@@ -4412,6 +4412,48 @@ abstract = This is a formalization of Markov models in Isabelle/HOL. It
 	<a href="http://arxiv.org/abs/1212.3870">See here for the corresponding paper.</a>
 notify = hoelzl@in.tum.de
 
+[MDP-Rewards]
+title = Markov Decision Processes with Rewards
+author = Maximilian Schäffeler <mailto:schaeffm@in.tum.de>, Mohammad Abdulaziz <mailto:mansour@in.tum.de>
+topic = Mathematics/Probability theory
+date = 2021-12-16
+notify = schaeffm@in.tum.de, mansour@in.tum.de
+abstract = 
+  We present a formalization of Markov Decision Processes with rewards.
+  In particular we first build on Hölzl's formalization  of MDPs
+  (AFP entry: Markov_Models) and extend them with rewards. We proceed
+  with an analysis of the expected total discounted reward criterion for
+  infinite horizon MDPs. The central result is the construction of the
+  iteration rule for the Bellman operator. We prove the optimality
+  equations for this operator and show the existence of an optimal
+  stationary deterministic solution. The analysis can be used to obtain
+  dynamic programming algorithms such as value iteration and policy
+  iteration to solve MDPs with formal guarantees. Our formalization is
+  based on chapters 5 and 6 in Puterman's book "Markov
+  Decision Processes: Discrete Stochastic Dynamic Programming".
+
+[MDP-Algorithms]
+title = Verified Algorithms for Solving Markov Decision Processes
+author = Maximilian Schäffeler <mailto:schaeffm@in.tum.de>, Mohammad Abdulaziz <mailto:mansour@in.tum.de>
+topic = Mathematics/Probability theory, Computer science/Algorithms
+date = 2021-12-16
+notify = schaeffm@in.tum.de, mansour@in.tum.de
+abstract = 
+  We present a formalization of algorithms for solving Markov Decision
+  Processes (MDPs) with formal guarantees on the optimality of their
+  solutions. In particular we build on our analysis of the Bellman
+  operator for discounted infinite horizon MDPs. From the iterator rule
+  on the Bellman operator we directly derive executable value iteration
+  and policy iteration algorithms to iteratively solve finite MDPs. We
+  also prove correct optimized versions of value iteration that use
+  matrix splittings to improve the convergence rate. In particular, we
+  formally verify Gauss-Seidel value iteration and modified policy
+  iteration. The algorithms are evaluated on two standard examples from
+  the literature, namely, inventory management and gridworld. Our
+  formalization covers most of chapter 6 in Puterman's book
+  "Markov Decision Processes: Discrete Stochastic Dynamic
+  Programming".
+
 [Probabilistic_System_Zoo]
 title = A Zoo of Probabilistic Systems
 author = Johannes Hölzl <http://in.tum.de/~hoelzl>,
@@ -10219,10 +10261,10 @@ abstract =
 
 [Extended_Finite_State_Machines]
 title = A Formal Model of Extended Finite State Machines
-author = Michael Foster <mailto:jmafoster1@sheffield.ac.uk>, Achim D. Brucker <mailto:a.brucker@exeter.ac.uk>, Ramsay G. Taylor <mailto:r.g.taylor@sheffield.ac.uk>, John Derrick <mailto:j.derrick@sheffield.ac.uk>
+author = Michael Foster <mailto:m.foster@sheffield.ac.uk>, Achim D. Brucker <mailto:a.brucker@exeter.ac.uk>, Ramsay G. Taylor <mailto:r.g.taylor@sheffield.ac.uk>, John Derrick <mailto:j.derrick@sheffield.ac.uk>
 topic = Computer science/Automata and formal languages
 date = 2020-09-07
-notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
+notify = m.foster@sheffield.ac.uk, adbrucker@0x5f.org
 abstract =
   In this AFP entry, we provide a formalisation of extended finite state
   machines (EFSMs) where models are represented as finite sets of
@@ -10235,10 +10277,10 @@ abstract =
 
 [Extended_Finite_State_Machine_Inference]
 title = Inference of Extended Finite State Machines
-author = Michael Foster <mailto:jmafoster1@sheffield.ac.uk>, Achim D. Brucker <mailto:a.brucker@exeter.ac.uk>, Ramsay G. Taylor <mailto:r.g.taylor@sheffield.ac.uk>, John Derrick <mailto:j.derrick@sheffield.ac.uk>
+author = Michael Foster <mailto:m.foster@sheffield.ac.uk>, Achim D. Brucker <mailto:a.brucker@exeter.ac.uk>, Ramsay G. Taylor <mailto:r.g.taylor@sheffield.ac.uk>, John Derrick <mailto:j.derrick@sheffield.ac.uk>
 topic = Computer science/Automata and formal languages
 date = 2020-09-07
-notify = jmafoster1@sheffield.ac.uk, adbrucker@0x5f.org
+notify = m.foster@sheffield.ac.uk, adbrucker@0x5f.org
 abstract =
   In this AFP entry, we provide a formal implementation of a
   state-merging technique to infer extended finite state machines
@@ -11377,7 +11419,7 @@ abstract =
   <a
   href="https://en.wikipedia.org/wiki/Szemerédi_regularity_lemma">Szemerédi's
   regularity lemma</a> is a key result in the study of large
-  graphs. It asserts the existence an upper bound on the number of parts
+  graphs. It asserts the existence of an upper bound on the number of parts
   the vertices of a graph need to be partitioned into such that the
   edges between the parts are random in a certain sense. This bound
   depends only on the desired precision and not on the graph itself, in
@@ -11512,3 +11554,111 @@ abstract =
   constructed in this book. In addition, the theorem of the problem
   about the part that is treated implicitly and is not clearly stated in
   it is being carried out in parallel.
+
+[Regular_Tree_Relations]
+title = Regular Tree Relations
+author = Alexander Lochmann <mailto:alexander.lochmann@uibk.ac.at>,  Bertram Felgenhauer<>, Christian Sternagel <http://cl-informatik.uibk.ac.at/users/griff/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Thomas Sternagel<>
+topic = Computer science/Automata and formal languages
+date = 2021-12-15
+notify = alexander.lochmann@uibk.ac.at
+abstract = 
+  Tree automata have good closure properties and therefore a commonly
+  used to prove/disprove properties. This formalization contains among
+  other things the proofs of many closure properties of tree automata
+  (anchored) ground tree transducers and regular relations. Additionally
+  it includes the well known pumping lemma and a lifting of the Myhill
+  Nerode theorem for regular languages to tree languages.  We want to
+  mention the existence of a <a
+  href="https://www.isa-afp.org/entries/Tree-Automata.html">tree
+  automata APF-entry</a> developed by Peter Lammich. His work is
+  based on epsilon free top-down tree automata, while this entry builds
+  on bottom-up tree auotamta with epsilon transitions. Moreover our
+  formalization relies on the <a
+  href="https://www.isa-afp.org/entries/Collections.html">Collections
+  Framework</a>, also by Peter Lammich, to obtain efficient code.
+  All proven constructions of the closure properties are exportable
+  using the Isabelle/HOL code generation facilities.
+
+[Roth_Arithmetic_Progressions]
+title = Roth's Theorem on Arithmetic Progressions
+author = Chelsea Edmonds <https://www.cst.cam.ac.uk/people/cle47>, Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>, Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Graph theory, Mathematics/Combinatorics
+date = 2021-12-28
+notify = lp15@cam.ac.uk
+abstract = 
+  We formalise a proof of Roth's Theorem on Arithmetic
+  Progressions, a major result in additive combinatorics on the
+  existence of 3-term arithmetic progressions in subsets of natural
+  numbers. To this end, we follow a proof using graph regularity. We
+  employ our recent formalisation of Szemerédi's Regularity Lemma,
+  a major result in extremal graph theory, which we use here to prove
+  the Triangle Counting Lemma and the Triangle Removal Lemma. Our
+  sources are Yufei Zhao's MIT lecture notes 
+  "<a href="https://ocw.mit.edu/courses/mathematics/18-217-graph-theory-and-additive-combinatorics-fall-2019/lecture-notes/MIT18_217F19_ch3.pdf">Graph Theory and Additive Combinatorics</a>"
+  (revised version <a href="https://yufeizhao.com/gtac/gtac17.pdf">here</a>)
+  and W.T. Gowers's Cambridge lecture notes 
+  "<a href="https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf">Topics in Combinatorics</a>".
+  We also refer to the University of
+  Georgia notes by Stephanie Bell and Will Grodzicki, 
+  "<a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.432.327">Using Szemerédi's Regularity Lemma to Prove Roth's Theorem</a>".
+
+[Gale_Shapley]
+title = Gale-Shapley Algorithm
+author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
+topic = Computer science/Algorithms, Mathematics/Games and economics
+date = 2021-12-29
+notify = nipkow@in.tum.de
+abstract = 
+  This is a stepwise refinement and proof of the Gale-Shapley stable
+  matching (or marriage) algorithm down to executable code. Both a
+  purely functional implementation based on lists and a functional
+  implementation based on efficient arrays (provided by the Collections
+  Framework in the AFP) are developed. The latter implementation runs in
+  time <i>O(n<sup>2</sup>)</i> where
+  <i>n</i> is the cardinality of the two sets to be matched.
+
+[Knights_Tour]
+title = Knight's Tour Revisited Revisited
+author = Lukas Koller <mailto:lukas.koller@tum.de>
+topic = Mathematics/Graph theory
+date = 2022-01-04
+notify = lukas.koller@tum.de
+abstract =
+  This is a formalization of the article <i>Knight's Tour Revisited</i> by
+  Cull and De Curtins where they prove the existence of a Knight's
+  path for arbitrary <i>n &times; m</i>-boards with <i>min(n,m) &ge;
+  5</i>. If <i>n &middot; m</i> is even, then there exists a Knight's
+  circuit.  A Knight's Path is a sequence of moves of a Knight on a
+  chessboard s.t. the Knight visits every square of a chessboard
+  exactly once.  Finding a Knight's path is a an instance of the
+  Hamiltonian path problem. A Knight's circuit is a Knight's path,
+  where additionally the Knight can move from the last square to the
+  first square of the path, forming a loop.  During the formalization
+  two mistakes in the original proof were discovered. These mistakes
+  are corrected in this formalization.
+
+[Hyperdual]
+title = Hyperdual Numbers and Forward Differentiation
+author = Filip Smola <>, Jacques Fleuriot <https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html>
+topic = Mathematics/Algebra, Mathematics/Analysis
+date = 2021-12-31
+notify = f.smola@sms.ed.ac.uk, Jacques.Fleuriot@ed.ac.uk
+abstract = 
+  <p>Hyperdual numbers are ones with a real component and a number
+  of infinitesimal components, usually written as $a_0 + a_1 \cdot
+  \epsilon_1 + a_2 \cdot \epsilon_2 + a_3 \cdot \epsilon_1\epsilon_2$.
+  They have been proposed by <a
+  href="https://doi.org/10.2514/6.2011-886">Fike and
+  Alonso</a> in an approach to automatic
+  differentiation.</p> <p>In this entry we formalise
+  hyperdual numbers and their application to forward differentiation. We
+  show them to be an instance of multiple algebraic structures and then,
+  along with facts about twice-differentiability, we define what we call
+  the hyperdual extensions of functions on real-normed fields. This
+  extension formally represents the proposed way that the first and
+  second derivatives of a function can be automatically calculated. We
+  demonstrate it on the standard logistic function $f(x) = \frac{1}{1 +
+  e^{-x}}$ and also reproduce the example analytic function $f(x) =
+  \frac{e^x}{\sqrt{sin(x)^3 + cos(x)^3}}$ used for demonstration by Fike
+  and Alonso.</p>
+

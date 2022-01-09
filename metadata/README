@@ -26,7 +26,7 @@ We're using a simple INI-like format for configuration files.
         title = Formalizing the Logic-Automaton Connection
         author = Stefan Berghofer <http://www.in.tum.de/~berghofe>, Markus Reiter
         date = 2009-12-03
-        topic = Computer Science/Automata, Logic
+        topic = Computer science/Automata, Logic
         abstract = This abstract has
           multiple lines ...
         notify = stefan.berghofer@example.org

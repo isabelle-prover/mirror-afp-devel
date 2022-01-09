@@ -1,0 +1,74 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+\usepackage{amsmath}
+\usepackage{float}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\begin{document}
+
+\title{Knight's Tour Revisited Revisited}
+\author{Lukas Koller\\Department of Informatics\\Technical University of Munich}
+\maketitle
+
+\begin{abstract}
+This is a formalization of the article ``Knight's Tour Revisited'' by
+Cull and De Curtins where they prove the existence of a Knight's path for arbitrary $n\times m$-boards with 
+$\operatorname{min}(n,m) \geq 5$. If $n\cdot m$ is even, then there exists a Knight's circuit.
+
+A Knight's Path is a sequence of moves of a Knight on a chessboard s.t. the Knight visits every square of a chessboard exactly once.
+Finding a Knight's path is a an instance of the Hamiltonian path problem.
+
+During the formalization two mistakes in the original proof were discovered. 
+These mistakes are corrected in this formalization.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

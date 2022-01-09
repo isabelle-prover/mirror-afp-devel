@@ -93,6 +93,8 @@ Clean
 ClockSynchInst
 Closest_Pair_Points
 CoCon
+CoSMeDis
+CoSMed
 CofGroups
 Coinductive
 Coinductive_Languages
@@ -123,8 +125,6 @@ CoreC++
 Core_DOM
 Core_SC_DOM
 Correctness_Algebras
-CoSMed
-CoSMeDis
 Count_Complex_Roots
 CryptHOL
 CryptoBasedCompositionalProperties
@@ -218,6 +218,7 @@ Furstenberg_Topology
 GPU_Kernel_PL
 Gabow_SCC
 GaleStewart_Games
+Gale_Shapley
 Game_Based_Crypto
 Gauss-Jordan-Elim-Fun
 Gauss_Jordan
@@ -263,6 +264,7 @@ Hybrid_Logic
 Hybrid_Multi_Lane_Spatial_Logic
 Hybrid_Systems_VCs
 HyperCTL
+Hyperdual
 IEEE_Floating_Point
 IFC_Tracking
 IMAP-CRDT
@@ -304,6 +306,7 @@ KBPs
 KD_Tree
 Key_Agreement_Strong_Adversaries
 Kleene_Algebra
+Knights_Tour
 Knot_Theory
 Knuth_Bendix_Order
 Knuth_Morris_Pratt
@@ -355,6 +358,8 @@ Lowe_Ontological_Argument
 Lower_Semicontinuous
 Lp
 Lucas_Theorem
+MDP-Algorithms
+MDP-Rewards
 MFMC_Countable
 MFODL_Monitor_Optimized
 MFOTL_Monitor
@@ -499,6 +504,7 @@ Registers
 Regression_Test_Selection
 Regular-Sets
 Regular_Algebras
+Regular_Tree_Relations
 Relation_Algebra
 Relational-Incorrectness-Logic
 Relational_Disjoint_Set_Forests
@@ -514,6 +520,7 @@ Ribbon_Proofs
 Robbins-Conjecture
 Robinson_Arithmetic
 Root_Balanced_Tree
+Roth_Arithmetic_Progressions
 Routing
 Roy_Floyd_Warshall
 SATSolverVerification
@@ -585,8 +592,8 @@ SuperCalc
 Surprise_Paradox
 Symmetric_Polynomials
 Syntax_Independent_Logic
-Szpilrajn
 Szemeredi_Regularity
+Szpilrajn
 TESL_Language
 TLA
 Tail_Recursive_Functions
@@ -631,8 +638,8 @@ VolpanoSmith
 WHATandWHERE_Security
 WOOT_Strong_Eventual_Consistency
 WebAssembly
-Weighted_Path_Order
 Weight_Balanced_Trees
+Weighted_Path_Order
 Well_Quasi_Orders
 Winding_Number_Eval
 Word_Lib

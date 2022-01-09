@@ -1,0 +1,15 @@
+chapter AFP
+session "MDP-Algorithms" (AFP) = "MDP-Rewards" +
+  options [timeout = 600]
+  sessions
+    Gauss_Jordan
+  directories
+    code
+    examples
+  theories
+    Algorithms
+    Code_Mod
+    Examples
+  document_files
+    "root.bib"
+    "root.tex"

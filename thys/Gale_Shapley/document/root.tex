@@ -1,0 +1,59 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Gale-Shapley Algorithm}
+\author{Tobias Nipkow\\Department of Informatics\\Technical University of Munich}
+\maketitle
+
+\begin{abstract}
+  This is a stepwise refinement and proof of the Gale-Shapley stable
+  matching (or marriage) algorithm down to executable code. Both a
+  purely functional implementation based on lists and a
+  functional implementation based on efficient arrays (provided
+  by the Collections entry in the AFP) are developed.  The latter
+  implementation runs in time $O(n^2)$ where $n$ is the cardinality of
+  the two sets to be matched.
+\end{abstract}
+
+\section{Introduction}
+
+The Gale-Shapley algorithm \cite{GaleS62,GusfieldI89} for stable
+matchings (or marriages) matches two sets of the same cardinality $n$,
+where each element has a complete list of preferences (a linear order)
+of the elements of the other set.
+
+The refinement process is carried out largely on the level of a simple
+imperative language. In every refinement step the whole algorithm is
+stated and proved. Most of the proof is abstrtacted into general
+lemmas that are used in multiple proofs. Except for one bigger step,
+each algorithm proof is obtained from the previous one by incremental changes.
+In the end, two executable functional algorithms are obtained:
+a purely functional one based on lists and a functional one based on a
+persistent imperative implementation of arrays (provided by the AFP entry
+Collections Framework \cite{Collections-AFP} based on \cite{Baker91}
+(see also \cite{ConchonF07})).
+The latter algorithm has linear complexity, i.e. $O(n^2)$.
+
+We prove that each of the algorithm computes a stable matching that is
+optimal for one of the two sets.
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
