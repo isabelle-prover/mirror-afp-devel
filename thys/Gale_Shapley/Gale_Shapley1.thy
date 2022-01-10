@@ -25,11 +25,6 @@ theorem while_rule2:
    Q (while b c s)"
 using while_rule[of P] by metis
 
-(* by now in Map *)
-lemma ran_map_upd_Some:
-  "\<lbrakk> m x = Some y; inj_on m (dom m); z \<notin> ran m \<rbrakk> \<Longrightarrow> ran(m(x := Some z)) = ran m - {y} \<union> {z}"
-by(force simp add: ran_def domI inj_onD)
-
 syntax
   "_assign_list" :: "idt \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> 'com"  ("(2_[_] :=/ _)" [70, 0, 65] 61)
 
