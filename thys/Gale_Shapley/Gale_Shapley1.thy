@@ -16,15 +16,6 @@ begin
 
 lemmas conj12 = conjunct1 conjunct2
 
-(* TODO: mv *)
-theorem while_rule2:
-  "[| P s;
-      !!s. [| P s; b s  |] ==> P (c s) \<and> (c s, s) \<in> r;
-      !!s. [| P s; \<not> b s  |] ==> Q s;
-      wf r |] ==>
-   Q (while b c s)"
-using while_rule[of P] by metis
-
 syntax
   "_assign_list" :: "idt \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> 'com"  ("(2_[_] :=/ _)" [70, 0, 65] 61)
 
