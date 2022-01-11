@@ -48,7 +48,7 @@ lemma subset_mset_imp_subset_add_mset: "A \<subseteq># B \<Longrightarrow> A \<s
 lemma subset_add_mset_notin_subset_mset: \<open>A \<subseteq># add_mset b B \<Longrightarrow> b \<notin># A \<Longrightarrow> A \<subseteq># B\<close>
   by (simp add: subset_mset.le_iff_sup)
 
-lemma subset_msetE: "\<lbrakk>A \<subset># B; \<lbrakk>A \<subseteq># B; \<not> B \<subseteq># A\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
+lemma subset_msetE [elim!]: "\<lbrakk>A \<subset># B; \<lbrakk>A \<subseteq># B; \<not> B \<subseteq># A\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
   by (simp add: subset_mset.less_le_not_le)
 
 lemma Diff_triv_mset: "M \<inter># N = {#} \<Longrightarrow> M - N = M"
@@ -56,8 +56,6 @@ lemma Diff_triv_mset: "M \<inter># N = {#} \<Longrightarrow> M - N = M"
 
 lemma diff_intersect_sym_diff: "(A - B) \<inter># (B - A) = {#}"
   by (rule multiset_eqI) simp
-
-declare subset_msetE [elim!]
 
 lemma subseq_mset_subseteq_mset: "subseq xs ys \<Longrightarrow> mset xs \<subseteq># mset ys"
 proof (induct xs arbitrary: ys)
