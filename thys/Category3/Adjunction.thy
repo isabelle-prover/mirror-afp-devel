@@ -311,11 +311,10 @@ begin
                     \<tau> (D.dom (\<mu> (C.cod f) \<cdot>\<^sub>D \<phi> y (f \<cdot>\<^sub>C \<tau>'.map y)))"
               using D.comp_assoc by simp
             also have "... = \<psi> x (\<phi> y (f \<cdot>\<^sub>C \<tau>'.map y)) \<cdot>\<^sub>C \<tau> y"
-              using f 1
-              by (metis C.ide_cod C.in_homE C.seqE D.comp_inv_arr D.in_homE D.seqI
-                  G.functor_axioms \<mu>'.inverts_components \<mu>.preserves_dom
-                  \<mu>.preserves_reflects_arr category.comp_cod_arr category.dom_comp
-                  functor_def)
+              by (metis "1" C.arr_cod C.dom_cod C.ide_cod C.in_homE D.comp_ide_arr D.dom_comp
+                  D.ide_compE D.in_homE D.inverse_arrowsE \<mu>'.inverts_components \<mu>.preserves_dom
+                  \<mu>.preserves_reflects_arr category.seqI f meta_adjunction_axioms
+                  meta_adjunction_def)
             also have "... = f"
               using f y \<psi>_\<phi> C.comp_assoc \<tau>'.inverts_components [of y] C.comp_arr_dom
               by fastforce
@@ -584,9 +583,9 @@ begin
     interpret \<eta>'\<eta>: natural_transformation D D Adj.D.map \<open>G o F o G o F\<close> \<open>\<eta>' o \<eta>\<close>
     proof -
       have "natural_transformation D D Adj.D.map ((G o F) o (G o F)) (\<eta>' o \<eta>)"
-        using Adj.\<eta>.natural_transformation_axioms Adj'.\<eta>.natural_transformation_axioms
-              horizontal_composite Adj.D.as_nat_trans.natural_transformation_axioms hcomp_ide_cod
-        by (metis (no_types, lifting))
+        using Adj'.\<eta>.natural_transformation_axioms Adj.D.identity_functor_axioms
+              Adj.\<eta>.natural_transformation_axioms horizontal_composite identity_functor.is_functor
+        by fastforce
       thus "natural_transformation D D Adj.D.map (G o F o G o F) (\<eta>' o \<eta>)"
         using o_assoc by metis
     qed
@@ -735,8 +734,9 @@ begin
       using assms \<eta>o_def \<phi>_in_hom [of y "F y" "F y"]
             D.comp_cod_arr [of "D (\<phi> y (F y)) g" "G (F y)"]
             \<phi>_naturality [of "F y" "F y" "F y" g y' y "F y"]
-      by (metis D.arr_cod D.cod_cod D.comp_in_homI' D.ide_char' D.ide_in_hom D.in_homE
-          F.as_nat_trans.is_natural_2 F.preserves_hom)
+      by (metis C.ide_in_hom D.arr_cod_iff_arr D.arr_dom D.cod_cod D.cod_dom D.comp_ide_arr
+          D.comp_ide_self D.ide_cod D.in_homE F.as_nat_trans.is_natural_2 F.functor_axioms
+          F.preserves_section_retraction \<phi>_in_hom functor.preserves_hom)
 
     interpretation \<eta>: transformation_by_components D D D.map GF.map \<eta>o
     proof
@@ -2977,12 +2977,9 @@ begin
         have "\<epsilon> a = \<psi> a (\<psi>' (G a) (G' (G a)))"
           using a \<epsilon>_in_terms_of_\<psi> by simp
         also have "... = FG.\<epsilon> a \<cdot>\<^sub>A F (F'G'.\<epsilon> (G a) \<cdot>\<^sub>B F' (G' (G a)))"
-          unfolding \<epsilon>_def
-          using a F'G'.\<psi>_in_terms_of_\<epsilon> [of "G a" "G' (G a)" "G' (G a)"]
-                F'G'.\<epsilon>.preserves_hom [of "G a" "G a" "G a"]
-                FG.\<psi>_in_terms_of_\<epsilon> [of a "F'G'.\<epsilon> (G a) \<cdot>\<^sub>B F' (G' (G a))" "(F'G'.FG.map (G a))"]
-                F'G'.\<epsilon>_def FG.\<epsilon>_def
-          by fastforce
+          by (metis F'G'.\<epsilon>_in_terms_of_\<psi> F'G'.\<epsilon>o_def F'G'.\<epsilon>o_in_hom F'G'.\<eta>\<epsilon>.\<epsilon>_in_terms_of_\<psi>
+              F'G'.\<eta>\<epsilon>.\<psi>_def FG.G\<epsilon>.natural_transformation_axioms FG.\<psi>_in_terms_of_\<epsilon> a
+              functor.preserves_ide natural_transformation_def)
         also have "... = \<epsilon>oF\<epsilon>'G.map a"
           using a B.comp_arr_dom \<epsilon>oF\<epsilon>'G.map_def by simp
         finally show ?thesis by blast

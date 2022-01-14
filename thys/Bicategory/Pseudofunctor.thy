@@ -161,7 +161,7 @@ begin
           also have "... = D.VV.comp (FF \<mu>\<nu>) (FF \<tau>\<pi>)"
             using 1 2 FF_def D.VV.comp_char D.VxV.comp_char C.VV.arr_char D.VV.arr_char
                   C.VV.seq_char C.VxV.seqE preserves_seq
-            by (simp, meson)
+            by simp meson
           finally show ?thesis by simp
         qed
       qed
@@ -280,7 +280,7 @@ begin
     and "src\<^sub>D (\<Phi> (\<mu>, \<nu>)) = map\<^sub>0 (src\<^sub>C \<nu>)" and "trg\<^sub>D (\<Phi> (\<mu>, \<nu>)) = map\<^sub>0 (trg\<^sub>C \<mu>)"
     and "D.dom (\<Phi> (\<mu>, \<nu>)) = F (C.dom \<mu>) \<star>\<^sub>D F (C.dom \<nu>)"
     and "D.cod (\<Phi> (\<mu>, \<nu>)) = F (C.cod \<mu> \<star>\<^sub>C C.cod \<nu>)"
-      using assms cmp_in_hom' by simp_all blast+
+      using assms cmp_in_hom' by blast+
 
     lemma cmp_components_are_iso [simp]:
     assumes "C.ide f" and "C.ide g" and "src\<^sub>C f = trg\<^sub>C g"
@@ -1208,8 +1208,8 @@ begin
             using assms
             by (intro conjI D.hcomp_in_vhom, auto)
           ultimately show ?thesis
-            using assms D.isos_compose D.comp_assoc
-          by (elim conjE D.in_homE) (auto simp add: D.inv_comp)
+            using assms D.isos_compose D.comp_assoc D.inv_comp
+            by (elim conjE D.in_homE) auto
         qed
         finally show ?thesis by simp
       qed
@@ -1697,8 +1697,7 @@ begin
       have "cmp \<mu>\<nu> = G (F (H\<^sub>B (fst \<mu>\<nu>) (snd \<mu>\<nu>))) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (B.VV.dom \<mu>\<nu>)) \<cdot>\<^sub>D
                      \<Phi>\<^sub>G (F (B.dom (fst \<mu>\<nu>)), F (B.dom (snd \<mu>\<nu>)))"
         using assms cmp_def by simp
-      moreover have "\<guillemotleft> ... : H\<^sub>DoGF_GF.map (B.VV.dom \<mu>\<nu>)
-                                \<Rightarrow>\<^sub>D GFoH\<^sub>B.map (B.VV.cod \<mu>\<nu>)\<guillemotright>"
+      moreover have "\<guillemotleft> ... : H\<^sub>DoGF_GF.map (B.VV.dom \<mu>\<nu>) \<Rightarrow>\<^sub>D GFoH\<^sub>B.map (B.VV.cod \<mu>\<nu>)\<guillemotright>"
       proof (intro D.comp_in_homI)
         show "\<guillemotleft>\<Phi>\<^sub>G (F (B.dom (fst \<mu>\<nu>)), F (B.dom (snd \<mu>\<nu>))) :
                  H\<^sub>DoGF_GF.map (B.VV.dom \<mu>\<nu>)
@@ -2183,7 +2182,7 @@ begin
                 map cmp
       using F.assoc_coherence C'.VVV.arr_char C'.VV.arr_char C'.arr_char C'.hcomp_def
             C'.src_def C'.trg_def C'.assoc_closed C'.hcomp_closed C'.ide_char
-      by unfold_locales (simp add: C'.ide_char C'.src_def C'.trg_def)
+      by unfold_locales auto
 
     lemma is_pseudofunctor:
     shows "pseudofunctor C'.comp C'.hcomp C'.\<a> \<i>\<^sub>C C'.src C'.trg V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D map cmp"
