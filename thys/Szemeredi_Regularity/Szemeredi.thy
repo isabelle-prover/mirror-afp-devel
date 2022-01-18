@@ -5,13 +5,6 @@ theory Szemeredi
 
 begin
 
-thm card_vimage_inj
-lemma card_vimage_inj_on_le: 
-  assumes "inj_on f D" "finite A"
-  shows "card (f-`A \<inter> D) \<le> card A"
-  by (meson assms card_inj_on_le image_subset_iff_subset_vimage inf_le1 inf_le2 inj_on_subset)
-
-
 text\<open>We formalise Szemerédi's Regularity Lemma, which is a major result in the study of large graphs
 (extremal graph theory).
 We follow Yufei Zhao's notes ``Graph Theory and Additive Combinatorics'' (MIT)
@@ -474,8 +467,8 @@ proof -
   then have finite_F: "finite (F R)" if "R \<in> X" for R
     using that by (simp add: F)
   have dFX: "disjoint (F ` X)"
-    using part_VX unfolding finite_graph_partition_def partition_def
-    by (smt (verit, best) F Int_subset_iff Union_upper disjnt_iff disjointD pairwise_imageI partition_on_def subset_empty)
+    using part_VX 
+    by (smt (verit, best) F Union_upper disjnt_iff disjointD le_inf_iff pairwise_imageI partition_on_def subset_empty)
   have F_ne: "F R \<noteq> {}" if "R \<in> X" for R
     by (metis F Sup_empty part_VX partition_on_def that)
   have F_sums_Y: "(\<Sum>R\<in>X. \<Sum>U\<in>F R. f U) = (\<Sum>S\<in>Y. f S)" for f :: "nat set \<Rightarrow> real"
@@ -559,8 +552,7 @@ lemma sum_P2: "\<lbrakk>X \<subseteq> Y; f{} = 0\<rbrakk> \<Longrightarrow> sum 
 lemma partition_P2:
   assumes "A \<subseteq> B" "A \<noteq> {}"
   shows "partition_on B (P2 A B)"
-  using assms 
-  by (auto simp add: partition_on_def P2_def disjnt_iff pairwise_insert)
+  using assms by (auto simp add: partition_on_def P2_def disjnt_iff pairwise_insert)
 
 proposition energy_boost:
   fixes \<epsilon>::real and \<U> \<W> G
@@ -812,8 +804,8 @@ proof -
               by (metis \<open>R \<in> P\<close> * pairwiseD partition_on_def \<open>p \<noteq> q\<close>)
           next
             case False
-            then show ?thesis
-              by (metis Union_upper \<open>R \<in> P\<close> \<open>S \<in> P\<close> disjnt_iff * in_mono pairwiseD part_GP part_QS partition_onD1 partition_onD2)
+            with * show ?thesis
+              by (metis QS_subset_P \<open>R \<in> P\<close> \<open>S \<in> P\<close> disjnt_iff pairwiseD part_GP partition_on_def subsetD)
           qed
         qed
         show "{} \<notin> Q"
