@@ -12,9 +12,6 @@ lifting_forget poly.lifting
 
 text \<open>\<close>
 
-no_notation MPoly_Type.div (infixl "div" 70)
-no_notation MPoly_Type.mod (infixl "mod" 70)
-
 subsection "Lemmas with Monomial and Monomials"
 
 lemma of_nat_monomial: "of_nat p = monomial p 0"
