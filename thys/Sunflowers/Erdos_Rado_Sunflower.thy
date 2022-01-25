@@ -2,7 +2,7 @@
 
 section \<open>The Sunflower Lemma\<close>
 
-text \<open>We formalize the proof of the sunflower lemma of Erdős and Rado~\cite{erdos_rado}, 
+text \<open>We formalize the proof of the sunflower lemma of Erd\H{o}s and Rado~\cite{erdos_rado}, 
 as it is presented in the textbook~\cite[Chapter~6]{book}.  
 We further integrate Exercise 6.2 from the textbook,
 which provides a lower bound on the existence of sunflowers.\<close>
@@ -56,7 +56,7 @@ proof (intro exI[of _ "insert a ` S"] conjI refl)
   qed
 qed
 
-text \<open>The sunflower-lemma of Erdős and Rado: 
+text \<open>The sunflower-lemma of Erd\H{o}s and Rado: 
   if a set has a certain size and all elements
   have the same cardinality, then a sunflower exists.\<close>
 
@@ -329,9 +329,9 @@ text \<open>The difference between the lower and the
 upper bound on the existence of sunflowers as they have been formalized
 is @{term \<open>fact k\<close>}. There is more recent work with tighter bounds
 \cite{sunflower_new}, but we only integrate the initial 
-result of Erdős and Rado in this theory.\<close>
+result of Erd\H{o}s and Rado in this theory.\<close>
 
-text \<open>We further provide the Erdős Rado lemma 
+text \<open>We further provide the Erd\H{o}s Rado lemma 
   lifted to obtain non-empty cores or cores of arbitrary cardinality.\<close>
 
 lemma Erdos_Rado_sunflower_card_core: 
