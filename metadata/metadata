@@ -11683,3 +11683,30 @@ abstract =
   \frac{e^x}{\sqrt{sin(x)^3 + cos(x)^3}}$ used for demonstration by Fike
   and Alonso.</p>
 
+[Median_Method]
+title = Median Method
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Mathematics/Probability theory
+date = 2022-01-25
+notify = me@eminkarayel.de
+abstract = 
+  <p>The median method is an amplification result for randomized
+  approximation algorithms described in [<a
+  href="https://doi.org/10.1006/jcss.1997.1545">1</a>].
+  Given an algorithm whose result is in a desired interval with a
+  probability larger than <i>1/2</i>, it is possible to
+  improve the success probability, by running the algorithm multiple
+  times independently and using the median. In contrast to using the
+  mean, the amplification of the success probability grows exponentially
+  with the number of independent runs.</p> <p>This entry
+  contains a formalization of the underlying theorem: Given a sequence
+  of n independent random variables, which are in a desired interval
+  with a probability <i>1/2 + a</i>. Then their median will
+  be in the desired interval with a probability of <i>1 −
+  exp(−2a<sup>2</sup> n)</i>. In particular, the
+  success probability approaches <i>1</i> exponentially with
+  the number of variables.</p> <p>In addition to that, this
+  entry also contains a proof that order-statistics of Borel-measurable
+  random variables are themselves measurable and that generalized
+  intervals in linearly ordered Borel-spaces are measurable.</p>
+

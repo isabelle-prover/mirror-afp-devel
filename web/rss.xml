@@ -9,7 +9,34 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>23 Jan 2022 00:00:00 +0000</pubDate>
+    <pubDate>25 Jan 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Median Method</title>
+              <link>https://www.isa-afp.org/entries/Median_Method.html</link>
+       <guid>https://www.isa-afp.org/entries/Median_Method.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>25 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The median method is an amplification result for randomized
+approximation algorithms described in [&lt;a
+href=&#34;https://doi.org/10.1006/jcss.1997.1545&#34;&gt;1&lt;/a&gt;].
+Given an algorithm whose result is in a desired interval with a
+probability larger than &lt;i&gt;1/2&lt;/i&gt;, it is possible to
+improve the success probability, by running the algorithm multiple
+times independently and using the median. In contrast to using the
+mean, the amplification of the success probability grows exponentially
+with the number of independent runs.&lt;/p&gt; &lt;p&gt;This entry
+contains a formalization of the underlying theorem: Given a sequence
+of n independent random variables, which are in a desired interval
+with a probability &lt;i&gt;1/2 + a&lt;/i&gt;. Then their median will
+be in the desired interval with a probability of &lt;i&gt;1 −
+exp(−2a&lt;sup&gt;2&lt;/sup&gt; n)&lt;/i&gt;. In particular, the
+success probability approaches &lt;i&gt;1&lt;/i&gt; exponentially with
+the number of variables.&lt;/p&gt; &lt;p&gt;In addition to that, this
+entry also contains a proof that order-statistics of Borel-measurable
+random variables are themselves measurable and that generalized
+intervals in linearly ordered Borel-spaces are measurable.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Actuarial Mathematics</title>
               <link>https://www.isa-afp.org/entries/Actuarial_Mathematics.html</link>
@@ -595,20 +622,6 @@ reasoning and rewriting, such as the method &lt;i&gt;auto&lt;/i&gt;,
 but use a different approach for rewriting. More specifically, these
 methods allow for the side conditions of the rewrite rules to be
 solved via intro-resolution.</description>
-    </item>
-    <item>
-       <title>Category Theory for ZFC in HOL III: Universal Constructions</title>
-              <link>https://www.isa-afp.org/entries/CZH_Universal_Constructions.html</link>
-       <guid>https://www.isa-afp.org/entries/CZH_Universal_Constructions.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-The article provides a formalization of elements of the theory of
-universal constructions for 1-categories (such as limits, adjoints and
-Kan extensions) in the object logic ZFC in HOL of the formal proof
-assistant Isabelle. The article builds upon the foundations
-established in the AFP entry &lt;i&gt;Category Theory for ZFC in HOL
-II: Elementary Theory of 1-Categories&lt;/i&gt;.</description>
     </item>
   </channel>
 </rss>
