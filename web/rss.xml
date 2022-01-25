@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>04 Jan 2022 00:00:00 +0000</pubDate>
+    <pubDate>23 Jan 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Actuarial Mathematics</title>
+              <link>https://www.isa-afp.org/entries/Actuarial_Mathematics.html</link>
+       <guid>https://www.isa-afp.org/entries/Actuarial_Mathematics.html</guid>
+       <dc:creator> Yosuke Ito       </dc:creator>
+       <pubDate>23 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+Actuarial Mathematics is a theory in applied mathematics, which is
+mainly used for determining the prices of insurance products and
+evaluating the liability of a company associating with insurance
+contracts. It is related to calculus, probability theory and financial
+theory, etc. In this entry, I formalize the very basic part of
+Actuarial Mathematics in Isabelle/HOL. The first formalization is
+about the theory of interest which deals with interest rates, present
+value factors, an annuity certain, etc. I have already formalized the
+basic part of Actuarial Mathematics in Coq
+(https://github.com/Yosuke-Ito-345/Actuary). This entry is currently
+the partial translation and a little generalization of the Coq
+formalization. The further translation in Isabelle/HOL is now
+proceeding.</description>
+    </item>
     <item>
        <title>Knight's Tour Revisited Revisited</title>
               <link>https://www.isa-afp.org/entries/Knights_Tour.html</link>
@@ -588,31 +609,6 @@ Kan extensions) in the object logic ZFC in HOL of the formal proof
 assistant Isabelle. The article builds upon the foundations
 established in the AFP entry &lt;i&gt;Category Theory for ZFC in HOL
 II: Elementary Theory of 1-Categories&lt;/i&gt;.</description>
-    </item>
-    <item>
-       <title>Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories</title>
-              <link>https://www.isa-afp.org/entries/CZH_Foundations.html</link>
-       <guid>https://www.isa-afp.org/entries/CZH_Foundations.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-This article provides a foundational framework for the formalization
-of category theory in the object logic ZFC in HOL of the formal proof
-assistant Isabelle. More specifically, this article provides a
-formalization of canonical set-theoretic constructions internalized in
-the type &lt;i&gt;V&lt;/i&gt; associated with the ZFC in HOL,
-establishes a design pattern for the formalization of mathematical
-structures using sequences and locales, and showcases the developed
-infrastructure by providing formalizations of the elementary theories
-of digraphs and semicategories. The methodology chosen for the
-formalization of the theories of digraphs and semicategories (and
-categories in future articles) rests on the ideas that were originally
-expressed in the article &lt;i&gt;Set-Theoretical Foundations of
-Category Theory&lt;/i&gt; written by Solomon Feferman and Georg
-Kreisel. Thus, in the context of this work, each of the aforementioned
-mathematical structures is represented as a term of the type
-&lt;i&gt;V&lt;/i&gt; embedded into a stage of the von Neumann
-hierarchy.</description>
     </item>
   </channel>
 </rss>
