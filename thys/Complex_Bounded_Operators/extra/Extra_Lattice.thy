@@ -7,29 +7,7 @@ begin
 
 subsection\<open>\<open>Lattice_Missing\<close> -- Miscellaneous missing facts about lattices\<close>
 
-text \<open>Two bundles to activate and deactivate lattice specific notation (e.g., \<open>\<sqinter>\<close> etc.).
-  Activate the notation locally via "@{theory_text \<open>includes lattice_notation\<close>}" in a lemma statement.
-  (Or sandwich a declaration using that notation between "@{theory_text \<open>unbundle lattice_notation ... unbundle no_lattice_notation\<close>}.)\<close>
-
-bundle lattice_notation begin
-notation inf (infixl "\<sqinter>" 70)
-notation sup (infixl "\<squnion>" 65)
-notation Inf ("\<Sqinter>")
-notation Sup ("\<Squnion>")
-notation bot ("\<bottom>")
-notation top ("\<top>")
-end
-
-bundle no_lattice_notation begin
-notation inf (infixl "\<sqinter>" 70)
-notation sup (infixl "\<squnion>" 65)
-notation Inf ("\<Sqinter>")
-notation Sup ("\<Squnion>")
-notation bot ("\<bottom>")
-notation top ("\<top>")
-end
-
-unbundle lattice_notation
+unbundle lattice_syntax
 
 text \<open>The following class \<open>complemented_lattice\<close> describes complemented lattices (with
   \<^const>\<open>uminus\<close> for the complement). The definition follows
@@ -266,6 +244,6 @@ next
     by (rule cSup_eq_non_empty)
 qed
 
-unbundle no_lattice_notation
+unbundle no_lattice_syntax
 
 end

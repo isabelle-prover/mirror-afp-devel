@@ -16,6 +16,8 @@ theory Complex_Bounded_Linear_Function
     Complex_Bounded_Linear_Function0
 begin
 
+unbundle lattice_syntax
+
 subsection \<open>Misc basic facts and declarations\<close>
 
 notation cblinfun_apply (infixr "*\<^sub>V" 70)
@@ -2977,5 +2979,6 @@ no_notation blinfun_apply (infixr "*\<^sub>V" 70)
 end
 
 unbundle no_cblinfun_notation
+unbundle no_lattice_syntax
 
 end

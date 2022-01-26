@@ -28,6 +28,8 @@ bundle notation_norm begin
 notation norm ("\<parallel>_\<parallel>")
 end
 
+unbundle lattice_syntax
+
 subsection \<open>Misc\<close>
 
 lemma (in scaleC) scaleC_real: assumes "r\<in>\<real>" shows "r *\<^sub>C x = Re r *\<^sub>R x"
@@ -2816,5 +2818,7 @@ end
 
 lemmas tendsto_scaleC [tendsto_intros] =
   bounded_cbilinear.tendsto [OF bounded_cbilinear_scaleC]
+
+unbundle no_lattice_syntax
 
 end
