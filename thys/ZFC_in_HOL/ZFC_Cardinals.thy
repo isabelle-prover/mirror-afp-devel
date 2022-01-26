@@ -648,7 +648,7 @@ qed
 
 lemma rank_Union: "rank(\<Squnion> A) = \<Squnion> (rank ` A)"
 proof (rule order_antisym)
-  have "elts (SUP y\<in>elts (\<Squnion> A). succ (rank y)) \<subseteq> elts (\<Squnion> (rank ` A))"
+  have "elts (\<Squnion>y\<in>elts (\<Squnion> A). succ (rank y)) \<subseteq> elts (\<Squnion> (rank ` A))"
     apply auto(*SLOW*)
     using Ord_mem_iff_lt Ord_rank rank_lt apply blast
     by (meson less_le_not_le rank_lt vsubsetD)
@@ -717,7 +717,7 @@ proof (rule order_antisym)
   show "Vfrom A (rank x) \<le> Vfrom A x"
   proof (induction x rule: eps_induct)
     case (step x)
-    have "(SUP j\<in>elts (rank x). VPow (Vfrom A j)) \<le> (SUP j\<in>elts x. VPow (Vfrom A j))"
+    have "(\<Squnion>j\<in>elts (rank x). VPow (Vfrom A j)) \<le> (\<Squnion>j\<in>elts x. VPow (Vfrom A j))"
       apply (rule Sup_least, clarify)
       apply (simp add: rank [of x])
       using step.IH
@@ -728,7 +728,7 @@ qed
   show "Vfrom A x \<le> Vfrom A (rank x)"
   proof (induction x rule: eps_induct)
     case (step x)
-    have "(SUP j\<in>elts x. VPow (Vfrom A j)) \<le> (SUP j\<in>elts (rank x). VPow (Vfrom A j))"
+    have "(\<Squnion>j\<in>elts x. VPow (Vfrom A j)) \<le> (\<Squnion>j\<in>elts (rank x). VPow (Vfrom A j))"
       using step.IH TC_rank_mem less_TC_iff by force
     then show ?case
       by (simp add: Vfrom [of _ x] Vfrom [of _ "rank(x)"] sup.coboundedI2)
