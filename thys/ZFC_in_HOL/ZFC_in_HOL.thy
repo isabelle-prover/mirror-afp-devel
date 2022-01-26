@@ -41,7 +41,8 @@ lemma small_iff_range: "small X \<longleftrightarrow> X \<in> range elts"
   by (metis inj_on_id2 replacement_raw the_inv_into_onto)
 
 text\<open>Small classes can be mapped to sets.\<close>
-definition   "set X \<equiv> (if small X then inv elts X else inv elts {})"
+definition set :: "V set \<Rightarrow> V"
+  where "set X \<equiv> (if small X then inv elts X else inv elts {})"
 
 lemma set_of_elts [simp]: "set (elts x) = x"
   by (force simp add: ext set_def f_inv_into_f small_def)

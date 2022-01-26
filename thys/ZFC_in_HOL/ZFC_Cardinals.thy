@@ -1753,12 +1753,11 @@ qed
 
 subsection\<open>Cardinality of a set\<close>
 
-definition
-  vcard :: "V\<Rightarrow>V"
+definition vcard :: "V\<Rightarrow>V"
   where "vcard a \<equiv> (LEAST i. Ord i \<and> elts i \<approx> elts a)"
 
-definition
-  Card:: "V\<Rightarrow>bool" where "Card i \<equiv> i = vcard i"
+definition Card:: "V\<Rightarrow>bool"
+  where "Card i \<equiv> i = vcard i"
 
 abbreviation CARD where "CARD \<equiv> Collect Card"
 
@@ -2211,8 +2210,7 @@ lemma InfCard_ge_ord_of_nat:
 lemma InfCard_not_0[iff]: "\<not> InfCard 0"
   by (simp add: InfCard_iff)
 
-definition
-  csucc :: "V\<Rightarrow>V"
+definition csucc :: "V\<Rightarrow>V"
   where "csucc \<kappa> \<equiv> LEAST \<kappa>'. Ord \<kappa>' \<and> (Card \<kappa>' \<and> \<kappa> < \<kappa>')"
 
 
@@ -2424,8 +2422,7 @@ subsection \<open>The Aleph-seqence\<close>
 
 text \<open>This is the well-known transfinite enumeration of the cardinal numbers.\<close>
 
-definition
-  Aleph :: "V \<Rightarrow> V"   (\<open>\<aleph>_\<close> [90] 90) 
+definition Aleph :: "V \<Rightarrow> V"   (\<open>\<aleph>_\<close> [90] 90) 
   where "Aleph \<equiv> transrec3 \<omega> (\<lambda>x r. csucc(r)) (\<lambda>i r . \<Squnion> (r ` elts i))"
 
 lemma Card_Aleph [simp, intro]:
