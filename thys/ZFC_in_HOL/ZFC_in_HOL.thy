@@ -9,11 +9,7 @@ subsection\<open>Syntax and axioms\<close>
 
 hide_const (open) list.set Sum subset
 
-notation
-  inf (infixl "\<sqinter>" 70) and
-  sup (infixl "\<squnion>" 65) and
-  Inf ("\<Sqinter>") and
-  Sup ("\<Squnion>")
+unbundle lattice_syntax
 
 typedecl V
 
