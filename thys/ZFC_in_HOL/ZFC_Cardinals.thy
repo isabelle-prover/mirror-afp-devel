@@ -648,7 +648,7 @@ qed
 
 lemma rank_Union: "rank(\<Squnion> A) = \<Squnion> (rank ` A)"
 proof (rule order_antisym)
-  have "elts (SUP y\<in>elts (\<Squnion> A). succ (rank y)) \<subseteq> elts (\<Squnion> (rank ` A))"
+  have "elts (\<Squnion>y\<in>elts (\<Squnion> A). succ (rank y)) \<subseteq> elts (\<Squnion> (rank ` A))"
     apply auto(*SLOW*)
     using Ord_mem_iff_lt Ord_rank rank_lt apply blast
     by (meson less_le_not_le rank_lt vsubsetD)
@@ -717,7 +717,7 @@ proof (rule order_antisym)
   show "Vfrom A (rank x) \<le> Vfrom A x"
   proof (induction x rule: eps_induct)
     case (step x)
-    have "(SUP j\<in>elts (rank x). VPow (Vfrom A j)) \<le> (SUP j\<in>elts x. VPow (Vfrom A j))"
+    have "(\<Squnion>j\<in>elts (rank x). VPow (Vfrom A j)) \<le> (\<Squnion>j\<in>elts x. VPow (Vfrom A j))"
       apply (rule Sup_least, clarify)
       apply (simp add: rank [of x])
       using step.IH
@@ -728,7 +728,7 @@ qed
   show "Vfrom A x \<le> Vfrom A (rank x)"
   proof (induction x rule: eps_induct)
     case (step x)
-    have "(SUP j\<in>elts x. VPow (Vfrom A j)) \<le> (SUP j\<in>elts (rank x). VPow (Vfrom A j))"
+    have "(\<Squnion>j\<in>elts x. VPow (Vfrom A j)) \<le> (\<Squnion>j\<in>elts (rank x). VPow (Vfrom A j))"
       using step.IH TC_rank_mem less_TC_iff by force
     then show ?case
       by (simp add: Vfrom [of _ x] Vfrom [of _ "rank(x)"] sup.coboundedI2)
@@ -1753,12 +1753,11 @@ qed
 
 subsection\<open>Cardinality of a set\<close>
 
-definition
-  vcard :: "V\<Rightarrow>V"
+definition vcard :: "V\<Rightarrow>V"
   where "vcard a \<equiv> (LEAST i. Ord i \<and> elts i \<approx> elts a)"
 
-definition
-  Card:: "V\<Rightarrow>bool" where "Card i \<equiv> i = vcard i"
+definition Card:: "V\<Rightarrow>bool"
+  where "Card i \<equiv> i = vcard i"
 
 abbreviation CARD where "CARD \<equiv> Collect Card"
 
@@ -2211,8 +2210,7 @@ lemma InfCard_ge_ord_of_nat:
 lemma InfCard_not_0[iff]: "\<not> InfCard 0"
   by (simp add: InfCard_iff)
 
-definition
-  csucc :: "V\<Rightarrow>V"
+definition csucc :: "V\<Rightarrow>V"
   where "csucc \<kappa> \<equiv> LEAST \<kappa>'. Ord \<kappa>' \<and> (Card \<kappa>' \<and> \<kappa> < \<kappa>')"
 
 
@@ -2424,8 +2422,7 @@ subsection \<open>The Aleph-seqence\<close>
 
 text \<open>This is the well-known transfinite enumeration of the cardinal numbers.\<close>
 
-definition
-  Aleph :: "V \<Rightarrow> V"   (\<open>\<aleph>_\<close> [90] 90) 
+definition Aleph :: "V \<Rightarrow> V"   (\<open>\<aleph>_\<close> [90] 90) 
   where "Aleph \<equiv> transrec3 \<omega> (\<lambda>x r. csucc(r)) (\<lambda>i r . \<Squnion> (r ` elts i))"
 
 lemma Card_Aleph [simp, intro]:

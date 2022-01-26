@@ -12,6 +12,7 @@ hide_const (open) Order.bottom Order.top
 no_notation Lattice.join (infixl "\<squnion>\<index>" 65)
 no_notation Lattice.meet (infixl "\<sqinter>\<index>" 70)
 
+unbundle lattice_syntax
 unbundle cblinfun_notation
 
 section \<open>Examples\<close>

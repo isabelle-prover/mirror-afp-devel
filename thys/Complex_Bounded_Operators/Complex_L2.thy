@@ -17,6 +17,7 @@ theory Complex_L2
     "HOL-Analysis.Infinite_Sum"
 begin
 
+unbundle lattice_syntax
 unbundle cblinfun_notation
 unbundle no_notation_blinfun_apply
 
@@ -1456,7 +1457,7 @@ next
 qed
 
 
-
+unbundle no_lattice_syntax
 unbundle no_cblinfun_notation
 
 end
