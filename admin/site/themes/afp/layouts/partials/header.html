@@ -1,37 +1,33 @@
 <header>
   {{ if and (ne .Kind "home") (ne .File.BaseFileName "search") -}}
   <form action="{{ "search" | absURL }}">
-  <div class='form-container'>
-    <input id="searchInput" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+    <div class='form-container'>
+      <input id="searchInput" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
       id="searchButton" type="button"><img src="{{- .Site.BaseURL -}}images/search.svg" alt="Search" /></button>
-    <datalist id="autocomplete">
-    </datalist>
-  </div>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
   </form>
   {{ end -}}
-  {{ if and (eq .Section "authors") (eq .Kind "term") -}}
-      {{ .Scratch.Set "title" (index (index .Site.Data.authors .Title) "name") }}  
-  {{ else }}
-    {{ .Scratch.Set "title" (default .Site.Title (default .Title .Params.name)) }}
-  {{ end }}
-    <h1 {{ if or (eq .Kind "home") (eq .File.BaseFileName "search") -}}style="margin-top: 48px;"{{ end -}}>{{ title (.Scratch.Get "title") | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML -}}{{- if (eq .Section "dependencies") }} Dependents{{ end -}}
+  {{ .Scratch.Set "title" (default .Site.Title (default .Title .Params.name)) }}
+  <h1 {{ if or (eq .Kind "home" ) (eq .File.BaseFileName "search" ) -}}class="largeTopMargin" {{ end -}}>{{ title (.Scratch.Get "title") | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML -}}{{- if (eq .Section "dependencies") }} Dependents{{ end -}}
   </h1>
   <div>
-  {{ if (eq .Section "authors") -}}
+    {{ if (eq .Section "authors") -}}
     {{ with (index $.Site.Data.authors .Title )}}
     {{ with .website}}
     <p><a href="{{ . }}">{{ . }}</a></p>
-  {{- end -}}{{- end -}}{{- end -}}
-  {{- $site := . -}}
-  {{ with .Params.authors}}
+    {{- end -}}{{- end -}}{{- end -}}
+    {{- $site := . -}}
+    {{ with .Params.authors}}
     <p>{{- partial "authors.html" (dict "site" $site "authors" .) -}}
-    {{ with $site.Params.contributors }}
+      {{ with $site.Params.contributors }}
       with contributions from {{ partial "authors.html" (dict "site" $site "authors" .) -}}
-    {{ end }}
+      {{ end }}
     </p>
-  {{ end }}
-  {{ with .Params.date }}
+    {{ end }}
+    {{ with .Params.date }}
     <p class="date">{{- dateFormat "2 January 2006" . -}}</p>
-  {{ end }}
+    {{ end }}
   </div>
 </header>

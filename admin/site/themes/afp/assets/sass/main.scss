@@ -124,7 +124,7 @@ aside {
   word-break: break-all;
   overflow-y: auto;
 
-  > div {
+  nav {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -240,7 +240,7 @@ header {
   grid-area: content;
   margin: 0 auto 2rem;
   width: 50vw;
-  min-width: 400px;
+  min-width: 550px;
 
   div {
     line-height: 1.35em;
@@ -415,6 +415,7 @@ h1 {
 h2 {
   margin: 1.5em 0 0 0;
   padding: 0;
+  line-height: normal;
 }
 
 h3 {
@@ -516,14 +517,18 @@ tr:nth-child(even) {
   white-space: nowrap;
 }
 
+.largeTopMargin {
+  margin-top: 48px;
+}
+
 .searchPage {
   > div {
     display: grid;
     grid-template-columns: 3fr #{"max(25%, 175px)"};
     grid-template-rows: 150px 1fr;
-    grid-template-areas: "search search"
-        "entries sidebar";
-    min-width: 560px;
+    grid-template-areas:
+      "search search"
+      "entries sidebar";
   }
 
   form {
@@ -537,7 +542,6 @@ tr:nth-child(even) {
   }
 
   #search-results {
-
     > div {
       position: relative;
       margin: 1.5rem 0;
@@ -594,10 +598,9 @@ a[download] {
     background-color: $light-grey;
     color: $black;
   }
-
   &:after {
     content: url("/images/download.svg");
-    @extend %button-image
+    @extend %button-image;
   }
 }
 
@@ -615,6 +618,7 @@ a[download] {
   .date {
     text-align: right;
     width: 15%;
+    min-width: 6ch;
     font-family: $monospace;
   }
 
@@ -674,7 +678,7 @@ button {
 button[copy] {
   &:after {
     content: url("/images/copy.svg");
-    @extend %button-image
+    @extend %button-image;
   }
 }
 
@@ -811,5 +815,169 @@ iframe {
   100% {
     left: 100%;
     right: -20%;
+  }
+}
+
+#menuToggle {
+  input,
+  label {
+    display: none;
+  }
+
+  > .logoLink {
+    display: none;
+  }
+
+  form {
+    display: none;
+  }
+}
+
+@media (max-width: 650px) {
+  .content {
+    width: 90%;
+    min-width: 350px;
+  }
+
+  .searchPage {
+    > div {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 150px auto auto ;
+      grid-template-areas:
+        'search'
+        'sidebar'
+        'entries';
+    }
+  }
+}
+
+@media (max-width: 875px) {
+  body {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'content';
+  }
+
+  aside {
+    height: 4rem;
+    width: 100vw;
+    overflow-y: visible;
+    z-index: 1;
+  }
+
+  header {
+    form {
+      display: none;
+    }
+  }
+
+  .content {
+    margin-top: 80px;
+  }
+
+  .entries {
+    > div {
+      display: grid;
+      grid-template-rows: auto auto;
+      grid-template-columns: 1fr;
+    }
+
+    nav {
+      margin-left: 0;
+    }
+  }
+
+    
+  .largeTopMargin {
+    margin-top: 0;
+  }
+
+    #menuToggle {
+        background: $theme;
+        display: block;
+        position: relative;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        height: 80px;
+        user-select: none;
+        a {
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .logoLink {
+            height: 3rem;
+            max-width: 50vw;
+            top: 1rem;
+            left: 0;
+            right: 0;
+            margin-left: auto; 
+            margin-right: auto;
+
+
+            img {
+                padding: 0;
+                height: 3rem;
+                object-fit: contain;
+            }
+        }
+
+        .logoLink, input, label, a[href="/search"] {
+            display: block;
+            position: absolute;
+            z-index: 2;
+        }
+
+        input, label, a[href="/search"] {
+            width: 24px;
+            height: 24px;
+            top: 28px;
+        }
+
+        input,label { 
+            left: 28px;
+            cursor: pointer;
+        }
+
+        a[href="/search"] {
+            right: 28px;
+            filter: invert(1);
+        }
+
+        a[href="/search"] img, label img {
+            width: 100%;
+        }
+
+        input {
+            opacity: 0;
+            &:checked {
+                ~ nav {
+                    left: 0;
+                }
+            }
+        }
+        
+        label span {
+                display: none;
+        }
+    }
+  #menu {
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-top: 80px;
+    box-sizing: border-box;
+    min-width: 200px;
+    width: 50vw;
+    max-width: 350px;
+    min-height: 355px;
+    background: $theme;
+    left: -100%;
+    transition: left 0.3s ease;
+
+    .logoLink {
+      display: none;
+    }
   }
 }
