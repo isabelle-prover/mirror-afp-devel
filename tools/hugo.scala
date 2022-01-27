@@ -47,9 +47,8 @@ object Hugo
             List("content", "statistics.md"),
             List("content", "submission.md"),
             List("themes"),
-            List("theories"),
             List("config.json"))
-        } Isabelle_System.copy_dir(hugo_static + Path.make(file), src_dir)
+        } Isabelle_System.copy_dir(hugo_static + Path.make(file), src_dir + Path.make(file))
       }
     }
   }
