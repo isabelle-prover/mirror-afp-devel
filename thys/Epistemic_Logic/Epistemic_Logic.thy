@@ -147,12 +147,12 @@ primrec eval :: \<open>(id \<Rightarrow> bool) \<Rightarrow> ('i fm \<Rightarrow
 
 abbreviation \<open>tautology p \<equiv> \<forall>g h. eval g h p\<close>
 
-inductive AK :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarrow> bool\<close> ("_ \<turnstile> _" [50, 50] 50)
+inductive AK :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarrow> bool\<close> ("_ \<turnstile> _" [20, 20] 20)
   for A :: \<open>'i fm \<Rightarrow> bool\<close> where
     A1: \<open>tautology p \<Longrightarrow> A \<turnstile> p\<close>
-  | A2: \<open>A \<turnstile> (K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i q)\<close>
+  | A2: \<open>A \<turnstile> K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i q\<close>
   | Ax: \<open>A p \<Longrightarrow> A \<turnstile> p\<close>
-  | R1: \<open>A \<turnstile> p \<Longrightarrow> A \<turnstile> (p \<^bold>\<longrightarrow> q) \<Longrightarrow> A \<turnstile> q\<close>
+  | R1: \<open>A \<turnstile> p \<Longrightarrow> A \<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> A \<turnstile> q\<close>
   | R2: \<open>A \<turnstile> p \<Longrightarrow> A \<turnstile> K i p\<close>
 
 section \<open>Soundness\<close>
@@ -180,24 +180,24 @@ theorem soundness:
 
 section \<open>Derived rules\<close>
 
-lemma K_A2': \<open>A \<turnstile> (K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q)\<close>
+lemma K_A2': \<open>A \<turnstile> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q\<close>
 proof -
-  have \<open>A \<turnstile> (K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i q)\<close>
+  have \<open>A \<turnstile> K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i q\<close>
     using A2 by fast
-  moreover have \<open>A \<turnstile> ((P \<^bold>\<and> Q \<^bold>\<longrightarrow> R) \<^bold>\<longrightarrow> (Q \<^bold>\<longrightarrow> P \<^bold>\<longrightarrow> R))\<close> for P Q R
+  moreover have \<open>A \<turnstile> (P \<^bold>\<and> Q \<^bold>\<longrightarrow> R) \<^bold>\<longrightarrow> (Q \<^bold>\<longrightarrow> P \<^bold>\<longrightarrow> R)\<close> for P Q R
     by (simp add: A1)
   ultimately show ?thesis
     using R1 by fast
 qed
 
 lemma K_map:
-  assumes \<open>A \<turnstile> (p \<^bold>\<longrightarrow> q)\<close>
-  shows \<open>A \<turnstile> (K i p \<^bold>\<longrightarrow> K i q)\<close>
+  assumes \<open>A \<turnstile> p \<^bold>\<longrightarrow> q\<close>
+  shows \<open>A \<turnstile> K i p \<^bold>\<longrightarrow> K i q\<close>
 proof -
-  note \<open>A \<turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+  note \<open>A \<turnstile> p \<^bold>\<longrightarrow> q\<close>
   then have \<open>A \<turnstile> K i (p \<^bold>\<longrightarrow> q)\<close>
     using R2 by fast
-  moreover have \<open>A \<turnstile> (K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q)\<close>
+  moreover have \<open>A \<turnstile> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q\<close>
     using K_A2' by fast
   ultimately show ?thesis
     using R1 by fast
@@ -213,46 +213,46 @@ proof -
     using K_map R1 by fast
 qed
 
-primrec imply :: \<open>'i fm list \<Rightarrow> 'i fm \<Rightarrow> 'i fm\<close> where
+primrec imply :: \<open>'i fm list \<Rightarrow> 'i fm \<Rightarrow> 'i fm\<close> (infixr \<open>\<^bold>\<leadsto>\<close> 26) where
   \<open>imply [] q = q\<close>
-| \<open>imply (p # ps) q = (p \<^bold>\<longrightarrow> imply ps q)\<close>
+| \<open>imply (p # ps) q = (p \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q)\<close>
 
-lemma K_imply_head: \<open>A \<turnstile> imply (p # ps) p\<close>
+lemma K_imply_head: \<open>A \<turnstile> (p # ps \<^bold>\<leadsto> p)\<close>
 proof -
-  have \<open>tautology (imply (p # ps) p)\<close>
+  have \<open>tautology (p # ps \<^bold>\<leadsto> p)\<close>
     by (induct ps) simp_all
   then show ?thesis
     using A1 by blast
 qed
 
 lemma K_imply_Cons:
-  assumes \<open>A \<turnstile> imply ps q\<close>
-  shows \<open>A \<turnstile> imply (p # ps) q\<close>
+  assumes \<open>A \<turnstile> ps \<^bold>\<leadsto> q\<close>
+  shows \<open>A \<turnstile> p # ps \<^bold>\<leadsto> q\<close>
 proof -
-  have \<open>A \<turnstile> (imply ps q \<^bold>\<longrightarrow> imply (p # ps) q)\<close>
+  have \<open>A \<turnstile> (ps \<^bold>\<leadsto> q \<^bold>\<longrightarrow> p # ps \<^bold>\<leadsto> q)\<close>
     by (simp add: A1)
   with R1 assms show ?thesis .
 qed
 
 lemma K_right_mp:
-  assumes \<open>A \<turnstile> imply ps p\<close> \<open>A \<turnstile> imply ps (p \<^bold>\<longrightarrow> q)\<close>
-  shows \<open>A \<turnstile> imply ps q\<close>
+  assumes \<open>A \<turnstile> ps \<^bold>\<leadsto> p\<close> \<open>A \<turnstile> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q)\<close>
+  shows \<open>A \<turnstile> ps \<^bold>\<leadsto> q\<close>
 proof -
-  have \<open>tautology (imply ps p \<^bold>\<longrightarrow> imply ps (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> imply ps q)\<close>
+  have \<open>tautology (ps \<^bold>\<leadsto> p \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q)\<close>
     by (induct ps) simp_all
-  with A1 have \<open>A \<turnstile> (imply ps p \<^bold>\<longrightarrow> imply ps (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> imply ps q)\<close> .
+  with A1 have \<open>A \<turnstile> ps \<^bold>\<leadsto> p \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q\<close> .
   then show ?thesis
     using assms R1 by blast
 qed
 
 lemma tautology_imply_superset:
   assumes \<open>set ps \<subseteq> set qs\<close>
-  shows \<open>tautology (imply ps r \<^bold>\<longrightarrow> imply qs r)\<close>
+  shows \<open>tautology (ps \<^bold>\<leadsto> r \<^bold>\<longrightarrow> qs \<^bold>\<leadsto> r)\<close>
 proof (rule ccontr)
-  assume \<open>\<not> tautology (imply ps r \<^bold>\<longrightarrow> imply qs r)\<close>
-  then obtain g h where \<open>\<not> eval g h (imply ps r \<^bold>\<longrightarrow> imply qs r)\<close>
+  assume \<open>\<not> tautology (ps \<^bold>\<leadsto> r \<^bold>\<longrightarrow> qs \<^bold>\<leadsto> r)\<close>
+  then obtain g h where \<open>\<not> eval g h (ps \<^bold>\<leadsto> r \<^bold>\<longrightarrow> qs \<^bold>\<leadsto> r)\<close>
     by blast
-  then have \<open>eval g h (imply ps r)\<close> \<open>\<not> eval g h (imply qs r)\<close>
+  then have \<open>eval g h (ps \<^bold>\<leadsto> r)\<close> \<open>\<not> eval g h (qs \<^bold>\<leadsto> r)\<close>
     by simp_all
   then consider (np) \<open>\<exists>p \<in> set ps. \<not> eval g h p\<close> | (r) \<open>\<forall>p \<in> set ps. eval g h p\<close> \<open>eval g h r\<close>
     by (induct ps) auto
@@ -261,119 +261,119 @@ proof (rule ccontr)
     case np
     then have \<open>\<exists>p \<in> set qs. \<not> eval g h p\<close>
       using \<open>set ps \<subseteq> set qs\<close> by blast
-    then have \<open>eval g h (imply qs r)\<close>
+    then have \<open>eval g h (qs \<^bold>\<leadsto> r)\<close>
       by (induct qs) simp_all
     then show ?thesis
-      using \<open>\<not> eval g h (imply qs r)\<close> by blast
+      using \<open>\<not> eval g h (qs \<^bold>\<leadsto> r)\<close> by blast
   next
     case r
-    then have \<open>eval g h (imply qs r)\<close>
+    then have \<open>eval g h (qs \<^bold>\<leadsto> r)\<close>
       by (induct qs) simp_all
     then show ?thesis
-      using \<open>\<not> eval g h (imply qs r)\<close> by blast
+      using \<open>\<not> eval g h (qs \<^bold>\<leadsto> r)\<close> by blast
   qed
 qed
 
 lemma K_imply_weaken:
-  assumes \<open>A \<turnstile> imply ps q\<close> \<open>set ps \<subseteq> set ps'\<close>
-  shows \<open>A \<turnstile> imply ps' q\<close>
+  assumes \<open>A \<turnstile> ps \<^bold>\<leadsto> q\<close> \<open>set ps \<subseteq> set ps'\<close>
+  shows \<open>A \<turnstile> ps' \<^bold>\<leadsto> q\<close>
 proof -
-  have \<open>tautology (imply ps q \<^bold>\<longrightarrow> imply ps' q)\<close>
+  have \<open>tautology (ps \<^bold>\<leadsto> q \<^bold>\<longrightarrow> ps' \<^bold>\<leadsto> q)\<close>
     using \<open>set ps \<subseteq> set ps'\<close> tautology_imply_superset by blast
-  then have \<open>A \<turnstile> (imply ps q \<^bold>\<longrightarrow> imply ps' q)\<close>
+  then have \<open>A \<turnstile> (ps \<^bold>\<leadsto> q \<^bold>\<longrightarrow> ps' \<^bold>\<leadsto> q)\<close>
     using A1 by blast
   then show ?thesis
-    using \<open>A \<turnstile> imply ps q\<close> R1 by blast
+    using \<open>A \<turnstile> ps \<^bold>\<leadsto> q\<close> R1 by blast
 qed
 
-lemma imply_append: \<open>imply (ps @ ps') q = imply ps (imply ps' q)\<close>
+lemma imply_append: \<open>(ps @ ps' \<^bold>\<leadsto> q) = (ps \<^bold>\<leadsto> ps' \<^bold>\<leadsto> q)\<close>
   by (induct ps) simp_all
 
 lemma K_ImpI:
-  assumes \<open>A \<turnstile> imply (p # G) q\<close>
-  shows \<open>A \<turnstile> imply G (p \<^bold>\<longrightarrow> q)\<close>
+  assumes \<open>A \<turnstile> p # G \<^bold>\<leadsto> q\<close>
+  shows \<open>A \<turnstile> G \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q)\<close>
 proof -
   have \<open>set (p # G) \<subseteq> set (G @ [p])\<close>
     by simp
-  then have \<open>A \<turnstile> imply (G @ [p]) q\<close>
+  then have \<open>A \<turnstile> G @ [p] \<^bold>\<leadsto> q\<close>
     using assms K_imply_weaken by blast
-  then have \<open>A \<turnstile> imply G (imply [p] q)\<close>
+  then have \<open>A \<turnstile> G \<^bold>\<leadsto> [p] \<^bold>\<leadsto> q\<close>
     using imply_append by metis
   then show ?thesis
     by simp
 qed
 
 lemma K_Boole:
-  assumes \<open>A \<turnstile> imply ((\<^bold>\<not> p) # G) \<^bold>\<bottom>\<close>
-  shows \<open>A \<turnstile> imply G p\<close>
+  assumes \<open>A \<turnstile> (\<^bold>\<not> p) # G \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
+  shows \<open>A \<turnstile> G \<^bold>\<leadsto> p\<close>
 proof -
-  have \<open>A \<turnstile> imply G (\<^bold>\<not> \<^bold>\<not> p)\<close>
+  have \<open>A \<turnstile> G \<^bold>\<leadsto> \<^bold>\<not> \<^bold>\<not> p\<close>
     using assms K_ImpI by blast
-  moreover have \<open>tautology (imply G (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> imply G p)\<close>
+  moreover have \<open>tautology (G \<^bold>\<leadsto> \<^bold>\<not> \<^bold>\<not> p \<^bold>\<longrightarrow> G \<^bold>\<leadsto> p)\<close>
     by (induct G) simp_all
-  then have \<open>A \<turnstile> (imply G (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> imply G p)\<close>
+  then have \<open>A \<turnstile> (G \<^bold>\<leadsto> \<^bold>\<not> \<^bold>\<not> p \<^bold>\<longrightarrow> G \<^bold>\<leadsto> p)\<close>
     using A1 by blast
   ultimately show ?thesis
     using R1 by blast
 qed
 
 lemma K_DisE:
-  assumes \<open>A \<turnstile> imply (p # G) r\<close> \<open>A \<turnstile> imply (q # G) r\<close> \<open>A \<turnstile> imply G (p \<^bold>\<or> q)\<close>
-  shows \<open>A \<turnstile> imply G r\<close>
+  assumes \<open>A \<turnstile> p # G \<^bold>\<leadsto> r\<close> \<open>A \<turnstile> q # G \<^bold>\<leadsto> r\<close> \<open>A \<turnstile> G \<^bold>\<leadsto> p \<^bold>\<or> q\<close>
+  shows \<open>A \<turnstile> G \<^bold>\<leadsto> r\<close>
 proof -
-  have \<open>tautology (imply (p # G) r \<^bold>\<longrightarrow> imply (q # G) r \<^bold>\<longrightarrow> imply G (p \<^bold>\<or> q) \<^bold>\<longrightarrow> imply G r)\<close>
+  have \<open>tautology (p # G \<^bold>\<leadsto> r \<^bold>\<longrightarrow> q # G \<^bold>\<leadsto> r \<^bold>\<longrightarrow> G \<^bold>\<leadsto> p \<^bold>\<or> q \<^bold>\<longrightarrow> G \<^bold>\<leadsto> r)\<close>
     by (induct G) auto
-  then have \<open>A \<turnstile> (imply (p # G) r \<^bold>\<longrightarrow> imply (q # G) r \<^bold>\<longrightarrow> imply G (p \<^bold>\<or> q) \<^bold>\<longrightarrow> imply G r)\<close>
+  then have \<open>A \<turnstile> p # G \<^bold>\<leadsto> r \<^bold>\<longrightarrow> q # G \<^bold>\<leadsto> r \<^bold>\<longrightarrow> G \<^bold>\<leadsto> p \<^bold>\<or> q \<^bold>\<longrightarrow> G \<^bold>\<leadsto> r\<close>
     using A1 by blast
   then show ?thesis
     using assms R1 by blast
 qed
 
-lemma K_mp: \<open>A \<turnstile> imply (p # (p \<^bold>\<longrightarrow> q) # G) q\<close>
+lemma K_mp: \<open>A \<turnstile> p # (p \<^bold>\<longrightarrow> q) # G \<^bold>\<leadsto> q\<close>
   by (meson K_imply_head K_imply_weaken K_right_mp set_subset_Cons)
 
 lemma K_swap:
-  assumes \<open>A \<turnstile> imply (p # q # G) r\<close>
-  shows \<open>A \<turnstile> imply (q # p # G) r\<close>
+  assumes \<open>A \<turnstile> p # q # G \<^bold>\<leadsto> r\<close>
+  shows \<open>A \<turnstile> q # p # G \<^bold>\<leadsto> r\<close>
   using assms K_ImpI by (metis imply.simps(1-2))
 
 lemma K_DisL:
-  assumes \<open>A \<turnstile> imply (p # ps) q\<close> \<open>A \<turnstile> imply (p' # ps) q\<close>
-  shows \<open>A \<turnstile> imply ((p \<^bold>\<or> p') # ps) q\<close>
+  assumes \<open>A \<turnstile> p # ps \<^bold>\<leadsto> q\<close> \<open>A \<turnstile> p' # ps \<^bold>\<leadsto> q\<close>
+  shows \<open>A \<turnstile> (p \<^bold>\<or> p') # ps \<^bold>\<leadsto> q\<close>
 proof -
-  have \<open>A \<turnstile> imply (p # (p \<^bold>\<or> p') # ps) q\<close> \<open>A \<turnstile> imply (p' # (p \<^bold>\<or> p') # ps) q\<close>
+  have \<open>A \<turnstile> p # (p \<^bold>\<or> p') # ps \<^bold>\<leadsto> q\<close> \<open>A \<turnstile> p' # (p \<^bold>\<or> p') # ps \<^bold>\<leadsto> q\<close>
     using assms K_swap K_imply_Cons by blast+
-  moreover have \<open>A \<turnstile> imply ((p \<^bold>\<or> p') # ps) (p \<^bold>\<or> p')\<close>
+  moreover have \<open>A \<turnstile> (p \<^bold>\<or> p') # ps \<^bold>\<leadsto> p \<^bold>\<or> p'\<close>
     using K_imply_head by blast
   ultimately show ?thesis
     using K_DisE by blast
 qed
 
 lemma K_distrib_K_imp:
-  assumes \<open>A \<turnstile> K i (imply G q)\<close>
-  shows \<open>A \<turnstile> imply (map (K i) G) (K i q)\<close>
+  assumes \<open>A \<turnstile> K i (G \<^bold>\<leadsto> q)\<close>
+  shows \<open>A \<turnstile> map (K i) G \<^bold>\<leadsto> K i q\<close>
 proof -
-  have \<open>A \<turnstile> (K i (imply G q) \<^bold>\<longrightarrow> imply (map (K i) G) (K i q))\<close>
+  have \<open>A \<turnstile> (K i (G \<^bold>\<leadsto> q) \<^bold>\<longrightarrow> map (K i) G \<^bold>\<leadsto> K i q)\<close>
   proof (induct G)
     case Nil
     then show ?case
       by (simp add: A1)
   next
     case (Cons a G)
-    have \<open>A \<turnstile> (K i a \<^bold>\<and> K i (imply (a # G) q) \<^bold>\<longrightarrow> K i (imply G q))\<close>
+    have \<open>A \<turnstile> K i a \<^bold>\<and> K i (a # G \<^bold>\<leadsto> q) \<^bold>\<longrightarrow> K i (G \<^bold>\<leadsto> q)\<close>
       by (simp add: A2)
     moreover have
-      \<open>A \<turnstile> ((K i a \<^bold>\<and> K i (imply (a # G) q) \<^bold>\<longrightarrow> K i (imply G q)) \<^bold>\<longrightarrow>
-        (K i (imply G q) \<^bold>\<longrightarrow> imply (map (K i) G) (K i q)) \<^bold>\<longrightarrow>
-        (K i a \<^bold>\<and> K i (imply (a # G) q) \<^bold>\<longrightarrow> imply (map (K i) G) (K i q)))\<close>
+      \<open>A \<turnstile> ((K i a \<^bold>\<and> K i (a # G \<^bold>\<leadsto> q) \<^bold>\<longrightarrow> K i (G \<^bold>\<leadsto> q)) \<^bold>\<longrightarrow>
+        (K i (G \<^bold>\<leadsto> q) \<^bold>\<longrightarrow> map (K i) G \<^bold>\<leadsto> K i q) \<^bold>\<longrightarrow>
+        (K i a \<^bold>\<and> K i (a # G \<^bold>\<leadsto> q) \<^bold>\<longrightarrow> map (K i) G \<^bold>\<leadsto> K i q))\<close>
       by (simp add: A1)
-    ultimately have \<open>A \<turnstile> (K i a \<^bold>\<and> K i (imply (a # G) q) \<^bold>\<longrightarrow> imply (map (K i) G) (K i q))\<close>
+    ultimately have \<open>A \<turnstile> K i a \<^bold>\<and> K i (a # G \<^bold>\<leadsto> q) \<^bold>\<longrightarrow> map (K i) G \<^bold>\<leadsto> K i q\<close>
       using Cons R1 by blast
     moreover have
-      \<open>A \<turnstile> ((K i a \<^bold>\<and> K i (imply (a # G) q) \<^bold>\<longrightarrow> imply (map (K i) G) (K i q)) \<^bold>\<longrightarrow>
-        (K i (imply (a # G) q) \<^bold>\<longrightarrow> K i a \<^bold>\<longrightarrow> imply (map (K i) G) (K i q)))\<close>
+      \<open>A \<turnstile> ((K i a \<^bold>\<and> K i (a # G \<^bold>\<leadsto> q) \<^bold>\<longrightarrow> map (K i) G \<^bold>\<leadsto> K i q) \<^bold>\<longrightarrow>
+        (K i (a # G \<^bold>\<leadsto> q) \<^bold>\<longrightarrow> K i a \<^bold>\<longrightarrow> map (K i) G \<^bold>\<leadsto> K i q))\<close>
       by (simp add: A1)
-    ultimately have \<open>A \<turnstile> (K i (imply (a # G) q) \<^bold>\<longrightarrow> K i a \<^bold>\<longrightarrow> imply (map (K i) G) (K i q))\<close>
+    ultimately have \<open>A \<turnstile> (K i (a # G \<^bold>\<leadsto> q) \<^bold>\<longrightarrow> K i a \<^bold>\<longrightarrow> map (K i) G \<^bold>\<leadsto> K i q)\<close>
       using R1 by blast
     then show ?case
       by simp
@@ -387,21 +387,21 @@ section \<open>Completeness\<close>
 subsection \<open>Consistent sets\<close>
 
 definition consistent :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> bool\<close> where
-  \<open>consistent A S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> A \<turnstile> imply S' \<^bold>\<bottom>\<close>
+  \<open>consistent A S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> (A \<turnstile> S' \<^bold>\<leadsto> \<^bold>\<bottom>)\<close>
 
 lemma inconsistent_subset:
   assumes \<open>consistent A V\<close> \<open>\<not> consistent A ({p} \<union> V)\<close>
-  obtains V' where \<open>set V' \<subseteq> V\<close> \<open>A \<turnstile> imply (p # V') \<^bold>\<bottom>\<close>
+  obtains V' where \<open>set V' \<subseteq> V\<close> \<open>A \<turnstile> p # V' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
 proof -
-  obtain V' where V': \<open>set V' \<subseteq> ({p} \<union> V)\<close> \<open>p \<in> set V'\<close> \<open>A \<turnstile> imply V' \<^bold>\<bottom>\<close>
+  obtain V' where V': \<open>set V' \<subseteq> ({p} \<union> V)\<close> \<open>p \<in> set V'\<close> \<open>A \<turnstile> V' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     using assms unfolding consistent_def by blast
-  then have *: \<open>A \<turnstile> imply (p # V') \<^bold>\<bottom>\<close>
+  then have *: \<open>A \<turnstile> p # V' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     using K_imply_Cons by blast
 
   let ?S = \<open>removeAll p V'\<close>
   have \<open>set (p # V') \<subseteq> set (p # ?S)\<close>
     by auto
-  then have \<open>A \<turnstile> imply (p # ?S) \<^bold>\<bottom>\<close>
+  then have \<open>A \<turnstile> p # ?S \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     using * K_imply_weaken by blast
   moreover have \<open>set ?S \<subseteq> V\<close>
     using V'(1) by (metis Diff_subset_conv set_removeAll)
@@ -415,13 +415,13 @@ lemma consistent_deriv:
   using assms by (metis R1 consistent_def imply.simps(2) inconsistent_subset)
 
 lemma consistent_consequent:
-  assumes \<open>consistent A V\<close> \<open>p \<in> V\<close> \<open>A \<turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+  assumes \<open>consistent A V\<close> \<open>p \<in> V\<close> \<open>A \<turnstile> p \<^bold>\<longrightarrow> q\<close>
   shows \<open>consistent A ({q} \<union> V)\<close>
 proof -
-  have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> A \<turnstile> imply (p # V') \<^bold>\<bottom>\<close>
+  have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> (A \<turnstile> p # V' \<^bold>\<leadsto> \<^bold>\<bottom>)\<close>
     using \<open>consistent A V\<close> \<open>p \<in> V\<close> unfolding consistent_def
     by (metis insert_subset list.simps(15))
-  then have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> A \<turnstile> imply (q # V') \<^bold>\<bottom>\<close>
+  then have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> (A \<turnstile> q # V' \<^bold>\<leadsto> \<^bold>\<bottom>)\<close>
     using \<open>A \<turnstile> (p \<^bold>\<longrightarrow> q)\<close> K_imply_head K_right_mp by (metis imply.simps(1-2))
   then show ?thesis
     using \<open>consistent A V\<close> inconsistent_subset by metis
@@ -441,17 +441,17 @@ proof (rule ccontr)
     by blast+
 
   then obtain S' T' where
-    S': \<open>set S' \<subseteq> V\<close> \<open>A \<turnstile> imply (p # S') \<^bold>\<bottom>\<close> and
-    T': \<open>set T' \<subseteq> V\<close> \<open>A \<turnstile> imply (q # T') \<^bold>\<bottom>\<close>
+    S': \<open>set S' \<subseteq> V\<close> \<open>A \<turnstile> p # S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close> and
+    T': \<open>set T' \<subseteq> V\<close> \<open>A \<turnstile> q # T' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     using \<open>consistent A V\<close> inconsistent_subset by metis
 
-  from S' have p: \<open>A \<turnstile> imply (p # S' @ T') \<^bold>\<bottom>\<close>
+  from S' have p: \<open>A \<turnstile> p # S' @ T' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     by (metis K_imply_weaken Un_upper1 append_Cons set_append)
-  moreover from T' have q: \<open>A \<turnstile> imply (q # S' @ T') \<^bold>\<bottom>\<close>
+  moreover from T' have q: \<open>A \<turnstile> q # S' @ T' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     by (metis K_imply_head K_right_mp R1 imply.simps(2) imply_append)
-  ultimately have \<open>A \<turnstile> imply ((p \<^bold>\<or> q) # S' @ T') \<^bold>\<bottom>\<close>
+  ultimately have \<open>A \<turnstile> (p \<^bold>\<or> q) # S' @ T' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     using K_DisL by blast
-  then have \<open>A \<turnstile> imply (S' @ T') \<^bold>\<bottom>\<close>
+  then have \<open>A \<turnstile> S' @ T' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     using S'(1) T'(1) p q \<open>consistent A V\<close> \<open>(p \<^bold>\<or> q) \<in> V\<close> unfolding consistent_def
     by (metis Un_subset_iff insert_subset list.simps(15) set_append)
   moreover have \<open>set (S' @ T') \<subseteq> V\<close>
@@ -464,7 +464,7 @@ lemma exists_finite_inconsistent:
   assumes \<open>\<not> consistent A ({\<^bold>\<not> p} \<union> V)\<close>
   obtains W where \<open>{\<^bold>\<not> p} \<union> W \<subseteq> {\<^bold>\<not> p} \<union> V\<close> \<open>(\<^bold>\<not> p) \<notin> W\<close> \<open>finite W\<close> \<open>\<not> consistent A ({\<^bold>\<not> p} \<union> W)\<close>
 proof -
-  obtain W' where W': \<open>set W' \<subseteq> {\<^bold>\<not> p} \<union> V\<close> \<open>A \<turnstile> imply W' \<^bold>\<bottom>\<close>
+  obtain W' where W': \<open>set W' \<subseteq> {\<^bold>\<not> p} \<union> V\<close> \<open>A \<turnstile> W' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     using assms unfolding consistent_def by blast
   let ?S = \<open>removeAll (\<^bold>\<not> p) W'\<close>
   have \<open>\<not> consistent A ({\<^bold>\<not> p} \<union> set ?S)\<close>
@@ -481,7 +481,7 @@ qed
 
 lemma inconsistent_imply:
   assumes \<open>\<not> consistent A ({\<^bold>\<not> p} \<union> set G)\<close>
-  shows \<open>A \<turnstile> imply G p\<close>
+  shows \<open>A \<turnstile> G \<^bold>\<leadsto> p\<close>
   using assms K_Boole K_imply_weaken unfolding consistent_def
   by (metis insert_is_Un list.simps(15))
 
@@ -520,10 +520,10 @@ theorem consequent_in_maximal:
   assumes \<open>consistent A V\<close> \<open>maximal A V\<close> \<open>p \<in> V\<close> \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close>
   shows \<open>q \<in> V\<close>
 proof -
-  have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> A \<turnstile> imply (p # (p \<^bold>\<longrightarrow> q) # V') \<^bold>\<bottom>\<close>
+  have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> (A \<turnstile> p # (p \<^bold>\<longrightarrow> q) # V' \<^bold>\<leadsto> \<^bold>\<bottom>)\<close>
     using \<open>consistent A V\<close> \<open>p \<in> V\<close> \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close> unfolding consistent_def
     by (metis insert_subset list.simps(15))
-  then have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> A \<turnstile> imply (q # V') \<^bold>\<bottom>\<close>
+  then have \<open>\<forall>V'. set V' \<subseteq> V \<longrightarrow> \<not> (A \<turnstile> q # V' \<^bold>\<leadsto> \<^bold>\<bottom>)\<close>
     by (meson K_mp K_ImpI K_imply_weaken K_right_mp set_subset_Cons)
   then have \<open>consistent A ({q} \<union> V)\<close>
     using \<open>consistent A V\<close> inconsistent_subset by metis
@@ -550,8 +550,8 @@ instance by countable_datatype
 end
 
 primrec extend :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> (nat \<Rightarrow> 'i fm) \<Rightarrow> nat \<Rightarrow> 'i fm set\<close> where
-  \<open>extend A S f 0 = S\<close> |
-  \<open>extend A S f (Suc n) =
+  \<open>extend A S f 0 = S\<close>
+| \<open>extend A S f (Suc n) =
     (if consistent A ({f n} \<union> extend A S f n)
      then {f n} \<union> extend A S f n
      else extend A S f n)\<close>
@@ -593,7 +593,7 @@ lemma consistent_Extend:
   unfolding Extend_def
 proof (rule ccontr)
   assume \<open>\<not> consistent A (\<Union>n. extend A S f n)\<close>
-  then obtain S' where \<open>A \<turnstile> imply S' \<^bold>\<bottom>\<close> \<open>set S' \<subseteq> (\<Union>n. extend A S f n)\<close>
+  then obtain S' where \<open>A \<turnstile> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close> \<open>set S' \<subseteq> (\<Union>n. extend A S f n)\<close>
     unfolding consistent_def by blast
   then obtain m where \<open>set S' \<subseteq> (\<Union>n \<le> m. extend A S f n)\<close>
     using UN_finite_bound by (metis List.finite_set)
@@ -602,7 +602,7 @@ proof (rule ccontr)
   moreover have \<open>consistent A (extend A S f m)\<close>
     using assms consistent_extend by blast
   ultimately show False
-    unfolding consistent_def using \<open>A \<turnstile> imply S' \<^bold>\<bottom>\<close> by blast
+    unfolding consistent_def using \<open>A \<turnstile> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close> by blast
 qed
 
 lemma maximal_Extend:
@@ -798,13 +798,13 @@ next
     obtain L where L: \<open>set L = W\<close>
       using \<open>finite W\<close> finite_list by blast
 
-    then have \<open>A \<turnstile> imply L p\<close>
+    then have \<open>A \<turnstile> L \<^bold>\<leadsto> p\<close>
       using W(4) inconsistent_imply by blast
-    then have \<open>A \<turnstile> K i (imply L p)\<close>
+    then have \<open>A \<turnstile> K i (L \<^bold>\<leadsto> p)\<close>
       using R2 by fast
-    then have \<open>A \<turnstile> imply (map (K i) L) (K i p)\<close>
+    then have \<open>A \<turnstile> map (K i) L \<^bold>\<leadsto> K i p\<close>
       using K_distrib_K_imp by fast
-    then have \<open>imply (map (K i) L) (K i p) \<in> V\<close>
+    then have \<open>(map (K i) L \<^bold>\<leadsto> K i p) \<in> V\<close>
       using deriv_in_maximal K.prems(1, 2) by blast
     then show \<open>K i p \<in> V\<close>
       using L W(1-2)
@@ -812,7 +812,7 @@ next
       case (Cons a L)
       then have \<open>K i a \<in> V\<close>
         by auto
-      then have \<open>imply (map (K i) L) (K i p) \<in> V\<close>
+      then have \<open>(map (K i) L \<^bold>\<leadsto> K i p) \<in> V\<close>
         using Cons(2) \<open>consistent A V\<close> \<open>maximal A V\<close> consequent_in_maximal by auto
       then show ?case
         using Cons by auto
@@ -855,10 +855,10 @@ lemma imply_completeness:
   fixes P :: \<open>(('i :: countable, 'i fm set) kripke) \<Rightarrow> bool\<close>
   assumes \<open>\<forall>M. \<forall>w \<in> \<W> M. P M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p\<close>
     and \<open>P (canonical A)\<close>
-  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile> imply qs p)\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile> qs \<^bold>\<leadsto> p)\<close>
 proof (rule ccontr)
-  assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> A \<turnstile> imply qs p\<close>
-  then have *: \<open>\<forall>qs. set qs \<subseteq> G \<longrightarrow> \<not> A \<turnstile> imply ((\<^bold>\<not> p) # qs) \<^bold>\<bottom>\<close>
+  assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> (A \<turnstile> qs \<^bold>\<leadsto> p)\<close>
+  then have *: \<open>\<forall>qs. set qs \<subseteq> G \<longrightarrow> \<not> (A \<turnstile> (\<^bold>\<not> p) # qs \<^bold>\<leadsto> \<^bold>\<bottom>)\<close>
     using K_Boole by blast
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
