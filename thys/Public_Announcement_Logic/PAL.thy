@@ -169,9 +169,6 @@ lemma ptautology_tautology:
 theorem AK_PAK: \<open>A o lift \<turnstile> p \<Longrightarrow> A \<turnstile>\<^sub>! lift p\<close>
   by (induct p rule: AK.induct) (auto intro: PAK.intros(1-5) simp: tautology_ptautology)
 
-abbreviation valid :: \<open>(('i :: countable, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarrow> bool\<close> where
-  \<open>valid P p \<equiv> \<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M. P M \<longrightarrow> M, w \<Turnstile> p\<close>
-
 abbreviation validP :: \<open>(('i :: countable, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>valid\<^sub>!\<close>)
   where \<open>valid\<^sub>! P p \<equiv> \<forall>M. \<forall>w \<in> \<W> M. P M \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
 
@@ -192,7 +189,7 @@ qed
 corollary static_completeness\<^sub>P\<^sub>K:
   assumes \<open>static p\<close> \<open>valid\<^sub>! (\<lambda>_. True) p\<close>
   shows \<open>A \<turnstile>\<^sub>! p\<close>
-  using assms static_completeness[where P=\<open>\<lambda>_. True\<close>] completeness by metis
+  using assms static_completeness[where P=\<open>\<lambda>_. True\<close>] completeness\<^sub>K by metis
 
 section \<open>Soundness\<close>
 
@@ -493,10 +490,10 @@ proof -
     using ConE(2) PR1 by blast
 qed
 
-corollary
+corollary completeness\<^sub>P\<^sub>K:
   assumes \<open>valid\<^sub>! (\<lambda>_. True) p\<close>
   shows \<open>A \<turnstile>\<^sub>! p\<close>
-  using assms completeness\<^sub>P[where P=\<open>\<lambda>_. True\<close>] completeness by metis
+  using assms completeness\<^sub>P[where P=\<open>\<lambda>_. True\<close>] completeness\<^sub>K by metis
 
 section \<open>System PK\<close>
 
@@ -509,10 +506,10 @@ lemma soundness\<^sub>P\<^sub>K: \<open>\<turnstile>\<^sub>!\<^sub>K p \<Longrig
 abbreviation validPK (\<open>valid\<^sub>!\<^sub>K\<close>) where
   \<open>valid\<^sub>!\<^sub>K \<equiv> valid\<^sub>! (\<lambda>_. True)\<close>
 
-lemma completeness\<^sub>P\<^sub>K:
+corollary
   assumes \<open>valid\<^sub>!\<^sub>K p\<close>
   shows \<open>\<turnstile>\<^sub>!\<^sub>K p\<close>
-  using assms completeness\<^sub>P[where P=\<open>\<lambda>_. True\<close>] completeness by metis
+  using completeness\<^sub>P\<^sub>K assms .
 
 theorem main\<^sub>P\<^sub>K: \<open>valid\<^sub>!\<^sub>K p \<longleftrightarrow> \<turnstile>\<^sub>!\<^sub>K p\<close>
   using soundness\<^sub>P\<^sub>K completeness\<^sub>P\<^sub>K by fast
@@ -665,8 +662,6 @@ section \<open>System PS4\<close>
 
 abbreviation SystemPS4 :: \<open>'i pfm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>!\<^sub>S\<^sub>4 _" [50] 50) where
   \<open>\<turnstile>\<^sub>!\<^sub>S\<^sub>4 p \<equiv> AxPT \<oplus> AxP4 \<turnstile>\<^sub>! p\<close>
-
-abbreviation \<open>refltrans M \<equiv> reflexive M \<and> transitive M\<close>
 
 lemma soundness_AxPT4: \<open>(AxPT \<oplus> AxP4) p \<Longrightarrow> refltrans M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   using soundness_AxPT soundness_AxP4 by fast
