@@ -13,11 +13,11 @@ theory PAL imports "Epistemic_Logic.Epistemic_Logic" begin
 section \<open>Syntax\<close>
 
 datatype 'i pfm
-  = FF ("\<^bold>\<bottom>\<^sub>!")
-  | Pro' id ("Pro\<^sub>!")
-  | Dis \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr "\<^bold>\<or>\<^sub>!" 30)
-  | Con \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr "\<^bold>\<and>\<^sub>!" 35)
-  | Imp \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr "\<^bold>\<longrightarrow>\<^sub>!" 25)
+  = FF (\<open>\<^bold>\<bottom>\<^sub>!\<close>)
+  | Pro' id (\<open>Pro\<^sub>!\<close>)
+  | Dis \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr \<open>\<^bold>\<or>\<^sub>!\<close> 30)
+  | Con \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr \<open>\<^bold>\<and>\<^sub>!\<close> 35)
+  | Imp \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<^sub>!\<close> 25)
   | K' 'i \<open>'i pfm\<close> (\<open>K\<^sub>!\<close>)
   | Ann \<open>'i pfm\<close> \<open>'i pfm\<close> (\<open>[_]\<^sub>! _\<close> [50, 50] 50)
 
@@ -33,7 +33,7 @@ abbreviation PL (\<open>L\<^sub>!\<close>) where
 section \<open>Semantics\<close>
 
 fun
-  psemantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> ("_, _ \<Turnstile>\<^sub>! _" [50, 50] 50) and
+  psemantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>_, _ \<Turnstile>\<^sub>! _\<close> [50, 50] 50) and
   restrict :: \<open>('i, 'w) kripke \<Rightarrow> 'i pfm \<Rightarrow> ('i, 'w) kripke\<close> where
   \<open>(M, w \<Turnstile>\<^sub>! \<^bold>\<bottom>\<^sub>!) = False\<close>
 | \<open>(M, w \<Turnstile>\<^sub>! Pro\<^sub>! x) = \<pi> M w x\<close>
@@ -135,7 +135,7 @@ primrec peval :: \<open>(id \<Rightarrow> bool) \<Rightarrow> ('i pfm \<Rightarr
 
 abbreviation \<open>ptautology p \<equiv> \<forall>g h. peval g h p\<close>
 
-inductive PAK :: \<open>('i pfm \<Rightarrow> bool) \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> ("_ \<turnstile>\<^sub>! _" [20, 20] 20)
+inductive PAK :: \<open>('i pfm \<Rightarrow> bool) \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>_ \<turnstile>\<^sub>! _\<close> [20, 20] 20)
   for A :: \<open>'i pfm \<Rightarrow> bool\<close> where
     PA1: \<open>ptautology p \<Longrightarrow> A \<turnstile>\<^sub>! p\<close>
   | PA2: \<open>A \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<and>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
@@ -155,16 +155,6 @@ lemma eval_peval: \<open>eval h (g o lift) p = peval h g (lift p)\<close>
 
 lemma tautology_ptautology: \<open>tautology p \<Longrightarrow> ptautology (lift p)\<close>
   using eval_peval by blast
-
-lemma peval_eval:
-  assumes \<open>static p\<close>
-  shows \<open>eval h g (lower p) = peval h (g o lower) p\<close>
-  using assms by (induct p) simp_all
-
-lemma ptautology_tautology:
-  assumes \<open>static p\<close>
-  shows \<open>ptautology p \<Longrightarrow> tautology (lower p)\<close>
-  using assms peval_eval by blast
 
 theorem AK_PAK: \<open>A o lift \<turnstile> p \<Longrightarrow> A \<turnstile>\<^sub>! lift p\<close>
   by (induct p rule: AK.induct) (auto intro: PAK.intros(1-5) simp: tautology_ptautology)
@@ -187,7 +177,7 @@ proof -
     using assms(1) lift_lower by metis
 qed
 
-corollary static_completeness\<^sub>P\<^sub>K:
+corollary
   assumes \<open>static p\<close> \<open>valid\<^sub>! (\<lambda>_. True) p\<close>
   shows \<open>A \<turnstile>\<^sub>! p\<close>
   using assms static_completeness[where P=\<open>\<lambda>_. True\<close>] completeness\<^sub>K by metis

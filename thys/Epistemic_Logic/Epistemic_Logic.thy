@@ -18,17 +18,17 @@ section \<open>Syntax\<close>
 type_synonym id = string
 
 datatype 'i fm
-  = FF ("\<^bold>\<bottom>")
+  = FF (\<open>\<^bold>\<bottom>\<close>)
   | Pro id
-  | Dis \<open>'i fm\<close> \<open>'i fm\<close> (infixr "\<^bold>\<or>" 30)
-  | Con \<open>'i fm\<close> \<open>'i fm\<close> (infixr "\<^bold>\<and>" 35)
-  | Imp \<open>'i fm\<close> \<open>'i fm\<close> (infixr "\<^bold>\<longrightarrow>" 25)
+  | Dis \<open>'i fm\<close> \<open>'i fm\<close> (infixr \<open>\<^bold>\<or>\<close> 30)
+  | Con \<open>'i fm\<close> \<open>'i fm\<close> (infixr \<open>\<^bold>\<and>\<close> 35)
+  | Imp \<open>'i fm\<close> \<open>'i fm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<close> 25)
   | K 'i \<open>'i fm\<close>
 
-abbreviation TT ("\<^bold>\<top>") where
+abbreviation TT (\<open>\<^bold>\<top>\<close>) where
   \<open>TT \<equiv> \<^bold>\<bottom> \<^bold>\<longrightarrow> \<^bold>\<bottom>\<close>
 
-abbreviation Neg ("\<^bold>\<not> _" [40] 40) where
+abbreviation Neg (\<open>\<^bold>\<not> _\<close> [40] 40) where
   \<open>Neg p \<equiv> p \<^bold>\<longrightarrow> \<^bold>\<bottom>\<close>
 
 abbreviation \<open>L i p \<equiv> \<^bold>\<not> K i (\<^bold>\<not> p)\<close>
@@ -38,8 +38,7 @@ section \<open>Semantics\<close>
 datatype ('i, 'w) kripke =
   Kripke (\<W>: \<open>'w set\<close>) (\<pi>: \<open>'w \<Rightarrow> id \<Rightarrow> bool\<close>) (\<K>: \<open>'i \<Rightarrow> 'w \<Rightarrow> 'w set\<close>)
 
-primrec semantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i fm \<Rightarrow> bool\<close>
-  ("_, _ \<Turnstile> _" [50, 50] 50) where
+primrec semantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i fm \<Rightarrow> bool\<close> (\<open>_, _ \<Turnstile> _\<close> [50, 50] 50) where
   \<open>(M, w \<Turnstile> \<^bold>\<bottom>) = False\<close>
 | \<open>(M, w \<Turnstile> Pro x) = \<pi> M w x\<close>
 | \<open>(M, w \<Turnstile> (p \<^bold>\<or> q)) = ((M, w \<Turnstile> p) \<or> (M, w \<Turnstile> q))\<close>
@@ -147,7 +146,7 @@ primrec eval :: \<open>(id \<Rightarrow> bool) \<Rightarrow> ('i fm \<Rightarrow
 
 abbreviation \<open>tautology p \<equiv> \<forall>g h. eval g h p\<close>
 
-inductive AK :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarrow> bool\<close> ("_ \<turnstile> _" [20, 20] 20)
+inductive AK :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarrow> bool\<close> (\<open>_ \<turnstile> _\<close> [20, 20] 20)
   for A :: \<open>'i fm \<Rightarrow> bool\<close> where
     A1: \<open>tautology p \<Longrightarrow> A \<turnstile> p\<close>
   | A2: \<open>A \<turnstile> K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i q\<close>
@@ -869,7 +868,7 @@ corollary completeness\<^sub>K:
 
 section \<open>System K\<close>
 
-abbreviation SystemK :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>K _" [50] 50) where
+abbreviation SystemK :: \<open>'i fm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>K _\<close> [20] 20) where
   \<open>\<turnstile>\<^sub>K p \<equiv> (\<lambda>_. False) \<turnstile> p\<close>
 
 lemma soundness\<^sub>K: \<open>\<turnstile>\<^sub>K p \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
@@ -882,7 +881,7 @@ corollary
   shows \<open>\<turnstile>\<^sub>K p\<close>
   using completeness\<^sub>K assms .
 
-theorem main\<^sub>K: \<open>valid\<^sub>K p \<longleftrightarrow> \<turnstile>\<^sub>K p\<close>
+theorem main\<^sub>K: \<open>valid\<^sub>K p \<longleftrightarrow> (\<turnstile>\<^sub>K p)\<close>
 proof
   assume \<open>valid\<^sub>K p\<close>
   with completeness show \<open>\<turnstile>\<^sub>K p\<close>
@@ -909,7 +908,7 @@ text \<open>Also known as System M\<close>
 inductive AxT :: \<open>'i fm \<Rightarrow> bool\<close> where
   \<open>AxT (K i p \<^bold>\<longrightarrow> p)\<close>
 
-abbreviation SystemT :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>T _" [50] 50) where
+abbreviation SystemT :: \<open>'i fm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>T _\<close> [20] 20) where
   \<open>\<turnstile>\<^sub>T p \<equiv> AxT \<turnstile> p\<close>
 
 lemma soundness_AxT: \<open>AxT p \<Longrightarrow> reflexive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
@@ -951,7 +950,7 @@ lemma completeness\<^sub>T:
   shows \<open>\<turnstile>\<^sub>T p\<close>
   using assms completeness mcs\<^sub>T_reflexive by blast
 
-theorem main\<^sub>T: \<open>valid\<^sub>T p \<longleftrightarrow> \<turnstile>\<^sub>T p\<close>
+theorem main\<^sub>T: \<open>valid\<^sub>T p \<longleftrightarrow> (\<turnstile>\<^sub>T p)\<close>
   using soundness\<^sub>T completeness\<^sub>T by fast
 
 corollary
@@ -964,7 +963,7 @@ section \<open>System KB\<close>
 inductive AxB :: \<open>'i fm \<Rightarrow> bool\<close> where
   \<open>AxB (p \<^bold>\<longrightarrow> K i (L i p))\<close>
 
-abbreviation SystemKB :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>K\<^sub>B _" [50] 50) where
+abbreviation SystemKB :: \<open>'i fm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>K\<^sub>B _\<close> [20] 20) where
   \<open>\<turnstile>\<^sub>K\<^sub>B p \<equiv> AxB \<turnstile> p\<close>
 
 lemma soundness_AxB: \<open>AxB p \<Longrightarrow> symmetric M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
@@ -1022,7 +1021,7 @@ lemma completeness\<^sub>K\<^sub>B:
   shows \<open>\<turnstile>\<^sub>K\<^sub>B p\<close>
   using assms completeness mcs\<^sub>K\<^sub>B_symmetric by blast
 
-theorem main\<^sub>K\<^sub>B: \<open>valid\<^sub>K\<^sub>B p \<longleftrightarrow> \<turnstile>\<^sub>K\<^sub>B p\<close>
+theorem main\<^sub>K\<^sub>B: \<open>valid\<^sub>K\<^sub>B p \<longleftrightarrow> (\<turnstile>\<^sub>K\<^sub>B p)\<close>
   using soundness\<^sub>K\<^sub>B completeness\<^sub>K\<^sub>B by fast
 
 corollary
@@ -1035,7 +1034,7 @@ section \<open>System K4\<close>
 inductive Ax4 :: \<open>'i fm \<Rightarrow> bool\<close> where
   \<open>Ax4 (K i p \<^bold>\<longrightarrow> K i (K i p))\<close>
 
-abbreviation SystemK4 :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>K\<^sub>4 _" [50] 50) where
+abbreviation SystemK4 :: \<open>'i fm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>K\<^sub>4 _\<close> [20] 20) where
   \<open>\<turnstile>\<^sub>K\<^sub>4 p \<equiv> Ax4 \<turnstile> p\<close>
 
 lemma soundness_Ax4: \<open>Ax4 p \<Longrightarrow> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
@@ -1082,7 +1081,7 @@ lemma completeness\<^sub>K\<^sub>4:
   shows \<open>\<turnstile>\<^sub>K\<^sub>4 p\<close>
   using assms completeness mcs\<^sub>K\<^sub>4_transitive by blast
 
-theorem main\<^sub>K\<^sub>4: \<open>valid\<^sub>K\<^sub>4 p \<longleftrightarrow> \<turnstile>\<^sub>K\<^sub>4 p\<close>
+theorem main\<^sub>K\<^sub>4: \<open>valid\<^sub>K\<^sub>4 p \<longleftrightarrow> (\<turnstile>\<^sub>K\<^sub>4 p)\<close>
   using soundness\<^sub>K\<^sub>4 completeness\<^sub>K\<^sub>4 by fast
 
 corollary
@@ -1095,7 +1094,7 @@ section \<open>System S4\<close>
 abbreviation Or :: \<open>('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool\<close> (infixl \<open>\<oplus>\<close> 65) where
   \<open>A \<oplus> A' \<equiv> \<lambda>x. A x \<or> A' x\<close>
 
-abbreviation SystemS4 :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>S\<^sub>4 _" [50] 50) where
+abbreviation SystemS4 :: \<open>'i fm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>S\<^sub>4 _\<close> [20] 20) where
   \<open>\<turnstile>\<^sub>S\<^sub>4 p \<equiv> AxT \<oplus> Ax4 \<turnstile> p\<close>
 
 lemma soundness_AxT4: \<open>(AxT \<oplus> Ax4) p \<Longrightarrow> reflexive M \<and> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
@@ -1113,7 +1112,7 @@ lemma completeness\<^sub>S\<^sub>4:
     mcs\<^sub>K\<^sub>4_transitive[where A=\<open>AxT \<oplus> Ax4\<close>]
   by blast
 
-theorem main\<^sub>S\<^sub>4: \<open>valid\<^sub>S\<^sub>4 p \<longleftrightarrow> \<turnstile>\<^sub>S\<^sub>4 p\<close>
+theorem main\<^sub>S\<^sub>4: \<open>valid\<^sub>S\<^sub>4 p \<longleftrightarrow> (\<turnstile>\<^sub>S\<^sub>4 p)\<close>
   using soundness\<^sub>S\<^sub>4 completeness\<^sub>S\<^sub>4 by fast
 
 corollary
@@ -1123,7 +1122,7 @@ corollary
 
 section \<open>System S5\<close>
 
-abbreviation SystemS5 :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>S\<^sub>5 _" [50] 50) where
+abbreviation SystemS5 :: \<open>'i fm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>S\<^sub>5 _\<close> [20] 20) where
   \<open>\<turnstile>\<^sub>S\<^sub>5 p \<equiv> AxT \<oplus> AxB \<oplus> Ax4 \<turnstile> p\<close>
 
 abbreviation AxTB4 :: \<open>'i fm \<Rightarrow> bool\<close> where
@@ -1144,7 +1143,7 @@ lemma completeness\<^sub>S\<^sub>5:
     mcs\<^sub>T_reflexive[where A=AxTB4] mcs\<^sub>K\<^sub>B_symmetric[where A=AxTB4] mcs\<^sub>K\<^sub>4_transitive[where A=AxTB4]
   by blast
 
-theorem main\<^sub>S\<^sub>5: \<open>valid\<^sub>S\<^sub>5 p \<longleftrightarrow> \<turnstile>\<^sub>S\<^sub>5 p\<close>
+theorem main\<^sub>S\<^sub>5: \<open>valid\<^sub>S\<^sub>5 p \<longleftrightarrow> (\<turnstile>\<^sub>S\<^sub>5 p)\<close>
   using soundness\<^sub>S\<^sub>5 completeness\<^sub>S\<^sub>5 by fast
 
 corollary
@@ -1154,70 +1153,70 @@ corollary
 
 subsection \<open>Traditional formulation\<close>
 
-inductive SystemS5' :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>S\<^sub>5'' _" [50] 50) where
+inductive SystemS5' :: \<open>'i fm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>S\<^sub>5'' _\<close> [20] 20) where
   A1': \<open>tautology p \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' p\<close>
-| A2': \<open>\<turnstile>\<^sub>S\<^sub>5' (K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q)\<close>
-| AT': \<open>\<turnstile>\<^sub>S\<^sub>5' (K i p \<^bold>\<longrightarrow> p)\<close>
-| A5': \<open>\<turnstile>\<^sub>S\<^sub>5' (\<^bold>\<not> K i p \<^bold>\<longrightarrow> K i (\<^bold>\<not> K i p))\<close>
-| R1': \<open>\<turnstile>\<^sub>S\<^sub>5' p \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> q) \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' q\<close>
+| A2': \<open>\<turnstile>\<^sub>S\<^sub>5' K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q\<close>
+| AT': \<open>\<turnstile>\<^sub>S\<^sub>5' K i p \<^bold>\<longrightarrow> p\<close>
+| A5': \<open>\<turnstile>\<^sub>S\<^sub>5' \<^bold>\<not> K i p \<^bold>\<longrightarrow> K i (\<^bold>\<not> K i p)\<close>
+| R1': \<open>\<turnstile>\<^sub>S\<^sub>5' p \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> q \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' q\<close>
 | R2': \<open>\<turnstile>\<^sub>S\<^sub>5' p \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' K i p\<close>
 
-lemma S5'_trans: \<open>\<turnstile>\<^sub>S\<^sub>5' ((p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r)\<close>
+lemma S5'_trans: \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
   by (simp add: A1')
 
-lemma S5'_L: \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> L i p)\<close>
+lemma S5'_L: \<open>\<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> L i p\<close>
 proof -
-  have \<open>\<turnstile>\<^sub>S\<^sub>5' (K i (\<^bold>\<not> p) \<^bold>\<longrightarrow> \<^bold>\<not> p)\<close>
+  have \<open>\<turnstile>\<^sub>S\<^sub>5' K i (\<^bold>\<not> p) \<^bold>\<longrightarrow> \<^bold>\<not> p\<close>
     using AT' by fast
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' ((P \<^bold>\<longrightarrow> \<^bold>\<not> Q) \<^bold>\<longrightarrow> Q \<^bold>\<longrightarrow> \<^bold>\<not> P)\<close> for P Q :: \<open>'i fm\<close>
+  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (P \<^bold>\<longrightarrow> \<^bold>\<not> Q) \<^bold>\<longrightarrow> Q \<^bold>\<longrightarrow> \<^bold>\<not> P\<close> for P Q :: \<open>'i fm\<close>
     using A1' by force
   ultimately show ?thesis
     using R1' by blast
 qed
 
-lemma S5'_B: \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> K i (L i p))\<close>
+lemma S5'_B: \<open>\<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> K i (L i p)\<close>
   using A5' S5'_L R1' S5'_trans by metis
 
 lemma S5'_map_K:
-  assumes \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> q)\<close>
-  shows \<open>\<turnstile>\<^sub>S\<^sub>5' (K i p \<^bold>\<longrightarrow> K i q)\<close>
+  assumes \<open>\<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> q\<close>
+  shows \<open>\<turnstile>\<^sub>S\<^sub>5' K i p \<^bold>\<longrightarrow> K i q\<close>
 proof -
-  note \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> q)\<close>
+  note \<open>\<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> q\<close>
   then have \<open>\<turnstile>\<^sub>S\<^sub>5' K i (p \<^bold>\<longrightarrow> q)\<close>
     using R2' by fast
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q)\<close>
+  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q\<close>
     using A2' by fast
   ultimately show ?thesis
     using R1' by fast
 qed
 
-lemma S5'_L_dual: \<open>\<turnstile>\<^sub>S\<^sub>5' (\<^bold>\<not> L i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i p)\<close>
+lemma S5'_L_dual: \<open>\<turnstile>\<^sub>S\<^sub>5' \<^bold>\<not> L i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i p\<close>
 proof -
-  have \<open>\<turnstile>\<^sub>S\<^sub>5' (K i p \<^bold>\<longrightarrow> K i p)\<close> \<open>\<turnstile>\<^sub>S\<^sub>5' (\<^bold>\<not> \<^bold>\<not> p \<^bold>\<longrightarrow> p)\<close>
+  have \<open>\<turnstile>\<^sub>S\<^sub>5' K i p \<^bold>\<longrightarrow> K i p\<close> \<open>\<turnstile>\<^sub>S\<^sub>5' \<^bold>\<not> \<^bold>\<not> p \<^bold>\<longrightarrow> p\<close>
     by (simp_all add: A1')
-  then have \<open>\<turnstile>\<^sub>S\<^sub>5' (K i (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> K i p)\<close>
+  then have \<open>\<turnstile>\<^sub>S\<^sub>5' K i (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> K i p\<close>
     by (simp add: S5'_map_K)
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' ((P \<^bold>\<longrightarrow> Q) \<^bold>\<longrightarrow> (\<^bold>\<not> \<^bold>\<not> P \<^bold>\<longrightarrow> Q))\<close> for P Q :: \<open>'i fm\<close>
+  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (P \<^bold>\<longrightarrow> Q) \<^bold>\<longrightarrow> (\<^bold>\<not> \<^bold>\<not> P \<^bold>\<longrightarrow> Q)\<close> for P Q :: \<open>'i fm\<close>
     by (simp add: A1')
-  ultimately show \<open>\<turnstile>\<^sub>S\<^sub>5' (\<^bold>\<not> \<^bold>\<not> K i (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> K i p)\<close>
+  ultimately show \<open>\<turnstile>\<^sub>S\<^sub>5' \<^bold>\<not> \<^bold>\<not> K i (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> K i p\<close>
     using R1' by blast
 qed
 
-lemma S5'_4: \<open>\<turnstile>\<^sub>S\<^sub>5' (K i p \<^bold>\<longrightarrow> K i (K i p))\<close>
+lemma S5'_4: \<open>\<turnstile>\<^sub>S\<^sub>5' K i p \<^bold>\<longrightarrow> K i (K i p)\<close>
 proof -
-  have \<open>\<turnstile>\<^sub>S\<^sub>5' (L i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i (L i (\<^bold>\<not> p)))\<close>
+  have \<open>\<turnstile>\<^sub>S\<^sub>5' L i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i (L i (\<^bold>\<not> p))\<close>
     using A5' by fast
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' ((P \<^bold>\<longrightarrow> Q) \<^bold>\<longrightarrow> \<^bold>\<not> Q \<^bold>\<longrightarrow> \<^bold>\<not> P)\<close> for P Q :: \<open>'i fm\<close>
+  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (P \<^bold>\<longrightarrow> Q) \<^bold>\<longrightarrow> \<^bold>\<not> Q \<^bold>\<longrightarrow> \<^bold>\<not> P\<close> for P Q :: \<open>'i fm\<close>
     using A1' by force
-  ultimately have \<open>\<turnstile>\<^sub>S\<^sub>5' (\<^bold>\<not> K i (L i (\<^bold>\<not> p)) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p))\<close>
+  ultimately have \<open>\<turnstile>\<^sub>S\<^sub>5' \<^bold>\<not> K i (L i (\<^bold>\<not> p)) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p)\<close>
     using R1' by fast
-  then have \<open>\<turnstile>\<^sub>S\<^sub>5' (L i (K i (\<^bold>\<not> \<^bold>\<not> p)) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p))\<close>
+  then have \<open>\<turnstile>\<^sub>S\<^sub>5' L i (K i (\<^bold>\<not> \<^bold>\<not> p)) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p)\<close>
     by blast
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> p)\<close>
+  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> p\<close>
     by (simp add: A1')
-  ultimately have \<open>\<turnstile>\<^sub>S\<^sub>5' (L i (K i p) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p))\<close>
+  ultimately have \<open>\<turnstile>\<^sub>S\<^sub>5' L i (K i p) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p)\<close>
     by (metis (no_types, opaque_lifting) R1' S5'_map_K S5'_trans)
-  then have \<open>\<turnstile>\<^sub>S\<^sub>5' (L i (K i p) \<^bold>\<longrightarrow> K i p)\<close>
+  then have \<open>\<turnstile>\<^sub>S\<^sub>5' L i (K i p) \<^bold>\<longrightarrow> K i p\<close>
     by (meson S5'_L_dual R1' S5'_trans)
   then show ?thesis
     by (metis A2' R1' R2' S5'_B S5'_trans)
@@ -1226,9 +1225,9 @@ qed
 lemma S5_S5': \<open>\<turnstile>\<^sub>S\<^sub>5 p \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' p\<close>
 proof (induct p rule: AK.induct)
   case (A2 i p q)
-  have \<open>\<turnstile>\<^sub>S\<^sub>5' (K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q)\<close>
+  have \<open>\<turnstile>\<^sub>S\<^sub>5' K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q\<close>
     using A2' .
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' ((P \<^bold>\<longrightarrow> Q \<^bold>\<longrightarrow> R) \<^bold>\<longrightarrow> (Q \<^bold>\<and> P \<^bold>\<longrightarrow> R))\<close> for P Q R :: \<open>'i fm\<close>
+  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (P \<^bold>\<longrightarrow> Q \<^bold>\<longrightarrow> R) \<^bold>\<longrightarrow> (Q \<^bold>\<and> P \<^bold>\<longrightarrow> R)\<close> for P Q R :: \<open>'i fm\<close>
     by (simp add: A1')
   ultimately show ?case
     using R1' by blast
@@ -1252,7 +1251,7 @@ next
     using completeness\<^sub>S\<^sub>5 neg_introspection by fast
 qed (meson AK.intros K_A2')+
 
-theorem main\<^sub>S\<^sub>5': \<open>valid\<^sub>S\<^sub>5 p \<longleftrightarrow> \<turnstile>\<^sub>S\<^sub>5' p\<close>
+theorem main\<^sub>S\<^sub>5': \<open>valid\<^sub>S\<^sub>5 p \<longleftrightarrow> (\<turnstile>\<^sub>S\<^sub>5' p)\<close>
   using main\<^sub>S\<^sub>5 S5_S5' S5'_S5 by blast
 
 section \<open>Acknowledgements\<close>
