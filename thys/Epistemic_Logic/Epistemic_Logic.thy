@@ -409,11 +409,6 @@ proof -
     using that by blast
 qed
 
-lemma consistent_deriv:
-  assumes \<open>consistent A V\<close> \<open>A \<turnstile> p\<close>
-  shows \<open>consistent A ({p} \<union> V)\<close>
-  using assms by (metis R1 consistent_def imply.simps(2) inconsistent_subset)
-
 lemma consistent_consequent:
   assumes \<open>consistent A V\<close> \<open>p \<in> V\<close> \<open>A \<turnstile> p \<^bold>\<longrightarrow> q\<close>
   shows \<open>consistent A ({q} \<union> V)\<close>
@@ -663,39 +658,30 @@ lemma truth_lemma:
   fixes A and p :: \<open>('i :: countable) fm\<close>
   defines \<open>M \<equiv> canonical A\<close>
   assumes \<open>consistent A V\<close> and \<open>maximal A V\<close>
-  shows \<open>(p \<in> V \<longleftrightarrow> M, V \<Turnstile> p) \<and> ((\<^bold>\<not> p) \<in> V \<longleftrightarrow> M, V \<Turnstile> \<^bold>\<not> p)\<close>
+  shows \<open>p \<in> V \<longleftrightarrow> M, V \<Turnstile> p\<close>
   using assms unfolding M_def
 proof (induct p arbitrary: V)
   case FF
   then show ?case
-  proof (intro conjI impI iffI)
+  proof safe
     assume \<open>\<^bold>\<bottom> \<in> V\<close>
     then have False
       using \<open>consistent A V\<close> K_imply_head unfolding consistent_def
       by (metis bot.extremum insert_subset list.set(1) list.simps(15))
     then show \<open>canonical A, V \<Turnstile> \<^bold>\<bottom>\<close> ..
   next
-    assume \<open>canonical A, V \<Turnstile> \<^bold>\<not> \<^bold>\<bottom>\<close>
-    then show \<open>(\<^bold>\<not> \<^bold>\<bottom>) \<in> V\<close>
-      using \<open>consistent A V\<close> \<open>maximal A V\<close> unfolding maximal_def
-      by (meson K_Boole inconsistent_subset consistent_def)
-  qed simp_all
+    assume \<open>canonical A, V \<Turnstile> \<^bold>\<bottom>\<close>
+    then show \<open>\<^bold>\<bottom> \<in> V\<close>
+      by simp
+  qed
 next
   case (Pro x)
   then show ?case
-  proof (intro conjI impI iffI)
-    assume \<open>(\<^bold>\<not> Pro x) \<in> V\<close>
-    then show \<open>canonical A, V \<Turnstile> \<^bold>\<not> Pro x\<close>
-      using \<open>consistent A V\<close> \<open>maximal A V\<close> exactly_one_in_maximal by auto
-  next
-    assume \<open>canonical A, V \<Turnstile> \<^bold>\<not> Pro x\<close>
-    then show \<open>(\<^bold>\<not> Pro x) \<in> V\<close>
-      using \<open>consistent A V\<close> \<open>maximal A V\<close> exactly_one_in_maximal by auto
-  qed (simp_all add: \<open>maximal A V\<close> maximal_def)
+    by simp
 next
   case (Dis p q)
-  have \<open>(p \<^bold>\<or> q) \<in> V \<longrightarrow> canonical A, V \<Turnstile> (p \<^bold>\<or> q)\<close>
-  proof
+  then show ?case
+  proof safe
     assume \<open>(p \<^bold>\<or> q) \<in> V\<close>
     then have \<open>consistent A ({p} \<union> V) \<or> consistent A ({q} \<union> V)\<close>
       using \<open>consistent A V\<close> consistent_disjuncts by blast
@@ -703,23 +689,21 @@ next
       using \<open>maximal A V\<close> unfolding maximal_def by fast
     then show \<open>canonical A, V \<Turnstile> (p \<^bold>\<or> q)\<close>
       using Dis by simp
+  next
+    assume \<open>canonical A, V \<Turnstile> (p \<^bold>\<or> q)\<close>
+    then consider \<open>canonical A, V \<Turnstile> p\<close> | \<open>canonical A, V \<Turnstile> q\<close>
+      by auto
+    then have \<open>p \<in> V \<or> q \<in> V\<close>
+      using Dis by auto
+    moreover have \<open>A \<turnstile> p \<^bold>\<longrightarrow> p \<^bold>\<or> q\<close> \<open>A \<turnstile> q \<^bold>\<longrightarrow> p \<^bold>\<or> q\<close>
+      by (auto simp: A1)
+    ultimately show \<open>(p \<^bold>\<or> q) \<in> V\<close>
+      using Dis.prems deriv_in_maximal consequent_in_maximal by blast
   qed
-  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) \<in> V \<longrightarrow> canonical A, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<or> q)\<close>
-  proof
-    assume \<open>(\<^bold>\<not> (p \<^bold>\<or> q)) \<in> V\<close>
-    then have \<open>consistent A ({\<^bold>\<not> q} \<union> V)\<close> \<open>consistent A ({\<^bold>\<not> p} \<union> V)\<close>
-      using \<open>consistent A V\<close> consistent_consequent' by fastforce+
-    then have \<open>(\<^bold>\<not> p) \<in> V\<close> \<open>(\<^bold>\<not> q) \<in> V\<close>
-      using \<open>maximal A V\<close> unfolding maximal_def by fast+
-    then show \<open>canonical A, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<or> q)\<close>
-      using Dis by simp
-  qed
-  ultimately show ?case
-    using exactly_one_in_maximal Dis by auto
 next
   case (Con p q)
-  have \<open>(p \<^bold>\<and> q) \<in> V \<longrightarrow> canonical A, V \<Turnstile> (p \<^bold>\<and> q)\<close>
-  proof
+  then show ?case
+  proof safe
     assume \<open>(p \<^bold>\<and> q) \<in> V\<close>
     then have \<open>consistent A ({p} \<union> V)\<close> \<open>consistent A ({q} \<union> V)\<close>
       using \<open>consistent A V\<close> consistent_consequent' by fastforce+
@@ -727,25 +711,21 @@ next
       using \<open>maximal A V\<close> unfolding maximal_def by fast+
     then show \<open>canonical A, V \<Turnstile> (p \<^bold>\<and> q)\<close>
       using Con by simp
+  next
+    assume \<open>canonical A, V \<Turnstile> (p \<^bold>\<and> q)\<close>
+    then have \<open>canonical A, V \<Turnstile> p\<close> \<open>canonical A, V \<Turnstile> q\<close>
+      by auto
+    then have \<open>p \<in> V\<close> \<open>q \<in> V\<close>
+      using Con by auto
+    moreover have \<open>A \<turnstile> p \<^bold>\<longrightarrow> q \<^bold>\<longrightarrow> p \<^bold>\<and> q\<close>
+      by (auto simp: A1)
+    ultimately show \<open>(p \<^bold>\<and> q) \<in> V\<close>
+      using Con.prems deriv_in_maximal consequent_in_maximal by blast
   qed
-  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V \<longrightarrow> canonical A, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<and> q)\<close>
-  proof
-    assume \<open>(\<^bold>\<not> (p \<^bold>\<and> q)) \<in> V\<close>
-    then have \<open>consistent A ({\<^bold>\<not> p \<^bold>\<or> \<^bold>\<not> q} \<union> V)\<close>
-      using \<open>consistent A V\<close> consistent_consequent' by fastforce
-    then have \<open>consistent A ({\<^bold>\<not> p} \<union> V) \<or> consistent A ({\<^bold>\<not> q} \<union> V)\<close>
-      using \<open>consistent A V\<close> \<open>maximal A V\<close> consistent_disjuncts unfolding maximal_def by blast
-    then have \<open>(\<^bold>\<not> p) \<in> V \<or> (\<^bold>\<not> q) \<in> V\<close>
-      using \<open>maximal A V\<close> unfolding maximal_def by fast
-    then show \<open>canonical A, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<and> q)\<close>
-      using Con by simp
-  qed
-  ultimately show ?case
-    using exactly_one_in_maximal Con by auto
 next
   case (Imp p q)
-  have \<open>(p \<^bold>\<longrightarrow> q) \<in> V \<longrightarrow> canonical A, V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
-  proof
+  then show ?case
+  proof safe
     assume \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close>
     then have \<open>consistent A ({\<^bold>\<not> p \<^bold>\<or> q} \<union> V)\<close>
       using \<open>consistent A V\<close> consistent_consequent' by fastforce
@@ -753,27 +733,31 @@ next
       using \<open>consistent A V\<close> \<open>maximal A V\<close> consistent_disjuncts unfolding maximal_def by blast
     then have \<open>(\<^bold>\<not> p) \<in> V \<or> q \<in> V\<close>
       using \<open>maximal A V\<close> unfolding maximal_def by fast
+    then have \<open>p \<notin> V \<or> q \<in> V\<close>
+      using Imp.prems exactly_one_in_maximal by blast
     then show \<open>canonical A, V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
       using Imp by simp
+  next
+    assume \<open>canonical A, V \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+    then consider \<open>\<not> canonical A, V \<Turnstile> p\<close> | \<open>canonical A, V \<Turnstile> q\<close>
+      by auto
+    then have \<open>p \<notin> V \<or> q \<in> V\<close>
+      using Imp by auto
+    then have \<open>(\<^bold>\<not> p) \<in> V \<or> q \<in> V\<close>
+      using Imp.prems exactly_one_in_maximal by blast
+    moreover have \<open>A \<turnstile> \<^bold>\<not> p \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> q\<close> \<open>A \<turnstile> q \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> q\<close>
+      by (auto simp: A1)
+    ultimately show \<open>(p \<^bold>\<longrightarrow> q) \<in> V\<close>
+      using Imp.prems deriv_in_maximal consequent_in_maximal by blast
   qed
-  moreover have \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> V \<longrightarrow> canonical A, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<longrightarrow> q)\<close>
-  proof
-    assume \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) \<in> V\<close>
-    then have \<open>consistent A ({p} \<union> V)\<close> \<open>consistent A ({\<^bold>\<not> q} \<union> V)\<close>
-      using \<open>consistent A V\<close> consistent_consequent' by fastforce+
-    then have \<open>p \<in> V\<close> \<open>(\<^bold>\<not> q) \<in> V\<close>
-      using \<open>maximal A V\<close> unfolding maximal_def by fast+
-    then show \<open>canonical A, V \<Turnstile> \<^bold>\<not> (p \<^bold>\<longrightarrow> q)\<close>
-      using Imp by simp
-  qed
-  ultimately show ?case
-    using exactly_one_in_maximal Imp \<open>consistent A V\<close> by auto
 next
   case (K i p)
-  then have \<open>K i p \<in> V \<longrightarrow> canonical A, V \<Turnstile> K i p\<close>
-    by auto
-  moreover have \<open>(canonical A, V \<Turnstile> K i p) \<longrightarrow> K i p \<in> V\<close>
-  proof (intro allI impI)
+  then show ?case
+  proof safe
+    assume \<open>K i p \<in> V\<close>
+    then show \<open>canonical A, V \<Turnstile> K i p\<close>
+      using K.hyps by auto
+  next
     assume \<open>canonical A, V \<Turnstile> K i p\<close>
 
     have \<open>\<not> consistent A ({\<^bold>\<not> p} \<union> known V i)\<close>
@@ -782,7 +766,7 @@ next
       then obtain W where W: \<open>{\<^bold>\<not> p} \<union> known V i \<subseteq> W\<close> \<open>consistent A W\<close> \<open>maximal A W\<close>
         using \<open>consistent A V\<close> maximal_extension by blast
       then have \<open>canonical A, W \<Turnstile> \<^bold>\<not> p\<close>
-        using K \<open>consistent A V\<close> by blast
+        using K \<open>consistent A V\<close> exactly_one_in_maximal by auto
       moreover have \<open>W \<in> reach A i V\<close> \<open>W \<in> mcss A\<close>
         using W by simp_all
       ultimately have \<open>canonical A, V \<Turnstile> \<^bold>\<not> K i p\<close>
@@ -818,13 +802,6 @@ next
         using Cons by auto
     qed simp
   qed
-  moreover have \<open>(canonical A, V \<Turnstile> \<^bold>\<not> K i p) \<longrightarrow> (\<^bold>\<not> K i p) \<in> V\<close>
-    using \<open>consistent A V\<close> \<open>maximal A V\<close> exactly_one_in_maximal calculation(1)
-    by (metis (no_types, lifting) semantics.simps(1, 5))
-  moreover have \<open>(\<^bold>\<not> K i p) \<in> V \<longrightarrow> canonical A, V \<Turnstile> \<^bold>\<not> K i p\<close>
-    using \<open>consistent A V\<close> \<open>maximal A V\<close> calculation(2) exactly_one_in_maximal by auto
-  ultimately show ?case
-    by blast
 qed
 
 lemma canonical_model:
@@ -1201,9 +1178,6 @@ qed
 lemma S5'_B: \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> K i (L i p))\<close>
   using A5' S5'_L R1' S5'_trans by metis
 
-lemma S5'_KL: \<open>\<turnstile>\<^sub>S\<^sub>5' (K i p \<^bold>\<longrightarrow> L i p)\<close>
-  by (meson AT' R1' S5'_L S5'_trans)
-
 lemma S5'_map_K:
   assumes \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> q)\<close>
   shows \<open>\<turnstile>\<^sub>S\<^sub>5' (K i p \<^bold>\<longrightarrow> K i q)\<close>
@@ -1216,11 +1190,6 @@ proof -
   ultimately show ?thesis
     using R1' by fast
 qed
-
-lemma S5'_map_L:
-  assumes \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> q)\<close>
-  shows \<open>\<turnstile>\<^sub>S\<^sub>5' (L i p \<^bold>\<longrightarrow> L i q)\<close>
-  using assms by (metis R1' S5'_map_K S5'_trans)
 
 lemma S5'_L_dual: \<open>\<turnstile>\<^sub>S\<^sub>5' (\<^bold>\<not> L i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i p)\<close>
 proof -
