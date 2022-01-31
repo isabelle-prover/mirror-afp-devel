@@ -11689,7 +11689,7 @@ author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
 topic = Mathematics/Probability theory
 date = 2022-01-25
 notify = me@eminkarayel.de
-abstract = 
+abstract =
   <p>The median method is an amplification result for randomized
   approximation algorithms described in [<a
   href="https://doi.org/10.1006/jcss.1997.1545">1</a>].
@@ -11716,16 +11716,14 @@ author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Number theory
 date = 2022-01-08
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   An elementary proof is formalised: that <em>exp r</em> is irrational for
   every nonzero rational number <em>r</em>. The mathematical development comes
   from the well-known volume <em>Proofs from THE BOOK</em>,
   by Aigner and Ziegler, who credit the idea to Hermite. The development
   illustrates a number of basic Isabelle techniques: the manipulation of
   summations, the calculation of quite complicated derivatives and the
-  estimation of integrals. Unusually, the sum of squares method is used
-  (<code>sos</code>: to prove a polynomial inequality), and
-  we also see how to import another AFP entry (Stirling's formula).
+  estimation of integrals. We also see how to import another AFP entry (Stirling's formula).
   As for the theorem itself, note that a much stronger and more general
   result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
   already available in the AFP.
