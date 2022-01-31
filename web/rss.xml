@@ -66,7 +66,7 @@ proceeding.</description>
        <pubDate>08 Jan 2022 00:00:00 +0000</pubDate>
        <description>
 An elementary proof is formalised: that &lt;em&gt;exp r&lt;/em&gt; is irrational for
-every nonzero rational number &lt;em&gt;r&lt;em&gt;. The mathematical development comes
+every nonzero rational number &lt;em&gt;r&lt;/em&gt;. The mathematical development comes
 from the well-known volume &lt;em&gt;Proofs from THE BOOK&lt;/em&gt;,
 by Aigner and Ziegler, who credit the idea to Hermite. The development
 illustrates a number of basic Isabelle techniques: the manipulation of
