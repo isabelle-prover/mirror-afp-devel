@@ -59,6 +59,26 @@ formalization. The further translation in Isabelle/HOL is now
 proceeding.</description>
     </item>
     <item>
+       <title>Irrational numbers from THE BOOK</title>
+              <link>https://www.isa-afp.org/entries/Irrationals_From_THEBOOK.html</link>
+       <guid>https://www.isa-afp.org/entries/Irrationals_From_THEBOOK.html</guid>
+       <dc:creator> Lawrence C Paulson       </dc:creator>
+       <pubDate>08 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+An elementary proof is formalised: that &lt;em&gt;exp r&lt;/em&gt; is irrational for
+every nonzero rational number &lt;em&gt;r&lt;em&gt;. The mathematical development comes
+from the well-known volume &lt;em&gt;Proofs from THE BOOK&lt;/em&gt;,
+by Aigner and Ziegler, who credit the idea to Hermite. The development
+illustrates a number of basic Isabelle techniques: the manipulation of
+summations, the calculation of quite complicated derivatives and the
+estimation of integrals. Unusually, the sum of squares method is used
+(&lt;code&gt;sos&lt;/code&gt;: to prove a polynomial inequality), and
+we also see how to import another AFP entry (Stirling&#39;s formula).
+As for the theorem itself, note that a much stronger and more general
+result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
+already available in the AFP.</description>
+    </item>
+    <item>
        <title>Knight's Tour Revisited Revisited</title>
               <link>https://www.isa-afp.org/entries/Knights_Tour.html</link>
        <guid>https://www.isa-afp.org/entries/Knights_Tour.html</guid>
@@ -605,23 +625,6 @@ This article provides a collection of experimental utilities for
 unoverloading of definitions and synthesis of conditional transfer
 rules for the object logic Isabelle/HOL of the formal proof assistant
 Isabelle written in Isabelle/ML.</description>
-    </item>
-    <item>
-       <title>Conditional Simplification</title>
-              <link>https://www.isa-afp.org/entries/Conditional_Simplification.html</link>
-       <guid>https://www.isa-afp.org/entries/Conditional_Simplification.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-The article provides a collection of experimental general-purpose
-proof methods for the object logic Isabelle/HOL of the formal proof
-assistant Isabelle. The methods in the collection offer functionality
-that is similar to certain aspects of the functionality provided by
-the standard proof methods of Isabelle that combine classical
-reasoning and rewriting, such as the method &lt;i&gt;auto&lt;/i&gt;,
-but use a different approach for rewriting. More specifically, these
-methods allow for the side conditions of the rewrite rules to be
-solved via intro-resolution.</description>
     </item>
   </channel>
 </rss>

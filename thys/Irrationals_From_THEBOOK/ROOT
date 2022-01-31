@@ -1,0 +1,10 @@
+chapter AFP
+
+session Irrationals_From_THEBOOK (AFP) = Stirling_Formula +
+  description "Exponentials are irrational, as proved by Aigner and Ziegler"
+  options [timeout = 600]
+  theories
+    Irrationals_From_THEBOOK
+  document_files
+    "root.bib"
+    "root.tex"
