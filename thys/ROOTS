@@ -284,6 +284,7 @@ InfPathElimination
 InformationFlowSlicing
 InformationFlowSlicing_Inter
 Integration
+Interpolation_Polynomials_HOL_Algebra
 Interpreter_Optimizations
 Interval_Arithmetic_Word32
 Intro_Dest_Elim

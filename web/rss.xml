@@ -9,7 +9,34 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>25 Jan 2022 00:00:00 +0000</pubDate>
+    <pubDate>29 Jan 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Interpolation Polynomials (in HOL-Algebra)</title>
+              <link>https://www.isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html</link>
+       <guid>https://www.isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>29 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;A well known result from algebra is that, on any field, there
+is exactly one polynomial of degree less than n interpolating n points
+[&lt;a
+href=&#34;https://doi.org/10.1017/CBO9780511814549&#34;&gt;1&lt;/a&gt;,
+§7].&lt;/p&gt; &lt;p&gt;This entry contains a formalization of the
+above result, as well as the following generalization in the case of
+finite fields &lt;i&gt;F&lt;/i&gt;: There are
+&lt;i&gt;|F|&lt;sup&gt;m-n&lt;/sup&gt;&lt;/i&gt; polynomials of degree
+less than &lt;i&gt;m ≥ n&lt;/i&gt; interpolating the same n points,
+where &lt;i&gt;|F|&lt;/i&gt; denotes the size of the domain of the
+field. To establish the result the entry also includes a formalization
+of Lagrange interpolation, which might be of independent
+interest.&lt;/p&gt; &lt;p&gt;The formalized results are defined on the
+algebraic structures from HOL-Algebra, which are distinct from the
+type-class based structures defined in HOL. Note that there is an
+existing formalization for polynomial interpolation and, in
+particular, Lagrange interpolation by Thiemann and Yamada [&lt;a
+href=&#34;https://www.isa-afp.org/entries/Polynomial_Interpolation.html&#34;&gt;2&lt;/a&gt;]
+on the type-class based structures in HOL.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Median Method</title>
               <link>https://www.isa-afp.org/entries/Median_Method.html</link>
@@ -611,18 +638,6 @@ object logic Isabelle/HOL of the formal proof assistant Isabelle. The
 command &lt;b&gt;mk_ide&lt;/b&gt; enables the automated synthesis of
 the introduction, destruction and elimination rules from arbitrary
 definitions of constant predicates stated in Isabelle/HOL.</description>
-    </item>
-    <item>
-       <title>Conditional Transfer Rule</title>
-              <link>https://www.isa-afp.org/entries/Conditional_Transfer_Rule.html</link>
-       <guid>https://www.isa-afp.org/entries/Conditional_Transfer_Rule.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-This article provides a collection of experimental utilities for
-unoverloading of definitions and synthesis of conditional transfer
-rules for the object logic Isabelle/HOL of the formal proof assistant
-Isabelle written in Isabelle/ML.</description>
     </item>
   </channel>
 </rss>

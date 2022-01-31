@@ -11728,3 +11728,30 @@ abstract =
   result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
   already available in the AFP.
 
+[Interpolation_Polynomials_HOL_Algebra]
+title = Interpolation Polynomials (in HOL-Algebra)
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Mathematics/Algebra
+date = 2022-01-29
+notify = me@eminkarayel.de
+abstract = 
+  <p>A well known result from algebra is that, on any field, there
+  is exactly one polynomial of degree less than n interpolating n points
+  [<a
+  href="https://doi.org/10.1017/CBO9780511814549">1</a>,
+  §7].</p> <p>This entry contains a formalization of the
+  above result, as well as the following generalization in the case of
+  finite fields <i>F</i>: There are
+  <i>|F|<sup>m-n</sup></i> polynomials of degree
+  less than <i>m ≥ n</i> interpolating the same n points,
+  where <i>|F|</i> denotes the size of the domain of the
+  field. To establish the result the entry also includes a formalization
+  of Lagrange interpolation, which might be of independent
+  interest.</p> <p>The formalized results are defined on the
+  algebraic structures from HOL-Algebra, which are distinct from the
+  type-class based structures defined in HOL. Note that there is an
+  existing formalization for polynomial interpolation and, in
+  particular, Lagrange interpolation by Thiemann and Yamada [<a
+  href="https://www.isa-afp.org/entries/Polynomial_Interpolation.html">2</a>]
+  on the type-class based structures in HOL.</p>
+
