@@ -71,9 +71,7 @@ from the well-known volume &lt;em&gt;Proofs from THE BOOK&lt;/em&gt;,
 by Aigner and Ziegler, who credit the idea to Hermite. The development
 illustrates a number of basic Isabelle techniques: the manipulation of
 summations, the calculation of quite complicated derivatives and the
-estimation of integrals. Unusually, the sum of squares method is used
-(&lt;code&gt;sos&lt;/code&gt;: to prove a polynomial inequality), and
-we also see how to import another AFP entry (Stirling&#39;s formula).
+estimation of integrals. We also see how to import another AFP entry (Stirling&#39;s formula).
 As for the theorem itself, note that a much stronger and more general
 result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
 already available in the AFP.</description>
