@@ -1,8 +1,7 @@
 section \<open>Some irrational numbers\<close>
 text \<open>From Aigner and Ziegler, \emph{Proofs from THE BOOK} (Springer, 2018), Chapter 8, pp. 50--51.\<close>
 
-theory Irrationals_From_THEBOOK imports
-  "HOL-Library.Sum_of_Squares" "Stirling_Formula.Stirling_Formula"
+theory Irrationals_From_THEBOOK imports "Stirling_Formula.Stirling_Formula"
    
 begin
 
