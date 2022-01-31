@@ -11718,7 +11718,7 @@ date = 2022-01-08
 notify = lp15@cam.ac.uk
 abstract = 
   An elementary proof is formalised: that <em>exp r</em> is irrational for
-  every nonzero rational number <em>r<em>. The mathematical development comes
+  every nonzero rational number <em>r</em>. The mathematical development comes
   from the well-known volume <em>Proofs from THE BOOK</em>,
   by Aigner and Ziegler, who credit the idea to Hermite. The development
   illustrates a number of basic Isabelle techniques: the manipulation of
