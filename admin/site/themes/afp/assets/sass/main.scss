@@ -824,8 +824,12 @@ iframe {
     display: none;
   }
 
-  > .logoLink {
+  > .logoLink, img[alt="Search"] {
     display: none;
+  }
+
+  > #menu {
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
   }
 
   form {
@@ -892,75 +896,86 @@ iframe {
     margin-top: 0;
   }
 
-    #menuToggle {
-        background: $theme;
-        display: block;
-        position: relative;
-        top: 0;
-        left: 0;
-        z-index: 1;
-        height: 80px;
-        user-select: none;
-        a {
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .logoLink {
-            height: 3rem;
-            max-width: 50vw;
-            top: 1rem;
-            left: 0;
-            right: 0;
-            margin-left: auto; 
-            margin-right: auto;
+  #banner {
+    left: 0;
+    width: 100vw;
+    height: 75px;
 
-
-            img {
-                padding: 0;
-                height: 3rem;
-                object-fit: contain;
-            }
-        }
-
-        .logoLink, input, label, a[href="/search"] {
-            display: block;
-            position: absolute;
-            z-index: 2;
-        }
-
-        input, label, a[href="/search"] {
-            width: 24px;
-            height: 24px;
-            top: 28px;
-        }
-
-        input,label { 
-            left: 28px;
-            cursor: pointer;
-        }
-
-        a[href="/search"] {
-            right: 28px;
-            filter: invert(1);
-        }
-
-        a[href="/search"] img, label img {
-            width: 100%;
-        }
-
-        input {
-            opacity: 0;
-            &:checked {
-                ~ nav {
-                    left: 0;
-                }
-            }
-        }
-        
-        label span {
-                display: none;
-        }
+    p {
+      line-height: normal;
+      margin: 1rem;
     }
+  }
+
+  #menuToggle {
+    background: $theme;
+    display: block;
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    height: 80px;
+    user-select: none;
+    a {
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    .logoLink {
+      height: 3rem;
+      max-width: 50vw;
+      top: 1rem;
+      left: 0;
+      right: 0;
+      margin-left: auto; 
+      margin-right: auto;
+
+
+      img {
+        padding: 0;
+        height: 3rem;
+        object-fit: contain;
+      }
+    }
+
+    .logoLink, input, label, a[href="/search"] {
+      display: block;
+      position: absolute;
+      z-index: 2;
+    }
+
+    input, label, a[href="/search"] {
+      width: 24px;
+      height: 24px;
+      top: 28px;
+    }
+
+    input,label { 
+      left: 28px;
+      cursor: pointer;
+    }
+
+    a[href="/search"] {
+      right: 28px;
+      filter: invert(1);
+    }
+
+    a[href="/search"] img, label img {
+      width: 100%;
+    }
+
+    input {
+      opacity: 0;
+      &:checked {
+        ~ nav {
+          left: 0;
+        }
+      }
+    }
+    
+    label span {
+        display: none;
+    }
+  }
   #menu {
     height: 100vh;
     position: absolute;

@@ -241,10 +241,11 @@ const sync_navbar = (link) => {
 
 const init = async () => {
   const theory_list = document.getElementById(ID_THEORY_LIST)
-  const thy_names = []
+  const navbar = document.getElementById(ID_NAVBAR)
 
+  if (theory_list && navbar) {
+    const thy_names = []
 
-  if (theory_list) {
     for (const theory of theory_list.children) {
       thy_names.push(theory.id)
 
@@ -259,29 +260,28 @@ const init = async () => {
         </div>`)
       theory.replaceWith(thy_collapsible)
     }
-  }
 
-  const navbar = document.getElementById(ID_NAVBAR)
-  const type = get_query(PARAM_NAVBAR_TYPE) ? get_query(PARAM_NAVBAR_TYPE) : DEFAULT_NAVBAR_TYPE
-  navbar.appendChild(parse_elem(`
+    const type = get_query(PARAM_NAVBAR_TYPE) ? get_query(PARAM_NAVBAR_TYPE) : DEFAULT_NAVBAR_TYPE
+    navbar.appendChild(parse_elem(`
       <li>
         <select id=${ID_NAVBAR_TYPE_SELECTOR} onchange="change_selector(this.options[this.selectedIndex].value)">
           <option value=${type} selected="selected">${type}</option>
         </select>
       </li>`))
-  navbar.append(...thy_names.map((thy_name) => parse_elem(`
+    navbar.append(...thy_names.map((thy_name) => parse_elem(`
       <li id="${to_nav_id(thy_name)}">
         <a id="${to_a_id(thy_name)}" class="${CLASS_SPY_LINK} ${CLASS_THY_NAV}" href="#${to_id(thy_name)}">
           ${thy_name}
         </a>
       </li>`)), parse_elem('<hr>'))
 
-  new ScrollSpy(document.body, 'theory-navbar')
+    window.onhashchange = follow_theory_hash
+    window.addEventListener(EVENT_SPY_ACTIVATE, (e) => sync_navbar(e.relatedTarget))
 
-  await follow_theory_hash()
+    new ScrollSpy(document.body, 'theory-navbar')
+
+    await follow_theory_hash()
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init)
-window.addEventListener(EVENT_SPY_ACTIVATE, (e) => sync_navbar(e.relatedTarget))
-
-window.onhashchange = follow_theory_hash

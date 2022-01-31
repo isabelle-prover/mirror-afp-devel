@@ -10,7 +10,12 @@
   </form>
   {{ end -}}
   {{ .Scratch.Set "title" (default .Site.Title (default .Title .Params.name)) }}
-  <h1 {{ if or (eq .Kind "home" ) (eq .File.BaseFileName "search" ) -}}class="largeTopMargin" {{ end -}}>{{ title (.Scratch.Get "title") | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML -}}{{- if (eq .Section "dependencies") }} Dependents{{ end -}}
+  {{- if and (eq .Section "authors") (isset .Site.Data.authors (.Scratch.Get "title")) -}}
+    {{- .Scratch.Set "title" (index (index .Site.Data.authors (.Scratch.Get "title")) "name") -}}
+  {{- end -}}
+  <h1 {{ if or (eq .Kind "home" ) (eq .File.BaseFileName "search" ) -}}class="largeTopMargin" {{ end -}}>
+    {{ title (.Scratch.Get "title") | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML -}}
+    {{- if (eq .Section "dependencies") }} Dependents{{ end -}}
   </h1>
   <div>
     {{ if (eq .Section "authors") -}}
@@ -20,14 +25,14 @@
     {{- end -}}{{- end -}}{{- end -}}
     {{- $site := . -}}
     {{ with .Params.authors}}
-    <p>{{- partial "authors.html" (dict "site" $site "authors" .) -}}
+    <p>{{- partial "authors.html" (dict "site" $site "authors" . "affiliations" $site.Params.affiliations) -}}
       {{ with $site.Params.contributors }}
-      with contributions from {{ partial "authors.html" (dict "site" $site "authors" .) -}}
+      with contributions from {{ partial "authors.html" (dict "site" $site "authors" . "affiliations" $site.Params.affiliations) -}}
       {{ end }}
     </p>
     {{ end }}
     {{ with .Params.date }}
-    <p class="date">{{- dateFormat "2 January 2006" . -}}</p>
+    <p class="date">{{- dateFormat "January 2, 2006" . -}}</p>
     {{ end }}
   </div>
 </header>
