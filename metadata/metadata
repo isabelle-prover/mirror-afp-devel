@@ -9267,6 +9267,26 @@ abstract =
   Mathematical Logic for Computer Science.
   Paper: <a href="http://ceur-ws.org/Vol-3002/paper7.pdf">http://ceur-ws.org/Vol-3002/paper7.pdf</a>.
 
+[FOL_Seq_Calc2]
+title = A Sequent Calculus Prover for First-Order Logic with Functions
+author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>, Frederik Krogsdal Jacobsen <http://people.compute.dtu.dk/fkjac/>
+topic = Logic/General logic/Classical first-order logic, Logic/Proof theory, Logic/General logic/Mechanization of proofs
+date = 2022-01-31
+notify = ahfrom@dtu.dk, fkjac@dtu.dk
+abstract =
+  We formalize an automated theorem prover for first-order logic with
+  functions. The proof search procedure is based on sequent calculus and
+  we verify its soundness and completeness using the Abstract Soundness
+  and Abstract Completeness theories. Our analytic completeness proof
+  covers both open and closed formulas. Since our deterministic prover
+  considers only the subset of terms relevant to proving a given
+  sequent, we do so as well when building a countermodel from a failed
+  proof. We formally connect our prover with the proof system and
+  semantics of the existing SeCaV system. In particular, the
+  prover's output can be post-processed in Haskell to generate
+  human-readable SeCaV proofs which are also machine-verifiable proof
+  certificates.
+
 [Szpilrajn]
 title = Order Extension and Szpilrajn's Extension Theorem
 author = Peter Zeller <mailto:p_zeller@cs.uni-kl.de>, Lukas Stevens <https://www21.in.tum.de/team/stevensl>
@@ -11734,7 +11754,7 @@ author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
 topic = Mathematics/Algebra
 date = 2022-01-29
 notify = me@eminkarayel.de
-abstract = 
+abstract =
   <p>A well known result from algebra is that, on any field, there
   is exactly one polynomial of degree less than n interpolating n points
   [<a

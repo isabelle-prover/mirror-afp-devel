@@ -9,7 +9,27 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>29 Jan 2022 00:00:00 +0000</pubDate>
+    <pubDate>31 Jan 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+              <link>https://www.isa-afp.org/entries/FOL_Seq_Calc2.html</link>
+       <guid>https://www.isa-afp.org/entries/FOL_Seq_Calc2.html</guid>
+       <dc:creator> Asta Halkjær From, Frederik Krogsdal Jacobsen       </dc:creator>
+       <pubDate>31 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+We formalize an automated theorem prover for first-order logic with
+functions. The proof search procedure is based on sequent calculus and
+we verify its soundness and completeness using the Abstract Soundness
+and Abstract Completeness theories. Our analytic completeness proof
+covers both open and closed formulas. Since our deterministic prover
+considers only the subset of terms relevant to proving a given
+sequent, we do so as well when building a countermodel from a failed
+proof. We formally connect our prover with the proof system and
+semantics of the existing SeCaV system. In particular, the
+prover&#39;s output can be post-processed in Haskell to generate
+human-readable SeCaV proofs which are also machine-verifiable proof
+certificates.</description>
+    </item>
     <item>
        <title>Interpolation Polynomials (in HOL-Algebra)</title>
               <link>https://www.isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html</link>
@@ -625,19 +645,6 @@ to Sets for Linear Algebra in Isabelle/HOL&lt;/i&gt; that was written
 by Fabian Immler and Bohua Zhan and published in the proceedings of
 the &lt;i&gt;International Conference on Certified Programs and
 Proofs&lt;/i&gt; in 2019.</description>
-    </item>
-    <item>
-       <title>IDE: Introduction, Destruction, Elimination</title>
-              <link>https://www.isa-afp.org/entries/Intro_Dest_Elim.html</link>
-       <guid>https://www.isa-afp.org/entries/Intro_Dest_Elim.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-The article provides the command &lt;b&gt;mk_ide&lt;/b&gt; for the
-object logic Isabelle/HOL of the formal proof assistant Isabelle. The
-command &lt;b&gt;mk_ide&lt;/b&gt; enables the automated synthesis of
-the introduction, destruction and elimination rules from arbitrary
-definitions of constant predicates stated in Isabelle/HOL.</description>
     </item>
   </channel>
 </rss>
