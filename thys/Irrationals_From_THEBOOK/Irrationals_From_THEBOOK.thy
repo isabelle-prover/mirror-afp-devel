@@ -299,4 +299,8 @@ proof
     by (smt (verit, del_insts) Rats_inverse \<open>s \<noteq> 0\<close> exp_minus exp_nat_irrational of_int_of_nat)
 qed
 
+corollary ln_irrational: 
+  fixes q::real assumes "q \<in> \<rat>" "q > 0"  "q \<noteq> 1" shows "ln q \<notin> \<rat>"
+  using assms exp_irrational [of "ln q"] exp_ln_iff [of q] by force
+
 end
