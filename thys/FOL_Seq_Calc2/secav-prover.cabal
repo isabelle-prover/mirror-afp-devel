@@ -1,0 +1,86 @@
+cabal-version:       2.4
+name:                secav-prover
+version:             1.0.0.0
+synopsis:            Prover for the SeCaV system
+license:             GPL-3.0-only
+license-file:        LICENSE
+author:              Frederik Krogsdal Jacobsen
+maintainer:          fkjacobsen@gmail.com
+category:            Math
+description:         An automated theorem prover for the SeCaV system of first-order logic.
+build-type:          Simple
+
+source-repository head
+  type:               git
+  location:           git://github.com/fkj/secav-prover.git
+
+library prover
+  exposed-modules:    Arith
+                    , FSet
+                    , Prover
+                    , SeCaV
+                    , Set
+  other-modules:      Lazy
+                    , List
+                    , MaybeExt
+                    , Orderings
+                    , Product_Type
+                    , HOL
+  build-depends:      base
+  hs-source-dirs:     haskell/prover
+  default-language:   Haskell2010
+
+library interface
+  exposed-modules:     ProofExtractor
+                     , ProverInstances
+                     , ShortAST
+                     , SeCaVTranslator
+                     , ShortLexer
+                     , ShortParser
+                     , Unshortener
+  build-depends:       base ^>=4.14.0.0
+                     , prover
+                     , parsec
+                     , bimap
+                     , mtl
+  hs-source-dirs:      haskell/lib
+  default-language:    Haskell2010
+  ghc-options:         -Wall
+
+test-suite completeness
+  type:                detailed-0.9
+  test-module:         Runner
+  other-modules:       Tests
+  build-depends:       base ^>=4.14.0.0
+                     , Cabal >= 1.9.2
+                     , process
+                     , directory
+                     , mtl
+                     , prover
+                     , interface
+  hs-source-dirs:      test/completeness
+  default-language:    Haskell2010
+
+test-suite soundness
+  type:                detailed-0.9
+  test-module:         Runner
+  other-modules:       Tests
+  build-depends:       base ^>=4.14.0.0
+                     , Cabal >= 1.9.2
+                     , process
+                     , mtl
+                     , prover
+                     , interface
+  hs-source-dirs:      test/soundness
+  default-language:    Haskell2010
+
+executable secav-prover
+  main-is:             Main.hs
+  build-depends:       base ^>=4.14.0.0
+                     , prover
+                     , interface
+                     , filepath
+                     , optparse-applicative
+  hs-source-dirs:      haskell/app
+  default-language:    Haskell2010
+  ghc-options:         -Wall

@@ -1,0 +1,7 @@
+session Prover_Test (FKJ) = "HOL-Library" +
+  options [timeout = 300]
+  sessions
+    Collections
+  theories
+    SeCaV
+    Test
