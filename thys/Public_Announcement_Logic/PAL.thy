@@ -8,7 +8,7 @@
   The completeness proof builds on the Epistemic Logic theory.
 *)
 
-theory PAL imports "Epistemic_Logic.Epistemic_Logic" begin
+theory PAL imports "Epistemic_Logic" begin
 
 section \<open>Syntax\<close>
 
@@ -122,6 +122,18 @@ proof (induct p arbitrary: M w)
     using reduce'_semantics static_reduce by fastforce
 qed simp_all
 
+section \<open>Chains of Implications\<close>
+
+primrec implyP :: \<open>'i pfm list \<Rightarrow> 'i pfm \<Rightarrow> 'i pfm\<close> (infixr \<open>\<^bold>\<leadsto>\<^sub>!\<close> 26) where
+  \<open>([] \<^bold>\<leadsto>\<^sub>! q) = q\<close>
+| \<open>(p # ps \<^bold>\<leadsto>\<^sub>! q) = (p \<^bold>\<longrightarrow>\<^sub>! ps \<^bold>\<leadsto>\<^sub>! q)\<close>
+
+lemma lift_imply: \<open>lift (ps \<^bold>\<leadsto> q) = (map lift ps \<^bold>\<leadsto>\<^sub>! lift q)\<close>
+  by (induct ps) auto
+
+lemma reduce_imply: \<open>reduce (ps \<^bold>\<leadsto>\<^sub>! q) = (map reduce ps \<^bold>\<leadsto>\<^sub>! reduce q)\<close>
+  by (induct ps) auto
+
 section \<open>Proof System\<close>
 
 primrec peval :: \<open>(id \<Rightarrow> bool) \<Rightarrow> ('i pfm \<Rightarrow> bool) \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> where
@@ -159,28 +171,59 @@ lemma tautology_ptautology: \<open>tautology p \<Longrightarrow> ptautology (lif
 theorem AK_PAK: \<open>A o lift \<turnstile> p \<Longrightarrow> A \<turnstile>\<^sub>! lift p\<close>
   by (induct p rule: AK.induct) (auto intro: PAK.intros(1-5) simp: tautology_ptautology)
 
-abbreviation validP :: \<open>(('i :: countable, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>valid\<^sub>!\<close>)
-  where \<open>valid\<^sub>! P p \<equiv> \<forall>M. \<forall>w \<in> \<W> M. P M \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+abbreviation validP
+  :: \<open>(('i :: countable, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i pfm set \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>valid\<^sub>!\<close>)
+  where \<open>valid\<^sub>! P G p \<equiv> \<forall>M. \<forall>w \<in> \<W> M. P M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile>\<^sub>! q) \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
 
-theorem static_completeness:
-  assumes \<open>static p\<close> and \<open>valid\<^sub>! P p\<close>
-    and \<open>valid P (lower p) \<Longrightarrow> A o lift \<turnstile> lower p\<close>
-  shows \<open>A \<turnstile>\<^sub>! p\<close>
+lemma set_map_inv:
+  assumes \<open>set xs \<subseteq> f ` X\<close>
+  shows \<open>\<exists>ys. set ys \<subseteq> X \<and> map f ys = xs\<close>
+  using assms
+proof (induct xs)
+  case (Cons x xs)
+  then obtain ys where \<open>set ys \<subseteq> X\<close> \<open>map f ys = xs\<close>
+    by auto
+  moreover obtain y where \<open>y \<in> X\<close> \<open>f y = x\<close>
+    using Cons.prems by auto
+  ultimately have \<open>set (y # ys) \<subseteq> X\<close> \<open>map f (y # ys) = x # xs\<close>
+    by simp_all
+  then show ?case
+    by meson
+qed simp
+
+theorem strong_static_completeness:
+  assumes \<open>static p\<close> and \<open>\<forall>q \<in> G. static q\<close> and \<open>valid\<^sub>! P G p\<close>
+    and \<open>valid P (lower ` G) (lower p) \<Longrightarrow>
+      \<exists>qs. set qs \<subseteq> lower ` G \<and> (A o lift \<turnstile> qs \<^bold>\<leadsto> lower p)\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p)\<close>
 proof -
-  have \<open>valid P (lower p)\<close>
+  have \<open>valid P (lower ` G) (lower p)\<close>
     using assms by (simp add: lower_semantics)
-  then have \<open>A o lift \<turnstile> lower p\<close>
-    using assms(3) by fast
-  then have \<open>A \<turnstile>\<^sub>! lift (lower p)\<close>
+  then have \<open>\<exists>qs. set qs \<subseteq> lower ` G \<and> (A o lift \<turnstile> qs \<^bold>\<leadsto> lower p)\<close>
+    using assms(4) by fast
+  then obtain qs where \<open>set qs \<subseteq> G\<close> and \<open>A o lift \<turnstile> map lower qs \<^bold>\<leadsto> lower p\<close>
+    using set_map_inv by blast
+  then have \<open>A \<turnstile>\<^sub>! lift (map lower qs \<^bold>\<leadsto> lower p)\<close>
     using AK_PAK by fast
+  then have \<open>A \<turnstile>\<^sub>! map lift (map lower qs) \<^bold>\<leadsto>\<^sub>! lift (lower p)\<close>
+    using lift_imply by metis
+  then have \<open>A \<turnstile>\<^sub>! map (lift o lower) qs \<^bold>\<leadsto>\<^sub>! lift (lower p)\<close>
+    by simp
   then show ?thesis
-    using assms(1) lift_lower by metis
+    using assms(1-2) \<open>set qs \<subseteq> G\<close> lift_lower
+    by (metis (mono_tags, lifting) comp_apply map_idI subset_eq)
 qed
 
-corollary
-  assumes \<open>static p\<close> \<open>valid\<^sub>! (\<lambda>_. True) p\<close>
+corollary static_completeness:
+  assumes \<open>static p\<close> and \<open>valid\<^sub>! P {} p\<close>
+    and \<open>valid P {} (lower p) \<Longrightarrow> A o lift \<turnstile> lower p\<close>
   shows \<open>A \<turnstile>\<^sub>! p\<close>
-  using assms static_completeness[where P=\<open>\<lambda>_. True\<close>] completeness\<^sub>K by metis
+  using assms strong_static_completeness[where G=\<open>{}\<close> and p=p] by simp
+
+corollary
+  assumes \<open>static p\<close> \<open>valid\<^sub>! (\<lambda>_. True) {} p\<close>
+  shows \<open>A \<turnstile>\<^sub>! p\<close>
+  using assms static_completeness[where P=\<open>\<lambda>_. True\<close> and p=p] completeness\<^sub>A by blast
 
 section \<open>Soundness\<close>
 
@@ -464,26 +507,41 @@ next
     by simp
 qed (simp_all add: PA1)
 
-theorem completeness\<^sub>P:
-  assumes \<open>valid\<^sub>! P p\<close> and \<open>valid P (lower (reduce p)) \<Longrightarrow> A o lift \<turnstile> lower (reduce p)\<close>
-  shows \<open>A \<turnstile>\<^sub>! p\<close>
+theorem strong_completeness\<^sub>P:
+  assumes \<open>valid\<^sub>! P G p\<close>
+    and \<open>valid P (lower ` reduce ` G) (lower (reduce p)) \<Longrightarrow>
+      \<exists>qs. set qs \<subseteq> lower ` reduce ` G \<and> (A o lift \<turnstile> qs \<^bold>\<leadsto> lower (reduce p))\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p)\<close>
 proof -
-  have \<open>valid\<^sub>! P (reduce p)\<close>
+  have \<open>valid\<^sub>! P (reduce ` G) (reduce p)\<close>
     using assms(1) reduce_semantics by fast
-  moreover have \<open>static (reduce p)\<close>
-    using static_reduce by fast
-  ultimately have \<open>A \<turnstile>\<^sub>! reduce p\<close>
-    using static_completeness assms(2) by blast
-  moreover have \<open>A \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! reduce p)\<close>
+  moreover have \<open>static (reduce p)\<close> \<open>\<forall>q \<in> reduce ` G. static q\<close>
+    using static_reduce by fast+
+  ultimately have \<open>\<exists>qs. set qs \<subseteq> reduce ` G \<and> (A \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! reduce p)\<close>
+    using assms(2) strong_static_completeness[where G=\<open>reduce ` G\<close> and p=\<open>reduce p\<close>] by presburger
+  then have \<open>\<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile>\<^sub>! map reduce qs \<^bold>\<leadsto>\<^sub>! reduce p)\<close>
+    using set_map_inv by fast
+  then obtain qs where qs: \<open>set qs \<subseteq> G\<close> and \<open>A \<turnstile>\<^sub>! map reduce qs \<^bold>\<leadsto>\<^sub>! reduce p\<close>
+    by blast
+  then have \<open>A \<turnstile>\<^sub>! reduce (qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+    using reduce_imply by metis
+  moreover have \<open>A \<turnstile>\<^sub>! (qs \<^bold>\<leadsto>\<^sub>! p) \<^bold>\<longleftrightarrow>\<^sub>! reduce (qs \<^bold>\<leadsto>\<^sub>! p)\<close>
     using Iff_reduce by blast
-  ultimately show ?thesis
+  ultimately have \<open>A \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p\<close>
     using ConE(2) PR1 by blast
+  then show ?thesis
+    using qs by blast
 qed
 
-corollary completeness\<^sub>P\<^sub>K:
-  assumes \<open>valid\<^sub>! (\<lambda>_. True) p\<close>
+corollary completeness\<^sub>P:
+  assumes \<open>valid\<^sub>! P {} p\<close> and \<open>\<And>p. valid P {} (lower p) \<Longrightarrow> A o lift \<turnstile> lower p\<close>
   shows \<open>A \<turnstile>\<^sub>! p\<close>
-  using assms completeness\<^sub>P[where P=\<open>\<lambda>_. True\<close>] completeness\<^sub>K by metis
+  using assms strong_completeness\<^sub>P[where P=P and G=\<open>{}\<close>] by simp
+
+corollary completeness\<^sub>P\<^sub>A:
+  assumes \<open>valid\<^sub>! (\<lambda>_. True) {} p\<close>
+  shows \<open>A \<turnstile>\<^sub>! p\<close>
+  using assms completeness\<^sub>P[where P=\<open>\<lambda>_. True\<close> and p=p] completeness\<^sub>A by blast
 
 section \<open>System PAL + K\<close>
 
@@ -496,16 +554,21 @@ lemma soundness\<^sub>P\<^sub>K: \<open>\<turnstile>\<^sub>!\<^sub>K p \<Longrig
 abbreviation validPK (\<open>valid\<^sub>!\<^sub>K\<close>) where
   \<open>valid\<^sub>!\<^sub>K \<equiv> valid\<^sub>! (\<lambda>_. True)\<close>
 
-corollary
-  assumes \<open>valid\<^sub>!\<^sub>K p\<close>
-  shows \<open>\<turnstile>\<^sub>!\<^sub>K p\<close>
-  using completeness\<^sub>P\<^sub>K assms .
+theorem strong_completeness\<^sub>P\<^sub>K:
+  assumes \<open>valid\<^sub>!\<^sub>K G p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (\<turnstile>\<^sub>!\<^sub>K qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+  using strong_completeness\<^sub>P assms strong_completeness\<^sub>K unfolding comp_apply .
 
-theorem main\<^sub>P\<^sub>K: \<open>valid\<^sub>!\<^sub>K p = (\<turnstile>\<^sub>!\<^sub>K p)\<close>
+corollary completeness\<^sub>P\<^sub>K:
+  assumes \<open>valid\<^sub>!\<^sub>K {} p\<close>
+  shows \<open>\<turnstile>\<^sub>!\<^sub>K p\<close>
+  using completeness\<^sub>P\<^sub>A assms .
+
+theorem main\<^sub>P\<^sub>K: \<open>valid\<^sub>!\<^sub>K {} p = (\<turnstile>\<^sub>!\<^sub>K p)\<close>
   using soundness\<^sub>P\<^sub>K completeness\<^sub>P\<^sub>K by fast
 
 corollary
-  assumes \<open>valid\<^sub>!\<^sub>K p\<close> and \<open>w \<in> \<W> M\<close>
+  assumes \<open>valid\<^sub>!\<^sub>K {} p\<close> and \<open>w \<in> \<W> M\<close>
   shows \<open>M, w \<Turnstile>\<^sub>! p\<close>
   using assms soundness\<^sub>P\<^sub>K completeness\<^sub>P\<^sub>K by metis
 
@@ -535,20 +598,25 @@ lemma AxT_AxPT: \<open>AxT = AxPT o lift\<close>
 abbreviation validPT (\<open>valid\<^sub>!\<^sub>T\<close>) where
   \<open>valid\<^sub>!\<^sub>T \<equiv> valid\<^sub>! reflexive\<close>
 
-lemma completeness\<^sub>P\<^sub>T:
-  assumes \<open>valid\<^sub>!\<^sub>T p\<close>
-  shows \<open>\<turnstile>\<^sub>!\<^sub>T p\<close>
-  using assms completeness\<^sub>P[where p=p] completeness\<^sub>T AxT_AxPT by metis
+theorem strong_completeness\<^sub>P\<^sub>T:
+  assumes \<open>valid\<^sub>!\<^sub>T G p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (\<turnstile>\<^sub>!\<^sub>T qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+  using strong_completeness\<^sub>P assms strong_completeness\<^sub>T unfolding AxT_AxPT .
 
-theorem main\<^sub>P\<^sub>T: \<open>valid\<^sub>!\<^sub>T p \<longleftrightarrow> (\<turnstile>\<^sub>!\<^sub>T p)\<close>
+corollary completeness\<^sub>P\<^sub>T:
+  assumes \<open>valid\<^sub>!\<^sub>T {} p\<close>
+  shows \<open>\<turnstile>\<^sub>!\<^sub>T p\<close>
+  using assms strong_completeness\<^sub>P\<^sub>T[where G=\<open>{}\<close>] by auto
+
+theorem main\<^sub>P\<^sub>T: \<open>valid\<^sub>!\<^sub>T {} p \<longleftrightarrow> (\<turnstile>\<^sub>!\<^sub>T p)\<close>
   using soundness\<^sub>P\<^sub>T completeness\<^sub>P\<^sub>T by fast
 
 corollary
   assumes \<open>reflexive M\<close> \<open>w \<in> \<W> M\<close>
-  shows \<open>valid\<^sub>!\<^sub>T p \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+  shows \<open>valid\<^sub>!\<^sub>T {} p \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   using assms soundness\<^sub>P\<^sub>T completeness\<^sub>P\<^sub>T by fast
 
-section \<open>System PKB\<close>
+section \<open>System PAL + KB\<close>
 
 inductive AxPB :: \<open>'i pfm \<Rightarrow> bool\<close> where
   \<open>AxPB (p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i (L\<^sub>! i p))\<close>
@@ -576,20 +644,25 @@ qed
 abbreviation validPKB (\<open>valid\<^sub>!\<^sub>K\<^sub>B\<close>) where
   \<open>valid\<^sub>!\<^sub>K\<^sub>B \<equiv> valid\<^sub>! symmetric\<close>
 
-lemma completeness\<^sub>P\<^sub>K\<^sub>B:
-  assumes \<open>valid\<^sub>!\<^sub>K\<^sub>B p\<close>
-  shows \<open>\<turnstile>\<^sub>!\<^sub>K\<^sub>B p\<close>
-  using assms completeness\<^sub>P[where p=p] completeness\<^sub>K\<^sub>B AxB_AxPB by metis
+theorem strong_completeness\<^sub>P\<^sub>K\<^sub>B:
+  assumes \<open>valid\<^sub>!\<^sub>K\<^sub>B G p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (\<turnstile>\<^sub>!\<^sub>K\<^sub>B qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+  using strong_completeness\<^sub>P assms strong_completeness\<^sub>K\<^sub>B unfolding AxB_AxPB .
 
-theorem main\<^sub>P\<^sub>K\<^sub>B: \<open>valid\<^sub>!\<^sub>K\<^sub>B p \<longleftrightarrow> (\<turnstile>\<^sub>!\<^sub>K\<^sub>B p)\<close>
+corollary completeness\<^sub>P\<^sub>K\<^sub>B:
+  assumes \<open>valid\<^sub>!\<^sub>K\<^sub>B {} p\<close>
+  shows \<open>\<turnstile>\<^sub>!\<^sub>K\<^sub>B p\<close>
+  using assms strong_completeness\<^sub>P\<^sub>K\<^sub>B[where G=\<open>{}\<close>] by auto
+
+theorem main\<^sub>P\<^sub>K\<^sub>B: \<open>valid\<^sub>!\<^sub>K\<^sub>B {} p \<longleftrightarrow> (\<turnstile>\<^sub>!\<^sub>K\<^sub>B p)\<close>
   using soundness\<^sub>P\<^sub>K\<^sub>B completeness\<^sub>P\<^sub>K\<^sub>B by fast
 
 corollary
   assumes \<open>symmetric M\<close> \<open>w \<in> \<W> M\<close>
-  shows \<open>valid\<^sub>!\<^sub>K\<^sub>B p \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+  shows \<open>valid\<^sub>!\<^sub>K\<^sub>B {} p \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   using assms soundness\<^sub>P\<^sub>K\<^sub>B completeness\<^sub>P\<^sub>K\<^sub>B by fast
 
-section \<open>System PK4\<close>
+section \<open>System PAL + K4\<close>
 
 inductive AxP4 :: \<open>'i pfm \<Rightarrow> bool\<close> where
   \<open>AxP4 (K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i (K\<^sub>! i p))\<close>
@@ -635,20 +708,25 @@ qed
 abbreviation validPK4 (\<open>valid\<^sub>!\<^sub>K\<^sub>4\<close>) where
   \<open>valid\<^sub>!\<^sub>K\<^sub>4 \<equiv> valid\<^sub>! transitive\<close>
 
-lemma completeness\<^sub>P\<^sub>K\<^sub>4:
-  assumes \<open>valid\<^sub>!\<^sub>K\<^sub>4 p\<close>
-  shows \<open>\<turnstile>\<^sub>!\<^sub>K\<^sub>4 p\<close>
-  using assms completeness\<^sub>P[where p=p] completeness\<^sub>K\<^sub>4 Ax4_AxP4 by metis
+theorem strong_completeness\<^sub>P\<^sub>K\<^sub>4:
+  assumes \<open>valid\<^sub>!\<^sub>K\<^sub>4 G p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (\<turnstile>\<^sub>!\<^sub>K\<^sub>4 qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+  using strong_completeness\<^sub>P assms strong_completeness\<^sub>K\<^sub>4 unfolding Ax4_AxP4 .
 
-theorem main\<^sub>P\<^sub>K\<^sub>4: \<open>valid\<^sub>!\<^sub>K\<^sub>4 p \<longleftrightarrow> (\<turnstile>\<^sub>!\<^sub>K\<^sub>4 p)\<close>
+corollary completeness\<^sub>P\<^sub>K\<^sub>4:
+  assumes \<open>valid\<^sub>!\<^sub>K\<^sub>4 {} p\<close>
+  shows \<open>\<turnstile>\<^sub>!\<^sub>K\<^sub>4 p\<close>
+  using assms strong_completeness\<^sub>P\<^sub>K\<^sub>4[where G=\<open>{}\<close>] by auto
+
+theorem main\<^sub>P\<^sub>K\<^sub>4: \<open>valid\<^sub>!\<^sub>K\<^sub>4 {} p \<longleftrightarrow> (\<turnstile>\<^sub>!\<^sub>K\<^sub>4 p)\<close>
   using soundness\<^sub>P\<^sub>K\<^sub>4 completeness\<^sub>P\<^sub>K\<^sub>4 by fast
 
 corollary
   assumes \<open>transitive M\<close> \<open>w \<in> \<W> M\<close>
-  shows \<open>valid\<^sub>!\<^sub>K\<^sub>4 p \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+  shows \<open>valid\<^sub>!\<^sub>K\<^sub>4 {} p \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   using assms soundness\<^sub>P\<^sub>K\<^sub>4 completeness\<^sub>P\<^sub>K\<^sub>4 by fast
 
-section \<open>System PS4\<close>
+section \<open>System PAL + S4\<close>
 
 abbreviation SystemPS4 :: \<open>'i pfm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>!\<^sub>S\<^sub>4 _\<close> [20] 20) where
   \<open>\<turnstile>\<^sub>!\<^sub>S\<^sub>4 p \<equiv> AxPT \<oplus> AxP4 \<turnstile>\<^sub>! p\<close>
@@ -669,21 +747,25 @@ lemma AxT4_AxPT4: \<open>(AxT \<oplus> Ax4) = (AxPT \<oplus> AxP4) o lift\<close
 abbreviation validPS4 (\<open>valid\<^sub>!\<^sub>S\<^sub>4\<close>) where
   \<open>valid\<^sub>!\<^sub>S\<^sub>4 \<equiv> valid\<^sub>! refltrans\<close>
 
-lemma completeness\<^sub>P\<^sub>S\<^sub>4:
-  assumes \<open>valid\<^sub>!\<^sub>S\<^sub>4 p\<close>
-  shows \<open>\<turnstile>\<^sub>!\<^sub>S\<^sub>4 p\<close>
-  using assms completeness\<^sub>P[where P=refltrans and p=p] completeness\<^sub>S\<^sub>4 AxT4_AxPT4
-  by (metis (mono_tags, lifting))
+theorem strong_completeness\<^sub>P\<^sub>S\<^sub>4:
+  assumes \<open>valid\<^sub>!\<^sub>S\<^sub>4 G p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (\<turnstile>\<^sub>!\<^sub>S\<^sub>4 qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+  using strong_completeness\<^sub>P assms strong_completeness\<^sub>S\<^sub>4 unfolding AxT4_AxPT4 .
 
-theorem main\<^sub>P\<^sub>S\<^sub>4: \<open>valid\<^sub>!\<^sub>S\<^sub>4 p \<longleftrightarrow> (\<turnstile>\<^sub>!\<^sub>S\<^sub>4 p)\<close>
+corollary completeness\<^sub>P\<^sub>S\<^sub>4:
+  assumes \<open>valid\<^sub>!\<^sub>S\<^sub>4 {} p\<close>
+  shows \<open>\<turnstile>\<^sub>!\<^sub>S\<^sub>4 p\<close>
+  using assms strong_completeness\<^sub>P\<^sub>S\<^sub>4[where G=\<open>{}\<close>] by auto
+
+theorem main\<^sub>P\<^sub>S\<^sub>4: \<open>valid\<^sub>!\<^sub>S\<^sub>4 {} p \<longleftrightarrow> (\<turnstile>\<^sub>!\<^sub>S\<^sub>4 p)\<close>
   using soundness\<^sub>P\<^sub>S\<^sub>4 completeness\<^sub>P\<^sub>S\<^sub>4 by fast
 
 corollary
   assumes \<open>reflexive M\<close> \<open>transitive M\<close> \<open>w \<in> \<W> M\<close>
-  shows \<open>valid\<^sub>!\<^sub>S\<^sub>4 p \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+  shows \<open>valid\<^sub>!\<^sub>S\<^sub>4 {} p \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   using assms soundness\<^sub>P\<^sub>S\<^sub>4 completeness\<^sub>P\<^sub>S\<^sub>4 by fast
 
-section \<open>System PS5\<close>
+section \<open>System PAL + S5\<close>
 
 abbreviation SystemPS5 :: \<open>'i pfm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>!\<^sub>S\<^sub>5 _\<close> [20] 20) where
   \<open>\<turnstile>\<^sub>!\<^sub>S\<^sub>5 p \<equiv> AxPT \<oplus> AxPB \<oplus> AxP4 \<turnstile>\<^sub>! p\<close>
@@ -707,18 +789,22 @@ lemma AxTB4_AxPTB4: \<open>AxTB4 = AxPTB4 o lift\<close>
 abbreviation validPS5 (\<open>valid\<^sub>!\<^sub>S\<^sub>5\<close>) where
   \<open>valid\<^sub>!\<^sub>S\<^sub>5 \<equiv> valid\<^sub>! equivalence\<close>
 
-lemma completeness\<^sub>P\<^sub>S\<^sub>5:
-  assumes \<open>valid\<^sub>!\<^sub>S\<^sub>5 p\<close>
-  shows \<open>\<turnstile>\<^sub>!\<^sub>S\<^sub>5 p\<close>
-  using assms completeness\<^sub>P[where P=equivalence and p=p] completeness\<^sub>S\<^sub>5 AxTB4_AxPTB4
-  by (metis (mono_tags, lifting))
+theorem strong_completeness\<^sub>P\<^sub>S\<^sub>5:
+  assumes \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p\<close>
+  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (\<turnstile>\<^sub>!\<^sub>S\<^sub>5 qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+  using strong_completeness\<^sub>P assms strong_completeness\<^sub>S\<^sub>5 unfolding AxTB4_AxPTB4 .
 
-theorem main\<^sub>P\<^sub>S\<^sub>5: \<open>valid\<^sub>!\<^sub>S\<^sub>5 p \<longleftrightarrow> (\<turnstile>\<^sub>!\<^sub>S\<^sub>5 p)\<close>
+corollary completeness\<^sub>P\<^sub>S\<^sub>5:
+  assumes \<open>valid\<^sub>!\<^sub>S\<^sub>5 {} p\<close>
+  shows \<open>\<turnstile>\<^sub>!\<^sub>S\<^sub>5 p\<close>
+  using assms strong_completeness\<^sub>P\<^sub>S\<^sub>5[where G=\<open>{}\<close>] by auto
+
+theorem main\<^sub>P\<^sub>S\<^sub>5: \<open>valid\<^sub>!\<^sub>S\<^sub>5 {} p \<longleftrightarrow> (\<turnstile>\<^sub>!\<^sub>S\<^sub>5 p)\<close>
   using soundness\<^sub>P\<^sub>S\<^sub>5 completeness\<^sub>P\<^sub>S\<^sub>5 by fast
 
 corollary
   assumes \<open>reflexive M\<close> \<open>symmetric M\<close> \<open>transitive M\<close> \<open>w \<in> \<W> M\<close>
-  shows \<open>valid\<^sub>!\<^sub>S\<^sub>5 p \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+  shows \<open>valid\<^sub>!\<^sub>S\<^sub>5 {} p \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   using assms soundness\<^sub>P\<^sub>S\<^sub>5 completeness\<^sub>P\<^sub>S\<^sub>5 by fast
 
 end
