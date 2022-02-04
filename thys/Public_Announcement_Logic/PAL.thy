@@ -8,7 +8,7 @@
   The completeness proof builds on the Epistemic Logic theory.
 *)
 
-theory PAL imports "Epistemic_Logic" begin
+theory PAL imports "Epistemic_Logic.Epistemic_Logic" begin
 
 section \<open>Syntax\<close>
 
