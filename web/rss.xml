@@ -9,7 +9,30 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>31 Jan 2022 00:00:00 +0000</pubDate>
+    <pubDate>03 Feb 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Quasi-Borel Spaces</title>
+              <link>https://www.isa-afp.org/entries/Quasi_Borel_Spaces.html</link>
+       <guid>https://www.isa-afp.org/entries/Quasi_Borel_Spaces.html</guid>
+       <dc:creator> Michikazu Hirata, Yasuhiko Minamide, Tetsuya Sato       </dc:creator>
+       <pubDate>03 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+The notion of quasi-Borel spaces was introduced by &lt;a
+href=&#34;https://dl.acm.org/doi/10.5555/3329995.3330072&#34;&gt;
+Heunen et al&lt;/a&gt;. The theory provides a suitable
+denotational model for higher-order probabilistic programming
+languages with continuous distributions. This entry is a formalization
+of the theory of quasi-Borel spaces, including construction of
+quasi-Borel spaces (product, coproduct, function spaces), the
+adjunction between the category of measurable spaces and the category
+of quasi-Borel spaces, and the probability monad on quasi-Borel
+spaces. This entry also contains the formalization of the Bayesian
+regression presented in the work of Heunen et al. This work is a part
+of the work by same authors, &lt;i&gt;Program Logic for Higher-Order
+Probabilistic Programs in Isabelle/HOL&lt;/i&gt;, which will be
+published in the proceedings of the 16th International Symposium on
+Functional and Logic Programming (FLOPS 2022).</description>
+    </item>
     <item>
        <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
               <link>https://www.isa-afp.org/entries/FOL_Seq_Calc2.html</link>
@@ -615,36 +638,6 @@ transformation is not required for Knuth&amp;ndash;Bendix orders
 (KBO), since they have already been formalized. Nevertheless, we still
 provide a proof that WPO subsumes KBO and thereby underline the
 generality of WPO.</description>
-    </item>
-    <item>
-       <title>Extension of Types-To-Sets</title>
-              <link>https://www.isa-afp.org/entries/Types_To_Sets_Extension.html</link>
-       <guid>https://www.isa-afp.org/entries/Types_To_Sets_Extension.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-In their article titled &lt;i&gt;From Types to Sets by Local Type
-Definitions in Higher-Order Logic&lt;/i&gt; and published in the
-proceedings of the conference &lt;i&gt;Interactive Theorem
-Proving&lt;/i&gt; in 2016, Ondřej Kunčar and Andrei Popescu propose an
-extension of the logic Isabelle/HOL and an associated algorithm for
-the relativization of the &lt;i&gt;type-based theorems&lt;/i&gt; to
-more flexible &lt;i&gt;set-based theorems&lt;/i&gt;, collectively
-referred to as &lt;i&gt;Types-To-Sets&lt;/i&gt;. One of the aims of
-their work was to open an opportunity for the development of a
-software tool for applied relativization in the implementation of the
-logic Isabelle/HOL of the proof assistant Isabelle. In this article,
-we provide a prototype of a software framework for the interactive
-automated relativization of theorems in Isabelle/HOL, developed as an
-extension of the proof language Isabelle/Isar. The software framework
-incorporates the implementation of the proposed extension of the
-logic, and builds upon some of the ideas for further work expressed in
-the original article on Types-To-Sets by Ondřej Kunčar and Andrei
-Popescu and the subsequent article &lt;i&gt;Smooth Manifolds and Types
-to Sets for Linear Algebra in Isabelle/HOL&lt;/i&gt; that was written
-by Fabian Immler and Bohua Zhan and published in the proceedings of
-the &lt;i&gt;International Conference on Certified Programs and
-Proofs&lt;/i&gt; in 2019.</description>
     </item>
   </channel>
 </rss>
