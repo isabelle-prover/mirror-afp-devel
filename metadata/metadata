@@ -11797,3 +11797,20 @@ abstract =
   Probabilistic Programs in Isabelle/HOL</i>, which will be
   published in the proceedings of the 16th International Symposium on
   Functional and Logic Programming (FLOPS 2022).
+
+[Youngs_Inequality]
+title = Young's Inequality for Increasing Functions
+author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Analysis
+date = 2022-01-31
+notify = lp15@cam.ac.uk
+abstract = 
+  Young's inequality states that $$ ab \leq \int_0^a f(x)dx +
+  \int_0^b f^{-1}(y) dy $$ where $a\geq 0$, $b\geq 0$ and $f$ is
+  strictly increasing and continuous. Its proof is formalised following
+  <a href="https://www.jstor.org/stable/2318018">the
+  development</a> by Cunningham and Grossman. Their idea is to
+  make the intuitive, geometric folklore proof rigorous by reasoning
+  about step functions. The lack of the Riemann integral makes the
+  development longer than one would like, but their argument is
+  reproduced faithfully.
