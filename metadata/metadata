@@ -11829,3 +11829,24 @@ abstract =
   dual problem is satisfiable and bounded. The proofs are based on an
   existing formalization of Farkas' Lemma.
 
+[Equivalence_Relation_Enumeration]
+title = Enumeration of Equivalence Relations
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Mathematics/Combinatorics, Computer science/Algorithms/Mathematical
+date = 2022-02-04
+notify = me@eminkarayel.de
+abstract = 
+  <p>This entry contains a formalization of an algorithm
+  enumerating all equivalence relations on an initial segment of the
+  natural numbers. The approach follows the method described by Stanton
+  and White <a
+  href="https://doi.org/10.1007/978-1-4612-4968-9">[5,§
+  1.5]</a> using restricted growth functions.</p>
+  <p>The algorithm internally enumerates restricted growth
+  functions (as lists), whose equivalence kernels then form the
+  equivalence relations. This has the advantage that the representation
+  is compact and lookup of the relation reduces to a list lookup
+  operation.</p> <p>The algorithm can also be used within a
+  proof and an example application is included, where a sequence of
+  variables is split by the possible partitions they can form.</p>
+

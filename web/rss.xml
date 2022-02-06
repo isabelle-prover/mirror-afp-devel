@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>03 Feb 2022 00:00:00 +0000</pubDate>
+    <pubDate>04 Feb 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Enumeration of Equivalence Relations</title>
+              <link>https://www.isa-afp.org/entries/Equivalence_Relation_Enumeration.html</link>
+       <guid>https://www.isa-afp.org/entries/Equivalence_Relation_Enumeration.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>04 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This entry contains a formalization of an algorithm
+enumerating all equivalence relations on an initial segment of the
+natural numbers. The approach follows the method described by Stanton
+and White &lt;a
+href=&#34;https://doi.org/10.1007/978-1-4612-4968-9&#34;&gt;[5,§
+1.5]&lt;/a&gt; using restricted growth functions.&lt;/p&gt;
+&lt;p&gt;The algorithm internally enumerates restricted growth
+functions (as lists), whose equivalence kernels then form the
+equivalence relations. This has the advantage that the representation
+is compact and lookup of the relation reduces to a list lookup
+operation.&lt;/p&gt; &lt;p&gt;The algorithm can also be used within a
+proof and an example application is included, where a sequence of
+variables is split by the possible partitions they can form.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Quasi-Borel Spaces</title>
               <link>https://www.isa-afp.org/entries/Quasi_Borel_Spaces.html</link>
@@ -611,23 +632,6 @@ resulting code on 378 benchmarks from the literature, comparing to
 Redlog, Z3, Wolfram Engine, and SMT-RAT. This identified
 inconsistencies in some tools, underscoring the significance of a
 verified approach for the intricacies of real arithmetic.</description>
-    </item>
-    <item>
-       <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
-              <link>https://www.isa-afp.org/entries/FOL_Axiomatic.html</link>
-       <guid>https://www.isa-afp.org/entries/FOL_Axiomatic.html</guid>
-       <dc:creator> Asta Halkjær From       </dc:creator>
-       <pubDate>24 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-This work is a formalization of the soundness and completeness of an
-axiomatic system for first-order logic. The proof system is based on
-System Q1 by Smullyan and the completeness proof follows his textbook
-&#34;First-Order Logic&#34; (Springer-Verlag 1968). The completeness
-proof is in the Henkin style where a consistent set is extended to a
-maximal consistent set using Lindenbaum&#39;s construction and Henkin
-witnesses are added during the construction to ensure saturation as
-well. The resulting set is a Hintikka set which, by the model
-existence theorem, is satisfiable in the Herbrand universe.</description>
     </item>
   </channel>
 </rss>
