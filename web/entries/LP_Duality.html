@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>A Formalization of Weighted Path Orders and Recursive Path Orders - Archive of Formal Proofs
+<title>Duality of Linear Programming - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,25 +74,13 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>
-  
-          <font class="first">F</font>ormalization
+  <h1>          <font class="first">D</font>uality
   
           of
   
-          <font class="first">W</font>eighted
+          <font class="first">L</font>inear
   
-          <font class="first">P</font>ath
-  
-          <font class="first">O</font>rders
-  
-          and
-  
-          <font class="first">R</font>ecursive
-  
-          <font class="first">P</font>ath
-  
-          <font class="first">O</font>rders
+          <font class="first">P</font>rogramming
   
 </h1>
   <p>&nbsp;</p>
@@ -101,17 +89,15 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">A Formalization of Weighted Path Orders and Recursive Path Orders</td>
+  <td class="data" width="80%">Duality of Linear Programming</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                      <a href="http://cl-informatik.uibk.ac.at/users/griff/">Christian Sternagel</a>,
-                René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at) and
-          Akihisa Yamada (akihisa /dot/ yamada /at/ aist /dot/ go /dot/ jp)
+              René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)
       </td>
 </tr>
 
@@ -119,38 +105,31 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-09-16</td>
+  <td class="data">2022-02-03</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We define the weighted path order (WPO) and formalize several
-properties such as strong normalization, the subterm property, and
-closure properties under substitutions and contexts. Our definition of
-WPO extends the original definition by also permitting multiset
-comparisons of arguments instead of just lexicographic extensions.
-Therefore, our WPO not only subsumes lexicographic path orders (LPO),
-but also recursive path orders (RPO). We formally prove these
-subsumptions and therefore all of the mentioned properties of WPO are
-automatically transferable to LPO and RPO as well. Such a
-transformation is not required for Knuth&ndash;Bendix orders
-(KBO), since they have already been formalized. Nevertheless, we still
-provide a proof that WPO subsumes KBO and thereby underline the
-generality of WPO.</td>
+We formalize the weak and strong duality theorems of linear
+programming. For the strong duality theorem we provide three
+sufficient preconditions: both the primal problem and the dual problem
+are satisfiable, the primal problem is satisfiable and bounded, or the
+dual problem is satisfiable and bounded. The proofs are based on an
+existing formalization of Farkas' Lemma.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Weighted_Path_Order-AFP,
-  author  = {Christian Sternagel and René Thiemann and Akihisa Yamada},
-  title   = {A Formalization of Weighted Path Orders and Recursive Path Orders},
+        <pre>@article{LP_Duality-AFP,
+  author  = {René Thiemann},
+  title   = {Duality of Linear Programming},
   journal = {Archive of Formal Proofs},
-  month   = sep,
-  year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/Weighted_Path_Order.html},
+  month   = feb,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/LP_Duality.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -162,7 +141,7 @@ generality of WPO.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Knuth_Bendix_Order.html">Knuth_Bendix_Order</a>      </td></tr>
+          <td class="data"><a href="Linear_Inequalities.html">Linear_Inequalities</a>      </td></tr>
           
                     
 
@@ -176,29 +155,23 @@ generality of WPO.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Weighted_Path_Order/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Weighted_Path_Order/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/LP_Duality/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/LP_Duality/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Weighted_Path_Order/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/LP_Duality/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Weighted_Path_Order-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-LP_Duality-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Weighted_Path_Order-2021-09-26.tar.gz">
-              afp-Weighted_Path_Order-2021-09-26.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

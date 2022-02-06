@@ -34,6 +34,20 @@ published in the proceedings of the 16th International Symposium on
 Functional and Logic Programming (FLOPS 2022).</description>
     </item>
     <item>
+       <title>Duality of Linear Programming</title>
+              <link>https://www.isa-afp.org/entries/LP_Duality.html</link>
+       <guid>https://www.isa-afp.org/entries/LP_Duality.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>03 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+We formalize the weak and strong duality theorems of linear
+programming. For the strong duality theorem we provide three
+sufficient preconditions: both the primal problem and the dual problem
+are satisfiable, the primal problem is satisfiable and bounded, or the
+dual problem is satisfiable and bounded. The proofs are based on an
+existing formalization of Farkas&#39; Lemma.</description>
+    </item>
+    <item>
        <title>Young's Inequality for Increasing Functions</title>
               <link>https://www.isa-afp.org/entries/Youngs_Inequality.html</link>
        <guid>https://www.isa-afp.org/entries/Youngs_Inequality.html</guid>
@@ -614,26 +628,6 @@ maximal consistent set using Lindenbaum&#39;s construction and Henkin
 witnesses are added during the construction to ensure saturation as
 well. The resulting set is a Hintikka set which, by the model
 existence theorem, is satisfiable in the Herbrand universe.</description>
-    </item>
-    <item>
-       <title>Complex Bounded Operators</title>
-              <link>https://www.isa-afp.org/entries/Complex_Bounded_Operators.html</link>
-       <guid>https://www.isa-afp.org/entries/Complex_Bounded_Operators.html</guid>
-       <dc:creator> Jose Manuel Rodriguez Caballero, Dominique Unruh       </dc:creator>
-       <pubDate>18 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of bounded operators on complex vector
-spaces.  Our formalization contains material on complex vector spaces
-(normed spaces, Banach spaces, Hilbert spaces) that complements and
-goes beyond the developments of real vectors spaces in the
-Isabelle/HOL standard library.  We define the type of bounded
-operators between complex vector spaces
-(&lt;em&gt;cblinfun&lt;/em&gt;) and develop the theory of unitaries,
-projectors, extension of bounded linear functions (BLT theorem),
-adjoints, Loewner order, closed subspaces and more.  For the
-finite-dimensional case, we provide code generation support by
-identifying finite-dimensional operators with matrices as formalized
-in the &lt;a href=&#34;Jordan_Normal_Form.html&#34;&gt;Jordan_Normal_Form&lt;/a&gt; AFP entry.</description>
     </item>
   </channel>
 </rss>

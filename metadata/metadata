@@ -11814,3 +11814,18 @@ abstract =
   about step functions. The lack of the Riemann integral makes the
   development longer than one would like, but their argument is
   reproduced faithfully.
+
+[LP_Duality]
+title = Duality of Linear Programming
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+topic = Mathematics/Algebra
+date = 2022-02-03
+notify = rene.thiemann@uibk.ac.at
+abstract = 
+  We formalize the weak and strong duality theorems of linear
+  programming. For the strong duality theorem we provide three
+  sufficient preconditions: both the primal problem and the dual problem
+  are satisfiable, the primal problem is satisfiable and bounded, or the
+  dual problem is satisfiable and bounded. The proofs are based on an
+  existing formalization of Farkas' Lemma.
+
