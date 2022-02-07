@@ -4,7 +4,6 @@ theory LP_Duality
   imports 
     Linear_Inequalities.Farkas_Lemma 
     Minimum_Maximum
-    Move_To_Matrix
 begin
 
 lemma weak_duality_theorem: 

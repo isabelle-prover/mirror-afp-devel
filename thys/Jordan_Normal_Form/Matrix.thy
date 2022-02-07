@@ -985,7 +985,7 @@ lemma transpose_minus: "A \<in> carrier_mat nr nc \<Longrightarrow> B \<in> carr
   \<Longrightarrow> transpose_mat (A - B) = transpose_mat A - transpose_mat B"
   by (intro eq_matI, auto)
 
-lemma transpose_uminus: "A \<in> carrier_mat nr nc \<Longrightarrow> transpose_mat (- A) = - (transpose_mat A)"
+lemma transpose_uminus: "transpose_mat (- A) = - (transpose_mat A)"
   by (intro eq_matI, auto)
 
 lemma row_add[simp]:
@@ -1124,6 +1124,24 @@ proof -
   also have "\<dots> = (\<Sum>k\<in>{0..<nr}. v\<^sub>1 $ k * vec nr (\<lambda>k. \<Sum>i\<in>{0..<nc}. row A k $ i * v\<^sub>2 $ i) $ k)"
     using * by auto
   also have "\<dots> = v\<^sub>1 \<bullet> vec nr (\<lambda>i. row A i \<bullet> v\<^sub>2)" unfolding scalar_prod_def using * by simp
+  finally show ?thesis .
+qed
+
+lemma transpose_vec_mult_scalar:
+  fixes A :: "'a :: comm_semiring_0 mat"
+  assumes A: "A \<in> carrier_mat nr nc"
+    and x: "x \<in> carrier_vec nc"
+    and y: "y \<in> carrier_vec nr"
+  shows "(transpose_mat A *\<^sub>v y) \<bullet> x = y \<bullet> (A *\<^sub>v x)"
+proof -
+  have "(transpose_mat A *\<^sub>v y) = vec nc (\<lambda>i. col A i \<bullet> y)"
+    unfolding mult_mat_vec_def using A by auto
+  also have "\<dots> = vec nc (\<lambda>i. y \<bullet> col A i)"
+    by (intro eq_vecI, simp, rule comm_scalar_prod[OF _ y], insert A, auto)
+  also have "\<dots> \<bullet> x = y \<bullet> vec nr (\<lambda>i. row A i \<bullet> x)"
+    by (rule assoc_scalar_prod[OF y A x])
+  also have "vec nr (\<lambda>i. row A i \<bullet> x) = A *\<^sub>v x"
+    unfolding mult_mat_vec_def using A by auto
   finally show ?thesis .
 qed
 
@@ -2078,6 +2096,35 @@ proof
   thus "?L $ i = ?R $ i" by (cases "i < n",auto)
 qed auto
 
+lemma four_block_mat_mult_vec:
+  assumes A: "A : carrier_mat nr1 nc1"
+      and B: "B : carrier_mat nr1 nc2" 
+      and C: "C : carrier_mat nr2 nc1" 
+      and D: "D : carrier_mat nr2 nc2"
+      and a: "a : carrier_vec nc1"
+      and d: "d : carrier_vec nc2"
+  shows "four_block_mat A B C D *\<^sub>v (a @\<^sub>v d) = (A *\<^sub>v a + B *\<^sub>v d) @\<^sub>v (C *\<^sub>v a + D *\<^sub>v d)"
+    (is "?ABCD *\<^sub>v _ = ?r")
+proof
+  have ABCD: "?ABCD : carrier_mat (nr1+nr2) (nc1+nc2)" using four_block_carrier_mat[OF A D].
+  fix i assume i: "i < dim_vec ?r"
+  show "(?ABCD *\<^sub>v (a @\<^sub>v d)) $ i = ?r $ i" (is "?li = _")
+  proof (cases "i < nr1")
+    case True
+      have "?li = (row A i @\<^sub>v row B i) \<bullet> (a @\<^sub>v d)"
+        using A row_four_block_mat[OF A B C D] True by simp
+      also have "... = row A i \<bullet> a + row B i \<bullet> d"
+        apply (rule scalar_prod_append) using A B D a d True by auto
+      finally show ?thesis using A B True by auto
+    next case False
+      let ?i = "i - nr1"
+      have "?li = (row C ?i @\<^sub>v row D ?i) \<bullet> (a @\<^sub>v d)"
+        using i row_four_block_mat[OF A B C D] False A B C D by simp
+      also have "... = row C ?i \<bullet> a + row D ?i \<bullet> d"
+        apply (rule scalar_prod_append) using A B C D a d False by auto
+      finally show ?thesis using A B C D False i by auto
+  qed
+qed (insert A B, auto)
 
 lemma mult_mat_vec_split:
   assumes A: "A : carrier_mat n n"
@@ -2085,29 +2132,7 @@ lemma mult_mat_vec_split:
       and a: "a : carrier_vec n"
       and d: "d : carrier_vec m"
   shows "four_block_mat A (0\<^sub>m n m) (0\<^sub>m m n) D *\<^sub>v (a @\<^sub>v d) = A *\<^sub>v a @\<^sub>v D *\<^sub>v d"
-    (is "?A00D *\<^sub>v _ = ?r")
-proof
-  have A00D: "?A00D : carrier_mat (n+m) (n+m)" using four_block_carrier_mat[OF A D].
-  fix i assume i: "i < dim_vec ?r"
-  show "(?A00D *\<^sub>v (a @\<^sub>v d)) $ i = ?r $ i" (is "?li = _")
-  proof (cases "i < n")
-    case True
-      have "?li = (row A i @\<^sub>v 0\<^sub>v m) \<bullet> (a @\<^sub>v d)"
-        using A row_four_block_mat[OF A _ _ D] True by simp
-      also have "... = row A i \<bullet> a + 0\<^sub>v m \<bullet> d"
-        apply (rule scalar_prod_append) using A D a d True by auto
-      also have "... = row A i \<bullet> a" using d by simp
-      finally show ?thesis using A True by auto
-    next case False
-      let ?i = "i - n"
-      have "?li = (0\<^sub>v n @\<^sub>v row D ?i) \<bullet> (a @\<^sub>v d)"
-        using i row_four_block_mat[OF A _ _ D] False A D by simp
-      also have "... = 0\<^sub>v n \<bullet> a + row D ?i \<bullet> d"
-        apply (rule scalar_prod_append) using A D a d False by auto
-      also have "... = row D ?i \<bullet> d" using a by simp
-      finally show ?thesis using A D False i by auto
-  qed
-qed auto
+  by (subst four_block_mat_mult_vec[OF A _ _ D a d], insert A D a d, auto)
 
 lemma similar_mat_witI: assumes "P * Q = 1\<^sub>m n" "Q * P = 1\<^sub>m n" "A = P * B * Q"
   "A \<in> carrier_mat n n" "B \<in> carrier_mat n n" "P \<in> carrier_mat n n" "Q \<in> carrier_mat n n"
@@ -2597,6 +2622,10 @@ proof -
     unfolding id append_rows_def dim
     by (subst mult_four_block_mat[OF M1 M2 z z A1 z A2 z], insert A1 A2, auto)
 qed
+
+lemma mat_of_row_uminus: "mat_of_row (- v) = - mat_of_row v"
+  by auto
+
 
 
 text \<open>Allowing to construct and deconstruct vectors like lists\<close>
