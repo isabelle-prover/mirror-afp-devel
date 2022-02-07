@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Interpolation Polynomials (in HOL-Algebra) - Archive of Formal Proofs
+</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body class="mathjax_ignore">
+
+<table width="100%">
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="https://www.isa-afp.org/">
+    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
+    <tr>
+      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.html">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.html">Submission</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.html">Using Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.html">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.html">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.html">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.html">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
+
+
+<!-- Content -->
+<td width="80%" valign="top">
+<div align="center">
+  <p>&nbsp;</p>
+  <h1>          <font class="first">I</font>nterpolation
+  
+          <font class="first">P</font>olynomials
+  
+          <font class="first">(</font>in
+  
+          <font class="first">H</font>OL-Algebra)
+  
+</h1>
+  <p>&nbsp;</p>
+
+<table width="80%" class="data">
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Interpolation Polynomials (in HOL-Algebra)</td>
+</tr>
+
+<tr>
+  <td class="datahead">
+          Author:
+      </td>
+  <td class="data">
+              <a href="https://orcid.org/0000-0003-3290-5034">Emin Karayel</a>
+      </td>
+</tr>
+
+
+
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2022-01-29</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract mathjax_process">
+<p>A well known result from algebra is that, on any field, there
+is exactly one polynomial of degree less than n interpolating n points
+[<a
+href="https://doi.org/10.1017/CBO9780511814549">1</a>,
+§7].</p> <p>This entry contains a formalization of the
+above result, as well as the following generalization in the case of
+finite fields <i>F</i>: There are
+<i>|F|<sup>m-n</sup></i> polynomials of degree
+less than <i>m ≥ n</i> interpolating the same n points,
+where <i>|F|</i> denotes the size of the domain of the
+field. To establish the result the entry also includes a formalization
+of Lagrange interpolation, which might be of independent
+interest.</p> <p>The formalized results are defined on the
+algebraic structures from HOL-Algebra, which are distinct from the
+type-class based structures defined in HOL. Note that there is an
+existing formalization for polynomial interpolation and, in
+particular, Lagrange interpolation by Thiemann and Yamada [<a
+href="https://www.isa-afp.org/entries/Polynomial_Interpolation.html">2</a>]
+on the type-class based structures in HOL.</p></td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{Interpolation_Polynomials_HOL_Algebra-AFP,
+  author  = {Emin Karayel},
+  title   = {Interpolation Polynomials (in HOL-Algebra)},
+  journal = {Archive of Formal Proofs},
+  month   = jan,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+  </td>
+</tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+    
+                    
+                    
+
+        
+  </tbody>
+</table>
+
+<p></p>
+
+<table class="links">
+  <tbody>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Interpolation_Polynomials_HOL_Algebra/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Interpolation_Polynomials_HOL_Algebra/document.pdf">Proof document</a>
+    </td>
+    </tr>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/Interpolation_Polynomials_HOL_Algebra/index.html">Browse theories</a>
+      </td></tr>
+    <tr>
+    <td class="links">
+      <a href="../release/afp-Interpolation_Polynomials_HOL_Algebra-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
+
+
+          <tr><td class="links">Older releases:
+            None
+            </td></tr>
+    
+  </tbody>
+</table>
+
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,75 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Quasi-Borel Spaces}
+\author{Michikazu Hirata, Yasuhiko Minamide, Tetsuya Sato}
+\maketitle
+
+\begin{abstract}
+  The notion of quasi-Borel spaces was introduced by Heunen et al.~\cite{Heunen_2017}.
+  The theory provides a suitable denotational model
+  for higher-order probabilistic programming languages with continuous distributions.
+
+  This entry is a formalization of the theory of quasi-Borel spaces, including
+  construction of quasi-Borel spaces (product, coproduct, function spaces),
+  the adjunction between the category of measurable spaces and the category of quasi-Borel spaces,
+  and the probability monad on quasi-Borel spaces.
+  This entry also contains the formalization of the Bayesian regression presented in the work of Heunen et al.
+  
+  This work is a part of the work by same authors,
+  \textit{Program Logic for Higher-Order Probabilistic Programs in Isabelle/HOL},
+  which will be published in proceedings of the 16th International Symposium on Functional and Logic Programming (FLOPS 2022).
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

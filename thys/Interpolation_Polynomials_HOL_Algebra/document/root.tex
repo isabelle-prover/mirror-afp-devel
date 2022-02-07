@@ -1,0 +1,76 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Interpolation Polynomials (in HOL-Algebra)}
+\author{Emin Karayel}
+\maketitle
+\begin{abstract}
+A well known result from algebra is that, on any field, there is exactly one polynomial of degree
+less than $n$ interpolating $n$ points~\cite[\textsection 7]{shoup2009computational}.
+
+This entry contains a formalization of the above result, as well as the following generalization
+in the case of finite fields $F$: There are $\lvert F\rvert^{m-n}$ polynomials of degree less
+than $m \geq n$ interpolating the same $n$ points, where $\lvert F \rvert$ denotes the size of the
+domain of the field. To establish the result the entry also includes a formalization of 
+Lagrange interpolation, which might be of independent interest.
+
+The formalized results are defined on the algebraic structures from HOL-Algebra, which are
+distinct from the type-class based structures defined in HOL. Note that there is an existing 
+formalization for polynomial interpolation and, in particular, Lagrange interpolation by Thiemann and
+Yamada~\cite{Polynomial_Interpolation-AFP} on the type-class based structures in HOL.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

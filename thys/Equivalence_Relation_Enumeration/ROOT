@@ -1,0 +1,11 @@
+chapter AFP
+
+session Equivalence_Relation_Enumeration (AFP) = "HOL-Library" +
+  options [timeout = 600]
+  sessions
+    Card_Equiv_Relations
+  theories 
+    Equivalence_Relation_Enumeration
+  document_files
+    "root.tex"
+    "root.bib"

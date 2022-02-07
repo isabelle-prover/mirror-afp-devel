@@ -1,0 +1,9 @@
+chapter AFP
+
+session "Actuarial_Mathematics" (AFP) = "HOL-Analysis" +
+  options [timeout = 300]
+  theories
+    Preliminaries
+    Interest
+  document_files
+    "root.tex"

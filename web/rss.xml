@@ -9,7 +9,195 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>04 Jan 2022 00:00:00 +0000</pubDate>
+    <pubDate>04 Feb 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Enumeration of Equivalence Relations</title>
+              <link>https://www.isa-afp.org/entries/Equivalence_Relation_Enumeration.html</link>
+       <guid>https://www.isa-afp.org/entries/Equivalence_Relation_Enumeration.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>04 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This entry contains a formalization of an algorithm
+enumerating all equivalence relations on an initial segment of the
+natural numbers. The approach follows the method described by Stanton
+and White &lt;a
+href=&#34;https://doi.org/10.1007/978-1-4612-4968-9&#34;&gt;[5,§
+1.5]&lt;/a&gt; using restricted growth functions.&lt;/p&gt;
+&lt;p&gt;The algorithm internally enumerates restricted growth
+functions (as lists), whose equivalence kernels then form the
+equivalence relations. This has the advantage that the representation
+is compact and lookup of the relation reduces to a list lookup
+operation.&lt;/p&gt; &lt;p&gt;The algorithm can also be used within a
+proof and an example application is included, where a sequence of
+variables is split by the possible partitions they can form.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Quasi-Borel Spaces</title>
+              <link>https://www.isa-afp.org/entries/Quasi_Borel_Spaces.html</link>
+       <guid>https://www.isa-afp.org/entries/Quasi_Borel_Spaces.html</guid>
+       <dc:creator> Michikazu Hirata, Yasuhiko Minamide, Tetsuya Sato       </dc:creator>
+       <pubDate>03 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+The notion of quasi-Borel spaces was introduced by &lt;a
+href=&#34;https://dl.acm.org/doi/10.5555/3329995.3330072&#34;&gt;
+Heunen et al&lt;/a&gt;. The theory provides a suitable
+denotational model for higher-order probabilistic programming
+languages with continuous distributions. This entry is a formalization
+of the theory of quasi-Borel spaces, including construction of
+quasi-Borel spaces (product, coproduct, function spaces), the
+adjunction between the category of measurable spaces and the category
+of quasi-Borel spaces, and the probability monad on quasi-Borel
+spaces. This entry also contains the formalization of the Bayesian
+regression presented in the work of Heunen et al. This work is a part
+of the work by same authors, &lt;i&gt;Program Logic for Higher-Order
+Probabilistic Programs in Isabelle/HOL&lt;/i&gt;, which will be
+published in the proceedings of the 16th International Symposium on
+Functional and Logic Programming (FLOPS 2022).</description>
+    </item>
+    <item>
+       <title>Duality of Linear Programming</title>
+              <link>https://www.isa-afp.org/entries/LP_Duality.html</link>
+       <guid>https://www.isa-afp.org/entries/LP_Duality.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>03 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+We formalize the weak and strong duality theorems of linear
+programming. For the strong duality theorem we provide three
+sufficient preconditions: both the primal problem and the dual problem
+are satisfiable, the primal problem is satisfiable and bounded, or the
+dual problem is satisfiable and bounded. The proofs are based on an
+existing formalization of Farkas&#39; Lemma.</description>
+    </item>
+    <item>
+       <title>Young's Inequality for Increasing Functions</title>
+              <link>https://www.isa-afp.org/entries/Youngs_Inequality.html</link>
+       <guid>https://www.isa-afp.org/entries/Youngs_Inequality.html</guid>
+       <dc:creator> Lawrence C Paulson       </dc:creator>
+       <pubDate>31 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+Young&#39;s inequality states that $$ ab \leq \int_0^a f(x)dx +
+\int_0^b f^{-1}(y) dy $$ where $a\geq 0$, $b\geq 0$ and $f$ is
+strictly increasing and continuous. Its proof is formalised following
+&lt;a href=&#34;https://www.jstor.org/stable/2318018&#34;&gt;the
+development&lt;/a&gt; by Cunningham and Grossman. Their idea is to
+make the intuitive, geometric folklore proof rigorous by reasoning
+about step functions. The lack of the Riemann integral makes the
+development longer than one would like, but their argument is
+reproduced faithfully.</description>
+    </item>
+    <item>
+       <title>A Sequent Calculus Prover for First-Order Logic with Functions</title>
+              <link>https://www.isa-afp.org/entries/FOL_Seq_Calc2.html</link>
+       <guid>https://www.isa-afp.org/entries/FOL_Seq_Calc2.html</guid>
+       <dc:creator> Asta Halkjær From, Frederik Krogsdal Jacobsen       </dc:creator>
+       <pubDate>31 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+We formalize an automated theorem prover for first-order logic with
+functions. The proof search procedure is based on sequent calculus and
+we verify its soundness and completeness using the Abstract Soundness
+and Abstract Completeness theories. Our analytic completeness proof
+covers both open and closed formulas. Since our deterministic prover
+considers only the subset of terms relevant to proving a given
+sequent, we do so as well when building a countermodel from a failed
+proof. We formally connect our prover with the proof system and
+semantics of the existing SeCaV system. In particular, the
+prover&#39;s output can be post-processed in Haskell to generate
+human-readable SeCaV proofs which are also machine-verifiable proof
+certificates.</description>
+    </item>
+    <item>
+       <title>Interpolation Polynomials (in HOL-Algebra)</title>
+              <link>https://www.isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html</link>
+       <guid>https://www.isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>29 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;A well known result from algebra is that, on any field, there
+is exactly one polynomial of degree less than n interpolating n points
+[&lt;a
+href=&#34;https://doi.org/10.1017/CBO9780511814549&#34;&gt;1&lt;/a&gt;,
+§7].&lt;/p&gt; &lt;p&gt;This entry contains a formalization of the
+above result, as well as the following generalization in the case of
+finite fields &lt;i&gt;F&lt;/i&gt;: There are
+&lt;i&gt;|F|&lt;sup&gt;m-n&lt;/sup&gt;&lt;/i&gt; polynomials of degree
+less than &lt;i&gt;m ≥ n&lt;/i&gt; interpolating the same n points,
+where &lt;i&gt;|F|&lt;/i&gt; denotes the size of the domain of the
+field. To establish the result the entry also includes a formalization
+of Lagrange interpolation, which might be of independent
+interest.&lt;/p&gt; &lt;p&gt;The formalized results are defined on the
+algebraic structures from HOL-Algebra, which are distinct from the
+type-class based structures defined in HOL. Note that there is an
+existing formalization for polynomial interpolation and, in
+particular, Lagrange interpolation by Thiemann and Yamada [&lt;a
+href=&#34;https://www.isa-afp.org/entries/Polynomial_Interpolation.html&#34;&gt;2&lt;/a&gt;]
+on the type-class based structures in HOL.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Median Method</title>
+              <link>https://www.isa-afp.org/entries/Median_Method.html</link>
+       <guid>https://www.isa-afp.org/entries/Median_Method.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>25 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;The median method is an amplification result for randomized
+approximation algorithms described in [&lt;a
+href=&#34;https://doi.org/10.1006/jcss.1997.1545&#34;&gt;1&lt;/a&gt;].
+Given an algorithm whose result is in a desired interval with a
+probability larger than &lt;i&gt;1/2&lt;/i&gt;, it is possible to
+improve the success probability, by running the algorithm multiple
+times independently and using the median. In contrast to using the
+mean, the amplification of the success probability grows exponentially
+with the number of independent runs.&lt;/p&gt; &lt;p&gt;This entry
+contains a formalization of the underlying theorem: Given a sequence
+of n independent random variables, which are in a desired interval
+with a probability &lt;i&gt;1/2 + a&lt;/i&gt;. Then their median will
+be in the desired interval with a probability of &lt;i&gt;1 −
+exp(−2a&lt;sup&gt;2&lt;/sup&gt; n)&lt;/i&gt;. In particular, the
+success probability approaches &lt;i&gt;1&lt;/i&gt; exponentially with
+the number of variables.&lt;/p&gt; &lt;p&gt;In addition to that, this
+entry also contains a proof that order-statistics of Borel-measurable
+random variables are themselves measurable and that generalized
+intervals in linearly ordered Borel-spaces are measurable.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Actuarial Mathematics</title>
+              <link>https://www.isa-afp.org/entries/Actuarial_Mathematics.html</link>
+       <guid>https://www.isa-afp.org/entries/Actuarial_Mathematics.html</guid>
+       <dc:creator> Yosuke Ito       </dc:creator>
+       <pubDate>23 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+Actuarial Mathematics is a theory in applied mathematics, which is
+mainly used for determining the prices of insurance products and
+evaluating the liability of a company associating with insurance
+contracts. It is related to calculus, probability theory and financial
+theory, etc. In this entry, I formalize the very basic part of
+Actuarial Mathematics in Isabelle/HOL. The first formalization is
+about the theory of interest which deals with interest rates, present
+value factors, an annuity certain, etc. I have already formalized the
+basic part of Actuarial Mathematics in Coq
+(https://github.com/Yosuke-Ito-345/Actuary). This entry is currently
+the partial translation and a little generalization of the Coq
+formalization. The further translation in Isabelle/HOL is now
+proceeding.</description>
+    </item>
+    <item>
+       <title>Irrational numbers from THE BOOK</title>
+              <link>https://www.isa-afp.org/entries/Irrationals_From_THEBOOK.html</link>
+       <guid>https://www.isa-afp.org/entries/Irrationals_From_THEBOOK.html</guid>
+       <dc:creator> Lawrence C Paulson       </dc:creator>
+       <pubDate>08 Jan 2022 00:00:00 +0000</pubDate>
+       <description>
+An elementary proof is formalised: that &lt;em&gt;exp r&lt;/em&gt; is irrational for
+every nonzero rational number &lt;em&gt;r&lt;/em&gt;. The mathematical development comes
+from the well-known volume &lt;em&gt;Proofs from THE BOOK&lt;/em&gt;,
+by Aigner and Ziegler, who credit the idea to Hermite. The development
+illustrates a number of basic Isabelle techniques: the manipulation of
+summations, the calculation of quite complicated derivatives and the
+estimation of integrals. We also see how to import another AFP entry (Stirling&#39;s formula).
+As for the theorem itself, note that a much stronger and more general
+result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
+already available in the AFP.</description>
+    </item>
     <item>
        <title>Knight's Tour Revisited Revisited</title>
               <link>https://www.isa-afp.org/entries/Knights_Tour.html</link>
@@ -444,175 +632,6 @@ resulting code on 378 benchmarks from the literature, comparing to
 Redlog, Z3, Wolfram Engine, and SMT-RAT. This identified
 inconsistencies in some tools, underscoring the significance of a
 verified approach for the intricacies of real arithmetic.</description>
-    </item>
-    <item>
-       <title>Soundness and Completeness of an Axiomatic System for First-Order Logic</title>
-              <link>https://www.isa-afp.org/entries/FOL_Axiomatic.html</link>
-       <guid>https://www.isa-afp.org/entries/FOL_Axiomatic.html</guid>
-       <dc:creator> Asta Halkjær From       </dc:creator>
-       <pubDate>24 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-This work is a formalization of the soundness and completeness of an
-axiomatic system for first-order logic. The proof system is based on
-System Q1 by Smullyan and the completeness proof follows his textbook
-&#34;First-Order Logic&#34; (Springer-Verlag 1968). The completeness
-proof is in the Henkin style where a consistent set is extended to a
-maximal consistent set using Lindenbaum&#39;s construction and Henkin
-witnesses are added during the construction to ensure saturation as
-well. The resulting set is a Hintikka set which, by the model
-existence theorem, is satisfiable in the Herbrand universe.</description>
-    </item>
-    <item>
-       <title>Complex Bounded Operators</title>
-              <link>https://www.isa-afp.org/entries/Complex_Bounded_Operators.html</link>
-       <guid>https://www.isa-afp.org/entries/Complex_Bounded_Operators.html</guid>
-       <dc:creator> Jose Manuel Rodriguez Caballero, Dominique Unruh       </dc:creator>
-       <pubDate>18 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of bounded operators on complex vector
-spaces.  Our formalization contains material on complex vector spaces
-(normed spaces, Banach spaces, Hilbert spaces) that complements and
-goes beyond the developments of real vectors spaces in the
-Isabelle/HOL standard library.  We define the type of bounded
-operators between complex vector spaces
-(&lt;em&gt;cblinfun&lt;/em&gt;) and develop the theory of unitaries,
-projectors, extension of bounded linear functions (BLT theorem),
-adjoints, Loewner order, closed subspaces and more.  For the
-finite-dimensional case, we provide code generation support by
-identifying finite-dimensional operators with matrices as formalized
-in the &lt;a href=&#34;Jordan_Normal_Form.html&#34;&gt;Jordan_Normal_Form&lt;/a&gt; AFP entry.</description>
-    </item>
-    <item>
-       <title>A Formalization of Weighted Path Orders and Recursive Path Orders</title>
-              <link>https://www.isa-afp.org/entries/Weighted_Path_Order.html</link>
-       <guid>https://www.isa-afp.org/entries/Weighted_Path_Order.html</guid>
-       <dc:creator> Christian Sternagel, René Thiemann, Akihisa Yamada       </dc:creator>
-       <pubDate>16 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-We define the weighted path order (WPO) and formalize several
-properties such as strong normalization, the subterm property, and
-closure properties under substitutions and contexts. Our definition of
-WPO extends the original definition by also permitting multiset
-comparisons of arguments instead of just lexicographic extensions.
-Therefore, our WPO not only subsumes lexicographic path orders (LPO),
-but also recursive path orders (RPO). We formally prove these
-subsumptions and therefore all of the mentioned properties of WPO are
-automatically transferable to LPO and RPO as well. Such a
-transformation is not required for Knuth&amp;ndash;Bendix orders
-(KBO), since they have already been formalized. Nevertheless, we still
-provide a proof that WPO subsumes KBO and thereby underline the
-generality of WPO.</description>
-    </item>
-    <item>
-       <title>Extension of Types-To-Sets</title>
-              <link>https://www.isa-afp.org/entries/Types_To_Sets_Extension.html</link>
-       <guid>https://www.isa-afp.org/entries/Types_To_Sets_Extension.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-In their article titled &lt;i&gt;From Types to Sets by Local Type
-Definitions in Higher-Order Logic&lt;/i&gt; and published in the
-proceedings of the conference &lt;i&gt;Interactive Theorem
-Proving&lt;/i&gt; in 2016, Ondřej Kunčar and Andrei Popescu propose an
-extension of the logic Isabelle/HOL and an associated algorithm for
-the relativization of the &lt;i&gt;type-based theorems&lt;/i&gt; to
-more flexible &lt;i&gt;set-based theorems&lt;/i&gt;, collectively
-referred to as &lt;i&gt;Types-To-Sets&lt;/i&gt;. One of the aims of
-their work was to open an opportunity for the development of a
-software tool for applied relativization in the implementation of the
-logic Isabelle/HOL of the proof assistant Isabelle. In this article,
-we provide a prototype of a software framework for the interactive
-automated relativization of theorems in Isabelle/HOL, developed as an
-extension of the proof language Isabelle/Isar. The software framework
-incorporates the implementation of the proposed extension of the
-logic, and builds upon some of the ideas for further work expressed in
-the original article on Types-To-Sets by Ondřej Kunčar and Andrei
-Popescu and the subsequent article &lt;i&gt;Smooth Manifolds and Types
-to Sets for Linear Algebra in Isabelle/HOL&lt;/i&gt; that was written
-by Fabian Immler and Bohua Zhan and published in the proceedings of
-the &lt;i&gt;International Conference on Certified Programs and
-Proofs&lt;/i&gt; in 2019.</description>
-    </item>
-    <item>
-       <title>IDE: Introduction, Destruction, Elimination</title>
-              <link>https://www.isa-afp.org/entries/Intro_Dest_Elim.html</link>
-       <guid>https://www.isa-afp.org/entries/Intro_Dest_Elim.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-The article provides the command &lt;b&gt;mk_ide&lt;/b&gt; for the
-object logic Isabelle/HOL of the formal proof assistant Isabelle. The
-command &lt;b&gt;mk_ide&lt;/b&gt; enables the automated synthesis of
-the introduction, destruction and elimination rules from arbitrary
-definitions of constant predicates stated in Isabelle/HOL.</description>
-    </item>
-    <item>
-       <title>Conditional Transfer Rule</title>
-              <link>https://www.isa-afp.org/entries/Conditional_Transfer_Rule.html</link>
-       <guid>https://www.isa-afp.org/entries/Conditional_Transfer_Rule.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-This article provides a collection of experimental utilities for
-unoverloading of definitions and synthesis of conditional transfer
-rules for the object logic Isabelle/HOL of the formal proof assistant
-Isabelle written in Isabelle/ML.</description>
-    </item>
-    <item>
-       <title>Conditional Simplification</title>
-              <link>https://www.isa-afp.org/entries/Conditional_Simplification.html</link>
-       <guid>https://www.isa-afp.org/entries/Conditional_Simplification.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-The article provides a collection of experimental general-purpose
-proof methods for the object logic Isabelle/HOL of the formal proof
-assistant Isabelle. The methods in the collection offer functionality
-that is similar to certain aspects of the functionality provided by
-the standard proof methods of Isabelle that combine classical
-reasoning and rewriting, such as the method &lt;i&gt;auto&lt;/i&gt;,
-but use a different approach for rewriting. More specifically, these
-methods allow for the side conditions of the rewrite rules to be
-solved via intro-resolution.</description>
-    </item>
-    <item>
-       <title>Category Theory for ZFC in HOL III: Universal Constructions</title>
-              <link>https://www.isa-afp.org/entries/CZH_Universal_Constructions.html</link>
-       <guid>https://www.isa-afp.org/entries/CZH_Universal_Constructions.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-The article provides a formalization of elements of the theory of
-universal constructions for 1-categories (such as limits, adjoints and
-Kan extensions) in the object logic ZFC in HOL of the formal proof
-assistant Isabelle. The article builds upon the foundations
-established in the AFP entry &lt;i&gt;Category Theory for ZFC in HOL
-II: Elementary Theory of 1-Categories&lt;/i&gt;.</description>
-    </item>
-    <item>
-       <title>Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories</title>
-              <link>https://www.isa-afp.org/entries/CZH_Foundations.html</link>
-       <guid>https://www.isa-afp.org/entries/CZH_Foundations.html</guid>
-       <dc:creator> Mihails Milehins       </dc:creator>
-       <pubDate>06 Sep 2021 00:00:00 +0000</pubDate>
-       <description>
-This article provides a foundational framework for the formalization
-of category theory in the object logic ZFC in HOL of the formal proof
-assistant Isabelle. More specifically, this article provides a
-formalization of canonical set-theoretic constructions internalized in
-the type &lt;i&gt;V&lt;/i&gt; associated with the ZFC in HOL,
-establishes a design pattern for the formalization of mathematical
-structures using sequences and locales, and showcases the developed
-infrastructure by providing formalizations of the elementary theories
-of digraphs and semicategories. The methodology chosen for the
-formalization of the theories of digraphs and semicategories (and
-categories in future articles) rests on the ideas that were originally
-expressed in the article &lt;i&gt;Set-Theoretical Foundations of
-Category Theory&lt;/i&gt; written by Solomon Feferman and Georg
-Kreisel. Thus, in the context of this work, each of the aforementioned
-mathematical structures is represented as a term of the type
-&lt;i&gt;V&lt;/i&gt; embedded into a stage of the von Neumann
-hierarchy.</description>
     </item>
   </channel>
 </rss>

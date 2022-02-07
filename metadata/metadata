@@ -311,7 +311,7 @@ extra-history =
         New "dataspace" command allows the definition of a local-based state space, including lenses and prisms.
         Addition of various examples for the above.
         (revision 89cf045a)<br>
-        [2021-11-15]	
+        [2021-11-15]
 	Improvement of alphabet and chantype commands to support code generation.
 	Addition of a tactic "rename_alpha_vars" that removes the subscript vs in proof goals.
 	Bug fixes and improvements to alphabet command ML implementation.
@@ -4418,7 +4418,7 @@ author = Maximilian Schäffeler <mailto:schaeffm@in.tum.de>, Mohammad Abdulaziz 
 topic = Mathematics/Probability theory
 date = 2021-12-16
 notify = schaeffm@in.tum.de, mansour@in.tum.de
-abstract = 
+abstract =
   We present a formalization of Markov Decision Processes with rewards.
   In particular we first build on Hölzl's formalization  of MDPs
   (AFP entry: Markov_Models) and extend them with rewards. We proceed
@@ -4438,7 +4438,7 @@ author = Maximilian Schäffeler <mailto:schaeffm@in.tum.de>, Mohammad Abdulaziz 
 topic = Mathematics/Probability theory, Computer science/Algorithms
 date = 2021-12-16
 notify = schaeffm@in.tum.de, mansour@in.tum.de
-abstract = 
+abstract =
   We present a formalization of algorithms for solving Markov Decision
   Processes (MDPs) with formal guarantees on the optimality of their
   solutions. In particular we build on our analysis of the Bellman
@@ -4762,6 +4762,27 @@ abstract =
 	function is non-negative. These properties also hold for the
 	automatically extracted Scala code.
 notify = mnfrd.krbr@gmail.com
+
+[Actuarial_Mathematics]
+title = Actuarial Mathematics
+author = Yosuke Ito <mailto:glacier345@gmail.com>
+topic = Mathematics/Games and economics
+date = 2022-01-23
+notify = glacier345@gmail.com
+abstract =
+  Actuarial Mathematics is a theory in applied mathematics, which is
+  mainly used for determining the prices of insurance products and
+  evaluating the liability of a company associating with insurance
+  contracts. It is related to calculus, probability theory and financial
+  theory, etc. In this entry, I formalize the very basic part of
+  Actuarial Mathematics in Isabelle/HOL. The first formalization is
+  about the theory of interest which deals with interest rates, present
+  value factors, an annuity certain, etc. I have already formalized the
+  basic part of Actuarial Mathematics in Coq
+  (https://github.com/Yosuke-Ito-345/Actuary). This entry is currently
+  the partial translation and a little generalization of the Coq
+  formalization. The further translation in Isabelle/HOL is now
+  proceeding.
 
 [Topology]
 title = Topology
@@ -9246,6 +9267,26 @@ abstract =
   Mathematical Logic for Computer Science.
   Paper: <a href="http://ceur-ws.org/Vol-3002/paper7.pdf">http://ceur-ws.org/Vol-3002/paper7.pdf</a>.
 
+[FOL_Seq_Calc2]
+title = A Sequent Calculus Prover for First-Order Logic with Functions
+author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>, Frederik Krogsdal Jacobsen <http://people.compute.dtu.dk/fkjac/>
+topic = Logic/General logic/Classical first-order logic, Logic/Proof theory, Logic/General logic/Mechanization of proofs
+date = 2022-01-31
+notify = ahfrom@dtu.dk, fkjac@dtu.dk
+abstract =
+  We formalize an automated theorem prover for first-order logic with
+  functions. The proof search procedure is based on sequent calculus and
+  we verify its soundness and completeness using the Abstract Soundness
+  and Abstract Completeness theories. Our analytic completeness proof
+  covers both open and closed formulas. Since our deterministic prover
+  considers only the subset of terms relevant to proving a given
+  sequent, we do so as well when building a countermodel from a failed
+  proof. We formally connect our prover with the proof system and
+  semantics of the existing SeCaV system. In particular, the
+  prover's output can be post-processed in Haskell to generate
+  human-readable SeCaV proofs which are also machine-verifiable proof
+  certificates.
+
 [Szpilrajn]
 title = Order Extension and Szpilrajn's Extension Theorem
 author = Peter Zeller <mailto:p_zeller@cs.uni-kl.de>, Lukas Stevens <https://www21.in.tum.de/team/stevensl>
@@ -11466,7 +11507,7 @@ author = Christoph Benzmüller <http://christoph-benzmueller.de>
 topic = Logic/Philosophical aspects, Logic/General logic/Modal logic
 date = 2021-11-08
 notify = c.benzmueller@gmail.com
-abstract = 
+abstract =
   <p>Simplified variants of Gödel's ontological argument are
   explored. Among those is a particularly interesting simplified
   argument which is (i) valid already in basic
@@ -11485,7 +11526,7 @@ author = Thomas Ammer<>, Peter Lammich<>
 topic = Computer science/Data structures
 date = 2021-11-23
 notify = lammich@in.tum.de
-abstract = 
+abstract =
   The <em>van Emde Boas tree</em> or <em>van Emde Boas
   priority queue</em> is a data structure supporting membership
   test, insertion, predecessor and successor search, minimum and maximum
@@ -11512,7 +11553,7 @@ author = Marie Cousin <mailto:marie.cousin@grenoble-inp.org>, Mnacho Echenim <ma
 topic = Mathematics/Measure theory
 date = 2021-11-19
 notify = mnacho.echenim@univ-grenoble-alpes.fr
-abstract = 
+abstract =
   In this work we formalize the Hahn decomposition theorem for signed
   measures, namely that any measure space for a signed measure can be
   decomposed into a positive and a negative set, where every measurable
@@ -11561,7 +11602,7 @@ author = Alexander Lochmann <mailto:alexander.lochmann@uibk.ac.at>,  Bertram Fel
 topic = Computer science/Automata and formal languages
 date = 2021-12-15
 notify = alexander.lochmann@uibk.ac.at
-abstract = 
+abstract =
   Tree automata have good closure properties and therefore a commonly
   used to prove/disprove properties. This formalization contains among
   other things the proofs of many closure properties of tree automata
@@ -11585,7 +11626,7 @@ author = Chelsea Edmonds <https://www.cst.cam.ac.uk/people/cle47>, Angeliki Kout
 topic = Mathematics/Graph theory, Mathematics/Combinatorics
 date = 2021-12-28
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   We formalise a proof of Roth's Theorem on Arithmetic
   Progressions, a major result in additive combinatorics on the
   existence of 3-term arithmetic progressions in subsets of natural
@@ -11593,13 +11634,13 @@ abstract =
   employ our recent formalisation of Szemerédi's Regularity Lemma,
   a major result in extremal graph theory, which we use here to prove
   the Triangle Counting Lemma and the Triangle Removal Lemma. Our
-  sources are Yufei Zhao's MIT lecture notes 
+  sources are Yufei Zhao's MIT lecture notes
   "<a href="https://ocw.mit.edu/courses/mathematics/18-217-graph-theory-and-additive-combinatorics-fall-2019/lecture-notes/MIT18_217F19_ch3.pdf">Graph Theory and Additive Combinatorics</a>"
   (revised version <a href="https://yufeizhao.com/gtac/gtac17.pdf">here</a>)
-  and W.T. Gowers's Cambridge lecture notes 
+  and W.T. Gowers's Cambridge lecture notes
   "<a href="https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf">Topics in Combinatorics</a>".
   We also refer to the University of
-  Georgia notes by Stephanie Bell and Will Grodzicki, 
+  Georgia notes by Stephanie Bell and Will Grodzicki,
   "<a href="http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.432.327">Using Szemerédi's Regularity Lemma to Prove Roth's Theorem</a>".
 
 [Gale_Shapley]
@@ -11608,7 +11649,7 @@ author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 topic = Computer science/Algorithms, Mathematics/Games and economics
 date = 2021-12-29
 notify = nipkow@in.tum.de
-abstract = 
+abstract =
   This is a stepwise refinement and proof of the Gale-Shapley stable
   matching (or marriage) algorithm down to executable code. Both a
   purely functional implementation based on lists and a functional
@@ -11643,7 +11684,7 @@ author = Filip Smola <>, Jacques Fleuriot <https://www.inf.ed.ac.uk/people/staff
 topic = Mathematics/Algebra, Mathematics/Analysis
 date = 2021-12-31
 notify = f.smola@sms.ed.ac.uk, Jacques.Fleuriot@ed.ac.uk
-abstract = 
+abstract =
   <p>Hyperdual numbers are ones with a real component and a number
   of infinitesimal components, usually written as $a_0 + a_1 \cdot
   \epsilon_1 + a_2 \cdot \epsilon_2 + a_3 \cdot \epsilon_1\epsilon_2$.
@@ -11661,4 +11702,151 @@ abstract =
   e^{-x}}$ and also reproduce the example analytic function $f(x) =
   \frac{e^x}{\sqrt{sin(x)^3 + cos(x)^3}}$ used for demonstration by Fike
   and Alonso.</p>
+
+[Median_Method]
+title = Median Method
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Mathematics/Probability theory
+date = 2022-01-25
+notify = me@eminkarayel.de
+abstract =
+  <p>The median method is an amplification result for randomized
+  approximation algorithms described in [<a
+  href="https://doi.org/10.1006/jcss.1997.1545">1</a>].
+  Given an algorithm whose result is in a desired interval with a
+  probability larger than <i>1/2</i>, it is possible to
+  improve the success probability, by running the algorithm multiple
+  times independently and using the median. In contrast to using the
+  mean, the amplification of the success probability grows exponentially
+  with the number of independent runs.</p> <p>This entry
+  contains a formalization of the underlying theorem: Given a sequence
+  of n independent random variables, which are in a desired interval
+  with a probability <i>1/2 + a</i>. Then their median will
+  be in the desired interval with a probability of <i>1 −
+  exp(−2a<sup>2</sup> n)</i>. In particular, the
+  success probability approaches <i>1</i> exponentially with
+  the number of variables.</p> <p>In addition to that, this
+  entry also contains a proof that order-statistics of Borel-measurable
+  random variables are themselves measurable and that generalized
+  intervals in linearly ordered Borel-spaces are measurable.</p>
+
+[Irrationals_From_THEBOOK]
+title = Irrational numbers from THE BOOK
+author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Number theory
+date = 2022-01-08
+notify = lp15@cam.ac.uk
+abstract =
+  An elementary proof is formalised: that <em>exp r</em> is irrational for
+  every nonzero rational number <em>r</em>. The mathematical development comes
+  from the well-known volume <em>Proofs from THE BOOK</em>,
+  by Aigner and Ziegler, who credit the idea to Hermite. The development
+  illustrates a number of basic Isabelle techniques: the manipulation of
+  summations, the calculation of quite complicated derivatives and the
+  estimation of integrals. We also see how to import another AFP entry (Stirling's formula).
+  As for the theorem itself, note that a much stronger and more general
+  result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
+  already available in the AFP.
+
+[Interpolation_Polynomials_HOL_Algebra]
+title = Interpolation Polynomials (in HOL-Algebra)
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Mathematics/Algebra
+date = 2022-01-29
+notify = me@eminkarayel.de
+abstract =
+  <p>A well known result from algebra is that, on any field, there
+  is exactly one polynomial of degree less than n interpolating n points
+  [<a
+  href="https://doi.org/10.1017/CBO9780511814549">1</a>,
+  §7].</p> <p>This entry contains a formalization of the
+  above result, as well as the following generalization in the case of
+  finite fields <i>F</i>: There are
+  <i>|F|<sup>m-n</sup></i> polynomials of degree
+  less than <i>m ≥ n</i> interpolating the same n points,
+  where <i>|F|</i> denotes the size of the domain of the
+  field. To establish the result the entry also includes a formalization
+  of Lagrange interpolation, which might be of independent
+  interest.</p> <p>The formalized results are defined on the
+  algebraic structures from HOL-Algebra, which are distinct from the
+  type-class based structures defined in HOL. Note that there is an
+  existing formalization for polynomial interpolation and, in
+  particular, Lagrange interpolation by Thiemann and Yamada [<a
+  href="https://www.isa-afp.org/entries/Polynomial_Interpolation.html">2</a>]
+  on the type-class based structures in HOL.</p>
+
+[Quasi_Borel_Spaces]
+title = Quasi-Borel Spaces
+author = Michikazu Hirata <>, Yasuhiko Minamide <https://sv.c.titech.ac.jp/minamide/index.en.html>, Tetsuya Sato <https://sites.google.com/view/tetsuyasato/>
+topic = Computer science/Semantics
+date = 2022-02-03
+notify = hirata.m.ac@m.titech.ac.jp, minamide@is.titech.ac.jp, tsato@c.titech.ac.jp
+abstract = 
+  The notion of quasi-Borel spaces was introduced by <a
+  href="https://dl.acm.org/doi/10.5555/3329995.3330072">
+  Heunen et al</a>. The theory provides a suitable
+  denotational model for higher-order probabilistic programming
+  languages with continuous distributions. This entry is a formalization
+  of the theory of quasi-Borel spaces, including construction of
+  quasi-Borel spaces (product, coproduct, function spaces), the
+  adjunction between the category of measurable spaces and the category
+  of quasi-Borel spaces, and the probability monad on quasi-Borel
+  spaces. This entry also contains the formalization of the Bayesian
+  regression presented in the work of Heunen et al. This work is a part
+  of the work by same authors, <i>Program Logic for Higher-Order
+  Probabilistic Programs in Isabelle/HOL</i>, which will be
+  published in the proceedings of the 16th International Symposium on
+  Functional and Logic Programming (FLOPS 2022).
+
+[Youngs_Inequality]
+title = Young's Inequality for Increasing Functions
+author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Analysis
+date = 2022-01-31
+notify = lp15@cam.ac.uk
+abstract = 
+  Young's inequality states that $$ ab \leq \int_0^a f(x)dx +
+  \int_0^b f^{-1}(y) dy $$ where $a\geq 0$, $b\geq 0$ and $f$ is
+  strictly increasing and continuous. Its proof is formalised following
+  <a href="https://www.jstor.org/stable/2318018">the
+  development</a> by Cunningham and Grossman. Their idea is to
+  make the intuitive, geometric folklore proof rigorous by reasoning
+  about step functions. The lack of the Riemann integral makes the
+  development longer than one would like, but their argument is
+  reproduced faithfully.
+
+[LP_Duality]
+title = Duality of Linear Programming
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+topic = Mathematics/Algebra
+date = 2022-02-03
+notify = rene.thiemann@uibk.ac.at
+abstract = 
+  We formalize the weak and strong duality theorems of linear
+  programming. For the strong duality theorem we provide three
+  sufficient preconditions: both the primal problem and the dual problem
+  are satisfiable, the primal problem is satisfiable and bounded, or the
+  dual problem is satisfiable and bounded. The proofs are based on an
+  existing formalization of Farkas' Lemma.
+
+[Equivalence_Relation_Enumeration]
+title = Enumeration of Equivalence Relations
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Mathematics/Combinatorics, Computer science/Algorithms/Mathematical
+date = 2022-02-04
+notify = me@eminkarayel.de
+abstract = 
+  <p>This entry contains a formalization of an algorithm
+  enumerating all equivalence relations on an initial segment of the
+  natural numbers. The approach follows the method described by Stanton
+  and White <a
+  href="https://doi.org/10.1007/978-1-4612-4968-9">[5,§
+  1.5]</a> using restricted growth functions.</p>
+  <p>The algorithm internally enumerates restricted growth
+  functions (as lists), whose equivalence kernels then form the
+  equivalence relations. This has the advantage that the representation
+  is compact and lookup of the relation reduces to a list lookup
+  operation.</p> <p>The algorithm can also be used within a
+  proof and an example application is included, where a sequence of
+  variables is split by the possible partitions they can form.</p>
 

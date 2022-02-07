@@ -9,6 +9,7 @@ Abstract-Hoare-Logics
 Abstract-Rewriting
 Abstract_Completeness
 Abstract_Soundness
+Actuarial_Mathematics
 Adaptive_State_Counting
 Affine_Arithmetic
 Aggregation_Algebras
@@ -167,6 +168,7 @@ Efficient-Mergesort
 Elliptic_Curves_Group_Law
 Encodability_Process_Calculi
 Epistemic_Logic
+Equivalence_Relation_Enumeration
 Ergodic_Theory
 Error_Function
 Euler_MacLaurin
@@ -180,6 +182,7 @@ FOL-Fitting
 FOL_Axiomatic
 FOL_Harrison
 FOL_Seq_Calc1
+FOL_Seq_Calc2
 Factor_Algebraic_Polynomial
 Factored_Transition_System_Bounding
 Falling_Factorial_Sum
@@ -283,12 +286,14 @@ InfPathElimination
 InformationFlowSlicing
 InformationFlowSlicing_Inter
 Integration
+Interpolation_Polynomials_HOL_Algebra
 Interpreter_Optimizations
 Interval_Arithmetic_Word32
 Intro_Dest_Elim
 Iptables_Semantics
 Irrational_Series_Erdos_Straus
 Irrationality_J_Hancl
+Irrationals_From_THEBOOK
 IsaGeoCoq
 Isabelle_C
 Isabelle_Marries_Dirac
@@ -357,6 +362,7 @@ Logging_Independent_Anonymity
 Lowe_Ontological_Argument
 Lower_Semicontinuous
 Lp
+LP_Duality
 Lucas_Theorem
 MDP-Algorithms
 MDP-Rewards
@@ -372,6 +378,7 @@ Matrix
 Matrix_Tensor
 Matroids
 Max-Card-Matching
+Median_Method
 Median_Of_Medians_Selection
 Menger
 Mereology
@@ -481,6 +488,7 @@ Public_Announcement_Logic
 QHLProver
 QR_Decomposition
 Quantales
+Quasi_Borel_Spaces
 Quaternions
 Quick_Sort_Cost
 RIPEMD-160-SPARK
@@ -646,6 +654,7 @@ Word_Lib
 WorkerWrapper
 X86_Semantics
 XML
+Youngs_Inequality
 ZFC_in_HOL
 Zeta_3_Irrational
 Zeta_Function
