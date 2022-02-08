@@ -8,7 +8,7 @@
   by Fagin, Halpern, Moses and Vardi (MIT Press 1995).
   The extensions of system K (T, KB, K4, S4, S5) and their completeness proofs
   are based on the textbook "Modal Logic" by Blackburn, de Rijke and Venema
-  (Cambridge University Press 2001).
+  (Cambridge University Press 5001).
 *)
 
 theory Epistemic_Logic imports "HOL-Library.Countable" begin
@@ -20,15 +20,15 @@ type_synonym id = string
 datatype 'i fm
   = FF (\<open>\<^bold>\<bottom>\<close>)
   | Pro id
-  | Dis \<open>'i fm\<close> \<open>'i fm\<close> (infixr \<open>\<^bold>\<or>\<close> 30)
-  | Con \<open>'i fm\<close> \<open>'i fm\<close> (infixr \<open>\<^bold>\<and>\<close> 35)
-  | Imp \<open>'i fm\<close> \<open>'i fm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<close> 25)
+  | Dis \<open>'i fm\<close> \<open>'i fm\<close> (infixr \<open>\<^bold>\<or>\<close> 60)
+  | Con \<open>'i fm\<close> \<open>'i fm\<close> (infixr \<open>\<^bold>\<and>\<close> 65)
+  | Imp \<open>'i fm\<close> \<open>'i fm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<close> 55)
   | K 'i \<open>'i fm\<close>
 
 abbreviation TT (\<open>\<^bold>\<top>\<close>) where
   \<open>TT \<equiv> \<^bold>\<bottom> \<^bold>\<longrightarrow> \<^bold>\<bottom>\<close>
 
-abbreviation Neg (\<open>\<^bold>\<not> _\<close> [40] 40) where
+abbreviation Neg (\<open>\<^bold>\<not> _\<close> [70] 70) where
   \<open>Neg p \<equiv> p \<^bold>\<longrightarrow> \<^bold>\<bottom>\<close>
 
 abbreviation \<open>L i p \<equiv> \<^bold>\<not> K i (\<^bold>\<not> p)\<close>
@@ -41,9 +41,9 @@ datatype ('i, 'w) kripke =
 primrec semantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i fm \<Rightarrow> bool\<close> (\<open>_, _ \<Turnstile> _\<close> [50, 50] 50) where
   \<open>(M, w \<Turnstile> \<^bold>\<bottom>) = False\<close>
 | \<open>(M, w \<Turnstile> Pro x) = \<pi> M w x\<close>
-| \<open>(M, w \<Turnstile> (p \<^bold>\<or> q)) = ((M, w \<Turnstile> p) \<or> (M, w \<Turnstile> q))\<close>
-| \<open>(M, w \<Turnstile> (p \<^bold>\<and> q)) = ((M, w \<Turnstile> p) \<and> (M, w \<Turnstile> q))\<close>
-| \<open>(M, w \<Turnstile> (p \<^bold>\<longrightarrow> q)) = ((M, w \<Turnstile> p) \<longrightarrow> (M, w \<Turnstile> q))\<close>
+| \<open>(M, w \<Turnstile> p \<^bold>\<or> q) = ((M, w \<Turnstile> p) \<or> (M, w \<Turnstile> q))\<close>
+| \<open>(M, w \<Turnstile> p \<^bold>\<and> q) = ((M, w \<Turnstile> p) \<and> (M, w \<Turnstile> q))\<close>
+| \<open>(M, w \<Turnstile> p \<^bold>\<longrightarrow> q) = ((M, w \<Turnstile> p) \<longrightarrow> (M, w \<Turnstile> q))\<close>
 | \<open>(M, w \<Turnstile> K i p) = (\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p)\<close>
 
 section \<open>S5 Axioms\<close>
@@ -64,15 +64,19 @@ abbreviation refltrans :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> wher
 abbreviation equivalence :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
   \<open>equivalence M \<equiv> reflexive M \<and> symmetric M \<and> transitive M\<close>
 
-lemma Imp_intro [intro]: \<open>(M, w \<Turnstile> p \<Longrightarrow> M, w \<Turnstile> q) \<Longrightarrow> M, w \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+definition Euclidean :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
+  \<open>Euclidean M \<equiv> \<forall>i. \<forall>u \<in> \<W> M. \<forall>v \<in> \<W> M. \<forall>w \<in> \<W> M.
+    v \<in> \<K> M i u \<longrightarrow> w \<in> \<K> M i u \<longrightarrow> w \<in> \<K> M i v\<close>
+
+lemma Imp_intro [intro]: \<open>(M, w \<Turnstile> p \<Longrightarrow> M, w \<Turnstile> q) \<Longrightarrow> M, w \<Turnstile> p \<^bold>\<longrightarrow> q\<close>
   by simp
 
-theorem distribution: \<open>M, w \<Turnstile> (K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i q)\<close>
+theorem distribution: \<open>M, w \<Turnstile> K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i q\<close>
 proof
-  assume \<open>M, w \<Turnstile> (K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q))\<close>
+  assume \<open>M, w \<Turnstile> K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q)\<close>
   then have \<open>M, w \<Turnstile> K i p\<close> \<open>M, w \<Turnstile> K i (p \<^bold>\<longrightarrow> q)\<close>
     by simp_all
-  then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p\<close> \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> (p \<^bold>\<longrightarrow> q)\<close>
+  then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p\<close> \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p \<^bold>\<longrightarrow> q\<close>
     by simp_all
   then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> q\<close>
     by simp
@@ -92,7 +96,7 @@ qed
 
 theorem truth:
   assumes \<open>reflexive M\<close> \<open>w \<in> \<W> M\<close>
-  shows \<open>M, w \<Turnstile> (K i p \<^bold>\<longrightarrow> p)\<close>
+  shows \<open>M, w \<Turnstile> K i p \<^bold>\<longrightarrow> p\<close>
 proof
   assume \<open>M, w \<Turnstile> K i p\<close>
   then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p\<close>
@@ -105,7 +109,7 @@ qed
 
 theorem pos_introspection:
   assumes \<open>transitive M\<close> \<open>w \<in> \<W> M\<close>
-  shows \<open>M, w \<Turnstile> (K i p \<^bold>\<longrightarrow> K i (K i p))\<close>
+  shows \<open>M, w \<Turnstile> K i p \<^bold>\<longrightarrow> K i (K i p)\<close>
 proof
   assume \<open>M, w \<Turnstile> K i p\<close>
   then have \<open>\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p\<close>
@@ -120,7 +124,7 @@ qed
 
 theorem neg_introspection:
   assumes \<open>symmetric M\<close> \<open>transitive M\<close> \<open>w \<in> \<W> M\<close>
-  shows \<open>M, w \<Turnstile> (\<^bold>\<not> K i p \<^bold>\<longrightarrow> K i (\<^bold>\<not> K i p))\<close>
+  shows \<open>M, w \<Turnstile> \<^bold>\<not> K i p \<^bold>\<longrightarrow> K i (\<^bold>\<not> K i p)\<close>
 proof
   assume \<open>M, w \<Turnstile> \<^bold>\<not> (K i p)\<close>
   then obtain u where \<open>u \<in> \<K> M i w\<close> \<open>\<not> (M, u \<Turnstile> p)\<close> \<open>u \<in> \<W> M\<close>
@@ -146,7 +150,7 @@ primrec eval :: \<open>(id \<Rightarrow> bool) \<Rightarrow> ('i fm \<Rightarrow
 
 abbreviation \<open>tautology p \<equiv> \<forall>g h. eval g h p\<close>
 
-inductive AK :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarrow> bool\<close> (\<open>_ \<turnstile> _\<close> [20, 20] 20)
+inductive AK :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarrow> bool\<close> (\<open>_ \<turnstile> _\<close> [50, 50] 50)
   for A :: \<open>'i fm \<Rightarrow> bool\<close> where
     A1: \<open>tautology p \<Longrightarrow> A \<turnstile> p\<close>
   | A2: \<open>A \<turnstile> K i p \<^bold>\<and> K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i q\<close>
@@ -154,12 +158,12 @@ inductive AK :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm \<Rightarr
   | R1: \<open>A \<turnstile> p \<Longrightarrow> A \<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> A \<turnstile> q\<close>
   | R2: \<open>A \<turnstile> p \<Longrightarrow> A \<turnstile> K i p\<close>
 
-primrec imply :: \<open>'i fm list \<Rightarrow> 'i fm \<Rightarrow> 'i fm\<close> (infixr \<open>\<^bold>\<leadsto>\<close> 26) where
+primrec imply :: \<open>'i fm list \<Rightarrow> 'i fm \<Rightarrow> 'i fm\<close> (infixr \<open>\<^bold>\<leadsto>\<close> 56) where
   \<open>([] \<^bold>\<leadsto> q) = q\<close>
 | \<open>(p # ps \<^bold>\<leadsto> q) = (p \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q)\<close>
 
-abbreviation AK_assms (\<open>_, _ \<turnstile> _\<close> [20, 20, 20] 20) where
-  \<open>A, G \<turnstile> p \<equiv> \<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile> qs \<^bold>\<leadsto> p)\<close>
+abbreviation AK_assms (\<open>_; _ \<turnstile> _\<close> [50, 50, 50] 50) where
+  \<open>A; G \<turnstile> p \<equiv> \<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile> qs \<^bold>\<leadsto> p)\<close>
 
 section \<open>Soundness\<close>
 
@@ -281,7 +285,7 @@ lemma K_imply_weaken:
 proof -
   have \<open>tautology (ps \<^bold>\<leadsto> q \<^bold>\<longrightarrow> ps' \<^bold>\<leadsto> q)\<close>
     using \<open>set ps \<subseteq> set ps'\<close> tautology_imply_superset by blast
-  then have \<open>A \<turnstile> (ps \<^bold>\<leadsto> q \<^bold>\<longrightarrow> ps' \<^bold>\<leadsto> q)\<close>
+  then have \<open>A \<turnstile> ps \<^bold>\<leadsto> q \<^bold>\<longrightarrow> ps' \<^bold>\<leadsto> q\<close>
     using A1 by blast
   then show ?thesis
     using \<open>A \<turnstile> ps \<^bold>\<leadsto> q\<close> R1 by blast
@@ -383,6 +387,21 @@ proof -
     using assms R1 by blast
 qed
 
+lemma K_trans: \<open>A \<turnstile> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
+  by (auto intro: A1)
+
+lemma K_L_dual: \<open>A \<turnstile> \<^bold>\<not> L i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i p\<close>
+proof -
+  have \<open>A \<turnstile> K i p \<^bold>\<longrightarrow> K i p\<close> \<open>A \<turnstile> \<^bold>\<not> \<^bold>\<not> p \<^bold>\<longrightarrow> p\<close>
+    by (auto intro: A1)
+  then have \<open>A \<turnstile> K i (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> K i p\<close>
+    by (auto intro: K_map)
+  moreover have \<open>A \<turnstile> (P \<^bold>\<longrightarrow> Q) \<^bold>\<longrightarrow> (\<^bold>\<not> \<^bold>\<not> P \<^bold>\<longrightarrow> Q)\<close> for P Q
+    by (auto intro: A1)
+  ultimately show \<open>A \<turnstile> \<^bold>\<not> \<^bold>\<not> K i (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> K i p\<close>
+    by (auto intro: R1)
+qed
+
 section \<open>Strong Soundness\<close>
 
 abbreviation validStar :: \<open>(('i, 'w) kripke \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> 'i fm \<Rightarrow> bool\<close> (\<open>valid\<star>\<close>) where
@@ -403,7 +422,7 @@ qed
 
 theorem strong_soundness:
   assumes \<open>\<And>M w p. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
-  shows \<open>A, G \<turnstile> p \<Longrightarrow> valid\<star> P G p\<close>
+  shows \<open>A; G \<turnstile> p \<Longrightarrow> valid\<star> P G p\<close>
 proof safe
   fix qs w and M :: \<open>('a, 'b) kripke\<close>
   assume \<open>A \<turnstile> qs \<^bold>\<leadsto> p\<close>
@@ -420,7 +439,7 @@ section \<open>Completeness\<close>
 subsection \<open>Consistent sets\<close>
 
 definition consistent :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> bool\<close> where
-  \<open>consistent A S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> (A \<turnstile> S' \<^bold>\<leadsto> \<^bold>\<bottom>)\<close>
+  \<open>consistent A S \<equiv> \<not> (A; S \<turnstile> \<^bold>\<bottom>)\<close>
 
 lemma inconsistent_subset:
   assumes \<open>consistent A V\<close> \<open>\<not> consistent A ({p} \<union> V)\<close>
@@ -688,7 +707,7 @@ abbreviation canonical :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> ('i, '
   \<open>canonical A \<equiv> Kripke (mcss A) pi (reach A)\<close>
 
 lemma truth_lemma:
-  fixes A and p :: \<open>('i :: countable) fm\<close>
+  fixes p :: \<open>('i :: countable) fm\<close>
   assumes \<open>consistent A V\<close> and \<open>maximal A V\<close>
   shows \<open>p \<in> V \<longleftrightarrow> canonical A, V \<Turnstile> p\<close>
   using assms
@@ -845,7 +864,6 @@ proof -
     using \<open>consistent A S\<close> unfolding V_def using consistent_Extend by blast
   have \<open>maximal A V\<close>
     unfolding V_def using maximal_Extend surj_from_nat by blast
-
   { fix x
     assume \<open>x \<in> S\<close>
     then have \<open>x \<in> V\<close>
@@ -861,11 +879,11 @@ qed
 subsection \<open>Completeness\<close>
 
 abbreviation valid :: \<open>(('i :: countable, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> 'i fm \<Rightarrow> bool\<close>
-  (\<open>valid\<close>) where \<open>valid \<equiv> valid\<star>\<close>
+  where \<open>valid \<equiv> valid\<star>\<close>
 
 theorem strong_completeness:
   assumes \<open>valid P G p\<close> and \<open>P (canonical A)\<close>
-  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile> qs \<^bold>\<leadsto> p)\<close>
+  shows \<open>A; G \<turnstile> p\<close>
 proof (rule ccontr)
   assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> (A \<turnstile> qs \<^bold>\<leadsto> p)\<close>
   then have *: \<open>\<forall>qs. set qs \<subseteq> G \<longrightarrow> \<not> (A \<turnstile> (\<^bold>\<not> p) # qs \<^bold>\<leadsto> \<^bold>\<bottom>)\<close>
@@ -900,7 +918,7 @@ corollary completeness\<^sub>A:
 section \<open>System K\<close>
 
 abbreviation SystemK (\<open>_ \<turnstile>\<^sub>K _\<close> [50] 50) where
-  \<open>G \<turnstile>\<^sub>K p \<equiv> (\<lambda>_. False), G \<turnstile> p\<close>
+  \<open>G \<turnstile>\<^sub>K p \<equiv> (\<lambda>_. False); G \<turnstile> p\<close>
 
 lemma strong_soundness\<^sub>K: \<open>G \<turnstile>\<^sub>K p \<Longrightarrow> valid\<star> P G p\<close>
   using strong_soundness[of \<open>\<lambda>_. False\<close> \<open>\<lambda>_. True\<close>] by fast
@@ -924,7 +942,7 @@ inductive AxT :: \<open>'i fm \<Rightarrow> bool\<close> where
   \<open>AxT (K i p \<^bold>\<longrightarrow> p)\<close>
 
 abbreviation SystemT (\<open>_ \<turnstile>\<^sub>T _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>T p \<equiv> AxT, G \<turnstile> p\<close>
+  \<open>G \<turnstile>\<^sub>T p \<equiv> AxT; G \<turnstile> p\<close>
 
 lemma soundness_AxT: \<open>AxT p \<Longrightarrow> reflexive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   by (induct p rule: AxT.induct) (meson truth)
@@ -975,7 +993,7 @@ inductive AxB :: \<open>'i fm \<Rightarrow> bool\<close> where
   \<open>AxB (p \<^bold>\<longrightarrow> K i (L i p))\<close>
 
 abbreviation SystemKB (\<open>_ \<turnstile>\<^sub>K\<^sub>B _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>K\<^sub>B p \<equiv> AxB, G \<turnstile> p\<close>
+  \<open>G \<turnstile>\<^sub>K\<^sub>B p \<equiv> AxB; G \<turnstile> p\<close>
 
 lemma soundness_AxB: \<open>AxB p \<Longrightarrow> symmetric M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   unfolding symmetric_def by (induct p rule: AxB.induct) auto
@@ -989,7 +1007,7 @@ lemma AxB_symmetric':
   shows \<open>V \<in> reach A i W\<close>
 proof -
   have \<open>\<forall>p. K i p \<in> W \<longrightarrow> p \<in> V\<close>
-  proof (intro allI impI, rule ccontr)
+  proof (safe, rule ccontr)
     fix p
     assume \<open>K i p \<in> W\<close> \<open>p \<notin> V\<close>
     then have \<open>(\<^bold>\<not> p) \<in> V\<close>
@@ -1041,7 +1059,7 @@ inductive Ax4 :: \<open>'i fm \<Rightarrow> bool\<close> where
   \<open>Ax4 (K i p \<^bold>\<longrightarrow> K i (K i p))\<close>
 
 abbreviation SystemK4 (\<open>_ \<turnstile>\<^sub>K\<^sub>4 _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>K\<^sub>4 p \<equiv> Ax4, G \<turnstile> p\<close>
+  \<open>G \<turnstile>\<^sub>K\<^sub>4 p \<equiv> Ax4; G \<turnstile> p\<close>
 
 lemma soundness_Ax4: \<open>Ax4 p \<Longrightarrow> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   by (induct p rule: Ax4.induct) (meson pos_introspection)
@@ -1091,13 +1109,87 @@ theorem main\<^sub>K\<^sub>4: \<open>valid\<^sub>K\<^sub>4 G p \<longleftrightar
 corollary \<open>valid\<^sub>K\<^sub>4 G p \<longrightarrow> valid\<star> transitive G p\<close>
   using strong_soundness\<^sub>K\<^sub>4[of G p] strong_completeness\<^sub>K\<^sub>4[of G p] by fast
 
+section \<open>System K5\<close>
+
+inductive Ax5 :: \<open>'i fm \<Rightarrow> bool\<close> where
+  \<open>Ax5 (L i p \<^bold>\<longrightarrow> K i (L i p))\<close>
+
+abbreviation SystemK5 (\<open>_ \<turnstile>\<^sub>K\<^sub>5 _\<close> [50, 50] 50) where
+  \<open>G \<turnstile>\<^sub>K\<^sub>5 p \<equiv> Ax5; G \<turnstile> p\<close>
+
+lemma soundness_Ax5: \<open>Ax5 p \<Longrightarrow> Euclidean M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
+  by (induct p rule: Ax5.induct) (unfold Euclidean_def semantics.simps, blast)
+
+lemma strong_soundness\<^sub>K\<^sub>5: \<open>G \<turnstile>\<^sub>K\<^sub>5 p \<Longrightarrow> valid\<star> Euclidean G p\<close>
+  using strong_soundness soundness_Ax5 .
+
+lemma Ax5_Euclidean:
+  assumes \<open>Ax5 \<le> A\<close>
+    \<open>consistent A U\<close> \<open>maximal A U\<close>
+    \<open>consistent A V\<close> \<open>maximal A V\<close>
+    \<open>consistent A W\<close> \<open>maximal A W\<close>
+    and \<open>V \<in> reach A i U\<close> \<open>W \<in> reach A i U\<close>
+  shows \<open>W \<in> reach A i V\<close>
+  using assms
+proof -
+  { fix p
+    assume \<open>K i p \<in> V\<close> \<open>p \<notin> W\<close>
+    then have \<open>(\<^bold>\<not> p) \<in> W\<close>
+      using assms(6-7) exactly_one_in_maximal by fast
+    then have \<open>L i (\<^bold>\<not> p) \<in> U\<close>
+      using assms(2-3, 6-7, 9) exactly_one_in_maximal by blast
+    then have \<open>K i (L i (\<^bold>\<not> p)) \<in> U\<close>
+      using assms(1-3) ax_in_maximal Ax5.intros consequent_in_maximal by fast
+    then have \<open>L i (\<^bold>\<not> p) \<in> V\<close>
+      using assms(8) by blast
+    then have \<open>\<^bold>\<not> K i p \<in> V\<close>
+      using assms(4-5) K_LK consequent_in_maximal deriv_in_maximal by fast
+    then have False
+      using assms(4-5) \<open>K i p \<in> V\<close> exactly_one_in_maximal by fast
+  }
+  then show ?thesis
+    by blast
+qed
+
+lemma Euclidean\<^sub>K\<^sub>5:
+  assumes \<open>Ax5 \<le> A\<close>
+  shows \<open>Euclidean (canonical A)\<close>
+  unfolding Euclidean_def
+proof safe
+  fix i U V W
+  assume \<open>U \<in> \<W> (canonical A)\<close> \<open>V \<in> \<W> (canonical A)\<close> \<open>W \<in> \<W> (canonical A)\<close>
+  then have
+    \<open>consistent A U\<close> \<open>maximal A U\<close>
+    \<open>consistent A V\<close> \<open>maximal A V\<close>
+    \<open>consistent A W\<close> \<open>maximal A W\<close>
+    by simp_all
+  moreover assume
+    \<open>V \<in> \<K> (canonical A) i U\<close>
+    \<open>W \<in> \<K> (canonical A) i U\<close>
+  ultimately have \<open>W \<in> reach A i V\<close>
+    using Ax5_Euclidean assms by simp
+  then show \<open>W \<in> \<K> (canonical A) i V\<close>
+    by simp
+qed
+
+abbreviation \<open>valid\<^sub>K\<^sub>5 \<equiv> valid Euclidean\<close>
+
+lemma strong_completeness\<^sub>K\<^sub>5: \<open>valid\<^sub>K\<^sub>5 G p \<Longrightarrow> G \<turnstile>\<^sub>K\<^sub>5 p\<close>
+  using strong_completeness Euclidean\<^sub>K\<^sub>5 by blast
+
+theorem main\<^sub>K\<^sub>5: \<open>valid\<^sub>K\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>K\<^sub>5 p\<close>
+  using strong_soundness\<^sub>K\<^sub>5[of G p] strong_completeness\<^sub>K\<^sub>5[of G p] by fast
+
+corollary \<open>valid\<^sub>K\<^sub>5 G p \<longrightarrow> valid\<star> Euclidean G p\<close>
+  using strong_soundness\<^sub>K\<^sub>5[of G p] strong_completeness\<^sub>K\<^sub>5[of G p] by fast
+
 section \<open>System S4\<close>
 
 abbreviation Or :: \<open>('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool\<close> (infixl \<open>\<oplus>\<close> 65) where
-  \<open>A \<oplus> A' \<equiv> \<lambda>x. A x \<or> A' x\<close>
+  \<open>(A \<oplus> A') p \<equiv> A p \<or> A' p\<close>
 
 abbreviation SystemS4 (\<open>_ \<turnstile>\<^sub>S\<^sub>4 _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>S\<^sub>4 p \<equiv> AxT \<oplus> Ax4, G \<turnstile> p\<close>
+  \<open>G \<turnstile>\<^sub>S\<^sub>4 p \<equiv> AxT \<oplus> Ax4; G \<turnstile> p\<close>
 
 lemma soundness_AxT4: \<open>(AxT \<oplus> Ax4) p \<Longrightarrow> reflexive M \<and> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness_AxT soundness_Ax4 by fast
@@ -1119,8 +1211,10 @@ corollary \<open>valid\<^sub>S\<^sub>4 G p \<longrightarrow> valid\<star> refltr
 
 section \<open>System S5\<close>
 
+subsection \<open>T + B + 4\<close>
+
 abbreviation SystemS5 (\<open>_ \<turnstile>\<^sub>S\<^sub>5 _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>S\<^sub>5 p \<equiv> AxT \<oplus> AxB \<oplus> Ax4, G \<turnstile> p\<close>
+  \<open>G \<turnstile>\<^sub>S\<^sub>5 p \<equiv> AxT \<oplus> AxB \<oplus> Ax4; G \<turnstile> p\<close>
 
 abbreviation AxTB4 :: \<open>'i fm \<Rightarrow> bool\<close> where
   \<open>AxTB4 \<equiv> AxT \<oplus> AxB \<oplus> Ax4\<close>
@@ -1144,116 +1238,149 @@ theorem main\<^sub>S\<^sub>5: \<open>valid\<^sub>S\<^sub>5 G p \<longleftrightar
 corollary \<open>valid\<^sub>S\<^sub>5 G p \<longrightarrow> valid\<star> equivalence G p\<close>
   using strong_soundness\<^sub>S\<^sub>5[of G p] strong_completeness\<^sub>S\<^sub>5[of G p] by fast
 
-subsection \<open>Traditional formulation\<close>
+subsection \<open>T + 5\<close>
 
-inductive SystemS5' :: \<open>'i fm \<Rightarrow> bool\<close> (\<open>\<turnstile>\<^sub>S\<^sub>5'' _\<close> [20] 20) where
-  A1': \<open>tautology p \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' p\<close>
-| A2': \<open>\<turnstile>\<^sub>S\<^sub>5' K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q\<close>
-| AT': \<open>\<turnstile>\<^sub>S\<^sub>5' K i p \<^bold>\<longrightarrow> p\<close>
-| A5': \<open>\<turnstile>\<^sub>S\<^sub>5' \<^bold>\<not> K i p \<^bold>\<longrightarrow> K i (\<^bold>\<not> K i p)\<close>
-| R1': \<open>\<turnstile>\<^sub>S\<^sub>5' p \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> q \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' q\<close>
-| R2': \<open>\<turnstile>\<^sub>S\<^sub>5' p \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' K i p\<close>
+abbreviation SystemS5' (\<open>_ \<turnstile>\<^sub>S\<^sub>5'' _\<close> [50, 50] 50) where
+  \<open>G \<turnstile>\<^sub>S\<^sub>5' p \<equiv> AxT \<oplus> Ax5; G \<turnstile> p\<close>
 
-lemma S5'_trans: \<open>\<turnstile>\<^sub>S\<^sub>5' (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
-  by (simp add: A1')
+abbreviation AxT5 :: \<open>'i fm \<Rightarrow> bool\<close> where
+  \<open>AxT5 \<equiv> AxT \<oplus> Ax5\<close>
 
-lemma S5'_L: \<open>\<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> L i p\<close>
+lemma symm_trans_Euclid: \<open>symmetric M \<Longrightarrow> transitive M \<Longrightarrow> Euclidean M\<close>
+  unfolding symmetric_def transitive_def Euclidean_def by blast
+
+lemma soundness_AxT5: \<open>AxT5 p \<Longrightarrow> equivalence M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
+  using soundness_AxT[of p M w] soundness_Ax5[of p M w] symm_trans_Euclid by blast
+
+lemma strong_soundness\<^sub>S\<^sub>5': \<open>G \<turnstile>\<^sub>S\<^sub>5' p \<Longrightarrow> valid\<star> equivalence G p\<close>
+  using strong_soundness soundness_AxT5 .
+
+lemma refl_Euclid_equiv: \<open>reflexive M \<Longrightarrow> Euclidean M \<Longrightarrow> equivalence M\<close>
+  unfolding reflexive_def symmetric_def transitive_def Euclidean_def by metis
+
+lemma strong_completeness\<^sub>S\<^sub>5': \<open>valid\<^sub>S\<^sub>5 G p \<Longrightarrow> G \<turnstile>\<^sub>S\<^sub>5' p\<close>
+  using strong_completeness[of equivalence]
+    reflexive\<^sub>T[of AxT5] Euclidean\<^sub>K\<^sub>5[of AxT5] refl_Euclid_equiv by blast
+
+theorem main\<^sub>S\<^sub>5': \<open>valid\<^sub>S\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>S\<^sub>5' p\<close>
+  using strong_soundness\<^sub>S\<^sub>5'[of G p] strong_completeness\<^sub>S\<^sub>5'[of G p] by fast
+
+subsection \<open>Equivalence between systems\<close>
+
+subsubsection \<open>Axiom 5 from B and 4\<close>
+
+lemma K4_L:
+  assumes \<open>Ax4 \<le> A\<close>
+  shows \<open>A \<turnstile> L i (L i p) \<^bold>\<longrightarrow> L i p\<close>
 proof -
-  have \<open>\<turnstile>\<^sub>S\<^sub>5' K i (\<^bold>\<not> p) \<^bold>\<longrightarrow> \<^bold>\<not> p\<close>
-    using AT' by fast
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (P \<^bold>\<longrightarrow> \<^bold>\<not> Q) \<^bold>\<longrightarrow> Q \<^bold>\<longrightarrow> \<^bold>\<not> P\<close> for P Q :: \<open>'i fm\<close>
-    using A1' by force
-  ultimately show ?thesis
-    using R1' by blast
-qed
-
-lemma S5'_B: \<open>\<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> K i (L i p)\<close>
-  using A5' S5'_L R1' S5'_trans by metis
-
-lemma S5'_map_K:
-  assumes \<open>\<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> q\<close>
-  shows \<open>\<turnstile>\<^sub>S\<^sub>5' K i p \<^bold>\<longrightarrow> K i q\<close>
-proof -
-  note \<open>\<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> q\<close>
-  then have \<open>\<turnstile>\<^sub>S\<^sub>5' K i (p \<^bold>\<longrightarrow> q)\<close>
-    using R2' by fast
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q\<close>
-    using A2' by fast
-  ultimately show ?thesis
-    using R1' by fast
-qed
-
-lemma S5'_L_dual: \<open>\<turnstile>\<^sub>S\<^sub>5' \<^bold>\<not> L i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i p\<close>
-proof -
-  have \<open>\<turnstile>\<^sub>S\<^sub>5' K i p \<^bold>\<longrightarrow> K i p\<close> \<open>\<turnstile>\<^sub>S\<^sub>5' \<^bold>\<not> \<^bold>\<not> p \<^bold>\<longrightarrow> p\<close>
-    by (simp_all add: A1')
-  then have \<open>\<turnstile>\<^sub>S\<^sub>5' K i (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> K i p\<close>
-    by (simp add: S5'_map_K)
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (P \<^bold>\<longrightarrow> Q) \<^bold>\<longrightarrow> (\<^bold>\<not> \<^bold>\<not> P \<^bold>\<longrightarrow> Q)\<close> for P Q :: \<open>'i fm\<close>
-    by (simp add: A1')
-  ultimately show \<open>\<turnstile>\<^sub>S\<^sub>5' \<^bold>\<not> \<^bold>\<not> K i (\<^bold>\<not> \<^bold>\<not> p) \<^bold>\<longrightarrow> K i p\<close>
-    using R1' by blast
-qed
-
-lemma S5'_4: \<open>\<turnstile>\<^sub>S\<^sub>5' K i p \<^bold>\<longrightarrow> K i (K i p)\<close>
-proof -
-  have \<open>\<turnstile>\<^sub>S\<^sub>5' L i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i (L i (\<^bold>\<not> p))\<close>
-    using A5' by fast
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (P \<^bold>\<longrightarrow> Q) \<^bold>\<longrightarrow> \<^bold>\<not> Q \<^bold>\<longrightarrow> \<^bold>\<not> P\<close> for P Q :: \<open>'i fm\<close>
-    using A1' by force
-  ultimately have \<open>\<turnstile>\<^sub>S\<^sub>5' \<^bold>\<not> K i (L i (\<^bold>\<not> p)) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p)\<close>
-    using R1' by fast
-  then have \<open>\<turnstile>\<^sub>S\<^sub>5' L i (K i (\<^bold>\<not> \<^bold>\<not> p)) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p)\<close>
-    by blast
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' p \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> p\<close>
-    by (simp add: A1')
-  ultimately have \<open>\<turnstile>\<^sub>S\<^sub>5' L i (K i p) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p)\<close>
-    by (metis (no_types, opaque_lifting) R1' S5'_map_K S5'_trans)
-  then have \<open>\<turnstile>\<^sub>S\<^sub>5' L i (K i p) \<^bold>\<longrightarrow> K i p\<close>
-    by (meson S5'_L_dual R1' S5'_trans)
+  have \<open>A \<turnstile> K i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i (K i (\<^bold>\<not> p))\<close>
+    using assms by (auto intro: Ax Ax4.intros)
   then show ?thesis
-    by (metis A2' R1' R2' S5'_B S5'_trans)
+    by (meson K_LK K_trans R1)
 qed
 
-lemma S5_S5': \<open>AxTB4 \<turnstile> p \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>5' p\<close>
+lemma KB4_5:
+  assumes \<open>AxB \<le> A\<close> \<open>Ax4 \<le> A\<close>
+  shows \<open>A \<turnstile> L i p \<^bold>\<longrightarrow> K i (L i p)\<close>
+proof -
+  have \<open>A \<turnstile> L i p \<^bold>\<longrightarrow> K i (L i (L i p))\<close>
+    using assms by (auto intro: Ax AxB.intros)
+  moreover have \<open>A \<turnstile> L i (L i p) \<^bold>\<longrightarrow> L i p\<close>
+    using assms by (auto intro: K4_L)
+  then have \<open>A \<turnstile> K i (L i (L i p)) \<^bold>\<longrightarrow> K i (L i p)\<close>
+    using K_map by fast
+  ultimately show ?thesis
+    using K_trans R1 by metis
+qed
+
+subsubsection \<open>Axioms B and 4 from T and 5\<close>
+
+lemma T_L:
+  assumes \<open>AxT \<le> A\<close>
+  shows \<open>A \<turnstile> p \<^bold>\<longrightarrow> L i p\<close>
+proof -
+  have \<open>A \<turnstile> K i (\<^bold>\<not> p) \<^bold>\<longrightarrow> \<^bold>\<not> p\<close>
+    using assms by (auto intro: Ax AxT.intros)
+  moreover have \<open>A \<turnstile> (P \<^bold>\<longrightarrow> \<^bold>\<not> Q) \<^bold>\<longrightarrow> Q \<^bold>\<longrightarrow> \<^bold>\<not> P\<close> for P Q
+    by (auto intro: A1)
+  ultimately show ?thesis
+    by (auto intro: R1)
+qed
+
+lemma S5'_B:
+  assumes \<open>AxT \<le> A\<close> \<open>Ax5 \<le> A\<close>
+  shows \<open>A \<turnstile> p \<^bold>\<longrightarrow> K i (L i p)\<close>
+proof -
+  have \<open>A \<turnstile> L i p \<^bold>\<longrightarrow> K i (L i p)\<close>
+    using assms(2) by (auto intro: Ax Ax5.intros)
+  moreover have \<open>A \<turnstile> p \<^bold>\<longrightarrow> L i p\<close>
+    using assms(1) by (auto intro: T_L)
+  ultimately show ?thesis
+    using K_trans R1 by metis
+qed
+
+lemma K5_L:
+  assumes \<open>Ax5 \<le> A\<close>
+  shows \<open>A \<turnstile> L i (K i p) \<^bold>\<longrightarrow> K i p\<close>
+proof -
+  have \<open>A \<turnstile> L i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i (L i (\<^bold>\<not> p))\<close>
+    using assms by (auto intro: Ax Ax5.intros)
+  then have \<open>A \<turnstile> L i (\<^bold>\<not> p) \<^bold>\<longrightarrow> K i (\<^bold>\<not> K i p)\<close>
+    using K_LK by (metis K_map K_trans R1)
+  moreover have \<open>A \<turnstile> (P \<^bold>\<longrightarrow> Q) \<^bold>\<longrightarrow> \<^bold>\<not> Q \<^bold>\<longrightarrow> \<^bold>\<not> P\<close> for P Q
+    by (auto intro: A1)
+  ultimately have \<open>A \<turnstile> \<^bold>\<not> K i (\<^bold>\<not> K i p) \<^bold>\<longrightarrow> \<^bold>\<not> L i (\<^bold>\<not> p)\<close>
+    using R1 by blast
+  then have \<open>A \<turnstile> \<^bold>\<not> K i (\<^bold>\<not> K i p) \<^bold>\<longrightarrow> K i p\<close>
+    using K_L_dual R1 K_trans by metis
+  then show ?thesis
+    by blast
+qed
+
+lemma S5'_4:
+  assumes \<open>AxT \<le> A\<close> \<open>Ax5 \<le> A\<close>
+  shows \<open>A \<turnstile> K i p \<^bold>\<longrightarrow> K i (K i p)\<close>
+proof -
+  have \<open>A \<turnstile> L i (K i p) \<^bold>\<longrightarrow> K i (L i (K i p))\<close>
+    using assms(2) by (auto intro: Ax Ax5.intros)
+  moreover have \<open>A \<turnstile> K i p \<^bold>\<longrightarrow> L i (K i p)\<close>
+    using assms(1) by (auto intro: T_L)
+  ultimately have \<open>A \<turnstile> K i p \<^bold>\<longrightarrow> K i (L i (K i p))\<close>
+    using K_trans R1 by metis
+  moreover have \<open>A \<turnstile> L i (K i p) \<^bold>\<longrightarrow> K i p\<close>
+    using assms(2) K5_L by metis
+  then have \<open>A \<turnstile> K i (L i (K i p)) \<^bold>\<longrightarrow> K i (K i p)\<close>
+    using K_map by fast
+  ultimately show ?thesis
+    using R1 K_trans by metis
+qed
+
+lemma S5_S5': \<open>AxTB4 \<turnstile> p \<Longrightarrow> AxT5 \<turnstile> p\<close>
 proof (induct p rule: AK.induct)
-  case (A2 i p q)
-  have \<open>\<turnstile>\<^sub>S\<^sub>5' K i (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> K i p \<^bold>\<longrightarrow> K i q\<close>
-    using A2' .
-  moreover have \<open>\<turnstile>\<^sub>S\<^sub>5' (P \<^bold>\<longrightarrow> Q \<^bold>\<longrightarrow> R) \<^bold>\<longrightarrow> (Q \<^bold>\<and> P \<^bold>\<longrightarrow> R)\<close> for P Q R :: \<open>'i fm\<close>
-    by (simp add: A1')
-  ultimately show ?case
-    using R1' by blast
-next
   case (Ax p)
-  then show ?case
-    using AT' S5'_B S5'_4
-    by (metis Ax4.cases AxB.cases AxT.cases)
-qed (meson SystemS5'.intros)+
+  moreover have \<open>AxT5 \<turnstile> p\<close> if \<open>AxT p\<close>
+    using that AK.Ax by metis
+  moreover have \<open>AxT5 \<turnstile> p\<close> if \<open>AxB p\<close>
+    using that S5'_B by (metis (no_types, lifting) AxB.cases predicate1I)
+  moreover have \<open>AxT5 \<turnstile> p\<close> if \<open>Ax4 p\<close>
+    using that S5'_4 by (metis (no_types, lifting) Ax4.cases predicate1I)
+  ultimately show ?case
+    by blast
+qed (auto intro: AK.intros)
 
-lemma S5'_S5:
-  fixes p :: \<open>('i :: countable) fm\<close>
-  shows \<open>\<turnstile>\<^sub>S\<^sub>5' p \<Longrightarrow> AxTB4 \<turnstile> p\<close>
-proof (induct p rule: SystemS5'.induct)
-  case (AT' i p)
-  then show ?case
-    by (simp add: Ax AxT.intros)
-next
-  case (A5' i p)
-  let ?p = \<open>\<^bold>\<not> K i p \<^bold>\<longrightarrow> K i (\<^bold>\<not> K i p)\<close>
-  have \<open>valid\<^sub>S\<^sub>5 {} ?p\<close>
-    by (meson neg_introspection)
-  then show ?case
-    using strong_completeness\<^sub>S\<^sub>5[of \<open>{}\<close> \<open>?p\<close>] by fastforce 
-qed (meson AK.intros K_A2')+
+lemma S5'_S5: \<open>AxT5 \<turnstile> p \<Longrightarrow> AxTB4 \<turnstile> p\<close>
+proof (induct p rule: AK.induct)
+  case (Ax p)
+  moreover have \<open>AxTB4 \<turnstile> p\<close> if \<open>AxT p\<close>
+    using that AK.Ax by metis
+  moreover have \<open>AxTB4 \<turnstile> p\<close> if \<open>Ax5 p\<close>
+    using that KB4_5 by (metis (no_types, lifting) Ax5.cases predicate1I)
+  ultimately show ?case
+    by blast
+qed (auto intro: AK.intros)
 
-theorem strong_completeness\<^sub>S\<^sub>5':
-  assumes \<open>valid\<^sub>S\<^sub>5 G p\<close>
-  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (\<turnstile>\<^sub>S\<^sub>5' qs \<^bold>\<leadsto> p)\<close>
-  using assms strong_completeness\<^sub>S\<^sub>5 S5_S5' S5'_S5 by blast
-
-theorem main\<^sub>S\<^sub>5': \<open>valid\<^sub>S\<^sub>5 {} p \<longleftrightarrow> (\<turnstile>\<^sub>S\<^sub>5' p)\<close>
-  using main\<^sub>S\<^sub>5[of \<open>{}\<close> p] S5_S5' S5'_S5 by auto
+corollary S5_S5'_assms: \<open>G \<turnstile>\<^sub>S\<^sub>5 p \<longleftrightarrow> G \<turnstile>\<^sub>S\<^sub>5' p\<close>
+  using S5_S5' S5'_S5 by blast
 
 section \<open>Acknowledgements\<close>
 

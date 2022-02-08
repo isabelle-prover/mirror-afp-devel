@@ -3,9 +3,9 @@
   Author:    Asta Halkjær From
 
   This work is a formalization of public announcement logic with countably many agents.
-  It includes proofs of soundness and completeness for a variant of the axiom system
+  It includes proofs of soundness and completeness for variants of the axiom system
     PA + DIST! + NEC!.
-  The completeness proof builds on the Epistemic Logic theory.
+  The completeness proofs build on the Epistemic Logic theory.
 *)
 
 theory PAL imports "Epistemic_Logic.Epistemic_Logic" begin
@@ -15,20 +15,29 @@ section \<open>Syntax\<close>
 datatype 'i pfm
   = FF (\<open>\<^bold>\<bottom>\<^sub>!\<close>)
   | Pro' id (\<open>Pro\<^sub>!\<close>)
-  | Dis \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr \<open>\<^bold>\<or>\<^sub>!\<close> 30)
-  | Con \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr \<open>\<^bold>\<and>\<^sub>!\<close> 35)
-  | Imp \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<^sub>!\<close> 25)
+  | Dis \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr \<open>\<^bold>\<or>\<^sub>!\<close> 60)
+  | Con \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr \<open>\<^bold>\<and>\<^sub>!\<close> 65)
+  | Imp \<open>'i pfm\<close> \<open>'i pfm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<^sub>!\<close> 55)
   | K' 'i \<open>'i pfm\<close> (\<open>K\<^sub>!\<close>)
-  | Ann \<open>'i pfm\<close> \<open>'i pfm\<close> (\<open>[_]\<^sub>! _\<close> [50, 50] 50)
+  | Ann \<open>'i pfm\<close> \<open>'i pfm\<close> (\<open>[_]\<^sub>! _\<close> [80, 80] 80)
 
-abbreviation PIff :: \<open>'i pfm \<Rightarrow> 'i pfm \<Rightarrow> 'i pfm\<close> (infixr \<open>\<^bold>\<longleftrightarrow>\<^sub>!\<close> 25) where
+abbreviation PIff :: \<open>'i pfm \<Rightarrow> 'i pfm \<Rightarrow> 'i pfm\<close> (infixr \<open>\<^bold>\<longleftrightarrow>\<^sub>!\<close> 55) where
   \<open>p \<^bold>\<longleftrightarrow>\<^sub>! q \<equiv> (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<and>\<^sub>! (q \<^bold>\<longrightarrow>\<^sub>! p)\<close>
 
-abbreviation PNeg (\<open>\<^bold>\<not>\<^sub>! _\<close> [40] 40) where
+abbreviation PNeg (\<open>\<^bold>\<not>\<^sub>! _\<close> [70] 70) where
   \<open>\<^bold>\<not>\<^sub>! p \<equiv> p \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!\<close>
 
 abbreviation PL (\<open>L\<^sub>!\<close>) where
   \<open>L\<^sub>! i p \<equiv> (\<^bold>\<not>\<^sub>! (K\<^sub>! i (\<^bold>\<not>\<^sub>! p)))\<close>
+
+primrec anns :: \<open>'i pfm \<Rightarrow> 'i pfm set\<close> where
+  \<open>anns \<^bold>\<bottom>\<^sub>! = {}\<close>
+| \<open>anns (Pro\<^sub>! _) = {}\<close>
+| \<open>anns (p \<^bold>\<or>\<^sub>! q) = (anns p \<union> anns q)\<close>
+| \<open>anns (p \<^bold>\<and>\<^sub>! q) = (anns p \<union> anns q)\<close>
+| \<open>anns (p \<^bold>\<longrightarrow>\<^sub>! q) = (anns p \<union> anns q)\<close>
+| \<open>anns (K\<^sub>! i p) = anns p\<close>
+| \<open>anns ([r]\<^sub>! p) = {r} \<union> anns r \<union> anns p\<close>
 
 section \<open>Semantics\<close>
 
@@ -37,12 +46,12 @@ fun
   restrict :: \<open>('i, 'w) kripke \<Rightarrow> 'i pfm \<Rightarrow> ('i, 'w) kripke\<close> where
   \<open>(M, w \<Turnstile>\<^sub>! \<^bold>\<bottom>\<^sub>!) = False\<close>
 | \<open>(M, w \<Turnstile>\<^sub>! Pro\<^sub>! x) = \<pi> M w x\<close>
-| \<open>(M, w \<Turnstile>\<^sub>! (p \<^bold>\<or>\<^sub>! q)) = ((M, w \<Turnstile>\<^sub>! p) \<or> (M, w \<Turnstile>\<^sub>! q))\<close>
-| \<open>(M, w \<Turnstile>\<^sub>! (p \<^bold>\<and>\<^sub>! q)) = ((M, w \<Turnstile>\<^sub>! p) \<and> (M, w \<Turnstile>\<^sub>! q))\<close>
-| \<open>(M, w \<Turnstile>\<^sub>! (p \<^bold>\<longrightarrow>\<^sub>! q)) = ((M, w \<Turnstile>\<^sub>! p) \<longrightarrow> (M, w \<Turnstile>\<^sub>! q))\<close>
+| \<open>(M, w \<Turnstile>\<^sub>! p \<^bold>\<or>\<^sub>! q) = ((M, w \<Turnstile>\<^sub>! p) \<or> (M, w \<Turnstile>\<^sub>! q))\<close>
+| \<open>(M, w \<Turnstile>\<^sub>! p \<^bold>\<and>\<^sub>! q) = ((M, w \<Turnstile>\<^sub>! p) \<and> (M, w \<Turnstile>\<^sub>! q))\<close>
+| \<open>(M, w \<Turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q) = ((M, w \<Turnstile>\<^sub>! p) \<longrightarrow> (M, w \<Turnstile>\<^sub>! q))\<close>
 | \<open>(M, w \<Turnstile>\<^sub>! K\<^sub>! i p) = (\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile>\<^sub>! p)\<close>
 | \<open>(M, w \<Turnstile>\<^sub>! [r]\<^sub>! p) = ((M, w \<Turnstile>\<^sub>! r) \<longrightarrow> (restrict M r, w \<Turnstile>\<^sub>! p))\<close>
-| \<open>restrict M p = Kripke {w. w \<in> \<W> M \<and> M, w \<Turnstile>\<^sub>! p} (\<pi> M) (\<K> M)\<close>
+| \<open>restrict M r = Kripke {w. w \<in> \<W> M \<and> M, w \<Turnstile>\<^sub>! r} (\<pi> M) (\<K> M)\<close>
 
 primrec static :: \<open>'i pfm \<Rightarrow> bool\<close> where
   \<open>static \<^bold>\<bottom>\<^sub>! = True\<close>
@@ -112,7 +121,7 @@ lemma static_reduce: \<open>static (reduce p)\<close>
 
 lemma reduce'_semantics:
   assumes \<open>static q\<close>
-  shows \<open>((M, w \<Turnstile>\<^sub>! [p]\<^sub>! (q))) = (M, w \<Turnstile>\<^sub>! reduce' p q)\<close>
+  shows \<open>(M, w \<Turnstile>\<^sub>! [p]\<^sub>! q) = (M, w \<Turnstile>\<^sub>! reduce' p q)\<close>
   using assms by (induct q arbitrary: w) auto
 
 lemma reduce_semantics: \<open>(M, w \<Turnstile>\<^sub>! p) = (M, w \<Turnstile>\<^sub>! reduce p)\<close>
@@ -124,7 +133,7 @@ qed simp_all
 
 section \<open>Chains of Implications\<close>
 
-primrec implyP :: \<open>'i pfm list \<Rightarrow> 'i pfm \<Rightarrow> 'i pfm\<close> (infixr \<open>\<^bold>\<leadsto>\<^sub>!\<close> 26) where
+primrec implyP :: \<open>'i pfm list \<Rightarrow> 'i pfm \<Rightarrow> 'i pfm\<close> (infixr \<open>\<^bold>\<leadsto>\<^sub>!\<close> 56) where
   \<open>([] \<^bold>\<leadsto>\<^sub>! q) = q\<close>
 | \<open>(p # ps \<^bold>\<leadsto>\<^sub>! q) = (p \<^bold>\<longrightarrow>\<^sub>! ps \<^bold>\<leadsto>\<^sub>! q)\<close>
 
@@ -147,23 +156,24 @@ primrec peval :: \<open>(id \<Rightarrow> bool) \<Rightarrow> ('i pfm \<Rightarr
 
 abbreviation \<open>ptautology p \<equiv> \<forall>g h. peval g h p\<close>
 
-inductive PAK :: \<open>('i pfm \<Rightarrow> bool) \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>_ \<turnstile>\<^sub>! _\<close> [20, 20] 20)
-  for A :: \<open>'i pfm \<Rightarrow> bool\<close> where
-    PA1: \<open>ptautology p \<Longrightarrow> A \<turnstile>\<^sub>! p\<close>
-  | PA2: \<open>A \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<and>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
-  | PAx: \<open>A p \<Longrightarrow> A \<turnstile>\<^sub>! p\<close>
-  | PR1: \<open>A \<turnstile>\<^sub>! p \<Longrightarrow> A \<turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q \<Longrightarrow> A \<turnstile>\<^sub>! q\<close>
-  | PR2: \<open>A \<turnstile>\<^sub>! p \<Longrightarrow> A \<turnstile>\<^sub>! K\<^sub>! i p\<close>
-  | PFF: \<open>A \<turnstile>\<^sub>! [r]\<^sub>! \<^bold>\<bottom>\<^sub>! \<^bold>\<longleftrightarrow>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!)\<close>
-  | PPro: \<open>A \<turnstile>\<^sub>! [r]\<^sub>! Pro\<^sub>! x \<^bold>\<longleftrightarrow>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! Pro\<^sub>! x)\<close>
-  | PDis: \<open>A \<turnstile>\<^sub>! [r]\<^sub>! (p \<^bold>\<or>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! [r]\<^sub>! p \<^bold>\<or>\<^sub>! [r]\<^sub>! q\<close>
-  | PCon: \<open>A \<turnstile>\<^sub>! [r]\<^sub>! (p \<^bold>\<and>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! [r]\<^sub>! p \<^bold>\<and>\<^sub>! [r]\<^sub>! q\<close>
-  | PImp: \<open>A \<turnstile>\<^sub>! ([r]\<^sub>! (p \<^bold>\<longrightarrow>\<^sub>! q)) \<^bold>\<longleftrightarrow>\<^sub>! ([r]\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! [r]\<^sub>! q)\<close>
-  | PK: \<open>A \<turnstile>\<^sub>! ([r]\<^sub>! K\<^sub>! i p) \<^bold>\<longleftrightarrow>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i ([r]\<^sub>! p))\<close>
-  | PAnn: \<open>A \<turnstile>\<^sub>! p \<Longrightarrow> A \<turnstile>\<^sub>! [r]\<^sub>! p\<close>
+inductive PAK :: \<open>('i pfm \<Rightarrow> bool) \<Rightarrow> ('i pfm \<Rightarrow> bool) \<Rightarrow> 'i pfm \<Rightarrow> bool\<close>
+  (\<open>_; _ \<turnstile>\<^sub>! _\<close> [50, 50, 50] 50)
+  for A B :: \<open>'i pfm \<Rightarrow> bool\<close> where
+    PA1: \<open>ptautology p \<Longrightarrow> A; B \<turnstile>\<^sub>! p\<close>
+  | PA2: \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<and>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
+  | PAx: \<open>A p \<Longrightarrow> A; B \<turnstile>\<^sub>! p\<close>
+  | PR1: \<open>A; B \<turnstile>\<^sub>! p \<Longrightarrow> A; B \<turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q \<Longrightarrow> A; B \<turnstile>\<^sub>! q\<close>
+  | PR2: \<open>A; B \<turnstile>\<^sub>! p \<Longrightarrow> A; B \<turnstile>\<^sub>! K\<^sub>! i p\<close>
+  | PAnn: \<open>A; B \<turnstile>\<^sub>! p \<Longrightarrow> B r \<Longrightarrow> A; B \<turnstile>\<^sub>! [r]\<^sub>! p\<close>
+  | PFF: \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! \<^bold>\<bottom>\<^sub>! \<^bold>\<longleftrightarrow>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!)\<close>
+  | PPro: \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! Pro\<^sub>! x \<^bold>\<longleftrightarrow>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! Pro\<^sub>! x)\<close>
+  | PDis: \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! (p \<^bold>\<or>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! [r]\<^sub>! p \<^bold>\<or>\<^sub>! [r]\<^sub>! q\<close>
+  | PCon: \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! (p \<^bold>\<and>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! [r]\<^sub>! p \<^bold>\<and>\<^sub>! [r]\<^sub>! q\<close>
+  | PImp: \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! ([r]\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! [r]\<^sub>! q)\<close>
+  | PK: \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! K\<^sub>! i p \<^bold>\<longleftrightarrow>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i ([r]\<^sub>! p))\<close>
 
-abbreviation PAK_assms (\<open>_, _ \<turnstile>\<^sub>! _\<close> [20, 20, 20] 20) where
-  \<open>A, G \<turnstile>\<^sub>! p \<equiv> \<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+abbreviation PAK_assms (\<open>_; _; _ \<turnstile>\<^sub>! _\<close> [50, 50, 50, 50] 50) where
+  \<open>A; B; G \<turnstile>\<^sub>! p \<equiv> \<exists>qs. set qs \<subseteq> G \<and> (A; B \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p)\<close>
 
 lemma eval_peval: \<open>eval h (g o lift) p = peval h g (lift p)\<close>
   by (induct p) simp_all
@@ -171,7 +181,7 @@ lemma eval_peval: \<open>eval h (g o lift) p = peval h g (lift p)\<close>
 lemma tautology_ptautology: \<open>tautology p \<Longrightarrow> ptautology (lift p)\<close>
   using eval_peval by blast
 
-theorem AK_PAK: \<open>A o lift \<turnstile> p \<Longrightarrow> A \<turnstile>\<^sub>! lift p\<close>
+theorem AK_PAK: \<open>A o lift \<turnstile> p \<Longrightarrow> A; B \<turnstile>\<^sub>! lift p\<close>
   by (induct p rule: AK.induct) (auto intro: PAK.intros(1-5) simp: tautology_ptautology)
 
 abbreviation validPS :: \<open>(('i, 'w) kripke \<Rightarrow> bool) \<Rightarrow> 'i pfm set \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>valid\<^sub>!\<star>\<close>)
@@ -199,20 +209,20 @@ qed simp
 
 lemma strong_static_completeness':
   assumes \<open>static p\<close> and \<open>\<forall>q \<in> G. static q\<close> and \<open>valid\<^sub>! P G p\<close>
-    and \<open>valid\<star> P (lower ` G) (lower p) \<Longrightarrow> A o lift, lower ` G \<turnstile> lower p\<close>
-  shows \<open>A, G \<turnstile>\<^sub>! p\<close>
+    and \<open>valid\<star> P (lower ` G) (lower p) \<Longrightarrow> A o lift; lower ` G \<turnstile> lower p\<close>
+  shows \<open>A; B; G \<turnstile>\<^sub>! p\<close>
 proof -
   have \<open>valid P (lower ` G) (lower p)\<close>
     using assms by (simp add: lower_semantics)
-  then have \<open>A o lift, lower ` G \<turnstile> lower p\<close>
+  then have \<open>A o lift; lower ` G \<turnstile> lower p\<close>
     using assms(4) by blast
   then obtain qs where \<open>set qs \<subseteq> G\<close> and \<open>A o lift \<turnstile> map lower qs \<^bold>\<leadsto> lower p\<close>
     using set_map_inv by blast
-  then have \<open>A \<turnstile>\<^sub>! lift (map lower qs \<^bold>\<leadsto> lower p)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! lift (map lower qs \<^bold>\<leadsto> lower p)\<close>
     using AK_PAK by fast
-  then have \<open>A \<turnstile>\<^sub>! map lift (map lower qs) \<^bold>\<leadsto>\<^sub>! lift (lower p)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! map lift (map lower qs) \<^bold>\<leadsto>\<^sub>! lift (lower p)\<close>
     using lift_implyP by metis
-  then have \<open>A \<turnstile>\<^sub>! map (lift o lower) qs \<^bold>\<leadsto>\<^sub>! lift (lower p)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! map (lift o lower) qs \<^bold>\<leadsto>\<^sub>! lift (lower p)\<close>
     by simp
   then show ?thesis
     using assms(1-2) \<open>set qs \<subseteq> G\<close> lift_lower
@@ -221,24 +231,24 @@ qed
 
 theorem strong_static_completeness:
   assumes \<open>static p\<close> and \<open>\<forall>q \<in> G. static q\<close> and \<open>valid\<^sub>! P G p\<close>
-    and \<open>\<And>G p. valid P G p \<Longrightarrow> A o lift, G \<turnstile> p\<close>
-  shows \<open>A, G \<turnstile>\<^sub>! p\<close>
+    and \<open>\<And>G p. valid P G p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
+  shows \<open>A; B; G \<turnstile>\<^sub>! p\<close>
   using strong_static_completeness' assms .
 
 corollary static_completeness':
   assumes \<open>static p\<close> and \<open>valid\<^sub>! P {} p\<close>
     and \<open>valid P {} (lower p) \<Longrightarrow> A o lift \<turnstile> lower p\<close>
-  shows \<open>A \<turnstile>\<^sub>! p\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using assms strong_static_completeness'[where G=\<open>{}\<close> and p=p] by simp
 
 corollary static_completeness:
   assumes \<open>static p\<close> and \<open>valid\<^sub>! P {} p\<close> and \<open>\<And>p. valid P {} p \<Longrightarrow> A o lift \<turnstile> p\<close>
-  shows \<open>A \<turnstile>\<^sub>! p\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using static_completeness' assms .
 
 corollary
   assumes \<open>static p\<close> \<open>valid\<^sub>! (\<lambda>_. True) {} p\<close>
-  shows \<open>A \<turnstile>\<^sub>! p\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using assms static_completeness[where P=\<open>\<lambda>_. True\<close> and p=p] completeness\<^sub>A by blast
 
 section \<open>Soundness\<close>
@@ -258,21 +268,19 @@ proof -
     by (metis kripke.collapse)
 qed
 
-theorem soundness:
+theorem soundness\<^sub>P:
   assumes
     \<open>\<And>M p w. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
-    \<open>\<And>M p. P M \<Longrightarrow> P (restrict M p)\<close>
-  shows \<open>A \<turnstile>\<^sub>! p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+    \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (restrict M r)\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
 proof (induct p arbitrary: M w rule: PAK.induct)
   case (PAnn p r)
-  moreover have \<open>P (restrict M r)\<close>
-    using PAnn(3) assms(2) by simp
-  ultimately show ?case
-    by simp
+  then show ?case
+    using assms by simp
 qed (simp_all add: assms ptautology)
 
-corollary \<open>(\<lambda>_. False) \<turnstile>\<^sub>! p \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
-  using soundness[where P=\<open>\<lambda>_. True\<close>] by metis
+corollary \<open>(\<lambda>_. False); B \<turnstile>\<^sub>! p \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+  using soundness\<^sub>P[where P=\<open>\<lambda>_. True\<close>] by metis
 
 section \<open>Strong Soundness\<close>
 
@@ -306,159 +314,159 @@ proof (rule ccontr)
 qed
 
 lemma PK_imply_weaken:
-  assumes \<open>A \<turnstile>\<^sub>! ps \<^bold>\<leadsto>\<^sub>! q\<close> \<open>set ps \<subseteq> set ps'\<close>
-  shows \<open>A \<turnstile>\<^sub>! ps' \<^bold>\<leadsto>\<^sub>! q\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! ps \<^bold>\<leadsto>\<^sub>! q\<close> \<open>set ps \<subseteq> set ps'\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! ps' \<^bold>\<leadsto>\<^sub>! q\<close>
 proof -
   have \<open>ptautology (ps \<^bold>\<leadsto>\<^sub>! q \<^bold>\<longrightarrow>\<^sub>! ps' \<^bold>\<leadsto>\<^sub>! q)\<close>
     using \<open>set ps \<subseteq> set ps'\<close> ptautology_imply_superset by blast
-  then have \<open>A \<turnstile>\<^sub>! ps \<^bold>\<leadsto>\<^sub>! q \<^bold>\<longrightarrow>\<^sub>! ps' \<^bold>\<leadsto>\<^sub>! q\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! ps \<^bold>\<leadsto>\<^sub>! q \<^bold>\<longrightarrow>\<^sub>! ps' \<^bold>\<leadsto>\<^sub>! q\<close>
     using PA1 by blast
   then show ?thesis
-    using \<open>A \<turnstile>\<^sub>! ps \<^bold>\<leadsto>\<^sub>! q\<close> PR1 by blast
+    using \<open>A; B \<turnstile>\<^sub>! ps \<^bold>\<leadsto>\<^sub>! q\<close> PR1 by blast
 qed
 
 lemma implyP_append: \<open>(ps @ ps' \<^bold>\<leadsto>\<^sub>! q) = (ps \<^bold>\<leadsto>\<^sub>! ps' \<^bold>\<leadsto>\<^sub>! q)\<close>
   by (induct ps) simp_all
 
 lemma PK_ImpI:
-  assumes \<open>A \<turnstile>\<^sub>! p # G \<^bold>\<leadsto>\<^sub>! q\<close>
-  shows \<open>A \<turnstile>\<^sub>! G \<^bold>\<leadsto>\<^sub>! (p \<^bold>\<longrightarrow>\<^sub>! q)\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! p # G \<^bold>\<leadsto>\<^sub>! q\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! G \<^bold>\<leadsto>\<^sub>! (p \<^bold>\<longrightarrow>\<^sub>! q)\<close>
 proof -
   have \<open>set (p # G) \<subseteq> set (G @ [p])\<close>
     by simp
-  then have \<open>A \<turnstile>\<^sub>! G @ [p] \<^bold>\<leadsto>\<^sub>! q\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! G @ [p] \<^bold>\<leadsto>\<^sub>! q\<close>
     using assms PK_imply_weaken by blast
-  then have \<open>A \<turnstile>\<^sub>! G \<^bold>\<leadsto>\<^sub>! [p] \<^bold>\<leadsto>\<^sub>! q\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! G \<^bold>\<leadsto>\<^sub>! [p] \<^bold>\<leadsto>\<^sub>! q\<close>
     using implyP_append by metis
   then show ?thesis
     by simp
 qed
 
-corollary soundness_imply:
+corollary soundness_imply\<^sub>P:
   assumes
     \<open>\<And>M p w. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
-    \<open>\<And>M p. P M \<Longrightarrow> P (restrict M p)\<close>
-  shows \<open>A \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> \<forall>q \<in> set qs. M, w \<Turnstile>\<^sub>! q \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+    \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (restrict M r)\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> \<forall>q \<in> set qs. M, w \<Turnstile>\<^sub>! q \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
 proof (induct qs arbitrary: p)
   case Nil
   then show ?case
-    using soundness[of A P p M w] assms by simp
+    using soundness\<^sub>P[of A P B p M w] assms by simp
 next
   case (Cons q qs)
   then show ?case
     using PK_ImpI by fastforce
 qed
 
-theorem strong_soundness:
+theorem strong_soundness\<^sub>P:
   assumes
     \<open>\<And>M w p. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
-    \<open>\<And>M p. P M \<Longrightarrow> P (restrict M p)\<close>
- shows \<open>A, G \<turnstile>\<^sub>! p \<Longrightarrow> valid\<^sub>!\<star> P G p\<close>
+    \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (restrict M r)\<close>
+  shows \<open>A; B; G \<turnstile>\<^sub>! p \<Longrightarrow> valid\<^sub>!\<star> P G p\<close>
 proof safe
   fix qs w and M :: \<open>('a, 'b) kripke\<close>
-  assume \<open>A \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p\<close>
+  assume \<open>A; B \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p\<close>
   moreover assume \<open>set qs \<subseteq> G\<close> \<open>\<forall>q \<in> G. M, w \<Turnstile>\<^sub>! q\<close>
   then have \<open>\<forall>q \<in> set qs. M, w \<Turnstile>\<^sub>! q\<close>
     using \<open>set qs \<subseteq> G\<close> by blast
   moreover assume \<open>P M\<close> \<open>w \<in> \<W> M\<close>
   ultimately show \<open>M, w \<Turnstile>\<^sub>! p\<close>
-    using soundness_imply[of A P qs p] assms by blast
+    using soundness_imply\<^sub>P[of A P B qs p] assms by blast
 qed
 
 section \<open>Completeness\<close>
 
 lemma ConE:
-  assumes \<open>A \<turnstile>\<^sub>! p \<^bold>\<and>\<^sub>! q\<close>
-  shows \<open>A \<turnstile>\<^sub>! p\<close> \<open>A \<turnstile>\<^sub>! q\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<and>\<^sub>! q\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! p\<close> \<open>A; B \<turnstile>\<^sub>! q\<close>
   using assms by (metis PA1 PR1 peval.simps(4-5))+
 
 lemma Iff_Dis:
-  assumes \<open>A \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! p'\<close> \<open>A \<turnstile>\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! q'\<close>
-  shows \<open>A \<turnstile>\<^sub>! ((p \<^bold>\<or>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<or>\<^sub>! q'))\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! p'\<close> \<open>A; B \<turnstile>\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! q'\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! ((p \<^bold>\<or>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<or>\<^sub>! q'))\<close>
 proof -
-  have \<open>A \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! p') \<^bold>\<longrightarrow>\<^sub>! (q \<^bold>\<longleftrightarrow>\<^sub>! q') \<^bold>\<longrightarrow>\<^sub>! ((p \<^bold>\<or>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<or>\<^sub>! q'))\<close>
+  have \<open>A; B \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! p') \<^bold>\<longrightarrow>\<^sub>! (q \<^bold>\<longleftrightarrow>\<^sub>! q') \<^bold>\<longrightarrow>\<^sub>! ((p \<^bold>\<or>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<or>\<^sub>! q'))\<close>
     by (simp add: PA1)
   then show ?thesis
     using assms PR1 by blast
 qed
 
 lemma Iff_Con:
-  assumes \<open>A \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! p'\<close> \<open>A \<turnstile>\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! q'\<close>
-  shows \<open>A \<turnstile>\<^sub>! (p \<^bold>\<and>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<and>\<^sub>! q')\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! p'\<close> \<open>A; B \<turnstile>\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! q'\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! (p \<^bold>\<and>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<and>\<^sub>! q')\<close>
 proof -
-  have \<open>A \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! p') \<^bold>\<longrightarrow>\<^sub>! (q \<^bold>\<longleftrightarrow>\<^sub>! q') \<^bold>\<longrightarrow>\<^sub>! ((p \<^bold>\<and>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<and>\<^sub>! q'))\<close>
+  have \<open>A; B \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! p') \<^bold>\<longrightarrow>\<^sub>! (q \<^bold>\<longleftrightarrow>\<^sub>! q') \<^bold>\<longrightarrow>\<^sub>! ((p \<^bold>\<and>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<and>\<^sub>! q'))\<close>
     by (simp add: PA1)
   then show ?thesis
     using assms PR1 by blast
 qed
 
 lemma Iff_Imp:
-  assumes \<open>A \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! p'\<close> \<open>A \<turnstile>\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! q'\<close>
-  shows \<open>A \<turnstile>\<^sub>! ((p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<longrightarrow>\<^sub>! q'))\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! p'\<close> \<open>A; B \<turnstile>\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! q'\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! ((p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<longrightarrow>\<^sub>! q'))\<close>
 proof -
-  have \<open>A \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! p') \<^bold>\<longrightarrow>\<^sub>! (q \<^bold>\<longleftrightarrow>\<^sub>! q') \<^bold>\<longrightarrow>\<^sub>! ((p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<longrightarrow>\<^sub>! q'))\<close>
+  have \<open>A; B \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! p') \<^bold>\<longrightarrow>\<^sub>! (q \<^bold>\<longleftrightarrow>\<^sub>! q') \<^bold>\<longrightarrow>\<^sub>! ((p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (p' \<^bold>\<longrightarrow>\<^sub>! q'))\<close>
     by (simp add: PA1)
   then show ?thesis
     using assms PR1 by blast
 qed
 
-lemma Iff_sym: \<open>(A \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! q) = (A \<turnstile>\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! p)\<close>
+lemma Iff_sym: \<open>(A; B \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! q) = (A; B \<turnstile>\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! p)\<close>
 proof -
-  have \<open>A \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (q \<^bold>\<longleftrightarrow>\<^sub>! p)\<close>
+  have \<open>A; B \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! (q \<^bold>\<longleftrightarrow>\<^sub>! p)\<close>
     by (simp add: PA1)
   then show ?thesis
     using PR1 ConE by blast
 qed
 
 lemma Iff_Iff:
-  assumes \<open>A \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! p'\<close> \<open>A \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! q\<close>
-  shows \<open>A \<turnstile>\<^sub>! p' \<^bold>\<longleftrightarrow>\<^sub>! q\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! p'\<close> \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! q\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! p' \<^bold>\<longleftrightarrow>\<^sub>! q\<close>
 proof -
   have \<open>ptautology ((p \<^bold>\<longleftrightarrow>\<^sub>! p') \<^bold>\<longrightarrow>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! (p' \<^bold>\<longleftrightarrow>\<^sub>! q))\<close>
     by (metis peval.simps(4-5))
-  with PA1 have \<open>A \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! p') \<^bold>\<longrightarrow>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! (p' \<^bold>\<longleftrightarrow>\<^sub>! q)\<close> .
+  with PA1 have \<open>A; B \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! p') \<^bold>\<longrightarrow>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! (p' \<^bold>\<longleftrightarrow>\<^sub>! q)\<close> .
   then show ?thesis
     using assms PR1 by blast
 qed
 
-lemma K'_A2': \<open>A \<turnstile>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
+lemma K'_A2': \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
 proof -
-  have \<open>A \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<and>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
+  have \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<and>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
     using PA2 by fast
-  moreover have \<open>A \<turnstile>\<^sub>! (P \<^bold>\<and>\<^sub>! Q \<^bold>\<longrightarrow>\<^sub>! R) \<^bold>\<longrightarrow>\<^sub>! (Q \<^bold>\<longrightarrow>\<^sub>! P \<^bold>\<longrightarrow>\<^sub>! R)\<close> for P Q R
+  moreover have \<open>A; B \<turnstile>\<^sub>! (P \<^bold>\<and>\<^sub>! Q \<^bold>\<longrightarrow>\<^sub>! R) \<^bold>\<longrightarrow>\<^sub>! (Q \<^bold>\<longrightarrow>\<^sub>! P \<^bold>\<longrightarrow>\<^sub>! R)\<close> for P Q R
     by (simp add: PA1)
   ultimately show ?thesis
     using PR1 by fast
 qed
 
 lemma K'_map:
-  assumes \<open>A \<turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q\<close>
-  shows \<open>A \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
 proof -
-  note \<open>A \<turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q\<close>
-  then have \<open>A \<turnstile>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q)\<close>
+  note \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q)\<close>
     using PR2 by fast
-  moreover have \<open>A \<turnstile>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
+  moreover have \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i (p \<^bold>\<longrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i q\<close>
     using K'_A2' by fast
   ultimately show ?thesis
     using PR1 by fast
 qed
 
 lemma ConI:
-  assumes \<open>A \<turnstile>\<^sub>! p\<close> \<open>A \<turnstile>\<^sub>! q\<close>
-  shows \<open>A \<turnstile>\<^sub>! p \<^bold>\<and>\<^sub>! q\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! p\<close> \<open>A; B \<turnstile>\<^sub>! q\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<and>\<^sub>! q\<close>
 proof -
-  have \<open>A \<turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q \<^bold>\<longrightarrow>\<^sub>! p \<^bold>\<and>\<^sub>! q\<close>
+  have \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q \<^bold>\<longrightarrow>\<^sub>! p \<^bold>\<and>\<^sub>! q\<close>
     by (simp add: PA1)
   then show ?thesis
     using assms PR1 by blast
 qed
 
 lemma Iff_wk:
-  assumes \<open>A \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! q\<close>
-  shows \<open>A \<turnstile>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! p) \<^bold>\<longleftrightarrow>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! q)\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! q\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! p) \<^bold>\<longleftrightarrow>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! q)\<close>
 proof -
-  have \<open>A \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! ((r \<^bold>\<longrightarrow>\<^sub>! p) \<^bold>\<longleftrightarrow>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! q))\<close>
+  have \<open>A; B \<turnstile>\<^sub>! (p \<^bold>\<longleftrightarrow>\<^sub>! q) \<^bold>\<longrightarrow>\<^sub>! ((r \<^bold>\<longrightarrow>\<^sub>! p) \<^bold>\<longleftrightarrow>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! q))\<close>
     by (simp add: PA1)
   then show ?thesis
     using assms PR1 by blast
@@ -466,7 +474,7 @@ qed
 
 lemma Iff_reduce':
   assumes \<open>static p\<close>
-  shows \<open>A \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! reduce' r p\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! reduce' r p\<close>
   using assms
 proof (induct p rule: pfm.induct)
   case FF
@@ -478,37 +486,37 @@ next
     by (simp add: PPro)
 next
   case (Dis p q)
-  then have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<or>\<^sub>! [r]\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! reduce' r (p \<^bold>\<or>\<^sub>! q)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<or>\<^sub>! [r]\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! reduce' r (p \<^bold>\<or>\<^sub>! q)\<close>
     using Iff_Dis by fastforce
-  moreover have \<open>A \<turnstile>\<^sub>! ([r]\<^sub>! p \<^bold>\<or>\<^sub>! [r]\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! ([r]\<^sub>! (p \<^bold>\<or>\<^sub>! q))\<close>
+  moreover have \<open>A; B \<turnstile>\<^sub>! ([r]\<^sub>! p \<^bold>\<or>\<^sub>! [r]\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! ([r]\<^sub>! (p \<^bold>\<or>\<^sub>! q))\<close>
     using PDis Iff_sym by fastforce
   ultimately show ?case
     using PA1 PR1 Iff_Iff by blast
 next
   case (Con p q)
-  then have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<and>\<^sub>! [r]\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! reduce' r (p \<^bold>\<and>\<^sub>! q)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<and>\<^sub>! [r]\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! reduce' r (p \<^bold>\<and>\<^sub>! q)\<close>
     using Iff_Con by fastforce
-  moreover have \<open>A \<turnstile>\<^sub>! ([r]\<^sub>! p \<^bold>\<and>\<^sub>! [r]\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! ([r]\<^sub>! (p \<^bold>\<and>\<^sub>! q))\<close>
+  moreover have \<open>A; B \<turnstile>\<^sub>! ([r]\<^sub>! p \<^bold>\<and>\<^sub>! [r]\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! ([r]\<^sub>! (p \<^bold>\<and>\<^sub>! q))\<close>
     using PCon Iff_sym by fastforce
   ultimately show ?case
     using PA1 PR1 Iff_Iff by blast
 next
   case (Imp p q)
-  then have \<open>A \<turnstile>\<^sub>! ([r]\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! [r]\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! reduce' r (p \<^bold>\<longrightarrow>\<^sub>! q)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! ([r]\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! [r]\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! reduce' r (p \<^bold>\<longrightarrow>\<^sub>! q)\<close>
     using Iff_Imp by fastforce
-  moreover have \<open>A \<turnstile>\<^sub>! ([r]\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! [r]\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! ([r]\<^sub>! (p \<^bold>\<longrightarrow>\<^sub>! q))\<close>
+  moreover have \<open>A; B \<turnstile>\<^sub>! ([r]\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! [r]\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! ([r]\<^sub>! (p \<^bold>\<longrightarrow>\<^sub>! q))\<close>
     using PImp Iff_sym by fastforce
   ultimately show ?case
     using PA1 PR1 Iff_Iff by blast
 next
   case (K' i p)
-  then have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! reduce' r p\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! reduce' r p\<close>
     by simp
-  then have \<open>A \<turnstile>\<^sub>! K\<^sub>! i ([r]\<^sub>! p) \<^bold>\<longleftrightarrow>\<^sub>! K\<^sub>! i (reduce' r p)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i ([r]\<^sub>! p) \<^bold>\<longleftrightarrow>\<^sub>! K\<^sub>! i (reduce' r p)\<close>
     using K'_map ConE ConI by metis
-  moreover have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! K\<^sub>! i p \<^bold>\<longleftrightarrow>\<^sub>! r \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i ([r]\<^sub>! p)\<close>
+  moreover have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! K\<^sub>! i p \<^bold>\<longleftrightarrow>\<^sub>! r \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i ([r]\<^sub>! p)\<close>
     using PK .
-  ultimately have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! K\<^sub>! i p \<^bold>\<longleftrightarrow>\<^sub>! r \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i (reduce' r p)\<close>
+  ultimately have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! K\<^sub>! i p \<^bold>\<longleftrightarrow>\<^sub>! r \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i (reduce' r p)\<close>
     by (meson Iff_Iff Iff_sym Iff_wk)
   then show ?case
     by simp
@@ -519,48 +527,48 @@ next
 qed
 
 lemma Iff_Ann1:
-  assumes r: \<open>A \<turnstile>\<^sub>! r \<^bold>\<longleftrightarrow>\<^sub>! r'\<close> and \<open>static p\<close>
-  shows \<open>A \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! [r']\<^sub>! p\<close>
+  assumes r: \<open>A; B \<turnstile>\<^sub>! r \<^bold>\<longleftrightarrow>\<^sub>! r'\<close> and \<open>static p\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! [r']\<^sub>! p\<close>
   using assms(2-)
 proof (induct p)
   case FF
-  have \<open>A \<turnstile>\<^sub>! (r \<^bold>\<longleftrightarrow>\<^sub>! r') \<^bold>\<longrightarrow>\<^sub>! ((r \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!) \<^bold>\<longleftrightarrow>\<^sub>! (r' \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!))\<close>
+  have \<open>A; B \<turnstile>\<^sub>! (r \<^bold>\<longleftrightarrow>\<^sub>! r') \<^bold>\<longrightarrow>\<^sub>! ((r \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!) \<^bold>\<longleftrightarrow>\<^sub>! (r' \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!))\<close>
     by (auto intro: PA1)
-  then have \<open>A \<turnstile>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!) \<^bold>\<longleftrightarrow>\<^sub>! (r' \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!) \<^bold>\<longleftrightarrow>\<^sub>! (r' \<^bold>\<longrightarrow>\<^sub>! \<^bold>\<bottom>\<^sub>!)\<close>
     using r PR1 by blast
   then show ?case
     by (meson PFF Iff_Iff Iff_sym)
 next
   case (Pro' x)
-  have \<open>A \<turnstile>\<^sub>! (r \<^bold>\<longleftrightarrow>\<^sub>! r') \<^bold>\<longrightarrow>\<^sub>! ((r \<^bold>\<longrightarrow>\<^sub>! Pro\<^sub>! x) \<^bold>\<longleftrightarrow>\<^sub>! (r' \<^bold>\<longrightarrow>\<^sub>! Pro\<^sub>! x))\<close>
+  have \<open>A; B \<turnstile>\<^sub>! (r \<^bold>\<longleftrightarrow>\<^sub>! r') \<^bold>\<longrightarrow>\<^sub>! ((r \<^bold>\<longrightarrow>\<^sub>! Pro\<^sub>! x) \<^bold>\<longleftrightarrow>\<^sub>! (r' \<^bold>\<longrightarrow>\<^sub>! Pro\<^sub>! x))\<close>
     by (auto intro: PA1)
-  then have \<open>A \<turnstile>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! Pro\<^sub>! x) \<^bold>\<longleftrightarrow>\<^sub>! (r' \<^bold>\<longrightarrow>\<^sub>! Pro\<^sub>! x)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! (r \<^bold>\<longrightarrow>\<^sub>! Pro\<^sub>! x) \<^bold>\<longleftrightarrow>\<^sub>! (r' \<^bold>\<longrightarrow>\<^sub>! Pro\<^sub>! x)\<close>
     using r PR1 by blast
   then show ?case
     by (meson PPro Iff_Iff Iff_sym)
 next
   case (Dis p q)
-  then have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<or>\<^sub>! [r]\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! [r']\<^sub>! p \<^bold>\<or>\<^sub>! [r']\<^sub>! q\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<or>\<^sub>! [r]\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! [r']\<^sub>! p \<^bold>\<or>\<^sub>! [r']\<^sub>! q\<close>
     by (simp add: Iff_Dis)
   then show ?case
     by (meson PDis Iff_Iff Iff_sym)
 next
   case (Con p q)
-  then have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<and>\<^sub>! [r]\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! [r']\<^sub>! p \<^bold>\<and>\<^sub>! [r']\<^sub>! q\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<and>\<^sub>! [r]\<^sub>! q \<^bold>\<longleftrightarrow>\<^sub>! [r']\<^sub>! p \<^bold>\<and>\<^sub>! [r']\<^sub>! q\<close>
     by (simp add: Iff_Con)
   then show ?case
     by (meson PCon Iff_Iff Iff_sym)
 next
   case (Imp p q)
-  then have \<open>A \<turnstile>\<^sub>! ([r]\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! [r]\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! ([r']\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! [r']\<^sub>! q)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! ([r]\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! [r]\<^sub>! q) \<^bold>\<longleftrightarrow>\<^sub>! ([r']\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! [r']\<^sub>! q)\<close>
     by (simp add: Iff_Imp)
   then show ?case
     by (meson PImp Iff_Iff Iff_sym)
 next
   case (K' i p)
-  then have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! [r']\<^sub>! p\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! [r']\<^sub>! p\<close>
     by simp
-  then have \<open>A \<turnstile>\<^sub>! K\<^sub>! i ([r]\<^sub>! p) \<^bold>\<longleftrightarrow>\<^sub>! K\<^sub>! i ([r']\<^sub>! p)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i ([r]\<^sub>! p) \<^bold>\<longleftrightarrow>\<^sub>! K\<^sub>! i ([r']\<^sub>! p)\<close>
     using K'_map ConE ConI by metis
   then show ?case
     by (meson Iff_Iff Iff_Imp Iff_sym PK r)
@@ -571,11 +579,14 @@ next
 qed
 
 lemma Iff_Ann2:
-  assumes \<open>A \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! p'\<close>
-  shows \<open>A \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! [r]\<^sub>! p'\<close>
+  assumes \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! p'\<close> and \<open>B r\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! [r]\<^sub>! p'\<close>
   using assms PAnn ConE ConI PImp PR1 by metis
 
-lemma Iff_reduce: \<open>A \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! reduce p\<close>
+lemma Iff_reduce:
+  assumes \<open>\<forall>r \<in> anns p. B r\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! reduce p\<close>
+  using assms
 proof (induct p)
   case (Dis p q)
   then show ?case
@@ -590,52 +601,65 @@ next
     by (simp add: Iff_Imp)
 next
   case (K' i p)
-  have
-    \<open>A \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i (reduce p)\<close>
-    \<open>A \<turnstile>\<^sub>! K\<^sub>! i (reduce p) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i p\<close>
-    using K' K'_map ConE by fast+
-  then have \<open>A \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<longleftrightarrow>\<^sub>! K\<^sub>! i (reduce p)\<close>
+  then have
+    \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i (reduce p)\<close>
+    \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i (reduce p) \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i p\<close>
+    using K'_map ConE by fastforce+
+  then have \<open>A; B \<turnstile>\<^sub>! K\<^sub>! i p \<^bold>\<longleftrightarrow>\<^sub>! K\<^sub>! i (reduce p)\<close>
     using ConI by blast
   then show ?case
     by simp
 next
   case (Ann r p)
-  have \<open>A \<turnstile>\<^sub>! [reduce r]\<^sub>! reduce p \<^bold>\<longleftrightarrow>\<^sub>! reduce' (reduce r) (reduce p)\<close>
+  then have \<open>B r\<close>
+    by simp
+  have \<open>A; B \<turnstile>\<^sub>! [reduce r]\<^sub>! reduce p \<^bold>\<longleftrightarrow>\<^sub>! reduce' (reduce r) (reduce p)\<close>
     using Iff_reduce' static_reduce by blast
-  moreover have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! reduce p \<^bold>\<longleftrightarrow>\<^sub>! [reduce r]\<^sub>! reduce p\<close>
-    using Ann(1) Iff_Ann1 static_reduce by blast
-  ultimately have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! reduce p \<^bold>\<longleftrightarrow>\<^sub>! reduce' (reduce r) (reduce p)\<close>
+  moreover have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! reduce p \<^bold>\<longleftrightarrow>\<^sub>! [reduce r]\<^sub>! reduce p\<close>
+    using Ann Iff_Ann1 static_reduce by fastforce
+  ultimately have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! reduce p \<^bold>\<longleftrightarrow>\<^sub>! reduce' (reduce r) (reduce p)\<close>
     using Iff_Iff Iff_sym by blast
-  moreover have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! reduce p \<^bold>\<longleftrightarrow>\<^sub>! [r]\<^sub>! p\<close>
-    by (meson Ann(2) static_reduce Iff_Ann2 Iff_sym)
-  ultimately have \<open>A \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! reduce' (reduce r) (reduce p)\<close>
+  moreover have \<open>\<forall>r \<in> anns p. B r\<close>
+    using Ann.prems by simp
+  then have \<open>A; B \<turnstile>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! reduce p\<close>
+    using Ann.hyps(2) by blast
+  then have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! reduce p \<^bold>\<longleftrightarrow>\<^sub>! [r]\<^sub>! p\<close>
+    using \<open>B r\<close> Iff_Ann2 Iff_sym by blast
+  ultimately have \<open>A; B \<turnstile>\<^sub>! [r]\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! reduce' (reduce r) (reduce p)\<close>
     using Iff_Iff by blast
   then show ?case
     by simp
 qed (simp_all add: PA1)
 
+lemma anns_implyP [simp]:
+  \<open>anns (ps \<^bold>\<leadsto>\<^sub>! q) =  anns q \<union> (\<Union>p \<in> set ps. anns p)\<close>
+  by (induct ps) auto
+
 lemma strong_completeness\<^sub>P':
   assumes \<open>valid\<^sub>! P G p\<close>
+    and \<open>\<forall>r \<in> anns p. B r\<close> \<open>\<forall>q \<in> G. \<forall>r \<in> anns q. B r\<close>
     and \<open>valid\<star> P (lower ` reduce ` G) (lower (reduce p)) \<Longrightarrow>
-      A o lift, lower ` reduce ` G \<turnstile> lower (reduce p)\<close>
-  shows \<open>A, G \<turnstile>\<^sub>! p\<close>
+      A o lift; lower ` reduce ` G \<turnstile> lower (reduce p)\<close>
+  shows \<open>A; B; G \<turnstile>\<^sub>! p\<close>
 proof -
   have \<open>valid\<^sub>! P (reduce ` G) (reduce p)\<close>
     using assms(1) reduce_semantics by fast
   moreover have \<open>static (reduce p)\<close> \<open>\<forall>q \<in> reduce ` G. static q\<close>
     using static_reduce by fast+
-  ultimately have \<open>A, reduce ` G \<turnstile>\<^sub>! reduce p\<close>
-    using assms(2) strong_static_completeness'[where G=\<open>reduce ` G\<close> and p=\<open>reduce p\<close>]
+  ultimately have \<open>A; B; reduce ` G \<turnstile>\<^sub>! reduce p\<close>
+    using assms(4) strong_static_completeness'[where G=\<open>reduce ` G\<close> and p=\<open>reduce p\<close>]
     by presburger
-  then have \<open>\<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile>\<^sub>! map reduce qs \<^bold>\<leadsto>\<^sub>! reduce p)\<close>
+  then have \<open>\<exists>qs. set qs \<subseteq> G \<and> (A; B \<turnstile>\<^sub>! map reduce qs \<^bold>\<leadsto>\<^sub>! reduce p)\<close>
     using set_map_inv by fast
-  then obtain qs where qs: \<open>set qs \<subseteq> G\<close> and \<open>A \<turnstile>\<^sub>! map reduce qs \<^bold>\<leadsto>\<^sub>! reduce p\<close>
+  then obtain qs where qs: \<open>set qs \<subseteq> G\<close> and \<open>A; B \<turnstile>\<^sub>! map reduce qs \<^bold>\<leadsto>\<^sub>! reduce p\<close>
     by blast
-  then have \<open>A \<turnstile>\<^sub>! reduce (qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+  then have \<open>A; B \<turnstile>\<^sub>! reduce (qs \<^bold>\<leadsto>\<^sub>! p)\<close>
     using reduce_implyP by metis
-  moreover have \<open>A \<turnstile>\<^sub>! (qs \<^bold>\<leadsto>\<^sub>! p) \<^bold>\<longleftrightarrow>\<^sub>! reduce (qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+  moreover have \<open>\<forall>r \<in> anns (qs \<^bold>\<leadsto>\<^sub>! p). B r\<close>
+    using assms(2-3) qs by auto
+  then have \<open>A; B \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p \<^bold>\<longleftrightarrow>\<^sub>! reduce (qs \<^bold>\<leadsto>\<^sub>! p)\<close>
     using Iff_reduce by blast
-  ultimately have \<open>A \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p\<close>
+  ultimately have \<open>A; B \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p\<close>
     using ConE(2) PR1 by blast
   then show ?thesis
     using qs by blast
@@ -643,32 +667,51 @@ qed
 
 theorem strong_completeness\<^sub>P:
   assumes \<open>valid\<^sub>! P G p\<close>
-    and \<open>\<And>G p. valid\<star> P G p \<Longrightarrow> A o lift, G \<turnstile> p\<close>
-  shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (A \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p)\<close>
+    and \<open>\<forall>r \<in> anns p. B r\<close> \<open>\<forall>q \<in> G. \<forall>r \<in> anns q. B r\<close>
+    and \<open>\<And>G p. valid\<star> P G p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
+  shows \<open>A; B; G \<turnstile>\<^sub>! p\<close>
   using strong_completeness\<^sub>P' assms .
 
+theorem main\<^sub>P:
+  assumes \<open>\<And>M w p. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+    and \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (restrict M r)\<close>
+    and \<open>\<forall>r \<in> anns p. B r\<close> \<open>\<forall>q \<in> G. \<forall>r \<in> anns q. B r\<close>
+    and \<open>\<And>G p. valid\<star> P G p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
+  shows \<open>valid\<^sub>! P G p \<longleftrightarrow> A; B; G \<turnstile>\<^sub>! p\<close>
+  using strong_soundness\<^sub>P[of A P B G p] strong_completeness\<^sub>P[of P G p B A] assms by blast
+
+corollary strong_completeness\<^sub>P\<^sub>B:
+  assumes \<open>valid\<^sub>! P G p\<close>
+    and \<open>\<And>G p. valid\<star> P G p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
+  shows \<open>A; (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
+  using strong_completeness\<^sub>P[where B=\<open>\<lambda>_. True\<close>] assms by blast
+
 corollary completeness\<^sub>P':
-  assumes \<open>valid\<^sub>! P {} p\<close> and \<open>\<And>p. valid P {} (lower p) \<Longrightarrow> A o lift \<turnstile> lower p\<close>
-  shows \<open>A \<turnstile>\<^sub>! p\<close>
+  assumes \<open>valid\<^sub>! P {} p\<close>
+    and \<open>\<forall>r \<in> anns p. B r\<close>
+    and \<open>\<And>p. valid P {} (lower p) \<Longrightarrow> A o lift \<turnstile> lower p\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using assms strong_completeness\<^sub>P'[where P=P and G=\<open>{}\<close>] by simp
 
 corollary completeness\<^sub>P:
-  assumes \<open>valid\<^sub>! P {} p\<close> and \<open>\<And>p. valid P {} p \<Longrightarrow> A o lift \<turnstile> p\<close>
-  shows \<open>A \<turnstile>\<^sub>! p\<close>
+  assumes \<open>valid\<^sub>! P {} p\<close>
+    and \<open>\<forall>r \<in> anns p. B r\<close>
+    and \<open>\<And>p. valid P {} p \<Longrightarrow> A o lift \<turnstile> p\<close>
+  shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using completeness\<^sub>P' assms .
 
 corollary completeness\<^sub>P\<^sub>A:
   assumes \<open>valid\<^sub>! (\<lambda>_. True) {} p\<close>
-  shows \<open>A \<turnstile>\<^sub>! p\<close>
-  using assms completeness\<^sub>P[where P=\<open>\<lambda>_. True\<close> and p=p] completeness\<^sub>A by blast
+  shows \<open>A; (\<lambda>_. True) \<turnstile>\<^sub>! p\<close>
+  using assms completeness\<^sub>P[of \<open>\<lambda>_. True\<close> p \<open>\<lambda>_. True\<close>] completeness\<^sub>A by blast
 
 section \<open>System PAL + K\<close>
 
 abbreviation SystemPK (\<open>_ \<turnstile>\<^sub>!\<^sub>K _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>!\<^sub>K p \<equiv> (\<lambda>_. False), G \<turnstile>\<^sub>! p\<close>
+  \<open>G \<turnstile>\<^sub>!\<^sub>K p \<equiv> (\<lambda>_. False); (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
 
 lemma strong_soundness\<^sub>P\<^sub>K: \<open>G \<turnstile>\<^sub>!\<^sub>K p \<Longrightarrow> valid\<^sub>!\<star> (\<lambda>_. True) G p\<close>
-  using strong_soundness[of \<open>\<lambda>_. False\<close> \<open>\<lambda>_. True\<close>] by fast
+  using strong_soundness\<^sub>P[of \<open>\<lambda>_. False\<close> \<open>\<lambda>_. True\<close>] by fast
 
 abbreviation validPK (\<open>valid\<^sub>!\<^sub>K\<close>) where
   \<open>valid\<^sub>!\<^sub>K \<equiv> valid\<^sub>! (\<lambda>_. True)\<close>
@@ -676,7 +719,7 @@ abbreviation validPK (\<open>valid\<^sub>!\<^sub>K\<close>) where
 lemma strong_completeness\<^sub>P\<^sub>K:
   assumes \<open>valid\<^sub>!\<^sub>K G p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>K p\<close>
-  using strong_completeness\<^sub>P assms strong_completeness\<^sub>K unfolding comp_apply .
+  using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>K unfolding comp_apply .
 
 theorem main\<^sub>P\<^sub>K: \<open>valid\<^sub>!\<^sub>K G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K p\<close>
   using strong_soundness\<^sub>P\<^sub>K[of G p] strong_completeness\<^sub>P\<^sub>K[of G p] by fast
@@ -692,7 +735,7 @@ inductive AxPT :: \<open>'i pfm \<Rightarrow> bool\<close> where
   \<open>AxPT (K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! p)\<close>
 
 abbreviation SystemPT (\<open>_ \<turnstile>\<^sub>!\<^sub>T _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>!\<^sub>T p \<equiv> AxPT, G \<turnstile>\<^sub>! p\<close>
+  \<open>G \<turnstile>\<^sub>!\<^sub>T p \<equiv> AxPT; (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
 
 lemma soundness_AxPT: \<open>AxPT p \<Longrightarrow> reflexive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   unfolding reflexive_def by (induct p rule: AxPT.induct) simp
@@ -701,7 +744,8 @@ lemma reflexive_restrict: \<open>reflexive M \<Longrightarrow> reflexive (restri
   unfolding reflexive_def by simp
 
 lemma strong_soundness\<^sub>P\<^sub>T: \<open>G \<turnstile>\<^sub>!\<^sub>T p \<Longrightarrow> valid\<^sub>!\<star> reflexive G p\<close>
-  using strong_soundness[of AxPT reflexive G p] soundness_AxPT reflexive_restrict by fast
+  using strong_soundness\<^sub>P[of AxPT reflexive \<open>\<lambda>_. True\<close> G p]
+    soundness_AxPT reflexive_restrict by fast
 
 lemma AxT_AxPT: \<open>AxT = AxPT o lift\<close>
   unfolding comp_apply using lower_lift
@@ -713,7 +757,7 @@ abbreviation validPT (\<open>valid\<^sub>!\<^sub>T\<close>) where
 lemma strong_completeness\<^sub>P\<^sub>T:
   assumes \<open>valid\<^sub>!\<^sub>T G p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>T p\<close>
-  using strong_completeness\<^sub>P assms strong_completeness\<^sub>T unfolding AxT_AxPT .
+  using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>T unfolding AxT_AxPT .
 
 theorem main\<^sub>P\<^sub>T: \<open>valid\<^sub>!\<^sub>T G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>T p\<close>
   using strong_soundness\<^sub>P\<^sub>T[of G p] strong_completeness\<^sub>P\<^sub>T[of G p] by fast
@@ -727,7 +771,7 @@ inductive AxPB :: \<open>'i pfm \<Rightarrow> bool\<close> where
   \<open>AxPB (p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i (L\<^sub>! i p))\<close>
 
 abbreviation SystemPKB (\<open>_ \<turnstile>\<^sub>!\<^sub>K\<^sub>B _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>B p \<equiv> AxPB, G \<turnstile>\<^sub>! p\<close>
+  \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>B p \<equiv> AxPB; (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
 
 lemma soundness_AxPB: \<open>AxPB p \<Longrightarrow> symmetric M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   unfolding symmetric_def by (induct p rule: AxPB.induct) auto
@@ -736,7 +780,8 @@ lemma symmetric_restrict: \<open>symmetric M \<Longrightarrow> symmetric (restri
   unfolding symmetric_def by simp
 
 lemma strong_soundness\<^sub>P\<^sub>K\<^sub>B: \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>B p \<Longrightarrow> valid\<^sub>!\<star> symmetric G p\<close>
-  using strong_soundness[of AxPB symmetric G p] soundness_AxPB symmetric_restrict by fast
+  using strong_soundness\<^sub>P[of AxPB symmetric \<open>\<lambda>_. True\<close> G p]
+    soundness_AxPB symmetric_restrict by fast
 
 lemma AxB_AxPB: \<open>AxB = AxPB o lift\<close>
 proof
@@ -752,7 +797,7 @@ abbreviation validPKB (\<open>valid\<^sub>!\<^sub>K\<^sub>B\<close>) where
 lemma strong_completeness\<^sub>P\<^sub>K\<^sub>B:
   assumes \<open>valid\<^sub>!\<^sub>K\<^sub>B G p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>B p\<close>
-  using strong_completeness\<^sub>P assms strong_completeness\<^sub>K\<^sub>B unfolding AxB_AxPB .
+  using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>K\<^sub>B unfolding AxB_AxPB .
 
 theorem main\<^sub>P\<^sub>K\<^sub>B: \<open>valid\<^sub>!\<^sub>K\<^sub>B G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K\<^sub>B p\<close>
   using strong_soundness\<^sub>P\<^sub>K\<^sub>B[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>B[of G p] by fast
@@ -766,7 +811,7 @@ inductive AxP4 :: \<open>'i pfm \<Rightarrow> bool\<close> where
   \<open>AxP4 (K\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i (K\<^sub>! i p))\<close>
 
 abbreviation SystemPK4 (\<open>_ \<turnstile>\<^sub>!\<^sub>K\<^sub>4 _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>4 p \<equiv> AxP4, G \<turnstile>\<^sub>! p\<close>
+  \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>4 p \<equiv> AxP4; (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
 
 lemma pos_introspection:
   assumes \<open>transitive M\<close> \<open>w \<in> \<W> M\<close>
@@ -793,7 +838,8 @@ lemma transitive_restrict: \<open>transitive M \<Longrightarrow> transitive (res
   by (metis (no_types, lifting) kripke.exhaust_sel kripke.inject mem_Collect_eq restrict.elims)
 
 lemma strong_soundness\<^sub>P\<^sub>K\<^sub>4: \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>4 p \<Longrightarrow> valid\<^sub>!\<star> transitive G p\<close>
-  using strong_soundness[of AxP4 transitive G p] soundness_AxP4 transitive_restrict by fast
+  using strong_soundness\<^sub>P[of AxP4 transitive \<open>\<lambda>_. True\<close> G p]
+    soundness_AxP4 transitive_restrict by fast
 
 lemma Ax4_AxP4: \<open>Ax4 = AxP4 o lift\<close>
 proof
@@ -809,7 +855,7 @@ abbreviation validPK4 (\<open>valid\<^sub>!\<^sub>K\<^sub>4\<close>) where
 lemma strong_completeness\<^sub>P\<^sub>K\<^sub>4:
   assumes \<open>valid\<^sub>!\<^sub>K\<^sub>4 G p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>4 p\<close>
-  using strong_completeness\<^sub>P assms strong_completeness\<^sub>K\<^sub>4 unfolding Ax4_AxP4 .
+  using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>K\<^sub>4 unfolding Ax4_AxP4 .
 
 theorem main\<^sub>P\<^sub>K\<^sub>4: \<open>valid\<^sub>!\<^sub>K\<^sub>4 G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K\<^sub>4 p\<close>
   using strong_soundness\<^sub>P\<^sub>K\<^sub>4[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>4[of G p] by fast
@@ -817,10 +863,50 @@ theorem main\<^sub>P\<^sub>K\<^sub>4: \<open>valid\<^sub>!\<^sub>K\<^sub>4 G p \
 corollary \<open>valid\<^sub>!\<^sub>K\<^sub>4 G p \<Longrightarrow> valid\<^sub>!\<star> transitive G p\<close>
   using strong_soundness\<^sub>P\<^sub>K\<^sub>4[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>4[of G p] by fast
 
+section \<open>System PAL + K5\<close>
+
+inductive AxP5 :: \<open>'i pfm \<Rightarrow> bool\<close> where
+  \<open>AxP5 (L\<^sub>! i p \<^bold>\<longrightarrow>\<^sub>! K\<^sub>! i (L\<^sub>! i p))\<close>
+
+abbreviation SystemPK5 (\<open>_ \<turnstile>\<^sub>!\<^sub>K\<^sub>5 _\<close> [50, 50] 50) where
+  \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>5 p \<equiv> AxP5; (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
+
+lemma soundness_AxP5: \<open>AxP5 p \<Longrightarrow> Euclidean M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+  by (induct p rule: AxP5.induct) (unfold Euclidean_def psemantics.simps, blast)
+
+lemma Euclidean_restrict: \<open>Euclidean M \<Longrightarrow> Euclidean (restrict M p)\<close>
+  unfolding Euclidean_def by auto
+
+lemma strong_soundness\<^sub>P\<^sub>K\<^sub>5: \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>5 p \<Longrightarrow> valid\<^sub>!\<star> Euclidean G p\<close>
+  using strong_soundness\<^sub>P[of AxP5 Euclidean \<open>\<lambda>_. True\<close> G p]
+    soundness_AxP5 Euclidean_restrict by fast
+
+lemma Ax5_AxP5: \<open>Ax5 = AxP5 o lift\<close>
+proof
+  fix p :: \<open>'i fm\<close>
+  show \<open>Ax5 p = (AxP5 \<circ> lift) p\<close>
+    unfolding comp_apply using lower_lift
+    by (smt (verit, best) Ax5.simps AxP5.simps lift.simps(1, 5-6) lower.simps(5-6))
+qed
+
+abbreviation validPK5 (\<open>valid\<^sub>!\<^sub>K\<^sub>5\<close>) where
+  \<open>valid\<^sub>!\<^sub>K\<^sub>5 \<equiv> valid\<^sub>! Euclidean\<close>
+
+lemma strong_completeness\<^sub>P\<^sub>K\<^sub>5:
+  assumes \<open>valid\<^sub>!\<^sub>K\<^sub>5 G p\<close>
+  shows \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>5 p\<close>
+  using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>K\<^sub>5 unfolding Ax5_AxP5 .
+
+theorem main\<^sub>P\<^sub>K\<^sub>5: \<open>valid\<^sub>!\<^sub>K\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K\<^sub>5 p\<close>
+  using strong_soundness\<^sub>P\<^sub>K\<^sub>5[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>5[of G p] by fast
+
+corollary \<open>valid\<^sub>!\<^sub>K\<^sub>5 G p \<Longrightarrow> valid\<^sub>!\<star> Euclidean G p\<close>
+  using strong_soundness\<^sub>P\<^sub>K\<^sub>5[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>5[of G p] by fast
+
 section \<open>System PAL + S4\<close>
 
 abbreviation SystemPS4 (\<open>_ \<turnstile>\<^sub>!\<^sub>S\<^sub>4 _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>4 p \<equiv> AxPT \<oplus> AxP4, G \<turnstile>\<^sub>! p\<close>
+  \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>4 p \<equiv> AxPT \<oplus> AxP4; (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
 
 lemma soundness_AxPT4: \<open>(AxPT \<oplus> AxP4) p \<Longrightarrow> refltrans M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   using soundness_AxPT soundness_AxP4 by fast
@@ -829,7 +915,8 @@ lemma refltrans_restrict: \<open>refltrans M \<Longrightarrow> refltrans (restri
   using reflexive_restrict transitive_restrict by blast
 
 lemma strong_soundness\<^sub>P\<^sub>S\<^sub>4: \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>4 p \<Longrightarrow> valid\<^sub>!\<star> refltrans G p\<close>
-  using strong_soundness[of \<open>AxPT \<oplus> AxP4\<close> refltrans G p] soundness_AxPT4 refltrans_restrict by fast
+  using strong_soundness\<^sub>P[of \<open>AxPT \<oplus> AxP4\<close> refltrans \<open>\<lambda>_. True\<close> G p]
+    soundness_AxPT4 refltrans_restrict by fast
 
 lemma AxT4_AxPT4: \<open>(AxT \<oplus> Ax4) = (AxPT \<oplus> AxP4) o lift\<close>
   using AxT_AxPT Ax4_AxP4 unfolding comp_apply by metis
@@ -840,7 +927,7 @@ abbreviation validPS4 (\<open>valid\<^sub>!\<^sub>S\<^sub>4\<close>) where
 theorem strong_completeness\<^sub>P\<^sub>S\<^sub>4:
   assumes \<open>valid\<^sub>!\<^sub>S\<^sub>4 G p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>4 p\<close>
-  using strong_completeness\<^sub>P assms strong_completeness\<^sub>S\<^sub>4 unfolding AxT4_AxPT4 .
+  using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>S\<^sub>4 unfolding AxT4_AxPT4 .
 
 theorem main\<^sub>P\<^sub>S\<^sub>4: \<open>valid\<^sub>!\<^sub>S\<^sub>4 G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>S\<^sub>4 p\<close>
   using strong_soundness\<^sub>P\<^sub>S\<^sub>4[of G p] strong_completeness\<^sub>P\<^sub>S\<^sub>4[of G p] by fast
@@ -851,7 +938,7 @@ corollary \<open>valid\<^sub>!\<^sub>S\<^sub>4 G p \<Longrightarrow> valid\<^sub
 section \<open>System PAL + S5\<close>
 
 abbreviation SystemPS5 (\<open>_ \<turnstile>\<^sub>!\<^sub>S\<^sub>5 _\<close> [50, 50] 50) where
-  \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5 p \<equiv> AxPT \<oplus> AxPB \<oplus> AxP4, G \<turnstile>\<^sub>! p\<close>
+  \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5 p \<equiv> AxPT \<oplus> AxPB \<oplus> AxP4; (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
 
 abbreviation AxPTB4 :: \<open>'i pfm \<Rightarrow> bool\<close> where
   \<open>AxPTB4 \<equiv> AxPT \<oplus> AxPB \<oplus> AxP4\<close>
@@ -863,7 +950,8 @@ lemma equivalence_restrict: \<open>equivalence M \<Longrightarrow> equivalence (
   using reflexive_restrict symmetric_restrict transitive_restrict by blast
 
 lemma strong_soundness\<^sub>P\<^sub>S\<^sub>5: \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5 p \<Longrightarrow> valid\<^sub>!\<star> equivalence G p\<close>
-  using strong_soundness[of AxPTB4 equivalence G p] soundness_AxPTB4 equivalence_restrict by fast
+  using strong_soundness\<^sub>P[of AxPTB4 equivalence \<open>\<lambda>_. True\<close> G p]
+    soundness_AxPTB4 equivalence_restrict by fast
 
 lemma AxTB4_AxPTB4: \<open>AxTB4 = AxPTB4 o lift\<close>
   using AxT_AxPT AxB_AxPB Ax4_AxP4 unfolding comp_apply by metis
@@ -874,12 +962,38 @@ abbreviation validPS5 (\<open>valid\<^sub>!\<^sub>S\<^sub>5\<close>) where
 theorem strong_completeness\<^sub>P\<^sub>S\<^sub>5:
   assumes \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5 p\<close>
-  using strong_completeness\<^sub>P assms strong_completeness\<^sub>S\<^sub>5 unfolding AxTB4_AxPTB4 .
+  using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>S\<^sub>5 unfolding AxTB4_AxPTB4 .
 
 theorem main\<^sub>P\<^sub>S\<^sub>5: \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>S\<^sub>5 p\<close>
   using strong_soundness\<^sub>P\<^sub>S\<^sub>5[of G p] strong_completeness\<^sub>P\<^sub>S\<^sub>5[of G p] by fast
 
 corollary \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p \<Longrightarrow> valid\<^sub>!\<star> equivalence G p\<close>
   using strong_soundness\<^sub>P\<^sub>S\<^sub>5[of G p] strong_completeness\<^sub>P\<^sub>S\<^sub>5[of G p] by fast
+
+section \<open>System PAL + S5'\<close>
+
+abbreviation SystemPS5' (\<open>_ \<turnstile>\<^sub>!\<^sub>S\<^sub>5'' _\<close> [50, 50] 50) where
+  \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5' p \<equiv> AxPT \<oplus> AxP5; (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
+
+abbreviation AxPT5 :: \<open>'i pfm \<Rightarrow> bool\<close> where
+  \<open>AxPT5 \<equiv> AxPT \<oplus> AxP5\<close>
+
+lemma soundness_AxPT5: \<open>AxPT5 p \<Longrightarrow> equivalence M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
+  using soundness_AxPT soundness_AxPT soundness_AxP5 symm_trans_Euclid by fast
+
+lemma strong_soundness\<^sub>P\<^sub>S\<^sub>5': \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5' p \<Longrightarrow> valid\<^sub>!\<star> equivalence G p\<close>
+  using strong_soundness\<^sub>P[of AxPT5 equivalence \<open>\<lambda>_. True\<close> G p]
+    soundness_AxPT5 equivalence_restrict by fast
+
+lemma AxT5_AxPT5: \<open>AxT5 = AxPT5 o lift\<close>
+  using AxT_AxPT Ax5_AxP5 unfolding comp_apply by metis
+
+theorem strong_completeness\<^sub>P\<^sub>S\<^sub>5':
+  assumes \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p\<close>
+  shows \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5' p\<close>
+  using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>S\<^sub>5' unfolding AxT5_AxPT5 .
+
+theorem main\<^sub>P\<^sub>S\<^sub>5': \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>S\<^sub>5' p\<close>
+  using strong_soundness\<^sub>P\<^sub>S\<^sub>5'[of G p] strong_completeness\<^sub>P\<^sub>S\<^sub>5'[of G p] by fast
 
 end
