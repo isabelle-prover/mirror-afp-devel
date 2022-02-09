@@ -7,15 +7,6 @@ begin
 
 subsection \<open>Library additions\<close>
 
-context comm_monoid_set
-begin
-
-lemma atLeast_atMost_pred_shift:
-  "F (g \<circ> (\<lambda>n. n - Suc 0)) {Suc m..Suc n} = F g {m..n}"
-  unfolding atLeast_Suc_atMost_Suc_shift by simp
-
-end
-
 lemma field_differentiable_diff_const [simp,derivative_intros]:
   "(-)c field_differentiable F"
   unfolding field_differentiable_def
