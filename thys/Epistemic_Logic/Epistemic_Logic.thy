@@ -8,7 +8,7 @@
   by Fagin, Halpern, Moses and Vardi (MIT Press 1995).
   The extensions of system K (T, KB, K4, S4, S5) and their completeness proofs
   are based on the textbook "Modal Logic" by Blackburn, de Rijke and Venema
-  (Cambridge University Press 5001).
+  (Cambridge University Press 2001).
 *)
 
 theory Epistemic_Logic imports "HOL-Library.Countable" begin
