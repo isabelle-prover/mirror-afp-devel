@@ -1,0 +1,69 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{xspace}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{Isa\kern-0.15exF\kern-0.15exo\kern-0.15exR}}
+\newcommand\ceta{\textsf{C\kern-0.15exe\kern-0.45exT\kern-0.45exA}}
+
+\begin{document}
+
+
+\title{A Formalization of the First Order Theory of Rewriting (FORT) \footnote{Supported by FWF (Austrian Science Fund) project P30301.}}
+\author{Alexander Lochmann \and Bertram Felgenhauer}
+\maketitle
+
+\begin{abstract}
+The first-order theory of rewriting (FORT) is a decidable theory for
+linear variable-separated rewrite systems. The decision
+procedure is based on tree automata technique and an inference system presented in \cite{MLMF21}.
+This AFP entry provides a formalization of the underlying decision procedure.
+Moreover it allows to generate a function that can verify each inference step via the
+code generation facility of Isabelle/HOL.
+
+Additionally it contains the specification of a certificate language
+(that allows to state proofs in FORT) and a formalized function that
+allows to verify the validity of the proof.
+This gives software tool authors, that implement the decision procedure,
+the possibility to verify their output.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+The first-order theory of rewriting (FORT) is a fragment of
+first-order predicate logic with predefined predicates.
+The language allows to state many interesting properties of
+term rewrite systems and is decidable for left-linear right-ground systems.
+This was proven by Dauchet and Tison \cite{DT90}.
+
+In this AFP entry we provide a formalized proof of an improved decision procedure
+for the first-order theory of rewriting. We introduce basic definitions to
+represent the rewrite semantics and connect FORT to first-order logic
+via the AFP entry "First-Order Logic According to Fitting" by Stefan Berghofer \cite{B07}.
+To prove the decidability and more importantly to allow code generation a relation between
+formulas in FORT and regular tree language is constructed. The tree language
+contains all witnesses of free variables satisfying the formula, details can be found in \cite{LMMF21}.
+
+Moreover we present a certificate language which is rich enough to express the various au-
+tomata operations in decision procedures for the first-order theory of rewrit-
+ing as well as numerous predicate symbols that may appear in formulas in
+this theory, for more details see \cite{MLMF21}.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

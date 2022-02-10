@@ -69,6 +69,26 @@ dual problem is satisfiable and bounded. The proofs are based on an
 existing formalization of Farkas&#39; Lemma.</description>
     </item>
     <item>
+       <title>First-Order Theory of Rewriting</title>
+              <link>https://www.isa-afp.org/entries/FO_Theory_Rewriting.html</link>
+       <guid>https://www.isa-afp.org/entries/FO_Theory_Rewriting.html</guid>
+       <dc:creator> Alexander Lochmann, Bertram Felgenhauer       </dc:creator>
+       <pubDate>02 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+The first-order theory of rewriting (FORT) is a decidable theory for
+linear variable-separated rewrite systems. The decision procedure is
+based on tree automata technique and an inference system presented in
+&#34;Certifying Proofs in the First-Order Theory of Rewriting&#34;.
+This AFP entry provides a formalization of the underlying decision
+procedure. Moreover it allows to generate a function that can verify
+each inference step via the code generation facility of Isabelle/HOL.
+Additionally it contains the specification of a certificate language
+(that allows to state proofs in FORT) and a formalized function that
+allows to verify the validity of the proof. This gives software tool
+authors, that implement the decision procedure, the possibility to
+verify their output.</description>
+    </item>
+    <item>
        <title>Young's Inequality for Increasing Functions</title>
               <link>https://www.isa-afp.org/entries/Youngs_Inequality.html</link>
        <guid>https://www.isa-afp.org/entries/Youngs_Inequality.html</guid>
@@ -605,33 +625,6 @@ of computation models. We propose algebras that describe preconditions
 and the effect of while-programs under postconditions. They unify
 correctness statements in two dimensions: one statement applies in
 various computation models to various correctness claims.</description>
-    </item>
-    <item>
-       <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
-              <link>https://www.isa-afp.org/entries/Virtual_Substitution.html</link>
-       <guid>https://www.isa-afp.org/entries/Virtual_Substitution.html</guid>
-       <dc:creator> Matias Scharager, Katherine Cordwell, Stefan Mitsch, André Platzer       </dc:creator>
-       <pubDate>02 Oct 2021 00:00:00 +0000</pubDate>
-       <description>
-This paper presents a formally verified quantifier elimination (QE)
-algorithm for first-order real arithmetic by linear and quadratic
-virtual substitution (VS) in Isabelle/HOL. The Tarski-Seidenberg
-theorem established that the first-order logic of real arithmetic is
-decidable by QE. However, in practice, QE algorithms are highly
-complicated and often combine multiple methods for performance. VS is
-a practically successful method for QE that targets formulas with
-low-degree polynomials. To our knowledge, this is the first work to
-formalize VS for quadratic real arithmetic including inequalities. The
-proofs necessitate various contributions to the existing multivariate
-polynomial libraries in Isabelle/HOL. Our framework is modularized and
-easily expandable (to facilitate integrating future optimizations),
-and could serve as a basis for developing practical general-purpose QE
-algorithms. Further, as our formalization is designed with
-practicality in mind, we export our development to SML and test the
-resulting code on 378 benchmarks from the literature, comparing to
-Redlog, Z3, Wolfram Engine, and SMT-RAT. This identified
-inconsistencies in some tools, underscoring the significance of a
-verified approach for the intricacies of real arithmetic.</description>
     </item>
   </channel>
 </rss>
