@@ -53,7 +53,7 @@ proof -
 qed
 
 lemma wf_add:
-  fixes m :: "('a,'b) insert_message"
+  fixes m :: "('\<I>,'\<Sigma>) insert_message"
   assumes "wfP (depends_on M)"
   assumes "\<And>n. n \<in> (M \<union> {m}) \<Longrightarrow> I m \<notin> deps (Insert n)"
   assumes "m \<notin> M"
@@ -62,7 +62,7 @@ proof -
   have "\<And>Q. Q \<noteq> {} \<Longrightarrow> (\<exists>z\<in>Q. \<forall>y. (y \<in> M \<union> {m}) \<and> (z \<in> M \<union> {m}) \<and>
            I y \<in> deps (Insert z) \<longrightarrow> y \<notin> Q)"
   proof -
-    fix Q :: "('a, 'b) insert_message set"
+    fix Q :: "('\<I>,'\<Sigma>) insert_message set"
     assume b:"Q \<noteq> {}"
     show "\<exists>z\<in>Q. \<forall>y. (y \<in> M \<union> {m}) \<and> (z \<in> M \<union> {m}) \<and> I y \<in> deps (Insert z)
            \<longrightarrow> y \<notin> Q"

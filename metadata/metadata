@@ -9745,7 +9745,7 @@ title = Strong Eventual Consistency of the Collaborative Editing Framework WOOT
 author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>, Edgar Gonzàlez <mailto:edgargip@google.com>
 topic = Computer science/Algorithms/Distributed
 date = 2020-03-25
-notify = eminkarayel@google.com, edgargip@google.com, me@eminkarayel.de
+notify = edgargip@google.com, me@eminkarayel.de
 abstract =
   Commutative Replicated Data Types (CRDTs) are a promising new class of
   data structures for large-scale shared mutable content in applications
