@@ -1,6 +1,6 @@
-subsection \<open>Index\<close>
+subsection \<open>Indexing\<close>
 
-theory Index
+theory Indexing
   imports Main
 begin
 
@@ -50,7 +50,7 @@ proof (rule conjI)
       case ge show ?thesis using ac[OF ge assms(2)] assms(3)[symmetric] ..
     qed
   }
-  
+
   then show "a = c"
     by auto
 
@@ -205,7 +205,7 @@ fun size :: "nat bound \<Rightarrow> nat" where
   "size (Bound l r) = r - l"
 
 sublocale index_locale "(\<le>)" "(<)" idx size
-proof qed (auto simp: in_bound_def split: bound.splits) 
+proof qed (auto simp: in_bound_def split: bound.splits)
 
 end
 
@@ -221,7 +221,7 @@ fun size :: "int bound \<Rightarrow> nat" where
   "size (Bound l r) = nat (r - l)"
 
 sublocale index_locale "(\<le>)" "(<)" idx size
-proof qed (auto simp: in_bound_def split: bound.splits) 
+proof qed (auto simp: in_bound_def split: bound.splits)
 
 end
 

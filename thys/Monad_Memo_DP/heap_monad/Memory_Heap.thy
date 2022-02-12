@@ -1,7 +1,7 @@
 subsection \<open>Heap Memory Implementations\<close>
 
 theory Memory_Heap
-  imports State_Heap DP_CRelVH Pair_Memory "HOL-Eisbach.Eisbach" "../Index"
+  imports State_Heap DP_CRelVH Pair_Memory "HOL-Eisbach.Eisbach" "../Indexing"
 begin
 
 text \<open>Move\<close>
@@ -814,7 +814,7 @@ lemma rel_state_update':
 interpretation heap_correct pair.inv_pair update_pair lookup_pair
   by (rule mem.mem_correct_heap_correct[OF _ rel_state_lookup' rel_state_update']) standard
 
-lemmas heap_correct_pairI = heap_correct_axioms 
+lemmas heap_correct_pairI = heap_correct_axioms
 
 (* TODO: Generalize *)
 lemma mem_rel_state_resultD:
