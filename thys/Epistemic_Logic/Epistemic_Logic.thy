@@ -35,36 +35,46 @@ abbreviation \<open>L i p \<equiv> \<^bold>\<not> K i (\<^bold>\<not> p)\<close>
 
 section \<open>Semantics\<close>
 
-datatype ('i, 'w) kripke =
-  Kripke (\<W>: \<open>'w set\<close>) (\<pi>: \<open>'w \<Rightarrow> id \<Rightarrow> bool\<close>) (\<K>: \<open>'i \<Rightarrow> 'w \<Rightarrow> 'w set\<close>)
+record ('i, 'w) frame =
+  \<W> :: \<open>'w set\<close>
+  \<K> :: \<open>'i \<Rightarrow> 'w \<Rightarrow> 'w set\<close>
 
-primrec semantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i fm \<Rightarrow> bool\<close> (\<open>_, _ \<Turnstile> _\<close> [50, 50] 50) where
-  \<open>(M, w \<Turnstile> \<^bold>\<bottom>) = False\<close>
-| \<open>(M, w \<Turnstile> Pro x) = \<pi> M w x\<close>
-| \<open>(M, w \<Turnstile> p \<^bold>\<or> q) = ((M, w \<Turnstile> p) \<or> (M, w \<Turnstile> q))\<close>
-| \<open>(M, w \<Turnstile> p \<^bold>\<and> q) = ((M, w \<Turnstile> p) \<and> (M, w \<Turnstile> q))\<close>
-| \<open>(M, w \<Turnstile> p \<^bold>\<longrightarrow> q) = ((M, w \<Turnstile> p) \<longrightarrow> (M, w \<Turnstile> q))\<close>
-| \<open>(M, w \<Turnstile> K i p) = (\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p)\<close>
+record ('i, 'w) kripke =
+  \<open>('i, 'w) frame\<close> +
+  \<pi> :: \<open>'w \<Rightarrow> id \<Rightarrow> bool\<close>
+
+primrec semantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i fm \<Rightarrow> bool\<close> (\<open>_, _ \<Turnstile> _\<close> [50, 50, 50] 50) where
+  \<open>M, w \<Turnstile> \<^bold>\<bottom> \<longleftrightarrow> False\<close>
+| \<open>M, w \<Turnstile> Pro x \<longleftrightarrow> \<pi> M w x\<close>
+| \<open>M, w \<Turnstile> p \<^bold>\<or> q \<longleftrightarrow> M, w \<Turnstile> p \<or> M, w \<Turnstile> q\<close>
+| \<open>M, w \<Turnstile> p \<^bold>\<and> q \<longleftrightarrow> M, w \<Turnstile> p \<and> M, w \<Turnstile> q\<close>
+| \<open>M, w \<Turnstile> p \<^bold>\<longrightarrow> q \<longleftrightarrow> M, w \<Turnstile> p \<longrightarrow> M, w \<Turnstile> q\<close>
+| \<open>M, w \<Turnstile> K i p \<longleftrightarrow> (\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile> p)\<close>
+
+abbreviation validStar :: \<open>(('i, 'w) kripke \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> 'i fm \<Rightarrow> bool\<close>
+  (\<open>_; _ \<TTurnstile>\<star> _\<close> [50, 50, 50] 50) where
+  \<open>P; G \<TTurnstile>\<star> p \<equiv> \<forall>M. P M \<longrightarrow>
+    (\<forall>w \<in> \<W> M. (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p)\<close>
 
 section \<open>S5 Axioms\<close>
 
-definition reflexive :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
+definition reflexive :: \<open>('i, 'w, 'c) frame_scheme \<Rightarrow> bool\<close> where
   \<open>reflexive M \<equiv> \<forall>i. \<forall>w \<in> \<W> M. w \<in> \<K> M i w\<close>
-
-definition symmetric :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
+ 
+definition symmetric :: \<open>('i, 'w, 'c) frame_scheme \<Rightarrow> bool\<close> where
   \<open>symmetric M \<equiv> \<forall>i. \<forall>v \<in> \<W> M. \<forall>w \<in> \<W> M. v \<in> \<K> M i w \<longleftrightarrow> w \<in> \<K> M i v\<close>
 
-definition transitive :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
+definition transitive :: \<open>('i, 'w, 'c) frame_scheme \<Rightarrow> bool\<close> where
   \<open>transitive M \<equiv> \<forall>i. \<forall>u \<in> \<W> M. \<forall>v \<in> \<W> M. \<forall>w \<in> \<W> M.
     w \<in> \<K> M i v \<and> u \<in> \<K> M i w \<longrightarrow> u \<in> \<K> M i v\<close>
 
-abbreviation refltrans :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
+abbreviation refltrans :: \<open>('i, 'w, 'c) frame_scheme \<Rightarrow> bool\<close> where
   \<open>refltrans M \<equiv> reflexive M \<and> transitive M\<close>
 
-abbreviation equivalence :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
+abbreviation equivalence :: \<open>('i, 'w, 'c) frame_scheme \<Rightarrow> bool\<close> where
   \<open>equivalence M \<equiv> reflexive M \<and> symmetric M \<and> transitive M\<close>
 
-definition Euclidean :: \<open>('i, 'w) kripke \<Rightarrow> bool\<close> where
+definition Euclidean :: \<open>('i, 'w, 'c) frame_scheme \<Rightarrow> bool\<close> where
   \<open>Euclidean M \<equiv> \<forall>i. \<forall>u \<in> \<W> M. \<forall>v \<in> \<W> M. \<forall>w \<in> \<W> M.
     v \<in> \<K> M i u \<longrightarrow> w \<in> \<K> M i u \<longrightarrow> w \<in> \<K> M i v\<close>
 
@@ -85,11 +95,12 @@ proof
 qed
 
 theorem generalization:
-  assumes valid: \<open>\<forall>(M :: ('i, 'w) kripke) w. M, w \<Turnstile> p\<close>
-  shows \<open>(M :: ('i, 'w) kripke), w \<Turnstile> K i p\<close>
+  fixes M :: \<open>('i, 'w) kripke\<close>
+  assumes \<open>\<forall>(M :: ('i, 'w) kripke). \<forall>w \<in> \<W> M. M, w \<Turnstile> p\<close> \<open>w \<in> \<W> M\<close>
+  shows \<open>M, w \<Turnstile> K i p\<close>
 proof -
-  have \<open>\<forall>w' \<in> \<K> M i w. M, w' \<Turnstile> p\<close>
-    using valid by blast
+  have \<open>\<forall>w' \<in> \<W> M \<inter> \<K> M i w. M, w' \<Turnstile> p\<close>
+    using assms by blast
   then show \<open>M, w \<Turnstile> K i p\<close>
     by simp
 qed
@@ -167,19 +178,20 @@ abbreviation AK_assms (\<open>_; _ \<turnstile> _\<close> [50, 50, 50] 50) where
 
 section \<open>Soundness\<close>
 
-lemma eval_semantics: \<open>eval (pi w) (\<lambda>q. Kripke W pi r, w \<Turnstile> q) p = (Kripke W pi r, w \<Turnstile> p)\<close>
+lemma eval_semantics:
+  \<open>eval (pi w) (\<lambda>q. \<lparr>\<W> = W, \<K> = r, \<pi> = pi\<rparr>, w \<Turnstile> q) p = (\<lparr>\<W> = W, \<K> = r, \<pi> = pi\<rparr>, w \<Turnstile> p)\<close>
   by (induct p) simp_all
 
 lemma tautology:
   assumes \<open>tautology p\<close>
   shows \<open>M, w \<Turnstile> p\<close>
 proof -
-  from assms have \<open>eval (g w) (\<lambda>q. Kripke W g r, w \<Turnstile> q) p\<close> for W g r
+  from assms have \<open>eval (g w) (\<lambda>q. \<lparr>\<W> = W, \<K> = r, \<pi> = g\<rparr>, w \<Turnstile> q) p\<close> for W g r
     by simp
-  then have \<open>Kripke W g r, w \<Turnstile> p\<close> for W g r
+  then have \<open>\<lparr>\<W> = W, \<K> = r, \<pi> = g\<rparr>, w \<Turnstile> p\<close> for W g r
     using eval_semantics by fast
   then show \<open>M, w \<Turnstile> p\<close>
-    by (metis kripke.collapse)
+    by (metis kripke.cases)
 qed
 
 theorem soundness:
@@ -404,12 +416,9 @@ qed
 
 section \<open>Strong Soundness\<close>
 
-abbreviation validStar :: \<open>(('i, 'w) kripke \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> 'i fm \<Rightarrow> bool\<close> (\<open>valid\<star>\<close>) where
-  \<open>valid\<star> P G p \<equiv> \<forall>M. \<forall>w \<in> \<W> M. P M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p\<close>
-
 corollary soundness_imply:
   assumes \<open>\<And>M w p. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
-  shows \<open>A \<turnstile> ps \<^bold>\<leadsto> p \<Longrightarrow> valid\<star> P (set ps) p\<close>
+  shows \<open>A \<turnstile> ps \<^bold>\<leadsto> p \<Longrightarrow> P; set ps \<TTurnstile>\<star> p\<close>
 proof (induct ps arbitrary: p)
   case Nil
   then show ?case
@@ -422,7 +431,7 @@ qed
 
 theorem strong_soundness:
   assumes \<open>\<And>M w p. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
-  shows \<open>A; G \<turnstile> p \<Longrightarrow> valid\<star> P G p\<close>
+  shows \<open>A; G \<turnstile> p \<Longrightarrow> P; G \<TTurnstile>\<star> p\<close>
 proof safe
   fix qs w and M :: \<open>('a, 'b) kripke\<close>
   assume \<open>A \<turnstile> qs \<^bold>\<leadsto> p\<close>
@@ -704,7 +713,7 @@ abbreviation mcss :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm set s
   \<open>mcss A \<equiv> {W. consistent A W \<and> maximal A W}\<close>
 
 abbreviation canonical :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> ('i, 'i fm set) kripke\<close> where
-  \<open>canonical A \<equiv> Kripke (mcss A) pi (reach A)\<close>
+  \<open>canonical A \<equiv> \<lparr>\<W> = mcss A, \<K> = reach A, \<pi> = pi\<rparr>\<close>
 
 lemma truth_lemma:
   fixes p :: \<open>('i :: countable) fm\<close>
@@ -879,10 +888,11 @@ qed
 subsection \<open>Completeness\<close>
 
 abbreviation valid :: \<open>(('i :: countable, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> 'i fm \<Rightarrow> bool\<close>
-  where \<open>valid \<equiv> valid\<star>\<close>
+  (\<open>_; _ \<TTurnstile> _\<close> [50, 50, 50] 50)
+  where \<open>P; G \<TTurnstile> p \<equiv> P; G \<TTurnstile>\<star> p\<close>
 
 theorem strong_completeness:
-  assumes \<open>valid P G p\<close> and \<open>P (canonical A)\<close>
+  assumes \<open>P; G \<TTurnstile> p\<close> and \<open>P (canonical A)\<close>
   shows \<open>A; G \<turnstile> p\<close>
 proof (rule ccontr)
   assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> (A \<turnstile> qs \<^bold>\<leadsto> p)\<close>
@@ -906,12 +916,12 @@ proof (rule ccontr)
 qed
 
 corollary completeness:
-  assumes \<open>valid P {} p\<close> and \<open>P (canonical A)\<close>
+  assumes \<open>P; {} \<TTurnstile> p\<close> and \<open>P (canonical A)\<close>
   shows \<open>A \<turnstile> p\<close>
   using assms strong_completeness[where G=\<open>{}\<close>] by simp
 
 corollary completeness\<^sub>A:
-  assumes \<open>valid (\<lambda>_. True) {} p\<close>
+  assumes \<open>(\<lambda>_. True); {} \<TTurnstile> p\<close>
   shows \<open>A \<turnstile> p\<close>
   using assms completeness by blast
 
@@ -920,18 +930,19 @@ section \<open>System K\<close>
 abbreviation SystemK (\<open>_ \<turnstile>\<^sub>K _\<close> [50] 50) where
   \<open>G \<turnstile>\<^sub>K p \<equiv> (\<lambda>_. False); G \<turnstile> p\<close>
 
-lemma strong_soundness\<^sub>K: \<open>G \<turnstile>\<^sub>K p \<Longrightarrow> valid\<star> P G p\<close>
+lemma strong_soundness\<^sub>K: \<open>G \<turnstile>\<^sub>K p \<Longrightarrow> P; G \<TTurnstile>\<star> p\<close>
   using strong_soundness[of \<open>\<lambda>_. False\<close> \<open>\<lambda>_. True\<close>] by fast
 
-abbreviation \<open>valid\<^sub>K \<equiv> valid (\<lambda>_. True)\<close>
+abbreviation validK (\<open>_ \<TTurnstile>\<^sub>K _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>K p \<equiv> (\<lambda>_. True); G \<TTurnstile> p\<close>
 
-lemma strong_completeness\<^sub>K: \<open>valid\<^sub>K G p \<Longrightarrow> G \<turnstile>\<^sub>K p\<close>
+lemma strong_completeness\<^sub>K: \<open>G \<TTurnstile>\<^sub>K p \<Longrightarrow> G \<turnstile>\<^sub>K p\<close>
   using strong_completeness[of \<open>\<lambda>_. True\<close>] by blast
 
-theorem main\<^sub>K: \<open>valid\<^sub>K G p \<longleftrightarrow> G \<turnstile>\<^sub>K p\<close>
+theorem main\<^sub>K: \<open>G \<TTurnstile>\<^sub>K p \<longleftrightarrow> G \<turnstile>\<^sub>K p\<close>
   using strong_soundness\<^sub>K[of G p] strong_completeness\<^sub>K[of G p] by fast
 
-corollary \<open>valid\<^sub>K G p \<Longrightarrow> valid\<star> (\<lambda>_. True) G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>K p \<Longrightarrow> (\<lambda>_. True); G \<TTurnstile>\<star> p\<close>
   using strong_soundness\<^sub>K[of G p] strong_completeness\<^sub>K[of G p] by fast
 
 section \<open>System T\<close>
@@ -947,7 +958,7 @@ abbreviation SystemT (\<open>_ \<turnstile>\<^sub>T _\<close> [50, 50] 50) where
 lemma soundness_AxT: \<open>AxT p \<Longrightarrow> reflexive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   by (induct p rule: AxT.induct) (meson truth)
 
-lemma strong_soundness\<^sub>T: \<open>G \<turnstile>\<^sub>T p \<Longrightarrow> valid\<star> reflexive G p\<close>
+lemma strong_soundness\<^sub>T: \<open>G \<turnstile>\<^sub>T p \<Longrightarrow> reflexive; G \<TTurnstile>\<star> p\<close>
   using strong_soundness soundness_AxT .
 
 lemma AxT_reflexive:
@@ -976,15 +987,16 @@ proof safe
     by simp
 qed
 
-abbreviation \<open>valid\<^sub>T \<equiv> valid reflexive\<close>
+abbreviation validT (\<open>_ \<TTurnstile>\<^sub>T _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>T p \<equiv> reflexive; G \<TTurnstile> p\<close>
 
-lemma strong_completeness\<^sub>T: \<open>valid\<^sub>T G p \<Longrightarrow> G \<turnstile>\<^sub>T p\<close>
+lemma strong_completeness\<^sub>T: \<open>G \<TTurnstile>\<^sub>T p \<Longrightarrow> G \<turnstile>\<^sub>T p\<close>
   using strong_completeness reflexive\<^sub>T by blast
 
-theorem main\<^sub>T: \<open>valid\<^sub>T G p \<longleftrightarrow> G \<turnstile>\<^sub>T p\<close>
+theorem main\<^sub>T: \<open>G \<TTurnstile>\<^sub>T p \<longleftrightarrow> G \<turnstile>\<^sub>T p\<close>
   using strong_soundness\<^sub>T[of G p] strong_completeness\<^sub>T[of G p] by fast
 
-corollary \<open>valid\<^sub>T G p \<longrightarrow> valid\<star> reflexive G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>T p \<longrightarrow> reflexive; G \<TTurnstile>\<star> p\<close>
   using strong_soundness\<^sub>T[of G p] strong_completeness\<^sub>T[of G p] by fast
 
 section \<open>System KB\<close>
@@ -998,7 +1010,7 @@ abbreviation SystemKB (\<open>_ \<turnstile>\<^sub>K\<^sub>B _\<close> [50, 50] 
 lemma soundness_AxB: \<open>AxB p \<Longrightarrow> symmetric M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   unfolding symmetric_def by (induct p rule: AxB.induct) auto
 
-lemma strong_soundness\<^sub>K\<^sub>B: \<open>G \<turnstile>\<^sub>K\<^sub>B p \<Longrightarrow> valid\<star> symmetric G p\<close>
+lemma strong_soundness\<^sub>K\<^sub>B: \<open>G \<turnstile>\<^sub>K\<^sub>B p \<Longrightarrow> symmetric; G \<TTurnstile>\<star> p\<close>
   using strong_soundness soundness_AxB .
 
 lemma AxB_symmetric':
@@ -1042,15 +1054,16 @@ proof (intro allI ballI)
     by simp
 qed
 
-abbreviation \<open>valid\<^sub>K\<^sub>B \<equiv> valid symmetric\<close>
+abbreviation validKB (\<open>_ \<TTurnstile>\<^sub>K\<^sub>B _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>K\<^sub>B p \<equiv> symmetric; G \<TTurnstile> p\<close>
 
-lemma strong_completeness\<^sub>K\<^sub>B: \<open>valid\<^sub>K\<^sub>B G p \<Longrightarrow> G \<turnstile>\<^sub>K\<^sub>B p\<close>
+lemma strong_completeness\<^sub>K\<^sub>B: \<open>G \<TTurnstile>\<^sub>K\<^sub>B p \<Longrightarrow> G \<turnstile>\<^sub>K\<^sub>B p\<close>
   using strong_completeness symmetric\<^sub>K\<^sub>B by blast
 
-theorem main\<^sub>K\<^sub>B: \<open>valid\<^sub>K\<^sub>B G p \<longleftrightarrow> G \<turnstile>\<^sub>K\<^sub>B p\<close>
+theorem main\<^sub>K\<^sub>B: \<open>G \<TTurnstile>\<^sub>K\<^sub>B p \<longleftrightarrow> G \<turnstile>\<^sub>K\<^sub>B p\<close>
   using strong_soundness\<^sub>K\<^sub>B[of G p] strong_completeness\<^sub>K\<^sub>B[of G p] by fast
 
-corollary \<open>valid\<^sub>K\<^sub>B G p \<longrightarrow> valid\<star> symmetric G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>K\<^sub>B p \<longrightarrow> symmetric; G \<TTurnstile>\<star> p\<close>
   using strong_soundness\<^sub>K\<^sub>B[of G p] strong_completeness\<^sub>K\<^sub>B[of G p] by fast
 
 section \<open>System K4\<close>
@@ -1064,7 +1077,7 @@ abbreviation SystemK4 (\<open>_ \<turnstile>\<^sub>K\<^sub>4 _\<close> [50, 50] 
 lemma soundness_Ax4: \<open>Ax4 p \<Longrightarrow> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   by (induct p rule: Ax4.induct) (meson pos_introspection)
 
-lemma strong_soundness\<^sub>K\<^sub>4: \<open>G \<turnstile>\<^sub>K\<^sub>4 p \<Longrightarrow> valid\<star> transitive G p\<close>
+lemma strong_soundness\<^sub>K\<^sub>4: \<open>G \<turnstile>\<^sub>K\<^sub>4 p \<Longrightarrow> transitive; G \<TTurnstile>\<star> p\<close>
   using strong_soundness soundness_Ax4 .
 
 lemma Ax4_transitive:
@@ -1098,15 +1111,16 @@ proof safe
     by simp
 qed
 
-abbreviation \<open>valid\<^sub>K\<^sub>4 \<equiv> valid transitive\<close>
+abbreviation validK4 (\<open>_ \<TTurnstile>\<^sub>K\<^sub>4 _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>K\<^sub>4 p \<equiv> transitive; G \<TTurnstile> p\<close>
 
-lemma strong_completeness\<^sub>K\<^sub>4: \<open>valid\<^sub>K\<^sub>4 G p \<Longrightarrow> G \<turnstile>\<^sub>K\<^sub>4 p\<close>
+lemma strong_completeness\<^sub>K\<^sub>4: \<open>G \<TTurnstile>\<^sub>K\<^sub>4 p \<Longrightarrow> G \<turnstile>\<^sub>K\<^sub>4 p\<close>
   using strong_completeness transitive\<^sub>K\<^sub>4 by blast
 
-theorem main\<^sub>K\<^sub>4: \<open>valid\<^sub>K\<^sub>4 G p \<longleftrightarrow> G \<turnstile>\<^sub>K\<^sub>4 p\<close>
+theorem main\<^sub>K\<^sub>4: \<open>G \<TTurnstile>\<^sub>K\<^sub>4 p \<longleftrightarrow> G \<turnstile>\<^sub>K\<^sub>4 p\<close>
   using strong_soundness\<^sub>K\<^sub>4[of G p] strong_completeness\<^sub>K\<^sub>4[of G p] by fast
 
-corollary \<open>valid\<^sub>K\<^sub>4 G p \<longrightarrow> valid\<star> transitive G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>K\<^sub>4 p \<longrightarrow> transitive; G \<TTurnstile>\<star> p\<close>
   using strong_soundness\<^sub>K\<^sub>4[of G p] strong_completeness\<^sub>K\<^sub>4[of G p] by fast
 
 section \<open>System K5\<close>
@@ -1120,7 +1134,7 @@ abbreviation SystemK5 (\<open>_ \<turnstile>\<^sub>K\<^sub>5 _\<close> [50, 50] 
 lemma soundness_Ax5: \<open>Ax5 p \<Longrightarrow> Euclidean M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   by (induct p rule: Ax5.induct) (unfold Euclidean_def semantics.simps, blast)
 
-lemma strong_soundness\<^sub>K\<^sub>5: \<open>G \<turnstile>\<^sub>K\<^sub>5 p \<Longrightarrow> valid\<star> Euclidean G p\<close>
+lemma strong_soundness\<^sub>K\<^sub>5: \<open>G \<turnstile>\<^sub>K\<^sub>5 p \<Longrightarrow> Euclidean; G \<TTurnstile>\<star> p\<close>
   using strong_soundness soundness_Ax5 .
 
 lemma Ax5_Euclidean:
@@ -1172,15 +1186,16 @@ proof safe
     by simp
 qed
 
-abbreviation \<open>valid\<^sub>K\<^sub>5 \<equiv> valid Euclidean\<close>
+abbreviation validK5 (\<open>_ \<TTurnstile>\<^sub>K\<^sub>5 _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>K\<^sub>5 p \<equiv> Euclidean; G \<TTurnstile> p\<close>
 
-lemma strong_completeness\<^sub>K\<^sub>5: \<open>valid\<^sub>K\<^sub>5 G p \<Longrightarrow> G \<turnstile>\<^sub>K\<^sub>5 p\<close>
+lemma strong_completeness\<^sub>K\<^sub>5: \<open>G \<TTurnstile>\<^sub>K\<^sub>5 p \<Longrightarrow> G \<turnstile>\<^sub>K\<^sub>5 p\<close>
   using strong_completeness Euclidean\<^sub>K\<^sub>5 by blast
 
-theorem main\<^sub>K\<^sub>5: \<open>valid\<^sub>K\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>K\<^sub>5 p\<close>
+theorem main\<^sub>K\<^sub>5: \<open>G \<TTurnstile>\<^sub>K\<^sub>5 p \<longleftrightarrow> G \<turnstile>\<^sub>K\<^sub>5 p\<close>
   using strong_soundness\<^sub>K\<^sub>5[of G p] strong_completeness\<^sub>K\<^sub>5[of G p] by fast
 
-corollary \<open>valid\<^sub>K\<^sub>5 G p \<longrightarrow> valid\<star> Euclidean G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>K\<^sub>5 p \<longrightarrow> Euclidean; G \<TTurnstile>\<star> p\<close>
   using strong_soundness\<^sub>K\<^sub>5[of G p] strong_completeness\<^sub>K\<^sub>5[of G p] by fast
 
 section \<open>System S4\<close>
@@ -1194,19 +1209,20 @@ abbreviation SystemS4 (\<open>_ \<turnstile>\<^sub>S\<^sub>4 _\<close> [50, 50] 
 lemma soundness_AxT4: \<open>(AxT \<oplus> Ax4) p \<Longrightarrow> reflexive M \<and> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness_AxT soundness_Ax4 by fast
 
-lemma strong_soundness\<^sub>S\<^sub>4: \<open>G \<turnstile>\<^sub>S\<^sub>4 p \<Longrightarrow> valid\<star> refltrans G p\<close>
+lemma strong_soundness\<^sub>S\<^sub>4: \<open>G \<turnstile>\<^sub>S\<^sub>4 p \<Longrightarrow> refltrans; G \<TTurnstile>\<star> p\<close>
   using strong_soundness soundness_AxT4 .
 
-abbreviation \<open>valid\<^sub>S\<^sub>4 \<equiv> valid refltrans\<close>
+abbreviation validS4 (\<open>_ \<TTurnstile>\<^sub>S\<^sub>4 _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>S\<^sub>4 p \<equiv> refltrans; G \<TTurnstile> p\<close>
 
-lemma strong_completeness\<^sub>S\<^sub>4: \<open>valid\<^sub>S\<^sub>4 G p \<Longrightarrow> G \<turnstile>\<^sub>S\<^sub>4 p\<close>
+lemma strong_completeness\<^sub>S\<^sub>4: \<open>G \<TTurnstile>\<^sub>S\<^sub>4 p \<Longrightarrow> G \<turnstile>\<^sub>S\<^sub>4 p\<close>
   using strong_completeness[of refltrans] reflexive\<^sub>T[of \<open>AxT \<oplus> Ax4\<close>] transitive\<^sub>K\<^sub>4[of \<open>AxT \<oplus> Ax4\<close>]
   by blast
 
-theorem main\<^sub>S\<^sub>4: \<open>valid\<^sub>S\<^sub>4 G p \<longleftrightarrow> G \<turnstile>\<^sub>S\<^sub>4 p\<close>
+theorem main\<^sub>S\<^sub>4: \<open>G \<TTurnstile>\<^sub>S\<^sub>4 p \<longleftrightarrow> G \<turnstile>\<^sub>S\<^sub>4 p\<close>
   using strong_soundness\<^sub>S\<^sub>4[of G p] strong_completeness\<^sub>S\<^sub>4[of G p] by fast
 
-corollary \<open>valid\<^sub>S\<^sub>4 G p \<longrightarrow> valid\<star> refltrans G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>S\<^sub>4 p \<longrightarrow> refltrans; G \<TTurnstile>\<star> p\<close>
   using strong_soundness\<^sub>S\<^sub>4[of G p] strong_completeness\<^sub>S\<^sub>4[of G p] by fast
 
 section \<open>System S5\<close>
@@ -1222,20 +1238,21 @@ abbreviation AxTB4 :: \<open>'i fm \<Rightarrow> bool\<close> where
 lemma soundness_AxTB4: \<open>AxTB4 p \<Longrightarrow> equivalence M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness_AxT soundness_AxB soundness_Ax4 by fast
 
-lemma strong_soundness\<^sub>S\<^sub>5: \<open>G \<turnstile>\<^sub>S\<^sub>5 p \<Longrightarrow> valid\<star> equivalence G p\<close>
+lemma strong_soundness\<^sub>S\<^sub>5: \<open>G \<turnstile>\<^sub>S\<^sub>5 p \<Longrightarrow> equivalence; G \<TTurnstile>\<star> p\<close>
   using strong_soundness soundness_AxTB4 .
 
-abbreviation \<open>valid\<^sub>S\<^sub>5 \<equiv> valid equivalence\<close>
+abbreviation validS5 (\<open>_ \<TTurnstile>\<^sub>S\<^sub>5 _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>S\<^sub>5 p \<equiv> equivalence; G \<TTurnstile> p\<close>
 
-lemma strong_completeness\<^sub>S\<^sub>5: \<open>valid\<^sub>S\<^sub>5 G p \<Longrightarrow> G \<turnstile>\<^sub>S\<^sub>5 p\<close>
+lemma strong_completeness\<^sub>S\<^sub>5: \<open>G \<TTurnstile>\<^sub>S\<^sub>5 p \<Longrightarrow> G \<turnstile>\<^sub>S\<^sub>5 p\<close>
   using strong_completeness[of equivalence]
     reflexive\<^sub>T[of AxTB4] symmetric\<^sub>K\<^sub>B[of AxTB4] transitive\<^sub>K\<^sub>4[of AxTB4]
   by blast
 
-theorem main\<^sub>S\<^sub>5: \<open>valid\<^sub>S\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>S\<^sub>5 p\<close>
+theorem main\<^sub>S\<^sub>5: \<open>G \<TTurnstile>\<^sub>S\<^sub>5 p \<longleftrightarrow> G \<turnstile>\<^sub>S\<^sub>5 p\<close>
   using strong_soundness\<^sub>S\<^sub>5[of G p] strong_completeness\<^sub>S\<^sub>5[of G p] by fast
 
-corollary \<open>valid\<^sub>S\<^sub>5 G p \<longrightarrow> valid\<star> equivalence G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>S\<^sub>5 p \<longrightarrow> equivalence; G \<TTurnstile>\<star> p\<close>
   using strong_soundness\<^sub>S\<^sub>5[of G p] strong_completeness\<^sub>S\<^sub>5[of G p] by fast
 
 subsection \<open>T + 5\<close>
@@ -1252,17 +1269,17 @@ lemma symm_trans_Euclid: \<open>symmetric M \<Longrightarrow> transitive M \<Lon
 lemma soundness_AxT5: \<open>AxT5 p \<Longrightarrow> equivalence M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile> p\<close>
   using soundness_AxT[of p M w] soundness_Ax5[of p M w] symm_trans_Euclid by blast
 
-lemma strong_soundness\<^sub>S\<^sub>5': \<open>G \<turnstile>\<^sub>S\<^sub>5' p \<Longrightarrow> valid\<star> equivalence G p\<close>
+lemma strong_soundness\<^sub>S\<^sub>5': \<open>G \<turnstile>\<^sub>S\<^sub>5' p \<Longrightarrow> equivalence; G \<TTurnstile>\<star> p\<close>
   using strong_soundness soundness_AxT5 .
 
 lemma refl_Euclid_equiv: \<open>reflexive M \<Longrightarrow> Euclidean M \<Longrightarrow> equivalence M\<close>
   unfolding reflexive_def symmetric_def transitive_def Euclidean_def by metis
 
-lemma strong_completeness\<^sub>S\<^sub>5': \<open>valid\<^sub>S\<^sub>5 G p \<Longrightarrow> G \<turnstile>\<^sub>S\<^sub>5' p\<close>
+lemma strong_completeness\<^sub>S\<^sub>5': \<open>G \<TTurnstile>\<^sub>S\<^sub>5 p \<Longrightarrow> G \<turnstile>\<^sub>S\<^sub>5' p\<close>
   using strong_completeness[of equivalence]
     reflexive\<^sub>T[of AxT5] Euclidean\<^sub>K\<^sub>5[of AxT5] refl_Euclid_equiv by blast
 
-theorem main\<^sub>S\<^sub>5': \<open>valid\<^sub>S\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>S\<^sub>5' p\<close>
+theorem main\<^sub>S\<^sub>5': \<open>G \<TTurnstile>\<^sub>S\<^sub>5 p \<longleftrightarrow> G \<turnstile>\<^sub>S\<^sub>5' p\<close>
   using strong_soundness\<^sub>S\<^sub>5'[of G p] strong_completeness\<^sub>S\<^sub>5'[of G p] by fast
 
 subsection \<open>Equivalence between systems\<close>

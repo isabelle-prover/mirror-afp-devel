@@ -42,16 +42,20 @@ primrec anns :: \<open>'i pfm \<Rightarrow> 'i pfm set\<close> where
 section \<open>Semantics\<close>
 
 fun
-  psemantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>_, _ \<Turnstile>\<^sub>! _\<close> [50, 50] 50) and
-  restrict :: \<open>('i, 'w) kripke \<Rightarrow> 'i pfm \<Rightarrow> ('i, 'w) kripke\<close> where
-  \<open>(M, w \<Turnstile>\<^sub>! \<^bold>\<bottom>\<^sub>!) = False\<close>
-| \<open>(M, w \<Turnstile>\<^sub>! Pro\<^sub>! x) = \<pi> M w x\<close>
-| \<open>(M, w \<Turnstile>\<^sub>! p \<^bold>\<or>\<^sub>! q) = ((M, w \<Turnstile>\<^sub>! p) \<or> (M, w \<Turnstile>\<^sub>! q))\<close>
-| \<open>(M, w \<Turnstile>\<^sub>! p \<^bold>\<and>\<^sub>! q) = ((M, w \<Turnstile>\<^sub>! p) \<and> (M, w \<Turnstile>\<^sub>! q))\<close>
-| \<open>(M, w \<Turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q) = ((M, w \<Turnstile>\<^sub>! p) \<longrightarrow> (M, w \<Turnstile>\<^sub>! q))\<close>
-| \<open>(M, w \<Turnstile>\<^sub>! K\<^sub>! i p) = (\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile>\<^sub>! p)\<close>
-| \<open>(M, w \<Turnstile>\<^sub>! [r]\<^sub>! p) = ((M, w \<Turnstile>\<^sub>! r) \<longrightarrow> (restrict M r, w \<Turnstile>\<^sub>! p))\<close>
-| \<open>restrict M r = Kripke {w. w \<in> \<W> M \<and> M, w \<Turnstile>\<^sub>! r} (\<pi> M) (\<K> M)\<close>
+  psemantics :: \<open>('i, 'w) kripke \<Rightarrow> 'w \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>_, _ \<Turnstile>\<^sub>! _\<close> [50, 50, 50] 50) and
+  restrict :: \<open>('i, 'w) kripke \<Rightarrow> 'i pfm \<Rightarrow> ('i, 'w) kripke\<close> (\<open>_[_!]\<close> [50, 50] 50) where
+  \<open>M, w \<Turnstile>\<^sub>! \<^bold>\<bottom>\<^sub>! \<longleftrightarrow> False\<close>
+| \<open>M, w \<Turnstile>\<^sub>! Pro\<^sub>! x \<longleftrightarrow> \<pi> M w x\<close>
+| \<open>M, w \<Turnstile>\<^sub>! p \<^bold>\<or>\<^sub>! q \<longleftrightarrow> M, w \<Turnstile>\<^sub>! p \<or> M, w \<Turnstile>\<^sub>! q\<close>
+| \<open>M, w \<Turnstile>\<^sub>! p \<^bold>\<and>\<^sub>! q \<longleftrightarrow> M, w \<Turnstile>\<^sub>! p \<and> M, w \<Turnstile>\<^sub>! q\<close>
+| \<open>M, w \<Turnstile>\<^sub>! p \<^bold>\<longrightarrow>\<^sub>! q \<longleftrightarrow> M, w \<Turnstile>\<^sub>! p \<longrightarrow> M, w \<Turnstile>\<^sub>! q\<close>
+| \<open>M, w \<Turnstile>\<^sub>! K\<^sub>! i p \<longleftrightarrow> (\<forall>v \<in> \<W> M \<inter> \<K> M i w. M, v \<Turnstile>\<^sub>! p)\<close>
+| \<open>M, w \<Turnstile>\<^sub>! [r]\<^sub>! p \<longleftrightarrow> M, w \<Turnstile>\<^sub>! r \<longrightarrow> M[r!], w \<Turnstile>\<^sub>! p\<close>
+| \<open>M[r!] = M \<lparr>\<W> := {w. w \<in> \<W> M \<and> M, w \<Turnstile>\<^sub>! r}\<rparr>\<close>
+
+abbreviation validPStar :: \<open>(('i, 'w) kripke \<Rightarrow> bool) \<Rightarrow> 'i pfm set \<Rightarrow> 'i pfm \<Rightarrow> bool\<close>
+  (\<open>_; _ \<TTurnstile>\<^sub>!\<star> _\<close> [50, 50, 50] 50) where
+  \<open>P; G \<TTurnstile>\<^sub>!\<star> p \<equiv> \<forall>M. P M \<longrightarrow> (\<forall>w \<in> \<W> M. (\<forall>q \<in> G. M, w \<Turnstile>\<^sub>! q) \<longrightarrow> M, w \<Turnstile>\<^sub>! p)\<close>
 
 primrec static :: \<open>'i pfm \<Rightarrow> bool\<close> where
   \<open>static \<^bold>\<bottom>\<^sub>! = True\<close>
@@ -124,7 +128,7 @@ lemma reduce'_semantics:
   shows \<open>(M, w \<Turnstile>\<^sub>! [p]\<^sub>! q) = (M, w \<Turnstile>\<^sub>! reduce' p q)\<close>
   using assms by (induct q arbitrary: w) auto
 
-lemma reduce_semantics: \<open>(M, w \<Turnstile>\<^sub>! p) = (M, w \<Turnstile>\<^sub>! reduce p)\<close>
+lemma reduce_semantics: \<open>M, w \<Turnstile>\<^sub>! p \<longleftrightarrow> M, w \<Turnstile>\<^sub>! reduce p\<close>
 proof (induct p arbitrary: M w)
   case (Ann p q)
   then show ?case
@@ -184,12 +188,10 @@ lemma tautology_ptautology: \<open>tautology p \<Longrightarrow> ptautology (lif
 theorem AK_PAK: \<open>A o lift \<turnstile> p \<Longrightarrow> A; B \<turnstile>\<^sub>! lift p\<close>
   by (induct p rule: AK.induct) (auto intro: PAK.intros(1-5) simp: tautology_ptautology)
 
-abbreviation validPS :: \<open>(('i, 'w) kripke \<Rightarrow> bool) \<Rightarrow> 'i pfm set \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>valid\<^sub>!\<star>\<close>)
-  where \<open>valid\<^sub>!\<star> P G p \<equiv> \<forall>M. \<forall>w \<in> \<W> M. P M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile>\<^sub>! q) \<longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
-
 abbreviation validP
-  :: \<open>(('i :: countable, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i pfm set \<Rightarrow> 'i pfm \<Rightarrow> bool\<close> (\<open>valid\<^sub>!\<close>)
-  where \<open>valid\<^sub>! \<equiv> valid\<^sub>!\<star>\<close>
+  :: \<open>(('i :: countable, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i pfm set \<Rightarrow> 'i pfm \<Rightarrow> bool\<close>
+  (\<open>_; _ \<TTurnstile>\<^sub>! _\<close> [50, 50, 50] 50)
+  where \<open>P; G \<TTurnstile>\<^sub>! p \<equiv> P; G \<TTurnstile>\<^sub>!\<star> p\<close>
 
 lemma set_map_inv:
   assumes \<open>set xs \<subseteq> f ` X\<close>
@@ -208,11 +210,11 @@ proof (induct xs)
 qed simp
 
 lemma strong_static_completeness':
-  assumes \<open>static p\<close> and \<open>\<forall>q \<in> G. static q\<close> and \<open>valid\<^sub>! P G p\<close>
-    and \<open>valid\<star> P (lower ` G) (lower p) \<Longrightarrow> A o lift; lower ` G \<turnstile> lower p\<close>
+  assumes \<open>static p\<close> and \<open>\<forall>q \<in> G. static q\<close> and \<open>P; G \<TTurnstile>\<^sub>! p\<close>
+    and \<open>P; lower ` G \<TTurnstile>\<star> lower p \<Longrightarrow> A o lift; lower ` G \<turnstile> lower p\<close>
   shows \<open>A; B; G \<turnstile>\<^sub>! p\<close>
 proof -
-  have \<open>valid P (lower ` G) (lower p)\<close>
+  have \<open>P; lower ` G \<TTurnstile>\<star> lower p\<close>
     using assms by (simp add: lower_semantics)
   then have \<open>A o lift; lower ` G \<turnstile> lower p\<close>
     using assms(4) by blast
@@ -230,48 +232,49 @@ proof -
 qed
 
 theorem strong_static_completeness:
-  assumes \<open>static p\<close> and \<open>\<forall>q \<in> G. static q\<close> and \<open>valid\<^sub>! P G p\<close>
+  assumes \<open>static p\<close> and \<open>\<forall>q \<in> G. static q\<close> and \<open>P; G \<TTurnstile>\<^sub>! p\<close>
     and \<open>\<And>G p. valid P G p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
   shows \<open>A; B; G \<turnstile>\<^sub>! p\<close>
   using strong_static_completeness' assms .
 
 corollary static_completeness':
-  assumes \<open>static p\<close> and \<open>valid\<^sub>! P {} p\<close>
-    and \<open>valid P {} (lower p) \<Longrightarrow> A o lift \<turnstile> lower p\<close>
+  assumes \<open>static p\<close> and \<open>P; {} \<TTurnstile>\<^sub>!\<star> p\<close>
+    and \<open>P; {} \<TTurnstile> lower p \<Longrightarrow> A o lift \<turnstile> lower p\<close>
   shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using assms strong_static_completeness'[where G=\<open>{}\<close> and p=p] by simp
 
 corollary static_completeness:
-  assumes \<open>static p\<close> and \<open>valid\<^sub>! P {} p\<close> and \<open>\<And>p. valid P {} p \<Longrightarrow> A o lift \<turnstile> p\<close>
+  assumes \<open>static p\<close> and \<open>P; {} \<TTurnstile>\<^sub>!\<star> p\<close> and \<open>\<And>p. P; {} \<TTurnstile> p \<Longrightarrow> A o lift \<turnstile> p\<close>
   shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using static_completeness' assms .
 
 corollary
-  assumes \<open>static p\<close> \<open>valid\<^sub>! (\<lambda>_. True) {} p\<close>
+  assumes \<open>static p\<close> \<open>(\<lambda>_. True); {} \<TTurnstile>\<^sub>! p\<close>
   shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using assms static_completeness[where P=\<open>\<lambda>_. True\<close> and p=p] completeness\<^sub>A by blast
 
 section \<open>Soundness\<close>
 
-lemma peval_semantics: \<open>peval (val w) (\<lambda>q. Kripke W val r, w \<Turnstile>\<^sub>! q) p = (Kripke W val r, w \<Turnstile>\<^sub>! p)\<close>
+lemma peval_semantics:
+  \<open>peval (val w) (\<lambda>q. \<lparr>\<W> = W, \<K> = r, \<pi> = val\<rparr>, w \<Turnstile>\<^sub>! q) p = (\<lparr>\<W> = W, \<K> = r, \<pi> = val\<rparr>, w \<Turnstile>\<^sub>! p)\<close>
   by (induct p) simp_all
 
 lemma ptautology:
   assumes \<open>ptautology p\<close>
   shows \<open>M, w \<Turnstile>\<^sub>! p\<close>
 proof -
-  from assms have \<open>peval (g w) (\<lambda>q. Kripke W g r, w \<Turnstile>\<^sub>! q) p\<close> for W g r
+  from assms have \<open>peval (g w) (\<lambda>q. \<lparr>\<W> = W, \<K> = r, \<pi> = g\<rparr>, w \<Turnstile>\<^sub>! q) p\<close> for W g r
     by simp
-  then have \<open>Kripke W g r, w \<Turnstile>\<^sub>! p\<close> for W g r
+  then have \<open>\<lparr>\<W> = W, \<K> = r, \<pi> = g\<rparr>, w \<Turnstile>\<^sub>! p\<close> for W g r
     using peval_semantics by fast
   then show \<open>M, w \<Turnstile>\<^sub>! p\<close>
-    by (metis kripke.collapse)
+    by (metis kripke.cases)
 qed
 
 theorem soundness\<^sub>P:
   assumes
     \<open>\<And>M p w. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
-    \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (restrict M r)\<close>
+    \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (M[r!])\<close>
   shows \<open>A; B \<turnstile>\<^sub>! p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
 proof (induct p arbitrary: M w rule: PAK.induct)
   case (PAnn p r)
@@ -345,7 +348,7 @@ qed
 corollary soundness_imply\<^sub>P:
   assumes
     \<open>\<And>M p w. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
-    \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (restrict M r)\<close>
+    \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (M[r!])\<close>
   shows \<open>A; B \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> \<forall>q \<in> set qs. M, w \<Turnstile>\<^sub>! q \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
 proof (induct qs arbitrary: p)
   case Nil
@@ -360,8 +363,8 @@ qed
 theorem strong_soundness\<^sub>P:
   assumes
     \<open>\<And>M w p. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
-    \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (restrict M r)\<close>
-  shows \<open>A; B; G \<turnstile>\<^sub>! p \<Longrightarrow> valid\<^sub>!\<star> P G p\<close>
+    \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (M[r!])\<close>
+  shows \<open>A; B; G \<turnstile>\<^sub>! p \<Longrightarrow> P; G  \<TTurnstile>\<^sub>!\<star> p\<close>
 proof safe
   fix qs w and M :: \<open>('a, 'b) kripke\<close>
   assume \<open>A; B \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p\<close>
@@ -636,13 +639,13 @@ lemma anns_implyP [simp]:
   by (induct ps) auto
 
 lemma strong_completeness\<^sub>P':
-  assumes \<open>valid\<^sub>! P G p\<close>
+  assumes \<open>P; G \<TTurnstile>\<^sub>! p\<close>
     and \<open>\<forall>r \<in> anns p. B r\<close> \<open>\<forall>q \<in> G. \<forall>r \<in> anns q. B r\<close>
-    and \<open>valid\<star> P (lower ` reduce ` G) (lower (reduce p)) \<Longrightarrow>
+    and \<open>P; lower ` reduce ` G \<TTurnstile>\<star> lower (reduce p) \<Longrightarrow>
       A o lift; lower ` reduce ` G \<turnstile> lower (reduce p)\<close>
   shows \<open>A; B; G \<turnstile>\<^sub>! p\<close>
 proof -
-  have \<open>valid\<^sub>! P (reduce ` G) (reduce p)\<close>
+  have \<open>P; reduce ` G \<TTurnstile>\<^sub>!\<star> reduce p\<close>
     using assms(1) reduce_semantics by fast
   moreover have \<open>static (reduce p)\<close> \<open>\<forall>q \<in> reduce ` G. static q\<close>
     using static_reduce by fast+
@@ -666,42 +669,42 @@ proof -
 qed
 
 theorem strong_completeness\<^sub>P:
-  assumes \<open>valid\<^sub>! P G p\<close>
+  assumes \<open>P; G \<TTurnstile>\<^sub>! p\<close>
     and \<open>\<forall>r \<in> anns p. B r\<close> \<open>\<forall>q \<in> G. \<forall>r \<in> anns q. B r\<close>
-    and \<open>\<And>G p. valid\<star> P G p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
+    and \<open>\<And>G p. P; G \<TTurnstile>\<star> p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
   shows \<open>A; B; G \<turnstile>\<^sub>! p\<close>
   using strong_completeness\<^sub>P' assms .
 
 theorem main\<^sub>P:
   assumes \<open>\<And>M w p. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
-    and \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (restrict M r)\<close>
+    and \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (M[r!])\<close>
     and \<open>\<forall>r \<in> anns p. B r\<close> \<open>\<forall>q \<in> G. \<forall>r \<in> anns q. B r\<close>
-    and \<open>\<And>G p. valid\<star> P G p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
-  shows \<open>valid\<^sub>! P G p \<longleftrightarrow> A; B; G \<turnstile>\<^sub>! p\<close>
+    and \<open>\<And>G p. P; G \<TTurnstile>\<star> p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
+  shows \<open>P; G \<TTurnstile>\<^sub>! p \<longleftrightarrow> A; B; G \<turnstile>\<^sub>! p\<close>
   using strong_soundness\<^sub>P[of A P B G p] strong_completeness\<^sub>P[of P G p B A] assms by blast
 
 corollary strong_completeness\<^sub>P\<^sub>B:
-  assumes \<open>valid\<^sub>! P G p\<close>
-    and \<open>\<And>G p. valid\<star> P G p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
+  assumes \<open>P; G \<TTurnstile>\<^sub>! p\<close>
+    and \<open>\<And>G p. P; G \<TTurnstile>\<star> p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
   shows \<open>A; (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
   using strong_completeness\<^sub>P[where B=\<open>\<lambda>_. True\<close>] assms by blast
 
 corollary completeness\<^sub>P':
-  assumes \<open>valid\<^sub>! P {} p\<close>
+  assumes \<open>P; {} \<TTurnstile>\<^sub>! p\<close>
     and \<open>\<forall>r \<in> anns p. B r\<close>
     and \<open>\<And>p. valid P {} (lower p) \<Longrightarrow> A o lift \<turnstile> lower p\<close>
   shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using assms strong_completeness\<^sub>P'[where P=P and G=\<open>{}\<close>] by simp
 
 corollary completeness\<^sub>P:
-  assumes \<open>valid\<^sub>! P {} p\<close>
+  assumes \<open>P; {} \<TTurnstile>\<^sub>! p\<close>
     and \<open>\<forall>r \<in> anns p. B r\<close>
     and \<open>\<And>p. valid P {} p \<Longrightarrow> A o lift \<turnstile> p\<close>
   shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using completeness\<^sub>P' assms .
 
 corollary completeness\<^sub>P\<^sub>A:
-  assumes \<open>valid\<^sub>! (\<lambda>_. True) {} p\<close>
+  assumes \<open>(\<lambda>_. True); {} \<TTurnstile>\<^sub>! p\<close>
   shows \<open>A; (\<lambda>_. True) \<turnstile>\<^sub>! p\<close>
   using assms completeness\<^sub>P[of \<open>\<lambda>_. True\<close> p \<open>\<lambda>_. True\<close>] completeness\<^sub>A by blast
 
@@ -710,21 +713,21 @@ section \<open>System PAL + K\<close>
 abbreviation SystemPK (\<open>_ \<turnstile>\<^sub>!\<^sub>K _\<close> [50, 50] 50) where
   \<open>G \<turnstile>\<^sub>!\<^sub>K p \<equiv> (\<lambda>_. False); (\<lambda>_. True); G \<turnstile>\<^sub>! p\<close>
 
-lemma strong_soundness\<^sub>P\<^sub>K: \<open>G \<turnstile>\<^sub>!\<^sub>K p \<Longrightarrow> valid\<^sub>!\<star> (\<lambda>_. True) G p\<close>
+lemma strong_soundness\<^sub>P\<^sub>K: \<open>G \<turnstile>\<^sub>!\<^sub>K p \<Longrightarrow> (\<lambda>_. True); G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P[of \<open>\<lambda>_. False\<close> \<open>\<lambda>_. True\<close>] by fast
 
-abbreviation validPK (\<open>valid\<^sub>!\<^sub>K\<close>) where
-  \<open>valid\<^sub>!\<^sub>K \<equiv> valid\<^sub>! (\<lambda>_. True)\<close>
+abbreviation validPK (\<open>_ \<TTurnstile>\<^sub>!\<^sub>K _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>!\<^sub>K p \<equiv> (\<lambda>_. True); G \<TTurnstile>\<^sub>! p\<close>
 
 lemma strong_completeness\<^sub>P\<^sub>K:
-  assumes \<open>valid\<^sub>!\<^sub>K G p\<close>
+  assumes \<open>G \<TTurnstile>\<^sub>!\<^sub>K p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>K p\<close>
   using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>K unfolding comp_apply .
 
-theorem main\<^sub>P\<^sub>K: \<open>valid\<^sub>!\<^sub>K G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K p\<close>
+theorem main\<^sub>P\<^sub>K: \<open>G \<TTurnstile>\<^sub>!\<^sub>K p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K p\<close>
   using strong_soundness\<^sub>P\<^sub>K[of G p] strong_completeness\<^sub>P\<^sub>K[of G p] by fast
 
-corollary \<open>valid\<^sub>!\<^sub>K G p \<Longrightarrow> valid\<^sub>!\<star> (\<lambda>_. True) G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>!\<^sub>K p \<Longrightarrow> (\<lambda>_. True); G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P\<^sub>K[of G p] strong_completeness\<^sub>P\<^sub>K[of G p] by fast
 
 section \<open>System PAL + T\<close>
@@ -740,10 +743,10 @@ abbreviation SystemPT (\<open>_ \<turnstile>\<^sub>!\<^sub>T _\<close> [50, 50] 
 lemma soundness_AxPT: \<open>AxPT p \<Longrightarrow> reflexive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   unfolding reflexive_def by (induct p rule: AxPT.induct) simp
 
-lemma reflexive_restrict: \<open>reflexive M \<Longrightarrow> reflexive (restrict M p)\<close>
+lemma reflexive_restrict: \<open>reflexive M \<Longrightarrow> reflexive (M[r!])\<close>
   unfolding reflexive_def by simp
 
-lemma strong_soundness\<^sub>P\<^sub>T: \<open>G \<turnstile>\<^sub>!\<^sub>T p \<Longrightarrow> valid\<^sub>!\<star> reflexive G p\<close>
+lemma strong_soundness\<^sub>P\<^sub>T: \<open>G \<turnstile>\<^sub>!\<^sub>T p \<Longrightarrow> reflexive; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P[of AxPT reflexive \<open>\<lambda>_. True\<close> G p]
     soundness_AxPT reflexive_restrict by fast
 
@@ -751,18 +754,18 @@ lemma AxT_AxPT: \<open>AxT = AxPT o lift\<close>
   unfolding comp_apply using lower_lift
   by (metis AxPT.simps AxT.simps lift.simps(5-6) lower.simps(5-6))
 
-abbreviation validPT (\<open>valid\<^sub>!\<^sub>T\<close>) where
-  \<open>valid\<^sub>!\<^sub>T \<equiv> valid\<^sub>! reflexive\<close>
+abbreviation validPT (\<open>_ \<TTurnstile>\<^sub>!\<^sub>T _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>!\<^sub>T p \<equiv> reflexive; G \<TTurnstile>\<^sub>! p\<close>
 
 lemma strong_completeness\<^sub>P\<^sub>T:
-  assumes \<open>valid\<^sub>!\<^sub>T G p\<close>
+  assumes \<open>G \<TTurnstile>\<^sub>!\<^sub>T p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>T p\<close>
   using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>T unfolding AxT_AxPT .
 
-theorem main\<^sub>P\<^sub>T: \<open>valid\<^sub>!\<^sub>T G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>T p\<close>
+theorem main\<^sub>P\<^sub>T: \<open>G \<TTurnstile>\<^sub>!\<^sub>T p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>T p\<close>
   using strong_soundness\<^sub>P\<^sub>T[of G p] strong_completeness\<^sub>P\<^sub>T[of G p] by fast
 
-corollary \<open>valid\<^sub>!\<^sub>T G p \<Longrightarrow> valid\<^sub>!\<star> reflexive G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>!\<^sub>T p \<Longrightarrow> reflexive; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P\<^sub>T[of G p] strong_completeness\<^sub>P\<^sub>T[of G p] by fast
 
 section \<open>System PAL + KB\<close>
@@ -776,10 +779,10 @@ abbreviation SystemPKB (\<open>_ \<turnstile>\<^sub>!\<^sub>K\<^sub>B _\<close> 
 lemma soundness_AxPB: \<open>AxPB p \<Longrightarrow> symmetric M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   unfolding symmetric_def by (induct p rule: AxPB.induct) auto
 
-lemma symmetric_restrict: \<open>symmetric M \<Longrightarrow> symmetric (restrict M p)\<close>
+lemma symmetric_restrict: \<open>symmetric M \<Longrightarrow> symmetric (M[r!])\<close>
   unfolding symmetric_def by simp
 
-lemma strong_soundness\<^sub>P\<^sub>K\<^sub>B: \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>B p \<Longrightarrow> valid\<^sub>!\<star> symmetric G p\<close>
+lemma strong_soundness\<^sub>P\<^sub>K\<^sub>B: \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>B p \<Longrightarrow> symmetric; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P[of AxPB symmetric \<open>\<lambda>_. True\<close> G p]
     soundness_AxPB symmetric_restrict by fast
 
@@ -791,18 +794,18 @@ proof
     by (smt (verit, best) AxB.simps AxPB.simps lift.simps(1, 5-6) lower.simps(5-6))
 qed
 
-abbreviation validPKB (\<open>valid\<^sub>!\<^sub>K\<^sub>B\<close>) where
-  \<open>valid\<^sub>!\<^sub>K\<^sub>B \<equiv> valid\<^sub>! symmetric\<close>
+abbreviation validPKB (\<open>_ \<TTurnstile>\<^sub>!\<^sub>K\<^sub>B _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>B p \<equiv> symmetric; G \<TTurnstile>\<^sub>! p\<close>
 
 lemma strong_completeness\<^sub>P\<^sub>K\<^sub>B:
-  assumes \<open>valid\<^sub>!\<^sub>K\<^sub>B G p\<close>
+  assumes \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>B p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>B p\<close>
   using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>K\<^sub>B unfolding AxB_AxPB .
 
-theorem main\<^sub>P\<^sub>K\<^sub>B: \<open>valid\<^sub>!\<^sub>K\<^sub>B G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K\<^sub>B p\<close>
+theorem main\<^sub>P\<^sub>K\<^sub>B: \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>B p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K\<^sub>B p\<close>
   using strong_soundness\<^sub>P\<^sub>K\<^sub>B[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>B[of G p] by fast
 
-corollary \<open>valid\<^sub>!\<^sub>K\<^sub>B G p \<Longrightarrow> valid\<^sub>!\<star> symmetric G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>B p \<Longrightarrow> symmetric; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P\<^sub>K\<^sub>B[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>B[of G p] by fast
 
 section \<open>System PAL + K4\<close>
@@ -833,11 +836,11 @@ qed
 lemma soundness_AxP4: \<open>AxP4 p \<Longrightarrow> transitive M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   by (induct p rule: AxP4.induct) (metis pos_introspection)
 
-lemma transitive_restrict: \<open>transitive M \<Longrightarrow> transitive (restrict M p)\<close>
-  unfolding transitive_def
-  by (metis (no_types, lifting) kripke.exhaust_sel kripke.inject mem_Collect_eq restrict.elims)
+lemma transitive_restrict: \<open>transitive M \<Longrightarrow> transitive (M[r!])\<close>
+  unfolding transitive_def by (cases M) (metis (no_types, lifting) frame.select_convs(1-2)
+      frame.update_convs(1) mem_Collect_eq restrict.simps)
 
-lemma strong_soundness\<^sub>P\<^sub>K\<^sub>4: \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>4 p \<Longrightarrow> valid\<^sub>!\<star> transitive G p\<close>
+lemma strong_soundness\<^sub>P\<^sub>K\<^sub>4: \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>4 p \<Longrightarrow> transitive; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P[of AxP4 transitive \<open>\<lambda>_. True\<close> G p]
     soundness_AxP4 transitive_restrict by fast
 
@@ -849,18 +852,18 @@ proof
     by (smt (verit, best) Ax4.simps AxP4.simps lift.simps(1, 5-6) lower.simps(5-6))
 qed
 
-abbreviation validPK4 (\<open>valid\<^sub>!\<^sub>K\<^sub>4\<close>) where
-  \<open>valid\<^sub>!\<^sub>K\<^sub>4 \<equiv> valid\<^sub>! transitive\<close>
+abbreviation validPK4 (\<open>_ \<TTurnstile>\<^sub>!\<^sub>K\<^sub>4 _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>4 p \<equiv> transitive; G \<TTurnstile>\<^sub>! p\<close>
 
 lemma strong_completeness\<^sub>P\<^sub>K\<^sub>4:
-  assumes \<open>valid\<^sub>!\<^sub>K\<^sub>4 G p\<close>
+  assumes \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>4 p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>4 p\<close>
   using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>K\<^sub>4 unfolding Ax4_AxP4 .
 
-theorem main\<^sub>P\<^sub>K\<^sub>4: \<open>valid\<^sub>!\<^sub>K\<^sub>4 G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K\<^sub>4 p\<close>
+theorem main\<^sub>P\<^sub>K\<^sub>4: \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>4 p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K\<^sub>4 p\<close>
   using strong_soundness\<^sub>P\<^sub>K\<^sub>4[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>4[of G p] by fast
 
-corollary \<open>valid\<^sub>!\<^sub>K\<^sub>4 G p \<Longrightarrow> valid\<^sub>!\<star> transitive G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>4 p \<Longrightarrow> transitive; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P\<^sub>K\<^sub>4[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>4[of G p] by fast
 
 section \<open>System PAL + K5\<close>
@@ -874,10 +877,10 @@ abbreviation SystemPK5 (\<open>_ \<turnstile>\<^sub>!\<^sub>K\<^sub>5 _\<close> 
 lemma soundness_AxP5: \<open>AxP5 p \<Longrightarrow> Euclidean M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   by (induct p rule: AxP5.induct) (unfold Euclidean_def psemantics.simps, blast)
 
-lemma Euclidean_restrict: \<open>Euclidean M \<Longrightarrow> Euclidean (restrict M p)\<close>
+lemma Euclidean_restrict: \<open>Euclidean M \<Longrightarrow> Euclidean (M[r!])\<close>
   unfolding Euclidean_def by auto
 
-lemma strong_soundness\<^sub>P\<^sub>K\<^sub>5: \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>5 p \<Longrightarrow> valid\<^sub>!\<star> Euclidean G p\<close>
+lemma strong_soundness\<^sub>P\<^sub>K\<^sub>5: \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>5 p \<Longrightarrow> Euclidean; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P[of AxP5 Euclidean \<open>\<lambda>_. True\<close> G p]
     soundness_AxP5 Euclidean_restrict by fast
 
@@ -889,18 +892,18 @@ proof
     by (smt (verit, best) Ax5.simps AxP5.simps lift.simps(1, 5-6) lower.simps(5-6))
 qed
 
-abbreviation validPK5 (\<open>valid\<^sub>!\<^sub>K\<^sub>5\<close>) where
-  \<open>valid\<^sub>!\<^sub>K\<^sub>5 \<equiv> valid\<^sub>! Euclidean\<close>
+abbreviation validPK5 (\<open>_ \<TTurnstile>\<^sub>!\<^sub>K\<^sub>5 _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>5 p \<equiv> Euclidean; G \<TTurnstile>\<^sub>! p\<close>
 
 lemma strong_completeness\<^sub>P\<^sub>K\<^sub>5:
-  assumes \<open>valid\<^sub>!\<^sub>K\<^sub>5 G p\<close>
+  assumes \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>5 p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>K\<^sub>5 p\<close>
   using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>K\<^sub>5 unfolding Ax5_AxP5 .
 
-theorem main\<^sub>P\<^sub>K\<^sub>5: \<open>valid\<^sub>!\<^sub>K\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K\<^sub>5 p\<close>
+theorem main\<^sub>P\<^sub>K\<^sub>5: \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>5 p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>K\<^sub>5 p\<close>
   using strong_soundness\<^sub>P\<^sub>K\<^sub>5[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>5[of G p] by fast
 
-corollary \<open>valid\<^sub>!\<^sub>K\<^sub>5 G p \<Longrightarrow> valid\<^sub>!\<star> Euclidean G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>!\<^sub>K\<^sub>5 p \<Longrightarrow> Euclidean; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P\<^sub>K\<^sub>5[of G p] strong_completeness\<^sub>P\<^sub>K\<^sub>5[of G p] by fast
 
 section \<open>System PAL + S4\<close>
@@ -911,28 +914,28 @@ abbreviation SystemPS4 (\<open>_ \<turnstile>\<^sub>!\<^sub>S\<^sub>4 _\<close> 
 lemma soundness_AxPT4: \<open>(AxPT \<oplus> AxP4) p \<Longrightarrow> refltrans M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   using soundness_AxPT soundness_AxP4 by fast
 
-lemma refltrans_restrict: \<open>refltrans M \<Longrightarrow> refltrans (restrict M p)\<close>
+lemma refltrans_restrict: \<open>refltrans M \<Longrightarrow> refltrans (M[r!])\<close>
   using reflexive_restrict transitive_restrict by blast
 
-lemma strong_soundness\<^sub>P\<^sub>S\<^sub>4: \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>4 p \<Longrightarrow> valid\<^sub>!\<star> refltrans G p\<close>
+lemma strong_soundness\<^sub>P\<^sub>S\<^sub>4: \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>4 p \<Longrightarrow> refltrans; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P[of \<open>AxPT \<oplus> AxP4\<close> refltrans \<open>\<lambda>_. True\<close> G p]
     soundness_AxPT4 refltrans_restrict by fast
 
 lemma AxT4_AxPT4: \<open>(AxT \<oplus> Ax4) = (AxPT \<oplus> AxP4) o lift\<close>
   using AxT_AxPT Ax4_AxP4 unfolding comp_apply by metis
 
-abbreviation validPS4 (\<open>valid\<^sub>!\<^sub>S\<^sub>4\<close>) where
-  \<open>valid\<^sub>!\<^sub>S\<^sub>4 \<equiv> valid\<^sub>! refltrans\<close>
+abbreviation validPS4 (\<open>_ \<TTurnstile>\<^sub>!\<^sub>S\<^sub>4 _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>!\<^sub>S\<^sub>4 p \<equiv> refltrans; G \<TTurnstile>\<^sub>! p\<close>
 
 theorem strong_completeness\<^sub>P\<^sub>S\<^sub>4:
-  assumes \<open>valid\<^sub>!\<^sub>S\<^sub>4 G p\<close>
+  assumes \<open>G \<TTurnstile>\<^sub>!\<^sub>S\<^sub>4 p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>4 p\<close>
   using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>S\<^sub>4 unfolding AxT4_AxPT4 .
 
-theorem main\<^sub>P\<^sub>S\<^sub>4: \<open>valid\<^sub>!\<^sub>S\<^sub>4 G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>S\<^sub>4 p\<close>
+theorem main\<^sub>P\<^sub>S\<^sub>4: \<open>G \<TTurnstile>\<^sub>!\<^sub>S\<^sub>4 p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>S\<^sub>4 p\<close>
   using strong_soundness\<^sub>P\<^sub>S\<^sub>4[of G p] strong_completeness\<^sub>P\<^sub>S\<^sub>4[of G p] by fast
 
-corollary \<open>valid\<^sub>!\<^sub>S\<^sub>4 G p \<Longrightarrow> valid\<^sub>!\<star> refltrans G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>!\<^sub>S\<^sub>4 p \<Longrightarrow> refltrans; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P\<^sub>S\<^sub>4[of G p] strong_completeness\<^sub>P\<^sub>S\<^sub>4[of G p] by fast
 
 section \<open>System PAL + S5\<close>
@@ -946,28 +949,28 @@ abbreviation AxPTB4 :: \<open>'i pfm \<Rightarrow> bool\<close> where
 lemma soundness_AxPTB4: \<open>AxPTB4 p \<Longrightarrow> equivalence M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   using soundness_AxPT soundness_AxPB soundness_AxP4 by fast
 
-lemma equivalence_restrict: \<open>equivalence M \<Longrightarrow> equivalence (restrict M p)\<close>
+lemma equivalence_restrict: \<open>equivalence M \<Longrightarrow> equivalence (M[r!])\<close>
   using reflexive_restrict symmetric_restrict transitive_restrict by blast
 
-lemma strong_soundness\<^sub>P\<^sub>S\<^sub>5: \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5 p \<Longrightarrow> valid\<^sub>!\<star> equivalence G p\<close>
+lemma strong_soundness\<^sub>P\<^sub>S\<^sub>5: \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5 p \<Longrightarrow> equivalence; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P[of AxPTB4 equivalence \<open>\<lambda>_. True\<close> G p]
     soundness_AxPTB4 equivalence_restrict by fast
 
 lemma AxTB4_AxPTB4: \<open>AxTB4 = AxPTB4 o lift\<close>
   using AxT_AxPT AxB_AxPB Ax4_AxP4 unfolding comp_apply by metis
 
-abbreviation validPS5 (\<open>valid\<^sub>!\<^sub>S\<^sub>5\<close>) where
-  \<open>valid\<^sub>!\<^sub>S\<^sub>5 \<equiv> valid\<^sub>! equivalence\<close>
+abbreviation validPS5 (\<open>_ \<TTurnstile>\<^sub>!\<^sub>S\<^sub>5 _\<close> [50, 50] 50) where
+  \<open>G \<TTurnstile>\<^sub>!\<^sub>S\<^sub>5 p \<equiv> equivalence; G \<TTurnstile>\<^sub>! p\<close>
 
 theorem strong_completeness\<^sub>P\<^sub>S\<^sub>5:
-  assumes \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p\<close>
+  assumes \<open>G \<TTurnstile>\<^sub>!\<^sub>S\<^sub>5 p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5 p\<close>
   using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>S\<^sub>5 unfolding AxTB4_AxPTB4 .
 
-theorem main\<^sub>P\<^sub>S\<^sub>5: \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>S\<^sub>5 p\<close>
+theorem main\<^sub>P\<^sub>S\<^sub>5: \<open>G \<TTurnstile>\<^sub>!\<^sub>S\<^sub>5 p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>S\<^sub>5 p\<close>
   using strong_soundness\<^sub>P\<^sub>S\<^sub>5[of G p] strong_completeness\<^sub>P\<^sub>S\<^sub>5[of G p] by fast
 
-corollary \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p \<Longrightarrow> valid\<^sub>!\<star> equivalence G p\<close>
+corollary \<open>G \<TTurnstile>\<^sub>!\<^sub>S\<^sub>5 p \<Longrightarrow> equivalence; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P\<^sub>S\<^sub>5[of G p] strong_completeness\<^sub>P\<^sub>S\<^sub>5[of G p] by fast
 
 section \<open>System PAL + S5'\<close>
@@ -981,7 +984,7 @@ abbreviation AxPT5 :: \<open>'i pfm \<Rightarrow> bool\<close> where
 lemma soundness_AxPT5: \<open>AxPT5 p \<Longrightarrow> equivalence M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
   using soundness_AxPT soundness_AxPT soundness_AxP5 symm_trans_Euclid by fast
 
-lemma strong_soundness\<^sub>P\<^sub>S\<^sub>5': \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5' p \<Longrightarrow> valid\<^sub>!\<star> equivalence G p\<close>
+lemma strong_soundness\<^sub>P\<^sub>S\<^sub>5': \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5' p \<Longrightarrow> equivalence; G \<TTurnstile>\<^sub>!\<star> p\<close>
   using strong_soundness\<^sub>P[of AxPT5 equivalence \<open>\<lambda>_. True\<close> G p]
     soundness_AxPT5 equivalence_restrict by fast
 
@@ -989,11 +992,11 @@ lemma AxT5_AxPT5: \<open>AxT5 = AxPT5 o lift\<close>
   using AxT_AxPT Ax5_AxP5 unfolding comp_apply by metis
 
 theorem strong_completeness\<^sub>P\<^sub>S\<^sub>5':
-  assumes \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p\<close>
+  assumes \<open>G \<TTurnstile>\<^sub>!\<^sub>S\<^sub>5 p\<close>
   shows \<open>G \<turnstile>\<^sub>!\<^sub>S\<^sub>5' p\<close>
   using strong_completeness\<^sub>P\<^sub>B assms strong_completeness\<^sub>S\<^sub>5' unfolding AxT5_AxPT5 .
 
-theorem main\<^sub>P\<^sub>S\<^sub>5': \<open>valid\<^sub>!\<^sub>S\<^sub>5 G p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>S\<^sub>5' p\<close>
+theorem main\<^sub>P\<^sub>S\<^sub>5': \<open>G \<TTurnstile>\<^sub>!\<^sub>S\<^sub>5 p \<longleftrightarrow> G \<turnstile>\<^sub>!\<^sub>S\<^sub>5' p\<close>
   using strong_soundness\<^sub>P\<^sub>S\<^sub>5'[of G p] strong_completeness\<^sub>P\<^sub>S\<^sub>5'[of G p] by fast
 
 end
