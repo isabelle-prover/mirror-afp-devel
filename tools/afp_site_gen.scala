@@ -186,6 +186,7 @@ object AFP_Site_Gen
           "keywords" -> get_keywords(name))
 
       val theories_json = isabelle.JSON.Object(
+        "title" -> entry.title,
         "url" -> ("/entries/" + name.toLowerCase + "/theories"),
         "theories" -> topo_theories)
 

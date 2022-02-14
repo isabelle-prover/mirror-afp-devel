@@ -354,8 +354,10 @@ object AFP_Migrate_Metadata
           "Jasmin Blanchette" -> "Jasmin Christian Blanchette",
           "Ognjen Maric" -> "Ognjen Marić",
           "Maximilian P.L. Haslbeck" -> "Maximilian P. L. Haslbeck",
+          "Maximilian Haslbeck" -> "Max W. Haslbeck",
           "Sebastiaan Joosten" -> "Sebastiaan J. C. Joosten",
-          "Jacques Fleuriot" -> "Jacques D. Fleuriot")
+          "Jacques Fleuriot" -> "Jacques D. Fleuriot",
+          "Jose Manuel Rodriguez Caballero" -> "José Manuel Rodríguez Caballero")
 
         var emails = List(
           "a.bentkamp@vu.nl" -> "Alexander Bentkamp",
@@ -412,7 +414,7 @@ object AFP_Migrate_Metadata
           "giamp@dmi.unict.it" -> "Giampaolo Bella",
           "giuliano@losa.fr" -> "Giuliano Losa",
           "Harald.Zankl@uibk.ac.at" -> "Harald Zankl",
-          "haslbecm@in.tum.de" -> "Maximilian Haslbeck",
+          "haslbecm@in.tum.de" -> "Max W. Haslbeck",
           "haslbema@in.tum.de" -> "Maximilian P. L. Haslbeck",
           "heimesl@student.ethz.ch" -> "Lukas Heimes",
           "hetzl@logic.at" -> "Stefan Hetzl",
@@ -451,7 +453,7 @@ object AFP_Migrate_Metadata
           "mathias.fleury@jku.at" -> "Mathias Fleury",
           "matthias.brun@inf.ethz.ch" -> "Matthias Brun",
           "max.haslbeck@gmx.de" -> "Max W. Haslbeck",
-          "maximilian.haslbeck@uibk.ac.at" -> "Maximilian Haslbeck",
+          "maximilian.haslbeck@uibk.ac.at" -> "Max W. Haslbeck",
           "me@eminkarayel.de" -> "Emin Karayel",
           "MichaelNedzelsky@yandex.ru" -> "Michael Nedzelsky",
           "mihailsmilehins@gmail.com" -> "Mihails Milehins",
