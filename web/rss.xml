@@ -9,7 +9,40 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>04 Feb 2022 00:00:00 +0000</pubDate>
+    <pubDate>13 Feb 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Multi-Head Monitoring of Metric Dynamic Logic</title>
+              <link>https://www.isa-afp.org/entries/VYDRA_MDL.html</link>
+       <guid>https://www.isa-afp.org/entries/VYDRA_MDL.html</guid>
+       <dc:creator> Martin Raszyk       </dc:creator>
+       <pubDate>13 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+Runtime monitoring (or runtime verification) is an approach to
+checking compliance of a system&#39;s execution with a specification
+(e.g., a temporal query). The system&#39;s execution is logged into a
+trace---a sequence of time-points, each consisting of a time-stamp and
+observed events. A monitor is an algorithm that produces verdicts on
+the satisfaction of a temporal query on a trace.  We formalize a
+monitoring algorithm for metric dynamic logic, an extension of metric
+temporal logic with regular expressions. The monitor computes whether
+a given query is satisfied at every position in an input trace of
+time-stamped events. We formalize the time-stamps as an abstract
+algebraic structure satisfying certain assumptions. Instances of this
+structure include natural numbers, real numbers, and lexicographic
+combinations of them. Our monitor follows the multi-head paradigm: it
+reads the input simultaneously at multiple positions and moves its
+reading heads asynchronously. This mode of operation results in
+unprecedented time and space complexity guarantees for metric dynamic
+logic: The monitor&#39;s amortized time complexity to process a
+time-point and the monitor&#39;s space complexity neither depends on
+the event-rate, i.e., the number of events within a fixed time-unit,
+nor on the numeric constants occurring in the quantitative temporal
+constraints in the given query.  The multi-head monitoring algorithm
+for metric dynamic logic is reported in our paper &#34;Multi-Head
+Monitoring of Metric Dynamic Logic&#34; published at ATVA 2020. We
+have also formalized unpublished specialized algorithms for the
+temporal operators of metric temporal logic.</description>
+    </item>
     <item>
        <title>Enumeration of Equivalence Relations</title>
               <link>https://www.isa-afp.org/entries/Equivalence_Relation_Enumeration.html</link>
@@ -605,26 +638,6 @@ examples can be supplied upon request (they are not included due to
 the running time of verification): functions from the floating-point
 modulo function from FDLIBM, the GLIBC strlen function and the
 CoreUtils SHA256 implementation.</description>
-    </item>
-    <item>
-       <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
-              <link>https://www.isa-afp.org/entries/Correctness_Algebras.html</link>
-       <guid>https://www.isa-afp.org/entries/Correctness_Algebras.html</guid>
-       <dc:creator> Walter Guttmann       </dc:creator>
-       <pubDate>12 Oct 2021 00:00:00 +0000</pubDate>
-       <description>
-We study models of state-based non-deterministic sequential
-computations and describe them using algebras. We propose algebras
-that describe iteration for strict and non-strict computations. They
-unify computation models which differ in the fixpoints used to
-represent iteration. We propose algebras that describe the infinite
-executions of a computation. They lead to a unified approximation
-order and results that connect fixpoints in the approximation and
-refinement orders. This unifies the semantics of recursion for a range
-of computation models. We propose algebras that describe preconditions
-and the effect of while-programs under postconditions. They unify
-correctness statements in two dimensions: one statement applies in
-various computation models to various correctness claims.</description>
     </item>
   </channel>
 </rss>
