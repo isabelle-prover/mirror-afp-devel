@@ -5,13 +5,6 @@ theory Irrationals_From_THEBOOK imports "Stirling_Formula.Stirling_Formula"
    
 begin
 
-subsection \<open>Library additions\<close>
-
-lemma field_differentiable_diff_const [simp,derivative_intros]:
-  "(-)c field_differentiable F"
-  unfolding field_differentiable_def
-  by (rule derivative_eq_intros exI | force)+
-
 subsection \<open>Basic definitions and their consequences\<close>
 
 definition hf where "hf \<equiv> \<lambda>n. \<lambda>x::real. (x^n * (1-x)^n) / fact n"

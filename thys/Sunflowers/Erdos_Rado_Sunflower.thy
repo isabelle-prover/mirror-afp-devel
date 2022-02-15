@@ -104,10 +104,10 @@ next
     from Suc(3) have "card F > 0" by simp
     hence "finite F" by (rule card_ge_0_finite)
     from GF \<open>finite F\<close> have finG: "finite G" by (rule finite_subset)
-    have "card (\<Union> G) \<le> sum card G" 
-      by (rule card_Union_le_sum_card, insert Suc(2) GF, auto)
-    also have "\<dots> \<le> of_nat (card G) * Suc k" 
-      by (rule sum_bounded_above, insert GF Suc(2), auto)
+    have "card (\<Union> G) \<le> sum card G"
+      using card_Union_le_sum_card by blast 
+    also have "\<dots> \<le> of_nat (card G) * Suc k"
+      by (metis GF Suc.prems(1) le_Suc_eq subsetD sum_bounded_above) 
     also have "\<dots> \<le> (r - 1) * Suc k" 
       using tr[folded cardG] by (metis id_apply mult_le_mono1 of_nat_eq_id)
     finally have cardA: "card A \<le> (r - 1) * Suc k" unfolding A_def .
