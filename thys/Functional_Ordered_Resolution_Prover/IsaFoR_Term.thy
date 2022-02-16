@@ -611,15 +611,25 @@ end
 
 definition "mgu_sets AAA = map_option subst_of (unify (Pairs AAA) [])"
 
+lemma mgu_sets_is_imgu:
+  fixes AAA :: "('a :: compare, nat) term set set" and \<sigma> :: "('a, nat) subst"
+  assumes fin: "finite AAA" "\<forall>AA \<in> AAA. finite AA" and "mgu_sets AAA = Some \<sigma>"
+  shows "is_imgu \<sigma> AAA"
+proof -
+  have "Unifiers.is_imgu \<sigma> (set (Pairs AAA))"
+    using assms unify_sound unfolding mgu_sets_def by blast
+  thus ?thesis
+    unfolding Unifiers.is_imgu_def is_imgu_def unifiers_Pairs[OF fin]
+    by simp
+qed
+
 interpretation mgu "(\<cdot>)" "Var :: _ \<Rightarrow> ('f :: compare, nat) term" "(\<circ>\<^sub>s)" renamings_apart
   "Fun undefined" mgu_sets
 proof unfold_locales
   fix AAA :: "('a :: compare, nat) term set set" and \<sigma> :: "('a, nat) subst"
   assume fin: "finite AAA" "\<forall>AA \<in> AAA. finite AA" and "mgu_sets AAA = Some \<sigma>"
-  then have "is_imgu \<sigma> (set (Pairs AAA))"
-    using unify_sound unfolding mgu_sets_def by blast
-  then show "is_mgu \<sigma> AAA"
-    unfolding is_imgu_def is_mgu_def unifiers_Pairs[OF fin] by auto
+  thus "is_mgu \<sigma> AAA"
+    using mgu_sets_is_imgu by auto
 next
   fix AAA :: "('a :: compare, nat) term set set" and \<sigma> :: "('a, nat) subst"
   assume fin: "finite AAA" "\<forall>AA \<in> AAA. finite AA" and "is_unifiers \<sigma> AAA"
@@ -627,6 +637,15 @@ next
     unfolding is_mgu_def unifiers_Pairs[OF fin] by auto
   then show "\<exists>\<tau>. mgu_sets AAA = Some \<tau>"
     using unify_complete unfolding mgu_sets_def by blast
+qed
+
+interpretation imgu "(\<cdot>)" "Var :: _ \<Rightarrow> ('f :: compare, nat) term" "(\<circ>\<^sub>s)" renamings_apart
+  "Fun undefined" mgu_sets
+proof unfold_locales
+  fix AAA :: "('a :: compare, nat) term set set" and \<sigma> :: "('a, nat) subst"
+  assume fin: "finite AAA" "\<forall>AA \<in> AAA. finite AA" and "mgu_sets AAA = Some \<sigma>"
+  thus "is_imgu \<sigma> AAA"
+    by (rule mgu_sets_is_imgu)
 qed
 
 derive linorder prod

@@ -208,6 +208,9 @@ definition is_unifiers :: "'s \<Rightarrow> 'a set set \<Rightarrow> bool" where
 definition is_mgu :: "'s \<Rightarrow> 'a set set \<Rightarrow> bool" where
   "is_mgu \<sigma> AAA \<longleftrightarrow> is_unifiers \<sigma> AAA \<and> (\<forall>\<tau>. is_unifiers \<tau> AAA \<longrightarrow> (\<exists>\<gamma>. \<tau> = \<sigma> \<odot> \<gamma>))"
 
+definition is_imgu :: "'s \<Rightarrow> 'a set set \<Rightarrow> bool" where
+  "is_imgu \<sigma> AAA \<longleftrightarrow> is_unifiers \<sigma> AAA \<and> (\<forall>\<tau>. is_unifiers \<tau> AAA \<longrightarrow> \<tau> = \<sigma> \<odot> \<tau>)"
+
 definition var_disjoint :: "'a clause list \<Rightarrow> bool" where
   "var_disjoint Cs \<longleftrightarrow>
    (\<forall>\<sigma>s. length \<sigma>s = length Cs \<longrightarrow> (\<exists>\<tau>. \<forall>i < length Cs. \<forall>S. S \<subseteq># Cs ! i \<longrightarrow> S \<cdot> \<sigma>s ! i = S \<cdot> \<tau>))"
@@ -973,6 +976,27 @@ lemma is_mgu_is_most_general: "is_mgu \<sigma> AAA \<Longrightarrow> is_unifiers
 lemma is_unifiers_is_unifier: "is_unifiers \<sigma> AAA \<Longrightarrow> AA \<in> AAA \<Longrightarrow> is_unifier \<sigma> AA"
   using is_unifiers_def by simp
 
+lemma is_imgu_is_mgu[intro]: "is_imgu \<sigma> AAA \<Longrightarrow> is_mgu \<sigma> AAA"
+  by (auto simp: is_imgu_def is_mgu_def)
+
+lemma is_imgu_comp_idempotent[simp]: "is_imgu \<sigma> AAA \<Longrightarrow> \<sigma> \<odot> \<sigma> = \<sigma>"
+  by (simp add: is_imgu_def)
+
+lemma is_imgu_subst_atm_idempotent[simp]: "is_imgu \<sigma> AAA \<Longrightarrow> A \<cdot>a \<sigma> \<cdot>a \<sigma> = A \<cdot>a \<sigma>"
+  using is_imgu_comp_idempotent[of \<sigma>] subst_atm_comp_subst[of A \<sigma> \<sigma>] by simp
+
+lemma is_imgu_subst_atms_idempotent[simp]: "is_imgu \<sigma> AAA \<Longrightarrow> AA \<cdot>as \<sigma> \<cdot>as \<sigma> = AA \<cdot>as \<sigma>"
+  using is_imgu_comp_idempotent[of \<sigma>] subst_atms_comp_subst[of AA \<sigma> \<sigma>] by simp
+
+lemma is_imgu_subst_lit_idemptotent[simp]: "is_imgu \<sigma> AAA \<Longrightarrow> L \<cdot>l \<sigma> \<cdot>l \<sigma> = L \<cdot>l \<sigma>"
+  using is_imgu_comp_idempotent[of \<sigma>] subst_lit_comp_subst[of L \<sigma> \<sigma>] by simp
+
+lemma is_imgu_subst_cls_idemptotent[simp]: "is_imgu \<sigma> AAA \<Longrightarrow> C \<cdot> \<sigma> \<cdot> \<sigma> = C \<cdot> \<sigma>"
+  using is_imgu_comp_idempotent[of \<sigma>] subst_cls_comp_subst[of C \<sigma> \<sigma>] by simp
+
+lemma is_imgu_subst_clss_idemptotent[simp]: "is_imgu \<sigma> AAA \<Longrightarrow> CC \<cdot>cs \<sigma> \<cdot>cs \<sigma> = CC \<cdot>cs \<sigma>"
+  using is_imgu_comp_idempotent[of \<sigma>] subst_clsscomp_subst[of CC \<sigma> \<sigma>] by simp
+
 
 subsubsection \<open>Generalization and Subsumption\<close>
 
@@ -1267,5 +1291,19 @@ proof -
 qed
 
 end
+
+
+subsection \<open>Idempotent Most General Unifiers\<close>
+
+locale imgu = mgu subst_atm id_subst comp_subst renamings_apart atm_of_atms mgu
+  for
+    subst_atm :: "'a \<Rightarrow> 's \<Rightarrow> 'a" and
+    id_subst :: 's and
+    comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" and
+    renamings_apart :: "'a literal multiset list \<Rightarrow> 's list" and
+    atm_of_atms :: "'a list \<Rightarrow> 'a" and
+    mgu :: "'a set set \<Rightarrow> 's option" +
+  assumes
+    mgu_is_imgu: "finite AAA \<Longrightarrow> (\<forall>AA \<in> AAA. finite AA) \<Longrightarrow> mgu AAA = Some \<sigma> \<Longrightarrow> is_imgu \<sigma> AAA"
 
 end
