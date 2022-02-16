@@ -1232,8 +1232,8 @@ locale mgu = substitution subst_atm id_subst comp_subst renamings_apart atm_of_a
     subst_atm :: "'a \<Rightarrow> 's \<Rightarrow> 'a" and
     id_subst :: 's and
     comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" and
-    atm_of_atms :: "'a list \<Rightarrow> 'a" and
-    renamings_apart :: "'a literal multiset list \<Rightarrow> 's list" +
+    renamings_apart :: "'a literal multiset list \<Rightarrow> 's list"  and
+    atm_of_atms :: "'a list \<Rightarrow> 'a"+
   fixes
     mgu :: "'a set set \<Rightarrow> 's option"
   assumes

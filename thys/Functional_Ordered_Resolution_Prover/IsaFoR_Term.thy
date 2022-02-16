@@ -611,9 +611,9 @@ end
 
 definition "mgu_sets AAA = map_option subst_of (unify (Pairs AAA) [])"
 
-interpretation mgu "(\<cdot>)" "Var :: _ \<Rightarrow> ('f :: compare, nat) term" "(\<circ>\<^sub>s)" "Fun undefined"
-  renamings_apart mgu_sets
-proof
+interpretation mgu "(\<cdot>)" "Var :: _ \<Rightarrow> ('f :: compare, nat) term" "(\<circ>\<^sub>s)" renamings_apart
+  "Fun undefined" mgu_sets
+proof unfold_locales
   fix AAA :: "('a :: compare, nat) term set set" and \<sigma> :: "('a, nat) subst"
   assume fin: "finite AAA" "\<forall>AA \<in> AAA. finite AA" and "mgu_sets AAA = Some \<sigma>"
   then have "is_imgu \<sigma> (set (Pairs AAA))"

@@ -21,7 +21,7 @@ soundness and Lemma 4.12 (the lifting lemma).
 The following corresponds to pages 41--42 of Section 4.3, until Figure 5 and its explanation.
 \<close>
 
-locale FO_resolution = mgu subst_atm id_subst comp_subst atm_of_atms renamings_apart mgu
+locale FO_resolution = mgu subst_atm id_subst comp_subst renamings_apart atm_of_atms mgu
   for
     subst_atm :: "'a :: wellorder \<Rightarrow> 's \<Rightarrow> 'a" and
     id_subst :: "'s" and
