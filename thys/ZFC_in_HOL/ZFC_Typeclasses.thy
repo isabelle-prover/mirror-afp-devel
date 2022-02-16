@@ -5,8 +5,6 @@ theory ZFC_Typeclasses
 
 begin
 
-
-
 subsection\<open>The class of embeddable types\<close>
 
 class embeddable =

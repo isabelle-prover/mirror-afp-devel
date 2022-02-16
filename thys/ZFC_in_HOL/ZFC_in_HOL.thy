@@ -207,6 +207,9 @@ lemma small_Un_elts: "small (elts x \<union> elts y)"
 lemma small_eqcong: "\<lbrakk>small X; X \<approx> Y\<rbrakk> \<Longrightarrow> small Y"
   by (metis bij_betw_imp_surj_on eqpoll_def replacement)
 
+lemma lepoll_small: "\<lbrakk>small Y; X \<lesssim> Y\<rbrakk> \<Longrightarrow> small X"
+    by (meson lepoll_iff replacement smaller_than_small)
+
 lemma big_UNIV [simp]: "\<not> small (UNIV::V set)" (is  "\<not> small ?U")
   proof
     assume "small ?U"

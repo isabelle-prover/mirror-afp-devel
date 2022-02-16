@@ -147,6 +147,23 @@ proof -
   qed
 qed
 
+lemma small_Times_iff: "small (A \<times> B) \<longleftrightarrow> small A \<and> small B \<or> A={} \<or> B={}"  (is "_ = ?rhs")
+proof
+  assume *: "small (A \<times> B)"
+  { have "small A \<and> small B" if "x \<in> A" "y \<in> B" for x y
+    proof -
+      have "A \<subseteq> fst ` (A \<times> B)" "B \<subseteq> snd ` (A \<times> B)"
+        using that by auto
+      with that show ?thesis
+        by (metis * replacement smaller_than_small)
+    qed    }
+  then show ?rhs
+    by (metis equals0I)
+next
+  assume ?rhs
+  then show "small (A \<times> B)"
+    by auto
+qed
 
 subsection \<open>Disjoint Sum\<close>
 
@@ -1764,6 +1781,9 @@ abbreviation CARD where "CARD \<equiv> Collect Card"
 lemma cardinal_cong: "elts x \<approx> elts y \<Longrightarrow> vcard x = vcard y"
   unfolding vcard_def by (meson eqpoll_sym eqpoll_trans)
 
+lemma vcard_set_image: "inj_on f (elts x) \<Longrightarrow> vcard (set (f ` elts x)) = vcard x"
+  by (simp add: cardinal_cong)
+
 lemma Card_cardinal_eq: "Card \<kappa> \<Longrightarrow> vcard \<kappa> = \<kappa>"
   by (simp add: Card_def)
 
@@ -1990,6 +2010,10 @@ proof (unfold cadd_def, rule cardinal_cong)
   finally show "elts (vcard (i \<Uplus> j) \<Uplus> k) \<approx> elts (i \<Uplus> vcard (j \<Uplus> k))" .
 qed
 
+lemma cadd_left_commute: "j \<oplus> (i \<oplus> k) = i \<oplus> (j \<oplus> k)"
+  using cadd_assoc cadd_commute by force
+
+lemmas cadd_ac = cadd_assoc cadd_commute cadd_left_commute
 
 text\<open>0 is the identity for addition\<close>
 lemma vsum_0_eqpoll: "elts (0\<Uplus>a) \<approx> elts a"
@@ -2323,6 +2347,19 @@ qed
 lemma Card_lt_csucc_iff: "\<lbrakk>Card \<kappa>'; Card \<kappa>\<rbrakk> \<Longrightarrow> (\<kappa>' < csucc \<kappa>) = (\<kappa>' \<le> \<kappa>)"
   by (simp add: lt_csucc_iff Card_cardinal_eq Card_is_Ord)
 
+lemma csucc_lt_csucc_iff: "\<lbrakk>Card \<kappa>'; Card \<kappa>\<rbrakk> \<Longrightarrow> (csucc \<kappa>' < csucc \<kappa>) = (\<kappa>' < \<kappa>)"
+  by (metis Card_csucc Card_is_Ord Card_lt_csucc_iff Ord_not_less)
+
+lemma csucc_le_csucc_iff: "\<lbrakk>Card \<kappa>'; Card \<kappa>\<rbrakk> \<Longrightarrow> (csucc \<kappa>' \<le> csucc \<kappa>) = (\<kappa>' \<le> \<kappa>)"
+  by (metis Card_csucc Card_is_Ord Card_lt_csucc_iff Ord_not_less)
+
+lemma csucc_0 [simp]: "csucc 0 = 1"
+  by (simp add: finite_csucc one_V_def)
+
+lemma Card_Un [simp,intro]:
+  assumes "Card x" "Card y" shows "Card(x \<squnion> y)"
+  by (metis Card_is_Ord Ord_linear_le assms sup.absorb2 sup.orderE)
+
 lemma InfCard_csucc: "InfCard \<kappa> \<Longrightarrow> InfCard (csucc \<kappa>)"
   using InfCard_def le_csucc by auto
 
@@ -2453,16 +2490,8 @@ proof -
       case (succ \<beta>)
       then consider "x = \<beta>" |"x \<in> elts \<beta>"
         using OrdmemD by auto
-      then show ?case
-      proof cases
-        case 1
-        then show ?thesis
-          by (simp add: Card_is_Ord Ord_mem_iff_lt succ.hyps(1))
-      next
-        case 2
-        with succ show ?thesis
-          by (metis Aleph_succ Card_Aleph le_csucc vsubsetD)
-      qed
+      with succ show ?case
+        by (metis Card_Aleph Card_is_Ord Ord_succ Ord_trans mem_Aleph_succ)
     next
       case (Limit \<gamma>)
       hence sc: "succ x \<in> elts \<gamma>"
@@ -2476,6 +2505,15 @@ proof -
   } thus ?thesis using ab
     by (simp add: Card_is_Ord Ord_mem_iff_lt)
 qed
+
+lemma InfCard_Aleph [simp, intro]:
+  assumes "Ord \<alpha>"
+  shows "InfCard(Aleph \<alpha>)"
+  unfolding InfCard_def
+  by (metis Aleph_0 Aleph_increasing Card_Aleph assms in_succ_iff order_le_less zero_in_succ)
+
+lemma Aleph_csquare_eq [simp]: "Ord \<alpha> \<Longrightarrow> \<aleph>\<alpha> \<otimes> \<aleph>\<alpha> = \<aleph>\<alpha>"
+  using InfCard_csquare_eq by auto
 
 lemma countable_iff_le_Aleph0: "countable (elts A) \<longleftrightarrow> vcard A \<le> \<aleph>0"
 proof
@@ -2502,6 +2540,20 @@ proof
       by (simp add: countable_iff_lepoll \<omega>_def inj_ord_of_nat)
   qed
 qed
+
+lemma finite_iff_less_Aleph0: "finite (elts x) \<longleftrightarrow> vcard x < \<omega>"
+proof
+  show "finite (elts x) \<Longrightarrow> vcard x < \<omega>"
+    by (metis Card_\<omega> Card_def finite_lesspoll_infinite infinite_\<omega> lesspoll_imp_Card_less)
+  show "vcard x < \<omega> \<Longrightarrow> finite (elts x)"
+    by (meson Ord_cardinal cardinal_eqpoll eqpoll_finite_iff infinite_Ord_omega less_le_not_le)
+qed
+
+lemma countable_iff_vcard_less1: "countable (elts x) \<longleftrightarrow> vcard x < \<aleph>1"
+  by (simp add: countable_iff_le_Aleph0 lt_csucc_iff one_V_def)
+
+lemma countable_infinite_vcard: "countable (elts x) \<and> infinite (elts x) \<longleftrightarrow> vcard x = \<aleph>0"
+  by (metis Aleph_0 countable_iff_le_Aleph0 dual_order.refl finite_iff_less_Aleph0 less_V_def)
 
 subsection \<open>The ordinal @{term "\<omega>1"}\<close>
 
