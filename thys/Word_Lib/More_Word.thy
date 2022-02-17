@@ -13,19 +13,6 @@ theory More_Word
     More_Divides
 begin
 
-context unique_euclidean_semiring_with_bit_operations \<comment>\<open>TODO: move\<close>
-begin
-
-lemma possible_bit [simp]:
-  \<open>possible_bit TYPE('a) n\<close>
-  by (simp add: possible_bit_def)
-
-lemma drop_bit_mask_eq:
-  \<open>drop_bit m (mask n) = mask (n - m)\<close>
-  by (rule bit_eqI) (auto simp add: bit_simps possible_bit_def)
-
-end
-
 context
   includes bit_operations_syntax
 begin
