@@ -239,7 +239,7 @@ lemma bin_nth_set_bits [simp]:
 using wff proof (induction m arbitrary: f)
   case 0
   then show ?case
-    by (simp add: Bit_Comprehension.bin_last_set_bits)
+    by (simp add: Bit_Comprehension.bin_last_set_bits bit_0)
 next
   case Suc
   from Suc.IH [of "f \<circ> Suc"] Suc.prems show ?case

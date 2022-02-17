@@ -30,7 +30,7 @@ lemma test_bit_int_code [code]:
   "bit (Int.Pos (num.Bit1 m)) (Suc n) = bit (Int.Pos m) n"
   "bit (Int.Neg (num.Bit0 m)) (Suc n) = bit (Int.Neg m) n"
   "bit (Int.Neg (num.Bit1 m)) (Suc n) = bit (Int.Neg (Num.inc m)) n"
-  by (simp_all add: Num.add_One bit_Suc)
+  by (simp_all add: Num.add_One bit_0 bit_Suc)
 
 lemma int_not_code [code]:
   "NOT (0 :: int) = -1"

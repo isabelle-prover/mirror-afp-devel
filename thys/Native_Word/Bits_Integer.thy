@@ -430,7 +430,7 @@ lemma integer_test_bit_code [code]:
    integer_test_bit (Code_Numeral.Neg n) (Code_Numeral.sub n' num.One)"
   "integer_test_bit (Code_Numeral.Neg (num.Bit1 n)) (Code_Numeral.Pos n') =
    integer_test_bit (Code_Numeral.Neg (n + num.One)) (Code_Numeral.sub n' num.One)"
-  by (simp_all add: integer_test_bit_def bit_integer_def flip: bit_not_int_iff')
+  by (simp_all add: integer_test_bit_def bit_integer_def bit_0 flip: bit_not_int_iff')
 
 code_printing constant integer_test_bit \<rightharpoonup>
   (SML) "Bits'_Integer.test'_bit" and

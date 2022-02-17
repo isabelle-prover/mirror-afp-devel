@@ -153,7 +153,7 @@ lemma bl_to_bin_BIT:
   by (simp add: bl_to_bin_append Bit_def)
 
 lemma bin_nth_0_BIT: "bin_nth (w BIT b) 0 \<longleftrightarrow> b"
-  by simp
+  by (simp add: bit_0)
 
 lemma bin_nth_Suc_BIT: "bin_nth (w BIT b) (Suc n) = bin_nth w n"
   by (simp add: bit_Suc)
@@ -166,7 +166,7 @@ lemma bin_sign_simps [simp]:
   by (simp add: bin_sign_def Bit_def)
 
 lemma bin_nth_Bit: "bin_nth (w BIT b) n \<longleftrightarrow> n = 0 \<and> b \<or> (\<exists>m. n = Suc m \<and> bin_nth w m)"
-  by (cases n) auto
+  by (cases n) (auto simp add: bit_0)
 
 lemmas sbintrunc_Suc_BIT [simp] =
   signed_take_bit_Suc [where a="w BIT b", simplified bin_last_BIT bin_rest_BIT] for w b
@@ -224,7 +224,7 @@ by(simp add: Bit_def)
 
 lemma int_lsb_BIT [simp]: fixes x :: int shows
   "lsb (x BIT b) \<longleftrightarrow> b"
-by(simp add: lsb_int_def)
+  by (simp add: lsb_int_def bit_0)
 
 lemma int_shiftr_BIT [simp]: fixes x :: int
   shows int_shiftr0: "drop_bit 0 x = x"
