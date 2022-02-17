@@ -76,7 +76,8 @@ proof -
     using n m unfolding q
      apply (simp_all add: of_nat_diff)
     apply (subst of_nat_diff)
-    apply (simp_all add: word_le_nat_alt take_bit_nat_eq_self unat_sub_if' unat_word_ariths unsigned_of_nat)
+    apply (cases \<open>LENGTH('a) \<ge> 2\<close>)
+     apply (simp_all add: word_le_nat_alt take_bit_nat_eq_self unat_sub_if' unat_word_ariths unsigned_of_nat)
     done
   then show ?thesis using n m div_half_nat [OF \<open>m \<noteq> 0\<close>, of n] unfolding q
     by (simp add: word_le_nat_alt word_div_def word_mod_def Let_def take_bit_nat_eq_self unsigned_of_nat

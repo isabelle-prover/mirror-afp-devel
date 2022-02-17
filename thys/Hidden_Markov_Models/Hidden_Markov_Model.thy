@@ -540,7 +540,7 @@ lemma viterbi_sequence:
 proof (induction os arbitrary: s)
   case Nil
   then show ?case
-    by (simp add: indicator_def split: if_split_asm)
+    by (simp add: indicator_def split: if_split_asm split_of_bool_asm)
 next
   case (Cons o os s)
   let ?xs = "map

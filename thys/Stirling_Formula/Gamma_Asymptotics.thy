@@ -251,7 +251,7 @@ proof -
     using assms
     by (subst Gamma_conv_nn_integral_real)
        (auto intro!: nn_integral_cong_AE[OF AE_I[of _ _ "{0}"]] 
-             simp: indicator_def split: if_splits)
+             simp: indicator_def split: if_splits split_of_bool_asm)
   finally have "ennreal (Gamma a * Gamma b) = I * ennreal (Gamma (a + b))" .
   hence "ennreal (Gamma a * Gamma b) / ennreal (Gamma (a + b)) =
            I * ennreal (Gamma (a + b)) / ennreal (Gamma (a + b))" by simp
