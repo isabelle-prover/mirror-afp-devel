@@ -5,7 +5,8 @@
 chapter \<open>Unsigned words of 32 bits\<close>
 
 theory Uint32 imports
-  Code_Target_Word_Base Word_Type_Copies
+  Word_Type_Copies
+  Code_Target_Integer_Bit
 begin
 
 section \<open>Type definition and primitive operations\<close>

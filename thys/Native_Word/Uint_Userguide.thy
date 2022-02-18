@@ -8,7 +8,7 @@ chapter \<open>User guide for native words\<close>
 theory Uint_Userguide imports
   Uint32
   Uint16
-  Code_Target_Bits_Int
+  Code_Target_Int_Bit
 begin
 (*>*)
 
@@ -50,7 +50,7 @@ text \<open>
   code generation. For example, PolyML does not provide the Word16
   structure, and OCaml provides neither Word8 nor Word16.
   You can still use these theories provided that you also import
-  the theory @{theory Native_Word.Code_Target_Bits_Int} (which implements
+  the theory @{theory Native_Word.Code_Target_Int_Bit} (which implements
   @{typ int} by target-language integers), but these words will
   be implemented via Isabelle's \<open>Word\<close> library, i.e.,
   you do not gain anything in terms of efficiency.

@@ -7,7 +7,8 @@ chapter \<open>Common base for target language implementations of word types\<cl
 theory Code_Target_Word_Base imports
   "HOL-Library.Word"
   "Word_Lib.Signed_Division_Word"
-  Bits_Integer
+  "Word_Lib.More_Word"
+  "Word_Lib.Bit_Comprehension"
 begin
 
 text \<open>More lemmas\<close>
@@ -58,13 +59,13 @@ proof -
   let ?q = "push_bit 1 (drop_bit 1 x div y)"
   let ?q' = "2 * (n div 2 div m)"
   have "n div 2 div m < 2 ^ LENGTH('a)"
-    using n by (metis of_nat_inverse unat_lt2p uno_simps(2))
+    using n by (metis of_nat_inverse uno_simps(2) unsigned_less)
   hence q: "?q = of_nat ?q'" using n m
     by (auto simp add: drop_bit_eq_div word_arith_nat_div uno_simps take_bit_nat_eq_self unsigned_of_nat)
   from assms have "m \<noteq> 0" using m by -(rule notI, simp)
 
   from n have "2 * (n div 2 div m) < 2 ^ LENGTH('a)"
-    by(metis mult.commute div_mult2_eq minus_mod_eq_mult_div [symmetric] less_imp_diff_less of_nat_inverse unat_lt2p uno_simps(2))
+    by (metis mult.commute div_mult2_eq minus_mod_eq_mult_div [symmetric] less_imp_diff_less of_nat_inverse unsigned_less uno_simps(2))
   moreover
   have "2 * (n div 2 div m) * m < 2 ^ LENGTH('a)" using n unfolding div_mult2_eq[symmetric]
     by(subst (2) mult.commute)(simp add: minus_mod_eq_div_mult [symmetric] diff_mult_distrib minus_mod_eq_mult_div [symmetric] div_mult2_eq)
@@ -89,7 +90,7 @@ lemma word_test_bit_set_bits: "bit (BITS n. f n :: 'a :: len word) n \<longleftr
   by (fact bit_set_bits_word_iff)
 
 lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. bit i n)"
-  by (rule word_eqI) (auto simp add: word_test_bit_set_bits bit_simps)
+  by (rule bit_eqI) (auto simp add: bit_simps)
 
 context
   includes bit_operations_syntax
@@ -98,7 +99,7 @@ begin
 lemma word_and_mask_or_conv_and_mask:
   "bit n index \<Longrightarrow> (n AND mask index) OR (push_bit index 1) = n AND mask (index + 1)"
   for n :: \<open>'a::len word\<close>
-by(rule word_eqI)(auto simp add: bit_simps)
+  by (rule bit_eqI) (auto simp add: bit_simps)
 
 lemma uint_and_mask_or_full:
   fixes n :: "'a :: len word"
@@ -170,18 +171,19 @@ proof(cases "push_bit (LENGTH('a) - 1) 1 \<le> y")
     case True
     then have "x mod y = x"
       by transfer simp
-    thus ?thesis using True y by(simp add: word_div_lt_eq_0)
+    then show ?thesis using True y
+      using bits_mod_div_trivial [of x y] by simp
   next
     case False
     obtain n where n: "y = of_nat n" "n < 2 ^ LENGTH('a)"
       by (rule that [of \<open>unat y\<close>]) simp_all
-    have "unat x < 2 ^ LENGTH('a)" by(rule unat_lt2p)
+    have "unat x < 2 ^ LENGTH('a)" by (rule unsigned_less)
     also have "\<dots> = 2 * 2 ^ (LENGTH('a) - 1)"
       by(metis Suc_pred len_gt_0 power_Suc One_nat_def)
     also have "\<dots> \<le> 2 * n" using y n
       by transfer (simp add: push_bit_of_1 take_bit_eq_mod)
     finally have div: "x div of_nat n = 1" using False n
-      by (simp add: word_div_eq_1_iff take_bit_nat_eq_self unsigned_of_nat)
+      by (simp add: take_bit_nat_eq_self unsigned_of_nat word_div_eq_1_iff)
     moreover have "x mod y = x - x div y * y"
       by (simp add: minus_div_mult_eq_mod)
     with div n have "x mod y = x - y" by simp

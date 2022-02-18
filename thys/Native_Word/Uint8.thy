@@ -5,13 +5,14 @@
 chapter \<open>Unsigned words of 8 bits\<close>
 
 theory Uint8 imports
-  Code_Target_Word_Base Word_Type_Copies
+  Word_Type_Copies
+  Code_Target_Integer_Bit
 begin
 
 text \<open>
   Restriction for OCaml code generation:
   OCaml does not provide an int8 type, so no special code generation 
-  for this type is set up. If the theory \<open>Code_Target_Bits_Int\<close>
+  for this type is set up. If the theory \<^text>\<open>Code_Target_Int_Bit\<close>
   is imported, the type \<open>uint8\<close> is emulated via \<^typ>\<open>8 word\<close>.
 \<close>
 

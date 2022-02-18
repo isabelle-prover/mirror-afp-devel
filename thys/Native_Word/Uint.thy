@@ -6,7 +6,8 @@
 chapter \<open>Unsigned words of default size\<close>
 
 theory Uint imports
-  Code_Target_Word_Base Word_Type_Copies
+  Word_Type_Copies
+  Code_Target_Integer_Bit
 begin
 
 text \<open>

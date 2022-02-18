@@ -1,14 +1,16 @@
-(*  Title:      Bits_Integer.thy
+(*  Title:      Code_Target_Integer_Bit.thy
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
 chapter \<open>Bit operations for target language integers\<close>
 
-theory Bits_Integer imports
+theory Code_Target_Integer_Bit imports
   "Word_Lib.Bit_Comprehension"
   Code_Int_Integer_Conversion
-  Code_Symbolic_Bits_Int
+  Code_Symbolic_Int_Bit
 begin
+
+text \<open>TODO: separate\<close>
 
 lemmas [transfer_rule] =
   identity_quotient

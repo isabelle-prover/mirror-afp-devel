@@ -3,7 +3,7 @@ theory Wasm_Interpreter_Printing_Pure
     "../Wasm_Interpreter_Properties"
     Wasm_Type_Abs_Printing
    "HOL-Library.Code_Target_Nat"
-   "Native_Word.Code_Target_Bits_Int"
+   "Native_Word.Code_Target_Int_Bit"
 begin
 
 axiomatization where

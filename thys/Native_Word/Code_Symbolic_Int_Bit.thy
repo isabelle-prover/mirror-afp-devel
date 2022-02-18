@@ -1,10 +1,10 @@
-(*  Title:      Code_Symbolic_Bits_Int.thy
+(*  Title:      Code_Symbolic_Int_Bit.thy
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
 chapter \<open>Symbolic implementation of bit operations on int\<close>
 
-theory Code_Symbolic_Bits_Int
+theory Code_Symbolic_Int_Bit
 imports
   "Word_Lib.Least_significant_bit"
   "Word_Lib.Generic_set_bit"
