@@ -2532,67 +2532,69 @@ subsection \<open>The Aleph-seqence\<close>
 
 text \<open>This is the well-known transfinite enumeration of the cardinal numbers.\<close>
 
-definition Aleph :: "V \<Rightarrow> V"   (\<open>\<aleph>_\<close> [90] 90) 
-  where "Aleph \<equiv> transrec3 \<omega> (\<lambda>x r. csucc(r)) (\<lambda>i r . \<Squnion> (r ` elts i))"
+definition Aleph :: "V \<Rightarrow> V"    (\<open>\<aleph>_\<close> [90] 90)
+  where "Aleph \<equiv> transrec (\<lambda>f x. \<omega> \<squnion> \<Squnion>((\<lambda>y. csucc(f y)) ` elts x))"
 
-lemma Card_Aleph [simp, intro]:
-     "Ord \<alpha> \<Longrightarrow> Card(Aleph \<alpha>)"
-by (induction \<alpha> rule: Ord_induct3) (auto simp: Aleph_def)
+lemma Aleph: "Aleph \<alpha> = \<omega> \<squnion> (\<Squnion>y\<in>elts \<alpha>. csucc (Aleph y))"
+  by (simp add: Aleph_def transrec[of _ \<alpha>])
 
-lemma Aleph_0 [simp]: "\<aleph>0 = \<omega>"
-  by (simp add: Aleph_def)
-
-lemma Aleph_succ [simp]: "\<aleph>(succ x) = csucc (\<aleph> x)"
-  by (simp add: Aleph_def)
-
-lemma Aleph_Limit: "Limit \<gamma> \<Longrightarrow> \<aleph> \<gamma> = \<Squnion> (Aleph ` elts \<gamma>)"
-  by (simp add: Aleph_def)
-
-lemma mem_Aleph_succ: "Ord \<alpha> \<Longrightarrow> \<aleph>(\<alpha>) \<in> elts (\<aleph>(succ \<alpha>))"
-  by (simp add: Card_is_Ord Ord_mem_iff_lt)
-
-lemma Aleph_increasing:
-  assumes ab: "\<alpha> < \<beta>" "Ord \<alpha>" "Ord \<beta>" shows "Aleph(\<alpha>) < Aleph(\<beta>)"
-proof -
-  { fix x
-    have "\<lbrakk>Ord x; x \<in> elts \<beta>\<rbrakk> \<Longrightarrow> Aleph(x) \<in> elts (Aleph \<beta>)"
-      using \<open>Ord \<beta>\<close>
-    proof (induct \<beta> arbitrary: x rule: Ord_induct3)
-      case 0 thus ?case by simp
-    next
-      case (succ \<beta>)
-      then consider "x = \<beta>" |"x \<in> elts \<beta>"
-        using OrdmemD by auto
-      with succ show ?case
-        by (metis Card_Aleph Card_is_Ord Ord_succ Ord_trans mem_Aleph_succ)
-    next
-      case (Limit \<gamma>)
-      hence sc: "succ x \<in> elts \<gamma>"
-        by (simp add: Limit_def Ord_mem_iff_lt)
-      hence "\<aleph> x \<in> elts (\<Squnion> (Aleph ` elts \<gamma>))" 
-        using Limit
-        by blast
-      thus ?case using Limit
-        by (simp add: Aleph_Limit)
-    qed
-  } thus ?thesis using ab
-    by (simp add: Card_is_Ord Ord_mem_iff_lt)
+lemma InfCard_Aleph [simp, intro]: "InfCard(Aleph x)"
+proof (induction x rule: eps_induct)
+  case (step x)
+  then show ?case
+    by (simp add: Aleph [of x] InfCard_def Card_UN step)
 qed
 
-lemma InfCard_Aleph [simp, intro]:
-  assumes "Ord \<alpha>"
-  shows "InfCard(Aleph \<alpha>)"
-  unfolding InfCard_def
-  by (metis Aleph_0 Aleph_increasing Card_Aleph assms in_succ_iff order_le_less zero_in_succ)
-
-lemma Aleph_csquare_eq [simp]: "Ord \<alpha> \<Longrightarrow> \<aleph>\<alpha> \<otimes> \<aleph>\<alpha> = \<aleph>\<alpha>"
-  using InfCard_csquare_eq by auto
-
-lemma vcard_Aleph [simp]: "Ord \<alpha> \<Longrightarrow> vcard (\<aleph>\<alpha>) = \<aleph>\<alpha>"
-  by (simp add: Card_cardinal_eq)
-
-lemma omega_le_Aleph [simp]: "Ord \<alpha> \<Longrightarrow> \<omega> \<le> \<aleph>\<alpha>"
+lemma Card_Aleph [simp, intro]: "Card(Aleph x)"
   using InfCard_def by auto
+
+lemma Aleph_0 [simp]: "\<aleph>0 = \<omega>"
+  by (simp add: Aleph [of 0])
+
+lemma mem_Aleph_succ: "\<aleph>\<alpha> \<in> elts (Aleph (succ \<alpha>))"
+  apply (simp add: Aleph [of "succ \<alpha>"])
+  by (meson InfCard_Aleph Card_csucc Card_is_Ord InfCard_def Ord_mem_iff_lt less_csucc)
+
+lemma Aleph_lt_succD [simp]: "\<aleph>\<alpha> < Aleph (succ \<alpha>)"
+  by (simp add: InfCard_is_Limit Limit_is_Ord OrdmemD mem_Aleph_succ)
+
+lemma Aleph_succ [simp]: "Aleph (succ x) = csucc (Aleph x)"
+proof (rule antisym)
+  show "Aleph (ZFC_in_HOL.succ x) \<le> csucc (Aleph x)"
+    apply (simp add: Aleph [of "succ x"])
+    by (metis Aleph InfCard_Aleph InfCard_def Sup_V_insert le_csucc le_sup_iff order_refl 
+         replacement small_elts)
+  show "csucc (Aleph x) \<le> Aleph (ZFC_in_HOL.succ x)"
+    by (force simp add: Aleph [of "succ x"])
+qed
+
+lemma csucc_Aleph_le_Aleph: "\<alpha> \<in> elts \<beta> \<Longrightarrow> csucc (\<aleph>\<alpha>) \<le> \<aleph>\<beta>"
+  by (metis Aleph ZFC_in_HOL.SUP_le_iff replacement small_elts sup_ge2)
+
+lemma Aleph_in_Aleph: "\<alpha> \<in> elts \<beta> \<Longrightarrow> \<aleph>\<alpha> \<in> elts (\<aleph>\<beta>)"
+  using csucc_Aleph_le_Aleph mem_Aleph_succ by auto
+
+lemma Aleph_Limit:
+  assumes "Limit \<gamma>"
+  shows "Aleph \<gamma> = \<Squnion> (Aleph ` elts \<gamma>)"
+proof -
+  have [simp]: "\<gamma> \<noteq> 0"
+    using assms by auto 
+  show ?thesis
+  proof (rule antisym)
+    show "Aleph \<gamma> \<le> \<Squnion> (Aleph ` elts \<gamma>)"
+      apply (simp add: Aleph [of \<gamma>])
+      by (metis (mono_tags, lifting) Aleph_0 Aleph_succ Limit_def ZFC_in_HOL.SUP_le_iff 
+           ZFC_in_HOL.Sup_upper assms imageI replacement small_elts)
+    show "\<Squnion> (Aleph ` elts \<gamma>) \<le> Aleph \<gamma>"
+      apply (simp add: cSup_le_iff)
+      by (meson InfCard_Aleph InfCard_def csucc_Aleph_le_Aleph le_csucc order_trans)
+  qed
+qed
+
+lemma Aleph_increasing:
+  assumes ab: "\<alpha> < \<beta>" "Ord \<alpha>" "Ord \<beta>" shows "\<aleph>\<alpha> < \<aleph>\<beta>"
+  by (meson Aleph_in_Aleph InfCard_Aleph Card_iff_initial InfCard_def Ord_mem_iff_lt assms)
 
 lemma countable_iff_le_Aleph0: "countable (elts A) \<longleftrightarrow> vcard A \<le> \<aleph>0"
 proof
@@ -2606,12 +2608,13 @@ proof
     case False
     then have "elts \<omega> \<approx> elts A"
       using countableE_infinite [OF that]     
-      by (simp add: eqpoll_def \<omega>_def) (meson bij_betw_def bij_betw_inv bij_betw_trans inj_ord_of_nat)
+      by (simp add: eqpoll_def \<omega>_def) 
+         (meson bij_betw_def bij_betw_inv bij_betw_trans inj_ord_of_nat)
     then show ?thesis
       using Card_\<omega> Card_def cardinal_cong vcard_def by auto
   qed
   show "countable (elts A)"
-    if "vcard A \<le> \<aleph>0"
+    if "vcard A \<le> Aleph 0"
   proof -
     have "elts A \<lesssim> elts \<omega>"
       using cardinal_le_lepoll [OF that] by simp
@@ -2619,6 +2622,15 @@ proof
       by (simp add: countable_iff_lepoll \<omega>_def inj_ord_of_nat)
   qed
 qed
+
+lemma Aleph_csquare_eq [simp]: "\<aleph>\<alpha> \<otimes> \<aleph>\<alpha> = \<aleph>\<alpha>"
+  using InfCard_csquare_eq by auto
+
+lemma vcard_Aleph [simp]: "vcard (\<aleph>\<alpha>) = \<aleph>\<alpha>"
+  using Card_def InfCard_Aleph InfCard_def by auto
+
+lemma omega_le_Aleph [simp]: "\<omega> \<le> \<aleph>\<alpha>"
+  using InfCard_def by auto
 
 lemma finite_iff_less_Aleph0: "finite (elts x) \<longleftrightarrow> vcard x < \<omega>"
 proof
@@ -2639,10 +2651,10 @@ subsection \<open>The ordinal @{term "\<omega>1"}\<close>
 abbreviation "\<omega>1 \<equiv> Aleph 1"
 
 lemma Ord_\<omega>1 [simp]: "Ord \<omega>1"
-  by (simp add: Card_is_Ord)
+  by (metis Ord_cardinal vcard_Aleph)
 
 lemma omega_\<omega>1 [iff]: "\<omega> \<in> elts \<omega>1"
-  using mem_Aleph_succ one_V_def by fastforce
+  by (metis Aleph_0 mem_Aleph_succ one_V_def)
 
 lemma ord_of_nat_\<omega>1 [iff]: "ord_of_nat n \<in> elts \<omega>1"
   using Ord_\<omega>1 Ord_trans by blast
