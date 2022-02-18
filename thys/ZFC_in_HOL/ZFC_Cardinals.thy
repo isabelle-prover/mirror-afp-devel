@@ -595,15 +595,12 @@ lemma rank_lt: "a \<in> elts b \<Longrightarrow> rank a < rank b"
   by (metis (no_types, lifting) Ord_mem_iff_lt Ord_rank small_UN UN_iff elts_of_set elts_succ insert_iff rank small_elts)
 
 lemma rank_0 [simp]: "rank 0 = 0"
-  unfolding rank_def
-  using transrec by fastforce
+  using transrec Ord_0 rank_def rank_of_Ord by presburger
 
 lemma rank_succ [simp]: "rank(succ x) = succ(rank x)"
 proof (rule order_antisym)
   show "rank (succ x) \<le> succ (rank x)"
-    apply (subst rank [of "succ x"])
-    apply (metis (no_types, lifting) Sup_insert elts_of_set elts_succ equals0D image_insert rank small_sup_iff subset_insertI sup.orderE vsubsetI)
-    done
+    by (metis (no_types, lifting) Sup_insert elts_of_set elts_succ image_insert rank small_UN small_elts subset_insertI sup.orderE vsubsetI)
   show "succ (rank x) \<le> rank (succ x)"
     by (metis (mono_tags, lifting) ZFC_in_HOL.Sup_upper elts_succ image_insert insertI1 rank_Sup replacement small_elts)
 qed
@@ -1810,6 +1807,22 @@ lemma inj_into_vcard:
 lemma cardinal_idem [simp]: "vcard (vcard a) = vcard a"
   using cardinal_cong cardinal_eqpoll by blast
 
+lemma subset_smaller_vcard:
+  assumes "\<kappa> \<le> vcard x" "Card \<kappa>"
+  obtains y where "y \<le> x" "vcard y = \<kappa>"
+proof -
+  obtain \<phi> where \<phi>: "bij_betw \<phi> (elts (vcard x)) (elts x)"
+    using cardinal_eqpoll eqpoll_def by blast
+  show thesis
+  proof
+    let ?y = "ZFC_in_HOL.set (\<phi> ` elts \<kappa>)"
+    show "?y \<le> x"
+      by (meson \<phi> assms bij_betwE set_image_le_iff small_elts vsubsetD) 
+    show "vcard ?y = \<kappa>"
+      by (metis vcard_set_image Card_def assms bij_betw_def bij_betw_subset \<phi> less_eq_V_def)
+  qed
+qed
+
 text\<open>every natural number is a (finite) cardinal\<close>
 lemma nat_into_Card:
   assumes "\<alpha> \<in> elts \<omega>" shows "Card(\<alpha>)"
@@ -2060,7 +2073,7 @@ lemma prod_bij: "\<lbrakk>bij_betw f A C; bij_betw g B D\<rbrakk>
 lemma cmult_commute: "i \<otimes> j = j \<otimes> i"
 proof -
   have "(\<lambda>(x, y). \<langle>x, y\<rangle>) ` (elts i \<times> elts j) \<approx> (\<lambda>(x, y). \<langle>x, y\<rangle>) ` (elts j \<times> elts i)"
-    by (simp add: inj_on_vpair times_commute_eqpoll)
+    by (simp add: times_commute_eqpoll)
   then show ?thesis
     unfolding cmult_def
     using cardinal_cong elts_VSigma by auto
@@ -2075,6 +2088,9 @@ proof -
   then show ?thesis
     using cardinal_eqpoll eqpoll_trans by blast
 qed
+
+lemma elts_cmult: "elts (\<kappa>' \<otimes> \<kappa>) \<approx> elts \<kappa>' \<times> elts \<kappa>"
+  by (simp add: cmult_def elts_vcard_VSigma_eqpoll)
 
 lemma cmult_assoc: "(i \<otimes> j) \<otimes> k = i \<otimes> (j \<otimes> k)"
   unfolding cmult_def
@@ -2155,6 +2171,36 @@ lemma cmult_le_mono: "\<lbrakk>\<kappa>' \<le> \<kappa>; \<mu>' \<le> \<mu>\<rbr
   unfolding cmult_def
   by (auto simp: elts_VSigma intro!: lepoll_imp_Card_le times_lepoll_mono subset_imp_lepoll)
 
+lemma vcard_Sup_le_cmult:
+  assumes "small U" and \<kappa>: "\<And>x. x \<in> U \<Longrightarrow> vcard x \<le> \<kappa>"
+  shows "vcard (\<Squnion>U) \<le> vcard (set U) \<otimes> \<kappa>"
+proof -
+  have "\<exists>f. f \<in> elts x \<rightarrow> elts \<kappa> \<and> inj_on f (elts x)" if "x \<in> U" for x
+    using \<kappa> [OF that] by (metis cardinal_le_lepoll image_subset_iff_funcset lepoll_def)
+  then obtain \<phi> where \<phi>: "\<And>x. x \<in> U \<Longrightarrow> (\<phi> x) \<in> elts x \<rightarrow> elts \<kappa> \<and> inj_on (\<phi> x) (elts x)"
+    by metis
+  define u where "u \<equiv> \<lambda>y. @x. x \<in> U \<and> y \<in> elts x"
+  have u: "u y \<in> U \<and> y \<in> elts (u y)" if "y \<in> \<Union>(elts ` U)" for y
+    unfolding u_def by (metis (mono_tags, lifting)that someI2_ex UN_iff)  
+  define \<psi> where "\<psi> \<equiv> \<lambda>y. (u y, \<phi> (u y) y)"
+  have U: "elts (vcard (set U)) \<approx> U"
+    by (metis \<open>small U\<close> cardinal_eqpoll elts_of_set)
+  have "elts (\<Squnion>U) = \<Union>(elts ` U)"
+    using \<open>small U\<close> by blast
+  also have "\<dots> \<lesssim> U \<times> elts \<kappa>"
+    unfolding lepoll_def
+  proof (intro exI conjI)
+    show "inj_on \<psi> (\<Union> (elts ` U))"
+      using \<phi> u by (smt (verit) \<psi>_def inj_on_def prod.inject)
+    show "\<psi> ` \<Union> (elts ` U) \<subseteq> U \<times> elts \<kappa>"
+      using \<phi> u by (auto simp: \<psi>_def)
+  qed
+  also have "\<dots>  \<approx> elts (vcard (set U) \<otimes> \<kappa>)"
+    using U elts_cmult eqpoll_sym eqpoll_trans times_eqpoll_cong by blast
+  finally have "elts (\<Squnion> U) \<lesssim> elts (vcard (set U) \<otimes> \<kappa>)" .
+  then show ?thesis
+    by (simp add: cmult_def lepoll_cardinal_le)
+qed
 
 subsection\<open>The finite cardinals\<close>
 
@@ -2209,6 +2255,21 @@ proof -
     by (metis cadd_commute cadd_def cardinal_cong cardinal_idem vsum_0_eqpoll cadd_assoc)
 qed
 
+lemma vcard_sup: "vcard (x \<squnion> y) \<le> vcard x \<oplus> vcard y"
+proof -
+  have "elts (x \<squnion> y) \<lesssim> elts (x \<Uplus> y)"
+    unfolding lepoll_def
+  proof (intro exI conjI)
+    let ?f = "\<lambda>z. if z \<in> elts x then Inl z else Inr z"
+    show "inj_on ?f (elts (x \<squnion> y))"
+      by (simp add: inj_on_def)
+    show "?f ` elts (x \<squnion> y) \<subseteq> elts (x \<Uplus> y)" thm add.left_commute
+      by force
+  qed
+  then show ?thesis
+    using cadd_ac
+    by (metis cadd_def cardinal_cong cardinal_idem lepoll_imp_Card_le vsum_0_eqpoll)
+qed
 
 subsection\<open>Infinite cardinals\<close>
 
@@ -2363,7 +2424,6 @@ lemma Card_Un [simp,intro]:
 lemma InfCard_csucc: "InfCard \<kappa> \<Longrightarrow> InfCard (csucc \<kappa>)"
   using InfCard_def le_csucc by auto
 
-
 text\<open>Kunen's Lemma 10.11\<close>
 lemma InfCard_is_Limit:
   assumes "InfCard \<kappa>" shows "Limit \<kappa>"
@@ -2454,6 +2514,19 @@ lemma InfCard_le_cadd_eq: "\<lbrakk>InfCard \<kappa>; \<mu> \<le> \<kappa>\<rbra
 lemma InfCard_cadd_eq: "\<lbrakk>InfCard \<kappa>; InfCard \<mu>\<rbrakk> \<Longrightarrow> \<kappa> \<oplus> \<mu> = \<kappa> \<squnion> \<mu>"
   by (metis Card_iff_initial InfCard_def InfCard_le_cadd_eq Ord_linear_le cadd_commute sup.absorb2 sup.orderE)
 
+lemma csucc_le_Card_iff: "\<lbrakk>Card \<kappa>'; Card \<kappa>\<rbrakk> \<Longrightarrow> csucc \<kappa>' \<le> \<kappa> \<longleftrightarrow> \<kappa>' < \<kappa>"
+  by (metis Card_csucc Card_is_Ord Card_lt_csucc_iff Ord_not_le)
+
+lemma cadd_InfCard_le:
+  assumes "\<alpha> \<le> \<kappa>" "\<beta> \<le> \<kappa>" "InfCard \<kappa>"
+  shows "\<alpha> \<oplus> \<beta> \<le> \<kappa>"
+  using assms by (metis InfCard_cdouble_eq cadd_le_mono)
+
+lemma cmult_InfCard_le:
+  assumes "\<alpha> \<le> \<kappa>" "\<beta> \<le> \<kappa>" "InfCard \<kappa>"
+  shows "\<alpha> \<otimes> \<beta> \<le> \<kappa>"
+  using assms
+  by (metis InfCard_csquare_eq cmult_le_mono)
 
 subsection \<open>The Aleph-seqence\<close>
 
@@ -2514,6 +2587,12 @@ lemma InfCard_Aleph [simp, intro]:
 
 lemma Aleph_csquare_eq [simp]: "Ord \<alpha> \<Longrightarrow> \<aleph>\<alpha> \<otimes> \<aleph>\<alpha> = \<aleph>\<alpha>"
   using InfCard_csquare_eq by auto
+
+lemma vcard_Aleph [simp]: "Ord \<alpha> \<Longrightarrow> vcard (\<aleph>\<alpha>) = \<aleph>\<alpha>"
+  by (simp add: Card_cardinal_eq)
+
+lemma omega_le_Aleph [simp]: "Ord \<alpha> \<Longrightarrow> \<omega> \<le> \<aleph>\<alpha>"
+  using InfCard_def by auto
 
 lemma countable_iff_le_Aleph0: "countable (elts A) \<longleftrightarrow> vcard A \<le> \<aleph>0"
 proof

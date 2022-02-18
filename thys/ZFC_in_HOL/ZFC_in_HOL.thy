@@ -795,6 +795,9 @@ lemma in_succ_iff: "Ord i \<Longrightarrow> j \<in> elts (ZFC_in_HOL.succ i) \<l
 lemma zero_in_succ [simp,intro]: "Ord i \<Longrightarrow> 0 \<in> elts (succ i)"
   using mem_0_Ord by auto
 
+lemma less_succ_self: "x < succ x"
+  by (simp add: less_eq_V_def order_neq_le_trans subset_insertI)
+
 lemma Ord_finite_Sup: "\<lbrakk>finite A; A \<subseteq> ON; A \<noteq> {}\<rbrakk> \<Longrightarrow> \<Squnion>A \<in> A"
 proof (induction A rule: finite_induct)
   case (insert x A)
@@ -1142,7 +1145,7 @@ lemma le_SUP_iff: "\<lbrakk>f ` A \<subseteq> ON; Ord x; small A\<rbrakk> \<Long
 
 subsection\<open>Transfinite Recursion and the V-levels\<close>
 
-definition transrec :: "[[V\<Rightarrow>V,V]\<Rightarrow>V, V] \<Rightarrow> V"
+definition transrec :: "((V \<Rightarrow> 'a) \<Rightarrow> V \<Rightarrow> 'a) \<Rightarrow> V \<Rightarrow> 'a"
   where "transrec H a \<equiv> wfrec {(x,y). x \<in> elts y} H a"
 
 lemma transrec: "transrec H a = H (\<lambda>x \<in> elts a. transrec H x) a"
