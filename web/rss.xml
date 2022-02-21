@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>18 Feb 2022 00:00:00 +0000</pubDate>
+    <pubDate>20 Feb 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Universal Hash Families</title>
+              <link>https://www.isa-afp.org/entries/Universal_Hash_Families.html</link>
+       <guid>https://www.isa-afp.org/entries/Universal_Hash_Families.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>20 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+A &lt;i&gt;k&lt;/i&gt;-universal hash family is a probability
+space of functions, which have uniform distribution and form
+&lt;i&gt;k&lt;/i&gt;-wise independent random variables. They can often be used
+in place of classic (or cryptographic) hash functions and allow the
+rigorous analysis of the performance of randomized algorithms and
+data structures that rely on hash functions. In 1981
+&lt;a href=&#34;https://doi.org/10.1016/0022-0000(81)90033-7&#34;&gt;Wegman and Carter&lt;/a&gt;
+introduced a generic construction for such families with arbitrary
+&lt;i&gt;k&lt;/i&gt; using polynomials over a finite field. This entry
+contains a formalization of them and establishes the property of
+&lt;i&gt;k&lt;/i&gt;-universality. To be useful the formalization also provides
+an explicit construction of finite fields using the factor ring of
+integers modulo a prime. Additionally, some generic results about
+independent families are shown that might be of independent interest.</description>
+    </item>
     <item>
        <title>Wetzel's Problem and the Continuum Hypothesis</title>
               <link>https://www.isa-afp.org/entries/Wetzels_Problem.html</link>
@@ -632,21 +654,6 @@ href=&#34;https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf&#34;&gt;Tim
 Gowers&lt;/a&gt; and &lt;a
 href=&#34;https://yufeizhao.com/gtac/gtac.pdf&#34;&gt;Yufei
 Zhao&lt;/a&gt;.</description>
-    </item>
-    <item>
-       <title>Quantum and Classical Registers</title>
-              <link>https://www.isa-afp.org/entries/Registers.html</link>
-       <guid>https://www.isa-afp.org/entries/Registers.html</guid>
-       <dc:creator> Dominique Unruh       </dc:creator>
-       <pubDate>28 Oct 2021 00:00:00 +0000</pubDate>
-       <description>
-A formalization of the theory of quantum and classical registers as
-developed by (Unruh, Quantum and Classical Registers). In a nutshell,
-a register refers to a part of a larger memory or system that can be
-accessed independently.  Registers can be constructed from other
-registers and several (compatible) registers can be composed. This
-formalization develops both the generic theory of registers as well as
-specific instantiations for classical and quantum registers.</description>
     </item>
   </channel>
 </rss>
