@@ -11903,3 +11903,48 @@ abstract =
   have also formalized unpublished specialized algorithms for the
   temporal operators of metric temporal logic.
 
+[Eval_FO]
+title = First-Order Query Evaluation
+author = Martin Raszyk <mailto:martin.raszyk@inf.ethz.ch>
+topic = Logic/General logic/Classical first-order logic
+date = 2022-02-15
+notify = m.raszyk@gmail.com
+abstract = 
+  We formalize first-order query evaluation over an infinite domain with
+  equality. We first define the syntax and semantics of first-order
+  logic with equality. Next we define a locale
+  <i>eval&lowbar;fo</i> abstracting a representation of
+  a potentially infinite set of tuples satisfying a first-order query
+  over finite relations. Inside the locale, we define a function
+  <i>eval</i> checking if the set of tuples satisfying a
+  first-order query over a database (an interpretation of the
+  query's predicates) is finite (i.e., deciding <i>relative
+  safety</i>) and computing the set of satisfying tuples if it is
+  finite. Altogether the function <i>eval</i> solves
+  <i>capturability</i> (Avron and Hirshfeld, 1991) of
+  first-order logic with equality. We also use the function
+  <i>eval</i> to prove a code equation for the semantics of
+  first-order logic, i.e., the function checking if a first-order query
+  over a database is satisfied by a variable assignment.<br/> We provide an
+  interpretation of the locale <i>eval&lowbar;fo</i>
+  based on the approach by Ailamazyan et al. A core notion in the
+  interpretation is the active domain of a query and a database that
+  contains all domain elements that occur in the database or interpret
+  the query's constants. We prove the main theorem of Ailamazyan et
+  al. relating the satisfaction of a first-order query over an infinite
+  domain to the satisfaction of this query over a finite domain
+  consisting of the active domain and a few additional domain elements
+  (outside the active domain) whose number only depends on the query. In
+  our interpretation of the locale
+  <i>eval&lowbar;fo</i>, we use a potentially higher
+  number of the additional domain elements, but their number still only
+  depends on the query and thus has no effect on the data complexity
+  (Vardi, 1982) of query evaluation. Our interpretation yields an
+  <i>executable</i> function <i>eval</i>. The
+  time complexity of <i>eval</i> on a query is linear in the
+  total number of tuples in the intermediate relations for the
+  subqueries. Specifically, we build a database index to evaluate a
+  conjunction. We also optimize the case of a negated subquery in a
+  conjunction. Finally, we export code for the infinite domain of
+  natural numbers.
+
