@@ -1,0 +1,17 @@
+chapter AFP
+
+session Eval_FO (AFP) = Containers +
+  options [timeout=600]
+  theories
+    Ailamazyan_Code
+    Ailamazyan
+    Cluster
+    Eval_FO
+    FO
+    Infinite
+    Mapping_Code
+  document_files
+    "root.tex"
+    "root.bib"
+export_files (in ".") [2]
+    "Eval_FO.Ailamazyan_Code:code/**"
