@@ -1,0 +1,51 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Wetzel's Problem and the Continuum Hypothesis}
+\author{Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+Let $F$ be a set of analytic functions on the complex plane such that, 
+for each $z\in\mathbb{C}$, the set $\{f(z) \mid f\in F\}$ is countable;
+must then $F$ itself be countable?
+The answer is yes if the Continuum Hypothesis is false, i.e.,
+if the cardinality of $\mathbb{R}$ exceeds $\aleph_1$.
+But if CH is true then such an $F$, of cardinality $\aleph_1$,
+can be constructed by transfinite recursion.
+
+The formal proof illustrates reasoning about complex 
+analysis (analytic and homomorphic functions) and set theory
+(transfinite cardinalities) in a single setting.
+The mathematical text comes from \emph{Proofs from THE BOOK}~\cite[pp.\thinspace137--8]{aigner-proofs}, by Aigner and Ziegler. 
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Acknowledgements}
+The author was supported by the ERC Advanced Grant ALEXANDRIA (Project 742178) funded by the European Research Council. 
+Thanks also to Manuel Eberl for advice on proving a function to be holomorphic.
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

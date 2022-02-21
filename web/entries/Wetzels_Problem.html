@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Irrational numbers from THE BOOK - Archive of Formal Proofs
+<title>Wetzel's Problem and the Continuum Hypothesis - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,15 +74,17 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">I</font>rrational
+  <h1>          <font class="first">W</font>etzel's
   
-          numbers
+          <font class="first">P</font>roblem
   
-          from
+          and
   
-          <font class="first">T</font>HE
+          the
   
-          <font class="first">B</font>OOK
+          <font class="first">C</font>ontinuum
+  
+          <font class="first">H</font>ypothesis
   
 </h1>
   <p>&nbsp;</p>
@@ -91,7 +93,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Irrational numbers from THE BOOK</td>
+  <td class="data" width="80%">Wetzel's Problem and the Continuum Hypothesis</td>
 </tr>
 
 <tr>
@@ -107,35 +109,36 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2022-01-08</td>
+  <td class="data">2022-02-18</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-An elementary proof is formalised: that <em>exp r</em> is irrational for
-every nonzero rational number <em>r</em>. The mathematical development comes
-from the well-known volume <em>Proofs from THE BOOK</em>,
-by Aigner and Ziegler, who credit the idea to Hermite. The development
-illustrates a number of basic Isabelle techniques: the manipulation of
-summations, the calculation of quite complicated derivatives and the
-estimation of integrals. We also see how to import another AFP entry (Stirling's formula).
-As for the theorem itself, note that a much stronger and more general
-result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
-already available in the AFP.</td>
+Let $F$ be a set of analytic functions on the complex plane such that,
+for each $z\in\mathbb{C}$, the set $\{f(z) \mid f\in F\}$ is
+countable; must then $F$ itself be countable? The answer is yes if the
+Continuum Hypothesis is false, i.e., if the cardinality of
+$\mathbb{R}$ exceeds $\aleph_1$. But if CH is true then such an $F$,
+of cardinality $\aleph_1$, can be constructed by transfinite
+recursion.  The formal proof illustrates reasoning about complex
+analysis (analytic and homomorphic functions) and set theory
+(transfinite cardinalities) in a single setting. The mathematical text
+comes from <em>Proofs from THE BOOK</em> by Aigner and
+Ziegler.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Irrationals_From_THEBOOK-AFP,
+        <pre>@article{Wetzels_Problem-AFP,
   author  = {Lawrence C Paulson},
-  title   = {Irrational numbers from THE BOOK},
+  title   = {Wetzel's Problem and the Continuum Hypothesis},
   journal = {Archive of Formal Proofs},
-  month   = jan,
+  month   = feb,
   year    = 2022,
-  note    = {\url{https://isa-afp.org/entries/Irrationals_From_THEBOOK.html},
+  note    = {\url{https://isa-afp.org/entries/Wetzels_Problem.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -147,7 +150,7 @@ already available in the AFP.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Stirling_Formula.html">Stirling_Formula</a>      </td></tr>
+          <td class="data"><a href="ZFC_in_HOL.html">ZFC_in_HOL</a>      </td></tr>
           
                     
 
@@ -161,17 +164,17 @@ already available in the AFP.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Irrationals_From_THEBOOK/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Irrationals_From_THEBOOK/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Wetzels_Problem/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Wetzels_Problem/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Irrationals_From_THEBOOK/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Wetzels_Problem/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Irrationals_From_THEBOOK-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Wetzels_Problem-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
