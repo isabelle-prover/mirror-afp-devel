@@ -75,10 +75,8 @@ definition mdl2mdl'_enat :: "(String.literal, enat) formula \<Rightarrow> (Strin
   "mdl2mdl'_enat = mdl2mdl'"
 definition interval_enat :: "enat \<Rightarrow> enat \<Rightarrow> bool \<Rightarrow> bool \<Rightarrow> enat \<I>" where
   "interval_enat = interval"
-definition left_enat :: "enat \<I> \<Rightarrow> enat" where
-  "left_enat = left"
-definition right_enat :: "enat \<I> \<Rightarrow> enat" where
-  "right_enat = right"
+definition rep_interval_enat :: "enat \<I> \<Rightarrow> enat \<times> enat \<times> bool \<times> bool" where
+  "rep_interval_enat = Rep_\<I>"
 
 definition init_vydra_string_ereal :: "_ \<Rightarrow> _ \<Rightarrow> _ \<Rightarrow> (String.literal, ereal, 'e) vydra" where
   "init_vydra_string_ereal = init_vydra"
@@ -94,10 +92,8 @@ definition mdl2mdl'_ereal :: "(String.literal, ereal) formula \<Rightarrow> (Str
   "mdl2mdl'_ereal = mdl2mdl'"
 definition interval_ereal :: "ereal \<Rightarrow> ereal \<Rightarrow> bool \<Rightarrow> bool \<Rightarrow> ereal \<I>" where
   "interval_ereal = interval"
-definition left_ereal :: "ereal \<I> \<Rightarrow> ereal" where
-  "left_ereal = left"
-definition right_ereal :: "ereal \<I> \<Rightarrow> ereal" where
-  "right_ereal = right"
+definition rep_interval_ereal :: "ereal \<I> \<Rightarrow> ereal \<times> ereal \<times> bool \<times> bool" where
+  "rep_interval_ereal = Rep_\<I>"
 
 lemma tfin_enat_code[code]: "(tfin :: enat set) = Collect_set (\<lambda>x. x \<noteq> \<infinity>)"
   by (auto simp: tfin_enat_def)
@@ -126,7 +122,7 @@ lemma progress_matchF_code[code]:
   by (auto simp: progress_matchP_code[unfolded progress.simps])
 
 export_code init_vydra_string_enat run_vydra_string_enat progress_enat bounded_future_fmla_enat wf_fmla_enat mdl2mdl'_enat
-  Bool Preliminaries.Bool enat interval_enat left_enat right_enat nat_of_integer integer_of_nat mk_db
+  Bool Preliminaries.Bool enat interval_enat rep_interval_enat nat_of_integer integer_of_nat mk_db
   in OCaml module_name VYDRA file_prefix "verified"
 
 end

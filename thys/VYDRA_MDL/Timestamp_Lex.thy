@@ -2,7 +2,7 @@ theory Timestamp_Lex
   imports Timestamp
 begin
 
-instantiation prod :: (timestamp_strict, timestamp_strict) timestamp_strict
+instantiation prod :: (timestamp_total_strict, timestamp_total_strict) timestamp_total_strict
 begin
 
 definition tfin_prod :: "('a \<times> 'b) set" where
@@ -22,7 +22,7 @@ definition less_prod :: "'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarro
 
 instance
   apply standard
-         apply (auto simp: zero_prod_def less_prod_def)[2]
+                  apply (auto simp: zero_prod_def less_prod_def)[2]
   subgoal for x y z
     using order.strict_trans
     by (cases x; cases y; cases z) auto
@@ -33,7 +33,7 @@ instance
   subgoal for x y
     apply (cases x; cases y)
     apply (auto simp add: sup.commute sup.strict_order_iff)
-    apply (metis sup.absorb_iff2 sup.order_iff timestamp_strict_total)
+    apply (metis sup.absorb_iff2 sup.order_iff timestamp_total)
     done
   subgoal for y x z
     by (cases x; cases y; cases z) auto
@@ -42,7 +42,7 @@ instance
     apply (auto simp: \<iota>_prod_def less_prod_def)
     by (simp add: \<iota>_mono)
   subgoal for i
-    by (auto simp: \<iota>_prod_def tfin_prod_def intro: \<iota>_fin)
+    by (auto simp: \<iota>_prod_def tfin_prod_def intro: \<iota>_tfin)
   subgoal for x i
     apply (cases x)
     apply (auto simp: \<iota>_prod_def tfin_prod_def)
@@ -59,20 +59,24 @@ instance
     apply (auto simp: tfin_prod_def zero_prod_def)
     apply (metis less_eq_prod.simps add.right_neutral add_mono_strict less_prod_def order_le_less order_less_le prod.inject)
     done
-  subgoal for a b
-    apply (cases a; cases b)
-    apply (auto)
-       apply (metis antisym_conv1 timestamp_strict_total)
-      apply (metis antisym_conv1 timestamp_strict_total)
-     apply (metis antisym_conv1 timestamp_strict_total)
-    apply (metis timestamp_strict_total)
-    done
   subgoal for c d a
     apply (cases c; cases d; cases a)
     apply (auto simp add: add_mono_strict less_prod_def order.strict_implies_order)
       apply (metis add_mono_strict sup.strict_order_iff)
      apply (metis add_mono_strict sup.strict_order_iff)
     by (metis add_mono_strict dual_order.order_iff_strict less_le_not_le)
+  subgoal for a b
+    apply (cases a; cases b)
+    apply (auto)
+       apply (metis antisym_conv1 timestamp_total)
+      apply (metis antisym_conv1 timestamp_total)
+     apply (metis antisym_conv1 timestamp_total)
+    apply (metis timestamp_total)
+    done
+  subgoal for a b
+    apply (cases a; cases b)
+    apply (auto simp: zero_prod_def tfin_prod_def order_less_le timestamp_tfin_le_not_tfin)
+    done
   done
 
 end
