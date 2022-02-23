@@ -2373,7 +2373,8 @@ proof-
   from a have za: "set {\<langle>0, a\<rangle>} \<in>\<^sub>\<circ> (\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>set {0}. \<AA>)\<lparr>Obj\<rparr>"
     by (intro cat_singleton_ObjI[where a=a]) simp
   have [simp]: "vinsert \<langle>0, a\<rangle> (set {\<langle>1\<^sub>\<nat>, b\<rangle>}) = [a, b]\<^sub>\<circ>"
-    using ord_of_nat_succ_vempty unfolding vcons_def by auto
+    using ord_of_nat_succ_vempty unfolding vcons_def
+    by (simp add: vinsert_vempty insert_commute vinsert_vsingleton)
 
   have "(\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = (?\<SS>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> ?cfs\<lparr>ObjMap\<rparr>)\<lparr>a\<rparr>"
     unfolding bifunctor_proj_fst_def dghm_comp_components by simp
@@ -2410,7 +2411,8 @@ proof-
   from b have ob: "set {\<langle>1\<^sub>\<nat>, b\<rangle>} \<in>\<^sub>\<circ> (\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>set {1\<^sub>\<nat>}. \<BB>)\<lparr>Obj\<rparr>"
     by (intro cat_singleton_ObjI[where a=b]) simp
   have[simp]: "vinsert \<langle>1\<^sub>\<nat>, b\<rangle> (set {\<langle>0, a\<rangle>}) = [a, b]\<^sub>\<circ>"
-    using ord_of_nat_succ_vempty unfolding vcons_def by auto
+    using ord_of_nat_succ_vempty unfolding vcons_def
+    by (simp add: vinsert_vempty)
 
   have "(\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>\<lparr>b\<rparr> = (?\<SS>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> ?cfs\<lparr>ObjMap\<rparr>)\<lparr>b\<rparr>"
     unfolding bifunctor_proj_snd_def dghm_comp_components by simp
@@ -2467,7 +2469,8 @@ proof-
   from assms(1) have ob: "set {\<langle>1\<^sub>\<nat>, b\<rangle>} \<in>\<^sub>\<circ> (\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>set {1\<^sub>\<nat>}. \<BB>)\<lparr>Obj\<rparr>"
     by (intro cat_singleton_ObjI[where a=b]) simp
   have [simp]: "vinsert \<langle>0, f\<rangle> (set {\<langle>1\<^sub>\<nat>, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>\<rangle>}) = [f, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>]\<^sub>\<circ>"
-    using ord_of_nat_succ_vempty unfolding vcons_def by auto
+    using ord_of_nat_succ_vempty unfolding vcons_def
+    by (simp add: insert_commute ord_of_nat_vone vinsert_vempty vinsert_vsingleton)
 
   have "(\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = (?\<SS>\<lparr>ArrMap\<rparr> \<circ>\<^sub>\<circ> ?cfs\<lparr>ArrMap\<rparr>)\<lparr>f\<rparr>"
     unfolding bifunctor_proj_fst_def dghm_comp_components by simp
@@ -2506,7 +2509,8 @@ proof-
   from assms(1) have ob: "set {\<langle>0, a\<rangle>} \<in>\<^sub>\<circ> (\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>set {0}. \<AA>)\<lparr>Obj\<rparr>"
     by (intro cat_singleton_ObjI[where a=a]) simp
   have [simp]: "vinsert \<langle>1\<^sub>\<nat>, g\<rangle> (set {\<langle>0, \<AA>\<lparr>CId\<rparr>\<lparr>a\<rparr>\<rangle>}) = [\<AA>\<lparr>CId\<rparr>\<lparr>a\<rparr>, g]\<^sub>\<circ>"
-    using ord_of_nat_succ_vempty unfolding vcons_def by auto
+    using ord_of_nat_succ_vempty unfolding vcons_def
+    by (simp add: vinsert_vempty)
 
   have "(\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = (?\<SS>\<lparr>ArrMap\<rparr> \<circ>\<^sub>\<circ> ?cfs\<lparr>ArrMap\<rparr>)\<lparr>g\<rparr>"
     unfolding two bifunctor_proj_snd_def dghm_comp_components by simp
