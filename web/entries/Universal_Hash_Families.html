@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Irrational numbers from THE BOOK - Archive of Formal Proofs
+<title>Universal Hash Families - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,15 +74,11 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">I</font>rrational
+  <h1>          <font class="first">U</font>niversal
   
-          numbers
+          <font class="first">H</font>ash
   
-          from
-  
-          <font class="first">T</font>HE
-  
-          <font class="first">B</font>OOK
+          <font class="first">F</font>amilies
   
 </h1>
   <p>&nbsp;</p>
@@ -91,7 +87,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Irrational numbers from THE BOOK</td>
+  <td class="data" width="80%">Universal Hash Families</td>
 </tr>
 
 <tr>
@@ -99,7 +95,7 @@ MathJax = {
           Author:
       </td>
   <td class="data">
-              Lawrence C Paulson
+              <a href="https://orcid.org/0000-0003-3290-5034">Emin Karayel</a>
       </td>
 </tr>
 
@@ -107,35 +103,39 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2022-01-08</td>
+  <td class="data">2022-02-20</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-An elementary proof is formalised: that <em>exp r</em> is irrational for
-every nonzero rational number <em>r</em>. The mathematical development comes
-from the well-known volume <em>Proofs from THE BOOK</em>,
-by Aigner and Ziegler, who credit the idea to Hermite. The development
-illustrates a number of basic Isabelle techniques: the manipulation of
-summations, the calculation of quite complicated derivatives and the
-estimation of integrals. We also see how to import another AFP entry (Stirling's formula).
-As for the theorem itself, note that a much stronger and more general
-result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
-already available in the AFP.</td>
+A <i>k</i>-universal hash family is a probability
+space of functions, which have uniform distribution and form
+<i>k</i>-wise independent random variables. They can often be used
+in place of classic (or cryptographic) hash functions and allow the
+rigorous analysis of the performance of randomized algorithms and
+data structures that rely on hash functions. In 1981
+<a href="https://doi.org/10.1016/0022-0000(81)90033-7">Wegman and Carter</a>
+introduced a generic construction for such families with arbitrary
+<i>k</i> using polynomials over a finite field. This entry
+contains a formalization of them and establishes the property of
+<i>k</i>-universality. To be useful the formalization also provides
+an explicit construction of finite fields using the factor ring of
+integers modulo a prime. Additionally, some generic results about
+independent families are shown that might be of independent interest.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Irrationals_From_THEBOOK-AFP,
-  author  = {Lawrence C Paulson},
-  title   = {Irrational numbers from THE BOOK},
+        <pre>@article{Universal_Hash_Families-AFP,
+  author  = {Emin Karayel},
+  title   = {Universal Hash Families},
   journal = {Archive of Formal Proofs},
-  month   = jan,
+  month   = feb,
   year    = 2022,
-  note    = {\url{https://isa-afp.org/entries/Irrationals_From_THEBOOK.html},
+  note    = {\url{https://isa-afp.org/entries/Universal_Hash_Families.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -147,7 +147,7 @@ already available in the AFP.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Stirling_Formula.html">Stirling_Formula</a>      </td></tr>
+          <td class="data"><a href="Interpolation_Polynomials_HOL_Algebra.html">Interpolation_Polynomials_HOL_Algebra</a>      </td></tr>
           
                     
 
@@ -161,17 +161,17 @@ already available in the AFP.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Irrationals_From_THEBOOK/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Irrationals_From_THEBOOK/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Universal_Hash_Families/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Universal_Hash_Families/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Irrationals_From_THEBOOK/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Universal_Hash_Families/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Irrationals_From_THEBOOK-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Universal_Hash_Families-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

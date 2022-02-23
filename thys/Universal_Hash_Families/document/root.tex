@@ -1,0 +1,44 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Universal Hash Families}
+\author{Emin Karayel}
+\maketitle
+
+\begin{abstract}
+A $k$-universal hash family is a probability space of functions, which have uniform distribution and
+form $k$-wise independent random variables.
+
+They can often be used in place of classic (or cryptographic) hash functions and allow the 
+rigorous analysis of the performance of randomized algorithms and data structures that
+rely on hash functions.
+
+In 1981 Wegman and Carter~\cite{wegman1981} introduced a generic construction for such
+families with arbitrary $k$ using polynomials over a finite field. This entry contains a formalization
+of them and establishes the property of $k$-universality.
+
+To be useful the formalization also provides an explicit construction of finite fields using the
+factor ring of integers modulo a prime. Additionally, some generic results about independent
+families are shown that might be of independent interest.
+\end{abstract}
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

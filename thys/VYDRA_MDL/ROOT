@@ -1,0 +1,23 @@
+chapter AFP
+
+session VYDRA_MDL (AFP) = Containers +
+  options [timeout=600]
+  theories
+    Interval
+    MDL
+    Monitor_Code
+    Monitor
+    NFA
+    Preliminaries
+    Temporal
+    Timestamp_Lex
+    Timestamp_Lex_Total
+    Timestamp_Prod
+    Timestamp
+    Trace
+    Window
+  document_files
+    "root.tex"
+    "root.bib"
+export_files (in ".") [2]
+    "VYDRA_MDL.Monitor_Code:code/**"

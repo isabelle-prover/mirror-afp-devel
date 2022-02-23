@@ -11870,3 +11870,122 @@ abstract =
   authors, that implement the decision procedure, the possibility to
   verify their output.
 
+[VYDRA_MDL]
+title = Multi-Head Monitoring of Metric Dynamic Logic
+author = Martin Raszyk <mailto:martin.raszyk@inf.ethz.ch>
+topic = Computer science/Algorithms
+date = 2022-02-13
+notify = m.raszyk@gmail.com
+abstract = 
+  Runtime monitoring (or runtime verification) is an approach to
+  checking compliance of a system's execution with a specification
+  (e.g., a temporal query). The system's execution is logged into a
+  trace---a sequence of time-points, each consisting of a time-stamp and
+  observed events. A monitor is an algorithm that produces verdicts on
+  the satisfaction of a temporal query on a trace.  We formalize a
+  monitoring algorithm for metric dynamic logic, an extension of metric
+  temporal logic with regular expressions. The monitor computes whether
+  a given query is satisfied at every position in an input trace of
+  time-stamped events. We formalize the time-stamps as an abstract
+  algebraic structure satisfying certain assumptions. Instances of this
+  structure include natural numbers, real numbers, and lexicographic
+  combinations of them. Our monitor follows the multi-head paradigm: it
+  reads the input simultaneously at multiple positions and moves its
+  reading heads asynchronously. This mode of operation results in
+  unprecedented time and space complexity guarantees for metric dynamic
+  logic: The monitor's amortized time complexity to process a
+  time-point and the monitor's space complexity neither depends on
+  the event-rate, i.e., the number of events within a fixed time-unit,
+  nor on the numeric constants occurring in the quantitative temporal
+  constraints in the given query.  The multi-head monitoring algorithm
+  for metric dynamic logic is reported in our paper "Multi-Head
+  Monitoring of Metric Dynamic Logic" published at ATVA 2020. We
+  have also formalized unpublished specialized algorithms for the
+  temporal operators of metric temporal logic.
+
+[Eval_FO]
+title = First-Order Query Evaluation
+author = Martin Raszyk <mailto:martin.raszyk@inf.ethz.ch>
+topic = Logic/General logic/Classical first-order logic
+date = 2022-02-15
+notify = m.raszyk@gmail.com
+abstract = 
+  We formalize first-order query evaluation over an infinite domain with
+  equality. We first define the syntax and semantics of first-order
+  logic with equality. Next we define a locale
+  <i>eval&lowbar;fo</i> abstracting a representation of
+  a potentially infinite set of tuples satisfying a first-order query
+  over finite relations. Inside the locale, we define a function
+  <i>eval</i> checking if the set of tuples satisfying a
+  first-order query over a database (an interpretation of the
+  query's predicates) is finite (i.e., deciding <i>relative
+  safety</i>) and computing the set of satisfying tuples if it is
+  finite. Altogether the function <i>eval</i> solves
+  <i>capturability</i> (Avron and Hirshfeld, 1991) of
+  first-order logic with equality. We also use the function
+  <i>eval</i> to prove a code equation for the semantics of
+  first-order logic, i.e., the function checking if a first-order query
+  over a database is satisfied by a variable assignment.<br/> We provide an
+  interpretation of the locale <i>eval&lowbar;fo</i>
+  based on the approach by Ailamazyan et al. A core notion in the
+  interpretation is the active domain of a query and a database that
+  contains all domain elements that occur in the database or interpret
+  the query's constants. We prove the main theorem of Ailamazyan et
+  al. relating the satisfaction of a first-order query over an infinite
+  domain to the satisfaction of this query over a finite domain
+  consisting of the active domain and a few additional domain elements
+  (outside the active domain) whose number only depends on the query. In
+  our interpretation of the locale
+  <i>eval&lowbar;fo</i>, we use a potentially higher
+  number of the additional domain elements, but their number still only
+  depends on the query and thus has no effect on the data complexity
+  (Vardi, 1982) of query evaluation. Our interpretation yields an
+  <i>executable</i> function <i>eval</i>. The
+  time complexity of <i>eval</i> on a query is linear in the
+  total number of tuples in the intermediate relations for the
+  subqueries. Specifically, we build a database index to evaluate a
+  conjunction. We also optimize the case of a negated subquery in a
+  conjunction. Finally, we export code for the infinite domain of
+  natural numbers.
+
+[Wetzels_Problem]
+title = Wetzel's Problem and the Continuum Hypothesis
+author = Lawrence C Paulson<>
+topic = Mathematics/Analysis, Logic/Set theory
+date = 2022-02-18
+notify = lp15@cam.ac.uk
+abstract = 
+  Let $F$ be a set of analytic functions on the complex plane such that,
+  for each $z\in\mathbb{C}$, the set $\{f(z) \mid f\in F\}$ is
+  countable; must then $F$ itself be countable? The answer is yes if the
+  Continuum Hypothesis is false, i.e., if the cardinality of
+  $\mathbb{R}$ exceeds $\aleph_1$. But if CH is true then such an $F$,
+  of cardinality $\aleph_1$, can be constructed by transfinite
+  recursion.  The formal proof illustrates reasoning about complex
+  analysis (analytic and homomorphic functions) and set theory
+  (transfinite cardinalities) in a single setting. The mathematical text
+  comes from <em>Proofs from THE BOOK</em> by Aigner and
+  Ziegler.
+
+[Universal_Hash_Families]
+title = Universal Hash Families
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Mathematics/Probability theory, Computer science/Algorithms
+date = 2022-02-20
+notify = me@eminkarayel.de
+abstract = 
+  A <i>k</i>-universal hash family is a probability
+  space of functions, which have uniform distribution and form
+  <i>k</i>-wise independent random variables. They can often be used
+  in place of classic (or cryptographic) hash functions and allow the
+  rigorous analysis of the performance of randomized algorithms and
+  data structures that rely on hash functions. In 1981
+  <a href="https://doi.org/10.1016/0022-0000(81)90033-7">Wegman and Carter</a>
+  introduced a generic construction for such families with arbitrary
+  <i>k</i> using polynomials over a finite field. This entry
+  contains a formalization of them and establishes the property of
+  <i>k</i>-universality. To be useful the formalization also provides
+  an explicit construction of finite fields using the factor ring of
+  integers modulo a prime. Additionally, some generic results about
+  independent families are shown that might be of independent interest.
+

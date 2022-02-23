@@ -173,6 +173,7 @@ Ergodic_Theory
 Error_Function
 Euler_MacLaurin
 Euler_Partition
+Eval_FO
 Example-Submission
 Extended_Finite_State_Machine_Inference
 Extended_Finite_State_Machines
@@ -630,6 +631,7 @@ Types_To_Sets_Extension
 UPF
 UPF_Firewall
 UTP
+Universal_Hash_Families
 Universal_Turing_Machine
 UpDown_Scheme
 Valuation
@@ -644,12 +646,14 @@ VerifyThis2019
 Vickrey_Clarke_Groves
 Virtual_Substitution
 VolpanoSmith
+VYDRA_MDL
 WHATandWHERE_Security
 WOOT_Strong_Eventual_Consistency
 WebAssembly
 Weight_Balanced_Trees
 Weighted_Path_Order
 Well_Quasi_Orders
+Wetzels_Problem
 Winding_Number_Eval
 Word_Lib
 WorkerWrapper

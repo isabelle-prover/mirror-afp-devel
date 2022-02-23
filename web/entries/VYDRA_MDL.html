@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Irrational numbers from THE BOOK - Archive of Formal Proofs
+<title>Multi-Head Monitoring of Metric Dynamic Logic - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,15 +74,17 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">I</font>rrational
+  <h1>          <font class="first">M</font>ulti-Head
   
-          numbers
+          <font class="first">M</font>onitoring
   
-          from
+          of
   
-          <font class="first">T</font>HE
+          <font class="first">M</font>etric
   
-          <font class="first">B</font>OOK
+          <font class="first">D</font>ynamic
+  
+          <font class="first">L</font>ogic
   
 </h1>
   <p>&nbsp;</p>
@@ -91,7 +93,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Irrational numbers from THE BOOK</td>
+  <td class="data" width="80%">Multi-Head Monitoring of Metric Dynamic Logic</td>
 </tr>
 
 <tr>
@@ -99,7 +101,7 @@ MathJax = {
           Author:
       </td>
   <td class="data">
-              Lawrence C Paulson
+              Martin Raszyk (martin /dot/ raszyk /at/ inf /dot/ ethz /dot/ ch)
       </td>
 </tr>
 
@@ -107,35 +109,50 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2022-01-08</td>
+  <td class="data">2022-02-13</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-An elementary proof is formalised: that <em>exp r</em> is irrational for
-every nonzero rational number <em>r</em>. The mathematical development comes
-from the well-known volume <em>Proofs from THE BOOK</em>,
-by Aigner and Ziegler, who credit the idea to Hermite. The development
-illustrates a number of basic Isabelle techniques: the manipulation of
-summations, the calculation of quite complicated derivatives and the
-estimation of integrals. We also see how to import another AFP entry (Stirling's formula).
-As for the theorem itself, note that a much stronger and more general
-result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
-already available in the AFP.</td>
+Runtime monitoring (or runtime verification) is an approach to
+checking compliance of a system's execution with a specification
+(e.g., a temporal query). The system's execution is logged into a
+trace---a sequence of time-points, each consisting of a time-stamp and
+observed events. A monitor is an algorithm that produces verdicts on
+the satisfaction of a temporal query on a trace.  We formalize a
+monitoring algorithm for metric dynamic logic, an extension of metric
+temporal logic with regular expressions. The monitor computes whether
+a given query is satisfied at every position in an input trace of
+time-stamped events. We formalize the time-stamps as an abstract
+algebraic structure satisfying certain assumptions. Instances of this
+structure include natural numbers, real numbers, and lexicographic
+combinations of them. Our monitor follows the multi-head paradigm: it
+reads the input simultaneously at multiple positions and moves its
+reading heads asynchronously. This mode of operation results in
+unprecedented time and space complexity guarantees for metric dynamic
+logic: The monitor's amortized time complexity to process a
+time-point and the monitor's space complexity neither depends on
+the event-rate, i.e., the number of events within a fixed time-unit,
+nor on the numeric constants occurring in the quantitative temporal
+constraints in the given query.  The multi-head monitoring algorithm
+for metric dynamic logic is reported in our paper "Multi-Head
+Monitoring of Metric Dynamic Logic" published at ATVA 2020. We
+have also formalized unpublished specialized algorithms for the
+temporal operators of metric temporal logic.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Irrationals_From_THEBOOK-AFP,
-  author  = {Lawrence C Paulson},
-  title   = {Irrational numbers from THE BOOK},
+        <pre>@article{VYDRA_MDL-AFP,
+  author  = {Martin Raszyk},
+  title   = {Multi-Head Monitoring of Metric Dynamic Logic},
   journal = {Archive of Formal Proofs},
-  month   = jan,
+  month   = feb,
   year    = 2022,
-  note    = {\url{https://isa-afp.org/entries/Irrationals_From_THEBOOK.html},
+  note    = {\url{https://isa-afp.org/entries/VYDRA_MDL.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -147,7 +164,7 @@ already available in the AFP.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Stirling_Formula.html">Stirling_Formula</a>      </td></tr>
+          <td class="data"><a href="Containers.html">Containers</a>      </td></tr>
           
                     
 
@@ -161,17 +178,17 @@ already available in the AFP.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Irrationals_From_THEBOOK/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Irrationals_From_THEBOOK/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/VYDRA_MDL/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/VYDRA_MDL/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Irrationals_From_THEBOOK/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/VYDRA_MDL/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Irrationals_From_THEBOOK-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-VYDRA_MDL-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
