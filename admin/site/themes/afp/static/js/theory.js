@@ -3,14 +3,13 @@
 const ID_THEORY_LIST = 'theories'
 const CLASS_LOADER = 'loader'
 const CLASS_ANIMATION = 'animation'
-const CLASS_COLLAPSIBLE = 'collapsible'
 const ATTRIBUTE_THEORY_SRC = 'theory-src'
 const CLASS_NAVBAR_TYPE = 'theory-navbar-type'
 const CLASS_THY_NAV = 'thy-nav'
 const PARAM_NAVBAR_TYPE = 'theory-navbar-type'
 const ID_NAVBAR_TYPE_SELECTOR = 'navbar-type-selector'
 const ID_NAVBAR = 'theory-navbar'
-const DEFAULT_NAVBAR_TYPE = 'fact'
+const NAVBAR_TYPES = ['fact', 'type', 'const']
 
 
 /* routing */
@@ -30,6 +29,7 @@ function to_id(thy_name, ref) {
   else return `${thy_name}.html`
 }
 
+const to_svg_id = (thy_name) => `${thy_name}#svg`
 const to_container_id = (thy_name) => `${thy_name}#container`
 const to_collapsible_id = (thy_name) => `${thy_name}#collapsible`
 const to_spinner_id = (thy_name) => `${thy_name}#spinner`
@@ -42,10 +42,10 @@ function set_query(attribute, value) {
   const params = new URLSearchParams(window.location.search)
   params.set(attribute, value)
 
-  const fragment = window.location.hash.length > 1 ? window.location.hash: ''
+  const fragment = window.location.hash.length > 1 ? window.location.hash : ''
   const new_url = `${window.location.origin}${window.location.pathname}?${params.toString()}${fragment}`
 
-  if (history.pushState) window.history.pushState({path: new_url}, '', new_url)
+  if (history.pushState) window.history.pushState({ path: new_url }, '', new_url)
   else window.location = new_url
 }
 
@@ -99,18 +99,17 @@ async function load_theory(thy_name, href) {
 }
 
 async function open_theory(thy_name) {
-  const collapsible = document.getElementById(to_collapsible_id(thy_name))
+  const container = document.getElementById(to_container_id(thy_name))
 
-  if (collapsible) open(collapsible)
-  else {
-    const container = document.getElementById(to_container_id(thy_name))
-
-    if (container) {
+  if (container) {
+    if (document.getElementById(to_collapsible_id(thy_name))) open(container)
+    else {
       const collapsible = parse_elem(`
-        <div id="${to_collapsible_id(thy_name)}" style="display: block">
-          <div id="${to_spinner_id(thy_name)}" class=${CLASS_LOADER}><div class=${CLASS_ANIMATION}></div></div>
-        </div>`)
+      <div id="${to_collapsible_id(thy_name)}" class="${CLASS_COLLAPSIBLE}">
+        <div id="${to_spinner_id(thy_name)}" class=${CLASS_LOADER}><div class=${CLASS_ANIMATION}></div></div>
+      </div>`)
       container.appendChild(collapsible)
+      open(container)
       let refs = await load_theory(thy_name, container.getAttribute(ATTRIBUTE_THEORY_SRC))
       await load_theory_nav(thy_name, refs)
       const spinner = document.getElementById(to_spinner_id(thy_name))
@@ -124,8 +123,11 @@ function nav_tree_rec(thy_name, path, key, ref_parts, type) {
   const id = to_id(thy_name, `${path.join('.')}.${key}|${type}`)
   let res
   if (rec_ref.length < ref_parts.length) {
-    res = `<a id="${to_a_id(id)}" class="${CLASS_SPY_LINK}" href="#${id}">${key}</a>`
-  } else res = `${key}`
+    res = `<a id="${to_a_id(id)}" class="${CLASS_SPY_LINK}" href="#${id}">${escape_html(key)}</a>`
+  } else {
+    const head_id = to_id(thy_name, `${[...path, key, ...ref_parts[0]].join('.')}|${type}`)
+    res = `<a id="${to_a_id(id)}" class="${CLASS_SPY_LINK}" href="#${head_id}">${escape_html(key)}</a>`
+  }
 
   if (rec_ref.length > 1) {
     const by_key = group_by(rec_ref)
@@ -133,37 +135,38 @@ function nav_tree_rec(thy_name, path, key, ref_parts, type) {
       <li>${nav_tree_rec(thy_name, [...path, key], key1, by_key[key1], type)}</li>`)
     return `
       ${res}
-      <ul id="${to_ul_id(id)}" class="${CLASS_COLLAPSIBLE}" style="display: none">
+      <ul id="${to_ul_id(id)}" class="${CLASS_COLLAPSIBLE} ${CLASS_COLLAPSED}">
         ${children.join('')}
       </ul>`
   } else return res
 }
 
 function nav_tree(thy_name, refs, type) {
-  let trees = Object.entries(group_by(refs)).map(([key, parts]) =>
+  let trees = Object.entries(group_by(refs || [])).map(([key, parts]) =>
     `<li>${nav_tree_rec(thy_name, [thy_name], key, parts, type)}</li>`)
 
   return parse_elem(`
-    <ul id="${to_ul_id(thy_name)}" class="${CLASS_NAVBAR_TYPE} ${CLASS_COLLAPSIBLE}" style="display: none">
+    <ul id="${to_ul_id(thy_name)}" class="${CLASS_NAVBAR_TYPE} ${CLASS_COLLAPSIBLE} ${CLASS_COLLAPSED}">
       ${trees.join('')}
     </ul>`)
 }
 
 
-const cached_refs = {}
+const cached_refs = Object.fromEntries(NAVBAR_TYPES.map(t => [t, {}]))
 const load_theory_nav = (thy_name, refs) => {
-  let selected = get_query(PARAM_NAVBAR_TYPE) ? get_query(PARAM_NAVBAR_TYPE) : DEFAULT_NAVBAR_TYPE
+  let selected = get_query(PARAM_NAVBAR_TYPE) || NAVBAR_TYPES[0]
 
   let by_type = group_by(refs.filter(ref => ref.includes('|')).map((id) => id.split('|').reverse()))
   let type_selector = document.getElementById(ID_NAVBAR_TYPE_SELECTOR)
   let options = [...type_selector.options].map(e => e.value)
 
   for (let [type, elems] of Object.entries(by_type)) {
-    if (!options.includes(type)) type_selector.appendChild(parse_elem(`<option value=${type}>${type}</option>`))
+    if (NAVBAR_TYPES.includes(type) && !options.includes(type)) {
+      type_selector.appendChild(parse_elem(`<option value=${type}>${type}</option>`))
+    }
 
     let parts_by_thy = group_by(elems.map((s) => s[0].split('.')))
-    if (!cached_refs[type]) cached_refs[type] = {}
-    cached_refs[type][thy_name] = parts_by_thy[thy_name]
+    if (NAVBAR_TYPES.includes(type)) cached_refs[type][thy_name] = parts_by_thy[thy_name]
   }
 
   let tree = nav_tree(thy_name, cached_refs[selected][thy_name], selected)
@@ -171,7 +174,6 @@ const load_theory_nav = (thy_name, refs) => {
 
   ScrollSpy.instance.refresh()
 }
-
 
 /* state */
 
@@ -196,9 +198,9 @@ const follow_theory_hash = async () => {
 
 const toggle_theory = async (thy_name) => {
   const hash = `#${to_id(thy_name)}`
-  const collapsible = document.getElementById(to_collapsible_id(thy_name))
+  const collapsible = document.getElementById(to_container_id(thy_name))
   if (collapsible) {
-    if (!close(collapsible)) {
+    if (!collapse(collapsible)) {
       if (window.location.hash === hash) open(collapsible)
       else window.location.hash = hash
     }
@@ -228,12 +230,12 @@ const open_tree = (elem) => {
 
 const sync_navbar = (link) => {
   for (const elem of navbar_last_opened){
-    close(elem)
+    collapse(elem)
   }
 
   open_tree(link.parentElement)
 
-  link.scrollIntoView()
+  link.scrollIntoView({block: "center"})
 }
 
 
@@ -253,15 +255,20 @@ const init = async () => {
       const thy_name = theory.id
 
       const thy_collapsible = parse_elem(`
-        <div id="${to_container_id(thy_name)}" theory-src="${href}">
+        <div id="${to_container_id(thy_name)}" theory-src="${href}" class="${CLASS_COLLAPSE_CONTAINER} ${CLASS_COLLAPSED}">
           <h2 id="${to_id(thy_name)}" style="cursor: pointer" onclick="toggle_theory('${thy_name}')">
             ${thy_name}
+          <svg id="${to_svg_id(thy_name)}" viewBox="0 0 10 10" aria-hidden="true" focusable="false"
+               class="${CLASS_INVERTIBLE}">
+            <path d="m1.6953 6.7407 3.3047-3.3929 3.3047 3.3927" fill="none" stroke-linecap="round"
+                  stroke-linejoin="round" stroke-width="2"/>
+          </svg>
           </h2>
         </div>`)
       theory.replaceWith(thy_collapsible)
     }
 
-    const type = get_query(PARAM_NAVBAR_TYPE) ? get_query(PARAM_NAVBAR_TYPE) : DEFAULT_NAVBAR_TYPE
+    const type = get_query(PARAM_NAVBAR_TYPE) ? get_query(PARAM_NAVBAR_TYPE) : NAVBAR_TYPES[0]
     navbar.appendChild(parse_elem(`
       <li>
         <select id=${ID_NAVBAR_TYPE_SELECTOR} onchange="change_selector(this.options[this.selectedIndex].value)">
@@ -278,7 +285,7 @@ const init = async () => {
     window.onhashchange = follow_theory_hash
     window.addEventListener(EVENT_SPY_ACTIVATE, (e) => sync_navbar(e.relatedTarget))
 
-    new ScrollSpy(document.body, 'theory-navbar')
+    new ScrollSpy(document.body, ID_NAVBAR)
 
     await follow_theory_hash()
   }

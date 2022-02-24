@@ -68,7 +68,7 @@
   <h3>Related Entries</h3>
   <ul>
     {{ range . }}
-    <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    <li>{{- printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString -}}</li>
     {{ end }}
   </ul>
   {{ end }}

@@ -42,7 +42,7 @@ class ScrollSpy {
     const targets = []
     for (const link of document.getElementById(this._target).getElementsByClassName(CLASS_SPY_LINK)) {
       // visible and has id
-      if (link.id && link.style.display !== 'none') {
+      if (link.id && !is_collapsed(link)) {
         const target_id = link.getAttribute('href').slice(1)
         const target = document.getElementById(target_id)
 
@@ -120,7 +120,7 @@ class ScrollSpy {
   _clear() {
     if (this._active_id) {
       const link = document.getElementById(this._active_id)
-      if (link.classList.contains(CLASS_ACTIVE)) {
+      if (link && link.classList.contains(CLASS_ACTIVE)) {
         link.classList.remove(CLASS_ACTIVE)
       }
     }

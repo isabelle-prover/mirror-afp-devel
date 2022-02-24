@@ -1,11 +1,11 @@
 <table>
   <tr>
     <td class="statsnumber">{{ len (where .Site.RegularPages "Section" "==" "entries") }}</td>
-    <td>Articles</td>
+    <td><a href="/">Entries</a></td>
   </tr>
   <tr>
-    <td class="statsnumber"><a href="/authors/">{{ len $.Site.Taxonomies.authors }}</a></td>
-    <td>Authors</td>
+    <td class="statsnumber">{{ len $.Site.Taxonomies.authors }}</td>
+    <td><a href="/authors/">Authors</a></td>
   </tr>
   <tr>
     <td class="statsnumber">~{{ lang.NumFmt 0 (mul (math.Round (div .Site.Data.statistics.num_lemmas 100)) 100) }}</td>

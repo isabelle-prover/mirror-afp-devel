@@ -4,7 +4,11 @@
 {{- if eq .Site.Params.devel true -}}
   {{- $path = .Site.Params.afpUrls.htmlDevel -}}
 {{- end -}}
-<div>
+<div id="menuToggle">
+  <a href="{{- .Site.BaseURL -}}" class='logoLink'>
+    <img src="{{- .Site.BaseURL -}}images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+  <nav>
   <div>
     <a href="{{- .Site.BaseURL -}}">
       <img src="{{- .Site.BaseURL -}}images/afp.png" alt='Logo of the Archive of Formal Proofs'
@@ -24,4 +28,5 @@
       document</a></li>
     <li><a href="{{- $path -}}/{{- $entry_name -}}/session_graph.pdf">Session dependencies</a></li>
   </ul>
+  </nav>
 </div>

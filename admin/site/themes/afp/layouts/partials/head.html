@@ -7,7 +7,7 @@
   {{- if or .IsHome (not .Params.title) -}}
   <title>{{- $siteTitle -}} </title>
   {{- else -}}
-  <title>{{- .Params.title }} - {{ $siteTitle -}}</title>
+  <title>{{- .Params.title | safeHTML }} - {{ $siteTitle -}}</title>
   {{- end -}}
 
   {{- if (eq .Section "entries") -}}

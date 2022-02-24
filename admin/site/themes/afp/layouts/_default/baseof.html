@@ -2,7 +2,7 @@
 <html lang="en">
 {{ partial "head.html" . }}
 
-<body class="mathjax_ignore">
+<body class='mathjax_ignore {{ if (eq .Section "theories") }}theories{{- end -}}'>
   <aside>
     {{ if ne .Section "theories"}}
     {{- partial "navigation.html" . -}}
@@ -12,7 +12,7 @@
   </aside>
 
   <div
-    class='content {{ if (eq .Section "entries") }} entries{{- end -}} {{ if (eq .Section "theories") }}theories{{- end -}} {{ if (eq .File.BaseFileName "search") }}searchPage{{- end -}}'>
+    class='content {{ if (eq .Section "entries") }} entries{{- end -}} {{ if (eq .File.BaseFileName "search") }}searchPage{{- end -}}'>
     {{- partial "header.html" . -}}
     <div>
       {{- block "main" . }}{{- end }}

@@ -1,4 +1,10 @@
+
 /* utilities */
+
+const CLASS_COLLAPSED = 'collapsed'
+const CLASS_COLLAPSIBLE = 'collapsible'
+const CLASS_INVERTIBLE = 'invertible'
+const CLASS_COLLAPSE_CONTAINER = 'collapse-container'
 
 const strip_suffix = (str, suffix) => {
   if (str.endsWith(suffix)) return str.slice(0, -suffix.length)
@@ -24,18 +30,39 @@ const parse_elem = (html_str) => {
   return template.content
 }
 
+const is_collapsed = (e) => {
+  return e.classList.contains(CLASS_COLLAPSED)
+}
+
 const open = (collapsible) => {
-  if (collapsible.style.display  === 'none') {
-    collapsible.style.display = 'block'
+  if (collapsible.classList.contains(CLASS_COLLAPSED)) {
+    collapsible.classList.remove(CLASS_COLLAPSED)
     return true
   }
   else return false
 }
 
-const close = (collapsible) => {
-  if (collapsible.style.display === 'block') {
-    collapsible.style.display = 'none'
+const collapse = (collapsible) => {
+  if (!collapsible.classList.contains(CLASS_COLLAPSED)) {
+    collapsible.classList.add(CLASS_COLLAPSED)
     return true
   }
   else return false
+}
+
+const escape_html = (html) => {
+  return html.replace(/[&<>"']/g, function(m) {
+    switch (m) {
+      case '&':
+        return '&amp;'
+      case '<':
+        return '&lt;'
+      case '>':
+        return '&gt;'
+      case '"':
+        return '&quot;'
+      case "'":
+        return '&#39;'
+    }
+  })
 }

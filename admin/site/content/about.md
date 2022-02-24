@@ -44,9 +44,10 @@ All entries in the Archive of Formal Proofs are licensed under a [BSD-style Lice
 The authors retain their full copyright on their original work, including their right to make the development available under another, additional license in the future.
 
 ## Website
-This website is the result of a project from the School of Informatics at the University of Edinburgh by:
+
+This website is the result of a project from the School of Informatics at the [University of Edinburgh](https://www.ed.ac.uk) by:
  * Carlin MacKenzie
- * James Vaughan, [AIAI](http://web.inf.ed.ac.uk/aiai/)
+ * James Vaughan, [AIML](https://aiml.inf.ed.ac.uk)
  * Jacques Fleuriot, [AIAI](http://web.inf.ed.ac.uk/aiai/)
 
 Integration and maintenance by:
