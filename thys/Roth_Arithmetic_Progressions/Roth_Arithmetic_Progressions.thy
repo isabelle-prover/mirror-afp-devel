@@ -8,43 +8,6 @@ theory Roth_Arithmetic_Progressions
 
 begin
 
-
-subsection \<open>For the Library\<close>
-
-declare prod_encode_eq [simp] 
-declare prod_decode_eq [simp] 
-
-lemma mult_mod_cancel_right:
-  fixes m :: "'a::{euclidean_ring_cancel,semiring_gcd}"
-  assumes eq: "(a * n) mod m = (b * n) mod m" and "coprime m n" 
-  shows "a mod m = b mod m"
-proof -
-  have "m dvd (a*n - b*n)" 
-    using eq mod_eq_dvd_iff by blast
-  then have "m dvd a-b"
-    by (metis \<open>coprime m n\<close> coprime_dvd_mult_left_iff left_diff_distrib')
-  then show ?thesis
-    using mod_eq_dvd_iff by blast
-qed
-
-lemma mult_mod_cancel_left:
-  fixes m :: "'a::{euclidean_ring_cancel,semiring_gcd}"
-  assumes "(n * a) mod m = (n * b) mod m" and "coprime m n" 
-  shows "a mod m = b mod m"
-  by (metis assms mult.commute mult_mod_cancel_right)
-
-(*Stronger than the one in Szemeredi [now installed in AFP_devel] *)
-lemma edge_density_le1: "edge_density X Y G \<le> 1"
-proof (cases "finite X \<and> finite Y")
-  case True
-  then show ?thesis 
-    using of_nat_mono [OF max_all_edges_between, of X Y]
-    by (fastforce simp add: edge_density_def divide_simps)
-qed (auto simp: edge_density_def)
-
-lemma card_3_iff: "card S = 3 \<longleftrightarrow> (\<exists>x y z. S = {x,y,z} \<and> x \<noteq> y \<and> y \<noteq> z \<and> x \<noteq> z)"
-  by (fastforce simp: card_Suc_eq numeral_eq_Suc)
-
 subsection \<open>Miscellaneous Preliminaries\<close>
 
 lemma sum_prod_le_prod_sum:
@@ -56,22 +19,6 @@ lemma sum_prod_le_prod_sum:
 
 lemma real_mult_gt_cube: "A \<ge> (X ::real) \<Longrightarrow> B \<ge> X \<Longrightarrow> C \<ge> X \<Longrightarrow> X \<ge> 0 \<Longrightarrow> A * B * C \<ge> X^3"
   by (simp add: mult_mono' power3_eq_cube)
-
-lemma min_card_fin_X_elem:  "finite X \<Longrightarrow> x \<in> X \<Longrightarrow> card X \<ge> 1"
-  using card.remove by fastforce
-
-lemma card_or_filter_max: 
-  assumes "finite A"
-  shows "card {a \<in> A . P a \<or> Q a} \<le> card {a \<in> A . P a} + card {a \<in> A . Q a}"
-proof -
-  have fin: "finite {a \<in> A . P a}" "finite {a \<in> A . Q a}"
-    by(simp_all add: assms) 
-  have equiv: "{a \<in> A . P a \<or> Q a} = {a \<in> A . P a} \<union> {a \<in> A . Q a}" by auto
-  then have "card {a \<in> A . P a} + card {a \<in> A . Q a} = card ({a \<in> A . P a} \<union> {a \<in> A . Q a}) + card ({a \<in> A . P a} \<inter> {a \<in> A . Q a})"
-    using card_Un_Int fin by auto
-  thus ?thesis using equiv
-    by presburger
-qed
 
 lemma triple_sigma_rewrite_card: 
   assumes "finite X" "finite Y" "finite Z"
@@ -88,34 +35,6 @@ proof -
     unfolding eq by (simp add: disjoint_iff assms card_UN_disjoint) (simp add: W_def)
 qed
 
-lemma all_edges_between_Union1:
-  "all_edges_between (Union \<X>) Y G = (\<Union>X\<in>\<X>. all_edges_between X Y G)"
-  by (auto simp: all_edges_between_def)
-
-lemma all_edges_between_Union2:
-  "all_edges_between X (Union \<Y>) G = (\<Union>Y\<in>\<Y>. all_edges_between X Y G)"
-  by (auto simp: all_edges_between_def)
-
-lemma all_edges_between_disjoint1:
-  assumes "disjoint R"
-  shows "disjoint ((\<lambda>X. all_edges_between X Y G) ` R)"
-  using assms by (auto simp: all_edges_between_def disjoint_def)
-
-lemma all_edges_between_disjoint2:
-  assumes "disjoint R"
-  shows "disjoint ((\<lambda>Y. all_edges_between X Y G) ` R)"
-  using assms by (auto simp: all_edges_between_def disjoint_def)
-
-lemma all_edges_between_disjoint_family_on1:
-  assumes "disjoint R"
-  shows "disjoint_family_on (\<lambda>X. all_edges_between X Y G) R"
-  by (metis (no_types, lifting) all_edges_between_disjnt1 assms disjnt_def disjoint_family_on_def pairwiseD)
-
-lemma all_edges_between_disjoint_family_on2:
-  assumes "disjoint R"
-  shows "disjoint_family_on (\<lambda>Y. all_edges_between X Y G) R"
-  by (metis (no_types, lifting) all_edges_between_disjnt2 assms disjnt_def disjoint_family_on_def pairwiseD)
-
 lemma all_edges_between_mono1:
   "Y \<subseteq> Z \<Longrightarrow> all_edges_between Y X G \<subseteq> all_edges_between Z X G"
   by (auto simp: all_edges_between_def)
@@ -124,23 +43,15 @@ lemma all_edges_between_mono2:
   "Y \<subseteq> Z \<Longrightarrow> all_edges_between X Y G \<subseteq> all_edges_between X Z G"
   by (auto simp: all_edges_between_def)
 
-lemma inj_on_mk_uedge: "X \<inter> Y = {} \<Longrightarrow> inj_on mk_uedge (all_edges_between X Y G)"
-  by (auto simp: inj_on_def doubleton_eq_iff all_edges_between_def)
-
-lemma uwellformed_alt: 
-  assumes "uwellformed G" "{x, y} \<in> uedges G"
-  shows "{x, y} \<subseteq> uverts G"
-  using uwellformed_def assms by auto
-
 lemma uwellformed_alt_fst: 
   assumes "uwellformed G" "{x, y} \<in> uedges G"
   shows "x \<in> uverts G"
-  using uwellformed_alt assms by simp
+  using uwellformed_def assms by simp
 
 lemma uwellformed_alt_snd: 
   assumes "uwellformed G" "{x, y} \<in> uedges G"
   shows "y \<in> uverts G"
-  using uwellformed_alt assms by simp
+  using uwellformed_def assms by simp
 
 lemma all_edges_between_subset_times: "all_edges_between X Y G \<subseteq> (X \<inter> \<Union>(uedges G)) \<times> (Y \<inter> \<Union>(uedges G))"
   by (auto simp: all_edges_between_def)
@@ -155,19 +66,6 @@ proof -
     by (metis finite_Int finite_SigmaI finite_subset)
 qed
 
-lemma card_all_edges_between:
-  assumes "finite Y" "finite (uverts G)" "uwellformed G"
-  shows "card (all_edges_between X Y G) = (\<Sum>y\<in>Y. card (all_edges_between X {y} G))"
-proof -
-  have "all_edges_between X Y G = (\<Union>y\<in>Y. all_edges_between X {y} G)"
-    by (auto simp: all_edges_between_def)
-  moreover have "disjoint_family_on (\<lambda>y. all_edges_between X {y} G) Y"
-    unfolding disjoint_family_on_def
-    by (auto simp: disjoint_family_on_def all_edges_between_def)
-  ultimately show ?thesis 
-    by (simp add: card_UN_disjoint' assms finite_all_edges_between')
-qed
-
 lemma max_edges_graph: 
   assumes "uwellformed G" "finite (uverts G)"
   shows "card (uedges G) \<le> (card (uverts G))^2"
@@ -180,12 +78,6 @@ qed
 
 lemma all_edges_between_ss_uedges:  "mk_uedge ` (all_edges_between X Y G) \<subseteq> uedges G" 
   by (auto simp: all_edges_between_def)
-
-lemma all_edges_betw_D1: "(x, y) \<in> all_edges_between X Y G \<Longrightarrow> x \<in> X"
-  by (simp add: all_edges_between_def)
-
-lemma all_edges_betw_D2: "(x, y) \<in> all_edges_between X Y G \<Longrightarrow> y \<in> Y"
-  by (simp add: all_edges_between_def)
 
 lemma all_edges_betw_D3: "(x, y) \<in> all_edges_between X Y G \<Longrightarrow> {x, y} \<in> uedges G"
   by (simp add: all_edges_between_def)
@@ -205,13 +97,6 @@ lemma all_edges_between_E_UN:
   "all_edges_between X Y (V, \<Union>i\<in>I. E i) = (\<Union>i\<in>I. all_edges_between X Y (V,E i))"
   by (auto simp: all_edges_between_def)
 
-lemma all_edges_betw_prod_def: "all_edges_between X Y G = {(x, y) \<in> X \<times> Y . {x, y} \<in> uedges G}"
-  by (simp add: all_edges_between_def)
-
-thm in_mk_uedge_img
-lemma in_mk_uedge_img_iff: "{a,b} \<in> mk_uedge ` A \<longleftrightarrow> (a,b) \<in> A \<or> (b,a) \<in> A"
-  by (auto simp: doubleton_eq_iff intro: rev_image_eqI)
-
 lemma all_edges_preserved: "\<lbrakk>all_edges_between A B G' = all_edges_between A B G; X \<subseteq> A; Y \<subseteq> B\<rbrakk>
     \<Longrightarrow> all_edges_between X Y G' = all_edges_between X Y G"
   by (auto simp: all_edges_between_def)
@@ -224,7 +109,6 @@ lemma subgraph_edge_wf:
 
 subsection \<open>Preliminaries on Neighbors in Graphs\<close>
 
-
 definition neighbor_in_graph::  " uvert \<Rightarrow> uvert \<Rightarrow> ugraph \<Rightarrow>  bool"
   where "neighbor_in_graph x y G \<equiv> (x \<in> (uverts G) \<and> y \<in> (uverts G) \<and> {x,y} \<in> (uedges G))"
 
@@ -233,11 +117,6 @@ definition neighbors :: "uvert \<Rightarrow> ugraph \<Rightarrow> uvert set" whe
 
 definition neighbors_ss:: "uvert \<Rightarrow> uvert set \<Rightarrow> ugraph \<Rightarrow> uvert set" where
   "neighbors_ss x Y G \<equiv> {y \<in> Y . neighbor_in_graph x y G}"
-
-
-lemma all_edges_betw_prod_def_neighbors: "uwellformed G \<Longrightarrow> 
-  all_edges_between X Y G = {(x, y) \<in> X \<times> Y . neighbor_in_graph x y G}"
-  by (auto simp: neighbor_in_graph_def uwellformed_alt_fst uwellformed_alt_snd all_edges_between_def)
 
 lemma all_edges_betw_sigma_neighbor: 
 "uwellformed G \<Longrightarrow> all_edges_between X Y G = (SIGMA x:X. neighbors_ss x Y G)"
@@ -250,9 +129,7 @@ lemma card_all_edges_betw_neighbor:
   using all_edges_betw_sigma_neighbor assms by (simp add: neighbors_ss_def)
 
 
-
 subsection \<open>Preliminaries on Triangles in Graphs\<close>
-
 
 definition triangle_in_graph:: "uvert \<Rightarrow> uvert \<Rightarrow> uvert \<Rightarrow> ugraph \<Rightarrow> bool"
   where "triangle_in_graph x y z G 
@@ -260,16 +137,6 @@ definition triangle_in_graph:: "uvert \<Rightarrow> uvert \<Rightarrow> uvert \<
 
 definition triangle_triples
   where "triangle_triples X Y Z G \<equiv> {(x,y,z) \<in> X \<times> Y \<times> Z. triangle_in_graph x y z G}"
-
-lemma card_triangle_triples_rotate: "card (triangle_triples X Y Z G) = card (triangle_triples Y Z X G)"
-proof -
-  have "triangle_triples Y Z X G = (\<lambda>(x,y,z). (y,z,x)) ` triangle_triples X Y Z G"
-    by (auto simp: triangle_triples_def case_prod_unfold image_iff insert_commute triangle_in_graph_def)
-  moreover have "inj_on (\<lambda>(x, y, z). (y, z, x)) (triangle_triples X Y Z G)"
-    by (auto simp: inj_on_def)
-  ultimately show ?thesis
-    by (simp add: card_image)
-qed
 
 lemma triangle_commu1:
   assumes "triangle_in_graph x y z G"
@@ -292,11 +159,6 @@ lemma triangle_vertices_distinct2:
   shows "y \<noteq> z"
   by (metis assms triangle_vertices_distinct1 triangle_in_graph_def) 
 
-lemma triangle_vertices_distinct3: 
-  assumes "uwellformed G" "triangle_in_graph x y z G"
-  shows "z \<noteq> x"
-  by (metis assms triangle_vertices_distinct1 triangle_in_graph_def) 
-
 lemma triangle_in_graph_edge_point: 
   assumes "uwellformed G"
   shows "triangle_in_graph x y z G \<longleftrightarrow> {y, z} \<in> uedges G \<and> neighbor_in_graph x y G \<and> neighbor_in_graph x z G"
@@ -317,20 +179,8 @@ lemma edge_vertices_not_equal:
   shows "x \<noteq> y"
   using assms triangle_in_graph_def triangle_vertices_distinct1 by blast
 
-lemma edge_btw_vertices_not_equal: 
-  assumes "uwellformed G" "(x, y) \<in> all_edges_between X Y G"
-  shows "x \<noteq> y"
-  using edge_vertices_not_equal all_edges_between_def
-  by (metis all_edges_betw_D3 assms) 
-
-lemma mk_triangle_from_ss_edges: 
-assumes "(x, y) \<in> all_edges_between X Y G" and "(x, z) \<in> all_edges_between X Z G" and "(y, z) \<in> all_edges_between Y Z G" 
-shows "(triangle_in_graph x y z G)"
-  by (meson all_edges_betw_D3 assms triangle_in_graph_def)
-
 lemma triangle_in_graph_verts: 
-  assumes "uwellformed G" 
-  assumes "triangle_in_graph x y z G"
+  assumes "uwellformed G" "triangle_in_graph x y z G"
   shows "x \<in> uverts G" "y \<in> uverts G" "z\<in> uverts G"
 proof -
   have 1: "{x, y} \<in> uedges G" using triangle_in_graph_def
@@ -345,18 +195,10 @@ qed
 definition triangle_set :: "ugraph \<Rightarrow> uvert set set"
   where "triangle_set G \<equiv> { {x,y,z} | x y z. triangle_in_graph x y z G}"
 
-
 fun mk_triangle_set :: "(uvert \<times> uvert \<times> uvert) \<Rightarrow> uvert set" 
   where "mk_triangle_set (x, y, z) = {x,y,z}"
 
-lemma convert_triangle_rep_ss: 
-  fixes G :: "ugraph" 
-  assumes "X \<subseteq> uverts G" and "Y \<subseteq> uverts G" and "Z \<subseteq> uverts G"
-  shows "mk_triangle_set ` {(x, y, z) \<in> X \<times> Y \<times> Z . (triangle_in_graph x y z G)} \<subseteq> triangle_set G"
-  by (auto simp add: subsetI triangle_set_def) (auto)
-
-lemma finite_triangle_set: 
-  fixes G :: "ugraph" 
+lemma finite_triangle_set:
   assumes fin: "finite (uverts G)" and wf: "uwellformed G"
   shows "finite (triangle_set G)"
 proof -
@@ -367,20 +209,12 @@ proof -
 qed
 
 lemma card_triangle_3: 
-  fixes G :: "ugraph" 
   assumes "t \<in> triangle_set G" "uwellformed G"
   shows "card t = 3"
   using assms by (auto simp: triangle_set_def edge_vertices_not_equal triangle_in_graph_def)
 
 lemma triangle_set_power_set_ss: "uwellformed G \<Longrightarrow> triangle_set G \<subseteq> Pow (uverts G)"
   by (auto simp add: triangle_set_def triangle_in_graph_def uwellformed_alt_fst  uwellformed_alt_snd)
-
-lemma triangle_set_finite: 
-  assumes "finite (uverts G)" 
-  assumes "uwellformed G"
-  shows "finite (triangle_set G)"
-  using triangle_set_power_set_ss assms
-  by (meson finite_Pow_iff rev_finite_subset) 
 
 lemma triangle_in_graph_ss: 
   fixes G :: "ugraph" and Gnew :: "ugraph"
@@ -412,13 +246,9 @@ qed
 
 lemma triangle_set_graph_edge_ss_bound: 
   fixes G :: "ugraph" and Gnew :: "ugraph"
-  assumes "uwellformed G"
-  assumes "finite (uverts G)"
-  assumes "uedges Gnew \<subseteq> uedges G" 
-  assumes "uverts Gnew = uverts G"
+  assumes "uwellformed G" "finite (uverts G)" "uedges Gnew \<subseteq> uedges G" "uverts Gnew = uverts G"
   shows "card (triangle_set G) \<ge> card (triangle_set Gnew)"
-  using triangle_set_graph_edge_ss triangle_set_finite
-  by (simp add: assms card_mono)
+  by (simp add: assms card_mono finite_triangle_set triangle_set_graph_edge_ss)
 
 
 subsection \<open>The Triangle Counting Lemma and the Triangle Removal Lemma\<close>
@@ -430,9 +260,6 @@ lemma regular_pairI:
   assumes "\<epsilon> > 0" and "regular_pair X Y G \<epsilon>" and xss: "X' \<subseteq> X" and yss: "Y' \<subseteq> Y" and "card X' \<ge> \<epsilon> * card X" and "(card Y' \<ge> \<epsilon> * card Y)"
   shows "\<bar> edge_density X' Y' G - edge_density X Y G \<bar> \<le> \<epsilon>"
   using regular_pair_def assms by meson 
-
-lemma edge_density_zero:  "Y = {} \<Longrightarrow> edge_density X Y G = 0" 
-  by (simp add: edge_density_def)
 
 lemma regular_pair_neighbor_bound: 
   fixes \<epsilon>::real
@@ -531,7 +358,6 @@ proof -
     by (smt (verit, ccfv_SIG) mult_right_mono of_nat_less_0_iff ed1 enot0) 
 qed
 
-
 lemma all_edges_btwn_neighbour_sets_lower_bound: 
   fixes \<epsilon>::real 
   assumes "X \<subseteq> uverts G" and  "Y \<subseteq> uverts G" and "Z \<subseteq> uverts G" and "\<epsilon> > 0"
@@ -562,19 +388,6 @@ proof -
     by (metis (no_types, lifting) ab_semigroup_mult_class.mult_ac(1) mult_of_nat_commute of_nat_mult) 
 qed
 
-
-lemma edge_density_implies_edge_exists: 
-  fixes \<epsilon>::real
-  assumes "X \<subseteq> uverts G" and "Y \<subseteq> uverts G" and "\<epsilon> > 0" and "uwellformed G"
-  assumes "edge_density X Y G \<ge> \<epsilon>"
-  obtains e where "e \<in> all_edges_between X Y G"
-proof -
-  have "edge_density X Y G = card (all_edges_between X Y G) / (card X * card Y)" by (simp add: edge_density_def)
-  then have "card (all_edges_between X Y G) \<noteq> 0"
-    using assms divide_eq_0_iff by fastforce 
-  thus ?thesis
-    by (metis card.empty empty_subsetI subsetI subset_antisym that)
-qed
 
 text\<open>We are now ready to show the Triangle Counting Lemma (Theorem 3.13 in Zhao's notes):\<close>
 
@@ -626,7 +439,7 @@ in @{term Y} and @{term Z}.\<close>
   then have minx2: "card X2 \<ge> (1 - 2 * \<epsilon>) * card X"
     by (metis mult.commute mult_cancel_left2 right_diff_distrib)
   have edmultbound: "((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>)* (card Y) * (edge_density X Z G - \<epsilon>)* (card Z) \<ge> 0"  
-    using ed3 ed1 ed2 assms(4) by auto 
+    using ed3 ed1 ed2 \<open>\<epsilon> > 0\<close> by auto 
   
   text \<open>Reasoning on the minimum number of edges between neighborhoods of @{term X} in @{term Y} 
 and @{term Z}.\<close>
@@ -682,9 +495,7 @@ card {(y, z) . y \<in> (neighbors_ss x Y G) \<and> z \<in> (neighbors_ss x Z G) 
     by force 
   then have "of_real (card ?T_all) \<ge> ((1 - 2 * \<epsilon>) * card X) * ((edge_density Y Z G) - \<epsilon>) * 
       (edge_density X Y G - \<epsilon>)* (card Y) * (edge_density X Z G - \<epsilon>)* (card Z)"
-    using minx2 edmultbound dual_order.trans mult.commute ordered_comm_semiring_class.comm_mult_left_mono
-    by (smt (verit, ccfv_SIG) assms(4) ed1 ed2 mult_cancel_right mult_less_cancel_right 
-mult_pos_neg2 of_nat_0_eq_iff of_nat_le_0_iff) 
+    by (smt (verit, best) ed2 edxygt0 edyzgt0 en0 minx2 mult_right_less_imp_less of_nat_less_0_iff)
   then show ?thesis by (simp add: triangle_triples_def mult.commute mult.left_commute) 
 qed
 
@@ -1247,11 +1058,9 @@ edge_vertices_not_equal [OF wf])
       show "finite ([i]\<^bsup>2\<^esup>)" if "i \<in> triangle_set G" for i 
         using that tri_nsets_2 triangle_set_def by fastforce
       show "finite (triangle_set G)"
-        by (meson G_ne card_gt_0_iff local.wf triangle_set_finite)
+        by (meson G_ne card_gt_0_iff local.wf finite_triangle_set)
       have "card ([i]\<^bsup>2\<^esup>) = 3" if "i \<in> triangle_set G" for i
-        using that wf
-        unfolding triangle_set_def triangle_in_graph_def uwellformed_def
-        by (smt (z3) image_subset_iff mem_Collect_eq nsets_def sub that)
+        using that wf nsets_def tri_nsets_2 tri_nsets_3 triangle_set_def by fastforce
       then show "(\<Sum>i\<in>triangle_set G. card ([i]\<^bsup>2\<^esup>)) = 3 * card (triangle_set G)"
         by simp
     qed
