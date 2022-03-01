@@ -1,6 +1,6 @@
 <header>
   {{ if and (ne .Kind "home") (ne .File.BaseFileName "search") -}}
-  <form action="{{ "search" | absURL }}">
+  <form autocomplete="off" action="{{ "search" | absURL }}">
     <div class='form-container'>
       <input id="searchInput" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
       id="searchButton" type="button"><img src="{{- .Site.BaseURL -}}images/search.svg" alt="Search" /></button>

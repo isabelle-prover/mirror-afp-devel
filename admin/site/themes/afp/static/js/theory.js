@@ -38,23 +38,6 @@ const to_ul_id = (thy_name) => `${thy_name}#ul`
 const of_ul_id = (id) => id.split('#').slice(0, -1).join('#')
 const to_a_id = (thy_name) => `${thy_name}#a`
 
-function set_query(attribute, value) {
-  const params = new URLSearchParams(window.location.search)
-  params.set(attribute, value)
-
-  const fragment = window.location.hash.length > 1 ? window.location.hash : ''
-  const new_url = `${window.location.origin}${window.location.pathname}?${params.toString()}${fragment}`
-
-  if (history.pushState) window.history.pushState({ path: new_url }, '', new_url)
-  else window.location = new_url
-}
-
-function get_query(attribute) {
-  const params = new URLSearchParams(window.location.search)
-  return params.get(attribute)
-}
-
-
 /* document translation */
 
 function translate(base_href, thy_name, thy_body) {

@@ -66,3 +66,32 @@ const escape_html = (html) => {
     }
   })
 }
+
+function set_query(attribute, value) {
+  const params = new URLSearchParams(window.location.search)
+  params.set(attribute, value)
+
+  const fragment = window.location.hash.length > 1 ? window.location.hash : ''
+  const new_url = `${window.location.origin}${window.location.pathname}?${params.toString()}${fragment}`
+
+  if (history.pushState) window.history.pushState({ path: new_url }, '', new_url)
+  else window.location = new_url
+}
+
+function get_query(attribute) {
+  const params = new URLSearchParams(window.location.search)
+  return params.get(attribute)
+}
+
+function memoize(fun) {
+  const cache = {}
+  return function (n) {
+    if (cache[n] !== undefined) {
+      return cache[n]
+    } else {
+      let result = fun(...n)
+      cache[n] = result
+      return result
+    }
+  }
+}

@@ -856,42 +856,6 @@ iframe {
   height: 90vh;
 }
 
-#banner {
-  display: block;
-  background-color: $theme-lightest;
-  height: 3rem;
-  width: 80vw;
-  position: fixed;
-  bottom: 0;
-  left: 20vw;
-  text-align: center;
-  z-index: 1;
-
-  p {
-    line-height: 1rem;
-  }
-
-  button {
-    height: 1.5rem;
-    width: 1.5rem;
-    position: absolute;
-    right: 2rem;
-    bottom: 0.75rem;
-    padding: 0.3rem;
-  }
-
-  svg {
-    height: 0.75rem;
-    width: 0.75rem;
-    fill: $black;
-  }
-
-  @media (max-width: 1000px) {
-    left: 200px;
-    width: calc(100vw - 200px);
-  }
-}
-
 .loader {
   margin: 24px 24px 0 0;
   height: 6px;

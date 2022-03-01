@@ -28,8 +28,8 @@
   {{ range $index, $element := first 12 .Site.Taxonomies.dependencies.ByCount }}
   <tr>
     <td>{{ add $index 1}}.</td>
-    <td><a href="/entries/{{- urlize $element.Page.Title -}}">{{ $element.Page.Title }}</a></td>
-    <td><a href="/dependencies/{{- urlize $element.Page.Title -}}">{{ $element.Count }}</a></td>
+    <td><a href="/entries/{{- $element.Page.Title -}}.html">{{ $element.Page.Title }}</a></td>
+    <td><a href="{{- $element.Page.RelPermalink -}}">{{ $element.Count }}</a></td>
   </tr>
   {{ end }}
 </table>

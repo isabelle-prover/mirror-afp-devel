@@ -3,14 +3,14 @@
 {{ end -}}
 
 {{- define "main" }}
-<form action="{{ "search" | absURL }}">
+<form autocomplete="off" action="{{ "search" | absURL }}">
   <div class='form-container'>
     <input id="searchInput" type="search" size="31" maxlength="255" value=""  aria-label="Search the AFP" list="autocomplete"><button id="searchButton"
       type="button">Search</button>
     <datalist id="autocomplete">
     </datalist>
   </div>
-</form> 
+</form>
 
 <div id="search-sidebar">
   <h3>Authors</h3>

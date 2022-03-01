@@ -30,7 +30,7 @@
   {{- with .Params.dependencies -}}
     <h3>Depends On</h3><ul>
       {{- range . -}}
-      <li>{{- printf "[%s](/entries/%s)" . (urlize .) | $.Page.RenderString -}}</li>
+      <li>{{- printf "[%s](/entries/%s.html)" . . | $.Page.RenderString -}}</li>
       {{- end -}}
     </ul>
   {{- end -}}
@@ -58,7 +58,7 @@
     {{ $file := printf "assets/theories/%s.html" $entry_name}}
     {{- with .Params.theories -}}
     {{- range . -}}
-    <li>{{- printf "[%s](theories#%s)" . . | $.Page.RenderString -}}</li>
+    <li>{{- printf "[%s](%s/theories#%s)" . (urlize $entry_name) . | $.Page.RenderString -}}</li>
     {{- end -}}
     {{- end -}}
   </ul>

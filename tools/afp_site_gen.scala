@@ -182,7 +182,7 @@ object AFP_Site_Gen
       val entry_json = JSON.from_entry(entry) ++ isabelle.JSON.Object(
           "dependencies" -> deps.distinct,
           "theories" -> topo_theories,
-          "aliases" -> List("/entries/" + name + ".html"),
+          "url" -> ("/entries/" + name + ".html"),
           "keywords" -> get_keywords(name))
 
       val theories_json = isabelle.JSON.Object(
