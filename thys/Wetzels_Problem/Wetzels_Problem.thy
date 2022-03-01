@@ -9,53 +9,6 @@ theory Wetzels_Problem imports
    
 begin
 
-subsection \<open>Added to the developer libraries\<close>
-
-lemma analytic_on_prod [analytic_intros]:
-  "(\<And>i. i \<in> I \<Longrightarrow> (f i) analytic_on S) \<Longrightarrow> (\<lambda>x. prod (\<lambda>i. f i x) I) analytic_on S"
-  by (induct I rule: infinite_finite_induct) (auto simp: analytic_on_mult)
-
-lemma holomorphic_countable_zeros:
-  assumes S: "f holomorphic_on S" "open S" "connected S" and "fsigma S"
-      and "\<not> f constant_on S"
-    shows "countable {z\<in>S. f z = 0}"
-proof -
-  obtain F::"nat \<Rightarrow> complex set" 
-      where F: "range F \<subseteq> Collect compact" and Seq: "S = (\<Union>i. F i)"
-    using \<open>fsigma S\<close> by (meson fsigma_Union_compact)
-  have fin: "finite {z \<in> F i. f z = 0}" for i
-    using holomorphic_compact_finite_zeros assms F Seq Union_iff by blast
-  have "{z \<in> S. f z = 0} = (\<Union>i. {z \<in> F i. f z = 0})"
-    using Seq by auto
-  with fin show ?thesis
-    by (simp add: countable_finite)
-qed
-
-lemma holomorphic_countable_equal:
-  assumes "f holomorphic_on S" "g holomorphic_on S" "open S" "connected S" and "fsigma S"
-    and eq: "uncountable {z\<in>S. f z = g z}"
-  shows "S \<subseteq> {z\<in>S. f z = g z}"
-proof -
-  obtain z where z: "z\<in>S" "f z = g z"
-    using eq not_finite_existsD uncountable_infinite by blast
-  have "(\<lambda>x. f x - g x) holomorphic_on S"
-    by (simp add: assms holomorphic_on_diff)
-  then have "(\<lambda>x. f x - g x) constant_on S"
-    using holomorphic_countable_zeros assms by force
-  with z have "\<And>x. x\<in>S \<Longrightarrow> f x - g x = 0"
-    unfolding constant_on_def by force
-  then show ?thesis
-    by auto
-qed
-
-lemma holomorphic_countable_equal_UNIV:
-  assumes fg: "f holomorphic_on UNIV" "g holomorphic_on UNIV"
-    and eq: "uncountable {z. f z = g z}"
-  shows "f=g"
-  using holomorphic_countable_equal [OF fg] eq by fastforce
-
-subsection \<open>Wetzel's problem\<close>
-
 definition Wetzel :: "(complex \<Rightarrow> complex) set \<Rightarrow> bool"
   where "Wetzel \<equiv> \<lambda>F. (\<forall>f\<in>F. f analytic_on UNIV) \<and> (\<forall>z. countable((\<lambda>f. f z) ` F))"
 
@@ -407,5 +360,10 @@ qed
 
 theorem Erdos_Wetzel: "C_continuum = \<aleph>1 \<longleftrightarrow> (\<exists>F. Wetzel F \<and> uncountable F)"
   by (metis C_continuum_ge Erdos_Wetzel_CH Erdos_Wetzel_nonCH TC_small less_V_def)
+
+text \<open>The originally submitted version of this theory included the development of cardinals 
+for general Isabelle/HOL sets (as opposed to ZF sets, elements of type V), as well as other 
+generally useful library material. From March 2022, that material has been moved to 
+the analysis libraries or to @{theory ZFC_in_HOL.General_Cardinals}, as appropriate.\<close>
 
 end
