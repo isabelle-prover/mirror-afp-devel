@@ -162,7 +162,7 @@ aside {
     text-align: center;
   }
 
-  a {
+  a:not(.entity_ref) {
     &:link,
     &:visited {
       color: $white;
@@ -215,13 +215,13 @@ header {
     line-height: 2.75rem;
   }
 
-  #searchInput {
+  #search-input {
     height: 2rem;
     padding: 7px;
     width: 175px;
   }
 
-  #searchButton {
+  #search-button {
     height: 2rem;
     padding: 7px;
     width: 2rem;
@@ -263,7 +263,7 @@ header {
       padding: 1rem 0;
     }
 
-    #searchButton {
+    #search-button {
       height: 2.5rem;
       width: 25%;
       min-width: 70px;
@@ -272,7 +272,7 @@ header {
       border: 1px $theme solid;
     }
 
-    #searchInput {
+    #search-input {
       height: 2.5rem;
       width: 75%;
     }
@@ -477,7 +477,7 @@ header {
   }
 }
 
-.popUpButton {
+.popup-button:not(.entity_ref) {
   &:visited {
     color: $white;
   }
@@ -500,7 +500,7 @@ header {
   }
 }
 
-a {
+a:not(.entity_ref) {
   &:link {
     color: $link;
     text-decoration: none;
@@ -573,7 +573,7 @@ h4 {
   }
 }
 
-#downloadPopUp {
+#download-popup {
   a[download] {
     display: block;
     width: 154px;
@@ -627,11 +627,11 @@ tr:nth-child(even) {
   white-space: nowrap;
 }
 
-.largeTopMargin {
+.large-top-margin {
   margin-top: 48px;
 }
 
-.searchPage {
+.search-page {
   > div {
     display: grid;
     grid-template-columns: 3fr #{"max(25%, 175px)"};
@@ -743,14 +743,14 @@ a[download] {
   text-align: left;
 }
 
-#searchInput {
+#search-input {
   @extend %button;
   border-right: none;
   font-family: $sans-serif;
   padding: 0.5em;
 }
 
-#searchButton {
+#search-button:not(.entity_ref) {
   @extend %button;
   cursor: pointer;
 
@@ -792,7 +792,7 @@ button[copy] {
   }
 }
 
-#searchInputautocomplete-list {
+#search-input-autocomplete-list {
   width: 214px;
   position: absolute;
   margin-bottom: 24px;
@@ -907,13 +907,13 @@ iframe {
   }
 }
 
-#menuToggle {
+#menu-toggle {
   input,
   label {
     display: none;
   }
 
-  > .logoLink, img[alt="Search"] {
+  > .logo-link, img[alt="Search"] {
     display: none;
   }
 
@@ -932,7 +932,7 @@ iframe {
     min-width: 350px;
   }
 
-  .searchPage {
+  .search-page {
     > div {
       display: grid;
       grid-template-columns: 1fr;
@@ -981,7 +981,7 @@ iframe {
   }
 
     
-  .largeTopMargin {
+  .large-top-margin {
     margin-top: 0;
   }
 
@@ -996,7 +996,7 @@ iframe {
     }
   }
 
-  #menuToggle {
+  #menu-toggle {
     background: $theme;
     display: block;
     position: relative;
@@ -1010,7 +1010,7 @@ iframe {
       text-decoration: none;
       transition: color 0.3s ease;
     }
-    .logoLink {
+    .logo-link {
       height: 3rem;
       max-width: 50vw;
       top: 1rem;
@@ -1027,7 +1027,7 @@ iframe {
       }
     }
 
-    .logoLink, input, label, a[href="/search"] {
+    .logo-link, input, label, a[href="/search"] {
       display: block;
       position: absolute;
       z-index: 2;
@@ -1081,7 +1081,7 @@ iframe {
     left: -100%;
     transition: left 0.3s ease;
 
-    .logoLink {
+    .logo-link {
       display: none;
     }
   }

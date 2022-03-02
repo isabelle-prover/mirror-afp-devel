@@ -43,8 +43,8 @@ function handle_submit(value) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const input = document.getElementById("searchInput")
-  const button = document.getElementById("searchButton")
+  const input = document.getElementById("search-input")
+  const button = document.getElementById("search-button")
   if (button) {
     button.addEventListener("click", () => {
       handle_submit(input.value)

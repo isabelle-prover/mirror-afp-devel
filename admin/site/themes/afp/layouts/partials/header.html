@@ -2,8 +2,8 @@
   {{ if and (ne .Kind "home") (ne .File.BaseFileName "search") -}}
   <form autocomplete="off" action="{{ "search" | absURL }}">
     <div class='form-container'>
-      <input id="searchInput" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
-      id="searchButton" type="button"><img src="{{- .Site.BaseURL -}}images/search.svg" alt="Search" /></button>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="{{- .Site.BaseURL -}}images/search.svg" alt="Search" /></button>
       <datalist id="autocomplete">
       </datalist>
     </div>
@@ -13,7 +13,7 @@
   {{- if and (eq .Section "authors") (isset .Site.Data.authors (.Scratch.Get "title")) -}}
     {{- .Scratch.Set "title" (index (index .Site.Data.authors (.Scratch.Get "title")) "name") -}}
   {{- end -}}
-  <h1 {{ if or (eq .Kind "home" ) (eq .File.BaseFileName "search" ) -}}class="largeTopMargin" {{ end -}}>
+  <h1 {{ if or (eq .Kind "home" ) (eq .File.BaseFileName "search" ) -}}class="large-top-margin" {{ end -}}>
     {{ title (.Scratch.Get "title") | replaceRE "[A-Z]" "<span class='first'>$0</span>" | safeHTML -}}
     {{- if (eq .Section "dependencies") }} Dependents{{ end -}}
   </h1>

@@ -12,7 +12,7 @@
   </aside>
 
   <div
-    class='content {{ if (eq .Section "entries") }} entries{{- end -}} {{ if (eq .File.BaseFileName "search") }}searchPage{{- end -}}'>
+    class='content {{ if (eq .Section "entries") }} entries{{- end -}} {{ if (eq .File.BaseFileName "search") }}search-page{{- end -}}'>
     {{- partial "header.html" . -}}
     <div>
       {{- block "main" . }}{{- end }}

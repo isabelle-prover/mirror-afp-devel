@@ -5,8 +5,8 @@ const URL_FINDFACTS = 'https://search.isabelle.in.tum.de'
 const NUM_MAX_SIDE_RESULTS = 4
 const NUM_MAX_MAIN_RESULTS = 15
 
-const ID_SEARCH_INPUT = 'searchInput'
-const ID_SEARCH_BUTTON = 'searchButton'
+const ID_SEARCH_INPUT = 'search-input'
+const ID_SEARCH_BUTTON = 'search-button'
 const ID_RESULTS_ENTRIES = 'search-results'
 const ID_RESULTS_AUTHORS = 'author-results'
 const ID_RESULTS_TOPICS = 'topic-results'
