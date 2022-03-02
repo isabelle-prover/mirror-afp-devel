@@ -6,6 +6,7 @@ session FOL_Axiomatic (AFP) = "HOL" +
     "HOL-Library"
   theories
     FOL_Axiomatic
+    FOL_Axiomatic_Variant
   document_files
     "root.tex"
     "root.bib"

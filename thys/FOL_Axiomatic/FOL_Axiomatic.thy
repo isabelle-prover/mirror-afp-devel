@@ -25,10 +25,10 @@ abbreviation Const (\<open>\<^bold>\<star>\<close>) where \<open>\<^bold>\<star>
 datatype (params_fm: 'f, 'p) fm
   = Falsity (\<open>\<^bold>\<bottom>\<close>)
   | Pre 'p \<open>'f tm list\<close> (\<open>\<^bold>\<ddagger>\<close>)
-  | Imp \<open>('f, 'p) fm\<close> \<open>('f, 'p) fm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<close> 25)
+  | Imp \<open>('f, 'p) fm\<close> \<open>('f, 'p) fm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<close> 55)
   | Uni \<open>('f, 'p) fm\<close> (\<open>\<^bold>\<forall>\<close>)
 
-abbreviation Neg (\<open>\<^bold>\<not> _\<close> [40] 40) where \<open>\<^bold>\<not> p \<equiv> p \<^bold>\<longrightarrow> \<^bold>\<bottom>\<close>
+abbreviation Neg (\<open>\<^bold>\<not> _\<close> [70] 70) where \<open>\<^bold>\<not> p \<equiv> p \<^bold>\<longrightarrow> \<^bold>\<bottom>\<close>
 
 term \<open>\<^bold>\<forall>(\<^bold>\<bottom> \<^bold>\<longrightarrow> \<^bold>\<ddagger>''P'' [\<^bold>\<dagger>''f'' [\<^bold>#0]])\<close>
 
@@ -156,7 +156,7 @@ section \<open>Calculus\<close>
 
 text \<open>Adapted from System Q1 by Smullyan in First-Order Logic (1968)\<close>
 
-inductive Axiomatic (\<open>\<turnstile> _\<close> [20] 20) where
+inductive Axiomatic (\<open>\<turnstile> _\<close> [50] 50) where
   TA: \<open>tautology p \<Longrightarrow> \<turnstile> p\<close>
 | IA: \<open>\<turnstile> \<^bold>\<forall>p \<^bold>\<longrightarrow> p\<langle>t/0\<rangle>\<close>
 | MP: \<open>\<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> \<turnstile> p \<Longrightarrow> \<turnstile> q\<close>
@@ -169,11 +169,11 @@ lemmas
 
 text \<open>We simulate assumptions on the lhs of \<open>\<turnstile>\<close> with a chain of implications on the rhs.\<close>
 
-primrec imply (infixr \<open>\<^bold>\<leadsto>\<close> 26) where
+primrec imply (infixr \<open>\<^bold>\<leadsto>\<close> 56) where
   \<open>([] \<^bold>\<leadsto> q) = q\<close>
 | \<open>(p # ps \<^bold>\<leadsto> q) = (p \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q)\<close>
 
-abbreviation Axiomatic_assms (\<open>_ \<turnstile> _\<close> [20, 20] 20) where
+abbreviation Axiomatic_assms (\<open>_ \<turnstile> _\<close> [50, 50] 50) where
   \<open>ps \<turnstile> q \<equiv> \<turnstile> ps \<^bold>\<leadsto> q\<close>
 
 section \<open>Soundness\<close>
@@ -289,7 +289,7 @@ qed simp
 
 section \<open>Consistent\<close>
 
-definition \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
+definition \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile> \<^bold>\<bottom>\<close>
 
 lemma UN_finite_bound:
   assumes \<open>finite A\<close> and \<open>A \<subseteq> (\<Union>n. f n)\<close>
@@ -337,7 +337,7 @@ lemma consistent_add_witness:
   shows \<open>consistent ({\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>} \<union> S)\<close>
   unfolding consistent_def
 proof
-  assume \<open>\<exists>S'. set S' \<subseteq> {\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>} \<union> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
+  assume \<open>\<exists>S'. set S' \<subseteq> {\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>} \<union> S \<and> S' \<turnstile> \<^bold>\<bottom>\<close>
   then obtain S' where \<open>set S' \<subseteq> S\<close> and \<open>(\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>) # S' \<turnstile> \<^bold>\<bottom>\<close>
     using assms inconsistent_fm unfolding consistent_def by metis
   then have \<open>\<turnstile> \<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle> \<^bold>\<longrightarrow> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
@@ -363,7 +363,7 @@ lemma consistent_add_instance:
   shows \<open>consistent ({p\<langle>t/0\<rangle>} \<union> S)\<close>
   unfolding consistent_def
 proof
-  assume \<open>\<exists>S'. set S' \<subseteq> {p\<langle>t/0\<rangle>} \<union> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
+  assume \<open>\<exists>S'. set S' \<subseteq> {p\<langle>t/0\<rangle>} \<union> S \<and> S' \<turnstile> \<^bold>\<bottom>\<close>
   then obtain S' where \<open>set S' \<subseteq> S\<close> and \<open>p\<langle>t/0\<rangle> # S' \<turnstile> \<^bold>\<bottom>\<close>
     using assms inconsistent_fm unfolding consistent_def by blast
   moreover have \<open>\<turnstile> \<^bold>\<forall>p \<^bold>\<longrightarrow> p\<langle>t/0\<rangle>\<close>
@@ -392,6 +392,9 @@ primrec extend where
 
 definition \<open>Extend S f \<equiv> \<Union>n. extend S f n\<close>
 
+lemma extend_subset: \<open>S \<subseteq> extend S f n\<close>
+  by (induct n) (fastforce simp: Let_def)+
+
 lemma Extend_subset: \<open>S \<subseteq> Extend S f\<close>
   unfolding Extend_def by (metis Union_upper extend.simps(1) range_eqI)
 
@@ -401,19 +404,39 @@ lemma extend_bound: \<open>(\<Union>n \<le> m. extend S f n) = extend S f m\<clo
 lemma finite_params_witness [simp]: \<open>finite (params (witness used p))\<close>
   by (induct used p rule: witness.induct) simp_all
 
-lemma finite_params_extend [simp]: \<open>finite (params S) \<Longrightarrow> finite (params (extend S f n))\<close>
-  by (induct n) (simp_all add: Let_def)
+lemma finite_params_extend [simp]: \<open>finite (params (extend S f n) - params S)\<close>
+  by (induct n) (simp_all add: Let_def Un_Diff)
+
+lemma Set_Diff_Un: \<open>X - (Y \<union> Z) = X - Y - Z\<close>
+  by blast
+
+lemma infinite_params_extend:
+  assumes \<open>infinite (UNIV - params S)\<close>
+  shows \<open>infinite (UNIV - params (extend S f n))\<close>
+proof -
+  have \<open>finite (params (extend S f n) - params S)\<close>
+    by simp
+  then obtain extra where \<open>finite extra\<close> \<open>params (extend S f n) = extra \<union> params S\<close>
+    using extend_subset by fast
+  then have \<open>?thesis = infinite (UNIV - (extra \<union> params S))\<close>
+    by simp
+  also have \<open>\<dots> = infinite (UNIV - extra - params S)\<close>
+    by (simp add: Set_Diff_Un)
+  also have \<open>\<dots> = infinite (UNIV - params S)\<close>
+    using \<open>finite extra\<close> by (metis Set_Diff_Un finite_Diff2 sup_commute)
+  finally show ?thesis
+    using assms ..
+qed
 
 lemma consistent_witness:
-  fixes p :: \<open>('f, 'p) fm\<close>
   assumes \<open>consistent S\<close> and \<open>p \<in> S\<close> and \<open>params S \<subseteq> used\<close>
-    and \<open>finite used\<close> and \<open>infinite (UNIV :: 'f set)\<close>
+    and \<open>infinite (UNIV - used)\<close>
   shows \<open>consistent (witness used p \<union> S)\<close>
   using assms
 proof (induct used p rule: witness.induct)
   case (1 used p)
   moreover have \<open>\<exists>a. a \<notin> used\<close>
-    using 1(4-) ex_new_if_finite by blast
+    using 1(4) by (meson Diff_iff finite_params_fm finite_subset subset_iff)
   ultimately obtain a where a: \<open>witness used (\<^bold>\<not> \<^bold>\<forall>p) = {\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>}\<close> and \<open>a \<notin> used\<close>
     by (metis someI_ex witness.simps(1))
   then have \<open>a \<notin> params S\<close>
@@ -423,24 +446,26 @@ proof (induct used p rule: witness.induct)
 qed (auto simp: assms)
 
 lemma consistent_extend:
-  fixes f :: \<open>nat \<Rightarrow> ('f, 'p) fm\<close>
-  assumes \<open>consistent S\<close> and \<open>finite (params S)\<close>
-    and \<open>infinite (UNIV :: 'f set)\<close>
+  assumes \<open>consistent S\<close> and \<open>infinite (UNIV - params S)\<close>
   shows \<open>consistent (extend S f n)\<close>
   using assms
 proof (induct n)
   case (Suc n)
-  then show ?case
-    using consistent_witness[where S=\<open>{f n} \<union> _\<close>] by (auto simp: Let_def)
+  moreover from this have \<open>infinite (UNIV - params ({f n} \<union> extend S f n))\<close>
+    using infinite_params_extend
+    by (metis (no_types, lifting) Diff_infinite_finite Set_Diff_Un UN_Un finite.emptyI
+        finite.insertI finite_UN_I finite_params_fm sup_commute)
+  ultimately show ?case
+    using consistent_witness[where S=\<open>{f n} \<union> _\<close>]
+    by (simp add: Let_def)
 qed simp
 
 lemma consistent_Extend:
-  fixes f :: \<open>nat \<Rightarrow> ('f, 'p) fm\<close>
-  assumes \<open>consistent S\<close> and \<open>finite (params S)\<close>
-    and \<open>infinite (UNIV :: 'f set)\<close>
+  assumes \<open>consistent S\<close> and \<open>infinite (UNIV - params S)\<close>
   shows \<open>consistent (Extend S f)\<close>
-proof (rule ccontr)
-  assume \<open>\<not> consistent (Extend S f)\<close>
+  unfolding consistent_def
+proof
+  assume \<open>\<exists>S'. set S' \<subseteq> Extend S f \<and> S' \<turnstile> \<^bold>\<bottom>\<close>
   then obtain S' where \<open>S' \<turnstile> \<^bold>\<bottom>\<close> and \<open>set S' \<subseteq> Extend S f\<close>
     unfolding consistent_def by blast
   then obtain m where \<open>set S' \<subseteq> (\<Union>n \<le> m. extend S f n)\<close>
@@ -483,7 +508,7 @@ next
   have \<open>consistent ({p} \<union> S)\<close>
     unfolding consistent_def
   proof
-    assume \<open>\<exists>S'. set S' \<subseteq> {p} \<union> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
+    assume \<open>\<exists>S'. set S' \<subseteq> {p} \<union> S \<and> S' \<turnstile> \<^bold>\<bottom>\<close>
     then obtain S'' where \<open>set S'' \<subseteq> S\<close> and \<open>p # S'' \<turnstile> \<^bold>\<bottom>\<close>
       using assms inconsistent_fm unfolding consistent_def by blast
     then have \<open>S' @ S'' \<turnstile> \<^bold>\<bottom>\<close>
@@ -747,13 +772,16 @@ instance fm :: (countable, countable) countable
 
 section \<open>Completeness\<close>
 
-lemma imply_completeness:
+lemma infinite_Diff_fin_Un: \<open>infinite (X - Y) \<Longrightarrow> finite Z \<Longrightarrow> infinite (X - (Z \<union> Y))\<close>
+  by (simp add: Set_Diff_Un sup_commute)
+
+theorem strong_completeness:
   fixes p :: \<open>('f :: countable, 'p :: countable) fm\<close>
   assumes \<open>\<forall>(E :: _ \<Rightarrow> 'f tm) F G. Ball X \<lbrakk>E, F, G\<rbrakk> \<longrightarrow> \<lbrakk>E, F, G\<rbrakk> p\<close>
-    and \<open>finite (params X)\<close> and \<open>infinite (UNIV :: 'f set)\<close>
-  shows \<open>\<exists>ps. set ps \<subseteq> X \<and> (ps \<turnstile> p)\<close>
+    and \<open>infinite (UNIV - params X)\<close>
+  shows \<open>\<exists>ps. set ps \<subseteq> X \<and> ps \<turnstile> p\<close>
 proof (rule ccontr)
-  assume \<open>\<nexists>ps. set ps \<subseteq> X \<and> (ps \<turnstile> p)\<close>
+  assume \<open>\<nexists>ps. set ps \<subseteq> X \<and> ps \<turnstile> p\<close>
   then have *: \<open>\<nexists>ps. set ps \<subseteq> X \<and> ((\<^bold>\<not> p) # ps \<turnstile> \<^bold>\<bottom>)\<close>
     using Boole by blast
 
@@ -762,14 +790,14 @@ proof (rule ccontr)
 
   have \<open>consistent ?S\<close>
     using * by (metis consistent_def imply_Cons inconsistent_fm)
-  moreover have \<open>finite (params ?S)\<close>
-    using assms by simp
+  moreover have \<open>infinite (UNIV - params ?S)\<close>
+    using assms(2) finite_params_fm by (simp add: infinite_Diff_fin_Un)
   ultimately have \<open>consistent ?H\<close> and \<open>maximal ?H\<close>
-    using assms(3) consistent_Extend maximal_Extend surj_from_nat by blast+
+    using consistent_Extend maximal_Extend surj_from_nat by blast+
   moreover from this have \<open>saturated ?H\<close>
     using saturated_Extend by fastforce
   ultimately have \<open>Hintikka ?H\<close>
-    using assms(3) Hintikka_Extend by blast
+    using assms(2) Hintikka_Extend by blast
 
   have \<open>\<lbrakk>?H\<rbrakk> p\<close> if \<open>p \<in> ?S\<close> for p
     using that Extend_subset Hintikka_model \<open>Hintikka ?H\<close> by blast
@@ -785,7 +813,7 @@ theorem completeness:
   fixes p :: \<open>(nat, nat) fm\<close>
   assumes \<open>\<forall>(E :: nat \<Rightarrow> nat tm) F G. \<lbrakk>E, F, G\<rbrakk> p\<close>
   shows \<open>\<turnstile> p\<close>
-  using assms imply_completeness[where X=\<open>{}\<close>] by auto
+  using assms strong_completeness[where X=\<open>{}\<close>] by auto
 
 section \<open>Main Result\<close>
 
