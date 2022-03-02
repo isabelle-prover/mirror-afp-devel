@@ -225,20 +225,12 @@ locale substitution = substitution_ops subst_atm id_subst comp_subst
     subst_atm :: "'a \<Rightarrow> 's \<Rightarrow> 'a" and
     id_subst :: 's and
     comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" +
-  fixes
-    renamings_apart :: "'a clause list \<Rightarrow> 's list" and
-    atm_of_atms :: "'a list \<Rightarrow> 'a"
   assumes
     subst_atm_id_subst[simp]: "A \<cdot>a id_subst = A" and
     subst_atm_comp_subst[simp]: "A \<cdot>a (\<sigma> \<odot> \<tau>) = (A \<cdot>a \<sigma>) \<cdot>a \<tau>" and
     subst_ext: "(\<And>A. A \<cdot>a \<sigma> = A \<cdot>a \<tau>) \<Longrightarrow> \<sigma> = \<tau>" and
     make_ground_subst: "is_ground_cls (C \<cdot> \<sigma>) \<Longrightarrow> \<exists>\<tau>. is_ground_subst \<tau> \<and>C \<cdot> \<tau> = C \<cdot> \<sigma>" and
-    wf_strictly_generalizes_atm: "wfP strictly_generalizes_atm" and
-    renamings_apart_length:  "length (renamings_apart Cs) = length Cs" and
-    renamings_apart_renaming: "\<rho> \<in> set (renamings_apart Cs) \<Longrightarrow> is_renaming \<rho>" and
-    renamings_apart_var_disjoint: "var_disjoint (Cs \<cdot>\<cdot>cl (renamings_apart Cs))" and
-    atm_of_atms_subst:
-      "\<And>As Bs. atm_of_atms As \<cdot>a \<sigma> = atm_of_atms Bs \<longleftrightarrow> map (\<lambda>A. A \<cdot>a \<sigma>) As = Bs"
+    wf_strictly_generalizes_atm: "wfP strictly_generalizes_atm"
 begin
 
 lemma subst_ext_iff: "\<sigma> = \<tau> \<longleftrightarrow> (\<forall>A. A \<cdot>a \<sigma> = A \<cdot>a \<tau>)"
@@ -1019,6 +1011,115 @@ next
         subset_mset.not_eq_order_implies_strict)
 qed
 
+lemma strict_subset_subst_strictly_subsumes: "C \<cdot> \<eta> \<subset># D \<Longrightarrow> strictly_subsumes C D"
+  by (metis leD mset_subset_size size_mset_mono size_subst strictly_subsumes_def
+      subset_mset.dual_order.strict_implies_order substitution_ops.subsumes_def)
+
+lemma generalizes_refl: "generalizes C C"
+  unfolding generalizes_def by (rule exI[of _ id_subst]) auto
+
+lemma generalizes_trans: "generalizes C D \<Longrightarrow> generalizes D E \<Longrightarrow> generalizes C E"
+  unfolding generalizes_def using subst_cls_comp_subst by blast
+
+lemma subsumes_refl: "subsumes C C"
+  unfolding subsumes_def by (rule exI[of _ id_subst]) auto
+
+lemma subsumes_trans: "subsumes C D \<Longrightarrow> subsumes D E \<Longrightarrow> subsumes C E"
+  unfolding subsumes_def
+  by (metis (no_types) subset_mset.trans subst_cls_comp_subst subst_cls_mono_mset)
+
+lemma strictly_generalizes_irrefl: "\<not> strictly_generalizes C C"
+  unfolding strictly_generalizes_def by blast
+
+lemma strictly_generalizes_antisym: "strictly_generalizes C D \<Longrightarrow> \<not> strictly_generalizes D C"
+  unfolding strictly_generalizes_def by blast
+
+lemma strictly_generalizes_trans:
+  "strictly_generalizes C D \<Longrightarrow> strictly_generalizes D E \<Longrightarrow> strictly_generalizes C E"
+  unfolding strictly_generalizes_def using generalizes_trans by blast
+
+lemma strictly_subsumes_irrefl: "\<not> strictly_subsumes C C"
+  unfolding strictly_subsumes_def by blast
+
+lemma strictly_subsumes_antisym: "strictly_subsumes C D \<Longrightarrow> \<not> strictly_subsumes D C"
+  unfolding strictly_subsumes_def by blast
+
+lemma strictly_subsumes_trans:
+  "strictly_subsumes C D \<Longrightarrow> strictly_subsumes D E \<Longrightarrow> strictly_subsumes C E"
+  unfolding strictly_subsumes_def using subsumes_trans by blast
+
+lemma subset_strictly_subsumes: "C \<subset># D \<Longrightarrow> strictly_subsumes C D"
+  using strict_subset_subst_strictly_subsumes[of C id_subst] by auto
+
+lemma strictly_generalizes_neq: "strictly_generalizes D' D \<Longrightarrow> D' \<noteq> D \<cdot> \<sigma>"
+  unfolding strictly_generalizes_def generalizes_def by blast
+
+lemma strictly_subsumes_neq: "strictly_subsumes D' D \<Longrightarrow> D' \<noteq> D \<cdot> \<sigma>"
+  unfolding strictly_subsumes_def subsumes_def by blast
+
+lemma variants_imp_exists_substitution: "variants D D' \<Longrightarrow> \<exists>\<sigma>. D \<cdot> \<sigma> = D'"
+  unfolding variants_iff_subsumes subsumes_def
+  by (meson strictly_subsumes_def subset_mset_def strict_subset_subst_strictly_subsumes subsumes_def)
+
+lemma strictly_subsumes_variants:
+  assumes "strictly_subsumes E D" and "variants D D'"
+  shows "strictly_subsumes E D'"
+proof -
+  from assms obtain \<sigma> \<sigma>' where
+    \<sigma>_\<sigma>'_p: "D \<cdot> \<sigma> = D' \<and> D' \<cdot> \<sigma>' = D"
+    using variants_imp_exists_substitution variants_sym by metis
+
+  from assms obtain \<sigma>'' where
+    "E \<cdot> \<sigma>'' \<subseteq># D"
+    unfolding strictly_subsumes_def subsumes_def by auto
+  then have "E \<cdot> \<sigma>'' \<cdot> \<sigma> \<subseteq># D \<cdot> \<sigma>"
+    using subst_cls_mono_mset by blast
+  then have "E \<cdot> (\<sigma>'' \<odot> \<sigma>) \<subseteq># D'"
+    using \<sigma>_\<sigma>'_p by auto
+  moreover from assms have n: "\<nexists>\<sigma>. D \<cdot> \<sigma> \<subseteq># E"
+    unfolding strictly_subsumes_def subsumes_def by auto
+  have "\<nexists>\<sigma>. D' \<cdot> \<sigma> \<subseteq># E"
+  proof
+    assume "\<exists>\<sigma>'''. D' \<cdot> \<sigma>''' \<subseteq># E"
+    then obtain \<sigma>''' where
+      "D' \<cdot> \<sigma>''' \<subseteq># E"
+      by auto
+    then have "D \<cdot> (\<sigma> \<odot> \<sigma>''') \<subseteq># E"
+      using \<sigma>_\<sigma>'_p by auto
+    then show False
+      using n by metis
+  qed
+  ultimately show ?thesis
+    unfolding strictly_subsumes_def subsumes_def by metis
+qed
+
+lemma neg_strictly_subsumes_variants:
+  assumes "\<not> strictly_subsumes E D" and "variants D D'"
+  shows "\<not> strictly_subsumes E D'"
+  using assms strictly_subsumes_variants variants_sym by auto
+
+
+end
+
+locale substitution_renamings = substitution subst_atm id_subst comp_subst
+  for
+    subst_atm :: "'a \<Rightarrow> 's \<Rightarrow> 'a" and
+    id_subst :: 's and
+    comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" +
+  fixes
+    renamings_apart :: "'a clause list \<Rightarrow> 's list" and
+    atm_of_atms :: "'a list \<Rightarrow> 'a"
+  assumes
+    renamings_apart_length:  "length (renamings_apart Cs) = length Cs" and
+    renamings_apart_renaming: "\<rho> \<in> set (renamings_apart Cs) \<Longrightarrow> is_renaming \<rho>" and
+    renamings_apart_var_disjoint: "var_disjoint (Cs \<cdot>\<cdot>cl (renamings_apart Cs))" and
+    atm_of_atms_subst:
+      "\<And>As Bs. atm_of_atms As \<cdot>a \<sigma> = atm_of_atms Bs \<longleftrightarrow> map (\<lambda>A. A \<cdot>a \<sigma>) As = Bs"
+begin
+
+
+subsubsection \<open>Generalization and Subsumption\<close>
+
 lemma wf_strictly_generalizes: "wfP strictly_generalizes"
 proof -
   {
@@ -1112,52 +1213,6 @@ proof -
     unfolding wfP_def by (blast intro: wf_iff_no_infinite_down_chain[THEN iffD2])
 qed
 
-lemma strict_subset_subst_strictly_subsumes: "C \<cdot> \<eta> \<subset># D \<Longrightarrow> strictly_subsumes C D"
-  by (metis leD mset_subset_size size_mset_mono size_subst strictly_subsumes_def
-      subset_mset.dual_order.strict_implies_order substitution_ops.subsumes_def)
-
-lemma generalizes_refl: "generalizes C C"
-  unfolding generalizes_def by (rule exI[of _ id_subst]) auto
-
-lemma generalizes_trans: "generalizes C D \<Longrightarrow> generalizes D E \<Longrightarrow> generalizes C E"
-  unfolding generalizes_def using subst_cls_comp_subst by blast
-
-lemma subsumes_refl: "subsumes C C"
-  unfolding subsumes_def by (rule exI[of _ id_subst]) auto
-
-lemma subsumes_trans: "subsumes C D \<Longrightarrow> subsumes D E \<Longrightarrow> subsumes C E"
-  unfolding subsumes_def
-  by (metis (no_types) subset_mset.trans subst_cls_comp_subst subst_cls_mono_mset)
-
-lemma strictly_generalizes_irrefl: "\<not> strictly_generalizes C C"
-  unfolding strictly_generalizes_def by blast
-
-lemma strictly_generalizes_antisym: "strictly_generalizes C D \<Longrightarrow> \<not> strictly_generalizes D C"
-  unfolding strictly_generalizes_def by blast
-
-lemma strictly_generalizes_trans:
-  "strictly_generalizes C D \<Longrightarrow> strictly_generalizes D E \<Longrightarrow> strictly_generalizes C E"
-  unfolding strictly_generalizes_def using generalizes_trans by blast
-
-lemma strictly_subsumes_irrefl: "\<not> strictly_subsumes C C"
-  unfolding strictly_subsumes_def by blast
-
-lemma strictly_subsumes_antisym: "strictly_subsumes C D \<Longrightarrow> \<not> strictly_subsumes D C"
-  unfolding strictly_subsumes_def by blast
-
-lemma strictly_subsumes_trans:
-  "strictly_subsumes C D \<Longrightarrow> strictly_subsumes D E \<Longrightarrow> strictly_subsumes C E"
-  unfolding strictly_subsumes_def using subsumes_trans by blast
-
-lemma subset_strictly_subsumes: "C \<subset># D \<Longrightarrow> strictly_subsumes C D"
-  using strict_subset_subst_strictly_subsumes[of C id_subst] by auto
-
-lemma strictly_generalizes_neq: "strictly_generalizes D' D \<Longrightarrow> D' \<noteq> D \<cdot> \<sigma>"
-  unfolding strictly_generalizes_def generalizes_def by blast
-
-lemma strictly_subsumes_neq: "strictly_subsumes D' D \<Longrightarrow> D' \<noteq> D \<cdot> \<sigma>"
-  unfolding strictly_subsumes_def subsumes_def by blast
-
 lemma strictly_subsumes_has_minimum:
   assumes "CC \<noteq> {}"
   shows "\<exists>C \<in> CC. \<forall>D \<in> CC. \<not> strictly_subsumes D C"
@@ -1205,53 +1260,12 @@ qed
 lemma wf_strictly_subsumes: "wfP strictly_subsumes"
   using strictly_subsumes_has_minimum by (metis equals0D wfP_eq_minimal)
 
-lemma variants_imp_exists_substitution: "variants D D' \<Longrightarrow> \<exists>\<sigma>. D \<cdot> \<sigma> = D'"
-  unfolding variants_iff_subsumes subsumes_def
-  by (meson strictly_subsumes_def subset_mset_def strict_subset_subst_strictly_subsumes subsumes_def)
-
-lemma strictly_subsumes_variants:
-  assumes "strictly_subsumes E D" and "variants D D'"
-  shows "strictly_subsumes E D'"
-proof -
-  from assms obtain \<sigma> \<sigma>' where
-    \<sigma>_\<sigma>'_p: "D \<cdot> \<sigma> = D' \<and> D' \<cdot> \<sigma>' = D"
-    using variants_imp_exists_substitution variants_sym by metis
-
-  from assms obtain \<sigma>'' where
-    "E \<cdot> \<sigma>'' \<subseteq># D"
-    unfolding strictly_subsumes_def subsumes_def by auto
-  then have "E \<cdot> \<sigma>'' \<cdot> \<sigma> \<subseteq># D \<cdot> \<sigma>"
-    using subst_cls_mono_mset by blast
-  then have "E \<cdot> (\<sigma>'' \<odot> \<sigma>) \<subseteq># D'"
-    using \<sigma>_\<sigma>'_p by auto
-  moreover from assms have n: "\<nexists>\<sigma>. D \<cdot> \<sigma> \<subseteq># E"
-    unfolding strictly_subsumes_def subsumes_def by auto
-  have "\<nexists>\<sigma>. D' \<cdot> \<sigma> \<subseteq># E"
-  proof
-    assume "\<exists>\<sigma>'''. D' \<cdot> \<sigma>''' \<subseteq># E"
-    then obtain \<sigma>''' where
-      "D' \<cdot> \<sigma>''' \<subseteq># E"
-      by auto
-    then have "D \<cdot> (\<sigma> \<odot> \<sigma>''') \<subseteq># E"
-      using \<sigma>_\<sigma>'_p by auto
-    then show False
-      using n by metis
-  qed
-  ultimately show ?thesis
-    unfolding strictly_subsumes_def subsumes_def by metis
-qed
-
-lemma neg_strictly_subsumes_variants:
-  assumes "\<not> strictly_subsumes E D" and "variants D D'"
-  shows "\<not> strictly_subsumes E D'"
-  using assms strictly_subsumes_variants variants_sym by auto
-
 end
 
 
 subsection \<open>Most General Unifiers\<close>
 
-locale mgu = substitution subst_atm id_subst comp_subst renamings_apart atm_of_atms
+locale mgu = substitution_renamings subst_atm id_subst comp_subst renamings_apart atm_of_atms
   for
     subst_atm :: "'a \<Rightarrow> 's \<Rightarrow> 'a" and
     id_subst :: 's and
