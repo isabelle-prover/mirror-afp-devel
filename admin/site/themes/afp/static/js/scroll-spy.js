@@ -16,7 +16,7 @@ const CLASS_SPY_LINK = 'spy-link'
  */
 
 class ScrollSpy {
-  constructor(element, target, offset = 10) {
+  constructor(element, target, offset = 0.5) {
     ScrollSpy.instance = this
     this._element = element
 
@@ -69,9 +69,9 @@ class ScrollSpy {
     )
   }
   _process() {
-    const scrollTop = window.pageYOffset + this._offset
+    const scrollTop = window.pageYOffset + this._offset * window.innerHeight
     const scrollHeight = this._getScrollHeight()
-    const maxScroll = this._offset + scrollHeight - window.innerHeight
+    const maxScroll = this._offset * window.innerHeight + scrollHeight - window.innerHeight
 
     if (this._scrollHeight !== scrollHeight) {
       this.refresh()
@@ -109,7 +109,9 @@ class ScrollSpy {
 
     const link = document.getElementById(link_id)
     if (link) {
+      const elem = document.getElementById(link.getAttribute('href').slice(1))
       link.classList.add(CLASS_ACTIVE)
+      elem.classList.add(CLASS_ACTIVE)
 
       const event = new Event(EVENT_SPY_ACTIVATE)
       event.relatedTarget = link
@@ -120,8 +122,10 @@ class ScrollSpy {
   _clear() {
     if (this._active_id) {
       const link = document.getElementById(this._active_id)
-      if (link && link.classList.contains(CLASS_ACTIVE)) {
-        link.classList.remove(CLASS_ACTIVE)
+      if (link) {
+        const elem = document.getElementById(link.getAttribute('href').slice(1))
+        if (link.classList.contains(CLASS_ACTIVE)) link.classList.remove(CLASS_ACTIVE)
+        if (elem.classList.contains(CLASS_ACTIVE)) elem.classList.remove(CLASS_ACTIVE)
       }
     }
   }

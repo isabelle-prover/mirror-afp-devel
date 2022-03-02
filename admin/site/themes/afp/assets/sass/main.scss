@@ -764,6 +764,10 @@ a[download] {
   }
 }
 
+.entity_def.active {
+  background-color: $theme-focus;
+}
+
 button {
   @extend %button;
   height: 2rem;
