@@ -1,7 +1,7 @@
 {{- define "main" -}}
 {{- $site := . -}}
 {{- $path := .Site.Params.afpUrls.html -}}
-{{- if eq .Site.Params.devel true -}}
+{{- if isset .Site.Data "status" -}}
   {{- $path = .Site.Params.afpUrls.htmlDevel -}}
 {{- end -}}
 <main id="theories">

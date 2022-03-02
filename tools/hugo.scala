@@ -40,7 +40,7 @@ object Hugo
           file <- List(
             List("content", "_index.md"),
             List("content", "about.md"),
-            List("content", "contribution.md"),
+            List("content", "submission.md"),
             List("content", "download.md"),
             List("content", "help.md"),
             List("content", "search.md"),

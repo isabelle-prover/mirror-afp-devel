@@ -19,8 +19,7 @@
         "afpUrls": {
           "html": "https://www.isa-afp.org/browser_info/current/AFP",
           "htmlDevel": "https://devel.isa-afp.org/browser_info/current/AFP"
-        },
-        "devel": true
+        }
     },
     "markup": {
         "goldmark": {

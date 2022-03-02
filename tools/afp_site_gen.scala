@@ -97,6 +97,7 @@ object AFP_Site_Gen
   def afp_site_gen(
     out_dir: Option[Path],
     layout: Hugo.Layout,
+    status_file: Option[Path],
     afp_structure: AFP_Structure,
     progress: Progress = new Progress()): Unit =
   {
@@ -217,6 +218,16 @@ object AFP_Site_Gen
     layout.copy_project()
 
 
+    /* status */
+
+    status_file match {
+      case Some(status_file) =>
+        progress.echo("Preparing devel version...")
+        val status_json = isabelle.JSON.parse(File.read(status_file))
+        layout.write_data(Path.basic("status.json"), status_json)
+    }
+
+
     /* hugo */
 
     out_dir match {
@@ -235,6 +246,7 @@ object AFP_Site_Gen
   {
     var base_dir = Path.explode("$AFP_BASE")
     var hugo_dir = base_dir + Path.make(List("web", "hugo"))
+    var status_file: Option[Path] = None
     var out_dir: Option[Path] = None
 
     val getopts = Getopts("""
@@ -243,13 +255,16 @@ Usage: isabelle afp_site_gen [OPTIONS]
   Options are:
     -B DIR       afp base dir (default """" + base_dir.implode + """")
     -H DIR       generated hugo project dir (default """" + hugo_dir.implode + """")
-    -O DIR       output dir (default none)
+    -D FILE      build status file for devel version
+    -O DIR       output dir for optional build (default none)
 
   Generates the AFP website source. HTML files of entries are dynamically loaded.
+  Providing a status file will build the development version of the archive.
   Site will be built from generated source if output dir is specified.
 """,
       "B:" -> (arg => base_dir = Path.explode(arg)),
       "H:" -> (arg => hugo_dir = Path.explode(arg)),
+      "D:" -> (arg => status_file = Some(Path.explode(arg))),
       "O:" -> (arg => out_dir = Some(Path.explode(arg))))
 
     getopts(args)
@@ -260,6 +275,7 @@ Usage: isabelle afp_site_gen [OPTIONS]
 
     progress.echo("Preparing site generation in " + hugo_dir.implode)
 
-    afp_site_gen(out_dir = out_dir, layout = layout, afp_structure = afp_structure, progress = progress)
+    afp_site_gen(out_dir = out_dir, layout = layout, status_file = status_file,
+      afp_structure = afp_structure, progress = progress)
   })
 }

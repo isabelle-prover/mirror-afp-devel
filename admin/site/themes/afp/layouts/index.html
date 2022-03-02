@@ -10,6 +10,16 @@
   publications. To cite an entry, please use the <a href="/help/#citing-entries">preferred citation style</a>.
 </p>
 
+{{- if isset .Site.Data "status" -}}
+<p>
+<strong>
+This is the development version of the archive, referring to a recent Isabelle development version.
+Some entries may not be in a working state.
+The main archive is available from the <a href="http://www.isa-afp.org/">front page</a>.
+</strong>
+</p>
+{{- end -}}
+
 <form autocomplete="off" action="{{ "search" | absURL }}">
   <div class='form-container'>
     <input id="searchInput" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button

@@ -851,6 +851,21 @@ button[copy] {
   }
 }
 
+.status-ok {
+  background-color: #00FF99;
+  padding: 8px;
+}
+
+.status-skipped {
+  background-color: #FFFF99;
+  padding: 8px;
+}
+
+.status-failed {
+  background-color: #DD2222;
+  padding: 8px;
+}
+
 iframe {
   width: 100%;
   height: 90vh;

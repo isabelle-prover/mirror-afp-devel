@@ -1,11 +1,16 @@
 {{- define "main" -}}
 {{- $site := . -}}
 {{- $path := .Site.Params.afpUrls.html -}}
-{{- if eq .Site.Params.devel true -}}
+{{- if isset .Site.Data "status" -}}
   {{- $path = .Site.Params.afpUrls.htmlDevel -}}
 {{- end -}}
 {{- $entry_name := .File.BaseFileName -}}
 <main>
+  {{- if isset .Site.Data "status" -}}
+  <strong>
+    This is a development version of this entry. It might change over time and is not stable. Please refer to release versions for citations.
+  </strong>
+  {{- end -}}
   <h3>Abstract</h3>
 
   <div class="abstract mathjax_process">{{- trim .Params.abstract "\n" | safeHTML -}}</div>
@@ -74,7 +79,21 @@
   {{ end }}
 </main>
 
-
+{{- if isset .Site.Data "status" -}}
+  <nav>
+  {{- $status := "none" -}}
+  {{- range where .Site.Data.status.entries "entry" $entry_name -}}
+    {{- $status = .status -}}
+  {{- end -}}
+    <div class="status-{{ $status }}">
+      <p>Status: <strong>{{- $status -}}</strong></p>
+      <p>{{ .Site.Data.status.build_data.time }}</p>
+      <p>Isabelle/<wbr>{{ .Site.Data.status.build_data.isabelle_id }}</p>
+      <p>AFP/<wbr>{{ .Site.Data.status.build_data.afp_id }}</p>
+      <p><a href="{{ .Site.Data.status.build_data.url }}">{{ .Site.Data.status.build_data.job }}</a></p>
+    </div>
+  </nav>
+{{- else -}}
 <nav class='links'>
   <a class='popUpButton' href="#citePopUp">Cite</a>
   <a class='popUpButton' href="#downloadPopUp">Download</a>
@@ -130,5 +149,6 @@
     {{- end }}
   </div>
 </div>
+{{- end -}}
 
 {{- end -}}
