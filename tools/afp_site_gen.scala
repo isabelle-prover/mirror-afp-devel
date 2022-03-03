@@ -18,7 +18,12 @@ object AFP_Site_Gen
     }
 
     def from_authors(authors: List[Metadata.Author]): T =
-      Metadata.TOML.from_authors(authors)
+    {
+      authors.map(author => author.id -> isabelle.JSON.Object(
+        "name" -> author.name,
+        "emails" -> author.emails.map(_.address),
+        "homepages" -> author.homepages.map(_.url))).toMap
+    }
 
     def from_topics(topics: List[Metadata.Topic]): T =
       Metadata.TOML.from_topics(topics)
@@ -57,7 +62,7 @@ object AFP_Site_Gen
           "date" -> entry.date.toString ::
           "topics" -> entry.topics.map(_.id) ::
           "abstract" -> entry.`abstract` ::
-          "license" -> entry.license ::
+          "license" -> entry.license.name ::
           (if (entry.releases.nonEmpty)
             "releases" -> entry.releases.map(r => r.isabelle -> r.date.toString).toMap :: Nil
           else Nil) :::
@@ -123,6 +128,13 @@ object AFP_Site_Gen
     layout.write_data(Path.basic("topics.json"), JSON.from_topics(topics))
 
 
+    /* add licenses */
+
+    progress.echo("Preparing licenses...")
+
+    val licenses_by_id = Utils.grouped_sorted(afp_structure.load_licenses,
+      (l: Metadata.License) => l.id)
+
     /* add releases */
 
     progress.echo("Preparing releases...")
@@ -137,7 +149,8 @@ object AFP_Site_Gen
     var seen_keywords = Set.empty[String]
     val entry_keywords = afp_structure.entries.map(name =>
     {
-      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, releases_by_entry)
+      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
+        releases_by_entry)
 
       val Keyword = """\('([^']*)', ([^)]*)\)""".r
       val scored_keywords = extract_keywords(entry.`abstract`).map {
@@ -164,7 +177,8 @@ object AFP_Site_Gen
     val sessions_deps = Sessions.deps(sessions_structure)
 
     for (name <- afp_structure.entries) {
-      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, releases_by_entry)
+      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
+        releases_by_entry)
 
       val deps =
         for {
@@ -225,6 +239,7 @@ object AFP_Site_Gen
         progress.echo("Preparing devel version...")
         val status_json = isabelle.JSON.parse(File.read(status_file))
         layout.write_data(Path.basic("status.json"), status_json)
+      case None =>
     }
 
 

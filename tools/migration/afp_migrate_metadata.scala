@@ -8,8 +8,12 @@ import afp.Metadata.{TOML => _, _}
 
 import scala.collection.BufferedIterator
 
+import java.io.BufferedReader
 import java.text.Normalizer
 import java.time.LocalDate
+import java.net.URI
+
+import org.jline.utils.InputStreamReader
 
 
 object AFP_Migrate_Metadata
@@ -32,19 +36,46 @@ object AFP_Migrate_Metadata
 
     /* seen */
 
-    private var seen_ids = Set.empty[Author.ID]
-    private var seen_authors = Map.empty[String, Author]
+    private var _seen_authors = Set.empty[Author.ID]
+    private var _seen_emails = Set.empty[Email.ID]
+    private var _seen_homepages = Set.empty[Homepage.ID]
+    private var _seen_licenses = Map.empty[License.ID, License]
+    private var _seen_author_names = Map.empty[String, Author]
 
-    def seen_id(id: Author.ID): Boolean = seen_ids.contains(id)
+    def seen_authors: Set[Author.ID] = _seen_authors
+    def seen_emails: Set[Email.ID] = _seen_emails
+    def seen_homepages: Set[Homepage.ID] = _seen_homepages
 
-    def author(name: String): Option[Author] = seen_authors.get(name)
+    def author(name: String): Option[Author] = _seen_author_names.get(name)
 
-    def authors: List[Author] = seen_authors.values.toList
+    def authors: List[Author] = _seen_author_names.values.toList
+    def licenses: List[License] = _seen_licenses.values.toList
 
     def update_author(author: Author): Unit =
     {
-      seen_ids += author.id
-      seen_authors = seen_authors.updated(author.name, author)
+      _seen_authors += author.id
+      _seen_author_names = _seen_author_names.updated(author.name, author)
+    }
+
+    def email(address: String): Email.ID =
+    {
+      val id = make_email_id(address, this)
+      _seen_emails += id
+      id
+    }
+
+    def homepage(url: String): Homepage.ID =
+    {
+      val id = make_homepage_id(url, this)
+      _seen_homepages += id
+      id
+    }
+
+    def license(license_str: String): License =
+    {
+      val license = License(license_str.toLowerCase, license_str)
+      _seen_licenses += license.id -> license
+      license
     }
   }
 
@@ -59,6 +90,54 @@ object AFP_Migrate_Metadata
     res = Normalizer.normalize(res, Normalizer.Form.NFD).replaceAll("[^\\x00-\\x7F]", "")
     if (res.exists(_ > 127)) error("Contained non convertible non-ascii character: " + str)
     res
+  }
+
+  def unique_id(prefix: String, ids: Set[String]): String =
+  {
+    if (!ids.contains(prefix)) prefix
+    else {
+      var num = 1
+      while (ids.contains(prefix + num)) { num += 1 }
+      prefix + num
+    }
+  }
+
+  def private_dom(full_dom: String): String =
+  {
+    val stream = getClass.getClassLoader.getResourceAsStream("public_suffix_list.dat")
+    val reader = new BufferedReader(new InputStreamReader(stream))
+    val public_suffixes = File.read_lines(reader, _ => ()).filterNot(_.startsWith("//"))
+    val stripped = public_suffixes.map(full_dom.stripSuffix(_)).minBy(_.length)
+    if (stripped.endsWith(".")) stripped.dropRight(1) else stripped
+  }
+
+  def make_email_id(address: String, context: Context): String =
+  {
+    val normalized = as_ascii(address).toLowerCase
+    val (user, host) = normalized.splitAt(normalized.lastIndexOf('@'))
+    val host_part = private_dom(host).replaceAll("[^a-zA-Z0-9.]", "").replace('.', '_')
+    val user_parts = user.replaceAll("[^a-zA-Z0-9.]", "").split('.')
+    var ident = user_parts.last + "_" + host_part
+    for {
+      part <- user_parts.dropRight(1)
+    } {
+      if (context.seen_emails.contains(ident)) {
+        ident = part + "_" + ident
+      } else return ident
+    }
+    unique_id(ident, context.seen_emails)
+  }
+
+  def make_homepage_id(url: String, context: Context): String =
+  {
+    val uri = new URI(url.toLowerCase)
+    val host = private_dom(uri.getHost).stripPrefix("www.").replaceAll(
+      "[^a-zA-Z0-9.]", "").replace('.', '_')
+    val path = as_ascii(uri.getPath.stripSuffix(".html")).replaceAll(
+      "[^a-zA-Z0-9/]", "").replace('/', '_')
+    var ident = host + path
+    while (ident.endsWith("_")) { ident = ident.dropRight(1) }
+    unique_id(ident, context.seen_homepages)
   }
 
   def make_author_id(name: String, context: Context): String =
@@ -78,13 +157,11 @@ object AFP_Migrate_Metadata
     for {
       c <- prefix.toLowerCase
     } {
-      if (context.seen_id(ident)) {
+      if (context.seen_authors.contains(ident)) {
         ident += c.toString
       } else return ident
     }
-    var num = 1
-    while (context.seen_id(ident + num)) { num += 1 }
-    ident
+    unique_id(ident, context.seen_authors)
   }
 
   def author_urls(name_urls: String, context: Context): (String, List[String]) =
@@ -101,7 +178,7 @@ object AFP_Migrate_Metadata
 
   def add_email(author: Author, address: String, context: Context): (Author, Email) =
   {
-    val email = Email(author = author.id, id = author.emails.length, address = address)
+    val email = Email(author = author.id, id = context.email(address), address = address)
     val update_author = author.copy(emails = author.emails :+ email)
     context.update_author(update_author)
     (update_author, email)
@@ -162,7 +239,7 @@ object AFP_Migrate_Metadata
         }
       }
       else if (url.nonEmpty && !author.homepages.exists(_.url == url)) {
-        val homepage = Homepage(author = author.id, id = author.homepages.length, url = url)
+        val homepage = Homepage(author = author.id, id = context.homepage(url), url = url)
 
         author = author.copy(homepages = author.homepages :+ homepage)
       }
@@ -193,7 +270,7 @@ object AFP_Migrate_Metadata
       `abstract` = entry.`abstract`,
       notifies = notify_emails,
       contributors = contributor_affiliations,
-      license = entry.license,
+      license = context.license(entry.license),
       note = entry.get_string("note"),
       change_history = change_history,
       extra = extra.toMap,
@@ -332,6 +409,11 @@ object AFP_Migrate_Metadata
 
       write(Metadata.TOML.from_entry(entry), Path.make(List("entries", entry.name + ".toml")))
     }
+
+
+    /* licenses */
+
+    write(Metadata.TOML.from_licenses(context.licenses), Path.basic("licenses.toml"))
 
 
     /* authors */

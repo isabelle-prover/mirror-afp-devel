@@ -15,6 +15,8 @@ class AFP_Structure private(base_dir: Path)
   private val authors_file = metadata_dir + Path.basic("authors.toml")
 
   private val releases_file = metadata_dir + Path.basic("releases.toml")
+  
+  private val licenses_file = metadata_dir + Path.basic("licenses.toml")
 
   private val topics_file = metadata_dir + Path.basic("topics.toml")
 
@@ -36,15 +38,19 @@ class AFP_Structure private(base_dir: Path)
 
   def load_releases: List[Metadata.Release] = load(releases_file, Metadata.TOML.to_releases)
 
+  def load_licenses: List[Metadata.License] = load(licenses_file, Metadata.TOML.to_licenses)
+  
   def load_topics: List[Metadata.Topic] = load(topics_file, Metadata.TOML.to_topics)
 
   def load_entry(name: Metadata.Entry.Name,
     authors: Map[Metadata.Author.ID, Metadata.Author],
     topics: Map[Metadata.Topic.ID, Metadata.Topic],
+    licenses: Map[Metadata.License.ID, Metadata.License],
     releases: Map[Metadata.Entry.Name, List[Metadata.Release]]): Metadata.Entry =
   {
     val entry_releases = releases.getOrElse(name, error("No releases for entry " + name))
-    load(entry_file(name), toml => Metadata.TOML.to_entry(toml ++ TOML.T("name" -> name), authors, topics, entry_releases))
+    load(entry_file(name), toml =>
+      Metadata.TOML.to_entry(toml ++ TOML.T("name" -> name), authors, topics, licenses, entry_releases))
   }
 
 

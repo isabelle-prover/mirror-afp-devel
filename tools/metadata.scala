@@ -20,7 +20,7 @@ object Metadata
 
   object Email
   {
-    type ID = Int
+    type ID = String
   }
 
   case class Homepage(override val author: Author.ID, id: Homepage.ID, url: String)
@@ -28,7 +28,7 @@ object Metadata
 
   object Homepage
   {
-    type ID = Int
+    type ID = String
   }
 
   case class Author(
@@ -59,7 +59,13 @@ object Metadata
 
   case class Release(entry: Entry.Name, date: Date, isabelle: Isabelle.Version)
 
-  type License = String
+  case class License(id: License.ID, name: String)
+
+  object License
+  {
+    type ID = String
+  }
+
   type Change_History = Map[Date, String]
   type Extra = Map[String, String]
 
@@ -88,9 +94,6 @@ object Metadata
 
   object TOML
   {
-    private def by_id[A](elems: List[A], id: Int): A =
-      elems.lift(id).getOrElse(error("Elem " + id + " not found in " + commas_quote(elems.map(_.toString))))
-
     private def by_id[A](elems: Map[String, A], id: String): A =
       elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.map(_.toString))))
 
@@ -102,24 +105,24 @@ object Metadata
       def from_author(author: Author): T =
         T(
           "name" -> author.name,
-          "emails" -> author.emails.map(_.address),
-          "homepages" -> author.homepages.map(_.url))
+          "emails" -> T(author.emails.map(email => email.id -> email.address)),
+          "homepages" -> T(author.homepages.map(homepage => homepage.id -> homepage.url)))
 
       T(authors.map(author => author.id -> from_author(author)))
     }
 
     def to_authors(authors: T): List[Author] =
     {
-      def to_author(id: Author.ID, author: T): Author =
+      def to_author(author_id: Author.ID, author: T): Author =
       {
-        val emails = get_as[List[String]](author, "emails").zipWithIndex.map {
-          case (address, idx) => Email(author = id, id = idx, address = address)
+        val emails = split_as[String](get_as[T](author, "emails")) map {
+          case (id, address) => Email(author = author_id, id = id, address = address)
         }
-        val homepages = get_as[List[String]](author, "homepages").zipWithIndex.map {
-          case (url, idx) => Homepage(author = id, id = idx, url = url)
+        val homepages = split_as[String](get_as[T](author, "homepages")) map {
+          case (id, url) => Homepage(author = author_id, id = id, url = url)
         }
         Author(
-          id = id,
+          id = author_id,
           name = get_as[String](author, "name"),
           emails = emails,
           homepages = homepages
@@ -174,11 +177,13 @@ object Metadata
 
     def to_affiliations(affiliations: T, authors: Map[Author.ID, Author]): List[Affiliation] =
     {
-      def to_affiliation(affiliation: (String, Int), author: Author): Affiliation =
+      def to_affiliation(affiliation: (String, String), author: Author): Affiliation =
       {
         affiliation match {
-          case ("email", id: Int) => by_id(author.emails, id)
-          case ("homepage", id: Int) => by_id(author.homepages, id)
+          case ("email", id: String) => author.emails.find(_.id == id) getOrElse
+            error("Email not found: " + quote(id))
+          case ("homepage", id: String) => author.homepages.find(_.id == id) getOrElse
+            error("Homepage not found: " + quote(id))
           case e => error("Unknown affiliation type: " + e)
         }
       }
@@ -187,7 +192,7 @@ object Metadata
         case (id, author_affiliations) =>
           val author = by_id(authors, id)
           if (author_affiliations.isEmpty) List(Unaffiliated(author.id))
-          else split_as[Int](author_affiliations).map(to_affiliation(_, author))
+          else split_as[String](author_affiliations).map(to_affiliation(_, author))
       }
     }
 
@@ -196,9 +201,26 @@ object Metadata
 
     def to_emails(emails: T, authors: Map[Author.ID, Author]): List[Email] =
       emails.toList.map {
-        case (author, id: Int) => by_id(by_id(authors, author).emails, id)
+        case (author, id: String) => by_id(authors, author).emails.find(_.id == id) getOrElse
+          error("Email not found: " + quote(id))
         case e => error("Unknown email: " + quote(e.toString))
       }
+
+
+    /* license */
+
+    def from_licenses(licenses: List[License]): T =
+      T(licenses.map(license => license.id -> T("name" -> license.name)))
+
+    def to_licenses(licenses: T): List[License] =
+    {
+      split_as[T](licenses) map {
+        case (id, license) => License(id, get_as[String](license, "name"))
+      }
+    }
+
+    def to_license(license: String, licenses: Map[License.ID, License]): License =
+      licenses.getOrElse(license, error("No such license: " + quote(license)))
 
 
     /* history */
@@ -224,12 +246,13 @@ object Metadata
         "topics" -> entry.topics.map(_.id),
         "abstract" -> entry.`abstract`,
         "notify" -> from_emails(entry.notifies),
-        "license" -> entry.license,
+        "license" -> entry.license.id,
         "note" -> entry.note,
         "history" -> from_change_history(entry.change_history),
         "extra" -> entry.extra)
 
-    def to_entry(entry: T, authors: Map[Author.ID, Author], topics: Map[Topic.ID, Topic], releases: List[Release]): Entry =
+    def to_entry(entry: T, authors: Map[Author.ID, Author], topics: Map[Topic.ID, Topic],
+      licenses: Map[License.ID, License], releases: List[Release]): Entry =
       Entry(
         name = get_as[String](entry, "name"),
         title = get_as[String](entry, "title"),
@@ -239,7 +262,7 @@ object Metadata
         `abstract` = get_as[String](entry, "abstract"),
         notifies = to_emails(get_as[T](entry, "notify"), authors),
         contributors = to_affiliations(get_as[T](entry, "contributors"), authors),
-        license = get_as[License](entry, "license"),
+        license = to_license(get_as[String](entry, "license"), licenses),
         note = get_as[String](entry, "note"),
         change_history = to_change_history(get_as[T](entry, "history")),
         extra = get_as[Extra](entry, "extra"),
