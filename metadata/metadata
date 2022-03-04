@@ -10023,6 +10023,20 @@ abstract =
   for Cohen posets. We work in the set theory framework of Isabelle/ZF,
   using the Axiom of Choice as needed.
 
+[Transitive_Models]
+title = Transitive Models of Fragments of ZFC
+author = Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>, Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro>, and Matías Steinberg <mailto:matias.steinberg@mi.unc.edu.ar>
+topic = Logic/Set theory
+date = 2022-03-03
+notify = sterraf@famaf.unc.edu.ar, miguel.pagano@unc.edu.ar
+abstract =
+  We extend the ZF-Constructibility library by relativizing theories of
+  the Isabelle/ZF and Delta System Lemma sessions to a transitive class.
+  We also relativize Paulson's work on Aleph and our former
+  treatment of the Axiom of Dependent Choices. This work is a
+  prerrequisite to our formalization of the independence of the
+  Continuum Hypothesis.
+
 [Recursion-Addition]
 title = Recursion Theorem in ZF
 author = Georgy Dunaev <mailto:georgedunaev@gmail.com>
@@ -11781,7 +11795,7 @@ author = Michikazu Hirata <>, Yasuhiko Minamide <https://sv.c.titech.ac.jp/minam
 topic = Computer science/Semantics
 date = 2022-02-03
 notify = hirata.m.ac@m.titech.ac.jp, minamide@is.titech.ac.jp, tsato@c.titech.ac.jp
-abstract = 
+abstract =
   The notion of quasi-Borel spaces was introduced by <a
   href="https://dl.acm.org/doi/10.5555/3329995.3330072">
   Heunen et al</a>. The theory provides a suitable
@@ -11804,7 +11818,7 @@ author = Lawrence C Paulson <https://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Analysis
 date = 2022-01-31
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   Young's inequality states that $$ ab \leq \int_0^a f(x)dx +
   \int_0^b f^{-1}(y) dy $$ where $a\geq 0$, $b\geq 0$ and $f$ is
   strictly increasing and continuous. Its proof is formalised following
@@ -11821,7 +11835,7 @@ author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 topic = Mathematics/Algebra
 date = 2022-02-03
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We formalize the weak and strong duality theorems of linear
   programming. For the strong duality theorem we provide three
   sufficient preconditions: both the primal problem and the dual problem
@@ -11835,7 +11849,7 @@ author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
 topic = Mathematics/Combinatorics, Computer science/Algorithms/Mathematical
 date = 2022-02-04
 notify = me@eminkarayel.de
-abstract = 
+abstract =
   <p>This entry contains a formalization of an algorithm
   enumerating all equivalence relations on an initial segment of the
   natural numbers. The approach follows the method described by Stanton
@@ -11856,7 +11870,7 @@ author = Alexander Lochmann <mailto:alexander.lochmann@uibk.ac.at>, Bertram Felg
 topic = Computer science/Automata and formal languages, Logic/Rewriting, Logic/Proof theory
 date = 2022-02-02
 notify = alexander.lochmann@uibk.ac.at
-abstract = 
+abstract =
   The first-order theory of rewriting (FORT) is a decidable theory for
   linear variable-separated rewrite systems. The decision procedure is
   based on tree automata technique and an inference system presented in
@@ -11876,7 +11890,7 @@ author = Martin Raszyk <mailto:martin.raszyk@inf.ethz.ch>
 topic = Computer science/Algorithms
 date = 2022-02-13
 notify = m.raszyk@gmail.com
-abstract = 
+abstract =
   Runtime monitoring (or runtime verification) is an approach to
   checking compliance of a system's execution with a specification
   (e.g., a temporal query). The system's execution is logged into a
@@ -11909,7 +11923,7 @@ author = Martin Raszyk <mailto:martin.raszyk@inf.ethz.ch>
 topic = Logic/General logic/Classical first-order logic
 date = 2022-02-15
 notify = m.raszyk@gmail.com
-abstract = 
+abstract =
   We formalize first-order query evaluation over an infinite domain with
   equality. We first define the syntax and semantics of first-order
   logic with equality. Next we define a locale
@@ -11954,7 +11968,7 @@ author = Lawrence C Paulson<>
 topic = Mathematics/Analysis, Logic/Set theory
 date = 2022-02-18
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   Let $F$ be a set of analytic functions on the complex plane such that,
   for each $z\in\mathbb{C}$, the set $\{f(z) \mid f\in F\}$ is
   countable; must then $F$ itself be countable? The answer is yes if the
@@ -11973,7 +11987,7 @@ author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
 topic = Mathematics/Probability theory, Computer science/Algorithms
 date = 2022-02-20
 notify = me@eminkarayel.de
-abstract = 
+abstract =
   A <i>k</i>-universal hash family is a probability
   space of functions, which have uniform distribution and form
   <i>k</i>-wise independent random variables. They can often be used

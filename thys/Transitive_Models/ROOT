@@ -11,7 +11,7 @@ session "Transitive_Models" (AFP) =  "Delta_System_Lemma" +
     prerrequisite to our formalization of the independence of the
     Continuum Hypothesis.
   "
-  options [timeout=180]
+  options [timeout=300]
  theories
     "Renaming_Auto"
     "Delta_System_Relative"

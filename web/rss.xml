@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>20 Feb 2022 00:00:00 +0000</pubDate>
+    <pubDate>03 Mar 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Transitive Models of Fragments of ZFC</title>
+              <link>https://www.isa-afp.org/entries/Transitive_Models.html</link>
+       <guid>https://www.isa-afp.org/entries/Transitive_Models.html</guid>
+       <dc:creator> Emmanuel Gunther, Miguel Pagano, Pedro Sánchez Terraf, and Matías Steinberg       </dc:creator>
+       <pubDate>03 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+We extend the ZF-Constructibility library by relativizing theories of
+the Isabelle/ZF and Delta System Lemma sessions to a transitive class.
+We also relativize Paulson&#39;s work on Aleph and our former
+treatment of the Axiom of Dependent Choices. This work is a
+prerrequisite to our formalization of the independence of the
+Continuum Hypothesis.</description>
+    </item>
     <item>
        <title>Universal Hash Families</title>
               <link>https://www.isa-afp.org/entries/Universal_Hash_Families.html</link>
@@ -633,27 +647,6 @@ existence of such an algorithm proves in a constructive way that the
 set of complex algebraic numbers is algebraically closed. Internally,
 the algorithm is based on resultants of multivariate polynomials and
 an approximation algorithm using interval arithmetic.</description>
-    </item>
-    <item>
-       <title>Szemerédi's Regularity Lemma</title>
-              <link>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</link>
-       <guid>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</guid>
-       <dc:creator> Chelsea Edmonds, Angeliki Koutsoukou-Argyraki, Lawrence C. Paulson       </dc:creator>
-       <pubDate>05 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;a
-href=&#34;https://en.wikipedia.org/wiki/Szemerédi_regularity_lemma&#34;&gt;Szemerédi&#39;s
-regularity lemma&lt;/a&gt; is a key result in the study of large
-graphs. It asserts the existence of an upper bound on the number of parts
-the vertices of a graph need to be partitioned into such that the
-edges between the parts are random in a certain sense. This bound
-depends only on the desired precision and not on the graph itself, in
-the spirit of Ramsey&#39;s theorem. The formalisation follows online
-course notes by &lt;a
-href=&#34;https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf&#34;&gt;Tim
-Gowers&lt;/a&gt; and &lt;a
-href=&#34;https://yufeizhao.com/gtac/gtac.pdf&#34;&gt;Yufei
-Zhao&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>
