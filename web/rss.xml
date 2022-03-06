@@ -25,6 +25,52 @@ prerrequisite to our formalization of the independence of the
 Continuum Hypothesis.</description>
     </item>
     <item>
+       <title>Residuated Transition Systems</title>
+              <link>https://www.isa-afp.org/entries/ResiduatedTransitionSystem.html</link>
+       <guid>https://www.isa-afp.org/entries/ResiduatedTransitionSystem.html</guid>
+       <dc:creator> Eugene W. Stark       </dc:creator>
+       <pubDate>28 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; A &lt;em&gt;residuated transition system&lt;/em&gt; (RTS) is
+a transition system that is equipped with a certain partial binary
+operation, called &lt;em&gt;residuation&lt;/em&gt;, on transitions.
+Using the residuation operation, one can express nuances, such as a
+distinction between nondeterministic and concurrent choice, as well as
+partial commutativity relationships between transitions, which are not
+captured by ordinary transition systems. A version of residuated
+transition systems was introduced in previous work by the author, in
+which they were called “concurrent transition systems” in view of the
+original motivation for their definition from the study of
+concurrency. In the first part of the present article, we give a
+formal development that generalizes and subsumes the original
+presentation. We give an axiomatic definition of residuated transition
+systems that assumes only a single partial binary operation as given
+structure. From the axioms, we derive notions of “arrow“ (transition),
+“source”, “target”, “identity”, as well as “composition” and “join” of
+transitions; thereby recovering structure that in the previous work
+was assumed as given. We formalize and generalize the result, that
+residuation extends from transitions to transition paths, and we
+systematically develop the properties of this extension. A significant
+generalization made in the present work is the identification of a
+general notion of congruence on RTS’s, along with an associated
+quotient construction. &lt;/p&gt; &lt;p&gt; In the second part of this
+article, we use the RTS framework to formalize several results in the
+theory of reduction in Church’s λ-calculus. Using a de Bruijn
+index-based syntax in which terms represent parallel reduction steps,
+we define residuation on terms and show that it satisfies the axioms
+for an RTS. An application of the results on paths from the first part
+of the article allows us to prove the classical Church-Rosser Theorem
+with little additional effort. We then use residuation to define the
+notion of “development” and we prove the Finite Developments Theorem,
+that every development is finite, formalizing and adapting to de
+Bruijn indices a proof by de Vrijer. We also use residuation to define
+the notion of a “standard reduction path”, and we prove the
+Standardization Theorem: that every reduction path is congruent to a
+standard one. As a corollary of the Standardization Theorem, we obtain
+the Leftmost Reduction Theorem: that leftmost reduction is a
+normalizing strategy. &lt;/p&gt;</description>
+    </item>
+    <item>
        <title>Universal Hash Families</title>
               <link>https://www.isa-afp.org/entries/Universal_Hash_Families.html</link>
        <guid>https://www.isa-afp.org/entries/Universal_Hash_Families.html</guid>
@@ -629,24 +675,6 @@ We present a shallow embedding of public announcement logic (PAL) with
 relativized general knowledge in HOL. We then use PAL to obtain an
 elegant encoding of the wise men puzzle, which we solve automatically
 using sledgehammer.</description>
-    </item>
-    <item>
-       <title>Factorization of Polynomials with Algebraic Coefficients</title>
-              <link>https://www.isa-afp.org/entries/Factor_Algebraic_Polynomial.html</link>
-       <guid>https://www.isa-afp.org/entries/Factor_Algebraic_Polynomial.html</guid>
-       <dc:creator> Manuel Eberl, René Thiemann       </dc:creator>
-       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-The AFP already contains a verified implementation of algebraic
-numbers. However, it is has a severe limitation in its factorization
-algorithm of real and complex polynomials: the factorization is only
-guaranteed to succeed if the coefficients of the polynomial are
-rational numbers. In this work, we verify an algorithm to factor all
-real and complex polynomials whose coefficients are algebraic. The
-existence of such an algorithm proves in a constructive way that the
-set of complex algebraic numbers is algebraically closed. Internally,
-the algorithm is based on resultants of multivariate polynomials and
-an approximation algorithm using interval arithmetic.</description>
     </item>
   </channel>
 </rss>

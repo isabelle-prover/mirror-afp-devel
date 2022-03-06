@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Residuated Transition Systems - Archive of Formal Proofs
+</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body class="mathjax_ignore">
+
+<table width="100%">
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="https://www.isa-afp.org/">
+    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
+    <tr>
+      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.html">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.html">Submission</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.html">Using Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.html">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.html">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.html">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.html">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
+
+
+<!-- Content -->
+<td width="80%" valign="top">
+<div align="center">
+  <p>&nbsp;</p>
+  <h1>          <font class="first">R</font>esiduated
+  
+          <font class="first">T</font>ransition
+  
+          <font class="first">S</font>ystems
+  
+</h1>
+  <p>&nbsp;</p>
+
+<table width="80%" class="data">
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">Residuated Transition Systems</td>
+</tr>
+
+<tr>
+  <td class="datahead">
+          Author:
+      </td>
+  <td class="data">
+              Eugene W. Stark (stark /at/ cs /dot/ stonybrook /dot/ edu)
+      </td>
+</tr>
+
+
+
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2022-02-28</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract mathjax_process">
+<p> A <em>residuated transition system</em> (RTS) is
+a transition system that is equipped with a certain partial binary
+operation, called <em>residuation</em>, on transitions.
+Using the residuation operation, one can express nuances, such as a
+distinction between nondeterministic and concurrent choice, as well as
+partial commutativity relationships between transitions, which are not
+captured by ordinary transition systems. A version of residuated
+transition systems was introduced in previous work by the author, in
+which they were called “concurrent transition systems” in view of the
+original motivation for their definition from the study of
+concurrency. In the first part of the present article, we give a
+formal development that generalizes and subsumes the original
+presentation. We give an axiomatic definition of residuated transition
+systems that assumes only a single partial binary operation as given
+structure. From the axioms, we derive notions of “arrow“ (transition),
+“source”, “target”, “identity”, as well as “composition” and “join” of
+transitions; thereby recovering structure that in the previous work
+was assumed as given. We formalize and generalize the result, that
+residuation extends from transitions to transition paths, and we
+systematically develop the properties of this extension. A significant
+generalization made in the present work is the identification of a
+general notion of congruence on RTS’s, along with an associated
+quotient construction. </p> <p> In the second part of this
+article, we use the RTS framework to formalize several results in the
+theory of reduction in Church’s λ-calculus. Using a de Bruijn
+index-based syntax in which terms represent parallel reduction steps,
+we define residuation on terms and show that it satisfies the axioms
+for an RTS. An application of the results on paths from the first part
+of the article allows us to prove the classical Church-Rosser Theorem
+with little additional effort. We then use residuation to define the
+notion of “development” and we prove the Finite Developments Theorem,
+that every development is finite, formalizing and adapting to de
+Bruijn indices a proof by de Vrijer. We also use residuation to define
+the notion of a “standard reduction path”, and we prove the
+Standardization Theorem: that every reduction path is congruent to a
+standard one. As a corollary of the Standardization Theorem, we obtain
+the Leftmost Reduction Theorem: that leftmost reduction is a
+normalizing strategy. </p></td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{ResiduatedTransitionSystem-AFP,
+  author  = {Eugene W. Stark},
+  title   = {Residuated Transition Systems},
+  journal = {Archive of Formal Proofs},
+  month   = feb,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/ResiduatedTransitionSystem.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+  </td>
+</tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+    
+                    
+                    
+
+        
+  </tbody>
+</table>
+
+<p></p>
+
+<table class="links">
+  <tbody>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/ResiduatedTransitionSystem/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/ResiduatedTransitionSystem/document.pdf">Proof document</a>
+    </td>
+    </tr>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/ResiduatedTransitionSystem/index.html">Browse theories</a>
+      </td></tr>
+    <tr>
+    <td class="links">
+      <a href="../release/afp-ResiduatedTransitionSystem-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
+
+
+          <tr><td class="links">Older releases:
+            None
+            </td></tr>
+    
+  </tbody>
+</table>
+
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,241 @@
+\documentclass[11pt,notitlepage,a4paper]{report}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym,eufrak}
+\usepackage{amssymb,amsmath}
+\usepackage[english]{babel}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% Even though I stayed within the default boundary in the JEdit buffer,
+% some proof lines wrap around in the PDF document.  To minimize this,
+% increase the text width a bit from the default.
+\addtolength\textwidth{60pt}
+\addtolength\oddsidemargin{-30pt}
+\addtolength\evensidemargin{-30pt}
+
+\newcommand\after{\backslash}
+
+\begin{document}
+
+\title{Residuated Transition Systems}
+\author{Eugene W. Stark\\[\medskipamount]
+        Department of Computer Science\\
+        Stony Brook University\\
+        Stony Brook, New York 11794 USA}
+\maketitle
+
+\begin{abstract}
+A \emph{residuated transition system} (RTS) is a transition system that is equipped with a
+certain partial binary operation, called \emph{residuation}, on transitions.
+Using the residuation operation, one can express nuances, such as a distinction
+between nondeterministic and concurrent choice, as well as partial commutativity
+relationships between transitions, which are not captured by ordinary transition systems.
+A version of residuated transition systems was introduced by the author in \cite{cts},
+where they were called ``concurrent transition systems'' in view of the original
+motivation for their definition from the study of concurrency.
+In the first part of the present article, we give a formal development that generalizes
+and subsumes the original presentation.  We give an axiomatic definition of residuated transition
+systems that assumes only a single partial binary operation as given structure.
+From the axioms, we derive notions of ``arrow'' (transition), ``source'', ``target'', ``identity'',
+as well as ``composition'' and ``join'' of transitions; thereby recovering structure that in the
+previous work was assumed as given.  We formalize and generalize the result, that residuation
+extends from transitions to transition paths, and we systematically develop the properties of
+this extension.  A significant generalization made in the present work is the identification of a
+general notion of congruence on RTS's, along with an associated quotient construction.
+
+In the second part of this article, we use the RTS framework to formalize several results in
+the theory of reduction in Church's $\lambda$-calculus.  Using a de Bruijn index-based syntax
+in which terms represent parallel reduction steps, we define residuation on terms and show that
+it satisfies the axioms for an RTS.  An application of the results on paths from the
+first part of the article allows us to prove the classical Church-Rosser Theorem with little
+additional effort.  We then use residuation to define the notion of ``development''
+and we prove the Finite Developments Theorem, that every development is finite,
+formalizing and adapting to de Bruijn indices a proof by de Vrijer.
+We also use residuation to define the notion of a ``standard reduction path'', and we prove
+the Standardization Theorem: that every reduction path is congruent to a standard one.
+As a corollary of the Standardization Theorem, we obtain the Leftmost Reduction Theorem:
+that leftmost reduction is a normalizing strategy.
+\end{abstract}
+
+\tableofcontents
+
+\chapter{Introduction}
+
+A {\em transition system} is a graph used to represent the dynamics of a computational
+process.  It consists simply of nodes, called {\em states}, and edges, called {\em transitions}.
+Paths through a transition system correspond to possible computations.
+A {\em residuated transition system} is a transition system that is equipped with a
+partial binary operation, called {\em residuation}, on transitions, subject to certain axioms.
+Among other things, these axioms imply that if residuation is defined for transitions
+$t$ and $u$, then $t$ and $u$ must be {\em coinitial}; that is, they must have a common
+source state.
+If the residuation is defined for coinitial transitions $t$ and $u$, then we regard
+transitions $t$ and $u$ as {\em consistent}, otherwise they are {\em in conflict}.
+The residuation $t \after u$ of $t$ along $u$ can be thought of as what remains of transition $t$
+after the portion that it has in common with $u$ has been cancelled.
+
+A version of residuated transition systems was introduced in \cite{cts}, where I called them
+``concurrent transition systems'', because my motivation for the definition was to be
+able to have a way of representing information about concurrency and nondeterministic choice.
+Indeed, transitions that are in conflict can be thought of as representing a nondeterministic
+choice between steps that cannot occur in a single computation, whereas consistent transitions
+represent steps that can so occur and are therefore in some sense concurrent with each other.
+Whereas performing a product construction on ordinary transition system results in a
+transition system that records no information about commutativity of concurrent steps,
+with residuated transition systems the residuation operation makes it possible to represent
+such information.
+
+In \cite{cts}, concurrent transition systems were defined in terms of graphs, consisting
+of states, transitions, and a pair of functions that assign to each transition a {\em source}
+(or domain) state and a {\em target} (or codomain) state.  In addition, the presence of
+transitions that are {\em identities} for the residuation was assumed.
+Identity transitions had the same source and target state, and they could be thought of as
+representing empty computational steps.
+The key axiom for concurrent transition systems is the ``cube axiom'', which
+is a parallel moves property stating that the same result is achieved when transporting a
+transition by residuation along the two paths from the base to the apex of a ``commuting diamond''.
+Using the residuation operation and the associated cube axiom, it becomes possible to define
+notions of ``join'' and ``composition'' of transitions.
+The residuation also induces a notion of congruence of transitions; namely, transitions
+$t$ and $u$ are congruent whenever they are coinitial and both $t \after u$ and $u \after t$
+are identities.
+In \cite{cts}, the basic definition of concurrent transition system included an axiom,
+called ``extensionality'', which states that the congruence relation is trivial
+({\em i.e.}~coincides with equality).  An advantage of the extensionality axiom is that,
+in its presence, joins and composites of transitions are uniquely defined when they exist.
+It was shown in \cite{cts} that a concurrent transition system could always be quotiented
+by congruence to achieve extensionality.
+
+A focus of the basic theory developed in \cite{cts} was to show that the residuation
+operation $\after$ on individual transitions extended in a natural way to a residuation
+operation $\after^\ast$ on paths, so that a concurrent transition system could be completed
+to one having a composite for each ``composable'' pair of transitions.  The construction
+involved quotienting by the congruence on paths obtained by declaring paths $T$ and $U$
+to be congruent if they are coinitial and both $T \after^\ast U$ and $U \after^\ast T$
+are paths consisting ony of identities.  Besides collapsing paths of identities, this
+congruence reflects permutation relations induced by the residuation.  In particular,
+if $t$ and $u$ are consistent, then the paths $t (u \after t)$ and $u (t \after u)$
+are congruent.
+
+Imposing the extensionality requirement as part of the basic definition of concurrent
+transition systems does not end up being particularly desirable, since natural examples
+of situations where there is a residuation on transitions (such as on reductions in
+the $\lambda$-calculus) often do not naturally satisfy the extensionality condition
+and can only be made to do so if a quotient construction is applied.
+Also, the treatment of identity transitions and quotienting in \cite{cts} was not entirely
+satisfactory.  The definition of ``strong congruence'' given there was somewhat awkward
+and basically existed to capture the specific congruence that was induced on paths
+by the underlying residuation.  It was clear that a more general quotient construction
+ought to be possible than the one used in \cite{cts}, but it was not clear what the right
+general definition ought to be.
+
+In the present article we revisit the notion of transition systems equipped with a
+residuation operation, with the idea of developing a more general theory that does not
+require the assumption of extensionality as part of the basic axioms, and of clarifying
+the general notion of congruence that applies to such structures.
+We use the term ``residuated transition systems'' to refer to the more general structures
+defined here, as the name is perhaps more suggestive of what the theory is about and
+it does not seem to limit the interpretation of the residuation operation only to settings
+that have something to do with concurrency.
+
+Rather than starting out by assuming source, target, and identities as basic structure,
+here we develop residuated transition systems purely as a theory about a partial binary
+operation (residuation) that is subject to certain axioms.  The axioms will allow us to
+introduce sources, targets, and identities as defined notions, and we will be able to
+recover the properties of this additional structure that in \cite{cts} were taken as
+axiomatic.  This idea of defining residuated transition systems purely in terms of
+a partial binary operation of residuation is similar to the approach taken in
+\cite{Category3-AFP}, where we formalized categories purely in terms of a partial binary
+operation of composition.
+
+This article comprises two parts.  In the first part, we give the definition of
+residuated transition systems and systematically develop the basic theory.
+We show how sources, composites, and identities can be defined in terms of the residuation
+operation.  We also show how residuation can be used to define the notions of join
+and composite of transitions, as well as the simple notion of congruence that relates
+transitions $t$ and $u$ whenever both $t \after u$ and $u \after t$ are identities.
+We then present a much more general notion of congruence, based a definition of
+``coherent normal sub-RTS'', which abstracts the properties enjoyed by the sub-RTS of
+identity transitions.  After defining this general notion of congruence, we show that
+it admits a quotient construction, which yields a quotient RTS having the extensionality
+property.
+After studying congruences and quotients, we consider paths in an RTS, represented
+as nonempty lists of transitions whose sources and targets match up in the expected
+``domino fashion''.
+We show that the residuation operation of an RTS lifts to a residuation on its paths,
+yielding an ``RTS of paths'' in which composites of paths are given by list concatenation.
+The collection of paths that consist entirely of identity transitions is then shown to form
+a coherent normal sub-RTS of the RTS of paths.  The associated congruence on paths
+can be seen as ``permutation congruence'': the least congruence respecting composition
+that relates the two-element lists $[t, t\after u]$ and $[u, u\after t]$ whenever
+$t$ and $u$ are consistent, and that relates $[t, b]$ and $[t]$ whenever $b$ is an
+identity transition that is a target of $t$.
+Quotienting by the associated congruence results in a free ``composite completion'' of
+the original RTS.  The composite completion has a composite for each pair of ``composable''
+transitions, and it will in general exhibit nontrivial equations between composites,
+as a result of the congruence induced on paths by the underlying residuation.
+In summary, the first part of this article can be seen as a significant generalization
+and more satisfactory development of the results originally presented in \cite{cts}.
+
+The second part of this article applies the formal framework developed in the first part
+to prove various results about reduction in Church's $\lambda$-calculus.
+Although many of these results have had machine-checked proofs given by other authors
+(\emph{e.g.}~the basic formalization of residuation in the $\lambda$-calculus given
+by Huet \cite{huet-residual-theory}), the presentation here develops a number of such
+results in a single formal framework: that of residuated transition systems.
+For the presentation of the $\lambda$-calculus given here we employ (as was also done in
+\cite{huet-residual-theory}) the device of de Bruijn indices \cite{deBruijn}, in order
+to avoid having to treat the issue of $\alpha$-convertibility.
+The terms in our syntax represent reductions in which multiple redexes are contracted
+in parallel; this is done to deal with the well-known fact that contractions of single
+redexes are not preserved by residuation, in general.
+We treat only $\beta$-reduction here; leaving the extension to the $\beta\eta$-calculus
+for future work.
+We define residuation on terms essentially as is done in \cite{huet-residual-theory} and we develop
+a similar series of lemmas concerning residuation, substitution, and de Bruijn indices,
+culminating in L\'{e}vy's ``Cube Lemma'' \cite{levy}, which is the key property needed
+to show that a residuated transition system is obtained.
+In this residuated transition system, the identities correspond to the usual $\lambda$-terms,
+and transitions correspond to parallel reductions, represented by $\lambda$-terms with
+``marked redexes''.  The source of a transition is obtained by erasing the markings on
+the redexes; the target is obtained by contracting all the marked redexes.
+
+Once having obtained an RTS whose transitions represent parallel reductions,
+we exploit the general results proved in the first part of this article to extend the
+residuation to sequences of reductions.  It is then possible to prove the Church-Rosser
+Theorem with very little additional effort.  After that, we turn our attention to the notion
+of a ``development'', which is a reduction sequence in which the only redexes contracted
+are those that are residuals of redexes in some originally marked set.
+We give a formal proof of the Finite Developments Theorem (\cite{schroer, hindley}),
+which states that all developments are finite.
+The proof here follows the one by de Vrijer \cite{deVrijer}, with the difference that here we
+are using de Bruijn indices, whereas de Vrijer used a classical $\lambda$-calculus syntax.
+The modifications of de Vrijer's proof required for de Bruijn indices were not entirely
+straightforward to find.
+We then proceed to define the notion of ``standard reduction path'', which is a reduction
+sequence that in some sense contracts redexes in a left-to-right fashion, perhaps with
+some jumps.  We give a formal proof of the Standardization Theorem (\cite{curry-and-feys}),
+stated in the strong form which asserts that every reduction is permutation congruent to
+a standard reduction.  The proof presented here proceeds by stating and proving correct
+the definition of a recursive function that transforms a given path of parallel reductions
+into a standard reduction path, using a technique roughly analogous to insertion sort.
+Finally, as a corollary of the Standardization Theorem, we prove the Leftmost Reduction
+Theorem, which is the well-known result that the leftmost (or normal-order) reduction
+strategy is normalizing.
+
+% include generated text of all theories
+\input{session}
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

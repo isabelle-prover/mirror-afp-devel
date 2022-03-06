@@ -12003,3 +12003,49 @@ abstract =
   integers modulo a prime. Additionally, some generic results about
   independent families are shown that might be of independent interest.
 
+[ResiduatedTransitionSystem]
+title = Residuated Transition Systems
+author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
+topic = Computer science/Automata and formal languages, Computer science/Concurrency, Computer science/Programming languages/Lambda calculi
+date = 2022-02-28
+notify = stark@cs.stonybrook.edu
+abstract = 
+  <p> A <em>residuated transition system</em> (RTS) is
+  a transition system that is equipped with a certain partial binary
+  operation, called <em>residuation</em>, on transitions.
+  Using the residuation operation, one can express nuances, such as a
+  distinction between nondeterministic and concurrent choice, as well as
+  partial commutativity relationships between transitions, which are not
+  captured by ordinary transition systems. A version of residuated
+  transition systems was introduced in previous work by the author, in
+  which they were called “concurrent transition systems” in view of the
+  original motivation for their definition from the study of
+  concurrency. In the first part of the present article, we give a
+  formal development that generalizes and subsumes the original
+  presentation. We give an axiomatic definition of residuated transition
+  systems that assumes only a single partial binary operation as given
+  structure. From the axioms, we derive notions of “arrow“ (transition),
+  “source”, “target”, “identity”, as well as “composition” and “join” of
+  transitions; thereby recovering structure that in the previous work
+  was assumed as given. We formalize and generalize the result, that
+  residuation extends from transitions to transition paths, and we
+  systematically develop the properties of this extension. A significant
+  generalization made in the present work is the identification of a
+  general notion of congruence on RTS’s, along with an associated
+  quotient construction. </p> <p> In the second part of this
+  article, we use the RTS framework to formalize several results in the
+  theory of reduction in Church’s λ-calculus. Using a de Bruijn
+  index-based syntax in which terms represent parallel reduction steps,
+  we define residuation on terms and show that it satisfies the axioms
+  for an RTS. An application of the results on paths from the first part
+  of the article allows us to prove the classical Church-Rosser Theorem
+  with little additional effort. We then use residuation to define the
+  notion of “development” and we prove the Finite Developments Theorem,
+  that every development is finite, formalizing and adapting to de
+  Bruijn indices a proof by de Vrijer. We also use residuation to define
+  the notion of a “standard reduction path”, and we prove the
+  Standardization Theorem: that every reduction path is congruent to a
+  standard one. As a corollary of the Standardization Theorem, we obtain
+  the Leftmost Reduction Theorem: that leftmost reduction is a
+  normalizing strategy. </p>
+
