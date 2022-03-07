@@ -213,9 +213,6 @@ qed
 
 subsubsection \<open>@{const count_list}\<close>
 
-lemma count_list_append [simp]: "count_list (xs @ ys) a = count_list xs a + count_list ys a"
-  by (induct xs, simp_all)
-
 lemma count_list_upt [simp]: "count_list [a..<b] x = (if a \<le> x \<and> x < b then 1 else 0)"
 proof (cases "a \<le> b")
   case True

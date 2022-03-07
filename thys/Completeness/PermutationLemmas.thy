@@ -8,36 +8,24 @@ begin
 
 subsection "perm, count equivalence"
 
-primrec count :: "'a \<Rightarrow> 'a list \<Rightarrow> nat"
-where
-  "count x [] = 0"
-| "count x (y#ys) = (if x=y then 1 else 0) + count x ys"
-
 lemma count_eq:
-  \<open>count x xs = Multiset.count (mset xs) x\<close>
-  by (induction xs) simp_all
+  \<open>count_list xs x = Multiset.count (mset xs) x\<close>
+by (induction xs) simp_all
 
-lemma perm_count: "mset A = mset B \<Longrightarrow> (\<forall> x. count x A = count x B)"
-  by (simp add: count_eq)
+lemma perm_count: "mset A = mset B \<Longrightarrow> (\<forall> x. count_list A x = count_list B x)"
+by (simp add: count_eq)
 
-lemma count_0: "(\<forall>x. count x B = 0) = (B = [])"
-  by(induct B) auto
+lemma count_0: "(\<forall>x. count_list B x = 0) = (B = [])"
+by (simp add: count_list_0_iff)
 
-lemma count_Suc: "count a B = Suc m \<Longrightarrow> a : set B"
-  apply(induct B)
-   apply auto
-  apply(case_tac "a = aa")
-   apply auto
-  done
+lemma count_Suc: "count_list B a = Suc m \<Longrightarrow> a : set B"
+by (metis Zero_not_Suc count_notin)
 
-lemma count_append: "count a (xs@ys) = count a xs + count a ys"
-  by(induct xs) auto
+lemma count_perm: "!! B. (\<forall> x. count_list A x = count_list B x) \<Longrightarrow> mset A = mset B"
+by (simp add: count_eq multiset_eq_iff)
 
-lemma count_perm: "!! B. (\<forall> x. count x A = count x B) \<Longrightarrow> mset A = mset B"
-  by (simp add: count_eq multiset_eq_iff)
-
-lemma perm_count_conv: "mset A = mset B \<longleftrightarrow> (\<forall> x. count x A = count x B)"
-  by (simp add: count_eq multiset_eq_iff)
+lemma perm_count_conv: "mset A = mset B \<longleftrightarrow> (\<forall> x. count_list A x = count_list B x)"
+by (simp add: count_eq multiset_eq_iff)
 
 
 subsection "Properties closed under Perm and Contr hold for x iff hold for remdups x"
@@ -63,10 +51,10 @@ proof (safe)
     from not_distinct_decomp[OF this] obtain ws ys zs y where xs: "xs = ws@[y]@ys@[y]@zs" by force
     have "P xs = P (ws@[y]@ys@[y]@zs)" by (simp add: xs)
     also have "... = P ([y,y]@ws@ys@zs)" 
-      apply(rule perm) apply(rule iffD2[OF perm_count_conv]) apply rule apply(simp add: count_append) done
+      apply(rule perm) apply(rule iffD2[OF perm_count_conv]) apply rule apply(simp) done
     also have "... = P ([y]@ws@ys@zs)" apply simp apply(rule contr') done
     also have "... = P (ws@ys@[y]@zs)" 
-      apply(rule perm) apply(rule iffD2[OF perm_count_conv]) apply rule apply(simp add: count_append) done
+      apply(rule perm) apply(rule iffD2[OF perm_count_conv]) apply rule apply(simp) done
     also have "... = P (remdups (ws@ys@[y]@zs))"
       apply(rule a) by(auto simp: xs)
     also have "(remdups (ws@ys@[y]@zs)) = (remdups xs)"
