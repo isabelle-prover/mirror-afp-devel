@@ -10,16 +10,6 @@ Partial_Cost_Model
 RExp_Var
 begin
 
-lemma "(N::nat set) \<noteq> {} \<Longrightarrow> Inf N : N"
-unfolding Inf_nat_def using LeastI[of "%x. x : N"] by force
-
-lemma nn_contains_Inf:
-  fixes S :: "nat set"
-  assumes nn: "S \<noteq> {}"
-  shows "Inf S \<in> S"
-using assms Inf_nat_def LeastI by force
-
-
 subsection "Definition"
 
 fun OPT2 :: "'a list \<Rightarrow> 'a list \<Rightarrow> (nat * nat list) list" where
@@ -47,7 +37,7 @@ proof -
 
     have "T\<^sub>p_opt [y,x] \<sigma> \<in> {T\<^sub>p [y, x] \<sigma> as |as. length as = length \<sigma>}"
     unfolding T_opt_def 
-      apply(rule nn_contains_Inf)
+      apply(rule Inf_nat_def1)
       apply(auto) by (rule Ex_list_of_length)
 
     then obtain asyx where costyx: "T\<^sub>p [y,x] \<sigma> asyx = T\<^sub>p_opt [y,x] \<sigma>"
