@@ -317,11 +317,10 @@ struct
                                                         | _ => NONE));
       val entity = Markup.entity varN name
       val cons' = cons o markup_init
-      val _ = make_entity_markup
       (* PATCH: copied as such from Isabelle2020 *)
       fun entity_properties_of def serial pos =
-          if def then (Markup.defN, Value.print_int serial) :: properties_of pos
-          else (Markup.refN, Value.print_int serial) :: def_properties_of pos;
+          if def then (Markup.defN, Value.print_int serial) :: Position.properties_of pos
+          else (Markup.refN, Value.print_int serial) :: Position.def_properties_of pos;
 
     in
      (cons' var
@@ -511,7 +510,6 @@ struct
     val bits14 = Integer.pow 14 2
     val bits21 = Integer.pow 21 2
     val bits28 = Integer.pow 28 2
-    val ord = SML90.ord; (* copied from ML_init in Isabelle2020. *)
   in
   fun quad s = case s of
     [] => 0

@@ -81,15 +81,12 @@ fun print_codepoint c =
       else error "Not yet implemented");
 
 fun print_symbol sym =
-  let val ord = SML90.ord; (* copied from ML_init in Isabelle2020. *)
-  in
-     (case Symbol.decode sym of
-       Symbol.Char s => print_codepoint (ord s)
-     | Symbol.UTF8 s => UTF8.decode_permissive s |> map print_codepoint |> implode
-     | Symbol.Sym s => "\\092<" ^ s ^ ">"
-     | Symbol.Control s => "\\092<^" ^ s ^ ">"
-     | _ => translate_string (print_codepoint o ord) sym)
-  end;
+  (case Symbol.decode sym of
+    Symbol.Char s => print_codepoint (ord s)
+  | Symbol.UTF8 s => UTF8.decode_permissive s |> map print_codepoint |> implode
+  | Symbol.Sym s => "\\092<" ^ s ^ ">"
+  | Symbol.Control s => "\\092<^" ^ s ^ ">"
+  | _ => translate_string (print_codepoint o ord) sym);
 
 val print_string = quote o implode o map print_symbol o Symbol.explode;
 end
