@@ -893,4 +893,6 @@ ML\<open> ML_Antiquotation.inline_embedded;
 \<close>
 (* and from where do I get the result ? *)
 
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
+
 end
