@@ -37,7 +37,7 @@
 chapter \<open>A Resume on Isabelle/C: Commands, Control Attributes and Programming Infrastructure\<close>
 
 theory C_Appendices
-  imports "../examples/C1"
+  imports "../examples/C2"
           Isar_Ref.Base
 begin
 
@@ -508,7 +508,7 @@ subtree \<open>T2\<close>, it is useful to zoom on the different parsing evaluat
 as make precise when the evaluation of semantic back-ends are starting.
 
 \<^enum> Whereas annotations in Isabelle/C code have the potential of carrying arbitrary ML code (as
-in \<^theory>\<open>Isabelle_C.C1\<close>), the moment when they are effectively evaluated
+in \<^theory>\<open>Isabelle_C.C2\<close>), the moment when they are effectively evaluated
 will not be discussed here, because to closely follow the semantics of the language in embedding (so
 C), we suppose comments --- comprising annotations --- may not affect any parsed tokens living
 outside comments. So no matter when annotations are scheduled to be future evaluated in Isabelle/C,
@@ -627,7 +627,7 @@ one can either:
 \<close>
 
 text \<open> More generally, to better inspect the list of rule code really executed when a C code
-is parsed, it might be helpful to proceed as in \<^theory>\<open>Isabelle_C.C1\<close>, by activating
+is parsed, it might be helpful to proceed as in \<^theory>\<open>Isabelle_C.C2\<close>, by activating
 \<^theory_text>\<open>declare[[C_parser_trace]]\<close>. Then, the output window will display the
 sequence of Shift Reduce actions associated to the \<^theory_text>\<open>C\<close> command of
 interest.
