@@ -10037,6 +10037,18 @@ abstract =
   prerrequisite to our formalization of the independence of the
   Continuum Hypothesis.
 
+[Independence_CH]
+title = The Independence of the Continuum Hypothesis in Isabelle/ZF
+author = Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>, Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro>, and Matías Steinberg <mailto:matias.steinberg@mi.unc.edu.ar>
+topic = Logic/Set theory
+date = 2022-03-06
+notify = sterraf@famaf.unc.edu.ar, psterraf@unc.edu.ar, miguel.pagano@unc.edu.ar
+abstract =
+  We redeveloped our formalization of forcing in the set theory
+  framework of Isabelle/ZF. Under the assumption of the existence of a
+  countable transitive model of ZFC, we construct proper generic
+  extensions that satisfy the Continuum Hypothesis and its negation.
+
 [Recursion-Addition]
 title = Recursion Theorem in ZF
 author = Georgy Dunaev <mailto:georgedunaev@gmail.com>
@@ -12009,7 +12021,7 @@ author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
 topic = Computer science/Automata and formal languages, Computer science/Concurrency, Computer science/Programming languages/Lambda calculi
 date = 2022-02-28
 notify = stark@cs.stonybrook.edu
-abstract = 
+abstract =
   <p> A <em>residuated transition system</em> (RTS) is
   a transition system that is equipped with a certain partial binary
   operation, called <em>residuation</em>, on transitions.

@@ -9,7 +9,19 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>03 Mar 2022 00:00:00 +0000</pubDate>
+    <pubDate>06 Mar 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Independence of the Continuum Hypothesis in Isabelle/ZF</title>
+              <link>https://www.isa-afp.org/entries/Independence_CH.html</link>
+       <guid>https://www.isa-afp.org/entries/Independence_CH.html</guid>
+       <dc:creator> Emmanuel Gunther, Miguel Pagano, Pedro Sánchez Terraf, and Matías Steinberg       </dc:creator>
+       <pubDate>06 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+We redeveloped our formalization of forcing in the set theory
+framework of Isabelle/ZF. Under the assumption of the existence of a
+countable transitive model of ZFC, we construct proper generic
+extensions that satisfy the Continuum Hypothesis and its negation.</description>
+    </item>
     <item>
        <title>Transitive Models of Fragments of ZFC</title>
               <link>https://www.isa-afp.org/entries/Transitive_Models.html</link>
@@ -663,18 +675,6 @@ to support our mechanical derivation of Euler&#39;s exponential
 series as an ``infinite polynomial&#34;. Aside from helping us avoid
 circular reasoning, this is, as far as we are aware, the first time
 real exponents are mechanised in this way within a proof assistant.</description>
-    </item>
-    <item>
-       <title>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/PAL.html</link>
-       <guid>https://www.isa-afp.org/entries/PAL.html</guid>
-       <dc:creator> Christoph Benzmüller, Sebastian Reiche       </dc:creator>
-       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-We present a shallow embedding of public announcement logic (PAL) with
-relativized general knowledge in HOL. We then use PAL to obtain an
-elegant encoding of the wise men puzzle, which we solve automatically
-using sledgehammer.</description>
     </item>
   </channel>
 </rss>
