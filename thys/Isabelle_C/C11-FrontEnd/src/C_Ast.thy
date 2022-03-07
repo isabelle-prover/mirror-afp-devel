@@ -65,7 +65,7 @@ val fresh_ident0 =
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>../generated/c_ast.ML\<close>\<close> \<open>
-\<comment> \<open>\<^url>\<open>https://gitlri.lri.fr/ftuong/isabelle_c/blob/C/Citadelle/src/compiler_generic/meta_isabelle/Printer_init.thy\<close>\<close>
+\<comment> \<open>\<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/blob/C/Citadelle/src/compiler_generic/meta_isabelle/Printer_init.thy\<close>\<close>
 structure CodeType = struct
   type mlInt = string
   type 'a mlMonad = 'a option
@@ -147,7 +147,7 @@ text \<open> For the case of \<^file>\<open>../generated/c_ast.ML\<close>, it is
 mandatory to have a ``physical'' representation of the file in \<^dir>\<open>../generated\<close>:
 it could be generated ``on-the-fly'' with \<^theory_text>\<open>code_reflect\<close> and immediately
 loaded: Citadelle has an option to choose between the two
-tasks~\cite{DBLP:journals/afp/TuongW15}.\<^footnote>\<open>\<^url>\<open>https://gitlri.lri.fr/ftuong/citadelle-devel\<close>\<close>\<close>
+tasks~\cite{DBLP:journals/afp/TuongW15}.\<^footnote>\<open>\<^url>\<open>https://gitlab.lisn.upsaclay.fr/frederictuong/isabelle_contrib/-/tree/master/Citadelle/src/compiler\<close>\<close>\<close>
 
 text \<open> After loading the AST, it is possible in Citadelle to do various meta-programming
 renaming, such as the one depicted in the next command. Actually, its content is explicitly included
@@ -158,178 +158,7 @@ generation and renaming tasks in Citadelle without resorting to a manual copying
 ML \<comment> \<open>\<^file>\<open>../generated/c_ast.ML\<close>\<close> \<open>
 structure C_Ast =
 struct
-  val Position = C_Ast.position 
-  val NoPosition = C_Ast.noPosition 
-  val BuiltinPosition = C_Ast.builtinPosition 
-  val InternalPosition = C_Ast.internalPosition 
-  val Name = C_Ast.name 
-  val OnlyPos = C_Ast.onlyPos 
-  val NodeInfo = C_Ast.nodeInfo 
-  val AnonymousRef = C_Ast.anonymousRef 
-  val NamedRef = C_Ast.namedRef 
-  val CChar = C_Ast.cChar val CChars = C_Ast.cChars 
-  val DecRepr = C_Ast.decRepr val HexRepr = C_Ast.hexRepr 
-  val OctalRepr = C_Ast.octalRepr 
-  val FlagUnsigned = C_Ast.flagUnsigned 
-  val FlagLong = C_Ast.flagLong 
-  val FlagLongLong = C_Ast.flagLongLong 
-  val FlagImag = C_Ast.flagImag 
-  val CFloat = C_Ast.cFloat 
-  val Flags = C_Ast.flags 
-  val CInteger = C_Ast.cInteger 
-  val CAssignOp = C_Ast.cAssignOp 
-  val CMulAssOp = C_Ast.cMulAssOp 
-  val CDivAssOp = C_Ast.cDivAssOp 
-  val CRmdAssOp = C_Ast.cRmdAssOp 
-  val CAddAssOp = C_Ast.cAddAssOp 
-  val CSubAssOp = C_Ast.cSubAssOp 
-  val CShlAssOp = C_Ast.cShlAssOp 
-  val CShrAssOp = C_Ast.cShrAssOp 
-  val CAndAssOp = C_Ast.cAndAssOp 
-  val CXorAssOp = C_Ast.cXorAssOp 
-  val COrAssOp = C_Ast.cOrAssOp 
-  val CMulOp = C_Ast.cMulOp 
-  val CDivOp = C_Ast.cDivOp 
-  val CRmdOp = C_Ast.cRmdOp 
-  val CAddOp = C_Ast.cAddOp 
-  val CSubOp = C_Ast.cSubOp 
-  val CShlOp = C_Ast.cShlOp 
-  val CShrOp = C_Ast.cShrOp 
-  val CLeOp = C_Ast.cLeOp 
-  val CGrOp = C_Ast.cGrOp 
-  val CLeqOp = C_Ast.cLeqOp 
-  val CGeqOp = C_Ast.cGeqOp 
-  val CEqOp = C_Ast.cEqOp 
-  val CNeqOp = C_Ast.cNeqOp 
-  val CAndOp = C_Ast.cAndOp 
-  val CXorOp = C_Ast.cXorOp 
-  val COrOp = C_Ast.cOrOp 
-  val CLndOp = C_Ast.cLndOp 
-  val CLorOp = C_Ast.cLorOp 
-  val CPreIncOp = C_Ast.cPreIncOp 
-  val CPreDecOp = C_Ast.cPreDecOp 
-  val CPostIncOp = C_Ast.cPostIncOp 
-  val CPostDecOp = C_Ast.cPostDecOp 
-  val CAdrOp = C_Ast.cAdrOp 
-  val CIndOp = C_Ast.cIndOp 
-  val CPlusOp = C_Ast.cPlusOp 
-  val CMinOp = C_Ast.cMinOp 
-  val CCompOp = C_Ast.cCompOp 
-  val CNegOp = C_Ast.cNegOp 
-  val CAuto = C_Ast.cAuto 
-  val CRegister = C_Ast.cRegister 
-  val CStatic = C_Ast.cStatic 
-  val CExtern = C_Ast.cExtern 
-  val CTypedef = C_Ast.cTypedef 
-  val CThread = C_Ast.cThread 
-  val CInlineQual = C_Ast.cInlineQual 
-  val CNoreturnQual = C_Ast.cNoreturnQual 
-  val CStructTag = C_Ast.cStructTag 
-  val CUnionTag = C_Ast.cUnionTag 
-  val CIntConst = C_Ast.cIntConst 
-  val CCharConst = C_Ast.cCharConst 
-  val CFloatConst = C_Ast.cFloatConst 
-  val CStrConst = C_Ast.cStrConst 
-  val CStrLit = C_Ast.cStrLit 
-  val CFunDef = C_Ast.cFunDef 
-  val CDecl = C_Ast.cDecl 
-  val CStaticAssert = C_Ast.cStaticAssert 
-  val CDeclr = C_Ast.cDeclr 
-  val CPtrDeclr = C_Ast.cPtrDeclr 
-  val CArrDeclr = C_Ast.cArrDeclr 
-  val CFunDeclr = C_Ast.cFunDeclr 
-  val CNoArrSize = C_Ast.cNoArrSize 
-  val CArrSize = C_Ast.cArrSize 
-  val CLabel = C_Ast.cLabel 
-  val CCase = C_Ast.cCase 
-  val CCases = C_Ast.cCases 
-  val CDefault = C_Ast.cDefault 
-  val CExpr = C_Ast.cExpr 
-  val CCompound = C_Ast.cCompound 
-  val CIf = C_Ast.cIf 
-  val CSwitch = C_Ast.cSwitch 
-  val CWhile = C_Ast.cWhile 
-  val CFor = C_Ast.cFor 
-  val CGoto = C_Ast.cGoto 
-  val CGotoPtr = C_Ast.cGotoPtr 
-  val CCont = C_Ast.cCont 
-  val CBreak = C_Ast.cBreak 
-  val CReturn = C_Ast.cReturn 
-  val CAsm = C_Ast.cAsm 
-  val CAsmStmt = C_Ast.cAsmStmt 
-  val CAsmOperand = C_Ast.cAsmOperand 
-  val CBlockStmt = C_Ast.cBlockStmt 
-  val CBlockDecl = C_Ast.cBlockDecl 
-  val CNestedFunDef = C_Ast.cNestedFunDef 
-  val CStorageSpec = C_Ast.cStorageSpec 
-  val CTypeSpec = C_Ast.cTypeSpec 
-  val CTypeQual = C_Ast.cTypeQual 
-  val CFunSpec = C_Ast.cFunSpec 
-  val CAlignSpec = C_Ast.cAlignSpec 
-  val CVoidType = C_Ast.cVoidType 
-  val CCharType = C_Ast.cCharType 
-  val CShortType = C_Ast.cShortType 
-  val CIntType = C_Ast.cIntType 
-  val CLongType = C_Ast.cLongType 
-  val CFloatType = C_Ast.cFloatType 
-  val CDoubleType = C_Ast.cDoubleType 
-  val CSignedType = C_Ast.cSignedType 
-  val CUnsigType = C_Ast.cUnsigType 
-  val CBoolType = C_Ast.cBoolType 
-  val CComplexType = C_Ast.cComplexType 
-  val CInt128Type = C_Ast.cInt128Type 
-  val CSUType = C_Ast.cSUType 
-  val CEnumType = C_Ast.cEnumType 
-  val CTypeDef = C_Ast.cTypeDef 
-  val CTypeOfExpr = C_Ast.cTypeOfExpr 
-  val CTypeOfType = C_Ast.cTypeOfType 
-  val CAtomicType = C_Ast.cAtomicType 
-  val CConstQual = C_Ast.cConstQual 
-  val CVolatQual = C_Ast.cVolatQual 
-  val CRestrQual = C_Ast.cRestrQual 
-  val CAtomicQual = C_Ast.cAtomicQual 
-  val CAttrQual = C_Ast.cAttrQual 
-  val CNullableQual = C_Ast.cNullableQual 
-  val CNonnullQual = C_Ast.cNonnullQual 
-  val CAlignAsType = C_Ast.cAlignAsType 
-  val CAlignAsExpr = C_Ast.cAlignAsExpr 
-  val CStruct = C_Ast.cStruct 
-  val CEnum = C_Ast.cEnum 
-  val CInitExpr = C_Ast.cInitExpr 
-  val CInitList = C_Ast.cInitList 
-  val CArrDesig = C_Ast.cArrDesig 
-  val CMemberDesig = C_Ast.cMemberDesig 
-  val CRangeDesig = C_Ast.cRangeDesig 
-  val CAttr = C_Ast.cAttr 
-  val CComma = C_Ast.cComma 
-  val CAssign = C_Ast.cAssign 
-  val CCond = C_Ast.cCond 
-  val CBinary = C_Ast.cBinary 
-  val CCast = C_Ast.cCast 
-  val CUnary = C_Ast.cUnary 
-  val CSizeofExpr = C_Ast.cSizeofExpr 
-  val CSizeofType = C_Ast.cSizeofType 
-  val CAlignofExpr = C_Ast.cAlignofExpr 
-  val CAlignofType = C_Ast.cAlignofType 
-  val CComplexReal = C_Ast.cComplexReal 
-  val CComplexImag = C_Ast.cComplexImag 
-  val CIndex = C_Ast.cIndex 
-  val CCall = C_Ast.cCall 
-  val CMember = C_Ast.cMember 
-  val CVar = C_Ast.cVar 
-  val CConst = C_Ast.cConst 
-  val CCompoundLit = C_Ast.cCompoundLit 
-  val CGenericSelection = C_Ast.cGenericSelection 
-  val CStatExpr = C_Ast.cStatExpr 
-  val CLabAddrExpr = C_Ast.cLabAddrExpr 
-  val CBuiltinExpr = C_Ast.cBuiltinExpr 
-  val CBuiltinVaArg = C_Ast.cBuiltinVaArg 
-  val CBuiltinOffsetOf = C_Ast.cBuiltinOffsetOf 
-  val CBuiltinTypesCompatible = C_Ast.cBuiltinTypesCompatible 
-  val CDeclExt = C_Ast.cDeclExt 
-  val CFDefExt = C_Ast.cFDefExt 
-  val CAsmExt = C_Ast.cAsmExt 
-  val CTranslUnit = C_Ast.cTranslUnit
+  val Position = C_Ast.position val NoPosition = C_Ast.noPosition val BuiltinPosition = C_Ast.builtinPosition val InternalPosition = C_Ast.internalPosition val Name = C_Ast.name val OnlyPos = C_Ast.onlyPos val NodeInfo = C_Ast.nodeInfo val AnonymousRef = C_Ast.anonymousRef val NamedRef = C_Ast.namedRef val CChar = C_Ast.cChar val CChars = C_Ast.cChars val DecRepr = C_Ast.decRepr val HexRepr = C_Ast.hexRepr val OctalRepr = C_Ast.octalRepr val FlagUnsigned = C_Ast.flagUnsigned val FlagLong = C_Ast.flagLong val FlagLongLong = C_Ast.flagLongLong val FlagImag = C_Ast.flagImag val CFloat = C_Ast.cFloat val Flags = C_Ast.flags val CInteger = C_Ast.cInteger val CAssignOp = C_Ast.cAssignOp val CMulAssOp = C_Ast.cMulAssOp val CDivAssOp = C_Ast.cDivAssOp val CRmdAssOp = C_Ast.cRmdAssOp val CAddAssOp = C_Ast.cAddAssOp val CSubAssOp = C_Ast.cSubAssOp val CShlAssOp = C_Ast.cShlAssOp val CShrAssOp = C_Ast.cShrAssOp val CAndAssOp = C_Ast.cAndAssOp val CXorAssOp = C_Ast.cXorAssOp val COrAssOp = C_Ast.cOrAssOp val CMulOp = C_Ast.cMulOp val CDivOp = C_Ast.cDivOp val CRmdOp = C_Ast.cRmdOp val CAddOp = C_Ast.cAddOp val CSubOp = C_Ast.cSubOp val CShlOp = C_Ast.cShlOp val CShrOp = C_Ast.cShrOp val CLeOp = C_Ast.cLeOp val CGrOp = C_Ast.cGrOp val CLeqOp = C_Ast.cLeqOp val CGeqOp = C_Ast.cGeqOp val CEqOp = C_Ast.cEqOp val CNeqOp = C_Ast.cNeqOp val CAndOp = C_Ast.cAndOp val CXorOp = C_Ast.cXorOp val COrOp = C_Ast.cOrOp val CLndOp = C_Ast.cLndOp val CLorOp = C_Ast.cLorOp val CPreIncOp = C_Ast.cPreIncOp val CPreDecOp = C_Ast.cPreDecOp val CPostIncOp = C_Ast.cPostIncOp val CPostDecOp = C_Ast.cPostDecOp val CAdrOp = C_Ast.cAdrOp val CIndOp = C_Ast.cIndOp val CPlusOp = C_Ast.cPlusOp val CMinOp = C_Ast.cMinOp val CCompOp = C_Ast.cCompOp val CNegOp = C_Ast.cNegOp val CAuto = C_Ast.cAuto val CRegister = C_Ast.cRegister val CStatic = C_Ast.cStatic val CExtern = C_Ast.cExtern val CTypedef = C_Ast.cTypedef val CThread = C_Ast.cThread val CInlineQual = C_Ast.cInlineQual val CNoreturnQual = C_Ast.cNoreturnQual val CStructTag = C_Ast.cStructTag val CUnionTag = C_Ast.cUnionTag val CIntConst = C_Ast.cIntConst val CCharConst = C_Ast.cCharConst val CFloatConst = C_Ast.cFloatConst val CStrConst = C_Ast.cStrConst val CStrLit = C_Ast.cStrLit val CFunDef = C_Ast.cFunDef val CDecl = C_Ast.cDecl val CStaticAssert = C_Ast.cStaticAssert val CDeclr = C_Ast.cDeclr val CPtrDeclr = C_Ast.cPtrDeclr val CArrDeclr = C_Ast.cArrDeclr val CFunDeclr = C_Ast.cFunDeclr val CNoArrSize = C_Ast.cNoArrSize val CArrSize = C_Ast.cArrSize val CLabel = C_Ast.cLabel val CCase = C_Ast.cCase val CCases = C_Ast.cCases val CDefault = C_Ast.cDefault val CExpr = C_Ast.cExpr val CCompound = C_Ast.cCompound val CIf = C_Ast.cIf val CSwitch = C_Ast.cSwitch val CWhile = C_Ast.cWhile val CFor = C_Ast.cFor val CGoto = C_Ast.cGoto val CGotoPtr = C_Ast.cGotoPtr val CCont = C_Ast.cCont val CBreak = C_Ast.cBreak val CReturn = C_Ast.cReturn val CAsm = C_Ast.cAsm val CAsmStmt = C_Ast.cAsmStmt val CAsmOperand = C_Ast.cAsmOperand val CBlockStmt = C_Ast.cBlockStmt val CBlockDecl = C_Ast.cBlockDecl val CNestedFunDef = C_Ast.cNestedFunDef val CStorageSpec = C_Ast.cStorageSpec val CTypeSpec = C_Ast.cTypeSpec val CTypeQual = C_Ast.cTypeQual val CFunSpec = C_Ast.cFunSpec val CAlignSpec = C_Ast.cAlignSpec val CVoidType = C_Ast.cVoidType val CCharType = C_Ast.cCharType val CShortType = C_Ast.cShortType val CIntType = C_Ast.cIntType val CLongType = C_Ast.cLongType val CFloatType = C_Ast.cFloatType val CDoubleType = C_Ast.cDoubleType val CSignedType = C_Ast.cSignedType val CUnsigType = C_Ast.cUnsigType val CBoolType = C_Ast.cBoolType val CComplexType = C_Ast.cComplexType val CInt128Type = C_Ast.cInt128Type val CSUType = C_Ast.cSUType val CEnumType = C_Ast.cEnumType val CTypeDef = C_Ast.cTypeDef val CTypeOfExpr = C_Ast.cTypeOfExpr val CTypeOfType = C_Ast.cTypeOfType val CAtomicType = C_Ast.cAtomicType val CConstQual = C_Ast.cConstQual val CVolatQual = C_Ast.cVolatQual val CRestrQual = C_Ast.cRestrQual val CAtomicQual = C_Ast.cAtomicQual val CAttrQual = C_Ast.cAttrQual val CNullableQual = C_Ast.cNullableQual val CNonnullQual = C_Ast.cNonnullQual val CAlignAsType = C_Ast.cAlignAsType val CAlignAsExpr = C_Ast.cAlignAsExpr val CStruct = C_Ast.cStruct val CEnum = C_Ast.cEnum val CInitExpr = C_Ast.cInitExpr val CInitList = C_Ast.cInitList val CArrDesig = C_Ast.cArrDesig val CMemberDesig = C_Ast.cMemberDesig val CRangeDesig = C_Ast.cRangeDesig val CAttr = C_Ast.cAttr val CComma = C_Ast.cComma val CAssign = C_Ast.cAssign val CCond = C_Ast.cCond val CBinary = C_Ast.cBinary val CCast = C_Ast.cCast val CUnary = C_Ast.cUnary val CSizeofExpr = C_Ast.cSizeofExpr val CSizeofType = C_Ast.cSizeofType val CAlignofExpr = C_Ast.cAlignofExpr val CAlignofType = C_Ast.cAlignofType val CComplexReal = C_Ast.cComplexReal val CComplexImag = C_Ast.cComplexImag val CIndex = C_Ast.cIndex val CCall = C_Ast.cCall val CMember = C_Ast.cMember val CVar = C_Ast.cVar val CConst = C_Ast.cConst val CCompoundLit = C_Ast.cCompoundLit val CGenericSelection = C_Ast.cGenericSelection val CStatExpr = C_Ast.cStatExpr val CLabAddrExpr = C_Ast.cLabAddrExpr val CBuiltinExpr = C_Ast.cBuiltinExpr val CBuiltinVaArg = C_Ast.cBuiltinVaArg val CBuiltinOffsetOf = C_Ast.cBuiltinOffsetOf val CBuiltinTypesCompatible = C_Ast.cBuiltinTypesCompatible val CDeclExt = C_Ast.cDeclExt val CFDefExt = C_Ast.cFDefExt val CAsmExt = C_Ast.cAsmExt val CTranslUnit = C_Ast.cTranslUnit
   open C_Ast
 end
 \<close>

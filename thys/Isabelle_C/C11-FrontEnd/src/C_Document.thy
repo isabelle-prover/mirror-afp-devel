@@ -40,9 +40,14 @@ theory C_Document
   imports C_Command
 begin
 
-ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/Thy/document_output.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
-(*  Text Antiquotations and Theory document output. *)
+ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/document_output.ML\<close>\<close>
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
+(*  Title:      Pure/Thy/document_output.ML
+    Author:     Makarius
+
+Theory document output.
+*)*)
 \<open>
 structure C_Document_Output =
 struct
@@ -157,12 +162,13 @@ end;
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/document_antiquotations.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/Thy/document_antiquotations.ML
     Author:     Makarius
 
 Miscellaneous document antiquotations.
-*)
+*)*)
 \<open>
 structure C_Document_Antiquotations =
 struct

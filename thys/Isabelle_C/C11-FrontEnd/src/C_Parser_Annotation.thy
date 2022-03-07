@@ -41,14 +41,15 @@ theory C_Parser_Annotation
 begin
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/outer_syntax.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/Isar/outer_syntax.ML
     Author:     Markus Wenzel, TU Muenchen
 
 Isabelle/Isar outer syntax.
-*)
+*)*)
 \<open>
-structure C_Annotation  =
+structure C_Annotation =
 struct
 
 (** outer syntax **)
@@ -229,12 +230,13 @@ end
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/PIDE/resources.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/PIDE/resources.ML
     Author:     Makarius
 
 Resources for theories and auxiliary files.
-*)
+*)*)
 \<open>
 structure C_Resources =
 struct

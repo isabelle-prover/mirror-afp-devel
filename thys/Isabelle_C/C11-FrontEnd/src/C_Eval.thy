@@ -93,12 +93,13 @@ end
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/ML/ml_context.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/ML/ml_context.ML
     Author:     Makarius
 
 ML context and antiquotations.
-*)
+*)*)
 \<open>
 structure C_Context0 =
 struct
@@ -108,18 +109,20 @@ type env_direct = bool (* internal result for conditional directives: branch ski
                 * (C_Env.env_directives * C_Env.env_tree)
 
 structure Directives = Generic_Data
-  (type T = (Position.T list
-             * serial
-             * ( (* evaluated during lexing phase *)
-                 (C_Lex.token_kind_directive
-                  -> env_direct
-                  -> C_Env.antiq_language list (* nested annotations from the input *)
-                     * env_direct (*NOTE: remove the possibility of returning a too modified env?*))
-               * (* evaluated during parsing phase *)
-                 (C_Lex.token_kind_directive -> C_Env.env_propagation_directive)))
-            Symtab.table
-   val empty = Symtab.empty
-   val merge = Symtab.join (K #2));
+(
+  type T = (Position.T list
+            * serial
+            * ( (* evaluated during lexing phase *)
+                (C_Lex.token_kind_directive
+                 -> env_direct
+                 -> C_Env.antiq_language list (* nested annotations from the input *)
+                    * env_direct (*NOTE: remove the possibility of returning a too modified env?*))
+              * (* evaluated during parsing phase *)
+                (C_Lex.token_kind_directive -> C_Env.env_propagation_directive)))
+           Symtab.table
+  val empty = Symtab.empty
+  val merge = Symtab.join (K #2)
+);
 end
 \<close>
 
@@ -460,12 +463,13 @@ subsection \<open>Full Evaluation Engine (Core Language with Annotations)\<close
                                                                          \<^theory>\<open>Isabelle_C.C_Parser_Annotation\<close>\<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/ML/ml_context.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/ML/ml_context.ML
     Author:     Makarius
 
 ML context and antiquotations.
-*)
+*)*)
 \<open>
 structure C_Context =
 struct

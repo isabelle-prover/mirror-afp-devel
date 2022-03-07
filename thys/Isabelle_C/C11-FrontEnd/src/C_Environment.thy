@@ -204,9 +204,10 @@ type markup_ident = { global : markup_global
                     , params : C_Ast.CDerivedDeclr list
                     , ret : C_Ast.CDeclSpec list parse_status }
 
-type var_table = { tyidents : markup_global markup_store Symtab.table    (*ident name*)
-                                                            Symtab.table (*internal namespace*)
-                 , idents : markup_ident markup_store Symtab.table       (*ident name*) }
+type var_table = { tyidents : markup_global markup_store Symtab.table (*ident name*)
+                                                                      Symtab.table (*internal
+                                                                                     namespace*)
+                 , idents : markup_ident markup_store Symtab.table (*ident name*) }
 
 type 'antiq_language_list stream = ('antiq_language_list, C_Lex.token) C_Scan.either list
 
@@ -267,7 +268,8 @@ module. \<close>
 
 (**)
 
-type ('LrTable_state, 'a, 'Position_T) stack_elem0 = 'LrTable_state * ('a * 'Position_T * 'Position_T)
+type ('LrTable_state, 'a, 'Position_T) stack_elem0 = 'LrTable_state
+                                                     * ('a * 'Position_T * 'Position_T)
 type ('LrTable_state, 'a, 'Position_T) stack0 = ('LrTable_state, 'a, 'Position_T) stack_elem0 list
 
 type ('LrTable_state, 'svalue0, 'pos) rule_reduce0 =
@@ -299,14 +301,14 @@ type ('LrTable_state, 'svalue0, 'pos) rule_output0 =
 
 type rule_output = C_Ast.class_Pos rule_output0'
 
-type stream_hook = (Symbol_Pos.T list * Symbol_Pos.T list * eval_node) list list
-
 (**)
 
 datatype stream_lang_state = Stream_ident of Position.range * string
                            | Stream_string of (Position.range * string) list
                            | Stream_atomic
                            | Stream_regular
+
+type stream_hook = (Symbol_Pos.T list * Symbol_Pos.T list * eval_node) list list
 
 type 'a T =  {env_lang: env_lang,
                env_tree: env_tree,
@@ -403,7 +405,8 @@ fun map_stream_ignored f {var_table, scopes, namesupply, stream_ignored, env_dir
 
 fun map_env_directives f {var_table, scopes, namesupply, stream_ignored, env_directives} =
                                   {var_table = var_table, scopes = scopes, namesupply = namesupply, 
-                                   stream_ignored = stream_ignored, env_directives = f env_directives}
+                                   stream_ignored = stream_ignored, env_directives = f
+                                                                                     env_directives}
 
 (**)
 

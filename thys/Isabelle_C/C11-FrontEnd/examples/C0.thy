@@ -37,7 +37,7 @@
 chapter \<open>Appendix II: Examples for C11 Lexis and Syntax; and Isabelle/C User-Interaction\<close>
 
 theory C0
-  imports "../C_Main"
+  imports "../main/C_Main"
 begin
 
 declare[[C_lexer_trace]]

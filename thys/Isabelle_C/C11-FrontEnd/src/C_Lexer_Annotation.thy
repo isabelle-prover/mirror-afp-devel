@@ -41,12 +41,13 @@ theory C_Lexer_Annotation
 begin
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/keyword.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/Isar/keyword.ML
     Author:     Makarius
 
 Isar keyword classification.
-*)
+*)*)
 \<open>
 structure C_Keyword =
 struct
@@ -102,7 +103,6 @@ fun make_keywords (minor, major, commands) =
 
 fun map_keywords f (Keywords {minor, major, commands}) =
   make_keywords (f (minor, major, commands));
-
 
 
 (* build keywords *)
@@ -217,12 +217,13 @@ text \<open> Notes:
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/token.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/Isar/token.ML
     Author:     Markus Wenzel, TU Muenchen
 
 Outer token syntax for Isabelle/Isar.
-*)
+*)*)
 \<open>
 structure C_Token =
 struct
@@ -793,8 +794,9 @@ fun syntax' f =
           explode
             ((case kind of
                 Token.Keyword => Keyword.add_keywords [((x, Position.none), Keyword.no_spec)]
-              | Token.Command => Keyword.add_keywords [( (x, Position.none), 
-                                                         Keyword.command_spec(Keyword.thy_decl, []))]
+              | Token.Command => Keyword.add_keywords [( (x, Position.none)
+                                                       , Keyword.command_spec
+                                                           (Keyword.thy_decl, []))]
               | _ => I)
                Keyword.empty_keywords)
             pos1
@@ -819,16 +821,15 @@ type 'a c_parser = 'a C_Token.parser;
 type 'a c_context_parser = 'a C_Token.context_parser;
 \<close>
 
+(* parsers for C syntax. A partial copy is unfortunately necessary due to signature restrictions. *)
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/parse.ML\<close>\<close>
 (*  Author:     Frédéric Tuong, Université Paris-Saclay
-    parsers for C syntax. A partial copy is unfortunately necessary due to signature restrictions.
- *)
-(*  based on:
-    Title:      Pure/Isar/parse.ML
+    Analogous to:
+(*  Title:      Pure/Isar/parse.ML
     Author:     Markus Wenzel, TU Muenchen
 
 Generic parsers for Isabelle/Isar outer syntax.
-*)
+*)*)
 \<open>
 signature C_PARSE =
 sig
@@ -1362,12 +1363,13 @@ end;
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/thy_header.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/Thy/thy_header.ML
     Author:     Makarius
 
 Static theory header information.
-*)
+*)*)
 \<open>
 structure C_Thy_Header =
 struct
@@ -1391,6 +1393,5 @@ val get_keywords' = get_keywords o Proof_Context.theory_of;
 
 end
 \<close>
-
 
 end

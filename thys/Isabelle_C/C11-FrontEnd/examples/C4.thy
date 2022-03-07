@@ -37,7 +37,7 @@
 chapter \<open>Annex  V: Examples for A Simple C Program with Directives and Annotations\<close>
 
 theory C4
-  imports "../C_Main"
+  imports "../main/C_Main"
 begin
 
 section \<open>A Simplistic Setup: Parse and Store\<close>

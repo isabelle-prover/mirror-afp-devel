@@ -37,7 +37,7 @@
 chapter \<open>Appendix III: Examples for the SML Interfaces to Generic and Specific C11 ASTs\<close>
 
 theory C1
-  imports "../C_Main"
+  imports "../main/C_Main"
 begin
 
 section\<open>Access to Main C11 AST Categories via the Standard Interface \<close>

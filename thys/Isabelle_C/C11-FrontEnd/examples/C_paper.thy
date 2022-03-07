@@ -37,7 +37,7 @@
 chapter \<open>Examples from the F-IDE Paper\<close>
 
 theory C_paper
-  imports "../C_Main"
+  imports "../main/C_Main"
 begin
 
 text \<open> This theory contains the examples presented in F-IDE 2019 paper~\cite{Tuong-IsabelleC:2019}. \<close>
@@ -142,7 +142,7 @@ int a (int b) { return &a + b + c; }
 
 section \<open>Proofs inside C-Annotations\<close>
 
-\<comment> \<open>See also: \<^url>\<open>https://gitlri.lri.fr/ftuong/isabelle_c/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/IsPrime_TEC.thy\<close>\<close>
+\<comment> \<open>See also: \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/IsPrime_linear_CCT.thy\<close>\<close>
 
 C \<open>
 #define SQRT_UINT_MAX 65536

@@ -67,12 +67,13 @@ end
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/General/symbol.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/General/symbol.ML
     Author:     Makarius
 
 Generalized characters with infinitely many named symbols.
-*)
+*)*)
 \<open>
 structure C_Symbol =
 struct
@@ -109,12 +110,13 @@ end
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/General/symbol_pos.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/General/symbol_pos.ML
     Author:     Makarius
 
 Symbols with explicit position information.
-*)
+*)*)
 \<open>
 structure C_Basic_Symbol_Pos =   (*not open by default*)
 struct
@@ -265,12 +267,13 @@ end
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/General/antiquote.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/General/antiquote.ML
     Author:     Makarius
 
 Antiquotations within plain text.
-*)
+*)*)
 \<open>
 structure C_Antiquote =
 struct
@@ -397,12 +400,13 @@ end;
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/ML/ml_options.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/ML/ml_options.ML
     Author:     Makarius
 
 ML configuration options.
-*)
+*)*)
 \<open>
 structure C_Options =
 struct
@@ -418,8 +422,14 @@ val starting_rule = Attrib.setup_config_string @{binding C\<^sub>r\<^sub>u\<^sub
 end
 \<close>
 
-ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/ML/ml_lex.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+ML \<comment> \<open>\<^file>\<open>~~/src/Pure/ML/ml_lex.ML\<close>\<close>
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
+(*  Title:      Pure/ML/ml_lex.ML
+    Author:     Makarius
+
+Lexical syntax for Isabelle/ML and Standard ML.
+*)*)
 \<open>
 structure C_Lex =
 struct
