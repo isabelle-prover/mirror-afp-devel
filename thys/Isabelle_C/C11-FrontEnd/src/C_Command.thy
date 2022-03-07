@@ -528,7 +528,7 @@ fun directive_update_define pos f_toks f_antiq =
       (fn C_Lex.Define (_, C_Lex.Group1 ([], [tok3]), NONE, C_Lex.Group1 ([], toks)) =>
           let val map_ctxt = 
               case (tok3, toks) of
-                (C_Lex.Token ((pos, _), (C_Lex.Ident, ident)),
+                (C_Lex.Token ((pos, _), (C_Lex.Ident _, ident)),
                  [C_Lex.Token (_, (C_Lex.Integer (_, C_Lex.Repr_decimal, []), integer))]) =>
                   C_Env.map_context
                     (Context.map_theory

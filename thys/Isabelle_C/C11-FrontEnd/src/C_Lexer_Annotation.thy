@@ -685,7 +685,7 @@ fun scan_token keywords = !!! "bad input"
       (Lexicon.scan_longid >> pair Token.Long_Ident ||
         Scan.max
           token_leq
-          (C_Lex.scan_ident >> pair Token.Ident)
+          (C_Lex.scan_ident' >> pair Token.Ident)
           (Lexicon.scan_id >> pair Token.Ident) ||
         Lexicon.scan_var >> pair Token.Var ||
         Lexicon.scan_tid >> pair Token.Type_Ident ||

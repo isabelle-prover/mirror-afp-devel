@@ -298,10 +298,10 @@ fun makeLexer ((stack, stack_ml, stack_pos, stack_tree), arg) =
           (case tok of
              C_Lex.Char (b, [c]) =>
               C_Grammar.Tokens.cchar
-                (CChar (From_char_hd (case c of Left c => c | _ => chr 0)) (encoding b), pos1, pos2)
+                (CChar (From_char_hd (case c of Left (c, _) => c | _ => chr 0)) (encoding b), pos1, pos2)
            | C_Lex.String (b, s) =>
               C_Grammar.Tokens.cstr
-                (CString0 ( From_string ( implode (map (fn Left s => s | Right _ => chr 0) s))
+                (CString0 ( From_string ( implode (map (fn Left (s, _) => s | Right _ => chr 0) s))
                                         , encoding b)
                           , pos1
                           , pos2)
@@ -330,7 +330,7 @@ fun makeLexer ((stack, stack_ml, stack_pos, stack_tree), arg) =
                , pos2)
            | C_Lex.Float s =>
               C_Grammar.Tokens.cfloat (CFloat (From_string (implode (map #1 s))), pos1, pos2)
-           | C_Lex.Ident => 
+           | C_Lex.Ident _ => 
               let val (name, arg) = C_Grammar_Rule_Lib.getNewName arg
                   val ident0 = C_Grammar_Rule_Lib.mkIdent
                                  (C_Grammar_Rule_Lib.posOf' false (pos1, pos2))
@@ -700,7 +700,7 @@ fun eval env start err accept (ants, ants_err) {context, reports_text, error_lin
                                  (C_Lex.token_list_of dir))
                       #> pair (Right (Left tok))
                   | C_Lex.Token (pos, (C_Lex.Keyword, cts)) => subst_directive tok pos cts
-                  | C_Lex.Token (pos, (C_Lex.Ident, cts)) => subst_directive tok pos cts
+                  | C_Lex.Token (pos, (C_Lex.Ident _, cts)) => subst_directive tok pos cts
                   | _ => pair (Right (Left tok))
                 end
                 ants

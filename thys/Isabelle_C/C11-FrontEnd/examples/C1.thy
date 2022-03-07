@@ -274,7 +274,7 @@ val _ =
                            end)
                          (these (Symtab.lookup (Directive_include.get (#context env_tree))
                                                (String.concat
-                                                 (maps (fn C_Scan.Left s => [s] | _ => []) file))))
+                                                 (maps (fn C_Scan.Left (s, _) => [s] | _ => []) file))))
                          (env_lang, env_tree)
                in
                  case tok of
