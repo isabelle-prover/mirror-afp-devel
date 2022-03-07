@@ -1,0 +1,21 @@
+chapter AFP
+
+session "Independence_CH" (AFP) =  "Transitive_Models" +
+  description "
+    The Independence of the Continuum Hypothesis in Isabelle/ZF
+
+    We redeveloped our formalization of forcing in the set theory framework of
+    Isabelle/ZF. Under the assumption of the existence of a countable
+    transitive model of ZFC, we construct proper generic extensions
+    that satisfy the Continuum Hypothesis and its negation.
+  "
+  options [timeout=300]
+  sessions
+    "Transitive_Models"
+  theories
+    "Definitions_Main"
+    "Demonstrations"
+  document_files
+    "root.tex"
+    "root.bib"
+    "root.bst"
