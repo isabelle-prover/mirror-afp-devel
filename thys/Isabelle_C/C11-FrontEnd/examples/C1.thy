@@ -147,9 +147,11 @@ text\<open>The following setup just stores the result of the parsed values in th
 
 ML\<open>
 structure Data_Out = Generic_Data
-  (type T = (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list
-   val empty = []
-   val merge = K empty)
+(
+  type T = (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list
+  val empty = []
+  val merge = K empty
+)
 
 fun get_CTranslUnit thy =
   let val context = Context.Theory thy
@@ -233,9 +235,11 @@ its definition in its environment. \<close>
 
 ML \<open>
 structure Directive_include = Generic_Data
-  (type T = (Input.source * C_Env.markup_ident) list Symtab.table
-   val empty = Symtab.empty
-   val merge = K empty)
+(
+  type T = (Input.source * C_Env.markup_ident) list Symtab.table
+  val empty = Symtab.empty
+  val merge = K empty
+)
 \<close>
 
 ML \<comment> \<open>\<^theory>\<open>Pure\<close>\<close> \<open>
@@ -635,8 +639,6 @@ void display(int a[],const int size)
 
 
 section \<open>C Code: Floats Exist\<close>
-
-declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
 
 C\<open>
 int a;

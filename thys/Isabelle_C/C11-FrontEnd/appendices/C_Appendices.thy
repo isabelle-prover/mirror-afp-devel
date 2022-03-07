@@ -322,19 +322,19 @@ text \<open>
 section \<open>Quick Start (for People More Familiar with C than Isabelle)\<close>
 
 text \<open>
-\<^item> Assuming we are working with Isabelle 2019
-\<^url>\<open>http://isabelle.in.tum.de/dist/Isabelle2019_app.tar.gz\<close>, the shortest way to
+\<^item> Assuming we are working with Isabelle 2021
+\<^url>\<open>https://isabelle.in.tum.de/website-Isabelle2021/dist/Isabelle2021_linux.tar.gz\<close>, the shortest way to
 start programming in C is to open a new theory file with the shell-command:
 
 \<^verbatim>\<open>$ISABELLE_HOME/bin/isabelle jedit -d $AFP_HOME/thys Scratch.thy\<close>
 
 where \<^verbatim>\<open>$ISABELLE_HOME\<close> is the path of the above extracted Isabelle source,
 and \<^verbatim>\<open>$AFP_HOME\<close> is the downloaded content of
-\<^url>\<open>https://bitbucket.org/isa-afp/afp-2019\<close>.\<^footnote>\<open>This folder
+\<^url>\<open>https://foss.heptapod.net/isa-afp/afp-2021\<close>.\<^footnote>\<open>This folder
 particularly contains the Isabelle/C project, located in
-\<^url>\<open>https://bitbucket.org/isa-afp/afp-2019/src/default/thys/Isabelle_C\<close>. To inspect
+\<^url>\<open>https://foss.heptapod.net/isa-afp/afp-2021/-/tree/branch/default/thys/Isabelle_C\<close>. To inspect
 the latest developper version, one can also replace \<^verbatim>\<open>$AFP_HOME/thys\<close> by the
-content downloaded from \<^url>\<open>https://gitlri.lri.fr/ftuong/isabelle_c\<close>.\<close>
+content downloaded from \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C\<close>.\<close>
 \<^item> The next step is to copy this minimal content inside the newly opened window:
 \<^verbatim>\<open>theory Scratch imports Isabelle_C.C_Main begin C \<open>
 // C code
@@ -548,7 +548,7 @@ text \<open> Generally, semantic back-ends can be written in full ML starting fr
 \<^ML_type>\<open>C_Ast.CTranslUnit\<close>, but to additionally support formalizing tasks requiring
 to start from an AST defined in Isabelle/HOL, we provide an equivalent AST in HOL in the project,
 such as the one obtained after loading
-\<^url>\<open>https://gitlri.lri.fr/ftuong/citadelle-devel/blob/master/doc/Meta_C_generated.thy\<close>.
+\<^url>\<open>https://gitlab.lisn.upsaclay.fr/frederictuong/isabelle_contrib/-/blob/master/Citadelle/doc/Meta_C_generated.thy\<close>.
 (In fact, the ML AST is just generated from the HOL one.) \<close>
 
 
@@ -691,7 +691,7 @@ val S' = @{term "a + b * c - a / b"};
 text\<open>This snippet is drawn from the C11-Example shown in Appendix III.\<close>
 
 section \<open>Known Limitations, Troubleshooting\<close>
-subsection \<open>The Document Model of the Isabelle/PIDE\<close>
+subsection \<open>The Document Model of the Isabelle/PIDE (applying since at least Isabelle 2019)\<close>
 subsubsection \<open>Introduction\<close>
 
 text \<open> Embedding C directives in C code is an act of common practice in numerous applications,
@@ -857,10 +857,10 @@ make the error disappear at the position the error is indicated can be detailed 
   contains \<^C>\<open>#define i int\<close>, as the former directive has been left for semantic
   back-end treatment. One way of solving this would be to modify the C code in input for it to be
   already preprocessed (without directives, for example the C example of
-  \<^url>\<open>https://gitlri.lri.fr/ftuong/isabelle_c/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/TestSEL4.thy\<close> is already provided as
+  \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/TestSEL4.thy\<close> is already provided as
   preprocessed). Another way would be adding a specific new semantic back-end implementing the
   automation of the preprocessing task (as done in
-  \<^url>\<open>https://gitlri.lri.fr/ftuong/isabelle_c/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/IsPrime_TEC.thy\<close>, where the
+  \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/IsPrime_linear_CCT.thy\<close>, where the
   back-end explicitly makes a call to \<open>cpp\<close> at run-time).
 
   \<^item> Ultimately, modifying the grammar with new rules cancelling the exception would only work
@@ -871,7 +871,7 @@ text \<open> In terms of parsing correctness, Isabelle/C provides at least two d
 \<^item> a parser limited to C99/C11 code provided in \<^dir>\<open>../../C11-FrontEnd\<close> that can
 parse certain liberal extensions out of the C
 standard~\<^footnote>\<open>\<^url>\<open>http://hackage.haskell.org/package/language-c\<close>\<close>;
-\<^item> and another parser accepting C99/C11/C18 code in \<^url>\<open>https://gitlri.lri.fr/ftuong/isabelle_c/tree/C/C18-FrontEnd\<close> that
+\<^item> and another parser accepting C99/C11/C18 code in \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/tree/C/C18-FrontEnd\<close> that
 is close to the C standard while focusing on resolving ambiguities of the
 standard~\<^footnote>\<open>\<^url>\<open>https://github.com/jhjourdan/C11parser\<close>\<close>~\cite{DBLP:journals/toplas/JourdanP17}. \<close>
 
