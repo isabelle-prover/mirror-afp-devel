@@ -273,6 +273,32 @@ int b,c,d/*@@ \<approx>setup\<Down> \<open>fn s => fn x => fn env => @{print_top
                                                 #> add_ex "evaluation of " "5_print_top"\<close> */
 \<close>
 
+subsection \<open>Out of Bound Evaluation for Annotations\<close>
+
+C \<comment> \<open>Bottom-up and top-down + internal initial value\<close> \<open>
+int a = 0 ;
+int     /*@ @    ML \<open>writeln "2"\<close>
+            @@@  ML \<open>writeln "4"\<close>
+            +@   ML \<open>writeln "3"\<close>
+(*            +++@ ML \<open>writeln "6"\<close>*)
+                 ML\<Down>\<open>writeln "1"\<close>  */
+//    a d /*@ @    ML \<open>writeln "5"\<close>  */;
+int a;
+\<close>
+
+C \<comment> \<open>Ordering of consecutive commands\<close> \<open>
+int a = 0  /*@ ML\<open>writeln "1"\<close> */;
+int        /*@ @@@@@ML\<open>writeln "5" \<close> @@@ML\<open>writeln "4" \<close> @@ML\<open>writeln "2" \<close> */
+           /*@ @@@@@ML\<open>writeln "5'"\<close> @@@ML\<open>writeln "4'"\<close> @@ML\<open>writeln "2'"\<close> */
+    a = 0;
+int d = 0; /*@ ML\<open>writeln "3"\<close> */
+\<close>
+
+C \<comment> \<open>Maximum depth reached\<close> \<open>
+int a = 0 /*@ ++@@@@ML\<open>writeln "2"\<close>
+              ++@@@ ML\<open>writeln "1"\<close> */;
+\<close>
+
 section \<open>Reporting of Positions and Contextual Update of Environment\<close>
 
 text \<open>
