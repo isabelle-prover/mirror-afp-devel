@@ -153,6 +153,7 @@ fun output_token ctxt tok =
     | Token.String => output false "{\\isachardoublequoteopen}" "{\\isachardoublequoteclose}"
     | Token.Alt_String => output false "{\\isacharbackquoteopen}" "{\\isacharbackquoteclose}"
     | Token.Cartouche => output false "{\\isacartoucheopen}" "{\\isacartoucheclose}"
+    | Token.Control control => output_body ctxt false "" "" (Antiquote.control_symbols control)
     | _ => output false "" "")
   end handle ERROR msg => error (msg ^ Position.here (C_Token.pos_of tok));
 

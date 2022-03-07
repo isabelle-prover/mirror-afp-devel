@@ -244,7 +244,7 @@ signature C_MODULE =
 
     (* toplevel command semantics of Isabelle_C *)
     val C: Input.source -> Context.generic -> Context.generic
-    val C': C_Env.env_lang -> Input.source -> Context.generic -> Context.generic
+    val C': C_Env.env_lang option -> Input.source -> Context.generic -> Context.generic
     val C_export_boot: Input.source -> Context.generic -> generic_theory
     val C_export_file: Position.T * 'a -> Proof.context -> Proof.context
     val C_prf: Input.source -> Proof.state -> Proof.state
@@ -465,20 +465,25 @@ fun C source =
   exec_eval source
   #> Local_Theory.propagate_ml_env
 
-val C': C_Env.env_lang -> Input.source -> Context.generic -> Context.generic  =
-    fn env_lang:C_Env.env_lang => fn src:Input.source => fn context:Context.generic =>
-  context
-  |> C_Env.empty_env_tree
-  |> C_Context.eval_source'
-       env_lang
-       (fn src => start src context)
-       err
-       accept
-       src
-  |> (fn (_, {context, reports_text, error_lines}) => 
-     tap (fn _ => case error_lines of [] => () | l => warning (cat_lines (rev l)))
-         (C_Stack.Data_Tree.map (curry C_Stack.Data_Tree_Args.merge (reports_text, []))
-                                 context))
+val C' =
+  let
+    fun C env_lang src context =
+      context
+      |> C_Env.empty_env_tree
+      |> C_Context.eval_source'
+           env_lang
+           (fn src => start src context)
+           err
+           accept
+           src
+      |> (fn (_, {context, reports_text, error_lines}) => 
+         tap (fn _ => case error_lines of [] => () | l => warning (cat_lines (rev l)))
+             (C_Stack.Data_Tree.map (curry C_Stack.Data_Tree_Args.merge (reports_text, []))
+                                    context))
+  in
+    fn NONE => (fn src => C (env (Context.the_generic_context ())) src)
+     | SOME env_lang => C env_lang
+  end
 
 fun C_export_file (pos, _) lthy =
   let
@@ -791,7 +796,7 @@ fun local_command'' spec = local_command' spec o K
 val command0_no_range = command_no_range' o drop1
 
 fun command0' f kind scan =
-  command3 (fn f => fn (name, pos) => command00 (drop2 f) kind (scan name) (name, pos)) f
+  command3 (fn f => command00 (drop2 f) kind scan) f
 end
 \<close>
 
@@ -802,12 +807,12 @@ struct
 fun command_c ({lines, pos, ...}: Token.file) =
   C_Module.C (Input.source true (cat_lines lines) (pos, pos));
 
-fun C files gthy =
-  command_c (hd (files (Context.theory_of gthy))) gthy;
+fun C get_file gthy =
+  command_c (get_file (Context.theory_of gthy)) gthy;
 
-fun command_ml environment debug files gthy =
+fun command_ml environment debug get_file gthy =
   let
-    val file: Token.file = hd (files (Context.theory_of gthy));
+    val file = get_file (Context.theory_of gthy);
     val source = Token.file_source file;
 
     val _ = Document_Output.check_comments (Context.proof_of gthy) (Input.source_explode source);
@@ -834,9 +839,9 @@ C_Thy_Header.add_keywords_minor
           [ ((C_Inner_Syntax.pref_lex name, pos_lex), ty)
           , ((C_Inner_Syntax.pref_bot name, pos_bot), ty)
           , ((C_Inner_Syntax.pref_top name, pos_top), ty) ])
-        [ (("apply", \<^here>, \<^here>, \<^here>), ((Keyword.prf_script, []), ["proof"]))
-        , (("by", \<^here>, \<^here>, \<^here>), ((Keyword.qed, []), ["proof"]))
-        , (("done", \<^here>, \<^here>, \<^here>), ((Keyword.qed_script, []), ["proof"])) ])
+        [ (("apply", \<^here>, \<^here>, \<^here>), Keyword.command_spec (Keyword.prf_script, ["proof"]))
+        , (("by", \<^here>, \<^here>, \<^here>), Keyword.command_spec (Keyword.qed, ["proof"]))
+        , (("done", \<^here>, \<^here>, \<^here>), Keyword.command_spec (Keyword.qed_script, ["proof"])) ])
 \<close>
 
 ML \<comment> \<open>\<^theory>\<open>Pure\<close>\<close> \<open>
@@ -913,11 +918,11 @@ val _ = Theory.setup
                              ("C", \<^here>, \<^here>, \<^here>)
   #> C_Inner_Syntax.command0' (C_Inner_Toplevel.generic_theory o C_Inner_File.ML NONE)
                               Keyword.thy_load
-                              (fn name => C_Resources.parse_files name --| semi)
+                              (C_Resources.parse_file --| semi)
                               ("ML_file", \<^here>, \<^here>, \<^here>)
   #> C_Inner_Syntax.command0' (C_Inner_Toplevel.generic_theory o C_Inner_File.C)
                               Keyword.thy_load
-                              (fn name => C_Resources.parse_files name --| semi)
+                              (C_Resources.parse_file --| semi)
                               ("C_file", \<^here>, \<^here>, \<^here>)
   #> C_Inner_Syntax.command0 (C_Inner_Toplevel.generic_theory o C_Module.C_export_boot)
                              C_Parse.C_source
@@ -1028,8 +1033,8 @@ fun command_c ({src_path, lines, digest, pos}: Token.file) =
     #> Context.mapping provide (Local_Theory.background_theory provide)
   end;
 
-fun C files gthy =
-  command_c (hd (files (Context.theory_of gthy))) gthy;
+fun C get_file gthy =
+  command_c (get_file (Context.theory_of gthy)) gthy;
 
 end;
 \<close>
@@ -1043,7 +1048,7 @@ val semi = Scan.option \<^keyword>\<open>;\<close>;
 
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>C_file\<close> "read and evaluate Isabelle/C file"
-    (Resources.parse_files single --| semi >> (Toplevel.generic_theory o C_Outer_File.C));
+    (Resources.parse_file --| semi >> (Toplevel.generic_theory o C_Outer_File.C));
 
 val _ =
   Outer_Syntax.command \<^command_keyword>\<open>C_export_boot\<close>

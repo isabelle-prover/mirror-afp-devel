@@ -49,17 +49,14 @@ ML\<open>
 val _ = Theory.setup
           (C_Inner_Syntax.command C_Inner_Isar_Cmd.setup' C_Parse.ML_source ("\<simeq>setup", \<^here>, \<^here>))
 
-val C' = C_Module.C'
-
-fun C opt = case opt of NONE => C' (C_Module.env (Context.the_generic_context ()))
-                      | SOME env => C' env
+val C = C_Module.C'
 
 fun C_def dir name _ _ =
   Context.map_theory 
     (C_Inner_Syntax.command'
       (C_Inner_Syntax.drop1
         (C_Scan.Right ( (fn src => fn context =>
-                          C' (C_Stack.Data_Lang.get' context |> #2) src context)
+                          C_Module.C' (SOME (C_Stack.Data_Lang.get' context |> #2)) src context)
                       , dir)))
       C_Parse.C_source
       name)

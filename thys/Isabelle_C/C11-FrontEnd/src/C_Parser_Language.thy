@@ -315,29 +315,12 @@ struct
       val (varN, var) = markup_elem (desc (case global of Left b => SOME b
                                                         | Right (SOME b, _, _) => SOME b
                                                         | _ => NONE));
-      val entity = Markup.entity varN name
       val cons' = cons o markup_init
-      (* PATCH: copied as such from Isabelle2020 *)
-      fun entity_properties_of def serial pos =
-          if def then (Markup.defN, Value.print_int serial) :: Position.properties_of pos
-          else (Markup.refN, Value.print_int serial) :: Position.def_properties_of pos;
-
     in
      (cons' var
       #> report' cons' def global
       #> (case typing of NONE => I | SOME x => cons x))
-       (map (fn pos =>
-(* WAS:  markup_init (Markup.properties (Position.entity_properties_of def id pos) entity))  *)
-(* NEW in Isabelle 2021-1RC:
-  fun make_entity_markup {def} serial kind (name, pos) =
-  let
-    val props =
-      if def then (Markup.defN, Value.print_int serial) :: properties_of pos
-      else (Markup.refN, Value.print_int serial) :: def_properties_of pos;
-  in Markup.entity kind name |> Markup.properties props end;
-*)
-              markup_init (Markup.properties (entity_properties_of def id pos) entity))
-            ps)
+       (map (markup_init o Position.make_entity_markup {def = def} id varN o pair name) ps)
     end)
 
   fun markup_make' typing get_global desc report =
@@ -598,7 +581,7 @@ struct
                    env
   fun shadowTypedef (i, params, ret) env =
     shadowTypedef0 (C_Env.Parsed ret) (List.null (C_Env_Ext.get_scopes env)) (K I) (i, params) env
-  fun isTypeIdent s0 arg = (Symtab.exists (fn (s1, _) => s0 = s1) o C_Env_Ext.get_tyidents_typedef) arg
+  fun isTypeIdent s0 = Symtab.exists (fn (s1, _) => s0 = s1) o C_Env_Ext.get_tyidents_typedef
   fun enterScope env =
     ((), C_Env_Ext.map_scopes (cons (NONE, C_Env_Ext.get_var_table env)) env)
   fun leaveScope env = 
@@ -888,6 +871,28 @@ ML_file "../../src_ext/mlton/lib/mlyacc-lib/parser1.sml" \<comment>
 subsection \<open>Loading the Generated Grammar (SML signature)\<close>
 
 ML_file "../generated/c_grammar_fun.grm.sig"
+
+ML \<comment> \<open>\<^file>\<open>../generated/c_grammar_fun.grm.sig\<close>\<close>
+(*TODO: the whole part should be maximally generated and integrated in the signature file*)
+\<open>
+structure C_Grammar_Rule = struct
+open C_Grammar_Rule
+
+(* ast_generic is an untyped universe of (some) ast's with the specific lenses put ... get ... *)
+
+type ast_generic = start_happy
+
+val get_CExpr = start_happy4
+val get_CStat = start_happy3
+val get_CExtDecl = start_happy2
+val get_CTranslUnit = start_happy1
+
+fun put_CExpr (x :  C_Grammar_Rule_Lib.CExpr)      = Right (Right (Right (Left x))) : ast_generic
+fun put_CStat (x : C_Grammar_Rule_Lib.CStat)       = Right (Right (Left x))         : ast_generic
+fun put_CExtDecl (x : C_Grammar_Rule_Lib.CExtDecl) = Right (Left x)                 : ast_generic
+fun put_CTranslUnit (x : C_Grammar_Rule_Lib.CTranslUnit) = Left x                   : ast_generic
+end
+\<close>
 
 subsection \<open>Overloading Grammar Rules (Optional Part)\<close>
 

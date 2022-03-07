@@ -375,8 +375,8 @@ subsection \<open>Continuation Calculus with the C Environment: Presentation in 
 declare [[C_parser_trace = false]]
 
 ML\<open>
-val C  = C_Module.C
-val C' = C_Module.C'
+val C = C_Module.C' NONE
+val C' = C_Module.C' o SOME
 \<close>
 
 C \<comment> \<open>Nesting C code without propagating the C environment\<close> \<open>

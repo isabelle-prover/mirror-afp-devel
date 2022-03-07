@@ -516,18 +516,18 @@ fun fun_decl a v s ctxt =
     fun decl (_: Proof.context) = (env, body);
   in (decl, ctxt') end;
 
-(* parsing and evaluation *)
+(* parsing *)
 
 local
 
 fun scan_antiq context syms =
   let val keywords = C_Thy_Header.get_keywords' (Context.proof_of context)
-  in ( C_Token.read_antiq'
+  in ( C_Parse_Read.read_antiq'
          keywords
          (C_Parse.!!! (Scan.trace (C_Annotation.parse_command (Context.theory_of context))
                        >> (I #>> C_Env.Antiq_stack)))
          syms
-     , C_Token.read_with_commands'0 keywords syms)
+     , C_Parse_Read.read_with_commands'0 keywords syms)
   end
 
 fun print0 s =
@@ -584,6 +584,9 @@ fun markup_directive_define in_direct =
       #> (case err of C_Ast.Left _ => I
                     | C_Ast.Right (_, msg, f) => tap (fn _ => Output.information msg) #> f)
       #> (if def then cons' Markup.free else if in_direct then I else cons' Markup.antiquote))
+
+
+(* evaluation *)
 
 fun eval env start err accept (ants, ants_err) {context, reports_text, error_lines} =
   let val error_lines = ants_err error_lines

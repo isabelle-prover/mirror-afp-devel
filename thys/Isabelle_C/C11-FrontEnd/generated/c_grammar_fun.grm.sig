@@ -2,21 +2,12 @@ structure C_Grammar_Rule =
 struct
 (*#line 1.2 "c_grammar_fun.grm"*)open C_Ast open C_Grammar_Rule_Lib
 
-(* ast_generic is an untyped universe of (some) ast's with the specific lenses put ... get ... *)
+type start_happy = (CTranslUnit, (CExtDecl, (CStat, (CExpr, unit) either) either) either) either
 
-type ast_generic = (CTranslUnit, (CExtDecl, (CStat, (CExpr, unit) either) either) either) either
-(*  name was: init_happy ,start_happy *)
-
-fun get_CExpr (x : ast_generic)       = case x of Right (Right (Right (Left x))) => SOME x | _ => NONE
-fun get_CStat (x : ast_generic)       = case x of Right (Right (Left x)) => SOME x | _ => NONE
-fun get_CExtDecl (x : ast_generic)    = case x of Right (Left x) => SOME x | _ => NONE
-fun get_CTranslUnit (x : ast_generic) = case x of Left x => SOME x | _ => NONE
-
-fun put_CExpr (x :  C_Grammar_Rule_Lib.CExpr)      = Right (Right (Right (Left x))) : ast_generic
-fun put_CStat (x : C_Grammar_Rule_Lib.CStat)       = Right (Right (Left x))         : ast_generic
-fun put_CExtDecl (x : C_Grammar_Rule_Lib.CExtDecl) = Right (Left x)                 : ast_generic   
-fun put_CTranslUnit (x : C_Grammar_Rule_Lib.CTranslUnit) = Left x                   : ast_generic      
-
+fun start_happy4 (x : start_happy) = case x of Right (Right (Right (Left x))) => SOME x | _ => NONE
+fun start_happy3 (x : start_happy) = case x of Right (Right (Left x)) => SOME x | _ => NONE
+fun start_happy2 (x : start_happy) = case x of Right (Left x) => SOME x | _ => NONE
+fun start_happy1 (x : start_happy) = case x of Left x => SOME x | _ => NONE
 
 
 (*#line 8775.1 "c_grammar_fun.grm.sml"*)
