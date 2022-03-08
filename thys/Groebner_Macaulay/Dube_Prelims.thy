@@ -105,9 +105,6 @@ lemma sum_split_nat_ivl:
 
 subsection \<open>@{const count_list}\<close>
 
-lemma count_list_map_ge: "count_list xs x \<le> count_list (map f xs) (f x)"
-  by (induct xs) simp_all
-
 lemma count_list_gr_1_E:
   assumes "1 < count_list xs x"
   obtains i j where "i < j" and "j < length xs" and "xs ! i = x" and "xs ! j = x"

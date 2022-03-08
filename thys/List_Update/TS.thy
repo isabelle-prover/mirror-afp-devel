@@ -1175,9 +1175,6 @@ apply(induct i)
 lemma count_notin2: "count_list xs x = 0 \<Longrightarrow> x \<notin> set xs"
 by (simp add: count_list_0_iff)
 
-lemma count_rev: "count_list (rev xs) x = count_list xs x"
-apply(induct xs) by(simp_all)
-
 lemma mtf2_q_passes: assumes "q \<in> set xs" "distinct xs" 
   and "index xs q - n \<le> index xs x" "index xs x < index xs q"
   shows "q < x in (mtf2 n q xs)"
@@ -1223,7 +1220,7 @@ proof -
                              count_list ?sincelast xa \<le> 1}"
 
   have y: "y \<in> ?S \<or> ~  y < x  in s_TS init h (as @ x # bs @ [x]) (Suc (length as + length bs))"
-    unfolding sl unfolding s_TS_def using assms(1) by(simp add: count_rev del: config'.simps)
+    unfolding sl unfolding s_TS_def using assms(1) by(simp del: config'.simps)
  
     have eklr: "length (as@[x]@bs@[x]) = Suc (length (as@[x]@bs))" by simp
   have 1: "s_TS init h (as@[x]@bs@[x]) (length (as@[x]@bs@[x]))
@@ -1495,8 +1492,8 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
     case 1
      have " count_list (take ?lastoccy (rev (take i cs))) x \<le>
           count_list (drop (length cs - i) (rev cs)) x" by (simp add: count_take rev_take)
-     also have "\<dots> \<le> count_list (rev cs) x" by(simp add: count_drop ) 
-     also have "\<dots> = 0" using assms(2) by(simp add: count_rev)
+     also have "\<dots> \<le> count_list (rev cs) x" by (meson count_drop)
+     also have "\<dots> = 0" using assms(2) by(simp)
      finally have " count_list (take ?lastoccy (rev (take i cs))) x = 0" by auto
      have"
         2 \<le>
@@ -1680,7 +1677,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
   also have "\<dots> \<le> 1" using zatmostonce by metis
   finally have aaa: "count_list (rev (take i cs) @ [x] @ rev bs @ [x]) z \<le> 1" .
   with el_n_x have "count_list bs z + count_list (take i cs) z \<le> 1"
-    by(simp add: count_rev)
+    by(simp)
   moreover have "count_list (take (Suc i) cs) z = count_list (take i cs) z" 
       using i_in_cs  el_n_y by(simp add: take_Suc_conv_app_nth)
   ultimately have aaaa: "count_list bs z + count_list (take  (Suc i) cs) z \<le> 1" by simp
