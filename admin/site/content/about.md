@@ -46,8 +46,8 @@ The authors retain their full copyright on their original work, including their 
 ## Website
 
 This website is the result of a project from the School of Informatics at the [University of Edinburgh](https://www.ed.ac.uk) by:
- * Carlin MacKenzie
- * James Vaughan, [AIML](https://aiml.inf.ed.ac.uk)
+ * Carlin MacKenzie, [AIML](https://aiml.inf.ed.ac.uk)
+ * James Vaughan, [AIAI](http://web.inf.ed.ac.uk/aiai/)
  * Jacques Fleuriot, [AIAI](http://web.inf.ed.ac.uk/aiai/)
 
 Integration and maintenance by:

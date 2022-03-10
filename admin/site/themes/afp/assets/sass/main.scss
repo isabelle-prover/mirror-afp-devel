@@ -27,6 +27,11 @@ $bold: 700;
 
 $border-bottom: 2px $darker-grey solid;
 
+//sizes
+$size-xs: 650px; // for example mobile
+$size-s: 875px; // for example half desktop window
+$size-xl: 1800px; // for example 4k desktop
+
 %code {
   font-family: $monospace;
   background-color: $lightest-grey;
@@ -243,7 +248,7 @@ header {
 .content {
   grid-area: content;
   margin: 0 auto 2rem;
-  width: 50vw;
+  width: #{"min(80%, 1100px)"};
   min-width: 550px;
 
   div {
@@ -315,7 +320,8 @@ header {
   }
 
   li {
-    word-break: break-all;
+    word-wrap: break-word;
+    word-break: break-word;
   }
 
   li::before {
@@ -373,10 +379,14 @@ header {
   }
 
   .content {
-    min-width: clamp(80ch,50vw, 50vw);
-    width: auto;
+    min-width: clamp(60ch,50vw,50vw);
+    width: 100%;
     max-width: 75vw;
     margin: 0 0 2rem 4vw;
+  }
+
+  pre {
+    width: fit-content;
   }
 
   h2 {
@@ -387,8 +397,9 @@ header {
     svg {
       height: 2rem;
       width: 20px;
-      position: absolute;
-      right: 1em;
+      position: sticky;
+      right: 1rem;
+      float: right;
       stroke: $dark-grey;
       transition: transform 100ms;
     }
@@ -410,7 +421,7 @@ header {
         padding-bottom: 2rem;
         width: 100px;
 
-        @media (min-width: 1800px) {
+        @media screen and (min-width: $size-xl) {
             width: 150px;
         }
     }
@@ -449,14 +460,18 @@ header {
     }
   }
 
-  @media (max-width: 875px) {
+  @media screen and (max-width: $size-s) {
     padding: 0;
     grid-template-columns: 1fr;
 
     .content {
       min-width: 350px;
       max-width: 100vw;
-      margin: 80px 0;
+      margin: 80px 0 0 20px;
+    }
+
+    h2 {
+      top: 60px;
     }
 
     nav {
@@ -930,7 +945,7 @@ iframe {
   }
 }
 
-@media (max-width: 650px) {
+@media screen and (max-width: $size-xs) {
   .content {
     width: 90%;
     min-width: 350px;
@@ -949,7 +964,7 @@ iframe {
   }
 }
 
-@media (max-width: 875px) {
+@media screen and (max-width: $size-s) {
   body {
     grid-template-columns: 1fr;
     grid-template-areas: 'content';

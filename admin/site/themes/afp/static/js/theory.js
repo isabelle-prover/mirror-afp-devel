@@ -238,7 +238,7 @@ const init = async () => {
       const thy_name = theory.id
 
       const thy_collapsible = parse_elem(`
-        <div id="${to_container_id(thy_name)}" theory-src="${href}" class="${CLASS_COLLAPSE_CONTAINER} ${CLASS_COLLAPSED}">
+        <div id="${to_container_id(thy_name)}" theory-src="${href}" style="min-width: fit-content" class="${CLASS_COLLAPSE_CONTAINER} ${CLASS_COLLAPSED}">
           <h2 id="${to_id(thy_name)}" style="cursor: pointer" onclick="toggle_theory('${thy_name}')">
             ${thy_name}
           <svg id="${to_svg_id(thy_name)}" viewBox="0 0 10 10" aria-hidden="true" focusable="false"
