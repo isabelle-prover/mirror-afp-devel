@@ -126,6 +126,7 @@ CoreC++
 Core_DOM
 Core_SC_DOM
 Correctness_Algebras
+Cotangent_PFD_Formula
 Count_Complex_Roots
 CryptHOL
 CryptoBasedCompositionalProperties
