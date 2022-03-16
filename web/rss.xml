@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>06 Mar 2022 00:00:00 +0000</pubDate>
+    <pubDate>15 Mar 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</title>
+              <link>https://www.isa-afp.org/entries/Cotangent_PFD_Formula.html</link>
+       <guid>https://www.isa-afp.org/entries/Cotangent_PFD_Formula.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>15 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;In this article, I formalise a proof from &lt;a
+href=&#34;https://dx.doi.org/10.1007/978-3-662-57265-8&#34;&gt;THE
+BOOK&lt;/a&gt;; namely a formula that was called ‘one of the most
+beautiful formulas involving elementary functions’:&lt;/p&gt; \[\pi
+\cot(\pi z) = \frac{1}{z} + \sum_{n=1}^\infty\left(\frac{1}{z+n} +
+\frac{1}{z-n}\right)\] &lt;p&gt;The proof uses Herglotz&#39;s trick
+to show the real case and analytic continuation for the complex
+case.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>The Independence of the Continuum Hypothesis in Isabelle/ZF</title>
               <link>https://www.isa-afp.org/entries/Independence_CH.html</link>
@@ -652,29 +668,6 @@ Whether the presented variants increase or decrease the
 attractiveness and persuasiveness of the ontological argument is a
 question I would like to pass on to philosophy and theology.
 &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Real Exponents as the Limits of Sequences of Rational Exponents</title>
-              <link>https://www.isa-afp.org/entries/Real_Power.html</link>
-       <guid>https://www.isa-afp.org/entries/Real_Power.html</guid>
-       <dc:creator> Jacques D. Fleuriot       </dc:creator>
-       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-In this formalisation, we  construct real exponents as the limits of
-sequences of rational exponents. In particular, if $a \ge 1$ and $x
-\in \mathbb{R}$, we choose an increasing rational sequence $r_n$ such
-that $\lim_{n\to\infty} {r_n} = x$. Then the sequence $a^{r_n}$ is
-increasing and if $r$ is any rational number such that $r &gt; x$,
-$a^{r_n}$ is bounded above by $a^r$. By the convergence criterion for
-monotone sequences, $a^{r_n}$ converges. We define $a^ x =
-\lim_{n\to\infty} a^{r_n}$ and show that it has the expected
-properties (for $a \ge 0$).  This particular construction of real
-exponents is needed instead of the usual one using the natural
-logarithm and exponential functions (which already exists in Isabelle)
-to support our mechanical derivation of Euler&#39;s exponential
-series as an ``infinite polynomial&#34;. Aside from helping us avoid
-circular reasoning, this is, as far as we are aware, the first time
-real exponents are mechanised in this way within a proof assistant.</description>
     </item>
   </channel>
 </rss>

@@ -10615,6 +10615,22 @@ abstract =
   one based on ergodic theory, which was formalised by Gouëzel in
   another AFP entry.</p>
 
+[Cotangent_PFD_Formula]
+title = A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent
+author = Manuel Eberl <https://pruvisto.org>
+topic = Mathematics/Analysis
+date = 2022-03-15
+notify = manuel@pruvisto.org
+abstract =
+  <p>In this article, I formalise a proof from <a
+  href="https://dx.doi.org/10.1007/978-3-662-57265-8">THE
+  BOOK</a>; namely a formula that was called ‘one of the most
+  beautiful formulas involving elementary functions’:</p> \[\pi
+  \cot(\pi z) = \frac{1}{z} + \sum_{n=1}^\infty\left(\frac{1}{z+n} +
+  \frac{1}{z-n}\right)\] <p>The proof uses Herglotz's trick
+  to show the real case and analytic continuation for the complex
+  case.</p>
+
 [BTree]
 title = A Verified Imperative Implementation of B-Trees
 author = Niels Mündler <mailto:n.muendler@tum.de>
