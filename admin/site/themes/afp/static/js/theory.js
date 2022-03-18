@@ -263,7 +263,8 @@ const init = async () => {
         <a id="${to_a_id(thy_name)}" class="${CLASS_SPY_LINK} ${CLASS_THY_NAV}" href="#${to_id(thy_name)}">
           ${thy_name}
         </a>
-      </li>`)), parse_elem('<hr>'))
+      </li>`)))
+    navbar.insertAdjacentElement('afterend', document.createElement('hr'));
 
     window.onhashchange = follow_theory_hash
     window.addEventListener(EVENT_SPY_ACTIVATE, (e) => sync_navbar(e.relatedTarget))

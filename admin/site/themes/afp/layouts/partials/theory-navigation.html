@@ -5,17 +5,24 @@
   {{- $path = .Site.Params.afpUrls.htmlDevel -}}
 {{- end -}}
 <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="{{- .Site.BaseURL -}}images/menu.svg" alt="Menu" />
+  </label>
+
   <a href="{{- .Site.BaseURL -}}" class='logo-link'>
     <img src="{{- .Site.BaseURL -}}images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <nav>
+
+  <nav id="menu">
   <div>
-    <a href="{{- .Site.BaseURL -}}">
+    <a href="{{- .Site.BaseURL -}}" class='logo-link'>
       <img src="{{- .Site.BaseURL -}}images/afp.png" alt='Logo of the Archive of Formal Proofs'
         class="logo">
     </a>
     {{ $currentPage := . -}}
-    <ul>
+    <ul id="return">
       <li><a href="{{- .Site.BaseURL -}}entries/{{- $entry_name -}}.html">Return to entry</a></li>
     </ul>
     <hr>

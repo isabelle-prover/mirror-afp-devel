@@ -55,5 +55,6 @@
         ],
         "threshold": 80,
         "toLower": true
-    }
+    },
+    "relativeURLs": true
 }

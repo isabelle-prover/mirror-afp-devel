@@ -56,11 +56,11 @@ $size-xl: 1800px; // for example 4k desktop
 }
 
 %sticky {
-    position: sticky;
-    top: 0;
-    background-color: $white;
-    margin: 0;
-    padding-bottom: 0.5rem;
+  position: sticky;
+  top: 0;
+  background-color: $white;
+  margin: 0;
+  padding-bottom: 0.5rem;
 }
 
 @font-face {
@@ -366,20 +366,21 @@ header {
   }
 
   .invertible.collapsed {
-    transform: scale(1,-1);
+    transform: scale(1, -1);
   }
 
   .collapse-container.collapsed {
     .collapsible {
       display: none;
     }
+
     .invertible {
-      transform: scale(1,-1);
+      transform: scale(1, -1);
     }
   }
 
   .content {
-    min-width: clamp(60ch,50vw,50vw);
+    min-width: clamp(60ch, 50vw, 50vw);
     width: 100%;
     max-width: 75vw;
     margin: 0 0 2rem 4vw;
@@ -406,9 +407,9 @@ header {
   }
 
   main {
-      > div {
-          margin-bottom: 1rem;
-      }
+    > div {
+      margin-bottom: 1rem;
+    }
   }
 
   aside {
@@ -417,13 +418,31 @@ header {
     overflow-x: hidden;
 
     .logo {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        width: 100px;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+      width: 100px;
 
-        @media screen and (min-width: $size-xl) {
-            width: 150px;
-        }
+      @media screen and (min-width: $size-xl) {
+        width: 150px;
+      }
+    }
+
+    #return {
+      position: sticky;
+      top: 0rem;
+      background: #2E2D4E;
+      min-width: 200px;
+    }
+
+    #pdfs {
+      position: fixed;
+      bottom: 0;
+      background: #2E2D4E;
+      margin: 0;
+      padding: 1rem 1.75rem;
+      width: 20vw;
+      box-sizing: border-box;
+      cursor: pointer;
     }
 
     > div {
@@ -432,10 +451,11 @@ header {
 
     &:hover {
       min-width: fit-content;
+
       div {
         min-width: fit-content;
       }
-    } 
+    }
 
     ul {
       margin-left: 1.75rem;
@@ -464,6 +484,15 @@ header {
     padding: 0;
     grid-template-columns: 1fr;
 
+    aside {
+      overflow-x: visible;
+    }
+
+    #menu {
+      min-width: fit-content;
+      padding-right: 1rem;
+    }
+
     .content {
       min-width: 350px;
       max-width: 100vw;
@@ -471,11 +500,8 @@ header {
     }
 
     h2 {
-      top: 60px;
-    }
-
-    nav {
-      display: none;
+      top: 80px;
+      padding-left: 0.5rem;
     }
   }
 }
@@ -723,6 +749,7 @@ a[download] {
     background-color: $light-grey;
     color: $black;
   }
+
   &:after {
     content: url("/images/download.svg");
     @extend %button-image;
@@ -937,7 +964,7 @@ iframe {
   }
 
   > #menu {
-    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
   }
 
   form {
@@ -955,7 +982,7 @@ iframe {
     > div {
       display: grid;
       grid-template-columns: 1fr;
-      grid-template-rows: 150px auto auto ;
+      grid-template-rows: 150px auto auto;
       grid-template-areas:
         'search'
         'sidebar'
@@ -971,7 +998,7 @@ iframe {
   }
 
   aside {
-    height: 4rem;
+    height: 80px;
     width: 100vw;
     overflow-y: visible;
     z-index: 1;
@@ -999,7 +1026,7 @@ iframe {
     }
   }
 
-    
+
   .large-top-margin {
     margin-top: 0;
   }
@@ -1025,19 +1052,20 @@ iframe {
     height: 80px;
     user-select: none;
     width: 100vw;
+
     a {
       text-decoration: none;
       transition: color 0.3s ease;
     }
+
     .logo-link {
       height: 3rem;
       max-width: 50vw;
       top: 1rem;
       left: 0;
       right: 0;
-      margin-left: auto; 
+      margin-left: auto;
       margin-right: auto;
-
 
       img {
         padding: 0;
@@ -1058,7 +1086,7 @@ iframe {
       top: 28px;
     }
 
-    input,label { 
+    input, label {
       left: 28px;
       cursor: pointer;
     }
@@ -1074,23 +1102,23 @@ iframe {
 
     input {
       opacity: 0;
+
       &:checked {
         ~ nav {
           left: 0;
         }
       }
     }
-    
+
     label span {
-        display: none;
+      display: none;
     }
   }
   #menu {
-    height: 100vh;
+    height: calc(100vh - 80px);
     position: absolute;
     top: 0;
-    left: 0;
-    padding-top: 80px;
+    margin-top: 80px;
     box-sizing: border-box;
     min-width: 200px;
     width: 50vw;
@@ -1099,6 +1127,7 @@ iframe {
     background: $theme;
     left: -100%;
     transition: left 0.3s ease;
+    overflow-y: scroll;
 
     .logo-link {
       display: none;
