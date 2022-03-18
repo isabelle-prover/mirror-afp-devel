@@ -1,3 +1,7 @@
+/* Author: Fabian Huch, TU Muenchen
+
+AFP metadata model and TOML serialization.
+ */
 package afp
 
 

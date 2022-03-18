@@ -1,3 +1,7 @@
+/* Author: Fabian Huch, TU Muenchen
+
+Wrapper for Python interaction, to be used with the AFP Python component.
+ */
 package afp
 
 

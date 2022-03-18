@@ -1,3 +1,7 @@
+/* Author: Fabian Huch, TU Muenchen
+
+Tool to extract dependencies of AFP entries.
+ */
 package afp
 
 

@@ -1,3 +1,7 @@
+/* Author: Fabian Huch, TU Muenchen
+
+AFP Metadata file structure with save and load operations.
+ */
 package afp
 
 

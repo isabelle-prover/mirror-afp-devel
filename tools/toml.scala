@@ -1,3 +1,7 @@
+/* Author: Fabian Huch, TU Muenchen
+
+Support for TOML: https://toml.io/en/v1.0.0
+ */
 package afp
 
 

@@ -1,3 +1,7 @@
+/* Author: Fabian Huch, TU Muenchen
+
+Utilities.
+ */
 package afp
 
 

@@ -1,3 +1,7 @@
+/* Author: Fabian Huch, TU Muenchen
+
+AFP Hugo wrapper and project layout.
+ */
 package afp
 
 

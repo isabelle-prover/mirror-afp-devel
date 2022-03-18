@@ -1,3 +1,7 @@
+/* Author: Fabian Huch, TU Muenchen
+
+Generation and compilation of SSG project for the AFP website.
+ */
 package afp
 
 
