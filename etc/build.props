@@ -6,7 +6,6 @@ sources = \
   tools/admin/afp_build_hugo.scala \
   tools/admin/afp_build_python.scala \
   tools/migration/afp_migrate_metadata.scala \
-  tools/afp_build_site.scala \
   tools/afp_check_roots.scala \
   tools/afp_dependencies.scala \
   tools/afp_site_gen.scala \

@@ -104,7 +104,6 @@ object AFP_Site_Gen
   /* site generation */
 
   def afp_site_gen(
-    out_dir: Option[Path],
     layout: Hugo.Layout,
     status_file: Option[Path],
     afp_structure: AFP_Structure,
@@ -246,55 +245,77 @@ object AFP_Site_Gen
       case None =>
     }
 
+    progress.echo("Finished sitegen preparation.")
+  }
 
-    /* hugo */
 
-    out_dir match {
-      case Some(out_dir) =>
-        progress.echo("Building site...")
+  /* build site */
 
-        Hugo.build(layout, out_dir).check
+  def afp_build_site(
+    out_dir: Path, layout: Hugo.Layout,
+    do_watch: Boolean = false,
+    progress: Progress = new Progress()): Unit =
+  {
+    if (do_watch) {
+      Hugo.watch(layout, out_dir, progress).check
+    } else {
+      progress.echo("Building site...")
 
-        progress.echo("Finished building site")
-      case None =>
-        progress.echo("Finished sitegen preparation.")
+      Hugo.build(layout, out_dir).check
+
+      progress.echo("Build in " + (out_dir + Path.basic("index.html")).absolute.implode)
     }
   }
+
+
+  /* tool wrapper */
 
   val isabelle_tool = Isabelle_Tool("afp_site_gen", "generates afp website source", Scala_Project.here, args =>
   {
     var base_dir = Path.explode("$AFP_BASE")
-    var hugo_dir = base_dir + Path.make(List("web", "hugo"))
     var status_file: Option[Path] = None
-    var out_dir: Option[Path] = None
+    var hugo_dir = base_dir + Path.make(List("web", "hugo"))
+    var out_dir: Path = base_dir + Path.make(List("web", "out"))
+    var build_only = false
+    var devel_mode = false
 
     val getopts = Getopts("""
 Usage: isabelle afp_site_gen [OPTIONS]
 
   Options are:
     -B DIR       afp base dir (default """" + base_dir.implode + """")
-    -H DIR       generated hugo project dir (default """" + hugo_dir.implode + """")
     -D FILE      build status file for devel version
-    -O DIR       output dir for optional build (default none)
+    -H DIR       generated hugo project dir (default """" + hugo_dir.implode + """")
+    -O DIR       output dir for build (default """ + out_dir.implode + """)
+    -b           build only
+    -d           devel mode (overrides hugo dir, builds site in watch mode)
 
   Generates the AFP website source. HTML files of entries are dynamically loaded.
   Providing a status file will build the development version of the archive.
   Site will be built from generated source if output dir is specified.
 """,
       "B:" -> (arg => base_dir = Path.explode(arg)),
-      "H:" -> (arg => hugo_dir = Path.explode(arg)),
       "D:" -> (arg => status_file = Some(Path.explode(arg))),
-      "O:" -> (arg => out_dir = Some(Path.explode(arg))))
+      "H:" -> (arg => hugo_dir = Path.explode(arg)),
+      "O:" -> (arg => out_dir = Path.explode(arg)),
+      "b" -> (_ => build_only = true),
+      "d" -> (_ => devel_mode = true))
 
     getopts(args)
+
+    if (devel_mode) hugo_dir = base_dir + Path.make(List("admin", "site"))
 
     val afp_structure = AFP_Structure(base_dir)
     val layout = Hugo.Layout(hugo_dir)
     val progress = new Console_Progress()
 
-    progress.echo("Preparing site generation in " + hugo_dir.implode)
+    if (!build_only) {
+      progress.echo("Preparing site generation in " + hugo_dir.implode)
 
-    afp_site_gen(out_dir = out_dir, layout = layout, status_file = status_file,
-      afp_structure = afp_structure, progress = progress)
+      afp_site_gen(layout = layout, status_file = status_file, afp_structure = afp_structure,
+        progress = progress)
+    }
+
+    afp_build_site(out_dir = out_dir, layout = layout, do_watch = devel_mode, progress = progress)
   })
 }
