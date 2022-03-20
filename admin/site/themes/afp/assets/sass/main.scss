@@ -963,10 +963,6 @@ iframe {
     display: none;
   }
 
-  > #menu {
-    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
-  }
-
   form {
     display: none;
   }
@@ -1115,6 +1111,7 @@ iframe {
     }
   }
   #menu {
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
     height: calc(100vh - 80px);
     position: absolute;
     top: 0;
