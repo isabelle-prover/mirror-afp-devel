@@ -19,9 +19,9 @@ function target(base_href, rel_href) {
 
   if (href_parts.length === 1) return `#${href_parts[0]}`
   else if (href_parts.length === 3 && href_parts[0] === '..' && href_parts[1] !== '..') {
-    return `/theories/${href_parts[1].toLowerCase()}/#${href_parts[2]}`
+    return `../${href_parts[1].toLowerCase()}/#${href_parts[2]}`
   }
-  else return `${base_href}/${rel_href}`
+  else return `${base_href}/../${rel_href}`
 }
 
 function to_id(thy_name, ref) {
