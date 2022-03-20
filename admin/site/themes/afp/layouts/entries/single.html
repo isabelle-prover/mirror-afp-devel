@@ -58,15 +58,16 @@
   </ul>
   {{- end -}}
 
-  <h3>Theories</h3>
+
+  {{- range .Params.sessions -}}
+  {{ $session := .session }}
+  <h3>Theories of {{ $session }}</h3>
   <ul>
-    {{ $file := printf "assets/theories/%s.html" $entry_name}}
-    {{- with .Params.theories -}}
-    {{- range . -}}
-    <li>{{- printf "[%s](%s/theories#%s)" . (urlize $entry_name) . | $.Page.RenderString -}}</li>
-    {{- end -}}
+    {{- range .theories }}
+    <li><a href="/theories/{{ urlize $session }}/#{{ . }}">{{ . }}</a></li>
     {{- end -}}
   </ul>
+  {{- end -}}
 
   {{ $related := .Site.RegularPages.Related . | first 3 }}
   {{ with $related }}

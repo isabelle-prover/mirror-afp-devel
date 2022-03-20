@@ -190,26 +190,25 @@ object AFP_Site_Gen
           if session.name != dep && sessions_structure(dep).groups.contains("AFP")
         } yield dep
 
-      val topo_theories =
-        for {
-          session <- afp_structure.entry_sessions(name)
-          base = sessions_deps(session.name)
-          node <- base.session_theories
-        } yield node.theory_base_name
+      val theories = afp_structure.entry_sessions(name).map { session =>
+        val base = sessions_deps(session.name)
+        val theories = base.session_theories.map(_.theory_base_name)
+        val session_json = isabelle.JSON.Object(
+            "title" -> session.name,
+            "entry" -> name,
+            "url" -> ("/theories/" + session.name.toLowerCase),
+            "theories" -> theories)
+        layout.write_content(Path.make(List("theories", session.name + ".md")), session_json)
+        isabelle.JSON.Object("session" -> session.name, "theories" -> theories)
+      }
 
       val entry_json = JSON.from_entry(entry) ++ isabelle.JSON.Object(
-          "dependencies" -> deps.distinct,
-          "theories" -> topo_theories,
-          "url" -> ("/entries/" + name + ".html"),
-          "keywords" -> get_keywords(name))
-
-      val theories_json = isabelle.JSON.Object(
-        "title" -> entry.title,
-        "url" -> ("/entries/" + name.toLowerCase + "/theories"),
-        "theories" -> topo_theories)
+      "dependencies" -> deps.distinct,
+      "sessions" -> theories,
+      "url" -> ("/entries/" + name + ".html"),
+      "keywords" -> get_keywords(name))
 
       layout.write_content(Path.make(List("entries", name + ".md")), entry_json)
-      layout.write_content(Path.make(List("theories", name + ".md")), theories_json)
     }
 
 

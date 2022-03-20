@@ -1,4 +1,4 @@
-{{- $entry_name := .File.BaseFileName -}}
+{{- $entry_name := .Params.entry -}}
 {{- $site := . -}}
 {{- $path := .Site.Params.afpUrls.html -}}
 {{- if isset .Site.Data "status" -}}

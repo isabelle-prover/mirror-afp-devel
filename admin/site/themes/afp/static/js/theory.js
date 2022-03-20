@@ -19,7 +19,7 @@ function target(base_href, rel_href) {
 
   if (href_parts.length === 1) return `#${href_parts[0]}`
   else if (href_parts.length === 3 && href_parts[0] === '..' && href_parts[1] !== '..') {
-    return `/entries/${href_parts[1].toLowerCase()}/theories#${href_parts[2]}`
+    return `/theories/${href_parts[1].toLowerCase()}/#${href_parts[2]}`
   }
   else return `${base_href}/${rel_href}`
 }
