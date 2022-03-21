@@ -1,42 +1,46 @@
 {{ define "main" }}
   {{ $topics := .Site.Taxonomies.topics }}
-  {{ range $firstLevel, $secondLevelTaxonomy := .Site.Data.topics }}
-    <h2>{{ $firstLevel }}</h2>
-    {{ with (index $topics (urlize $firstLevel)) }}
-      <div class="list">
-        {{ range $key := .Pages.ByDate }}
-          <a href="{{ .RelPermalink }}">{{ .File.BaseFileName }}</a> &nbsp;
-        {{ end }}
-      </div>
-    {{ end }}
-    {{ with $secondLevelTaxonomy }}
-      {{ range $secondLevel, $thirdLevelTaxonomy := . }}
-        <h3>{{ $secondLevel }}</h3>
-        <div class="list">
-          {{ with (index $topics (printf "%s/%s" (urlize $firstLevel) (urlize $secondLevel))) }}
-            {{ range $key := .Pages.ByDate }}
-              <a href="{{ .RelPermalink }}">{{ .File.BaseFileName }}</a> &nbsp;
-            {{ end }}
-          {{ end }}
-          {{ with $thirdLevelTaxonomy }}
-            <table>
-              <tbody>
-                {{ range $thirdLevel, $ignore := . }}
-                  <tr>
-                    <td><i>{{ $thirdLevel }}</i></td>
-                    <td>{{ with (index $topics (printf "%s/%s/%s" (urlize $firstLevel) (urlize $secondLevel) (urlize $thirdLevel))) }}
-                      {{ range $key := uniq .Pages.ByDate }}
-                      <a href="{{ .RelPermalink }}">{{ .File.BaseFileName }}</a> &nbsp;
-                      {{ end }}
-                    {{ end }}
-                    </td>
-                  </tr>         
-                {{ end }}
-              </tbody>
-            </table>
-          {{ end }}
-        </div>
-      {{ end }}
-    {{ end }}
-  {{ end }}
+  {{- range $first := .Site.Data.topics -}}
+  {{- range $firstLevel, $second := $first -}}
+    {{- $topic := urlize $firstLevel -}}
+    {{- $count := (index $topics $topic).Pages | uniq | len -}}
+    <h2>
+      {{- if gt $count 0 -}}
+        <a href="/topics/{{ $topic }}">{{ $firstLevel }} ({{ $count }})</a>
+      {{- else -}}
+        {{ $firstLevel }}
+      {{- end -}}
+    </h2>
+    <ul>
+    {{- range $second := $second -}}
+    {{- range $secondLevel, $third := $second -}}
+      {{- $topic := printf "%s/%s" (urlize $firstLevel) (urlize $secondLevel) -}}
+      {{- $count := (index $topics $topic).Pages | uniq | len -}}
+      <li><h3>
+        {{- if gt $count 0 -}}
+          <a href="/topics/{{ $topic }}">{{ $secondLevel }} ({{ $count }})</a>
+        {{- else -}}
+          {{ $secondLevel }}
+        {{- end -}}
+      </h3></li>
+      <ul>
+      {{- range $third := $third -}}
+      {{- range $thirdLevel, $ignored := $third -}}
+        {{- $topic = (printf "%s/%s/%s" (urlize $firstLevel) (urlize $secondLevel) (urlize $thirdLevel)) -}}
+        {{- $count := (index $topics $topic).Pages | uniq | len -}}
+        <li>
+          {{- if gt $count 0 -}}
+            <a href="/topics/{{ $topic }}">{{ $thirdLevel }} ({{ $count }})</a>
+          {{- else -}}
+            {{ $thirdLevel }}
+          {{- end -}}
+        </li>
+      {{- end -}}
+      {{- end -}}
+      </ul>
+    {{- end -}}
+    {{- end -}}
+    </ul>
+  {{- end -}}
+  {{- end -}}
 {{ end }}

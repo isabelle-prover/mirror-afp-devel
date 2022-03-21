@@ -30,7 +30,7 @@ object AFP_Site_Gen
     }
 
     def from_topics(topics: List[Metadata.Topic]): T =
-      Metadata.TOML.from_topics(topics)
+      topics.map(topic => isabelle.JSON.Object(topic.name -> from_topics(topic.sub_topics)))
 
     def from_affiliations(affiliations: List[Metadata.Affiliation]): Object.T =
     {
