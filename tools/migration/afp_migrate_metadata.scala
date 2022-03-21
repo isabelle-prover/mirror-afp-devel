@@ -57,16 +57,16 @@ object AFP_Migrate_Metadata
       _seen_author_names = _seen_author_names.updated(author.name, author)
     }
 
-    def email(address: String): Email.ID =
+    def email(author: Author.ID): Email.ID =
     {
-      val id = make_email_id(address, this)
+      val id = unique_id(author + "_email", this.seen_emails)
       _seen_emails += id
       id
     }
 
-    def homepage(url: String): Homepage.ID =
+    def homepage(homepage: Homepage.ID): Homepage.ID =
     {
-      val id = make_homepage_id(url, this)
+      val id = unique_id(homepage + "_homepage", this.seen_homepages)
       _seen_homepages += id
       id
     }
@@ -111,35 +111,6 @@ object AFP_Migrate_Metadata
     if (stripped.endsWith(".")) stripped.dropRight(1) else stripped
   }
 
-  def make_email_id(address: String, context: Context): String =
-  {
-    val normalized = as_ascii(address).toLowerCase
-    val (user, host) = normalized.splitAt(normalized.lastIndexOf('@'))
-    val host_part = private_dom(host).replaceAll("[^a-zA-Z0-9.]", "").replace('.', '_')
-    val user_parts = user.replaceAll("[^a-zA-Z0-9.]", "").split('.')
-    var ident = user_parts.last + "_" + host_part
-    for {
-      part <- user_parts.dropRight(1)
-    } {
-      if (context.seen_emails.contains(ident)) {
-        ident = part + "_" + ident
-      } else return ident
-    }
-    unique_id(ident, context.seen_emails)
-  }
-
-  def make_homepage_id(url: String, context: Context): String =
-  {
-    val uri = new URI(url.toLowerCase)
-    val host = private_dom(uri.getHost).stripPrefix("www.").replaceAll(
-      "[^a-zA-Z0-9.]", "").replace('.', '_')
-    val path = as_ascii(uri.getPath.stripSuffix(".html")).replaceAll(
-      "[^a-zA-Z0-9/]", "").replace('/', '_')
-    var ident = host + path
-    while (ident.endsWith("_")) { ident = ident.dropRight(1) }
-    unique_id(ident, context.seen_homepages)
-  }
-
   def make_author_id(name: String, context: Context): String =
   {
     val normalized = as_ascii(name)
@@ -178,7 +149,7 @@ object AFP_Migrate_Metadata
 
   def add_email(author: Author, address: String, context: Context): (Author, Email) =
   {
-    val email = Email(author = author.id, id = context.email(address), address = address)
+    val email = Email(author = author.id, id = context.email(author.id), address = address)
     val update_author = author.copy(emails = author.emails :+ email)
     context.update_author(update_author)
     (update_author, email)
@@ -239,7 +210,7 @@ object AFP_Migrate_Metadata
         }
       }
       else if (url.nonEmpty && !author.homepages.exists(_.url == url)) {
-        val homepage = Homepage(author = author.id, id = context.homepage(url), url = url)
+        val homepage = Homepage(author = author.id, id = context.homepage(author.id), url = url)
 
         author = author.copy(homepages = author.homepages :+ homepage)
       }
