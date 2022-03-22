@@ -7,6 +7,8 @@ package afp
 
 import isabelle._
 
+import afp.Metadata.{Affiliation, Author, Email, Homepage}
+
 
 object AFP_Site_Gen
 {
@@ -107,17 +109,15 @@ object AFP_Site_Gen
     layout: Hugo.Layout,
     status_file: Option[Path],
     afp_structure: AFP_Structure,
+    clean: Boolean = false,
     progress: Progress = new Progress()): Unit =
   {
-    /* add authors */
+    /* clean old */
 
-    progress.echo("Preparing authors...")
-
-    val authors = afp_structure.load_authors
-    val authors_by_id = Utils.grouped_sorted(authors, (a: Metadata.Author) => a.id)
-
-    layout.write_data(Path.basic("authors.json"), JSON.from_authors(authors))
-
+    if (clean) {
+      progress.echo("Cleaning up generated files...")
+      layout.clean()
+    }
 
     /* add topics */
 
@@ -138,6 +138,7 @@ object AFP_Site_Gen
     val licenses_by_id = Utils.grouped_sorted(afp_structure.load_licenses,
       (l: Metadata.License) => l.id)
 
+
     /* add releases */
 
     progress.echo("Preparing releases...")
@@ -145,16 +146,37 @@ object AFP_Site_Gen
     val releases_by_entry = afp_structure.load_releases.groupBy(_.entry)
 
 
+    /* prepare authors and entries */
+
+    progress.echo("Preparing authors...")
+
+    val full_authors = afp_structure.load_authors
+    val authors_by_id = Utils.grouped_sorted(full_authors, (a: Metadata.Author) => a.id)
+
+    var seen_affiliations = Set.empty[Affiliation]
+
+    val entries = afp_structure.entries.map { name =>
+      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
+        releases_by_entry)
+      seen_affiliations ++= entry.authors ++ entry.contributors
+      entry
+    }
+
+    val authors = Utils.group_sorted(seen_affiliations.toList, (a: Affiliation) => a.author).map {
+      case (id, affiliations) =>
+        val emails = affiliations.collect { case e: Email => e }
+        val homepages = affiliations.collect { case h: Homepage => h }
+        Author(id, authors_by_id(id).name, emails, homepages)
+    }
+
+    layout.write_data(Path.basic("authors.json"), JSON.from_authors(authors.toList))
+
     /* extract keywords */
 
     progress.echo("Extracting keywords...")
 
     var seen_keywords = Set.empty[String]
-    val entry_keywords = afp_structure.entries.map(name =>
-    {
-      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
-        releases_by_entry)
-
+    val entry_keywords = entries.map { entry =>
       val Keyword = """\('([^']*)', ([^)]*)\)""".r
       val scored_keywords = extract_keywords(entry.`abstract`).map {
         case Keyword(keyword, score) => keyword -> score.toDouble
@@ -162,8 +184,8 @@ object AFP_Site_Gen
       }
       seen_keywords ++= scored_keywords.map(_._1)
 
-      name -> scored_keywords.filter(_._2 > 1.0).map(_._1)
-    }).toMap
+      entry.name -> scored_keywords.filter(_._2 > 1.0).map(_._1)
+    }.toMap
     
     seen_keywords = seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
     layout.write_static(Path.make(List("data", "keywords.json")), JSON.from_keywords(seen_keywords.toList))
@@ -179,23 +201,20 @@ object AFP_Site_Gen
     val sessions_structure = afp_structure.sessions_structure
     val sessions_deps = Sessions.deps(sessions_structure)
 
-    for (name <- afp_structure.entries) {
-      val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
-        releases_by_entry)
-
+    entries.foreach { entry =>
       val deps =
         for {
-          session <- afp_structure.entry_sessions(name)
+          session <- afp_structure.entry_sessions(entry.name)
           dep <- sessions_structure.imports_graph.imm_preds(session.name)
           if session.name != dep && sessions_structure(dep).groups.contains("AFP")
         } yield dep
 
-      val theories = afp_structure.entry_sessions(name).map { session =>
+      val theories = afp_structure.entry_sessions(entry.name).map { session =>
         val base = sessions_deps(session.name)
         val theories = base.session_theories.map(_.theory_base_name)
         val session_json = isabelle.JSON.Object(
             "title" -> session.name,
-            "entry" -> name,
+            "entry" -> entry.name,
             "url" -> ("/theories/" + session.name.toLowerCase),
             "theories" -> theories)
         layout.write_content(Path.make(List("theories", session.name + ".md")), session_json)
@@ -205,11 +224,13 @@ object AFP_Site_Gen
       val entry_json = JSON.from_entry(entry) ++ isabelle.JSON.Object(
       "dependencies" -> deps.distinct,
       "sessions" -> theories,
-      "url" -> ("/entries/" + name + ".html"),
-      "keywords" -> get_keywords(name))
+      "url" -> ("/entries/" + entry.name + ".html"),
+      "keywords" -> get_keywords(entry.name))
 
-      layout.write_content(Path.make(List("entries", name + ".md")), entry_json)
+      layout.write_content(Path.make(List("entries", entry.name + ".md")), entry_json)
     }
+
+    /* add authors */
 
 
     /* add statistics */
@@ -253,8 +274,14 @@ object AFP_Site_Gen
   def afp_build_site(
     out_dir: Path, layout: Hugo.Layout,
     do_watch: Boolean = false,
+    clean: Boolean = false,
     progress: Progress = new Progress()): Unit =
   {
+    if (clean) {
+      progress.echo("Cleaning output dir...")
+      Hugo.clean(out_dir)
+    }
+
     if (do_watch) {
       Hugo.watch(layout, out_dir, progress).check
     } else {
@@ -277,6 +304,7 @@ object AFP_Site_Gen
     var out_dir: Path = base_dir + Path.make(List("web", "out"))
     var build_only = false
     var devel_mode = false
+    var fresh = false
 
     val getopts = Getopts("""
 Usage: isabelle afp_site_gen [OPTIONS]
@@ -288,6 +316,7 @@ Usage: isabelle afp_site_gen [OPTIONS]
     -O DIR       output dir for build (default """ + out_dir.implode + """)
     -b           build only
     -d           devel mode (overrides hugo dir, builds site in watch mode)
+    -f           fresh build: clean up existing hugo and build directories
 
   Generates the AFP website source. HTML files of entries are dynamically loaded.
   Providing a status file will build the development version of the archive.
@@ -298,7 +327,8 @@ Usage: isabelle afp_site_gen [OPTIONS]
       "H:" -> (arg => hugo_dir = Path.explode(arg)),
       "O:" -> (arg => out_dir = Path.explode(arg)),
       "b" -> (_ => build_only = true),
-      "d" -> (_ => devel_mode = true))
+      "d" -> (_ => devel_mode = true),
+      "f" -> (_ => fresh = true))
 
     getopts(args)
 
@@ -312,9 +342,10 @@ Usage: isabelle afp_site_gen [OPTIONS]
       progress.echo("Preparing site generation in " + hugo_dir.implode)
 
       afp_site_gen(layout = layout, status_file = status_file, afp_structure = afp_structure,
-        progress = progress)
+        clean = fresh, progress = progress)
     }
 
-    afp_build_site(out_dir = out_dir, layout = layout, do_watch = devel_mode, progress = progress)
+    afp_build_site(out_dir = out_dir, layout = layout, do_watch = devel_mode,
+      clean = fresh, progress = progress)
   })
 }

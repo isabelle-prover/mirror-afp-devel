@@ -37,23 +37,40 @@ object Hugo
     def write_static(file: Path, content: JSON.T): Unit =
       write(Path.basic("static") + file, isabelle.JSON.Format(content))
 
+    private val generated_dirs = List(
+      List("content", "entries"),
+      List("content", "theories"),
+      List("data"),
+      List("resources"),
+      List("static")).map(Path.make)
+
+
+    /* Static project files */
+
+    private val project_files = List(
+    List("content", "_index.md"),
+    List("content", "about.md"),
+    List("content", "submission.md"),
+    List("content", "download.md"),
+    List("content", "help.md"),
+    List("content", "search.md"),
+    List("content", "statistics.md"),
+    List("content", "submission.md"),
+    List("themes"),
+    List("config.json")).map(Path.make)
+
+    private val is_static_src = hugo_static.canonical.absolute == src_dir.canonical.absolute
+
     def copy_project(): Unit =
     {
-      if (hugo_static.canonical != src_dir) {
-        for {
-          file <- List(
-            List("content", "_index.md"),
-            List("content", "about.md"),
-            List("content", "submission.md"),
-            List("content", "download.md"),
-            List("content", "help.md"),
-            List("content", "search.md"),
-            List("content", "statistics.md"),
-            List("content", "submission.md"),
-            List("themes"),
-            List("config.json"))
-        } Isabelle_System.copy_dir(hugo_static + Path.make(file), src_dir + Path.make(file))
-      }
+      if (!is_static_src) project_files.foreach(file =>
+        Isabelle_System.copy_dir(hugo_static + file, src_dir + file))
+    }
+
+    def clean(): Unit =
+    {
+      generated_dirs.foreach(file => Isabelle_System.rm_tree(src_dir + file))
+      if (!is_static_src) project_files.foreach(file => Isabelle_System.rm_tree(src_dir + file))
     }
   }
 
@@ -66,18 +83,20 @@ object Hugo
   private lazy val exec =
     Path.explode(proper_string(hugo_home).getOrElse(error("No hugo component found"))) + Path.basic("hugo")
 
-  def build(layout: Layout, out_dir: Path = Path.explode("$AFP_BASE") + Path.basic("web")): Process_Result =
+  def build(layout: Layout, out_dir: Path): Process_Result =
   {
     Isabelle_System.bash(
       exec.implode + " -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.canonical.implode))
   }
 
-  def watch(layout: Layout, out_dir: Path = Path.explode("$AFP_BASE") + Path.basic("web"),
-    progress: Progress = new Progress()): Process_Result =
+  def watch(layout: Layout, out_dir: Path, progress: Progress = new Progress()): Process_Result =
   {
     Isabelle_System.bash(
       exec.implode + " server -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.canonical.implode),
       progress_stdout = progress.echo,
       progress_stderr = progress.echo_warning)
   }
+
+  def clean(out_dir: Path): Unit =
+    File.read_dir(out_dir).foreach(file => Isabelle_System.rm_tree(out_dir + Path.basic(file)))
 }
