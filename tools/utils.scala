@@ -13,10 +13,10 @@ import scala.collection.immutable.ListMap
 object Utils
 {
   def group_sorted[A, K](l: List[A], f: A => K): ListMap[K, List[A]] =
-    l.foldRight(ListMap.empty[K, List[A]]) {
-      case (a, m) =>
+    l.foldLeft(ListMap.empty[K, List[A]]) {
+      case (m, a) =>
         m.updatedWith(f(a)) {
-          case Some(as) => Some(a :: as)
+          case Some(as) => Some(as :+ a)
           case None => Some(List(a))
         }
     }
