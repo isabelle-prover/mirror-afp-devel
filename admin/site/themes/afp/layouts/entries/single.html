@@ -80,21 +80,6 @@
   {{ end }}
 </main>
 
-{{- if isset .Site.Data "status" -}}
-  <nav>
-  {{- $status := "none" -}}
-  {{- range where .Site.Data.status.entries "entry" $entry_name -}}
-    {{- $status = .status -}}
-  {{- end -}}
-    <div class="status-{{ $status }}">
-      <p>Status: <strong>{{- $status -}}</strong></p>
-      <p>{{ .Site.Data.status.build_data.time }}</p>
-      <p>Isabelle/<wbr>{{ .Site.Data.status.build_data.isabelle_id }}</p>
-      <p>AFP/<wbr>{{ .Site.Data.status.build_data.afp_id }}</p>
-      <p><a href="{{ .Site.Data.status.build_data.url }}">{{ .Site.Data.status.build_data.job }}</a></p>
-    </div>
-  </nav>
-{{- else -}}
 <nav class='links'>
   <a class='popup-button' href="#citePopUp">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
@@ -104,6 +89,21 @@
   <a href="{{- $path -}}/{{- $entry_name -}}/document.pdf">Proof
     document</a>
   <a href="{{- $path -}}/{{- $entry_name -}}/session_graph.pdf">Dependencies</a>
+
+  {{- if isset .Site.Data "status" -}}
+  {{- $status := "none" -}}
+  {{- range where .Site.Data.status.entries "entry" $entry_name -}}
+  {{- $status = .status -}}
+  {{- end -}}
+  <h4>Build Status</h4>
+  <div class="status-{{ $status }}">
+  <strong>{{- $status -}}</strong>
+  <p>{{ .Site.Data.status.build_data.time }}</p>
+  <p>Isabelle/<wbr>{{ .Site.Data.status.build_data.isabelle_id }}</p>
+  <p>AFP/<wbr>{{ .Site.Data.status.build_data.afp_id }}</p>
+  <a href="{{ .Site.Data.status.build_data.url }}">{{ .Site.Data.status.build_data.job }}</a>
+  </div>
+  {{- end -}}
 </nav>
 
 <div id="citePopUp" class="overlay">
@@ -150,6 +150,5 @@
     {{- end }}
   </div>
 </div>
-{{- end -}}
 
 {{- end -}}
