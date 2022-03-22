@@ -29,14 +29,15 @@ function to_id(thy_name, ref) {
   else return `${thy_name}.html`
 }
 
-const to_svg_id = (thy_name) => `${thy_name}#svg`
-const to_container_id = (thy_name) => `${thy_name}#container`
-const to_collapsible_id = (thy_name) => `${thy_name}#collapsible`
-const to_spinner_id = (thy_name) => `${thy_name}#spinner`
-const to_nav_id = (thy_name) => `${thy_name}#nav`
-const to_ul_id = (thy_name) => `${thy_name}#ul`
+const to_fresh_id = (id) => `${id}#`
+const to_svg_id = (id) => `${id}#svg`
+const to_container_id = (id) => `${id}#container`
+const to_collapsible_id = (id) => `${id}#collapsible`
+const to_spinner_id = (id) => `${id}#spinner`
+const to_nav_id = (id) => `${id}#nav`
+const to_ul_id = (id) => `${id}#ul`
 const of_ul_id = (id) => id.split('#').slice(0, -1).join('#')
-const to_a_id = (thy_name) => `${thy_name}#a`
+const to_a_id = (id) => `${id}#a`
 
 /* document translation */
 
@@ -44,7 +45,7 @@ function translate(base_href, thy_name, thy_body) {
   const thy_refs = [...thy_body.getElementsByTagName('span')].map((span) => {
     let ref = span.getAttribute('id')
     if (ref) {
-      span.setAttribute('id', to_id(thy_name, ref))
+      span.setAttribute('id', to_fresh_id(to_id(thy_name, ref)))
     }
     return ref
   }).filter(e => e)
@@ -103,7 +104,8 @@ async function open_theory(thy_name) {
 
 function nav_tree_rec(thy_name, path, key, ref_parts, type) {
   const rec_ref = ref_parts.filter(e => e.length > 0)
-  const id = to_id(thy_name, `${path.join('.')}.${key}|${type}`)
+  const ref = `${path.join('.')}.${key}|${type}`
+  const id = to_id(thy_name, ref)
   let res
   if (rec_ref.length < ref_parts.length) {
     res = `<a id="${to_a_id(id)}" class="${CLASS_SPY_LINK}" href="#${id}">${escape_html(key)}</a>`
@@ -174,8 +176,7 @@ const follow_theory_hash = async () => {
     const thy_name = strip_suffix(id.split('#')[0], '.html')
     await open_theory(thy_name)
 
-    const elem = document.getElementById(id)
-    if (elem) elem.scrollIntoView()
+    ScrollSpy.instance.scroll_to(id)
   }
 }
 
@@ -269,7 +270,7 @@ const init = async () => {
     window.onhashchange = follow_theory_hash
     window.addEventListener(EVENT_SPY_ACTIVATE, (e) => sync_navbar(e.relatedTarget))
 
-    new ScrollSpy(document.body, ID_NAVBAR)
+    new ScrollSpy(document.body, ID_NAVBAR, "#")
 
     await follow_theory_hash()
   }

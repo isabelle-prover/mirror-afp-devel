@@ -16,7 +16,7 @@ const CLASS_SPY_LINK = 'spy-link'
  */
 
 class ScrollSpy {
-  constructor(element, target, offset = 0.5) {
+  constructor(element, target, target_suffix = "", offset = 0.5) {
     ScrollSpy.instance = this
     this._element = element
 
@@ -26,6 +26,8 @@ class ScrollSpy {
     this._active_id = null
     this._scrollHeight = 0
     this._target = target
+    this._eps = 0.01
+    this._target_suffix = target_suffix
 
     window.onscroll = () => this._process()
 
@@ -33,18 +35,25 @@ class ScrollSpy {
     this._process()
   }
 
+  scroll_to(id) {
+    const elem = document.getElementById(id + this._target_suffix)
+    if (elem) {
+      const offset = -window.innerHeight * (this._offset - this._eps)
+      window.scroll(0, elem.offsetTop + offset)
+    }
+  }
+
   refresh() {
     this._clear()
     this._offsets = []
     this._link_ids = []
-    this._scrollHeight = this._getScrollHeight()
+    this._scrollHeight = this._get_scroll_height()
 
     const targets = []
     for (const link of document.getElementById(this._target).getElementsByClassName(CLASS_SPY_LINK)) {
       // visible and has id
       if (link.id && !is_collapsed(link)) {
-        const target_id = link.getAttribute('href').slice(1)
-        const target = document.getElementById(target_id)
+        const target = document.getElementById(this._get_target_id(link))
 
         if (target) {
           const targetBCR = target.getBoundingClientRect()
@@ -62,22 +71,26 @@ class ScrollSpy {
   }
 
   // Private
-  _getScrollHeight() {
+  _get_target_id(link) {
+    return link.getAttribute('href').slice(1) + this._target_suffix
+  }
+  
+  _get_scroll_height() {
     return window.scrollHeight || Math.max(
       document.body.scrollHeight,
       document.documentElement.scrollHeight
     )
   }
   _process() {
-    const scrollTop = window.pageYOffset + this._offset * window.innerHeight
-    const scrollHeight = this._getScrollHeight()
-    const maxScroll = this._offset * window.innerHeight + scrollHeight - window.innerHeight
+    const scroll_top = window.pageYOffset + this._offset * window.innerHeight
+    const scroll_height = this._get_scroll_height()
+    const max_scroll = this._offset * window.innerHeight + scroll_height - window.innerHeight
 
-    if (this._scrollHeight !== scrollHeight) {
+    if (this._scrollHeight !== scroll_height) {
       this.refresh()
     }
 
-    if (scrollTop >= maxScroll) {
+    if (scroll_top >= max_scroll) {
       const target_id = this._link_ids[this._link_ids.length - 1]
 
       if (this._active_id !== target_id) {
@@ -87,15 +100,15 @@ class ScrollSpy {
       return
     }
 
-    if (this._active_id && scrollTop < this._offsets[0] && this._offsets[0] > 0) {
+    if (this._active_id && scroll_top < this._offsets[0] && this._offsets[0] > 0) {
       this._clear()
       return
     }
 
     for (let i = this._offsets.length; i--;) {
       const isActiveTarget = this._active_id !== this._link_ids[i] &&
-        scrollTop >= this._offsets[i] &&
-        (typeof this._offsets[i + 1] === 'undefined' || scrollTop < this._offsets[i + 1])
+        scroll_top >= this._offsets[i] &&
+        (typeof this._offsets[i + 1] === 'undefined' || scroll_top < this._offsets[i + 1])
 
       if (isActiveTarget) {
         this._activate(this._link_ids[i])
@@ -109,7 +122,7 @@ class ScrollSpy {
 
     const link = document.getElementById(link_id)
     if (link) {
-      const elem = document.getElementById(link.getAttribute('href').slice(1))
+      const elem = document.getElementById(this._get_target_id(link))
       link.classList.add(CLASS_ACTIVE)
       elem.classList.add(CLASS_ACTIVE)
 
@@ -123,7 +136,7 @@ class ScrollSpy {
     if (this._active_id) {
       const link = document.getElementById(this._active_id)
       if (link) {
-        const elem = document.getElementById(link.getAttribute('href').slice(1))
+        const elem = document.getElementById(this._get_target_id(link))
         if (link.classList.contains(CLASS_ACTIVE)) link.classList.remove(CLASS_ACTIVE)
         if (elem.classList.contains(CLASS_ACTIVE)) elem.classList.remove(CLASS_ACTIVE)
       }
