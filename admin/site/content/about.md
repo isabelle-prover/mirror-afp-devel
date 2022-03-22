@@ -19,10 +19,10 @@ Older versions of archive entries will remain available.
 
 The editors of the Archive of Formal Proofs are:
 
-*   [Manuel Eberl](http://www.in.tum.de/~eberlm/), [Technische Universität München](http://www.tum.de/)
-*   [Gerwin Klein](http://www.cse.unsw.edu.au/~kleing/), [Data61](http://www.data61.csiro.au)
-*   [Tobias Nipkow](http://www.in.tum.de/~nipkow/), [Technische Universität München](http://www.tum.de/)
-*   [Larry Paulson](http://www.cl.cam.ac.uk/users/lcp/), [University of Cambridge](http://www.cam.ac.uk/)
+*   [Manuel Eberl](https://www.in.tum.de/~eberlm/), [Technische Universität München](https://www.tum.de/)
+*   [Gerwin Klein](https://www.cse.unsw.edu.au/~kleing/), [Data61](https://www.data61.csiro.au)
+*   [Tobias Nipkow](https://www.in.tum.de/~nipkow/), [Technische Universität München](https://www.tum.de/)
+*   [Larry Paulson](https://www.cl.cam.ac.uk/users/lcp/), [University of Cambridge](https://www.cam.ac.uk/)
 *   [René Thiemann](http://cl-informatik.uibk.ac.at/users/thiemann/), [University of Innsbruck](https://www.uibk.ac.at/)
 
 ## Why
@@ -39,7 +39,7 @@ We encourage authors of publications that contain Isabelle developments to make 
 
 ## License
 
-All entries in the Archive of Formal Proofs are licensed under a [BSD-style License](LICENSE) or the [GNU LGPL](http://www.gnu.org/copyleft/lesser.html). This means they are free to download, free to use, free to change, and free to redistribute with minimal restrictions.
+All entries in the Archive of Formal Proofs are licensed under a [BSD-style License](LICENSE) or the [GNU LGPL](https://www.gnu.org/copyleft/lesser.html). This means they are free to download, free to use, free to change, and free to redistribute with minimal restrictions.
 
 The authors retain their full copyright on their original work, including their right to make the development available under another, additional license in the future.
 
@@ -47,8 +47,8 @@ The authors retain their full copyright on their original work, including their 
 
 This website is the result of a project from the School of Informatics at the [University of Edinburgh](https://www.ed.ac.uk) by:
  * Carlin MacKenzie, [AIML](https://aiml.inf.ed.ac.uk)
- * James Vaughan, [AIAI](http://web.inf.ed.ac.uk/aiai/)
- * Jacques Fleuriot, [AIAI](http://web.inf.ed.ac.uk/aiai/)
+ * James Vaughan, [AIAI](https://web.inf.ed.ac.uk/aiai/)
+ * Jacques Fleuriot, [AIAI](https://web.inf.ed.ac.uk/aiai/)
 
 Integration and maintenance by:
- * [Fabian Huch](https://www21.in.tum.de/team/huch), [Technische Universität München](http://www.tum.de/)
+ * [Fabian Huch](https://www21.in.tum.de/team/huch), [Technische Universität München](https://www.tum.de/)

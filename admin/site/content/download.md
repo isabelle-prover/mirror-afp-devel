@@ -12,7 +12,7 @@ Download all sessions: {{< download href="https://www.isa-afp.org/release/afp-cu
 
 ### Older stable versions:
 
-Please use the [sourceforge download system](http://sourceforge.net/projects/afp/files/) to access older versions of the archive.
+Please use the [sourceforge download system](https://sourceforge.net/projects/afp/files/) to access older versions of the archive.
 
 ### Mercurial access:
 

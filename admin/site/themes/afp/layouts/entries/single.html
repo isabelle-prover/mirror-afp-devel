@@ -15,9 +15,9 @@
 
   <div class="abstract mathjax_process">{{- trim .Params.abstract "\n" | safeHTML -}}</div>
   {{- if (eq .Params.licence "BSD") -}}
-  <a href="http://isa-afp.org/LICENSE">BSD License</a>
+  <a href="https://isa-afp.org/LICENSE">BSD License</a>
   {{- else if (eq .Params.license "LGPL") -}}
-  <a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
+  <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
   {{- else -}}
     {{- printf "%s License" .Params.license -}}
   {{- end -}}
@@ -119,7 +119,7 @@
   journal = {Archive of Formal Proofs},
   month   = {{ dateFormat "January" .Params.date -}},
   year    = {{ dateFormat "2006" .Params.date -}},
-  note    = {\url{http://isa-afp.org/entries/{{- $entry_name -}}.html},
+  note    = {\url{https://isa-afp.org/entries/{{- $entry_name -}}.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
