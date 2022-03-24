@@ -12077,3 +12077,17 @@ abstract =
   the Leftmost Reduction Theorem: that leftmost reduction is a
   normalizing strategy. </p>
 
+[Ackermanns_not_PR]
+title = Ackermann's Function Is Not Primitive Recursive
+author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
+topic = Logic/Computability
+date = 2022-03-23
+notify = lp15@cam.ac.uk
+abstract = 
+  Ackermann's function is defined in the usual way and a number of
+  its elementary properties are proved. Then, the primitive recursive
+  functions are defined inductively: as a predicate on the functions
+  that map lists of  numbers to numbers. It is shown that every
+  primitive recursive function is strictly dominated by Ackermann's
+  function. The formalisation follows an earlier one by Nora Szasz.
+

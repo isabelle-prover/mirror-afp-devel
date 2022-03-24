@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>15 Mar 2022 00:00:00 +0000</pubDate>
+    <pubDate>23 Mar 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Ackermann's Function Is Not Primitive Recursive</title>
+              <link>https://www.isa-afp.org/entries/Ackermanns_not_PR.html</link>
+       <guid>https://www.isa-afp.org/entries/Ackermanns_not_PR.html</guid>
+       <dc:creator> Lawrence C. Paulson       </dc:creator>
+       <pubDate>23 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+Ackermann&#39;s function is defined in the usual way and a number of
+its elementary properties are proved. Then, the primitive recursive
+functions are defined inductively: as a predicate on the functions
+that map lists of  numbers to numbers. It is shown that every
+primitive recursive function is strictly dominated by Ackermann&#39;s
+function. The formalisation follows an earlier one by Nora Szasz.</description>
+    </item>
     <item>
        <title>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</title>
               <link>https://www.isa-afp.org/entries/Cotangent_PFD_Formula.html</link>
@@ -649,25 +663,6 @@ formalize the Jordan decomposition theorem as a corollary, which
 states that the signed measure under consideration admits a unique
 decomposition into a difference of two positive measures, at least one
 of which is finite.</description>
-    </item>
-    <item>
-       <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/SimplifiedOntologicalArgument.html</link>
-       <guid>https://www.isa-afp.org/entries/SimplifiedOntologicalArgument.html</guid>
-       <dc:creator> Christoph Benzmüller       </dc:creator>
-       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;Simplified variants of Gödel&#39;s ontological argument are
-explored. Among those is a particularly interesting simplified
-argument which is (i) valid already in basic
-modal logics K or KT, (ii) which does not suffer from modal collapse,
-and (iii) which avoids the rather complex predicates of essence (Ess.)
-and necessary existence (NE) as used by Gödel.
-&lt;/p&gt;&lt;p&gt;
-Whether the presented variants increase or decrease the
-attractiveness and persuasiveness of the ontological argument is a
-question I would like to pass on to philosophy and theology.
-&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

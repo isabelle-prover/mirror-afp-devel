@@ -1,0 +1,10 @@
+chapter AFP
+
+session Ackermanns_not_PR (AFP) = HOL +
+  options [timeout = 300]
+  theories
+    Primrec
+  document_files
+    "root.tex"
+    "root.bib"
+
