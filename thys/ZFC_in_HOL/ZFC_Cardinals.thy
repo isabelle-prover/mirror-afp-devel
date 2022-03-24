@@ -516,11 +516,14 @@ lemma TC_sup_distrib: "TC (x \<squnion> y) = TC x \<squnion> TC y"
 lemma TC_Sup_distrib:
   assumes "small X" shows "TC (\<Squnion>X) = \<Squnion>(TC ` X)"
 proof -
+  have "\<Squnion>X \<le> \<Squnion> (TC ` X)"
+    using arg_subset_TC by fastforce
+  moreover have "\<Squnion> (\<Union>x\<in>X. TC ` elts x) \<le> \<Squnion> (TC ` X)"
+    using assms 
+    by clarsimp (meson TC_least Transset_TC Transset_def arg_subset_TC replacement vsubsetD)
+  ultimately
   have "\<Squnion> X \<squnion> \<Squnion> (\<Union>x\<in>X. TC ` elts x) \<le> \<Squnion> (TC ` X)"
-    using assms
-    apply (auto simp: Sup_le_iff)
-    using arg_subset_TC apply blast
-    by (metis TC_least Transset_TC Transset_def arg_subset_TC vsubsetD)
+    by simp
   moreover have "\<Squnion> (TC ` X) \<le> \<Squnion> X \<squnion> \<Squnion> (\<Union>x\<in>X. TC ` elts x)"
   proof (clarsimp simp add: Sup_le_iff assms)
     show "\<exists>x\<in>X. y \<in> elts x"
@@ -584,15 +587,13 @@ proof (induction a rule: eps_induct)
 qed
 
 lemma rank_of_Ord: "Ord i \<Longrightarrow> rank i = i"
-  apply (induction rule: Ord_induct)
-  by (metis (no_types, lifting) Ord_equality SUP_cong rank_Sup)
+  by (induction rule: Ord_induct) (metis (no_types, lifting) Ord_equality SUP_cong rank_Sup)
 
 lemma Ord_iff_rank: "Ord x \<longleftrightarrow> rank x = x"
   using Ord_rank [of x] rank_of_Ord by fastforce
 
 lemma rank_lt: "a \<in> elts b \<Longrightarrow> rank a < rank b"
-  apply (subst rank [of b])
-  by (metis (no_types, lifting) Ord_mem_iff_lt Ord_rank small_UN UN_iff elts_of_set elts_succ insert_iff rank small_elts)
+  by (metis Ord_linear2 Ord_rank ZFC_in_HOL.SUP_le_iff rank_Sup replacement small_elts succ_le_iff order.irrefl)
 
 lemma rank_0 [simp]: "rank 0 = 0"
   using transrec Ord_0 rank_def rank_of_Ord by presburger
@@ -606,8 +607,7 @@ proof (rule order_antisym)
 qed
 
 lemma rank_mono: "a \<le> b \<Longrightarrow> rank a \<le> rank b"
-  apply (rule vsubsetI)
-  using rank [of a] rank [of b] small_UN by auto
+  using rank [of a] rank [of b] small_UN by force
 
 lemma VsetI: "rank b \<sqsubset> i \<Longrightarrow> b \<in> elts (Vset i)"
 proof (induction i arbitrary: b rule: eps_induct)
@@ -663,16 +663,14 @@ qed
 lemma rank_Union: "rank(\<Squnion> A) = \<Squnion> (rank ` A)"
 proof (rule order_antisym)
   have "elts (\<Squnion>y\<in>elts (\<Squnion> A). succ (rank y)) \<subseteq> elts (\<Squnion> (rank ` A))"
-    apply auto(*SLOW*)
-    using Ord_mem_iff_lt Ord_rank rank_lt apply blast
-    by (meson less_le_not_le rank_lt vsubsetD)
+    by clarsimp (meson Ord_mem_iff_lt Ord_rank less_V_def rank_lt vsubsetD)
   then show "rank (\<Squnion> A) \<le> \<Squnion> (rank ` A)"
     by (metis less_eq_V_def rank_Sup)
   show "\<Squnion> (rank ` A) \<le> rank (\<Squnion> A)"
   proof (cases "small A")
     case True
     then show ?thesis
-      by (metis (mono_tags, lifting) ZFC_in_HOL.Sup_least ZFC_in_HOL.Sup_upper image_iff rank_mono)
+      by (simp add: ZFC_in_HOL.SUP_le_iff ZFC_in_HOL.Sup_upper rank_mono)
   next
     case False
     then have "\<not> small (rank ` A)"
@@ -707,7 +705,7 @@ next
 next
   case small
   show ?case
-    apply (rule smaller_than_small [OF small_bounded_rank_le [of "rank b"]])
+    using smaller_than_small [OF small_bounded_rank_le [of "rank b"]]
     by (simp add: Collect_mono less_V_def)
 qed
 
@@ -732,10 +730,9 @@ proof (rule order_antisym)
   proof (induction x rule: eps_induct)
     case (step x)
     have "(\<Squnion>j\<in>elts (rank x). VPow (Vfrom A j)) \<le> (\<Squnion>j\<in>elts x. VPow (Vfrom A j))"
-      apply (rule Sup_least, clarify)
-      apply (simp add: rank [of x])
-      using step.IH
-      by (metis Ord_rank OrdmemD Vfrom_mono2 dual_order.trans inf_sup_aci(5) less_V_def sup.orderE)
+      apply (rule Sup_least)
+      apply (clarsimp simp add: rank [of x])
+      by (meson Ord_in_Ord Ord_rank OrdmemD Vfrom_mono order.trans less_imp_le order.refl step)
     then show ?case
       by (simp add: Vfrom [of _ x] Vfrom [of _ "rank(x)"] sup.coboundedI2)
 qed
@@ -756,8 +753,7 @@ lemma Vset_succ_TC:
   assumes "x \<in> elts (Vset (ZFC_in_HOL.succ k))" "u \<sqsubset> x"
   shows "u \<in> elts (Vset k)"
   using assms
-  apply (simp add: Vfrom_succ)
-  using TC_least Transset_Vfrom less_TC_def by auto
+  using TC_least Transset_Vfrom Vfrom_succ less_TC_def by auto
 
 subsection\<open>Cardinal Numbers\<close>
 
@@ -816,8 +812,7 @@ proof (induction y arbitrary: x rule: eps_induct)
 qed
 
 lemma le_TC_imp_VWO: "x \<sqsubseteq> y \<Longrightarrow> (x,y) \<in> VWO"
-  apply (auto simp: le_TC_def less_TC_imp_VWO)
-  by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id UNIV_I VWO)
+  by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id UNIV_I VWO le_TC_def less_TC_imp_VWO)
 
 lemma le_TC_0_iff [simp]: "x \<sqsubseteq> 0 \<longleftrightarrow> x = 0"
   by (simp add: le_TC_def)
@@ -848,7 +843,7 @@ lemma VWO_TC_le: "\<lbrakk>Ord \<alpha>; Ord \<beta>; (\<beta>, \<alpha>) \<in> 
 proof (induct \<alpha> arbitrary: \<beta> rule: Ord_induct)
   case (step \<alpha>)
   then show ?case
-    by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id Ord_TC_less_iff Ord_linear2 UNIV_I VWO le_TC_def le_less less_TC_imp_VWO pair_in_Id_conv)
+    by (metis DiffI IdD Linear_order_VWO Linear_order_in_diff_Id Ord_linear Ord_mem_iff_less_TC VWO iso_tuple_UNIV_I le_TC_def mem_imp_VWO)
 qed
 
 lemma VWO_iff_Ord_le [simp]: "\<lbrakk>Ord \<alpha>; Ord \<beta>\<rbrakk> \<Longrightarrow> (\<beta>, \<alpha>) \<in> VWO \<longleftrightarrow> \<beta> \<le> \<alpha>"
