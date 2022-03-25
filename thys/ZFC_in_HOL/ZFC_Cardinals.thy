@@ -125,27 +125,30 @@ lemma times_empty2 [simp]: "vtimes A 0 = 0"
 lemma times_empty_iff: "VSigma A B = 0 \<longleftrightarrow> A=0 \<or> (\<forall>x \<in> elts A. B x = 0)"
   by (metis VSigmaE VSigmaI elts_0 empty_iff trad_foundation)
 
-lemma elts_VSigma: "elts (VSigma a b) = (\<lambda>(x,y). vpair x y) ` Sigma (elts a) (\<lambda>x. elts (b x))"
+lemma elts_VSigma: "elts (VSigma A B) = (\<lambda>(x,y). vpair x y) ` Sigma (elts A) (\<lambda>x. elts (B x))"
   by auto
+    
+lemma small_Sigma [simp]:
+  assumes A: "small A" and B: "\<And>x. x \<in> A \<Longrightarrow> small (B x)"
+  shows "small (Sigma A B)"
+proof -
+  obtain a where "elts a \<approx> A" 
+    by (meson assms small_eqpoll)
+  then obtain f where f: "bij_betw f (elts a) A"
+    using eqpoll_def by blast
+  have "\<exists>y. elts y \<approx> B x" if "x \<in> A" for x
+    using B small_eqpoll that by blast
+  then obtain g where g: "\<And>x. x \<in> A \<Longrightarrow> elts (g x) \<approx> B x"
+    by metis 
+  with f have "elts (VSigma a (g \<circ> f)) \<approx> Sigma A B"
+    by (simp add: elts_VSigma Sigma_eqpoll_cong bij_betwE)
+  then show ?thesis
+    using small_eqpoll by blast
+qed
 
 lemma small_Times [simp]:
-  assumes "small A" "small B" 
-  shows "small (A \<times> B)"
-proof -
-  obtain f a g b where "inj_on f A" "inj_on g B" and f: "f ` A = elts a" and g: "g ` B = elts b"
-    using assms by (auto simp: small_def)
-  define h where "h \<equiv> \<lambda>(x,y). \<langle>f x, g y\<rangle>"
-  show ?thesis
-    unfolding small_def
-  proof (intro exI conjI)
-    show "inj_on h (A \<times> B)"
-      using \<open>inj_on f A\<close> \<open>inj_on g B\<close> by (simp add: h_def inj_on_def)
-    have "h ` (A \<times> B) = elts (vtimes a b)"
-      using f g by (fastforce simp: h_def image_iff split: prod.split)
-    then show "h ` (A \<times> B) \<in> range elts"
-      by blast
-  qed
-qed
+  assumes "small A" "small B"  shows "small (A \<times> B)"
+  by (simp add: assms)
 
 lemma small_Times_iff: "small (A \<times> B) \<longleftrightarrow> small A \<and> small B \<or> A={} \<or> B={}"  (is "_ = ?rhs")
 proof
@@ -267,43 +270,34 @@ lemma small_Un:
   assumes X: "small X" and Y: "small Y"
   shows "small (X \<union> Y)"
 proof -
-  obtain f g :: "'a\<Rightarrow>V" where f: "inj_on f X" and g: "inj_on g Y" 
-    by (meson assms small_def)
-  define h where "h \<equiv> \<lambda>z. if z \<in> X then Inl (f z) else Inr (g z)"
-  show ?thesis
-    unfolding small_def
-  proof (intro exI conjI)
-    show "inj_on h (X \<union> Y)"
-      using f g by (auto simp add: inj_on_def h_def)
-    show "h ` (X \<union> Y) \<in> range elts"
-      by (metis X Y image_Un replacement small_iff_range small_sup_iff)
-  qed
+  obtain x y where "elts x \<approx> X" "elts y \<approx> Y"
+    by (meson assms small_eqpoll)
+  then have "X \<union> Y \<lesssim> Inl ` (elts x) \<union> Inr ` (elts y)"
+    by (metis (mono_tags, lifting) Inr_Inl_iff Un_lepoll_mono disjnt_iff eqpoll_imp_lepoll eqpoll_sym f_inv_into_f inj_on_Inl inj_on_Inr inj_on_image_lepoll_2)
+  then show ?thesis
+    by (metis lepoll_iff replacement small_elts small_sup_iff smaller_than_small)
 qed
 
 lemma small_UN [simp,intro]:
-  assumes X: "small X" and B: "\<And>x. x \<in> X \<Longrightarrow> small (B x)"
-  shows "small (\<Union>x\<in>X. B x)"
+  assumes A: "small A" and B: "\<And>x. x \<in> A \<Longrightarrow> small (B x)"
+  shows "small (\<Union>x\<in>A. B x)"
 proof -
-  obtain f :: "'a\<Rightarrow>V" where f: "inj_on f X" 
-    by (meson assms small_def)
-  have "\<exists>g. inj_on g (B x) \<and> g ` (B x) \<in> range elts" if "x \<in> X" for x
-    using B small_def that by auto
-  then obtain g::"'a \<Rightarrow> 'b \<Rightarrow> V" where g: "\<And>x. x \<in> X \<Longrightarrow> inj_on (g x) (B x)" 
+  obtain a where "elts a \<approx> A" 
+    by (meson assms small_eqpoll)
+  then obtain f where f: "bij_betw f (elts a) A"
+    using eqpoll_def by blast
+  have "\<exists>y. elts y \<approx> B x" if "x \<in> A" for x
+    using B small_eqpoll that by blast
+  then obtain g where g: "\<And>x. x \<in> A \<Longrightarrow> elts (g x) \<approx> B x" 
     by metis
-  define \<phi> where "\<phi> \<equiv> \<lambda>y. @x. x \<in> X \<and> y \<in> B x"
-  have \<phi>: "\<phi> y \<in> X \<and> y \<in> B (\<phi> y)" if "y \<in> (\<Union>x\<in>X. B x)" for y
-    unfolding \<phi>_def by (metis (mono_tags, lifting) UN_E someI that)
-  define h where "h \<equiv> \<lambda>y. \<langle>f (\<phi> y), g (\<phi> y) y\<rangle>"
-  show ?thesis
-    unfolding small_def
-  proof (intro exI conjI)
-    show "inj_on h (\<Union> (B ` X))"
-      using f g \<phi> unfolding h_def inj_on_def by (metis vpair_inject)
-  have "small (h ` \<Union> (B ` X))"
-    by (simp add: B X image_UN)
-  then show "h ` \<Union> (B ` X) \<in> range elts"
-    using small_iff_range by blast
-  qed
+  have sm: "small (Sigma (elts a) (elts \<circ> g \<circ> f))"
+    by simp
+  have "(\<Union>x\<in>A. B x) \<lesssim> Sigma A B"
+    by (metis image_lepoll snd_image_Sigma)
+  also have "...  \<lesssim> Sigma (elts a) (elts \<circ> g \<circ> f)"
+    by (smt (verit) Sigma_eqpoll_cong bij_betw_iff_bijections comp_apply eqpoll_imp_lepoll eqpoll_sym f g)
+  finally show ?thesis
+    using lepoll_small sm by blast
 qed
 
 lemma small_Union [simp,intro]:
@@ -516,11 +510,14 @@ lemma TC_sup_distrib: "TC (x \<squnion> y) = TC x \<squnion> TC y"
 lemma TC_Sup_distrib:
   assumes "small X" shows "TC (\<Squnion>X) = \<Squnion>(TC ` X)"
 proof -
+  have "\<Squnion>X \<le> \<Squnion> (TC ` X)"
+    using arg_subset_TC by fastforce
+  moreover have "\<Squnion> (\<Union>x\<in>X. TC ` elts x) \<le> \<Squnion> (TC ` X)"
+    using assms 
+    by clarsimp (meson TC_least Transset_TC Transset_def arg_subset_TC replacement vsubsetD)
+  ultimately
   have "\<Squnion> X \<squnion> \<Squnion> (\<Union>x\<in>X. TC ` elts x) \<le> \<Squnion> (TC ` X)"
-    using assms
-    apply (auto simp: Sup_le_iff)
-    using arg_subset_TC apply blast
-    by (metis TC_least Transset_TC Transset_def arg_subset_TC vsubsetD)
+    by simp
   moreover have "\<Squnion> (TC ` X) \<le> \<Squnion> X \<squnion> \<Squnion> (\<Union>x\<in>X. TC ` elts x)"
   proof (clarsimp simp add: Sup_le_iff assms)
     show "\<exists>x\<in>X. y \<in> elts x"
@@ -584,15 +581,13 @@ proof (induction a rule: eps_induct)
 qed
 
 lemma rank_of_Ord: "Ord i \<Longrightarrow> rank i = i"
-  apply (induction rule: Ord_induct)
-  by (metis (no_types, lifting) Ord_equality SUP_cong rank_Sup)
+  by (induction rule: Ord_induct) (metis (no_types, lifting) Ord_equality SUP_cong rank_Sup)
 
 lemma Ord_iff_rank: "Ord x \<longleftrightarrow> rank x = x"
   using Ord_rank [of x] rank_of_Ord by fastforce
 
 lemma rank_lt: "a \<in> elts b \<Longrightarrow> rank a < rank b"
-  apply (subst rank [of b])
-  by (metis (no_types, lifting) Ord_mem_iff_lt Ord_rank small_UN UN_iff elts_of_set elts_succ insert_iff rank small_elts)
+  by (metis Ord_linear2 Ord_rank ZFC_in_HOL.SUP_le_iff rank_Sup replacement small_elts succ_le_iff order.irrefl)
 
 lemma rank_0 [simp]: "rank 0 = 0"
   using transrec Ord_0 rank_def rank_of_Ord by presburger
@@ -606,8 +601,7 @@ proof (rule order_antisym)
 qed
 
 lemma rank_mono: "a \<le> b \<Longrightarrow> rank a \<le> rank b"
-  apply (rule vsubsetI)
-  using rank [of a] rank [of b] small_UN by auto
+  using rank [of a] rank [of b] small_UN by force
 
 lemma VsetI: "rank b \<sqsubset> i \<Longrightarrow> b \<in> elts (Vset i)"
 proof (induction i arbitrary: b rule: eps_induct)
@@ -663,16 +657,14 @@ qed
 lemma rank_Union: "rank(\<Squnion> A) = \<Squnion> (rank ` A)"
 proof (rule order_antisym)
   have "elts (\<Squnion>y\<in>elts (\<Squnion> A). succ (rank y)) \<subseteq> elts (\<Squnion> (rank ` A))"
-    apply auto(*SLOW*)
-    using Ord_mem_iff_lt Ord_rank rank_lt apply blast
-    by (meson less_le_not_le rank_lt vsubsetD)
+    by clarsimp (meson Ord_mem_iff_lt Ord_rank less_V_def rank_lt vsubsetD)
   then show "rank (\<Squnion> A) \<le> \<Squnion> (rank ` A)"
     by (metis less_eq_V_def rank_Sup)
   show "\<Squnion> (rank ` A) \<le> rank (\<Squnion> A)"
   proof (cases "small A")
     case True
     then show ?thesis
-      by (metis (mono_tags, lifting) ZFC_in_HOL.Sup_least ZFC_in_HOL.Sup_upper image_iff rank_mono)
+      by (simp add: ZFC_in_HOL.SUP_le_iff ZFC_in_HOL.Sup_upper rank_mono)
   next
     case False
     then have "\<not> small (rank ` A)"
@@ -707,7 +699,7 @@ next
 next
   case small
   show ?case
-    apply (rule smaller_than_small [OF small_bounded_rank_le [of "rank b"]])
+    using smaller_than_small [OF small_bounded_rank_le [of "rank b"]]
     by (simp add: Collect_mono less_V_def)
 qed
 
@@ -732,10 +724,9 @@ proof (rule order_antisym)
   proof (induction x rule: eps_induct)
     case (step x)
     have "(\<Squnion>j\<in>elts (rank x). VPow (Vfrom A j)) \<le> (\<Squnion>j\<in>elts x. VPow (Vfrom A j))"
-      apply (rule Sup_least, clarify)
-      apply (simp add: rank [of x])
-      using step.IH
-      by (metis Ord_rank OrdmemD Vfrom_mono2 dual_order.trans inf_sup_aci(5) less_V_def sup.orderE)
+      apply (rule Sup_least)
+      apply (clarsimp simp add: rank [of x])
+      by (meson Ord_in_Ord Ord_rank OrdmemD Vfrom_mono order.trans less_imp_le order.refl step)
     then show ?case
       by (simp add: Vfrom [of _ x] Vfrom [of _ "rank(x)"] sup.coboundedI2)
 qed
@@ -756,8 +747,7 @@ lemma Vset_succ_TC:
   assumes "x \<in> elts (Vset (ZFC_in_HOL.succ k))" "u \<sqsubset> x"
   shows "u \<in> elts (Vset k)"
   using assms
-  apply (simp add: Vfrom_succ)
-  using TC_least Transset_Vfrom less_TC_def by auto
+  using TC_least Transset_Vfrom Vfrom_succ less_TC_def by auto
 
 subsection\<open>Cardinal Numbers\<close>
 
@@ -816,8 +806,7 @@ proof (induction y arbitrary: x rule: eps_induct)
 qed
 
 lemma le_TC_imp_VWO: "x \<sqsubseteq> y \<Longrightarrow> (x,y) \<in> VWO"
-  apply (auto simp: le_TC_def less_TC_imp_VWO)
-  by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id UNIV_I VWO)
+  by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id UNIV_I VWO le_TC_def less_TC_imp_VWO)
 
 lemma le_TC_0_iff [simp]: "x \<sqsubseteq> 0 \<longleftrightarrow> x = 0"
   by (simp add: le_TC_def)
@@ -848,7 +837,7 @@ lemma VWO_TC_le: "\<lbrakk>Ord \<alpha>; Ord \<beta>; (\<beta>, \<alpha>) \<in> 
 proof (induct \<alpha> arbitrary: \<beta> rule: Ord_induct)
   case (step \<alpha>)
   then show ?case
-    by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id Ord_TC_less_iff Ord_linear2 UNIV_I VWO le_TC_def le_less less_TC_imp_VWO pair_in_Id_conv)
+    by (metis DiffI IdD Linear_order_VWO Linear_order_in_diff_Id Ord_linear Ord_mem_iff_less_TC VWO iso_tuple_UNIV_I le_TC_def mem_imp_VWO)
 qed
 
 lemma VWO_iff_Ord_le [simp]: "\<lbrakk>Ord \<alpha>; Ord \<beta>\<rbrakk> \<Longrightarrow> (\<beta>, \<alpha>) \<in> VWO \<longleftrightarrow> \<beta> \<le> \<alpha>"
@@ -1479,7 +1468,7 @@ proof
     by (meson ordermap_bij assms(4) bij_betw_def r)
   have B: "bij_betw (ordermap B s) B (ordermap B s ` B)"
     by (meson ordermap_bij assms(8) bij_betw_def s)
-  define f where "f \<equiv> inv_into B (ordermap B s) o ordermap A r"
+  define f where "f \<equiv> inv_into B (ordermap B s) \<circ> ordermap A r"
   show ?rhs
   proof (intro exI conjI)
     have bijA: "bij_betw (ordermap A r) A (elts \<gamma>)"
@@ -2263,7 +2252,7 @@ proof -
     let ?f = "\<lambda>z. if z \<in> elts x then Inl z else Inr z"
     show "inj_on ?f (elts (x \<squnion> y))"
       by (simp add: inj_on_def)
-    show "?f ` elts (x \<squnion> y) \<subseteq> elts (x \<Uplus> y)" thm add.left_commute
+    show "?f ` elts (x \<squnion> y) \<subseteq> elts (x \<Uplus> y)"
       by force
   qed
   then show ?thesis

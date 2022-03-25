@@ -40,6 +40,9 @@ lemma small_iff_range: "small X \<longleftrightarrow> X \<in> range elts"
   apply (simp add: small_def)
   by (metis inj_on_id2 replacement_raw the_inv_into_onto)
 
+lemma small_eqpoll: "small A \<longleftrightarrow> (\<exists>x. elts x \<approx> A)"
+  unfolding small_def by (metis UNIV_I bij_betw_def eqpoll_def eqpoll_sym imageE image_eqI)
+
 text\<open>Small classes can be mapped to sets.\<close>
 definition set :: "V set \<Rightarrow> V"
   where "set X \<equiv> (if small X then inv elts X else inv elts {})"
