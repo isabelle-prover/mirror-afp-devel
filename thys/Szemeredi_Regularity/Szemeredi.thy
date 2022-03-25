@@ -1011,8 +1011,7 @@ proof
       by (meson Pk finG finite_elements finite_graph_partition_def)
     then show ?thesis
       using that exists_refinement [OF _ finG irreg assms] irreg Pk
-      apply (simp only: nxt_def if_False)
-      by (metis (no_types, lifting) \<Phi>_def someI)
+      unfolding \<Phi>_def nxt_def by (smt (verit) someI)
   qed
   have partition_on: "partition_on (uverts G) (iter i)" for i
   proof (induction i)
