@@ -44,7 +44,7 @@ proof (intro_classes, rule exI)
 qed
 
 instance V :: embeddable
-  by (rule embeddable_classI [where f=id]) auto
+  by (intro_classes) (meson inj_on_id)
 
 instance prod :: (embeddable,embeddable) embeddable
 proof -
@@ -179,10 +179,7 @@ proof -
     using that by (auto simp: inj_on_def)
   with small [where 'a='a] small [where 'a='b]
   show "OFCLASS('a \<times> 'b, small_class)"
-    apply intro_classes
-    unfolding small_def
-    apply clarify
-    by (metis down_raw dual_order.refl)
+    by intro_classes (smt (verit) down_raw f_inv_into_f set_eq_subset small_def)
 qed
 
 instance sum :: (small,small) small
@@ -194,10 +191,7 @@ proof -
     using that by (force simp: inj_on_def split: sum.split)+
   with small [where 'a='a] small [where 'a='b]
   show "OFCLASS('a + 'b, small_class)"
-    apply intro_classes
-    unfolding small_def
-    apply clarify
-    by (metis down_raw dual_order.refl)
+    by intro_classes (metis down_raw replacement set_eq_subset small_def small_iff)
 qed
 
 instance option :: (small) small
@@ -209,10 +203,7 @@ proof -
     using that  by (auto simp: inj_on_def split: option.split_asm)
   with small [where 'a='a]
   show "OFCLASS('a option, small_class)"
-    apply intro_classes
-    unfolding small_def
-    apply clarify
-    by (metis down_raw elts_vinsert subset_insertI)
+    by intro_classes (smt (verit) down order.refl ex_inj small_iff small_image_iff small_insert)
 qed
 
 instance list :: (small) small
@@ -244,10 +235,7 @@ proof -
   qed
   with small [where 'a='a]
   show "OFCLASS('a list, small_class)"
-    apply intro_classes
-    unfolding small_def
-    apply clarify
-    by (metis inj_V_of_list order_refl small_def small_iff_range)
+    by intro_classes (metis inj_V_of_list order.refl small_def small_iff small_iff_range)
 qed
 
 instance "fun" :: (small,embeddable) embeddable
@@ -285,10 +273,7 @@ proof -
   qed
   with small [where 'a='a] small [where 'a='b]
   show "OFCLASS('a \<Rightarrow> 'b, small_class)"
-    apply intro_classes
-    unfolding small_def
-    apply clarify
-    by (metis down_raw dual_order.refl)
+    by intro_classes (smt (verit, best) down_raw order_refl imageE small_def)
 qed
 
 instance set :: (small) small 
@@ -301,10 +286,7 @@ proof -
     using that by (auto simp: inj_on_def image_subset_iff)
   from small [where 'a='a]
   show "OFCLASS('a set, small_class)"
-    apply intro_classes
-    unfolding small_def
-    apply clarify
-    by (metis 1 2 down_raw subsetI)
+    by intro_classes (metis 1 2 down_raw imageE small_def order_refl)
 qed
 
 instance real :: small 
@@ -322,6 +304,5 @@ proof -
   then show "OFCLASS(complex, small_class)"
     by intro_classes (meson TC_small replacement smaller_than_small subset_eq)
 qed
-
 
 end
