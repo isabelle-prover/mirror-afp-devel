@@ -26,21 +26,12 @@ class ScrollSpy {
     this._active_id = null
     this._scrollHeight = 0
     this._target = target
-    this._eps = 0.01
     this._target_suffix = target_suffix
 
     window.onscroll = () => this._process()
 
     this.refresh()
     this._process()
-  }
-
-  scroll_to(id) {
-    const elem = document.getElementById(id + this._target_suffix)
-    if (elem) {
-      const offset = -window.innerHeight * (this._offset - this._eps)
-      window.scroll(0, elem.offsetTop + offset)
-    }
   }
 
   refresh() {

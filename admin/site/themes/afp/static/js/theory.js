@@ -24,12 +24,12 @@ function target(base_href, rel_href) {
   else return `${base_href}/../${rel_href}`
 }
 
-function to_id(thy_name, ref) {
+function to_ref(thy_name, ref) {
   if (ref) return `${thy_name}.html#${ref}`
   else return `${thy_name}.html`
 }
 
-const to_fresh_id = (id) => `${id}#`
+const to_id = (id) => `${id}#`
 const to_svg_id = (id) => `${id}#svg`
 const to_container_id = (id) => `${id}#container`
 const to_collapsible_id = (id) => `${id}#collapsible`
@@ -45,7 +45,7 @@ function translate(base_href, thy_name, thy_body) {
   const thy_refs = [...thy_body.getElementsByTagName('span')].map((span) => {
     let ref = span.getAttribute('id')
     if (ref) {
-      span.setAttribute('id', to_fresh_id(to_id(thy_name, ref)))
+      span.setAttribute('id', to_id(to_ref(thy_name, ref)))
     }
     return ref
   }).filter(e => e)
@@ -105,12 +105,12 @@ async function open_theory(thy_name) {
 function nav_tree_rec(thy_name, path, key, ref_parts, type) {
   const rec_ref = ref_parts.filter(e => e.length > 0)
   const ref = `${path.join('.')}.${key}|${type}`
-  const id = to_id(thy_name, ref)
+  const id = to_ref(thy_name, ref)
   let res
   if (rec_ref.length < ref_parts.length) {
     res = `<a id="${to_a_id(id)}" class="${CLASS_SPY_LINK}" href="#${id}">${escape_html(key)}</a>`
   } else {
-    const head_id = to_id(thy_name, `${[...path, key, ...ref_parts[0]].join('.')}|${type}`)
+    const head_id = to_ref(thy_name, `${[...path, key, ...ref_parts[0]].join('.')}|${type}`)
     res = `<a id="${to_a_id(id)}" class="${CLASS_SPY_LINK}" href="#${head_id}">${escape_html(key)}</a>`
   }
 
@@ -167,6 +167,14 @@ let navbar_last_opened = []
 
 /* controls */
 
+const scroll_to = (ref) => {
+  const elem = document.getElementById(to_id(decodeURI(ref)))
+  if (elem) {
+    const offset = -window.innerHeight * 0.49
+    window.scroll(0, elem.offsetTop + offset)
+  }
+}
+
 const follow_theory_hash = async () => {
   let hash = window.location.hash
 
@@ -176,12 +184,12 @@ const follow_theory_hash = async () => {
     const thy_name = strip_suffix(id.split('#')[0], '.html')
     await open_theory(thy_name)
 
-    ScrollSpy.instance.scroll_to(id)
+    scroll_to(id)
   }
 }
 
 const toggle_theory = async (thy_name) => {
-  const hash = `#${to_id(thy_name)}`
+  const hash = `#${to_ref(thy_name)}`
   const collapsible = document.getElementById(to_container_id(thy_name))
   if (collapsible) {
     if (!collapse(collapsible)) {
@@ -240,7 +248,7 @@ const init = async () => {
 
       const thy_collapsible = parse_elem(`
         <div id="${to_container_id(thy_name)}" theory-src="${href}" style="min-width: fit-content" class="${CLASS_COLLAPSE_CONTAINER} ${CLASS_COLLAPSED}">
-          <h2 id="${to_id(thy_name)}" style="cursor: pointer" onclick="toggle_theory('${thy_name}')">
+          <h2 id="${to_ref(thy_name)}" style="cursor: pointer" onclick="toggle_theory('${thy_name}')">
             ${thy_name}
           <svg id="${to_svg_id(thy_name)}" viewBox="0 0 10 10" aria-hidden="true" focusable="false"
                class="${CLASS_INVERTIBLE}">
@@ -261,7 +269,7 @@ const init = async () => {
       </li>`))
     navbar.append(...thy_names.map((thy_name) => parse_elem(`
       <li id="${to_nav_id(thy_name)}">
-        <a id="${to_a_id(thy_name)}" class="${CLASS_SPY_LINK} ${CLASS_THY_NAV}" href="#${to_id(thy_name)}">
+        <a id="${to_a_id(thy_name)}" class="${CLASS_SPY_LINK} ${CLASS_THY_NAV}" href="#${to_ref(thy_name)}">
           ${thy_name}
         </a>
       </li>`)))
