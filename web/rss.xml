@@ -39,6 +39,45 @@ primitive recursive function is strictly dominated by Ackermann&#39;s
 function. The formalisation follows an earlier one by Nora Szasz.</description>
     </item>
     <item>
+       <title>A Naive Prover for First-Order Logic</title>
+              <link>https://www.isa-afp.org/entries/FOL_Seq_Calc3.html</link>
+       <guid>https://www.isa-afp.org/entries/FOL_Seq_Calc3.html</guid>
+       <dc:creator> Asta Halkjær From       </dc:creator>
+       <pubDate>22 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; The AFP entry &lt;a
+href=&#34;https://www.isa-afp.org/entries/Abstract_Completeness.html&#34;&gt;Abstract
+Completeness&lt;/a&gt; by Blanchette, Popescu and Traytel formalizes
+the core of Beth/Hintikka-style completeness proofs for first-order
+logic and can be used to formalize executable sequent calculus
+provers. In the Journal of Automated Reasoning, the authors
+instantiate the framework with a sequent calculus for first-order
+logic and prove its completeness. Their use of an infinite set of
+proof rules indexed by formulas yields very direct arguments. A fair
+stream of these rules controls the prover, making its definition
+remarkably simple. The AFP entry, however, only contains a toy example
+for propositional logic. The AFP entry &lt;a
+href=&#34;https://www.isa-afp.org/entries/FOL_Seq_Calc2.html&#34;&gt;A
+Sequent Calculus Prover for First-Order Logic with Functions&lt;/a&gt;
+by From and Jacobsen also uses the framework, but uses a finite set of
+generic rules resulting in a more sophisticated prover with more
+complicated proofs. &lt;/p&gt; &lt;p&gt; This entry contains an
+executable sequent calculus prover for first-order logic with
+functions in the style presented by Blanchette et al. The prover can
+be exported to Haskell and this entry includes formalized proofs of
+its soundness and completeness. The proofs are simpler than those for
+the prover by From and Jacobsen but the performance of the prover is
+significantly worse. &lt;/p&gt; &lt;p&gt; The included theory
+&lt;em&gt;Fair-Stream&lt;/em&gt; first proves that the sequence of
+natural numbers 0, 0, 1, 0, 1, 2, etc. is fair. It then proves that
+mapping any surjective function across the sequence preserves
+fairness. This method of obtaining a fair stream of rules is similar
+to the one given by Blanchette et al. The concrete functions from
+natural numbers to terms, formulas and rules are defined using the
+&lt;em&gt;Nat-Bijection&lt;/em&gt; theory in the HOL-Library.
+&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</title>
               <link>https://www.isa-afp.org/entries/Cotangent_PFD_Formula.html</link>
        <guid>https://www.isa-afp.org/entries/Cotangent_PFD_Formula.html</guid>
@@ -645,21 +684,6 @@ operations to Imperative HOL with time, and show correctness and
 complexity. This yields a practically more efficient implementation,
 and eliminates the manually defined timing functions from the trusted
 base of the proof.</description>
-    </item>
-    <item>
-       <title>Foundation of geometry in planes, and some complements: Excluding the parallel axioms</title>
-              <link>https://www.isa-afp.org/entries/Foundation_of_geometry.html</link>
-       <guid>https://www.isa-afp.org/entries/Foundation_of_geometry.html</guid>
-       <dc:creator> Fumiya Iwama       </dc:creator>
-       <pubDate>22 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-&#34;Foundations of Geometry&#34; is a mathematical book written by
-Hilbert in 1899. This entry is a complete formalization of
-&#34;Incidence&#34; (excluding cubic axioms), &#34;Order&#34; and
-&#34;Congruence&#34; (excluding point sequences) of the axioms
-constructed in this book. In addition, the theorem of the problem
-about the part that is treated implicitly and is not clearly stated in
-it is being carried out in parallel.</description>
     </item>
   </channel>
 </rss>

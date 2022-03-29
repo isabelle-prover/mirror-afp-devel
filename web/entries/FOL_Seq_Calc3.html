@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A Naive Prover for First-Order Logic - Archive of Formal Proofs
+</title>
+<link rel="stylesheet" type="text/css" href="../front.css">
+<link rel="icon" href="../images/favicon.ico" type="image/icon">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
+<!-- MathJax for LaTeX support in abstracts -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']]
+  },
+  processEscapes: true,
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body class="mathjax_ignore">
+
+<table width="100%">
+<tbody>
+<tr>
+
+<!-- Navigation -->
+<td width="20%" align="center" valign="top">
+  <p>&nbsp;</p>
+  <a href="https://www.isa-afp.org/">
+    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  </a>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <table class="nav" width="80%">
+    <tr>
+      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../about.html">About</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../submitting.html">Submission</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../using.html">Using Entries</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../search.html">Search</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../statistics.html">Statistics</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../topics.html">Index</a></td>
+    </tr>
+    <tr>
+      <td class="nav"><a href="../download.html">Download</a></td>
+    </tr>
+  </table>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+</td>
+
+
+<!-- Content -->
+<td width="80%" valign="top">
+<div align="center">
+  <p>&nbsp;</p>
+  <h1>          <font class="first">A</font>
+  
+          <font class="first">N</font>aive
+  
+          <font class="first">P</font>rover
+  
+          for
+  
+          <font class="first">F</font>irst-Order
+  
+          <font class="first">L</font>ogic
+  
+</h1>
+  <p>&nbsp;</p>
+
+<table width="80%" class="data">
+<tbody>
+<tr>
+  <td class="datahead" width="20%">Title:</td>
+  <td class="data" width="80%">A Naive Prover for First-Order Logic</td>
+</tr>
+
+<tr>
+  <td class="datahead">
+          Author:
+      </td>
+  <td class="data">
+              <a href="https://people.compute.dtu.dk/ahfrom/">Asta Halkjær From</a>
+      </td>
+</tr>
+
+
+
+<tr>
+  <td class="datahead">Submission date:</td>
+  <td class="data">2022-03-22</td>
+</tr>
+
+<tr>
+  <td class="datahead" valign="top">Abstract:</td>
+  <td class="abstract mathjax_process">
+<p> The AFP entry <a
+href="https://www.isa-afp.org/entries/Abstract_Completeness.html">Abstract
+Completeness</a> by Blanchette, Popescu and Traytel formalizes
+the core of Beth/Hintikka-style completeness proofs for first-order
+logic and can be used to formalize executable sequent calculus
+provers. In the Journal of Automated Reasoning, the authors
+instantiate the framework with a sequent calculus for first-order
+logic and prove its completeness. Their use of an infinite set of
+proof rules indexed by formulas yields very direct arguments. A fair
+stream of these rules controls the prover, making its definition
+remarkably simple. The AFP entry, however, only contains a toy example
+for propositional logic. The AFP entry <a
+href="https://www.isa-afp.org/entries/FOL_Seq_Calc2.html">A
+Sequent Calculus Prover for First-Order Logic with Functions</a>
+by From and Jacobsen also uses the framework, but uses a finite set of
+generic rules resulting in a more sophisticated prover with more
+complicated proofs. </p> <p> This entry contains an
+executable sequent calculus prover for first-order logic with
+functions in the style presented by Blanchette et al. The prover can
+be exported to Haskell and this entry includes formalized proofs of
+its soundness and completeness. The proofs are simpler than those for
+the prover by From and Jacobsen but the performance of the prover is
+significantly worse. </p> <p> The included theory
+<em>Fair-Stream</em> first proves that the sequence of
+natural numbers 0, 0, 1, 0, 1, 2, etc. is fair. It then proves that
+mapping any surjective function across the sequence preserves
+fairness. This method of obtaining a fair stream of rules is similar
+to the one given by Blanchette et al. The concrete functions from
+natural numbers to terms, formulas and rules are defined using the
+<em>Nat-Bijection</em> theory in the HOL-Library.
+</p></td>
+</tr>
+
+
+<tr>
+  <td class="datahead" valign="top">BibTeX:</td>
+  <td class="formatted">
+        <pre>@article{FOL_Seq_Calc3-AFP,
+  author  = {Asta Halkjær From},
+  title   = {A Naive Prover for First-Order Logic},
+  journal = {Archive of Formal Proofs},
+  month   = mar,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/FOL_Seq_Calc3.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+  </td>
+</tr>
+
+    <tr><td class="datahead">License:</td>
+        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
+
+    
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Abstract_Completeness.html">Abstract_Completeness</a>, <a href="Abstract_Soundness.html">Abstract_Soundness</a>      </td></tr>
+          
+                    
+
+        
+  </tbody>
+</table>
+
+<p></p>
+
+<table class="links">
+  <tbody>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/FOL_Seq_Calc3/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/FOL_Seq_Calc3/document.pdf">Proof document</a>
+    </td>
+    </tr>
+    <tr>
+    <td class="links">
+      <a href="../browser_info/current/AFP/FOL_Seq_Calc3/index.html">Browse theories</a>
+      </td></tr>
+    <tr>
+    <td class="links">
+      <a href="../release/afp-FOL_Seq_Calc3-current.tar.gz">Download this entry</a>
+    </td>
+    </tr>
+
+
+          <tr><td class="links">Older releases:
+            None
+            </td></tr>
+    
+  </tbody>
+</table>
+
+</div>
+</td>
+
+</tr>
+</tbody>
+</table>
+
+<script src="../jquery.min.js"></script>
+<script src="../script.js"></script>
+
+</body>
+</html>
