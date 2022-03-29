@@ -665,7 +665,7 @@ next
     then have fin_P: "finite R" and card_P_gt0: "card R > 0" if "R\<in>P" for R
       using fin finite_graph_partition_finite finite_graph_partition_gt0 that by auto
     have card_P_le: "card R \<le> ?n" if "R\<in>P" for R
-      using fin fin_part finite_graph_partition_le that by meson
+      by (meson card_mono fin fin_part finite_graph_partition_subset that)
     have P_disjnt: "\<And>R S. \<lbrakk>R \<noteq> S; R \<in> P; S \<in> P\<rbrakk> \<Longrightarrow> R \<inter> S = {}"
       using fin_part
       by (metis disjnt_def finite_graph_partition_def insert_absorb pairwise_insert partition_on_def) 
@@ -691,7 +691,7 @@ next
     
     text \<open>Obtain the set of edges meeting condition (a).\<close>
     
-    define irreg_pairs where "irreg_pairs \<equiv> {(R,S). R \<in> P \<and> S \<in> P \<and> irregular_pair R S G (\<epsilon>/4)}"
+    define irreg_pairs where "irreg_pairs \<equiv> {(R,S). R \<in> P \<and> S \<in> P \<and> \<not> regular_pair R S G (\<epsilon>/4)}"
     define Ea where "Ea \<equiv> (\<Union>(R,S) \<in> irreg_pairs. edge R S)"
     
     text \<open>Obtain the set of edges meeting condition (b).\<close>
@@ -719,7 +719,7 @@ next
         by (meson \<open>finite P\<close> finite_SigmaI finite_subset)
       have "card Ea \<le> (\<Sum>(R,S)\<in>irreg_pairs. card (edge R S))"
         by (simp add: Ea_def card_UN_le [OF \<open>finite irreg_pairs\<close>] case_prod_unfold)
-      also have "\<dots> \<le> (\<Sum>(R,S) \<in> {(R,S). R\<in>P \<and> S\<in>P \<and> irregular_pair R S G (\<epsilon>/4)}. card R * card S)"
+      also have "\<dots> \<le> (\<Sum>(R,S) \<in> {(R,S). R\<in>P \<and> S\<in>P \<and> \<not> regular_pair R S G (\<epsilon>/4)}. card R * card S)"
         unfolding irreg_pairs_def using \<section> by (force intro: sum_mono)
       also have "\<dots> = (\<Sum>(R,S) \<in> irregular_set (\<epsilon>/4) G P. card R * card S)"
         by (simp add: irregular_set_def)
@@ -928,14 +928,11 @@ edge_density_def)
           using triangle_free_graph_def non by auto
         then have xin: "x \<in> (uverts Gnew)" and yin: "y \<in> (uverts Gnew)" and zin: "z \<in> (uverts Gnew)" 
           using triangle_in_graph_verts new_wf by auto
-        then obtain R where xinp: "x \<in> R" and ilt: "R\<in>P" 
-          using graph_partition_new finite_graph_partition_obtain xin  by metis
-        then obtain S where yinp: "y \<in> S" and jlt: "S\<in>P" 
-          using graph_partition_new finite_graph_partition_obtain yin by metis
-        then obtain T where zinp: "z \<in> T" and klt: "T\<in>P" 
-          using graph_partition_new finite_graph_partition_obtain zin by metis
-        have finitesubsets: "finite R" "finite S" "finite T"
-          using ilt jlt klt new_fin fin_part finite_graph_partition_finite fin by auto
+        then obtain R S T where xinp: "x \<in> R" and ilt: "R\<in>P" and yinp: "y \<in> S" and jlt: "S\<in>P"
+                          and zinp: "z \<in> T" and klt: "T\<in>P" 
+          by (metis graph_partition_new xin Union_iff finite_graph_partition_equals)
+        then have finitesubsets: "finite R" "finite S" "finite T"
+          using new_fin fin_part finite_graph_partition_finite fin by auto
         have subsets: "R \<subseteq> uverts Gnew" "S \<subseteq> uverts Gnew" "T \<subseteq> uverts Gnew" 
           using finite_graph_partition_subset ilt jlt klt graph_partition_new by auto
         have min_sizes: "card R \<ge> ?e4M*?n" "card S \<ge> ?e4M*?n" "card T \<ge> ?e4M*?n"

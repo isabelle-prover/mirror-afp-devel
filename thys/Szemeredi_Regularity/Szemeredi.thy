@@ -73,11 +73,6 @@ lemma finite_graph_partition_finite:
   shows "finite X"
   by (meson assms finite_graph_partition_subset infinite_super)
 
-lemma finite_graph_partition_le:
-  assumes "finite_graph_partition V P k" "finite V" "X \<in> P"
-  shows "card X \<le> card V"
-  by (meson assms card_mono finite_graph_partition_subset)
-
 lemma finite_graph_partition_gt0:
   assumes "finite_graph_partition V P k" "finite V" "X \<in> P"
   shows "card X > 0"
@@ -87,11 +82,6 @@ lemma card_finite_graph_partition:
   assumes "finite_graph_partition V P k" "finite V"
   shows "(\<Sum>X\<in>P. card X) = card V"
   by (metis assms finite_graph_partition_def finite_graph_partition_finite product_partition)
-
-lemma finite_graph_partition_obtain:
-  assumes "finite_graph_partition V P k" "x \<in> V"
-  obtains X where "X \<in> P" and "x \<in> X"
-  using assms finite_graph_partition_equals by force
 
 subsubsection \<open>Tools to combine the refinements of the partition @{term "P i"} for each @{term i}\<close>
 
@@ -190,22 +180,6 @@ definition regular_pair::  "uvert set  \<Rightarrow> uvert set \<Rightarrow> ugr
 lemma regular_pair_commute: "regular_pair X Y G \<epsilon> \<longleftrightarrow> regular_pair Y X G \<epsilon>"
   by (metis edge_density_commute regular_pair_def)
 
-abbreviation "irregular_pair X Y G \<epsilon> \<equiv> \<not> regular_pair X Y G \<epsilon>"
-
-lemma irregular_pair_E:
-  fixes \<epsilon>::real
-  assumes "irregular_pair X Y G \<epsilon>" 
-  obtains A B where "A \<subseteq> X \<and> B \<subseteq> Y \<and> (card A \<ge> \<epsilon> * card X) \<and> (card B \<ge> \<epsilon> * card Y)"
-              "\<bar>edge_density A B G - edge_density X Y G\<bar> > \<epsilon>"
-  using assms by (auto simp: not_le regular_pair_def)
-
-lemma irregular_pair_I: 
-  fixes \<epsilon>::real
-  assumes "A \<subseteq> X" "B \<subseteq> Y" "(card A \<ge> \<epsilon> * card X)" "(card B \<ge> \<epsilon> * card Y)"
-              "\<bar>edge_density A B G - edge_density X Y G\<bar> > \<epsilon>"
-  shows "irregular_pair X Y G \<epsilon>"
-  using assms  by (auto simp: not_le regular_pair_def)
-
 lemma edge_density_Un:
   assumes "disjnt X1 X2" "finite X1" "finite X2" "finite Y"
   shows "edge_density (X1 \<union> X2) Y G = (edge_density X1 Y G * card X1 + edge_density X2 Y G * card X2) / (card X1 + card X2)"
@@ -270,7 +244,7 @@ text \<open>For the sake of generality, and following Zhao's Online Lecture
 we do not impose disjointness: we do not include @{term "i\<noteq>j"} below.\<close>
 
 definition irregular_set:: "[real, ugraph, uvert set set] \<Rightarrow> (uvert set \<times> uvert set) set"
-  where "irregular_set \<equiv> \<lambda>\<epsilon>::real. \<lambda>G P. {(R,S)|R S. R\<in>P \<and> S\<in>P \<and> irregular_pair R S G \<epsilon>}"
+  where "irregular_set \<equiv> \<lambda>\<epsilon>::real. \<lambda>G P. {(R,S)|R S. R\<in>P \<and> S\<in>P \<and> \<not> regular_pair R S G \<epsilon>}"
 
 text\<open>A regular partition may contain a few irregular pairs as long as their total size is bounded as follows.\<close>
 definition regular_partition:: "[real, ugraph, uvert set set] \<Rightarrow> bool"
@@ -347,7 +321,7 @@ proof -
     have [simp]: "finite Y" if "Y \<in> insert X P" for Y
       by (meson finite_graph_partition_finite insert.prems that)
     have C: "card Y \<le> card V" if"Y \<in> insert X P" for Y
-      by (meson finite_graph_partition_le insert.prems that)
+      by (meson card_mono finite_graph_partition_subset insert.prems that)
     have D [simp]: "(\<Sum>Y\<in>P. real (card Y)) = real (card V) - real (card X)"
       by (smt (verit) card_finite_graph_partition insert.hyps insert.prems of_nat_sum sum.cong sum.insert)
     have "disjnt X (\<Union>P)"
