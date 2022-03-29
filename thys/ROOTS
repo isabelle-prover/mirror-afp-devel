@@ -187,6 +187,7 @@ FOL_Axiomatic
 FOL_Harrison
 FOL_Seq_Calc1
 FOL_Seq_Calc2
+FOL_Seq_Calc3
 Factor_Algebraic_Polynomial
 Factored_Transition_System_Bounding
 Falling_Factorial_Sum
