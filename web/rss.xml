@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>23 Mar 2022 00:00:00 +0000</pubDate>
+    <pubDate>24 Mar 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
+              <link>https://www.isa-afp.org/entries/Dedekind_Real.html</link>
+       <guid>https://www.isa-afp.org/entries/Dedekind_Real.html</guid>
+       <dc:creator> Jacques D. Fleuriot, Lawrence C. Paulson       </dc:creator>
+       <pubDate>24 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+The type of real numbers is constructed from the positive rationals
+using the method of Dedekind cuts. This development, briefly described
+in papers by the authors, follows the textbook presentation by
+Gleason. It&#39;s notable that the first formalisation of a
+significant piece of mathematics, by Jutting in 1977, involved a
+similar construction.</description>
+    </item>
     <item>
        <title>Ackermann's Function Is Not Primitive Recursive</title>
               <link>https://www.isa-afp.org/entries/Ackermanns_not_PR.html</link>
@@ -646,23 +660,6 @@ Hilbert in 1899. This entry is a complete formalization of
 constructed in this book. In addition, the theorem of the problem
 about the part that is treated implicitly and is not clearly stated in
 it is being carried out in parallel.</description>
-    </item>
-    <item>
-       <title>The Hahn and Jordan Decomposition Theorems</title>
-              <link>https://www.isa-afp.org/entries/Hahn_Jordan_Decomposition.html</link>
-       <guid>https://www.isa-afp.org/entries/Hahn_Jordan_Decomposition.html</guid>
-       <dc:creator> Marie Cousin, Mnacho Echenim, Hervé Guiol       </dc:creator>
-       <pubDate>19 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-In this work we formalize the Hahn decomposition theorem for signed
-measures, namely that any measure space for a signed measure can be
-decomposed into a positive and a negative set, where every measurable
-subset of the positive one has a positive measure, and every
-measurable subset of the negative one has a negative measure. We also
-formalize the Jordan decomposition theorem as a corollary, which
-states that the signed measure under consideration admits a unique
-decomposition into a difference of two positive measures, at least one
-of which is finite.</description>
     </item>
   </channel>
 </rss>
