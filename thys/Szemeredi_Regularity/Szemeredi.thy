@@ -190,13 +190,14 @@ proof (cases "finite Y")
 qed (simp add: edge_density_def)
 
 lemma edge_density_partition:
-  assumes U: "finite U" "finite_graph_partition U P n"
+  assumes "finite_graph_partition U P n"
   shows "edge_density U W G = (\<Sum>X\<in>P. edge_density X W G * card X) / card U"
-proof -
+proof (cases "finite U")
+  case True
   have "finite P"
     using assms finite_graph_partition_def by blast
   then show ?thesis
-    using U 
+    using True assms
   proof (induction P arbitrary: n U)
     case empty
     then show ?case
@@ -209,7 +210,7 @@ proof -
     have UX: "finite_graph_partition (U-X) P (n-1)"
       by (auto simp: finite_graph_partition_def partition_on_def disjnt_iff pairwise_insert)
     then have finU: "finite (\<Union>P)"
-      using finite_graph_partition_equals insert by auto
+      by (simp add: finite_graph_partition_equals insert)
     then have sumXP: "card U = card X + card (\<Union>P)"
       by (metis UX card_finite_graph_partition finite_graph_partition_equals insert.hyps insert.prems sum.insert)
     have FUX: "finite (U - X)"
@@ -235,8 +236,7 @@ proof -
       by (metis (no_types, lifting) Diff_eq_empty_iff finite_graph_partition_empty sum.empty)
     finally show ?case .
   qed
-qed
-
+qed (simp add: edge_density_def)
 
 text\<open>Let @{term P}, @{term Q} be partitions of a set of vertices @{term V}. 
   Then @{term P} refines @{term Q} if for all @{term \<open>A \<in> P\<close>} there is @{term \<open>B \<in> Q\<close>} 
@@ -383,14 +383,14 @@ proof (cases "finite \<U>")
   proof -
     have "edge_density \<U> \<W> G * (\<Sum>R\<in>U. edge_density R \<W> G * card R) 
         = edge_density \<U> \<W> G * (edge_density \<U> \<W> G * (\<Sum>R\<in>U. card R))"
-      using \<open>finite \<U>\<close> assms card_finite_graph_partition  by (auto simp: edge_density_partition [OF _ U])
+      using \<open>finite \<U>\<close> assms card_finite_graph_partition  by (auto simp: edge_density_partition [OF U])
     then show ?thesis
       by (simp add: mult.commute sum_distrib_left)
   qed
   also have "\<dots> = (\<Sum>R\<in>U. card R * edge_density R \<W> G) * edge_density \<U> \<W> G"
     by (simp add: sum_distrib_left mult_ac)
   also have "\<dots> = (\<Sum>R\<in>U. card R * edge_density R \<W> G)\<^sup>2 / card \<U>"
-    using \<open>finite \<U>\<close> assms by (simp add: edge_density_partition [OF _ U] mult_ac flip: power2_eq_square)
+    using assms by (simp add: edge_density_partition [OF U] mult_ac flip: power2_eq_square)
   also have "\<dots> \<le> (\<Sum>R\<in>U. card R * (edge_density R \<W> G)\<^sup>2)"
     using \<section> U card_finite_graph_partition \<open>finite \<U>\<close> 
     by (force simp add: mult_ac divide_simps simp flip: of_nat_sum)
