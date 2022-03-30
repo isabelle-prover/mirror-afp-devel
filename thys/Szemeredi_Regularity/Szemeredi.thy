@@ -181,13 +181,16 @@ lemma regular_pair_commute: "regular_pair X Y G \<epsilon> \<longleftrightarrow>
   by (metis edge_density_commute regular_pair_def)
 
 lemma edge_density_Un:
-  assumes "disjnt X1 X2" "finite X1" "finite X2" "finite Y"
+  assumes "disjnt X1 X2" "finite X1" "finite X2"
   shows "edge_density (X1 \<union> X2) Y G = (edge_density X1 Y G * card X1 + edge_density X2 Y G * card X2) / (card X1 + card X2)"
-  using assms unfolding edge_density_def
-  by (simp add: all_edges_between_disjnt1 all_edges_between_Un1 finite_all_edges_between card_Un_disjnt divide_simps)
+proof (cases "finite Y")
+  case True
+  with assms show ?thesis 
+    by (simp add: edge_density_def all_edges_between_disjnt1 all_edges_between_Un1 finite_all_edges_between card_Un_disjnt card_ge_0_finite divide_simps)
+qed (simp add: edge_density_def)
 
 lemma edge_density_partition:
-  assumes U: "finite U" "finite_graph_partition U P n" and "finite W"
+  assumes U: "finite U" "finite_graph_partition U P n"
   shows "edge_density U W G = (\<Sum>X\<in>P. edge_density X W G * card X) / card U"
 proof -
   have "finite P"
@@ -222,7 +225,7 @@ proof -
         using UX disjnt_iff finite_graph_partition_equals by auto
       show "finite X"
         using XUP \<open>finite U\<close> by blast
-    qed (use \<open>finite W\<close> finU in auto)
+    qed (use finU in auto)
     also have "\<dots> = (edge_density X W G * card X + edge_density (U-X) W G * card (\<Union>P)) 
                   / card U"
       using UX card_finite_graph_partition finite_graph_partition_equals insert.prems(1) insert.prems(2) sumXP by auto
@@ -365,9 +368,10 @@ text\<open>Zhao's Lemma 3.8 and Gowers's remark after Lemma 11.
  We follow Gowers's proof, which avoids the use of probability.\<close>
 
 lemma energy_graph_partition_half:
-  assumes fin: "finite \<U>" "finite \<W>" and U: "finite_graph_partition \<U> U n"
+  assumes U: "finite_graph_partition \<U> U n"
   shows "card \<U> * (edge_density \<U> \<W> G)\<^sup>2 \<le> (\<Sum>R\<in>U. card R * (edge_density R \<W> G)\<^sup>2)"
-proof -
+proof (cases "finite \<U>")
+  case True
   have \<section>: "(\<Sum>R\<in>U. card R * edge_density R \<W> G)\<^sup>2 
          \<le> (sum card U) * (\<Sum>R\<in>U. card R * (edge_density R \<W> G)\<^sup>2)"
     by (simp add: sum_products_le)
@@ -379,37 +383,32 @@ proof -
   proof -
     have "edge_density \<U> \<W> G * (\<Sum>R\<in>U. edge_density R \<W> G * card R) 
         = edge_density \<U> \<W> G * (edge_density \<U> \<W> G * (\<Sum>R\<in>U. card R))"
-      using assms card_finite_graph_partition  by (auto simp: edge_density_partition [OF _ U])
+      using \<open>finite \<U>\<close> assms card_finite_graph_partition  by (auto simp: edge_density_partition [OF _ U])
     then show ?thesis
       by (simp add: mult.commute sum_distrib_left)
   qed
   also have "\<dots> = (\<Sum>R\<in>U. card R * edge_density R \<W> G) * edge_density \<U> \<W> G"
     by (simp add: sum_distrib_left mult_ac)
   also have "\<dots> = (\<Sum>R\<in>U. card R * edge_density R \<W> G)\<^sup>2 / card \<U>"
-    using assms
-    by (simp add: edge_density_partition [OF _ U] mult_ac flip: power2_eq_square)
+    using \<open>finite \<U>\<close> assms by (simp add: edge_density_partition [OF _ U] mult_ac flip: power2_eq_square)
   also have "\<dots> \<le> (\<Sum>R\<in>U. card R * (edge_density R \<W> G)\<^sup>2)"
-    using \<section> U card_finite_graph_partition fin by (force simp add: mult_ac divide_simps simp flip: of_nat_sum)
+    using \<section> U card_finite_graph_partition \<open>finite \<U>\<close> 
+    by (force simp add: mult_ac divide_simps simp flip: of_nat_sum)
   finally show ?thesis .
-qed
+qed (simp add: sum_nonneg)
 
 proposition energy_graph_partition_increase:
-  assumes fin: "finite \<U>" "finite \<W>" 
-    and U: "finite_graph_partition \<U> U k" 
-    and V: "finite_graph_partition \<W> W l"
+  assumes U: "finite_graph_partition \<U> U k" and V: "finite_graph_partition \<W> W l"
   shows "energy_graph_partitions_subsets G U W \<ge> energy_graph_subsets \<U> \<W> G" 
 proof -
   have "(card \<U> * card \<W>) * (edge_density \<U> \<W> G)\<^sup>2 = card \<W> * (card \<U> * (edge_density \<U> \<W> G)\<^sup>2)"
-    using fin by (simp add: mult_ac)
+    by (simp add: mult_ac)
   also have "\<dots> \<le> card \<W> * (\<Sum>R\<in>U. card R * (edge_density R \<W> G)\<^sup>2)"
-    by (intro mult_left_mono energy_graph_partition_half fin) (use assms in auto)
+    by (intro mult_left_mono energy_graph_partition_half) (use assms in auto)
   also have "\<dots> = (\<Sum>R\<in>U. card R * (card \<W> * (edge_density \<W> R G)\<^sup>2))"
     by (simp add: sum_distrib_left edge_density_commute mult_ac)
   also have "\<dots> \<le> (\<Sum>R\<in>U. card R * (\<Sum>S\<in>W. card S * (edge_density S R G)\<^sup>2))"
-  proof (intro mult_left_mono energy_graph_partition_half sum_mono fin)
-    show "finite R" if "R \<in> U" for R
-      using that U fin finite_graph_partition_finite by blast
-  qed (use assms in auto)
+    by (intro mult_left_mono energy_graph_partition_half sum_mono) (use assms in auto)
   also have "\<dots> \<le> (\<Sum>R\<in>U. \<Sum>S\<in>W. (card R * card S) * (edge_density R S G)\<^sup>2)"
     by (simp add: sum_distrib_left edge_density_commute mult_ac)
   finally
@@ -426,7 +425,7 @@ Note that @{term V} should be @{term "uverts G"} even though this more general v
 
 lemma energy_graph_partitions_subsets_increase_half:
   assumes ref: "refines V Y X" and "finite V" and part_VX: "partition_on V X"
-    and U: "{} \<notin> U" "finite (\<Union>U)"
+    and U: "{} \<notin> U"
   shows "energy_graph_partitions_subsets G X U \<le> energy_graph_partitions_subsets G Y U" 
         (is "?lhs \<le> ?rhs")
 proof -
@@ -437,7 +436,7 @@ proof -
   have injF: "inj_on F X"
     by (metis F inj_on_inverseI partition_on_def)
   have finite_X: "finite R" if "R \<in> X" for R
-    by (metis Union_upper assms(2) part_VX finite_subset partition_on_def that)
+    by (metis Union_upper \<open>finite V\<close> part_VX finite_subset partition_on_def that)
   then have finite_F: "finite (F R)" if "R \<in> X" for R
     using that by (simp add: F)
   have dFX: "disjoint (F ` X)"
@@ -468,8 +467,6 @@ proof -
     moreover have "finite_graph_partition T {T} (Suc 0)"
       if "T \<in> U" for T
       using U by (metis that trivial_graph_partition_exists)
-    moreover have "finite T" if "T \<in> U" for T
-      using U by (meson Sup_upper infinite_super that)
     ultimately show ?thesis
       using finite_X  by (intro sum_mono energy_graph_partition_increase) auto
   qed
@@ -481,25 +478,15 @@ proof -
 qed
 
 proposition energy_graph_partitions_subsets_increase:
-  assumes refX: "refines V Y X" and refU: "refines V' W U" 
+  assumes "refines V Y X" "refines V' W U" 
     and "finite V" "finite V'" 
   shows "energy_graph_partitions_subsets G X U \<le> energy_graph_partitions_subsets G Y W"
-        (is "?lhs \<le> ?rhs")
 proof -
-  obtain U: "finite (\<Union>U)" "{} \<notin> U"
+  obtain "{} \<notin> U" "{} \<notin> Y"
     using assms unfolding refines_def partition_on_def by presburger
-  obtain Y: "finite (\<Union>Y)" "{} \<notin> Y"
-    using assms unfolding refines_def partition_on_def by presburger
-  have "?lhs \<le> energy_graph_partitions_subsets G Y U"
-    using assms energy_graph_partitions_subsets_increase_half U assms
-    using refines_def by blast
-  also have "\<dots> = energy_graph_partitions_subsets G U Y"
-    by (meson energy_graph_partitions_subsets_commute)
-  also have "\<dots> \<le> energy_graph_partitions_subsets G W Y"
-    using Y \<open>finite V'\<close> energy_graph_partitions_subsets_increase_half refU refines_def by blast
-  also have "\<dots> = ?rhs"
-    by (simp add: energy_graph_partitions_subsets_commute)
-  finally show ?thesis .
+  then show ?thesis
+    using assms unfolding refines_def
+    by (smt (verit, ccfv_SIG) assms energy_graph_partitions_subsets_commute energy_graph_partitions_subsets_increase_half)
 qed
 
 text \<open>The original version of Gowers's Lemma 11 and Zhao's Lemma 3.9 
@@ -728,7 +715,7 @@ proof -
     unfolding QS_def
   proof (intro partition_on_common_refinement partition_onI)
     show "\<And>\<A>. \<A> \<in> PP R \<Longrightarrow> {} \<notin> \<A>"
-      using that XY_nonempty XY_psub_P finP(2) 
+      using that XY_nonempty XY_psub_P finP
       by (fastforce simp add: PP_def XP_def YP_def P2_def)
   qed (auto simp: disjnt_iff PP_def XP_def YP_def P2_def dest: XY_psub_P)
 
@@ -855,7 +842,7 @@ proof -
       by (force intro: sum_mono simp flip: sum.distrib)
     also have "\<dots> \<le> (\<Sum>(i,j) \<in> ?REG. energy_graph_partitions_subsets G (QS i) (QS j))
                    + (\<Sum>(i,j) \<in> irregular_set \<epsilon> G P. energy_graph_partitions_subsets G (P2 (X i j) i) (P2 (Y i j) j))"
-      by (auto simp: finP intro!: part_P_QS sum_mono energy_graph_partition_increase)
+      by (auto intro!: part_P_QS sum_mono energy_graph_partition_increase)
     also have "\<dots> \<le> (\<Sum>(i,j) \<in> ?REG. energy_graph_partitions_subsets G (QS i) (QS j)) 
                   + (\<Sum>(i,j) \<in> irregular_set \<epsilon> G P. energy_graph_partitions_subsets G (QS i) (QS j))"
       using B
