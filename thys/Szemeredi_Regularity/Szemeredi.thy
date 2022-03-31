@@ -534,16 +534,14 @@ proof -
     by (force simp: u_def alpha_def edge_density_def mult_le_0_iff zero_less_mult_iff)
   then obtain 0: "card U > 0" "card W > 0"
     using assms by fastforce
-  then obtain 1: "card U' > 0" "card W' > 0"
-    by (smt (verit) U' W' \<open>\<epsilon> > 0\<close> of_nat_0_less_iff zero_less_mult_iff)
   then obtain [simp]: "finite U'" "finite W'"
-    by (meson card_ge_0_finite)
+    by (meson 1 card_ge_0_finite)
   obtain [simp]: "W' \<noteq> W - W'" "U' \<noteq> U - U'"
     by (metis DiffD2 1 all_not_in_conv card.empty less_irrefl)
-  have 2 [simp]: "card x > 0" if "x \<in> UF" for x
-    using "1"(1) assms that by (auto simp: UF_def part2_def split: if_split_asm)
-  have 3 [simp]: "card x > 0" if "x \<in> WF" for x
-    using "1"(2) assms that by (auto simp: WF_def part2_def split: if_split_asm)
+  have [simp]: "card x > 0" if "x \<in> UF" for x
+    using 1 assms that by (auto simp: UF_def part2_def split: if_split_asm)
+  have [simp]: "card x > 0" if "x \<in> WF" for x
+    using 1 assms that by (auto simp: WF_def part2_def split: if_split_asm)
   have cardUW: "card U = card U' + card(U - U')" "card W = card W' + card(W - W')"
     using 0 1 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close>
     by (metis card_eq_0_iff card_Diff_subset card_mono le_add_diff_inverse less_le)+
