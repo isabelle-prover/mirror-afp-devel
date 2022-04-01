@@ -1,5 +1,4 @@
-object profile extends isabelle.CI_Profile
-{
+object profile extends isabelle.CI_Profile {
 
   import isabelle._
 
@@ -11,8 +10,7 @@ object profile extends isabelle.CI_Profile
   def include = List(afp_thys)
   def select = Nil
 
-  def pre_hook(args: List[String]) =
-  {
+  def pre_hook(args: List[String]) = {
     println(s"Build for AFP id ${hg_id(afp)}")
     Result.ok
   }

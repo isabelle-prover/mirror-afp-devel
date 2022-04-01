@@ -9,8 +9,7 @@ object AFP_Dependencies extends isabelle.Isabelle_Tool.Body {
   val tree = Sessions.load_structure(Options.init(), Nil, List(afp_dir))
   val selected = tree.selection(Sessions.Selection(false, false, Nil, Nil, Nil, Nil)).build_graph.keys
 
-  def get_entry(name: String): Option[String] =
-  {
+  def get_entry(name: String): Option[String] = {
     val info = tree(name)
     val dir = info.dir
 
@@ -28,8 +27,7 @@ object AFP_Dependencies extends isabelle.Isabelle_Tool.Body {
         }
       }"""
 
-  def apply(args: List[String]): Unit =
-  {
+  def apply(args: List[String]): Unit = {
     val result = selected.groupBy(get_entry).collect {
       case (Some(e), sessions) =>
         val dependencies = sessions.flatMap(tree.imports_graph.imm_preds).map(d => (d, get_entry(d)))

@@ -1,5 +1,4 @@
-object profile extends isabelle.CI_Profile
-{
+object profile extends isabelle.CI_Profile {
   import isabelle._
   import java.io.FileReader
   import scala.sys.process._
@@ -11,8 +10,7 @@ object profile extends isabelle.CI_Profile
   val afp_thys = afp + Path.explode("thys")
   val afp_id = hg_id(afp)
 
-  sealed abstract class Status(val str: String)
-  {
+  sealed abstract class Status(val str: String) {
     def merge(that: Status): Status = (this, that) match {
       case (Ok, s) => s
       case (Failed, s) => Failed
@@ -20,8 +18,7 @@ object profile extends isabelle.CI_Profile
       case (Skipped, s) => Skipped
     }
   }
-  object Status
-  {
+  object Status {
     def merge(statuses: List[Status]): Status =
       statuses.foldLeft(Ok: Status)(_ merge _)
 
@@ -38,11 +35,9 @@ object profile extends isabelle.CI_Profile
   case object Skipped extends Status("skipped")
   case object Failed extends Status("failed")
 
-  class Metadata(ini: INIConfiguration)
-  {
+  class Metadata(ini: INIConfiguration) {
 
-    def entry_of_session(info: Sessions.Info): Option[String] =
-    {
+    def entry_of_session(info: Sessions.Info): Option[String] = {
       val afp_path = afp_thys.canonical_file.toPath
       val session_path = info.dir.canonical_file.toPath
 
@@ -57,8 +52,7 @@ object profile extends isabelle.CI_Profile
         entry_of_session(results.info(name)) -> name
       }.groupBy(_._1).view.mapValues(_.map(_._2)).toMap
 
-    def status_as_html(status: Map[Option[String], Status]): String =
-    {
+    def status_as_html(status: Map[Option[String], Status]): String = {
       val entries_strings = status.collect {
         case (None, Failed) =>
           s"<li>Distribution</li>"
@@ -78,8 +72,7 @@ object profile extends isabelle.CI_Profile
   def include = List(afp_thys)
   def select = Nil
 
-  def pre_hook(args: List[String]) =
-  {
+  def pre_hook(args: List[String]) = {
     println(s"AFP id $afp_id")
     if (report_file.exists())
       report_file.delete()
@@ -88,8 +81,7 @@ object profile extends isabelle.CI_Profile
     Result.ok
   }
 
-  def post_hook(results: Build.Results) =
-  {
+  def post_hook(results: Build.Results) = {
     val metadata = {
       val path = afp + Path.explode("metadata/metadata")
       val ini = new INIConfiguration()

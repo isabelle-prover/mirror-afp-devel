@@ -1,5 +1,4 @@
-object profile extends isabelle.CI_Profile
-{
+object profile extends isabelle.CI_Profile {
   import isabelle._
   import java.io.FileReader
   import scala.sys.process._
@@ -11,8 +10,7 @@ object profile extends isabelle.CI_Profile
   val afp_thys = afp + Path.explode("thys")
   val afp_id = hg_id(afp)
 
-  sealed abstract class Status(val str: String)
-  {
+  sealed abstract class Status(val str: String) {
     def merge(that: Status): Status = (this, that) match {
       case (Ok, s) => s
       case (Failed, s) => Failed
@@ -20,8 +18,7 @@ object profile extends isabelle.CI_Profile
       case (Skipped, s) => Skipped
     }
   }
-  object Status
-  {
+  object Status {
     def merge(statuses: List[Status]): Status =
       statuses.foldLeft(Ok: Status)(_ merge _)
 
@@ -77,11 +74,9 @@ object profile extends isabelle.CI_Profile
     }
   }
 
-  class Metadata(ini: INIConfiguration)
-  {
+  class Metadata(ini: INIConfiguration) {
 
-    def maintainers(entry: String): List[String] =
-    {
+    def maintainers(entry: String): List[String] = {
       val config = ini.getSection(entry)
       val raw =
         if (config.containsKey("notify"))
@@ -91,8 +86,7 @@ object profile extends isabelle.CI_Profile
       List(raw.split(','): _*).map(_.trim).filterNot(_.isEmpty)
     }
 
-    def entry_of_session(info: Sessions.Info): Option[String] =
-    {
+    def entry_of_session(info: Sessions.Info): Option[String] = {
       val afp_path = afp_thys.canonical_file.toPath
       val session_path = info.dir.canonical_file.toPath
 
@@ -146,8 +140,7 @@ object profile extends isabelle.CI_Profile
         entry_of_session(results.info(name)) -> name
       }.groupBy(_._1).view.mapValues(_.map(_._2)).toMap
 
-    def status_as_json(status: Map[Option[String], Status]): String =
-    {
+    def status_as_json(status: Map[Option[String], Status]): String = {
       val entries_strings = status.collect {
         case (Some(entry), status) =>
           s"""{"entry": "$entry", "status": "${status.str}"}"""
@@ -169,8 +162,7 @@ object profile extends isabelle.CI_Profile
       """
     }
 
-    def status_as_html(status: Map[Option[String], Status]): String =
-    {
+    def status_as_html(status: Map[Option[String], Status]): String = {
       val entries_strings = status.collect {
         case (None, Failed) =>
           s"<li>Distribution</li>"
@@ -193,8 +185,7 @@ object profile extends isabelle.CI_Profile
   def include = List(afp_thys)
   def select = Nil
 
-  def pre_hook(args: List[String]) =
-  {
+  def pre_hook(args: List[String]) = {
     println(s"AFP id $afp_id")
     if (status_file.exists())
       status_file.delete()
@@ -211,8 +202,7 @@ object profile extends isabelle.CI_Profile
     }
   }
 
-  def post_hook(results: Build.Results) =
-  {
+  def post_hook(results: Build.Results) = {
     print_section("DEPENDENCIES")
     println("Generating dependencies file ...")
     val result = Isabelle_System.bash("isabelle afp_dependencies")
@@ -247,16 +237,13 @@ object profile extends isabelle.CI_Profile
 
     val script = afp + Path.explode("admin/sitegen-devel")
     val sitegen_rc = List(script.file.toString, status_file.toString, deps_file.toString).!
-    if (sitegen_rc > 0)
-    {
+    if (sitegen_rc > 0) {
       println("sitegen failed")
     }
 
-    if (!results.ok)
-    {
+    if (!results.ok) {
       print_section("NOTIFICATIONS")
-      for (name <- results.sessions)
-      {
+      for (name <- results.sessions) {
         val result = results(name)
         if (!result.ok && !results.cancelled(name) && can_send_mails)
           metadata.notify(name, result, results.info(name))

@@ -16,8 +16,8 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
   class Check[T](
     run: (Sessions.Structure, List[String]) => List[T],
     failure_msg: String,
-    failure_format: T => String)
-  {
+    failure_format: T => String
+  ) {
     def apply(tree: Sessions.Structure, selected: List[String]): Boolean =
       run(tree, selected) match {
         case Nil =>
@@ -105,8 +105,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
     failure_format = identity
   )
 
-  def apply(args: List[String]): Unit =
-  {
+  def apply(args: List[String]): Unit = {
     val full_tree = Sessions.load_structure(Options.init(), Nil, List(afp_dir))
     val selected = full_tree.build_selection(Sessions.Selection.empty)
 
@@ -119,13 +118,11 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
 
     val bad = checks.exists(check => !check(full_tree, selected))
 
-    if (bad)
-    {
+    if (bad) {
       print_bad("Errors found.")
       System.exit(1)
     }
-    else
-    {
+    else {
       print_good(s"${selected.length} sessions have been checked")
       print_good(s"${checks.length} checks have found no errors")
     }

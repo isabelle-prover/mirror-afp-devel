@@ -1,5 +1,4 @@
-object profile extends isabelle.CI_Profile
-{
+object profile extends isabelle.CI_Profile {
   import isabelle._
   import java.io.FileReader
   import scala.sys.process._
@@ -18,16 +17,14 @@ object profile extends isabelle.CI_Profile
   def include = List(afp_thys)
   def select = Nil
 
-  def pre_hook(args: List[String]) =
-  {
+  def pre_hook(args: List[String]) = {
     println(s"AFP id $afp_id")
     if (status_file.exists())
       status_file.delete()
     Result.ok
   }
 
-  def post_hook(results: Build.Results) =
-  {
+  def post_hook(results: Build.Results) = {
     print_section("DEPENDENCIES")
     println("Generating dependencies file ...")
     val result = Isabelle_System.bash("isabelle afp_dependencies")
