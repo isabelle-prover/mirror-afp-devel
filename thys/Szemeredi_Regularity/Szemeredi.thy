@@ -613,19 +613,16 @@ proof (induction k rule: less_induct)
     define j where "j = k - Suc 0"
     have kj: "k = Suc j"
       using False j_def by force
-    have "(3::nat) \<le> 2 ^ j"
-      by (metis kj False Suc_leI less_trans_Suc less_exp not_less numeral_3_eq_3)
-    then have \<section>: "(2^j + 3) \<le> (2::nat) ^ k"
-      by (simp add: kj)
+    with False have \<section>: "(2^j + 3) \<le> (2::nat) ^ k"
+      by (simp add: Suc_leI le_less_trans not_less_eq_eq numeral_3_eq_3)
     have "k * (2 ^ Suc k) \<le> 6 * j * 2^j"
       using False by (simp add: kj)
     also have "\<dots> \<le> 6 * 2^(2^j)"
       using kj less.IH by force
-    also have "\<dots> < 8 * 2^(2^j)" by simp
-    also have "\<dots> = 2^(2^j + 3)"
+    also have "\<dots> < 2^(2^j + 3)"
       by (simp add: power_add) 
     also have "\<dots> \<le> 2^2^k"
-      using \<section> by (metis One_nat_def less_2_cases_iff power_increasing_iff)
+      by (simp add: \<section>)
     finally show ?thesis
       by simp      
   qed (auto simp: le_Suc_eq)
@@ -915,19 +912,16 @@ proof -
         using QS_def card_cr by presburger
       finally show ?thesis .
     qed
-    have "card Q = card (\<Union> (QS ` P))"
-      unfolding Q_def ..
-    also have "\<dots> \<le> card (\<Union>i\<in>P. QinP i)"
+    have "card Q \<le> card (\<Union>i\<in>P. QinP i)"
+      unfolding Q_def
     proof (rule card_mono)
       show "(\<Union> (QS ` P)) \<subseteq> (\<Union>i\<in>P. QinP i)"
         using ref_QP QS_subset_P Q_def QinP_def by blast
       show "finite (\<Union>i\<in>P. QinP i)"
         by (simp add: Q_def QinP_def \<open>finite P\<close>)
     qed 
-    also have "\<dots> \<le> (\<Sum>i\<in>P. card (QinP i))"
-      using card_UN_le \<open>finite P\<close> by blast
     also have "\<dots> \<le> (\<Sum>i\<in>P. 2 ^ Suc k)"
-      using card_QP sum_mono by force
+      by (smt (verit) \<open>finite P\<close> card_QP card_UN_le order_trans sum_mono)
     finally show "card Q \<le> k * 2 ^ Suc k" 
       by (simp add: cardP)
   qed
