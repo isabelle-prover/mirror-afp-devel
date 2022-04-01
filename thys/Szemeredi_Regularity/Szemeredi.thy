@@ -529,21 +529,21 @@ proof -
   define WF where "WF \<equiv> part2 W' W"
   obtain [simp]: "finite U" "finite W"
     using assms by (meson finite_subset)
-  obtain 1: "card U' > 0" "card W' > 0"
+  obtain card': "card U' > 0" "card W' > 0"
     using gt \<open>\<epsilon> > 0\<close> U' W'
     by (force simp: u_def alpha_def edge_density_def mult_le_0_iff zero_less_mult_iff)
-  then obtain 0: "card U > 0" "card W > 0"
+  then obtain card: "card U > 0" "card W > 0"
     using assms by fastforce
   then obtain [simp]: "finite U'" "finite W'"
-    by (meson 1 card_ge_0_finite)
+    by (meson card' card_ge_0_finite)
   obtain [simp]: "W' \<noteq> W - W'" "U' \<noteq> U - U'"
-    by (metis DiffD2 1 all_not_in_conv card.empty less_irrefl)
-  have [simp]: "card x > 0" if "x \<in> UF" for x
-    using 1 assms that by (auto simp: UF_def part2_def split: if_split_asm)
-  have [simp]: "card x > 0" if "x \<in> WF" for x
-    using 1 assms that by (auto simp: WF_def part2_def split: if_split_asm)
+    by (metis DiffD2 card' all_not_in_conv card.empty less_irrefl)
+  have UF_ne: "card x \<noteq> 0" if "x \<in> UF" for x
+    using card' assms that by (auto simp: UF_def part2_def split: if_split_asm)
+  have WF_ne: "card x \<noteq> 0" if "x \<in> WF" for x
+    using card' assms that by (auto simp: WF_def part2_def split: if_split_asm)
   have cardUW: "card U = card U' + card(U - U')" "card W = card W' + card(W - W')"
-    using 0 1 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close>
+    using card card' \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close>
     by (metis card_eq_0_iff card_Diff_subset card_mono le_add_diff_inverse less_le)+
   have "U = (U - U') \<union> U'" "disjnt (U - U') U'"
     using \<open>U' \<subseteq> U\<close> by (force simp: disjnt_iff)+
@@ -560,31 +560,28 @@ proof -
     if "finite Z" for Z
     by (metis \<open>finite W'\<close> all_edges_between_Un2 all_edges_between_disjnt2 \<open>finite W\<close>
         card_Un_disjnt finite_Diff2 finite_all_edges_between that)
-  have *: "(\<Sum>i\<in>UF. \<Sum>j\<in>WF. real (card (all_edges_between i j G))) 
+  have *: "(\<Sum>X\<in>UF. \<Sum>Y\<in>WF. real (card (all_edges_between X Y G))) 
          = card (all_edges_between U W G)"
     by (simp add: UF_def WF_def cardUW CU CW sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close>)
-
-  have **: "real (card U) * real (card W) = (\<Sum>i\<in>UF. \<Sum>j\<in>WF. card i * card j)"
+  have **: "real (card U) * real (card W) = (\<Sum>X\<in>UF. \<Sum>Y\<in>WF. card X * card Y)"
     by (simp add: UF_def WF_def cardUW sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close> algebra_simps)
 
-  let ?S = "\<Sum>i\<in>UF. \<Sum>j\<in>WF. (card i * card j) / (card U * card W) * (edge_density i j G)\<^sup>2"
-  have \<section>: "2 * (\<Sum>i\<in>UF. \<Sum>j\<in>WF.
-                 (card i * card j) / (card U * card W) * (edge_density i j G)) 
-         = alpha + alpha * (\<Sum>i\<in>UF. \<Sum>j\<in>WF. (card i * card j) / (card U * card W))"
-    unfolding alpha_def 
-    by (simp add: * ** edge_density_def divide_simps sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close> flip: sum_divide_distrib)
+  let ?S = "\<Sum>X\<in>UF. \<Sum>Y\<in>WF. (card X * card Y) / (card U * card W) * (edge_density X Y G)\<^sup>2"
+  define T where "T \<equiv> (\<Sum>X\<in>UF. \<Sum>Y\<in>WF. (card X * card Y) / (card U * card W) * (edge_density X Y G))"
+  have \<section>: "2 * T = alpha + alpha * (\<Sum>X\<in>UF. \<Sum>Y\<in>WF. (card X * card Y) / (card U * card W))"
+    unfolding alpha_def T_def
+    by (simp add: * ** edge_density_def divide_simps sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close> UF_ne WF_ne flip: sum_divide_distrib)
   have "\<epsilon> * \<epsilon> \<le> u U' W' * u U' W'"
     by (metis abs_ge_zero abs_mult_self_eq \<open>\<epsilon> > 0\<close> gt less_le mult_mono)
   then have "(\<epsilon>*\<epsilon>)*(\<epsilon>*\<epsilon>) \<le> (card U' * card W') / (card U * card W) * (u U' W')\<^sup>2"
-    using 0 mult_mono [OF U' W']  \<open>\<epsilon> > 0\<close>
+    using card mult_mono [OF U' W']  \<open>\<epsilon> > 0\<close>
     apply (simp add: divide_simps eval_nat_numeral)
     by (smt (verit, del_insts) mult.assoc mult.commute mult_mono' of_nat_0_le_iff zero_le_mult_iff)
-  also have "\<dots> \<le> (\<Sum>i\<in>UF. \<Sum>j\<in>WF.  (card i * card j) / (card U * card W) * (u i j)\<^sup>2)"
+  also have "\<dots> \<le> (\<Sum>X\<in>UF. \<Sum>Y\<in>WF.  (card X * card Y) / (card U * card W) * (u X Y)\<^sup>2)"
     by (simp add: UF_def WF_def sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close>)
-  also have "\<dots> = ?S - 2 * alpha * (\<Sum>i\<in>UF. \<Sum>j\<in>WF. 
-                         (card i * card j) / (card U * card W) * edge_density i j G)
-                 + alpha\<^sup>2 * (\<Sum>i\<in>UF. \<Sum>j\<in>WF. (card i * card j) / (card U * card W))"
-    by (simp add: u_def power2_diff mult_ac ring_distribs divide_simps 
+  also have "\<dots> = ?S - 2 * T * alpha
+                 + alpha\<^sup>2 * (\<Sum>X\<in>UF. \<Sum>Y\<in>WF. (card X * card Y) / (card U * card W))"
+    by (simp add: u_def T_def power2_diff mult_ac ring_distribs divide_simps 
           sum_distrib_left sum_distrib_right sum_subtractf sum.distrib flip: sum_divide_distrib)
   also have "\<dots> = ?S - alpha\<^sup>2"
     using \<section> by (simp add: power2_eq_square algebra_simps)
@@ -596,7 +593,7 @@ proof -
   also have "\<dots> \<le> ?S * (card U * card W / (card (uverts G))\<^sup>2)"
     by (rule mult_right_mono [OF 12]) auto
   also have "\<dots> = ?lhs"
-    using 0 unfolding energy_graph_subsets_def UF_def WF_def
+    using card unfolding energy_graph_subsets_def UF_def WF_def
     by (auto simp add: algebra_simps sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close> )
   finally show ?thesis .
 qed
