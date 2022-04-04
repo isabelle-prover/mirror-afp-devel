@@ -26,7 +26,7 @@ begin
     \<open>\<epsilon>: FG \<approx> I\<^sub>C\<close>.
   \<close>
 
-  locale equivalence_of_bicategories =  (* 35 sec *)
+  locale equivalence_of_bicategories =  (* 25 sec *)
     C: bicategory V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C +
     D: bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D +
     F: pseudofunctor V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C F \<Phi>\<^sub>F +
@@ -378,7 +378,7 @@ begin
     bicategories.
   \<close>
 
-  locale equivalence_of_bicategories_and_pseudonatural_equivalence_left =  (* 40 sec *)
+  locale equivalence_of_bicategories_and_pseudonatural_equivalence_left =  (* 30 sec *)
     C: bicategory V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C +
     D: bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D +
     E: equivalence_of_bicategories +
@@ -421,22 +421,24 @@ begin
                            F'G.map F'G.cmp E.FG.map E.FG.cmp E.I\<^sub>C.map E.I\<^sub>C.cmp
                            \<tau>'oG.map\<^sub>0 \<tau>'oG.map\<^sub>1 \<epsilon>\<^sub>0 \<epsilon>\<^sub>1
       ..
-    sublocale equivalence_of_bicategories
-                     V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F' \<Phi>\<^sub>F' G \<Phi>\<^sub>G
-                     unit.map\<^sub>0 unit.map\<^sub>1 counit.map\<^sub>0 counit.map\<^sub>1
-      ..
 
-    abbreviation unit\<^sub>0
+    definition unit\<^sub>0
     where "unit\<^sub>0 \<equiv> unit.map\<^sub>0"
 
-    abbreviation unit\<^sub>1
+    definition unit\<^sub>1
     where "unit\<^sub>1 \<equiv> unit.map\<^sub>1"
 
-    abbreviation counit\<^sub>0
+    definition counit\<^sub>0
     where "counit\<^sub>0 \<equiv> counit.map\<^sub>0"
 
-    abbreviation counit\<^sub>1
+    definition counit\<^sub>1
     where "counit\<^sub>1 \<equiv> counit.map\<^sub>1"
+
+    sublocale equivalence_of_bicategories
+                V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F' \<Phi>\<^sub>F' G \<Phi>\<^sub>G
+                unit\<^sub>0 unit\<^sub>1 counit\<^sub>0 counit\<^sub>1
+      unfolding unit\<^sub>0_def unit\<^sub>1_def counit\<^sub>0_def counit\<^sub>1_def
+      ..
 
     lemma induces_equivalence_of_bicategories:
     shows "equivalence_of_bicategories
@@ -446,7 +448,7 @@ begin
 
   end
 
-  locale equivalence_of_bicategories_and_pseudonatural_equivalence_right =  (* 40 sec *)
+  locale equivalence_of_bicategories_and_pseudonatural_equivalence_right =  (* 30 sec *)
     C: bicategory V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C +
     D: bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D +
     E: equivalence_of_bicategories +
@@ -485,22 +487,24 @@ begin
                           FG'.map FG'.cmp E.FG.map E.FG.cmp E.I\<^sub>C.map E.I\<^sub>C.cmp
                           Fo\<tau>'.map\<^sub>0 Fo\<tau>'.map\<^sub>1 \<epsilon>\<^sub>0 \<epsilon>\<^sub>1
       ..
-    sublocale equivalence_of_bicategories
-                     V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>\<^sub>F G' \<Phi>\<^sub>G'
-                     unit.map\<^sub>0 unit.map\<^sub>1 counit.map\<^sub>0 counit.map\<^sub>1
-      ..
 
-    abbreviation unit\<^sub>0
+    definition unit\<^sub>0
     where "unit\<^sub>0 \<equiv> unit.map\<^sub>0"
 
-    abbreviation unit\<^sub>1
+    definition unit\<^sub>1
     where "unit\<^sub>1 \<equiv> unit.map\<^sub>1"
 
-    abbreviation counit\<^sub>0
+    definition counit\<^sub>0
     where "counit\<^sub>0 \<equiv> counit.map\<^sub>0"
 
-    abbreviation counit\<^sub>1
+    definition counit\<^sub>1
     where "counit\<^sub>1 \<equiv> counit.map\<^sub>1"
+
+    sublocale equivalence_of_bicategories
+                     V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>\<^sub>F G' \<Phi>\<^sub>G'
+                     unit\<^sub>0 unit\<^sub>1 counit\<^sub>0 counit\<^sub>1
+      unfolding unit\<^sub>0_def unit\<^sub>1_def counit\<^sub>0_def counit\<^sub>1_def
+      ..
 
     lemma induces_equivalence_of_bicategories:
     shows "equivalence_of_bicategories
@@ -521,7 +525,7 @@ begin
     have pseudonatural converses, which we have already done.
   \<close>
 
-  locale converse_equivalence_of_bicategories =  (* 35 sec *)
+  locale converse_equivalence_of_bicategories =  (* 25 sec *)
     C: bicategory V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C +
     D: bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D +
     I\<^sub>C: identity_pseudofunctor V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C +
@@ -538,22 +542,23 @@ begin
                       E.FG.map E.FG.cmp I\<^sub>C.map I\<^sub>C.cmp \<epsilon>\<^sub>0 \<epsilon>\<^sub>1
       ..
 
-    sublocale equivalence_of_bicategories
-                 V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C G \<Phi>\<^sub>G F \<Phi>\<^sub>F
-                 unit.map\<^sub>0 unit.map\<^sub>1 counit.map\<^sub>0 counit.map\<^sub>1
-      ..
-
-    abbreviation unit\<^sub>0
+    definition unit\<^sub>0
     where "unit\<^sub>0 \<equiv> unit.map\<^sub>0"
 
-    abbreviation unit\<^sub>1
+    definition unit\<^sub>1
     where "unit\<^sub>1 \<equiv> unit.map\<^sub>1"
 
-    abbreviation counit\<^sub>0
+    definition counit\<^sub>0
     where "counit\<^sub>0 \<equiv> counit.map\<^sub>0"
 
-    abbreviation counit\<^sub>1
+    definition counit\<^sub>1
     where "counit\<^sub>1 \<equiv> counit.map\<^sub>1"
+
+    sublocale equivalence_of_bicategories
+                 V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C G \<Phi>\<^sub>G F \<Phi>\<^sub>F
+                 unit\<^sub>0 unit\<^sub>1 counit\<^sub>0 counit\<^sub>1
+      unfolding unit\<^sub>0_def unit\<^sub>1_def counit\<^sub>0_def counit\<^sub>1_def
+      ..
 
     lemma is_equivalence_of_bicategories:
     shows "equivalence_of_bicategories
@@ -571,7 +576,7 @@ begin
     from \<open>B\<close> to \<open>D\<close>.
   \<close>
 
-  locale composite_equivalence_of_bicategories =  (* 80 sec *)
+  locale composite_equivalence_of_bicategories =  (* 60 sec *)
     B: bicategory V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B +
     C: bicategory V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C +
     D: bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D +
@@ -679,7 +684,7 @@ begin
     interpretation FHKG: composite_pseudofunctor V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B
                            V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B
                            HKG.map HKG.cmp F \<Phi>\<^sub>F
-        ..
+      ..
     interpretation \<rho>oH: pseudonatural_equivalence_whisker_right V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
                           V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
                           I\<^sub>C.map I\<^sub>C.cmp FG.GF.map FG.GF.cmp H \<Phi>\<^sub>H \<rho>\<^sub>0 \<rho>\<^sub>1
@@ -759,22 +764,22 @@ begin
     abbreviation right_cmp
     where "right_cmp \<equiv> KG.cmp"
 
-    abbreviation unit\<^sub>0
+    definition unit\<^sub>0
     where "unit\<^sub>0 \<equiv> unit.map\<^sub>0"
 
-    abbreviation unit\<^sub>1
+    definition unit\<^sub>1
     where "unit\<^sub>1 \<equiv> unit.map\<^sub>1"
 
-    abbreviation counit\<^sub>0
+    definition counit\<^sub>0
     where "counit\<^sub>0 \<equiv> counit.map\<^sub>0"
 
-    abbreviation counit\<^sub>1
+    definition counit\<^sub>1
     where "counit\<^sub>1 == counit.map\<^sub>1"
 
     lemma unit\<^sub>0_simp:
     assumes "D.obj a"
     shows "unit\<^sub>0 a = K (\<rho>\<^sub>0 (H.map\<^sub>0 a)) \<star>\<^sub>D \<zeta>\<^sub>0 a"
-      using assms unit.map\<^sub>0_def Ko\<rho>oH.map\<^sub>0_def \<rho>oH.map\<^sub>0_def by simp
+      using assms unit\<^sub>0_def unit.map\<^sub>0_def Ko\<rho>oH.map\<^sub>0_def \<rho>oH.map\<^sub>0_def by simp
 
     lemma unit\<^sub>1_simp:
     assumes "D.ide f"
@@ -785,13 +790,13 @@ begin
                      K (\<rho>\<^sub>1 (H f)) \<cdot>\<^sub>D
                      \<Phi>\<^sub>K (G (F (H f)), \<rho>\<^sub>0 (H.map\<^sub>0 (src\<^sub>D f))) \<star>\<^sub>D \<zeta>\<^sub>0 (src\<^sub>D f)) \<cdot>\<^sub>D
                      \<a>\<^sub>D\<^sup>-\<^sup>1[K (G (F (H f))), K (\<rho>\<^sub>0 (H.map\<^sub>0 (src\<^sub>D f))), \<zeta>\<^sub>0 (src\<^sub>D f)]"
-      using assms unit.map\<^sub>1_def Ko\<rho>oH.map\<^sub>0_def \<rho>oH.map\<^sub>0_def Ko\<rho>oH.map\<^sub>1_def \<rho>oH.map\<^sub>1_def
+      using assms unit\<^sub>1_def unit.map\<^sub>1_def Ko\<rho>oH.map\<^sub>0_def \<rho>oH.map\<^sub>0_def Ko\<rho>oH.map\<^sub>1_def \<rho>oH.map\<^sub>1_def
       by simp
 
     lemma counit\<^sub>0_simp:
     assumes "B.obj a"
     shows "counit\<^sub>0 a = \<sigma>\<^sub>0 a \<star>\<^sub>B F (\<xi>\<^sub>0 (G_.map\<^sub>0 a))"
-      using assms counit.map\<^sub>0_def Fo\<xi>oG.map\<^sub>0_def \<xi>oG.map\<^sub>0_def by simp
+      using assms counit\<^sub>0_def counit.map\<^sub>0_def Fo\<xi>oG.map\<^sub>0_def \<xi>oG.map\<^sub>0_def by simp
 
     lemma counit\<^sub>1_simp:
     assumes "B.ide f"
@@ -803,12 +808,12 @@ begin
                        \<a>\<^sub>B[\<sigma>\<^sub>0 (trg\<^sub>B f), F (G f), F (\<xi>\<^sub>0 (G_.map\<^sub>0 (src\<^sub>B f)))] \<cdot>\<^sub>B
                        (\<sigma>\<^sub>1 f \<star>\<^sub>B F (\<xi>\<^sub>0 (G_.map\<^sub>0 (src\<^sub>B f)))) \<cdot>\<^sub>B
                        \<a>\<^sub>B\<^sup>-\<^sup>1[f, \<sigma>\<^sub>0 (src\<^sub>B f), F (\<xi>\<^sub>0 (G_.map\<^sub>0 (src\<^sub>B f)))]"
-      using assms counit.map\<^sub>1_def Fo\<xi>oG.map\<^sub>0_def Fo\<xi>oG.map\<^sub>1_def \<xi>oG.map\<^sub>0_def \<xi>oG.map\<^sub>1_def
+      using assms counit\<^sub>1_def counit.map\<^sub>1_def Fo\<xi>oG.map\<^sub>0_def Fo\<xi>oG.map\<^sub>1_def
+            \<xi>oG.map\<^sub>0_def \<xi>oG.map\<^sub>1_def
       by simp
 
     sublocale equivalence_of_bicategories V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
-                FH.map FH.cmp KG.map KG.cmp
-                unit.map\<^sub>0 unit.map\<^sub>1 counit.map\<^sub>0 counit.map\<^sub>1
+                FH.map FH.cmp KG.map KG.cmp unit\<^sub>0 unit\<^sub>1 counit\<^sub>0 counit\<^sub>1
     proof -
       interpret FH_KG: composite_pseudofunctor
                           V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B
@@ -971,8 +976,8 @@ begin
       qed
       ultimately show "equivalence_of_bicategories
                          V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
-                         FH.map FH.cmp KG.map KG.cmp
-                         unit.map\<^sub>0 unit.map\<^sub>1 counit.map\<^sub>0 counit.map\<^sub>1"
+                         FH.map FH.cmp KG.map KG.cmp unit\<^sub>0 unit\<^sub>1 counit\<^sub>0 counit\<^sub>1"
+        unfolding unit\<^sub>0_def unit\<^sub>1_def counit\<^sub>0_def counit\<^sub>1_def
         using B.bicategory_axioms D.bicategory_axioms FH.pseudofunctor_axioms
               KG.pseudofunctor_axioms unit.pseudonatural_equivalence_axioms
               counit.pseudonatural_equivalence_axioms I\<^sub>B.identity_pseudofunctor_axioms
@@ -3918,6 +3923,9 @@ begin
                      \<a>\<^sub>B[e (trg\<^sub>B f) \<star>\<^sub>B f, d (src\<^sub>B f), e (src\<^sub>B f)] \<cdot>\<^sub>B
                      (\<a>\<^sub>B\<^sup>-\<^sup>1[e (trg\<^sub>B f), f, d (src\<^sub>B f)] \<star>\<^sub>B e (src\<^sub>B f))"
 
+    abbreviation (input) \<eta>\<^sub>0
+    where "\<eta>\<^sub>0 \<equiv> unit\<^sub>0"
+
     abbreviation (input) \<eta>\<^sub>1
     where "\<eta>\<^sub>1 \<equiv> unit\<^sub>1"
 
@@ -3942,7 +3950,7 @@ begin
       using assms unit\<^sub>1_in_hom
            apply auto
       unfolding unit\<^sub>1_def
-      by (intro B.isos_compose) auto (* 15 sec *)
+      by (intro B.isos_compose) auto (* 10 sec *)
 
     lemma unit\<^sub>1_in_hom\<^sub>S [intro]:
     assumes "ide f"
@@ -4008,7 +4016,7 @@ begin
                   ((e ?b \<star>\<^sub>B \<mu> \<star>\<^sub>B d ?a) \<star>\<^sub>B e ?a)"
           unfolding unit\<^sub>1_def P_def emb.map_def hcomp_def src_def
           using \<mu> comp_char cod_simp arr_char P\<^sub>0_props [of ?a] P\<^sub>0_props [of ?b]
-          by auto (* 7 sec *)
+          by auto (* 10 sec *)
         also have "... = (e ?b \<star>\<^sub>B \<r>\<^sub>B[?g]) \<cdot>\<^sub>B
                          \<a>\<^sub>B[e ?b, ?g, ?a] \<cdot>\<^sub>B
                          ((e ?b \<star>\<^sub>B ?g) \<star>\<^sub>B B.inv (\<eta> ?a)) \<cdot>\<^sub>B
@@ -4177,7 +4185,7 @@ begin
                 hcomp_closed in_hom_char src)
           moreover have "B.seq (\<eta>\<^sub>1 a) (P a \<cdot>\<^sub>B (e a \<star>\<^sub>B \<l>\<^sub>B\<^sup>-\<^sup>1[d a]) \<cdot>\<^sub>B B.inv (\<epsilon> a) \<star>\<^sub>B e a)"
             using 0 3 P_def obj_char
-            by (elim B.objE, intro B.seqI) auto (* 6 sec *)
+            by (elim B.objE, intro B.seqI) auto (* 10 sec *)
           ultimately show ?thesis
             using 2 comp_char by meson
         qed
@@ -5395,6 +5403,9 @@ begin
                        (\<eta> (trg\<^sub>B f) \<star>\<^sub>B f \<star>\<^sub>B d (src\<^sub>B f)) \<cdot>\<^sub>B
                        \<l>\<^sub>B\<^sup>-\<^sup>1[f \<star>\<^sub>B d (src\<^sub>B f)]"
 
+    abbreviation (input) \<epsilon>\<^sub>0
+    where "\<epsilon>\<^sub>0 \<equiv> counit\<^sub>0"
+
     abbreviation (input) \<epsilon>\<^sub>1
     where "\<epsilon>\<^sub>1 \<equiv> counit\<^sub>1"
 
@@ -6233,8 +6244,8 @@ begin
       qed
     qed
 
-    sublocale equivalence_of_bicategories V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B comp hcomp \<a> \<i>\<^sub>B src trg
-                E \<Phi>\<^sub>E P \<Phi>\<^sub>P unit\<^sub>0 unit\<^sub>1 counit\<^sub>0 counit\<^sub>1
+    interpretation equivalence_of_bicategories V\<^sub>B H\<^sub>B \<a>\<^sub>B \<i>\<^sub>B src\<^sub>B trg\<^sub>B comp hcomp \<a> \<i>\<^sub>B src trg
+                     E \<Phi>\<^sub>E P \<Phi>\<^sub>P unit\<^sub>0 unit\<^sub>1 counit\<^sub>0 counit\<^sub>1
       ..
 
     lemma induces_equivalence:
@@ -6460,12 +6471,7 @@ begin
         have \<psi>_in_hhom: "D.in_hhom ?\<psi> b b"
           using b \<psi> 1 D.src_dom D.trg_dom by fastforce
         have 2: "hom\<^sub>D.arr ?\<psi> \<and> hom\<^sub>D.arr (D.inv ?\<psi>)"
-        proof -
-          have "D.in_hhom ?\<psi> (F\<^sub>0 (G\<^sub>0 b)) (F\<^sub>0 (G\<^sub>0 b))"
-            using b \<psi>_in_hhom G\<^sub>0_props by simp
-          thus ?thesis
-            using \<psi> by auto
-        qed
+          by (metis D.in_hhomE D.inv_in_hhom G\<^sub>0_props(1) \<psi> \<psi>_in_hhom hom\<^sub>D.arr_char)
         have \<psi>': "hom\<^sub>D.in_hom ?\<psi> b (Faa'.F\<^sub>1 (G\<^sub>0 b))"
         proof
           show "hom\<^sub>D.arr ?\<psi>"
@@ -6489,14 +6495,7 @@ begin
         have **: "hom\<^sub>C.isomorphic (G b) (G\<^sub>0 b)"
         proof -
           have "hom\<^sub>C.in_hom (Faa'.\<eta>\<epsilon>.\<psi> (G\<^sub>0 b) ?\<psi>) (Faa'.G\<^sub>1 b) (G\<^sub>0 b)"
-          proof -
-            have "hom\<^sub>D.in_hom ?\<psi> b (Faa'.F\<^sub>1 (G\<^sub>0 b))"
-              using \<psi>' by simp
-            moreover have "hom\<^sub>C.ide (G\<^sub>0 b)"
-              using b 1 hom\<^sub>C.ide_char G\<^sub>0_props hom\<^sub>C.arr_char by auto
-            ultimately show ?thesis
-              using \<psi> Faa'.\<eta>\<epsilon>.\<psi>_in_hom hom\<^sub>D.in_hom_char hom\<^sub>D.arr_char by simp
-          qed
+            by (metis "1" C.ide_src C.in_hhom_def Faa'.\<eta>\<epsilon>.\<psi>_in_hom \<psi>' hom\<^sub>C.ideI)
           moreover have "hom\<^sub>C.iso (Faa'.\<eta>\<epsilon>.\<psi> (G\<^sub>0 b) ?\<psi>)"
           proof (unfold Faa'.\<eta>\<epsilon>.\<psi>_def)
             have "hom\<^sub>C.iso_in_hom (hom\<^sub>C.comp (Faa'.\<epsilon> (G\<^sub>0 b))
@@ -6508,19 +6507,10 @@ begin
                       Faa'.\<eta>\<epsilon>.F.preserves_iso hom\<^sub>C.in_hom_char hom\<^sub>C.arr_char
                 by auto
               show "hom\<^sub>C.iso_in_hom (Faa'.\<epsilon> (G\<^sub>0 b)) (Faa'.\<eta>\<epsilon>.FG.map (G\<^sub>0 b)) (G\<^sub>0 b)"
-              proof
-                show "hom\<^sub>C.iso (Faa'.\<epsilon> (G\<^sub>0 b))"
-                proof -
-                  have "hom\<^sub>C.ide (G\<^sub>0 b)"
-                    using b 1 G\<^sub>0_props hom\<^sub>C.ide_char hom\<^sub>C.arr_char by auto
-                  thus ?thesis
-                    using b G\<^sub>0_props Faa'.\<eta>\<epsilon>.\<epsilon>.components_are_iso by simp
-                qed
-                show "hom\<^sub>C.in_hom (Faa'.\<epsilon> (G\<^sub>0 b)) (Faa'.\<eta>\<epsilon>.FG.map (G\<^sub>0 b)) (G\<^sub>0 b)"
-                  using \<psi> \<psi>' 1
-                  by (metis C.ide_src C.in_hhom_def Faa'.\<eta>\<epsilon>.\<epsilon>.preserves_hom hom\<^sub>C.arrI
-                      hom\<^sub>C.ideI hom\<^sub>C.ide_in_hom hom\<^sub>C.map_simp)
-              qed
+                using 1 C.ide_src C.ide_trg C.in_hhom_def Faa'.\<eta>\<epsilon>.\<epsilon>.components_are_iso
+                      Faa'.\<eta>\<epsilon>.\<epsilon>.preserves_hom hom\<^sub>C.arrI hom\<^sub>C.ideI hom\<^sub>C.ide_in_hom
+                      hom\<^sub>C.map_simp hom\<^sub>C.iso_in_hom_def
+                by metis
             qed
             thus "hom\<^sub>C.iso (hom\<^sub>C.comp (Faa'.\<epsilon> (G\<^sub>0 b)) (Faa'.G\<^sub>1 (unit (G\<^sub>0 b))))" by auto
           qed
@@ -8618,15 +8608,25 @@ begin
       finally show ?thesis by simp
     qed
 
-    abbreviation counit\<^sub>0
-    where "counit\<^sub>0 \<equiv> \<lambda>b. b"
+    (*
+     * The following clash with definitions made later in the context of
+     * equivalence_pseudofunctor.  The clash is only flagged when -o export_theory
+     * is invoked with "isabelle_build", as was pointed out by Fabian Huch in an email
+     * of 3/31/2022.  The reason for the clash is not clear.
+     * I have distinguished the constants here with a prime because it is unlikely
+     * that they will be useful outside of the present theory, so the name is not
+     * so important.
+     *)
 
-    abbreviation counit\<^sub>1
-    where "counit\<^sub>1 \<equiv> \<lambda>g. \<l>\<^sub>D\<^sup>-\<^sup>1[F (G g)] \<cdot>\<^sub>D \<eta> g \<cdot>\<^sub>D \<r>\<^sub>D[g]"
+    abbreviation counit\<^sub>0'
+    where "counit\<^sub>0' \<equiv> \<lambda>b. b"
+
+    abbreviation counit\<^sub>1'
+    where "counit\<^sub>1' \<equiv> \<lambda>g. \<l>\<^sub>D\<^sup>-\<^sup>1[F (G g)] \<cdot>\<^sub>D \<eta> g \<cdot>\<^sub>D \<r>\<^sub>D[g]"
 
     interpretation \<epsilon>: pseudonatural_equivalence
                         V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
-                        FG.map FG.cmp I\<^sub>D.map I\<^sub>D.cmp counit\<^sub>0 counit\<^sub>1
+                        FG.map FG.cmp I\<^sub>D.map I\<^sub>D.cmp counit\<^sub>0' counit\<^sub>1'
     proof
       show "\<And>a. D.obj a \<Longrightarrow> D.ide a"
         by auto
@@ -8698,15 +8698,15 @@ begin
         using D.obj_is_equivalence_map by simp
     qed
 
-    abbreviation unit\<^sub>0
-    where "unit\<^sub>0 \<equiv> \<lambda>a. a"
+    abbreviation unit\<^sub>0'
+    where "unit\<^sub>0' \<equiv> \<lambda>a. a"
 
-    abbreviation unit\<^sub>1
-    where "unit\<^sub>1 \<equiv> \<lambda>f. \<l>\<^sub>C\<^sup>-\<^sup>1[f] \<cdot>\<^sub>C \<epsilon> f \<cdot>\<^sub>C \<r>\<^sub>C[G (F f)]"
+    abbreviation unit\<^sub>1'
+    where "unit\<^sub>1' \<equiv> \<lambda>f. \<l>\<^sub>C\<^sup>-\<^sup>1[f] \<cdot>\<^sub>C \<epsilon> f \<cdot>\<^sub>C \<r>\<^sub>C[G (F f)]"
 
     interpretation \<eta>: pseudonatural_equivalence
                            V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
-                           I\<^sub>C.map I\<^sub>C.cmp GF.map GF.cmp unit\<^sub>0 unit\<^sub>1
+                           I\<^sub>C.map I\<^sub>C.cmp GF.map GF.cmp unit\<^sub>0' unit\<^sub>1'
     proof
       show "\<And>a. C.obj a \<Longrightarrow> C.ide a"
         by auto
@@ -8781,12 +8781,12 @@ begin
 
     interpretation EQ: equivalence_of_bicategories
                          V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
-                         F \<Phi> G \<Phi>\<^sub>G.map unit\<^sub>0 unit\<^sub>1 counit\<^sub>0 counit\<^sub>1
+                         F \<Phi> G \<Phi>\<^sub>G.map unit\<^sub>0' unit\<^sub>1' counit\<^sub>0' counit\<^sub>1'
       ..
 
     lemma extends_to_equivalence_of_bicategories:
     shows "equivalence_of_bicategories V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
-             F \<Phi> G \<Phi>\<^sub>G.map unit\<^sub>0 unit\<^sub>1 counit\<^sub>0 counit\<^sub>1"
+             F \<Phi> G \<Phi>\<^sub>G.map unit\<^sub>0' unit\<^sub>1' counit\<^sub>0' counit\<^sub>1'"
       ..
 
   end
@@ -8884,12 +8884,12 @@ begin
        apply (metis C.comp_ide_self C.ide_src C.src_cod C.src_dom)
       by (metis C.trg.as_nat_trans.is_natural_2 C.trg.as_nat_trans.naturality C.trg_cod)
 
-    interpretation C\<^sub>U: dense_subbicategory V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C U  (* 25 sec *)
+    interpretation C\<^sub>U: dense_subbicategory V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C U  (* 15 sec *)
     proof
       show "\<And>a. C.obj a \<Longrightarrow> \<exists>a'. a' \<in> U \<and> C.equivalent_objects a' a"
         using U_dense C.equivalent_objects_symmetric by blast
       (* TODO: The above inference is trivial, but qed consumes 15 seconds! *)
-    qed (* 15 sec *)
+    qed (* 25 sec *)
 
     abbreviation (input) Arr\<^sub>V
     where "Arr\<^sub>V \<equiv> \<lambda>\<mu>. D.arr \<mu> \<and> src\<^sub>D \<mu> \<in> V \<and> trg\<^sub>D \<mu> \<in> V"
@@ -8901,9 +8901,9 @@ begin
        apply (metis D.comp_ide_self D.ide_src D.src_cod D.src_dom)
       by (metis D.trg.as_nat_trans.is_natural_2 D.trg.as_nat_trans.naturality D.trg_cod)
 
-    interpretation D\<^sub>V: dense_subbicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V  (* 35 sec *)
+    interpretation D\<^sub>V: dense_subbicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V  (* 25 sec *)
       using V_dense D.equivalent_objects_def D.equivalent_objects_symmetric V_def
-      by unfold_locales metis (* 20 sec -- time is similar doing it this way. *)
+      by unfold_locales metis (* 35 sec -- time is similar doing it this way. *)
 
     interpretation F\<^sub>U: restricted_pseudofunctor
                          V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D F \<Phi>
@@ -9122,7 +9122,7 @@ begin
                           D\<^sub>V.comp D\<^sub>V.hcomp D\<^sub>V.\<a> \<i>\<^sub>D D\<^sub>V.src D\<^sub>V.trg
                           C\<^sub>U.comp C\<^sub>U.hcomp C\<^sub>U.\<a> \<i>\<^sub>C C\<^sub>U.src C\<^sub>U.trg
                           F\<^sub>U\<^sub>V.map F\<^sub>U\<^sub>V.cmp F\<^sub>U\<^sub>V.G F\<^sub>U\<^sub>V.\<Phi>\<^sub>G
-                          F\<^sub>U\<^sub>V.unit\<^sub>0 F\<^sub>U\<^sub>V.unit\<^sub>1 F\<^sub>U\<^sub>V.counit\<^sub>0 F\<^sub>U\<^sub>V.counit\<^sub>1
+                          F\<^sub>U\<^sub>V.unit\<^sub>0' F\<^sub>U\<^sub>V.unit\<^sub>1' F\<^sub>U\<^sub>V.counit\<^sub>0' F\<^sub>U\<^sub>V.counit\<^sub>1'
       using F\<^sub>U\<^sub>V.extends_to_equivalence_of_bicategories by blast  (* 18 sec, mostly "by" *)
 
     text \<open>
@@ -9148,17 +9148,17 @@ begin
                            D\<^sub>V.unit\<^sub>0 D\<^sub>V.unit\<^sub>1 D\<^sub>V.counit\<^sub>0 D\<^sub>V.counit\<^sub>1
       using D\<^sub>V.induces_equivalence by simp
 
-    interpretation EQ\<^sub>U\<^sub>VoEQ\<^sub>C': composite_equivalence_of_bicategories  (* 50 sec *)
+    interpretation EQ\<^sub>U\<^sub>VoEQ\<^sub>C': composite_equivalence_of_bicategories  (* 35 sec *)
                                D\<^sub>V.comp D\<^sub>V.hcomp D\<^sub>V.\<a> \<i>\<^sub>D D\<^sub>V.src D\<^sub>V.trg
                                C\<^sub>U.comp C\<^sub>U.hcomp C\<^sub>U.\<a> \<i>\<^sub>C C\<^sub>U.src C\<^sub>U.trg
                                V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
                                F\<^sub>U\<^sub>V.map F\<^sub>U\<^sub>V.cmp F\<^sub>U\<^sub>V.G F\<^sub>U\<^sub>V.\<Phi>\<^sub>G
                                C\<^sub>U.P C\<^sub>U.\<Phi>\<^sub>P C\<^sub>U.E C\<^sub>U.\<Phi>\<^sub>E
-                               F\<^sub>U\<^sub>V.unit\<^sub>0 F\<^sub>U\<^sub>V.unit\<^sub>1 F\<^sub>U\<^sub>V.counit\<^sub>0 F\<^sub>U\<^sub>V.counit\<^sub>1
+                               F\<^sub>U\<^sub>V.unit\<^sub>0' F\<^sub>U\<^sub>V.unit\<^sub>1' F\<^sub>U\<^sub>V.counit\<^sub>0' F\<^sub>U\<^sub>V.counit\<^sub>1'
                                EQ\<^sub>C'.unit\<^sub>0 EQ\<^sub>C'.unit\<^sub>1 EQ\<^sub>C'.counit\<^sub>0 EQ\<^sub>C'.counit\<^sub>1
-      ..  (* 40 sec *)
+      ..  (* 55 sec *)
 
-    interpretation EQ\<^sub>DoEQ\<^sub>U\<^sub>VoEQ\<^sub>C': composite_equivalence_of_bicategories  (* 50 sec *)
+    interpretation EQ\<^sub>DoEQ\<^sub>U\<^sub>VoEQ\<^sub>C': composite_equivalence_of_bicategories  (* 30 sec *)
                                    V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
                                    D\<^sub>V.comp D\<^sub>V.hcomp D\<^sub>V.\<a> \<i>\<^sub>D D\<^sub>V.src D\<^sub>V.trg
                                    V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
@@ -9168,7 +9168,7 @@ begin
                                    D\<^sub>V.unit\<^sub>0 D\<^sub>V.unit\<^sub>1 D\<^sub>V.counit\<^sub>0 D\<^sub>V.counit\<^sub>1
                                    EQ\<^sub>U\<^sub>VoEQ\<^sub>C'.unit\<^sub>0 EQ\<^sub>U\<^sub>VoEQ\<^sub>C'.unit\<^sub>1
                                    EQ\<^sub>U\<^sub>VoEQ\<^sub>C'.counit\<^sub>0 EQ\<^sub>U\<^sub>VoEQ\<^sub>C'.counit\<^sub>1
-      ..  (* 40 sec *)
+      ..  (* 50 sec *)
 
     lemma induces_equivalence_of_bicategories:
     shows "equivalence_of_bicategories V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
@@ -9191,7 +9191,7 @@ begin
     lemma unit\<^sub>0_simp:
     assumes "C.obj a"
     shows "EQ\<^sub>DoEQ\<^sub>U\<^sub>VoEQ\<^sub>C'.unit\<^sub>0 a =
-           C\<^sub>U.E (F\<^sub>U\<^sub>V.G (D\<^sub>V.unit\<^sub>0 (D\<^sub>V.src (F (C\<^sub>U.P a))))) \<star>\<^sub>C C\<^sub>U.E (C\<^sub>U.P\<^sub>0 (src\<^sub>C a))
+           C\<^sub>U.E (F\<^sub>U\<^sub>V.G (D\<^sub>V.\<eta>\<^sub>0 (D\<^sub>V.src (F (C\<^sub>U.P a))))) \<star>\<^sub>C C\<^sub>U.E (C\<^sub>U.P\<^sub>0 (src\<^sub>C a))
              \<star>\<^sub>C EQ\<^sub>C'.unit\<^sub>0 a"
       using assms EQ\<^sub>DoEQ\<^sub>U\<^sub>VoEQ\<^sub>C'.unit\<^sub>0_simp EQ\<^sub>U\<^sub>VoEQ\<^sub>C'.unit\<^sub>0_simp
             EQ\<^sub>U\<^sub>VoEQ\<^sub>C'.FH.map\<^sub>0_def C\<^sub>U.src_def
@@ -9215,11 +9215,10 @@ begin
     \<close>
 
     abbreviation \<tau>\<^sub>0
-    where "\<tau>\<^sub>0 a \<equiv> F (C\<^sub>U.counit\<^sub>0 a)"
+    where "\<tau>\<^sub>0 a \<equiv> F (C\<^sub>U.\<epsilon>\<^sub>0 a)"
 
     abbreviation \<tau>\<^sub>1
-    where "\<tau>\<^sub>1 f \<equiv> D.inv (\<Phi> (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)) \<cdot>\<^sub>D F (C\<^sub>U.counit\<^sub>1 f) \<cdot>\<^sub>D
-                    \<Phi> (f, C\<^sub>U.counit\<^sub>0 (src\<^sub>C f))"
+    where "\<tau>\<^sub>1 f \<equiv> D.inv (\<Phi> (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)) \<cdot>\<^sub>D F (C\<^sub>U.\<epsilon>\<^sub>1 f) \<cdot>\<^sub>D \<Phi> (f, C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C f))"
 
     lemma \<tau>\<^sub>0_in_hom [intro]:
     assumes "C.obj a"
@@ -9254,13 +9253,12 @@ begin
     proof -
       show 1: "\<guillemotleft>\<tau>\<^sub>1 f : F f \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C f) \<Rightarrow>\<^sub>D \<tau>\<^sub>0 (trg\<^sub>C f) \<star>\<^sub>D F (C\<^sub>U.P f)\<guillemotright>"
       proof (intro D.comp_in_homI)
-        show "\<guillemotleft>\<Phi> (f, C\<^sub>U.d (src\<^sub>C f)) : F f \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C f) \<Rightarrow>\<^sub>D F (f \<star>\<^sub>C C\<^sub>U.counit\<^sub>0 (src\<^sub>C f))\<guillemotright>"
+        show "\<guillemotleft>\<Phi> (f, C\<^sub>U.d (src\<^sub>C f)) : F f \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C f) \<Rightarrow>\<^sub>D F (f \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C f))\<guillemotright>"
           using assms by auto
-        show "\<guillemotleft>F (C\<^sub>U.counit\<^sub>1 f) :
-                 F (f \<star>\<^sub>C C\<^sub>U.counit\<^sub>0 (src\<^sub>C f)) \<Rightarrow>\<^sub>D F (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C f) \<star>\<^sub>C C\<^sub>U.P f)\<guillemotright>"
+        show "\<guillemotleft>F (C\<^sub>U.\<epsilon>\<^sub>1 f) : F (f \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C f)) \<Rightarrow>\<^sub>D F (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C f) \<star>\<^sub>C C\<^sub>U.P f)\<guillemotright>"
           using assms C\<^sub>U.counit\<^sub>1_in_hom [of f] C\<^sub>U.P_def by auto
-        show "\<guillemotleft>D.inv (\<Phi> (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)) :
-                   F (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C f) \<star>\<^sub>C C\<^sub>U.P f) \<Rightarrow>\<^sub>D \<tau>\<^sub>0 (trg\<^sub>C f) \<star>\<^sub>D F (C\<^sub>U.P f)\<guillemotright>"
+        show "\<guillemotleft>D.inv (\<Phi> (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)) :
+                   F (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C f) \<star>\<^sub>C C\<^sub>U.P f) \<Rightarrow>\<^sub>D \<tau>\<^sub>0 (trg\<^sub>C f) \<star>\<^sub>D F (C\<^sub>U.P f)\<guillemotright>"
           using assms C.VV.arr_char C.VV.ide_char \<Phi>.components_are_iso
           by (metis (no_types, lifting) C\<^sub>U.P_def C\<^sub>U.counit.ide_map\<^sub>0_obj C\<^sub>U.counit\<^sub>1_simps(1,5)
               C\<^sub>U.equivalence_data_simps\<^sub>B(2) C.hseqE C.ide_hcomp C.obj_trg D.arr_cod D.inv_in_homI
@@ -9289,14 +9287,14 @@ begin
     assumes "C.ide f"
     shows "D.iso (\<tau>\<^sub>1 f)"
     proof -
-      have "C.VV.ide (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)"
+      have "C.VV.ide (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)"
       proof -
-        have "C.VV.arr (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)"
+        have "C.VV.arr (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)"
           using assms C\<^sub>U.equivalence_data_simps\<^sub>B(7) C.ideD(1) by auto
-        moreover have "C.VxV.ide (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)"
+        moreover have "C.VxV.ide (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)"
           using assms C\<^sub>U.prj.preserves_ide [of f] C\<^sub>U.ide_char by simp
         ultimately show ?thesis
-          using assms C.VV.ide_char [of "(C\<^sub>U.counit\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)"] by blast
+          using assms C.VV.ide_char [of "(C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C f), C\<^sub>U.P f)"] by blast
       qed
       hence "D.iso (\<Phi> (C\<^sub>U.d (trg\<^sub>C f), C\<^sub>U.P f))"
         by simp
@@ -9382,50 +9380,48 @@ begin
                 = (\<tau>\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>D EQ\<^sub>DoEQ\<^sub>U\<^sub>VoEQ\<^sub>C'.left_map \<mu>) \<cdot>\<^sub>D \<tau>\<^sub>1 (C.dom \<mu>)"
         proof -
           have "\<tau>\<^sub>1 (C.cod \<mu>) \<cdot>\<^sub>D (F \<mu> \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C \<mu>))
-                  = D.inv (\<Phi> (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.cod \<mu>))) \<cdot>\<^sub>D
-                    F (C\<^sub>U.counit\<^sub>1 (C.cod \<mu>)) \<cdot>\<^sub>D
-                    \<Phi> (C.cod \<mu>, C\<^sub>U.counit\<^sub>0 (src\<^sub>C \<mu>)) \<cdot>\<^sub>D
+                  = D.inv (\<Phi> (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.cod \<mu>))) \<cdot>\<^sub>D
+                    F (C\<^sub>U.\<epsilon>\<^sub>1 (C.cod \<mu>)) \<cdot>\<^sub>D
+                    \<Phi> (C.cod \<mu>, C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C \<mu>)) \<cdot>\<^sub>D
                     (F \<mu> \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C \<mu>))"
             using \<mu> D.comp_assoc by simp
-          also have "... = D.inv (\<Phi> (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.cod \<mu>))) \<cdot>\<^sub>D
-                           (F (C\<^sub>U.counit\<^sub>1 (C.cod \<mu>)) \<cdot>\<^sub>D
-                           F (\<mu> \<star>\<^sub>C C\<^sub>U.counit\<^sub>0 (src\<^sub>C \<mu>))) \<cdot>\<^sub>D
-                           \<Phi> (C.dom \<mu>, C\<^sub>U.counit\<^sub>0 (src\<^sub>C \<mu>))"
-            using \<mu> \<Phi>.naturality [of "(\<mu>, C\<^sub>U.counit\<^sub>0 (src\<^sub>C \<mu>))"] D.comp_assoc
+          also have "... = D.inv (\<Phi> (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.cod \<mu>))) \<cdot>\<^sub>D
+                           (F (C\<^sub>U.\<epsilon>\<^sub>1 (C.cod \<mu>)) \<cdot>\<^sub>D
+                           F (\<mu> \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C \<mu>))) \<cdot>\<^sub>D
+                           \<Phi> (C.dom \<mu>, C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C \<mu>))"
+            using \<mu> \<Phi>.naturality [of "(\<mu>, C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C \<mu>))"] D.comp_assoc
                   C.VV.arr_char C.VV.dom_char C.VV.cod_char FF_def
             by simp
-          also have "... = (D.inv (\<Phi> (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.cod \<mu>))) \<cdot>\<^sub>D
-                           F (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>C C\<^sub>U.EoP.map \<mu>)) \<cdot>\<^sub>D
-                           F (C\<^sub>U.counit\<^sub>1 (C.dom \<mu>)) \<cdot>\<^sub>D
-                           \<Phi> (C.dom \<mu>, C\<^sub>U.counit\<^sub>0 (src\<^sub>C \<mu>))"
+          also have "... = (D.inv (\<Phi> (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.cod \<mu>))) \<cdot>\<^sub>D
+                           F (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>C C\<^sub>U.EoP.map \<mu>)) \<cdot>\<^sub>D
+                           F (C\<^sub>U.\<epsilon>\<^sub>1 (C.dom \<mu>)) \<cdot>\<^sub>D
+                           \<Phi> (C.dom \<mu>, C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C \<mu>))"
           proof -
-            have "F (C\<^sub>U.counit\<^sub>1 (C.cod \<mu>)) \<cdot>\<^sub>D F (\<mu> \<star>\<^sub>C C\<^sub>U.counit\<^sub>0 (src\<^sub>C \<mu>))
-                    = F (C\<^sub>U.counit\<^sub>1 (C.cod \<mu>) \<cdot>\<^sub>C (\<mu> \<star>\<^sub>C C\<^sub>U.counit\<^sub>0 (src\<^sub>C \<mu>)))"
+            have "F (C\<^sub>U.\<epsilon>\<^sub>1 (C.cod \<mu>)) \<cdot>\<^sub>D F (\<mu> \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C \<mu>))
+                    = F (C\<^sub>U.\<epsilon>\<^sub>1 (C.cod \<mu>) \<cdot>\<^sub>C (\<mu> \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C \<mu>)))"
               using \<mu> by simp
-            also have "... = F ((C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>C C\<^sub>U.EoP.map \<mu>) \<cdot>\<^sub>C
-                                  C\<^sub>U.counit\<^sub>1 (C.dom \<mu>))"
+            also have "... = F ((C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>C C\<^sub>U.EoP.map \<mu>) \<cdot>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>1 (C.dom \<mu>))"
               using \<mu> C\<^sub>U.counit.naturality [of \<mu>] by simp
-            also have "... = F (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>C C\<^sub>U.EoP.map \<mu>) \<cdot>\<^sub>D
-                             F (C\<^sub>U.counit\<^sub>1 (C.dom \<mu>))"
+            also have "... = F (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>C C\<^sub>U.EoP.map \<mu>) \<cdot>\<^sub>D
+                             F (C\<^sub>U.\<epsilon>\<^sub>1 (C.dom \<mu>))"
               using \<mu> by simp
-            finally have "F (C\<^sub>U.counit\<^sub>1 (C.cod \<mu>)) \<cdot>\<^sub>D F (\<mu> \<star>\<^sub>C C\<^sub>U.counit\<^sub>0 (src\<^sub>C \<mu>))
-                            = F (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>C C\<^sub>U.EoP.map \<mu>) \<cdot>\<^sub>D
-                              F (C\<^sub>U.counit\<^sub>1 (C.dom \<mu>))"
+            finally have "F (C\<^sub>U.\<epsilon>\<^sub>1 (C.cod \<mu>)) \<cdot>\<^sub>D F (\<mu> \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C \<mu>))
+                            = F (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>C C\<^sub>U.EoP.map \<mu>) \<cdot>\<^sub>D F (C\<^sub>U.\<epsilon>\<^sub>1 (C.dom \<mu>))"
               by blast
             thus ?thesis
               using D.comp_assoc by simp
           qed
-          also have "... = (F (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>)) \<star>\<^sub>D F (C\<^sub>U.EoP.map \<mu>)) \<cdot>\<^sub>D
-                           D.inv (\<Phi> (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.dom \<mu>))) \<cdot>\<^sub>D
-                           F (C\<^sub>U.counit\<^sub>1 (C.dom \<mu>)) \<cdot>\<^sub>D
-                           \<Phi> (C.dom \<mu>, C\<^sub>U.counit\<^sub>0 (src\<^sub>C \<mu>))"
+          also have "... = (F (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>)) \<star>\<^sub>D F (C\<^sub>U.EoP.map \<mu>)) \<cdot>\<^sub>D
+                           D.inv (\<Phi> (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.dom \<mu>))) \<cdot>\<^sub>D
+                           F (C\<^sub>U.\<epsilon>\<^sub>1 (C.dom \<mu>)) \<cdot>\<^sub>D
+                           \<Phi> (C.dom \<mu>, C\<^sub>U.\<epsilon>\<^sub>0 (src\<^sub>C \<mu>))"
           proof -
-            have "D.inv (\<Phi> (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.cod \<mu>))) \<cdot>\<^sub>D
-                  F (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>C C\<^sub>U.EoP.map \<mu>)
-                    = (F (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>)) \<star>\<^sub>D F (C\<^sub>U.EoP.map \<mu>)) \<cdot>\<^sub>D
-                      D.inv (\<Phi> (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.dom \<mu>)))"
+            have "D.inv (\<Phi> (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.cod \<mu>))) \<cdot>\<^sub>D
+                  F (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>) \<star>\<^sub>C C\<^sub>U.EoP.map \<mu>)
+                    = (F (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>)) \<star>\<^sub>D F (C\<^sub>U.EoP.map \<mu>)) \<cdot>\<^sub>D
+                      D.inv (\<Phi> (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P (C.dom \<mu>)))"
             proof -
-              have "C.VV.arr (C\<^sub>U.counit\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P \<mu>)"
+              have "C.VV.arr (C\<^sub>U.\<epsilon>\<^sub>0 (trg\<^sub>C \<mu>), C\<^sub>U.P \<mu>)"
               proof (unfold C.VV.arr_char, intro conjI)
                 show "C.arr (fst (C\<^sub>U.d (trg\<^sub>C \<mu>), C\<^sub>U.P \<mu>))"
                   using \<mu> by simp
@@ -9639,7 +9635,7 @@ begin
         proof -
           have "\<l>\<^sub>D[\<tau>\<^sub>0 a] = F \<l>\<^sub>C[C\<^sub>U.d a] \<cdot>\<^sub>D \<Phi> (trg\<^sub>C (C\<^sub>U.d a), C\<^sub>U.d a) \<cdot>\<^sub>D
                           (unit (trg\<^sub>C (C\<^sub>U.d a)) \<star>\<^sub>D \<tau>\<^sub>0 a)"
-            using a preserves_lunit [of "C\<^sub>U.counit\<^sub>0 a"] C\<^sub>U.counit.ide_map\<^sub>0_obj lunit_coherence
+            using a preserves_lunit [of "C\<^sub>U.\<epsilon>\<^sub>0 a"] C\<^sub>U.counit.ide_map\<^sub>0_obj lunit_coherence
             by blast
           moreover
           have "\<r>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0 a] = (\<tau>\<^sub>0 a \<star>\<^sub>D D.inv (unit (src\<^sub>C (C\<^sub>U.d a)))) \<cdot>\<^sub>D
@@ -9647,7 +9643,7 @@ begin
           proof -
             have "F \<r>\<^sub>C\<^sup>-\<^sup>1[C\<^sub>U.d a] =
                   \<Phi> (C\<^sub>U.d a, src\<^sub>C (C\<^sub>U.d a)) \<cdot>\<^sub>D (\<tau>\<^sub>0 a \<star>\<^sub>D unit (src\<^sub>C (C\<^sub>U.d a))) \<cdot>\<^sub>D \<r>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0 a]"
-              using preserves_runit(2) [of "C\<^sub>U.counit\<^sub>0 a"] by simp
+              using preserves_runit(2) [of "C\<^sub>U.\<epsilon>\<^sub>0 a"] by simp
             moreover have 1: "D.iso (\<Phi> (C\<^sub>U.d a, src\<^sub>C (C\<^sub>U.d a)))"
               using a C.VV.ide_char C.VV.arr_char C.obj_src [of "C\<^sub>U.d a"]
                     \<Phi>.components_are_iso [of "(C\<^sub>U.d a, src\<^sub>C (C\<^sub>U.d a))"]
@@ -9759,15 +9755,13 @@ begin
         qed
         also have "... = \<tau>\<^sub>1 a \<cdot>\<^sub>D (unit a \<star>\<^sub>D \<tau>\<^sub>0 a)"
         proof -
-          have "D.inv (\<Phi> (C\<^sub>U.d a, C\<^sub>U.P a)) \<cdot>\<^sub>D F (C\<^sub>U.counit\<^sub>1 a \<cdot>\<^sub>C (a \<star>\<^sub>C C\<^sub>U.d a)) \<cdot>\<^sub>D
-                \<Phi> (a, C\<^sub>U.d a)
-                  = D.inv (\<Phi> (C\<^sub>U.d a, C\<^sub>U.P a)) \<cdot>\<^sub>D F (C\<^sub>U.counit\<^sub>1 a) \<cdot>\<^sub>D \<Phi> (a, C\<^sub>U.d a)"
+          have "D.inv (\<Phi> (C\<^sub>U.d a, C\<^sub>U.P a)) \<cdot>\<^sub>D F (C\<^sub>U.\<epsilon>\<^sub>1 a \<cdot>\<^sub>C (a \<star>\<^sub>C C\<^sub>U.d a)) \<cdot>\<^sub>D \<Phi> (a, C\<^sub>U.d a)
+                  = D.inv (\<Phi> (C\<^sub>U.d a, C\<^sub>U.P a)) \<cdot>\<^sub>D F (C\<^sub>U.\<epsilon>\<^sub>1 a) \<cdot>\<^sub>D \<Phi> (a, C\<^sub>U.d a)"
             using a C.obj_def' C.comp_arr_dom
             by (metis C\<^sub>U.counit\<^sub>1_simps(1) C\<^sub>U.counit\<^sub>1_simps(4) C.objE)
           also have "... = \<tau>\<^sub>1 a"
             using a by auto
-          finally have "D.inv (\<Phi> (C\<^sub>U.d a, C\<^sub>U.P a)) \<cdot>\<^sub>D F (C\<^sub>U.counit\<^sub>1 a \<cdot>\<^sub>C (a \<star>\<^sub>C C\<^sub>U.d a)) \<cdot>\<^sub>D
-                        \<Phi> (a, C\<^sub>U.d a)
+          finally have "D.inv (\<Phi> (C\<^sub>U.d a, C\<^sub>U.P a)) \<cdot>\<^sub>D F (C\<^sub>U.\<epsilon>\<^sub>1 a \<cdot>\<^sub>C (a \<star>\<^sub>C C\<^sub>U.d a)) \<cdot>\<^sub>D \<Phi> (a, C\<^sub>U.d a)
                           = \<tau>\<^sub>1 a"
             by blast
           thus ?thesis
@@ -9800,9 +9794,9 @@ begin
                 = (D.inv (\<Phi> (C\<^sub>U.d (trg\<^sub>C g), C\<^sub>U.P (g \<star>\<^sub>C f))) \<cdot>\<^sub>D
                   F ((C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.EoP.cmp (g, f)) \<cdot>\<^sub>C
                   \<a>\<^sub>C[C\<^sub>U.d (trg\<^sub>C g), C\<^sub>U.P g, C\<^sub>U.P f] \<cdot>\<^sub>C
-                  (C\<^sub>U.counit\<^sub>1 g \<star>\<^sub>C C\<^sub>U.P f) \<cdot>\<^sub>C
+                  (C\<^sub>U.\<epsilon>\<^sub>1 g \<star>\<^sub>C C\<^sub>U.P f) \<cdot>\<^sub>C
                   C.inv \<a>\<^sub>C[g, C\<^sub>U.d (src\<^sub>C g), C\<^sub>U.P f] \<cdot>\<^sub>C
-                  (g \<star>\<^sub>C C\<^sub>U.counit\<^sub>1 f) \<cdot>\<^sub>C
+                  (g \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>1 f) \<cdot>\<^sub>C
                   \<a>\<^sub>C[g, f, C\<^sub>U.d (src\<^sub>C f)]) \<cdot>\<^sub>D
                   \<Phi> (g \<star>\<^sub>C f, C\<^sub>U.d (src\<^sub>C f))) \<cdot>\<^sub>D
                   (\<Phi> (g, f) \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C f))"
@@ -9824,22 +9818,22 @@ begin
         proof -
           have "F ((C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.EoP.cmp (g, f)) \<cdot>\<^sub>C
                    \<a>\<^sub>C[C\<^sub>U.d (trg\<^sub>C g), C\<^sub>U.P g, C\<^sub>U.P f] \<cdot>\<^sub>C
-                   (C\<^sub>U.counit\<^sub>1 g \<star>\<^sub>C C\<^sub>U.P f) \<cdot>\<^sub>C
+                   (C\<^sub>U.\<epsilon>\<^sub>1 g \<star>\<^sub>C C\<^sub>U.P f) \<cdot>\<^sub>C
                    C.inv \<a>\<^sub>C[g, C\<^sub>U.d (src\<^sub>C g), C\<^sub>U.P f] \<cdot>\<^sub>C
-                   (g \<star>\<^sub>C C\<^sub>U.counit\<^sub>1 f) \<cdot>\<^sub>C
+                   (g \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>1 f) \<cdot>\<^sub>C
                    \<a>\<^sub>C[g, f, C\<^sub>U.d (src\<^sub>C f)])
                   = F (C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.EoP.cmp (g, f)) \<cdot>\<^sub>D
                     F \<a>\<^sub>C[C\<^sub>U.d (trg\<^sub>C g), C\<^sub>U.P g, C\<^sub>U.P f] \<cdot>\<^sub>D
-                    F (C\<^sub>U.counit\<^sub>1 g \<star>\<^sub>C C\<^sub>U.P f) \<cdot>\<^sub>D
+                    F (C\<^sub>U.\<epsilon>\<^sub>1 g \<star>\<^sub>C C\<^sub>U.P f) \<cdot>\<^sub>D
                     F (C.inv \<a>\<^sub>C[g, C\<^sub>U.d (src\<^sub>C g), C\<^sub>U.P f]) \<cdot>\<^sub>D
-                    F (g \<star>\<^sub>C C\<^sub>U.counit\<^sub>1 f) \<cdot>\<^sub>D
+                    F (g \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>1 f) \<cdot>\<^sub>D
                     F \<a>\<^sub>C[g, f, C\<^sub>U.d (src\<^sub>C f)]"
           proof -
             have "C.arr ((C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.EoP.cmp (g, f)) \<cdot>\<^sub>C
                          \<a>\<^sub>C[C\<^sub>U.d (trg\<^sub>C g), C\<^sub>U.P g, C\<^sub>U.P f] \<cdot>\<^sub>C
-                         (C\<^sub>U.counit\<^sub>1 g \<star>\<^sub>C C\<^sub>U.P f) \<cdot>\<^sub>C
+                         (C\<^sub>U.\<epsilon>\<^sub>1 g \<star>\<^sub>C C\<^sub>U.P f) \<cdot>\<^sub>C
                          C.inv \<a>\<^sub>C[g, C\<^sub>U.d (src\<^sub>C g), C\<^sub>U.P f] \<cdot>\<^sub>C
-                         (g \<star>\<^sub>C C\<^sub>U.counit\<^sub>1 f) \<cdot>\<^sub>C
+                         (g \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>1 f) \<cdot>\<^sub>C
                          \<a>\<^sub>C[g, f, C\<^sub>U.d (src\<^sub>C f)])"
              using f g fg 1 C\<^sub>U.emb.map_def C.VV.arr_char C.VV.dom_char C\<^sub>U.EoP.FF_def
              by (intro C.seqI C.hseqI') auto
@@ -9855,7 +9849,7 @@ begin
                            (D.inv (\<Phi> (C\<^sub>U.d (trg\<^sub>C g), C\<^sub>U.P g)) \<star>\<^sub>D F (C\<^sub>U.P f)) \<cdot>\<^sub>D
                            ((D.inv (\<Phi> (C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.P g, C\<^sub>U.P f)) \<cdot>\<^sub>D
                            \<Phi> (C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.P g, C\<^sub>U.P f)) \<cdot>\<^sub>D
-                           (F (C\<^sub>U.counit\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f))) \<cdot>\<^sub>D
+                           (F (C\<^sub>U.\<epsilon>\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f))) \<cdot>\<^sub>D
                            ((D.inv (\<Phi> (g \<star>\<^sub>C C\<^sub>U.d (trg\<^sub>C f), C\<^sub>U.P f)) \<cdot>\<^sub>D
                            \<Phi> (g \<star>\<^sub>C C\<^sub>U.d (trg\<^sub>C f), C\<^sub>U.P f)) \<cdot>\<^sub>D
                            (\<Phi> (g, C\<^sub>U.d (trg\<^sub>C f)) \<star>\<^sub>D F (C\<^sub>U.P f))) \<cdot>\<^sub>D
@@ -9863,7 +9857,7 @@ begin
                            (F g \<star>\<^sub>D D.inv (\<Phi> (C\<^sub>U.d (trg\<^sub>C f), C\<^sub>U.P f))) \<cdot>\<^sub>D
                            ((D.inv (\<Phi> (g, C\<^sub>U.d (trg\<^sub>C f) \<star>\<^sub>C C\<^sub>U.P f)) \<cdot>\<^sub>D
                            \<Phi> (g, C\<^sub>U.d (trg\<^sub>C f) \<star>\<^sub>C C\<^sub>U.P f)) \<cdot>\<^sub>D
-                           (F g \<star>\<^sub>D F (C\<^sub>U.counit\<^sub>1 f))) \<cdot>\<^sub>D
+                           (F g \<star>\<^sub>D F (C\<^sub>U.\<epsilon>\<^sub>1 f))) \<cdot>\<^sub>D
                            ((D.inv (\<Phi> (g, f \<star>\<^sub>C C\<^sub>U.d (src\<^sub>C f))) \<cdot>\<^sub>D
                            \<Phi> (g, f \<star>\<^sub>C C\<^sub>U.d (src\<^sub>C f))) \<cdot>\<^sub>D
                            (F g \<star>\<^sub>D \<Phi> (f, C\<^sub>U.d (src\<^sub>C f)))) \<cdot>\<^sub>D
@@ -9878,11 +9872,11 @@ begin
                            (\<tau>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<Phi> (C\<^sub>U.P g, C\<^sub>U.P f)) \<cdot>\<^sub>D
                            \<a>\<^sub>D[\<tau>\<^sub>0 (trg\<^sub>C g), F (C\<^sub>U.P g), F (C\<^sub>U.P f)] \<cdot>\<^sub>D
                            ((D.inv (\<Phi> (C\<^sub>U.d (trg\<^sub>C g), C\<^sub>U.P g)) \<star>\<^sub>D F (C\<^sub>U.P f)) \<cdot>\<^sub>D
-                           (F (C\<^sub>U.counit\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f)) \<cdot>\<^sub>D
+                           (F (C\<^sub>U.\<epsilon>\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f)) \<cdot>\<^sub>D
                            (\<Phi> (g, C\<^sub>U.d (trg\<^sub>C f)) \<star>\<^sub>D F (C\<^sub>U.P f))) \<cdot>\<^sub>D
                            D.inv \<a>\<^sub>D[F g, \<tau>\<^sub>0 (trg\<^sub>C f), F (C\<^sub>U.P f)] \<cdot>\<^sub>D
                            ((F g \<star>\<^sub>D D.inv (\<Phi> (C\<^sub>U.d (trg\<^sub>C f), C\<^sub>U.P f))) \<cdot>\<^sub>D
-                           (F g \<star>\<^sub>D F (C\<^sub>U.counit\<^sub>1 f)) \<cdot>\<^sub>D
+                           (F g \<star>\<^sub>D F (C\<^sub>U.\<epsilon>\<^sub>1 f)) \<cdot>\<^sub>D
                            (F g \<star>\<^sub>D \<Phi> (f, C\<^sub>U.d (src\<^sub>C f)))) \<cdot>\<^sub>D
                            \<a>\<^sub>D[F g, F f, \<tau>\<^sub>0 (src\<^sub>C f)] \<cdot>\<^sub>D
                            (D.inv (\<Phi> (g, f)) \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C f)) \<cdot>\<^sub>D
@@ -9898,14 +9892,14 @@ begin
               by simp
             moreover have "(D.inv (\<Phi> (C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.P g, C\<^sub>U.P f)) \<cdot>\<^sub>D
                            \<Phi> (C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.P g, C\<^sub>U.P f)) \<cdot>\<^sub>D
-                           (F (C\<^sub>U.counit\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f))
-                             = F (C\<^sub>U.counit\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f)"
+                           (F (C\<^sub>U.\<epsilon>\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f))
+                             = F (C\<^sub>U.\<epsilon>\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f)"
             proof -
               have "(D.inv (\<Phi> (C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.P g, C\<^sub>U.P f)) \<cdot>\<^sub>D
                             \<Phi> (C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.P g, C\<^sub>U.P f)) \<cdot>\<^sub>D
-                            (F (C\<^sub>U.counit\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f))
+                            (F (C\<^sub>U.\<epsilon>\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f))
                       = (F (C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.P g) \<star>\<^sub>D F (C\<^sub>U.P f)) \<cdot>\<^sub>D
-                        (F (C\<^sub>U.counit\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f))"
+                        (F (C\<^sub>U.\<epsilon>\<^sub>1 g) \<star>\<^sub>D F (C\<^sub>U.P f))"
                 using f g fg 1 C.VV.arr_char C.VV.dom_char C.VV.cod_char C\<^sub>U.EoP.FF_def
                     C\<^sub>U.emb.map_def D.comp_inv_arr' D.comp_arr_dom D.comp_cod_arr
                     \<Phi>.components_are_iso C.VV.ide_char FF_def
@@ -9970,9 +9964,9 @@ begin
           qed
           finally have "F ((C\<^sub>U.d (trg\<^sub>C g) \<star>\<^sub>C C\<^sub>U.EoP.cmp (g, f)) \<cdot>\<^sub>C
                         \<a>\<^sub>C[C\<^sub>U.d (trg\<^sub>C g), C\<^sub>U.P g, C\<^sub>U.P f] \<cdot>\<^sub>C
-                        (C\<^sub>U.counit\<^sub>1 g \<star>\<^sub>C C\<^sub>U.P f) \<cdot>\<^sub>C
+                        (C\<^sub>U.\<epsilon>\<^sub>1 g \<star>\<^sub>C C\<^sub>U.P f) \<cdot>\<^sub>C
                         C.inv \<a>\<^sub>C[g, C\<^sub>U.d (src\<^sub>C g), C\<^sub>U.P f] \<cdot>\<^sub>C
-                        (g \<star>\<^sub>C C\<^sub>U.counit\<^sub>1 f) \<cdot>\<^sub>C
+                        (g \<star>\<^sub>C C\<^sub>U.\<epsilon>\<^sub>1 f) \<cdot>\<^sub>C
                         \<a>\<^sub>C[g, f, C\<^sub>U.d (src\<^sub>C f)])
                           = \<Phi> (C\<^sub>U.d (trg\<^sub>C g), C\<^sub>U.P (g \<star>\<^sub>C f)) \<cdot>\<^sub>D
                             (\<tau>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D F (C\<^sub>U.EoP.cmp (g, f))) \<cdot>\<^sub>D
@@ -10267,7 +10261,7 @@ begin
       qed
     qed
 
-    interpretation EQ: equivalence_of_bicategories_and_pseudonatural_equivalence_left  (* 25 sec *)
+    interpretation EQ: equivalence_of_bicategories_and_pseudonatural_equivalence_left  (* 17 sec *)
                          V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C
                          EQ\<^sub>DoEQ\<^sub>U\<^sub>VoEQ\<^sub>C'.left_map EQ\<^sub>DoEQ\<^sub>U\<^sub>VoEQ\<^sub>C'.left_cmp
                          EQ\<^sub>DoEQ\<^sub>U\<^sub>VoEQ\<^sub>C'.right_map EQ\<^sub>DoEQ\<^sub>U\<^sub>VoEQ\<^sub>C'.right_cmp
