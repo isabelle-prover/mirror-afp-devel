@@ -518,7 +518,8 @@ begin
         using is_left_adjoint_functor by blast
       interpret Adj: meta_adjunction D C F G \<phi> \<psi>
         using induces_meta_adjunction by simp
-      interpret Adj: adjunction D C replete_setcat.comp
+      interpret S: replete_setcat .
+      interpret Adj: adjunction D C S.comp S.setp
                        Adj.\<phi>C Adj.\<phi>D F G \<phi> \<psi> Adj.\<eta> Adj.\<epsilon> Adj.\<Phi> Adj.\<Psi>
         using induces_adjunction by simp
       interpret equivalence_of_categories D C F G Adj.\<eta> Adj.\<epsilon>

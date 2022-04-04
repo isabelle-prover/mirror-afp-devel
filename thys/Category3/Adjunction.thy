@@ -406,7 +406,7 @@ begin
   locale hom_adjunction =
     C: category C +
     D: category D +
-    S: replete_set_category S +
+    S: set_category S setp +
     Cop: dual_category C +
     Dop: dual_category D +
     CopxC: product_category Cop.comp C +
@@ -414,21 +414,22 @@ begin
     DopxC: product_category Dop.comp C +
     F: "functor" D C F +
     G: "functor" C D G +
-    HomC: hom_functor C S \<phi>C +
-    HomD: hom_functor D S \<phi>D +
+    HomC: hom_functor C S setp \<phi>C +
+    HomD: hom_functor D S setp \<phi>D +
     Fop: dual_functor Dop.comp Cop.comp F +
     FopxC: product_functor Dop.comp C Cop.comp C Fop.map C.map +
     DopxG: product_functor Dop.comp C Dop.comp D Dop.map G +
     Hom_FopxC: composite_functor DopxC.comp CopxC.comp S FopxC.map HomC.map +
     Hom_DopxG: composite_functor DopxC.comp DopxD.comp S DopxG.map HomD.map +
-    Hom_FopxC: set_valued_functor DopxC.comp S Hom_FopxC.map +
-    Hom_DopxG: set_valued_functor DopxC.comp S Hom_DopxG.map +
-    \<Phi>: set_valued_transformation DopxC.comp S Hom_FopxC.map Hom_DopxG.map \<Phi> +
-    \<Psi>: set_valued_transformation DopxC.comp S Hom_DopxG.map Hom_FopxC.map \<Psi> +
+    Hom_FopxC: set_valued_functor DopxC.comp S setp Hom_FopxC.map +
+    Hom_DopxG: set_valued_functor DopxC.comp S setp Hom_DopxG.map +
+    \<Phi>: set_valued_transformation DopxC.comp S setp Hom_FopxC.map Hom_DopxG.map \<Phi> +
+    \<Psi>: set_valued_transformation DopxC.comp S setp Hom_DopxG.map Hom_FopxC.map \<Psi> +
     \<Phi>\<Psi>: inverse_transformations DopxC.comp S Hom_FopxC.map Hom_DopxG.map \<Phi> \<Psi>
     for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
     and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
     and S :: "'s comp"     (infixr "\<cdot>\<^sub>S" 55)
+    and setp :: "'s set \<Rightarrow> bool"
     and \<phi>C :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
     and \<phi>D :: "'d * 'd \<Rightarrow> 'd \<Rightarrow> 's"
     and F :: "'d \<Rightarrow> 'c"
@@ -635,15 +636,15 @@ begin
   locale adjunction =
     C: category C +
     D: category D +
-    S: replete_set_category S +
+    S: set_category S setp +
     Cop: dual_category C +
     Dop: dual_category D +
     CopxC: product_category Cop.comp C +
     DopxD: product_category Dop.comp D +
     DopxC: product_category Dop.comp C +
     idDop: identity_functor Dop.comp +
-    HomC: hom_functor C S \<phi>C +
-    HomD: hom_functor D S \<phi>D +
+    HomC: hom_functor C S setp \<phi>C +
+    HomD: hom_functor D S setp \<phi>D +
     F: left_adjoint_functor D C F +
     G: right_adjoint_functor C D G +
     GF: composite_functor D C D F G +
@@ -655,8 +656,8 @@ begin
     DopxG: product_functor Dop.comp C Dop.comp D Dop.map G +
     Hom_FopxC: composite_functor DopxC.comp CopxC.comp S FopxC.map HomC.map +
     Hom_DopxG: composite_functor DopxC.comp DopxD.comp S DopxG.map HomD.map +
-    Hom_FopxC: set_valued_functor DopxC.comp S Hom_FopxC.map +
-    Hom_DopxG: set_valued_functor DopxC.comp S Hom_DopxG.map +
+    Hom_FopxC: set_valued_functor DopxC.comp S setp Hom_FopxC.map +
+    Hom_DopxG: set_valued_functor DopxC.comp S setp Hom_DopxG.map +
     \<eta>: natural_transformation D D D.map GF.map \<eta> +
     \<epsilon>: natural_transformation C C FG.map C.map \<epsilon> +
     F\<eta>: natural_transformation D C F \<open>F o G o F\<close> \<open>F o \<eta>\<close> +
@@ -667,10 +668,11 @@ begin
     G\<epsilon>o\<eta>G: vertical_composite C D G GFG.map G \<open>\<eta> o G\<close> \<open>G o \<epsilon>\<close> +
     \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi> +
     \<eta>\<epsilon>: unit_counit_adjunction C D F G \<eta> \<epsilon> +
-    \<Phi>\<Psi>: hom_adjunction C D S \<phi>C \<phi>D F G \<Phi> \<Psi>
+    \<Phi>\<Psi>: hom_adjunction C D S setp \<phi>C \<phi>D F G \<Phi> \<Psi>
     for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
     and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
     and S :: "'s comp"     (infixr "\<cdot>\<^sub>S" 55)
+    and setp :: "'s set \<Rightarrow> bool"
     and \<phi>C :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
     and \<phi>D :: "'d * 'd \<Rightarrow> 'd \<Rightarrow> 's"
     and F :: "'d \<Rightarrow> 'c"
@@ -1544,24 +1546,29 @@ begin
     definition inD :: "'d \<Rightarrow> ('c+'d) setcat.arr"
     where "inD \<equiv> S.UP o Inr"
 
+    interpretation S: replete_setcat \<open>undefined :: ('c+'d)\<close> .
     interpretation Cop: dual_category C ..
     interpretation Dop: dual_category D ..
     interpretation CopxC: product_category Cop.comp C ..
     interpretation DopxD: product_category Dop.comp D ..
     interpretation DopxC: product_category Dop.comp C ..
-    interpretation HomC: hom_functor C S.comp \<open>\<lambda>_. inC\<close>
+    interpretation HomC: hom_functor C S.comp S.setp \<open>\<lambda>_. inC\<close>
     proof
       show "\<And>f. C.arr f \<Longrightarrow> inC f \<in> S.Univ"
         unfolding inC_def using S.UP_mapsto by auto
+      thus "\<And>b a. \<lbrakk>C.ide b; C.ide a\<rbrakk> \<Longrightarrow> inC ` C.hom b a \<subseteq> S.Univ"
+        by blast
       show "\<And>b a. \<lbrakk>C.ide b; C.ide a\<rbrakk> \<Longrightarrow> inj_on inC (C.hom b a)"
         unfolding inC_def
         using S.inj_UP
         by (metis injD inj_Inl inj_compose inj_on_def)
     qed
-    interpretation HomD: hom_functor D S.comp \<open>\<lambda>_. inD\<close>
+    interpretation HomD: hom_functor D S.comp S.setp \<open>\<lambda>_. inD\<close>
     proof
       show "\<And>f. D.arr f \<Longrightarrow> inD f \<in> S.Univ"
         unfolding inD_def using S.UP_mapsto by auto
+      thus "\<And>b a. \<lbrakk>D.ide b; D.ide a\<rbrakk> \<Longrightarrow> inD ` D.hom b a \<subseteq> S.Univ"
+        by blast
       show "\<And>b a. \<lbrakk>D.ide b; D.ide a\<rbrakk> \<Longrightarrow> inj_on inD (D.hom b a)"
         unfolding inD_def
         using S.inj_UP
@@ -1682,13 +1689,11 @@ begin
                  \<Phi>o (DopxC.cod gf) = S.mkArr (HomC.set (?Fy', ?x')) (HomD.set (?y', ?Gx'))
                                              (inD o \<phi> ?y' o HomC.\<psi> (?Fy', ?x'))"
           using gf \<Phi>o_in_hom [of "DopxC.cod gf"] \<Phi>o_def [of "DopxC.cod gf"] \<phi>_in_hom
-                S.card_of_leq
           by auto
         have 3: "S.arr (\<Phi>o (DopxC.dom gf)) \<and>
                  \<Phi>o (DopxC.dom gf) = S.mkArr (HomC.set (?Fy, ?x)) (HomD.set (?y, ?Gx))
                                              (inD o \<phi> ?y o HomC.\<psi> (?Fy, ?x))"
           using gf \<Phi>o_in_hom [of "DopxC.dom gf"] \<Phi>o_def [of "DopxC.dom gf"] \<phi>_in_hom
-                S.card_of_leq
           by auto
         have 4: "S.arr (Hom_DopxG.map gf) \<and>
                  Hom_DopxG.map gf = S.mkArr (HomD.set (?y, ?Gx)) (HomD.set (?y', ?Gx'))
@@ -1827,7 +1832,7 @@ begin
             show
               "S.arr (S.mkArr (HomC.set (F (fst yx), snd yx)) (HomC.set (F (fst yx), snd yx))
                      (\<lambda>x. x))"
-              using yx HomC.set_subset_Univ S.arr_mkArr by simp
+              using yx HomC.set_subset_Univ by simp
             show "\<And>x. x \<in> HomC.set (F (fst yx), snd yx) \<Longrightarrow>
                         x = ((inC o \<psi> (snd yx) o HomD.\<psi> (fst yx, G (snd yx)))
                              o (inD o \<phi> (fst yx) o HomC.\<psi> (F (fst yx), snd yx))) x"
@@ -1876,7 +1881,7 @@ begin
             show
               "S.arr (S.mkArr (HomD.set (fst yx, G (snd yx))) (HomD.set (fst yx, G (snd yx)))
                      (\<lambda>x. x))"
-              using yx HomD.set_subset_Univ S.arr_mkArr by simp
+              using yx HomD.set_subset_Univ by simp
             show "\<And>x. x \<in> (HomD.set (fst yx, G (snd yx))) \<Longrightarrow>
                         x = ((inD o \<phi> (fst yx) o HomC.\<psi> (F (fst yx), snd yx))
                             o (inC o \<psi> (snd yx) o HomD.\<psi> (fst yx, G (snd yx)))) x"
@@ -1933,7 +1938,7 @@ begin
     abbreviation HomD where "HomD \<equiv> HomD.map"
     abbreviation \<phi>D where "\<phi>D \<equiv> \<lambda>_. inD"
 
-    theorem induces_hom_adjunction: "hom_adjunction C D S.comp \<phi>C \<phi>D F G \<Phi> \<Psi>"
+    theorem induces_hom_adjunction: "hom_adjunction C D S.comp S.setp \<phi>C \<phi>D F G \<Phi> \<Psi>"
       using F.is_extensional by unfold_locales auto
 
     lemma \<Psi>_simp:
@@ -1946,10 +1951,10 @@ begin
       The original @{term \<phi>} and @{term \<psi>} can be recovered from @{term \<Phi>} and @{term \<Psi>}.
 \<close>
 
-    interpretation \<Phi>: set_valued_transformation DopxC.comp S.comp
+    interpretation \<Phi>: set_valued_transformation DopxC.comp S.comp S.setp
                                                 Hom_FopxC.map Hom_DopxG.map \<Phi>.map ..
      
-    interpretation \<Psi>: set_valued_transformation DopxC.comp S.comp
+    interpretation \<Psi>: set_valued_transformation DopxC.comp S.comp S.setp
                                                 Hom_DopxG.map Hom_FopxC.map \<Psi>.map ..
 
     lemma \<phi>_in_terms_of_\<Phi>':
@@ -2088,7 +2093,7 @@ begin
           also have "... = \<Phi>.FUN (y, x) h"
             using assms h \<Phi>_Fun_mapsto [of y "\<psi>C (F y, x) h"] HomC.\<psi>_mapsto
                   HomD.\<phi>_\<psi> [of y "G x"] C.ide_in_hom D.ide_in_hom
-            by (meson 2 G.preserves_ide S.arr_mkArr funcset_mem)
+            by blast
           finally show "\<Phi>.FUN (y, x) h = (\<phi>D (y, G x) o \<phi> y o \<psi>C (F y, x)) h" by auto
         qed
       qed
@@ -2581,16 +2586,17 @@ begin
   context meta_adjunction
   begin
 
+    interpretation S: replete_setcat .
     interpretation F: left_adjoint_functor D C F using has_left_adjoint_functor by auto
     interpretation G: right_adjoint_functor C D G using has_right_adjoint_functor by auto
 
     interpretation \<eta>\<epsilon>: unit_counit_adjunction C D F G \<eta> \<epsilon>
       using induces_unit_counit_adjunction \<eta>_def \<epsilon>_def by auto
-    interpretation \<Phi>\<Psi>: hom_adjunction C D replete_setcat.comp \<phi>C \<phi>D F G \<Phi> \<Psi>
+    interpretation \<Phi>\<Psi>: hom_adjunction C D S.comp S.setp \<phi>C \<phi>D F G \<Phi> \<Psi>
       using induces_hom_adjunction by auto
 
     theorem induces_adjunction:
-    shows "adjunction C D replete_setcat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>"
+    shows "adjunction C D S.comp S.setp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>"
       using \<epsilon>_map_simp \<eta>_map_simp \<phi>_in_terms_of_\<eta> \<phi>_in_terms_of_\<Phi>' \<psi>_in_terms_of_\<epsilon>
             \<psi>_in_terms_of_\<Psi>' \<Phi>_simp \<Psi>_simp \<eta>_def \<epsilon>_def
       by unfold_locales auto
@@ -2602,15 +2608,16 @@ begin
 
     interpretation \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi> using induces_meta_adjunction by auto
 
+    interpretation S: replete_setcat .
     interpretation F: left_adjoint_functor D C F using \<phi>\<psi>.has_left_adjoint_functor by auto
     interpretation G: right_adjoint_functor C D G using \<phi>\<psi>.has_right_adjoint_functor by auto
 
-    interpretation \<Phi>\<Psi>: hom_adjunction C D replete_setcat.comp
+    interpretation \<Phi>\<Psi>: hom_adjunction C D S.comp S.setp
                           \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>
       using \<phi>\<psi>.induces_hom_adjunction by auto
 
     theorem induces_adjunction:
-    shows "adjunction C D replete_setcat.comp \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>"
+    shows "adjunction C D S.comp S.setp \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>"
       using \<epsilon>_in_terms_of_\<psi> \<eta>_in_terms_of_\<phi> \<phi>\<psi>.\<phi>_in_terms_of_\<Phi>' \<psi>_def \<phi>\<psi>.\<psi>_in_terms_of_\<Psi>'
             \<phi>\<psi>.\<Phi>_simp \<phi>\<psi>.\<Psi>_simp \<phi>_def
       by unfold_locales auto
@@ -2628,7 +2635,7 @@ begin
       using \<phi>\<psi>.induces_unit_counit_adjunction \<phi>\<psi>.\<eta>_def \<phi>\<psi>.\<epsilon>_def by auto
 
     theorem induces_adjunction:
-    shows "adjunction C D S \<phi>C \<phi>D F G \<phi> \<psi> \<phi>\<psi>.\<eta> \<phi>\<psi>.\<epsilon> \<Phi> \<Psi>"
+    shows "adjunction C D S setp \<phi>C \<phi>D F G \<phi> \<psi> \<phi>\<psi>.\<eta> \<phi>\<psi>.\<epsilon> \<Phi> \<Psi>"
     proof
       fix x
       assume "C.ide x"
@@ -2670,9 +2677,10 @@ begin
 
     interpretation \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi>
       using induces_meta_adjunction by auto
+    interpretation S: replete_setcat .
 
     theorem induces_adjunction:
-    shows "adjunction C D replete_setcat.comp \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi> \<psi> \<phi>\<psi>.\<eta> \<phi>\<psi>.\<epsilon> \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>"
+    shows "adjunction C D S.comp S.setp \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi> \<psi> \<phi>\<psi>.\<eta> \<phi>\<psi>.\<epsilon> \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>"
       using \<phi>\<psi>.induces_adjunction by auto
 
   end
@@ -2682,9 +2690,10 @@ begin
 
     interpretation \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi>
       using induces_meta_adjunction by auto
+    interpretation S: replete_setcat .
 
     theorem induces_adjunction:
-    shows "adjunction C D replete_setcat.comp \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi> \<psi> \<phi>\<psi>.\<eta> \<phi>\<psi>.\<epsilon> \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>"
+    shows "adjunction C D S.comp S.setp \<phi>\<psi>.\<phi>C \<phi>\<psi>.\<phi>D F G \<phi> \<psi> \<phi>\<psi>.\<eta> \<phi>\<psi>.\<epsilon> \<phi>\<psi>.\<Phi> \<phi>\<psi>.\<Psi>"
       using \<phi>\<psi>.induces_adjunction by auto
 
   end
@@ -2813,7 +2822,8 @@ begin
     proof (intro eqI)
       interpret meta_adjunction A B F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close>
         using inverse_functors_induce_meta_adjunction inverse_functors_axioms by auto
-      interpret adjunction A B replete_setcat.comp \<phi>C \<phi>D F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close> \<eta> \<epsilon> \<Phi> \<Psi>
+      interpret S: replete_setcat .
+      interpret adjunction A B S.comp S.setp \<phi>C \<phi>D F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close> \<eta> \<epsilon> \<Phi> \<Psi>
         using induces_adjunction by force
       show "natural_transformation B B B.map GF.map \<eta>"
         using \<eta>.natural_transformation_axioms by auto
@@ -2828,7 +2838,8 @@ begin
     proof (intro eqI)
       interpret meta_adjunction A B F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close>
         using inverse_functors_induce_meta_adjunction inverse_functors_axioms by auto
-      interpret adjunction A B replete_setcat.comp \<phi>C \<phi>D F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close> \<eta> \<epsilon> \<Phi> \<Psi>
+      interpret S: replete_setcat .
+      interpret adjunction A B S.comp S.setp \<phi>C \<phi>D F G \<open>\<lambda>y. G\<close> \<open>\<lambda>x. F\<close> \<eta> \<epsilon> \<Phi> \<Psi>
         using induces_adjunction by force
       show "natural_transformation A A FG.map A.map \<epsilon>"
         using \<epsilon>.natural_transformation_axioms by auto
@@ -2865,10 +2876,11 @@ begin
   and \<psi>' :: "'b \<Rightarrow> 'c \<Rightarrow> 'b"
   begin
 
-    interpretation FG: adjunction A B replete_setcat.comp
+    interpretation S: replete_setcat .
+    interpretation FG: adjunction A B S.comp S.setp
                            FG.\<phi>C FG.\<phi>D F G \<phi> \<psi> FG.\<eta> FG.\<epsilon> FG.\<Phi> FG.\<Psi>
       using FG.induces_adjunction by simp
-    interpretation F'G': adjunction B C replete_setcat.comp F'G'.\<phi>C F'G'.\<phi>D F' G' \<phi>' \<psi>'
+    interpretation F'G': adjunction B C S.comp S.setp F'G'.\<phi>C F'G'.\<phi>D F' G' \<phi>' \<psi>'
                            F'G'.\<eta> F'G'.\<epsilon> F'G'.\<Phi> F'G'.\<Psi>
       using F'G'.induces_adjunction by simp
 
@@ -2944,7 +2956,8 @@ begin
     interpretation meta_adjunction A C \<open>F o F'\<close> \<open>G' o G\<close>
                                    \<open>\<lambda>z. \<phi>' z o \<phi> (F' z)\<close> \<open>\<lambda>x. \<psi> x o \<psi>' (G x)\<close>
       using is_meta_adjunction by auto
-    interpretation adjunction A C replete_setcat.comp \<phi>C \<phi>D \<open>F \<circ> F'\<close> \<open>G' \<circ> G\<close>
+    interpretation S: replete_setcat .
+    interpretation adjunction A C S.comp S.setp \<phi>C \<phi>D \<open>F \<circ> F'\<close> \<open>G' \<circ> G\<close>
                      \<open>\<lambda>z. \<phi>' z \<circ> \<phi> (F' z)\<close> \<open>\<lambda>x. \<psi> x \<circ> \<psi>' (G x)\<close> \<eta> \<epsilon> \<Phi> \<Psi>
       using induces_adjunction by simp
 
@@ -3014,11 +3027,12 @@ begin
     obtain \<phi>' \<psi>' where \<phi>'\<psi>': "meta_adjunction C D F G' \<phi>' \<psi>'"
       using assms adjoint_functors_def by blast
     interpret Adj: meta_adjunction C D F G \<phi> \<psi> using \<phi>\<psi> by auto
-    interpret Adj: adjunction C D replete_setcat.comp Adj.\<phi>C Adj.\<phi>D
+    interpret S: replete_setcat .
+    interpret Adj: adjunction C D S.comp S.setp Adj.\<phi>C Adj.\<phi>D
                               F G \<phi> \<psi> Adj.\<eta> Adj.\<epsilon> Adj.\<Phi> Adj.\<Psi>
       using Adj.induces_adjunction by auto
     interpret Adj': meta_adjunction C D F G' \<phi>' \<psi>' using \<phi>'\<psi>' by auto
-    interpret Adj': adjunction C D replete_setcat.comp Adj'.\<phi>C Adj'.\<phi>D
+    interpret Adj': adjunction C D S.comp S.setp Adj'.\<phi>C Adj'.\<phi>D
                                F G' \<phi>' \<psi>' Adj'.\<eta> Adj'.\<epsilon> Adj'.\<Phi> Adj'.\<Psi>
       using Adj'.induces_adjunction by auto
     write C (infixr "\<cdot>\<^sub>C" 55)
