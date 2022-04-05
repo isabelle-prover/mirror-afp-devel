@@ -1,4 +1,6 @@
+(*<*)
 theory Incidence imports Main begin
+(*>*)
 
 section\<open>Incidence\<close>
 text\<open>
@@ -40,8 +42,6 @@ locale Axiom_1 = Definition_1 +
         \<Longrightarrow> \<exists>l. Line_on l p1 \<and> Line_on l p2"
     and Line_unique : "\<lbrakk>Line_on l1 p1; Line_on l1 p2; Line_on l2 p1; Line_on l2 p2;
         \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)\<rbrakk> \<Longrightarrow> Eq (Geos (Lin l1) add Emp) (Geos (Lin l2) add Emp)"
-    and Line_on_trans : "\<lbrakk>Eq (Geos (Lin l1) add Emp) (Geos (Lin l2) add Emp); Line_on l1 p1\<rbrakk>
-        \<Longrightarrow> Line_on l2 p1"
     and Line_on_exist : "\<exists>p q. Line_on l1 p \<and> Line_on l1 q
         \<and> \<not> Eq (Geos (Poi p) add Emp) (Geos (Poi q) add Emp)"
     and Line_not_on_exist : "\<exists>p q r. \<not> Line_on l1 p \<and> \<not> Line_on l1 q \<and> \<not> Line_on l1 r
@@ -51,6 +51,8 @@ locale Axiom_1 = Definition_1 +
 
 locale Incidence_Rule = Axiom_1 +
   assumes Point_Eq : "\<lbrakk>P1(p1); Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)\<rbrakk> \<Longrightarrow> P1(p2)"
+    and Line_on_trans : "\<lbrakk>Eq (Geos (Lin l1) add Emp) (Geos (Lin l2) add Emp); Line_on l1 p1\<rbrakk>
+        \<Longrightarrow> Line_on l2 p1"
     and Line_on_rule : "Line_on (Li p1 p2) p1 \<and> Line_on (Li p1 p2) p2"
 
 lemma(in Incidence_Rule) Eq_not_trans : 
