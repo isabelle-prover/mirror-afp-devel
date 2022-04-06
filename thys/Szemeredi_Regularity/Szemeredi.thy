@@ -253,7 +253,7 @@ text\<open>A regular partition may contain a few irregular pairs as long as thei
 definition regular_partition:: "[real, ugraph, uvert set set] \<Rightarrow> bool"
   where
   "regular_partition \<equiv> \<lambda>\<epsilon>::real. \<lambda>G P . 
-     partition_on (uverts G) P  \<and>
+     partition_on (uverts G) P \<and>
      (\<Sum>(R,S) \<in> irregular_set \<epsilon> G P. card R * card S) \<le> \<epsilon> * (card (uverts G))\<^sup>2"
 
 lemma irregular_set_subset: "irregular_set \<epsilon> G P \<subseteq> P \<times> P"

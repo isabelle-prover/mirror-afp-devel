@@ -255,93 +255,63 @@ subsection \<open>The Triangle Counting Lemma and the Triangle Removal Lemma\<cl
 
 text\<open>We begin with some more auxiliary material to be used in the main lemmas.\<close>
 
-lemma regular_pairI:
-  fixes \<epsilon> :: real and G :: "ugraph" and X :: "uvert set" and Y ::"uvert set"
-  assumes "\<epsilon> > 0" and "regular_pair X Y G \<epsilon>" and xss: "X' \<subseteq> X" and yss: "Y' \<subseteq> Y" and "card X' \<ge> \<epsilon> * card X" and "(card Y' \<ge> \<epsilon> * card Y)"
-  shows "\<bar> edge_density X' Y' G - edge_density X Y G \<bar> \<le> \<epsilon>"
-  using regular_pair_def assms by meson 
-
 lemma regular_pair_neighbor_bound: 
   fixes \<epsilon>::real
   assumes finG: "finite (uverts G)"
   assumes xss: "X \<subseteq> uverts G" and yss: "Y \<subseteq> uverts G" and "card X > 0"
     and wf: "uwellformed G"
     and eg0: "\<epsilon> > 0" and "regular_pair X Y G \<epsilon>" and ed: "edge_density X Y G \<ge> 2*\<epsilon>"
-  shows "card{x \<in> X. card (neighbors_ss x Y G) < (edge_density X Y G - \<epsilon>)* card (Y)} < \<epsilon> * card X" 
-           (is "card (?X') < \<epsilon> * _")
+  defines "X' \<equiv> {x \<in> X. card (neighbors_ss x Y G) < (edge_density X Y G - \<epsilon>) * card (Y)}"
+  shows "card X' < \<epsilon> * card X" 
+    (is "card (?X') < \<epsilon> * _")
 proof (cases "?X' = {}")
   case True
   then show ?thesis
     by (simp add: True \<open>card X > 0\<close> eg0)
- next
+next
   case False
+  let ?rxy = "1/(card X' * card Y)" 
   show ?thesis 
-    proof (rule ccontr)
-      assume "\<not> (card (?X') <  \<epsilon> * card X) " 
-      then have a: "(card(?X') \<ge>  \<epsilon> * card X) " by simp
-      have fin: "finite X" "finite Y" using assms finite_subset by auto
-      have ebound: "\<epsilon> \<le> 1/2"
-        by (metis ed edge_density_le1 le_divide_eq_numeral1(1) mult.commute order_trans)
-      have finx: "finite ?X'" using fin by simp 
-      have "\<And> x. x \<in> ?X'\<Longrightarrow> (card (neighbors_ss x Y G)) < (edge_density X Y G - \<epsilon>) * (card Y)"
-        by blast 
-      then have "(\<Sum>x\<in>?X'. card (neighbors_ss x Y G)) < (\<Sum>x\<in>?X'. ((edge_density X Y G - \<epsilon>)* (card Y)))"
-        using False sum_strict_mono
-        by (smt (verit, del_insts) finx of_nat_sum)
-      then have upper: "(\<Sum>x\<in>?X'. card (neighbors_ss x Y G)) < (card ?X')* ((edge_density X Y G - \<epsilon>)* (card Y))"
-        by (simp add: sum_bounded_above)
-      have sumge0: "(\<Sum>x\<in>?X'. card (neighbors_ss x Y G)) \<ge> 0"
-        by blast 
-      have xge0: "card X > 0"
-        using fin(1) False by fastforce
-      have yge0: "card Y > 0"
-        using False by fastforce
-      then have xyge0: "card X * card Y > 0" using xge0 by simp
-      then have xyne0: "card X * card Y \<noteq> 0" by simp
-      have fracg0:"(1/(card ?X' * card Y)) > 0"
-        using card_0_eq finx False yge0 by fastforce 
-      then have upper2: "(1/(card ?X' * card Y)) * (\<Sum>x\<in>?X'. card (neighbors_ss x Y G)) < (1/(card ?X' * card Y)) * (card ?X')* ((edge_density X Y G - \<epsilon>)* (card Y))"
-        using upper mult_less_cancel_left_pos[of "(1/(card ?X' * card Y))" "(\<Sum>x\<in>?X'. card (neighbors_ss x Y G))" "(card ?X')* ((edge_density X Y G - \<epsilon>)* (card Y))"]
-        by linarith 
-      have minuse: "(1/(card ?X' * card Y)) * (card ?X')* ((edge_density X Y G - \<epsilon>)* (card Y)) = (edge_density X Y G - \<epsilon>)"
-      proof - 
-        have "(1/(card ?X' * card Y)) * (card ?X')* ((edge_density X Y G - \<epsilon>)* (card Y)) = (1/(card ?X' * card Y)) * ((card ?X')* (card Y))*(edge_density X Y G - \<epsilon>)"
-          by (smt (z3) divide_divide_eq_right of_nat_mult times_divide_eq_left)
-        also have "\<dots> = ((card ?X'* card Y)/(card ?X' * card Y)) * (edge_density X Y G - \<epsilon>)" by simp
-        also have "\<dots> = 1 * (edge_density X Y G - \<epsilon>)"
-          using divide_eq_1_iff[of "(card ?X'* card Y)" "(card ?X'* card Y)"] xyne0
-          using finx False by force 
-        finally have "(1/(card ?X' * card Y)) * (card ?X')* ((edge_density X Y G - \<epsilon>)* (card Y)) = (edge_density X Y G - \<epsilon>)" by simp
-        thus ?thesis by simp
-      qed
-      then have edlt1: "(1/(card ?X' * card Y)) * (card ?X')* ((edge_density X Y G - \<epsilon>)* (card Y)) < edge_density X Y G" 
-        using eg0
-        by linarith
-      then have edlt2: "(1/(card ?X' * card Y))* (\<Sum>x\<in>?X'. card (neighbors_ss x Y G)) < edge_density X Y G" 
-        using upper2 by linarith 
-      then have "\<bar>edge_density X Y G - (1/(card ?X' * card Y))* (\<Sum>x\<in>?X'. card (neighbors_ss x Y G))\<bar> = edge_density X Y G - (1/(card ?X' * card Y))* (\<Sum>x\<in>?X'. card (neighbors_ss x Y G))"
-        by linarith 
-      have "(edge_density X Y G - (1/(card ?X' * card Y))* (\<Sum>x\<in>?X'. card (neighbors_ss x Y G))) > (edge_density X Y G - (1/(card ?X' * card Y)) * (card ?X')* ((edge_density X Y G - \<epsilon>)* (card Y)))"
-        using edlt1 edlt2 upper2
-        by linarith  
-      then have "edge_density X Y G - (1/(card ?X' * card Y)) * (\<Sum>x\<in>?X'. card (neighbors_ss x Y G))  >  edge_density X Y G - (edge_density X Y G - \<epsilon>)"
-        using minuse by linarith
-      then have con: "edge_density X Y G - (1/(card ?X' * card Y)) * (\<Sum>x\<in>?X'. card (neighbors_ss x Y G)) > \<epsilon>" by simp
-      have ye: "card Y \<ge> \<epsilon> * (card Y)" using ebound by (simp add: yge0)
-      have xe': "card ?X' \<ge> \<epsilon> * (card X)" using a by fastforce
-      have "?X' \<subseteq> X" by simp
-      then have "\<bar> edge_density ?X' Y G - edge_density X Y G \<bar> \<le> \<epsilon>"
-        using regular_pairI[of "\<epsilon>" "X" "Y" "G" "?X'" "Y"] assms ye xe' by simp
-      then have "\<bar> (card (all_edges_between ?X' Y G))/ (card ?X' * card Y) - edge_density X Y G \<bar> \<le> \<epsilon>"
-        by (simp add: edge_density_def)
-      then have "\<bar> (1/(card ?X' * card Y)) * (card (all_edges_between ?X' Y G)) - edge_density X Y G \<bar> \<le> \<epsilon>"
-        by simp
-      then have "\<bar>(1/(card ?X' * card Y)) * (\<Sum>x\<in>?X'. card (neighbors_ss x Y G)) - edge_density X Y G \<bar> \<le> \<epsilon>"
-        using card_all_edges_betw_neighbor fin wf by simp
-      then have lt: "\<bar>edge_density X Y G - (1/(card ?X' * card Y)) * (\<Sum>x\<in>?X'. card (neighbors_ss x Y G)) \<bar> \<le> \<epsilon>"
-        by simp
-      thus False using lt con by linarith
-    qed (* Following Gowers's proof - more in depth with reasoning on contradiction *)
+  proof (rule ccontr)
+    assume "\<not> (card (X') <  \<epsilon> * card X) " 
+    then have a: "(card(X') \<ge>  \<epsilon> * card X) " by simp
+    have fin: "finite X" "finite Y" using assms finite_subset by auto
+    have ebound: "\<epsilon> \<le> 1/2"
+      by (metis ed edge_density_le1 le_divide_eq_numeral1(1) mult.commute order_trans)
+    have finx: "finite X'" using fin X'_def by simp 
+    have "\<And> x. x \<in> X'\<Longrightarrow> (card (neighbors_ss x Y G)) < (edge_density X Y G - \<epsilon>) * (card Y)"
+      unfolding X'_def by blast 
+    then have "(\<Sum>x\<in>X'. card (neighbors_ss x Y G)) < (\<Sum>x\<in>X'. ((edge_density X Y G - \<epsilon>) * (card Y)))"
+      using False sum_strict_mono X'_def
+      by (smt (verit, del_insts) finx of_nat_sum)
+    then have upper: "(\<Sum>x\<in>X'. card (neighbors_ss x Y G)) < (card X') * ((edge_density X Y G - \<epsilon>) * (card Y))"
+      by (simp add: sum_bounded_above)
+    have yge0: "card Y > 0"
+      by (metis gr0I mult_eq_0_iff of_nat_0 of_nat_less_0_iff upper)
+    have "?rxy > 0"
+      using card_0_eq finx False yge0 X'_def by fastforce 
+    then have upper2: "?rxy * (\<Sum>x\<in>X'. card (neighbors_ss x Y G)) < ?rxy * (card X') * ((edge_density X Y G - \<epsilon>) * (card Y))"
+      by (smt (verit) mult.assoc mult_le_cancel_left upper)
+    have minuse: "?rxy * (card X') * ((edge_density X Y G - \<epsilon>) * (card Y)) = edge_density X Y G - \<epsilon>"
+      using False X'_def finx by force
+    then have edlt1: "?rxy * (card X') * ((edge_density X Y G - \<epsilon>) * (card Y)) < edge_density X Y G" 
+      using eg0 by linarith
+    then have edlt2: "?rxy * (\<Sum>x\<in>X'. card (neighbors_ss x Y G)) < edge_density X Y G" 
+      using upper2 by linarith 
+    have "edge_density X Y G - ?rxy * (\<Sum>x\<in>X'. card (neighbors_ss x Y G)) > edge_density X Y G - (edge_density X Y G - \<epsilon>)"
+      using edlt1 edlt2 upper2 minuse by linarith
+    then have con: "edge_density X Y G - ?rxy * (\<Sum>x\<in>X'. card (neighbors_ss x Y G)) > \<epsilon>" by simp
+    have ye: "card Y \<ge> \<epsilon> * (card Y)" using ebound by (simp add: yge0)
+    have xe': "card X' \<ge> \<epsilon> * (card X)" using a by fastforce
+    have "\<bar>edge_density X Y G - ?rxy * (\<Sum>x\<in>X'. card (neighbors_ss x Y G))\<bar> 
+        = \<bar>?rxy * (card (all_edges_between X' Y G)) - edge_density X Y G\<bar>"
+      using card_all_edges_betw_neighbor fin wf by (simp add: X'_def)
+    also have "... = \<bar>edge_density X' Y G - edge_density X Y G\<bar>"
+      by (simp add: edge_density_def)
+    also have "... \<le> \<epsilon>"
+      using assms ye xe' by (force simp add: X'_def regular_pair_def)
+    finally show False using con by linarith
+  qed (* Following Gowers's proof - more in depth with reasoning on contradiction *)
 qed
 
 lemma neighbor_set_meets_e_reg_cond:
@@ -374,11 +344,13 @@ lemma all_edges_btwn_neighbour_sets_lower_bound:
 proof -
   have yss': "?Y' \<subseteq> Y" using neighbors_ss_def by simp
   have zss': "?Z' \<subseteq> Z" using neighbors_ss_def by simp
-  have min_sizeY: "card ?Y' \<ge> \<epsilon> * card Y" using neighbor_set_meets_e_reg_cond cond1 assms fin by meson
-  have min_sizeZ: "card ?Z' \<ge> \<epsilon> * card Z" using neighbor_set_meets_e_reg_cond cond2 assms fin by meson
+  have min_sizeY: "card ?Y' \<ge> \<epsilon> * card Y" 
+    using neighbor_set_meets_e_reg_cond cond1 assms fin by meson
+  have min_sizeZ: "card ?Z' \<ge> \<epsilon> * card Z" 
+    using neighbor_set_meets_e_reg_cond cond2 assms fin by meson
   then have "\<bar> edge_density ?Y' ?Z' G - edge_density Y Z G \<bar> \<le> \<epsilon>"
-    using min_sizeY regular_pairI[of "\<epsilon>" "Y" "Z" "G" "?Y'" "?Z'"] yss' zss' assms by simp
-  then have "-\<epsilon> \<le> ( edge_density ?Y' ?Z' G - edge_density Y Z G)"
+    using min_sizeY yss' zss' assms by (force simp add: regular_pair_def)
+  then have "-\<epsilon> \<le> (edge_density ?Y' ?Z' G - edge_density Y Z G)"
     by linarith 
   then have "edge_density Y Z G - \<epsilon> \<le> edge_density ?Y' ?Z' G" by linarith
   then have "edge_density Y Z G - \<epsilon> \<le> (card (all_edges_between ?Y' ?Z' G)/(card ?Y' * card ?Z'))" using edge_density_def by simp
@@ -395,18 +367,18 @@ theorem triangle_counting_lemma:
   fixes \<epsilon>::real 
   assumes xss: "X \<subseteq> uverts G" and yss: "Y \<subseteq> uverts G" and zss: "Z \<subseteq> uverts G" and en0: "\<epsilon> > 0"
     and finG: "finite (uverts G)" and wf: "uwellformed G"    
-    and rp1: "regular_pair X Y G \<epsilon> " and rp2: "regular_pair Y Z G \<epsilon>" and  rp3: "regular_pair X Z G \<epsilon>"
-    and ed1: "edge_density X Y G  \<ge> 2*\<epsilon>" and ed2: "edge_density X Z G \<ge> 2*\<epsilon>" and ed3: "edge_density Y Z G  \<ge> 2*\<epsilon>"
+    and rp1: "regular_pair X Y G \<epsilon>" and rp2: "regular_pair Y Z G \<epsilon>" and  rp3: "regular_pair X Z G \<epsilon>"
+    and ed1: "edge_density X Y G \<ge> 2*\<epsilon>" and ed2: "edge_density X Z G \<ge> 2*\<epsilon>" and ed3: "edge_density Y Z G \<ge> 2*\<epsilon>"
   shows "card (triangle_triples X Y Z G)
-      \<ge> (1-2*\<epsilon>)*((edge_density X Y G) - \<epsilon>)*((edge_density X Z G) - \<epsilon>) *((edge_density Y Z G) - \<epsilon>)*
-        (card X)*(card Y)* (card Z)" 
+        \<ge> (1-2*\<epsilon>) * ((edge_density X Y G) - \<epsilon>) * ((edge_density X Z G) - \<epsilon>) * ((edge_density Y Z G) - \<epsilon>)*
+           card X * card Y * card Z" 
 proof -
   let ?T_all = "{(x,y,z) \<in> X \<times> Y \<times> Z. (triangle_in_graph x y z G)}"
   define XF where "XF \<equiv> \<lambda>Y. {x \<in> X. card(neighbors_ss x Y G) < ((edge_density X Y G) - \<epsilon>) * card Y}"
   have fin: "finite X" "finite Y" "finite Z" using finG rev_finite_subset xss yss zss by auto
   have "card X > 0"
     using card_0_eq ed1 edge_density_def en0 fin(1) by fastforce
-  have ebound: "\<epsilon> \<le> 1/2"
+  have "\<epsilon> \<le> 1/2"
     using ed1 edge_density_le1 fin
     by (metis le_divide_eq_numeral1(1) mult.commute order_trans)
   then have ebound2: "1 - 2*\<epsilon> \<ge> 0"
@@ -438,7 +410,7 @@ in @{term Y} and @{term Z}.\<close>
     by (smt (verit, del_insts) card_Un_le of_nat_add of_nat_mono) 
   then have minx2: "card X2 \<ge> (1 - 2 * \<epsilon>) * card X"
     by (metis mult.commute mult_cancel_left2 right_diff_distrib)
-  have edmultbound: "((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>)* (card Y) * (edge_density X Z G - \<epsilon>)* (card Z) \<ge> 0"  
+  have edmultbound: "((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>) * (card Y) * (edge_density X Z G - \<epsilon>) * (card Z) \<ge> 0"  
     using ed3 ed1 ed2 \<open>\<epsilon> > 0\<close> by auto 
   
   text \<open>Reasoning on the minimum number of edges between neighborhoods of @{term X} in @{term Y} 
@@ -455,14 +427,14 @@ and @{term Z}.\<close>
     by (auto simp: XF_def X2_def)   
   have card_y_bound': 
           "(\<Sum>x\<in> X2. ((edge_density Y Z G) - \<epsilon>) * (card (neighbors_ss x Y G)) * (card (neighbors_ss x Z G))) \<ge>
-           (\<Sum>x\<in> X2 . ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>)* (card Y) * (card (neighbors_ss x Z G)))" 
+           (\<Sum>x\<in> X2 . ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>) * (card Y) * (card (neighbors_ss x Z G)))" 
       by (rule sum_mono) (smt (verit, best) Groups.mult_ac(3) card_y_bound edyzgt0 mult.commute mult_right_mono of_nat_0_le_iff)
   have x2_card: "\<And>x. x \<in> X2 \<Longrightarrow> ((edge_density Y Z G) - \<epsilon>) * (card (neighbors_ss x Y G)) * (card (neighbors_ss x Z G))
                     \<le> card (all_edges_between (neighbors_ss x Y G) (neighbors_ss x Z G) G)"
     by (meson all_edges_btwn_neighbour_sets_lower_bound assms(1) card_y_bound card_z_bound ed1 ed2 ed3 en0 fin finG local.wf rp1 rp2 rp3 subsetD xss yss zss)
   have card_z_bound': 
-         "(\<Sum>x\<in> X2. ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>)* (card Y) * (card (neighbors_ss x Z G))) \<ge>
-          (\<Sum>x\<in> X2. ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>)* (card Y) * (edge_density X Z G - \<epsilon>)* (card Z))" 
+         "(\<Sum>x\<in> X2. ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>) * (card Y) * (card (neighbors_ss x Z G))) \<ge>
+          (\<Sum>x\<in> X2. ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>) * (card Y) * (edge_density X Z G - \<epsilon>) * (card Z))" 
       using card_z_bound mult_left_mono edxygt0 edyzgt0 by (fastforce intro!: sum_mono)
   have eq_set: "\<And> x. x \<in> X \<Longrightarrow> card {(y, z) . y \<in> Y \<and> z \<in> Z \<and> {y, z} \<in> uedges G \<and> neighbor_in_graph x y G \<and> neighbor_in_graph x z G } = 
 card {(y, z) . y \<in> (neighbors_ss x Y G) \<and> z \<in> (neighbors_ss x Z G) \<and> {y, z} \<in> uedges G }"
@@ -482,19 +454,19 @@ card {(y, z) . y \<in> (neighbors_ss x Y G) \<and> z \<in> (neighbors_ss x Z G) 
     by (meson x2_card finx2 sum_mono)
   then have "card ?T_all \<ge> (\<Sum>x\<in> X2 . ((edge_density Y Z G) - \<epsilon>) * (card (neighbors_ss x Y G)) * (card (neighbors_ss x Z G)))" 
     using l of_nat_le_iff [symmetric, where 'a=real] by force
-  then have "card ?T_all \<ge> (\<Sum>x\<in> X2 . ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>)* (card Y) * (card (neighbors_ss x Z G)))" 
+  then have "card ?T_all \<ge> (\<Sum>x\<in> X2 . ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>) * (card Y) * (card (neighbors_ss x Z G)))" 
     using card_y_bound' by simp
-  then have tall_gt: "card ?T_all \<ge> (\<Sum>x\<in> X2 . ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>)* (card Y) * (edge_density X Z G - \<epsilon>)* (card Z))" 
+  then have tall_gt: "card ?T_all \<ge> (\<Sum>x\<in> X2 . ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>) * (card Y) * (edge_density X Z G - \<epsilon>) * (card Z))" 
     using card_z_bound' by simp
-  have "(\<Sum>x\<in> X2 . ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>)* (card Y) * (edge_density X Z G - \<epsilon>)* (card Z)) = 
-    card X2 * ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>)* (card Y) * (edge_density X Z G - \<epsilon>)* (card Z)"
+  have "(\<Sum>x\<in> X2 . ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>) * (card Y) * (edge_density X Z G - \<epsilon>) * (card Z)) = 
+    card X2 * ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>) * (card Y) * (edge_density X Z G - \<epsilon>) * (card Z)"
     by simp 
   then have "of_real (card ?T_all) \<ge> card X2 * ((edge_density Y Z G) - \<epsilon>) * (edge_density X Y G - \<epsilon>)* 
-      (card Y) * (edge_density X Z G - \<epsilon>)* (card Z)"
+      (card Y) * (edge_density X Z G - \<epsilon>) * (card Z)"
     using tall_gt
     by force 
   then have "of_real (card ?T_all) \<ge> ((1 - 2 * \<epsilon>) * card X) * ((edge_density Y Z G) - \<epsilon>) * 
-      (edge_density X Y G - \<epsilon>)* (card Y) * (edge_density X Z G - \<epsilon>)* (card Z)"
+      (edge_density X Y G - \<epsilon>) * (card Y) * (edge_density X Z G - \<epsilon>) * (card Z)"
     by (smt (verit, best) ed2 edxygt0 edyzgt0 en0 minx2 mult_right_less_imp_less of_nat_less_0_iff)
   then show ?thesis by (simp add: triangle_triples_def mult.commute mult.left_commute) 
 qed
@@ -578,7 +550,7 @@ proof -
   thus ?thesis using tgt by linarith
 qed
 
- lemma edge_density_eq0:
+lemma edge_density_eq0:
   assumes "all_edges_between A B G = {}" and "X \<subseteq> A" "Y \<subseteq> B"
   shows "edge_density X Y G = 0"
 proof -
@@ -595,8 +567,8 @@ theorem triangle_removal_lemma:
   assumes egt: "\<epsilon> > 0"
   shows "\<exists>\<delta>::real > 0. \<forall>G. card(uverts G) > 0 \<longrightarrow> uwellformed G \<longrightarrow> 
           card (triangle_set G) \<le> \<delta> * card(uverts G) ^ 3 \<longrightarrow>
-          (\<exists>Gnew. triangle_free_graph Gnew \<and> uverts Gnew = uverts G \<and> (uedges Gnew \<subseteq> uedges G) \<and> 
-          card (uedges G - uedges Gnew) \<le> \<epsilon> * (card (uverts G))\<^sup>2)"
+          (\<exists>G'. triangle_free_graph G' \<and> uverts G' = uverts G \<and> uedges G' \<subseteq> uedges G \<and> 
+          card (uedges G - uedges G') \<le> \<epsilon> * (card (uverts G))\<^sup>2)"
     (is "\<exists>\<delta>::real > 0. \<forall>G. _ \<longrightarrow> _ \<longrightarrow> _ \<longrightarrow> (\<exists>Gnew. ?\<Phi> G Gnew)")
 proof (cases "\<epsilon> < 1")
   case False
@@ -946,7 +918,7 @@ edge_density_def)
           "edge_density R S Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" "edge_density R T Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" 
 "edge_density S T Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" 
           by auto
-        have mincard0: "(card R)*(card S)* (card T) \<ge> 0" by simp
+        have mincard0: "(card R)*(card S) * (card T) \<ge> 0" by simp
         have gtcube: "((edge_density R S Gnew) - \<epsilon>/4)*((edge_density R T Gnew) - \<epsilon>/4) *((edge_density S T Gnew) - \<epsilon>/4) \<ge> (\<epsilon>/4)^3"
           using min_dens_diff e4gt real_mult_gt_cube by auto 
         then have c1: "((edge_density R S Gnew) - \<epsilon>/4)*((edge_density R T Gnew) - \<epsilon>/4) *((edge_density S T Gnew) - \<epsilon>/4) \<ge> 0"
@@ -955,7 +927,7 @@ edge_density_def)
           using egt by force
         then have "card R * card S * card T \<ge> (?e4M * ?n)*(?e4M * ?n) * (?e4M * ?n)" 
           by (metis (no_types) of_nat_0_le_iff of_nat_mult min_sizes mult_mono)
-        then have "(card R)*(card S)* (card T) \<ge> (?e4M* ?n)^3"
+        then have "(card R)*(card S) * (card T) \<ge> (?e4M* ?n)^3"
           by (simp add: power3_eq_cube) 
         then have cardgtbound:"card R * card S * card T \<ge> ?e4M^ 3 * ?n^3"
           by (metis of_nat_power power_mult_distrib)
@@ -995,7 +967,10 @@ subsection \<open>Roth's Theorem\<close>
 text\<open>We will first need the following corollary of the Triangle Removal Lemma.
 This is Corollary 3.18 in Zhao's notes:\<close>
 
-corollary corollary_triangle_removal:
+text \<open>See \<^url>\<open>https://en.wikipedia.org/wiki/Ruzsa–Szemerédi_problem#Upper_bound\<close>.
+Suggested by Yaël Dillies
+\<close>
+corollary ruzsa_szemeredi_upper_bound:
   fixes \<epsilon> :: real 
   assumes "0 < \<epsilon>"
   shows "\<exists>N>0. \<forall>G. card(uverts G) > N \<longrightarrow> uwellformed G \<longrightarrow> unique_triangles G \<longrightarrow>
@@ -1136,7 +1111,7 @@ proof -
   obtain X where "X>0"
     and X: "\<And>G. \<lbrakk>card(uverts G) > X; uwellformed G; unique_triangles G\<rbrakk> 
                 \<Longrightarrow> card (uedges G) \<le> \<epsilon>/12 * (card (uverts G))\<^sup>2"
-    by (metis assms corollary_triangle_removal less_divide_eq_numeral1(1) mult_eq_0_iff)
+    by (metis assms ruzsa_szemeredi_upper_bound less_divide_eq_numeral1(1) mult_eq_0_iff)
   show thesis
   proof (intro strip that)
     fix N A
