@@ -370,7 +370,7 @@ theorem triangle_counting_lemma:
     and rp1: "regular_pair X Y G \<epsilon>" and rp2: "regular_pair Y Z G \<epsilon>" and  rp3: "regular_pair X Z G \<epsilon>"
     and ed1: "edge_density X Y G \<ge> 2*\<epsilon>" and ed2: "edge_density X Z G \<ge> 2*\<epsilon>" and ed3: "edge_density Y Z G \<ge> 2*\<epsilon>"
   shows "card (triangle_triples X Y Z G)
-        \<ge> (1-2*\<epsilon>) * ((edge_density X Y G) - \<epsilon>) * ((edge_density X Z G) - \<epsilon>) * ((edge_density Y Z G) - \<epsilon>)*
+        \<ge> (1-2*\<epsilon>) * (edge_density X Y G - \<epsilon>) * (edge_density X Z G - \<epsilon>) * (edge_density Y Z G - \<epsilon>)*
            card X * card Y * card Z" 
 proof -
   let ?T_all = "{(x,y,z) \<in> X \<times> Y \<times> Z. (triangle_in_graph x y z G)}"
@@ -572,18 +572,18 @@ theorem triangle_removal_lemma:
     (is "\<exists>\<delta>::real > 0. \<forall>G. _ \<longrightarrow> _ \<longrightarrow> _ \<longrightarrow> (\<exists>Gnew. ?\<Phi> G Gnew)")
 proof (cases "\<epsilon> < 1")
   case False
-  define Gnew where "Gnew \<equiv> \<lambda>G. ((uverts G), {}::uedge set)"
   show ?thesis
   proof (intro exI conjI strip)
     fix G
+    define Gnew where "Gnew \<equiv> ((uverts G), {}::uedge set)"
     assume G: "uwellformed G" "card(uverts G) > 0"
-    then show "triangle_free_graph (Gnew G)" "uverts (Gnew G) = uverts G" "uedges (Gnew G) \<subseteq> uedges G"
+    then show "triangle_free_graph Gnew" "uverts Gnew = uverts G" "uedges Gnew \<subseteq> uedges G"
       by (auto simp: Gnew_def triangle_free_graph_empty)
     have "real (card (uedges G)) \<le> (card (uverts G))\<^sup>2"
       by (meson G card_gt_0_iff max_edges_graph of_nat_le_iff)
     also have "\<dots> \<le> \<epsilon> * (card (uverts G))\<^sup>2"
       using False mult_le_cancel_right1 by fastforce
-    finally show "real (card (uedges G - uedges (Gnew G))) \<le> \<epsilon> * real ((card (uverts G))\<^sup>2)"
+    finally show "real (card (uedges G - uedges Gnew)) \<le> \<epsilon> * ((card (uverts G))\<^sup>2)"
       by (simp add: Gnew_def)
   qed (rule zero_less_one)
 next
@@ -630,7 +630,6 @@ next
     have "D0 \<le> D"
       unfolding D0_def D_def using \<open>0 < \<epsilon>\<close> \<open>\<epsilon> < 1\<close> \<open>card P \<le> M0\<close> \<open>M > 0\<close>
       by (intro mult_mono) (auto simp: frac_le M_def)
-        (* a reminder: as it is implied we have: *)  
     have fin_part: "finite_graph_partition (uverts G) P M"
       using M unfolding regular_partition_def finite_graph_partition_def
       by (metis M_def \<open>0 < M\<close> card_gt_0_iff)
@@ -650,8 +649,7 @@ next
     Process (a) removes at most $(\epsilon/4)n^2$ edges. 
     Process (b) removes at most $(\epsilon/2)n^2$ edges.
     Process (c) removes at most $(\epsilon/4)n^2$ edges. 
-   The remaining graph is triangle-free for some choice of $\delta$.
-   We call the graph obtained after this process @{term Gnew}.  \<close>
+   The remaining graph is triangle-free for some choice of $\delta$. \<close>
     
     define edge where "edge \<equiv> \<lambda>R S. mk_uedge ` (all_edges_between R S G)"
     have edge_commute: "edge R S = edge S R" for R S
@@ -706,13 +704,12 @@ next
       then have "finite low_density_pairs"
         by (metis \<open>finite P\<close> finite_SigmaI finite_subset)
       have "real (card Eb) \<le> (\<Sum>(i,j)\<in>low_density_pairs. real (card (edge i j)))"
-        unfolding Eb_def
+        unfolding Eb_def 
         by (smt (verit, ccfv_SIG) \<open>finite low_density_pairs\<close> card_UN_le of_nat_mono of_nat_sum 
  case_prod_unfold sum_mono)
       also have "\<dots> \<le> (\<Sum>(R,S)\<in>low_density_pairs. \<epsilon>/2 * card R * card S)"
         apply (rule sum_mono)
-        apply(auto simp add: divide_simps card_P_gt0 low_density_pairs_def edge_density_def 
- edge_dense_def)
+        apply(auto simp add: divide_simps card_P_gt0 low_density_pairs_def edge_density_def edge_dense_def)
         by (smt (verit, best) card_edge_le_card of_nat_le_iff mult.assoc)
       also have "\<dots> \<le> (\<Sum>(R,S)\<in>P \<times> P. \<epsilon>/2 * card R * card S)"
         using subs \<open>\<epsilon> > 0\<close> by (intro sum_mono2) (auto simp: \<open>finite P\<close>)
@@ -855,8 +852,8 @@ next
             (if (R,S) \<in> irreg_pairs \<union> low_density_pairs \<union> small_pairs then 0
              else edge_density X Y G)" 
           if "X \<subseteq> R" "Y \<subseteq> S" for X Y
-          using all_edges_if that ij False by (smt (verit) all_edges_preserved edge_density_eq0 
-edge_density_def) 
+          using all_edges_if that ij False 
+          by (smt (verit) all_edges_preserved edge_density_eq0 edge_density_def) 
         show ?thesis
           using that False \<open>\<epsilon> > 0\<close>
           by (auto simp add: irreg_pairs_def regular_pair_def less_le ed)
@@ -910,25 +907,21 @@ edge_density_def)
         have min_sizes: "card R \<ge> ?e4M*?n" "card S \<ge> ?e4M*?n" "card T \<ge> ?e4M*?n"
           using trig_ex min_subset_size xinp yinp zinp ilt jlt klt
           by (auto simp: triangle_in_graph_def decent_graph_def decent_def all_edges_between_def)
-        have min_dens: "edge_density R S Gnew \<ge> \<epsilon>/2" "edge_density R T Gnew \<ge> \<epsilon>/2" 
-"edge_density S T Gnew \<ge> \<epsilon>/2" 
+        have min_dens: "edge_density R S Gnew \<ge> \<epsilon>/2" "edge_density R T Gnew \<ge> \<epsilon>/2" "edge_density S T Gnew \<ge> \<epsilon>/2" 
           using density_bound subsets ilt jlt klt xinp yinp zinp unfolding dense_graph_def edge_dense_def
           by (metis all_edges_betw_I equals0D triangle_in_graph_def trig_ex)+
         then have min_dens_diff: 
-          "edge_density R S Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" "edge_density R T Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" 
-"edge_density S T Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" 
+          "edge_density R S Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" "edge_density R T Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" "edge_density S T Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" 
           by auto
-        have mincard0: "(card R)*(card S) * (card T) \<ge> 0" by simp
+        have mincard0: "(card R) * (card S) * (card T) \<ge> 0" by simp
         have gtcube: "((edge_density R S Gnew) - \<epsilon>/4)*((edge_density R T Gnew) - \<epsilon>/4) *((edge_density S T Gnew) - \<epsilon>/4) \<ge> (\<epsilon>/4)^3"
           using min_dens_diff e4gt real_mult_gt_cube by auto 
         then have c1: "((edge_density R S Gnew) - \<epsilon>/4)*((edge_density R T Gnew) - \<epsilon>/4) *((edge_density S T Gnew) - \<epsilon>/4) \<ge> 0"
           by (smt (verit) e4gt zero_less_power) 
         have "?e4M * ?n \<ge> 0"
           using egt by force
-        then have "card R * card S * card T \<ge> (?e4M * ?n)*(?e4M * ?n) * (?e4M * ?n)" 
-          by (metis (no_types) of_nat_0_le_iff of_nat_mult min_sizes mult_mono)
-        then have "(card R)*(card S) * (card T) \<ge> (?e4M* ?n)^3"
-          by (simp add: power3_eq_cube) 
+        then have "card R * card S * card T \<ge> (?e4M * ?n)^3"
+          by (metis min_sizes of_nat_mult real_mult_gt_cube)
         then have cardgtbound:"card R * card S * card T \<ge> ?e4M^ 3 * ?n^3"
           by (metis of_nat_power power_mult_distrib)
 
@@ -1548,8 +1541,7 @@ less_imp_le_nat mod_add_right_eq mod_add_self2 mod_less)
           and eq: "f \<xi> (part_of \<zeta>) df u = f \<xi> (part_of \<zeta>) df u'"
         obtain x y a where u: "u = {x,y}" "x \<in> part_of \<xi>" "y \<in> part_of \<zeta>" "a \<in> A" 
           and df: "df (from_part y) (from_part x) = int a"
-          using \<open>u \<in> ?E\<close>
-          by (force simp add: Edges_def image_iff)
+          using \<open>u \<in> ?E\<close> by (force simp add: Edges_def image_iff)
         then obtain i where i: "x = prod_encode (\<xi>,i)"
           using part_of_def by blast
         with u df R_def f_if_R that have fu: "f \<xi> (part_of \<zeta>) df u = (i,a)"
