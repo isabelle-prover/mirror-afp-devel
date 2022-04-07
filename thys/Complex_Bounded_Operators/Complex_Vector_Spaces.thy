@@ -18,7 +18,7 @@ theory Complex_Vector_Spaces
 
     "Complex_Bounded_Operators.Extra_Vector_Spaces"
     "Complex_Bounded_Operators.Extra_Ordered_Fields"
-    "Complex_Bounded_Operators.Extra_Lattice"
+    "HOL-Library.Complemented_Lattices"
     "Complex_Bounded_Operators.Extra_General"
 
     Complex_Vector_Spaces0
