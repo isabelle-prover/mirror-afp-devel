@@ -7,12 +7,11 @@ begin
 
 text\<open>We formalise Szemerédi's Regularity Lemma, which is a major result in the study of large graphs
 (extremal graph theory).
-We follow Yufei Zhao's notes ``Graph Theory and Additive Combinatorics'' (MIT)
-\<^url>\<open>https://ocw.mit.edu/courses/mathematics/18-217-graph-theory-and-additive-combinatorics-fall-2019/lecture-notes/MIT18_217F19_ch3.pdf\<close>
+We follow Yufei Zhao's notes ``Graph Theory and Additive Combinatorics'' (MIT),
+latest version here: \<^url>\<open>https://yufeizhao.com/gtacbook/\<close>
 and W.T. Gowers's notes ``Topics in Combinatorics'' (University of Cambridge, Lent 2004, Chapter 3)
 \<^url>\<open>https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf\<close>.
-We also refer to a third source, also by Zhao and also entitled 
-``Graph Theory and Additive Combinatorics'': \<^url>\<open>https://yufeizhao.com/gtac/gtac17.pdf\<close>.\<close>
+We also used an earlier version of Zhao's book: \<^url>\<open>https://yufeizhao.com/gtac/gtac.pdf\<close>.\<close>
 
 
 subsection \<open>Miscellaneous\<close>
@@ -133,8 +132,7 @@ subsection \<open>Edge Density and Regular Pairs\<close>
 
 text \<open>The edge density between two sets of vertices, @{term X} and @{term Y}, in @{term G}.
       Authors disagree on whether the sets are assumed to be disjoint!.
-      Quite a few authors assume disjointness, e.g. Malliaris and Shelah \<^url>\<open>https://www.jstor.org/stable/23813167\<close>
-      For the following definitions, see pages 49--50 in Zhao's notes.\<close>
+      Quite a few authors assume disjointness, e.g. Malliaris and Shelah \<^url>\<open>https://www.jstor.org/stable/23813167\<close>.\<close>
 definition "edge_density X Y G \<equiv> card(all_edges_between X Y G) / (card X * card Y)"
 
 lemma edge_density_ge0: "edge_density X Y G \<ge> 0"
@@ -361,7 +359,7 @@ qed
 
 subsection \<open>Partitioning and Energy\<close>
 
-text\<open>Zhao's Lemma 3.8 and Gowers's remark after Lemma 11. 
+text\<open>See Gowers's remark after Lemma 11. 
  Further partitioning of subsets of the vertex set cannot make the energy decrease. 
  We follow Gowers's proof, which avoids the use of probability.\<close>
 
@@ -417,7 +415,7 @@ proof -
     by (simp add: divide_simps flip: sum_divide_distrib)
 qed
 
-text \<open>The following is the fully general version of Gowers's Lemma 11 and Zhao's Lemma 3.9. 
+text \<open>The following is the fully general version of Gowers's Lemma 11  
 Further partitioning of subsets of the vertex set cannot make the energy decrease.
 Note that @{term V} should be @{term "uverts G"} even though this more general version holds.\<close>
 
@@ -487,7 +485,7 @@ proof -
     by (smt (verit, ccfv_SIG) assms energy_graph_partitions_commute energy_graph_partitions_increase_half)
 qed
 
-text \<open>The original version of Gowers's Lemma 11 and Zhao's Lemma 3.9 
+text \<open>The original version of Gowers's Lemma 11 (also in Zhao)
       is not general enough to be used for anything.\<close>
 corollary mean_square_density_increase:
   assumes "refines V Y X" "finite V"
@@ -495,7 +493,7 @@ corollary mean_square_density_increase:
   using assms energy_graph_partitions_increase by presburger 
 
 
-text\<open>The Energy Boost Lemma (Lemma 3.10 in Zhao's notes) says that an 
+text\<open>The Energy Boost Lemma says that an 
 irregular partition increases the energy substantially. We assume that @{term "\<U> \<subseteq> uverts G"} 
 and @{term "\<W> \<subseteq> uverts G"} are not irregular, as witnessed by their subsets @{term"U1 \<subseteq> \<U>"} and @{term"W1 \<subseteq> \<W>"}.
 The proof follows Lemma 12 of Gowers. \<close>
@@ -598,10 +596,9 @@ proof -
   finally show ?thesis .
 qed
 
-subsection \<open>Towards Zhao's Lemma 3.11\<close>
+subsection \<open>Energy boost for partitions\<close>
 
-text\<open>Lemma 3.11 says that we can always find a refinement
-that increases the energy by a certain amount.\<close>
+text\<open>We can always find a refinement that increases the energy by a certain amount.\<close>
 
 text \<open>A necessary lemma for the tower of exponentials in the result. Angeliki's proof\<close>
 lemma le_tower_2: "k * (2 ^ Suc k) \<le> 2^(2^k)"
@@ -629,9 +626,10 @@ proof (induction k rule: less_induct)
 qed
 
 
-text \<open>Zhao's actual Lemma 3.11. However, the bound $m \le k 2 ^{k+1}$  
-comes from a different source by Zhao: ``Graph Theory and Additive Combinatorics'', \<^url>\<open>https://yufeizhao.com/gtac/gtac17.pdf\<close>.
-Zhao's original version, and Gowers', both have incorrect bounds.\<close>
+text \<open>The bound $2 ^{k+1}$  comes from a different source by Zhao:
+``Graph Theory and Additive Combinatorics'', \<^url>\<open>https://yufeizhao.com/gtacbook/\<close>.
+It's needed because our @{term regular_partition} includes the diagonal; 
+otherwise, $k 2^k$ would work. Gowers'  version has a flatly incorrect bound.\<close>
 proposition exists_refinement:
   assumes fgp: "finite_graph_partition (uverts G) P k" and "finite (uverts G)" 
     and irreg: "\<not> regular_partition \<epsilon> G P" and "\<epsilon> > 0"
@@ -928,8 +926,6 @@ proof -
 qed
 
 subsection \<open>The Regularity Proof Itself\<close>
-
-text\<open>Szemerédi's Regularity Lemma is Theorem 3.5 in Zhao's notes.\<close>
 
 text\<open>We start with a trivial partition (one part). If it is already $\epsilon$-regular, we are done. If
 not, we refine it by applying lemma @{thm[source]"exists_refinement"} above, which increases the

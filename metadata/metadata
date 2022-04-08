@@ -9867,7 +9867,7 @@ abstract =
 
 [Lucas_Theorem]
 title = Lucas's Theorem
-author = Chelsea Edmonds <mailto:cle47@cam.ac.uk>
+author = Chelsea Edmonds <https://www.cst.cam.ac.uk/people/cle47>
 topic = Mathematics/Number theory
 date = 2020-04-07
 notify = cle47@cam.ac.uk
@@ -11465,10 +11465,8 @@ abstract =
   edges between the parts are random in a certain sense. This bound
   depends only on the desired precision and not on the graph itself, in
   the spirit of Ramsey's theorem. The formalisation follows online
-  course notes by <a
-  href="https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf">Tim
-  Gowers</a> and <a
-  href="https://yufeizhao.com/gtac/gtac.pdf">Yufei
+  course notes by <a href="https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf">Tim
+  Gowers</a> and <a href="https://yufeizhao.com/gtacbook/">Yufei
   Zhao</a>.
 
 [Factor_Algebraic_Polynomial]
@@ -11635,8 +11633,8 @@ abstract =
   a major result in extremal graph theory, which we use here to prove
   the Triangle Counting Lemma and the Triangle Removal Lemma. Our
   sources are Yufei Zhao's MIT lecture notes
-  "<a href="https://ocw.mit.edu/courses/mathematics/18-217-graph-theory-and-additive-combinatorics-fall-2019/lecture-notes/MIT18_217F19_ch3.pdf">Graph Theory and Additive Combinatorics</a>"
-  (revised version <a href="https://yufeizhao.com/gtac/gtac17.pdf">here</a>)
+  "<a href="https://yufeizhao.com/gtac/gtac.pdf">Graph Theory and Additive Combinatorics</a>"
+  (latest version <a href="https://yufeizhao.com/gtacbook/">here</a>)
   and W.T. Gowers's Cambridge lecture notes
   "<a href="https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf">Topics in Combinatorics</a>".
   We also refer to the University of
