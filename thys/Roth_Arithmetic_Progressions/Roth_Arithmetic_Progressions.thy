@@ -22,14 +22,14 @@ lemma real_mult_gt_cube: "A \<ge> (X ::real) \<Longrightarrow> B \<ge> X \<Longr
 
 lemma triple_sigma_rewrite_card: 
   assumes "finite X" "finite Y" "finite Z"
-  shows "card {(x, y, z) . x \<in> X \<and> (y,z) \<in> Y \<times> Z \<and> P x y z} = (\<Sum>x\<in> X . card {(y,z) \<in> Y \<times> Z. P x y z})"
+  shows "card {(x,y,z) . x \<in> X \<and> (y,z) \<in> Y \<times> Z \<and> P x y z} = (\<Sum>x\<in> X . card {(y,z) \<in> Y \<times> Z. P x y z})"
 proof -
   define W where "W \<equiv> \<lambda>x. {(y,z) \<in> Y \<times> Z. P x y z}"
   have "W x \<subseteq> Y \<times> Z" for x
     by (auto simp: W_def)
   then have [simp]: "finite (W x)" for x
     by (meson assms finite_SigmaI infinite_super)
-  have eq: "{(x, y, z) . x \<in> X \<and> (y,z) \<in> Y \<times> Z \<and> P x y z} = (\<Union>x\<in>X. \<Union>(y,z)\<in>W x. {(x,y,z)})"
+  have eq: "{(x,y,z) . x \<in> X \<and> (y,z) \<in> Y \<times> Z \<and> P x y z} = (\<Union>x\<in>X. \<Union>(y,z)\<in>W x. {(x,y,z)})"
     by (auto simp: W_def)
   show ?thesis
     unfolding eq by (simp add: disjoint_iff assms card_UN_disjoint) (simp add: W_def)
@@ -196,7 +196,7 @@ definition triangle_set :: "ugraph \<Rightarrow> uvert set set"
   where "triangle_set G \<equiv> { {x,y,z} | x y z. triangle_in_graph x y z G}"
 
 fun mk_triangle_set :: "(uvert \<times> uvert \<times> uvert) \<Rightarrow> uvert set" 
-  where "mk_triangle_set (x, y, z) = {x,y,z}"
+  where "mk_triangle_set (x,y,z) = {x,y,z}"
 
 lemma finite_triangle_set:
   assumes fin: "finite (uverts G)" and wf: "uwellformed G"
@@ -419,10 +419,10 @@ definition dense_graph :: "uvert set set \<Rightarrow> ugraph \<Rightarrow> real
   where "dense_graph P G \<epsilon> \<equiv> \<forall>R S. R\<in>P \<longrightarrow> S\<in>P \<longrightarrow> edge_dense R S G \<epsilon>" for \<epsilon>::real
 
 definition decent :: "nat set \<Rightarrow> nat set \<Rightarrow> ugraph \<Rightarrow> real \<Rightarrow> bool"
-  where "decent X Y G \<eta> \<equiv> all_edges_between X Y G = {} \<or> (real (card X) \<ge> \<eta> \<and> real (card Y) \<ge> \<eta>)"
+  where "decent X Y G \<eta> \<equiv> all_edges_between X Y G = {} \<or> (card X \<ge> \<eta> \<and> card Y \<ge> \<eta>)" for \<eta>::real
 
 definition decent_graph :: "uvert set set \<Rightarrow> ugraph \<Rightarrow> real \<Rightarrow> bool"
-  where "decent_graph P G \<eta> \<equiv> \<forall>R S. R\<in>P \<longrightarrow> S\<in>P \<longrightarrow> decent R S G \<eta>" for \<epsilon>::real
+  where "decent_graph P G \<eta> \<equiv> \<forall>R S. R\<in>P \<longrightarrow> S\<in>P \<longrightarrow> decent R S G \<eta>" 
 
 text \<open>The proof of the triangle counting lemma requires ordered triples. For each unordered triple 
 there are six permutations, hence the factor of $1/6$ here.\<close>
@@ -431,11 +431,11 @@ lemma card_convert_triangle_rep:
   fixes G :: "ugraph" 
   assumes "X \<subseteq> uverts G" and "Y \<subseteq> uverts G" and "Z \<subseteq> uverts G" and fin: "finite (uverts G)" 
 and wf: "uwellformed G"
-  shows "card (triangle_set G) \<ge> 1/6 * card {(x, y, z) \<in> X \<times> Y \<times> Z . (triangle_in_graph x y z G)}"
+  shows "card (triangle_set G) \<ge> 1/6 * card {(x,y,z) \<in> X \<times> Y \<times> Z . (triangle_in_graph x y z G)}"
          (is  "_ \<ge> 1/6 * card ?TT")
 proof -
   define tofl where "tofl \<equiv> \<lambda>l::nat list. (hd l, hd(tl l), hd(tl(tl l)))"
-  have in_tofl: "(x, y, z) \<in> tofl ` permutations_of_set {x,y,z}" if "x\<noteq>y" "y\<noteq>z" "x\<noteq>z" for x y z
+  have in_tofl: "(x,y,z) \<in> tofl ` permutations_of_set {x,y,z}" if "x\<noteq>y" "y\<noteq>z" "x\<noteq>z" for x y z
   proof -
     have "distinct[x,y,z]"
       using that by simp
@@ -443,17 +443,11 @@ proof -
       unfolding tofl_def image_iff
       by (smt (verit, best) list.sel(1) list.sel(3) list.simps(15) permutations_of_setI set_empty)
   qed
-  have "?TT \<subseteq> {(x, y, z). (triangle_in_graph x y z G)}"
+  have "?TT \<subseteq> {(x,y,z). (triangle_in_graph x y z G)}"
     by auto
   also have "\<dots> \<subseteq> (\<Union>t \<in> triangle_set G. tofl ` permutations_of_set t)"
-  proof (clarsimp simp: triangle_set_def)
-    fix u v w
-    assume t: "triangle_in_graph u v w G"
-    then have "(u, v, w) \<in> tofl ` permutations_of_set {u,v,w}"
-      by (metis in_tofl local.wf triangle_commu1 triangle_vertices_distinct1 triangle_vertices_distinct2)
-    with t show "\<exists>t. (\<exists>x y z. t = {x, y, z} \<and> triangle_in_graph x y z G) \<and> (u, v, w) \<in> tofl ` permutations_of_set t"
-      by blast
-  qed
+    using edge_vertices_not_equal [OF wf] in_tofl 
+    by (clarsimp simp add: triangle_set_def triangle_in_graph_def) metis
   finally have "?TT \<subseteq> (\<Union>t \<in> triangle_set G. tofl ` permutations_of_set t)" .
   then have "card ?TT \<le> card(\<Union>t \<in> triangle_set G. tofl ` permutations_of_set t)" 
     by (intro card_mono finite_UN_I finite_triangle_set) (auto simp: assms)
@@ -462,8 +456,7 @@ proof -
   also have "\<dots> \<le> (\<Sum>t \<in> triangle_set G. card (permutations_of_set t))"
     by (meson card_image_le finite_permutations_of_set sum_mono)
   also have "\<dots> \<le> (\<Sum>t \<in> triangle_set G. fact 3)"
-    apply (rule sum_mono)
-    by (metis card.infinite card_permutations_of_set card_triangle_3 eq_refl local.wf nat.simps(3) numeral_3_eq_3)
+    by (rule sum_mono) (metis  card.infinite card_permutations_of_set card_triangle_3 eq_refl local.wf nat.case numeral_3_eq_3)
   also have "\<dots> = 6 * card (triangle_set G)"
     by (simp add: eval_nat_numeral)
   finally have "card ?TT \<le> 6 * card (triangle_set G)" .
@@ -473,12 +466,12 @@ qed
 
 lemma card_convert_triangle_rep_bound: 
   fixes G :: "ugraph" and t :: real
-  assumes "card {(x, y, z) \<in> X \<times> Y \<times> Z . (triangle_in_graph x y z G)} \<ge> t"
   assumes "X \<subseteq> uverts G" and "Y \<subseteq> uverts G" and "Z \<subseteq> uverts G" and fin: "finite (uverts G)" 
 and wf: "uwellformed G"
+  assumes "card {(x,y,z) \<in> X \<times> Y \<times> Z . (triangle_in_graph x y z G)} \<ge> t"
   shows "card (triangle_set G) \<ge> 1/6 *t"
 proof -
-  define t' where "t' \<equiv> card {(x, y, z) \<in> X \<times> Y \<times> Z . (triangle_in_graph x y z G)}"
+  define t' where "t' \<equiv> card {(x,y,z) \<in> X \<times> Y \<times> Z . (triangle_in_graph x y z G)}"
   have "t' \<ge> t" using assms t'_def by simp
   then have tgt: "1/6 * t' \<ge> 1/6 * t" by simp
   have "card (triangle_set G) \<ge> 1/6 *t'" using t'_def card_convert_triangle_rep assms by simp
@@ -633,7 +626,11 @@ next
         unfolding regular_partition_def by linarith 
     qed
     have ebbound: "card Eb \<le> (\<epsilon>/2) * (?n^2)"  \<comment>\<open>Count the edge bound for @{term Eb}.\<close>
-    proof - 
+    proof -
+      have \<section>: "\<And>R S. \<lbrakk>R \<in> P; S \<in> P; \<not> edge_dense R S G (\<epsilon> / 2)\<rbrakk>
+           \<Longrightarrow> real (card (edge R S)) * 2 \<le> \<epsilon> * real (card R) * real (card S)"
+        by (simp add: divide_simps edge_dense_def edge_density_def card_P_gt0) 
+           (smt (verit, best) card_edge_le_card of_nat_le_iff mult.assoc)
       have subs: "low_density_pairs \<subseteq> P \<times> P"
         by (auto simp: low_density_pairs_def)
       then have "finite low_density_pairs"
@@ -643,9 +640,7 @@ next
         by (smt (verit, ccfv_SIG) \<open>finite low_density_pairs\<close> card_UN_le of_nat_mono of_nat_sum 
  case_prod_unfold sum_mono)
       also have "\<dots> \<le> (\<Sum>(R,S)\<in>low_density_pairs. \<epsilon>/2 * card R * card S)"
-        apply (rule sum_mono)
-        apply(auto simp add: divide_simps card_P_gt0 low_density_pairs_def edge_density_def edge_dense_def)
-        by (smt (verit, best) card_edge_le_card of_nat_le_iff mult.assoc)
+        unfolding low_density_pairs_def by (force intro: sum_mono \<section>)
       also have "\<dots> \<le> (\<Sum>(R,S)\<in>P \<times> P. \<epsilon>/2 * card R * card S)"
         using subs \<open>\<epsilon> > 0\<close> by (intro sum_mono2) (auto simp: \<open>finite P\<close>)
       also have "\<dots> = \<epsilon>/2 * (\<Sum>(R,S)\<in>P \<times> P. card R * card S)"
@@ -1235,8 +1230,8 @@ nat_int of_nat_add of_nat_mod)
     qed
     
     text\<open>Every edge of the graph G lies in exactly one triangle.\<close>
-    
-have "unique_triangles G"
+
+    have "unique_triangles G"
       unfolding unique_triangles_def
     proof (intro strip)
       fix e
@@ -1320,9 +1315,8 @@ linorder_not_less mod_add_left_eq
         with \<open>N < M\<close> have "((M + j - a) mod M + a) mod M = j mod M"
           by (simp add: mod_add_left_eq)
         then have "{?x,?y} \<in> XY"
-          using \<open>a \<in> A\<close> \<open>j<M\<close>
-          by (force simp add: XY_def Edges_def zeq image_iff diff_invert 
-doubleton_eq_iff ex_disj_distrib)
+          using \<open>a \<in> A\<close> \<open>j<M\<close> unfolding XY_def Edges_def
+          by (force simp add: zeq image_iff diff_invert  doubleton_eq_iff ex_disj_distrib)
         ultimately have T: "triangle_in_graph ?x ?y ?z G"
           using \<open>e \<in> uedges G\<close> by (auto simp: G_def eeq triangle_in_graph_def)
         show ?thesis
