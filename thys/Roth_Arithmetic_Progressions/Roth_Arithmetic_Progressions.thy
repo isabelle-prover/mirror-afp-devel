@@ -22,14 +22,14 @@ lemma real_mult_gt_cube: "A \<ge> (X ::real) \<Longrightarrow> B \<ge> X \<Longr
 
 lemma triple_sigma_rewrite_card: 
   assumes "finite X" "finite Y" "finite Z"
-  shows "card {(x, y, z) . x \<in> X \<and> (y, z) \<in> Y \<times> Z \<and> P x y z} = (\<Sum>x\<in> X . card {(y,z) \<in> Y \<times> Z. P x y z})"
+  shows "card {(x, y, z) . x \<in> X \<and> (y,z) \<in> Y \<times> Z \<and> P x y z} = (\<Sum>x\<in> X . card {(y,z) \<in> Y \<times> Z. P x y z})"
 proof -
   define W where "W \<equiv> \<lambda>x. {(y,z) \<in> Y \<times> Z. P x y z}"
   have "W x \<subseteq> Y \<times> Z" for x
     by (auto simp: W_def)
   then have [simp]: "finite (W x)" for x
     by (meson assms finite_SigmaI infinite_super)
-  have eq: "{(x, y, z) . x \<in> X \<and> (y, z) \<in> Y \<times> Z \<and> P x y z} = (\<Union>x\<in>X. \<Union>(y, z)\<in>W x. {(x,y,z)})"
+  have eq: "{(x, y, z) . x \<in> X \<and> (y,z) \<in> Y \<times> Z \<and> P x y z} = (\<Union>x\<in>X. \<Union>(y,z)\<in>W x. {(x,y,z)})"
     by (auto simp: W_def)
   show ?thesis
     unfolding eq by (simp add: disjoint_iff assms card_UN_disjoint) (simp add: W_def)
@@ -321,7 +321,7 @@ proof -
 qed
 
 
-text\<open>We are now ready to show the Triangle Counting Lemma (Theorem 3.13 in Zhao's notes):\<close>
+text\<open>We are now ready to show the Triangle Counting Lemma:\<close>
 
 theorem triangle_counting_lemma:
   fixes \<epsilon>::real 
@@ -337,22 +337,15 @@ proof -
   let ?ediff = "\<lambda>X Y. edge_density X Y G - \<epsilon>"
   define XF where "XF \<equiv> \<lambda>Y. {x \<in> X. card(neighbors_ss x Y G) < ?ediff X Y * card Y}"
   have fin: "finite X" "finite Y" "finite Z" using finG rev_finite_subset xss yss zss by auto
-  have "card X > 0"
-    using card_0_eq ed1 edge_density_def en0 fin(1) by fastforce
-  have "\<epsilon> \<le> 1/2"
-    using ed1 edge_density_le1 fin
-    by (metis le_divide_eq_numeral1(1) mult.commute order_trans)
-  then have ebound2: "1 - 2*\<epsilon> \<ge> 0"
-    by linarith 
+  then have "card X > 0"
+    using card_0_eq ed1 edge_density_def en0  by fastforce
   
   text\<open> Obtain a subset of @{term X} where all elements meet minimum numbers for neighborhood size
 in @{term Y} and @{term Z}.\<close>
   
   define X2 where "X2 \<equiv> X - (XF Y \<union> XF Z)"
-  have xss: "X2 \<subseteq> X"
-    by (simp add: X2_def)
-  have finx2: "finite X2"
-    by (simp add: X2_def fin)
+  have xss: "X2 \<subseteq> X" and finx2: "finite X2"
+    by (auto simp add: X2_def fin)
   
   text \<open>Reasoning on the minimum size of @{term X2}:\<close>
   have part1: "(XF Y \<union> XF Z) \<union> X2 = X"
@@ -375,52 +368,41 @@ and @{term Z}.\<close>
  
   have edyzgt0: "?ediff Y Z > 0" and edxygt0: "?ediff X Y > 0" 
     using ed1 ed3 \<open>\<epsilon> > 0\<close> by linarith+
-  have card_y_bound: "card (neighbors_ss x Y G) \<ge> (?ediff X Y) * card Y"
-    and card_z_bound: "card (neighbors_ss x Z G) \<ge> (?ediff X Z) * card Z"
+  have card_y_bound: "card (neighbors_ss x Y G) \<ge> ?ediff X Y * card Y"
+    and card_z_bound: "card (neighbors_ss x Z G) \<ge> ?ediff X Z * card Z"
     if "x \<in> X2" for x
     using that by (auto simp: XF_def X2_def)
   have card_y_bound': 
-          "(\<Sum>x\<in> X2. (?ediff Y Z) * (card (neighbors_ss x Y G)) * (card (neighbors_ss x Z G))) \<ge>
-           (\<Sum>x\<in> X2 . (?ediff Y Z) * (?ediff X Y) * (card Y) * (card (neighbors_ss x Z G)))" 
-      by (rule sum_mono) (smt (verit, best) Groups.mult_ac(3) card_y_bound edyzgt0 mult.commute mult_right_mono of_nat_0_le_iff)
-  have x2_card: "\<And>x. x \<in> X2 \<Longrightarrow> (?ediff Y Z) * (card (neighbors_ss x Y G)) * (card (neighbors_ss x Z G))
-                    \<le> card (all_edges_between (neighbors_ss x Y G) (neighbors_ss x Z G) G)"
-    using all_edges_btwn_neighbour_sets_lower_bound card_y_bound card_z_bound ed1 ed2 rp2 by blast
+          "(\<Sum>x\<in> X2. ?ediff Y Z * (card (neighbors_ss x Y G)) * (card (neighbors_ss x Z G))) \<ge>
+           (\<Sum>x\<in> X2. ?ediff Y Z * ?ediff X Y * (card Y) * (card (neighbors_ss x Z G)))" 
+      by (rule sum_mono) (smt (verit, best) mult.left_commute card_y_bound edyzgt0 mult.commute mult_right_mono of_nat_0_le_iff)
   have card_z_bound': 
-         "(\<Sum>x\<in> X2. (?ediff Y Z) * (?ediff X Y) * (card Y) * (card (neighbors_ss x Z G))) \<ge>
-          (\<Sum>x\<in> X2. (?ediff Y Z) * (?ediff X Y) * (card Y) * (?ediff X Z) * (card Z))" 
+         "(\<Sum>x\<in> X2. ?ediff Y Z * ?ediff X Y * (card Y) * (card (neighbors_ss x Z G))) \<ge>
+          (\<Sum>x\<in> X2. ?ediff Y Z * ?ediff X Y * (card Y) * ?ediff X Z * (card Z))" 
       using card_z_bound mult_left_mono edxygt0 edyzgt0 by (fastforce intro!: sum_mono)
-  have eq_set: "\<And> x. x \<in> X \<Longrightarrow> card {(y, z) . y \<in> Y \<and> z \<in> Z \<and> {y, z} \<in> uedges G \<and> neighbor_in_graph x y G \<and> neighbor_in_graph x z G } = 
-card {(y, z) . y \<in> (neighbors_ss x Y G) \<and> z \<in> (neighbors_ss x Z G) \<and> {y, z} \<in> uedges G }"
-    by (metis (no_types, lifting) mem_Collect_eq neighbors_ss_def)
+  have eq_set: "\<And>x. {(y,z). y \<in> Y \<and> z \<in> Z \<and> {y, z} \<in> uedges G \<and> neighbor_in_graph x y G \<and> neighbor_in_graph x z G } = 
+                     {(y,z). y \<in> (neighbors_ss x Y G) \<and> z \<in> (neighbors_ss x Z G) \<and> {y, z} \<in> uedges G }"
+    by (auto simp: neighbors_ss_def)
   have "card ?T_all = (\<Sum>x\<in> X . card {(y,z) \<in> Y \<times> Z. triangle_in_graph x y z G})"
     using triple_sigma_rewrite_card fin by force  
-  also have "\<dots> = (\<Sum>x\<in> X . card {(y,z) \<in> Y \<times> Z. {y,z} \<in> uedges G \<and> neighbor_in_graph x y G \<and> neighbor_in_graph x z G })"
+  also have "\<dots> = (\<Sum>x\<in> X . card {(y,z). y \<in> Y \<and> z \<in> Z \<and> {y, z} \<in> uedges G \<and> neighbor_in_graph x y G \<and> neighbor_in_graph x z G })"
     using triangle_in_graph_edge_point assms by auto
-  also have "\<dots> = (\<Sum>x\<in> X . card {(y, z). y \<in> Y \<and> z \<in> Z \<and> {y, z} \<in> uedges G \<and> neighbor_in_graph x y G \<and> neighbor_in_graph x z G })"
-    by simp
-  finally have "card ?T_all = (\<Sum>x\<in> X . card (all_edges_between (neighbors_ss x Y G) (neighbors_ss x Z G) G))"
-    using eq_set by (auto simp: all_edges_between_def)
-  then have l: "card ?T_all \<ge> (\<Sum>x\<in> X2 . card (all_edges_between (neighbors_ss x Y G) (neighbors_ss x Z G) G))"
+  also have "... = (\<Sum>x \<in> X. card (all_edges_between (neighbors_ss x Y G) (neighbors_ss x Z G) G))"
+    using all_edges_between_def eq_set by presburger
+  finally have l: "card ?T_all \<ge> (\<Sum>x\<in> X2 . card (all_edges_between (neighbors_ss x Y G) (neighbors_ss x Z G) G))"
     by (simp add: fin xss sum_mono2)
-  have "(\<Sum>x\<in> X2 . (?ediff Y Z) * (card (neighbors_ss x Y G)) * (card (neighbors_ss x Z G))) \<le> 
+  have "(\<Sum>x\<in> X2. ?ediff Y Z * (card (neighbors_ss x Y G)) * (card (neighbors_ss x Z G))) \<le> 
         (\<Sum>x\<in> X2. real (card (all_edges_between (neighbors_ss x Y G) (neighbors_ss x Z G) G)))"
-    by (meson x2_card finx2 sum_mono)
-  then have "card ?T_all \<ge> (\<Sum>x\<in> X2 . (?ediff Y Z) * (card (neighbors_ss x Y G)) * (card (neighbors_ss x Z G)))" 
-    using l of_nat_le_iff [symmetric, where 'a=real] by force
-  then have "card ?T_all \<ge> (\<Sum>x\<in> X2 . (?ediff Y Z) * (?ediff X Y) * (card Y) * (card (neighbors_ss x Z G)))" 
-    using card_y_bound' by simp
-  then have tall_gt: "card ?T_all \<ge> (\<Sum>x\<in> X2 . (?ediff Y Z) * (?ediff X Y) * (card Y) * (?ediff X Z) * (card Z))" 
-    using card_z_bound' by simp
-  have "(\<Sum>x\<in> X2 . (?ediff Y Z) * (?ediff X Y) * (card Y) * (?ediff X Z) * (card Z)) = 
-    card X2 * (?ediff Y Z) * (?ediff X Y) * (card Y) * (?ediff X Z) * (card Z)"
-    by simp 
-  then have "real (card ?T_all) \<ge> card X2 * (?ediff Y Z) * (?ediff X Y)* 
-      (card Y) * (?ediff X Z) * (card Z)"
-    using tall_gt by force 
-  then have "real (card ?T_all) \<ge> ((1 - 2 * \<epsilon>) * card X) * (?ediff Y Z) * 
-      (?ediff X Y) * (card Y) * (?ediff X Z) * (card Z)"
-    by (smt (verit, best) ed2 edxygt0 edyzgt0 en0 minx2 mult_right_less_imp_less of_nat_less_0_iff)
+        (is "sum ?F _ \<le> sum ?G _")
+  proof (rule sum_mono)
+    show  "\<And>x. x \<in> X2 \<Longrightarrow> ?F x \<le> ?G x"
+      using all_edges_btwn_neighbour_sets_lower_bound card_y_bound card_z_bound ed1 ed2 rp2 by blast
+  qed
+  then have "card ?T_all \<ge> card X2 * ?ediff Y Z * ?ediff X Y * card Y * ?ediff X Z * card Z" 
+    using card_z_bound' card_y_bound' l of_nat_le_iff [symmetric, where 'a=real] by force
+  then have "real (card ?T_all) \<ge> ((1 - 2 * \<epsilon>) * card X) * ?ediff Y Z * 
+      ?ediff X Y * (card Y) * ?ediff X Z * (card Z)"
+    by (smt (verit, best) ed2 edxygt0 edyzgt0 en0 minx2 mult_right_mono of_nat_0_le_iff)
   then show ?thesis by (simp add: triangle_triples_def mult.commute mult.left_commute) 
 qed
 
@@ -443,8 +425,7 @@ definition decent_graph :: "uvert set set \<Rightarrow> ugraph \<Rightarrow> rea
   where "decent_graph P G \<eta> \<equiv> \<forall>R S. R\<in>P \<longrightarrow> S\<in>P \<longrightarrow> decent R S G \<eta>" for \<epsilon>::real
 
 text \<open>The proof of the triangle counting lemma requires ordered triples. For each unordered triple 
-there are six permutations, hence the factor of $1/6$ here. This is mentioned briefly on pg 57 of 
-Zhao's notes towards the end of the proof.\<close>
+there are six permutations, hence the factor of $1/6$ here.\<close>
 
 lemma card_convert_triangle_rep:
   fixes G :: "ugraph" 
@@ -514,7 +495,7 @@ proof -
     by (auto simp: edge_density_def)
 qed
 
-text\<open>The following is the Triangle Removal Lemma (Theorem 3.15 in Zhao's notes).\<close>
+text\<open>The following is the Triangle Removal Lemma.\<close>
 
 theorem triangle_removal_lemma:
   fixes \<epsilon> :: real
@@ -911,8 +892,7 @@ qed
 
 subsection \<open>Roth's Theorem\<close>
 
-text\<open>We will first need the following corollary of the Triangle Removal Lemma.
-This is Corollary 3.18 in Zhao's notes:\<close>
+text\<open>We will first need the following corollary of the Triangle Removal Lemma.\<close>
 
 text \<open>See \<^url>\<open>https://en.wikipedia.org/wiki/Ruzsa–Szemerédi_problem#Upper_bound\<close>.
 Suggested by Yaël Dillies
@@ -1376,9 +1356,10 @@ doubleton_eq_iff ex_disj_distrib)
             by (simp add: diff_def \<open>a' < M\<close>)
           then have "a' = a"
             by (metis M_mod_bound \<open>a' \<in> A\<close> df diff_invert eq' mod_add_eq mod_if of_nat_eq_iff)
-          have "(M + ((i'+a') mod M) - a') mod M = i'"
-            by (metis Nat.add_diff_assoc2 \<open>a' < M\<close> \<open>i' < M\<close> add.left_commute add_implies_diff 
-less_imp_le_nat mod_add_right_eq mod_add_self2 mod_less)
+          have "(M + ((i'+a') mod M) - a') mod M = (M + (i' + a') - a') mod M"
+            by (metis Nat.add_diff_assoc2 \<open>a' < M\<close> less_imp_le_nat mod_add_right_eq)
+          with \<open>i' < M\<close> have "(M + ((i'+a') mod M) - a') mod M = i'"
+            by force
           with \<open>a' = a\<close> eq' have "(M + j - a) mod M = i'"
             by force
           with xeq have "x = ?x" by blast
