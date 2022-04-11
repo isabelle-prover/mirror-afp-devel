@@ -960,10 +960,10 @@ subsection \<open>Roth's Theorem\<close>
 text\<open>We will first need the following corollary of the Triangle Removal Lemma.
 This is Corollary 3.18 in Zhao's notes:\<close>
 
-text \<open>See \<^url>\<open>https://en.wikipedia.org/wiki/Ruzsa–Szemerédi_problem#Upper_bound\<close>.
+text \<open>See \<^url>\<open>https://en.wikipedia.org/wiki/Ruzsa–Szemerédi_problem\<close>.
 Suggested by Yaël Dillies
 \<close>
-corollary ruzsa_szemeredi_upper_bound:
+corollary Diamond_free:
   fixes \<epsilon> :: real 
   assumes "0 < \<epsilon>"
   shows "\<exists>N>0. \<forall>G. card(uverts G) > N \<longrightarrow> uwellformed G \<longrightarrow> unique_triangles G \<longrightarrow>
@@ -1104,7 +1104,7 @@ proof -
   obtain X where "X>0"
     and X: "\<And>G. \<lbrakk>card(uverts G) > X; uwellformed G; unique_triangles G\<rbrakk> 
                 \<Longrightarrow> card (uedges G) \<le> \<epsilon>/12 * (card (uverts G))\<^sup>2"
-    by (metis assms ruzsa_szemeredi_upper_bound less_divide_eq_numeral1(1) mult_eq_0_iff)
+    by (metis assms Diamond_free less_divide_eq_numeral1(1) mult_eq_0_iff)
   show thesis
   proof (intro strip that)
     fix N A
@@ -1123,8 +1123,7 @@ proof -
     have A_sub_M: "int ` A \<subseteq> {..<M}"
       using A by (force simp: M_def)
     have non_img_A: "\<nexists>k d. d > 0 \<and> progression3 k d \<subseteq> int ` A"
-      by (metis p3_int_iff non pos_int_cases zero_le_imp_eq_int imageE insert_subset of_nat_0_le_iff 
-progression3_def)
+      by (metis imageE insert_subset non p3_int_iff pos_int_cases progression3_def)
     
     text\<open>Construct a tripartite graph @{term G} whose three parts are copies of @{text"\<int>/M\<int>"}.\<close>
     
@@ -1299,10 +1298,10 @@ nat_int of_nat_add of_nat_mod)
         using i j k x y z \<open>a1 \<in> A\<close>
         by (metis \<open>y \<in> ?Y\<close> \<open>z \<in>?Z\<close> enc_iff i_to_j j_to_k mod_add_left_eq mod_less)
     qed
-    
+
     text\<open>Every edge of the graph G lies in exactly one triangle.\<close>
-    
-have "unique_triangles G"
+
+    have "unique_triangles G"
       unfolding unique_triangles_def
     proof (intro strip)
       fix e
