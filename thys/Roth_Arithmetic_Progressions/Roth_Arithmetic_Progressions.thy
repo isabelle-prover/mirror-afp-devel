@@ -66,25 +66,6 @@ proof -
     by (metis finite_Int finite_SigmaI finite_subset)
 qed
 
-lemma max_edges_graph: 
-  assumes "uwellformed G" "finite (uverts G)"
-  shows "card (uedges G) \<le> (card (uverts G))^2"
-proof -
-  have "card (uedges G) \<le> card (uverts G) choose 2" 
-    by (metis all_edges_finite assms card_all_edges card_mono wellformed_all_edges)
-  thus ?thesis
-    by (metis binomial_le_pow le0 neq0_conv order.trans zero_less_binomial_iff) 
-qed
-
-lemma all_edges_between_ss_uedges:  "mk_uedge ` (all_edges_between X Y G) \<subseteq> uedges G" 
-  by (auto simp: all_edges_between_def)
-
-lemma all_edges_betw_D3: "(x, y) \<in> all_edges_between X Y G \<Longrightarrow> {x, y} \<in> uedges G"
-  by (simp add: all_edges_between_def)
-
-lemma all_edges_betw_I: "x \<in> X \<Longrightarrow> y \<in> Y \<Longrightarrow> {x, y} \<in> uedges G \<Longrightarrow> (x, y) \<in> all_edges_between X Y G"
-  by (simp add: all_edges_between_def)
-
 lemma all_edges_between_E_diff: 
   "all_edges_between X Y (V,E-E') = all_edges_between X Y (V,E) - all_edges_between X Y (V,E')"
   by (auto simp: all_edges_between_def)
@@ -711,13 +692,8 @@ next
     show "\<exists>Gnew. ?\<Phi> G Gnew"
     proof (intro exI conjI)
       show verts: "uverts Gnew = uverts G" by (simp add: Gnew_def)
-      have allij: "\<And>R S. edge R S \<subseteq> uedges G" 
-        using all_edges_between_ss_uedges edge_def by presburger
-      then have eae: "Ea \<subseteq> uedges G" by (auto simp: Ea_def) 
-      have eab: "Eb \<subseteq> uedges G" using allij by (auto simp: Eb_def)
-      have "Ec \<subseteq> uedges G" using allij by (auto simp: Ec_def)
-      then have diffedges: "(Ea \<union> Eb \<union> Ec) \<subseteq> uedges G" 
-        using eae eab by auto
+      have diffedges: "(Ea \<union> Eb \<union> Ec) \<subseteq> uedges G" 
+        by (auto simp: Ea_def Eb_def Ec_def all_edges_between_def edge_def)
       then show edges: "uedges Gnew \<subseteq> uedges G"  
         by (simp add: Gnew_def)
       then have "uedges G - (uedges Gnew) = uedges G \<inter> (Ea \<union> Eb \<union> Ec) " 
@@ -838,8 +814,8 @@ next
           using trig_ex min_subset_size xinp yinp zinp ilt jlt klt
           by (auto simp: triangle_in_graph_def decent_graph_def decent_def all_edges_between_def)
         have min_dens: "edge_density R S Gnew \<ge> \<epsilon>/2" "edge_density R T Gnew \<ge> \<epsilon>/2" "edge_density S T Gnew \<ge> \<epsilon>/2" 
-          using density_bound subsets ilt jlt klt xinp yinp zinp unfolding dense_graph_def edge_dense_def
-          by (metis all_edges_betw_I equals0D triangle_in_graph_def trig_ex)+
+          using density_bound ilt jlt klt xinp yinp zinp trig_ex 
+          by (auto simp: dense_graph_def edge_dense_def all_edges_between_def triangle_in_graph_def)
         then have min_dens_diff: 
           "edge_density R S Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" "edge_density R T Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" "edge_density S T Gnew - \<epsilon>/4 \<ge> \<epsilon>/4" 
           by auto

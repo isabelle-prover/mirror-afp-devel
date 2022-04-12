@@ -10,27 +10,27 @@ text\<open>The complete graph is a graph where all possible edges are present. I
 definition.\<close>
 
 definition complete :: "nat set \<Rightarrow> ugraph" where
-"complete V = (V, all_edges V)"
+  "complete V = (V, all_edges V)"
 
 lemma complete_wellformed: "uwellformed (complete V)"
-unfolding complete_def uwellformed_def all_edges_def
-by simp
+  unfolding complete_def uwellformed_def all_edges_def
+  by simp
 
 text\<open>If the set of vertices is finite, the set of edges in the complete graph is finite.\<close>
 
 lemma all_edges_finite: "finite V \<Longrightarrow> finite (all_edges V)"
-unfolding all_edges_def
-by simp
+  unfolding all_edges_def
+  by simp
 
 corollary complete_finite_edges: "finite V \<Longrightarrow> finite (uedges (complete V))"
-unfolding complete_def using all_edges_finite
-by simp
+  unfolding complete_def using all_edges_finite
+  by simp
 
 text\<open>The sets of possible edges of disjoint sets of vertices are disjoint.\<close>
 
 lemma all_edges_disjoint: "S \<inter> T = {} \<Longrightarrow> all_edges S \<inter> all_edges T = {}"
-unfolding all_edges_def
-by force
+  unfolding all_edges_def
+  by force
 
 text\<open>A graph is called `finite' if its set of edges and its set of vertices are finite.\<close>
 
@@ -39,8 +39,8 @@ definition "finite_graph G \<equiv> finite (uverts G) \<and> finite (uedges G)"
 text\<open>The complete graph is finite.\<close>
 
 corollary complete_finite: "finite V \<Longrightarrow> finite_graph (complete V)"
-using complete_finite_edges unfolding finite_graph_def complete_def
-by simp
+  using complete_finite_edges unfolding finite_graph_def complete_def
+  by simp
 
 text\<open>A graph is called `nonempty' if it contains at least one vertex and at least one edge.\<close>
 
@@ -67,24 +67,24 @@ text\<open>The probability for a random graph to have $e$ edges is $p ^ e$.\<clo
 
 lemma (in edge_space) cylinder_empty_prob:
   "A \<subseteq> S_edges \<Longrightarrow> prob (cylinder S_edges A {}) = p ^ (card A)"
-using cylinder_prob by auto
+  using cylinder_prob by auto
 
 subsection\<open>Subgraphs\<close>
 
 definition subgraph :: "ugraph \<Rightarrow> ugraph \<Rightarrow> bool" where
-"subgraph G' G \<equiv> uverts G' \<subseteq> uverts G \<and> uedges G' \<subseteq> uedges G"
+  "subgraph G' G \<equiv> uverts G' \<subseteq> uverts G \<and> uedges G' \<subseteq> uedges G"
 
 lemma subgraph_refl: "subgraph G G"
-unfolding subgraph_def
-by simp
+  unfolding subgraph_def
+  by simp
 
 lemma subgraph_trans: "subgraph G'' G' \<Longrightarrow> subgraph G' G \<Longrightarrow> subgraph G'' G"
-unfolding subgraph_def
-by auto
+  unfolding subgraph_def
+  by auto
 
 lemma subgraph_antisym: "subgraph G G' \<Longrightarrow> subgraph G' G \<Longrightarrow> G = G'"
-unfolding subgraph_def
-by (auto simp add: Product_Type.prod_eqI)
+  unfolding subgraph_def
+  by (auto simp add: Product_Type.prod_eqI)
 
 lemma subgraph_complete:
   assumes "uwellformed G"
@@ -107,11 +107,21 @@ proof -
 qed
 
 corollary wellformed_all_edges: "uwellformed G \<Longrightarrow> uedges G \<subseteq> all_edges (uverts G)"
-using subgraph_complete subgraph_def complete_def by simp
+  using subgraph_complete subgraph_def complete_def by simp
+
+corollary max_edges_graph: 
+  assumes "uwellformed G" "finite (uverts G)"
+  shows "card (uedges G) \<le> (card (uverts G))^2"
+proof -
+  have "card (uedges G) \<le> card (uverts G) choose 2" 
+    by (metis all_edges_finite assms card_all_edges card_mono wellformed_all_edges)
+  thus ?thesis
+    by (metis binomial_le_pow le0 neq0_conv order.trans zero_less_binomial_iff) 
+qed
 
 lemma subgraph_finite: "\<lbrakk> finite_graph G; subgraph G' G \<rbrakk> \<Longrightarrow> finite_graph G'"
-unfolding finite_graph_def subgraph_def
-by (metis rev_finite_subset)
+  unfolding finite_graph_def subgraph_def
+  by (metis rev_finite_subset)
 
 corollary wellformed_finite:
   assumes "finite (uverts G)" and "uwellformed G"
@@ -587,11 +597,8 @@ proof -
     hence "max_density A \<le> max_density B"
       by (subst f)
   }
-  note le = this
-
-  show ?thesis
-    using le[OF assms(2) assms(4) assms(1)] le[OF assms(3) assms(5) isomorphic_sym[OF assms(1)]]
-    by (fact antisym)
+  then show ?thesis
+    by (meson assms isomorphic_sym order_antisym_conv)
 qed
 
 subsection\<open>Fixed selectors\<close>
@@ -644,21 +651,6 @@ lemma fixed_selector_induced_subgraph:
   assumes "is_fixed_selector H f" and "card (uverts H) = card V" and "finite V"
   assumes sub: "subgraph (f V) (induced_subgraph V G)" and V: "V \<subseteq> uverts G" and G: "uwellformed G"
   shows "H \<sqsubseteq> G"
-proof -
-  have post: "H \<simeq> f V" "uverts (f V) = V"
-    using assms unfolding is_fixed_selector_def by auto
-
-  have "H \<sqsubseteq> f V"
-    by (rule isomorphic_is_subgraph_isomorphic)
-       (simp add: post)
-  also have "f V \<sqsubseteq> induced_subgraph V G"
-    by (rule subgraph_is_subgraph_isomorphic)
-       (auto simp: induced_wellformed[OF G V] post sub)
-  also have "\<dots> \<sqsubseteq> G"
-    by (rule subgraph_is_subgraph_isomorphic[OF induced_wellformed])
-       (auto simp: G V induced_is_subgraph(1)[OF V])
-  finally show "H \<sqsubseteq> G"
-    .
-qed
+  by (meson G V assms induced_is_subgraph(1) is_fixed_selector_def sub subgraph_isomorphic_def subgraph_trans)
 
 end
