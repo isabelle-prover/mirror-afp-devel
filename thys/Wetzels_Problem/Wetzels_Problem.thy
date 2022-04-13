@@ -24,10 +24,10 @@ proof -
       using \<open>small F\<close> that uncountable_gcard_ge by blast 
     then obtain F' where "F' \<subseteq> F" and F': "gcard F' = \<aleph>1"
       by (meson Card_Aleph Ord_1 subset_smaller_gcard \<open>small F\<close>)
-    then obtain \<phi> where \<phi>: "bij_betw \<phi> (elts (\<aleph>1)) F'"
+    then obtain \<phi> where \<phi>: "bij_betw \<phi> (elts \<omega>1) F'"
       by (metis TC_small eqpoll_def gcard_eqpoll)
     define S where "S \<equiv> \<lambda>\<alpha> \<beta>. {z. \<phi> \<alpha> z = \<phi> \<beta> z}"
-    have co_S: "gcard (S \<alpha> \<beta>) \<le> \<aleph>0" if "\<alpha> \<in> elts \<beta>" "\<beta> \<in> elts (\<aleph>1)" for \<alpha> \<beta>
+    have co_S: "gcard (S \<alpha> \<beta>) \<le> \<aleph>0" if "\<alpha> \<in> elts \<beta>" "\<beta> \<in> elts \<omega>1" for \<alpha> \<beta>
     proof -
       have "\<phi> \<alpha> holomorphic_on UNIV" "\<phi> \<beta> holomorphic_on UNIV"
         using W \<open>F' \<subseteq> F\<close> unfolding Wetzel_def
@@ -39,10 +39,10 @@ proof -
       then show ?thesis
         using countable_imp_g_le_Aleph0 by blast
     qed
-    define SS where "SS \<equiv>\<Squnion>\<beta> \<in> elts(\<aleph>1). \<Squnion>\<alpha> \<in> elts \<beta>. S \<alpha> \<beta>"
+    define SS where "SS \<equiv>\<Squnion>\<beta> \<in> elts \<omega>1. \<Squnion>\<alpha> \<in> elts \<beta>. S \<alpha> \<beta>"
     have F'_eq: "F' =  \<phi> ` elts \<omega>1"
       using \<phi> bij_betw_imp_surj_on by auto
-    have \<section>: "\<And>x xa. xa \<in> elts \<omega>1 \<Longrightarrow> gcard (\<Union>\<alpha>\<in>elts xa. S \<alpha> xa) \<le> \<omega>"
+    have \<section>: "\<And>\<beta>. \<beta> \<in> elts \<omega>1 \<Longrightarrow> gcard (\<Union>\<alpha>\<in>elts \<beta>. S \<alpha> \<beta>) \<le> \<omega>"
       by (metis Aleph_0 TC_small co_S countable_UN countable_iff_g_le_Aleph0 less_\<omega>1_imp_countable)
     have "gcard SS \<le> gcard ((\<lambda>\<beta>. \<Union>\<alpha>\<in>elts \<beta>. S \<alpha> \<beta>) ` elts \<omega>1) \<otimes> \<aleph>0"
       apply (simp add: SS_def)
@@ -95,12 +95,12 @@ proof -
   qed
   then have cloD: "closure D = UNIV"
     by (auto simp: D_def closure_approachable dist_complex_def)
-  obtain \<zeta> where \<zeta>: "bij_betw \<zeta> (elts (\<aleph>1)) (UNIV::complex set)"
+  obtain \<zeta> where \<zeta>: "bij_betw \<zeta> (elts \<omega>1) (UNIV::complex set)"
     by (metis Complex_gcard TC_small assms eqpoll_def gcard_eqpoll)
   define inD where "inD \<equiv> \<lambda>\<beta> f. (\<forall>\<alpha> \<in> elts \<beta>. f (\<zeta> \<alpha>) \<in> D)"
   define \<Phi> where "\<Phi> \<equiv> \<lambda>\<beta> f. f \<beta> analytic_on UNIV \<and> inD \<beta> (f \<beta>) \<and> inj_on f (elts (succ \<beta>))"
   have *: "\<exists>h. \<Phi> \<gamma> ((restrict f (elts \<gamma>))(\<gamma>:=h))"
-    if \<gamma>: "\<gamma> \<in> elts (\<aleph>1)" and "\<forall>\<beta> \<in> elts \<gamma>. \<Phi> \<beta> f" for \<gamma> f
+    if \<gamma>: "\<gamma> \<in> elts \<omega>1" and "\<forall>\<beta> \<in> elts \<gamma>. \<Phi> \<beta> f" for \<gamma> f
   proof -
     have f: "\<forall>\<beta> \<in> elts \<gamma>. f \<beta> analytic_on UNIV \<and> inD \<beta> (f \<beta>)" 
       using that by (auto simp: \<Phi>_def)
@@ -115,7 +115,7 @@ proof -
       define w where "w \<equiv> \<zeta> o \<eta>"
       have gf: "\<forall>i<card (elts \<gamma>). h \<noteq> g i \<Longrightarrow> \<forall>\<beta>\<in>elts \<gamma>. h \<noteq> f \<beta>" for h
         using \<eta> by (auto simp: bij_betw_iff_bijections g_def)
-      have *: "\<exists>h. h analytic_on UNIV \<and> (\<forall>i<n. h (w i) \<in> D \<and> h (w i) \<noteq> g i (w i))"
+      have **: "\<exists>h. h analytic_on UNIV \<and> (\<forall>i<n. h (w i) \<in> D \<and> h (w i) \<noteq> g i (w i))"
         if "n \<le> card (elts \<gamma>)" for n
         using that
       proof (induction n)
@@ -157,7 +157,7 @@ proof -
         qed
       qed
       show ?thesis 
-        using * [OF order_refl] \<eta> that gf 
+        using ** [OF order_refl] \<eta> that gf 
         by (simp add: w_def bij_betw_iff_bijections inD_def) metis
     next
       case False
@@ -309,12 +309,12 @@ proof -
   qed
   define G where "G \<equiv> \<lambda>f \<gamma>. @h. \<Phi> \<gamma> ((restrict f (elts \<gamma>))(\<gamma>:=h))"
   have nxt: "\<Phi> \<gamma> ((restrict f (elts \<gamma>))(\<gamma>:= G f \<gamma>))" 
-    if "\<gamma> \<in> elts (\<aleph>1)" "\<forall>\<beta> \<in> elts \<gamma>. \<Phi> \<beta> f" for f \<gamma>
+    if "\<gamma> \<in> elts \<omega>1" "\<forall>\<beta> \<in> elts \<gamma>. \<Phi> \<beta> f" for f \<gamma>
     unfolding G_def using * [OF that] by (metis someI) 
-  have G_restr: "G (restrict f (elts \<gamma>)) \<gamma> = G f \<gamma>" if "\<gamma> \<in> elts (\<aleph>1)" for f \<gamma>
+  have G_restr: "G (restrict f (elts \<gamma>)) \<gamma> = G f \<gamma>" if "\<gamma> \<in> elts \<omega>1" for f \<gamma>
     by (auto simp: G_def)
   define f where "f \<equiv> transrec G"
-  have \<Phi>f: "\<Phi> \<beta> f" if "\<beta> \<in> elts (\<aleph>1)" for \<beta>
+  have \<Phi>f: "\<Phi> \<beta> f" if "\<beta> \<in> elts \<omega>1" for \<beta>
     using that
   proof (induction \<beta> rule: eps_induct)
     case (step \<gamma>)
@@ -327,17 +327,17 @@ proof -
     with nxt [OF step.prems] * show ?case
       by (metis \<Phi>_def elts_succ fun_upd_same fun_upd_triv inj_on_restrict_eq restrict_upd)
   qed
-  then have anf: "\<And>\<beta>. \<beta> \<in> elts (\<aleph>1) \<Longrightarrow> f \<beta> analytic_on UNIV"
-    and inD: "\<And>\<alpha> \<beta>. \<lbrakk>\<beta> \<in> elts (\<aleph>1); \<alpha> \<in> elts \<beta>\<rbrakk> \<Longrightarrow> f \<beta> (\<zeta> \<alpha>) \<in> D"
+  then have anf: "\<And>\<beta>. \<beta> \<in> elts \<omega>1 \<Longrightarrow> f \<beta> analytic_on UNIV"
+    and inD: "\<And>\<alpha> \<beta>. \<lbrakk>\<beta> \<in> elts \<omega>1; \<alpha> \<in> elts \<beta>\<rbrakk> \<Longrightarrow> f \<beta> (\<zeta> \<alpha>) \<in> D"
     using \<Phi>_def inD_def by blast+
-  have injf: "inj_on f (elts (\<aleph>1))"
+  have injf: "inj_on f (elts \<omega>1)"
     using \<Phi>f unfolding inj_on_def \<Phi>_def by (metis Ord_\<omega>1 Ord_in_Ord Ord_linear_le in_succ_iff)
   show ?thesis
   proof
-    let ?F = "f ` elts (\<aleph>1)"
+    let ?F = "f ` elts \<omega>1"
     have "countable ((\<lambda>f. f z) ` f ` elts \<omega>1)" for z
     proof -
-      obtain \<alpha> where \<alpha>: "\<zeta> \<alpha> = z" "\<alpha> \<in> elts (\<aleph>1)" "Ord \<alpha>"
+      obtain \<alpha> where \<alpha>: "\<zeta> \<alpha> = z" "\<alpha> \<in> elts \<omega>1" "Ord \<alpha>"
         by (meson Ord_\<omega>1 Ord_in_Ord UNIV_I \<zeta> bij_betw_iff_bijections)
       let ?B = "elts \<omega>1 - elts (succ \<alpha>)"
       have eq: "elts \<omega>1 = elts (succ \<alpha>) \<union> ?B"
