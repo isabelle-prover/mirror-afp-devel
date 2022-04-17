@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-## Dependencies: Python 2.7 or Python 3.5
+## Dependencies: Python 3.5
 ##
 ## This script reads a metadata file and generates the topics.html,
 ## index.html and the entry pages on isa-afp.org.
@@ -9,12 +9,7 @@
 ## For adding new entries see `doc/editors/new-entry-checkin.html`
 ##
 
-# Cross-python compatibility
-from __future__ import print_function
-try:
-    import configparser
-except ImportError:
-    from six.moves import configparser
+from six.moves import configparser
 
 from collections import OrderedDict
 import argparse
@@ -102,7 +97,7 @@ def validate(entry, attributes):
 def parse(filename):
     parser = configparser.RawConfigParser(dict_type=OrderedDict)
     try:
-        parser.readfp(codecs.open(filename, encoding='UTF-8', errors='strict'))
+        parser.read_file(codecs.open(filename, encoding='UTF-8', errors='strict'))
         return OrderedDict((sec, validate(sec, dict(parser.items(sec))))
                            for sec in parser.sections())
     except UnicodeDecodeError as ex:
