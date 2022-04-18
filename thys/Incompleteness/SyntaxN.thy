@@ -168,18 +168,17 @@ nominal_function eval_fm :: "(name, hf) finfun \<Rightarrow> fm \<Rightarrow> bo
  | "eval_fm e (A OR B) \<longleftrightarrow> eval_fm e A \<or> eval_fm e B"
  | "eval_fm e (Neg A) \<longleftrightarrow> (~ eval_fm e A)"
  | "atom k \<sharp> e \<Longrightarrow> eval_fm e (Ex k A) \<longleftrightarrow> (\<exists>x. eval_fm (finfun_update e k x) A)"
-supply [[simproc del: defined_all]]
-apply(simp add: eqvt_def eval_fm_graph_aux_def)
-apply(auto del: iffI)[16]
-apply(rule_tac y=b and c="(a)" in fm.strong_exhaust)
-apply(auto simp: fresh_star_def)[5]
-using [[simproc del: alpha_lst]] apply clarsimp
-apply(erule_tac c="(ea)" in Abs_lst1_fcb2')
-apply(rule pure_fresh)
-apply(simp add: fresh_star_def)
-apply (simp_all add: eqvt_at_def)
-apply (simp_all add: perm_supp_eq)
-done
+                   supply [[simproc del: defined_all]]
+                   apply(simp add: eqvt_def eval_fm_graph_aux_def)
+                  apply(auto del: iffI)[16]
+   apply (metis fm.strong_exhaust fresh_star_insert)
+  using [[simproc del: alpha_lst]] apply clarsimp
+  apply(erule Abs_lst1_fcb2')
+     apply(rule pure_fresh)
+    apply(simp add: fresh_star_def)
+   apply (simp_all add: eqvt_at_def)
+   apply (simp_all add: perm_supp_eq)
+  done
 
 nominal_termination (eqvt)
   by lexicographic_order
@@ -193,11 +192,12 @@ by (induct t rule: tm.induct) (auto simp: permute_flip_at)
 lemma eval_fm_rename:
   assumes "atom k' \<sharp> A"
   shows "eval_fm (finfun_update e k x) A = eval_fm (finfun_update e k' x) ((k' \<leftrightarrow> k) \<bullet> A)"
-using assms
-apply (nominal_induct A avoiding: e k k' x rule: fm.strong_induct)
-apply (simp_all add: eval_tm_rename[symmetric], metis)
-apply (simp add: fresh_finfun_update fresh_at_base finfun_update_twist)
-done
+  using assms
+proof (nominal_induct A avoiding: e k k' x rule: fm.strong_induct)
+  case Ex
+  then show ?case
+    by (simp add: fresh_finfun_update fresh_at_base) (metis finfun_update_twist)
+qed (simp_all add: eval_tm_rename[symmetric], metis)
 
 lemma better_ex_eval_fm[simp]:
   "eval_fm e (Ex k A) \<longleftrightarrow> (\<exists>x. eval_fm (finfun_update e k x) A)"
@@ -486,9 +486,6 @@ text\<open>Soundness theorem!\<close>
 theorem hfthm_sound: assumes "H \<turnstile> A" shows "(\<forall>B\<in>H. eval_fm e B) \<Longrightarrow> eval_fm e A"
 using assms
 proof (induct arbitrary: e)
-  case (Hyp A H) thus ?case
-    by auto
-next
   case (Extra H) thus ?case
     by (metis extra_axiom_holds)
 next
@@ -507,12 +504,9 @@ next
   case (Ind A H) thus ?case
     by (metis induction_axioms_hold)
 next
-  case (MP H A B H') thus ?case
-    by auto
-next
   case (Exists H A B i e) thus ?case
     by auto (metis forget_eval_fm)
-qed
+qed auto
 
 subsection\<open>Derived rules of inference\<close>
 
@@ -697,7 +691,7 @@ next
     moreover have "H - {C} \<turnstile> A IMP C IMP B" using Exists
       by (metis Imp_Imp_commute)
     ultimately have "H - {C} \<turnstile> (Ex i A) IMP C IMP B" using Exists
-      by (metis fm.fresh(3) fm.fresh(4) hfthm.Exists member_remove remove_def)
+      using hfthm.Exists by force
     thus ?thesis
       by (metis Imp_Imp_commute)
   next
@@ -883,10 +877,7 @@ lemma Iff_trans: "H \<turnstile> A IFF B \<Longrightarrow> H \<turnstile> B IFF 
 
 lemma Iff_E:
   "insert A (insert B H) \<turnstile> C \<Longrightarrow> insert (Neg A) (insert (Neg B) H) \<turnstile> C \<Longrightarrow> insert (A IFF B) H \<turnstile> C"
-  apply (auto simp: Iff_def insert_commute)
-  apply (metis Disj_I1 Hyp anti_deduction insertCI)
-  apply (metis Assume Disj_I1 anti_deduction)
-  done
+  by (smt (verit) AssumeH(2) Conj_E Disj_E Iff_def Neg_D rotate2)
 
 lemma Iff_E1:
   assumes A: "H \<turnstile> A" and B: "insert B H \<turnstile> C" shows "insert (A IFF B) H \<turnstile> C"
@@ -954,9 +945,7 @@ lemma Ex_E_with_renaming:
   shows "insert (Ex i A) H \<turnstile> B"
 proof -
   have "Ex i A = Ex i' ((i \<leftrightarrow> i') \<bullet> A)" using assms
-    apply (auto simp: Abs1_eq_iff fresh_Pair)
-    apply (metis flip_at_simps(2) fresh_at_base_permute_iff)+
-    done
+    using fresh_permute_left by (fastforce simp add: Abs1_eq_iff fresh_Pair)
   thus ?thesis
     by (metis Ex_E assms fresh_Pair)
 qed
@@ -1006,10 +995,7 @@ lemma Iff_cong: "H \<turnstile> A IFF A' \<Longrightarrow> H \<turnstile> B IFF 
   by (metis Iff_def Conj_cong Imp_cong)
 
 lemma Ex_cong: "H \<turnstile> A IFF A' \<Longrightarrow> \<forall>C \<in> H. atom i \<sharp> C \<Longrightarrow> H \<turnstile> (Ex i A) IFF (Ex i A')"
-  apply (rule Iff_I)
-   apply (metis Ex_mono Hyp Iff_MP_same Un_absorb Un_insert_right insertI1 thin_Un)
-  apply (metis Ex_mono Hyp Iff_MP2_same Un_absorb Un_insert_right insertI1 thin_Un)
-  done
+  by (meson Assume Ex_mono Iff_I Iff_MP_left Iff_MP_left')
 
 lemma All_cong: "H \<turnstile> A IFF A' \<Longrightarrow> \<forall>C \<in> H. atom i \<sharp> C \<Longrightarrow> H \<turnstile> (All i A) IFF (All i A')"
   by (metis Ex_cong Neg_cong)
@@ -1357,10 +1343,7 @@ lemma Neg_Imp_I [intro!]: "H \<turnstile> A \<Longrightarrow> insert B H \<turns
   by (metis NegNeg_I Neg_Disj_I Neg_I)
 
 lemma Neg_Imp_E [intro!]: "insert (Neg B) (insert A H) \<turnstile> C \<Longrightarrow> insert (Neg (A IMP B)) H \<turnstile> C"
-apply (rule cut_same [where A=A])
- apply (metis Assume Disj_I1 NegNeg_D Neg_mono)
-apply (metis Swap Imp_I rotate2 thin1)
-done
+  using Imp_I Swap rotate2 by metis
 
 declare Neg_Imp_E [THEN rotate2, intro!]
 declare Neg_Imp_E [THEN rotate3, intro!]
@@ -1418,7 +1401,7 @@ proof -
   have "H \<turnstile> All i (Neg ((Var i) IN t))"
     by (metis All_I Neg_I i2 insi)
   thus ?thesis
-    by (metis cut_same  cut [OF Eq_Zero_thm [OF i1] Hyp] insertCI insert_is_Un)
+    using Eq_Zero_thm cut1 i1 by blast
 qed
 
 subsection\<open>Basic properties of @{term Eats}\<close>
@@ -1487,7 +1470,7 @@ lemma Mem_Eats_I2: "H \<turnstile> u EQ z \<Longrightarrow> H \<turnstile> u IN 
 lemma Mem_Eats_E:
   assumes A: "insert (u IN t) H \<turnstile> C" and B: "insert (u EQ z) H \<turnstile> C"
     shows "insert (u IN Eats t z) H \<turnstile> C"
-  by (rule Mem_Eats_Iff [of _ u t z, THEN Iff_MP_left']) (metis A B Disj_E)
+  by (meson A B Disj_E Iff_MP_left' Mem_Eats_Iff)
 
 lemmas Mem_Eats_EH = Mem_Eats_E Mem_Eats_E [THEN rotate2] Mem_Eats_E [THEN rotate3] Mem_Eats_E [THEN rotate4] Mem_Eats_E [THEN rotate5]
                  Mem_Eats_E [THEN rotate6] Mem_Eats_E [THEN rotate7] Mem_Eats_E [THEN rotate8]

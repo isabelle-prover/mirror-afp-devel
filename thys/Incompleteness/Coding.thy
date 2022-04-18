@@ -33,10 +33,7 @@ lemma lookup_notin: "x \<notin> set e \<Longrightarrow> lookup e n x = DBVar x"
 
 lemma lookup_in:
   "x \<in> set e \<Longrightarrow> \<exists>k. lookup e n x = DBInd k \<and> n \<le> k \<and> k < n + length e"
-apply (induct e arbitrary: n) 
-apply (auto intro: Suc_leD)
-apply (metis Suc_leD add_Suc_right add_Suc_shift)
-done
+  by (induction e arbitrary: n) force+
 
 lemma lookup_fresh: "x \<sharp> lookup e n y \<longleftrightarrow> y \<in> set e \<or> x \<noteq> atom y"
   by (induct arbitrary: n rule: lookup.induct) (auto simp: pure_fresh fresh_at_base)
@@ -45,8 +42,11 @@ lemma lookup_eqvt[eqvt]: "(p \<bullet> lookup xs n x) = lookup (p \<bullet> xs) 
   by (induct xs arbitrary: n) (simp_all add: permute_pure)
 
 lemma lookup_inject [iff]: "(lookup e n x = lookup e n y) \<longleftrightarrow> x = y"
-apply (induct e n x arbitrary: y rule: lookup.induct, force, simp)
-by (metis Suc_n_not_le_n dbtm.distinct(7) dbtm.eq_iff(3) lookup_in lookup_notin)
+proof (induction e n x arbitrary: y rule: lookup.induct)
+  case (2 y ys n x z)
+  then show ?case
+    by (metis dbtm.distinct(7) dbtm.eq_iff(3) lookup.simps(2) lookup_in lookup_notin not_less_eq_eq)
+qed auto
 
 nominal_function trans_tm :: "name list \<Rightarrow> tm \<Rightarrow> dbtm"
   where
@@ -72,18 +72,17 @@ nominal_function (invariant "\<lambda>(xs, _) y. atom ` set xs \<sharp>* y")
  | "trans_fm e (Disj A B) = DBDisj (trans_fm e A) (trans_fm e B)"
  | "trans_fm e (Neg A)   = DBNeg (trans_fm e A)"
  | "atom k \<sharp> e \<Longrightarrow> trans_fm e (Ex k A) = DBEx (trans_fm (k#e) A)"
-supply [[simproc del: defined_all]]
-apply(simp add: eqvt_def trans_fm_graph_aux_def)
-apply(erule trans_fm_graph.induct)
-using [[simproc del: alpha_lst]]
-apply(auto simp: fresh_star_def)
-apply(rule_tac y=b and c=a in fm.strong_exhaust)
-apply(auto simp: fresh_star_def)
-apply(erule_tac c=ea in Abs_lst1_fcb2')
-apply (simp_all add: eqvt_at_def)
-apply (simp_all add: fresh_star_Pair perm_supp_eq)
-apply (simp add: fresh_star_def)
-done
+                   supply [[simproc del: defined_all]]
+                   apply(simp add: eqvt_def trans_fm_graph_aux_def)
+                  apply(erule trans_fm_graph.induct)
+  using [[simproc del: alpha_lst]]
+                      apply(auto simp: fresh_star_def)
+   apply (metis fm.strong_exhaust fresh_star_insert)
+  apply(erule Abs_lst1_fcb2')
+     apply (simp_all add: eqvt_at_def)
+    apply (simp_all add: fresh_star_Pair perm_supp_eq)
+  apply (simp add: fresh_star_def)
+  done
 
 nominal_termination (eqvt)
   by lexicographic_order
