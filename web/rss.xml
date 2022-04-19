@@ -29,6 +29,33 @@ having to hand-craft a dedicated encoding for it, independent of
 Isabelle&#39;s internal representation.</description>
     </item>
     <item>
+       <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
+              <link>https://www.isa-afp.org/entries/Frequency_Moments.html</link>
+       <guid>https://www.isa-afp.org/entries/Frequency_Moments.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>08 Apr 2022 00:00:00 +0000</pubDate>
+       <description>
+In 1999 Alon et. al. introduced the still active research topic of
+approximating the frequency moments of a data stream using randomized
+algorithms with minimal space usage. This includes the problem of
+estimating the cardinality of the stream elements - the zeroth
+frequency moment. But, also higher-order frequency moments that
+provide information about the skew of the data stream. (The
+&lt;i&gt;k&lt;/i&gt;-th frequency moment of a data stream is the sum
+of the &lt;i&gt;k&lt;/i&gt;-th powers of the occurrence counts of each
+element in the stream.) This entry formalizes three randomized
+algorithms for the approximation of
+&lt;i&gt;F&lt;sub&gt;0&lt;/sub&gt;&lt;/i&gt;,
+&lt;i&gt;F&lt;sub&gt;2&lt;/sub&gt;&lt;/i&gt; and
+&lt;i&gt;F&lt;sub&gt;k&lt;/sub&gt;&lt;/i&gt; for &lt;i&gt;k ≥
+3&lt;/i&gt; based on [&lt;a
+href=&#34;https://doi.org/10.1006/jcss.1997.1545&#34;&gt;1&lt;/a&gt;,
+&lt;a
+href=&#34;https://doi.org/10.1007/3-540-45726-7_1&#34;&gt;2&lt;/a&gt;]
+and verifies their expected accuracy, success probability and space
+usage.</description>
+    </item>
+    <item>
        <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
               <link>https://www.isa-afp.org/entries/Dedekind_Real.html</link>
        <guid>https://www.isa-afp.org/entries/Dedekind_Real.html</guid>
@@ -658,23 +685,6 @@ href=&#34;https://www.isa-afp.org/entries/Collections.html&#34;&gt;Collections
 Framework&lt;/a&gt;, also by Peter Lammich, to obtain efficient code.
 All proven constructions of the closure properties are exportable
 using the Isabelle/HOL code generation facilities.</description>
-    </item>
-    <item>
-       <title>Simplicial Complexes and Boolean functions</title>
-              <link>https://www.isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</link>
-       <guid>https://www.isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</guid>
-       <dc:creator> Jesús Aransay, Alejandro del Campo, Julius Michaelis       </dc:creator>
-       <pubDate>29 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-In this work we formalise the isomorphism between simplicial complexes
-of dimension $n$ and monotone Boolean functions in $n$ variables,
-mainly following the definitions and results as introduced by N. A.
-Scoville. We also take advantage of the AFP
-representation of &lt;a href=&#34;https://www.isa-afp.org/entries/ROBDD.html&#34;&gt;ROBDD&lt;/a&gt;
-(Reduced Ordered Binary Decision Diagrams) to compute the ROBDD representation of a
-given simplicial complex (by means of the isomorphism to Boolean
-functions). Some examples of simplicial complexes and associated
-Boolean functions are also presented.</description>
     </item>
   </channel>
 </rss>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Lp spaces - Archive of Formal Proofs
+<title>Formalization of Randomized Approximation Algorithms for Frequency Moments - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,9 +74,21 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">L</font>p
+  <h1>          <font class="first">F</font>ormalization
   
-          spaces
+          of
+  
+          <font class="first">R</font>andomized
+  
+          <font class="first">A</font>pproximation
+  
+          <font class="first">A</font>lgorithms
+  
+          for
+  
+          <font class="first">F</font>requency
+  
+          <font class="first">M</font>oments
   
 </h1>
   <p>&nbsp;</p>
@@ -85,7 +97,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Lp spaces</td>
+  <td class="data" width="80%">Formalization of Randomized Approximation Algorithms for Frequency Moments</td>
 </tr>
 
 <tr>
@@ -93,7 +105,7 @@ MathJax = {
           Author:
       </td>
   <td class="data">
-              Sebastien Gouezel
+              <a href="https://orcid.org/0000-0003-3290-5034">Emin Karayel</a>
       </td>
 </tr>
 
@@ -101,26 +113,44 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-10-05</td>
+  <td class="data">2022-04-08</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-Lp is the space of functions whose p-th power is integrable. It is one of the most fundamental Banach spaces that is used in analysis and probability. We develop a framework for function spaces, and then implement the Lp spaces in this framework using the existing integration theory in Isabelle/HOL. Our development contains most fundamental properties of Lp spaces, notably the Hölder and Minkowski inequalities, completeness of Lp, duality, stability under almost sure convergence, multiplication of functions in Lp and Lq, stability under conditional expectation.</td>
+In 1999 Alon et. al. introduced the still active research topic of
+approximating the frequency moments of a data stream using randomized
+algorithms with minimal space usage. This includes the problem of
+estimating the cardinality of the stream elements - the zeroth
+frequency moment. But, also higher-order frequency moments that
+provide information about the skew of the data stream. (The
+<i>k</i>-th frequency moment of a data stream is the sum
+of the <i>k</i>-th powers of the occurrence counts of each
+element in the stream.) This entry formalizes three randomized
+algorithms for the approximation of
+<i>F<sub>0</sub></i>,
+<i>F<sub>2</sub></i> and
+<i>F<sub>k</sub></i> for <i>k ≥
+3</i> based on [<a
+href="https://doi.org/10.1006/jcss.1997.1545">1</a>,
+<a
+href="https://doi.org/10.1007/3-540-45726-7_1">2</a>]
+and verifies their expected accuracy, success probability and space
+usage.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Lp-AFP,
-  author  = {Sebastien Gouezel},
-  title   = {Lp spaces},
+        <pre>@article{Frequency_Moments-AFP,
+  author  = {Emin Karayel},
+  title   = {Formalization of Randomized Approximation Algorithms for Frequency Moments},
   journal = {Archive of Formal Proofs},
-  month   = oct,
-  year    = 2016,
-  note    = {\url{https://isa-afp.org/entries/Lp.html},
+  month   = apr,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/Frequency_Moments.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -132,11 +162,9 @@ Lp is the space of functions whose p-th power is integrable. It is one of the mo
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Ergodic_Theory.html">Ergodic_Theory</a>      </td></tr>
+          <td class="data"><a href="Bertrands_Postulate.html">Bertrands_Postulate</a>, <a href="Equivalence_Relation_Enumeration.html">Equivalence_Relation_Enumeration</a>, <a href="Interpolation_Polynomials_HOL_Algebra.html">Interpolation_Polynomials_HOL_Algebra</a>, <a href="Lp.html">Lp</a>, <a href="Median_Method.html">Median_Method</a>, <a href="Prefix_Free_Code_Combinators.html">Prefix_Free_Code_Combinators</a>, <a href="Universal_Hash_Families.html">Universal_Hash_Families</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Fourier.html">Fourier</a>, <a href="Frequency_Moments.html">Frequency_Moments</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -148,54 +176,23 @@ Lp is the space of functions whose p-th power is integrable. It is one of the mo
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Lp/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Lp/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Frequency_Moments/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Frequency_Moments/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Lp/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Frequency_Moments/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Lp-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Frequency_Moments-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Lp-2021-02-23.tar.gz">
-              afp-Lp-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Lp-2020-04-20.tar.gz">
-              afp-Lp-2020-04-20.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Lp-2019-06-11.tar.gz">
-              afp-Lp-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Lp-2018-08-16.tar.gz">
-              afp-Lp-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Lp-2017-10-10.tar.gz">
-              afp-Lp-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Lp-2016-12-17.tar.gz">
-              afp-Lp-2016-12-17.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
