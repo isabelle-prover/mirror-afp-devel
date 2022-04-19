@@ -467,6 +467,7 @@ Posix-Lexing
 Possibilistic_Noninterference
 Power_Sum_Polynomials
 Pratt_Certificate
+Prefix_Free_Code_Combinators
 Presburger-Automata
 Prim_Dijkstra_Simple
 Prime_Distribution_Elementary
