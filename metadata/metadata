@@ -12143,3 +12143,21 @@ abstract =
   natural numbers to terms, formulas and rules are defined using the
   <em>Nat-Bijection</em> theory in the HOL-Library.
   </p>
+
+[Prefix_Free_Code_Combinators]
+title = A Combinator Library for Prefix-Free Codes
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Computer science/Algorithms, Computer science/Data structures
+date = 2022-04-08
+notify = me@eminkarayel.de
+abstract = 
+  This entry contains a set of binary encodings for primitive data
+  types, such as natural numbers, integers, floating-point numbers as
+  well as combinators to construct encodings for products, lists, sets
+  or functions of/between such types.  For natural numbers and integers,
+  the entry contains various encodings, such as Elias-Gamma-Codes and
+  exponential Golomb Codes, which are efficient variable-length codes in
+  use by current compression formats.  A use-case for this library is
+  measuring the persisted size of a complex data structure without
+  having to hand-craft a dedicated encoding for it, independent of
+  Isabelle's internal representation.

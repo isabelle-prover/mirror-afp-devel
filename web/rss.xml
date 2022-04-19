@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>24 Mar 2022 00:00:00 +0000</pubDate>
+    <pubDate>08 Apr 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Combinator Library for Prefix-Free Codes</title>
+              <link>https://www.isa-afp.org/entries/Prefix_Free_Code_Combinators.html</link>
+       <guid>https://www.isa-afp.org/entries/Prefix_Free_Code_Combinators.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>08 Apr 2022 00:00:00 +0000</pubDate>
+       <description>
+This entry contains a set of binary encodings for primitive data
+types, such as natural numbers, integers, floating-point numbers as
+well as combinators to construct encodings for products, lists, sets
+or functions of/between such types.  For natural numbers and integers,
+the entry contains various encodings, such as Elias-Gamma-Codes and
+exponential Golomb Codes, which are efficient variable-length codes in
+use by current compression formats.  A use-case for this library is
+measuring the persisted size of a complex data structure without
+having to hand-craft a dedicated encoding for it, independent of
+Isabelle&#39;s internal representation.</description>
+    </item>
     <item>
        <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
               <link>https://www.isa-afp.org/entries/Dedekind_Real.html</link>
@@ -657,33 +675,6 @@ representation of &lt;a href=&#34;https://www.isa-afp.org/entries/ROBDD.html&#34
 given simplicial complex (by means of the isomorphism to Boolean
 functions). Some examples of simplicial complexes and associated
 Boolean functions are also presented.</description>
-    </item>
-    <item>
-       <title>van Emde Boas Trees</title>
-              <link>https://www.isa-afp.org/entries/Van_Emde_Boas_Trees.html</link>
-       <guid>https://www.isa-afp.org/entries/Van_Emde_Boas_Trees.html</guid>
-       <dc:creator> Thomas Ammer, Peter Lammich       </dc:creator>
-       <pubDate>23 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-The &lt;em&gt;van Emde Boas tree&lt;/em&gt; or &lt;em&gt;van Emde Boas
-priority queue&lt;/em&gt; is a data structure supporting membership
-test, insertion, predecessor and successor search, minimum and maximum
-determination and deletion in &lt;em&gt;O(log log U)&lt;/em&gt; time, where &lt;em&gt;U =
-0,...,2&lt;sup&gt;n-1&lt;/sup&gt;&lt;/em&gt; is the overall range to be
-considered. &lt;p/&gt; The presented formalization follows Chapter 20
-of the popular &lt;em&gt;Introduction to Algorithms (3rd
-ed.)&lt;/em&gt; by Cormen, Leiserson, Rivest and Stein (CLRS),
-extending the list of formally verified CLRS algorithms. Our current
-formalization is based on the first author&#39;s bachelor&#39;s
-thesis. &lt;p/&gt; First, we prove correct a
-&lt;em&gt;functional&lt;/em&gt; implementation, w.r.t. an abstract
-data type for sets. Apart from functional correctness, we show a
-resource bound, and runtime bounds w.r.t. manually defined timing
-functions for the operations. &lt;p/&gt; Next, we refine the
-operations to Imperative HOL with time, and show correctness and
-complexity. This yields a practically more efficient implementation,
-and eliminates the manually defined timing functions from the trusted
-base of the proof.</description>
     </item>
   </channel>
 </rss>
