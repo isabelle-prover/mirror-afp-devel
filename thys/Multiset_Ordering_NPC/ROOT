@@ -1,0 +1,12 @@
+chapter AFP
+
+session Multiset_Ordering_NPC (AFP) = Weighted_Path_Order +
+  options [timeout = 600]
+  theories
+    Multiset_Ordering_in_NP    
+    Multiset_Ordering_NP_Hard
+  theories 
+    RPO_NP_Hard
+  document_files
+    "root.bib"
+    "root.tex"

@@ -1,0 +1,82 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{url}
+\usepackage{amssymb}
+\usepackage{xspace}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{Isa\kern-0.15exF\kern-0.15exo\kern-0.15exR}}
+\newcommand\ceta{\textsf{C\kern-0.15exe\kern-0.45exT\kern-0.45exA}}
+\newcommand\sms{\mathrel{\succ_{\mathit{ms}}}}
+
+\begin{document}
+
+\title{The Generalized Multiset Ordering is NP-Complete}
+\author{Ren\'e Thiemann \and Lukas Schmidinger}
+\maketitle
+
+\begin{abstract}
+We consider the problem of comparing two multisets via the
+generalized multiset ordering. We show that the corresponding decision problem
+is NP-complete. To be more precise, we encode
+multiset-comparisons into propositional formulas or into conjunctive normal forms 
+of quadratic size;
+we further prove that satisfiability of conjunctive normal forms can be encoded as
+multiset-comparison problems of linear size. 
+
+As a corollary, we also show that the problem of deciding whether
+two terms are related by a recursive path order is NP-hard,
+provided the recursive path order is based on the generalized multiset ordering.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Given a transitive and irreflexive relation $\succ$ on elements, 
+it can be extended to a relation on multisets (the \emph{multiset ordering} $\sms$)
+where for two multisets $M$ and $N$ the relation $M \sms N$ is defined in a way that $N$ is obtained from $M$ by
+replacing some elements $a \in M$ by arbitrarily many elements $b_1,\dots,b_n$  which are
+all smaller than $a$: $a \succ b_i$ for all $1 \leq i \leq n$.
+
+Now, given $\succ$, $M$, and $N$, it is easy to decide $M \sms N$: it is equivalent
+to demand $M \neq N$ and for each $b \in N \setminus M$ there must be some $a \in M \setminus N$ 
+such that $a \succ b$.
+
+The \emph{generalized multiset ordering} is defined in terms of two 
+relations $\succ$ and $\succsim$. Here, one may additionally replace each element $a \in M$ by exactly one
+element $b$ that satisfies $a \succsim b$. 
+The multiset ordering is an instance of the generalized multiset ordering by choosing ${\succsim}$ as the
+equality relation ${=}$.
+
+The generalized multiset ordering is used in some definitions of  
+the recursive path order (the original RPO \cite{RPO} is defined via the multiset ordering, the variants of RPO \cite{RPO_NP,RPO_NPC} use the generalized multiset ordering instead)  
+so that more terms are in relation. A downside of the generalization is that the decision problem of whether
+two multisets are in relation becomes NP-complete, and also the decision
+problem for the RPO-variant in \cite{RPO_NPC} is NP-complete.
+
+In this AFP-entry we formalize NP-completeness of the generalized multiset ordering: 
+we provide an ${\cal O}(n^2)$ encoding of multiset-comparisons into propositional formulas (using connectives
+${\vee},{\wedge},{\neg},{\rightarrow},{\leftrightarrow}$), 
+an ${\cal O}(n^2)$ encoding of multiset-comparisons into conjunctive normal forms (CNF),
+and an ${\cal O}(n)$ encoding of CNFs into multiset-comparisons.
+Moreover, we verify an ${\cal O}(n^2)$ encoding from a CNF into an RPO-constraint.
+
+Our formalization is based on proofs in \cite{RPO_NP} (in NP) and \cite{RPO_NPC} (NP-hardness).
+
+\input{session}
+
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

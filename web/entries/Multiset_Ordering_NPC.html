@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>A Formalization of Weighted Path Orders and Recursive Path Orders - Archive of Formal Proofs
+<title>The Generalized Multiset Ordering is NP-Complete - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,25 +74,17 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>
+  <h1>          <font class="first">T</font>he
   
-          <font class="first">F</font>ormalization
+          <font class="first">G</font>eneralized
   
-          of
+          <font class="first">M</font>ultiset
   
-          <font class="first">W</font>eighted
+          <font class="first">O</font>rdering
   
-          <font class="first">P</font>ath
+          is
   
-          <font class="first">O</font>rders
-  
-          and
-  
-          <font class="first">R</font>ecursive
-  
-          <font class="first">P</font>ath
-  
-          <font class="first">O</font>rders
+          <font class="first">N</font>P-Complete
   
 </h1>
   <p>&nbsp;</p>
@@ -101,7 +93,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">A Formalization of Weighted Path Orders and Recursive Path Orders</td>
+  <td class="data" width="80%">The Generalized Multiset Ordering is NP-Complete</td>
 </tr>
 
 <tr>
@@ -109,9 +101,8 @@ MathJax = {
           Authors:
       </td>
   <td class="data">
-                      <a href="http://cl-informatik.uibk.ac.at/users/griff/">Christian Sternagel</a>,
-                René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at) and
-          Akihisa Yamada (akihisa /dot/ yamada /at/ aist /dot/ go /dot/ jp)
+                    René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at) and
+          Lukas Schmidinger
       </td>
 </tr>
 
@@ -119,38 +110,34 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-09-16</td>
+  <td class="data">2022-04-20</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We define the weighted path order (WPO) and formalize several
-properties such as strong normalization, the subterm property, and
-closure properties under substitutions and contexts. Our definition of
-WPO extends the original definition by also permitting multiset
-comparisons of arguments instead of just lexicographic extensions.
-Therefore, our WPO not only subsumes lexicographic path orders (LPO),
-but also recursive path orders (RPO). We formally prove these
-subsumptions and therefore all of the mentioned properties of WPO are
-automatically transferable to LPO and RPO as well. Such a
-transformation is not required for Knuth&ndash;Bendix orders
-(KBO), since they have already been formalized. Nevertheless, we still
-provide a proof that WPO subsumes KBO and thereby underline the
-generality of WPO.</td>
+We consider the problem of comparing two multisets via the generalized
+multiset ordering. We show that the corresponding decision problem is
+NP-complete. To be more precise, we encode multiset-comparisons into
+propositional formulas or into conjunctive normal forms of quadratic
+size; we further prove that satisfiability of conjunctive normal forms
+can be encoded as multiset-comparison problems of linear size.  As a
+corollary, we also show that the problem of deciding whether two terms
+are related by a recursive path order is NP-hard, provided the
+recursive path order is based on the generalized multiset ordering.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Weighted_Path_Order-AFP,
-  author  = {Christian Sternagel and René Thiemann and Akihisa Yamada},
-  title   = {A Formalization of Weighted Path Orders and Recursive Path Orders},
+        <pre>@article{Multiset_Ordering_NPC-AFP,
+  author  = {René Thiemann and Lukas Schmidinger},
+  title   = {The Generalized Multiset Ordering is NP-Complete},
   journal = {Archive of Formal Proofs},
-  month   = sep,
-  year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/Weighted_Path_Order.html},
+  month   = apr,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/Multiset_Ordering_NPC.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -162,11 +149,9 @@ generality of WPO.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Knuth_Bendix_Order.html">Knuth_Bendix_Order</a>      </td></tr>
+          <td class="data"><a href="Weighted_Path_Order.html">Weighted_Path_Order</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Multiset_Ordering_NPC.html">Multiset_Ordering_NPC</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -178,29 +163,23 @@ generality of WPO.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Weighted_Path_Order/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Weighted_Path_Order/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Multiset_Ordering_NPC/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Multiset_Ordering_NPC/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Weighted_Path_Order/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Multiset_Ordering_NPC/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Weighted_Path_Order-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Multiset_Ordering_NPC-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Weighted_Path_Order-2021-09-26.tar.gz">
-              afp-Weighted_Path_Order-2021-09-26.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
