@@ -1,15 +1,17 @@
 (*
 Stepwise refinement of the Gale-Shapley algorithm down to executable code.
 
-Part 2: Refinement from lists to arrays,
-        resulting in a linear (in the input size, which is n^2) time algorithm
-
 Author: Tobias Nipkow
 *)
+
+section \<open>Part 2: Refinement from lists to arrays\<close>
 
 theory Gale_Shapley2
 imports Gale_Shapley1 "Collections.Diff_Array"
 begin
+
+text \<open>Refinement from lists to arrays,
+resulting in a linear (in the input size, which is \<open>n^2\<close>) time algorithm.\<close>
 
 abbreviation "array \<equiv> new_array"
 notation array_get (infixl "!!" 100)
