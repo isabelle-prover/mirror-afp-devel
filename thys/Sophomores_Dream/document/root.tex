@@ -1,0 +1,39 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{pgfplots}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{The Sophomore's Dream}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This article provides a brief formalisation of the two equations known as the \emph{Sophomore's Dream}, first discovered by Johann Bernoulli~\cite{bernoulli} in 1697:
+\[\int_0^1 x^{-x}\,\text{d}x = \sum_{n=1}^\infty n^{-n} \quad\text{and}\quad \int_0^1 x^x\,\text{d}x = -\sum_{n=1}^\infty (-n)^{-n}\]
+\end{abstract}
+
+\tableofcontents
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{corless96}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

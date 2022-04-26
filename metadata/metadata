@@ -194,6 +194,19 @@ abstract =
   computing the fundamental solution and the infinite sequence of all
   non-negative solutions are also provided. </p>
 
+[Sophomores_Dream]
+title = The Sophomore's Dream
+author = Manuel Eberl <https://pruvisto.org>
+topic = Mathematics/Analysis
+date = 2022-04-10
+notify = manuel@pruvisto.org
+abstract =
+  <p>This article provides a brief formalisation of the two
+  equations known as the <em>Sophomore's Dream</em>,
+  first discovered by Johann Bernoulli in 1697:</p> \[\int_0^1
+  x^{-x}\,\text{d}x = \sum_{n=1}^\infty n^{-n} \quad\text{and}\quad
+  \int_0^1 x^x\,\text{d}x = -\sum_{n=1}^\infty (-n)^{-n}\]
+
 [WebAssembly]
 title = WebAssembly
 author = Conrad Watt <http://www.cl.cam.ac.uk/~caw77/>
@@ -12083,7 +12096,7 @@ author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 topic = Logic/Computability
 date = 2022-03-23
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   Ackermann's function is defined in the usual way and a number of
   its elementary properties are proved. Then, the primitive recursive
   functions are defined inductively: as a predicate on the functions
@@ -12097,7 +12110,7 @@ author = Jacques D. Fleuriot<>, Lawrence C. Paulson<>
 topic = Mathematics/Analysis
 date = 2022-03-24
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   The type of real numbers is constructed from the positive rationals
   using the method of Dedekind cuts. This development, briefly described
   in papers by the authors, follows the textbook presentation by
@@ -12111,7 +12124,7 @@ author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
 topic = Logic/General logic/Classical first-order logic, Logic/Proof theory, Logic/General logic/Mechanization of proofs
 date = 2022-03-22
 notify = ahfrom@dtu.dk
-abstract = 
+abstract =
   <p> The AFP entry <a
   href="https://www.isa-afp.org/entries/Abstract_Completeness.html">Abstract
   Completeness</a> by Blanchette, Popescu and Traytel formalizes

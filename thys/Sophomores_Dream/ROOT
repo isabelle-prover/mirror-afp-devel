@@ -1,0 +1,12 @@
+chapter AFP
+
+session Sophomores_Dream (AFP) = "HOL-Analysis" +
+  options [timeout = 900]
+  sessions
+    "HOL-Real_Asymp"
+  theories
+    Sophomores_Dream
+  document_files
+    "root.tex"
+    "root.bib"
+
