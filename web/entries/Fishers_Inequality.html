@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Combinatorial Design Theory - Archive of Formal Proofs
+<title>Fisher's Inequality: Linear Algebraic Proof Techniques for Combinatorics - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,11 +74,21 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>ombinatorial
+  <h1>          <font class="first">F</font>isher's
   
-          <font class="first">D</font>esign
+          <font class="first">I</font>nequality:
   
-          <font class="first">T</font>heory
+          <font class="first">L</font>inear
+  
+          <font class="first">A</font>lgebraic
+  
+          <font class="first">P</font>roof
+  
+          <font class="first">T</font>echniques
+  
+          for
+  
+          <font class="first">C</font>ombinatorics
   
 </h1>
   <p>&nbsp;</p>
@@ -87,7 +97,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Combinatorial Design Theory</td>
+  <td class="data" width="80%">Fisher's Inequality: Linear Algebraic Proof Techniques for Combinatorics</td>
 </tr>
 
 <tr>
@@ -96,7 +106,7 @@ MathJax = {
       </td>
   <td class="data">
                     <a href="https://www.cst.cam.ac.uk/people/cle47">Chelsea Edmonds</a> and
-          <a href="https://www.cl.cam.ac.uk/~lp15/">Lawrence Paulson</a>
+          Lawrence C. Paulson
       </td>
 </tr>
 
@@ -104,41 +114,40 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-08-13</td>
+  <td class="data">2022-04-21</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-Combinatorial design theory studies incidence set systems with certain
-balance and symmetry properties. It is closely related to hypergraph
-theory. This formalisation presents a general library for formal
-reasoning on incidence set systems, designs and their applications,
-including formal definitions and proofs for many key properties,
-operations, and theorems on the construction and existence of designs.
-Notably, this includes formalising t-designs, balanced incomplete
-block designs (BIBD), group divisible designs (GDD), pairwise balanced
-designs (PBD), design isomorphisms, and the relationship between
-graphs and designs. A locale-centric approach has been used to manage
-the relationships between the many different types of designs.
-Theorems of particular interest include the necessary conditions for
-existence of a BIBD, Wilson's construction on GDDs, and
-Bose's inequality on resolvable designs. Parts of this
-formalisation are explored in the paper "A Modular First
-Formalisation of Combinatorial Design Theory", presented at CICM 2021.</td>
+Linear algebraic techniques are powerful, yet often underrated tools
+in combinatorial proofs. This formalisation provides a library
+including matrix representations of incidence set systems, general
+formal proof techniques for the rank argument and linear bound
+argument, and finally a formalisation of a number of variations of the
+well-known Fisher's inequality. We build on our prior work
+formalising combinatorial design theory using a locale-centric
+approach, including extensions such as constant intersect designs and
+dual incidence systems. In addition to Fisher's inequality, we
+also formalise proofs on other incidence system properties using the
+incidence matrix representation, such as design existence, dual system
+relationships and incidence system isomorphisms. This formalisation is
+presented in the paper "Formalising Fisher's Inequality:
+Formal Linear Algebraic Techniques in Combinatorics", accepted to
+ITP 2022.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Design_Theory-AFP,
-  author  = {Chelsea Edmonds and Lawrence Paulson},
-  title   = {Combinatorial Design Theory},
+        <pre>@article{Fishers_Inequality-AFP,
+  author  = {Chelsea Edmonds and Lawrence C. Paulson},
+  title   = {Fisher's Inequality: Linear Algebraic Proof Techniques for Combinatorics},
   journal = {Archive of Formal Proofs},
-  month   = aug,
-  year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/Design_Theory.html},
+  month   = apr,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/Fishers_Inequality.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -150,11 +159,9 @@ Formalisation of Combinatorial Design Theory", presented at CICM 2021.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Card_Partitions.html">Card_Partitions</a>, <a href="Graph_Theory.html">Graph_Theory</a>, <a href="Nested_Multisets_Ordinals.html">Nested_Multisets_Ordinals</a>      </td></tr>
+          <td class="data"><a href="BenOr_Kozen_Reif.html">BenOr_Kozen_Reif</a>, <a href="Berlekamp_Zassenhaus.html">Berlekamp_Zassenhaus</a>, <a href="Design_Theory.html">Design_Theory</a>, <a href="Groebner_Bases.html">Groebner_Bases</a>, <a href="List-Index.html">List-Index</a>, <a href="Polynomial_Factorization.html">Polynomial_Factorization</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Fishers_Inequality.html">Fishers_Inequality</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -166,29 +173,23 @@ Formalisation of Combinatorial Design Theory", presented at CICM 2021.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Design_Theory/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Design_Theory/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Fishers_Inequality/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Fishers_Inequality/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Design_Theory/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Fishers_Inequality/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Design_Theory-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Fishers_Inequality-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Design_Theory-2021-09-02.tar.gz">
-              afp-Design_Theory-2021-09-02.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

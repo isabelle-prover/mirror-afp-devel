@@ -9,7 +9,30 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>20 Apr 2022 00:00:00 +0000</pubDate>
+    <pubDate>21 Apr 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Fisher's Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
+              <link>https://www.isa-afp.org/entries/Fishers_Inequality.html</link>
+       <guid>https://www.isa-afp.org/entries/Fishers_Inequality.html</guid>
+       <dc:creator> Chelsea Edmonds, Lawrence C. Paulson       </dc:creator>
+       <pubDate>21 Apr 2022 00:00:00 +0000</pubDate>
+       <description>
+Linear algebraic techniques are powerful, yet often underrated tools
+in combinatorial proofs. This formalisation provides a library
+including matrix representations of incidence set systems, general
+formal proof techniques for the rank argument and linear bound
+argument, and finally a formalisation of a number of variations of the
+well-known Fisher&#39;s inequality. We build on our prior work
+formalising combinatorial design theory using a locale-centric
+approach, including extensions such as constant intersect designs and
+dual incidence systems. In addition to Fisher&#39;s inequality, we
+also formalise proofs on other incidence system properties using the
+incidence matrix representation, such as design existence, dual system
+relationships and incidence system isomorphisms. This formalisation is
+presented in the paper &#34;Formalising Fisher&#39;s Inequality:
+Formal Linear Algebraic Techniques in Combinatorics&#34;, accepted to
+ITP 2022.</description>
+    </item>
     <item>
        <title>The Generalized Multiset Ordering is NP-Complete</title>
               <link>https://www.isa-afp.org/entries/Multiset_Ordering_NPC.html</link>
@@ -656,28 +679,6 @@ dynamic programming algorithms such as value iteration and policy
 iteration to solve MDPs with formal guarantees. Our formalization is
 based on chapters 5 and 6 in Puterman&#39;s book &#34;Markov
 Decision Processes: Discrete Stochastic Dynamic Programming&#34;.</description>
-    </item>
-    <item>
-       <title>Verified Algorithms for Solving Markov Decision Processes</title>
-              <link>https://www.isa-afp.org/entries/MDP-Algorithms.html</link>
-       <guid>https://www.isa-afp.org/entries/MDP-Algorithms.html</guid>
-       <dc:creator> Maximilian Schäffeler, Mohammad Abdulaziz       </dc:creator>
-       <pubDate>16 Dec 2021 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of algorithms for solving Markov Decision
-Processes (MDPs) with formal guarantees on the optimality of their
-solutions. In particular we build on our analysis of the Bellman
-operator for discounted infinite horizon MDPs. From the iterator rule
-on the Bellman operator we directly derive executable value iteration
-and policy iteration algorithms to iteratively solve finite MDPs. We
-also prove correct optimized versions of value iteration that use
-matrix splittings to improve the convergence rate. In particular, we
-formally verify Gauss-Seidel value iteration and modified policy
-iteration. The algorithms are evaluated on two standard examples from
-the literature, namely, inventory management and gridworld. Our
-formalization covers most of chapter 6 in Puterman&#39;s book
-&#34;Markov Decision Processes: Discrete Stochastic Dynamic
-Programming&#34;.</description>
     </item>
   </channel>
 </rss>
