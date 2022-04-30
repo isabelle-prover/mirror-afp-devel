@@ -1754,10 +1754,18 @@ proof -
 qed
 
 
+subsection \<open>Cardinality of an arbitrary HOL set\<close>
+
+definition gcard :: "'a set \<Rightarrow> V" 
+  where "gcard X \<equiv> if small X then (LEAST i. Ord i \<and> elts i \<approx> X) else 0"
+
 subsection\<open>Cardinality of a set\<close>
 
 definition vcard :: "V\<Rightarrow>V"
   where "vcard a \<equiv> (LEAST i. Ord i \<and> elts i \<approx> elts a)"
+
+lemma gcard_eq_vcard [simp]: "gcard (elts x) = vcard x"
+  by (simp add: vcard_def gcard_def)
 
 definition Card:: "V\<Rightarrow>bool"
   where "Card i \<equiv> i = vcard i"
@@ -1767,8 +1775,21 @@ abbreviation CARD where "CARD \<equiv> Collect Card"
 lemma cardinal_cong: "elts x \<approx> elts y \<Longrightarrow> vcard x = vcard y"
   unfolding vcard_def by (meson eqpoll_sym eqpoll_trans)
 
+lemma gcardinal_cong:
+  assumes "X \<approx> Y" shows "gcard X = gcard Y"
+proof -
+  have "(LEAST i. Ord i \<and> elts i \<approx> X) = (LEAST i. Ord i \<and> elts i \<approx> Y)"
+    by (meson eqpoll_sym eqpoll_trans assms)
+  then show ?thesis
+    unfolding gcard_def
+    by (meson eqpoll_sym small_eqcong assms)
+qed
+
 lemma vcard_set_image: "inj_on f (elts x) \<Longrightarrow> vcard (set (f ` elts x)) = vcard x"
   by (simp add: cardinal_cong)
+
+lemma gcard_image: "inj_on f X \<Longrightarrow> gcard (f ` X) = gcard X"
+  by (simp add: gcardinal_cong)
 
 lemma Card_cardinal_eq: "Card \<kappa> \<Longrightarrow> vcard \<kappa> = \<kappa>"
   by (simp add: Card_def)
@@ -1848,53 +1869,70 @@ lemma vcard_0 [simp]: "vcard 0 = 0"
 lemma Ord_cardinal [simp,intro!]: "Ord(vcard a)"
   unfolding vcard_def by (metis Card_def Card_is_Ord cardinal_cong cardinal_eqpoll vcard_def)
 
-text\<open>The cardinals are the initial ordinals.\<close>
-lemma Card_iff_initial: "Card \<kappa> \<longleftrightarrow> Ord \<kappa> \<and> (\<forall>\<alpha>. Ord \<alpha> \<and> \<alpha> < \<kappa> \<longrightarrow> ~ elts \<alpha> \<approx> elts \<kappa>)"
+lemma gcard_big_0: "\<not> small X \<Longrightarrow> gcard X = 0"
+  by (simp add: gcard_def)
+
+lemma gcard_eq_card:
+  assumes "finite X" shows "gcard X = ord_of_nat (card X)"
 proof -
-  { fix j
-    assume \<kappa>: "Card \<kappa>" "elts j \<approx> elts \<kappa>" "Ord j"
-    assume "j < \<kappa>"
-    also have "\<dots> = (LEAST i. Ord i \<and> elts i \<approx> elts \<kappa>)" using \<kappa>
-      by (simp add: Card_def vcard_def)
-    finally have "j < (LEAST i. Ord i \<and> elts i \<approx> elts \<kappa>)" .
-    hence "False" using \<kappa>
-      using not_less_Ord_Least by fastforce
-  }
-  then show ?thesis
-    by (blast intro: CardI Card_is_Ord)
+  have "\<And>y. Ord y \<and> elts y \<approx> X \<Longrightarrow> ord_of_nat (card X) \<le> y"
+    by (metis assms eqpoll_finite_iff eqpoll_iff_card order_le_less ordertype_VWF_finite_nat ordertype_eq_Ord)
+  then have "(LEAST i. Ord i \<and> elts i \<approx> X) = ord_of_nat (card X)"
+    by (simp add: assms eqpoll_iff_card finite_Ord_omega Least_equality)
+  with assms show ?thesis
+    by (simp add: finite_imp_small gcard_def)
 qed
 
-lemma Card_\<omega> [iff]: "Card \<omega>"
+lemma gcard_empty_0 [simp]: "gcard {} = 0"
+  by (simp add: gcard_eq_card) 
+
+lemma gcard_single_1 [simp]: "gcard {x} = 1"
+  by (simp add: gcard_eq_card one_V_def)
+
+lemma Card_gcard [iff]: "Card (gcard X)"
+  by (metis Card_0 Card_def cardinal_idem gcard_big_0 gcardinal_cong small_eqpoll gcard_eq_vcard)
+
+lemma gcard_eqpoll: "small X \<Longrightarrow> elts (gcard X) \<approx> X"
+  by (metis cardinal_eqpoll eqpoll_trans gcard_eq_vcard gcardinal_cong small_eqpoll)
+
+lemma lepoll_imp_gcard_le:
+  assumes "A \<lesssim> B" "small B"
+  shows "gcard A \<le> gcard B"
 proof -
-  have "\<And>\<alpha> f. \<lbrakk>\<alpha> \<in> elts \<omega>; bij_betw f (elts \<alpha>) (elts \<omega>)\<rbrakk> \<Longrightarrow> False"
-  using bij_betw_finite finite_Ord_omega infinite_\<omega> by blast
-  then show ?thesis
-    by (meson CardI Ord_\<omega> Ord_mem_iff_lt eqpoll_def)
+  have "elts (gcard A) \<approx> A" "elts (gcard B) \<approx> B"
+    by (meson assms gcard_eqpoll lepoll_small)+
+  with \<open>A \<lesssim> B\<close> show ?thesis
+    by (metis Ord_cardinal Ord_linear2 eqpoll_sym gcard_eq_vcard gcardinal_cong lepoll_antisym
+              lepoll_trans2 less_V_def less_eq_V_def subset_imp_lepoll)
 qed
+
+lemma gcard_image_le:
+  assumes "small A" shows "gcard (f ` A) \<le> gcard A"
+  using assms image_lepoll lepoll_imp_gcard_le by blast
+
+lemma subset_imp_gcard_le:
+  assumes "A \<subseteq> B" "small B"
+  shows "gcard A \<le> gcard B"
+  by (simp add: assms lepoll_imp_gcard_le subset_imp_lepoll)
+
+lemma gcard_le_lepoll: "\<lbrakk>gcard A \<le> \<alpha>; small A\<rbrakk> \<Longrightarrow> A \<lesssim> elts \<alpha>"
+  by (meson eqpoll_sym gcard_eqpoll lepoll_trans1 less_eq_V_def subset_imp_lepoll)
+
+subsection\<open>Cardinality of a set\<close>
+
+text\<open>The cardinals are the initial ordinals.\<close>
+lemma Card_iff_initial: "Card \<kappa> \<longleftrightarrow> Ord \<kappa> \<and> (\<forall>\<alpha>. Ord \<alpha> \<and> \<alpha> < \<kappa> \<longrightarrow> ~ elts \<alpha> \<approx> elts \<kappa>)"
+  by (metis CardI Card_def Card_is_Ord not_less_Ord_Least vcard_def)
+
+lemma Card_\<omega> [iff]: "Card \<omega>"
+  by (meson CardI Ord_\<omega> eqpoll_finite_iff infinite_Ord_omega infinite_\<omega> leD)
 
 lemma lt_Card_imp_lesspoll: "\<lbrakk>i < a; Card a; Ord i\<rbrakk> \<Longrightarrow> elts i \<prec> elts a"
   by (meson Card_iff_initial less_eq_V_def less_imp_le lesspoll_def subset_imp_lepoll)
 
 lemma lepoll_imp_Card_le:
   assumes "elts a \<lesssim> elts b" shows "vcard a \<le> vcard b"
-using Ord_cardinal [of a] Ord_cardinal [of b]
-proof (cases rule: Ord_linear_le)
-  case le thus ?thesis .
-next
-  case ge
-  have "elts b \<approx> elts (vcard b)"
-    by (simp add: cardinal_eqpoll eqpoll_sym)
-  also have "\<dots> \<lesssim> elts (vcard a)"
-    by (meson ge less_eq_V_def subset_imp_lepoll)
-  also have "\<dots> \<approx> elts a"
-    by (simp add: cardinal_eqpoll)
-  finally have "elts b \<lesssim> elts a"  .
-  hence "elts a \<approx> elts b"
-    using assms lepoll_antisym by blast
-  hence "vcard a = vcard b"
-    by (rule cardinal_cong)
-  thus ?thesis by simp
-qed
+  using assms lepoll_imp_gcard_le by fastforce
 
 lemma lepoll_cardinal_le: "\<lbrakk>elts A \<lesssim> elts i; Ord i\<rbrakk> \<Longrightarrow> vcard A \<le> i"
   by (metis Ord_Least Ord_linear2 dual_order.trans eqpoll_refl lepoll_imp_Card_le not_less_Ord_Least vcard_def)
@@ -1904,7 +1942,7 @@ lemma cardinal_le_lepoll: "vcard A \<le> \<alpha> \<Longrightarrow> elts A \<les
 
 lemma lesspoll_imp_Card_less:
   assumes "elts a \<prec> elts b" shows "vcard a < vcard b"
-  by (metis assms cardinal_eqpoll eqpoll_sym eqpoll_trans le_neq_trans lepoll_imp_Card_le lesspoll_def)
+  by (metis assms cardinal_eqpoll eqpoll_sym eqpoll_trans lepoll_imp_Card_le less_V_def lesspoll_def)
 
 
 lemma Card_Union [simp,intro]:
@@ -1923,7 +1961,7 @@ next
     using j(2) lt_Card_imp_lesspoll by blast
   { assume eqp: "elts j \<approx> elts (\<Squnion>A)"
     have  "elts c \<lesssim> elts (\<Squnion>A)" using c
-      using Sup_V_def ZFC_in_HOL.Sup_upper j(1) less_eq_V_def subset_imp_lepoll by fastforce
+      by (metis Card_def Sup_V_def ZFC_in_HOL.Sup_upper cardinal_le_lepoll j(1) not_less_0)
     also have "... \<approx> elts j"  by (rule eqpoll_sym [OF eqp])
     also have "... \<prec> elts c"  by (rule jls)
     finally have "elts c \<prec> elts c" .
