@@ -33,7 +33,7 @@ proof -
         using W \<open>F' \<subseteq> F\<close> unfolding Wetzel_def
         by (meson Ord_\<omega>1 Ord_trans \<phi> analytic_imp_holomorphic bij_betwE subsetD that)+
       moreover have "\<phi> \<alpha> \<noteq> \<phi> \<beta>"
-        by (metis Ord_\<omega>1 Ord_in_Ord Ord_trans OrdmemD \<phi> bij_betw_imp_inj_on inj_on_def less_V_def that)
+        by (metis Ord_\<omega>1 Ord_trans \<phi> bij_betw_def inj_on_def mem_not_refl that)
       ultimately have "countable (S \<alpha> \<beta>)"
         using holomorphic_countable_equal_UNIV unfolding S_def by blast
       then show ?thesis
@@ -124,7 +124,7 @@ proof -
           using analytic_on_const by blast
       next
         case (Suc n)
-        then obtain h where "h analytic_on UNIV" and hg: "\<forall>i<n. h (w i) \<in> D \<and> h (w i) \<noteq> g i (w i)"
+        then obtain h where "h analytic_on UNIV" and hg: "\<forall>i<n. h(w i) \<in> D \<and> h(w i) \<noteq> g i (w i)"
           using Suc_leD by blast
         define p where "p \<equiv> \<lambda>z. \<Prod>i<n. z - w i"
         have p0: "p z = 0 \<longleftrightarrow> (\<exists>i<n. z = w i)" for z
@@ -271,11 +271,11 @@ proof -
             fix n z'
             assume  "z' \<in> cball z 1"
             then have "norm (coeff n * p n z') \<le> norm (coeff n) * q n * (1 + norm z) ^ n"
-              by (metis norm_p_bound norm_mult mem_cball mult.assoc mult_left_mono norm_ge_zero)
+              by (simp add: mult.assoc mult_mono norm_mult norm_p_bound)
             also have "\<dots> \<le> (1 / fact n) * (1 + norm z) ^ n"
             proof (rule mult_right_mono)
               show "norm (coeff n) * q n \<le> 1 / fact n"
-                by (metis divide_divide_eq_left less_divide_eq less_eq_real_def norm_coeff q_gt0)
+                using q_gt0 norm_coeff [of n] by (simp add: field_simps)
             qed auto
             also have "\<dots> \<le> ?M n"
               by (simp add: divide_simps)
