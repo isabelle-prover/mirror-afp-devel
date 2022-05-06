@@ -15,15 +15,15 @@ definition Wetzel :: "(complex \<Rightarrow> complex) set \<Rightarrow> bool"
 subsubsection \<open>When the continuum hypothesis is false\<close>
 
 proposition Erdos_Wetzel_nonCH:
-  assumes W: "Wetzel F" and NCH: "C_continuum > \<aleph>1" and "small F"
+  assumes W: "Wetzel F" and NCH: "C_continuum > \<aleph>1"
   shows "countable F"
 proof -
   have "\<exists>z0. gcard ((\<lambda>f. f z0) ` F) \<ge> \<aleph>1" if "uncountable F"
   proof -
     have "gcard F \<ge> \<aleph>1"
-      using \<open>small F\<close> that uncountable_gcard_ge by blast 
+      using that uncountable_gcard_ge by force
     then obtain F' where "F' \<subseteq> F" and F': "gcard F' = \<aleph>1"
-      by (meson Card_Aleph Ord_1 subset_smaller_gcard \<open>small F\<close>)
+      by (meson Card_Aleph subset_smaller_gcard)
     then obtain \<phi> where \<phi>: "bij_betw \<phi> (elts \<omega>1) F'"
       by (metis TC_small eqpoll_def gcard_eqpoll)
     define S where "S \<equiv> \<lambda>\<alpha> \<beta>. {z. \<phi> \<alpha> z = \<phi> \<beta> z}"
@@ -198,7 +198,6 @@ proof -
         using that by (simp add: h_def)
       have dd_cong: "dd n \<epsilon> = dd n \<epsilon>'" if "\<And>i. i<n \<Longrightarrow> \<epsilon> i = \<epsilon>' i" for n \<epsilon> \<epsilon>'
         using that by (metis dd_def DD_def BALL_def h_cong) 
-
       have [simp]: "h n (cut \<epsilon> less_than n) = h n \<epsilon>" for n \<epsilon>
         by (meson cut_apply h_cong less_than_iff)
       have [simp]: "dd n (cut \<epsilon> less_than n) = dd n \<epsilon>" for n \<epsilon>
@@ -211,18 +210,9 @@ proof -
       have norm_coeff: "norm (coeff n) < 1 / (fact n * q n)" for n
         using dd_in_DD [of n coeff]
         by (simp add: q_gt0 coeff_eq DD_def BALL_def dist_norm norm_minus_commute norm_divide divide_simps)
-      have h_truncated: "h n coeff (w k) = h (Suc k) coeff (w k)" if "k < n" for n k
-      proof -
-        have "(\<Sum>i<n. coeff i * p i (w k)) = (\<Sum>i<Suc k. coeff i * p i (w k)) + (\<Sum>i=Suc k..<n. coeff i * p i (w k))"
-          by (smt (verit) Suc_le_eq atLeast0LessThan le0 sum.atLeastLessThan_concat that)
-        also have "\<dots> = (\<Sum>i<Suc k. coeff i * p i (w k))"
-          by simp
-        finally show ?thesis
-          by (simp add: h_def)
-      qed                
       have norm_p_bound: "norm (p n z') \<le> q n * (1 + norm z) ^ n" 
           if "dist z z' \<le> 1" for n z z'
-      proof (induction n )
+      proof (induction n)
         case 0
         then show ?case
           by (auto simp: p_def q_def)
@@ -269,7 +259,7 @@ proof -
             then show "summable ?M"
               by (rule ratio_test_convergence) (auto simp: add_nonneg_eq_0_iff L)
             fix n z'
-            assume  "z' \<in> cball z 1"
+            assume "z' \<in> cball z 1"
             then have "norm (coeff n * p n z') \<le> norm (coeff n) * q n * (1 + norm z) ^ n"
               by (simp add: mult.assoc mult_mono norm_mult norm_p_bound)
             also have "\<dots> \<le> (1 / fact n) * (1 + norm z) ^ n"
@@ -359,7 +349,7 @@ proof -
 qed
 
 theorem Erdos_Wetzel: "C_continuum = \<aleph>1 \<longleftrightarrow> (\<exists>F. Wetzel F \<and> uncountable F)"
-  by (metis C_continuum_ge Erdos_Wetzel_CH Erdos_Wetzel_nonCH TC_small less_V_def)
+  by (metis C_continuum_ge Erdos_Wetzel_CH Erdos_Wetzel_nonCH less_V_def)
 
 text \<open>The originally submitted version of this theory included the development of cardinals 
 for general Isabelle/HOL sets (as opposed to ZF sets, elements of type V), as well as other 
