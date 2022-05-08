@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>The Sunflower Lemma of Erdős and Rado - Archive of Formal Proofs
+<title>Clique is not solvable by monotone circuits of polynomial size - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,19 +74,25 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
+  <h1>          <font class="first">C</font>lique
   
-          <font class="first">S</font>unflower
+          is
   
-          <font class="first">L</font>emma
+          not
+  
+          solvable
+  
+          by
+  
+          monotone
+  
+          circuits
   
           of
   
-          <font class="first">E</font>rdős
+          polynomial
   
-          and
-  
-          <font class="first">R</font>ado
+          size
   
 </h1>
   <p>&nbsp;</p>
@@ -95,7 +101,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The Sunflower Lemma of Erdős and Rado</td>
+  <td class="data" width="80%">Clique is not solvable by monotone circuits of polynomial size</td>
 </tr>
 
 <tr>
@@ -111,30 +117,33 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2021-02-25</td>
+  <td class="data">2022-05-08</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-We formally define sunflowers and provide a formalization of the
-sunflower lemma of Erd&odblac;s and Rado: whenever a set of
-size-<i>k</i>-sets has a larger cardinality than
-<i>(r - 1)<sup>k</sup> &middot; k!</i>,
-then it contains a sunflower of cardinality <i>r</i>.</td>
+<p> Given a graph $G$ with $n$ vertices and a number $s$, the
+decision problem Clique asks whether $G$ contains a fully connected
+subgraph with $s$ vertices. For this NP-complete problem there exists
+a non-trivial lower bound: no monotone circuit of a size that is
+polynomial in $n$ can solve Clique. </p><p> This entry
+provides an Isabelle/HOL formalization of a concrete lower bound (the
+bound is $\sqrt[7]{n}^{\sqrt[8]{n}}$ for the fixed choice of $s =
+\sqrt[4]{n}$), following a proof by Gordeev. </p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Sunflowers-AFP,
+        <pre>@article{Clique_and_Monotone_Circuits-AFP,
   author  = {René Thiemann},
-  title   = {The Sunflower Lemma of Erdős and Rado},
+  title   = {Clique is not solvable by monotone circuits of polynomial size},
   journal = {Archive of Formal Proofs},
-  month   = feb,
-  year    = 2021,
-  note    = {\url{https://isa-afp.org/entries/Sunflowers.html},
+  month   = may,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/Clique_and_Monotone_Circuits.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -145,10 +154,10 @@ then it contains a sunflower of cardinality <i>r</i>.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Clique_and_Monotone_Circuits.html">Clique_and_Monotone_Circuits</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Stirling_Formula.html">Stirling_Formula</a>, <a href="Sunflowers.html">Sunflowers</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -160,29 +169,23 @@ then it contains a sunflower of cardinality <i>r</i>.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Sunflowers/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Sunflowers/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Clique_and_Monotone_Circuits/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Clique_and_Monotone_Circuits/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Sunflowers/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Clique_and_Monotone_Circuits/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Sunflowers-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Clique_and_Monotone_Circuits-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Sunflowers-2021-03-01.tar.gz">
-              afp-Sunflowers-2021-03-01.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>21 Apr 2022 00:00:00 +0000</pubDate>
+    <pubDate>08 May 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Clique is not solvable by monotone circuits of polynomial size</title>
+              <link>https://www.isa-afp.org/entries/Clique_and_Monotone_Circuits.html</link>
+       <guid>https://www.isa-afp.org/entries/Clique_and_Monotone_Circuits.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>08 May 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; Given a graph $G$ with $n$ vertices and a number $s$, the
+decision problem Clique asks whether $G$ contains a fully connected
+subgraph with $s$ vertices. For this NP-complete problem there exists
+a non-trivial lower bound: no monotone circuit of a size that is
+polynomial in $n$ can solve Clique. &lt;/p&gt;&lt;p&gt; This entry
+provides an Isabelle/HOL formalization of a concrete lower bound (the
+bound is $\sqrt[7]{n}^{\sqrt[8]{n}}$ for the fixed choice of $s =
+\sqrt[4]{n}$), following a proof by Gordeev. &lt;/p&gt;</description>
+    </item>
     <item>
        <title>Fisher's Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
               <link>https://www.isa-afp.org/entries/Fishers_Inequality.html</link>
@@ -659,26 +675,6 @@ and W.T. Gowers&#39;s Cambridge lecture notes
 We also refer to the University of
 Georgia notes by Stephanie Bell and Will Grodzicki,
 &#34;&lt;a href=&#34;http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.432.327&#34;&gt;Using Szemerédi&#39;s Regularity Lemma to Prove Roth&#39;s Theorem&lt;/a&gt;&#34;.</description>
-    </item>
-    <item>
-       <title>Markov Decision Processes with Rewards</title>
-              <link>https://www.isa-afp.org/entries/MDP-Rewards.html</link>
-       <guid>https://www.isa-afp.org/entries/MDP-Rewards.html</guid>
-       <dc:creator> Maximilian Schäffeler, Mohammad Abdulaziz       </dc:creator>
-       <pubDate>16 Dec 2021 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of Markov Decision Processes with rewards.
-In particular we first build on Hölzl&#39;s formalization  of MDPs
-(AFP entry: Markov_Models) and extend them with rewards. We proceed
-with an analysis of the expected total discounted reward criterion for
-infinite horizon MDPs. The central result is the construction of the
-iteration rule for the Bellman operator. We prove the optimality
-equations for this operator and show the existence of an optimal
-stationary deterministic solution. The analysis can be used to obtain
-dynamic programming algorithms such as value iteration and policy
-iteration to solve MDPs with formal guarantees. Our formalization is
-based on chapters 5 and 6 in Puterman&#39;s book &#34;Markov
-Decision Processes: Discrete Stochastic Dynamic Programming&#34;.</description>
     </item>
   </channel>
 </rss>
