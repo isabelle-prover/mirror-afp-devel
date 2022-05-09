@@ -1,0 +1,9 @@
+chapter AFP
+
+session "ResiduatedTransitionSystem" (AFP) = "HOL-Library" +
+  options [timeout = 1500, names_unique = false]
+  theories
+    ResiduatedTransitionSystem LambdaCalculus
+  document_files
+    "root.bib"
+    "root.tex"

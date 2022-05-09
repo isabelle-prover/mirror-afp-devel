@@ -9,7 +9,291 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>20 Feb 2022 00:00:00 +0000</pubDate>
+    <pubDate>08 May 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Clique is not solvable by monotone circuits of polynomial size</title>
+              <link>https://www.isa-afp.org/entries/Clique_and_Monotone_Circuits.html</link>
+       <guid>https://www.isa-afp.org/entries/Clique_and_Monotone_Circuits.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>08 May 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; Given a graph $G$ with $n$ vertices and a number $s$, the
+decision problem Clique asks whether $G$ contains a fully connected
+subgraph with $s$ vertices. For this NP-complete problem there exists
+a non-trivial lower bound: no monotone circuit of a size that is
+polynomial in $n$ can solve Clique. &lt;/p&gt;&lt;p&gt; This entry
+provides an Isabelle/HOL formalization of a concrete lower bound (the
+bound is $\sqrt[7]{n}^{\sqrt[8]{n}}$ for the fixed choice of $s =
+\sqrt[4]{n}$), following a proof by Gordeev. &lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Fisher's Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
+              <link>https://www.isa-afp.org/entries/Fishers_Inequality.html</link>
+       <guid>https://www.isa-afp.org/entries/Fishers_Inequality.html</guid>
+       <dc:creator> Chelsea Edmonds, Lawrence C. Paulson       </dc:creator>
+       <pubDate>21 Apr 2022 00:00:00 +0000</pubDate>
+       <description>
+Linear algebraic techniques are powerful, yet often underrated tools
+in combinatorial proofs. This formalisation provides a library
+including matrix representations of incidence set systems, general
+formal proof techniques for the rank argument and linear bound
+argument, and finally a formalisation of a number of variations of the
+well-known Fisher&#39;s inequality. We build on our prior work
+formalising combinatorial design theory using a locale-centric
+approach, including extensions such as constant intersect designs and
+dual incidence systems. In addition to Fisher&#39;s inequality, we
+also formalise proofs on other incidence system properties using the
+incidence matrix representation, such as design existence, dual system
+relationships and incidence system isomorphisms. This formalisation is
+presented in the paper &#34;Formalising Fisher&#39;s Inequality:
+Formal Linear Algebraic Techniques in Combinatorics&#34;, accepted to
+ITP 2022.</description>
+    </item>
+    <item>
+       <title>The Generalized Multiset Ordering is NP-Complete</title>
+              <link>https://www.isa-afp.org/entries/Multiset_Ordering_NPC.html</link>
+       <guid>https://www.isa-afp.org/entries/Multiset_Ordering_NPC.html</guid>
+       <dc:creator> René Thiemann, Lukas Schmidinger       </dc:creator>
+       <pubDate>20 Apr 2022 00:00:00 +0000</pubDate>
+       <description>
+We consider the problem of comparing two multisets via the generalized
+multiset ordering. We show that the corresponding decision problem is
+NP-complete. To be more precise, we encode multiset-comparisons into
+propositional formulas or into conjunctive normal forms of quadratic
+size; we further prove that satisfiability of conjunctive normal forms
+can be encoded as multiset-comparison problems of linear size.  As a
+corollary, we also show that the problem of deciding whether two terms
+are related by a recursive path order is NP-hard, provided the
+recursive path order is based on the generalized multiset ordering.</description>
+    </item>
+    <item>
+       <title>Digit Expansions</title>
+              <link>https://www.isa-afp.org/entries/Digit_Expansions.html</link>
+       <guid>https://www.isa-afp.org/entries/Digit_Expansions.html</guid>
+       <dc:creator> Jonas Bayer, Marco David, Abhik Pal, Benedikt Stock       </dc:creator>
+       <pubDate>20 Apr 2022 00:00:00 +0000</pubDate>
+       <description>
+We formalize how a natural number can be expanded into its digits in
+some base and prove properties about functions that operate on digit
+expansions. This includes the formalization of concepts such as digit
+shifts and carries. For a base that is a power of 2 we formalize the
+binary AND, binary orthogonality and binary masking of two natural
+numbers. This library on digit expansions builds the basis for the
+formalization of the DPRM theorem.</description>
+    </item>
+    <item>
+       <title>The Sophomore's Dream</title>
+              <link>https://www.isa-afp.org/entries/Sophomores_Dream.html</link>
+       <guid>https://www.isa-afp.org/entries/Sophomores_Dream.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>10 Apr 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a brief formalisation of the two
+equations known as the &lt;em&gt;Sophomore&#39;s Dream&lt;/em&gt;,
+first discovered by Johann Bernoulli in 1697:&lt;/p&gt; \[\int_0^1
+x^{-x}\,\text{d}x = \sum_{n=1}^\infty n^{-n} \quad\text{and}\quad
+\int_0^1 x^x\,\text{d}x = -\sum_{n=1}^\infty (-n)^{-n}\]</description>
+    </item>
+    <item>
+       <title>A Combinator Library for Prefix-Free Codes</title>
+              <link>https://www.isa-afp.org/entries/Prefix_Free_Code_Combinators.html</link>
+       <guid>https://www.isa-afp.org/entries/Prefix_Free_Code_Combinators.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>08 Apr 2022 00:00:00 +0000</pubDate>
+       <description>
+This entry contains a set of binary encodings for primitive data
+types, such as natural numbers, integers, floating-point numbers as
+well as combinators to construct encodings for products, lists, sets
+or functions of/between such types.  For natural numbers and integers,
+the entry contains various encodings, such as Elias-Gamma-Codes and
+exponential Golomb Codes, which are efficient variable-length codes in
+use by current compression formats.  A use-case for this library is
+measuring the persisted size of a complex data structure without
+having to hand-craft a dedicated encoding for it, independent of
+Isabelle&#39;s internal representation.</description>
+    </item>
+    <item>
+       <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
+              <link>https://www.isa-afp.org/entries/Frequency_Moments.html</link>
+       <guid>https://www.isa-afp.org/entries/Frequency_Moments.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>08 Apr 2022 00:00:00 +0000</pubDate>
+       <description>
+In 1999 Alon et. al. introduced the still active research topic of
+approximating the frequency moments of a data stream using randomized
+algorithms with minimal space usage. This includes the problem of
+estimating the cardinality of the stream elements - the zeroth
+frequency moment. But, also higher-order frequency moments that
+provide information about the skew of the data stream. (The
+&lt;i&gt;k&lt;/i&gt;-th frequency moment of a data stream is the sum
+of the &lt;i&gt;k&lt;/i&gt;-th powers of the occurrence counts of each
+element in the stream.) This entry formalizes three randomized
+algorithms for the approximation of
+&lt;i&gt;F&lt;sub&gt;0&lt;/sub&gt;&lt;/i&gt;,
+&lt;i&gt;F&lt;sub&gt;2&lt;/sub&gt;&lt;/i&gt; and
+&lt;i&gt;F&lt;sub&gt;k&lt;/sub&gt;&lt;/i&gt; for &lt;i&gt;k ≥
+3&lt;/i&gt; based on [&lt;a
+href=&#34;https://doi.org/10.1006/jcss.1997.1545&#34;&gt;1&lt;/a&gt;,
+&lt;a
+href=&#34;https://doi.org/10.1007/3-540-45726-7_1&#34;&gt;2&lt;/a&gt;]
+and verifies their expected accuracy, success probability and space
+usage.</description>
+    </item>
+    <item>
+       <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
+              <link>https://www.isa-afp.org/entries/Dedekind_Real.html</link>
+       <guid>https://www.isa-afp.org/entries/Dedekind_Real.html</guid>
+       <dc:creator> Jacques D. Fleuriot, Lawrence C. Paulson       </dc:creator>
+       <pubDate>24 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+The type of real numbers is constructed from the positive rationals
+using the method of Dedekind cuts. This development, briefly described
+in papers by the authors, follows the textbook presentation by
+Gleason. It&#39;s notable that the first formalisation of a
+significant piece of mathematics, by Jutting in 1977, involved a
+similar construction.</description>
+    </item>
+    <item>
+       <title>Ackermann's Function Is Not Primitive Recursive</title>
+              <link>https://www.isa-afp.org/entries/Ackermanns_not_PR.html</link>
+       <guid>https://www.isa-afp.org/entries/Ackermanns_not_PR.html</guid>
+       <dc:creator> Lawrence C. Paulson       </dc:creator>
+       <pubDate>23 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+Ackermann&#39;s function is defined in the usual way and a number of
+its elementary properties are proved. Then, the primitive recursive
+functions are defined inductively: as a predicate on the functions
+that map lists of  numbers to numbers. It is shown that every
+primitive recursive function is strictly dominated by Ackermann&#39;s
+function. The formalisation follows an earlier one by Nora Szasz.</description>
+    </item>
+    <item>
+       <title>A Naive Prover for First-Order Logic</title>
+              <link>https://www.isa-afp.org/entries/FOL_Seq_Calc3.html</link>
+       <guid>https://www.isa-afp.org/entries/FOL_Seq_Calc3.html</guid>
+       <dc:creator> Asta Halkjær From       </dc:creator>
+       <pubDate>22 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; The AFP entry &lt;a
+href=&#34;https://www.isa-afp.org/entries/Abstract_Completeness.html&#34;&gt;Abstract
+Completeness&lt;/a&gt; by Blanchette, Popescu and Traytel formalizes
+the core of Beth/Hintikka-style completeness proofs for first-order
+logic and can be used to formalize executable sequent calculus
+provers. In the Journal of Automated Reasoning, the authors
+instantiate the framework with a sequent calculus for first-order
+logic and prove its completeness. Their use of an infinite set of
+proof rules indexed by formulas yields very direct arguments. A fair
+stream of these rules controls the prover, making its definition
+remarkably simple. The AFP entry, however, only contains a toy example
+for propositional logic. The AFP entry &lt;a
+href=&#34;https://www.isa-afp.org/entries/FOL_Seq_Calc2.html&#34;&gt;A
+Sequent Calculus Prover for First-Order Logic with Functions&lt;/a&gt;
+by From and Jacobsen also uses the framework, but uses a finite set of
+generic rules resulting in a more sophisticated prover with more
+complicated proofs. &lt;/p&gt; &lt;p&gt; This entry contains an
+executable sequent calculus prover for first-order logic with
+functions in the style presented by Blanchette et al. The prover can
+be exported to Haskell and this entry includes formalized proofs of
+its soundness and completeness. The proofs are simpler than those for
+the prover by From and Jacobsen but the performance of the prover is
+significantly worse. &lt;/p&gt; &lt;p&gt; The included theory
+&lt;em&gt;Fair-Stream&lt;/em&gt; first proves that the sequence of
+natural numbers 0, 0, 1, 0, 1, 2, etc. is fair. It then proves that
+mapping any surjective function across the sequence preserves
+fairness. This method of obtaining a fair stream of rules is similar
+to the one given by Blanchette et al. The concrete functions from
+natural numbers to terms, formulas and rules are defined using the
+&lt;em&gt;Nat-Bijection&lt;/em&gt; theory in the HOL-Library.
+&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent</title>
+              <link>https://www.isa-afp.org/entries/Cotangent_PFD_Formula.html</link>
+       <guid>https://www.isa-afp.org/entries/Cotangent_PFD_Formula.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>15 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;In this article, I formalise a proof from &lt;a
+href=&#34;https://dx.doi.org/10.1007/978-3-662-57265-8&#34;&gt;THE
+BOOK&lt;/a&gt;; namely a formula that was called ‘one of the most
+beautiful formulas involving elementary functions’:&lt;/p&gt; \[\pi
+\cot(\pi z) = \frac{1}{z} + \sum_{n=1}^\infty\left(\frac{1}{z+n} +
+\frac{1}{z-n}\right)\] &lt;p&gt;The proof uses Herglotz&#39;s trick
+to show the real case and analytic continuation for the complex
+case.&lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>The Independence of the Continuum Hypothesis in Isabelle/ZF</title>
+              <link>https://www.isa-afp.org/entries/Independence_CH.html</link>
+       <guid>https://www.isa-afp.org/entries/Independence_CH.html</guid>
+       <dc:creator> Emmanuel Gunther, Miguel Pagano, Pedro Sánchez Terraf, Matías Steinberg       </dc:creator>
+       <pubDate>06 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+We redeveloped our formalization of forcing in the set theory
+framework of Isabelle/ZF. Under the assumption of the existence of a
+countable transitive model of ZFC, we construct proper generic
+extensions that satisfy the Continuum Hypothesis and its negation.</description>
+    </item>
+    <item>
+       <title>Transitive Models of Fragments of ZFC</title>
+              <link>https://www.isa-afp.org/entries/Transitive_Models.html</link>
+       <guid>https://www.isa-afp.org/entries/Transitive_Models.html</guid>
+       <dc:creator> Emmanuel Gunther, Miguel Pagano, Pedro Sánchez Terraf, Matías Steinberg       </dc:creator>
+       <pubDate>03 Mar 2022 00:00:00 +0000</pubDate>
+       <description>
+We extend the ZF-Constructibility library by relativizing theories of
+the Isabelle/ZF and Delta System Lemma sessions to a transitive class.
+We also relativize Paulson&#39;s work on Aleph and our former
+treatment of the Axiom of Dependent Choices. This work is a
+prerrequisite to our formalization of the independence of the
+Continuum Hypothesis.</description>
+    </item>
+    <item>
+       <title>Residuated Transition Systems</title>
+              <link>https://www.isa-afp.org/entries/ResiduatedTransitionSystem.html</link>
+       <guid>https://www.isa-afp.org/entries/ResiduatedTransitionSystem.html</guid>
+       <dc:creator> Eugene W. Stark       </dc:creator>
+       <pubDate>28 Feb 2022 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; A &lt;em&gt;residuated transition system&lt;/em&gt; (RTS) is
+a transition system that is equipped with a certain partial binary
+operation, called &lt;em&gt;residuation&lt;/em&gt;, on transitions.
+Using the residuation operation, one can express nuances, such as a
+distinction between nondeterministic and concurrent choice, as well as
+partial commutativity relationships between transitions, which are not
+captured by ordinary transition systems. A version of residuated
+transition systems was introduced in previous work by the author, in
+which they were called “concurrent transition systems” in view of the
+original motivation for their definition from the study of
+concurrency. In the first part of the present article, we give a
+formal development that generalizes and subsumes the original
+presentation. We give an axiomatic definition of residuated transition
+systems that assumes only a single partial binary operation as given
+structure. From the axioms, we derive notions of “arrow“ (transition),
+“source”, “target”, “identity”, as well as “composition” and “join” of
+transitions; thereby recovering structure that in the previous work
+was assumed as given. We formalize and generalize the result, that
+residuation extends from transitions to transition paths, and we
+systematically develop the properties of this extension. A significant
+generalization made in the present work is the identification of a
+general notion of congruence on RTS’s, along with an associated
+quotient construction. &lt;/p&gt; &lt;p&gt; In the second part of this
+article, we use the RTS framework to formalize several results in the
+theory of reduction in Church’s λ-calculus. Using a de Bruijn
+index-based syntax in which terms represent parallel reduction steps,
+we define residuation on terms and show that it satisfies the axioms
+for an RTS. An application of the results on paths from the first part
+of the article allows us to prove the classical Church-Rosser Theorem
+with little additional effort. We then use residuation to define the
+notion of “development” and we prove the Finite Developments Theorem,
+that every development is finite, formalizing and adapting to de
+Bruijn indices a proof by de Vrijer. We also use residuation to define
+the notion of a “standard reduction path”, and we prove the
+Standardization Theorem: that every reduction path is congruent to a
+standard one. As a corollary of the Standardization Theorem, we obtain
+the Leftmost Reduction Theorem: that leftmost reduction is a
+normalizing strategy. &lt;/p&gt;</description>
+    </item>
     <item>
        <title>Universal Hash Families</title>
               <link>https://www.isa-afp.org/entries/Universal_Hash_Families.html</link>
@@ -386,277 +670,6 @@ demonstrate it on the standard logistic function $f(x) = \frac{1}{1 +
 e^{-x}}$ and also reproduce the example analytic function $f(x) =
 \frac{e^x}{\sqrt{sin(x)^3 + cos(x)^3}}$ used for demonstration by Fike
 and Alonso.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Gale-Shapley Algorithm</title>
-              <link>https://www.isa-afp.org/entries/Gale_Shapley.html</link>
-       <guid>https://www.isa-afp.org/entries/Gale_Shapley.html</guid>
-       <dc:creator> Tobias Nipkow       </dc:creator>
-       <pubDate>29 Dec 2021 00:00:00 +0000</pubDate>
-       <description>
-This is a stepwise refinement and proof of the Gale-Shapley stable
-matching (or marriage) algorithm down to executable code. Both a
-purely functional implementation based on lists and a functional
-implementation based on efficient arrays (provided by the Collections
-Framework in the AFP) are developed. The latter implementation runs in
-time &lt;i&gt;O(n&lt;sup&gt;2&lt;/sup&gt;)&lt;/i&gt; where
-&lt;i&gt;n&lt;/i&gt; is the cardinality of the two sets to be matched.</description>
-    </item>
-    <item>
-       <title>Roth's Theorem on Arithmetic Progressions</title>
-              <link>https://www.isa-afp.org/entries/Roth_Arithmetic_Progressions.html</link>
-       <guid>https://www.isa-afp.org/entries/Roth_Arithmetic_Progressions.html</guid>
-       <dc:creator> Chelsea Edmonds, Angeliki Koutsoukou-Argyraki, Lawrence C. Paulson       </dc:creator>
-       <pubDate>28 Dec 2021 00:00:00 +0000</pubDate>
-       <description>
-We formalise a proof of Roth&#39;s Theorem on Arithmetic
-Progressions, a major result in additive combinatorics on the
-existence of 3-term arithmetic progressions in subsets of natural
-numbers. To this end, we follow a proof using graph regularity. We
-employ our recent formalisation of Szemerédi&#39;s Regularity Lemma,
-a major result in extremal graph theory, which we use here to prove
-the Triangle Counting Lemma and the Triangle Removal Lemma. Our
-sources are Yufei Zhao&#39;s MIT lecture notes
-&#34;&lt;a href=&#34;https://yufeizhao.com/gtac/gtac.pdf&#34;&gt;Graph Theory and Additive Combinatorics&lt;/a&gt;&#34;
-(latest version &lt;a href=&#34;https://yufeizhao.com/gtacbook/&#34;&gt;here&lt;/a&gt;)
-and W.T. Gowers&#39;s Cambridge lecture notes
-&#34;&lt;a href=&#34;https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf&#34;&gt;Topics in Combinatorics&lt;/a&gt;&#34;.
-We also refer to the University of
-Georgia notes by Stephanie Bell and Will Grodzicki,
-&#34;&lt;a href=&#34;http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.432.327&#34;&gt;Using Szemerédi&#39;s Regularity Lemma to Prove Roth&#39;s Theorem&lt;/a&gt;&#34;.</description>
-    </item>
-    <item>
-       <title>Markov Decision Processes with Rewards</title>
-              <link>https://www.isa-afp.org/entries/MDP-Rewards.html</link>
-       <guid>https://www.isa-afp.org/entries/MDP-Rewards.html</guid>
-       <dc:creator> Maximilian Schäffeler, Mohammad Abdulaziz       </dc:creator>
-       <pubDate>16 Dec 2021 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of Markov Decision Processes with rewards.
-In particular we first build on Hölzl&#39;s formalization  of MDPs
-(AFP entry: Markov_Models) and extend them with rewards. We proceed
-with an analysis of the expected total discounted reward criterion for
-infinite horizon MDPs. The central result is the construction of the
-iteration rule for the Bellman operator. We prove the optimality
-equations for this operator and show the existence of an optimal
-stationary deterministic solution. The analysis can be used to obtain
-dynamic programming algorithms such as value iteration and policy
-iteration to solve MDPs with formal guarantees. Our formalization is
-based on chapters 5 and 6 in Puterman&#39;s book &#34;Markov
-Decision Processes: Discrete Stochastic Dynamic Programming&#34;.</description>
-    </item>
-    <item>
-       <title>Verified Algorithms for Solving Markov Decision Processes</title>
-              <link>https://www.isa-afp.org/entries/MDP-Algorithms.html</link>
-       <guid>https://www.isa-afp.org/entries/MDP-Algorithms.html</guid>
-       <dc:creator> Maximilian Schäffeler, Mohammad Abdulaziz       </dc:creator>
-       <pubDate>16 Dec 2021 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of algorithms for solving Markov Decision
-Processes (MDPs) with formal guarantees on the optimality of their
-solutions. In particular we build on our analysis of the Bellman
-operator for discounted infinite horizon MDPs. From the iterator rule
-on the Bellman operator we directly derive executable value iteration
-and policy iteration algorithms to iteratively solve finite MDPs. We
-also prove correct optimized versions of value iteration that use
-matrix splittings to improve the convergence rate. In particular, we
-formally verify Gauss-Seidel value iteration and modified policy
-iteration. The algorithms are evaluated on two standard examples from
-the literature, namely, inventory management and gridworld. Our
-formalization covers most of chapter 6 in Puterman&#39;s book
-&#34;Markov Decision Processes: Discrete Stochastic Dynamic
-Programming&#34;.</description>
-    </item>
-    <item>
-       <title>Regular Tree Relations</title>
-              <link>https://www.isa-afp.org/entries/Regular_Tree_Relations.html</link>
-       <guid>https://www.isa-afp.org/entries/Regular_Tree_Relations.html</guid>
-       <dc:creator> Alexander Lochmann, Bertram Felgenhauer, Christian Sternagel, René Thiemann, Thomas Sternagel       </dc:creator>
-       <pubDate>15 Dec 2021 00:00:00 +0000</pubDate>
-       <description>
-Tree automata have good closure properties and therefore a commonly
-used to prove/disprove properties. This formalization contains among
-other things the proofs of many closure properties of tree automata
-(anchored) ground tree transducers and regular relations. Additionally
-it includes the well known pumping lemma and a lifting of the Myhill
-Nerode theorem for regular languages to tree languages.  We want to
-mention the existence of a &lt;a
-href=&#34;https://www.isa-afp.org/entries/Tree-Automata.html&#34;&gt;tree
-automata APF-entry&lt;/a&gt; developed by Peter Lammich. His work is
-based on epsilon free top-down tree automata, while this entry builds
-on bottom-up tree auotamta with epsilon transitions. Moreover our
-formalization relies on the &lt;a
-href=&#34;https://www.isa-afp.org/entries/Collections.html&#34;&gt;Collections
-Framework&lt;/a&gt;, also by Peter Lammich, to obtain efficient code.
-All proven constructions of the closure properties are exportable
-using the Isabelle/HOL code generation facilities.</description>
-    </item>
-    <item>
-       <title>Simplicial Complexes and Boolean functions</title>
-              <link>https://www.isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</link>
-       <guid>https://www.isa-afp.org/entries/Simplicial_complexes_and_boolean_functions.html</guid>
-       <dc:creator> Jesús Aransay, Alejandro del Campo, Julius Michaelis       </dc:creator>
-       <pubDate>29 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-In this work we formalise the isomorphism between simplicial complexes
-of dimension $n$ and monotone Boolean functions in $n$ variables,
-mainly following the definitions and results as introduced by N. A.
-Scoville. We also take advantage of the AFP
-representation of &lt;a href=&#34;https://www.isa-afp.org/entries/ROBDD.html&#34;&gt;ROBDD&lt;/a&gt;
-(Reduced Ordered Binary Decision Diagrams) to compute the ROBDD representation of a
-given simplicial complex (by means of the isomorphism to Boolean
-functions). Some examples of simplicial complexes and associated
-Boolean functions are also presented.</description>
-    </item>
-    <item>
-       <title>van Emde Boas Trees</title>
-              <link>https://www.isa-afp.org/entries/Van_Emde_Boas_Trees.html</link>
-       <guid>https://www.isa-afp.org/entries/Van_Emde_Boas_Trees.html</guid>
-       <dc:creator> Thomas Ammer, Peter Lammich       </dc:creator>
-       <pubDate>23 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-The &lt;em&gt;van Emde Boas tree&lt;/em&gt; or &lt;em&gt;van Emde Boas
-priority queue&lt;/em&gt; is a data structure supporting membership
-test, insertion, predecessor and successor search, minimum and maximum
-determination and deletion in &lt;em&gt;O(log log U)&lt;/em&gt; time, where &lt;em&gt;U =
-0,...,2&lt;sup&gt;n-1&lt;/sup&gt;&lt;/em&gt; is the overall range to be
-considered. &lt;p/&gt; The presented formalization follows Chapter 20
-of the popular &lt;em&gt;Introduction to Algorithms (3rd
-ed.)&lt;/em&gt; by Cormen, Leiserson, Rivest and Stein (CLRS),
-extending the list of formally verified CLRS algorithms. Our current
-formalization is based on the first author&#39;s bachelor&#39;s
-thesis. &lt;p/&gt; First, we prove correct a
-&lt;em&gt;functional&lt;/em&gt; implementation, w.r.t. an abstract
-data type for sets. Apart from functional correctness, we show a
-resource bound, and runtime bounds w.r.t. manually defined timing
-functions for the operations. &lt;p/&gt; Next, we refine the
-operations to Imperative HOL with time, and show correctness and
-complexity. This yields a practically more efficient implementation,
-and eliminates the manually defined timing functions from the trusted
-base of the proof.</description>
-    </item>
-    <item>
-       <title>Foundation of geometry in planes, and some complements: Excluding the parallel axioms</title>
-              <link>https://www.isa-afp.org/entries/Foundation_of_geometry.html</link>
-       <guid>https://www.isa-afp.org/entries/Foundation_of_geometry.html</guid>
-       <dc:creator> Fumiya Iwama       </dc:creator>
-       <pubDate>22 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-&#34;Foundations of Geometry&#34; is a mathematical book written by
-Hilbert in 1899. This entry is a complete formalization of
-&#34;Incidence&#34; (excluding cubic axioms), &#34;Order&#34; and
-&#34;Congruence&#34; (excluding point sequences) of the axioms
-constructed in this book. In addition, the theorem of the problem
-about the part that is treated implicitly and is not clearly stated in
-it is being carried out in parallel.</description>
-    </item>
-    <item>
-       <title>The Hahn and Jordan Decomposition Theorems</title>
-              <link>https://www.isa-afp.org/entries/Hahn_Jordan_Decomposition.html</link>
-       <guid>https://www.isa-afp.org/entries/Hahn_Jordan_Decomposition.html</guid>
-       <dc:creator> Marie Cousin, Mnacho Echenim, Hervé Guiol       </dc:creator>
-       <pubDate>19 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-In this work we formalize the Hahn decomposition theorem for signed
-measures, namely that any measure space for a signed measure can be
-decomposed into a positive and a negative set, where every measurable
-subset of the positive one has a positive measure, and every
-measurable subset of the negative one has a negative measure. We also
-formalize the Jordan decomposition theorem as a corollary, which
-states that the signed measure under consideration admits a unique
-decomposition into a difference of two positive measures, at least one
-of which is finite.</description>
-    </item>
-    <item>
-       <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/SimplifiedOntologicalArgument.html</link>
-       <guid>https://www.isa-afp.org/entries/SimplifiedOntologicalArgument.html</guid>
-       <dc:creator> Christoph Benzmüller       </dc:creator>
-       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;Simplified variants of Gödel&#39;s ontological argument are
-explored. Among those is a particularly interesting simplified
-argument which is (i) valid already in basic
-modal logics K or KT, (ii) which does not suffer from modal collapse,
-and (iii) which avoids the rather complex predicates of essence (Ess.)
-and necessary existence (NE) as used by Gödel.
-&lt;/p&gt;&lt;p&gt;
-Whether the presented variants increase or decrease the
-attractiveness and persuasiveness of the ontological argument is a
-question I would like to pass on to philosophy and theology.
-&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Real Exponents as the Limits of Sequences of Rational Exponents</title>
-              <link>https://www.isa-afp.org/entries/Real_Power.html</link>
-       <guid>https://www.isa-afp.org/entries/Real_Power.html</guid>
-       <dc:creator> Jacques D. Fleuriot       </dc:creator>
-       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-In this formalisation, we  construct real exponents as the limits of
-sequences of rational exponents. In particular, if $a \ge 1$ and $x
-\in \mathbb{R}$, we choose an increasing rational sequence $r_n$ such
-that $\lim_{n\to\infty} {r_n} = x$. Then the sequence $a^{r_n}$ is
-increasing and if $r$ is any rational number such that $r &gt; x$,
-$a^{r_n}$ is bounded above by $a^r$. By the convergence criterion for
-monotone sequences, $a^{r_n}$ converges. We define $a^ x =
-\lim_{n\to\infty} a^{r_n}$ and show that it has the expected
-properties (for $a \ge 0$).  This particular construction of real
-exponents is needed instead of the usual one using the natural
-logarithm and exponential functions (which already exists in Isabelle)
-to support our mechanical derivation of Euler&#39;s exponential
-series as an ``infinite polynomial&#34;. Aside from helping us avoid
-circular reasoning, this is, as far as we are aware, the first time
-real exponents are mechanised in this way within a proof assistant.</description>
-    </item>
-    <item>
-       <title>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</title>
-              <link>https://www.isa-afp.org/entries/PAL.html</link>
-       <guid>https://www.isa-afp.org/entries/PAL.html</guid>
-       <dc:creator> Christoph Benzmüller, Sebastian Reiche       </dc:creator>
-       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-We present a shallow embedding of public announcement logic (PAL) with
-relativized general knowledge in HOL. We then use PAL to obtain an
-elegant encoding of the wise men puzzle, which we solve automatically
-using sledgehammer.</description>
-    </item>
-    <item>
-       <title>Factorization of Polynomials with Algebraic Coefficients</title>
-              <link>https://www.isa-afp.org/entries/Factor_Algebraic_Polynomial.html</link>
-       <guid>https://www.isa-afp.org/entries/Factor_Algebraic_Polynomial.html</guid>
-       <dc:creator> Manuel Eberl, René Thiemann       </dc:creator>
-       <pubDate>08 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-The AFP already contains a verified implementation of algebraic
-numbers. However, it is has a severe limitation in its factorization
-algorithm of real and complex polynomials: the factorization is only
-guaranteed to succeed if the coefficients of the polynomial are
-rational numbers. In this work, we verify an algorithm to factor all
-real and complex polynomials whose coefficients are algebraic. The
-existence of such an algorithm proves in a constructive way that the
-set of complex algebraic numbers is algebraically closed. Internally,
-the algorithm is based on resultants of multivariate polynomials and
-an approximation algorithm using interval arithmetic.</description>
-    </item>
-    <item>
-       <title>Szemerédi's Regularity Lemma</title>
-              <link>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</link>
-       <guid>https://www.isa-afp.org/entries/Szemeredi_Regularity.html</guid>
-       <dc:creator> Chelsea Edmonds, Angeliki Koutsoukou-Argyraki, Lawrence C. Paulson       </dc:creator>
-       <pubDate>05 Nov 2021 00:00:00 +0000</pubDate>
-       <description>
-&lt;a
-href=&#34;https://en.wikipedia.org/wiki/Szemerédi_regularity_lemma&#34;&gt;Szemerédi&#39;s
-regularity lemma&lt;/a&gt; is a key result in the study of large
-graphs. It asserts the existence of an upper bound on the number of parts
-the vertices of a graph need to be partitioned into such that the
-edges between the parts are random in a certain sense. This bound
-depends only on the desired precision and not on the graph itself, in
-the spirit of Ramsey&#39;s theorem. The formalisation follows online
-course notes by &lt;a href=&#34;https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf&#34;&gt;Tim
-Gowers&lt;/a&gt; and &lt;a href=&#34;https://yufeizhao.com/gtacbook/&#34;&gt;Yufei
-Zhao&lt;/a&gt;.</description>
     </item>
   </channel>
 </rss>

@@ -1,0 +1,60 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+% \renewcommand{\isastyle}{\isastyleminor}
+
+\begin{document}
+
+\title{A Naive Prover for First-Order Logic}
+\author{Asta Halkjær From}
+\maketitle
+
+\begin{abstract}
+	The AFP entry Abstract Completeness by Blanchette, Popescu and Traytel~\cite{Abstract-Completeness-AFP} formalizes the core of Beth/Hintikka-style completeness proofs for first-order logic and can be used to formalize executable sequent calculus provers.
+	In the Journal of Automated Reasoning~\cite{BlanchettePT17}, the authors instantiate the framework with a sequent calculus for first-order logic and prove its completeness.
+	Their use of an infinite set of proof rules indexed by formulas yields very direct arguments.
+	A fair stream of these rules controls the prover, making its definition remarkably simple.
+	The AFP entry, however, only contains a toy example for propositional logic.
+	The AFP entry A Sequent Calculus Prover for First-Order Logic with Functions by From and Jacobsen~\cite{FOL-Seq-Calc2-AFP} also uses the framework, but uses a finite set of generic rules resulting in a more sophisticated prover with more complicated proofs.
+
+	This entry contains an executable sequent calculus prover for first-order logic with functions in the style presented by Blanchette et al.
+	The prover can be exported to Haskell and this entry includes formalized proofs of its soundness and completeness.
+	The proofs are simpler than those for the prover by From and Jacobsen~\cite{FOL-Seq-Calc2-AFP} but the performance of the prover is significantly worse.
+
+	The included theory \isa{Fair-Stream} first proves that the sequence of natural numbers 0, 0, 1, 0, 1, 2, etc.\ is fair.
+	It then proves that mapping any surjective function across the sequence preserves fairness.
+	This method of obtaining a fair stream of rules is similar to the one given by Blanchette et al.~\cite{BlanchettePT17}.
+	The concrete functions from natural numbers to terms, formulas and rules are defined using the \isa{Nat-Bijection} theory in the HOL-Library.
+\end{abstract}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

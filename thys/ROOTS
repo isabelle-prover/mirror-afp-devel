@@ -9,6 +9,7 @@ Abstract-Hoare-Logics
 Abstract-Rewriting
 Abstract_Completeness
 Abstract_Soundness
+Ackermanns_not_PR
 Actuarial_Mathematics
 Adaptive_State_Counting
 Affine_Arithmetic
@@ -91,6 +92,7 @@ Chandy_Lamport
 Chord_Segments
 Circus
 Clean
+Clique_and_Monotone_Circuits
 ClockSynchInst
 Closest_Pair_Points
 CoCon
@@ -126,6 +128,7 @@ CoreC++
 Core_DOM
 Core_SC_DOM
 Correctness_Algebras
+Cotangent_PFD_Formula
 Count_Complex_Roots
 CryptHOL
 CryptoBasedCompositionalProperties
@@ -138,6 +141,7 @@ Datatype_Order_Generator
 Decl_Sem_Fun_PL
 Decreasing-Diagrams
 Decreasing-Diagrams-II
+Dedekind_Real
 Deep_Learning
 Delta_System_Lemma
 Density_Compiler
@@ -151,6 +155,7 @@ Design_Theory
 Dict_Construction
 Differential_Dynamic_Logic
 Differential_Game_Logic
+Digit_Expansions
 Dijkstra_Shortest_Path
 Diophantine_Eqns_Lin_Hom
 Dirichlet_L
@@ -184,6 +189,7 @@ FOL_Axiomatic
 FOL_Harrison
 FOL_Seq_Calc1
 FOL_Seq_Calc2
+FOL_Seq_Calc3
 Factor_Algebraic_Polynomial
 Factored_Transition_System_Bounding
 Falling_Factorial_Sum
@@ -201,6 +207,7 @@ First_Order_Terms
 First_Welfare_Theorem
 Fishburn_Impossibility
 Fisher_Yates
+Fishers_Inequality
 Flow_Networks
 Floyd_Warshall
 Flyspeck-Tame
@@ -214,6 +221,7 @@ Fourier
 FO_Theory_Rewriting
 Free-Boolean-Algebra
 Free-Groups
+Frequency_Moments
 Fresh_Identifiers
 FunWithFunctions
 FunWithTilings
@@ -282,6 +290,7 @@ Imperative_Insertion_Sort
 Impossible_Geometry
 Incompleteness
 Incredible_Proof_Machine
+Independence_CH
 Inductive_Confidentiality
 Inductive_Inference
 InfPathElimination
@@ -400,6 +409,7 @@ MonoBoolTranAlgebra
 MonoidalCategory
 Monomorphic_Monad
 MuchAdoAboutTwo
+Multiset_Ordering_NPC
 Multi_Party_Computation
 Multirelations
 Myhill-Nerode
@@ -462,6 +472,7 @@ Posix-Lexing
 Possibilistic_Noninterference
 Power_Sum_Polynomials
 Pratt_Certificate
+Prefix_Free_Code_Combinators
 Presburger-Automata
 Prim_Dijkstra_Simple
 Prime_Distribution_Elementary
@@ -523,6 +534,7 @@ Relational_Method
 Relational_Minimum_Spanning_Trees
 Relational_Paths
 Rep_Fin_Groups
+ResiduatedTransitionSystem
 Residuated_Lattices
 Resolution_FOL
 Rewriting_Z
@@ -570,6 +582,7 @@ Slicing
 Sliding_Window_Algorithm
 Smith_Normal_Form
 Smooth_Manifolds
+Sophomores_Dream
 Sort_Encodings
 Source_Coding_Theorem
 SpecCheck
@@ -619,6 +632,7 @@ Transformer_Semantics
 Transition_Systems_and_Automata
 Transitive-Closure
 Transitive-Closure-II
+Transitive_Models
 Treaps
 Tree-Automata
 Tree_Decomposition

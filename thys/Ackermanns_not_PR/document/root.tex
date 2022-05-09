@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Ackermann's Function Is Not Primitive Recursive}
+\author{Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+Ackermann's function is defined in the usual way and a number of its elementary properties are proved.
+Then, the primitive recursive functions are defined inductively: as a predicate on the functions that map lists of  numbers to numbers. It is shown that every primitive recursive function is strictly dominated by Ackermann's function. The formalisation follows an earlier one by Nora Szasz~\cite{szasz93}.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Remark.}
+This development was part of the Isabelle distribution from 1997 to 2022. 
+It has been transferred to the AFP, where it may be more useful.
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

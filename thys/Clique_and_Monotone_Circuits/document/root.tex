@@ -1,0 +1,90 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+
+% this should be the last package used
+\usepackage{url}
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Clique is not solvable by monotone circuits of polynomial size\footnote{We thank Lev Gordeev for several clarification regarding his proof, 
+for his explanation of the history of the underlying proof idea, 
+and for a lively and ongoing interesting discussion on
+how his draft can be repaired.}}
+\author{Ren\'e Thiemann\\
+  {\small University of Innsbruck}}
+\maketitle
+
+\begin{abstract}
+Given a graph $G$ with $n$ vertices and a number $s$, the decision problem Clique
+asks whether $G$ contains a fully connected subgraph with $s$ vertices.
+For this NP-complete problem there exists
+a non-trivial lower bound: 
+no monotone circuit of a size that is polynomial in $n$ can solve Clique.
+
+This entry provides an Isabelle/HOL formalization of a concrete 
+lower bound (the bound is $\sqrt[7]{n}^{\sqrt[8]{n}}$ for the fixed choice 
+of $s = \sqrt[4]{n}$), 
+following a proof by Gordeev.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+In this AFP submission we verify the result, that no polynomial-sized circuit 
+can implement the Clique problem.
+
+We arrived at this formalization by trying to verify 
+an unpublished draft of Gordeev \cite{PNP}, which tries to show
+that Clique cannot be solved by any polynomial-sized circuit,
+including non-monotone ones, where the concrete exponential
+lower bound is $\sqrt[7]{n}^{\sqrt[8]{n}}$ for graphs 
+with $n$ vertices and cliques of size $s = \sqrt[4]n$.
+
+Although there are some flaws in that draft, all of these disappear
+if one restricts to monotone circuits. Consequently, the claimed
+lower bound is valid for monotone circuits.
+
+We verify a simplified version of Gordeev's proof, where those parts that
+deal with negations in circuits have been eliminated from definitions and proofs.
+
+Gordeev's work itself was inspired by ``Razborov's theorem'' 
+in a textbook by Papadimitriou
+\cite{P94}, which states that Clique cannot be encoded with a monotone
+circuit of polynomial size. 
+However the proof in the draft uses a construction based on 
+the sunflower lemma of Erdős and Rado \cite{erdos_rado},
+following a proof in Boppana and 
+Sipser \cite{BS90}. 
+There are further proofs on lower bounds of monotone circuits for Clique.
+For instance, an early result is due to Alon and Boppana \cite{AlonB87},
+where they show a slightly different lower bound (using a differently structured
+proof without the construction based on sunflowers.)
+
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

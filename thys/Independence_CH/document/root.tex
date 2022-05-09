@@ -1,0 +1,124 @@
+\documentclass[11pt,a4paper,english]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage[numbers]{natbib}
+\usepackage{babel}
+
+\usepackage{relsize}
+\DeclareRobustCommand{\isactrlbsub}{\emph\bgroup\math{}\sb\bgroup\mbox\bgroup\isaspacing\itshape\smaller}
+\DeclareRobustCommand{\isactrlesub}{\egroup\egroup\endmath\egroup}
+\DeclareRobustCommand{\isactrlbsup}{\emph\bgroup\math{}\sp\bgroup\mbox\bgroup\isaspacing\itshape\smaller}
+\DeclareRobustCommand{\isactrlesup}{\egroup\egroup\endmath\egroup}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+\newcommand{\forces}{\Vdash}
+\newcommand{\dom}{\mathsf{dom}}
+\renewcommand{\isacharunderscorekeyword}{\mbox{\_}}
+\renewcommand{\isacharunderscore}{\mbox{\_}}
+\renewcommand{\isasymtturnstile}{\isamath{\Vdash}}
+\renewcommand{\isacharminus}{-}
+\newcommand{\session}[1]{\textit{#1}}
+\newcommand{\theory}[1]{\texttt{#1}}
+\newcommand{\axiomas}[1]{\mathit{#1}}
+\newcommand{\ZFC}{\axiomas{ZFC}}
+\newcommand{\ZF}{\axiomas{ZF}}
+\newcommand{\AC}{\axiomas{AC}}
+\newcommand{\CH}{\axiomas{CH}}
+\newcommand{\calV}{\mathcal{V}}
+
+\begin{document}
+
+\title{The Independence of the Continuum Hypothesis in Isabelle/ZF}
+\author{Emmanuel Gunther\thanks{Universidad Nacional de C\'ordoba. 
+    Facultad de Matem\'atica, Astronom\'{\i}a,  F\'{\i}sica y
+    Computaci\'on.}
+  \and
+  Miguel Pagano\footnotemark[1]
+  \and
+  Pedro S\'anchez Terraf\footnotemark[1] \thanks{Centro de Investigaci\'on y Estudios de Matem\'atica
+    (CIEM-FaMAF), Conicet. C\'ordoba. Argentina.
+    Supported by Secyt-UNC project 33620180100465CB.}
+  \and
+  Mat\'{\i}as Steinberg\footnotemark[1]
+}
+\maketitle
+
+\begin{abstract}
+  We redeveloped our formalization of forcing in the set theory framework of
+  Isabelle/ZF. Under the assumption of the existence of a countable
+  transitive model of $\ZFC$, we construct proper generic extensions 
+  that satisfy the Continuum Hypothesis and its negation.
+\end{abstract}
+
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+We formalize the theory of forcing. We work on top of the Isabelle/ZF
+framework developed by \citet{DBLP:journals/jar/PaulsonG96}. Our
+mechanization is described in more detail in our papers
+\cite{2018arXiv180705174G} (LSFA 2018), \cite{2019arXiv190103313G},
+and \cite{2020arXiv200109715G} (IJCAR 2020).
+
+The main entry point of the present session is
+\theory{Definitions\_Main.thy} (Section~\ref{sec:main-definitions}),
+in which a path from fundamental set
+theoretic concepts formalized in Isabelle reaching to our main theorems
+is expounded. Cross-references to major milestones are provided there.
+
+In order to provide evidence for the correctness of several of our relativized
+definitions, we needed to assume the Axiom of Choice ($\AC$) during the
+aforementioned theory. Nevertheless, the whole of our development is
+independent of $\AC$, and the theory \theory{CH.thy} already provides
+all of our results and does not import that axiom.
+
+\subsection*{Release notes}
+\label{sec:release-notes}
+
+Previous versions of this development can be found at
+\url{https://cs.famaf.unc.edu.ar/~pedro/forcing/}.
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{root}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

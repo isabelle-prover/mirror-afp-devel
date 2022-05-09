@@ -42,6 +42,21 @@ abstract =
   algebraically, but correspondence with classical geometric definitions
   is shown.
 
+[Digit_Expansions]
+title = Digit Expansions
+author = Jonas Bayer <mailto:jonas.bayer999@gmail.com>, Marco David <mailto:marco.david@hotmail.de>, Abhik Pal <mailto:apal@ucsd.edu>, Benedikt Stock <mailto:benedikt1999@freenet.de>
+topic = Mathematics/Number theory
+date = 2022-04-20
+notify = jonas.bayer999@gmail.com, marco.david@hotmail.de, benedikt1999@freenet.de
+abstract =
+  We formalize how a natural number can be expanded into its digits in
+  some base and prove properties about functions that operate on digit
+  expansions. This includes the formalization of concepts such as digit
+  shifts and carries. For a base that is a power of 2 we formalize the
+  binary AND, binary orthogonality and binary masking of two natural
+  numbers. This library on digit expansions builds the basis for the
+  formalization of the DPRM theorem.
+
 [Poincare_Disc]
 title = Poincaré Disc Model
 author = Danijela Simić <http://poincare.matf.bg.ac.rs/~danijela>,  Filip Marić <http://www.matf.bg.ac.rs/~filip>,  Pierre Boutry <mailto:boutry@unistra.fr>
@@ -193,6 +208,19 @@ abstract =
   </p> <p> Based on this, simple executable algorithms for
   computing the fundamental solution and the infinite sequence of all
   non-negative solutions are also provided. </p>
+
+[Sophomores_Dream]
+title = The Sophomore's Dream
+author = Manuel Eberl <https://pruvisto.org>
+topic = Mathematics/Analysis
+date = 2022-04-10
+notify = manuel@pruvisto.org
+abstract =
+  <p>This article provides a brief formalisation of the two
+  equations known as the <em>Sophomore's Dream</em>,
+  first discovered by Johann Bernoulli in 1697:</p> \[\int_0^1
+  x^{-x}\,\text{d}x = \sum_{n=1}^\infty n^{-n} \quad\text{and}\quad
+  \int_0^1 x^x\,\text{d}x = -\sum_{n=1}^\infty (-n)^{-n}\]
 
 [WebAssembly]
 title = WebAssembly
@@ -10023,6 +10051,32 @@ abstract =
   for Cohen posets. We work in the set theory framework of Isabelle/ZF,
   using the Axiom of Choice as needed.
 
+[Transitive_Models]
+title = Transitive Models of Fragments of ZFC
+author = Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>, Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro>, Matías Steinberg <mailto:matias.steinberg@mi.unc.edu.ar>
+topic = Logic/Set theory
+date = 2022-03-03
+notify = sterraf@famaf.unc.edu.ar, miguel.pagano@unc.edu.ar
+abstract =
+  We extend the ZF-Constructibility library by relativizing theories of
+  the Isabelle/ZF and Delta System Lemma sessions to a transitive class.
+  We also relativize Paulson's work on Aleph and our former
+  treatment of the Axiom of Dependent Choices. This work is a
+  prerrequisite to our formalization of the independence of the
+  Continuum Hypothesis.
+
+[Independence_CH]
+title = The Independence of the Continuum Hypothesis in Isabelle/ZF
+author = Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>, Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro>, Matías Steinberg <mailto:matias.steinberg@mi.unc.edu.ar>
+topic = Logic/Set theory
+date = 2022-03-06
+notify = sterraf@famaf.unc.edu.ar, psterraf@unc.edu.ar, miguel.pagano@unc.edu.ar
+abstract =
+  We redeveloped our formalization of forcing in the set theory
+  framework of Isabelle/ZF. Under the assumption of the existence of a
+  countable transitive model of ZFC, we construct proper generic
+  extensions that satisfy the Continuum Hypothesis and its negation.
+
 [Recursion-Addition]
 title = Recursion Theorem in ZF
 author = Georgy Dunaev <mailto:georgedunaev@gmail.com>
@@ -10588,6 +10642,22 @@ abstract =
   used for the proof of the strong law is a particularly quick and slick
   one based on ergodic theory, which was formalised by Gouëzel in
   another AFP entry.</p>
+
+[Cotangent_PFD_Formula]
+title = A Proof from THE BOOK: The Partial Fraction Expansion of the Cotangent
+author = Manuel Eberl <https://pruvisto.org>
+topic = Mathematics/Analysis
+date = 2022-03-15
+notify = manuel@pruvisto.org
+abstract =
+  <p>In this article, I formalise a proof from <a
+  href="https://dx.doi.org/10.1007/978-3-662-57265-8">THE
+  BOOK</a>; namely a formula that was called ‘one of the most
+  beautiful formulas involving elementary functions’:</p> \[\pi
+  \cot(\pi z) = \frac{1}{z} + \sum_{n=1}^\infty\left(\frac{1}{z+n} +
+  \frac{1}{z-n}\right)\] <p>The proof uses Herglotz's trick
+  to show the real case and analytic continuation for the complex
+  case.</p>
 
 [BTree]
 title = A Verified Imperative Implementation of B-Trees
@@ -11996,4 +12066,218 @@ abstract =
   an explicit construction of finite fields using the factor ring of
   integers modulo a prime. Additionally, some generic results about
   independent families are shown that might be of independent interest.
+
+[ResiduatedTransitionSystem]
+title = Residuated Transition Systems
+author = Eugene W. Stark <mailto:stark@cs.stonybrook.edu>
+topic = Computer science/Automata and formal languages, Computer science/Concurrency, Computer science/Programming languages/Lambda calculi
+date = 2022-02-28
+notify = stark@cs.stonybrook.edu
+abstract =
+  <p> A <em>residuated transition system</em> (RTS) is
+  a transition system that is equipped with a certain partial binary
+  operation, called <em>residuation</em>, on transitions.
+  Using the residuation operation, one can express nuances, such as a
+  distinction between nondeterministic and concurrent choice, as well as
+  partial commutativity relationships between transitions, which are not
+  captured by ordinary transition systems. A version of residuated
+  transition systems was introduced in previous work by the author, in
+  which they were called “concurrent transition systems” in view of the
+  original motivation for their definition from the study of
+  concurrency. In the first part of the present article, we give a
+  formal development that generalizes and subsumes the original
+  presentation. We give an axiomatic definition of residuated transition
+  systems that assumes only a single partial binary operation as given
+  structure. From the axioms, we derive notions of “arrow“ (transition),
+  “source”, “target”, “identity”, as well as “composition” and “join” of
+  transitions; thereby recovering structure that in the previous work
+  was assumed as given. We formalize and generalize the result, that
+  residuation extends from transitions to transition paths, and we
+  systematically develop the properties of this extension. A significant
+  generalization made in the present work is the identification of a
+  general notion of congruence on RTS’s, along with an associated
+  quotient construction. </p> <p> In the second part of this
+  article, we use the RTS framework to formalize several results in the
+  theory of reduction in Church’s λ-calculus. Using a de Bruijn
+  index-based syntax in which terms represent parallel reduction steps,
+  we define residuation on terms and show that it satisfies the axioms
+  for an RTS. An application of the results on paths from the first part
+  of the article allows us to prove the classical Church-Rosser Theorem
+  with little additional effort. We then use residuation to define the
+  notion of “development” and we prove the Finite Developments Theorem,
+  that every development is finite, formalizing and adapting to de
+  Bruijn indices a proof by de Vrijer. We also use residuation to define
+  the notion of a “standard reduction path”, and we prove the
+  Standardization Theorem: that every reduction path is congruent to a
+  standard one. As a corollary of the Standardization Theorem, we obtain
+  the Leftmost Reduction Theorem: that leftmost reduction is a
+  normalizing strategy. </p>
+
+[Ackermanns_not_PR]
+title = Ackermann's Function Is Not Primitive Recursive
+author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
+topic = Logic/Computability
+date = 2022-03-23
+notify = lp15@cam.ac.uk
+abstract =
+  Ackermann's function is defined in the usual way and a number of
+  its elementary properties are proved. Then, the primitive recursive
+  functions are defined inductively: as a predicate on the functions
+  that map lists of  numbers to numbers. It is shown that every
+  primitive recursive function is strictly dominated by Ackermann's
+  function. The formalisation follows an earlier one by Nora Szasz.
+
+[Dedekind_Real]
+title = Constructing the Reals as Dedekind Cuts of Rationals
+author = Jacques D. Fleuriot<>, Lawrence C. Paulson<>
+topic = Mathematics/Analysis
+date = 2022-03-24
+notify = lp15@cam.ac.uk
+abstract =
+  The type of real numbers is constructed from the positive rationals
+  using the method of Dedekind cuts. This development, briefly described
+  in papers by the authors, follows the textbook presentation by
+  Gleason. It's notable that the first formalisation of a
+  significant piece of mathematics, by Jutting in 1977, involved a
+  similar construction.
+
+[FOL_Seq_Calc3]
+title = A Naive Prover for First-Order Logic
+author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
+topic = Logic/General logic/Classical first-order logic, Logic/Proof theory, Logic/General logic/Mechanization of proofs
+date = 2022-03-22
+notify = ahfrom@dtu.dk
+abstract =
+  <p> The AFP entry <a
+  href="https://www.isa-afp.org/entries/Abstract_Completeness.html">Abstract
+  Completeness</a> by Blanchette, Popescu and Traytel formalizes
+  the core of Beth/Hintikka-style completeness proofs for first-order
+  logic and can be used to formalize executable sequent calculus
+  provers. In the Journal of Automated Reasoning, the authors
+  instantiate the framework with a sequent calculus for first-order
+  logic and prove its completeness. Their use of an infinite set of
+  proof rules indexed by formulas yields very direct arguments. A fair
+  stream of these rules controls the prover, making its definition
+  remarkably simple. The AFP entry, however, only contains a toy example
+  for propositional logic. The AFP entry <a
+  href="https://www.isa-afp.org/entries/FOL_Seq_Calc2.html">A
+  Sequent Calculus Prover for First-Order Logic with Functions</a>
+  by From and Jacobsen also uses the framework, but uses a finite set of
+  generic rules resulting in a more sophisticated prover with more
+  complicated proofs. </p> <p> This entry contains an
+  executable sequent calculus prover for first-order logic with
+  functions in the style presented by Blanchette et al. The prover can
+  be exported to Haskell and this entry includes formalized proofs of
+  its soundness and completeness. The proofs are simpler than those for
+  the prover by From and Jacobsen but the performance of the prover is
+  significantly worse. </p> <p> The included theory
+  <em>Fair-Stream</em> first proves that the sequence of
+  natural numbers 0, 0, 1, 0, 1, 2, etc. is fair. It then proves that
+  mapping any surjective function across the sequence preserves
+  fairness. This method of obtaining a fair stream of rules is similar
+  to the one given by Blanchette et al. The concrete functions from
+  natural numbers to terms, formulas and rules are defined using the
+  <em>Nat-Bijection</em> theory in the HOL-Library.
+  </p>
+
+[Prefix_Free_Code_Combinators]
+title = A Combinator Library for Prefix-Free Codes
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Computer science/Algorithms, Computer science/Data structures
+date = 2022-04-08
+notify = me@eminkarayel.de
+abstract =
+  This entry contains a set of binary encodings for primitive data
+  types, such as natural numbers, integers, floating-point numbers as
+  well as combinators to construct encodings for products, lists, sets
+  or functions of/between such types.  For natural numbers and integers,
+  the entry contains various encodings, such as Elias-Gamma-Codes and
+  exponential Golomb Codes, which are efficient variable-length codes in
+  use by current compression formats.  A use-case for this library is
+  measuring the persisted size of a complex data structure without
+  having to hand-craft a dedicated encoding for it, independent of
+  Isabelle's internal representation.
+
+[Frequency_Moments]
+title = Formalization of Randomized Approximation Algorithms for Frequency Moments
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Computer science/Algorithms/Approximation, Mathematics/Probability theory
+date = 2022-04-08
+notify = me@eminkarayel.de
+abstract =
+  In 1999 Alon et. al. introduced the still active research topic of
+  approximating the frequency moments of a data stream using randomized
+  algorithms with minimal space usage. This includes the problem of
+  estimating the cardinality of the stream elements - the zeroth
+  frequency moment. But, also higher-order frequency moments that
+  provide information about the skew of the data stream. (The
+  <i>k</i>-th frequency moment of a data stream is the sum
+  of the <i>k</i>-th powers of the occurrence counts of each
+  element in the stream.) This entry formalizes three randomized
+  algorithms for the approximation of
+  <i>F<sub>0</sub></i>,
+  <i>F<sub>2</sub></i> and
+  <i>F<sub>k</sub></i> for <i>k ≥
+  3</i> based on [<a
+  href="https://doi.org/10.1006/jcss.1997.1545">1</a>,
+  <a
+  href="https://doi.org/10.1007/3-540-45726-7_1">2</a>]
+  and verifies their expected accuracy, success probability and space
+  usage.
+
+[Multiset_Ordering_NPC]
+title = The Generalized Multiset Ordering is NP-Complete
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Lukas Schmidinger <>
+topic = Logic/Rewriting
+date = 2022-04-20
+notify = rene.thiemann@uibk.ac.at
+abstract =
+  We consider the problem of comparing two multisets via the generalized
+  multiset ordering. We show that the corresponding decision problem is
+  NP-complete. To be more precise, we encode multiset-comparisons into
+  propositional formulas or into conjunctive normal forms of quadratic
+  size; we further prove that satisfiability of conjunctive normal forms
+  can be encoded as multiset-comparison problems of linear size.  As a
+  corollary, we also show that the problem of deciding whether two terms
+  are related by a recursive path order is NP-hard, provided the
+  recursive path order is based on the generalized multiset ordering.
+
+[Fishers_Inequality]
+title = Fisher's Inequality: Linear Algebraic Proof Techniques for Combinatorics
+author = Chelsea Edmonds<https://www.cst.cam.ac.uk/people/cle47>, Lawrence C. Paulson <>
+topic = Mathematics/Combinatorics, Mathematics/Algebra
+date = 2022-04-21
+notify = cle47@cam.ac.uk
+abstract =
+  Linear algebraic techniques are powerful, yet often underrated tools
+  in combinatorial proofs. This formalisation provides a library
+  including matrix representations of incidence set systems, general
+  formal proof techniques for the rank argument and linear bound
+  argument, and finally a formalisation of a number of variations of the
+  well-known Fisher's inequality. We build on our prior work
+  formalising combinatorial design theory using a locale-centric
+  approach, including extensions such as constant intersect designs and
+  dual incidence systems. In addition to Fisher's inequality, we
+  also formalise proofs on other incidence system properties using the
+  incidence matrix representation, such as design existence, dual system
+  relationships and incidence system isomorphisms. This formalisation is
+  presented in the paper "Formalising Fisher's Inequality:
+  Formal Linear Algebraic Techniques in Combinatorics", accepted to
+  ITP 2022.
+
+[Clique_and_Monotone_Circuits]
+title = Clique is not solvable by monotone circuits of polynomial size
+author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
+topic = Mathematics/Combinatorics
+date = 2022-05-08
+notify = rene.thiemann@uibk.ac.at
+abstract =
+  <p> Given a graph $G$ with $n$ vertices and a number $s$, the
+  decision problem Clique asks whether $G$ contains a fully connected
+  subgraph with $s$ vertices. For this NP-complete problem there exists
+  a non-trivial lower bound: no monotone circuit of a size that is
+  polynomial in $n$ can solve Clique. </p><p> This entry
+  provides an Isabelle/HOL formalization of a concrete lower bound (the
+  bound is $\sqrt[7]{n}^{\sqrt[8]{n}}$ for the fixed choice of $s =
+  \sqrt[4]{n}$), following a proof by Gordeev. </p>
 
