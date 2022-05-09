@@ -67,6 +67,21 @@ are related by a recursive path order is NP-hard, provided the
 recursive path order is based on the generalized multiset ordering.</description>
     </item>
     <item>
+       <title>Digit Expansions</title>
+              <link>https://www.isa-afp.org/entries/Digit_Expansions.html</link>
+       <guid>https://www.isa-afp.org/entries/Digit_Expansions.html</guid>
+       <dc:creator> Jonas Bayer, Marco David, Abhik Pal, Benedikt Stock       </dc:creator>
+       <pubDate>20 Apr 2022 00:00:00 +0000</pubDate>
+       <description>
+We formalize how a natural number a can be expanded into its digits in
+some baseUK and prove properties about functions that operate digit
+expansions. This includes the formalization of concepts such as digit
+shifts and carries. For a base that is a power of 2 we formalize the
+binary AND, binary orthogonality and binary masking of two natural
+numbers. This library on digit expansions builds the basis for the
+formalization of the DPRM theorem.</description>
+    </item>
+    <item>
        <title>The Sophomore's Dream</title>
               <link>https://www.isa-afp.org/entries/Sophomores_Dream.html</link>
        <guid>https://www.isa-afp.org/entries/Sophomores_Dream.html</guid>
@@ -650,21 +665,6 @@ demonstrate it on the standard logistic function $f(x) = \frac{1}{1 +
 e^{-x}}$ and also reproduce the example analytic function $f(x) =
 \frac{e^x}{\sqrt{sin(x)^3 + cos(x)^3}}$ used for demonstration by Fike
 and Alonso.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Gale-Shapley Algorithm</title>
-              <link>https://www.isa-afp.org/entries/Gale_Shapley.html</link>
-       <guid>https://www.isa-afp.org/entries/Gale_Shapley.html</guid>
-       <dc:creator> Tobias Nipkow       </dc:creator>
-       <pubDate>29 Dec 2021 00:00:00 +0000</pubDate>
-       <description>
-This is a stepwise refinement and proof of the Gale-Shapley stable
-matching (or marriage) algorithm down to executable code. Both a
-purely functional implementation based on lists and a functional
-implementation based on efficient arrays (provided by the Collections
-Framework in the AFP) are developed. The latter implementation runs in
-time &lt;i&gt;O(n&lt;sup&gt;2&lt;/sup&gt;)&lt;/i&gt; where
-&lt;i&gt;n&lt;/i&gt; is the cardinality of the two sets to be matched.</description>
     </item>
   </channel>
 </rss>

@@ -42,6 +42,21 @@ abstract =
   algebraically, but correspondence with classical geometric definitions
   is shown.
 
+[Digit_Expansions]
+title = Digit Expansions
+author = Jonas Bayer <mailto:jonas.bayer999@gmail.com>, Marco David <mailto:marco.david@hotmail.de>, Abhik Pal <mailto:apal@ucsd.edu>, Benedikt Stock <mailto:benedikt1999@freenet.de>
+topic = Mathematics/Number theory
+date = 2022-04-20
+notify = jonas.bayer999@gmail.com, marco.david@hotmail.de, benedikt1999@freenet.de
+abstract =
+  We formalize how a natural number a can be expanded into its digits in
+  some baseUK and prove properties about functions that operate digit
+  expansions. This includes the formalization of concepts such as digit
+  shifts and carries. For a base that is a power of 2 we formalize the
+  binary AND, binary orthogonality and binary masking of two natural
+  numbers. This library on digit expansions builds the basis for the
+  formalization of the DPRM theorem.
+
 [Poincare_Disc]
 title = Poincaré Disc Model
 author = Danijela Simić <http://poincare.matf.bg.ac.rs/~danijela>,  Filip Marić <http://www.matf.bg.ac.rs/~filip>,  Pierre Boutry <mailto:boutry@unistra.fr>
@@ -12225,7 +12240,7 @@ author = Chelsea Edmonds<https://www.cst.cam.ac.uk/people/cle47>, Lawrence C. Pa
 topic = Mathematics/Combinatorics, Mathematics/Algebra
 date = 2022-04-21
 notify = cle47@cam.ac.uk
-abstract = 
+abstract =
   Linear algebraic techniques are powerful, yet often underrated tools
   in combinatorial proofs. This formalisation provides a library
   including matrix representations of incidence set systems, general
@@ -12248,7 +12263,7 @@ author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 topic = Mathematics/Combinatorics
 date = 2022-05-08
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   <p> Given a graph $G$ with $n$ vertices and a number $s$, the
   decision problem Clique asks whether $G$ contains a fully connected
   subgraph with $s$ vertices. For this NP-complete problem there exists
