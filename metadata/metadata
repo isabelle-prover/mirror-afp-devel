@@ -194,6 +194,19 @@ abstract =
   computing the fundamental solution and the infinite sequence of all
   non-negative solutions are also provided. </p>
 
+[Sophomores_Dream]
+title = The Sophomore's Dream
+author = Manuel Eberl <https://pruvisto.org>
+topic = Mathematics/Analysis
+date = 2022-04-10
+notify = manuel@pruvisto.org
+abstract =
+  <p>This article provides a brief formalisation of the two
+  equations known as the <em>Sophomore's Dream</em>,
+  first discovered by Johann Bernoulli in 1697:</p> \[\int_0^1
+  x^{-x}\,\text{d}x = \sum_{n=1}^\infty n^{-n} \quad\text{and}\quad
+  \int_0^1 x^x\,\text{d}x = -\sum_{n=1}^\infty (-n)^{-n}\]
+
 [WebAssembly]
 title = WebAssembly
 author = Conrad Watt <http://www.cl.cam.ac.uk/~caw77/>
@@ -10025,7 +10038,7 @@ abstract =
 
 [Transitive_Models]
 title = Transitive Models of Fragments of ZFC
-author = Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>, Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro>, and Matías Steinberg <mailto:matias.steinberg@mi.unc.edu.ar>
+author = Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>, Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro>, Matías Steinberg <mailto:matias.steinberg@mi.unc.edu.ar>
 topic = Logic/Set theory
 date = 2022-03-03
 notify = sterraf@famaf.unc.edu.ar, miguel.pagano@unc.edu.ar
@@ -10039,7 +10052,7 @@ abstract =
 
 [Independence_CH]
 title = The Independence of the Continuum Hypothesis in Isabelle/ZF
-author = Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>, Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro>, and Matías Steinberg <mailto:matias.steinberg@mi.unc.edu.ar>
+author = Emmanuel Gunther <mailto:gunther@famaf.unc.edu.ar>, Miguel Pagano <https://cs.famaf.unc.edu.ar/~mpagano/>, Pedro Sánchez Terraf <https://cs.famaf.unc.edu.ar/~pedro>, Matías Steinberg <mailto:matias.steinberg@mi.unc.edu.ar>
 topic = Logic/Set theory
 date = 2022-03-06
 notify = sterraf@famaf.unc.edu.ar, psterraf@unc.edu.ar, miguel.pagano@unc.edu.ar
@@ -12083,7 +12096,7 @@ author = Lawrence C. Paulson <http://www.cl.cam.ac.uk/~lp15/>
 topic = Logic/Computability
 date = 2022-03-23
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   Ackermann's function is defined in the usual way and a number of
   its elementary properties are proved. Then, the primitive recursive
   functions are defined inductively: as a predicate on the functions
@@ -12097,7 +12110,7 @@ author = Jacques D. Fleuriot<>, Lawrence C. Paulson<>
 topic = Mathematics/Analysis
 date = 2022-03-24
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   The type of real numbers is constructed from the positive rationals
   using the method of Dedekind cuts. This development, briefly described
   in papers by the authors, follows the textbook presentation by
@@ -12111,7 +12124,7 @@ author = Asta Halkjær From <https://people.compute.dtu.dk/ahfrom/>
 topic = Logic/General logic/Classical first-order logic, Logic/Proof theory, Logic/General logic/Mechanization of proofs
 date = 2022-03-22
 notify = ahfrom@dtu.dk
-abstract = 
+abstract =
   <p> The AFP entry <a
   href="https://www.isa-afp.org/entries/Abstract_Completeness.html">Abstract
   Completeness</a> by Blanchette, Popescu and Traytel formalizes
@@ -12150,7 +12163,7 @@ author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
 topic = Computer science/Algorithms, Computer science/Data structures
 date = 2022-04-08
 notify = me@eminkarayel.de
-abstract = 
+abstract =
   This entry contains a set of binary encodings for primitive data
   types, such as natural numbers, integers, floating-point numbers as
   well as combinators to construct encodings for products, lists, sets
@@ -12168,7 +12181,7 @@ author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
 topic = Computer science/Algorithms/Approximation, Mathematics/Probability theory
 date = 2022-04-08
 notify = me@eminkarayel.de
-abstract = 
+abstract =
   In 1999 Alon et. al. introduced the still active research topic of
   approximating the frequency moments of a data stream using randomized
   algorithms with minimal space usage. This includes the problem of
@@ -12195,7 +12208,7 @@ author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Lukas Schmidinger <>
 topic = Logic/Rewriting
 date = 2022-04-20
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We consider the problem of comparing two multisets via the generalized
   multiset ordering. We show that the corresponding decision problem is
   NP-complete. To be more precise, we encode multiset-comparisons into
