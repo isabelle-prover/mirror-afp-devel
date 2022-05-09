@@ -8,7 +8,7 @@ text\<open>Finite-String.thy implements a type of strings whose lengths are boun
     We include finite strings in this AFP entry both to promote using it as the basis of future
     versions of the dL entry and simply in case the typeclass instances herein are useful. One could
     imagine using this type in file formats with fixed-length fields.\<close>
-(*  Author:     Brandon Bohrer*)
+(*  Author:     Rose Bohrer*)
 
 theory "Finite_String"
   imports 

@@ -103,31 +103,36 @@ natural numbers.</description>
        <dc:creator> Martin Raszyk       </dc:creator>
        <pubDate>13 Feb 2022 00:00:00 +0000</pubDate>
        <description>
-Runtime monitoring (or runtime verification) is an approach to
+&lt;p&gt;Runtime monitoring (or runtime verification) is an approach to
 checking compliance of a system&#39;s execution with a specification
-(e.g., a temporal query). The system&#39;s execution is logged into a
-trace---a sequence of time-points, each consisting of a time-stamp and
-observed events. A monitor is an algorithm that produces verdicts on
-the satisfaction of a temporal query on a trace.  We formalize a
-monitoring algorithm for metric dynamic logic, an extension of metric
-temporal logic with regular expressions. The monitor computes whether
-a given query is satisfied at every position in an input trace of
-time-stamped events. We formalize the time-stamps as an abstract
-algebraic structure satisfying certain assumptions. Instances of this
-structure include natural numbers, real numbers, and lexicographic
-combinations of them. Our monitor follows the multi-head paradigm: it
-reads the input simultaneously at multiple positions and moves its
-reading heads asynchronously. This mode of operation results in
-unprecedented time and space complexity guarantees for metric dynamic
-logic: The monitor&#39;s amortized time complexity to process a
-time-point and the monitor&#39;s space complexity neither depends on
-the event-rate, i.e., the number of events within a fixed time-unit,
-nor on the numeric constants occurring in the quantitative temporal
-constraints in the given query.  The multi-head monitoring algorithm
-for metric dynamic logic is reported in our paper &#34;Multi-Head
-Monitoring of Metric Dynamic Logic&#34; published at ATVA 2020. We
-have also formalized unpublished specialized algorithms for the
-temporal operators of metric temporal logic.</description>
+(e.g., a temporal formula). The system&#39;s execution is logged into a
+&lt;i&gt;trace&lt;/i&gt;&amp;mdash;a sequence of time-points, each consisting of a
+time-stamp and observed events. A &lt;i&gt;monitor&lt;/i&gt; is an algorithm that
+produces &lt;i&gt;verdicts&lt;/i&gt; on the satisfaction of a temporal formula on
+a trace.&lt;/p&gt;
+&lt;p&gt;We formalize the time-stamps as an abstract algebraic structure
+satisfying certain assumptions. Instances of this structure include
+natural numbers, real numbers, and lexicographic combinations of
+them. We also include the formalization of a conversion from the
+abstract time domain introduced by Koymans (1990) to our
+time-stamps.&lt;/p&gt;
+&lt;p&gt;We formalize a monitoring algorithm for metric dynamic logic, an
+extension of metric temporal logic with regular expressions. The
+monitor computes whether a given formula is satisfied at every
+position in an input trace of time-stamped events. Our monitor
+follows the multi-head paradigm: it reads the input simultaneously at
+multiple positions and moves its reading heads asynchronously. This
+mode of operation results in unprecedented time and space complexity
+guarantees for metric dynamic logic: The monitor&#39;s amortized time
+complexity to process a time-point and the monitor&#39;s space complexity
+neither depends on the event-rate, i.e., the number of events within
+a fixed time-unit, nor on the numeric constants occurring in the
+quantitative temporal constraints in the given formula.&lt;/p&gt;
+&lt;p&gt;The multi-head monitoring algorithm for metric dynamic logic is
+reported in our paper ``Multi-Head Monitoring of Metric Dynamic
+Logic&#39;&#39; published at ATVA 2020. We have also formalized unpublished
+specialized algorithms for the temporal operators of metric temporal
+logic.&lt;/p&gt;</description>
     </item>
     <item>
        <title>Enumeration of Equivalence Relations</title>
@@ -412,8 +417,8 @@ employ our recent formalisation of Szemerédi&#39;s Regularity Lemma,
 a major result in extremal graph theory, which we use here to prove
 the Triangle Counting Lemma and the Triangle Removal Lemma. Our
 sources are Yufei Zhao&#39;s MIT lecture notes
-&#34;&lt;a href=&#34;https://ocw.mit.edu/courses/mathematics/18-217-graph-theory-and-additive-combinatorics-fall-2019/lecture-notes/MIT18_217F19_ch3.pdf&#34;&gt;Graph Theory and Additive Combinatorics&lt;/a&gt;&#34;
-(revised version &lt;a href=&#34;https://yufeizhao.com/gtac/gtac17.pdf&#34;&gt;here&lt;/a&gt;)
+&#34;&lt;a href=&#34;https://yufeizhao.com/gtac/gtac.pdf&#34;&gt;Graph Theory and Additive Combinatorics&lt;/a&gt;&#34;
+(latest version &lt;a href=&#34;https://yufeizhao.com/gtacbook/&#34;&gt;here&lt;/a&gt;)
 and W.T. Gowers&#39;s Cambridge lecture notes
 &#34;&lt;a href=&#34;https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf&#34;&gt;Topics in Combinatorics&lt;/a&gt;&#34;.
 We also refer to the University of
@@ -649,10 +654,8 @@ the vertices of a graph need to be partitioned into such that the
 edges between the parts are random in a certain sense. This bound
 depends only on the desired precision and not on the graph itself, in
 the spirit of Ramsey&#39;s theorem. The formalisation follows online
-course notes by &lt;a
-href=&#34;https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf&#34;&gt;Tim
-Gowers&lt;/a&gt; and &lt;a
-href=&#34;https://yufeizhao.com/gtac/gtac.pdf&#34;&gt;Yufei
+course notes by &lt;a href=&#34;https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf&#34;&gt;Tim
+Gowers&lt;/a&gt; and &lt;a href=&#34;https://yufeizhao.com/gtacbook/&#34;&gt;Yufei
 Zhao&lt;/a&gt;.</description>
     </item>
   </channel>
