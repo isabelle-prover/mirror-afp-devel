@@ -1,12 +1,12 @@
 section \<open>Introduction\label{sec:intro}\<close>
 
 theory Prefix_Free_Code_Combinators
-  imports 
+  imports
     "HOL-Library.Extended_Real"
     "HOL-Library.Float"
     "HOL-Library.FuncSet"
     "HOL-Library.List_Lexorder"
-    "HOL-Library.Log_Nat" 
+    "HOL-Library.Log_Nat"
     "HOL-Library.Sublist"
 begin
 
@@ -20,21 +20,21 @@ where the objects to be encoded may be in a much smaller sets, as their type may
 For example a natural number may be known to have a given range, or a function may be
 encodable because it has a finite domain.
 
-Note: Prefix-free codes can also be automatically derived using Huffmans' algorithm, which was 
+Note: Prefix-free codes can also be automatically derived using Huffmans' algorithm, which was
 formalized by Blanchette~\cite{Huffman-AFP}. This is especially useful if it is possible to transmit
 a dictionary before the data. On the other hand these standard codes are useful, when the above is
-impractical and/or the distribution of the input is unknown or expected to be close to the one's 
+impractical and/or the distribution of the input is unknown or expected to be close to the one's
 implied by standard codes.
 
 The following section contains general definitions and results, followed by
-Section~\ref{sec:dep_enc} to \ref{sec:float_enc} where encoders for primitive types 
+Section~\ref{sec:dep_enc} to \ref{sec:float_enc} where encoders for primitive types
 and combinators are defined. Each construct is accompanied by lemmas verifying that they
 form prefix free codes as well as bounds on the bit count to encode the data.
 Section~\ref{sec:examples} concludes with a few examples.\<close>
 
 section \<open>Encodings\<close>
 
-fun opt_prefix where 
+fun opt_prefix where
   "opt_prefix (Some x) (Some y) = prefix x y" |
   "opt_prefix _ _ = False"
 
@@ -86,7 +86,7 @@ Paulson~\cite{Source_Coding_Theorem-AFP} except for the use of partial functions
 practical reasons described in Section~\ref{sec:intro}.\<close>
 
 lemma is_encodingI:
-  assumes "\<And>x x' y y'. e x = Some x' \<Longrightarrow> e y = Some y' \<Longrightarrow> 
+  assumes "\<And>x x' y y'. e x = Some x' \<Longrightarrow> e y = Some y' \<Longrightarrow>
     prefix x' y' \<Longrightarrow> x = y"
   shows "is_encoding e"
 proof -
@@ -107,7 +107,7 @@ lemma is_encodingD:
   assumes "is_encoding e"
   assumes "opt_comp (e x) (e y)"
   shows "x = y"
-  using assms by (auto simp add:opt_comp_def is_encoding_def) 
+  using assms by (auto simp add:opt_comp_def is_encoding_def)
 
 lemma encoding_imp_inj:
   assumes "is_encoding f"
@@ -123,17 +123,17 @@ lemma bit_count_finite_imp_dom:
   "bit_count (f x) < \<infinity> \<Longrightarrow> x \<in> dom f"
   by (cases "f x", auto)
 
-lemma bit_count_append: 
+lemma bit_count_append:
   "bit_count (opt_append x y) = bit_count x + bit_count y"
   by (cases x, case_tac[!] "y", simp_all)
 
 section \<open>(Dependent) Products\label{sec:dep_enc}\<close>
 
-definition encode_dependent_prod :: 
-  "'a encoding \<Rightarrow> ('a \<Rightarrow> 'b encoding) \<Rightarrow> ('a \<times> 'b) encoding" 
+definition encode_dependent_prod ::
+  "'a encoding \<Rightarrow> ('a \<Rightarrow> 'b encoding) \<Rightarrow> ('a \<times> 'b) encoding"
   (infixr "\<Join>\<^sub>e" 65)
-  where 
-    "encode_dependent_prod e f x = 
+  where
+    "encode_dependent_prod e f x =
       opt_append (e (fst x)) (f (fst x) (snd x))"
 
 lemma dependent_encoding:
@@ -145,7 +145,7 @@ proof (rule is_encodingI_2)
   assume a:"opt_comp ((e1 \<Join>\<^sub>e e2) x) ((e1 \<Join>\<^sub>e e2) y)"
   have d:"opt_comp (e1 (fst x)) (e1 (fst y))"
     using a unfolding encode_dependent_prod_def
-    by (metis opt_comp_append opt_comp_append_2) 
+    by (metis opt_comp_append opt_comp_append_2)
   hence b:"fst x = fst y"
     using is_encodingD[OF assms(1)] by simp
   hence "opt_comp (e2 (fst x) (snd x)) (e2 (fst x) (snd y))"
@@ -159,7 +159,7 @@ proof (rule is_encodingI_2)
 qed
 
 lemma dependent_bit_count:
-  "bit_count ((e\<^sub>1 \<Join>\<^sub>e e\<^sub>2) (x\<^sub>1,x\<^sub>2)) = 
+  "bit_count ((e\<^sub>1 \<Join>\<^sub>e e\<^sub>2) (x\<^sub>1,x\<^sub>2)) =
     bit_count (e\<^sub>1 x\<^sub>1) + bit_count (e\<^sub>2 x\<^sub>1 x\<^sub>2)"
   by (simp add: encode_dependent_prod_def bit_count_append)
 
@@ -170,10 +170,10 @@ lemma dependent_bit_count_2:
 
 text \<open>This abbreviation is for non-dependent products.\<close>
 
-abbreviation encode_prod :: 
+abbreviation encode_prod ::
   "'a encoding \<Rightarrow> 'b encoding \<Rightarrow> ('a \<times> 'b) encoding"
   (infixr "\<times>\<^sub>e" 65)
-  where 
+  where
     "encode_prod e1 e2 \<equiv> e1 \<Join>\<^sub>e (\<lambda>_. e2)"
 
 section \<open>Composition\<close>
@@ -193,12 +193,12 @@ lemma encoding_compose_2:
 section \<open>Natural Numbers\<close>
 
 fun encode_bounded_nat :: "nat \<Rightarrow> nat \<Rightarrow> bool list" where
-  "encode_bounded_nat (Suc l) n = 
+  "encode_bounded_nat (Suc l) n =
     (let r = n \<ge> (2^l) in r#encode_bounded_nat l (n-of_bool r*2^l))" |
   "encode_bounded_nat 0 _ = []"
 
 lemma encode_bounded_nat_prefix_free:
-  fixes u v l :: nat 
+  fixes u v l :: nat
   assumes "u < 2^l"
   assumes "v < 2^l"
   assumes "prefix (encode_bounded_nat l u) (encode_bounded_nat l v)"
@@ -209,10 +209,10 @@ proof (induction l arbitrary: u v)
   then show ?case by simp
 next
   case (Suc l)
-  have "prefix (encode_bounded_nat l (u - of_bool (u \<ge> 2^l)*2^l)) 
-    (encode_bounded_nat l (v - of_bool (v \<ge> 2^l)*2^l))" 
+  have "prefix (encode_bounded_nat l (u - of_bool (u \<ge> 2^l)*2^l))
+    (encode_bounded_nat l (v - of_bool (v \<ge> 2^l)*2^l))"
     and a:"(u \<ge> 2^l) = (v \<ge> 2^l)"
-    using Suc(4) by (simp_all add:Let_def)
+    using Suc(4) by (simp_all add: Let_def split: split_of_bool_asm)
   moreover have "u - of_bool (u \<ge> 2^l)*2^l < 2^l"
     using Suc(2) by (cases "u < 2^l", auto simp add:of_bool_def)
   moreover have "v - of_bool (v \<ge> 2^l)*2^l < 2^l"
@@ -220,16 +220,16 @@ next
   ultimately have
     "u - of_bool (u \<ge> 2^l)*2^l = v - of_bool (v \<ge> 2^l)*2^l"
     by (intro Suc(1), simp_all)
-  thus "u = v" using a by simp
+  thus "u = v" using a by (simp split: split_of_bool_asm)
 qed
 
-definition Nb\<^sub>e :: "nat \<Rightarrow> nat encoding" 
+definition Nb\<^sub>e :: "nat \<Rightarrow> nat encoding"
   where "Nb\<^sub>e l n = (
-    if n < l 
-      then Some (encode_bounded_nat (floorlog 2 (l-1)) n) 
+    if n < l
+      then Some (encode_bounded_nat (floorlog 2 (l-1)) n)
       else None)"
 
-text \<open>@{term "Nb\<^sub>e l"} is  encoding for natural numbers strictly smaller than 
+text \<open>@{term "Nb\<^sub>e l"} is  encoding for natural numbers strictly smaller than
   @{term "l"} using a fixed length encoding.\<close>
 
 lemma bounded_nat_bit_count:
@@ -253,8 +253,8 @@ lemma bounded_nat_encoding: "is_encoding (Nb\<^sub>e l)"
 proof -
   have "x < l \<Longrightarrow> x < 2 ^ floorlog 2 (l-1)" for x :: nat
     by (intro floorlog_leD floorlog_mono, auto)
-  thus ?thesis 
-    using encode_bounded_nat_prefix_free 
+  thus ?thesis
+    using encode_bounded_nat_prefix_free
     by (intro is_encodingI, simp add:Nb\<^sub>e_def split:if_splits, blast)
 qed
 
@@ -263,22 +263,22 @@ fun encode_unary_nat :: "nat \<Rightarrow> bool list" where
   "encode_unary_nat 0 = [True]"
 
 lemma encode_unary_nat_prefix_free:
-  fixes u v :: nat 
+  fixes u v :: nat
   assumes "prefix (encode_unary_nat u) (encode_unary_nat v)"
   shows "u = v"
   using assms
 proof (induction u arbitrary: v)
   case 0
-  then show ?case by (cases v, simp_all) 
+  then show ?case by (cases v, simp_all)
 next
   case (Suc u)
   then show ?case by (cases v, simp_all)
 qed
 
-definition Nu\<^sub>e :: "nat encoding" 
+definition Nu\<^sub>e :: "nat encoding"
   where "Nu\<^sub>e n = Some (encode_unary_nat n)"
 
-text \<open>@{term "Nu\<^sub>e"} is encoding for natural numbers using unary encoding. It is 
+text \<open>@{term "Nu\<^sub>e"} is encoding for natural numbers using unary encoding. It is
 inefficient except for special cases, where the probability of large numbers decreases
 exponentially with its magnitude.\<close>
 
@@ -287,27 +287,27 @@ lemma unary_nat_bit_count:
   unfolding Nu\<^sub>e_def by (induction n, auto)
 
 lemma unary_encoding: "is_encoding Nu\<^sub>e"
-    using encode_unary_nat_prefix_free 
+    using encode_unary_nat_prefix_free
     by (intro is_encodingI, simp add:Nu\<^sub>e_def)
 
 text \<open>Encoding for positive numbers using Elias-Gamma code.\<close>
 
 definition Ng\<^sub>e :: "nat encoding" where
-  "Ng\<^sub>e n = 
-    (if n > 0 
-      then (Nu\<^sub>e \<Join>\<^sub>e (\<lambda>r. Nb\<^sub>e (2^r))) 
-        (let r = floorlog 2 n - 1 in (r, n - 2^r)) 
+  "Ng\<^sub>e n =
+    (if n > 0
+      then (Nu\<^sub>e \<Join>\<^sub>e (\<lambda>r. Nb\<^sub>e (2^r)))
+        (let r = floorlog 2 n - 1 in (r, n - 2^r))
       else None)"
 
 text \<open>@{term "Ng\<^sub>e"} is an encoding for positive numbers using Elias-Gamma encoding\cite{elias1975}.\<close>
 
-lemma elias_gamma_bit_count: 
+lemma elias_gamma_bit_count:
   "bit_count (Ng\<^sub>e n) = (if n > 0 then 2 * \<lfloor>log 2 n\<rfloor> + 1 else (\<infinity>::ereal))"
 proof (cases "n > 0")
   case True
   define r where "r = floorlog 2 n - Suc 0"
   have "floorlog 2 n \<noteq> 0"
-    using True 
+    using True
     by (simp add:floorlog_eq_zero_iff)
   hence a:"floorlog 2 n > 0" by simp
 
@@ -324,7 +324,7 @@ proof (cases "n > 0")
   ultimately have c:"floorlog 2 (2 ^ r - Suc 0) = r"
     using order_antisym by blast
 
-  have "bit_count (Ng\<^sub>e n) = bit_count (Nu\<^sub>e r) + 
+  have "bit_count (Ng\<^sub>e n) = bit_count (Nu\<^sub>e r) +
     bit_count (Nb\<^sub>e (2 ^ r) (n - 2 ^ r))"
     using True by (simp add:Ng\<^sub>e_def r_def[symmetric] dependent_bit_count)
   also have "... = ereal (r + 1) + ereal (r)"
@@ -341,7 +341,7 @@ qed
 
 lemma elias_gamma_encoding: "is_encoding Ng\<^sub>e"
 proof -
-  have a: "inj_on (\<lambda>x. let r = floorlog 2 x - 1 in (r, x - 2 ^ r)) 
+  have a: "inj_on (\<lambda>x. let r = floorlog 2 x - 1 in (r, x - 2 ^ r))
     {n. 0 < n}"
   proof (rule inj_onI)
     fix x y :: nat
@@ -350,9 +350,9 @@ proof -
     assume "y \<in> {n. 0 < n}"
     hence y_pos: "0 < y" by simp
     define r where "r = floorlog 2 x - Suc 0"
-    assume b:"(let r = floorlog 2 x - 1 in (r, x - 2 ^ r)) = 
+    assume b:"(let r = floorlog 2 x - 1 in (r, x - 2 ^ r)) =
       (let r = floorlog 2 y - 1 in (r, y - 2 ^ r))"
-    hence c:"r = floorlog 2 y - Suc 0" 
+    hence c:"r = floorlog 2 y - Suc 0"
       by (simp_all add:Let_def r_def)
     have "x - 2^r = y - 2^r" using b
       by (simp add:Let_def r_def[symmetric] c[symmetric]  prod_eq_iff)
@@ -365,14 +365,14 @@ proof -
 
   have "is_encoding (\<lambda>n. Ng\<^sub>e n)"
     unfolding Ng\<^sub>e_def using a
-    by (intro encoding_compose[where f="Nu\<^sub>e \<Join>\<^sub>e (\<lambda>r. Nb\<^sub>e (2^r))"] 
+    by (intro encoding_compose[where f="Nu\<^sub>e \<Join>\<^sub>e (\<lambda>r. Nb\<^sub>e (2^r))"]
         dependent_encoding unary_encoding bounded_nat_encoding) auto
   thus ?thesis by simp
 qed
 
 definition N\<^sub>e :: "nat encoding" where "N\<^sub>e x = Ng\<^sub>e (x+1)"
 
-text \<open>@{term "N\<^sub>e"} is an encoding for all natural numbers using exponential Golomb 
+text \<open>@{term "N\<^sub>e"} is an encoding for all natural numbers using exponential Golomb
 encoding~\cite{teuhola1978}. Exponential Golomb codes are also used in video compression
 applications~\cite{richardson2010}.\<close>
 
@@ -384,15 +384,15 @@ proof -
   thus ?thesis by simp
 qed
 
-lemma exp_golomb_bit_count_exact: 
+lemma exp_golomb_bit_count_exact:
   "bit_count (N\<^sub>e n) = 2 * \<lfloor>log 2 (n+1)\<rfloor> + 1"
   by (simp add:N\<^sub>e_def elias_gamma_bit_count)
 
-lemma exp_golomb_bit_count: 
+lemma exp_golomb_bit_count:
   "bit_count (N\<^sub>e n) \<le> (2 * log 2 (real n+1) + 1)"
   by (simp add:exp_golomb_bit_count_exact add.commute)
 
-lemma exp_golomb_bit_count_est: 
+lemma exp_golomb_bit_count_est:
   assumes "n \<le> m "
   shows "bit_count (N\<^sub>e n) \<le> (2 * log 2 (real m+1) + 1)"
 proof -
@@ -418,31 +418,31 @@ proof -
   have "inj (\<lambda>x. nat (if x \<le> 0 then - 2 * x else 2 * x - 1))"
     by (rule inj_onI, auto simp add:eq_nat_nat_iff, presburger)
   thus ?thesis
-    unfolding I\<^sub>e_def 
+    unfolding I\<^sub>e_def
     by (intro exp_golomb_encoding encoding_compose_2[where f="N\<^sub>e"])
       auto
 qed
 
-lemma int_bit_count: "bit_count (I\<^sub>e n) = 2 * \<lfloor>log 2 (2*\<bar>n\<bar>+1)\<rfloor> +1" 
+lemma int_bit_count: "bit_count (I\<^sub>e n) = 2 * \<lfloor>log 2 (2*\<bar>n\<bar>+1)\<rfloor> +1"
 proof -
-  have a:"m > 0 \<Longrightarrow> 
+  have a:"m > 0 \<Longrightarrow>
     \<lfloor>log (real 2) (real (2 * m))\<rfloor> = \<lfloor>log (real 2) (real (2 * m + 1))\<rfloor>"
     for m :: nat by (rule  floor_log_eq_if, auto)
-  have "n > 0 \<Longrightarrow> 
+  have "n > 0 \<Longrightarrow>
     \<lfloor>log 2 (2 * real_of_int n)\<rfloor> = \<lfloor>log 2 (2 * real_of_int n + 1)\<rfloor>"
     using  a[where m="nat n"] by (simp add:add.commute)
   thus ?thesis
     by (simp add:I\<^sub>e_def exp_golomb_bit_count_exact floorlog_def)
 qed
 
-lemma int_bit_count_1: 
+lemma int_bit_count_1:
   assumes "abs n > 0"
-  shows "bit_count (I\<^sub>e n) = 2 * \<lfloor>log 2 \<bar>n\<bar>\<rfloor> +3" 
+  shows "bit_count (I\<^sub>e n) = 2 * \<lfloor>log 2 \<bar>n\<bar>\<rfloor> +3"
 proof -
-  have a:"m > 0 \<Longrightarrow> 
+  have a:"m > 0 \<Longrightarrow>
     \<lfloor>log (real 2) (real (2 * m))\<rfloor> = \<lfloor>log (real 2) (real (2 * m + 1))\<rfloor>"
     for m :: nat by (rule  floor_log_eq_if, auto)
-  have "n < 0 \<Longrightarrow> 
+  have "n < 0 \<Longrightarrow>
     \<lfloor>log 2 (-2 * real_of_int n)\<rfloor> = \<lfloor>log 2 (1-2 * real_of_int n)\<rfloor>"
     using a[where m="nat (-n)"] by (simp add:add.commute)
   hence "bit_count (I\<^sub>e n) = 2 * \<lfloor>log 2 (2*real_of_int \<bar>n\<bar>)\<rfloor> +1"
@@ -453,7 +453,7 @@ proof -
   finally show ?thesis by simp
 qed
 
-lemma int_bit_count_est_1: 
+lemma int_bit_count_est_1:
   assumes "\<bar>n\<bar> \<le> r"
   shows "bit_count (I\<^sub>e n) \<le> 2 * log 2 (r+1) +3"
 proof (cases "abs n > 0")
@@ -462,10 +462,10 @@ proof (cases "abs n > 0")
     using of_int_floor_le by blast
   also have "... \<le> log 2 (real_of_int r+1)"
     using True assms by force
-  finally have 
+  finally have
     "real_of_int \<lfloor>log 2 \<bar>real_of_int n\<bar>\<rfloor> \<le> log 2 (real_of_int r + 1)"
     by simp
-  then show ?thesis 
+  then show ?thesis
     using True assms by (simp add:int_bit_count_1)
 next
   case False
@@ -474,7 +474,7 @@ next
   ultimately show ?thesis by (simp add:I\<^sub>e_def exp_golomb_bit_count_exact)
 qed
 
-lemma int_bit_count_est: 
+lemma int_bit_count_est:
   assumes "\<bar>n\<bar> \<le> r"
   shows "bit_count (I\<^sub>e n) \<le> 2 * log 2 (2*r+1) +1"
 proof -
@@ -488,12 +488,12 @@ qed
 section \<open>Lists\<close>
 
 definition Lf\<^sub>e where
-  "Lf\<^sub>e e n xs = 
-    (if length xs = n 
+  "Lf\<^sub>e e n xs =
+    (if length xs = n
       then fold (\<lambda>x y. opt_append y (e x)) xs (Some [])
       else None)"
 
-text \<open>@{term "Lf\<^sub>e e n"} is an encoding for lists of length @{term"n"}, 
+text \<open>@{term "Lf\<^sub>e e n"} is an encoding for lists of length @{term"n"},
 where the elements are encoding using the encoder @{term "e"}.\<close>
 
 lemma fixed_list_encoding:
@@ -511,15 +511,15 @@ next
     assume a:"opt_comp (Lf\<^sub>e e (Suc n) x) (Lf\<^sub>e e (Suc n) y)"
     have b:"length x = Suc n" using a
       by (cases "length x = Suc n", simp_all add:Lf\<^sub>e_def opt_comp_def)
-    then obtain x1 x2 where x_def: "x = x1@[x2]" "length x1 = n" 
-      by (metis length_append_singleton lessI nat.inject order.refl 
+    then obtain x1 x2 where x_def: "x = x1@[x2]" "length x1 = n"
+      by (metis length_append_singleton lessI nat.inject order.refl
           take_all take_hd_drop)
     have c:"length y = Suc n" using a
       by (cases "length y = Suc n", simp_all add:Lf\<^sub>e_def opt_comp_def)
-    then obtain y1 y2 where y_def: "y = y1@[y2]" "length y1 = n" 
+    then obtain y1 y2 where y_def: "y = y1@[y2]" "length y1 = n"
       by (metis length_append_singleton lessI nat.inject order.refl
           take_all take_hd_drop)
-    have d: "opt_comp (opt_append (Lf\<^sub>e e n x1) (e x2)) 
+    have d: "opt_comp (opt_append (Lf\<^sub>e e n x1) (e x2))
       (opt_append (Lf\<^sub>e e n y1) (e y2)) "
       using a b c by (simp add:Lf\<^sub>e_def x_def y_def)
     hence "opt_comp (Lf\<^sub>e e n x1)  (Lf\<^sub>e e n y1)"
@@ -534,8 +534,8 @@ next
   qed
 qed
 
-lemma fixed_list_bit_count: 
-  "bit_count (Lf\<^sub>e e n xs) = 
+lemma fixed_list_bit_count:
+  "bit_count (Lf\<^sub>e e n xs) =
     (if length xs = n then (\<Sum>x \<leftarrow> xs. (bit_count (e x))) else \<infinity>)"
 proof (induction n arbitrary: xs)
   case 0
@@ -545,7 +545,7 @@ next
   show ?case
   proof (cases "length xs = Suc n")
     case True
-    then obtain x1 x2 where x_def: "xs = x1@[x2]" "length x1 = n" 
+    then obtain x1 x2 where x_def: "xs = x1@[x2]" "length x1 = n"
       by (metis length_append_singleton lessI nat.inject order.refl
           take_all take_hd_drop)
     have "bit_count (Lf\<^sub>e e n x1) = (\<Sum>x\<leftarrow>x1. bit_count (e x))"
@@ -586,7 +586,7 @@ lemma sum_list_triv_ereal:
 lemma list_bit_count:
   "bit_count (L\<^sub>e e xs) = (\<Sum>x \<leftarrow> xs. bit_count (e x) + 1) + 1"
 proof -
-  have "bit_count (L\<^sub>e e xs) = 
+  have "bit_count (L\<^sub>e e xs) =
     ereal (1 + real (length xs)) + (\<Sum>x\<leftarrow>xs. bit_count (e x))"
     by (simp add: L\<^sub>e_def dependent_bit_count fixed_list_bit_count unary_nat_bit_count)
   also have "... = (\<Sum>x\<leftarrow>xs. bit_count (e x)) +  (\<Sum>x \<leftarrow> xs. 1) + 1"
@@ -598,9 +598,9 @@ qed
 
 section \<open>Functions\<close>
 
-definition encode_fun :: "'a list \<Rightarrow> 'b encoding \<Rightarrow> ('a \<Rightarrow> 'b) encoding" 
+definition encode_fun :: "'a list \<Rightarrow> 'b encoding \<Rightarrow> ('a \<Rightarrow> 'b) encoding"
   (infixr "\<rightarrow>\<^sub>e" 65)  where
-  "encode_fun xs e f = 
+  "encode_fun xs e f =
     (if f \<in> extensional (set xs)
       then (Lf\<^sub>e e (length xs) (map f xs))
       else None)"
@@ -616,13 +616,13 @@ proof -
     by (rule inj_onI) (simp add: extensionalityI)
   have "is_encoding (\<lambda>x. (xs \<rightarrow>\<^sub>e e) x)"
     unfolding encode_fun_def
-    by (intro encoding_compose[where f="Lf\<^sub>e e (length xs)"] 
+    by (intro encoding_compose[where f="Lf\<^sub>e e (length xs)"]
         fixed_list_encoding assms a)
   thus ?thesis by simp
 qed
 
-lemma fun_bit_count: 
-  "bit_count ((xs \<rightarrow>\<^sub>e e) f) = 
+lemma fun_bit_count:
+  "bit_count ((xs \<rightarrow>\<^sub>e e) f) =
     (if f \<in> extensional (set xs) then (\<Sum>x \<leftarrow> xs. bit_count (e (f x))) else \<infinity>)"
   by (simp add:encode_fun_def fixed_list_bit_count comp_def)
 
@@ -643,9 +643,9 @@ qed
 section \<open>Finite Sets\<close>
 
 definition S\<^sub>e :: "'a encoding \<Rightarrow> 'a set encoding" where
-  "S\<^sub>e e S = 
-    (if finite S \<and> S \<subseteq> dom e 
-      then (L\<^sub>e e (linorder.sorted_key_list_of_set (\<le>) (the \<circ> e) S)) 
+  "S\<^sub>e e S =
+    (if finite S \<and> S \<subseteq> dom e
+      then (L\<^sub>e e (linorder.sorted_key_list_of_set (\<le>) (the \<circ> e) S))
       else None)"
 
 text \<open>@{term "S\<^sub>e e"} is an encoding for finite sets whose elements are encoded using the
@@ -667,36 +667,36 @@ proof -
   thus ?thesis by simp
 qed
 
-lemma set_bit_count: 
+lemma set_bit_count:
   assumes "is_encoding e"
   shows "bit_count (S\<^sub>e e S) = (if finite S then (\<Sum>x \<in> S. bit_count (e x)+1)+1 else \<infinity>)"
 proof (cases "finite S")
   case f:True
-  have "bit_count (S\<^sub>e e S) = (\<Sum>x\<in>S. bit_count (e x)+1)+1" 
+  have "bit_count (S\<^sub>e e S) = (\<Sum>x\<in>S. bit_count (e x)+1)+1"
   proof (cases "S \<subseteq> dom e")
     case True
 
     have a:"inj_on (the \<circ> e) (dom e)"
       using inj_on_def by (intro comp_inj_on encoding_imp_inj[OF assms], fastforce)
-  
+
     interpret folding_insort_key "(\<le>)" "(<)" "(dom e)" "(the \<circ> e)"
       using a by (unfold_locales) auto
 
-    have b:"distinct (linorder.sorted_key_list_of_set (\<le>) (the \<circ> e) S)" 
+    have b:"distinct (linorder.sorted_key_list_of_set (\<le>) (the \<circ> e) S)"
       (is "distinct ?l") using distinct_sorted_key_list_of_set True
         distinct_if_distinct_map by auto
 
     have "bit_count (S\<^sub>e e S) = (\<Sum>x\<leftarrow>?l. bit_count (e x) + 1) + 1"
       using f True by (simp add:S\<^sub>e_def list_bit_count)
     also have "... = (\<Sum>x\<in>S. bit_count (e x)+1)+1"
-      by (simp add: sum_list_distinct_conv_sum_set[OF b] 
+      by (simp add: sum_list_distinct_conv_sum_set[OF b]
           set_sorted_key_list_of_set[OF True f])
     finally show ?thesis by simp
   next
     case False
-    hence "\<exists>i\<in>S. e i = None" by force 
+    hence "\<exists>i\<in>S. e i = None" by force
     hence "\<exists>i\<in>S. bit_count (e i) = \<infinity>" by force
-    hence "(\<Sum>x\<in>S. bit_count (e x) + 1) = \<infinity>" 
+    hence "(\<Sum>x\<in>S. bit_count (e x) + 1) = \<infinity>"
       by (simp add:sum_Pinfty f)
     then show ?thesis using False by (simp add:S\<^sub>e_def)
   qed
@@ -769,14 +769,14 @@ lemma suc_n_le_2_pow_n:
   by (induction n, simp, simp)
 
 lemma float_bit_count_1:
-  "bit_count (F\<^sub>e f) \<le> 6 + 2 * (log 2 (\<bar>mantissa f\<bar> + 1) + 
+  "bit_count (F\<^sub>e f) \<le> 6 + 2 * (log 2 (\<bar>mantissa f\<bar> + 1) +
     log 2 (\<bar>exponent f\<bar> + 1))" (is "?lhs \<le> ?rhs")
 proof -
-  have "?lhs = bit_count (I\<^sub>e (mantissa f)) + 
+  have "?lhs = bit_count (I\<^sub>e (mantissa f)) +
     bit_count (I\<^sub>e (exponent f))"
     by (simp add:F\<^sub>e_def dependent_bit_count)
-  also have "... \<le> 
-    ereal (2 * log 2 (real_of_int (\<bar>mantissa f\<bar> + 1)) + 3) + 
+  also have "... \<le>
+    ereal (2 * log 2 (real_of_int (\<bar>mantissa f\<bar> + 1)) + 3) +
     ereal (2 * log 2 (real_of_int (\<bar>exponent f\<bar> + 1)) + 3)"
     by (intro int_bit_count_est_1 add_mono) auto
   also have "... = ?rhs"
@@ -791,10 +791,10 @@ lemma float_bit_count_2:
   fixes m :: int
   fixes e :: int
   defines "f \<equiv> float_of (m * 2 powr e)"
-  shows "bit_count (F\<^sub>e f) \<le> 
+  shows "bit_count (F\<^sub>e f) \<le>
     6 + 2 * (log 2 (\<bar>m\<bar> + 2) + log 2 (\<bar>e\<bar> + 1))"
 proof -
-  have b:" (r + 1) * int i \<le> r * (2 ^ i - 1) + 1" 
+  have b:" (r + 1) * int i \<le> r * (2 ^ i - 1) + 1"
     if b_assms: "r \<ge> 1" for r :: int and i :: nat
   proof (cases "i > 0")
     case True
@@ -802,14 +802,14 @@ proof -
       using True by (simp add:algebra_simps)
     also have "... \<le> r * i + int (2^1) * int (2^(i-1)) - i"
       using b_assms
-      by (intro add_mono diff_mono mult_mono of_nat_mono suc_n_le_2_pow_n) 
+      by (intro add_mono diff_mono mult_mono of_nat_mono suc_n_le_2_pow_n)
         simp_all
     also have "... = r * i + 2^i - i"
       using True
-      by (subst of_nat_mult[symmetric], subst power_add[symmetric]) 
+      by (subst of_nat_mult[symmetric], subst power_add[symmetric])
         simp
     also have "... = r *i + 1 * (2 ^ i - int i - 1) + 1"  by simp
-    also have "... \<le> r *i + r * (2 ^ i - int i - 1) + 1"  
+    also have "... \<le> r *i + r * (2 ^ i - int i - 1) + 1"
       using b_assms
       by (intro add_mono mult_mono, simp_all)
     also have "... = r * (2 ^ i - 1) + 1"
@@ -821,14 +821,14 @@ proof -
     then show ?thesis by simp
   qed
 
-  have a:"log 2 (\<bar>mantissa f\<bar> + 1) + log 2 (\<bar>exponent f\<bar> + 1) \<le> 
+  have a:"log 2 (\<bar>mantissa f\<bar> + 1) + log 2 (\<bar>exponent f\<bar> + 1) \<le>
     log 2 (\<bar>m\<bar>+2) + log 2 (\<bar>e\<bar>+1)"
   proof (cases "f=0")
     case True then show ?thesis by simp
   next
     case False
-    moreover have "f = Float m e" 
-      by (simp add:f_def Float.abs_eq) 
+    moreover have "f = Float m e"
+      by (simp add:f_def Float.abs_eq)
     ultimately obtain i :: nat
       where m_def: "m = mantissa f * 2 ^ i"
         and e_def: "e = exponent f - i"
@@ -837,7 +837,7 @@ proof -
     have mantissa_ge_1: "1 \<le> \<bar>mantissa f\<bar>"
       using False mantissa_noteq_0 by fastforce
 
-    have "(\<bar>mantissa f\<bar> + 1) * (\<bar>exponent f\<bar> + 1) = 
+    have "(\<bar>mantissa f\<bar> + 1) * (\<bar>exponent f\<bar> + 1) =
       (\<bar>mantissa f\<bar> + 1) * (\<bar>e+i\<bar>+1)"
       by (simp add:e_def)
     also have "...  \<le> (\<bar>mantissa f\<bar> + 1) * ((\<bar>e\<bar>+\<bar>i\<bar>)+1)"
@@ -846,29 +846,29 @@ proof -
       by simp
     also have "... = (\<bar>mantissa f\<bar> + 1) * (\<bar>e\<bar>+1) + (\<bar>mantissa f\<bar>+1)*i"
       by (simp add:algebra_simps)
-    also have "... \<le> (\<bar>mantissa f\<bar> + 1) * (\<bar>e\<bar>+1) + (\<bar>mantissa f\<bar> * (2^i-1)+1)" 
-      by (intro add_mono b mantissa_ge_1, simp) 
+    also have "... \<le> (\<bar>mantissa f\<bar> + 1) * (\<bar>e\<bar>+1) + (\<bar>mantissa f\<bar> * (2^i-1)+1)"
+      by (intro add_mono b mantissa_ge_1, simp)
     also have "... = (\<bar>mantissa f\<bar> + 1) * (\<bar>e\<bar>+1) + (\<bar>mantissa f\<bar> * (2^i-1)+1)*(1)"
       by simp
-    also have 
-      "... \<le> (\<bar>mantissa f\<bar> + 1) * (\<bar>e\<bar>+1) + (\<bar>mantissa f\<bar>*  (2^i-1)+1)*(\<bar>e\<bar>+1)" 
+    also have
+      "... \<le> (\<bar>mantissa f\<bar> + 1) * (\<bar>e\<bar>+1) + (\<bar>mantissa f\<bar>*  (2^i-1)+1)*(\<bar>e\<bar>+1)"
       by (intro add_mono mult_left_mono, simp_all)
     also have "... = ((\<bar>mantissa f\<bar> + 1)+(\<bar>mantissa f\<bar>*  (2^i-1)+1))*(\<bar>e\<bar>+1)"
       by (simp add:algebra_simps)
-    also have "... = (\<bar>mantissa f\<bar>*2^i+2)*(\<bar>e\<bar>+1)" 
+    also have "... = (\<bar>mantissa f\<bar>*2^i+2)*(\<bar>e\<bar>+1)"
       by (simp add:algebra_simps)
-    also have "... = (\<bar>m\<bar>+2)*(\<bar>e\<bar>+1)" 
+    also have "... = (\<bar>m\<bar>+2)*(\<bar>e\<bar>+1)"
       by (simp add:m_def abs_mult)
     finally have "(\<bar>mantissa f\<bar> + 1) * (\<bar>exponent f\<bar> + 1) \<le> (\<bar>m\<bar>+2)*(\<bar>e\<bar>+1)"
       by simp
 
-    hence "(\<bar>real_of_int (mantissa f)\<bar> + 1) * (\<bar>of_int (exponent f)\<bar> + 1) \<le> 
-      (\<bar>of_int m\<bar>+2)*(\<bar>of_int e\<bar>+1)" 
-      by (simp flip:of_int_abs) (metis (mono_tags, opaque_lifting) numeral_One 
+    hence "(\<bar>real_of_int (mantissa f)\<bar> + 1) * (\<bar>of_int (exponent f)\<bar> + 1) \<le>
+      (\<bar>of_int m\<bar>+2)*(\<bar>of_int e\<bar>+1)"
+      by (simp flip:of_int_abs) (metis (mono_tags, opaque_lifting) numeral_One
           of_int_add of_int_le_iff of_int_mult of_int_numeral)
     then show ?thesis by (simp add:log_mult[symmetric])
   qed
-  have "bit_count (F\<^sub>e f) \<le> 
+  have "bit_count (F\<^sub>e f) \<le>
     6 + 2 * (log 2 (\<bar>mantissa f\<bar> + 1) + log 2 (\<bar>exponent f\<bar> + 1))"
     using float_bit_count_1 by simp
   also have "... \<le> 6 + 2 * (log 2 (\<bar>m\<bar> + 2) + log 2 (\<bar>e\<bar> + 1))"
@@ -878,7 +878,7 @@ qed
 
 lemma float_bit_count_zero:
   "bit_count (F\<^sub>e (float_of 0)) = 2"
-  by (simp add:F\<^sub>e_def dependent_bit_count int_bit_count 
+  by (simp add:F\<^sub>e_def dependent_bit_count int_bit_count
       zero_float.abs_eq[symmetric])
 
 

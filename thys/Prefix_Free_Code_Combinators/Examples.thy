@@ -28,7 +28,7 @@ begin \<^marker>\<open>tag visible\<close>
   define example2
     where "example2 = [0..<42] \<rightarrow>\<^sub>e Nb\<^sub>e 314"
 
-  text \<open>The second example illustrates the use of the combinator @{term "(\<rightarrow>\<^sub>e)"}, which allows 
+  text \<open>The second example illustrates the use of the combinator @{term "(\<rightarrow>\<^sub>e)"}, which allows
   encoding functions with a known finite encodable domain, here we assume the values are smaller
   than @{term "314"} on the domain @{term "{..<42}"}.\<close>
 
