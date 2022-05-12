@@ -932,9 +932,9 @@ next
 qed
 
 
-subsection \<open>Algorithm 4': single-loop variant\<close>
+subsubsection \<open>Algorithm 4.1: single-loop variant\<close>
 
-lemma Gale_Shapley4': "VARS A B a a' ai b
+lemma Gale_Shapley4_1: "VARS A B a a' ai b
  [ai = 0 \<and> a = 0 \<and> A = replicate n 0 \<and> B = (\<lambda>_. None)]
  WHILE ai < n
  INV { invAM A ({<ai+1} - {a}) \<and> invAB A B ({<ai+1} - {a}) \<and> (a \<le> ai \<and> ai \<le> n) \<and> (ai=n \<longrightarrow> a=ai)}
@@ -1145,12 +1145,92 @@ next
 qed
 
 
-subsection \<open>Algorithm 5': single-loop variant\<close>
+subsubsection \<open>Algorithm 5.1: single-loop variant\<close>
 
 definition invar2' where
 [simp]: "invar2' A B M ai a \<equiv> (invAM A ({<ai+1} - {a}) \<and> invAB2 A B M ({<ai+1} - {a}) \<and> a \<le> ai \<and> ai \<le> n)"
 
-lemma Gale_Shapley5': "VARS A B M a a' ai b
+lemma pres2':
+assumes "invar2' A B M ai a" "ai < n" "var A ({<ai + 1} - {a}) = v"
+and after[simp]: "b = match A a" "a' = B ! b" "A1 = A[a' := A ! a' + 1]" "A2 = A[a := A ! a + 1]"
+shows
+  "(\<not> M ! b \<longrightarrow>
+    invar2' A (B[b := a]) (M[b := True]) (ai + 1) (ai + 1) \<and> var A ({<ai + 1 + 1} - {ai + 1}) < v) \<and>
+   (M ! b \<longrightarrow>
+    (P\<^sub>b ! match A a' \<turnstile> a < a' \<longrightarrow> invar2' A1 (B[b := a]) M ai a' \<and> var A1 ({<ai + 1} - {a'}) < v) \<and>
+    (\<not> P\<^sub>b ! match A a' \<turnstile> a < a' \<longrightarrow> invar2' A2 B M ai a \<and> var A2 ({<ai + 1} - {a}) < v))"
+proof -
+  let ?M = "{<ai+1} - {a}"
+  have invAM: "invAM A ?M" and m: "matching A ?M" and A: "wf A" and M: "?M \<subseteq> {<n}"
+    and pref_match: "pref_match A ?M"
+    and v: "var A ?M = v" and as: "a \<le> ai \<and> ai < n" and invAB: "invAB2 A B M ?M"
+    using assms by auto
+  note invar = assms(1)
+  note pref_match' = pref_match[THEN pref_match'_iff[OF A, THEN iffD2]]
+  hence pref_match1: "\<forall>a<n. preferred A a \<subseteq> match A ` ?M" unfolding pref_match'_def by blast
+  have a: "a < n \<and> a \<notin> ?M" using as by (simp)
+  show ?thesis (is "(\<not> ?matched \<longrightarrow> ?THEN) \<and> (?matched \<longrightarrow> ?ELSE)")
+  proof (rule; rule)
+    assume "\<not> ?matched"
+    then have nm: "match A a \<notin> match A ` ?M" using invAB unfolding ran_def
+      apply (clarsimp simp: set_eq_iff) by metis
+    show ?THEN
+    proof(rule conjI, goal_cases)
+      have *: "{<ai + 1 + 1} - {ai + 1} = {<ai + 1}" by auto
+      have **: "{<ai + 1} - {a} \<union> {a} = {<ai + 1}" using as by auto
+      hence invAM': "invAM A {<ai+1}" using invAM_match[OF invAM a nm] by simp
+      have invAB': "invAB2 A (B[match A a := a]) (M[match A a := True]) {<ai+1}"
+        using invAB \<open>\<not> ?matched\<close> **
+        by (simp add: A a \<alpha>update1 match_less_n nth_list_update)
+      case 1 show ?case using invAM' as invAB' *
+        by (simp add: Suc_le_eq plus_1_eq_Suc)
+      case 2 show ?case
+        using var_match[OF m M _ pref_match1, of a] a atLeast0LessThan * **
+        unfolding v by (metis lessThan_iff)
+    qed
+  next
+    assume matched: "?matched"
+    let ?a = "B ! match A a"
+    have a': "?a \<in> ?M \<and> match A ?a = match A a"
+      using invAB match_less_n[OF A] a matched after by (metis \<alpha>_Some ranI)
+    hence "?a < n" "a \<noteq> ?a" using a M atLeast0LessThan by auto
+    have inj_dom: "inj_on (\<alpha> B M) (dom (\<alpha> B M))" by (metis (mono_tags) domD inj_onI invAB)
+    show ?ELSE (is "(?pref \<longrightarrow> ?THEN) \<and> (\<not> ?pref \<longrightarrow> ?ELSE)")
+    proof (rule; rule)
+      assume ?pref
+      show ?THEN
+      proof (rule conjI, goal_cases)
+        have *: "{<ai + 1} - {a} - {?a} \<union> {a} = {<ai + 1} - {?a}" using a a' as by auto
+        have a'neq: "\<forall>b<n. b \<noteq> match A a \<longrightarrow> M!b \<longrightarrow> ?a \<noteq> B!b"
+          using invAB a' by force
+        have invAB': "invAB (A[B ! match A a := A ! ?a + 1]) (\<alpha> (B[match A a := a]) M) ({<ai + 1} - {?a})"
+          using invAB_swap[OF invAB[THEN conjunct1] a a' inj_dom] * match_less_n[OF A] a matched invAB
+          by(simp add:\<alpha>update2)
+        case 1 show ?case using invAM_swap[OF invAM a a'] \<open>?pref\<close> invAB invAB' unfolding *
+          using a' as by simp
+        case 2
+        have "card({<ai + 1} - {?a}) = card({<ai + 1} - {a})" using a a' as by auto
+        thus ?case using v var_next[OF m M _ pref_match1, of ?a] \<open>?a < n\<close> a atLeast0LessThan
+          by (metis Suc_eq_plus1 lessThan_iff var_def after)
+      qed
+    next
+      assume "\<not> ?pref"
+      show ?ELSE
+      proof (rule conjI, goal_cases)
+        case 1
+        have "invAB2 (A[a := A ! a + 1]) B M ?M" using invAB a
+          by (metis match_def nth_list_update_neq ranI)
+        thus ?case using invAM_next[OF invAM a a'] \<open>\<not> ?pref\<close> invar after
+          by (meson invar2'_def)
+        case 2
+        show ?case using a v var_next[OF m M _ pref_match1, of a] after
+          by (metis Suc_eq_plus1 atLeast0LessThan lessThan_iff) 
+      qed
+    qed
+  qed
+qed
+
+lemma Gale_Shapley5_1: "VARS A B M a a' ai b
  [ai = 0 \<and> a = 0 \<and> A = replicate n 0 \<and> length B = n \<and> M = replicate n False]
  WHILE ai < n
  INV { invar2' A B M ai a }
@@ -1174,78 +1254,8 @@ next
     using atLeast0_lessThan_Suc by force
 next
   case (2 v A B M a a' ai b)
-  let ?M = "{<ai+1} - {a}"
-  have invAM: "invAM A ?M" and m: "matching A ?M" and A: "wf A" and M: "?M \<subseteq> {<n}"
-    and pref_match: "pref_match A ?M"
-    and v: "var A ?M = v" and as: "a \<le> ai \<and> ai < n" and invAB: "invAB2 A B M ?M"
-    using 2 by auto
-  note invar = 2[THEN conjunct1,THEN conjunct1]
-  note pref_match' = pref_match[THEN pref_match'_iff[OF A, THEN iffD2]]
-  hence pref_match1: "\<forall>a<n. preferred A a \<subseteq> match A ` ?M" unfolding pref_match'_def by blast
-  have a: "a < n \<and> a \<notin> ?M" using as by (simp)
-  show ?case (is "(?not_matched \<longrightarrow> ?THEN) \<and> (\<not> ?not_matched \<longrightarrow> ?ELSE)")
-  proof (rule; rule)
-    assume ?not_matched
-    then have nm: "match A a \<notin> match A ` ?M" using invAB unfolding ran_def
-      apply (clarsimp simp: set_eq_iff) by metis
-    show ?THEN
-    proof(simp only:mem_Collect_eq prod.case, rule conjI, goal_cases)
-      have *: "{<ai + 1 + 1} - {ai + 1} = {<ai + 1}" by auto
-      have **: "{<ai + 1} - {a} \<union> {a} = {<ai + 1}" using as by auto
-      hence invAM': "invAM A {<ai+1}" using invAM_match[OF invAM a nm] by simp
-      have invAB': "invAB2 A (B[match A a := a]) (M[match A a := True]) {<ai+1}"
-        using invAB \<open>?not_matched\<close> **
-        by (simp add: A a \<alpha>update1 match_less_n nth_list_update)
-      case 1 show ?case using invAM' as invAB' *
-        by (simp add: Suc_le_eq plus_1_eq_Suc)
-      case 2 show ?case
-        using var_match[OF m M _ pref_match1, of a] a atLeast0LessThan * **
-        unfolding v by (metis lessThan_iff)
-    qed
-  next
-    assume matched: "\<not> ?not_matched"
-    let ?a = "B ! match A a"
-    have a': "?a \<in> ?M \<and> match A ?a = match A a"
-      using invAB match_less_n[OF A] a matched by (metis \<alpha>_Some ranI)
-    hence "?a < n" "a \<noteq> ?a" using a M atLeast0LessThan by auto
-    show ?ELSE unfolding option.sel
-    proof (goal_cases)
-      have inj_dom: "inj_on (\<alpha> B M) (dom (\<alpha> B M))" by (metis (mono_tags) domD inj_onI invAB)
-      case 1
-      show ?case (is "(?pref \<longrightarrow> ?THEN) \<and> (\<not> ?pref \<longrightarrow> ?ELSE)")
-      proof (rule; rule)
-        assume ?pref
-        show ?THEN
-        proof (simp only: mem_Collect_eq prod.case, rule conjI, goal_cases)
-          have *: "{<ai + 1} - {a} - {?a} \<union> {a} = {<ai + 1} - {?a}" using a a' as by auto
-          have a'neq: "\<forall>b<n. b \<noteq> match A a \<longrightarrow> M!b \<longrightarrow> ?a \<noteq> B!b"
-            using invAB a' by force
-          have invAB': "invAB (A[B ! match A a := A ! ?a + 1]) (\<alpha> (B[match A a := a]) M) ({<ai + 1} - {?a})"
-            using invAB_swap[OF invAB[THEN conjunct1] a a' inj_dom] * match_less_n[OF A] a matched invAB
-            by(simp add:\<alpha>update2)
-          case 1 show ?case using invAM_swap[OF invAM a a' \<open>?pref\<close>] invAB invAB' unfolding *
-            using a' as by simp
-          case 2
-          have "card({<ai + 1} - {?a}) = card({<ai + 1} - {a})" using a a' as by auto
-          thus ?case using v var_next[OF m M _ pref_match1, of ?a] \<open>?a < n\<close> a atLeast0LessThan
-            by (metis Suc_eq_plus1 lessThan_iff var_def)
-        qed
-      next
-        assume "\<not> ?pref"
-        show ?ELSE
-        proof (simp only: mem_Collect_eq prod.case, rule conjI, goal_cases)
-          case 1
-          have "invAB2 (A[a := A ! a + 1]) B M ?M" using invAB a
-            by (metis match_def nth_list_update_neq ranI)
-          thus ?case using invAM_next[OF invAM a a' \<open>\<not> ?pref\<close>] using "2"
-            by (meson invar2'_def)
-          case 2
-          show ?case using a v var_next[OF m M _ pref_match1, of a]
-            by (metis Suc_eq_plus1 atLeast0LessThan lessThan_iff) 
-        qed
-      qed
-    qed
-  qed
+  thus ?case using pres2'
+    by (simp only:mem_Collect_eq prod.case) blast
 qed
 
 
@@ -1269,7 +1279,7 @@ qed
 lemma inner_pres:
 assumes R: "\<forall>b<n. \<forall>a1<n. \<forall>a2<n. R ! b ! a1 < R ! b ! a2 \<longleftrightarrow> P\<^sub>b ! b \<turnstile> a1 < a2" and
   inv: "invar2 A B M ai a" and m: "M ! b" and v: "var A {<ai} = v"
-  and after: "A1 = A[B ! b := A ! (B ! b) + 1]" "A2 = A[a := A ! a + 1]"
+  and after: "A1 = A[a' := A ! a' + 1]" "A2 = A[a := A ! a + 1]"
     "a' = B!b" "r = R ! match A a'" "b = match A a"
 shows "(r ! a < r ! a' \<longrightarrow> invar2 A1 (B[b:=a]) M ai a' \<and> var A1 {<ai} < v) \<and>
   (\<not> r ! a < r ! a' \<longrightarrow> invar2 A2 B M ai a \<and> var A2 {<ai} < v)"
@@ -1299,10 +1309,10 @@ proof -
       using invAB_swap[OF invAB a a' inj_dom] * match_less_n[OF A] a m
       by (simp add: \<alpha>update2 inv')
     show ?case using invAM_swap[OF invAM a a'] unstab invAB' inv a'
-      unfolding * by (simp add: insert_absorb \<alpha>update2)
+      unfolding * by (simp)
   next
     case 2
-      show ?case using v var_next[OF mat M \<open>?M \<noteq> {<n}\<close> pref_match1 \<open>?a < n\<close>] card assms(5,9)
+      show ?case using v var_next[OF mat M \<open>?M \<noteq> {<n}\<close> pref_match1 \<open>?a < n\<close>] card assms(5,7,9)
         by (metis Suc_eq_plus1 var_def)
   next
     have *: "\<forall>b. b < n \<and> M!b \<longrightarrow> a \<noteq> B!b" by (metis invAB ranI \<alpha>_Some a)
@@ -1388,7 +1398,7 @@ qed
 lemma inner_pres2:
 assumes R: "\<forall>b<n. \<forall>a1<n. \<forall>a2<n. R\<^sub>b ! b ! a1 < R\<^sub>b ! b ! a2 \<longleftrightarrow> P\<^sub>b ! b \<turnstile> a1 < a2" and
   inv: "invar2 A B M ai a" and m: "M ! b" and v: "var0 A {<n} = v"
-  and after: "A1 = A[B ! b := A ! (B ! b) + 1]" "A2 = A[a := A ! a + 1]"
+  and after: "A1 = A[a' := A ! a' + 1]" "A2 = A[a := A ! a + 1]"
     "a' = B!b" "r = R\<^sub>b ! match A a'" "b = match A a"
 shows "(r ! a < r ! a' \<longrightarrow> invar2 A1 (B[b:=a]) M ai a' \<and> var0 A1 {<n} < v) \<and>
   (\<not> r ! a < r ! a' \<longrightarrow> invar2 A2 B M ai a \<and> var0 A2 {<n} < v)"
@@ -1492,6 +1502,159 @@ next
 qed
 
 
+subsubsection \<open>Algorithm 6.1: single-loop variant\<close>
+
+lemma R_iff_P:
+assumes "R\<^sub>b = map ranking P\<^sub>b" "invar2' A B M ai a" "ai < n" "M ! match A a"
+shows "(R\<^sub>b ! match A (B ! match A a) ! a < R\<^sub>b ! match A (B ! match A a) ! (B ! match A a)) =
+  (P\<^sub>b ! match A (B ! match A a) \<turnstile> a < B ! match A a)"
+proof -
+  have R: "\<forall>b<n. \<forall>a1<n. \<forall>a2<n. R\<^sub>b ! b ! a1 < R\<^sub>b ! b ! a2 \<longleftrightarrow> P\<^sub>b ! b \<turnstile> a1 < a2"
+    by (simp add: P\<^sub>b_set \<open>R\<^sub>b = _\<close> length_P\<^sub>b ranking_iff_pref)
+  let ?M = "{<ai+1} - {a}"
+  have A: "wf A" and M: "?M \<subseteq> {<n}" and as: "a < n" and invAB: "invAB2 A B M ?M"
+      using assms(2,3) by auto
+  have a': "B ! match A a \<in> ?M"
+    using invAB match_less_n[OF A] as \<open>M!match A a\<close> by (metis \<alpha>_Some ranI)
+  hence "B ! match A a < n" using M by auto
+  thus ?thesis using assms R match_less_n by auto
+qed
+
+
+lemma Gale_Shapley6_1:
+assumes "R\<^sub>b = map ranking P\<^sub>b"
+shows "VARS A B M a a' ai b r
+ [ai = 0 \<and> a = 0 \<and> A = replicate n 0 \<and> length B = n \<and> M = replicate n False]
+ WHILE ai < n
+ INV { invar2' A B M ai a }
+ VAR {var A ({<ai+1} - {a})}
+ DO b := match A a;
+  IF \<not> M ! b
+  THEN B[b] := a; M[b] := True; ai := ai + 1; a := ai
+  ELSE a' := B ! b; r := R\<^sub>b ! match A a';
+       IF r ! a < r ! a'
+       THEN B[b] := a; A[a'] := A!a'+1; a := a'
+       ELSE A[a] := A!a+1
+       FI
+  FI 
+ OD
+ [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+proof (vcg_tc, goal_cases)
+  case 1 thus ?case
+   by(auto simp: pref_match_def P\<^sub>a_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+next
+  case 3 thus ?case using pref_match_stable atLeast0_lessThan_Suc by force
+next
+  case (2 v A B M a a' ai)
+  have R': "M ! match A a \<Longrightarrow>
+    (R\<^sub>b ! match A (B ! match A a) ! a < R\<^sub>b ! match A (B ! match A a) ! (B ! match A a)) =
+     (P\<^sub>b ! match A (B ! match A a) \<turnstile> a < B ! match A a)"
+    using R_iff_P 2 assms by blast
+  show ?case
+    apply(simp only:mem_Collect_eq prod.case)
+    using 2 R' pres2'[of A B M ai a] by presburger
+qed
+
+(* TODO: rm? *)
+lemma Gale_Shapley6_1_explicit:
+assumes "R\<^sub>b = map ranking P\<^sub>b"
+shows "VARS A B M a a' ai b r
+ [ai = 0 \<and> a = 0 \<and> A = replicate n 0 \<and> length B = n \<and> M = replicate n False]
+ WHILE ai < n
+ INV { invar2' A B M ai a }
+ VAR {var A ({<ai+1} - {a})}
+ DO b := match A a;
+  IF \<not> M ! b
+  THEN B[b] := a; M[b] := True; ai := ai + 1; a := ai
+  ELSE a' := B ! b; r := R\<^sub>b ! match A a';
+       IF r ! a < r ! a'
+       THEN B[b] := a; A[a'] := A!a'+1; a := a'
+       ELSE A[a] := A!a+1
+       FI
+  FI 
+ OD
+ [matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A]"
+proof (vcg_tc, goal_cases)
+  case 1 thus ?case
+   by(auto simp: pref_match_def P\<^sub>a_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+next
+  case 3 thus ?case using pref_match_stable
+    using atLeast0_lessThan_Suc by force
+next
+  case (2 v A B M a a' ai b)
+  let ?M = "{<ai+1} - {a}"
+  have invAM: "invAM A ?M" and m: "matching A ?M" and A: "wf A" and M: "?M \<subseteq> {<n}"
+    and pref_match: "pref_match A ?M"
+    and v: "var A ?M = v" and as: "a \<le> ai \<and> ai < n" and invAB: "invAB2 A B M ?M"
+    using 2 by auto
+  note invar = 2[THEN conjunct1,THEN conjunct1]
+  note pref_match' = pref_match[THEN pref_match'_iff[OF A, THEN iffD2]]
+  hence pref_match1: "\<forall>a<n. preferred A a \<subseteq> match A ` ?M" unfolding pref_match'_def by blast
+  have a: "a < n \<and> a \<notin> ?M" using as by (simp)
+  show ?case (is "(?not_matched \<longrightarrow> ?THEN) \<and> (\<not> ?not_matched \<longrightarrow> ?ELSE)")
+  proof (rule; rule)
+    assume ?not_matched
+    then have nm: "match A a \<notin> match A ` ?M" using invAB unfolding ran_def
+      apply (clarsimp simp: set_eq_iff) by metis
+    show ?THEN
+    proof(simp only:mem_Collect_eq prod.case, rule conjI, goal_cases)
+      have *: "{<ai + 1 + 1} - {ai + 1} = {<ai + 1}" by auto
+      have **: "{<ai + 1} - {a} \<union> {a} = {<ai + 1}" using as by auto
+      hence invAM': "invAM A {<ai+1}" using invAM_match[OF invAM a nm] by simp
+      have invAB': "invAB2 A (B[match A a := a]) (M[match A a := True]) {<ai+1}"
+        using invAB \<open>?not_matched\<close> **
+        by (simp add: A a \<alpha>update1 match_less_n nth_list_update)
+      case 1 show ?case using invAM' as invAB' *
+        by (simp add: Suc_le_eq plus_1_eq_Suc)
+      case 2 show ?case
+        using var_match[OF m M _ pref_match1, of a] a atLeast0LessThan * **
+        unfolding v by (metis lessThan_iff)
+    qed
+  next
+    assume matched: "\<not> ?not_matched"
+    let ?a = "B ! match A a"
+    have a': "?a \<in> ?M \<and> match A ?a = match A a"
+      using invAB match_less_n[OF A] a matched by (metis \<alpha>_Some ranI)
+    hence "?a < n" "a \<noteq> ?a" using a M atLeast0LessThan by auto
+    have inj_dom: "inj_on (\<alpha> B M) (dom (\<alpha> B M))" by (metis (mono_tags) domD inj_onI invAB)
+    show ?ELSE (is "(?pref \<longrightarrow> ?THEN) \<and> (\<not> ?pref \<longrightarrow> ?ELSE)")
+    proof (rule; rule)
+      assume ?pref
+      show ?THEN
+      proof (simp only: mem_Collect_eq prod.case, rule conjI, goal_cases)
+        have *: "{<ai + 1} - {a} - {?a} \<union> {a} = {<ai + 1} - {?a}" using a a' as by auto
+        have a'neq: "\<forall>b<n. b \<noteq> match A a \<longrightarrow> M!b \<longrightarrow> ?a \<noteq> B!b"
+          using invAB a' by force
+        have invAB': "invAB (A[B ! match A a := A ! ?a + 1]) (\<alpha> (B[match A a := a]) M) ({<ai + 1} - {?a})"
+          using invAB_swap[OF invAB[THEN conjunct1] a a' inj_dom] * match_less_n[OF A] a matched invAB
+          by(simp add:\<alpha>update2)
+        have pref: "P\<^sub>b ! match A ?a \<turnstile> a < ?a" using A P\<^sub>b_set \<open>?a < n\<close> \<open>?pref\<close> a assms length_P\<^sub>b
+          by(auto simp: match_less_n ranking_iff_pref)
+        case 1 show ?case (* changed *)
+          using invAM_swap[OF invAM a a' pref] invAB invAB' a' as unfolding *
+          by (simp add: match_less_n ranking_iff_pref)
+        case 2
+        have "card({<ai + 1} - {?a}) = card({<ai + 1} - {a})" using a a' as by auto
+        thus ?case using v var_next[OF m M _ pref_match1, of ?a] \<open>?a < n\<close> a atLeast0LessThan
+          by (metis Suc_eq_plus1 lessThan_iff var_def)
+      qed
+    next
+      assume "\<not> ?pref"
+      show ?ELSE
+      proof (simp only: mem_Collect_eq prod.case, rule conjI, goal_cases)
+        case 1
+        have "invAB2 (A[a := A ! a + 1]) B M ?M" using invAB a
+          by (metis match_def nth_list_update_neq ranI)
+        thus ?case using invAM_next[OF invAM a a'] \<open>\<not> ?pref\<close>  \<open>B ! match A a < n\<close> P\<^sub>b_set 2 assms
+          by (simp add: invar2'_def length_P\<^sub>b match_less_n ranking_iff_pref) (* changed *)
+        case 2
+        show ?case using a v var_next[OF m M _ pref_match1, of a]
+          by (metis Suc_eq_plus1 atLeast0LessThan lessThan_iff) 
+      qed
+    qed
+  qed
+qed
+
 end
 
 
@@ -1516,6 +1679,19 @@ definition
      let (A,B,a,b) = gs_inner P\<^sub>a R\<^sub>b M (A, B, ai, P\<^sub>a ! ai ! (A ! ai))
      in (A, B[b:=a], M[b:=True], ai+1))
   (replicate n 0, replicate n 0, replicate n False,0)"
+
+definition
+"gs1 n P\<^sub>a R\<^sub>b =
+  while (\<lambda>(A,B,M,ai,a). ai < n)
+   (\<lambda>(A,B,M,ai,a).
+     let b = P\<^sub>a ! a ! (A ! a) in
+     if \<not> M ! b
+     then (A, B[b := a], M[b := True], ai+1, ai+1)
+     else let a' = B ! b; r = R\<^sub>b ! (P\<^sub>a ! a' ! (A ! a')) in
+       if r ! a < r ! a'
+       then (A[a' := A!a'+1], B[b := a], M, ai, a')
+       else (A[a := A!a+1], B, M, ai, a))
+  (replicate n 0, replicate n 0, replicate n False, 0, 0)"
 
 context Pref
 begin
@@ -1578,6 +1754,39 @@ next
   case 4
   show ?case by simp
 qed
+
+
+lemma gs1: assumes "R\<^sub>b = map ranking P\<^sub>b"
+shows "gs1 n P\<^sub>a R\<^sub>b = (A,BMaia) \<longrightarrow> matching A {<n} \<and> stable A {<n} \<and> opti\<^sub>a A"
+unfolding gs1_def
+proof(rule while_rule2[where P = "\<lambda>(A,B,M,ai,a). invar2' A B M ai a"
+  and r = "measure (%(A, B, M, ai, a). Pref.var P\<^sub>a A ({<ai+1} - {a}))"], goal_cases)
+  case 1 show ?case
+    by(auto simp: stable_def pref_match_def P\<^sub>a_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+next
+  case (2 s)
+  obtain A B M ai a where s: "s =  (A, B, M, ai, a)"
+    using prod_cases5 by blast
+  hence 1: "invar2' A B M ai a" "ai < n" using 2 by (simp_all)
+  have R': "M ! match A a \<Longrightarrow>
+    (R\<^sub>b ! match A (B ! match A a) ! a < R\<^sub>b ! match A (B ! match A a) ! (B ! match A a)) =
+     (P\<^sub>b ! match A (B ! match A a) \<turnstile> a < B ! match A a)"
+    using R_iff_P[OF assms 1] by linarith
+  show ?case 
+    using 1 R' pres2'[OF 1]
+    apply(simp only: s mem_Collect_eq prod.case Let_def in_measure match_def split: if_split)
+    by blast
+next
+  case (3 s)
+  obtain B M ai a where "BMaia =  (B, M, ai, a)"
+    using prod_cases4 by blast
+  with 3 show ?case
+    using pref_match_stable atLeast0_lessThan_Suc by force
+next
+  case 4
+  show ?case by simp
+qed
+
 
 end
 
