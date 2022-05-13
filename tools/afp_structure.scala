@@ -8,8 +8,7 @@ package afp
 import isabelle._
 
 
-class AFP_Structure private(base_dir: Path)
-{
+class AFP_Structure private(base_dir: Path) {
   /* files */
 
   private val metadata_dir = base_dir + Path.basic("metadata")
@@ -31,8 +30,7 @@ class AFP_Structure private(base_dir: Path)
 
   /* load */
 
-  private def load[A](file: Path, parser: afp.TOML.T => A): A =
-  {
+  private def load[A](file: Path, parser: afp.TOML.T => A): A = {
     val content = File.read(file)
     val toml = TOML.parse(content)
     parser(toml)
@@ -50,8 +48,8 @@ class AFP_Structure private(base_dir: Path)
     authors: Map[Metadata.Author.ID, Metadata.Author],
     topics: Map[Metadata.Topic.ID, Metadata.Topic],
     licenses: Map[Metadata.License.ID, Metadata.License],
-    releases: Map[Metadata.Entry.Name, List[Metadata.Release]]): Metadata.Entry =
-  {
+    releases: Map[Metadata.Entry.Name, List[Metadata.Release]]
+  ): Metadata.Entry = {
     val entry_releases = releases.getOrElse(name, error("No releases for entry " + name))
     load(entry_file(name), toml =>
       Metadata.TOML.to_entry(toml ++ TOML.T("name" -> name), authors, topics, licenses, entry_releases))
@@ -60,8 +58,7 @@ class AFP_Structure private(base_dir: Path)
 
   /* save */
 
-  private def save(file: Path, content: afp.TOML.T): Unit =
-  {
+  private def save(file: Path, content: afp.TOML.T): Unit = {
     file.file.mkdirs()
     File.write(file, TOML.Format(content))
   }
@@ -81,8 +78,7 @@ class AFP_Structure private(base_dir: Path)
 
   /* sessions */
 
-  def entries: List[Metadata.Entry.Name] =
-  {
+  def entries: List[Metadata.Entry.Name] = {
     val Entry = """([a-zA-Z0-9+_-]+)\.toml""".r
     val file_entries = File.read_dir(entries_dir).map {
       case Entry(name) => name
@@ -112,7 +108,6 @@ class AFP_Structure private(base_dir: Path)
     Sessions.parse_root(thys_dir + Path.make(List(name, "ROOT"))).collect { case e: Sessions.Session_Entry => e }
 }
 
-object AFP_Structure
-{
+object AFP_Structure {
   def apply(base_dir: Path = Path.explode("$AFP_BASE")): AFP_Structure = new AFP_Structure(base_dir.absolute)
 }

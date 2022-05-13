@@ -28,8 +28,7 @@ object AFP_Check_Roots
       }
   }
 
-  def afp_checks(afp_dir: Path, excludes: List[String]): List[Check[_]] =
-  {
+  def afp_checks(afp_dir: Path, excludes: List[String]): List[Check[_]] = {
     val check_timeout = new Check[(String, List[String])](
       run = { (tree, selected) =>
         selected.flatMap { name =>

@@ -10,21 +10,17 @@ import isabelle._
 import afp.Metadata.{Affiliation, Author, Email, Homepage}
 
 
-object AFP_Site_Gen
-{
+object AFP_Site_Gen {
   /* json */
 
-  object JSON
-  {
+  object JSON {
     type T = isabelle.JSON.T
 
-    object Object
-    {
+    object Object {
       type T = isabelle.JSON.Object.T
     }
 
-    def from_authors(authors: List[Metadata.Author]): T =
-    {
+    def from_authors(authors: List[Metadata.Author]): T = {
       authors.map(author => author.id -> isabelle.JSON.Object(
         "name" -> author.name,
         "emails" -> author.emails.map(_.address),
@@ -34,10 +30,9 @@ object AFP_Site_Gen
     def from_topics(topics: List[Metadata.Topic]): T =
       topics.map(topic => isabelle.JSON.Object(topic.name -> from_topics(topic.sub_topics)))
 
-    def from_affiliations(affiliations: List[Metadata.Affiliation]): Object.T =
-    {
-      Utils.group_sorted(affiliations, (a: Metadata.Affiliation) => a.author).view.mapValues(author_affiliations =>
-      {
+    def from_affiliations(affiliations: List[Metadata.Affiliation]): Object.T = {
+      Utils.group_sorted(affiliations, (a: Metadata.Affiliation) => a.author).view.mapValues(
+      { author_affiliations =>
         val homepage = author_affiliations.collectFirst { case Metadata.Homepage(_, _, url) => url }
         val email = author_affiliations.collectFirst { case Metadata.Email(_, _, address) => address }
 
@@ -47,8 +42,7 @@ object AFP_Site_Gen
       }).toMap
     }
 
-    def from_change_history(history: Metadata.Change_History): Object.T =
-    {
+    def from_change_history(history: Metadata.Change_History): Object.T = {
       if (history.isEmpty) {
         Map.empty
       } else {
@@ -90,8 +84,7 @@ object AFP_Site_Gen
     "[^\\w\\s()'.,;:-]".r -> " ",
     "\\s+".r -> " ")
 
-  def extract_keywords(text: String): List[String] =
-  {
+  def extract_keywords(text: String): List[String] = {
     val stripped_text =
       replacements.foldLeft(text) { case (res, (regex, replacement)) => regex.replaceAllIn(res, replacement) }
 
@@ -110,8 +103,8 @@ object AFP_Site_Gen
     status_file: Option[Path],
     afp_structure: AFP_Structure,
     clean: Boolean = false,
-    progress: Progress = new Progress()): Unit =
-  {
+    progress: Progress = new Progress()
+  ): Unit = {
     /* clean old */
 
     if (clean) {
@@ -275,8 +268,8 @@ object AFP_Site_Gen
     out_dir: Path, layout: Hugo.Layout,
     do_watch: Boolean = false,
     clean: Boolean = false,
-    progress: Progress = new Progress()): Unit =
-  {
+    progress: Progress = new Progress()
+  ): Unit = {
     if (clean) {
       progress.echo("Cleaning output dir...")
       Hugo.clean(out_dir)
@@ -296,56 +289,57 @@ object AFP_Site_Gen
 
   /* tool wrapper */
 
-  val isabelle_tool = Isabelle_Tool("afp_site_gen", "generates afp website source", Scala_Project.here, args =>
-  {
-    var base_dir = Path.explode("$AFP_BASE")
-    var status_file: Option[Path] = None
-    var hugo_dir = base_dir + Path.make(List("web", "hugo"))
-    var out_dir: Path = base_dir + Path.make(List("web", "out"))
-    var build_only = false
-    var devel_mode = false
-    var fresh = false
+  val isabelle_tool = Isabelle_Tool("afp_site_gen", "generates afp website source",
+    Scala_Project.here,
+    { args =>
+      var base_dir = Path.explode("$AFP_BASE")
+      var status_file: Option[Path] = None
+      var hugo_dir = base_dir + Path.make(List("web", "hugo"))
+      var out_dir: Path = base_dir + Path.make(List("web", "out"))
+      var build_only = false
+      var devel_mode = false
+      var fresh = false
 
-    val getopts = Getopts("""
-Usage: isabelle afp_site_gen [OPTIONS]
+      val getopts = Getopts("""
+  Usage: isabelle afp_site_gen [OPTIONS]
 
-  Options are:
-    -B DIR       afp base dir (default """" + base_dir.implode + """")
-    -D FILE      build status file for devel version
-    -H DIR       generated hugo project dir (default """" + hugo_dir.implode + """")
-    -O DIR       output dir for build (default """ + out_dir.implode + """)
-    -b           build only
-    -d           devel mode (overrides hugo dir, builds site in watch mode)
-    -f           fresh build: clean up existing hugo and build directories
+    Options are:
+      -B DIR       afp base dir (default """" + base_dir.implode + """")
+      -D FILE      build status file for devel version
+      -H DIR       generated hugo project dir (default """" + hugo_dir.implode + """")
+      -O DIR       output dir for build (default """ + out_dir.implode + """)
+      -b           build only
+      -d           devel mode (overrides hugo dir, builds site in watch mode)
+      -f           fresh build: clean up existing hugo and build directories
 
-  Generates the AFP website source. HTML files of entries are dynamically loaded.
-  Providing a status file will build the development version of the archive.
-  Site will be built from generated source if output dir is specified.
-""",
-      "B:" -> (arg => base_dir = Path.explode(arg)),
-      "D:" -> (arg => status_file = Some(Path.explode(arg))),
-      "H:" -> (arg => hugo_dir = Path.explode(arg)),
-      "O:" -> (arg => out_dir = Path.explode(arg)),
-      "b" -> (_ => build_only = true),
-      "d" -> (_ => devel_mode = true),
-      "f" -> (_ => fresh = true))
+    Generates the AFP website source. HTML files of entries are dynamically loaded.
+    Providing a status file will build the development version of the archive.
+    Site will be built from generated source if output dir is specified.
+  """,
+        "B:" -> (arg => base_dir = Path.explode(arg)),
+        "D:" -> (arg => status_file = Some(Path.explode(arg))),
+        "H:" -> (arg => hugo_dir = Path.explode(arg)),
+        "O:" -> (arg => out_dir = Path.explode(arg)),
+        "b" -> (_ => build_only = true),
+        "d" -> (_ => devel_mode = true),
+        "f" -> (_ => fresh = true))
 
-    getopts(args)
+      getopts(args)
 
-    if (devel_mode) hugo_dir = base_dir + Path.make(List("admin", "site"))
+      if (devel_mode) hugo_dir = base_dir + Path.make(List("admin", "site"))
 
-    val afp_structure = AFP_Structure(base_dir)
-    val layout = Hugo.Layout(hugo_dir)
-    val progress = new Console_Progress()
+      val afp_structure = AFP_Structure(base_dir)
+      val layout = Hugo.Layout(hugo_dir)
+      val progress = new Console_Progress()
 
-    if (!build_only) {
-      progress.echo("Preparing site generation in " + hugo_dir.implode)
+      if (!build_only) {
+        progress.echo("Preparing site generation in " + hugo_dir.implode)
 
-      afp_site_gen(layout = layout, status_file = status_file, afp_structure = afp_structure,
+        afp_site_gen(layout = layout, status_file = status_file, afp_structure = afp_structure,
+          clean = fresh, progress = progress)
+      }
+
+      afp_build_site(out_dir = out_dir, layout = layout, do_watch = devel_mode,
         clean = fresh, progress = progress)
-    }
-
-    afp_build_site(out_dir = out_dir, layout = layout, do_watch = devel_mode,
-      clean = fresh, progress = progress)
-  })
+    })
 }

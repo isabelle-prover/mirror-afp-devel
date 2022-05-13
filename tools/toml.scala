@@ -18,23 +18,19 @@ import scala.util.parsing.input.CharArrayReader.EofCh
 import java.time.{LocalDate, LocalDateTime, LocalTime, OffsetDateTime}
 
 
-object TOML
-{
+object TOML {
   type Key = String
   type V = Any
 
   type T = Map[Key, V]
 
-  object T
-  {
+  object T {
     def apply(entries: (Key, V)*): T = ListMap(entries: _*)
 
     def apply(entries: List[(Key, V)]): T = ListMap(entries: _*)
 
-    def unapply(t: Map[_, V]): Option[T] =
-    {
-      if (t.keys.forall(_.isInstanceOf[Key])) Some(t.asInstanceOf[T])
-      else None
+    def unapply(t: Map[_, V]): Option[T] = {
+      if (t.keys.forall(_.isInstanceOf[Key])) Some(t.asInstanceOf[T]) else None
     }
   }
 
@@ -52,21 +48,18 @@ object TOML
 
   /* lexer */
 
-  object Kind extends Enumeration
-  {
+  object Kind extends Enumeration {
     val KEYWORD, IDENT, STRING, COMMENT, ERROR = Value
   }
 
-  sealed case class Token(kind: Kind.Value, text: String)
-  {
+  sealed case class Token(kind: Kind.Value, text: String) {
     def is_ident: Boolean = kind == Kind.IDENT
     def is_keyword(name: String): Boolean = kind == Kind.KEYWORD && text == name
     def is_string: Boolean = kind == Kind.STRING
     def is_error: Boolean = kind == Kind.ERROR
   }
 
-  object Lexer extends Scanners with Scan.Parsers
-  {
+  object Lexer extends Scanners with Scan.Parsers {
     override type Elem = Char
     type Token = TOML.Token
 
@@ -119,8 +112,7 @@ object TOML
 
   /* parser */
 
-  trait Parser extends Parsers
-  {
+  trait Parser extends Parsers {
     type Elem = Token
 
     def keys: Parser[List[Key]] = rep1sep(key, $$$("."))
@@ -176,10 +168,8 @@ object TOML
 
     /* extractors */
 
-    private object T
-    {
-      def unapply(table: List[(List[Key], V)]): Option[T] =
-      {
+    private object T {
+      def unapply(table: List[(List[Key], V)]): Option[T] = {
         val by_first_key = table.foldLeft(ListMap.empty[Key, List[(List[Key], V)]]) {
           case (map, (k :: ks, v)) => map.updatedWith(k) {
             case Some(value) => Some(value :+ (ks, v))
@@ -199,10 +189,8 @@ object TOML
     }
     private def to_map: PartialFunction[List[(List[Key], V)], T] = { case T(map) => map }
 
-    object Merge
-    {
-      private def merge(map1: T, map2: T): Option[T] =
-      {
+    object Merge {
+      private def merge(map1: T, map2: T): Option[T] = {
         val res2 = map2.map {
           case (k2, v2) =>
             map1.get(k2) match {
@@ -222,8 +210,7 @@ object TOML
 
     /* parse */
 
-    def parse(input: CharSequence): T =
-    {
+    def parse(input: CharSequence): T = {
       val scanner = new Lexer.Scanner(Scan.char_reader(input))
       phrase(toml)(scanner) match {
         case Success(toml, _) => toml
@@ -241,16 +228,13 @@ object TOML
 
   /* format to a subset of TOML */
 
-  object Format
-  {
-    def apply(toml: T): String =
-    {
+  object Format {
+    def apply(toml: T): String = {
       val result = new StringBuilder
 
       /* keys */
 
-      def key(k: Key): Unit =
-      {
+      def key(k: Key): Unit = {
         val Bare_Key = """[A-Za-z0-9_-]+""".r
         k match {
           case Bare_Key() => result ++= k
@@ -269,8 +253,7 @@ object TOML
 
       /* string */
 
-      def basic_string(s: String): Unit =
-      {
+      def basic_string(s: String): Unit = {
         result += '"'
         result ++=
           s.iterator.map {
@@ -288,8 +271,7 @@ object TOML
         result += '"'
       }
 
-      def multiline_basic_string(s: String): Unit =
-      {
+      def multiline_basic_string(s: String): Unit = {
         result ++= "\"\"\"\n"
         result ++=
           s.iterator.map {
@@ -309,8 +291,7 @@ object TOML
 
       /* integer, boolean, offset date-time, local date-time, local date, local time */
 
-      object To_String
-      {
+      object To_String {
         def unapply(v: V): Option[String] = v match {
           case _: Int | _: Double | _: Boolean | _: OffsetDateTime |
                _: LocalDateTime | _: LocalDate | _: LocalTime => Some(v.toString)
@@ -320,8 +301,7 @@ object TOML
 
       /* inline: string, float, To_String, value array */
 
-      def inline(v: V, indent: Int = 0): Unit =
-      {
+      def inline(v: V, indent: Int = 0): Unit = {
         def indentation(i: Int): Unit = for (_ <- Range(0, i)) result ++= "  "
 
         indentation(indent)
@@ -349,8 +329,7 @@ object TOML
 
       /* array */
 
-      def inline_values(path: List[Key], v: V): Unit =
-      {
+      def inline_values(path: List[Key], v: V): Unit = {
         v match {
           case T(map) => map.foreach { case (k, v1) => inline_values(k :: path, v1) }
           case _ =>
@@ -367,8 +346,7 @@ object TOML
         case _ => false
       }
 
-      def array(path: List[Key], list: List[V]): Unit =
-      {
+      def array(path: List[Key], list: List[V]): Unit = {
         if (list.forall(is_inline)) inline_values(path.take(1), list)
         else {
           list.collect {
@@ -384,8 +362,7 @@ object TOML
 
       /* table */
 
-      def table(path: List[Key], map: T, is_table_entry: Boolean = false): Unit =
-      {
+      def table(path: List[Key], map: T, is_table_entry: Boolean = false): Unit = {
         val (values, nodes) = map.toList.partition(kv => is_inline(kv._2))
 
         if (!is_table_entry && path.nonEmpty) {

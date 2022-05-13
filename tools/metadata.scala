@@ -22,16 +22,14 @@ object Metadata
   case class Email(override val author: Author.ID, id: Email.ID, address: String)
     extends Affiliation(author)
 
-  object Email
-  {
+  object Email {
     type ID = String
   }
 
   case class Homepage(override val author: Author.ID, id: Homepage.ID, url: String)
     extends Affiliation(author)
 
-  object Homepage
-  {
+  object Homepage {
     type ID = String
   }
 
@@ -42,22 +40,19 @@ object Metadata
     homepages: List[Homepage]
   )
 
-  object Author
-  {
+  object Author {
     type ID = String
   }
 
   case class Topic(id: Topic.ID, name: String, sub_topics: List[Topic])
 
-  object Topic
-  {
+  object Topic {
     type ID = String
   }
 
   type Date = LocalDate
 
-  object Isabelle
-  {
+  object Isabelle {
     type Version = String
   }
 
@@ -65,8 +60,7 @@ object Metadata
 
   case class License(id: License.ID, name: String)
 
-  object License
-  {
+  object License {
     type ID = String
   }
 
@@ -88,24 +82,21 @@ object Metadata
     extra: Extra,
     releases: List[Release])
 
-  object Entry
-  {
+  object Entry {
     type Name = String
   }
 
 
   /* toml */
 
-  object TOML
-  {
+  object TOML {
     private def by_id[A](elems: Map[String, A], id: String): A =
       elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.map(_.toString))))
 
 
     /* author */
 
-    def from_authors(authors: List[Author]): T =
-    {
+    def from_authors(authors: List[Author]): T = {
       def from_author(author: Author): T =
         T(
           "name" -> author.name,
@@ -115,10 +106,8 @@ object Metadata
       T(authors.map(author => author.id -> from_author(author)))
     }
 
-    def to_authors(authors: T): List[Author] =
-    {
-      def to_author(author_id: Author.ID, author: T): Author =
-      {
+    def to_authors(authors: T): List[Author] = {
+      def to_author(author_id: Author.ID, author: T): Author = {
         val emails = split_as[String](get_as[T](author, "emails")) map {
           case (id, address) => Email(author = author_id, id = id, address = address)
         }
@@ -142,8 +131,7 @@ object Metadata
     def from_topics(root_topics: List[Topic]): T =
       T(root_topics.map(t => t.name -> from_topics(t.sub_topics)))
 
-    def to_topics(root_topics: T): List[Topic] =
-    {
+    def to_topics(root_topics: T): List[Topic] = {
       def to_topics_rec(topics: T, root: Topic.ID): List[Topic] =
         split_as[T](topics).map {
           case (name, sub_topics) =>
@@ -179,10 +167,8 @@ object Metadata
           case Homepage(_, id, _) => "homepage" -> id
         })).toList)
 
-    def to_affiliations(affiliations: T, authors: Map[Author.ID, Author]): List[Affiliation] =
-    {
-      def to_affiliation(affiliation: (String, String), author: Author): Affiliation =
-      {
+    def to_affiliations(affiliations: T, authors: Map[Author.ID, Author]): List[Affiliation] = {
+      def to_affiliation(affiliation: (String, String), author: Author): Affiliation = {
         affiliation match {
           case ("email", id: String) => author.emails.find(_.id == id) getOrElse
             error("Email not found: " + quote(id))
@@ -216,8 +202,7 @@ object Metadata
     def from_licenses(licenses: List[License]): T =
       T(licenses.map(license => license.id -> T("name" -> license.name)))
 
-    def to_licenses(licenses: T): List[License] =
-    {
+    def to_licenses(licenses: T): List[License] = {
       split_as[T](licenses) map {
         case (id, license) => License(id, get_as[String](license, "name"))
       }

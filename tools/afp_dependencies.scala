@@ -11,12 +11,10 @@ import Metadata.Entry
 import isabelle._
 
 
-object AFP_Dependencies
-{
+object AFP_Dependencies {
   case class Dependency(entry: Entry.Name,  distrib_deps: List[Entry.Name], afp_deps: List[Entry.Name])
 
-  object JSON
-  {
+  object JSON {
     private def from_dep(dependency: Dependency): (String, isabelle.JSON.T) =
       dependency.entry ->
         isabelle.JSON.Object(
@@ -31,8 +29,7 @@ object AFP_Dependencies
       deps.map(from_dep).toMap
   }
 
-  def afp_dependencies(afp_dir: Path): List[Dependency] =
-  {
+  def afp_dependencies(afp_dir: Path): List[Dependency] = {
     val tree = Sessions.load_structure(Options.init(), Nil, List(afp_dir))
     val selected = tree.selection(Sessions.Selection(false, false, Nil, Nil, Nil, Nil))
       .build_graph.keys

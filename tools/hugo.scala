@@ -8,15 +8,12 @@ package afp
 import isabelle._
 
 
-object Hugo
-{
+object Hugo {
   val hugo_home = Isabelle_System.getenv("ISABELLE_HUGO")
   val hugo_static = Path.explode("$AFP_BASE") + Path.make(List("admin", "site"))
 
-  class Layout private(private[Hugo] val src_dir: Path)
-  {
-    private def write(file: Path, content: String): Unit =
-    {
+  class Layout private(private[Hugo] val src_dir: Path) {
+    private def write(file: Path, content: String): Unit = {
       val path = src_dir + file
       if (!path.dir.file.exists()) path.dir.file.mkdirs()
       File.write(path, content)
@@ -61,21 +58,18 @@ object Hugo
 
     private val is_static_src = hugo_static.canonical.absolute == src_dir.canonical.absolute
 
-    def copy_project(): Unit =
-    {
+    def copy_project(): Unit = {
       if (!is_static_src) project_files.foreach(file =>
         Isabelle_System.copy_dir(hugo_static + file, src_dir + file))
     }
 
-    def clean(): Unit =
-    {
+    def clean(): Unit = {
       generated_dirs.foreach(file => Isabelle_System.rm_tree(src_dir + file))
       if (!is_static_src) project_files.foreach(file => Isabelle_System.rm_tree(src_dir + file))
     }
   }
 
-  object Layout
-  {
+  object Layout {
     def apply(src_dir: Path = Path.explode("$AFP_BASE") + Path.make(List("web", "hugo"))): Layout =
       new Layout(src_dir.canonical)
   }
@@ -83,14 +77,12 @@ object Hugo
   private lazy val exec =
     Path.explode(proper_string(hugo_home).getOrElse(error("No hugo component found"))) + Path.basic("hugo")
 
-  def build(layout: Layout, out_dir: Path): Process_Result =
-  {
+  def build(layout: Layout, out_dir: Path): Process_Result = {
     Isabelle_System.bash(
       exec.implode + " -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.canonical.implode))
   }
 
-  def watch(layout: Layout, out_dir: Path, progress: Progress = new Progress()): Process_Result =
-  {
+  def watch(layout: Layout, out_dir: Path, progress: Progress = new Progress()): Process_Result = {
     Isabelle_System.bash(
       exec.implode + " server -s " + quote(layout.src_dir.implode) + " -d " + quote(out_dir.canonical.implode),
       progress_stdout = progress.echo,

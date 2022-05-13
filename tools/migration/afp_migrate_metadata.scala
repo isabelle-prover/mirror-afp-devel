@@ -16,13 +16,12 @@ import java.net.URI
 import org.jline.utils.InputStreamReader
 
 
-object AFP_Migrate_Metadata
-{
+object AFP_Migrate_Metadata {
   private class Context(
     names_mapping: Map[String, String],
     email_names: Map[String, String],
-    dates_mapping: Map[String, String])
-  {
+    dates_mapping: Map[String, String]
+  ) {
     /* mappings */
 
     def transform_name(name: String): String =
@@ -51,28 +50,24 @@ object AFP_Migrate_Metadata
     def authors: List[Author] = _seen_author_names.values.toList
     def licenses: List[License] = _seen_licenses.values.toList
 
-    def update_author(author: Author): Unit =
-    {
+    def update_author(author: Author): Unit = {
       _seen_authors += author.id
       _seen_author_names = _seen_author_names.updated(author.name, author)
     }
 
-    def email(author: Author.ID): Email.ID =
-    {
+    def email(author: Author.ID): Email.ID = {
       val id = unique_id(author + "_email", this.seen_emails)
       _seen_emails += id
       id
     }
 
-    def homepage(homepage: Homepage.ID): Homepage.ID =
-    {
+    def homepage(homepage: Homepage.ID): Homepage.ID = {
       val id = unique_id(homepage + "_homepage", this.seen_homepages)
       _seen_homepages += id
       id
     }
 
-    def license(license_str: String): License =
-    {
+    def license(license_str: String): License = {
       val license = License(license_str.toLowerCase, license_str)
       _seen_licenses += license.id -> license
       license
@@ -81,8 +76,7 @@ object AFP_Migrate_Metadata
 
   private def is_email(url: String) = url.contains("@")
 
-  private def as_ascii(str: String) =
-  {
+  private def as_ascii(str: String) = {
     var res: String = str
     List("ö" -> "oe", "ü" -> "ue", "ä" -> "ae", "ß" -> "ss").foreach {
       case (c, rep) => res = res.replace(c, rep)
@@ -92,8 +86,7 @@ object AFP_Migrate_Metadata
     res
   }
 
-  def unique_id(prefix: String, ids: Set[String]): String =
-  {
+  def unique_id(prefix: String, ids: Set[String]): String = {
     if (!ids.contains(prefix)) prefix
     else {
       var num = 1
@@ -102,8 +95,7 @@ object AFP_Migrate_Metadata
     }
   }
 
-  def private_dom(full_dom: String): String =
-  {
+  def private_dom(full_dom: String): String = {
     val stream = getClass.getClassLoader.getResourceAsStream("public_suffix_list.dat")
     val reader = new BufferedReader(new InputStreamReader(stream))
     val public_suffixes = File.read_lines(reader, _ => ()).filterNot(_.startsWith("//"))
@@ -111,8 +103,7 @@ object AFP_Migrate_Metadata
     if (stripped.endsWith(".")) stripped.dropRight(1) else stripped
   }
 
-  def make_author_id(name: String, context: Context): String =
-  {
+  def make_author_id(name: String, context: Context): String = {
     val normalized = as_ascii(name)
     val Suffix = """^.*?([a-zA-Z]*)$""".r
     val suffix = normalized match {
@@ -135,8 +126,7 @@ object AFP_Migrate_Metadata
     unique_id(ident, context.seen_authors)
   }
 
-  def author_urls(name_urls: String, context: Context): (String, List[String]) =
-  {
+  def author_urls(name_urls: String, context: Context): (String, List[String]) = {
     val name = AFP.trim_mail(name_urls)
     val urls_string = name_urls.stripPrefix(name).trim
     val transformed = context.transform_name(name)
@@ -147,16 +137,14 @@ object AFP_Migrate_Metadata
     }
   }
 
-  def add_email(author: Author, address: String, context: Context): (Author, Email) =
-  {
+  def add_email(author: Author, address: String, context: Context): (Author, Email) = {
     val email = Email(author = author.id, id = context.email(author.id), address = address)
     val update_author = author.copy(emails = author.emails :+ email)
     context.update_author(update_author)
     (update_author, email)
   }
 
-  def get_affiliations(name_url: String, context: Context): List[Affiliation] =
-  {
+  def get_affiliations(name_url: String, context: Context): List[Affiliation] = {
     val (name, urls) = author_urls(name_url, context)
     val author = context.author(name).getOrElse(error("Author not found: " + name))
 
@@ -177,8 +165,7 @@ object AFP_Migrate_Metadata
     }
   }
 
-  def get_email_affiliation(address: String, context: Context, progress: Progress): Email =
-  {
+  def get_email_affiliation(address: String, context: Context, progress: Progress): Email = {
     context.authors.flatMap(_.emails).find(_.address == address) match {
       case Some(email) => email
       case None =>
@@ -193,8 +180,7 @@ object AFP_Migrate_Metadata
     }
   }
 
-  def update_author(name_urls: String, context: Context): Unit =
-  {
+  def update_author(name_urls: String, context: Context): Unit = {
     val (name, urls) = author_urls(name_urls, context)
     var author = context.author(name) match {
       case Some(author) => author
@@ -224,8 +210,8 @@ object AFP_Migrate_Metadata
     releases: Map[Entry.Name, List[Release]],
     topics: Map[Topic.ID, Topic],
     context: Context,
-    progress: Progress): Entry =
-  {
+    progress: Progress
+  ): Entry = {
     val author_affiliations = entry.authors.flatMap(get_affiliations(_, context))
     val contributor_affiliations = entry.contributors.flatMap(get_affiliations(_, context))
     val notify_emails = entry.get_strings("notify").map(get_email_affiliation(_, context, progress))
@@ -249,8 +235,7 @@ object AFP_Migrate_Metadata
     )
   }
 
-  def parse_change_history(history: String, context: Context): Change_History =
-  {
+  def parse_change_history(history: String, context: Context): Change_History = {
     val matches = """\[(\d{4}-\d{2}-\d{2})]: ([^\[]+)""".r.findAllMatchIn(history.stripPrefix("Change history:"))
     matches.toList.map(_.subgroups match {
       case date :: content :: Nil => context.parse_date(date) -> content
@@ -258,14 +243,12 @@ object AFP_Migrate_Metadata
     }).toMap
   }
 
-  def parse_topics(lines: List[String]): List[Topic] =
-  {
+  def parse_topics(lines: List[String]): List[Topic] = {
     val lines_iterator: BufferedIterator[String] = lines.filterNot(_.isBlank).iterator.buffered
 
     def get_indent(line: String) = line.takeWhile(_.isWhitespace).length
 
-    def parse_level(level: Int, root: Option[Topic.ID]): List[Topic] =
-    {
+    def parse_level(level: Int, root: Option[Topic.ID]): List[Topic] = {
       val name = lines_iterator.next().trim
       val id = root.map(_ + "/").getOrElse("") + name
       val (sub_topics, next_topics) = lines_iterator.headOption match {
@@ -290,8 +273,8 @@ object AFP_Migrate_Metadata
     releases: List[String],
     isabelle_releases: List[String],
     all_entries: List[Entry.Name],
-    context: Context): List[Release] =
-  {
+    context: Context
+  ): List[Release] = {
     val Isa_Release = """(.+) = (.+)""".r
     val release_dates = isabelle_releases.filterNot(_.isBlank).map {
       case Isa_Release(isabelle_version, date) => context.parse_date(date) -> isabelle_version
@@ -318,16 +301,15 @@ object AFP_Migrate_Metadata
     overwrite: Boolean,
     context: Context,
     options: Options = Options.init(),
-    progress: Progress = new Progress()): Unit =
-  {
+    progress: Progress = new Progress()
+  ): Unit = {
     val metadata = AFP.init(options, base_dir)
     val metadata_dir = base_dir + Path.basic("metadata")
 
     def read(file: Path): String =
       File.read(metadata_dir + file)
 
-    def write(toml: TOML.T, file: Path) =
-    {
+    def write(toml: TOML.T, file: Path) = {
       val path = metadata_dir + file
       if (!overwrite && path.file.exists) error("File already exists: " + path.file_name)
       else path.dir.file.mkdirs()
@@ -393,11 +375,9 @@ object AFP_Migrate_Metadata
   }
 
   val isabelle_tool =
-    Isabelle_Tool(
-      "afp_migrate_metadata",
-      "migrates old sitegen metadata to new format",
+    Isabelle_Tool("afp_migrate_metadata", "migrates old sitegen metadata to new format",
       Scala_Project.here,
-      args => {
+      { args =>
         var base_dir = Path.explode("$AFP_BASE")
 
         var names = List(
@@ -562,8 +542,7 @@ object AFP_Migrate_Metadata
 
         var overwrite = false
 
-        val getopts = Getopts(
-          """
+        val getopts = Getopts("""
 Usage: isabelle afp_migrate_metadata [OPTIONS]
 
   Options are:

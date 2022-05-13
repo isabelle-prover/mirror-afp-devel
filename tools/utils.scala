@@ -10,8 +10,7 @@ import isabelle._
 import scala.collection.immutable.ListMap
 
 
-object Utils
-{
+object Utils {
   def group_sorted[A, K](l: List[A], f: A => K): ListMap[K, List[A]] =
     l.foldLeft(ListMap.empty[K, List[A]]) {
       case (m, a) =>
