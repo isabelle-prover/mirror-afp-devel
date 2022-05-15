@@ -2144,7 +2144,7 @@ proof-
       )+
     show 
       "op_cf (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>)\<lparr>ArrMap\<rparr> =
-        ((op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M op_cf_comma \<GG> \<HH>)\<lparr>ArrMap\<rparr>"
+        ((op_cf \<HH>) \<Sqinter>\<^sub>C\<^sub>F (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ArrMap\<rparr>"
     proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
       fix ABF assume "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
       then obtain A B where "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
@@ -2235,7 +2235,7 @@ proof-
       )+
     show 
       "op_cf (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ArrMap\<rparr> =
-        ((op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M op_cf_comma \<GG> \<HH>)\<lparr>ArrMap\<rparr>"
+        ((op_cf \<HH>) \<^sub>C\<^sub>F\<Sqinter> (op_cf \<GG>) \<circ>\<^sub>C\<^sub>F op_cf_comma \<GG> \<HH>)\<lparr>ArrMap\<rparr>"
     proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
       fix ABF assume prems: "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>"
       then obtain A B where ABF: "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
@@ -2362,6 +2362,253 @@ lemma cf_comma_proj_right_is_tm_functor'[cat_comma_cs_intros]:
   using assms(1,2) unfolding assms(3) by (rule cf_comma_proj_right_is_tm_functor)
 
 
+lemma cf_comp_cf_comma_proj_left_is_tm_functor[cat_comma_cs_intros]:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>"
+  shows "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH> \<circ>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+proof(intro is_tm_functorI')
+
+  interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
+  interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
+  interpret \<FF>: is_tm_functor \<alpha> \<JJ> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close> \<FF> by (rule assms(3))
+  interpret \<GG>\<HH>: is_functor \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close> \<AA> \<open>\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<close>
+    by (rule cf_comma_proj_left_is_functor[OF assms(1-2)])
+
+  show "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH> \<circ>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+
+  show "(\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH> \<circ>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
+    unfolding dghm_comp_components
+  proof(rule vbrelation.vbrelation_Limit_in_VsetI)
+    show "vbrelation (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ObjMap\<rparr>)" by auto
+    show "Limit \<alpha>" by auto
+    show "\<D>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ObjMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
+      by
+        (
+          cs_concl 
+            cs_simp: V_cs_simps cat_cs_simps
+            cs_intro: \<FF>.cf_ObjMap_vrange cat_small_cs_intros
+        )
+    show "\<R>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ObjMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
+      unfolding vrange_vcomp
+    proof-
+      have "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ObjMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>))))"
+      proof(intro vsubsetI)
+        fix A assume prems: "A \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ObjMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)"
+        then obtain abf 
+          where abf_in_\<FF>: "abf \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)"
+            and \<GG>\<HH>_abf: "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ObjMap\<rparr>\<lparr>abf\<rparr> = A"
+          by auto
+        with \<FF>.ObjMap.vrange_atD obtain j 
+          where "j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" and \<FF>j: "\<FF>\<lparr>ObjMap\<rparr>\<lparr>j\<rparr> = abf"
+          by (force simp: \<FF>.cf_ObjMap_vdomain)
+        from abf_in_\<FF> \<FF>.cf_ObjMap_vrange have abf_in_\<GG>\<HH>: 
+          "abf \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>" 
+          by auto
+        then obtain a b f where abf_def: "abf = [a, b, f]\<^sub>\<circ>"
+          by (elim cat_comma_ObjE[OF _ assms(1,2)])
+        have "a \<in>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>))))"
+        proof(intro VUnionI)
+          from abf_in_\<FF> show "[a, b, f]\<^sub>\<circ> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)"
+            unfolding abf_def by auto
+          show "\<langle>0, a\<rangle> \<in>\<^sub>\<circ> [a, b, f]\<^sub>\<circ>" by auto
+          show "set {0, a} \<in>\<^sub>\<circ> \<langle>0, a\<rangle>" unfolding vpair_def by simp
+        qed auto
+        with abf_in_\<GG>\<HH> show "A \<in>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ>(\<FF>\<lparr>ObjMap\<rparr>))))"
+          unfolding \<GG>\<HH>_abf[symmetric] abf_def
+          by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)
+      qed
+      moreover have "\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)))) \<in>\<^sub>\<circ> Vset \<alpha>"
+        by (intro VUnion_in_VsetI vrange_in_VsetI[OF \<FF>.tm_cf_ObjMap_in_Vset])
+      ultimately show "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ObjMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>" by auto
+    qed
+  qed
+
+  show "(\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH> \<circ>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
+    unfolding dghm_comp_components
+  proof(rule vbrelation.vbrelation_Limit_in_VsetI)
+    show "vbrelation (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ArrMap\<rparr>)" by auto
+    show "Limit \<alpha>" by auto
+    show "\<D>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ArrMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
+      by
+        (
+          cs_concl
+            cs_simp: V_cs_simps cat_cs_simps
+            cs_intro: \<FF>.cf_ArrMap_vrange cat_small_cs_intros
+        )
+    show "\<R>\<^sub>\<circ> (\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ArrMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
+      unfolding vrange_vcomp
+    proof-
+      have 
+        "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>) \<subseteq>\<^sub>\<circ> 
+          \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)))))))"
+      proof(intro vsubsetI)
+        fix F assume prems: "F \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
+        then obtain ABF 
+          where ABF_in_\<FF>: "ABF \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
+            and \<GG>\<HH>_ABF: "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> = F"
+          by auto
+        with \<FF>.ArrMap.vrange_atD obtain k 
+          where "k \<in>\<^sub>\<circ> \<JJ>\<lparr>Arr\<rparr>" and \<FF>j: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>k\<rparr> = ABF"
+          by (force simp: \<FF>.cf_ArrMap_vdomain)
+        then obtain i j where "k : i \<mapsto>\<^bsub>\<JJ>\<^esub> j" by auto
+        from ABF_in_\<FF> \<FF>.cf_ArrMap_vrange have ABF_in_\<GG>\<HH>: 
+          "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>" 
+          by auto
+        then obtain A B where "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
+        with assms obtain a b f a' b' f' g h
+          where ABF_def: "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+          by (elim cat_comma_is_arrE[OF _ assms(1,2)])
+        have "g \<in>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)))))))"
+        proof(intro VUnionI)
+          from ABF_in_\<FF> show 
+            "[[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
+            unfolding ABF_def by auto
+          show "\<langle>2\<^sub>\<nat>, [g, h]\<^sub>\<circ>\<rangle> \<in>\<^sub>\<circ> [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+            by (auto simp: nat_omega_simps)
+          show "set {2\<^sub>\<nat>, [g, h]\<^sub>\<circ>} \<in>\<^sub>\<circ> \<langle>2\<^sub>\<nat>, [g, h]\<^sub>\<circ>\<rangle>"
+            unfolding vpair_def by auto
+          show "[g, h]\<^sub>\<circ> \<in>\<^sub>\<circ> set {2\<^sub>\<nat>, [g, h]\<^sub>\<circ>}" by simp
+          show "\<langle>0, g\<rangle> \<in>\<^sub>\<circ> [g, h]\<^sub>\<circ>" by auto
+          show "set {0, g} \<in>\<^sub>\<circ> \<langle>0, g\<rangle>" unfolding vpair_def by auto
+        qed auto
+        with ABF_in_\<GG>\<HH> show "F \<in>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)))))))"
+          unfolding \<GG>\<HH>_ABF[symmetric] ABF_def
+          by (cs_concl cs_simp: cat_cs_simps cat_comma_cs_simps)
+      qed
+      moreover have "\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>))))))) \<in>\<^sub>\<circ> Vset \<alpha>"
+        by (intro VUnion_in_VsetI vrange_in_VsetI[OF \<FF>.tm_cf_ArrMap_in_Vset])
+      ultimately show "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH>\<lparr>ArrMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>" by auto
+    qed
+  qed
+
+qed
+
+lemma cf_comp_cf_comma_proj_right_is_tm_functor[cat_comma_cs_intros]:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>"
+  shows "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH> \<circ>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
+proof(intro is_tm_functorI')
+
+  interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
+  interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(2))
+  interpret \<FF>: is_tm_functor \<alpha> \<JJ> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close> \<FF> by (rule assms(3))
+  interpret \<GG>\<HH>: is_functor \<alpha> \<open>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<close> \<BB> \<open>\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<close>
+    by (rule cf_comma_proj_right_is_functor[OF assms(1-2)])
+
+  show "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH> \<circ>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    by (cs_concl cs_intro: cat_cs_intros cat_comma_cs_intros)
+
+  show "(\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH> \<circ>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
+    unfolding dghm_comp_components
+  proof(rule vbrelation.vbrelation_Limit_in_VsetI)
+    show "vbrelation (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ObjMap\<rparr>)" by auto
+    show "Limit \<alpha>" by auto
+    show "\<D>\<^sub>\<circ> (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ObjMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
+      by
+        (
+          cs_concl 
+            cs_simp: V_cs_simps cat_cs_simps
+            cs_intro: \<FF>.cf_ObjMap_vrange cat_small_cs_intros
+        )
+    show "\<R>\<^sub>\<circ> (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ObjMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
+      unfolding vrange_vcomp
+    proof-
+      have "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ObjMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>))))"
+      proof(intro vsubsetI)
+        fix A assume prems: "A \<in>\<^sub>\<circ> (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ObjMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)"
+        then obtain abf 
+          where abf_in_\<FF>: "abf \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)"
+            and \<GG>\<HH>_abf: "(\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>)\<lparr>ObjMap\<rparr>\<lparr>abf\<rparr> = A"
+          by (auto simp: cf_comma_proj_right_ObjMap_vsv)
+        with \<FF>.ObjMap.vrange_atD obtain j 
+          where "j \<in>\<^sub>\<circ> \<JJ>\<lparr>Obj\<rparr>" and \<FF>j: "\<FF>\<lparr>ObjMap\<rparr>\<lparr>j\<rparr> = abf"
+          by (force simp: \<FF>.cf_ObjMap_vdomain)
+        from abf_in_\<FF> \<FF>.cf_ObjMap_vrange have abf_in_\<GG>\<HH>: 
+          "abf \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Obj\<rparr>" 
+          by auto
+        then obtain a b f where abf_def: "abf = [a, b, f]\<^sub>\<circ>"
+          by (elim cat_comma_ObjE[OF _ assms(1,2)])
+        have "b \<in>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>))))"
+        proof(intro VUnionI)
+          from abf_in_\<FF> show "[a, b, f]\<^sub>\<circ> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)"
+            unfolding abf_def by auto
+          show "\<langle>1\<^sub>\<nat>, b\<rangle> \<in>\<^sub>\<circ> [a, b, f]\<^sub>\<circ>" by (auto simp: nat_omega_simps)
+          show "set {1\<^sub>\<nat>, b} \<in>\<^sub>\<circ> \<langle>1\<^sub>\<nat>, b\<rangle>" unfolding vpair_def by simp
+        qed auto
+        with abf_in_\<GG>\<HH> show "A \<in>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ>(\<FF>\<lparr>ObjMap\<rparr>))))"
+          unfolding \<GG>\<HH>_abf[symmetric] abf_def
+          by (cs_concl cs_shallow cs_simp: cat_comma_cs_simps)
+      qed
+      moreover have "\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)))) \<in>\<^sub>\<circ> Vset \<alpha>"
+        by (intro VUnion_in_VsetI vrange_in_VsetI[OF \<FF>.tm_cf_ObjMap_in_Vset])
+      ultimately show "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ObjMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>" by auto
+    qed
+  qed
+
+  show "(\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH> \<circ>\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
+    unfolding dghm_comp_components
+  proof(rule vbrelation.vbrelation_Limit_in_VsetI)
+    show "vbrelation (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ArrMap\<rparr>)" by auto
+    show "Limit \<alpha>" by auto
+    show "\<D>\<^sub>\<circ> (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ArrMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
+      by
+        (
+          cs_concl 
+            cs_simp: V_cs_simps cat_cs_simps
+            cs_intro: \<FF>.cf_ArrMap_vrange cat_small_cs_intros
+        )
+    show "\<R>\<^sub>\<circ> (\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ArrMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>"
+      unfolding vrange_vcomp
+    proof-
+      have 
+        "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>) \<subseteq>\<^sub>\<circ> 
+          \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)))))))"
+      proof(intro vsubsetI)
+        fix F assume prems: "F \<in>\<^sub>\<circ> \<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
+        then obtain ABF 
+          where ABF_in_\<FF>: "ABF \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
+            and \<GG>\<HH>_ABF: "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr>\<lparr>ABF\<rparr> = F"
+          by (auto simp: cf_comma_proj_right_ArrMap_vsv)
+        with \<FF>.ArrMap.vrange_atD obtain k 
+          where "k \<in>\<^sub>\<circ> \<JJ>\<lparr>Arr\<rparr>" and \<FF>j: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>k\<rparr> = ABF"
+          by (force simp: \<FF>.cf_ArrMap_vdomain)
+        then obtain i j where "k : i \<mapsto>\<^bsub>\<JJ>\<^esub> j" by auto
+        from ABF_in_\<FF> \<FF>.cf_ArrMap_vrange have ABF_in_\<GG>\<HH>: 
+          "ABF \<in>\<^sub>\<circ> \<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<lparr>Arr\<rparr>" 
+          by auto
+        then obtain A B where "ABF : A \<mapsto>\<^bsub>\<GG> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<HH>\<^esub> B" by auto
+        with assms obtain a b f a' b' f' g h
+          where ABF_def: "ABF = [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+          by (elim cat_comma_is_arrE[OF _ assms(1,2)])
+        have "h \<in>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)))))))"
+        proof(intro VUnionI)
+          from ABF_in_\<FF> show 
+            "[[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)"
+            unfolding ABF_def by auto
+          show "\<langle>2\<^sub>\<nat>, [g, h]\<^sub>\<circ>\<rangle> \<in>\<^sub>\<circ> [[a, b, f]\<^sub>\<circ>, [a', b', f']\<^sub>\<circ>, [g, h]\<^sub>\<circ>]\<^sub>\<circ>"
+            by (auto simp: nat_omega_simps)
+          show "set {2\<^sub>\<nat>, [g, h]\<^sub>\<circ>} \<in>\<^sub>\<circ> \<langle>2\<^sub>\<nat>, [g, h]\<^sub>\<circ>\<rangle>"
+            unfolding vpair_def by auto
+          show "[g, h]\<^sub>\<circ> \<in>\<^sub>\<circ> set {2\<^sub>\<nat>, [g, h]\<^sub>\<circ>}" by simp
+          show "\<langle>1\<^sub>\<nat>, h\<rangle> \<in>\<^sub>\<circ> [g, h]\<^sub>\<circ>" by (auto simp: nat_omega_simps)
+          show "set {1\<^sub>\<nat>, h} \<in>\<^sub>\<circ> \<langle>1\<^sub>\<nat>, h\<rangle>" unfolding vpair_def by auto
+        qed auto
+        with ABF_in_\<GG>\<HH> show "F \<in>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)))))))"
+          unfolding \<GG>\<HH>_ABF[symmetric] ABF_def
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps cat_comma_cs_simps)
+      qed
+      moreover have "\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>))))))) \<in>\<^sub>\<circ> Vset \<alpha>"
+        by (intro VUnion_in_VsetI vrange_in_VsetI[OF \<FF>.tm_cf_ArrMap_in_Vset])
+      ultimately show "\<GG> \<Sqinter>\<^sub>C\<^sub>F \<HH>\<lparr>ArrMap\<rparr> `\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>) \<in>\<^sub>\<circ> Vset \<alpha>" by auto
+    qed
+  qed
+
+qed
+
+
 
 subsection\<open>Comma categories constructed from a functor and an object\<close>
 
@@ -2387,6 +2634,56 @@ lemma (in is_functor) cat_cf_obj_comma_def:
 lemma (in is_functor) cat_obj_cf_comma_def:
   "b \<down>\<^sub>C\<^sub>F \<FF> = (cf_const (cat_1 0 0) \<BB> b) \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F \<FF>" 
   unfolding cat_obj_cf_comma_def cf_HomCod ..
+
+
+text\<open>Size.\<close>
+
+lemma small_cat_cf_obj_comma_Obj[simp]: 
+  "small {[a, 0, f]\<^sub>\<circ> | a f. a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<and> f : x \<mapsto>\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>}"
+  (is \<open>small ?afs\<close>)
+proof-
+  define Q where 
+    "Q i = (if i = 0 then \<AA>\<lparr>Obj\<rparr> else if i = 1\<^sub>\<nat> then set {0} else \<CC>\<lparr>Arr\<rparr>)" 
+    for i
+  have "?afs \<subseteq> elts (\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i)"
+    unfolding Q_def
+  proof
+    (
+      intro subsetI, 
+      unfold mem_Collect_eq, 
+      elim exE conjE, 
+      intro vproductI; 
+      simp only:
+    )
+    fix a f show "\<D>\<^sub>\<circ> [a, 0, f]\<^sub>\<circ> = set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}"
+      by (simp add: three nat_omega_simps)
+  qed (force simp: nat_omega_simps)+
+  then show "small ?afs" by (rule down)
+qed
+
+lemma small_cat_obj_cf_comma_Obj[simp]: 
+  "small {[0, b, f]\<^sub>\<circ> | b f. b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr> \<and> f : x \<mapsto>\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>}"
+  (is \<open>small ?bfs\<close>)
+proof-
+  define Q where
+    "Q i = (if i = 0 then set {0} else if i = 1\<^sub>\<nat> then \<BB>\<lparr>Obj\<rparr> else \<CC>\<lparr>Arr\<rparr>)" 
+    for i
+  have "?bfs \<subseteq> elts (\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i)"
+    unfolding Q_def
+  proof
+    (
+      intro subsetI, 
+      unfold mem_Collect_eq, 
+      elim exE conjE, 
+      intro vproductI; 
+      simp only:
+    )
+    fix a b f show "\<D>\<^sub>\<circ> [0, b, f]\<^sub>\<circ> = set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}"
+      by (simp add: three nat_omega_simps)
+  qed (force simp: nat_omega_simps)+
+  then show "small ?bfs" by (rule down)
+qed
+
 
 
 subsubsection\<open>Objects\<close>
@@ -3027,7 +3324,7 @@ proof-
     unfolding ABF_def 
     by 
       (
-        cs_prems cs_shallow 
+        cs_prems cs_shallow 
           cs_simp: cat_comma_cs_simps cs_intro: cat_comma_cs_intros
       )
   from that ABF_def C_def D_def g f f' f'_def C D show ?thesis by auto
@@ -3943,6 +4240,50 @@ lemma (in is_tm_functor) cf_obj_cf_comma_proj_is_tm_functor'[cat_comma_cs_intros
 
 lemmas [cat_comma_cs_intros] = is_tm_functor.cf_obj_cf_comma_proj_is_tm_functor'
 
+lemma cf_comp_cf_cf_obj_comma_proj_is_tm_functor[cat_comma_cs_intros]:
+  assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<GG> \<^sub>C\<^sub>F\<down> c"
+    and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  shows "\<GG> \<^sub>C\<^sub>F\<Sqinter>\<^sub>O c \<circ>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<AA>"
+proof-
+  interpret \<GG>: is_functor \<alpha> \<AA> \<CC> \<GG> by (rule assms(1))
+  from assms(3) have cf_const: "cf_const (cat_1 0 0) \<CC> c : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros)
+  show ?thesis
+    by 
+      (
+        rule cf_comp_cf_comma_proj_left_is_tm_functor
+          [
+            OF assms(1) _ assms(2)[unfolded cat_cf_obj_comma_def],
+            unfolded cat_cs_simps,
+            OF cf_const, 
+            folded \<GG>.cf_cf_obj_comma_proj_def
+          ]
+      )
+qed
+
+lemma cf_comp_cf_obj_cf_comma_proj_is_tm_functor[cat_comma_cs_intros]:
+  assumes "\<HH> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> c \<down>\<^sub>C\<^sub>F \<HH>"
+    and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
+  shows "c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<HH> \<circ>\<^sub>C\<^sub>F \<FF> : \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
+proof-
+  interpret \<HH>: is_functor \<alpha> \<BB> \<CC> \<HH> by (rule assms(1))
+  from assms(3) have cf_const: "cf_const (cat_1 0 0) \<CC> c : cat_1 0 0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros)
+  show ?thesis
+    by 
+      (
+        rule cf_comp_cf_comma_proj_right_is_tm_functor
+          [
+            OF _ assms(1) assms(2)[unfolded cat_obj_cf_comma_def], 
+            unfolded cat_cs_simps,
+            OF cf_const, 
+            folded \<HH>.cf_obj_cf_comma_proj_def
+          ]
+      )
+qed
+
 
 
 subsection\<open>Comma functors\<close>
@@ -4810,8 +5151,8 @@ proof(rule cf_eqI)
         and f: "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> c"
       by auto
     from assms a f show 
-      "(op_cf_obj_comma \<FF> c' \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M op_cf (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g))\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> =
-        (g \<^sub>A\<down>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M op_cf_obj_comma \<FF> c)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
+      "(op_cf_obj_comma \<FF> c' \<circ>\<^sub>C\<^sub>F op_cf (\<FF> \<^sub>C\<^sub>F\<down>\<^sub>A g))\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> =
+        (g \<^sub>A\<down>\<^sub>C\<^sub>F (op_cf \<FF>) \<circ>\<^sub>C\<^sub>F op_cf_obj_comma \<FF> c)\<lparr>ObjMap\<rparr>\<lparr>A\<rparr>"
       unfolding A_def 
       by
         (

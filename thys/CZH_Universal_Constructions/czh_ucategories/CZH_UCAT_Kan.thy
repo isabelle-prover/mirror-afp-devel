@@ -4,18 +4,12 @@ section\<open>Simple Kan extensions\<close>
 theory CZH_UCAT_Kan
   imports 
     CZH_Elementary_Categories.CZH_ECAT_Comma
-    CZH_UCAT_Limit
     CZH_UCAT_Adjoints
 begin
 
 
 
 subsection\<open>Background\<close>
-
-named_theorems ua_field_simps
-
-definition UObj :: V where [ua_field_simps]: "UObj = 0"
-definition UArr :: V where [ua_field_simps]: "UArr = 1\<^sub>\<nat>"
 
 named_theorems cat_Kan_cs_simps
 named_theorems cat_Kan_cs_intros
@@ -631,7 +625,7 @@ lemma op_ua_UArr_is_cat_limit:
     r <\<^sub>C\<^sub>F\<^sub>.\<^sub>l\<^sub>i\<^sub>m op_cf \<TT> \<circ>\<^sub>C\<^sub>F c \<^sub>O\<Sqinter>\<^sub>C\<^sub>F (op_cf \<KK>) : c \<down>\<^sub>C\<^sub>F (op_cf \<KK>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<AA>"
 proof-
 
-  note [cf_cs_simps] = is_iso_functor_is_arr_isomorphism(2,3)
+  note [cf_cs_simps] = is_iso_functor_is_iso_arr(2,3)
 
   let ?op_\<KK> = \<open>\<lambda>c. op_cf_obj_comma \<KK> c\<close>
   let ?op_\<KK>c = \<open>?op_\<KK> c\<close>
@@ -1400,7 +1394,7 @@ proof-
                 "vsv ((?const_comma a a \<circ>\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ObjMap\<rparr>)"
                 by
                   (
-                    cs_concl cs_shallow
+                    cs_concl
                       cs_simp: cat_comma_cs_simps cat_cs_simps 
                       cs_intro:
                         cat_cs_intros cat_lim_cs_intros cat_comma_cs_intros
@@ -1417,7 +1411,7 @@ proof-
                 unfolding A_def
                 by
                   (
-                    cs_concl cs_shallow
+                    cs_concl
                       cs_simp: cat_comma_cs_simps cat_cs_simps 
                       cs_intro:
                         cat_cs_intros cat_lim_cs_intros cat_comma_cs_intros
@@ -1446,7 +1440,7 @@ proof-
                 "vsv ((?const_comma a a \<circ>\<^sub>C\<^sub>F (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<^sub>A\<down>\<^sub>C\<^sub>F \<KK>)\<lparr>ArrMap\<rparr>)"
                 by
                   (
-                    cs_concl cs_shallow
+                    cs_concl
                       cs_simp: cat_comma_cs_simps cat_cs_simps
                       cs_intro:
                         cat_cs_intros cat_lim_cs_intros cat_comma_cs_intros
@@ -1539,7 +1533,7 @@ proof-
                     cs_intro: 
                       cat_cs_intros cat_Kan_cs_intros cat_comma_cs_intros
                 )+
-          qed (cs_concl cs_shallow cs_simp: cs_intro: cat_cs_intros)+
+          qed (cs_concl cs_simp: cs_intro: cat_cs_intros)+
         qed simp_all
       qed
     qed
@@ -1639,10 +1633,10 @@ proof-
                 (
                   cs_concl 
                     cs_simp: cat_cs_simps cat_comma_cs_simps
-                    cs_intro: 
+                    cs_intro:
                       cat_lim_cs_intros cat_comma_cs_intros cat_cs_intros
                 )
-          qed (cs_concl cs_shallow cs_intro: cat_cs_intros)
+          qed (cs_concl cs_intro: cat_cs_intros)
         qed simp_all
 
         with that show 
@@ -1781,6 +1775,8 @@ proof-
       interpret lim_\<KK>b: is_cat_limit 
         \<alpha> \<open>?\<KK>b \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F ?\<KK>b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj ?\<KK>b\<close> \<open>?UArr ?\<KK>b\<close>
         by (rule lim_\<KK>b)
+      note lim_\<KK>a.cat_cone_Comp_commute[cat_cs_simps del]
+      note lim_\<KK>b.cat_cone_Comp_commute[cat_cs_simps del]
       from that have 
         "[[0, a, \<CC>\<lparr>CId\<rparr>\<lparr>?\<KK>a\<rparr>]\<^sub>\<circ>, [0, b, ?\<KK>f]\<^sub>\<circ>, [0, f]\<^sub>\<circ>]\<^sub>\<circ> :
           [0, a, \<CC>\<lparr>CId\<rparr>\<lparr>?\<KK>a\<rparr>]\<^sub>\<circ> \<mapsto>\<^bsub>(?\<KK>a) \<down>\<^sub>C\<^sub>F \<KK>\<^esub> [0, b, ?\<KK>f]\<^sub>\<circ>"
@@ -1794,11 +1790,11 @@ proof-
       have [cat_Kan_cs_simps]:
         "\<TT>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> ?UArr (?\<KK>a)\<lparr>NTMap\<rparr> \<lparr>0, a, \<CC>\<lparr>CId\<rparr>\<lparr>?\<KK>a\<rparr>\<rparr>\<^sub>\<bullet> =
           ?UArr ?\<KK>a\<lparr>NTMap\<rparr>\<lparr>0, b, ?\<KK>f\<rparr>\<^sub>\<bullet>"
-        by
+        by 
           (
-            cs_prems 
+            cs_prems
               cs_simp: cat_cs_simps cat_comma_cs_simps
-              cs_intro: cat_cs_intros cat_comma_cs_intros \<Z>.cat_1_is_arrI
+              cs_intro: cat_cs_intros cat_comma_cs_intros cat_1_is_arrI
           )
       from that show ?thesis
         by 
@@ -2144,7 +2140,9 @@ proof-
         interpret lim_b: is_cat_limit 
           \<alpha> \<open>b \<down>\<^sub>C\<^sub>F \<KK>\<close> \<AA> \<open>\<TT> \<circ>\<^sub>C\<^sub>F b \<^sub>O\<Sqinter>\<^sub>C\<^sub>F \<KK>\<close> \<open>?UObj b\<close> \<open>?UArr b\<close>
           by (rule lim_b)
-        
+
+        note lim_b.cat_cone_Comp_commute[cat_cs_simps del]
+
         from f have a: "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and b: "b \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
 
         show ?thesis
@@ -2200,7 +2198,7 @@ proof-
               unfolding F_def A_def B_def
               by
                 (
-                  cs_prems cs_shallow
+                  cs_prems 
                     cs_simp: 
                       cat_cs_simps cat_comma_cs_simps f''_def[symmetric]
                     cs_intro: cat_cs_intros cat_comma_cs_intros
@@ -2841,7 +2839,7 @@ subsection\<open>All concepts are Kan extensions\<close>
 text\<open>
 Background information for this subsection is provided in 
 Chapter X-7 in \cite{mac_lane_categories_2010}
-and section 6.5 in \cite{riehl_category_2016}. 
+and subsection 6.5 in \cite{riehl_category_2016}. 
 It should be noted that only the connections between the Kan extensions,
 limits and adjunctions are exposed (an alternative proof of the Yoneda
 lemma using Kan extensions is not provided in the context of this work).
@@ -3187,7 +3185,7 @@ proof-
               cat_FUNCT_cs_simps
               adj_cs_simps 
             cs_intro:
-              \<DD>\<eta>.NT.iso_ntcf_is_arr_isomorphism''
+              \<DD>\<eta>.NT.iso_ntcf_is_iso_arr''
               cat_op_intros
               adj_cs_intros
               cat_cs_intros
@@ -3289,7 +3287,7 @@ proof-
                 cs_simp: cat_cs_simps \<eta>.ntcf_lKe.ntcf_Comp_commute[symmetric]
                 cs_intro: cat_cs_intros
             )
-      qed (cs_concl cs_shallow cs_intro: cat_cs_intros)+
+      qed (cs_concl cs_intro: cat_cs_intros)+
     qed (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
     also have "\<dots> = (ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<eta>"
       by
@@ -3325,7 +3323,7 @@ proof-
       "\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<epsilon> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<eta> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>) = ntcf_id \<FF>"
       by simp
 
-  qed (cs_concl cs_shallow cs_intro: cat_cs_intros)+
+  qed (cs_concl cs_intro: cat_cs_intros)+
 
 qed
 

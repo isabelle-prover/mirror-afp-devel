@@ -225,9 +225,9 @@ proof
     by (simp add: \<FF>.dghm_ArrMap_vrange)
   then have "\<FF>\<lparr>ArrMap\<rparr> = 0" by (auto intro: \<FF>.ArrMap.vsv_vrange_vempty)
   with \<FF>.dghm_ArrMap_vdomain have Arr[simp]: "\<AA>\<lparr>Arr\<rparr> = 0" by auto
-  from Arr \<FF>.HomDom.dg_Dom_vempty_if_Arr_vempty have [simp]: "\<AA>\<lparr>Dom\<rparr> = []\<^sub>\<circ>" 
+  from Arr \<FF>.HomDom.dg_Dom_vempty_if_Arr_vempty have [simp]: "\<AA>\<lparr>Dom\<rparr> = 0" 
     by auto
-  from Arr \<FF>.HomDom.dg_Cod_vempty_if_Arr_vempty have [simp]: "\<AA>\<lparr>Cod\<rparr> = []\<^sub>\<circ>"
+  from Arr \<FF>.HomDom.dg_Cod_vempty_if_Arr_vempty have [simp]: "\<AA>\<lparr>Cod\<rparr> = 0"
     by auto
   show "\<AA> = dg_0"
     by (rule dg_eqI[of \<alpha>]) (simp_all add: prems(1) dg_0_components digraph_dg_0)

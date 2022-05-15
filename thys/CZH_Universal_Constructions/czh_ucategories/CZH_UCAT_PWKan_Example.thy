@@ -1381,17 +1381,17 @@ proof-
       "LK_\<sigma>23 \<TT> \<eta>' \<FF>'\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> LK23 \<TT>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> =
         \<FF>'\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> LK_\<sigma>23 \<TT> \<eta>' \<FF>'\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
       if "f : a \<mapsto>\<^bsub>cat_ordinal (3\<^sub>\<nat>)\<^esub> b" for a b f
-      using that 0123 
-      by (elim cat_ordinal_3_is_arrE, use nothing in \<open>simp_all only:\<close>) (*slow*)
+      using that 0123 (*very slow*)
+      by (elim cat_ordinal_3_is_arrE, use nothing in \<open>simp_all only:\<close>) 
         (
           cs_concl 
-            cs_simp:
-              cat_cs_simps
+            cs_simp: 
+              cat_cs_simps 
               cat_ordinal_cs_simps
               \<FF>'.cf_ArrMap_Comp[symmetric]
               \<FF>'.HomCod.cat_Comp_assoc[symmetric]
-              \<eta>'.ntcf_Comp_commute
-              cat_Kan_cs_simps
+              \<eta>'.ntcf_Comp_commute 
+              cat_Kan_cs_simps 
             cs_intro: cat_cs_intros cat_ordinal_cs_intros nat_omega_intros
         )+
   qed
@@ -2254,7 +2254,7 @@ proof-
                         cat_op_intros 
                         \<TT>.HomCod.cat_Hom_in_Vset
                   )+
-            qed (cs_concl cs_shallow cs_intro: V_cs_intros cat_cs_intros)+
+            qed (cs_concl cs_intro: V_cs_intros cat_cs_intros)+
           qed simp_all
 
           fix \<sigma> assume prems'':

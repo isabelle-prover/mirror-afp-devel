@@ -161,13 +161,13 @@ qed
 
 subsection\<open>Isomorphism\<close>
 
-lemma (in \<Z>) cat_GRPH_is_arr_isomorphismI: 
+lemma cat_GRPH_is_iso_arrI: 
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
   shows "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>"
-proof(intro is_arr_isomorphismI is_inverseI)
+proof(intro is_iso_arrI is_inverseI)
   from assms show \<FF>: "\<FF> : \<AA> \<mapsto>\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>"
     unfolding cat_GRPH_is_arr_iff by auto
-  note iso_thms = is_iso_dghm_is_arr_isomorphism[OF assms]
+  note iso_thms = is_iso_dghm_is_iso_arr[OF assms]
   from iso_thms(1) show inv_\<FF>: "inv_dghm \<FF> : \<BB> \<mapsto>\<^bsub>cat_GRPH \<alpha>\<^esub> \<AA>"
     unfolding cat_GRPH_is_arr_iff by auto
   from assms show "\<FF> : \<AA> \<mapsto>\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>"
@@ -181,11 +181,11 @@ proof(intro is_arr_isomorphismI is_inverseI)
     by (rule iso_thms(3))
 qed
 
-lemma (in \<Z>) cat_GRPH_is_arr_isomorphismD: 
+lemma cat_GRPH_is_iso_arrD: 
   assumes "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>"
   shows "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
 proof-
-  from is_arr_isomorphismD[OF assms] have \<FF>: "\<FF> : \<AA> \<mapsto>\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>" 
+  from is_iso_arrD[OF assms] have \<FF>: "\<FF> : \<AA> \<mapsto>\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>" 
     and "(\<exists>\<GG>. is_inverse (cat_GRPH \<alpha>) \<GG> \<FF>)"
     by simp_all
   then obtain \<GG> where \<GG>\<FF>: "is_inverse (cat_GRPH \<alpha>) \<GG> \<FF>" by clarsimp
@@ -203,47 +203,47 @@ proof-
     unfolding \<AA>' cat_GRPH_Comp_app[OF \<GG>' \<FF>'] cat_GRPH_CId_app[OF \<AA>] by simp
   moreover from \<FF>\<GG> have "\<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> = dghm_id \<BB>"
     unfolding \<BB>' cat_GRPH_Comp_app[OF \<FF>' \<GG>'] cat_GRPH_CId_app[OF \<BB>] by simp
-  ultimately show ?thesis using \<FF> by (elim is_arr_isomorphism_is_iso_dghm)
+  ultimately show ?thesis using \<FF> by (elim is_iso_arr_is_iso_dghm)
 qed
 
-lemma (in \<Z>) cat_GRPH_is_arr_isomorphismE: 
+lemma cat_GRPH_is_iso_arrE: 
   assumes "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>"
   obtains "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
-  using assms by (auto dest: cat_GRPH_is_arr_isomorphismD)
+  using assms by (auto dest: cat_GRPH_is_iso_arrD)
 
-lemma (in \<Z>) cat_GRPH_is_arr_isomorphism_iff[cat_GRPH_simps]: 
+lemma cat_GRPH_is_iso_arr_iff[cat_GRPH_simps]: 
   "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB> \<longleftrightarrow> \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
-  using cat_GRPH_is_arr_isomorphismI cat_GRPH_is_arr_isomorphismD by auto
+  using cat_GRPH_is_iso_arrI cat_GRPH_is_iso_arrD by auto
 
 
 
 subsection\<open>Isomorphic objects\<close>
 
-lemma (in \<Z>) cat_GRPH_obj_isoI: 
+lemma cat_GRPH_obj_isoI: 
   assumes "\<AA> \<approx>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
   shows "\<AA> \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>"
 proof-
   from iso_digraphD[OF assms] obtain \<FF> where "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
     by clarsimp
-  from cat_GRPH_is_arr_isomorphismI[OF this] show ?thesis by (rule obj_isoI)
+  from cat_GRPH_is_iso_arrI[OF this] show ?thesis by (rule obj_isoI)
 qed
 
-lemma (in \<Z>) cat_GRPH_obj_isoD: 
+lemma cat_GRPH_obj_isoD: 
   assumes "\<AA> \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>"
   shows "\<AA> \<approx>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
 proof-
   from obj_isoD[OF assms] obtain \<FF> where "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>" 
     by clarsimp
-  from cat_GRPH_is_arr_isomorphismD[OF this] show ?thesis
+  from cat_GRPH_is_iso_arrD[OF this] show ?thesis
     by (rule iso_digraphI)
 qed
 
-lemma (in \<Z>) cat_GRPH_obj_isoE: 
+lemma cat_GRPH_obj_isoE: 
   assumes "\<AA> \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB>"
   obtains "\<AA> \<approx>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
   using assms by (auto simp: cat_GRPH_obj_isoD)
 
-lemma (in \<Z>) cat_GRPH_obj_iso_iff: "\<AA> \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB> \<longleftrightarrow> \<AA> \<approx>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
+lemma cat_GRPH_obj_iso_iff: "\<AA> \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>cat_GRPH \<alpha>\<^esub> \<BB> \<longleftrightarrow> \<AA> \<approx>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
   using cat_GRPH_obj_isoI cat_GRPH_obj_isoD by (intro iffI) auto
 
 text\<open>\newpage\<close>

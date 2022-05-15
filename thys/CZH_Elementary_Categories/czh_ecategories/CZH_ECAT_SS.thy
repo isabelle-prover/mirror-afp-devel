@@ -1,6 +1,6 @@
 (* Copyright 2021 (C) Mihails Milehins *)
 
-section\<open>\<open>\<rightarrow>\<bullet>\<leftarrow>\<close> and \<open>\<leftarrow>\<bullet>\<rightarrow>\<close>\<close>
+section\<open>\<open>\<rightarrow>\<bullet>\<leftarrow>\<close> and \<open>\<leftarrow>\<bullet>\<rightarrow>\<close>: cospan and span\<close>
 theory CZH_ECAT_SS
   imports CZH_ECAT_Small_Functor
 begin

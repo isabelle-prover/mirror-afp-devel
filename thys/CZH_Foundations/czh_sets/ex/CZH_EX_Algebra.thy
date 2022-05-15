@@ -32,7 +32,6 @@ definition mbinop where [sgrp_struct_field_simps]: "mbinop = 1\<^sub>\<nat>"
 locale \<Z>_sgrp_basis = \<Z>_vfsequence \<alpha> \<SS> + op: binop \<open>\<SS>\<lparr>\<A>\<rparr>\<close> \<open>\<SS>\<lparr>mbinop\<rparr>\<close> 
   for \<alpha> \<SS> +
   assumes \<Z>_sgrp_length: "vcard \<SS> = 2\<^sub>\<nat>"
-    and \<Z>_sgrp_binop: "binop (\<SS>\<lparr>\<A>\<rparr>) (\<SS>\<lparr>mbinop\<rparr>)"
 
 abbreviation sgrp_app :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<odot>\<^sub>\<circ>\<index>\<close> 70)
   where "sgrp_app \<SS> a b \<equiv> \<SS>\<lparr>mbinop\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet>"

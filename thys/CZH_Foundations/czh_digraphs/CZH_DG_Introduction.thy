@@ -58,7 +58,7 @@ named_theorems Ord_cs_simps
 named_theorems Ord_cs_intros
 
 
-subsubsection\<open>\<open>HOL\<close>\<close>
+subsubsection\<open>Basic \<open>HOL\<close>\<close>
 
 lemma (in semilattice_sup) sup_commute':
   shows "b' = b \<Longrightarrow> a' = a \<Longrightarrow> a \<squnion> b = b' \<squnion> a'"
@@ -87,10 +87,73 @@ lemmas [V_cs_simps] =
   add_0
 
 lemmas [V_cs_intros] = 
+  conjI
   sup_commute' 
   inf_commute' 
   sup.commute
   inf.commute
+
+
+subsubsection\<open>Lists for \<open>HOL\<close>\<close>
+
+lemma list_all_singleton: "list_all P [x] = P x" by simp
+
+lemma replicate_one: "replicate 1 x = [x]"
+  by (simp add: One_nat_def)
+
+lemma list_all_mono:
+  assumes "list_all P xs" and "P \<le> Q"
+  shows "list_all Q xs"
+  using assms by (metis list.pred_mono_strong rev_predicate1D)
+
+lemma pred_in_set_mono:
+  assumes "S \<subseteq> T"
+  shows "(\<lambda>x. x \<in> S) \<le> (\<lambda>x. x \<in> T)"
+  using assms by auto
+
+lemma elts_subset_mono: 
+  assumes "S \<subseteq>\<^sub>\<circ> T"
+  shows "elts S \<subseteq> elts T"
+  using assms by auto
+
+lemma list_all_replicate:
+  assumes "P x"
+  shows "list_all P (replicate n x)"
+  using assms by (metis Ball_set in_set_replicate)
+
+lemma list_all_set:
+  assumes "list_all P xs" and "x \<in> list.set xs"
+  shows "P x"
+  using assms by (induct xs) auto
+
+lemma list_map_id:
+  assumes "list_all (\<lambda>x. f x = x) xs"
+  shows "map f xs = xs"
+  using assms by (induct xs) auto
+
+lemmas [V_cs_simps] = 
+  List.append.append_Nil  
+  List.append_Nil2 
+  List.append.append_Cons
+  List.rev.simps(1)
+  list.map(1,2)
+  rev.simps(2)
+  List.map_append
+  list_all_append
+  replicate.replicate_0
+  rev_replicate
+  semiring_1_class.of_nat_0
+  group_add_class.minus_zero
+  group_add_class.minus_minus
+  replicate.replicate_Suc
+  replicate_one
+  list_all_singleton
+
+lemmas [V_cs_intros] = 
+  exI
+  pred_in_set_mono
+  elts_subset_mono
+  list_all_replicate
 
 
 subsubsection\<open>Foundations\<close>
@@ -181,12 +244,15 @@ lemma vrange_vcomp_eq_vrange[V_cs_simps]:
 lemmas [V_cs_simps] =
   vdomain_vsingleton
   vdomain_vlrestriction
+  vdomain_vlrestriction_vsubset
   vdomain_vcomp_vsubset
   vdomain_vconverse
   vrange_vconverse
   vdomain_vconst_on
   vconverse_vtimes
   vdomain_VLambda
+
+lemmas [V_cs_intros] = vcpower_vsubset_mono
 
 
 subsubsection\<open>Single-valued functions\<close>
@@ -267,10 +333,14 @@ lemmas [V_cs_simps] =
 
 subsubsection\<open>Binary relation as a finite sequence\<close>
 
-lemmas [V_cs_simps] = 
+lemmas [V_cs_simps] =
   fconverse_vunion
   fconverse_ftimes
   vdomain_fflip
+
+lemmas [V_cs_intros] =
+  ftimesI2
+  vcpower_two_ftimesI
 
 
 subsubsection\<open>Ordinals\<close>

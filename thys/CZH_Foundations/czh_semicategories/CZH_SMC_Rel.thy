@@ -30,6 +30,9 @@ named_theorems smc_Rel_cs_intros
 lemmas (in arr_Rel) [smc_Rel_cs_simps] = 
   dg_Rel_shared_cs_simps
 
+lemmas (in arr_Rel) [smc_cs_intros, smc_Rel_cs_intros] = 
+  arr_Rel_axioms'
+
 lemmas [smc_Rel_cs_simps] = 
   dg_Rel_shared_cs_simps
   arr_Rel.arr_Rel_length
@@ -112,6 +115,7 @@ lemmas_with [folded smc_dg_smc_Rel, unfolded slicing_simps]:
   and smc_Rel_is_arrI[smc_Rel_cs_intros] = dg_Rel_is_arrI
   and smc_Rel_is_arrD = dg_Rel_is_arrD
   and smc_Rel_is_arrE = dg_Rel_is_arrE
+  and smc_Rel_is_arr_ArrValE = dg_Rel_is_arr_ArrValE
 
 lemmas [smc_cs_simps] = smc_Rel_is_arrD(2,3)
 
@@ -119,7 +123,6 @@ lemmas_with (in \<Z>) [folded smc_dg_smc_Rel, unfolded slicing_simps]:
   smc_Rel_Hom_vifunion_in_Vset = dg_Rel_Hom_vifunion_in_Vset
   and smc_Rel_incl_Rel_is_arr = dg_Rel_incl_Rel_is_arr
   and smc_Rel_incl_Rel_is_arr'[smc_Rel_cs_intros] = dg_Rel_incl_Rel_is_arr'
-  and smc_Rel_is_arr_ArrValE = dg_Rel_is_arr_ArrValE
 
 lemmas [smc_Rel_cs_intros] = \<Z>.smc_Rel_incl_Rel_is_arr'
 
@@ -150,8 +153,7 @@ qed
 lemma smc_Rel_Comp_vdomain: "\<D>\<^sub>\<circ> (smc_Rel \<alpha>\<lparr>Comp\<rparr>) = composable_arrs (smc_Rel \<alpha>)" 
   unfolding smc_Rel_Comp by simp
 
-lemma (in \<Z>) smc_CAT_Comp_vrange:
-  "\<R>\<^sub>\<circ> (smc_Rel \<alpha>\<lparr>Comp\<rparr>) \<subseteq>\<^sub>\<circ> set {T. arr_Rel \<alpha> T}"
+lemma (in \<Z>) smc_Rel_Comp_vrange: "\<R>\<^sub>\<circ> (smc_Rel \<alpha>\<lparr>Comp\<rparr>) \<subseteq>\<^sub>\<circ> set {T. arr_Rel \<alpha> T}"
 proof(rule vsubsetI)
   interpret digraph \<alpha> \<open>smc_dg (smc_Rel \<alpha>)\<close>
     unfolding smc_dg_smc_Rel by (simp add: digraph_dg_Rel)
@@ -276,8 +278,7 @@ proof(rule vsv_eqI)
 qed
 
 lemmas_with [
-    folded smc_dg_smc_Rel smcf_dghm_smcf_dag_Rel, 
-    unfolded slicing_simps
+    folded smc_dg_smc_Rel smcf_dghm_smcf_dag_Rel, unfolded slicing_simps
     ]: 
   smcf_dag_Rel_ObjMap_vsv[smc_Rel_cs_intros] = dghm_dag_Rel_ObjMap_vsv
   and smcf_dag_Rel_ObjMap_vdomain[smc_Rel_cs_simps] = 
@@ -285,24 +286,16 @@ lemmas_with [
   and smcf_dag_Rel_ObjMap_app[smc_Rel_cs_simps] = dghm_dag_Rel_ObjMap_app
   and smcf_dag_Rel_ObjMap_vrange[smc_Rel_cs_simps] = dghm_dag_Rel_ObjMap_vrange
   and smcf_dag_Rel_ArrMap_vsv[smc_Rel_cs_intros] = dghm_dag_Rel_ArrMap_vsv
-  and smcf_dag_Rel_ArrMap_vdomain[smc_Rel_cs_simps] = dghm_dag_Rel_ArrMap_vdomain
+  and smcf_dag_Rel_ArrMap_vdomain[smc_Rel_cs_simps] = 
+    dghm_dag_Rel_ArrMap_vdomain
   and smcf_dag_Rel_ArrMap_app[smc_Rel_cs_simps] = dghm_dag_Rel_ArrMap_app
-  and smcf_dag_Rel_ArrMap_vrange[smc_Rel_cs_simps] = dghm_dag_Rel_ArrMap_vrange
-
-lemmas_with (in \<Z>) [
-    folded smc_dg_smc_Rel smcf_dghm_smcf_dag_Rel, unfolded slicing_simps
-    ]: 
-  smcf_dag_Rel_app_is_arr = dghm_dag_Rel_ArrMap_app_is_arr
   and smcf_dag_Rel_ArrMap_app_vdomain[smc_cs_simps] = 
     dghm_dag_Rel_ArrMap_app_vdomain
   and smcf_dag_Rel_ArrMap_app_vrange[smc_cs_simps] = 
     dghm_dag_Rel_ArrMap_app_vrange
+  and smcf_dag_Rel_ArrMap_vrange[smc_Rel_cs_simps] = dghm_dag_Rel_ArrMap_vrange
   and smcf_dag_Rel_ArrMap_app_iff[smc_cs_simps] = dghm_dag_Rel_ArrMap_app_iff
-
-lemmas [smc_cs_simps] = 
-  \<Z>.smcf_dag_Rel_ArrMap_app_vdomain
-  \<Z>.smcf_dag_Rel_ArrMap_app_vrange
-  \<Z>.smcf_dag_Rel_ArrMap_app_iff
+  and smcf_dag_Rel_app_is_arr = dghm_dag_Rel_ArrMap_app_is_arr
 
 
 subsubsection\<open>Canonical dagger is a contravariant isomorphism of \<open>Rel\<close>\<close>
@@ -358,7 +351,7 @@ proof(rule is_iso_semifunctorI)
           slicing_commute[symmetric] 
           dghm_dag_Rel_is_iso_dghm
       )
-                                        
+
 qed
 
 
@@ -383,7 +376,7 @@ proof(rule smcf_dghm_eqI)
     by (simp add: dghm_cn_comp_dghm_dag_Rel_dghm_dag_Rel)
 qed simp_all
 
-lemma (in \<Z>) smcf_dag_Rel_ArrMap_smc_Rel_Comp:
+lemma smcf_dag_Rel_ArrMap_smc_Rel_Comp:
   assumes "S : b \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> c" and "T : a \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> b"
   shows "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S \<circ>\<^sub>A\<^bsub>smc_Rel \<alpha>\<^esub> T\<rparr> =
     \<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> \<circ>\<^sub>A\<^bsub>smc_Rel \<alpha>\<^esub> \<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>S\<rparr>"
@@ -410,9 +403,6 @@ outlined in nLab \cite{noauthor_nlab_nodate}\footnote{
 }.
 \<close>
 
-context \<Z>
-begin
-
 context
 begin
 
@@ -425,15 +415,13 @@ private lemma smc_Rel_is_monic_arr_vsubset:
       \<lbrakk> y \<subseteq>\<^sub>\<circ> A; z \<subseteq>\<^sub>\<circ> A; T\<lparr>ArrVal\<rparr> `\<^sub>\<circ> y = X; T\<lparr>ArrVal\<rparr> `\<^sub>\<circ> z = X \<rbrakk> \<Longrightarrow> y = z"
   shows "R\<lparr>ArrVal\<rparr> \<subseteq>\<^sub>\<circ> S\<lparr>ArrVal\<rparr>"
 proof-
-  interpret Rel: semicategory \<alpha> \<open>smc_Rel \<alpha>\<close> by (rule semicategory_smc_Rel)
   interpret R: arr_Rel \<alpha> R 
     rewrites "R\<lparr>ArrDom\<rparr> = A'" and "R\<lparr>ArrCod\<rparr> = A"
-    using assms(2)
-    by (all\<open>elim Rel.smc_is_arrE\<close>) (simp_all add: smc_Rel_components)
+    by (intro smc_Rel_is_arrD[OF assms(2)])+
   interpret S: arr_Rel \<alpha> S
     rewrites "S\<lparr>ArrDom\<rparr> = A'" and "S\<lparr>ArrCod\<rparr> = A"
-    using assms(3)
-    by (all\<open>elim Rel.smc_is_arrE\<close>) (simp_all add: smc_Rel_components)
+    by (intro smc_Rel_is_arrD[OF assms(3)])+
+  interpret Rel: semicategory \<alpha> \<open>smc_Rel \<alpha>\<close> by (rule R.semicategory_smc_Rel)
   from assms(4) have "(T \<circ>\<^sub>A\<^bsub>smc_Rel \<alpha>\<^esub> R)\<lparr>ArrVal\<rparr> = (T \<circ>\<^sub>A\<^bsub>smc_Rel \<alpha>\<^esub> S)\<lparr>ArrVal\<rparr>"
     by simp
   then have eq: "T\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> R\<lparr>ArrVal\<rparr> = T\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> S\<lparr>ArrVal\<rparr>"
@@ -501,26 +489,23 @@ lemma smc_Rel_is_monic_arrI:
   shows "T : A \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Rel \<alpha>\<^esub> B"
 proof(rule is_monic_arrI)
 
-  interpret Rel: semicategory \<alpha> \<open>smc_Rel \<alpha>\<close> by (simp add: semicategory_smc_Rel)
+  interpret T: arr_Rel \<alpha> T 
+    rewrites "T\<lparr>ArrDom\<rparr> = A" and "T\<lparr>ArrCod\<rparr> = B"
+    by (intro smc_Rel_is_arrD[OF assms(1)])+
 
-  fix R S A'
-  assume prems: 
+  interpret Rel: semicategory \<alpha> \<open>smc_Rel \<alpha>\<close> by (simp add: T.semicategory_smc_Rel)
+
+  fix R S A' assume prems: 
     "R : A' \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> A" 
     "S : A' \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> A"
     "T \<circ>\<^sub>A\<^bsub>smc_Rel \<alpha>\<^esub> R = T \<circ>\<^sub>A\<^bsub>smc_Rel \<alpha>\<^esub> S"
 
-  interpret T: arr_Rel \<alpha> T
-    rewrites "T\<lparr>ArrDom\<rparr> = A" and "T\<lparr>ArrCod\<rparr> = B"
-    using assms(1)
-    by (all\<open>elim Rel.smc_is_arrE\<close>) (simp_all add: smc_Rel_components)
   interpret R: arr_Rel \<alpha> R 
     rewrites [simp]: "R\<lparr>ArrDom\<rparr> = A'" and [simp]: "R\<lparr>ArrCod\<rparr> = A"
-    using prems(1)
-    by (all\<open>elim Rel.smc_is_arrE\<close>) (simp_all add: smc_Rel_components)
+    by (intro smc_Rel_is_arrD[OF prems(1)])+
   interpret S: arr_Rel \<alpha> S
     rewrites [simp]: "S\<lparr>ArrDom\<rparr> = A'" and [simp]: "S\<lparr>ArrCod\<rparr> = A"
-    using prems(2)
-    by (all\<open>elim Rel.smc_is_arrE\<close>) (simp_all add: smc_Rel_components)
+    by (intro smc_Rel_is_arrD[OF prems(2)])+
 
   from assms prems have 
     "R\<lparr>ArrVal\<rparr> \<subseteq>\<^sub>\<circ> S\<lparr>ArrVal\<rparr>" "S\<lparr>ArrVal\<rparr> \<subseteq>\<^sub>\<circ> R\<lparr>ArrVal\<rparr>" 
@@ -533,9 +518,7 @@ qed (rule assms(1))
 
 end
 
-end
-
-lemma (in \<Z>) smc_Rel_is_monic_arrD[dest]:
+lemma smc_Rel_is_monic_arrD[dest]:
   assumes "T : A \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Rel \<alpha>\<^esub> B"
     and "y \<subseteq>\<^sub>\<circ> A"
     and "z \<subseteq>\<^sub>\<circ> A" 
@@ -544,13 +527,14 @@ lemma (in \<Z>) smc_Rel_is_monic_arrD[dest]:
   shows "y = z"
 proof-
 
-  interpret Rel: semicategory \<alpha> \<open>smc_Rel \<alpha>\<close> by (simp add: semicategory_smc_Rel)
-
   from assms have T: "T : A \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B" by (simp add: is_monic_arr_def)
+
   interpret T: arr_Rel \<alpha> T
     rewrites "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
-    using T
-    by (all\<open>elim Rel.smc_is_arrE\<close>) (simp_all add: smc_Rel_components)
+    by (intro smc_Rel_is_arrD[OF T])+
+
+  interpret Rel: semicategory \<alpha> \<open>smc_Rel \<alpha>\<close> 
+    by (simp add: T.semicategory_smc_Rel)
  
   define R where "R = [set {0} \<times>\<^sub>\<circ> y, set {0}, A]\<^sub>\<circ>"
   define S where "S = [set {0} \<times>\<^sub>\<circ> z, set {0}, A]\<^sub>\<circ>"
@@ -559,7 +543,7 @@ proof-
   proof(intro smc_Rel_is_arrI)
     show "arr_Rel \<alpha> R"
       unfolding R_def
-    proof(intro arr_Rel_vfsequenceI)
+    proof(intro T.arr_Rel_vfsequenceI)
       from assms(2) show "\<R>\<^sub>\<circ> (set {0} \<times>\<^sub>\<circ> y) \<subseteq>\<^sub>\<circ> A" by auto
     qed (auto simp: T.arr_Rel_ArrDom_in_Vset)
   qed (simp_all add: R_def arr_Rel_components)
@@ -568,7 +552,7 @@ proof-
   proof(intro smc_Rel_is_arrI)
     show "arr_Rel \<alpha> S"
       unfolding S_def
-    proof(intro arr_Rel_vfsequenceI)
+    proof(intro T.arr_Rel_vfsequenceI)
       from assms(3) show "\<R>\<^sub>\<circ> (set {0} \<times>\<^sub>\<circ> z) \<subseteq>\<^sub>\<circ> A" by auto
     qed (auto simp: T.arr_Rel_ArrDom_in_Vset)
   qed (simp_all add: S_def arr_Rel_components)
@@ -587,7 +571,7 @@ proof-
 
 qed
 
-lemma (in \<Z>) smc_Rel_is_monic_arr:
+lemma smc_Rel_is_monic_arr:
   "T : A \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Rel \<alpha>\<^esub> B \<longleftrightarrow>
     T : A \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B \<and>
     (
@@ -601,18 +585,22 @@ lemma (in \<Z>) smc_Rel_is_monic_arr:
   by (rule iffI allI impI) 
     (auto simp: smc_Rel_is_monic_arrD smc_Rel_is_monic_arrI)
 
-lemma (in \<Z>) smc_Rel_is_monic_arr_is_epic_arr: 
+lemma smc_Rel_is_monic_arr_is_epic_arr: 
   assumes "T : A \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B" 
     and "(\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>)\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> : B \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Rel \<alpha>\<^esub> A"
   shows "T : A \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>smc_Rel \<alpha>\<^esub> B"
 proof-
 
+  interpret T: arr_Rel \<alpha> T
+    rewrites "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
+    by (intro smc_Rel_is_arrD[OF assms(1)])+
+
   interpret is_iso_semifunctor \<alpha> \<open>op_smc (smc_Rel \<alpha>)\<close> \<open>smc_Rel \<alpha>\<close> \<open>\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<close>
-    rewrites "(op_smc \<CC>')\<lparr>Obj\<rparr> = \<CC>'\<lparr>Obj\<rparr>" 
-      and "(op_smc \<CC>')\<lparr>Arr\<rparr> = \<CC>'\<lparr>Arr\<rparr>"
+    rewrites "op_smc \<CC>'\<lparr>Obj\<rparr> = \<CC>'\<lparr>Obj\<rparr>" 
+      and "op_smc \<CC>'\<lparr>Arr\<rparr> = \<CC>'\<lparr>Arr\<rparr>"
       and "f : b \<mapsto>\<^bsub>op_smc \<CC>'\<^esub> a \<longleftrightarrow> f : a \<mapsto>\<^bsub>\<CC>'\<^esub> b" 
       for \<CC>' f a b
-    unfolding smc_op_simps by (auto simp: smcf_dag_Rel_is_iso_semifunctor)
+    unfolding smc_op_simps by (auto simp: T.smcf_dag_Rel_is_iso_semifunctor)
   
   show ?thesis
   proof(intro HomCod.is_epic_arrI)
@@ -646,14 +634,21 @@ proof-
   qed
 qed
 
-lemma (in \<Z>) smc_Rel_is_epic_arr_is_monic_arr:
+lemma smc_Rel_is_epic_arr_is_monic_arr:
   assumes "T : A \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>smc_Rel \<alpha>\<^esub> B" 
   shows "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> : B \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Rel \<alpha>\<^esub> A"
 proof(rule is_monic_arrI)
 
+  from assms(1) have T: "T : A \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B" 
+    by (simp add: is_epic_arr_def is_monic_arr_def smc_op_simps)
+
+  interpret T: arr_Rel \<alpha> T
+    rewrites "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
+    by (intro smc_Rel_is_arrD[OF T])+
+
   interpret is_iso_semifunctor \<alpha> \<open>op_smc (smc_Rel \<alpha>)\<close> \<open>smc_Rel \<alpha>\<close> \<open>\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<close> 
     rewrites "f : b \<mapsto>\<^bsub>op_smc \<CC>'\<^esub> a \<longleftrightarrow> f : a \<mapsto>\<^bsub>\<CC>'\<^esub> b" for \<CC>' f a b
-    unfolding smc_op_simps by (auto simp: smcf_dag_Rel_is_iso_semifunctor)
+    unfolding smc_op_simps by (auto simp: T.smcf_dag_Rel_is_iso_semifunctor)
 
   have dag: "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha> : op_smc (smc_Rel \<alpha>) \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> smc_Rel \<alpha>" 
     by (auto intro: smc_cs_intros)
@@ -667,8 +662,7 @@ proof(rule is_monic_arrI)
     unfolding smcf_dag_Rel_components(1)
     by (metis HomCod.smc_is_arrD(2) HomCod.smc_is_arrD(3) vid_on_eq_atI)
 
-  fix f g a :: V
-  assume prems:
+  fix f g a assume prems:
     "f : a \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B" 
     "g : a \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B" 
     "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> \<circ>\<^sub>A\<^bsub>smc_Rel \<alpha>\<^esub> f = \<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> \<circ>\<^sub>A\<^bsub>smc_Rel \<alpha>\<^esub> g" 
@@ -693,7 +687,8 @@ proof(rule is_monic_arrI)
           cs_simp: smc_Rel_cs_simps smc_cn_cs_simps smc_cs_simps
       )
   also from T have "\<dots> = T" 
-    unfolding dghm_id_components smcf_cn_comp_smcf_dag_Rel_smcf_dag_Rel by auto
+    unfolding dghm_id_components T.smcf_cn_comp_smcf_dag_Rel_smcf_dag_Rel 
+    by auto
   finally have dag_dag_T: "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<rparr> = T" by simp
   have 
     "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>smc_Rel \<alpha>\<^esub> T = \<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>smc_Rel \<alpha>\<^esub> T"
@@ -704,16 +699,21 @@ proof(rule is_monic_arrI)
 
 qed
 
-lemma (in \<Z>) smc_Rel_is_epic_arrI:
+lemma smc_Rel_is_epic_arrI:
   assumes "T : A \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B"  
     and "\<And>y z X. \<lbrakk> y \<subseteq>\<^sub>\<circ> B; z \<subseteq>\<^sub>\<circ> B; T\<lparr>ArrVal\<rparr> -`\<^sub>\<circ> y = X; T\<lparr>ArrVal\<rparr> -`\<^sub>\<circ> z = X \<rbrakk> \<Longrightarrow>
       y = z"
   shows "T : A \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>smc_Rel \<alpha>\<^esub> B"
 proof-
+
+  interpret T: arr_Rel \<alpha> T
+    rewrites "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
+    by (intro smc_Rel_is_arrD[OF assms(1)])+
+
   interpret is_iso_semifunctor \<alpha> \<open>op_smc (smc_Rel \<alpha>)\<close> \<open>smc_Rel \<alpha>\<close> \<open>\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<close> 
     rewrites "f : b \<mapsto>\<^bsub>op_smc \<CC>'\<^esub> a \<longleftrightarrow> f : a \<mapsto>\<^bsub>\<CC>'\<^esub> b" for \<CC>' f a b 
-    unfolding smc_op_simps by (auto simp: smcf_dag_Rel_is_iso_semifunctor)
-  from assms have T: "arr_Rel \<alpha> T" by (auto simp: smc_Rel_is_arrD(1))
+    unfolding smc_op_simps by (auto simp: T.smcf_dag_Rel_is_iso_semifunctor)
+
   have "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> : B \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Rel \<alpha>\<^esub> A"
   proof(rule smc_Rel_is_monic_arrI)
     from assms(1) have "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> :
@@ -730,14 +730,14 @@ proof-
     then show "y = z"
       unfolding 
         converse_Rel_components 
-        smcf_dag_Rel_ArrMap_app[OF T] 
+        smcf_dag_Rel_ArrMap_app[OF T.arr_Rel_axioms] 
         app_invimage_def[symmetric]
       by (rule assms(2))
   qed
   from smc_Rel_is_monic_arr_is_epic_arr[OF assms(1) this] show ?thesis by simp
 qed
 
-lemma (in \<Z>) smc_Rel_is_epic_arrD[dest]:
+lemma smc_Rel_is_epic_arrD[dest]:
   assumes "T : A \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>smc_Rel \<alpha>\<^esub> B"
     and "y \<subseteq>\<^sub>\<circ> B"
     and "z \<subseteq>\<^sub>\<circ> B" 
@@ -745,10 +745,18 @@ lemma (in \<Z>) smc_Rel_is_epic_arrD[dest]:
     and "T\<lparr>ArrVal\<rparr> -`\<^sub>\<circ> z = X" 
   shows "y = z"
 proof-
+
+  from assms(1) have T: "T : A \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B" 
+    by (simp add: is_epic_arr_def is_monic_arr_def smc_op_simps)
+
+  interpret T: arr_Rel \<alpha> T
+    rewrites "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
+    by (intro smc_Rel_is_arrD[OF T])+
+
   interpret is_iso_semifunctor \<alpha> \<open>op_smc (smc_Rel \<alpha>)\<close> \<open>smc_Rel \<alpha>\<close> \<open>\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<close> 
     rewrites "f : b \<mapsto>\<^bsub>op_smc \<CC>'\<^esub> a \<longleftrightarrow> f : a \<mapsto>\<^bsub>\<CC>'\<^esub> b" 
     for \<CC>' f a b 
-    unfolding smc_op_simps by (auto simp: smcf_dag_Rel_is_iso_semifunctor)
+    unfolding smc_op_simps by (auto simp: T.smcf_dag_Rel_is_iso_semifunctor)
   have dag_T: "\<dagger>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr> : B \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Rel \<alpha>\<^esub> A"
     by (rule smc_Rel_is_epic_arr_is_monic_arr[OF assms(1)])
   from HomCod.is_epic_arrD(1)[OF assms(1)] have T: "T : A \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B".
@@ -768,7 +776,7 @@ proof-
     by (auto simp: app_invimage_def)
 qed
 
-lemma (in \<Z>) smc_Rel_is_epic_arr:
+lemma smc_Rel_is_epic_arr:
   "T : A \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>smc_Rel \<alpha>\<^esub> B \<longleftrightarrow>
     T : A \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B \<and> 
       (
@@ -876,7 +884,7 @@ proof-
         with is_arrD(2,3)[OF T] show "T\<lparr>ArrDom\<rparr> = A" "T\<lparr>ArrCod\<rparr> = 0"
           using T smc_Rel_is_arrD(2,3) by auto
         with T.arr_Rel_ArrVal_vrange T.ArrVal.vbrelation_vintersection_vrange 
-        show "T\<lparr>ArrVal\<rparr> = []\<^sub>\<circ>"
+        show "T\<lparr>ArrVal\<rparr> = 0"
           by auto
       qed
 
@@ -954,7 +962,7 @@ proof-
         )
         show "arr_Rel \<alpha> [T\<lparr>ArrVal\<rparr>, T\<lparr>ArrDom\<rparr>, T\<lparr>ArrCod\<rparr>]\<^sub>\<circ>"
           by (fold T.arr_Rel_def) (simp add: T.arr_Rel_axioms)
-        show "arr_Rel \<alpha> [[]\<^sub>\<circ>, []\<^sub>\<circ>, B]\<^sub>\<circ>" 
+        show "arr_Rel \<alpha> [0, 0, B]\<^sub>\<circ>" 
           by (simp add: arr_Rel_vfsequenceI vbrelationI)
         from T have "T \<in>\<^sub>\<circ> smc_Rel \<alpha>\<lparr>Arr\<rparr>" by (auto intro: smc_cs_intros)
         with T is_arrD(2,3)[OF T] show "T\<lparr>ArrDom\<rparr> = 0" "T\<lparr>ArrCod\<rparr> = B"
@@ -963,7 +971,7 @@ proof-
           T.arr_Rel_ArrVal_vrange 
           T.arr_Rel_ArrVal_vdomain 
           T.ArrVal.vbrelation_vintersection_vdomain
-        show "T\<lparr>ArrVal\<rparr> = []\<^sub>\<circ>"
+        show "T\<lparr>ArrVal\<rparr> = 0"
           by auto
       qed
     qed
@@ -997,7 +1005,7 @@ result is not expected to be original.
 \<close>
 
 lemma (in \<Z>) smc_Rel_is_zero_arr: 
-  assumes "A \<in>\<^sub>\<circ> Vset \<alpha>" and "B \<in>\<^sub>\<circ> Vset \<alpha>"
+  assumes "A \<in>\<^sub>\<circ> smc_Rel \<alpha>\<lparr>Obj\<rparr>" and "B \<in>\<^sub>\<circ> smc_Rel \<alpha>\<lparr>Obj\<rparr>"
   shows "T : A \<mapsto>\<^sub>0\<^bsub>smc_Rel \<alpha>\<^esub> B \<longleftrightarrow> T = [0, A, B]\<^sub>\<circ>"
 proof(rule HOL.ext iffI)
 
@@ -1012,10 +1020,10 @@ proof(rule HOL.ext iffI)
 
   interpret S: arr_Rel \<alpha> S
     rewrites [simp]: "S\<lparr>ArrDom\<rparr> = A" and [simp]: "S\<lparr>ArrCod\<rparr> = 0"
-    using S by (all\<open>elim Rel.smc_is_arrE\<close>) (simp_all add: smc_Rel_components)
+    by (intro smc_Rel_is_arrD[OF S])+
   interpret R: arr_Rel \<alpha> R
     rewrites [simp]: "R\<lparr>ArrDom\<rparr> = 0" and [simp]: "R\<lparr>ArrCod\<rparr> = B"
-    using R by (all\<open>elim Rel.smc_is_arrE\<close>) (simp_all add: smc_Rel_components)
+    by (intro smc_Rel_is_arrD[OF R])+
 
   have S_def: "S = [0, A, 0]\<^sub>\<circ>"   
     by 
@@ -1053,7 +1061,8 @@ next
   assume prems: "T = [0, A, B]\<^sub>\<circ>"
   let ?S = \<open>[0, A, 0]\<^sub>\<circ>\<close> and ?R = \<open>[0, 0, B]\<^sub>\<circ>\<close>
   have S: "arr_Rel \<alpha> ?S" and R: "arr_Rel \<alpha> ?R" 
-    by (all\<open>intro arr_Rel_vfsequenceI\<close>) (auto simp: assms)
+    by (all\<open>intro arr_Rel_vfsequenceI\<close>) 
+      (auto simp: assms[unfolded smc_Rel_components])
   have SA0: "?S : A \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> 0"
     by (intro smc_Rel_is_arrI) (simp_all add: S arr_Rel_components)
   moreover have R0B: "?R : 0 \<mapsto>\<^bsub>smc_Rel \<alpha>\<^esub> B"
@@ -1062,7 +1071,9 @@ next
     unfolding smc_Rel_Comp_app[OF R0B SA0]
   proof(rule arr_Rel_eqI, unfold comp_Rel_components arr_Rel_components prems)
     show "arr_Rel \<alpha> [0, A, B]\<^sub>\<circ>"
-      unfolding prems by (intro arr_Rel_vfsequenceI) (auto simp: assms)
+      unfolding prems 
+      by (intro arr_Rel_vfsequenceI) 
+        (auto simp: assms[unfolded smc_Rel_components(1)])
   qed (use R S in \<open>auto simp: smc_Rel_cs_intros\<close>)
   ultimately show "T : A \<mapsto>\<^sub>0\<^bsub>smc_Rel \<alpha>\<^esub> B" 
     by (simp add: is_zero_arrI smc_Rel_obj_null)

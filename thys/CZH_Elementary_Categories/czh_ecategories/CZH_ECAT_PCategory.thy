@@ -5450,7 +5450,7 @@ proof-
       by (rule assms(4)[OF a])
     from b have \<NN>ab: "\<NN>\<lparr>NTMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet> = (\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>\<lparr>b\<rparr>"
       by (cs_concl cs_shallow cs_simp: cat_cs_simps)
-    from \<NN>a.iso_ntcf_is_arr_isomorphism[OF b] assms(1,2,3) a b show
+    from \<NN>a.iso_ntcf_is_iso_arr[OF b] assms(1,2,3) a b show
       "\<NN>\<lparr>NTMap\<rparr>\<lparr>ab\<rparr> : \<SS>\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> \<SS>'\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr>" 
       by 
         (
@@ -5482,7 +5482,7 @@ proof-
       by (rule assms(4)[OF b])
     from b have \<NN>ab: "\<NN>\<lparr>NTMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet> = (\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>\<lparr>b\<rparr>"
       by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-    from \<NN>a.iso_ntcf_is_arr_isomorphism[OF a] assms(1,2,3) a b show
+    from \<NN>a.iso_ntcf_is_iso_arr[OF a] assms(1,2,3) a b show
       "\<NN>\<lparr>NTMap\<rparr>\<lparr>ab\<rparr> : \<SS>\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> \<SS>'\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr>"
       unfolding ab_def 
       by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_prod_cs_intros)

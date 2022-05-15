@@ -4,7 +4,6 @@ session CZH_Foundations (AFP) = ZFC_in_HOL +
   options [timeout = 2400]
   sessions
     "HOL-Library"
-    "HOL-ex"
     Intro_Dest_Elim
     Conditional_Simplification
     "HOL-Eisbach"

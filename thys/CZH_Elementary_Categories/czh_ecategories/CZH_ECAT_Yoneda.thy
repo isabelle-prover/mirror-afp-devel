@@ -933,7 +933,12 @@ proof-
       fix f assume "f : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> \<FF>'\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
       with category_axioms Set.category_axioms assms show 
         "?\<FF>\<FF>'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr> = cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>?\<FF>a\<FF>'b\<rparr>\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros) 
+        by
+          (
+            cs_concl
+              cs_simp: cat_cs_simps cat_Set_components(1)
+              cs_intro: cat_cs_intros
+          )
     qed (use arr_Set_\<FF>a\<FF>'b in auto)
       
   qed (use \<FF>\<FF>' \<FF>a\<FF>'b in \<open>cs_concl cs_simp: cat_cs_simps\<close>)+
@@ -2270,7 +2275,7 @@ lemma (in category) cat_Yoneda_map_of_ntcf_Hom_snd:
   by
     (
       cs_concl 
-        cs_simp: cat_cs_simps cat_op_simps 
+        cs_simp: cat_cs_simps cat_op_simps cat_Set_components(1)
         cs_intro: cat_cs_intros cat_prod_cs_intros
     ) 
 
@@ -3542,7 +3547,7 @@ proof-
   show ?thesis
   proof
     (
-      intro cat_Set_is_arr_isomorphismI cat_Set_is_arrI arr_SetI,
+      intro cat_Set_is_iso_arrI cat_Set_is_arrI arr_SetI,
       unfold cat_cs_simps cf_map_components
     )
     show "vfsequence (ntcf_Yoneda_arrow \<alpha> \<CC> (cf_map \<FF>) r)"
@@ -3619,7 +3624,7 @@ lemma (in category) cat_ntcf_Yoneda_arrow_is_arr:
     \<FF>\<lparr>ObjMap\<rparr>\<lparr>r\<rparr>"
   by 
     (
-      rule cat_Set_is_arr_isomorphismD[
+      rule cat_Set_is_iso_arrD[
         OF cat_ntcf_Yoneda_arrow_is_arr_isomoprhism[OF assms]
         ]
     )
@@ -3645,7 +3650,7 @@ lemmas [cat_arrow_cs_intros] = category.cat_ntcf_Yoneda_arrow_is_arr'
 
 subsection\<open>Commutativity law for the Yoneda natural transformation arrow\<close>
 
-lemma (in category) cat_ntcf_Yoneda_arrow_commutativity:
+lemma (in category) cat_ntcf_Yoneda_arrow_commute:
   assumes "\<Z> \<beta>"
     and "\<alpha> \<in>\<^sub>\<circ> \<beta>"
     and "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
@@ -3798,7 +3803,11 @@ proof-
         by
           (
             cs_prems cs_shallow
-              cs_simp: cat_FUNCT_cs_simps cat_cs_simps cat_op_simps
+              cs_simp: 
+                cat_FUNCT_cs_simps 
+                cat_map_extra_cs_simps 
+                cat_cs_simps 
+                cat_op_simps
               cs_intro: cat_cs_intros cat_prod_cs_intros cat_op_intros
           )
     
@@ -3813,9 +3822,11 @@ proof-
             cs_concl 
               cs_simp:
                 \<FF>f_\<MM>a_eq_\<MM>b \<GG>\<NN>_eq_\<NN>\<FF>
+                cat_map_extra_cs_simps 
                 cat_FUNCT_cs_simps 
                 cat_cs_simps 
                 cat_op_simps
+                cat_Set_components(1)
               cs_intro: 
                 cat_Set_\<alpha>\<beta>.subcat_is_arrD 
                 cat_small_cs_intros
@@ -3823,7 +3834,7 @@ proof-
                 cat_FUNCT_cs_intros
                 cat_prod_cs_intros
                 cat_op_intros
-          )+
+          )
 
     qed (use arr_Set_\<GG>b_\<NN>f arr_Set_\<NN>f_\<FF>a in auto)
 
@@ -3969,7 +3980,7 @@ proof-
     show "ntcf_Yoneda \<alpha> \<beta> \<CC>\<lparr>NTMap\<rparr>\<lparr>\<FF>r\<rparr> :
       cf_nt \<alpha> \<beta> (cf_id \<CC>)\<lparr>ObjMap\<rparr>\<lparr>\<FF>r\<rparr> \<mapsto>\<^bsub>cat_Set \<beta>\<^esub> cf_eval \<alpha> \<beta> \<CC>\<lparr>ObjMap\<rparr>\<lparr>\<FF>r\<rparr>"
       if "\<FF>r \<in>\<^sub>\<circ> (cat_FUNCT \<alpha> \<CC> (cat_Set \<alpha>) \<times>\<^sub>C \<CC>)\<lparr>Obj\<rparr>" for \<FF>r
-      by (rule is_arr_isomorphismD[OF ntcf_Yoneda_\<FF>r[OF that]])
+      by (rule is_iso_arrD[OF ntcf_Yoneda_\<FF>r[OF that]])
     show 
       "ntcf_Yoneda \<alpha> \<beta> \<CC>\<lparr>NTMap\<rparr>\<lparr>\<GG>b\<rparr> \<circ>\<^sub>A\<^bsub>cat_Set \<beta>\<^esub> 
         cf_nt \<alpha> \<beta> (cf_id \<CC>)\<lparr>ArrMap\<rparr>\<lparr>\<NN>f\<rparr> =
@@ -3992,7 +4003,7 @@ proof-
           )
       note \<NN> = cat_FUNCT_is_arrD[OF \<NN>]
       note [cat_cs_simps] = 
-        cat_ntcf_Yoneda_arrow_commutativity[OF assms \<NN>(1) f, folded \<NN>(2,3,4)]
+        cat_ntcf_Yoneda_arrow_commute[OF assms \<NN>(1) f, folded \<NN>(2,3,4)]
       from \<NN>(1) assms(2) f show ?thesis
         unfolding \<NN>f_def \<FF>a_def \<GG>b_def
         by (subst (1 2) \<NN>(2), use nothing in \<open>subst \<NN>(3), subst \<NN>(4)\<close>)
@@ -4308,7 +4319,7 @@ This subsection presents further results that were stated
 as Corollary 2 in subsection 1.15 in \cite{bodo_categories_1970}.
 \<close>
 
-lemma (in category) cat_is_arr_isomorphism_ntcf_Hom_snd_is_iso_ntcf:
+lemma (in category) cat_is_iso_arr_ntcf_Hom_snd_is_iso_ntcf:
   assumes "f : s \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> r"
   shows "Hom\<^sub>A\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(f,-) :
     Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(r,-) \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(s,-) : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
@@ -4322,11 +4333,11 @@ proof-
         auto intro:
           cat_the_inverse_Comp_CId_left 
           cat_the_inverse_Comp_CId_right 
-          cat_the_inverse_is_arr_isomorphism'
+          cat_the_inverse_is_iso_arr'
       )
   then have g: "g : r \<mapsto>\<^bsub>\<CC>\<^esub> s" by auto
   show ?thesis
-  proof(intro is_arr_isomorphism_is_iso_ntcf)
+  proof(intro is_iso_arr_is_iso_ntcf)
     from assms have f: "f : s \<mapsto>\<^bsub>\<CC>\<^esub> r" by auto
     with category_axioms show "Hom\<^sub>A\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(f,-) :
       Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(r,-) \<mapsto>\<^sub>C\<^sub>F Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(s,-) : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
@@ -4353,14 +4364,14 @@ proof-
   qed
 qed
 
-lemma (in category) cat_is_arr_isomorphism_ntcf_Hom_fst_is_iso_ntcf:
+lemma (in category) cat_is_iso_arr_ntcf_Hom_fst_is_iso_ntcf:
   assumes "f : r \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> s"
   shows "Hom\<^sub>A\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,f) :
     Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,r) \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,s) : op_cat \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
 proof-
   from assms have r: "r \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and s: "s \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
   from 
-    category.cat_is_arr_isomorphism_ntcf_Hom_snd_is_iso_ntcf
+    category.cat_is_iso_arr_ntcf_Hom_snd_is_iso_ntcf
       [
         OF category_op, 
         unfolded cat_op_simps,
@@ -4389,7 +4400,7 @@ proof-
   from assms(3) have \<NN>:
     "\<NN> : Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(r,-) \<mapsto>\<^sub>C\<^sub>F Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(s,-) : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
     by auto
-  from iso_ntcf_is_arr_isomorphism[OF assms(3)] 
+  from iso_ntcf_is_iso_arr[OF assms(3)] 
   have iso_inv_\<NN>: "inv_ntcf \<NN> : 
     Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(s,-) \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(r,-) : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
     and [simp]: "\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F inv_ntcf \<NN> = ntcf_id Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(s,-)"
@@ -4409,7 +4420,7 @@ proof-
     by (intro unique)+
 
   show "Yoneda_map \<alpha> Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(s,-) r\<lparr>\<NN>\<rparr> : s \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> r"
-  proof(intro is_arr_isomorphismI[OF Ym_\<NN>, of \<open>?Ym_inv_\<NN>\<close>] is_inverseI)
+  proof(intro is_iso_arrI[OF Ym_\<NN>, of \<open>?Ym_inv_\<NN>\<close>] is_inverseI)
 
     show Ym_inv_\<NN>: "?Ym_inv_\<NN> : r \<mapsto>\<^bsub>\<CC>\<^esub> s" by (rule inv_unique(1))
     
@@ -4481,7 +4492,7 @@ lemma (in category) cat_ntcf_Hom_fst_is_iso_ntcf_Hom_fst_unique:
           ]
     )+
 
-lemma (in category) cat_is_arr_isomorphism_if_ntcf_Hom_snd_is_iso_ntcf:
+lemma (in category) cat_is_iso_arr_if_ntcf_Hom_snd_is_iso_ntcf:
   assumes "f : s \<mapsto>\<^bsub>\<CC>\<^esub> r"
     and "Hom\<^sub>A\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(f,-) :
       Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(r,-) \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(s,-) : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
@@ -4497,7 +4508,7 @@ proof-
     by simp
 qed
 
-lemma (in category) cat_is_arr_isomorphism_if_ntcf_Hom_fst_is_iso_ntcf:
+lemma (in category) cat_is_iso_arr_if_ntcf_Hom_fst_is_iso_ntcf:
   assumes "f : r \<mapsto>\<^bsub>\<CC>\<^esub> s"
     and "Hom\<^sub>A\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,f) :
       Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,r) \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,s) : op_cat \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
@@ -5291,7 +5302,7 @@ proof-
       by 
         (
           auto intro!: 
-            cat_is_arr_isomorphism_ntcf_Hom_snd_is_iso_ntcf cat_arrow_cs_intros
+            cat_is_iso_arr_ntcf_Hom_snd_is_iso_ntcf cat_arrow_cs_intros
         )
   qed (auto simp: cat_cs_intros)
 qed
@@ -5367,7 +5378,7 @@ proof-
     show "af_Yoneda_arrow \<alpha> \<FF> \<GG> \<NN>\<lparr>NTMap\<rparr>\<lparr>b\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
       by 
         (
-          rule cat_is_arr_isomorphism_if_ntcf_Hom_snd_is_iso_ntcf[
+          rule cat_is_iso_arr_if_ntcf_Hom_snd_is_iso_ntcf[
             OF aYa_b Hb[OF prems]
             ]
         )

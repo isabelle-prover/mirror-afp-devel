@@ -14,8 +14,8 @@ text\<open>
 \<open>Rel\<close> is usually defined as a category of sets and binary relations
 (e.g., see Chapter I-7 in \cite{mac_lane_categories_2010}). However, there
 is little that can prevent one from exposing \<open>Rel\<close> as a digraph and
-provide additional structure gradually in subsequent installments of this 
-work. Thus, in this section, \<open>\<alpha>\<close>-\<open>Rel\<close> is defined as a digraph of sets 
+provide additional structure gradually later. 
+Thus, in this section, \<open>\<alpha>\<close>-\<open>Rel\<close> is defined as a digraph of sets 
 and binary relations in \<open>V\<^sub>\<alpha>\<close>.
 \<close>
 
@@ -55,7 +55,7 @@ locale arr_Rel = \<Z> \<alpha> + vfsequence T + ArrVal: vbrelation \<open>T\<lpa
     and arr_Rel_ArrDom_in_Vset: "T\<lparr>ArrDom\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
     and arr_Rel_ArrCod_in_Vset: "T\<lparr>ArrCod\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
 
-lemmas [dg_Rel_cs_simps] = arr_Rel.arr_Rel_length
+lemmas [dg_Rel_shared_cs_simps, dg_Rel_cs_simps] = arr_Rel.arr_Rel_length
 
 
 text\<open>Components.\<close>
@@ -68,6 +68,11 @@ lemma arr_Rel_components[dg_Rel_shared_cs_simps, dg_Rel_cs_simps]:
 
 
 text\<open>Rules.\<close>
+
+lemma (in arr_Rel) arr_Rel_axioms'[dg_cs_intros, dg_Rel_cs_intros]:
+  assumes "\<alpha>' = \<alpha>"
+  shows "arr_Rel \<alpha>' T"
+  unfolding assms by (rule arr_Rel_axioms)
 
 mk_ide rf arr_Rel_def[unfolded arr_Rel_axioms_def]
   |intro arr_RelI|
@@ -751,7 +756,7 @@ mk_VLambda dghm_dag_Rel_components(2)
   |vdomain dghm_dag_Rel_ArrMap_vdomain[dg_Rel_cs_simps]|
   |app dghm_dag_Rel_ArrMap_app[unfolded dg_Rel_cs_simps, dg_Rel_cs_simps]|
 
-lemma (in \<Z>) dghm_dag_Rel_ArrMap_app_vdomain[dg_cs_simps]:
+lemma dghm_dag_Rel_ArrMap_app_vdomain[dg_cs_simps]:
   assumes "T : A \<mapsto>\<^bsub>dg_Rel \<alpha>\<^esub> B"
   shows "\<D>\<^sub>\<circ> (\<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>) = \<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
 proof-
@@ -760,9 +765,7 @@ proof-
     by (cs_concl cs_simp: dg_Rel_cs_simps V_cs_simps converse_Rel_components(1))
 qed
 
-lemmas [dg_cs_simps] = \<Z>.dghm_dag_Rel_ArrMap_app_vdomain
-
-lemma (in \<Z>) dghm_dag_Rel_ArrMap_app_vrange[dg_cs_simps]:
+lemma dghm_dag_Rel_ArrMap_app_vrange[dg_cs_simps]:
   assumes "T : A \<mapsto>\<^bsub>dg_Rel \<alpha>\<^esub> B"
   shows "\<R>\<^sub>\<circ> (\<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr>) = \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
 proof-
@@ -771,9 +774,7 @@ proof-
     by (cs_concl cs_simp: dg_Rel_cs_simps V_cs_simps converse_Rel_components(1))
 qed
 
-lemmas [dg_cs_simps] = \<Z>.dghm_dag_Rel_ArrMap_app_vrange
-
-lemma (in \<Z>) dghm_dag_Rel_ArrMap_app_iff[dg_cs_simps]:
+lemma dghm_dag_Rel_ArrMap_app_iff[dg_cs_simps]:
   assumes "T : A \<mapsto>\<^bsub>dg_Rel \<alpha>\<^esub> B" 
   shows "\<langle>a, b\<rangle> \<in>\<^sub>\<circ> \<dagger>\<^sub>D\<^sub>G\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrVal\<rparr> \<longleftrightarrow> \<langle>b, a\<rangle> \<in>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>"
 proof-

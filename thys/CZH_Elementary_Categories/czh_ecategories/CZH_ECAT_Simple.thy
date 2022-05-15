@@ -143,10 +143,11 @@ lemma cf_0_ArrMap_vsv[cat_cs_intros]: "vsv (cf_0 \<CC>\<lparr>ArrMap\<rparr>)"
 
 subsubsection\<open>Empty functor is a faithful functor\<close>
 
-lemma (in \<Z>) cf_0_is_ft_functor: 
+lemma cf_0_is_ft_functor: 
   assumes "category \<alpha> \<AA>"
   shows "cf_0 \<AA> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<^bsub>\<alpha>\<^esub> \<AA>"
 proof(rule is_ft_functorI)
+  interpret \<AA>: category \<alpha> \<AA> by (rule assms(1))
   show "cf_0 \<AA> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
   proof(rule is_functorI, unfold cat_smc_cat_0 cf_smcf_cf_0)
     show "vfsequence (cf_0 \<AA>)" unfolding cf_0_def by simp
@@ -155,42 +156,38 @@ proof(rule is_ft_functorI)
     from \<Z>.smcf_0_is_ft_semifunctor assms show 
       "smcf_0 (cat_smc \<AA>) : smc_0 \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> cat_smc \<AA>"   
       by auto
-  qed (auto simp: assms category_cat_0 cat_0_components cf_0_components)
+  qed (auto simp: assms \<AA>.category_cat_0 cat_0_components cf_0_components)
   show "cf_smcf (cf_0 \<AA>) : cat_smc cat_0 \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<^bsub>\<alpha>\<^esub> cat_smc \<AA>"
     by 
       (
         auto simp:
           assms 
-          \<Z>_axioms
-          \<Z>.smcf_0_is_ft_semifunctor  
+          \<AA>.\<Z>_axioms
+          \<AA>.smcf_0_is_ft_semifunctor  
           category.cat_semicategory 
           cf_smcf_cf_0 
           cat_smc_cat_0
       )
 qed
 
-lemma (in \<Z>) cf_0_is_ft_functor'[cf_cs_intros]:
+lemma cf_0_is_ft_functor'[cf_cs_intros]:
   assumes "category \<alpha> \<AA>"
     and "\<BB>' = \<AA>"
     and "\<AA>' = cat_0"
   shows "cf_0 \<AA> : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<^bsub>\<alpha>\<^esub> \<BB>'"
   using assms(1) unfolding assms(2,3) by (rule cf_0_is_ft_functor)
 
-lemmas [cf_cs_intros] = \<Z>.cf_0_is_ft_functor'
-
-lemma (in \<Z>) cf_0_is_functor: 
+lemma cf_0_is_functor: 
   assumes "category \<alpha> \<AA>"
   shows "cf_0 \<AA> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
   using cf_0_is_ft_functor[OF assms] by auto
 
-lemma (in \<Z>) cf_0_is_functor'[cat_cs_intros]: 
+lemma cf_0_is_functor'[cat_cs_intros]: 
   assumes "category \<alpha> \<AA>"
     and "\<BB>' = \<AA>"
     and "\<AA>' = cat_0"
   shows "cf_0 \<AA> : \<AA>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>'"
   using assms(1) unfolding assms(2,3) by (rule cf_0_is_functor)
-
-lemmas [cat_cs_intros] = \<Z>.cf_0_is_functor'
 
 
 subsubsection\<open>Further properties\<close>
@@ -213,6 +210,35 @@ proof(rule cf_smcf_eqI)
         rule \<FF>.cf_is_semifunctor[unfolded slicing_simps cat_smc_cat_0]
       )
 qed simp_all 
+
+lemma (in is_functor) cf_comp_cf_cf_0[cat_cs_simps]: "\<FF> \<circ>\<^sub>C\<^sub>F cf_0 \<AA> = cf_0 \<BB>"
+proof(rule cf_eqI)
+  show "\<FF> \<circ>\<^sub>C\<^sub>F cf_0 \<AA> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by (cs_concl cs_intro: cat_cs_intros)
+  then have ObjMap_dom_lhs: "\<D>\<^sub>\<circ> ((\<FF> \<circ>\<^sub>C\<^sub>F cf_0 \<AA>)\<lparr>ObjMap\<rparr>) = cat_0\<lparr>Obj\<rparr>"
+    and ArrMap_dom_lhs: "\<D>\<^sub>\<circ> ((\<FF> \<circ>\<^sub>C\<^sub>F cf_0 \<AA>)\<lparr>ArrMap\<rparr>) = cat_0\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)+
+  show "cf_0 \<BB> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" 
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
+  then have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> (cf_0 \<BB>\<lparr>ObjMap\<rparr>) = cat_0\<lparr>Obj\<rparr>"
+    and ArrMap_dom_rhs: "\<D>\<^sub>\<circ> (cf_0 \<BB>\<lparr>ArrMap\<rparr>) = cat_0\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)+
+  show "(\<FF> \<circ>\<^sub>C\<^sub>F cf_0 \<AA>)\<lparr>ObjMap\<rparr> = cf_0 \<BB>\<lparr>ObjMap\<rparr>"
+    by 
+      (
+        rule vsv_eqI, 
+        unfold ObjMap_dom_lhs ObjMap_dom_rhs ArrMap_dom_lhs ArrMap_dom_rhs
+      )
+      (auto simp: cat_0_components intro: cat_cs_intros)
+  show "(\<FF> \<circ>\<^sub>C\<^sub>F cf_0 \<AA>)\<lparr>ArrMap\<rparr> = cf_0 \<BB>\<lparr>ArrMap\<rparr>"
+    by 
+      (
+        rule vsv_eqI, 
+        unfold ObjMap_dom_lhs ObjMap_dom_rhs ArrMap_dom_lhs ArrMap_dom_rhs
+      )
+      (auto simp: cat_0_components intro: cat_cs_intros)
+qed simp_all
+
+lemmas [cat_cs_simps] = is_functor.cf_comp_cf_cf_0
 
 
 
@@ -367,7 +393,25 @@ proof(rule ntcf_ntsmcf_eqI)
           folded ntcf_ntsmcf_ntcf_0
         ]
       ..
+  qed simp_all
+
+lemma (in is_functor) cf_ntcf_comp_cf_ntcf_0[cat_cs_simps]: 
+  "\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_0 \<AA> = ntcf_0 \<BB>"
+proof(rule ntcf_eqI)
+  show "\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_0 \<AA> : cf_0 \<BB> \<mapsto>\<^sub>C\<^sub>F cf_0 \<BB> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  then have dom_lhs: "\<D>\<^sub>\<circ> ((\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_0 \<AA>)\<lparr>NTMap\<rparr>) = cat_0\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)
+  show "ntcf_0 \<BB> : cf_0 \<BB> \<mapsto>\<^sub>C\<^sub>F cf_0 \<BB> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  then have dom_rhs: "\<D>\<^sub>\<circ> (ntcf_0 \<BB>\<lparr>NTMap\<rparr>) = cat_0\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)
+  show "(\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_0 \<AA>)\<lparr>NTMap\<rparr> = ntcf_0 \<BB>\<lparr>NTMap\<rparr>"
+    by (rule vsv_eqI, unfold dom_lhs dom_rhs)
+      (auto simp: cat_0_components intro!: cat_cs_intros)+
 qed simp_all
+
+lemmas [cat_cs_simps] = is_functor.cf_ntcf_comp_cf_ntcf_0
 
 
 
@@ -409,7 +453,7 @@ lemma smc_cat_1: "cat_smc (cat_1 \<aa> \<ff>) = smc_1 \<aa> \<ff>"
   unfolding cat_smc_def cat_1_def smc_1_def dg_field_simps
   by (simp add: nat_omega_simps)
 
-lemmas_with (in \<Z>) [folded smc_cat_1, unfolded slicing_simps]: 
+lemmas_with [folded smc_cat_1, unfolded slicing_simps]: 
   cat_1_is_arrI = smc_1_is_arrI
   and cat_1_is_arrD = smc_1_is_arrD
   and cat_1_is_arrE = smc_1_is_arrE
@@ -429,14 +473,6 @@ subsubsection\<open>Identity\<close>
 
 lemma cat_1_CId_app: "cat_1 \<aa> \<ff>\<lparr>CId\<rparr>\<lparr>\<aa>\<rparr> = \<ff>" 
   unfolding cat_1_components by simp
-
-
-subsubsection\<open>Arrow with a domain and a codomain\<close>
-
-lemma cat_1_is_arrI:
-  assumes "f = \<ff>" and "a = \<aa>" and "b = \<aa>"
-  shows "f : a \<mapsto>\<^bsub>cat_1 \<aa> \<ff>\<^esub> b"
-  by (rule is_arrI, unfold assms cat_1_components) auto
 
 
 subsubsection\<open>\<open>1\<close> is a category\<close>

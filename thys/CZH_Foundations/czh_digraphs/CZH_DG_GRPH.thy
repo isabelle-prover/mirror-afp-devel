@@ -16,8 +16,8 @@ text\<open>
 Conventionally, \<open>GRPH\<close> defined as a category of digraphs and digraph 
 homomorphisms (e.g., see Chapter II-7 in \cite{mac_lane_categories_2010}).
 However, there is little that can prevent one from exposing \<open>GRPH\<close>
-as a digraph and provide additional structure gradually in 
-subsequent installments of this work. Thus, in this section, \<open>\<alpha>\<close>-\<open>GRPH\<close> is 
+as a digraph and provide additional structure gradually later. 
+Thus, in this section, \<open>\<alpha>\<close>-\<open>GRPH\<close> is 
 defined as a digraph of digraphs and digraph homomorphisms in \<open>V\<^sub>\<alpha>\<close>.
 \<close>
 

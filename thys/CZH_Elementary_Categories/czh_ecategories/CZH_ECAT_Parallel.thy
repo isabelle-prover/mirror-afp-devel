@@ -1,6 +1,6 @@
 (* Copyright 2021 (C) Mihails Milehins *)
 
-section\<open>\<open>\<Up>\<close>: category with parallel arrows between two objects\<close>
+section\<open>Categories with parallel arrows between two objects\<close>
 theory CZH_ECAT_Parallel
   imports CZH_ECAT_Small_Functor
 begin

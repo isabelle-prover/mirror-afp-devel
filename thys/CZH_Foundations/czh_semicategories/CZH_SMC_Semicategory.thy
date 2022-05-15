@@ -562,7 +562,7 @@ proof-
 qed
 
 
-text\<open>Further elementary properties.\<close>
+text\<open>Further properties.\<close>
 
 lemma (in semicategory) smc_Comp_vempty_if_Arr_vempty:
   assumes "\<CC>\<lparr>Arr\<rparr> = 0"
@@ -725,15 +725,10 @@ lemma (in semicategory) smc_assoc_helper:
   assumes "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b"
     and "g : b \<mapsto>\<^bsub>\<CC>\<^esub> c"
     and "h : c \<mapsto>\<^bsub>\<CC>\<^esub> d"
-    and "q : b \<mapsto>\<^bsub>\<CC>\<^esub> d"
     and "h \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g = q"
   shows "h \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) = q \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
   using semicategory_axioms assms(1-4)
-  by 
-    (
-      cs_concl cs_shallow 
-        cs_simp: semicategory.smc_Comp_assoc[symmetric] assms(5)
-    )
+  by (cs_concl cs_simp: assms(4) semicategory.smc_Comp_assoc[symmetric])
 
 lemma (in semicategory) smc_pattern_rectangle_right:
   assumes "aa' : a \<mapsto>\<^bsub>\<CC>\<^esub> a'" 

@@ -20,7 +20,7 @@ is \cite{takeuti_introduction_1971}.
 
 
 
-subsection\<open>Further elementary properties of \<open>Vfrom\<close>\<close>
+subsection\<open>Further properties of \<open>Vfrom\<close>\<close>
 
 
 text\<open>Reusable patterns.\<close>
@@ -584,6 +584,20 @@ proof-
     by simp  
 qed
 
+lemma Limit_vdunion_in_Vset_if_VLambda_in_VsetI:
+  assumes "Limit \<alpha>" and "VLambda I A \<in>\<^sub>\<circ> Vset \<alpha>"
+  shows "(\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. A i) \<in>\<^sub>\<circ> Vset \<alpha>"
+proof-
+  interpret vsv \<open>VLambda I A\<close> by auto
+  from assms have "\<D>\<^sub>\<circ> (VLambda I A) \<in>\<^sub>\<circ> Vset \<alpha>" 
+    by (fastforce intro!: vdomain_in_VsetI)
+  then have I: "I \<in>\<^sub>\<circ> Vset \<alpha>" by simp
+  have "(\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. A i) \<subseteq>\<^sub>\<circ> I \<times>\<^sub>\<circ> (\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (VLambda I A)))" by force
+  moreover have "I \<times>\<^sub>\<circ> (\<Union>\<^sub>\<circ>(\<R>\<^sub>\<circ> (VLambda I A))) \<in>\<^sub>\<circ> Vset \<alpha>"
+    by (intro Limit_vtimes_in_VsetI assms I VUnion_in_VsetI vrange_in_VsetI)
+  ultimately show "(\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. A i) \<in>\<^sub>\<circ> Vset \<alpha>" by auto
+qed
+
 lemma vrange_vprojection_in_VsetI:
   assumes "Limit \<alpha>" 
     and "A \<in>\<^sub>\<circ> Vset \<alpha>" 
@@ -922,6 +936,21 @@ proof-
 qed
 
 lemma (in \<Z>) ord_of_nat_in_Vset[simp]: "a\<^sub>\<nat> \<in>\<^sub>\<circ> Vset \<alpha>" by force
+
+
+text\<open>\<open>vfsequences_on\<close>.\<close>
+
+lemma (in \<Z>) vfsequences_on_in_VsetI:
+  assumes "X \<in>\<^sub>\<circ> Vset \<alpha>"
+  shows "vfsequences_on X \<in>\<^sub>\<circ> Vset \<alpha>"
+proof-
+  from vfsequences_on_subset_\<omega>_set have "vfsequences_on X \<subseteq>\<^sub>\<circ> VPow (\<omega> \<times>\<^sub>\<circ> X)"
+    by (auto simp: less_eq_V_def)
+  moreover have "VPow (\<omega> \<times>\<^sub>\<circ> X) \<in>\<^sub>\<circ> Vset \<alpha>"
+    by (intro Limit_VPow_in_VsetI Limit_vtimes_in_VsetI assms Axiom_of_Infinity)
+      auto
+  ultimately show ?thesis by auto
+qed
 
 
 

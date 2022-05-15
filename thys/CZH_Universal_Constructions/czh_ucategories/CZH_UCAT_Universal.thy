@@ -5,7 +5,6 @@ theory CZH_UCAT_Universal
   imports 
     CZH_UCAT_Introduction
     CZH_Elementary_Categories.CZH_ECAT_FUNCT
-    CZH_Elementary_Categories.CZH_ECAT_Set
     CZH_Elementary_Categories.CZH_ECAT_Hom
 begin
 
@@ -18,6 +17,16 @@ text\<open>
 The following section is based, primarily, on the elements of the content 
 of Chapter III-1 in \cite{mac_lane_categories_2010}.
 \<close>
+
+named_theorems ua_field_simps
+
+definition UObj :: V where [ua_field_simps]: "UObj = 0"
+definition UArr :: V where [ua_field_simps]: "UArr = 1\<^sub>\<nat>"
+
+lemma [cat_cs_simps]:
+  shows UObj_simp: "[a, b]\<^sub>\<circ>\<lparr>UObj\<rparr> = a"
+    and UArr_simp: "[a, b]\<^sub>\<circ>\<lparr>UArr\<rparr> = b"
+  unfolding ua_field_simps by (simp_all add: nat_omega_simps)
 
 
 
@@ -375,7 +384,7 @@ universal arrow. These properties can be inferred from the content of
 Chapter III-1 in \cite{mac_lane_categories_2010}.
 \<close>
 
-lemma (in is_functor) cf_universal_arrow_of_ex_is_arr_isomorphism:
+lemma (in is_functor) cf_universal_arrow_of_ex_is_iso_arr:
   \<comment>\<open>The proof is based on the ideas expressed in the proof of Theorem 5.2 
   in Chapter Introduction in \cite{hungerford_algebra_2003}.\<close>
   assumes "universal_arrow_of \<FF> c r u" and "universal_arrow_of \<FF> c r' u'"
@@ -421,7 +430,7 @@ proof-
     by metis
 
   have "f : r \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<AA>\<^esub> r'"
-  proof(intro is_arr_isomorphismI is_inverseI)
+  proof(intro is_iso_arrI is_inverseI)
     show f: "f : r \<mapsto>\<^bsub>\<AA>\<^esub> r'" by (rule f)
     show f': "f' : r' \<mapsto>\<^bsub>\<AA>\<^esub> r" by (rule f')
     show "f : r \<mapsto>\<^bsub>\<AA>\<^esub> r'" by (rule f)
@@ -453,14 +462,14 @@ proof-
 
 qed
 
-lemma (in is_functor) cf_universal_arrow_fo_ex_is_arr_isomorphism:
+lemma (in is_functor) cf_universal_arrow_fo_ex_is_iso_arr:
   assumes "universal_arrow_fo \<FF> c r u"
     and "universal_arrow_fo \<FF> c r' u'"
   obtains f where "f : r' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<AA>\<^esub> r" and "u' = umap_fo \<FF> c r u r'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
   by 
     (
       elim 
-        is_functor.cf_universal_arrow_of_ex_is_arr_isomorphism[
+        is_functor.cf_universal_arrow_of_ex_is_iso_arr[
           OF is_functor_op, unfolded cat_op_simps, OF assms
           ]
     )
@@ -485,7 +494,7 @@ proof-
   from ua1(3)[OF ua2(1,2)] show ?thesis .
 qed
 
-lemma (in is_functor) cf_universal_arrow_of_is_arr_isomorphism:
+lemma (in is_functor) cf_universal_arrow_of_is_iso_arr:
   assumes "universal_arrow_of \<FF> c r u"
     and "universal_arrow_of \<FF> c r' u'"
     and "f : r \<mapsto>\<^bsub>\<AA>\<^esub> r'" 
@@ -498,12 +507,12 @@ proof-
   from assms(1,2) obtain f' 
     where iso_f': "f' : r \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<AA>\<^esub> r'" 
       and u'_def: "u' = umap_of \<FF> c r u r'\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
-    by (auto elim: cf_universal_arrow_of_ex_is_arr_isomorphism)
+    by (auto elim: cf_universal_arrow_of_ex_is_iso_arr)
   then have f': "f' : r \<mapsto>\<^bsub>\<AA>\<^esub> r'" by auto
   from iso_f' show ?thesis unfolding eq[OF f' u'_def, symmetric].
 qed
 
-lemma (in is_functor) cf_universal_arrow_fo_is_arr_isomorphism:
+lemma (in is_functor) cf_universal_arrow_fo_is_iso_arr:
   assumes "universal_arrow_fo \<FF> c r u"
     and "universal_arrow_fo \<FF> c r' u'"
     and "f : r' \<mapsto>\<^bsub>\<AA>\<^esub> r" 
@@ -512,9 +521,101 @@ lemma (in is_functor) cf_universal_arrow_fo_is_arr_isomorphism:
   by 
     (
       rule 
-        is_functor.cf_universal_arrow_of_is_arr_isomorphism[
+        is_functor.cf_universal_arrow_of_is_iso_arr[
           OF is_functor_op, unfolded cat_op_simps, OF assms
           ]
+    )
+
+lemma (in is_functor) universal_arrow_of_if_universal_arrow_of:
+  assumes "universal_arrow_of \<FF> c r u" 
+    and "f : r \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<AA>\<^esub> r'"
+    and "u' = umap_of \<FF> c r u r'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
+  shows "universal_arrow_of \<FF> c r' u'"
+proof(intro universal_arrow_ofI assms(2))
+
+  note ua = universal_arrow_ofD[OF assms(1)]
+  note f = is_iso_arrD(1)[OF assms(2)]
+  from assms(3) ua(1,2) f have u'_def: "u' = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> u"
+    by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  from  ua(2) f show u': "u' : c \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>r'\<rparr>"
+    unfolding u'_def by (cs_concl cs_intro: cat_cs_intros)
+
+  from f(1) show  "r' \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" by auto
+
+  fix r'' u'' assume prems: "r'' \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" "u'' : c \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>r''\<rparr>"
+
+  from ua(3)[OF prems] obtain f' 
+    where f': "f' : r \<mapsto>\<^bsub>\<AA>\<^esub> r''"
+      and u''_def: "u'' = umap_of \<FF> c r u r''\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
+      and f'_unique: "\<And>f''.
+        \<lbrakk> f'' : r \<mapsto>\<^bsub>\<AA>\<^esub> r''; u'' = umap_of \<FF> c r u r''\<lparr>ArrVal\<rparr>\<lparr>f''\<rparr> \<rbrakk> \<Longrightarrow>
+          f'' = f'"
+    by metis
+
+  from u''_def f' ua(2) have [cat_cs_simps]: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> u = u''"
+    by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros) simp
+
+  show "\<exists>!f'. f' : r' \<mapsto>\<^bsub>\<AA>\<^esub> r'' \<and> u'' = umap_of \<FF> c r' u' r''\<lparr>ArrVal\<rparr>\<lparr>f'\<rparr>"
+  proof(intro ex1I conjI; (elim conjE)?)
+    from f' assms(2) f show "f' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub> : r' \<mapsto>\<^bsub>\<AA>\<^esub> r''"
+      by (cs_concl cs_intro: cat_cs_intros cat_arrow_cs_intros)
+    have 
+      "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> (\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub>\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> u') =
+        \<FF>\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> (\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub>\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> (\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> u))"
+      unfolding u'_def ..
+    also from f' assms(2) u' f ua(2) have 
+      "\<dots> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> (\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub> \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<rparr>) \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> u"
+      by
+        (
+          cs_concl 
+            cs_simp: cat_cs_simps cs_intro: cat_arrow_cs_intros cat_cs_intros
+        )
+    also from f' assms(2) f ua(2) have "\<dots> = u''"
+      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    finally have [cat_cs_simps]: 
+      "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> (\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub>\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> u') = u''".
+    from f' assms(2) u' f show 
+      "u'' = umap_of \<FF> c r' u' r''\<lparr>ArrVal\<rparr>\<lparr>f' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub>\<rparr>"
+      by
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_arrow_cs_intros
+        )
+    fix g assume prems': 
+      "g : r' \<mapsto>\<^bsub>\<AA>\<^esub> r''" "u'' = umap_of \<FF> c r' u' r''\<lparr>ArrVal\<rparr>\<lparr>g\<rparr>"
+    from prems'(1) f have gf: "g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f : r \<mapsto>\<^bsub>\<AA>\<^esub> r''"
+      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    from prems'(2,1) assms(2) u' have "u'' = \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> u'"
+      by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    also from prems'(1) f ua(2) have 
+      "\<dots> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> u"
+      by (cs_concl cs_simp: cat_cs_simps u'_def u''_def cs_intro: cat_cs_intros)
+    also from prems'(1) f ua(2) have 
+      "\<dots> = umap_of \<FF> c r u r''\<lparr>ArrVal\<rparr>\<lparr>g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<rparr>"
+      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    finally have "u'' = umap_of \<FF> c r u r''\<lparr>ArrVal\<rparr>\<lparr>g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<rparr>".
+    from f'_unique[OF gf this] have "g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f = f'".
+    then have "(g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f) \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub> = f' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub>" by simp
+    from this assms(2) prems'(1) u' f ua(2) show "g = f' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub>"
+      by
+        (
+          cs_prems
+            cs_simp: cat_cs_simps cs_intro: cat_arrow_cs_intros cat_cs_intros
+        )
+  qed
+
+qed
+
+lemma (in is_functor) universal_arrow_fo_if_universal_arrow_fo:
+  assumes "universal_arrow_fo \<FF> c r u" 
+    and "f : r' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<AA>\<^esub> r"
+    and "u' = umap_fo \<FF> c r u r'\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
+  shows "universal_arrow_fo \<FF> c r' u'"
+  by 
+    (
+      rule is_functor.universal_arrow_of_if_universal_arrow_of[
+        OF is_functor_op, unfolded cat_op_simps, OF assms
+        ]
     )
 
 
@@ -873,7 +974,7 @@ proof-
     then have dom: "\<D>\<^sub>\<circ> (umap_of \<FF> c r u a\<lparr>ArrVal\<rparr>) = Hom \<AA> r a"
       by (cs_concl cs_simp: cat_cs_simps)
     have "umap_of \<FF> c r u a : Hom \<AA> r a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Set \<alpha>\<^esub> Hom \<BB> c (\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>)"
-    proof(intro cat_Set_is_arr_isomorphismI, unfold dom)
+    proof(intro cat_Set_is_iso_arrI, unfold dom)
  
       show umof_a: "v11 (umap_of \<FF> c r u a\<lparr>ArrVal\<rparr>)"
       proof(intro vsv.vsv_valeq_v11I, unfold dom in_Hom_iff)
@@ -981,11 +1082,11 @@ proof(rule universal_arrow_ofI)
   have "ntcf_ua_of \<alpha> \<FF> c r u\<lparr>NTMap\<rparr>\<lparr>r'\<rparr> :
     Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<AA>(r,-)\<lparr>ObjMap\<rparr>\<lparr>r'\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Set \<alpha>\<^esub>
     (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<BB>(c,-) \<circ>\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>\<lparr>r'\<rparr>"
-    by (rule is_iso_ntcf.iso_ntcf_is_arr_isomorphism[OF assms(3) prems(1)])
+    by (rule is_iso_ntcf.iso_ntcf_is_iso_arr[OF assms(3) prems(1)])
   from this is_functor_axioms assms(1-2) prems have uof_r':
     "umap_of \<FF> c r u r' : Hom \<AA> r r' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Set \<alpha>\<^esub> Hom \<BB> c (\<FF>\<lparr>ObjMap\<rparr>\<lparr>r'\<rparr>)"
     by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros)
-  note uof_r' = cat_Set_is_arr_isomorphismD[OF uof_r']  
+  note uof_r' = cat_Set_is_iso_arrD[OF uof_r']  
   interpret uof_r': v11 \<open>umap_of \<FF> c r u r'\<lparr>ArrVal\<rparr>\<close> by (rule uof_r'(2))  
   from 
     uof_r'.v11_vrange_ex1_eq[

@@ -417,6 +417,44 @@ lemma small_cfs[simp]: "small {\<FF>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<
   by (rule down[of _ \<open>set {\<FF>. \<exists>\<AA> \<BB>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>}\<close>]) auto
 
 
+subsubsection\<open>Further properties\<close>
+
+lemma (in is_functor) cf_ArrMap_is_iso_arr:
+  assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<AA>\<^esub> b"
+  shows "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+proof-
+
+  note f = is_iso_arrD(1)[OF assms(1)]
+  note HomDom.cat_the_inverse_is_iso_arr[OF assms]
+  note inv_f = this is_iso_arrD(1)[OF this]
+
+  show ?thesis
+  proof(intro is_iso_arrI is_inverseI)
+    from inv_f(2) show \<FF>_inv_f: 
+      "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub>\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+      by (cs_concl cs_intro: cat_cs_intros)
+    note cf_ArrMap_Comp is_functor.cf_ArrMap_Comp[cat_cs_simps del]
+    from assms f(1) inv_f show 
+      "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub>\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = \<BB>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>\<rparr>"
+      "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<inverse>\<^sub>C\<^bsub>\<AA>\<^esub>\<rparr> = \<BB>\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>\<rparr>"
+      by
+        (
+          cs_concl
+            cs_simp: cat_cs_simps cf_ArrMap_Comp[symmetric] 
+            cs_intro: cat_cs_intros
+        )+
+  qed (intro cf_ArrMap_is_arr[OF f(1)])+
+
+qed
+
+lemma (in is_functor) cf_ArrMap_is_iso_arr'[cat_arrow_cs_intros]:
+  assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<AA>\<^esub> b" and "\<FF>a = \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>" and "\<FF>b = \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
+  shows "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> : \<FF>a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> \<FF>b"
+  using assms(1) unfolding assms(2,3) by (rule cf_ArrMap_is_iso_arr)
+
+lemmas [cat_arrow_cs_intros] = is_functor.cf_ArrMap_is_iso_arr'
+
+
 
 subsection\<open>Opposite functor\<close>
 
@@ -738,6 +776,24 @@ text\<open>The opposite of the covariant composition of functors.\<close>
 lemma op_cf_cf_comp[cat_op_simps]: "op_cf (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>) = op_cf \<GG> \<circ>\<^sub>C\<^sub>F op_cf \<FF>"
   unfolding dghm_comp_def op_cf_def dghm_field_simps
   by (simp add: nat_omega_simps)
+
+
+text\<open>Composition helper.\<close>
+
+lemma cf_comp_assoc_helper: 
+  assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "\<HH> : \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
+    and "\<HH> \<circ>\<^sub>C\<^sub>F \<GG> = \<Q>"
+  shows "\<HH> \<circ>\<^sub>C\<^sub>F (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>) = \<Q> \<circ>\<^sub>C\<^sub>F \<FF>"
+proof-
+  interpret \<FF>: is_functor \<alpha> \<AA> \<BB> \<FF> by (rule assms(1))
+  interpret \<GG>: is_functor \<alpha> \<BB> \<CC> \<GG> by (rule assms(2))
+  interpret \<HH>: is_functor \<alpha> \<CC> \<DD> \<HH> by (rule assms(3))
+  show ?thesis
+    using assms(1-3) unfolding assms(4)[symmetric]
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+qed
 
 
 
@@ -1363,7 +1419,58 @@ lemma cf_const_is_functor'[cat_cs_intros]:
 
 subsubsection\<open>Further properties\<close>
 
-lemma (in is_functor) cf_cf_comp_cf_const:
+lemma cf_comp_cf_const_right[cat_cs_simps]:
+  assumes "category \<alpha> \<AA>"
+    and "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+  shows "\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> b = cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)"
+proof(rule cf_eqI)
+
+  interpret \<AA>: category \<alpha> \<AA> by (rule assms(1))
+  interpret \<GG>: is_functor \<alpha> \<BB> \<CC> \<GG> by (rule assms(2))
+
+  from assms(3) show "\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> b : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_intro: cat_cs_intros)
+  from assms(3) show "cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>) : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  from assms(3) have ObjMap_dom_lhs: 
+    "\<D>\<^sub>\<circ> ((\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> b)\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  from assms(3) have ObjMap_dom_rhs: 
+    "\<D>\<^sub>\<circ> (cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)
+  show "(\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> b)\<lparr>ObjMap\<rparr> = cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)\<lparr>ObjMap\<rparr>"
+  proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
+    fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+    with assms(3) show "(\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> b)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> =
+      cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  qed (auto intro: assms(3) cat_cs_intros)
+  from assms(3) have ArrMap_dom_lhs: 
+    "\<D>\<^sub>\<circ> ((\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> b)\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  from assms(3) have ArrMap_dom_rhs: 
+    "\<D>\<^sub>\<circ> (cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>"
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  show "(\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> b)\<lparr>ArrMap\<rparr> = cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)\<lparr>ArrMap\<rparr>"
+  proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
+    fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>"
+    with assms(3) show "(\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> b)\<lparr>ArrMap\<rparr>\<lparr>a\<rparr> =
+      cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)\<lparr>ArrMap\<rparr>\<lparr>a\<rparr>"
+      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  qed (auto intro: assms(3) cat_cs_intros)
+
+qed simp_all
+
+lemma cf_comp_cf_const_right'[cat_cs_simps]:
+  assumes "category \<alpha> \<AA>"
+    and "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+    and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+    and "f = \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>"
+  shows "\<GG> \<circ>\<^sub>C\<^sub>F dghm_const \<AA> \<BB> b f = cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)"
+  using assms(1-3) unfolding assms(4) by (rule cf_comp_cf_const_right)
+
+lemma (in is_functor) cf_comp_cf_const_left[cat_cs_simps]:
   assumes "category \<alpha> \<CC>" and "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
   shows "cf_const \<BB> \<CC> a \<circ>\<^sub>C\<^sub>F \<FF> = cf_const \<AA> \<CC> a"
 proof(rule cf_smcf_eqI)
@@ -1387,14 +1494,14 @@ proof(rule cf_smcf_eqI)
     by (cs_prems cs_shallow cs_simp: slicing_simps slicing_commute)
 qed simp_all
 
-lemma (in is_functor) cf_cf_comp_cf_const'[cat_cs_simps]:
+lemma (in is_functor) cf_comp_cf_const_left'[cat_cs_simps]:
   assumes "category \<alpha> \<CC>" 
     and "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and "f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
   shows "dghm_const \<BB> \<CC> a f \<circ>\<^sub>C\<^sub>F \<FF> = cf_const \<AA> \<CC> a"
-  using assms(1,2) unfolding assms(3) by (rule cf_cf_comp_cf_const)
+  using assms(1,2) unfolding assms(3) by (rule cf_comp_cf_const_left)
 
-lemmas [cat_cs_simps] = is_functor.cf_cf_comp_cf_const'
+lemmas [cat_cs_simps] = is_functor.cf_comp_cf_const_left'
 
 
 
@@ -1469,6 +1576,20 @@ lemma is_ft_functorE':
     and "\<And>a b. \<lbrakk> a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>; b \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<rbrakk> \<Longrightarrow> v11 (\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b)"
   using assms by (simp_all add: is_ft_functorD')
 
+lemma is_ft_functorI'':
+  assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<And>a b g f.
+      \<lbrakk> g : a \<mapsto>\<^bsub>\<AA>\<^esub> b; f : a \<mapsto>\<^bsub>\<AA>\<^esub> b; \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<rbrakk> \<Longrightarrow> g = f"
+  shows "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<^bsub>\<alpha>\<^esub> \<BB>"
+  by 
+    (
+      intro is_ft_functorI assms,
+      rule is_ft_semifunctorI'', 
+      unfold slicing_simps, 
+      rule is_functor.cf_is_semifunctor[OF assms(1)], 
+      rule assms(2)
+    )
+
 
 text\<open>Elementary properties.\<close>
 
@@ -1480,6 +1601,7 @@ interpretation smcf: is_ft_semifunctor \<alpha> \<open>cat_smc \<AA>\<close> \<o
 
 lemmas_with [unfolded slicing_simps]:
   ft_cf_v11_on_Hom = smcf.ft_smcf_v11_on_Hom
+  and ft_cf_ArrMap_eqD = smcf.ft_smcf_ArrMap_eqD
 
 end
 
@@ -1897,20 +2019,40 @@ lemmas_with [unfolded slicing_simps slicing_commute]:
   and inv_cf_ArrMap_vdomain = smcf.inv_smcf_ArrMap_vdomain
   and inv_cf_ArrMap_app = smcf.inv_smcf_ArrMap_app
   and inv_cf_ArrMap_vrange = smcf.inv_smcf_ArrMap_vrange
-  and iso_cf_ObjMap_inv_cf_ObjMap_app =
+  and iso_cf_ObjMap_inv_cf_ObjMap_app[cf_cs_simps] =
     smcf.iso_smcf_ObjMap_inv_smcf_ObjMap_app
-  and iso_cf_ArrMap_inv_cf_ArrMap_app = 
+  and iso_cf_ArrMap_inv_cf_ArrMap_app[cf_cs_simps] = 
     smcf.iso_smcf_ArrMap_inv_smcf_ArrMap_app
   and iso_cf_HomDom_is_arr_conv = smcf.iso_smcf_HomDom_is_arr_conv
   and iso_cf_HomCod_is_arr_conv = smcf.iso_smcf_HomCod_is_arr_conv
+  and iso_inv_cf_ObjMap_cf_ObjMap_app[cf_cs_simps] =
+    smcf.iso_inv_smcf_ObjMap_smcf_ObjMap_app
+  and iso_inv_cf_ArrMap_cf_ArrMap_app[cf_cs_simps] =
+    smcf.iso_inv_smcf_ArrMap_smcf_ArrMap_app
 
 end
+
+lemmas [cf_cs_intros] = 
+  is_iso_functor.inv_cf_ObjMap_v11
+  is_iso_functor.inv_cf_ArrMap_v11
+
+lemmas [cf_cs_simps] = 
+  is_iso_functor.inv_cf_ObjMap_vdomain
+  is_iso_functor.inv_cf_ObjMap_app
+  is_iso_functor.inv_cf_ObjMap_vrange
+  is_iso_functor.inv_cf_ArrMap_vdomain
+  is_iso_functor.inv_cf_ArrMap_app
+  is_iso_functor.inv_cf_ArrMap_vrange
+  is_iso_functor.iso_cf_ObjMap_inv_cf_ObjMap_app
+  is_iso_functor.iso_cf_ArrMap_inv_cf_ArrMap_app
+  is_iso_functor.iso_inv_cf_ObjMap_cf_ObjMap_app
+  is_iso_functor.iso_inv_cf_ArrMap_cf_ArrMap_app
 
 
 
 subsection\<open>An isomorphism of categories is an isomorphism in the category \<open>CAT\<close>\<close>
 
-lemma is_arr_isomorphism_is_iso_functor:
+lemma is_iso_arr_is_iso_functor:
   \<comment>\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -1928,15 +2070,15 @@ proof-
       by (simp add: assms(4) cf_smcf_cf_id cf_smcf_smcf_comp)
     from \<FF>.cf_is_semifunctor \<GG>.cf_is_semifunctor \<GG>\<FF>\<AA> \<FF>\<GG>\<BB> show 
       "cf_smcf \<FF> : cat_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> cat_smc \<BB>" 
-      by (rule is_arr_isomorphism_is_iso_semifunctor)
+      by (rule is_iso_arr_is_iso_semifunctor)
   qed (auto simp: cat_cs_intros)
 qed
 
-lemma is_iso_functor_is_arr_isomorphism:
+lemma is_iso_functor_is_iso_arr:
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
   shows [cf_cs_intros]: "inv_cf \<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<AA>"
-    and "inv_cf \<FF> \<circ>\<^sub>C\<^sub>F \<FF> = cf_id \<AA>"
-    and "\<FF> \<circ>\<^sub>C\<^sub>F inv_cf \<FF> = cf_id \<BB>"
+    and [cf_cs_simps]: "inv_cf \<FF> \<circ>\<^sub>C\<^sub>F \<FF> = cf_id \<AA>"
+    and [cf_cs_simps]: "\<FF> \<circ>\<^sub>C\<^sub>F inv_cf \<FF> = cf_id \<BB>"
 proof-
 
   let ?\<GG> = "inv_cf \<FF>"
@@ -1955,7 +2097,7 @@ proof-
             dghm_inv_semifunctor 
             iso_cf_is_iso_semifunctor 
             is_iso_semifunctor_def 
-            is_iso_semifunctor_is_arr_isomorphism(1)
+            is_iso_semifunctor_is_iso_arr(1)
         ) 
     show "cf_smcf ?\<GG> : cat_smc \<BB> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> cat_smc \<AA>"
       by 
@@ -1963,7 +2105,7 @@ proof-
           metis 
             dghm_inv_semifunctor 
             iso_cf_is_iso_semifunctor 
-            is_iso_semifunctor_is_arr_isomorphism(1)
+            is_iso_semifunctor_is_iso_arr(1)
         )
     fix c assume prems: "c \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
     from prems show "(\<FF>\<lparr>ArrMap\<rparr>)\<inverse>\<^sub>\<circ>\<lparr>\<BB>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = \<AA>\<lparr>CId\<rparr>\<lparr>(\<FF>\<lparr>ObjMap\<rparr>)\<inverse>\<^sub>\<circ>\<lparr>c\<rparr>\<rparr>"
@@ -2073,7 +2215,7 @@ lemma iso_category_sym[sym]:
 proof-
   interpret iso_category \<alpha> \<AA> \<BB> by (rule assms)
   from iso_cat_is_iso_functor obtain \<FF> where "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>" by clarsimp
-  from is_iso_functor_is_arr_isomorphism(1)[OF this] show ?thesis 
+  from is_iso_functor_is_iso_arr(1)[OF this] show ?thesis 
     by (auto intro: iso_categoryI)
 qed
 

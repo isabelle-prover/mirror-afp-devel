@@ -63,6 +63,11 @@ lemmas (in arr_Par) [dg_Par_cs_simps] = dg_Rel_shared_cs_simps
 
 text\<open>Rules.\<close>
 
+lemma (in arr_Par) arr_Par_axioms'[dg_cs_intros, dg_Par_cs_intros]:
+  assumes "\<alpha>' = \<alpha>"
+  shows "arr_Par \<alpha>' T"
+  unfolding assms by (rule arr_Par_axioms)
+
 mk_ide rf arr_Par_def[unfolded arr_Par_axioms_def]
   |intro arr_ParI|
   |dest arr_ParD[dest]|
@@ -112,7 +117,7 @@ lemma arr_Par_arr_RelE:
   using assms by (auto simp: arr_Par_arr_RelD)
 
 
-text\<open>Further elementary properties.\<close>
+text\<open>Further properties.\<close>
 
 lemma arr_Par_eqI:
   assumes "arr_Par \<alpha> S" 
@@ -163,6 +168,14 @@ proof(intro arr_Par_arr_RelI)
     by (simp add: S.ArrVal.vsv_axioms T.ArrVal.vsv_axioms vsv_vcomp)
 qed
 
+lemma arr_Par_comp_Par_ArrVal_app:
+  assumes "arr_Par \<alpha> S" 
+    and "arr_Par \<alpha> T"
+    and "x \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
+    and "T\<lparr>ArrVal\<rparr>\<lparr>x\<rparr> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (S\<lparr>ArrVal\<rparr>)"
+  shows "(S \<circ>\<^sub>P\<^sub>a\<^sub>r T)\<lparr>ArrVal\<rparr>\<lparr>x\<rparr> = S\<lparr>ArrVal\<rparr>\<lparr>T\<lparr>ArrVal\<rparr>\<lparr>x\<rparr>\<rparr>"
+  using assms unfolding comp_Rel_components by (intro vcomp_atI) auto
+
 
 subsubsection\<open>Inclusion\<close>
 
@@ -192,7 +205,7 @@ lemma (in \<Z>) arr_Par_id_ParI:
 
 lemma arr_Par_comp_Par_id_Par_left[dg_Par_cs_simps]:
   assumes "arr_Par \<alpha> f" and "f\<lparr>ArrCod\<rparr> = A"
-  shows "id_Par A \<circ>\<^sub>R\<^sub>e\<^sub>l f = f"
+  shows "id_Par A \<circ>\<^sub>P\<^sub>a\<^sub>r f = f"
 proof-
   interpret f: arr_Par \<alpha> f by (rule assms(1))
   have "arr_Rel \<alpha> f" by (simp add: f.arr_Rel_axioms)
@@ -201,22 +214,12 @@ qed
 
 lemma arr_Par_comp_Par_id_Par_right[dg_Par_cs_simps]:
   assumes "arr_Par \<alpha> f" and "f\<lparr>ArrDom\<rparr> = A"
-  shows "f \<circ>\<^sub>R\<^sub>e\<^sub>l id_Par A = f"
+  shows "f \<circ>\<^sub>P\<^sub>a\<^sub>r id_Par A = f"
 proof-
   interpret f: arr_Par \<alpha> f by (rule assms(1))
   have "arr_Rel \<alpha> f" by (simp add: f.arr_Rel_axioms)
   from arr_Rel_comp_Rel_id_Rel_right[OF this assms(2)] show ?thesis.
 qed
-
-lemma arr_Par_comp_Par_ArrVal:
-  assumes "arr_Par \<alpha> S" 
-    and "arr_Par \<alpha> T" 
-    and "x \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
-    and "T\<lparr>ArrVal\<rparr>\<lparr>x\<rparr> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (S\<lparr>ArrVal\<rparr>)"
-  shows "(S \<circ>\<^sub>P\<^sub>a\<^sub>r T)\<lparr>ArrVal\<rparr>\<lparr>x\<rparr> = S\<lparr>ArrVal\<rparr>\<lparr>T\<lparr>ArrVal\<rparr>\<lparr>x\<rparr>\<rparr>"
-  using assms 
-  unfolding comp_Rel_components 
-  by (intro vcomp_atI) auto
 
 
 
@@ -320,14 +323,18 @@ lemma dg_Par_Hom_vsubset_dg_Rel_Hom:
   by (rule vsubsetI) (simp add: dg_Par_is_arr_dg_Rel_is_arr)
 
 lemma (in \<Z>) dg_Par_incl_Par_is_arr:
-  assumes "A \<in>\<^sub>\<circ> Vset \<alpha>" and "B \<in>\<^sub>\<circ> Vset \<alpha>" and "A \<subseteq>\<^sub>\<circ> B"
+  assumes "A \<in>\<^sub>\<circ> dg_Par \<alpha>\<lparr>Obj\<rparr>" and "B \<in>\<^sub>\<circ> dg_Par \<alpha>\<lparr>Obj\<rparr>" and "A \<subseteq>\<^sub>\<circ> B"
   shows "incl_Par A B : A \<mapsto>\<^bsub>dg_Par \<alpha>\<^esub> B"
   by (rule dg_Par_is_arrI)
-    (auto simp: incl_Rel_components intro!: arr_Par_incl_ParI assms)
+    (
+      auto 
+        simp: incl_Rel_components 
+        intro!: arr_Par_incl_ParI assms[unfolded dg_Par_components(1)]
+    )
 
 lemma (in \<Z>) dg_Par_incl_Par_is_arr'[dg_Par_cs_intros]:
-  assumes "A \<in>\<^sub>\<circ> Vset \<alpha>" 
-    and "B \<in>\<^sub>\<circ> Vset \<alpha>" 
+  assumes "A \<in>\<^sub>\<circ> dg_Par \<alpha>\<lparr>Obj\<rparr>" 
+    and "B \<in>\<^sub>\<circ> dg_Par \<alpha>\<lparr>Obj\<rparr>" 
     and "A \<subseteq>\<^sub>\<circ> B"
     and "A' = A"
     and "B' = B"

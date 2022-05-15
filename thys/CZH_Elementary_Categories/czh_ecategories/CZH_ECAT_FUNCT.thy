@@ -25,6 +25,9 @@ A general reference for this section is Chapter II-4 in
 named_theorems cat_FUNCT_cs_simps
 named_theorems cat_FUNCT_cs_intros
 
+lemmas (in is_functor) [cat_FUNCT_cs_simps] = cat_map_cs_simps
+lemmas (in is_functor) [cat_FUNCT_cs_intros] = cat_map_cs_intros
+
 lemmas [cat_FUNCT_cs_simps] = cat_map_cs_simps
 lemmas [cat_FUNCT_cs_intros] = cat_map_cs_intros
 
@@ -306,15 +309,15 @@ lemmas (in \<Z>) [cat_FUNCT_cs_intros] = tiny_category_cat_FUNCT
 
 subsubsection\<open>Isomorphism\<close>
 
-lemma (in \<Z>) cat_FUNCT_is_arr_isomorphismI: 
+lemma cat_FUNCT_is_iso_arrI: 
   assumes "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
   shows "ntcf_arrow \<NN> : cf_map \<FF> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> cf_map \<GG>"
-proof(intro is_arr_isomorphismI is_inverseI)
+proof(intro is_iso_arrI is_inverseI)
   interpret \<NN>: is_iso_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN> by (rule assms)
   show is_arr_\<NN>: "ntcf_arrow \<NN> : cf_map \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> cf_map \<GG>"
     by (simp add: assms cat_FUNCT_is_arrI is_iso_ntcf.axioms(1))
   interpret inv_\<NN>: is_iso_ntcf \<alpha> \<AA> \<BB> \<GG> \<FF> \<open>inv_ntcf \<NN>\<close> 
-    using CZH_ECAT_NTCF.iso_ntcf_is_arr_isomorphism(1)[OF assms] by simp
+    using CZH_ECAT_NTCF.iso_ntcf_is_iso_arr(1)[OF assms] by simp
   from assms show is_arr_inv_\<NN>: 
     "ntcf_arrow (inv_ntcf \<NN>) : cf_map \<GG> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> cf_map \<FF>"
     by 
@@ -332,22 +335,20 @@ proof(intro is_arr_isomorphismI is_inverseI)
     by 
       (
         cs_concl cs_shallow
-          cs_simp: iso_ntcf_is_arr_isomorphism(2,3) cat_FUNCT_cs_simps
+          cs_simp: iso_ntcf_is_iso_arr(2,3) cat_FUNCT_cs_simps
           cs_intro: ntcf_cs_intros cat_cs_intros cat_FUNCT_cs_intros
       )+
 qed
 
-lemma (in \<Z>) cat_FUNCT_is_arr_isomorphismI': 
-  assumes "\<NN>' = ntcf_arrow \<NN>" 
-    and "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+lemma cat_FUNCT_is_iso_arrI'[cat_FUNCT_cs_intros]: 
+  assumes "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<NN>' = ntcf_arrow \<NN>" 
     and "\<FF>' = cf_map \<FF>"
     and "\<GG>' = cf_map \<GG>"
   shows "\<NN>' : \<FF>' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> cf_map \<GG>"
-  using assms(2) unfolding assms(1,3,4) by (rule cat_FUNCT_is_arr_isomorphismI)
+  using assms(1) unfolding assms(2-4) by (rule cat_FUNCT_is_iso_arrI)
 
-lemmas [cat_FUNCT_cs_intros] = \<Z>.cat_FUNCT_is_arr_isomorphismI'[rotated 2]
-
-lemma (in \<Z>) cat_FUNCT_is_arr_isomorphismD:
+lemma cat_FUNCT_is_iso_arrD:
   assumes "\<NN> : \<FF> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> \<GG>" (is \<open>\<NN> : \<FF> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>?FUNCT\<^esub> \<GG>\<close>)
   shows "ntcf_of_ntcf_arrow \<AA> \<BB> \<NN> :
     cf_of_cf_map \<AA> \<BB> \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o cf_of_cf_map \<AA> \<BB> \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" 
@@ -355,6 +356,9 @@ lemma (in \<Z>) cat_FUNCT_is_arr_isomorphismD:
     and "\<FF> = cf_map (cf_of_cf_map \<AA> \<BB> \<FF>)"
     and "\<GG> = cf_map (cf_of_cf_map \<AA> \<BB> \<GG>)"
 proof-
+  from assms(1) have \<NN>: "\<NN> : \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> \<GG>"
+    unfolding is_iso_arr_def by simp
+  interpret \<Z> \<alpha> by (rule is_ntcfD[OF cat_FUNCT_is_arrD(1)[OF \<NN>]])
   define \<beta> where "\<beta> = \<alpha> + \<omega>"
   have \<Z>\<beta>: "\<Z> \<beta>" and \<alpha>\<beta>: "\<alpha> \<in>\<^sub>\<circ> \<beta>"
     by (simp_all add: \<Z>_\<alpha>_\<alpha>\<omega> \<Z>.intro \<Z>_Limit_\<alpha>\<omega> \<Z>_\<omega>_\<alpha>\<omega> \<beta>_def)
@@ -366,10 +370,10 @@ proof-
     by 
       (
         intro 
-          FUNCT.cat_the_inverse_is_arr_isomorphism[OF assms] 
+          FUNCT.cat_the_inverse_is_iso_arr[OF assms] 
           FUNCT.cat_the_inverse_Comp_CId[OF assms]
       )+
-  from assms is_arr_isomorphismD inv_\<NN> 
+  from assms is_iso_arrD inv_\<NN> 
   have \<NN>_is_arr: "\<NN> : \<FF> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> \<GG>" 
     and inv_\<NN>_is_arr: "\<NN>\<inverse>\<^sub>C\<^bsub>?FUNCT\<^esub> : \<GG> \<mapsto>\<^bsub>cat_FUNCT \<alpha> \<AA> \<BB>\<^esub> \<FF>"
     by auto
@@ -405,7 +409,7 @@ proof-
     cf_of_cf_map \<AA> \<BB> \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o cf_of_cf_map \<AA> \<BB> \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by 
       (
-        rule CZH_ECAT_NTCF.is_arr_isomorphism_is_iso_ntcf[
+        rule CZH_ECAT_NTCF.is_iso_arr_is_iso_ntcf[
           OF \<NN>_is_arr(1) inv_\<NN>_is_arr(1) \<NN>_inv_\<NN> inv_\<NN>_\<NN> 
           ]
       )
@@ -437,7 +441,7 @@ definition cat_Funct :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
 text\<open>Components.\<close>
 
 lemma cat_Funct_components: 
-  shows "cat_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr> = tm_cf_maps \<alpha> \<AA> \<BB>"
+  shows [cat_FUNCT_cs_simps]: "cat_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr> = tm_cf_maps \<alpha> \<AA> \<BB>"
     and "cat_Funct \<alpha> \<AA> \<BB>\<lparr>Arr\<rparr> = tm_ntcf_arrows \<alpha> \<AA> \<BB>"
     and "cat_Funct \<alpha> \<AA> \<BB>\<lparr>Dom\<rparr> = (\<lambda>\<NN>\<in>\<^sub>\<circ>tm_ntcf_arrows \<alpha> \<AA> \<BB>. \<NN>\<lparr>NTDom\<rparr>)"
     and "cat_Funct \<alpha> \<AA> \<BB>\<lparr>Cod\<rparr> = (\<lambda>\<NN>\<in>\<^sub>\<circ>tm_ntcf_arrows \<alpha> \<AA> \<BB>. \<NN>\<lparr>NTCod\<rparr>)"
@@ -631,15 +635,15 @@ qed
 
 subsubsection\<open>Isomorphism\<close>
 
-lemma (in is_tm_iso_ntcf) cat_Funct_is_arr_isomorphismI: 
+lemma (in is_tm_iso_ntcf) cat_Funct_is_iso_arrI: 
   assumes "category \<alpha> \<BB>"
   shows "ntcf_arrow \<NN> : cf_map \<FF> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> cf_map \<GG>"
-proof(intro is_arr_isomorphismI is_inverseI)
+proof(intro is_iso_arrI is_inverseI)
   from is_tm_iso_ntcf_axioms show 
     "ntcf_arrow \<NN> : cf_map \<FF> \<mapsto>\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> cf_map \<GG>"
     by (cs_concl cs_shallow cs_intro: ntcf_cs_intros cat_FUNCT_cs_intros)
   interpret inv_\<NN>: is_tm_iso_ntcf \<alpha> \<AA> \<BB> \<GG> \<FF> \<open>inv_ntcf \<NN>\<close> 
-    by (rule iso_tm_ntcf_is_arr_isomorphism(1)[OF assms is_tm_iso_ntcf_axioms]) 
+    by (rule iso_tm_ntcf_is_iso_arr(1)[OF assms is_tm_iso_ntcf_axioms]) 
   from inv_\<NN>.is_tm_iso_ntcf_axioms show 
     "ntcf_arrow (inv_ntcf \<NN>) : cf_map \<GG> \<mapsto>\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> cf_map \<FF>"
     by (cs_concl cs_shallow cs_intro: ntcf_cs_intros cat_FUNCT_cs_intros)
@@ -654,23 +658,23 @@ proof(intro is_arr_isomorphismI is_inverseI)
     by
       (
         cs_concl 
-          cs_simp: iso_tm_ntcf_is_arr_isomorphism(2,3) cat_FUNCT_cs_simps
+          cs_simp: iso_tm_ntcf_is_iso_arr(2,3) cat_FUNCT_cs_simps
           cs_intro: ntcf_cs_intros cat_FUNCT_cs_intros cat_small_cs_intros
       )+
 qed
 
-lemma (in is_tm_iso_ntcf) cat_Funct_is_arr_isomorphismI': 
+lemma (in is_tm_iso_ntcf) cat_Funct_is_iso_arrI': 
   assumes "category \<alpha> \<BB>" 
     and "\<NN>' = ntcf_arrow \<NN>" 
     and "\<FF>' = cf_map \<FF>"
     and "\<GG>' = cf_map \<GG>"
   shows "\<NN>' : \<FF>' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> cf_map \<GG>"
-  using assms(1) unfolding assms(2-4) by (rule cat_Funct_is_arr_isomorphismI)
+  using assms(1) unfolding assms(2-4) by (rule cat_Funct_is_iso_arrI)
 
 lemmas [cat_FUNCT_cs_intros] = 
-  is_tm_iso_ntcf.cat_Funct_is_arr_isomorphismI'[rotated 2]
+  is_tm_iso_ntcf.cat_Funct_is_iso_arrI'[rotated 2]
 
-lemma (in \<Z>) cat_Funct_is_arr_isomorphismD:
+lemma cat_Funct_is_iso_arrD:
   assumes "tiny_category \<alpha> \<AA>" 
     and "category \<alpha> \<BB>" 
     and "\<NN> : \<FF> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> \<GG>" (is \<open>\<NN> : \<FF> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>?Funct\<^esub> \<GG>\<close>)
@@ -688,10 +692,10 @@ proof-
     by 
       (
         intro 
-          Funct.cat_the_inverse_is_arr_isomorphism[OF assms(3)] 
+          Funct.cat_the_inverse_is_iso_arr[OF assms(3)] 
           Funct.cat_the_inverse_Comp_CId[OF assms(3)]
       )+
-  from assms is_arr_isomorphismD inv_\<NN> 
+  from assms is_iso_arrD inv_\<NN> 
   have \<NN>_is_arr: "\<NN> : \<FF> \<mapsto>\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> \<GG>" 
     and inv_\<NN>_is_arr: "\<NN>\<inverse>\<^sub>C\<^bsub>?Funct\<^esub> : \<GG> \<mapsto>\<^bsub>cat_Funct \<alpha> \<AA> \<BB>\<^esub> \<FF>"
     by auto
@@ -727,7 +731,7 @@ proof-
     cf_of_cf_map \<AA> \<BB> \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>i\<^sub>s\<^sub>o cf_of_cf_map \<AA> \<BB> \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
     by 
       (
-        rule is_arr_isomorphism_is_tm_iso_ntcf[
+        rule is_iso_arr_is_tm_iso_ntcf[
           OF \<NN>_is_arr(1) inv_\<NN>_is_arr(1) \<NN>_inv_\<NN> inv_\<NN>_\<NN> 
           ]
       )

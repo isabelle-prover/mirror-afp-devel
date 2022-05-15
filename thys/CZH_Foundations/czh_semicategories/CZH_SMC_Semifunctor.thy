@@ -1460,6 +1460,20 @@ lemma is_ft_semifunctorE':
     and "\<And>a b. \<lbrakk> a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>; b \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<rbrakk> \<Longrightarrow> v11 (\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b)"
   using assms by (simp_all add: is_ft_semifunctorD')
 
+lemma is_ft_semifunctorI'':
+  assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<And>a b g f.
+      \<lbrakk> g : a \<mapsto>\<^bsub>\<AA>\<^esub> b; f : a \<mapsto>\<^bsub>\<AA>\<^esub> b; \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<rbrakk> \<Longrightarrow> g = f"
+  shows "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<^bsub>\<alpha>\<^esub> \<BB>"
+  by 
+    (
+      intro is_ft_semifunctorI assms,
+      rule is_ft_dghmI'', 
+      unfold slicing_simps, 
+      rule is_semifunctor.smcf_is_dghm[OF assms(1)], 
+      rule assms(2)
+    )
+
 
 text\<open>Elementary properties.\<close>
 
@@ -1471,6 +1485,7 @@ interpretation dghm: is_ft_dghm \<alpha> \<open>smc_dg \<AA>\<close> \<open>smc_
 
 lemmas_with [unfolded slicing_simps]:
   ft_smcf_v11_on_Hom = dghm.ft_dghm_v11_on_Hom
+  and ft_smcf_ArrMap_eqD = dghm.ft_dghm_ArrMap_eqD
 
 end
 
@@ -1912,12 +1927,16 @@ lemmas_with [unfolded slicing_simps slicing_commute]:
   and inv_smcf_ArrMap_vdomain = dghm.inv_dghm_ArrMap_vdomain
   and inv_smcf_ArrMap_app = dghm.inv_dghm_ArrMap_app
   and inv_smcf_ArrMap_vrange = dghm.inv_dghm_ArrMap_vrange
-  and iso_smcf_ObjMap_inv_smcf_ObjMap_app =
+  and iso_smcf_ObjMap_inv_smcf_ObjMap_app[smcf_cs_simps] =
     dghm.iso_dghm_ObjMap_inv_dghm_ObjMap_app
-  and iso_smcf_ArrMap_inv_smcf_ArrMap_app = 
+  and iso_smcf_ArrMap_inv_smcf_ArrMap_app[smcf_cs_simps] = 
     dghm.iso_dghm_ArrMap_inv_dghm_ArrMap_app
   and iso_smcf_HomDom_is_arr_conv = dghm.iso_dghm_HomDom_is_arr_conv
   and iso_smcf_HomCod_is_arr_conv = dghm.iso_dghm_HomCod_is_arr_conv
+  and iso_inv_smcf_ObjMap_smcf_ObjMap_app[smcf_cs_simps] = 
+    dghm.iso_inv_dghm_ObjMap_dghm_ObjMap_app
+  and iso_inv_smcf_ArrMap_smcf_ArrMap_app[smcf_cs_simps] =
+    dghm.iso_inv_dghm_ArrMap_dghm_ArrMap_app
 
 end
 
@@ -1934,6 +1953,8 @@ lemmas [smcf_cs_simps] =
   is_iso_semifunctor.inv_smcf_ArrMap_vrange
   is_iso_semifunctor.iso_smcf_ObjMap_inv_smcf_ObjMap_app
   is_iso_semifunctor.iso_smcf_ArrMap_inv_smcf_ArrMap_app
+  is_iso_semifunctor.iso_inv_smcf_ObjMap_smcf_ObjMap_app
+  is_iso_semifunctor.iso_inv_smcf_ArrMap_smcf_ArrMap_app
 
 
 
@@ -1941,7 +1962,7 @@ subsection\<open>
 An isomorphism of semicategories is an isomorphism in the category \<open>SemiCAT\<close>
 \<close>
 
-lemma is_arr_isomorphism_is_iso_semifunctor:
+lemma is_iso_arr_is_iso_semifunctor:
   \<comment>\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
@@ -1959,22 +1980,22 @@ proof-
       by (simp add: assms(4) smcf_dghm_smcf_id smcf_dghm_smcf_comp)
     from \<FF>.smcf_is_dghm \<GG>.smcf_is_dghm dg_\<GG>\<FF>\<AA> dg_\<FF>\<GG>\<BB> show 
       "smcf_dghm \<FF> : smc_dg \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> smc_dg \<BB>"
-      by (rule is_arr_isomorphism_is_iso_dghm)
+      by (rule is_iso_arr_is_iso_dghm)
   qed (simp add: \<FF>.is_semifunctor_axioms)
 qed
 
-lemma is_iso_semifunctor_is_arr_isomorphism:
+lemma is_iso_semifunctor_is_iso_arr:
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
   shows [smcf_cs_intros]: "inv_smcf \<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<AA>"
-    and "inv_smcf \<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> = smcf_id \<AA>"
-    and "\<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F inv_smcf \<FF> = smcf_id \<BB>"
+    and [smcf_cs_simps]: "inv_smcf \<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> = smcf_id \<AA>"
+    and [smcf_cs_simps]: "\<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F inv_smcf \<FF> = smcf_id \<BB>"
 proof-
 
   let ?\<GG> = \<open>inv_smcf \<FF>\<close>
 
   interpret is_iso_semifunctor \<alpha> \<AA> \<BB> \<FF> by (rule assms(1))
 
-  note is_iso_dghm = is_iso_dghm_is_arr_isomorphism[OF iso_smcf_is_iso_dghm]
+  note is_iso_dghm = is_iso_dghm_is_iso_arr[OF iso_smcf_is_iso_dghm]
 
   show \<GG>: "?\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<AA>"
   proof
@@ -2117,7 +2138,7 @@ proof-
   from iso_smc_is_iso_semifunctor obtain \<FF> where "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>" 
     by clarsimp
   then have "inv_smcf \<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<AA>" 
-    by (simp add: is_iso_semifunctor_is_arr_isomorphism(1))
+    by (simp add: is_iso_semifunctor_is_iso_arr(1))
   then show ?thesis by (auto intro: iso_semicategoryI)
 qed
 

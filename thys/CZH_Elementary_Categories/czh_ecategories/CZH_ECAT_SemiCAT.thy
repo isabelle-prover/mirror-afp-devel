@@ -171,14 +171,14 @@ qed
 
 subsection\<open>Isomorphism\<close>
 
-lemma cat_SemiCAT_is_arr_isomorphismI: 
+lemma cat_SemiCAT_is_iso_arrI: 
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
   shows "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_SemiCAT \<alpha>\<^esub> \<BB>"
-proof(intro is_arr_isomorphismI is_inverseI)
+proof(intro is_iso_arrI is_inverseI)
   interpret is_iso_semifunctor \<alpha> \<AA> \<BB> \<FF> by (rule assms)
   from assms show \<FF>: "\<FF> : \<AA> \<mapsto>\<^bsub>cat_SemiCAT \<alpha>\<^esub> \<BB>"
     unfolding cat_SemiCAT_is_arr_iff by auto
-  note iso_thms = is_iso_semifunctor_is_arr_isomorphism[OF assms]
+  note iso_thms = is_iso_semifunctor_is_iso_arr[OF assms]
   from iso_thms(1) show inv_\<FF>: "inv_smcf \<FF> : \<BB> \<mapsto>\<^bsub>cat_SemiCAT \<alpha>\<^esub> \<AA>"
     unfolding cat_SemiCAT_is_arr_iff by auto
   from assms show "\<FF> : \<AA> \<mapsto>\<^bsub>cat_SemiCAT \<alpha>\<^esub> \<BB>"
@@ -192,11 +192,11 @@ proof(intro is_arr_isomorphismI is_inverseI)
     by (rule iso_thms(3))
 qed
 
-lemma cat_SemiCAT_is_arr_isomorphismD: 
+lemma cat_SemiCAT_is_iso_arrD: 
   assumes "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_SemiCAT \<alpha>\<^esub> \<BB>"
   shows "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
 proof-
-  from is_arr_isomorphismD[OF assms] have \<FF>: "\<FF> : \<AA> \<mapsto>\<^bsub>cat_SemiCAT \<alpha>\<^esub> \<BB>" 
+  from is_iso_arrD[OF assms] have \<FF>: "\<FF> : \<AA> \<mapsto>\<^bsub>cat_SemiCAT \<alpha>\<^esub> \<BB>" 
     and "(\<exists>\<GG>. is_inverse (cat_SemiCAT \<alpha>) \<GG> \<FF>)"
     by simp_all
   then obtain \<GG> where \<GG>\<FF>: "is_inverse (cat_SemiCAT \<alpha>) \<GG> \<FF>" by clarsimp
@@ -219,17 +219,17 @@ proof-
     unfolding \<BB>' cat_SemiCAT_Comp_app[OF \<FF>' \<GG>'] cat_SemiCAT_CId_app[OF \<BB>] 
     by simp
   ultimately show ?thesis 
-    using \<FF> by (elim is_arr_isomorphism_is_iso_semifunctor)
+    using \<FF> by (elim is_iso_arr_is_iso_semifunctor)
 qed
 
-lemma cat_SemiCAT_is_arr_isomorphismE: 
+lemma cat_SemiCAT_is_iso_arrE: 
   assumes "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_SemiCAT \<alpha>\<^esub> \<BB>"
   obtains "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
-  using assms by (auto dest: cat_SemiCAT_is_arr_isomorphismD)
+  using assms by (auto dest: cat_SemiCAT_is_iso_arrD)
 
-lemma cat_SemiCAT_is_arr_isomorphism_iff[cat_SemiCAT_simps]: 
+lemma cat_SemiCAT_is_iso_arr_iff[cat_SemiCAT_simps]: 
   "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_SemiCAT \<alpha>\<^esub> \<BB> \<longleftrightarrow> \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
-  using cat_SemiCAT_is_arr_isomorphismI cat_SemiCAT_is_arr_isomorphismD by auto
+  using cat_SemiCAT_is_iso_arrI cat_SemiCAT_is_iso_arrD by auto
 
 
 
@@ -241,7 +241,7 @@ lemma cat_SemiCAT_obj_isoI:
 proof-
   from iso_semicategoryD[OF assms] obtain \<FF> where "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
     by clarsimp
-  from cat_SemiCAT_is_arr_isomorphismI[OF this] show ?thesis by (rule obj_isoI)
+  from cat_SemiCAT_is_iso_arrI[OF this] show ?thesis by (rule obj_isoI)
 qed
 
 lemma cat_SemiCAT_obj_isoD: 
@@ -250,7 +250,7 @@ lemma cat_SemiCAT_obj_isoD:
 proof-
   from obj_isoD[OF assms] obtain \<FF> where "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_SemiCAT \<alpha>\<^esub> \<BB>" 
     by clarsimp
-  from cat_SemiCAT_is_arr_isomorphismD[OF this] show ?thesis
+  from cat_SemiCAT_is_iso_arrD[OF this] show ?thesis
     by (rule iso_semicategoryI)
 qed
 

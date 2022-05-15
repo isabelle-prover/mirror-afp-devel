@@ -449,7 +449,7 @@ proof-
 qed
 
 
-text\<open>Further elementary properties.\<close>
+text\<open>Further properties.\<close>
 
 lemma (in digraph) dg_Dom_app_in_Obj:
   assumes "f \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>"

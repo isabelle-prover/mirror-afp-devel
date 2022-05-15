@@ -7,7 +7,6 @@ begin
 
 
 
-
 section\<open>Background\<close>
 
 
@@ -25,8 +24,9 @@ its foundational part.
 There already exist several formalizations of the foundations of category 
 theory in Isabelle. In the context of the work presented here, the most relevant
 formalizations (listed in the chronological order) are 
+\cite{caccamo_higher-order_2001-1, caccamo_higher-order_2001}, 
 \cite{okeefe_category_2005}, \cite{katovsky_category_2010} and 
-\cite{stark_category_2016}. 
+\cite{stark_category_2016}.
 Arguably, the most well developed and maintained entry is 
 \cite{stark_category_2016}: it subsumes the majority of the content of 
 \cite{okeefe_category_2005} and \cite{katovsky_category_2010}.

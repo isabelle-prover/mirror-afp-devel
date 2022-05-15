@@ -16,7 +16,8 @@ subsection\<open>Background\<close>
 text\<open>
 The methodology chosen for the exposition 
 of \<open>Set\<close> as a semicategory is analogous to the 
-one used in the previous chapter for the exposition of \<open>Set\<close> as a digraph. 
+one used in the previous chapter for the exposition 
+of \<open>Set\<close> as a digraph. 
 \<close>
 
 named_theorems smc_Set_cs_simps
@@ -24,6 +25,9 @@ named_theorems smc_Set_cs_intros
 
 lemmas (in arr_Set) [smc_Set_cs_simps] = 
   dg_Rel_shared_cs_simps
+
+lemmas (in arr_Set) [smc_cs_intros, smc_Set_cs_intros] = 
+  arr_Set_axioms'
 
 lemmas [smc_Set_cs_simps] =
   dg_Rel_shared_cs_simps
@@ -107,11 +111,21 @@ lemmas [smc_cs_simps] = smc_Set_is_arrD(2,3)
 lemmas_with (in \<Z>) [folded smc_dg_smc_Set, unfolded slicing_simps]: 
   smc_Set_Hom_vifunion_in_Vset = dg_Set_Hom_vifunion_in_Vset
   and smc_Set_incl_Set_is_arr = dg_Set_incl_Set_is_arr
-  and smc_Set_incl_Set_is_arr'[smc_Set_cs_intros] = dg_Set_incl_Set_is_arr'
 
 lemmas [smc_Set_cs_intros] = 
   smc_Set_is_arrI
-  \<Z>.smc_Set_incl_Set_is_arr'
+
+lemma (in \<Z>) smc_Set_incl_Set_is_arr'[smc_cs_intros, smc_Set_cs_intros]:
+  assumes "A \<in>\<^sub>\<circ> smc_Set \<alpha>\<lparr>Obj\<rparr>" 
+    and "B \<in>\<^sub>\<circ> smc_Set \<alpha>\<lparr>Obj\<rparr>" 
+    and "A \<subseteq>\<^sub>\<circ> B"
+    and "A' = A"
+    and "B' = B"
+    and "\<CC>' = smc_Set \<alpha>"
+  shows "incl_Set A B : A' \<mapsto>\<^bsub>\<CC>'\<^esub> B'"
+  using assms(1-3) unfolding assms(4-6) by (rule smc_Set_incl_Set_is_arr)
+
+lemmas [smc_Set_cs_intros] = \<Z>.smc_Set_incl_Set_is_arr'
 
 
 subsubsection\<open>Composable arrows\<close>
@@ -130,11 +144,11 @@ subsubsection\<open>Composition\<close>
 
 lemma smc_Set_Comp_app[smc_Set_cs_simps]:
   assumes "S : b \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> c" and "T : a \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> b"
-  shows "S \<circ>\<^sub>A\<^bsub>smc_Set \<alpha>\<^esub> T = S \<circ>\<^sub>R\<^sub>e\<^sub>l T"
+  shows "S \<circ>\<^sub>A\<^bsub>smc_Set \<alpha>\<^esub> T = S \<circ>\<^sub>S\<^sub>e\<^sub>t T"
 proof-
   from assms have "[S, T]\<^sub>\<circ> \<in>\<^sub>\<circ> composable_arrs (smc_Set \<alpha>)" 
     by (auto simp: smc_cs_intros)
-  then show "S \<circ>\<^sub>A\<^bsub>smc_Set \<alpha>\<^esub> T = S \<circ>\<^sub>R\<^sub>e\<^sub>l T"
+  then show "S \<circ>\<^sub>A\<^bsub>smc_Set \<alpha>\<^esub> T = S \<circ>\<^sub>S\<^sub>e\<^sub>t T"
     unfolding smc_Set_Comp by (simp add: nat_omega_simps)
 qed 
 
@@ -172,7 +186,7 @@ proof(rule vsubsetI)
     from prems x T.arr_Set_ArrVal_vrange show "y \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (S\<lparr>ArrVal\<rparr>)"
       unfolding y_def by (auto simp: smc_Set_cs_simps)
   qed
-  with S.arr_Set_axioms T.arr_Set_axioms have "arr_Set \<alpha> (S \<circ>\<^sub>R\<^sub>e\<^sub>l T)"
+  with S.arr_Set_axioms T.arr_Set_axioms have "arr_Set \<alpha> (S \<circ>\<^sub>S\<^sub>e\<^sub>t T)"
     by (simp add: arr_Set_comp_Set)
   from this show "R \<in>\<^sub>\<circ> set {T. arr_Set \<alpha> T}" 
     unfolding R_def' smc_Set_Comp_app[OF S T] by simp
@@ -207,7 +221,7 @@ proof-
         )
   qed
   from Ta assms S.arr_Set_axioms T.arr_Set_axioms show ?thesis
-    by ((cs_concl_step smc_Set_cs_simps)+, intro arr_Set_comp_Set_ArrVal[of \<alpha>])
+    by ((cs_concl_step smc_Set_cs_simps)+, intro arr_Set_comp_Set_ArrVal_app[of \<alpha>])
       (simp_all add: smc_Set_is_arrD smc_Set_cs_simps)
 qed
 
@@ -305,14 +319,17 @@ qed
 
 subsection\<open>Monic arrow and epic arrow\<close>
 
-lemma (in \<Z>) smc_Set_is_monic_arrI:
+lemma smc_Set_is_monic_arrI:
   \<comment>\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}).\<close>
   assumes "T : A \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B" and "v11 (T\<lparr>ArrVal\<rparr>)" and "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A"
   shows "T : A \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Set \<alpha>\<^esub> B"
 proof(rule is_monic_arrI)
+
+  interpret T: arr_Set \<alpha> T by (intro smc_Set_is_arrD[OF assms(1)])+
   interpret wide_subsemicategory \<alpha> \<open>smc_Set \<alpha>\<close> \<open>smc_Par \<alpha>\<close>
-    by (rule wide_subsemicategory_smc_Set_smc_Par)
+    by (rule T.wide_subsemicategory_smc_Set_smc_Par)
   interpret v11 \<open>T\<lparr>ArrVal\<rparr>\<close> by (rule assms(2))
+
   show T: "T : A \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B" by (rule assms(1))
   fix S R A'
   assume S: "S : A' \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> A" 
@@ -329,22 +346,22 @@ proof(rule is_monic_arrI)
     "T \<circ>\<^sub>A\<^bsub>smc_Par \<alpha>\<^esub> S = T \<circ>\<^sub>A\<^bsub>smc_Par \<alpha>\<^esub> R" 
     by (auto simp: smc_sub_bw_cs_simps)
   ultimately show "S = R" by (rule is_monic_arrD(2))
+
 qed
 
-lemma (in \<Z>) smc_Set_is_monic_arrD:
+lemma smc_Set_is_monic_arrD:
   assumes "T : A \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Set \<alpha>\<^esub> B"
   shows "T : A \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B" and "v11 (T\<lparr>ArrVal\<rparr>)" and "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A"
 proof-
 
-  interpret wide_subdigraph \<alpha> \<open>dg_Set \<alpha>\<close> \<open>dg_Par \<alpha>\<close> 
-    by (rule wide_subdigraph_dg_Set_dg_Par)
-  interpret Par: semicategory \<alpha> \<open>smc_Par \<alpha>\<close> by (rule semicategory_smc_Par)
-
   from assms show T: "T : A \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B" by auto
-
   interpret T: arr_Set \<alpha> T 
     rewrites [simp]: "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
-    using T by (auto elim!: smc_Set_is_arrE)
+    by (intro smc_Set_is_arrD[OF T])+
+
+  interpret wide_subdigraph \<alpha> \<open>dg_Set \<alpha>\<close> \<open>dg_Par \<alpha>\<close> 
+    by (rule T.wide_subdigraph_dg_Set_dg_Par)
+  interpret Par: semicategory \<alpha> \<open>smc_Par \<alpha>\<close> by (rule T.semicategory_smc_Par)
   
   show "v11 (T\<lparr>ArrVal\<rparr>)"
   proof(rule v11I)
@@ -365,21 +382,21 @@ proof-
       proof(rule smc_Set_is_arrI)
         show "arr_Set \<alpha> R"
           unfolding R_def
-          by (rule arr_Set_vfsequenceI) (auto simp: T.arr_Rel_ArrDom_in_Vset)
+          by (rule T.arr_Set_vfsequenceI) (auto simp: T.arr_Rel_ArrDom_in_Vset)
       qed (simp_all add: R_def arr_Rel_components)
       interpret R: arr_Set \<alpha> R 
         rewrites [simp]: "R\<lparr>ArrDom\<rparr> = set {0}" and [simp]: "R\<lparr>ArrCod\<rparr> = A"
-        using R by (auto elim!: smc_Set_is_arrE)
+        by (intro smc_Set_is_arrD[OF R])+
 
       have S: "S : set {0} \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> A"
       proof(rule smc_Set_is_arrI)
         show "arr_Set \<alpha> S"
           unfolding S_def
-          by (rule arr_Set_vfsequenceI) (auto simp: T.arr_Rel_ArrDom_in_Vset)
+          by (rule T.arr_Set_vfsequenceI) (auto simp: T.arr_Rel_ArrDom_in_Vset)
       qed (simp_all add: S_def arr_Rel_components)
       interpret S: arr_Set \<alpha> S 
         rewrites [simp]: "S\<lparr>ArrDom\<rparr> = set {0}" and [simp]: "S\<lparr>ArrCod\<rparr> = A"
-        using S by (auto elim!: smc_Set_is_arrE)
+        by (intro smc_Set_is_arrD[OF S])+
 
       have "T \<circ>\<^sub>A\<^bsub>smc_Set \<alpha>\<^esub> R = [set {\<langle>0, a\<rangle>}, set {0}, B]\<^sub>\<circ>"        
         unfolding smc_Set_Comp_app[OF T R]
@@ -388,13 +405,13 @@ proof-
           rule arr_Set_eqI[of \<alpha>], 
           unfold comp_Rel_components arr_Rel_components
         )
-        from R T show "arr_Set \<alpha> (T \<circ>\<^sub>R\<^sub>e\<^sub>l R)"
+        from R T show "arr_Set \<alpha> (T \<circ>\<^sub>S\<^sub>e\<^sub>t R)"
           by (intro arr_Set_comp_Set) 
             (auto elim!: smc_Set_is_arrE simp: smc_Set_cs_simps)
         show "arr_Set \<alpha> [set {\<langle>0, a\<rangle>}, set {0}, B]\<^sub>\<circ>"
-        proof(rule arr_Set_vfsequenceI)
+        proof(rule T.arr_Set_vfsequenceI)
           from T.arr_Rel_ArrVal_vrange bar show "\<R>\<^sub>\<circ> (set {\<langle>0, a\<rangle>}) \<subseteq>\<^sub>\<circ> B" by auto
-        qed (auto simp: T.arr_Rel_ArrCod_in_Vset Axiom_of_Powers)
+        qed (auto simp: T.arr_Rel_ArrCod_in_Vset T.Axiom_of_Powers)
         show "T\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> R\<lparr>ArrVal\<rparr> = set {\<langle>0, a\<rangle>}"
           unfolding R_def arr_Rel_components
         proof(rule vsv_eqI, unfold vdomain_vsingleton)
@@ -412,7 +429,7 @@ proof-
           rule arr_Set_eqI[of \<alpha>],
           unfold comp_Rel_components arr_Rel_components
         )
-        from T S show "arr_Set \<alpha> (T \<circ>\<^sub>R\<^sub>e\<^sub>l S)"  
+        from T S show "arr_Set \<alpha> (T \<circ>\<^sub>S\<^sub>e\<^sub>t S)"  
           by (intro arr_Set_comp_Set)
             (
               auto simp: 
@@ -422,9 +439,9 @@ proof-
                 smc_Set_cs_simps
             )
         show "arr_Set \<alpha> [set {\<langle>0, a\<rangle>}, set {0}, B]\<^sub>\<circ>"
-        proof(rule arr_Set_vfsequenceI)
+        proof(rule T.arr_Set_vfsequenceI)
           from T.arr_Rel_ArrVal_vrange bar show "\<R>\<^sub>\<circ> (set {\<langle>0, a\<rangle>}) \<subseteq>\<^sub>\<circ> B" by auto
-        qed (auto simp: T.arr_Rel_ArrCod_in_Vset Axiom_of_Powers)
+        qed (auto simp: T.arr_Rel_ArrCod_in_Vset T.Axiom_of_Powers)
         show "T\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> S\<lparr>ArrVal\<rparr> = set {\<langle>0, a\<rangle>}"
           unfolding S_def arr_Rel_components
         proof(rule vsv_eqI, unfold vdomain_vsingleton)
@@ -447,7 +464,7 @@ proof-
 
 qed
 
-lemma (in \<Z>) smc_Set_is_monic_arr: 
+lemma smc_Set_is_monic_arr: 
   "T : A \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Set \<alpha>\<^esub> B \<longleftrightarrow>  
     T : A \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B \<and> v11 (T\<lparr>ArrVal\<rparr>) \<and> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A"
   by (rule iffI) (auto simp: smc_Set_is_monic_arrD smc_Set_is_monic_arrI)
@@ -458,14 +475,20 @@ An epic arrow in \<open>Set\<close> is a total surjective function (see Chapter 
 in \cite{mac_lane_categories_2010}).
 \<close>
 
-lemma (in \<Z>) smc_Set_is_epic_arrI:
+lemma smc_Set_is_epic_arrI:
   assumes "T : A \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B" and "\<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B"
   shows "T : A \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>smc_Set \<alpha>\<^esub> B"
 proof-
+
+  interpret T: arr_Set \<alpha> T 
+    rewrites [simp]: "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
+    by (intro smc_Set_is_arrD[OF assms(1)])+
+
   interpret wide_subsemicategory \<alpha> \<open>smc_Set \<alpha>\<close> \<open>smc_Par \<alpha>\<close>
-    by (rule wide_subsemicategory_smc_Set_smc_Par)
+    by (rule T.wide_subsemicategory_smc_Set_smc_Par)
   have epi_T: "T : A \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>smc_Par \<alpha>\<^esub> B"
     using assms by (meson smc_Par_is_epic_arr subsmc_is_arrD)
+
   show ?thesis
   proof(rule sdg.is_epic_arrI)
     show T: "T : A \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B" by (rule assms(1))
@@ -484,19 +507,21 @@ proof-
     ultimately show "f = g"
       by (rule dg.is_epic_arrD(2)[OF epi_T])
   qed
+
 qed
 
-lemma (in \<Z>) smc_Set_is_epic_arrD:
+lemma smc_Set_is_epic_arrD:
   assumes "T : A \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>smc_Set \<alpha>\<^esub> B"
   shows "T : A \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B" and "\<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B"
 proof-
 
-  interpret semicategory \<alpha> \<open>smc_Set \<alpha>\<close> by (rule semicategory_smc_Set)
-
   from assms show T: "T : A \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B" by auto
   interpret T: arr_Set \<alpha> T
     rewrites "T\<lparr>ArrDom\<rparr> = A" and "T\<lparr>ArrCod\<rparr> = B"
-    using T by (auto elim!: smc_Set_is_arrE)
+    by (intro smc_Set_is_arrD[OF T])+
+
+  interpret semicategory \<alpha> \<open>smc_Set \<alpha>\<close> by (rule T.semicategory_smc_Set)
+
   show "\<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B"
   proof(intro vsubset_antisym vsubsetI)
     fix b assume [intro]: "b \<in>\<^sub>\<circ> B" 
@@ -508,13 +533,23 @@ proof-
       define S where "S = [B \<times>\<^sub>\<circ> set {1}, B, set {0, 1}]\<^sub>\<circ>"
       have R: "R : B \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> set {0, 1}" 
         unfolding R_def
-      proof(intro smc_Set_is_arrI arr_Set_vfsequenceI, unfold arr_Rel_components)
-        from Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" by blast
+      proof
+        (
+          intro smc_Set_is_arrI T.arr_Set_vfsequenceI, 
+          unfold arr_Rel_components
+        )
+        from T.Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" 
+          by blast
       qed (auto simp: T.arr_Rel_ArrCod_in_Vset)
       have S: "S : B \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> set {0, 1}"
         unfolding S_def
-      proof(intro smc_Set_is_arrI arr_Set_vfsequenceI, unfold arr_Rel_components)
-        from Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" by blast
+      proof
+        (
+          intro smc_Set_is_arrI T.arr_Set_vfsequenceI,
+          unfold arr_Rel_components
+        )
+        from T.Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" 
+          by blast
       qed (auto simp: T.arr_Rel_ArrCod_in_Vset)
       from b have "R\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> T\<lparr>ArrVal\<rparr> = S\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>" 
         unfolding S_def R_def arr_Rel_components 
@@ -526,9 +561,10 @@ proof-
       with zero_neq_one show False unfolding R_def S_def by blast
     qed
   qed (use T.arr_Set_ArrVal_vrange in auto)
+
 qed
 
-lemma (in \<Z>) smc_Set_is_epic_arr: 
+lemma smc_Set_is_epic_arr: 
   "T : A \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>smc_Set \<alpha>\<^esub> B \<longleftrightarrow> T : A \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B \<and> \<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B" 
   by (rule iffI) (simp_all add: smc_Set_is_epic_arrD smc_Set_is_epic_arrI)
 
@@ -537,8 +573,10 @@ lemma (in \<Z>) smc_Set_is_epic_arr:
 subsection\<open>Terminal object, initial object and null object\<close>
 
 
-text\<open>An object in \<open>Set\<close> is terminal if and only if it is a singleton 
-set (see Chapter I-5 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>
+An object in \<open>Set\<close> is terminal if and only if it is a singleton 
+set (see Chapter I-5 in \cite{mac_lane_categories_2010}).
+\<close>
 
 lemma (in \<Z>) smc_Set_obj_terminal: 
   "obj_terminal (smc_Set \<alpha>) A \<longleftrightarrow> (\<exists>B\<in>\<^sub>\<circ>Vset \<alpha>. A = set {B})"
@@ -564,7 +602,7 @@ proof-
         by (metis Axiom_of_Pairing insert_absorb2 vempty_is_zet)
       interpret T: arr_Set \<alpha> T
         rewrites "T\<lparr>ArrDom\<rparr> = set {0}" and "T\<lparr>ArrCod\<rparr> = 0"
-        using T by (auto elim!: smc_Set_is_arrE)
+        by (intro smc_Set_is_arrD[OF T])+
       from 
         T.vdomain_vrange_is_vempty
         T.ArrVal.vdomain_vrange_is_vempty 
@@ -590,6 +628,7 @@ proof-
       ultimately show False
         by (metis prems smc_is_arrE smc_Set_components(1))
     qed
+
   next
     
     fix A assume prems: "\<exists>b\<in>\<^sub>\<circ>Vset \<alpha>. B = set {b}" "A \<in>\<^sub>\<circ> Vset \<alpha>"
@@ -614,7 +653,7 @@ proof-
 
       interpret T: arr_Set \<alpha> T
         rewrites [simp]: "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = set {b}"
-        using prems by (auto elim!: smc_Set_is_arrE)
+        by (intro smc_Set_is_arrD[OF prems])+
 
       have [simp]: "T\<lparr>ArrVal\<rparr> = A \<times>\<^sub>\<circ> set {b}"
       proof(intro vsubset_antisym vsubsetI)
@@ -663,8 +702,10 @@ proof-
 qed
 
 
-text\<open>An object in \<open>Set\<close> is initial if and only if it is the empty 
-set (see Chapter I-5 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>
+An object in \<open>Set\<close> is initial if and only if it is the empty 
+set (see Chapter I-5 in \cite{mac_lane_categories_2010}).
+\<close>
 
 lemma (in \<Z>) smc_Set_obj_initial: "obj_initial (smc_Set \<alpha>) A \<longleftrightarrow> A = 0"
 proof-
@@ -705,7 +746,7 @@ proof-
           intro smc_Set_is_arrI arr_Set_vfsequenceI, 
           unfold arr_Rel_components
         )
-        show "set {[]\<^sub>\<circ>, 1} \<in>\<^sub>\<circ> Vset \<alpha>"
+        show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>"
           by (intro Limit_vdoubleton_in_VsetI) (force simp: nat_omega_simps)+
       qed auto
       moreover have 
@@ -715,7 +756,7 @@ proof-
           intro smc_Set_is_arrI arr_Set_vfsequenceI, 
           unfold arr_Rel_components
         )
-        show "set {[]\<^sub>\<circ>, 1} \<in>\<^sub>\<circ> Vset \<alpha>"
+        show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>"
           by (intro Limit_vdoubleton_in_VsetI) (force simp: nat_omega_simps)+
       qed auto
       moreover from \<open>A \<noteq> 0\<close> one_neq_zero have 
@@ -735,15 +776,15 @@ proof-
             unfold arr_Rel_components
           )
           (simp_all add: prems)
-      fix T assume prems: "T : 0 \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B"
+      fix T assume prems': "T : 0 \<mapsto>\<^bsub>smc_Set \<alpha>\<^esub> B"
       interpret T: arr_Set \<alpha> T
         rewrites [simp]: "T\<lparr>ArrDom\<rparr> = 0" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
-        using prems by (auto simp: smc_Set_is_arrD)
+        by (intro smc_Set_is_arrD[OF prems'])+
       show "T = [0, 0, B]\<^sub>\<circ>"  
       proof(rule arr_Set_eqI[of \<alpha>], unfold arr_Rel_components)
         show "arr_Set \<alpha> T" by (rule T.arr_Set_axioms)
-        from zzB show "arr_Set \<alpha> [[]\<^sub>\<circ>, []\<^sub>\<circ>, B]\<^sub>\<circ>" by (meson smc_Set_is_arrE)
-        from T.ArrVal.vdomain_vrange_is_vempty show "T\<lparr>ArrVal\<rparr> = []\<^sub>\<circ>"
+        from zzB show "arr_Set \<alpha> [0, 0, B]\<^sub>\<circ>" by (meson smc_Set_is_arrE)
+        from T.ArrVal.vdomain_vrange_is_vempty show "T\<lparr>ArrVal\<rparr> = 0"
           by (auto intro: T.ArrVal.vsv_vrange_vempty simp: smc_Set_cs_simps)
       qed simp_all
     qed
@@ -760,8 +801,7 @@ qed
 
 
 text\<open>
-There are no null objects in \<open>Set\<close> (this is a trivial corollary of the 
-above).
+There are no null objects in \<open>Set\<close> (this is a trivial corollary of the above).
 \<close>
 
 lemma (in \<Z>) smc_Set_obj_null: "obj_null (smc_Set \<alpha>) A \<longleftrightarrow> False"

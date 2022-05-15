@@ -438,6 +438,30 @@ lemma binopE[elim]:
 
 text\<open>Elementary properties.\<close>
 
+lemma binop_eqI:
+  assumes "binop A g"
+    and "binop A f"
+    and "\<And>a b. \<lbrakk> a \<in>\<^sub>\<circ> A; b \<in>\<^sub>\<circ> A \<rbrakk> \<Longrightarrow> g\<lparr>a, b\<rparr>\<^sub>\<bullet> = f\<lparr>a, b\<rparr>\<^sub>\<bullet>"
+  shows "g = f"
+proof-
+  interpret g: binop A g by (rule assms(1))
+  interpret f: binop A f by (rule assms(2))
+  show ?thesis
+  proof
+    (
+      rule vsv_eqI; 
+      (intro g.vsv_axioms f.vsv_axioms)?;
+      (unfold g.nop_vdomain f.nop_vdomain)
+    )
+    fix ab assume "ab \<in>\<^sub>\<circ> A ^\<^sub>\<times> 2\<^sub>\<nat>"
+    then obtain a b where ab_def: "ab = [a, b]\<^sub>\<circ>" 
+      and a: "a \<in>\<^sub>\<circ> A"
+      and b: "b \<in>\<^sub>\<circ> A" 
+      by auto
+    show "g\<lparr>ab\<rparr> = f\<lparr>ab\<rparr>" unfolding ab_def by (rule assms(3)[OF a b])
+  qed simp
+qed
+
 lemma (in binop) binop_app_in_vrange[intro]:
   assumes "a \<in>\<^sub>\<circ> A" and "b \<in>\<^sub>\<circ> A"
   shows "f\<lparr>a, b\<rparr>\<^sub>\<bullet> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> f"

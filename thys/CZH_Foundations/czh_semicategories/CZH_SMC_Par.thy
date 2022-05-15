@@ -25,6 +25,9 @@ named_theorems smc_Par_cs_intros
 lemmas (in arr_Par) [smc_Par_cs_simps] = 
   dg_Rel_shared_cs_simps
 
+lemmas (in arr_Par) [smc_cs_intros, smc_Par_cs_intros] = 
+  arr_Par_axioms'
+
 lemmas [smc_Par_cs_simps] = 
   dg_Rel_shared_cs_simps
   arr_Par.arr_Par_length
@@ -244,13 +247,16 @@ qed
 
 subsection\<open>Monic arrow and epic arrow\<close>
 
-lemma (in \<Z>) smc_Par_is_monic_arrI[intro]:
+lemma smc_Par_is_monic_arrI[intro]:
   assumes "T : A \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> B" and "v11 (T\<lparr>ArrVal\<rparr>)" and "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A"
   shows "T : A \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Par \<alpha>\<^esub> B"
 proof(intro is_monic_arrI)
+
+  interpret T: arr_Par \<alpha> T by (intro smc_Par_is_arrD(1)[OF assms(1)])
   interpret Par_Rel: wide_subsemicategory \<alpha> \<open>smc_Par \<alpha>\<close> \<open>smc_Rel \<alpha>\<close>
-    by (rule wide_subsemicategory_smc_Par_smc_Rel)
+    by (rule T.wide_subsemicategory_smc_Par_smc_Rel)
   interpret v11: v11 \<open>T\<lparr>ArrVal\<rparr>\<close> by (rule assms(2))
+
   show T: "T : A \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> B" by (rule assms(1))
   fix S R A'
   assume S: "S : A' \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> A" 
@@ -269,7 +275,7 @@ proof(intro is_monic_arrI)
   ultimately show "S = R" by (rule is_monic_arrD(2))
 qed
 
-lemma (in \<Z>) smc_Par_is_monic_arrD:
+lemma smc_Par_is_monic_arrD:
   assumes "T : A \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Par \<alpha>\<^esub> B"
   shows "T : A \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> B" and "v11 (T\<lparr>ArrVal\<rparr>)" and "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A"
 proof-
@@ -305,14 +311,14 @@ proof-
       proof(rule smc_Par_is_arrI)
         show "arr_Par \<alpha> R"
           unfolding R_def
-          by (rule arr_Par_vfsequenceI) (auto simp: T.arr_Rel_ArrDom_in_Vset)
+          by (rule T.arr_Par_vfsequenceI) (auto simp: T.arr_Rel_ArrDom_in_Vset)
       qed (simp_all add: R_components)
 
       have S: "S : set {0} \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> A"
       proof(rule smc_Par_is_arrI)
         show "arr_Par \<alpha> S"
           unfolding S_def
-          by (rule arr_Par_vfsequenceI) (auto simp: T.arr_Rel_ArrDom_in_Vset)
+          by (rule T.arr_Par_vfsequenceI) (auto simp: T.arr_Rel_ArrDom_in_Vset)
       qed (simp_all add: S_components)
 
       have "T \<circ>\<^sub>A\<^bsub>smc_Par \<alpha>\<^esub> R = [set {\<langle>0, a\<rangle>}, set {0}, B]\<^sub>\<circ>"
@@ -325,9 +331,9 @@ proof-
         from R T show "arr_Par \<alpha> (T \<circ>\<^sub>R\<^sub>e\<^sub>l R)"
           by (intro arr_Par_comp_Par) (auto elim!: smc_Par_is_arrE)
         show "arr_Par \<alpha> [set {\<langle>0, a\<rangle>}, set {0}, B]\<^sub>\<circ>"
-        proof(rule arr_Par_vfsequenceI)
+        proof(rule T.arr_Par_vfsequenceI)
           from T.arr_Rel_ArrVal_vrange bar show "\<R>\<^sub>\<circ> (set {\<langle>0, a\<rangle>}) \<subseteq>\<^sub>\<circ> B" by auto
-        qed (auto simp: T.arr_Rel_ArrCod_in_Vset Axiom_of_Powers)
+        qed (auto simp: T.arr_Rel_ArrCod_in_Vset T.Axiom_of_Powers)
         show "T\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> set {\<langle>0, b\<rangle>} = set {\<langle>0, a\<rangle>}"
         proof(rule vsv_eqI, unfold vdomain_vsingleton)
           from bar show "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> set {\<langle>0, b\<rangle>}) = set {0}" by auto
@@ -349,9 +355,9 @@ proof-
         from T S show "arr_Par \<alpha> (T \<circ>\<^sub>R\<^sub>e\<^sub>l S)"
           by (intro arr_Par_comp_Par) (auto elim!: smc_Par_is_arrE)
         show "arr_Par \<alpha> [set {\<langle>0, a\<rangle>}, set {0}, B]\<^sub>\<circ>"
-        proof(rule arr_Par_vfsequenceI)
+        proof(rule T.arr_Par_vfsequenceI)
           from T.arr_Rel_ArrVal_vrange bar show "\<R>\<^sub>\<circ> (set {\<langle>0, a\<rangle>}) \<subseteq>\<^sub>\<circ> B" by auto
-        qed (auto simp: T.arr_Rel_ArrCod_in_Vset Axiom_of_Powers)
+        qed (auto simp: T.arr_Rel_ArrCod_in_Vset T.Axiom_of_Powers)
         show "T\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> set {\<langle>0, c\<rangle>} = set {\<langle>0, a\<rangle>}"
         proof(rule vsv_eqI, unfold vdomain_vsingleton)
           from car show "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> set {\<langle>0, c\<rangle>}) = set {0}" by auto
@@ -381,8 +387,8 @@ proof-
       proof(rule smc_Par_is_arrI)
         show "arr_Par \<alpha> R"
           unfolding R_def
-        proof(rule arr_Par_vfsequenceI)
-          from Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" 
+        proof(rule T.arr_Par_vfsequenceI)
+          from T.Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" 
             by blast
         qed (auto simp: T.arr_Rel_ArrDom_in_Vset)
       qed (auto simp: R_def arr_Rel_components)
@@ -390,8 +396,8 @@ proof-
       proof(rule smc_Par_is_arrI)
         show "arr_Par \<alpha> S"
           unfolding S_def
-        proof(rule arr_Par_vfsequenceI)
-          from Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" 
+        proof(rule T.arr_Par_vfsequenceI)
+          from T.Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" 
             by blast
         qed (auto simp: T.arr_Rel_ArrDom_in_Vset)
       qed (auto simp: S_def arr_Rel_components)
@@ -422,13 +428,10 @@ proof-
 
 qed 
 
-lemma (in \<Z>) smc_Par_is_monic_arr: 
+lemma smc_Par_is_monic_arr: 
   "T : A \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>smc_Par \<alpha>\<^esub> B \<longleftrightarrow>
     T : A \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> B \<and> v11 (T\<lparr>ArrVal\<rparr>) \<and> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A"
   by (intro iffI) (auto simp: smc_Par_is_monic_arrD smc_Par_is_monic_arrI)
-
-context \<Z>
-begin
 
 context
 begin
@@ -479,7 +482,11 @@ proof
       ]
   )
 
-  interpret semicategory \<alpha> \<open>smc_Par \<alpha>\<close> by (rule semicategory_smc_Par)
+  interpret T: arr_Par \<alpha> T
+    rewrites [simp]: "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
+    using assms smc_Par_is_arrD by auto
+
+  interpret semicategory \<alpha> \<open>smc_Par \<alpha>\<close> by (rule T.semicategory_smc_Par)
 
   fix R S a 
   assume prems: 
@@ -509,14 +516,14 @@ lemma smc_Par_is_epic_arrD:
   shows "T : A \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> B" and "\<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B"
 proof-
 
-  interpret semicategory \<alpha> \<open>smc_Par \<alpha>\<close> by (rule semicategory_smc_Par)
-
   from assms show T: "T : A \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> B" 
     unfolding is_epic_arr_def by (auto simp: op_smc_is_arr)
 
   interpret T: arr_Par \<alpha> T
     rewrites [simp]: "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
     using T by (auto elim: smc_Par_is_arrE)
+
+  interpret semicategory \<alpha> \<open>smc_Par \<alpha>\<close> by (rule T.semicategory_smc_Par)
 
   show "\<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B"
   proof(intro vsubset_antisym vsubsetI)
@@ -529,14 +536,22 @@ proof-
       define S where "S = [set {\<langle>b, 1\<rangle>}, B, set {0, 1}]\<^sub>\<circ>"
       have R: "R : B \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> set {0, 1}" 
         unfolding R_def
-      proof(intro smc_Par_is_arrI arr_Par_vfsequenceI, unfold arr_Rel_components)
-        from Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" 
+      proof
+        (
+          intro smc_Par_is_arrI T.arr_Par_vfsequenceI, 
+          unfold arr_Rel_components
+        )
+        from T.Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" 
           by blast
       qed (auto simp: T.arr_Rel_ArrCod_in_Vset)
       have S: "S : B \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> set {0, 1}"
         unfolding S_def
-      proof(intro smc_Par_is_arrI arr_Par_vfsequenceI, unfold arr_Rel_components)
-        from Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" 
+      proof
+        (
+          intro smc_Par_is_arrI T.arr_Par_vfsequenceI, 
+          unfold arr_Rel_components
+        )
+        from T.Axiom_of_Infinity vone_in_omega show "set {0, 1} \<in>\<^sub>\<circ> Vset \<alpha>" 
           by blast
       qed (auto simp: T.arr_Rel_ArrCod_in_Vset)
       from prems have "R\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> T\<lparr>ArrVal\<rparr> = 0"
@@ -557,9 +572,7 @@ qed
 
 end
 
-end
-
-lemma (in \<Z>) smc_Par_is_epic_arr: 
+lemma smc_Par_is_epic_arr: 
   "T : A \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>smc_Par \<alpha>\<^esub> B \<longleftrightarrow> T : A \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> B \<and> \<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B" 
   by (intro iffI) (simp_all add: smc_Par_is_epic_arrD smc_Par_is_epic_arrI)
 
@@ -707,7 +720,7 @@ lemma (in \<Z>) smc_Par_obj_null: "obj_null (smc_Par \<alpha>) A \<longleftright
 subsection\<open>Zero arrow\<close>
 
 lemma (in \<Z>) smc_Par_is_zero_arr: 
-  assumes "A \<in>\<^sub>\<circ> Vset \<alpha>" and "B \<in>\<^sub>\<circ> Vset \<alpha>"
+  assumes "A \<in>\<^sub>\<circ> smc_Par \<alpha>\<lparr>Obj\<rparr>" and "B \<in>\<^sub>\<circ> smc_Par \<alpha>\<lparr>Obj\<rparr>"
   shows "T : A \<mapsto>\<^sub>0\<^bsub>smc_Par \<alpha>\<^esub> B \<longleftrightarrow> T = [0, A, B]\<^sub>\<circ>"
 proof(intro HOL.ext iffI)
   interpret Par: semicategory \<alpha> \<open>smc_Par \<alpha>\<close> by (rule semicategory_smc_Par)
@@ -756,7 +769,8 @@ next
   fix T assume prems: "T = [0, A, B]\<^sub>\<circ>"
   let ?S = \<open>[0, A, 0]\<^sub>\<circ>\<close> and ?R = \<open>[0, 0, B]\<^sub>\<circ>\<close>
   have S: "arr_Par \<alpha> ?S" and R: "arr_Par \<alpha> ?R"  
-    by (all\<open>intro arr_Par_vfsequenceI\<close>) (simp_all add: assms)
+    by (all\<open>intro arr_Par_vfsequenceI\<close>)
+      (simp_all add: assms[unfolded smc_Par_components])
   have SA0: "?S : A \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> 0"
     by (intro smc_Par_is_arrI) (simp_all add: S arr_Rel_components)
   moreover have R0B: "?R : 0 \<mapsto>\<^bsub>smc_Par \<alpha>\<^esub> B"
@@ -769,7 +783,9 @@ next
       unfold comp_Rel_components arr_Rel_components prems
     )
     show "arr_Par \<alpha> [0, A, B]\<^sub>\<circ>"
-      unfolding prems by (intro arr_Par_vfsequenceI) (auto simp: assms)
+      unfolding prems 
+      by (intro arr_Par_vfsequenceI) 
+        (auto simp: assms[unfolded smc_Par_components])
   qed (use R S in \<open>auto simp: smc_Par_cs_intros\<close>)
   ultimately show "T : A \<mapsto>\<^sub>0\<^bsub>smc_Par \<alpha>\<^esub> B" 
     by (simp add: is_zero_arrI smc_Par_obj_null)

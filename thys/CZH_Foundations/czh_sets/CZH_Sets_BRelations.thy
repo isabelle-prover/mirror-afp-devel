@@ -883,6 +883,11 @@ lemma vdomain_VLambda[simp]: "\<D>\<^sub>\<circ> (\<lambda>a\<in>\<^sub>\<circ>A
 
 lemma vdomain_vlrestriction: "\<D>\<^sub>\<circ> (r \<restriction>\<^sup>l\<^sub>\<circ> A) = \<D>\<^sub>\<circ> r \<inter>\<^sub>\<circ> A" by auto
 
+lemma vdomain_vlrestriction_vsubset:
+  assumes "A \<subseteq>\<^sub>\<circ> \<D>\<^sub>\<circ> r"
+  shows "\<D>\<^sub>\<circ> (r \<restriction>\<^sup>l\<^sub>\<circ> A) = A"
+  using assms by (auto simp: vdomain_vlrestriction)
+
 
 text\<open>Special properties.\<close>
 
