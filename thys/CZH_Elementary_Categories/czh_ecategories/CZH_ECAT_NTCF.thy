@@ -610,9 +610,6 @@ proof-
   interpret \<LL>: is_ntcf \<alpha> \<AA> \<BB> \<HH> \<KK> \<LL> by (rule assms(1))
   interpret \<MM>: is_ntcf \<alpha> \<AA> \<BB> \<GG> \<HH> \<MM> by (rule assms(2))
   interpret \<NN>: is_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN> by (rule assms(3))
-  find_theorems "vsv (\<LL>\<lparr>NTMap\<rparr>) "
-
-  thm vsvI
   show ?thesis
   proof(rule ntcf_eqI[of \<alpha>])
     from ntsmcf_vcomp_assoc[
