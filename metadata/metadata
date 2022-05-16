@@ -11221,7 +11221,7 @@ abstract =
 
 [Conditional_Simplification]
 title = Conditional Simplification
-author = Mihails Milehins <mailto:user9716869@gmail.com>
+author = Mihails Milehins <mailto:mihailsmilehins@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11235,10 +11235,13 @@ abstract =
   but use a different approach for rewriting. More specifically, these
   methods allow for the side conditions of the rewrite rules to be
   solved via intro-resolution.
+extra-history =
+  Change history:
+  [2022-01-07]: added a switch for backtracking (revision 241da1cdeabf)<br>
 
 [Intro_Dest_Elim]
 title = IDE: Introduction, Destruction, Elimination
-author = Mihails Milehins <mailto:user9716869@gmail.com>
+author = Mihails Milehins <mailto:mihailsmilehins@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11251,7 +11254,7 @@ abstract =
 
 [CZH_Foundations]
 title = Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories
-author = Mihails Milehins <mailto:user9716869@gmail.com>
+author = Mihails Milehins <mailto:mihailsmilehins@gmail.com>
 topic = Mathematics/Category theory, Logic/Set theory
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11276,7 +11279,7 @@ abstract =
 
 [CZH_Elementary_Categories]
 title = Category Theory for ZFC in HOL II: Elementary Theory of 1-Categories
-author = Mihails Milehins <mailto:user9716869@gmail.com>
+author = Mihails Milehins <mailto:mihailsmilehins@gmail.com>
 topic = Mathematics/Category theory
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11287,10 +11290,13 @@ abstract =
   established in the AFP entry <i>Category Theory for ZFC in HOL
   I: Foundations: Design Patterns, Set Theory, Digraphs,
   Semicategories</i>.
+extra-history =
+  Change history:
+  [2021-11-07]: added a definition of a dagger monoidal category (revision c9ed46c09de9)<br>
 
 [CZH_Universal_Constructions]
 title = Category Theory for ZFC in HOL III: Universal Constructions
-author = Mihails Milehins <mailto:user9716869@gmail.com>
+author = Mihails Milehins <mailto:mihailsmilehins@gmail.com>
 topic = Mathematics/Category theory
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11301,10 +11307,13 @@ abstract =
   assistant Isabelle. The article builds upon the foundations
   established in the AFP entry <i>Category Theory for ZFC in HOL
   II: Elementary Theory of 1-Categories</i>.
+extra-history =
+  Change history:
+  [2022-05-16]: creation and preservation of limits (revision 68412a363595)<br>
 
 [Conditional_Transfer_Rule]
 title = Conditional Transfer Rule
-author = Mihails Milehins <mailto:user9716869@gmail.com>
+author = Mihails Milehins <mailto:mihailsmilehins@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11316,7 +11325,7 @@ abstract =
 
 [Types_To_Sets_Extension]
 title = Extension of Types-To-Sets
-author = Mihails Milehins <mailto:user9716869@gmail.com>
+author = Mihails Milehins <mailto:mihailsmilehins@gmail.com>
 topic = Tools
 date = 2021-09-06
 notify = mihailsmilehins@gmail.com
@@ -11343,6 +11352,9 @@ abstract =
   by Fabian Immler and Bohua Zhan and published in the proceedings of
   the <i>International Conference on Certified Programs and
   Proofs</i> in 2019.
+extra-history =
+  Change history:
+  [2021-11-15]: integration with SpecCheck (revision 61e152c118d4)<br>
 
 [Complex_Bounded_Operators]
 title = Complex Bounded Operators
