@@ -2563,7 +2563,7 @@ proof -
       unfolding OUT1 by(auto intro!: SUP_eq_const simp add: nempty OUT_\<epsilon> dest!: Chains_FieldD[OF M])
     have OUT1_le: "(\<Squnion>\<epsilon>h\<in>M. d_OUT (fst \<epsilon>h) x) \<le> weight \<Gamma> x" for x
       using currentD_weight_OUT[OF SM1, of x] OUT1[of x] by(simp add: split_beta)
-    have OUT1_nonneg: "0 \<le> (\<Squnion>\<epsilon>h\<in>M. d_OUT (fst \<epsilon>h) x)" for x using in_M by(rule SUP_upper2)(simp add: )
+    have OUT1_nonneg: "0 \<le> (\<Squnion>\<epsilon>h\<in>M. d_OUT (fst \<epsilon>h) x)" for x using in_M by(rule SUP_upper2)simp
     have IN1: "d_IN (Sup (fst ` M)) x = (SUP (\<epsilon>, h)\<in>M. d_IN \<epsilon> x)" for x
       by (subst d_IN_Sup [OF chain1 _ supp_flow1])
         (simp_all add: nempty split_beta image_comp)
@@ -3320,7 +3320,7 @@ next
     and unhindered: "\<not> hindered (\<Gamma> \<ominus> f n)" for n
   proof(induction n)
     case 0
-    { case 1 thus ?case by(simp add: ) }
+    { case 1 thus ?case bysimp }
     { case 2 thus ?case by simp }
     { case 3 thus ?case using unhindered by simp }
   next

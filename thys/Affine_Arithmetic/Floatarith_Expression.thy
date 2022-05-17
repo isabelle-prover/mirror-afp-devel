@@ -526,7 +526,7 @@ lemma
 
 lemma interpret_floatariths_Var[simp]:
   "interpret_floatariths (map floatarith.Var xs) vs = (map (nth vs) xs)"
-  by (induction xs) (auto simp: )
+  by (induction xs) auto
 
 lemma max_Var_floatariths_append[simp]: "max_Var_floatariths (xs @ ys) = max (max_Var_floatariths xs) (max_Var_floatariths ys)"
   by (induction xs) (auto)
@@ -700,7 +700,7 @@ definition FDERIV_floatarith where
    TODO: introduce approximation on type @{typ "real^'i^'j"} and use @{term jacobian}?\<close>
 
 lemma interpret_floatariths_map: "interpret_floatariths (map f xs) vs = map (\<lambda>x. interpret_floatarith (f x) vs) xs"
-  by (induct xs) (auto simp: )
+  by (induct xs) auto
 
 lemma max_Var_floatarith_DERIV_floatarith:
   "max_Var_floatarith (DERIV_floatarith x fa) \<le> max_Var_floatarith fa"
@@ -1995,7 +1995,7 @@ qed (auto simp: fold_const_fa.simps
         elim!: dest_Num_fa_Some)
 
 lemma subst_floatarith_eq_Num[simp]: "(subst_floatarith (\<lambda>x. Var (s x)) fa = Num x) \<longleftrightarrow> fa = Num x"
-  by (induction fa) (auto simp: )
+  by (induction fa) auto
 
 lemma fold_const_fa_subst_eq_Num0_iff[simp]:
   "fold_const_fa (subst_floatarith (\<lambda>x. Var (s x)) fa) = Num x \<longleftrightarrow> fold_const_fa fa = Num x"
@@ -2017,7 +2017,7 @@ proof -
     for x
     apply (subst map_eq_conv)
     using eq[of x x] eq[of "s x"]
-    by (auto simp: )
+    by auto
   show ?thesis
     using len
     by (induction fa)

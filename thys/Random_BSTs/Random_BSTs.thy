@@ -568,7 +568,7 @@ proof -
                   \<le> real ((card A + 3) choose 3) / 4" .
   hence "log 2 (2 powr measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)) \<le>
            log 2 (real ((card A + 3) choose 3) / 4)" (is "?lhs \<le> ?rhs")
-    by (subst log_le_cancel_iff) (auto simp: )
+    by (subst log_le_cancel_iff) auto
   also have "?lhs = measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)"
     by simp
   also have "\<dots> = measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t)) - 1"

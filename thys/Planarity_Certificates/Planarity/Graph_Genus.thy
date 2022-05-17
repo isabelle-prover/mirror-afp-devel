@@ -165,7 +165,7 @@ begin
   lemma funpow_prop:
     assumes "\<And>x. P (f x) \<longleftrightarrow> P x"
     shows "P ((f ^^ n) x) \<longleftrightarrow> P x"
-    using assms by (induct n) (auto simp: )
+    using assms by (induct n) auto
 
   lemma face_cycle_succ_no_arc[simp]: "a \<notin> arcs G \<Longrightarrow> face_cycle_succ a = a"
     by (auto simp: face_cycle_succ_def permutes_not_in[OF arev_permutes_arcs]

@@ -256,7 +256,7 @@ proof -
   hence "ennreal (Gamma a * Gamma b) / ennreal (Gamma (a + b)) =
            I * ennreal (Gamma (a + b)) / ennreal (Gamma (a + b))" by simp
   also have "\<dots> = I"
-    using \<open>Gamma (a + b) > 0\<close> by (intro ennreal_mult_divide_eq) (auto simp: )
+    using \<open>Gamma (a + b) > 0\<close> by (intro ennreal_mult_divide_eq) auto
   also have "ennreal (Gamma a * Gamma b) / ennreal (Gamma (a + b)) =
                ennreal (Gamma a * Gamma b / Gamma (a + b))"
     using assms by (intro divide_ennreal) auto

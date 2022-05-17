@@ -148,7 +148,7 @@ subsection \<open>Correctness Proof\<close>
       assume A: "v \<notin> V" "v \<noteq> tgt"
         and PRE: "rpre S (V, v)"
       hence "fe_inv S V v (E``{v}) (insert v V, False)"
-        unfolding fe_inv_def rpre_def by (auto simp: )
+        unfolding fe_inv_def rpre_def by auto
     } note vc_enter_foreach = this
 
     {

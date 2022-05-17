@@ -533,7 +533,7 @@ proof -
     insertion (nth_default 0 (list_update L var x)) ((\<Sum>i::nat \<le> d. isolate_variable_sparse p var i * (Var var)^i))" using h1 deg by auto
   have h3:  "insertion (nth_default 0 (list_update L var x)) p = (\<Sum>i = 0..<(d+1).  insertion (nth_default 0 (list_update L var x)) (isolate_variable_sparse p var i * (Var var)^i))"
     using h2 insertion_add_ind nth_default_def
-    by (simp add: )
+    by simp
   show ?thesis using h3 insertion_var insertion_pow
     by (metis (no_types, lifting) insertion_mult lLength sum.cong)
 qed
@@ -771,7 +771,7 @@ lemma degree_eq_univariate_degree: "MPoly_Type.degree p v =
   apply (rule antisym)
   subgoal
     apply (rule Polynomial.le_degree)
-    apply (auto simp: )
+    apply auto
     apply transfer'
     by (simp add: isolate_variable_sparse_degree_eq_zero_iff)
   subgoal apply (rule Polynomial.degree_le)

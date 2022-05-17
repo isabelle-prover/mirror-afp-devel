@@ -10,7 +10,7 @@ subsection \<open>``Final'' Theorems, stated outside of refinement framework.\<c
 lemma br_Times_Univ: "br a I \<times>\<^sub>r (UNIV::(_ \<times> unit) set) = br (\<lambda>(x, _). (a x, ())) (\<lambda>(x, _). I x)"
   by (auto simp: br_def)
 
-lemma TRANSFER_refl: "TRANSFER (x \<le> (x::_nres))" by (auto simp: )
+lemma TRANSFER_refl: "TRANSFER (x \<le> (x::_nres))" by auto
 lemma init_ode_ops: "(y \<Longrightarrow> x) \<Longrightarrow> (init_ode_ops x y odo, odo) \<in> ode_ops_rel"
   by (auto simp: ode_ops_rel_def init_ode_ops_def)
 
@@ -346,7 +346,7 @@ fun parts::"nat\<Rightarrow>'a list\<Rightarrow>'a list list"
 
 lemma Joints_in_lv_rel_set_relD:
   "(Joints xs, X) \<in> \<langle>lv_rel\<rangle>set_rel \<Longrightarrow> X = Affine (eucl_of_list_aform xs)"
-  apply (auto simp: )
+  apply auto
    apply (subst eucl_of_list_image_Joints[symmetric])
   unfolding lv_rel_def set_rel_br
     apply (auto simp: br_def )

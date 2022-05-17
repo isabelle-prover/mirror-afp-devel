@@ -697,7 +697,7 @@ proof -
         apply (rule has_integral_diff)
         using x y apply (auto intro: integrable_integral [OF integrable_subinterval_real [OF f]])
         using has_integral_const_real [of "f x" x y] False
-        apply (simp add: )
+        apply simp
         done
       show ?thesis
         using False
@@ -719,7 +719,7 @@ proof -
         apply (rule has_integral_diff)
         using x y apply (auto intro: integrable_integral [OF integrable_subinterval_real [OF f]])
         using has_integral_const_real [of "f x" y x] True
-        apply (simp add: )
+        apply simp
         done
       have "norm (integral {a..x} f - integral {a..y} f - (x - y) *\<^sub>R f x) \<le> e * \<bar>y - x\<bar>"
         using True

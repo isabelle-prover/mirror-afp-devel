@@ -297,7 +297,7 @@ begin
       unfolding hm_append_op_def h.append_op_def
       apply refine_vcg
       unfolding heapmap_\<alpha>_def hmr_rel_defs
-      apply (auto simp: )
+      apply auto
       done
 
     lemma hm_append_op_refine: "\<lbrakk> heapmap_\<alpha> hm k = None; (hm,h)\<in>hmr_rel \<rbrakk> 
@@ -306,7 +306,7 @@ begin
       unfolding hm_append_op_def h.append_op_def
       apply refine_vcg
       unfolding heapmap_\<alpha>_def hmr_rel_defs
-      apply (auto simp: )
+      apply auto
       done
 
     lemmas hm_append_op_refine'[refine] = hm_append_op_refine[param_fo, THEN nres_relD]

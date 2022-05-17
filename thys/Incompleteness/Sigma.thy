@@ -167,7 +167,7 @@ proof -
   show ?thesis
     apply (rule Sigma_fm_Iff [where A = "Ex i (Ex j (Var i IN Var j))"])
     using ij
-    apply (auto simp: )
+    apply auto
     apply (rule Ex_I [where x=Zero], simp)
     apply (rule Ex_I [where x="Eats Zero Zero"])
     apply (auto intro: Mem_Eats_I2 assms thin0)
@@ -441,7 +441,7 @@ by (simp_all add: fresh_star_def)
 declare se_fm.intros [intro]
 
 lemma subst_fm_in_se_fm: "se_fm A \<Longrightarrow> se_fm (A(k::=x))"
-by (nominal_induct avoiding: k x rule: se_fm.strong_induct) (auto)
+  by (nominal_induct avoiding: k x rule: se_fm.strong_induct) (auto)
 
 subsection\<open>Preparation\<close>
 text\<open>To begin, we require some facts connecting quantification and ground terms.\<close>

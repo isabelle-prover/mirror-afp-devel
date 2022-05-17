@@ -876,7 +876,7 @@ proof (cases "Re u > 1")
       then interpret dcharacter n G \<chi> by (simp_all add: dcharacters_def G_def)
       from p have "real p > real 1" by (subst of_nat_less_iff) (auto simp: prime_gt_Suc_0_nat)
       hence "real p powr - Re s < real p powr 0"
-        using p that by (intro powr_less_mono) (auto simp: )
+        using p that by (intro powr_less_mono) auto
       hence "0 < norm (1 :: complex) - norm (\<chi> p * p powr (-s + \<i>*a))"
         using p by (simp add: norm_mult norm norm_powr_real_powr)
       also have "\<dots> \<le> norm (1 - \<chi> p * p powr (-s + \<i>*a))"

@@ -394,7 +394,7 @@ proof cases
   have tr: "fst s < fst r \<Longrightarrow> fst t = fst s \<Longrightarrow> snd t \<le> snd r"
     by (simp add: s)
   from s have "fst (r - s) = fst (x *\<^sub>R (t - s))" "snd (r - s) = snd (x *\<^sub>R (t - s))"
-    by (auto simp: )
+    by auto
   hence "x = (if fst (t - s) = 0 then snd (r - s) / snd (t - s) else fst (r - s) / fst (t - s))"
     using \<open>s \<noteq> t\<close>
     by (auto simp add: field_simps prod_eq_iff)

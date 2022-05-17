@@ -578,7 +578,7 @@ lemma nres_of_nress_SPEC[THEN order_trans, refine_vcg]:
   shows "nres_of_nress P xs \<le> SPEC (list_all P)"
   using assms
   apply (induction xs)
-    apply (simp add: )
+    apply simp
   apply (simp add:)
   apply (intro refine_vcg)
   subgoal for x xs

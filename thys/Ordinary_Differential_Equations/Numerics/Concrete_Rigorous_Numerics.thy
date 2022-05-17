@@ -811,7 +811,7 @@ lemma set_of_appr_of_ivl_point_append:
             (map ((!) (appr_of_ivl ops p p @ xs))
               [0..<(length p)])"
       by (rule set_of_appr_project[OF r, of "[0..<(length p)]"])
-         (auto simp: )
+         auto
     also have "map ((!) (r @ x)) [0..<(length p)] = r"
       using length_set_of_appr prems r
       by (auto intro!: nth_equalityI simp: nth_append dest!: length_set_of_appr)

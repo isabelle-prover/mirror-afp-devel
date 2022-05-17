@@ -539,7 +539,7 @@ proof -
     show "0 \<le> h" using \<open>0 < h\<close> by simp
     show safe_X0: "x \<in> Csafe" if "x \<in> X0" for x using that \<open>{l..u} \<subseteq> Csafe\<close> \<open>X0 \<subseteq> {l..u}\<close> by blast
     show "x \<in> Csafe" if "x \<in> Res_ivl" for x using prems that
-      by (auto simp: )
+      by auto
     show "x \<in> Csafe" if "x \<in> Res" for x using prems that by (auto simp:)
     fix x0 assume "x0 \<in> X0"
     from PHI'(4)[OF \<open>x0 \<in> X0\<close> order_refl \<open>0 \<le> h\<close> cx]
@@ -1280,7 +1280,7 @@ proof -
     case 2
     define i where "i = -n"
     with 2 have "i \<in> Basis" "n = -i"
-      by (auto simp: )
+      by auto
     then show ?thesis
       by (auto simp: inverse_eq_divide intro!: blinfun_eqI blinfun.bilinear_simps euclidean_eqI[where 'a='a])
   qed
@@ -1299,7 +1299,7 @@ proof -
     case 2
     define i where "i = -n"
     with 2 have "i \<in> Basis" "n = -i"
-      by (auto simp: )
+      by auto
     then show ?thesis
       by (auto simp: inverse_eq_divide intro!: blinfun_eqI blinfun.bilinear_simps euclidean_eqI[where 'a='a])
   qed

@@ -189,7 +189,7 @@ qed
 lemma inner_Basis_sum:
   "(\<And>i. i \<in> I \<Longrightarrow> x i \<in> S) \<Longrightarrow> inner_Basis (\<Sum>i\<in>I. x i) v = (\<Sum>i\<in>I. inner_Basis (x i) v)"
   apply (induction I rule: infinite_finite_induct)
-    apply (auto simp: )
+    apply auto
   apply (subst inner_Basis_add)
   apply auto
   by (metis B(2) subspace_span subspace_sum)
@@ -197,7 +197,7 @@ lemma inner_Basis_sum:
 lemma inner_Basis_sum2:
   "(\<And>i. i \<in> I \<Longrightarrow> x i \<in> S) \<Longrightarrow> inner_Basis v (\<Sum>i\<in>I. x i) = (\<Sum>i\<in>I. inner_Basis v (x i))"
   apply (induction I rule: infinite_finite_induct)
-    apply (auto simp: )
+    apply auto
   apply (subst inner_Basis_add2)
   apply auto
   by (metis B(2) subspace_span subspace_sum)

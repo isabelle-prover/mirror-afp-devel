@@ -230,7 +230,7 @@ lemma peterson_thread_2:
   OD \<lbrace>\<acute>pr2=0 \<and> \<not>\<acute>in2\<rbrace>,\<lbrace>False\<rbrace>
  "
   apply oghoare (*7 subgoals*)
-        apply (((auto simp: )[1]) ; fail)+
+        apply ((auto[1]) ; fail)+
   done
 
 lemma Petersons_mutex_1:

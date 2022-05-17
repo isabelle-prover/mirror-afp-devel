@@ -496,7 +496,7 @@ proof (rule has_laplaceI)
       apply (rule cg) apply (rule ce) apply (rule g') apply force apply (rule de)
       apply (rule has_integral_eq_rhs)
        apply (rule *)
-      by (auto simp: )
+      by auto
   qed
   have t1: "((\<lambda>x. g x * exp (x *\<^sub>R - s)) \<longlongrightarrow> 0) at_top"
     apply (subst mult.commute)
@@ -859,7 +859,7 @@ next
       then have "(\<lambda>u. integral {a..u} f) differentiable at x within {i<..<b} - I"
         apply (rule differentiable_transform_within[OF _ zero_less_one])
         subgoal using that 2 by auto
-        apply (auto simp: )
+        apply auto
         apply (subst Henstock_Kurzweil_Integration.integral_combine)
         using that 2 \<open>a \<le> i\<close>
         apply auto
@@ -894,7 +894,7 @@ next
       then have "(\<lambda>u. integral {a..u} f) differentiable at x within {x..b}"
         apply (rule differentiable_transform_within[OF _ zero_less_one])
         subgoal using that 2 by auto
-        apply (auto simp: )
+        apply auto
         apply (subst Henstock_Kurzweil_Integration.integral_combine)
         using that 2 \<open>a \<le> i\<close>
         apply auto
@@ -929,7 +929,7 @@ next
       then have "(\<lambda>u. integral {a..u} f) differentiable at x within {i..x}"
         apply (rule differentiable_transform_within[OF _ zero_less_one])
         subgoal using that 2 by auto
-        apply (auto simp: )
+        apply auto
         apply (subst Henstock_Kurzweil_Integration.integral_combine)
         using that 2 \<open>a \<le> i\<close>
         apply auto
