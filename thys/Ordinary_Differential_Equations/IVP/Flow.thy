@@ -232,7 +232,7 @@ proof -
   have "{t0 -- t} \<subseteq> existence_ivl t0 x0"
     using assms closed_segment_iv_subset_domain
     by (intro maximal_existence_flow[OF solves_ode_on_subset[OF uc.solution_solves_ode]])
-      (auto simp: )
+      auto
   thus "t \<in> existence_ivl t0 x0"
     using assms by auto
   show "flow t0 x0 s \<in> C" if "s \<in> {t0 -- t}" for s
@@ -421,7 +421,7 @@ proof -
   have "((\<lambda>t. f t (flow t0 x0 t)) has_ivl_integral flow t0 x0 t - x0) t0 t"
     by (simp add: mem_existence_ivl_iv_defined[OF assms])
   from this[THEN ivl_integral_unique]
-  show ?thesis by (simp add: )
+  show ?thesis by simp
 qed
 
 lemma flow_continuous: "t \<in> existence_ivl t0 x0 \<Longrightarrow> continuous (at t) (flow t0 x0)"
@@ -1543,7 +1543,7 @@ lemma flow_unique:
   apply (rule maximal_existence_flow[where K="existence_ivl t0 x0"])
   subgoal by (auto intro!: solves_odeI simp: has_vderiv_on_def assms at_within_open[OF _ open_existence_ivl])
   subgoal by fact
-  subgoal by (simp add: )
+  subgoal by simp
   subgoal using mem_existence_ivl_iv_defined[OF \<open>t \<in> existence_ivl t0 x0\<close>] by simp
   subgoal by (simp add: existence_ivl_subset)
   subgoal by fact
@@ -1727,7 +1727,7 @@ proof(safe)
         "s \<le> x \<Longrightarrow> x \<le> 0 \<Longrightarrow> x \<in> F.existence_ivl 0 x0"
         "s \<le> x \<Longrightarrow> x \<le> 0 \<Longrightarrow> x \<in> G.existence_ivl 0 x0" for x
         using t0_s_in_existence
-        by (auto simp: )
+        by auto
       have "flow0 s - Y s = - integral {s..0} (\<lambda>s. F s (flow0 s) - G s (Y s))"
         using t0_s_in_existence \<open>s \<le> 0\<close>
         by (simp add: flow0_def Y_def ivl_integral_def
@@ -2345,7 +2345,7 @@ proof-
         qed
       from this[of x0] \<open>0 < d\<close>
       have X_in_G: "flow0 x0 ` J \<subseteq> G"
-        by (simp add: )
+        by simp
 
       show "\<exists>d>0. \<forall>x. 0 < dist x x0 \<and> dist x x0 < d \<longrightarrow>
                      dist ((Y (x - x0) t - flow0 x0 t - vector_Dflow (x - x0) t) /\<^sub>R norm (x - x0)) 0 < e"
@@ -2494,7 +2494,7 @@ proof-
               by (rule flow_fixed_point[OF s_in_existence_ivl_x0])
             have Y_integral_eq_left: "Y (x - x0) s = x0 + (x - x0) + ivl_integral 0 s (\<lambda>s. f (Y (x - x0) s))"
               using flow_fixed_point \<open>s \<le> 0\<close> s_in_existence_ivl2[OF z_in_ball] ball_in_X[OF z_in_ball]
-              by (simp add: )
+              by simp
             have U_integral_eq_left: "vector_Dflow (x - x0) s = (x - x0) + ivl_integral 0 s (\<lambda>s. vareq x0 s (vector_Dflow (x - x0) s))"
               unfolding vector_Dflow_def
               by (rule var.flow_fixed_point)

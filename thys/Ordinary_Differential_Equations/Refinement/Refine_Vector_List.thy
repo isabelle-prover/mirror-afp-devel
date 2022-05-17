@@ -163,7 +163,7 @@ lemma DIM_precond_times[autoref_rules_raw]:
   "DIM_precond TYPE('a::executable_euclidean_space\<times>'b::executable_euclidean_space) (D + E)"
   if "DIM_precond TYPE('a::executable_euclidean_space) D"
      "DIM_precond TYPE('b::executable_euclidean_space) E"
-  using that by (auto simp: )
+  using that by auto
 
 lemma [autoref_rules]: "(sum_list, sum_list) \<in> \<langle>rnv_rel\<rangle>list_rel \<rightarrow> rnv_rel"
   by auto

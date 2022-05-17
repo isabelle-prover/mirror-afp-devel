@@ -344,7 +344,7 @@ lemma top_ccsubspace_code[code]:
       map_filter_map o_def unit_vecs_def)
   apply (simp add: basis_enum_of_vec_unit_vec)
   apply (subst nth_image)
-  by (auto simp: )
+  by auto
 
 lemma bot_as_span[code]: 
   \<comment> \<open>Code equation for \<^term>\<open>bot\<close>, the subspace containing everything.

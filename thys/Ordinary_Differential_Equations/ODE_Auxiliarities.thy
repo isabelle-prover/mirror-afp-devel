@@ -371,7 +371,7 @@ proof (rule has_derivativeI)
       moreover have "{..DIM('a) - 1} = {..<DIM('a)}"
         using le_imp_less_Suc by fastforce
       ultimately have "f x - f (x + h) = (\<Sum>j<DIM('a). f (x + z j) - f (x + z (Suc j)))"
-        by (auto simp: )
+        by auto
       then have "norm (f (x + h) - f x - (\<Sum>j\<in>Basis. ((x' - x) \<bullet> j) *\<^sub>R f' j x)) =
         norm(
           (\<Sum>j<DIM('a). f (x + z (Suc j)) - f (x + z j) - (x' \<bullet> E ! j - x \<bullet> E ! j) *\<^sub>R f' (E ! j) (x + z j)) +

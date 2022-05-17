@@ -143,7 +143,7 @@ proof(coinduction)
        apply (rule disjI2)
        apply (rule alw_mono[of "nxt (state_eq None)"])
         apply (simp add: once_none_nxt_always_none)
-       apply (simp add: )
+       apply simp
       apply (simp add: possible_steps_0 select_def)
       apply (rule disjI2)
       apply (simp only: nxt.simps[symmetric])

@@ -1384,7 +1384,7 @@ proof -
         simp: split_beta' isCont_def)
   from return_time_returns[OF rt cls]
   have Z: "(case (x, ?t1) of (x, t) \<Rightarrow> s (flow0 x t)) = 0"
-    by (auto simp: )
+    by auto
   have I1: "blinfun_scaleR_left (inverse (Ds (flow0 x (?t1))(f (flow0 x (?t1))))) o\<^sub>L 
     ((Ds (flow0 (fst (x, return_time {x \<in> S. s x = 0} x))
             (snd (x, return_time {x \<in> S. s x = 0} x))) o\<^sub>L
@@ -1910,7 +1910,7 @@ proof (rule tendstoI)
       apply auto
       using \<open>0 < d\<close> d_ex that(3) by fastforce
     finally show ?thesis
-      by (auto simp: )
+      by auto
   qed
   obtain u eu where u:
       "s (flow0 x (u x)) = 0"
@@ -2012,7 +2012,7 @@ proof (rule tendstoI)
     moreover
     from tendstoD[OF tendsto_ident_at \<open>0 < d\<close>]
     have "\<forall>\<^sub>F y in at x within {x. s x \<le> 0}. dist y x < d"
-      by (auto simp: )
+      by auto
     moreover
     have "d \<in> existence_ivl0 x"
       using d_ex[of x d] \<open>0 < d\<close> by auto

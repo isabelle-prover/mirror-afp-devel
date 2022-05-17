@@ -405,7 +405,7 @@ lemma C: "set_pmf (Proj1_pmf (Sum_pmf 0.5 Da Db)) = set_pmf Da"
 proof -
   show ?thesis
     unfolding Sum_pmf_def Proj1_pmf_def
-    apply(simp add: )
+    applysimp
     using none[of "0.5" Da Db] apply(simp add: set_cond_pmf UNIV_bool)
       by force
 qed

@@ -686,7 +686,7 @@ proof -
       by (auto simp del: divide_le_eq_numeral1 le_divide_eq_numeral1 simp: s''_def) fastforce
     then have "flow0 x ` {0..s''} \<subseteq> M"
       using s s'
-      apply (auto simp: )
+      apply auto
       subgoal for u
         by (cases "u\<le>s") auto
       done
@@ -1077,7 +1077,7 @@ next
       by (simp add: eventually_ball_finite_distrib)
     then show "\<forall>\<^sub>F s in at 0. \<forall>x\<in>C. dist (flow0 x s) (flow0 x 0) < e"
       apply eventually_elim
-      apply (auto simp: )
+      apply auto
       subgoal for s x
         apply (drule bspec[where x="c' x"])
          apply (simp add: c'(2))

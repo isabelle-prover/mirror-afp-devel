@@ -597,7 +597,7 @@ lemma quotient_map_map_topology:
 lemma topological_space_quotient: "class.topological_space (openin (map_topology f euclidean))"
   if "surj f"
   apply standard
-    apply (auto simp: )
+    apply auto
   using that
   by (auto simp: openin_map_topology)
 

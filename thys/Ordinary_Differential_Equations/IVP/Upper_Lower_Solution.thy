@@ -168,7 +168,7 @@ proof -
     assume "v t0 = y t0"
     from this[THEN eq_imp]
     have *: "0 < y' t0 - v' t0"
-      by (simp add: )
+      by simp
     have "((\<lambda>t. y t - v t) has_vderiv_on (\<lambda>t0. y' t0 - v' t0)) {t0 .. t}"
       by (auto intro!: derivative_intros y' v' has_vderiv_on_subset[OF _ subset])
     with \<open>t0 < t\<close>

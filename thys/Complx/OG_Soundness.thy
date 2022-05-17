@@ -830,7 +830,7 @@ shows
            apply (rule Conseq)
            apply (rule exI[where x="{}"])
            apply (fastforce)
-          apply (simp add: )
+          apply simp
           apply (clarsimp simp: interfree_def)
           apply (rename_tac i' j')
           apply (drule_tac x=i' and y=j' in spec2)

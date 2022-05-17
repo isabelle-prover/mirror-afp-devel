@@ -151,7 +151,7 @@ at the head of the full observation.\<close>
 abbreviation "label_eq v s \<equiv> fst (action (shd s)) = (String.implode v)"
 
 lemma watch_label: "label_eq l (watch e t) = (fst (shd t) = String.implode l)"
-  by (simp add: )
+  by simp
 
 subsubsection\<open>Input Equality\<close>
 text\<open>The \textsc{input\_eq} function takes a value list and returns true if this is equal to the
@@ -208,7 +208,7 @@ text\<open>Once the sink state is entered, it cannot be left and there are no ou
 henceforth.\<close>
 
 lemma shd_state_is_none: "(state_eq None) (make_full_observation e None r p t)"
-  by (simp add: )
+  by simp
 
 lemma unfold_observe_none: "make_full_observation e None d p t = (\<lparr>statename = None, datastate = d, action=(shd t), output = p\<rparr>##(make_full_observation e None d [] (stl t)))"
   by (simp add: stream.expand)
@@ -240,12 +240,12 @@ lemma alw_not_some: "alw (\<lambda>xs. statename (shd xs) \<noteq> Some s) (make
   by (metis (mono_tags, lifting) alw_mono once_none_always_none option.distinct(1) )
 
 lemma state_none: "((state_eq None) impl nxt (state_eq None)) (make_full_observation e s r p t)"
-  by (simp add: )
+  by simp
 
 lemma state_none_2:
   "(state_eq None) (make_full_observation e s r p t) \<Longrightarrow>
    (state_eq None) (make_full_observation e s r p (stl t))"
-  by (simp add: )
+  by simp
 
 lemma no_output_none_aux:
   assumes "\<exists> p r i. j = (make_full_observation e None r []) i"

@@ -369,9 +369,9 @@ theorem einterpret_solve_poincare_fas:
       apply (subst nth_map)
        apply auto
       using wdD[OF wd]
-      apply (simp add: )
+      apply simp
       using wdD[OF wd]
-      apply (simp add: )
+      apply simp
       done
     define z where "z = (0::float)"
     show ?thesis
@@ -401,7 +401,7 @@ lemma choose_step'_flowpipe:
   shows "var.choose_step (X0::'n vec1 set) h \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'n vec1 set).
       0 < h' \<and> h' \<le> h \<and> flowpipe (flow1_of_vec1 ` X0) h' h' (flow1_of_vec1 ` RES_ivl) (flow1_of_vec1 ` RES))"
   apply refine_vcg
-  apply (auto simp: )
+  apply auto
   apply (frule var.flowpipe0_safeD)
   apply (drule var_flowpipe0_flowpipe[rotated])
   by (auto simp: safe_eq wd)
@@ -427,9 +427,9 @@ theorem interpret_floatariths_solve_poincare_fas:
        d - (blinfun_scaleR_left (ode (x)) o\<^sub>L
       (blinfun_scaleR_left (inverse (ode x \<bullet> Basis_list ! n)) o\<^sub>L (blinfun_inner_left (Basis_list ! n) o\<^sub>L d))))))"
   using arg_cong[where f="list_of_eucl::'n vec1 \<Rightarrow> _", OF arg_cong[where f=vec1_of_flow1, OF einterpret_solve_poincare_fas[OF assms]]]
-  apply (auto simp: )
+  apply auto
   apply (subst (asm) list_of_eucl_eucl_of_list)
-   apply (auto simp: )
+   apply auto
   apply (auto simp: wdD[OF wd])
   done
 
@@ -497,7 +497,7 @@ lemma solve_poincare_plane[le, refine_vcg]:
     subgoal using wd by auto
     subgoal using wd by auto
     subgoal using wd assms by (auto elim!: ne_zero_lemma)
-    subgoal using wd assms by (auto simp: )
+    subgoal using wd assms by auto
     done
   subgoal by (auto elim!: ne_zero_lemma2)
   done
@@ -631,7 +631,7 @@ proof -
   have 2: "fst ` (X' \<inter> (sbelow_halfspace sctn) \<times> UNIV) \<inter> {x. pstn sctn \<le> x \<bullet> normal sctn} = {}"
     by (auto simp: halfspace_simps plane_of_def)
   from normal_Basis have 3: "normal sctn \<noteq> 0"
-    by (auto simp: )
+    by auto
   note 4 = \<open>closed ivl\<close>
   from \<open>ivl \<subseteq> plane_of sctn\<close> have 5: "ivl \<subseteq> plane (normal sctn) (pstn sctn)"
     by (auto simp: plane_of_def)
@@ -825,17 +825,17 @@ proof -
     unfolding do_intersection_body_def do_intersection_invar_def
     apply simp
     apply (refine_vcg, clarsimp_all)
-    subgoal using AB by (auto simp: )
-    subgoal using AB by (auto simp: )
-    subgoal using AB by (auto simp: )
+    subgoal using AB by auto
+    subgoal using AB by auto
+    subgoal using AB by auto
     subgoal
       apply (rule conjI)
       subgoal using AB by auto\<comment> \<open>unnecessarily slow\<close>
       subgoal using AB by fastforce
       done
-    subgoal using AB by (auto simp: )
-    subgoal using AB by (auto simp: )
-    subgoal using AB by (auto simp: )
+    subgoal using AB by auto
+    subgoal using AB by auto
+    subgoal using AB by auto
     subgoal by (auto dest!: flowpipe_safeD)
     subgoal
       apply safe
@@ -1077,7 +1077,7 @@ lemma reach_cont[le, refine_vcg]:
   using [[simproc del: defined_all]]
   unfolding reach_cont_def autoref_tag_defs
   apply (refine_vcg, clarsimp_all simp add: cancel_times_UNIV_subset)
-  subgoal by (rule flowsto_self) (auto simp: )
+  subgoal by (rule flowsto_self) auto
   subgoal by (force simp: scaleR2_def)
   subgoal by (fastforce simp: scaleR2_def vimage_def image_def)
   subgoal premises prems for _ _ _ _ _ _ _ g
@@ -1409,7 +1409,7 @@ lemma do_intersection_spec_Union3:
   using that
 proof induction
   case empty
-  then show ?case by (auto simp: )
+  then show ?case by auto
 next
   case (insert x F)
   show ?case
@@ -1479,7 +1479,7 @@ lemma
         by (auto intro!: closed_levelset_within continuous_intros simp: plane_of_def assms)
       from flowsto_poincare_mapsto_trans_flowsto[OF \<open>flowsto _ _ _ _\<close> \<open>poincare_mapsto _ _ _ _ _\<close> _ _ order_refl]
       have ft: "flowsto XS0 {0<..} (X1 \<union> CX \<times> UNIV \<union> CP \<times> UNIV) (fst ` P \<times> UNIV)"
-        by (auto simp: )
+        by auto
       then have ret: "returns_to {x \<in> ivl. x \<bullet> normal sctn - pstn sctn = 0} x"
         apply (rule returns_to_flowstoI[OF _ _ _ _ _ _ order_refl])
         using prems by (auto simp: plane_of_def)
@@ -1665,7 +1665,7 @@ lemma resolve_ivlplanes[le]:
       subgoal
         apply (refine_vcg, clarsimp_all)
         subgoal by (auto simp: subset_iff)
-        subgoal by (auto simp: )
+        subgoal by auto
         subgoal for x1 x1' x2 x3 A
           apply (rule exI[where x="R0((c, x1, x1', x3, d, e, x2):=(XSf c - A))"])
           apply (rule exI[where x="P0((c, x1, x1', x3, d, e, x2):=A)"])
@@ -1740,7 +1740,7 @@ lemma poincare_onto[le, refine_vcg]:
       apply (rule conjI, force)
       apply (rule conjI, force)
       apply (rule conjI)
-      subgoal using CXS0 by (auto simp: )
+      subgoal using CXS0 by auto
       apply (rule conjI, force)
       apply (rule conjI, force)
       apply (rule conjI)
@@ -1972,7 +1972,7 @@ lemma poincare_onto2[le, refine_vcg]:
                 subgoal using * by (auto simp: do_intersection_spec_def)
                 done
               ultimately show ?case
-                by (simp add: )
+                by simp
             qed note q0 = this
             have q0': "(a, aa, aa', ab, ac, ad, ae, b) \<in> m \<Longrightarrow> XS0 \<subseteq> b \<times> UNIV" for a aa aa' ab ac ad ae b
               apply (drule prems(15)[rule_format])
@@ -2492,7 +2492,7 @@ lemma
     apply (rule exI[where x=D])
     apply (auto dest!: trapprop simp: poincare_map_def intro!: return_time_exivl assms(1,2) return_time_pos)
     subgoal for s
-      by (cases "s = return_time p x0") (auto simp: )
+      by (cases "s = return_time p x0") auto
     done
   done
 
@@ -2633,13 +2633,13 @@ lemma
     proof -
       have [intro, simp]: "closed {x \<in> ivl. x \<in> plane_of sctn} " "closed {x \<in> ivl. x \<bullet> normal sctn = pstn sctn}"
         by (auto intro!: closed_levelset_within continuous_intros simp: plane_of_def assms)
-      from subset_plane have "fst ` XS0 \<subseteq> below_halfspace sctn" by (auto simp: )
+      from subset_plane have "fst ` XS0 \<subseteq> below_halfspace sctn" by auto
       from flowsto_stays_sbelow[OF \<open>flowsto _ _ _ _\<close> this down(2)]
       have ft_below: "flowsto XS0 pos_reals (CX \<times> UNIV \<inter> sbelow_halfspace sctn \<times> UNIV) X1"
         by auto
       from flowsto_poincare_mapsto_trans_flowsto[OF ft_below \<open>poincare_mapsto _ _ _ _ _\<close> _ _ order_refl]
       have ft: "flowsto XS0 {0<..} (X1 \<union> CX \<times> UNIV \<inter> sbelow_halfspace sctn \<times> UNIV \<union> CP \<times> UNIV) (fst ` P \<times> UNIV)"
-        by (auto simp: )
+        by auto
       have ret: "returns_to {x \<in> ivl. x \<bullet> normal sctn - pstn sctn = 0} x"
         apply (rule returns_to_flowstoI[OF ft])
         using prems by (auto simp: plane_of_def halfspace_simps)
@@ -2856,7 +2856,7 @@ lemma poincare_onto_from_in_ivl[le, refine_vcg]:
    apply (rule trapprop)
   apply (rule poincare_mapsto_subset)
       apply assumption
-  by (auto simp: )
+  by auto
 
 lemma lvivl_default_relI:
   "(dRi, set_of_lvivl' dRi::'e::executable_euclidean_space set) \<in> \<langle>lvivl_rel\<rangle>default_rel UNIV"
