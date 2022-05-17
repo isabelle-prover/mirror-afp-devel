@@ -242,7 +242,7 @@ proof -
   qed
 
   have s2: "config' (rTS h0) ([x,y],h) u = ([x, y], x # y # h)"
-    unfolding rTS_def uyx applysimp
+    unfolding rTS_def uyx apply simp
     unfolding Step_def by(simp add: firststep step_def oneTS_steps) 
   
   have ta: "T_on' (rTS h0) ([x,y],h) u = 1"

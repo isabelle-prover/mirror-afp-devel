@@ -230,8 +230,7 @@ lemma peterson_thread_2:
   OD \<lbrace>\<acute>pr2=0 \<and> \<not>\<acute>in2\<rbrace>,\<lbrace>False\<rbrace>
  "
   apply oghoare (*7 subgoals*)
-        apply ((auto[1]) ; fail)+
-  done
+  by auto
 
 lemma Petersons_mutex_1:
   "\<Gamma>, \<Theta> |\<tturnstile>\<^bsub>/F\<^esub> \<lbrace>\<acute>pr1=0 \<and> \<not>\<acute>in1 \<and> \<acute>pr2=0 \<and> \<not>\<acute>in2 \<rbrace>
@@ -260,8 +259,7 @@ lemma Petersons_mutex_1:
   \<lbrace>\<acute>pr1=0 \<and> \<not>\<acute>in1 \<and> \<acute>pr2=0 \<and> \<not>\<acute>in2\<rbrace>,\<lbrace>False\<rbrace>"
   apply oghoare
 \<comment> \<open>81 verification conditions.\<close>
-  apply (((auto)[1]) ; fail)+
- done
+  by auto
 
 end
 

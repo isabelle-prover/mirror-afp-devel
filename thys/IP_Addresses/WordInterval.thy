@@ -349,7 +349,7 @@ begin
      apply(simp)
     apply(rename_tac x xs)
     apply(case_tac x)
-    applysimp
+    apply simp
     by blast
 
   private function listwordinterval_adjacent
