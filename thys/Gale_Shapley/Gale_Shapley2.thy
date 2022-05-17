@@ -86,6 +86,43 @@ next
   thus ?case using pref_match_stable unfolding invAM_def invar1_def by(metis le_neq_implies_less)
 qed
 
+
+subsection \<open>Algorithm 7.1: single-loop variant\<close>
+
+lemma Gale_Shapley7_1:
+assumes "R\<^sub>b = map ranking P\<^sub>b"
+shows "VARS A B M a a' ai b r
+ [ai = 0 \<and> a = 0 \<and> A = array 0 n \<and> B = array 0 n \<and> M = array False n]
+ WHILE ai < n
+ INV { invar2' (list A) (list B) (list M) ai a }
+ VAR {var (list A) ({<ai+1} - {a})}
+ DO b := match_array A a;
+  IF \<not> M !! b
+  THEN B := B[b ::= a]; M := M[b ::= True]; ai := ai + 1; a := ai
+  ELSE a' := B !! b; r := R\<^sub>b ! match_array A a';
+       IF r ! a < r ! a'
+       THEN B := B[b ::= a]; A := A[a' ::= A!!a' + 1]; a := a'
+       ELSE A := A[a ::= A!!a + 1]
+       FI
+  FI
+ OD
+ [matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)]"
+proof (vcg_tc, goal_cases)
+  case 1 thus ?case
+   by(auto simp:  pref_match_def P\<^sub>a_set card_distinct match_def list_array index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+next
+  case 3 thus ?case using pref_match_stable atLeast0_lessThan_Suc[of n] by force
+next
+  case (2 v A B M a a' ai)
+  have R': "M !! match_array A a \<Longrightarrow>
+    (R\<^sub>b ! match_array A (B !! match_array A a) ! a < R\<^sub>b ! match_array A (B !! match_array A a) ! (B !! match_array A a)) =
+     (P\<^sub>b ! match_array A (B !! match_array A a) \<turnstile> a < B !! match_array A a)"
+    using R_iff_P 2 assms by (metis array_abs)
+  show ?case
+    apply(simp only:mem_Collect_eq prod.case)
+    using 2 R' pres2'[of "list A" "list B" "list M" ai a] by (metis array_abs)
+qed
+
 end
 
 
@@ -103,13 +140,30 @@ definition gs_inner where
         else (A[a ::= A !! a + 1], B, a)
       in (A, B, a, P\<^sub>a !! a !! (A !! a)))"
 
-definition gs where
+definition gs :: "nat \<Rightarrow> nat array array \<Rightarrow> nat array array
+  \<Rightarrow> nat array \<times> nat array \<times> bool array \<times> nat" where
 "gs n P\<^sub>a R =
   while (\<lambda>(A,B,M,ai). ai < n)
    (\<lambda>(A,B,M,ai).
      let (A,B,a,b) = gs_inner P\<^sub>a R M (A, B, ai, P\<^sub>a !! ai !! (A !! ai))
      in (A, B[b ::= a], M[b::=True], ai+1))
   (array 0 n, array 0 n, array False n, 0)"
+
+
+definition gs1 :: "nat \<Rightarrow> nat array array \<Rightarrow> nat array array
+  \<Rightarrow> nat array \<times> nat array \<times> bool array \<times> nat \<times> nat"  where
+"gs1 n P\<^sub>a R =
+  while (\<lambda>(A,B,M,ai,a). ai < n)
+   (\<lambda>(A,B,M,ai,a).
+     let b = P\<^sub>a !! a !! (A !! a)
+     in if \<not> M !! b
+        then (A, B[b ::= a], M[b ::= True], ai+1, ai+1)
+        else let a' = B !! b;
+                 r = R !! (P\<^sub>a !! a' !! (A !! a'))
+             in if r !!  a < r !! a'
+                then (A[a' ::= A!!a' + 1], B[b ::= a], M, ai, a')
+                else (A[a ::= A!!a + 1], B, M, ai, a))
+  (array 0 n, array 0 n, array False n, 0, 0)"
 
 
 definition "pref_array = array_of_list o map array_of_list"
@@ -143,6 +197,12 @@ definition Gale_Shapley where
 "Gale_Shapley P\<^sub>a P\<^sub>b =
   (if Pref P\<^sub>a P\<^sub>b
    then Some (fst (gs (length P\<^sub>a) (pref_array P\<^sub>a) (rank_array P\<^sub>b)))
+   else None)"
+
+definition Gale_Shapley1 where
+"Gale_Shapley1 P\<^sub>a P\<^sub>b =
+  (if Pref P\<^sub>a P\<^sub>b
+   then Some (fst (gs1 (length P\<^sub>a) (pref_array P\<^sub>a) (rank_array P\<^sub>b)))
    else None)"
 
 (*export_code Gale_Shapley_array in SML*)
@@ -228,12 +288,74 @@ next
   show ?case by simp
 qed
 
+
+lemma R_iff_P:
+assumes "R\<^sub>b = rank_array P\<^sub>b" "invar2' A B M ai a" "ai < n" "M ! match A a"
+  "b = match A a" "a' = B ! b"
+shows "(list (list R\<^sub>b ! match A a') ! a < list (list R\<^sub>b ! match A a') ! a')
+       = (P\<^sub>b ! match A a' \<turnstile> a < a')"
+proof -
+  have R: "\<forall>b<n. \<forall>a1<n. \<forall>a2<n. R\<^sub>b !! b !! a1 < R\<^sub>b !! b !! a2 \<longleftrightarrow> P\<^sub>b ! b \<turnstile> a1 < a2"
+    by (simp add: P\<^sub>b_set \<open>R\<^sub>b = _\<close> length_P\<^sub>b array_of_list_def rank_array_def rank_array1_iff_pref)
+  let ?M = "{<ai+1} - {a}"
+  have A: "wf A" and M: "?M \<subseteq> {<n}" and as: "a < n" and invAB: "invAB2 A B M ?M"
+      using assms(2,3) by auto
+  have a': "B ! match A a \<in> ?M"
+    using invAB match_less_n[OF A] as \<open>M!match A a\<close> by (metis \<alpha>_Some ranI)
+  hence "B ! match A a < n" using M by auto
+  thus ?thesis using assms match_less_n R by simp (metis array_get as)
+qed
+
+
+lemma gs1: assumes "R\<^sub>b = rank_array P\<^sub>b"
+shows "gs1 n (pref_array P\<^sub>a) R\<^sub>b = (A,B,M,ai,a) \<longrightarrow> matching (list A) {<n} \<and> stable (list A) {<n} \<and> opti\<^sub>a (list A)"
+unfolding gs1_def
+proof(rule while_rule2[where P = "\<lambda>(A,B,M,ai,a). invar2' (list A) (list B) (list M) ai a"
+  and r = "measure(\<lambda>(A,B,M,ai,a). Pref.var P\<^sub>a (list A) ({<ai+1} - {a}))"], goal_cases)
+  case 1 show ?case
+   by(auto simp: pref_match_def P\<^sub>a_set card_distinct match_def list_array index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
+next
+  case (2 s)
+  obtain A B M ai a where s: "s =  (A, B, M, ai, a)"
+    using prod_cases5 by blast
+  have 1: "invar2' (list A) (list B) (list M) ai a" using 2(1) s
+    by (auto simp: atLeastLessThanSuc_atLeastAtMost simp flip: atLeastLessThan_eq_atLeastAtMost_diff)
+  have "ai < n" using 2(2) s by(simp)
+  hence "a < n" using 1 by simp
+  hence "match (list A) a < n" using 1 match_less_n by auto
+  hence *: "list M ! match (list A) a \<Longrightarrow> list B ! match (list A) a < n"
+    using s 1[unfolded invar2'_def] apply (simp add: array_abs ran_def)
+    using atLeast0LessThan by blast
+  have R': "list M ! match (list A) a \<Longrightarrow>
+    (list (list R\<^sub>b ! match (list A) (list B ! match (list A) a)) ! a
+     < list (list R\<^sub>b ! match (list A) (list B ! match (list A) a)) ! (list B ! match (list A) a)) =
+     (P\<^sub>b ! match (list A) (list B ! match (list A) a) \<turnstile> a < list B ! match (list A) a)"
+    using R_iff_P \<open>R\<^sub>b = _\<close> 1 \<open>ai < n\<close> by blast
+  show ?case
+    using s apply (simp add: Let_def)
+    unfolding list_list_pref_array[OF \<open>a < n\<close>[unfolded n_def]] array_abs
+    using list_list_pref_array[OF *[unfolded n_def]] (* conditional, cannot unfold :-( *)
+      pres2'[OF 1 \<open>ai < n\<close> refl refl refl refl refl] R'
+    apply(intro conjI impI) by (auto simp: match_def)
+    (* w/o intro too slow because of conditional eqn above *)
+next
+  case 3 thus ?case using pref_match_stable atLeast0_lessThan_Suc[of n] by force
+next
+  case 4 show ?case by simp
+qed
+
 end
 
 theorem gs: "\<lbrakk> Pref P\<^sub>a P\<^sub>b; n = length P\<^sub>a \<rbrakk> \<Longrightarrow>
  \<exists>A. Gale_Shapley P\<^sub>a P\<^sub>b = Some A
    \<and> Pref.matching P\<^sub>a (list A) {<n} \<and> Pref.stable P\<^sub>a P\<^sub>b (list A) {<n} \<and> Pref.opti\<^sub>a P\<^sub>a P\<^sub>b (list A)"
 unfolding Gale_Shapley_def using Pref.gs
+by (metis fst_conv surj_pair)
+
+theorem gs1: "\<lbrakk> Pref P\<^sub>a P\<^sub>b; n = length P\<^sub>a \<rbrakk> \<Longrightarrow>
+ \<exists>A. Gale_Shapley1 P\<^sub>a P\<^sub>b = Some A
+   \<and> Pref.matching P\<^sub>a (list A) {<n} \<and> Pref.stable P\<^sub>a P\<^sub>b (list A) {<n} \<and> Pref.opti\<^sub>a P\<^sub>a P\<^sub>b (list A)"
+unfolding Gale_Shapley1_def using Pref.gs1
 by (metis fst_conv surj_pair)
 
 
