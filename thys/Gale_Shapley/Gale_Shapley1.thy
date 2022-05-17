@@ -1578,8 +1578,7 @@ proof (vcg_tc, goal_cases)
   case 1 thus ?case
    by(auto simp: pref_match_def P\<^sub>a_set card_distinct match_def index_nth_id prefers_def opti\<^sub>a_def \<alpha>_def cong: conj_cong)
 next
-  case 3 thus ?case using pref_match_stable
-    using atLeast0_lessThan_Suc by force
+  case 3 thus ?case using pref_match_stable atLeast0_lessThan_Suc by force
 next
   case (2 v A B M a a' ai b)
   let ?M = "{<ai+1} - {a}"
@@ -1804,6 +1803,17 @@ by (metis fst_conv surj_pair)
 
 declare Pref_def [code]
 
+definition
+"Gale_Shapley1 P\<^sub>a P\<^sub>b = (if Pref P\<^sub>a P\<^sub>b then Some (fst (gs1 (length P\<^sub>a) P\<^sub>a (map ranking P\<^sub>b))) else None)"
+
+theorem gs1: "\<lbrakk> Pref P\<^sub>a P\<^sub>b; n = length P\<^sub>a \<rbrakk> \<Longrightarrow>
+ \<exists>A. Gale_Shapley1 P\<^sub>a P\<^sub>b = Some(A) \<and> Pref.matching P\<^sub>a A {<n} \<and>
+   Pref.stable P\<^sub>a P\<^sub>b A {<n} \<and> Pref.opti\<^sub>a P\<^sub>a P\<^sub>b A"
+unfolding Gale_Shapley1_def using Pref.gs1
+by (metis fst_conv surj_pair)
+
+declare Pref_def [code]
+
 text \<open>Two examples from Gusfield and Irving:\<close>
 
 lemma "Gale_Shapley
@@ -1812,7 +1822,7 @@ lemma "Gale_Shapley
   = Some[0,1,0,1]"
 by eval
 
-lemma "Gale_Shapley
+lemma "Gale_Shapley1
   [[4,6,0,1,5,7,3,2], [1,2,6,4,3,0,7,5], [7,4,0,3,5,1,2,6], [2,1,6,3,0,5,7,4],
    [6,1,4,0,2,5,7,3], [0,5,6,4,7,3,1,2], [1,4,6,5,2,3,7,0], [2,7,3,4,6,1,5,0]]
   [[4,2,6,5,0,1,7,3], [7,5,2,4,6,1,0,3], [0,4,5,1,3,7,6,2], [7,6,2,1,3,0,4,5],
