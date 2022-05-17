@@ -523,7 +523,7 @@ next
   case Suc: (2 i e)
   note IH = Suc.IH(2)[OF UNIV_I]
   let ?h' = "\<lambda>e'. h_plus (Suc i) e' - h_minus i e'"
-  have h': "?h' e' \<noteq> top" for e' using IH(1)[of e'] bysimp
+  have h': "?h' e' \<noteq> top" for e' using IH(1)[of e'] by simp
 
   have "(\<Squnion>j. h_minus_aux ?h' j e) \<le> ?h' e" by(rule SUP_least)(rule h_minus_aux_le_h'[OF h'])
   hence "h_minus (Suc i) e \<le> h_minus i e + \<dots>" by(simp add: add_mono)

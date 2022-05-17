@@ -4035,7 +4035,7 @@ node_ptr \<notin> set |h' \<turnstile> get_child_nodes parent_ptr|\<^sub>r"
           using children_h distinct_lists_children h0 \<open>known_ptr ptr\<close> by blast
         have "|h' \<turnstile> get_child_nodes ptr|\<^sub>r = remove1 child children_h"
           using children_h'
-          bysimp
+          by simp
         have "children = children_h"
           using True children children_h by auto
         show ?thesis

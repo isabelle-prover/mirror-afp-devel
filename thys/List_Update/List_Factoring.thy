@@ -622,7 +622,7 @@ proof (clarify, goal_cases)
                   have "(\<not> x < y in fst z) = y < x in fst z" 
                     apply(subst not_before_in)
                       using set_z 1(3,4) xny by(simp_all)
-                  then show ?case bysimp
+                  then show ?case by simp
                 qed simp 
             finally have a: "?projS \<bind> (\<lambda>s. snd A s x
                            \<bind> (\<lambda>(a, is'). return_pmf (real (t\<^sub>p (fst s) x a))))

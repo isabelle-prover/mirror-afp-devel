@@ -611,7 +611,7 @@ proof-
       free_in_quad_fm[OF freeA freeB2 freeC freeD] by auto
   show ?thesis
     using not_in_mult not_in_add h4 not_in_pow not_in_sub freeIn_list_conj not_in_isovarspar hlinear quadratic1 quadratic2
-    bysimp
+    by simp
 qed
 
 

@@ -3320,7 +3320,7 @@ next
     and unhindered: "\<not> hindered (\<Gamma> \<ominus> f n)" for n
   proof(induction n)
     case 0
-    { case 1 thus ?case bysimp }
+    { case 1 thus ?case by simp }
     { case 2 thus ?case by simp }
     { case 3 thus ?case using unhindered by simp }
   next
