@@ -423,26 +423,6 @@ lemma LstSeqP_sf [iff]: "Sigma_fm (LstSeqP t u v)"
   
 section \<open>A Key Result: Theorem 2.5\<close>
 
-subsection \<open>Sigma-Eats Formulas\<close>
-
-inductive se_fm :: "fm \<Rightarrow> bool" where
-    MemI:  "se_fm (t IN u)"
-  | DisjI: "se_fm A \<Longrightarrow> se_fm B \<Longrightarrow> se_fm (A OR B)"
-  | ConjI: "se_fm A \<Longrightarrow> se_fm B \<Longrightarrow> se_fm (A AND B)"
-  | ExI:   "se_fm A \<Longrightarrow> se_fm (Ex i A)"
-  | All2I: "se_fm A \<Longrightarrow> atom i \<sharp> t \<Longrightarrow> se_fm (All2 i t A)"
-
-equivariance se_fm
-
-nominal_inductive se_fm
-  avoids ExI: "i" | All2I: "i"
-by (simp_all add: fresh_star_def)
-
-declare se_fm.intros [intro]
-
-lemma subst_fm_in_se_fm: "se_fm A \<Longrightarrow> se_fm (A(k::=x))"
-  by (nominal_induct avoiding: k x rule: se_fm.strong_induct) (auto)
-
 subsection\<open>Preparation\<close>
 text\<open>To begin, we require some facts connecting quantification and ground terms.\<close>
 
@@ -482,20 +462,14 @@ lemma eval_fm_All2_Eats:
 text\<open>The term @{term t} must be ground, since @{term elts} doesn't handle variables.\<close>
 lemma eval_fm_All2_Iff_elts:
   "ground t \<Longrightarrow> eval_fm e (All2 i t A) \<longleftrightarrow> (\<forall>u \<in> elts t. eval_fm e (A(i::=u)))"
-apply (induct t rule: tm.induct)
-apply auto [2]
-apply (simp add: eval_fm_All2_Eats del: eval_fm.simps)
-done
+proof (induct t rule: tm.induct)
+  case Eats
+  then show ?case by (simp add: eval_fm_All2_Eats del: eval_fm.simps)
+qed auto
 
 lemma prove_elts_imp_prove_All2:
    "ground t \<Longrightarrow> (\<And>u. u \<in> elts t \<Longrightarrow> {} \<turnstile> A(i::=u)) \<Longrightarrow> {} \<turnstile> All2 i t A"
 proof (induct t rule: tm.induct)
-  case Zero thus ?case
-    by auto
-next
-  case (Var i) thus ?case  \<comment> \<open>again: vacuously!\<close>
-    by simp
-next
   case (Eats t u)
   hence pt: "{} \<turnstile> All2 i t A" and pu: "{} \<turnstile> A(i::=u)"
     by auto
@@ -505,7 +479,7 @@ next
     by simp
   thus ?case using pu
     by (auto intro: anti_deduction) (metis Iff_MP_same Var_Eq_subst_Iff thin1)
-qed
+qed auto
 
 subsection\<open>The base cases: ground atomic formulas\<close>
 
@@ -549,6 +523,26 @@ lemma ground_subst_fm:
 lemma elts_imp_ground: "u \<in> elts t \<Longrightarrow> ground_aux t S \<Longrightarrow> ground_aux u S"
   by (induct t rule: tm.induct) auto
 
+
+subsection \<open>Sigma-Eats Formulas\<close>
+
+inductive se_fm :: "fm \<Rightarrow> bool" where
+    MemI:  "se_fm (t IN u)"
+  | DisjI: "se_fm A \<Longrightarrow> se_fm B \<Longrightarrow> se_fm (A OR B)"
+  | ConjI: "se_fm A \<Longrightarrow> se_fm B \<Longrightarrow> se_fm (A AND B)"
+  | ExI:   "se_fm A \<Longrightarrow> se_fm (Ex i A)"
+  | All2I: "se_fm A \<Longrightarrow> atom i \<sharp> t \<Longrightarrow> se_fm (All2 i t A)"
+
+equivariance se_fm
+
+nominal_inductive se_fm
+  avoids ExI: "i" | All2I: "i"
+by (simp_all add: fresh_star_def)
+
+declare se_fm.intros [intro]
+
+lemma subst_fm_in_se_fm: "se_fm A \<Longrightarrow> se_fm (A(k::=x))"
+  by (nominal_induct avoiding: k x rule: se_fm.strong_induct) (auto)
 lemma ground_se_fm_induction:
    "ground_fm \<alpha> \<Longrightarrow> size \<alpha> < n \<Longrightarrow> se_fm \<alpha> \<Longrightarrow> eval_fm e \<alpha> \<Longrightarrow> {} \<turnstile> \<alpha>"
 proof (induction n arbitrary: \<alpha> rule: less_induct)
