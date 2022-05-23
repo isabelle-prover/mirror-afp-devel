@@ -97,7 +97,7 @@ lemma trans_fm_Conj [simp]: "trans_fm e (Conj A B) = DBConj (trans_fm e A) (tran
   by (simp add: Conj_def)
 
 lemma trans_tm_inject [iff]: "(trans_tm e t = trans_tm e u) \<longleftrightarrow> t = u"
-proof (induct t arbitrary: e u rule: tm.induct)
+proof (induct t arbitrary: u rule: tm.induct)
   case Zero show ?case
     apply (cases u rule: tm.exhaust, auto)
     apply (metis dbtm.distinct(1) dbtm.distinct(3) lookup_in lookup_notin)
@@ -315,8 +315,7 @@ declare wf_dbfm.intros [intro]
 lemma trans_fm_abs: "trans_fm (e@[name]) A = abst_dbfm name (length e) (trans_fm e A)"
   apply (nominal_induct A avoiding: name e rule: fm.strong_induct)
   apply (auto simp: trans_tm_abs fresh_Cons fresh_append)
-  apply (metis One_nat_def Suc_eq_plus1 append_Cons list.size(4))
-  done
+  by (metis append_Cons length_Cons)
 
 lemma abst_trans_fm: "abst_dbfm name 0 (trans_fm [] A) = trans_fm [name] A"
   by (metis append_Nil list.size(3) trans_fm_abs)
