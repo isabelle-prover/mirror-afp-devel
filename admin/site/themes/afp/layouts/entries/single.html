@@ -32,23 +32,6 @@
 
   {{- $Scratch := newScratch -}}
   
-  {{- with .Params.dependencies -}}
-    <h3>Depends On</h3><ul>
-      {{- range . -}}
-      <li>{{- printf "[%s](/entries/%s.html)" . . | $.Page.RenderString -}}</li>
-      {{- end -}}
-    </ul>
-  {{- end -}}
-
-  {{- with (index .Site.Taxonomies.dependencies (urlize $entry_name)) -}}
-    <h3>Used by</h3>
-    <ul>
-      {{- range . -}}
-      <li>{{- printf "[%s](%s)" .File.BaseFileName .RelPermalink | $.Page.RenderString -}}</li>
-      {{- end -}}
-    </ul>
-  {{- end -}}
-
   {{- with .Params.topics -}}
   <h3>Topics</h3>
   <ul>
@@ -69,15 +52,41 @@
   </ul>
   {{- end -}}
 
+  <div class="flex-wrap">
+  {{- with .Params.dependencies -}}
+  <div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list">
+      {{- range . -}}
+      <li>{{- printf "[%s](/entries/%s.html)" . . | $.Page.RenderString -}}</li>
+      {{- end -}}
+    </ul>
+  </div>
+  {{- end -}}
+
+  {{- with (index .Site.Taxonomies.dependencies (urlize $entry_name)) -}}
+  <div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list">
+      {{- range . -}}
+      <li>{{- printf "[%s](%s)" .File.BaseFileName .RelPermalink | $.Page.RenderString -}}</li>
+      {{- end -}}
+    </ul>
+  </div>
+  {{- end -}}
+  
   {{ $related := .Site.RegularPages.Related . | first 3 }}
   {{ with $related }}
-  <h3>Related Entries</h3>
-  <ul>
-    {{ range . }}
-    <li>{{- printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString -}}</li>
-    {{ end }}
-  </ul>
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      {{ range . }}
+      <li>{{- printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString -}}</li>
+      {{ end }}
+    </ul>
+  </div>
   {{ end }}
+  </div>
 </main>
 
 <nav class='links'>

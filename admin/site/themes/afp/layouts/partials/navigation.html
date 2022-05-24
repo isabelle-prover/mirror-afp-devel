@@ -26,12 +26,5 @@
         {{- end }}
       </ul>
     </div>
-    <ul>
-      {{- range .Site.Menus.bottom }}
-      <li {{ if $currentPage.IsMenuCurrent "bottom" . }}class="active" {{ end }}><a href="{{- .URL -}}">{{- .Name
-          -}}</a>
-      </li>
-      {{- end }}
-    </ul>
   </nav>
 </div>

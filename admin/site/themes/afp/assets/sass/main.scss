@@ -987,6 +987,22 @@ iframe {
   }
 }
 
+@media screen and (min-width: $size-s) {
+  ul.horizontal-list {
+    display: flex;
+    flex-flow: wrap;
+    padding-left: 0;
+
+    li {
+      margin-right: 16px;
+    }
+
+    li::before {
+      content: none;
+    }
+  }
+}
+
 @media screen and (max-width: $size-s) {
   body {
     grid-template-columns: 1fr;

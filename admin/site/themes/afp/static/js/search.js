@@ -21,7 +21,7 @@ function build_indexes(entries, authors, topics, keywords) {
     tokenize: 'forward',
     document: {
       id: 'id',
-      index: ['title', 'abstract', 'date', 'topics[]', 'authors[]'],
+      index: ['shortname', 'title', 'abstract', 'date', 'topics[]', 'authors[]'],
       store: true,
     },
   })

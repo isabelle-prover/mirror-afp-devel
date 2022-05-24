@@ -23,11 +23,11 @@
 <h3 class="head">{{- .Key -}}</h3>
 {{- range .Pages -}}
 <article class="entry">
-  <span class="item-text">
-    <p><a class="title" href="{{ .RelPermalink }}">{{- htmlUnescape .Title -}}</a> <br>
-      {{- $entry := . -}}
-      {{- with .Params.authors -}}by {{ partial "authors.html" (dict "site" $site "authors" . "affiliations" $entry.Params.affiliations) -}}{{- end -}}</p>
-  </span>
+  <div class="item-text">
+    <h5><a class="title" href="{{ .RelPermalink }}">{{- htmlUnescape .Title -}}</a></h5> <br>
+    {{- $entry := . -}}
+    {{- with .Params.authors -}}by {{ partial "authors.html" (dict "site" $site "authors" . "affiliations" $entry.Params.affiliations) -}}{{- end -}}
+  </div>
   <span class="date">
     {{ .Date.Format "Jan 02" }}
   </span>

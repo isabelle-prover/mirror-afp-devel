@@ -1,8 +1,9 @@
 ---
 title: Entry Submission
 menu: 
-    bottom:
+    main:
         name: "Submission"
+        weight: 5
 ---
 
 ## Submission Guidelines

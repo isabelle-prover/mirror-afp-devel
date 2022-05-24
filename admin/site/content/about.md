@@ -3,7 +3,7 @@ title: "About"
 menu: 
     main:
         name: "About"
-        weight: 6
+        weight: 7
 ---
 
 The Archive of Formal Proofs is a collection of proof libraries, examples, and larger scientific developments,
