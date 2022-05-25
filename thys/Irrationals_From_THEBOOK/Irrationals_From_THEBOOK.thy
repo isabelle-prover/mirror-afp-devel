@@ -230,7 +230,7 @@ proof
     by (rule refl Fder derivative_eq_intros | force simp: algebra_simps)+
   let ?N = "b * integral {0..1} sF'"
   have sF'_integral: "(sF' has_integral sF 1 - sF 0) {0..1}"
-    by (smt (verit) fundamental_theorem_of_calculus has_field_derivative_iff_has_vector_derivative 
+    by (smt (verit) fundamental_theorem_of_calculus has_real_derivative_iff_has_vector_derivative 
                     has_vector_derivative_at_within sF_der)
   then have "?N = a * F 1 - b * F 0"
     using \<open>b > 0\<close> by (simp add: integral_unique exp_s sF_def algebra_simps)

@@ -830,7 +830,7 @@ proof -
       using integrable_EM_remainder'[of a b f' "Suc n"]
         by (simp add: has_integral_iff T_def)
     qed (insert ab n, auto intro!: derivative_eq_intros
-           simp: has_field_derivative_iff_has_vector_derivative [symmetric] not_le elim!: Ints_cases)
+           simp: has_real_derivative_iff_has_vector_derivative [symmetric] not_le elim!: Ints_cases)
     also have "?h b - ?h a = (bernoulli (Suc n) / real (Suc n)) *\<^sub>R (f b - f a)"
       using n by (simp add: algebra_simps bernoulli'_def)
     finally have "integral {a..b} (\<lambda>t. pbernpoly n t *\<^sub>R f t) = \<dots> - T"
@@ -1326,7 +1326,7 @@ proof -
     also have "\<dots> = D * integral {x..y} g'" by simp
     also have "(g' has_integral (g y - g x)) {x..y}" using xy
       by (intro fundamental_theorem_of_calculus_strong[OF fin] continuous_on_subset[OF cont_g])
-         (auto simp: has_field_derivative_iff_has_vector_derivative [symmetric] intro!: deriv)
+         (auto simp: has_real_derivative_iff_has_vector_derivative [symmetric] intro!: deriv)
     hence "integral {x..y} g' = g y - g x" by (simp add: has_integral_iff)
     finally show ?thesis by (simp add: D'_def divide_simps)
   qed
@@ -1449,7 +1449,7 @@ proof -
     also from elim have "(g' has_integral (g x - g x0)) {x0..x}"
       by (intro fundamental_theorem_of_calculus) 
          (auto intro!: has_field_derivative_at_within[OF x0(3)] 
-               simp: has_field_derivative_iff_has_vector_derivative [symmetric])
+               simp: has_real_derivative_iff_has_vector_derivative [symmetric])
     hence "integral {x0..x} g' = g x - g x0" by (simp add: has_integral_iff)
     finally have "norm (integral {a..x} (\<lambda>t. pbernpoly n t *\<^sub>R f t)) \<le> norm ?I1 + D * (g x - g x0)"
       by simp_all
@@ -1482,7 +1482,7 @@ proof -
     thus "(fs k has_vector_derivative fs (Suc k) x) (at x)"
       by (cases "k = 0")
          (auto intro!: derivative_eq_intros 
-               simp: fs_def has_field_derivative_iff_has_vector_derivative [symmetric] 
+               simp: fs_def has_real_derivative_iff_has_vector_derivative [symmetric] 
                      field_simps power_diff)
   next
     have "(\<lambda>b. harm b - ln (real b) -
@@ -1496,7 +1496,7 @@ proof -
             (\<Sum>i<2*N+1. (bernoulli' (Suc i) / fact (Suc i)) *\<^sub>R fs i (real b))) \<longlonglongrightarrow> euler_mascheroni"
       by (simp add: harm_def divide_simps fs_def)
   qed (insert n N, auto intro!: continuous_intros derivative_eq_intros
-         simp: fs_def has_field_derivative_iff_has_vector_derivative [symmetric])
+         simp: fs_def has_real_derivative_iff_has_vector_derivative [symmetric])
        
   have "harm n = (\<Sum>k=1..n. 1 / real k)" by (simp add: harm_def divide_simps)
   also have "\<dots> = ln (real n) + euler_mascheroni + (1/2) *\<^sub>R (1 / real n) +
@@ -1559,7 +1559,7 @@ proof -
     thus "(fs k has_vector_derivative fs (Suc k) x) (at x)"
       by (cases "k = 0")
          (auto intro!: derivative_eq_intros 
-               simp: fs_def has_field_derivative_iff_has_vector_derivative [symmetric] 
+               simp: fs_def has_real_derivative_iff_has_vector_derivative [symmetric] 
                      field_simps power_diff)
   next
     from inverse_squares_sums
@@ -1576,7 +1576,7 @@ proof -
             (\<Sum>i<2*N+1. (bernoulli' (Suc i) / fact (Suc i)) *\<^sub>R fs i (real b))) \<longlonglongrightarrow> pi^2/6"
       by (simp add: harm_def field_simps fs_def del: power_Suc of_nat_Suc)
   qed (insert n N, auto intro!: continuous_intros derivative_eq_intros
-         simp: fs_def has_field_derivative_iff_has_vector_derivative [symmetric] power2_eq_square)
+         simp: fs_def has_real_derivative_iff_has_vector_derivative [symmetric] power2_eq_square)
 
   have "(\<Sum>k=1..n. 1 / real k ^ 2) = - 1 / real n + pi^2/6 + (1/2) *\<^sub>R (1 / real n^2) +
                (\<Sum>i=1..N. (bernoulli (2*i) / fact (2*i)) *\<^sub>R fs (2*i-1) (real n)) -

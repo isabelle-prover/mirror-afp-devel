@@ -571,7 +571,7 @@ proof (cases "x = 2")
           (\<Sum>n\<in>real -` {2<..x}. ind prime n * ln (real n))) {2..x}" using x
     by (intro partial_summation_strong[where X = "{}"])
        (auto intro!: continuous_intros derivative_eq_intros
-             simp flip: has_field_derivative_iff_has_vector_derivative)
+             simp flip: has_real_derivative_iff_has_vector_derivative)
   hence "((\<lambda>t. \<pi> t / t) has_integral (\<pi> x * ln x -
            (\<pi> 2 * ln 2 + (\<Sum>n\<in>real -` {2<..x}. ind prime n * ln n)))) {2..x}"
     by (simp add: \<pi>_def prime_sum_upto_altdef1 algebra_simps)
@@ -596,7 +596,7 @@ proof (cases "x = 2")
               (\<Sum>n\<in>real -` {2<..x}. b n * (1 / ln (real n))))) {2..x}" using x
     by (intro has_integral_neg partial_summation_strong[where X = "{}"])
        (auto intro!: continuous_intros derivative_eq_intros
-             simp flip: has_field_derivative_iff_has_vector_derivative simp add: power2_eq_square)
+             simp flip: has_real_derivative_iff_has_vector_derivative simp add: power2_eq_square)
   also have "sum_upto b = \<theta>"
     by (simp add: \<theta>_def b_def prime_sum_upto_altdef1 fun_eq_iff)
   also have "\<theta> x * (1 / ln x) - \<theta> 2 * (1 / ln 2) - 
@@ -621,7 +621,7 @@ proof (cases "a < x")
   hence "((\<lambda>t. \<theta> t * (1 / (t * ln t ^ 2))) integrable_on {a..x})" using assms
     unfolding \<theta>_def prime_sum_upto_altdef1
     by (intro partial_summation_integrable_strong[where X = "{}" and f = "\<lambda>x. -1 / ln x"])
-       (auto simp flip: has_field_derivative_iff_has_vector_derivative
+       (auto simp flip: has_real_derivative_iff_has_vector_derivative
              intro!: derivative_eq_intros continuous_intros simp: power2_eq_square field_simps)
   thus ?thesis by simp
 qed (insert has_integral_refl[of _ a] assms, auto simp: has_integral_iff)
@@ -640,7 +640,7 @@ proof (cases "x = 2")
   have "((\<lambda>t. sum_upto b t * 1) has_integral sum_upto b x * x - sum_upto b 2 * 2 -
           (\<Sum>n\<in>real -` {2<..x}. b n * real n)) {2..x}" using x
     by (intro partial_summation_strong[of "{}"])
-       (auto simp flip: has_field_derivative_iff_has_vector_derivative
+       (auto simp flip: has_real_derivative_iff_has_vector_derivative
              intro!: derivative_eq_intros continuous_intros)
   also have "sum_upto b = \<MM>"
     by (simp add: fun_eq_iff primes_M_def b_def prime_sum_upto_altdef1)
@@ -668,7 +668,7 @@ proof (cases "x = 2")
           sum_upto b x * (-1 / x) - sum_upto b 2 * (-1 / 2) -
           (\<Sum>n\<in>real -` {2<..x}. b n * (-1 / real n))) {2..x}" using x
     by (intro partial_summation_strong[of "{}"])
-       (auto simp flip: has_field_derivative_iff_has_vector_derivative simp: power2_eq_square
+       (auto simp flip: has_real_derivative_iff_has_vector_derivative simp: power2_eq_square
              intro!: derivative_eq_intros continuous_intros)
   also have "sum_upto b = \<theta>"
     by (simp add: fun_eq_iff \<theta>_def b_def prime_sum_upto_altdef1)
@@ -686,7 +686,7 @@ proof -
   have "(\<lambda>x. \<MM> x * 1) integrable_on {x..y}" if "2 \<le> x" "x < y" for x y :: real
     unfolding primes_M_def prime_sum_upto_altdef1 using that
     by (intro partial_summation_integrable_strong[where X = "{}" and f = "\<lambda>x. x"])
-       (auto simp flip: has_field_derivative_iff_has_vector_derivative
+       (auto simp flip: has_real_derivative_iff_has_vector_derivative
              intro!: derivative_eq_intros continuous_intros)
   thus ?thesis using that has_integral_refl(2)[of \<MM> x] by (cases x y rule: linorder_cases) auto
 qed
@@ -1312,7 +1312,7 @@ next
           sum_upto (\<lambda>_. 1) x * ln x - sum_upto (\<lambda>_. 1) 1 * ln 1 -
           (\<Sum>n\<in>real -` {1<..x}. 1 * ln (real n))) {1..x}" using x
     by (intro partial_summation_strong[of "{}"])
-       (auto simp flip: has_field_derivative_iff_has_vector_derivative
+       (auto simp flip: has_real_derivative_iff_has_vector_derivative
              intro!: derivative_eq_intros continuous_intros)
   hence "((\<lambda>t. real (nat \<lfloor>t\<rfloor>) / t) has_integral
            real (nat \<lfloor>x\<rfloor>) * ln x - (\<Sum>n\<in>real -` {1<..x}. ln (real n))) {1..x}"

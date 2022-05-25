@@ -67,7 +67,7 @@ lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
   assumes "(g has_vderiv_on g') T"
   shows has_vderiv_on_scaleR: "((\<lambda>x. f x *\<^sub>R g x) has_vderiv_on (\<lambda>x. f x *\<^sub>R g' x + f' x *\<^sub>R g x)) T"
   using assms
-  by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative
+  by (auto simp: has_vderiv_on_def has_real_derivative_iff_has_vector_derivative
     intro!: derivative_eq_intros)
 
 lemma [THEN has_vderiv_on_eq_rhs, derivative_intros]:
@@ -85,7 +85,7 @@ lemma has_vderiv_on_ln[THEN has_vderiv_on_eq_rhs, derivative_intros]:
   shows "((\<lambda>x. ln (g x)) has_vderiv_on (\<lambda>x. g' x / g x)) s"
   using assms
   unfolding has_vderiv_on_def
-  by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative[symmetric]
+  by (auto simp: has_vderiv_on_def has_real_derivative_iff_has_vector_derivative[symmetric]
     intro!: derivative_eq_intros)
 
 

@@ -173,7 +173,7 @@ proof -
       by (auto intro!: derivative_intros y' v' has_vderiv_on_subset[OF _ subset])
     with \<open>t0 < t\<close>
     have d: "((\<lambda>t. y t - v t) has_real_derivative y' t0 - v' t0) (at t0 within {t0 .. t})"
-      by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative)
+      by (auto simp: has_vderiv_on_def has_real_derivative_iff_has_vector_derivative)
     from has_real_derivative_pos_inc_right[OF d *] \<open>v t0 = y t0\<close>
     obtain d where "d > 0" and vy: "h > 0 \<Longrightarrow> t0 + h \<le> t \<Longrightarrow> h < d \<Longrightarrow> v (t0 + h) < y (t0 + h)" for h
       by auto

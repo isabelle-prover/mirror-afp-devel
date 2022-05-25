@@ -276,7 +276,7 @@ lemma
     and integral_FTC_Icc_real: "(\<integral>x. f x * indicator {a .. b} x \<partial>lborel) = F b - F a" (is ?eq)
 proof -
   have 1: "\<And>x. a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow> (F has_vector_derivative f x) (at x within {a .. b})"
-    unfolding has_field_derivative_iff_has_vector_derivative[symmetric]
+    unfolding has_real_derivative_iff_has_vector_derivative[symmetric]
     using deriv by auto
   show ?has ?eq
     using has_bochner_integral_FTC_Icc[OF \<open>a \<le> b\<close> 1 cont] integral_FTC_Icc[OF \<open>a \<le> b\<close> 1 cont]
@@ -1475,7 +1475,7 @@ proof -
   next
     case (deriv z)
     show ?case
-      unfolding has_field_derivative_iff_has_vector_derivative [symmetric]
+      unfolding has_real_derivative_iff_has_vector_derivative [symmetric]
       by (insert less[of z] xy \<open>x * y < 1\<close> deriv)
          (rule derivative_eq_intros refl | simp)+
   qed

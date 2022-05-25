@@ -1694,7 +1694,7 @@ proof (rule simple_Fourier_convergence_periodic [OF f])
         show "((\<lambda>b. inverse a * b powr a) has_vector_derivative x powr (a - 1)) (at x)"
           if "x \<in> {0<..<pi}" for x
           using that \<open>a > 0\<close>
-          apply (simp flip: has_field_derivative_iff_has_vector_derivative)
+          apply (simp flip: has_real_derivative_iff_has_vector_derivative)
           apply (rule derivative_eq_intros | simp)+
           done
       qed auto

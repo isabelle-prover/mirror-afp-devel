@@ -176,7 +176,74 @@ proof -
   then show "(i \<leftrightarrow> c) \<bullet> A = (j \<leftrightarrow> c) \<bullet> B" by simp
 qed
 
-section\<open>Characterising the Well-Formed de Bruijn Formulas\<close>
+section\<open>Abstraction and Substitution on de Bruijn Formulas\<close>
+
+nominal_function abst_dbtm :: "name \<Rightarrow> nat \<Rightarrow> dbtm \<Rightarrow> dbtm"
+  where
+   "abst_dbtm name i DBZero = DBZero"
+ | "abst_dbtm name i (DBVar name') = (if name = name' then DBInd i else DBVar name')"
+ | "abst_dbtm name i (DBInd j) = DBInd j"
+ | "abst_dbtm name i (DBEats t1 t2) = DBEats (abst_dbtm name i t1) (abst_dbtm name i t2)"
+apply (simp add: eqvt_def abst_dbtm_graph_aux_def, auto)
+apply (metis dbtm.exhaust)
+done
+
+nominal_termination (eqvt)
+  by lexicographic_order
+
+nominal_function subst_dbtm :: "dbtm \<Rightarrow> name \<Rightarrow> dbtm \<Rightarrow> dbtm"
+  where
+   "subst_dbtm u x DBZero = DBZero"
+ | "subst_dbtm u x (DBVar name) = (if x = name then u else DBVar name)"
+ | "subst_dbtm u x (DBInd j) = DBInd j"
+ | "subst_dbtm u x (DBEats t1 t2) = DBEats (subst_dbtm u x t1) (subst_dbtm u x t2)"
+by (auto simp: eqvt_def subst_dbtm_graph_aux_def) (metis dbtm.exhaust)
+
+nominal_termination (eqvt)
+  by lexicographic_order
+
+lemma fresh_iff_non_subst_dbtm: "subst_dbtm DBZero i t = t \<longleftrightarrow> atom i \<sharp> t"
+  by (induct t rule: dbtm.induct) (auto simp: pure_fresh fresh_at_base(2))
+
+lemma lookup_append: "lookup (e @ [i]) n j = abst_dbtm i (length e + n) (lookup e n j)"
+  by (induct e arbitrary: n) (auto simp: fresh_Cons)
+
+lemma trans_tm_abs: "trans_tm (e@[name]) t = abst_dbtm name (length e) (trans_tm e t)"
+  by (induct t rule: tm.induct) (auto simp: lookup_notin lookup_append)
+
+subsection\<open>Well-Formed Formulas\<close>
+
+nominal_function abst_dbfm :: "name \<Rightarrow> nat \<Rightarrow> dbfm \<Rightarrow> dbfm"
+  where
+   "abst_dbfm name i (DBMem t1 t2) = DBMem (abst_dbtm name i t1) (abst_dbtm name i t2)"
+ | "abst_dbfm name i (DBEq t1 t2) =  DBEq (abst_dbtm name i t1) (abst_dbtm name i t2)"
+ | "abst_dbfm name i (DBDisj A1 A2) = DBDisj (abst_dbfm name i A1) (abst_dbfm name i A2)"
+ | "abst_dbfm name i (DBNeg A) = DBNeg (abst_dbfm name i A)"
+ | "abst_dbfm name i (DBEx A) = DBEx (abst_dbfm name (i+1) A)"
+apply (simp add: eqvt_def abst_dbfm_graph_aux_def, auto)
+apply (metis dbfm.exhaust)
+done
+
+nominal_termination (eqvt)
+  by lexicographic_order
+
+nominal_function subst_dbfm :: "dbtm \<Rightarrow> name \<Rightarrow> dbfm \<Rightarrow> dbfm"
+  where
+   "subst_dbfm u x (DBMem t1 t2) = DBMem (subst_dbtm u x t1) (subst_dbtm u x t2)"
+ | "subst_dbfm u x (DBEq t1 t2) =  DBEq (subst_dbtm u x t1) (subst_dbtm u x t2)"
+ | "subst_dbfm u x (DBDisj A1 A2) = DBDisj (subst_dbfm u x A1) (subst_dbfm u x A2)"
+ | "subst_dbfm u x (DBNeg A) = DBNeg (subst_dbfm u x A)"
+ | "subst_dbfm u x (DBEx A) = DBEx (subst_dbfm u x A)"
+by (auto simp: eqvt_def subst_dbfm_graph_aux_def) (metis dbfm.exhaust)
+
+nominal_termination (eqvt)
+  by lexicographic_order
+
+lemma fresh_iff_non_subst_dbfm: "subst_dbfm DBZero i t = t \<longleftrightarrow> atom i \<sharp> t"
+  by (induct t rule: dbfm.induct) (auto simp: fresh_iff_non_subst_dbtm)
+
+
+section\<open>Well formed terms and formulas (de Bruijn representation)\<close>
 
 subsection\<open>Well-Formed Terms\<close>
 
@@ -216,72 +283,7 @@ lemma wf_dbtm_trans_tm: "wf_dbtm (trans_tm [] t)"
 theorem wf_dbtm_iff_is_tm: "wf_dbtm x \<longleftrightarrow> (\<exists>t::tm. x = trans_tm [] t)"
   by (metis wf_dbtm_imp_is_tm wf_dbtm_trans_tm)
 
-nominal_function abst_dbtm :: "name \<Rightarrow> nat \<Rightarrow> dbtm \<Rightarrow> dbtm"
-  where
-   "abst_dbtm name i DBZero = DBZero"
- | "abst_dbtm name i (DBVar name') = (if name = name' then DBInd i else DBVar name')"
- | "abst_dbtm name i (DBInd j) = DBInd j"
- | "abst_dbtm name i (DBEats t1 t2) = DBEats (abst_dbtm name i t1) (abst_dbtm name i t2)"
-apply (simp add: eqvt_def abst_dbtm_graph_aux_def, auto)
-apply (metis dbtm.exhaust)
-done
-
-nominal_termination (eqvt)
-  by lexicographic_order
-
-nominal_function subst_dbtm :: "dbtm \<Rightarrow> name \<Rightarrow> dbtm \<Rightarrow> dbtm"
-  where
-   "subst_dbtm u i DBZero = DBZero"
- | "subst_dbtm u i (DBVar name) = (if i = name then u else DBVar name)"
- | "subst_dbtm u i (DBInd j) = DBInd j"
- | "subst_dbtm u i (DBEats t1 t2) = DBEats (subst_dbtm u i t1) (subst_dbtm u i t2)"
-by (auto simp: eqvt_def subst_dbtm_graph_aux_def) (metis dbtm.exhaust)
-
-nominal_termination (eqvt)
-  by lexicographic_order
-
-lemma fresh_iff_non_subst_dbtm: "subst_dbtm DBZero i t = t \<longleftrightarrow> atom i \<sharp> t"
-  by (induct t rule: dbtm.induct) (auto simp: pure_fresh fresh_at_base(2))
-
-lemma lookup_append: "lookup (e @ [i]) n j = abst_dbtm i (length e + n) (lookup e n j)"
-  by (induct e arbitrary: n) (auto simp: fresh_Cons)
-
-lemma trans_tm_abs: "trans_tm (e@[name]) t = abst_dbtm name (length e) (trans_tm e t)"
-  by (induct t rule: tm.induct) (auto simp: lookup_notin lookup_append)
-
 subsection\<open>Well-Formed Formulas\<close>
-
-nominal_function abst_dbfm :: "name \<Rightarrow> nat \<Rightarrow> dbfm \<Rightarrow> dbfm"
-  where
-   "abst_dbfm name i (DBMem t1 t2) = DBMem (abst_dbtm name i t1) (abst_dbtm name i t2)"
- | "abst_dbfm name i (DBEq t1 t2) =  DBEq (abst_dbtm name i t1) (abst_dbtm name i t2)"
- | "abst_dbfm name i (DBDisj A1 A2) = DBDisj (abst_dbfm name i A1) (abst_dbfm name i A2)"
- | "abst_dbfm name i (DBNeg A) = DBNeg (abst_dbfm name i A)"
- | "abst_dbfm name i (DBEx A) = DBEx (abst_dbfm name (i+1) A)"
-apply (simp add: eqvt_def abst_dbfm_graph_aux_def, auto)
-apply (metis dbfm.exhaust)
-done
-
-nominal_termination (eqvt)
-  by lexicographic_order
-
-nominal_function subst_dbfm :: "dbtm \<Rightarrow> name \<Rightarrow> dbfm \<Rightarrow> dbfm"
-  where
-   "subst_dbfm u i (DBMem t1 t2) = DBMem (subst_dbtm u i t1) (subst_dbtm u i t2)"
- | "subst_dbfm u i (DBEq t1 t2) =  DBEq (subst_dbtm u i t1) (subst_dbtm u i t2)"
- | "subst_dbfm u i (DBDisj A1 A2) = DBDisj (subst_dbfm u i A1) (subst_dbfm u i A2)"
- | "subst_dbfm u i (DBNeg A) = DBNeg (subst_dbfm u i A)"
- | "subst_dbfm u i (DBEx A) = DBEx (subst_dbfm u i A)"
-by (auto simp: eqvt_def subst_dbfm_graph_aux_def) (metis dbfm.exhaust)
-
-nominal_termination (eqvt)
-  by lexicographic_order
-
-lemma fresh_iff_non_subst_dbfm: "subst_dbfm DBZero i t = t \<longleftrightarrow> atom i \<sharp> t"
-  by (induct t rule: dbfm.induct) (auto simp: fresh_iff_non_subst_dbtm)
-
-
-section\<open>Well formed terms and formulas (de Bruijn representation)\<close>
 
 inductive wf_dbfm :: "dbfm \<Rightarrow> bool"
   where
