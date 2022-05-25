@@ -382,15 +382,13 @@ lemma dbfm_abst_swap_subst:
 lemma subst_trans_commute [simp]:
   "atom i \<sharp> e \<Longrightarrow> subst_dbtm (trans_tm e u) i (trans_tm e t) = trans_tm e (subst i u t)"
   apply (induct t rule: tm.induct)
-  apply (auto simp: lookup_notin fresh_imp_notin_env)
-  apply (metis abst_dbtm_fresh_ignore dbtm_subst_ignore lookup_fresh lookup_notin subst_dbtm.simps(2))
-  done
+    apply (auto simp: lookup_notin fresh_imp_notin_env)
+  by (metis abst_dbtm_fresh_ignore atom_eq_iff dbtm_subst_ignore lookup_fresh)
 
 lemma subst_fm_trans_commute [simp]:
   "subst_dbfm (trans_tm [] u) name (trans_fm [] A) = trans_fm [] (A (name::= u))"
   apply (nominal_induct A avoiding: name u rule: fm.strong_induct)
-  apply (auto simp: lookup_notin abst_trans_fm [symmetric])
-  apply (metis dbfm_abst_swap_subst fresh_at_base(2) fresh_trans_tm_iff)
+  apply (auto simp: lookup_notin dbfm_abst_swap_subst simp flip: abst_trans_fm)
   done
 
 lemma subst_fm_trans_commute_eq:
