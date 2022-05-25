@@ -2230,7 +2230,7 @@ proof -
       moreover have "integrable (lebesgue_on {0..\<delta>}) (norm \<circ> (\<lambda>x. (f(t+x) + f(t-x) - 2*l) / x))"
       proof (rule integrable_subinterval [of 0 d])
         show "integrable (lebesgue_on {0..d}) (norm \<circ> (\<lambda>x. (f(t+x) + f(t-x) - 2*l) / x))"
-          using int0d by (subst integrable_cong) (auto simp: o_def)
+          using int0d by (subst Bochner_Integration.integrable_cong) (auto simp: o_def)
         show "{0..\<delta>} \<subseteq> {0..d}"
           using \<open>d > 0\<close> by (auto simp: \<delta>_def)
       qed
@@ -2629,7 +2629,7 @@ proof -
               qed auto
               show "\<psi> \<in> borel_measurable (lebesgue_on {\<xi>..pi})"
                 apply (rule borel_measurable_integrable)
-                apply (rule integrable_cong [where f = "\<lambda>x. sin(n / 2 * x) ^ 2 / (2 * n * sin(x/2) ^ 2) * h x", OF refl, THEN iffD1])
+                apply (rule Bochner_Integration.integrable_cong [where f = "\<lambda>x. sin(n / 2 * x) ^ 2 / (2 * n * sin(x/2) ^ 2) * h x", OF refl, THEN iffD1])
                 using \<open>0 < \<xi>\<close> **
                  apply (force simp: \<psi>_def divide_simps algebra_simps mult_less_0_iff abs_mult)
                 using Bochner_Integration.integrable_mult_left [OF ***, of "1/n"]
