@@ -44,7 +44,7 @@ abstract =
 
 [Digit_Expansions]
 title = Digit Expansions
-author = Jonas Bayer <mailto:jonas.bayer999@gmail.com>, Marco David <mailto:marco.david@hotmail.de>, Abhik Pal <mailto:apal@ucsd.edu>, Benedikt Stock <mailto:benedikt1999@freenet.de>
+author = Jonas Bayer, Marco David, Abhik Pal, Benedikt Stock
 topic = Mathematics/Number theory
 date = 2022-04-20
 notify = jonas.bayer999@gmail.com, marco.david@hotmail.de, benedikt1999@freenet.de
