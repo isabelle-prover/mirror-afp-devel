@@ -1,0 +1,10 @@
+chapter AFP
+
+session Package_logic (AFP) = HOL +
+  options [timeout=300]
+  theories
+  	SepAlgebra
+  	PackageLogic
+  document_files
+	"root.bib"
+    	"root.tex"
