@@ -9882,12 +9882,12 @@ topic = Computer science/Programming languages/Logics
 date = 2022-05-18
 notify = thibault.dardinier@inf.ethz.ch
 abstract =
-  The magic wand $$\mathbin{-\!\!*}$$ (also called separating
+  The magic wand $\mathbin{-\!\!*}$ (also called separating
   implication) is a separation logic connective commonly used to specify
   properties of partial data structures, for instance during iterative
   traversals. A <em>footprint</em> of a magic wand formula
   $$A \mathbin{-\!\!*} B$$ is a state that, combined with any state in
-  which $$A$$ holds, yields a state in which $$B$$ holds. The key
+  which $A$ holds, yields a state in which $B$ holds. The key
   challenge of proving a magic wand (also called
   <em>packaging</em> a wand) is to find such a footprint.
   Existing package algorithms either have a high annotation overhead or
