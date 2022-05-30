@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Formalization of a Framework for the Sound Automation of Magic Wands - Archive of Formal Proofs
+<title>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,27 +74,33 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>ormalization
+  <h1>          <font class="first">A</font>
+  
+          <font class="first">R</font>estricted
+  
+          <font class="first">D</font>efinition
+  
+          of
+  
+          the
+  
+          <font class="first">M</font>agic
+  
+          <font class="first">W</font>and
+  
+          to
+  
+          <font class="first">S</font>oundly
+  
+          <font class="first">C</font>ombine
+  
+          <font class="first">F</font>ractions
   
           of
   
           a
   
-          <font class="first">F</font>ramework
-  
-          for
-  
-          the
-  
-          <font class="first">S</font>ound
-  
-          <font class="first">A</font>utomation
-  
-          of
-  
-          <font class="first">M</font>agic
-  
-          <font class="first">W</font>ands
+          <font class="first">W</font>and
   
 </h1>
   <p>&nbsp;</p>
@@ -103,7 +109,7 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Formalization of a Framework for the Sound Automation of Magic Wands</td>
+  <td class="data" width="80%">A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand</td>
 </tr>
 
 <tr>
@@ -119,40 +125,49 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2022-05-18</td>
+  <td class="data">2022-05-30</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-The magic wand $\mathbin{-\!\!*}$ (also called separating
-implication) is a separation logic connective commonly used to specify
-properties of partial data structures, for instance during iterative
-traversals. A <em>footprint</em> of a magic wand formula
-$$A \mathbin{-\!\!*} B$$ is a state that, combined with any state in
-which $A$ holds, yields a state in which $B$ holds. The key
-challenge of proving a magic wand (also called
-<em>packaging</em> a wand) is to find such a footprint.
-Existing package algorithms either have a high annotation overhead or
-are unsound.  In this entry, we formally define a framework for the
-sound automation of magic wands, described in an <a href="https://www.cs.ubc.ca/~alexsumm/papers/DardinierParthasarathyWeeksMuellerSummers22.pdf">upcoming
-paper at CAV 2022</a>, and prove that it is sound and complete.
-This framework, called the <em>package logic</em>,
-precisely characterises a wide design space of possible package
-algorithms applicable to a large class of separation logics.</td>
+Many separation logics support <em>fractional
+permissions</em> to distinguish between read and write access to
+a heap location, for instance, to allow concurrent reads while
+enforcing exclusive writes. The concept has been generalized to
+fractional assertions. $A^p$ (where $A$ is a separation logic
+assertion and $p$ a fraction between $0$ and $1$) represents a
+fraction $p$ of $A$. $A^p$ holds in a state $\sigma$ iff there exists
+a state $\sigma_A$ in which $A$ holds and $\sigma$ is obtained from
+$\sigma_A$ by multiplying all permission amounts held by $p$.  While
+$A^{p + q}$ can always be split into $A^p * A^q$, recombining $A^p *
+A^q$ into $A^{p+q}$ is not always sound. We say that $A$ is
+<em>combinable</em> iff the entailment $A^p * A^q \models
+A^{p+q}$ holds for any two positive fractions $p$ and $q$ such that $p
++ q \le 1$. Combinable assertions are particularly useful to reason
+about concurrent programs, for instance, to combine the postconditions
+of parallel branches when they terminate. Unfortunately, the magic
+wand assertion $A \wand B$, commonly used to specify properties of
+partial data structures, is typically <em>not</em>
+combinable.  In this entry, we formalize a novel, restricted
+definition of the magic wand, described in <a
+href="https://arxiv.org/abs/2205.11325">a paper at CAV
+22</a>, which we call the <em>combinable wand</em>.
+We prove some key properties of the combinable wand; in particular, a
+combinable wand is combinable if its right-hand side is combinable.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Package_logic-AFP,
+        <pre>@article{Combinable_Wands-AFP,
   author  = {Thibault Dardinier},
-  title   = {Formalization of a Framework for the Sound Automation of Magic Wands},
+  title   = {A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand},
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2022,
-  note    = {\url{https://isa-afp.org/entries/Package_logic.html},
+  note    = {\url{https://isa-afp.org/entries/Combinable_Wands.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -163,10 +178,10 @@ algorithms applicable to a large class of separation logics.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Combinable_Wands.html">Combinable_Wands</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Package_logic.html">Package_logic</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -178,17 +193,17 @@ algorithms applicable to a large class of separation logics.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Package_logic/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Package_logic/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Combinable_Wands/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Combinable_Wands/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Package_logic/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Combinable_Wands/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Package_logic-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Combinable_Wands-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

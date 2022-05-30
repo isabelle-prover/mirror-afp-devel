@@ -9,7 +9,39 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>26 May 2022 00:00:00 +0000</pubDate>
+    <pubDate>30 May 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand</title>
+              <link>https://www.isa-afp.org/entries/Combinable_Wands.html</link>
+       <guid>https://www.isa-afp.org/entries/Combinable_Wands.html</guid>
+       <dc:creator> Thibault Dardinier       </dc:creator>
+       <pubDate>30 May 2022 00:00:00 +0000</pubDate>
+       <description>
+Many separation logics support &lt;em&gt;fractional
+permissions&lt;/em&gt; to distinguish between read and write access to
+a heap location, for instance, to allow concurrent reads while
+enforcing exclusive writes. The concept has been generalized to
+fractional assertions. $A^p$ (where $A$ is a separation logic
+assertion and $p$ a fraction between $0$ and $1$) represents a
+fraction $p$ of $A$. $A^p$ holds in a state $\sigma$ iff there exists
+a state $\sigma_A$ in which $A$ holds and $\sigma$ is obtained from
+$\sigma_A$ by multiplying all permission amounts held by $p$.  While
+$A^{p + q}$ can always be split into $A^p * A^q$, recombining $A^p *
+A^q$ into $A^{p+q}$ is not always sound. We say that $A$ is
+&lt;em&gt;combinable&lt;/em&gt; iff the entailment $A^p * A^q \models
+A^{p+q}$ holds for any two positive fractions $p$ and $q$ such that $p
++ q \le 1$. Combinable assertions are particularly useful to reason
+about concurrent programs, for instance, to combine the postconditions
+of parallel branches when they terminate. Unfortunately, the magic
+wand assertion $A \wand B$, commonly used to specify properties of
+partial data structures, is typically &lt;em&gt;not&lt;/em&gt;
+combinable.  In this entry, we formalize a novel, restricted
+definition of the magic wand, described in &lt;a
+href=&#34;https://arxiv.org/abs/2205.11325&#34;&gt;a paper at CAV
+22&lt;/a&gt;, which we call the &lt;em&gt;combinable wand&lt;/em&gt;.
+We prove some key properties of the combinable wand; in particular, a
+combinable wand is combinable if its right-hand side is combinable.</description>
+    </item>
     <item>
        <title>The Plünnecke-Ruzsa Inequality</title>
               <link>https://www.isa-afp.org/entries/Pluennecke_Ruzsa_Inequality.html</link>
@@ -640,24 +672,6 @@ basic part of Actuarial Mathematics in Coq
 the partial translation and a little generalization of the Coq
 formalization. The further translation in Isabelle/HOL is now
 proceeding.</description>
-    </item>
-    <item>
-       <title>Irrational numbers from THE BOOK</title>
-              <link>https://www.isa-afp.org/entries/Irrationals_From_THEBOOK.html</link>
-       <guid>https://www.isa-afp.org/entries/Irrationals_From_THEBOOK.html</guid>
-       <dc:creator> Lawrence C Paulson       </dc:creator>
-       <pubDate>08 Jan 2022 00:00:00 +0000</pubDate>
-       <description>
-An elementary proof is formalised: that &lt;em&gt;exp r&lt;/em&gt; is irrational for
-every nonzero rational number &lt;em&gt;r&lt;/em&gt;. The mathematical development comes
-from the well-known volume &lt;em&gt;Proofs from THE BOOK&lt;/em&gt;,
-by Aigner and Ziegler, who credit the idea to Hermite. The development
-illustrates a number of basic Isabelle techniques: the manipulation of
-summations, the calculation of quite complicated derivatives and the
-estimation of integrals. We also see how to import another AFP entry (Stirling&#39;s formula).
-As for the theorem itself, note that a much stronger and more general
-result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
-already available in the AFP.</description>
     </item>
   </channel>
 </rss>
