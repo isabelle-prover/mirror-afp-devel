@@ -12295,3 +12295,18 @@ abstract =
   bound is $\sqrt[7]{n}^{\sqrt[8]{n}}$ for the fixed choice of $s =
   \sqrt[4]{n}$), following a proof by Gordeev. </p>
 
+[Pluennecke_Ruzsa_Inequality]
+title = The Plünnecke-Ruzsa Inequality
+author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>
+  and Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Combinatorics
+date = 2022-05-26
+notify = lp15@cam.ac.uk
+abstract = 
+  We formalise Plünnecke's inequality and the Plünnecke-Ruzsa
+  inequality, following the notes by Timothy Gowers: "Introduction
+  to Additive Combinatorics" (2022) for the University of
+  Cambridge. To this end, we first introduce basic definitions and prove
+  elementary facts on sumsets and difference sets. Then, we show two
+  versions of the Ruzsa triangle inequality. We follow with a proof due
+  to Petridis.

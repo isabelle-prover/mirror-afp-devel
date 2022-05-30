@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>18 May 2022 00:00:00 +0000</pubDate>
+    <pubDate>26 May 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Plünnecke-Ruzsa Inequality</title>
+              <link>https://www.isa-afp.org/entries/Pluennecke_Ruzsa_Inequality.html</link>
+       <guid>https://www.isa-afp.org/entries/Pluennecke_Ruzsa_Inequality.html</guid>
+       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
+       <pubDate>26 May 2022 00:00:00 +0000</pubDate>
+       <description>
+We formalise Plünnecke&#39;s inequality and the Plünnecke-Ruzsa
+inequality, following the notes by Timothy Gowers: &#34;Introduction
+to Additive Combinatorics&#34; (2022) for the University of
+Cambridge. To this end, we first introduce basic definitions and prove
+elementary facts on sumsets and difference sets. Then, we show two
+versions of the Ruzsa triangle inequality. We follow with a proof due
+to Petridis.</description>
+    </item>
     <item>
        <title>Formalization of a Framework for the Sound Automation of Magic Wands</title>
               <link>https://www.isa-afp.org/entries/Package_logic.html</link>
@@ -643,26 +658,6 @@ estimation of integrals. We also see how to import another AFP entry (Stirling&#
 As for the theorem itself, note that a much stronger and more general
 result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
 already available in the AFP.</description>
-    </item>
-    <item>
-       <title>Knight's Tour Revisited Revisited</title>
-              <link>https://www.isa-afp.org/entries/Knights_Tour.html</link>
-       <guid>https://www.isa-afp.org/entries/Knights_Tour.html</guid>
-       <dc:creator> Lukas Koller       </dc:creator>
-       <pubDate>04 Jan 2022 00:00:00 +0000</pubDate>
-       <description>
-This is a formalization of the article &lt;i&gt;Knight&#39;s Tour Revisited&lt;/i&gt; by
-Cull and De Curtins where they prove the existence of a Knight&#39;s
-path for arbitrary &lt;i&gt;n &amp;times; m&lt;/i&gt;-boards with &lt;i&gt;min(n,m) &amp;ge;
-5&lt;/i&gt;. If &lt;i&gt;n &amp;middot; m&lt;/i&gt; is even, then there exists a Knight&#39;s
-circuit.  A Knight&#39;s Path is a sequence of moves of a Knight on a
-chessboard s.t. the Knight visits every square of a chessboard
-exactly once.  Finding a Knight&#39;s path is a an instance of the
-Hamiltonian path problem. A Knight&#39;s circuit is a Knight&#39;s path,
-where additionally the Knight can move from the last square to the
-first square of the path, forming a loop.  During the formalization
-two mistakes in the original proof were discovered. These mistakes
-are corrected in this formalization.</description>
     </item>
   </channel>
 </rss>
