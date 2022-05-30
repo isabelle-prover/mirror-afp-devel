@@ -33,7 +33,7 @@ A^{p+q}$ holds for any two positive fractions $p$ and $q$ such that $p
 + q \le 1$. Combinable assertions are particularly useful to reason
 about concurrent programs, for instance, to combine the postconditions
 of parallel branches when they terminate. Unfortunately, the magic
-wand assertion $A \wand B$, commonly used to specify properties of
+wand assertion $A \mathbin{-\!\!*} B$, commonly used to specify properties of
 partial data structures, is typically &lt;em&gt;not&lt;/em&gt;
 combinable.  In this entry, we formalize a novel, restricted
 definition of the magic wand, described in &lt;a
