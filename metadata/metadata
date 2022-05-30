@@ -12297,8 +12297,7 @@ abstract =
 
 [Pluennecke_Ruzsa_Inequality]
 title = The Plünnecke-Ruzsa Inequality
-author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>
-  and Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+author = Angeliki Koutsoukou-Argyraki <https://www.cl.cam.ac.uk/~ak2110/>, Lawrence C. Paulson <>
 topic = Mathematics/Combinatorics
 date = 2022-05-26
 notify = lp15@cam.ac.uk
