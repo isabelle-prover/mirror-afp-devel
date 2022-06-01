@@ -141,13 +141,13 @@ next
   assume rr: "random_scheduler \<sigma> s = \<lfloor>(t, None, \<sigma>')\<rfloor>"
     and invar: "random_scheduler_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
   thus "\<exists>x ln n. thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor> \<and> 0 < ln $ n \<and> \<not> waiting (ws_\<alpha> (wset s) t) \<and> may_acquire_all (locks s) t ln"
-    by(fastforce simp add: random_scheduler_def Option_bind_eq_Some_conv dest: step_thread_Some_NoneD[OF det])
+    by(fastforce simp add: random_scheduler_def bind_eq_Some_conv dest: step_thread_Some_NoneD[OF det])
 next
   fix \<sigma> s t ta x' m' \<sigma>'
   assume rr: "random_scheduler \<sigma> s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
     and invar: "random_scheduler_invar \<sigma> (dom (thr_\<alpha> (thr s)))" "state_invar s" "state_\<alpha> s \<in> I"
   thus "\<exists>x. thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> Predicate.eval (r t (x, shr s)) (ta, x', m') \<and> \<alpha>.actions_ok (state_\<alpha> s) t ta"
-    by(auto simp add: random_scheduler_def Option_bind_eq_Some_conv dest: step_thread_Some_SomeD[OF det])
+    by(auto simp add: random_scheduler_def bind_eq_Some_conv dest: step_thread_Some_SomeD[OF det])
 qed simp_all
 
 end

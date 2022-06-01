@@ -111,13 +111,13 @@ proof cases
     by(rule typeof_addr_hext_mono)
   hence type: "list_all2 (\<lambda>al T. P,H' \<turnstile> a@al : T) ?als ?Ts"
     using \<open>P \<turnstile> C has_fields FDTs\<close>
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    unfolding list_all2_map1 list_all2_map2 list_all2_same
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   ultimately have "ad = a \<and> al \<in> set ?als" by(rule heap_copies_read_typeable)
   hence [simp]: "ad = a" and "al \<in> set ?als" by simp_all
   then obtain F D T where [simp]: "al = CField D F" and "((F, D), T) \<in> set FDTs" by auto
   with type \<open>h \<unlhd> H'\<close> \<open>typeof_addr h a = \<lfloor>Class_type C\<rfloor>\<close> show ?thesis 
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    unfolding list_all2_map1 list_all2_map2 list_all2_same
     by(fastforce elim!: ballE[where x="((F, D), T)"] addr_loc_type.cases dest: typeof_addr_hext_mono intro: addr_loc_type.intros)
 next
   case (ArrClone T n H' FDTs obs')
@@ -133,7 +133,7 @@ next
   have type': "typeof_addr H' a = \<lfloor>Array_type T n\<rfloor>"
     by(auto dest: typeof_addr_hext_mono hext_arrD)
   hence type: "list_all2 (\<lambda>al T. P,H' \<turnstile> a@al : T) ?als ?Ts" using FDTs
-    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
   ultimately have "ad = a \<and> al \<in> set ?als" by(rule heap_copies_read_typeable)
   hence [simp]: "ad = a" and "al \<in> set ?als" by simp_all
   hence "al \<in> set (map (\<lambda>((F, D), Tfm). CField D F) FDTs) \<or> al \<in> set (map ACell [0..<n])" by simp
@@ -142,7 +142,7 @@ next
     assume "al \<in> set (map (\<lambda>((F, D), Tfm). CField D F) FDTs)"
     then obtain F D Tfm where [simp]: "al = CField D F" and "((F, D), Tfm) \<in> set FDTs" by auto
     with type type' \<open>h \<unlhd> H'\<close> \<open>typeof_addr h a = \<lfloor>Array_type T n\<rfloor>\<close> show ?thesis 
-      by(fastforce elim!: ballE[where x="((F, D), Tfm)"] addr_loc_type.cases intro: addr_loc_type.intros simp add: list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv)
+      by(fastforce elim!: ballE[where x="((F, D), Tfm)"] addr_loc_type.cases intro: addr_loc_type.intros simp add: list_all2_append list_all2_map1 list_all2_map2 list_all2_same)
   next
     assume "al \<in> set (map ACell [0..<n])"
     then obtain n' where [simp]: "al = ACell n'" and "n' < n" by auto
@@ -354,12 +354,12 @@ proof(cases)
   moreover from \<open>(h'', ad') \<in> allocate h (Class_type C)\<close> hconf \<open>is_htype P (Class_type C)\<close>
   have "hconf h''" by(rule hconf_allocate_mono)
   moreover from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    unfolding list_all2_map1 list_all2_map2 list_all2_same
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   moreover from \<open>(h'', ad') \<in> allocate h (Class_type C)\<close> \<open>is_htype P (Class_type C)\<close>
   have "typeof_addr h'' ad' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
   with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts"
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    unfolding list_all2_map1 list_all2_map2 list_all2_same
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   ultimately
   have copy: "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' (map (\<lambda>((F, D), Tfm). CField D F) FDTs) h'' obs' h'"
@@ -386,12 +386,12 @@ next
   moreover from new hconf \<open>is_htype P (Array_type T n)\<close> have "hconf h''" by(rule hconf_allocate_mono)
   moreover
   from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
-    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
   moreover from new \<open>is_htype P (Array_type T n)\<close>
   have "typeof_addr h'' ad' = \<lfloor>Array_type T n\<rfloor>"
     by(auto dest: allocate_SomeD)
   hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts" using FDTs
-    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
   ultimately have copy: "heap_base.heap_copies (heap_read_typed P) heap_write ad ad' (map (\<lambda>((F, D), Tfm). CField D F) FDTs @ map ACell [0..<n]) h'' obs' h'"
     by(rule heap_copies_non_speculative_typeable)+
   from \<open>typeof_addr h ad = \<lfloor>Array_type T n\<rfloor>\<close> new FDTs copy show ?thesis
@@ -427,12 +427,12 @@ proof(cases)
   moreover from \<open>(h'', ad') \<in> allocate h (Class_type C)\<close> hconf \<open>is_htype P (Class_type C)\<close>
   have "hconf h''" by(rule hconf_allocate_mono)
   moreover from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    unfolding list_all2_map1 list_all2_map2 list_all2_same
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   moreover from \<open>(h'', ad') \<in> allocate h (Class_type C)\<close> \<open>is_htype P (Class_type C)\<close>
   have "typeof_addr h'' ad' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
   with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts"
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    unfolding list_all2_map1 list_all2_map2 list_all2_same
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   ultimately
   have vs': "vs_conf P h' (w_values P ?vs (take (n - 1) (map NormalAction obs')))"
@@ -469,12 +469,12 @@ next
   moreover from new hconf \<open>is_htype P (Array_type T N)\<close> have "hconf h''" by(rule hconf_allocate_mono)
   moreover
   from type FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad@al : T) ?als ?Ts"
-    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
   moreover from new \<open>is_htype P (Array_type T N)\<close>
   have "typeof_addr h'' ad' = \<lfloor>Array_type T N\<rfloor>"
     by(auto dest: allocate_SomeD)
   hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> ad'@al : T) ?als ?Ts" using FDTs
-    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
   ultimately have vs': "vs_conf P h' (w_values P ?vs (take (n - 1) (map NormalAction obs')))"
     by(rule heap_copies_non_speculative_vs_conf)
   show ?thesis
@@ -696,11 +696,11 @@ proof cases
   from hext \<open>typeof_addr h a = \<lfloor>Class_type C\<rfloor>\<close>
   have "typeof_addr h'' a = \<lfloor>Class_type C\<rfloor>" by(rule typeof_addr_hext_mono)
   hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts" using FDTs
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    unfolding list_all2_map1 list_all2_map2 list_all2_same
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   moreover from FDTs type_a'
   have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    unfolding list_all2_map1 list_all2_map2 list_all2_same
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   moreover from \<open>(h'', a') \<in> allocate h (Class_type C)\<close> hconf \<open>is_htype P (Class_type C)\<close>
   have "hconf h''" by(rule hconf_allocate_mono)
@@ -740,10 +740,10 @@ next
   have type'a: "typeof_addr h'' a = \<lfloor>Array_type T n\<rfloor>"
     by(auto intro: hext_arrD)
   from type'a FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
-    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
   moreover from type_a' FDTs
   have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
-    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
   moreover from \<open>(h'', a') \<in> allocate h (Array_type T n)\<close> hconf \<open>is_htype P (Array_type T n)\<close>
   have "hconf h''" by(rule hconf_allocate_mono)
   moreover from i read i_0 obs have "?i < length obs'" "obs' ! ?i = ReadMem a'' al'' v" by simp_all
