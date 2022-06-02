@@ -8,12 +8,12 @@ package afp
 import isabelle._
 
 
-class AFP_Structure private(base_dir: Path) {
+class AFP_Structure private(val base_dir: Path) {
   /* files */
 
-  private val metadata_dir = base_dir + Path.basic("metadata")
+  val metadata_dir = base_dir + Path.basic("metadata")
 
-  private val thys_dir = base_dir + Path.basic("thys")
+  val thys_dir = base_dir + Path.basic("thys")
 
   private val authors_file = metadata_dir + Path.basic("authors.toml")
 
@@ -53,6 +53,14 @@ class AFP_Structure private(base_dir: Path) {
     val entry_releases = releases.getOrElse(name, error("No releases for entry " + name))
     load(entry_file(name), toml =>
       Metadata.TOML.to_entry(toml ++ TOML.T("name" -> name), authors, topics, licenses, entry_releases))
+  }
+
+  def load(): List[Metadata.Entry] = {
+    val authors = load_authors.map(author => author.id -> author).toMap
+    val topics = load_topics.map(topic => topic.id -> topic).toMap
+    val licenses = load_licenses.map(license => license.id -> license).toMap
+    val releases = load_releases.groupBy(_.entry)
+    entries.map(name => load_entry(name, authors, topics, licenses, releases))
   }
 
 
@@ -106,6 +114,8 @@ class AFP_Structure private(base_dir: Path) {
 
   def entry_sessions(name: Metadata.Entry.Name): List[Sessions.Session_Entry] =
     Sessions.parse_root(thys_dir + Path.make(List(name, "ROOT"))).collect { case e: Sessions.Session_Entry => e }
+
+  def hg_id: String = Mercurial.repository(base_dir).id()
 }
 
 object AFP_Structure {
