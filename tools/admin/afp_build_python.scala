@@ -4,8 +4,7 @@ package afp
 import isabelle._
 
 
-object AFP_Build_Python
-{
+object AFP_Build_Python {
   val default_mirror = "https://www.python.org/ftp/python/3.9.8/Python-3.9.8.tgz"
 
   def make_component_name(version: String): String = "python-" + version
@@ -18,8 +17,8 @@ object AFP_Build_Python
     progress: Progress = new Progress,
     mirror: String = default_mirror,
     target_dir: Path = Path.current,
-    verbose: Boolean = false): Unit =
-  {
+    verbose: Boolean = false
+  ): Unit = {
     Isabelle_System.with_tmp_dir("python") { tmp_dir =>
       /* component */
 
@@ -120,8 +119,9 @@ AFP packages are installed.
 
   /* Isabelle tool wrapper */
 
-  val isabelle_tool = Isabelle_Tool("afp_build_python", "build afp python environment", Scala_Project.here, args =>
-  {
+  val isabelle_tool = Isabelle_Tool("afp_build_python", "build afp python environment",
+    Scala_Project.here,
+  { args =>
     var target_dir = Path.current
     var requirements_file = Path.explode("$AFP_BASE/admin/sitegen-req.txt")
     var mirror = default_mirror
