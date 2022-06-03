@@ -6,7 +6,7 @@ import isabelle._
 
 object AFP_Build_Python
 {
-  val default_mirror = "https://www.python.org/ftp/python/3.9.8/Python-3.9.8.tar.xz"
+  val default_mirror = "https://www.python.org/ftp/python/3.9.8/Python-3.9.8.tgz"
 
   def make_component_name(version: String): String = "python-" + version
 
@@ -24,7 +24,7 @@ object AFP_Build_Python
       /* component */
 
       val Archive_Name = """^.*?([^/]+)$""".r
-      val Version = """^Python-([0-9.]+)\.tar.xz$""".r
+      val Version = """^Python-([0-9.]+)\.tgz$""".r
 
       val archive_name =
         mirror match {
@@ -59,11 +59,11 @@ object AFP_Build_Python
       val archive_path = tmp_dir + Path.basic(archive_name)
       Isabelle_System.download_file(mirror, archive_path, progress = progress)
 
-      Isabelle_System.bash("tar xf " + File.bash_path(archive_path), cwd = tmp_dir.file).check
+      Isabelle_System.bash("tar xzf " + File.bash_path(archive_path), cwd = tmp_dir.file).check
       val source_name = File.get_dir(tmp_dir)
 
       Isabelle_System.bash(
-        "tar xf " + archive_path + " && mv " + Bash.string(source_name) + " src",
+        "tar xzf " + archive_path + " && mv " + Bash.string(source_name) + " src",
         cwd = component_dir.file).check
 
 
