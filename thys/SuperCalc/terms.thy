@@ -1137,24 +1137,29 @@ where
 
 lemma renamings_admit_inverse:
   shows "finite V \<Longrightarrow> renaming \<sigma> V \<Longrightarrow> \<exists> \<theta>. (\<forall> x \<in> V. (subst (subst (Var x) \<sigma> ) \<theta>) = (Var x))
-    \<and> (\<forall> x. (x \<notin> (subst_codomain \<sigma> V) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))"
+    \<and> (\<forall> x. (x \<notin> (subst_codomain \<sigma> V) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))
+    \<and> (\<forall>x. is_a_variable (subst (Var x) \<theta>))"
 proof (induction rule: finite.induct)
   case emptyI
     let ?\<theta> = "[]"
     have i: "(\<forall> x \<in> {}. (subst (subst (Var x) \<sigma> ) ?\<theta>) = (Var x))" by auto
     have ii: "(\<forall> x. (x \<notin> (subst_codomain \<sigma> {}) \<longrightarrow> (subst (Var x) ?\<theta>) = (Var x)))" by auto
-    from i ii show ?case  by metis
+    have iii: "\<forall>x. is_a_variable (subst (Var x) ?\<theta>)" by simp
+    from i ii iii show ?case  by metis
 next
   fix A :: "'a set" and a::'a 
   assume "finite A"
   assume hyp_ind: "renaming \<sigma> A \<Longrightarrow> \<exists> \<theta>. (\<forall> x \<in> A. (subst (subst (Var x) \<sigma> ) \<theta>) = (Var x))
-    \<and> (\<forall> x. (x \<notin> (subst_codomain \<sigma> A) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))" 
+    \<and> (\<forall> x. (x \<notin> (subst_codomain \<sigma> A) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))
+    \<and> (\<forall>x. is_a_variable (subst (Var x) \<theta>))"
   show "renaming \<sigma> (insert a A) \<Longrightarrow> \<exists> \<theta>. (\<forall> x \<in>  (insert a A). (subst (subst (Var x) \<sigma> ) \<theta>) = (Var x))
-    \<and> (\<forall> x. (x \<notin> (subst_codomain \<sigma> (insert a A)) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))" 
+    \<and> (\<forall> x. (x \<notin> (subst_codomain \<sigma> (insert a A)) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))
+    \<and> (\<forall>x. is_a_variable (subst (Var x) \<theta>))"
   proof -
     assume "renaming \<sigma> (insert a A)" 
     show "\<exists> \<theta>. (\<forall> x \<in>  (insert a A). (subst (subst (Var x) \<sigma> ) \<theta>) = (Var x))
-    \<and> (\<forall> x. (x \<notin> (subst_codomain \<sigma> (insert a A)) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))"
+    \<and> (\<forall> x. (x \<notin> (subst_codomain \<sigma> (insert a A)) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))
+    \<and> (\<forall>x. is_a_variable (subst (Var x) \<theta>))"
     proof (cases)
       assume "a \<in> A"
       from this have "insert a A = A" by auto
@@ -1162,7 +1167,8 @@ next
     next assume "a \<notin> A"
       from \<open>renaming \<sigma> (insert a A)\<close> have "renaming \<sigma> A" unfolding renaming_def by blast
       from this and hyp_ind obtain \<theta> where i: "(\<forall> x \<in> A. (subst (subst (Var x) \<sigma> ) \<theta>) = (Var x))" and 
-        ii:  "(\<forall> x. (x \<notin> (subst_codomain \<sigma> A) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))" by metis 
+        ii:  "(\<forall> x. (x \<notin> (subst_codomain \<sigma> A) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))" and
+        iii: "\<forall>x. is_a_variable (Var x \<lhd> \<theta>)" by metis
       from \<open>renaming \<sigma> (insert a A)\<close> have "is_a_variable (subst (Var a) \<sigma>)" unfolding renaming_def by blast
       from this obtain b where "(subst (Var a) \<sigma>) = (Var b)" using is_a_variable.elims(2) by auto 
       let ?\<eta> = "(b,(Var a)) # \<theta>"
@@ -1217,8 +1223,10 @@ next
         from \<open>(subst (Var x) ?\<eta>) = (subst (Var x) \<theta>)\<close> 
           and \<open>(subst (Var x) \<theta>) = (Var x)\<close> show "(subst (Var x) ?\<eta>) = (Var x)" 
           by auto
-       qed
-      from i' ii' show ?thesis by auto
+      qed
+      have iii': "\<forall>x. is_a_variable (subst (Var x) ?\<eta>)"
+        using iii by auto
+      from i' ii' iii' show ?thesis by auto
     qed
   qed
 qed
