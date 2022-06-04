@@ -540,7 +540,7 @@ proof-
   then have "\<forall>(term,d)\<in>set(chop (to_list v p)). d\<ge>i"
     unfolding assms[symmetric]  by fastforce
   then have simp : "\<forall>(term,d)\<in>set(chop(to_list v p)). f v ^ (d - i) * f v ^ i = f v ^ d"
-    unfolding HOL.no_atp(118) by(auto simp del: to_list.simps)
+    unfolding semiring_normalization_rules(26) by(auto simp del: to_list.simps)
   have "insertion f p = sum_list [insertion f term * (f v) ^ i. (term,i)\<leftarrow>(chop (to_list v p))]" using insertion_chop[of f p v] .
   also have "...= (\<Sum>(term, d)\<leftarrow>chop (to_list v p). insertion f term * f v ^ (d-i) * f v ^ i)" 
     using simp
