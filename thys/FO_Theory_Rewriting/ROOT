@@ -1,7 +1,7 @@
 chapter AFP
 
 session FO_Theory_Rewriting (AFP) = "HOL-Library" +
-  options [timeout = 600]
+  options [timeout = 1200]
   sessions
     "Regular_Tree_Relations"
     "FOL-Fitting"
@@ -16,19 +16,15 @@ session FO_Theory_Rewriting (AFP) = "HOL-Library" +
     "Util/Bot_Terms"
     "Util/Saturation"
     "Util/Utils"
-  theories
     "Rewriting/Rewriting"
-  theories
     "Primitives/LV_to_GTT"
     "Primitives/NF"
     "Primitives/NF_Impl"
-  theories
     "Closure/TA_Clousure_Const"
     "Closure/Context_Extensions"
     "Closure/Lift_Root_Step"
     "Closure/GTT_RRn"
     "Closure/Context_RR2"
-  theories
     "FOL_Extra"
     "FOR_Certificate"
     "FOR_Semantics"
