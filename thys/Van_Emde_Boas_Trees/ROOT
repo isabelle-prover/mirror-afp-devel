@@ -2,7 +2,7 @@ chapter AFP
 
 session Van_Emde_Boas_Trees (AFP) = HOL +
   (*descpription "Functional and imperative van Emde Boas Trees"*)
-  options [timeout = 900]
+  options [timeout = 1200]
   sessions
     "HOL-Imperative_HOL"
     "Automatic_Refinement"
