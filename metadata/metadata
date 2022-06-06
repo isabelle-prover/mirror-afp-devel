@@ -44,7 +44,7 @@ abstract =
 
 [Digit_Expansions]
 title = Digit Expansions
-author = Jonas Bayer, Marco David, Abhik Pal, Benedikt Stock
+author = Jonas Bayer<>, Marco David<>, Abhik Pal<>, Benedikt Stock<>
 topic = Mathematics/Number theory
 date = 2022-04-20
 notify = jonas.bayer999@gmail.com, marco.david@hotmail.de, benedikt1999@freenet.de
@@ -12341,3 +12341,18 @@ abstract =
   elementary facts on sumsets and difference sets. Then, we show two
   versions of the Ruzsa triangle inequality. We follow with a proof due
   to Petridis.
+
+[Rewrite_Properties_Reduction]
+title = Reducing Rewrite Properties to Properties on Ground Terms
+author = Alexander Lochmann <mailto:alexander.lochmann@uibk.ac.at>
+topic = Logic/Rewriting
+date = 2022-06-02
+notify = alexander.lochmann@uibk.ac.at
+abstract = 
+  This AFP entry relates important rewriting properties between the set
+  of terms and the set of ground terms induced by a given signature. The
+  properties considered are confluence, strong/local confluence, the
+  normal form property, unique normal forms with respect to reduction
+  and conversion, commutation, conversion equivalence, and normalization
+  equivalence.
+
