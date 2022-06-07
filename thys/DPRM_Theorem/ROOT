@@ -1,0 +1,69 @@
+chapter AFP
+
+session DPRM_Theorem (AFP) = HOL +
+  description \<open>The DPRM Theorem\<close>
+  options [timeout = 600]
+
+  sessions
+    "HOL-Library"
+    "Lucas_Theorem"
+    "Digit_Expansions"
+
+  directories
+    "Diophantine"
+    "Register_Machine"
+    "Machine_Equations"
+
+  theories
+    (* Diophantine Equations *)
+    "Diophantine/Parametric_Polynomials"
+    "Diophantine/Assignments"
+    "Diophantine/Diophantine_Relations"
+    "Diophantine/Existential_Quantifier"
+    "Diophantine/Modulo_Divisibility"
+
+    (* Exponentiation is Diophantine *)
+    "Diophantine/Exponentiation"
+    "Diophantine/Alpha_Sequence"
+    "Diophantine/Exponential_Relation"
+
+    (* Diophantization of Digitwise Operations *)
+    "Diophantine/Digit_Function"
+    "Diophantine/Binomial_Coefficient"
+    "Diophantine/Binary_Masking"
+    "Diophantine/Binary_Orthogonal"
+    "Diophantine/Binary_And"
+
+    (* Register Machines *)
+    "Register_Machine/RegisterMachineSpecification"
+    "Register_Machine/RegisterMachineProperties"
+    "Register_Machine/RegisterMachineSimulation"
+    "Register_Machine/SingleStepRegister"
+    "Register_Machine/SingleStepState"
+    "Register_Machine/MultipleStepRegister"
+    "Register_Machine/MultipleStepState"
+    "Register_Machine/MachineMasking"
+
+    (* Arithmetization of Register Machines *)
+    "Register_Machine/MachineEquations"
+    "Register_Machine/CommutationRelations"
+    "Register_Machine/MultipleToSingleSteps"
+    "Machine_Equations/Equation_Setup"
+    "Machine_Equations/RM_Sums_Diophantine"
+    "Diophantine/Register_Machine_Sums"
+    "Machine_Equations/Register_Equations"
+    "Machine_Equations/State_0_Equation"
+    "Machine_Equations/State_d_Equation"
+    "Machine_Equations/All_State_Equations"
+    "Machine_Equations/Mask_Equations"
+    "Machine_Equations/Constants_Equations"
+    "Machine_Equations/All_Equations_Invariance"
+    "Machine_Equations/All_Equations"
+    "Machine_Equations/Machine_Equation_Equivalence"
+
+    (* The DPRM Theorem *)
+    DPRM
+
+  document_files
+    "root.tex"
+    "root.bib"
