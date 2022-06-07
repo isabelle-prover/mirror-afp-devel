@@ -2,7 +2,7 @@ title = AFP/Tools
 module = $AFP_BASE/tools/lib/classes/afp_tools.jar
 requirements = \
   env:ISABELLE_SCALA_JAR \
-  $AFP_DEPS_JAR
+  $ISABELLE_HOME_USER/contrib/ci-extras-1/lib/ci-extras.jar
 sources = \
   tools/admin/afp_build_hugo.scala \
   tools/admin/afp_build_python.scala \
