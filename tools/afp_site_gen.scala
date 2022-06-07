@@ -330,6 +330,9 @@ object AFP_Site_Gen {
 
       getopts(args)
 
+      status_file.foreach(path =>
+        if (!path.is_file || !path.file.exists()) error("Invalid status file: " + path))
+
       if (devel_mode) hugo_dir = base_dir + Path.make(List("admin", "site"))
 
       val afp_structure = AFP_Structure(base_dir)
