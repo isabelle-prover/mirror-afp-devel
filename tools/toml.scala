@@ -39,6 +39,12 @@ object TOML {
 
   def split_as[A: ClassTag](map: T): List[(Key, A)] = map.keys.toList.map(k => k -> get_as[A](map, k))
 
+  def optional_as[A: ClassTag](map: T, name: String): Option[A] = map.get(name) match {
+    case Some(value: A) => Some(value)
+    case Some(value) => error("Value " + quote(value.toString) + " not of type " + classTag[A].runtimeClass.getName)
+    case None => None
+  }
+
   def get_as[A: ClassTag](map: T, name: String): A = map.get(name) match {
     case Some(value: A) => value
     case Some(value) => error("Value " + quote(value.toString) + " not of type " + classTag[A].runtimeClass.getName)
@@ -159,8 +165,8 @@ object TOML {
 
     private def key: Parser[Key] = elem("key", e => e.is_ident || e.is_string) ^^ (_.text)
 
-    private def toml_value: Parser[V] = string | integer | float | offset_date_time | local_date_time | local_date |
-      local_time | array | inline_table
+    private def toml_value: Parser[V] = string | integer | float | boolean | offset_date_time |
+      local_date_time | local_date | local_time | array | inline_table
 
     private def content: Parser[List[(List[Key], V)]] = rep((keys <~ $$$("=")) ~! toml_value ^^
       { case ks ~ v => ks -> v })
