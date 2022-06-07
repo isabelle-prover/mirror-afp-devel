@@ -148,11 +148,15 @@ object AFP_Site_Gen {
 
     var seen_affiliations = Set.empty[Affiliation]
 
-    val entries = afp_structure.entries.map { name =>
+    val entries = afp_structure.entries.flatMap { name =>
       val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
         releases_by_entry)
-      seen_affiliations ++= entry.authors ++ entry.contributors
-      entry
+
+      if (entry.sitegen_ignore) None
+      else {
+        seen_affiliations ++= entry.authors ++ entry.contributors
+        Some(entry)
+      }
     }
 
     val authors = Utils.group_sorted(seen_affiliations.toList, (a: Affiliation) => a.author).map {

@@ -80,7 +80,8 @@ object Metadata
     note: String,
     change_history: Change_History,
     extra: Extra,
-    releases: List[Release])
+    releases: List[Release],
+    sitegen_ignore: Boolean)
 
   object Entry {
     type Name = String
@@ -226,7 +227,7 @@ object Metadata
 
     /* entry */
 
-    def from_entry(entry: Entry): T =
+    def from_entry(entry: Entry): T = {
       T(
         "title" -> entry.title,
         "authors" -> from_affiliations(entry.authors),
@@ -238,7 +239,9 @@ object Metadata
         "license" -> entry.license.id,
         "note" -> entry.note,
         "history" -> from_change_history(entry.change_history),
-        "extra" -> entry.extra)
+        "extra" -> entry.extra) ++
+        (if (entry.sitegen_ignore) T("sitegen_ignore" -> true) else T())
+    }
 
     def to_entry(entry: T, authors: Map[Author.ID, Author], topics: Map[Topic.ID, Topic],
       licenses: Map[License.ID, License], releases: List[Release]): Entry =
@@ -255,6 +258,7 @@ object Metadata
         note = get_as[String](entry, "note"),
         change_history = to_change_history(get_as[T](entry, "history")),
         extra = get_as[Extra](entry, "extra"),
-        releases = releases)
+        releases = releases,
+        sitegen_ignore = optional_as[Boolean](entry, "sitegen_ignore").getOrElse(false))
   }
 }
