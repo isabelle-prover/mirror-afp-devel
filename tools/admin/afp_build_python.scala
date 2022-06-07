@@ -17,10 +17,9 @@ object AFP_Build_Python {
     platform: Platform.Family.Value
   ): String = {
     val arch = platform match {
-      case isabelle.Platform.Family.linux_arm => "aarch64-unknown-linux-gnu"
       case isabelle.Platform.Family.linux => "x86_64-unknown-linux-gnu"
       case isabelle.Platform.Family.macos => "x86_64-apple-darwin"
-      case isabelle.Platform.Family.windows => "x86_64-windows-msvc-shared"
+      case _ => error("Unsupported platform: " + platform)
     }
     "cpython-" + version + "+" + release + "-" + arch + "-install_only.tar.gz"
   }

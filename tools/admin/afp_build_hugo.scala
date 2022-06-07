@@ -11,10 +11,9 @@ object AFP_Build_Hugo {
 
   def make_archive_name(release: String, platform: Platform.Family.Value): String = {
     val arch = platform match {
-      case isabelle.Platform.Family.linux_arm => "Linux-ARM64"
       case isabelle.Platform.Family.linux => "Linux-64bit"
       case isabelle.Platform.Family.macos => "macOS-64bit"
-      case isabelle.Platform.Family.windows => "Windows-64bit"
+      case _ => error("Unsupported platform: " + platform)
     }
     "hugo_extended_" + release + "_" + arch + ".tar.gz"
   }
