@@ -45,7 +45,7 @@ object AFP_Dependencies {
         Some(dir.base.implode)
     }
 
-    selected.groupBy(get_entry).toList.map {
+    selected.groupBy(get_entry).toList.collect {
       case (Some(e), sessions) =>
         val dependencies = sessions.flatMap(tree.imports_graph.imm_preds)
           .map(d => (d, get_entry(d)))

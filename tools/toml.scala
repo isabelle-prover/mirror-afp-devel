@@ -135,7 +135,7 @@ object TOML {
 
     def array: Parser[V] = $$$("[") ~>! rep(toml_value <~ $$$(",")) <~ $$$("]")
 
-    def table: Parser[T] = $$$("[") ~>! (keys <~ $$$("]")) ~! content ^^
+    def table: Parser[T] = $$$("[") ~>! (keys <~ $$$("]")) ~! content ^?
       { case base ~ T(map) => to_map(List(base -> map)) }
 
     def inline_table: Parser[V] = $$$("{") ~>! (content ^? to_map) <~ $$$("}")
@@ -212,7 +212,8 @@ object TOML {
 
     def parse(input: CharSequence): T = {
       val scanner = new Lexer.Scanner(Scan.char_reader(input))
-      phrase(toml)(scanner) match {
+      val result = phrase(toml)(scanner)
+      (result : @unchecked) match {
         case Success(toml, _) => toml
         case NoSuccess(_, next) => error("Malformed TOML input at " + next.pos)
       }
