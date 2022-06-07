@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Lucas's Theorem - Archive of Formal Proofs
+<title>Diophantine Equations and the DPRM Theorem - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -74,7 +74,15 @@ MathJax = {
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">L</font>ucas's
+  <h1>          <font class="first">D</font>iophantine
+  
+          <font class="first">E</font>quations
+  
+          and
+  
+          the
+  
+          <font class="first">D</font>PRM
   
           <font class="first">T</font>heorem
   
@@ -85,15 +93,20 @@ MathJax = {
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Lucas's Theorem</td>
+  <td class="data" width="80%">Diophantine Equations and the DPRM Theorem</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              <a href="https://www.cst.cam.ac.uk/people/cle47">Chelsea Edmonds</a>
+                      Jonas Bayer,
+                  Marco David,
+                  Benedikt Stock,
+                  Abhik Pal,
+                Yuri Matiyasevich and
+          Dierk Schleicher
       </td>
 </tr>
 
@@ -101,38 +114,34 @@ MathJax = {
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2020-04-07</td>
+  <td class="data">2022-06-06</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract mathjax_process">
-This work presents a formalisation of a generating function proof for
-Lucas's theorem. We first outline extensions to the existing
-Formal Power Series (FPS) library, including an equivalence relation
-for coefficients modulo <em>n</em>, an alternate binomial theorem statement,
-and a formalised proof of the Freshman's dream (mod <em>p</em>) lemma.
-The second part of the work presents the formal proof of Lucas's
-Theorem. Working backwards, the formalisation first proves a well
-known corollary of the theorem which is easier to formalise, and then
-applies induction to prove the original theorem statement. The proof
-of the corollary aims to provide a good example of a formalised
-generating function equivalence proof using the FPS library. The final
-theorem statement is intended to be integrated into the formalised
-proof of Hilbert's 10th Problem.</td>
+We present a formalization of Matiyasevich's proof of the DPRM
+theorem, which states that every recursively enumerable set of natural
+numbers is Diophantine. This result from 1970 yields a negative
+solution to Hilbert's 10th problem over the integers. To
+represent recursively enumerable sets in equations, we implement and
+arithmetize register machines. We formalize a general theory of
+Diophantine sets and relations to reason about them abstractly. Using
+several number-theoretic lemmas, we prove that exponentiation has a
+Diophantine representation.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Lucas_Theorem-AFP,
-  author  = {Chelsea Edmonds},
-  title   = {Lucas's Theorem},
+        <pre>@article{DPRM_Theorem-AFP,
+  author  = {Jonas Bayer and Marco David and Benedikt Stock and Abhik Pal and Yuri Matiyasevich and Dierk Schleicher},
+  title   = {Diophantine Equations and the DPRM Theorem},
   journal = {Archive of Formal Proofs},
-  month   = apr,
-  year    = 2020,
-  note    = {\url{https://isa-afp.org/entries/Lucas_Theorem.html},
+  month   = jun,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/DPRM_Theorem.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -143,10 +152,10 @@ proof of Hilbert's 10th Problem.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="DPRM_Theorem.html">DPRM_Theorem</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Digit_Expansions.html">Digit_Expansions</a>, <a href="Lucas_Theorem.html">Lucas_Theorem</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -158,34 +167,23 @@ proof of Hilbert's 10th Problem.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Lucas_Theorem/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Lucas_Theorem/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/DPRM_Theorem/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/DPRM_Theorem/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Lucas_Theorem/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/DPRM_Theorem/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Lucas_Theorem-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-DPRM_Theorem-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Lucas_Theorem-2021-02-23.tar.gz">
-              afp-Lucas_Theorem-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Lucas_Theorem-2020-04-21.tar.gz">
-              afp-Lucas_Theorem-2020-04-21.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

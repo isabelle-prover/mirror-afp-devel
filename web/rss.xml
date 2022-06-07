@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>02 Jun 2022 00:00:00 +0000</pubDate>
+    <pubDate>06 Jun 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Diophantine Equations and the DPRM Theorem</title>
+              <link>https://www.isa-afp.org/entries/DPRM_Theorem.html</link>
+       <guid>https://www.isa-afp.org/entries/DPRM_Theorem.html</guid>
+       <dc:creator> Jonas Bayer, Marco David, Benedikt Stock, Abhik Pal, Yuri Matiyasevich, Dierk Schleicher       </dc:creator>
+       <pubDate>06 Jun 2022 00:00:00 +0000</pubDate>
+       <description>
+We present a formalization of Matiyasevich&#39;s proof of the DPRM
+theorem, which states that every recursively enumerable set of natural
+numbers is Diophantine. This result from 1970 yields a negative
+solution to Hilbert&#39;s 10th problem over the integers. To
+represent recursively enumerable sets in equations, we implement and
+arithmetize register machines. We formalize a general theory of
+Diophantine sets and relations to reason about them abstractly. Using
+several number-theoretic lemmas, we prove that exponentiation has a
+Diophantine representation.</description>
+    </item>
     <item>
        <title>Reducing Rewrite Properties to Properties on Ground Terms</title>
               <link>https://www.isa-afp.org/entries/Rewrite_Properties_Reduction.html</link>
@@ -638,33 +655,6 @@ existing formalization for polynomial interpolation and, in
 particular, Lagrange interpolation by Thiemann and Yamada [&lt;a
 href=&#34;https://www.isa-afp.org/entries/Polynomial_Interpolation.html&#34;&gt;2&lt;/a&gt;]
 on the type-class based structures in HOL.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Median Method</title>
-              <link>https://www.isa-afp.org/entries/Median_Method.html</link>
-       <guid>https://www.isa-afp.org/entries/Median_Method.html</guid>
-       <dc:creator> Emin Karayel       </dc:creator>
-       <pubDate>25 Jan 2022 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;The median method is an amplification result for randomized
-approximation algorithms described in [&lt;a
-href=&#34;https://doi.org/10.1006/jcss.1997.1545&#34;&gt;1&lt;/a&gt;].
-Given an algorithm whose result is in a desired interval with a
-probability larger than &lt;i&gt;1/2&lt;/i&gt;, it is possible to
-improve the success probability, by running the algorithm multiple
-times independently and using the median. In contrast to using the
-mean, the amplification of the success probability grows exponentially
-with the number of independent runs.&lt;/p&gt; &lt;p&gt;This entry
-contains a formalization of the underlying theorem: Given a sequence
-of n independent random variables, which are in a desired interval
-with a probability &lt;i&gt;1/2 + a&lt;/i&gt;. Then their median will
-be in the desired interval with a probability of &lt;i&gt;1 −
-exp(−2a&lt;sup&gt;2&lt;/sup&gt; n)&lt;/i&gt;. In particular, the
-success probability approaches &lt;i&gt;1&lt;/i&gt; exponentially with
-the number of variables.&lt;/p&gt; &lt;p&gt;In addition to that, this
-entry also contains a proof that order-statistics of Borel-measurable
-random variables are themselves measurable and that generalized
-intervals in linearly ordered Borel-spaces are measurable.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
