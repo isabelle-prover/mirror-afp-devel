@@ -179,7 +179,7 @@ proof -
   have "(!) (P\<^sub>a ! a) ` {<n} = {<n}" by (metis P\<^sub>a_set a map_nth set_map set_upt)
   hence "inj_on ((!) (P\<^sub>a ! a)) {<n}" by(simp add: eq_card_imp_inj_on)
   hence "inj_on ((!) (P\<^sub>a ! a)) {<A!a}" using final by(simp add: subset_inj_on)
-  hence 1: "Suc(card ?B) = n" using P\<^sub>a_set a final by (simp add: card_image)
+  hence 1: "Suc(card ?B) = n" using final by (simp add: card_image)
   have 2: "card ?B \<le> card M"
     by(rule surj_card_le[OF subset_eq_atLeast0_lessThan_finite[OF M] pref_match'])
   have 3: "card M < n" using M a
