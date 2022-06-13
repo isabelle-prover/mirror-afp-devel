@@ -218,7 +218,7 @@ shows "gs_inner (pref_array P\<^sub>a) R M (A, B, a, b) = (A',B',a',b')
 unfolding gs_inner_def
 proof(rule while_rule2[where
      P = "\<lambda>(A,B,a,b). invar2 (list A) (list B) (list M) ai a \<and> b = match_array A a"
- and r = "measure (\<lambda>(A, B, a, b). Pref.var P\<^sub>a (list A) {<ai})"], goal_cases)
+ and r = "measure (\<lambda>(A, B, a, b). Pref.var0 P\<^sub>a (list A) {<n})"], goal_cases)
   case 1
   show ?case using assms unfolding var_def by simp
 next
@@ -247,7 +247,7 @@ next
     unfolding match_def by presburger
     case 2 show ?case
     using inv apply(simp only: s prod.case Let_def in_measure split: if_split)
-    using inner_pres[OF R _ _ refl refl refl refl refl, of "list A" "list B" "list M" ai a b]
+    using inner_pres2[OF R _ _ refl refl refl refl refl, of "list A" "list B" "list M" ai a b]
     unfolding invar2_def array_abs
       list_list_pref_array[OF **[unfolded n_def]] list_list_pref_array[OF *[unfolded n_def]] nth_map[OF ***]
     unfolding match_def by presburger
