@@ -1140,7 +1140,7 @@ theorem f0_exact_space_usage:
   shows "AE \<omega> in \<Omega>. bit_count (encode_f0_state \<omega>) \<le> f0_space_usage (n, \<epsilon>, \<delta>)"
   using f0_exact_space_usage'[OF assms(1-3)] unfolding \<Omega>_def by blast
 
-theorem f0_asympotic_space_complexity:
+theorem f0_asymptotic_space_complexity:
   "f0_space_usage \<in> O[at_top \<times>\<^sub>F at_right 0 \<times>\<^sub>F at_right 0](\<lambda>(n, \<epsilon>, \<delta>). ln (1 / of_rat \<epsilon>) * 
   (ln (real n) + 1 / (of_rat \<delta>)\<^sup>2 * (ln (ln (real n)) + ln (1 / of_rat \<delta>))))"
   (is "_ \<in> O[?F](?rhs)")

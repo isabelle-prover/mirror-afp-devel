@@ -172,15 +172,6 @@ next
   ultimately show ?case by (simp add:algebra_simps) 
 qed
 
-lemma sum_collapse: 
-  fixes f :: "'a \<Rightarrow> 'b::{comm_monoid_add}"
-  assumes "finite A"
-  assumes "z \<in> A"
-  assumes "\<And>y. y \<in> A \<Longrightarrow> y \<noteq> z \<Longrightarrow> f y = 0"
-  shows "sum f A = f z"
-  using sum.union_disjoint[where A="A-{z}" and B="{z}" and g="f"]
-  by (simp add: assms sum.insert_if)
-
 text \<open>There is a version @{thm [source] sum_list_map_eq_sum_count} but it doesn't work
 if the function maps into the reals.\<close>
 
