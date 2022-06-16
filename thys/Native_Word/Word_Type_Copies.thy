@@ -278,11 +278,11 @@ text \<open>Use pretty numerals from integer for pretty printing\<close>
 
 lemma numeral_eq_integer [code_unfold]:
   \<open>numeral n = of_integer (numeral n)\<close>
-  by (simp add: eq_iff_word_of word_of_integer_eq word_of_integer.rep_eq)
+  by (simp add: eq_iff_word_of word_of_integer_eq)
 
 lemma neg_numeral_eq_integer [code_unfold]:
   \<open>- numeral n = of_integer (- numeral n)\<close>
-  by (simp add: eq_iff_word_of word_of_integer_eq word_of_minus word_of_integer.rep_eq)
+  by (simp add: eq_iff_word_of word_of_integer_eq word_of_minus)
 
 end
 

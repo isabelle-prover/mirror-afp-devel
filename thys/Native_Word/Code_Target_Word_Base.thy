@@ -21,20 +21,8 @@ lemma int_of_integer_signed_eq [simp]:
   \<open>int_of_integer (signed w) = sint w\<close>
   by transfer simp
 
-context
-  includes integer.lifting
-begin
-
-lift_definition word_of_integer :: "integer \<Rightarrow> 'a :: len word" is word_of_int .
-
-lemma word_of_integer_code [code]: "word_of_integer n = word_of_int (int_of_integer n)"
-  by (fact word_of_integer.rep_eq)
-
-end
-
-lemma word_of_int_of_integer_eq [simp]:
-  \<open>word_of_int (int_of_integer k) = word_of_integer k\<close>
-  by (simp add: word_of_integer.rep_eq)
+abbreviation word_of_integer :: \<open>integer \<Rightarrow> 'a::len word\<close>
+  where \<open>word_of_integer k \<equiv> word_of_int (int_of_integer k)\<close>
 
 
 subsection \<open>Quickcheck conversion functions\<close>

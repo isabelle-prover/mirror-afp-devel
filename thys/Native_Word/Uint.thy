@@ -406,8 +406,7 @@ lemma Uint_code [code]:
 lemma Uint_signed_code [code]:
   "Rep_uint (Uint_signed i) = 
   (if i < wivs_least_integer \<or> i \<ge> wivs_overflow_integer then Rep_uint (undefined Uint i) else word_of_int (int_of_integer_symbolic i))"
-  unfolding Uint_signed_def Uint_def int_of_integer_symbolic_def word_of_integer_def
-  by(simp add: Abs_uint_inverse)
+  unfolding Uint_signed_def Uint_def int_of_integer_symbolic_def by(simp add: Abs_uint_inverse)
 end
 
 text \<open>
