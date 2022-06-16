@@ -62,6 +62,10 @@ lemma int_set_bits_K_False [simp]: "(BITS _. False) = (0 :: int)"
 lemma int_set_bits_K_True [simp]: "(BITS _. True) = (-1 :: int)"
   by (simp add: set_bits_int_def)
 
+lemma set_bits_code [code]:
+  "set_bits = Code.abort (STR ''set_bits is unsupported on type int'') (\<lambda>_. set_bits :: _ \<Rightarrow> int)"
+  by simp
+
 instantiation word :: (len) bit_comprehension
 begin
 
@@ -76,6 +80,9 @@ end
 lemma bit_set_bits_word_iff [bit_simps]:
   \<open>bit (set_bits P :: 'a::len word) n \<longleftrightarrow> n < LENGTH('a) \<and> P n\<close>
   by (auto simp add: word_set_bits_def bit_horner_sum_bit_word_iff)
+
+lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. bit i n)"
+  by (rule bit_eqI) (auto simp add: bit_simps)
 
 lemma set_bits_K_False [simp]:
   \<open>set_bits (\<lambda>_. False) = (0 :: 'a :: len word)\<close>
@@ -138,6 +145,47 @@ next
   then show ?thesis
     by (auto simp add: set_bits_int_def)
 qed
+
+lemma word_test_bit_set_bits: "bit (BITS n. f n :: 'a :: len word) n \<longleftrightarrow> n < LENGTH('a) \<and> f n"
+  by (fact bit_set_bits_word_iff)
+
+context
+  includes bit_operations_syntax
+  fixes f :: \<open>nat \<Rightarrow> bool\<close>
+begin
+
+definition set_bits_aux :: \<open>nat \<Rightarrow> 'a word \<Rightarrow> 'a::len word\<close>
+  where \<open>set_bits_aux n w = push_bit n w OR take_bit n (set_bits f)\<close>
+
+lemma bit_set_bit_aux [bit_simps]:
+  \<open>bit (set_bits_aux n w) m \<longleftrightarrow> m < LENGTH('a) \<and>
+    (if m < n then f m else bit w (m - n))\<close> for w :: \<open>'a::len word\<close>
+  by (auto simp add: bit_simps set_bits_aux_def)
+
+corollary set_bits_conv_set_bits_aux:
+  \<open>set_bits f = (set_bits_aux LENGTH('a) 0 :: 'a :: len word)\<close>
+  by (rule bit_word_eqI) (simp add: bit_simps)
+
+lemma set_bits_aux_0 [simp]:
+  \<open>set_bits_aux 0 w = w\<close>
+  by (simp add: set_bits_aux_def)
+
+lemma set_bits_aux_Suc [simp]:
+  \<open>set_bits_aux (Suc n) w = set_bits_aux n (push_bit 1 w OR (if f n then 1 else 0))\<close>
+  by (rule bit_word_eqI) (auto simp add: bit_simps le_less_Suc_eq mult.commute [of _ 2])
+
+lemma set_bits_aux_simps [code]:
+  \<open>set_bits_aux 0 w = w\<close>
+  \<open>set_bits_aux (Suc n) w = set_bits_aux n (push_bit 1 w OR (if f n then 1 else 0))\<close>
+  by simp_all
+
+lemma set_bits_aux_rec:
+  \<open>set_bits_aux n w =
+  (if n = 0 then w
+   else let n' = n - 1 in set_bits_aux n' (push_bit 1 w OR (if f n' then 1 else 0)))\<close>
+  by (cases n) simp_all
+
+end
 
 inductive wf_set_bits_int :: "(nat \<Rightarrow> bool) \<Rightarrow> bool"
   for f :: "nat \<Rightarrow> bool"

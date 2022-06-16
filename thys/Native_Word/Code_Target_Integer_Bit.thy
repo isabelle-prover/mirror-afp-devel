@@ -4,10 +4,14 @@
 
 chapter \<open>Bit operations for target language integers\<close>
 
-theory Code_Target_Integer_Bit imports
-  "Word_Lib.Bit_Comprehension"
-  Code_Int_Integer_Conversion
-  Code_Symbolic_Int_Bit
+theory Code_Target_Integer_Bit
+  imports
+    "HOL-Library.Word"
+    "Code_Int_Integer_Conversion"
+    "Word_Lib.Most_significant_bit"
+    "Word_Lib.Least_significant_bit"
+    "Word_Lib.Generic_set_bit"
+    "Word_Lib.Bit_Comprehension"
 begin
 
 text \<open>TODO: separate\<close>
@@ -457,7 +461,7 @@ by(simp add: integer_set_bit_def)
 lemma set_bit_integer_conv_masks:
   fixes x :: integer shows
   "set_bit x i b = (if b then x OR (push_bit i 1) else x AND NOT (push_bit i 1))"
-  by transfer (simp add: int_set_bit_False_conv_NAND int_set_bit_True_conv_OR)
+  by (transfer; rule bit_eqI) (simp add: bit_simps)
 
 end
 

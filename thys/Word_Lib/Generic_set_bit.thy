@@ -38,6 +38,18 @@ instance
 
 end
 
+context
+  includes bit_operations_syntax
+begin
+
+lemma fixes i :: int
+  shows int_set_bit_True_conv_OR [code]: "Generic_set_bit.set_bit i n True = i OR push_bit n 1"
+  and int_set_bit_False_conv_NAND [code]: "Generic_set_bit.set_bit i n False = i AND NOT (push_bit n 1)"
+  and int_set_bit_conv_ops: "Generic_set_bit.set_bit i n b = (if b then i OR (push_bit n 1) else i AND NOT (push_bit n 1))"
+  by (simp_all add: bit_eq_iff) (auto simp add: bit_simps)
+
+end
+
 instantiation word :: (len) set_bit
 begin
 
