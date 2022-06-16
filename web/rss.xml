@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>06 Jun 2022 00:00:00 +0000</pubDate>
+    <pubDate>08 Jun 2022 00:00:00 +0000</pubDate>
+    <item>
+       <title>Finite Fields</title>
+              <link>https://www.isa-afp.org/entries/Finite_Fields.html</link>
+       <guid>https://www.isa-afp.org/entries/Finite_Fields.html</guid>
+       <dc:creator> Emin Karayel       </dc:creator>
+       <pubDate>08 Jun 2022 00:00:00 +0000</pubDate>
+       <description>
+This entry formalizes the classification of the finite fields (also
+called Galois fields): For each prime power $p^n$ there exists exactly
+one (up to isomorphisms) finite field of that size and there are no
+other finite fields. The derivation includes a formalization of the
+characteristic of rings, the Frobenius endomorphism, formal
+differentiation for polynomials in HOL-Algebra and Gauss&#39; formula
+for the number of monic irreducible polynomials over finite fields: \[
+\frac{1}{n} \sum_{d | n} \mu(d) p^{n/d} \textrm{.} \] The proofs are
+based on the books from &lt;a
+href=&#34;https://doi.org/10.1007/978-1-4757-2103-4&#34;&gt;Ireland
+and Rosen&lt;/a&gt;, as well as, &lt;a
+href=&#34;https://doi.org/10.1017/CBO9781139172769&#34;&gt;Lidl and
+Niederreiter&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>Diophantine Equations and the DPRM Theorem</title>
               <link>https://www.isa-afp.org/entries/DPRM_Theorem.html</link>
@@ -628,33 +649,6 @@ semantics of the existing SeCaV system. In particular, the
 prover&#39;s output can be post-processed in Haskell to generate
 human-readable SeCaV proofs which are also machine-verifiable proof
 certificates.</description>
-    </item>
-    <item>
-       <title>Interpolation Polynomials (in HOL-Algebra)</title>
-              <link>https://www.isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html</link>
-       <guid>https://www.isa-afp.org/entries/Interpolation_Polynomials_HOL_Algebra.html</guid>
-       <dc:creator> Emin Karayel       </dc:creator>
-       <pubDate>29 Jan 2022 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;A well known result from algebra is that, on any field, there
-is exactly one polynomial of degree less than n interpolating n points
-[&lt;a
-href=&#34;https://doi.org/10.1017/CBO9780511814549&#34;&gt;1&lt;/a&gt;,
-§7].&lt;/p&gt; &lt;p&gt;This entry contains a formalization of the
-above result, as well as the following generalization in the case of
-finite fields &lt;i&gt;F&lt;/i&gt;: There are
-&lt;i&gt;|F|&lt;sup&gt;m-n&lt;/sup&gt;&lt;/i&gt; polynomials of degree
-less than &lt;i&gt;m ≥ n&lt;/i&gt; interpolating the same n points,
-where &lt;i&gt;|F|&lt;/i&gt; denotes the size of the domain of the
-field. To establish the result the entry also includes a formalization
-of Lagrange interpolation, which might be of independent
-interest.&lt;/p&gt; &lt;p&gt;The formalized results are defined on the
-algebraic structures from HOL-Algebra, which are distinct from the
-type-class based structures defined in HOL. Note that there is an
-existing formalization for polynomial interpolation and, in
-particular, Lagrange interpolation by Thiemann and Yamada [&lt;a
-href=&#34;https://www.isa-afp.org/entries/Polynomial_Interpolation.html&#34;&gt;2&lt;/a&gt;]
-on the type-class based structures in HOL.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

@@ -44,7 +44,7 @@ abstract =
 
 [Digit_Expansions]
 title = Digit Expansions
-author = Jonas Bayer, Marco David, Abhik Pal, Benedikt Stock
+author = Jonas Bayer <>, Marco David <>, Abhik Pal <>, Benedikt Stock <>
 topic = Mathematics/Number theory
 date = 2022-04-20
 notify = jonas.bayer999@gmail.com, marco.david@hotmail.de, benedikt1999@freenet.de
@@ -59,7 +59,7 @@ abstract =
 
 [DPRM_Theorem]
 title = Diophantine Equations and the DPRM Theorem
-author = Jonas Bayer, Marco David, Benedikt Stock, Abhik Pal, Yuri Matiyasevich, Dierk Schleicher
+author = Jonas Bayer <>, Marco David <>, Benedikt Stock <>, Abhik Pal <>, Yuri Matiyasevich <>, Dierk Schleicher <>
 topic = Logic/Computability, Mathematics/Number theory
 date = 2022-06-06
 notify = jonas.bayer999@gmail.com, marco.david@hotmail.de, benedikt1999@freenet.de
@@ -12373,3 +12373,23 @@ abstract =
   and conversion, commutation, conversion equivalence, and normalization
   equivalence.
 
+[Finite_Fields]
+title = Finite Fields
+author = Emin Karayel <https://orcid.org/0000-0003-3290-5034>
+topic = Mathematics/Algebra
+date = 2022-06-08
+notify = me@eminkarayel.de
+abstract = 
+  This entry formalizes the classification of the finite fields (also
+  called Galois fields): For each prime power $p^n$ there exists exactly
+  one (up to isomorphisms) finite field of that size and there are no
+  other finite fields. The derivation includes a formalization of the
+  characteristic of rings, the Frobenius endomorphism, formal
+  differentiation for polynomials in HOL-Algebra and Gauss' formula
+  for the number of monic irreducible polynomials over finite fields: \[
+  \frac{1}{n} \sum_{d | n} \mu(d) p^{n/d} \textrm{.} \] The proofs are
+  based on the books from <a
+  href="https://doi.org/10.1007/978-1-4757-2103-4">Ireland
+  and Rosen</a>, as well as, <a
+  href="https://doi.org/10.1017/CBO9781139172769">Lidl and
+  Niederreiter</a>.
