@@ -1004,18 +1004,18 @@ We will then show that @{term A} is of cardinality $o(N)$.\<close>
 lemma RothArithmeticProgressions_aux:
   fixes \<epsilon>::real
   assumes "\<epsilon> > 0"
-  obtains X where "\<forall>N \<ge> X. \<forall>A \<subseteq> {..<N}. (\<nexists>k d. d>0 \<and> progression3 k d \<subseteq> A) \<longrightarrow> card A < \<epsilon> * real N"
+  obtains M where "\<forall>N \<ge> M. \<forall>A \<subseteq> {..<N}. (\<nexists>k d. d>0 \<and> progression3 k d \<subseteq> A) \<longrightarrow> card A < \<epsilon> * real N"
 proof -
-  obtain X where "X>0"
-    and X: "\<And>G. \<lbrakk>card(uverts G) > X; uwellformed G; unique_triangles G\<rbrakk> 
+  obtain L where "L>0"
+    and L: "\<And>G. \<lbrakk>card(uverts G) > L; uwellformed G; unique_triangles G\<rbrakk> 
                 \<Longrightarrow> card (uedges G) \<le> \<epsilon>/12 * (card (uverts G))\<^sup>2"
     by (metis assms Diamond_free less_divide_eq_numeral1(1) mult_eq_0_iff)
   show thesis
   proof (intro strip that)
     fix N A
-    assume "X \<le> N" and A: "A \<subseteq> {..<N}"
+    assume "L \<le> N" and A: "A \<subseteq> {..<N}"
       and non: "\<nexists>k d. 0 < d \<and> progression3 k d \<subseteq> A"
-    then have "N > 0" using \<open>0 < X\<close> by linarith
+    then have "N > 0" using \<open>0 < L\<close> by linarith
     define M where "M \<equiv> Suc (2*N)"
     have M_mod_bound[simp]: "x mod M < M" for x
       by (simp add: M_def)
@@ -1116,8 +1116,8 @@ proof -
     define G where "G \<equiv> (?X \<union> ?Y \<union> ?Z, XY \<union> YZ \<union> XZ)"
     have finG: "finite (uverts G)" and cardG: "card (uverts G) = 3*M"
       by (simp_all add: G_def card_Un_disjnt disjnt_part_of)
-    then have "card(uverts G) > X"
-      using M_def \<open>X \<le> N\<close> by linarith 
+    then have "card(uverts G) > L"
+      using M_def \<open>L \<le> N\<close> by linarith 
     have "uwellformed G"
       by (fastforce simp: card_insert_if part_of_def G_def XY_def YZ_def XZ_def Edges_def uwellformed_def)
     have [simp]: "{prod_encode (\<xi>,x), prod_encode (\<xi>,y)} \<notin> XY"  
@@ -1158,7 +1158,7 @@ proof -
       then have "x \<in> ?X" "y \<in> ?Y" "z \<in> ?Z"
         by (auto simp: XY_def YZ_def XZ_def Edges_def doubleton_eq_iff; metis disjnt_iff disjnt_part_of)+
       then obtain i j k where i: "x = prod_encode(0,i)" and j: "y = prod_encode(1,j)" 
-and k: "z = prod_encode(2,k)"
+        and k: "z = prod_encode(2,k)"
         by (metis One_nat_def Suc_1 enc_iff prod_decode_aux.cases prod_decode_inverse)
       obtain a1 where "a1 \<in> A" and a1: "(int j - int i) mod int M = int a1"
         using xy \<open>x \<in> ?X\<close> i j by (auto simp add: XY_def Edges_def doubleton_eq_iff diff_def)
@@ -1187,7 +1187,7 @@ and k: "z = prod_encode(2,k)"
       with non equal have "a2 = a1"
         unfolding progression3_def
         by (metis \<open>a2 \<in> A\<close> \<open>a3 \<in> A\<close> add.right_neutral diff_is_0_eq insert_subset 
-le_add_diff_inverse not_gr_zero)
+            le_add_diff_inverse not_gr_zero)
       then have "a3 = a2"
         using \<open>a2 * 2 = a1 + a3\<close> by force
       have k_minus_j: "(int k - int j) mod int M = int a1"
@@ -1196,7 +1196,7 @@ le_add_diff_inverse not_gr_zero)
         by (metis a1 add_diff_cancel_left' add_diff_eq mod_add_right_eq nat_int of_nat_add of_nat_mod)
       have j_to_k: "k mod M = (j+a1) mod M"
         by (metis \<open>a2 = a1\<close> \<open>a3 = a2\<close> a3 add_diff_cancel_left' add_diff_eq mod_add_right_eq 
-nat_int of_nat_add of_nat_mod)
+            nat_int of_nat_add of_nat_mod)
       have "i<M"
         using \<open>x \<in> ?X\<close> i by simp
       then show ?thesis
@@ -1282,8 +1282,7 @@ nat_int of_nat_add of_nat_mod)
           unfolding XZ_def Edges_def image_iff
           apply (clarsimp simp: mod_add_left_eq doubleton_eq_iff conj_disj_distribR ex_disj_distrib)
           apply (smt (verit, ccfv_threshold) A \<open>N < M\<close> diff2_invert le_add_diff_inverse2 lessThan_iff 
-linorder_not_less mod_add_left_eq 
-                     mod_add_self1 not_add_less1 order.strict_trans subsetD)
+                     linorder_not_less mod_add_left_eq  mod_add_self1 not_add_less1 order.strict_trans subsetD)
           done
         moreover 
         have "a < N" using A \<open>a \<in> A\<close> by blast
@@ -1392,7 +1391,7 @@ linorder_not_less mod_add_left_eq
       qed
     qed
     have *: "card (uedges G) \<le> \<epsilon>/12 * (card (uverts G))\<^sup>2"
-      using X \<open>X < card (uverts G)\<close> \<open>unique_triangles G\<close> \<open>uwellformed G\<close> by blast
+      using L \<open>L < card (uverts G)\<close> \<open>unique_triangles G\<close> \<open>uwellformed G\<close> by blast
 
     have diff_cancel: "\<exists>j<M. diff j i = int a" if "a \<in> A" for i a
     proof -
@@ -1523,10 +1522,10 @@ theorem RothArithmeticProgressions:
   shows "\<exists>k d. d>0 \<and> progression3 k d \<subseteq> A"
 proof (rule ccontr)
   assume non: "\<nexists>k d. 0 < d \<and> progression3 k d \<subseteq> A"
-  obtain X where X: "\<forall>N \<ge> X. \<forall>A' \<subseteq> {..<N}. (\<nexists>k d. d>0 \<and> progression3 k d \<subseteq> A') 
+  obtain M where X: "\<forall>N \<ge> M. \<forall>A' \<subseteq> {..<N}. (\<nexists>k d. d>0 \<and> progression3 k d \<subseteq> A') 
                           \<longrightarrow> card A' < upper_asymptotic_density A / 2 * real N"
     by (metis half_gt_zero RothArithmeticProgressions_aux assms)
-  then have "\<forall>N \<ge> X. card (A \<inter> {..<N}) < upper_asymptotic_density A / 2 * N"
+  then have "\<forall>N \<ge> M. card (A \<inter> {..<N}) < upper_asymptotic_density A / 2 * N"
     by (meson order_trans inf_le1 inf_le2 non)
   then have "upper_asymptotic_density A \<le> upper_asymptotic_density A / 2"
     by (force simp add: eventually_sequentially less_eq_real_def intro!: upper_asymptotic_densityI)
