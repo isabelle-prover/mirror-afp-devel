@@ -2,11 +2,11 @@ theory LexicalVals
   imports Lexer "HOL-Library.Sublist"
 begin
 
-section {* Sets of Lexical Values *}
+section \<open> Sets of Lexical Values \<close>
 
-text {*
+text \<open>
   Shows that lexical values are finite for a given regex and string.
-*}
+\<close>
 
 definition
   LV :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> ('a val) set"
