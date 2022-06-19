@@ -102,6 +102,7 @@ CofGroups
 Coinductive
 Coinductive_Languages
 Collections
+Combinable_Wands
 Combinatorics_Words
 Combinatorics_Words_Graph_Lemma
 Combinatorics_Words_Lyndon
@@ -164,6 +165,7 @@ DiscretePricing
 Discrete_Summation
 DiskPaxos
 Dominance_CHK
+DPRM_Theorem
 DynamicArchitectures
 Dynamic_Tables
 E_Transcendental
@@ -202,6 +204,7 @@ FinFun
 Finger-Trees
 Finite-Map-Extras
 Finite_Automata_HF
+Finite_Fields
 Finitely_Generated_Abelian_Groups
 First_Order_Terms
 First_Welfare_Theorem
@@ -443,6 +446,7 @@ Ordinal_Partitions
 Ordinals_and_Cardinals
 Ordinary_Differential_Equations
 PAC_Checker
+Package_logic
 PAL
 PCF
 PLM
@@ -462,6 +466,7 @@ Physical_Quantities
 Pi_Calculus
 Pi_Transcendental
 Planarity_Certificates
+Pluennecke_Ruzsa_Inequality
 Poincare_Bendixson
 Poincare_Disc
 Polynomial_Factorization
@@ -537,6 +542,7 @@ Rep_Fin_Groups
 ResiduatedTransitionSystem
 Residuated_Lattices
 Resolution_FOL
+Rewrite_Properties_Reduction
 Rewriting_Z
 Ribbon_Proofs
 Robbins-Conjecture

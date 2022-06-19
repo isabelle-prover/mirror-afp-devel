@@ -1,0 +1,134 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xspace}
+\usepackage[T1]{fontenc}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{Isa\kern-0.15exF\kern-0.15exo\kern-0.15exR}}
+\newcommand\ceta{\textsf{C\kern-0.15exe\kern-0.45exT\kern-0.45exA}}
+
+
+\newcommand{\h}[1][.3]{\hspace{#1mm}}
+\newcommand{\seq}[2][n]{#2_1,\dotsc,#2_{#1}}
+\newcommand{\SET}[1]{\{\h #1\h\}}
+
+
+\newcommand{\m}[1]{\mathrm{#1}}
+\newcommand{\xR}{\mathcal{R}}
+\newcommand{\xS}{\mathcal{S}}
+
+\newcommand{\R}{\rightarrow}
+\newcommand{\Rab}[2][]{\R_{#1}^{#2}}
+
+\newcommand{\RabR}[1]{\Rab[\xR]{#1}}
+\newcommand{\RabS}[1]{\Rab[\xS]{#1}}
+
+\newcommand{\LR}{\leftrightarrow}
+\newcommand{\LRab}[2][]{\LR_{#1}^{#2}}
+\newcommand{\Con}[1][]{\LRab[#1]{*}}
+\newcommand{\CbR}{\LRab[\xR]{*}}
+\newcommand{\CbS}{\LRab[\xS]{*}}
+
+\newcommand{\xF}{\mathcal{F}}
+\newcommand{\xT}{\mathcal{T}}
+
+\newcommand{\T}[1][\xF]{\xT(#1,\xV)}
+\newcommand{\GT}[1][\xF]{\xT(#1)}
+\begin{document}
+
+
+\title{Reducing Rewrite Properties to Properties on Ground Terms\footnote{Supported by FWF (Austrian Science Fund) projects P30301.}}
+\author{Alexander Lochmann}
+\maketitle
+
+\begin{abstract}
+This AFP entry relates important rewriting properties
+between the set of terms and the set of ground terms induced
+by a given signature. The properties considered are
+confluence, strong/local confluence, the normal form property,
+unique normal forms with respect to reduction and conversion, commutation,
+conversion equivalence, and normalization equivalence.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Rewriting is an abstract model of computation.
+Among other things, it studies important properties
+including the following:
+
+\begin{align*}
+\label{prop}
+\m{CR}\colon&~~ \forall\,s\,\forall\,t\,\forall\,u\,(s \Rab{*} t \land
+s \Rab{*} u \implies t \downarrow u) \tag*{confluence} \\
+\m{SCR}\colon&~~ \forall\,s\,\forall\,t\,\forall\,u\,(s \R t \land
+s \R u \implies \exists\,v~(t \Rab{=} v \land u \Rab{*} v))
+\tag*{strong confluence} \\
+\m{WCR}\colon&~~ \forall\,s\,\forall\,t\,\forall\,u\,(s \R t \land s \R u
+\implies t \downarrow u) \tag*{local confluence} \\ 
+\m{NFP}\colon&~~ \forall\,s\,\forall\,t\,\forall\,u\,(s \Rab{*} t \land s
+\Rab{!} u \implies t \Rab{!} u) \tag*{normal form property} \\
+\m{UNR}\colon&~~ \forall\,s\,\forall\,t\,\forall\,u\,(s \Rab{!} t \land
+s \Rab{!} u \implies t = u)
+\tag*{unique normal forms with respect to reduction} \\
+\m{UNC}\colon&~~ \phantom{\forall\,s\,}\forall\,t\,\forall\,u\,
+(t \Con u \land \m{NF}(t) \land \m{NF}(u) \implies t = u)
+\tag*{unique normal forms with respect to conversion}
+\intertext{We also consider the following properties involving two TRSs $\xR$ and
+$\xS$:}
+\m{COM}:& \quad \forall\,s\,\forall\,t\,\forall\,u\,(s \RabR{*} t \land
+s \RabS{*} u \implies \exists\,v\,(t \RabS{*} v \land u \RabR{*} v))
+\tag*{commutation} \\
+\m{CE}:& \quad \forall\,s\,\forall\,t\,(s \CbR t \iff s \CbS t)
+\tag*{conversion equivalence} \\
+\m{NE}:& \quad \forall\,s\,\forall\,t\,(s \RabR{!} t \iff s \RabS{!} t)
+\tag*{normalization equivalence}
+\end{align*}
+
+An interesting observation is that for each of these properties there
+exists a rewrite system that satisfies the property when restricted to
+ground terms but not when arbitrary terms are allowed.
+Consider the left-linear right-ground TRS $\xR$ consisting of the rules
+\begin{align*}
+\m{a} &\R \m{b} &
+\m{f}(\m{a},x) &\R \m{b} &
+\m{f}(\m{b},\m{b}) &\R \m{b}
+\end{align*}
+over the signature $\xF = \SET{\m{a},\m{b},\m{f}}$. It is ground-confluent
+because every ground term in $\GT$ rewrites to $\m{b}$. Confluence does
+not hold; the term $\m{f}(\m{a},x)$ rewrites to the different normal forms
+$\m{b}$ and $\m{f}(\m{b},x)$.
+
+In this AFP entry, properties on arbitrary terms are reduced to the
+corresponding properties on ground terms, for left-linear right-ground
+rewrite systems and for linear variable-separated systems.
+To do this, I formalized fundamental term rewriting operations that
+include the root step and the one step rewriting relations. Also, I added definitions for
+conversion equivalence, normalization equivalence,
+strong confluence and the normal from property extending
+the list of important rewriting properties of the AFP entry
+``Abstract Rewriting'' \cite{AFP-CSRT}.
+
+Rewrite sequences that contain a root step play an important role
+in the formalization. The table of contents should give the reader a good overview
+of the content of this entry.
+
+\input{session}
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

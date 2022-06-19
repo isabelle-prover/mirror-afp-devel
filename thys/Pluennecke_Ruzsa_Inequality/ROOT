@@ -1,0 +1,12 @@
+chapter AFP
+
+session Pluennecke_Ruzsa_Inequality (AFP) = "HOL-Library" +
+  options [timeout = 600]
+  sessions
+    "Jacobson_Basic_Algebra"
+  theories
+    Pluennecke_Ruzsa_Inequality
+  document_files
+    "root.tex"
+    "root.bib"
+

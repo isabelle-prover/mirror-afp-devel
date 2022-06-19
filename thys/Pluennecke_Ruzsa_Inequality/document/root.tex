@@ -1,0 +1,42 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{The Pl\"{u}nnecke-Ruzsa Inequality}
+\author{Angeliki Koutsoukou-Argyraki and Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+We formalise Pl\"{u}nnecke's inequality and the Pl\"{u}nnecke-Ruzsa inequality, 
+following the notes by Timothy Gowers: "Introduction to Additive
+Combinatorics" (2022) for the University of Cambridge. To this end, we first introduce basic definitions
+and prove elementary facts on sumsets and difference sets. Then, we show two versions of
+the Ruzsa triangle inequality. We follow with a proof due to Petridis~\cite{petridis-plunnecke-ruzsa}.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Acknowledgements}
+The authors were supported by the ERC Advanced Grant ALEXANDRIA (Project 742178) funded by the European Research Council. 
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

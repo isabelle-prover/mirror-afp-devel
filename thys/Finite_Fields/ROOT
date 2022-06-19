@@ -1,0 +1,18 @@
+chapter AFP
+
+session Finite_Fields (AFP) = "HOL-Algebra" +
+  options [timeout = 600]
+  sessions
+    Dirichlet_Series
+  theories 
+    Card_Irreducible_Polynomials
+    Card_Irreducible_Polynomials_Aux
+    Finite_Fields_Factorization_Ext
+    Finite_Fields_Isomorphic
+    Finite_Fields_Preliminary_Results
+    Formal_Polynomial_Derivatives
+    Monic_Polynomial_Factorization
+    Ring_Characteristic
+  document_files
+    "root.tex"
+    "root.bib"

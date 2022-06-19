@@ -1,0 +1,105 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{authblk}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Diophantine Equations and the DPRM Theorem}
+
+\author{Jonas Bayer\thanks{Equal contribution.} \hspace*{10ex} Marco David\textsuperscript{*}
+         \hspace*{10ex} Benedikt Stock\textsuperscript{*} \\ Abhik Pal
+         \hspace*{10ex} Yuri Matiyasevich\thanks{Contributed by supplying a detailed proof and an
+        initial introduction to Isabelle.}
+         \hspace*{10ex} Dierk Schleicher}
+
+\maketitle
+
+%\footnotetext[*]{Text}
+
+\begin{abstract}
+	We present a formalization of Matiyasevich's proof of the DPRM theorem, which states that every
+  recursively enumerable set of natural numbers is Diophantine. This result from 1970 yields a
+  negative solution to Hilbert's 10th problem over the integers. To represent recursively
+  enumerable sets in equations, we implement and arithmetize register machines. We formalize a
+  general theory of Diophantine sets and relations to reason about them abstractly.
+  Using several number-theoretic lemmas, we prove that exponentiation has a Diophantine
+  representation.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% Some preliminary text
+\paragraph{Overview}
+A previous short paper~\cite{dprm_isabelle} gives an overview
+of the formalization. In particular, the challenges of implementing the notion of 
+diophantine predicates is discussed and a formal definition of register machines is described.
+Another meta-publication~\cite{cicm} recounts our learning experience throughout this project.
+
+The present formalisation is based on Yuri Matiyasevich's monograph~\cite{h10lecturenotes} which
+contains a full proof of the DPRM theorem. This result or parts of its proof have also been
+formalized in other interactive theorem provers, notably in Coq~\cite{dprm_coq},
+Lean~\cite{dprm_lean} and Mizar~\cite{dprm_mizar1,dprm_mizar2}.
+
+\paragraph{Acknowledgements}
+We want to thank everyone who participated in the formalization
+during the early stages of this project:
+Deepak Aryal, Bogdan Ciurezu, Yiping Deng, Prabhat Devkota,
+Simon Dubischar, Malte Haßler, Yufei Liu and Maria Antonia Oprea. Moreover, we would like to
+express our sincere gratitude to the entire welcoming and supportive Isabelle
+community. In particular, we are indebted to Christoph Benzmüller for his
+expertise, his advice and for connecting us with relevant experts in the field.
+Among those, we specially want to thank Mathias Fleury for all his help with Isabelle.
+Finally, we would like to thank the DFG for supporting our attendance at several events and conferences, allowing us to present the project to a broad audience.
+
+\newpage
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
