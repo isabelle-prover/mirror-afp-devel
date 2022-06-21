@@ -1,0 +1,4 @@
+# components required for the AFP infrastructure
+python-3.10.4
+hugo-0.88.1
+ci-extras-1

@@ -1,1 +1,1 @@
-ISABELLE_TOOLS="$COMPONENT:$ISABELLE_TOOLS"
+# Kept for backwards-compatibility with build server (for now)

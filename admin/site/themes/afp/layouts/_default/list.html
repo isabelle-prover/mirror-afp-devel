@@ -1,0 +1,19 @@
+{{ define "main" }}
+{{- $site := . -}}
+{{- range (.Data.Pages).GroupByDate "2006" -}}
+{{- if ne .Key "0001" -}}
+<h2 class="head">{{- .Key -}}</h2>
+{{- range .Pages -}}
+<article class="entry">
+  <div class="item-text">
+    <h5><a class="title" href="{{ .RelPermalink }}">{{- htmlUnescape .Title -}}</a></h5> <br>
+    {{- with .Params.authors -}}by {{ partial "authors.html" (dict "site" $site "authors" .) -}}{{- end -}}
+  </div>
+  <span class="date">
+    {{ .Date.Format "Jan 02" }}
+  </span>
+</article>
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}

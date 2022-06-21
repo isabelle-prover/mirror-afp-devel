@@ -46,24 +46,23 @@ Everything happens in the release branch `afp/release`.
             session foo (AFP) = bar +
 
 
-3.  to check, run in `afp/release/thys`
+3. to check, run in `afp/release/thys`
 
          ../admin/testall -c <name>
 
      (be sure to have `ISABELLE_RELEASES` set to the path where Isabelle
     releases are kept, e.g. `/home/proj/isabelle/`)
-4.  check license headers: if the authors want the code released under
+4. check license headers: if the authors want the code released under
     LGPL instead of BSD, each file should mention "License: LGPL" in the
     header. We only accept the BSD 3-Clause and LPGPL version 2.1 licenses
     as they are printed in `thys/LICENSE` and `thys/LICENSE.LGPL`.
-5.  `hg add` and `hg commit` the new submission
-6.  Enter data for author/abstract/index/etc in the file
-    `metadata/metadata`. Make sure that your editor uses UTF-8 encoding
-    for this file to preserve special characters. If the entry uses a
-    new topic or category, add it to metadata/topics (make sure there is
-    an empty line at the end of the file).
-7.  Generate the new web site by running `../admin/sitegen` .
-8.  Use `hg st` and `hg diff` to make sure the generated html makes
+5. `hg add` and `hg commit` the new submission
+6. Enter data for author/abstract/index/etc in the `metadata` dir.
+   Make sure that your editor uses UTF-8 encoding to preserve special 
+   characters. If the entry uses a new topic or category, add it to 
+   metadata/topics.
+7. Generate the new web site by running `../admin/sitegen` .
+8. Use `hg st` and `hg diff` to make sure the generated html makes
     sense. The diff should be small and concern the new entry only.
 9. `hg add` and `hg commit` the web site updates.
 10. finally, when you are happy with everything, `hg push` all changes

@@ -1,0 +1,393 @@
+<div id="rightbox">
+  <table class="entries">
+    <tbody>
+      <tr>
+        <td>
+
+          <a href="top"></a>
+          <h2 id="hide-toggle" class="hide-button">Submission Guidelines</h2>
+          <div id="hide">
+            <p class="example"><a href="#form">(Jump to submission form)</a></p>
+
+            <p>The submission must build with the current Isabelle release version.
+              Submissions for older Isabelle versions are not accepted.</p>
+
+            <p>Submissions for the Isabelle development version are also acceptable,
+              but publication of the entry on the front page will be deferred until the
+              next Isabelle release. In the meantime the entry will only be visible on
+              the <a href="https://devel.isa-afp.org">development pages</a>.
+              In this case,
+              submit your article as described above. Because your article is tested
+              against the release version, this will fail (otherwise your article does
+              not need the development version!) and you cannot perform the final step
+              in the submission process. When that happens, simply copy the url of the
+              submission page at that point into an email to <a
+                href="&#109;&#97;&#105;&#108;&#116;&#111;:&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;">&#97;&#102;&#112;-&#115;&#117;&#98;&#109;&#105;&#116;&#64;&#105;&#110;&#46;&#116;&#117;&#109;&#46;&#100;&#101;</a>.
+            </p>
+
+            <p>To submit your contribution, you need to create a zip or tar archive containing all your
+              theories, including a ROOT file. All files need to reside in a folder that has the same name
+              as the short article name (see below). When submitting multiple entries at once, there must be
+              one entry per folder and one ROOT file per entry. If you don't already have a ROOT file, refer
+              to the <a href="https://isabelle.in.tum.de/doc/system.pdf">system manual</a> for how to create
+              one.</p>
+
+            <p>There is also a self-contained
+              <a href="https://www.isa-afp.org/entries/Example-Submission.shtml">example submission</a>
+              that contains further information, including the structure of the entry and its ROOT file.</p>
+
+            <p class="example"><a href="#top" class="hide-button">Hide guidelines</a></p>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <form action="index" method="POST" enctype="multipart/form-data">
+    <a name="form"></a>
+
+
+    <p>&nbsp;</p>
+    <table class="entries">
+      <tbody>
+        <tr>
+          <td>
+            <h2>Metadata</h2>
+            <input type="hidden" name="numtable" value="0">
+            <table class="formtable" id="formtable_0">
+              <tr>
+                <td>Title of article:</td>
+                <td><input name="title_0" type="text" value="">
+                  <br>
+                  <span class="example">Example: <em>Example Submission</em></span>
+                </td>
+              </tr>
+              <tr>
+                <td>Short article name (folder name):</td>
+                <td><input name="shortname_0" type="text" value="">
+                  <br>
+                  <span class="example">Example: <em>Example_Submission</em> (name of the folder where
+                    your ROOT and theory files reside)
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>Authors:</td>
+                <td><input name="author_0" type="text" value="">
+                  <br>
+                  <span class="example">
+                    Example:
+                    <em>
+                      Gerwin Klein &lt;https://www.cse.unsw.edu.au/~kleing/&gt;,
+                      Johannes H&ouml;lzl &lt;mailto:hoelzl@in.tum.de&gt;
+                    </em>
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>Topics:</td>
+                <td><input name="topic_0" type="text" value="">
+                  <br>
+                  <span class="example">
+                    Example: <em>Computer Science/Security,
+                      Computer Science/Programming Languages/Type Systems</em><br>
+                    (<a href=https://www.isa-afp.org/topics.shtml>Index of topics</a>)
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>License:</td>
+                <td><label><input type="radio" name="license_0" value="BSD" checked>BSD</label>
+                  <label><input type="radio" name="license_0" value="LGPL">LGPL</label>
+                  <br>
+                  <span class="example">
+                    Note: For LGPL submissions, please include the header "License: LGPL" in each file
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>Abstract:</td>
+                <td><textarea name="abstract_0"></textarea>
+                  <br>
+                  <span class="example">
+                    Note: You can use HTML to format your abstract.
+                  </span>
+                </td>
+              </tr>
+            </table>
+            <p>
+              <a href="javaScript:void(0);" class="removeField">Remove this entry</a>
+            </p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>&nbsp;</p>
+
+    <table class="entries">
+      <tbody>
+        <tr>
+          <td>
+            <p>
+              You can submit multiple entries at once. Put the corresponding folders in
+              the archive and use the button below to add more input fields for metadata.
+            </p>
+            <a href="javaScript:void(0);" id="newFields">Add new entry</a><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>&nbsp;</p>
+
+    <table class="entries">
+      <tbody>
+        <tr>
+          <td>
+            <table id="formtable_end">
+              <tr>
+                <td>
+                  Contact:
+                </td>
+                <td>
+                  <input name="contact" type="text" value="">
+                  <br>
+                  <span class="example">
+                    Example:
+                    <em>hoelzl@in.tum.de, haslbecm@in.tum.de</em>
+                    (These addresses serve two purposes: 1. They are used to send you updates about
+                    the state of your submission. 2. They are the maintainers of the entry once it
+                    is accepted. Typically this will be one or more of the authors. You can supply
+                    multiple addresses seperated by commas.)
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Message for the editors:<br>
+                </td>
+                <td>
+                  <textarea name="comment"></textarea>
+                  <br>
+                  <span class="example">
+                    Note:
+                    Anything special or noteworthy about your submission can be covered here.
+                    It will not become part of your entry. You're also welcome to leave
+                    suggestions for our AFP submission service here. (Can be left empty)
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  Archive file (.tar.gz or .zip):
+                </td>
+                <td>
+                  <input name="tar" type="file">
+                  <br>
+                  <span class="example">
+                    Note: Your zip or tar file should contain one folder with your theories, ROOT,
+                    etc. The folder name should be the short/folder name used in the
+                    submission form.
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <input name="submit" type="submit" value="Submit">
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </form>
+</div>
+
+<script src="/js/jquery.min.js"></script>
+<script>
+  var table_template = ''
+    + '<table class="entries"><tbody><tr><td>'
+    + '<h2>Metadata</h2>'
+    + '<input type="hidden" name="numtable" value="{0}">'
+    + '<table class="formtable" id="formtable_{0}">'
+    + '<tr>'
+    + '<td>Title of article:</td>'
+    + '<td><input name="title_{0}" type="text" '
+    + 'value="">'
+    + '<br>'
+    + '<span class="example">Example: <em>Example Submission</em></span>'
+    + '</td>'
+    + '</tr>'
+    + '<tr>'
+    + '<td>Short article name (folder name):</td>'
+    + '<td><input name="shortname_{0}" type="text"'
+    + 'value="">'
+    + '<br>'
+    + '<span class="example">Example: <em>Example_Submission</em> (name of the folder where'
+    + 'your ROOT and theory files reside)'
+    + '</span>'
+    + '</td>'
+    + '</tr>'
+    + '<tr>'
+    + '<td>Authors:</td>'
+    + '<td><input name="author_{0}" type="text"'
+    + 'value="">'
+    + '<br>'
+    + '<span class="example">'
+    + 'Example:'
+    + '<em>'
+    + 'Gerwin Klein &lt;https://www.cse.unsw.edu.au/~kleing/&gt;,'
+    + 'Johannes H&ouml;lzl &lt;mailto:hoelzl@in.tum.de&gt;'
+    + '</em>'
+    + '</span>'
+    + '</td>'
+    + '</tr>'
+    + '<tr>'
+    + '<td>Topics:</td>'
+    + '<td><input name="topic_{0}" type="text"'
+    + 'value="">'
+    + '<br>'
+    + '<span class="example">'
+    + 'Example: <em>Computer Science/Security, '
+    + 'Computer Science/Programming, Languages/Type Systems</em><br>'
+    + '(<a href=https://www.isa-afp.org/topics.shtml>Index of topics</a>)'
+    + '</span>'
+    + '</td>'
+    + '</tr>'
+    + '<tr>'
+    + '<td>License:</td>'
+    + '<td><label><input type="radio" name="license_{0}" value="BSD"'
+    + 'checked>BSD</label>'
+    + '<label><input type="radio" name="license_{0}" value="LGPL"'
+    + '>LGPL</label>'
+    + '<br>'
+    + '<span class="example">'
+    + 'Note: For LGPL submissions, please include the header "License: LGPL" in each file'
+    + '</span>'
+    + '</td>'
+    + '</tr>'
+    + '<tr>'
+    + '<td>Abstract:</td>'
+    + '<td><textarea name="abstract_{0}"></textarea>'
+    + '<br>'
+    + '<span class="example">'
+    + 'Note: You can use HTML to format your abstract.'
+    + '</span>'
+    + '</td>'
+    + '</tr>'
+    + '</table>'
+    + '<p>'
+    + '<a href="javaScript:void(0);" class="removeField">Remove this entry</a>'
+    + '</p>'
+    + '</td></tr></tbody></table>'
+    + '<p>&nbsp;</p>'
+    + '';
+  var regex = new RegExp('\\{0\\}', 'g');
+  function noOfFields() {
+    var noOfForms = $.map($(".formtable"), function (val, i) {
+      return parseInt(val.id.replace('formtable_', ''));
+    });
+    return Math.max.apply(0, noOfForms);
+  }
+  $("#newFields").click(function () {
+    $(this).closest(".entries").before(table_template.replace(regex, String(noOfFields() + 1)));
+  });
+  $("#rightbox").on("click", ".removeField", function () {
+    $(this).closest(".entries").remove();
+  });
+  $(".hide-button").click(function () {
+    $("#hide-toggle").toggleClass("active");
+    $("#hide").slideToggle();
+  })
+</script>
+<style type="text/css">
+  input[type=text] {
+    width: 30em;
+  }
+
+  .red {
+    color: red;
+    font-size: 0.7em;
+  }
+
+  .example {
+    font-size: 0.8em;
+  }
+
+  textarea {
+    width: 40em;
+    height: 15em;
+  }
+
+  h1 {
+    font: small-caps bold large sans-serif;
+  }
+
+  h2 {
+    font-size: 1.2em;
+    margin: 0.5em 0.2em 0 0.2em;
+    padding: 0;
+  }
+
+  td {
+    vertical-align: top;
+  }
+
+  tr.archive_table_row td {
+    padding-top: 1.5em;
+  }
+
+  code {
+    background-color: #F2F2F2;
+    color: #303030;
+    padding: 1px 2px 2px 2px;
+    border-radius: 4px;
+  }
+
+  #log {
+    width: 85%;
+    background: white;
+    margin: auto;
+    border: thin solid;
+    padding: 5px;
+  }
+
+  .log_button {
+    width: 20em;
+  }
+
+  .formtable tr td:first-child {
+    width: 8em;
+  }
+
+  .formtable td {
+    padding: 0.4em;
+  }
+
+  #formtable_end tr td:first-child {
+    width: 8em;
+  }
+
+  #formtable_end td {
+    padding: 0.4em;
+  }
+
+  input[type="file"] {
+    font-weight: bold;
+  }
+
+  #hide-toggle {
+    cursor: pointer;
+  }
+
+  #hide-toggle:before {
+    content: "▾ ";
+  }
+
+  #hide-toggle.active:before {
+    content: "▸ ";
+  }
+</style>

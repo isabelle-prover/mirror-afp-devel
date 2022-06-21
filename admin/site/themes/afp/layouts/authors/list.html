@@ -1,0 +1,38 @@
+{{ define "main" }}
+{{- $site := . -}}
+{{ with (index (index .Site.Data.authors .Title) "homepages") }}
+<h2>Homepages 🌐</h2>
+<ul>
+{{- range . -}}
+  <li><a href="{{ . }}">{{ . }}</a></li>
+{{- end -}}
+</ul>
+{{ end }}
+{{ with (index (index .Site.Data.authors .Title) "emails") }}
+<h2>E-Mails 📧</h2>
+<ul>
+{{- range . -}}
+  <li><a href="mailto:{{ . }}">{{ . }}</a></li>
+{{- end -}}
+</ul>
+{{ end }}
+
+<h2>Entries</h2>
+{{- range (.Data.Pages).GroupByDate "2006" -}}
+{{- if ne .Key "0001" -}}
+<h3 class="head">{{- .Key -}}</h3>
+{{- range .Pages -}}
+<article class="entry">
+  <div class="item-text">
+    <h5><a class="title" href="{{ .RelPermalink }}">{{- htmlUnescape .Title -}}</a></h5> <br>
+    {{- $entry := . -}}
+    {{- with .Params.authors -}}by {{ partial "authors.html" (dict "site" $site "authors" . "affiliations" $entry.Params.affiliations) -}}{{- end -}}
+  </div>
+  <span class="date">
+    {{ .Date.Format "Jan 02" }}
+  </span>
+</article>
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}

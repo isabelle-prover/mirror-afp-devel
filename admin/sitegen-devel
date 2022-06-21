@@ -2,19 +2,21 @@
 
 # devel invocation of sitegen.py
 
-STATUS_FILE="$(readlink -f "$1")"
-shift
+source "$(dirname "$0")/common"
 
-DEPS_FILE="$(readlink -f "$1")"
+set_isabelle_tool
+
+STATUS_FILE="$(readlink -f "$1")"
 shift
 
 cd "$(dirname "$0")/.."
 
-python3 admin/sitegen-lib/sitegen.py --dest=web \
-                                     --templates=metadata/templates \
-                                     --status="$STATUS_FILE" \
-                                     --deps="$DEPS_FILE" \
-                                     metadata thys "$@"
+"$ISABELLE_TOOL" afp_site_gen \
+  -f \
+  -H out/hugo \
+  -O web \
+  -D "$STATUS_FILE" \
+  "$@"
 
 mkdir -p release
 echo "Packing tars ..."

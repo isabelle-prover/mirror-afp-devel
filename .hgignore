@@ -70,3 +70,6 @@ thys/Simplicial_complexes_and_boolean_functions/SMLBDD
 
 admin/py-bootstrap
 admin/venv
+
+tools/**.jar
+web/hugo

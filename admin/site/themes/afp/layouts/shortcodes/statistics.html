@@ -1,0 +1,216 @@
+<table>
+  <tr>
+    <td class="statsnumber">{{ len (where .Site.RegularPages "Section" "==" "entries") }}</td>
+    <td><a href="/">Entries</a></td>
+  </tr>
+  <tr>
+    <td class="statsnumber">{{ len $.Site.Taxonomies.authors }}</td>
+    <td><a href="/authors/">Authors</a></td>
+  </tr>
+  <tr>
+    <td class="statsnumber">~{{ lang.NumFmt 0 (mul (math.Round (div .Site.Data.statistics.num_lemmas 100)) 100) }}</td>
+    <td>Lemmas</td>
+  </tr>
+  <tr>
+    <td class="statsnumber">~{{ lang.NumFmt 0 (mul (math.Round (div .Site.Data.statistics.num_loc 100)) 100) }}</td>
+    <td>Lines of Code</td>
+  </tr>
+</table>
+
+<h4>Most used AFP articles:</h4>
+<table id="most_used">
+  <tr>
+    <th></th>
+    <th>Name</th>
+    <th>Used by ? articles</th>
+  </tr>
+
+  {{ range $index, $element := first 12 .Site.Taxonomies.dependencies.ByCount }}
+  <tr>
+    <td>{{ add $index 1}}.</td>
+    <td><a href="/entries/{{- $element.Page.Title -}}.html">{{ $element.Page.Title }}</a></td>
+    <td><a href="{{- $element.Page.RelPermalink -}}">{{ $element.Count }}</a></td>
+  </tr>
+  {{ end }}
+</table>
+
+{{- $Scratch := newScratch -}}
+
+{{- range ((where site.RegularPages "Section" "entries").GroupByDate "2006" ).Reverse -}}
+  {{- $collection := . -}}
+  {{- $Scratch.Add "years" (slice .Key) -}}
+  {{- with $Scratch.Get "articles_year" -}}
+    {{- $lastYearArticleCount := index (last 1 .) 0 -}}
+    {{- $articleCount := len $collection.Pages -}}
+    {{- $Scratch.Add "articles_year" (slice (int (add $articleCount $lastYearArticleCount))) -}}
+  {{- else }}
+    {{- $Scratch.Add "articles_year" (slice (len .Pages)) -}}
+  {{- end }}
+{{- end }}
+
+{{- range (where site.RegularPages "Section" "entries").Reverse -}}
+{{- $Scratch.Add "all_articles" (slice (printf "'%s'" .File.BaseFileName )) -}}
+{{- end }}
+
+<script>
+  // DATA
+  var years = [{{- delimit ($Scratch.Get "years") ", " | safeJS -}}];
+  var no_articles = [{{- delimit ($Scratch.Get "articles_year") ", " | safeJS -}}];
+  var no_loc = [{{- delimit .Site.Data.statistics.loc_years  ", " | safeJS -}} ];
+  var no_authors = [{{- delimit .Site.Data.statistics.author_years  ", " | safeJS -}}];
+  var no_authors_series = [{{- delimit .Site.Data.statistics.author_years_cumulative  ", " | safeJS -}}];
+  var all_articles = [{{- delimit ($Scratch.Get "all_articles") ", " | safeJS -}}];
+  var years_loc_articles = [{{ index ($Scratch.Get "years") 0 | safeJS }}];
+  {{ range $index, $value := ($Scratch.Get "articles_year") -}}
+    {{- with (index ($Scratch.Get "years") (add $index 1)) -}}
+      years_loc_articles[{{- $value | safeJS -}}] = {{ . | safeJS -}};
+    {{ end -}}
+  {{- end }}
+  years_loc_articles.length = {{ index (last 1 ($Scratch.Get "articles_year")) 0 | safeJS }};
+  var loc_articles = [{{- delimit .Site.Data.statistics.loc_articles  ", " | safeJS -}}];
+</script>
+<h4>Growth in number of articles:</h4>
+<script src="/js/Chart.js"></script>
+<div class="chart">
+  <canvas id="NumberOfArticles"></canvas>
+</div>
+<script>
+  var ctx = document.getElementById("NumberOfArticles");
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [{
+        label: 'size of the AFP in # of articles',
+        data: no_articles,
+        backgroundColor: "rgba(46, 45, 78, 1)"
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      },
+    }
+  });
+</script>
+
+<h4>Growth in lines of code:</h4>
+<div class="chart">
+  <canvas id="NumberOfLoc"></canvas>
+</div>
+<script>
+  var ctx = document.getElementById("NumberOfLoc");
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [{
+        label: 'size of the AFP in lines of code',
+        data: no_loc,
+        backgroundColor: "rgba(101, 99, 136, 1)"
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      },
+    }
+  });
+</script>
+
+<h4>Growth in number of authors:</h4>
+<div class="chart">
+  <canvas id="NumberOfAuthors"></canvas>
+</div>
+<script>
+  var ctx = document.getElementById("NumberOfAuthors");
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: years,
+      datasets: [{
+        label: 'new authors per year',
+        data: no_authors,
+        backgroundColor: "rgba(101, 99, 136, 1)"
+      },
+      {
+        label: 'number of authors contributing (cumulative)',
+        data: no_authors_series,
+        backgroundColor: "rgba(0, 15, 48, 1)"
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      },
+    }
+  });
+</script>
+
+<h4>Size of articles:</h4>
+<div class="chart">
+  <canvas id="LocArticles"></canvas>
+</div>
+<script>
+  var ctx = document.getElementById("LocArticles");
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: years_loc_articles,
+      datasets: [{
+        label: 'loc per article',
+        data: loc_articles,
+        backgroundColor: "rgba(101, 99, 136, 1)"
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        xAxes: [{
+          categoryPercentage: 1,
+          barPercentage: 0.9,
+          ticks: {
+            autoSkip: false
+          }
+        }],
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      },
+      tooltips: {
+        callbacks: {
+          title: function (tooltipItem, data) {
+            return all_articles[tooltipItem[0].index];
+          }
+        }
+      }
+    }
+  });
+</script>
+
+</td>
+</tr>
+
+</tbody>
+</table>
