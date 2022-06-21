@@ -1,0 +1,22 @@
+title = "Perfect Number Theorem"
+date = 2009-11-22
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = "These theories present the mechanised proof of the Perfect Number Theorem."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ijbema]
+email = "ijbema_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

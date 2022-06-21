@@ -1,0 +1,22 @@
+title = "Sums of Two and Four Squares"
+date = 2007-08-12
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = "This document presents the mechanised proofs of the following results:<ul><li>any prime number of the form 4m+1 can be written as the sum of two squares;</li><li>any natural number can be written as the sum of four squares</li></ul>"
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.oosterhuis]
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+oosterhuis = "oosterhuis_email"
+
+[history]
+
+[extra]

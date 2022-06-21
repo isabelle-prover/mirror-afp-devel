@@ -1,0 +1,33 @@
+title = "Transformer Semantics"
+date = 2018-12-11
+topics = [
+  "Mathematics/Algebra",
+  "Computer science/Semantics",
+]
+abstract = """
+These mathematical components formalise predicate transformer
+semantics for programs, yet currently only for partial correctness and
+in the absence of faults.  A first part for isotone (or monotone),
+Sup-preserving and Inf-preserving transformers follows Back and von
+Wright's approach, with additional emphasis on the quantalic
+structure of algebras of transformers.  The second part develops
+Sup-preserving and Inf-preserving predicate transformers from the
+powerset monad, via its Kleisli category and Eilenberg-Moore algebras,
+with emphasis on adjunctions and dualities, as well as isomorphisms
+between relations, state transformers and predicate transformers."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.struth]
+homepage = "struth_homepage1"
+
+[contributors]
+
+[notify]
+struth = "struth_email"
+
+[history]
+
+[extra]

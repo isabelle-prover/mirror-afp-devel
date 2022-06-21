@@ -1,0 +1,38 @@
+title = "Probabilistic Timed Automata"
+date = 2018-05-24
+topics = [
+  "Mathematics/Probability theory",
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+We present a formalization of probabilistic timed automata (PTA) for
+which we try to follow the formula MDP + TA = PTA as far as possible:
+our work starts from our existing formalizations of Markov decision
+processes (MDP) and timed automata (TA) and combines them modularly.
+We prove the fundamental result for probabilistic timed automata: the
+region construction that is known from timed automata carries over to
+the probabilistic setting. In particular, this allows us to prove that
+minimum and maximum reachability probabilities can be computed via a
+reduction to MDP model checking, including the case where one wants to
+disregard unrealizable behavior. Further information can be found in
+our ITP paper [2]."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.wimmer]
+homepage = "wimmer_homepage"
+
+[authors.hoelzl]
+homepage = "hoelzl_homepage1"
+
+[contributors]
+
+[notify]
+wimmer = "wimmer_email1"
+hoelzl = "hoelzl_email"
+
+[history]
+
+[extra]

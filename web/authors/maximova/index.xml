@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>maximova on Archive of Formal Proofs</title>
+    <link>/authors/maximova/</link>
+    <description>Recent content in maximova on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 10 Oct 2014 00:00:00 +0000</lastBuildDate><atom:link href="/authors/maximova/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Stream Fusion in HOL with Code Generation</title>
+      <link>/entries/Stream_Fusion_Code.html</link>
+      <pubDate>Fri, 10 Oct 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stream_Fusion_Code.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

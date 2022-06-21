@@ -1,0 +1,38 @@
+title = "Binomial Heaps and Skew Binomial Heaps"
+date = 2010-10-28
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+We implement and prove correct binomial heaps and skew binomial heaps.
+Both are data-structures for priority queues.
+While binomial heaps have logarithmic <em>findMin</em>, <em>deleteMin</em>,
+<em>insert</em>, and <em>meld</em> operations,
+skew binomial heaps have constant time <em>findMin</em>, <em>insert</em>,
+and <em>meld</em> operations, and only the <em>deleteMin</em>-operation is
+logarithmic. This is achieved by using <em>skew links</em> to avoid
+cascading linking on <em>insert</em>-operations, and <em>data-structural
+bootstrapping</em> to get constant-time <em>findMin</em> and <em>meld</em>
+operations.  Our implementation follows the paper by Brodal and Okasaki."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.meis]
+email = "meis_email"
+
+[authors.nielsen]
+email = "nielsen_email"
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email1"
+
+[history]
+
+[extra]

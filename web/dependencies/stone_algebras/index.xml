@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Stone_Algebras on Archive of Formal Proofs</title>
+    <link>/dependencies/stone_algebras/</link>
+    <description>Recent content in Stone_Algebras on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 31 Jan 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/stone_algebras/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Hierarchy of Algebras for Boolean Subsets</title>
+      <link>/entries/Subset_Boolean_Algebras.html</link>
+      <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Subset_Boolean_Algebras.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stone Relation Algebras</title>
+      <link>/entries/Stone_Relation_Algebras.html</link>
+      <pubDate>Tue, 07 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stone_Relation_Algebras.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,32 @@
+title = "Conditional Simplification"
+date = 2021-09-06
+topics = [
+  "Tools",
+]
+abstract = """
+The article provides a collection of experimental general-purpose
+proof methods for the object logic Isabelle/HOL of the formal proof
+assistant Isabelle. The methods in the collection offer functionality
+that is similar to certain aspects of the functionality provided by
+the standard proof methods of Isabelle that combine classical
+reasoning and rewriting, such as the method <i>auto</i>,
+but use a different approach for rewriting. More specifically, these
+methods allow for the side conditions of the rewrite rules to be
+solved via intro-resolution."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.milehins]
+email = "milehins_email"
+
+[contributors]
+
+[notify]
+milehins = "milehins_email"
+
+[history]
+2022-01-07 = "added a switch for backtracking (revision 241da1cdeabf)<br>"
+
+[extra]

@@ -1,0 +1,43 @@
+title = "A Formal Model of the Safely Composable Document Object Model with Shadow Roots"
+date = 2020-09-28
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+In this AFP entry, we extend our formalization of the safely
+composable DOM with Shadow Roots. This is a proposal for Shadow Roots
+with stricter safety guarantess than the standard compliant
+formalization (see \"Shadow DOM\"). Shadow Roots are a recent
+proposal of the web community to support a component-based development
+approach for client-side web applications.  Shadow roots are a
+significant extension to the DOM standard and, as web standards are
+condemned to be backward compatible, such extensions often result in
+complex specification that may contain unwanted subtleties that can be
+detected by a formalization.  Our Isabelle/HOL formalization is, in
+the sense of object-orientation, an extension of our formalization of
+the core DOM and enjoys the same basic properties, i.e., it is
+extensible, i.e., can be extended without the need of re-proving
+already proven properties and executable, i.e., we can generate
+executable code from our specification. We exploit the executability
+to show that our formalization complies to the official standard of
+the W3C, respectively, the WHATWG."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brucker]
+homepage = "brucker_homepage1"
+
+[authors.herzberg]
+homepage = "herzberg_homepage"
+
+[contributors]
+
+[notify]
+brucker = "brucker_email2"
+herzberg = "herzberg_email"
+
+[history]
+
+[extra]

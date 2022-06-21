@@ -1,0 +1,34 @@
+title = "Deriving generic class instances for datatypes"
+date = 2018-11-06
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+<p>We provide a framework for automatically deriving instances for
+generic type classes. Our approach is inspired by Haskell's
+<i>generic-deriving</i> package and Scala's
+<i>shapeless</i> library.  In addition to generating the
+code for type class functions, we also attempt to automatically prove
+type class laws for these instances. As of now, however, some manual
+proofs are still required for recursive datatypes.</p>
+<p>Note: There are already articles in the AFP that provide
+automatic instantiation for a number of classes. Concretely, <a href=\"https://www.isa-afp.org/entries/Deriving.html\">Deriving</a> allows the automatic instantiation of comparators, linear orders, equality, and hashing. <a href=\"https://www.isa-afp.org/entries/Show.html\">Show</a> instantiates a Haskell-style <i>show</i> class.</p><p>Our approach works for arbitrary classes (with some Isabelle/HOL overhead for each class), but a smaller set of datatypes.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.raedle]
+email = "raedle_email"
+
+[authors.hupel]
+homepage = "hupel_homepage"
+
+[contributors]
+
+[notify]
+raedle = "raedle_email"
+
+[history]
+
+[extra]

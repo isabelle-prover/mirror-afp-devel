@@ -1,0 +1,36 @@
+title = "Enumeration of Equivalence Relations"
+date = 2022-02-04
+topics = [
+  "Mathematics/Combinatorics",
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = """
+<p>This entry contains a formalization of an algorithm
+enumerating all equivalence relations on an initial segment of the
+natural numbers. The approach follows the method described by Stanton
+and White <a
+href=\"https://doi.org/10.1007/978-1-4612-4968-9\">[5,§
+1.5]</a> using restricted growth functions.</p>
+<p>The algorithm internally enumerates restricted growth
+functions (as lists), whose equivalence kernels then form the
+equivalence relations. This has the advantage that the representation
+is compact and lookup of the relation reduces to a list lookup
+operation.</p> <p>The algorithm can also be used within a
+proof and an example application is included, where a sequence of
+variables is split by the possible partitions they can form.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.karayel]
+homepage = "karayel_homepage"
+
+[contributors]
+
+[notify]
+karayel = "karayel_email"
+
+[history]
+
+[extra]

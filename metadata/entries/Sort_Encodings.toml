@@ -1,0 +1,38 @@
+title = "Sound and Complete Sort Encodings for First-Order Logic"
+date = 2013-06-27
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = """
+This is a formalization of the soundness and completeness properties
+for various efficient encodings of sorts in unsorted first-order logic
+used by Isabelle's Sledgehammer tool.
+<p>
+Essentially, the encodings proceed as follows:
+a many-sorted problem is decorated with (as few as possible) tags or
+guards that make the problem monotonic; then sorts can be soundly
+erased.
+<p>
+The development employs a formalization of many-sorted first-order logic
+in clausal form (clauses, structures and the basic properties
+of the satisfaction relation), which could be of interest as the starting
+point for other formalizations of first-order logic metatheory."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.blanchette]
+homepage = "blanchette_homepage"
+
+[authors.popescu]
+homepage = "popescu_homepage"
+
+[contributors]
+
+[notify]
+popescu = "popescu_email1"
+
+[history]
+
+[extra]

@@ -1,0 +1,38 @@
+title = "Markov Decision Processes with Rewards"
+date = 2021-12-16
+topics = [
+  "Mathematics/Probability theory",
+]
+abstract = """
+We present a formalization of Markov Decision Processes with rewards.
+In particular we first build on Hölzl's formalization  of MDPs
+(AFP entry: Markov_Models) and extend them with rewards. We proceed
+with an analysis of the expected total discounted reward criterion for
+infinite horizon MDPs. The central result is the construction of the
+iteration rule for the Bellman operator. We prove the optimality
+equations for this operator and show the existence of an optimal
+stationary deterministic solution. The analysis can be used to obtain
+dynamic programming algorithms such as value iteration and policy
+iteration to solve MDPs with formal guarantees. Our formalization is
+based on chapters 5 and 6 in Puterman's book \"Markov
+Decision Processes: Discrete Stochastic Dynamic Programming\"."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schaeffeler]
+email = "schaeffeler_email"
+
+[authors.abdulaziz]
+email = "abdulaziz_email"
+
+[contributors]
+
+[notify]
+schaeffeler = "schaeffeler_email"
+abdulaziz = "abdulaziz_email"
+
+[history]
+
+[extra]

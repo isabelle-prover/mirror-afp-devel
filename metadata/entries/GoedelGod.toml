@@ -1,0 +1,30 @@
+title = "Gödel's God in Isabelle/HOL"
+date = 2013-11-12
+topics = [
+  "Logic/Philosophical aspects",
+]
+abstract = """
+Dana Scott's version of Gödel's proof of God's existence is formalized in quantified
+modal logic KB (QML KB).
+QML KB is modeled as a fragment of classical higher-order logic (HOL);
+thus, the formalization is essentially a formalization in HOL."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.benzmueller]
+homepage = "benzmueller_homepage1"
+
+[authors.paleo]
+homepage = "paleo_homepage"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+benzmueller = "benzmueller_email1"
+
+[history]
+
+[extra]

@@ -1,0 +1,26 @@
+title = "Hall's Marriage Theorem"
+date = 2010-12-17
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = "Two proofs of Hall's Marriage Theorem: one due to Halmos and Vaughan, one due to Rado."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.jiangd]
+email = "jiangd_email"
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+2011-09-09 = "Added Rado's proof"
+
+[extra]

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bengtson on Archive of Formal Proofs</title>
+    <link>/authors/bengtson/</link>
+    <description>Recent content in bengtson on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 29 May 2012 00:00:00 +0000</lastBuildDate><atom:link href="/authors/bengtson/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CCS in nominal logic</title>
+      <link>/entries/CCS.html</link>
+      <pubDate>Tue, 29 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CCS.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Psi-calculi in Isabelle</title>
+      <link>/entries/Psi_Calculi.html</link>
+      <pubDate>Tue, 29 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Psi_Calculi.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The pi-calculus in nominal logic</title>
+      <link>/entries/Pi_Calculus.html</link>
+      <pubDate>Tue, 29 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Pi_Calculus.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

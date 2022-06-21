@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>jiang on Archive of Formal Proofs</title>
+    <link>/authors/jiang/</link>
+    <description>Recent content in jiang on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 05 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/jiang/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A data flow analysis algorithm for computing dominators</title>
+      <link>/entries/Dominance_CHK.html</link>
+      <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Dominance_CHK.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

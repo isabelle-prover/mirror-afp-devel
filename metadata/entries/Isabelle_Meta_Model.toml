@@ -1,0 +1,57 @@
+title = "A Meta-Model for the Isabelle API"
+date = 2015-09-16
+topics = [
+  "Computer science/Programming languages/Language definitions",
+]
+abstract = """
+We represent a theory <i>of</i> (a fragment of) Isabelle/HOL <i>in</i>
+Isabelle/HOL. The purpose of this exercise is to write packages for
+domain-specific specifications such as class models, B-machines, ...,
+and generally speaking, any domain-specific languages whose
+abstract syntax can be defined by a HOL \"datatype\". On this basis, the
+Isabelle code-generator can then be used to generate code for global
+context transformations as well as tactic code.
+<p>
+Consequently the package is geared towards
+parsing, printing and code-generation to the Isabelle API.
+It is at the moment not sufficiently rich for doing meta theory on
+Isabelle itself. Extensions in this direction are possible though.
+<p>
+Moreover, the chosen fragment is fairly rudimentary. However it should be
+easily adapted to one's needs if a package is written on top of it.
+The supported API contains types, terms, transformation of
+global context like definitions and data-type declarations as well
+as infrastructure for Isar-setups.
+<p>
+This theory is drawn from the
+<a href=\"http://isa-afp.org/entries/Featherweight_OCL.html\">Featherweight OCL</a>
+project where
+it is used to construct a package for object-oriented data-type theories
+generated from UML class diagrams. The Featherweight OCL, for example, allows for
+both the direct execution of compiled tactic code by the Isabelle API
+as well as the generation of \".thy\"-files for debugging purposes.
+<p>
+Gained experience from this project shows that the compiled code is sufficiently
+efficient for practical purposes while being based on a formal <i>model</i>
+on which properties of the package can be proven such as termination of certain
+transformations, correctness, etc."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.tuong]
+email = "tuong_email"
+
+[authors.wolff]
+homepage = "wolff_homepage"
+
+[contributors]
+
+[notify]
+tuong = "tuong_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,28 @@
+title = "The Inversions of a List"
+date = 2019-02-01
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+<p>This entry defines the set of <em>inversions</em>
+of a list, i.e. the pairs of indices that violate sortedness. It also
+proves the correctness of the well-known
+<em>O</em>(<em>n log n</em>)
+divide-and-conquer algorithm to compute the number of
+inversions.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

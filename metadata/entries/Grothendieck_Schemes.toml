@@ -1,0 +1,35 @@
+title = "Grothendieck's Schemes in Algebraic Geometry"
+date = 2021-03-29
+topics = [
+  "Mathematics/Algebra",
+  "Mathematics/Geometry",
+]
+abstract = """
+We formalize mainstream structures in algebraic geometry culminating
+in Grothendieck's schemes: presheaves of rings, sheaves of rings,
+ringed spaces, locally ringed spaces, affine schemes and schemes. We
+prove that the spectrum of a ring is a locally ringed space, hence an
+affine scheme. Finally, we prove that any affine scheme is a scheme."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bordg]
+homepage = "bordg_homepage"
+
+[authors.paulson]
+homepage = "paulson_homepage1"
+
+[authors.li]
+homepage = "li_homepage"
+
+[contributors]
+
+[notify]
+bordg = "bordg_email"
+paulson = "paulson_email"
+
+[history]
+
+[extra]

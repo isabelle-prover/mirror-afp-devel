@@ -1,0 +1,31 @@
+title = "Optimal Binary Search Trees"
+date = 2018-05-27
+topics = [
+  "Computer science/Algorithms",
+  "Computer science/Data structures",
+]
+abstract = """
+This article formalizes recursive algorithms for the construction
+of optimal binary search trees given fixed access frequencies.
+We follow Knuth (1971), Yao (1980) and Mehlhorn (1984).
+The algorithms are memoized with the help of the AFP article
+<a href=\"Monad_Memo_DP.html\">Monadification, Memoization and Dynamic Programming</a>,
+thus yielding dynamic programming algorithms."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage3"
+
+[authors.somogyi]
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

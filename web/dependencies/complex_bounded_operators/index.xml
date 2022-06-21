@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Complex_Bounded_Operators on Archive of Formal Proofs</title>
+    <link>/dependencies/complex_bounded_operators/</link>
+    <description>Recent content in Complex_Bounded_Operators on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 28 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/complex_bounded_operators/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Quantum and Classical Registers</title>
+      <link>/entries/Registers.html</link>
+      <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Registers.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

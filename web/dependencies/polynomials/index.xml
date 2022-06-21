@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Polynomials on Archive of Formal Proofs</title>
+    <link>/dependencies/polynomials/</link>
+    <description>Recent content in Polynomials on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 08 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/polynomials/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Factorization of Polynomials with Algebraic Coefficients</title>
+      <link>/entries/Factor_Algebraic_Polynomial.html</link>
+      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Factor_Algebraic_Polynomial.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
+      <link>/entries/Virtual_Substitution.html</link>
+      <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Virtual_Substitution.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Practical Algebraic Calculus Checker</title>
+      <link>/entries/PAC_Checker.html</link>
+      <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/PAC_Checker.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Symmetric Polynomials</title>
+      <link>/entries/Symmetric_Polynomials.html</link>
+      <pubDate>Tue, 25 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Symmetric_Polynomials.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</title>
+      <link>/entries/Lambda_Free_KBOs.html</link>
+      <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Lambda_Free_KBOs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Expressiveness of Deep Learning</title>
+      <link>/entries/Deep_Learning.html</link>
+      <pubDate>Thu, 10 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Deep_Learning.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gröbner Bases Theory</title>
+      <link>/entries/Groebner_Bases.html</link>
+      <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Groebner_Bases.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

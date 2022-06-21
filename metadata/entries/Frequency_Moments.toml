@@ -1,0 +1,42 @@
+title = "Formalization of Randomized Approximation Algorithms for Frequency Moments"
+date = 2022-04-08
+topics = [
+  "Computer science/Algorithms/Approximation",
+  "Mathematics/Probability theory",
+]
+abstract = """
+In 1999 Alon et. al. introduced the still active research topic of
+approximating the frequency moments of a data stream using randomized
+algorithms with minimal space usage. This includes the problem of
+estimating the cardinality of the stream elements - the zeroth
+frequency moment. But, also higher-order frequency moments that
+provide information about the skew of the data stream. (The
+<i>k</i>-th frequency moment of a data stream is the sum
+of the <i>k</i>-th powers of the occurrence counts of each
+element in the stream.) This entry formalizes three randomized
+algorithms for the approximation of
+<i>F<sub>0</sub></i>,
+<i>F<sub>2</sub></i> and
+<i>F<sub>k</sub></i> for <i>k ≥
+3</i> based on [<a
+href=\"https://doi.org/10.1006/jcss.1997.1545\">1</a>,
+<a
+href=\"https://doi.org/10.1007/3-540-45726-7_1\">2</a>]
+and verifies their expected accuracy, success probability and space
+usage."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.karayel]
+homepage = "karayel_homepage"
+
+[contributors]
+
+[notify]
+karayel = "karayel_email"
+
+[history]
+
+[extra]

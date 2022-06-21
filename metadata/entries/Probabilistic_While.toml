@@ -1,0 +1,30 @@
+title = "Probabilistic while loop"
+date = 2017-05-05
+topics = [
+  "Computer science/Functional programming",
+  "Mathematics/Probability theory",
+  "Computer science/Algorithms",
+]
+abstract = """
+This AFP entry defines a probabilistic while operator based on
+sub-probability mass functions and formalises zero-one laws and variant
+rules for probabilistic loop termination. As applications, we
+implement probabilistic algorithms for the Bernoulli, geometric and
+arbitrary uniform distributions that only use fair coin flips, and
+prove them correct and terminating with probability 1."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochbihler]
+homepage = "lochbihler_homepage"
+
+[contributors]
+
+[notify]
+lochbihler = "lochbihler_email1"
+
+[history]
+
+[extra]

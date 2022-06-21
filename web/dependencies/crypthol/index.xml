@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CryptHOL on Archive of Formal Proofs</title>
+    <link>/dependencies/crypthol/</link>
+    <description>Recent content in CryptHOL on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 07 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/crypthol/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sigma Protocols and Commitment Schemes</title>
+      <link>/entries/Sigma_Commit_Crypto.html</link>
+      <pubDate>Mon, 07 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Sigma_Commit_Crypto.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Constructive Cryptography in HOL</title>
+      <link>/entries/Constructive_Cryptography.html</link>
+      <pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Constructive_Cryptography.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Game-based cryptography in HOL</title>
+      <link>/entries/Game_Based_Crypto.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Game_Based_Crypto.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

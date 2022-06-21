@@ -1,0 +1,33 @@
+title = "Chamber Complexes, Coxeter Systems, and Buildings"
+date = 2016-07-01
+topics = [
+  "Mathematics/Algebra",
+  "Mathematics/Geometry",
+]
+abstract = """
+We provide a basic formal framework for the theory of chamber
+complexes and Coxeter systems, and for buildings as thick chamber
+complexes endowed with a system of apartments. Along the way, we
+develop some of the general theory of abstract simplicial complexes
+and of groups (relying on the <i>group_add</i> class for the basics),
+including free groups and group presentations, and their universal
+properties. The main results verified are that the deletion condition
+is both necessary and sufficient for a group with a set of generators
+of order two to be a Coxeter system, and that the apartments in a
+(thick) building are all uniformly Coxeter."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sylvestre]
+homepage = "sylvestre_homepage"
+
+[contributors]
+
+[notify]
+sylvestre = "sylvestre_email"
+
+[history]
+
+[extra]

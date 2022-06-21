@@ -21,45 +21,15 @@ shift $((OPTIND-1))
 
 set_isabelle_tool
 
-DEPENDENCIES_FILE="$(mktemp /tmp/afp.XXX)"
-
-echo "Obtaining dependency information ..."
-"$ISABELLE_TOOL" afp_dependencies > "$DEPENDENCIES_FILE" || fail "Could not obtain dependency information"
-
 echo "Checking ROOTs ..."
 "$ISABELLE_TOOL" afp_check_roots || exit 2
 
-echo "Checking presence of Python 3.x ..."
-PYTHON="$(which python3 2> /dev/null)"
-
-if [ ! -f "$PYTHON" ]; then
-  fail "No suitable Python found"
-else
-  echo "Found Python at '$PYTHON'"
-fi
-
-VENV_DIR="$AFP_ROOT/admin/venv"
-
-if [ ! -d "$VENV_DIR" ]; then
-  echo "Installing virtualenv"
-  pip3 install --user virtualenv
-  echo "Creating venv ..."
-  BIN="$(python3 -m site --user-base)/bin"
-  "$BIN/virtualenv" "$VENV_DIR"
-fi
-
-echo "Activating venv ..."
-source "$VENV_DIR/bin/activate"
-
-PYTHON="$VENV_DIR/bin/python"
-PIP="$VENV_DIR/bin/pip"
-
-echo "Installing dependencies ..."
-"$PIP" install -q -r "$AFP_ROOT/admin/sitegen-req.txt"
+echo "Building Isabelle components ..."
 
 echo "Running sitegen ..."
-"$PYTHON" "$AFP_ROOT/admin/sitegen-lib/sitegen.py" \
-  --dest="$AFP_ROOT/web" \
-  --templates="$AFP_ROOT/metadata/templates" \
-  --deps="$DEPENDENCIES_FILE" \
-  "$AFP_ROOT/metadata" "$AFP_ROOT/thys" "$@"
+
+"$ISABELLE_TOOL" afp_site_gen \
+  -f \
+  -H "$AFP_ROOT/out/hugo" \
+  -O "$AFP_ROOT/web" \
+  "$@"

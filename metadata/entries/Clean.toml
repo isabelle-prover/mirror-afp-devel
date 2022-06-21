@@ -1,0 +1,46 @@
+title = "Clean - An Abstract Imperative Programming Language and its Theory"
+date = 2019-10-04
+topics = [
+  "Computer science/Programming languages",
+  "Computer science/Semantics",
+]
+abstract = """
+Clean is based on a simple, abstract execution model for an imperative
+target language. “Abstract” is understood in contrast to “Concrete
+Semantics”; alternatively, the term “shallow-style embedding” could be
+used. It strives for a type-safe notion of program-variables, an
+incremental construction of the typed state-space, support of
+incremental verification, and open-world extensibility of new type
+definitions being intertwined with the program definitions. Clean is
+based on a “no-frills” state-exception monad with the usual
+definitions of bind and unit for the compositional glue of state-based
+computations. Clean offers conditionals and loops supporting C-like
+control-flow operators such as break and return. The state-space
+construction is based on the extensible record package. Direct
+recursion of procedures is supported. Clean’s design strives for
+extreme simplicity. It is geared towards symbolic execution and proven
+correct verification tools. The underlying libraries of this package,
+however, deliberately restrict themselves to the most elementary
+infrastructure for these tasks. The package is intended to serve as
+demonstrator semantic backend for Isabelle/C, or for the
+test-generation techniques."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.tuong]
+homepage = "tuong_homepage"
+
+[authors.wolff]
+homepage = "wolff_homepage"
+
+[contributors]
+
+[notify]
+wolff = "wolff_email"
+tuong = "tuong_email1"
+
+[history]
+
+[extra]

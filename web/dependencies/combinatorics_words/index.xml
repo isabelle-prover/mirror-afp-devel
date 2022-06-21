@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Combinatorics_Words on Archive of Formal Proofs</title>
+    <link>/dependencies/combinatorics_words/</link>
+    <description>Recent content in Combinatorics_Words on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 24 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/combinatorics_words/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Graph Lemma</title>
+      <link>/entries/Combinatorics_Words_Graph_Lemma.html</link>
+      <pubDate>Mon, 24 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Combinatorics_Words_Graph_Lemma.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lyndon words</title>
+      <link>/entries/Combinatorics_Words_Lyndon.html</link>
+      <pubDate>Mon, 24 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Combinatorics_Words_Lyndon.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

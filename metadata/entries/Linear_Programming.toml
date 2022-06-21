@@ -1,0 +1,32 @@
+title = "Linear Programming"
+date = 2019-08-06
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+We use the previous formalization of the general simplex algorithm to
+formulate an algorithm for solving linear programs. We encode the
+linear programs using only linear constraints. Solving these
+constraints also solves the original linear program. This algorithm is
+proven to be sound by applying the weak duality theorem which is also
+part of this formalization."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.parsert]
+homepage = "parsert_homepage"
+
+[authors.kaliszyk]
+homepage = "kaliszyk_homepage1"
+
+[contributors]
+
+[notify]
+parsert = "parsert_email"
+kaliszyk = "kaliszyk_email"
+
+[history]
+
+[extra]

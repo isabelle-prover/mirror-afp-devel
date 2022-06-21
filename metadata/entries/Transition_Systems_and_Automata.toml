@@ -1,0 +1,32 @@
+title = "Transition Systems and Automata"
+date = 2017-10-19
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+This entry provides a very abstract theory of transition systems that
+can be instantiated to express various types of automata. A transition
+system is typically instantiated by providing a set of initial states,
+a predicate for enabled transitions, and a transition execution
+function. From this, it defines the concepts of finite and infinite
+paths as well as the set of reachable states, among other things. Many
+useful theorems, from basic path manipulation rules to coinduction and
+run construction rules, are proven in this abstract transition system
+context. The library comes with instantiations for DFAs, NFAs, and
+Büchi automata."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brunner]
+homepage = "brunner_homepage"
+
+[contributors]
+
+[notify]
+brunner = "brunner_email"
+
+[history]
+
+[extra]

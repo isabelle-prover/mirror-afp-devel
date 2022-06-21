@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>wimmer on Archive of Formal Proofs</title>
+    <link>/authors/wimmer/</link>
+    <description>Recent content in wimmer on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 16 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="/authors/wimmer/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
+      <link>/entries/VerifyThis2019.html</link>
+      <pubDate>Wed, 16 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/VerifyThis2019.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
+      <link>/entries/IMP2.html</link>
+      <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMP2.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hidden Markov Models</title>
+      <link>/entries/Hidden_Markov_Models.html</link>
+      <pubDate>Fri, 25 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Hidden_Markov_Models.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Probabilistic Timed Automata</title>
+      <link>/entries/Probabilistic_Timed_Automata.html</link>
+      <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_Timed_Automata.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Monadification, Memoization and Dynamic Programming</title>
+      <link>/entries/Monad_Memo_DP.html</link>
+      <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Monad_Memo_DP.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>VerifyThis 2018 - Polished Isabelle Solutions</title>
+      <link>/entries/VerifyThis2018.html</link>
+      <pubDate>Fri, 27 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/VerifyThis2018.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
+      <link>/entries/Floyd_Warshall.html</link>
+      <pubDate>Mon, 08 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Floyd_Warshall.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Timed Automata</title>
+      <link>/entries/Timed_Automata.html</link>
+      <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Timed_Automata.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lehmer&#39;s Theorem</title>
+      <link>/entries/Lehmer.html</link>
+      <pubDate>Mon, 22 Jul 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Lehmer.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Pratt&#39;s Primality Certificates</title>
+      <link>/entries/Pratt_Certificate.html</link>
+      <pubDate>Mon, 22 Jul 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Pratt_Certificate.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

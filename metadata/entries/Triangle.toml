@@ -1,0 +1,33 @@
+title = "Basic Geometric Properties of Triangles"
+date = 2015-12-28
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+<p>
+This entry contains a definition of angles between vectors and between three
+points. Building on this, we prove basic geometric properties of triangles, such
+as the Isosceles Triangle Theorem, the Law of Sines and the Law of Cosines, that
+the sum of the angles of a triangle is π, and the congruence theorems for
+triangles.
+</p><p>
+The definitions and proofs were developed following those by John Harrison in
+HOL Light. However, due to Isabelle's type class system, all definitions and
+theorems in the Isabelle formalisation hold for all real inner product spaces.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

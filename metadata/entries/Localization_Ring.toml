@@ -1,0 +1,27 @@
+title = "The Localization of a Commutative Ring"
+date = 2018-06-14
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+We formalize the localization of a commutative ring R with respect to
+a multiplicative subset (i.e. a submonoid of R seen as a
+multiplicative monoid). This localization is itself a commutative ring
+and we build the natural homomorphism of rings from R to its
+localization."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bordg]
+homepage = "bordg_homepage"
+
+[contributors]
+
+[notify]
+bordg = "bordg_email"
+
+[history]
+
+[extra]

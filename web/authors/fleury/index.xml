@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fleury on Archive of Formal Proofs</title>
+    <link>/authors/fleury/</link>
+    <description>Recent content in fleury on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 31 Aug 2020 00:00:00 +0000</lastBuildDate><atom:link href="/authors/fleury/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Practical Algebraic Calculus Checker</title>
+      <link>/entries/PAC_Checker.html</link>
+      <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/PAC_Checker.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</title>
+      <link>/entries/Nested_Multisets_Ordinals.html</link>
+      <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Nested_Multisets_Ordinals.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

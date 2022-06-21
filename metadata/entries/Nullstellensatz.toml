@@ -1,0 +1,35 @@
+title = "Hilbert's Nullstellensatz"
+date = 2019-06-16
+topics = [
+  "Mathematics/Algebra",
+  "Mathematics/Geometry",
+]
+abstract = """
+This entry formalizes Hilbert's Nullstellensatz, an important
+theorem in algebraic geometry that can be viewed as the generalization
+of the Fundamental Theorem of Algebra to multivariate polynomials: If
+a set of (multivariate) polynomials over an algebraically closed field
+has no common zero, then the ideal it generates is the entire
+polynomial ring. The formalization proves several equivalent versions
+of this celebrated theorem: the weak Nullstellensatz, the strong
+Nullstellensatz (connecting algebraic varieties and radical ideals),
+and the field-theoretic Nullstellensatz. The formalization follows
+Chapter 4.1. of <a
+href=\"https://link.springer.com/book/10.1007/978-0-387-35651-8\">Ideals,
+Varieties, and Algorithms</a> by Cox, Little and O'Shea."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.maletzky]
+homepage = "maletzky_homepage"
+
+[contributors]
+
+[notify]
+maletzky = "maletzky_email1"
+
+[history]
+
+[extra]

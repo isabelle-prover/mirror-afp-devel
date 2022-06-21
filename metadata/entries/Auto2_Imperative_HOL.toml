@@ -1,0 +1,33 @@
+title = "Verifying Imperative Programs using Auto2"
+date = 2018-12-21
+topics = [
+  "Computer science/Algorithms",
+  "Computer science/Data structures",
+]
+abstract = """
+This entry contains the application of auto2 to verifying functional
+and imperative programs. Algorithms and data structures that are
+verified include linked lists, binary search trees, red-black trees,
+interval trees, priority queue, quicksort, union-find, Dijkstra's
+algorithm, and a sweep-line algorithm for detecting rectangle
+intersection. The imperative verification is based on Imperative HOL
+and its separation logic framework. A major goal of this work is to
+set up automation in order to reduce the length of proof that the user
+needs to provide, both for verifying functional programs and for
+working with separation logic."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.zhan]
+homepage = "zhan_homepage"
+
+[contributors]
+
+[notify]
+zhan = "zhan_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,29 @@
+title = "Laplace Transform"
+date = 2019-08-14
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+This entry formalizes the Laplace transform and concrete Laplace
+transforms for arithmetic functions, frequency shift, integration and
+(higher) differentiation in the time domain. It proves Lerch's
+lemma and uniqueness of the Laplace transform for continuous
+functions. In order to formalize the foundational assumptions, this
+entry contains a formalization of piecewise continuous functions and
+functions of exponential order."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.immler]
+homepage = "immler_homepage1"
+
+[contributors]
+
+[notify]
+immler = "immler_email1"
+
+[history]
+
+[extra]

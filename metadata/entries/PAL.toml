@@ -1,0 +1,29 @@
+title = "Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL"
+date = 2021-11-08
+topics = [
+  "Logic/General logic/Logics of knowledge and belief",
+]
+abstract = """
+We present a shallow embedding of public announcement logic (PAL) with
+relativized general knowledge in HOL. We then use PAL to obtain an
+elegant encoding of the wise men puzzle, which we solve automatically
+using sledgehammer."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.benzmueller]
+homepage = "benzmueller_homepage"
+
+[authors.reiche]
+homepage = "reiche_homepage"
+
+[contributors]
+
+[notify]
+benzmueller = "benzmueller_email"
+
+[history]
+
+[extra]

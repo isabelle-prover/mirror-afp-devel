@@ -1,0 +1,37 @@
+title = "Cardinality of Multisets"
+date = 2016-06-26
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+<p>This entry provides three lemmas to count the number of multisets
+of a given size and finite carrier set. The first lemma provides a
+cardinality formula assuming that the multiset's elements are chosen
+from the given carrier set. The latter two lemmas provide formulas
+assuming that the multiset's elements also cover the given carrier
+set, i.e., each element of the carrier set occurs in the multiset at
+least once.</p>  <p>The proof of the first lemma uses the argument of
+the recurrence relation for counting multisets. The proof of the
+second lemma is straightforward, and the proof of the third lemma is
+easily obtained using the first cardinality lemma. A challenge for the
+formalization is the derivation of the required induction rule, which
+is a special combination of the induction rules for finite sets and
+natural numbers. The induction rule is derived by defining a suitable
+inductive predicate and transforming the predicate's induction
+rule.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bulwahn]
+email = "bulwahn_email"
+
+[contributors]
+
+[notify]
+bulwahn = "bulwahn_email"
+
+[history]
+
+[extra]

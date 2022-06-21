@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HOL-ODE-Numerics on Archive of Formal Proofs</title>
+    <link>/dependencies/hol-ode-numerics/</link>
+    <description>Recent content in HOL-ODE-Numerics on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 18 Dec 2019 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/hol-ode-numerics/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Poincaré-Bendixson Theorem</title>
+      <link>/entries/Poincare_Bendixson.html</link>
+      <pubDate>Wed, 18 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Poincare_Bendixson.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ordinary Differential Equations</title>
+      <link>/entries/Ordinary_Differential_Equations.html</link>
+      <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Ordinary_Differential_Equations.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

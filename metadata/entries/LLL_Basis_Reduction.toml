@@ -1,0 +1,58 @@
+title = "A verified LLL algorithm"
+date = 2018-02-02
+topics = [
+  "Computer science/Algorithms/Mathematical",
+  "Mathematics/Algebra",
+]
+abstract = """
+The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
+LLL algorithm, is an algorithm to find a basis with short, nearly
+orthogonal vectors of an integer lattice. Thereby, it can also be seen
+as an approximation to solve the shortest vector problem (SVP), which
+is an NP-hard problem, where the approximation quality solely depends
+on the dimension of the lattice, but not the lattice itself. The
+algorithm also possesses many applications in diverse fields of
+computer science, from cryptanalysis to number theory, but it is
+specially well-known since it was used to implement the first
+polynomial-time algorithm to factor polynomials. In this work we
+present the first mechanized soundness proof of the LLL algorithm to
+compute short vectors in lattices. The formalization follows a
+textbook by von zur Gathen and Gerhard."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bottesch]
+
+[authors.divason]
+homepage = "divason_homepage1"
+
+[authors.haslbeck]
+homepage = "haslbeck_homepage"
+
+[authors.joosten]
+homepage = "joosten_homepage1"
+
+[authors.thiemann]
+homepage = "thiemann_homepage2"
+
+[authors.yamada]
+
+[contributors]
+
+[notify]
+bottesch = "bottesch_email"
+divason = "divason_email1"
+haslbeck = "haslbeck_email"
+joosten = "joosten_email2"
+thiemann = "thiemann_email"
+yamada = "yamada_email1"
+
+[history]
+2018-04-16 = """
+Integrated formal complexity bounds (Haslbeck, Thiemann)
+"""
+2018-05-25 = "Integrated much faster LLL implementation based on integer arithmetic (Bottesch, Haslbeck, Thiemann)"
+
+[extra]

@@ -1,0 +1,41 @@
+title = "Verified Algorithms for Solving Markov Decision Processes"
+date = 2021-12-16
+topics = [
+  "Mathematics/Probability theory",
+  "Computer science/Algorithms",
+]
+abstract = """
+We present a formalization of algorithms for solving Markov Decision
+Processes (MDPs) with formal guarantees on the optimality of their
+solutions. In particular we build on our analysis of the Bellman
+operator for discounted infinite horizon MDPs. From the iterator rule
+on the Bellman operator we directly derive executable value iteration
+and policy iteration algorithms to iteratively solve finite MDPs. We
+also prove correct optimized versions of value iteration that use
+matrix splittings to improve the convergence rate. In particular, we
+formally verify Gauss-Seidel value iteration and modified policy
+iteration. The algorithms are evaluated on two standard examples from
+the literature, namely, inventory management and gridworld. Our
+formalization covers most of chapter 6 in Puterman's book
+\"Markov Decision Processes: Discrete Stochastic Dynamic
+Programming\"."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schaeffeler]
+email = "schaeffeler_email"
+
+[authors.abdulaziz]
+email = "abdulaziz_email"
+
+[contributors]
+
+[notify]
+schaeffeler = "schaeffeler_email"
+abdulaziz = "abdulaziz_email"
+
+[history]
+
+[extra]

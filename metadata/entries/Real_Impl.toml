@@ -1,0 +1,32 @@
+title = "Implementing field extensions of the form Q[sqrt(b)]"
+date = 2014-02-06
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+We apply data refinement to implement the real numbers, where we support all
+numbers in the field extension Q[sqrt(b)], i.e., all numbers of the form p +
+q * sqrt(b) for rational numbers p and q and some fixed natural number b. To
+this end, we also developed algorithms to precisely compute roots of a
+rational number, and to perform a factorization of natural numbers which
+eliminates duplicate prime factors.
+<p>
+Our results have been used to certify termination proofs which involve
+polynomial interpretations over the reals."""
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+2014-07-11 = "Moved NthRoot_Impl to Sqrt-Babylonian."
+
+[extra]

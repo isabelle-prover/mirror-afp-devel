@@ -1,0 +1,41 @@
+title = "Communicating Concurrent Kleene Algebra for Distributed Systems Specification"
+date = 2019-08-06
+topics = [
+  "Computer science/Automata and formal languages",
+  "Mathematics/Algebra",
+]
+abstract = """
+Communicating Concurrent Kleene Algebra (C²KA) is a mathematical
+framework for capturing the communicating and concurrent behaviour of
+agents in distributed systems. It extends Hoare et al.'s
+Concurrent Kleene Algebra (CKA) with communication actions through the
+notions of stimuli and shared environments. C²KA has applications in
+studying system-level properties of distributed systems such as
+safety, security, and reliability. In this work, we formalize results
+about C²KA and its application for distributed systems specification.
+We first formalize the stimulus structure and behaviour structure
+(CKA). Next, we combine them to formalize C²KA and its properties.
+Then, we formalize notions and properties related to the topology of
+distributed systems and the potential for communication via stimuli
+and via shared environments of agents, all within the algebraic
+setting of C²KA."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.buyse]
+email = "buyse_email"
+
+[authors.jaskolka]
+homepage = "jaskolka_homepage"
+
+[contributors]
+
+[notify]
+buyse = "buyse_email"
+jaskolka = "jaskolka_email"
+
+[history]
+
+[extra]

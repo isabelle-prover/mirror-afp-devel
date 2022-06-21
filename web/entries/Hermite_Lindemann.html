@@ -1,117 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>The Hermite–Lindemann–Weierstraß Transcendence Theorem - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>The Hermite–Lindemann–Weierstraß Transcendence Theorem - Archive of Formal Proofs</title><meta name="description" content="This article provides a formalisation of the Hermite-Lindemann-Weierstraß Theorem (also known as simply Hermite-Lindemann or Lindemann-Weierstraß). This..."><meta property="og:title" content="The Hermite–Lindemann–Weierstraß Transcendence Theorem" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Hermite_Lindemann.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2021-03-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-03-03T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="The Hermite–Lindemann–Weierstraß Transcendence Theorem"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
-  
-          <font class="first">H</font>ermite–Lindemann–Weierstraß
-  
-          <font class="first">T</font>ranscendence
-  
-          <font class="first">T</font>heorem
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>T</span>he <span class='first'>H</span>ermite–<span class='first'>L</span>indemann–<span class='first'>W</span>eierstraß <span class='first'>T</span>ranscendence <span class='first'>T</span>heorem</h1>
+  <div>
+    
+    <p><a href="../authors/eberl">Manuel Eberl</a> <a href="https://pruvisto.org">🌐</a>
+    </p>
+    
+    
+    <p class="date">March 3, 2021</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The Hermite–Lindemann–Weierstraß Transcendence Theorem</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              <a href="https://pruvisto.org">Manuel Eberl</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2021-03-03</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-<p>This article provides a formalisation of the
+  <div class="abstract mathjax_process"><p>This article provides a formalisation of the
 Hermite-Lindemann-Weierstraß Theorem (also known as simply
 Hermite-Lindemann or Lindemann-Weierstraß). This theorem is one of the
 crowning achievements of 19th century number theory.</p>
@@ -135,84 +119,84 @@ are transcendental</li> <li>$e^z$, $\sin z$, $\tan z$,
 etc. are transcendental for algebraic
 $z\in\mathbb{C}\setminus\{0\}$</li> <li>$\ln z$ is
 transcendental for algebraic $z\in\mathbb{C}\setminus\{0,
-1\}$</li> </ul></td>
-</tr>
+1\}$</li> </ul></div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/number-theory">Mathematics/Number theory</a></li></ul>
+  <h3>Theories of Hermite_Lindemann</h3>
+  <ul>
+    <li><a href="../theories/hermite_lindemann/#Algebraic_Integer_Divisibility">Algebraic_Integer_Divisibility</a></li>
+    <li><a href="../theories/hermite_lindemann/#More_Polynomial_HLW">More_Polynomial_HLW</a></li>
+    <li><a href="../theories/hermite_lindemann/#More_Min_Int_Poly">More_Min_Int_Poly</a></li>
+    <li><a href="../theories/hermite_lindemann/#Complex_Lexorder">Complex_Lexorder</a></li>
+    <li><a href="../theories/hermite_lindemann/#More_Multivariate_Polynomial_HLW">More_Multivariate_Polynomial_HLW</a></li>
+    <li><a href="../theories/hermite_lindemann/#More_Algebraic_Numbers_HLW">More_Algebraic_Numbers_HLW</a></li>
+    <li><a href="../theories/hermite_lindemann/#Misc_HLW">Misc_HLW</a></li>
+    <li><a href="../theories/hermite_lindemann/#Hermite_Lindemann">Hermite_Lindemann</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Algebraic_Numbers.html">Algebraic_Numbers</a></li><li><a href="../entries/Pi_Transcendental.html">Pi_Transcendental</a></li><li><a href="../entries/Power_Sum_Polynomials.html">Power_Sum_Polynomials</a></li></ul>
+  </div><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Factor_Algebraic_Polynomial.html">Factor_Algebraic_Polynomial</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Van_der_Waerden.html">Van der Waerden&rsquo;s Theorem</a></li>
+      
+      <li><a href="../entries/MFMC_Countable.html">A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks</a></li>
+      
+      <li><a href="../entries/Sturm_Sequences.html">Sturm&rsquo;s Theorem</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Hermite_Lindemann/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Hermite_Lindemann/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Hermite_Lindemann/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Hermite_Lindemann-AFP,
-  author  = {Manuel Eberl},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Hermite_Lindemann-AFP</p>
+      <pre id="copyText">@article{Hermite_Lindemann-AFP,
+  author  = {eberl},
   title   = {The Hermite–Lindemann–Weierstraß Transcendence Theorem},
   journal = {Archive of Formal Proofs},
-  month   = mar,
+  month   = March,
   year    = 2021,
   note    = {\url{https://isa-afp.org/entries/Hermite_Lindemann.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Algebraic_Numbers.html">Algebraic_Numbers</a>, <a href="Pi_Transcendental.html">Pi_Transcendental</a>, <a href="Power_Sum_Polynomials.html">Power_Sum_Polynomials</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Factor_Algebraic_Polynomial.html">Factor_Algebraic_Polynomial</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Hermite_Lindemann/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Hermite_Lindemann/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Hermite_Lindemann/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Hermite_Lindemann-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Hermite_Lindemann-2021-03-12.tar.gz">
-              afp-Hermite_Lindemann-2021-03-12.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Hermite_Lindemann-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

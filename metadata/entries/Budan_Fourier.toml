@@ -1,0 +1,37 @@
+title = "The Budan-Fourier Theorem and Counting Real Roots with Multiplicity"
+date = 2018-09-02
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+This entry is mainly about counting and approximating real roots (of a
+polynomial) with multiplicity. We have first formalised the
+Budan-Fourier theorem: given a polynomial with real coefficients, we
+can calculate sign variations on Fourier sequences to over-approximate
+the number of real roots (counting multiplicity) within an interval.
+When all roots are known to be real, the over-approximation becomes
+tight: we can utilise this theorem to count real roots exactly. It is
+also worth noting that Descartes' rule of sign is a direct
+consequence of the Budan-Fourier theorem, and has been included in
+this entry. In addition, we have extended previous formalised
+Sturm's theorem to count real roots with multiplicity, while the
+original Sturm's theorem only counts distinct real roots.
+Compared to the Budan-Fourier theorem, our extended Sturm's
+theorem always counts roots exactly but may suffer from greater
+computational cost."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.li]
+homepage = "li_homepage"
+
+[contributors]
+
+[notify]
+li = "li_email1"
+
+[history]
+
+[extra]

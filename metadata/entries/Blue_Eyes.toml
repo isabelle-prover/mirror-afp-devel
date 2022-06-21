@@ -1,0 +1,28 @@
+title = "Solution to the xkcd Blue Eyes puzzle"
+date = 2021-01-30
+topics = [
+  "Logic/General logic/Logics of knowledge and belief",
+]
+abstract = """
+In a <a href=\"https://xkcd.com/blue_eyes.html\">puzzle published by
+Randall Munroe</a>, perfect logicians forbidden
+from communicating are stranded on an island, and may only leave once
+they have figured out their own eye color. We present a method of
+modeling the behavior of perfect logicians and formalize a solution of
+the puzzle."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.kadzioka]
+email = "kadzioka_email"
+
+[contributors]
+
+[notify]
+kadzioka = "kadzioka_email"
+
+[history]
+
+[extra]

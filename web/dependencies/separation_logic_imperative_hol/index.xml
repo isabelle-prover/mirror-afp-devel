@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Separation_Logic_Imperative_HOL on Archive of Formal Proofs</title>
+    <link>/dependencies/separation_logic_imperative_hol/</link>
+    <description>Recent content in Separation_Logic_Imperative_HOL on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 08 Aug 2016 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/separation_logic_imperative_hol/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Imperative Refinement Framework</title>
+      <link>/entries/Refine_Imperative_HOL.html</link>
+      <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Refine_Imperative_HOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verification of the UpDown Scheme</title>
+      <link>/entries/UpDown_Scheme.html</link>
+      <pubDate>Wed, 28 Jan 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/UpDown_Scheme.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

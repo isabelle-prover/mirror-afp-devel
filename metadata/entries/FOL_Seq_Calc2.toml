@@ -1,0 +1,40 @@
+title = "A Sequent Calculus Prover for First-Order Logic with Functions"
+date = 2022-01-31
+topics = [
+  "Logic/General logic/Classical first-order logic",
+  "Logic/Proof theory",
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = """
+We formalize an automated theorem prover for first-order logic with
+functions. The proof search procedure is based on sequent calculus and
+we verify its soundness and completeness using the Abstract Soundness
+and Abstract Completeness theories. Our analytic completeness proof
+covers both open and closed formulas. Since our deterministic prover
+considers only the subset of terms relevant to proving a given
+sequent, we do so as well when building a countermodel from a failed
+proof. We formally connect our prover with the proof system and
+semantics of the existing SeCaV system. In particular, the
+prover's output can be post-processed in Haskell to generate
+human-readable SeCaV proofs which are also machine-verifiable proof
+certificates."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.from]
+homepage = "from_homepage"
+
+[authors.jacobsen]
+homepage = "jacobsen_homepage"
+
+[contributors]
+
+[notify]
+from = "from_email"
+jacobsen = "jacobsen_email"
+
+[history]
+
+[extra]

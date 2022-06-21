@@ -1,0 +1,38 @@
+title = "The LambdaMu-calculus"
+date = 2017-08-16
+topics = [
+  "Computer science/Programming languages/Lambda calculi",
+  "Logic/General logic/Lambda calculus",
+]
+abstract = """
+The propositions-as-types correspondence is ordinarily presented as
+linking the metatheory of typed λ-calculi and the proof theory of
+intuitionistic logic. Griffin observed that this correspondence could
+be extended to classical logic through the use of control operators.
+This observation set off a flurry of further research, leading to the
+development of Parigots λμ-calculus. In this work, we formalise λμ-
+calculus in Isabelle/HOL and prove several metatheoretical properties
+such as type preservation and progress."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.matache]
+email = "matache_email"
+
+[authors.gomes]
+email = "gomes_email2"
+
+[authors.mulligan]
+email = "mulligan_email"
+
+[contributors]
+
+[notify]
+gomes = "gomes_email2"
+mulligan = "mulligan_email"
+
+[history]
+
+[extra]

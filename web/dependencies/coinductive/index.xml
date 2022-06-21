@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Coinductive on Archive of Formal Proofs</title>
+    <link>/dependencies/coinductive/</link>
+    <description>Recent content in Coinductive on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 05 Jun 2018 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/coinductive/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Partial Order Reduction</title>
+      <link>/entries/Partial_Order_Reduction.html</link>
+      <pubDate>Tue, 05 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Partial_Order_Reduction.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CakeML</title>
+      <link>/entries/CakeML.html</link>
+      <pubDate>Mon, 12 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CakeML.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+      <link>/entries/Ordered_Resolution_Prover.html</link>
+      <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Ordered_Resolution_Prover.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Dynamic Architectures</title>
+      <link>/entries/DynamicArchitectures.html</link>
+      <pubDate>Fri, 28 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/DynamicArchitectures.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CryptHOL</title>
+      <link>/entries/CryptHOL.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CryptHOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Positional Determinacy of Parity Games</title>
+      <link>/entries/Parity_Game.html</link>
+      <pubDate>Mon, 02 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Parity_Game.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stream Fusion in HOL with Code Generation</title>
+      <link>/entries/Stream_Fusion_Code.html</link>
+      <pubDate>Fri, 10 Oct 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stream_Fusion_Code.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Probabilistic Noninterference</title>
+      <link>/entries/Probabilistic_Noninterference.html</link>
+      <pubDate>Tue, 11 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_Noninterference.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Markov Models</title>
+      <link>/entries/Markov_Models.html</link>
+      <pubDate>Tue, 03 Jan 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Markov_Models.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Jinja with Threads</title>
+      <link>/entries/JinjaThreads.html</link>
+      <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/JinjaThreads.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lazy Lists II</title>
+      <link>/entries/Lazy-Lists-II.html</link>
+      <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Lazy-Lists-II.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Topology</title>
+      <link>/entries/Topology.html</link>
+      <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Topology.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

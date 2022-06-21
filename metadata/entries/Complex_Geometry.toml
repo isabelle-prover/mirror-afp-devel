@@ -1,0 +1,34 @@
+title = "Complex Geometry"
+date = 2019-12-16
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+A formalization of geometry of complex numbers is presented.
+Fundamental objects that are investigated are the complex plane
+extended by a single infinite point, its objects (points, lines and
+circles), and groups of transformations that act on them (e.g.,
+inversions and Möbius transformations). Most objects are defined
+algebraically, but correspondence with classical geometric definitions
+is shown."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.maricf]
+homepage = "maricf_homepage"
+
+[authors.simic]
+homepage = "simic_homepage"
+
+[contributors]
+
+[notify]
+simic = "simic_email"
+maricf = "maricf_email"
+boutry = "boutry_email"
+
+[history]
+
+[extra]

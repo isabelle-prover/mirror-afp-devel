@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>guttmann on Archive of Formal Proofs</title>
+    <link>/authors/guttmann/</link>
+    <description>Recent content in guttmann on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 12 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/guttmann/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations</title>
+      <link>/entries/Correctness_Algebras.html</link>
+      <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Correctness_Algebras.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Relational Forests</title>
+      <link>/entries/Relational_Forests.html</link>
+      <pubDate>Tue, 03 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Forests.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Relational Minimum Spanning Tree Algorithms</title>
+      <link>/entries/Relational_Minimum_Spanning_Trees.html</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Minimum_Spanning_Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Relational Disjoint-Set Forests</title>
+      <link>/entries/Relational_Disjoint_Set_Forests.html</link>
+      <pubDate>Wed, 26 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Disjoint_Set_Forests.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Relational Characterisations of Paths</title>
+      <link>/entries/Relational_Paths.html</link>
+      <pubDate>Mon, 13 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Paths.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Hierarchy of Algebras for Boolean Subsets</title>
+      <link>/entries/Subset_Boolean_Algebras.html</link>
+      <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Subset_Boolean_Algebras.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Aggregation Algebras</title>
+      <link>/entries/Aggregation_Algebras.html</link>
+      <pubDate>Sat, 15 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Aggregation_Algebras.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stone-Kleene Relation Algebras</title>
+      <link>/entries/Stone_Kleene_Relation_Algebras.html</link>
+      <pubDate>Thu, 06 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stone_Kleene_Relation_Algebras.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stone Relation Algebras</title>
+      <link>/entries/Stone_Relation_Algebras.html</link>
+      <pubDate>Tue, 07 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stone_Relation_Algebras.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stone Algebras</title>
+      <link>/entries/Stone_Algebras.html</link>
+      <pubDate>Tue, 06 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stone_Algebras.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kleene Algebras with Domain</title>
+      <link>/entries/KAD.html</link>
+      <pubDate>Tue, 12 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/KAD.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

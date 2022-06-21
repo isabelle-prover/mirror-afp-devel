@@ -1,0 +1,34 @@
+title = "Lower bound on comparison-based sorting algorithms"
+date = 2017-03-15
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+<p>This article contains a formal proof of the well-known fact
+that number of comparisons that a comparison-based sorting algorithm
+needs to perform to sort a list of length <em>n</em> is at
+least <em>log<sub>2</sub>&nbsp;(n!)</em>
+in the worst case, i.&thinsp;e.&nbsp;<em>Ω(n log
+n)</em>.</p>  <p>For this purpose, a shallow
+embedding for comparison-based sorting algorithms is defined: a
+sorting algorithm is a recursive datatype containing either a HOL
+function or a query of a comparison oracle with a continuation
+containing the remaining computation. This makes it possible to force
+the algorithm to use only comparisons and to track the number of
+comparisons made.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

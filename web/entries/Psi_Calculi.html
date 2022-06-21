@@ -1,253 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Psi-calculi in Isabelle - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Psi-calculi in Isabelle - Archive of Formal Proofs</title><meta name="description" content="Psi-calculi are extensions of the pi-calculus, accommodating arbitrary nominal datatypes to represent not only data but also communication channels,..."><meta property="og:title" content="Psi-calculi in Isabelle" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Psi_Calculi.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2012-05-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2012-05-29T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Psi-calculi in Isabelle"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">P</font>si-calculi
-  
-          in
-  
-          <font class="first">I</font>sabelle
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>P</span>si-<span class='first'>C</span>alculi in <span class='first'>I</span>sabelle</h1>
+  <div>
+    
+    <p><a href="../authors/bengtson">Jesper Bengtson</a> <a href="http://www.itu.dk/people/jebe">🌐</a>
+    </p>
+    
+    
+    <p class="date">May 29, 2012</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Psi-calculi in Isabelle</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              <a href="http://www.itu.dk/people/jebe">Jesper Bengtson</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2012-05-29</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">Psi-calculi are extensions of the pi-calculus, accommodating arbitrary nominal datatypes to represent not only data but also communication channels, assertions and conditions, giving it an expressive power beyond the applied pi-calculus and the concurrent constraint pi-calculus.
+  <div class="abstract mathjax_process">Psi-calculi are extensions of the pi-calculus, accommodating arbitrary nominal datatypes to represent not only data but also communication channels, assertions and conditions, giving it an expressive power beyond the applied pi-calculus and the concurrent constraint pi-calculus.
 <p>
 We have formalised psi-calculi in the interactive theorem prover Isabelle using its nominal datatype package. One distinctive feature is that the framework needs to treat binding sequences, as opposed to single binders, in an efficient way. While different methods for formalising single binder calculi have been proposed over the last decades, representations for such binding sequences are not very well explored.
 <p>
 The main effort in the formalisation is to keep the machine checked proofs as close to their pen-and-paper counterparts as possible. This includes treating all binding sequences as atomic elements, and creating custom induction and inversion rules that to remove the bulk of manual alpha-conversions.
 <p>
-This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.</td>
-</tr>
+This entry is described in detail in <a href="http://www.itu.dk/people/jebe/files/thesis.pdf">Bengtson's thesis</a>.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/concurrency/process-calculi">Computer science/Concurrency/Process calculi</a></li></ul>
+  <h3>Theories of Psi_Calculi</h3>
+  <ul>
+    <li><a href="../theories/psi_calculi/#Chain">Chain</a></li>
+    <li><a href="../theories/psi_calculi/#Subst_Term">Subst_Term</a></li>
+    <li><a href="../theories/psi_calculi/#Agent">Agent</a></li>
+    <li><a href="../theories/psi_calculi/#Frame">Frame</a></li>
+    <li><a href="../theories/psi_calculi/#Semantics">Semantics</a></li>
+    <li><a href="../theories/psi_calculi/#Simulation">Simulation</a></li>
+    <li><a href="../theories/psi_calculi/#Tau_Chain">Tau_Chain</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Simulation">Weak_Simulation</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Stat_Imp">Weak_Stat_Imp</a></li>
+    <li><a href="../theories/psi_calculi/#Bisimulation">Bisimulation</a></li>
+    <li><a href="../theories/psi_calculi/#Sim_Pres">Sim_Pres</a></li>
+    <li><a href="../theories/psi_calculi/#Bisim_Pres">Bisim_Pres</a></li>
+    <li><a href="../theories/psi_calculi/#Sim_Struct_Cong">Sim_Struct_Cong</a></li>
+    <li><a href="../theories/psi_calculi/#Structural_Congruence">Structural_Congruence</a></li>
+    <li><a href="../theories/psi_calculi/#Bisim_Struct_Cong">Bisim_Struct_Cong</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Bisimulation">Weak_Bisimulation</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Sim_Pres">Weak_Sim_Pres</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Stat_Imp_Pres">Weak_Stat_Imp_Pres</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Bisim_Pres">Weak_Bisim_Pres</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Bisim_Struct_Cong">Weak_Bisim_Struct_Cong</a></li>
+    <li><a href="../theories/psi_calculi/#Close_Subst">Close_Subst</a></li>
+    <li><a href="../theories/psi_calculi/#Bisim_Subst">Bisim_Subst</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Bisim_Subst">Weak_Bisim_Subst</a></li>
+    <li><a href="../theories/psi_calculi/#Weakening">Weakening</a></li>
+    <li><a href="../theories/psi_calculi/#Weaken_Transition">Weaken_Transition</a></li>
+    <li><a href="../theories/psi_calculi/#Weaken_Stat_Imp">Weaken_Stat_Imp</a></li>
+    <li><a href="../theories/psi_calculi/#Weaken_Simulation">Weaken_Simulation</a></li>
+    <li><a href="../theories/psi_calculi/#Weaken_Bisimulation">Weaken_Bisimulation</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Cong_Simulation">Weak_Cong_Simulation</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Psi_Congruence">Weak_Psi_Congruence</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Cong_Sim_Pres">Weak_Cong_Sim_Pres</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Cong_Pres">Weak_Cong_Pres</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Cong_Struct_Cong">Weak_Cong_Struct_Cong</a></li>
+    <li><a href="../theories/psi_calculi/#Weak_Congruence">Weak_Congruence</a></li>
+    <li><a href="../theories/psi_calculi/#Tau">Tau</a></li>
+    <li><a href="../theories/psi_calculi/#Sum">Sum</a></li>
+    <li><a href="../theories/psi_calculi/#Tau_Sim">Tau_Sim</a></li>
+    <li><a href="../theories/psi_calculi/#Tau_Stat_Imp">Tau_Stat_Imp</a></li>
+    <li><a href="../theories/psi_calculi/#Tau_Laws_Weak">Tau_Laws_Weak</a></li>
+    <li><a href="../theories/psi_calculi/#Tau_Laws_No_Weak">Tau_Laws_No_Weak</a></li></ul><div class="flex-wrap">
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Pi_Calculus.html">The pi-calculus in nominal logic</a></li>
+      
+      <li><a href="../entries/Heard_Of.html">Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</a></li>
+      
+      <li><a href="../entries/Gauss-Jordan-Elim-Fun.html">Gauss-Jordan Elimination for Matrices Represented as Functions</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Psi_Calculi/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Psi_Calculi/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Psi_Calculi/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Psi_Calculi-AFP,
-  author  = {Jesper Bengtson},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Psi_Calculi-AFP</p>
+      <pre id="copyText">@article{Psi_Calculi-AFP,
+  author  = {bengtson},
   title   = {Psi-calculi in Isabelle},
   journal = {Archive of Formal Proofs},
-  month   = may,
+  month   = May,
   year    = 2012,
   note    = {\url{https://isa-afp.org/entries/Psi_Calculi.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                    
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Psi_Calculi/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Psi_Calculi/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Psi_Calculi/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Psi_Calculi-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Psi_Calculi-2021-02-23.tar.gz">
-              afp-Psi_Calculi-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Psi_Calculi-2020-04-20.tar.gz">
-              afp-Psi_Calculi-2020-04-20.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Psi_Calculi-2019-06-11.tar.gz">
-              afp-Psi_Calculi-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Psi_Calculi-2018-08-16.tar.gz">
-              afp-Psi_Calculi-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Psi_Calculi-2017-10-10.tar.gz">
-              afp-Psi_Calculi-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Psi_Calculi-2016-12-17.tar.gz">
-              afp-Psi_Calculi-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-Psi_Calculi-2016-02-22.tar.gz">
-              afp-Psi_Calculi-2016-02-22.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2015:
-            <a href="../release/afp-Psi_Calculi-2015-05-27.tar.gz">
-              afp-Psi_Calculi-2015-05-27.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2014:
-            <a href="../release/afp-Psi_Calculi-2014-08-28.tar.gz">
-              afp-Psi_Calculi-2014-08-28.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2013-2:
-            <a href="../release/afp-Psi_Calculi-2013-12-11.tar.gz">
-              afp-Psi_Calculi-2013-12-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2013-1:
-            <a href="../release/afp-Psi_Calculi-2013-11-17.tar.gz">
-              afp-Psi_Calculi-2013-11-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2013:
-            <a href="../release/afp-Psi_Calculi-2013-02-16.tar.gz">
-              afp-Psi_Calculi-2013-02-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2012:
-            <a href="../release/afp-Psi_Calculi-2012-06-14.tar.gz">
-              afp-Psi_Calculi-2012-06-14.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Psi_Calculi-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

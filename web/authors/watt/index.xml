@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>watt on Archive of Formal Proofs</title>
+    <link>/authors/watt/</link>
+    <description>Recent content in watt on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 29 Apr 2018 00:00:00 +0000</lastBuildDate><atom:link href="/authors/watt/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>WebAssembly</title>
+      <link>/entries/WebAssembly.html</link>
+      <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/WebAssembly.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

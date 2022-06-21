@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bulwahn on Archive of Formal Proofs</title>
+    <link>/authors/bulwahn/</link>
+    <description>Recent content in bulwahn on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 01 Jul 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/bulwahn/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SpecCheck - Specification-Based Testing for Isabelle/ML</title>
+      <link>/entries/SpecCheck.html</link>
+      <pubDate>Thu, 01 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SpecCheck.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Falling Factorial of a Sum</title>
+      <link>/entries/Falling_Factorial_Sum.html</link>
+      <pubDate>Fri, 22 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Falling_Factorial_Sum.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stewart&#39;s Theorem and Apollonius&#39; Theorem</title>
+      <link>/entries/Stewart_Apollonius.html</link>
+      <pubDate>Mon, 31 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stewart_Apollonius.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bernoulli Numbers</title>
+      <link>/entries/Bernoulli.html</link>
+      <pubDate>Tue, 24 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Bernoulli.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Twelvefold Way</title>
+      <link>/entries/Twelvefold_Way.html</link>
+      <pubDate>Thu, 29 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Twelvefold_Way.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Intersecting Chords Theorem</title>
+      <link>/entries/Chord_Segments.html</link>
+      <pubDate>Tue, 11 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Chord_Segments.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ptolemy&#39;s Theorem</title>
+      <link>/entries/Ptolemys_Theorem.html</link>
+      <pubDate>Sun, 07 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Ptolemys_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cardinality of Multisets</title>
+      <link>/entries/Card_Multisets.html</link>
+      <pubDate>Sun, 26 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Card_Multisets.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cardinality of Equivalence Relations</title>
+      <link>/entries/Card_Equiv_Relations.html</link>
+      <pubDate>Tue, 24 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Card_Equiv_Relations.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Spivey&#39;s Generalized Recurrence for Bell Numbers</title>
+      <link>/entries/Bell_Numbers_Spivey.html</link>
+      <pubDate>Wed, 04 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Bell_Numbers_Spivey.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cardinality of Number Partitions</title>
+      <link>/entries/Card_Number_Partitions.html</link>
+      <pubDate>Thu, 14 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Card_Number_Partitions.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cardinality of Set Partitions</title>
+      <link>/entries/Card_Partitions.html</link>
+      <pubDate>Sat, 12 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Card_Partitions.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Euler&#39;s Partition Theorem</title>
+      <link>/entries/Euler_Partition.html</link>
+      <pubDate>Thu, 19 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Euler_Partition.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Derangements Formula</title>
+      <link>/entries/Derangements.html</link>
+      <pubDate>Sat, 27 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Derangements.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

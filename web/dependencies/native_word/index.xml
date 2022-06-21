@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Native_Word on Archive of Formal Proofs</title>
+    <link>/dependencies/native_word/</link>
+    <description>Recent content in Native_Word on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 18 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/native_word/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
+      <link>/entries/MiniSail.html</link>
+      <pubDate>Fri, 18 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MiniSail.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mersenne primes and the Lucas–Lehmer test</title>
+      <link>/entries/Mersenne_Primes.html</link>
+      <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Mersenne_Primes.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>WebAssembly</title>
+      <link>/entries/WebAssembly.html</link>
+      <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/WebAssembly.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Iptables Semantics</title>
+      <link>/entries/Iptables_Semantics.html</link>
+      <pubDate>Fri, 09 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Iptables_Semantics.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
+      <link>/entries/ROBDD.html</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ROBDD.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Separation Logic Framework for Imperative HOL</title>
+      <link>/entries/Separation_Logic_Imperative_HOL.html</link>
+      <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Separation_Logic_Imperative_HOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Generating linear orders for datatypes</title>
+      <link>/entries/Datatype_Order_Generator.html</link>
+      <pubDate>Tue, 07 Aug 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Datatype_Order_Generator.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Collections Framework</title>
+      <link>/entries/Collections.html</link>
+      <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Collections.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Jinja with Threads</title>
+      <link>/entries/JinjaThreads.html</link>
+      <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/JinjaThreads.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

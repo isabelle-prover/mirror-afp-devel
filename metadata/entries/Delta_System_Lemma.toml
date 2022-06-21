@@ -1,0 +1,28 @@
+title = "Cofinality and the Delta System Lemma"
+date = 2020-12-27
+topics = [
+  "Mathematics/Combinatorics",
+  "Logic/Set theory",
+]
+abstract = """
+We formalize the basic results on cofinality of linearly ordered sets
+and ordinals and Šanin’s Lemma for uncountable families of finite
+sets. This last result is used to prove the countable chain condition
+for Cohen posets. We work in the set theory framework of Isabelle/ZF,
+using the Axiom of Choice as needed."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.terraf]
+homepage = "terraf_homepage"
+
+[contributors]
+
+[notify]
+terraf = "terraf_email"
+
+[history]
+
+[extra]

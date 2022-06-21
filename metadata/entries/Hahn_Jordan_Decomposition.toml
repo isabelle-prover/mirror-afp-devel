@@ -1,0 +1,37 @@
+title = "The Hahn and Jordan Decomposition Theorems"
+date = 2021-11-19
+topics = [
+  "Mathematics/Measure theory",
+]
+abstract = """
+In this work we formalize the Hahn decomposition theorem for signed
+measures, namely that any measure space for a signed measure can be
+decomposed into a positive and a negative set, where every measurable
+subset of the positive one has a positive measure, and every
+measurable subset of the negative one has a negative measure. We also
+formalize the Jordan decomposition theorem as a corollary, which
+states that the signed measure under consideration admits a unique
+decomposition into a difference of two positive measures, at least one
+of which is finite."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.cousin]
+email = "cousin_email"
+
+[authors.echenim]
+email = "echenim_email"
+
+[authors.guiol]
+email = "guiol_email"
+
+[contributors]
+
+[notify]
+echenim = "echenim_email"
+
+[history]
+
+[extra]

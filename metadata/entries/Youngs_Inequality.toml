@@ -1,0 +1,31 @@
+title = "Young's Inequality for Increasing Functions"
+date = 2022-01-31
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+Young's inequality states that $$ ab \\leq \\int_0^a f(x)dx +
+\\int_0^b f^{-1}(y) dy $$ where $a\\geq 0$, $b\\geq 0$ and $f$ is
+strictly increasing and continuous. Its proof is formalised following
+<a href=\"https://www.jstor.org/stable/2318018\">the
+development</a> by Cunningham and Grossman. Their idea is to
+make the intuitive, geometric folklore proof rigorous by reasoning
+about step functions. The lack of the Riemann integral makes the
+development longer than one would like, but their argument is
+reproduced faithfully."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+homepage = "paulson_homepage1"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]

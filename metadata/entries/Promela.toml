@@ -1,0 +1,31 @@
+title = "Promela Formalization"
+date = 2014-05-28
+topics = [
+  "Computer science/System description languages",
+]
+abstract = """
+We present an executable formalization of the language Promela, the
+description language for models of the model checker SPIN. This
+formalization is part of the work for a completely verified model
+checker (CAVA), but also serves as a useful (and executable!)
+description of the semantics of the language itself, something that is
+currently missing.
+The formalization uses three steps: It takes an abstract syntax tree
+generated from an SML parser, removes syntactic sugar and enriches it
+with type information. This further gets translated into a transition
+system, on which the semantic engine (read: successor function) operates."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.neumann]
+email = "neumann_email1"
+
+[contributors]
+
+[notify]
+
+[history]
+
+[extra]

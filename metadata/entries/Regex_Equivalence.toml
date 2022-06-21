@@ -1,0 +1,37 @@
+title = "Unified Decision Procedures for Regular Expression Equivalence"
+date = 2014-01-30
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+We formalize a unified framework for verified decision procedures for regular
+expression equivalence. Five recently published formalizations of such
+decision procedures (three based on derivatives, two on marked regular
+expressions) can be obtained as instances of the framework. We discover that
+the two approaches based on marked regular expressions, which were previously
+thought to be the same, are different, and one seems to produce uniformly
+smaller automata.  The common framework makes it possible to compare the
+performance of the different decision procedures in a meaningful way.
+<a href=\"http://www21.in.tum.de/~nipkow/pubs/itp14.html\">
+The formalization is described in a paper of the same name presented at
+Interactive Theorem Proving 2014</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+traytel = "traytel_email"
+
+[history]
+
+[extra]

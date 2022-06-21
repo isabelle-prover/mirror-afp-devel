@@ -1,0 +1,35 @@
+title = "A Shorter Compiler Correctness Proof for Language IMP"
+date = 2021-06-04
+topics = [
+  "Computer science/Programming languages/Compiling",
+]
+abstract = """
+This paper presents a compiler correctness proof for the didactic
+imperative programming language IMP, introduced in Nipkow and
+Klein's book on formal programming language semantics (version of
+March 2021), whose size is just two thirds of the book's proof in
+the number of formal text lines. As such, it promises to constitute a
+further enhanced reference for the formal verification of compilers
+meant for larger, real-world programming languages.  The presented
+proof does not depend on language determinism, so that the proposed
+approach can be applied to non-deterministic languages as well. As a
+confirmation, this paper extends IMP with an additional
+non-deterministic choice command, and proves compiler correctness,
+viz. the simulation of compiled code execution by source code, for
+such extended language."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.noce]
+email = "noce_email"
+
+[contributors]
+
+[notify]
+noce = "noce_email"
+
+[history]
+
+[extra]

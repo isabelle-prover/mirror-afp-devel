@@ -1,0 +1,24 @@
+title = "Depth First Search"
+date = 2004-06-24
+topics = [
+  "Computer science/Algorithms/Graph",
+]
+abstract = "Depth-first search of a graph is formalized with recdef. It is shown that it visits all of the reachable nodes from a given list of nodes. Executable ML code of depth-first search is obtained using the code generation feature of Isabelle/HOL."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nishihara]
+
+[authors.minamide]
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+krauss = "krauss_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,36 @@
+title = "Digit Expansions"
+date = 2022-04-20
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+We formalize how a natural number can be expanded into its digits in
+some base and prove properties about functions that operate on digit
+expansions. This includes the formalization of concepts such as digit
+shifts and carries. For a base that is a power of 2 we formalize the
+binary AND, binary orthogonality and binary masking of two natural
+numbers. This library on digit expansions builds the basis for the
+formalization of the DPRM theorem."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bayer]
+
+[authors.david]
+
+[authors.pal]
+
+[authors.stock]
+
+[contributors]
+
+[notify]
+bayer = "bayer_email"
+david = "david_email"
+stock = "stock_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>prathamesh on Archive of Formal Proofs</title>
+    <link>/authors/prathamesh/</link>
+    <description>Recent content in prathamesh on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 20 Jan 2016 00:00:00 +0000</lastBuildDate><atom:link href="/authors/prathamesh/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Knot Theory</title>
+      <link>/entries/Knot_Theory.html</link>
+      <pubDate>Wed, 20 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Knot_Theory.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tensor Product of Matrices</title>
+      <link>/entries/Matrix_Tensor.html</link>
+      <pubDate>Mon, 18 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Matrix_Tensor.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

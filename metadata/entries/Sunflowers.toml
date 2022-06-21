@@ -1,0 +1,27 @@
+title = "The Sunflower Lemma of Erdős and Rado"
+date = 2021-02-25
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+We formally define sunflowers and provide a formalization of the
+sunflower lemma of Erd&odblac;s and Rado: whenever a set of
+size-<i>k</i>-sets has a larger cardinality than
+<i>(r - 1)<sup>k</sup> &middot; k!</i>,
+then it contains a sunflower of cardinality <i>r</i>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

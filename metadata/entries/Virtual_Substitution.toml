@@ -1,0 +1,53 @@
+title = "Verified Quadratic Virtual Substitution for Real Arithmetic"
+date = 2021-10-02
+topics = [
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = """
+This paper presents a formally verified quantifier elimination (QE)
+algorithm for first-order real arithmetic by linear and quadratic
+virtual substitution (VS) in Isabelle/HOL. The Tarski-Seidenberg
+theorem established that the first-order logic of real arithmetic is
+decidable by QE. However, in practice, QE algorithms are highly
+complicated and often combine multiple methods for performance. VS is
+a practically successful method for QE that targets formulas with
+low-degree polynomials. To our knowledge, this is the first work to
+formalize VS for quadratic real arithmetic including inequalities. The
+proofs necessitate various contributions to the existing multivariate
+polynomial libraries in Isabelle/HOL. Our framework is modularized and
+easily expandable (to facilitate integrating future optimizations),
+and could serve as a basis for developing practical general-purpose QE
+algorithms. Further, as our formalization is designed with
+practicality in mind, we export our development to SML and test the
+resulting code on 378 benchmarks from the literature, comparing to
+Redlog, Z3, Wolfram Engine, and SMT-RAT. This identified
+inconsistencies in some tools, underscoring the significance of a
+verified approach for the intricacies of real arithmetic."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.scharager]
+email = "scharager_email"
+
+[authors.cordwell]
+email = "cordwell_email"
+
+[authors.mitsch]
+email = "mitsch_email"
+
+[authors.platzer]
+email = "platzer_email"
+
+[contributors]
+
+[notify]
+scharager = "scharager_email"
+cordwell = "cordwell_email"
+mitsch = "mitsch_email"
+platzer = "platzer_email"
+
+[history]
+
+[extra]

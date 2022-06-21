@@ -1,0 +1,29 @@
+title = "Splay Tree"
+date = 2014-08-12
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+Splay trees are self-adjusting binary search trees which were invented by Sleator and Tarjan [JACM 1985].
+This entry provides executable and verified functional splay trees
+as well as the related splay heaps (due to Okasaki).
+<p>
+The amortized complexity of splay trees and heaps is analyzed in the AFP entry
+<a href=\"http://isa-afp.org/entries/Amortized_Complexity.html\">Amortized Complexity</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+2016-07-12 = "Moved splay heaps here from Amortized_Complexity"
+
+[extra]

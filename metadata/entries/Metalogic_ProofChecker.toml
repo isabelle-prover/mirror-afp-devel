@@ -1,0 +1,33 @@
+title = "Isabelle's Metalogic: Formalization and Proof Checker"
+date = 2021-04-27
+topics = [
+  "Logic/General logic",
+]
+abstract = """
+In this entry we formalize Isabelle's metalogic in Isabelle/HOL.
+Furthermore, we define a language of proof terms and an executable
+proof checker and prove its soundness wrt. the metalogic.  The
+formalization is intentionally kept close to the Isabelle
+implementation(for example using de Brujin indices) to enable easy
+integration of generated code with the Isabelle system without a
+complicated translation layer.  The formalization is described in our
+<a href=\"https://arxiv.org/pdf/2104.12224.pdf\">CADE 28 paper</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[authors.rosskopf]
+homepage = "rosskopf_homepage"
+
+[contributors]
+
+[notify]
+rosskopf = "rosskopf_email"
+
+[history]
+
+[extra]

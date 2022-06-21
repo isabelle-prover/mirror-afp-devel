@@ -1,0 +1,39 @@
+title = "Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation"
+date = 2021-03-12
+topics = [
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = """
+We verify two algorithms for which modular arithmetic plays an
+essential role: Storjohann's variant of the LLL lattice basis
+reduction algorithm and Kopparty's algorithm for computing the
+Hermite normal form of a matrix. To do this, we also formalize some
+facts about the modulo operation with symmetric range. Our
+implementations are based on the original papers, but are otherwise
+efficient. For basis reduction we formalize two versions: one that
+includes all of the optimizations/heuristics from Storjohann's
+paper, and one excluding a heuristic that we observed to often
+decrease efficiency. We also provide a fast, self-contained certifier
+for basis reduction, based on the efficient Hermite normal form
+algorithm."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bottesch]
+
+[authors.divason]
+homepage = "divason_homepage2"
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

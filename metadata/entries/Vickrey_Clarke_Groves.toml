@@ -1,0 +1,41 @@
+title = "VCG - Combinatorial Vickrey-Clarke-Groves Auctions"
+date = 2015-04-30
+topics = [
+  "Mathematics/Games and economics",
+]
+abstract = """
+A VCG auction (named after their inventors Vickrey, Clarke, and
+Groves) is a generalization of the single-good, second price Vickrey
+auction to the case of a combinatorial auction (multiple goods, from
+which any participant can bid on each possible combination). We
+formalize in this entry VCG auctions, including tie-breaking and prove
+that the functions for the allocation and the price determination are
+well-defined. Furthermore we show that the allocation function
+allocates goods only to participants, only goods in the auction are
+allocated, and no good is allocated twice. We also show that the price
+function is non-negative. These properties also hold for the
+automatically extracted Scala code."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.caminati]
+
+[authors.kerber]
+homepage = "kerber_homepage"
+
+[authors.lange]
+email = "lange_email"
+
+[authors.rowat]
+email = "rowat_email"
+
+[contributors]
+
+[notify]
+kerber = "kerber_email"
+
+[history]
+
+[extra]

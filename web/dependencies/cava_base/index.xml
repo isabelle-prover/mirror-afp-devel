@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CAVA_Base on Archive of Formal Proofs</title>
+    <link>/dependencies/cava_base/</link>
+    <description>Recent content in CAVA_Base on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 28 May 2014 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/cava_base/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The CAVA Automata Library</title>
+      <link>/entries/CAVA_Automata.html</link>
+      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CAVA_Automata.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

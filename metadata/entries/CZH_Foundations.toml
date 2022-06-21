@@ -1,0 +1,40 @@
+title = "Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories"
+date = 2021-09-06
+topics = [
+  "Mathematics/Category theory",
+  "Logic/Set theory",
+]
+abstract = """
+This article provides a foundational framework for the formalization
+of category theory in the object logic ZFC in HOL of the formal proof
+assistant Isabelle. More specifically, this article provides a
+formalization of canonical set-theoretic constructions internalized in
+the type <i>V</i> associated with the ZFC in HOL,
+establishes a design pattern for the formalization of mathematical
+structures using sequences and locales, and showcases the developed
+infrastructure by providing formalizations of the elementary theories
+of digraphs and semicategories. The methodology chosen for the
+formalization of the theories of digraphs and semicategories (and
+categories in future articles) rests on the ideas that were originally
+expressed in the article <i>Set-Theoretical Foundations of
+Category Theory</i> written by Solomon Feferman and Georg
+Kreisel. Thus, in the context of this work, each of the aforementioned
+mathematical structures is represented as a term of the type
+<i>V</i> embedded into a stage of the von Neumann
+hierarchy."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.milehins]
+email = "milehins_email"
+
+[contributors]
+
+[notify]
+milehins = "milehins_email"
+
+[history]
+
+[extra]

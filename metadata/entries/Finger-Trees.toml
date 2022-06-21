@@ -1,0 +1,38 @@
+title = "Finger Trees"
+date = 2010-10-28
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+We implement and prove correct 2-3 finger trees.
+Finger trees are a general purpose data structure, that can be used to
+efficiently implement other data structures, such as priority queues.
+Intuitively, a finger tree is an annotated sequence, where the annotations are
+elements of a monoid. Apart from operations to access the ends of the sequence,
+the main operation is to split the sequence at the point where a
+<em>monotone predicate</em> over the sum of the left part of the sequence
+becomes true for the first time.
+The implementation follows the paper of Hinze and Paterson.
+The code generator can be used to get efficient, verified code."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nordhoff]
+email = "nordhoff_email1"
+
+[authors.koerner]
+email = "koerner_email"
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email1"
+
+[history]
+
+[extra]

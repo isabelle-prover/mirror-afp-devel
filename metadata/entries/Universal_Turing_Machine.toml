@@ -1,0 +1,36 @@
+title = "Universal Turing Machine"
+date = 2019-02-08
+topics = [
+  "Logic/Computability",
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+We formalise results from computability theory: recursive functions,
+undecidability of the halting problem, and the existence of a
+universal Turing machine. This formalisation is the AFP entry
+corresponding to the paper Mechanising Turing Machines and Computability Theory
+in Isabelle/HOL, ITP 2013."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.xu]
+
+[authors.zhangx]
+
+[authors.urban]
+homepage = "urban_homepage2"
+
+[authors.joosten]
+homepage = "joosten_homepage1"
+
+[contributors]
+
+[notify]
+joosten = "joosten_email1"
+urban = "urban_email"
+
+[history]
+
+[extra]

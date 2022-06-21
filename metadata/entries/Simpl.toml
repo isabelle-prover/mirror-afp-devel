@@ -1,0 +1,23 @@
+title = "A Sequential Imperative Programming Language Syntax, Semantics, Hoare Logics and Verification Environment"
+date = 2008-02-29
+topics = [
+  "Computer science/Programming languages/Language definitions",
+  "Computer science/Programming languages/Logics",
+]
+abstract = "We present the theory of Simpl, a sequential imperative programming language. We introduce its syntax, its semantics (big and small-step operational semantics) and Hoare logics for both partial as well as total correctness. We prove soundness and completeness of the Hoare logic. We integrate and automate the Hoare logic in Isabelle/HOL to obtain a practically usable verification environment for imperative programs. Simpl is independent of a concrete programming language but expressive enough to cover all common language features: mutually recursive procedures, abrupt termination and exceptions, runtime faults, local and global variables, pointers and heap, expressions with side effects, pointers to procedures, partial application and closures, dynamic method invocation and also unbounded nondeterminism."
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.schirmer]
+
+[contributors]
+
+[notify]
+klein = "klein_email"
+schirmer = "schirmer_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,35 @@
+title = "Logging-independent Message Anonymity in the Relational Method"
+date = 2021-08-26
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+In the context of formal cryptographic protocol verification,
+logging-independent message anonymity is the property for a given
+message to remain anonymous despite the attacker's capability of
+mapping messages of that sort to agents based on some intrinsic
+feature of such messages, rather than by logging the messages
+exchanged by legitimate agents as with logging-dependent message
+anonymity.
+This paper illustrates how logging-independent message
+anonymity can be formalized according to the relational method for
+formal protocol verification by considering a real-world protocol,
+namely the Restricted Identification one by the BSI. This sample model
+is used to verify that the pseudonymous identifiers output by user
+identification tokens remain anonymous under the expected conditions."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.noce]
+email = "noce_email"
+
+[contributors]
+
+[notify]
+noce = "noce_email"
+
+[history]
+
+[extra]

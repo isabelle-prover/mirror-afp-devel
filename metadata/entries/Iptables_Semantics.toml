@@ -1,0 +1,41 @@
+title = "Iptables Semantics"
+date = 2016-09-09
+topics = [
+  "Computer science/Networks",
+]
+abstract = """
+We present a big step semantics of the filtering behavior of the
+Linux/netfilter iptables firewall. We provide algorithms to simplify
+complex iptables rulests to a simple firewall model (c.f. AFP entry <a
+href=\"https://www.isa-afp.org/entries/Simple_Firewall.html\">Simple_Firewall</a>)
+and to verify spoofing protection of a ruleset.
+Internally, we embed our semantics into ternary logic, ultimately
+supporting every iptables match condition by abstracting over
+unknowns. Using this AFP entry and all entries it depends on, we
+created an easy-to-use, stand-alone haskell tool called <a
+href=\"http://iptables.isabelle.systems\">fffuu</a>. The tool does not
+require any input &mdash;except for the <tt>iptables-save</tt> dump of
+the analyzed firewall&mdash; and presents interesting results about
+the user's ruleset. Real-Word firewall errors have been uncovered, and
+the correctness of rulesets has been proved, with the help of
+our tool."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.diekmann]
+homepage = "diekmann_homepage"
+
+[authors.hupel]
+homepage = "hupel_homepage"
+
+[contributors]
+
+[notify]
+diekmann = "diekmann_email"
+hupel = "hupel_email"
+
+[history]
+
+[extra]

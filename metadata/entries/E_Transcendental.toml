@@ -1,0 +1,28 @@
+title = "The Transcendence of e"
+date = 2017-01-12
+topics = [
+  "Mathematics/Analysis",
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This work contains a proof that Euler's number e is transcendental. The
+proof follows the standard approach of assuming that e is algebraic and
+then using a specific integer polynomial to derive two inconsistent bounds,
+leading to a contradiction.</p> <p>This kind of approach can be found in
+many different sources; this formalisation mostly follows a <a  href=\"http://planetmath.org/proofoflindemannweierstrasstheoremandthateandpiaretranscendental\">PlanetMath article</a> by Roger Lipsett.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

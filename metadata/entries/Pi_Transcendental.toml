@@ -1,0 +1,28 @@
+title = "The Transcendence of π"
+date = 2018-09-28
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This entry shows the transcendence of &pi; based on the
+classic proof using the fundamental theorem of symmetric polynomials
+first given by von Lindemann in 1882, but the formalisation mostly
+follows the version by Niven. The proof reuses much of the machinery
+developed in the AFP entry on the transcendence of
+<em>e</em>.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

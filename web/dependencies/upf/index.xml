@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>UPF on Archive of Formal Proofs</title>
+    <link>/dependencies/upf/</link>
+    <description>Recent content in UPF on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 08 Jan 2017 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/upf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Formal Network Models and Their Application to Firewall Policies</title>
+      <link>/entries/UPF_Firewall.html</link>
+      <pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/UPF_Firewall.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

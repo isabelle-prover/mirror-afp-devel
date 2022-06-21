@@ -1,0 +1,62 @@
+title = "Formal Specification of a Generic Separation Kernel"
+date = 2014-07-18
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+<p>Intransitive noninterference has been a widely studied topic in the last
+few decades. Several well-established methodologies apply interactive
+theorem proving to formulate a noninterference theorem over abstract
+academic models. In joint work with several industrial and academic partners
+throughout Europe, we are helping in the certification process of PikeOS, an
+industrial separation kernel developed at SYSGO. In this process,
+established theories could not be applied. We present a new generic model of
+separation kernels and a new theory of intransitive noninterference. The
+model is rich in detail, making it suitable for formal verification of
+realistic and industrial systems such as PikeOS. Using a refinement-based
+theorem proving approach, we ensure that proofs remain manageable.</p>
+<p>
+This document corresponds to the deliverable D31.1 of the EURO-MILS
+Project <a href=\"http://www.euromils.eu\">http://www.euromils.eu</a>.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.verbeek]
+email = "verbeek_email"
+
+[authors.tverdyshev]
+email = "tverdyshev_email"
+
+[authors.havle]
+email = "havle_email"
+
+[authors.blasum]
+email = "blasum_email"
+
+[authors.langenstein]
+email = "langenstein_email"
+
+[authors.stephan]
+email = "stephan_email"
+
+[authors.nemouchi]
+email = "nemouchi_email"
+
+[authors.feliachi]
+email = "feliachi_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[authors.schmaltz]
+email = "schmaltz_email"
+
+[contributors]
+
+[notify]
+
+[history]
+
+[extra]

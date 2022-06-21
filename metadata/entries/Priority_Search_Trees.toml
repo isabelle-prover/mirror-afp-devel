@@ -1,0 +1,35 @@
+title = "Priority Search Trees"
+date = 2019-06-25
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+We present a new, purely functional, simple and efficient data
+structure combining a search tree and a priority queue, which we call
+a <em>priority search tree</em>. The salient feature of priority search
+trees is that they offer a decrease-key operation, something that is
+missing from other simple, purely functional priority queue
+implementations. Priority search trees can be implemented on top of
+any search tree. This entry does the implementation for red-black
+trees.  This entry formalizes the first part of our ITP-2019 proof
+pearl <em>Purely Functional, Simple and Efficient Priority
+Search Trees and Applications to Prim and Dijkstra</em>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email"
+
+[history]
+
+[extra]

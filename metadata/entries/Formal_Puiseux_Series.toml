@@ -1,0 +1,31 @@
+title = "Formal Puiseux Series"
+date = 2021-02-17
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+<p>Formal Puiseux series are generalisations of formal power
+series and formal Laurent series that also allow for fractional
+exponents. They have the following general form: \\[\\sum_{i=N}^\\infty
+a_{i/d} X^{i/d}\\] where <em>N</em> is an integer and
+<em>d</em> is a positive integer.</p> <p>This
+entry defines these series including their basic algebraic properties.
+Furthermore, it proves the Newton–Puiseux Theorem, namely that the
+Puiseux series over an algebraically closed field of characteristic 0
+are also algebraically closed.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

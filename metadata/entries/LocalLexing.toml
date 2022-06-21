@@ -1,0 +1,31 @@
+title = "Local Lexing"
+date = 2017-04-28
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+This formalisation accompanies the paper <a
+href=\"https://arxiv.org/abs/1702.03277\">Local
+Lexing</a> which introduces a novel parsing concept of the same
+name. The paper also gives a high-level algorithm for local lexing as
+an extension of Earley's algorithm. This formalisation proves the
+algorithm to be correct with respect to its local lexing semantics. As
+a special case, this formalisation thus also contains a proof of the
+correctness of Earley's algorithm. The paper contains a short
+outline of how this formalisation is organised."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.obua]
+email = "obua_email"
+
+[contributors]
+
+[notify]
+obua = "obua_email"
+
+[history]
+
+[extra]

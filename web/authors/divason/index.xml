@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>divason on Archive of Formal Proofs</title>
+    <link>/authors/divason/</link>
+    <description>Recent content in divason on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 12 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/divason/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+      <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+      <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A verified algorithm for computing the Smith normal form of a matrix</title>
+      <link>/entries/Smith_Normal_Form.html</link>
+      <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Smith_Normal_Form.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A verified factorization algorithm for integer polynomials with polynomial complexity</title>
+      <link>/entries/LLL_Factorization.html</link>
+      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LLL_Factorization.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A verified LLL algorithm</title>
+      <link>/entries/LLL_Basis_Reduction.html</link>
+      <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LLL_Basis_Reduction.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Factorization Algorithm of Berlekamp and Zassenhaus</title>
+      <link>/entries/Berlekamp_Zassenhaus.html</link>
+      <pubDate>Fri, 14 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Berlekamp_Zassenhaus.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Perron-Frobenius Theorem for Spectral Radius Analysis</title>
+      <link>/entries/Perron_Frobenius.html</link>
+      <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Perron_Frobenius.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hermite Normal Form</title>
+      <link>/entries/Hermite.html</link>
+      <pubDate>Tue, 07 Jul 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Hermite.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Echelon Form</title>
+      <link>/entries/Echelon_Form.html</link>
+      <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Echelon_Form.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>QR Decomposition</title>
+      <link>/entries/QR_Decomposition.html</link>
+      <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/QR_Decomposition.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gauss-Jordan Algorithm and Its Applications</title>
+      <link>/entries/Gauss_Jordan.html</link>
+      <pubDate>Wed, 03 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Gauss_Jordan.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Rank-Nullity Theorem in Linear Algebra</title>
+      <link>/entries/Rank_Nullity_Theorem.html</link>
+      <pubDate>Wed, 16 Jan 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Rank_Nullity_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

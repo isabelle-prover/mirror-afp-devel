@@ -1,0 +1,35 @@
+title = "Differential Game Logic"
+date = 2019-06-03
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = """
+This formalization provides differential game logic (dGL), a logic for
+proving properties of hybrid game. In addition to the syntax and
+semantics, it formalizes a uniform substitution calculus for dGL.
+Church's uniform substitutions substitute a term or formula for a
+function or predicate symbol everywhere. The uniform substitutions for
+dGL also substitute hybrid games for a game symbol everywhere. We
+prove soundness of one-pass uniform substitutions and the axioms of
+differential game logic with respect to their denotational semantics.
+One-pass uniform substitutions are faster by postponing
+soundness-critical admissibility checks with a linear pass homomorphic
+application and regain soundness by a variable condition at the
+replacements.  The formalization is based on prior non-mechanized
+soundness proofs for dGL."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.platzer]
+homepage = "platzer_homepage1"
+
+[contributors]
+
+[notify]
+platzer = "platzer_email"
+
+[history]
+
+[extra]

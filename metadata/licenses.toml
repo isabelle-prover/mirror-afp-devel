@@ -1,0 +1,6 @@
+
+[bsd]
+name = "BSD"
+
+[lgpl]
+name = "LGPL"

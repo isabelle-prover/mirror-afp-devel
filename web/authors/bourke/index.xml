@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bourke on Archive of Formal Proofs</title>
+    <link>/authors/bourke/</link>
+    <description>Recent content in bourke on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 23 Oct 2014 00:00:00 +0000</lastBuildDate><atom:link href="/authors/bourke/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Loop freedom of the (untimed) AODV routing protocol</title>
+      <link>/entries/AODV.html</link>
+      <pubDate>Thu, 23 Oct 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/AODV.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Mechanization of the Algebra for Wireless Networks (AWN)</title>
+      <link>/entries/AWN.html</link>
+      <pubDate>Sat, 08 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/AWN.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

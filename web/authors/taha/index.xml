@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>taha on Archive of Formal Proofs</title>
+    <link>/authors/taha/</link>
+    <description>Recent content in taha on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 19 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/taha/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Belief Revision Theory</title>
+      <link>/entries/Belief_Revision.html</link>
+      <pubDate>Tue, 19 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Belief_Revision.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The HOL-CSP Refinement Toolkit</title>
+      <link>/entries/CSP_RefTK.html</link>
+      <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CSP_RefTK.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>HOL-CSP Version 2.0</title>
+      <link>/entries/HOL-CSP.html</link>
+      <pubDate>Fri, 26 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/HOL-CSP.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

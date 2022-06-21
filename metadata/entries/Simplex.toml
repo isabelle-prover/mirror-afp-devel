@@ -1,0 +1,37 @@
+title = "An Incremental Simplex Algorithm with Unsatisfiable Core Generation"
+date = 2018-08-24
+topics = [
+  "Computer science/Algorithms/Optimization",
+]
+abstract = """
+We present an Isabelle/HOL formalization and total correctness proof
+for the incremental version of the Simplex algorithm which is used in
+most state-of-the-art SMT solvers. It supports extraction of
+satisfying assignments, extraction of minimal unsatisfiable cores, incremental
+assertion of constraints and backtracking. The formalization relies on
+stepwise program refinement, starting from a simple specification,
+going through a number of refinement steps, and ending up in a fully
+executable functional implementation. Symmetries present in the
+algorithm are handled with special care."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.maricf]
+email = "maricf_email"
+
+[authors.spasic]
+email = "spasic_email"
+
+[authors.thiemann]
+homepage = "thiemann_homepage1"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

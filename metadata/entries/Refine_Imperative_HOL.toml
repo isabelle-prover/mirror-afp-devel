@@ -1,0 +1,44 @@
+title = "The Imperative Refinement Framework"
+date = 2016-08-08
+topics = [
+  "Computer science/Programming languages/Transformations",
+  "Computer science/Data structures",
+]
+abstract = """
+We present the Imperative Refinement Framework (IRF), a tool that
+supports a stepwise refinement based approach to imperative programs.
+This entry is based on the material we presented in [ITP-2015,
+CPP-2016].  It uses the Monadic Refinement Framework as a frontend for
+the specification of the abstract programs, and Imperative/HOL as a
+backend to generate executable imperative programs.  The IRF comes
+with tool support to synthesize imperative programs from more
+abstract, functional ones, using efficient imperative implementations
+for the abstract data structures.  This entry also includes the
+Imperative Isabelle Collection Framework (IICF), which provides a
+library of re-usable imperative collection data structures.  Moreover,
+this entry contains a quickstart guide and a reference manual, which
+provide an introduction to using the IRF for Isabelle/HOL experts. It
+also provids a collection of (partly commented) practical examples,
+some highlights being Dijkstra's Algorithm, Nested-DFS, and a generic
+worklist algorithm with subsumption.  Finally, this entry contains
+benchmark scripts that compare the runtime of some examples against
+reference implementations of the algorithms in Java and C++.
+[ITP-2015] Peter Lammich: Refinement to Imperative/HOL. ITP 2015:
+253--269  [CPP-2016] Peter Lammich: Refinement based verification of
+imperative data structures. CPP 2016: 27--36"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email"
+
+[history]
+
+[extra]

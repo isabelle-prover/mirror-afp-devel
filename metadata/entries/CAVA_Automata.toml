@@ -1,0 +1,46 @@
+title = "The CAVA Automata Library"
+date = 2014-05-28
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+We report on the graph and automata library that is used in the fully
+verified LTL model checker CAVA.
+As most components of CAVA use some type of graphs or automata, a common
+automata library simplifies assembly of the components and reduces
+redundancy.
+<p>
+The CAVA Automata Library provides a hierarchy of graph and automata
+classes, together with some standard algorithms.
+Its object oriented design allows for sharing of algorithms, theorems,
+and implementations between its classes, and also simplifies extensions
+of the library.
+Moreover, it is integrated into the Automatic Refinement Framework,
+supporting automatic refinement of the abstract automata types to
+efficient data structures.
+<p>
+Note that the CAVA Automata Library is work in progress. Currently, it
+is very specifically tailored towards the requirements of the CAVA model
+checker.
+Nevertheless, the formalization techniques presented here allow an
+extension of the library to a wider scope. Moreover, they are not
+limited to graph libraries, but apply to class hierarchies in general.
+<p>
+The CAVA Automata Library is described in the paper: Peter Lammich, The
+CAVA Automata Library, Isabelle Workshop 2014."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email"
+
+[history]
+
+[extra]

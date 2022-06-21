@@ -1,0 +1,31 @@
+title = "Verified Efficient Implementation of Gabow's Strongly Connected Components Algorithm"
+date = 2014-05-28
+topics = [
+  "Computer science/Algorithms/Graph",
+  "Mathematics/Graph theory",
+]
+abstract = """
+We present an Isabelle/HOL formalization of Gabow's algorithm for
+finding the strongly connected components of a directed graph.
+Using data refinement techniques, we extract efficient code that
+performs comparable to a reference implementation in Java.
+Our style of formalization allows for re-using large parts of the proofs
+when defining variants of the algorithm. We demonstrate this by
+verifying an algorithm for the emptiness check of generalized Büchi
+automata, re-using most of the existing proofs."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email"
+
+[history]
+
+[extra]

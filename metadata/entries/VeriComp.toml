@@ -1,0 +1,29 @@
+title = "A Generic Framework for Verified Compilers"
+date = 2020-02-10
+topics = [
+  "Computer science/Programming languages/Compiling",
+]
+abstract = """
+This is a generic framework for formalizing compiler transformations.
+It leverages Isabelle/HOL’s locales to abstract over concrete
+languages and transformations. It states common definitions for
+language semantics, program behaviours, forward and backward
+simulations, and compilers. We provide generic operations, such as
+simulation and compiler composition, and prove general (partial)
+correctness theorems, resulting in reusable proof components."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.desharnais]
+homepage = "desharnais_homepage"
+
+[contributors]
+
+[notify]
+desharnais = "desharnais_email"
+
+[history]
+
+[extra]

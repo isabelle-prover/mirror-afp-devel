@@ -1,0 +1,27 @@
+title = "Fourier Series"
+date = 2019-09-06
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+This development formalises the square integrable functions over the
+reals and the basics of Fourier series. It culminates with a proof
+that every well-behaved periodic function can be approximated by a
+Fourier series. The material is ported from HOL Light:
+https://github.com/jrh13/hol-light/blob/master/100/fourier.ml"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+homepage = "paulson_homepage1"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]

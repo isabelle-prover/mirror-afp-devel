@@ -1,0 +1,29 @@
+title = "Randomised Binary Search Trees"
+date = 2018-10-19
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+<p>This work is a formalisation of the Randomised Binary Search
+Trees introduced by Martínez and Roura, including definitions and
+correctness proofs.</p> <p>Like randomised treaps, they
+are a probabilistic data structure that behaves exactly as if elements
+were inserted into a non-balancing BST in random order. However,
+unlike treaps, they only use discrete probability distributions, but
+their use of randomness is more complicated.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

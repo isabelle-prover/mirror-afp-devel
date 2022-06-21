@@ -1,0 +1,36 @@
+title = "A verified algorithm for computing the Smith normal form of a matrix"
+date = 2020-05-23
+topics = [
+  "Mathematics/Algebra",
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = """
+This work presents a formal proof in Isabelle/HOL of an algorithm to
+transform a matrix into its Smith normal form, a canonical matrix
+form, in a general setting: the algorithm is parameterized by
+operations to prove its existence over elementary divisor rings, while
+execution is guaranteed over Euclidean domains. We also provide a
+formal proof on some results about the generality of this algorithm as
+well as the uniqueness of the Smith normal form.  Since Isabelle/HOL
+does not feature dependent types, the development is carried out
+switching conveniently between two different existing libraries: the
+Hermite normal form (based on HOL Analysis) and the Jordan normal form
+AFP entries. This permits to reuse results from both developments and
+it is done by means of the lifting and transfer package together with
+the use of local type definitions."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.divason]
+homepage = "divason_homepage2"
+
+[contributors]
+
+[notify]
+divason = "divason_email1"
+
+[history]
+
+[extra]

@@ -1,0 +1,29 @@
+{{ define "footerfiles" }}
+<script src="/js/mark.min.js"></script>
+{{ end -}}
+
+{{- define "main" }}
+<form autocomplete="off" action="{{ "search" | absURL }}">
+  <div class='form-container'>
+    <input id="search-input" type="search" size="31" maxlength="255" value=""  aria-label="Search the AFP" list="autocomplete"><button id="search-button"
+      type="button">Search</button>
+    <datalist id="autocomplete">
+    </datalist>
+  </div>
+</form>
+
+<div id="search-sidebar">
+  <h3>Authors</h3>
+  <div id="author-results"></div>
+  <h3>Topics</h3>
+  <div id="topic-results"></div>
+  <h3>FindFacts Results</h3>
+  <div id="find-facts-results"></div>
+</div>
+
+<div id="search-main">
+  <h3>Entries</h3>
+  <div id="search-results"></div>
+</div>
+
+{{ end }}

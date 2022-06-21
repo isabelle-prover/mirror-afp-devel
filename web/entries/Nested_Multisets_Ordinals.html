@@ -1,230 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals - Archive of Formal Proofs</title><meta name="description" content="This Isabelle/HOL formalization introduces a nested multiset datatype and defines Dershowitz and Manna&#39;s nested multiset order. The order is proved well..."><meta property="og:title" content="Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Nested_Multisets_Ordinals.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2016-11-12T00:00:00+00:00" />
+<meta property="article:modified_time" content="2016-11-12T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>ormalization
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>F</span>ormalization of <span class='first'>N</span>ested <span class='first'>M</span>ultisets, <span class='first'>H</span>ereditary <span class='first'>M</span>ultisets, and <span class='first'>S</span>yntactic <span class='first'>O</span>rdinals</h1>
+  <div>
+    
+    <p><a href="../authors/blanchette">Jasmin Christian Blanchette</a> <a href="mailto:jasmin.blanchette@gmail.com">📧</a>, <a href="../authors/fleury">Mathias Fleury</a> <a href="mailto:fleury@mpi-inf.mpg.de">📧</a> and <a href="../authors/traytel">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io">🌐</a>
+    </p>
+    
+    
+    <p class="date">November 12, 2016</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">This Isabelle/HOL formalization introduces a nested multiset datatype and defines Dershowitz and Manna's nested multiset order. The order is proved well founded and linear. By removing one constructor, we transform the nested multisets into hereditary multisets. These are isomorphic to the syntactic ordinals—the ordinals can be recursively expressed in Cantor normal form. Addition, subtraction, multiplication, and linear orders are provided on this type.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/logic/rewriting">Logic/Rewriting</a></li></ul>
+  <h3>Theories of Nested_Multisets_Ordinals</h3>
+  <ul>
+    <li><a href="../theories/nested_multisets_ordinals/#Multiset_More">Multiset_More</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#Signed_Multiset">Signed_Multiset</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#Nested_Multiset">Nested_Multiset</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#Hereditary_Multiset">Hereditary_Multiset</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#Signed_Hereditary_Multiset">Signed_Hereditary_Multiset</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#Syntactic_Ordinal">Syntactic_Ordinal</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#Signed_Syntactic_Ordinal">Signed_Syntactic_Ordinal</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#Syntactic_Ordinal_Bridge">Syntactic_Ordinal_Bridge</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#McCarthy_91">McCarthy_91</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#Hydra_Battle">Hydra_Battle</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#Goodstein_Sequence">Goodstein_Sequence</a></li>
+    <li><a href="../theories/nested_multisets_ordinals/#Unary_PCF">Unary_PCF</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/List-Index.html">List-Index</a></li><li><a href="../entries/Ordinal.html">Ordinal</a></li></ul>
+  </div><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Design_Theory.html">Design_Theory</a></li><li><a href="../entries/Progress_Tracking.html">Progress_Tracking</a></li><li><a href="../entries/PAC_Checker.html">PAC_Checker</a></li><li><a href="../entries/Functional_Ordered_Resolution_Prover.html">Functional_Ordered_Resolution_Prover</a></li><li><a href="../entries/Ordered_Resolution_Prover.html">Ordered_Resolution_Prover</a></li><li><a href="../entries/Lambda_Free_KBOs.html">Lambda_Free_KBOs</a></li><li><a href="../entries/Lambda_Free_RPOs.html">Lambda_Free_RPOs</a></li></ul>
+  </div>
   
-          of
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Datatype_Order_Generator.html">Generating linear orders for datatypes</a></li>
+      
+    </ul>
+  </div>
   
-          <font class="first">N</font>ested
-  
-          <font class="first">M</font>ultisets,
-  
-          <font class="first">H</font>ereditary
-  
-          <font class="first">M</font>ultisets,
-  
-          and
-  
-          <font class="first">S</font>yntactic
-  
-          <font class="first">O</font>rdinals
-  
-</h1>
-  <p>&nbsp;</p>
+  </div>
+</main>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</td>
-</tr>
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Nested_Multisets_Ordinals/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Nested_Multisets_Ordinals/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Nested_Multisets_Ordinals/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                      Jasmin Christian Blanchette (j /dot/ c /dot/ blanchette /at/ vu /dot/ nl),
-                <a href="http://fmv.jku.at/fleury">Mathias Fleury</a> and
-          <a href="https://traytel.bitbucket.io/">Dmitriy Traytel</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2016-11-12</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">This Isabelle/HOL formalization introduces a nested multiset datatype and defines Dershowitz and Manna's nested multiset order. The order is proved well founded and linear. By removing one constructor, we transform the nested multisets into hereditary multisets. These are isomorphic to the syntactic ordinals—the ordinals can be recursively expressed in Cantor normal form. Addition, subtraction, multiplication, and linear orders are provided on this type.</td>
-</tr>
-
-
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Nested_Multisets_Ordinals-AFP,
-  author  = {Jasmin Christian Blanchette and Mathias Fleury and Dmitriy Traytel},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Nested_Multisets_Ordinals-AFP</p>
+      <pre id="copyText">@article{Nested_Multisets_Ordinals-AFP,
+  author  = {blanchette, fleury and traytel},
   title   = {Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals},
   journal = {Archive of Formal Proofs},
-  month   = nov,
+  month   = November,
   year    = 2016,
   note    = {\url{https://isa-afp.org/entries/Nested_Multisets_Ordinals.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="List-Index.html">List-Index</a>, <a href="Ordinal.html">Ordinal</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Design_Theory.html">Design_Theory</a>, <a href="Functional_Ordered_Resolution_Prover.html">Functional_Ordered_Resolution_Prover</a>, <a href="Lambda_Free_KBOs.html">Lambda_Free_KBOs</a>, <a href="Lambda_Free_RPOs.html">Lambda_Free_RPOs</a>, <a href="Ordered_Resolution_Prover.html">Ordered_Resolution_Prover</a>, <a href="PAC_Checker.html">PAC_Checker</a>, <a href="Progress_Tracking.html">Progress_Tracking</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Nested_Multisets_Ordinals/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Nested_Multisets_Ordinals/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Nested_Multisets_Ordinals/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Nested_Multisets_Ordinals-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Nested_Multisets_Ordinals-2021-02-23.tar.gz">
-              afp-Nested_Multisets_Ordinals-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Nested_Multisets_Ordinals-2020-04-20.tar.gz">
-              afp-Nested_Multisets_Ordinals-2020-04-20.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Nested_Multisets_Ordinals-2019-06-11.tar.gz">
-              afp-Nested_Multisets_Ordinals-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Nested_Multisets_Ordinals-2018-08-16.tar.gz">
-              afp-Nested_Multisets_Ordinals-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Nested_Multisets_Ordinals-2017-10-10.tar.gz">
-              afp-Nested_Multisets_Ordinals-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Nested_Multisets_Ordinals-2016-12-17.tar.gz">
-              afp-Nested_Multisets_Ordinals-2016-12-17.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Nested_Multisets_Ordinals-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

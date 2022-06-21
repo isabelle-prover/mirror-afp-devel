@@ -1,0 +1,23 @@
+title = "Gauss-Jordan Elimination for Matrices Represented as Functions"
+date = 2011-08-19
+topics = [
+  "Computer science/Algorithms/Mathematical",
+  "Mathematics/Algebra",
+]
+abstract = "This theory provides a compact formulation of Gauss-Jordan elimination for matrices represented as functions. Its distinctive feature is succinctness. It is not meant for large computations."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

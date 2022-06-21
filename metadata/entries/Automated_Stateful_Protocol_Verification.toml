@@ -1,0 +1,43 @@
+title = "Automated Stateful Protocol Verification"
+date = 2020-04-08
+topics = [
+  "Computer science/Security",
+  "Tools",
+]
+abstract = """
+In protocol verification we observe a wide spectrum from fully
+automated methods to interactive theorem proving with proof assistants
+like Isabelle/HOL. In this AFP entry, we present a fully-automated
+approach for verifying stateful security protocols, i.e., protocols
+with mutable state that may span several sessions. The approach
+supports reachability goals like secrecy and authentication. We also
+include a simple user-friendly transaction-based protocol
+specification language that is embedded into Isabelle."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hess]
+email = "hess_email"
+
+[authors.moedersheim]
+homepage = "moedersheim_homepage"
+
+[authors.brucker]
+homepage = "brucker_homepage"
+
+[authors.schlichtkrull]
+homepage = "schlichtkrull_homepage"
+
+[contributors]
+
+[notify]
+hess = "hess_email1"
+moedersheim = "moedersheim_email"
+brucker = "brucker_email1"
+schlichtkrull = "schlichtkrull_email"
+
+[history]
+
+[extra]

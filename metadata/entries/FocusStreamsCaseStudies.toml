@@ -1,0 +1,32 @@
+title = "Stream Processing Components: Isabelle/HOL Formalisation and Case Studies"
+date = 2013-11-14
+topics = [
+  "Computer science/Programming languages/Language definitions",
+]
+abstract = """
+This set of theories presents an Isabelle/HOL formalisation of stream processing components introduced
+in Focus,
+a framework for formal specification and development of interactive systems.
+This is an extended and updated version of the formalisation, which was
+elaborated within the methodology \"Focus on Isabelle\".
+In addition, we also applied the formalisation on three case studies
+that cover different application areas: process control (Steam Boiler System),
+data transmission (FlexRay communication protocol),
+memory and processing components (Automotive-Gateway System)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.spichkova]
+email = "spichkova_email"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+spichkova = "spichkova_email"
+
+[history]
+
+[extra]

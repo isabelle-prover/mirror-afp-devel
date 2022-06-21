@@ -1,0 +1,31 @@
+title = "Matrices for ODEs"
+date = 2020-04-19
+topics = [
+  "Mathematics/Analysis",
+  "Mathematics/Algebra",
+]
+abstract = """
+Our theories formalise various matrix properties that serve to
+establish existence, uniqueness and characterisation of the solution
+to affine systems of ordinary differential equations (ODEs). In
+particular, we formalise the operator and maximum norm of matrices.
+Then we use them to prove that square matrices form a Banach space,
+and in this setting, we show an instance of Picard-Lindelöf’s
+theorem for affine systems of ODEs. Finally, we use this formalisation
+to verify three simple hybrid programs."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.munive]
+email = "munive_email"
+
+[contributors]
+
+[notify]
+munive = "munive_email1"
+
+[history]
+
+[extra]

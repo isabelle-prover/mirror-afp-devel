@@ -1,0 +1,34 @@
+title = "Practical Algebraic Calculus Checker"
+date = 2020-08-31
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+Generating and checking proof certificates is important to increase
+the trust in automated reasoning tools. In recent years formal
+verification using computer algebra became more important and is
+heavily used in automated circuit verification.  An existing proof
+format which covers algebraic reasoning and allows efficient proof
+checking is the practical algebraic calculus (PAC). In this
+development, we present the verified checker Pastèque that is obtained
+by synthesis via the Refinement Framework.  This is the formalization
+going with our FMCAD'20 tool presentation."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.fleury]
+homepage = "fleury_homepage"
+
+[authors.kaufmann]
+homepage = "kaufmann_homepage"
+
+[contributors]
+
+[notify]
+fleury = "fleury_email1"
+
+[history]
+
+[extra]

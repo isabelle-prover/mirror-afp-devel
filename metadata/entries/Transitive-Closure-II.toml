@@ -1,0 +1,36 @@
+title = "Executable Transitive Closures"
+date = 2012-02-29
+topics = [
+  "Computer science/Algorithms/Graph",
+]
+abstract = """
+<p>
+We provide a generic work-list algorithm to compute the
+(reflexive-)transitive closure of relations where only successors of newly
+detected states are generated.
+In contrast to our previous work, the relations do not have to be finite,
+but each element must only have finitely many (indirect) successors.
+Moreover, a subsumption relation can be used instead of pure equality.
+An executable variant of the algorithm is available where the generic operations
+are instantiated with list operations.
+</p><p>
+This formalization was performed as part of the IsaFoR/CeTA project,
+and it has been used to certify size-change
+termination proofs where large transitive closures have to be computed.
+</p>"""
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,29 @@
+title = "Semantics and Data Refinement of Invariant Based Programs"
+date = 2010-05-28
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = "The invariant based programming is a technique of constructing correct programs by first identifying the basic situations (pre- and post-conditions and invariants) that can occur during the execution of the program, and then defining the transitions and proving that they preserve the invariants. Data refinement is a technique of building correct programs working on concrete datatypes as refinements of more abstract programs. In the theories presented here we formalize the predicate transformer semantics for invariant based programs and their data refinement."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.preoteasa]
+homepage = "preoteasa_homepage"
+
+[authors.back]
+homepage = "back_homepage"
+
+[contributors]
+
+[notify]
+preoteasa = "preoteasa_email"
+
+[history]
+2012-01-05 = """
+Moved some general complete lattice properties to the AFP entry Lattice Properties.
+Changed the definition of the data refinement relation to be more general and updated all corresponding theorems.
+Added new syntax for demonic and angelic update statements."""
+
+[extra]

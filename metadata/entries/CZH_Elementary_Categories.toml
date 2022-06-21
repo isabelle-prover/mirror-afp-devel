@@ -1,0 +1,29 @@
+title = "Category Theory for ZFC in HOL II: Elementary Theory of 1-Categories"
+date = 2021-09-06
+topics = [
+  "Mathematics/Category theory",
+]
+abstract = """
+This article provides a formalization of the foundations of the theory
+of 1-categories in the object logic ZFC in HOL of the formal proof
+assistant Isabelle. The article builds upon the foundations that were
+established in the AFP entry <i>Category Theory for ZFC in HOL
+I: Foundations: Design Patterns, Set Theory, Digraphs,
+Semicategories</i>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.milehins]
+email = "milehins_email"
+
+[contributors]
+
+[notify]
+milehins = "milehins_email"
+
+[history]
+2021-11-07 = "added a definition of a dagger monoidal category (revision c9ed46c09de9)<br>"
+
+[extra]

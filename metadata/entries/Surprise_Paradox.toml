@@ -1,0 +1,27 @@
+title = "Surprise Paradox"
+date = 2016-07-17
+topics = [
+  "Logic/Proof theory",
+]
+abstract = """
+In 1964, Fitch showed that the paradox of the surprise hanging can be
+resolved by showing that the judge’s verdict is inconsistent. His
+formalization builds on Gödel’s coding of provability.  In this
+theory, we reproduce his proof in Isabelle, building on Paulson’s
+formalisation of Gödel’s incompleteness theorems."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.breitner]
+homepage = "breitner_homepage"
+
+[contributors]
+
+[notify]
+breitner = "breitner_email"
+
+[history]
+
+[extra]

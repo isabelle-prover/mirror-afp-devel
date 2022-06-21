@@ -1,0 +1,37 @@
+title = "An Algebra for Higher-Order Terms"
+date = 2019-01-15
+topics = [
+  "Computer science/Programming languages/Lambda calculi",
+]
+abstract = """
+In this formalization, I introduce a higher-order term algebra,
+generalizing the notions of free variables, matching, and
+substitution. The need arose from the work on a <a
+href=\"http://dx.doi.org/10.1007/978-3-319-89884-1_35\">verified
+compiler from Isabelle to CakeML</a>. Terms can be thought of as
+consisting of a generic (free variables, constants, application) and
+a specific part. As example applications, this entry provides
+instantiations for de-Bruijn terms, terms with named variables, and
+<a
+href=\"https://www.isa-afp.org/entries/Lambda_Free_RPOs.html\">Blanchette’s
+&lambda;-free higher-order terms</a>. Furthermore, I
+implement translation functions between de-Bruijn terms and named
+terms and prove their correctness."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hupel]
+homepage = "hupel_homepage1"
+
+[contributors]
+
+[contributors.zhang]
+
+[notify]
+hupel = "hupel_email1"
+
+[history]
+
+[extra]

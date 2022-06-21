@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hibon on Archive of Formal Proofs</title>
+    <link>/authors/hibon/</link>
+    <description>Recent content in hibon on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 19 Oct 2016 00:00:00 +0000</lastBuildDate><atom:link href="/authors/hibon/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Source Coding Theorem</title>
+      <link>/entries/Source_Coding_Theorem.html</link>
+      <pubDate>Wed, 19 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Source_Coding_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,27 @@
+title = "Tensor Product of Matrices"
+date = 2016-01-18
+topics = [
+  "Computer science/Data structures",
+  "Mathematics/Algebra",
+]
+abstract = """
+In this work, the Kronecker tensor product of matrices and the proofs of
+some of its properties are formalized. Properties which have been formalized
+include associativity of the tensor product and the mixed-product
+property."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.prathamesh]
+email = "prathamesh_email"
+
+[contributors]
+
+[notify]
+prathamesh = "prathamesh_email"
+
+[history]
+
+[extra]

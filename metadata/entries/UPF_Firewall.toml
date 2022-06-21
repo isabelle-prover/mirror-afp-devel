@@ -1,0 +1,35 @@
+title = "Formal Network Models and Their Application to Firewall Policies"
+date = 2017-01-08
+topics = [
+  "Computer science/Security",
+  "Computer science/Networks",
+]
+abstract = """
+We present a formal model of network protocols and their application
+to modeling firewall policies. The formalization is based on the
+Unified Policy Framework (UPF). The formalization was originally
+developed with for generating test cases for testing the security
+configuration actual firewall and router (middle-boxes) using
+HOL-TestGen. Our work focuses on modeling application level protocols
+on top of tcp/ip."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brucker]
+homepage = "brucker_homepage1"
+
+[authors.bruegger]
+
+[authors.wolff]
+homepage = "wolff_homepage"
+
+[contributors]
+
+[notify]
+brucker = "brucker_email2"
+
+[history]
+
+[extra]

@@ -1,0 +1,34 @@
+title = "Computer-assisted Reconstruction and Assessment of E. J. Lowe's Modal Ontological Argument"
+date = 2017-09-21
+topics = [
+  "Logic/Philosophical aspects",
+]
+abstract = """
+Computers may help us to understand --not just verify-- philosophical
+arguments. By utilizing modern proof assistants in an iterative
+interpretive process, we can reconstruct and assess an argument by
+fully formal means. Through the mechanization of a variant of St.
+Anselm's ontological argument by E. J. Lowe, which is a
+paradigmatic example of a natural-language argument with strong ties
+to metaphysics and religion, we offer an ideal showcase for our
+computer-assisted interpretive method."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.fuenmayor]
+email = "fuenmayor_email"
+
+[authors.benzmueller]
+homepage = "benzmueller_homepage2"
+
+[contributors]
+
+[notify]
+fuenmayor = "fuenmayor_email"
+benzmueller = "benzmueller_email"
+
+[history]
+
+[extra]

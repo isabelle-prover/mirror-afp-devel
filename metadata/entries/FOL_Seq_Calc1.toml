@@ -1,0 +1,38 @@
+title = "A Sequent Calculus for First-Order Logic"
+date = 2019-07-18
+topics = [
+  "Logic/Proof theory",
+]
+abstract = """
+This work formalizes soundness and completeness of a one-sided sequent
+calculus for first-order logic. The completeness is shown via a
+translation from a complete semantic tableau calculus, the proof of
+which is based on the First-Order Logic According to Fitting theory.
+The calculi and proof techniques are taken from Ben-Ari's
+Mathematical Logic for Computer Science.
+Paper: <a href=\"http://ceur-ws.org/Vol-3002/paper7.pdf\">http://ceur-ws.org/Vol-3002/paper7.pdf</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.from]
+homepage = "from_homepage"
+
+[contributors]
+
+[contributors.jensen]
+homepage = "jensen_homepage"
+
+[contributors.schlichtkrull]
+homepage = "schlichtkrull_homepage"
+
+[contributors.villadsen]
+homepage = "villadsen_homepage"
+
+[notify]
+from = "from_email"
+
+[history]
+
+[extra]

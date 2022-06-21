@@ -1,0 +1,32 @@
+title = "A Hierarchy of Algebras for Boolean Subsets"
+date = 2020-01-31
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+We present a collection of axiom systems for the construction of
+Boolean subalgebras of larger overall algebras. The subalgebras are
+defined as the range of a complement-like operation on a semilattice.
+This technique has been used, for example, with the antidomain
+operation, dynamic negation and Stone algebras. We present a common
+ground for these constructions based on a new equational
+axiomatisation of Boolean algebras."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.guttmann]
+homepage = "guttmann_homepage"
+
+[authors.moeller]
+homepage = "moeller_homepage"
+
+[contributors]
+
+[notify]
+guttmann = "guttmann_email"
+
+[history]
+
+[extra]

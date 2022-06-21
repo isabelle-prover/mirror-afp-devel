@@ -1,0 +1,29 @@
+title = "Dictionary Construction"
+date = 2017-05-24
+topics = [
+  "Tools",
+]
+abstract = """
+Isabelle's code generator natively supports type classes. For
+targets that do not have language support for classes and instances,
+it performs the well-known dictionary translation, as described by
+Haftmann and Nipkow. This translation happens outside the logic, i.e.,
+there is no guarantee that it is correct, besides the pen-and-paper
+proof. This work implements a certified dictionary translation that
+produces new class-free constants and derives equality theorems."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hupel]
+homepage = "hupel_homepage"
+
+[contributors]
+
+[notify]
+hupel = "hupel_email"
+
+[history]
+
+[extra]

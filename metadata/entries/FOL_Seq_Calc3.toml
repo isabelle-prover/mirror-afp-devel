@@ -1,0 +1,55 @@
+title = "A Naive Prover for First-Order Logic"
+date = 2022-03-22
+topics = [
+  "Logic/General logic/Classical first-order logic",
+  "Logic/Proof theory",
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = """
+<p> The AFP entry <a
+href=\"https://www.isa-afp.org/entries/Abstract_Completeness.html\">Abstract
+Completeness</a> by Blanchette, Popescu and Traytel formalizes
+the core of Beth/Hintikka-style completeness proofs for first-order
+logic and can be used to formalize executable sequent calculus
+provers. In the Journal of Automated Reasoning, the authors
+instantiate the framework with a sequent calculus for first-order
+logic and prove its completeness. Their use of an infinite set of
+proof rules indexed by formulas yields very direct arguments. A fair
+stream of these rules controls the prover, making its definition
+remarkably simple. The AFP entry, however, only contains a toy example
+for propositional logic. The AFP entry <a
+href=\"https://www.isa-afp.org/entries/FOL_Seq_Calc2.html\">A
+Sequent Calculus Prover for First-Order Logic with Functions</a>
+by From and Jacobsen also uses the framework, but uses a finite set of
+generic rules resulting in a more sophisticated prover with more
+complicated proofs. </p> <p> This entry contains an
+executable sequent calculus prover for first-order logic with
+functions in the style presented by Blanchette et al. The prover can
+be exported to Haskell and this entry includes formalized proofs of
+its soundness and completeness. The proofs are simpler than those for
+the prover by From and Jacobsen but the performance of the prover is
+significantly worse. </p> <p> The included theory
+<em>Fair-Stream</em> first proves that the sequence of
+natural numbers 0, 0, 1, 0, 1, 2, etc. is fair. It then proves that
+mapping any surjective function across the sequence preserves
+fairness. This method of obtaining a fair stream of rules is similar
+to the one given by Blanchette et al. The concrete functions from
+natural numbers to terms, formulas and rules are defined using the
+<em>Nat-Bijection</em> theory in the HOL-Library.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.from]
+homepage = "from_homepage"
+
+[contributors]
+
+[notify]
+from = "from_email"
+
+[history]
+
+[extra]

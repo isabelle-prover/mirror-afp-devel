@@ -1,0 +1,44 @@
+title = "The Mason–Stothers Theorem"
+date = 2017-12-21
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+<p>This article provides a formalisation of Snyder’s simple and
+elegant proof of the Mason&ndash;Stothers theorem, which is the
+polynomial analogue of the famous abc Conjecture for integers.
+Remarkably, Snyder found this very elegant proof when he was still a
+high-school student.</p> <p>In short, the statement of the
+theorem is that three non-zero coprime polynomials
+<em>A</em>, <em>B</em>, <em>C</em>
+over a field which sum to 0 and do not all have vanishing derivatives
+fulfil max{deg(<em>A</em>), deg(<em>B</em>),
+deg(<em>C</em>)} < deg(rad(<em>ABC</em>))
+where the rad(<em>P</em>) denotes the
+<em>radical</em> of <em>P</em>,
+i.&thinsp;e. the product of all unique irreducible factors of
+<em>P</em>.</p> <p>This theorem also implies a
+kind of polynomial analogue of Fermat’s Last Theorem for polynomials:
+except for trivial cases,
+<em>A<sup>n</sup></em> +
+<em>B<sup>n</sup></em> +
+<em>C<sup>n</sup></em> = 0 implies
+n&nbsp;&le;&nbsp;2 for coprime polynomials
+<em>A</em>, <em>B</em>, <em>C</em>
+over a field.</em></p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

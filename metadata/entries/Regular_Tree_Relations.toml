@@ -1,0 +1,48 @@
+title = "Regular Tree Relations"
+date = 2021-12-15
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+Tree automata have good closure properties and therefore a commonly
+used to prove/disprove properties. This formalization contains among
+other things the proofs of many closure properties of tree automata
+(anchored) ground tree transducers and regular relations. Additionally
+it includes the well known pumping lemma and a lifting of the Myhill
+Nerode theorem for regular languages to tree languages.  We want to
+mention the existence of a <a
+href=\"https://www.isa-afp.org/entries/Tree-Automata.html\">tree
+automata APF-entry</a> developed by Peter Lammich. His work is
+based on epsilon free top-down tree automata, while this entry builds
+on bottom-up tree auotamta with epsilon transitions. Moreover our
+formalization relies on the <a
+href=\"https://www.isa-afp.org/entries/Collections.html\">Collections
+Framework</a>, also by Peter Lammich, to obtain efficient code.
+All proven constructions of the closure properties are exportable
+using the Isabelle/HOL code generation facilities."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochmann]
+email = "lochmann_email"
+
+[authors.felgenhauer]
+
+[authors.sternagel]
+homepage = "sternagel_homepage"
+
+[authors.thiemann]
+homepage = "thiemann_homepage2"
+
+[authors.sternagelt]
+
+[contributors]
+
+[notify]
+lochmann = "lochmann_email"
+
+[history]
+
+[extra]

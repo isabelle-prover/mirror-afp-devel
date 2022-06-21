@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ballarin on Archive of Formal Proofs</title>
+    <link>/authors/ballarin/</link>
+    <description>Recent content in ballarin on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 30 Aug 2019 00:00:00 +0000</lastBuildDate><atom:link href="/authors/ballarin/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Case Study in Basic Algebra</title>
+      <link>/entries/Jacobson_Basic_Algebra.html</link>
+      <pubDate>Fri, 30 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Jacobson_Basic_Algebra.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fast Fourier Transform</title>
+      <link>/entries/FFT.html</link>
+      <pubDate>Wed, 12 Oct 2005 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/FFT.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

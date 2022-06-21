@@ -1,0 +1,26 @@
+title = "Anselm's God in Isabelle/HOL"
+date = 2017-09-06
+topics = [
+  "Logic/Philosophical aspects",
+]
+abstract = """
+Paul Oppenheimer and Edward Zalta's formalisation of
+Anselm's ontological argument for the existence of God is
+automated by embedding a free logic for definite descriptions within
+Isabelle/HOL."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.blumson]
+homepage = "blumson_homepage"
+
+[contributors]
+
+[notify]
+blumson = "blumson_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>abdulaziz on Archive of Formal Proofs</title>
+    <link>/authors/abdulaziz/</link>
+    <description>Recent content in abdulaziz on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 16 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/abdulaziz/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Markov Decision Processes with Rewards</title>
+      <link>/entries/MDP-Rewards.html</link>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MDP-Rewards.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Algorithms for Solving Markov Decision Processes</title>
+      <link>/entries/MDP-Algorithms.html</link>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MDP-Algorithms.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>AI Planning Languages Semantics</title>
+      <link>/entries/AI_Planning_Languages_Semantics.html</link>
+      <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/AI_Planning_Languages_Semantics.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified SAT-Based AI Planning</title>
+      <link>/entries/Verified_SAT_Based_AI_Planning.html</link>
+      <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Verified_SAT_Based_AI_Planning.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Upper Bounding Diameters of State Spaces of Factored Transition Systems</title>
+      <link>/entries/Factored_Transition_System_Bounding.html</link>
+      <pubDate>Fri, 12 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Factored_Transition_System_Bounding.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>An Isabelle/HOL formalisation of Green&#39;s Theorem</title>
+      <link>/entries/Green.html</link>
+      <pubDate>Thu, 11 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Green.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

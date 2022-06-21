@@ -1,0 +1,57 @@
+title = "Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations"
+date = 2020-04-09
+topics = [
+  "Computer science/Algorithms",
+  "Logic/General logic/Modal logic",
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+A monitor is a runtime verification tool that solves the following
+problem: Given a stream of time-stamped events and a policy formulated
+in a specification language, decide whether the policy is satisfied at
+every point in the stream. We verify the correctness of an executable
+monitor for specifications given as formulas in metric first-order
+dynamic logic (MFODL), which combines the features of metric
+first-order temporal logic (MFOTL) and metric dynamic logic. Thus,
+MFODL supports real-time constraints, first-order parameters, and
+regular expressions. Additionally, the monitor supports aggregation
+operations such as count and sum. This formalization, which is
+described in a <a href=\"http://people.inf.ethz.ch/trayteld/papers/ijcar20-verimonplus/verimonplus.pdf\">
+forthcoming paper at IJCAR 2020</a>, significantly extends <a
+href=\"https://www.isa-afp.org/entries/MFOTL_Monitor.html\">previous
+work on a verified monitor</a> for MFOTL. Apart from the
+addition of regular expressions and aggregations, we implemented <a
+href=\"https://www.isa-afp.org/entries/Generic_Join.html\">multi-way
+joins</a> and a specialized sliding window algorithm to further
+optimize the monitor."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.dardinier]
+
+[authors.heimes]
+
+[authors.raszyk]
+email = "raszyk_email"
+
+[authors.schneider]
+email = "schneider_email"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+raszyk = "raszyk_email"
+schneider = "schneider_email"
+traytel = "traytel_email1"
+
+[history]
+2021-10-19 = """
+corrected a mistake in the calculation of median aggregations
+(reported by Nicolas Kaletsch, revision 02b14c9bf3da)<br>"""
+
+[extra]

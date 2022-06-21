@@ -1,0 +1,42 @@
+title = "Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic"
+date = 2019-07-04
+topics = [
+  "Computer science/Algorithms",
+  "Logic/General logic/Temporal logic",
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+A monitor is a runtime verification tool that solves the following
+problem: Given a stream of time-stamped events and a policy formulated
+in a specification language, decide whether the policy is satisfied at
+every point in the stream. We verify the correctness of an executable
+monitor for specifications given as formulas in metric first-order
+temporal logic (MFOTL), an expressive extension of linear temporal
+logic with real-time constraints and first-order quantification. The
+verified monitor implements a simplified variant of the algorithm used
+in the efficient MonPoly monitoring tool. The formalization is
+presented in a <a href=\"https://doi.org/10.1007/978-3-030-32079-9_18\">RV
+2019 paper</a>, which also compares the output of the verified
+monitor to that of other monitoring tools on randomly generated
+inputs. This case study revealed several errors in the optimized but
+unverified tools."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schneider]
+email = "schneider_email"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+schneider = "schneider_email"
+traytel = "traytel_email1"
+
+[history]
+
+[extra]

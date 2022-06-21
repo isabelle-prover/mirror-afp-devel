@@ -1,0 +1,25 @@
+title = "Native Word"
+date = 2013-09-17
+topics = [
+  "Computer science/Data structures",
+]
+abstract = "This entry makes machine words and machine arithmetic available for code generation from Isabelle/HOL.  It provides a common abstraction that hides the differences between the different target languages.  The code generator maps these operations to the APIs of the target languages.  Apart from that, we extend the available bit operations on types int and integer, and map them to the operations in the target languages."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochbihler]
+homepage = "lochbihler_homepage"
+
+[contributors]
+
+[contributors.lammich]
+homepage = "lammich_homepage"
+
+[notify]
+lochbihler = "lochbihler_email1"
+
+[history]
+
+[extra]

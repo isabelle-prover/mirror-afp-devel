@@ -1,0 +1,34 @@
+title = "Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL"
+date = 2021-11-08
+topics = [
+  "Logic/Philosophical aspects",
+  "Logic/General logic/Modal logic",
+]
+abstract = """
+<p>Simplified variants of Gödel's ontological argument are
+explored. Among those is a particularly interesting simplified
+argument which is (i) valid already in basic
+modal logics K or KT, (ii) which does not suffer from modal collapse,
+and (iii) which avoids the rather complex predicates of essence (Ess.)
+and necessary existence (NE) as used by Gödel.
+</p><p>
+Whether the presented variants increase or decrease the
+attractiveness and persuasiveness of the ontological argument is a
+question I would like to pass on to philosophy and theology.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.benzmueller]
+homepage = "benzmueller_homepage"
+
+[contributors]
+
+[notify]
+benzmueller = "benzmueller_email"
+
+[history]
+
+[extra]

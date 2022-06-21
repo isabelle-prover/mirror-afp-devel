@@ -1,0 +1,31 @@
+title = "Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra"
+date = 2019-06-25
+topics = [
+  "Computer science/Algorithms/Graph",
+]
+abstract = """
+We verify purely functional, simple and efficient implementations of
+Prim's and Dijkstra's algorithms. This constitutes the first
+verification of an executable and even efficient version of
+Prim's algorithm. This entry formalizes the second part of our
+ITP-2019 proof pearl <em>Purely Functional, Simple and Efficient
+Priority Search Trees and Applications to Prim and Dijkstra</em>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email"
+
+[history]
+
+[extra]

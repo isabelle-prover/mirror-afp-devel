@@ -1,0 +1,43 @@
+title = "Diophantine Equations and the DPRM Theorem"
+date = 2022-06-06
+topics = [
+  "Logic/Computability",
+  "Mathematics/Number theory",
+]
+abstract = """
+We present a formalization of Matiyasevich's proof of the DPRM
+theorem, which states that every recursively enumerable set of natural
+numbers is Diophantine. This result from 1970 yields a negative
+solution to Hilbert's 10th problem over the integers. To
+represent recursively enumerable sets in equations, we implement and
+arithmetize register machines. We formalize a general theory of
+Diophantine sets and relations to reason about them abstractly. Using
+several number-theoretic lemmas, we prove that exponentiation has a
+Diophantine representation."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bayer]
+
+[authors.david]
+
+[authors.stock]
+
+[authors.pal]
+
+[authors.matiyasevich]
+
+[authors.schleicher]
+
+[contributors]
+
+[notify]
+bayer = "bayer_email"
+david = "david_email"
+stock = "stock_email"
+
+[history]
+
+[extra]

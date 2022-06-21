@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Logic/General logic/Lambda calculus on Archive of Formal Proofs</title>
+    <link>/topics/logic/general-logic/lambda-calculus/</link>
+    <description>Recent content in Logic/General logic/Lambda calculus on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/logic/general-logic/lambda-calculus/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The LambdaMu-calculus</title>
+      <link>/entries/LambdaMu.html</link>
+      <pubDate>Wed, 16 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LambdaMu.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

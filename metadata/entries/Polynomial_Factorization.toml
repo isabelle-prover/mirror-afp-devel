@@ -1,0 +1,40 @@
+title = "Polynomial Factorization"
+date = 2016-01-29
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+Based on existing libraries for polynomial interpolation and matrices,
+we formalized several factorization algorithms for polynomials, including
+Kronecker's algorithm for integer polynomials,
+Yun's square-free factorization algorithm for field polynomials, and
+Berlekamp's algorithm for polynomials over finite fields.
+By combining the last one with Hensel's lifting,
+we derive an efficient factorization algorithm for the integer polynomials,
+which is then lifted for rational polynomials by mechanizing Gauss' lemma.
+Finally, we assembled a combined factorization algorithm for rational polynomials,
+which combines all the mentioned algorithms and additionally uses the explicit formula for roots
+of quadratic polynomials and a rational root test.
+<p>
+As side products, we developed division algorithms for polynomials over integral domains,
+as well as primality-testing and prime-factorization algorithms for integers."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[authors.yamada]
+email = "yamada_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+yamada = "yamada_email1"
+
+[history]
+
+[extra]

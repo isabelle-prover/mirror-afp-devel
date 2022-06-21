@@ -1,0 +1,30 @@
+title = "Stone Algebras"
+date = 2016-09-06
+topics = [
+  "Mathematics/Order",
+]
+abstract = """
+A range of algebras between lattices and Boolean algebras generalise
+the notion of a complement. We develop a hierarchy of these
+pseudo-complemented algebras that includes Stone algebras.
+Independently of this theory we study filters based on partial orders.
+Both theories are combined to prove Chen and Grätzer's construction
+theorem for Stone algebras. The latter involves extensive reasoning
+about algebraic structures in addition to reasoning in algebraic
+structures."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.guttmann]
+homepage = "guttmann_homepage"
+
+[contributors]
+
+[notify]
+guttmann = "guttmann_email"
+
+[history]
+
+[extra]

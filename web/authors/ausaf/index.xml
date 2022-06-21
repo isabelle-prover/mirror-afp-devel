@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ausaf on Archive of Formal Proofs</title>
+    <link>/authors/ausaf/</link>
+    <description>Recent content in ausaf on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 24 May 2016 00:00:00 +0000</lastBuildDate><atom:link href="/authors/ausaf/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>POSIX Lexing with Derivatives of Regular Expressions</title>
+      <link>/entries/Posix-Lexing.html</link>
+      <pubDate>Tue, 24 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Posix-Lexing.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

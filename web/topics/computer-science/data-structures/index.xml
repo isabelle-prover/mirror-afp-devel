@@ -1,0 +1,577 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Computer science/Data structures on Archive of Formal Proofs</title>
+    <link>/topics/computer-science/data-structures/</link>
+    <description>Recent content in Computer science/Data structures on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/computer-science/data-structures/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Combinator Library for Prefix-Free Codes</title>
+      <link>/entries/Prefix_Free_Code_Combinators.html</link>
+      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Prefix_Free_Code_Combinators.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>van Emde Boas Trees</title>
+      <link>/entries/Van_Emde_Boas_Trees.html</link>
+      <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Van_Emde_Boas_Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fresh identifiers</title>
+      <link>/entries/Fresh_Identifiers.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Fresh_Identifiers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Verified Imperative Implementation of B-Trees</title>
+      <link>/entries/BTree.html</link>
+      <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/BTree.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hood-Melville Queue</title>
+      <link>/entries/Hood_Melville_Queue.html</link>
+      <pubDate>Mon, 18 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Hood_Melville_Queue.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Finite Map Extras</title>
+      <link>/entries/Finite-Map-Extras.html</link>
+      <pubDate>Mon, 12 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Finite-Map-Extras.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formal Model of the Document Object Model with Shadow Roots</title>
+      <link>/entries/Shadow_DOM.html</link>
+      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Shadow_DOM.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formal Model of the Safely Composable Document Object Model with Shadow Roots</title>
+      <link>/entries/Shadow_SC_DOM.html</link>
+      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Shadow_SC_DOM.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formalization of Safely Composable Web Components</title>
+      <link>/entries/SC_DOM_Components.html</link>
+      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SC_DOM_Components.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formalization of Web Components</title>
+      <link>/entries/DOM_Components.html</link>
+      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/DOM_Components.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Safely Composable DOM</title>
+      <link>/entries/Core_SC_DOM.html</link>
+      <pubDate>Mon, 28 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Core_SC_DOM.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Relational Disjoint-Set Forests</title>
+      <link>/entries/Relational_Disjoint_Set_Forests.html</link>
+      <pubDate>Wed, 26 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Disjoint_Set_Forests.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Authenticated Data Structures As Functors</title>
+      <link>/entries/ADS_Functor.html</link>
+      <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ADS_Functor.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Skip Lists</title>
+      <link>/entries/Skip_Lists.html</link>
+      <pubDate>Thu, 09 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Skip_Lists.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Interval Arithmetic on 32-bit Words</title>
+      <link>/entries/Interval_Arithmetic_Word32.html</link>
+      <pubDate>Wed, 27 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Interval_Arithmetic_Word32.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Priority Search Trees</title>
+      <link>/entries/Priority_Search_Trees.html</link>
+      <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Priority_Search_Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Binary Heaps for IMP2</title>
+      <link>/entries/IMP2_Binary_Heap.html</link>
+      <pubDate>Thu, 13 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMP2_Binary_Heap.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Multidimensional Binary Search Trees</title>
+      <link>/entries/KD_Tree.html</link>
+      <pubDate>Thu, 30 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/KD_Tree.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formal Model of the Document Object Model</title>
+      <link>/entries/Core_DOM.html</link>
+      <pubDate>Wed, 26 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Core_DOM.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verifying Imperative Programs using Auto2</title>
+      <link>/entries/Auto2_Imperative_HOL.html</link>
+      <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Auto2_Imperative_HOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Deriving generic class instances for datatypes</title>
+      <link>/entries/Generic_Deriving.html</link>
+      <pubDate>Tue, 06 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Generic_Deriving.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Randomised Binary Search Trees</title>
+      <link>/entries/Randomised_BSTs.html</link>
+      <pubDate>Fri, 19 Oct 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Randomised_BSTs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Optimal Binary Search Trees</title>
+      <link>/entries/Optimal_BST.html</link>
+      <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Optimal_BST.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
+      <link>/entries/OpSets.html</link>
+      <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/OpSets.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Weight-Balanced Trees</title>
+      <link>/entries/Weight_Balanced_Trees.html</link>
+      <pubDate>Tue, 13 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Weight_Balanced_Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Treaps</title>
+      <link>/entries/Treaps.html</link>
+      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Treaps.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Taylor Models</title>
+      <link>/entries/Taylor_Models.html</link>
+      <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Taylor_Models.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The IMAP CmRDT</title>
+      <link>/entries/IMAP-CRDT.html</link>
+      <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMAP-CRDT.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Root-Balanced Tree</title>
+      <link>/entries/Root_Balanced_Tree.html</link>
+      <pubDate>Sun, 20 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Root_Balanced_Tree.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
+      <link>/entries/CRDT.html</link>
+      <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CRDT.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Expected Shape of Random Binary Search Trees</title>
+      <link>/entries/Random_BSTs.html</link>
+      <pubDate>Tue, 04 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Random_BSTs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Imperative Refinement Framework</title>
+      <link>/entries/Refine_Imperative_HOL.html</link>
+      <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Refine_Imperative_HOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Pairing Heap</title>
+      <link>/entries/Pairing_Heap.html</link>
+      <pubDate>Thu, 14 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Pairing_Heap.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Finite Machine Word Library</title>
+      <link>/entries/Word_Lib.html</link>
+      <pubDate>Thu, 09 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Word_Lib.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
+      <link>/entries/ROBDD.html</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ROBDD.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tensor Product of Matrices</title>
+      <link>/entries/Matrix_Tensor.html</link>
+      <pubDate>Mon, 18 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Matrix_Tensor.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reasoning about Lists via List Interleaving</title>
+      <link>/entries/List_Interleaving.html</link>
+      <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/List_Interleaving.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Parameterized Dynamic Tables</title>
+      <link>/entries/Dynamic_Tables.html</link>
+      <pubDate>Sun, 07 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Dynamic_Tables.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Trie</title>
+      <link>/entries/Trie.html</link>
+      <pubDate>Mon, 30 Mar 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Trie.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Deriving class instances for datatypes</title>
+      <link>/entries/Deriving.html</link>
+      <pubDate>Wed, 11 Mar 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Deriving.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>XML</title>
+      <link>/entries/XML.html</link>
+      <pubDate>Fri, 03 Oct 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/XML.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Priority Queues Based on Braun Trees</title>
+      <link>/entries/Priority_Queue_Braun.html</link>
+      <pubDate>Thu, 04 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Priority_Queue_Braun.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Skew Heap</title>
+      <link>/entries/Skew_Heap.html</link>
+      <pubDate>Wed, 13 Aug 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Skew_Heap.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Splay Tree</title>
+      <link>/entries/Splay_Tree.html</link>
+      <pubDate>Tue, 12 Aug 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Splay_Tree.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Amortized Complexity Verified</title>
+      <link>/entries/Amortized_Complexity.html</link>
+      <pubDate>Mon, 07 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Amortized_Complexity.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Native Word</title>
+      <link>/entries/Native_Word.html</link>
+      <pubDate>Tue, 17 Sep 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Native_Word.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formal Model of IEEE Floating Point Arithmetic</title>
+      <link>/entries/IEEE_Floating_Point.html</link>
+      <pubDate>Sat, 27 Jul 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IEEE_Floating_Point.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Light-weight Containers</title>
+      <link>/entries/Containers.html</link>
+      <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Containers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Generating linear orders for datatypes</title>
+      <link>/entries/Datatype_Order_Generator.html</link>
+      <pubDate>Tue, 07 Aug 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Datatype_Order_Generator.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Infinite Lists</title>
+      <link>/entries/List-Infinite.html</link>
+      <pubDate>Wed, 23 Feb 2011 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/List-Infinite.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Binomial Heaps and Skew Binomial Heaps</title>
+      <link>/entries/Binomial-Heaps.html</link>
+      <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Binomial-Heaps.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Finger Trees</title>
+      <link>/entries/Finger-Trees.html</link>
+      <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Finger-Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Functional Binomial Queues</title>
+      <link>/entries/Binomial-Queues.html</link>
+      <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Binomial-Queues.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Matrix Operations on Matrices of Arbitrary Dimensions</title>
+      <link>/entries/Matrix.html</link>
+      <pubDate>Thu, 17 Jun 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Matrix.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>List Index</title>
+      <link>/entries/List-Index.html</link>
+      <pubDate>Sat, 20 Feb 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/List-Index.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Collections Framework</title>
+      <link>/entries/Collections.html</link>
+      <pubDate>Wed, 25 Nov 2009 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Collections.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Code Generation for Functions as Data</title>
+      <link>/entries/FinFun.html</link>
+      <pubDate>Wed, 06 May 2009 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/FinFun.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Textbook Proof of Huffman&#39;s Algorithm</title>
+      <link>/entries/Huffman.html</link>
+      <pubDate>Wed, 15 Oct 2008 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Huffman.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>BDD Normalisation</title>
+      <link>/entries/BDD.html</link>
+      <pubDate>Fri, 29 Feb 2008 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/BDD.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>File Refinement</title>
+      <link>/entries/FileRefinement.html</link>
+      <pubDate>Thu, 09 Dec 2004 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/FileRefinement.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lazy Lists II</title>
+      <link>/entries/Lazy-Lists-II.html</link>
+      <pubDate>Mon, 26 Apr 2004 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Lazy-Lists-II.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Binary Search Trees</title>
+      <link>/entries/BinarySearchTree.html</link>
+      <pubDate>Mon, 05 Apr 2004 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/BinarySearchTree.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>AVL Trees</title>
+      <link>/entries/AVL-Trees.html</link>
+      <pubDate>Fri, 19 Mar 2004 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/AVL-Trees.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

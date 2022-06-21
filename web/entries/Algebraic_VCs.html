@@ -1,128 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Program Construction and Verification Components Based on Kleene Algebra - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Program Construction and Verification Components Based on Kleene Algebra - Archive of Formal Proofs</title><meta name="description" content="Variants of Kleene algebra support program construction and
+verification by algebraic reasoning. This entry provides a
+verification component for Hoare..."><meta property="og:title" content="Program Construction and Verification Components Based on Kleene Algebra" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Algebraic_VCs.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2016-06-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2016-06-18T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Program Construction and Verification Components Based on Kleene Algebra"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">P</font>rogram
-  
-          <font class="first">C</font>onstruction
-  
-          and
-  
-          <font class="first">V</font>erification
-  
-          <font class="first">C</font>omponents
-  
-          <font class="first">B</font>ased
-  
-          on
-  
-          <font class="first">K</font>leene
-  
-          <font class="first">A</font>lgebra
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>P</span>rogram <span class='first'>C</span>onstruction and <span class='first'>V</span>erification <span class='first'>C</span>omponents <span class='first'>B</span>ased on <span class='first'>K</span>leene <span class='first'>A</span>lgebra</h1>
+  <div>
+    
+    <p><a href="../authors/gomes">Victor B. F. Gomes</a> <a href="mailto:victor.gomes@cl.cam.ac.uk">📧</a> and <a href="../authors/struth">Georg Struth</a> <a href="mailto:g.struth@sheffield.ac.uk">📧</a>
+    </p>
+    
+    
+    <p class="date">June 18, 2016</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Program Construction and Verification Components Based on Kleene Algebra</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                    Victor B. F. Gomes (vb358 /at/ cl /dot/ cam /dot/ ac /dot/ uk) and
-          <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2016-06-18</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-Variants of Kleene algebra support program construction and
+  <div class="abstract mathjax_process">Variants of Kleene algebra support program construction and
 verification by algebraic reasoning. This entry provides a
 verification component for Hoare logic based on Kleene algebra with
 tests, verification components for weakest preconditions and strongest
@@ -133,112 +108,94 @@ programs, a verification component for total correctness based on
 divergence Kleene algebras and one for (partial correctness) of
 recursive programs based on domain quantales are provided. Finally we
 have integrated memory models for programs with pointers and a program
-trace semantics into the weakest precondition component.</td>
-</tr>
+trace semantics into the weakest precondition component.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li></ul>
+  <h3>Theories of Algebraic_VCs</h3>
+  <ul>
+    <li><a href="../theories/algebraic_vcs/#VC_KAT_scratch">VC_KAT_scratch</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAD_scratch">VC_KAD_scratch</a></li>
+    <li><a href="../theories/algebraic_vcs/#P2S2R">P2S2R</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAT">VC_KAT</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAT_Examples">VC_KAT_Examples</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAT_Examples2">VC_KAT_Examples2</a></li>
+    <li><a href="../theories/algebraic_vcs/#RKAT">RKAT</a></li>
+    <li><a href="../theories/algebraic_vcs/#RKAT_Models">RKAT_Models</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_RKAT">VC_RKAT</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_RKAT_Examples">VC_RKAT_Examples</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAD">VC_KAD</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAD_Examples">VC_KAD_Examples</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAD_Examples2">VC_KAD_Examples2</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAD_dual">VC_KAD_dual</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAD_dual_Examples">VC_KAD_dual_Examples</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAD_wf">VC_KAD_wf</a></li>
+    <li><a href="../theories/algebraic_vcs/#VC_KAD_wf_Examples">VC_KAD_wf_Examples</a></li>
+    <li><a href="../theories/algebraic_vcs/#Path_Model_Example">Path_Model_Example</a></li>
+    <li><a href="../theories/algebraic_vcs/#Pointer_Examples">Pointer_Examples</a></li>
+    <li><a href="../theories/algebraic_vcs/#KAD_is_KAT">KAD_is_KAT</a></li>
+    <li><a href="../theories/algebraic_vcs/#Domain_Quantale">Domain_Quantale</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/KAD.html">KAD</a></li><li><a href="../entries/KAT_and_DRA.html">KAT_and_DRA</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Transformer_Semantics.html">Transformer Semantics</a></li>
+      
+      <li><a href="../entries/QHLProver.html">Quantum Hoare Logic</a></li>
+      
+      <li><a href="../entries/Coinductive_Languages.html">A Codatatype of Formal Languages</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Algebraic_VCs/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Algebraic_VCs/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Algebraic_VCs/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Algebraic_VCs-AFP,
-  author  = {Victor B. F. Gomes and Georg Struth},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Algebraic_VCs-AFP</p>
+      <pre id="copyText">@article{Algebraic_VCs-AFP,
+  author  = {gomes and struth},
   title   = {Program Construction and Verification Components Based on Kleene Algebra},
   journal = {Archive of Formal Proofs},
-  month   = jun,
+  month   = June,
   year    = 2016,
   note    = {\url{https://isa-afp.org/entries/Algebraic_VCs.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="KAD.html">KAD</a>, <a href="KAT_and_DRA.html">KAT_and_DRA</a>      </td></tr>
-          
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Algebraic_VCs/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Algebraic_VCs/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Algebraic_VCs/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Algebraic_VCs-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Algebraic_VCs-2021-02-23.tar.gz">
-              afp-Algebraic_VCs-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Algebraic_VCs-2020-04-18.tar.gz">
-              afp-Algebraic_VCs-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Algebraic_VCs-2019-06-11.tar.gz">
-              afp-Algebraic_VCs-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Algebraic_VCs-2018-08-16.tar.gz">
-              afp-Algebraic_VCs-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Algebraic_VCs-2017-10-10.tar.gz">
-              afp-Algebraic_VCs-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Algebraic_VCs-2016-12-17.tar.gz">
-              afp-Algebraic_VCs-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-Algebraic_VCs-2016-06-18.tar.gz">
-              afp-Algebraic_VCs-2016-06-18.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Algebraic_VCs-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

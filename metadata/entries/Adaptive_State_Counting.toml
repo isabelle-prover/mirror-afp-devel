@@ -1,0 +1,36 @@
+title = "Formalisation of an Adaptive State Counting Algorithm"
+date = 2019-08-16
+topics = [
+  "Computer science/Automata and formal languages",
+  "Computer science/Algorithms",
+]
+abstract = """
+This entry provides a formalisation of a refinement of an adaptive
+state counting algorithm, used to test for reduction between finite
+state machines. The algorithm has been originally presented by Hierons
+in the paper <a
+href=\"https://doi.org/10.1109/TC.2004.85\">Testing from a
+Non-Deterministic Finite State Machine Using Adaptive State
+Counting</a>.  Definitions for finite state machines and
+adaptive test cases are given and many useful theorems are derived
+from these. The algorithm is formalised using mutually recursive
+functions, for which it is proven that the generated test suite is
+sufficient to test for reduction against finite state machines of a
+certain fault domain. Additionally, the algorithm is specified in a
+simple WHILE-language and its correctness is shown using Hoare-logic."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sachtleben]
+email = "sachtleben_email"
+
+[contributors]
+
+[notify]
+sachtleben = "sachtleben_email"
+
+[history]
+
+[extra]

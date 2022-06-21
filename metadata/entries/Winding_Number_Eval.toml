@@ -1,0 +1,29 @@
+title = "Evaluate Winding Numbers through Cauchy Indices"
+date = 2017-10-17
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+In complex analysis, the winding number measures the number of times a
+path (counterclockwise) winds around a point, while the Cauchy index
+can approximate how the path winds. This entry provides a
+formalisation of the Cauchy index, which is then shown to be related
+to the winding number. In addition, this entry also offers a tactic
+that enables users to evaluate the winding number by calculating
+Cauchy indices."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.li]
+homepage = "li_homepage"
+
+[contributors]
+
+[notify]
+li = "li_email1"
+
+[history]
+
+[extra]

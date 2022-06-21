@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fosters on Archive of Formal Proofs</title>
+    <link>/authors/fosters/</link>
+    <description>Recent content in fosters on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 20 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="/authors/fosters/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Sound Type System for Physical Quantities, Units, and Measurements</title>
+      <link>/entries/Physical_Quantities.html</link>
+      <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Physical_Quantities.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Isabelle/UTP: Mechanised Theory Engineering for Unifying Theories of Programming</title>
+      <link>/entries/UTP.html</link>
+      <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/UTP.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Optics</title>
+      <link>/entries/Optics.html</link>
+      <pubDate>Thu, 25 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Optics.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Regular Algebras</title>
+      <link>/entries/Regular_Algebras.html</link>
+      <pubDate>Wed, 21 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Regular_Algebras.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Relation Algebra</title>
+      <link>/entries/Relation_Algebra.html</link>
+      <pubDate>Sat, 25 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relation_Algebra.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

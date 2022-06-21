@@ -1,0 +1,44 @@
+title = "Modal Logics for Nominal Transition Systems"
+date = 2016-10-25
+topics = [
+  "Computer science/Concurrency/Process calculi",
+  "Logic/General logic/Modal logic",
+]
+abstract = """
+We formalize a uniform semantic substrate for a wide variety of
+process calculi where states and action labels can be from arbitrary
+nominal sets. A Hennessy-Milner logic for these systems is defined,
+and proved adequate for bisimulation equivalence. A main novelty is
+the construction of an infinitary nominal data type to model formulas
+with (finitely supported) infinite conjunctions and actions that may
+contain binding names. The logic is generalized to treat different
+bisimulation variants such as early, late and open in a systematic
+way."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.weber]
+email = "weber_email"
+
+[authors.eriksson]
+email = "eriksson_email"
+
+[authors.parrow]
+email = "parrow_email"
+
+[authors.borgstroem]
+email = "borgstroem_email"
+
+[authors.gutkovas]
+email = "gutkovas_email"
+
+[contributors]
+
+[notify]
+weber = "weber_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Secondary_Sylow on Archive of Formal Proofs</title>
+    <link>/dependencies/secondary_sylow/</link>
+    <description>Recent content in Secondary_Sylow on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 09 Sep 2014 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/secondary_sylow/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Jordan-Hölder Theorem</title>
+      <link>/entries/Jordan_Hoelder.html</link>
+      <pubDate>Tue, 09 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Jordan_Hoelder.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

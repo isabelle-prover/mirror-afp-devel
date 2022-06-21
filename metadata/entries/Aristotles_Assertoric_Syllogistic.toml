@@ -1,0 +1,33 @@
+title = "Aristotle's Assertoric Syllogistic"
+date = 2019-10-08
+topics = [
+  "Logic/Philosophical aspects",
+]
+abstract = """
+We formalise with Isabelle/HOL some basic elements of Aristotle's
+assertoric syllogistic following the <a
+href=\"https://plato.stanford.edu/entries/aristotle-logic/\">article from the Stanford Encyclopedia of Philosophy by Robin Smith.</a> To
+this end, we use a set theoretic formulation (covering both individual
+and general predication). In particular, we formalise the deductions
+in the Figures and after that we present Aristotle's
+metatheoretical observation that all deductions in the Figures can in
+fact be reduced to either Barbara or Celarent. As the formal proofs
+prove to be straightforward, the interest of this entry lies in
+illustrating the functionality of Isabelle and high efficiency of
+Sledgehammer for simple exercises in philosophy."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.argyraki]
+homepage = "argyraki_homepage"
+
+[contributors]
+
+[notify]
+argyraki = "argyraki_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Polynomial_Interpolation on Archive of Formal Proofs</title>
+    <link>/dependencies/polynomial_interpolation/</link>
+    <description>Recent content in Polynomial_Interpolation on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sat, 21 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/polynomial_interpolation/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Theorem of Three Circles</title>
+      <link>/entries/Three_Circles.html</link>
+      <pubDate>Sat, 21 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Three_Circles.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formal Puiseux Series</title>
+      <link>/entries/Formal_Puiseux_Series.html</link>
+      <pubDate>Wed, 17 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Formal_Puiseux_Series.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gauss Sums and the Pólya–Vinogradov Inequality</title>
+      <link>/entries/Gauss_Sums.html</link>
+      <pubDate>Tue, 10 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Gauss_Sums.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Count the Number of Complex Roots</title>
+      <link>/entries/Count_Complex_Roots.html</link>
+      <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Count_Complex_Roots.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Expressiveness of Deep Learning</title>
+      <link>/entries/Deep_Learning.html</link>
+      <pubDate>Thu, 10 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Deep_Learning.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Factorization Algorithm of Berlekamp and Zassenhaus</title>
+      <link>/entries/Berlekamp_Zassenhaus.html</link>
+      <pubDate>Fri, 14 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Berlekamp_Zassenhaus.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Polynomial Factorization</title>
+      <link>/entries/Polynomial_Factorization.html</link>
+      <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Polynomial_Factorization.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

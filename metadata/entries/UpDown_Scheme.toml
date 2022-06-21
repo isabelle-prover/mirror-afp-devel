@@ -1,0 +1,34 @@
+title = "Verification of the UpDown Scheme"
+date = 2015-01-28
+topics = [
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = """
+The UpDown scheme is a recursive scheme used to compute the stiffness matrix
+on a special form of sparse grids. Usually, when discretizing a Euclidean
+space of dimension d we need O(n^d) points, for n points along each dimension.
+Sparse grids are a hierarchical representation where the number of points is
+reduced to O(n * log(n)^d). One disadvantage of such sparse grids is that the
+algorithm now operate recursively in the dimensions and levels of the sparse grid.
+<p>
+The UpDown scheme allows us to compute the stiffness matrix on such a sparse
+grid. The stiffness matrix represents the influence of each representation
+function on the L^2 scalar product. For a detailed description see
+Dirk Pflüger's PhD thesis. This formalization was developed as an
+interdisciplinary project (IDP) at the Technische Universität München."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hoelzl]
+email = "hoelzl_email"
+
+[contributors]
+
+[notify]
+hoelzl = "hoelzl_email"
+
+[history]
+
+[extra]

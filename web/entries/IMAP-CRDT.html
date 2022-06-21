@@ -1,117 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>The IMAP CmRDT - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>The IMAP CmRDT - Archive of Formal Proofs</title><meta name="description" content="We provide our Isabelle/HOL formalization of a Conflict-free
+Replicated Datatype for Internet Message Access Protocol commands.
+We show that Strong..."><meta property="og:title" content="The IMAP CmRDT" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/IMAP-CRDT.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2017-11-09T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-11-09T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="The IMAP CmRDT"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
-  
-          <font class="first">I</font>MAP
-  
-          <font class="first">C</font>mRDT
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>T</span>he <span class='first'>I</span><span class='first'>M</span><span class='first'>A</span><span class='first'>P</span> <span class='first'>C</span>m<span class='first'>R</span><span class='first'>D</span><span class='first'>T</span></h1>
+  <div>
+    
+    <p><a href="../authors/jungnickel">Tim Jungnickel</a> <a href="mailto:tim.jungnickel@tu-berlin.de">📧</a>, <a href="../authors/oldenburg">Lennart Oldenburg</a> and <a href="../authors/loibl">Matthias Loibl</a>
+    </p>
+    
+    
+    <p class="date">November 9, 2017</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The IMAP CmRDT</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                      Tim Jungnickel (tim /dot/ jungnickel /at/ tu-berlin /dot/ de),
-                Lennart Oldenburg and
-          Matthias Loibl
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2017-11-09</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-We provide our Isabelle/HOL formalization of a Conflict-free
+  <div class="abstract mathjax_process">We provide our Isabelle/HOL formalization of a Conflict-free
 Replicated Datatype for Internet Message Access Protocol commands.
 We show that Strong Eventual Consistency (SEC) is guaranteed
 by proving the commutativity of concurrent operations. We base our
@@ -119,107 +105,65 @@ formalization on the recently proposed "framework for
 establishing Strong Eventual Consistency for Conflict-free Replicated
 Datatypes" (AFP.CRDT) from Gomes et al. Hence, we provide an
 additional example of how the recently proposed framework can be used
-to design and prove CRDTs.</td>
-</tr>
+to design and prove CRDTs.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/algorithms/distributed">Computer science/Algorithms/Distributed</a></li><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
+  <h3>Theories of IMAP-CRDT</h3>
+  <ul>
+    <li><a href="../theories/imap-crdt/#IMAP-def">IMAP-def</a></li>
+    <li><a href="../theories/imap-crdt/#IMAP-proof-commute">IMAP-proof-commute</a></li>
+    <li><a href="../theories/imap-crdt/#IMAP-proof-helpers">IMAP-proof-helpers</a></li>
+    <li><a href="../theories/imap-crdt/#IMAP-proof-independent">IMAP-proof-independent</a></li>
+    <li><a href="../theories/imap-crdt/#IMAP-proof">IMAP-proof</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/CRDT.html">CRDT</a></li></ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/IMAP-CRDT/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/IMAP-CRDT/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/IMAP-CRDT/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{IMAP-CRDT-AFP,
-  author  = {Tim Jungnickel and Lennart Oldenburg and Matthias Loibl},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">IMAP-CRDT-AFP</p>
+      <pre id="copyText">@article{IMAP-CRDT-AFP,
+  author  = {jungnickel, oldenburg and loibl},
   title   = {The IMAP CmRDT},
   journal = {Archive of Formal Proofs},
-  month   = nov,
+  month   = November,
   year    = 2017,
   note    = {\url{https://isa-afp.org/entries/IMAP-CRDT.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="CRDT.html">CRDT</a>      </td></tr>
-          
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/IMAP-CRDT/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/IMAP-CRDT/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/IMAP-CRDT/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-IMAP-CRDT-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-IMAP-CRDT-2021-02-23.tar.gz">
-              afp-IMAP-CRDT-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-IMAP-CRDT-2020-04-18.tar.gz">
-              afp-IMAP-CRDT-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-IMAP-CRDT-2020-01-14.tar.gz">
-              afp-IMAP-CRDT-2020-01-14.tar.gz
-            </a>
-            </li>
-                      <li>Isabelle 2019:
-            <a href="../release/afp-IMAP-CRDT-2019-06-11.tar.gz">
-              afp-IMAP-CRDT-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-IMAP-CRDT-2018-08-16.tar.gz">
-              afp-IMAP-CRDT-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-IMAP-CRDT-2017-11-10.tar.gz">
-              afp-IMAP-CRDT-2017-11-10.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-IMAP-CRDT-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

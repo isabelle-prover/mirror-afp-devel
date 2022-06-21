@@ -1,0 +1,37 @@
+title = "A Separation Logic Framework for Imperative HOL"
+date = 2012-11-14
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = """
+We provide a framework for separation-logic based correctness proofs of
+Imperative HOL programs. Our framework comes with a set of proof methods to
+automate canonical tasks such as verification condition generation and
+frame inference. Moreover, we provide a set of examples that show the
+applicability of our framework. The examples include algorithms on lists,
+hash-tables, and union-find trees. We also provide abstract interfaces for
+lists, maps, and sets, that allow to develop generic imperative algorithms
+and use data-refinement techniques.
+<br>
+As we target Imperative HOL, our programs can be translated to
+efficiently executable code in various target languages, including
+ML, OCaml, Haskell, and Scala."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[authors.meis]
+email = "meis_email1"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,32 @@
+title = "The Theorem of Three Circles"
+date = 2021-08-21
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+The Descartes test based on Bernstein coefficients and Descartes’ rule
+of signs effectively (over-)approximates the number of real roots of a
+univariate polynomial over an interval. In this entry we formalise the
+theorem of three circles, which gives sufficient conditions for when
+the Descartes test returns 0 or 1. This is the first step for
+efficient root isolation."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thomson]
+email = "thomson_email"
+
+[authors.li]
+homepage = "li_homepage"
+
+[contributors]
+
+[notify]
+thomson = "thomson_email"
+li = "li_email"
+
+[history]
+
+[extra]

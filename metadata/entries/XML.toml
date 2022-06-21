@@ -1,0 +1,34 @@
+title = "XML"
+date = 2014-10-03
+topics = [
+  "Computer science/Functional programming",
+  "Computer science/Data structures",
+]
+abstract = """
+This entry provides an XML library for Isabelle/HOL. This includes parsing
+and pretty printing of XML trees as well as combinators for transforming XML
+trees into arbitrary user-defined data. The main contribution of this entry is
+an interface (fit for code generation) that allows for communication between
+verified programs formalized in Isabelle/HOL and the outside world via XML.
+This library was developed as part of the IsaFoR/CeTA project
+to which we refer for examples of its usage."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+sternagel = "sternagel_email"
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

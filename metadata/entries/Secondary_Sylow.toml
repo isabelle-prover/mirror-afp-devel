@@ -1,0 +1,28 @@
+title = "Secondary Sylow Theorems"
+date = 2014-01-28
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+These theories extend the existing proof of the first Sylow theorem
+(written by Florian Kammueller and L. C. Paulson) by what are often
+called the second, third and fourth Sylow theorems. These theorems
+state propositions about the number of Sylow p-subgroups of a group
+and the fact that they are conjugate to each other. The proofs make
+use of an implementation of group actions and their properties."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.raumer]
+email = "raumer_email"
+
+[contributors]
+
+[notify]
+raumer = "raumer_email"
+
+[history]
+
+[extra]

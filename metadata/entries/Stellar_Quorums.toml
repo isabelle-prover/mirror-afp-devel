@@ -1,0 +1,25 @@
+title = "Stellar Quorum Systems"
+date = 2019-08-01
+topics = [
+  "Computer science/Algorithms/Distributed",
+]
+abstract = """
+We formalize the static properties of personal Byzantine quorum
+systems (PBQSs) and Stellar quorum systems, as described in the paper
+``Stellar Consensus by Reduction'' (to appear at DISC 2019)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.losa]
+email = "losa_email1"
+
+[contributors]
+
+[notify]
+losa = "losa_email1"
+
+[history]
+
+[extra]

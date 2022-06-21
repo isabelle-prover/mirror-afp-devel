@@ -1,0 +1,56 @@
+title = "Multi-Head Monitoring of Metric Dynamic Logic"
+date = 2022-02-13
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+<p>Runtime monitoring (or runtime verification) is an approach to
+checking compliance of a system's execution with a specification
+(e.g., a temporal formula). The system's execution is logged into a
+<i>trace</i>&mdash;a sequence of time-points, each consisting of a
+time-stamp and observed events. A <i>monitor</i> is an algorithm that
+produces <i>verdicts</i> on the satisfaction of a temporal formula on
+a trace.</p>
+<p>We formalize the time-stamps as an abstract algebraic structure
+satisfying certain assumptions. Instances of this structure include
+natural numbers, real numbers, and lexicographic combinations of
+them. We also include the formalization of a conversion from the
+abstract time domain introduced by Koymans (1990) to our
+time-stamps.</p>
+<p>We formalize a monitoring algorithm for metric dynamic logic, an
+extension of metric temporal logic with regular expressions. The
+monitor computes whether a given formula is satisfied at every
+position in an input trace of time-stamped events. Our monitor
+follows the multi-head paradigm: it reads the input simultaneously at
+multiple positions and moves its reading heads asynchronously. This
+mode of operation results in unprecedented time and space complexity
+guarantees for metric dynamic logic: The monitor's amortized time
+complexity to process a time-point and the monitor's space complexity
+neither depends on the event-rate, i.e., the number of events within
+a fixed time-unit, nor on the numeric constants occurring in the
+quantitative temporal constraints in the given formula.</p>
+<p>The multi-head monitoring algorithm for metric dynamic logic is
+reported in our paper ``Multi-Head Monitoring of Metric Dynamic
+Logic'' published at ATVA 2020. We have also formalized unpublished
+specialized algorithms for the temporal operators of metric temporal
+logic.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.raszyk]
+email = "raszyk_email"
+
+[contributors]
+
+[notify]
+raszyk = "raszyk_email"
+
+[history]
+2022-02-23 = """
+added conversion from the abstract time
+domain by Koymans (1990) to our time domain; refactored assumptions
+on time domain (revision c9f94b0ae10e)<br>"""
+
+[extra]
