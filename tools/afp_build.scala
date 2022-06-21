@@ -404,7 +404,7 @@ Usage: isabelle ci_build_all
     val status_file = Path.explode("$ISABELLE_HOME/status.json").file
     val report_file = Path.explode("$ISABELLE_HOME/report.html").file
     val deps_file = Path.explode("$ISABELLE_HOME/dependencies.json").file
-    val can_send_mails = System.getProperties.containsKey("mail.smtp.host")
+    def can_send_mails = System.getProperties.containsKey("mail.smtp.host")
 
     val profile = Profile.from_host
     def pre_hook(): Result = {
