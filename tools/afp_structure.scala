@@ -57,7 +57,9 @@ class AFP_Structure private(val base_dir: Path) {
 
   def load(): List[Metadata.Entry] = {
     val authors = load_authors.map(author => author.id -> author).toMap
-    val topics = load_topics.map(topic => topic.id -> topic).toMap
+    def sub_topics(topic: Metadata.Topic): List[Metadata.Topic] =
+      topic :: topic.sub_topics.flatMap(sub_topics)
+    val topics = Utils.grouped_sorted(load_topics.flatMap(sub_topics), (t: Metadata.Topic) => t.id)
     val licenses = load_licenses.map(license => license.id -> license).toMap
     val releases = load_releases.groupBy(_.entry)
     entries.map(name => load_entry(name, authors, topics, licenses, releases))

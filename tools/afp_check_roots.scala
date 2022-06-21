@@ -4,8 +4,7 @@ package afp
 import isabelle._
 
 
-object AFP_Check_Roots
-{
+object AFP_Check_Roots {
   def print_good(string: String): Unit =
     println(Console.BOLD + Console.GREEN + string + Console.RESET)
 
@@ -15,8 +14,8 @@ object AFP_Check_Roots
   class Check[T](
     run: (Sessions.Structure, List[String]) => List[T],
     failure_msg: String,
-    failure_format: T => String)
-  {
+    failure_format: T => String
+  ) {
     def apply(tree: Sessions.Structure, selected: List[String]): Boolean =
       run(tree, selected) match {
         case Nil =>
@@ -119,36 +118,29 @@ object AFP_Check_Roots
       check_presence)
   }
 
-  def afp_check_roots(afp_dir: Path, excludes: List[String]): Unit =
-  {
+  def afp_check_roots(afp_dir: Path, excludes: List[String]): Unit = {
     val full_tree = Sessions.load_structure(Options.init(), Nil, List(afp_dir))
     val selected = full_tree.build_selection(Sessions.Selection.empty)
     val checks = afp_checks(afp_dir, excludes)
 
     val bad = checks.exists(check => !check(full_tree, selected))
 
-    if (bad)
-    {
+    if (bad) {
       print_bad("Errors found.")
       System.exit(1)
     }
-    else
-    {
+    else {
       print_good(s"${selected.length} sessions have been checked")
       print_good(s"${checks.length} checks have found no errors")
     }
   }
 
-  val isabelle_tool =
-    Isabelle_Tool(
-      "afp_check_roots",
-      "check ROOT files of AFP sessions",
-      Scala_Project.here,
-      args => {
-        var excludes = List("ROOTS", "LICENSE", "LICENSE.LGPL", ".DS_Store", "etc")
+  val isabelle_tool = Isabelle_Tool("afp_check_roots", "check ROOT files of AFP sessions",
+    Scala_Project.here,
+    { args =>
+      var excludes = List("ROOTS", "LICENSE", "LICENSE.LGPL", ".DS_Store", "etc")
 
-        val getopts = Getopts(
-          """
+      val getopts = Getopts("""
 Usage: isabelle afp_check_roots [OPTIONS]
 
   Options are:
@@ -157,14 +149,12 @@ Usage: isabelle afp_check_roots [OPTIONS]
 
   Check ROOT files of AFP sessions.
 """,
-          "x:" -> (arg => excludes ::= arg)
-        )
+        "x:" -> (arg => excludes ::= arg))
 
-        getopts(args)
+      getopts(args)
 
-        val afp_dir = Path.explode("$AFP").expand
+      val afp_dir = Path.explode("$AFP").expand
 
-        afp_check_roots(afp_dir, excludes)
-      }
-    )
+      afp_check_roots(afp_dir, excludes)
+    })
 }
