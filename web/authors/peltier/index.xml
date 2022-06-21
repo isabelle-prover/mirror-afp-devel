@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>peltier on Archive of Formal Proofs</title>
+    <link>/authors/peltier/</link>
+    <description>Recent content in peltier on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 06 Sep 2016 00:00:00 +0000</lastBuildDate><atom:link href="/authors/peltier/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Variant of the Superposition Calculus</title>
+      <link>/entries/SuperCalc.html</link>
+      <pubDate>Tue, 06 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SuperCalc.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Propositional Resolution and Prime Implicates Generation</title>
+      <link>/entries/PropResPI.html</link>
+      <pubDate>Fri, 11 Mar 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/PropResPI.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

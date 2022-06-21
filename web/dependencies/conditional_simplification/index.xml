@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Conditional_Simplification on Archive of Formal Proofs</title>
+    <link>/dependencies/conditional_simplification/</link>
+    <description>Recent content in Conditional_Simplification on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 06 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/conditional_simplification/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories</title>
+      <link>/entries/CZH_Foundations.html</link>
+      <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CZH_Foundations.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ullrich on Archive of Formal Proofs</title>
+    <link>/authors/ullrich/</link>
+    <description>Recent content in ullrich on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 05 Feb 2016 00:00:00 +0000</lastBuildDate><atom:link href="/authors/ullrich/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Verified Construction of Static Single Assignment Form</title>
+      <link>/entries/Formal_SSA.html</link>
+      <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Formal_SSA.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

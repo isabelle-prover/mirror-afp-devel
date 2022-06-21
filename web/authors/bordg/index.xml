@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bordg on Archive of Formal Proofs</title>
+    <link>/authors/bordg/</link>
+    <description>Recent content in bordg on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 29 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/bordg/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
+      <link>/entries/Grothendieck_Schemes.html</link>
+      <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Grothendieck_Schemes.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
+      <link>/entries/Isabelle_Marries_Dirac.html</link>
+      <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Isabelle_Marries_Dirac.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Projective Geometry</title>
+      <link>/entries/Projective_Geometry.html</link>
+      <pubDate>Thu, 14 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Projective_Geometry.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Localization of a Commutative Ring</title>
+      <link>/entries/Localization_Ring.html</link>
+      <pubDate>Thu, 14 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Localization_Ring.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

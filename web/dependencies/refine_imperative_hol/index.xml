@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Refine_Imperative_HOL on Archive of Formal Proofs</title>
+    <link>/dependencies/refine_imperative_hol/</link>
+    <description>Recent content in Refine_Imperative_HOL on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 24 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/refine_imperative_hol/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Verified Imperative Implementation of B-Trees</title>
+      <link>/entries/BTree.html</link>
+      <pubDate>Wed, 24 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/BTree.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
+      <link>/entries/Kruskal.html</link>
+      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Kruskal.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
+      <link>/entries/Flow_Networks.html</link>
+      <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Flow_Networks.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
+      <link>/entries/Floyd_Warshall.html</link>
+      <pubDate>Mon, 08 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Floyd_Warshall.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Imperative Refinement Framework</title>
+      <link>/entries/Refine_Imperative_HOL.html</link>
+      <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Refine_Imperative_HOL.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

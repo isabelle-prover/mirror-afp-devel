@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Deriving on Archive of Formal Proofs</title>
+    <link>/dependencies/deriving/</link>
+    <description>Recent content in Deriving on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 23 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/deriving/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>van Emde Boas Trees</title>
+      <link>/entries/Van_Emde_Boas_Trees.html</link>
+      <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Van_Emde_Boas_Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Compositional and Unified Translation of LTL into ω-Automata</title>
+      <link>/entries/LTL_Master_Theorem.html</link>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LTL_Master_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gröbner Bases Theory</title>
+      <link>/entries/Groebner_Bases.html</link>
+      <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Groebner_Bases.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Derivatives of Logical Formulas</title>
+      <link>/entries/Formula_Derivatives.html</link>
+      <pubDate>Thu, 28 May 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Formula_Derivatives.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Haskell&#39;s Show Class in Isabelle/HOL</title>
+      <link>/entries/Show.html</link>
+      <pubDate>Tue, 29 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Show.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions</title>
+      <link>/entries/MSO_Regex_Equivalence.html</link>
+      <pubDate>Thu, 12 Jun 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MSO_Regex_Equivalence.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The CAVA Automata Library</title>
+      <link>/entries/CAVA_Automata.html</link>
+      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CAVA_Automata.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Affine Arithmetic</title>
+      <link>/entries/Affine_Arithmetic.html</link>
+      <pubDate>Fri, 07 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Affine_Arithmetic.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Implementing field extensions of the form Q[sqrt(b)]</title>
+      <link>/entries/Real_Impl.html</link>
+      <pubDate>Thu, 06 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Real_Impl.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Light-weight Containers</title>
+      <link>/entries/Containers.html</link>
+      <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Containers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Generating linear orders for datatypes</title>
+      <link>/entries/Datatype_Order_Generator.html</link>
+      <pubDate>Tue, 07 Aug 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Datatype_Order_Generator.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ordinary Differential Equations</title>
+      <link>/entries/Ordinary_Differential_Equations.html</link>
+      <pubDate>Thu, 26 Apr 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Ordinary_Differential_Equations.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Prime_Number_Theorem on Archive of Formal Proofs</title>
+    <link>/dependencies/prime_number_theorem/</link>
+    <description>Recent content in Prime_Number_Theorem on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 12 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/prime_number_theorem/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Irrationality Criteria for Series by Erdős and Straus</title>
+      <link>/entries/Irrational_Series_Erdos_Straus.html</link>
+      <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Irrational_Series_Erdos_Straus.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Irrationality of ζ(3)</title>
+      <link>/entries/Zeta_3_Irrational.html</link>
+      <pubDate>Fri, 27 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Zeta_3_Irrational.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Transcendence of Certain Infinite Series</title>
+      <link>/entries/Transcendence_Series_Hancl_Rucki.html</link>
+      <pubDate>Wed, 27 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transcendence_Series_Hancl_Rucki.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Elementary Facts About the Distribution of Primes</title>
+      <link>/entries/Prime_Distribution_Elementary.html</link>
+      <pubDate>Thu, 21 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Prime_Distribution_Elementary.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

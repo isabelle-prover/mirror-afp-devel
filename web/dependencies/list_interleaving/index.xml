@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>List_Interleaving on Archive of Formal Proofs</title>
+    <link>/dependencies/list_interleaving/</link>
+    <description>Recent content in List_Interleaving on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 11 Jun 2015 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/list_interleaving/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Ipurge Unwinding Theorem for CSP Noninterference Security</title>
+      <link>/entries/Noninterference_Ipurge_Unwinding.html</link>
+      <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Ipurge_Unwinding.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

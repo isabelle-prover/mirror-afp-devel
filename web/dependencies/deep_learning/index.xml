@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Deep_Learning on Archive of Formal Proofs</title>
+    <link>/dependencies/deep_learning/</link>
+    <description>Recent content in Deep_Learning on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 24 Mar 2019 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/deep_learning/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Quantum Hoare Logic</title>
+      <link>/entries/QHLProver.html</link>
+      <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/QHLProver.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

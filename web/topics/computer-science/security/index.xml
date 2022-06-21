@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Computer science/Security on Archive of Formal Proofs</title>
+    <link>/topics/computer-science/security/</link>
+    <description>Recent content in Computer science/Security on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/computer-science/security/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Logging-independent Message Anonymity in the Relational Method</title>
+      <link>/entries/Logging_Independent_Anonymity.html</link>
+      <pubDate>Thu, 26 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Logging_Independent_Anonymity.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CoCon: A Confidentiality-Verified Conference Management System</title>
+      <link>/entries/CoCon.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CoCon.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Compositional BD Security</title>
+      <link>/entries/BD_Security_Compositional.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/BD_Security_Compositional.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CoSMed: A confidentiality-verified social media platform</title>
+      <link>/entries/CoSMed.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CoSMed.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CoSMeDis: A confidentiality-verified distributed social media platform</title>
+      <link>/entries/CoSMeDis.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CoSMeDis.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Information Flow Control via Dependency Tracking</title>
+      <link>/entries/IFC_Tracking.html</link>
+      <pubDate>Thu, 01 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IFC_Tracking.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
+      <link>/entries/Constructive_Cryptography_CM.html</link>
+      <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Constructive_Cryptography_CM.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</title>
+      <link>/entries/Relational_Method.html</link>
+      <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Method.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</title>
+      <link>/entries/Attack_Trees.html</link>
+      <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Attack_Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Automated Stateful Protocol Verification</title>
+      <link>/entries/Automated_Stateful_Protocol_Verification.html</link>
+      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Automated_Stateful_Protocol_Verification.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stateful Protocol Composition and Typing</title>
+      <link>/entries/Stateful_Protocol_Composition_and_Typing.html</link>
+      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stateful_Protocol_Composition_and_Typing.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>An Under-Approximate Relational Logic</title>
+      <link>/entries/Relational-Incorrectness-Logic.html</link>
+      <pubDate>Thu, 12 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational-Incorrectness-Logic.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sigma Protocols and Commitment Schemes</title>
+      <link>/entries/Sigma_Commit_Crypto.html</link>
+      <pubDate>Mon, 07 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Sigma_Commit_Crypto.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Generic Authenticated Data Structures</title>
+      <link>/entries/LambdaAuth.html</link>
+      <pubDate>Tue, 14 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LambdaAuth.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Multi-Party Computation</title>
+      <link>/entries/Multi_Party_Computation.html</link>
+      <pubDate>Thu, 09 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Multi_Party_Computation.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Constructive Cryptography in HOL</title>
+      <link>/entries/Constructive_Cryptography.html</link>
+      <pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Constructive_Cryptography.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</title>
+      <link>/entries/Modular_Assembly_Kit_Security.html</link>
+      <pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Modular_Assembly_Kit_Security.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Developing Security Protocols by Refinement</title>
+      <link>/entries/Security_Protocol_Refinement.html</link>
+      <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Security_Protocol_Refinement.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CryptHOL</title>
+      <link>/entries/CryptHOL.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CryptHOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Game-based cryptography in HOL</title>
+      <link>/entries/Game_Based_Crypto.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Game_Based_Crypto.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Group Law for Elliptic Curves</title>
+      <link>/entries/Elliptic_Curves_Group_Law.html</link>
+      <pubDate>Tue, 28 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Elliptic_Curves_Group_Law.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Refining Authenticated Key Agreement with Strong Adversaries</title>
+      <link>/entries/Key_Agreement_Strong_Adversaries.html</link>
+      <pubDate>Tue, 31 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Key_Agreement_Strong_Adversaries.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formal Network Models and Their Application to Firewall Policies</title>
+      <link>/entries/UPF_Firewall.html</link>
+      <pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/UPF_Firewall.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method</title>
+      <link>/entries/Password_Authentication_Protocol.html</link>
+      <pubDate>Tue, 03 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Password_Authentication_Protocol.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor</title>
+      <link>/entries/SPARCv8.html</link>
+      <pubDate>Wed, 19 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SPARCv8.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Compositional Security-Preserving Refinement for Concurrent Imperative Programs</title>
+      <link>/entries/Dependent_SIFUM_Refinement.html</link>
+      <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Dependent_SIFUM_Refinement.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Dependent Security Type System for Concurrent Imperative Programs</title>
+      <link>/entries/Dependent_SIFUM_Type_Systems.html</link>
+      <pubDate>Sat, 25 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Dependent_SIFUM_Type_Systems.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Conservation of CSP Noninterference Security under Concurrent Composition</title>
+      <link>/entries/Noninterference_Concurrent_Composition.html</link>
+      <pubDate>Mon, 13 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Concurrent_Composition.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Conservation of CSP Noninterference Security under Sequential Composition</title>
+      <link>/entries/Noninterference_Sequential_Composition.html</link>
+      <pubDate>Tue, 26 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Sequential_Composition.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Inductive Unwinding Theorem for CSP Noninterference Security</title>
+      <link>/entries/Noninterference_Inductive_Unwinding.html</link>
+      <pubDate>Tue, 18 Aug 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Inductive_Unwinding.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Generic Unwinding Theorem for CSP Noninterference Security</title>
+      <link>/entries/Noninterference_Generic_Unwinding.html</link>
+      <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Generic_Unwinding.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Ipurge Unwinding Theorem for CSP Noninterference Security</title>
+      <link>/entries/Noninterference_Ipurge_Unwinding.html</link>
+      <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Ipurge_Unwinding.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Unified Policy Framework (UPF)</title>
+      <link>/entries/UPF.html</link>
+      <pubDate>Fri, 28 Nov 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/UPF.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formal Specification of a Generic Separation Kernel</title>
+      <link>/entries/CISC-Kernel.html</link>
+      <pubDate>Fri, 18 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CISC-Kernel.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Network Security Policy Verification</title>
+      <link>/entries/Network_Security_Policy_Verification.html</link>
+      <pubDate>Fri, 04 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Network_Security_Policy_Verification.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Noninterference Security in Communicating Sequential Processes</title>
+      <link>/entries/Noninterference_CSP.html</link>
+      <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_CSP.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formalization of Assumptions and Guarantees for Compositional Noninterference</title>
+      <link>/entries/SIFUM_Type_Systems.html</link>
+      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SIFUM_Type_Systems.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formalization of Declassification with WHAT-and-WHERE-Security</title>
+      <link>/entries/WHATandWHERE_Security.html</link>
+      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/WHATandWHERE_Security.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formalization of Strong Security</title>
+      <link>/entries/Strong_Security.html</link>
+      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Strong_Security.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bounded-Deducibility Security</title>
+      <link>/entries/Bounded_Deducibility_Security.html</link>
+      <pubDate>Tue, 22 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Bounded_Deducibility_Security.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A shallow embedding of HyperCTL*</title>
+      <link>/entries/HyperCTL.html</link>
+      <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/HyperCTL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Probabilistic Noninterference</title>
+      <link>/entries/Probabilistic_Noninterference.html</link>
+      <pubDate>Tue, 11 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_Noninterference.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Compositional Properties of Crypto-Based Components</title>
+      <link>/entries/CryptoBasedCompositionalProperties.html</link>
+      <pubDate>Sat, 11 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CryptoBasedCompositionalProperties.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Possibilistic Noninterference</title>
+      <link>/entries/Possibilistic_Noninterference.html</link>
+      <pubDate>Mon, 10 Sep 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Possibilistic_Noninterference.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Inductive Study of Confidentiality</title>
+      <link>/entries/Inductive_Confidentiality.html</link>
+      <pubDate>Wed, 02 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Inductive_Confidentiality.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Information Flow Noninterference via Slicing</title>
+      <link>/entries/InformationFlowSlicing.html</link>
+      <pubDate>Tue, 23 Mar 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/InformationFlowSlicing.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Inter-Procedural Information Flow Noninterference via Slicing</title>
+      <link>/entries/InformationFlowSlicing_Inter.html</link>
+      <pubDate>Tue, 23 Mar 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/InformationFlowSlicing_Inter.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Secure information flow and program logics</title>
+      <link>/entries/SIFPL.html</link>
+      <pubDate>Mon, 10 Nov 2008 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SIFPL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Correctness Proof for the Volpano/Smith Security Typing System</title>
+      <link>/entries/VolpanoSmith.html</link>
+      <pubDate>Tue, 02 Sep 2008 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/VolpanoSmith.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hotel Key Card System</title>
+      <link>/entries/HotelKeyCards.html</link>
+      <pubDate>Sat, 09 Sep 2006 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/HotelKeyCards.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>SHA1, RSA, PSS and more</title>
+      <link>/entries/RSAPSS.html</link>
+      <pubDate>Mon, 02 May 2005 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/RSAPSS.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

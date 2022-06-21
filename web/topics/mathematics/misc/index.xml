@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mathematics/Misc on Archive of Formal Proofs</title>
+    <link>/topics/mathematics/misc/</link>
+    <description>Recent content in Mathematics/Misc on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/mathematics/misc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Selected Problems from the International Mathematical Olympiad 2019</title>
+      <link>/entries/IMO2019.html</link>
+      <pubDate>Mon, 05 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMO2019.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fun With Tilings</title>
+      <link>/entries/FunWithTilings.html</link>
+      <pubDate>Fri, 07 Nov 2008 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/FunWithTilings.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fun With Functions</title>
+      <link>/entries/FunWithFunctions.html</link>
+      <pubDate>Tue, 26 Aug 2008 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/FunWithFunctions.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hermite_Lindemann on Archive of Formal Proofs</title>
+    <link>/dependencies/hermite_lindemann/</link>
+    <description>Recent content in Hermite_Lindemann on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 08 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/hermite_lindemann/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Factorization of Polynomials with Algebraic Coefficients</title>
+      <link>/entries/Factor_Algebraic_Polynomial.html</link>
+      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Factor_Algebraic_Polynomial.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

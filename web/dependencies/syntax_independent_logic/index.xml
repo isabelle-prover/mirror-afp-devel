@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Syntax_Independent_Logic on Archive of Formal Proofs</title>
+    <link>/dependencies/syntax_independent_logic/</link>
+    <description>Recent content in Syntax_Independent_Logic on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 16 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/syntax_independent_logic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>An Abstract Formalization of G&amp;ouml;del&#39;s Incompleteness Theorems</title>
+      <link>/entries/Goedel_Incompleteness.html</link>
+      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Goedel_Incompleteness.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Robinson Arithmetic</title>
+      <link>/entries/Robinson_Arithmetic.html</link>
+      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Robinson_Arithmetic.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

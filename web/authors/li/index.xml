@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>li on Archive of Formal Proofs</title>
+    <link>/authors/li/</link>
+    <description>Recent content in li on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sat, 21 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/li/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Theorem of Three Circles</title>
+      <link>/entries/Three_Circles.html</link>
+      <pubDate>Sat, 21 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Three_Circles.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Grothendieck&#39;s Schemes in Algebraic Geometry</title>
+      <link>/entries/Grothendieck_Schemes.html</link>
+      <pubDate>Mon, 29 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Grothendieck_Schemes.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Irrationality Criteria for Series by Erdős and Straus</title>
+      <link>/entries/Irrational_Series_Erdos_Straus.html</link>
+      <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Irrational_Series_Erdos_Straus.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Transcendence of Certain Infinite Series</title>
+      <link>/entries/Transcendence_Series_Hancl_Rucki.html</link>
+      <pubDate>Wed, 27 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transcendence_Series_Hancl_Rucki.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Budan-Fourier Theorem and Counting Real Roots with Multiplicity</title>
+      <link>/entries/Budan_Fourier.html</link>
+      <pubDate>Sun, 02 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Budan_Fourier.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Irrational Rapidly Convergent Series</title>
+      <link>/entries/Irrationality_J_Hancl.html</link>
+      <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Irrationality_J_Hancl.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Count the Number of Complex Roots</title>
+      <link>/entries/Count_Complex_Roots.html</link>
+      <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Count_Complex_Roots.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Evaluate Winding Numbers through Cauchy Indices</title>
+      <link>/entries/Winding_Number_Eval.html</link>
+      <pubDate>Tue, 17 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Winding_Number_Eval.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Sturm-Tarski Theorem</title>
+      <link>/entries/Sturm_Tarski.html</link>
+      <pubDate>Fri, 19 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Sturm_Tarski.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Königsberg Bridge Problem and the Friendship Theorem</title>
+      <link>/entries/Koenigsberg_Friendship.html</link>
+      <pubDate>Fri, 19 Jul 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Koenigsberg_Friendship.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

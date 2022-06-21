@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ergodic_Theory on Archive of Formal Proofs</title>
+    <link>/dependencies/ergodic_theory/</link>
+    <description>Recent content in Ergodic_Theory on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 28 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/ergodic_theory/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Roth&#39;s Theorem on Arithmetic Progressions</title>
+      <link>/entries/Roth_Arithmetic_Progressions.html</link>
+      <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Roth_Arithmetic_Progressions.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Laws of Large Numbers</title>
+      <link>/entries/Laws_of_Large_Numbers.html</link>
+      <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Laws_of_Large_Numbers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gromov Hyperbolicity</title>
+      <link>/entries/Gromov_Hyperbolicity.html</link>
+      <pubDate>Tue, 16 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Gromov_Hyperbolicity.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lp spaces</title>
+      <link>/entries/Lp.html</link>
+      <pubDate>Wed, 05 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Lp.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

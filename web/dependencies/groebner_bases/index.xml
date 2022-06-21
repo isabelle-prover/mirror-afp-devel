@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Groebner_Bases on Archive of Formal Proofs</title>
+    <link>/dependencies/groebner_bases/</link>
+    <description>Recent content in Groebner_Bases on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 21 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/groebner_bases/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
+      <link>/entries/Fishers_Inequality.html</link>
+      <pubDate>Thu, 21 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Fishers_Inequality.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hilbert&#39;s Nullstellensatz</title>
+      <link>/entries/Nullstellensatz.html</link>
+      <pubDate>Sun, 16 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Nullstellensatz.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds</title>
+      <link>/entries/Groebner_Macaulay.html</link>
+      <pubDate>Sat, 15 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Groebner_Macaulay.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Signature-Based Gröbner Basis Algorithms</title>
+      <link>/entries/Signature_Groebner.html</link>
+      <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Signature_Groebner.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

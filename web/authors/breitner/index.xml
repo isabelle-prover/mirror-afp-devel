@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>breitner on Archive of Formal Proofs</title>
+    <link>/authors/breitner/</link>
+    <description>Recent content in breitner on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sat, 15 Jul 2017 00:00:00 +0000</lastBuildDate><atom:link href="/authors/breitner/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>HOLCF-Prelude</title>
+      <link>/entries/HOLCF-Prelude.html</link>
+      <pubDate>Sat, 15 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/HOLCF-Prelude.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Surprise Paradox</title>
+      <link>/entries/Surprise_Paradox.html</link>
+      <pubDate>Sun, 17 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Surprise_Paradox.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The meta theory of the Incredible Proof Machine</title>
+      <link>/entries/Incredible_Proof_Machine.html</link>
+      <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Incredible_Proof_Machine.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Safety of Call Arity</title>
+      <link>/entries/Call_Arity.html</link>
+      <pubDate>Fri, 20 Feb 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Call_Arity.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Correctness of Launchbury&#39;s Natural Semantics for Lazy Evaluation</title>
+      <link>/entries/Launchbury.html</link>
+      <pubDate>Thu, 31 Jan 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Launchbury.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The General Triangle Is Unique</title>
+      <link>/entries/General-Triangle.html</link>
+      <pubDate>Fri, 01 Apr 2011 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/General-Triangle.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Shivers&#39; Control Flow Analysis</title>
+      <link>/entries/Shivers-CFA.html</link>
+      <pubDate>Tue, 16 Nov 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Shivers-CFA.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Free Groups</title>
+      <link>/entries/Free-Groups.html</link>
+      <pubDate>Thu, 24 Jun 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Free-Groups.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

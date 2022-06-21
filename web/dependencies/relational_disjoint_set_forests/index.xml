@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Relational_Disjoint_Set_Forests on Archive of Formal Proofs</title>
+    <link>/dependencies/relational_disjoint_set_forests/</link>
+    <description>Recent content in Relational_Disjoint_Set_Forests on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 08 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/relational_disjoint_set_forests/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Relational Minimum Spanning Tree Algorithms</title>
+      <link>/entries/Relational_Minimum_Spanning_Trees.html</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Minimum_Spanning_Trees.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

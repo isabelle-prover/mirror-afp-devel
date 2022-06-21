@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>blanchette on Archive of Formal Proofs</title>
+    <link>/authors/blanchette/</link>
+    <description>Recent content in blanchette on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 25 Aug 2020 00:00:00 +0000</lastBuildDate><atom:link href="/authors/blanchette/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
+      <link>/entries/Saturation_Framework_Extensions.html</link>
+      <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Saturation_Framework_Extensions.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+      <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
+      <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+      <link>/entries/Ordered_Resolution_Prover.html</link>
+      <pubDate>Thu, 18 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Ordered_Resolution_Prover.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Operations on Bounded Natural Functors</title>
+      <link>/entries/BNF_Operations.html</link>
+      <pubDate>Tue, 19 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/BNF_Operations.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Abstract Soundness</title>
+      <link>/entries/Abstract_Soundness.html</link>
+      <pubDate>Fri, 10 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Abstract_Soundness.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</title>
+      <link>/entries/Lambda_Free_KBOs.html</link>
+      <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Lambda_Free_KBOs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals</title>
+      <link>/entries/Nested_Multisets_Ordinals.html</link>
+      <pubDate>Sat, 12 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Nested_Multisets_Ordinals.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms</title>
+      <link>/entries/Lambda_Free_RPOs.html</link>
+      <pubDate>Fri, 23 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Lambda_Free_RPOs.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Abstract Completeness</title>
+      <link>/entries/Abstract_Completeness.html</link>
+      <pubDate>Wed, 16 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Abstract_Completeness.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sound and Complete Sort Encodings for First-Order Logic</title>
+      <link>/entries/Sort_Encodings.html</link>
+      <pubDate>Thu, 27 Jun 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Sort_Encodings.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Textbook Proof of Huffman&#39;s Algorithm</title>
+      <link>/entries/Huffman.html</link>
+      <pubDate>Wed, 15 Oct 2008 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Huffman.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

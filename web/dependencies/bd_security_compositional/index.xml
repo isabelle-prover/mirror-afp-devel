@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>BD_Security_Compositional on Archive of Formal Proofs</title>
+    <link>/dependencies/bd_security_compositional/</link>
+    <description>Recent content in BD_Security_Compositional on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 16 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/bd_security_compositional/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CoSMeDis: A confidentiality-verified distributed social media platform</title>
+      <link>/entries/CoSMeDis.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CoSMeDis.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

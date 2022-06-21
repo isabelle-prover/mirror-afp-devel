@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>siek on Archive of Formal Proofs</title>
+    <link>/authors/siek/</link>
+    <description>Recent content in siek on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 21 Jul 2017 00:00:00 +0000</lastBuildDate><atom:link href="/authors/siek/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Declarative Semantics for Functional Languages</title>
+      <link>/entries/Decl_Sem_Fun_PL.html</link>
+      <pubDate>Fri, 21 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Decl_Sem_Fun_PL.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Graph_Theory on Archive of Formal Proofs</title>
+    <link>/dependencies/graph_theory/</link>
+    <description>Recent content in Graph_Theory on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 13 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/graph_theory/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Combinatorial Design Theory</title>
+      <link>/entries/Design_Theory.html</link>
+      <pubDate>Fri, 13 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Design_Theory.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Planarity Certificates</title>
+      <link>/entries/Planarity_Certificates.html</link>
+      <pubDate>Wed, 11 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Planarity_Certificates.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Positional Determinacy of Parity Games</title>
+      <link>/entries/Parity_Game.html</link>
+      <pubDate>Mon, 02 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Parity_Game.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>An Axiomatic Characterization of the Single-Source Shortest Path Problem</title>
+      <link>/entries/ShortestPath.html</link>
+      <pubDate>Wed, 22 May 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ShortestPath.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

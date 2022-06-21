@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hybrid_Systems_VCs on Archive of Formal Proofs</title>
+    <link>/dependencies/hybrid_systems_vcs/</link>
+    <description>Recent content in Hybrid_Systems_VCs on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 19 Apr 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/hybrid_systems_vcs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Matrices for ODEs</title>
+      <link>/entries/Matrices_for_ODEs.html</link>
+      <pubDate>Sun, 19 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Matrices_for_ODEs.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

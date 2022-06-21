@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fleuriot on Archive of Formal Proofs</title>
+    <link>/authors/fleuriot/</link>
+    <description>Recent content in fleuriot on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 24 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/fleuriot/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Constructing the Reals as Dedekind Cuts of Rationals</title>
+      <link>/entries/Dedekind_Real.html</link>
+      <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Dedekind_Real.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hyperdual Numbers and Forward Differentiation</title>
+      <link>/entries/Hyperdual.html</link>
+      <pubDate>Fri, 31 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Hyperdual.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Real Exponents as the Limits of Sequences of Rational Exponents</title>
+      <link>/entries/Real_Power.html</link>
+      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Real_Power.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Schutz&#39; Independent Axioms for Minkowski Spacetime</title>
+      <link>/entries/Schutz_Spacetime.html</link>
+      <pubDate>Tue, 27 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Schutz_Spacetime.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

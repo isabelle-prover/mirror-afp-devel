@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>sickert on Archive of Formal Proofs</title>
+    <link>/authors/sickert/</link>
+    <description>Recent content in sickert on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 08 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="/authors/sickert/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation</title>
+      <link>/entries/LTL_Normal_Form.html</link>
+      <pubDate>Fri, 08 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LTL_Normal_Form.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Compositional and Unified Translation of LTL into ω-Automata</title>
+      <link>/entries/LTL_Master_Theorem.html</link>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LTL_Master_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linear Temporal Logic</title>
+      <link>/entries/LTL.html</link>
+      <pubDate>Tue, 01 Mar 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LTL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Automata</title>
+      <link>/entries/LTL_to_DRA.html</link>
+      <pubDate>Fri, 04 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LTL_to_DRA.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

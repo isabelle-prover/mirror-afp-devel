@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Logic/Set theory on Archive of Formal Proofs</title>
+    <link>/topics/logic/set-theory/</link>
+    <description>Recent content in Logic/Set theory on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/logic/set-theory/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Independence of the Continuum Hypothesis in Isabelle/ZF</title>
+      <link>/entries/Independence_CH.html</link>
+      <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Independence_CH.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Transitive Models of Fragments of ZFC</title>
+      <link>/entries/Transitive_Models.html</link>
+      <pubDate>Thu, 03 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transitive_Models.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Wetzel&#39;s Problem and the Continuum Hypothesis</title>
+      <link>/entries/Wetzels_Problem.html</link>
+      <pubDate>Fri, 18 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Wetzels_Problem.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories</title>
+      <link>/entries/CZH_Foundations.html</link>
+      <pubDate>Mon, 06 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CZH_Foundations.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cofinality and the Delta System Lemma</title>
+      <link>/entries/Delta_System_Lemma.html</link>
+      <pubDate>Sun, 27 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Delta_System_Lemma.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ordinal Partitions</title>
+      <link>/entries/Ordinal_Partitions.html</link>
+      <pubDate>Mon, 03 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Ordinal_Partitions.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Recursion Theorem in ZF</title>
+      <link>/entries/Recursion-Addition.html</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Recursion-Addition.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Forcing in Isabelle/ZF</title>
+      <link>/entries/Forcing.html</link>
+      <pubDate>Wed, 06 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Forcing.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Zermelo Fraenkel Set Theory in Higher-Order Logic</title>
+      <link>/entries/ZFC_in_HOL.html</link>
+      <pubDate>Thu, 24 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ZFC_in_HOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Hereditarily Finite Sets</title>
+      <link>/entries/HereditarilyFinite.html</link>
+      <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/HereditarilyFinite.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ordinals and Cardinals</title>
+      <link>/entries/Ordinals_and_Cardinals.html</link>
+      <pubDate>Tue, 01 Sep 2009 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Ordinals_and_Cardinals.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Countable Ordinals</title>
+      <link>/entries/Ordinal.html</link>
+      <pubDate>Fri, 11 Nov 2005 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Ordinal.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

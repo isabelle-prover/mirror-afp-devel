@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kaliszyk on Archive of Formal Proofs</title>
+    <link>/authors/kaliszyk/</link>
+    <description>Recent content in kaliszyk on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 06 Aug 2019 00:00:00 +0000</lastBuildDate><atom:link href="/authors/kaliszyk/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linear Programming</title>
+      <link>/entries/Linear_Programming.html</link>
+      <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Linear_Programming.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Von-Neumann-Morgenstern Utility Theorem</title>
+      <link>/entries/Neumann_Morgenstern_Utility.html</link>
+      <pubDate>Wed, 04 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Neumann_Morgenstern_Utility.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Microeconomics and the First Welfare Theorem</title>
+      <link>/entries/First_Welfare_Theorem.html</link>
+      <pubDate>Fri, 01 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/First_Welfare_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Nominal 2</title>
+      <link>/entries/Nominal2.html</link>
+      <pubDate>Thu, 21 Feb 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Nominal2.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

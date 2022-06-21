@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Jordan_Normal_Form on Archive of Formal Proofs</title>
+    <link>/dependencies/jordan_normal_form/</link>
+    <description>Recent content in Jordan_Normal_Form on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 29 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/jordan_normal_form/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Simplicial Complexes and Boolean functions</title>
+      <link>/entries/Simplicial_complexes_and_boolean_functions.html</link>
+      <pubDate>Mon, 29 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Simplicial_complexes_and_boolean_functions.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Complex Bounded Operators</title>
+      <link>/entries/Complex_Bounded_Operators.html</link>
+      <pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Complex_Bounded_Operators.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+      <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+      <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
+      <link>/entries/Isabelle_Marries_Dirac.html</link>
+      <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Isabelle_Marries_Dirac.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linear Programming</title>
+      <link>/entries/Linear_Programming.html</link>
+      <pubDate>Tue, 06 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Linear_Programming.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Quantum Hoare Logic</title>
+      <link>/entries/QHLProver.html</link>
+      <pubDate>Sun, 24 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/QHLProver.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Farkas&#39; Lemma and Motzkin&#39;s Transposition Theorem</title>
+      <link>/entries/Farkas.html</link>
+      <pubDate>Thu, 17 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Farkas.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
+      <link>/entries/Stochastic_Matrices.html</link>
+      <pubDate>Wed, 22 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stochastic_Matrices.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Subresultants</title>
+      <link>/entries/Subresultants.html</link>
+      <pubDate>Thu, 06 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Subresultants.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Expressiveness of Deep Learning</title>
+      <link>/entries/Deep_Learning.html</link>
+      <pubDate>Thu, 10 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Deep_Learning.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Perron-Frobenius Theorem for Spectral Radius Analysis</title>
+      <link>/entries/Perron_Frobenius.html</link>
+      <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Perron_Frobenius.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gröbner Bases Theory</title>
+      <link>/entries/Groebner_Bases.html</link>
+      <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Groebner_Bases.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Automatic_Refinement on Archive of Formal Proofs</title>
+    <link>/dependencies/automatic_refinement/</link>
+    <description>Recent content in Automatic_Refinement on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 23 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/automatic_refinement/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>van Emde Boas Trees</title>
+      <link>/entries/Van_Emde_Boas_Trees.html</link>
+      <pubDate>Tue, 23 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Van_Emde_Boas_Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Dictionary Construction</title>
+      <link>/entries/Dict_Construction.html</link>
+      <pubDate>Wed, 24 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Dict_Construction.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>IP Addresses</title>
+      <link>/entries/IP_Addresses.html</link>
+      <pubDate>Tue, 28 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IP_Addresses.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
+      <link>/entries/ROBDD.html</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ROBDD.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verification of the UpDown Scheme</title>
+      <link>/entries/UpDown_Scheme.html</link>
+      <pubDate>Wed, 28 Jan 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/UpDown_Scheme.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Network Security Policy Verification</title>
+      <link>/entries/Network_Security_Policy_Verification.html</link>
+      <pubDate>Fri, 04 Jul 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Network_Security_Policy_Verification.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Light-weight Containers</title>
+      <link>/entries/Containers.html</link>
+      <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Containers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Separation Logic Framework for Imperative HOL</title>
+      <link>/entries/Separation_Logic_Imperative_HOL.html</link>
+      <pubDate>Wed, 14 Nov 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Separation_Logic_Imperative_HOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Refinement for Monadic Programs</title>
+      <link>/entries/Refine_Monadic.html</link>
+      <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Refine_Monadic.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Jinja with Threads</title>
+      <link>/entries/JinjaThreads.html</link>
+      <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/JinjaThreads.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

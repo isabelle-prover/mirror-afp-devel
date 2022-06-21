@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Computer science/Algorithms/Graph on Archive of Formal Proofs</title>
+    <link>/topics/computer-science/algorithms/graph/</link>
+    <description>Recent content in Computer science/Algorithms/Graph on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/computer-science/algorithms/graph/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Relational Minimum Spanning Tree Algorithms</title>
+      <link>/entries/Relational_Minimum_Spanning_Trees.html</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Minimum_Spanning_Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
+      <link>/entries/Prim_Dijkstra_Simple.html</link>
+      <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Prim_Dijkstra_Simple.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
+      <link>/entries/Kruskal.html</link>
+      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Kruskal.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalizing Push-Relabel Algorithms</title>
+      <link>/entries/Prpu_Maxflow.html</link>
+      <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Prpu_Maxflow.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
+      <link>/entries/Floyd_Warshall.html</link>
+      <pubDate>Mon, 08 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Floyd_Warshall.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalizing the Edmonds-Karp Algorithm</title>
+      <link>/entries/EdmondsKarp_Maxflow.html</link>
+      <pubDate>Fri, 12 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/EdmondsKarp_Maxflow.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Framework for Verifying Depth-First Search Algorithms</title>
+      <link>/entries/DFS_Framework.html</link>
+      <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/DFS_Framework.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
+      <link>/entries/Gabow_SCC.html</link>
+      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Gabow_SCC.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Transitive closure according to Roy-Floyd-Warshall</title>
+      <link>/entries/Roy_Floyd_Warshall.html</link>
+      <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Roy_Floyd_Warshall.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Transitive Closures</title>
+      <link>/entries/Transitive-Closure-II.html</link>
+      <pubDate>Wed, 29 Feb 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transitive-Closure-II.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Dijkstra&#39;s Shortest Path Algorithm</title>
+      <link>/entries/Dijkstra_Shortest_Path.html</link>
+      <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Dijkstra_Shortest_Path.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Transitive Closures of Finite Relations</title>
+      <link>/entries/Transitive-Closure.html</link>
+      <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transitive-Closure.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</title>
+      <link>/entries/GraphMarkingIBP.html</link>
+      <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/GraphMarkingIBP.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Depth First Search</title>
+      <link>/entries/Depth-First-Search.html</link>
+      <pubDate>Thu, 24 Jun 2004 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Depth-First-Search.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

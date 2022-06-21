@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Amortized_Complexity on Archive of Formal Proofs</title>
+    <link>/dependencies/amortized_complexity/</link>
+    <description>Recent content in Amortized_Complexity on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 20 Aug 2017 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/amortized_complexity/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Root-Balanced Tree</title>
+      <link>/entries/Root_Balanced_Tree.html</link>
+      <pubDate>Sun, 20 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Root_Balanced_Tree.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Parameterized Dynamic Tables</title>
+      <link>/entries/Dynamic_Tables.html</link>
+      <pubDate>Sun, 07 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Dynamic_Tables.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

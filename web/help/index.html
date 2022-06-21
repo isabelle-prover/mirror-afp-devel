@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Help - Archive of Formal Proofs</title><meta name="description" content="A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle."><meta property="og:title" content="Help" />
+<meta property="og:description" content="This section focuses on the Archive of Formal Proofs. For help with Isabelle, see the Isabelle Wiki and Documentation
+Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you can include its articles and theories in your own developments. If you would like to make your work available to others without having to include the AFP articles you depend on, here is how to do it.
+From Isabelle2021 on, the recommended method for making the whole AFP available to Isabelle is the isabelle components -u command." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/help/" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="" />
+
+<meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Help"/>
+<meta name="twitter:description" content="This section focuses on the Archive of Formal Proofs. For help with Isabelle, see the Isabelle Wiki and Documentation
+Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you can include its articles and theories in your own developments. If you would like to make your work available to others without having to include the AFP articles you depend on, here is how to do it.
+From Isabelle2021 on, the recommended method for making the whole AFP available to Isabelle is the isabelle components -u command."/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon"><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li class="active" ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content '><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>H</span>elp</h1>
+  <div>
+    
+    
+  </div>
+</header><div><div>
+  <p>This section focuses on the Archive of Formal Proofs. For help with Isabelle, see the <a href="https://isabelle.in.tum.de/community/Main_Page">Isabelle Wiki</a> and <a href="https://isabelle.in.tum.de/documentation.html">Documentation</a></p>
+<h2 id="referring-to-afp-entries-in-isabellejedit">Referring to AFP Entries in Isabelle/JEdit</h2>
+<p>Once you have downloaded the AFP, you can include its articles and theories in your own developments. If you would like to make your work available to others <em>without</em> having to include the AFP articles you depend on, here is how to do it.</p>
+<p>From Isabelle2021 on, the recommended method for making the whole AFP available to Isabelle is the <code>isabelle components -u</code> command.</p>
+<h4 id="linux-and-mac">Linux and Mac</h4>
+<p>Assuming you have downloaded and unzipped the afp to <code>/home/myself/afp</code>, run:</p>
+<pre><code>isabelle components -u /home/myself/afp
+</code></pre>
+<h4 id="windows">Windows</h4>
+<p>If the AFP is in <code>C:\afp</code>, run the following command in a Cygwin terminal:</p>
+<pre><code>isabelle components -u /cygdrive/c/afp
+</code></pre>
+<h4 id="use">Use</h4>
+<p>You can now refer to article <code>ABC</code> from the AFP in another theory via:</p>
+<pre><code>imports &quot;ABC.Some_ABC_Theory&quot;
+</code></pre>
+<p>This allows you to distribute your material separately from any AFP theories. Users of your distribution also need to install the AFP in the above manner.</p>
+<h2 id="citing-entries">Citing Entries</h2>
+<p>The following gives an example of the preferred way for citing entries in the AFP:</p>
+<blockquote>
+<p>M. Jaskelioff and S. Merz, Proving the Correctness of Disk Paxos. <em>Archive of Formal Proofs</em>, June 2005, <a href="https://isa-afp.org/entries/DiskPaxos.html">https://isa-afp.org/entries/DiskPaxos.html</a>, Formal proof development.</p>
+</blockquote>
+<p>The bibtext entry for this would be:</p>
+<pre tabindex="0"><code>@article{Jaskelioff-Merz-AFP05,
+  author =   {Mauro Jaskelioff and Stephan Merz},
+  title =    {Proving the Correctness of Disk Paxos},
+  journal =  {Archive of Formal Proofs},
+  month =    Jun,
+  year =     2005,
+  note =     {\\url{https://isa-afp.org/entries/DiskPaxos.html}, Formal proof development},
+  ISSN =     {2150-914x}
+}
+</code></pre><h2 id="mailing-lists">Mailing Lists</h2>
+<ul>
+<li>
+<p><a href="mailto:isabelle-users@cl.cam.ac.uk">isabelle-users@cl.cam.ac.uk</a> provides a forum for Isabelle users to discuss problems, exchange information, and make announcements. Users of official Isabelle releases should subscribe or see the archive.</p>
+</li>
+<li>
+<p><a href="mailto:isabelle-dev@in.tum.de">isabelle-dev@in.tum.de</a> covers the Isabelle development process, including intermediate repository versions, and administrative issues concerning the website or testing infrastructure. Early adopters of development snapshots or repository versions should subscribe or see the archive (also available at mail-archive.com).</p>
+</li>
+</ul>
+
+</div>
+    </div>
+  </div>
+</body>
+
+</html>

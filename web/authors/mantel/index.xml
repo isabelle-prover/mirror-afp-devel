@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mantel on Archive of Formal Proofs</title>
+    <link>/authors/mantel/</link>
+    <description>Recent content in mantel on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 07 May 2018 00:00:00 +0000</lastBuildDate><atom:link href="/authors/mantel/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</title>
+      <link>/entries/Modular_Assembly_Kit_Security.html</link>
+      <pubDate>Mon, 07 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Modular_Assembly_Kit_Security.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formalization of Assumptions and Guarantees for Compositional Noninterference</title>
+      <link>/entries/SIFUM_Type_Systems.html</link>
+      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SIFUM_Type_Systems.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formalization of Declassification with WHAT-and-WHERE-Security</title>
+      <link>/entries/WHATandWHERE_Security.html</link>
+      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/WHATandWHERE_Security.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formalization of Strong Security</title>
+      <link>/entries/Strong_Security.html</link>
+      <pubDate>Wed, 23 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Strong_Security.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
