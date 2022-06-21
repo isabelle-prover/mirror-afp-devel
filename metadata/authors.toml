@@ -1308,11 +1308,7 @@ name = "Tobias Nipkow"
 nipkow_email = "nipkow@in.tum.de"
 
 [nipkow.homepages]
-nipkow_homepage = "http://www21.in.tum.de/~nipkow"
-nipkow_homepage1 = "http://www.in.tum.de/~nipkow/"
-nipkow_homepage2 = "http://www.in.tum.de/~nipkow"
-nipkow_homepage3 = "https://www.in.tum.de/~nipkow"
-nipkow_homepage4 = "http://www21.in.tum.de/~nipkow/"
+nipkow_homepage = "https://www.in.tum.de/~nipkow"
 
 [divason]
 name = "Jose Divasón"
