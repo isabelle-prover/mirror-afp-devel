@@ -1,0 +1,45 @@
+title = "A Verified Compiler for Probability Density Functions"
+date = 2014-10-09
+topics = [
+  "Mathematics/Probability theory",
+  "Computer science/Programming languages/Compiling",
+]
+abstract = """
+<a href=\"https://doi.org/10.1007/978-3-642-36742-7_35\">Bhat et al. [TACAS 2013]</a> developed an inductive compiler that computes
+density functions for probability spaces described by programs in a
+probabilistic functional language. In this work, we implement such a
+compiler for a modified version of this language within the theorem prover
+Isabelle and give a formal proof of its soundness w.r.t. the semantics of
+the source and target language.  Together with Isabelle's code generation
+for inductive predicates, this yields a fully verified, executable density
+compiler. The proof is done in two steps: First, an abstract compiler
+working with abstract functions modelled directly in the theorem prover's
+logic is defined and proved sound.  Then, this compiler is refined to a
+concrete version that returns a target-language expression.
+<p>
+An article with the same title and authors is published in the proceedings
+of ESOP 2015.
+A detailed presentation of this work can be found in the first author's
+master's thesis."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[authors.hoelzl]
+homepage = "hoelzl_homepage"
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+hoelzl = "hoelzl_email"
+
+[history]
+
+[extra]

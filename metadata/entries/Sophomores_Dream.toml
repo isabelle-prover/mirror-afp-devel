@@ -1,0 +1,27 @@
+title = "The Sophomore's Dream"
+date = 2022-04-10
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This article provides a brief formalisation of the two
+equations known as the <em>Sophomore's Dream</em>,
+first discovered by Johann Bernoulli in 1697:</p> \\[\\int_0^1
+x^{-x}\\,\\text{d}x = \\sum_{n=1}^\\infty n^{-n} \\quad\\text{and}\\quad
+\\int_0^1 x^x\\,\\text{d}x = -\\sum_{n=1}^\\infty (-n)^{-n}\\]"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

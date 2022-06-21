@@ -1,0 +1,39 @@
+title = "POSIX Lexing with Derivatives of Regular Expressions"
+date = 2016-05-24
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+Brzozowski introduced the notion of derivatives for regular
+expressions. They can be used for a very simple regular expression
+matching algorithm. Sulzmann and Lu cleverly extended this algorithm
+in order to deal with POSIX matching, which is the underlying
+disambiguation strategy for regular expressions needed in lexers. In
+this entry we give our inductive definition of what a POSIX value is
+and show (i) that such a value is unique (for given regular expression
+and string being matched) and (ii) that Sulzmann and Lu's algorithm
+always generates such a value (provided that the regular expression
+matches the string). We also prove the correctness of an optimised
+version of the POSIX matching algorithm."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ausaf]
+homepage = "ausaf_homepage"
+
+[authors.dyckhoff]
+homepage = "dyckhoff_homepage"
+
+[authors.urban]
+homepage = "urban_homepage"
+
+[contributors]
+
+[notify]
+urban = "urban_email"
+
+[history]
+
+[extra]

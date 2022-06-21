@@ -1,0 +1,60 @@
+title = "A Constructive Proof for FLP"
+date = 2016-05-18
+topics = [
+  "Computer science/Concurrency",
+]
+abstract = """
+The impossibility of distributed consensus with one faulty process is
+a result with important consequences for real world distributed
+systems e.g., commits in replicated databases. Since proofs are not
+immune to faults and even plausible proofs with a profound formalism
+can conclude wrong results, we validate the fundamental result named
+FLP after Fischer, Lynch and Paterson.
+We present a formalization of distributed systems
+and the aforementioned consensus problem. Our proof is based on Hagen
+Völzer's paper \"A constructive proof for FLP\". In addition to the
+enhanced confidence in the validity of Völzer's proof, we contribute
+the missing gaps to show the correctness in Isabelle/HOL. We clarify
+the proof details and even prove fairness of the infinite execution
+that contradicts consensus. Our Isabelle formalization can also be
+reused for further proofs of properties of distributed systems."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bisping]
+email = "bisping_email"
+
+[authors.brodmann]
+email = "brodmann_email"
+
+[authors.jungnickel]
+email = "jungnickel_email"
+
+[authors.rickmann]
+email = "rickmann_email"
+
+[authors.seidler]
+email = "seidler_email"
+
+[authors.stueber]
+email = "stueber_email"
+
+[authors.weidner]
+email = "weidner_email"
+
+[authors.peters]
+email = "peters_email"
+
+[authors.nestmann]
+homepage = "nestmann_homepage"
+
+[contributors]
+
+[notify]
+seidler = "seidler_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,27 @@
+title = "Ptolemy's Theorem"
+date = 2016-08-07
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+This entry provides an analytic proof to Ptolemy's Theorem using
+polar form transformation and trigonometric identities.
+In this formalization, we use ideas from John Harrison's HOL Light
+formalization and the proof sketch on the Wikipedia entry of Ptolemy's Theorem.
+This theorem is the 95th theorem of the Top 100 Theorems list."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bulwahn]
+email = "bulwahn_email"
+
+[contributors]
+
+[notify]
+bulwahn = "bulwahn_email"
+
+[history]
+
+[extra]

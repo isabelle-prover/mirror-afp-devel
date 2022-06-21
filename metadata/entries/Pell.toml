@@ -1,0 +1,50 @@
+title = "Pell's Equation"
+date = 2018-06-23
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p> This article gives the basic theory of Pell's equation
+<em>x</em><sup>2</sup> = 1 +
+<em>D</em>&thinsp;<em>y</em><sup>2</sup>,
+where
+<em>D</em>&thinsp;&isin;&thinsp;&#8469; is
+a parameter and <em>x</em>, <em>y</em> are
+integer variables. </p> <p> The main result that is proven
+is the following: If <em>D</em> is not a perfect square,
+then there exists a <em>fundamental solution</em>
+(<em>x</em><sub>0</sub>,
+<em>y</em><sub>0</sub>) that is not the
+trivial solution (1, 0) and which generates all other solutions
+(<em>x</em>, <em>y</em>) in the sense that
+there exists some
+<em>n</em>&thinsp;&isin;&thinsp;&#8469;
+such that |<em>x</em>| +
+|<em>y</em>|&thinsp;&radic;<span
+style=\"text-decoration:
+overline\"><em>D</em></span> =
+(<em>x</em><sub>0</sub> +
+<em>y</em><sub>0</sub>&thinsp;&radic;<span
+style=\"text-decoration:
+overline\"><em>D</em></span>)<sup><em>n</em></sup>.
+This also implies that the set of solutions is infinite, and it gives
+us an explicit and executable characterisation of all the solutions.
+</p> <p> Based on this, simple executable algorithms for
+computing the fundamental solution and the infinite sequence of all
+non-negative solutions are also provided. </p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

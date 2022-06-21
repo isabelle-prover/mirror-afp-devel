@@ -1,215 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Aggregation Algebras - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Aggregation Algebras - Archive of Formal Proofs</title><meta name="description" content="We develop algebras for aggregation and minimisation for weight
+matrices and for edge weights in graphs. We verify the correctness of
+Prim&#39;s and Kruskal&#39;s..."><meta property="og:title" content="Aggregation Algebras" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Aggregation_Algebras.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2018-09-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2018-09-15T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Aggregation Algebras"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>ggregation
-  
-          <font class="first">A</font>lgebras
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>A</span>ggregation <span class='first'>A</span>lgebras</h1>
+  <div>
+    
+    <p><a href="../authors/guttmann">Walter Guttmann</a> <a href="http://www.cosc.canterbury.ac.nz/walter.guttmann/">🌐</a>
+    </p>
+    
+    
+    <p class="date">September 15, 2018</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Aggregation Algebras</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              <a href="https://www.cosc.canterbury.ac.nz/walter.guttmann/">Walter Guttmann</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2018-09-15</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-We develop algebras for aggregation and minimisation for weight
+  <div class="abstract mathjax_process">We develop algebras for aggregation and minimisation for weight
 matrices and for edge weights in graphs. We verify the correctness of
 Prim's and Kruskal's minimum spanning tree algorithms based
 on these algebras. We also show numerous instances of these algebras
-based on linearly ordered commutative semigroups.</td>
-</tr>
+based on linearly ordered commutative semigroups.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li></ul>
+  <h3>Theories of Aggregation_Algebras</h3>
+  <ul>
+    <li><a href="../theories/aggregation_algebras/#Semigroups_Big">Semigroups_Big</a></li>
+    <li><a href="../theories/aggregation_algebras/#Aggregation_Algebras">Aggregation_Algebras</a></li>
+    <li><a href="../theories/aggregation_algebras/#Matrix_Aggregation_Algebras">Matrix_Aggregation_Algebras</a></li>
+    <li><a href="../theories/aggregation_algebras/#Linear_Aggregation_Algebras">Linear_Aggregation_Algebras</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Stone_Kleene_Relation_Algebras.html">Stone_Kleene_Relation_Algebras</a></li></ul>
+  </div><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Relational_Minimum_Spanning_Trees.html">Relational_Minimum_Spanning_Trees</a></li></ul>
+  </div>
+  
+  </div>
+</main>
 
-  <tr>
-    <td class="datahead" valign="top">Change history:</td>
-    <td class="abstract">[2020-12-09]:
-moved Hoare logic to HOL-Hoare, moved spanning trees to Relational_Minimum_Spanning_Trees
-(revision dbb9bfaf4283)</td>
-  </tr>
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Aggregation_Algebras/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Aggregation_Algebras/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Aggregation_Algebras/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Aggregation_Algebras-AFP,
-  author  = {Walter Guttmann},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Aggregation_Algebras-AFP</p>
+      <pre id="copyText">@article{Aggregation_Algebras-AFP,
+  author  = {guttmann},
   title   = {Aggregation Algebras},
   journal = {Archive of Formal Proofs},
-  month   = sep,
+  month   = September,
   year    = 2018,
   note    = {\url{https://isa-afp.org/entries/Aggregation_Algebras.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Stone_Kleene_Relation_Algebras.html">Stone_Kleene_Relation_Algebras</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Relational_Minimum_Spanning_Trees.html">Relational_Minimum_Spanning_Trees</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Aggregation_Algebras/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Aggregation_Algebras/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Aggregation_Algebras/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Aggregation_Algebras-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Aggregation_Algebras-2021-02-23.tar.gz">
-              afp-Aggregation_Algebras-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Aggregation_Algebras-2020-04-18.tar.gz">
-              afp-Aggregation_Algebras-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Aggregation_Algebras-2019-06-11.tar.gz">
-              afp-Aggregation_Algebras-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Aggregation_Algebras-2018-09-16.tar.gz">
-              afp-Aggregation_Algebras-2018-09-16.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Aggregation_Algebras-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

@@ -1,0 +1,35 @@
+title = "Probabilistic Primality Testing"
+date = 2019-02-11
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>The most efficient known primality tests are
+<em>probabilistic</em> in the sense that they use
+randomness and may, with some probability, mistakenly classify a
+composite number as prime &ndash; but never a prime number as
+composite. Examples of this are the Miller&ndash;Rabin test, the
+Solovay&ndash;Strassen test, and (in most cases) Fermat's
+test.</p> <p>This entry defines these three tests and
+proves their correctness. It also develops some of the
+number-theoretic foundations, such as Carmichael numbers and the
+Jacobi symbol with an efficient executable algorithm to compute
+it.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.stuewe]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

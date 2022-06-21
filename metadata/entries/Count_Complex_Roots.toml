@@ -1,0 +1,30 @@
+title = "Count the Number of Complex Roots"
+date = 2017-10-17
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+Based on evaluating Cauchy indices through remainder sequences, this
+entry provides an effective procedure to count the number of complex
+roots (with multiplicity) of a polynomial within various shapes (e.g., rectangle,
+circle and half-plane). Potential applications of this entry include certified
+complex root isolation (of a polynomial) and testing the Routh-Hurwitz
+stability criterion (i.e., to check whether all the roots of some
+characteristic polynomial have negative real parts)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.li]
+homepage = "li_homepage"
+
+[contributors]
+
+[notify]
+li = "li_email1"
+
+[history]
+2021-10-26 = "resolved the roots-on-the-border problem in the rectangular case (revision 82a159e398cf)."
+
+[extra]

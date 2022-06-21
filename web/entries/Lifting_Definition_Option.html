@@ -1,115 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Lifting Definition Option - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Lifting Definition Option - Archive of Formal Proofs</title><meta name="description" content="We implemented a command that can be used to easily generate elements of a restricted type {x :: &#39;a. P x}, provided the definition is of the form f ys =..."><meta property="og:title" content="Lifting Definition Option" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Lifting_Definition_Option.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2014-10-13T00:00:00+00:00" />
+<meta property="article:modified_time" content="2014-10-13T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Lifting Definition Option"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">L</font>ifting
-  
-          <font class="first">D</font>efinition
-  
-          <font class="first">O</font>ption
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>L</span>ifting <span class='first'>D</span>efinition <span class='first'>O</span>ption</h1>
+  <div>
+    
+    <p><a href="../authors/thiemann">René Thiemann</a> <a href="mailto:rene.thiemann@uibk.ac.at">📧</a>
+    </p>
+    
+    
+    <p class="date">October 13, 2014</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Lifting Definition Option</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at)
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2014-10-13</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-We implemented a command that can be used to easily generate
+  <div class="abstract mathjax_process">We implemented a command that can be used to easily generate
 elements of a restricted type <tt>{x :: 'a. P x}</tt>,
 provided the definition is of the form
 <tt>f ys = (if check ys then Some(generate ys :: 'a) else None)</tt> where
@@ -122,120 +108,58 @@ suitable for code-generation. To this end, we automated a more complex
 construction of Joachim Breitner which is amenable for code-generation, and
 where the test <tt>check ys</tt> will only be performed once.  In the
 automation, one auxiliary type is created, and Isabelle's lifting- and
-transfer-package is invoked several times.</td>
-</tr>
+transfer-package is invoked several times.</div><a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a><h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/functional-programming">Computer science/Functional programming</a></li></ul>
+  <h3>Theories of Lifting_Definition_Option</h3>
+  <ul>
+    <li><a href="../theories/lifting_definition_option/#Lifting_Definition_Option_Examples">Lifting_Definition_Option_Examples</a></li></ul><div class="flex-wrap">
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Lifting_Definition_Option/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Lifting_Definition_Option/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Lifting_Definition_Option/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Lifting_Definition_Option-AFP,
-  author  = {René Thiemann},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Lifting_Definition_Option-AFP</p>
+      <pre id="copyText">@article{Lifting_Definition_Option-AFP,
+  author  = {thiemann},
   title   = {Lifting Definition Option},
   journal = {Archive of Formal Proofs},
-  month   = oct,
+  month   = October,
   year    = 2014,
   note    = {\url{https://isa-afp.org/entries/Lifting_Definition_Option.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
-
-    
-                    
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Lifting_Definition_Option/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Lifting_Definition_Option/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Lifting_Definition_Option/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Lifting_Definition_Option-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Lifting_Definition_Option-2021-02-23.tar.gz">
-              afp-Lifting_Definition_Option-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Lifting_Definition_Option-2020-04-18.tar.gz">
-              afp-Lifting_Definition_Option-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Lifting_Definition_Option-2019-06-11.tar.gz">
-              afp-Lifting_Definition_Option-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Lifting_Definition_Option-2018-08-16.tar.gz">
-              afp-Lifting_Definition_Option-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Lifting_Definition_Option-2017-10-10.tar.gz">
-              afp-Lifting_Definition_Option-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Lifting_Definition_Option-2016-12-17.tar.gz">
-              afp-Lifting_Definition_Option-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-Lifting_Definition_Option-2016-02-22.tar.gz">
-              afp-Lifting_Definition_Option-2016-02-22.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2015:
-            <a href="../release/afp-Lifting_Definition_Option-2015-05-27.tar.gz">
-              afp-Lifting_Definition_Option-2015-05-27.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2014:
-            <a href="../release/afp-Lifting_Definition_Option-2014-10-15.tar.gz">
-              afp-Lifting_Definition_Option-2014-10-15.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Lifting_Definition_Option-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

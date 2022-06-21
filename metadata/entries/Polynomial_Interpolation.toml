@@ -1,0 +1,40 @@
+title = "Polynomial Interpolation"
+date = 2016-01-29
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+We formalized three algorithms for polynomial interpolation over arbitrary
+fields: Lagrange's explicit expression, the recursive algorithm of Neville
+and Aitken, and the Newton interpolation in combination with an efficient
+implementation of divided differences.  Variants of these algorithms for
+integer polynomials are also available, where sometimes the interpolation
+can fail; e.g., there is no linear integer polynomial <i>p</i> such that
+<i>p(0) = 0</i> and <i>p(2) = 1</i>. Moreover, for the Newton interpolation
+for integer polynomials, we proved that all intermediate results that are
+computed during the algorithm must be integers.  This admits an early
+failure detection in the implementation.  Finally, we proved the uniqueness
+of polynomial interpolation.
+<p>
+The development also contains improved code equations to speed up the
+division of integers in target languages."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[authors.yamada]
+email = "yamada_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+yamada = "yamada_email1"
+
+[history]
+
+[extra]

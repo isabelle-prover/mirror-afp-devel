@@ -1,0 +1,22 @@
+title = "Mutually Recursive Partial Functions"
+date = 2014-02-18
+topics = [
+  "Computer science/Functional programming",
+]
+abstract = "We provide a wrapper around the partial-function command that supports mutual recursion."
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

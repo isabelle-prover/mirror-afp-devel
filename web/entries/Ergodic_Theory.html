@@ -1,225 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Ergodic Theory - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Ergodic Theory - Archive of Formal Proofs</title><meta name="description" content="Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts..."><meta property="og:title" content="Ergodic Theory" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Ergodic_Theory.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2015-12-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2015-12-01T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Ergodic Theory"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">E</font>rgodic
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>E</span>rgodic <span class='first'>T</span>heory</h1>
+  <div>
+    
+    <p><a href="../authors/gouezel">Sebastien Gouezel</a> <a href="mailto:sebastien.gouezel@univ-rennes1.fr">📧</a>
+      with contributions from <a href="../authors/eberl">Manuel Eberl</a> <a href="https://pruvisto.org">🌐</a>
+    </p>
+    
+    
+    <p class="date">December 1, 2015</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts both with probability theory (mainly through measure theory) and with geometry as a lot of interesting examples are from geometric origin. We implement the first definitions and theorems of ergodic theory, including notably Poicaré recurrence theorem for finite measure preserving systems (together with the notion of conservativity in general), induced maps, Kac's theorem, Birkhoff theorem (arguably the most important theorem in ergodic theory), and variations around it such as conservativity of the corresponding skew product, or Atkinson lemma.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/probability-theory">Mathematics/Probability theory</a></li></ul>
+  <h3>Theories of Ergodic_Theory</h3>
+  <ul>
+    <li><a href="../theories/ergodic_theory/#SG_Library_Complement">SG_Library_Complement</a></li>
+    <li><a href="../theories/ergodic_theory/#ME_Library_Complement">ME_Library_Complement</a></li>
+    <li><a href="../theories/ergodic_theory/#Fekete">Fekete</a></li>
+    <li><a href="../theories/ergodic_theory/#Asymptotic_Density">Asymptotic_Density</a></li>
+    <li><a href="../theories/ergodic_theory/#Measure_Preserving_Transformations">Measure_Preserving_Transformations</a></li>
+    <li><a href="../theories/ergodic_theory/#Recurrence">Recurrence</a></li>
+    <li><a href="../theories/ergodic_theory/#Invariants">Invariants</a></li>
+    <li><a href="../theories/ergodic_theory/#Ergodicity">Ergodicity</a></li>
+    <li><a href="../theories/ergodic_theory/#Shift_Operator">Shift_Operator</a></li>
+    <li><a href="../theories/ergodic_theory/#Kingman">Kingman</a></li>
+    <li><a href="../theories/ergodic_theory/#Gouezel_Karlsson">Gouezel_Karlsson</a></li>
+    <li><a href="../theories/ergodic_theory/#Kohlberg_Neyman_Karlsson">Kohlberg_Neyman_Karlsson</a></li>
+    <li><a href="../theories/ergodic_theory/#Transfer_Operator">Transfer_Operator</a></li>
+    <li><a href="../theories/ergodic_theory/#Normalizing_Sequences">Normalizing_Sequences</a></li></ul><div class="flex-wrap"><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Roth_Arithmetic_Progressions.html">Roth_Arithmetic_Progressions</a></li><li><a href="../entries/Laws_of_Large_Numbers.html">Laws_of_Large_Numbers</a></li><li><a href="../entries/Gromov_Hyperbolicity.html">Gromov_Hyperbolicity</a></li><li><a href="../entries/Lp.html">Lp</a></li></ul>
+  </div>
   
-          <font class="first">T</font>heory
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Laws_of_Large_Numbers.html">The Laws of Large Numbers</a></li>
+      
+      <li><a href="../entries/Markov_Models.html">Markov Models</a></li>
+      
+    </ul>
+  </div>
   
-</h1>
-  <p>&nbsp;</p>
+  </div>
+</main>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Ergodic Theory</td>
-</tr>
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Ergodic_Theory/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Ergodic_Theory/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Ergodic_Theory/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              Sebastien Gouezel
-      </td>
-</tr>
-
-  <tr>
-    <td class="datahead">
-              Contributor:
-          </td>
-    <td class="data">
-                  <a href="https://pruvisto.org">Manuel Eberl</a>
-           </td>
-  </tr>
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2015-12-01</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">Ergodic theory is the branch of mathematics that studies the behaviour of measure preserving transformations, in finite or infinite measure. It interacts both with probability theory (mainly through measure theory) and with geometry as a lot of interesting examples are from geometric origin. We implement the first definitions and theorems of ergodic theory, including notably Poicaré recurrence theorem for finite measure preserving systems (together with the notion of conservativity in general), induced maps, Kac's theorem, Birkhoff theorem (arguably the most important theorem in ergodic theory), and variations around it such as conservativity of the corresponding skew product, or Atkinson lemma.</td>
-</tr>
-
-
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Ergodic_Theory-AFP,
-  author  = {Sebastien Gouezel},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Ergodic_Theory-AFP</p>
+      <pre id="copyText">@article{Ergodic_Theory-AFP,
+  author  = {gouezel},
   title   = {Ergodic Theory},
   journal = {Archive of Formal Proofs},
-  month   = dec,
+  month   = December,
   year    = 2015,
   note    = {\url{https://isa-afp.org/entries/Ergodic_Theory.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Gromov_Hyperbolicity.html">Gromov_Hyperbolicity</a>, <a href="Laws_of_Large_Numbers.html">Laws_of_Large_Numbers</a>, <a href="Lp.html">Lp</a>, <a href="Roth_Arithmetic_Progressions.html">Roth_Arithmetic_Progressions</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Ergodic_Theory/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Ergodic_Theory/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Ergodic_Theory/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Ergodic_Theory-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Ergodic_Theory-2021-02-23.tar.gz">
-              afp-Ergodic_Theory-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Ergodic_Theory-2020-04-18.tar.gz">
-              afp-Ergodic_Theory-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Ergodic_Theory-2019-06-11.tar.gz">
-              afp-Ergodic_Theory-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Ergodic_Theory-2018-08-16.tar.gz">
-              afp-Ergodic_Theory-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Ergodic_Theory-2017-10-10.tar.gz">
-              afp-Ergodic_Theory-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Ergodic_Theory-2016-12-17.tar.gz">
-              afp-Ergodic_Theory-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-Ergodic_Theory-2016-02-22.tar.gz">
-              afp-Ergodic_Theory-2016-02-22.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Ergodic_Theory-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

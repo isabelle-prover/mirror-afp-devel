@@ -1,0 +1,40 @@
+title = "A Compositional and Unified Translation of LTL into ω-Automata"
+date = 2019-04-16
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+We present a formalisation of the unified translation approach of
+linear temporal logic (LTL) into ω-automata from [1]. This approach
+decomposes LTL formulas into ``simple'' languages and allows
+a clear separation of concerns: first, we formalise the purely logical
+result yielding this decomposition; second, we instantiate this
+generic theory to obtain a construction for deterministic
+(state-based) Rabin automata (DRA). We extract from this particular
+instantiation an executable tool translating LTL to DRAs. To the best
+of our knowledge this is the first verified translation from LTL to
+DRAs that is proven to be double exponential in the worst case which
+asymptotically matches the known lower bound.
+<p>
+[1] Javier Esparza, Jan Kretínský, Salomon Sickert. One Theorem to Rule Them All:
+A Unified Translation of LTL into ω-Automata. LICS 2018"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.seidl]
+email = "seidl_email"
+
+[authors.sickert]
+email = "sickert_email"
+
+[contributors]
+
+[notify]
+seidl = "seidl_email"
+sickert = "sickert_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,30 @@
+title = "Selected Problems from the International Mathematical Olympiad 2019"
+date = 2019-08-05
+topics = [
+  "Mathematics/Misc",
+]
+abstract = """
+<p>This entry contains formalisations of the answers to three of
+the six problem of the International Mathematical Olympiad 2019,
+namely Q1, Q4, and Q5.</p> <p>The reason why these
+problems were chosen is that they are particularly amenable to
+formalisation: they can be solved with minimal use of libraries. The
+remaining three concern geometry and graph theory, which, in the
+author's opinion, are more difficult to formalise resp. require a
+more complex library.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

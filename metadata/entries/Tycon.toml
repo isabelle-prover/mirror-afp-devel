@@ -1,0 +1,34 @@
+title = "Type Constructor Classes and Monad Transformers"
+date = 2012-06-26
+topics = [
+  "Computer science/Functional programming",
+]
+abstract = """
+These theories contain a formalization of first class type constructors
+and axiomatic constructor classes for HOLCF. This work is described
+in detail in the ICFP 2012 paper <i>Formal Verification of Monad
+Transformers</i> by the author. The formalization is a revised and
+updated version of earlier joint work with Matthews and White.
+<P>
+Based on the hierarchy of type classes in Haskell, we define classes
+for functors, monads, monad-plus, etc. Each one includes all the
+standard laws as axioms. We also provide a new user command,
+tycondef, for defining new type constructors in HOLCF. Using tycondef,
+we instantiate the type class hierarchy with various monads and monad
+transformers."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.huffman]
+email = "huffman_email"
+
+[contributors]
+
+[notify]
+huffman = "huffman_email"
+
+[history]
+
+[extra]

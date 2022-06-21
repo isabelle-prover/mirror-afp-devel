@@ -1,0 +1,32 @@
+title = "Subresultants"
+date = 2017-04-06
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+We formalize the theory of subresultants and the subresultant
+polynomial remainder sequence as described by Brown and Traub. As a
+result, we obtain efficient certified algorithms for computing the
+resultant and the greatest common divisor of polynomials."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.joosten]
+email = "joosten_email"
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[authors.yamada]
+email = "yamada_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

@@ -1,207 +1,203 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Formalization of Forcing in Isabelle/ZF - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Formalization of Forcing in Isabelle/ZF - Archive of Formal Proofs</title><meta name="description" content="We formalize the theory of forcing in the set theory framework of
+Isabelle/ZF. Under the assumption of the existence of a countable
+transitive model of..."><meta property="og:title" content="Formalization of Forcing in Isabelle/ZF" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Forcing.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2020-05-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-05-06T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Formalization of Forcing in Isabelle/ZF"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>ormalization
-  
-          of
-  
-          <font class="first">F</font>orcing
-  
-          in
-  
-          <font class="first">I</font>sabelle/ZF
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>F</span>ormalization of <span class='first'>F</span>orcing in <span class='first'>I</span>sabelle/<span class='first'>Z</span><span class='first'>F</span></h1>
+  <div>
+    
+    <p><a href="../authors/gunther">Emmanuel Gunther</a> <a href="mailto:gunther@famaf.unc.edu.ar">📧</a>, <a href="../authors/pagano">Miguel Pagano</a> <a href="https://cs.famaf.unc.edu.ar/~mpagano/">🌐</a> and <a href="../authors/terraf">Pedro Sánchez Terraf</a> <a href="https://cs.famaf.unc.edu.ar/~pedro/home_en">🌐</a>
+    </p>
+    
+    
+    <p class="date">May 6, 2020</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Formalization of Forcing in Isabelle/ZF</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                      Emmanuel Gunther (gunther /at/ famaf /dot/ unc /dot/ edu /dot/ ar),
-                <a href="https://cs.famaf.unc.edu.ar/~mpagano/">Miguel Pagano</a> and
-          <a href="https://cs.famaf.unc.edu.ar/~pedro">Pedro Sánchez Terraf</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2020-05-06</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-We formalize the theory of forcing in the set theory framework of
+  <div class="abstract mathjax_process">We formalize the theory of forcing in the set theory framework of
 Isabelle/ZF. Under the assumption of the existence of a countable
 transitive model of ZFC, we construct a proper generic extension and
-show that the latter also satisfies ZFC.</td>
-</tr>
+show that the latter also satisfies ZFC.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/logic/set-theory">Logic/Set theory</a></li></ul>
+  <h3>Theories of Forcing</h3>
+  <ul>
+    <li><a href="../theories/forcing/#Utils">Utils</a></li>
+    <li><a href="../theories/forcing/#Forcing_Notions">Forcing_Notions</a></li>
+    <li><a href="../theories/forcing/#Pointed_DC">Pointed_DC</a></li>
+    <li><a href="../theories/forcing/#Rasiowa_Sikorski">Rasiowa_Sikorski</a></li>
+    <li><a href="../theories/forcing/#Nat_Miscellanea">Nat_Miscellanea</a></li>
+    <li><a href="../theories/forcing/#Internalizations">Internalizations</a></li>
+    <li><a href="../theories/forcing/#Recursion_Thms">Recursion_Thms</a></li>
+    <li><a href="../theories/forcing/#Relative_Univ">Relative_Univ</a></li>
+    <li><a href="../theories/forcing/#Synthetic_Definition">Synthetic_Definition</a></li>
+    <li><a href="../theories/forcing/#Interface">Interface</a></li>
+    <li><a href="../theories/forcing/#Forcing_Data">Forcing_Data</a></li>
+    <li><a href="../theories/forcing/#Internal_ZFC_Axioms">Internal_ZFC_Axioms</a></li>
+    <li><a href="../theories/forcing/#Renaming">Renaming</a></li>
+    <li><a href="../theories/forcing/#Renaming_Auto">Renaming_Auto</a></li>
+    <li><a href="../theories/forcing/#Names">Names</a></li>
+    <li><a href="../theories/forcing/#FrecR">FrecR</a></li>
+    <li><a href="../theories/forcing/#Arities">Arities</a></li>
+    <li><a href="../theories/forcing/#Forces_Definition">Forces_Definition</a></li>
+    <li><a href="../theories/forcing/#Forcing_Theorems">Forcing_Theorems</a></li>
+    <li><a href="../theories/forcing/#Separation_Rename">Separation_Rename</a></li>
+    <li><a href="../theories/forcing/#Separation_Axiom">Separation_Axiom</a></li>
+    <li><a href="../theories/forcing/#Pairing_Axiom">Pairing_Axiom</a></li>
+    <li><a href="../theories/forcing/#Union_Axiom">Union_Axiom</a></li>
+    <li><a href="../theories/forcing/#Powerset_Axiom">Powerset_Axiom</a></li>
+    <li><a href="../theories/forcing/#Extensionality_Axiom">Extensionality_Axiom</a></li>
+    <li><a href="../theories/forcing/#Foundation_Axiom">Foundation_Axiom</a></li>
+    <li><a href="../theories/forcing/#Least">Least</a></li>
+    <li><a href="../theories/forcing/#Replacement_Axiom">Replacement_Axiom</a></li>
+    <li><a href="../theories/forcing/#Infinity_Axiom">Infinity_Axiom</a></li>
+    <li><a href="../theories/forcing/#Choice_Axiom">Choice_Axiom</a></li>
+    <li><a href="../theories/forcing/#Ordinals_In_MG">Ordinals_In_MG</a></li>
+    <li><a href="../theories/forcing/#Proper_Extension">Proper_Extension</a></li>
+    <li><a href="../theories/forcing/#Succession_Poset">Succession_Poset</a></li>
+    <li><a href="../theories/forcing/#Forcing_Main">Forcing_Main</a></li></ul><div class="flex-wrap">
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Independence_CH.html">The Independence of the Continuum Hypothesis in Isabelle/ZF</a></li>
+      
+      <li><a href="../entries/Transitive_Models.html">Transitive Models of Fragments of ZFC</a></li>
+      
+      <li><a href="../entries/Delta_System_Lemma.html">Cofinality and the Delta System Lemma</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Forcing/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Forcing/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Forcing/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Forcing-AFP,
-  author  = {Emmanuel Gunther and Miguel Pagano and Pedro Sánchez Terraf},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Forcing-AFP</p>
+      <pre id="copyText">@article{Forcing-AFP,
+  author  = {gunther, pagano and terraf},
   title   = {Formalization of Forcing in Isabelle/ZF},
   journal = {Archive of Formal Proofs},
-  month   = may,
+  month   = May,
   year    = 2020,
   note    = {\url{https://isa-afp.org/entries/Forcing.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                    
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Forcing/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Forcing/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Forcing/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Forcing-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Forcing-2021-02-23.tar.gz">
-              afp-Forcing-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Forcing-2020-05-07.tar.gz">
-              afp-Forcing-2020-05-07.tar.gz
-            </a>
-            </li>
-                      <li>Isabelle 2020:
-            <a href="../release/afp-Forcing-2020-05-06.tar.gz">
-              afp-Forcing-2020-05-06.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Forcing-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

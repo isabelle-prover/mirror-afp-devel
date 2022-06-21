@@ -1,0 +1,32 @@
+title = "Verified Metatheory and Type Inference for a Name-Carrying Simply-Typed Lambda Calculus"
+date = 2017-07-09
+topics = [
+  "Computer science/Programming languages/Type systems",
+]
+abstract = """
+I formalise a Church-style simply-typed
+\\(\\lambda\\)-calculus, extended with pairs, a unit value, and
+projection functions, and show some metatheory of the calculus, such
+as the subject reduction property. Particular attention is paid to the
+treatment of names in the calculus. A nominal style of binding is
+used, but I use a manual approach over Nominal Isabelle in order to
+extract an executable type inference algorithm. More information can
+be found in my <a
+href=\"http://www.openthesis.org/documents/Verified-Metatheory-Type-Inference-Simply-603182.html\">undergraduate
+dissertation</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.rawson]
+email = "rawson_email"
+
+[contributors]
+
+[notify]
+rawson = "rawson_email"
+
+[history]
+
+[extra]

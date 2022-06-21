@@ -1,0 +1,40 @@
+title = "The Lambert W Function on the Reals"
+date = 2020-04-24
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>The Lambert <em>W</em> function is a multi-valued
+function defined as the inverse function of <em>x</em>
+&#x21A6; <em>x</em>
+e<sup><em>x</em></sup>. Besides numerous
+applications in combinatorics, physics, and engineering, it also
+frequently occurs when solving equations containing both
+e<sup><em>x</em></sup> and
+<em>x</em>, or both <em>x</em> and log
+<em>x</em>.</p> <p>This article provides a
+definition of the two real-valued branches
+<em>W</em><sub>0</sub>(<em>x</em>)
+and
+<em>W</em><sub>-1</sub>(<em>x</em>)
+and proves various properties such as basic identities and
+inequalities, monotonicity, differentiability, asymptotic expansions,
+and the MacLaurin series of
+<em>W</em><sub>0</sub>(<em>x</em>)
+at <em>x</em> = 0.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

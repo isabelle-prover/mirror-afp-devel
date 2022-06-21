@@ -1,0 +1,32 @@
+title = "The Akra-Bazzi theorem and the Master theorem"
+date = 2015-07-14
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+This article contains a formalisation of the Akra-Bazzi method
+based on a proof by Leighton. It is a generalisation of the well-known
+Master Theorem for analysing the complexity of Divide & Conquer algorithms.
+We also include a generalised version of the Master theorem based on the
+Akra-Bazzi theorem, which is easier to apply than the Akra-Bazzi theorem
+itself.
+<p>
+Some proof methods that facilitate applying the Master theorem are also
+included. For a more detailed explanation of the formalisation and the
+proof methods, see the accompanying paper (publication forthcoming)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

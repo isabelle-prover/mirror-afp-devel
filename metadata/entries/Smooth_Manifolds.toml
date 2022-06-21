@@ -1,0 +1,34 @@
+title = "Smooth Manifolds"
+date = 2018-10-22
+topics = [
+  "Mathematics/Analysis",
+  "Mathematics/Topology",
+]
+abstract = """
+We formalize the definition and basic properties of smooth manifolds
+in Isabelle/HOL. Concepts covered include partition of unity, tangent
+and cotangent spaces, and the fundamental theorem of path integrals.
+We also examine some concrete manifolds such as spheres and projective
+spaces. The formalization makes extensive use of the analysis and
+linear algebra libraries in Isabelle/HOL, in particular its
+“types-to-sets” mechanism."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.immler]
+homepage = "immler_homepage2"
+
+[authors.zhan]
+homepage = "zhan_homepage"
+
+[contributors]
+
+[notify]
+immler = "immler_email"
+zhan = "zhan_email"
+
+[history]
+
+[extra]

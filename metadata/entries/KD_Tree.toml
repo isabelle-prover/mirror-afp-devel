@@ -1,0 +1,34 @@
+title = "Multidimensional Binary Search Trees"
+date = 2019-05-30
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+This entry provides a formalization of multidimensional binary trees,
+also known as k-d trees. It includes a balanced build algorithm as
+well as the nearest neighbor algorithm and the range search algorithm.
+It is based on the papers <a
+href=\"https://dl.acm.org/citation.cfm?doid=361002.361007\">Multidimensional
+binary search trees used for associative searching</a> and <a
+href=\"https://dl.acm.org/citation.cfm?doid=355744.355745\">
+An Algorithm for Finding Best Matches in Logarithmic Expected
+Time</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.rau]
+
+[contributors]
+
+[notify]
+rau = "rau_email1"
+
+[history]
+2020-04-15 = """
+Change representation of k-dimensional points from 'list' to
+HOL-Analysis.Finite_Cartesian_Product 'vec'. Update proofs
+to incorporate HOL-Analysis 'dist' and 'cbox' primitives."""
+
+[extra]

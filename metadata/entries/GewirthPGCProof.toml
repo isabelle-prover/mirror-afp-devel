@@ -1,0 +1,31 @@
+title = "Formalisation and Evaluation of Alan Gewirth's Proof for the Principle of Generic Consistency in Isabelle/HOL"
+date = 2018-10-30
+topics = [
+  "Logic/Philosophical aspects",
+]
+abstract = """
+An ambitious ethical theory ---Alan Gewirth's \"Principle of
+Generic Consistency\"--- is encoded and analysed in Isabelle/HOL.
+Gewirth's theory has stirred much attention in philosophy and
+ethics and has been proposed as a potential means to bound the impact
+of artificial general intelligence."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.fuenmayor]
+email = "fuenmayor_email"
+
+[authors.benzmueller]
+homepage = "benzmueller_homepage"
+
+[contributors]
+
+[notify]
+fuenmayor = "fuenmayor_email"
+benzmueller = "benzmueller_email"
+
+[history]
+
+[extra]

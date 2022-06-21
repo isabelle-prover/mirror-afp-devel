@@ -1,0 +1,47 @@
+title = "Multi-Head Monitoring of Metric Dynamic Logic"
+date = 2022-02-13
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+Runtime monitoring (or runtime verification) is an approach to
+checking compliance of a system's execution with a specification
+(e.g., a temporal query). The system's execution is logged into a
+trace---a sequence of time-points, each consisting of a time-stamp and
+observed events. A monitor is an algorithm that produces verdicts on
+the satisfaction of a temporal query on a trace.  We formalize a
+monitoring algorithm for metric dynamic logic, an extension of metric
+temporal logic with regular expressions. The monitor computes whether
+a given query is satisfied at every position in an input trace of
+time-stamped events. We formalize the time-stamps as an abstract
+algebraic structure satisfying certain assumptions. Instances of this
+structure include natural numbers, real numbers, and lexicographic
+combinations of them. Our monitor follows the multi-head paradigm: it
+reads the input simultaneously at multiple positions and moves its
+reading heads asynchronously. This mode of operation results in
+unprecedented time and space complexity guarantees for metric dynamic
+logic: The monitor's amortized time complexity to process a
+time-point and the monitor's space complexity neither depends on
+the event-rate, i.e., the number of events within a fixed time-unit,
+nor on the numeric constants occurring in the quantitative temporal
+constraints in the given query.  The multi-head monitoring algorithm
+for metric dynamic logic is reported in our paper \"Multi-Head
+Monitoring of Metric Dynamic Logic\" published at ATVA 2020. We
+have also formalized unpublished specialized algorithms for the
+temporal operators of metric temporal logic."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.raszyk]
+email = "raszyk_email"
+
+[contributors]
+
+[notify]
+raszyk = "raszyk_email1"
+
+[history]
+
+[extra]

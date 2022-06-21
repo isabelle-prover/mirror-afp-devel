@@ -1,0 +1,31 @@
+title = "Graph Lemma"
+date = 2021-05-24
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+Graph lemma quantifies the defect effect of a system of word
+equations. That is, it provides an upper bound on the rank of the
+system. We formalize the proof based on the decomposition of a
+solution into its free basis. A direct application is an alternative
+proof of the fact that two noncommuting words form a code."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.holub]
+homepage = "holub_homepage"
+
+[authors.starosta]
+homepage = "starosta_homepage"
+
+[contributors]
+
+[notify]
+holub = "holub_email"
+starosta = "starosta_email"
+
+[history]
+
+[extra]

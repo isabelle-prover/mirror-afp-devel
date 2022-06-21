@@ -1,0 +1,48 @@
+title = "Inference of Extended Finite State Machines"
+date = 2020-09-07
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+In this AFP entry, we provide a formal implementation of a
+state-merging technique to infer extended finite state machines
+(EFSMs), complete with output and update functions, from black-box
+traces. In particular, we define the subsumption in context relation
+as a means of determining whether one transition is able to account
+for the behaviour of another. Building on this, we define the direct
+subsumption relation, which lifts the subsumption in context relation
+to EFSM level such that we can use it to determine whether it is safe
+to merge a given pair of transitions. Key proofs include the
+conditions necessary for subsumption to occur and that subsumption
+and direct subsumption are preorder relations.  We also provide a
+number of different heuristics which can be used to abstract away
+concrete values into registers so that more states and transitions can
+be merged and provide proofs of the various conditions which must hold
+for these abstractions to subsume their ungeneralised counterparts. A
+Code Generator setup to create executable Scala code is also defined."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.foster]
+email = "foster_email"
+
+[authors.brucker]
+email = "brucker_email"
+
+[authors.taylor]
+email = "taylor_email"
+
+[authors.derrick]
+email = "derrick_email"
+
+[contributors]
+
+[notify]
+foster = "foster_email"
+brucker = "brucker_email2"
+
+[history]
+
+[extra]

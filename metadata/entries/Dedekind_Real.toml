@@ -1,0 +1,29 @@
+title = "Constructing the Reals as Dedekind Cuts of Rationals"
+date = 2022-03-24
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+The type of real numbers is constructed from the positive rationals
+using the method of Dedekind cuts. This development, briefly described
+in papers by the authors, follows the textbook presentation by
+Gleason. It's notable that the first formalisation of a
+significant piece of mathematics, by Jutting in 1977, involved a
+similar construction."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.fleuriot]
+
+[authors.paulson]
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]

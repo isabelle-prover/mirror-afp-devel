@@ -1,0 +1,33 @@
+title = "AI Planning Languages Semantics"
+date = 2020-10-29
+topics = [
+  "Computer science/Artificial intelligence",
+]
+abstract = """
+This is an Isabelle/HOL formalisation of the semantics of the
+multi-valued planning tasks language that is used by the planning
+system Fast-Downward, the STRIPS fragment of the Planning Domain
+Definition Language (PDDL), and the STRIPS soundness meta-theory
+developed by Vladimir Lifschitz. It also contains formally verified
+checkers for checking the well-formedness of problems specified in
+either language as well the correctness of potential solutions. The
+formalisation in this entry was described in an earlier publication."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.abdulaziz]
+homepage = "abdulaziz_homepage"
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[contributors]
+
+[notify]
+abdulaziz = "abdulaziz_email1"
+
+[history]
+
+[extra]

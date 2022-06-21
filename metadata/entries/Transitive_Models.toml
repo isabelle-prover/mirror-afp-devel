@@ -1,0 +1,38 @@
+title = "Transitive Models of Fragments of ZFC"
+date = 2022-03-03
+topics = [
+  "Logic/Set theory",
+]
+abstract = """
+We extend the ZF-Constructibility library by relativizing theories of
+the Isabelle/ZF and Delta System Lemma sessions to a transitive class.
+We also relativize Paulson's work on Aleph and our former
+treatment of the Axiom of Dependent Choices. This work is a
+prerrequisite to our formalization of the independence of the
+Continuum Hypothesis."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gunther]
+email = "gunther_email"
+
+[authors.pagano]
+homepage = "pagano_homepage"
+
+[authors.terraf]
+homepage = "terraf_homepage2"
+
+[authors.steinberg]
+email = "steinberg_email"
+
+[contributors]
+
+[notify]
+terraf = "terraf_email"
+pagano = "pagano_email1"
+
+[history]
+
+[extra]

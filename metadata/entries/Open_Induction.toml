@@ -1,0 +1,26 @@
+title = "Open Induction"
+date = 2012-11-02
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+A proof of the open induction schema based on J.-C. Raoult, Proving open properties by induction, <i>Information Processing Letters</i> 29, 1988, pp.19-23.
+<p>This research was supported by the Austrian Science Fund (FWF): J3202.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ogawa]
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[contributors]
+
+[notify]
+sternagel = "sternagel_email"
+
+[history]
+
+[extra]

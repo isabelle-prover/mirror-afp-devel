@@ -1,0 +1,28 @@
+title = "Psi-calculi in Isabelle"
+date = 2012-05-29
+topics = [
+  "Computer science/Concurrency/Process calculi",
+]
+abstract = """
+Psi-calculi are extensions of the pi-calculus, accommodating arbitrary nominal datatypes to represent not only data but also communication channels, assertions and conditions, giving it an expressive power beyond the applied pi-calculus and the concurrent constraint pi-calculus.
+<p>
+We have formalised psi-calculi in the interactive theorem prover Isabelle using its nominal datatype package. One distinctive feature is that the framework needs to treat binding sequences, as opposed to single binders, in an efficient way. While different methods for formalising single binder calculi have been proposed over the last decades, representations for such binding sequences are not very well explored.
+<p>
+The main effort in the formalisation is to keep the machine checked proofs as close to their pen-and-paper counterparts as possible. This includes treating all binding sequences as atomic elements, and creating custom induction and inversion rules that to remove the bulk of manual alpha-conversions.
+<p>
+This entry is described in detail in <a href=\"http://www.itu.dk/people/jebe/files/thesis.pdf\">Bengtson's thesis</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bengtson]
+homepage = "bengtson_homepage"
+
+[contributors]
+
+[notify]
+
+[history]
+
+[extra]

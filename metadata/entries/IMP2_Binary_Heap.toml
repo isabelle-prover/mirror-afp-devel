@@ -1,0 +1,32 @@
+title = "Binary Heaps for IMP2"
+date = 2019-06-13
+topics = [
+  "Computer science/Data structures",
+  "Computer science/Algorithms",
+]
+abstract = """
+In this submission array-based binary minimum heaps are formalized.
+The correctness of the following heap operations is proved: insert,
+get-min, delete-min and make-heap. These are then used to verify an
+in-place heapsort. The formalization is based on IMP2, an imperative
+program verification framework implemented in Isabelle/HOL. The
+verified heap functions are iterative versions of the partly recursive
+functions found in \"Algorithms and Data Structures – The Basic
+Toolbox\" by K. Mehlhorn and P. Sanders and \"Introduction to
+Algorithms\" by T. H. Cormen, C. E. Leiserson, R. L. Rivest and C.
+Stein."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.griebel]
+
+[contributors]
+
+[notify]
+griebel = "griebel_email"
+
+[history]
+
+[extra]

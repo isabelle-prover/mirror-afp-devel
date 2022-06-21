@@ -1,0 +1,30 @@
+title = "Computing N-th Roots using the Babylonian Method"
+date = 2013-01-03
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+We implement the Babylonian method to compute n-th roots of numbers.
+We provide precise algorithms for naturals, integers and rationals, and
+offer an approximation algorithm for square roots over linear ordered fields. Moreover, there
+are precise algorithms to compute the floor and the ceiling of n-th roots."""
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+2013-10-16 = """
+Added algorithms to compute floor and ceiling of sqrt of integers.
+"""
+2014-07-11 = "Moved NthRoot_Impl from Real-Impl to this entry."
+
+[extra]

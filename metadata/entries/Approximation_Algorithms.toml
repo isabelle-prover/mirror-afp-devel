@@ -1,0 +1,36 @@
+title = "Verified Approximation Algorithms"
+date = 2020-01-16
+topics = [
+  "Computer science/Algorithms/Approximation",
+]
+abstract = """
+We present the first formal verification of approximation algorithms
+for NP-complete optimization problems: vertex cover, set cover, independent set,
+center selection, load balancing, and bin packing. The proofs correct incompletenesses
+in existing proofs and improve the approximation ratio in one case.
+A detailed description of our work (excluding center selection) has been published in the proceedings of
+<a href=\"https://doi.org/10.1007/978-3-030-51054-1_17\">IJCAR 2020</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.essmann]
+email = "essmann_email"
+
+[authors.nipkow]
+homepage = "nipkow_homepage1"
+
+[authors.robillard]
+homepage = "robillard_homepage"
+
+[authors.sulejmani]
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

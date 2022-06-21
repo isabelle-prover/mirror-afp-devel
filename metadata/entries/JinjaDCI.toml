@@ -1,0 +1,27 @@
+title = "JinjaDCI: a Java semantics with dynamic class initialization"
+date = 2021-01-11
+topics = [
+  "Computer science/Programming languages/Language definitions",
+]
+abstract = """
+We extend Jinja to include static fields, methods, and instructions,
+and dynamic class initialization, based on the Java SE 8
+specification. This includes extension of definitions and proofs. This
+work is partially described in Mansky and Gunter's paper at CPP
+2019 and Mansky's doctoral thesis (UIUC, 2020)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.mansky]
+email = "mansky_email"
+
+[contributors]
+
+[notify]
+mansky = "mansky_email1"
+
+[history]
+
+[extra]

@@ -1,0 +1,40 @@
+title = "Conservation of CSP Noninterference Security under Concurrent Composition"
+date = 2016-06-13
+topics = [
+  "Computer science/Security",
+  "Computer science/Concurrency/Process calculi",
+]
+abstract = """
+<p>In his outstanding work on Communicating Sequential Processes,
+Hoare has defined two fundamental binary operations allowing to
+compose the input processes into another, typically more complex,
+process: sequential composition and concurrent composition.
+Particularly, the output of the latter operation is a process in which
+any event not shared by both operands can occur whenever the operand
+that admits the event can engage in it, whereas any event shared by
+both operands can occur just in case both can engage in it.</p>
+<p>This paper formalizes Hoare's definition of concurrent composition
+and proves, in the general case of a possibly intransitive policy,
+that CSP noninterference security is conserved under this operation.
+This result, along with the previous analogous one concerning
+sequential composition, enables the construction of more and more
+complex processes enforcing noninterference security by composing,
+sequentially or concurrently, simpler secure processes, whose security
+can in turn be proven using either the definition of security, or
+unwinding theorems.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.noce]
+email = "noce_email"
+
+[contributors]
+
+[notify]
+noce = "noce_email"
+
+[history]
+
+[extra]

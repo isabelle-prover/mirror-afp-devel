@@ -1,0 +1,33 @@
+title = "Interval Arithmetic on 32-bit Words"
+date = 2019-11-27
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+Interval_Arithmetic implements conservative interval arithmetic
+computations, then uses this interval arithmetic to implement a simple
+programming language where all terms have 32-bit signed word values,
+with explicit infinities for terms outside the representable bounds.
+Our target use case is interpreters for languages that must have a
+well-understood low-level behavior.  We include a formalization of
+bounded-length strings which are used for the identifiers of our
+language. Bounded-length identifiers are useful in some applications,
+for example the <a href=\"https://www.isa-afp.org/entries/Differential_Dynamic_Logic.html\">Differential_Dynamic_Logic</a> article,
+where a Euclidean space indexed by identifiers demands that identifiers
+are finitely many."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bohrer]
+email = "bohrer_email"
+
+[contributors]
+
+[notify]
+bohrer = "bohrer_email"
+
+[history]
+
+[extra]

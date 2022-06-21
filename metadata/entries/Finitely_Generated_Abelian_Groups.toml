@@ -1,0 +1,32 @@
+title = "Finitely Generated Abelian Groups"
+date = 2021-07-07
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+This article deals with the formalisation of some group-theoretic
+results including the fundamental theorem of finitely generated
+abelian groups characterising the structure of these groups as a
+uniquely determined product of cyclic groups. Both the invariant
+factor decomposition and the primary decomposition are covered.
+Additional work includes results about the direct product, the
+internal direct product and more group-theoretic lemmas."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thommes]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+thommes = "thommes_email"
+eberl = "eberl_email"
+
+[history]
+
+[extra]

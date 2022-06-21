@@ -1,0 +1,35 @@
+title = "Possibilistic Noninterference"
+date = 2012-09-10
+topics = [
+  "Computer science/Security",
+  "Computer science/Programming languages/Type systems",
+]
+abstract = """
+We formalize a wide variety of Volpano/Smith-style  noninterference
+notions for a while language with parallel composition.
+We systematize and classify these notions according to
+compositionality w.r.t. the language constructs. Compositionality
+yields sound syntactic criteria (a.k.a. type systems) in a uniform way.
+<p>
+An <a href=\"http://www21.in.tum.de/~nipkow/pubs/cpp12.html\">article</a>
+about these proofs is published in the proceedings
+of the conference Certified Programs and Proofs 2012."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.popescu]
+homepage = "popescu_homepage"
+
+[authors.hoelzl]
+email = "hoelzl_email"
+
+[contributors]
+
+[notify]
+hoelzl = "hoelzl_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,26 @@
+title = "Bondy's Theorem"
+date = 2012-10-27
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = "A proof of Bondy's theorem following B. Bollabas, Combinatorics, 1986, Cambridge University Press."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.avigad]
+homepage = "avigad_homepage"
+
+[authors.hetzl]
+homepage = "hetzl_homepage"
+
+[contributors]
+
+[notify]
+avigad = "avigad_email"
+hetzl = "hetzl_email"
+
+[history]
+
+[extra]

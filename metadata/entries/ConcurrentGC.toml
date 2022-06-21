@@ -1,0 +1,34 @@
+title = "Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO"
+date = 2015-04-13
+topics = [
+  "Computer science/Algorithms/Concurrent",
+]
+abstract = """
+<p>
+We use ConcurrentIMP to model Schism, a state-of-the-art real-time
+garbage collection scheme for weak memory, and show that it is safe
+on x86-TSO.</p>
+<p>
+This development accompanies the PLDI 2015 paper of the same name.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gammie]
+homepage = "gammie_homepage"
+
+[authors.hosking]
+homepage = "hosking_homepage"
+
+[authors.engelhardt]
+
+[contributors]
+
+[notify]
+gammie = "gammie_email"
+
+[history]
+
+[extra]

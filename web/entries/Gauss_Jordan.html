@@ -1,236 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Gauss-Jordan Algorithm and Its Applications - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Gauss-Jordan Algorithm and Its Applications - Archive of Formal Proofs</title><meta name="description" content="The Gauss-Jordan algorithm states that any matrix over a field can be transformed by means of elementary row operations to a matrix in reduced row echelon..."><meta property="og:title" content="Gauss-Jordan Algorithm and Its Applications" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Gauss_Jordan.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2014-09-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2014-09-03T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Gauss-Jordan Algorithm and Its Applications"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">G</font>auss-Jordan
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>G</span>auss-<span class='first'>J</span>ordan <span class='first'>A</span>lgorithm and <span class='first'>I</span>ts <span class='first'>A</span>pplications</h1>
+  <div>
+    
+    <p><a href="../authors/divason">Jose Divasón</a> <a href="http://www.unirioja.es/cu/jodivaso">🌐</a> and <a href="../authors/aransay">Jesús Aransay</a> <a href="http://www.unirioja.es/cu/jearansa">🌐</a>
+    </p>
+    
+    
+    <p class="date">September 3, 2014</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">The Gauss-Jordan algorithm states that any matrix over a field can be transformed by means of elementary row operations to a matrix in reduced row echelon form. The formalization is based on the Rank Nullity Theorem entry of the AFP and on the HOL-Multivariate-Analysis session of Isabelle, where matrices are represented as functions over finite types. We have set up the code generator to make this representation executable. In order to improve the performance, a refinement to immutable arrays has been carried out. We have formalized some of the applications of the Gauss-Jordan algorithm. Thanks to this development, the following facts can be computed over matrices whose elements belong to a field: Ranks, Determinants, Inverses, Bases and dimensions and Solutions of systems of linear equations. Code can be exported to SML and Haskell.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/algorithms/mathematical">Computer science/Algorithms/Mathematical</a></li></ul>
+  <h3>Theories of Gauss_Jordan</h3>
+  <ul>
+    <li><a href="../theories/gauss_jordan/#Rref">Rref</a></li>
+    <li><a href="../theories/gauss_jordan/#Code_Set">Code_Set</a></li>
+    <li><a href="../theories/gauss_jordan/#Code_Matrix">Code_Matrix</a></li>
+    <li><a href="../theories/gauss_jordan/#Elementary_Operations">Elementary_Operations</a></li>
+    <li><a href="../theories/gauss_jordan/#Rank">Rank</a></li>
+    <li><a href="../theories/gauss_jordan/#Gauss_Jordan">Gauss_Jordan</a></li>
+    <li><a href="../theories/gauss_jordan/#Linear_Maps">Linear_Maps</a></li>
+    <li><a href="../theories/gauss_jordan/#Gauss_Jordan_PA">Gauss_Jordan_PA</a></li>
+    <li><a href="../theories/gauss_jordan/#Determinants2">Determinants2</a></li>
+    <li><a href="../theories/gauss_jordan/#Inverse">Inverse</a></li>
+    <li><a href="../theories/gauss_jordan/#Bases_Of_Fundamental_Subspaces">Bases_Of_Fundamental_Subspaces</a></li>
+    <li><a href="../theories/gauss_jordan/#System_Of_Equations">System_Of_Equations</a></li>
+    <li><a href="../theories/gauss_jordan/#Code_Z2">Code_Z2</a></li>
+    <li><a href="../theories/gauss_jordan/#Examples_Gauss_Jordan_Abstract">Examples_Gauss_Jordan_Abstract</a></li>
+    <li><a href="../theories/gauss_jordan/#IArray_Addenda">IArray_Addenda</a></li>
+    <li><a href="../theories/gauss_jordan/#Matrix_To_IArray">Matrix_To_IArray</a></li>
+    <li><a href="../theories/gauss_jordan/#Gauss_Jordan_IArrays">Gauss_Jordan_IArrays</a></li>
+    <li><a href="../theories/gauss_jordan/#Gauss_Jordan_PA_IArrays">Gauss_Jordan_PA_IArrays</a></li>
+    <li><a href="../theories/gauss_jordan/#Bases_Of_Fundamental_Subspaces_IArrays">Bases_Of_Fundamental_Subspaces_IArrays</a></li>
+    <li><a href="../theories/gauss_jordan/#System_Of_Equations_IArrays">System_Of_Equations_IArrays</a></li>
+    <li><a href="../theories/gauss_jordan/#Determinants_IArrays">Determinants_IArrays</a></li>
+    <li><a href="../theories/gauss_jordan/#Inverse_IArrays">Inverse_IArrays</a></li>
+    <li><a href="../theories/gauss_jordan/#Examples_Gauss_Jordan_IArrays">Examples_Gauss_Jordan_IArrays</a></li>
+    <li><a href="../theories/gauss_jordan/#Code_Generation_IArrays">Code_Generation_IArrays</a></li>
+    <li><a href="../theories/gauss_jordan/#Code_Generation_IArrays_SML">Code_Generation_IArrays_SML</a></li>
+    <li><a href="../theories/gauss_jordan/#Code_Real_Approx_By_Float_Haskell">Code_Real_Approx_By_Float_Haskell</a></li>
+    <li><a href="../theories/gauss_jordan/#Code_Rational">Code_Rational</a></li>
+    <li><a href="../theories/gauss_jordan/#Code_Generation_IArrays_Haskell">Code_Generation_IArrays_Haskell</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Rank_Nullity_Theorem.html">Rank_Nullity_Theorem</a></li></ul>
+  </div><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/MDP-Algorithms.html">MDP-Algorithms</a></li><li><a href="../entries/Polynomial_Factorization.html">Polynomial_Factorization</a></li><li><a href="../entries/Echelon_Form.html">Echelon_Form</a></li><li><a href="../entries/QR_Decomposition.html">QR_Decomposition</a></li></ul>
+  </div>
   
-          <font class="first">A</font>lgorithm
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/QR_Decomposition.html">QR Decomposition</a></li>
+      
+      <li><a href="../entries/Hermite.html">Hermite Normal Form</a></li>
+      
+      <li><a href="../entries/Echelon_Form.html">Echelon Form</a></li>
+      
+    </ul>
+  </div>
   
-          and
-  
-          <font class="first">I</font>ts
-  
-          <font class="first">A</font>pplications
-  
-</h1>
-  <p>&nbsp;</p>
+  </div>
+</main>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Gauss-Jordan Algorithm and Its Applications</td>
-</tr>
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Gauss_Jordan/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Gauss_Jordan/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Gauss_Jordan/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                    <a href="https://www.unirioja.es/cu/jodivaso/">Jose Divasón</a> and
-          <a href="https://www.unirioja.es/cu/jearansa">Jesús Aransay</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2014-09-03</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">The Gauss-Jordan algorithm states that any matrix over a field can be transformed by means of elementary row operations to a matrix in reduced row echelon form. The formalization is based on the Rank Nullity Theorem entry of the AFP and on the HOL-Multivariate-Analysis session of Isabelle, where matrices are represented as functions over finite types. We have set up the code generator to make this representation executable. In order to improve the performance, a refinement to immutable arrays has been carried out. We have formalized some of the applications of the Gauss-Jordan algorithm. Thanks to this development, the following facts can be computed over matrices whose elements belong to a field: Ranks, Determinants, Inverses, Bases and dimensions and Solutions of systems of linear equations. Code can be exported to SML and Haskell.</td>
-</tr>
-
-
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Gauss_Jordan-AFP,
-  author  = {Jose Divasón and Jesús Aransay},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Gauss_Jordan-AFP</p>
+      <pre id="copyText">@article{Gauss_Jordan-AFP,
+  author  = {divason and aransay},
   title   = {Gauss-Jordan Algorithm and Its Applications},
   journal = {Archive of Formal Proofs},
-  month   = sep,
+  month   = September,
   year    = 2014,
   note    = {\url{https://isa-afp.org/entries/Gauss_Jordan.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Rank_Nullity_Theorem.html">Rank_Nullity_Theorem</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Echelon_Form.html">Echelon_Form</a>, <a href="MDP-Algorithms.html">MDP-Algorithms</a>, <a href="Polynomial_Factorization.html">Polynomial_Factorization</a>, <a href="QR_Decomposition.html">QR_Decomposition</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Gauss_Jordan/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Gauss_Jordan/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Gauss_Jordan/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Gauss_Jordan-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Gauss_Jordan-2021-02-23.tar.gz">
-              afp-Gauss_Jordan-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Gauss_Jordan-2020-04-18.tar.gz">
-              afp-Gauss_Jordan-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Gauss_Jordan-2019-06-11.tar.gz">
-              afp-Gauss_Jordan-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Gauss_Jordan-2018-08-16.tar.gz">
-              afp-Gauss_Jordan-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Gauss_Jordan-2017-10-10.tar.gz">
-              afp-Gauss_Jordan-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Gauss_Jordan-2016-12-17.tar.gz">
-              afp-Gauss_Jordan-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-Gauss_Jordan-2016-02-22.tar.gz">
-              afp-Gauss_Jordan-2016-02-22.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2015:
-            <a href="../release/afp-Gauss_Jordan-2015-05-27.tar.gz">
-              afp-Gauss_Jordan-2015-05-27.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2014:
-            <a href="../release/afp-Gauss_Jordan-2014-09-03.tar.gz">
-              afp-Gauss_Jordan-2014-09-03.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Gauss_Jordan-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

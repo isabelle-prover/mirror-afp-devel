@@ -1,0 +1,28 @@
+title = "Planarity Certificates"
+date = 2015-11-11
+topics = [
+  "Mathematics/Graph theory",
+]
+abstract = """
+This development provides a formalization of planarity based on
+combinatorial maps and proves that Kuratowski's theorem implies
+combinatorial planarity.
+Moreover, it contains verified implementations of programs checking
+certificates for planarity (i.e., a combinatorial map) or non-planarity
+(i.e., a Kuratowski subgraph)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.noschinski]
+homepage = "noschinski_homepage"
+
+[contributors]
+
+[notify]
+noschinski = "noschinski_email"
+
+[history]
+
+[extra]

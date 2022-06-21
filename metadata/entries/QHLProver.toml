@@ -1,0 +1,43 @@
+title = "Quantum Hoare Logic"
+date = 2019-03-24
+topics = [
+  "Computer science/Programming languages/Logics",
+  "Computer science/Semantics",
+]
+abstract = """
+We formalize quantum Hoare logic as given in [1]. In particular, we
+specify the syntax and denotational semantics of a simple model of
+quantum programs. Then, we write down the rules of quantum Hoare logic
+for partial correctness, and show the soundness and completeness of
+the resulting proof system. As an application, we verify the
+correctness of Grover’s algorithm."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.liu]
+
+[authors.zhan]
+homepage = "zhan_homepage"
+
+[authors.wang]
+
+[authors.ying]
+
+[authors.liut]
+
+[authors.liy]
+
+[authors.yingm]
+
+[authors.zhann]
+
+[contributors]
+
+[notify]
+zhan = "zhan_email"
+
+[history]
+
+[extra]

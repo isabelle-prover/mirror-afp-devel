@@ -1,0 +1,36 @@
+title = "Converting Linear-Time Temporal Logic to Generalized Büchi Automata"
+date = 2014-05-28
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+We formalize linear-time temporal logic (LTL) and the algorithm by Gerth
+et al. to convert LTL formulas to generalized Büchi automata.
+We also formalize some syntactic rewrite rules that can be applied to
+optimize the LTL formula before conversion.
+Moreover, we integrate the Stuttering Equivalence AFP-Entry by Stefan
+Merz, adapting the lemma that next-free LTL formula cannot distinguish
+between stuttering equivalent runs to our setting.
+<p>
+We use the Isabelle Refinement and Collection framework, as well as the
+Autoref tool, to obtain a refined version of our algorithm, from which
+efficiently executable code can be extracted."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schimpf]
+email = "schimpf_email"
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email"
+
+[history]
+
+[extra]

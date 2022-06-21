@@ -1,0 +1,35 @@
+title = "Catalan Numbers"
+date = 2016-06-21
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+<p>In this work, we define the Catalan numbers <em>C<sub>n</sub></em>
+and prove several equivalent definitions (including some closed-form
+formulae). We also show one of their applications (counting the number
+of binary trees of size <em>n</em>), prove the asymptotic growth
+approximation <em>C<sub>n</sub> &sim; 4<sup>n</sup> / (&radic;<span
+style=\"text-decoration: overline\">&pi;</span> &middot;
+n<sup>1.5</sup>)</em>, and provide reasonably efficient executable
+code to compute them.</p>  <p>The derivation of the closed-form
+formulae uses algebraic manipulations of the ordinary generating
+function of the Catalan numbers, and the asymptotic approximation is
+then done using generalised binomial coefficients and the Gamma
+function. Thanks to these highly non-elementary mathematical tools,
+the proofs are very short and simple.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

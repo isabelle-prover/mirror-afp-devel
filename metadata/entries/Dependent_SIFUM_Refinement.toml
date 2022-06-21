@@ -1,0 +1,35 @@
+title = "Compositional Security-Preserving Refinement for Concurrent Imperative Programs"
+date = 2016-06-28
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+The paper \"Compositional Verification and Refinement of Concurrent
+Value-Dependent Noninterference\" by Murray et. al. (CSF 2016) presents
+a compositional theory of refinement for a value-dependent
+noninterference property, defined in (Murray, PLAS 2015), for
+concurrent programs. This development formalises that refinement
+theory, and demonstrates its application on some small examples."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.murray]
+homepage = "murray_homepage"
+
+[authors.sison]
+
+[authors.pierzchalski]
+
+[authors.rizkallah]
+homepage = "rizkallah_homepage"
+
+[contributors]
+
+[notify]
+murray = "murray_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,25 @@
+title = "Positional Determinacy of Parity Games"
+date = 2015-11-02
+topics = [
+  "Mathematics/Games and economics",
+  "Mathematics/Graph theory",
+]
+abstract = """
+We present a formalization of parity games (a two-player game on
+directed graphs) and a proof of their positional determinacy in
+Isabelle/HOL.  This proof works for both finite and infinite games."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.dittmann]
+homepage = "dittmann_homepage"
+
+[contributors]
+
+[notify]
+
+[history]
+
+[extra]

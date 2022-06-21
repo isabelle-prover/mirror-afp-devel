@@ -1,0 +1,35 @@
+title = "An Isabelle/HOL formalisation of Green's Theorem"
+date = 2018-01-11
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+We formalise a statement of Green’s theorem—the first formalisation to
+our knowledge—in Isabelle/HOL. The theorem statement that we formalise
+is enough for most applications, especially in physics and
+engineering. Our formalisation is made possible by a novel proof that
+avoids the ubiquitous line integral cancellation argument. This
+eliminates the need to formalise orientations and region boundaries
+explicitly with respect to the outwards-pointing normal vector.
+Instead we appeal to a homological argument about equivalences between
+paths."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.abdulaziz]
+homepage = "abdulaziz_homepage"
+
+[authors.paulson]
+homepage = "paulson_homepage"
+
+[contributors]
+
+[notify]
+abdulaziz = "abdulaziz_email1"
+paulson = "paulson_email"
+
+[history]
+
+[extra]

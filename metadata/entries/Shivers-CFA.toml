@@ -1,0 +1,28 @@
+title = "Shivers' Control Flow Analysis"
+date = 2010-11-16
+topics = [
+  "Computer science/Programming languages/Static analysis",
+]
+abstract = """
+In his dissertation, Olin Shivers introduces a concept of control flow graphs
+for functional languages, provides an algorithm to statically derive a safe
+approximation of the control flow graph and proves this algorithm correct. In
+this research project, Shivers' algorithms and proofs are formalized
+in the HOLCF extension of HOL."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.breitner]
+email = "breitner_email"
+
+[contributors]
+
+[notify]
+breitner = "breitner_email"
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

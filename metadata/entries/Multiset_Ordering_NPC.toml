@@ -1,0 +1,33 @@
+title = "The Generalized Multiset Ordering is NP-Complete"
+date = 2022-04-20
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+We consider the problem of comparing two multisets via the generalized
+multiset ordering. We show that the corresponding decision problem is
+NP-complete. To be more precise, we encode multiset-comparisons into
+propositional formulas or into conjunctive normal forms of quadratic
+size; we further prove that satisfiability of conjunctive normal forms
+can be encoded as multiset-comparison problems of linear size.  As a
+corollary, we also show that the problem of deciding whether two terms
+are related by a recursive path order is NP-hard, provided the
+recursive path order is based on the generalized multiset ordering."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[authors.schmidinger]
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

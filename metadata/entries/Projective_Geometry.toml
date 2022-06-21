@@ -1,0 +1,30 @@
+title = "Projective Geometry"
+date = 2018-06-14
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+We formalize the basics of projective geometry. In particular, we give
+a proof of the so-called Hessenberg's theorem in projective plane
+geometry. We also provide a proof of the so-called Desargues's
+theorem based on an axiomatization of (higher) projective space
+geometry using the notion of rank of a matroid. This last approach
+allows to handle incidence relations in an homogeneous way dealing
+only with points and without the need of talking explicitly about
+lines, planes or any higher entity."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bordg]
+homepage = "bordg_homepage"
+
+[contributors]
+
+[notify]
+bordg = "bordg_email"
+
+[history]
+
+[extra]

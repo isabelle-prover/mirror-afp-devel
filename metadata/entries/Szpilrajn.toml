@@ -1,0 +1,28 @@
+title = "Order Extension and Szpilrajn's Extension Theorem"
+date = 2019-07-27
+topics = [
+  "Mathematics/Order",
+]
+abstract = """
+This entry is concerned with the principle of order extension, i.e. the extension of an order relation to a total order relation.
+To this end, we prove a more general version of Szpilrajn's extension theorem employing terminology from the book \"Consistency, Choice, and Rationality\" by Bossert and Suzumura.
+We also formalize theorem 2.7 of their book."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.zeller]
+email = "zeller_email"
+
+[authors.stevens]
+homepage = "stevens_homepage"
+
+[contributors]
+
+[notify]
+zeller = "zeller_email"
+
+[history]
+
+[extra]

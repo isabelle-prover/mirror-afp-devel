@@ -1,0 +1,41 @@
+title = "The Unified Policy Framework (UPF)"
+date = 2014-11-28
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+We present the Unified Policy Framework (UPF), a generic framework
+for modelling security (access-control) policies. UPF emphasizes
+the view that a policy is a policy decision function that grants or
+denies access to resources, permissions, etc. In other words,
+instead of modelling the relations of permitted or prohibited
+requests directly, we model the concrete function that implements
+the policy decision point in a system.  In more detail, UPF is
+based on the following four principles: 1) Functional representation
+of policies, 2) No conflicts are possible, 3) Three-valued decision
+type (allow, deny, undefined), 4) Output type not containing the
+decision only."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brucker]
+email = "brucker_email2"
+
+[authors.bruegger]
+email = "bruegger_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+brucker = "brucker_email2"
+wolff = "wolff_email"
+bruegger = "bruegger_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,22 @@
+title = "Efficient Mergesort"
+date = 2011-11-09
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = "We provide a formalization of the mergesort algorithm as used in GHC's Data.List module, proving correctness and stability. Furthermore, experimental data suggests that generated (Haskell-)code for this algorithm is much faster than for previous algorithms available in the Isabelle distribution."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[contributors]
+
+[notify]
+sternagel = "sternagel_email"
+
+[history]
+
+[extra]

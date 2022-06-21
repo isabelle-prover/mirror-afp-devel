@@ -1,0 +1,22 @@
+title = "Fun With Functions"
+date = 2008-08-26
+topics = [
+  "Mathematics/Misc",
+]
+abstract = "This is a collection of cute puzzles of the form ``Show that if a function satisfies the following constraints, it must be ...'' Please add further examples to this collection!"
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

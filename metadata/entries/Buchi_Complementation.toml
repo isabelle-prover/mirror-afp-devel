@@ -1,0 +1,31 @@
+title = "Büchi Complementation"
+date = 2017-10-19
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+This entry provides a verified implementation of rank-based Büchi
+Complementation. The verification is done in three steps: <ol>
+<li>Definition of odd rankings and proof that an automaton
+rejects a word iff there exists an odd ranking for it.</li>
+<li>Definition of the complement automaton and proof that it
+accepts exactly those words for which there is an odd
+ranking.</li> <li>Verified implementation of the
+complement automaton using the Isabelle Collections
+Framework.</li> </ol>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brunner]
+homepage = "brunner_homepage"
+
+[contributors]
+
+[notify]
+brunner = "brunner_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,31 @@
+title = "The Plünnecke-Ruzsa Inequality"
+date = 2022-05-26
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+We formalise Plünnecke's inequality and the Plünnecke-Ruzsa
+inequality, following the notes by Timothy Gowers: \"Introduction
+to Additive Combinatorics\" (2022) for the University of
+Cambridge. To this end, we first introduce basic definitions and prove
+elementary facts on sumsets and difference sets. Then, we show two
+versions of the Ruzsa triangle inequality. We follow with a proof due
+to Petridis."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.argyraki]
+homepage = "argyraki_homepage"
+
+[authors.paulson]
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]

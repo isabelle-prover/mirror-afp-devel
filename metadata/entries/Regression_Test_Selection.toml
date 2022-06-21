@@ -1,0 +1,34 @@
+title = "Regression Test Selection"
+date = 2021-04-30
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+This development provides a general definition for safe Regression
+Test Selection (RTS) algorithms. RTS algorithms select which tests to
+rerun on revised code, reducing the time required to check for newly
+introduced errors. An RTS algorithm is considered safe if and only if
+all deselected tests would have unchanged results.  This definition is
+instantiated with two class-collection-based RTS algorithms run over
+the JVM as modeled by JinjaDCI. This is achieved with a general
+definition for Collection Semantics, small-step semantics instrumented
+to collect information during execution. As the RTS definition
+mandates safety, these instantiations include proofs of safety.  This
+work is described in Mansky and Gunter's LSFA 2020 paper and
+Mansky's doctoral thesis (UIUC, 2020)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.mansky]
+email = "mansky_email"
+
+[contributors]
+
+[notify]
+mansky = "mansky_email1"
+
+[history]
+
+[extra]

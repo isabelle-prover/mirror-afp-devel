@@ -1,0 +1,28 @@
+title = "Formalization of Recursive Path Orders for Lambda-Free Higher-Order Terms"
+date = 2016-09-23
+topics = [
+  "Logic/Rewriting",
+]
+abstract = "This Isabelle/HOL formalization defines recursive path orders (RPOs) for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard RPO on first-order terms also in the presence of currying, distinguishing it from previous work. An optimized variant is formalized as well. It appears promising as the basis of a higher-order superposition calculus."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.blanchette]
+email = "blanchette_email"
+
+[authors.waldmann]
+email = "waldmann_email"
+
+[authors.wand]
+email = "wand_email"
+
+[contributors]
+
+[notify]
+blanchette = "blanchette_email"
+
+[history]
+
+[extra]

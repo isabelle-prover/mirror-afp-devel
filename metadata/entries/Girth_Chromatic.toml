@@ -1,0 +1,22 @@
+title = "A Probabilistic Proof of the Girth-Chromatic Number Theorem"
+date = 2012-02-06
+topics = [
+  "Mathematics/Graph theory",
+]
+abstract = "This works presents a formalization of the Girth-Chromatic number theorem in graph theory, stating that graphs with arbitrarily large girth and chromatic number exist. The proof uses the theory of Random Graphs to prove the existence with probabilistic arguments."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.noschinski]
+homepage = "noschinski_homepage"
+
+[contributors]
+
+[notify]
+noschinski = "noschinski_email"
+
+[history]
+
+[extra]

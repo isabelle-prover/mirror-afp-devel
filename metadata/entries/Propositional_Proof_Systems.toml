@@ -1,0 +1,31 @@
+title = "Propositional Proof Systems"
+date = 2017-06-21
+topics = [
+  "Logic/Proof theory",
+]
+abstract = """
+We formalize a range of proof systems for classical propositional
+logic (sequent calculus, natural deduction, Hilbert systems,
+resolution) and prove the most important meta-theoretic results about
+semantics and proofs: compactness, soundness, completeness,
+translations between proof systems, cut-elimination, interpolation and
+model existence."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.michaelis]
+homepage = "michaelis_homepage"
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+michaelis = "michaelis_email1"
+
+[history]
+
+[extra]

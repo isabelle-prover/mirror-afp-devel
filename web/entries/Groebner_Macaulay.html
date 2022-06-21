@@ -1,125 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Gröbner Bases, Macaulay Matrices and Dubé's Degree Bounds - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds - Archive of Formal Proofs</title><meta name="description" content="This entry formalizes the connection between Gröbner bases and
+Macaulay matrices (sometimes also referred to as `generalized
+Sylvester matrices&#39;). In..."><meta property="og:title" content="Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Groebner_Macaulay.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2019-06-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-06-15T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">G</font>röbner
-  
-          <font class="first">B</font>ases,
-  
-          <font class="first">M</font>acaulay
-  
-          <font class="first">M</font>atrices
-  
-          and
-  
-          <font class="first">D</font>ubé's
-  
-          <font class="first">D</font>egree
-  
-          <font class="first">B</font>ounds
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>G</span>röbner <span class='first'>B</span>ases, <span class='first'>M</span>acaulay <span class='first'>M</span>atrices and <span class='first'>D</span>ubé's <span class='first'>D</span>egree <span class='first'>B</span>ounds</h1>
+  <div>
+    
+    <p><a href="../authors/maletzky">Alexander Maletzky</a> <a href="https://risc.jku.at/m/alexander-maletzky/">🌐</a>
+    </p>
+    
+    
+    <p class="date">June 15, 2019</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Gröbner Bases, Macaulay Matrices and Dubé's Degree Bounds</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              <a href="https://risc.jku.at/m/alexander-maletzky/">Alexander Maletzky</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2019-06-15</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-This entry formalizes the connection between Gröbner bases and
+  <div class="abstract mathjax_process">This entry formalizes the connection between Gröbner bases and
 Macaulay matrices (sometimes also referred to as `generalized
 Sylvester matrices'). In particular, it contains a method for
 computing Gröbner bases, which proceeds by first constructing some
@@ -130,92 +108,84 @@ matrix constructed in the first step is sufficiently large. In order
 to obtain concrete upper bounds on the size of the matrix (and hence
 turn the method into an effectively executable algorithm), Dubé's
 degree bounds on Gröbner bases are utilized; consequently, they are
-also part of the formalization.</td>
-</tr>
+also part of the formalization.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li></ul>
+  <h3>Theories of Groebner_Macaulay</h3>
+  <ul>
+    <li><a href="../theories/groebner_macaulay/#Degree_Section">Degree_Section</a></li>
+    <li><a href="../theories/groebner_macaulay/#Degree_Bound_Utils">Degree_Bound_Utils</a></li>
+    <li><a href="../theories/groebner_macaulay/#Groebner_Macaulay">Groebner_Macaulay</a></li>
+    <li><a href="../theories/groebner_macaulay/#Binomial_Int">Binomial_Int</a></li>
+    <li><a href="../theories/groebner_macaulay/#Poly_Fun">Poly_Fun</a></li>
+    <li><a href="../theories/groebner_macaulay/#Monomial_Module">Monomial_Module</a></li>
+    <li><a href="../theories/groebner_macaulay/#Dube_Prelims">Dube_Prelims</a></li>
+    <li><a href="../theories/groebner_macaulay/#Hilbert_Function">Hilbert_Function</a></li>
+    <li><a href="../theories/groebner_macaulay/#Cone_Decomposition">Cone_Decomposition</a></li>
+    <li><a href="../theories/groebner_macaulay/#Dube_Bound">Dube_Bound</a></li>
+    <li><a href="../theories/groebner_macaulay/#Groebner_Macaulay_Examples">Groebner_Macaulay_Examples</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Groebner_Bases.html">Groebner_Bases</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Finite_Fields.html">Finite Fields</a></li>
+      
+      <li><a href="../entries/Frequency_Moments.html">Formalization of Randomized Approximation Algorithms for Frequency Moments</a></li>
+      
+      <li><a href="../entries/Inductive_Inference.html">Some classical results in inductive inference of recursive functions</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Groebner_Macaulay/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Groebner_Macaulay/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Groebner_Macaulay/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Groebner_Macaulay-AFP,
-  author  = {Alexander Maletzky},
-  title   = {Gröbner Bases, Macaulay Matrices and Dubé's Degree Bounds},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Groebner_Macaulay-AFP</p>
+      <pre id="copyText">@article{Groebner_Macaulay-AFP,
+  author  = {maletzky},
+  title   = {Gröbner Bases, Macaulay Matrices and Dubé&#39;s Degree Bounds},
   journal = {Archive of Formal Proofs},
-  month   = jun,
+  month   = June,
   year    = 2019,
   note    = {\url{https://isa-afp.org/entries/Groebner_Macaulay.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Groebner_Bases.html">Groebner_Bases</a>      </td></tr>
-          
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Groebner_Macaulay/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Groebner_Macaulay/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Groebner_Macaulay/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Groebner_Macaulay-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Groebner_Macaulay-2021-02-23.tar.gz">
-              afp-Groebner_Macaulay-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Groebner_Macaulay-2020-04-18.tar.gz">
-              afp-Groebner_Macaulay-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Groebner_Macaulay-2019-06-17.tar.gz">
-              afp-Groebner_Macaulay-2019-06-17.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Groebner_Macaulay-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

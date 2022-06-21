@@ -1,0 +1,41 @@
+title = "Median Method"
+date = 2022-01-25
+topics = [
+  "Mathematics/Probability theory",
+]
+abstract = """
+<p>The median method is an amplification result for randomized
+approximation algorithms described in [<a
+href=\"https://doi.org/10.1006/jcss.1997.1545\">1</a>].
+Given an algorithm whose result is in a desired interval with a
+probability larger than <i>1/2</i>, it is possible to
+improve the success probability, by running the algorithm multiple
+times independently and using the median. In contrast to using the
+mean, the amplification of the success probability grows exponentially
+with the number of independent runs.</p> <p>This entry
+contains a formalization of the underlying theorem: Given a sequence
+of n independent random variables, which are in a desired interval
+with a probability <i>1/2 + a</i>. Then their median will
+be in the desired interval with a probability of <i>1 −
+exp(−2a<sup>2</sup> n)</i>. In particular, the
+success probability approaches <i>1</i> exponentially with
+the number of variables.</p> <p>In addition to that, this
+entry also contains a proof that order-statistics of Borel-measurable
+random variables are themselves measurable and that generalized
+intervals in linearly ordered Borel-spaces are measurable.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.karayel]
+homepage = "karayel_homepage"
+
+[contributors]
+
+[notify]
+karayel = "karayel_email"
+
+[history]
+
+[extra]

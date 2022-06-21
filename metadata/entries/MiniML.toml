@@ -1,0 +1,24 @@
+title = "Mini ML"
+date = 2004-03-19
+topics = [
+  "Computer science/Programming languages/Type systems",
+]
+abstract = "This theory defines the type inference rules and the type inference algorithm <i>W</i> for MiniML (simply-typed lambda terms with <tt>let</tt>) due to Milner. It proves the soundness and completeness of <i>W</i> w.r.t. the rules."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.naraschewski]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+klein = "klein_email"
+
+[history]
+
+[extra]

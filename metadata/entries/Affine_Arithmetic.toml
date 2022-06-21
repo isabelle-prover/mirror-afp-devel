@@ -1,0 +1,32 @@
+title = "Affine Arithmetic"
+date = 2014-02-07
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+We give a formalization of affine forms as abstract representations of zonotopes.
+We provide affine operations as well as overapproximations of some non-affine operations like multiplication and division.
+Expressions involving those operations can automatically be turned into (executable) functions approximating the original
+expression in affine arithmetic."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.immler]
+homepage = "immler_homepage"
+
+[contributors]
+
+[notify]
+immler = "immler_email"
+
+[history]
+2015-01-31 = """
+added algorithm for zonotope/hyperplane intersection<br>
+"""
+2017-09-20 = """
+linear approximations for all symbols from the floatarith data
+type"""
+
+[extra]

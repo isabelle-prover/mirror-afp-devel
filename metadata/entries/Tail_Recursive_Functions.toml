@@ -1,0 +1,31 @@
+title = "A General Method for the Proof of Theorems on Tail-recursive Functions"
+date = 2013-12-01
+topics = [
+  "Computer science/Functional programming",
+]
+abstract = """
+<p>
+Tail-recursive function definitions are sometimes more straightforward than
+alternatives, but proving theorems on them may be roundabout because of the
+peculiar form of the resulting recursion induction rules.
+</p><p>
+This paper describes a proof method that provides a general solution to
+this problem by means of suitable invariants over inductive sets, and
+illustrates the application of such method by examining two case studies.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.noce]
+email = "noce_email"
+
+[contributors]
+
+[notify]
+noce = "noce_email"
+
+[history]
+
+[extra]

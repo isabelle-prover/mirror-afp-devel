@@ -1,0 +1,26 @@
+title = "Executable Transitive Closures of Finite Relations"
+date = 2011-03-14
+topics = [
+  "Computer science/Algorithms/Graph",
+]
+abstract = "We provide a generic work-list algorithm to compute the transitive closure of finite relations where only successors of newly detected states are generated. This algorithm is then instantiated for lists over arbitrary carriers and red black trees (which are faster but require a linear order on the carrier), respectively.  Our formalization was performed as part of the IsaFoR/CeTA project where reflexive transitive closures of large tree automata have to be computed."
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+sternagel = "sternagel_email"
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,33 @@
+title = "Pairing Heap"
+date = 2016-07-14
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+This library defines three different versions of pairing heaps: a
+functional version of the original design based on binary
+trees [Fredman et al. 1986], the version by Okasaki [1998] and
+a modified version of the latter that is free of structural invariants.
+<p>
+The amortized complexity of pairing heaps is analyzed in the AFP article
+<a href=\"http://isa-afp.org/entries/Amortized_Complexity.html\">Amortized Complexity</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brinkop]
+email = "brinkop_email"
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+extra-0 = "Origin: This library was extracted from Amortized Complexity and extended."

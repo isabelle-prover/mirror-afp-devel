@@ -1,0 +1,38 @@
+title = "Derivatives of Logical Formulas"
+date = 2015-05-28
+topics = [
+  "Computer science/Automata and formal languages",
+  "Logic/General logic/Decidability of theories",
+]
+abstract = """
+We formalize new decision procedures for WS1S, M2L(Str), and Presburger
+Arithmetics. Formulas of these logics denote regular languages. Unlike
+traditional decision procedures, we do <em>not</em> translate formulas into automata
+(nor into regular expressions), at least not explicitly. Instead we devise
+notions of derivatives (inspired by Brzozowski derivatives for regular
+expressions) that operate on formulas directly and compute a syntactic
+bisimulation using these derivatives. The treatment of Boolean connectives and
+quantifiers is uniform for all mentioned logics and is abstracted into a
+locale. This locale is then instantiated by different atomic formulas and their
+derivatives (which may differ even for the same logic under different encodings
+of interpretations as formal words).
+<p>
+The WS1S instance is described in the draft paper <a
+href=\"https://people.inf.ethz.ch/trayteld/papers/csl15-ws1s_derivatives/index.html\">A
+Coalgebraic Decision Procedure for WS1S</a> by the author."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+traytel = "traytel_email"
+
+[history]
+
+[extra]

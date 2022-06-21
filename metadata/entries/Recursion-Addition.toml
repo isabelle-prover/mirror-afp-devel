@@ -1,0 +1,28 @@
+title = "Recursion Theorem in ZF"
+date = 2020-05-11
+topics = [
+  "Logic/Set theory",
+]
+abstract = """
+This document contains a proof of the recursion theorem. This is a
+mechanization of the proof of the recursion theorem from the text <i>Introduction to
+Set Theory</i>, by Karel Hrbacek and Thomas Jech. This
+implementation may be used as the basis for a model of Peano arithmetic in
+ZF. While recursion and the natural numbers are already available in Isabelle/ZF, this clean development
+is much easier to follow."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.dunaev]
+email = "dunaev_email"
+
+[contributors]
+
+[notify]
+dunaev = "dunaev_email"
+
+[history]
+
+[extra]

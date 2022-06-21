@@ -1,0 +1,44 @@
+title = "Extension of Types-To-Sets"
+date = 2021-09-06
+topics = [
+  "Tools",
+]
+abstract = """
+In their article titled <i>From Types to Sets by Local Type
+Definitions in Higher-Order Logic</i> and published in the
+proceedings of the conference <i>Interactive Theorem
+Proving</i> in 2016, Ondřej Kunčar and Andrei Popescu propose an
+extension of the logic Isabelle/HOL and an associated algorithm for
+the relativization of the <i>type-based theorems</i> to
+more flexible <i>set-based theorems</i>, collectively
+referred to as <i>Types-To-Sets</i>. One of the aims of
+their work was to open an opportunity for the development of a
+software tool for applied relativization in the implementation of the
+logic Isabelle/HOL of the proof assistant Isabelle. In this article,
+we provide a prototype of a software framework for the interactive
+automated relativization of theorems in Isabelle/HOL, developed as an
+extension of the proof language Isabelle/Isar. The software framework
+incorporates the implementation of the proposed extension of the
+logic, and builds upon some of the ideas for further work expressed in
+the original article on Types-To-Sets by Ondřej Kunčar and Andrei
+Popescu and the subsequent article <i>Smooth Manifolds and Types
+to Sets for Linear Algebra in Isabelle/HOL</i> that was written
+by Fabian Immler and Bohua Zhan and published in the proceedings of
+the <i>International Conference on Certified Programs and
+Proofs</i> in 2019."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.milehins]
+email = "milehins_email"
+
+[contributors]
+
+[notify]
+milehins = "milehins_email1"
+
+[history]
+
+[extra]

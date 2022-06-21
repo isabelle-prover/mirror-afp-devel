@@ -1,0 +1,37 @@
+title = "An Efficient Normalisation Procedure for Linear Temporal Logic: Isabelle/HOL Formalisation"
+date = 2020-05-08
+topics = [
+  "Computer science/Automata and formal languages",
+  "Logic/General logic/Temporal logic",
+]
+abstract = """
+In the mid 80s, Lichtenstein, Pnueli, and Zuck proved a classical
+theorem stating that every formula of Past LTL (the extension of LTL
+with past operators) is equivalent to a formula of the form
+$\\bigwedge_{i=1}^n \\mathbf{G}\\mathbf{F} \\varphi_i \\vee
+\\mathbf{F}\\mathbf{G} \\psi_i$,  where $\\varphi_i$ and $\\psi_i$ contain
+only past operators. Some years later, Chang, Manna, and Pnueli built
+on this result to derive a similar normal form for LTL. Both
+normalisation procedures have a non-elementary worst-case blow-up, and
+follow an involved path from formulas to counter-free automata to
+star-free regular expressions and back to formulas. We improve on both
+points. We present an executable formalisation of a direct and purely
+syntactic normalisation procedure for LTL yielding a normal form,
+comparable to the one by Chang, Manna, and Pnueli, that has only a
+single exponential blow-up."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sickert]
+email = "sickert_email"
+
+[contributors]
+
+[notify]
+sickert = "sickert_email"
+
+[history]
+
+[extra]

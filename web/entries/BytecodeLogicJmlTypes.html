@@ -1,286 +1,171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>A Bytecode Logic for JML and Types - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>A Bytecode Logic for JML and Types - Archive of Formal Proofs</title><meta name="description" content="This document contains the Isabelle/HOL sources underlying the paper A bytecode logic for JML and types by Beringer and Hofmann, updated to Isabelle 2008...."><meta property="og:title" content="A Bytecode Logic for JML and Types" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/BytecodeLogicJmlTypes.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2008-12-12T00:00:00+00:00" />
+<meta property="article:modified_time" content="2008-12-12T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="A Bytecode Logic for JML and Types"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">A</font>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>A</span> <span class='first'>B</span>ytecode <span class='first'>L</span>ogic for <span class='first'>J</span><span class='first'>M</span><span class='first'>L</span> and <span class='first'>T</span>ypes</h1>
+  <div>
+    
+    <p><a href="../authors/beringer">Lennart Beringer</a> and <a href="../authors/hofmann">Martin Hofmann</a> <a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">🌐</a>
+    </p>
+    
+    
+    <p class="date">December 12, 2008</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">This document contains the Isabelle/HOL sources underlying the paper <i>A bytecode logic for JML and types</i> by Beringer and Hofmann, updated to Isabelle 2008. We present a program logic for a subset of sequential Java bytecode that is suitable for representing both, features found in high-level specification language JML as well as interpretations of high-level type systems. To this end, we introduce a fine-grained collection of assertions, including strong invariants, local annotations and VDM-reminiscent partial-correctness specifications. Thanks to a goal-oriented structure and interpretation of judgements, verification may proceed without recourse to an additional control flow analysis. The suitability for interpreting intensional type systems is illustrated by the proof-carrying-code style encoding of a type system for a first-order functional language which guarantees a constant upper bound on the number of objects allocated throughout an execution, be the execution terminating or non-terminating. Like the published paper, the formal development is restricted to a comparatively small subset of the JVML, lacking (among other features) exceptions, arrays, virtual methods, and static fields. This shortcoming has been overcome meanwhile, as our paper has formed the basis of the Mobius base logic, a program logic for the full sequential fragment of the JVML. Indeed, the present formalisation formed the basis of a subsequent formalisation of the Mobius base logic in the proof assistant Coq, which includes a proof of soundness with respect to the Bicolano operational semantics by Pichardie.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/programming-languages/logics">Computer science/Programming languages/Logics</a></li></ul>
+  <h3>Theories of BytecodeLogicJmlTypes</h3>
+  <ul>
+    <li><a href="../theories/bytecodelogicjmltypes/#AssocLists">AssocLists</a></li>
+    <li><a href="../theories/bytecodelogicjmltypes/#Language">Language</a></li>
+    <li><a href="../theories/bytecodelogicjmltypes/#Logic">Logic</a></li>
+    <li><a href="../theories/bytecodelogicjmltypes/#MultiStep">MultiStep</a></li>
+    <li><a href="../theories/bytecodelogicjmltypes/#Reachability">Reachability</a></li>
+    <li><a href="../theories/bytecodelogicjmltypes/#Sound">Sound</a></li>
+    <li><a href="../theories/bytecodelogicjmltypes/#Cachera">Cachera</a></li></ul><div class="flex-wrap">
   
-          <font class="first">B</font>ytecode
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/SIFPL.html">Secure information flow and program logics</a></li>
+      
+      <li><a href="../entries/Quasi_Borel_Spaces.html">Quasi-Borel Spaces</a></li>
+      
+      <li><a href="../entries/Physical_Quantities.html">A Sound Type System for Physical Quantities, Units, and Measurements</a></li>
+      
+    </ul>
+  </div>
   
-          <font class="first">L</font>ogic
-  
-          for
-  
-          <font class="first">J</font>ML
-  
-          and
-  
-          <font class="first">T</font>ypes
-  
-</h1>
-  <p>&nbsp;</p>
+  </div>
+</main>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">A Bytecode Logic for JML and Types</td>
-</tr>
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/BytecodeLogicJmlTypes/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/BytecodeLogicJmlTypes/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/BytecodeLogicJmlTypes/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                    Lennart Beringer and
-          <a href="http://www.tcs.informatik.uni-muenchen.de/~mhofmann">Martin Hofmann</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2008-12-12</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">This document contains the Isabelle/HOL sources underlying the paper <i>A bytecode logic for JML and types</i> by Beringer and Hofmann, updated to Isabelle 2008. We present a program logic for a subset of sequential Java bytecode that is suitable for representing both, features found in high-level specification language JML as well as interpretations of high-level type systems. To this end, we introduce a fine-grained collection of assertions, including strong invariants, local annotations and VDM-reminiscent partial-correctness specifications. Thanks to a goal-oriented structure and interpretation of judgements, verification may proceed without recourse to an additional control flow analysis. The suitability for interpreting intensional type systems is illustrated by the proof-carrying-code style encoding of a type system for a first-order functional language which guarantees a constant upper bound on the number of objects allocated throughout an execution, be the execution terminating or non-terminating. Like the published paper, the formal development is restricted to a comparatively small subset of the JVML, lacking (among other features) exceptions, arrays, virtual methods, and static fields. This shortcoming has been overcome meanwhile, as our paper has formed the basis of the Mobius base logic, a program logic for the full sequential fragment of the JVML. Indeed, the present formalisation formed the basis of a subsequent formalisation of the Mobius base logic in the proof assistant Coq, which includes a proof of soundness with respect to the Bicolano operational semantics by Pichardie.</td>
-</tr>
-
-
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{BytecodeLogicJmlTypes-AFP,
-  author  = {Lennart Beringer and Martin Hofmann},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">BytecodeLogicJmlTypes-AFP</p>
+      <pre id="copyText">@article{BytecodeLogicJmlTypes-AFP,
+  author  = {beringer and hofmann},
   title   = {A Bytecode Logic for JML and Types},
   journal = {Archive of Formal Proofs},
-  month   = dec,
+  month   = December,
   year    = 2008,
   note    = {\url{https://isa-afp.org/entries/BytecodeLogicJmlTypes.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                    
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/BytecodeLogicJmlTypes/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/BytecodeLogicJmlTypes/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/BytecodeLogicJmlTypes/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-BytecodeLogicJmlTypes-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2021-02-23.tar.gz">
-              afp-BytecodeLogicJmlTypes-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2020-04-18.tar.gz">
-              afp-BytecodeLogicJmlTypes-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2019-06-11.tar.gz">
-              afp-BytecodeLogicJmlTypes-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2018-08-16.tar.gz">
-              afp-BytecodeLogicJmlTypes-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2017-10-10.tar.gz">
-              afp-BytecodeLogicJmlTypes-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2016-12-17.tar.gz">
-              afp-BytecodeLogicJmlTypes-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2016-02-22.tar.gz">
-              afp-BytecodeLogicJmlTypes-2016-02-22.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2015:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2015-05-27.tar.gz">
-              afp-BytecodeLogicJmlTypes-2015-05-27.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2014:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2014-08-28.tar.gz">
-              afp-BytecodeLogicJmlTypes-2014-08-28.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2013-2:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2013-12-11.tar.gz">
-              afp-BytecodeLogicJmlTypes-2013-12-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2013-1:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2013-11-17.tar.gz">
-              afp-BytecodeLogicJmlTypes-2013-11-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2013:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2013-02-16.tar.gz">
-              afp-BytecodeLogicJmlTypes-2013-02-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2012:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2012-05-24.tar.gz">
-              afp-BytecodeLogicJmlTypes-2012-05-24.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2011-1:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2011-10-11.tar.gz">
-              afp-BytecodeLogicJmlTypes-2011-10-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2011:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2011-02-11.tar.gz">
-              afp-BytecodeLogicJmlTypes-2011-02-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2009-2:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2010-06-30.tar.gz">
-              afp-BytecodeLogicJmlTypes-2010-06-30.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2009-1:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2009-12-12.tar.gz">
-              afp-BytecodeLogicJmlTypes-2009-12-12.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2009:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2009-04-29.tar.gz">
-              afp-BytecodeLogicJmlTypes-2009-04-29.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2008:
-            <a href="../release/afp-BytecodeLogicJmlTypes-2008-12-22.tar.gz">
-              afp-BytecodeLogicJmlTypes-2008-12-22.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-BytecodeLogicJmlTypes-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

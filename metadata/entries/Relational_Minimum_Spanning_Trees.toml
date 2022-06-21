@@ -1,0 +1,27 @@
+title = "Relational Minimum Spanning Tree Algorithms"
+date = 2020-12-08
+topics = [
+  "Computer science/Algorithms/Graph",
+]
+abstract = """
+We verify the correctness of Prim's, Kruskal's and
+Borůvka's minimum spanning tree algorithms based on algebras for
+aggregation and minimisation."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.guttmann]
+homepage = "guttmann_homepage"
+
+[authors.brien]
+
+[contributors]
+
+[notify]
+guttmann = "guttmann_email"
+
+[history]
+
+[extra]

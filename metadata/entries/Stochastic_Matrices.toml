@@ -1,0 +1,31 @@
+title = "Stochastic Matrices and the Perron-Frobenius Theorem"
+date = 2017-11-22
+topics = [
+  "Mathematics/Algebra",
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+Stochastic matrices are a convenient way to model discrete-time and
+finite state Markov chains. The Perron&ndash;Frobenius theorem
+tells us something about the existence and uniqueness of non-negative
+eigenvectors of a stochastic matrix.  In this entry, we formalize
+stochastic matrices, link the formalization to the existing AFP-entry
+on Markov chains, and apply the Perron&ndash;Frobenius theorem to
+prove that stationary distributions always exist, and they are unique
+if the stochastic matrix is irreducible."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+homepage = "thiemann_homepage"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

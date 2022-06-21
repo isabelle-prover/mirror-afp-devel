@@ -1,0 +1,33 @@
+title = "Gale-Stewart Games"
+date = 2021-04-23
+topics = [
+  "Mathematics/Games and economics",
+]
+abstract = """
+This is a formalisation of the main result of Gale and Stewart from
+1953, showing that closed finite games are determined. This property
+is now known as the Gale Stewart Theorem. While the original paper
+shows some additional theorems as well, we only formalize this main
+result, but do so in a somewhat general way. We formalize games of a
+fixed arbitrary length, including infinite length, using co-inductive
+lists, and show that defensive strategies exist unless the other
+player is winning. For closed games, defensive strategies are winning
+for the closed player, proving that such games are determined. For
+finite games, which are a special case in our formalisation, all games
+are closed."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.joosten]
+homepage = "joosten_homepage"
+
+[contributors]
+
+[notify]
+joosten = "joosten_email1"
+
+[history]
+
+[extra]

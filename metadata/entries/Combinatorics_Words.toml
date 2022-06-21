@@ -1,0 +1,40 @@
+title = "Combinatorics on Words Basics"
+date = 2021-05-24
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+We formalize basics of Combinatorics on Words. This is an extension of
+existing theories on lists. We provide additional properties related
+to prefix, suffix, factor, length and rotation. The topics include
+prefix and suffix comparability, mismatch, word power, total and
+reversed morphisms, border, periods, primitivity and roots. We also
+formalize basic, mostly folklore results related to word equations:
+equidivisibility, commutation and conjugation. Slightly advanced
+properties include the Periodicity lemma (often cited as the Fine and
+Wilf theorem) and the variant of the Lyndon-Schützenberger theorem for
+words. We support the algebraic point of view which sees words as
+generators of submonoids of a free monoid. This leads to the concepts
+of the (free) hull, the (free) basis (or code)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.holub]
+homepage = "holub_homepage"
+
+[authors.raska]
+
+[authors.starosta]
+homepage = "starosta_homepage"
+
+[contributors]
+
+[notify]
+holub = "holub_email"
+starosta = "starosta_email"
+
+[history]
+
+[extra]

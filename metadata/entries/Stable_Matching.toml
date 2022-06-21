@@ -1,0 +1,27 @@
+title = "Stable Matching"
+date = 2016-10-24
+topics = [
+  "Mathematics/Games and economics",
+]
+abstract = """
+We mechanize proofs of several results from the matching with
+contracts literature, which generalize those of the classical
+two-sided matching scenarios that go by the name of stable marriage.
+Our focus is on game theoretic issues. Along the way we develop
+executable algorithms for computing optimal stable matches."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gammie]
+homepage = "gammie_homepage"
+
+[contributors]
+
+[notify]
+gammie = "gammie_email"
+
+[history]
+
+[extra]

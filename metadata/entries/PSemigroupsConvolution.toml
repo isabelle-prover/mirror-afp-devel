@@ -1,0 +1,47 @@
+title = "Partial Semigroups and Convolution Algebras"
+date = 2017-06-13
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+Partial Semigroups are relevant to the foundations of quantum
+mechanics and combinatorics as well as to interval and separation
+logics. Convolution algebras can be understood either as algebras of
+generalised binary modalities over ternary Kripke frames, in
+particular over partial semigroups, or as algebras of quantale-valued
+functions which are equipped with a convolution-style operation of
+multiplication that is parametrised by a ternary relation. Convolution
+algebras provide algebraic semantics for various substructural logics,
+including categorial, relevance and linear logics, for separation
+logic and for interval logics; they cover quantitative and qualitative
+applications. These mathematical components for partial semigroups and
+convolution algebras provide uniform foundations from which models of
+computation based on relations, program traces or pomsets, and
+verification components for separation or interval temporal logics can
+be built with little effort."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.dongol]
+email = "dongol_email"
+
+[authors.gomes]
+email = "gomes_email"
+
+[authors.hayes]
+email = "hayes_email"
+
+[authors.struth]
+email = "struth_email"
+
+[contributors]
+
+[notify]
+struth = "struth_email"
+gomes = "gomes_email"
+
+[history]
+
+[extra]

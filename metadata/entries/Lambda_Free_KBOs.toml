@@ -1,0 +1,31 @@
+title = "Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms"
+date = 2016-11-12
+topics = [
+  "Logic/Rewriting",
+]
+abstract = "This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard transfinite KBO with subterm coefficients on first-order terms. It appears promising as the basis of a higher-order superposition calculus."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.becker]
+email = "becker_email"
+
+[authors.blanchette]
+email = "blanchette_email"
+
+[authors.waldmann]
+email = "waldmann_email"
+
+[authors.wand]
+email = "wand_email"
+
+[contributors]
+
+[notify]
+blanchette = "blanchette_email"
+
+[history]
+
+[extra]

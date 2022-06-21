@@ -1,0 +1,31 @@
+title = "Verification Components for Hybrid Systems"
+date = 2019-09-10
+topics = [
+  "Mathematics/Algebra",
+  "Mathematics/Analysis",
+]
+abstract = """
+These components formalise a semantic framework for the deductive
+verification of hybrid systems. They support reasoning about
+continuous evolutions of hybrid programs in the style of differential
+dynamics logic. Vector fields or flows model these evolutions, and
+their verification is done with invariants for the former or orbits
+for the latter. Laws of modal Kleene algebra or categorical predicate
+transformers implement the verification condition generation. Examples
+show the approach at work."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.munive]
+
+[contributors]
+
+[notify]
+munive = "munive_email1"
+
+[history]
+2020-12-13 = "added components based on Kleene algebras with tests. These implement differential Hoare logic (dH) and a Morgan-style differential refinement calculus (dR) for verification of hybrid programs."
+
+[extra]

@@ -1,0 +1,22 @@
+title = "List Index"
+date = 2010-02-20
+topics = [
+  "Computer science/Data structures",
+]
+abstract = "This theory provides functions for finding the index of an element in a list, by predicate and by value."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,26 @@
+title = "Conditional Transfer Rule"
+date = 2021-09-06
+topics = [
+  "Tools",
+]
+abstract = """
+This article provides a collection of experimental utilities for
+unoverloading of definitions and synthesis of conditional transfer
+rules for the object logic Isabelle/HOL of the formal proof assistant
+Isabelle written in Isabelle/ML."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.milehins]
+email = "milehins_email"
+
+[contributors]
+
+[notify]
+milehins = "milehins_email1"
+
+[history]
+
+[extra]

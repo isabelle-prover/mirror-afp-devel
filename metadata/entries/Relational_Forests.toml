@@ -1,0 +1,29 @@
+title = "Relational Forests"
+date = 2021-08-03
+topics = [
+  "Mathematics/Graph theory",
+]
+abstract = """
+We study second-order formalisations of graph properties expressed as
+first-order formulas in relation algebras extended with a Kleene star.
+The formulas quantify over relations while still avoiding
+quantification over elements of the base set. We formalise the
+property of undirected graphs being acyclic this way. This involves a
+study of various kinds of orientation of graphs. We also verify basic
+algorithms to constructively prove several second-order properties."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.guttmann]
+homepage = "guttmann_homepage1"
+
+[contributors]
+
+[notify]
+guttmann = "guttmann_email"
+
+[history]
+
+[extra]

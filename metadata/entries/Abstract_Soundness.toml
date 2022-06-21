@@ -1,0 +1,36 @@
+title = "Abstract Soundness"
+date = 2017-02-10
+topics = [
+  "Logic/Proof theory",
+]
+abstract = """
+A formalized coinductive account of the abstract development of
+Brotherston, Gorogiannis, and Petersen [APLAS 2012], in a slightly
+more general form since we work with arbitrary infinite proofs, which
+may be acyclic. This work is described in detail in an article by the
+authors, published in 2017 in the <em>Journal of Automated
+Reasoning</em>. The abstract proof can be instantiated for
+various formalisms, including first-order logic with inductive
+predicates."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.blanchette]
+email = "blanchette_email"
+
+[authors.popescu]
+homepage = "popescu_homepage"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+blanchette = "blanchette_email"
+
+[history]
+
+[extra]

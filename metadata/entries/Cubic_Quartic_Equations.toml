@@ -1,0 +1,30 @@
+title = "Solving Cubic and Quartic Equations"
+date = 2021-09-03
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>We formalize Cardano's formula to solve a cubic equation
+$$ax^3 + bx^2 + cx + d = 0,$$ as well as Ferrari's formula to
+solve a quartic equation. We further turn both formulas into
+executable algorithms based on the algebraic number implementation in
+the AFP. To this end we also slightly extended this library, namely by
+making the minimal polynomial of an algebraic number executable, and
+by defining and implementing $n$-th roots of complex
+numbers.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

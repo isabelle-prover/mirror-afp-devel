@@ -1,0 +1,30 @@
+title = "Gale-Shapley Algorithm"
+date = 2021-12-29
+topics = [
+  "Computer science/Algorithms",
+  "Mathematics/Games and economics",
+]
+abstract = """
+This is a stepwise refinement and proof of the Gale-Shapley stable
+matching (or marriage) algorithm down to executable code. Both a
+purely functional implementation based on lists and a functional
+implementation based on efficient arrays (provided by the Collections
+Framework in the AFP) are developed. The latter implementation runs in
+time <i>O(n<sup>2</sup>)</i> where
+<i>n</i> is the cardinality of the two sets to be matched."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

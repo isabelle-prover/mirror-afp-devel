@@ -1,0 +1,36 @@
+title = "The IMAP CmRDT"
+date = 2017-11-09
+topics = [
+  "Computer science/Algorithms/Distributed",
+  "Computer science/Data structures",
+]
+abstract = """
+We provide our Isabelle/HOL formalization of a Conflict-free
+Replicated Datatype for Internet Message Access Protocol commands.
+We show that Strong Eventual Consistency (SEC) is guaranteed
+by proving the commutativity of concurrent operations. We base our
+formalization on the recently proposed \"framework for
+establishing Strong Eventual Consistency for Conflict-free Replicated
+Datatypes\" (AFP.CRDT) from Gomes et al. Hence, we provide an
+additional example of how the recently proposed framework can be used
+to design and prove CRDTs."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.jungnickel]
+email = "jungnickel_email"
+
+[authors.oldenburg]
+
+[authors.loibl]
+
+[contributors]
+
+[notify]
+jungnickel = "jungnickel_email"
+
+[history]
+
+[extra]

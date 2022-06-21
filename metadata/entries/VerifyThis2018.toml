@@ -1,0 +1,31 @@
+title = "VerifyThis 2018 - Polished Isabelle Solutions"
+date = 2018-04-27
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+<a
+href=\"http://www.pm.inf.ethz.ch/research/verifythis.html\">VerifyThis
+2018</a> was a program verification competition associated with
+ETAPS 2018. It was the 7th event in the VerifyThis competition series.
+In this entry, we present polished and completed versions of our
+solutions that we created during the competition."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[authors.wimmer]
+homepage = "wimmer_homepage"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,27 @@
+title = "Amicable Numbers"
+date = 2020-08-04
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+This is a formalisation of Amicable Numbers, involving some relevant
+material including Euler's sigma function, some relevant
+definitions, results and examples as well as rules such as
+Th&#257;bit ibn Qurra's Rule, Euler's Rule, te
+Riele's Rule and Borho's Rule with breeders."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.argyraki]
+homepage = "argyraki_homepage"
+
+[contributors]
+
+[notify]
+argyraki = "argyraki_email"
+
+[history]
+
+[extra]

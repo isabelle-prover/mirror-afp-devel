@@ -1,115 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>IP Addresses - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>IP Addresses - Archive of Formal Proofs</title><meta name="description" content="This entry contains a definition of IP addresses and a library to work
+with them.  Generic IP addresses are modeled as machine words of
+arbitrary length...."><meta property="og:title" content="IP Addresses" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/IP_Addresses.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2016-06-28T00:00:00+00:00" />
+<meta property="article:modified_time" content="2016-06-28T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="IP Addresses"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">I</font>P
-  
-          <font class="first">A</font>ddresses
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>I</span><span class='first'>P</span> <span class='first'>A</span>ddresses</h1>
+  <div>
+    
+    <p><a href="../authors/diekmann">Cornelius Diekmann</a> <a href="http://net.in.tum.de/~diekmann">🌐</a>, <a href="../authors/michaelis">Julius Michaelis</a> <a href="http://liftm.de">🌐</a> and <a href="../authors/hupel">Lars Hupel</a> <a href="https://www21.in.tum.de/~hupel/">🌐</a>
+    </p>
+    
+    
+    <p class="date">June 28, 2016</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">IP Addresses</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                      <a href="http://net.in.tum.de/~diekmann">Cornelius Diekmann</a>,
-                <a href="http://liftm.de/">Julius Michaelis</a> and
-          <a href="https://www21.in.tum.de/~hupel/">Lars Hupel</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2016-06-28</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-This entry contains a definition of IP addresses and a library to work
+  <div class="abstract mathjax_process">This entry contains a definition of IP addresses and a library to work
 with them.  Generic IP addresses are modeled as machine words of
 arbitrary length. Derived from this generic definition, IPv4 addresses
 are 32bit machine words, IPv6 addresses are 128bit words.
@@ -120,114 +108,88 @@ IP addresses can be represented with a netmask (e.g.
 192.168.0.0/255.255.0.0) or in CIDR notation (e.g. 192.168.0.0/16). To
 provide executable code for set operations on IP address ranges, the
 library includes a datatype to work on arbitrary intervals of machine
-words.</td>
-</tr>
+words.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/networks">Computer science/Networks</a></li></ul>
+  <h3>Theories of IP_Addresses</h3>
+  <ul>
+    <li><a href="../theories/ip_addresses/#NumberWang_IPv4">NumberWang_IPv4</a></li>
+    <li><a href="../theories/ip_addresses/#NumberWang_IPv6">NumberWang_IPv6</a></li>
+    <li><a href="../theories/ip_addresses/#WordInterval">WordInterval</a></li>
+    <li><a href="../theories/ip_addresses/#Hs_Compat">Hs_Compat</a></li>
+    <li><a href="../theories/ip_addresses/#IP_Address">IP_Address</a></li>
+    <li><a href="../theories/ip_addresses/#IPv4">IPv4</a></li>
+    <li><a href="../theories/ip_addresses/#IPv6">IPv6</a></li>
+    <li><a href="../theories/ip_addresses/#Prefix_Match">Prefix_Match</a></li>
+    <li><a href="../theories/ip_addresses/#CIDR_Split">CIDR_Split</a></li>
+    <li><a href="../theories/ip_addresses/#WordInterval_Sorted">WordInterval_Sorted</a></li>
+    <li><a href="../theories/ip_addresses/#IP_Address_Parser">IP_Address_Parser</a></li>
+    <li><a href="../theories/ip_addresses/#Lib_Numbers_toString">Lib_Numbers_toString</a></li>
+    <li><a href="../theories/ip_addresses/#Lib_Word_toString">Lib_Word_toString</a></li>
+    <li><a href="../theories/ip_addresses/#Lib_List_toString">Lib_List_toString</a></li>
+    <li><a href="../theories/ip_addresses/#IP_Address_toString">IP_Address_toString</a></li>
+    <li><a href="../theories/ip_addresses/#Prefix_Match_toString">Prefix_Match_toString</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Automatic_Refinement.html">Automatic_Refinement</a></li><li><a href="../entries/Word_Lib.html">Word_Lib</a></li></ul>
+  </div><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Simple_Firewall.html">Simple_Firewall</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Simple_Firewall.html">Simple Firewall</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/IP_Addresses/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/IP_Addresses/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/IP_Addresses/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{IP_Addresses-AFP,
-  author  = {Cornelius Diekmann and Julius Michaelis and Lars Hupel},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">IP_Addresses-AFP</p>
+      <pre id="copyText">@article{IP_Addresses-AFP,
+  author  = {diekmann, michaelis and hupel},
   title   = {IP Addresses},
   journal = {Archive of Formal Proofs},
-  month   = jun,
+  month   = June,
   year    = 2016,
   note    = {\url{https://isa-afp.org/entries/IP_Addresses.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Automatic_Refinement.html">Automatic_Refinement</a>, <a href="Word_Lib.html">Word_Lib</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Simple_Firewall.html">Simple_Firewall</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/IP_Addresses/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/IP_Addresses/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/IP_Addresses/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-IP_Addresses-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-IP_Addresses-2021-02-23.tar.gz">
-              afp-IP_Addresses-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-IP_Addresses-2020-04-18.tar.gz">
-              afp-IP_Addresses-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-IP_Addresses-2019-06-11.tar.gz">
-              afp-IP_Addresses-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-IP_Addresses-2018-08-16.tar.gz">
-              afp-IP_Addresses-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-IP_Addresses-2017-10-10.tar.gz">
-              afp-IP_Addresses-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-IP_Addresses-2016-12-17.tar.gz">
-              afp-IP_Addresses-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-IP_Addresses-2016-06-28.tar.gz">
-              afp-IP_Addresses-2016-06-28.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-IP_Addresses-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

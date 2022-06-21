@@ -1,0 +1,61 @@
+title = "Power Sum Polynomials"
+date = 2020-04-24
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+<p>This article provides a formalisation of the symmetric
+multivariate polynomials known as <em>power sum
+polynomials</em>. These are of the form
+p<sub>n</sub>(<em>X</em><sub>1</sub>,&hellip;,
+<em>X</em><sub><em>k</em></sub>) =
+<em>X</em><sub>1</sub><sup>n</sup>
++ &hellip; +
+X<sub><em>k</em></sub><sup>n</sup>.
+A formal proof of the Girard–Newton Theorem is also given. This
+theorem relates the power sum polynomials to the elementary symmetric
+polynomials s<sub><em>k</em></sub> in the form
+of a recurrence relation
+(-1)<sup><em>k</em></sup>
+<em>k</em> s<sub><em>k</em></sub>
+=
+&sum;<sub>i&isinv;[0,<em>k</em>)</sub>
+(-1)<sup>i</sup> s<sub>i</sub>
+p<sub><em>k</em>-<em>i</em></sub>&thinsp;.</p>
+<p>As an application, this is then used to solve a generalised
+form of a puzzle given as an exercise in Dummit and Foote's
+<em>Abstract Algebra</em>: For <em>k</em>
+complex unknowns <em>x</em><sub>1</sub>,
+&hellip;,
+<em>x</em><sub><em>k</em></sub>,
+define p<sub><em>j</em></sub> :=
+<em>x</em><sub>1</sub><sup><em>j</em></sup>
++ &hellip; +
+<em>x</em><sub><em>k</em></sub><sup><em>j</em></sup>.
+Then for each vector <em>a</em> &isinv;
+&#x2102;<sup><em>k</em></sup>, show that
+there is exactly one solution to the system p<sub>1</sub>
+= a<sub>1</sub>, &hellip;,
+p<sub><em>k</em></sub> =
+a<sub><em>k</em></sub> up to permutation of
+the
+<em>x</em><sub><em>i</em></sub>
+and determine the value of
+p<sub><em>i</em></sub> for
+i&gt;k.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

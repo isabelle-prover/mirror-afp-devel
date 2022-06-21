@@ -1,0 +1,31 @@
+title = "Hello World"
+date = 2020-03-07
+topics = [
+  "Computer science/Functional programming",
+]
+abstract = """
+In this article, we present a formalization of the well-known
+\"Hello, World!\" code, including a formal framework for
+reasoning about IO. Our model is inspired by the handling of IO in
+Haskell. We start by formalizing the 🌍 and embrace the IO monad
+afterwards. Then we present a sample main :: IO (), followed by its
+proof of correctness."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.diekmann]
+homepage = "diekmann_homepage"
+
+[authors.hupel]
+homepage = "hupel_homepage"
+
+[contributors]
+
+[notify]
+diekmann = "diekmann_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,28 @@
+title = "Foundation of geometry in planes, and some complements: Excluding the parallel axioms"
+date = 2021-11-22
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+\"Foundations of Geometry\" is a mathematical book written by
+Hilbert in 1899. This entry is a complete formalization of
+\"Incidence\" (excluding cubic axioms), \"Order\" and
+\"Congruence\" (excluding point sequences) of the axioms
+constructed in this book. In addition, the theorem of the problem
+about the part that is treated implicitly and is not clearly stated in
+it is being carried out in parallel."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.iwama]
+
+[contributors]
+
+[notify]
+iwama = "iwama_email"
+
+[history]
+
+[extra]

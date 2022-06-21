@@ -1,0 +1,47 @@
+title = "The Factorization Algorithm of Berlekamp and Zassenhaus"
+date = 2016-10-14
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+<p>We formalize the Berlekamp-Zassenhaus algorithm for factoring
+square-free integer polynomials in Isabelle/HOL. We further adapt an
+existing formalization of Yun’s square-free factorization algorithm to
+integer polynomials, and thus provide an efficient and certified
+factorization algorithm for arbitrary univariate polynomials.
+</p>
+<p>The algorithm first performs a factorization in the prime field GF(p) and
+then performs computations in the integer ring modulo p^k, where both
+p and k are determined at runtime. Since a natural modeling of these
+structures via dependent types is not possible in Isabelle/HOL, we
+formalize the whole algorithm using Isabelle’s recent addition of
+local type definitions.
+</p>
+<p>Through experiments we verify that our algorithm factors polynomials of degree
+100 within seconds.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.divason]
+homepage = "divason_homepage"
+
+[authors.joosten]
+email = "joosten_email"
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[authors.yamada]
+email = "yamada_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

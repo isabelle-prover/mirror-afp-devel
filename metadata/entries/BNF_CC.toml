@@ -1,0 +1,45 @@
+title = "Bounded Natural Functors with Covariance and Contravariance"
+date = 2018-04-24
+topics = [
+  "Computer science/Functional programming",
+  "Tools",
+]
+abstract = """
+Bounded natural functors (BNFs) provide a modular framework for the
+construction of (co)datatypes in higher-order logic.  Their functorial
+operations, the mapper and relator, are restricted to a subset of the
+parameters, namely those where recursion can take place.  For certain
+applications, such as free theorems, data refinement, quotients, and
+generalised rewriting, it is desirable that these operations do not
+ignore the other parameters.  In this article, we formalise the
+generalisation BNF<sub>CC</sub> that extends the mapper
+and relator to covariant and contravariant parameters.  We show that
+<ol> <li> BNF<sub>CC</sub>s are closed under
+functor composition and least and greatest fixpoints,</li>
+<li> subtypes inherit the BNF<sub>CC</sub> structure
+under conditions that generalise those for the BNF case,
+and</li> <li> BNF<sub>CC</sub>s preserve
+quotients under mild conditions.</li> </ol> These proofs
+are carried out for abstract BNF<sub>CC</sub>s similar to
+the AFP entry BNF Operations.  In addition, we apply the
+BNF<sub>CC</sub> theory to several concrete functors."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochbihler]
+homepage = "lochbihler_homepage"
+
+[authors.schneider]
+email = "schneider_email"
+
+[contributors]
+
+[notify]
+lochbihler = "lochbihler_email1"
+schneider = "schneider_email"
+
+[history]
+
+[extra]

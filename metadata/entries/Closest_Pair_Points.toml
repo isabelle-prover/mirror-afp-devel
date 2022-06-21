@@ -1,0 +1,33 @@
+title = "Closest Pair of Points Algorithms"
+date = 2020-01-13
+topics = [
+  "Computer science/Algorithms/Geometry",
+]
+abstract = """
+This entry provides two related verified divide-and-conquer algorithms
+solving the fundamental <em>Closest Pair of Points</em>
+problem in Computational Geometry. Functional correctness and the
+optimal running time of <em>O</em>(<em>n</em> log <em>n</em>) are
+proved. Executable code is generated which is empirically competitive
+with handwritten reference implementations."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.rau]
+email = "rau_email"
+
+[authors.nipkow]
+homepage = "nipkow_homepage2"
+
+[contributors]
+
+[notify]
+rau = "rau_email"
+nipkow = "nipkow_email"
+
+[history]
+2020-04-14 = "Incorporate Time_Monad of the AFP entry Root_Balanced_Tree."
+
+[extra]
