@@ -10,7 +10,7 @@ text\<open>This theory is based on work by Brozowski \cite{Brzozowski64} and Ant
 
 subsection \<open>Brzozowski's derivatives of regular expressions\<close>
 
-primrec
+fun
   deriv :: "'a \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "deriv c (Zero) = Zero"
@@ -21,7 +21,7 @@ where
     (if nullable r1 then Plus (Times (deriv c r1) r2) (deriv c r2) else Times (deriv c r1) r2)"
 | "deriv c (Star r) = Times (deriv c r) (Star r)"
 
-primrec 
+fun 
   derivs :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where
   "derivs [] r = r"

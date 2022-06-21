@@ -197,13 +197,13 @@ lemmas [cat_cs_intros] = \<Z>.tiny_category_cat_CAT
 
 subsection\<open>Isomorphism\<close>
 
-lemma (in \<Z>) cat_CAT_is_arr_isomorphismI: 
+lemma cat_CAT_is_iso_arrI: 
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
   shows "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>"
-proof(intro is_arr_isomorphismI is_inverseI)
+proof(intro is_iso_arrI is_inverseI)
   from assms show \<FF>: "\<FF> : \<AA> \<mapsto>\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>"
     unfolding cat_CAT_is_arr_iff by auto
-  note iso_thms = is_iso_functor_is_arr_isomorphism[OF assms]
+  note iso_thms = is_iso_functor_is_iso_arr[OF assms]
   from iso_thms(1) show inv_\<FF>: "inv_cf \<FF> : \<BB> \<mapsto>\<^bsub>cat_CAT \<alpha>\<^esub> \<AA>"
     unfolding cat_CAT_is_arr_iff by auto
   from assms show "\<FF> : \<AA> \<mapsto>\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>"
@@ -217,11 +217,11 @@ proof(intro is_arr_isomorphismI is_inverseI)
     by (rule iso_thms(3))
 qed
 
-lemma (in \<Z>) cat_CAT_is_arr_isomorphismD: 
+lemma cat_CAT_is_iso_arrD: 
   assumes "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>"
   shows "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
 proof-
-  from is_arr_isomorphismD[OF assms] have \<FF>: "\<FF> : \<AA> \<mapsto>\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>" 
+  from is_iso_arrD[OF assms] have \<FF>: "\<FF> : \<AA> \<mapsto>\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>" 
     and "(\<exists>\<GG>. is_inverse (cat_CAT \<alpha>) \<GG> \<FF>)"
     by simp_all
   then obtain \<GG> where "is_inverse (cat_CAT \<alpha>) \<GG> \<FF>" by clarsimp
@@ -233,55 +233,51 @@ proof-
   from \<FF> \<FF>' have \<AA>': "\<AA>' = \<AA>" and \<BB>': "\<BB>' = \<BB>" by auto  
   from \<FF> have \<FF>: "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" unfolding cat_CAT_is_arr_iff by simp
   then have \<AA>: "category \<alpha> \<AA>" and \<BB>: "category \<alpha> \<BB>" by auto
-  from \<GG>' have "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" 
-    unfolding \<AA>' \<BB>' cat_CAT_is_arr_iff by simp
+  from \<GG>' have "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" unfolding \<AA>' \<BB>' cat_CAT_is_arr_iff by simp
   moreover from \<GG>\<FF> have "\<GG> \<circ>\<^sub>C\<^sub>F \<FF> = cf_id \<AA>"
-    unfolding \<AA>' cat_CAT_Comp_app[OF \<GG>' \<FF>'] cat_CAT_CId_app[OF \<AA>] 
-    by simp
+    unfolding \<AA>' cat_CAT_Comp_app[OF \<GG>' \<FF>'] cat_CAT_CId_app[OF \<AA>] by simp
   moreover from \<FF>\<GG> have "\<FF> \<circ>\<^sub>C\<^sub>F \<GG> = cf_id \<BB>"
-    unfolding \<BB>' cat_CAT_Comp_app[OF \<FF>' \<GG>'] cat_CAT_CId_app[OF \<BB>] 
-    by simp
-  ultimately show ?thesis 
-    using \<FF> by (elim is_arr_isomorphism_is_iso_functor)
+    unfolding \<BB>' cat_CAT_Comp_app[OF \<FF>' \<GG>'] cat_CAT_CId_app[OF \<BB>] by simp
+  ultimately show ?thesis using \<FF> by (elim is_iso_arr_is_iso_functor)
 qed
 
-lemma (in \<Z>) cat_CAT_is_arr_isomorphismE: 
+lemma cat_CAT_is_iso_arrE: 
   assumes "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>"
   obtains "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
-  using assms by (auto dest: cat_CAT_is_arr_isomorphismD)
+  using assms by (auto dest: cat_CAT_is_iso_arrD)
 
-lemma (in \<Z>) cat_CAT_is_arr_isomorphism_iff[cat_CAT_simps]: 
+lemma cat_CAT_is_iso_arr_iff[cat_CAT_simps]: 
   "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_CAT \<alpha>\<^esub> \<BB> \<longleftrightarrow> \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
-  using cat_CAT_is_arr_isomorphismI cat_CAT_is_arr_isomorphismD by auto
+  using cat_CAT_is_iso_arrI cat_CAT_is_iso_arrD by auto
 
 
 
 subsection\<open>Isomorphic objects\<close>
 
-lemma (in \<Z>) cat_CAT_obj_isoI: 
+lemma cat_CAT_obj_isoI: 
   assumes "\<AA> \<approx>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
   shows "\<AA> \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>"
 proof-
   from iso_categoryD[OF assms] obtain \<FF> where "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
     by clarsimp
-  from cat_CAT_is_arr_isomorphismI[OF this] show ?thesis by (rule obj_isoI)
+  from cat_CAT_is_iso_arrI[OF this] show ?thesis by (rule obj_isoI)
 qed
 
-lemma (in \<Z>) cat_CAT_obj_isoD: 
+lemma cat_CAT_obj_isoD: 
   assumes "\<AA> \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>"
   shows "\<AA> \<approx>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
 proof-
   from obj_isoD[OF assms] obtain \<FF> where "\<FF> : \<AA> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>" 
     by clarsimp
-  from cat_CAT_is_arr_isomorphismD[OF this] show ?thesis by (rule iso_categoryI)
+  from cat_CAT_is_iso_arrD[OF this] show ?thesis by (rule iso_categoryI)
 qed
 
-lemma (in \<Z>) cat_CAT_obj_isoE: 
+lemma cat_CAT_obj_isoE: 
   assumes "\<AA> \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>cat_CAT \<alpha>\<^esub> \<BB>"
   obtains "\<AA> \<approx>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
   using assms by (auto simp: cat_CAT_obj_isoD)
 
-lemma (in \<Z>) cat_CAT_obj_iso_iff[cat_CAT_simps]: 
+lemma cat_CAT_obj_iso_iff[cat_CAT_simps]: 
   "\<AA> \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>cat_CAT \<alpha>\<^esub> \<BB> \<longleftrightarrow> \<AA> \<approx>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
   using cat_CAT_obj_isoI cat_CAT_obj_isoD by (intro iffI) auto
 

@@ -393,7 +393,7 @@ proof -
   also have "\<dots> = l / 2 * integral {0..pi} sin" by simp
   also have "(sin has_integral (-cos pi - (- cos 0))) {0..pi}"
     by (intro fundamental_theorem_of_calculus)
-       (auto intro!: derivative_eq_intros simp: has_field_derivative_iff_has_vector_derivative [symmetric])
+       (auto intro!: derivative_eq_intros simp: has_real_derivative_iff_has_vector_derivative [symmetric])
   hence "integral {0..pi} sin = -cos pi - (-cos 0)"
     by (simp add: has_integral_iff)
   finally show ?thesis by (simp add: lborel_prod)
@@ -462,7 +462,7 @@ proof -
   also have "((\<lambda>x. l / 2 * sin x) has_integral (- (l / 2 * cos \<phi>') - (- (l / 2 * cos 0)))) {0..\<phi>'}"
     using \<phi>'_nonneg
     by (intro fundamental_theorem_of_calculus)
-       (auto simp: has_field_derivative_iff_has_vector_derivative [symmetric] intro!: derivative_eq_intros)
+       (auto simp: has_real_derivative_iff_has_vector_derivative [symmetric] intro!: derivative_eq_intros)
   hence "integral {0..\<phi>'} (\<lambda>x. l / 2 * sin x) = (1 - cos \<phi>') * l / 2"
     by (simp add: has_integral_iff algebra_simps)
   also have "integral {\<phi>'..pi/2} ?f = integral {\<phi>'..pi/2} (\<lambda>_. d / 2)"

@@ -1373,9 +1373,9 @@ node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
       then have 5: "\<And>x. x \<in> set children \<Longrightarrow> x \<in> set disc_nodes \<Longrightarrow> False"
         using children disc_nodes  by fastforce
       have 6: "|h' \<turnstile> get_child_nodes xa|\<^sub>r = children'"
-        using children' by (simp add: )
+        using children' by simp
       have 7: "|h' \<turnstile> get_disconnected_nodes xb|\<^sub>r = disc_nodes'"
-        using disc_nodes' by (simp add: )
+        using disc_nodes' by simp
       have "False"
       proof (cases "xa = ptr")
         case True
@@ -1383,7 +1383,7 @@ node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
           using children_h distinct_lists_children h0 \<open>known_ptr ptr\<close> by blast
         have "|h' \<turnstile> get_child_nodes ptr|\<^sub>r = remove1 child children_h"
           using children_h'
-          by(simp add: )
+          by simp
         have "children = children_h"
           using True children children_h by auto
         show ?thesis

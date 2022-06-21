@@ -140,7 +140,7 @@ Opposite transformation of digraph homomorphisms with tiny maps
 lemma (in is_tm_tdghm) is_tm_tdghm_op:
   "op_tdghm \<NN> : op_dghm \<GG> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>.\<^sub>t\<^sub>m op_dghm \<FF> : op_dg \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> op_dg \<BB>"
   by (intro is_tm_tdghmI)
-    (cs_concl cs_intro: dg_cs_intros dg_op_intros)+
+    (cs_concl cs_shallow cs_intro: dg_cs_intros dg_op_intros)+
 
 lemma (in is_tm_tdghm) is_tm_tdghm_op'[dg_op_intros]: 
   assumes "\<GG>' = op_dghm \<GG>"
@@ -167,7 +167,7 @@ proof-
   show ?thesis
     by (rule is_tm_tdghmI)
       (
-        cs_concl
+        cs_concl 
           cs_simp: dg_cs_simps cs_intro: dg_cs_intros dg_small_cs_intros
       )+
 qed
@@ -195,7 +195,7 @@ proof-
   show ?thesis
     by (rule is_tm_tdghmI)
       (
-        cs_concl
+        cs_concl 
           cs_simp: dg_cs_simps cs_intro: dg_cs_intros dg_small_cs_intros
       )+
 qed
@@ -275,7 +275,10 @@ proof-
     NTDom.HomCod.tiny_dg_in_Vset
   show ?thesis
     by (subst tdghm_def) 
-      (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros
+      )
 qed
 
 lemma small_all_tiny_tdghms[simp]:
@@ -347,7 +350,7 @@ proof(intro is_tiny_tdghmI)
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
   show "\<NN> : \<FF> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<beta>\<^esub> \<BB>"
     by (intro tdghm_is_tdghm_if_ge_Limit)
-      (use assms(2) in \<open>cs_concl cs_intro: dg_cs_intros\<close>)+
+      (use assms(2) in \<open>cs_concl cs_shallow cs_intro: dg_cs_intros\<close>)+
   show "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<beta>\<^esub> \<BB>" "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<beta>\<^esub> \<BB>"
     by 
       (
@@ -373,7 +376,7 @@ subsubsection\<open>Opposite transformation of homomorphisms of tiny digraphs\<c
 lemma (in is_tiny_tdghm) is_tm_tdghm_op: "op_tdghm \<NN> :
   op_dghm \<GG> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y op_dghm \<FF> : op_dg \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> op_dg \<BB>"
   by (intro is_tiny_tdghmI)
-   (cs_concl cs_intro: dg_cs_intros dg_op_intros)+
+   (cs_concl cs_shallow cs_intro: dg_cs_intros dg_op_intros)+
 
 lemma (in is_tiny_tdghm) is_tiny_tdghm_op'[dg_op_intros]: 
   assumes "\<GG>' = op_dghm \<GG>"

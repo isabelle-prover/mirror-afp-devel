@@ -761,7 +761,7 @@ proof -
     have "(\<MM> has_integral ((x * ln x - x + c * x) - (2 * ln 2 - 2 + c * 2) + r' x)) {2..x}"
       unfolding \<MM>_expand using x
       by (intro has_integral_add[OF fundamental_theorem_of_calculus integral])
-         (auto simp flip: has_field_derivative_iff_has_vector_derivative
+         (auto simp flip: has_real_derivative_iff_has_vector_derivative
                intro!: derivative_eq_intros continuous_intros)
     from has_integral_unique[OF \<theta>_conv_\<MM>_integral this]
       show "\<theta> x = x + (r x * x + C - r' x)" using x

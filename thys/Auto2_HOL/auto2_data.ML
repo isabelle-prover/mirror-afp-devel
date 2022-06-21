@@ -15,7 +15,11 @@ sig
   val get_single_type: Proof.context -> Proof.context
 end;
 
-structure Auto2Data : AUTO2_DATA =
+functor Auto2Data(
+  structure PropertyData: PROPERTY_DATA;
+  structure RewriteTable: REWRITE_TABLE;
+  structure WellformData: WELLFORM_DATA;
+  ): AUTO2_DATA =
 struct
 
 (* Procedure to add a new term. Here old_items is the list of existing

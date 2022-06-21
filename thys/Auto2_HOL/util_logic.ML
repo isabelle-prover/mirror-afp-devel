@@ -111,21 +111,21 @@ sig
                      thm list -> thm
 end;
 
-structure UtilLogic : UTIL_LOGIC =
+functor UtilLogic(UtilBase: UTIL_BASE) : UTIL_LOGIC =
 struct
 
 (* Booleans *)
 
-fun term_of_bool b = (if b then bTrue else bFalse)
+fun term_of_bool b = (if b then UtilBase.bTrue else UtilBase.bFalse)
 
 fun bool_of_term t =
-    if t aconv bTrue then true
-    else if t aconv bFalse then false
+    if t aconv UtilBase.bTrue then true
+    else if t aconv UtilBase.bFalse then false
     else raise Fail "bool_of_term: unexpected t."
 
 (* Trueprop *)
 
-val Trueprop = Const (UtilBase.Trueprop_name, boolT --> propT)
+val Trueprop = Const (UtilBase.Trueprop_name, UtilBase.boolT --> propT)
 
 (* Returns whether the given term is Trueprop. *)
 fun is_Trueprop t =
@@ -145,18 +145,18 @@ fun Trueprop_conv cv ct =
     if is_Trueprop (Thm.term_of ct) then Conv.arg_conv cv ct
     else raise CTERM ("Trueprop_conv", [ct])
 
-val pFalse = Trueprop $ bFalse
+val pFalse = Trueprop $ UtilBase.bFalse
 
 (* Not *)
 
-val Not = Const (UtilBase.Not_name, boolT --> boolT)
+val Not = Const (UtilBase.Not_name, UtilBase.boolT --> UtilBase.boolT)
 
 fun mk_not P = Not $ P
 
 (* Returns whether the given term is in neg form. *)
 fun is_neg t =
     let
-      val _ = assert (fastype_of t = boolT) "is_neg: wrong type"
+      val _ = assert (fastype_of t = UtilBase.boolT) "is_neg: wrong type"
     in
       case t of
           Const (c, _) $ _ => c = UtilBase.Not_name
@@ -180,7 +180,7 @@ fun get_neg' t =
 
 (* Conjunction and disjunction *)
 
-val conj = Const (UtilBase.Conj_name, boolT --> boolT --> boolT)
+val conj = Const (UtilBase.Conj_name, UtilBase.boolT --> UtilBase.boolT --> UtilBase.boolT)
 
 fun is_conj t =
     case t of Const (c, _) $ _ $ _ => c = UtilBase.Conj_name | _ => false
@@ -196,7 +196,7 @@ fun list_conj ts =
       | [t] => t
       | t :: rest => mk_conj (t, list_conj rest)
 
-val disj = Const (UtilBase.Disj_name, boolT --> boolT --> boolT)
+val disj = Const (UtilBase.Disj_name, UtilBase.boolT --> UtilBase.boolT --> UtilBase.boolT)
 
 fun is_disj t =
     case t of Const (c, _) $ _ $ _ => c = UtilBase.Disj_name | _ => false
@@ -214,7 +214,7 @@ fun list_disj ts =
 
 (* Object implication *)
 
-val imp = Const (UtilBase.Imp_name, boolT --> boolT --> boolT)
+val imp = Const (UtilBase.Imp_name, UtilBase.boolT --> UtilBase.boolT --> UtilBase.boolT)
 
 fun is_imp t =
     case t of Const (c, _) $ _ $ _ => c = UtilBase.Imp_name | _ => false
@@ -247,7 +247,7 @@ fun mk_obj_all t body =
     let
       val (x, T) = Term.dest_Free t
     in
-      Const (UtilBase.All_name, (T --> boolT) --> boolT) $ Term.absfree (x, T) body
+      Const (UtilBase.All_name, (T --> UtilBase.boolT) --> UtilBase.boolT) $ Term.absfree (x, T) body
     end
 
 fun is_ex t =
@@ -260,7 +260,7 @@ fun mk_exists t body =
     let
       val (x, T) = Term.dest_Free t
     in
-      Const (UtilBase.Ex_name, (T --> boolT) --> boolT) $ Term.absfree (x, T) body
+      Const (UtilBase.Ex_name, (T --> UtilBase.boolT) --> UtilBase.boolT) $ Term.absfree (x, T) body
     end
 
 fun is_mem t =
@@ -270,7 +270,7 @@ fun mk_mem (x, A) =
     let
       val T = fastype_of x
     in
-      Const (UtilBase.Mem_name, T --> UtilBase.mk_setT T --> boolT) $ x $ A
+      Const (UtilBase.Mem_name, T --> UtilBase.mk_setT T --> UtilBase.boolT) $ x $ A
     end
 
 (* Finding subterms *)
@@ -314,14 +314,14 @@ fun get_all_subterms_skip_if t =
 fun get_cneg ct =
     let
       val t = Thm.term_of ct
-      val _ = assert (fastype_of t = boolT) "get_neg: wrong type"
+      val _ = assert (fastype_of t = UtilBase.boolT) "get_neg: wrong type"
     in
       if is_neg t then Thm.dest_arg ct else Thm.apply UtilBase.cNot ct
     end
 
 (* Theorems *)
 
-fun is_true_th th = Thm.eq_thm_prop (th, true_th)
+fun is_true_th th = Thm.eq_thm_prop (th, UtilBase.true_th)
 fun prop_of' th = dest_Trueprop (Thm.prop_of th)
 fun cprop_of' th = Thm.dest_arg (Thm.cprop_of th)
 fun concl_of' th = dest_Trueprop (Thm.concl_of th)
@@ -334,7 +334,7 @@ fun make_trueprop_eq th =
 
 (* Assumed theorems. *)
 fun assume_eq thy (t1, t2) =
-    Thm.assume (Thm.global_cterm_of thy (mk_Trueprop (mk_eq (t1, t2))))
+    Thm.assume (Thm.global_cterm_of thy (mk_Trueprop (UtilBase.mk_eq (t1, t2))))
 
 (* Apply cv to the statement of th, skipping Trueprop. *)
 fun apply_to_thm' cv th = apply_to_thm (Trueprop_conv cv) th
@@ -365,7 +365,7 @@ fun rewrite_to_contra_form ct =
       val (_, concl) = Logic.strip_horn (Thm.term_of ct)
       val concl' = dest_Trueprop concl
     in
-      if concl' aconv bFalse then
+      if concl' aconv UtilBase.bFalse then
         Conv.all_conv ct
       else if is_neg concl' then
         Util.concl_conv (Conv.rewr_conv UtilBase.to_contra_form_th') ct
@@ -620,9 +620,6 @@ fun prove_by_tac tac ctxt ths goal =
       ths MRS (Goal.prove ctxt [] [] goal' (HEADGOAL o tac o #context))
     end
 
-fun contra_by_tac tac ctxt ths = prove_by_tac tac ctxt ths bFalse
+fun contra_by_tac tac ctxt ths = prove_by_tac tac ctxt ths UtilBase.bFalse
 
 end  (* structure UtilLogic *)
-
-structure Basic_UtilLogic: BASIC_UTIL_LOGIC = UtilLogic
-open Basic_UtilLogic

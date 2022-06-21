@@ -297,10 +297,10 @@ proof -
       by (intro continuous_on_powr' continuous_on_mult) (auto intro!: continuous_intros)
     fix x :: real assume x: "x \<in> {0<..<4}"
     from x show "(u has_vector_derivative u' x) (at x)"
-      unfolding has_field_derivative_iff_has_vector_derivative [symmetric] u_def u'_def
+      unfolding has_real_derivative_iff_has_vector_derivative [symmetric] u_def u'_def
       by (auto intro!: derivative_eq_intros simp: field_simps powr_half_sqrt)
     from x show "(v has_vector_derivative v' x) (at x)"
-      unfolding has_field_derivative_iff_has_vector_derivative [symmetric] v_def v'_def
+      unfolding has_real_derivative_iff_has_vector_derivative [symmetric] v_def v'_def
       by (auto intro!: derivative_eq_intros simp: field_simps)
   next
     show "((\<lambda>x. u x * v' x) has_integral u 4 * v 4 - u 0 * v 0 - - c * (4 * I n - I (Suc n))) {0..4}"

@@ -13,7 +13,16 @@ sig
   val unfold_cmd: string -> Proof.state -> Proof.state
 end;
 
-structure Unfolding : UNFOLDING =
+signature UNFOLDING_KEYWORD =
+sig
+  val unfold : string * Position.T
+end
+
+functor Unfolding(
+  structure Auto2_Outer: AUTO2_OUTER;
+  structure Basic_UtilLogic: BASIC_UTIL_LOGIC;
+  structure Unfolding_Keyword: UNFOLDING_KEYWORD;
+  ): UNFOLDING =
 struct
 
 fun get_unfold_thms_by_name thy nm =
@@ -34,7 +43,7 @@ fun unfold thy ct =
     let
       val ths = get_unfold_thms thy (Thm.term_of ct)
     in
-      Conv.first_conv (map rewr_obj_eq ths) ct
+      Conv.first_conv (map Basic_UtilLogic.rewr_obj_eq ths) ct
     end
 
 fun unfold_cmd s state =
@@ -48,7 +57,7 @@ fun unfold_cmd s state =
 
       val t = Syntax.read_term ctxt s
       val eq_th = t |> Thm.cterm_of ctxt |> unfold thy
-                    |> to_obj_eq
+                    |> Basic_UtilLogic.to_obj_eq
                     |> fold Thm.implies_intr (rev cAs)
       val _ = writeln ("Obtained " ^ (eq_th |> Thm.concl_of
                                             |> Syntax.string_of_term ctxt))
@@ -59,7 +68,7 @@ fun unfold_cmd s state =
     end
 
 val _ =
-  Outer_Syntax.command @{command_keyword "@unfold"} "unfold a term"
+  Outer_Syntax.command Unfolding_Keyword.unfold "unfold a term"
     (Parse.term >>
         (fn s =>
             Toplevel.proof (fn state => unfold_cmd s state)))

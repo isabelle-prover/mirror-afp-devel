@@ -151,9 +151,9 @@ termination integrate_insert
 subsection \<open>Integrate Commutes\<close>
 
 locale integrate_insert_commute =
-  fixes M :: "('a :: linorder, 's) message set"
-  fixes a :: "'a extended \<Rightarrow> 'a position"
-  fixes s :: "('a, 's) woot_character list"
+  fixes M :: "('\<I> :: linorder, '\<Sigma>) message set"
+  fixes a :: "'\<I> extended \<Rightarrow> '\<I> position"
+  fixes s :: "('\<I>, '\<Sigma>) woot_character list"
   assumes associated_string_assm: "is_associated_string M s"
   assumes a_conditions_assm: "a_conditions (insert_messages M) a"
 begin
@@ -576,14 +576,14 @@ proof -
 qed 
 
 locale integrate_insert_commute_delete = integrate_insert_commute +
-  fixes m
+  fixes m :: "('\<I> :: linorder) delete_message"
   assumes consistent_assm: "consistent (M \<union> {Delete m})"
 begin
 
-fun delete :: "('a, 's) woot_character \<Rightarrow> ('a, 's) woot_character"
+fun delete :: "('\<I>, '\<Sigma>) woot_character \<Rightarrow> ('\<I>, '\<Sigma>) woot_character"
   where "delete (InsertMessage p i u _) = InsertMessage p i u None"
 
-definition delete_only_m :: "('a, 's) woot_character \<Rightarrow> ('a, 's) woot_character"
+definition delete_only_m :: "('\<I>, '\<Sigma>) woot_character \<Rightarrow> ('\<I>, '\<Sigma>) woot_character"
   where "delete_only_m x = (if DeleteMessage (I x) = m then delete x else x)"
 
 lemma set_s: "set s = to_woot_character M ` insert_messages M"
@@ -650,7 +650,7 @@ proof -
   show "?thesis" using integrate_delete_result by blast
 qed
 
-fun is_delete :: "(('a, 's) message) \<Rightarrow> bool" 
+fun is_delete :: "('\<I>, '\<Sigma>) message \<Rightarrow> bool" 
   where 
     "is_delete (Insert m) = False" |
     "is_delete (Delete m) = True"

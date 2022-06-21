@@ -587,7 +587,7 @@ proof-
   with assms obtain as where "xs = as@as"
     using lconjseq_alternating_order2_repeats by fast
   hence "count_list xs x = 2 * (count_list as x)"
-    by (simp add: count_list_append times2_conv_add)
+    by (simp add: times2_conv_add)
   with xs show ?thesis by simp
 qed
 
@@ -728,10 +728,9 @@ proof (induct ss)
       have  "snd (signed_list_lconjaction (s # ss) x) =
               (if even (count_list (lconjseq (rev ss)) (fst x)) then \<not> snd x else snd x)"
       by    (simp add: signed_lconjactionD)
-    with True Cons(2) show ?thesis
-      by    (simp add:
-              signed_list_lconjaction_fst lconjby_eq_conv_rconjby_eq
-              uminus_sum_list_order2[THEN sym] lconjseq_snoc count_list_snoc
+    with True Cons(2) rconjby_lconjby show ?thesis
+      by    (auto simp add: signed_list_lconjaction_fst lconjseq_snoc
+              simp flip: uminus_sum_list_order2
             )
   next
     case False
@@ -743,7 +742,7 @@ proof (induct ss)
               count_list (lconjseq (rev ss)) (fst x)"
       by    (simp add:
               rconjby_lconjby uminus_sum_list_order2[THEN sym]
-              lconjseq_snoc count_list_snoc
+              lconjseq_snoc
             )
     moreover from False 1 prevcase
       have "snd (signed_list_lconjaction (s # ss) x) =

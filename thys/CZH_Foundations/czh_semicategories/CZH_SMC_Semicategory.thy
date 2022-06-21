@@ -354,8 +354,10 @@ proof-
   interpret \<BB>: semicategory \<alpha> \<BB> by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom: "\<D>\<^sub>\<circ> \<AA> = 5\<^sub>\<nat>" by (cs_concl cs_simp: smc_cs_simps V_cs_simps)
-    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" by (cs_concl cs_simp: dom smc_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<AA> = 5\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: smc_cs_simps V_cs_simps)
+    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" 
+      by (cs_concl cs_shallow cs_simp: dom smc_cs_simps V_cs_simps)
     show "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<AA> \<Longrightarrow> \<AA>\<lparr>a\<rparr> = \<BB>\<lparr>a\<rparr>" for a 
       by (unfold dom, elim_in_numeral, insert assms) (auto simp: dg_field_simps)
   qed auto
@@ -381,7 +383,8 @@ qed (auto intro: assms)
 
 lemma (in semicategory) smc_def: "\<CC> = [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Comp\<rparr>]\<^sub>\<circ>"
 proof(rule vsv_eqI)
-  have dom_lhs: "\<D>\<^sub>\<circ> \<CC> = 5\<^sub>\<nat>" by (cs_concl cs_simp: smc_cs_simps V_cs_simps)
+  have dom_lhs: "\<D>\<^sub>\<circ> \<CC> = 5\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps V_cs_simps)
   have dom_rhs: "\<D>\<^sub>\<circ> [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Comp\<rparr>]\<^sub>\<circ> = 5\<^sub>\<nat>"
     by (simp add: nat_omega_simps)
   then show "\<D>\<^sub>\<circ> \<CC> = \<D>\<^sub>\<circ> [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Comp\<rparr>]\<^sub>\<circ>"
@@ -422,7 +425,11 @@ proof(rule Comp.vsv_vrange_vsubset)
       and f: "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b"  
     by clarsimp
   from semicategory_axioms g f show "\<CC>\<lparr>Comp\<rparr>\<lparr>gf\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: gf_def smc_cs_simps cs_intro: smc_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: gf_def smc_cs_simps cs_intro: smc_cs_intros
+      )
 qed
 
 sublocale semicategory \<subseteq> Comp: pbinop \<open>\<CC>\<lparr>Arr\<rparr>\<close> \<open>\<CC>\<lparr>Comp\<rparr>\<close>
@@ -457,7 +464,7 @@ proof(intro vsubsetI)
   from h smc_Comp_vrange have "h \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>" by auto
   with g f show "gfh \<in>\<^sub>\<circ> Vset \<alpha>"
     unfolding gfh_def gf_def 
-    by (cs_concl cs_intro: smc_cs_intros V_cs_intros)
+    by (cs_concl cs_shallow cs_intro: smc_cs_intros V_cs_intros)
 qed
 
 lemma (in semicategory) smc_semicategory_in_Vset_4: "\<CC> \<in>\<^sub>\<circ> Vset (\<alpha> + 4\<^sub>\<nat>)"
@@ -471,7 +478,7 @@ proof-
   show ?thesis
     by (subst smc_def, succ_of_numeral)
       (
-        cs_concl 
+        cs_concl  
           cs_simp: plus_V_succ_right V_cs_simps 
           cs_intro: smc_cs_intros V_cs_intros
       )
@@ -494,7 +501,7 @@ proof-
     smc_Cod_in_Vset
     smc_Comp_in_Vset
   from assms(2) show ?thesis 
-    by (subst smc_def) (cs_concl cs_intro: smc_cs_intros V_cs_intros)
+    by (subst smc_def) (cs_concl cs_shallow cs_intro: smc_cs_intros V_cs_intros)
 qed
 
 lemma (in semicategory) smc_semicategory_if_ge_Limit:
@@ -532,7 +539,7 @@ proof(rule vsubset_in_VsetI)
       unfolding VPow_iff by (rule smc_semicategory_in_Vset_4)
   qed
   from assms(2) show "Vset (\<alpha> + 4\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
 
 lemma semicategory_if_semicategory:
@@ -555,7 +562,7 @@ proof-
 qed
 
 
-text\<open>Further elementary properties.\<close>
+text\<open>Further properties.\<close>
 
 lemma (in semicategory) smc_Comp_vempty_if_Arr_vempty:
   assumes "\<CC>\<lparr>Arr\<rparr> = 0"
@@ -635,7 +642,11 @@ lemma (in semicategory) semicategory_op[smc_op_intros]:
   "semicategory \<alpha> (op_smc \<CC>)"
 proof(intro semicategoryI)
   from semicategory_axioms smc_digraph show "digraph \<alpha> (smc_dg (op_smc \<CC>))"
-    by (cs_concl cs_simp: slicing_commute[symmetric] cs_intro: dg_op_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: slicing_commute[symmetric] cs_intro: dg_op_intros
+      )
   show "vfsequence (op_smc \<CC>)" unfolding op_smc_def by simp
   show "vcard (op_smc \<CC>) = 5\<^sub>\<nat>"
     unfolding op_smc_def by (simp add: nat_omega_simps)
@@ -665,7 +676,7 @@ proof(intro semicategoryI)
       g \<circ>\<^sub>A\<^bsub>op_smc \<CC>\<^esub> f : a \<mapsto>\<^bsub>op_smc \<CC>\<^esub> c"
     for g b c f a
     unfolding smc_op_simps 
-    by (cs_concl cs_simp: smc_op_simps cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_simp: smc_op_simps cs_intro: smc_cs_intros)
   fix h c d g b f a
   assume "h : c \<mapsto>\<^bsub>op_smc \<CC>\<^esub> d" "g : b \<mapsto>\<^bsub>op_smc \<CC>\<^esub> c" "f : a \<mapsto>\<^bsub>op_smc \<CC>\<^esub> b"
   with semicategory_axioms show
@@ -714,11 +725,10 @@ lemma (in semicategory) smc_assoc_helper:
   assumes "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b"
     and "g : b \<mapsto>\<^bsub>\<CC>\<^esub> c"
     and "h : c \<mapsto>\<^bsub>\<CC>\<^esub> d"
-    and "q : b \<mapsto>\<^bsub>\<CC>\<^esub> d"
     and "h \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g = q"
   shows "h \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) = q \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
   using semicategory_axioms assms(1-4)
-  by (cs_concl cs_simp: semicategory.smc_Comp_assoc[symmetric] assms(5))
+  by (cs_concl cs_simp: assms(4) semicategory.smc_Comp_assoc[symmetric])
 
 lemma (in semicategory) smc_pattern_rectangle_right:
   assumes "aa' : a \<mapsto>\<^bsub>\<CC>\<^esub> a'" 
@@ -734,15 +744,15 @@ lemma (in semicategory) smc_pattern_rectangle_right:
 proof-
   from semicategory_axioms assms(3,2,1) have 
     "a''b'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (a'a'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> aa') = (a''b'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> a'a'') \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> aa'"
-    by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
   also have "\<dots> = (b'b'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> a'b') \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> aa'" unfolding assms(9) ..
   also from semicategory_axioms assms(1,6,7) have 
     "\<dots> = b'b'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (a'b' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> aa')"
-    by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
   also have "\<dots> = b'b'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (bb' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> ab)" unfolding assms(8) ..
   also from semicategory_axioms assms(6,5,4) have 
     "\<dots> = (b'b'' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> bb') \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> ab" 
-    by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
   finally show ?thesis by simp
 qed
 
@@ -800,7 +810,7 @@ proof(intro is_monic_arrI, unfold smc_op_simps)
     from prems(3,1,2) assms(1) semicategory_axioms have "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> e = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> e"
       by 
         (
-          cs_prems 
+          cs_prems cs_shallow
             cs_simp: smc_cs_simps smc_op_simps
             cs_intro: smc_cs_intros smc_op_intros
         )
@@ -826,7 +836,7 @@ proof-
   fix f g c 
   assume prems: "f : b \<mapsto>\<^bsub>\<CC>\<^esub> c" "g : b \<mapsto>\<^bsub>\<CC>\<^esub> c" "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> e = g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> e"
   with semicategory_axioms e have "e \<circ>\<^sub>A\<^bsub>op_smc \<CC>\<^esub> f = e \<circ>\<^sub>A\<^bsub>op_smc \<CC>\<^esub> g"
-    by (cs_concl cs_simp: smc_op_simps cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_simp: smc_op_simps cs_intro: smc_cs_intros)
   then show "f = g" 
     by (rule is_monic_arrD[THEN conjunct2, rule_format, OF prems(1,2)])
 qed
@@ -875,7 +885,7 @@ proof-
   from assms op_smc_is_arr have "g : b \<mapsto>\<^bsub>\<CC>\<^esub> c" "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" 
     unfolding is_epic_arr_def by auto
   with semicategory_axioms have "f \<circ>\<^sub>A\<^bsub>op_smc \<CC>\<^esub> g = g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
-    by (cs_concl cs_simp: smc_op_simps)
+    by (cs_concl cs_shallow cs_simp: smc_op_simps)
   with 
     semicategory.smc_Comp_is_monic_arr[
       OF semicategory_op,
@@ -908,7 +918,7 @@ proof-
   from assms have "g : b \<mapsto>\<^bsub>op_smc \<CC>\<^esub> a" "f : c \<mapsto>\<^bsub>op_smc \<CC>\<^esub> b" 
     unfolding smc_op_simps by simp_all 
   moreover from semicategory_axioms assms have "g \<circ>\<^sub>A\<^bsub>op_smc \<CC>\<^esub> f : a \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>\<CC>\<^esub> c"
-    by (cs_concl cs_simp: smc_op_simps)
+    by (cs_concl cs_shallow cs_simp: smc_op_simps)
   ultimately show ?thesis 
     using 
       semicategory.smc_Comp_is_monic_arr_is_monic_arr[

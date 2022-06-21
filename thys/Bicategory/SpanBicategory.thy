@@ -227,49 +227,16 @@ subsection "Spans"
               using C.ide_in_hom \<mu>.cod.ide_apex \<mu>.chine_in_hom C.comp_arr_dom
               by (unfold_locales, auto)
             have "?cod_\<mu> \<bullet> \<mu> = ?cod_\<mu>"
-            proof -
-              have "?cod_\<mu> \<bullet> \<mu> \<noteq> Null"
-                unfolding vcomp_def
-                using \<mu> cod_\<mu>.arrow_of_spans_axioms \<mu>.cod.is_span C.comp_cod_arr
-                apply simp
-                using \<mu>.chine_simps(1) by force
-              thus ?thesis
-                using 1 by simp
-            qed
+              by (metis (no_types, opaque_lifting) "1" C.not_arr_null
+                  \<mu>.cod.span_in_category_axioms arrow_of_spans_data.select_convs(2)
+                  cod_\<mu>.arrow_of_spans_axioms span_data.select_convs(1)
+                  span_in_category.leg_simps(1) vcomp_def)
             thus "f \<cdot> \<mu>.chine = f"
-              unfolding vcomp_def
-              using f C.comp_arr_ide C.comp_cod_arr \<mu>.arrow_of_spans_axioms
-                    cod_\<mu>.arrow_of_spans_axioms
+              using C.comp_arr_ide C.comp_cod_arr \<mu> cod_\<mu>.arrow_of_spans_axioms f vcomp_def
               by auto
           qed
           moreover have "\<And>f. \<mu>.chine \<cdot> f \<noteq> C.null \<Longrightarrow> \<mu>.chine \<cdot> f = f"
-          proof -
-            fix f
-            assume "\<mu>.chine \<cdot> f \<noteq> C.null"
-            hence f: "\<guillemotleft>f : C.dom f \<rightarrow> \<mu>.dom.apex\<guillemotright>"
-              using C.ext C.in_homI by force
-            let ?dom_\<mu> = "\<lparr>Chn = C.cod f, Dom = Dom \<mu>, Cod = Dom \<mu>\<rparr>"
-            interpret dom_\<mu>: arrow_of_spans C ?dom_\<mu>
-              using f C.ide_in_hom \<mu>.dom.ide_apex \<mu>.chine_in_hom C.comp_arr_dom
-              by (unfold_locales, auto)
-            have "\<mu> \<bullet> ?dom_\<mu> = ?dom_\<mu>"
-            proof -
-              have "\<mu> \<bullet> ?dom_\<mu> \<noteq> Null"
-                unfolding vcomp_def
-                using \<mu> dom_\<mu>.arrow_of_spans_axioms \<mu>.cod.is_span by (simp, force)
-              thus ?thesis
-                using 1 by simp
-            qed
-            hence "\<mu>.chine \<cdot> C.cod f = C.cod f"
-              unfolding vcomp_def
-              using \<mu> dom_\<mu>.arrow_of_spans_axioms f 0 C.comp_ide_arr C.comp_arr_ide
-              by simp
-            thus "\<mu>.chine \<cdot> f = f"
-              unfolding vcomp_def
-              using f C.comp_ide_arr C.comp_arr_dom \<mu>.arrow_of_spans_axioms
-                    dom_\<mu>.arrow_of_spans_axioms
-              by auto
-          qed
+            by (metis C.comp_cod_arr C.comp_ide_arr C.ext C.ide_char' calculation(1-2))
           ultimately show "C.ide \<mu>.chine"
             unfolding C.ide_def by simp
         qed
@@ -280,11 +247,9 @@ subsection "Spans"
         interpret \<mu>: arrow_of_spans C \<mu>
           using \<mu> by auto
         have 1: "Dom \<mu> = Cod \<mu>"
-        proof -
-          have "\<mu>.dom.leg0 = \<mu>.cod.leg0 \<and> \<mu>.dom.leg1 = \<mu>.cod.leg1"
-            using \<mu> C.comp_arr_ide \<mu>.cod.is_span by force
-          thus ?thesis by simp
-        qed
+          using \<mu> identity_arrow_of_spans.cod_simps(2) identity_arrow_of_spans.cod_simps(3)
+                identity_arrow_of_spans.intro identity_arrow_of_spans_axioms.intro
+          by fastforce
         show "V.ide \<mu>"
         proof -
           have "\<mu> \<bullet> \<mu> \<noteq> V.null"
@@ -457,18 +422,9 @@ subsection "Spans"
         by (simp add: V.arr_def V.dom_def)
       moreover have "V.arr \<mu> \<Longrightarrow> V.dom \<mu> = \<lparr>Chn = span_in_category.apex C (Dom \<mu>),
                                             Dom = Dom \<mu>, Cod = Dom \<mu>\<rparr>"
-      proof (intro V.dom_eqI)
-        assume \<mu>: "V.arr \<mu>"
-        interpret \<mu>: arrow_of_spans C \<mu>
-          using \<mu> arr_char by auto
-        let ?dom_\<mu> = "\<lparr>Chn = \<mu>.dom.apex, Dom = Dom \<mu>, Cod = Dom \<mu>\<rparr>"
-        interpret dom_\<mu>: arrow_of_spans C ?dom_\<mu>
-          using C.comp_arr_dom by (unfold_locales, auto)
-        show "V.ide ?dom_\<mu>"
-          using ide_char dom_\<mu>.arrow_of_spans_axioms by simp
-        thus "V.seq \<mu> ?dom_\<mu>"
-          using seq_char ide_char \<mu>.arrow_of_spans_axioms by simp
-      qed
+        by (metis V.comp_arr_dom V.comp_ide_self V.ideD(1) V.ide_dom arrow_of_spans_data.cases
+            arrow_of_spans_data.select_convs(1-3) ide_char identity_arrow_of_spans.chine_eq_apex
+            identity_arrow_of_spans_axioms.intro identity_arrow_of_spans_def seq_char)
       ultimately show "V.dom \<mu> = (if V.arr \<mu> then
                                      \<lparr>Chn = span_in_category.apex C (Dom \<mu>),
                                       Dom = Dom \<mu>, Cod = Dom \<mu>\<rparr>
@@ -486,18 +442,8 @@ subsection "Spans"
         by (simp add: V.arr_def V.cod_def)
       moreover have "V.arr \<mu> \<Longrightarrow> V.cod \<mu> = \<lparr>Chn = span_in_category.apex C (Cod \<mu>),
                                             Dom = Cod \<mu>, Cod = Cod \<mu>\<rparr>"
-      proof (intro V.cod_eqI)
-        assume \<mu>: "V.arr \<mu>"
-        interpret \<mu>: arrow_of_spans C \<mu>
-          using \<mu> arr_char by auto
-        let ?cod_\<mu> = "\<lparr>Chn = \<mu>.cod.apex, Dom = Cod \<mu>, Cod = Cod \<mu>\<rparr>"
-        interpret cod_\<mu>: arrow_of_spans C ?cod_\<mu>
-          using C.comp_arr_dom by (unfold_locales, auto)
-       show "V.ide ?cod_\<mu>"
-          using ide_char cod_\<mu>.arrow_of_spans_axioms by simp
-        thus "V.seq ?cod_\<mu> \<mu>"
-          using seq_char ide_char \<mu>.arrow_of_spans_axioms by simp
-      qed
+        by (metis V.arr_cod V.comp_cod_arr V.dom_cod dom_char span_vertical_category.seq_char
+                  span_vertical_category_axioms)
       ultimately show "V.cod \<mu> = (if V.arr \<mu> then
                                     \<lparr>Chn = span_in_category.apex C (Cod \<mu>),
                                      Dom = Cod \<mu>, Cod = Cod \<mu>\<rparr>
@@ -509,13 +455,7 @@ subsection "Spans"
     shows "vcomp = (\<lambda>\<nu> \<mu>. if V.seq \<nu> \<mu> then
                              \<lparr>Chn = Chn \<nu> \<cdot> Chn \<mu>, Dom = Dom \<mu>, Cod = Cod \<nu>\<rparr>
                            else V.null)"
-    proof -
-      have "\<And>\<mu> \<nu>. \<nu> \<bullet> \<mu> = (if V.seq \<nu> \<mu> then
-                             \<lparr>Chn = Chn \<nu> \<cdot> Chn \<mu>, Dom = Dom \<mu>, Cod = Cod \<nu>\<rparr>
-                           else V.null)"
-        using vcomp_def seq_char null_char by simp
-      thus ?thesis by auto
-    qed
+      by (meson V.ext seq_char vcomp_def)
 
     lemma vcomp_eq:
     assumes "V.seq \<nu> \<mu>"
@@ -536,10 +476,9 @@ subsection "Spans"
     lemma Chn_in_hom:
     assumes "V.in_hom \<tau> f g"
     shows "C.in_hom (Chn \<tau>) (Chn f) (Chn g)"
-      using assms ide_char arr_char dom_char cod_char
-      by (metis (no_types, lifting) C.ide_char arrow_of_spans.chine_in_hom
-          arrow_of_spans.chine_simps(3) arrow_of_spans_data.simps(3) V.ide_cod
-          V.ide_dom V.in_homE)
+      by (metis arr_char arrow_of_spans.chine_in_hom arrow_of_spans_data.select_convs(1)
+                assms category.in_homE is_category span_vertical_category.cod_char
+                span_vertical_category.dom_char span_vertical_category_axioms)
 
     abbreviation mkIde
     where "mkIde f0 f1 \<equiv>
@@ -580,34 +519,13 @@ subsection "Spans"
       show "V.inverse_arrows \<mu> ?\<nu>"
       proof
         show "V.ide (?\<nu> \<bullet> \<mu>)"
-        proof -
-          have 1: "V.seq ?\<nu> \<mu>"
-            using arr_char ide_char dom_char cod_char vcomp_def \<mu>.arrow_of_spans_axioms
-                  \<nu>.arrow_of_spans_axioms
-            by (intro V.seqI', auto)
-          have 2: "?\<nu> \<bullet> \<mu> = \<lparr>Chn = C.inv (Chn \<mu>) \<cdot> Chn \<mu>, Dom = Dom \<mu>, Cod = Dom \<mu>\<rparr>"
-            using 1 arr_char ide_char dom_char cod_char vcomp_def \<mu>.arrow_of_spans_axioms
-                  \<nu>.arrow_of_spans_axioms
-            by simp
-          moreover have
-            "V.ide \<lparr>Chn = C.inv (Chn \<mu>) \<cdot> Chn \<mu>, Dom = Dom \<mu>, Cod = Dom \<mu>\<rparr>"
-            using assms 1 2 arr_char ide_char by (simp add: C.comp_inv_arr')
-          ultimately show ?thesis by simp
-        qed
-        show "V.ide (\<mu> \<bullet> ?\<nu>)"
-        proof -
-          have 1: "V.seq \<mu> ?\<nu>"
-            using arr_char ide_char dom_char cod_char vcomp_def \<mu>.arrow_of_spans_axioms
-                  \<nu>.arrow_of_spans_axioms
-            by (intro V.seqI', auto)
-          have 2: "\<mu> \<bullet> ?\<nu> = \<lparr>Chn = Chn \<mu> \<cdot> C.inv (Chn \<mu>), Dom = Cod \<mu>, Cod = Cod \<mu>\<rparr>"
-            using 1 arr_char ide_char dom_char cod_char vcomp_def \<mu>.arrow_of_spans_axioms
-                  \<nu>.arrow_of_spans_axioms
-            by simp
-          moreover have "V.ide \<lparr>Chn = Chn \<mu> \<cdot> C.inv (Chn \<mu>), Dom = Cod \<mu>, Cod = Cod \<mu>\<rparr>"
-            using assms 1 2 arr_char ide_char by (simp add: C.comp_arr_inv')
-          ultimately show ?thesis by simp
-        qed
+          by (metis C.invert_side_of_triangle(1) Chn_vcomp \<mu>.arrow_of_spans_axioms
+                    \<mu>.chine_simps(1) \<mu>.chine_simps(2) \<mu>.dom.ide_apex \<nu>.arrow_of_spans_axioms
+                    arr_char select_convs(1-2) assms(2) C.comp_arr_dom ide_char seq_char)
+        thus "V.ide (\<mu> \<bullet> ?\<nu>)"
+          by (metis C.comp_inv_arr' C.inv_inv C.iso_inv_iso V.ide_compE \<mu>.cod.ide_apex
+                    \<nu>.chine_simps(2) arr_char select_convs(1-2) assms(2) ide_char
+                    Chn_vcomp)
       qed
     qed
 
@@ -660,28 +578,8 @@ subsection "Spans"
               arrow_of_spans.cod_src_eq_dom_src
         by force
       show "\<And>\<mu> \<nu>. V.seq \<nu> \<mu> \<Longrightarrow> src (\<nu> \<bullet> \<mu>) = src \<nu> \<bullet> src \<mu>"
-      proof -
-        fix \<mu> \<nu>
-        assume \<mu>\<nu>: "V.seq \<nu> \<mu>"
-        show "src (\<nu> \<bullet> \<mu>) = src \<nu> \<bullet> src \<mu>"
-        proof -
-          have "src (\<nu> \<bullet> \<mu>) = mkObj (C.cod (Leg0 (Dom \<mu>)))"
-            using \<mu>\<nu> src_def vcomp_def
-            apply simp
-            using V.not_arr_null null_char by auto
-          also have
-            "... = \<lparr>Chn = C.dom (C.cod (Leg0 (Dom \<mu>))) \<cdot> C.dom (C.cod (Leg0 (Dom \<mu>))),
-                    Dom = \<lparr>Leg0 = C.cod (Leg0 (Dom \<mu>)), Leg1 = C.cod (Leg0 (Dom \<mu>))\<rparr>,
-                    Cod = \<lparr>Leg0 = C.cod (Leg0 (Dom \<mu>)), Leg1 = C.cod (Leg0 (Dom \<mu>))\<rparr>\<rparr>"
-            using \<mu>\<nu> 1
-            by (simp add: arrow_of_spans_def seq_char span_in_category.leg_simps(1))
-          also have "... = src \<nu> \<bullet> src \<mu>"
-            using \<mu>\<nu> 1 src_def vcomp_def
-            apply (elim V.seqE, simp)
-            by (metis \<mu>\<nu> arrow_of_spans.cod_src_eq_dom_src ide_char seq_char ide_src)
-          finally show ?thesis by blast
-        qed
-      qed
+        by (metis (no_types, lifting) "1" "2" "3" V.comp_ide_self V.dom_comp V.ideD(2)
+            V.seqE span_vertical_category.ide_src span_vertical_category_axioms)
     qed
 
     lemma src_is_endofunctor:
@@ -715,29 +613,7 @@ subsection "Spans"
               arrow_of_spans.cod_trg_eq_dom_trg
         by force
       show "\<And>\<mu> \<nu>. V.seq \<nu> \<mu> \<Longrightarrow> trg (\<nu> \<bullet> \<mu>) = trg \<nu> \<bullet> trg \<mu>"
-      proof -
-        fix \<mu> \<nu>
-        assume \<mu>\<nu>: "V.seq \<nu> \<mu>"
-        show "trg (\<nu> \<bullet> \<mu>) = trg \<nu> \<bullet> trg \<mu>"
-        proof -
-          have "trg (\<nu> \<bullet> \<mu>) = mkObj (C.cod (Leg1 (Dom \<mu>)))"
-            using \<mu>\<nu> trg_def vcomp_def
-            apply simp
-            using V.not_arr_null null_char by auto
-          also have "... = \<lparr>Chn = Chn (trg \<nu>) \<cdot> Chn (trg \<mu>),
-                            Dom = Dom (trg \<mu>), Cod = Cod (trg \<nu>)\<rparr>"
-            using \<mu>\<nu> 1 trg_def vcomp_def
-            apply (elim V.seqE, simp)
-            by (metis C.ide_def \<mu>\<nu> arrow_of_spans.cod_trg_eq_dom_trg select_convs(1) ide_char
-                ide_trg seq_char)
-          also have "... = trg \<nu> \<bullet> trg \<mu>"
-            using \<mu>\<nu> 1 src_def vcomp_def
-            apply (elim V.seqE, simp)
-            by (metis "2" "3" V.ideD(2) V.ideD(3) select_convs(2) select_convs(3) ide_char
-                ide_trg trg_def)  
-          finally show ?thesis by blast
-        qed
-      qed
+        by (metis "2" "3" V.comp_ide_self V.dom_comp V.ide_char V.seqE ide_trg)
     qed
 
     lemma trg_is_endofunctor:
@@ -783,28 +659,9 @@ subsection "Spans"
 
     lemma obj_char:
     shows "obj a \<longleftrightarrow> V.ide a \<and> a = mkObj (Chn a)"
-    proof
-      show "obj a \<Longrightarrow> V.ide a \<and> a = mkObj (Chn a)"
-      proof
-        assume a: "obj a"
-        show 1: "V.ide a"
-          using a by auto
-        show "a = mkObj (Chn a)"
-          using a 1 obj_def src_def ide_char
-          apply simp
-          by (metis arrow_of_spans_data.select_convs(1) arrow_of_spans_def category.dom_cod)
-      qed
-      show "V.ide a \<and> a = mkObj (Chn a) \<Longrightarrow> obj a"
-      proof -
-        assume a: "V.ide a \<and> a = mkObj (Chn a)"
-        show "obj a"
-          unfolding obj_def src_def
-          using a
-          apply simp
-          by (metis C.ide_char arrow_of_spans_data.select_convs(2) ide_char
-              span_data.select_convs(1))
-      qed
-    qed
+      by (metis C.dom_cod V.comp_ide_self V.ide_char arrow_of_spans.chine_simps(3)
+          arrow_of_spans_data.select_convs(1,3) objE objI_trg span_data.select_convs(2)
+          cod_char seq_char trg_def)
 
   end
 
@@ -973,47 +830,13 @@ $$\xymatrix{
           using assms src_def trg_def chine_hcomp_props hcomp_def Cod.apex_def Dom.apex_def
           by auto
         show "Cod.leg0 \<cdot> Chn (\<nu> \<star> \<mu>) = Dom.leg0"
-        proof -
-          have "(\<mu>.cod.leg0 \<cdot> \<p>\<^sub>0[\<nu>.cod.leg0, \<mu>.cod.leg1]) \<cdot> chine_hcomp \<nu> \<mu> =
-                \<mu>.dom.leg0 \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-          proof -
-            have "(\<mu>.cod.leg0 \<cdot> \<p>\<^sub>0[\<nu>.cod.leg0, \<mu>.cod.leg1]) \<cdot> chine_hcomp \<nu> \<mu> =
-                  \<mu>.cod.leg0 \<cdot> \<p>\<^sub>0[\<nu>.cod.leg0, \<mu>.cod.leg1] \<cdot> chine_hcomp \<nu> \<mu>"
-              using assms
-              by (metis (full_types) C.category_axioms C.comp_reduce C.dom_comp C.match_2
-                  C.seqE C.seqI category.ext)
-            also have "... = \<mu>.cod.leg0 \<cdot> \<mu>.chine \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-              using assms src_def trg_def
-              by (simp add: chine_hcomp_def chine_hcomp_props(2))
-            also have "... = \<mu>.dom.leg0 \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-              using assms \<mu>.leg0_commutes C.comp_reduce
-              by (metis (mono_tags, lifting) C.commutative_squareE \<mu>.dom.leg_simps(1)
-                  chine_hcomp_props(2))
-            finally show ?thesis by simp
-          qed
-          thus ?thesis
-            using assms src_def trg_def hcomp_def chine_hcomp_props \<mu>.chine_in_hom C.comp_reduce
-            by auto
-        qed
+          by (metis C.comp_assoc \<mu>.leg0_commutes arrow_of_spans_data.select_convs(1-3)
+              assms(1-3) chine_hcomp_props(5) hcomp_def span_data.select_convs(1))
         show "Cod.leg1 \<cdot> Chn (\<nu> \<star> \<mu>) = Dom.leg1"
         proof -
           have "(\<nu>.cod.leg1 \<cdot> \<p>\<^sub>1[\<nu>.cod.leg0, \<mu>.cod.leg1]) \<cdot> chine_hcomp \<nu> \<mu> =
                  \<nu>.dom.leg1 \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-          proof -
-            have "(\<nu>.cod.leg1 \<cdot> \<p>\<^sub>1[\<nu>.cod.leg0, \<mu>.cod.leg1]) \<cdot> chine_hcomp \<nu> \<mu> =
-                  \<nu>.cod.leg1 \<cdot> \<p>\<^sub>1[\<nu>.cod.leg0, \<mu>.cod.leg1] \<cdot> chine_hcomp \<nu> \<mu>"
-              using assms
-              by (metis (full_types) C.category_axioms C.comp_reduce C.dom_comp C.match_2
-                  C.seqE C.seqI category.ext)
-            also have "... = \<nu>.cod.leg1 \<cdot> \<nu>.chine \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-              using assms src_def trg_def
-              by (simp add: chine_hcomp_def chine_hcomp_props(2))
-            also have "... = \<nu>.dom.leg1 \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-              using assms \<nu>.leg1_commutes C.comp_reduce
-              by (metis (mono_tags, lifting) C.commutative_squareE \<nu>.dom.leg_simps(3)
-                  chine_hcomp_props(2))
-            finally show ?thesis by blast
-          qed
+            by (metis C.comp_assoc \<nu>.leg1_commutes assms(1-3) chine_hcomp_props(6))
           thus ?thesis
             using assms src_def trg_def hcomp_def chine_hcomp_props \<nu>.chine_in_hom C.comp_reduce
             by auto
@@ -1103,31 +926,12 @@ $$\xymatrix{
            \<langle>\<p>\<^sub>1[C.cod (Leg1 (Dom \<mu>)), Leg1 (Dom \<mu>)]
               \<lbrakk>C.cod (Leg1 (Dom \<mu>)), Leg1 (Cod \<mu>)\<rbrakk>
             Chn \<mu> \<cdot> \<p>\<^sub>0[C.cod (Leg1 (Dom \<mu>)), Leg1 (Dom \<mu>)]\<rangle>"
-    proof -
-      interpret \<mu>: arrow_of_spans C \<mu>
-        using assms arr_char by auto
-      interpret trg_\<mu>: arrow_of_spans C \<open>trg \<mu>\<close>
-        using assms ide_trg ide_char by simp
-      have "trg_\<mu>.dom.leg0 = C.cod \<mu>.dom.leg1 \<and> trg_\<mu>.cod.leg0 = C.cod \<mu>.dom.leg1 \<and>
-            trg_\<mu>.dom.leg0 = C.cod \<mu>.dom.leg1"
-        using assms ide_char src_def trg_def by simp
-      thus ?thesis
-        using assms chine_hcomp_ide_arr [of "trg \<mu>" \<mu>] by auto
-    qed
+      using assms chine_hcomp_ide_arr ide_trg src_trg trg_def by force
 
     lemma chine_hcomp_trg_ide:
     assumes "ide f"
     shows "chine_hcomp (trg f) f = C.cod (Leg1 (Dom f)) \<down>\<down> Leg1 (Dom f)"
-    proof -
-      interpret f: arrow_of_spans C f
-        using assms arr_char by auto
-      interpret trg_f: arrow_of_spans C \<open>trg f\<close>
-        using assms ide_trg ide_char by simp
-      have "trg_f.dom.leg0 = C.cod f.dom.leg1"
-        using assms trg_def by simp
-      thus ?thesis
-        using assms chine_hcomp_ide_ide [of "trg f" f] by auto
-    qed
+      using assms chine_hcomp_ide_ide ide_trg src_trg trg_def by force
 
     lemma chine_hcomp_arr_src:
     assumes "arr \<mu>"
@@ -1135,30 +939,12 @@ $$\xymatrix{
            \<langle>Chn \<mu> \<cdot> \<p>\<^sub>1[Leg0 (Dom \<mu>), C.cod (Leg0 (Dom \<mu>))]
               \<lbrakk>Leg0 (Cod \<mu>), C.cod (Leg0 (Dom \<mu>))\<rbrakk>
             \<p>\<^sub>0[Leg0 (Dom \<mu>), C.cod (Leg0 (Dom \<mu>))]\<rangle>"
-    proof -
-      interpret \<mu>: arrow_of_spans C \<mu>
-        using assms arr_char by auto
-      interpret src_\<mu>: arrow_of_spans C \<open>src \<mu>\<close>
-        using assms ide_src ide_char by simp
-      have "src_\<mu>.dom.leg1 = \<mu>.dsrc \<and> src_\<mu>.cod.leg1 = \<mu>.dsrc"
-        using assms ide_char src_def trg_def by simp
-      thus ?thesis
-        using assms chine_hcomp_arr_ide by auto
-    qed
+      using assms chine_hcomp_arr_ide ide_src src_def trg_src by force
 
     lemma chine_hcomp_ide_src:
     assumes "ide f"
     shows "chine_hcomp f (src f) = Leg0 (Dom f) \<down>\<down> C.cod (Leg0 (Dom f))"
-    proof -
-      interpret f: arrow_of_spans C f
-        using assms arr_char by auto
-      interpret src_f: arrow_of_spans C \<open>src f\<close>
-        using assms ide_src ide_char by simp
-      have "C.cod f.dom.leg0 = src_f.dom.leg1"
-        using assms src_def by simp
-      thus ?thesis
-        using assms chine_hcomp_ide_ide by auto
-    qed
+      using assms chine_hcomp_ide_ide src.preserves_ide src_def trg_src by force
 
     lemma src_hcomp [simp]:
     assumes "arr \<mu>" and "arr \<nu>" and "src \<nu> = trg \<mu>"
@@ -1300,64 +1086,24 @@ $$\xymatrix{
       have C2: "C.commutative_square \<nu>'.cod.leg0 \<mu>'.cod.leg1
                  (Chn (\<nu>' \<bullet> \<nu>) \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1])
                  (Chn (\<mu>' \<bullet> \<mu>) \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1])"
-      (* using assms 1 2 vcomp_def seq_char arr_char chine_hcomp_props(1-2) src_vcomp trg_vcomp
-         by smt *)
-      proof
-        show 3: "C.cospan \<nu>'.cod.leg0 \<mu>'.cod.leg1"
-          using assms 1 2 vcomp_def seq_char arr_char chine_hcomp_props(1-2)
-                src_vcomp trg_vcomp
-          by (meson C.commutative_squareE)
-        show 4: "C.span (Chn (\<nu>' \<bullet> \<nu>) \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1])
-                     (Chn (\<mu>' \<bullet> \<mu>) \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1])"
-          using assms 1 2 3 vcomp_def seq_char arr_char chine_hcomp_props(1-2)
-                src_vcomp trg_vcomp
-          by simp
-        show "C.dom \<nu>'.cod.leg0 = C.cod (Chn (\<nu>' \<bullet> \<nu>) \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1])"
-          using assms 1 2 4 vcomp_def seq_char arr_char chine_hcomp_props(1-2)
-                src_vcomp trg_vcomp
-          by simp
-        show "\<nu>'.cod.leg0 \<cdot> Chn (\<nu>' \<bullet> \<nu>) \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1] =
-              \<mu>'.cod.leg1 \<cdot> Chn (\<mu>' \<bullet> \<mu>) \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-          using assms 1 2 vcomp_def seq_char arr_char chine_hcomp_props(1-2)
-                src_vcomp trg_vcomp
-          by (metis (mono_tags, lifting) C.comp_assoc C.pullback_commutes' Chn_vcomp
-              \<mu>'.cod_trg_eq_dom_trg \<mu>'.leg1_commutes \<mu>.cod_trg_eq_dom_trg \<mu>.dom.leg_simps(3)
-              \<mu>.leg1_commutes \<nu>'.cod_src_eq_dom_src \<nu>'.leg0_commutes \<nu>.cod_src_eq_dom_src
-              \<nu>.dom.leg_simps(1) \<nu>.leg0_commutes \<open>C.cospan \<nu>'.cod.leg0 \<mu>'.cod.leg1\<close>)
-      qed
+        by (metis "2" assms(3,6-8) chine_hcomp_props(2) src.as_nat_trans.preserves_comp_2
+                  trg.as_nat_trans.preserves_comp_2 vseq_implies_hpar(2))
       have "(\<nu>' \<bullet> \<nu>) \<star> (\<mu>' \<bullet> \<mu>) =
             \<lparr>Chn = chine_hcomp (\<nu>' \<bullet> \<nu>) (\<mu>' \<bullet> \<mu>),
              Dom = \<lparr>Leg0 = \<mu>.dom.leg0 \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1],
                     Leg1 = \<nu>.dom.leg1 \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]\<rparr>,
              Cod = \<lparr>Leg0 = \<mu>'.cod.leg0 \<cdot> \<p>\<^sub>0[\<nu>'.cod.leg0, \<mu>'.cod.leg1],
                     Leg1 = \<nu>'.cod.leg1 \<cdot> \<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1]\<rparr>\<rparr>"
-      proof -
-        have "\<nu>' \<bullet> \<nu> \<star> \<mu>' \<bullet> \<mu> =
-              \<lparr>Chn = chine_hcomp (\<nu>' \<bullet> \<nu>) (\<mu>' \<bullet> \<mu>),
-               Dom =
-                 \<lparr>Leg0 = Leg0 (Dom (\<mu>' \<bullet> \<mu>)) \<cdot> \<p>\<^sub>0[Leg0 (Dom (\<nu>' \<bullet> \<nu>)), Leg1 (Dom (\<mu>' \<bullet> \<mu>))],
-                  Leg1 = Leg1 (Dom (\<nu>' \<bullet> \<nu>)) \<cdot> \<p>\<^sub>1[Leg0 (Dom (\<nu>' \<bullet> \<nu>)), Leg1 (Dom (\<mu>' \<bullet> \<mu>))]\<rparr>,
-               Cod = \<lparr>Leg0 = Leg0 (Cod (\<mu>' \<bullet> \<mu>)) \<cdot> \<p>\<^sub>0[Leg0 (Cod (\<nu>' \<bullet> \<nu>)), Leg1 (Cod (\<mu>' \<bullet> \<mu>))],
-               Leg1 = Leg1 (Cod (\<nu>' \<bullet> \<nu>)) \<cdot> \<p>\<^sub>1[Leg0 (Cod (\<nu>' \<bullet> \<nu>)), Leg1 (Cod (\<mu>' \<bullet> \<mu>))]\<rparr>\<rparr>"
-          by (simp add: assms(3) assms(6-8) hcomp_def)
-        then show ?thesis
-          by (metis "2")
-      qed
-      moreover
-      have "(\<nu>' \<star> \<mu>') \<bullet> (\<nu> \<star> \<mu>) =
-            \<lparr>Chn = chine_hcomp \<nu>' \<mu>' \<cdot> chine_hcomp \<nu> \<mu>,
-             Dom = \<lparr>Leg0 = \<mu>.dom.leg0 \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1],
-                    Leg1 = \<nu>.dom.leg1 \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]\<rparr>,
-             Cod = \<lparr>Leg0 = \<mu>'.cod.leg0 \<cdot> \<p>\<^sub>0[\<nu>'.cod.leg0, \<mu>'.cod.leg1],
-                    Leg1 = \<nu>'.cod.leg1 \<cdot> \<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1]\<rparr>\<rparr>"
-      proof -
-        have "arr (\<nu>' \<star> \<mu>') \<and> arr (\<nu> \<star> \<mu>)"
-          using assms arrow_of_spans_hcomp arr_char by simp
-        moreover have "Dom (\<nu>' \<star> \<mu>') = Cod (\<nu> \<star> \<mu>)"
-          using assms src_def trg_def seq_char hcomp_def src_hcomp trg_hcomp by simp
-        ultimately show ?thesis
-          using assms seq_char arr_char vcomp_eq hcomp_def by auto
-      qed
+        using "2" assms(3,6-8) hcomp_def src_vcomp trg_vcomp by presburger
+      moreover have "(\<nu>' \<star> \<mu>') \<bullet> (\<nu> \<star> \<mu>) =
+                     \<lparr>Chn = chine_hcomp \<nu>' \<mu>' \<cdot> chine_hcomp \<nu> \<mu>,
+                      Dom = \<lparr>Leg0 = \<mu>.dom.leg0 \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1],
+                             Leg1 = \<nu>.dom.leg1 \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]\<rparr>,
+                      Cod = \<lparr>Leg0 = \<mu>'.cod.leg0 \<cdot> \<p>\<^sub>0[\<nu>'.cod.leg0, \<mu>'.cod.leg1],
+                             Leg1 = \<nu>'.cod.leg1 \<cdot> \<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1]\<rparr>\<rparr>"
+        using "1" \<nu>'\<mu>'.arrow_of_spans_axioms \<nu>\<mu>.arrow_of_spans_axioms assms(1-6)
+              hcomp_def span_vertical_category.seq_char span_vertical_category_axioms vcomp_eq
+        by fastforce
       moreover have "chine_hcomp (\<nu>' \<bullet> \<nu>) (\<mu>' \<bullet> \<mu>) = chine_hcomp \<nu>' \<mu>' \<cdot> chine_hcomp \<nu> \<mu>"
       proof -
         have "C.cospan \<nu>'.cod.leg0 \<mu>'.cod.leg1"
@@ -1368,64 +1114,12 @@ $$\xymatrix{
           using assms 1 chine_hcomp_props [of \<mu> \<nu>] chine_hcomp_props [of \<mu>' \<nu>'] by auto
         moreover have "\<p>\<^sub>0[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp (\<nu>' \<bullet> \<nu>) (\<mu>' \<bullet> \<mu>) =
                        \<p>\<^sub>0[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp \<nu>' \<mu>' \<cdot> chine_hcomp \<nu> \<mu>"
-        proof -
-          have "\<p>\<^sub>0[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp (\<nu>' \<bullet> \<nu>) (\<mu>' \<bullet> \<mu>) =
-                Chn (\<mu>' \<bullet> \<mu>) \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-            using C2 3 by simp
-          also have "... = (\<mu>'.chine \<cdot> \<mu>.chine) \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-            using assms vcomp_def seq_char arr_char
-            by (metis arrow_of_spans_data.select_convs(1))
-          also have "... = \<mu>'.chine \<cdot> \<mu>.chine \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-            using C.comp_assoc by simp
-          also have "... = (\<mu>'.chine \<cdot> \<p>\<^sub>0[\<nu>.cod.leg0, \<mu>.cod.leg1]) \<cdot> chine_hcomp \<nu> \<mu>"
-            using assms 1
-                  C.prj_tuple(1)
-                    [of "\<nu>.cod.leg0" "\<nu>.chine \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-                        "\<mu>.cod.leg1" "\<mu>.chine \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]"]
-            by (metis (mono_tags, lifting) C.commutative_squareE C.comp_assoc chine_hcomp_props(4))
-          also have "... = (\<p>\<^sub>0[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp \<nu>' \<mu>') \<cdot> chine_hcomp \<nu> \<mu>"
-            using assms 1
-              by (metis (mono_tags, lifting) C.commutative_squareE chine_hcomp_props(4))
-          also have "... = \<p>\<^sub>0[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp \<nu>' \<mu>' \<cdot> chine_hcomp \<nu> \<mu>"
-            using C.comp_assoc by simp
-          finally show ?thesis by blast
-        qed
+          by (metis (no_types, lifting) "1" "2" C.comp_assoc Chn_vcomp assms(1-8)
+              chine_hcomp_props(5) src_vcomp trg_vcomp)
         moreover have "\<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp (\<nu>' \<bullet> \<nu>) (\<mu>' \<bullet> \<mu>) =
                        \<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp \<nu>' \<mu>' \<cdot> chine_hcomp \<nu> \<mu>"
-        proof -
-          have "\<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp (\<nu>' \<bullet> \<nu>) (\<mu>' \<bullet> \<mu>) =
-                \<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot>
-                   \<langle>Chn (\<nu>' \<bullet> \<nu>) \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]
-                     \<lbrakk>Leg0 (Cod \<nu>'), Leg1 (Cod \<mu>')\<rbrakk>
-                    Chn (\<mu>' \<bullet> \<mu>) \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]\<rangle>"
-            using 3 by simp
-          also have "... = Chn (\<nu>' \<bullet> \<nu>) \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-             using C2 C.prj_tuple(2) [of "Leg0 (Cod \<nu>')"
-                                         "Chn (\<nu>' \<bullet> \<nu>) \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-                                         "Leg1 (Cod \<mu>')"
-                                         "Chn (\<mu>' \<bullet> \<mu>) \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1]"]
-               by simp
-          also have "... = (\<nu>'.chine \<cdot> \<nu>.chine) \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-            using assms vcomp_def seq_char arr_char
-            by (metis (no_types, lifting) arrow_of_spans_data.select_convs(1))
-          also have "... = \<nu>'.chine \<cdot> \<nu>.chine \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]"
-            using C.comp_assoc by simp
-          also have "... = (\<nu>'.chine \<cdot> \<p>\<^sub>1[\<nu>.cod.leg0, \<mu>.cod.leg1]) \<cdot> chine_hcomp \<nu> \<mu>"
-          proof -
-            have "C.commutative_square \<nu>.cod.leg0 \<mu>.cod.leg1
-                     (\<nu>.chine \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1])
-                     (\<mu>.chine \<cdot> \<p>\<^sub>0[\<nu>.dom.leg0, \<mu>.dom.leg1])"
-              using assms 1 vcomp_def seq_char arr_char chine_hcomp_props(2) by auto            
-            thus ?thesis
-              using assms 1 \<nu>'.leg0_commutes C.prj_tuple(2) apply (simp add: C.comp_assoc)
-              by (metis (mono_tags, lifting) C.commutative_squareE chine_hcomp_props(3))
-          qed
-          also have "... = (\<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp \<nu>' \<mu>') \<cdot> chine_hcomp \<nu> \<mu>"
-            unfolding chine_hcomp_def using C1 1 C.prj_tuple(2) by simp
-          also have "... = \<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp \<nu>' \<mu>' \<cdot> chine_hcomp \<nu> \<mu>"
-            using C.comp_assoc by simp
-          finally show ?thesis by blast
-        qed
+          by (metis (no_types, lifting) "1" "3" C.comp_assoc C.prj_tuple(2) C1 C2 Chn_vcomp
+              assms(1-3,8) chine_hcomp_def chine_hcomp_props(6))
         ultimately show ?thesis
           using C.prj_joint_monic
                   [of "\<nu>'.cod.leg0" "\<mu>'.cod.leg1"
@@ -1452,7 +1146,7 @@ $$\xymatrix{
         fix \<nu>\<mu>' \<nu>\<mu>
         assume 1: "VV.seq \<nu>\<mu>' \<nu>\<mu>"
         have "VV.comp \<nu>\<mu>' \<nu>\<mu> = (fst \<nu>\<mu>' \<bullet> fst \<nu>\<mu>, snd \<nu>\<mu>' \<bullet> snd \<nu>\<mu>)"
-          using 1 VV.comp_char VV.seq_char VxV.comp_char by auto
+          by (metis (no_types, lifting) "1" VV.comp_simp VV.seq_char VxV.comp_char VxV.seqE)
         thus "fst (VV.comp \<nu>\<mu>' \<nu>\<mu>) \<star> snd (VV.comp \<nu>\<mu>' \<nu>\<mu>) =
               (fst \<nu>\<mu>' \<star> snd \<nu>\<mu>') \<bullet> (fst \<nu>\<mu> \<star> snd \<nu>\<mu>)"
           using 1 hcomp_vcomp VV.seq_char VV.arr_char VV.comp_char
@@ -1578,20 +1272,7 @@ $$\xymatrix{
                      \<langle>\<p>\<^sub>1[\<mu>.dtrg, \<mu>.dom.leg1] \<lbrakk>\<mu>.dtrg, \<mu>.cod.leg1\<rbrakk> \<mu>.chine \<cdot> \<p>\<^sub>0[\<mu>.dtrg, \<mu>.dom.leg1]\<rangle>"
             proof -
               have "Chn (\<l> (cod \<mu>) \<bullet> L \<mu>) = \<p>\<^sub>0[\<mu>.dtrg, \<mu>.cod.leg1] \<cdot> Chn (trg \<mu> \<star> \<mu>)"
-              proof -
-                have "Dom (trg \<mu> \<star> cod \<mu>) = Cod (trg \<mu> \<star> \<mu>)"
-                  using \<mu> seq_char by fastforce
-                moreover have "\<p>\<^sub>0[C.cod (Leg1 (Dom (cod \<mu>))), Leg1 (Dom (cod \<mu>))] \<cdot>
-                                 Chn (trg \<mu> \<star> \<mu>) =
-                               \<p>\<^sub>0[\<mu>.dtrg, \<mu>.cod.leg1] \<cdot> Chn (trg \<mu> \<star> \<mu>)"
-                  by (simp add: \<mu> cod_char)
-                moreover have "arrow_of_spans (\<cdot>)
-                                 \<lparr>Chn = \<p>\<^sub>0[C.cod (Leg1 (Dom (cod \<mu>))), Leg1 (Dom (cod \<mu>))],
-                                  Dom = Cod (trg \<mu> \<star> \<mu>), Cod = Cod (cod \<mu>)\<rparr>"
-                  using \<mu> par seq_char by auto
-                ultimately show ?thesis
-                  using \<mu> vcomp_def L\<mu>.arrow_of_spans_axioms by auto
-              qed
+                using Chn_vcomp \<mu> cod_char par by force
               moreover
               have "Chn (trg \<mu> \<star> \<mu>) = \<langle>\<p>\<^sub>1[\<mu>.dtrg, \<mu>.dom.leg1]
                                         \<lbrakk>\<mu>.dtrg, \<mu>.cod.leg1\<rbrakk>
@@ -1663,15 +1344,9 @@ $$\xymatrix{
                       \<l>f'.arrow_of_spans_axioms vcomp_def ide_char arr_char
                 by (simp add: vcomp_def C.comp_inv_arr)
               also have "... = dom (\<ll>.map f)"
-              proof -
-                have "C.cod f.dom.leg1 \<down>\<down> f.dom.leg1 = C.dom (Leg1 (Dom (hcomp (trg f) f)))"
-                  using f f.arrow_of_spans_axioms hcomp_def src_def trg_def ide_mkObj
-                  by auto
-                thus ?thesis
-                  using 1 f.arrow_of_spans_axioms arr_char dom_char \<l>f.dom.is_span
-                        \<l>f.arrow_of_spans_axioms \<l>f'.cod.apex_def
-                  by auto
-              qed
+                by (metis (no_types, lifting) "1" C.pbdom_def \<l>f.chine_simps(2)
+                    \<ll>.preserves_reflects_arr arrow_of_spans_data.select_convs(1)
+                    dom_char f ideD(1))
               finally show ?thesis by blast
             qed
             thus ?thesis
@@ -1798,20 +1473,7 @@ $$\xymatrix{
                     \<langle>\<mu>.chine \<cdot> \<p>\<^sub>1[\<mu>.dom.leg0, \<mu>.dsrc] \<lbrakk>\<mu>.cod.leg0, \<mu>.cod.src\<rbrakk> \<p>\<^sub>0[\<mu>.dom.leg0, \<mu>.dsrc]\<rangle>"
             proof -
               have "Chn (\<r> (cod \<mu>) \<bullet> R \<mu>) = \<p>\<^sub>1[\<mu>.cod.leg0, \<mu>.cod.src] \<cdot> Chn (\<mu> \<star> src \<mu>)"
-              proof -
-                have "Dom (cod \<mu> \<star> src \<mu>) = Cod (\<mu> \<star> src \<mu>)"
-                  using \<mu> seq_char by fastforce
-                moreover have "\<p>\<^sub>1[Leg0 (Dom (cod \<mu>)), C.cod (Leg0 (Dom (cod \<mu>)))] \<cdot>
-                                 Chn (\<mu> \<star> src \<mu>) =
-                               \<p>\<^sub>1[\<mu>.cod.leg0, \<mu>.dsrc] \<cdot> Chn (\<mu> \<star> src \<mu>)"
-                  by (simp add: \<mu> cod_char)
-                moreover have "arrow_of_spans (\<cdot>)
-                                 \<lparr>Chn = \<p>\<^sub>1[Leg0 (Dom (cod \<mu>)), C.cod (Leg0 (Dom (cod \<mu>)))],
-                                  Dom = Cod (\<mu> \<star> src \<mu>), Cod = Cod (cod \<mu>)\<rparr>"
-                  using \<mu> par seq_char by auto
-                ultimately show ?thesis
-                  using \<mu> vcomp_def R\<mu>.arrow_of_spans_axioms by auto
-              qed
+                using Chn_vcomp \<mu> cod_char par by force
               moreover
               have "Chn (\<mu> \<star> src \<mu>) = \<langle>\<mu>.chine \<cdot> \<p>\<^sub>1[\<mu>.dom.leg0, \<mu>.dsrc]
                                         \<lbrakk>\<mu>.cod.leg0, \<mu>.dsrc\<rbrakk>
@@ -1875,30 +1537,9 @@ $$\xymatrix{
         have "inverse_arrows (\<rho>.map f) ?\<rho>f'"
         proof
           show "ide (?\<rho>f' \<bullet> \<rho>.map f)"
-          proof -
-            have "?\<rho>f' \<bullet> \<rho>.map f = dom (\<rho>.map f)"
-            proof -
-              have "?\<rho>f' \<bullet> \<rho>.map f =
-                     \<lparr>Chn = f.leg0 \<down>\<down> f.dsrc, Dom = Dom (\<rho>.map f), Cod = Dom (\<rho>.map f)\<rparr>"
-                using f 1 2 f.arrow_of_spans_axioms
-                      \<rho>f.arrow_of_spans_axioms \<rho>f'.arrow_of_spans_axioms
-                      vcomp_def ide_char arr_char C.comp_inv_arr
-                by (simp add: vcomp_def)
-              also have "... = dom (\<rho>.map f)"
-              proof -
-                have "C.dom (Leg0 (Dom (f \<star> src f))) = C.dom (Leg1 (Dom (f \<star> src f)))"
-                  using f f.arrow_of_spans_axioms hcomp_def src_def trg_def ide_mkObj
-                  by auto
-                thus ?thesis
-                  using 1 f.arrow_of_spans_axioms arr_char dom_char \<rho>f.dom.is_span
-                        \<rho>f.arrow_of_spans_axioms \<rho>f'.cod.apex_def \<rho>f.chine_simps(2)
-                  by auto
-              qed
-              finally show ?thesis by blast
-            qed
-            thus ?thesis
-              using \<rho>f.arrow_of_spans_axioms arr_char by simp
-          qed
+            using "2" C.comp_inv_arr \<rho>f'.arrow_of_spans_axioms \<rho>f.arrow_of_spans_axioms
+                  \<rho>f.chine_simps(2) dom_char f ideD(2) vcomp_def
+            by force
           show "ide (\<rho>.map f \<bullet> ?\<rho>f')"
           proof -
             have "\<rho>.map f \<bullet> ?\<rho>f' = dom ?\<rho>f'"
@@ -1982,15 +1623,7 @@ $$\xymatrix{
           interpret Cod: span_in_category C \<open>Cod \<i>[a]\<close>
             using Cod by (unfold_locales, auto)
           show "\<guillemotleft>Chn \<i>[a] : Dom.apex \<rightarrow>\<^sub>C Cod.apex\<guillemotright>"
-          proof -
-            have "\<guillemotleft>Chn \<i>[a] : a.chine \<down>\<down> a.chine \<rightarrow>\<^sub>C C.dom a.chine\<guillemotright>"
-              using assms obj_char ide_char unit_def by simp
-            moreover have "C.dom (Leg0 (Dom \<i>[a])) = Chn a \<down>\<down> Chn a"
-              using assms 3 unit_def obj_char ide_char by simp
-            moreover have "C.dom a.chine = C.dom Cod.leg0"
-              using unit_def by auto
-            ultimately show ?thesis by simp
-          qed
+            by (simp add: \<open>aa.apex = a.chine \<down>\<down> a.chine\<close> unit_def)
           show "Cod.leg0 \<cdot> Chn \<i>[a] = Dom.leg0"
             unfolding unit_def using 1 2 3 C.comp_cod_arr by auto
           show "Cod.leg1 \<cdot> Chn \<i>[a] = Dom.leg1"
@@ -2151,14 +1784,7 @@ $$\xymatrix{
       using hcomp_is_functor by auto
 
     interpretation \<mu>\<nu>: identity_arrow_of_spans C \<open>\<mu> \<star> \<nu>\<close>
-    proof
-      have "VV.ide (\<mu>, \<nu>)"
-        using VV.ide_char composable by auto
-      hence "ide (hcomp \<mu> \<nu>)"
-        using H.preserves_ide [of "(\<mu>, \<nu>)"] by simp
-      thus "C.ide chine"
-        using ide_char by simp
-    qed
+      using are_identities(1-2) composable ide_char' by blast
 
     lemma ide_composite [simp]:
     shows "ide (\<mu> \<star> \<nu>)"
@@ -2297,18 +1923,7 @@ $$\xymatrix{
 
     lemma composites_are_identities [simp]:
     shows "ide (\<mu> \<star> \<nu> \<star> \<pi>)" and "ide ((\<mu> \<star> \<nu>) \<star> \<pi>)"
-    proof -
-      interpret \<mu>_H\<nu>\<pi>: two_composable_identity_arrows_of_spans C prj0 prj1 \<mu> \<open>\<nu> \<star> \<pi>\<close>
-        using \<mu>\<nu>.composable \<nu>\<pi>.composable
-        by (unfold_locales, simp)
-      show "ide (\<mu> \<star> \<nu> \<star> \<pi>)"
-        by auto
-      interpret H\<mu>\<nu>_\<pi>: two_composable_identity_arrows_of_spans C prj0 prj1 \<open>\<mu> \<star> \<nu>\<close> \<pi>
-        using \<mu>\<nu>.composable \<nu>\<pi>.composable
-        by (unfold_locales, simp)
-      show "ide ((\<mu> \<star> \<nu>) \<star> \<pi>)"
-        by auto
-    qed
+      by (auto simp add: \<mu>\<nu>.composable \<nu>\<pi>.composable)
 
     interpretation \<mu>\<nu>\<pi>: identity_arrow_of_spans C \<open>\<mu> \<star> \<nu> \<star> \<pi>\<close>
       using composites_are_identities ide_char' by auto
@@ -2422,15 +2037,7 @@ $$\xymatrix{
               C.pullback_commutes [of "\<nu>.leg0 \<cdot> \<p>\<^sub>0[\<mu>.leg0, \<nu>.leg1]" \<pi>.leg1] C.comp_assoc
         by auto
       have 2: "\<mu>.leg0 \<cdot> Prj\<^sub>1\<^sub>1 = \<nu>.leg1 \<cdot> Prj\<^sub>0\<^sub>1"
-      proof -
-        have "\<mu>.leg0 \<cdot> Prj\<^sub>1\<^sub>1 = (\<mu>.leg0 \<cdot> \<mu>\<nu>.prj\<^sub>1) \<cdot> \<p>\<^sub>1[\<nu>.leg0 \<cdot> \<mu>\<nu>.prj\<^sub>0, \<pi>.leg1]"
-          using C.comp_assoc by auto
-        also have "... = \<nu>.leg1 \<cdot> Prj\<^sub>0\<^sub>1"
-          using \<mu>\<nu>.are_identities \<nu>\<pi>.are_identities \<mu>\<nu>.composable \<nu>\<pi>.composable src_def trg_def
-                C.pullback_commutes
-          by (auto simp add: C.commutative_square_def C.comp_assoc)
-        finally show ?thesis by simp
-      qed
+        by (metis C.comp_assoc C.pullback_commutes' \<mu>\<nu>.legs_form_cospan(1))
       show "\<guillemotleft>chine_assoc : \<mu>\<nu>_\<pi>.chine \<rightarrow>\<^sub>C \<mu>\<nu>\<pi>.chine\<guillemotright>"
         unfolding chine_assoc_def
         using \<mu>\<nu>.are_identities \<nu>\<pi>.are_identities \<mu>\<nu>.composable \<nu>\<pi>.composable 1 2
@@ -2474,15 +2081,7 @@ $$\xymatrix{
               C.comp_assoc
         by auto
       have 2: "\<nu>.leg0 \<cdot> Prj\<^sub>1\<^sub>0 = \<pi>.leg1 \<cdot> Prj\<^sub>0\<^sub>0"
-      proof -
-        have "\<nu>.leg0 \<cdot> Prj\<^sub>1\<^sub>0 = (\<nu>.leg0 \<cdot> \<nu>\<pi>.prj\<^sub>1) \<cdot> \<p>\<^sub>0[\<mu>.leg0, \<nu>.leg1 \<cdot> \<nu>\<pi>.prj\<^sub>1]"
-          using C.comp_assoc by simp
-        also have "... = \<pi>.leg1 \<cdot> Prj\<^sub>0\<^sub>0"
-          using \<mu>\<nu>.are_identities \<nu>\<pi>.are_identities \<mu>\<nu>.composable \<nu>\<pi>.composable src_def trg_def
-                C.pullback_commutes
-          by (auto simp add: C.commutative_square_def C.comp_assoc)
-        finally show ?thesis by auto
-      qed
+        by (metis C.comp_assoc C.pullback_commutes' \<nu>\<pi>.legs_form_cospan(1))
       show "\<guillemotleft>chine_assoc' : \<mu>\<nu>\<pi>.chine \<rightarrow>\<^sub>C \<mu>\<nu>_\<pi>.chine\<guillemotright>"
         unfolding chine_assoc'_def
         using \<mu>\<nu>.are_identities \<nu>\<pi>.are_identities \<mu>\<nu>.composable \<nu>\<pi>.composable 1 2
@@ -2742,48 +2341,7 @@ $$\xymatrix{
     lemma chine_composite_in_hom [intro]:
     shows "\<guillemotleft>\<mu>\<nu>_\<pi>.chine : Chn ((dom \<mu> \<star> dom \<nu>) \<star> dom \<pi>) \<rightarrow>\<^sub>C Chn ((cod \<mu> \<star> cod \<nu>) \<star> cod \<pi>)\<guillemotright>"
     and "\<guillemotleft>\<mu>\<nu>\<pi>.chine : Chn (dom \<mu> \<star> dom \<nu> \<star> dom \<pi>) \<rightarrow>\<^sub>C Chn (cod \<mu> \<star> cod \<nu> \<star> cod \<pi>)\<guillemotright>"
-    proof -
-      interpret \<mu>\<nu>: arrow_of_spans C \<open>\<mu> \<star> \<nu>\<close>
-        using arrow_of_spans_hcomp \<mu>\<nu>.composable by auto
-      interpret \<nu>\<pi>: arrow_of_spans C \<open>\<nu> \<star> \<pi>\<close>
-        using arrow_of_spans_hcomp \<nu>\<pi>.composable by auto
-      show "\<guillemotleft>\<mu>\<nu>_\<pi>.chine : Chn ((dom \<mu> \<star> dom \<nu>) \<star> dom \<pi>) \<rightarrow>\<^sub>C Chn ((cod \<mu> \<star> cod \<nu>) \<star> cod \<pi>)\<guillemotright>"
-      proof -
-        have "\<guillemotleft>\<mu>\<nu>_\<pi>.chine : \<mu>\<nu>.dom.leg0 \<down>\<down> \<pi>.dom.leg1 \<rightarrow>\<^sub>C \<mu>\<nu>.cod.leg0 \<down>\<down> \<pi>.cod.leg1\<guillemotright>"
-        proof -
-          have "src (\<mu> \<star> \<nu>) = trg \<pi>"
-            using \<mu>\<nu>.composable \<nu>\<pi>.composable by simp
-          moreover have "arr (\<mu> \<star> \<nu>)"
-            using \<mu>\<nu>.arrow_of_spans_axioms by auto
-          ultimately show ?thesis
-            using hcomp_def chine_hcomp_props(1) [of \<pi> "\<mu> \<star> \<nu>"] by auto
-        qed
-        hence "\<guillemotleft>\<mu>\<nu>_\<pi>.chine : \<nu>.dom.leg0 \<cdot> \<p>\<^sub>0[\<mu>.dom.leg0, \<nu>.dom.leg1] \<down>\<down> \<pi>.dom.leg1 \<rightarrow>\<^sub>C
-                             \<nu>.cod.leg0 \<cdot> \<p>\<^sub>0[\<mu>.cod.leg0, \<nu>.cod.leg1] \<down>\<down> \<pi>.cod.leg1\<guillemotright>"
-          unfolding hcomp_def using \<mu>\<nu>.composable \<nu>\<pi>.composable by simp
-        thus ?thesis
-          using doms.chine_composite(1) cods.chine_composite(1) dom_char cod_char
-          by auto
-      qed
-      show "\<guillemotleft>\<mu>\<nu>\<pi>.chine : Chn (dom \<mu> \<star> dom \<nu> \<star> dom \<pi>) \<rightarrow>\<^sub>C Chn (cod \<mu> \<star> cod \<nu> \<star> cod \<pi>)\<guillemotright>"
-      proof -
-        have "\<guillemotleft>\<mu>\<nu>\<pi>.chine : \<mu>.dom.leg0 \<down>\<down> \<nu>\<pi>.dom.leg1 \<rightarrow>\<^sub>C \<mu>.cod.leg0 \<down>\<down> \<nu>\<pi>.cod.leg1\<guillemotright>"
-        proof -
-          have "src \<mu> = trg (\<nu> \<star> \<pi>)"
-            using trg_hcomp \<mu>\<nu>.composable \<nu>\<pi>.composable by simp
-          moreover have "arr (\<nu> \<star> \<pi>)"
-            using \<mu>\<nu>.arrow_of_spans_axioms by auto
-          ultimately show ?thesis
-            using hcomp_def chine_hcomp_props(1) [of "\<nu> \<star> \<pi>" \<mu>] by auto
-        qed
-        hence "\<guillemotleft>\<mu>\<nu>\<pi>.chine : \<mu>.dom.leg0 \<down>\<down> \<nu>.dom.leg1 \<cdot> \<p>\<^sub>1[\<nu>.dom.leg0, \<pi>.dom.leg1] \<rightarrow>\<^sub>C
-                            \<mu>.cod.leg0 \<down>\<down> \<nu>.cod.leg1 \<cdot> \<p>\<^sub>1[\<nu>.cod.leg0, \<pi>.cod.leg1]\<guillemotright>"
-          unfolding hcomp_def \<mu>\<nu>.composable \<nu>\<pi>.composable by simp
-        thus ?thesis
-          using doms.chine_composite(2) cods.chine_composite(2) dom_char cod_char
-          by auto
-      qed
-    qed
+      using Chn_in_hom by auto
 
     lemma cospan_\<mu>\<nu>:
     shows "C.cospan \<mu>.dom.leg0 \<nu>.dom.leg1"
@@ -2989,36 +2547,22 @@ $$\xymatrix{
           apply (metis C.ideD(2) C.ideD(3) HHfgh.chine_simps(2) HfHgh.chine_simps(3)
             fgh.composites_are_identities(1) fgh.composites_are_identities(2)
             fgh.chine_assoc_in_hom ide_char)
-      proof -
-        have 1: "arr (f \<star> g)" using fgh.\<mu>\<nu>.composite_is_arrow by simp
-        have 2: "arr (g \<star> h)" using fgh.\<nu>\<pi>.composite_is_arrow by simp
-        show "HfHgh.cod.leg0 \<cdot> fgh.chine_assoc = HHfgh.dom.leg0"
-          using 1 2 hcomp_def src_def trg_def fgh.\<mu>\<nu>.composable fgh.\<nu>\<pi>.composable
-                fgh.chine_assoc_props(4) C.comp_assoc
-          by simp
-        show "HfHgh.cod.leg1 \<cdot> fgh.chine_assoc = HHfgh.dom.leg1"
-          using 1 2 hcomp_def src_def trg_def fgh.\<mu>\<nu>.composable fgh.\<nu>\<pi>.composable
-                fgh.chine_assoc_props(2) C.comp_assoc
-          by simp
-      qed
+        apply (metis C.comp_assoc fgh.composites_are_identities(1) fgh.leg0_composite(1-2)
+                     fgh.prj_chine_assoc(3) ide_char' identity_arrow_of_spans.cod_simps(2))
+        by (metis C.comp_assoc fgh.composites_are_identities(1) fgh.leg1_composite(1-2)
+            fgh.prj_chine_assoc(1) ide_char' identity_arrow_of_spans.cod_simps(3))
       interpret assoc'_fgh: arrow_of_spans C \<open>assoc'\<^sub>S\<^sub>B f g h\<close>
         apply unfold_locales
             apply simp_all
           apply (metis C.ideD(2) C.ideD(3) HHfgh.chine_simps(2) HfHgh.chine_simps(3)
             fgh.composites_are_identities(1) fgh.composites_are_identities(2)
             fgh.chine_assoc'_in_hom ide_char)
-      proof -
-        have 1: "arr (f \<star> g)" using fgh.\<mu>\<nu>.composite_is_arrow by simp
-        have 2: "arr (g \<star> h)"  using fgh.\<nu>\<pi>.composite_is_arrow by simp
-        show "HHfgh.dom.leg0 \<cdot> fgh.chine_assoc' = HfHgh.cod.leg0"
-          using 1 2 hcomp_def src_def trg_def fgh.\<mu>\<nu>.composable fgh.\<nu>\<pi>.composable
-                C.comp_assoc fgh.chine_assoc'_props(4)
-          by simp
-        show "HHfgh.dom.leg1 \<cdot> fgh.chine_assoc' = HfHgh.cod.leg1"
-          using 1 2 hcomp_def src_def trg_def fgh.\<mu>\<nu>.composable fgh.\<nu>\<pi>.composable
-                C.comp_assoc fgh.chine_assoc'_props(2)
-          by auto
-      qed
+        using C.comp_assoc fgh.composites_are_identities(1) fgh.leg0_composite(1-2)
+              ide_char' identity_arrow_of_spans.cod_simps(2)
+         apply force
+        using C.comp_assoc fgh.composites_are_identities(1) fgh.leg1_composite(1-2)
+              fgh.prj_chine_assoc'(1) ide_char' identity_arrow_of_spans.cod_simps(3)
+        by force
       show 1: "\<guillemotleft>assoc\<^sub>S\<^sub>B f g h : (f \<star> g) \<star> h \<Rightarrow> f \<star> g \<star> h\<guillemotright>"
       proof
         show 1: "arr (assoc\<^sub>S\<^sub>B f g h)"
@@ -3116,10 +2660,7 @@ $$\xymatrix{
         using assms arr_char by (unfold_locales, auto)
       interpret fgh: three_composable_identity_arrows_of_spans C prj0 prj1 f g h
         using assms ide_char
-        apply unfold_locales
-          apply blast
-         apply blast
-        by blast
+        by unfold_locales blast+
       interpret afgh: arrow_of_spans C \<open>assoc\<^sub>S\<^sub>B f g h\<close>
         using assms assoc_props(3) arr_char by blast
       interpret a'fgh: arrow_of_spans C \<open>assoc'\<^sub>S\<^sub>B f g h\<close>
@@ -3249,16 +2790,7 @@ $$\xymatrix{
         have Dom: "Dom ((fst (VVV.dom \<mu>\<nu>\<pi>) \<star> fst (snd (VVV.dom \<mu>\<nu>\<pi>))) \<star>
                          snd (snd (VVV.dom \<mu>\<nu>\<pi>))) =
                    \<lparr>Leg0 = \<pi>.dom.leg0 \<cdot> dom_\<mu>\<nu>\<pi>.Prj\<^sub>0, Leg1 = \<mu>.dom.leg1 \<cdot> dom_\<mu>\<nu>\<pi>.Prj\<^sub>1\<^sub>1\<rparr>"
-        proof -
-            have "arr (dom (fst \<mu>\<nu>\<pi>) \<star> dom (fst (snd \<mu>\<nu>\<pi>)))"
-              using \<mu>\<nu>\<pi>.\<mu>\<nu>.composable \<mu>\<nu>\<pi>.\<nu>\<pi>.composable by simp
-            thus ?thesis
-              using \<mu>\<nu>\<pi> hcomp_def dom_legs ide_dom dom_char
-                apply simp
-              using \<mu>\<nu>\<pi>.\<mu>\<nu>.composable \<mu>\<nu>\<pi>.\<nu>\<pi>.composable src_def trg_def dom_char C.comp_assoc
-                    VVV.dom_simp VV.dom_simp
-              by auto
-        qed
+          using dom_\<mu>\<nu>\<pi>.leg0_composite(2) dom_\<mu>\<nu>\<pi>.leg1_composite(2) dom_legs by auto
         have Cod: "Cod (fst (VVV.dom \<mu>\<nu>\<pi>) \<star> fst (snd (VVV.dom \<mu>\<nu>\<pi>)) \<star>
                          snd (snd (VVV.dom \<mu>\<nu>\<pi>))) =
                    \<lparr>Leg0 = \<pi>.dom.leg0 \<cdot> dom_\<mu>\<nu>\<pi>.Prj\<^sub>0\<^sub>0, Leg1 = \<mu>.dom.leg1 \<cdot> dom_\<mu>\<nu>\<pi>.Prj\<^sub>1\<rparr>"
@@ -3275,19 +2807,7 @@ $$\xymatrix{
         have Dom': "Dom ((fst (VVV.cod \<mu>\<nu>\<pi>) \<star> fst (snd (VVV.cod \<mu>\<nu>\<pi>))) \<star>
                           snd (snd (VVV.cod \<mu>\<nu>\<pi>))) =
                     \<lparr>Leg0 = \<pi>.cod.leg0 \<cdot> cod_\<mu>\<nu>\<pi>.Prj\<^sub>0, Leg1 = \<mu>.cod.leg1 \<cdot> cod_\<mu>\<nu>\<pi>.Prj\<^sub>1\<^sub>1\<rparr>"
-        proof -
-            have "arr (cod (fst \<mu>\<nu>\<pi>) \<star> cod (fst (snd \<mu>\<nu>\<pi>)))"
-              using \<mu>\<nu>\<pi>.\<mu>\<nu>.composable \<mu>\<nu>\<pi>.\<nu>\<pi>.composable by simp
-            moreover have "\<mu>.dsrc = \<nu>.dtrg"
-              using \<mu>\<nu>\<pi>.\<mu>\<nu>.composable src_def trg_def cod_char by simp
-            moreover have "\<nu>.dsrc = \<pi>.dtrg"
-              using \<mu>\<nu>\<pi>.\<nu>\<pi>.composable src_def trg_def cod_char by simp
-            ultimately show ?thesis
-              using \<mu>\<nu>\<pi> hcomp_def cod_legs ide_cod cod_char VVV.cod_simp VV.cod_simp
-                apply simp
-              using \<mu>\<nu>\<pi>.\<mu>\<nu>.composable \<mu>\<nu>\<pi>.\<nu>\<pi>.composable src_def trg_def cod_char C.comp_assoc
-              by simp
-        qed
+          by (simp add: cod_\<mu>\<nu>\<pi>.leg0_composite(2) cod_\<mu>\<nu>\<pi>.leg1_composite(2) cod_legs)
         have Cod': "Cod (fst (VVV.cod \<mu>\<nu>\<pi>) \<star> fst (snd (VVV.cod \<mu>\<nu>\<pi>)) \<star>
                           snd (snd (VVV.cod \<mu>\<nu>\<pi>))) =
                     \<lparr>Leg0 = \<pi>.cod.leg0 \<cdot> cod_\<mu>\<nu>\<pi>.Prj\<^sub>0\<^sub>0, Leg1 = \<mu>.cod.leg1 \<cdot> cod_\<mu>\<nu>\<pi>.Prj\<^sub>1\<rparr>"
@@ -3457,10 +2977,7 @@ $$\xymatrix{
         interpret fgh: three_composable_identity_arrows_of_spans C prj0 prj1
                          \<open>fst fgh\<close> \<open>fst (snd fgh)\<close> \<open>snd (snd fgh)\<close>
           using fgh VVV.ide_char VV.ide_char ide_char
-          apply unfold_locales
-            apply blast
-           apply blast
-          by blast
+          by unfold_locales blast+
         have 1: "arr (\<alpha>\<^sub>S\<^sub>B fgh)"
           using fgh \<alpha>.preserves_reflects_arr VVV.ideD(1) by blast
         have 2: "\<alpha>\<^sub>S\<^sub>B fgh = assoc\<^sub>S\<^sub>B (fst fgh) (fst (snd fgh)) (snd (snd fgh))"
@@ -3566,14 +3083,7 @@ $$\xymatrix{
         using hcomp_def [of \<mu> "hcomp (hcomp \<nu> \<pi>) \<rho>"] chine_hcomp_ide_ide \<mu>\<nu>.composable
         by simp
       show "HH\<mu>H\<nu>\<pi>\<rho>.chine = assoc\<mu>\<nu>\<pi>.cod.leg0 \<down>\<down> \<rho>.leg1"
-      proof -
-        have "hseq \<nu> \<pi> \<and> arr \<mu> \<and> src \<mu> = trg (hcomp \<nu> \<pi>)"
-          using \<mu>_\<nu>\<pi>.are_arrows(1) \<mu>_\<nu>\<pi>.composable \<nu>\<pi>.composite_is_arrow by blast
-        then have "assoc\<mu>\<nu>\<pi>.cod.leg0 = \<nu>\<pi>.leg0 \<cdot> \<mu>_\<nu>\<pi>.prj\<^sub>0"
-          using \<nu>\<pi>.composable by (simp add: hcomp_def)
-        then show ?thesis
-          by (simp add: \<mu>_\<nu>\<pi>_\<rho>.chine_composite(1))
-      qed
+        by (simp add: \<mu>_\<nu>\<pi>.leg0_composite \<mu>_\<nu>\<pi>_\<rho>.chine_composite(1))
       show "H\<mu>H\<nu>H\<pi>\<rho>.chine = \<mu>.leg0 \<down>\<down> H\<nu>H\<pi>\<rho>.leg1"
         using hcomp_def [of \<mu> "hcomp \<nu> (hcomp \<pi> \<rho>)"] chine_hcomp_ide_ide \<mu>\<nu>.composable
         by simp
@@ -3581,14 +3091,7 @@ $$\xymatrix{
 
     lemma cospan_\<mu>0_H\<nu>H\<pi>\<rho>1:
     shows "C.cospan \<mu>.leg0 H\<nu>H\<pi>\<rho>.leg1"
-    proof -
-      have "H\<nu>H\<pi>\<rho>.leg1 = \<nu>.leg1 \<cdot> \<nu>\<pi>\<rho>.Prj\<^sub>1"
-        using hcomp_def [of \<nu> "hcomp \<pi> \<rho>"] \<nu>\<pi>.composable \<pi>\<rho>.composable
-        apply auto
-        by (auto simp add: hcomp_def)
-      thus ?thesis
-        using \<mu>\<nu>.legs_form_cospan \<nu>\<pi>.legs_form_cospan \<pi>\<rho>.legs_form_cospan by simp
-    qed
+      by (metis C.cod_comp H\<nu>H\<pi>\<rho>.dom.leg_simps(3) \<mu>_\<nu>_\<pi>\<rho>.cospan_\<mu>\<nu> \<nu>\<pi>\<rho>.leg1_composite(1))
  
     (* TODO: Better name for this. *)
     lemma assoc_in_homs:
@@ -3647,76 +3150,27 @@ $$\xymatrix{
     and "\<guillemotleft>\<mu>_\<nu>\<pi>.prj\<^sub>0 : H\<mu>H\<nu>\<pi>.chine \<rightarrow>\<^sub>C \<nu>\<pi>.apex\<guillemotright>"
     proof -
       show "\<guillemotleft>\<p>\<^sub>0[\<mu>.leg0, HH\<nu>\<pi>\<rho>.leg1] : H\<mu>HH\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C HH\<nu>\<pi>\<rho>.chine\<guillemotright>"
-      proof
-        show "C.cospan \<mu>.leg0 HH\<nu>\<pi>\<rho>.leg1"
-          using hcomp_def [of "hcomp \<nu> \<pi>" \<rho>] \<mu>_\<nu>\<pi>_\<rho>.cospan_\<mu>\<nu> \<pi>\<rho>.composable \<nu>\<pi>_\<rho>.legs_form_cospan
-          by auto
-        show "H\<mu>HH\<nu>\<pi>\<rho>.chine = \<mu>.leg0 \<down>\<down> HH\<nu>\<pi>\<rho>.leg1"
-          using hcomp_def [of \<mu> "hcomp (hcomp \<nu> \<pi>) \<rho>"] chine_hcomp_ide_ide \<mu>\<nu>.composable
-          by simp
-        show "HH\<nu>\<pi>\<rho>.chine = C.dom HH\<nu>\<pi>\<rho>.leg1"
-          by simp
-      qed
+        by (metis C.dom_comp C.prj0_in_hom' C.prj1_simps_arr HH\<nu>\<pi>\<rho>.chine_eq_apex
+            HH\<nu>\<pi>\<rho>.cod.apex_def HH\<nu>\<pi>\<rho>.cod.is_span HH\<nu>\<pi>\<rho>.cod_simps(1) HH\<nu>\<pi>\<rho>.cod_simps(3)
+            \<mu>_\<nu>\<pi>_\<rho>.prj_simps(10) \<mu>_\<nu>\<pi>_\<rho>.prj_simps(11) \<mu>_\<nu>\<pi>_\<rho>.prj_simps(14) \<nu>\<pi>_\<rho>.leg1_composite)
       show "\<guillemotleft>\<p>\<^sub>1[assoc\<mu>\<nu>\<pi>.cod.leg0, \<rho>.cod.leg1] : HH\<mu>H\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C H\<mu>H\<nu>\<pi>.chine\<guillemotright>"
-      proof
-        show "C.cospan assoc\<mu>\<nu>\<pi>.cod.leg0 \<rho>.cod.leg1"
-          using hcomp_def [of \<mu> "hcomp \<nu> \<pi>"] hcomp_def [of \<nu> \<pi>]
-          by (metis C.cod_comp H\<mu>H\<nu>\<pi>.cod.leg_simps(1) \<nu>\<pi>.cod_simps(2) \<mu>_\<nu>\<pi>.are_arrows(1)
-              \<mu>_\<nu>\<pi>.composable \<mu>_\<nu>\<pi>_\<rho>.cospan_\<nu>\<pi> \<nu>\<pi>.composite_is_arrow \<rho>.cod_simps(3)
-              arrow_of_spans_data.select_convs(3) span_data.select_convs(1))
-        show "HH\<mu>H\<nu>\<pi>\<rho>.chine = assoc\<mu>\<nu>\<pi>.cod.leg0 \<down>\<down> \<rho>.cod.leg1"
-          using chines_eq(2) by simp
-        show "H\<mu>H\<nu>\<pi>.chine = C.dom assoc\<mu>\<nu>\<pi>.cod.leg0"
-          by auto
-      qed
-      show "\<guillemotleft>\<p>\<^sub>0[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1] : HHH\<mu>\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C \<rho>.chine\<guillemotright>"
-      proof
-        show "C.cospan HH\<mu>\<nu>\<pi>.leg0 \<rho>.leg1"
-          using hcomp_def [of "hcomp \<mu> \<nu>" \<pi>] \<nu>\<pi>.composable \<mu>\<nu>_\<pi>_\<rho>.cospan_\<mu>\<nu> \<nu>\<pi>\<rho>.cospan_\<nu>\<pi>
-          by simp
-        show "HHH\<mu>\<nu>\<pi>\<rho>.chine = HH\<mu>\<nu>\<pi>.leg0 \<down>\<down> \<rho>.leg1"
-          using chine_hcomp_ide_ide hcomp_def [of "hcomp (hcomp \<mu> \<nu>) \<pi>" \<rho>] \<pi>\<rho>.composable
-          by simp
-        show "\<rho>.chine = C.dom \<rho>.leg1 " by simp
-      qed
-      show "\<guillemotleft>\<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1] : HHH\<mu>\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C HH\<mu>\<nu>\<pi>.chine\<guillemotright>"
-      proof
-        show "C.cospan HH\<mu>\<nu>\<pi>.leg0 \<rho>.leg1"
-          using hcomp_def [of "hcomp \<mu> \<nu>" \<pi>] \<nu>\<pi>.composable \<mu>\<nu>_\<pi>_\<rho>.cospan_\<mu>\<nu> \<nu>\<pi>\<rho>.cospan_\<nu>\<pi>
-          by simp
-        show "HHH\<mu>\<nu>\<pi>\<rho>.chine = HH\<mu>\<nu>\<pi>.leg0 \<down>\<down> \<rho>.leg1"
-          using chine_hcomp_ide_ide hcomp_def [of "hcomp (hcomp \<mu> \<nu>) \<pi>" \<rho>] \<pi>\<rho>.composable
-          by simp
-        show "HH\<mu>\<nu>\<pi>.chine = C.dom HH\<mu>\<nu>\<pi>.leg0" by simp
-      qed
-      show "\<guillemotleft>\<p>\<^sub>1[\<nu>\<pi>.leg0 \<cdot> \<mu>_\<nu>\<pi>.prj\<^sub>0, \<rho>.leg1] : HH\<mu>H\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C H\<mu>H\<nu>\<pi>.chine\<guillemotright>"
-      proof
-        show "C.cospan (\<nu>\<pi>.leg0 \<cdot> \<mu>_\<nu>\<pi>.prj\<^sub>0) \<rho>.leg1"
-          using \<mu>_\<nu>\<pi>.prj_in_hom(2) C.seqI' \<mu>_\<nu>\<pi>_\<rho>.cospan_\<nu>\<pi> by auto
-        show "HH\<mu>H\<nu>\<pi>\<rho>.chine = \<nu>\<pi>.leg0 \<cdot> \<mu>_\<nu>\<pi>.prj\<^sub>0 \<down>\<down> \<rho>.leg1"
-          using chines_eq(2) hcomp_def [of \<mu> "hcomp \<nu> \<pi>"] \<mu>\<nu>.composable by simp
-        show "H\<mu>H\<nu>\<pi>.chine = C.dom (\<nu>\<pi>.leg0 \<cdot> \<mu>_\<nu>\<pi>.prj\<^sub>0)"
-          using \<mu>_\<nu>\<pi>.prj_in_hom(2) hcomp_def [of \<mu> "hcomp \<nu> \<pi>"] chine_hcomp_ide_ide \<mu>\<nu>.composable
-          by auto
-      qed
-      show "\<guillemotleft>\<p>\<^sub>1[assoc\<mu>\<nu>\<pi>.dom.leg0, \<rho>.leg1] : HHH\<mu>\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C HH\<mu>\<nu>\<pi>.chine\<guillemotright>"
-      proof
-        show "C.cospan assoc\<mu>\<nu>\<pi>.dom.leg0 \<rho>.leg1"
-          using hcomp_def [of "hcomp \<mu> \<nu>" \<pi>] \<nu>\<pi>.composable \<mu>\<nu>_\<pi>_\<rho>.cospan_\<mu>\<nu> \<nu>\<pi>\<rho>.cospan_\<nu>\<pi>
-          by simp
-        show "HHH\<mu>\<nu>\<pi>\<rho>.chine = assoc\<mu>\<nu>\<pi>.dom.leg0 \<down>\<down> \<rho>.leg1"
-          using hcomp_def [of "hcomp (hcomp \<mu> \<nu>) \<pi>" \<rho>] chine_hcomp_ide_ide \<pi>\<rho>.composable
-          by simp
-        show "HH\<mu>\<nu>\<pi>.chine = C.dom assoc\<mu>\<nu>\<pi>.dom.leg0"
-          using assoc\<mu>\<nu>\<pi>.dom.apex_def assoc\<mu>\<nu>\<pi>.chine_in_hom by fastforce
-      qed
-      show "\<guillemotleft>\<p>\<^sub>1[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] : H\<mu>H\<nu>H\<pi>\<rho>.chine \<rightarrow>\<^sub>C \<mu>.apex\<guillemotright>"
-        using cospan_\<mu>0_H\<nu>H\<pi>\<rho>1 chine_hcomp_ide_ide hcomp_def [of \<mu> "hcomp \<nu> (hcomp \<pi> \<rho>)"]
-              \<mu>\<nu>.composable
+        using \<mu>\<nu>\<pi>.leg0_composite(1) \<mu>\<nu>_\<pi>_\<rho>.prj_simps(3) \<mu>_\<nu>\<pi>.leg0_composite 
+              \<mu>_\<nu>\<pi>_\<rho>.prj_simps(6)
         by auto
+      show "\<guillemotleft>\<p>\<^sub>0[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1] : HHH\<mu>\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C \<rho>.chine\<guillemotright>"
+        by (simp add: \<mu>\<nu>_\<pi>.leg0_composite \<mu>\<nu>_\<pi>_\<rho>.prj_in_hom(3))
+      show "\<guillemotleft>\<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1] : HHH\<mu>\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C HH\<mu>\<nu>\<pi>.chine\<guillemotright>"
+        using \<mu>\<nu>.leg0_composite \<mu>\<nu>_\<pi>.leg0_composite \<mu>\<nu>_\<pi>_\<rho>.prj_in_hom(2) by fastforce
+      show "\<guillemotleft>\<p>\<^sub>1[\<nu>\<pi>.leg0 \<cdot> \<mu>_\<nu>\<pi>.prj\<^sub>0, \<rho>.leg1] : HH\<mu>H\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C H\<mu>H\<nu>\<pi>.chine\<guillemotright>"
+        using \<mu>\<nu>\<pi>.leg0_composite(1) \<mu>_\<nu>\<pi>.leg0_composite \<mu>_\<nu>\<pi>_\<rho>.prj_simps(3)
+              \<mu>_\<nu>\<pi>_\<rho>.prj_simps(6)
+        by force
+      show "\<guillemotleft>\<p>\<^sub>1[assoc\<mu>\<nu>\<pi>.dom.leg0, \<rho>.leg1] : HHH\<mu>\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C HH\<mu>\<nu>\<pi>.chine\<guillemotright>"
+        using \<open>\<guillemotleft>\<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1] : HHH\<mu>\<nu>\<pi>\<rho>.chine \<rightarrow>\<^sub>C HH\<mu>\<nu>\<pi>.chine\<guillemotright>\<close> by fastforce
+      show "\<guillemotleft>\<p>\<^sub>1[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] : H\<mu>H\<nu>H\<pi>\<rho>.chine \<rightarrow>\<^sub>C \<mu>.apex\<guillemotright>"
+        by (simp add: \<mu>_\<nu>_\<pi>\<rho>.prj_in_hom(4) \<nu>_\<pi>\<rho>.leg1_composite)
       show "\<guillemotleft>\<mu>_\<nu>\<pi>.prj\<^sub>0 : H\<mu>H\<nu>\<pi>.chine \<rightarrow>\<^sub>C \<nu>\<pi>.apex\<guillemotright>"
-        using \<mu>_\<nu>\<pi>.prj_in_hom(2) chine_hcomp_ide_ide hcomp_def [of \<mu> "hcomp \<nu> \<pi>"] \<mu>\<nu>.composable
-        by simp
+        using \<mu>_\<nu>\<pi>.chine_composite \<mu>_\<nu>\<pi>.prj_in_hom(2) by presburger
     qed
 
     lemma chine_in_homs [intro, simp]:
@@ -3795,16 +3249,8 @@ $$\xymatrix{
           by simp
         show "\<mu>.leg0 \<cdot> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>1\<^sub>1 =
               (\<nu>\<pi>.leg1 \<cdot> \<nu>\<pi>_\<rho>.prj\<^sub>1) \<cdot> \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle>"
-        proof -
-          have "(\<nu>\<pi>.leg1 \<cdot> \<nu>\<pi>_\<rho>.prj\<^sub>1) \<cdot> \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle> =
-                \<nu>\<pi>.leg1 \<cdot> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1"
-            using 1 C.comp_assoc by auto
-          also have "... = \<mu>.leg0 \<cdot> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>1\<^sub>1"
-            using hcomp_def [of \<nu> \<pi>]
-            by (metis (no_types, lifting) C.comp_assoc C.prj1_simps_arr C.pullback_commutes'
-                \<open>C.span \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>1\<^sub>1 \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle>\<close> C.seqE)
-          finally show ?thesis by auto
-        qed
+          by (metis (no_types, lifting) "1" C.comp_assoc C.prj_tuple(2) C.pullback_commutes'
+              \<mu>_\<nu>\<pi>_\<rho>.cospan_\<mu>\<nu>)
       qed
       show "C.commutative_square \<mu>.leg0 (\<nu>.leg1 \<cdot> \<nu>_\<pi>\<rho>.prj\<^sub>1) \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>1\<^sub>1
                \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"
@@ -3817,19 +3263,9 @@ $$\xymatrix{
           using \<mu>_\<nu>_\<pi>\<rho>.cospan_\<mu>\<nu> by simp
         show "\<mu>.leg0 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>1\<^sub>1 =
               (\<nu>.leg1 \<cdot> \<nu>_\<pi>\<rho>.prj\<^sub>1) \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"
-        proof -
-          have "(\<nu>.leg1 \<cdot> \<nu>_\<pi>\<rho>.prj\<^sub>1) \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> =
-                \<nu>.leg1 \<cdot> \<nu>_\<pi>\<rho>.prj\<^sub>1 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"
-            using C.comp_assoc by auto
-          also have "... = \<nu>.leg1 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1"
-            using 2 by simp
-          also have "... = \<mu>.leg0 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>1\<^sub>1"
-            using C.pullback_commutes [of \<mu>.leg0 \<nu>.leg1]
-            by (metis C.comp_assoc C.pullback_commutes' \<mu>_\<nu>_\<pi>\<rho>.cospan_\<mu>\<nu>)
-          finally show ?thesis by simp
-        qed
+          by (metis (no_types, lifting) "2" C.comp_assoc C.prj_tuple(2) C.pullback_commutes'
+              \<mu>_\<nu>_\<pi>\<rho>.cospan_\<mu>\<nu>)
       qed
-
     qed
 
     lemma chine_pentagon:
@@ -3844,28 +3280,13 @@ $$\xymatrix{
       have RHS_in_hom: "\<guillemotleft>?RHS : ((\<mu> \<star> \<nu>) \<star> \<pi>) \<star> \<rho> \<Rightarrow> \<mu> \<star> \<nu> \<star> \<pi> \<star> \<rho>\<guillemotright>"
         using \<mu>\<nu>.composable \<nu>\<pi>.composable \<pi>\<rho>.composable by auto
 
-      have "arrow_of_spans (\<cdot>) ?LHS"
+      have 1: "arrow_of_spans (\<cdot>) ?LHS"
         using arr_char assoc_in_homs(1-3) by blast
 
       have L: "Chn ?LHS = chine_hcomp \<mu> (assoc\<^sub>S\<^sub>B \<nu> \<pi> \<rho>) \<cdot> \<mu>_\<nu>\<pi>_\<rho>.chine_assoc \<cdot>
                             chine_hcomp (assoc\<^sub>S\<^sub>B \<mu> \<nu> \<pi>) \<rho>"
-      proof -
-        have "seq (\<mu> \<star> \<lparr>Chn = \<nu>\<pi>\<rho>.chine_assoc, Dom = Dom ((\<nu> \<star> \<pi>) \<star> \<rho>),
-                        Cod = Cod (\<nu> \<star> \<pi> \<star> \<rho>)\<rparr>)
-                  (\<lparr>Chn = \<mu>_\<nu>\<pi>_\<rho>.chine_assoc,
-                    Dom = Dom ((\<mu> \<star> \<nu> \<star> \<pi>) \<star> \<rho>), Cod = Cod (\<mu> \<star> (\<nu> \<star> \<pi>) \<star> \<rho>)\<rparr> \<bullet>
-                  (\<lparr>Chn = \<mu>\<nu>\<pi>.chine_assoc,
-                    Dom = Dom ((\<mu> \<star> \<nu>) \<star> \<pi>), Cod = Cod (\<mu> \<star> \<nu> \<star> \<pi>)\<rparr> \<star> \<rho>))"
-          by (meson LHS_in_hom arrI)
-        moreover have "seq \<lparr>Chn = \<mu>_\<nu>\<pi>_\<rho>.chine_assoc,
-                            Dom = Dom ((\<mu> \<star> \<nu> \<star> \<pi>) \<star> \<rho>), Cod = Cod (\<mu> \<star> (\<nu> \<star> \<pi>) \<star> \<rho>)\<rparr>
-                       (\<lparr>Chn = \<mu>\<nu>\<pi>.chine_assoc,
-                         Dom = Dom ((\<mu> \<star> \<nu>) \<star> \<pi>), Cod = Cod (\<mu> \<star> \<nu> \<star> \<pi>)\<rparr> \<star> \<rho>)"
-          using assoc_in_homs(2) assoc_in_homs(3) by blast
-        ultimately show ?thesis
-          using Chn_vcomp chine_composites(1) chine_composites(2) chine_composites(3)
-          by presburger
-      qed
+        using Chn_vcomp 1 arr_char chine_composites(1) chine_composites(3) seq_char
+        by fastforce
       have R: "Chn ?RHS = \<mu>_\<nu>_\<pi>\<rho>.chine_assoc \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
         using Chn_vcomp assoc_in_homs(4) assoc_in_homs(5) seqI' by auto
 
@@ -3931,20 +3352,7 @@ $$\xymatrix{
             also have "... = \<mu>.chine \<cdot> \<mu>\<nu>.prj\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1\<^sub>1"
             proof -
               have "\<mu>\<nu>\<pi>.Prj\<^sub>1\<^sub>1 \<cdot> \<p>\<^sub>1[assoc\<mu>\<nu>\<pi>.dom.leg0, \<rho>.leg1] = \<mu>\<nu>.prj\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1\<^sub>1"
-              proof -
-                have "\<mu>\<nu>\<pi>.Prj\<^sub>1\<^sub>1 \<cdot> \<p>\<^sub>1[assoc\<mu>\<nu>\<pi>.dom.leg0, \<rho>.leg1] =
-                      (\<p>\<^sub>1[\<mu>.leg0, \<nu>.leg1] \<cdot> \<p>\<^sub>1[\<mu>\<nu>.leg0, \<pi>.leg1]) \<cdot> \<p>\<^sub>1[\<pi>.leg0 \<cdot> \<mu>\<nu>_\<pi>.prj\<^sub>0, \<rho>.leg1]"
-                proof -
-                  have "\<mu>\<nu>.leg0 = \<nu>.leg0 \<cdot> \<mu>\<nu>.prj\<^sub>0"
-                    using hcomp_def \<mu>\<nu>.composable by simp
-                  moreover have "assoc\<mu>\<nu>\<pi>.dom.leg0 = \<pi>.leg0 \<cdot> \<mu>\<nu>_\<pi>.prj\<^sub>0"
-                    using hcomp_def [of "hcomp \<mu> \<nu>" \<pi>] \<nu>\<pi>.composable by auto
-                  ultimately show ?thesis by simp
-                qed
-                also have "... = \<mu>\<nu>.prj\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1\<^sub>1"
-                  using \<mu>\<nu>_\<pi>_\<rho>.prj_in_hom(1) C.comp_assoc by simp
-                finally show ?thesis by blast
-              qed
+                by (simp add: C.comp_assoc \<mu>\<nu>.leg0_composite \<mu>\<nu>_\<pi>.leg0_composite)
               thus ?thesis by simp
             qed
             finally show ?thesis by blast
@@ -3956,29 +3364,8 @@ $$\xymatrix{
           finally show ?thesis by blast
         qed
         also have "... = \<p>\<^sub>1[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] \<cdot> Chn ?RHS"
-        proof -
-          have "\<p>\<^sub>1[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] \<cdot> Chn ?RHS =
-                \<p>\<^sub>1[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] \<cdot> \<mu>_\<nu>_\<pi>\<rho>.chine_assoc \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-            using R by simp
-          also have "... = \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>1\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-            using C.comp_reduce [of "\<p>\<^sub>1[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1]" \<mu>_\<nu>_\<pi>\<rho>.chine_assoc]
-                  hcomp_def [of \<nu> "hcomp \<pi> \<rho>"] \<mu>_\<nu>_\<pi>\<rho>.chine_assoc_def \<nu>\<pi>.composable
-            by fastforce
-          also have "... = \<mu>\<nu>.prj\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1\<^sub>1"
-          proof -
-            have "\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>1\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc = (\<mu>\<nu>.prj\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1) \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-              using hcomp_def [of \<mu> \<nu>] hcomp_def [of \<pi> \<rho>] \<mu>\<nu>.composable \<pi>\<rho>.composable
-              by simp
-            also have "... = \<mu>\<nu>.prj\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-              using \<mu>\<nu>.dom.apex_def \<mu>\<nu>.dom.leg_simps(1) hcomp_def \<mu>\<nu>.composable
-                    \<mu>\<nu>.prj_in_hom(1) \<mu>\<nu>_\<pi>_\<rho>.prj_in_hom(4) C.comp_assoc
-              by auto
-            also have "... = \<mu>\<nu>.prj\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1\<^sub>1"
-              by simp
-            finally show ?thesis by simp
-          qed
-          finally show ?thesis by simp
-        qed
+          by (metis C.comp_assoc R \<mu>\<nu>.leg0_composite \<mu>\<nu>_\<pi>_\<rho>.prj_chine_assoc(1)
+                    \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(1) \<nu>_\<pi>\<rho>.leg1_composite \<pi>\<rho>.leg1_composite)
         finally show ?thesis by blast
       qed
 
@@ -4040,25 +3427,8 @@ $$\xymatrix{
               using A C.comp_reduce [of "\<p>\<^sub>0[\<mu>.leg0, HH\<nu>\<pi>\<rho>.leg1]" \<mu>_\<nu>\<pi>_\<rho>.chine_assoc]
               by fastforce
             also have "... = \<nu>\<pi>.prj\<^sub>1 \<cdot> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<cdot> chine_hcomp (assoc\<^sub>S\<^sub>B \<mu> \<nu> \<pi>) \<rho>"
-            proof -
-              have "\<nu>\<pi>\<rho>.Prj\<^sub>1\<^sub>1 \<cdot> \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle> = \<nu>\<pi>.prj\<^sub>1 \<cdot> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1"
-              proof -
-                have "\<nu>\<pi>.leg0 = \<pi>.leg0 \<cdot> \<nu>\<pi>.prj\<^sub>0"
-                  using hcomp_def \<nu>\<pi>.composable by simp
-                thus ?thesis
-                  using commutative_squares(1) C.arrI \<mu>_\<nu>\<pi>_\<rho>.prj_in_hom(2) \<nu>\<pi>\<rho>.prj_in_hom(1)
-                  by (simp add: C.comp_assoc)
-              qed
-              moreover have "C.seq \<nu>\<pi>\<rho>.Prj\<^sub>1\<^sub>1 \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle>"
-                using chine_hcomp_ide_ide [of "hcomp \<nu> \<pi>" \<rho>] hcomp_def [of "hcomp \<nu> \<pi>" \<rho>]
-                      \<pi>\<rho>.composable \<nu>\<pi>\<rho>.prj_in_hom(1)
-                by auto
-              moreover have "C.seq \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle>
-                                   (chine_hcomp (assoc\<^sub>S\<^sub>B \<mu> \<nu> \<pi>) \<rho>)"
-                by fastforce
-              ultimately show ?thesis
-                using C.comp_permute by blast
-            qed
+              by (metis A C.comp_assoc \<mu>_\<nu>\<pi>_\<rho>.prj_chine_assoc(2) \<nu>\<pi>.leg0_composite
+                        \<nu>\<pi>_\<rho>.leg1_composite)
             also have "... = \<nu>\<pi>.prj\<^sub>1 \<cdot> \<mu>_\<nu>\<pi>.prj\<^sub>0 \<cdot> \<mu>\<nu>\<pi>.chine_assoc \<cdot> \<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
               using B by simp
             also have "... = \<mu>\<nu>\<pi>.Prj\<^sub>0\<^sub>1 \<cdot> \<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
@@ -4068,40 +3438,9 @@ $$\xymatrix{
               by auto
             also have "... = \<nu>\<pi>\<rho>.Prj\<^sub>1 \<cdot>
                              \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-            proof -
-              have 1: "C.commutative_square \<nu>.leg0 \<pi>\<rho>.leg1 \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0"
-                by blast
-              hence 2: "\<guillemotleft>\<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> :
-                           HH\<mu>\<nu>H\<pi>\<rho>.chine \<rightarrow>\<^sub>C H\<nu>H\<pi>\<rho>.chine\<guillemotright>"
-                using hcomp_def [of \<nu> "hcomp \<pi> \<rho>"] chine_hcomp_ide_ide \<nu>\<pi>.composable by auto
-              have "\<nu>\<pi>\<rho>.Prj\<^sub>1 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc =
-                     \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-                using 1 2 \<pi>\<rho>.composable hcomp_def [of \<pi> \<rho>]
-                      C.comp_reduce [of \<nu>\<pi>\<rho>.Prj\<^sub>1 "\<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"
-                                        \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<mu>\<nu>_\<pi>_\<rho>.chine_assoc]
-                by fastforce
-              also have "... = \<mu>\<nu>.prj\<^sub>0 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1\<^sub>1"
-              proof -
-                have "\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 = \<mu>\<nu>.prj\<^sub>0 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1"
-                  using hcomp_def \<mu>\<nu>.composable \<pi>\<rho>.composable by simp
-                thus ?thesis
-                  using C.comp_reduce C.comp_assoc by auto
-              qed
-              also have "... = \<mu>\<nu>.prj\<^sub>0 \<cdot> \<mu>\<nu>_\<pi>.prj\<^sub>1 \<cdot> \<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
-                using hcomp_def [of "hcomp \<mu> \<nu>" \<pi>] \<nu>\<pi>.composable by simp
-              also have "... = \<mu>\<nu>\<pi>.Prj\<^sub>0\<^sub>1 \<cdot> \<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
-              proof -
-                have 1: "\<mu>\<nu>.prj\<^sub>0 \<cdot> \<mu>\<nu>_\<pi>.prj\<^sub>1 = \<mu>\<nu>\<pi>.Prj\<^sub>0\<^sub>1"
-                  using hcomp_def \<mu>\<nu>.composable by simp
-                moreover have 2: "C.seq \<mu>\<nu>.prj\<^sub>0 \<mu>\<nu>_\<pi>.prj\<^sub>1"
-                  using 1 by fastforce
-                moreover have "C.seq \<mu>\<nu>_\<pi>.prj\<^sub>1 \<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
-                  by (metis 1 2 C.match_1 C.seqI' \<mu>\<nu>\<pi>.prj_in_hom(2) prj_in_homs(5))
-                ultimately show ?thesis
-                  using C.comp_reduce by simp
-              qed
-              finally show ?thesis by simp
-            qed
+              by (metis (no_types, lifting) C.comp_assoc C.prj_tuple(2) \<mu>\<nu>.leg0_composite
+                  \<mu>\<nu>\<pi>.leg0_composite(2) \<mu>\<nu>_\<pi>_\<rho>.prj_chine_assoc(1) \<pi>\<rho>.leg1_composite
+                  commutative_squares(2))
             finally show ?thesis by simp
           qed
           moreover
@@ -4123,22 +3462,8 @@ $$\xymatrix{
               using A C.comp_reduce [of "\<p>\<^sub>0[\<mu>.leg0, HH\<nu>\<pi>\<rho>.leg1]" \<mu>_\<nu>\<pi>_\<rho>.chine_assoc]
               by fastforce
             also have "... = \<nu>\<pi>.prj\<^sub>0 \<cdot> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<cdot> chine_hcomp (assoc\<^sub>S\<^sub>B \<mu> \<nu> \<pi>) \<rho>"
-            proof -
-              have "\<nu>\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<cdot> \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle> =
-                    \<nu>\<pi>.prj\<^sub>0 \<cdot> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1"
-                using commutative_squares(1) C.arrI \<mu>_\<nu>\<pi>_\<rho>.prj_in_hom(2) \<nu>\<pi>\<rho>.prj_in_hom(2)
-                      C.comp_assoc \<nu>\<pi>.leg0_composite
-                by auto
-              moreover have "C.seq \<nu>\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle>"
-                using chine_hcomp_ide_ide [of "hcomp \<nu> \<pi>" \<rho>] hcomp_def [of "hcomp \<nu> \<pi>" \<rho>]
-                      \<pi>\<rho>.composable \<nu>\<pi>\<rho>.prj_in_hom(2)
-                by auto
-              moreover have "C.seq \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle>
-                                   (chine_hcomp (assoc\<^sub>S\<^sub>B \<mu> \<nu> \<pi>) \<rho>)"
-                by fastforce
-              ultimately show ?thesis
-                using C.comp_permute by blast
-            qed
+              by (metis A C.comp_assoc \<mu>_\<nu>\<pi>_\<rho>.prj_chine_assoc(2) \<nu>\<pi>.leg0_composite
+                        \<nu>\<pi>_\<rho>.leg1_composite)
             also have "... = \<nu>\<pi>.prj\<^sub>0 \<cdot> \<mu>_\<nu>\<pi>.prj\<^sub>0 \<cdot> \<mu>\<nu>\<pi>.chine_assoc \<cdot> \<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
               using B by simp
             also have "... = \<mu>\<nu>\<pi>.Prj\<^sub>0 \<cdot> \<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
@@ -4150,53 +3475,9 @@ $$\xymatrix{
               by fastforce
             also have "... = \<nu>\<pi>\<rho>.Prj\<^sub>1\<^sub>0 \<cdot>
                              \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-            proof -
-              have 1: "C.commutative_square \<nu>.leg0 \<pi>\<rho>.leg1 \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0"
-                by blast
-              hence 2: "\<guillemotleft>\<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> :
-                            HH\<mu>\<nu>H\<pi>\<rho>.chine \<rightarrow>\<^sub>C H\<nu>H\<pi>\<rho>.chine\<guillemotright>"
-                using hcomp_def [of \<nu> "hcomp \<pi> \<rho>"] chine_hcomp_ide_ide \<nu>\<pi>.composable by auto
-              have "\<nu>\<pi>\<rho>.Prj\<^sub>1\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> = \<pi>\<rho>.prj\<^sub>1 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0"
-              proof -
-                have "\<nu>\<pi>\<rho>.Prj\<^sub>1\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> =
-                      \<pi>\<rho>.prj\<^sub>1 \<cdot> \<nu>_\<pi>\<rho>.prj\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"
-                proof -
-                  have "\<pi>\<rho>.prj\<^sub>1 \<cdot> \<nu>_\<pi>\<rho>.prj\<^sub>0 = \<nu>\<pi>\<rho>.Prj\<^sub>1\<^sub>0"
-                    using hcomp_def [of \<pi> \<rho>] \<pi>\<rho>.composable by simp
-                  moreover have "C.seq \<pi>\<rho>.prj\<^sub>1
-                                       (\<nu>_\<pi>\<rho>.prj\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>)"
-                    using 2 hcomp_def [of \<pi> \<rho>] \<nu>\<pi>\<rho>.chine_composite(2) \<nu>\<pi>\<rho>.prj_in_hom(5)
-                          \<pi>\<rho>.composable
-                    by auto
-                  ultimately show ?thesis
-                    using 2 C.comp_reduce [of \<pi>\<rho>.prj\<^sub>1 \<nu>_\<pi>\<rho>.prj\<^sub>0 \<nu>\<pi>\<rho>.Prj\<^sub>1\<^sub>0
-                                              "\<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"]
-                    by auto
-                qed
-                also have "... = \<pi>\<rho>.prj\<^sub>1 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0"
-                  using 1 by simp
-                finally show ?thesis by blast
-              qed
-              hence "\<nu>\<pi>\<rho>.Prj\<^sub>1\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot>
-                       \<mu>\<nu>_\<pi>_\<rho>.chine_assoc =
-                     \<pi>\<rho>.prj\<^sub>1 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-                using 2 C.comp_permute by blast
-              also have "... = \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1\<^sub>0 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-             proof -
-                have "\<pi>\<rho>.prj\<^sub>1 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0 = \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1\<^sub>0"
-                  using hcomp_def \<mu>\<nu>.composable \<pi>\<rho>.composable by simp
-                thus ?thesis
-                  using 2 C.comp_reduce [of \<pi>\<rho>.prj\<^sub>1 \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0 \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>1\<^sub>0 \<mu>\<nu>_\<pi>_\<rho>.chine_assoc]
-                  by auto
-              qed
-              also have "... = \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>0\<^sub>1"
-                by simp
-              also have "... = \<mu>\<nu>\<pi>.Prj\<^sub>0 \<cdot> \<p>\<^sub>1[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
-                using hcomp_def [of "hcomp \<mu> \<nu>" \<pi>] hcomp_def [of \<mu> \<nu>] \<mu>\<nu>.composite_is_arrow
-                      \<mu>\<nu>_\<pi>.composable
-                by auto
-              finally show ?thesis by simp
-            qed
+              by (metis C.comp_assoc C.tuple_prj \<mu>\<nu>.leg0_composite \<mu>\<nu>_\<pi>.leg0_composite
+                        \<mu>\<nu>_\<pi>_\<rho>.prj_chine_assoc(2) \<mu>_\<nu>_\<pi>\<rho>.cospan_\<nu>\<pi> \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(2)
+                        \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(3) \<mu>_\<nu>_\<pi>\<rho>.prj_simps(2) \<pi>\<rho>.leg1_composite)
             finally show ?thesis by blast
           qed
           moreover
@@ -4218,20 +3499,8 @@ $$\xymatrix{
               using A C.comp_reduce [of "\<p>\<^sub>0[\<mu>.leg0, HH\<nu>\<pi>\<rho>.leg1]" \<mu>_\<nu>\<pi>_\<rho>.chine_assoc]
               by fastforce
             also have "... = \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0 \<cdot> chine_hcomp (assoc\<^sub>S\<^sub>B \<mu> \<nu> \<pi>) \<rho>"
-            proof -
-              have "\<nu>\<pi>\<rho>.Prj\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle> = \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0"
-              proof -
-                have "\<nu>\<pi>\<rho>.Prj\<^sub>0 = \<nu>\<pi>_\<rho>.prj\<^sub>0"
-                  using hcomp_def [of \<nu> \<pi>] \<nu>\<pi>.composable by simp
-                thus ?thesis by simp
-              qed
-              thus ?thesis
-                using chine_hcomp_ide_ide [of "hcomp \<nu> \<pi>" \<rho>] hcomp_def [of "hcomp \<nu> \<pi>" \<rho>]
-                      \<pi>\<rho>.composable \<mu>_\<nu>\<pi>_\<rho>.prj_in_hom(3) calculation
-                      C.comp_reduce [of \<nu>\<pi>\<rho>.Prj\<^sub>0 "\<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle>"
-                                        \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0 "chine_hcomp (assoc\<^sub>S\<^sub>B \<mu> \<nu> \<pi>) \<rho>"]
-                by fastforce
-            qed
+              by (metis A C.comp_assoc \<mu>_\<nu>\<pi>_\<rho>.prj_chine_assoc(3) \<nu>\<pi>.leg0_composite
+                        \<nu>\<pi>_\<rho>.leg1_composite)
             also have "... = \<rho>.chine \<cdot> \<p>\<^sub>0[assoc\<mu>\<nu>\<pi>.dom.leg0, \<rho>.leg1]"
             proof -
               have "\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0 = \<p>\<^sub>0[assoc\<mu>\<nu>\<pi>.cod.leg0, \<rho>.cod.leg1]"
@@ -4242,69 +3511,13 @@ $$\xymatrix{
                 by simp
             qed
             also have "... = \<p>\<^sub>0[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
-            proof -
-              have "C.cospan HH\<mu>\<nu>\<pi>.leg0 \<rho>.leg1"
-                using hcomp_def [of "hcomp \<mu> \<nu>" \<pi>] \<nu>\<pi>.composable prj_in_homs(5) by blast
-              hence "\<rho>.chine = C.cod \<p>\<^sub>0[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
-                using C.prj0_simps [of HH\<mu>\<nu>\<pi>.leg0 \<rho>.leg1] by simp
-              thus ?thesis
-                using C.comp_cod_arr hcomp_def [of "hcomp \<mu> \<nu>" \<pi>] \<nu>\<pi>.composable
-                      HH\<mu>\<nu>\<pi>.dom.leg_simps(1) \<nu>\<pi>\<rho>.cospan_\<nu>\<pi>
-                by simp
-            qed
+              by (metis C.comp_cod_arr C.in_homE arrow_of_spans_data.select_convs(2)
+                        prj_in_homs(4))
             also have "... = \<nu>\<pi>\<rho>.Prj\<^sub>0\<^sub>0 \<cdot>
                              \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-            proof -
-              have 1: "C.commutative_square \<nu>.leg0 \<pi>\<rho>.leg1 \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0"
-                by blast
-              hence 2: "\<guillemotleft>\<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> :
-                           HH\<mu>\<nu>H\<pi>\<rho>.chine \<rightarrow>\<^sub>C H\<nu>H\<pi>\<rho>.chine\<guillemotright>"
-                using hcomp_def [of \<nu> "hcomp \<pi> \<rho>"] chine_hcomp_ide_ide \<nu>\<pi>.composable by auto
-              have
-                "\<nu>\<pi>\<rho>.Prj\<^sub>0\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc =
-                 \<pi>\<rho>.prj\<^sub>0 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-              proof -
-                have "\<nu>\<pi>\<rho>.Prj\<^sub>0\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> =
-                      \<pi>\<rho>.prj\<^sub>0 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0"
-                proof -
-                  have
-                    "\<nu>\<pi>\<rho>.Prj\<^sub>0\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> =
-                     \<pi>\<rho>.prj\<^sub>0 \<cdot> \<nu>_\<pi>\<rho>.prj\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"
-                  proof -
-                    have 3: "\<pi>\<rho>.prj\<^sub>0 \<cdot> \<nu>_\<pi>\<rho>.prj\<^sub>0 = \<nu>\<pi>\<rho>.Prj\<^sub>0\<^sub>0"
-                      using hcomp_def [of \<pi> \<rho>] \<pi>\<rho>.composable by simp
-                    moreover have "C.seq \<pi>\<rho>.prj\<^sub>0
-                                         (\<nu>_\<pi>\<rho>.prj\<^sub>0 \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>)"
-                      using 1 2 3 hcomp_def [of \<pi> \<rho>] \<nu>\<pi>\<rho>.chine_composite(2)
-                            \<pi>\<rho>.composable
-                      by (metis C.arrI C.match_4 C.prj_tuple(1) \<mu>_\<nu>_\<pi>\<rho>.prj_in_hom(3)
-                          \<nu>\<pi>\<rho>.prj_in_hom(6))
-                    ultimately show ?thesis
-                      using 2 C.comp_reduce [of \<pi>\<rho>.prj\<^sub>0 \<nu>_\<pi>\<rho>.prj\<^sub>0 \<nu>\<pi>\<rho>.Prj\<^sub>0\<^sub>0
-                                                "\<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"]
-                      by auto
-                  qed
-                  also have "... = \<pi>\<rho>.prj\<^sub>0 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0"
-                    using 1 by simp
-                  finally show ?thesis by blast
-                qed
-                thus ?thesis
-                  using 2 C.comp_permute [of \<nu>\<pi>\<rho>.Prj\<^sub>0\<^sub>0 "\<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"
-                                             \<pi>\<rho>.prj\<^sub>0 \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0 \<mu>\<nu>_\<pi>_\<rho>.chine_assoc]
-                  by blast
-              qed
-              also have "... = \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>0\<^sub>0 \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-                using hcomp_def \<mu>\<nu>.composable \<pi>\<rho>.composable C.comp_assoc \<nu>\<pi>\<rho>.cospan_\<nu>\<pi>
-                      C.comp_reduce [of \<pi>\<rho>.prj\<^sub>0 \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0 \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>0\<^sub>0 \<mu>\<nu>_\<pi>_\<rho>.chine_assoc]
-                by auto
-              also have "... = \<mu>\<nu>_\<pi>_\<rho>.Prj\<^sub>0"
-                by simp
-              also have "... = \<p>\<^sub>0[HH\<mu>\<nu>\<pi>.leg0, \<rho>.leg1]"
-                using hcomp_def [of "hcomp \<mu> \<nu>" \<pi>] hcomp_def [of \<mu> \<nu>]
-                      \<mu>\<nu>.composite_is_arrow \<mu>\<nu>_\<pi>.composable
-                by auto
-              finally show ?thesis by simp
-            qed
+              by (metis C.comp_assoc C.tuple_prj \<mu>\<nu>.leg0_composite \<mu>\<nu>_\<pi>.leg0_composite
+                        \<mu>\<nu>_\<pi>_\<rho>.prj_chine_assoc(3) \<mu>_\<nu>_\<pi>\<rho>.cospan_\<nu>\<pi> \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(2)
+                        \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(3) \<mu>_\<nu>_\<pi>\<rho>.prj_simps(2) \<pi>\<rho>.leg1_composite)
             finally show ?thesis by blast
           qed
           moreover have "\<guillemotleft>assoc\<nu>\<pi>\<rho>.chine \<cdot> \<p>\<^sub>0[\<mu>.leg0, HH\<nu>\<pi>\<rho>.leg1] \<cdot> \<mu>_\<nu>\<pi>_\<rho>.chine_assoc \<cdot>
@@ -4365,23 +3578,8 @@ $$\xymatrix{
         also have "... = \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
           using * by simp
         also have "... = \<p>\<^sub>0[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] \<cdot> Chn ?RHS"
-        proof -
-          have "\<p>\<^sub>0[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] \<cdot> Chn ?RHS =
-                \<p>\<^sub>0[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] \<cdot> \<mu>_\<nu>_\<pi>\<rho>.chine_assoc \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-            using R by simp
-          also have "... = \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-          proof -
-            have "\<p>\<^sub>0[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] \<cdot> \<mu>_\<nu>_\<pi>\<rho>.chine_assoc =
-                  \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"
-              using hcomp_def [of \<nu> "hcomp \<pi> \<rho>"] \<nu>\<pi>.composable \<mu>_\<nu>_\<pi>\<rho>.chine_assoc_def by auto
-            thus ?thesis
-              using C.comp_reduce [of "\<p>\<^sub>0[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1]" \<mu>_\<nu>_\<pi>\<rho>.chine_assoc
-                                      "\<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"
-                                      \<mu>\<nu>_\<pi>_\<rho>.chine_assoc]
-              by fastforce
-          qed
-          finally show ?thesis by simp
-        qed
+          by (metis C.comp_assoc C.tuple_prj R \<mu>_\<nu>_\<pi>\<rho>.cospan_\<nu>\<pi> \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(2)
+                    \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(3) \<mu>_\<nu>_\<pi>\<rho>.prj_simps(2) \<nu>_\<pi>\<rho>.leg1_composite)
         finally show ?thesis by blast
       qed
       moreover have "C.seq \<p>\<^sub>1[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] (Chn ?LHS)"
@@ -4436,12 +3634,7 @@ $$\xymatrix{
     sublocale bicategory vcomp hcomp assoc unit src trg
       using extends_to_bicategory by auto
 
-  end
-
   subsection "Miscellaneous Formulas"
-
-  context span_bicategory
-  begin
 
     no_notation in_hom    ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
     notation in_hom       ("\<guillemotleft>_ : _ \<Rightarrow> _\<guillemotright>")
@@ -4539,15 +3732,8 @@ $$\xymatrix{
           show par: "par (?rf \<star> src f) ((f \<star> \<i>[src f]) \<bullet> \<a>[f, src f, src f])"
           proof -
             have "\<guillemotleft>?rf \<star> src f : (f \<star> src f) \<star> src f \<Rightarrow> f \<star> src f\<guillemotright>"
-            proof -
-              have "?rf \<star> src f = R ?rf"
-                using assms rf_in_hom src_def trg_def arr_char rf.arrow_of_spans_axioms
-                      f.arrow_of_spans_axioms
-                by simp
-              moreover have "\<guillemotleft>R ?rf : (f \<star> src f) \<star> src f \<Rightarrow> f \<star> src f\<guillemotright>"
-                using rf_in_hom R.preserves_hom [of ?rf "f \<star> src f" f] by simp
-              ultimately show ?thesis by auto
-            qed
+              using f_src_src.composites_are_arrows(2) rf_in_hom src_src.are_identities(1)
+              by blast
             thus ?thesis by auto
           qed
           show "Chn (?rf \<star> src f) = Chn ((f \<star> \<i>[src f]) \<bullet> \<a>[f, src f, src f])"
@@ -4604,25 +3790,9 @@ $$\xymatrix{
               also have "... = \<langle>f_src_src.Prj\<^sub>1 \<cdot> f_src_src.chine_assoc
                                   \<lbrakk>f.leg0, src.leg1\<rbrakk>
                                 f_src_src.Prj\<^sub>1\<^sub>0 \<cdot> f_src_src.chine_assoc\<rangle>"
-              proof -
-                have "C.commutative_square f.leg0 src.leg1 f_src_src.Prj\<^sub>1 f_src_src.Prj\<^sub>1\<^sub>0"
-                proof
-                  show "C.cospan f.leg0 src.leg1"
-                    using f_src.legs_form_cospan(1) by auto
-                  show "C.span f_src_src.Prj\<^sub>1 f_src_src.Prj\<^sub>1\<^sub>0"
-                    using f_src_src.prj_in_hom(5) by auto
-                  show "C.dom f.leg0 = C.cod f_src_src.Prj\<^sub>1"
-                    by simp
-                  show "f.leg0 \<cdot> f_src_src.Prj\<^sub>1 = src.leg1 \<cdot> f_src_src.Prj\<^sub>1\<^sub>0"
-                    using C.pullback_commutes' \<open>C.span f_src_src.Prj\<^sub>1 f_src_src.Prj\<^sub>1\<^sub>0\<close>
-                          C.comp_assoc
-                    by auto
-                qed
-                moreover have "C.seq f_src_src.Prj\<^sub>1 f_src_src.chine_assoc"
-                  by blast
-                ultimately show ?thesis
-                  using C.comp_tuple_arr by auto
-              qed
+                using C.comp_assoc C.comp_tuple_arr C.pullback_commutes'
+                      f_src_src.cospan_\<mu>\<nu> f_src_src.cospan_\<nu>\<pi>
+                by simp
               also have "... = \<langle>f_src_src.Prj\<^sub>1\<^sub>1 \<lbrakk>f.leg0, src.leg1\<rbrakk> f_src_src.Prj\<^sub>0\<^sub>1\<rangle>"
                 by simp
               finally show ?thesis by simp
@@ -4750,13 +3920,7 @@ $$\xymatrix{
                 moreover have "Chn \<a>\<^sup>-\<^sup>1[trg f, trg f, f] = trg_trg_f.chine_assoc'"
                 proof -
                   have "iso (\<alpha> (trg f, trg f, f))"
-                  proof -
-                    have "VVV.ide (trg f, trg f, f)"
-                      using assms VVV.ide_char VVV.arr_char VV.ide_char VV.arr_char
-                      by auto
-                    thus ?thesis
-                      using \<alpha>_def \<alpha>.components_are_iso [of "(trg f, trg f, f)"] by simp
-                  qed
+                    by (simp add: \<alpha>_def)
                   moreover have "C.inv trg_trg_f.chine_assoc = trg_trg_f.chine_assoc'"
                     using trg_trg_f.chine_assoc_inverse C.inv_is_inverse C.inverse_arrow_unique
                     by auto
@@ -4813,25 +3977,8 @@ $$\xymatrix{
                      Cod = \<lparr>Leg0 = \<p>\<^sub>0[f.leg0, f.dsrc], Leg1 = f.leg1 \<cdot> \<p>\<^sub>1[f.leg0, f.dsrc]\<rparr>\<rparr>"
       proof -
         have "C.inverse_arrows \<p>\<^sub>1[f.leg0, f.dsrc] \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
-        proof
-          show "C.ide (\<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle> \<cdot> \<p>\<^sub>1[f.leg0, f.dsrc])"
-          proof -
-            have "\<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle> \<cdot> \<p>\<^sub>1[f.leg0, f.dsrc] =
-                  \<langle>f.chine \<cdot> \<p>\<^sub>1[f.leg0, f.dsrc] \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0 \<cdot> \<p>\<^sub>1[f.leg0, f.dsrc]\<rangle>"
-              using assms C.comp_tuple_arr [of f.leg0 f.dsrc f.chine f.leg0 "\<p>\<^sub>1[f.leg0, f.dsrc]"]
-                    C.comp_arr_dom C.comp_cod_arr
-              by simp
-            also have "... = \<langle>\<p>\<^sub>1[f.leg0, f.dsrc] \<lbrakk>f.leg0, f.dsrc\<rbrakk> \<p>\<^sub>0[f.leg0, f.dsrc]\<rangle>"
-              using C.pullback_commutes [of f.leg0 f.dsrc] C.comp_cod_arr by auto
-            also have "... = f.leg0 \<down>\<down> f.dsrc"
-              by simp
-            finally have "\<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle> \<cdot> \<p>\<^sub>1[f.leg0, f.dsrc] = f.leg0 \<down>\<down> f.dsrc"
-              by blast
-            thus ?thesis by simp
-          qed
-          show "C.ide (\<p>\<^sub>1[f.leg0, f.dsrc] \<cdot> \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>)"
-            using assms C.comp_arr_dom C.comp_cod_arr by auto
-        qed
+          using C.pullback_arr_cod(1) f.chine_eq_apex f.dom.apex_def f.dom.leg_simps(1)
+          by presburger
         hence "C.inv \<p>\<^sub>1[f.leg0, f.dsrc] = \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
           using C.inv_is_inverse C.inverse_arrow_unique by auto
         hence "\<r>\<^sup>-\<^sup>1[f] = \<lparr>Chn = \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>,
@@ -4855,29 +4002,8 @@ $$\xymatrix{
                      Cod = \<lparr>Leg0 = f.leg0 \<cdot> \<p>\<^sub>0[f.dtrg, f.leg1], Leg1 = \<p>\<^sub>1[f.dtrg, f.leg1]\<rparr>\<rparr>"
       proof -
         have "C.inverse_arrows \<p>\<^sub>0[f.dtrg, f.leg1] \<langle>f.leg1 \<lbrakk>f.dtrg, f.leg1\<rbrakk> f.chine\<rangle>"
-        proof
-          show "C.ide (\<langle>f.leg1 \<lbrakk>f.dtrg, f.leg1\<rbrakk> f.chine\<rangle> \<cdot> \<p>\<^sub>0[f.dtrg, f.leg1])"
-          proof -
-            have "\<langle>f.leg1 \<lbrakk>f.dtrg, f.leg1\<rbrakk> f.chine\<rangle> \<cdot> \<p>\<^sub>0[f.dtrg, f.leg1] =
-                  \<langle>f.leg1 \<cdot> \<p>\<^sub>0[f.dtrg, f.leg1] \<lbrakk>f.dtrg, f.leg1\<rbrakk> f.chine \<cdot> \<p>\<^sub>0[f.dtrg, f.leg1]\<rangle>"
-              using assms C.comp_tuple_arr C.comp_arr_dom C.comp_cod_arr
-              by simp
-            also have "... = \<langle>\<p>\<^sub>1[f.dtrg, f.leg1] \<lbrakk>f.dtrg, f.leg1\<rbrakk> \<p>\<^sub>0[f.dtrg, f.leg1]\<rangle>"
-            proof -
-              have "f.leg1 \<cdot> \<p>\<^sub>0[f.dtrg, f.leg1] = \<p>\<^sub>1[f.dtrg, f.leg1]"
-                using C.pullback_commutes [of f.dtrg f.leg1] C.comp_cod_arr by auto
-              thus ?thesis
-                using C.comp_cod_arr by simp
-            qed
-            also have "... = f.dtrg \<down>\<down> f.leg1"
-              by simp
-            finally have "\<langle>f.leg1 \<lbrakk>f.dtrg, f.leg1\<rbrakk> f.chine\<rangle> \<cdot> \<p>\<^sub>0[f.dtrg, f.leg1] = f.dtrg \<down>\<down> f.leg1"
-              by blast
-            thus ?thesis by simp
-          qed
-          show "C.ide (\<p>\<^sub>0[f.dtrg, f.leg1] \<cdot> \<langle>f.leg1 \<lbrakk>f.dtrg, f.leg1\<rbrakk> f.chine\<rangle>)"
-            using assms C.comp_arr_dom C.comp_cod_arr by auto
-        qed
+          using C.pullback_arr_cod(2) f.chine_eq_apex f.dom.apex_def f.dom.is_span
+          by presburger
         hence "C.inv \<p>\<^sub>0[f.dtrg, f.leg1] = \<langle>f.leg1 \<lbrakk>f.dtrg, f.leg1\<rbrakk> f.chine\<rangle>"
           using C.inv_is_inverse C.inverse_arrow_unique by auto
         hence "\<l>\<^sup>-\<^sup>1[f] = \<lparr>Chn = \<langle>f.leg1 \<lbrakk>f.dtrg, f.leg1\<rbrakk> f.chine\<rangle>,
@@ -4928,14 +4054,8 @@ $$\xymatrix{
       moreover have "\<eta>.dom.apex = f.dsrc"
         using \<eta>.dom.apex_def dom_char unit_simps src_def by auto
       moreover have "\<eta>.cod.apex = g.leg0 \<down>\<down> f.leg1"
-      proof -
-        have "\<eta>.cod.apex = C.dom \<eta>.cod.leg0" by simp
-        also have "... = C.dom (f.leg0 \<cdot> \<p>\<^sub>0[g.leg0, f.leg1])"
-          using cod_char unit_simps hcomp_def gf.composable by simp
-        also have "... = g.leg0 \<down>\<down> f.leg1"
-          using fgf.cospan_\<nu>\<pi> by simp
-        finally show ?thesis by blast
-      qed
+        by (metis arrow_of_spans_data.select_convs(1) cod_char gf.chine_composite
+                  unit_simps(1,3))
       ultimately show ?thesis by simp
     qed
 
@@ -4947,14 +4067,8 @@ $$\xymatrix{
       moreover have "\<epsilon>.cod.apex = f.dtrg"
         using \<epsilon>.cod.apex_def cod_char counit_simps trg_def gf.composable by auto
       moreover have "\<epsilon>.dom.apex = f.leg0 \<down>\<down> g.leg1"
-      proof -
-        have "\<epsilon>.dom.apex = C.dom \<epsilon>.dom.leg0" by simp
-        also have "... = C.dom (g.leg0 \<cdot> fg.prj\<^sub>0)"
-          using dom_char counit_simps hcomp_def fg.composable by simp
-        also have "... = f.leg0 \<down>\<down> g.leg1"
-          using fg.prj_in_hom(2) by auto
-        finally show ?thesis by blast
-      qed
+        by (metis Chn_in_hom \<epsilon>.chine_simps(2) category.in_homE counit_in_hom(2)
+                  fg.chine_composite span_vertical_category_axioms span_vertical_category_def)
       ultimately show ?thesis by simp
     qed
 
@@ -4992,9 +4106,9 @@ $$\xymatrix{
     shows "Chn (\<l>[f] \<bullet> (\<epsilon> \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[f, g, f] \<bullet> (f \<star> \<eta>) \<bullet> \<r>\<^sup>-\<^sup>1[f]) = gf.prj\<^sub>0 \<cdot> \<eta>.chine \<cdot> f.leg0"
     and "Chn (\<r>[g] \<bullet> (g \<star> \<epsilon>) \<bullet> \<a>[g, f, g] \<bullet> (\<eta> \<star> g) \<bullet> \<l>\<^sup>-\<^sup>1[g]) = gf.prj\<^sub>1 \<cdot> \<eta>.chine \<cdot> g.leg1"
     proof -
-      have "Chn (\<l>[f] \<bullet> (\<epsilon> \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[f, g, f] \<bullet> (f \<star> \<eta>) \<bullet> \<r>\<^sup>-\<^sup>1[f]) =
-            \<p>\<^sub>0[f.dtrg, f.leg1] \<cdot> chine_hcomp \<epsilon> f \<cdot> fgf.chine_assoc' \<cdot> chine_hcomp f \<eta> \<cdot>
-              \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
+      have 1: "Chn (\<l>[f] \<bullet> (\<epsilon> \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[f, g, f] \<bullet> (f \<star> \<eta>) \<bullet> \<r>\<^sup>-\<^sup>1[f]) =
+               \<p>\<^sub>0[f.dtrg, f.leg1] \<cdot> chine_hcomp \<epsilon> f \<cdot> fgf.chine_assoc' \<cdot> chine_hcomp f \<eta> \<cdot>
+                 \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
       proof -
         have "Chn (\<l>[f] \<bullet> (\<epsilon> \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[f, g, f] \<bullet> (f \<star> \<eta>) \<bullet> \<r>\<^sup>-\<^sup>1[f]) =
               Chn \<l>[f] \<cdot> Chn (\<epsilon> \<star> f) \<cdot> Chn \<a>\<^sup>-\<^sup>1[f, g, f] \<cdot> Chn (f \<star> \<eta>) \<cdot> Chn \<r>\<^sup>-\<^sup>1[f]"
@@ -5008,65 +4122,26 @@ $$\xymatrix{
         finally show ?thesis by blast
       qed
       moreover have "C.arr (Chn (\<l>[f] \<bullet> (\<epsilon> \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[f, g, f] \<bullet> (f \<star> \<eta>) \<bullet> \<r>\<^sup>-\<^sup>1[f]))"
-      proof -
-        have "\<guillemotleft>\<l>[f] \<bullet> (\<epsilon> \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[f, g, f] \<bullet> (f \<star> \<eta>) \<bullet> \<r>\<^sup>-\<^sup>1[f] : f \<Rightarrow> f\<guillemotright>"
-          using ide_left ide_right antipar triangle_in_hom(1) by blast
-        thus ?thesis
-          using Chn_in_hom by blast
-      qed
-      ultimately have *: "C.arr (\<p>\<^sub>0[f.dtrg, f.leg1] \<cdot> chine_hcomp \<epsilon> f \<cdot> fgf.chine_assoc' \<cdot>
+        by (meson arrI arrow_of_spans.chine_simps(1) arr_char triangle_in_hom(3))
+      ultimately have 2: "C.arr (\<p>\<^sub>0[f.dtrg, f.leg1] \<cdot> chine_hcomp \<epsilon> f \<cdot> fgf.chine_assoc' \<cdot>
                                    chine_hcomp f \<eta> \<cdot> \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>)"
         by simp
 
       have "Chn (\<l>[f] \<bullet> (\<epsilon> \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[f, g, f] \<bullet> (f \<star> \<eta>) \<bullet> \<r>\<^sup>-\<^sup>1[f]) =
                \<p>\<^sub>0[f.dtrg, f.leg1] \<cdot> chine_hcomp \<epsilon> f \<cdot> fgf.chine_assoc' \<cdot> chine_hcomp f \<eta> \<cdot>
                  \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
-        by fact
+        using 1 by simp
       also have
-        1: "... = fgf.Prj\<^sub>0 \<cdot> fgf.chine_assoc' \<cdot> chine_hcomp f \<eta> \<cdot> \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
-      proof -
-        have "\<p>\<^sub>0[f.dtrg, f.leg1] \<cdot> chine_hcomp \<epsilon> f = \<p>\<^sub>0[\<epsilon>.dom.leg0, f.leg1]"
-        proof -
-          have "chine_hcomp \<epsilon> f = \<langle>\<epsilon>.chine \<cdot> \<p>\<^sub>1[\<epsilon>.dom.leg0, f.leg1]
-                                   \<lbrakk>\<epsilon>.cod.leg0, f.leg1\<rbrakk>
-                                 \<p>\<^sub>0[\<epsilon>.dom.leg0, f.leg1]\<rangle>"
-            using chine_hcomp_arr_ide gf.composable by simp
-          moreover have 1: "f.dtrg = \<epsilon>.cod.leg0"
-            using cod_char trg_def counit_simps gf.composable by simp
-          moreover have "C.commutative_square f.dtrg f.leg1
-                           (\<epsilon>.chine \<cdot> \<p>\<^sub>1[\<epsilon>.dom.leg0, f.leg1]) \<p>\<^sub>0[\<epsilon>.dom.leg0, f.leg1]"
-          proof
-            show "C.cospan f.dtrg f.leg1" by simp
-            show 2: "C.span (\<epsilon>.chine \<cdot> \<p>\<^sub>1[\<epsilon>.dom.leg0, f.leg1]) \<p>\<^sub>0[\<epsilon>.dom.leg0, f.leg1]"
-              using 1 \<open>C.cospan f.dtrg f.leg1\<close> chine_counit_in_hom by simp
-            show 3: "C.dom f.dtrg = C.cod (\<epsilon>.chine \<cdot> \<p>\<^sub>1[\<epsilon>.dom.leg0, f.leg1])"
-              using 1 2 dom_char counit_simps by simp
-            show "f.dtrg \<cdot> \<epsilon>.chine \<cdot> \<p>\<^sub>1[\<epsilon>.dom.leg0, f.leg1] = f.leg1 \<cdot> \<p>\<^sub>0[\<epsilon>.dom.leg0, f.leg1]"
-              using 1 2 3 C.comp_cod_arr dom_char counit_simps C.pullback_commutes'
-              by (metis (no_types, lifting) C.prj1_simps_arr C.seqE \<epsilon>.leg0_commutes)
-          qed
-          ultimately show ?thesis by simp
-        qed
-        also have "... = fgf.Prj\<^sub>0"
-          using dom_char counit_simps hcomp_def fg.composable by simp
-        finally have "\<p>\<^sub>0[f.dtrg, f.leg1] \<cdot> chine_hcomp \<epsilon> f = fgf.Prj\<^sub>0"
-          by simp
-        moreover have "C.seq \<p>\<^sub>0[f.dtrg, f.leg1] (chine_hcomp \<epsilon> f)"
-          using chine_hcomp_props(1) fg.composable calculation(1) fgf.prj_in_hom(3)
-          by auto
-        moreover have "C.seq (chine_hcomp \<epsilon> f)
-                             (fgf.chine_assoc' \<cdot> chine_hcomp f \<eta> \<cdot>
-                                \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>)"
-          using chine_hcomp_props(1) fg.composable by (metis "*" C.seqE)
-        ultimately show ?thesis
-          using C.comp_reduce by simp
-      qed
-      also have 3: "... = fgf.Prj\<^sub>0\<^sub>0 \<cdot> chine_hcomp f \<eta> \<cdot> \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
+        3: "... = fgf.Prj\<^sub>0 \<cdot> fgf.chine_assoc' \<cdot> chine_hcomp f \<eta> \<cdot> \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
+        by (metis (no_types, lifting) C.comp_assoc C.comp_cod_arr \<epsilon>_leg_simps(1,3)
+            chine_hcomp_props(5) counit_simps(1,4) f.chine_eq_apex f.cod_simps(3)
+            fg.composite_is_arrow fg.leg0_composite fgf.prj_simps(3,9) hseqE)
+      also have 4: "... = fgf.Prj\<^sub>0\<^sub>0 \<cdot> chine_hcomp f \<eta> \<cdot> \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
         using C.comp_reduce [of fgf.Prj\<^sub>0 fgf.chine_assoc' fgf.Prj\<^sub>0\<^sub>0
                                 "chine_hcomp f \<eta> \<cdot> \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"]
-              * fgf.prj_chine_assoc'(3)
+              2 fgf.prj_chine_assoc'(3)
         by blast
-      also have 4: "... = (gf.prj\<^sub>0 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>0[f.leg0, f.dsrc]) \<cdot> \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
+      also have "... = (gf.prj\<^sub>0 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>0[f.leg0, f.dsrc]) \<cdot> \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
       proof -
         have "fgf.Prj\<^sub>0\<^sub>0 \<cdot> chine_hcomp f \<eta> = gf.prj\<^sub>0 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>0[f.leg0, f.dsrc]"
         proof -
@@ -5087,24 +4162,18 @@ $$\xymatrix{
                 using chine_unit_in_hom by auto
               show "C.dom f.leg0 = C.cod \<p>\<^sub>1[f.leg0, f.dsrc]" by simp
               show "f.leg0 \<cdot> \<p>\<^sub>1[f.leg0, f.dsrc] = gf.leg1 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>0[f.leg0, f.dsrc]"
-              proof -
-                have "f.leg0 \<cdot> \<p>\<^sub>1[f.leg0, f.dsrc] = \<p>\<^sub>0[f.leg0, f.dsrc]"
-                  using C.comp_cod_arr C.pullback_commutes [of f.leg0 f.dsrc] by auto
-                also have "... = gf.leg1 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>0[f.leg0, f.dsrc]"
-                  using unit_simps cod_char hcomp_def gf.composable \<eta>.leg1_commutes \<eta>_leg_simps
-                        C.comp_cod_arr chine_unit_in_hom C.comp_reduce
-                  by auto
-                finally show ?thesis by blast
-              qed
+                by (metis C.comp_assoc C.pullback_commutes' \<eta>.cod_trg_eq_dom_trg
+                    \<eta>.dom.leg_simps(1) \<eta>.leg1_commutes \<eta>_leg_simps(1-2,4)
+                    \<open>C.cospan f.leg0 gf.leg1\<close>)
             qed
             thus ?thesis by simp
           qed
           finally show ?thesis by simp
         qed
         moreover have "C.seq fgf.Prj\<^sub>0\<^sub>0 (chine_hcomp f \<eta>)"
-          using chine_hcomp_props(1) by (metis "*" 1 3 C.match_2 C.seqE)
+          using chine_hcomp_props(1) by (metis 2 3 4 C.match_2 C.seqE)
         moreover have "C.seq (chine_hcomp f \<eta>) \<langle>f.chine \<lbrakk>f.leg0, f.dsrc\<rbrakk> f.leg0\<rangle>"
-          using chine_hcomp_props(1) by (metis "*" C.seqE)
+          using chine_hcomp_props(1) by (metis 2 C.seqE)
         ultimately show ?thesis
           using C.comp_reduce by simp
       qed
@@ -5115,9 +4184,9 @@ $$\xymatrix{
       finally show "Chn (\<l>[f] \<bullet> (\<epsilon> \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[f, g, f] \<bullet> (f \<star> \<eta>) \<bullet> \<r>\<^sup>-\<^sup>1[f]) = gf.prj\<^sub>0 \<cdot> \<eta>.chine \<cdot> f.leg0"
         by simp
 
-      have "Chn (\<r>[g] \<bullet> (g \<star> \<epsilon>) \<bullet> \<a>[g, f, g] \<bullet> (\<eta> \<star> g) \<bullet> \<l>\<^sup>-\<^sup>1[g]) =
-            \<p>\<^sub>1[g.leg0, g.dsrc] \<cdot> chine_hcomp g \<epsilon> \<cdot> gfg.chine_assoc \<cdot> chine_hcomp \<eta> g \<cdot>
-              \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
+      have 1: "Chn (\<r>[g] \<bullet> (g \<star> \<epsilon>) \<bullet> \<a>[g, f, g] \<bullet> (\<eta> \<star> g) \<bullet> \<l>\<^sup>-\<^sup>1[g]) =
+               \<p>\<^sub>1[g.leg0, g.dsrc] \<cdot> chine_hcomp g \<epsilon> \<cdot> gfg.chine_assoc \<cdot> chine_hcomp \<eta> g \<cdot>
+                 \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
       proof -
         have "Chn (\<r>[g] \<bullet> (g \<star> \<epsilon>) \<bullet> \<a>[g, f, g] \<bullet> (\<eta> \<star> g) \<bullet> \<l>\<^sup>-\<^sup>1[g]) =
               Chn \<r>[g] \<cdot> Chn (g \<star> \<epsilon>) \<cdot> Chn \<a>[g, f, g] \<cdot> Chn (\<eta> \<star> g) \<cdot> Chn \<l>\<^sup>-\<^sup>1[g]"
@@ -5129,46 +4198,22 @@ $$\xymatrix{
           by simp
         finally show ?thesis by blast
       qed
-      moreover have "C.arr (Chn (\<r>[g] \<bullet> (g \<star> \<epsilon>) \<bullet> \<a>[g, f, g] \<bullet> (\<eta> \<star> g) \<bullet> \<l>\<^sup>-\<^sup>1[g]))"
-      proof -
-        have "\<guillemotleft>\<r>[g] \<bullet> (g \<star> \<epsilon>) \<bullet> \<a>[g, f, g] \<bullet> (\<eta> \<star> g) \<bullet> \<l>\<^sup>-\<^sup>1[g] : g \<Rightarrow> g\<guillemotright>"
-          using ide_left ide_right antipar triangle_in_hom(2) by blast
-        thus ?thesis
-          using Chn_in_hom by blast
-      qed
-      ultimately have *: "C.arr (\<p>\<^sub>1[g.leg0, g.dsrc] \<cdot> chine_hcomp g \<epsilon> \<cdot> gfg.chine_assoc \<cdot> chine_hcomp \<eta> g \<cdot>
-                                   \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>)"
-        by simp
+      hence 2: "C.arr (\<p>\<^sub>1[g.leg0, g.dsrc] \<cdot> chine_hcomp g \<epsilon> \<cdot> gfg.chine_assoc \<cdot>
+                       chine_hcomp \<eta> g \<cdot> \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>)"
+        by (metis arrI arr_char arrow_of_spans.chine_simps(1) triangle_in_hom(4))
 
       have "Chn (\<r>[g] \<bullet> (g \<star> \<epsilon>) \<bullet> \<a>[g, f, g] \<bullet> (\<eta> \<star> g) \<bullet> \<l>\<^sup>-\<^sup>1[g]) =
             \<p>\<^sub>1[g.leg0, g.dsrc] \<cdot> chine_hcomp g \<epsilon> \<cdot> gfg.chine_assoc \<cdot> chine_hcomp \<eta> g \<cdot>
               \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
-        by fact
+        using 1 by simp
       also have
-        1: "... = gfg.Prj\<^sub>1 \<cdot> gfg.chine_assoc \<cdot> chine_hcomp \<eta> g \<cdot> \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
+        "... = gfg.Prj\<^sub>1 \<cdot> gfg.chine_assoc \<cdot> chine_hcomp \<eta> g \<cdot> \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
       proof -
         have "\<p>\<^sub>1[g.leg0, g.dsrc] \<cdot> chine_hcomp g \<epsilon> = \<p>\<^sub>1[g.leg0, \<epsilon>.dom.leg1]"
-        proof -
-          have "chine_hcomp g \<epsilon> = \<langle>\<p>\<^sub>1[g.leg0, \<epsilon>.dom.leg1]
-                                   \<lbrakk>g.leg0, \<epsilon>.cod.leg1\<rbrakk>
-                                 \<epsilon>.chine \<cdot> \<p>\<^sub>0[g.leg0, \<epsilon>.dom.leg1]\<rangle>"
-            using chine_hcomp_ide_arr gf.composable by simp
-          moreover have 1: "g.dsrc = \<epsilon>.cod.leg1"
-            using gfg.cospan_\<mu>\<nu> by (simp add: \<epsilon>_leg_simps(2))
-          moreover have "C.commutative_square g.leg0 g.dsrc \<p>\<^sub>1[g.leg0, \<epsilon>.dom.leg1]
-                             (\<epsilon>.chine \<cdot> \<p>\<^sub>0[g.leg0, \<epsilon>.dom.leg1])"
-          proof
-            show "C.cospan g.leg0 g.dsrc" by simp
-            show 2: "C.span \<p>\<^sub>1[g.leg0, \<epsilon>.dom.leg1] (\<epsilon>.chine \<cdot> \<p>\<^sub>0[g.leg0, \<epsilon>.dom.leg1])"
-              using 1 \<open>C.cospan g.leg0 g.dsrc\<close> chine_counit_in_hom by simp
-            show 3: "C.dom g.leg0 = C.cod \<p>\<^sub>1[g.leg0, \<epsilon>.dom.leg1]"
-              using 1 2 dom_char counit_simps by simp
-            show "g.leg0 \<cdot> \<p>\<^sub>1[g.leg0, \<epsilon>.dom.leg1] = g.dsrc \<cdot> \<epsilon>.chine \<cdot> \<p>\<^sub>0[g.leg0, \<epsilon>.dom.leg1]"
-              using 1 2 3 C.comp_cod_arr dom_char counit_simps C.pullback_commutes'
-              by (metis (no_types, lifting) C.cod_comp C.prj0_simps_arr C.seqE \<epsilon>.leg1_commutes)
-          qed
-          ultimately show ?thesis by simp
-        qed
+          by (metis C.comp_cod_arr \<epsilon>_leg_simps(2) \<epsilon>_leg_simps(4) arrI chine_hcomp_props(6)
+                    fg.leg1_composite g.cod_simps(2) g.identity_arrow_of_spans_axioms
+                    gfg.cospan_\<mu>\<nu> gfg.prj_simps(10) gfg.prj_simps(16) hseqE
+                    identity_arrow_of_spans.chine_eq_apex seqE triangle_in_hom(4))
         also have "... = gfg.Prj\<^sub>1"
           using dom_char counit_simps hcomp_def fg.composable by simp
         finally have "\<p>\<^sub>1[g.leg0, g.dsrc] \<cdot> chine_hcomp g \<epsilon> = gfg.Prj\<^sub>1"
@@ -5178,69 +4223,18 @@ $$\xymatrix{
           by auto
         moreover have "C.seq (chine_hcomp g \<epsilon>)
                              (gfg.chine_assoc \<cdot> chine_hcomp \<eta> g \<cdot> \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>)"
-          using chine_hcomp_props(1) gf.composable * by (metis C.seqE)
+          using chine_hcomp_props(1) gf.composable 2 by (metis C.seqE)
         ultimately show ?thesis
           using C.comp_reduce by simp
       qed
-      also have 3: "... = gfg.Prj\<^sub>1\<^sub>1 \<cdot> chine_hcomp \<eta> g \<cdot> \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
+      also have "... = gfg.Prj\<^sub>1\<^sub>1 \<cdot> chine_hcomp \<eta> g \<cdot> \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
         using C.comp_reduce [of gfg.Prj\<^sub>1 gfg.chine_assoc gfg.Prj\<^sub>1\<^sub>1
                                 "chine_hcomp \<eta> g \<cdot> \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"]
-              * gfg.prj_chine_assoc(1)
+              2 gfg.prj_chine_assoc(1)
         by blast
-      also have 4: "... = (gf.prj\<^sub>1 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1]) \<cdot> \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
-      proof -
-        have "gfg.Prj\<^sub>1\<^sub>1 \<cdot> chine_hcomp \<eta> g = gf.prj\<^sub>1 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1]"
-        proof -
-          have "gfg.Prj\<^sub>1\<^sub>1 \<cdot> chine_hcomp \<eta> g =
-                (gf.prj\<^sub>1 \<cdot> \<p>\<^sub>1[gf.leg0, g.leg1]) \<cdot>
-                   \<langle>\<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1] \<lbrakk>gf.leg0, g.leg1\<rbrakk> \<p>\<^sub>0[g.dtrg, g.leg1]\<rangle>"
-            using hcomp_def fg.composable gf.composable chine_hcomp_arr_ide trg_def unit_simps(5)
-                  \<eta>_leg_simps
-            by auto
-          also have "... = gf.prj\<^sub>1 \<cdot> \<p>\<^sub>1[gf.leg0, g.leg1] \<cdot>
-                             \<langle>\<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1] \<lbrakk>gf.leg0, g.leg1\<rbrakk> \<p>\<^sub>0[g.dtrg, g.leg1]\<rangle>"
-            using C.comp_assoc by simp
-          also have "... = gf.prj\<^sub>1 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1]"
-          proof -
-            have "C.commutative_square gf.leg0 g.leg1 (\<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1]) \<p>\<^sub>0[g.dtrg, g.leg1]"
-            proof
-              show "C.cospan gf.leg0 g.leg1"
-                using hcomp_def [of g f] gf.composable gfg.prj_in_hom(3) by auto
-              show "C.span (\<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1]) \<p>\<^sub>0[g.dtrg, g.leg1]"
-                using chine_unit_in_hom fg.composable src_def trg_def by auto
-              show "C.dom gf.leg0 = C.cod (\<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1])"
-                using chine_unit_in_hom \<eta>_leg_simps
-                by (simp add: \<eta>.cod.apex_def
-                    \<open>C.span (\<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1]) \<p>\<^sub>0[g.dtrg, g.leg1]\<close>)
-              show "gf.leg0 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1] = g.leg1 \<cdot> \<p>\<^sub>0[g.dtrg, g.leg1]"
-              proof -
-                have "g.leg1 \<cdot> \<p>\<^sub>0[g.dtrg, g.leg1] = \<p>\<^sub>1[g.dtrg, g.leg1]"
-                  using C.comp_cod_arr C.pullback_commutes [of g.dtrg g.leg1] by auto
-                also have "... = gf.leg0 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1]"
-                proof -
-                  have "gf.leg0 \<cdot> \<eta>.chine = g.dtrg"
-                    using unit_simps cod_char hcomp_def gf.composable \<eta>.leg0_commutes
-                          dom_char trg_def fg.composable
-                    by simp
-                  moreover have "C.seq \<eta>.chine \<p>\<^sub>1[g.dtrg, g.leg1]"
-                    using chine_unit_in_hom fg.composable src_def trg_def by auto
-                  ultimately show ?thesis
-                    using C.comp_cod_arr C.comp_reduce by auto
-                qed
-                finally show ?thesis by simp
-              qed
-            qed
-            thus ?thesis by simp
-          qed
-          finally show ?thesis by simp
-        qed
-        moreover have "C.seq gfg.Prj\<^sub>1\<^sub>1 (chine_hcomp \<eta> g)"
-          using chine_hcomp_props(1) [of \<eta> g] by (metis "*" 1 "3" C.match_2 C.seqE)
-        moreover have "C.seq (chine_hcomp \<eta> g) \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
-          using chine_hcomp_props(1) by (metis "*" C.seqE)
-        ultimately show ?thesis
-          using C.comp_reduce by simp
-      qed
+      also have "... = (gf.prj\<^sub>1 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1]) \<cdot> \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
+        by (metis C.comp_assoc \<eta>_leg_simps(1) \<eta>_leg_simps(3) arrI chine_hcomp_props(6)
+                  g.cod_simps(3) gf.leg0_composite gfg.cospan_\<nu>\<pi> hseqE seqE triangle_in_hom(4))
       also have "... = gf.prj\<^sub>1 \<cdot> \<eta>.chine \<cdot> \<p>\<^sub>1[g.dtrg, g.leg1] \<cdot> \<langle>g.leg1 \<lbrakk>g.dtrg, g.leg1\<rbrakk> g.chine\<rangle>"
         using C.comp_assoc by simp
       also have "... = gf.prj\<^sub>1 \<cdot> \<eta>.chine \<cdot> g.leg1"

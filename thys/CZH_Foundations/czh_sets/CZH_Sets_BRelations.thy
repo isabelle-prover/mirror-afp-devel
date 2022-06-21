@@ -90,6 +90,9 @@ text\<open>Special properties.\<close>
 
 lemma vid_on_vsubset_vtimes: "vid_on A \<subseteq>\<^sub>\<circ> A \<times>\<^sub>\<circ> A" by clarsimp
 
+lemma VLambda_id[simp]: "VLambda A id = vid_on A"  
+  by (simp add: id_def vid_on_def Setcompr_eq_image VLambda_def)
+
 
 subsubsection\<open>Constant function\<close>
 
@@ -879,6 +882,11 @@ lemma vdomain_VLambda[simp]: "\<D>\<^sub>\<circ> (\<lambda>a\<in>\<^sub>\<circ>A
   by (auto intro!: vsubset_antisym)
 
 lemma vdomain_vlrestriction: "\<D>\<^sub>\<circ> (r \<restriction>\<^sup>l\<^sub>\<circ> A) = \<D>\<^sub>\<circ> r \<inter>\<^sub>\<circ> A" by auto
+
+lemma vdomain_vlrestriction_vsubset:
+  assumes "A \<subseteq>\<^sub>\<circ> \<D>\<^sub>\<circ> r"
+  shows "\<D>\<^sub>\<circ> (r \<restriction>\<^sup>l\<^sub>\<circ> A) = A"
+  using assms by (auto simp: vdomain_vlrestriction)
 
 
 text\<open>Special properties.\<close>

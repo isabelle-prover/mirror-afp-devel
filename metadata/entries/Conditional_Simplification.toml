@@ -24,8 +24,9 @@ email = "milehins_email"
 [contributors]
 
 [notify]
-milehins = "milehins_email1"
+milehins = "milehins_email"
 
 [history]
+2022-01-07 = "added a switch for backtracking (revision 241da1cdeabf)<br>"
 
 [extra]

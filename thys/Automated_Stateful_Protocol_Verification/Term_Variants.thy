@@ -1,45 +1,9 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2020
-(C) Copyright Sebastian A. Mödersheim, DTU, 2020
-(C) Copyright Achim D. Brucker, University of Exeter, 2020
-(C) Copyright Anders Schlichtkrull, DTU, 2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Term_Variants.thy
     Author:     Andreas Viktor Hess, DTU
     Author:     Sebastian A. Mödersheim, DTU
     Author:     Achim D. Brucker, University of Exeter
     Author:     Anders Schlichtkrull, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section\<open>Term Variants\<close>
@@ -53,7 +17,7 @@ fun term_variants where
   let S = product_lists (map (term_variants P) T)
   in map (Fun f) S@concat (map (\<lambda>g. map (Fun g) S) (P f)))"
 
-inductive term_variants_pred where
+inductive term_variants_pred for P where
   term_variants_Var:
   "term_variants_pred P (Var x) (Var x)"
 | term_variants_P:
@@ -106,14 +70,14 @@ lemma term_variants_pred_refl_inv:
   shows "s = t"
   using st P
 proof (induction s t rule: term_variants_pred.induct)
-case (term_variants_Var P x) thus ?case by blast
+  case (term_variants_Var x) thus ?case by blast
 next
-  case (term_variants_P T S P g f)
+  case (term_variants_P T S g f)
   hence "T ! i = S ! i" when i: "i < length T" for i using i by blast
   hence "T = S" using term_variants_P.hyps(1) by (simp add: nth_equalityI)
   thus ?case using term_variants_P.prems term_variants_P.hyps(3) by fast
 next
-  case (term_variants_Fun T S P f)
+  case (term_variants_Fun T S f)
   hence "T ! i = S ! i" when i: "i < length T" for i using i by blast
   hence "T = S" using term_variants_Fun.hyps(1) by (simp add: nth_equalityI)
   thus ?case by fast
@@ -173,11 +137,11 @@ proof -
   define F where "F \<equiv> \<lambda>(P::'a set) (fs::'a list) x. if x \<in> P then fs else []"
 
   show ?thesis using ut g P_fs_def unfolding P_gs_def Q_fs_def
-  proof (induction P_fs u t arbitrary: g gs rule: term_variants_pred.induct)
-    case (term_variants_Var P h x) thus ?case
+  proof (induction u t arbitrary: g gs rule: term_variants_pred.induct)
+    case (term_variants_Var h x) thus ?case
       by (auto intro: term_variants_pred.term_variants_Var)
   next
-    case (term_variants_P T S P' h' h g gs)
+    case (term_variants_P T S h' h g gs)
     note hyps = term_variants_P.hyps(1,2,4,5,6,7)
     note IH = term_variants_P.hyps(3)
 
@@ -197,7 +161,7 @@ proof -
             hyps(3)[unfolded hyps(6)] hyps(4,5)
       unfolding F_def by force
   next
-    case (term_variants_Fun T S P' h' g gs)
+    case (term_variants_Fun T S h' g gs)
     note hyps = term_variants_Fun.hyps(1,2,4,5,6)
     note IH = term_variants_Fun.hyps(3)
 
@@ -230,8 +194,8 @@ lemma term_variants_pred_eq_case:
   assumes "term_variants_pred P t s" "\<forall>f \<in> funs_term t. P f = []"
   shows "t = s"
 using assms
-proof (induction P t s rule: term_variants_pred.induct)
-  case (term_variants_Fun T S P f) thus ?case
+proof (induction t s rule: term_variants_pred.induct)
+  case (term_variants_Fun T S f) thus ?case
     using subtermeq_imp_funs_term_subset[OF Fun_param_in_subterms[OF nth_mem], of _ T f]
           nth_equalityI[of T S]
     by blast
@@ -241,8 +205,8 @@ lemma term_variants_pred_subst:
   assumes "term_variants_pred P t s"
   shows "term_variants_pred P (t \<cdot> \<delta>) (s \<cdot> \<delta>)"
 using assms
-proof (induction P t s rule: term_variants_pred.induct)
-  case (term_variants_P T S P f g)
+proof (induction t s rule: term_variants_pred.induct)
+  case (term_variants_P T S f g)
   have 1: "length (map (\<lambda>t. t \<cdot> \<delta>) T) = length (map (\<lambda>t. t \<cdot> \<delta>) S)"
     using term_variants_P.hyps
     by simp
@@ -256,7 +220,7 @@ proof (induction P t s rule: term_variants_pred.induct)
     using term_variants_pred.term_variants_P[OF 1 2 term_variants_P.hyps(3)]
     by fastforce
 next
-  case (term_variants_Fun T S P f)
+  case (term_variants_Fun T S f)
   have 1: "length (map (\<lambda>t. t \<cdot> \<delta>) T) = length (map (\<lambda>t. t \<cdot> \<delta>) S)"
     using term_variants_Fun.hyps
     by simp
@@ -277,10 +241,10 @@ lemma term_variants_pred_subst':
     and "\<forall>x \<in> fv t \<union> fv s. (\<exists>y. \<delta> x = Var y) \<or> (\<exists>f. \<delta> x = Fun f [] \<and> P f = [])"
   shows "\<exists>u. term_variants_pred P t u \<and> s = u \<cdot> \<delta>"
 using assms
-proof (induction P "t \<cdot> \<delta>" s arbitrary: t rule: term_variants_pred.induct)
-  case (term_variants_Var P x g) thus ?case using term_variants_pred_refl by fast
+proof (induction "t \<cdot> \<delta>" s arbitrary: t rule: term_variants_pred.induct)
+  case (term_variants_Var x g) thus ?case using term_variants_pred_refl by fast
 next
-  case (term_variants_P T S P g f) show ?case
+  case (term_variants_P T S g f) show ?case
   proof (cases t)
     case (Var x) thus ?thesis
       using term_variants_P.hyps(4,5) term_variants_P.prems
@@ -312,7 +276,7 @@ next
     ultimately show ?thesis using term_variants_P.hyps(1,4) Fun 1 by blast
   qed
 next
-  case (term_variants_Fun T S P f t) show ?case
+  case (term_variants_Fun T S f t) show ?case
   proof (cases t)
     case (Var x)
     hence "T = []" "P f = []" using term_variants_Fun.hyps(4) term_variants_Fun.prems by fastforce+
@@ -345,6 +309,15 @@ next
   qed
 qed
 
+lemma term_variants_pred_subst'':
+  assumes "\<forall>x \<in> fv t. term_variants_pred P (\<delta> x) (\<theta> x)"
+  shows "term_variants_pred P (t \<cdot> \<delta>) (t \<cdot> \<theta>)"
+using assms
+proof (induction t)
+  case (Fun f ts) thus ?case
+    using term_variants_Fun[of "map (\<lambda>t. t \<cdot> \<delta>) ts" "map (\<lambda>t. t \<cdot> \<theta>) ts" P f] by force
+qed simp
+
 lemma term_variants_pred_iff_in_term_variants:
   fixes t::"('a,'b) term"
   shows "term_variants_pred P t s \<longleftrightarrow> s \<in> set (term_variants P t)"
@@ -368,8 +341,8 @@ proof
     by (simp add: in_set_product_lists_length)
 
   show "?A t s \<Longrightarrow> ?B t s"
-  proof (induction P t s rule: term_variants_pred.induct)
-    case (term_variants_P T S P g f)
+  proof (induction t s rule: term_variants_pred.induct)
+    case (term_variants_P T S g f)
     note hyps = term_variants_P.hyps
     note IH = term_variants_P.IH
 
@@ -378,7 +351,7 @@ proof
       unfolding U_def by simp
     thus ?case using a(1)[of _ P, OF hyps(3)] by auto
   next
-    case (term_variants_Fun T S P f)
+    case (term_variants_Fun T S f)
     note hyps = term_variants_Fun.hyps
     note IH = term_variants_Fun.IH
 
@@ -429,7 +402,7 @@ lemma term_variants_pred_funs_term:
   shows "f \<in> funs_term s \<or> (\<exists>g \<in> funs_term s. f \<in> set (P g))"
   using assms
 proof (induction rule: term_variants_pred.induct)
-  case (term_variants_P T S P g h) thus ?case
+  case (term_variants_P T S g h) thus ?case
   proof (cases "f = g")
     case False
     then obtain s where "s \<in> set S" "f \<in> funs_term s"
@@ -438,7 +411,7 @@ proof (induction rule: term_variants_pred.induct)
       using term_variants_P.IH term_variants_P.hyps(1) in_set_conv_nth[of s S] by force
   qed simp
 next
-  case (term_variants_Fun T S P h) thus ?case
+  case (term_variants_Fun T S h) thus ?case
   proof (cases "f = h")
     case False
     then obtain s where "s \<in> set S" "f \<in> funs_term s"

@@ -170,7 +170,7 @@ subsubsection\<open>Opposite natural transformation of functors with tiny maps\<
 lemma (in is_tm_ntcf) is_tm_ntcf_op: "op_ntcf \<NN> :
   op_cf \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m op_cf \<FF> : op_cat \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> op_cat \<BB>"
   by (intro is_tm_ntcfI')
-    (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
+    (cs_concl cs_shallow cs_intro: cat_cs_intros cat_op_intros)+
 
 lemma (in is_tm_ntcf) is_tm_ntcf_op'[cat_op_intros]: 
   assumes "\<GG>' = op_cf \<GG>"
@@ -263,7 +263,7 @@ mk_ide rf is_tm_iso_ntcf_def
 
 lemmas [ntcf_cs_intros] = is_tm_iso_ntcfD
 
-lemma iso_tm_ntcf_is_arr_isomorphism:
+lemma iso_tm_ntcf_is_iso_arr:
   assumes "category \<alpha> \<BB>" and "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
   shows [ntcf_cs_intros]: "inv_ntcf \<NN> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F inv_ntcf \<NN> = ntcf_id \<GG>"
@@ -271,7 +271,7 @@ lemma iso_tm_ntcf_is_arr_isomorphism:
 proof-
   interpret \<BB>: category \<alpha> \<BB> by (rule assms(1))
   interpret \<NN>: is_tm_iso_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN> by (rule assms)
-  note inv_\<NN> = iso_ntcf_is_arr_isomorphism[OF \<NN>.is_iso_ntcf_axioms]
+  note inv_\<NN> = iso_ntcf_is_iso_arr[OF \<NN>.is_iso_ntcf_axioms]
   show "inv_ntcf \<NN> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
   proof(intro is_tm_iso_ntcfI)
     show "inv_ntcf \<NN> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by (intro inv_\<NN>(1))
@@ -283,7 +283,7 @@ proof-
     by (intro inv_\<NN>(2,3))+
 qed
 
-lemma is_arr_isomorphism_is_tm_iso_ntcf:
+lemma is_iso_arr_is_tm_iso_ntcf:
   assumes "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<MM> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
     and [simp]: "\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<MM> = ntcf_id \<GG>"
@@ -295,7 +295,7 @@ proof-
   show ?thesis
   proof(rule is_tm_iso_ntcfI)
     show "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-      by (rule is_arr_isomorphism_is_iso_ntcf) (auto intro: cat_small_cs_intros)
+      by (rule is_iso_arr_is_iso_ntcf) (auto intro: cat_small_cs_intros)
     show "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
       by (rule is_tm_ntcfI')
         (auto simp: \<NN>.tm_ntcf_NTMap_in_Vset intro: cat_small_cs_intros)
@@ -317,7 +317,7 @@ proof-
   from assms show ?thesis
     by (intro is_tm_ntcfI)
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: slicing_commute[symmetric] 
           cs_intro: cat_cs_intros smc_small_cs_intros slicing_intros
       )+
@@ -346,7 +346,7 @@ proof-
   from assms show ?thesis
     by (intro is_tm_ntcfI)
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: slicing_commute[symmetric] 
           cs_intro: cat_cs_intros smc_small_cs_intros slicing_intros
       )+
@@ -492,7 +492,10 @@ proof-
     NTDom.HomCod.tiny_cat_in_Vset
   show ?thesis
     by (subst ntcf_def) 
-      (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros V_cs_intros
+      )
 qed
 
 lemma small_all_tiny_ntcfs[simp]: 
@@ -574,7 +577,7 @@ proof(intro is_tiny_ntcfI)
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
   show "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<beta>\<^esub> \<BB>"
     by (intro ntcf_is_ntcf_if_ge_Limit)
-      (use assms(2) in \<open>cs_concl cs_intro: dg_cs_intros\<close>)+
+      (use assms(2) in \<open>cs_concl cs_shallow cs_intro: dg_cs_intros\<close>)+
   show "ntcf_ntsmcf \<NN> : 
     cf_smcf \<FF> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y cf_smcf \<GG> : cat_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<beta>\<^esub> cat_smc \<BB>"
     by 
@@ -591,7 +594,7 @@ subsubsection\<open>Opposite natural transformation of tiny functors\<close>
 lemma (in is_tiny_ntcf) is_tm_ntcf_op: "op_ntcf \<NN> :
   op_cf \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y op_cf \<FF> : op_cat \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> op_cat \<BB>"
   by (intro is_tiny_ntcfI')
-   (cs_concl cs_intro: cat_cs_intros cat_op_intros)+
+   (cs_concl cs_shallow cs_intro: cat_cs_intros cat_op_intros)+
 
 lemma (in is_tiny_ntcf) is_tiny_ntcf_op'[cat_op_intros]: 
   assumes "\<GG>' = op_cf \<GG>"
@@ -714,7 +717,7 @@ lemma is_tiny_iso_ntcf_iff:
 
 subsubsection\<open>Further properties\<close>
 
-lemma iso_tiny_ntcf_is_arr_isomorphism:
+lemma iso_tiny_ntcf_is_iso_arr:
   assumes "category \<alpha> \<BB>" and "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>"
   shows [ntcf_cs_intros]: "inv_ntcf \<NN> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F inv_ntcf \<NN> = ntcf_id \<GG>"
@@ -722,7 +725,7 @@ lemma iso_tiny_ntcf_is_arr_isomorphism:
 proof-
   interpret \<BB>: category \<alpha> \<BB> by (rule assms(1))
   interpret \<NN>: is_tiny_iso_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN> by (rule assms)
-  note inv_\<NN> = iso_ntcf_is_arr_isomorphism[OF \<NN>.is_iso_ntcf_axioms]
+  note inv_\<NN> = iso_ntcf_is_iso_arr[OF \<NN>.is_iso_ntcf_axioms]
   show "inv_ntcf \<NN> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>"
   proof(intro is_tiny_iso_ntcfI)
     show "inv_ntcf \<NN> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by (intro inv_\<NN>(1))
@@ -734,7 +737,7 @@ proof-
     by (intro inv_\<NN>(2,3))+
 qed
 
-lemma is_arr_isomorphism_is_tiny_iso_ntcf:
+lemma is_iso_arr_is_tiny_iso_ntcf:
   assumes "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<MM> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>"
     and [simp]: "\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<MM> = ntcf_id \<GG>"
@@ -746,7 +749,7 @@ proof-
   show ?thesis
   proof(rule is_tiny_iso_ntcfI)
     show "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-      by (rule is_arr_isomorphism_is_iso_ntcf) (auto intro: cat_small_cs_intros)
+      by (rule is_iso_arr_is_iso_ntcf) (auto intro: cat_small_cs_intros)
     show "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>"
       by (rule is_tiny_ntcfI') (auto intro: cat_small_cs_intros)
   qed

@@ -19,7 +19,7 @@ setup \<open>add_backward_prfstep @{thm injI}\<close>
 
 subsubsection \<open>AC property of intersection and union\<close>
 
-setup \<open>fold ACUtil.add_ac_data [
+setup \<open>fold Auto2_HOL_Extra_Setup.ACUtil.add_ac_data [
   {cfhead = @{cterm inf}, unit = SOME @{cterm inf},
    assoc_th = @{thm inf_assoc}, comm_th = @{thm inf_commute},
    unitl_th = @{thm inf_top_left}, unitr_th = @{thm inf_top_right}},
@@ -36,7 +36,7 @@ lemma ball_single [rewrite]: "(\<forall>x\<in>{x}. P x) = P x" by auto
 
 subsubsection \<open>Membership\<close>
 
-setup \<open>add_rewrite_rule @{thm Set.singleton_iff}\<close> 
+setup \<open>add_rewrite_rule @{thm Set.singleton_iff}\<close>
 setup \<open>add_forward_prfstep (equiv_forward_th @{thm Set.empty_iff})\<close>
 lemma set_membership_distinct [forward]: "x \<in> s \<Longrightarrow> y \<notin> s \<Longrightarrow> x \<noteq> y" by auto
 lemma non_empty_exist_elt [backward]: "U \<noteq> {} \<Longrightarrow> \<exists>x. x \<in> U" by blast
@@ -74,7 +74,7 @@ lemma UnI1_single: "a \<in> {a} \<union> B" by auto
 lemma UnI2_single: "b \<in> A \<union> {b}" by auto
 setup \<open>add_forward_prfstep_cond @{thm UnI1_single} [with_term "{?a} \<union> ?B"]\<close>
 setup \<open>add_forward_prfstep_cond @{thm UnI2_single} [with_term "?A \<union> {?b}"]\<close>
-  
+
 lemma union_single_eq [rewrite, backward]: "x \<in> p \<Longrightarrow> {x} \<union> p = p" by auto
 
 subsubsection \<open>Intersection\<close>

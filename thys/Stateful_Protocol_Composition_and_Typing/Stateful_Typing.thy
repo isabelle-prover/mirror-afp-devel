@@ -1,43 +1,9 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2018-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Stateful_Typing.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section \<open>Extending the Typing Result to Stateful Constraints\<close>
-text \<open>\label{sec:Stateful-Typing}\<close>
 
 theory Stateful_Typing
 imports Typing_Result Stateful_Strands
@@ -79,8 +45,8 @@ text \<open>
 fun tr::"('fun,'var) stateful_strand \<Rightarrow> ('fun,'var) dbstatelist \<Rightarrow> ('fun,'var) strand list"
 where
   "tr [] D = [[]]"
-| "tr (send\<langle>t\<rangle>#A) D = map ((#) (send\<langle>t\<rangle>\<^sub>s\<^sub>t)) (tr A D)"
-| "tr (receive\<langle>t\<rangle>#A) D = map ((#) (receive\<langle>t\<rangle>\<^sub>s\<^sub>t)) (tr A D)"
+| "tr (send\<langle>ts\<rangle>#A) D = map ((#) (send\<langle>ts\<rangle>\<^sub>s\<^sub>t)) (tr A D)"
+| "tr (receive\<langle>ts\<rangle>#A) D = map ((#) (receive\<langle>ts\<rangle>\<^sub>s\<^sub>t)) (tr A D)"
 | "tr (\<langle>ac: t \<doteq> t'\<rangle>#A) D = map ((#) (\<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t)) (tr A D)"
 | "tr (insert\<langle>t,s\<rangle>#A) D = tr A (List.insert (t,s) D)"
 | "tr (delete\<langle>t,s\<rangle>#A) D =
@@ -106,7 +72,8 @@ text \<open>Type-flaw resistance of stateful constraints\<close>
 definition tfr\<^sub>s\<^sub>s\<^sub>t where "tfr\<^sub>s\<^sub>s\<^sub>t S \<equiv> tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>s\<^sub>t S \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t S) \<and> list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p S"
 
 
-subsection \<open>Small Lemmata\<close>
+
+subsection \<open>Minor Lemmata\<close>
 lemma pair_in_pair_image_iff:
   "pair (s,t) \<in> pair ` P \<longleftrightarrow> (s,t) \<in> P"
 unfolding pair_def by fast
@@ -117,7 +84,7 @@ unfolding subst_apply_pairs_def pair_def by (induct F) auto
 
 lemma Ana_subst_subterms_cases:
   fixes \<theta>::"('fun,'var) subst"
-  assumes t: "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t (M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>)"
+  assumes t: "t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
     and s: "s \<in> set (snd (Ana t))"
   shows "(\<exists>u \<in> subterms\<^sub>s\<^sub>e\<^sub>t M. t = u \<cdot> \<theta> \<and> s \<in> set (snd (Ana u)) \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>) \<or> (\<exists>x \<in> fv\<^sub>s\<^sub>e\<^sub>t M. t \<sqsubseteq> \<theta> x)"
 proof (cases "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>")
@@ -136,25 +103,25 @@ proof (cases "t \<in> subterms\<^sub>s\<^sub>e\<^sub>t M \<cdot>\<^sub>s\<^sub>e
   qed
 qed (use s t subterms\<^sub>s\<^sub>e\<^sub>t_subst in blast)
 
-lemma tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_alt_def:
-  "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p S =
-    ((\<forall>ac t t'. Equality ac t t' \<in> set S \<and> (\<exists>\<delta>. Unifier \<delta> t t') \<longrightarrow> \<Gamma> t = \<Gamma> t') \<and>
-     (\<forall>X F F'. NegChecks X F F' \<in> set S \<longrightarrow> (
-        (F' = [] \<and> (\<forall>x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F-set X. \<exists>a. \<Gamma> (Var x) = TAtom a)) \<or>
-        (\<forall>f T. Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F') \<longrightarrow>
-                  T = [] \<or> (\<exists>s \<in> set T. s \<notin> Var ` set X)))))"
-  (is "?P S = ?Q S")
-proof
-  show "?P S \<Longrightarrow> ?Q S"
-  proof (induction S)
-    case (Cons x S) thus ?case by (cases x) auto
-  qed simp
-
-  show "?Q S \<Longrightarrow> ?P S"
-  proof (induction S)
-    case (Cons x S) thus ?case by (cases x) auto
-  qed simp
+lemma Ana_snd_subst_nth_inv:
+  fixes \<theta>::"('fun,'var) subst" and f ts
+  defines "R \<equiv> snd (Ana (Fun f ts \<cdot> \<theta>))"
+  assumes r: "r = R ! i" "i < length R"
+  shows "r = snd (Ana (Fun f ts)) ! i \<cdot> \<theta>"
+proof -
+  obtain K R where "Ana (Fun f ts) = (K,R)" by (metis surj_pair)
+  thus ?thesis using Ana_subst'[of f ts K R \<theta>] r unfolding R_def by auto
 qed
+
+lemma Ana_snd_subst_inv:
+  fixes \<theta>::"('fun,'var) subst"
+  assumes r: "r \<in> set (snd (Ana (Fun f ts \<cdot> \<theta>)))"
+  shows "\<exists>t \<in> set (snd (Ana (Fun f ts))). r = t \<cdot> \<theta>"
+proof -
+  obtain K R where "Ana (Fun f ts) = (K,R)" by (metis surj_pair)
+  thus ?thesis using Ana_subst'[of f ts K R \<theta>] r by auto
+qed
+
 
 lemma fun_pair_eq[dest]: "pair d = pair d' \<Longrightarrow> d = d'"
 proof -
@@ -183,8 +150,8 @@ by (metis fun_pair_subst fun_pair_eq[of "d \<cdot>\<^sub>p \<delta>" "d' \<cdot>
 
 lemma setops\<^sub>s\<^sub>s\<^sub>t_pair_image_cons[simp]:
   "pair ` setops\<^sub>s\<^sub>s\<^sub>t (x#S) = pair ` setops\<^sub>s\<^sub>s\<^sub>t\<^sub>p x \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t S"
-  "pair ` setops\<^sub>s\<^sub>s\<^sub>t (send\<langle>t\<rangle>#S) = pair ` setops\<^sub>s\<^sub>s\<^sub>t S"
-  "pair ` setops\<^sub>s\<^sub>s\<^sub>t (receive\<langle>t\<rangle>#S) = pair ` setops\<^sub>s\<^sub>s\<^sub>t S"
+  "pair ` setops\<^sub>s\<^sub>s\<^sub>t (send\<langle>ts\<rangle>#S) = pair ` setops\<^sub>s\<^sub>s\<^sub>t S"
+  "pair ` setops\<^sub>s\<^sub>s\<^sub>t (receive\<langle>ts\<rangle>#S) = pair ` setops\<^sub>s\<^sub>s\<^sub>t S"
   "pair ` setops\<^sub>s\<^sub>s\<^sub>t (\<langle>ac: t \<doteq> t'\<rangle>#S) = pair ` setops\<^sub>s\<^sub>s\<^sub>t S"
   "pair ` setops\<^sub>s\<^sub>s\<^sub>t (insert\<langle>t,s\<rangle>#S) = {pair (t,s)} \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t S"
   "pair ` setops\<^sub>s\<^sub>s\<^sub>t (delete\<langle>t,s\<rangle>#S) = {pair (t,s)} \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t S"
@@ -194,8 +161,8 @@ unfolding setops\<^sub>s\<^sub>s\<^sub>t_def by auto
 
 lemma setops\<^sub>s\<^sub>s\<^sub>t_pair_image_subst_cons[simp]:
   "pair ` setops\<^sub>s\<^sub>s\<^sub>t (x#S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>) = pair ` setops\<^sub>s\<^sub>s\<^sub>t\<^sub>p (x \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>)"
-  "pair ` setops\<^sub>s\<^sub>s\<^sub>t (send\<langle>t\<rangle>#S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>) = pair ` setops\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>)"
-  "pair ` setops\<^sub>s\<^sub>s\<^sub>t (receive\<langle>t\<rangle>#S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>) = pair ` setops\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+  "pair ` setops\<^sub>s\<^sub>s\<^sub>t (send\<langle>ts\<rangle>#S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>) = pair ` setops\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+  "pair ` setops\<^sub>s\<^sub>s\<^sub>t (receive\<langle>ts\<rangle>#S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>) = pair ` setops\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>)"
   "pair ` setops\<^sub>s\<^sub>s\<^sub>t (\<langle>ac: t \<doteq> t'\<rangle>#S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>) = pair ` setops\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>)"
   "pair ` setops\<^sub>s\<^sub>s\<^sub>t (insert\<langle>t,s\<rangle>#S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>) = {pair (t,s) \<cdot> \<theta>} \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>)"
   "pair ` setops\<^sub>s\<^sub>s\<^sub>t (delete\<langle>t,s\<rangle>#S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>) = {pair (t,s) \<cdot> \<theta>} \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>)"
@@ -215,396 +182,6 @@ using Pair_arity unfolding wf\<^sub>t\<^sub>r\<^sub>m_def pair_def by auto
 
 lemma wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_pairs: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) \<Longrightarrow> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (pair ` set F)"
 using fun_pair_wf\<^sub>t\<^sub>r\<^sub>m by blast
-
-lemma tfr\<^sub>s\<^sub>s\<^sub>t_Nil[simp]: "tfr\<^sub>s\<^sub>s\<^sub>t []"
-by (simp add: tfr\<^sub>s\<^sub>s\<^sub>t_def setops\<^sub>s\<^sub>s\<^sub>t_def)
-
-lemma tfr\<^sub>s\<^sub>s\<^sub>t_append: "tfr\<^sub>s\<^sub>s\<^sub>t (A@B) \<Longrightarrow> tfr\<^sub>s\<^sub>s\<^sub>t A"
-proof -
-  assume assms: "tfr\<^sub>s\<^sub>s\<^sub>t (A@B)"
-  let ?M = "trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A"
-  let ?N = "trms\<^sub>s\<^sub>s\<^sub>t (A@B) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (A@B)"
-  let ?P = "\<lambda>t t'. \<forall>x \<in> fv t \<union> fv t'. \<exists>a. \<Gamma> (Var x) = Var a"
-  let ?Q = "\<lambda>X t t'. X = [] \<or> (\<forall>x \<in> (fv t \<union> fv t')-set X. \<exists>a. \<Gamma> (Var x) = Var a)"
-  have *: "SMP ?M - Var`\<V> \<subseteq> SMP ?N - Var`\<V>" "?M \<subseteq> ?N"
-    using SMP_mono[of ?M ?N] setops\<^sub>s\<^sub>s\<^sub>t_append[of A B]
-    by auto
-  { fix s t assume **: "tfr\<^sub>s\<^sub>e\<^sub>t ?N" "s \<in> SMP ?M - Var`\<V>" "t \<in> SMP ?M - Var`\<V>" "(\<exists>\<delta>. Unifier \<delta> s t)"
-    hence "s \<in> SMP ?N - Var`\<V>" "t \<in> SMP ?N - Var`\<V>" using * by auto
-    hence "\<Gamma> s = \<Gamma> t" using **(1,4) unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
-  } moreover have "\<forall>t \<in> ?N. wf\<^sub>t\<^sub>r\<^sub>m t \<Longrightarrow> \<forall>t \<in> ?M. wf\<^sub>t\<^sub>r\<^sub>m t" using * by blast
-  ultimately have "tfr\<^sub>s\<^sub>e\<^sub>t ?N \<Longrightarrow> tfr\<^sub>s\<^sub>e\<^sub>t ?M" unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
-  hence "tfr\<^sub>s\<^sub>e\<^sub>t ?M" using assms unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by metis
-  thus "tfr\<^sub>s\<^sub>s\<^sub>t A" using assms unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by simp
-qed
-
-lemma tfr\<^sub>s\<^sub>s\<^sub>t_append': "tfr\<^sub>s\<^sub>s\<^sub>t (A@B) \<Longrightarrow> tfr\<^sub>s\<^sub>s\<^sub>t B"
-proof -
-  assume assms: "tfr\<^sub>s\<^sub>s\<^sub>t (A@B)"
-  let ?M = "trms\<^sub>s\<^sub>s\<^sub>t B \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t B"
-  let ?N = "trms\<^sub>s\<^sub>s\<^sub>t (A@B) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (A@B)"
-  let ?P = "\<lambda>t t'. \<forall>x \<in> fv t \<union> fv t'. \<exists>a. \<Gamma> (Var x) = Var a"
-  let ?Q = "\<lambda>X t t'. X = [] \<or> (\<forall>x \<in> (fv t \<union> fv t')-set X. \<exists>a. \<Gamma> (Var x) = Var a)"
-  have *: "SMP ?M - Var`\<V> \<subseteq> SMP ?N - Var`\<V>" "?M \<subseteq> ?N"
-    using SMP_mono[of ?M ?N] setops\<^sub>s\<^sub>s\<^sub>t_append[of A B]
-    by auto
-  { fix s t assume **: "tfr\<^sub>s\<^sub>e\<^sub>t ?N" "s \<in> SMP ?M - Var`\<V>" "t \<in> SMP ?M - Var`\<V>" "(\<exists>\<delta>. Unifier \<delta> s t)"
-    hence "s \<in> SMP ?N - Var`\<V>" "t \<in> SMP ?N - Var`\<V>" using * by auto
-    hence "\<Gamma> s = \<Gamma> t" using **(1,4) unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
-  } moreover have "\<forall>t \<in> ?N. wf\<^sub>t\<^sub>r\<^sub>m t \<Longrightarrow> \<forall>t \<in> ?M. wf\<^sub>t\<^sub>r\<^sub>m t" using * by blast
-  ultimately have "tfr\<^sub>s\<^sub>e\<^sub>t ?N \<Longrightarrow> tfr\<^sub>s\<^sub>e\<^sub>t ?M" unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
-  hence "tfr\<^sub>s\<^sub>e\<^sub>t ?M" using assms unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by metis
-  thus "tfr\<^sub>s\<^sub>s\<^sub>t B" using assms unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by simp
-qed
-
-lemma tfr\<^sub>s\<^sub>s\<^sub>t_cons: "tfr\<^sub>s\<^sub>s\<^sub>t (a#A) \<Longrightarrow> tfr\<^sub>s\<^sub>s\<^sub>t A"
-using tfr\<^sub>s\<^sub>s\<^sub>t_append'[of "[a]" A] by simp
-
-lemma tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst:
-  assumes s: "tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p s"
-    and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p s) \<inter> range_vars \<theta> = {}"
-  shows "tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (s \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)"
-proof (cases s)
-  case (Equality a t t')
-  thus ?thesis
-  proof (cases "\<exists>\<delta>. Unifier \<delta> (t \<cdot> \<theta>) (t' \<cdot> \<theta>)")
-    case True
-    hence "\<exists>\<delta>. Unifier \<delta> t t'" by (metis subst_subst_compose[of _ \<theta>])
-    moreover have "\<Gamma> t = \<Gamma> (t \<cdot> \<theta>)" "\<Gamma> t' = \<Gamma> (t' \<cdot> \<theta>)" by (metis wt_subst_trm''[OF assms(2)])+
-    ultimately have "\<Gamma> (t \<cdot> \<theta>) = \<Gamma> (t' \<cdot> \<theta>)" using s Equality by simp
-    thus ?thesis using Equality True by simp
-  qed simp
-next
-  case (NegChecks X F G)
-  let ?P = "\<lambda>F G. G = [] \<and> (\<forall>x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F-set X. \<exists>a. \<Gamma> (Var x) = TAtom a)"
-  let ?Q = "\<lambda>F G. \<forall>f T. Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set G) \<longrightarrow>
-                          T = [] \<or> (\<exists>s \<in> set T. s \<notin> Var ` set X)"
-  let ?\<theta> = "rm_vars (set X) \<theta>"
-
-  have "?P F G \<or> ?Q F G" using NegChecks assms(1) by simp
-  hence "?P (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>) (G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>) \<or> ?Q (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>) (G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>)"
-  proof
-    assume *: "?P F G"
-    have "G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta> = []" using * by simp
-    moreover have "\<exists>a. \<Gamma> (Var x) = TAtom a" when x: "x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>) - set X" for x
-    proof -
-      obtain t t' where t: "(t,t') \<in> set (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>)" "x \<in> fv t \<union> fv t' - set X"
-        using x(1) by auto
-      then obtain u u' where u: "(u,u') \<in> set F" "u \<cdot> ?\<theta> = t" "u' \<cdot> ?\<theta> = t'"
-        unfolding subst_apply_pairs_def by auto
-      obtain y where y: "y \<in> fv u \<union> fv u' - set X" "x \<in> fv (?\<theta> y)"
-        using t(2) u(2,3) rm_vars_fv_obtain by fast
-      hence a: "\<exists>a. \<Gamma> (Var y) = TAtom a" using u * by auto
-      
-      have a': "\<Gamma> (Var y) = \<Gamma> (?\<theta> y)"
-        using wt_subst_trm''[OF wt_subst_rm_vars[OF \<theta>(1), of "set X"], of "Var y"]
-        by simp
-
-      have "(\<exists>z. ?\<theta> y = Var z) \<or> (\<exists>c. ?\<theta> y = Fun c [])"
-      proof (cases "?\<theta> y \<in> subst_range \<theta>")
-        case True thus ?thesis
-          using a a' \<theta>(2) const_type_inv_wf
-          by (cases "?\<theta> y") fastforce+
-      qed fastforce
-      hence "?\<theta> y = Var x" using y(2) by fastforce
-      hence "\<Gamma> (Var x) = \<Gamma> (Var y)" using a' by simp
-      thus ?thesis using a by presburger
-    qed
-    ultimately show ?thesis by simp
-  next
-    assume *: "?Q F G"
-    have **: "set X \<inter> range_vars ?\<theta> = {}"
-      using \<theta>(3) NegChecks rm_vars_img_fv_subset[of "set X" \<theta>] by auto
-    have "?Q (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>) (G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>)"
-      using ineq_subterm_inj_cond_subst[OF ** *]
-            trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst[of F "rm_vars (set X) \<theta>"]
-            subst_apply_pairs_pair_image_subst[of G "rm_vars (set X) \<theta>"]
-      by (metis (no_types, lifting) image_Un)
-    thus ?thesis by simp
-  qed
-  thus ?thesis using NegChecks by simp
-qed simp_all
-
-lemma tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_all_wt_subst_apply:
-  assumes S: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p S"
-    and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "bvars\<^sub>s\<^sub>s\<^sub>t S \<inter> range_vars \<theta> = {}"
-  shows "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>)"
-proof -
-  have "set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p s) \<inter> range_vars \<theta> = {}" when "s \<in> set S" for s
-    using that \<theta>(3) unfolding bvars\<^sub>s\<^sub>s\<^sub>t_def range_vars_alt_def by fastforce
-  thus ?thesis
-    using tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst[OF _ \<theta>(1,2)] S
-    unfolding list_all_iff
-    by (auto simp add: subst_apply_stateful_strand_def)
-qed
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_empty_case:
-  assumes "tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D = []"
-  shows "D = []" "F \<noteq> []"
-proof -
-  show "F \<noteq> []" using assms by (auto intro: ccontr)
-
-  have "tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (a#A) \<noteq> []" for a A
-    by (induct F "a#A" rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct) fastforce+
-  thus "D = []" using assms by (cases D) simp_all
-qed
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_elem_length_eq:
-  assumes "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)"
-  shows "length G = length F" 
-using assms by (induct F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct) auto
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_index:
-  assumes "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "i < length F"
-  shows "\<exists>d \<in> set D. G ! i = (pair (F ! i), pair d)"
-using assms
-proof (induction F D arbitrary: i G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
-  case (2 s t F D)
-  obtain d G' where G:
-      "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)"
-      "G = (pair (s,t), pair d)#G'"
-    using "2.prems"(1) by moura
-  show ?case
-    using "2.IH"[OF G(1,2)] "2.prems"(2) G(1,3)
-    by (cases i) auto
-qed simp
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_cons:
-  assumes "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "d \<in> set D"
-  shows "(pair (s,t), pair d)#G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) D)"
-using assms by auto
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_has_pair_lists:
-  assumes "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "g \<in> set G"
-  shows "\<exists>f \<in> set F. \<exists>d \<in> set D. g = (pair f, pair d)"
-using assms
-proof (induction F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
-  case (2 s t F D)
-  obtain d G' where G:
-      "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)"
-      "G = (pair (s,t), pair d)#G'"
-    using "2.prems"(1) by moura
-  show ?case
-    using "2.IH"[OF G(1,2)] "2.prems"(2) G(1,3)
-    by (cases "g \<in> set G'") auto
-qed simp
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_is_pair_lists:
-  assumes "f \<in> set F" "d \<in> set D"
-  shows "\<exists>G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D). (pair f, pair d) \<in> set G"
-  (is "?P F D f d")
-proof -
-  have "\<forall>f \<in> set F. \<forall>d \<in> set D. ?P F D f d"
-  proof (induction F D rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
-    case (2 s t F D)
-    hence IH: "\<forall>f \<in> set F. \<forall>d \<in> set D. ?P F D f d" by metis
-    moreover have "\<forall>d \<in> set D. ?P ((s,t)#F) D (s,t) d"
-    proof
-      fix d assume d: "d \<in> set D"
-      then obtain G where G: "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)"
-        using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_empty_case(1) by force
-      hence "(pair (s, t), pair d)#G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) D)"
-        using d by auto
-      thus "?P ((s,t)#F) D (s,t) d" using d G by auto
-    qed
-    ultimately show ?case by fastforce
-  qed simp
-  thus ?thesis by (metis assms)
-qed
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_db_append_subset:
-  "set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D) \<subseteq> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (D@E))" (is ?A)
-  "set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F E) \<subseteq> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (D@E))" (is ?B)
-proof -
-  show ?A
-  proof (induction F D rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
-    case (2 s t F D)
-    show ?case
-    proof
-      fix G assume "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) D)"
-      then obtain d G' where G':
-          "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "G = (pair (s,t), pair d)#G'"
-        by moura
-      have "d \<in> set (D@E)" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (D@E))" using "2.IH"[OF G'(1)] G'(1,2) by auto
-      thus "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) (D@E))" using G'(3) by auto
-    qed
-  qed simp
-
-  show ?B
-  proof (induction F E rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
-    case (2 s t F E)
-    show ?case
-    proof
-      fix G assume "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) E)"
-      then obtain d G' where G':
-          "d \<in> set E" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F E)" "G = (pair (s,t), pair d)#G'"
-        by moura
-      have "d \<in> set (D@E)" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (D@E))" using "2.IH"[OF G'(1)] G'(1,2) by auto
-      thus "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) (D@E))" using G'(3) by auto
-    qed
-  qed simp
-qed
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset:
-  "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D) \<Longrightarrow> trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G \<subseteq> pair ` set F \<union> pair ` set D"
-proof (induction F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
-  case (2 s t F D G)
-  obtain d G' where G:
-      "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "G = (pair (s,t), pair d)#G'"
-    using "2.prems"(1) by moura
- 
-  show ?case using "2.IH"[OF G(1,2)] G(1,3) by auto
-qed simp
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset':
-  "\<Union>(trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ` set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)) \<subseteq> pair ` set F \<union> pair ` set D"
-using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset by blast
-
-lemma tr_trms_subset:
-  "A' \<in> set (tr A D) \<Longrightarrow> trms\<^sub>s\<^sub>t A' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D"
-proof (induction A D arbitrary: A' rule: tr.induct)
-  case 1 thus ?case by simp
-next
-  case (2 t A D)
-  then obtain A'' where A'': "A' = send\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by moura
-  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "2.IH")
-  thus ?case using A'' by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-next
-  case (3 t A D)
-  then obtain A'' where A'': "A' = receive\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by moura
-  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "3.IH")
-  thus ?case using A'' by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-next
-  case (4 ac t t' A D)
-  then obtain A'' where A'': "A' = \<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by moura
-  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "4.IH")
-  thus ?case using A'' by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-next
-  case (5 t s A D)
-  hence "A' \<in> set (tr A (List.insert (t,s) D))" by simp
-  hence "trms\<^sub>s\<^sub>t A' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set (List.insert (t, s) D)"
-    by (metis "5.IH")
-  thus ?case by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-next
-  case (6 t s A D)
-  from 6 obtain Di A'' B C where A'':
-      "Di \<in> set (subseqs D)" "A'' \<in> set (tr A [d\<leftarrow>D. d \<notin> set Di])" "A' = (B@C)@A''"
-      "B = map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di"
-      "C = map (\<lambda>d. Inequality [] [(pair (t,s) , pair d)]) [d\<leftarrow>D. d \<notin> set Di]"
-    by moura
-  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set [d\<leftarrow>D. d \<notin> set Di]"
-    by (metis "6.IH")
-  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t (Delete t s#A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (Delete t s#A) \<union> pair ` set D"
-    by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-  moreover have "trms\<^sub>s\<^sub>t (B@C) \<subseteq> insert (pair (t,s)) (pair ` set D)"
-    using A''(4,5) subseqs_set_subset[OF A''(1)] by auto
-  moreover have "pair (t,s) \<in> pair ` setops\<^sub>s\<^sub>s\<^sub>t (Delete t s#A)" by (simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-  ultimately show ?case using A''(3) trms\<^sub>s\<^sub>t_append[of "B@C" A'] by auto
-next
-  case (7 ac t s A D)
-  from 7 obtain d A'' where A'':
-      "d \<in> set D" "A'' \<in> set (tr A D)"
-      "A' = \<langle>ac: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t#A''"
-    by moura
-  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "7.IH")
-  moreover have "trms\<^sub>s\<^sub>t A' = {pair (t,s), pair d} \<union> trms\<^sub>s\<^sub>t A''"
-    using A''(1,3) by auto
-  ultimately show ?case using A''(1) by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-next
-  case (8 X F F' A D)
-  from 8 obtain A'' where A'':
-      "A'' \<in> set (tr A D)" "A' = (map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))@A''"
-    by moura
-
-  define B where "B \<equiv> \<Union>(trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ` set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))"
-
-  have "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis A''(1) "8.IH")
-  hence "trms\<^sub>s\<^sub>t A' \<subseteq> B \<union> trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D"
-    using A'' B_def by auto
-  moreover have "B \<subseteq> pair ` set F' \<union> pair ` set D"
-    using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset'[of F' D] B_def by simp
-  moreover have "pair ` setops\<^sub>s\<^sub>s\<^sub>t (\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: F'\<rangle>#A) = pair ` set F' \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A"
-    by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
-  ultimately show ?case by auto
-qed
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_vars_subset:
-  "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D) \<Longrightarrow> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s D"
-proof (induction F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
-  case (2 s t F D G)
-  obtain d G' where G:
-      "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "G = (pair (s,t), pair d)#G'"
-    using "2.prems"(1) by moura
- 
-  show ?case using "2.IH"[OF G(1,2)] G(1,3) unfolding pair_def by auto
-qed simp
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_vars_subset': "\<Union>(fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ` set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)) \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s D"
-using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_vars_subset[of _ F D] by blast
-
-lemma tr_vars_subset:
-  assumes "A' \<in> set (tr A D)"
-  shows "fv\<^sub>s\<^sub>t A' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t A \<union> (\<Union>(t,t') \<in> set D. fv t \<union> fv t')" (is ?P)
-  and "bvars\<^sub>s\<^sub>t A' \<subseteq> bvars\<^sub>s\<^sub>s\<^sub>t A" (is ?Q)
-proof -
-  show ?P using assms
-  proof (induction A arbitrary: A' D rule: strand_sem_stateful_induct)
-    case (ConsIn A' D ac t s A)
-    then obtain A'' d where *:
-        "d \<in> set D" "A' = \<langle>ac: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t#A''"
-        "A'' \<in> set (tr A D)"
-      by moura
-    hence "fv\<^sub>s\<^sub>t A'' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t A \<union> (\<Union>(t,t')\<in>set D. fv t \<union> fv t')" by (metis ConsIn.IH)
-    thus ?case using * unfolding pair_def by auto
-  next
-    case (ConsDel A' D t s A)
-    define Dfv where "Dfv \<equiv> \<lambda>D::('fun,'var) dbstatelist. (\<Union>(t,t')\<in>set D. fv t \<union> fv t')"
-    define fltD where "fltD \<equiv> \<lambda>Di. filter (\<lambda>d. d \<notin> set Di) D"
-    define constr where
-      "constr \<equiv> \<lambda>Di. (map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@
-                      (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) (fltD Di))"
-    from ConsDel obtain A'' Di where *:
-        "Di \<in> set (subseqs D)" "A' = (constr Di)@A''" "A'' \<in> set (tr A (fltD Di))"
-      unfolding constr_def fltD_def by moura
-    hence "fv\<^sub>s\<^sub>t A'' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t A \<union> Dfv (fltD Di)"
-      unfolding Dfv_def constr_def fltD_def by (metis ConsDel.IH)
-    moreover have "Dfv (fltD Di) \<subseteq> Dfv D" unfolding Dfv_def constr_def fltD_def by auto
-    moreover have "Dfv Di \<subseteq> Dfv D"
-      using subseqs_set_subset(1)[OF *(1)] unfolding Dfv_def constr_def fltD_def by fast
-    moreover have "fv\<^sub>s\<^sub>t (constr Di) \<subseteq> fv t \<union> fv s \<union> (Dfv Di \<union> Dfv (fltD Di))"
-      unfolding Dfv_def constr_def fltD_def pair_def by auto
-    moreover have "fv\<^sub>s\<^sub>s\<^sub>t (Delete t s#A) = fv t \<union> fv s \<union> fv\<^sub>s\<^sub>s\<^sub>t A" by auto
-    moreover have "fv\<^sub>s\<^sub>t A' = fv\<^sub>s\<^sub>t (constr Di) \<union> fv\<^sub>s\<^sub>t A''" using * by force
-    ultimately have "fv\<^sub>s\<^sub>t A' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (Delete t s#A) \<union> Dfv D" by auto
-    thus ?case unfolding Dfv_def fltD_def constr_def by simp
-  next
-    case (ConsNegChecks A' D X F F' A)
-    then obtain A'' where A'':
-        "A'' \<in> set (tr A D)" "A' = (map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))@A''"
-      by moura
-
-    define B where "B \<equiv> \<Union>(fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ` set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))"
-
-    have 1: "fv\<^sub>s\<^sub>t (map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D)) \<subseteq> (B \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) - set X"
-      unfolding B_def by auto
-
-    have 2: "B \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s D"
-      using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_vars_subset'[of F' D]
-      unfolding B_def by simp
-
-    have "fv\<^sub>s\<^sub>t A' \<subseteq> ((fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s D \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) - set X) \<union> fv\<^sub>s\<^sub>t A''"
-      using 1 2 A''(2) by fastforce
-    thus ?case using ConsNegChecks.IH[OF A''(1)] by auto
-  qed fastforce+
-
-  show ?Q using assms by (induct A arbitrary: A' D rule: strand_sem_stateful_induct) fastforce+
-qed
-
-lemma tr_vars_disj:
-  assumes "A' \<in> set (tr A D)" "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-  and "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-  shows "fv\<^sub>s\<^sub>t A' \<inter> bvars\<^sub>s\<^sub>t A' = {}"
-  using assms tr_vars_subset by fast
 
 lemma wf_fun_pair_ineqs_map:
   assumes "wf\<^sub>s\<^sub>t X A"
@@ -852,6 +429,503 @@ proof -
     by blast
 qed
 
+lemma constraint_model_priv_const_in_constr_prefix:
+  assumes A: "wf\<^sub>s\<^sub>s\<^sub>t A"
+    and I: "I \<Turnstile>\<^sub>s A"
+           "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t I"
+           "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range I)"
+           "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t I"
+    and c: "\<not>public c"
+           "arity c = 0"
+           "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t ik\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I"
+  shows "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t trms\<^sub>s\<^sub>s\<^sub>t A"
+using const_subterms_subst_cases[OF c(3)]
+proof
+  assume "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t ik\<^sub>s\<^sub>s\<^sub>t A" thus ?thesis using ik\<^sub>s\<^sub>s\<^sub>t_trms\<^sub>s\<^sub>s\<^sub>t_subset by blast 
+next
+  assume "\<exists>x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>s\<^sub>s\<^sub>t A). x \<in> subst_domain I \<and> Fun c [] \<sqsubseteq> I x"
+  then obtain x where x: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (ik\<^sub>s\<^sub>s\<^sub>t A)" "Fun c [] \<sqsubseteq> I x" by blast
+  
+  have 0: "wf\<^sub>t\<^sub>r\<^sub>m (I x)" "wf'\<^sub>s\<^sub>s\<^sub>t {} A" "Fun c [] \<cdot> I = Fun c []"
+    using I A by simp_all
+
+  have 1: "x \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t A"
+    using x(1) in_ik\<^sub>s\<^sub>s\<^sub>t_iff[of _ A] unfolding wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def by force
+  hence 2: "\<exists>v \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t A. Fun c [] \<cdot> I \<sqsubseteq> I v" using 0(3) x(2) by force
+
+
+  obtain A\<^sub>p\<^sub>r\<^sub>e A\<^sub>s\<^sub>u\<^sub>f where A': "\<not>(\<exists>w \<in> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t A\<^sub>p\<^sub>r\<^sub>e. Fun c [] \<sqsubseteq> I w)"
+    "(\<exists>ts. A = A\<^sub>p\<^sub>r\<^sub>e@send\<langle>ts\<rangle>#A\<^sub>s\<^sub>u\<^sub>f \<and> Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t I) \<or>
+     (\<exists>s u. A = A\<^sub>p\<^sub>r\<^sub>e@\<langle>assign: s \<doteq> u\<rangle>#A\<^sub>s\<^sub>u\<^sub>f \<and> Fun c [] \<sqsubseteq> s \<cdot> I \<and> \<not>(Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t (I ` fv u))) \<or>
+     (\<exists>s u. A = A\<^sub>p\<^sub>r\<^sub>e@\<langle>assign: s \<in> u\<rangle>#A\<^sub>s\<^sub>u\<^sub>f \<and> (Fun c [] \<sqsubseteq> s \<cdot> I \<or> Fun c [] \<sqsubseteq> u \<cdot> I))"
+    (is "?X \<or> ?Y \<or> ?Z")
+    using wf\<^sub>s\<^sub>s\<^sub>t_strand_first_Send_var_split[OF 0(2) 2] by force
+
+  show ?thesis using A'(2)
+  proof (elim disjE)
+    assume ?X
+    then obtain ts where ts: "A = A\<^sub>p\<^sub>r\<^sub>e@send\<langle>ts\<rangle>#A\<^sub>s\<^sub>u\<^sub>f" "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t I" by blast
+    hence "I \<Turnstile>\<^sub>s (A\<^sub>p\<^sub>r\<^sub>e@[send\<langle>ts\<rangle>])"
+      using I(1) strand_sem_append_stateful[of "{}" "{}" "A\<^sub>p\<^sub>r\<^sub>e@[send\<langle>ts\<rangle>]" A\<^sub>s\<^sub>u\<^sub>f I] by auto
+    hence "(ik\<^sub>s\<^sub>s\<^sub>t A\<^sub>p\<^sub>r\<^sub>e) \<cdot>\<^sub>s\<^sub>e\<^sub>t I \<turnstile> t \<cdot> I" when "t \<in> set ts" for t
+      using that strand_sem_append_stateful[of "{}" "{}" A\<^sub>p\<^sub>r\<^sub>e "[send\<langle>ts\<rangle>]" I]
+            strand_sem_stateful.simps(2)[of _ _ ts "[]"]
+      unfolding list_all_iff by force
+    hence "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t ik\<^sub>s\<^sub>s\<^sub>t A\<^sub>p\<^sub>r\<^sub>e \<cdot>\<^sub>s\<^sub>e\<^sub>t I"
+      using ts(2) c(1) private_fun_deduct_in_ik by fast
+    hence "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t ik\<^sub>s\<^sub>s\<^sub>t A\<^sub>p\<^sub>r\<^sub>e"
+      using A'(1) const_subterms_subst_cases[of c I "ik\<^sub>s\<^sub>s\<^sub>t A\<^sub>p\<^sub>r\<^sub>e"]
+            ik\<^sub>s\<^sub>s\<^sub>t_fv_subset_wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t[of A\<^sub>p\<^sub>r\<^sub>e]
+      by fast
+    thus ?thesis
+      using ik\<^sub>s\<^sub>s\<^sub>t_trms\<^sub>s\<^sub>s\<^sub>t_subset[of "A\<^sub>p\<^sub>r\<^sub>e"] unfolding ts(1) by fastforce
+  next
+    assume ?Y
+    then obtain s u where su:
+        "A = A\<^sub>p\<^sub>r\<^sub>e@\<langle>assign: s \<doteq> u\<rangle>#A\<^sub>s\<^sub>u\<^sub>f" "Fun c [] \<sqsubseteq> s \<cdot> I" "\<not>(Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t I ` fv u)"
+      by fast
+    hence "s \<cdot> I = u \<cdot> I"
+      using I(1) strand_sem_append_stateful[of "{}" "{}" "A\<^sub>p\<^sub>r\<^sub>e@[\<langle>assign: s \<doteq> u\<rangle>]" A\<^sub>s\<^sub>u\<^sub>f I]
+            strand_sem_append_stateful[of _ _ A\<^sub>p\<^sub>r\<^sub>e "[\<langle>assign: s \<doteq> u\<rangle>]" I]
+      by auto
+    hence "Fun c [] \<sqsubseteq> u" using su(2,3) const_subterm_subst_var_obtain[of c u I] by auto
+    thus ?thesis unfolding su(1) by auto
+  next
+    assume ?Z
+    then obtain s u where su:
+        "A = A\<^sub>p\<^sub>r\<^sub>e@\<langle>assign: s \<in> u\<rangle>#A\<^sub>s\<^sub>u\<^sub>f" "Fun c [] \<sqsubseteq> s \<cdot> I \<or> Fun c [] \<sqsubseteq> u \<cdot> I"
+      by fast
+    hence "(s,u) \<cdot>\<^sub>p I \<in> dbupd\<^sub>s\<^sub>s\<^sub>t A\<^sub>p\<^sub>r\<^sub>e I {}"
+      using I(1) strand_sem_append_stateful[of "{}" "{}" "A\<^sub>p\<^sub>r\<^sub>e@[\<langle>assign: s \<in> u\<rangle>]" A\<^sub>s\<^sub>u\<^sub>f I]
+            strand_sem_append_stateful[of _ _ A\<^sub>p\<^sub>r\<^sub>e "[\<langle>assign: s \<in> u\<rangle>]" I]
+      unfolding db\<^sub>s\<^sub>s\<^sub>t_def by auto
+    then obtain s' u' where su': "insert\<langle>s',u'\<rangle> \<in> set A\<^sub>p\<^sub>r\<^sub>e" "s \<cdot> I = s' \<cdot> I" "u \<cdot> I = u' \<cdot> I"
+      using db\<^sub>s\<^sub>s\<^sub>t_in_cases[of "s \<cdot> I" "u \<cdot> I" A\<^sub>p\<^sub>r\<^sub>e I "[]"] db\<^sub>s\<^sub>s\<^sub>t_set_is_dbupd\<^sub>s\<^sub>s\<^sub>t[of A\<^sub>p\<^sub>r\<^sub>e I "[]"]
+      by fastforce
+
+    have "fv s' \<union> fv u' \<subseteq> wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t A\<^sub>p\<^sub>r\<^sub>e"
+      using su'(1) unfolding wfrestrictedvars\<^sub>s\<^sub>s\<^sub>t_def by force
+    hence "Fun c [] \<sqsubseteq> s' \<or> Fun c [] \<sqsubseteq> u'"
+      using su(2) A'(1) su'(2,3)
+            const_subterm_subst_cases[of c s' I]
+            const_subterm_subst_cases[of c u' I]
+      by auto
+    thus ?thesis using su'(1) unfolding su(1) by force
+  qed
+qed
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_empty_case:
+  assumes "tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D = []"
+  shows "D = []" "F \<noteq> []"
+proof -
+  show "F \<noteq> []" using assms by (auto intro: ccontr)
+
+  have "tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (a#A) \<noteq> []" for a A
+    by (induct F "a#A" rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct) fastforce+
+  thus "D = []" using assms by (cases D) simp_all
+qed
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_elem_length_eq:
+  assumes "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)"
+  shows "length G = length F" 
+using assms by (induct F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct) auto
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_index:
+  assumes "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "i < length F"
+  shows "\<exists>d \<in> set D. G ! i = (pair (F ! i), pair d)"
+using assms
+proof (induction F D arbitrary: i G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
+  case (2 s t F D)
+  obtain d G' where G:
+      "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)"
+      "G = (pair (s,t), pair d)#G'"
+    using "2.prems"(1) by moura
+  show ?case
+    using "2.IH"[OF G(1,2)] "2.prems"(2) G(1,3)
+    by (cases i) auto
+qed simp
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_cons:
+  assumes "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "d \<in> set D"
+  shows "(pair (s,t), pair d)#G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) D)"
+using assms by auto
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_has_pair_lists:
+  assumes "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "g \<in> set G"
+  shows "\<exists>f \<in> set F. \<exists>d \<in> set D. g = (pair f, pair d)"
+using assms
+proof (induction F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
+  case (2 s t F D)
+  obtain d G' where G:
+      "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)"
+      "G = (pair (s,t), pair d)#G'"
+    using "2.prems"(1) by moura
+  show ?case
+    using "2.IH"[OF G(1,2)] "2.prems"(2) G(1,3)
+    by (cases "g \<in> set G'") auto
+qed simp
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_is_pair_lists:
+  assumes "f \<in> set F" "d \<in> set D"
+  shows "\<exists>G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D). (pair f, pair d) \<in> set G"
+  (is "?P F D f d")
+proof -
+  have "\<forall>f \<in> set F. \<forall>d \<in> set D. ?P F D f d"
+  proof (induction F D rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
+    case (2 s t F D)
+    hence IH: "\<forall>f \<in> set F. \<forall>d \<in> set D. ?P F D f d" by metis
+    moreover have "\<forall>d \<in> set D. ?P ((s,t)#F) D (s,t) d"
+    proof
+      fix d assume d: "d \<in> set D"
+      then obtain G where G: "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)"
+        using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_empty_case(1) by force
+      hence "(pair (s, t), pair d)#G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) D)"
+        using d by auto
+      thus "?P ((s,t)#F) D (s,t) d" using d G by auto
+    qed
+    ultimately show ?case by fastforce
+  qed simp
+  thus ?thesis by (metis assms)
+qed
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_db_append_subset:
+  "set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D) \<subseteq> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (D@E))" (is ?A)
+  "set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F E) \<subseteq> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (D@E))" (is ?B)
+proof -
+  show ?A
+  proof (induction F D rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
+    case (2 s t F D)
+    show ?case
+    proof
+      fix G assume "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) D)"
+      then obtain d G' where G':
+          "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "G = (pair (s,t), pair d)#G'"
+        by moura
+      have "d \<in> set (D@E)" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (D@E))" using "2.IH"[OF G'(1)] G'(1,2) by auto
+      thus "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) (D@E))" using G'(3) by auto
+    qed
+  qed simp
+
+  show ?B
+  proof (induction F E rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
+    case (2 s t F E)
+    show ?case
+    proof
+      fix G assume "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) E)"
+      then obtain d G' where G':
+          "d \<in> set E" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F E)" "G = (pair (s,t), pair d)#G'"
+        by moura
+      have "d \<in> set (D@E)" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F (D@E))" using "2.IH"[OF G'(1)] G'(1,2) by auto
+      thus "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F) (D@E))" using G'(3) by auto
+    qed
+  qed simp
+qed
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset:
+  "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D) \<Longrightarrow> trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G \<subseteq> pair ` set F \<union> pair ` set D"
+proof (induction F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
+  case (2 s t F D G)
+  obtain d G' where G:
+      "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "G = (pair (s,t), pair d)#G'"
+    using "2.prems"(1) by moura
+ 
+  show ?case using "2.IH"[OF G(1,2)] G(1,3) by auto
+qed simp
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset':
+  "\<Union>(trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ` set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)) \<subseteq> pair ` set F \<union> pair ` set D"
+using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset by blast
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_vars_subset:
+  "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D) \<Longrightarrow> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s D"
+proof (induction F D arbitrary: G rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
+  case (2 s t F D G)
+  obtain d G' where G:
+      "d \<in> set D" "G' \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)" "G = (pair (s,t), pair d)#G'"
+    using "2.prems"(1) by moura
+ 
+  show ?case using "2.IH"[OF G(1,2)] G(1,3) unfolding pair_def by auto
+qed simp
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_vars_subset': "\<Union>(fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ` set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F D)) \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s D"
+using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_vars_subset[of _ F D] by blast
+
+
+lemma tr_trms_subset:
+  "A' \<in> set (tr A D) \<Longrightarrow> trms\<^sub>s\<^sub>t A' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D"
+proof (induction A D arbitrary: A' rule: tr.induct)
+  case 1 thus ?case by simp
+next
+  case (2 t A D)
+  then obtain A'' where A'': "A' = send\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by moura
+  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "2.IH")
+  thus ?case using A'' by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+next
+  case (3 t A D)
+  then obtain A'' where A'': "A' = receive\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by moura
+  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "3.IH")
+  thus ?case using A'' by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+next
+  case (4 ac t t' A D)
+  then obtain A'' where A'': "A' = \<langle>ac: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" by moura
+  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "4.IH")
+  thus ?case using A'' by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+next
+  case (5 t s A D)
+  hence "A' \<in> set (tr A (List.insert (t,s) D))" by simp
+  hence "trms\<^sub>s\<^sub>t A' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set (List.insert (t, s) D)"
+    by (metis "5.IH")
+  thus ?case by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+next
+  case (6 t s A D)
+  from 6 obtain Di A'' B C where A'':
+      "Di \<in> set (subseqs D)" "A'' \<in> set (tr A [d\<leftarrow>D. d \<notin> set Di])" "A' = (B@C)@A''"
+      "B = map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di"
+      "C = map (\<lambda>d. Inequality [] [(pair (t,s) , pair d)]) [d\<leftarrow>D. d \<notin> set Di]"
+    by moura
+  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set [d\<leftarrow>D. d \<notin> set Di]"
+    by (metis "6.IH")
+  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t (Delete t s#A) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (Delete t s#A) \<union> pair ` set D"
+    by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+  moreover have "trms\<^sub>s\<^sub>t (B@C) \<subseteq> insert (pair (t,s)) (pair ` set D)"
+    using A''(4,5) subseqs_set_subset[OF A''(1)] by auto
+  moreover have "pair (t,s) \<in> pair ` setops\<^sub>s\<^sub>s\<^sub>t (Delete t s#A)" by (simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+  ultimately show ?case using A''(3) trms\<^sub>s\<^sub>t_append[of "B@C" A'] by auto
+next
+  case (7 ac t s A D)
+  from 7 obtain d A'' where A'':
+      "d \<in> set D" "A'' \<in> set (tr A D)"
+      "A' = \<langle>ac: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t#A''"
+    by moura
+  hence "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis "7.IH")
+  moreover have "trms\<^sub>s\<^sub>t A' = {pair (t,s), pair d} \<union> trms\<^sub>s\<^sub>t A''"
+    using A''(1,3) by auto
+  ultimately show ?case using A''(1) by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+next
+  case (8 X F F' A D)
+  from 8 obtain A'' where A'':
+      "A'' \<in> set (tr A D)" "A' = (map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))@A''"
+    by moura
+
+  define B where "B \<equiv> \<Union>(trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ` set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))"
+
+  have "trms\<^sub>s\<^sub>t A'' \<subseteq> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D" by (metis A''(1) "8.IH")
+  hence "trms\<^sub>s\<^sub>t A' \<subseteq> B \<union> trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` set D"
+    using A'' B_def by auto
+  moreover have "B \<subseteq> pair ` set F' \<union> pair ` set D"
+    using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_trms_subset'[of F' D] B_def by simp
+  moreover have "pair ` setops\<^sub>s\<^sub>s\<^sub>t (\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: F'\<rangle>#A) = pair ` set F' \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A"
+    by (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def)
+  ultimately show ?case by auto
+qed
+
+lemma tr_vars_subset:
+  assumes "A' \<in> set (tr A D)"
+  shows "fv\<^sub>s\<^sub>t A' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t A \<union> (\<Union>(t,t') \<in> set D. fv t \<union> fv t')" (is ?P)
+  and "bvars\<^sub>s\<^sub>t A' \<subseteq> bvars\<^sub>s\<^sub>s\<^sub>t A" (is ?Q)
+proof -
+  show ?P using assms
+  proof (induction A arbitrary: A' D rule: strand_sem_stateful_induct)
+    case (ConsIn A' D ac t s A)
+    then obtain A'' d where *:
+        "d \<in> set D" "A' = \<langle>ac: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t#A''"
+        "A'' \<in> set (tr A D)"
+      by moura
+    hence "fv\<^sub>s\<^sub>t A'' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t A \<union> (\<Union>(t,t')\<in>set D. fv t \<union> fv t')" by (metis ConsIn.IH)
+    thus ?case using * unfolding pair_def by auto
+  next
+    case (ConsDel A' D t s A)
+    define Dfv where "Dfv \<equiv> \<lambda>D::('fun,'var) dbstatelist. (\<Union>(t,t')\<in>set D. fv t \<union> fv t')"
+    define fltD where "fltD \<equiv> \<lambda>Di. filter (\<lambda>d. d \<notin> set Di) D"
+    define constr where
+      "constr \<equiv> \<lambda>Di. (map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@
+                      (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) (fltD Di))"
+    from ConsDel obtain A'' Di where *:
+        "Di \<in> set (subseqs D)" "A' = (constr Di)@A''" "A'' \<in> set (tr A (fltD Di))"
+      unfolding constr_def fltD_def by moura
+    hence "fv\<^sub>s\<^sub>t A'' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t A \<union> Dfv (fltD Di)"
+      unfolding Dfv_def constr_def fltD_def by (metis ConsDel.IH)
+    moreover have "Dfv (fltD Di) \<subseteq> Dfv D" unfolding Dfv_def constr_def fltD_def by auto
+    moreover have "Dfv Di \<subseteq> Dfv D"
+      using subseqs_set_subset(1)[OF *(1)] unfolding Dfv_def constr_def fltD_def by fast
+    moreover have "fv\<^sub>s\<^sub>t (constr Di) \<subseteq> fv t \<union> fv s \<union> (Dfv Di \<union> Dfv (fltD Di))"
+      unfolding Dfv_def constr_def fltD_def pair_def by auto
+    moreover have "fv\<^sub>s\<^sub>s\<^sub>t (Delete t s#A) = fv t \<union> fv s \<union> fv\<^sub>s\<^sub>s\<^sub>t A" by auto
+    moreover have "fv\<^sub>s\<^sub>t A' = fv\<^sub>s\<^sub>t (constr Di) \<union> fv\<^sub>s\<^sub>t A''" using * by force
+    ultimately have "fv\<^sub>s\<^sub>t A' \<subseteq> fv\<^sub>s\<^sub>s\<^sub>t (Delete t s#A) \<union> Dfv D" by auto
+    thus ?case unfolding Dfv_def fltD_def constr_def by simp
+  next
+    case (ConsNegChecks A' D X F F' A)
+    then obtain A'' where A'':
+        "A'' \<in> set (tr A D)" "A' = (map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))@A''"
+      by moura
+
+    define B where "B \<equiv> \<Union>(fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ` set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))"
+
+    have 1: "fv\<^sub>s\<^sub>t (map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D)) \<subseteq> (B \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) - set X"
+      unfolding B_def by auto
+
+    have 2: "B \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s D"
+      using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_vars_subset'[of F' D]
+      unfolding B_def by simp
+
+    have "fv\<^sub>s\<^sub>t A' \<subseteq> ((fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s D \<union> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F) - set X) \<union> fv\<^sub>s\<^sub>t A''"
+      using 1 2 A''(2) by fastforce
+    thus ?case using ConsNegChecks.IH[OF A''(1)] by auto
+  qed fastforce+
+
+  show ?Q using assms by (induct A arbitrary: A' D rule: strand_sem_stateful_induct) fastforce+
+qed
+
+lemma tr_vars_disj:
+  assumes "A' \<in> set (tr A D)" "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+    and "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+  shows "fv\<^sub>s\<^sub>t A' \<inter> bvars\<^sub>s\<^sub>t A' = {}"
+using assms tr_vars_subset by fast
+
+
+lemma tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_alt_def:
+  "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p S =
+    ((\<forall>ac t t'. Equality ac t t' \<in> set S \<and> (\<exists>\<delta>. Unifier \<delta> t t') \<longrightarrow> \<Gamma> t = \<Gamma> t') \<and>
+     (\<forall>X F F'. NegChecks X F F' \<in> set S \<longrightarrow> (
+        (F' = [] \<and> (\<forall>x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F-set X. \<exists>a. \<Gamma> (Var x) = TAtom a)) \<or>
+        (\<forall>f T. Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set F') \<longrightarrow>
+                  T = [] \<or> (\<exists>s \<in> set T. s \<notin> Var ` set X)))))"
+  (is "?P S = ?Q S")
+proof
+  show "?P S \<Longrightarrow> ?Q S"
+  proof (induction S)
+    case (Cons x S) thus ?case by (cases x) auto
+  qed simp
+
+  show "?Q S \<Longrightarrow> ?P S"
+  proof (induction S)
+    case (Cons x S) thus ?case by (cases x) auto
+  qed simp
+qed
+
+lemma tfr\<^sub>s\<^sub>s\<^sub>t_Nil[simp]: "tfr\<^sub>s\<^sub>s\<^sub>t []"
+by (simp add: tfr\<^sub>s\<^sub>s\<^sub>t_def setops\<^sub>s\<^sub>s\<^sub>t_def)
+
+lemma tfr\<^sub>s\<^sub>s\<^sub>t_append: "tfr\<^sub>s\<^sub>s\<^sub>t (A@B) \<Longrightarrow> tfr\<^sub>s\<^sub>s\<^sub>t A"
+proof -
+  assume assms: "tfr\<^sub>s\<^sub>s\<^sub>t (A@B)"
+  let ?M = "trms\<^sub>s\<^sub>s\<^sub>t A \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t A"
+  let ?N = "trms\<^sub>s\<^sub>s\<^sub>t (A@B) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (A@B)"
+  let ?P = "\<lambda>t t'. \<forall>x \<in> fv t \<union> fv t'. \<exists>a. \<Gamma> (Var x) = Var a"
+  let ?Q = "\<lambda>X t t'. X = [] \<or> (\<forall>x \<in> (fv t \<union> fv t')-set X. \<exists>a. \<Gamma> (Var x) = Var a)"
+  have *: "SMP ?M - Var`\<V> \<subseteq> SMP ?N - Var`\<V>" "?M \<subseteq> ?N"
+    using SMP_mono[of ?M ?N] setops\<^sub>s\<^sub>s\<^sub>t_append[of A B]
+    by auto
+  { fix s t assume **: "tfr\<^sub>s\<^sub>e\<^sub>t ?N" "s \<in> SMP ?M - Var`\<V>" "t \<in> SMP ?M - Var`\<V>" "(\<exists>\<delta>. Unifier \<delta> s t)"
+    hence "s \<in> SMP ?N - Var`\<V>" "t \<in> SMP ?N - Var`\<V>" using * by auto
+    hence "\<Gamma> s = \<Gamma> t" using **(1,4) unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
+  } moreover have "\<forall>t \<in> ?N. wf\<^sub>t\<^sub>r\<^sub>m t \<Longrightarrow> \<forall>t \<in> ?M. wf\<^sub>t\<^sub>r\<^sub>m t" using * by blast
+  ultimately have "tfr\<^sub>s\<^sub>e\<^sub>t ?N \<Longrightarrow> tfr\<^sub>s\<^sub>e\<^sub>t ?M" unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
+  hence "tfr\<^sub>s\<^sub>e\<^sub>t ?M" using assms unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by metis
+  thus "tfr\<^sub>s\<^sub>s\<^sub>t A" using assms unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by simp
+qed
+
+lemma tfr\<^sub>s\<^sub>s\<^sub>t_append': "tfr\<^sub>s\<^sub>s\<^sub>t (A@B) \<Longrightarrow> tfr\<^sub>s\<^sub>s\<^sub>t B"
+proof -
+  assume assms: "tfr\<^sub>s\<^sub>s\<^sub>t (A@B)"
+  let ?M = "trms\<^sub>s\<^sub>s\<^sub>t B \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t B"
+  let ?N = "trms\<^sub>s\<^sub>s\<^sub>t (A@B) \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t (A@B)"
+  let ?P = "\<lambda>t t'. \<forall>x \<in> fv t \<union> fv t'. \<exists>a. \<Gamma> (Var x) = Var a"
+  let ?Q = "\<lambda>X t t'. X = [] \<or> (\<forall>x \<in> (fv t \<union> fv t')-set X. \<exists>a. \<Gamma> (Var x) = Var a)"
+  have *: "SMP ?M - Var`\<V> \<subseteq> SMP ?N - Var`\<V>" "?M \<subseteq> ?N"
+    using SMP_mono[of ?M ?N] setops\<^sub>s\<^sub>s\<^sub>t_append[of A B]
+    by auto
+  { fix s t assume **: "tfr\<^sub>s\<^sub>e\<^sub>t ?N" "s \<in> SMP ?M - Var`\<V>" "t \<in> SMP ?M - Var`\<V>" "(\<exists>\<delta>. Unifier \<delta> s t)"
+    hence "s \<in> SMP ?N - Var`\<V>" "t \<in> SMP ?N - Var`\<V>" using * by auto
+    hence "\<Gamma> s = \<Gamma> t" using **(1,4) unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
+  } moreover have "\<forall>t \<in> ?N. wf\<^sub>t\<^sub>r\<^sub>m t \<Longrightarrow> \<forall>t \<in> ?M. wf\<^sub>t\<^sub>r\<^sub>m t" using * by blast
+  ultimately have "tfr\<^sub>s\<^sub>e\<^sub>t ?N \<Longrightarrow> tfr\<^sub>s\<^sub>e\<^sub>t ?M" unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
+  hence "tfr\<^sub>s\<^sub>e\<^sub>t ?M" using assms unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by metis
+  thus "tfr\<^sub>s\<^sub>s\<^sub>t B" using assms unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def by simp
+qed
+
+lemma tfr\<^sub>s\<^sub>s\<^sub>t_cons: "tfr\<^sub>s\<^sub>s\<^sub>t (a#A) \<Longrightarrow> tfr\<^sub>s\<^sub>s\<^sub>t A"
+using tfr\<^sub>s\<^sub>s\<^sub>t_append'[of "[a]" A] by simp
+
+lemma tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst:
+  assumes s: "tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p s"
+    and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p s) \<inter> range_vars \<theta> = {}"
+  shows "tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (s \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)"
+proof (cases s)
+  case (Equality a t t')
+  thus ?thesis
+  proof (cases "\<exists>\<delta>. Unifier \<delta> (t \<cdot> \<theta>) (t' \<cdot> \<theta>)")
+    case True
+    hence "\<exists>\<delta>. Unifier \<delta> t t'" by (metis subst_subst_compose[of _ \<theta>])
+    moreover have "\<Gamma> t = \<Gamma> (t \<cdot> \<theta>)" "\<Gamma> t' = \<Gamma> (t' \<cdot> \<theta>)" by (metis wt_subst_trm''[OF assms(2)])+
+    ultimately have "\<Gamma> (t \<cdot> \<theta>) = \<Gamma> (t' \<cdot> \<theta>)" using s Equality by simp
+    thus ?thesis using Equality True by simp
+  qed simp
+next
+  case (NegChecks X F G)
+  let ?P = "\<lambda>F G. G = [] \<and> (\<forall>x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F-set X. \<exists>a. \<Gamma> (Var x) = TAtom a)"
+  let ?Q = "\<lambda>F G. \<forall>f T. Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<union> pair ` set G) \<longrightarrow>
+                          T = [] \<or> (\<exists>s \<in> set T. s \<notin> Var ` set X)"
+  let ?\<theta> = "rm_vars (set X) \<theta>"
+
+  have "?P F G \<or> ?Q F G" using NegChecks assms(1) by simp
+  hence "?P (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>) (G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>) \<or> ?Q (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>) (G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>)"
+  proof
+    assume *: "?P F G"
+    have "G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta> = []" using * by simp
+    moreover have "\<exists>a. \<Gamma> (Var x) = TAtom a" when x: "x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>) - set X" for x
+    proof -
+      obtain t t' where t: "(t,t') \<in> set (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>)" "x \<in> fv t \<union> fv t' - set X"
+        using x(1) by auto
+      then obtain u u' where u: "(u,u') \<in> set F" "u \<cdot> ?\<theta> = t" "u' \<cdot> ?\<theta> = t'"
+        unfolding subst_apply_pairs_def by auto
+      obtain y where y: "y \<in> fv u \<union> fv u' - set X" "x \<in> fv (?\<theta> y)"
+        using t(2) u(2,3) rm_vars_fv_obtain by fast
+      hence a: "\<exists>a. \<Gamma> (Var y) = TAtom a" using u * by auto
+      
+      have a': "\<Gamma> (Var y) = \<Gamma> (?\<theta> y)"
+        using wt_subst_trm''[OF wt_subst_rm_vars[OF \<theta>(1), of "set X"], of "Var y"]
+        by simp
+
+      have "(\<exists>z. ?\<theta> y = Var z) \<or> (\<exists>c. ?\<theta> y = Fun c [])"
+      proof (cases "?\<theta> y \<in> subst_range \<theta>")
+        case True thus ?thesis
+          using a a' \<theta>(2) const_type_inv_wf
+          by (cases "?\<theta> y") fastforce+
+      qed fastforce
+      hence "?\<theta> y = Var x" using y(2) by fastforce
+      hence "\<Gamma> (Var x) = \<Gamma> (Var y)" using a' by simp
+      thus ?thesis using a by presburger
+    qed
+    ultimately show ?thesis by simp
+  next
+    assume *: "?Q F G"
+    have **: "set X \<inter> range_vars ?\<theta> = {}"
+      using \<theta>(3) NegChecks rm_vars_img_fv_subset[of "set X" \<theta>] by auto
+    have "?Q (F \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>) (G \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ?\<theta>)"
+      using ineq_subterm_inj_cond_subst[OF ** *]
+            trms\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst[of F "rm_vars (set X) \<theta>"]
+            subst_apply_pairs_pair_image_subst[of G "rm_vars (set X) \<theta>"]
+      by (metis (no_types, lifting) image_Un)
+    thus ?thesis by simp
+  qed
+  thus ?thesis using NegChecks by simp
+qed simp_all
+
+lemma tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_all_wt_subst_apply:
+  assumes S: "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p S"
+    and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "bvars\<^sub>s\<^sub>s\<^sub>t S \<inter> range_vars \<theta> = {}"
+  shows "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p (S \<cdot>\<^sub>s\<^sub>s\<^sub>t \<theta>)"
+proof -
+  have "set (bvars\<^sub>s\<^sub>s\<^sub>t\<^sub>p s) \<inter> range_vars \<theta> = {}" when "s \<in> set S" for s
+    using that \<theta>(3) unfolding bvars\<^sub>s\<^sub>s\<^sub>t_def range_vars_alt_def by fastforce
+  thus ?thesis
+    using tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst[OF _ \<theta>(1,2)] S
+    unfolding list_all_iff
+    by (auto simp add: subst_apply_stateful_strand_def)
+qed
+
 lemma tfr_setops_if_tfr_trms:
   assumes "Pair \<notin> \<Union>(funs_term ` SMP (trms\<^sub>s\<^sub>s\<^sub>t S))"
     and "\<forall>p. Ana (pair p) = ([], [])"
@@ -920,8 +994,15 @@ proof -
   show ?thesis using 0 1 2 3 unfolding tfr\<^sub>s\<^sub>e\<^sub>t_def by metis
 qed
 
+end
+
 
 subsection \<open>The Typing Result for Stateful Constraints\<close>
+
+subsubsection \<open>Correctness of the Constraint Reduction\<close>
+context stateful_typed_model
+begin
+
 context
 begin
 private lemma tr_wf':
@@ -940,18 +1021,19 @@ proof -
   proof (induction A arbitrary: A' D X rule: wf'\<^sub>s\<^sub>s\<^sub>t.induct)
     case 1 thus ?case by simp
   next
-    case (2 X t A A')
-    then obtain A'' where A'': "A' = receive\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" "fv t \<subseteq> X"
+    case (2 X ts A A')
+    then obtain A'' where A'': "A' = receive\<langle>ts\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)" "fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<subseteq> X"
       by moura
     have *: "wf'\<^sub>s\<^sub>s\<^sub>t X A" "\<forall>(s,s') \<in> set D. fv s \<union> fv s' \<subseteq> X" "P D A"
       using 2(1,2,3,4) apply (force, force)
       using 2(5) unfolding P_def by force
     show ?case using "2.IH"[OF A''(2) *] A''(1,3) by simp
   next
-    case (3 X t A A')
-    then obtain A'' where A'': "A' = send\<langle>t\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)"
+    case (3 X ts A A')
+    then obtain A'' where A'': "A' = send\<langle>ts\<rangle>\<^sub>s\<^sub>t#A''" "A'' \<in> set (tr A D)"
       by moura
-    have *: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> fv t) A" "\<forall>(s,s') \<in> set D. fv s \<union> fv s' \<subseteq> X \<union> fv t" "P D A"
+    have *: "wf'\<^sub>s\<^sub>s\<^sub>t (X \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)) A"
+            "\<forall>(s,s') \<in> set D. fv s \<union> fv s' \<subseteq> X \<union> fv\<^sub>s\<^sub>e\<^sub>t (set ts)" "P D A"
       using 3(1,2,3,4) apply (force, force)
       using 3(5) unfolding P_def by force
     show ?case using "3.IH"[OF A''(2) *] A''(1) by simp
@@ -1049,6 +1131,503 @@ using tr_wf'[OF _ _ _ _ assms(1)]
       tr_vars_disj[OF assms(1)]
       assms(2)
 by fastforce+
+
+private lemma fun_pair_ineqs:
+  assumes "d \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<theta> \<noteq> d' \<cdot>\<^sub>p \<I>"
+  shows "pair d \<cdot> \<delta> \<cdot> \<theta> \<noteq> pair d' \<cdot> \<I>"
+proof -
+  have "d \<cdot>\<^sub>p (\<delta> \<circ>\<^sub>s \<theta>) \<noteq> d' \<cdot>\<^sub>p \<I>" using assms subst_pair_compose by metis
+  hence "pair d \<cdot> (\<delta> \<circ>\<^sub>s \<theta>) \<noteq> pair d' \<cdot> \<I>" using fun_pair_eq_subst by metis
+  thus ?thesis by simp
+qed
+
+private lemma tr_Delete_constr_iff_aux1:
+  assumes "\<forall>d \<in> set Di. (t,s) \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>"
+  and "\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>"
+  shows "\<lbrakk>M; (map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@
+             (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di])\<rbrakk>\<^sub>d \<I>"
+proof -
+  from assms(2) have
+    "\<lbrakk>M; map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di]\<rbrakk>\<^sub>d \<I>"
+  proof (induction D)
+    case (Cons d D)
+    hence IH: "\<lbrakk>M; map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D . d \<notin> set Di]\<rbrakk>\<^sub>d \<I>" by auto
+    thus ?case
+    proof (cases "d \<in> set Di")
+      case False
+      hence "(t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>" using Cons by simp
+      hence "pair (t,s) \<cdot> \<I> \<noteq> pair d \<cdot> \<I>" using fun_pair_eq_subst by metis
+      moreover have "\<And>t (\<delta>::('fun,'var) subst). subst_domain \<delta> = {} \<Longrightarrow> t \<cdot> \<delta> = t" by auto
+      ultimately have "\<forall>\<delta>. subst_domain \<delta> = {} \<longrightarrow> pair (t,s) \<cdot> \<delta> \<cdot> \<I> \<noteq> pair d \<cdot> \<delta> \<cdot> \<I>" by metis
+      thus ?thesis using IH by (simp add: ineq_model_def)
+    qed simp
+  qed simp
+  moreover {
+    fix B assume "\<lbrakk>M; B\<rbrakk>\<^sub>d \<I>" 
+    with assms(1) have "\<lbrakk>M; (map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@B\<rbrakk>\<^sub>d \<I>"
+      unfolding pair_def by (induction Di) auto
+  } ultimately show ?thesis by metis
+qed
+
+private lemma tr_Delete_constr_iff_aux2:
+  assumes "ground M"
+  and "\<lbrakk>M; (map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@
+           (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di])\<rbrakk>\<^sub>d \<I>"
+  shows "(\<forall>d \<in> set Di. (t,s) \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>) \<and> (\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>)"
+proof -
+  let ?c1 = "map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di"
+  let ?c2 = "map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di]"
+
+  have "M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = M" using assms(1) subst_all_ground_ident by metis
+  moreover have "ik\<^sub>s\<^sub>t ?c1 = {}" by auto
+  ultimately have *:
+       "\<lbrakk>M; map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di\<rbrakk>\<^sub>d \<I>"
+       "\<lbrakk>M; map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di]\<rbrakk>\<^sub>d \<I>"
+    using strand_sem_split(3,4)[of M ?c1 ?c2 \<I>] assms(2) by auto
+  
+  from *(1) have 1: "\<forall>d \<in> set Di. (t,s) \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>" unfolding pair_def by (induct Di) auto
+  from *(2) have 2: "\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>"
+  proof (induction D arbitrary: Di)
+    case (Cons d D) thus ?case
+    proof (cases "d \<in> set Di")
+      case False
+      hence IH: "\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>" using Cons by force
+      have "\<And>t (\<delta>::('fun,'var) subst). subst_domain \<delta> = {} \<and> ground (subst_range \<delta>) \<longleftrightarrow> \<delta> = Var"
+        by auto
+      moreover have "ineq_model \<I> [] [((pair (t,s)), (pair d))]"
+        using False Cons.prems by simp
+      ultimately have "pair (t,s) \<cdot> \<I> \<noteq> pair d \<cdot> \<I>" by (simp add: ineq_model_def)
+      thus ?thesis using IH unfolding pair_def by force
+    qed simp
+  qed simp
+
+  show ?thesis by (metis 1 2)
+qed
+
+private lemma tr_Delete_constr_iff:
+  fixes \<I>::"('fun,'var) subst"
+  assumes "ground M"
+  shows "set Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>} \<and> (t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - set Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<longleftrightarrow>
+         \<lbrakk>M; (map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@
+             (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di])\<rbrakk>\<^sub>d \<I>"
+proof -
+  let ?constr = "(map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@
+                 (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di])"
+  { assume "set Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>}" "(t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - set Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+    hence "\<forall>d \<in> set Di. (t,s) \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>" "\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>"
+      by auto
+    hence "\<lbrakk>M; ?constr\<rbrakk>\<^sub>d \<I>" using tr_Delete_constr_iff_aux1 by simp
+  } moreover {
+    assume "\<lbrakk>M; ?constr\<rbrakk>\<^sub>d \<I>"
+    hence "\<forall>d \<in> set Di. (t,s) \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>" "\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>"
+      using assms tr_Delete_constr_iff_aux2 by auto
+    hence "set Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>} \<and> (t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - set Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>" by force
+  } ultimately show ?thesis by metis
+qed
+
+private lemma tr_NotInSet_constr_iff:
+  fixes \<I>::"('fun,'var) subst"
+  assumes "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> set X = {}"
+  shows "(\<forall>\<delta>. subst_domain \<delta> = set X \<and> ground (subst_range \<delta>) \<longrightarrow> (t,s) \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>)
+          \<longleftrightarrow> \<lbrakk>M; map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D\<rbrakk>\<^sub>d \<I>"
+proof -
+  { assume "\<forall>\<delta>. subst_domain \<delta> = set X \<and> ground (subst_range \<delta>) \<longrightarrow> (t,s) \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+    with assms have "\<lbrakk>M; map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D\<rbrakk>\<^sub>d \<I>"
+    proof (induction D)
+      case (Cons d D)
+      obtain t' s' where d: "d = (t',s')" by moura
+      have "\<lbrakk>M; map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D\<rbrakk>\<^sub>d \<I>"
+           "map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) (d#D) =
+            \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t#map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D"
+        using Cons by auto
+      moreover have
+          "\<forall>\<delta>. subst_domain \<delta> = set X \<and> ground (subst_range \<delta>) \<longrightarrow> pair (t, s) \<cdot> \<delta> \<cdot> \<I> \<noteq> pair d \<cdot> \<I>"
+        using fun_pair_ineqs[of \<I> _  "(t,s)" \<I> d] Cons.prems(2) by auto
+      moreover have "(fv t' \<union> fv s') \<inter> set X = {}" using Cons.prems(1) d by auto
+      hence "\<forall>\<delta>. subst_domain \<delta> = set X \<longrightarrow> pair d \<cdot> \<delta> = pair d" using d unfolding pair_def by auto
+      ultimately show ?case by (simp add: ineq_model_def)
+    qed simp
+  } moreover {
+    fix \<delta>::"('fun,'var) subst"
+    assume "\<lbrakk>M; map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D\<rbrakk>\<^sub>d \<I>"
+      and \<delta>: "subst_domain \<delta> = set X" "ground (subst_range \<delta>)"
+    with assms have "(t,s) \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+    proof (induction D)
+      case (Cons d D)
+      obtain t' s' where d: "d = (t',s')" by moura
+      have "(t,s) \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+           "pair (t,s) \<cdot> \<delta> \<cdot> \<I> \<noteq> pair d \<cdot> \<delta> \<cdot> \<I>"
+        using Cons d by (auto simp add: ineq_model_def simp del: subst_range.simps)
+      moreover have "pair d \<cdot> \<delta> = pair d"
+        using Cons.prems(1) fun_pair_subst[of d \<delta>] d \<delta>(1) unfolding pair_def by auto
+      ultimately show ?case unfolding pair_def by force
+    qed simp
+  } ultimately show ?thesis by metis
+qed
+
+lemma tr_NegChecks_constr_iff:
+  "(\<forall>G\<in>set L. ineq_model \<I> X (F@G)) \<longleftrightarrow> \<lbrakk>M; map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) L\<rbrakk>\<^sub>d \<I>" (is ?A)
+  "negchecks_model \<I> D X F F' \<longleftrightarrow> \<lbrakk>M; D; [\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: F'\<rangle>]\<rbrakk>\<^sub>s \<I>" (is ?B)
+proof -
+  show ?A by (induct L) auto
+  show ?B by simp
+qed
+
+lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_sem_equiv:
+  fixes \<I>::"('fun,'var) subst"
+  assumes "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> set X = {}"
+  shows "negchecks_model \<I> (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) X F F' \<longleftrightarrow>
+         (\<forall>G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D). ineq_model \<I> X (F@G))"
+proof -
+  define P where
+    "P \<equiv> \<lambda>\<delta>::('fun,'var) subst. subst_domain \<delta> = set X \<and> ground (subst_range \<delta>)" 
+
+  define Ineq where
+    "Ineq \<equiv> \<lambda>(\<delta>::('fun,'var) subst) F. \<exists>(s,t) \<in> set F. s \<cdot> \<delta> \<circ>\<^sub>s \<I> \<noteq> t \<cdot> \<delta> \<circ>\<^sub>s \<I>"
+
+  define Ineq' where
+    "Ineq' \<equiv> \<lambda>(\<delta>::('fun,'var) subst) F. \<exists>(s,t) \<in> set F. s \<cdot> \<delta> \<circ>\<^sub>s \<I> \<noteq> t \<cdot> \<I>"
+  
+  define Notin where
+    "Notin \<equiv> \<lambda>(\<delta>::('fun,'var) subst) D F'. \<exists>(s,t) \<in> set F'. (s,t) \<cdot>\<^sub>p \<delta> \<circ>\<^sub>s \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+
+  have sublmm:
+      "((s,t) \<cdot>\<^sub>p \<delta> \<circ>\<^sub>s \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) \<longleftrightarrow> (list_all (\<lambda>d. Ineq' \<delta> [(pair (s,t),pair d)]) D)"
+    for s t \<delta> D
+    unfolding pair_def by (induct D) (auto simp add: Ineq'_def)
+
+  have "Notin \<delta> D F' \<longleftrightarrow> (\<forall>G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D). Ineq' \<delta> G)"
+    (is "?A \<longleftrightarrow> ?B")
+    when "P \<delta>" for \<delta>
+  proof
+    show "?A \<Longrightarrow> ?B"
+    proof (induction F' D rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
+      case (2 s t F' D)
+      show ?case
+      proof (cases "Notin \<delta> D F'")
+        case False
+        hence "(s,t) \<cdot>\<^sub>p \<delta> \<circ>\<^sub>s \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+          using "2.prems"
+          by (auto simp add: Notin_def)
+        hence "pair (s,t) \<cdot> \<delta> \<circ>\<^sub>s \<I> \<noteq> pair d \<cdot> \<I>" when "d \<in> set D" for d
+          using that sublmm Ball_set[of D "\<lambda>d. Ineq' \<delta> [(pair (s,t), pair d)]"]
+          by (simp add: Ineq'_def)
+        moreover have "\<exists>d \<in> set D. \<exists>G'. G = (pair (s,t), pair d)#G'"
+          when "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F') D)" for G
+          using that tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_index[OF that, of 0] by force
+        ultimately show ?thesis by (simp add: Ineq'_def)
+      qed (auto dest: "2.IH" simp add: Ineq'_def)
+    qed (simp add: Notin_def)
+
+    have "\<not>?A \<Longrightarrow> \<not>?B"
+    proof (induction F' D rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
+      case (2 s t F' D)
+      hence "\<not>Notin \<delta> D F'" "D \<noteq> []" unfolding Notin_def by auto
+      then obtain G where G: "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D)" "\<not>Ineq' \<delta> G"
+        using "2.IH" by (cases D) auto
+
+      obtain d where d: "d \<in> set D" "pair (s,t) \<cdot> \<delta> \<circ>\<^sub>s \<I> = pair d \<cdot> \<I>"
+        using "2.prems"
+        unfolding pair_def by (auto simp add: Notin_def)
+      thus ?case
+        using G(2) tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_cons[OF G(1) d(1)]
+        by (auto simp add: Ineq'_def)
+    qed (simp add: Ineq'_def)
+    thus "?B \<Longrightarrow> ?A" by metis
+  qed
+  hence *: "(\<forall>\<delta>. P \<delta> \<longrightarrow> Ineq \<delta> F \<or> Notin \<delta> D F') \<longleftrightarrow>
+            (\<forall>G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D). \<forall>\<delta>. P \<delta> \<longrightarrow> Ineq \<delta> F \<or> Ineq' \<delta> G)"
+    by auto
+
+  have "t \<cdot> \<delta> = t"
+    when "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D)" "(s,t) \<in> set G" "P \<delta>"
+    for \<delta> s t G
+    using assms that(3) tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_has_pair_lists[OF that(1,2)]
+    unfolding pair_def by (fastforce simp add: P_def)
+  hence **: "Ineq' \<delta> G = Ineq \<delta> G"
+    when "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D)" "P \<delta>"
+    for \<delta> G
+    using that unfolding Ineq_def Ineq'_def by force
+
+  have ***: "negchecks_model \<I> (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) X F F' \<longleftrightarrow> (\<forall>\<delta>. P \<delta> \<longrightarrow> Ineq \<delta> F \<or> Notin \<delta> D F')"
+    unfolding P_def Ineq_def Notin_def negchecks_model_def by blast
+
+  have "ineq_model \<I> X (F@G) \<longleftrightarrow> (\<forall>\<delta>. P \<delta> \<longrightarrow> Ineq \<delta> (F@G))" for G
+    unfolding P_def Ineq_def ineq_model_def by blast
+  hence ****: "ineq_model \<I> X (F@G) \<longleftrightarrow> (\<forall>\<delta>. P \<delta> \<longrightarrow> Ineq \<delta> F \<or> Ineq \<delta> G)" for G
+    unfolding Ineq_def by fastforce
+
+  show ?thesis
+    using * ** *** **** by simp
+qed
+
+lemma tr_sem_equiv':
+  assumes "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+    and "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+    and "ground M"
+    and \<I>: "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
+  shows "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I> \<longleftrightarrow> (\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>)" (is "?P \<longleftrightarrow> ?Q")
+proof
+  have \<I>_grounds: "\<And>t. fv (t \<cdot> \<I>) = {}" by (rule interpretation_grounds[OF \<I>])
+  have "\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>" when ?P using that assms(1,2,3)
+  proof (induction A arbitrary: D rule: strand_sem_stateful_induct)
+    case (ConsRcv M D ts A)
+    have "\<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
+         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground ((set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M)"
+      using \<I> ConsRcv.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
+    then obtain A' where A': "A' \<in> set (tr A D)" "\<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; A'\<rbrakk>\<^sub>d \<I>" by (metis ConsRcv.IH)
+    thus ?case by auto
+  next
+    case (ConsSnd M D ts A)
+    have "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
+         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
+      and *: "\<forall>t \<in> set ts. M \<turnstile> t \<cdot> \<I>"
+      using \<I> ConsSnd.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
+    then obtain A' where A': "A' \<in> set (tr A D)" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>" by (metis ConsSnd.IH)
+    thus ?case using * by auto
+  next
+    case (ConsEq M D ac t t' A)
+    have "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
+         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
+      and *: "t \<cdot> \<I> = t' \<cdot> \<I>"
+      using \<I> ConsEq.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
+    then obtain A' where A': "A' \<in> set (tr A D)" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>" by (metis ConsEq.IH)
+    thus ?case using * by auto
+  next
+    case (ConsIns M D t s A)
+    have "\<lbrakk>M; set (List.insert (t,s) D) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
+         "\<forall>(t,t') \<in> set (List.insert (t,s) D). (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
+      using ConsIns.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
+    then obtain A' where A': "A' \<in> set (tr A (List.insert (t,s) D))" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
+      by (metis ConsIns.IH)
+    thus ?case by auto
+  next
+    case (ConsDel M D t s A)
+    have *: "\<lbrakk>M; (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {(t,s) \<cdot>\<^sub>p \<I>}; A\<rbrakk>\<^sub>s \<I>"
+            "\<forall>(t,t')\<in>set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+            "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
+      using ConsDel.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
+    then obtain Di where Di:
+        "Di \<subseteq> set D" "Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>}" "(t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+      using subset_subst_pairs_diff_exists'[of "set D"] by moura
+    hence **: "(set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {(t,s) \<cdot>\<^sub>p \<I>} = (set D - Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>" by blast
+
+    obtain Di' where Di': "set Di' = Di" "Di' \<in> set (subseqs D)"
+      using subset_sublist_exists[OF Di(1)] by moura
+    hence ***: "(set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {(t,s) \<cdot>\<^sub>p \<I>} = (set [d\<leftarrow>D. d \<notin> set Di'] \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>)"
+      using Di ** by auto
+    
+    define constr where "constr \<equiv>
+        map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di'@
+        map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di']"
+    
+    have ****: "\<forall>(t,t')\<in>set [d\<leftarrow>D. d \<notin> set Di']. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+      using *(2) Di(1) Di'(1) subseqs_set_subset[OF Di'(2)] by simp
+    have "set D - Di = set [d\<leftarrow>D. d \<notin> set Di']" using Di Di' by auto
+    hence *****: "\<lbrakk>M; set [d\<leftarrow>D. d \<notin> set Di'] \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
+      using *(1) ** by metis
+    obtain A' where A': "A' \<in> set (tr A [d\<leftarrow>D. d \<notin> set Di'])" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
+      using ConsDel.IH[OF ***** **** *(3,4)] by moura
+    hence constr_sat: "\<lbrakk>M; constr\<rbrakk>\<^sub>d \<I>"
+      using Di Di' *(1) *** tr_Delete_constr_iff[OF *(4), of \<I> Di' t s D] 
+      unfolding constr_def by auto
+
+    have "constr@A' \<in> set (tr (Delete t s#A) D)" using A'(1) Di' unfolding constr_def by auto
+    moreover have "ik\<^sub>s\<^sub>t constr = {}" unfolding constr_def by auto
+    hence "\<lbrakk>M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; constr\<rbrakk>\<^sub>d \<I>" "\<lbrakk>M \<union> (ik\<^sub>s\<^sub>t constr \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>); A'\<rbrakk>\<^sub>d \<I>"
+      using constr_sat A'(2) subst_all_ground_ident[OF *(4)] by simp_all
+    ultimately show ?case
+      using strand_sem_append(2)[of _ _ \<I>]
+            subst_all_ground_ident[OF *(4), of \<I>]
+      by metis
+  next
+    case (ConsIn M D ac t s A)
+    have "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
+         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
+      and *: "(t,s) \<cdot>\<^sub>p \<I> \<in> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+      using \<I> ConsIn.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
+    then obtain A' where A': "A' \<in> set (tr A D)" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>" by (metis ConsIn.IH)
+    moreover obtain d where "d \<in> set D" "pair (t,s) \<cdot> \<I> = pair d \<cdot> \<I>"
+      using * unfolding pair_def by auto
+    ultimately show ?case using * by auto
+  next
+    case (ConsNegChecks M D X F F' A)
+    let ?ineqs = "(map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))"
+    have 1: "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" "ground M" using ConsNegChecks by auto
+    have 2: "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" 
+      using ConsNegChecks.prems(2,3) \<I> unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by fastforce+
+    
+    have 3: "negchecks_model \<I> (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) X F F'" using ConsNegChecks.prems(1) by simp
+    from 1 2 obtain A' where A': "A' \<in> set (tr A D)" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>" by (metis ConsNegChecks.IH)
+    
+    have 4: "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> set X = {}"
+      using ConsNegChecks.prems(2) unfolding bvars\<^sub>s\<^sub>s\<^sub>t_def by auto
+    
+    have "\<lbrakk>M; ?ineqs\<rbrakk>\<^sub>d \<I>"
+      using 3 tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_sem_equiv[OF 4] tr_NegChecks_constr_iff
+      by metis
+    moreover have "ik\<^sub>s\<^sub>t ?ineqs = {}" by auto
+    moreover have "M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = M" using 1(2) \<I> by (simp add: subst_all_ground_ident)
+    ultimately show ?case
+      using strand_sem_append(2)[of M ?ineqs \<I> A'] A'
+      by force
+  qed simp
+  thus "?P \<Longrightarrow> ?Q" by metis
+
+  have "(\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>) \<Longrightarrow> ?P" using assms(1,2,3)
+  proof (induction A arbitrary: D rule: strand_sem_stateful_induct)
+    case (ConsRcv M D ts A)
+    have "\<exists>A' \<in> set (tr A D). \<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; A'\<rbrakk>\<^sub>d \<I>"
+         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground ((set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M)"
+      using \<I> ConsRcv.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
+    hence "\<lbrakk>(set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>) \<union> M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" by (metis ConsRcv.IH)
+    thus ?case by auto
+  next
+    case (ConsSnd M D ts A)
+    have "\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
+         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
+      and *: "\<forall>t \<in> set ts. M \<turnstile> t \<cdot> \<I>"
+      using \<I> ConsSnd.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
+    hence "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" by (metis ConsSnd.IH)
+    thus ?case using * by auto
+  next
+    case (ConsEq M D ac t t' A)
+    have "\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
+         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
+      and *: "t \<cdot> \<I> = t' \<cdot> \<I>"
+      using \<I> ConsEq.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
+    hence "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" by (metis ConsEq.IH)
+    thus ?case using * by auto
+  next
+    case (ConsIns M D t s A)
+    hence "\<exists>A' \<in> set (tr A (List.insert (t,s) D)). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
+          "\<forall>(t,t') \<in> set (List.insert (t,s) D). (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+          "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
+      unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by auto+
+    hence "\<lbrakk>M; set (List.insert (t,s) D) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" by (metis ConsIns.IH)
+    thus ?case by auto
+  next
+    case (ConsDel M D t s A)
+    define constr where "constr \<equiv>
+      \<lambda>Di. map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di@
+           map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di]"
+    let ?flt = "\<lambda>Di. filter (\<lambda>d. d \<notin> set Di) D"
+
+    have "\<exists>Di \<in> set (subseqs D). \<exists>B' \<in> set (tr A (?flt Di)). B = constr Di@B'"
+      when "B \<in> set (tr (delete\<langle>t,s\<rangle>#A) D)" for B
+      using that unfolding constr_def by auto
+    then obtain A' Di where A':
+        "constr Di@A' \<in> set (tr (Delete t s#A) D)"
+        "A' \<in> set (tr A (?flt Di))"
+        "Di \<in> set (subseqs D)"
+        "\<lbrakk>M; constr Di@A'\<rbrakk>\<^sub>d \<I>"
+      using ConsDel.prems(1) by blast
+
+    have 1: "\<forall>(t,t')\<in>set (?flt Di). (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" using ConsDel.prems(2) by auto
+    have 2: "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" using ConsDel.prems(3) by force+
+    have "ik\<^sub>s\<^sub>t (constr Di) = {}" unfolding constr_def by auto
+    hence 3: "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
+      using subst_all_ground_ident[OF ConsDel.prems(4)] A'(4)
+            strand_sem_split(4)[of M "constr Di" A' \<I>]
+      by simp
+    have IH: "\<lbrakk>M; set (?flt Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
+      by (metis ConsDel.IH[OF _ 1 2 ConsDel.prems(4)] 3 A'(2))
+
+    have "\<lbrakk>M; constr Di\<rbrakk>\<^sub>d \<I>"
+      using subst_all_ground_ident[OF ConsDel.prems(4)] strand_sem_split(3) A'(4)
+      by metis
+    hence *: "set Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>}" "(t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - set Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+      using tr_Delete_constr_iff[OF ConsDel.prems(4), of \<I> Di t s D] unfolding constr_def by auto
+    have 4: "set (?flt Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> = (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {((t,s) \<cdot>\<^sub>p \<I>)}"
+    proof
+      show "set (?flt Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {((t,s) \<cdot>\<^sub>p \<I>)}"
+      proof
+        fix u u' assume u: "(u,u') \<in> set (?flt Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+        then obtain v v' where v: "(v,v') \<in> set D - set Di" "(v,v') \<cdot>\<^sub>p \<I> = (u,u')" by auto
+        hence "(u,u') \<noteq> (t,s) \<cdot>\<^sub>p \<I>" using * by force
+        thus "(u,u') \<in>  (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {((t,s) \<cdot>\<^sub>p \<I>)}"
+          using u v * subseqs_set_subset[OF A'(3)] by auto
+      qed
+      show "(set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {((t,s) \<cdot>\<^sub>p \<I>)} \<subseteq> set (?flt Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+        using * subseqs_set_subset[OF A'(3)] by force
+    qed
+
+    show ?case using 4 IH by simp
+  next
+    case (ConsIn M D ac t s A)
+    have "\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
+         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
+      and *: "(t,s) \<cdot>\<^sub>p \<I> \<in> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
+      using ConsIn.prems(1,2,3,4) apply (fastforce, fastforce, fastforce, fastforce)
+      using ConsIn.prems(1) tr.simps(7)[of ac t s A D] unfolding pair_def by fastforce
+    hence "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" by (metis ConsIn.IH)
+    moreover obtain d where "d \<in> set D" "pair (t,s) \<cdot> \<I> = pair d \<cdot> \<I>"
+      using * unfolding pair_def by auto
+    ultimately show ?case using * by auto
+  next
+    case (ConsNegChecks M D X F F' A)
+    let ?ineqs = "(map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))"
+
+    obtain B where B:
+        "?ineqs@B \<in> set (tr (NegChecks X F F'#A) D)" "\<lbrakk>M; ?ineqs@B\<rbrakk>\<^sub>d \<I>" "B \<in> set (tr A D)"
+      using ConsNegChecks.prems(1) by moura
+    moreover have "M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = M"
+      using ConsNegChecks.prems(4) \<I> by (simp add: subst_all_ground_ident)
+    moreover have "ik\<^sub>s\<^sub>t ?ineqs = {}" by auto
+    ultimately have "\<lbrakk>M; B\<rbrakk>\<^sub>d \<I>" using strand_sem_split(4)[of M ?ineqs B \<I>] by simp
+    moreover have "\<forall>(t,t')\<in>set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
+      using ConsNegChecks.prems(2,3) unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
+    ultimately have "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
+      by (metis ConsNegChecks.IH B(3) ConsNegChecks.prems(4))
+    moreover have "\<forall>(t, t')\<in>set D. (fv t \<union> fv t') \<inter> set X = {}"
+      using ConsNegChecks.prems(2) unfolding bvars\<^sub>s\<^sub>s\<^sub>t_def by force
+    ultimately show ?case
+      using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_sem_equiv tr_NegChecks_constr_iff
+            B(2) strand_sem_split(3)[of M ?ineqs B \<I>] \<open>M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = M\<close>
+      by simp
+  qed simp
+  thus "?Q \<Longrightarrow> ?P" by metis
+qed
+
+lemma tr_sem_equiv:
+  assumes "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" and "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
+  shows "\<I> \<Turnstile>\<^sub>s A \<longleftrightarrow> (\<exists>A' \<in> set (tr A []). (\<I> \<Turnstile> \<langle>A'\<rangle>))"
+using tr_sem_equiv'[OF _ assms(1) _ assms(2), of "[]" "{}"]
+unfolding constr_sem_d_def
+by auto
+
+end
+
+end
+
+
+subsubsection \<open>Typing Result Locale Definition\<close>
+
+locale stateful_typing_result =
+  stateful_typed_model arity public Ana \<Gamma> Pair
++ typing_result arity public Ana \<Gamma>
+  for arity::"'fun \<Rightarrow> nat"
+    and public::"'fun \<Rightarrow> bool"
+    and Ana::"('fun,'var) term \<Rightarrow> (('fun,'var) term list \<times> ('fun,'var) term list)"
+    and \<Gamma>::"('fun,'var) term \<Rightarrow> ('fun,'atom::finite) term_type"
+    and Pair::"'fun"
+
+
+subsubsection \<open>Type-Flaw Resistance Preservation of the Constraint Reduction\<close>
+context stateful_typing_result
+begin
+
+context
+begin
 
 private lemma tr_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p:
   assumes "A' \<in> set (tr A D)" "list_all tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p A"
@@ -1271,473 +1850,14 @@ proof -
   show ?thesis by (metis 1 2 tfr\<^sub>s\<^sub>t_def)
 qed
 
-private lemma fun_pair_ineqs:
-  assumes "d \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<theta> \<noteq> d' \<cdot>\<^sub>p \<I>"
-  shows "pair d \<cdot> \<delta> \<cdot> \<theta> \<noteq> pair d' \<cdot> \<I>"
-proof -
-  have "d \<cdot>\<^sub>p (\<delta> \<circ>\<^sub>s \<theta>) \<noteq> d' \<cdot>\<^sub>p \<I>" using assms subst_pair_compose by metis
-  hence "pair d \<cdot> (\<delta> \<circ>\<^sub>s \<theta>) \<noteq> pair d' \<cdot> \<I>" using fun_pair_eq_subst by metis
-  thus ?thesis by simp
-qed
+end
 
-private lemma tr_Delete_constr_iff_aux1:
-  assumes "\<forall>d \<in> set Di. (t,s) \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>"
-  and "\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>"
-  shows "\<lbrakk>M; (map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@
-             (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di])\<rbrakk>\<^sub>d \<I>"
-proof -
-  from assms(2) have
-    "\<lbrakk>M; map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di]\<rbrakk>\<^sub>d \<I>"
-  proof (induction D)
-    case (Cons d D)
-    hence IH: "\<lbrakk>M; map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D . d \<notin> set Di]\<rbrakk>\<^sub>d \<I>" by auto
-    thus ?case
-    proof (cases "d \<in> set Di")
-      case False
-      hence "(t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>" using Cons by simp
-      hence "pair (t,s) \<cdot> \<I> \<noteq> pair d \<cdot> \<I>" using fun_pair_eq_subst by metis
-      moreover have "\<And>t (\<delta>::('fun,'var) subst). subst_domain \<delta> = {} \<Longrightarrow> t \<cdot> \<delta> = t" by auto
-      ultimately have "\<forall>\<delta>. subst_domain \<delta> = {} \<longrightarrow> pair (t,s) \<cdot> \<delta> \<cdot> \<I> \<noteq> pair d \<cdot> \<delta> \<cdot> \<I>" by metis
-      thus ?thesis using IH by (simp add: ineq_model_def)
-    qed simp
-  qed simp
-  moreover {
-    fix B assume "\<lbrakk>M; B\<rbrakk>\<^sub>d \<I>" 
-    with assms(1) have "\<lbrakk>M; (map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@B\<rbrakk>\<^sub>d \<I>"
-      unfolding pair_def by (induction Di) auto
-  } ultimately show ?thesis by metis
-qed
+end
 
-private lemma tr_Delete_constr_iff_aux2:
-  assumes "ground M"
-  and "\<lbrakk>M; (map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@
-           (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di])\<rbrakk>\<^sub>d \<I>"
-  shows "(\<forall>d \<in> set Di. (t,s) \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>) \<and> (\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>)"
-proof -
-  let ?c1 = "map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di"
-  let ?c2 = "map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di]"
 
-  have "M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = M" using assms(1) subst_all_ground_ident by metis
-  moreover have "ik\<^sub>s\<^sub>t ?c1 = {}" by auto
-  ultimately have *:
-       "\<lbrakk>M; map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di\<rbrakk>\<^sub>d \<I>"
-       "\<lbrakk>M; map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di]\<rbrakk>\<^sub>d \<I>"
-    using strand_sem_split(3,4)[of M ?c1 ?c2 \<I>] assms(2) by auto
-  
-  from *(1) have 1: "\<forall>d \<in> set Di. (t,s) \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>" unfolding pair_def by (induct Di) auto
-  from *(2) have 2: "\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>"
-  proof (induction D arbitrary: Di)
-    case (Cons d D) thus ?case
-    proof (cases "d \<in> set Di")
-      case False
-      hence IH: "\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>" using Cons by force
-      have "\<And>t (\<delta>::('fun,'var) subst). subst_domain \<delta> = {} \<and> ground (subst_range \<delta>) \<longleftrightarrow> \<delta> = Var"
-        by auto
-      moreover have "ineq_model \<I> [] [((pair (t,s)), (pair d))]"
-        using False Cons.prems by simp
-      ultimately have "pair (t,s) \<cdot> \<I> \<noteq> pair d \<cdot> \<I>" by (simp add: ineq_model_def)
-      thus ?thesis using IH unfolding pair_def by force
-    qed simp
-  qed simp
-
-  show ?thesis by (metis 1 2)
-qed
-
-private lemma tr_Delete_constr_iff:
-  fixes \<I>::"('fun,'var) subst"
-  assumes "ground M"
-  shows "set Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>} \<and> (t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - set Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<longleftrightarrow>
-         \<lbrakk>M; (map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@
-             (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di])\<rbrakk>\<^sub>d \<I>"
-proof -
-  let ?constr = "(map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di)@
-                 (map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di])"
-  { assume "set Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>}" "(t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - set Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-    hence "\<forall>d \<in> set Di. (t,s) \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>" "\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>"
-      by auto
-    hence "\<lbrakk>M; ?constr\<rbrakk>\<^sub>d \<I>" using tr_Delete_constr_iff_aux1 by simp
-  } moreover {
-    assume "\<lbrakk>M; ?constr\<rbrakk>\<^sub>d \<I>"
-    hence "\<forall>d \<in> set Di. (t,s) \<cdot>\<^sub>p \<I> = d \<cdot>\<^sub>p \<I>" "\<forall>d \<in> set D - set Di. (t,s) \<cdot>\<^sub>p \<I> \<noteq> d \<cdot>\<^sub>p \<I>"
-      using assms tr_Delete_constr_iff_aux2 by auto
-    hence "set Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>} \<and> (t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - set Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>" by force
-  } ultimately show ?thesis by metis
-qed
-
-private lemma tr_NotInSet_constr_iff:
-  fixes \<I>::"('fun,'var) subst"
-  assumes "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> set X = {}"
-  shows "(\<forall>\<delta>. subst_domain \<delta> = set X \<and> ground (subst_range \<delta>) \<longrightarrow> (t,s) \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>)
-          \<longleftrightarrow> \<lbrakk>M; map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D\<rbrakk>\<^sub>d \<I>"
-proof -
-  { assume "\<forall>\<delta>. subst_domain \<delta> = set X \<and> ground (subst_range \<delta>) \<longrightarrow> (t,s) \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-    with assms have "\<lbrakk>M; map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D\<rbrakk>\<^sub>d \<I>"
-    proof (induction D)
-      case (Cons d D)
-      obtain t' s' where d: "d = (t',s')" by moura
-      have "\<lbrakk>M; map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D\<rbrakk>\<^sub>d \<I>"
-           "map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) (d#D) =
-            \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t#map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D"
-        using Cons by auto
-      moreover have
-          "\<forall>\<delta>. subst_domain \<delta> = set X \<and> ground (subst_range \<delta>) \<longrightarrow> pair (t, s) \<cdot> \<delta> \<cdot> \<I> \<noteq> pair d \<cdot> \<I>"
-        using fun_pair_ineqs[of \<I> _  "(t,s)" \<I> d] Cons.prems(2) by auto
-      moreover have "(fv t' \<union> fv s') \<inter> set X = {}" using Cons.prems(1) d by auto
-      hence "\<forall>\<delta>. subst_domain \<delta> = set X \<longrightarrow> pair d \<cdot> \<delta> = pair d" using d unfolding pair_def by auto
-      ultimately show ?case by (simp add: ineq_model_def)
-    qed simp
-  } moreover {
-    fix \<delta>::"('fun,'var) subst"
-    assume "\<lbrakk>M; map (\<lambda>d. \<forall>X\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) D\<rbrakk>\<^sub>d \<I>"
-      and \<delta>: "subst_domain \<delta> = set X" "ground (subst_range \<delta>)"
-    with assms have "(t,s) \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-    proof (induction D)
-      case (Cons d D)
-      obtain t' s' where d: "d = (t',s')" by moura
-      have "(t,s) \<cdot>\<^sub>p \<delta> \<cdot>\<^sub>p \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-           "pair (t,s) \<cdot> \<delta> \<cdot> \<I> \<noteq> pair d \<cdot> \<delta> \<cdot> \<I>"
-        using Cons d by (auto simp add: ineq_model_def simp del: subst_range.simps)
-      moreover have "pair d \<cdot> \<delta> = pair d"
-        using Cons.prems(1) fun_pair_subst[of d \<delta>] d \<delta>(1) unfolding pair_def by auto
-      ultimately show ?case unfolding pair_def by force
-    qed simp
-  } ultimately show ?thesis by metis
-qed
-
-lemma tr_NegChecks_constr_iff:
-  "(\<forall>G\<in>set L. ineq_model \<I> X (F@G)) \<longleftrightarrow> \<lbrakk>M; map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) L\<rbrakk>\<^sub>d \<I>" (is ?A)
-  "negchecks_model \<I> D X F F' \<longleftrightarrow> \<lbrakk>M; D; [\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: F'\<rangle>]\<rbrakk>\<^sub>s \<I>" (is ?B)
-proof -
-  show ?A by (induct L) auto
-  show ?B by simp
-qed
-
-lemma tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_sem_equiv:
-  fixes \<I>::"('fun,'var) subst"
-  assumes "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> set X = {}"
-  shows "negchecks_model \<I> (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) X F F' \<longleftrightarrow>
-         (\<forall>G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D). ineq_model \<I> X (F@G))"
-proof -
-  define P where
-    "P \<equiv> \<lambda>\<delta>::('fun,'var) subst. subst_domain \<delta> = set X \<and> ground (subst_range \<delta>)" 
-
-  define Ineq where
-    "Ineq \<equiv> \<lambda>(\<delta>::('fun,'var) subst) F. list_ex (\<lambda>f. fst f \<cdot> \<delta> \<circ>\<^sub>s \<I> \<noteq> snd f \<cdot> \<delta> \<circ>\<^sub>s \<I>) F"
-
-  define Ineq' where
-    "Ineq' \<equiv> \<lambda>(\<delta>::('fun,'var) subst) F. list_ex (\<lambda>f. fst f \<cdot> \<delta> \<circ>\<^sub>s \<I> \<noteq> snd f \<cdot> \<I>) F"
-  
-  define Notin where
-    "Notin \<equiv> \<lambda>(\<delta>::('fun,'var) subst) D F'. list_ex (\<lambda>f. f \<cdot>\<^sub>p \<delta> \<circ>\<^sub>s \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) F'"
-
-  have sublmm:
-      "((s,t) \<cdot>\<^sub>p \<delta> \<circ>\<^sub>s \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) \<longleftrightarrow> (list_all (\<lambda>d. Ineq' \<delta> [(pair (s,t),pair d)]) D)"
-    for s t \<delta> D
-    unfolding pair_def by (induct D) (auto simp add: Ineq'_def)
-
-  have "Notin \<delta> D F' \<longleftrightarrow> (\<forall>G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D). Ineq' \<delta> G)"
-    (is "?A \<longleftrightarrow> ?B")
-    when "P \<delta>" for \<delta>
-  proof
-    show "?A \<Longrightarrow> ?B"
-    proof (induction F' D rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
-      case (2 s t F' D)
-      show ?case
-      proof (cases "Notin \<delta> D F'")
-        case False
-        hence "(s,t) \<cdot>\<^sub>p \<delta> \<circ>\<^sub>s \<I> \<notin> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-          using "2.prems"
-          by (auto simp add: Notin_def)
-        hence "pair (s,t) \<cdot> \<delta> \<circ>\<^sub>s \<I> \<noteq> pair d \<cdot> \<I>" when "d \<in> set D" for d
-          using that sublmm Ball_set[of D "\<lambda>d. Ineq' \<delta> [(pair (s,t), pair d)]"]
-          by (simp add: Ineq'_def)
-        moreover have "\<exists>d \<in> set D. \<exists>G'. G = (pair (s,t), pair d)#G'"
-          when "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s ((s,t)#F') D)" for G
-          using that tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_index[OF that, of 0] by force
-        ultimately show ?thesis by (simp add: Ineq'_def)
-      qed (auto dest: "2.IH" simp add: Ineq'_def)
-    qed (simp add: Notin_def)
-
-    have "\<not>?A \<Longrightarrow> \<not>?B"
-    proof (induction F' D rule: tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s.induct)
-      case (2 s t F' D)
-      then obtain G where G: "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D)" "\<not>Ineq' \<delta> G"
-        by (auto simp add: Notin_def)
-
-      obtain d where d: "d \<in> set D" "pair (s,t) \<cdot> \<delta> \<circ>\<^sub>s \<I> = pair d \<cdot> \<I>"
-        using "2.prems"
-        unfolding pair_def by (auto simp add: Notin_def)
-      thus ?case
-        using G(2) tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_cons[OF G(1) d(1)]
-        by (auto simp add: Ineq'_def)
-    qed (simp add: Ineq'_def)
-    thus "?B \<Longrightarrow> ?A" by metis
-  qed
-  hence *: "(\<forall>\<delta>. P \<delta> \<longrightarrow> Ineq \<delta> F \<or> Notin \<delta> D F') \<longleftrightarrow>
-            (\<forall>G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D). \<forall>\<delta>. P \<delta> \<longrightarrow> Ineq \<delta> F \<or> Ineq' \<delta> G)"
-    by auto
-
-  have "snd g \<cdot> \<delta> = snd g"
-    when "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D)" "g \<in> set G" "P \<delta>"
-    for \<delta> g G
-    using assms that(3) tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_has_pair_lists[OF that(1,2)]
-    unfolding pair_def by (fastforce simp add: P_def)
-  hence **: "Ineq' \<delta> G = Ineq \<delta> G"
-    when "G \<in> set (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D)" "P \<delta>"
-    for \<delta> G
-    using Bex_set[of G "\<lambda>f. fst f \<cdot> \<delta> \<circ>\<^sub>s \<I> \<noteq> snd f \<cdot> \<I>"]
-          Bex_set[of G "\<lambda>f. fst f \<cdot> \<delta> \<circ>\<^sub>s \<I> \<noteq> snd f \<cdot> \<delta> \<circ>\<^sub>s \<I>"]
-          that
-    by (simp add: Ineq_def Ineq'_def)
-  
-  show ?thesis
-    using * **
-    by (simp add: Ineq_def Ineq'_def Notin_def P_def negchecks_model_def ineq_model_def)
-qed
-
-lemma tr_sem_equiv':
-  assumes "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-    and "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-    and "ground M"
-    and \<I>: "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
-  shows "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I> \<longleftrightarrow> (\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>)" (is "?P \<longleftrightarrow> ?Q")
-proof
-  have \<I>_grounds: "\<And>t. fv (t \<cdot> \<I>) = {}" by (rule interpretation_grounds[OF \<I>])
-  have "\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>" when ?P using that assms(1,2,3)
-  proof (induction A arbitrary: D rule: strand_sem_stateful_induct)
-    case (ConsRcv M D t A)
-    have "\<lbrakk>insert (t \<cdot> \<I>) M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
-         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground (insert (t \<cdot> \<I>) M)"
-      using \<I> ConsRcv.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
-    then obtain A' where A': "A' \<in> set (tr A D)" "\<lbrakk>insert (t \<cdot> \<I>) M; A'\<rbrakk>\<^sub>d \<I>" by (metis ConsRcv.IH)
-    thus ?case by auto
-  next
-    case (ConsSnd M D t A)
-    have "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
-         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
-      and *: "M \<turnstile> t \<cdot> \<I>"
-      using \<I> ConsSnd.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
-    then obtain A' where A': "A' \<in> set (tr A D)" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>" by (metis ConsSnd.IH)
-    thus ?case using * by auto
-  next
-    case (ConsEq M D ac t t' A)
-    have "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
-         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
-      and *: "t \<cdot> \<I> = t' \<cdot> \<I>"
-      using \<I> ConsEq.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
-    then obtain A' where A': "A' \<in> set (tr A D)" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>" by (metis ConsEq.IH)
-    thus ?case using * by auto
-  next
-    case (ConsIns M D t s A)
-    have "\<lbrakk>M; set (List.insert (t,s) D) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
-         "\<forall>(t,t') \<in> set (List.insert (t,s) D). (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
-      using ConsIns.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
-    then obtain A' where A': "A' \<in> set (tr A (List.insert (t,s) D))" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
-      by (metis ConsIns.IH)
-    thus ?case by auto
-  next
-    case (ConsDel M D t s A)
-    have *: "\<lbrakk>M; (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {(t,s) \<cdot>\<^sub>p \<I>}; A\<rbrakk>\<^sub>s \<I>"
-            "\<forall>(t,t')\<in>set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-            "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
-      using ConsDel.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
-    then obtain Di where Di:
-        "Di \<subseteq> set D" "Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>}" "(t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-      using subset_subst_pairs_diff_exists'[of "set D"] by moura
-    hence **: "(set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {(t,s) \<cdot>\<^sub>p \<I>} = (set D - Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>" by blast
-
-    obtain Di' where Di': "set Di' = Di" "Di' \<in> set (subseqs D)"
-      using subset_sublist_exists[OF Di(1)] by moura
-    hence ***: "(set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {(t,s) \<cdot>\<^sub>p \<I>} = (set [d\<leftarrow>D. d \<notin> set Di'] \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>)"
-      using Di ** by auto
-    
-    define constr where "constr \<equiv>
-        map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di'@
-        map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di']"
-    
-    have ****: "\<forall>(t,t')\<in>set [d\<leftarrow>D. d \<notin> set Di']. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-      using *(2) Di(1) Di'(1) subseqs_set_subset[OF Di'(2)] by simp
-    have "set D - Di = set [d\<leftarrow>D. d \<notin> set Di']" using Di Di' by auto
-    hence *****: "\<lbrakk>M; set [d\<leftarrow>D. d \<notin> set Di'] \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
-      using *(1) ** by metis
-    obtain A' where A': "A' \<in> set (tr A [d\<leftarrow>D. d \<notin> set Di'])" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
-      using ConsDel.IH[OF ***** **** *(3,4)] by moura
-    hence constr_sat: "\<lbrakk>M; constr\<rbrakk>\<^sub>d \<I>"
-      using Di Di' *(1) *** tr_Delete_constr_iff[OF *(4), of \<I> Di' t s D] 
-      unfolding constr_def by auto
-
-    have "constr@A' \<in> set (tr (Delete t s#A) D)" using A'(1) Di' unfolding constr_def by auto
-    moreover have "ik\<^sub>s\<^sub>t constr = {}" unfolding constr_def by auto
-    hence "\<lbrakk>M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>; constr\<rbrakk>\<^sub>d \<I>" "\<lbrakk>M \<union> (ik\<^sub>s\<^sub>t constr \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I>); A'\<rbrakk>\<^sub>d \<I>"
-      using constr_sat A'(2) subst_all_ground_ident[OF *(4)] by simp_all
-    ultimately show ?case
-      using strand_sem_append(2)[of _ _ \<I>]
-            subst_all_ground_ident[OF *(4), of \<I>]
-      by metis
-  next
-    case (ConsIn M D ac t s A)
-    have "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
-         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
-      and *: "(t,s) \<cdot>\<^sub>p \<I> \<in> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-      using \<I> ConsIn.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
-    then obtain A' where A': "A' \<in> set (tr A D)" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>" by (metis ConsIn.IH)
-    moreover obtain d where "d \<in> set D" "pair (t,s) \<cdot> \<I> = pair d \<cdot> \<I>"
-      using * unfolding pair_def by auto
-    ultimately show ?case using * by auto
-  next
-    case (ConsNegChecks M D X F F' A)
-    let ?ineqs = "(map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))"
-    have 1: "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" "ground M" using ConsNegChecks by auto
-    have 2: "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" 
-      using ConsNegChecks.prems(2,3) \<I> unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by fastforce+
-    
-    have 3: "negchecks_model \<I> (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) X F F'" using ConsNegChecks.prems(1) by simp
-    from 1 2 obtain A' where A': "A' \<in> set (tr A D)" "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>" by (metis ConsNegChecks.IH)
-    
-    have 4: "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> set X = {}"
-      using ConsNegChecks.prems(2) unfolding bvars\<^sub>s\<^sub>s\<^sub>t_def by auto
-    
-    have "\<lbrakk>M; ?ineqs\<rbrakk>\<^sub>d \<I>"
-      using 3 tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_sem_equiv[OF 4] tr_NegChecks_constr_iff
-      by metis
-    moreover have "ik\<^sub>s\<^sub>t ?ineqs = {}" by auto
-    moreover have "M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = M" using 1(2) \<I> by (simp add: subst_all_ground_ident)
-    ultimately show ?case
-      using strand_sem_append(2)[of M ?ineqs \<I> A'] A'
-      by force
-  qed simp
-  thus "?P \<Longrightarrow> ?Q" by metis
-
-  have "(\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>) \<Longrightarrow> ?P" using assms(1,2,3)
-  proof (induction A arbitrary: D rule: strand_sem_stateful_induct)
-    case (ConsRcv M D t A)
-    have "\<exists>A' \<in> set (tr A D). \<lbrakk>insert (t \<cdot> \<I>) M; A'\<rbrakk>\<^sub>d \<I>"
-         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground (insert (t \<cdot> \<I>) M)"
-      using \<I> ConsRcv.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
-    hence "\<lbrakk>insert (t \<cdot> \<I>) M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" by (metis ConsRcv.IH)
-    thus ?case by auto
-  next
-    case (ConsSnd M D t A)
-    have "\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
-         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
-      and *: "M \<turnstile> t \<cdot> \<I>"
-      using \<I> ConsSnd.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
-    hence "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" by (metis ConsSnd.IH)
-    thus ?case using * by auto
-  next
-    case (ConsEq M D ac t t' A)
-    have "\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
-         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
-      and *: "t \<cdot> \<I> = t' \<cdot> \<I>"
-      using \<I> ConsEq.prems unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
-    hence "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" by (metis ConsEq.IH)
-    thus ?case using * by auto
-  next
-    case (ConsIns M D t s A)
-    hence "\<exists>A' \<in> set (tr A (List.insert (t,s) D)). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
-          "\<forall>(t,t') \<in> set (List.insert (t,s) D). (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-          "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
-      unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by auto+
-    hence "\<lbrakk>M; set (List.insert (t,s) D) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" by (metis ConsIns.IH)
-    thus ?case by auto
-  next
-    case (ConsDel M D t s A)
-    define constr where "constr \<equiv>
-      \<lambda>Di. map (\<lambda>d. \<langle>check: (pair (t,s)) \<doteq> (pair d)\<rangle>\<^sub>s\<^sub>t) Di@
-           map (\<lambda>d. \<forall>[]\<langle>\<or>\<noteq>: [(pair (t,s), pair d)]\<rangle>\<^sub>s\<^sub>t) [d\<leftarrow>D. d \<notin> set Di]"
-    let ?flt = "\<lambda>Di. filter (\<lambda>d. d \<notin> set Di) D"
-
-    have "\<exists>Di \<in> set (subseqs D). \<exists>B' \<in> set (tr A (?flt Di)). B = constr Di@B'"
-      when "B \<in> set (tr (delete\<langle>t,s\<rangle>#A) D)" for B
-      using that unfolding constr_def by auto
-    then obtain A' Di where A':
-        "constr Di@A' \<in> set (tr (Delete t s#A) D)"
-        "A' \<in> set (tr A (?flt Di))"
-        "Di \<in> set (subseqs D)"
-        "\<lbrakk>M; constr Di@A'\<rbrakk>\<^sub>d \<I>"
-      using ConsDel.prems(1) by blast
-
-    have 1: "\<forall>(t,t')\<in>set (?flt Di). (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" using ConsDel.prems(2) by auto
-    have 2: "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" using ConsDel.prems(3) by force+
-    have "ik\<^sub>s\<^sub>t (constr Di) = {}" unfolding constr_def by auto
-    hence 3: "\<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
-      using subst_all_ground_ident[OF ConsDel.prems(4)] A'(4)
-            strand_sem_split(4)[of M "constr Di" A' \<I>]
-      by simp
-    have IH: "\<lbrakk>M; set (?flt Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
-      by (metis ConsDel.IH[OF _ 1 2 ConsDel.prems(4)] 3 A'(2))
-
-    have "\<lbrakk>M; constr Di\<rbrakk>\<^sub>d \<I>"
-      using subst_all_ground_ident[OF ConsDel.prems(4)] strand_sem_split(3) A'(4)
-      by metis
-    hence *: "set Di \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> {(t,s) \<cdot>\<^sub>p \<I>}" "(t,s) \<cdot>\<^sub>p \<I> \<notin> (set D - set Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-      using tr_Delete_constr_iff[OF ConsDel.prems(4), of \<I> Di t s D] unfolding constr_def by auto
-    have 4: "set (?flt Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> = (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {((t,s) \<cdot>\<^sub>p \<I>)}"
-    proof
-      show "set (?flt Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I> \<subseteq> (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {((t,s) \<cdot>\<^sub>p \<I>)}"
-      proof
-        fix u u' assume u: "(u,u') \<in> set (?flt Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-        then obtain v v' where v: "(v,v') \<in> set D - set Di" "(v,v') \<cdot>\<^sub>p \<I> = (u,u')" by auto
-        hence "(u,u') \<noteq> (t,s) \<cdot>\<^sub>p \<I>" using * by force
-        thus "(u,u') \<in>  (set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {((t,s) \<cdot>\<^sub>p \<I>)}"
-          using u v * subseqs_set_subset[OF A'(3)] by auto
-      qed
-      show "(set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>) - {((t,s) \<cdot>\<^sub>p \<I>)} \<subseteq> set (?flt Di) \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-        using * subseqs_set_subset[OF A'(3)] by force
-    qed
-
-    show ?case using 4 IH by simp
-  next
-    case (ConsIn M D ac t s A)
-    have "\<exists>A' \<in> set (tr A D). \<lbrakk>M; A'\<rbrakk>\<^sub>d \<I>"
-         "\<forall>(t,t') \<in> set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-         "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "ground M"
-      and *: "(t,s) \<cdot>\<^sub>p \<I> \<in> set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>"
-      using ConsIn.prems(1,2,3,4) apply (fastforce, fastforce, fastforce, fastforce)
-      using ConsIn.prems(1) tr.simps(7)[of ac t s A D] unfolding pair_def by fastforce
-    hence "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>" by (metis ConsIn.IH)
-    moreover obtain d where "d \<in> set D" "pair (t,s) \<cdot> \<I> = pair d \<cdot> \<I>"
-      using * unfolding pair_def by auto
-    ultimately show ?case using * by auto
-  next
-    case (ConsNegChecks M D X F F' A)
-    let ?ineqs = "(map (\<lambda>G. \<forall>X\<langle>\<or>\<noteq>: (F@G)\<rangle>\<^sub>s\<^sub>t) (tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F' D))"
-
-    obtain B where B:
-        "?ineqs@B \<in> set (tr (NegChecks X F F'#A) D)" "\<lbrakk>M; ?ineqs@B\<rbrakk>\<^sub>d \<I>" "B \<in> set (tr A D)"
-      using ConsNegChecks.prems(1) by moura
-    moreover have "M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = M"
-      using ConsNegChecks.prems(4) \<I> by (simp add: subst_all_ground_ident)
-    moreover have "ik\<^sub>s\<^sub>t ?ineqs = {}" by auto
-    ultimately have "\<lbrakk>M; B\<rbrakk>\<^sub>d \<I>" using strand_sem_split(4)[of M ?ineqs B \<I>] by simp
-    moreover have "\<forall>(t,t')\<in>set D. (fv t \<union> fv t') \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}"
-      using ConsNegChecks.prems(2,3) unfolding fv\<^sub>s\<^sub>s\<^sub>t_def bvars\<^sub>s\<^sub>s\<^sub>t_def by force+
-    ultimately have "\<lbrakk>M; set D \<cdot>\<^sub>p\<^sub>s\<^sub>e\<^sub>t \<I>; A\<rbrakk>\<^sub>s \<I>"
-      by (metis ConsNegChecks.IH B(3) ConsNegChecks.prems(4))
-    moreover have "\<forall>(t, t')\<in>set D. (fv t \<union> fv t') \<inter> set X = {}"
-      using ConsNegChecks.prems(2) unfolding bvars\<^sub>s\<^sub>s\<^sub>t_def by force
-    ultimately show ?case
-      using tr\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_sem_equiv tr_NegChecks_constr_iff
-            B(2) strand_sem_split(3)[of M ?ineqs B \<I>] \<open>M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<I> = M\<close>
-      by simp
-  qed simp
-  thus "?Q \<Longrightarrow> ?P" by metis
-qed
-
-lemma tr_sem_equiv:
-  assumes "fv\<^sub>s\<^sub>s\<^sub>t A \<inter> bvars\<^sub>s\<^sub>s\<^sub>t A = {}" and "interpretation\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<I>"
-  shows "\<I> \<Turnstile>\<^sub>s A \<longleftrightarrow> (\<exists>A' \<in> set (tr A []). (\<I> \<Turnstile> \<langle>A'\<rangle>))"
-using tr_sem_equiv'[OF _ assms(1) _ assms(2), of "[]" "{}"]
-unfolding constr_sem_d_def
-by auto
+subsubsection \<open>Theorem: The Stateful Typing Result\<close>
+context stateful_typing_result
+begin
 
 theorem stateful_typing_result:
   assumes "wf\<^sub>s\<^sub>s\<^sub>t \<A>"
@@ -1780,9 +1900,8 @@ qed
 
 end
 
-end
 
-subsection \<open>Proving type-flaw resistance automatically\<close>
+subsection \<open>Proving Type-Flaw Resistance Automatically\<close>
 definition pair' where
   "pair' pair_fun d \<equiv> case d of (t,t') \<Rightarrow> Fun pair_fun [t,t']"
 
@@ -1798,7 +1917,7 @@ definition comp_tfr\<^sub>s\<^sub>s\<^sub>t where
   "comp_tfr\<^sub>s\<^sub>s\<^sub>t arity Ana \<Gamma> pair_fun M S \<equiv>
     list_all (comp_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<Gamma> pair_fun) S \<and>
     list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) (trms_list\<^sub>s\<^sub>s\<^sub>t S) \<and>
-    has_all_wt_instances_of \<Gamma> (trms\<^sub>s\<^sub>s\<^sub>t S \<union> pair' pair_fun ` setops\<^sub>s\<^sub>s\<^sub>t S) (set M) \<and>
+    has_all_wt_instances_of \<Gamma> (trms\<^sub>s\<^sub>s\<^sub>t S \<union> pair' pair_fun ` setops\<^sub>s\<^sub>s\<^sub>t S) M \<and>
     comp_tfr\<^sub>s\<^sub>e\<^sub>t arity Ana \<Gamma> M"
 
 locale stateful_typed_model' = stateful_typed_model arity public Ana \<Gamma> Pair
@@ -1820,6 +1939,19 @@ by (unfold_locales, rule \<Gamma>_Var_fst', metis Ana_const', metis Ana_subst')
 lemma pair_code:
   "pair d = pair' Pair d"
 by (simp add: pair_def pair'_def)
+
+end
+
+locale stateful_typing_result' =
+  stateful_typed_model' arity public Ana \<Gamma> Pair + stateful_typing_result arity public Ana \<Gamma> Pair
+  for arity::"'fun \<Rightarrow> nat"
+    and public::"'fun \<Rightarrow> bool"
+    and Ana::"('fun,(('fun,'atom::finite) term_type \<times> nat)) term
+              \<Rightarrow> (('fun,(('fun,'atom) term_type \<times> nat)) term list
+                 \<times> ('fun,(('fun,'atom) term_type \<times> nat)) term list)"
+    and \<Gamma>::"('fun,(('fun,'atom) term_type \<times> nat)) term \<Rightarrow> ('fun,'atom) term_type"
+    and Pair::"'fun"
+begin
 
 lemma tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p_is_comp_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p: "tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p a = comp_tfr\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<Gamma> Pair a"
 proof (cases a)
@@ -1844,14 +1976,18 @@ unfolding tfr\<^sub>s\<^sub>s\<^sub>t_def
 proof
   have comp_tfr\<^sub>s\<^sub>e\<^sub>t_M: "comp_tfr\<^sub>s\<^sub>e\<^sub>t arity Ana \<Gamma> M"
     using assms unfolding comp_tfr\<^sub>s\<^sub>s\<^sub>t_def by blast
+
+  have SMP_repr_M: "finite_SMP_representation arity Ana \<Gamma> M"
+    using comp_tfr\<^sub>s\<^sub>e\<^sub>t_M unfolding comp_tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
   
-  have wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
+  have wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M"
       and wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_S: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>s\<^sub>t S \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t S)"
-      and S_trms_instance_M: "has_all_wt_instances_of \<Gamma> (trms\<^sub>s\<^sub>s\<^sub>t S \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t S) (set M)"
+      and S_trms_instance_M: "has_all_wt_instances_of \<Gamma> (trms\<^sub>s\<^sub>s\<^sub>t S \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t S) M"
     using assms setops\<^sub>s\<^sub>s\<^sub>t_wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s(2)[of S] trms_list\<^sub>s\<^sub>s\<^sub>t_is_trms\<^sub>s\<^sub>s\<^sub>t[of S]
+          finite_SMP_representationD[OF SMP_repr_M]
     unfolding comp_tfr\<^sub>s\<^sub>s\<^sub>t_def comp_tfr\<^sub>s\<^sub>e\<^sub>t_def list_all_iff pair_code[symmetric] wf\<^sub>t\<^sub>r\<^sub>m_code[symmetric]
               finite_SMP_representation_def
-    by (meson, meson, blast, meson)
+    by (meson, argo, argo)
 
   show "tfr\<^sub>s\<^sub>e\<^sub>t (trms\<^sub>s\<^sub>s\<^sub>t S \<union> pair ` setops\<^sub>s\<^sub>s\<^sub>t S)"
     using tfr_subset(3)[OF tfr\<^sub>s\<^sub>e\<^sub>t_if_comp_tfr\<^sub>s\<^sub>e\<^sub>t[OF comp_tfr\<^sub>s\<^sub>e\<^sub>t_M] SMP_SMP_subset]
@@ -1863,9 +1999,11 @@ proof
 qed
 
 lemma tfr\<^sub>s\<^sub>s\<^sub>t_if_comp_tfr\<^sub>s\<^sub>s\<^sub>t':
-  assumes "comp_tfr\<^sub>s\<^sub>s\<^sub>t arity Ana \<Gamma> Pair (SMP0  Ana \<Gamma> (trms_list\<^sub>s\<^sub>s\<^sub>t S@map pair (setops_list\<^sub>s\<^sub>s\<^sub>t S))) S"
+  fixes S
+  defines "M \<equiv> SMP0 Ana \<Gamma> (trms_list\<^sub>s\<^sub>s\<^sub>t S@map pair (setops_list\<^sub>s\<^sub>s\<^sub>t S))"
+  assumes comp_tfr: "comp_tfr\<^sub>s\<^sub>s\<^sub>t arity Ana \<Gamma> Pair (set M) S"
   shows "tfr\<^sub>s\<^sub>s\<^sub>t S"
-by (rule tfr\<^sub>s\<^sub>s\<^sub>t_if_comp_tfr\<^sub>s\<^sub>s\<^sub>t[OF assms])
+by (rule tfr\<^sub>s\<^sub>s\<^sub>t_if_comp_tfr\<^sub>s\<^sub>s\<^sub>t[OF comp_tfr[unfolded M_def]])
 
 end
 

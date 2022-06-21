@@ -20,7 +20,7 @@ local
   val px = Var (("x", 0), natT)
   val py = Var (("y", 0), natT)
   val ctxt' = ctxt |> fold Variable.declare_term [x, x', y, y', z, w, px, py]
-                   |> RewriteTable.add_rewrite ([], assume_eq thy (x, x')) |> snd
+                   |> Auto2_Setup.RewriteTable.add_rewrite ([], assume_eq thy (x, x')) |> snd
 in
 
 val test_fold_double_plus =
@@ -124,7 +124,7 @@ val test_nat_order_match =
             val ritems = convert_prop_to_nat_order prop
             val ritem = the_single ritems
                         handle List.Empty => raise Fail "ambiguous input"
-            val item = BoxItem.mk_box_item ctxt (0, [], 0, ritem)
+            val item = Auto2_Setup.BoxItem.mk_box_item ctxt (0, [], 0, ritem)
             val res = map (mk_Trueprop o Syntax.read_term ctxt') res_strs
             val res' = match_fn pat item ctxt' ([], fo_init)
             fun check_inst ((_, inst), th) =
@@ -196,7 +196,7 @@ val test_nat_order_single_match =
           let
             val ineq = Syntax.read_term ctxt' ineq_str
             val res = Nat_Order.nat_order_single_match
-                          ineq BoxItem.null_item ctxt' ([], fo_init)
+                          ineq Auto2_Setup.BoxItem.null_item ctxt' ([], fo_init)
           in
             if length res = 1 andalso
                res |> the_single |> snd |> prop_of' aconv ineq then ()

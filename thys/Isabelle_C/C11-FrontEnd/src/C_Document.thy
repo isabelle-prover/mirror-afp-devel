@@ -40,9 +40,14 @@ theory C_Document
   imports C_Command
 begin
 
-ML \<comment> \<open>analogous to \<^file>\<open>~~/src/Pure/Thy/document_output.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
-(*  Text Antiquotations and Theory document output. *)
+ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/document_output.ML\<close>\<close>
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
+(*  Title:      Pure/Thy/document_output.ML
+    Author:     Makarius
+
+Theory document output.
+*)*)
 \<open>
 structure C_Document_Output =
 struct
@@ -55,11 +60,11 @@ fun output_comment ctxt (kind, syms) =
       Input.cartouche_content syms
       |> output_document (ctxt |> Config.put Document_Antiquotation.thy_output_display false)
           {markdown = false}
-      |> Latex.enclose_text "%\n\\isamarkupcmt{" "%\n}"
+      |> XML.enclose "%\n\\isamarkupcmt{" "%\n}"
   | Comment.Cancel =>
       Symbol_Pos.cartouche_content syms
       |> Latex.symbols_output
-      |> Latex.enclose_text "%\n\\isamarkupcancel{" "}"
+      |> XML.enclose "%\n\\isamarkupcancel{" "}"
   | Comment.Latex => Latex.symbols (Symbol_Pos.cartouche_content syms)
   | Comment.Marker => [])
 and output_comment_document ctxt (comment, syms) =
@@ -83,7 +88,7 @@ and output_document ctxt {markdown} source =
     fun output_block (Markdown.Par lines) =
           separate (XML.Text "\n") (map (Latex.block o output_line) lines)
       | output_block (Markdown.List {kind, body, ...}) =
-          Latex.environment_text (Markdown.print_kind kind) (output_blocks body)
+          Latex.environment (Markdown.print_kind kind) (output_blocks body)
     and output_blocks blocks =
       separate (XML.Text "\n\n") (map (Latex.block o output_block) blocks);
   in
@@ -115,7 +120,7 @@ val output_symbols_antiq =
         Latex.string (Latex.output_symbols [Symbol.encode (Symbol.Control name)]) @
           Latex.symbols_output body
     | Antiquote.Antiq {body, ...} =>
-        Latex.enclose_text "%\n\\isaantiq\n" "{}%\n\\endisaantiq\n" (Latex.symbols_output body));
+        XML.enclose "%\n\\isaantiq\n" "{}%\n\\endisaantiq\n" (Latex.symbols_output body));
 
 fun output_comment_symbols ctxt {antiq} (comment, syms) =
   (case (comment, antiq) of
@@ -128,7 +133,7 @@ fun output_comment_symbols ctxt {antiq} (comment, syms) =
 fun output_body ctxt antiq bg en syms =
   Comment.read_body syms
   |> maps (output_comment_symbols ctxt {antiq = antiq})
-  |> Latex.enclose_text bg en;
+  |> XML.enclose bg en;
 
 in
 
@@ -147,8 +152,8 @@ fun output_token ctxt tok =
         else output false "" ""
     | Token.String => output false "{\\isachardoublequoteopen}" "{\\isachardoublequoteclose}"
     | Token.Alt_String => output false "{\\isacharbackquoteopen}" "{\\isacharbackquoteclose}"
-    | Token.Verbatim => output true "{\\isacharverbatimopen}" "{\\isacharverbatimclose}"
     | Token.Cartouche => output false "{\\isacartoucheopen}" "{\\isacartoucheclose}"
+    | Token.Control control => output_body ctxt false "" "" (Antiquote.control_symbols control)
     | _ => output false "" "")
   end handle ERROR msg => error (msg ^ Position.here (C_Token.pos_of tok));
 
@@ -158,12 +163,13 @@ end;
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Thy/document_antiquotations.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/Thy/document_antiquotations.ML
     Author:     Makarius
 
 Miscellaneous document antiquotations.
-*)
+*)*)
 \<open>
 structure C_Document_Antiquotations =
 struct
@@ -183,7 +189,7 @@ fun prepare_text ctxt =
   Input.source_content #> #1 #> Document_Antiquotation.prepare_lines ctxt;
 
 val theory_text_antiquotation =
-  Document_Output.antiquotation_raw_embedded \<^binding>\<open>C_theory_text\<close> (Scan.lift Args.text_input)
+  Document_Output.antiquotation_raw_embedded \<^binding>\<open>C_theory_text\<close> (Scan.lift Parse.embedded_input)
     (fn ctxt => fn text =>
       let
         val keywords = C_Thy_Header.get_keywords' ctxt;
@@ -213,7 +219,7 @@ end;
 local
 
 fun c_text name c =
-  Document_Output.antiquotation_verbatim_embedded name (Scan.lift Args.text_input)
+  Document_Output.antiquotation_verbatim_embedded name (Scan.lift Parse.embedded_input)
     (fn ctxt => fn text =>
       let val _ = C_Module.eval_in text (SOME (Context.Proof ctxt)) (c text)
       in #1 (Input.source_content text) end);

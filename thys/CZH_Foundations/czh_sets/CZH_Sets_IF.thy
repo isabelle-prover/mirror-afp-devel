@@ -460,39 +460,92 @@ subsection\<open>Disjoint union\<close>
 
 
 text\<open>
-Fundamental properties have already been exposed in the main library
-of \<open>ZFC in HOL\<close>.
+See the main library of \<open>ZFC in HOL\<close> for further information 
+and elementary properties.
 \<close>
 
-syntax "_VPRODUCT" :: "pttrn \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>(3\<Coprod>\<^sub>\<times>_\<in>\<^sub>\<circ>_./ _)\<close> [0, 0, 10] 10)
+syntax "_VSIGMA" :: "pttrn \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>(3\<Coprod>\<^sub>\<circ>_\<in>\<^sub>\<circ>_./ _)\<close> [0, 0, 10] 10)
 
-translations "\<Coprod>\<^sub>\<times>i\<in>\<^sub>\<circ>I. A" \<rightleftharpoons> "CONST VSigma I (\<lambda>i. A)"
+translations "\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. A" \<rightleftharpoons> "CONST VSigma I (\<lambda>i. A)"
 
 
 text\<open>Further rules.\<close>
 
-lemma vdunion_expE[elim!]:
-  assumes "c \<in>\<^sub>\<circ> (\<Union>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. \<Union>\<^sub>\<circ>x\<in>\<^sub>\<circ>A i. set {\<langle>i, x\<rangle>})"
-  obtains i a where "i \<in>\<^sub>\<circ> I" and "a \<in>\<^sub>\<circ> A i" and "c = \<langle>i, a\<rangle>"
-  using assms by (clarsimp simp: vrange_VLambda vimage_VLambda_vrange_rep)
-
-lemma vdunion_def: "(\<Coprod>\<^sub>\<times>i\<in>\<^sub>\<circ>I. A i) = (\<Union>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. \<Union>\<^sub>\<circ>x\<in>\<^sub>\<circ>A i. set {\<langle>i, x\<rangle>})" 
+lemma vdunion_def: "(\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. A i) = (\<Union>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. \<Union>\<^sub>\<circ>x\<in>\<^sub>\<circ>A i. set {\<langle>i, x\<rangle>})" 
   by (auto simp: vrange_VLambda vimage_VLambda_vrange_rep)
+
+lemma vdunionI:
+  assumes "ix = \<langle>i, x\<rangle>" and "i \<in>\<^sub>\<circ> I" and "x \<in>\<^sub>\<circ> A i"
+  shows "ix \<in>\<^sub>\<circ> (\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. A i)"
+  using assms(2,3) unfolding assms(1) vdunion_def by (intro vifunionI) auto
+
+lemmas vdunionD = VSigmaD1 VSigmaD2
+  and vdunionE = VSigmaE
 
 
 text\<open>Set operations.\<close>
 
-lemma vdunion_vsingleton: "(\<Coprod>\<^sub>\<times>i\<in>\<^sub>\<circ>set{c}. A i) = set {c} \<times>\<^sub>\<circ> A c" by auto
+lemma vdunion_vsingleton: "(\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>set{c}. A i) = set {c} \<times>\<^sub>\<circ> A c" by auto
 
 lemma vdunion_vdoubleton: 
-  "(\<Coprod>\<^sub>\<times>i\<in>\<^sub>\<circ>set{a, b}. A i) = set {a} \<times>\<^sub>\<circ> A a \<union>\<^sub>\<circ> set {b} \<times>\<^sub>\<circ> A b" 
+  "(\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>set{a, b}. A i) = set {a} \<times>\<^sub>\<circ> A a \<union>\<^sub>\<circ> set {b} \<times>\<^sub>\<circ> A b" 
   by auto
 
 
 text\<open>Connections.\<close>
 
-lemma vdunion_vsum: "(\<Coprod>\<^sub>\<times>i\<in>\<^sub>\<circ>set{0, 1}. if i=0 then A else B) = A \<Uplus> B"
+lemma vdunion_vsum: "(\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>set{0, 1}. if i=0 then A else B) = A \<Uplus> B"
   unfolding vdunion_vdoubleton vsum_def by simp
+
+
+
+subsection\<open>Canonical injection\<close>
+                                         
+definition vcinjection :: "(V \<Rightarrow> V) \<Rightarrow> V \<Rightarrow> V"
+  where "vcinjection A i = (\<lambda>x\<in>\<^sub>\<circ>A i. \<langle>i, x\<rangle>)"
+
+
+text\<open>Rules.\<close>
+
+mk_VLambda vcinjection_def
+  |vsv vcinjection_vsv[intro]|
+  |vdomain vcinjection_vdomain[simp]|
+  |app vcinjection_app[simp, intro]|
+
+
+text\<open>Elementary results.\<close>
+
+lemma vcinjection_vrange_vsubset: 
+  assumes "i \<in>\<^sub>\<circ> I" 
+  shows "\<R>\<^sub>\<circ> (vcinjection A i) \<subseteq>\<^sub>\<circ> (\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. A i)"
+  unfolding vcinjection_def
+proof(intro vrange_VLambda_vsubset)
+  fix x assume prems: "x \<in>\<^sub>\<circ> A i"
+  show "\<langle>i, x\<rangle> \<in>\<^sub>\<circ> (\<Coprod>\<^sub>\<circ>i\<in>\<^sub>\<circ>I. A i)" 
+    by (intro vdunionI[where A=A, OF _ assms prems]) simp
+qed
+
+lemma vcinjection_vrange: 
+  assumes "i \<in>\<^sub>\<circ> I" and "\<And>j. j \<in>\<^sub>\<circ> I \<Longrightarrow> A j \<noteq> 0"
+  shows "\<R>\<^sub>\<circ> (vcinjection A i) = (\<Union>\<^sub>\<circ>x\<in>\<^sub>\<circ>A i. set {\<langle>i, x\<rangle>})"
+proof(intro vsubset_antisym)
+  interpret vsv \<open>vcinjection A i\<close> by (rule vcinjection_vsv)
+  show "\<R>\<^sub>\<circ> (vcinjection A i) \<subseteq>\<^sub>\<circ> (\<Union>\<^sub>\<circ>x\<in>\<^sub>\<circ>A i. set {\<langle>i, x\<rangle>})"
+    unfolding vcinjection_def
+  proof(intro vrange_VLambda_vsubset)
+    fix x assume prems: "x \<in>\<^sub>\<circ> A i"
+    show "\<langle>i, x\<rangle> \<in>\<^sub>\<circ> (\<Union>\<^sub>\<circ>x\<in>\<^sub>\<circ>A i. set {\<langle>i, x\<rangle>})" 
+      by (intro vifunionI, rule prems) simp
+  qed
+  show "(\<Union>\<^sub>\<circ>x\<in>\<^sub>\<circ>A i. set {\<langle>i, x\<rangle>}) \<subseteq>\<^sub>\<circ> \<R>\<^sub>\<circ> (vcinjection A i)"
+  proof(rule vsubsetI)
+    fix ix assume "ix \<in>\<^sub>\<circ> (\<Union>\<^sub>\<circ>x\<in>\<^sub>\<circ>A i. set {\<langle>i, x\<rangle>})"
+    then obtain x where x: "x \<in>\<^sub>\<circ> A i" and ix_def: "ix = \<langle>i, x\<rangle>" 
+      by (elim vifunionE) auto
+    with x show "ix \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (vcinjection A i)"
+      unfolding ix_def by (intro vsv_vimageI2') auto
+  qed
+qed
 
 
 
@@ -825,6 +878,13 @@ lemma vcpower_of_vempty:
   assumes "n \<noteq> 0"
   shows "0 ^\<^sub>\<times> n = 0"
   using assms unfolding vcpower_def vproduct_def by simp
+
+lemma vcpower_vsubset_mono: 
+  assumes "A \<subseteq>\<^sub>\<circ> B"
+  shows "A ^\<^sub>\<times> n \<subseteq>\<^sub>\<circ> B ^\<^sub>\<times> n"
+  using assms
+  by (intro vsubsetI vcpowerI vproductI)
+    (auto intro: vproductD[OF vcpowerD, rule_format])
 
 
 text\<open>Connections.\<close>

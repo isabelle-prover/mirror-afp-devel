@@ -1,11 +1,11 @@
 (*
-  File: auto2_hol.ML
+  File: auto2_hol_util_base.ML
   Author: Bohua Zhan
 
-  Setup of auto2 for HOL.
+  Setup of auto2 utility for HOL.
 *)
 
-structure UtilBase : UTIL_BASE =
+structure Auto2_UtilBase : UTIL_BASE =
 struct
 
 (* Types *)
@@ -128,5 +128,4 @@ val Ball_def_th = @{thm Ball_def'}
 
 end  (* structure Base *)
 
-structure Basic_UtilBase: BASIC_UTIL_BASE = UtilBase
-open Basic_UtilBase
+structure Auto2_Basic_UtilBase : BASIC_UTIL_BASE = Auto2_UtilBase

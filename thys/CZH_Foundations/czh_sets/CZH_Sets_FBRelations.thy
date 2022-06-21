@@ -332,9 +332,9 @@ lemma fcomp_vunion_right[simp]: "r \<circ>\<^sub>\<bullet> (s \<union>\<^sub>\<c
 
 text\<open>Connections.\<close>
 
-lemma fcomp_fid_on_idem[simp]: "fid_on A \<circ>\<^sub>\<bullet> fid_on A = fid_on A" by auto
+lemma fcomp_fid_on_idem[simp]: "fid_on A \<circ>\<^sub>\<bullet> fid_on A = fid_on A" by force
 
-lemma fcomp_fid_on[simp]: "fid_on A \<circ>\<^sub>\<bullet> fid_on B = fid_on (A \<inter>\<^sub>\<circ> B)" by auto
+lemma fcomp_fid_on[simp]: "fid_on A \<circ>\<^sub>\<bullet> fid_on B = fid_on (A \<inter>\<^sub>\<circ> B)" by force
 
 lemma fcomp_fconst_on_fid_on[simp]: "fconst_on A c \<circ>\<^sub>\<bullet> fid_on A = fconst_on A c" 
   by auto

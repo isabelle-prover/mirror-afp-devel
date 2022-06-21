@@ -18,7 +18,7 @@ theory Complex_Vector_Spaces
 
     "Complex_Bounded_Operators.Extra_Vector_Spaces"
     "Complex_Bounded_Operators.Extra_Ordered_Fields"
-    "Complex_Bounded_Operators.Extra_Lattice"
+    "HOL-Library.Complemented_Lattices"
     "Complex_Bounded_Operators.Extra_General"
 
     Complex_Vector_Spaces0
@@ -27,6 +27,8 @@ begin
 bundle notation_norm begin
 notation norm ("\<parallel>_\<parallel>")
 end
+
+unbundle lattice_syntax
 
 subsection \<open>Misc\<close>
 
@@ -2816,5 +2818,7 @@ end
 
 lemmas tendsto_scaleC [tendsto_intros] =
   bounded_cbilinear.tendsto [OF bounded_cbilinear_scaleC]
+
+unbundle no_lattice_syntax
 
 end

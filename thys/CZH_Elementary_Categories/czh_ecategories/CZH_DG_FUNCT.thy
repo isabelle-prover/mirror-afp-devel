@@ -21,6 +21,7 @@ named_theorems dg_FUNCT_cs_simps
 named_theorems dg_FUNCT_cs_intros
 named_theorems cat_map_cs_simps
 named_theorems cat_map_cs_intros
+named_theorems cat_map_extra_cs_simps
 
 
 
@@ -66,7 +67,7 @@ lemma cf_map_vdomain[cat_map_cs_simps]: "\<D>\<^sub>\<circ> (cf_map \<FF>) = 2\<
 
 lemma (in is_functor) cf_map_vsubset_cf: "cf_map \<FF> \<subseteq>\<^sub>\<circ> \<FF>"
   by (unfold cf_map_def, subst (3) cf_def)
-    (cs_concl cs_intro: vcons_vsubset' V_cs_intros)
+    (cs_concl cs_shallow cs_intro: vcons_vsubset' V_cs_intros)
 
 
 text\<open>Size.\<close>
@@ -103,7 +104,7 @@ qed
 
 lemma (in is_tm_functor) tm_cf_map_in_Vset: "cf_map \<FF> \<in>\<^sub>\<circ> Vset \<alpha>"
   using tm_cf_ObjMap_in_Vset tm_cf_ArrMap_in_Vset unfolding cf_map_def
-  by (cs_concl cs_intro: V_cs_intros)
+  by (cs_concl cs_shallow cs_intro: V_cs_intros)
 
 lemma (in is_functor) cf_map_in_Vset: 
   assumes "\<Z> \<beta>" and "\<alpha> \<in>\<^sub>\<circ> \<beta>"  
@@ -149,7 +150,7 @@ proof(rule vsubset_in_VsetI)
     show "\<FF> \<in>\<^sub>\<circ> Vset (\<alpha> + 4\<^sub>\<nat>)" unfolding \<FF>_def by (rule cf_map_in_Vset_4)
   qed
   from assms(2) show "Vset (\<alpha> + 4\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
 
 lemma (in \<Z>) tm_cf_maps_vsubset_Vset: "tm_cf_maps \<alpha> \<AA> \<BB> \<subseteq>\<^sub>\<circ> Vset \<alpha>"
@@ -285,12 +286,15 @@ definition cf_of_cf_map :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
 
 text\<open>Components.\<close>
 
-lemma cf_of_cf_map_components[cat_map_cs_simps]:
+lemma cf_of_cf_map_components:
   shows "cf_of_cf_map \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr> = \<FF>\<lparr>ObjMap\<rparr>"
     and "cf_of_cf_map \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr> = \<FF>\<lparr>ArrMap\<rparr>"
     and "cf_of_cf_map \<AA> \<BB> \<FF>\<lparr>HomDom\<rparr> = \<AA>"
     and "cf_of_cf_map \<AA> \<BB> \<FF>\<lparr>HomCod\<rparr> = \<BB>"
   unfolding cf_of_cf_map_def dghm_field_simps by (simp_all add: nat_omega_simps)
+
+lemmas [cat_map_extra_cs_simps] = cf_of_cf_map_components(1-2)
+lemmas [cat_map_cs_simps] = cf_of_cf_map_components(3-4)
 
 
 subsubsection\<open>The conversion of a functor map to a functor is a functor\<close>
@@ -309,7 +313,7 @@ proof(rule is_functorI')
     if "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for a b f 
     unfolding cf_of_cf_map_components cf_map_components
     using is_functor_axioms that 
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   show 
     "cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<rparr> =
       cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub>
@@ -317,14 +321,14 @@ proof(rule is_functorI')
     if "g : b \<mapsto>\<^bsub>\<AA>\<^esub> c" and "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for b c g a f
     using is_functor_axioms that 
     unfolding cf_of_cf_map_components cf_map_components
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   show 
     "cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> = 
       \<BB>\<lparr>CId\<rparr>\<lparr>cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
     if "c \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for c
     using is_functor_axioms that 
     unfolding cf_of_cf_map_components cf_map_components
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
 qed 
   (
     auto simp: 
@@ -363,7 +367,7 @@ proof(rule cf_eqI)
       if "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for a b f 
       unfolding cf_of_cf_map_components cf_map_components
       using is_functor_axioms that 
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     show 
       "cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f\<rparr> =
         cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub>
@@ -371,14 +375,14 @@ proof(rule cf_eqI)
       if "g : b \<mapsto>\<^bsub>\<AA>\<^esub> c" and "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for b c g a f
       unfolding cf_of_cf_map_components cf_map_components
       using is_functor_axioms that 
-      by (cs_concl cs_simp: cat_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps)
     show 
       "cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr> =
         \<BB>\<lparr>CId\<rparr>\<lparr>cf_of_cf_map \<AA> \<BB> (cf_map \<FF>)\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>\<rparr>"
       if "c \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for c
       unfolding cf_of_cf_map_components cf_map_components
       using is_functor_axioms that 
-      by (cs_concl cs_simp: cat_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   qed 
     (
       auto simp: 
@@ -581,10 +585,12 @@ proof-
     ntcf_NTMap_vsubset_Vset 
   from NTDom.cf_map_in_Vset_4 have [cat_cs_intros]:
     "cf_map \<FF> \<in>\<^sub>\<circ> Vset (succ (succ (succ (succ \<alpha>))))"
-    by succ_of_numeral (cs_prems cs_simp: plus_V_succ_right V_cs_simps)
+    by succ_of_numeral 
+      (cs_prems cs_shallow cs_simp: plus_V_succ_right V_cs_simps)
   from NTCod.cf_map_in_Vset_4 have [cat_cs_intros]:
     "cf_map \<GG> \<in>\<^sub>\<circ> Vset (succ (succ (succ (succ \<alpha>))))"
-    by succ_of_numeral (cs_prems cs_simp: plus_V_succ_right V_cs_simps)
+    by succ_of_numeral 
+      (cs_prems cs_shallow cs_simp: plus_V_succ_right V_cs_simps)
   show ?thesis
     by (subst ntcf_arrow_def, succ_of_numeral, unfold cat_cs_simps)
       (
@@ -610,7 +616,7 @@ proof(rule vsubset_in_VsetI)
     show "\<NN> \<in>\<^sub>\<circ> Vset (\<alpha> + 7\<^sub>\<nat>)" unfolding \<NN>_def by (rule ntcf_arrow_in_Vset_7)
   qed
   from assms(2) show "Vset (\<alpha> + 7\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
   
 lemma (in \<Z>) tm_ntcf_arrows_vsubset_Vset: "tm_ntcf_arrows \<alpha> \<AA> \<BB> \<subseteq>\<^sub>\<circ> Vset \<alpha>"
@@ -755,7 +761,7 @@ definition ntcf_of_ntcf_arrow :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow
 
 text\<open>Components.\<close>
 
-lemma ntcf_of_ntcf_arrow_components[cat_map_cs_simps]:
+lemma ntcf_of_ntcf_arrow_components:
   shows "ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr> = \<NN>\<lparr>NTMap\<rparr>"
     and "ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTDom\<rparr> = cf_of_cf_map \<AA> \<BB> (\<NN>\<lparr>NTDom\<rparr>)"
     and "ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTCod\<rparr> = cf_of_cf_map \<AA> \<BB> (\<NN>\<lparr>NTCod\<rparr>)"
@@ -763,6 +769,9 @@ lemma ntcf_of_ntcf_arrow_components[cat_map_cs_simps]:
     and "ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTDGCod\<rparr> = \<BB>"
   unfolding ntcf_of_ntcf_arrow_def nt_field_simps 
   by (simp_all add: nat_omega_simps)
+
+lemmas [cat_map_extra_cs_simps] = ntcf_of_ntcf_arrow_components(1)
+lemmas [cat_map_cs_simps] = ntcf_of_ntcf_arrow_components(2-5)
 
 
 subsubsection\<open>
@@ -781,17 +790,27 @@ proof(rule is_ntcfI')
     \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
     if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a
     using is_ntcf_axioms that
-    by (cs_concl cs_simp: cat_map_cs_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_map_cs_simps cat_map_extra_cs_simps 
+          cs_intro: cat_cs_intros
+      )
   show "ntcf_of_ntcf_arrow \<AA> \<BB> (ntcf_arrow \<NN>)\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> =
     \<GG>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> ntcf_of_ntcf_arrow \<AA> \<BB> (ntcf_arrow \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
     if "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for a b f
     using is_ntcf_axioms that
     by 
       (
-        cs_concl 
-          cs_simp: ntcf_Comp_commute cat_map_cs_simps cs_intro: cat_cs_intros
+        cs_concl cs_shallow 
+          cs_simp: ntcf_Comp_commute cat_map_cs_simps cat_map_extra_cs_simps 
+          cs_intro: cat_cs_intros
       )
-qed (use is_ntcf_axioms in \<open>auto simp: cat_cs_simps cat_map_cs_simps\<close>)
+qed 
+  (
+    use is_ntcf_axioms in 
+      \<open>auto simp: cat_cs_simps cat_map_cs_simps cat_map_extra_cs_simps\<close>
+  )
 
 lemma (in is_ntcf) ntcf_of_ntcf_arrow_is_ntcf': 
   assumes "\<NN>' = ntcf_arrow \<NN>" and "\<AA>' = \<AA>" and "\<BB>' = \<BB>"
@@ -809,7 +828,11 @@ to a natural transformation
 lemma (in is_ntcf) ntcf_of_ntcf_arrow[cat_map_cs_simps]:
   "ntcf_of_ntcf_arrow \<AA> \<BB> (ntcf_arrow \<NN>) = \<NN>"
   by (rule ntcf_eqI) 
-    (auto simp: cat_map_cs_simps intro: cat_cs_intros ntcf_of_ntcf_arrow_is_ntcf)
+    (
+      auto 
+        simp: cat_map_cs_simps cat_map_extra_cs_simps 
+        intro: cat_cs_intros ntcf_of_ntcf_arrow_is_ntcf
+    )
 
 lemmas [cat_map_cs_simps] = is_ntcf.ntcf_of_ntcf_arrow
 
@@ -849,7 +872,7 @@ lemma ntcf_arrow_vcomp_ntcf_vcomp[cat_map_cs_simps]:
   shows "ntcf_arrow \<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^bsub>\<AA>,\<BB>\<^esub> ntcf_arrow \<NN> = ntcf_arrow (\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>)"
   by (rule ntcf_arrow_eqI, insert assms)
     (
-      cs_concl
+      cs_concl 
         cs_simp: ntcf_arrow_vcomp_def cat_map_cs_simps cat_cs_simps
         cs_intro: cat_map_cs_intros cat_cs_intros
     )+
@@ -939,7 +962,11 @@ proof-
     "dg_FUNCT \<alpha> \<AA> \<BB>\<lparr>Dom\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<FF>"  
     "dg_FUNCT \<alpha> \<AA> \<BB>\<lparr>Cod\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<GG>"
     unfolding dg_FUNCT_components 
-    by (cs_concl cs_simp: dg_FUNCT_cs_simps V_cs_simps cs_intro: dg_FUNCT_cs_intros)+
+    by 
+      ( 
+        cs_concl 
+          cs_simp: dg_FUNCT_cs_simps V_cs_simps cs_intro: dg_FUNCT_cs_intros
+      )+
 qed
 
 lemma (in is_ntcf)
@@ -964,7 +991,11 @@ proof(all\<open>intro vrange_VLambda_vsubset\<close>)
   from \<MM> show "\<NN>\<lparr>NTDom\<rparr> \<in>\<^sub>\<circ> cf_maps \<alpha> \<AA> \<BB>"
     by (cs_concl cs_simp: dg_FUNCT_cs_simps cs_intro: dg_FUNCT_cs_intros cat_cs_intros)
   from \<MM> show "\<NN>\<lparr>NTCod\<rparr> \<in>\<^sub>\<circ> cf_maps \<alpha> \<AA> \<BB>"
-    by (cs_concl cs_simp: dg_FUNCT_cs_simps cs_intro: dg_FUNCT_cs_intros cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_FUNCT_cs_simps cs_intro: dg_FUNCT_cs_intros cat_cs_intros
+      )
 qed
 
 
@@ -1003,7 +1034,7 @@ proof(intro is_arrI, unfold dg_FUNCT_components(1,2))
   from assms show 
     "dg_FUNCT \<alpha> \<AA> \<BB>\<lparr>Dom\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<FF>"
     "dg_FUNCT \<alpha> \<AA> \<BB>\<lparr>Cod\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<GG>"
-    by (cs_concl cs_simp: dg_FUNCT_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: dg_FUNCT_cs_simps)+
 qed
 
 lemma dg_FUNCT_is_arrI':
@@ -1033,7 +1064,7 @@ proof-
   from \<NN>(3) \<NN>' have \<GG>_def: "\<GG> = cf_map \<GG>'"
     by (cs_prems cs_simp: \<NN>_def dg_FUNCT_cs_simps) simp
   from \<NN>' have \<NN>'_def: "\<NN>' = ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>"
-    unfolding \<NN>_def by (cs_concl cs_simp: dg_FUNCT_cs_simps)
+    unfolding \<NN>_def by (cs_concl cs_shallow cs_simp: dg_FUNCT_cs_simps)
   from \<NN>' have \<FF>'_def: "\<FF>' = cf_of_cf_map \<AA> \<BB> \<FF>"
     and \<GG>'_def: "\<GG>' = cf_of_cf_map \<AA> \<BB> \<GG>"
     unfolding \<FF>_def \<GG>_def 
@@ -1108,7 +1139,7 @@ proof-
     unfolding dg_Funct_components 
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: dg_FUNCT_cs_simps V_cs_simps 
           cs_intro: dg_FUNCT_cs_intros cat_cs_intros
       )+
@@ -1136,14 +1167,14 @@ proof(all\<open>intro vrange_VLambda_vsubset\<close>)
   from \<MM> show "\<NN>\<lparr>NTDom\<rparr> \<in>\<^sub>\<circ> tm_cf_maps \<alpha> \<AA> \<BB>"
     by 
       ( 
-        cs_concl 
+        cs_concl  
           cs_simp: dg_FUNCT_cs_simps 
           cs_intro: dg_FUNCT_cs_intros cat_small_cs_intros
       )
   from \<MM> show "\<NN>\<lparr>NTCod\<rparr> \<in>\<^sub>\<circ> tm_cf_maps \<alpha> \<AA> \<BB>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: dg_FUNCT_cs_simps 
           cs_intro: dg_FUNCT_cs_intros cat_small_cs_intros
       )
@@ -1161,7 +1192,7 @@ proof(intro is_arrI, unfold dg_Funct_components(1,2))
   from assms show 
     "dg_Funct \<alpha> \<AA> \<BB>\<lparr>Dom\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<FF>"
     "dg_Funct \<alpha> \<AA> \<BB>\<lparr>Cod\<rparr>\<lparr>ntcf_arrow \<NN>\<rparr> = cf_map \<GG>"
-    by (cs_concl cs_simp: dg_FUNCT_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: dg_FUNCT_cs_simps)+
 qed
 
 lemma dg_Funct_is_arrI':
@@ -1194,7 +1225,7 @@ proof-
     unfolding \<NN>_def 
     by 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: dg_FUNCT_cs_simps cs_intro: cat_small_cs_intros cat_cs_intros
       )
   from \<NN>' have \<FF>'_def: "\<FF>' = cf_of_cf_map \<AA> \<BB> \<FF>"
@@ -1224,204 +1255,210 @@ lemma dg_Funct_is_arrE[elim]:
 
 subsubsection\<open>\<open>Funct\<close> is a digraph\<close>
 
-lemma (in \<Z>) digraph_dg_Funct: 
+lemma digraph_dg_Funct: 
   assumes "tiny_category \<alpha> \<AA>" and "category \<alpha> \<BB>"
   shows "digraph \<alpha> (dg_Funct \<alpha> \<AA> \<BB>)"
-proof(intro digraphI)
+proof-
 
   interpret tiny_category \<alpha> \<AA> by (rule assms(1))
   interpret \<BB>: category \<alpha> \<BB> by (rule assms(2))
 
-  show "vfsequence (dg_Funct \<alpha> \<AA> \<BB>)" unfolding dg_Funct_def by simp
-  show "vcard (dg_Funct \<alpha> \<AA> \<BB>) = 4\<^sub>\<nat>"
-    unfolding dg_Funct_def by (simp add: nat_omega_simps)
-  show "\<R>\<^sub>\<circ> (dg_Funct \<alpha> \<AA> \<BB>\<lparr>Dom\<rparr>) \<subseteq>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>"
-    by (simp add: dg_Funct_Dom_vrange dg_Funct_Cod_vrange)
-  show "\<R>\<^sub>\<circ> (dg_Funct \<alpha> \<AA> \<BB>\<lparr>Cod\<rparr>) \<subseteq>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>"
-    by (simp add: dg_Funct_Dom_vrange dg_Funct_Cod_vrange)
-  show "dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr> \<subseteq>\<^sub>\<circ> Vset \<alpha>"
-    unfolding dg_Funct_components(1,2) by (rule tm_cf_maps_vsubset_Vset)
+  show ?thesis
+
+  proof(intro digraphI)
   
-  have RA: 
-    "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<in>\<^sub>\<circ> Vset \<alpha>"
-    "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<subseteq>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-    if "A \<subseteq>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>" and "A \<in>\<^sub>\<circ> Vset \<alpha>" for A
-  proof-
-    have "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<subseteq>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
-      and "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<subseteq>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>A)))))"
-    proof(all\<open>intro vsubsetI\<close>)
-      fix f assume "f \<in>\<^sub>\<circ> (\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>))"
-      then obtain \<FF> where \<FF>: "\<FF> \<in>\<^sub>\<circ> A" and f: "f \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)" by auto
-      with that(1) have "\<FF> \<in>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>" by (elim vsubsetE)
-      then obtain \<FF>'
-        where \<FF>_def: "\<FF> = cf_map \<FF>'" and \<FF>': "\<FF>' : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
-        unfolding dg_Funct_components by auto
-      interpret \<FF>': is_tm_functor \<alpha> \<AA> \<BB> \<FF>' by (rule \<FF>')
-      from f obtain a where "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<FF>'\<lparr>ObjMap\<rparr>)" and af: "\<langle>a, f\<rangle> \<in>\<^sub>\<circ> \<FF>'\<lparr>ObjMap\<rparr>"
-        unfolding \<FF>_def cf_map_components vdomain_iff by force
-      then show "f \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-        using \<FF>'.cf_ObjMap_vrange \<FF>_def cf_map_components(1) f vsubsetE by auto
-      show "f \<in>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>A)))))"
-      proof(intro VUnionI)
-        show "\<FF> \<in>\<^sub>\<circ> A" by (rule \<FF>)
-        show "set {0, \<FF>\<lparr>ObjMap\<rparr>} \<in>\<^sub>\<circ> \<langle>[]\<^sub>\<circ>, \<FF>\<lparr>ObjMap\<rparr>\<rangle>" unfolding vpair_def by simp
-        show "\<langle>a, f\<rangle> \<in>\<^sub>\<circ> \<FF>\<lparr>ObjMap\<rparr>"
-          unfolding \<FF>_def cf_map_components by (intro af)
-        show "set {a, f} \<in>\<^sub>\<circ> \<langle>a, f\<rangle>" unfolding vpair_def by clarsimp
-      qed (clarsimp simp: \<FF>_def cf_map_def dg_FUNCT_Obj_components)+
-    qed
-    moreover have "\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>A))))) \<in>\<^sub>\<circ> Vset \<alpha>"
-      by (intro VUnion_in_VsetI that(2))
-    ultimately show 
-      "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<in>\<^sub>\<circ> Vset \<alpha>" 
-      "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<subseteq>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
-      by blast+
-  qed
-
-  fix A B assume prems:
-    "A \<subseteq>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>"
-    "B \<subseteq>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>"
-    "A \<in>\<^sub>\<circ> Vset \<alpha>"
-    "B \<in>\<^sub>\<circ> Vset \<alpha>"
-
-  define ARs where "ARs = (\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>))"
-  define BRs where "BRs = (\<Union>\<^sub>\<circ>\<GG>\<in>\<^sub>\<circ>B. \<R>\<^sub>\<circ> (\<GG>\<lparr>ObjMap\<rparr>))"
-  define Hom_AB where "Hom_AB = (\<Union>\<^sub>\<circ>a\<in>\<^sub>\<circ>ARs. \<Union>\<^sub>\<circ>b\<in>\<^sub>\<circ>BRs. Hom \<BB> a b)"
-
-  define Q where
-    "Q i = (if i = 0 then VPow (\<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB) else if i = 1\<^sub>\<nat> then A else B)" 
-    for i
-  have 
-    "{[\<NN>, \<FF>, \<GG>]\<^sub>\<circ> |\<NN> \<FF> \<GG>. \<NN> \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB \<and> \<FF> \<in>\<^sub>\<circ> A \<and> \<GG> \<in>\<^sub>\<circ> B} \<subseteq>
-      elts (\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ>set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i)"
-  proof(intro subsetI, unfold mem_Collect_eq, elim exE conjE)
-    fix \<NN>\<FF>\<GG> \<NN> \<FF> \<GG> assume prems': 
-      "\<NN>\<FF>\<GG> = [\<NN>, \<FF>, \<GG>]\<^sub>\<circ>" "\<NN> \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB" "\<FF> \<in>\<^sub>\<circ> A" "\<GG> \<in>\<^sub>\<circ> B"
-    show "\<NN>\<FF>\<GG> \<in>\<^sub>\<circ> (\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i)"
-    proof(intro vproductI, unfold Ball_def; (intro allI impI)?)
-      show "\<D>\<^sub>\<circ> \<NN>\<FF>\<GG> = set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}"
-        by (simp add: three prems'(1) nat_omega_simps)
-      fix i assume "i \<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}"
-      then consider \<open>i = 0\<close> | \<open>i = 1\<^sub>\<nat>\<close> | \<open>i = 2\<^sub>\<nat>\<close> by auto
-      then show "\<NN>\<FF>\<GG>\<lparr>i\<rparr> \<in>\<^sub>\<circ> Q i"
-        by cases (auto simp: Q_def prems' nat_omega_simps)
-    qed (auto simp: prems'(1))
-  qed
-  moreover then have small[simp]: 
-    "small {[r, a, b]\<^sub>\<circ> | r a b. r \<subseteq>\<^sub>\<circ>\<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB \<and> a \<in>\<^sub>\<circ> A \<and> b \<in>\<^sub>\<circ> B}"
-    by (rule down)
-  ultimately have
-    "set {[r, a, b]\<^sub>\<circ> |r a b. r \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB \<and> a \<in>\<^sub>\<circ> A \<and> b \<in>\<^sub>\<circ> B} \<subseteq>\<^sub>\<circ>
-      (\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i)"
-    by auto
-  moreover have "(\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i) \<in>\<^sub>\<circ> Vset \<alpha>"
-  proof(rule Limit_vproduct_in_VsetI)
-    show "set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>} \<in>\<^sub>\<circ> Vset \<alpha>"
-      by (cs_concl cs_intro: V_cs_intros cat_cs_intros cs_simp: V_cs_simps)
-    have "Hom_AB \<in>\<^sub>\<circ> Vset \<alpha>"
-      unfolding Hom_AB_def
-      by 
-        (
-          intro \<BB>.cat_Hom_vifunion_in_Vset prems(3,4), 
-          unfold ARs_def BRs_def; 
-          intro RA prems
-        )
-    moreover have "\<AA>\<lparr>Obj\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>" by (intro tiny_cat_Obj_in_Vset)
-    ultimately have "VPow (\<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB) \<in>\<^sub>\<circ> Vset \<alpha>"
-      by (cs_concl cs_intro: V_cs_intros)
-    with prems(3,4) show "Q i \<in>\<^sub>\<circ> Vset \<alpha>" if "i \<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}" for i
-      unfolding Q_def by (simp_all add: nat_omega_simps)
-  qed auto
-  moreover have
-    "(\<Union>\<^sub>\<circ>a\<in>\<^sub>\<circ>A. \<Union>\<^sub>\<circ>b\<in>\<^sub>\<circ>B. Hom (dg_Funct \<alpha> \<AA> \<BB>) a b) \<subseteq>\<^sub>\<circ>
-      set {[r, a, b]\<^sub>\<circ> | r a b. r \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB \<and> a \<in>\<^sub>\<circ> A \<and> b \<in>\<^sub>\<circ> B}"
-  proof(rule vsubsetI)
-    fix \<NN> assume "\<NN> \<in>\<^sub>\<circ> (\<Union>\<^sub>\<circ>a\<in>\<^sub>\<circ>A. \<Union>\<^sub>\<circ>b\<in>\<^sub>\<circ>B. Hom (dg_Funct \<alpha> \<AA> \<BB>) a b)"
-    then obtain \<FF> \<GG> 
-      where \<FF>: "\<FF> \<in>\<^sub>\<circ> A"
-        and \<GG>: "\<GG> \<in>\<^sub>\<circ> B"
-        and \<NN>_ab: "\<NN> \<in>\<^sub>\<circ> Hom (dg_Funct \<alpha> \<AA> \<BB>) \<FF> \<GG>"
-      by auto
-    then have "\<NN> : \<FF> \<mapsto>\<^bsub>dg_Funct \<alpha> \<AA> \<BB>\<^esub> \<GG>" by simp
-    note \<NN> = dg_Funct_is_arrD[OF this]
-    show 
-      "\<NN> \<in>\<^sub>\<circ> set {[r, a, b]\<^sub>\<circ> | r a b. r \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB \<and> a \<in>\<^sub>\<circ> A \<and> b \<in>\<^sub>\<circ> B}"
-    proof(intro in_set_CollectI small exI conjI)
-      show "\<NN> =
-        [
-          ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr>,
-          cf_map (ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTDom\<rparr>),
-          cf_map (ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTCod\<rparr>)
-        ]\<^sub>\<circ>"
-        by (rule \<NN>(2)[unfolded ntcf_arrow_def])
-      interpret \<NN>: is_tm_ntcf \<alpha> 
-        \<AA> \<BB> 
-        \<open>cf_of_cf_map \<AA> \<BB> \<FF>\<close> \<open>cf_of_cf_map \<AA> \<BB> \<GG>\<close> 
-        \<open>ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<close>
-        rewrites "ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr> = \<NN>\<lparr>NTMap\<rparr>"
-          and "cf_of_cf_map \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr> = \<FF>\<lparr>ObjMap\<rparr>"
-          and "cf_of_cf_map \<AA> \<BB> \<GG>\<lparr>ObjMap\<rparr> = \<GG>\<lparr>ObjMap\<rparr>"
-        by
-          (
-            rule \<NN>(1), 
-            unfold ntcf_of_ntcf_arrow_components cf_of_cf_map_components
-          ) 
-          simp_all
-      show "ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr> \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB"
-      proof(intro vsubsetI, unfold ntcf_of_ntcf_arrow_components)
-        fix af assume prems'': "af \<in>\<^sub>\<circ> \<NN>\<lparr>NTMap\<rparr>"
-        then obtain a f where af_def: "af = \<langle>a, f\<rangle>" 
-          and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
-          and f: "f \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<NN>\<lparr>NTMap\<rparr>)" 
-          by (elim \<NN>.NTMap.vbrelation_vinE)
-        from prems'' have f_def: "f = \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>" 
-          unfolding af_def \<NN>.NTMap.vsv_ex1_app1[OF a] .
-        have \<NN>a: "\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-          by (rule \<NN>.ntcf_NTMap_is_arr[OF a])
-        have "f \<in>\<^sub>\<circ> Hom_AB"
-          unfolding f_def Hom_AB_def ARs_def BRs_def
-        proof(intro vifunionI, unfold in_Hom_iff)
-          show "\<FF> \<in>\<^sub>\<circ> A" by (intro \<FF>)
-          from a show "\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)" 
-            by (metis \<NN>.NTDom.ObjMap.vdomain_atD \<NN>.NTDom.cf_ObjMap_vdomain)
-          show "\<GG> \<in>\<^sub>\<circ> B" by (intro \<GG>)
-          from a show "\<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<GG>\<lparr>ObjMap\<rparr>)" 
-            by (metis \<NN>.NTCod.ObjMap.vdomain_atD \<NN>.NTCod.cf_ObjMap_vdomain)
-          show "\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>" by (intro \<NN>a)
-        qed
-        with a show "af \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB" unfolding af_def f_def by simp
+    show "vfsequence (dg_Funct \<alpha> \<AA> \<BB>)" unfolding dg_Funct_def by simp
+    show "vcard (dg_Funct \<alpha> \<AA> \<BB>) = 4\<^sub>\<nat>"
+      unfolding dg_Funct_def by (simp add: nat_omega_simps)
+    show "\<R>\<^sub>\<circ> (dg_Funct \<alpha> \<AA> \<BB>\<lparr>Dom\<rparr>) \<subseteq>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>"
+      by (simp add: dg_Funct_Dom_vrange dg_Funct_Cod_vrange)
+    show "\<R>\<^sub>\<circ> (dg_Funct \<alpha> \<AA> \<BB>\<lparr>Cod\<rparr>) \<subseteq>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>"
+      by (simp add: dg_Funct_Dom_vrange dg_Funct_Cod_vrange)
+    show "dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr> \<subseteq>\<^sub>\<circ> Vset \<alpha>"
+      unfolding dg_Funct_components(1,2) by (rule tm_cf_maps_vsubset_Vset)
+    
+    have RA: 
+      "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<in>\<^sub>\<circ> Vset \<alpha>"
+      "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<subseteq>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+      if "A \<subseteq>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>" and "A \<in>\<^sub>\<circ> Vset \<alpha>" for A
+    proof-
+      have "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<subseteq>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
+        and "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<subseteq>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>A)))))"
+      proof(all\<open>intro vsubsetI\<close>)
+        fix f assume "f \<in>\<^sub>\<circ> (\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>))"
+        then obtain \<FF> where \<FF>: "\<FF> \<in>\<^sub>\<circ> A" and f: "f \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)" by auto
+        with that(1) have "\<FF> \<in>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>" by (elim vsubsetE)
+        then obtain \<FF>'
+          where \<FF>_def: "\<FF> = cf_map \<FF>'" and \<FF>': "\<FF>' : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> \<BB>"
+          unfolding dg_Funct_components by auto
+        interpret \<FF>': is_tm_functor \<alpha> \<AA> \<BB> \<FF>' by (rule \<FF>')
+        from f obtain a where "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (\<FF>'\<lparr>ObjMap\<rparr>)" and af: "\<langle>a, f\<rangle> \<in>\<^sub>\<circ> \<FF>'\<lparr>ObjMap\<rparr>"
+          unfolding \<FF>_def cf_map_components vdomain_iff by force
+        then show "f \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
+          using \<FF>'.cf_ObjMap_vrange \<FF>_def cf_map_components(1) f vsubsetE by auto
+        show "f \<in>\<^sub>\<circ> \<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>A)))))"
+        proof(intro VUnionI)
+          show "\<FF> \<in>\<^sub>\<circ> A" by (rule \<FF>)
+          show "set {0, \<FF>\<lparr>ObjMap\<rparr>} \<in>\<^sub>\<circ> \<langle>[]\<^sub>\<circ>, \<FF>\<lparr>ObjMap\<rparr>\<rangle>" unfolding vpair_def by simp
+          show "\<langle>a, f\<rangle> \<in>\<^sub>\<circ> \<FF>\<lparr>ObjMap\<rparr>"
+            unfolding \<FF>_def cf_map_components by (intro af)
+          show "set {a, f} \<in>\<^sub>\<circ> \<langle>a, f\<rangle>" unfolding vpair_def by clarsimp
+        qed (clarsimp simp: \<FF>_def cf_map_def dg_FUNCT_Obj_components)+
       qed
-      show "cf_map (ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTDom\<rparr>) \<in>\<^sub>\<circ> A"
-        unfolding \<NN>.ntcf_NTDom \<NN>(3)[symmetric] by (rule \<FF>)
-      show "cf_map (ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTCod\<rparr>) \<in>\<^sub>\<circ> B"
-        unfolding \<NN>.ntcf_NTCod \<NN>(4)[symmetric] by (rule \<GG>)
+      moreover have "\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>(\<Union>\<^sub>\<circ>A))))) \<in>\<^sub>\<circ> Vset \<alpha>"
+        by (intro VUnion_in_VsetI that(2))
+      ultimately show 
+        "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<in>\<^sub>\<circ> Vset \<alpha>" 
+        "(\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)) \<subseteq>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
+        by blast+
     qed
-  qed
-  ultimately show "(\<Union>\<^sub>\<circ>a\<in>\<^sub>\<circ>A. \<Union>\<^sub>\<circ>b\<in>\<^sub>\<circ>B. Hom (dg_Funct \<alpha> \<AA> \<BB>) a b) \<in>\<^sub>\<circ> Vset \<alpha>"
-    by blast
-qed (unfold dg_Funct_components, auto)
+  
+    fix A B assume prems:
+      "A \<subseteq>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>"
+      "B \<subseteq>\<^sub>\<circ> dg_Funct \<alpha> \<AA> \<BB>\<lparr>Obj\<rparr>"
+      "A \<in>\<^sub>\<circ> Vset \<alpha>"
+      "B \<in>\<^sub>\<circ> Vset \<alpha>"
+  
+    define ARs where "ARs = (\<Union>\<^sub>\<circ>\<FF>\<in>\<^sub>\<circ>A. \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>))"
+    define BRs where "BRs = (\<Union>\<^sub>\<circ>\<GG>\<in>\<^sub>\<circ>B. \<R>\<^sub>\<circ> (\<GG>\<lparr>ObjMap\<rparr>))"
+    define Hom_AB where "Hom_AB = (\<Union>\<^sub>\<circ>a\<in>\<^sub>\<circ>ARs. \<Union>\<^sub>\<circ>b\<in>\<^sub>\<circ>BRs. Hom \<BB> a b)"
+  
+    define Q where
+      "Q i = (if i = 0 then VPow (\<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB) else if i = 1\<^sub>\<nat> then A else B)" 
+      for i
+    have 
+      "{[\<NN>, \<FF>, \<GG>]\<^sub>\<circ> |\<NN> \<FF> \<GG>. \<NN> \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB \<and> \<FF> \<in>\<^sub>\<circ> A \<and> \<GG> \<in>\<^sub>\<circ> B} \<subseteq>
+        elts (\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ>set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i)"
+    proof(intro subsetI, unfold mem_Collect_eq, elim exE conjE)
+      fix \<NN>\<FF>\<GG> \<NN> \<FF> \<GG> assume prems': 
+        "\<NN>\<FF>\<GG> = [\<NN>, \<FF>, \<GG>]\<^sub>\<circ>" "\<NN> \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB" "\<FF> \<in>\<^sub>\<circ> A" "\<GG> \<in>\<^sub>\<circ> B"
+      show "\<NN>\<FF>\<GG> \<in>\<^sub>\<circ> (\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i)"
+      proof(intro vproductI, unfold Ball_def; (intro allI impI)?)
+        fix i assume "i \<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}"
+        then consider \<open>i = 0\<close> | \<open>i = 1\<^sub>\<nat>\<close> | \<open>i = 2\<^sub>\<nat>\<close> by auto
+        then show "\<NN>\<FF>\<GG>\<lparr>i\<rparr> \<in>\<^sub>\<circ> Q i"
+          by cases (auto simp: Q_def prems' nat_omega_simps)
+      qed (auto simp: prems'(1) three nat_omega_simps)
+    qed
+    moreover then have small[simp]: 
+      "small {[r, a, b]\<^sub>\<circ> | r a b. r \<subseteq>\<^sub>\<circ>\<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB \<and> a \<in>\<^sub>\<circ> A \<and> b \<in>\<^sub>\<circ> B}"
+      by (rule down)
+    ultimately have
+      "set {[r, a, b]\<^sub>\<circ> |r a b. r \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB \<and> a \<in>\<^sub>\<circ> A \<and> b \<in>\<^sub>\<circ> B} \<subseteq>\<^sub>\<circ>
+        (\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i)"
+      by auto
+    moreover have "(\<Prod>\<^sub>\<circ>i\<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}. Q i) \<in>\<^sub>\<circ> Vset \<alpha>"
+    proof(rule Limit_vproduct_in_VsetI)
+      show "set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>} \<in>\<^sub>\<circ> Vset \<alpha>"
+        by (cs_concl cs_intro: V_cs_intros cat_cs_intros cs_simp: V_cs_simps)
+      have "Hom_AB \<in>\<^sub>\<circ> Vset \<alpha>"
+        unfolding Hom_AB_def
+        by 
+          (
+            intro \<BB>.cat_Hom_vifunion_in_Vset prems(3,4), 
+            unfold ARs_def BRs_def; 
+            intro RA prems
+          )
+      moreover have "\<AA>\<lparr>Obj\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>" by (intro tiny_cat_Obj_in_Vset)
+      ultimately have "VPow (\<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB) \<in>\<^sub>\<circ> Vset \<alpha>"
+        by (cs_concl cs_shallow cs_intro: V_cs_intros)
+      with prems(3,4) show "Q i \<in>\<^sub>\<circ> Vset \<alpha>" if "i \<in>\<^sub>\<circ> set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}" for i
+        unfolding Q_def by (simp_all add: nat_omega_simps)
+    qed auto
+    moreover have
+      "(\<Union>\<^sub>\<circ>a\<in>\<^sub>\<circ>A. \<Union>\<^sub>\<circ>b\<in>\<^sub>\<circ>B. Hom (dg_Funct \<alpha> \<AA> \<BB>) a b) \<subseteq>\<^sub>\<circ>
+        set {[r, a, b]\<^sub>\<circ> | r a b. r \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB \<and> a \<in>\<^sub>\<circ> A \<and> b \<in>\<^sub>\<circ> B}"
+    proof(rule vsubsetI)
+      fix \<NN> assume "\<NN> \<in>\<^sub>\<circ> (\<Union>\<^sub>\<circ>a\<in>\<^sub>\<circ>A. \<Union>\<^sub>\<circ>b\<in>\<^sub>\<circ>B. Hom (dg_Funct \<alpha> \<AA> \<BB>) a b)"
+      then obtain \<FF> \<GG> 
+        where \<FF>: "\<FF> \<in>\<^sub>\<circ> A"
+          and \<GG>: "\<GG> \<in>\<^sub>\<circ> B"
+          and \<NN>_ab: "\<NN> \<in>\<^sub>\<circ> Hom (dg_Funct \<alpha> \<AA> \<BB>) \<FF> \<GG>"
+        by auto
+      then have "\<NN> : \<FF> \<mapsto>\<^bsub>dg_Funct \<alpha> \<AA> \<BB>\<^esub> \<GG>" by simp
+      note \<NN> = dg_Funct_is_arrD[OF this]
+      show 
+        "\<NN> \<in>\<^sub>\<circ> set {[r, a, b]\<^sub>\<circ> | r a b. r \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB \<and> a \<in>\<^sub>\<circ> A \<and> b \<in>\<^sub>\<circ> B}"
+      proof(intro in_set_CollectI small exI conjI)
+        show "\<NN> =
+          [
+            ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr>,
+            cf_map (ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTDom\<rparr>),
+            cf_map (ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTCod\<rparr>)
+          ]\<^sub>\<circ>"
+          by (rule \<NN>(2)[unfolded ntcf_arrow_def])
+        interpret \<NN>: is_tm_ntcf \<alpha> 
+          \<AA> \<BB> 
+          \<open>cf_of_cf_map \<AA> \<BB> \<FF>\<close> \<open>cf_of_cf_map \<AA> \<BB> \<GG>\<close> 
+          \<open>ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<close>
+          rewrites "ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr> = \<NN>\<lparr>NTMap\<rparr>"
+            and "cf_of_cf_map \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr> = \<FF>\<lparr>ObjMap\<rparr>"
+            and "cf_of_cf_map \<AA> \<BB> \<GG>\<lparr>ObjMap\<rparr> = \<GG>\<lparr>ObjMap\<rparr>"
+          by
+            (
+              rule \<NN>(1), 
+              unfold ntcf_of_ntcf_arrow_components cf_of_cf_map_components
+            ) 
+            simp_all
+        show "ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr> \<subseteq>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB"
+        proof(intro vsubsetI, unfold ntcf_of_ntcf_arrow_components)
+          fix af assume prems'': "af \<in>\<^sub>\<circ> \<NN>\<lparr>NTMap\<rparr>"
+          then obtain a f where af_def: "af = \<langle>a, f\<rangle>" 
+            and a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+            and f: "f \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<NN>\<lparr>NTMap\<rparr>)" 
+            by (elim \<NN>.NTMap.vbrelation_vinE)
+          from prems'' have f_def: "f = \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>" 
+            unfolding af_def \<NN>.NTMap.vsv_ex1_app1[OF a] .
+          have \<NN>a: "\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+            by (rule \<NN>.ntcf_NTMap_is_arr[OF a])
+          have "f \<in>\<^sub>\<circ> Hom_AB"
+            unfolding f_def Hom_AB_def ARs_def BRs_def
+          proof(intro vifunionI, unfold in_Hom_iff)
+            show "\<FF> \<in>\<^sub>\<circ> A" by (intro \<FF>)
+            from a show "\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)" 
+              by (metis \<NN>.NTDom.ObjMap.vdomain_atD \<NN>.NTDom.cf_ObjMap_vdomain)
+            show "\<GG> \<in>\<^sub>\<circ> B" by (intro \<GG>)
+            from a show "\<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<GG>\<lparr>ObjMap\<rparr>)" 
+              by (metis \<NN>.NTCod.ObjMap.vdomain_atD \<NN>.NTCod.cf_ObjMap_vdomain)
+            show "\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>" by (intro \<NN>a)
+          qed
+          with a show "af \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<times>\<^sub>\<circ> Hom_AB" unfolding af_def f_def by simp
+        qed
+        show "cf_map (ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTDom\<rparr>) \<in>\<^sub>\<circ> A"
+          unfolding \<NN>.ntcf_NTDom \<NN>(3)[symmetric] by (rule \<FF>)
+        show "cf_map (ntcf_of_ntcf_arrow \<AA> \<BB> \<NN>\<lparr>NTCod\<rparr>) \<in>\<^sub>\<circ> B"
+          unfolding \<NN>.ntcf_NTCod \<NN>(4)[symmetric] by (rule \<GG>)
+      qed
+    qed
+    ultimately show "(\<Union>\<^sub>\<circ>a\<in>\<^sub>\<circ>A. \<Union>\<^sub>\<circ>b\<in>\<^sub>\<circ>B. Hom (dg_Funct \<alpha> \<AA> \<BB>) a b) \<in>\<^sub>\<circ> Vset \<alpha>"
+      by blast
+  qed (auto simp: dg_Funct_components)
+
+qed
 
 
 subsubsection\<open>\<open>Funct\<close> is a subdigraph of \<open>FUNCT\<close>\<close>
 
-lemma (in \<Z>) subdigraph_dg_Funct_dg_FUNCT:
+lemma subdigraph_dg_Funct_dg_FUNCT:
   assumes "\<Z> \<beta>" and "\<alpha> \<in>\<^sub>\<circ> \<beta>" and "tiny_category \<alpha> \<AA>" and "category \<alpha> \<BB>"
   shows "dg_Funct \<alpha> \<AA> \<BB> \<subseteq>\<^sub>D\<^sub>G\<^bsub>\<beta>\<^esub> dg_FUNCT \<alpha> \<AA> \<BB>"
 proof(intro subdigraphI, unfold dg_FUNCT_components(1) dg_Funct_components(1))
+  interpret \<AA>: tiny_category \<alpha> \<AA> by (rule assms(3))
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
   show "digraph \<beta> (dg_Funct \<alpha> \<AA> \<BB>)"
     by (intro digraph.dg_digraph_if_ge_Limit[OF digraph_dg_Funct] assms)
   from assms show "digraph \<beta> (dg_FUNCT \<alpha> \<AA> \<BB>)"    
-    by (cs_concl cs_intro: dg_small_cs_intros tiny_digraph_dg_FUNCT)
+    by (cs_concl cs_shallow cs_intro: dg_small_cs_intros \<AA>.tiny_digraph_dg_FUNCT)
   show "\<FF> \<in>\<^sub>\<circ> cf_maps \<alpha> \<AA> \<BB>" if "\<FF> \<in>\<^sub>\<circ> tm_cf_maps \<alpha> \<AA> \<BB>" for \<FF>
-    using that by (cs_concl cs_intro: dg_FUNCT_cs_intros tm_cf_maps_in_cf_maps)
+    using that 
+    by (cs_concl cs_shallow cs_intro: dg_FUNCT_cs_intros tm_cf_maps_in_cf_maps)
   show "\<NN> : \<FF> \<mapsto>\<^bsub>dg_FUNCT \<alpha> \<AA> \<BB>\<^esub> \<GG>" if "\<NN> : \<FF> \<mapsto>\<^bsub>dg_Funct \<alpha> \<AA> \<BB>\<^esub> \<GG>" 
     for \<NN> \<FF> \<GG>
   proof-
     note f = dg_Funct_is_arrD[OF that]
     from f(1) show ?thesis
       by (subst f(2), use nothing in \<open>subst f(3), subst f(4)\<close>)
-        (cs_concl cs_intro: dg_FUNCT_cs_intros cat_small_cs_intros)
+        (cs_concl cs_shallow cs_intro: dg_FUNCT_cs_intros cat_small_cs_intros)
   qed
 qed
 

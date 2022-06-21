@@ -1,14 +1,20 @@
-(*  Title:      Bits_Integer.thy
+(*  Title:      Code_Target_Integer_Bit.thy
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
 chapter \<open>Bit operations for target language integers\<close>
 
-theory Bits_Integer imports
-  "Word_Lib.Bit_Comprehension"
-  Code_Int_Integer_Conversion
-  Code_Symbolic_Bits_Int
+theory Code_Target_Integer_Bit
+  imports
+    "HOL-Library.Word"
+    "Code_Int_Integer_Conversion"
+    "Word_Lib.Most_significant_bit"
+    "Word_Lib.Least_significant_bit"
+    "Word_Lib.Generic_set_bit"
+    "Word_Lib.Bit_Comprehension"
 begin
+
+text \<open>TODO: separate\<close>
 
 lemmas [transfer_rule] =
   identity_quotient
@@ -128,18 +134,19 @@ text \<open>
   does not know these code\_printing serialisations and would otherwise loop.
 \<close>
 
-code_identifier code_module Bits_Integer \<rightharpoonup>
-  (SML) Bits_Int and (OCaml) Bits_Int and (Haskell) Bits_Int and (Scala) Bits_Int
-
-code_printing code_module Bits_Integer \<rightharpoonup> (SML)
-\<open>structure Bits_Integer : sig
+code_printing code_module Integer_Bit \<rightharpoonup> (SML)
+\<open>structure Integer_Bit : sig
+  val test_bit : IntInf.int -> IntInf.int -> bool
   val set_bit : IntInf.int -> IntInf.int -> bool -> IntInf.int
   val shiftl : IntInf.int -> IntInf.int -> IntInf.int
   val shiftr : IntInf.int -> IntInf.int -> IntInf.int
-  val test_bit : IntInf.int -> IntInf.int -> bool
 end = struct
 
 val maxWord = IntInf.pow (2, Word.wordSize);
+
+fun test_bit x n =
+  if n < maxWord then IntInf.andb (x, IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n))) <> 0
+  else raise (Fail ("Bit index too large: " ^ IntInf.toString n));
 
 fun set_bit x n b =
   if n < maxWord then
@@ -155,31 +162,27 @@ fun shiftr x n =
   if n < maxWord then IntInf.~>> (x, Word.fromLargeInt (IntInf.toLarge n))
   else raise (Fail ("Shift operand too large: " ^ IntInf.toString n));
 
-fun test_bit x n =
-  if n < maxWord then IntInf.andb (x, IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n))) <> 0
-  else raise (Fail ("Bit index too large: " ^ IntInf.toString n));
+end; (*struct Integer_Bit*)\<close>
+code_reserved SML Integer_Bit
 
-end; (*struct Bits_Integer*)\<close>
-code_reserved SML Bits_Integer
-
-code_printing code_module Bits_Integer \<rightharpoonup> (OCaml)
-\<open>module Bits_Integer : sig
+code_printing code_module Integer_Bit \<rightharpoonup> (OCaml)
+\<open>module Integer_Bit : sig
+  val test_bit : Z.t -> Z.t -> bool
   val shiftl : Z.t -> Z.t -> Z.t
   val shiftr : Z.t -> Z.t -> Z.t
-  val test_bit : Z.t -> Z.t -> bool
 end = struct
 
 (* We do not need an explicit range checks here,
    because Big_int.int_of_big_int raises Failure
    if the argument does not fit into an int. *)
+let test_bit x n =  Z.testbit x (Z.to_int n);;
+
 let shiftl x n = Z.shift_left x (Z.to_int n);;
 
 let shiftr x n = Z.shift_right x (Z.to_int n);;
 
-let test_bit x n =  Z.testbit x (Z.to_int n);;
-
-end;; (*struct Bits_Integer*)\<close>
-code_reserved OCaml Bits_Integer
+end;; (*struct Integer_Bit*)\<close>
+code_reserved OCaml Integer_Bit
 
 code_printing code_module Data_Bits \<rightharpoonup> (Haskell)
 \<open>
@@ -309,8 +312,14 @@ shiftrBounded = Data.Bits.shiftR;
 }\<close>
 code_reserved Haskell Data_Bits
 
-code_printing code_module Bits_Integer \<rightharpoonup> (Scala)
-\<open>object Bits_Integer {
+code_printing code_module Integer_Bit \<rightharpoonup> (Scala)
+\<open>object Integer_Bit {
+
+def testBit(x: BigInt, n: BigInt) : Boolean =
+  if (n.isValidInt)
+    x.testBit(n.toInt)
+  else
+    sys.error("Bit index too large: " + n.toString)
 
 def setBit(x: BigInt, n: BigInt, b: Boolean) : BigInt =
   if (n.isValidInt)
@@ -333,13 +342,7 @@ def shiftr(x: BigInt, n: BigInt) : BigInt =
   else
     sys.error("Shift index too large: " + n.toString)
 
-def testBit(x: BigInt, n: BigInt) : Boolean =
-  if (n.isValidInt)
-    x.testBit(n.toInt)
-  else
-    sys.error("Bit index too large: " + n.toString)
-
-} /* object Bits_Integer */\<close>
+} /* object Integer_Bit */\<close>
 
 code_printing
   constant "Bit_Operations.and :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
@@ -430,14 +433,14 @@ lemma integer_test_bit_code [code]:
    integer_test_bit (Code_Numeral.Neg n) (Code_Numeral.sub n' num.One)"
   "integer_test_bit (Code_Numeral.Neg (num.Bit1 n)) (Code_Numeral.Pos n') =
    integer_test_bit (Code_Numeral.Neg (n + num.One)) (Code_Numeral.sub n' num.One)"
-  by (simp_all add: integer_test_bit_def bit_integer_def flip: bit_not_int_iff')
+  by (simp_all add: integer_test_bit_def bit_integer_def bit_0 flip: bit_not_int_iff')
 
 code_printing constant integer_test_bit \<rightharpoonup>
-  (SML) "Bits'_Integer.test'_bit" and
-  (OCaml) "Bits'_Integer.test'_bit" and
+  (SML) "Integer'_Bit.test'_bit" and
+  (OCaml) "Integer'_Bit.test'_bit" and
   (Haskell) "(Data'_Bits.testBitUnbounded :: Integer -> Integer -> Bool)" and
   (Haskell_Quickcheck) "(Data'_Bits.testBitUnbounded :: Prelude.Int -> Prelude.Int -> Bool)" and
-  (Scala) "Bits'_Integer.testBit"
+  (Scala) "Integer'_Bit.testBit"
 
 context
   includes integer.lifting bit_operations_syntax
@@ -458,15 +461,15 @@ by(simp add: integer_set_bit_def)
 lemma set_bit_integer_conv_masks:
   fixes x :: integer shows
   "set_bit x i b = (if b then x OR (push_bit i 1) else x AND NOT (push_bit i 1))"
-  by transfer (simp add: int_set_bit_False_conv_NAND int_set_bit_True_conv_OR)
+  by (transfer; rule bit_eqI) (simp add: bit_simps)
 
 end
 
 code_printing constant integer_set_bit \<rightharpoonup>
-  (SML) "Bits'_Integer.set'_bit" and
+  (SML) "Integer'_Bit.set'_bit" and
   (Haskell) "(Data'_Bits.setBitUnbounded :: Integer -> Integer -> Bool -> Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.setBitUnbounded :: Prelude.Int -> Prelude.Int -> Bool -> Prelude.Int)" and
-  (Scala) "Bits'_Integer.setBit"
+  (Scala) "Integer'_Bit.setBit"
 
 text \<open>
   OCaml.Big\_int does not have a method for changing an individual bit, so we emulate that with masks.
@@ -518,11 +521,11 @@ lemma integer_shiftl_code [code]:
 end
 
 code_printing constant integer_shiftl \<rightharpoonup>
-  (SML) "Bits'_Integer.shiftl" and
-  (OCaml) "Bits'_Integer.shiftl" and
+  (SML) "Integer'_Bit.shiftl" and
+  (OCaml) "Integer'_Bit.shiftl" and
   (Haskell) "(Data'_Bits.shiftlUnbounded :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.shiftlUnbounded :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
-  (Scala) "Bits'_Integer.shiftl"
+  (Scala) "Integer'_Bit.shiftl"
 
 definition integer_shiftr :: "integer \<Rightarrow> integer \<Rightarrow> integer"
 where [code del]: "integer_shiftr x n = (if n < 0 then undefined x n else drop_bit (nat_of_integer n) x)"
@@ -540,11 +543,11 @@ lemma shiftr_integer_code [code]:
 by(auto simp add: integer_shiftr_def)
 
 code_printing constant integer_shiftr \<rightharpoonup>
-  (SML) "Bits'_Integer.shiftr" and
-  (OCaml) "Bits'_Integer.shiftr" and
+  (SML) "Integer'_Bit.shiftr" and
+  (OCaml) "Integer'_Bit.shiftr" and
   (Haskell) "(Data'_Bits.shiftrUnbounded :: Integer -> Integer -> Integer)" and
   (Haskell_Quickcheck) "(Data'_Bits.shiftrUnbounded :: Prelude.Int -> Prelude.Int -> Prelude.Int)" and
-  (Scala) "Bits'_Integer.shiftr"
+  (Scala) "Integer'_Bit.shiftr"
 
 lemma integer_shiftr_code [code]:
   includes integer.lifting

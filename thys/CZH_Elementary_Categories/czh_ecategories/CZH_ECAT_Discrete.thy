@@ -220,7 +220,7 @@ proof(intro cat_discreteI categoryI')
       unfolding fba gcb  
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_discrete_cs_simps cs_intro: cat_discrete_cs_intros
         )
   qed
@@ -235,21 +235,22 @@ proof(intro cat_discreteI categoryI')
     from that have hcd: "h = c" "d = c"
       unfolding the_cat_discrete_is_arrD[OF that(1)] by simp_all
     from a show ?thesis
-      unfolding fba gcb hcd by (cs_concl cs_simp: cat_discrete_cs_simps)
+      unfolding fba gcb hcd 
+      by (cs_concl cs_shallow cs_simp: cat_discrete_cs_simps)
   qed
   show ":\<^sub>C I\<lparr>CId\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>:\<^sub>C I\<^esub> f = f" if "f : a \<mapsto>\<^bsub>:\<^sub>C I\<^esub> b" for f a b
   proof-
     from that have fba: "f = a" "b = a" and a: "a \<in>\<^sub>\<circ> I" 
       unfolding the_cat_discrete_is_arrD[OF that] by (simp_all add: \<open>a \<in>\<^sub>\<circ> I\<close>)
     from a show ?thesis 
-      by (cs_concl cs_simp: cat_discrete_cs_simps fba)
+      by (cs_concl cs_shallow cs_simp: cat_discrete_cs_simps fba)
   qed
   show "f \<circ>\<^sub>A\<^bsub>:\<^sub>C I\<^esub> :\<^sub>C I\<lparr>CId\<rparr>\<lparr>b\<rparr> = f" if "f : b \<mapsto>\<^bsub>:\<^sub>C I\<^esub> c" for f b c
   proof-
     from that have fba: "f = b" "c = b" and b: "b \<in>\<^sub>\<circ> I" 
       unfolding the_cat_discrete_is_arrD[OF that] by (simp_all add: \<open>b \<in>\<^sub>\<circ> I\<close>)
     from b show ?thesis 
-      by (cs_concl cs_simp: cat_discrete_cs_simps fba)
+      by (cs_concl cs_shallow cs_simp: cat_discrete_cs_simps fba)
   qed
   show ":\<^sub>C I\<lparr>CId\<rparr>\<lparr>a\<rparr> : a \<mapsto>\<^bsub>:\<^sub>C I\<^esub> a"
     if "a \<in>\<^sub>\<circ> :\<^sub>C I\<lparr>Obj\<rparr>" for a 
@@ -286,7 +287,7 @@ proof(rule cat_eqI[of \<alpha>])
   from assms show dI: "category \<alpha> (:\<^sub>C I)"
     by (cs_concl cs_intro: cat_discrete_the_cat_discrete cat_discrete_cs_intros)
   then show op_dI: "category \<alpha> (op_cat (:\<^sub>C I))"
-    by (cs_concl cs_intro: cat_op_intros)
+    by (cs_concl cs_shallow cs_intro: cat_op_intros)
   interpret category \<alpha> \<open>op_cat (:\<^sub>C I)\<close> by (rule op_dI)
   show "op_cat (:\<^sub>C I)\<lparr>Comp\<rparr> = :\<^sub>C I\<lparr>Comp\<rparr>"
   proof(rule vsv_eqI)
@@ -299,7 +300,7 @@ proof(rule cat_eqI[of \<alpha>])
     from dI h show "op_cat (:\<^sub>C I)\<lparr>Comp\<rparr>\<lparr>gf\<rparr> = :\<^sub>C I\<lparr>Comp\<rparr>\<lparr>gf\<rparr>" 
       by 
         ( 
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_op_simps gf_def cs_intro: cat_discrete_cs_intros
         )
   qed (auto intro: cat_discrete_cs_intros)
@@ -424,7 +425,7 @@ proof(intro is_functorI')
     from that \<open>a \<in>\<^sub>\<circ> I\<close> show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_discrete_cs_simps fba cs_intro: cat_discrete_cs_intros
         )
   qed
@@ -445,7 +446,7 @@ proof(intro is_functorI')
       unfolding gfacb
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_discrete_cs_simps cs_intro: cat_cs_intros
         )
   qed
@@ -453,7 +454,11 @@ proof(intro is_functorI')
     if "c \<in>\<^sub>\<circ> :\<^sub>C I\<lparr>Obj\<rparr>" for c
     using that
     unfolding the_cat_discrete_components(1)
-    by (cs_concl cs_simp: cat_discrete_cs_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_discrete_cs_simps cs_intro: cat_cs_intros
+      )
 qed 
   (
     auto simp: 
@@ -487,7 +492,7 @@ proof-
   from assms(1) interpret \<CC>: cf_discrete \<alpha> I ?F \<CC> 
     apply(intro cf_discreteI) 
     unfolding dr[symmetric] 
-    by (cs_concl cs_intro: V_cs_intros cat_cs_intros)+
+    by (cs_concl cs_shallow cs_intro: V_cs_intros cat_cs_intros)+
   have ":\<rightarrow>: I ?F \<CC> : :\<^sub>C I \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<CC>"
   proof(intro is_iso_functorI')
     from \<CC>.cf_discrete_selector_vrange show  
@@ -541,7 +546,7 @@ proof(rule cf_eqI)
     "op_cf (:\<rightarrow>: I F \<CC>) : :\<^sub>C I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_op_simps cs_intro: cat_op_intros cat_discrete_cs_intros
       )
   show ":\<rightarrow>: I F (op_cat \<CC>) : :\<^sub>C I \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<CC>"
@@ -557,10 +562,15 @@ lemmas [cat_op_simps] = cf_discrete.cf_discrete_the_cf_discrete_op
 lemma (in cf_discrete) cf_discrete_op[cat_op_intros]: 
   "cf_discrete \<alpha> I F (op_cat \<CC>)"
 proof(intro cf_discreteI)
-  show "category \<alpha> (op_cat \<CC>)" by (cs_concl cs_intro: cat_cs_intros)
+  show "category \<alpha> (op_cat \<CC>)" 
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   fix i assume "i \<in>\<^sub>\<circ> I"
   then show "F i \<in>\<^sub>\<circ> op_cat \<CC>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_op_simps cs_intro: cat_discrete_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_op_simps cs_intro: cat_discrete_cs_intros
+      )
 qed (intro cf_discrete_vdomain_vsubset_Vset)
 
 lemmas [cat_op_intros] = cf_discrete.cf_discrete_op
@@ -667,7 +677,7 @@ text\<open>Elementary properties.\<close>
 sublocale tm_cf_discrete \<subseteq> cf_discrete
 proof(intro cf_discreteI)
   from tm_cf_discrete_ObjMap_in_Vset have "\<D>\<^sub>\<circ> (\<lambda>i\<in>\<^sub>\<circ>I. F i) \<in>\<^sub>\<circ> Vset \<alpha>"
-    by (cs_concl cs_intro: vdomain_in_VsetI)
+    by (cs_concl cs_shallow cs_intro: vdomain_in_VsetI)
   then show "I \<subseteq>\<^sub>\<circ> Vset \<alpha>" by auto
 qed (auto intro: cat_cs_intros tm_cf_discrete_selector_vrange)
 
@@ -682,7 +692,7 @@ lemma (in tm_cf_discrete)
   "I \<in>\<^sub>\<circ> Vset \<alpha>"
 proof-
   from tm_cf_discrete_ObjMap_in_Vset have "\<D>\<^sub>\<circ> (\<lambda>i\<in>\<^sub>\<circ>I. F i) \<in>\<^sub>\<circ> Vset \<alpha>"
-    by (cs_concl cs_intro: vdomain_in_VsetI)
+    by (cs_concl cs_shallow cs_intro: vdomain_in_VsetI)
   then show ?thesis by simp
 qed
 

@@ -168,7 +168,7 @@ proof
   show "\<exists>!f. f : dg_0 \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<AA>"
   proof
     show dghm_0: "dghm_0 \<AA> : dg_0 \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<AA>"
-      by (simp add: dghm_0_is_dghm digraph_axioms is_ft_dghm.axioms(1))
+      by (simp add: dghm_0_is_ft_dghm digraph_axioms is_ft_dghm.axioms(1))
     fix \<FF> assume prems: "\<FF> : dg_0 \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<AA>" 
     then interpret \<FF>: is_dghm \<alpha> dg_0 \<AA> \<FF> .
     show "\<FF> = dghm_0 \<AA>"
@@ -225,9 +225,9 @@ proof
     by (simp add: \<FF>.dghm_ArrMap_vrange)
   then have "\<FF>\<lparr>ArrMap\<rparr> = 0" by (auto intro: \<FF>.ArrMap.vsv_vrange_vempty)
   with \<FF>.dghm_ArrMap_vdomain have Arr[simp]: "\<AA>\<lparr>Arr\<rparr> = 0" by auto
-  from Arr \<FF>.HomDom.dg_Dom_vempty_if_Arr_vempty have [simp]: "\<AA>\<lparr>Dom\<rparr> = []\<^sub>\<circ>" 
+  from Arr \<FF>.HomDom.dg_Dom_vempty_if_Arr_vempty have [simp]: "\<AA>\<lparr>Dom\<rparr> = 0" 
     by auto
-  from Arr \<FF>.HomDom.dg_Cod_vempty_if_Arr_vempty have [simp]: "\<AA>\<lparr>Cod\<rparr> = []\<^sub>\<circ>"
+  from Arr \<FF>.HomDom.dg_Cod_vempty_if_Arr_vempty have [simp]: "\<AA>\<lparr>Cod\<rparr> = 0"
     by auto
   show "\<AA> = dg_0"
     by (rule dg_eqI[of \<alpha>]) (simp_all add: prems(1) dg_0_components digraph_dg_0)

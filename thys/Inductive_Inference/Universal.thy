@@ -1717,8 +1717,7 @@ proof -
   ultimately have "eval r_leap [t, i, x] \<down>= encode_config (ss, rv)"
     using assms r_leap by simp
   then have "eval (Cn 3 r_pdec1 [r_leap]) [t, i, x] \<down>\<noteq> 0"
-    using \<open>ss \<noteq> []\<close> r_leap_prim encode_config r_leap_total list_encode_0
-    by (auto, blast)
+    using \<open>ss \<noteq> []\<close> r_leap_prim encode_config r_leap_total list_encode_0 by auto
   then show ?thesis unfolding r_result_def using r_leap_prim by auto
 qed
 

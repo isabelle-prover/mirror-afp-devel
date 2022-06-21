@@ -208,7 +208,7 @@ lemma p_has_vector_derivative[derivative_intros]: "(p has_vector_derivative p' t
 
 lemma p_has_real_derivative[derivative_intros]: "(p has_real_derivative p' t) (at t within s)"
   using p_has_vector_derivative
-  by (simp add: has_field_derivative_iff_has_vector_derivative)
+  by (simp add: has_real_derivative_iff_has_vector_derivative)
 
 definition p'' :: "real \<Rightarrow> real" where 
   "p'' t = a"
@@ -219,7 +219,7 @@ lemma p'_has_vector_derivative[derivative_intros]: "(p' has_vector_derivative p'
 
 lemma p'_has_real_derivative[derivative_intros]: "(p' has_real_derivative p'' t) (at t within s)"
   using p'_has_vector_derivative
-  by (simp add: has_field_derivative_iff_has_vector_derivative)
+  by (simp add: has_real_derivative_iff_has_vector_derivative)
 
 definition t_stop :: real where 
   "t_stop = - v / a"
@@ -274,7 +274,7 @@ lemma q_has_vector_derivative[derivative_intros]: "(q has_vector_derivative q' t
 
 lemma q_has_real_derivative[derivative_intros]: "(q has_real_derivative q' t) (at t within u)"
   using q_has_vector_derivative
-  by (simp add:has_field_derivative_iff_has_vector_derivative)
+  by (simp add:has_real_derivative_iff_has_vector_derivative)
 
 lemma s_cond_def:
   "t \<le> 0 \<Longrightarrow> s t = s0"
@@ -426,13 +426,13 @@ proof -
   have "((\<lambda>t. if t \<in> {0 .. t_stop} then p t else p_max) has_real_derivative
     (if t \<in> {0..t_stop} then p' t else 0)) (at t within {0..})"
     unfolding s_def[abs_def] s'_def 
-      has_field_derivative_iff_has_vector_derivative
+      has_real_derivative_iff_has_vector_derivative
     apply (rule has_vector_derivative_If_within_closures[where T = "{t_stop ..}"])
     using \<open>0 \<le> t_stop\<close> \<open>a \<noteq> 0\<close>
     by (auto simp: assms p'_stop_zero p_t_stop max_def insert_absorb
       intro!: p_has_vector_derivative)
   from _ _ this show ?thesis
-    unfolding has_vector_derivative_def has_field_derivative_iff_has_vector_derivative
+    unfolding has_vector_derivative_def has_real_derivative_iff_has_vector_derivative
       s'_def s_def[abs_def] *
     by (rule has_derivative_transform)
       (auto simp: assms s_def p_max_def t_stop_def)
@@ -442,13 +442,13 @@ lemma s_has_vector_derivative[derivative_intros]:
   assumes "t \<ge> 0" "v / a \<le> 0" "a \<noteq> 0"
   shows  "(s has_vector_derivative s' t) (at t within {0..})"
   using s_has_real_derivative[OF assms]
-  by (simp add: has_field_derivative_iff_has_vector_derivative)
+  by (simp add: has_real_derivative_iff_has_vector_derivative)
    
 lemma s_has_field_derivative[derivative_intros]:
   assumes "t \<ge> 0" "v / a \<le> 0" "a \<noteq> 0"
   shows "(s has_field_derivative s' t) (at t within {0..})"
   using s_has_vector_derivative[OF assms]
-  by(simp add: has_field_derivative_iff_has_vector_derivative)
+  by(simp add: has_real_derivative_iff_has_vector_derivative)
   
 lemma s_has_real_derivative_at:
   assumes "0 < x" "0 \<le> v" "a < 0"
@@ -478,7 +478,7 @@ lemma s_delayed_has_vector_derivative[derivative_intros]:
   assumes "\<delta> < t" "0 \<le> v" "a < 0"
   shows  "((\<lambda>x. s (x - \<delta>)) has_vector_derivative s' (t - \<delta>)) (at t within {\<delta><..})"
   using s_delayed_has_field_derivative[OF assms]  
-  by(simp add:has_field_derivative_iff_has_vector_derivative)
+  by(simp add:has_real_derivative_iff_has_vector_derivative)
 
 lemma s'_nonneg: "0 \<le> v \<Longrightarrow> a \<le> 0 \<Longrightarrow> 0 \<le> s' x"
   by (auto simp: s'_def p'_def t_stop_def field_split_simps) 

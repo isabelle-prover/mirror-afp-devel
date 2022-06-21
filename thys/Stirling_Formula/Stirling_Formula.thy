@@ -438,7 +438,7 @@ proof -
   note DERIV_g [THEN DERIV_chain2, derivative_intros]
   from assms have int1: "((\<lambda>x. -P x) has_integral (g x - g 1)) {1..x}"
     by (intro fundamental_theorem_of_calculus)
-       (auto simp: has_field_derivative_iff_has_vector_derivative [symmetric]
+       (auto simp: has_real_derivative_iff_has_vector_derivative [symmetric]
              intro!: derivative_eq_intros)
   from x have int2: "((\<lambda>x. -P x) has_integral integral {x..} (\<lambda>x. -P x)) {x..}"
     by (intro integrable_integral integrable_neg P_integrable) simp_all

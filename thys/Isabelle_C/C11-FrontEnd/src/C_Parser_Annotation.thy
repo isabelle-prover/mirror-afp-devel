@@ -41,14 +41,15 @@ theory C_Parser_Annotation
 begin
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/Isar/outer_syntax.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/Isar/outer_syntax.ML
     Author:     Markus Wenzel, TU Muenchen
 
 Isabelle/Isar outer syntax.
-*)
+*)*)
 \<open>
-structure C_Annotation  =
+structure C_Annotation =
 struct
 
 (** outer syntax **)
@@ -82,14 +83,7 @@ fun new_command comment command_parser pos =
 fun command_pos (Command {pos, ...}) = pos;
 
 fun command_markup def (name, Command {pos, id, ...}) =
-    let   (* PATCH: copied as such from Isabelle2020 *)
-        fun entity_properties_of def serial pos =
-            if def then (Markup.defN, Value.print_int serial) :: Position.properties_of pos
-            else (Markup.refN, Value.print_int serial) :: Position.def_properties_of pos;
-
-    in  Markup.properties (entity_properties_of def id pos)
-            (Markup.entity Markup.commandN name)
-    end;
+  Position.make_entity_markup def id Markup.commandN (name, pos);
 
 
 
@@ -99,7 +93,6 @@ structure Data = Theory_Data
 (
   type T = command Symtab.table;
   val empty = Symtab.empty;
-  val extend = I;
   fun merge data : T =
     data |> Symtab.join (fn name => fn (cmd1, cmd2) =>
       if eq_command (cmd1, cmd2) then raise Symtab.SAME
@@ -124,7 +117,7 @@ fun add_command name cmd thy =
         | SOME cmd' => err_dup_command name [command_pos cmd, command_pos cmd']);
       val _ =
         Context_Position.report_generic (Context.the_generic_context ())
-          (command_pos cmd) (command_markup true (name, cmd));
+          (command_pos cmd) (command_markup {def = true} (name, cmd));
     in Data.map (Symtab.update (name, cmd)) thy end;
 
 fun delete_command (name, pos) thy =
@@ -140,7 +133,7 @@ fun delete_command (name, pos) thy =
 type command_keyword = string * Position.T;
 
 fun raw_command0 kind (name, pos) comment command_parser =
-  C_Thy_Header.add_keywords [((name, pos), ((kind, []), [name]))]
+  C_Thy_Header.add_keywords [((name, pos), Keyword.command_spec (kind, [name]))]
   #> add_command name (new_command comment command_parser pos);
 
 fun raw_command (name, pos) comment command_parser =
@@ -182,7 +175,7 @@ fun parse_command thy =
       case lookup_commands thy name of
         SOME (cmd as Command {command_parser = Parser parse, ...}) =>
           C_Parse.!!! (command_tags :|-- parse)
-          >> pair [((pos, command_markup false (name, cmd)), "")]
+          >> pair [((pos, command_markup {def = false} (name, cmd)), "")]
       | NONE =>
           Scan.fail_with (fn _ => fn _ =>
             let
@@ -198,7 +191,7 @@ fun command_reports thy tok =
     let val name = C_Token.content_of tok in
       (case lookup_commands thy name of
         NONE => []
-      | SOME cmd => [((C_Token.pos_of tok, command_markup false (name, cmd)), "")])
+      | SOME cmd => [((C_Token.pos_of tok, command_markup {def = false} (name, cmd)), "")])
     end
   else [];
 
@@ -230,29 +223,32 @@ end
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/PIDE/resources.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/PIDE/resources.ML
     Author:     Makarius
 
 Resources for theories and auxiliary files.
-*)
+*)*)
 \<open>
 structure C_Resources =
 struct
 (* load files *)
 
-fun parse_files cmd =
-  Scan.ahead C_Parse.not_eof -- C_Parse.path >> (fn (tok, name) => fn thy =>
+fun parse_files make_paths =
+  Scan.ahead C_Parse.not_eof -- C_Parse.path_input >> (fn (tok, source) => fn thy =>
     (case C_Token.get_files tok of
       [] =>
         let
-          val keywords = C_Thy_Header.get_keywords thy;
           val master_dir = Resources.master_directory thy;
-          val pos = C_Token.pos_of tok;
-          val delimited = Input.is_delimited (C_Token.input_of tok);
-          val src_paths = C_Keyword.command_files keywords cmd (Path.explode name);
+          val name = Input.string_of source;
+          val pos = Input.pos_of source;
+          val delimited = Input.is_delimited source;
+          val src_paths = make_paths (Path.explode name);
         in map (Command.read_file master_dir pos delimited) src_paths end
     | files => map Exn.release files));
+
+val parse_file = parse_files single >> (fn f => f #> the_single);
 
 end;
 \<close>

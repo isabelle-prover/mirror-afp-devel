@@ -119,13 +119,14 @@ signature C_ENV =
     datatype antiq_language = Antiq_none of C_Lex.token 
                             | Antiq_stack of C_Position.reports_text * eval_time
 
-    type stream_hook = (Symbol_Pos.T list * Symbol_Pos.T list * eval_node) list list
+    type 'a stream_hook = ('a list * Symbol_Pos.T list * eval_node) list list
 
     type 'a T =   {env_lang    : env_lang,
                    env_tree    : env_tree,
                    rule_input  : C_Ast.class_Pos list * int,
                    rule_output : rule_output,
-                   stream_hook : stream_hook,
+                   stream_hook: Symbol_Pos.T stream_hook,
+                   stream_hook_excess : int stream_hook,
                    stream_lang : stream_lang_state * 'a stream}
 
     val decode_positions: string -> Position.T list
@@ -162,7 +163,8 @@ signature C_ENV =
     val map_env_tree   : (env_tree -> env_tree) -> 'a T -> 'a T
     val map_env_tree'  : (env_tree -> 'b * env_tree) -> 'a T -> 'b * 'a T
     val map_rule_output: (rule_output -> rule_output) -> 'a T -> 'a T
-    val map_stream_hook: (stream_hook -> stream_hook) -> 'a T -> 'a T
+    val map_stream_hook: (Symbol_Pos.T stream_hook -> Symbol_Pos.T stream_hook) -> 'a T -> 'a T
+    val map_stream_hook_excess: (int stream_hook -> int stream_hook) -> 'a T -> 'a T
     val map_rule_input : (C_Ast.class_Pos list * int -> C_Ast.class_Pos list * int) -> 'a T -> 'a T
     val map_stream_lang: (stream_lang_state*'a stream -> stream_lang_state*'a stream)-> 'a T -> 'a T
 
@@ -204,9 +206,10 @@ type markup_ident = { global : markup_global
                     , params : C_Ast.CDerivedDeclr list
                     , ret : C_Ast.CDeclSpec list parse_status }
 
-type var_table = { tyidents : markup_global markup_store Symtab.table    (*ident name*)
-                                                            Symtab.table (*internal namespace*)
-                 , idents : markup_ident markup_store Symtab.table       (*ident name*) }
+type var_table = { tyidents : markup_global markup_store Symtab.table (*ident name*)
+                                                                      Symtab.table (*internal
+                                                                                     namespace*)
+                 , idents : markup_ident markup_store Symtab.table (*ident name*) }
 
 type 'antiq_language_list stream = ('antiq_language_list, C_Lex.token) C_Scan.either list
 
@@ -267,7 +270,8 @@ module. \<close>
 
 (**)
 
-type ('LrTable_state, 'a, 'Position_T) stack_elem0 = 'LrTable_state * ('a * 'Position_T * 'Position_T)
+type ('LrTable_state, 'a, 'Position_T) stack_elem0 = 'LrTable_state
+                                                     * ('a * 'Position_T * 'Position_T)
 type ('LrTable_state, 'a, 'Position_T) stack0 = ('LrTable_state, 'a, 'Position_T) stack_elem0 list
 
 type ('LrTable_state, 'svalue0, 'pos) rule_reduce0 =
@@ -299,8 +303,6 @@ type ('LrTable_state, 'svalue0, 'pos) rule_output0 =
 
 type rule_output = C_Ast.class_Pos rule_output0'
 
-type stream_hook = (Symbol_Pos.T list * Symbol_Pos.T list * eval_node) list list
-
 (**)
 
 datatype stream_lang_state = Stream_ident of Position.range * string
@@ -308,11 +310,14 @@ datatype stream_lang_state = Stream_ident of Position.range * string
                            | Stream_atomic
                            | Stream_regular
 
+type 'a stream_hook = ('a list * Symbol_Pos.T list * eval_node) list list
+
 type 'a T =  {env_lang: env_lang,
                env_tree: env_tree,
                rule_input: C_Ast.class_Pos list * int,
                rule_output: rule_output,
-               stream_hook: (Symbol_Pos.T list * Symbol_Pos.T list * eval_node) list list,
+               stream_hook: Symbol_Pos.T stream_hook,
+               stream_hook_excess : int stream_hook,
                stream_lang: stream_lang_state * 'a stream}
 
 
@@ -330,35 +335,54 @@ type ('LrTable_state, 'a, 'Position_T) stack' =
 
 (**)
 
-fun map_env_lang f {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_lang} =
+fun map_env_lang f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
                      {env_lang = f
                                  env_lang, env_tree = env_tree, rule_output = rule_output, 
-                      rule_input = rule_input, stream_hook = stream_hook, stream_lang = stream_lang}
+                      rule_input = rule_input, stream_hook = stream_hook,
+                      stream_hook_excess = stream_hook_excess, stream_lang = stream_lang}
 
-fun map_env_tree f {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_lang} =
+fun map_env_tree f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
                      {env_lang = env_lang, env_tree = f
                                                       env_tree, rule_output = rule_output, 
-                      rule_input = rule_input, stream_hook = stream_hook, stream_lang = stream_lang}
+                      rule_input = rule_input, stream_hook = stream_hook, 
+                      stream_hook_excess = stream_hook_excess, stream_lang = stream_lang}
 
-fun map_rule_output f {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_lang} =
+fun map_rule_output f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
                      {env_lang = env_lang, env_tree = env_tree, rule_output = f
                                                                               rule_output,
-                      rule_input = rule_input, stream_hook = stream_hook, stream_lang = stream_lang}
+                      rule_input = rule_input, stream_hook = stream_hook, 
+                      stream_hook_excess = stream_hook_excess, stream_lang = stream_lang}
 
-fun map_rule_input f {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_lang} =
+fun map_rule_input f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
                      {env_lang = env_lang, env_tree = env_tree, rule_output = rule_output, 
                       rule_input = f
-                                   rule_input, stream_hook = stream_hook, stream_lang = stream_lang}
+                                   rule_input, stream_hook = stream_hook, 
+                      stream_hook_excess = stream_hook_excess, stream_lang = stream_lang}
 
-fun map_stream_hook f {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_lang} =
+fun map_stream_hook f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
                      {env_lang = env_lang, env_tree = env_tree, rule_output = rule_output, 
                       rule_input = rule_input, stream_hook = f
-                                                             stream_hook, stream_lang = stream_lang}
+                                                             stream_hook, 
+                      stream_hook_excess = stream_hook_excess, stream_lang = stream_lang}
 
-fun map_stream_lang f {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_lang} =
+fun map_stream_hook_excess f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
                      {env_lang = env_lang, env_tree = env_tree, rule_output = rule_output, 
-                      rule_input = rule_input, stream_hook = stream_hook, stream_lang = f
-                                                                                        stream_lang}
+                      rule_input = rule_input, stream_hook = stream_hook, 
+                      stream_hook_excess = f
+                                           stream_hook_excess, stream_lang = stream_lang}
+
+fun map_stream_lang f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
+                     {env_lang = env_lang, env_tree = env_tree, rule_output = rule_output, 
+                      rule_input = rule_input, stream_hook = stream_hook, 
+                      stream_hook_excess = stream_hook_excess, stream_lang = f
+                                                                             stream_lang}
 
 (**)
 
@@ -403,7 +427,8 @@ fun map_stream_ignored f {var_table, scopes, namesupply, stream_ignored, env_dir
 
 fun map_env_directives f {var_table, scopes, namesupply, stream_ignored, env_directives} =
                                   {var_table = var_table, scopes = scopes, namesupply = namesupply, 
-                                   stream_ignored = stream_ignored, env_directives = f env_directives}
+                                   stream_ignored = stream_ignored, env_directives = f
+                                                                                     env_directives}
 
 (**)
 
@@ -423,22 +448,28 @@ fun map_error_lines f {context, reports_text, error_lines} =
 
 (**)
 
-fun map_env_tree' f {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_lang} =
+fun map_env_tree' f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
                 let val (res, env_tree) = f env_tree
                 in (res, {env_lang = env_lang, env_tree = env_tree, rule_output = rule_output, 
-                    rule_input = rule_input, stream_hook = stream_hook, stream_lang = stream_lang})
+                          rule_input = rule_input, stream_hook = stream_hook,
+                          stream_hook_excess = stream_hook_excess, stream_lang = stream_lang})
                 end
 
-fun map_env_lang_tree f {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_lang} =
+fun map_env_lang_tree f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
                 let val (env_lang, env_tree) = f env_lang env_tree
                 in {env_lang = env_lang, env_tree = env_tree, rule_output = rule_output, 
-                    rule_input = rule_input, stream_hook = stream_hook, stream_lang = stream_lang}
+                    rule_input = rule_input, stream_hook = stream_hook,
+                    stream_hook_excess = stream_hook_excess, stream_lang = stream_lang}
                 end
 
-fun map_env_lang_tree' f {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_lang} =
+fun map_env_lang_tree' f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
                 let val (res, (env_lang, env_tree)) = f env_lang env_tree
                 in (res, {env_lang = env_lang, env_tree = env_tree, rule_output = rule_output, 
-                    rule_input = rule_input, stream_hook = stream_hook, stream_lang = stream_lang})
+                          rule_input = rule_input, stream_hook = stream_hook,
+                          stream_hook_excess = stream_hook_excess, stream_lang = stream_lang})
                 end
 
 (**)
@@ -461,8 +492,9 @@ fun make env_lang stream_lang env_tree =
        , rule_output = empty_rule_output
        , rule_input = ([], 0)
        , stream_hook = []
+       , stream_hook_excess = []
        , stream_lang = ( Stream_regular
-                       , map_filter (fn C_Scan.Right (C_Lex.Token (_, (C_Lex.Space, _))) => NONE
+                       , map_filter (fn C_Scan.Right (C_Lex.Token (_, (C_Lex.Space _, _))) => NONE
                                       | C_Scan.Right (C_Lex.Token (_, (C_Lex.Comment _, _))) => NONE
                                       | C_Scan.Right tok => SOME (C_Scan.Right tok)
                                       | C_Scan.Left antiq => SOME (C_Scan.Left antiq))
@@ -584,10 +616,12 @@ fun map_env_directives' f {var_table, scopes, namesupply, stream_ignored, env_di
 
 (**)
 
-fun map_stream_lang' f {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_lang} =
+fun map_stream_lang' f
+      {env_lang, env_tree, rule_output, rule_input, stream_hook, stream_hook_excess, stream_lang} =
   let val (res, stream_lang) = f stream_lang
   in (res, {env_lang = env_lang, env_tree = env_tree, rule_output = rule_output, 
-            rule_input = rule_input, stream_hook = stream_hook, stream_lang = stream_lang})
+            rule_input = rule_input, stream_hook = stream_hook,
+            stream_hook_excess = stream_hook_excess, stream_lang = stream_lang})
   end
 
 (**)

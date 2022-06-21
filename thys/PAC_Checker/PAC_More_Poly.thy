@@ -417,7 +417,7 @@ definition decrease_key::"'a \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::{monoid
 
 lemma remove_key_lookup:
   "lookup (decrease_key k0 f) k = (if k = k0 \<and> lookup f k \<noteq> 0 then lookup f k - 1 else lookup f k)"
-  unfolding decrease_key_def using finite_subset apply (simp add: )
+  unfolding decrease_key_def using finite_subset apply simp
   apply (subst lookup_Abs_poly_mapping)
   apply (auto intro: finite_subset[of _ \<open>{x. lookup f x \<noteq> 0}\<close>])
   apply (subst lookup_Abs_poly_mapping)

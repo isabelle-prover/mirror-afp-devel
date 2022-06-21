@@ -43,9 +43,9 @@ begin
 
 type_synonym 'p event_id = "'p \<times> nat"
 
-datatype ('p,'s) event =
-  Send "('p event_id, 's) message" |
-  Receive "'p event_id" "('p event_id, 's) message"
+datatype ('p,'\<Sigma>) event =
+  Send "('p event_id, '\<Sigma>) message" |
+  Receive "'p event_id" "('p event_id, '\<Sigma>) message"
 
 text \<open>The type variable @{typ "'p"} denotes a unique identifier identifying a peer.
   We model each peer's history as a finite sequence of events, where each event is either
@@ -62,7 +62,7 @@ text \<open>The type variable @{typ "'p"} denotes a unique identifier identifyin
   set of participating peers is finite.\<close>
 
 locale dist_execution_preliminary =
-  fixes events :: "('p :: linorder) \<Rightarrow> ('p,'s) event list"
+  fixes events :: "('p :: linorder) \<Rightarrow> ('p,'\<Sigma>) event list"
   \<comment> \<open>We introduce a locale fixing the sequence of events per peer.\<close>
 
   assumes fin_peers: "finite (UNIV :: 'p set)"
@@ -125,12 +125,12 @@ end
 
 text \<open> The function @{text deps} computes the identifiers a message depends on. \<close>
 
-fun extended_to_set :: "'a extended \<Rightarrow> 'a set"
+fun extended_to_set :: "'\<I> extended \<Rightarrow> '\<I> set"
   where
     "extended_to_set \<lbrakk>i\<rbrakk> = {i}" |
     "extended_to_set _ = {}"
 
-fun deps :: "('id, 's) message \<Rightarrow> 'id set"
+fun deps :: "('\<I>, '\<Sigma>) message \<Rightarrow> '\<I> set"
   where
     "deps (Insert (InsertMessage l _ u _)) = extended_to_set l \<union> extended_to_set u" |
     "deps (Delete (DeleteMessage i)) = {i}"

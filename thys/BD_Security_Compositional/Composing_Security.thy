@@ -343,13 +343,13 @@ using c proof cases
   case (Step2 vll2 vll1 v2)
   obtain tr2a trn2 tr2b where tr2: "tr2 = tr2a @ trn2 # tr2b" and
   \<phi>2: "\<phi>2 trn2" and f2: "f2 trn2 = v2"
-  using `Two.V tr2 = v2 # vll2` by (metis Two.V_eq_Cons append_Cons)
+  using \<open>Two.V tr2 = v2 # vll2\<close> by (metis Two.V_eq_Cons append_Cons)
   have v2: "validTrans2 trn2" using tr2 v
   by (metis Nil_is_append_conv Two.validFrom_def Two.valid_ConsE
           Two.valid_append list.distinct(2) self_append_conv2)
   have rs2': "Two.reach (srcOf2 trn2)" using v rs2 unfolding tr2
     by (induction tr2a arbitrary: s2) (auto intro: Two.reach.Step)
-  then have False using isCom2_V2[OF v2 rs2' \<phi>2] `\<not> isComV2 v2`
+  then have False using isCom2_V2[OF v2 rs2' \<phi>2] \<open>\<not> isComV2 v2\<close>
   using \<phi>2 f2 isCom2_isComV2 v2 by blast
   thus ?thesis by simp
 qed (insert assms, auto)
@@ -427,7 +427,7 @@ next
   show ?case proof(cases trn)
     case (Trans1 s22 trn1)
     let ?s1 = "tgtOf1 trn1"
-    have s22[simp]: "s22 = s2" using `srcOf (hd (trn # tr)) = (s1, s2)`
+    have s22[simp]: "s22 = s2" using \<open>srcOf (hd (trn # tr)) = (s1, s2)\<close>
     unfolding Trans1 by simp
     hence "tgtOf trn = (?s1, s2)" unfolding Trans1 by simp
     hence "srcOf (hd tr) = (?s1, s2)" using Cons.hyps(2) by auto
@@ -439,7 +439,7 @@ next
   next
     case (Trans2 s11 trn2)
     let ?s2 = "tgtOf2 trn2"
-    have s11[simp]: "s11 = s1" using `srcOf (hd (trn # tr)) = (s1, s2)`
+    have s11[simp]: "s11 = s1" using \<open>srcOf (hd (trn # tr)) = (s1, s2)\<close>
     unfolding Trans2 by simp
     hence "tgtOf trn = (s1, ?s2)" unfolding Trans2 by simp
     hence "srcOf (hd tr) = (s1, ?s2)" using Cons.hyps(2) by auto
@@ -579,7 +579,7 @@ next
     case True note com1 = True
     hence \<gamma>1: "\<gamma>1 trn1" using trn1 isCom1_\<gamma>1 s1 by auto
     hence "isComO1 (g1 trn1)" using \<gamma>1 com1 s1 isCom1_isComO1 trn1 by blast
-    hence False using `compO (One.O (trn1 # tr1)) (Two.O []) obl`
+    hence False using \<open>compO (One.O (trn1 # tr1)) (Two.O []) obl\<close>
     using \<gamma>1 by (auto elim: compO.cases)
     thus ?thesis by simp
   next
@@ -587,13 +587,13 @@ next
     show ?thesis proof(cases "\<phi>1 trn1")
       case True note \<phi>1 = True
       hence comv1: "\<not> isComV1 (f1 trn1)" using \<phi>1 com1 isCom1_isComV1 trn1 s1 by blast
-      with `compV (One.V (trn1 # tr1)) (Two.V []) vl` \<phi>1
+      with \<open>compV (One.V (trn1 # tr1)) (Two.V []) vl\<close> \<phi>1
       obtain vll where vl: "vl = Value1 (f1 trn1) # vll"
       and vll: "compV (One.V tr1) (Two.V []) vll" by (auto elim: compV.cases)
       show ?thesis proof(cases "\<gamma>1 trn1")
         case True note \<gamma>1 = True
         hence "\<not> isComO1 (g1 trn1)" using \<gamma>1 com1 isCom1_isComO1 trn1 s1 by blast
-        with `compO (One.O (trn1 # tr1)) (Two.O []) obl` \<gamma>1
+        with \<open>compO (One.O (trn1 # tr1)) (Two.O []) obl\<close> \<gamma>1
         obtain obll where obl: "obl = Obs1 (g1 trn1) # obll"
         and obll: "compO (One.O tr1) (Two.O []) obll" by (auto elim: compO.cases)
         from ConsNil.IH[OF tr1 _ rs1' rs2 vll obll] obtain trr where
@@ -603,7 +603,7 @@ next
         by (intro exI[of _ "Trans1 s2 trn1 # trr"]) auto
       next
         case False note \<gamma>1 = False
-        note obl = `compO (One.O (trn1 # tr1)) (Two.O []) obl`
+        note obl = \<open>compO (One.O (trn1 # tr1)) (Two.O []) obl\<close>
         from ConsNil.IH[OF tr1 _ rs1' rs2 vll] obl \<gamma>1 obtain trr where
         "validFrom (?s1, s2) trr" and "O trr = obl \<and> V trr = vll" by auto
         thus ?thesis
@@ -612,11 +612,11 @@ next
       qed
     next
       case False note \<phi>1 = False
-      note vl = `compV (One.V (trn1 # tr1)) (Two.V []) vl`
+      note vl = \<open>compV (One.V (trn1 # tr1)) (Two.V []) vl\<close>
       show ?thesis proof(cases "\<gamma>1 trn1")
         case True note \<gamma>1 = True
         hence "\<not> isComO1 (g1 trn1)" using \<gamma>1 com1 isCom1_isComO1 trn1 s1 by blast
-        with `compO (One.O (trn1 # tr1)) (Two.O []) obl` \<gamma>1
+        with \<open>compO (One.O (trn1 # tr1)) (Two.O []) obl\<close> \<gamma>1
         obtain obll where obl: "obl = Obs1 (g1 trn1) # obll"
         and obll: "compO (One.O tr1) (Two.O []) obll" by (auto elim: compO.cases)
         from ConsNil.IH[OF tr1 _ rs1' rs2 _ obll] vl \<phi>1 obtain trr where
@@ -626,7 +626,7 @@ next
         by (intro exI[of _ "Trans1 s2 trn1 # trr"]) auto
       next
         case False note \<gamma>1 = False
-        note obl = `compO (One.O (trn1 # tr1)) (Two.O []) obl`
+        note obl = \<open>compO (One.O (trn1 # tr1)) (Two.O []) obl\<close>
         from ConsNil.IH[OF tr1 _ rs1' rs2 _] vl \<phi>1 obl \<gamma>1 obtain trr where
         "validFrom (?s1, s2) trr" and "O trr = obl \<and> V trr = vl" by fastforce
         thus ?thesis
@@ -645,7 +645,7 @@ next
     case True note com2 = True
     hence \<gamma>2: "\<gamma>2 trn2" using trn2 isCom2_\<gamma>2 s2 by auto
     hence "isComO2 (g2 trn2)" using \<gamma>2 com2 isCom2_isComO2 trn2 s2 by blast
-    hence False using `compO (One.O []) (Two.O (trn2 # tr2)) obl`
+    hence False using \<open>compO (One.O []) (Two.O (trn2 # tr2)) obl\<close>
     using \<gamma>2 by (auto elim: compO.cases)
     thus ?thesis by simp
   next
@@ -653,13 +653,13 @@ next
     show ?thesis proof(cases "\<phi>2 trn2")
       case True note \<phi>2 = True
       hence comv1: "\<not> isComV2 (f2 trn2)" using \<phi>2 com2 isCom2_isComV2 trn2 s2 by blast
-      with `compV (One.V []) (Two.V (trn2 # tr2)) vl` \<phi>2
+      with \<open>compV (One.V []) (Two.V (trn2 # tr2)) vl\<close> \<phi>2
       obtain vll where vl: "vl = Value2 (f2 trn2) # vll"
       and vll: "compV (One.V []) (Two.V tr2) vll" by (auto elim: compV.cases)
       show ?thesis proof(cases "\<gamma>2 trn2")
         case True note \<gamma>2 = True
         hence "\<not> isComO2 (g2 trn2)" using \<gamma>2 com2 isCom2_isComO2 trn2 s2 by blast
-        with `compO (One.O []) (Two.O (trn2 # tr2)) obl` \<gamma>2
+        with \<open>compO (One.O []) (Two.O (trn2 # tr2)) obl\<close> \<gamma>2
         obtain obll where obl: "obl = Obs2 (g2 trn2) # obll"
         and obll: "compO (One.O []) (Two.O tr2) obll" by (auto elim: compO.cases)
         from NilCons.IH[OF _ tr2 rs1 rs2' vll obll] obtain trr where
@@ -669,7 +669,7 @@ next
         by (intro exI[of _ "Trans2 s1 trn2 # trr"]) auto
       next
         case False note \<gamma>2 = False
-        note obl = `compO (One.O []) (Two.O (trn2 # tr2)) obl`
+        note obl = \<open>compO (One.O []) (Two.O (trn2 # tr2)) obl\<close>
         from NilCons.IH[OF _ tr2 rs1 rs2' vll] obl \<gamma>2 obtain trr where
         "validFrom (s1, ?s2) trr" and "O trr = obl \<and> V trr = vll" by auto
         thus ?thesis
@@ -678,11 +678,11 @@ next
       qed
     next
       case False note \<phi>2 = False
-      note vl = `compV (One.V []) (Two.V (trn2 # tr2)) vl`
+      note vl = \<open>compV (One.V []) (Two.V (trn2 # tr2)) vl\<close>
       show ?thesis proof(cases "\<gamma>2 trn2")
         case True note \<gamma>2 = True
         hence "\<not> isComO2 (g2 trn2)" using \<gamma>2 com2 isCom2_isComO2 trn2 s2 by blast
-        with `compO (One.O []) (Two.O (trn2 # tr2)) obl` \<gamma>2
+        with \<open>compO (One.O []) (Two.O (trn2 # tr2)) obl\<close> \<gamma>2
         obtain obll where obl: "obl = Obs2 (g2 trn2) # obll"
         and obll: "compO (One.O []) (Two.O tr2) obll" by (auto elim: compO.cases)
         from NilCons.IH[OF _ tr2 rs1 rs2' _ obll] vl \<phi>2 obtain trr where
@@ -692,7 +692,7 @@ next
         by (intro exI[of _ "Trans2 s1 trn2 # trr"]) auto
       next
         case False note \<gamma>2 = False
-        note obl = `compO (One.O []) (Two.O (trn2 # tr2)) obl`
+        note obl = \<open>compO (One.O []) (Two.O (trn2 # tr2)) obl\<close>
         from NilCons.IH[OF _ tr2 rs1 rs2' _] vl \<phi>2 obl \<gamma>2 obtain trr where
         "validFrom (s1, ?s2) trr" and "O trr = obl \<and> V trr = vl" by fastforce
         thus ?thesis
@@ -710,9 +710,9 @@ next
   using ConsCons.prems by auto
   then have rs1': "One.reach ?s1" and rs2': "Two.reach ?s2"
     using One.reach.Step[of s1 trn1 ?s1] Two.reach.Step[of s2 trn2 ?s2] by auto
-  note vl = `compV (One.V ?tr1) (Two.V ?tr2) vl`
-  note obl = `compO (One.O ?tr1) (Two.O ?tr2) obl`
-  note trr1 = `One.validFrom s1 ?tr1` note trr2 = `Two.validFrom s2 ?tr2`
+  note vl = \<open>compV (One.V ?tr1) (Two.V ?tr2) vl\<close>
+  note obl = \<open>compO (One.O ?tr1) (Two.O ?tr2) obl\<close>
+  note trr1 = \<open>One.validFrom s1 ?tr1\<close> note trr2 = \<open>Two.validFrom s2 ?tr2\<close>
   show ?case proof(cases "\<phi>1 trn1 \<or> \<gamma>1 trn1")
     case False note \<phi>\<gamma>1 = False
     hence com1: "\<not> isCom1 trn1" using isCom1_\<gamma>1 trn1 s1 by blast

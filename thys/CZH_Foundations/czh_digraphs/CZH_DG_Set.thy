@@ -14,8 +14,8 @@ text\<open>
 \<open>Set\<close> is usually defined as a category of sets and total functions
 (see Chapter I-2 in \cite{mac_lane_categories_2010}). However, there
 is little that can prevent one from exposing \<open>Set\<close> as a digraph and
-provide additional structure gradually in subsequent installments of this 
-work. Thus, in this section, \<open>\<alpha>\<close>-\<open>Set\<close> is defined as a digraph of sets 
+provide additional structure gradually later. 
+Thus, in this section, \<open>\<alpha>\<close>-\<open>Set\<close> is defined as a digraph of sets 
 and binary relations in the set \<open>V\<^sub>\<alpha>\<close>. 
 \<close>
 
@@ -56,6 +56,11 @@ sublocale arr_Set \<subseteq> arr_Par
 
 
 text\<open>Rules.\<close>
+
+lemma (in arr_Set) arr_Set_axioms'[dg_cs_intros, dg_Set_cs_intros]:
+  assumes "\<alpha>' = \<alpha>"
+  shows "arr_Set \<alpha>' T"
+  unfolding assms by (rule arr_Set_axioms)
 
 mk_ide rf arr_Set_def[unfolded arr_Set_axioms_def]
   |intro arr_SetI|
@@ -105,7 +110,7 @@ lemma arr_Set_arr_ParE:
   using assms by (auto simp: arr_Set_arr_ParD)
 
 
-text\<open>Further elementary properties.\<close>
+text\<open>Further properties.\<close>
 
 lemma arr_Set_eqI:
   assumes "arr_Set \<alpha> S" 
@@ -158,6 +163,18 @@ proof(intro arr_Set_arr_ParI)
     by (simp add: dg_Set_cs_simps)
 qed
 
+lemma arr_Set_comp_Set_ArrVal_app:
+  assumes "arr_Set \<alpha> S" 
+    and "arr_Set \<alpha> T" 
+    and "x \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
+    and "T\<lparr>ArrVal\<rparr>\<lparr>x\<rparr> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (S\<lparr>ArrVal\<rparr>)"
+  shows "(S \<circ>\<^sub>S\<^sub>e\<^sub>t T)\<lparr>ArrVal\<rparr>\<lparr>x\<rparr> = S\<lparr>ArrVal\<rparr>\<lparr>T\<lparr>ArrVal\<rparr>\<lparr>x\<rparr>\<rparr>"
+proof-
+  interpret S: arr_Set \<alpha> S + T: arr_Set \<alpha> T by (simp_all add: assms(1,2))  
+  from assms show ?thesis 
+    unfolding comp_Rel_components by (intro vcomp_atI) auto
+qed
+
 
 subsubsection\<open>Inclusion\<close>
 
@@ -188,7 +205,7 @@ qed (simp add: id_Rel_components)
 
 lemma arr_Set_comp_Set_id_Set_left[dg_Set_cs_simps]:
   assumes "arr_Set \<alpha> F" and "F\<lparr>ArrCod\<rparr> = A"
-  shows "id_Set A \<circ>\<^sub>R\<^sub>e\<^sub>l F = F"
+  shows "id_Set A \<circ>\<^sub>S\<^sub>e\<^sub>t F = F"
 proof-
   interpret F: arr_Set \<alpha> F by (rule assms(1))
   have "arr_Rel \<alpha> F" by (simp add: F.arr_Rel_axioms)
@@ -197,23 +214,11 @@ qed
 
 lemma arr_Set_comp_Set_id_Set_right[dg_Set_cs_simps]:
   assumes "arr_Set \<alpha> F" and "F\<lparr>ArrDom\<rparr> = A"
-  shows "F \<circ>\<^sub>R\<^sub>e\<^sub>l id_Set A = F"
+  shows "F \<circ>\<^sub>S\<^sub>e\<^sub>t id_Set A = F"
 proof-
   interpret F: arr_Set \<alpha> F by (rule assms(1))
   have "arr_Rel \<alpha> F" by (simp add: F.arr_Rel_axioms)
   from arr_Rel_comp_Rel_id_Rel_right[OF this assms(2)] show ?thesis.
-qed
-
-lemma arr_Set_comp_Set_ArrVal:
-  assumes "arr_Set \<alpha> S" 
-    and "arr_Set \<alpha> T" 
-    and "x \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)"
-    and "T\<lparr>ArrVal\<rparr>\<lparr>x\<rparr> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (S\<lparr>ArrVal\<rparr>)"
-  shows "(S \<circ>\<^sub>S\<^sub>e\<^sub>t T)\<lparr>ArrVal\<rparr>\<lparr>x\<rparr> = S\<lparr>ArrVal\<rparr>\<lparr>T\<lparr>ArrVal\<rparr>\<lparr>x\<rparr>\<rparr>"
-proof-
-  interpret S: arr_Set \<alpha> S + T: arr_Set \<alpha> T by (simp_all add: assms(1,2))  
-  from assms show ?thesis 
-    unfolding comp_Rel_components by (intro vcomp_atI) auto
 qed
 
 
@@ -335,20 +340,22 @@ lemma dg_Set_Hom_vsubset_dg_Par_Hom:
   by (rule vsubsetI) (simp add: dg_Set_is_arr_dg_Par_is_arr)
 
 lemma (in \<Z>) dg_Set_incl_Set_is_arr:
-  assumes "A \<in>\<^sub>\<circ> Vset \<alpha>" and "B \<in>\<^sub>\<circ> Vset \<alpha>" and "A \<subseteq>\<^sub>\<circ> B"
+  assumes "A \<in>\<^sub>\<circ> dg_Set \<alpha>\<lparr>Obj\<rparr>" and "B \<in>\<^sub>\<circ> dg_Set \<alpha>\<lparr>Obj\<rparr>" and "A \<subseteq>\<^sub>\<circ> B"
   shows "incl_Set A B : A \<mapsto>\<^bsub>dg_Set \<alpha>\<^esub> B"
 proof(rule dg_Set_is_arrI)
-  show "arr_Set \<alpha> (incl_Set A B)" by (intro arr_Set_incl_SetI assms)
-qed (simp_all add: incl_Rel_components)
+  from assms(1,2) show "arr_Set \<alpha> (incl_Set A B)" 
+    unfolding dg_Set_components(1) by (intro arr_Set_incl_SetI assms)
+qed (simp_all add: dg_Set_components incl_Rel_components)
 
-lemma (in \<Z>) dg_Set_incl_Set_is_arr'[dg_Set_cs_intros]:
-  assumes "A \<in>\<^sub>\<circ> Vset \<alpha>" 
-    and "B \<in>\<^sub>\<circ> Vset \<alpha>" 
+lemma (in \<Z>) dg_Set_incl_Set_is_arr'[dg_cs_intros, dg_Set_cs_intros]:
+  assumes "A \<in>\<^sub>\<circ> dg_Set \<alpha>\<lparr>Obj\<rparr>" 
+    and "B \<in>\<^sub>\<circ> dg_Set \<alpha>\<lparr>Obj\<rparr>" 
     and "A \<subseteq>\<^sub>\<circ> B"
     and "A' = A"
     and "B' = B"
-  shows "incl_Set A B : A' \<mapsto>\<^bsub>dg_Set \<alpha>\<^esub> B'"
-  using assms(1-3) unfolding assms(4,5) by (rule dg_Set_incl_Set_is_arr)
+    and "\<CC>' = dg_Set \<alpha>"
+  shows "incl_Set A B : A' \<mapsto>\<^bsub>\<CC>'\<^esub> B'"
+  using assms(1-3) unfolding assms(4-6) by (rule dg_Set_incl_Set_is_arr)
 
 lemmas [dg_Set_cs_intros] = \<Z>.dg_Set_incl_Set_is_arr'
 

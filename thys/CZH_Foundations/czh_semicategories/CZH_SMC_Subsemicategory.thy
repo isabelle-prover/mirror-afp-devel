@@ -125,7 +125,7 @@ proof(rule subsemicategoryI)
   then have "g : c \<mapsto>\<^bsub>\<BB>\<^esub> b" and "f : b \<mapsto>\<^bsub>\<BB>\<^esub> a" 
     by (simp_all add: smc_op_simps)
   with subsemicategory_axioms have g: "g : c \<mapsto>\<^bsub>\<CC>\<^esub> b" and f: "f : b \<mapsto>\<^bsub>\<CC>\<^esub> a" 
-    by (cs_concl cs_intro: smc_sub_fw_cs_intros)+
+    by (cs_concl cs_shallow cs_intro: smc_sub_fw_cs_intros)+
   from dg.op_smc_Comp[OF this(2,1)] have "g \<circ>\<^sub>A\<^bsub>op_smc \<CC>\<^esub> f = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g".
   with prems show "g \<circ>\<^sub>A\<^bsub>op_smc \<BB>\<^esub> f = g \<circ>\<^sub>A\<^bsub>op_smc \<CC>\<^esub> f"
     by (simp add: smc_op_simps subsmc_Comp)
@@ -155,7 +155,10 @@ lemma (in subsemicategory) subsmc_is_idem_arrD:
   shows "f : \<mapsto>\<^sub>i\<^sub>d\<^sub>e\<^bsub>\<CC>\<^esub> b"
   using assms subsemicategory_axioms
   by (intro is_idem_arrI; elim is_idem_arrE)
-    (cs_concl cs_simp: smc_sub_bw_cs_simps[symmetric] cs_intro: smc_sub_fw_cs_intros)
+    (
+      cs_concl cs_shallow 
+        cs_simp: smc_sub_bw_cs_simps[symmetric] cs_intro: smc_sub_fw_cs_intros
+    )
 
 lemmas [smc_sub_fw_cs_intros] = subsemicategory.subsmc_is_idem_arrD
 
@@ -285,7 +288,11 @@ proof(rule is_ft_semifunctorI)
       by (auto simp: smc_sub_bw_cs_simps)
     from prems show "dghm_inc \<BB> \<CC>\<lparr>ArrMap\<rparr>\<lparr>g \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f\<rparr> = 
       dghm_inc \<BB> \<CC>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> dghm_inc \<BB> \<CC>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
-      by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros smc_sub_fw_cs_intros)
+      by 
+        (
+          cs_concl 
+            cs_simp: smc_cs_simps cs_intro: smc_cs_intros smc_sub_fw_cs_intros
+        )
   qed 
     (
       insert subsmc_inc_is_ft_dghm_axioms, 

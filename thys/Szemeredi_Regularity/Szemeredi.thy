@@ -5,21 +5,13 @@ theory Szemeredi
 
 begin
 
-thm card_vimage_inj
-lemma card_vimage_inj_on_le: 
-  assumes "inj_on f D" "finite A"
-  shows "card (f-`A \<inter> D) \<le> card A"
-  by (meson assms card_inj_on_le image_subset_iff_subset_vimage inf_le1 inf_le2 inj_on_subset)
-
-
 text\<open>We formalise Szemerédi's Regularity Lemma, which is a major result in the study of large graphs
 (extremal graph theory).
-We follow Yufei Zhao's notes ``Graph Theory and Additive Combinatorics'' (MIT)
-\<^url>\<open>https://ocw.mit.edu/courses/mathematics/18-217-graph-theory-and-additive-combinatorics-fall-2019/lecture-notes/MIT18_217F19_ch3.pdf\<close>
+We follow Yufei Zhao's notes ``Graph Theory and Additive Combinatorics'' (MIT),
+latest version here: \<^url>\<open>https://yufeizhao.com/gtacbook/\<close>
 and W.T. Gowers's notes ``Topics in Combinatorics'' (University of Cambridge, Lent 2004, Chapter 3)
 \<^url>\<open>https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf\<close>.
-We also refer to a third source, also by Zhao and also entitled 
-``Graph Theory and Additive Combinatorics'': \<^url>\<open>https://yufeizhao.com/gtac/gtac17.pdf\<close>.\<close>
+We also used an earlier version of Zhao's book: \<^url>\<open>https://yufeizhao.com/gtac/gtac.pdf\<close>.\<close>
 
 
 subsection \<open>Miscellaneous\<close>
@@ -80,11 +72,6 @@ lemma finite_graph_partition_finite:
   shows "finite X"
   by (meson assms finite_graph_partition_subset infinite_super)
 
-lemma finite_graph_partition_le:
-  assumes "finite_graph_partition V P k" "finite V" "X \<in> P"
-  shows "card X \<le> card V"
-  by (meson assms card_mono finite_graph_partition_subset)
-
 lemma finite_graph_partition_gt0:
   assumes "finite_graph_partition V P k" "finite V" "X \<in> P"
   shows "card X > 0"
@@ -94,11 +81,6 @@ lemma card_finite_graph_partition:
   assumes "finite_graph_partition V P k" "finite V"
   shows "(\<Sum>X\<in>P. card X) = card V"
   by (metis assms finite_graph_partition_def finite_graph_partition_finite product_partition)
-
-lemma finite_graph_partition_obtain:
-  assumes "finite_graph_partition V P k" "x \<in> V"
-  obtains X where "X \<in> P" and "x \<in> X"
-  using assms finite_graph_partition_equals by force
 
 subsubsection \<open>Tools to combine the refinements of the partition @{term "P i"} for each @{term i}\<close>
 
@@ -150,18 +132,19 @@ subsection \<open>Edge Density and Regular Pairs\<close>
 
 text \<open>The edge density between two sets of vertices, @{term X} and @{term Y}, in @{term G}.
       Authors disagree on whether the sets are assumed to be disjoint!.
-      Quite a few authors assume disjointness, e.g. Malliaris and Shelah \<^url>\<open>https://www.jstor.org/stable/23813167\<close>
-      For the following definitions, see pages 49--50 in Zhao's notes.\<close>
+      Quite a few authors assume disjointness, e.g. Malliaris and Shelah \<^url>\<open>https://www.jstor.org/stable/23813167\<close>.\<close>
 definition "edge_density X Y G \<equiv> card(all_edges_between X Y G) / (card X * card Y)"
 
 lemma edge_density_ge0: "edge_density X Y G \<ge> 0"
   by (auto simp: edge_density_def)
 
-lemma edge_density_le1:
-  assumes "finite X" "finite Y"
-  shows "edge_density X Y G \<le> 1"
-  using of_nat_mono [OF max_all_edges_between [OF assms]]
-  by (fastforce simp add: edge_density_def divide_simps)
+lemma edge_density_le1: "edge_density K Y G \<le> 1"
+proof (cases "finite K \<and> finite Y")
+  case True
+  then show ?thesis 
+    using of_nat_mono [OF max_all_edges_between, of K Y]
+    by (fastforce simp add: edge_density_def divide_simps)
+qed (auto simp: edge_density_def)
 
 lemma all_edges_between_swap:
   "all_edges_between X Y G = (\<lambda>(x,y). (y,x)) ` (all_edges_between Y X G)"
@@ -195,36 +178,24 @@ definition regular_pair::  "uvert set  \<Rightarrow> uvert set \<Rightarrow> ugr
 lemma regular_pair_commute: "regular_pair X Y G \<epsilon> \<longleftrightarrow> regular_pair Y X G \<epsilon>"
   by (metis edge_density_commute regular_pair_def)
 
-abbreviation "irregular_pair X Y G \<epsilon> \<equiv> \<not> regular_pair X Y G \<epsilon>"
-
-lemma irregular_pair_E:
-  fixes \<epsilon>::real
-  assumes "irregular_pair X Y G \<epsilon>" 
-  obtains A B where "A \<subseteq> X \<and> B \<subseteq> Y \<and> (card A \<ge> \<epsilon> * card X) \<and> (card B \<ge> \<epsilon> * card Y)"
-              "\<bar>edge_density A B G - edge_density X Y G\<bar> > \<epsilon>"
-  using assms by (auto simp: not_le regular_pair_def)
-
-lemma irregular_pair_I: 
-  fixes \<epsilon>::real
-  assumes "A \<subseteq> X" "B \<subseteq> Y" "(card A \<ge> \<epsilon> * card X)" "(card B \<ge> \<epsilon> * card Y)"
-              "\<bar>edge_density A B G - edge_density X Y G\<bar> > \<epsilon>"
-  shows "irregular_pair X Y G \<epsilon>"
-  using assms  by (auto simp: not_le regular_pair_def)
-
 lemma edge_density_Un:
-  assumes "disjnt X1 X2" "finite X1" "finite X2" "finite Y"
+  assumes "disjnt X1 X2" "finite X1" "finite X2"
   shows "edge_density (X1 \<union> X2) Y G = (edge_density X1 Y G * card X1 + edge_density X2 Y G * card X2) / (card X1 + card X2)"
-  using assms unfolding edge_density_def
-  by (simp add: all_edges_between_disjnt1 all_edges_between_Un1 finite_all_edges_between card_Un_disjnt divide_simps)
+proof (cases "finite Y")
+  case True
+  with assms show ?thesis 
+    by (simp add: edge_density_def all_edges_between_disjnt1 all_edges_between_Un1 finite_all_edges_between card_Un_disjnt card_ge_0_finite divide_simps)
+qed (simp add: edge_density_def)
 
 lemma edge_density_partition:
-  assumes U: "finite U" "finite_graph_partition U P n" and "finite W"
+  assumes "finite_graph_partition U P n"
   shows "edge_density U W G = (\<Sum>X\<in>P. edge_density X W G * card X) / card U"
-proof -
+proof (cases "finite U")
+  case True
   have "finite P"
     using assms finite_graph_partition_def by blast
   then show ?thesis
-    using U 
+    using True assms
   proof (induction P arbitrary: n U)
     case empty
     then show ?case
@@ -237,7 +208,7 @@ proof -
     have UX: "finite_graph_partition (U-X) P (n-1)"
       by (auto simp: finite_graph_partition_def partition_on_def disjnt_iff pairwise_insert)
     then have finU: "finite (\<Union>P)"
-      using finite_graph_partition_equals insert by auto
+      by (simp add: finite_graph_partition_equals insert)
     then have sumXP: "card U = card X + card (\<Union>P)"
       by (metis UX card_finite_graph_partition finite_graph_partition_equals insert.hyps insert.prems sum.insert)
     have FUX: "finite (U - X)"
@@ -253,7 +224,7 @@ proof -
         using UX disjnt_iff finite_graph_partition_equals by auto
       show "finite X"
         using XUP \<open>finite U\<close> by blast
-    qed (use \<open>finite W\<close> finU in auto)
+    qed (use finU in auto)
     also have "\<dots> = (edge_density X W G * card X + edge_density (U-X) W G * card (\<Union>P)) 
                   / card U"
       using UX card_finite_graph_partition finite_graph_partition_equals insert.prems(1) insert.prems(2) sumXP by auto
@@ -263,8 +234,7 @@ proof -
       by (metis (no_types, lifting) Diff_eq_empty_iff finite_graph_partition_empty sum.empty)
     finally show ?case .
   qed
-qed
-
+qed (simp add: edge_density_def)
 
 text\<open>Let @{term P}, @{term Q} be partitions of a set of vertices @{term V}. 
   Then @{term P} refines @{term Q} if for all @{term \<open>A \<in> P\<close>} there is @{term \<open>B \<in> Q\<close>} 
@@ -275,13 +245,13 @@ text \<open>For the sake of generality, and following Zhao's Online Lecture
 we do not impose disjointness: we do not include @{term "i\<noteq>j"} below.\<close>
 
 definition irregular_set:: "[real, ugraph, uvert set set] \<Rightarrow> (uvert set \<times> uvert set) set"
-  where "irregular_set \<equiv> \<lambda>\<epsilon>::real. \<lambda>G P. {(R,S)|R S. R\<in>P \<and> S\<in>P \<and> irregular_pair R S G \<epsilon>}"
+  where "irregular_set \<equiv> \<lambda>\<epsilon>::real. \<lambda>G P. {(R,S)|R S. R\<in>P \<and> S\<in>P \<and> \<not> regular_pair R S G \<epsilon>}"
 
 text\<open>A regular partition may contain a few irregular pairs as long as their total size is bounded as follows.\<close>
 definition regular_partition:: "[real, ugraph, uvert set set] \<Rightarrow> bool"
   where
   "regular_partition \<equiv> \<lambda>\<epsilon>::real. \<lambda>G P . 
-     partition_on (uverts G) P  \<and>
+     partition_on (uverts G) P \<and>
      (\<Sum>(R,S) \<in> irregular_set \<epsilon> G P. card R * card S) \<le> \<epsilon> * (card (uverts G))\<^sup>2"
 
 lemma irregular_set_subset: "irregular_set \<epsilon> G P \<subseteq> P \<times> P"
@@ -295,47 +265,45 @@ lemma finite_irregular_set [simp]: "finite P \<Longrightarrow> finite (irregular
 
 subsection \<open>Energy of a Graph\<close>
 
-text \<open>Definition 3.7 (Energy), written @{term "q(\<U>,\<W>)"}\<close>
+text \<open>Definition 3.7 (Energy), written @{term "q(U,W)"}\<close>
 definition energy_graph_subsets:: "[uvert set, uvert set, ugraph] \<Rightarrow> real" where
-  "energy_graph_subsets \<U> \<W> G \<equiv>
-     card \<U> * card \<W> * (edge_density \<U> \<W> G)\<^sup>2 / (card (uverts G))\<^sup>2"
+  "energy_graph_subsets U W G \<equiv>
+     card U * card W * (edge_density U W G)\<^sup>2 / (card (uverts G))\<^sup>2"
 
 text \<open>Definition for partitions\<close>
-definition energy_graph_partitions_subsets
-  :: "[ugraph, uvert set set, uvert set set] \<Rightarrow> real"
-  where "energy_graph_partitions_subsets G U W \<equiv> 
-           \<Sum>R\<in>U.\<Sum>S\<in>W. energy_graph_subsets R S G"
+definition energy_graph_partitions :: "[ugraph, uvert set set, uvert set set] \<Rightarrow> real"
+  where "energy_graph_partitions G U W \<equiv> \<Sum>R\<in>U.\<Sum>S\<in>W. energy_graph_subsets R S G"
 
 lemma energy_graph_subsets_0 [simp]: 
      "energy_graph_subsets {} B G = 0" "energy_graph_subsets A {} G = 0"
   by (auto simp: energy_graph_subsets_def)
 
 lemma energy_graph_subsets_ge0 [simp]:
-  "energy_graph_subsets \<U> \<W> G \<ge> 0"
+  "energy_graph_subsets U W G \<ge> 0"
   by (auto simp: energy_graph_subsets_def)
 
-lemma energy_graph_partitions_subsets_ge0 [simp]:
-  "energy_graph_partitions_subsets G U W \<ge> 0"
-  by (auto simp: sum_nonneg energy_graph_partitions_subsets_def)
+lemma energy_graph_partitions_ge0 [simp]:
+  "energy_graph_partitions G U W \<ge> 0"
+  by (auto simp: sum_nonneg energy_graph_partitions_def)
 
 lemma energy_graph_subsets_commute: 
-  "energy_graph_subsets \<U> \<W> G = energy_graph_subsets \<W> \<U> G"
+  "energy_graph_subsets U W G = energy_graph_subsets W U G"
   by (simp add: energy_graph_subsets_def edge_density_commute)
 
-lemma energy_graph_partitions_subsets_commute:
-  "energy_graph_partitions_subsets G W U = energy_graph_partitions_subsets G U W"
-  by (simp add: energy_graph_partitions_subsets_def energy_graph_subsets_commute sum.swap [where A=W])
+lemma energy_graph_partitions_commute:
+  "energy_graph_partitions G W U = energy_graph_partitions G U W"
+  by (simp add: energy_graph_partitions_def energy_graph_subsets_commute sum.swap [where A=W])
 
 text\<open>Definition 3.7 (Energy of a Partition), or following Gowers, mean square density:
  a version of energy for a single partition of the vertex set. \<close> 
 
 abbreviation mean_square_density :: "[ugraph, uvert set set] \<Rightarrow> real"
-  where "mean_square_density G U \<equiv> energy_graph_partitions_subsets G U U"
+  where "mean_square_density G U \<equiv> energy_graph_partitions G U U"
 
 lemma mean_square_density: 
   "mean_square_density G U \<equiv> 
           (\<Sum>R\<in>U. \<Sum>S\<in>U. card R * card S * (edge_density R S G)\<^sup>2) / (card (uverts G))\<^sup>2"
-  by (simp add: energy_graph_partitions_subsets_def energy_graph_subsets_def sum_divide_distrib)
+  by (simp add: energy_graph_partitions_def energy_graph_subsets_def sum_divide_distrib)
 
 text\<open>Observation: the energy is between 0 and 1 because the edge density is bounded above by 1.\<close>
 
@@ -352,7 +320,7 @@ proof -
     have [simp]: "finite Y" if "Y \<in> insert X P" for Y
       by (meson finite_graph_partition_finite insert.prems that)
     have C: "card Y \<le> card V" if"Y \<in> insert X P" for Y
-      by (meson finite_graph_partition_le insert.prems that)
+      by (meson card_mono finite_graph_partition_subset insert.prems that)
     have D [simp]: "(\<Sum>Y\<in>P. real (card Y)) = real (card V) - real (card X)"
       by (smt (verit) card_finite_graph_partition insert.hyps insert.prems of_nat_sum sum.cong sum.insert)
     have "disjnt X (\<Union>P)"
@@ -380,12 +348,9 @@ lemma mean_square_density_bounded:
   assumes "finite_graph_partition (uverts G) P k" "finite (uverts G)" 
   shows "mean_square_density G P \<le> 1"
 proof-
-  have \<section>: "edge_density R S G \<le> 1" for R S
-    using assms of_nat_mono [OF max_all_edges_between]
-    by (smt (verit) card.infinite divide_eq_0_iff edge_density_def edge_density_le1 mult_eq_0_iff of_nat_0)
   have "(\<Sum>R\<in>P. \<Sum>S\<in>P. real (card R * card S) * (edge_density R S G)\<^sup>2) 
      \<le> (\<Sum>R\<in>P. \<Sum>S\<in>P. real (card R * card S))"
-    by (intro sum_mono mult_right_le_one_le) (auto simp: abs_square_le_1 edge_density_ge0 \<section>)
+    by (intro sum_mono mult_right_le_one_le) (auto simp: abs_square_le_1 edge_density_ge0 edge_density_le1)
   also have "\<dots> \<le> (real(card (uverts G)))\<^sup>2"
     using sum_partition_le assms by blast 
   finally show ?thesis 
@@ -394,75 +359,71 @@ qed
 
 subsection \<open>Partitioning and Energy\<close>
 
-text\<open>Zhao's Lemma 3.8 and Gowers's remark after Lemma 11. 
+text\<open>See Gowers's remark after Lemma 11. 
  Further partitioning of subsets of the vertex set cannot make the energy decrease. 
  We follow Gowers's proof, which avoids the use of probability.\<close>
 
 lemma energy_graph_partition_half:
-  assumes fin: "finite \<U>" "finite \<W>" and U: "finite_graph_partition \<U> U n"
-  shows "card \<U> * (edge_density \<U> \<W> G)\<^sup>2 \<le> (\<Sum>R\<in>U. card R * (edge_density R \<W> G)\<^sup>2)"
-proof -
-  have \<section>: "(\<Sum>R\<in>U. card R * edge_density R \<W> G)\<^sup>2 
-         \<le> (sum card U) * (\<Sum>R\<in>U. card R * (edge_density R \<W> G)\<^sup>2)"
+  assumes P: "finite_graph_partition U P n"
+  shows "card U * (edge_density U W G)\<^sup>2 \<le> (\<Sum>R\<in>P. card R * (edge_density R W G)\<^sup>2)"
+proof (cases "finite U")
+  case True
+  have \<section>: "(\<Sum>R\<in>P. card R * edge_density R W G)\<^sup>2 
+         \<le> (sum card P) * (\<Sum>R\<in>P. card R * (edge_density R W G)\<^sup>2)"
     by (simp add: sum_products_le)
-  have "card \<U> * (edge_density \<U> \<W> G)\<^sup>2 = (\<Sum>R\<in>U. card R * (edge_density \<U> \<W> G)\<^sup>2)"
-    by (metis \<open>finite \<U>\<close> U sum_distrib_right card_finite_graph_partition of_nat_sum)
-  also have "\<dots> = edge_density \<U> \<W> G * (\<Sum>R\<in>U. edge_density \<U> \<W> G * card R)"
+  have "card U * (edge_density U W G)\<^sup>2 = (\<Sum>R\<in>P. card R * (edge_density U W G)\<^sup>2)"
+    by (metis \<open>finite U\<close> P sum_distrib_right card_finite_graph_partition of_nat_sum)
+  also have "\<dots> = edge_density U W G * (\<Sum>R\<in>P. edge_density U W G * card R)"
     by (simp add: sum_distrib_left power2_eq_square mult_ac)
-  also have "\<dots> = (\<Sum>R\<in>U. edge_density R \<W> G * real (card R)) * edge_density \<U> \<W> G"
+  also have "\<dots> = (\<Sum>R\<in>P. edge_density R W G * real (card R)) * edge_density U W G"
   proof -
-    have "edge_density \<U> \<W> G * (\<Sum>R\<in>U. edge_density R \<W> G * card R) 
-        = edge_density \<U> \<W> G * (edge_density \<U> \<W> G * (\<Sum>R\<in>U. card R))"
-      using assms card_finite_graph_partition  by (auto simp: edge_density_partition [OF _ U])
+    have "edge_density U W G * (\<Sum>R\<in>P. edge_density R W G * card R) 
+        = edge_density U W G * (edge_density U W G * (\<Sum>R\<in>P. card R))"
+      using \<open>finite U\<close> assms card_finite_graph_partition  by (auto simp: edge_density_partition [OF P])
     then show ?thesis
       by (simp add: mult.commute sum_distrib_left)
   qed
-  also have "\<dots> = (\<Sum>R\<in>U. card R * edge_density R \<W> G) * edge_density \<U> \<W> G"
+  also have "\<dots> = (\<Sum>R\<in>P. card R * edge_density R W G) * edge_density U W G"
     by (simp add: sum_distrib_left mult_ac)
-  also have "\<dots> = (\<Sum>R\<in>U. card R * edge_density R \<W> G)\<^sup>2 / card \<U>"
-    using assms
-    by (simp add: edge_density_partition [OF _ U] mult_ac flip: power2_eq_square)
-  also have "\<dots> \<le> (\<Sum>R\<in>U. card R * (edge_density R \<W> G)\<^sup>2)"
-    using \<section> U card_finite_graph_partition fin by (force simp add: mult_ac divide_simps simp flip: of_nat_sum)
+  also have "\<dots> = (\<Sum>R\<in>P. card R * edge_density R W G)\<^sup>2 / card U"
+    using assms by (simp add: edge_density_partition [OF P] mult_ac flip: power2_eq_square)
+  also have "\<dots> \<le> (\<Sum>R\<in>P. card R * (edge_density R W G)\<^sup>2)"
+    using \<section> P card_finite_graph_partition \<open>finite U\<close> 
+    by (force simp add: mult_ac divide_simps simp flip: of_nat_sum)
   finally show ?thesis .
-qed
+qed (simp add: sum_nonneg)
 
 proposition energy_graph_partition_increase:
-  assumes fin: "finite \<U>" "finite \<W>" 
-    and U: "finite_graph_partition \<U> U k" 
-    and V: "finite_graph_partition \<W> W l"
-  shows "energy_graph_partitions_subsets G U W \<ge> energy_graph_subsets \<U> \<W> G" 
+  assumes P: "finite_graph_partition U P k" and V: "finite_graph_partition W Q l"
+  shows "energy_graph_partitions G P Q \<ge> energy_graph_subsets U W G" 
 proof -
-  have "(card \<U> * card \<W>) * (edge_density \<U> \<W> G)\<^sup>2 = card \<W> * (card \<U> * (edge_density \<U> \<W> G)\<^sup>2)"
-    using fin by (simp add: mult_ac)
-  also have "\<dots> \<le> card \<W> * (\<Sum>R\<in>U. card R * (edge_density R \<W> G)\<^sup>2)"
-    by (intro mult_left_mono energy_graph_partition_half fin) (use assms in auto)
-  also have "\<dots> = (\<Sum>R\<in>U. card R * (card \<W> * (edge_density \<W> R G)\<^sup>2))"
+  have "(card U * card W) * (edge_density U W G)\<^sup>2 = card W * (card U * (edge_density U W G)\<^sup>2)"
+    by (simp add: mult_ac)
+  also have "\<dots> \<le> card W * (\<Sum>R\<in>P. card R * (edge_density R W G)\<^sup>2)"
+    by (intro mult_left_mono energy_graph_partition_half) (use assms in auto)
+  also have "\<dots> = (\<Sum>R\<in>P. card R * (card W * (edge_density W R G)\<^sup>2))"
     by (simp add: sum_distrib_left edge_density_commute mult_ac)
-  also have "\<dots> \<le> (\<Sum>R\<in>U. card R * (\<Sum>S\<in>W. card S * (edge_density S R G)\<^sup>2))"
-  proof (intro mult_left_mono energy_graph_partition_half sum_mono fin)
-    show "finite R" if "R \<in> U" for R
-      using that U fin finite_graph_partition_finite by blast
-  qed (use assms in auto)
-  also have "\<dots> \<le> (\<Sum>R\<in>U. \<Sum>S\<in>W. (card R * card S) * (edge_density R S G)\<^sup>2)"
+  also have "\<dots> \<le> (\<Sum>R\<in>P. card R * (\<Sum>S\<in>Q. card S * (edge_density S R G)\<^sup>2))"
+    by (intro mult_left_mono energy_graph_partition_half sum_mono) (use assms in auto)
+  also have "\<dots> \<le> (\<Sum>R\<in>P. \<Sum>S\<in>Q. (card R * card S) * (edge_density R S G)\<^sup>2)"
     by (simp add: sum_distrib_left edge_density_commute mult_ac)
   finally
-  have "(card \<U> * card \<W>) * (edge_density \<U> \<W> G)\<^sup>2 
-    \<le> (\<Sum>R\<in>U. \<Sum>S\<in>W. (card R * card S) * (edge_density R S G)\<^sup>2)" .
+  have "(card U * card W) * (edge_density U W G)\<^sup>2 
+    \<le> (\<Sum>R\<in>P. \<Sum>S\<in>Q. (card R * card S) * (edge_density R S G)\<^sup>2)" .
   then show ?thesis
-    unfolding energy_graph_partitions_subsets_def energy_graph_subsets_def
+    unfolding energy_graph_partitions_def energy_graph_subsets_def
     by (simp add: divide_simps flip: sum_divide_distrib)
 qed
 
-text \<open>The following is the fully general version of Gowers's Lemma 11 and Zhao's Lemma 3.9. 
+text \<open>The following is the fully general version of Gowers's Lemma 11  
 Further partitioning of subsets of the vertex set cannot make the energy decrease.
 Note that @{term V} should be @{term "uverts G"} even though this more general version holds.\<close>
 
-lemma energy_graph_partitions_subsets_increase_half:
+lemma energy_graph_partitions_increase_half:
   assumes ref: "refines V Y X" and "finite V" and part_VX: "partition_on V X"
-    and U: "{} \<notin> U" "finite (\<Union>U)"
-  shows "energy_graph_partitions_subsets G X U \<le> energy_graph_partitions_subsets G Y U" 
-        (is "?lhs \<le> ?rhs")
+    and U: "{} \<notin> U"
+  shows "energy_graph_partitions G Y U \<ge> energy_graph_partitions G X U" 
+        (is "?Y \<ge> ?X")
 proof -
   have "\<exists>F. partition_on R F \<and> F = {S\<in>Y. S \<subseteq> R}" if "R\<in>X" for R
     using ref refines_obtains_subset that by blast
@@ -471,12 +432,12 @@ proof -
   have injF: "inj_on F X"
     by (metis F inj_on_inverseI partition_on_def)
   have finite_X: "finite R" if "R \<in> X" for R
-    by (metis Union_upper assms(2) part_VX finite_subset partition_on_def that)
+    by (metis Union_upper \<open>finite V\<close> part_VX finite_subset partition_on_def that)
   then have finite_F: "finite (F R)" if "R \<in> X" for R
     using that by (simp add: F)
   have dFX: "disjoint (F ` X)"
-    using part_VX unfolding finite_graph_partition_def partition_def
-    by (smt (verit, best) F Int_subset_iff Union_upper disjnt_iff disjointD pairwise_imageI partition_on_def subset_empty)
+    using part_VX 
+    by (smt (verit, best) F Union_upper disjnt_iff disjointD le_inf_iff pairwise_imageI partition_on_def subset_empty)
   have F_ne: "F R \<noteq> {}" if "R \<in> X" for R
     by (metis F Sup_empty part_VX partition_on_def that)
   have F_sums_Y: "(\<Sum>R\<in>X. \<Sum>U\<in>F R. f U) = (\<Sum>S\<in>Y. f S)" for f :: "nat set \<Rightarrow> real"
@@ -492,9 +453,9 @@ proof -
     finally show ?thesis
       by simp
   qed
-  have "?lhs = (\<Sum>R \<in> X. \<Sum>T\<in>U. energy_graph_subsets R T G)"
-    by (simp add: energy_graph_partitions_subsets_def)
-  also have "\<dots> \<le> (\<Sum>R\<in>X. \<Sum>T\<in>U. energy_graph_partitions_subsets G (F R) {T})"
+  have "?X = (\<Sum>R \<in> X. \<Sum>T\<in>U. energy_graph_subsets R T G)"
+    by (simp add: energy_graph_partitions_def)
+  also have "\<dots> \<le> (\<Sum>R\<in>X. \<Sum>T\<in>U. energy_graph_partitions G (F R) {T})"
   proof -
     have "finite_graph_partition R (F R) (card (F R))"
       if "R \<in> X" for R
@@ -502,161 +463,142 @@ proof -
     moreover have "finite_graph_partition T {T} (Suc 0)"
       if "T \<in> U" for T
       using U by (metis that trivial_graph_partition_exists)
-    moreover have "finite T" if "T \<in> U" for T
-      using U by (meson Sup_upper infinite_super that)
     ultimately show ?thesis
       using finite_X  by (intro sum_mono energy_graph_partition_increase) auto
   qed
   also have "\<dots> = (\<Sum>R \<in> X. \<Sum>D \<in> F R. \<Sum>T\<in>U. energy_graph_subsets D T G)"
-    by (simp add: energy_graph_partitions_subsets_def sum.swap [where B = "U"])
-  also have "\<dots> = ?rhs"
-    by (simp add: energy_graph_partitions_subsets_def F_sums_Y)
+    by (simp add: energy_graph_partitions_def sum.swap [where B = "U"])
+  also have "\<dots> = ?Y"
+    by (simp add: energy_graph_partitions_def F_sums_Y)
   finally show ?thesis .
 qed
 
-proposition energy_graph_partitions_subsets_increase:
-  assumes refX: "refines V Y X" and refU: "refines V' W U" 
+proposition energy_graph_partitions_increase:
+  assumes "refines V Y X" "refines V' W U" 
     and "finite V" "finite V'" 
-  shows "energy_graph_partitions_subsets G X U \<le> energy_graph_partitions_subsets G Y W"
-        (is "?lhs \<le> ?rhs")
+  shows "energy_graph_partitions G Y W \<ge> energy_graph_partitions G X U"
 proof -
-  obtain U: "finite (\<Union>U)" "{} \<notin> U"
+  obtain "{} \<notin> U" "{} \<notin> Y"
     using assms unfolding refines_def partition_on_def by presburger
-  obtain Y: "finite (\<Union>Y)" "{} \<notin> Y"
-    using assms unfolding refines_def partition_on_def by presburger
-  have "?lhs \<le> energy_graph_partitions_subsets G Y U"
-    using assms energy_graph_partitions_subsets_increase_half U assms
-    using refines_def by blast
-  also have "\<dots> = energy_graph_partitions_subsets G U Y"
-    by (meson energy_graph_partitions_subsets_commute)
-  also have "\<dots> \<le> energy_graph_partitions_subsets G W Y"
-    using Y \<open>finite V'\<close> energy_graph_partitions_subsets_increase_half refU refines_def by blast
-  also have "\<dots> = ?rhs"
-    by (simp add: energy_graph_partitions_subsets_commute)
-  finally show ?thesis .
+  then show ?thesis
+    using assms unfolding refines_def
+    by (smt (verit, ccfv_SIG) assms energy_graph_partitions_commute energy_graph_partitions_increase_half)
 qed
 
-text \<open>The original version of Gowers's Lemma 11 and Zhao's Lemma 3.9 
+text \<open>The original version of Gowers's Lemma 11 (also in Zhao)
       is not general enough to be used for anything.\<close>
 corollary mean_square_density_increase:
   assumes "refines V Y X" "finite V"
-  shows "mean_square_density G X \<le> mean_square_density G Y"
-  using assms energy_graph_partitions_subsets_increase by presburger 
+  shows "mean_square_density G Y \<ge> mean_square_density G X"
+  using assms energy_graph_partitions_increase by presburger 
 
 
-text\<open>The Energy Boost Lemma (Lemma 3.10 in Zhao's notes) says that an 
+text\<open>The Energy Boost Lemma says that an 
 irregular partition increases the energy substantially. We assume that @{term "\<U> \<subseteq> uverts G"} 
 and @{term "\<W> \<subseteq> uverts G"} are not irregular, as witnessed by their subsets @{term"U1 \<subseteq> \<U>"} and @{term"W1 \<subseteq> \<W>"}.
 The proof follows Lemma 12 of Gowers. \<close>
 
-definition "P2 X Y \<equiv> if X \<subset> Y then {X,Y-X} else {Y}"
+definition "part2 X Y \<equiv> if X \<subset> Y then {X,Y-X} else {Y}"
 
-lemma card_P2: "card (P2 X Y) \<le> 2"
-  by (simp add: P2_def card_insert_if)
+lemma card_part2: "card (part2 X Y) \<le> 2"
+  by (simp add: part2_def card_insert_if)
 
-lemma sum_P2: "\<lbrakk>X \<subseteq> Y; f{} = 0\<rbrakk> \<Longrightarrow> sum f (P2 X Y) = f X + f (Y-X)"
-  by (force simp add: P2_def sum.insert_if)
+lemma sum_part2: "\<lbrakk>X \<subseteq> Y; f{} = 0\<rbrakk> \<Longrightarrow> sum f (part2 X Y) = f X + f (Y-X)"
+  by (force simp add: part2_def sum.insert_if)
 
-lemma partition_P2:
+lemma partition_part2:
   assumes "A \<subseteq> B" "A \<noteq> {}"
-  shows "partition_on B (P2 A B)"
-  using assms 
-  by (auto simp add: partition_on_def P2_def disjnt_iff pairwise_insert)
+  shows "partition_on B (part2 A B)"
+  using assms by (auto simp add: partition_on_def part2_def disjnt_iff pairwise_insert)
 
 proposition energy_boost:
-  fixes \<epsilon>::real and \<U> \<W> G
-  defines "alpha \<equiv> edge_density \<U> \<W> G"
+  fixes \<epsilon>::real and U W G
+  defines "alpha \<equiv> edge_density U W G"
   defines "u \<equiv> \<lambda>X Y. edge_density X Y G - alpha"
-  assumes "finite \<U>" "finite \<W>"
-    and "U1 \<subseteq> \<U>" "W1 \<subseteq> \<W>" "\<epsilon> > 0"
-    and U1: "card U1 \<ge> \<epsilon> * card \<U>" and W1: "card W1 \<ge> \<epsilon> * card \<W>"
-    and gt: "\<bar>u U1 W1\<bar> > \<epsilon>"
-  shows "(\<Sum>A \<in> P2 U1 \<U>. \<Sum>B \<in> P2 W1 \<W>. energy_graph_subsets A B G)
-         \<ge> energy_graph_subsets \<U> \<W> G + \<epsilon>^4 * (card \<U> * card \<W>) / (card (uverts G))\<^sup>2"
+  assumes "finite U" "finite W"
+    and "U' \<subseteq> U" "W' \<subseteq> W" "\<epsilon> > 0"
+    and U': "card U' \<ge> \<epsilon> * card U" and W': "card W' \<ge> \<epsilon> * card W"
+    and gt: "\<bar>u U' W'\<bar> > \<epsilon>"
+  shows "(\<Sum>A \<in> part2 U' U. \<Sum>B \<in> part2 W' W. energy_graph_subsets A B G)
+         \<ge> energy_graph_subsets U W G + \<epsilon>^4 * (card U * card W) / (card (uverts G))\<^sup>2"
           (is "?lhs \<ge> ?rhs")
 proof -
-  define UF where "UF \<equiv> P2 U1 \<U>"
-  define WF where "WF \<equiv> P2 W1 \<W>"
-  obtain [simp]: "finite \<U>" "finite \<W>"
+  define UF where "UF \<equiv> part2 U' U"
+  define WF where "WF \<equiv> part2 W' W"
+  obtain [simp]: "finite U" "finite W"
     using assms by (meson finite_subset)
-  obtain 1: "card U1 > 0" "card W1 > 0"
-    using gt \<open>\<epsilon> > 0\<close> U1 W1
+  obtain card': "card U' > 0" "card W' > 0"
+    using gt \<open>\<epsilon> > 0\<close> U' W'
     by (force simp: u_def alpha_def edge_density_def mult_le_0_iff zero_less_mult_iff)
-  then obtain 0: "card \<U> > 0" "card \<W> > 0"
+  then obtain card: "card U > 0" "card W > 0"
     using assms by fastforce
-  then obtain 1: "card U1 > 0" "card W1 > 0"
-    by (smt (verit) U1 W1 \<open>\<epsilon> > 0\<close> of_nat_0_less_iff zero_less_mult_iff)
-  then obtain [simp]: "finite U1" "finite W1"
-    by (meson card_ge_0_finite)
-  obtain [simp]: "W1 \<noteq> \<W> - W1" "U1 \<noteq> \<U> - U1"
-    by (metis DiffD2 1 all_not_in_conv card.empty less_irrefl)
-  have 2 [simp]: "card x > 0" if "x \<in> UF" for x
-    using "1"(1) assms that by (auto simp: UF_def P2_def split: if_split_asm)
-  have 3 [simp]: "card x > 0" if "x \<in> WF" for x
-    using "1"(2) assms that by (auto simp: WF_def P2_def split: if_split_asm)
-  have cardUW: "card \<U> = card U1 + card(\<U> - U1)" "card \<W> = card W1 + card(\<W> - W1)"
-    using 0 1 \<open>U1 \<subseteq> \<U>\<close> \<open>W1 \<subseteq> \<W>\<close>
+  then obtain [simp]: "finite U'" "finite W'"
+    by (meson card' card_ge_0_finite)
+  obtain [simp]: "W' \<noteq> W - W'" "U' \<noteq> U - U'"
+    by (metis DiffD2 card' all_not_in_conv card.empty less_irrefl)
+  have UF_ne: "card x \<noteq> 0" if "x \<in> UF" for x
+    using card' assms that by (auto simp: UF_def part2_def split: if_split_asm)
+  have WF_ne: "card x \<noteq> 0" if "x \<in> WF" for x
+    using card' assms that by (auto simp: WF_def part2_def split: if_split_asm)
+  have cardUW: "card U = card U' + card(U - U')" "card W = card W' + card(W - W')"
+    using card card' \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close>
     by (metis card_eq_0_iff card_Diff_subset card_mono le_add_diff_inverse less_le)+
-  have "\<U> = (\<U> - U1) \<union> U1" "disjnt (\<U> - U1) U1"
-    using \<open>U1 \<subseteq> \<U>\<close> by (force simp: disjnt_iff)+
-  then have CU: "card (all_edges_between \<U> Z G) 
-          = card (all_edges_between (\<U> - U1) Z G) + card (all_edges_between U1 Z G)" 
+  have "U = (U - U') \<union> U'" "disjnt (U - U') U'"
+    using \<open>U' \<subseteq> U\<close> by (force simp: disjnt_iff)+
+  then have CU: "card (all_edges_between U Z G) 
+          = card (all_edges_between (U - U') Z G) + card (all_edges_between U' Z G)" 
       if "finite Z" for Z 
-    by (metis \<open>finite U1\<close> all_edges_between_Un1 all_edges_between_disjnt1 \<open>finite \<U>\<close> 
+    by (metis \<open>finite U'\<close> all_edges_between_Un1 all_edges_between_disjnt1 \<open>finite U\<close> 
         card_Un_disjnt finite_Diff finite_all_edges_between that)
 
-  have "\<W> = (\<W> - W1) \<union> W1" "disjnt (\<W> - W1) W1"
-    using \<open>W1 \<subseteq> \<W>\<close> by (force simp: disjnt_iff)+
-  then have CW: "card (all_edges_between Z \<W> G) 
-          = card (all_edges_between Z (\<W> - W1) G) + card (all_edges_between Z W1 G)"
+  have "W = (W - W') \<union> W'" "disjnt (W - W') W'"
+    using \<open>W' \<subseteq> W\<close> by (force simp: disjnt_iff)+
+  then have CW: "card (all_edges_between Z W G) 
+          = card (all_edges_between Z (W - W') G) + card (all_edges_between Z W' G)"
     if "finite Z" for Z
-    by (metis \<open>finite W1\<close> all_edges_between_Un2 all_edges_between_disjnt2 \<open>finite \<W>\<close>
+    by (metis \<open>finite W'\<close> all_edges_between_Un2 all_edges_between_disjnt2 \<open>finite W\<close>
         card_Un_disjnt finite_Diff2 finite_all_edges_between that)
-  have *: "(\<Sum>i\<in>UF. \<Sum>j\<in>WF. real (card (all_edges_between i j G))) 
-         = card (all_edges_between \<U> \<W> G)"
-    by (simp add: UF_def WF_def cardUW CU CW sum_P2 \<open>U1 \<subseteq> \<U>\<close> \<open>W1 \<subseteq> \<W>\<close>)
+  have *: "(\<Sum>X\<in>UF. \<Sum>Y\<in>WF. real (card (all_edges_between X Y G))) 
+         = card (all_edges_between U W G)"
+    by (simp add: UF_def WF_def cardUW CU CW sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close>)
+  have **: "real (card U) * real (card W) = (\<Sum>X\<in>UF. \<Sum>Y\<in>WF. card X * card Y)"
+    by (simp add: UF_def WF_def cardUW sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close> algebra_simps)
 
-  have **: "real (card \<U>) * real (card \<W>) = (\<Sum>i\<in>UF. \<Sum>j\<in>WF. card i * card j)"
-    by (simp add: UF_def WF_def cardUW sum_P2 \<open>U1 \<subseteq> \<U>\<close> \<open>W1 \<subseteq> \<W>\<close> algebra_simps)
-
-  let ?S = "\<Sum>i\<in>UF. \<Sum>j\<in>WF. (card i * card j) / (card \<U> * card \<W>) * (edge_density i j G)\<^sup>2"
-  have \<section>: "2 * (\<Sum>i\<in>UF. \<Sum>j\<in>WF.
-                 (card i * card j) / (card \<U> * card \<W>) * (edge_density i j G)) 
-         = alpha + alpha * (\<Sum>i\<in>UF. \<Sum>j\<in>WF. (card i * card j) / (card \<U> * card \<W>))"
-    unfolding alpha_def 
-    by (simp add: * ** edge_density_def divide_simps sum_P2 \<open>U1 \<subseteq> \<U>\<close> \<open>W1 \<subseteq> \<W>\<close> flip: sum_divide_distrib)
-  have "\<epsilon> * \<epsilon> \<le> u U1 W1 * u U1 W1"
+  let ?S = "\<Sum>X\<in>UF. \<Sum>Y\<in>WF. (card X * card Y) / (card U * card W) * (edge_density X Y G)\<^sup>2"
+  define T where "T \<equiv> (\<Sum>X\<in>UF. \<Sum>Y\<in>WF. (card X * card Y) / (card U * card W) * (edge_density X Y G))"
+  have \<section>: "2 * T = alpha + alpha * (\<Sum>X\<in>UF. \<Sum>Y\<in>WF. (card X * card Y) / (card U * card W))"
+    unfolding alpha_def T_def
+    by (simp add: * ** edge_density_def divide_simps sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close> UF_ne WF_ne flip: sum_divide_distrib)
+  have "\<epsilon> * \<epsilon> \<le> u U' W' * u U' W'"
     by (metis abs_ge_zero abs_mult_self_eq \<open>\<epsilon> > 0\<close> gt less_le mult_mono)
-  then have "(\<epsilon>*\<epsilon>)*(\<epsilon>*\<epsilon>) \<le> (card U1 * card W1) / (card \<U> * card \<W>) * (u U1 W1)\<^sup>2"
-    using 0 mult_mono [OF U1 W1]  \<open>\<epsilon> > 0\<close>
+  then have "(\<epsilon>*\<epsilon>)*(\<epsilon>*\<epsilon>) \<le> (card U' * card W') / (card U * card W) * (u U' W')\<^sup>2"
+    using card mult_mono [OF U' W']  \<open>\<epsilon> > 0\<close>
     apply (simp add: divide_simps eval_nat_numeral)
     by (smt (verit, del_insts) mult.assoc mult.commute mult_mono' of_nat_0_le_iff zero_le_mult_iff)
-  also have "\<dots> \<le> (\<Sum>i\<in>UF. \<Sum>j\<in>WF.  (card i * card j) / (card \<U> * card \<W>) * (u i j)\<^sup>2)"
-    by (simp add: UF_def WF_def sum_P2 \<open>U1 \<subseteq> \<U>\<close> \<open>W1 \<subseteq> \<W>\<close>)
-  also have "\<dots> = ?S - 2 * alpha * (\<Sum>i\<in>UF. \<Sum>j\<in>WF. 
-                         (card i * card j) / (card \<U> * card \<W>) * edge_density i j G)
-                 + alpha\<^sup>2 * (\<Sum>i\<in>UF. \<Sum>j\<in>WF. (card i * card j) / (card \<U> * card \<W>))"
-    by (simp add: u_def power2_diff mult_ac ring_distribs divide_simps 
+  also have "\<dots> \<le> (\<Sum>X\<in>UF. \<Sum>Y\<in>WF.  (card X * card Y) / (card U * card W) * (u X Y)\<^sup>2)"
+    by (simp add: UF_def WF_def sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close>)
+  also have "\<dots> = ?S - 2 * T * alpha
+                 + alpha\<^sup>2 * (\<Sum>X\<in>UF. \<Sum>Y\<in>WF. (card X * card Y) / (card U * card W))"
+    by (simp add: u_def T_def power2_diff mult_ac ring_distribs divide_simps 
           sum_distrib_left sum_distrib_right sum_subtractf sum.distrib flip: sum_divide_distrib)
   also have "\<dots> = ?S - alpha\<^sup>2"
     using \<section> by (simp add: power2_eq_square algebra_simps)
   finally have 12: "alpha\<^sup>2 + \<epsilon>^4 \<le> ?S"
     by (simp add: eval_nat_numeral)
-  have "?rhs = (alpha\<^sup>2 + \<epsilon>^4) * (card \<U> * card \<W> / (card (uverts G))\<^sup>2)"
+  have "?rhs = (alpha\<^sup>2 + \<epsilon>^4) * (card U * card W / (card (uverts G))\<^sup>2)"
     unfolding alpha_def energy_graph_subsets_def
     by (simp add: ring_distribs divide_simps power2_eq_square)
-  also have "\<dots> \<le> ?S * (card \<U> * card \<W> / (card (uverts G))\<^sup>2)"
+  also have "\<dots> \<le> ?S * (card U * card W / (card (uverts G))\<^sup>2)"
     by (rule mult_right_mono [OF 12]) auto
   also have "\<dots> = ?lhs"
-    using 0 unfolding energy_graph_subsets_def UF_def WF_def
-    by (auto simp add: algebra_simps sum_P2 \<open>U1 \<subseteq> \<U>\<close> \<open>W1 \<subseteq> \<W>\<close> )
+    using card unfolding energy_graph_subsets_def UF_def WF_def
+    by (auto simp add: algebra_simps sum_part2 \<open>U' \<subseteq> U\<close> \<open>W' \<subseteq> W\<close> )
   finally show ?thesis .
 qed
 
-subsection \<open>Towards Zhao's Lemma 3.11\<close>
+subsection \<open>Energy boost for partitions\<close>
 
-text\<open>Lemma 3.11 says that we can always find a refinement
-that increases the energy by a certain amount.\<close>
+text\<open>We can always find a refinement that increases the energy by a certain amount.\<close>
 
 text \<open>A necessary lemma for the tower of exponentials in the result. Angeliki's proof\<close>
 lemma le_tower_2: "k * (2 ^ Suc k) \<le> 2^(2^k)"
@@ -668,28 +610,26 @@ proof (induction k rule: less_induct)
     define j where "j = k - Suc 0"
     have kj: "k = Suc j"
       using False j_def by force
-    have "(3::nat) \<le> 2 ^ j"
-      by (metis kj False Suc_leI less_trans_Suc less_exp not_less numeral_3_eq_3)
-    then have \<section>: "(2^j + 3) \<le> (2::nat) ^ k"
-      by (simp add: kj)
+    with False have \<section>: "(2^j + 3) \<le> (2::nat) ^ k"
+      by (simp add: Suc_leI le_less_trans not_less_eq_eq numeral_3_eq_3)
     have "k * (2 ^ Suc k) \<le> 6 * j * 2^j"
       using False by (simp add: kj)
     also have "\<dots> \<le> 6 * 2^(2^j)"
       using kj less.IH by force
-    also have "\<dots> < 8 * 2^(2^j)" by simp
-    also have "\<dots> = 2^(2^j + 3)"
+    also have "\<dots> < 2^(2^j + 3)"
       by (simp add: power_add) 
     also have "\<dots> \<le> 2^2^k"
-      using \<section> by (metis One_nat_def less_2_cases_iff power_increasing_iff)
+      by (simp add: \<section>)
     finally show ?thesis
       by simp      
   qed (auto simp: le_Suc_eq)
 qed
 
 
-text \<open>Zhao's actual Lemma 3.11. However, the bound $m \le k 2 ^{k+1}$  
-comes from a different source by Zhao: ``Graph Theory and Additive Combinatorics'', \<^url>\<open>https://yufeizhao.com/gtac/gtac17.pdf\<close>.
-Zhao's original version, and Gowers', both have incorrect bounds.\<close>
+text \<open>The bound $2 ^{k+1}$  comes from a different source by Zhao:
+``Graph Theory and Additive Combinatorics'', \<^url>\<open>https://yufeizhao.com/gtacbook/\<close>.
+It's needed because our @{term regular_partition} includes the diagonal; 
+otherwise, $k 2^k$ would work. Gowers'  version has a flatly incorrect bound.\<close>
 proposition exists_refinement:
   assumes fgp: "finite_graph_partition (uverts G) P k" and "finite (uverts G)" 
     and irreg: "\<not> regular_partition \<epsilon> G P" and "\<epsilon> > 0"
@@ -743,8 +683,8 @@ proof -
 
   text\<open>By the assumption that our partition is irregular, there are many irregular pairs.
        For each irregular pair, find pairs of subsets that witness irregularity.\<close>
-  define XP where "XP R \<equiv> ((\<lambda>S. P2 (X R S) R) ` {S. (R,S) \<in> irregular_set \<epsilon> G P})" for R
-  define YP where "YP S \<equiv> ((\<lambda>R. P2 (Y R S) S) ` {R. (R,S) \<in> irregular_set \<epsilon> G P})" for S
+  define XP where "XP R \<equiv> ((\<lambda>S. part2 (X R S) R) ` {S. (R,S) \<in> irregular_set \<epsilon> G P})" for R
+  define YP where "YP S \<equiv> ((\<lambda>R. part2 (Y R S) S) ` {R. (R,S) \<in> irregular_set \<epsilon> G P})" for S
 
   text \<open>include degenerate partition to ensure it works whether or not there's an irregular pair\<close>
   define PP where "PP \<equiv> \<lambda>R. insert {R} (XP R \<union> YP R)"
@@ -755,7 +695,7 @@ proof -
   then have finPP: "finite (PP R)" for R
     by (simp add: PP_def XP_def YP_def irregular_set_def)
   have inPP_fin: "P \<in> PP R \<Longrightarrow> finite P" for P R
-    by (auto simp: PP_def XP_def YP_def P2_def)
+    by (auto simp: PP_def XP_def YP_def part2_def)
   have finite_QS: "finite (QS R)" for R
     by (simp add: QS_def finPP finite_common_refinement inPP_fin)
 
@@ -763,9 +703,9 @@ proof -
     unfolding QS_def
   proof (intro partition_on_common_refinement partition_onI)
     show "\<And>\<A>. \<A> \<in> PP R \<Longrightarrow> {} \<notin> \<A>"
-      using that XY_nonempty XY_psub_P finP(2) 
-      by (fastforce simp add: PP_def XP_def YP_def P2_def)
-  qed (auto simp: disjnt_iff PP_def XP_def YP_def P2_def dest: XY_psub_P)
+      using that XY_nonempty XY_psub_P finP
+      by (fastforce simp add: PP_def XP_def YP_def part2_def)
+  qed (auto simp: disjnt_iff PP_def XP_def YP_def part2_def dest: XY_psub_P)
 
   have part_P_QS: "finite_graph_partition R (QS R) (r R)" if "R\<in>P" for R
     by (simp add: finite_QS finite_graph_partition_def part_QS r_def that)
@@ -813,8 +753,8 @@ proof -
               by (metis \<open>R \<in> P\<close> * pairwiseD partition_on_def \<open>p \<noteq> q\<close>)
           next
             case False
-            then show ?thesis
-              by (metis Union_upper \<open>R \<in> P\<close> \<open>S \<in> P\<close> disjnt_iff * in_mono pairwiseD part_GP part_QS partition_onD1 partition_onD2)
+            with * show ?thesis
+              by (metis QS_subset_P \<open>R \<in> P\<close> \<open>S \<in> P\<close> disjnt_iff pairwiseD part_GP partition_on_def subsetD)
           qed
         qed
         show "{} \<notin> Q"
@@ -827,45 +767,45 @@ proof -
     let ?REG = "?PP - irregular_set \<epsilon> G P"
     define sum_eps where "sum_eps \<equiv> (\<Sum>(R,S) \<in> irregular_set \<epsilon> G P. \<epsilon>^4 * (card R * card S) / (card (uverts G))\<^sup>2)"
     have A: "energy_graph_subsets R S G + \<epsilon>^4 * (card R * card S) / (card (uverts G))\<^sup>2
-          \<le> energy_graph_partitions_subsets G (P2 (X R S) R) (P2 (Y R S) S)"
+          \<le> energy_graph_partitions G (part2 (X R S) R) (part2 (Y R S) S)"
           (is "?L \<le> ?R")
           if *: "(R,S) \<in> irregular_set \<epsilon> G P" for R S
     proof -
       have "R\<in>P" "S\<in>P"
         using * by (auto simp: irregular_set_def)
-      have "?L \<le> (\<Sum>A \<in> P2 (X R S) R. \<Sum>B \<in> P2 (Y R S) S. energy_graph_subsets A B G)"
+      have "?L \<le> (\<Sum>A \<in> part2 (X R S) R. \<Sum>B \<in> part2 (Y R S) S. energy_graph_subsets A B G)"
         using XY_psub_P [OF *] XY_eps [OF *] assms
         by (intro energy_boost \<open>R \<in> P\<close> \<open>S \<in> P\<close> finP \<open>\<epsilon>>0\<close>) auto
       also have "\<dots> \<le> ?R"
-        by (simp add: energy_graph_partitions_subsets_def)
+        by (simp add: energy_graph_partitions_def)
       finally show ?thesis .
     qed
-    have B: "energy_graph_partitions_subsets G (P2 (X R S) R) (P2 (Y R S) S)
-          \<le> energy_graph_partitions_subsets G (QS R) (QS S)"
+    have B: "energy_graph_partitions G (part2 (X R S) R) (part2 (Y R S) S)
+          \<le> energy_graph_partitions G (QS R) (QS S)"
       if "(R,S) \<in> irregular_set \<epsilon> G P" for R S
     proof -
       have "R\<in>P" "S\<in>P" using that by (auto simp: irregular_set_def)
       have [simp]: "\<not> X R S \<subset> R \<longleftrightarrow> X R S = R" "\<not> Y R S \<subset> S \<longleftrightarrow> Y R S = S"
         using XY_psub_P that by blast+
-      have XPX: "P2 (X R S) R \<in> PP R"
+      have XPX: "part2 (X R S) R \<in> PP R"
         using that by (simp add: PP_def XP_def)
       have I: "partition_on R (QS R)"
         using QS_def \<open>R \<in> P\<close> part_QS by force
-      moreover have "\<forall>q \<in> QS R. \<exists>b \<in> P2 (X R S) R. q \<subseteq> b"
+      moreover have "\<forall>q \<in> QS R. \<exists>b \<in> part2 (X R S) R. q \<subseteq> b"
         using common_refinement_exists [OF _ XPX] by (simp add: QS_def)
-      ultimately have ref_XP: "refines R (QS R) (P2 (X R S) R)"
-        by (simp add: refines_def XY_nonempty XY_psub_P that partition_P2)
-      have YPY: "P2 (Y R S) S \<in> PP S"
+      ultimately have ref_XP: "refines R (QS R) (part2 (X R S) R)"
+        by (simp add: refines_def XY_nonempty XY_psub_P that partition_part2)
+      have YPY: "part2 (Y R S) S \<in> PP S"
         using that by (simp add: PP_def YP_def)
       have J: "partition_on S (QS S)"
         using QS_def \<open>S \<in> P\<close> part_QS by force
-      moreover have "\<forall>q \<in> QS S. \<exists>b \<in> P2 (Y R S) S. q \<subseteq> b"
+      moreover have "\<forall>q \<in> QS S. \<exists>b \<in> part2 (Y R S) S. q \<subseteq> b"
         using common_refinement_exists [OF _ YPY] by (simp add: QS_def)
-      ultimately have ref_YP: "refines S (QS S) (P2 (Y R S) S)"
-        by (simp add: XY_nonempty XY_psub_P that partition_P2 refines_def)
+      ultimately have ref_YP: "refines S (QS S) (part2 (Y R S) S)"
+        by (simp add: XY_nonempty XY_psub_P that partition_part2 refines_def)
       show ?thesis
         using \<open>R \<in> P\<close> \<open>S \<in> P\<close>
-        by (simp add: finP energy_graph_partitions_subsets_increase [OF ref_XP ref_YP])
+        by (simp add: finP energy_graph_partitions_increase [OF ref_XP ref_YP])
     qed
     have "mean_square_density G P + \<epsilon>^5 \<le> mean_square_density G P + sum_eps"
     proof -
@@ -883,25 +823,25 @@ proof -
     qed
     also have "\<dots> = (\<Sum>(i,j)\<in>?REG. energy_graph_subsets i j G) 
                    + (\<Sum>(i,j)\<in>irregular_set \<epsilon> G P. energy_graph_subsets i j G) + sum_eps"
-      by (simp add: \<open>finite P\<close> energy_graph_partitions_subsets_def sum.cartesian_product irregular_set_subset sum.subset_diff)
+      by (simp add: \<open>finite P\<close> energy_graph_partitions_def sum.cartesian_product irregular_set_subset sum.subset_diff)
     also have "\<dots> \<le> (\<Sum>(i,j) \<in> ?REG. energy_graph_subsets i j G)
-                   + (\<Sum>(i,j) \<in> irregular_set \<epsilon> G P. energy_graph_partitions_subsets G (P2 (X i j) i) (P2 (Y i j) j))"
+                   + (\<Sum>(i,j) \<in> irregular_set \<epsilon> G P. energy_graph_partitions G (part2 (X i j) i) (part2 (Y i j) j))"
       using A unfolding sum_eps_def case_prod_unfold
       by (force intro: sum_mono simp flip: sum.distrib)
-    also have "\<dots> \<le> (\<Sum>(i,j) \<in> ?REG. energy_graph_partitions_subsets G (QS i) (QS j))
-                   + (\<Sum>(i,j) \<in> irregular_set \<epsilon> G P. energy_graph_partitions_subsets G (P2 (X i j) i) (P2 (Y i j) j))"
-      by (auto simp: finP intro!: part_P_QS sum_mono energy_graph_partition_increase)
-    also have "\<dots> \<le> (\<Sum>(i,j) \<in> ?REG. energy_graph_partitions_subsets G (QS i) (QS j)) 
-                  + (\<Sum>(i,j) \<in> irregular_set \<epsilon> G P. energy_graph_partitions_subsets G (QS i) (QS j))"
+    also have "\<dots> \<le> (\<Sum>(i,j) \<in> ?REG. energy_graph_partitions G (QS i) (QS j))
+                   + (\<Sum>(i,j) \<in> irregular_set \<epsilon> G P. energy_graph_partitions G (part2 (X i j) i) (part2 (Y i j) j))"
+      by (auto intro!: part_P_QS sum_mono energy_graph_partition_increase)
+    also have "\<dots> \<le> (\<Sum>(i,j) \<in> ?REG. energy_graph_partitions G (QS i) (QS j)) 
+                  + (\<Sum>(i,j) \<in> irregular_set \<epsilon> G P. energy_graph_partitions G (QS i) (QS j))"
       using B
     proof (intro sum_mono add_mono ordered_comm_monoid_add_class.sum_mono2)
     qed (auto split: prod.split)
-    also have "\<dots> = (\<Sum>(i,j) \<in> ?PP. energy_graph_partitions_subsets G (QS i) (QS j))"
+    also have "\<dots> = (\<Sum>(i,j) \<in> ?PP. energy_graph_partitions G (QS i) (QS j))"
       by (metis (no_types, lifting) \<open>finite P\<close> finite_SigmaI irregular_set_subset sum.subset_diff)
-    also have "\<dots> = (\<Sum>i\<in>P. \<Sum>j\<in>P. energy_graph_partitions_subsets G (QS i) (QS j))"
+    also have "\<dots> = (\<Sum>i\<in>P. \<Sum>j\<in>P. energy_graph_partitions G (QS i) (QS j))"
       by (simp flip: sum.cartesian_product)
     also have "\<dots> = (\<Sum>A \<in> Q. \<Sum>B \<in> Q. energy_graph_subsets A B G)"
-      unfolding energy_graph_partitions_subsets_def Q_def
+      unfolding energy_graph_partitions_def Q_def
       by (simp add: disj_QSP \<open>finite P\<close> sum.UNION_disjoint_family sum.swap [of _ "P" "QS _"])
     also have "\<dots> = mean_square_density G Q"
       by (simp add: mean_square_density energy_graph_subsets_def sum_divide_distrib)
@@ -921,8 +861,8 @@ proof -
           using finPP by (simp add: PP_def prod.insert_if)
         also have "\<dots> \<le> 2 ^ Suc k" 
         proof (rule prod_le_power)
-          define XS where "XS \<equiv> (\<Union>R \<in> {R\<in>P. iP R \<le> iP i}. {P2 (X0 i R) i})"
-          define YS where "YS \<equiv> (\<Union>R \<in> {R\<in>P. iP R \<ge> iP i}. {P2 (Y0 R i) i})"
+          define XS where "XS \<equiv> (\<Union>R \<in> {R\<in>P. iP R \<le> iP i}. {part2 (X0 i R) i})"
+          define YS where "YS \<equiv> (\<Union>R \<in> {R\<in>P. iP R \<ge> iP i}. {part2 (Y0 R i) i})"
           have 1: "{R \<in> P. iP R \<le> iP i} \<subseteq> iP -` {..iP i} \<inter> P"
             by auto
           have "card XS \<le> card {R \<in> P. iP R \<le> iP i}"
@@ -956,7 +896,7 @@ proof -
           fix x
           assume "x \<in> XP i \<union> YP i"
           then show "0 \<le> card x \<and> card x \<le> 2"
-            using XP_def YP_def card_P2 by force
+            using XP_def YP_def card_part2 by force
         qed auto
         finally show ?thesis .
       qed
@@ -970,27 +910,22 @@ proof -
         using QS_def card_cr by presburger
       finally show ?thesis .
     qed
-    have "card Q = card (\<Union> (QS ` P))"
-      unfolding Q_def ..
-    also have "\<dots> \<le> card (\<Union>i\<in>P. QinP i)"
+    have "card Q \<le> card (\<Union>i\<in>P. QinP i)"
+      unfolding Q_def
     proof (rule card_mono)
       show "(\<Union> (QS ` P)) \<subseteq> (\<Union>i\<in>P. QinP i)"
         using ref_QP QS_subset_P Q_def QinP_def by blast
       show "finite (\<Union>i\<in>P. QinP i)"
         by (simp add: Q_def QinP_def \<open>finite P\<close>)
     qed 
-    also have "\<dots> \<le> (\<Sum>i\<in>P. card (QinP i))"
-      using card_UN_le \<open>finite P\<close> by blast
     also have "\<dots> \<le> (\<Sum>i\<in>P. 2 ^ Suc k)"
-      using card_QP sum_mono by force
+      by (smt (verit) \<open>finite P\<close> card_QP card_UN_le order_trans sum_mono)
     finally show "card Q \<le> k * 2 ^ Suc k" 
       by (simp add: cardP)
   qed
 qed
 
 subsection \<open>The Regularity Proof Itself\<close>
-
-text\<open>Szemerédi's Regularity Lemma is Theorem 3.5 in Zhao's notes.\<close>
 
 text\<open>We start with a trivial partition (one part). If it is already $\epsilon$-regular, we are done. If
 not, we refine it by applying lemma @{thm[source]"exists_refinement"} above, which increases the
@@ -1020,8 +955,7 @@ proof
       by (meson Pk finG finite_elements finite_graph_partition_def)
     then show ?thesis
       using that exists_refinement [OF _ finG irreg assms] irreg Pk
-      apply (simp only: nxt_def if_False)
-      by (metis (no_types, lifting) \<Phi>_def someI)
+      unfolding \<Phi>_def nxt_def by (smt (verit) someI)
   qed
   have partition_on: "partition_on (uverts G) (iter i)" for i
   proof (induction i)

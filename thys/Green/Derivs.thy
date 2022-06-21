@@ -4,7 +4,7 @@ begin
 
 lemma field_simp_has_vector_derivative [derivative_intros]:
   "(f has_field_derivative y) F \<Longrightarrow> (f has_vector_derivative y) F"
-  by (simp add: has_field_derivative_iff_has_vector_derivative)
+  by (simp add: has_real_derivative_iff_has_vector_derivative)
 
 lemma continuous_on_cases_empty [continuous_intros]:
   "\<lbrakk>closed S; continuous_on S f; \<And>x. \<lbrakk>x \<in> S; \<not> P x\<rbrakk> \<Longrightarrow> f x = g x\<rbrakk> \<Longrightarrow>
@@ -87,7 +87,7 @@ proof -
     by (simp add: C1_differentiable_imp_continuous_on f)
   show ?thesis
     using assms
-    unfolding C1_differentiable_on_def has_field_derivative_iff_has_vector_derivative [symmetric]
+    unfolding C1_differentiable_on_def has_real_derivative_iff_has_vector_derivative [symmetric]
     by (fastforce intro!: contf continuous_intros derivative_intros)
 qed
 
@@ -110,7 +110,7 @@ proof -
   note df_cos = field_vector_diff_chain_at [where g=cos, unfolded o_def]
   show  "(\<lambda>x. sin (f x)) C1_differentiable_on S" "(\<lambda>x. cos (f x)) C1_differentiable_on S"
     using assms
-    unfolding C1_differentiable_on_def has_field_derivative_iff_has_vector_derivative [symmetric]
+    unfolding C1_differentiable_on_def has_real_derivative_iff_has_vector_derivative [symmetric]
     apply auto
     by (rule contf continuous_intros df_sin df_cos derivative_intros exI conjI ballI | force)+
 qed
@@ -137,7 +137,7 @@ proof -
   note df = DERIV_chain [where f=abs and g=f, unfolded o_def]
   show ?thesis
     using assms
-    unfolding C1_differentiable_on_def has_field_derivative_iff_has_vector_derivative [symmetric]
+    unfolding C1_differentiable_on_def has_real_derivative_iff_has_vector_derivative [symmetric]
     apply clarify
     apply (rule df exI conjI ballI)+
       apply (force simp: has_field_derivative_def intro: has_derivative_abs continuous_intros contf)+

@@ -5,8 +5,10 @@ session "Posix-Lexing" (AFP) = "Regular-Sets" +
   options [timeout = 600]
 
   theories
-    Lexer 
+    Lexer
+    LexicalVals
     Simplifying
+    Positions
     
   document_files
     "root.bib"

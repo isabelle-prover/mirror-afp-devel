@@ -13,10 +13,8 @@ the vertices of a graph need to be partitioned into such that the
 edges between the parts are random in a certain sense. This bound
 depends only on the desired precision and not on the graph itself, in
 the spirit of Ramsey's theorem. The formalisation follows online
-course notes by <a
-href=\"https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf\">Tim
-Gowers</a> and <a
-href=\"https://yufeizhao.com/gtac/gtac.pdf\">Yufei
+course notes by <a href=\"https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf\">Tim
+Gowers</a> and <a href=\"https://yufeizhao.com/gtacbook/\">Yufei
 Zhao</a>."""
 license = "bsd"
 note = ""

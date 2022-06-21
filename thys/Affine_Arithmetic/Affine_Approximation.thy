@@ -1267,7 +1267,7 @@ lemma aform_err_acc_errI:
 
 lemma minus_times_le_abs: "- (err * B) \<le> \<bar>B\<bar>" if "-1 \<le> err" "err \<le> 1" for err::real
 proof -
-  have [simp]: "abs err \<le> 1" using that by (auto simp: )
+  have [simp]: "abs err \<le> 1" using that by auto
   have "- (err * B) \<le> abs (- err * B)" by auto
   also have "\<dots> \<le> abs B"
     by (auto simp: abs_mult intro!: mult_left_le_one_le)
@@ -1276,7 +1276,7 @@ qed
 
 lemma times_le_abs: "err * B \<le> \<bar>B\<bar>" if "-1 \<le> err" "err \<le> 1" for err::real
 proof -
-  have [simp]: "abs err \<le> 1" using that by (auto simp: )
+  have [simp]: "abs err \<le> 1" using that by auto
   have "err * B \<le> abs (err * B)" by auto
   also have "\<dots> \<le> abs B"
     by (auto simp: abs_mult intro!: mult_left_le_one_le)
@@ -2337,7 +2337,7 @@ proof -
       done
     then show ?thesis
       unfolding xn_def
-      by (simp add: )
+      by simp
   next
     case 2
     then have min_eq_Some: "min_range_mono p Cos (\<lambda>x. Minus (Sin x)) l u X = Some Y"
@@ -2378,7 +2378,7 @@ proof -
       done
     then show ?thesis
       unfolding xn_def
-      by (simp add: )
+      by simp
   next
     case 3
     then obtain ivl' where
@@ -2434,7 +2434,7 @@ proof -
       subgoal using \<open>l > 0\<close> by (auto simp: inverse_eq_divide min_def divide_simps)
       done
     then show ?thesis
-      by (simp add: )
+      by simp
   next
     case 2
     then have "Y = ivl_err (real_interval (sqrt_float_interval p ivl))"
@@ -2487,7 +2487,7 @@ proof -
       subgoal using \<open>l > 0\<close> by (auto simp: inverse_eq_divide min_def divide_simps)
       done
     then show ?thesis
-      by (simp add: )
+      by simp
   next
     case 2
     then show ?thesis using assms
@@ -2527,7 +2527,7 @@ proof -
     subgoal by (auto simp: inverse_eq_divide min_def divide_simps)
     done
   then show ?thesis
-    by (simp add: )
+    by simp
 qed
 
 definition "arctan_aform_err p X = do {
@@ -2574,7 +2574,7 @@ proof -
       done
     done
   then show ?thesis
-    by (simp add: )
+    by simp
 qed
 
 subsection \<open>Power, TODO: compare with Min-range approximation?!\<close>
@@ -2664,7 +2664,7 @@ proof -
     have xe': "\<bar>xe'\<bar> \<le> xe"
       by (auto simp: x0_def xs_def xe_def xe'_def)
     then have xe_nonneg: "0 \<le> xe"
-      by (auto simp: )
+      by auto
 
     define t where "t = tdev' p xs"
     have t: "tdev xs \<le> t" "t \<in> float" by (auto simp add: t_def tdev'_le)
@@ -2702,7 +2702,7 @@ proof -
       also
       have rewr: "{2 .. n} = {2 ..<Suc n}"
         using n
-        by (auto simp: )
+        by auto
       have "plain_floatarith 0 ?ERR"
         by (auto simp add: zero_floatarith_def plain_floatarith_Sum\<^sub>e times_floatarith_def
             plus_floatarith_def intro!: list_allI)
@@ -3433,7 +3433,7 @@ next
 next
   case Pi
   then show ?case using pi_float_interval
-    by (auto simp: )
+    by auto
 next
   case (Sqrt ra)
   then show ?case
@@ -3836,7 +3836,7 @@ proof -
     "interpret_floatariths fas xs = aform_vals e RS"
     and e: "e \<in> UNIV \<rightarrow> {- 1..1}" "\<And>i. i < d' \<Longrightarrow> e i = e' i"
     unfolding RS
-    by (auto simp: )
+    by auto
   moreover
 
   from e have e'_eq: "e' i = e i" if "i < min d d'" for i

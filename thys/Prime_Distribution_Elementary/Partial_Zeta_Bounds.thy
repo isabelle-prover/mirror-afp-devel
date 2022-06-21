@@ -88,7 +88,7 @@ proof -
             \<longlonglongrightarrow> z" by (simp add: f_def F_def z_def)
   qed (use \<open>s \<noteq> 1\<close> in
          \<open>auto intro!: derivative_eq_intros continuous_intros 
-               simp flip: has_field_derivative_iff_has_vector_derivative
+               simp flip: has_real_derivative_iff_has_vector_derivative
                simp: F_def f_def f'_def nth_Cons split: nat.splits\<close>)
 
   {
@@ -191,7 +191,7 @@ proof -
       by (rule euler_maclaurin_strong_raw_nat[where Y = "{}"])
          (use \<open>s > 0\<close> \<open>n \<ge> 1\<close> in
            \<open>auto intro!: derivative_eq_intros continuous_intros 
-                 simp flip: has_field_derivative_iff_has_vector_derivative
+                 simp flip: has_real_derivative_iff_has_vector_derivative
                  simp: F_def f_def f'_def nth_Cons split: nat.splits\<close>)
     also have "(\<Sum>i\<in>{1<..n}. f (real i)) = (\<Sum>i\<in>insert 1 {1<..n}. f (real i)) - f 1"
       using n by (subst sum.insert) auto
@@ -203,7 +203,7 @@ proof -
       using s by (simp add: f_def diff_divide_distrib)
     also have "(f has_integral (F (real n) - F 1)) {1..real n}" using assms n
       by (intro fundamental_theorem_of_calculus)
-         (auto simp flip: has_field_derivative_iff_has_vector_derivative simp: F_def f_def
+         (auto simp flip: has_real_derivative_iff_has_vector_derivative simp: F_def f_def
                intro!: derivative_eq_intros continuous_intros)
     hence "integral {1..real n} f - F n = - F 1"
       by (simp add: has_integral_iff)

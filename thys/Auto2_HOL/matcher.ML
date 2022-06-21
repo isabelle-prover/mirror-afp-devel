@@ -43,7 +43,7 @@ sig
   val pre_match_head: Proof.context -> term * cterm -> bool
 end;
 
-structure Matcher : MATCHER =
+functor Matcher(RewriteTable: REWRITE_TABLE) : MATCHER =
 struct
 
 fun compare_inst (((id1, inst1), _), ((id2, inst2), _)) =

@@ -46,6 +46,7 @@ functor AssnMatcher(SepUtil: SEP_UTIL): ASSN_MATCHER =
 struct
 
 open SepUtil
+structure ACUtil = Auto2_HOL_Extra_Setup.ACUtil
 
 (* Matching in the forward direction *)
 
@@ -151,7 +152,7 @@ fun triv_assn_matcher ctxt (pat, ct) (id, inst) =
       fun match_i i =
           let
             val ct' = nth cts i
-            val insts = Matcher.rewrite_match ctxt (pat, ct') (id, inst)
+            val insts = Auto2_Setup.Matcher.rewrite_match ctxt (pat, ct') (id, inst)
 
             (* eq_th is of form pat(inst') == t'. *)
             fun process_inst ((id', inst'), eq_th) =
@@ -197,7 +198,7 @@ fun entail_matcher' entail_th ctxt r ct id =
     let
       (* Match pat_r with r. *)
       val pat_r = entail_th |> prop_of' |> dest_entail |> snd |> dest_arg
-      val inst_r = Matcher.rewrite_match ctxt (pat_r, Thm.cterm_of ctxt r) (id, fo_init)
+      val inst_r = Auto2_Setup.Matcher.rewrite_match ctxt (pat_r, Thm.cterm_of ctxt r) (id, fo_init)
 
       (* For each match, recursively match the instantiated version of
          A (named pat here) with t.
@@ -252,7 +253,7 @@ fun entail_matcher entail_th ctxt (pat, ct) (id, inst) =
               val xs = th |> cprop_of' |> Thm.dest_arg
                           |> ACUtil.cdest_ac assn_ac_info
                           |> List.last |> Drule.strip_comb |> snd |> hd
-              val insts = Matcher.rewrite_match ctxt (pat_xs, xs) (id', inst)
+              val insts = Auto2_Setup.Matcher.rewrite_match ctxt (pat_xs, xs) (id', inst)
 
               fun process_inst ((id'', inst'), eq_th) =
                   let
@@ -292,7 +293,7 @@ fun assn_match_single ctxt (pat, ct) (id, inst) =
           let
             val ct' = nth cts i
             val t' = Thm.term_of ct'
-            val insts = Matcher.rewrite_match ctxt (pat, ct') (id, inst)
+            val insts = Auto2_Setup.Matcher.rewrite_match ctxt (pat, ct') (id, inst)
 
             (* eq_th is of form pat(inst) == t'. *)
             fun process_inst ((id', inst'), eq_th) =

@@ -1,12 +1,12 @@
-(*  Title:      Code_Target_Bits_Int.thy
+(*  Title:      Code_Target_Int_Bit.thy
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
 chapter \<open>Implementation of bit operations on int by target language operations\<close>
 
-theory Code_Target_Bits_Int
+theory Code_Target_Int_Bit
   imports
-  Bits_Integer
+  Code_Target_Integer_Bit
   "HOL-Library.Code_Target_Int"
 begin
 
@@ -86,8 +86,8 @@ qualified definition even :: \<open>int \<Rightarrow> bool\<close>
 end
 
 lemma [code]:
-  \<open>Code_Target_Bits_Int.even i \<longleftrightarrow> i AND 1 = 0\<close>
-  by (simp add: Code_Target_Bits_Int.even_def even_iff_mod_2_eq_zero and_one_eq)
+  \<open>Code_Target_Int_Bit.even i \<longleftrightarrow> i AND 1 = 0\<close>
+  by (simp add: Code_Target_Int_Bit.even_def even_iff_mod_2_eq_zero and_one_eq)
 
 lemma bin_rest_code:
   "int_of_integer i div 2 = int_of_integer (bin_rest_integer i)"

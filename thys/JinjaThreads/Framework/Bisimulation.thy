@@ -792,7 +792,7 @@ lemma \<tau>Runs_terminate_final1:
   shows "\<exists>s2'. tfinite tls2 \<and> terminal tls2 = Some s2' \<and> final2 s2'"
 using assms(4) assms(1-3,5-)
 apply(induct arbitrary: tls2 s1 s2 rule: tfinite_induct)
-apply(auto 4 4 simp add: tllist_all2_TCons1 tllist_all2_TNil1 rel_option_Some1 trsys1.\<tau>Runs_simps trsys2.\<tau>Runs_simps dest: final1_simulation elim: converse_rtranclpE)
+apply(auto 4 4 simp add: tllist_all2_TCons1 tllist_all2_TNil1 option_rel_Some1 trsys1.\<tau>Runs_simps trsys2.\<tau>Runs_simps dest: final1_simulation elim: converse_rtranclpE)
 done
 
 lemma \<tau>Runs_terminate_final2:

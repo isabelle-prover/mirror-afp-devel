@@ -498,15 +498,7 @@ lemma bin_nth_of_bl: "bit (bl_to_bin bl) n = (n < length bl \<and> rev bl ! n)"
   by (simp add: bl_to_bin_def bin_nth_of_bl_aux)
 
 lemma bin_nth_bl: "n < m \<Longrightarrow> bit w n = nth (rev (bin_to_bl m w)) n"
-  apply (induct n arbitrary: m w)
-   apply clarsimp
-   apply (case_tac m, clarsimp)
-   apply (clarsimp simp: bin_to_bl_def)
-   apply (simp add: bin_to_bl_aux_alt)
-  apply (case_tac m, clarsimp)
-  apply (clarsimp simp: bin_to_bl_def)
-  apply (simp add: bin_to_bl_aux_alt bit_Suc)
-  done
+  by (metis bin_bl_bin bin_nth_of_bl nth_bintr size_bin_to_bl)
 
 lemma nth_bin_to_bl_aux:
   "n < m + length bl \<Longrightarrow> (bin_to_bl_aux m w bl) ! n =
@@ -1891,12 +1883,12 @@ lemma bin_to_bl_or:
 lemma word_and_1_bl:
   fixes x::"'a::len word"
   shows "(x AND 1) = of_bl [bit x 0]"
-  by (simp add: mod_2_eq_odd and_one_eq)
+  by (simp add: word_and_1)
 
 lemma word_1_and_bl:
   fixes x::"'a::len word"
   shows "(1 AND x) = of_bl [bit x 0]"
-  by (simp add: mod_2_eq_odd one_and_eq)
+  using word_and_1_bl [of x] by (simp add: ac_simps)
 
 lemma of_bl_drop:
   "of_bl (drop n xs) = (of_bl xs AND mask (length xs - n))"
@@ -1955,7 +1947,7 @@ lemma word_lsb_last:
   \<open>lsb w \<longleftrightarrow> last (to_bl w)\<close>
   for w :: \<open>'a::len word\<close>
   using nth_to_bl [of \<open>LENGTH('a) - Suc 0\<close> w]
-  by (simp add: lsb_odd last_conv_nth)
+  by (simp add: last_conv_nth bit_0 lsb_odd)
 
 lemma is_aligned_to_bl:
   "is_aligned (w :: 'a :: len word) n = (True \<notin> set (drop (size w - n) (to_bl w)))"

@@ -141,7 +141,7 @@ fun get_proc_def thy t =
       val nm = Util.get_head_name t
     in
       if null (get_hoare_triples thy nm) then
-        Unfolding.get_unfold_thms_by_name thy nm
+        Auto2_HOL_Extra_Setup.Unfolding.get_unfold_thms_by_name thy nm
       else []
     end
 
@@ -202,10 +202,10 @@ fun hoare_goal_update ctxt (id, th) =
     else let
       val (ex_ritems, res_th) =
           th |> apply_to_thm' (normalize_hoare_goal_cv ctxt)
-             |> Update.apply_exists_ritems ctxt
+             |> Auto2_Setup.Update.apply_exists_ritems ctxt
 
       val (res_th', rest) =
-          res_th |> UtilLogic.split_conj_gen_th
+          res_th |> Auto2_Setup.UtilLogic.split_conj_gen_th
                  |> filter_split (is_neg_hoare_triple o prop_of')
       val _ = assert (length res_th' = 1) "hoare_goal_update"
 
@@ -213,7 +213,7 @@ fun hoare_goal_update ctxt (id, th) =
                             |> apply_to_thm' (Conv.arg_conv (norm_precond ctxt))
                             |> normalize_let ctxt
 
-      val ritems = ex_ritems @ map Update.thm_to_ritem rest @
+      val ritems = ex_ritems @ map Auto2_Setup.Update.thm_to_ritem rest @
                    [Fact (TY_CODE_POS, [prop_of' res_th'], res_th')]
     in
       AddItems {id = id, sc = SOME 1, raw_items = ritems}
@@ -226,10 +226,10 @@ fun entail_goal_update ctxt (id, th) =
     else let
       val (ex_ritems, res_th) =
           th |> apply_to_thm' (normalize_entail_goal_cv ctxt)
-             |> Update.apply_exists_ritems ctxt
+             |> Auto2_Setup.Update.apply_exists_ritems ctxt
 
       val (res_th', rest) =
-          res_th |> UtilLogic.split_conj_gen_th
+          res_th |> Auto2_Setup.UtilLogic.split_conj_gen_th
                  |> filter_split (is_neg_entail o prop_of')
       val _ = assert (length res_th' = 1) "entail_goal_update"
 
@@ -238,7 +238,7 @@ fun entail_goal_update ctxt (id, th) =
                   |> apply_to_thm' (Conv.arg_conv (norm_entail_conds ctxt))
                   |> normalize_let ctxt
 
-      val ritems = ex_ritems @ map Update.thm_to_ritem rest @
+      val ritems = ex_ritems @ map Auto2_Setup.Update.thm_to_ritem rest @
                    [Fact (TY_ENTAIL, [prop_of' res_th'], res_th')]
     in
       AddItems {id = id, sc = SOME 1, raw_items = ritems}
@@ -329,7 +329,7 @@ fun group_pure_assn ct =
         if has_pure_assn (dest_arg1 t) then
           Conv.every_conv [
             Conv.arg1_conv group_pure_assn,
-            ACUtil.assoc_cv assn_ac_info,
+            Auto2_HOL_Extra_Setup.ACUtil.assoc_cv assn_ac_info,
             Conv.arg_conv (rewr_obj_eq (obj_sym pure_conj_th))] ct
         else
           Conv.all_conv ct
@@ -354,7 +354,7 @@ fun entails_norm_ex ctxt th =
     in
       if is_ex_assn Q then
         (th RS entails_ex_post_th)
-            |> apply_to_thm (UtilLogic.to_meta_conv ctxt)
+            |> apply_to_thm (Auto2_Setup.UtilLogic.to_meta_conv ctxt)
             |> make_sch_th ctxt
             |> entails_norm_ex ctxt
       else th
@@ -379,10 +379,10 @@ fun entails_resolve_fn ctxt item =
                     Conv.arg_conv (Conv.arg_conv group_pure_assn))
               val res = [prop', mod_th] MRS entails_pure_post_th
             in
-              Update.thm_update (id', res)
+              Auto2_Setup.Update.thm_update (id', res)
             end
           else
-            Update.thm_update (id', [prop, mod_th] MRS @{thm contra_triv})
+            Auto2_Setup.Update.thm_update (id', [prop, mod_th] MRS @{thm contra_triv})
     in
       map process_inst insts
     end
@@ -405,7 +405,7 @@ fun init_pos_fn ctxt item =
           let
             val (lhs, _) = proc_def |> prop_of' |> dest_eq
             val cc = Thm.cterm_of ctxt c
-            val insts = (Matcher.rewrite_match ctxt (lhs, cc) (id, fo_init))
+            val insts = (Auto2_Setup.Matcher.rewrite_match ctxt (lhs, cc) (id, fo_init))
                             |> filter (BoxID.has_incr_id o fst o fst)
 
             fun process_inst ((id', _), eq_th) =
@@ -556,7 +556,7 @@ fun match_hoare_th id ctxt hoare_th goal item =
 
       val (P', pat, _) = dest_hoare_triple (prop_of' hoare_th)
       val cc = Thm.cterm_of ctxt c'
-      val insts = Matcher.rewrite_match ctxt (pat, cc) (id, fo_init)
+      val insts = Auto2_Setup.Matcher.rewrite_match ctxt (pat, cc) (id, fo_init)
 
       fun process_inst ((id', inst), eq_th) =
           let
@@ -573,7 +573,7 @@ fun match_hoare_th id ctxt hoare_th goal item =
                       (Util.subst_thm ctxt inst' hoare_th)
                           |> apply_to_thm' (Conv.arg1_conv (Conv.rewr_conv eq_th))
                           |> apply_to_thm' extract_pure_hoare_cv
-                          |> apply_to_thm (UtilLogic.to_meta_conv ctxt)
+                          |> apply_to_thm (Auto2_Setup.UtilLogic.to_meta_conv ctxt)
                   val hoare_th' =
                       [hoare_th, ent_th] MRS pre_rule_th''
                 in
@@ -629,7 +629,7 @@ fun match_hoare_disj_fn ctxt item1 item2 =
     if is_implies_item item2 then [] else
     let
       val {tname, ...} = item1
-      val (_, csubs) = Logic_ProofSteps.dest_tname_of_disj tname
+      val (_, csubs) = Auto2_Setup.Logic_ProofSteps.dest_tname_of_disj tname
       val subs = map Thm.term_of csubs
     in
       if length subs > 1 then []
@@ -639,7 +639,7 @@ fun match_hoare_disj_fn ctxt item1 item2 =
 
 val match_hoare_disj =
     {name = "sep.match_hoare_disj",
-     args = [TypedUniv TY_DISJ, TypedUniv TY_CODE_POS],
+     args = [TypedUniv Auto2_Setup.Logic_ProofSteps.TY_DISJ, TypedUniv TY_CODE_POS],
      func = TwoStep match_hoare_disj_fn}
 
 (* Match a MATCH_POS item with hoare triple <P * \<up>(b)> c <Q> with
@@ -655,7 +655,7 @@ fun match_assn_pure_fn ctxt item1 item2 =
         let
           val (A, _) = Logic.dest_implies (Thm.prop_of prop)
           val pat = PropMatch (dest_Trueprop A)
-          val insts = (ItemIO.match_arg ctxt pat item2 (id, fo_init))
+          val insts = (Auto2_Setup.ItemIO.match_arg ctxt pat item2 (id, fo_init))
                           |> filter (BoxID.has_incr_id o fst o fst)
 
           fun process_inst ((id', _), th) =
@@ -700,7 +700,7 @@ fun entail_pure_fn ctxt item1 item2 =
         let
           val (A, _) = Logic.dest_implies (Thm.prop_of prop)
           val pat = PropMatch (dest_Trueprop A)
-          val insts = (ItemIO.match_arg ctxt pat item2 (id, fo_init))
+          val insts = (Auto2_Setup.ItemIO.match_arg ctxt pat item2 (id, fo_init))
                           |> filter (BoxID.has_incr_id o fst o fst)
 
           fun process_inst ((id', _), th) =
@@ -776,7 +776,7 @@ fun add_hoare_triple_prfstep hoare_th thy =
       val name = Util.name_of_thm hoare_th
       val ctxt = Proof_Context.init_global thy
       val hoare_th' =
-          hoare_th |> apply_to_thm (UtilLogic.to_obj_conv ctxt)
+          hoare_th |> apply_to_thm (Auto2_Setup.UtilLogic.to_obj_conv ctxt)
                    |> apply_to_thm' (contract_hoare_cv ctxt)
                    |> Util.update_name_of_thm hoare_th ""
       val _ = writeln ("Add Hoare triple " ^ name ^ "\n" ^
@@ -810,7 +810,7 @@ fun entail_terms ts =
     end
 
 val add_sep_logic_proofsteps =
-    fold ItemIO.add_item_type [
+    fold Auto2_Setup.ItemIO.add_item_type [
       (TY_CODE_POS, SOME code_pos_terms, NONE, NONE),
       (TY_ENTAIL, SOME entail_terms, NONE, NONE)
 

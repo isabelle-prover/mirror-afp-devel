@@ -16,14 +16,14 @@ nominal_termination (eqvt)
 declare Subset.simps [simp del]
 
 lemma Subset_fresh_iff [simp]: "a \<sharp> t SUBS u \<longleftrightarrow> a \<sharp> t \<and> a \<sharp> u"
-apply (rule obtain_fresh [where x="(t, u)"])
-apply (subst Subset.simps, auto)
-done
+  apply (rule obtain_fresh [where x="(t, u)"])
+  apply (subst Subset.simps, auto)
+  done
 
 lemma eval_fm_Subset [simp]: "eval_fm e (Subset t u) \<longleftrightarrow> (\<lbrakk>t\<rbrakk>e \<le> \<lbrakk>u\<rbrakk>e)"
-apply (rule obtain_fresh [where x="(t, u)"])
-apply (subst Subset.simps, auto)
-done
+  apply (rule obtain_fresh [where x="(t, u)"])
+  apply (subst Subset.simps, auto)
+  done
 
 lemma subst_fm_Subset [simp]: "(t SUBS u)(i::=x) = (subst i x t) SUBS (subst i x u)"
 proof -
@@ -200,12 +200,7 @@ lemma Equality_I: "H \<turnstile> y SUBS x \<Longrightarrow> H \<turnstile> x SU
   by (metis Conj_I Extensionality Iff_MP2_same)
 
 lemma EQ_imp_SUBS: "insert (t EQ u) H \<turnstile> (t SUBS u)"
-proof -
-  have "{t EQ u} \<turnstile> (t SUBS u)"
-    by (metis Assume Conj_E Extensionality Iff_MP_left')
-thus ?thesis
-  by (metis Assume cut1)
-qed
+  by (meson Assume Iff_MP_same Refl Subset_cong Subset_refl)
 
 lemma EQ_imp_SUBS2: "insert (u EQ t) H \<turnstile> (t SUBS u)"
   by (metis EQ_imp_SUBS Sym_L)
@@ -312,10 +307,7 @@ qed
 
 lemma Disjoint_Eats_E: 
   "insert (Disjoint x z) (insert (Neg(y IN z)) H) \<turnstile> A \<Longrightarrow> insert (Disjoint (Eats x y) z) H \<turnstile> A"
-  apply (rule cut_same [OF cut1 [OF Disjoint_Eats_D2, OF Assume]])
-  apply (rule cut_same [OF cut1 [OF Disjoint_Eats_D1, OF Hyp]])
-  apply (auto intro: thin)
-  done  
+  by (meson Conj_E Conj_I Disjoint_Eats_D1 Disjoint_Eats_D2 rcut1)
 
 lemma Disjoint_Eats_E2: 
   "insert (Disjoint z x) (insert (Neg(y IN z)) H) \<turnstile> A \<Longrightarrow> insert (Disjoint z (Eats x y)) H \<turnstile> A"
@@ -547,9 +539,8 @@ proof -
   have 2: "{Var z IN Var y, Var y IN SUCC k, OrdP k} \<turnstile> Var z SUBS Var y"
     by (metis rotate2 Mem_SUCC_E in_case eq_case)   
   show ?thesis
-    apply (rule OrdP_I [OF 1 2]) 
-    using atoms apply auto 
-    done
+    using OrdP_I [OF 1 2] atoms
+    by (metis OrdP_fresh_iff SUCC_fresh_iff fresh_Pair singletonD)
 qed
 
 lemma OrdP_SUCC_I: "H \<turnstile> OrdP k \<Longrightarrow> H \<turnstile> OrdP (SUCC k)"
@@ -668,27 +659,27 @@ proof -
       using j k
       apply simp
       apply (rule All_I Imp_I)+
-      defer 1
-      apply auto [2]
+        defer 1
+        apply auto [2]
       apply (rule OrdIndH [where i=j and j=l]) using l
-      \<comment> \<open>nested induction\<close>
-      apply (force simp add: fresh_Pair)
+        \<comment> \<open>nested induction\<close>
+       apply (force simp add: fresh_Pair)
       apply simp
       apply (rule All_I Imp_I)+
-      prefer 2  apply force
+       prefer 2  apply force
       apply (rule Disj_3I)
       apply (rule Equality_I)
-      \<comment> \<open>Now the opposite inclusion, @{term"Var j SUBS Var i"}\<close>
+        \<comment> \<open>Now the opposite inclusion, @{term"Var j SUBS Var i"}\<close>
+       apply (rule Subset_I [where i=m])
+         apply (rule All2_E [THEN rotate4]) using l m
+           apply auto
+        apply (blast intro: ContraProve [THEN rotate3] OrdP_Trans)
+       apply (blast intro: ContraProve [THEN rotate3] Mem_cong [OF Hyp Refl, THEN Iff_MP2_same])
+        \<comment> \<open>Now the opposite inclusion, @{term"Var i SUBS Var j"}\<close>
       apply (rule Subset_I [where i=m])
-      apply (rule All2_E [THEN rotate4]) using l m
-      apply auto
-      apply (blast intro: ContraProve [THEN rotate3] OrdP_Trans)
-      apply (blast intro: ContraProve [THEN rotate3] Mem_cong [OF Hyp Refl, THEN Iff_MP2_same])
-      \<comment> \<open>Now the opposite inclusion, @{term"Var i SUBS Var j"}\<close>
-      apply (rule Subset_I [where i=m])
-      apply (rule All2_E [THEN rotate6], auto) 
+        apply (rule All2_E [THEN rotate6], auto) 
       apply (rule All_E [where x = "Var j"], auto) 
-      apply (blast intro: ContraProve [THEN rotate4] Mem_cong [OF Hyp Refl, THEN Iff_MP_same])
+       apply (blast intro: ContraProve [THEN rotate4] Mem_cong [OF Hyp Refl, THEN Iff_MP_same])
       apply (blast intro: ContraProve [THEN rotate4] OrdP_Trans)
       done
   qed
@@ -788,24 +779,24 @@ proof -
       apply (metis Assume Eq_Zero_D rotate3)
      apply (metis Assume EQ_imp_SUBS Neg_D thin1)
     apply (rule Cases [where A = "Var j IN Var l"])
-    apply (rule Ex_I [where x="Var l"], auto intro: Mem_Eats_I2)
-    apply (rule Ex_I [where x="Var l"], auto intro: Mem_Eats_I2 ContraProve)
-    apply (rule Ex_I [where x="Var k"], auto)
-    apply (metis Assume Subset_trans OrdP_Mem_imp_Subset thin1)
-    apply (rule Ex_I [where x="Var l"], auto intro: Mem_Eats_I2 ContraProve)
-    apply (metis ContraProve EQ_imp_SUBS rotate3)
-    \<comment> \<open>final case\<close>
+     apply (rule Ex_I [where x="Var l"], auto intro: Mem_Eats_I2)
+      apply (rule Ex_I [where x="Var l"], auto intro: Mem_Eats_I2 ContraProve)
+      apply (rule Ex_I [where x="Var k"], auto)
+      apply (metis Assume Subset_trans OrdP_Mem_imp_Subset thin1)
+     apply (rule Ex_I [where x="Var l"], auto intro: Mem_Eats_I2 ContraProve)
+     apply (metis ContraProve EQ_imp_SUBS rotate3)
+      \<comment> \<open>final case\<close>
     apply (rule All2_Eats_E [THEN rotate4], simp_all)
     apply (rule Ex_I [where x="Var j"], auto intro: Mem_Eats_I1)
-    apply (rule All2_E [where x = "Var k", THEN rotate3], auto)
-    apply (rule Ex_I [where x="Var k"], simp)
-    apply (metis Assume NegNeg_I Neg_Disj_I rotate3)
+     apply (rule All2_E [where x = "Var k", THEN rotate3], auto)
+     apply (rule Ex_I [where x="Var k"], simp)
+     apply (metis Assume NegNeg_I Neg_Disj_I rotate3)
     apply (rule cut_same [where A = "OrdP (Var j)"])
-    apply (rule All2_E [where x = "Var j", THEN rotate3], auto)
+     apply (rule All2_E [where x = "Var j", THEN rotate3], auto)
     apply (rule cut_same [where A = "Var l EQ Var j OR Var l IN Var j"])
-    apply (rule OrdP_linear [of _ "Var l" "Var j"], auto intro: Disj_CI)
-    apply (metis Assume ContraProve rotate7)
-    apply (metis ContraProve [THEN rotate4] EQ_imp_SUBS Subset_trans rotate3)
+     apply (rule OrdP_linear [of _ "Var l" "Var j"], auto intro: Disj_CI)
+      apply (metis Assume ContraProve rotate7)
+     apply (metis ContraProve [THEN rotate4] EQ_imp_SUBS Subset_trans rotate3)
     apply (blast intro: ContraProve [THEN rotate4] OrdP_Mem_imp_Subset Iff_MP2_same [OF Mem_cong])
     done
 qed
@@ -876,18 +867,18 @@ proof -
   obtain j::name and k::name  where atoms: "atom j \<sharp> (i,A)" "atom k \<sharp> (i,j,A)" 
     by (metis obtain_fresh) 
   show ?thesis
-  apply (rule OrdIndH [where i=i and j=j]) 
-  using atoms  apply auto
-  apply (rule OrdP_cases_E [where k=k, THEN rotate3])
-  apply (rule ContraProve [THEN rotate2]) using Var_Eq_imp_subst_Iff
-  apply (metis Assume AssumeH(3) Iff_MP_same) 
-  apply (rule Ex_I [where x="Var k"], simp)
-  apply (rule Neg_Imp_I, blast)
-  apply (rule cut_same [where A = "A(i::=Var k)"])
-  apply (rule All2_E [where x = "Var k", THEN rotate5])
-  apply (auto intro: Mem_SUCC_I2 Mem_cong [OF Refl, THEN Iff_MP2_same])
-  apply (rule ContraProve [THEN rotate5])
-  by (metis Assume Iff_MP_left' Var_Eq_subst_Iff thin1)
+    apply (rule OrdIndH [where i=i and j=j]) 
+    using atoms  apply auto
+    apply (rule OrdP_cases_E [where k=k, THEN rotate3])
+       apply (rule ContraProve [THEN rotate2]) using Var_Eq_imp_subst_Iff
+       apply (metis Assume AssumeH(3) Iff_MP_same) 
+      apply (rule Ex_I [where x="Var k"], simp)
+      apply (rule Neg_Imp_I, blast)
+      apply (rule cut_same [where A = "A(i::=Var k)"])
+       apply (rule All2_E [where x = "Var k", THEN rotate5])
+         apply (auto intro: Mem_SUCC_I2 Mem_cong [OF Refl, THEN Iff_MP2_same])
+    apply (rule ContraProve [THEN rotate5])
+    by (metis Assume Iff_MP_left' Var_Eq_subst_Iff thin1)
 qed
 
 lemma OrdInd2:
@@ -997,8 +988,7 @@ proof -
     apply (rule All_E [where x=a], auto)
     apply (rule All_E [where x=a], simp)
     apply (rule Imp_E, blast)
-    apply (rule Ex_EH Conj_EH)+
-    apply simp_all
+    apply (rule Ex_EH Conj_EH)+ apply simp_all
     apply (rule Ex_I [where x="Var x"], simp)
     apply (rule Ex_I [where x="Var y"], auto)
     done
@@ -1192,9 +1182,9 @@ declare SUCC_inject_E [THEN rotate8, intro!]
 
 lemma OrdP_IN_SUCC_lemma: "{OrdP x, y IN x} \<turnstile> SUCC y IN SUCC x"
   apply (rule OrdP_linear [of _ "SUCC x" "SUCC y"])
-  apply (auto intro!: Mem_SUCC_EH  intro: OrdP_SUCC_I Ord_IN_Ord0)
-  apply (metis Hyp Mem_SUCC_I1 Mem_not_sym cut_same insertCI)
-  apply (metis Assume EQ_imp_SUBS Mem_SUCC_I1 Mem_non_refl Subset_D thin1) 
+      apply (auto intro!: Mem_SUCC_EH  intro: OrdP_SUCC_I Ord_IN_Ord0)
+    apply (metis Hyp Mem_SUCC_I1 Mem_not_sym cut_same insertCI)
+   apply (metis Assume EQ_imp_SUBS Mem_SUCC_I1 Mem_non_refl Subset_D thin1) 
   apply (blast intro: cut_same [OF Mem_cong [THEN Iff_MP2_same]])
   done
 
@@ -1203,12 +1193,9 @@ lemma OrdP_IN_SUCC: "H \<turnstile> OrdP x \<Longrightarrow> H \<turnstile> y IN
 
 lemma OrdP_IN_SUCC_D_lemma: "{OrdP x, SUCC y IN SUCC x} \<turnstile> y IN x"
   apply (rule OrdP_linear [of _ "x" "y"], auto)
-  apply (metis Assume AssumeH(2) Mem_SUCC_Refl OrdP_SUCC_I Ord_IN_Ord)
-  apply (rule Mem_SUCC_E [THEN rotate3])
-  apply (blast intro: Mem_SUCC_Refl OrdP_Trans) 
-  apply (metis AssumeH(2) EQ_imp_SUBS Mem_SUCC_I1 Mem_non_refl Subset_D)
-  apply (metis EQ_imp_SUBS Mem_SUCC_I2 Mem_SUCC_EH(2) Mem_SUCC_I1 Refl SUCC_Subset_Ord_lemma Subset_D thin1)  
-  done
+    apply (metis Assume AssumeH(2) Mem_SUCC_Refl OrdP_SUCC_I Ord_IN_Ord)
+   apply (metis Assume EQ_imp_SUBS Mem_Eats_EH(2) Mem_SUCC_Refl OrdP_Mem_imp_Subset SUCC_def Subset_D thin1)
+  by (meson Assume EQ_imp_SUBS Mem_SUCC_E Mem_SUCC_Refl OrdP_Mem_imp_Subset Subset_D rotate3)
 
 lemma OrdP_IN_SUCC_D: "H \<turnstile> OrdP x \<Longrightarrow> H \<turnstile> SUCC y IN SUCC x \<Longrightarrow> H \<turnstile> y IN x"
   by (rule cut2 [OF OrdP_IN_SUCC_D_lemma])

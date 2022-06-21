@@ -9,6 +9,8 @@
 structure SepUtil : SEP_UTIL =
 struct
 
+structure ACUtil = Auto2_HOL_Extra_Setup.ACUtil
+
 val assnT = @{typ assn}
 val emp = @{term emp}
 val assn_true = @{term true}

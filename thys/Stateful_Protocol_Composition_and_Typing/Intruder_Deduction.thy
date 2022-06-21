@@ -1,39 +1,6 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2015-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Intruder_Deduction.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section \<open>Dolev-Yao Intruder Model\<close>
@@ -441,9 +408,8 @@ qed (auto simp add: f in_subterms_Union)
 lemma private_fun_deduct_in_ik':
   assumes t: "M \<turnstile> Fun f T"
     and f: "\<not>public f"
-    and M: "Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t M \<Longrightarrow> Fun f T \<in> M"
-  shows "Fun f T \<in> M"
-by (rule M[OF private_fun_deduct_in_ik[OF t term.order_refl f]])
+  shows "Fun f T \<in> subterms\<^sub>s\<^sub>e\<^sub>t M"
+by (rule private_fun_deduct_in_ik[OF t term.order_refl f])
 
 lemma pgwt_public: "\<lbrakk>public_ground_wf_term t; Fun f T \<sqsubseteq> t\<rbrakk> \<Longrightarrow> public f"
 by (induct t rule: public_ground_wf_term.induct) auto
@@ -488,7 +454,7 @@ proof -
 qed
   
 
-subsection \<open>Lemmata: Monotonicity, deduction private constants, etc.\<close>
+subsection \<open>Lemmata: Monotonicity, Deduction of Private Constants, etc.\<close>
 context
 begin
 lemma ideduct_mono:
@@ -504,6 +470,17 @@ lemma ideduct_synth_mono:
   fixes M::"('fun,'var) terms" and t::"('fun,'var) term"
   shows "\<lbrakk>M \<turnstile>\<^sub>c t; M \<subseteq> M'\<rbrakk> \<Longrightarrow> M' \<turnstile>\<^sub>c t"
 by (induct rule: intruder_synth.induct) auto
+
+context
+begin
+
+\<comment> \<open>Used by \<open>inductive_set\<close>\<close>
+private lemma ideduct_mono_set[mono_set]:
+  "M \<subseteq> N \<Longrightarrow> M \<turnstile> t \<longrightarrow> N \<turnstile> t"
+  "M \<subseteq> N \<Longrightarrow> M \<turnstile>\<^sub>c t \<longrightarrow> N \<turnstile>\<^sub>c t"
+using ideduct_mono ideduct_synth_mono by (blast, blast)
+
+end
 
 lemma ideduct_reduce:
   "\<lbrakk>M \<union> M' \<turnstile> t; \<And>t'. t' \<in> M' \<Longrightarrow> M \<turnstile> t'\<rbrakk> \<Longrightarrow> M \<turnstile> t"
@@ -742,6 +719,10 @@ proof -
   ultimately show ?thesis using M'_closes by blast
 qed
 
+lemma deducts_eq_if_empty_ik:
+  "{} \<turnstile> t \<longleftrightarrow> {} \<turnstile>\<^sub>c t"
+using analyzed_is_all_analyzed_in[of "{}"] deducts_eq_if_analyzed[of "{}" t] by blast
+
 
 subsection \<open>Intruder Variants: Numbered and Composition-Restricted Intruder Deduction Relations\<close>
 text \<open>
@@ -759,9 +740,9 @@ where
                     \<Longrightarrow> \<langle>M; Q\<rangle> \<turnstile>\<^sub>r t\<^sub>i"
 
 text \<open>
-  A variant of the intruder relation equipped with a number representing the heigth of the
+  A variant of the intruder relation equipped with a number representing the height of the
   derivation tree (i.e., \<open>\<langle>M; k\<rangle> \<turnstile>\<^sub>n t\<close> iff k is the maximum number of applications of the compose
-  an decompose rules in any path of the derivation tree for \<open>M \<turnstile> t\<close>).
+  and decompose rules in any path of the derivation tree for \<open>M \<turnstile> t\<close>).
 \<close>
 inductive intruder_deduct_num::
   "('fun,'var) terms \<Rightarrow> nat \<Rightarrow> ('fun,'var) term \<Rightarrow> bool"
@@ -999,6 +980,18 @@ proof (induction n arbitrary: t rule: nat_less_induct)
     qed
     thus ?thesis using Suc by fast
   qed
+qed
+
+lemma deduct_inv':
+  assumes "M \<turnstile> Fun f ts"
+  shows "Fun f ts \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<or> (\<forall>t \<in> set ts. M \<turnstile> t)"
+proof -
+  obtain k where k: "intruder_deduct_num M k (Fun f ts)"
+    using deduct_num_if_deduct[OF assms] by fast
+
+  have "Fun f ts \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<or> (\<forall>t \<in> set ts. \<exists>l. intruder_deduct_num M l t)"
+    using deduct_inv[OF k] Ana_subterm'[of "Fun f ts"] in_subterms_subset_Union by blast
+  thus ?thesis using deduct_if_deduct_num by blast
 qed
 
 lemma restricted_deduct_if_deduct:

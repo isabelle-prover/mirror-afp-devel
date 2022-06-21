@@ -45,15 +45,18 @@ begin
 
   locale hom_functor =
     C: category C +
-    Cop: dual_category C +
-    CopxC: product_category Cop.comp C +
-    S: replete_set_category S
+    S: set_category S setp
   for C :: "'c comp"      (infixr "\<cdot>" 55)
   and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  and setp :: "'s set \<Rightarrow> bool"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's" +
   assumes maps_arr_to_Univ: "C.arr f \<Longrightarrow> \<phi> (C.dom f, C.cod f) f \<in> S.Univ"
   and local_inj: "\<lbrakk> C.ide b; C.ide a \<rbrakk> \<Longrightarrow> inj_on (\<phi> (b, a)) (C.hom b a)"
+  and small_homs: "\<lbrakk> C.ide b; C.ide a \<rbrakk> \<Longrightarrow> setp (\<phi> (b, a) ` C.hom b a)"
   begin
+
+    sublocale Cop: dual_category C ..
+    sublocale CopxC: product_category Cop.comp C ..
 
     notation S.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>")
     notation CopxC.comp   (infixr "\<odot>" 55)
@@ -120,7 +123,8 @@ begin
               \<psi>_mapsto [of "fst (CopxC.dom gf)" "snd (CopxC.dom gf)"]
         by fastforce
       thus ?thesis
-        using assms map_def S.arr_mkArr set_subset_Univ S.card_of_leq by simp
+        using assms map_def set_subset_Univ small_homs
+        by (simp add: set_def)
     qed
 
     lemma map_ide [simp]:
@@ -133,26 +137,27 @@ begin
       also have "... = S.mkArr (set (b, a)) (set (b, a)) (\<lambda>h. h)"
       proof -
         have "S.mkArr (set (b, a)) (set (b, a)) (\<lambda>h. h) = ..."
-          using assms S.arr_mkArr set_subset_Univ set_def C.comp_arr_dom C.comp_cod_arr
-                S.card_of_leq S.arr_mkIde
+          using assms set_subset_Univ set_def C.comp_arr_dom C.comp_cod_arr
+                S.arr_mkIde small_homs
           by (intro S.mkArr_eqI', simp, fastforce)
         thus ?thesis by auto
       qed
       also have "... = S.mkIde (set (b, a))"
-        using assms S.mkIde_as_mkArr set_subset_Univ by simp
+        using assms S.mkIde_as_mkArr set_subset_Univ small_homs
+        by (simp add: set_def)
       finally show ?thesis by auto
     qed
 
     lemma set_map:
     assumes "C.ide a" and "C.ide b"
     shows "S.set (map (b, a)) = set (b, a)"
-      using assms map_ide S.set_mkIde set_subset_Univ by simp
+      using assms map_ide set_subset_Univ small_homs set_def by simp
 
     text\<open>
       The definition does in fact yield a functor.
 \<close>
 
-    interpretation "functor" CopxC.comp S map
+    sublocale "functor" CopxC.comp S map
     proof
       fix gf
       assume "\<not>CopxC.arr gf"
@@ -164,8 +169,7 @@ begin
       show "S.dom (map gf) = map (CopxC.dom gf)"
         using arr gf local.map_def map_ide by auto
       show "S.cod (map gf) = map (CopxC.cod gf)"
-        using gf set_subset_Univ \<psi>_mapsto map_def set_def S.card_of_leq S.arr_mkIde S.arr_mkArr
-              arr map_ide
+        using gf set_subset_Univ \<psi>_mapsto map_def set_def S.arr_mkIde arr map_ide
         by auto
       next
       fix gf gf'
@@ -237,18 +241,13 @@ begin
         using seq gf' by auto
     qed
 
-    interpretation binary_functor Cop.comp C S map ..
+    lemma is_functor:
+    shows "functor CopxC.comp S map" ..
+
+    sublocale binary_functor Cop.comp C S map ..
 
     lemma is_binary_functor:
     shows "binary_functor Cop.comp C S map" ..
-
-  end
-
-  sublocale hom_functor \<subseteq> binary_functor Cop.comp C S map
-    using is_binary_functor by auto
-
-  context hom_functor
-  begin
 
     text\<open>
       The map @{term \<phi>} determines a bijection between @{term "C.hom b a"} and
@@ -289,12 +288,12 @@ begin
     lemma Dom_map:
     assumes "C.arr g" and "C.arr f"
     shows "S.Dom (map (g, f)) = set (C.cod g, C.dom f)"
-      using assms map_def preserves_arr S.set_mkIde S.arr_mkArr by auto
+      using assms map_def preserves_arr by auto
 
     lemma Cod_map:
     assumes "C.arr g" and "C.arr f"
     shows "S.Cod (map (g, f)) = set (C.dom g, C.cod f)"
-      using assms map_def preserves_arr S.set_mkIde S.arr_mkArr by auto
+      using assms map_def preserves_arr by auto
 
     lemma Fun_map:
     assumes "C.arr g" and "C.arr f"
@@ -349,10 +348,12 @@ begin
     interpretation S: replete_setcat \<open>undefined :: 'a\<close> .
 
     lemma has_hom_functor:
-    shows "hom_functor C (S.comp :: 'a setcat.arr comp) (\<lambda>_. S.UP)"
+    shows "hom_functor C S.comp S.setp (\<lambda>_. S.UP)"
     proof
       show "\<And>f. arr f \<Longrightarrow> S.UP f \<in> S.Univ"
         using S.UP_mapsto by auto
+      thus "\<And>b a. \<lbrakk>ide b; ide a\<rbrakk> \<Longrightarrow> S.UP ` hom b a \<subseteq> S.Univ"
+        by force
       show "\<And>b a. \<lbrakk>ide b; ide a\<rbrakk> \<Longrightarrow> inj_on S.UP (hom b a)"
         by (meson S.inj_UP injD inj_onI)
     qed
@@ -367,10 +368,11 @@ begin
 
   locale set_valued_functor =
     C: category C +
-    S: replete_set_category S +
+    S: set_category S setp +
     "functor" C S F
     for C :: "'c comp"
     and S :: "'s comp"
+    and setp :: "'s set \<Rightarrow> bool"
     and F :: "'c \<Rightarrow> 's"
   begin
 
@@ -390,12 +392,13 @@ begin
 
   locale set_valued_transformation =
     C: category C +
-    S: replete_set_category S +
-    F: set_valued_functor C S F +
-    G: set_valued_functor C S G +
+    S: set_category S setp +
+    F: set_valued_functor C S setp F +
+    G: set_valued_functor C S setp G +
     natural_transformation C S F G \<tau>
   for C :: "'c comp"
   and S :: "'s comp"
+  and setp :: "'s set \<Rightarrow> bool"
   and F :: "'c \<Rightarrow> 's"
   and G :: "'c \<Rightarrow> 's"
   and \<tau> :: "'c \<Rightarrow> 's"
@@ -423,14 +426,16 @@ begin
     C: category C +
     Cop: dual_category C +
     CopxC: product_category Cop.comp C +
-    S: replete_set_category S +
-    Hom: hom_functor C S \<phi> +
-    Cop_S: functor_category Cop.comp S +
-    curried_functor' Cop.comp C S Hom.map
+    S: set_category S setp +
+    Hom: hom_functor C S setp \<phi>
   for C :: "'c comp"      (infixr "\<cdot>" 55)
   and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  and setp :: "'s set \<Rightarrow> bool"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   begin
+
+    sublocale Cop_S: functor_category Cop.comp S ..
+    sublocale curried_functor' Cop.comp C S Hom.map ..
 
     notation Cop_S.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>C\<^sub>o\<^sub>p\<^sub>,\<^sub>S\<^sub>] _\<guillemotright>")
 
@@ -482,16 +487,16 @@ begin
   end
 
   locale yoneda_functor_fixed_object =
-    yoneda_functor C S \<phi>
-  for C :: "'c comp" (infixr "\<cdot>" 55)
-  and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
-  and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
-  and a :: 'c +
+    yoneda_functor +
+  fixes a
   assumes ide_a: "C.ide a"
+  begin
   
-  sublocale yoneda_functor_fixed_object \<subseteq> "functor" Cop.comp S "(Y a)"
-    using ide_a Y_ide_is_functor by auto
-  sublocale yoneda_functor_fixed_object \<subseteq> set_valued_functor Cop.comp S "(Y a)" ..
+    sublocale "functor" Cop.comp S \<open>Y a\<close>
+      using ide_a Y_ide_is_functor by auto
+    sublocale set_valued_functor Cop.comp S setp \<open>Y a\<close> ..
+
+  end
 
   text\<open>
     The Yoneda lemma states that, given a category @{term C} and a functor @{term F}
@@ -517,13 +522,11 @@ begin
 \<close>
 
   locale yoneda_lemma =
-    C: category C +
-    Cop: dual_category C +
-    S: replete_set_category S +
-    F: set_valued_functor Cop.comp S F +
-    yoneda_functor_fixed_object C S \<phi> a
+    yoneda_functor_fixed_object C S setp \<phi> a +
+    F: set_valued_functor Cop.comp S setp F
   for C :: "'c comp" (infixr "\<cdot>" 55)
   and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
+  and setp :: "'s set \<Rightarrow> bool"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   and F :: "'c \<Rightarrow> 's"
   and a :: 'c
@@ -545,50 +548,48 @@ begin
       @{term "(\<lambda>x. F.FUN (\<psi> (b, a) x) e) \<in> Hom.set (b, a) \<rightarrow> F.SET b"}.
 \<close>
 
-    definition \<T>o :: "'s \<Rightarrow> 'c \<Rightarrow> 's"
-    where "\<T>o e b = S.mkArr (Hom.set (b, a)) (F.SET b) (\<lambda>x. F.FUN (\<psi> (b, a) x) e)"
+    definition \<T>\<^sub>o :: "'s \<Rightarrow> 'c \<Rightarrow> 's"
+    where "\<T>\<^sub>o e b = S.mkArr (Hom.set (b, a)) (F.SET b) (\<lambda>x. F.FUN (\<psi> (b, a) x) e)"
 
-    lemma \<T>o_e_ide:
+    lemma \<T>\<^sub>o_in_hom:
     assumes e: "e \<in> S.set (F a)" and b: "C.ide b"
-    shows "\<guillemotleft>\<T>o e b : Y a b \<rightarrow>\<^sub>S F b\<guillemotright>"
-    and "\<T>o e b = S.mkArr (Hom.set (b, a)) (F.SET b) (\<lambda>x. F.FUN (\<psi> (b, a) x) e)"
+    shows "\<guillemotleft>\<T>\<^sub>o e b : Y a b \<rightarrow>\<^sub>S F b\<guillemotright>"
     proof -
-      show "\<T>o e b = S.mkArr (Hom.set (b, a)) (F.SET b) (\<lambda>x. F.FUN (\<psi> (b, a) x) e)"
-        using \<T>o_def by auto
-      moreover have "(\<lambda>x. F.FUN (\<psi> (b, a) x) e) \<in> Hom.set (b, a) \<rightarrow> F.SET b"
+      have "(\<lambda>x. F.FUN (\<psi> (b, a) x) e) \<in> Hom.set (b, a) \<rightarrow> F.SET b"
       proof
         fix x
         assume x: "x \<in> Hom.set (b, a)"
         thus "F.FUN (\<psi> (b, a) x) e \<in> F.SET b"
           using assms e ide_a Hom.\<psi>_mapsto S.Fun_mapsto [of "F (\<psi> (b, a) x)"] by force
       qed
-      ultimately show "\<guillemotleft>\<T>o e b : Y a b \<rightarrow>\<^sub>S F b\<guillemotright>"
+      thus ?thesis
         using ide_a b S.mkArr_in_hom [of "Hom.set (b, a)" "F.SET b"] Hom.set_subset_Univ
-              S.mkIde_set
-        by force
+              S.mkIde_set \<T>\<^sub>o_def
+        by (metis C.ideD(1) Cop.ide_char F.preserves_ide Hom.set_map S.setp_set_ide
+            preserves_ide Y_simp)
     qed
 
     text\<open>
-      For each @{term "e \<in> F.SET a"}, the mapping @{term "\<T>o e"} gives the components
+      For each @{term "e \<in> F.SET a"}, the mapping @{term "\<T>\<^sub>o e"} gives the components
       of a natural transformation @{term \<T>} from @{term "Y a"} to @{term F}.
 \<close>
 
-    lemma \<T>o_e_induces_transformation:
+    lemma \<T>\<^sub>o_induces_transformation:
     assumes e: "e \<in> S.set (F a)"
-    shows "transformation_by_components Cop.comp S (Y a) F (\<T>o e)"
+    shows "transformation_by_components Cop.comp S (Y a) F (\<T>\<^sub>o e)"
     proof
       fix b :: 'c
       assume b: "Cop.ide b"
-      show "\<guillemotleft>\<T>o e b : Y a b \<rightarrow>\<^sub>S F b\<guillemotright>"
-        using ide_a b e \<T>o_e_ide by simp
+      show "\<guillemotleft>\<T>\<^sub>o e b : Y a b \<rightarrow>\<^sub>S F b\<guillemotright>"
+        using ide_a b e \<T>\<^sub>o_in_hom by simp
       next
       fix g :: 'c
       assume g: "Cop.arr g"
       let ?b = "Cop.dom g"
       let ?b' = "Cop.cod g"
-      show "\<T>o e (Cop.cod g) \<cdot>\<^sub>S Y a g = F g \<cdot>\<^sub>S \<T>o e (Cop.dom g)"
+      show "\<T>\<^sub>o e (Cop.cod g) \<cdot>\<^sub>S Y a g = F g \<cdot>\<^sub>S \<T>\<^sub>o e (Cop.dom g)"
       proof -
-        have 1: "\<T>o e (Cop.cod g) \<cdot>\<^sub>S Y a g
+        have 1: "\<T>\<^sub>o e (Cop.cod g) \<cdot>\<^sub>S Y a g
                    = S.mkArr (Hom.set (?b, a)) (F.SET ?b')
                              ((\<lambda>x. F.FUN (\<psi> (?b', a) x) e)
                                 o (\<phi> (?b', a) o Cop.comp g o \<psi> (?b, a)))"
@@ -599,17 +600,17 @@ begin
                       (\<lambda>s. F.FUN (\<psi> (Cop.cod g, a) s) e)) = Y a (Cop.cod g) \<and>
                 S.cod (S.mkArr (Hom.set (Cop.cod g, a)) (F.SET (Cop.cod g))
                       (\<lambda>s. F.FUN (\<psi> (Cop.cod g, a) s) e)) = F (Cop.cod g)"
-            using Cop.cod_char \<T>o_e_ide [of e ?b'] \<T>o_e_ide [of e ?b'] e g
+            using Cop.cod_char \<T>\<^sub>o_def \<T>\<^sub>o_in_hom [of e ?b'] e g
             by (metis Cop.ide_char Cop.ide_cod S.in_homE)
           moreover have "Y a g = S.mkArr (Hom.set (Cop.dom g, a)) (Hom.set (Cop.cod g, a))
                                          (\<phi> (Cop.cod g, a) \<circ> Cop.comp g \<circ> \<psi> (Cop.dom g, a))"
             using Y_ide_arr [of a g ?b' ?b] ide_a g by auto
           ultimately show ?thesis
-            using ide_a e g Y_ide_arr Cop.cod_char \<T>o_e_ide
+            using ide_a e g Y_ide_arr Cop.cod_char \<T>\<^sub>o_def
                   S.comp_mkArr [of "Hom.set (?b, a)" "Hom.set (?b', a)"
                                    "\<phi> (?b', a) o Cop.comp g o \<psi> (?b, a)"
                                    "F.SET ?b'" "\<lambda>x. F.FUN (\<psi> (?b', a) x) e"]
-            by (metis C.ide_dom Cop.arr_char preserves_arr)
+            by (metis preserves_arr)
         qed
         also have "... = S.mkArr (Hom.set (?b, a)) (F.SET ?b')
                                  (F.FUN g o (\<lambda>x. F.FUN (\<psi> (?b, a) x) e))"
@@ -617,16 +618,18 @@ begin
           have "(\<lambda>x. F.FUN (\<psi> (?b', a) x) e)
                    o (\<phi> (?b', a) o Cop.comp g o \<psi> (?b, a)) \<in> Hom.set (?b, a) \<rightarrow> F.SET ?b'"
           proof -
-            have "S.arr (S (\<T>o e ?b') (Y a g))"
-              using ide_a e g \<T>o_e_ide [of e ?b'] Y_ide_arr(1) [of a "C.dom g" "C.cod g" g]
+            have "S.arr (S (\<T>\<^sub>o e ?b') (Y a g))"
+              using ide_a e g \<T>\<^sub>o_in_hom [of e ?b'] Y_ide_arr(1) [of a "C.dom g" "C.cod g" g]
                     Cop.ide_char Cop.ide_cod
               by blast
-            thus ?thesis using 1 S.arr_mkArr by simp
+            thus ?thesis using 1 by simp
           qed
           thus "S.arr (S.mkArr (Hom.set (?b, a)) (F.SET ?b')
                                ((\<lambda>x. F.FUN (\<psi> (?b', a) x) e)
                                   o (\<phi> (?b', a) o Cop.comp g o \<psi> (?b, a))))"
-            using ide_a e g Hom.set_subset_Univ S.arr_mkArr by force
+            using ide_a e g Hom.set_subset_Univ S.arr_mkArr
+            by (metis C.dom_dom C.ide_dom Cop.arr_char Cop.cod_char Cop.comp_cod_arr
+                Cop.comp_in_homI' Cop.seqE S.seqI' \<T>\<^sub>o_in_hom calculation preserves_hom)
           show "\<And>x. x \<in> Hom.set (?b, a) \<Longrightarrow>
                         ((\<lambda>x. F.FUN (\<psi> (?b', a) x) e) o (\<phi> (?b', a) o Cop.comp g o \<psi> (?b, a))) x
                         = (F.FUN g o (\<lambda>x. F.FUN (\<psi> (?b, a) x) e)) x"
@@ -656,14 +659,14 @@ begin
               by simp
           qed
         qed
-        also have "... = F g \<cdot>\<^sub>S \<T>o e (Cop.dom g)"
+        also have "... = F g \<cdot>\<^sub>S \<T>\<^sub>o e (Cop.dom g)"
         proof -
           have "S.arr (F g) \<and> F g = S.mkArr (F.SET ?b) (F.SET ?b') (F.FUN g)"
             using g S.mkArr_Fun [of "F g"] by simp
           moreover have
-              "S.arr (\<T>o e ?b) \<and>
-               \<T>o e ?b = S.mkArr (Hom.set (?b, a)) (F.SET ?b) (\<lambda>x. F.FUN (\<psi> (?b, a) x) e)"
-            using e g \<T>o_e_ide
+              "S.arr (\<T>\<^sub>o e ?b) \<and>
+               \<T>\<^sub>o e ?b = S.mkArr (Hom.set (?b, a)) (F.SET ?b) (\<lambda>x. F.FUN (\<psi> (?b, a) x) e)"
+            using e g \<T>\<^sub>o_def \<T>\<^sub>o_in_hom
             by (metis C.ide_cod Cop.arr_char Cop.dom_char S.in_homE)
           ultimately show ?thesis
             using S.comp_mkArr [of "Hom.set (?b, a)" "F.SET ?b" "\<lambda>x. F.FUN (\<psi> (?b, a) x) e"
@@ -674,24 +677,21 @@ begin
       qed
     qed
 
-    abbreviation \<T> :: "'s \<Rightarrow> 'c \<Rightarrow> 's"
-    where "\<T> e \<equiv> transformation_by_components.map Cop.comp S (Y a) (\<T>o e)"
+    definition \<T> :: "'s \<Rightarrow> 'c \<Rightarrow> 's"
+    where "\<T> e \<equiv> transformation_by_components.map Cop.comp S (Y a) (\<T>\<^sub>o e)"
 
   end
 
   locale yoneda_lemma_fixed_e =
-    yoneda_lemma C S \<phi> F a
-  for C :: "'c comp" (infixr "\<cdot>" 55)
-  and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
-  and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
-  and F :: "'c \<Rightarrow> 's"
-  and a :: 'c
-  and e :: 's +
+    yoneda_lemma +
+  fixes e
   assumes E: "e \<in> F.SET a"
   begin
 
-    interpretation \<T>e: transformation_by_components Cop.comp S \<open>Y a\<close> F \<open>\<T>o e\<close>
-      using E \<T>o_e_induces_transformation by auto
+    interpretation \<T>e: transformation_by_components Cop.comp S \<open>Y a\<close> F \<open>\<T>\<^sub>o e\<close>
+      using E \<T>\<^sub>o_induces_transformation by auto
+    sublocale \<T>e: natural_transformation Cop.comp S \<open>Y a\<close> F \<open>\<T> e\<close>
+      unfolding \<T>_def ..
 
     lemma natural_transformation_\<T>e:
     shows "natural_transformation Cop.comp S (Y a) F (\<T> e)" ..
@@ -701,20 +701,17 @@ begin
     shows "S.arr (\<T> e b)"
     and "\<T> e b = S.mkArr (Hom.set (b, a)) (F.SET b) (\<lambda>x. F.FUN (\<psi> (b, a) x) e)"
       using assms apply fastforce
-      using assms \<T>o_def by auto
+      using assms \<T>\<^sub>o_def \<T>_def by auto
 
   end
 
   locale yoneda_lemma_fixed_\<tau> =
-    yoneda_lemma C S \<phi> F a +
-    \<tau>: set_valued_transformation Cop.comp S "Y a" F \<tau>
-  for C :: "'c comp" (infixr "\<cdot>" 55)
-  and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
-  and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
-  and F :: "'c \<Rightarrow> 's"
-  and a :: 'c
-  and \<tau> :: "'c \<Rightarrow> 's"
+    yoneda_lemma +
+    \<tau>: natural_transformation Cop.comp S \<open>Y a\<close> F \<tau>
+  for \<tau>
   begin
+
+    sublocale \<tau>: set_valued_transformation Cop.comp S setp \<open>Y a\<close> F \<tau> ..
 
     text\<open>
       The key lemma: The component @{term "\<tau> b"} of @{term \<tau>} at an arbitrary object @{term b}
@@ -820,7 +817,7 @@ begin
     shows "\<tau>' = \<tau>"
     proof (intro NaturalTransformation.eqI)
       interpret \<tau>': natural_transformation Cop.comp S \<open>Y a\<close> F \<tau>' using assms by auto
-      interpret T': yoneda_lemma_fixed_\<tau> C S \<phi> F a \<tau>' ..
+      interpret T': yoneda_lemma_fixed_\<tau> C S setp \<phi> F a \<tau>' ..
       show "natural_transformation Cop.comp S (Y a) F \<tau>" ..
       show "natural_transformation Cop.comp S (Y a) F \<tau>'" ..
       show "\<And>b. Cop.ide b \<Longrightarrow> \<tau>' b = \<tau> b"
@@ -843,10 +840,8 @@ begin
     assumes "e \<in> F.SET a"
     shows "natural_transformation Cop.comp S (Y a) F (\<T> e)" and "\<E> (\<T> e) = e"
     proof -
-      interpret yoneda_lemma_fixed_e C S \<phi> F a e
+      interpret yoneda_lemma_fixed_e C S setp \<phi> F a e
         using assms by (unfold_locales, auto)
-      interpret \<T>e: natural_transformation Cop.comp S \<open>Y a\<close> F \<open>\<T> e\<close>
-        using natural_transformation_\<T>e by auto
       show "natural_transformation Cop.comp S (Y a) F (\<T> e)" ..
       show "\<E> (\<T> e) = e"
         unfolding \<E>_def
@@ -855,12 +850,13 @@ begin
         by (auto simp add: Pi_iff)
     qed
 
-    lemma \<E>\<tau>_in_Fa:
+    lemma \<E>\<tau>_mapsto:
     assumes "natural_transformation Cop.comp S (Y a) F \<tau>"
     shows "\<E> \<tau> \<in> F.SET a"
     proof -
-      interpret \<tau>: natural_transformation Cop.comp S \<open>Y a\<close> F \<tau> using assms by auto
-      interpret yoneda_lemma_fixed_\<tau> C S \<phi> F a \<tau> ..
+      interpret \<tau>: natural_transformation Cop.comp S \<open>Y a\<close> F \<tau>
+        using assms by auto
+      interpret yoneda_lemma_fixed_\<tau> C S setp \<phi> F a \<tau> ..
       show ?thesis
       proof (unfold \<E>_def)
         have "S.arr (\<tau> a) \<and> S.Dom (\<tau> a) = Hom.set (a, a) \<and> S.Cod (\<tau> a) = F.SET a"
@@ -881,15 +877,13 @@ begin
 
     lemma \<T>_is_surjection:
     assumes "natural_transformation Cop.comp S (Y a) F \<tau>"
-    shows "\<E> \<tau> \<in> F.SET a" and "\<T> (\<E> \<tau>) = \<tau>"
+    shows "\<T> (\<E> \<tau>) = \<tau>"
     proof -
-      interpret natural_transformation Cop.comp S \<open>Y a\<close> F \<tau> using assms by auto
-      interpret yoneda_lemma_fixed_\<tau> C S \<phi> F a \<tau> ..
-      show 1: "\<E> \<tau> \<in> F.SET a" using assms \<E>\<tau>_in_Fa by auto
-      interpret yoneda_lemma_fixed_e C S \<phi> F a \<open>\<E> \<tau>\<close>
-        using 1 by (unfold_locales, auto)
-      interpret \<T>e: natural_transformation Cop.comp S \<open>Y a\<close> F \<open>\<T> (\<E> \<tau>)\<close>
-        using natural_transformation_\<T>e by auto
+      interpret natural_transformation Cop.comp S \<open>Y a\<close> F \<tau>
+        using assms by auto
+      interpret yoneda_lemma_fixed_\<tau> C S setp \<phi> F a \<tau> ..
+      interpret yoneda_lemma_fixed_e C S setp \<phi> F a \<open>\<E> \<tau>\<close>
+        using assms \<E>\<tau>_mapsto by unfold_locales auto
       show "\<T> (\<E> \<tau>) = \<tau>"
       proof (intro eqI)
         show "natural_transformation Cop.comp S (Y a) F (\<T> (\<E> \<tau>))" ..
@@ -904,7 +898,8 @@ begin
 
     theorem yoneda_lemma:
     shows "bij_betw \<T> (F.SET a) {\<tau>. natural_transformation Cop.comp S (Y a) F \<tau>}"
-      using \<T>_is_injection \<T>_is_surjection by (intro bij_betwI, auto)
+      using \<E>\<tau>_mapsto \<T>_is_injection \<T>_is_surjection
+      by (intro bij_betwI, auto)
 
   end
 
@@ -918,16 +913,13 @@ begin
 \<close>
 
   locale yoneda_lemma_for_hom =
-    C: category C +
-    Cop: dual_category C +
-    S: replete_set_category S +
-    yoneda_functor_fixed_object C S \<phi> a +
-    Ya': yoneda_functor_fixed_object C S \<phi> a' +
-    yoneda_lemma C S \<phi> "Y a'" a
+    yoneda_functor_fixed_object C S setp \<phi> a +
+    Ya': yoneda_functor_fixed_object C S setp \<phi> a' +
+    yoneda_lemma C S setp \<phi> "Y a'" a
   for C :: "'c comp" (infixr "\<cdot>" 55)
   and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
+  and setp :: "'s set \<Rightarrow> bool"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
-  and F :: "'c \<Rightarrow> 's"
   and a :: 'c
   and a' :: 'c +
   assumes ide_a': "C.ide a'"
@@ -939,7 +931,7 @@ begin
       is just @{term "Y (\<psi> (a, a') e)"}.
 \<close>
 
-    lemma \<T>_equals_Yo\<psi>:
+    lemma app_\<T>_equals:
     assumes e: "e \<in> Hom.set (a, a')"
     shows "\<T> e = Y (\<psi> (a, a') e)"
     proof -
@@ -947,12 +939,10 @@ begin
       have \<psi>e: "\<guillemotleft>?\<psi>e : a \<rightarrow> a'\<guillemotright>" using ide_a ide_a' e Hom.\<psi>_mapsto [of a a'] by auto
       interpret Ye: natural_transformation Cop.comp S \<open>Y a\<close> \<open>Y a'\<close> \<open>Y ?\<psi>e\<close>
         using Y_arr_is_transformation [of ?\<psi>e] \<psi>e by (elim C.in_homE, auto)
-      interpret yoneda_lemma_fixed_e C S \<phi> \<open>Y a'\<close> a e
-        using ide_a ide_a' e S.set_mkIde Hom.set_map
+      interpret yoneda_lemma_fixed_e C S setp \<phi> \<open>Y a'\<close> a e
+        using ide_a ide_a' e Hom.set_map
         by (unfold_locales, simp_all)
-      interpret \<T>e: natural_transformation Cop.comp S \<open>Y a\<close> \<open>Y a'\<close> \<open>\<T> e\<close>
-        using natural_transformation_\<T>e by auto
-      interpret yoneda_lemma_fixed_\<tau> C S \<phi> \<open>Y a'\<close> a \<open>\<T> e\<close> ..
+      interpret yoneda_lemma_fixed_\<tau> C S setp \<phi> \<open>Y a'\<close> a \<open>\<T> e\<close> ..
       have "natural_transformation Cop.comp S (Y a) (Y a') (Y ?\<psi>e)" ..
       moreover have "natural_transformation Cop.comp S (Y a) (Y a') (\<T> e)" ..
       moreover have "\<T> e a = Y ?\<psi>e a"
@@ -960,7 +950,7 @@ begin
         have 1: "S.arr (\<T> e a)"
           using ide_a e \<T>e.preserves_reflects_arr by simp
         have 2: "\<T> e a = S.mkArr (Hom.set (a, a)) (Ya'.SET a) (\<lambda>x. Ya'.FUN (\<psi> (a, a) x) e)"
-          using ide_a \<T>o_def \<T>e_ide by simp
+          using ide_a \<T>\<^sub>o_def \<T>e_ide by simp
         also have
             "... = S.mkArr (Hom.set (a, a)) (Hom.set (a, a')) (\<phi> (a, a') o C ?\<psi>e o \<psi> (a, a))"
         proof (intro S.mkArr_eqI)
@@ -992,33 +982,33 @@ begin
       ultimately show ?thesis using eqI by auto
     qed
 
-    lemma Y_injective_on_homs:
-    assumes "\<guillemotleft>f : a \<rightarrow> a'\<guillemotright>" and "\<guillemotleft>f' : a \<rightarrow> a'\<guillemotright>" and "map f = map f'"
-    shows "f = f'"
-    proof -
-      have "f = \<psi> (a, a') (\<phi> (a, a') f)"
-        using assms ide_a Hom.\<psi>_\<phi> by simp
-      also have "... = \<psi> (a, a') (\<E> (\<T> (\<phi> (a, a') f)))"
-        using ide_a ide_a' assms(1) \<T>_is_injection Hom.\<phi>_mapsto Hom.set_map
-        by (elim C.in_homE, simp add: Pi_iff)
-      also have "... = \<psi> (a, a') (\<E> (Y (\<psi> (a, a') (\<phi> (a, a') f))))"
-        using assms Hom.\<phi>_mapsto [of a a'] \<T>_equals_Yo\<psi> [of "\<phi> (a, a') f"] by force
-      also have "... = \<psi> (a, a') (\<E> (\<T> (\<phi> (a, a') f')))"
-        using assms Hom.\<phi>_mapsto [of a a'] ide_a Hom.\<psi>_\<phi> Y_def
-              \<T>_equals_Yo\<psi> [of "\<phi> (a, a') f'"]
-        by fastforce
-      also have "... = \<psi> (a, a') (\<phi> (a, a') f')"
-        using ide_a ide_a' assms(2) \<T>_is_injection Hom.\<phi>_mapsto Hom.set_map
-        by (elim C.in_homE, simp add: Pi_iff)
-      also have "... = f'"
-        using assms ide_a Hom.\<psi>_\<phi> by simp
-      finally show "f = f'" by auto
+    lemma is_injective_on_homs:
+    shows "inj_on map (C.hom a a')"
+    proof (intro inj_onI)
+      fix f f'
+      assume f: "f \<in> C.hom a a'" and f': "f' \<in> C.hom a a'"
+      assume eq: "map f = map f'"
+      show "f = f'"
+      proof -
+        have "f = \<psi> (a, a') (\<phi> (a, a') f)"
+          using f ide_a Hom.\<psi>_\<phi> by simp
+        also have "... = \<psi> (a, a') (\<E> (\<T> (\<phi> (a, a') f)))"
+          using ide_a ide_a' f \<T>_is_injection Hom.\<phi>_mapsto Hom.set_map
+          by (metis C.ideD(1) PiE Y_simp mem_Collect_eq)
+        also have "... = \<psi> (a, a') (\<E> (Y (\<psi> (a, a') (\<phi> (a, a') f))))"
+          using f Hom.\<phi>_mapsto app_\<T>_equals [of "\<phi> (a, a') f"] by force
+        also have "... = \<psi> (a, a') (\<E> (\<T> (\<phi> (a, a') f')))"
+          using f f' eq Hom.\<phi>_mapsto [of a a'] ide_a Hom.\<psi>_\<phi> Y_def
+                app_\<T>_equals [of "\<phi> (a, a') f'"]
+          by fastforce
+        also have "... = \<psi> (a, a') (\<phi> (a, a') f')"
+          using ide_a ide_a' f' \<T>_is_injection Hom.\<phi>_mapsto Hom.set_map
+          by (metis C.ideD(1) PiE Y_simp mem_Collect_eq)
+        also have "... = f'"
+          using f' ide_a Hom.\<psi>_\<phi> by simp
+        finally show "f = f'" by auto
+      qed
     qed
-
-    lemma Y_surjective_on_homs:
-    assumes \<tau>: "natural_transformation Cop.comp S (Y a) (Y a') \<tau>"
-    shows "Y (\<psi> (a, a') (\<E> \<tau>)) = \<tau>"
-      using ide_a ide_a' \<tau> \<T>_is_surjection \<T>_equals_Yo\<psi> \<E>\<tau>_in_Fa Hom.set_map by simp
 
   end
 
@@ -1032,11 +1022,13 @@ begin
       assume par: "C.par f f'" and ff': "map f = map f'"
       show "f = f'"
       proof -
-        interpret Ya': yoneda_functor_fixed_object C S \<phi> \<open>C.cod f\<close>
+        interpret Ya': yoneda_functor_fixed_object C S setp \<phi> \<open>C.cod f\<close>
           using par by (unfold_locales, auto)
-        interpret yoneda_lemma_for_hom C S \<phi> \<open>Y (C.cod f)\<close> \<open>C.dom f\<close> \<open>C.cod f\<close>
+        interpret yoneda_lemma_for_hom C S setp \<phi> \<open>C.dom f\<close> \<open>C.cod f\<close>
           using par by (unfold_locales, auto)
-        show "f = f'" using par ff' Y_injective_on_homs [of f f'] by fastforce
+        show "f = f'"
+          using par ff' is_injective_on_homs inj_on_def [of map "C.hom (C.dom f) (C.cod f)"]
+          by force
       qed
     qed
 
@@ -1048,16 +1040,16 @@ begin
       assume t: "\<guillemotleft>t : map a \<rightarrow>\<^sub>[\<^sub>C\<^sub>o\<^sub>p\<^sub>,\<^sub>S\<^sub>] map a'\<guillemotright>"
       show "\<exists>e. \<guillemotleft>e : a \<rightarrow> a'\<guillemotright> \<and> map e = t"
       proof
-        interpret Ya': yoneda_functor_fixed_object C S \<phi> a'
+        interpret Ya': yoneda_functor_fixed_object C S setp \<phi> a'
           using a' by (unfold_locales, auto)
-        interpret yoneda_lemma_for_hom C S \<phi> \<open>Y a'\<close> a a'
+        interpret yoneda_lemma_for_hom C S setp \<phi> a a'
           using a a' by (unfold_locales, auto)
         have NT: "natural_transformation Cop.comp S (Y a) (Y a') (Cop_S.Map t)"
           using t a' Y_def Cop_S.Map_dom Cop_S.Map_cod Cop_S.dom_char Cop_S.cod_char
                 Cop_S.in_homE Cop_S.arrE
           by metis
         hence 1: "\<E> (Cop_S.Map t) \<in> Hom.set (a, a')"
-          using \<E>\<tau>_in_Fa ide_a ide_a' Hom.set_map by simp
+          using \<E>\<tau>_mapsto ide_a ide_a' Hom.set_map by simp
         moreover have "map (\<psi> (a, a') (\<E> (Cop_S.Map t))) = t"
         proof (intro Cop_S.arr_eqI)
           have 2: "\<guillemotleft>map (\<psi> (a, a') (\<E> (Cop_S.Map t))) : map a \<rightarrow>\<^sub>[\<^sub>C\<^sub>o\<^sub>p\<^sub>,\<^sub>S\<^sub>] map a'\<guillemotright>"
@@ -1065,7 +1057,7 @@ begin
           show "Cop_S.arr t" using t by blast
           show "Cop_S.arr (map (\<psi> (a, a') (\<E> (Cop_S.Map t))))" using 2 by blast
           show 3: "Cop_S.Map (map (\<psi> (a, a') (\<E> (Cop_S.Map t)))) = Cop_S.Map t"
-            using NT Y_surjective_on_homs Y_def by simp
+            using NT 1 Y_def \<T>_is_surjection app_\<T>_equals \<E>\<tau>_mapsto by metis
           show 4: "Cop_S.Dom (map (\<psi> (a, a') (\<E> (Cop_S.Map t)))) = Cop_S.Dom t"
             using t 2 functor_axioms Cop_S.Map_dom by (metis Cop_S.in_homE)
           show "Cop_S.Cod (map (\<psi> (a, a') (\<E> (Cop_S.Map t)))) = Cop_S.Cod t"

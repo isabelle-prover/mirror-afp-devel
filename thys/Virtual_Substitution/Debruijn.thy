@@ -165,10 +165,10 @@ next
 qed
 
 lemma map_of_filter_key_in: "P x \<Longrightarrow> map_of (filter (\<lambda>(k, v). P k) xs) x = map_of xs x"
-  by (induction xs) (auto simp: )
+  by (induction xs) auto
 
 lemma map_of_eq_NoneI: "x\<notin>fst`set xs \<Longrightarrow> map_of xs x = None"
-  by (induction xs) (auto simp: )
+  by (induction xs) auto
 
 lemma compute_higherPowers\<^sub>f[code]: "higherPowers\<^sub>f b i (fmap_of_list xs) =
   fmap_of_list (map (\<lambda>(k, v). (if k < b then k else k - i, v)) (filter (\<lambda>(k, v). k \<notin> {b..<b+i}) xs))"

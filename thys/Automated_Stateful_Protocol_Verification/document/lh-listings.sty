@@ -1,0 +1,903 @@
+%% Copyright (C) 2018-2020 Achim D. Brucker, https://www.brucker.ch
+%%
+%% License:
+%%   This program can be redistributed and/or modified under the terms
+%%   of the LaTeX Project Public License Distributed from CTAN
+%%   archives in directory macros/latex/base/lppl.txt; either
+%%   version 1.3c of the License, or (at your opinion) any later version.
+%%   OR
+%%   The 2-clause BSD-style license.
+%%
+%%   SPDX-License-Identifier: LPPL-1.3c+ OR BSD-2-Clause
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{lh-listings}
+   [2020/04/01 v0.0 Listings setup following the cooperate design 
+   of LogicalHacking.com.]
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage{tikz}
+\usepackage[many]{tcolorbox}
+\tcbuselibrary{listings}
+\tcbuselibrary{skins}
+\usepackage{xstring}
+
+\definecolor{OliveGreen}    {cmyk}{0.64,0,0.95,0.40}
+\definecolor{BrickRed}      {cmyk}{0,0.89,0.94,0.28}
+\definecolor{Blue}          {cmyk}{1,1,0,0}
+\definecolor{CornflowerBlue}{cmyk}{0.65,0.13,0,0}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% <antiquotations>
+%% Hack: re-defining tag types for supporting highlighting of antiquotations
+\gdef\lst@tagtypes{s}
+\gdef\lst@TagKey#1#2{%
+    \lst@Delim\lst@tagstyle #2\relax
+        {Tag}\lst@tagtypes #1%
+                     {\lst@BeginTag\lst@EndTag}%
+        \@@end\@empty{}}
+\lst@Key{tag}\relax{\lst@TagKey\@empty{#1}}
+\lst@Key{tagstyle}{}{\def\lst@tagstyle{#1}}
+\lst@AddToHook{EmptyStyle}{\let\lst@tagstyle\@empty}
+\gdef\lst@BeginTag{%
+    \lst@DelimOpen
+        \lst@ifextags\else
+        {\let\lst@ifkeywords\iftrue
+         \lst@ifmarkfirstintag \lst@firstintagtrue \fi}}
+\lst@AddToHookExe{ExcludeDelims}{\let\lst@ifextags\iffalse}
+\gdef\lst@EndTag{\lst@DelimClose\lst@ifextags\else}
+\lst@Key{usekeywordsintag}t[t]{\lstKV@SetIf{#1}\lst@ifusekeysintag}
+\lst@Key{markfirstintag}f[t]{\lstKV@SetIf{#1}\lst@ifmarkfirstintag}
+\gdef\lst@firstintagtrue{\global\let\lst@iffirstintag\iftrue}
+\global\let\lst@iffirstintag\iffalse
+ \lst@AddToHook{PostOutput}{\lst@tagresetfirst}
+ \lst@AddToHook{Output}
+     {\gdef\lst@tagresetfirst{\global\let\lst@iffirstintag\iffalse}}
+ \lst@AddToHook{OutputOther}{\gdef\lst@tagresetfirst{}}
+\lst@AddToHook{Output}
+    {\ifnum\lst@mode=\lst@tagmode
+         \lst@iffirstintag \let\lst@thestyle\lst@gkeywords@sty \fi
+         \lst@ifusekeysintag\else \let\lst@thestyle\lst@gkeywords@sty\fi
+     \fi}
+\lst@NewMode\lst@tagmode
+\gdef\lst@Tag@s#1#2\@empty#3#4#5{%
+    \lst@CArg #1\relax\lst@DefDelimB {}{}%
+        {\ifnum\lst@mode=\lst@tagmode \expandafter\@gobblethree \fi}%
+        #3\lst@tagmode{#5}%
+    \lst@CArg #2\relax\lst@DefDelimE {}{}{}#4\lst@tagmode}%
+\gdef\lst@BeginCDATA#1\@empty{%
+    \lst@TrackNewLines \lst@PrintToken
+    \lst@EnterMode\lst@GPmode{}\let\lst@ifmode\iffalse
+    \lst@mode\lst@tagmode #1\lst@mode\lst@GPmode\relax\lst@modetrue}
+%
+\def\beginlstdelim#1#2#3%
+{%
+    \def\endlstdelim{\texttt{\textbf{\color{black!60}#2}}\egroup}%
+    \ttfamily\textbf{\color{black!60}#1}\bgroup\rmfamily\color{#3}\aftergroup\endlstdelim%
+}
+%% </antiquotations>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% <isar>
+\newcommand{\subscr}[1]{\ensuremath{_{\text{#1}}}}
+\newcommand{\supscr}[1]{\ensuremath{^{\text{#1}}}}
+\lstdefinestyle{isar}{%
+  language=%
+  ,basicstyle=\ttfamily%
+  ,showspaces=false%
+  ,showlines=false%
+  ,columns=flexible%
+  ,keepspaces
+  ,morecomment=[s]{(*}{*)}%
+  % ,moredelim=*[s][\rmfamily]{\{*}{*\}}%
+  ,moredelim = **[is][\beginlstdelim{\{*}{*\}}{black}]{\{*}{*\}}
+  ,showstringspaces=false%
+  ,moredelim=*[is][\supscr]{<bsup>}{<esup>}%
+  ,moredelim=*[is][\subscr]{<bsub>}{<esub>}%
+  ,literate={%
+    {...}{\,\ldots\,}3%
+    {<Open>}{\ensuremath{\isacartoucheopen}}1%
+    {<open>}{\ensuremath{\isacartoucheopen}}1%
+    %{<@>}{@}1%
+    {"}{}0%
+    {é}{\'e}1%
+    {~}{\ }1%
+    {::}{:\!:}1%
+    {<Close>}{\ensuremath{\isacartoucheclose}}1%
+    {<close>}{\ensuremath{\isacartoucheclose}}1%
+    {\\<Gamma>}{\ensuremath{\Gamma}}1%
+    {\\<theta>}{\ensuremath{\theta}}1%
+    {\\<times>}{\ensuremath{\times}}1%
+    {\\<equiv>}{\ensuremath{\equiv}}1%
+    {\\<sigma>}{\ensuremath{\sigma}}1%
+    {\\<geq>}{\ensuremath{\geq}}1%
+    {level0}{level\textsubscript{0}}6%
+    {\\<Rightarrow>}{\ensuremath{\Rightarrow}}1%
+    {\\<rightarrow>}{\ensuremath{\rightarrow}}1%
+    {\\<longrightarrow>}{\ensuremath{\rightarrow}}1%
+    {\\<and>}{\ensuremath{\land}}1%  
+    {\\<or>}{\ensuremath{\lor}}1%
+    {\\<lfloor>}{\ensuremath{\lfloor}}1%
+    {\\<rfloor>}{\ensuremath{\rfloor}}1%  
+    %{\\<lparr>}{\ensuremath{\lparr}}1% 
+    %{\\<rparr>}{\ensuremath{\rparr}}1%
+    {\\<le>}{\ensuremath{\le}}1%
+    {\\<delta>}{\ensuremath{\delta}}1%
+    {\\<lambda>}{\ensuremath{\lambda}}1%
+    {\\<bar>}{\ensuremath{\vert}}1%
+    {\<sigma>}{\ensuremath{\sigma}}1%
+    {\\<lparr>}{\ensuremath{\isasymlparr}}1%  
+    {\\<rparr>}{\ensuremath{\isasymrparr}}1% 
+    {\\<leftrightarrow>}{\ensuremath{\leftrightarrow}}1%
+    {\{*}{\raise.3ex\hbox{$\scriptscriptstyle\langle$}}1%
+    {*\}}{\raise.3ex\hbox{$\scriptscriptstyle\rangle$}}1%
+    {\\<open>}{\raise.3ex\hbox{$\scriptscriptstyle\langle$}}1%
+    {\\<Open>}{\raise.3ex\hbox{$\scriptscriptstyle\langle$}}1%
+    {\\<close>}{\raise.3ex\hbox{$\scriptscriptstyle\rangle$}}1%
+    {\\<Close>}{\raise.3ex\hbox{$\scriptscriptstyle\rangle$}}1%
+    {\\<forall>}{\ensuremath{\forall}}1%
+    {\\<exists>}{\ensuremath{\exists}}1%
+    {\\<in>}{\ensuremath{\in}}1%
+    {\\<delta>}{\ensuremath{\delta}}1%
+    {\\<real>}{\ensuremath{\mathbb{R}}}1%
+    {\\<noteq>}{\ensuremath{\neq}}1%
+    {\\<exists>}{\ensuremath{\exists}}1%
+    {\\<Forall>}{\ensuremath{\bigwedge\,}}1%
+    {<string>}{<\ensuremath{\text{\textit{string}}}>}9%
+    {\\<lbrakk>}{\ensuremath{\mathopen{\lbrack\mkern-3mu\lbrack}}}1%
+    {\\<lbrace>}{\ensuremath{\mathopen{\lbrace\mkern-4.5mu\mid}}}1%
+    {\\<rbrakk>}{\ensuremath{\mathclose{\rbrack\mkern-3mu\rbrack}}}1%
+    {\\<rbrace>}{\ensuremath{\mathclose{\mid\mkern-4.5mu\rbrace}}}1%
+  }%
+  % % Defining "tags" (text-antiquotations) based on 1-keywords
+   ,tag=**[s]{@\{}{\}}%
+   ,tagstyle=\color{CornflowerBlue}%
+   ,markfirstintag=true%
+   ,keywordstyle=\bfseries%
+   ,keywords={}
+   % Defining 2-keywords
+   ,keywordstyle=[2]{\color{Blue!60}\bfseries}%
+   ,alsoletter={*,-}
+   ,morekeywords=[2]{case, then, show, theory, begin, end, ML,section,subsection,paragraph,chapter,text}%
+   %,moredelim=[s][\textit]{<}{>}
+   % Defining 3-keywords
+   ,keywordstyle=[3]{\color{OliveGreen!60}\bfseries}%
+   ,morekeywords=[3]{doc_class,declare_reference,update_instance*,
+     open_monitor*,  close_monitor*, declare_reference*,section*,text*,title*,abstract*}%
+   % Defining 4-keywords
+   ,keywordstyle=[4]{\color{black!60}\bfseries}%
+   ,morekeywords=[4]{where, imports, keywords}%
+   % Defining 5-keywords
+   ,keywordstyle=[5]{\color{BrickRed!70}\bfseries}%
+   ,morekeywords=[5]{datatype, by, fun, Definition*, definition,
+     type_synonym, typedecl, 
+     consts, assumes, and, shows, proof, next, qed, lemma, theorem}%
+   % Defining 6-keywords
+   ,keywordstyle=[6]{\itshape}%
+   ,morekeywords=[6]{meta-args, ref, expr, class_id}%
+  % 
+}%
+%% 
+\IfFileExists{lh-listings-isar.sty}{\usepackage{lh-listings-isar}}
+
+\providecolor{isar}{named}{blue}
+\def\inlineisar{\lstinline[style=isar,breaklines=true,mathescape,breakatwhitespace=true]}
+\newtcblisting{isar}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!isar
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{isar!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=isar!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {Isabelle (Isar)};}
+     ,listing options={
+          style=isar
+          ,basicstyle=\small\ttfamily
+         ,mathescape
+         ,#1
+      }
+  }%
+%% </isar>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <out>
+\providecolor{out}{named}{green}
+\newtcblisting{out}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!out
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{out!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=out!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {Document};}
+        ,listing options={
+           breakatwhitespace=true
+          ,columns=flexible%
+          ,basicstyle=\small\rmfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </out>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <sml>
+\lstloadlanguages{ML}
+\providecolor{sml}{named}{red}
+\lstdefinestyle{sml}{
+   basicstyle=\ttfamily,%
+   commentstyle=\itshape,%
+   keywordstyle=\bfseries\color{CornflowerBlue},%
+   ndkeywordstyle=\color{green},%
+   language=ML
+%  ,literate={%
+%     {<@>}{@}1%
+%    }
+   ,keywordstyle=[6]{\itshape}%
+   ,morekeywords=[6]{args_type}%
+   ,tag=**[s]{@\{}{\}}%
+   ,tagstyle=\color{CornflowerBlue}%
+   ,markfirstintag=true%
+ }%
+\IfFileExists{lh-listings-sml.sty}{\usepackage{lh-listings-sml}}
+\def\inlinesml{\lstinline[style=sml,breaklines=true,mathescape,breakatwhitespace=true]}
+\newtcblisting{sml}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!sml
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{sml!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=sml!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {SML};}
+        ,listing options={
+          style=sml
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </sml>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <latex>
+\lstloadlanguages{TeX}
+\providecolor{ltx}{named}{yellow}
+\lstdefinestyle{lltx}{language=[AlLaTeX]TeX,
+  ,basicstyle=\ttfamily%
+  ,showspaces=false%
+  ,showlines=false%
+  ,morekeywords={newisadof}
+ %  ,keywordstyle=\bfseries%
+   % Defining 2-keywords
+   ,keywordstyle=[1]{\color{BrickRed!60}\bfseries}%
+   % Defining 3-keywords
+   ,keywordstyle=[2]{\color{OliveGreen!60}\bfseries}%
+   % Defining 4-keywords
+   ,keywordstyle=[3]{\color{black!60}\bfseries}%
+   % Defining 5-keywords
+   ,keywordstyle=[4]{\color{Blue!70}\bfseries}%
+   % Defining 6-keywords
+   ,keywordstyle=[5]{\itshape}%
+  % 
+}
+\IfFileExists{lh-listings-ltx.sty}{\usepackage{lh-listings-lltx}}
+
+\lstdefinestyle{ltx}{style=lltx,
+                basicstyle=\ttfamily\small}%
+\def\inlineltx{\lstinline[style=ltx, breaklines=true,columns=fullflexible]}
+% see
+% https://tex.stackexchange.com/questions/247643/problem-with-tcblisting-first-listed-latex-command-is-missing
+% \NewTCBListing{ltx}{ !O{} }{%
+\NewTCBListing{ltx}{ O{} }{%
+     listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!ltx
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{ltx!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=ltx!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {\LaTeX};}
+      ,listing options={
+             style=lltx,
+            ,columns=flexible%
+            ,basicstyle=\small\ttfamily
+            ,#1
+       }
+  }%
+%% </latex>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <bash>
+\providecolor{bash}{named}{black}
+\lstloadlanguages{bash}
+\lstdefinestyle{bash}{%
+   language=bash
+  ,escapechar=ë
+  ,basicstyle=\ttfamily%
+  ,showspaces=false%
+  ,showlines=false%
+  ,columns=flexible%
+ %  ,keywordstyle=\bfseries%
+   % Defining 2-keywords
+   ,keywordstyle=[1]{\color{BrickRed!60}\bfseries}%
+   % Defining 3-keywords
+   ,keywordstyle=[2]{\color{OliveGreen!60}\bfseries}%
+   % Defining 4-keywords
+   ,keywordstyle=[3]{\color{black!60}\bfseries}%
+   % Defining 5-keywords
+   ,keywordstyle=[4]{\color{Blue!80}\bfseries}%
+   ,alsoletter={*,-,:,~,/}
+   ,morekeywords=[4]{}%
+   % Defining 6-keywords
+   ,keywordstyle=[5]{\itshape}%
+  % 
+}
+\IfFileExists{lh-listings-bash.sty}{\usepackage{lh-listings-bash}}
+\def\inlinebash{\lstinline[style=bash, breaklines=true,columns=fullflexible]}
+\newcommand\@isabsolutepath[3]{%
+  \StrLeft{#1}{1}[\firstchar]%
+  \IfStrEq{\firstchar}{/}{#2}{#3}%
+}
+
+\newcommand{\@homeprefix}[1]{%
+  \ifthenelse{\equal{#1}{}}{\textasciitilde}{\textasciitilde/}%
+}
+
+\newcommand{\prompt}[2][achim@logicalhacking]{%
+  \color{Blue!80}{\texttt{\bfseries%
+    #1:{\@isabsolutepath{#2}{#2}{\@homeprefix{#2}#2}}\$}}%
+}
+\newtcblisting{bash}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!bash
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{bash!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=bash!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {Bash};}
+     ,listing options={
+           style=bash
+           ,columns=flexible%
+           ,breaklines=true%
+           ,prebreak=\mbox{\space\textbackslash}%
+           ,basicstyle=\small\ttfamily%
+           ,#1
+      }
+  }%
+%% </bash>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <java>
+\lstloadlanguages{java}
+\providecolor{java}{named}{lhCyan}
+\lstdefinestyle{java}{
+   basicstyle=\ttfamily,%
+   commentstyle=\itshape,%
+   keywordstyle=\bfseries\color{CornflowerBlue},%
+   ndkeywordstyle=\color{green},%
+   language=java
+   ,keywordstyle=[6]{\itshape}%
+   ,morekeywords=[6]{args_type}%
+   ,tag=**[s]{@\{}{\}}%
+   ,tagstyle=\color{CornflowerBlue}%
+   ,markfirstintag=true%
+}%
+\IfFileExists{lh-listings-java.sty}{\usepackage{lh-listings-java}}
+\def\inlinejava{\lstinline[style=java,breaklines=true,mathescape,breakatwhitespace=true]}
+\newtcblisting{java}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!java
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{java!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=java!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {Java};}
+        ,listing options={
+          style=java
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </java>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <ruby>
+\lstloadlanguages{ruby}
+\providecolor{ruby}{named}{lhMagentaDark}
+\lstdefinestyle{ruby}{
+   basicstyle=\ttfamily,%
+   commentstyle=\itshape,%
+   keywordstyle=\bfseries\color{CornflowerBlue},%
+   ndkeywordstyle=\color{green},%
+   language=ruby
+   ,keywordstyle=[6]{\itshape}%
+   ,morekeywords=[6]{args_type}%
+   ,tag=**[s]{@\{}{\}}%
+   ,tagstyle=\color{CornflowerBlue}%
+   ,markfirstintag=true%
+}%
+\IfFileExists{lh-listings-ruby.sty}{\usepackage{lh-listings-ruby}}
+\def\inlineruby{\lstinline[style=ruby,breaklines=true,mathescape,breakatwhitespace=true]}
+\newtcblisting{ruby}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!ruby
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{ruby!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=ruby!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {Ruby/Rails};}
+        ,listing options={
+          style=ruby
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </ruby>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <python>
+\lstloadlanguages{python}
+\providecolor{python}{named}{lhMagentaDark}
+\lstdefinestyle{python}{
+   basicstyle=\ttfamily,%
+   commentstyle=\itshape,%
+   keywordstyle=\bfseries\color{CornflowerBlue},%
+   ndkeywordstyle=\color{green},%
+   language=python
+   ,keywordstyle=[6]{\itshape}%
+   ,morekeywords=[6]{args_type}%
+   ,tag=**[s]{@\{}{\}}%
+   ,tagstyle=\color{CornflowerBlue}%
+   ,markfirstintag=true%
+}%
+\IfFileExists{lh-listings-python.sty}{\usepackage{lh-listings-python}}
+\def\inlinepython{\lstinline[style=python,breaklines=true,mathescape,breakatwhitespace=true]}
+\newtcblisting{python}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!python
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{python!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=python!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {Python};}
+        ,listing options={
+          style=python
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </python>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <config>
+\providecolor{config}{named}{gray}
+\newtcblisting{config}[2][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!config
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{config!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=config!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {#2};}
+        ,listing options={
+           breakatwhitespace=true
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </config>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <AnB>
+\providecolor{AnB}{named}{gray}
+\lstdefinelanguage{AnB}{
+  keywords={Protocol, Types, Agent, Number, Function, Knowledge, Actions,
+  Goals, Symmetric_key},
+  keywordstyle=\color{lhOrange},
+  ndkeywords={inv},
+  ndkeywordstyle=\color{lhCyan},
+  %identifierstyle=\color{black},
+  sensitive=false,
+  escapeinside={\%*}{*)},
+  comment=[l]{\#},
+  %morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  %stringstyle=\color{red}\ttfamily,
+  %morestring=[b]',
+  %morestring=[b]"
+}
+\lstdefinestyle{AnB}{language=AnB,
+  basicstyle=\small\ttfamily,
+}
+\IfFileExists{lh-listings-AnB.sty}{\usepackage{lh-listings-AnB}}
+\def\inlineAnB{\lstinline[style=AnB, columns=fullflexible]}
+\newtcblisting{AnB}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!AnB
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{AnB!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=AnB!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {A\&B};}
+     ,listing options={
+          style=AnB      
+          ,breakatwhitespace=true
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </AnB>
+
+%% <xml>
+\providecolor{xml}{named}{gray}
+\lstdefinestyle{xml}{language=XML,
+  basicstyle=\ttfamily,
+  commentstyle=\itshape,
+  keywordstyle=\color{blue},
+  ndkeywordstyle=\color{blue},
+}
+\lstdefinestyle{displayxml}{style=xml,
+                floatplacement={tbp}, captionpos=b, framexleftmargin=0pt,
+                basicstyle=\ttfamily\scriptsize,
+                backgroundcolor=\color{black!2}, frame=lines,
+                % numbers=left, numberstyle=\tiny, stepnumber=5
+              }
+
+\IfFileExists{lh-listings-xml.sty}{\usepackage{lh-listings-xml}}
+\def\inlinexml{\lstinline[style=xml, columns=fullflexible]}
+\newtcblisting{xml}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!xml
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{xml!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=xml!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {XML};}
+        ,listing options={
+          style=xml
+          ,breakatwhitespace=true
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+
+
+%% </xml>
+
+%% <html>
+\providecolor{html}{named}{gray}
+\lstdefinestyle{html}{language=XML,
+  basicstyle=\ttfamily,
+  commentstyle=\itshape,
+  keywordstyle=\color{blue},
+  ndkeywordstyle=\color{blue},
+}
+\lstdefinestyle{displayhtml}{style=html,
+                floatplacement={tbp}, captionpos=b, framexleftmargin=0pt,
+                basicstyle=\ttfamily\scriptsize,
+                backgroundcolor=\color{black!2}, frame=lines,
+                % numbers=left, numberstyle=\tiny, stepnumber=5
+              }
+
+\IfFileExists{lh-listings-html.sty}{\usepackage{lh-listings-html}}
+\def\inlinehtml{\lstinline[style=html, columns=fullflexible]}
+\newtcblisting{html}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!html
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{html!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=html!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {HTML};}
+        ,listing options={
+          style=html
+          ,breakatwhitespace=true
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+
+
+%% </html>
+
+%% <js>
+\providecolor{js}{named}{gray}
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{purple}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
+\lstdefinestyle{js}{language=JavaScript,
+  basicstyle=\ttfamily,
+  commentstyle=\itshape,
+  keywordstyle=\color{blue},
+  ndkeywordstyle=\color{blue},
+  moredelim=**[is][{\btHL[fill=green!30,draw=red,dashed,thin]}]{@}{@},
+}
+
+\lstdefinestyle{displayjs}{style=js,
+                floatplacement={tbp}, captionpos=b, framexleftmargin=0pt,
+                basicstyle=\ttfamily\scriptsize,
+                backgroundcolor=\color{black!2}, frame=lines,
+                % numbers=left, numberstyle=\tiny, stepnumber=5
+              }
+\IfFileExists{lh-listings-js.sty}{\usepackage{lh-listings-js}}
+
+\def\inlinejs{\lstinline[style=js, columns=fullflexible]}
+\newtcblisting{js}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!js
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{js!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=js!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {JavaScript};}
+        ,listing options={
+          style=js
+          ,breakatwhitespace=true
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          %,mathescape
+          ,#1
+      }
+  }%
+%% </js>
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <SQL>
+\lstloadlanguages{SQL}
+\providecolor{SQL}{named}{lhCyan}
+\lstdefinestyle{SQL}{
+   basicstyle=\ttfamily,%
+   commentstyle=\itshape,%
+   keywordstyle=\bfseries\color{CornflowerBlue},%
+   ndkeywordstyle=\color{green},%
+   language=SQL
+   ,keywordstyle=[6]{\itshape}%
+   ,morekeywords=[6]{args_type}%
+   ,tag=**[s]{@\{}{\}}%
+   ,tagstyle=\color{CornflowerBlue}%
+   ,markfirstintag=true%
+}%
+\IfFileExists{lh-listings-SQL.sty}{\usepackage{lh-listings-SQL}}
+\def\inlinesql{\lstinline[style=SQL,breaklines=true,mathescape,breakatwhitespace=true]}
+\newtcblisting{sql}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!SQL
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{SQL!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=SQL!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {SQL};}
+        ,listing options={
+          style=SQL
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </SQL>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <OCL>
+\lstloadlanguages{OCL}
+\providecolor{OCL}{named}{lhCyan}
+\lstdefinestyle{OCL}{
+   basicstyle=\ttfamily,%
+   commentstyle=\itshape,%
+   keywordstyle=\bfseries\color{CornflowerBlue},%
+   ndkeywordstyle=\color{green},%
+   language=OCL%
+   ,keywordstyle=[7]{\color{Blue!60}\bfseries}%
+   ,morekeywords=[7]{Class,Association,Context,Pre,Post}%
+   ,keywordstyle=[6]{\itshape}%
+   ,morekeywords=[6]{args_type}%
+   ,tag=**[s]{@\{}{\}}%
+   ,tagstyle=\color{CornflowerBlue}%
+   ,markfirstintag=true%
+ }%
+\IfFileExists{lh-listings-OCL.sty}{\usepackage{lh-listings-OCL}}
+\def\inlineocl{\lstinline[style=OCL,breaklines=true,mathescape,breakatwhitespace=true]}
+\newtcblisting{ocl}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!OCL
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{OCL!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=OCL!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {OCL};}
+        ,listing options={
+          style=OCL
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </OCL>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%% <trac>
+\providecolor{trac}{named}{lhCyan}
+\lstdefinestyle{trac}{
+   basicstyle=\ttfamily,%
+   commentstyle=\itshape,%
+   keywordstyle=\bfseries\color{CornflowerBlue},%
+   ndkeywordstyle=\color{green},%
+   ,keywordstyle=[7]{\color{Blue!60}\bfseries}%
+   ,morekeywords=[7]{Class,Association,Context,Pre,Post}%
+   ,keywordstyle=[6]{\itshape}%
+   ,morekeywords=[6]{args_type}%
+   ,tag=**[s]{@\{}{\}}%
+   ,tagstyle=\color{CornflowerBlue}%
+   ,markfirstintag=true%
+ }%
+\IfFileExists{lh-listings-trac.sty}{\usepackage{lh-listings-trac}}
+\def\inlinetrac{\lstinline[style=trac,breaklines=true,mathescape,breakatwhitespace=true]}
+\newtcblisting{trac}[1][]{%
+      listing only%
+     ,boxrule=0pt
+     ,boxsep=0pt
+     ,colback=white!90!trac
+     ,enhanced jigsaw
+     ,borderline west={2pt}{0pt}{trac!60!black}
+     ,sharp corners
+     % ,before skip=10pt
+     % ,after skip=10pt
+     ,enlarge top by=0mm
+     ,enhanced
+     ,overlay={\node[draw,fill=trac!60!black,xshift=0pt,anchor=north
+       east,font=\bfseries\footnotesize\color{white}]
+                at (frame.north east) {$\isacartoucheopen \ldots \isacartoucheopen$};}
+        ,listing options={
+          style=trac
+          ,columns=flexible%
+          ,basicstyle=\small\ttfamily
+          ,mathescape
+          ,#1
+      }
+  }%
+%% </trac>
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 

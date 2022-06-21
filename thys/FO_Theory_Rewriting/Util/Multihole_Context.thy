@@ -322,7 +322,7 @@ lemma inf_mctxt_assoc [ac_simps]:
   fixes C :: "('f, 'v) mctxt"
   shows "C \<sqinter> D \<sqinter> E = C \<sqinter> (D \<sqinter> E)"
   apply (induct C D arbitrary: E rule: inf_mctxt.induct)
-  apply (auto simp: )
+  apply auto
   apply (case_tac E, auto)+
   apply (fastforce simp: in_set_conv_nth intro!: nth_equalityI)
   apply (case_tac E, auto)+

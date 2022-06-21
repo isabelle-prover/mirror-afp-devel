@@ -239,7 +239,7 @@ proof -
     by (rule DERIV_continuous_on[OF deriv]) (use ab in auto)
   have I': "(f' has_integral (f b - f a)) {a..b}"
     using ab deriv by (intro fundamental_theorem_of_calculus)
-                      (auto simp: has_field_derivative_iff_has_vector_derivative [symmetric])
+                      (auto simp: has_real_derivative_iff_has_vector_derivative [symmetric])
 
   define I where "I = integral {a..b} (\<lambda>t. ?A t * of_real (f' t))"
   define C where "C = real (totient n)"
@@ -876,7 +876,7 @@ proof (cases "Re u > 1")
       then interpret dcharacter n G \<chi> by (simp_all add: dcharacters_def G_def)
       from p have "real p > real 1" by (subst of_nat_less_iff) (auto simp: prime_gt_Suc_0_nat)
       hence "real p powr - Re s < real p powr 0"
-        using p that by (intro powr_less_mono) (auto simp: )
+        using p that by (intro powr_less_mono) auto
       hence "0 < norm (1 :: complex) - norm (\<chi> p * p powr (-s + \<i>*a))"
         using p by (simp add: norm_mult norm norm_powr_real_powr)
       also have "\<dots> \<le> norm (1 - \<chi> p * p powr (-s + \<i>*a))"
@@ -1049,7 +1049,7 @@ next
       using xy assms 
       by (intro fundamental_theorem_of_calculus) 
          (auto intro!: derivative_eq_intros 
-               simp: has_field_derivative_iff_has_vector_derivative [symmetric] \<sigma>_def)
+               simp: has_real_derivative_iff_has_vector_derivative [symmetric] \<sigma>_def)
     hence "integral {x..y} (\<lambda>t. t powr (-\<sigma>-1)) = y powr -\<sigma> / (-\<sigma>) - x powr -\<sigma> / (-\<sigma>)"
       by (simp add: has_integral_iff)
     also from assms have "\<dots> \<le> x powr -\<sigma> / \<sigma>" by (simp add: \<sigma>_def)

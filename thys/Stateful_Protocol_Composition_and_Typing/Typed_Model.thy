@@ -1,39 +1,6 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2015-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Typed_Model.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section \<open>The Typed Model\<close>
@@ -49,7 +16,7 @@ abbreviation (input) TAtom::"'v \<Rightarrow> ('f,'v) term_type" where
   "TAtom a \<equiv> Var a"
 
 abbreviation (input) TComp::"['f, ('f,'v) term_type list] \<Rightarrow> ('f,'v) term_type" where
-  "TComp f T \<equiv> Fun f T"
+  "TComp f ts \<equiv> Fun f ts"
 
 
 text \<open>
@@ -61,13 +28,12 @@ locale typed_model = intruder_model arity public Ana
     and Ana::"('fun,'var) term \<Rightarrow> (('fun,'var) term list \<times> ('fun,'var) term list)"
   +
   fixes \<Gamma>::"('fun,'var) term \<Rightarrow> ('fun,'atom::finite) term_type"
-  assumes const_type: "\<And>c. arity c = 0 \<Longrightarrow> \<exists>a. \<forall>T. \<Gamma> (Fun c T) = TAtom a"
-    and fun_type: "\<And>f T. arity f > 0 \<Longrightarrow> \<Gamma> (Fun f T) = TComp f (map \<Gamma> T)"
-    and infinite_typed_consts: "\<And>a. infinite {c. \<Gamma> (Fun c []) = TAtom a \<and> public c}"
-    and \<Gamma>_wf: "\<And>t f T. TComp f T \<sqsubseteq> \<Gamma> t \<Longrightarrow> arity f > 0"
+  assumes const_type: "\<And>c. arity c = 0 \<Longrightarrow> \<exists>a. \<forall>ts. \<Gamma> (Fun c ts) = TAtom a"
+    and fun_type: "\<And>f ts. arity f > 0 \<Longrightarrow> \<Gamma> (Fun f ts) = TComp f (map \<Gamma> ts)"
+    and \<Gamma>_wf: "\<And>x f ts. TComp f ts \<sqsubseteq> \<Gamma> (Var x) \<Longrightarrow> arity f > 0"
               "\<And>x. wf\<^sub>t\<^sub>r\<^sub>m (\<Gamma> (Var x))"
-    and no_private_funs[simp]: "\<And>f. arity f > 0 \<Longrightarrow> public f"
 begin
+
 
 subsection \<open>Definitions\<close>
 text \<open>The set of atomic types\<close>
@@ -131,6 +97,13 @@ proof
   qed simp
 qed
 
+lemma \<Gamma>_wf'': "TComp f T \<sqsubseteq> \<Gamma> t \<Longrightarrow> arity f > 0"
+proof (induction t)
+  case (Var x) thus ?case using \<Gamma>_wf(1)[of f T x] by blast
+next
+  case (Fun g S) thus ?case
+    using fun_type[of g S] const_type[of g] by (cases "arity g") auto
+qed
 
 lemma \<Gamma>_wf': "wf\<^sub>t\<^sub>r\<^sub>m t \<Longrightarrow> wf\<^sub>t\<^sub>r\<^sub>m (\<Gamma> t)"
 proof (induction t)
@@ -142,8 +115,8 @@ proof (induction t)
   ultimately show ?case by auto 
 qed (metis \<Gamma>_wf(2))
 
-lemma fun_type_inv: assumes "\<Gamma> t = TComp f T" shows "arity f > 0" "public f"
-using \<Gamma>_wf(1)[of f T t] assms by simp_all
+lemma fun_type_inv: assumes "\<Gamma> t = TComp f T" shows "arity f > 0"
+using \<Gamma>_wf''(1)[of f T t] assms by simp_all
 
 lemma fun_type_inv_wf: assumes "\<Gamma> t = TComp f T" "wf\<^sub>t\<^sub>r\<^sub>m t" shows "arity f = length T"
 using \<Gamma>_wf'[OF assms(2)] assms(1) unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by auto
@@ -157,152 +130,11 @@ by (metis assms const_type_inv length_0_conv subtermeqI' wf\<^sub>t\<^sub>r\<^su
 lemma const_type': "\<forall>c \<in> \<C>. \<exists>a \<in> \<TT>\<^sub>a. \<forall>X. \<Gamma> (Fun c X) = TAtom a" using const_type by simp
 lemma fun_type': "\<forall>f \<in> \<Sigma>\<^sub>f. \<forall>X. \<Gamma> (Fun f X) = TComp f (map \<Gamma> X)" using fun_type by simp
 
-lemma infinite_public_consts[simp]: "infinite {c. public c \<and> arity c = 0}"
-proof -
-  fix a::'atom
-  define A where "A \<equiv> {c. \<Gamma> (Fun c []) = TAtom a \<and> public c}"
-  define B where "B \<equiv> {c. public c \<and> arity c = 0}"
-
-  have "arity c = 0" when c: "c \<in> A" for c
-    using c const_type_inv unfolding A_def by blast
-  hence "A \<subseteq> B" unfolding A_def B_def by blast
-  hence "infinite B"
-    using infinite_typed_consts[of a, unfolded A_def[symmetric]]
-    by (metis infinite_super)
-  thus ?thesis unfolding B_def by blast
-qed
-
-lemma infinite_fun_syms[simp]:
-  "infinite {c. public c \<and> arity c > 0} \<Longrightarrow> infinite \<Sigma>\<^sub>f"
-  "infinite \<C>" "infinite \<C>\<^sub>p\<^sub>u\<^sub>b" "infinite (UNIV::'fun set)"
-by (metis \<Sigma>\<^sub>f_unfold finite_Collect_conjI,
-    metis infinite_public_consts finite_Collect_conjI,
-    use infinite_public_consts \<C>pub_unfold in \<open>force simp add: Collect_conj_eq\<close>,
-    metis UNIV_I finite_subset subsetI infinite_public_consts(1))
-
-lemma id_univ_proper_subset[simp]: "\<Sigma>\<^sub>f \<subset> UNIV" "(\<exists>f. arity f > 0) \<Longrightarrow> \<C> \<subset> UNIV"
-by (metis finite.emptyI inf_top.right_neutral top.not_eq_extremum disjoint_fun_syms
-          infinite_fun_syms(2) inf_commute)
-   (metis top.not_eq_extremum UNIV_I const_arity_eq_zero less_irrefl)
-
-lemma exists_fun_notin_funs_term: "\<exists>f::'fun. f \<notin> funs_term t"
-by (metis UNIV_eq_I finite_fun_symbols infinite_fun_syms(4))
-
-lemma exists_fun_notin_funs_terms:
-  assumes "finite M" shows "\<exists>f::'fun. f \<notin> \<Union>(funs_term ` M)"
-by (metis assms finite_fun_symbols infinite_fun_syms(4) ex_new_if_finite finite_UN)
-
-lemma exists_notin_funs\<^sub>s\<^sub>t: "\<exists>f. f \<notin> funs\<^sub>s\<^sub>t (S::('fun,'var) strand)"
-by (metis UNIV_eq_I finite_funs\<^sub>s\<^sub>t infinite_fun_syms(4))
-
-lemma infinite_typed_consts': "infinite {c. \<Gamma> (Fun c []) = TAtom a \<and> public c \<and> arity c = 0}"
-proof -
-  { fix c assume "\<Gamma> (Fun c []) = TAtom a" "public c"
-    hence "arity c = 0" using const_type[of c] fun_type[of c "[]"] by auto
-  } hence "{c. \<Gamma> (Fun c []) = TAtom a \<and> public c \<and> arity c = 0} =
-           {c. \<Gamma> (Fun c []) = TAtom a \<and> public c}"
-    by auto
-  thus "infinite {c. \<Gamma> (Fun c []) = TAtom a \<and> public c \<and> arity c = 0}"
-    using infinite_typed_consts[of a] by metis
-qed
-
-lemma atypes_inhabited: "\<exists>c. \<Gamma> (Fun c []) = TAtom a \<and> wf\<^sub>t\<^sub>r\<^sub>m (Fun c []) \<and> public c \<and> arity c = 0"
-proof -
-  obtain c where "\<Gamma> (Fun c []) = TAtom a" "public c" "arity c = 0"
-    using infinite_typed_consts'(1)[of a] not_finite_existsD by blast
-  thus ?thesis using const_type_inv[OF \<open>\<Gamma> (Fun c []) = TAtom a\<close>] unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by auto
-qed
-
-lemma atype_ground_term_ex: "\<exists>t. fv t = {} \<and> \<Gamma> t = TAtom a \<and> wf\<^sub>t\<^sub>r\<^sub>m t"
-using atypes_inhabited[of a] by force
-
 lemma fun_type_id_eq: "\<Gamma> (Fun f X) = TComp g Y \<Longrightarrow> f = g"
 by (metis const_type fun_type neq0_conv "term.inject"(2) "term.simps"(4))
 
 lemma fun_type_length_eq: "\<Gamma> (Fun f X) = TComp g Y \<Longrightarrow> length X = length Y"
 by (metis fun_type fun_type_id_eq fun_type_inv(1) length_map term.inject(2))
-
-lemma type_ground_inhabited: "\<exists>t'. fv t' = {} \<and> \<Gamma> t = \<Gamma> t'"
-proof -
-  { fix \<tau>::"('fun, 'atom) term_type" assume "\<And>f T. Fun f T \<sqsubseteq> \<tau> \<Longrightarrow> 0 < arity f"
-    hence "\<exists>t'. fv t' = {} \<and> \<tau> = \<Gamma> t'"
-    proof (induction \<tau>)
-      case (Fun f T)
-      hence "arity f > 0" by auto
-    
-      from Fun.IH Fun.prems(1) have "\<exists>Y. map \<Gamma> Y = T \<and> (\<forall>x \<in> set Y. fv x = {})"
-      proof (induction T)
-        case (Cons x X)
-        hence "\<And>g Y. Fun g Y \<sqsubseteq> Fun f X \<Longrightarrow> 0 < arity g" by auto
-        hence "\<exists>Y. map \<Gamma> Y = X \<and> (\<forall>x\<in>set Y. fv x = {})" using Cons by auto
-        moreover have "\<exists>t'. fv t' = {} \<and> x = \<Gamma> t'" using Cons by auto
-        ultimately obtain y Y where
-            "fv y = {}" "\<Gamma> y = x" "map \<Gamma> Y = X" "\<forall>x\<in>set Y. fv x = {}" 
-          using Cons by moura
-        hence "map \<Gamma> (y#Y) = x#X \<and> (\<forall>x\<in>set (y#Y). fv x = {})" by auto
-        thus ?case by meson 
-      qed simp
-      then obtain Y where "map \<Gamma> Y = T" "\<forall>x \<in> set Y. fv x = {}" by metis
-      hence "fv (Fun f Y) = {}" "\<Gamma> (Fun f Y) = TComp f T" using fun_type[OF \<open>arity f > 0\<close>] by auto
-      thus ?case by (metis exI[of "\<lambda>t. fv t = {} \<and> \<Gamma> t = TComp f T" "Fun f Y"])
-    qed (metis atype_ground_term_ex)
-  }
-  thus ?thesis by (metis \<Gamma>_wf(1))
-qed
-
-lemma type_wfttype_inhabited:
-  assumes "\<And>f T. Fun f T \<sqsubseteq> \<tau> \<Longrightarrow> 0 < arity f" "wf\<^sub>t\<^sub>r\<^sub>m \<tau>"
-  shows "\<exists>t. \<Gamma> t = \<tau> \<and> wf\<^sub>t\<^sub>r\<^sub>m t"
-using assms
-proof (induction \<tau>)
-  case (Fun f Y)
-  have IH: "\<exists>t. \<Gamma> t = y \<and> wf\<^sub>t\<^sub>r\<^sub>m t" when y: "y \<in> set Y " for y
-  proof -
-    have "wf\<^sub>t\<^sub>r\<^sub>m y"
-      using Fun y unfolding wf\<^sub>t\<^sub>r\<^sub>m_def
-      by (metis Fun_param_is_subterm term.le_less_trans) 
-    moreover have "Fun g Z \<sqsubseteq> y \<Longrightarrow> 0 < arity g" for g Z
-      using Fun y by auto
-    ultimately show ?thesis using Fun.IH[OF y] by auto
-  qed
-
-  from Fun have "arity f = length Y" "arity f > 0" unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by force+
-  moreover from IH have "\<exists>X. map \<Gamma> X = Y \<and> (\<forall>x \<in> set X. wf\<^sub>t\<^sub>r\<^sub>m x)"
-    by (induct Y, simp_all, metis list.simps(9) set_ConsD)
-  ultimately show ?case by (metis fun_type length_map wf_trmI)
-qed (use atypes_inhabited wf\<^sub>t\<^sub>r\<^sub>m_def in blast)
-
-lemma type_pgwt_inhabited: "wf\<^sub>t\<^sub>r\<^sub>m t \<Longrightarrow> \<exists>t'. \<Gamma> t = \<Gamma> t' \<and> public_ground_wf_term t'"
-proof -
-  assume "wf\<^sub>t\<^sub>r\<^sub>m t"
-  { fix \<tau> assume "\<Gamma> t = \<tau>"
-    hence "\<exists>t'. \<Gamma> t = \<Gamma> t' \<and> public_ground_wf_term t'" using \<open>wf\<^sub>t\<^sub>r\<^sub>m t\<close>
-    proof (induction \<tau> arbitrary: t)
-      case (Var a t)
-      then obtain c where "\<Gamma> t = \<Gamma> (Fun c [])" "arity c = 0" "public c"
-        using const_type_inv[of _ "[]" a] infinite_typed_consts(1)[of a]  not_finite_existsD
-        by force
-      thus ?case using PGWT[OF \<open>public c\<close>, of "[]"] by auto
-    next
-      case (Fun f Y t)
-      have *: "arity f > 0" "public f" "arity f = length Y"
-        using fun_type_inv[OF \<open>\<Gamma> t = TComp f Y\<close>] fun_type_inv_wf[OF \<open>\<Gamma> t = TComp f Y\<close> \<open>wf\<^sub>t\<^sub>r\<^sub>m t\<close>]
-        by auto
-      have "\<And>y. y \<in> set Y \<Longrightarrow> \<exists>t'. y = \<Gamma> t' \<and> public_ground_wf_term t'"
-        using Fun.prems(1) Fun.IH \<Gamma>_wf(1)[of _ _ t] \<Gamma>_wf'[OF \<open>wf\<^sub>t\<^sub>r\<^sub>m t\<close>] type_wfttype_inhabited
-        by (metis Fun_param_is_subterm term.order_trans wf_trm_subtermeq) 
-      hence "\<exists>X. map \<Gamma> X = Y \<and> (\<forall>x \<in> set X. public_ground_wf_term x)"
-        by (induct Y, simp_all, metis list.simps(9) set_ConsD)
-      then obtain X where X: "map \<Gamma> X = Y" "\<And>x. x \<in> set X \<Longrightarrow> public_ground_wf_term x" by moura
-      hence "arity f = length X" using *(3) by auto
-      have "\<Gamma> t = \<Gamma> (Fun f X)" "public_ground_wf_term (Fun f X)"
-        using fun_type[OF *(1), of X] Fun.prems(1) X(1) apply simp
-        using PGWT[OF *(2) \<open>arity f = length X\<close> X(2)] by metis
-      thus ?case by metis
-    qed
-  }
-  thus ?thesis using \<open>wf\<^sub>t\<^sub>r\<^sub>m t\<close> by auto
-qed
 
 lemma pgwt_type_map: 
   assumes "public_ground_wf_term t"
@@ -765,14 +597,14 @@ qed
 lemma MP_subset_SMP: "\<Union>(trms\<^sub>s\<^sub>t\<^sub>p ` set S) \<subseteq> SMP (trms\<^sub>s\<^sub>t S)" "trms\<^sub>s\<^sub>t S \<subseteq> SMP (trms\<^sub>s\<^sub>t S)" "M \<subseteq> SMP M"
 by auto
 
-lemma SMP_fun_map_snd_subset: "SMP (trms\<^sub>s\<^sub>t (map Send X)) \<subseteq> SMP (trms\<^sub>s\<^sub>t [Send (Fun f X)])"
+lemma SMP_fun_map_snd_subset: "SMP (trms\<^sub>s\<^sub>t (map Send1 X)) \<subseteq> SMP (trms\<^sub>s\<^sub>t [Send1 (Fun f X)])"
 proof
-  fix t assume "t \<in> SMP (trms\<^sub>s\<^sub>t (map Send X))" thus "t \<in> SMP (trms\<^sub>s\<^sub>t [Send (Fun f X)])"
+  fix t assume "t \<in> SMP (trms\<^sub>s\<^sub>t (map Send1 X))" thus "t \<in> SMP (trms\<^sub>s\<^sub>t [Send1 (Fun f X)])"
   proof (induction t rule: SMP.induct)
     case (MP t)
     hence "t \<in> set X" by auto
     hence "t \<sqsubset> Fun f X" by (metis subtermI')
-    thus ?case using SMP.Subterm[of "Fun f X" "trms\<^sub>s\<^sub>t [Send (Fun f X)]" t] using SMP.MP by auto
+    thus ?case using SMP.Subterm[of "Fun f X" "trms\<^sub>s\<^sub>t [Send1 (Fun f X)]" t] using SMP.MP by auto
   qed blast+
 qed
 
@@ -1246,21 +1078,22 @@ definition remove_superfluous_terms where
 
 subsubsection \<open>Definitions: Checking Type-Flaw Resistance\<close>
 definition is_TComp_var_instance_closed where
-  "is_TComp_var_instance_closed \<Gamma> M \<equiv> \<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). is_Fun (\<Gamma> (Var x)) \<longrightarrow>
-      list_ex (\<lambda>t. is_Fun t \<and> \<Gamma> t = \<Gamma> (Var x) \<and> list_all is_Var (args t) \<and> distinct (args t)) M"
+  "is_TComp_var_instance_closed \<Gamma> M \<equiv> \<forall>x \<in> fv\<^sub>s\<^sub>e\<^sub>t M. is_Fun (\<Gamma> (Var x)) \<longrightarrow>
+      (\<exists>t \<in> M. is_Fun t \<and> \<Gamma> t = \<Gamma> (Var x) \<and> list_all is_Var (args t) \<and> distinct (args t))"
 
 definition finite_SMP_representation where
   "finite_SMP_representation arity Ana \<Gamma> M \<equiv>
-    list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) M \<and>
-    has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set M)) (set M) \<and>
-    has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` set M)) (set M) \<and>
+    (M = {} \<or> card M > 0) \<and>
+    wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s' arity M \<and>
+    has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t M) M \<and>
+    has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` M)) M \<and>
     is_TComp_var_instance_closed \<Gamma> M"
 
 definition comp_tfr\<^sub>s\<^sub>e\<^sub>t where
   "comp_tfr\<^sub>s\<^sub>e\<^sub>t arity Ana \<Gamma> M \<equiv>
     finite_SMP_representation arity Ana \<Gamma> M \<and>
-    (let \<delta> = var_rename (max_var_set (fv\<^sub>s\<^sub>e\<^sub>t (set M)))
-     in \<forall>s \<in> set M. \<forall>t \<in> set M. is_Fun s \<and> is_Fun t \<and> \<Gamma> s \<noteq> \<Gamma> t \<longrightarrow> mgu s (t \<cdot> \<delta>) = None)"
+    (let \<delta> = var_rename (max_var_set (fv\<^sub>s\<^sub>e\<^sub>t M))
+     in \<forall>s \<in> M. \<forall>t \<in> M. is_Fun s \<and> is_Fun t \<and> \<Gamma> s \<noteq> \<Gamma> t \<longrightarrow> mgu s (t \<cdot> \<delta>) = None)"
 
 fun comp_tfr\<^sub>s\<^sub>t\<^sub>p where
   "comp_tfr\<^sub>s\<^sub>t\<^sub>p \<Gamma> (\<langle>_: t \<doteq> t'\<rangle>\<^sub>s\<^sub>t) = (mgu t t' \<noteq> None \<longrightarrow> \<Gamma> t = \<Gamma> t')"
@@ -1274,11 +1107,17 @@ definition comp_tfr\<^sub>s\<^sub>t where
   "comp_tfr\<^sub>s\<^sub>t arity Ana \<Gamma> M S \<equiv>
     list_all (comp_tfr\<^sub>s\<^sub>t\<^sub>p \<Gamma>) S \<and>
     list_all (wf\<^sub>t\<^sub>r\<^sub>m' arity) (trms_list\<^sub>s\<^sub>t S) \<and>
-    has_all_wt_instances_of \<Gamma> (trms\<^sub>s\<^sub>t S) (set M) \<and>
+    has_all_wt_instances_of \<Gamma> (trms\<^sub>s\<^sub>t S) M \<and>
     comp_tfr\<^sub>s\<^sub>e\<^sub>t arity Ana \<Gamma> M"
 
 
 subsubsection \<open>Small Lemmata\<close>
+lemma max_var_set_mono:
+  assumes "finite N"
+    and "M \<subseteq> N"
+  shows "max_var_set M \<le> max_var_set N"
+by (meson assms Max.subset_imp finite.insertI finite_imageI image_mono insert_mono insert_not_empty) 
+
 lemma less_Suc_max_var_set:
   assumes z: "z \<in> X"
     and X: "finite X"
@@ -1291,11 +1130,13 @@ qed
 
 lemma (in typed_model) finite_SMP_representationD:
   assumes "finite_SMP_representation arity Ana \<Gamma> M"
-  shows "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
-    and "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set M)) (set M)"
-    and "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` set M)) (set M)"
+  shows "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M"
+    and "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t M) M"
+    and "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` M)) M"
     and "is_TComp_var_instance_closed \<Gamma> M"
-using assms unfolding finite_SMP_representation_def list_all_iff wf\<^sub>t\<^sub>r\<^sub>m_code by blast+
+    and "finite M"
+using assms wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code[of M] unfolding finite_SMP_representation_def list_all_iff card_gt_0_iff
+by blast+
 
 lemma (in typed_model) is_wt_instance_of_condD:
   assumes t_instance_s: "is_wt_instance_of_cond \<Gamma> t s"
@@ -1467,30 +1308,30 @@ lemma Fun_range_case:
 by (auto split: "term.splits")
 
 lemma is_TComp_var_instance_closedD:
-  assumes x: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var x) = \<Gamma> (Var y)" "\<Gamma> (Var x) = TComp f T"
+  assumes x: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var x) = \<Gamma> (Var y)" "\<Gamma> (Var x) = TComp f T"
     and closed: "is_TComp_var_instance_closed \<Gamma> M"
-  shows "\<exists>g U. Fun g U \<in> set M \<and> \<Gamma> (Fun g U) = \<Gamma> (Var x) \<and> (\<forall>u \<in> set U. is_Var u) \<and> distinct U"
+  shows "\<exists>g U. Fun g U \<in> M \<and> \<Gamma> (Fun g U) = \<Gamma> (Var x) \<and> (\<forall>u \<in> set U. is_Var u) \<and> distinct U"
 using assms unfolding is_TComp_var_instance_closed_def list_all_iff list_ex_iff by fastforce
 
 lemma is_TComp_var_instance_closedD':
-  assumes "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var x) = \<Gamma> (Var y)" "TComp f T \<sqsubseteq> \<Gamma> (Var x)"
+  assumes "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var x) = \<Gamma> (Var y)" "TComp f T \<sqsubseteq> \<Gamma> (Var x)"
     and closed: "is_TComp_var_instance_closed \<Gamma> M"
-    and wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
-  shows "\<exists>g U. Fun g U \<in> set M \<and> \<Gamma> (Fun g U) = TComp f T \<and> (\<forall>u \<in> set U. is_Var u) \<and> distinct U"
+    and wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M"
+  shows "\<exists>g U. Fun g U \<in> M \<and> \<Gamma> (Fun g U) = TComp f T \<and> (\<forall>u \<in> set U. is_Var u) \<and> distinct U"
 using assms(1,2)
 proof (induction "\<Gamma> (Var x)" arbitrary: x)
   case (Fun g U)
   note IH = Fun.hyps(1)
-  have g: "arity g > 0" "public g" using Fun.hyps(2) fun_type_inv[of "Var x"] \<Gamma>_Var_fst by simp_all
+  have g: "arity g > 0" using Fun.hyps(2) fun_type_inv[of "Var x"] \<Gamma>_Var_fst by simp_all
   then obtain V where V:
-      "Fun g V \<in> set M" "\<Gamma> (Fun g V) = \<Gamma> (Var x)" "\<forall>v \<in> set V. \<exists>x. v = Var x"
+      "Fun g V \<in> M" "\<Gamma> (Fun g V) = \<Gamma> (Var x)" "\<forall>v \<in> set V. \<exists>x. v = Var x"
       "distinct V" "length U = length V"
     using is_TComp_var_instance_closedD[OF Fun.prems(1) Fun.hyps(2)[symmetric] closed(1)]
     by (metis Fun.hyps(2) fun_type_id_eq fun_type_length_eq is_VarE)
   hence U: "U = map \<Gamma> V" using fun_type[OF g(1), of V] Fun.hyps(2) by simp
   hence 1: "\<Gamma> v \<in> set U" when v: "v \<in> set V" for v using v by simp
 
-  have 2: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var z) = \<Gamma> (Var y)" when z: "Var z \<in> set V" for z
+  have 2: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var z) = \<Gamma> (Var y)" when z: "Var z \<in> set V" for z
     using V(1) fv_subset_subterms Fun_param_in_subterms[OF z] by fastforce
 
   show ?case
@@ -1537,12 +1378,12 @@ qed
 
 lemma TComp_var_instance_closed_has_Var:
   assumes closed: "is_TComp_var_instance_closed \<Gamma> M"
-    and wf_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
+    and wf_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M"
     and wf_\<delta>x: "wf\<^sub>t\<^sub>r\<^sub>m (\<delta> x)"
-    and y_ex: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var x) = \<Gamma> (Var y)"
+    and y_ex: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var x) = \<Gamma> (Var y)"
     and t: "t \<sqsubseteq> \<delta> x"
     and \<delta>_wt: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>"
-  shows "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var y) = \<Gamma> t"
+  shows "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var y) = \<Gamma> t"
 proof (cases "\<Gamma> (Var x)")
   case (Var a)
   hence "t = \<delta> x"
@@ -1567,7 +1408,7 @@ next
     hence gS_\<Gamma>: "\<Gamma> (Fun g S) = TComp g (map \<Gamma> S)" using fun_type by blast
   
     obtain h U where hU:
-        "Fun h U \<in> set M" "\<Gamma> (Fun h U) = Fun g (map \<Gamma> S)" "\<forall>u \<in> set U. is_Var u"
+        "Fun h U \<in> M" "\<Gamma> (Fun h U) = Fun g (map \<Gamma> S)" "\<forall>u \<in> set U. is_Var u"
       using is_TComp_var_instance_closedD'[OF y_ex _ closed wf_M]
             subtermeq_imp_subtermtypeeq[OF wf_\<delta>x] gS \<Gamma>_\<delta>x Fun gS_\<Gamma>
       by metis
@@ -1575,21 +1416,21 @@ next
     obtain y where y: "Var y \<in> set U" "\<Gamma> (Var y) = \<Gamma> t"
       using hU(3) fun_type_param_ex[OF hU(2) gS(2)] by fast
   
-    have "y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M)" using hU(1) y(1) by force
+    have "y \<in> fv\<^sub>s\<^sub>e\<^sub>t M" using hU(1) y(1) by force
     thus ?thesis using y(2) closed by metis
   qed (metis y_ex Fun \<Gamma>_\<delta>x)
 qed
 
 lemma TComp_var_instance_closed_has_Fun:
   assumes closed: "is_TComp_var_instance_closed \<Gamma> M"
-    and wf_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
+    and wf_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M"
     and wf_\<delta>x: "wf\<^sub>t\<^sub>r\<^sub>m (\<delta> x)"
-    and y_ex: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var x) = \<Gamma> (Var y)"
+    and y_ex: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var x) = \<Gamma> (Var y)"
     and t: "t \<sqsubseteq> \<delta> x"
     and \<delta>_wt: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>"
     and t_\<Gamma>: "\<Gamma> t = TComp g T"
     and t_fun: "is_Fun t"
-  shows "\<exists>m \<in> set M. \<exists>\<theta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>) \<and> t = m \<cdot> \<theta> \<and> is_Fun m"
+  shows "\<exists>m \<in> M. \<exists>\<theta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>) \<and> t = m \<cdot> \<theta> \<and> is_Fun m"
 proof -
   obtain T'' where T'': "t = Fun g T''" using t_\<Gamma> t_fun fun_type_id_eq by blast
 
@@ -1598,7 +1439,7 @@ proof -
   have "TComp g T \<sqsubseteq> \<Gamma> (Var x)" using \<delta>_wt t t_\<Gamma>
     by (metis wf_\<delta>x subtermeq_imp_subtermtypeeq wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def) 
   then obtain U where U:
-      "Fun g U \<in> set M" "\<Gamma> (Fun g U) = TComp g T" "\<forall>u \<in> set U. \<exists>y. u = Var y"
+      "Fun g U \<in> M" "\<Gamma> (Fun g U) = TComp g T" "\<forall>u \<in> set U. \<exists>y. u = Var y"
       "distinct U" "length T'' = length U"
     using is_TComp_var_instance_closedD'[OF y_ex _ closed wf_M]
     by (metis t_\<Gamma> T'' fun_type_id_eq fun_type_length_eq is_VarE)
@@ -1611,21 +1452,21 @@ qed
 
 lemma TComp_var_and_subterm_instance_closed_has_subterms_instances:
   assumes M_var_inst_cl: "is_TComp_var_instance_closed \<Gamma> M"
-    and M_subterms_cl: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set M)) (set M)"
-    and M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
-    and t: "t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t set M"
+    and M_subterms_cl: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t M) M"
+    and M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M"
+    and t: "t \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M"
     and s: "s \<sqsubseteq> t \<cdot> \<delta>"
     and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
-  shows "\<exists>m \<in> set M. \<exists>\<theta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>) \<and> s = m \<cdot> \<theta>"
+  shows "\<exists>m \<in> M. \<exists>\<theta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>) \<and> s = m \<cdot> \<theta>"
 using subterm_subst_unfold[OF s]
 proof
   assume "\<exists>s'. s' \<sqsubseteq> t \<and> s = s' \<cdot> \<delta>"
   then obtain s' where s': "s' \<sqsubseteq> t" "s = s' \<cdot> \<delta>" by blast
-  then obtain \<theta> where \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "s' \<in> set M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
+  then obtain \<theta> where \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "s' \<in> M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<theta>"
     using t has_all_wt_instances_ofD'[OF wf_trms_subterms[OF M_wf] M_wf M_subterms_cl]
           term.order_trans[of s' t]
     by blast
-  then obtain m where m: "m \<in> set M" "s' = m \<cdot> \<theta>" by blast
+  then obtain m where m: "m \<in> M" "s' = m \<cdot> \<theta>" by blast
 
   have "s = m \<cdot> (\<theta> \<circ>\<^sub>s \<delta>)" using s'(2) m(2) by simp
   thus ?thesis
@@ -1640,13 +1481,13 @@ next
   have \<delta>x_wf: "wf\<^sub>t\<^sub>r\<^sub>m (\<delta> x)" and s_wf_trm: "wf\<^sub>t\<^sub>r\<^sub>m s"
     using \<delta>(2) wf_trm_subterm[OF _ x(2)] by fastforce+
 
-  have x_fv_ex: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var x) = \<Gamma> (Var y)"
+  have x_fv_ex: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var x) = \<Gamma> (Var y)"
     using x(1) s fv_subset_subterms[OF t] by auto
 
-  obtain y where y: "y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M)" "\<Gamma> (Var y) = \<Gamma> s"
+  obtain y where y: "y \<in> fv\<^sub>s\<^sub>e\<^sub>t M" "\<Gamma> (Var y) = \<Gamma> s"
     using 0[of \<delta> x s, OF \<delta>x_wf x_fv_ex x(3) \<delta>(1)] by metis
-  then obtain z where z: "Var z \<in> set M" "\<Gamma> (Var z) = \<Gamma> s"
-    using 1[of y] vars_iff_subtermeq_set[of y "set M"] by metis
+  then obtain z where z: "Var z \<in> M" "\<Gamma> (Var z) = \<Gamma> s"
+    using 1[of y] vars_iff_subtermeq_set[of y M] by metis
 
   define \<theta> where "\<theta> \<equiv> Var(z := s)::('fun, ('fun, 'atom) term \<times> nat) subst"
 
@@ -1658,22 +1499,22 @@ qed
 context
 begin
 private lemma SMP_D_aux1:
-  assumes "t \<in> SMP (set M)"
-    and closed: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set M)) (set M)"
+  assumes "t \<in> SMP M"
+    and closed: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t M) M"
                 "is_TComp_var_instance_closed \<Gamma> M"
-    and wf_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
-  shows "\<forall>x \<in> fv t. \<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var y) = \<Gamma> (Var x)"
+    and wf_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M"
+  shows "\<forall>x \<in> fv t. \<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var y) = \<Gamma> (Var x)"
 using assms(1)
 proof (induction t rule: SMP.induct)
   case (MP t) show ?case
   proof
     fix x assume x: "x \<in> fv t"
-    hence "Var x \<in> subterms\<^sub>s\<^sub>e\<^sub>t (set M)" using MP.hyps vars_iff_subtermeq by fastforce
+    hence "Var x \<in> subterms\<^sub>s\<^sub>e\<^sub>t M" using MP.hyps vars_iff_subtermeq by fastforce
     then obtain \<delta> s where \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
-        and s: "s \<in> set M" "Var x = s \<cdot> \<delta>"
+        and s: "s \<in> M" "Var x = s \<cdot> \<delta>"
       using has_all_wt_instances_ofD'[OF wf_trms_subterms[OF wf_M] wf_M closed(1)] by blast
     then obtain y where y: "s = Var y" by (cases s) auto
-    thus "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var y) = \<Gamma> (Var x)"
+    thus "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var y) = \<Gamma> (Var x)"
       using s wt_subst_trm''[OF \<delta>(1), of "Var y"] by force
   qed
 next
@@ -1690,7 +1531,7 @@ next
       using Substitution.hyps(2,3)
       by (metis subst_apply_img_var subtermeqI' subtermeq_imp_subtermtypeeq
                 vars_iff_subtermeq wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def wf_trm_subst_rangeD)
-    let ?P = "\<lambda>x. \<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var y) = \<Gamma> (Var x)"
+    let ?P = "\<lambda>x. \<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var y) = \<Gamma> (Var x)"
     show "?P x" using y IH
     proof (induction "\<Gamma> (Var y)" arbitrary: y t)
       case (Var a)
@@ -1698,7 +1539,7 @@ next
       thus ?case using Var(2,4) by auto
     next
       case (Fun f T)
-      obtain z where z: "\<exists>w \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var z) = \<Gamma> (Var w)" "\<Gamma> (Var z) = \<Gamma> (Var y)"
+      obtain z where z: "\<exists>w \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var z) = \<Gamma> (Var w)" "\<Gamma> (Var z) = \<Gamma> (Var y)"
         using Fun.prems(1,3) by blast
       show ?case
       proof (cases "\<Gamma> (Var x) = \<Gamma> (Var y)")
@@ -1707,10 +1548,10 @@ next
         case False
         then obtain \<tau> where \<tau>: "\<tau> \<in> set T" "\<Gamma> (Var x) \<sqsubseteq> \<tau>" using Fun.prems(2) Fun.hyps(2) by auto
         then obtain U where U:
-            "Fun f U \<in> set M" "\<Gamma> (Fun f U) = \<Gamma> (Var z)" "\<forall>u \<in> set U. \<exists>v. u = Var v" "distinct U"
+            "Fun f U \<in> M" "\<Gamma> (Fun f U) = \<Gamma> (Var z)" "\<forall>u \<in> set U. \<exists>v. u = Var v" "distinct U"
           using is_TComp_var_instance_closedD'[OF z(1) _ closed(2) wf_M] Fun.hyps(2) z(2)
           by (metis fun_type_id_eq subtermeqI' is_VarE)
-        hence 1: "\<forall>x \<in> fv (Fun f U). \<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var y) = \<Gamma> (Var x)" by force
+        hence 1: "\<forall>x \<in> fv (Fun f U). \<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var y) = \<Gamma> (Var x)" by force
 
         have "arity f > 0" using U(2) z(2) Fun.hyps(2) fun_type_inv(1) by metis
         hence "\<Gamma> (Fun f U) = TComp f (map \<Gamma> U)" using fun_type by auto
@@ -1730,31 +1571,31 @@ qed
 
 private lemma SMP_D_aux2:
   fixes t::"('fun, ('fun, 'atom) term \<times> nat) term"
-  assumes t_SMP: "t \<in> SMP (set M)"
+  assumes t_SMP: "t \<in> SMP M"
     and t_Var: "\<exists>x. t = Var x"
     and M_SMP_repr: "finite_SMP_representation arity Ana \<Gamma> M"
-  shows "\<exists>m \<in> set M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta>"
+  shows "\<exists>m \<in> M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta>"
 proof -
-  have M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)" 
+  have M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M" 
       and M_var_inst_cl: "is_TComp_var_instance_closed \<Gamma> M"
-      and M_subterms_cl: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set M)) (set M)"
-      and M_Ana_cl: "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` set M)) (set M)"
+      and M_subterms_cl: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t M) M"
+      and M_Ana_cl: "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` M)) M"
     using finite_SMP_representationD[OF M_SMP_repr] by blast+
 
-  have M_Ana_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (\<Union> ((set \<circ> fst \<circ> Ana) ` set M))"
+  have M_Ana_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (\<Union> ((set \<circ> fst \<circ> Ana) ` M))"
   proof
-    fix k assume "k \<in> \<Union>((set \<circ> fst \<circ> Ana) ` set M)"
-    then obtain m where m: "m \<in> set M" "k \<in> set (fst (Ana m))" by force
+    fix k assume "k \<in> \<Union>((set \<circ> fst \<circ> Ana) ` M)"
+    then obtain m where m: "m \<in> M" "k \<in> set (fst (Ana m))" by force
     thus "wf\<^sub>t\<^sub>r\<^sub>m k" using M_wf Ana_keys_wf'[of m "fst (Ana m)" _ k] surjective_pairing by blast
   qed
 
   note 0 = has_all_wt_instances_ofD'[OF wf_trms_subterms[OF M_wf] M_wf M_subterms_cl]
   note 1 = has_all_wt_instances_ofD'[OF M_Ana_wf M_wf M_Ana_cl]
 
-  obtain x y where x: "t = Var x" and y: "y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M)" "\<Gamma> (Var y) = \<Gamma> (Var x)"
+  obtain x y where x: "t = Var x" and y: "y \<in> fv\<^sub>s\<^sub>e\<^sub>t M" "\<Gamma> (Var y) = \<Gamma> (Var x)"
     using t_Var SMP_D_aux1[OF t_SMP M_subterms_cl M_var_inst_cl M_wf] by fastforce
-  then obtain m \<delta> where m: "m \<in> set M" "m \<cdot> \<delta> = Var y" and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>"
-    using 0[of "Var y"] vars_iff_subtermeq_set[of y "set M"] by fastforce
+  then obtain m \<delta> where m: "m \<in> M" "m \<cdot> \<delta> = Var y" and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>"
+    using 0[of "Var y"] vars_iff_subtermeq_set[of y M] by fastforce
   obtain z where z: "m = Var z" using m(2) by (cases m) auto
 
   define \<theta> where "\<theta> \<equiv> Var(z := Var x)::('fun, ('fun, 'atom) term \<times> nat) subst"
@@ -1768,17 +1609,17 @@ qed
 private lemma SMP_D_aux3:
   assumes hyps: "t' \<sqsubseteq> t" and wf_t: "wf\<^sub>t\<^sub>r\<^sub>m t" and prems: "is_Fun t'"
     and IH:
-      "((\<exists>f. t = Fun f []) \<and> (\<exists>m \<in> set M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta>)) \<or>
-       (\<exists>m \<in> set M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta> \<and> is_Fun m)"
+      "((\<exists>f. t = Fun f []) \<and> (\<exists>m \<in> M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta>)) \<or>
+       (\<exists>m \<in> M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta> \<and> is_Fun m)"
     and M_SMP_repr: "finite_SMP_representation arity Ana \<Gamma> M"
-  shows "((\<exists>f. t' = Fun f []) \<and> (\<exists>m \<in> set M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t' = m \<cdot> \<delta>)) \<or>
-         (\<exists>m \<in> set M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t' = m \<cdot> \<delta> \<and> is_Fun m)"
+  shows "((\<exists>f. t' = Fun f []) \<and> (\<exists>m \<in> M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t' = m \<cdot> \<delta>)) \<or>
+         (\<exists>m \<in> M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t' = m \<cdot> \<delta> \<and> is_Fun m)"
 proof (cases "\<exists>f. t = Fun f [] \<or> t' = Fun f []")
   case True
-  have M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)" 
+  have M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M" 
     and M_var_inst_cl: "is_TComp_var_instance_closed \<Gamma> M"
-    and M_subterms_cl: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set M)) (set M)"
-    and M_Ana_cl: "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` set M)) (set M)"
+    and M_subterms_cl: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t M) M"
+    and M_Ana_cl: "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` M)) M"
   using finite_SMP_representationD[OF M_SMP_repr] by blast+
 
   note 0 = has_all_wt_instances_ofD'[OF wf_trms_subterms[OF M_wf] M_wf M_subterms_cl]
@@ -1800,7 +1641,7 @@ proof (cases "\<exists>f. t = Fun f [] \<or> t' = Fun f []")
     next
       case False
       note F = this
-      then obtain m \<delta> where m: "m \<in> set M" "t = m \<cdot> \<delta>"
+      then obtain m \<delta> where m: "m \<in> M" "t = m \<cdot> \<delta>"
           and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
         using IH by blast
 
@@ -1808,7 +1649,7 @@ proof (cases "\<exists>f. t = Fun f [] \<or> t' = Fun f []")
       proof
         assume "\<exists>m'. m' \<sqsubseteq> m \<and> t' = m' \<cdot> \<delta>"
         then obtain m' where m': "m' \<sqsubseteq> m" "t' = m' \<cdot> \<delta>" by moura
-        obtain n \<theta> where n: "n \<in> set M" "m' = n \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
+        obtain n \<theta> where n: "n \<in> M" "m' = n \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
           using 0[of m'] m(1) m'(1) by blast
         have "t' = n \<cdot> (\<theta> \<circ>\<^sub>s \<delta>)" using m'(2) n(2) by auto
         thus ?thesis
@@ -1818,7 +1659,7 @@ proof (cases "\<exists>f. t = Fun f [] \<or> t' = Fun f []")
         then obtain x where x: "x \<in> fv m" "t' \<sqsubset> \<delta> x" "t' \<sqsubseteq> \<delta> x" by moura
         have \<delta>x_wf: "wf\<^sub>t\<^sub>r\<^sub>m (\<delta> x)" using \<delta>(2) by fastforce
         
-        have x_fv_ex: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var x) = \<Gamma> (Var y)" using x m by auto
+        have x_fv_ex: "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var x) = \<Gamma> (Var y)" using x m by auto
 
         show ?thesis
         proof (cases "\<Gamma> t'")
@@ -1839,24 +1680,24 @@ next
   case False
   note F = False
   then obtain m \<delta> where m:
-      "m \<in> set M" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "t = m \<cdot> \<delta>" "is_Fun m" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
+      "m \<in> M" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "t = m \<cdot> \<delta>" "is_Fun m" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
     using IH by moura
   obtain f T where fT: "t' = Fun f T" "arity f > 0" "\<Gamma> t' = TComp f (map \<Gamma> T)"
     using F prems fun_type wf_trm_subtermeq[OF wf_t hyps]
     by (metis is_FunE length_greater_0_conv subtermeqI' wf\<^sub>t\<^sub>r\<^sub>m_def)
 
-  have closed: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set M)) (set M)"
+  have closed: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t M) M"
                "is_TComp_var_instance_closed \<Gamma> M"
     using M_SMP_repr unfolding finite_SMP_representation_def by metis+
 
-  have M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)" 
+  have M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M" 
     using finite_SMP_representationD[OF M_SMP_repr] by blast
 
   show ?thesis
   proof (cases "\<exists>x \<in> fv m. t' \<sqsubseteq> \<delta> x")
     case True
     then obtain x where x: "x \<in> fv m" "t' \<sqsubseteq> \<delta> x" by moura
-    have 1: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M)" using m(1) x(1) by auto
+    have 1: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t M" using m(1) x(1) by auto
     have 2: "is_Fun (\<delta> x)" using prems x(2) by auto
     have 3: "wf\<^sub>t\<^sub>r\<^sub>m (\<delta> x)" using m(5) by (simp add: wf_trm_subst_rangeD)
     have "\<not>(\<exists>f. \<delta> x = Fun f [])" using F x(2) by auto
@@ -1873,7 +1714,7 @@ next
     then obtain m' where m': "m' \<sqsubseteq> m" "t' = m' \<cdot> \<delta>" "is_Fun m'"
       using hyps m(3) subterm_subst_not_img_subterm
       by blast
-    then obtain \<theta> m'' where \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "m'' \<in> set M" "m' = m'' \<cdot> \<theta>"
+    then obtain \<theta> m'' where \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "m'' \<in> M" "m' = m'' \<cdot> \<theta>"
       using m(1) has_all_wt_instances_ofD'[OF wf_trms_subterms[OF M_wf] M_wf closed(1)] by blast
     hence t'_m'': "t' = m'' \<cdot> \<theta> \<circ>\<^sub>s \<delta>" using m'(2) by fastforce
 
@@ -1885,7 +1726,7 @@ next
     next
       case False
       then obtain x where x: "m'' = Var x" by moura
-      hence "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M). \<Gamma> (Var x) = \<Gamma> (Var y)" "t' \<sqsubseteq> (\<theta> \<circ>\<^sub>s \<delta>) x"
+      hence "\<exists>y \<in> fv\<^sub>s\<^sub>e\<^sub>t M. \<Gamma> (Var x) = \<Gamma> (Var y)" "t' \<sqsubseteq> (\<theta> \<circ>\<^sub>s \<delta>) x"
             "\<Gamma> (Var x) = Fun f (map \<Gamma> T)" "wf\<^sub>t\<^sub>r\<^sub>m ((\<theta> \<circ>\<^sub>s \<delta>) x)"
         using \<theta>\<delta> t'_m'' \<theta>(3) fv_subset[OF \<theta>(3)] fT(3) subst_apply_term.simps(1)[of x "\<theta> \<circ>\<^sub>s \<delta>"]
               wt_subst_trm''[OF \<theta>\<delta>(1), of "Var x"]
@@ -1899,14 +1740,14 @@ next
 qed
 
 lemma SMP_D:
-  assumes "t \<in> SMP (set M)" "is_Fun t"
+  assumes "t \<in> SMP M" "is_Fun t"
     and M_SMP_repr: "finite_SMP_representation arity Ana \<Gamma> M"
-  shows "((\<exists>f. t = Fun f []) \<and> (\<exists>m \<in> set M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta>)) \<or>
-         (\<exists>m \<in> set M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta> \<and> is_Fun m)"
+  shows "((\<exists>f. t = Fun f []) \<and> (\<exists>m \<in> M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta>)) \<or>
+         (\<exists>m \<in> M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta> \<and> is_Fun m)"
 proof -
-  have wf_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
-      and closed: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set M)) (set M)"
-                  "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` set M)) (set M)"
+  have wf_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M"
+      and closed: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t M) M"
+                  "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` M)) M"
                   "is_TComp_var_instance_closed \<Gamma> M"
     using finite_SMP_representationD[OF M_SMP_repr] by blast+
 
@@ -1938,7 +1779,7 @@ proof -
         then obtain x where x: "t = Var x" "\<delta> x = Fun c []" "\<Gamma> (Var x) = TAtom a"
           using c 1 wt_subst_trm''[OF Substitution.hyps(2), of t] by force
         
-        obtain m \<theta> where m: "m \<in> set M" "t = m \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
+        obtain m \<theta> where m: "m \<in> M" "t = m \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
           using SMP_D_aux2[OF Substitution.hyps(1) t_Var M_SMP_repr] by moura
 
         have "m \<cdot> (\<theta> \<circ>\<^sub>s \<delta>) = Fun c []" using c m(2) by auto
@@ -1954,13 +1795,13 @@ proof -
       obtain T'' where T'': "t \<cdot> \<delta> = Fun f T''"
         using 1 2 fun_type_id_eq Fun Substitution.prems
         by fastforce
-      have f: "arity f > 0" "public f" using fun_type_inv[OF 1] by metis+
+      have f: "arity f > 0" using fun_type_inv[OF 1] by metis
   
       show ?thesis
       proof (cases t)
         case (Fun g U)
         then obtain m \<theta> where m:
-            "m \<in> set M" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "t = m \<cdot> \<theta>" "is_Fun m" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
+            "m \<in> M" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "t = m \<cdot> \<theta>" "is_Fun m" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
           using Substitution.IH Fun 2 by moura
         have "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t (\<theta> \<circ>\<^sub>s \<delta>)" "t \<cdot> \<delta> = m \<cdot> (\<theta> \<circ>\<^sub>s \<delta>)" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range (\<theta> \<circ>\<^sub>s \<delta>))"
           using wt_subst_compose[OF m(2) Substitution.hyps(2)] m(3)
@@ -1969,13 +1810,13 @@ proof -
         thus ?thesis using m(1,4) by metis
       next
         case (Var x)
-        then obtain y where y: "y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M)" "\<Gamma> (Var y) = \<Gamma> (Var x)"
+        then obtain y where y: "y \<in> fv\<^sub>s\<^sub>e\<^sub>t M" "\<Gamma> (Var y) = \<Gamma> (Var x)"
           using SMP_D_aux1[OF Substitution.hyps(1) closed(1,3) wf_M] Fun
           by moura
         hence 3: "\<Gamma> (Var y) = TComp f T" using Var Fun \<Gamma>_Var_fst by simp
         
         obtain h V where V:
-            "Fun h V \<in> set M" "\<Gamma> (Fun h V) = \<Gamma> (Var y)" "\<forall>u \<in> set V. \<exists>z. u = Var z" "distinct V"
+            "Fun h V \<in> M" "\<Gamma> (Fun h V) = \<Gamma> (Var y)" "\<forall>u \<in> set V. \<exists>z. u = Var z" "distinct V"
           by (metis is_VarE is_TComp_var_instance_closedD[OF _ 3 closed(3)] y(1))
         moreover have "length T'' = length V" using 3 V(2) fun_type_length_eq 1 T'' by metis
         ultimately have TV: "T = map \<Gamma> V"
@@ -2004,10 +1845,10 @@ proof -
       using Ana_keys_wf'[OF Ana.hyps(2)] wf\<^sub>t\<^sub>r\<^sub>m_code Ana.hyps(3)
       by auto
   
-    have wf_M_keys: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (\<Union>((set \<circ> fst \<circ> Ana) ` set M))"
+    have wf_M_keys: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (\<Union>((set \<circ> fst \<circ> Ana) ` M))"
     proof
-      fix t assume "t \<in> (\<Union>((set \<circ> fst \<circ> Ana) ` set M))"
-      then obtain s where s: "s \<in> set M" "t \<in> (set \<circ> fst \<circ> Ana) s" by blast
+      fix t assume "t \<in> (\<Union>((set \<circ> fst \<circ> Ana) ` M))"
+      then obtain s where s: "s \<in> M" "t \<in> (set \<circ> fst \<circ> Ana) s" by blast
       obtain K R where KR: "Ana s = (K,R)" by (metis surj_pair)
       hence "t \<in> set K" using s(2) by simp
       thus "wf\<^sub>t\<^sub>r\<^sub>m t" using Ana_keys_wf'[OF KR] wf_M s(1) by blast
@@ -2024,7 +1865,7 @@ proof -
   
       have "arity f > 0" using Ana_const[of f U] U Ana.hyps(2,3) by fastforce
       hence "U \<noteq> []" using wf_t U unfolding wf\<^sub>t\<^sub>r\<^sub>m_def by force
-      then obtain m \<delta> where m: "m \<in> set M" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)" "t = m \<cdot> \<delta>" "is_Fun m"
+      then obtain m \<delta> where m: "m \<in> M" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)" "t = m \<cdot> \<delta>" "is_Fun m"
         using Ana.IH[OF 1] U by auto
       hence "Ana (t \<cdot> \<delta>) = (K \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>,T \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>)" using Ana_subst' U Ana.hyps(2) by auto
       obtain Km Tm where Ana_m: "Ana m = (Km,Tm)" by moura
@@ -2033,7 +1874,7 @@ proof -
         by metis
       then obtain km where km: "km \<in> set Km" "k = km \<cdot> \<delta>" using Ana.hyps(2,3) m(4) by auto
       then obtain \<theta> km' where \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
-          and km': "km' \<in> set M" "km = km' \<cdot> \<theta>"
+          and km': "km' \<in> M" "km = km' \<cdot> \<theta>"
         using Ana_m m(1) has_all_wt_instances_ofD'[OF wf_M_keys wf_M closed(2), of km] by force
   
       have k\<theta>\<delta>: "k = km' \<cdot> \<theta> \<circ>\<^sub>s \<delta>" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t (\<theta> \<circ>\<^sub>s \<delta>)" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range (\<theta> \<circ>\<^sub>s \<delta>))"
@@ -2047,7 +1888,7 @@ proof -
         case False
         note F = False
         then obtain x where x: "km' = Var x" by auto
-        hence 3: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M)" using fv_subset[OF km'(1)] by auto
+        hence 3: "x \<in> fv\<^sub>s\<^sub>e\<^sub>t M" using fv_subset[OF km'(1)] by auto
         obtain kf kT where kf: "k = Fun kf kT" using Ana.prems by auto
         show ?thesis
         proof (cases "kT = []")
@@ -2057,7 +1898,7 @@ proof -
           hence 4: "arity kf > 0" using wf_k kf TAtom_term_cases const_type by fastforce
           then obtain kT' where kT': "\<Gamma> k = TComp kf kT'" by (simp add: fun_type kf) 
           then obtain V where V:
-              "Fun kf V \<in> set M" "\<Gamma> (Fun kf V) = \<Gamma> (Var x)" "\<forall>u \<in> set V. \<exists>v. u = Var v"
+              "Fun kf V \<in> M" "\<Gamma> (Fun kf V) = \<Gamma> (Var x)" "\<forall>u \<in> set V. \<exists>v. u = Var v"
               "distinct V" "is_Fun (Fun kf V)"
             using is_TComp_var_instance_closedD[OF _ _ closed(3), of x]
                   x m(2) k\<theta>\<delta>(1) 3 wt_subst_trm''[OF k\<theta>\<delta>(2)]
@@ -2076,20 +1917,20 @@ qed
 
 lemma SMP_D':
   fixes M
-  defines "\<delta> \<equiv> var_rename (max_var_set (fv\<^sub>s\<^sub>e\<^sub>t (set M)))"
+  defines "\<delta> \<equiv> var_rename (max_var_set (fv\<^sub>s\<^sub>e\<^sub>t M))"
   assumes M_SMP_repr: "finite_SMP_representation arity Ana \<Gamma> M"
-    and s: "s \<in> SMP (set M)" "is_Fun s" "\<nexists>f. s = Fun f []"
-    and t: "t \<in> SMP (set M)" "is_Fun t" "\<nexists>f. t = Fun f []"
+    and s: "s \<in> SMP M" "is_Fun s" "\<nexists>f. s = Fun f []"
+    and t: "t \<in> SMP M" "is_Fun t" "\<nexists>f. t = Fun f []"
   obtains \<sigma> s0 \<theta> t0
-  where "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<sigma>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<sigma>)" "s0 \<in> set M" "is_Fun s0" "s = s0 \<cdot> \<sigma>" "\<Gamma> s = \<Gamma> s0"
-    and "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "t0 \<in> set M" "is_Fun t0" "t = t0 \<cdot> \<delta> \<cdot> \<theta>" "\<Gamma> t = \<Gamma> t0"
+  where "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<sigma>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<sigma>)" "s0 \<in> M" "is_Fun s0" "s = s0 \<cdot> \<sigma>" "\<Gamma> s = \<Gamma> s0"
+    and "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "t0 \<in> M" "is_Fun t0" "t = t0 \<cdot> \<delta> \<cdot> \<theta>" "\<Gamma> t = \<Gamma> t0"
 proof -
   obtain \<sigma> s0 where
-      s0: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<sigma>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<sigma>)" "s0 \<in> set M" "s = s0 \<cdot> \<sigma>" "is_Fun s0"
+      s0: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<sigma>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<sigma>)" "s0 \<in> M" "s = s0 \<cdot> \<sigma>" "is_Fun s0"
     using s(3) SMP_D[OF s(1,2) M_SMP_repr] unfolding \<delta>_def by metis
 
   obtain \<theta> t0 where t0:
-      "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "t0 \<in> set M" "t = t0 \<cdot> \<delta> \<cdot> \<theta>" "is_Fun t0"
+      "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)" "t0 \<in> M" "t = t0 \<cdot> \<delta> \<cdot> \<theta>" "is_Fun t0"
     using t(3) SMP_D[OF t(1,2) M_SMP_repr] var_rename_wt'[of _ t]
           wf_trms_subst_compose_Var_range(1)[OF _ var_rename_is_renaming(2)]
     unfolding \<delta>_def by metis
@@ -2101,32 +1942,32 @@ qed
 
 lemma SMP_D'':
   fixes t::"('fun, ('fun, 'atom) term \<times> nat) term"
-  assumes t_SMP: "t \<in> SMP (set M)"
+  assumes t_SMP: "t \<in> SMP M"
     and M_SMP_repr: "finite_SMP_representation arity Ana \<Gamma> M"
-  shows "\<exists>m \<in> set M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta>"
+  shows "\<exists>m \<in> M. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> t = m \<cdot> \<delta>"
 proof (cases "(\<exists>x. t = Var x) \<or> (\<exists>c. t = Fun c [])")
   case True
-  have M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)" 
+  have M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M" 
       and M_var_inst_cl: "is_TComp_var_instance_closed \<Gamma> M"
-      and M_subterms_cl: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set M)) (set M)"
-      and M_Ana_cl: "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` set M)) (set M)"
+      and M_subterms_cl: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t M) M"
+      and M_Ana_cl: "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` M)) M"
     using finite_SMP_representationD[OF M_SMP_repr] by blast+
 
-  have M_Ana_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (\<Union> ((set \<circ> fst \<circ> Ana) ` set M))"
+  have M_Ana_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (\<Union> ((set \<circ> fst \<circ> Ana) ` M))"
   proof
-    fix k assume "k \<in> \<Union>((set \<circ> fst \<circ> Ana) ` set M)"
-    then obtain m where m: "m \<in> set M" "k \<in> set (fst (Ana m))" by force
+    fix k assume "k \<in> \<Union>((set \<circ> fst \<circ> Ana) ` M)"
+    then obtain m where m: "m \<in> M" "k \<in> set (fst (Ana m))" by force
     thus "wf\<^sub>t\<^sub>r\<^sub>m k" using M_wf Ana_keys_wf'[of m "fst (Ana m)" _ k] surjective_pairing by blast
   qed
 
   show ?thesis using True
   proof
     assume "\<exists>x. t = Var x"
-    then obtain x y where x: "t = Var x" and y: "y \<in> fv\<^sub>s\<^sub>e\<^sub>t (set M)" "\<Gamma> (Var y) = \<Gamma> (Var x)"
+    then obtain x y where x: "t = Var x" and y: "y \<in> fv\<^sub>s\<^sub>e\<^sub>t M" "\<Gamma> (Var y) = \<Gamma> (Var x)"
       using SMP_D_aux1[OF t_SMP M_subterms_cl M_var_inst_cl M_wf] by fastforce
-    then obtain m \<delta> where m: "m \<in> set M" "m \<cdot> \<delta> = Var y" and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>"
+    then obtain m \<delta> where m: "m \<in> M" "m \<cdot> \<delta> = Var y" and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>"
       using has_all_wt_instances_ofD'[OF wf_trms_subterms[OF M_wf] M_wf M_subterms_cl, of "Var y"]
-            vars_iff_subtermeq_set[of y "set M"]
+            vars_iff_subtermeq_set[of y M]
       by fastforce
 
     obtain z where z: "m = Var z" using m(2) by (cases m) auto
@@ -2143,25 +1984,25 @@ end
 
 lemma tfr\<^sub>s\<^sub>e\<^sub>t_if_comp_tfr\<^sub>s\<^sub>e\<^sub>t:
   assumes "comp_tfr\<^sub>s\<^sub>e\<^sub>t arity Ana \<Gamma> M"
-  shows "tfr\<^sub>s\<^sub>e\<^sub>t (set M)"
+  shows "tfr\<^sub>s\<^sub>e\<^sub>t M"
 proof -
-  let ?\<delta> = "var_rename (max_var_set (fv\<^sub>s\<^sub>e\<^sub>t (set M)))"
+  let ?\<delta> = "var_rename (max_var_set (fv\<^sub>s\<^sub>e\<^sub>t M))"
   have M_SMP_repr: "finite_SMP_representation arity Ana \<Gamma> M"
     by (metis comp_tfr\<^sub>s\<^sub>e\<^sub>t_def assms)
 
-  have M_finite: "finite (set M)"
-    using assms card_gt_0_iff unfolding comp_tfr\<^sub>s\<^sub>e\<^sub>t_def by blast
+  have M_finite: "finite M"
+    using assms card_gt_0_iff unfolding comp_tfr\<^sub>s\<^sub>e\<^sub>t_def finite_SMP_representation_def by blast
 
   show ?thesis
   proof (unfold tfr\<^sub>s\<^sub>e\<^sub>t_def; intro ballI impI)
-    fix s t assume "s \<in> SMP (set M) - Var`\<V>" "t \<in> SMP (set M) - Var`\<V>"
-    hence st: "s \<in> SMP (set M)" "is_Fun s" "t \<in> SMP (set M)" "is_Fun t" by auto
+    fix s t assume "s \<in> SMP M - Var`\<V>" "t \<in> SMP M - Var`\<V>"
+    hence st: "s \<in> SMP M" "is_Fun s" "t \<in> SMP M" "is_Fun t" by auto
     have "\<not>(\<exists>\<delta>. Unifier \<delta> s t)" when st_type_neq: "\<Gamma> s \<noteq> \<Gamma> t"
     proof (cases "\<exists>f. s = Fun f [] \<or> t = Fun f []")
       case False
       then obtain \<sigma> s0 \<theta> t0 where
-            s0: "s0 \<in> set M" "is_Fun s0" "s = s0 \<cdot> \<sigma>" "\<Gamma> s = \<Gamma> s0"
-        and t0: "t0 \<in> set M" "is_Fun t0" "t = t0 \<cdot> ?\<delta> \<cdot> \<theta>" "\<Gamma> t = \<Gamma> t0"
+            s0: "s0 \<in> M" "is_Fun s0" "s = s0 \<cdot> \<sigma>" "\<Gamma> s = \<Gamma> s0"
+        and t0: "t0 \<in> M" "is_Fun t0" "t = t0 \<cdot> ?\<delta> \<cdot> \<theta>" "\<Gamma> t = \<Gamma> t0"
         using SMP_D'[OF M_SMP_repr st(1,2) _ st(3,4)] by metis
       hence "\<not>(\<exists>\<delta>. Unifier \<delta> s0 (t0 \<cdot> ?\<delta>))"
         using assms mgu_None_is_subst_neq st_type_neq wt_subst_trm''[OF var_rename_wt(1)]
@@ -2175,7 +2016,7 @@ proof -
 qed
 
 lemma tfr\<^sub>s\<^sub>e\<^sub>t_if_comp_tfr\<^sub>s\<^sub>e\<^sub>t':
-  assumes "let N = SMP0 Ana \<Gamma> M in set M \<subseteq> set N \<and> comp_tfr\<^sub>s\<^sub>e\<^sub>t arity Ana \<Gamma> N"
+  assumes "let N = SMP0 Ana \<Gamma> M in set M \<subseteq> set N \<and> comp_tfr\<^sub>s\<^sub>e\<^sub>t arity Ana \<Gamma> (set N)"
   shows "tfr\<^sub>s\<^sub>e\<^sub>t (set M)"
 by (rule tfr_subset(2)[
           OF tfr\<^sub>s\<^sub>e\<^sub>t_if_comp_tfr\<^sub>s\<^sub>e\<^sub>t[OF conjunct2[OF assms[unfolded Let_def]]]
@@ -2205,10 +2046,10 @@ proof
   have comp_tfr\<^sub>s\<^sub>e\<^sub>t_M: "comp_tfr\<^sub>s\<^sub>e\<^sub>t arity Ana \<Gamma> M"
     using assms unfolding comp_tfr\<^sub>s\<^sub>t_def by blast
   
-  have wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
+  have wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_M: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M"
       and wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_S: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (trms\<^sub>s\<^sub>t S)"
-      and S_trms_instance_M: "has_all_wt_instances_of \<Gamma> (trms\<^sub>s\<^sub>t S) (set M)"
-    using assms wf\<^sub>t\<^sub>r\<^sub>m_code trms_list\<^sub>s\<^sub>t_is_trms\<^sub>s\<^sub>t
+      and S_trms_instance_M: "has_all_wt_instances_of \<Gamma> (trms\<^sub>s\<^sub>t S) M"
+    using assms wf\<^sub>t\<^sub>r\<^sub>m_code wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s_code trms_list\<^sub>s\<^sub>t_is_trms\<^sub>s\<^sub>t
     unfolding comp_tfr\<^sub>s\<^sub>t_def comp_tfr\<^sub>s\<^sub>e\<^sub>t_def finite_SMP_representation_def list_all_iff
     by blast+
 
@@ -2222,7 +2063,7 @@ proof
 qed
 
 lemma tfr\<^sub>s\<^sub>t_if_comp_tfr\<^sub>s\<^sub>t':
-  assumes "comp_tfr\<^sub>s\<^sub>t arity Ana \<Gamma> (SMP0 Ana \<Gamma> (trms_list\<^sub>s\<^sub>t S)) S"
+  assumes "comp_tfr\<^sub>s\<^sub>t arity Ana \<Gamma> (set (SMP0 Ana \<Gamma> (trms_list\<^sub>s\<^sub>t S))) S"
   shows "tfr\<^sub>s\<^sub>t S"
 by (rule tfr\<^sub>s\<^sub>t_if_comp_tfr\<^sub>s\<^sub>t[OF assms])
 
@@ -2249,31 +2090,31 @@ proof
 qed (use f_def g_def in blast)
 
 private lemma ground_SMP_disjointI_aux2:
-  fixes M::"('fun, ('fun, 'atom) term \<times> nat) term list"
+  fixes M::"('fun, ('fun, 'atom) term \<times> nat) term set"
   assumes f_def: "f \<equiv> \<lambda>M. {t \<cdot> \<delta> | t \<delta>. t \<in> M \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> fv (t \<cdot> \<delta>) = {}}"
     and M_SMP_repr: "finite_SMP_representation arity Ana \<Gamma> M"
-  shows "f (set M) = f (SMP (set M))"
+  shows "f M = f (SMP M)"
 proof
-  have M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)" 
+  have M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s M" 
       and M_var_inst_cl: "is_TComp_var_instance_closed \<Gamma> M"
-      and M_subterms_cl: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t (set M)) (set M)"
-      and M_Ana_cl: "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` set M)) (set M)"
+      and M_subterms_cl: "has_all_wt_instances_of \<Gamma> (subterms\<^sub>s\<^sub>e\<^sub>t M) M"
+      and M_Ana_cl: "has_all_wt_instances_of \<Gamma> (\<Union>((set \<circ> fst \<circ> Ana) ` M)) M"
     using finite_SMP_representationD[OF M_SMP_repr] by blast+
 
-  show "f (SMP (set M)) \<subseteq> f (set M)"
+  show "f (SMP M) \<subseteq> f M"
   proof
-    fix t assume "t \<in> f (SMP (set M))"
-    then obtain s \<delta> where s: "t = s \<cdot> \<delta>" "s \<in> SMP (set M)" "fv (s \<cdot> \<delta>) = {}"
+    fix t assume "t \<in> f (SMP M)"
+    then obtain s \<delta> where s: "t = s \<cdot> \<delta>" "s \<in> SMP M" "fv (s \<cdot> \<delta>) = {}"
         and \<delta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>)"
       unfolding f_def by blast
 
     have t_wf: "wf\<^sub>t\<^sub>r\<^sub>m t" using SMP_wf_trm[OF s(2) M_wf] s(1) wf_trm_subst[OF \<delta>(2)] by blast 
 
-    obtain m \<theta> where m: "m \<in> set M" "s = m \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
+    obtain m \<theta> where m: "m \<in> M" "s = m \<cdot> \<theta>" and \<theta>: "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<theta>" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<theta>)"
       using SMP_D''[OF s(2) M_SMP_repr] by blast
 
     have "t = m \<cdot> (\<theta> \<circ>\<^sub>s \<delta>)" "fv (m \<cdot> (\<theta> \<circ>\<^sub>s \<delta>)) = {}" using s(1,3) m(2) by simp_all
-    thus "t \<in> f (set M)"
+    thus "t \<in> f M"
       using m(1) wt_subst_compose[OF \<theta>(1) \<delta>(1)] wf_trms_subst_compose[OF \<theta>(2) \<delta>(2)]
       unfolding f_def by blast
   qed
@@ -2287,7 +2128,7 @@ private lemma ground_SMP_disjointI_aux3:
     and R_def: "R \<equiv> \<lambda>t. \<exists>u \<in> C. is_wt_instance_of_cond \<Gamma> t u"
     and AB: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s A" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s B" "fv\<^sub>s\<^sub>e\<^sub>t A \<inter> fv\<^sub>s\<^sub>e\<^sub>t B = {}"
     and C: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s C"
-    and ABC: "\<forall>t \<in> A. \<forall>s \<in> B. P t s \<longrightarrow> (Q t \<and> Q s) \<or> (R t \<and> R s)"
+    and ABC: "\<forall>t \<in> A. \<forall>s \<in> B. P t s \<longrightarrow> Q t \<or> R t"
   shows "f A \<inter> f B \<subseteq> f C \<union> {m. {} \<turnstile>\<^sub>c m}"
 proof
   fix t assume "t \<in> f A \<inter> f B"
@@ -2305,14 +2146,14 @@ proof
     using vars_term_disjoint_imp_unifier[OF ta_tb_wf(3), of \<delta>a \<delta>b]
           ta(1) tb(1) wt_Unifier_if_Unifier[OF ta_tb_wf(1,2,4)]
     by blast
-  hence "(Q ta \<and> Q tb) \<or> (R ta \<and> R tb)" using ABC ta(2) tb(2) unfolding P_def by blast+
+  hence "Q ta \<or> R ta" using ABC ta(2) tb(2) unfolding P_def by blast+
   thus "t \<in> f C \<union> {m. {} \<turnstile>\<^sub>c m}"
   proof
-    show "Q ta \<and> Q tb \<Longrightarrow> ?thesis"
+    show "Q ta \<Longrightarrow> ?thesis"
       using ta(1) pgwt_ground[of ta] pgwt_is_empty_synth[of ta] subst_ground_ident[of ta \<delta>a]
       unfolding Q_def f_def intruder_synth_code[symmetric] by simp
   next
-    assume "R ta \<and> R tb"
+    assume "R ta"
     then obtain ua \<sigma>a where ua: "ta = ua \<cdot> \<sigma>a" "ua \<in> C" "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<sigma>a" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<sigma>a)"
       using \<theta> ABC ta_tb_wf(1,2) ta(2) tb(2) C is_wt_instance_of_condD'
       unfolding P_def R_def by metis
@@ -2326,30 +2167,29 @@ proof
 qed
 
 lemma ground_SMP_disjointI:
-  fixes A B::"('fun, ('fun, 'atom) term \<times> nat) term list" and C
+  fixes A B::"('fun, ('fun, 'atom) term \<times> nat) term set" and C
   defines "f \<equiv> \<lambda>M. {t \<cdot> \<delta> | t \<delta>. t \<in> M \<and> wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> fv (t \<cdot> \<delta>) = {}}"
     and "g \<equiv> \<lambda>M. {t \<in> M. fv t = {}}"
     and "Q \<equiv> \<lambda>t. intruder_synth' public arity {} t"
     and "R \<equiv> \<lambda>t. \<exists>u \<in> C. is_wt_instance_of_cond \<Gamma> t u"
-  assumes AB_fv_disj: "fv\<^sub>s\<^sub>e\<^sub>t (set A) \<inter> fv\<^sub>s\<^sub>e\<^sub>t (set B) = {}"
+  assumes AB_fv_disj: "fv\<^sub>s\<^sub>e\<^sub>t A \<inter> fv\<^sub>s\<^sub>e\<^sub>t B = {}"
     and A_SMP_repr: "finite_SMP_representation arity Ana \<Gamma> A"
     and B_SMP_repr: "finite_SMP_representation arity Ana \<Gamma> B"
     and C_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s C"
-    and ABC: "\<forall>t \<in> set A. \<forall>s \<in> set B. \<Gamma> t = \<Gamma> s \<and> mgu t s \<noteq> None \<longrightarrow> (Q t \<and> Q s) \<or> (R t \<and> R s)"
-  shows "g (SMP (set A)) \<inter> g (SMP (set B)) \<subseteq> f C \<union> {m. {} \<turnstile>\<^sub>c m}"
+    and ABC: "\<forall>t \<in> A. \<forall>s \<in> B. \<Gamma> t = \<Gamma> s \<and> mgu t s \<noteq> None \<longrightarrow> Q t \<or> R t"
+  shows "g (SMP A) \<inter> g (SMP B) \<subseteq> f C \<union> {m. {} \<turnstile>\<^sub>c m}"
 proof -
-  have AB_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set A)" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set B)"
-    using A_SMP_repr B_SMP_repr
-    unfolding finite_SMP_representation_def wf\<^sub>t\<^sub>r\<^sub>m_code list_all_iff
-    by blast+
+  have AB_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s A" "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s B"
+    using A_SMP_repr B_SMP_repr finite_SMP_representationD(1)
+    by (blast, blast)
 
   let ?P = "\<lambda>t s. \<exists>\<delta>. wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<delta> \<and> wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (subst_range \<delta>) \<and> Unifier \<delta> t s"
-  have ABC': "\<forall>t \<in> set A. \<forall>s \<in> set B. ?P t s \<longrightarrow> (Q t \<and> Q s) \<or> (R t \<and> R s)"
+  have ABC': "\<forall>t \<in> A. \<forall>s \<in> B. ?P t s \<longrightarrow> Q t \<or> R t"
     by (metis (no_types) ABC mgu_None_is_subst_neq wt_subst_trm'')
 
   show ?thesis
-    using ground_SMP_disjointI_aux1[OF f_def g_def, of "set A"]
-          ground_SMP_disjointI_aux1[OF f_def g_def, of "set B"]
+    using ground_SMP_disjointI_aux1[OF f_def g_def, of A]
+          ground_SMP_disjointI_aux1[OF f_def g_def, of B]
           ground_SMP_disjointI_aux2[OF f_def A_SMP_repr]
           ground_SMP_disjointI_aux2[OF f_def B_SMP_repr]
           ground_SMP_disjointI_aux3[OF f_def Q_def R_def AB_wf AB_fv_disj C_wf ABC']

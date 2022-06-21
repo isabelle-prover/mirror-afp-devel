@@ -2948,7 +2948,7 @@ proof -
   hence "\<forall>w \<in> space N. discount_factor r n w = c" using assms by simp
   thus "integrable N (\<lambda>w. discount_factor r n w * X n w)"
     using \<open>\<forall>w \<in> space N. discount_factor r n w = c\<close> assms
-    integrable_cong[of N N "(\<lambda>w. discount_factor r n w * X n w)" "(\<lambda>w. c * X n w)"] by simp
+    Bochner_Integration.integrable_cong[of N N "(\<lambda>w. discount_factor r n w * X n w)" "(\<lambda>w. c * X n w)"] by simp
 qed
 
 
@@ -3048,9 +3048,8 @@ proof
         have "integrable N (\<lambda>w. prices Mkt asset (Suc n) w * pf asset (Suc n) w)" using assms \<open>asset \<in> support_set pf\<close> by auto
         hence "integrable N (discounted_value r (\<lambda>m w. prices Mkt asset m w * pf asset m w) (Suc n))" using assms
           unfolding risk_neutral_prob_def using acceptable_rate  by (auto simp add:discounted_integrable subalgebra_def)
-        thus ?thesis using discounted_mult
-            integrable_cong[of N N "discounted_value r (\<lambda>m w. prices Mkt asset m w * pf asset m w) (Suc n)" "(\<lambda>z. pf asset (Suc n) z * discounted_value r (prices Mkt asset) (Suc n) z)"]
-          by (simp add: discounted_value_def)
+        thus ?thesis
+          by (smt (verit, ccfv_SIG) Bochner_Integration.integrable_cong discounted_value_def mult.assoc mult.commute)
       qed
     qed
     also have "AE w in N.  pf asset (Suc n) w * (real_cond_exp N (F n) (\<lambda>z. discounted_value r (\<lambda>m y. prices Mkt asset m y) (Suc n) z)) w =

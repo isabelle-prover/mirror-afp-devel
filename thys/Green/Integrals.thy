@@ -348,7 +348,7 @@ lemma gauge_integral_by_substitution:
   shows "integral {g a..g b} (f) = integral {a..b} (\<lambda>x. f(g x) * (g' x))"
 proof -
   have "\<forall>x \<in> {a..b}. (g has_real_derivative (g' x)) (at x within {a..b})"
-    using has_field_derivative_iff_has_vector_derivative[of "g"] and g'_derivative
+    using has_real_derivative_iff_has_vector_derivative[of "g"] and g'_derivative
     by auto
   then have 2: "interval_lebesgue_integral lborel (ereal (a)) (ereal (b)) (\<lambda>x. g' x *\<^sub>R f (g x))
                     = interval_lebesgue_integral lborel (ereal (g a)) (ereal (g b)) f"
@@ -697,7 +697,7 @@ proof -
         apply (rule has_integral_diff)
         using x y apply (auto intro: integrable_integral [OF integrable_subinterval_real [OF f]])
         using has_integral_const_real [of "f x" x y] False
-        apply (simp add: )
+        apply simp
         done
       show ?thesis
         using False
@@ -719,7 +719,7 @@ proof -
         apply (rule has_integral_diff)
         using x y apply (auto intro: integrable_integral [OF integrable_subinterval_real [OF f]])
         using has_integral_const_real [of "f x" y x] True
-        apply (simp add: )
+        apply simp
         done
       have "norm (integral {a..x} f - integral {a..y} f - (x - y) *\<^sub>R f x) \<le> e * \<bar>y - x\<bar>"
         using True
@@ -835,17 +835,17 @@ proof -
                  (at x within ({a..b} - s))"
     apply (rule has_vector_derivative_eq_rhs)
      apply (rule vector_diff_chain_within)
-      apply (subst has_field_derivative_iff_has_vector_derivative [symmetric])
+      apply (subst has_real_derivative_iff_has_vector_derivative [symmetric])
   proof-
     fix x::real
     assume ass: "x \<in> {a..b} - s"
     let ?f'3 = "g' x"
     have i:"{a..b} - s \<subseteq> {a..b}" by auto
     have ii: " (g has_vector_derivative g' x) (at x within {a..b})" using deriv[OF ass]
-      by (simp only: has_field_derivative_iff_has_vector_derivative)
+      by (simp only: has_real_derivative_iff_has_vector_derivative)
     show "(g has_real_derivative ?f'3) (at x within {a..b} - s)"
       using has_vector_derivative_within_subset[OF ii i]
-      by (simp only: has_field_derivative_iff_has_vector_derivative)
+      by (simp only: has_real_derivative_iff_has_vector_derivative)
   next
     let ?g'3 = "f o g"
     show "\<And>x. x \<in> {a..b} - s \<Longrightarrow> ((\<lambda>x. integral {c..x} f) has_vector_derivative ?g'3 x) (at (g x) within g ` ({a..b} - s))"

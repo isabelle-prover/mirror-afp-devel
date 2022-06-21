@@ -19,7 +19,6 @@ instance by standard (transfer, auto)
 
 end
 
-lift_definition left :: "'a :: timestamp \<I> \<Rightarrow> 'a" is "fst" .
 lift_definition right :: "'a :: timestamp \<I> \<Rightarrow> 'a" is "fst \<circ> snd" .
 
 lift_definition memL :: "'a :: timestamp \<Rightarrow> 'a \<Rightarrow> 'a \<I> \<Rightarrow> bool" is
@@ -97,11 +96,11 @@ lemma "t \<in> tfin \<Longrightarrow> memL 0 0 I \<longleftrightarrow> memL t t 
   apply (metis add.right_neutral add_pos antisym_conv2 dual_order.eq_iff order_less_imp_not_less)
   done
 
-definition "full (I :: ('a :: timestamp_total) \<I>) \<longleftrightarrow> (\<forall>t t'. 0 \<le> t \<and> t \<le> t' \<and> t \<in> tfin \<and> t' \<in> tfin \<longrightarrow> mem t t' I)"
+definition "full (I :: ('a :: timestamp) \<I>) \<longleftrightarrow> (\<forall>t t'. 0 \<le> t \<and> t \<le> t' \<and> t \<in> tfin \<and> t' \<in> tfin \<longrightarrow> mem t t' I)"
 
-lemma "memL 0 0 I \<Longrightarrow> right I \<notin> tfin \<Longrightarrow> full I"
+lemma "memL 0 0 (I :: ('a :: timestamp_total) \<I>) \<Longrightarrow> right I \<notin> tfin \<Longrightarrow> full I"
   unfolding full_def mem_def
-  by transfer (fastforce split: if_splits dest: aux)
+  by transfer (fastforce split: if_splits dest: add_not_tfin)
 
 (*<*)
 end

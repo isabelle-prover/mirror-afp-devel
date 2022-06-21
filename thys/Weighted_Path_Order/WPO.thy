@@ -248,7 +248,7 @@ next
       from False subst_NS[OF this, of "\<lambda> z. if z = x then v else w" for v w]
       have "(v,w) \<in> NS" for v w by auto
       hence "NS = UNIV" by auto
-      with ss_NS_not_UNIV[OF `ssimple`]
+      with ss_NS_not_UNIV[OF \<open>ssimple\<close>]
       have False by auto
       thus ?thesis ..
     qed
@@ -1055,7 +1055,7 @@ proof (induct "(s,t)" arbitrary:s t rule: wf_induct[OF wf_measure[of "\<lambda> 
           proof (cases "\<delta> y")
             case (Var z)
             show ?thesis unfolding wpo.simps[of ?s ?t] not id 
-              unfolding s t using Var `ssimple` largef by auto
+              unfolding s t using Var \<open>ssimple\<close> largef by auto
           next
             case (Fun g ts)
             let ?g = "(g,length ts)" 
@@ -1064,12 +1064,12 @@ proof (induct "(s,t)" arbitrary:s t rule: wf_induct[OF wf_measure[of "\<lambda> 
             {
               fix j
               assume "j \<in> set (\<sigma> ?g)"
-              with set_status_nth[OF refl this] ss_status[OF `ssimple` this] t Fun
+              with set_status_nth[OF refl this] ss_status[OF \<open>ssimple\<close> this] t Fun
               have "(t \<cdot> \<delta>, ts ! j) \<in> S" by (auto simp: simple_arg_pos_def)
               with sstsA have S: "(s \<cdot> \<delta>, ts ! j) \<in> S" by (metis compat_NS_S_point)
               hence "wpo_s (s \<cdot> \<delta>) (ts ! j)" by (rule S_imp_wpo_s)
             } note ssimple = this
-            from large[OF `ssimple` largef, of ?g, unfolded prc]
+            from large[OF \<open>ssimple\<close> largef, of ?g, unfolded prc]
             have "ps \<or> pns \<and>  \<sigma> ?g = []" by auto 
             thus ?thesis using ssimple unfolding wpo.simps[of ?s ?t] not id 
               unfolding s t using Fun prc ps by (auto simp: lex_ext_least_1 mul_ext_def Let_def ns_mul_ext_bottom)

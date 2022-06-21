@@ -267,7 +267,7 @@ concrete_definition cert_stepsize_impl_dres for E m x h n i uses cert_stepsize_i
 lemmas [refine_transfer] = cert_stepsize_impl_dres.refine
 
 lemma DIM_obvious[autoref_rules_raw]: "DIM_precond TYPE('a) DIM('a::executable_euclidean_space)"
-  by (auto simp: )
+  by auto
 
 lemma default_reduce_argument_spec_impl[autoref_rules]:
   "(RETURN (default_reduce optns), default_reduce_argument_spec) \<in> \<langle>reduce_argument_rel TYPE('b)\<rangle>nres_rel"
@@ -479,7 +479,7 @@ lemma eq_ivl_impl:
   subgoal premises prems for a b c d e f
     using op_subset_ivl[param_fo, OF assms prems(1,2)]
       op_subset_ivl[param_fo, OF assms prems(2,1)]
-    by (auto simp: )
+    by auto
   done
 concrete_definition eq_ivl_impl uses eq_ivl_impl
 lemmas [autoref_rules] = eq_ivl_impl.refine

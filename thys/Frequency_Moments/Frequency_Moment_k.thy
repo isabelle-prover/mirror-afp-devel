@@ -877,7 +877,7 @@ theorem fk_exact_space_usage:
   shows "AE \<omega> in M. bit_count (encode_fk_state \<omega>) \<le> fk_space_usage (k, n, length as, \<epsilon>, \<delta>)"
   unfolding M_def using fk_exact_space_usage'[OF assms(1-4)] by blast
 
-theorem fk_asympotic_space_complexity:
+theorem fk_asymptotic_space_complexity:
   "fk_space_usage \<in> 
   O[at_top \<times>\<^sub>F at_top \<times>\<^sub>F at_top \<times>\<^sub>F at_right (0::rat) \<times>\<^sub>F at_right (0::rat)](\<lambda> (k, n, m, \<epsilon>, \<delta>).
   real k * real n powr (1-1/ real k) / (of_rat \<delta>)\<^sup>2 * (ln (1 / of_rat \<epsilon>)) * (ln (real n) + ln (real m)))"

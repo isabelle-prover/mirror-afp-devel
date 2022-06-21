@@ -25,8 +25,8 @@ email = "gonzalez_email"
 [contributors]
 
 [notify]
-karayel = "karayel_email"
 gonzalez = "gonzalez_email"
+karayel = "karayel_email"
 
 [history]
 

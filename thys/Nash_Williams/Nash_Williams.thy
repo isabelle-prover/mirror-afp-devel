@@ -84,8 +84,10 @@ lemma init_segment_insert_iff:
   assumes Sn: "S \<lless> {n}" and TS: "\<And>x. x \<in> T-S \<Longrightarrow> n\<le>x"
   shows "init_segment (insert n S) T \<longleftrightarrow> init_segment S T \<and> n \<in> T" (is "?lhs=?rhs")
 proof
-  assume ?lhs then show ?rhs
-    by (metis Sn Un_commute init_segment_Un init_segment_subset init_segment_trans insertI1 insert_is_Un subsetD)
+  assume L: ?lhs 
+  with init_segment_subset have "n \<in> T" by blast
+  with L show ?rhs
+    by (metis Sn init_segment_Un init_segment_trans insert_is_Un sup_commute)
 next
   assume rhs: ?rhs
   then obtain R where R: "T = S \<union> R" "S \<lless> R"
@@ -173,8 +175,7 @@ lemma strongly_accepts_subset: "\<lbrakk>strongly_accepts \<F> S M; N \<subseteq
   by (auto simp: strongly_accepts_def)
 
 lemma decides_subset: "\<lbrakk>decides \<F> S M; N \<subseteq> M\<rbrakk> \<Longrightarrow> decides \<F> S N"
-  unfolding decides_def
-  using rejects_subset strongly_accepts_subset by blast
+  by (meson decides_def rejects_subset strongly_accepts_subset)
 
 lemma decides_subsets_subset: "\<lbrakk>decides_subsets \<F> M; N \<subseteq> M\<rbrakk> \<Longrightarrow> decides_subsets \<F> N"
   by (meson decides_subset decides_subsets_def subset_trans)
@@ -217,10 +218,10 @@ proof -
     show "?N \<subseteq> M"
       by (metis "*" INF_lower2 Pow_iff f imageE order_refl)
   next
-    have eq: "(\<Inter>n\<le>m. F n) = F m" for m
-      by (induction m) (use telescope in \<open>auto simp: atMost_Suc\<close>)
+    have eq: "(\<Inter>n < Suc m. F n) = F m" for m
+      by (induction m) (use telescope in \<open>auto simp: lessThan_Suc\<close>)
     then show "infinite ?N"
-      by (metis "*" Suc_le_D Suc_le_eq finite_subset le_INF_iff lessThan_Suc_atMost lessThan_iff)
+      by (metis (full_types) "*" Pow_top Suc_le_D Suc_le_eq f imageE lessThan_iff)
   next
     fix T
     assume "T \<subseteq> S"
@@ -246,14 +247,16 @@ proof -
   define \<Phi> where "\<Phi> \<equiv> \<lambda>NL N. N \<subseteq> hd NL \<and> Inf N > Inf (hd NL) \<and> infinite N \<and> decides_all (List.set (map Inf NL)) N"
   have "\<exists>N. \<Phi> NL N" if "infinite (hd NL)" for NL
   proof -
-    obtain N where N: "N \<subseteq> hd NL \<and> infinite N \<and> decides_all (List.set (map Inf NL)) N"
-      unfolding \<Phi>_def decides_all_def
+    obtain N where N: "N \<subseteq> hd NL" "infinite N" "decides_all (List.set (map Inf NL)) N"
+      unfolding decides_all_def
       by (metis List.finite_set ex_infinite_decides_finite \<open>infinite (hd NL)\<close>)
+    then have inf: "infinite (N \<inter> {Inf (hd NL)<..})" 
+      by (metis finite_nat_Int_greaterThan_iff)
     then have "Inf (N \<inter> {Inf (hd NL)<..}) > Inf (hd NL)"
-      by (metis Inf_nat_def1 Int_iff finite.emptyI finite_nat_Int_greaterThan_iff greaterThan_iff)
-    then show ?thesis
-      unfolding \<Phi>_def
-      by (meson Int_lower1 N decides_all_def decides_subset finite_nat_Int_greaterThan_iff subset_trans)
+      by (metis finite.emptyI Inf_nat_def1 Int_iff greaterThan_iff)
+    with N show ?thesis
+      unfolding \<Phi>_def 
+      by (meson Int_lower1 decides_all_def decides_subset finite_nat_Int_greaterThan_iff subset_trans)
   qed
   then have \<Phi>_Eps: "\<Phi> NL (Eps (\<Phi> NL))" if "infinite (hd NL)" for NL
     by (simp add: someI_ex that)
@@ -367,8 +370,10 @@ proof -
               using Inf_nat_def not_less_Least by auto
             obtain k where k: "x = mmap k"
               using \<open>S \<subseteq> range mmap\<close> \<open>x \<in> S\<close> by blast
-            with T \<open>x < Inf T\<close> have "k < j"
-              by (metis F Inf_hd_in_Eps \<open>x \<notin> T\<close> hd_Suc_eq_Eps mmap_def not_less_eq sorted_wrt_subset subsetD)
+            moreover have "Eps (\<Phi> (F j)) \<subseteq> T"
+              by (metis F hd_Suc_eq_Eps sorted_wrt_subset that)
+            ultimately have "k < j"
+              unfolding mmap_def by (metis Inf_hd_in_Eps \<open>x \<notin> T\<close> in_mono not_less_eq)
             then have "Eps (\<Phi> (F k)) \<in> list.set (F j)"
               by (metis Suc_leI hd_Suc_eq_Eps hd_F_in_F)
             then show "x \<in> Inf ` list.set (F j)"
@@ -451,20 +456,19 @@ proof (rule ccontr)
   next
     let ?n = "Min (T-S)"
     case 2
-    then obtain TS: "?n \<in> T-S" "finite (T-S)"
-      using T unfolding comparables_iff
-      by (meson Diff_eq_empty_iff Min_in finite_Diff init_segment_subset subset_antisym)
+    then have TS: "finite (T-S)" "T - S \<noteq> {}"
+      using T(1) init_segment_subset by (force simp: comparables_iff)+
     then have "?n \<in> N"
-      by (meson Diff_subset_conv TSN in_mono)
+      by (meson Diff_subset_conv Min_in TSN subsetD)
     then have "rejects \<F> (insert ?n S) N"
       using rejects_subset \<open>N \<subseteq> M\<close> by (auto simp: N_def)
-    then have \<section>: "\<not> init_segment T (insert ?n S) \<and> (init_segment (insert ?n S) T \<longrightarrow> insert ?n S = T)"
+    then have \<section>: "\<not> init_segment T (insert ?n S)" "(init_segment (insert ?n S) T \<longrightarrow> insert ?n S = T)"
       using T Diff_partition TSN \<open>?n \<in> N\<close> \<open>finite S\<close>
       by (auto simp: rejects_def comparables_iff disjoint_iff)
     moreover have "S \<lless> {?n}"
       using Sup_nat_less_sets_singleton N \<open>?n \<in> N\<close> \<open>finite S\<close> by blast
     ultimately show ?thesis
-      using 2 TS Min_in init_segment_insert_iff by fastforce
+      using 2 by (metis DiffD1 eq_Min_iff TS init_segment_insert_iff)
   qed
 qed
 
@@ -534,7 +538,7 @@ proof -
     have "hd (F n) \<subseteq> M"
       by (meson Pow_iff Suc.IH hd_in_set subsetD)
     then obtain \<Phi>: "Ball (list.set (F n)) ((\<subseteq>) (Eps (\<Phi> (F n))))" "infinite (Eps (\<Phi> (F n)))" 
-      using order_trans [OF _ sorted_wrt_subset]
+      using order_trans [OF _ sorted_wrt_subset] 
       by (metis Suc.IH Un_subset_iff \<Phi>_Eps \<Phi>_def hd_in_set mem_Collect_eq subsetD)
     then have M: "Eps (\<Phi> (F n)) \<subseteq> M"
       by (meson Pow_iff Suc.IH hd_in_set subset_iff)

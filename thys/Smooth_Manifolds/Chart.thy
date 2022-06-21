@@ -145,7 +145,7 @@ lemma open_inv_chart_image[simp, intro]: "open (inv_chart c ` X)"
 proof -
   have "inv_chart c ` X = c -` X \<inter> domain c"
     using that(2)
-    apply (auto simp: )
+    apply auto
     using image_iff by fastforce
   also have "open \<dots>"
     using that

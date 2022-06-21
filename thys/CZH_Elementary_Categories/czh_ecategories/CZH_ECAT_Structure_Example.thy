@@ -121,7 +121,11 @@ subsubsection\<open>\<open>Rel\<close> is a dagger category\<close>
 lemma (in \<Z>) dagger_category_dagcat_Rel: "dagger_category \<alpha> (dagcat_Rel \<alpha>)"
 proof(intro dagger_categoryI)
   show "category \<alpha> (dagcat_Rel \<alpha>\<lparr>DagCat\<rparr>)" 
-    by (cs_concl cs_simp: dagcat_Rel_components cs_intro: cat_Rel_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: dagcat_Rel_components cs_intro: cat_Rel_cs_intros
+      )
   show "\<dagger>\<^sub>C (dagcat_Rel \<alpha>) :
     op_cat (dagcat_Rel \<alpha>\<lparr>DagCat\<rparr>) \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> dagcat_Rel \<alpha>\<lparr>DagCat\<rparr>"
     unfolding dagcat_Rel_components
@@ -132,10 +136,10 @@ proof(intro dagger_categoryI)
     if "a \<in>\<^sub>\<circ> dagcat_Rel \<alpha>\<lparr>DagCat\<rparr>\<lparr>Obj\<rparr>" for a
     using that
     unfolding dagcat_Rel_components cat_Rel_components(1)
-    by (cs_concl cs_simp: cat_cs_simps cat_Rel_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cat_Rel_cs_simps)
   show "\<dagger>\<^sub>C (dagcat_Rel \<alpha>) \<^sub>C\<^sub>F\<circ> \<dagger>\<^sub>C (dagcat_Rel \<alpha>) = dghm_id (dagcat_Rel \<alpha>\<lparr>DagCat\<rparr>)"
     unfolding dagcat_Rel_components
-    by (cs_concl cs_simp: cf_cn_comp_cf_dag_Rel_cf_dag_Rel)
+    by (cs_concl cs_shallow cs_simp: cf_cn_comp_cf_dag_Rel_cf_dag_Rel)
 qed (auto simp: dagcat_Rel_def)
 
 
@@ -242,8 +246,10 @@ proof-
   interpret \<BB>: monoidal_category \<alpha> \<BB> by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom: "\<D>\<^sub>\<circ> \<AA> = 6\<^sub>\<nat>" by (cs_concl cs_simp: mcat_cs_simps V_cs_simps)
-    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" by (cs_concl cs_simp: mcat_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<AA> = 6\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: mcat_cs_simps V_cs_simps)
+    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" 
+      by (cs_concl cs_shallow cs_simp: mcat_cs_simps V_cs_simps)
     show "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<AA> \<Longrightarrow> \<AA>\<lparr>a\<rparr> = \<BB>\<lparr>a\<rparr>" for a 
       by (unfold dom, elim_in_numeral, insert assms) 
         (auto simp: mcat_field_simps)
@@ -332,7 +338,10 @@ proof(intro cat_Set_is_arrI arr_SetI)
 qed
   (
     use assms in 
-      \<open>cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros\<close>
+      \<open>
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros 
+      \<close>
   )+
 
 lemma (in \<Z>) M\<alpha>_Rel_arrow_rl_is_cat_Set_arr_Vset: 
@@ -347,7 +356,10 @@ proof(intro cat_Set_is_arrI arr_SetI)
 qed
   (
     use assms in 
-      \<open>cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros\<close>
+      \<open>
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros
+      \<close>
   )+
 
 lemma (in \<Z>) M\<alpha>_Rel_arrow_lr_is_cat_Set_arr: 
@@ -519,20 +531,21 @@ lemma (in \<Z>) M\<alpha>_Rel_arrow_rl_M\<alpha>_Rel_arrow_lr[cat_cs_simps]:
     "M\<alpha>_Rel_arrow_rl A B C \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> M\<alpha>_Rel_arrow_lr A B C = 
       cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>(A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C\<rparr>"
 proof-
-  interpret Set: category \<alpha> \<open>cat_Set \<alpha>\<close> by (cs_concl cs_intro: cat_cs_intros)
+  interpret Set: category \<alpha> \<open>cat_Set \<alpha>\<close> 
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from assms have lhs:
     "M\<alpha>_Rel_arrow_rl A B C \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> M\<alpha>_Rel_arrow_lr A B C :
       (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
     by 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_Set_components(1)
           cs_intro: cat_rel_par_Set_cs_intros cat_cs_intros
       )
   then have dom_lhs:
     "\<D>\<^sub>\<circ> ((M\<alpha>_Rel_arrow_rl A B C \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> M\<alpha>_Rel_arrow_lr A B C)\<lparr>ArrVal\<rparr>) =
       (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from assms Set.category_axioms have rhs:
     "cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>(A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C\<rparr> :
       (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
@@ -543,7 +556,7 @@ proof-
       )
   then have dom_rhs: 
     "\<D>\<^sub>\<circ> ((cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>(A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C\<rparr>)\<lparr>ArrVal\<rparr>) = (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   show ?thesis
   proof(rule arr_Set_eqI)
     from lhs show arr_Set_lhs:
@@ -568,12 +581,12 @@ proof-
         unfolding ab_c_def
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_Set_components(1) cat_cs_simps
               cs_intro: cat_rel_par_Set_cs_intros V_cs_intros cat_cs_intros
           )
     qed (use arr_Set_lhs arr_Set_rhs in auto)
-  qed (use lhs rhs in \<open>cs_concl cs_simp: cat_cs_simps\<close>)+
+  qed (use lhs rhs in \<open>cs_concl cs_shallow cs_simp: cat_cs_simps\<close>)+
 qed
 
 lemma (in \<Z>) M\<alpha>_Rel_arrow_rl_M\<alpha>_Rel_arrow_lr'[cat_cs_simps]:
@@ -595,31 +608,32 @@ lemma (in \<Z>) M\<alpha>_Rel_arrow_lr_M\<alpha>_Rel_arrow_rl[cat_cs_simps]:
     "M\<alpha>_Rel_arrow_lr A B C \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> M\<alpha>_Rel_arrow_rl A B C = 
       cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)\<rparr>"
 proof-
-  interpret Set: category \<alpha> \<open>cat_Set \<alpha>\<close> by (cs_concl cs_intro: cat_cs_intros)
+  interpret Set: category \<alpha> \<open>cat_Set \<alpha>\<close> 
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from assms have lhs:
     "M\<alpha>_Rel_arrow_lr A B C \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> M\<alpha>_Rel_arrow_rl A B C :
       A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C) \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_Set_components(1) 
           cs_intro: cat_rel_par_Set_cs_intros cat_cs_intros
       )
   then have dom_lhs:
     "\<D>\<^sub>\<circ> ((M\<alpha>_Rel_arrow_lr A B C \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> M\<alpha>_Rel_arrow_rl A B C)\<lparr>ArrVal\<rparr>) =
       A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from assms Set.category_axioms have rhs:
     "cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)\<rparr> :
       A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C) \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)"
     by 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: cat_Set_components(1) cs_intro: V_cs_intros cat_cs_intros
       )
   then have dom_rhs: 
     "\<D>\<^sub>\<circ> ((cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)\<rparr>)\<lparr>ArrVal\<rparr>) = A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   show ?thesis
   proof(rule arr_Set_eqI)
     from lhs show arr_Set_lhs:
@@ -644,12 +658,12 @@ proof-
         unfolding a_bc_def
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_Set_components(1) cat_cs_simps
               cs_intro: V_cs_intros cat_rel_par_Set_cs_intros cat_cs_intros
           )
     qed (use arr_Set_lhs arr_Set_rhs in auto)
-  qed (use lhs rhs in \<open>cs_concl cs_simp: cat_cs_simps\<close>)+
+  qed (use lhs rhs in \<open>cs_concl cs_shallow cs_simp: cat_cs_simps\<close>)+
 qed
 
 lemma (in \<Z>) M\<alpha>_Rel_arrow_lr_M\<alpha>_Rel_arrow_rl'[cat_cs_simps]:
@@ -670,12 +684,13 @@ subsubsection\<open>Components for \<open>M\<alpha>\<close> for \<open>Rel\<clos
 
 lemma (in \<Z>) 
   assumes "A \<in>\<^sub>\<circ> Vset \<alpha>" and "B \<in>\<^sub>\<circ> Vset \<alpha>" and "C \<in>\<^sub>\<circ> Vset \<alpha>"
-  shows M\<alpha>_Rel_arrow_lr_is_cat_Set_arr_isomorphism_Vset: 
+  shows M\<alpha>_Rel_arrow_lr_is_cat_Set_iso_arr_Vset: 
     "M\<alpha>_Rel_arrow_lr A B C : (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Set \<alpha>\<^esub> A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)"
-    and M\<alpha>_Rel_arrow_rl_is_cat_Set_arr_isomorphism_Vset:
+    and M\<alpha>_Rel_arrow_rl_is_cat_Set_iso_arr_Vset:
     "M\<alpha>_Rel_arrow_rl A B C : A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C) \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Set \<alpha>\<^esub> (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
 proof-
-  interpret Set: category \<alpha> \<open>cat_Set \<alpha>\<close> by (cs_concl cs_intro: cat_cs_intros)
+  interpret Set: category \<alpha> \<open>cat_Set \<alpha>\<close> 
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   have lhs: "M\<alpha>_Rel_arrow_rl A B C : A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C) \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
     by (intro M\<alpha>_Rel_arrow_rl_is_cat_Set_arr_Vset assms)
   from assms have [cat_cs_simps]:
@@ -683,7 +698,7 @@ proof-
       cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>(A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C\<rparr>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_Set_components(1) cat_cs_simps cs_intro: cat_cs_intros
       )
   from assms have [cat_cs_simps]: 
@@ -691,11 +706,11 @@ proof-
       cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>A \<times>\<^sub>\<circ> B \<times>\<^sub>\<circ> C\<rparr>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_Set_components(1) cat_cs_simps cs_intro: cat_cs_intros
       )
   from 
-    Set.is_arr_isomorphismI'
+    Set.is_iso_arrI'
       [
         OF lhs M\<alpha>_Rel_arrow_lr_is_cat_Set_arr_Vset[OF assms], 
         unfolded cat_cs_simps,
@@ -710,9 +725,9 @@ lemma (in \<Z>)
   assumes "A \<in>\<^sub>\<circ> cat_Set \<alpha>\<lparr>Obj\<rparr>" 
     and "B \<in>\<^sub>\<circ> cat_Set \<alpha>\<lparr>Obj\<rparr>" 
     and "C \<in>\<^sub>\<circ> cat_Set \<alpha>\<lparr>Obj\<rparr>"
-  shows M\<alpha>_Rel_arrow_lr_is_cat_Set_arr_isomorphism:
+  shows M\<alpha>_Rel_arrow_lr_is_cat_Set_iso_arr:
     "M\<alpha>_Rel_arrow_lr A B C : (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Set \<alpha>\<^esub> A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)"
-    and M\<alpha>_Rel_arrow_rl_is_cat_Set_arr_isomorphism:
+    and M\<alpha>_Rel_arrow_rl_is_cat_Set_iso_arr:
     "M\<alpha>_Rel_arrow_rl A B C : A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C) \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Set \<alpha>\<^esub> (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
   using assms
   unfolding cat_Set_components(1)
@@ -721,13 +736,13 @@ lemma (in \<Z>)
       all
         \<open>
           intro
-            M\<alpha>_Rel_arrow_lr_is_cat_Set_arr_isomorphism_Vset
-            M\<alpha>_Rel_arrow_rl_is_cat_Set_arr_isomorphism_Vset
+            M\<alpha>_Rel_arrow_lr_is_cat_Set_iso_arr_Vset
+            M\<alpha>_Rel_arrow_rl_is_cat_Set_iso_arr_Vset
         \<close>
     )
 
 lemma (in \<Z>) 
-  M\<alpha>_Rel_arrow_lr_is_cat_Set_arr_isomorphism'[cat_rel_par_Set_cs_intros]:
+  M\<alpha>_Rel_arrow_lr_is_cat_Set_iso_arr'[cat_rel_par_Set_cs_intros]:
   assumes "A \<in>\<^sub>\<circ> cat_Set \<alpha>\<lparr>Obj\<rparr>" 
     and "B \<in>\<^sub>\<circ> cat_Set \<alpha>\<lparr>Obj\<rparr>" 
     and "C \<in>\<^sub>\<circ> cat_Set \<alpha>\<lparr>Obj\<rparr>"
@@ -737,13 +752,13 @@ lemma (in \<Z>)
   shows "M\<alpha>_Rel_arrow_lr A B C : A' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>'\<^esub> B'"
   using assms(1-3) 
   unfolding assms(4-6) 
-  by (rule M\<alpha>_Rel_arrow_lr_is_cat_Set_arr_isomorphism)
+  by (rule M\<alpha>_Rel_arrow_lr_is_cat_Set_iso_arr)
 
 lemmas [cat_rel_par_Set_cs_intros] = 
-  \<Z>.M\<alpha>_Rel_arrow_lr_is_cat_Set_arr_isomorphism'
+  \<Z>.M\<alpha>_Rel_arrow_lr_is_cat_Set_iso_arr'
 
 lemma (in \<Z>) 
-  M\<alpha>_Rel_arrow_rl_is_cat_Set_arr_isomorphism'[cat_rel_par_Set_cs_intros]:
+  M\<alpha>_Rel_arrow_rl_is_cat_Set_iso_arr'[cat_rel_par_Set_cs_intros]:
   assumes "A \<in>\<^sub>\<circ> cat_Set \<alpha>\<lparr>Obj\<rparr>" 
     and "B \<in>\<^sub>\<circ> cat_Set \<alpha>\<lparr>Obj\<rparr>" 
     and "C \<in>\<^sub>\<circ> cat_Set \<alpha>\<lparr>Obj\<rparr>"
@@ -753,18 +768,18 @@ lemma (in \<Z>)
   shows "M\<alpha>_Rel_arrow_rl A B C : A' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>'\<^esub> B'"
   using assms(1-3) 
   unfolding assms(4-6)
-  by (rule M\<alpha>_Rel_arrow_rl_is_cat_Set_arr_isomorphism)
+  by (rule M\<alpha>_Rel_arrow_rl_is_cat_Set_iso_arr)
 
 lemmas [cat_rel_par_Set_cs_intros] = 
-  \<Z>.M\<alpha>_Rel_arrow_rl_is_cat_Set_arr_isomorphism'
+  \<Z>.M\<alpha>_Rel_arrow_rl_is_cat_Set_iso_arr'
 
 lemma (in \<Z>) 
   assumes "A \<in>\<^sub>\<circ> cat_Par \<alpha>\<lparr>Obj\<rparr>" 
     and "B \<in>\<^sub>\<circ> cat_Par \<alpha>\<lparr>Obj\<rparr>" 
     and "C \<in>\<^sub>\<circ> cat_Par \<alpha>\<lparr>Obj\<rparr>"
-  shows M\<alpha>_Rel_arrow_lr_is_cat_Par_arr_isomorphism: 
+  shows M\<alpha>_Rel_arrow_lr_is_cat_Par_iso_arr: 
     "M\<alpha>_Rel_arrow_lr A B C : (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Par \<alpha>\<^esub> A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)"
-    and M\<alpha>_Rel_arrow_rl_is_cat_Par_arr_isomorphism: 
+    and M\<alpha>_Rel_arrow_rl_is_cat_Par_iso_arr: 
     "M\<alpha>_Rel_arrow_rl A B C : A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C) \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Par \<alpha>\<^esub> (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
 proof-
   interpret Set_Par: wide_replete_subcategory \<alpha> \<open>cat_Set \<alpha>\<close> \<open>cat_Par \<alpha>\<close> 
@@ -772,10 +787,10 @@ proof-
   show "M\<alpha>_Rel_arrow_lr A B C : (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Par \<alpha>\<^esub> A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)"
     by 
       (
-        rule Set_Par.wr_subcat_is_arr_isomorphism_is_arr_isomorphism
+        rule Set_Par.wr_subcat_is_iso_arr_is_iso_arr
           [
             THEN iffD1, 
-            OF M\<alpha>_Rel_arrow_lr_is_cat_Set_arr_isomorphism_Vset[
+            OF M\<alpha>_Rel_arrow_lr_is_cat_Set_iso_arr_Vset[
               OF assms[unfolded cat_Par_components]
               ]
           ]
@@ -783,10 +798,10 @@ proof-
   show "M\<alpha>_Rel_arrow_rl A B C : A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C) \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Par \<alpha>\<^esub> (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
     by 
       (
-        rule Set_Par.wr_subcat_is_arr_isomorphism_is_arr_isomorphism
+        rule Set_Par.wr_subcat_is_iso_arr_is_iso_arr
           [
             THEN iffD1, 
-            OF M\<alpha>_Rel_arrow_rl_is_cat_Set_arr_isomorphism_Vset[
+            OF M\<alpha>_Rel_arrow_rl_is_cat_Set_iso_arr_Vset[
               OF assms[unfolded cat_Par_components]
               ]
           ]
@@ -794,7 +809,7 @@ proof-
 qed
 
 lemma (in \<Z>) 
-  M\<alpha>_Rel_arrow_lr_is_cat_Par_arr_isomorphism'[cat_rel_Par_set_cs_intros]:
+  M\<alpha>_Rel_arrow_lr_is_cat_Par_iso_arr'[cat_rel_Par_set_cs_intros]:
   assumes "A \<in>\<^sub>\<circ> cat_Par \<alpha>\<lparr>Obj\<rparr>" 
     and "B \<in>\<^sub>\<circ> cat_Par \<alpha>\<lparr>Obj\<rparr>" 
     and "C \<in>\<^sub>\<circ> cat_Par \<alpha>\<lparr>Obj\<rparr>"
@@ -804,13 +819,13 @@ lemma (in \<Z>)
   shows "M\<alpha>_Rel_arrow_lr A B C : A' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>'\<^esub> B'"
   using assms(1-3) 
   unfolding assms(4-6) 
-  by (rule M\<alpha>_Rel_arrow_lr_is_cat_Par_arr_isomorphism)
+  by (rule M\<alpha>_Rel_arrow_lr_is_cat_Par_iso_arr)
 
 lemmas [cat_rel_Par_set_cs_intros] = 
-  \<Z>.M\<alpha>_Rel_arrow_lr_is_cat_Par_arr_isomorphism'
+  \<Z>.M\<alpha>_Rel_arrow_lr_is_cat_Par_iso_arr'
 
 lemma (in \<Z>) 
-  M\<alpha>_Rel_arrow_rl_is_cat_Par_arr_isomorphism'[cat_rel_Par_set_cs_intros]:
+  M\<alpha>_Rel_arrow_rl_is_cat_Par_iso_arr'[cat_rel_Par_set_cs_intros]:
   assumes "A \<in>\<^sub>\<circ> cat_Par \<alpha>\<lparr>Obj\<rparr>" 
     and "B \<in>\<^sub>\<circ> cat_Par \<alpha>\<lparr>Obj\<rparr>" 
     and "C \<in>\<^sub>\<circ> cat_Par \<alpha>\<lparr>Obj\<rparr>"
@@ -820,18 +835,18 @@ lemma (in \<Z>)
   shows "M\<alpha>_Rel_arrow_rl A B C : A' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>'\<^esub> B'"
   using assms(1-3) 
   unfolding assms(4-6)
-  by (rule M\<alpha>_Rel_arrow_rl_is_cat_Par_arr_isomorphism)
+  by (rule M\<alpha>_Rel_arrow_rl_is_cat_Par_iso_arr)
 
 lemmas [cat_rel_Par_set_cs_intros] = 
-  \<Z>.M\<alpha>_Rel_arrow_rl_is_cat_Par_arr_isomorphism'
+  \<Z>.M\<alpha>_Rel_arrow_rl_is_cat_Par_iso_arr'
 
 lemma (in \<Z>) 
   assumes "A \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>" 
     and "B \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>" 
     and "C \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>"
-  shows M\<alpha>_Rel_arrow_lr_is_cat_Rel_arr_isomorphism: 
+  shows M\<alpha>_Rel_arrow_lr_is_cat_Rel_iso_arr: 
     "M\<alpha>_Rel_arrow_lr A B C : (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)"
-    and M\<alpha>_Rel_arrow_rl_is_cat_Rel_arr_isomorphism: 
+    and M\<alpha>_Rel_arrow_rl_is_cat_Rel_iso_arr: 
     "M\<alpha>_Rel_arrow_rl A B C : A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C) \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
 proof-
   interpret Set_Par: wide_replete_subcategory \<alpha> \<open>cat_Set \<alpha>\<close> \<open>cat_Par \<alpha>\<close> 
@@ -851,10 +866,10 @@ proof-
   show "M\<alpha>_Rel_arrow_lr A B C : (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C)"
     by 
       (
-        rule Set_Rel.wr_subcat_is_arr_isomorphism_is_arr_isomorphism
+        rule Set_Rel.wr_subcat_is_iso_arr_is_iso_arr
           [
             THEN iffD1, 
-            OF M\<alpha>_Rel_arrow_lr_is_cat_Set_arr_isomorphism_Vset[
+            OF M\<alpha>_Rel_arrow_lr_is_cat_Set_iso_arr_Vset[
               OF assms[unfolded cat_Rel_components]
               ]
           ]
@@ -862,10 +877,10 @@ proof-
   show "M\<alpha>_Rel_arrow_rl A B C : A \<times>\<^sub>\<circ> (B \<times>\<^sub>\<circ> C) \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C"
     by 
       (
-        rule Set_Rel.wr_subcat_is_arr_isomorphism_is_arr_isomorphism
+        rule Set_Rel.wr_subcat_is_iso_arr_is_iso_arr
           [
             THEN iffD1, 
-            OF M\<alpha>_Rel_arrow_rl_is_cat_Set_arr_isomorphism_Vset[
+            OF M\<alpha>_Rel_arrow_rl_is_cat_Set_iso_arr_Vset[
               OF assms[unfolded cat_Rel_components]
               ]
           ]
@@ -873,7 +888,7 @@ proof-
 qed
 
 lemma (in \<Z>) 
-  M\<alpha>_Rel_arrow_lr_is_cat_Rel_arr_isomorphism'[cat_Rel_par_set_cs_intros]:
+  M\<alpha>_Rel_arrow_lr_is_cat_Rel_iso_arr'[cat_Rel_par_set_cs_intros]:
   assumes "A \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>" 
     and "B \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>" 
     and "C \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>"
@@ -883,13 +898,13 @@ lemma (in \<Z>)
   shows "M\<alpha>_Rel_arrow_lr A B C : A' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>'\<^esub> B'"
   using assms(1-3) 
   unfolding assms(4-6) 
-  by (rule M\<alpha>_Rel_arrow_lr_is_cat_Rel_arr_isomorphism)
+  by (rule M\<alpha>_Rel_arrow_lr_is_cat_Rel_iso_arr)
 
 lemmas [cat_Rel_par_set_cs_intros] =
-  \<Z>.M\<alpha>_Rel_arrow_lr_is_cat_Rel_arr_isomorphism'
+  \<Z>.M\<alpha>_Rel_arrow_lr_is_cat_Rel_iso_arr'
 
 lemma (in \<Z>) 
-  M\<alpha>_Rel_arrow_rl_is_cat_Rel_arr_isomorphism'[cat_Rel_par_set_cs_intros]:
+  M\<alpha>_Rel_arrow_rl_is_cat_Rel_iso_arr'[cat_Rel_par_set_cs_intros]:
   assumes "A \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>" 
     and "B \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>" 
     and "C \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>"
@@ -899,10 +914,10 @@ lemma (in \<Z>)
   shows "M\<alpha>_Rel_arrow_rl A B C : A' \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>'\<^esub> B'"
   using assms(1-3) 
   unfolding assms(4-6)
-  by (rule M\<alpha>_Rel_arrow_rl_is_cat_Rel_arr_isomorphism)
+  by (rule M\<alpha>_Rel_arrow_rl_is_cat_Rel_iso_arr)
 
 lemmas [cat_Rel_par_set_cs_intros] = 
-  \<Z>.M\<alpha>_Rel_arrow_rl_is_cat_Rel_arr_isomorphism'
+  \<Z>.M\<alpha>_Rel_arrow_rl_is_cat_Rel_iso_arr'
 
 
 
@@ -960,7 +975,7 @@ proof-
 
   interpret cf_prod: is_functor 
     \<alpha> \<open>cat_Rel \<alpha> \<times>\<^sub>C cat_Rel \<alpha>\<close> \<open>cat_Rel \<alpha>\<close> \<open>cf_prod_2_Rel (cat_Rel \<alpha>)\<close>
-    by (cs_concl cs_intro: cat_cs_intros cat_Rel_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_Rel_cs_intros)
 
   show ?thesis
   proof(intro is_iso_ntcfI is_ntcfI')
@@ -984,7 +999,7 @@ proof-
         unfolding ABC_def
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_intro:
                 cat_cs_intros cat_Rel_par_set_cs_intros cat_prod_cs_intros
               cs_simp: cat_cs_simps cat_Rel_cs_simps
@@ -994,7 +1009,7 @@ proof-
       cf_blcomp (cf_prod_2_Rel (cat_Rel \<alpha>))\<lparr>ObjMap\<rparr>\<lparr>ABC\<rparr> \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub>
       cf_brcomp (cf_prod_2_Rel (cat_Rel \<alpha>))\<lparr>ObjMap\<rparr>\<lparr>ABC\<rparr>"
       if "ABC \<in>\<^sub>\<circ> (cat_Rel \<alpha>^\<^sub>C\<^sub>3)\<lparr>Obj\<rparr>" for ABC
-      using that by (simp add: cat_Rel_is_arr_isomorphismD(1))
+      using that by (simp add: cat_Rel_is_iso_arrD(1))
     show 
       "M\<alpha>_Rel (cat_Rel \<alpha>)\<lparr>NTMap\<rparr>\<lparr>ABC'\<rparr> \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub>
         cf_blcomp (cf_prod_2_Rel (cat_Rel \<alpha>))\<lparr>ArrMap\<rparr>\<lparr>HGF\<rparr> =
@@ -1047,16 +1062,20 @@ proof-
           \<close>
 
       have [cat_cs_simps]:
-        "?ABC' \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> prod_2_Rel (prod_2_Rel H G) F =
-          prod_2_Rel H (prod_2_Rel G F) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?ABC"
+        "?ABC' \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> (H \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l G) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l  F =
+          H \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (G \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l F) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?ABC"
       proof-
 
         from H_is_arr G_is_arr F_is_arr have lhs:
-          "?ABC' \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> prod_2_Rel (prod_2_Rel H G) F :
+          "?ABC' \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> (H \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l G) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l F :
             (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> A' \<times>\<^sub>\<circ> (B' \<times>\<^sub>\<circ> C')"
-          by (cs_concl cs_intro: cat_Rel_par_set_cs_intros cat_cs_intros)
+          by 
+            (
+              cs_concl cs_shallow 
+                cs_intro: cat_Rel_par_set_cs_intros cat_cs_intros
+            )
         from H_is_arr G_is_arr F_is_arr have rhs:
-          "prod_2_Rel H (prod_2_Rel G F) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?ABC :
+          "H \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (G \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l F) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?ABC :
             (A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> A' \<times>\<^sub>\<circ> (B' \<times>\<^sub>\<circ> C')"
           by (cs_concl cs_intro: cat_Rel_par_set_cs_intros cat_cs_intros)
         
@@ -1064,10 +1083,10 @@ proof-
         proof(rule arr_Rel_eqI)
 
           from lhs show arr_Rel_lhs: 
-            "arr_Rel \<alpha> (?ABC' \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> prod_2_Rel (prod_2_Rel H G) F)"
+            "arr_Rel \<alpha> (?ABC' \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> (H \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l G) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l F)"
             by (auto dest: cat_Rel_is_arrD)
           from rhs show arr_Rel_rhs: 
-            "arr_Rel \<alpha> (prod_2_Rel H (prod_2_Rel G F) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?ABC)"
+            "arr_Rel \<alpha> (H \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (G \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l F) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?ABC)"
             by (auto dest: cat_Rel_is_arrD)
 
           have [cat_cs_simps]: "?ABC'\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> ?HG_F = ?H_GF \<circ>\<^sub>\<circ> ?ABC\<lparr>ArrVal\<rparr>"
@@ -1077,13 +1096,13 @@ proof-
               where abc_abc''_def: "abc_abc'' = \<langle>abc, abc''\<rangle>"
                 and abc_abc': "\<langle>abc, abc'\<rangle> \<in>\<^sub>\<circ> ?HG_F"
                 and abc'_abc'': "\<langle>abc', abc''\<rangle> \<in>\<^sub>\<circ> ?ABC'\<lparr>ArrVal\<rparr>"
-              by clarsimp
+              by (elim vcompE)
             from abc_abc' obtain ab c ab' c' 
               where abc_abc'_def: "\<langle>abc, abc'\<rangle> = \<langle>\<langle>ab, c\<rangle>, \<langle>ab', c'\<rangle>\<rangle>"
                 and ab_ab':
                   "\<langle>ab, ab'\<rangle> \<in>\<^sub>\<circ> prod_2_Rel_ArrVal (H\<lparr>ArrVal\<rparr>) (G\<lparr>ArrVal\<rparr>)"
                 and cc': "\<langle>c, c'\<rangle> \<in>\<^sub>\<circ> F\<lparr>ArrVal\<rparr>"
-              by auto
+              by (meson prod_2_Rel_ArrValE) 
             then have abc_def: "abc = \<langle>ab, c\<rangle>" and abc'_def: "abc' = \<langle>ab', c'\<rangle>" 
               by auto
             from ab_ab' obtain a b a' b'
@@ -1106,14 +1125,14 @@ proof-
               by (simp add: vsv.vsv_appI[OF M\<alpha>_Rel_arrow_lr_ArrVal_vsv])
             also from a' b' c' have "\<dots> = \<langle>a', \<langle>b', c'\<rangle>\<rangle>"
               unfolding abc'_def ab'_def
-              by (cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros)
+              by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: V_cs_intros)
             finally have abc''_def: "abc'' = \<langle>a', \<langle>b', c'\<rangle>\<rangle>" by auto
             from aa' bb' cc' a a' b b' c c' show 
               "abc_abc'' \<in>\<^sub>\<circ> ?H_GF \<circ>\<^sub>\<circ> ?ABC\<lparr>ArrVal\<rparr>"
               unfolding abc_abc''_def abc_def abc'_def abc''_def ab'_def ab_def
               by (intro vcompI prod_2_Rel_ArrValI)
                 (
-                  cs_concl 
+                  cs_concl cs_shallow
                     cs_simp: cat_cs_simps 
                     cs_intro: 
                       vsv.vsv_ex1_app2[THEN iffD1] 
@@ -1127,13 +1146,13 @@ proof-
               where abc_abc''_def: "abc_abc'' = \<langle>abc, abc''\<rangle>"
                 and abc_abc': "\<langle>abc, abc'\<rangle> \<in>\<^sub>\<circ> ?ABC\<lparr>ArrVal\<rparr>"
                 and abc'_abc'': "\<langle>abc', abc''\<rangle> \<in>\<^sub>\<circ> ?H_GF"
-              by clarsimp
+              by (elim vcompE)
             from abc'_abc'' obtain a' bc' a'' bc'' 
               where abc'_abc''_def: "\<langle>abc', abc''\<rangle> = \<langle>\<langle>a', bc'\<rangle>, \<langle>a'', bc''\<rangle>\<rangle>"
                 and aa'': "\<langle>a', a''\<rangle> \<in>\<^sub>\<circ> H\<lparr>ArrVal\<rparr>"
                 and bc'_bc'':
                   "\<langle>bc', bc''\<rangle> \<in>\<^sub>\<circ> prod_2_Rel_ArrVal (G\<lparr>ArrVal\<rparr>) (F\<lparr>ArrVal\<rparr>)"
-              by auto
+              by (meson prod_2_Rel_ArrValE) 
             then have abc'_def: "abc' = \<langle>a', bc'\<rangle>" 
               and abc''_def: "abc'' = \<langle>a'', bc''\<rangle>" 
               by auto
@@ -1166,19 +1185,19 @@ proof-
               by (simp add: vsv.vsv_appI[OF M\<alpha>_Rel_arrow_lr_ArrVal_vsv])
             also from a b c have "\<dots> = \<langle>a, \<langle>b, c\<rangle>\<rangle>"
               unfolding abc_def bc'_def
-              by (cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros)
+              by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: V_cs_intros)
             finally have abc'_def': "abc' = \<langle>a, \<langle>b, c\<rangle>\<rangle>" by auto
             with abc'_def[unfolded bc'_def] have [cat_cs_simps]:
               "a = a'" "b = b'" "c = c'"
               by auto
             from a'' b'' c'' have "\<langle>\<langle>a'', b''\<rangle>, c''\<rangle> \<in>\<^sub>\<circ> (A' \<times>\<^sub>\<circ> B') \<times>\<^sub>\<circ> C'"
-              by (cs_concl cs_intro: V_cs_intros)
+              by (cs_concl cs_shallow cs_intro: V_cs_intros)
             with aa'' bb'' cc'' a a' b b' c c' show 
               "abc_abc'' \<in>\<^sub>\<circ> ?ABC'\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> ?HG_F"
               unfolding abc_abc''_def abc_def abc'_def abc''_def bc''_def
               by (intro vcompI prod_2_Rel_ArrValI)
                (
-                 cs_concl 
+                 cs_concl cs_shallow
                   cs_simp: cat_cs_simps 
                   cs_intro: 
                     vsv.vsv_ex1_app2[THEN iffD1] 
@@ -1187,11 +1206,11 @@ proof-
           qed
 
           from that H_is_arr G_is_arr F_is_arr show 
-            "(?ABC' \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> prod_2_Rel (prod_2_Rel H G) F)\<lparr>ArrVal\<rparr> =
-              (prod_2_Rel H (prod_2_Rel G F) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?ABC)\<lparr>ArrVal\<rparr>"
+            "(?ABC' \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> (H \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l G) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l F)\<lparr>ArrVal\<rparr> =
+              (H \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (G \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l F) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?ABC)\<lparr>ArrVal\<rparr>"
             by
               (
-                cs_concl
+                cs_concl 
                   cs_simp:
                     prod_2_Rel_components comp_Rel_components
                     cat_Rel_cs_simps cat_cs_simps 
@@ -1215,7 +1234,7 @@ proof-
 
     qed
 
-  qed (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
+  qed (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
 
 qed
 
@@ -1305,7 +1324,7 @@ proof-
 
   interpret cf_prod: is_functor 
     \<alpha> \<open>cat_Rel \<alpha> \<times>\<^sub>C cat_Rel \<alpha>\<close> \<open>cat_Rel \<alpha>\<close> \<open>cf_prod_2_Rel (cat_Rel \<alpha>)\<close>
-    by (cs_concl cs_intro: cat_cs_intros cat_Rel_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_Rel_cs_intros)
   
   show ?thesis
   proof(intro is_iso_ntcfI is_ntcfI')
@@ -1315,7 +1334,7 @@ proof-
     from assms show "?cf_prod : cat_Rel \<alpha> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Rel \<alpha>"
       by
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_Rel_components(1) cat_cs_simps 
             cs_intro: cat_cs_intros V_cs_intros
         )
@@ -1325,7 +1344,7 @@ proof-
       using assms that
       by
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_Rel_components(1) V_cs_simps cat_cs_simps 
             cs_intro:
               cat_Rel_par_set_cs_intros
@@ -1333,7 +1352,7 @@ proof-
               V_cs_intros
               cat_prod_cs_intros
         )
-    with cat_Rel_is_arr_isomorphismD[OF this] show 
+    with cat_Rel_is_iso_arrD[OF this] show 
       "Ml_Rel (cat_Rel \<alpha>) a\<lparr>NTMap\<rparr>\<lparr>B\<rparr> :
         ?cf_prod\<lparr>ObjMap\<rparr>\<lparr>B\<rparr> \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> cf_id (cat_Rel \<alpha>)\<lparr>ObjMap\<rparr>\<lparr>B\<rparr>"
       if "B \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>" for B
@@ -1349,7 +1368,7 @@ proof-
         by (intro F)+
       have [cat_cs_simps]:
         "vsnd_arrow (set {a}) B \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> 
-          prod_2_Rel (cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>set {a}\<rparr>) F =
+          (cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>set {a}\<rparr>) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l F =
             F \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> vsnd_arrow (set {a}) A"
         (is \<open>?B2 \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?aF = F \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?A2\<close>)
       proof-
@@ -1357,7 +1376,7 @@ proof-
           "?B2 \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?aF : set {a} \<times>\<^sub>\<circ> A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B"
           by
             (
-              cs_concl
+              cs_concl 
                 cs_simp: cat_Rel_components(1) cat_cs_simps
                 cs_intro: cat_Rel_par_set_cs_intros cat_cs_intros V_cs_intros
             )
@@ -1365,7 +1384,7 @@ proof-
           "F \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?A2 : set {a} \<times>\<^sub>\<circ> A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B"
           by
             (
-              cs_concl
+              cs_concl 
                 cs_simp: cat_Rel_components(1) cat_cs_simps
                 cs_intro: cat_Rel_par_set_cs_intros cat_cs_intros V_cs_intros
             )
@@ -1380,7 +1399,7 @@ proof-
               and xx'_yy':
                 "\<langle>xx', yy'\<rangle> \<in>\<^sub>\<circ> prod_2_Rel_ArrVal (vid_on (set {a})) (F\<lparr>ArrVal\<rparr>)"
               and yy'_z: "\<langle>yy', z\<rangle> \<in>\<^sub>\<circ> ?B2\<lparr>ArrVal\<rparr>" 
-            by auto
+            by (meson vcompE prod_2_Rel_ArrValE) 
           from xx'_yy' obtain x x' y y'
             where "\<langle>xx', yy'\<rangle> = \<langle>\<langle>x, x'\<rangle>, \<langle>y, y'\<rangle>\<rangle>"
               and "\<langle>x, y\<rangle> \<in>\<^sub>\<circ> vid_on (set {a})"
@@ -1421,7 +1440,7 @@ proof-
                 insert z
               )
               (
-                cs_concl 
+                cs_concl cs_shallow
                   cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros
               )
         qed
@@ -1437,7 +1456,7 @@ proof-
             "(?B2 \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?aF)\<lparr>ArrVal\<rparr> = (F \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?A2)\<lparr>ArrVal\<rparr>"
             by (*slow*)
               (
-                cs_concl
+                cs_concl 
                   cs_simp: cat_cs_simps cat_Rel_cs_simps
                   cs_intro: cat_cs_intros cat_Rel_par_set_cs_intros V_cs_intros
                   cs_simp: 
@@ -1452,7 +1471,7 @@ proof-
       from that assms show ?thesis
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps
               cs_intro: cat_cs_intros V_cs_intros cat_prod_cs_intros
               cs_simp: cat_Rel_components(1) V_cs_simps
@@ -1487,7 +1506,7 @@ proof-
 
   interpret cf_prod: is_functor 
     \<alpha> \<open>cat_Rel \<alpha> \<times>\<^sub>C cat_Rel \<alpha>\<close> \<open>cat_Rel \<alpha>\<close> \<open>cf_prod_2_Rel (cat_Rel \<alpha>)\<close>
-    by (cs_concl cs_intro: cat_cs_intros cat_Rel_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_Rel_cs_intros)
   
   show ?thesis
   proof(intro is_iso_ntcfI is_ntcfI')
@@ -1497,7 +1516,7 @@ proof-
     from assms show "?cf_prod : cat_Rel \<alpha> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Rel \<alpha>"
       by
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_Rel_components(1) cat_cs_simps 
             cs_intro: cat_cs_intros V_cs_intros
         )
@@ -1507,7 +1526,7 @@ proof-
       using assms that
       by
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_Rel_components(1) V_cs_simps cat_cs_simps
             cs_intro:
               cat_cs_intros
@@ -1515,7 +1534,7 @@ proof-
               V_cs_intros
               cat_prod_cs_intros
         )
-    with cat_Rel_is_arr_isomorphismD[OF this] show 
+    with cat_Rel_is_iso_arrD[OF this] show 
       "Mr_Rel (cat_Rel \<alpha>) b\<lparr>NTMap\<rparr>\<lparr>B\<rparr> :
         ?cf_prod\<lparr>ObjMap\<rparr>\<lparr>B\<rparr> \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> cf_id (cat_Rel \<alpha>)\<lparr>ObjMap\<rparr>\<lparr>B\<rparr>"
       if "B \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>" for B
@@ -1531,7 +1550,7 @@ proof-
         by (intro F)+
       have [cat_cs_simps]:
         "vfst_arrow B (set {b}) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub>
-          prod_2_Rel F (cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>set {b}\<rparr>) =
+          F \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>set {b}\<rparr>) =
             F \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> vfst_arrow A (set {b})"
         (is \<open>?B1 \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?bF = F \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?A1\<close>)
       proof-
@@ -1539,7 +1558,7 @@ proof-
           "?B1 \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?bF : A \<times>\<^sub>\<circ> set {b} \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B"
           by
             (
-              cs_concl
+              cs_concl 
                 cs_simp: cat_Rel_components(1) cat_cs_simps
                 cs_intro: cat_cs_intros cat_Rel_par_set_cs_intros V_cs_intros
             )
@@ -1547,7 +1566,7 @@ proof-
           "F \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?A1 : A \<times>\<^sub>\<circ> set {b} \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B"
           by
             (
-              cs_concl
+              cs_concl 
                 cs_simp: cat_Rel_components(1) cat_cs_simps
                 cs_intro: cat_cs_intros cat_Rel_par_set_cs_intros V_cs_intros
             )
@@ -1562,7 +1581,7 @@ proof-
               and xx'_yy':
                 "\<langle>xx', yy'\<rangle> \<in>\<^sub>\<circ> prod_2_Rel_ArrVal (F\<lparr>ArrVal\<rparr>) (vid_on (set {b}))"
               and yy'_z: "\<langle>yy', z\<rangle> \<in>\<^sub>\<circ> ?B1\<lparr>ArrVal\<rparr>" 
-            by auto
+            by (meson vcompE prod_2_Rel_ArrValE) 
           from xx'_yy' obtain x x' y y'
             where "\<langle>xx', yy'\<rangle> = \<langle>\<langle>x, x'\<rangle>, \<langle>y, y'\<rangle>\<rangle>"
               and "\<langle>x', y'\<rangle> \<in>\<^sub>\<circ> vid_on (set {b})"
@@ -1603,7 +1622,7 @@ proof-
                 insert z
               )
               (
-                cs_concl
+                cs_concl cs_shallow
                   cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_cs_intros
               )
         qed
@@ -1619,7 +1638,7 @@ proof-
             "(?B1 \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?bF)\<lparr>ArrVal\<rparr> = (F \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> ?A1)\<lparr>ArrVal\<rparr>"
             by (*slow*)
               (
-                cs_concl 
+                cs_concl  
                   cs_simp: cat_cs_simps cat_Rel_cs_simps 
                   cs_intro: cat_cs_intros cat_Rel_par_set_cs_intros V_cs_intros 
                   cs_simp:
@@ -1634,7 +1653,7 @@ proof-
       from that assms show ?thesis
         by
           (
-            cs_concl 
+            cs_concl  
               cs_simp: cat_cs_simps 
               cs_intro: cat_cs_intros V_cs_intros cat_prod_cs_intros
               cs_simp: cat_Rel_components(1) V_cs_simps
@@ -1721,25 +1740,30 @@ proof-
   proof(rule monoidal_categoryI)
     show "vfsequence (mcat_Rel \<alpha> a)" unfolding mcat_Rel_def by auto
     show "category \<alpha> (mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>)"
-      unfolding mcat_Rel_components by (cs_concl cs_intro: cat_cs_intros)
+      unfolding mcat_Rel_components 
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     show "mcat_Rel \<alpha> a\<lparr>Mcf\<rparr> :
       mcat_Rel \<alpha> a\<lparr>Mcat\<rparr> \<times>\<^sub>C mcat_Rel \<alpha> a\<lparr>Mcat\<rparr> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>"
-      unfolding mcat_Rel_components by (cs_concl cs_intro: cat_cs_intros)
+      unfolding mcat_Rel_components 
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     show "mcat_Rel \<alpha> a\<lparr>M\<alpha>\<rparr> :
       cf_blcomp (mcat_Rel \<alpha> a\<lparr>Mcf\<rparr>) \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o cf_brcomp (mcat_Rel \<alpha> a\<lparr>Mcf\<rparr>) : 
       mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>^\<^sub>C\<^sub>3 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>"
-      unfolding mcat_Rel_components by (cs_concl cs_intro: cat_cs_intros)
+      unfolding mcat_Rel_components 
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     from assms show "mcat_Rel \<alpha> a\<lparr>Ml\<rparr> :
       mcat_Rel \<alpha> a\<lparr>Mcf\<rparr>\<^bsub>mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>,mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>\<^esub> (mcat_Rel \<alpha> a\<lparr>Me\<rparr>,-)\<^sub>C\<^sub>F
         \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o 
       cf_id (mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>) :
       mcat_Rel \<alpha> a\<lparr>Mcat\<rparr> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>"
-      unfolding mcat_Rel_components by (cs_concl cs_intro: cat_cs_intros)
+      unfolding mcat_Rel_components 
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     from assms show "mcat_Rel \<alpha> a\<lparr>Mr\<rparr> :
       mcat_Rel \<alpha> a\<lparr>Mcf\<rparr>\<^bsub>mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>,mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>\<^esub> (-,mcat_Rel \<alpha> a\<lparr>Me\<rparr>)\<^sub>C\<^sub>F
         \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o 
       cf_id (mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>) : mcat_Rel \<alpha> a\<lparr>Mcat\<rparr> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>"
-      unfolding mcat_Rel_components by (cs_concl cs_intro: cat_cs_intros)
+      unfolding mcat_Rel_components 
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     show "vcard (mcat_Rel \<alpha> a) = 6\<^sub>\<nat>"
       unfolding mcat_Rel_def by (simp add: nat_omega_simps)
     from assms show "mcat_Rel \<alpha> a\<lparr>Me\<rparr> \<in>\<^sub>\<circ> mcat_Rel \<alpha> a\<lparr>Mcat\<rparr>\<lparr>Obj\<rparr>"
@@ -1764,10 +1788,10 @@ proof-
     proof-
 
       have [cat_cs_simps]:
-        "prod_2_Rel (cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>A\<rparr>) (M\<alpha>_Rel_arrow_lr B C D) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub>
+        "(cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>A\<rparr>) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (M\<alpha>_Rel_arrow_lr B C D) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub>
           (
             M\<alpha>_Rel_arrow_lr A (B \<times>\<^sub>\<circ> C) D \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub>
-            prod_2_Rel (M\<alpha>_Rel_arrow_lr A B C) (cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>D\<rparr>)
+            (M\<alpha>_Rel_arrow_lr A B C) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>D\<rparr>)
           ) =
             M\<alpha>_Rel_arrow_lr A B (C \<times>\<^sub>\<circ> D) \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub>
               M\<alpha>_Rel_arrow_lr (A \<times>\<^sub>\<circ> B) C D"
@@ -1781,10 +1805,10 @@ proof-
       proof-
 
         have [cat_cs_simps]:
-          "prod_2_Rel (cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>A\<rparr>) (M\<alpha>_Rel_arrow_lr B C D) \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub>
+          "(cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>A\<rparr>) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (M\<alpha>_Rel_arrow_lr B C D) \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub>
             (
               ?A_BC_D \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> 
-              prod_2_Rel (M\<alpha>_Rel_arrow_lr A B C) (cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>D\<rparr>)
+              (M\<alpha>_Rel_arrow_lr A B C) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>D\<rparr>)
             ) = ?A_B_CD \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> ?AB_C_D"
           (
             is 
@@ -1800,20 +1824,20 @@ proof-
             unfolding mcat_Rel_components cat_Rel_components(1)
             by
               (
-                cs_concl
+                cs_concl cs_shallow
                   cs_simp: cat_Set_components(1)
                   cs_intro: cat_rel_par_Set_cs_intros cat_cs_intros V_cs_intros
                )
           then have dom_lhs:
             "\<D>\<^sub>\<circ> ((?A_BCD \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> (?A_BC_D \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> ?ABC_D))\<lparr>ArrVal\<rparr>) = 
               ((A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C) \<times>\<^sub>\<circ> D"
-            by (cs_concl cs_simp: cat_cs_simps)
+            by (cs_concl cs_shallow cs_simp: cat_cs_simps)
           from that have rhs: "?A_B_CD \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> ?AB_C_D :
             ((A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C) \<times>\<^sub>\<circ> D \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> A \<times>\<^sub>\<circ> B \<times>\<^sub>\<circ> C \<times>\<^sub>\<circ> D"
             unfolding mcat_Rel_components cat_Rel_components(1)
             by
               (
-                cs_concl
+                cs_concl cs_shallow
                   cs_simp: cat_Rel_components(1) cat_Set_components(1) 
                   cs_intro: 
                     cat_cs_intros V_cs_intros M\<alpha>_Rel_arrow_lr_is_cat_Set_arr' 
@@ -1821,7 +1845,7 @@ proof-
           then have dom_rhs:
             "\<D>\<^sub>\<circ> ((?A_B_CD \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> ?AB_C_D)\<lparr>ArrVal\<rparr>) = 
               ((A \<times>\<^sub>\<circ> B) \<times>\<^sub>\<circ> C) \<times>\<^sub>\<circ> D"
-            by (cs_concl cs_simp: cat_cs_simps)
+            by (cs_concl cs_shallow cs_simp: cat_cs_simps)
           show ?thesis
           proof(rule arr_Set_eqI)
             from lhs show arr_Set_lhs: 
@@ -1851,7 +1875,7 @@ proof-
                 unfolding abcd_def mcat_Rel_components(1) cat_Rel_components(1)
                 by (*slow*)
                   (
-                    cs_concl
+                    cs_concl cs_shallow
                       cs_simp: 
                         cat_Set_components(1) 
                         cat_cs_simps 
@@ -1860,14 +1884,14 @@ proof-
                         cat_cs_intros cat_rel_par_Set_cs_intros V_cs_intros
                   )
             qed (use arr_Set_lhs arr_Set_rhs in auto)
-          qed (use lhs rhs in \<open>cs_concl cs_simp: cat_cs_simps\<close>)+
+          qed (use lhs rhs in \<open>cs_concl cs_shallow cs_simp: cat_cs_simps\<close>)+
         qed
 
         from assms that show ?thesis
           unfolding mcat_Rel_components cat_Rel_components(1)
           by
             (
-              cs_concl
+              cs_concl cs_shallow
                 cs_simp:
                   cat_cs_simps
                   cat_Rel_components(1)
@@ -1883,7 +1907,7 @@ proof-
         unfolding mcat_Rel_components cat_Rel_components(1)
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_Rel_components(1) cat_cs_simps
               cs_intro: 
                 cat_cs_intros 
@@ -1906,9 +1930,9 @@ proof-
       note [cat_cs_simps] = set_empty
   
       have [cat_cs_simps]: 
-        "prod_2_Rel (cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>A\<rparr>) (vsnd_arrow (set {a}) B) \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub>
+        "(cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>A\<rparr>) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (vsnd_arrow (set {a}) B) \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub>
           M\<alpha>_Rel_arrow_lr A (set {a}) B =
-            prod_2_Rel (vfst_arrow A (set {a})) (cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>B\<rparr>)"
+            (vfst_arrow A (set {a})) \<^sub>A\<times>\<^sub>R\<^sub>e\<^sub>l (cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>B\<rparr>)"
         (is \<open>?A_aB \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> ?AaB = ?Aa_B\<close>)
       proof-
         from assms that have lhs: 
@@ -1916,24 +1940,24 @@ proof-
           unfolding mcat_Rel_components cat_Rel_components(1)
           by 
             (
-              cs_concl 
+              cs_concl cs_shallow 
                 cs_simp: cat_cs_simps cat_Rel_components(1) cat_Set_components(1)
                 cs_intro: cat_cs_intros cat_rel_par_Set_cs_intros V_cs_intros
             )
         then have dom_lhs: 
           "\<D>\<^sub>\<circ> ((?A_aB \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> ?AaB)\<lparr>ArrVal\<rparr>) = (A \<times>\<^sub>\<circ> set {a}) \<times>\<^sub>\<circ> B"
-          by (cs_concl cs_simp: cat_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps)
         from assms that have rhs:
           "?Aa_B : (A \<times>\<^sub>\<circ> set {a}) \<times>\<^sub>\<circ> B \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> A \<times>\<^sub>\<circ> B"
           unfolding mcat_Rel_components cat_Rel_components(1)
           by
             (
-              cs_concl
+              cs_concl cs_shallow
                 cs_simp: cat_cs_simps cat_Set_components(1)
                 cs_intro: cat_cs_intros cat_rel_par_Set_cs_intros V_cs_intros
             )
         then have dom_rhs: "\<D>\<^sub>\<circ> (?Aa_B\<lparr>ArrVal\<rparr>) = (A \<times>\<^sub>\<circ> set {a}) \<times>\<^sub>\<circ> B"
-          by (cs_concl cs_simp: cat_cs_simps)
+          by (cs_concl cs_shallow cs_simp: cat_cs_simps)
         show ?thesis
         proof(rule arr_Set_eqI)
           from lhs show arr_Set_lhs: "arr_Set \<alpha> (?A_aB \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> ?AaB)"
@@ -1951,7 +1975,7 @@ proof-
               unfolding xay_def mcat_Rel_components cat_Rel_components(1)
               by
                 (
-                  cs_concl
+                  cs_concl cs_shallow
                     cs_simp:
                       cat_Rel_components(1) cat_Set_components(1)
                       cat_cs_simps cat_rel_par_Set_cs_simps 
@@ -1966,7 +1990,7 @@ proof-
         unfolding mcat_Rel_components cat_Rel_components(1)
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: 
                 cat_cs_simps 
                 cat_Rel_components(1) 
@@ -2097,8 +2121,10 @@ proof-
   interpret \<BB>: dagger_monoidal_category \<alpha> \<BB> by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom: "\<D>\<^sub>\<circ> \<AA> = 7\<^sub>\<nat>" by (cs_concl cs_simp: dmcat_cs_simps V_cs_simps)
-    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" by (cs_concl cs_simp: dmcat_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<AA> = 7\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: dmcat_cs_simps V_cs_simps)
+    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" 
+      by (cs_concl cs_shallow cs_simp: dmcat_cs_simps V_cs_simps)
     show "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<AA> \<Longrightarrow> \<AA>\<lparr>a\<rparr> = \<BB>\<lparr>a\<rparr>" for a 
       by (unfold dom, elim_in_numeral, insert assms) 
         (auto simp: dmcat_field_simps)
@@ -2279,7 +2305,7 @@ proof-
       unfolding dmcat_Rel_components
       by
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cf_dag_Rel_ArrMap_app_prod_2_Rel cat_cs_simps cat_op_simps
             cs_intro: cat_cs_intros cat_prod_cs_intros cat_op_intros
         )
@@ -2306,7 +2332,7 @@ proof-
         unfolding dmcat_Rel_components BCD_def
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_Rel_cs_simps cat_cs_simps
               cs_intro: 
                 cat_Rel_is_arrD
@@ -2323,7 +2349,7 @@ proof-
       unfolding dmcat_Rel_components
       by
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_Rel_cs_simps
             cs_intro: cat_Rel_is_arrD cat_cs_intros cat_arrow_cs_intros
         )+
@@ -2335,7 +2361,7 @@ proof-
       unfolding dmcat_Rel_components
       by
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_Rel_cs_simps
             cs_intro: cat_Rel_is_arrD cat_cs_intros cat_arrow_cs_intros
         )+

@@ -71,7 +71,22 @@ sig
   val solve_root: int * status -> int * status
 end;
 
-structure ProofStatus : PROOFSTATUS =
+functor ProofStatus(
+  structure Auto2Data: AUTO2_DATA;
+  structure BoxItem: BOXITEM;
+  structure ItemIO: ITEM_IO;
+  structure Normalizer: NORMALIZER;
+  structure Logic_ProofSteps: LOGIC_PROOFSTEPS;
+  structure Property: PROPERTY;
+  structure PropertyData: PROPERTY_DATA;
+  structure ProofStepData: PROOFSTEP_DATA;
+  structure RewriteTable: REWRITE_TABLE;
+  structure Status: STATUS;
+  structure UtilBase: UTIL_BASE;
+  structure UtilLogic: UTIL_LOGIC;
+  structure Update: UPDATE;
+  structure WellformData: WELLFORM_DATA;
+  ): PROOFSTATUS =
 struct
 
 fun check_hyps id th (st as {ctxt, ...}) =
@@ -298,8 +313,8 @@ fun get_rewr_terms ctxt item =
                              |> distinct (op aconv)
                              |> filter_out Util.has_vars
       val headt = if ty_str = TY_PROP then
-                    if is_neg (the_single ts) then
-                      [dest_not (the_single ts)]
+                    if UtilLogic.is_neg (the_single ts) then
+                      [UtilLogic.dest_not (the_single ts)]
                     else ts
                   else []
     in
@@ -316,7 +331,7 @@ fun get_rewr_terms2 ctxt item =
       rewr_terms |> maps UtilLogic.get_all_subterms_skip_if
                  |> distinct (op aconv)
                  |> filter_out Util.has_vars
-                 |> filter_out (fn t => fastype_of t = boolT)
+                 |> filter_out (fn t => fastype_of t = UtilBase.boolT)
     end
 
 fun process_add_terms id sc items (st as {ctxt, ...}) =
@@ -335,12 +350,12 @@ fun process_add_terms id sc items (st as {ctxt, ...}) =
 
       (* Add new terms as updates. *)
       fun exists_item t =
-          Status.find_ritem_exact st id (Fact (TY_TERM, [t], true_th))
+          Status.find_ritem_exact st id (Fact (TY_TERM, [t], UtilBase.true_th))
 
       val terms2 = items |> maps (get_rewr_terms2 ctxt)
                          |> distinct (op aconv)
                          |> filter_out exists_item
-                         |> filter_out (fn t => fastype_of t = boolT)
+                         |> filter_out (fn t => fastype_of t = UtilBase.boolT)
 
       (* New terms have score of the source item plus 1. *)
       val updt =
@@ -369,7 +384,7 @@ fun process_fact_all id sc items (st as {ctxt, ...}) =
       val ctxt' = Auto2Data.get_incr_type old_items items ctxt
       val ts =
           (maps Auto2Data.relevant_terms_single items @
-           maps (Property.strip_property_field thy o dest_arg o prop_of' o snd)
+           maps (Property.strip_property_field thy o dest_arg o UtilLogic.prop_of' o snd)
                 (PropertyData.get_new_property ctxt') @
            map fst (WellformData.get_new_wellform_data ctxt'))
               |> distinct (op aconv)
@@ -472,7 +487,7 @@ fun process_add_boxes (updt as {sc, raw_updt, ...}) (st as {ctxt, ...}) =
 
           (* Find neg_form and check if already present. *)
           val neg_form_opt = if id = [] then NONE else
-                             init_assum |> dest_Trueprop |> get_neg
+                             init_assum |> UtilLogic.dest_Trueprop |> UtilLogic.get_neg
                                         |> Status.find_fact st id
 
           val prev_prim_box = Status.find_prim_box st id init_assum
@@ -508,7 +523,7 @@ fun process_add_boxes (updt as {sc, raw_updt, ...}) (st as {ctxt, ...}) =
                 case ritem of
                     Handler _ => [ritem]
                   | Fact (ty_str, _, th) =>
-                    if ty_str = TY_PROP andalso is_neg (prop_of' th) then
+                    if ty_str = TY_PROP andalso UtilLogic.is_neg (UtilLogic.prop_of' th) then
                       map Update.thm_to_ritem (
                         Logic_ProofSteps.split_not_imp_th th)
                     else [ritem]
@@ -539,7 +554,7 @@ fun apply_update (updt as {raw_updt, ...}) (st as {ctxt, ...}) =
 fun init_status ctxt subgoal =
     let
       (* Free variables are implicitly quantified over at the front. *)
-      val raw_updt = AddBoxes {id = [], sc = NONE, init_assum = get_neg' subgoal}
+      val raw_updt = AddBoxes {id = [], sc = NONE, init_assum = UtilLogic.get_neg' subgoal}
       val updt = {sc = 0, prfstep_name = "$INIT", source = [],
                   raw_updt = raw_updt}
     in
@@ -573,7 +588,11 @@ sig
   val auto2_tac: Proof.context -> tactic
 end
 
-structure Auto2 : AUTO2 =
+functor Auto2(
+  structure ProofStatus: PROOFSTATUS;
+  structure Status: STATUS;
+  structure UtilLogic: UTIL_LOGIC;
+  ): AUTO2 =
 struct
 
 fun auto2_tac ctxt state =

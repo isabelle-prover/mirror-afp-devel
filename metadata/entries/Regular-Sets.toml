@@ -20,6 +20,9 @@ homepage = "nipkow_homepage"
 [contributors.eberl]
 homepage = "eberl_homepage"
 
+[contributors.urban]
+homepage = "urban_homepage"
+
 [notify]
 nipkow = "nipkow_email"
 krauss = "krauss_email"

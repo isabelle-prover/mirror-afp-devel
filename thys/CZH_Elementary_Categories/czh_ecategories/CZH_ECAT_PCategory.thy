@@ -268,7 +268,7 @@ proof-
         if "i \<in>\<^sub>\<circ> I" for i
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps 
               cs_intro: cat_cs_intros cat_prod_cs_intros that
           )
@@ -1447,8 +1447,7 @@ proof(rule vsv.vsv_vrange_vsubset, unfold cat_cs_simps)
     and b: "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
     by (elim cat_prod_2_ObjE[OF \<AA> \<BB>])
   from \<AA> \<BB> a b show "(\<AA> \<times>\<^sub>C \<BB>)\<lparr>CId\<rparr>\<lparr>ab\<rparr> \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>C \<BB>)\<lparr>Arr\<rparr>"
-    unfolding ab_def 
-    by (cs_concl cs_intro: cat_cs_intros cat_prod_cs_intros)
+    unfolding ab_def by (cs_concl cs_intro: cat_cs_intros cat_prod_cs_intros)
 qed
 
 end
@@ -1470,14 +1469,14 @@ proof(rule cat_smc_eqI [of \<alpha>])
   from \<AA> \<BB> show cat_lhs: "category \<alpha> (op_cat (\<AA> \<times>\<^sub>C \<BB>))"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros
       )
   interpret cat_lhs: category \<alpha> \<open>op_cat (\<AA> \<times>\<^sub>C \<BB>)\<close> by (rule cat_lhs)
   from \<AA> \<BB> show cat_rhs: "category \<alpha> (op_cat \<AA> \<times>\<^sub>C op_cat \<BB>)"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros
       )
   interpret cat_rhs: category \<alpha> \<open>op_cat \<AA> \<times>\<^sub>C op_cat \<BB>\<close> by (rule cat_rhs)
@@ -1487,7 +1486,11 @@ proof(rule cat_smc_eqI [of \<alpha>])
     show "vsv ((\<AA> \<times>\<^sub>C \<BB>)\<lparr>CId\<rparr>)" by (rule cat_prod_2_CId_vsv)
     show "vsv ((op_cat \<AA> \<times>\<^sub>C op_cat \<BB>)\<lparr>CId\<rparr>)" by (rule cat_prod_2_CId_vsv)
     from \<AA> \<BB> show "(\<AA> \<times>\<^sub>C \<BB>)\<lparr>Obj\<rparr> = (op_cat \<AA> \<times>\<^sub>C op_cat \<BB>)\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_op_intros)
+      by 
+        (
+          cs_concl cs_shallow
+            cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_op_intros
+        )
     show "(\<AA> \<times>\<^sub>C \<BB>)\<lparr>CId\<rparr>\<lparr>ab\<rparr> = (op_cat \<AA> \<times>\<^sub>C op_cat \<BB>)\<lparr>CId\<rparr>\<lparr>ab\<rparr>"
       if "ab \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>C \<BB>)\<lparr>Obj\<rparr>" for ab
       using that unfolding cat_cs_simps
@@ -1501,7 +1504,7 @@ proof(rule cat_smc_eqI [of \<alpha>])
         unfolding ab_def
         by 
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_op_simps cat_prod_cs_simps
               cs_intro: cat_op_intros cat_prod_cs_intros
           )
@@ -1510,7 +1513,7 @@ proof(rule cat_smc_eqI [of \<alpha>])
 
   from \<AA> \<BB> show "cat_smc (op_cat (\<AA> \<times>\<^sub>C \<BB>)) = cat_smc (op_cat \<AA> \<times>\<^sub>C op_cat \<BB>)"
     unfolding slicing_commute[symmetric]
-    by (cs_concl cs_simp: smc_op_simps cs_intro: slicing_intros)
+    by (cs_concl cs_shallow cs_simp: smc_op_simps cs_intro: slicing_intros)
 
 qed
 
@@ -1540,7 +1543,7 @@ proof-
     then have "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
       by (auto elim: cat_prod_2_ObjE[OF \<AA> \<BB>])
     with \<AA> \<BB> show "ba \<in>\<^sub>\<circ> (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Obj\<rparr>"
-      unfolding ba_def by (cs_concl cs_intro: cat_prod_cs_intros)
+      unfolding ba_def by (cs_concl cs_shallow cs_intro: cat_prod_cs_intros)
   next
     fix ba assume "ba \<in>\<^sub>\<circ> (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Obj\<rparr>"  
     then obtain a b 
@@ -1945,11 +1948,11 @@ proof-
     then show "cf_cat_prod_21_of_3 \<AA> \<BB> \<CC>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<in>\<^sub>\<circ> ((\<AA> \<times>\<^sub>C \<BB>) \<times>\<^sub>C \<CC>)\<lparr>Obj\<rparr>"
       by (elim cat_prod_3_ObjE[OF assms], insert prems, simp only:)
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_prod_cs_simps 
             cs_intro: cat_cs_intros cat_prod_cs_intros
         )
-  qed (cs_concl cs_intro: cat_cs_intros)
+  qed (cs_concl cs_shallow cs_intro: cat_cs_intros)
 qed
 
 lemma cf_cat_prod_12_of_3_ObjMap_vrange: 
@@ -1965,11 +1968,11 @@ proof-
     then show "cf_cat_prod_12_of_3 \<AA> \<BB> \<CC>\<lparr>ObjMap\<rparr>\<lparr>A\<rparr> \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>C (\<BB> \<times>\<^sub>C \<CC>))\<lparr>Obj\<rparr>"
       by (elim cat_prod_3_ObjE[OF assms], insert prems, simp only:)
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_prod_cs_simps 
             cs_intro: cat_cs_intros cat_prod_cs_intros
         )
-  qed (cs_concl cs_intro: cat_cs_intros)
+  qed (cs_concl cs_shallow cs_intro: cat_cs_intros)
 qed
 
 
@@ -2029,7 +2032,10 @@ proof-
       for A B F
       using that
       by (elim cat_prod_3_is_arrE[OF assms], insert that, simp only:)
-        (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros)
+        (
+          cs_concl 
+            cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
+        )
     show 
       "cf_cat_prod_21_of_3 \<AA> \<BB> \<CC>\<lparr>ArrMap\<rparr>\<lparr>G \<circ>\<^sub>A\<^bsub>\<AA> \<times>\<^sub>C\<^sub>3 \<BB> \<times>\<^sub>C\<^sub>3 \<CC>\<^esub> F\<rparr> = 
         cf_cat_prod_21_of_3 \<AA> \<BB> \<CC>\<lparr>ArrMap\<rparr>\<lparr>G\<rparr> \<circ>\<^sub>A\<^bsub>(\<AA> \<times>\<^sub>C \<BB>) \<times>\<^sub>C \<CC>\<^esub> 
@@ -2056,7 +2062,7 @@ proof-
         unfolding F_def A_def B_def G_def C_def
         by
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_prod_cs_simps 
               cs_intro: cat_cs_intros cat_prod_cs_intros
           )
@@ -2068,11 +2074,11 @@ proof-
       using that 
       by (elim cat_prod_3_ObjE[OF assms], insert that, simp only: )
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_prod_cs_simps 
             cs_intro: cat_cs_intros cat_prod_cs_intros
         )
-  qed (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
+  qed (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
 
 qed
 
@@ -2110,7 +2116,10 @@ proof-
       for A B F
       using that
       by (elim cat_prod_3_is_arrE[OF assms], insert that, simp only:)
-        (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros)
+        (
+          cs_concl 
+            cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
+        )
     show 
       "cf_cat_prod_12_of_3 \<AA> \<BB> \<CC>\<lparr>ArrMap\<rparr>\<lparr>G \<circ>\<^sub>A\<^bsub>\<AA> \<times>\<^sub>C\<^sub>3 \<BB> \<times>\<^sub>C\<^sub>3 \<CC>\<^esub> F\<rparr> = 
         cf_cat_prod_12_of_3 \<AA> \<BB> \<CC>\<lparr>ArrMap\<rparr>\<lparr>G\<rparr> \<circ>\<^sub>A\<^bsub>\<AA> \<times>\<^sub>C (\<BB> \<times>\<^sub>C \<CC>)\<^esub> 
@@ -2137,7 +2146,7 @@ proof-
         unfolding F_def A_def B_def G_def C_def
         by
           (
-            cs_concl 
+            cs_concl cs_shallow 
               cs_simp: cat_cs_simps cat_prod_cs_simps 
               cs_intro: cat_cs_intros cat_prod_cs_intros
           )
@@ -2149,11 +2158,11 @@ proof-
       using that 
       by (elim cat_prod_3_ObjE[OF assms], insert that, simp only: )
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_cs_simps cat_prod_cs_simps 
             cs_intro: cat_cs_intros cat_prod_cs_intros
         )
-  qed (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
+  qed (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)+
 
 qed
 
@@ -2364,7 +2373,8 @@ proof-
   from a have za: "set {\<langle>0, a\<rangle>} \<in>\<^sub>\<circ> (\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>set {0}. \<AA>)\<lparr>Obj\<rparr>"
     by (intro cat_singleton_ObjI[where a=a]) simp
   have [simp]: "vinsert \<langle>0, a\<rangle> (set {\<langle>1\<^sub>\<nat>, b\<rangle>}) = [a, b]\<^sub>\<circ>"
-    using ord_of_nat_succ_vempty unfolding vcons_def by auto
+    using ord_of_nat_succ_vempty unfolding vcons_def
+    by (simp add: vinsert_vempty insert_commute vinsert_vsingleton)
 
   have "(\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = (?\<SS>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> ?cfs\<lparr>ObjMap\<rparr>)\<lparr>a\<rparr>"
     unfolding bifunctor_proj_fst_def dghm_comp_components by simp
@@ -2401,7 +2411,8 @@ proof-
   from b have ob: "set {\<langle>1\<^sub>\<nat>, b\<rangle>} \<in>\<^sub>\<circ> (\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>set {1\<^sub>\<nat>}. \<BB>)\<lparr>Obj\<rparr>"
     by (intro cat_singleton_ObjI[where a=b]) simp
   have[simp]: "vinsert \<langle>1\<^sub>\<nat>, b\<rangle> (set {\<langle>0, a\<rangle>}) = [a, b]\<^sub>\<circ>"
-    using ord_of_nat_succ_vempty unfolding vcons_def by auto
+    using ord_of_nat_succ_vempty unfolding vcons_def
+    by (simp add: vinsert_vempty)
 
   have "(\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>\<lparr>b\<rparr> = (?\<SS>\<lparr>ObjMap\<rparr> \<circ>\<^sub>\<circ> ?cfs\<lparr>ObjMap\<rparr>)\<lparr>b\<rparr>"
     unfolding bifunctor_proj_snd_def dghm_comp_components by simp
@@ -2458,7 +2469,8 @@ proof-
   from assms(1) have ob: "set {\<langle>1\<^sub>\<nat>, b\<rangle>} \<in>\<^sub>\<circ> (\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>set {1\<^sub>\<nat>}. \<BB>)\<lparr>Obj\<rparr>"
     by (intro cat_singleton_ObjI[where a=b]) simp
   have [simp]: "vinsert \<langle>0, f\<rangle> (set {\<langle>1\<^sub>\<nat>, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>\<rangle>}) = [f, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>]\<^sub>\<circ>"
-    using ord_of_nat_succ_vempty unfolding vcons_def by auto
+    using ord_of_nat_succ_vempty unfolding vcons_def
+    by (simp add: insert_commute ord_of_nat_vone vinsert_vempty vinsert_vsingleton)
 
   have "(\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = (?\<SS>\<lparr>ArrMap\<rparr> \<circ>\<^sub>\<circ> ?cfs\<lparr>ArrMap\<rparr>)\<lparr>f\<rparr>"
     unfolding bifunctor_proj_fst_def dghm_comp_components by simp
@@ -2497,7 +2509,8 @@ proof-
   from assms(1) have ob: "set {\<langle>0, a\<rangle>} \<in>\<^sub>\<circ> (\<Prod>\<^sub>Ci\<in>\<^sub>\<circ>set {0}. \<AA>)\<lparr>Obj\<rparr>"
     by (intro cat_singleton_ObjI[where a=a]) simp
   have [simp]: "vinsert \<langle>1\<^sub>\<nat>, g\<rangle> (set {\<langle>0, \<AA>\<lparr>CId\<rparr>\<lparr>a\<rparr>\<rangle>}) = [\<AA>\<lparr>CId\<rparr>\<lparr>a\<rparr>, g]\<^sub>\<circ>"
-    using ord_of_nat_succ_vempty unfolding vcons_def by auto
+    using ord_of_nat_succ_vempty unfolding vcons_def
+    by (simp add: vinsert_vempty)
 
   have "(\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = (?\<SS>\<lparr>ArrMap\<rparr> \<circ>\<^sub>\<circ> ?cfs\<lparr>ArrMap\<rparr>)\<lparr>g\<rparr>"
     unfolding two bifunctor_proj_snd_def dghm_comp_components by simp
@@ -2723,7 +2736,11 @@ lemma bifunctor_flip_ObjMap_app:
   shows "bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b, a\<rparr>\<^sub>\<bullet> = \<FF>\<lparr>ObjMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet>"
   using assms
   unfolding bifunctor_flip_components assms(4,5)
-  by (cs_concl cs_simp: V_cs_simps cat_cs_simps cs_intro: cat_prod_cs_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: V_cs_simps cat_cs_simps cs_intro: cat_prod_cs_intros
+    )
 
 lemma bifunctor_flip_ObjMap_app'[cat_cs_simps]:
   assumes "ba = [b, a]\<^sub>\<circ>"
@@ -2742,7 +2759,7 @@ lemma bifunctor_flip_ObjMap_vdomain[cat_cs_simps]:
   shows "\<D>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>) = (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Obj\<rparr>"
   using assms
   unfolding bifunctor_flip_components 
-  by (cs_concl cs_simp: V_cs_simps cat_cs_simps)
+  by (cs_concl cs_shallow cs_simp: V_cs_simps cat_cs_simps)
 
 lemma bifunctor_flip_ObjMap_vrange[cat_cs_simps]:
   assumes "category \<alpha> \<AA>"
@@ -2773,7 +2790,7 @@ proof-
         unfolding ba_def
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_prod_cs_intros
           )
     qed (auto intro: cat_cs_intros)
@@ -2787,10 +2804,14 @@ proof-
           and b: "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
         by (elim cat_prod_2_ObjE[OF assms(1,2)])
       from assms a b have ba: "[b, a]\<^sub>\<circ> \<in>\<^sub>\<circ> (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Obj\<rparr>"
-        by (cs_concl cs_intro: cat_prod_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_prod_cs_intros)
       from assms bifunctor_flip_ObjMap_vsv prems a b ba show 
         "\<FF>\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>)"
-        by (cs_concl cs_simp: ab_def cat_cs_simps cs_intro: V_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: ab_def cat_cs_simps cs_intro: V_cs_intros
+          )
     qed auto
 
   qed
@@ -2813,7 +2834,11 @@ lemma bifunctor_flip_ArrMap_app:
   shows "bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f, g\<rparr>\<^sub>\<bullet> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>g, f\<rparr>\<^sub>\<bullet>"
   using assms
   unfolding bifunctor_flip_components
-  by (cs_concl cs_simp: V_cs_simps cat_cs_simps cs_intro: cat_prod_cs_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: V_cs_simps cat_cs_simps cs_intro: cat_prod_cs_intros
+    )
 
 lemma bifunctor_flip_ArrMap_app'[cat_cs_simps]:
   assumes "fg = [f, g]\<^sub>\<circ>"
@@ -2832,7 +2857,7 @@ lemma bifunctor_flip_ArrMap_vdomain[cat_cs_simps]:
   shows "\<D>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>) = (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Arr\<rparr>"
   using assms
   unfolding bifunctor_flip_components 
-  by (cs_concl cs_simp: V_cs_simps cat_cs_simps)
+  by (cs_concl cs_shallow cs_simp: V_cs_simps cat_cs_simps)
 
 lemma bifunctor_flip_ArrMap_vrange[cat_cs_simps]:
   assumes "category \<alpha> \<AA>"
@@ -2865,7 +2890,7 @@ proof-
         unfolding fg_def
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps 
               cs_intro: V_cs_intros cat_cs_intros cat_prod_cs_intros
           )
@@ -2880,11 +2905,11 @@ proof-
           and f: "f \<in>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>"
         by (elim cat_prod_2_ArrE[OF assms(1,2)])
       from assms g f have fg: "[f, g]\<^sub>\<circ> \<in>\<^sub>\<circ> (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Arr\<rparr>"
-        by (cs_concl cs_intro: cat_prod_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_prod_cs_intros)
       from assms bifunctor_flip_ArrMap_vsv prems g f fg show 
         "\<FF>\<lparr>ArrMap\<rparr>\<lparr>gf\<rparr> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>)"
         unfolding gf_def
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: V_cs_intros)
     qed auto
 
   qed
@@ -2910,18 +2935,18 @@ proof-
     show "vfsequence (bifunctor_flip \<AA> \<BB> \<FF>)"
       unfolding bifunctor_flip_def by simp
     from assms(1,2) show "category \<alpha> (\<BB> \<times>\<^sub>C \<AA>)"
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     show "vcard (bifunctor_flip \<AA> \<BB> \<FF>) = 4\<^sub>\<nat>"
       unfolding bifunctor_flip_def by (simp add: nat_omega_simps)
     show "vsv (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>)" by (auto intro: cat_cs_intros)
     show "vsv (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>)" by (auto intro: cat_cs_intros)
     from assms show "\<D>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>) = (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps)
     from assms \<FF>.cf_ObjMap_vrange show 
       "\<R>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>) \<subseteq>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps)
     from assms show "\<D>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>) = (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Arr\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps)
     show "bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>\<lparr>gf\<rparr> :
       bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>\<lparr>ba\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub>
       bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'a'\<rparr>"
@@ -2968,7 +2993,11 @@ proof-
       from assms g g' f f' have [cat_cs_simps]:
         "\<FF>\<lparr>ArrMap\<rparr>\<lparr>g' \<circ>\<^sub>A\<^bsub>\<AA>\<^esub> f', g \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f\<rparr>\<^sub>\<bullet> = 
           \<FF>\<lparr>ArrMap\<rparr>\<lparr>[g', g]\<^sub>\<circ> \<circ>\<^sub>A\<^bsub>\<AA> \<times>\<^sub>C \<BB>\<^esub> [f', f]\<^sub>\<circ>\<rparr>"
-        by (cs_concl cs_simp: cat_prod_2_Comp_app cs_intro: cat_prod_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: cat_prod_2_Comp_app cs_intro: cat_prod_cs_intros
+          )
       from assms g g' f f' show 
         "bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>\<lparr>gg' \<circ>\<^sub>A\<^bsub>\<BB> \<times>\<^sub>C \<AA>\<^esub> ff'\<rparr> =
           bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>\<lparr>gg'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub>
@@ -2976,7 +3005,7 @@ proof-
         unfolding gg'_def ff'_def (*slow*)
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow 
               cs_simp: cat_prod_cs_simps cat_cs_simps
               cs_intro: cat_prod_cs_intros cat_cs_intros
           )
@@ -2994,12 +3023,16 @@ proof-
       from assms b a have [cat_cs_simps]:
         "\<FF>\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>a\<rparr>, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>\<rparr>\<^sub>\<bullet> =
           \<FF>\<lparr>ArrMap\<rparr>\<lparr>(\<AA> \<times>\<^sub>C \<BB>)\<lparr>CId\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet>\<rparr>"
-        by (cs_concl cs_simp: cat_prod_2_CId_app cs_intro: cat_prod_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: cat_prod_2_CId_app cs_intro: cat_prod_cs_intros
+          )
       from assms b a show ?thesis
         unfolding ba_def
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_intro: cat_cs_intros cat_prod_cs_intros 
               cs_simp: cat_prod_cs_simps cat_cs_simps
           )
@@ -3032,18 +3065,18 @@ proof(rule cf_eqI)
 
   from assms show 
     "bifunctor_flip \<BB> \<AA> (bifunctor_flip \<AA> \<BB> \<FF>) : \<AA> \<times>\<^sub>C \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
   from assms have ObjMap_dom_lhs: 
     "\<D>\<^sub>\<circ> (bifunctor_flip \<BB> \<AA> (bifunctor_flip \<AA> \<BB> \<FF>)\<lparr>ObjMap\<rparr>) = 
       (\<AA> \<times>\<^sub>C \<BB>)\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>) = (\<AA> \<times>\<^sub>C \<BB>)\<lparr>Obj\<rparr>" 
     by (simp add: cat_cs_simps)
   from assms have ArrMap_dom_lhs: 
     "\<D>\<^sub>\<circ> (bifunctor_flip \<BB> \<AA> (bifunctor_flip \<AA> \<BB> \<FF>)\<lparr>ArrMap\<rparr>) =
       (\<AA> \<times>\<^sub>C \<BB>)\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   have ArrMap_dom_rhs: "\<D>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>) = (\<AA> \<times>\<^sub>C \<BB>)\<lparr>Arr\<rparr>" 
     by (simp add: cat_cs_simps)
 
@@ -3056,7 +3089,7 @@ proof(rule cf_eqI)
     from assms a b show 
       "bifunctor_flip \<BB> \<AA> (bifunctor_flip \<AA> \<BB> \<FF>)\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr> = \<FF>\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr>"
       unfolding ab_def
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (auto simp: cat_cs_intros)
 
   show "bifunctor_flip \<BB> \<AA> (bifunctor_flip \<AA> \<BB> \<FF>)\<lparr>ArrMap\<rparr> = \<FF>\<lparr>ArrMap\<rparr>"
@@ -3068,7 +3101,7 @@ proof(rule cf_eqI)
     from assms a b show 
       "bifunctor_flip \<BB> \<AA> (bifunctor_flip \<AA> \<BB> \<FF>)\<lparr>ArrMap\<rparr>\<lparr>ab\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>ab\<rparr>"
       unfolding ab_def 
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (auto simp: cat_cs_intros)
 
 qed (simp_all add: assms(3))
@@ -3085,34 +3118,34 @@ lemma bifunctor_flip_proj_snd[cat_cs_simps]:
 proof(rule cf_eqI)
 
   from assms show f_\<FF>b: "bifunctor_flip \<AA> \<BB> \<FF>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from assms show \<FF>b: "\<FF>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
   from assms have ObjMap_dom_lhs:
     "\<D>\<^sub>\<circ> ((bifunctor_flip \<AA> \<BB> \<FF>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from assms have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> ((\<FF>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   from assms have ArrMap_dom_lhs:
     "\<D>\<^sub>\<circ> ((bifunctor_flip \<AA> \<BB> \<FF>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from assms have ArrMap_dom_rhs: "\<D>\<^sub>\<circ> ((\<FF>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
 
   show "(bifunctor_flip \<AA> \<BB> \<FF>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr> = (\<FF>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>"
   proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
     from assms show "vsv ((bifunctor_flip \<AA> \<BB> \<FF>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>)"
       by (intro bifunctor_proj_snd_ObjMap_vsv)
-        (cs_concl cs_intro: cat_cs_intros)
+        (cs_concl cs_shallow cs_intro: cat_cs_intros)
     from assms show "vsv ((\<FF>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>)"
       by (intro bifunctor_proj_fst_ObjMap_vsv)
-        (cs_concl cs_intro: cat_cs_intros)
+        (cs_concl cs_shallow cs_intro: cat_cs_intros)
     fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
     with assms show 
       "(bifunctor_flip \<AA> \<BB> \<FF>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = 
         (\<FF>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_prod_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_prod_cs_intros)
   qed simp
 
   show 
@@ -3120,15 +3153,15 @@ proof(rule cf_eqI)
   proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
     from assms show "vsv ((bifunctor_flip \<AA> \<BB> \<FF>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>)"
       by (intro bifunctor_proj_snd_ArrMap_vsv)
-        (cs_concl cs_intro: cat_cs_intros)
+        (cs_concl cs_shallow cs_intro: cat_cs_intros)
     from assms show "vsv ((\<FF>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>)"
       by (intro bifunctor_proj_fst_ArrMap_vsv)
-        (cs_concl cs_intro: cat_cs_intros)
+        (cs_concl cs_shallow cs_intro: cat_cs_intros)
     fix f assume "f \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>"
     with assms show 
       "(bifunctor_flip \<AA> \<BB> \<FF>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> =
         (\<FF>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed simp
 
 qed simp_all
@@ -3141,7 +3174,7 @@ lemma bifunctor_flip_proj_fst[cat_cs_simps]:
   shows "bifunctor_flip \<AA> \<BB> \<FF>\<^bsub>\<BB>,\<AA>\<^esub>(-,a)\<^sub>C\<^sub>F = \<FF>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F"
 proof-
   from assms have f_\<FF>: "bifunctor_flip \<AA> \<BB> \<FF> : \<BB> \<times>\<^sub>C \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   show ?thesis
     by 
       (
@@ -3170,7 +3203,7 @@ proof-
   interpret \<FF>: is_iso_functor \<alpha> \<open>\<AA> \<times>\<^sub>C \<BB>\<close> \<CC> \<FF> by (rule assms(3))
 
   from assms have f_\<FF>: "bifunctor_flip \<AA> \<BB> \<FF> : \<BB> \<times>\<^sub>C \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC> "
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
   from f_\<FF> have ObjMap_dom: 
     "\<D>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>) = (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Obj\<rparr>" 
@@ -3182,7 +3215,7 @@ proof-
   show ?thesis
   proof(intro is_iso_functorI' vsv.vsv_valeq_v11I, unfold ObjMap_dom ArrMap_dom)
     from assms show "bifunctor_flip \<AA> \<BB> \<FF> : \<BB> \<times>\<^sub>C \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     fix ba b'a'
     assume prems: 
       "ba \<in>\<^sub>\<circ> (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Obj\<rparr>"
@@ -3201,11 +3234,11 @@ proof-
     from prems(3) assms a b b' a' have \<FF>ab_\<FF>a'b': 
       "\<FF>\<lparr>ObjMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet> = \<FF>\<lparr>ObjMap\<rparr>\<lparr>a', b'\<rparr>\<^sub>\<bullet>"
       unfolding ba_def b'a'_def
-      by (cs_prems cs_simp: cat_cs_simps cs_intro: cf_cs_intros)
+      by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cf_cs_intros)
     from assms a b a' b' have "[a, b]\<^sub>\<circ> = [a', b']\<^sub>\<circ>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_intro: 
               \<FF>.ObjMap.v11_eq_iff[THEN iffD1, OF _ _ \<FF>ab_\<FF>a'b'] 
               cat_prod_cs_intros
@@ -3229,12 +3262,11 @@ proof-
     from prems(3) assms f g f' g' have \<FF>gf_\<FF>g'f': 
       "\<FF>\<lparr>ArrMap\<rparr>\<lparr>g, f\<rparr>\<^sub>\<bullet> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>g', f'\<rparr>\<^sub>\<bullet>"
       unfolding fg_def f'g'_def
-      by (cs_prems cs_simp: cat_cs_simps cs_intro: cf_cs_intros)
+      by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cf_cs_intros)
     from assms g f g' f' have "[g, f]\<^sub>\<circ> = [g', f']\<^sub>\<circ>"
       by 
         (
-          cs_concl 
-            cs_simp: 
+          cs_concl cs_shallow
             cs_intro:
               \<FF>.ArrMap.v11_eq_iff[THEN iffD1, OF _ _ \<FF>gf_\<FF>g'f'] 
               cat_prod_cs_intros
@@ -3270,11 +3302,11 @@ proof-
         show "c \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>)"
         proof(intro vsv.vsv_vimageI2', unfold ObjMap_dom)
           from assms a b show "[b, a]\<^sub>\<circ> \<in>\<^sub>\<circ> (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Obj\<rparr>"
-            by (cs_concl cs_intro: cat_prod_cs_intros)
+            by (cs_concl cs_shallow cs_intro: cat_prod_cs_intros)
           from assms b a prems show "c = bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b, a\<rparr>\<^sub>\<bullet>"
             by 
               (
-                cs_concl 
+                cs_concl cs_shallow
                   cs_simp: \<FF>ab[unfolded ab_def] cat_cs_simps
                   cs_intro: cf_cs_intros
               )
@@ -3297,7 +3329,11 @@ proof-
           where f: "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b" and g: "g : a' \<mapsto>\<^bsub>\<AA>\<^esub> b'"
           by (auto intro!: is_arrI)
         from assms f g show "bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>\<lparr>fg\<rparr> \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>"
-          by (cs_concl cs_simp: fg_def cs_intro: cat_cs_intros cat_prod_cs_intros)
+          by 
+            (
+              cs_concl cs_shallow 
+                cs_simp: fg_def cs_intro: cat_cs_intros cat_prod_cs_intros
+            )
       qed
       show "\<CC>\<lparr>Arr\<rparr> \<subseteq>\<^sub>\<circ> \<R>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>)"
       proof(intro vsubsetI)
@@ -3313,11 +3349,11 @@ proof-
         show "c \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>)"
         proof(intro vsv.vsv_vimageI2', unfold ArrMap_dom)
           from assms a b show "[b, a]\<^sub>\<circ> \<in>\<^sub>\<circ> (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Arr\<rparr>"
-            by (cs_concl cs_intro: cat_prod_cs_intros)
+            by (cs_concl cs_shallow cs_intro: cat_prod_cs_intros)
           from assms b a prems show "c = bifunctor_flip \<AA> \<BB> \<FF>\<lparr>ArrMap\<rparr>\<lparr>b, a\<rparr>\<^sub>\<bullet>"
             by 
               (
-                cs_concl 
+                cs_concl cs_shallow
                   cs_simp: \<FF>ab[unfolded ab_def] cat_cs_simps 
                   cs_intro: cat_cs_intros 
               )
@@ -3585,7 +3621,11 @@ proof-
         "\<FF> b'\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<DD>\<^esub> (\<FF> b'\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<DD>\<^esub> \<GG> a\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr>) = 
           (\<GG> c\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> \<circ>\<^sub>A\<^bsub>\<DD>\<^esub> \<FF> a'\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>) \<circ>\<^sub>A\<^bsub>\<DD>\<^esub> \<FF> a'\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
         using f' f g \<GG>b_f' assms(4)[OF a'] assms(4)[OF b'] 
-        by (cs_concl cs_simp: cat_cs_simps assms(7) cs_intro: cat_cs_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: cat_cs_simps assms(7) cs_intro: cat_cs_intros
+          )
       also have "\<dots> =
         \<GG> c\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr> \<circ>\<^sub>A\<^bsub>\<DD>\<^esub> (\<FF> a'\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>\<DD>\<^esub> \<FF> a'\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>)"
         using assms(2) f f' g g' assms(4)[OF a'] assms(5)[OF c]
@@ -3606,7 +3646,7 @@ proof-
         unfolding gg'_def ff'_def aa'_def bb'_def cc'_def (*slow*)
         by 
           (
-            cs_concl
+            cs_concl 
               cs_simp: assms(6,7) cat_prod_cs_simps cat_cs_simps 
               cs_intro: cat_prod_cs_intros cat_cs_intros
           )
@@ -3621,7 +3661,7 @@ proof-
           and c': "c' \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
         by (elim cat_prod_2_ObjE[rotated 2]) (auto intro: cat_cs_intros)
       from assms(1,2,3) c c' assms(4)[OF c'] assms(5)[OF c] show ?thesis
-        unfolding cc'_def (*very slow*)
+        unfolding cc'_def (*slow*)
         by 
           (
             cs_concl 
@@ -3634,18 +3674,26 @@ proof-
   show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ObjMap\<rparr>\<lparr>b, c\<rparr>\<^sub>\<bullet> = \<FF> c\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
     if "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" for b c
     using that assms(1,2,3)
-    by (cs_concl cs_simp: cat_cs_simps assms(6) cs_intro: cat_prod_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps assms(6) cs_intro: cat_prod_cs_intros
+      )
   show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ObjMap\<rparr>\<lparr>b, c\<rparr>\<^sub>\<bullet> = \<GG> b\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>"
     if "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" for b c 
     using that assms(1,2,3)
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_prod_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_prod_cs_intros)
   show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ArrMap\<rparr>\<lparr>f, \<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>\<rparr>\<^sub>\<bullet> = \<FF> c\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
     if f: "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b" and c: "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" for a b f c
   proof-
     from f have "a \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" by auto
     from assms(5)[OF this(1)] assms(5)[OF this(2)] assms(4)[OF c] show ?thesis
       using assms(1,2,3) f c 
-      by (cs_concl cs_simp: cat_cs_simps assms(6) cs_intro: cat_cs_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: cat_cs_simps assms(6) cs_intro: cat_cs_intros
+        )
   qed
 
   show "cf_array \<BB> \<CC> \<DD> \<FF> \<GG>\<lparr>ArrMap\<rparr>\<lparr>\<BB>\<lparr>CId\<rparr>\<lparr>c\<rparr>, g\<rparr>\<^sub>\<bullet> = \<GG> c\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>"
@@ -3752,7 +3800,7 @@ proof
     unfolding bc_def 
     by 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
       )
 qed
@@ -3802,7 +3850,7 @@ proof(rule vsv.vsv_vrange_vsubset, unfold cf_bcomp_ArrMap_vdomain[OF assms(1,2)]
     unfolding gf_def 
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
       )
 qed (simp add: cf_bcomp_ArrMap_vsv)
@@ -3860,7 +3908,7 @@ proof-
         unfolding ff'_def aa'_def bb'_def
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
           )
     qed
@@ -3900,7 +3948,7 @@ proof-
           [\<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>, \<GG>\<lparr>ArrMap\<rparr>\<lparr>g'\<rparr>]\<^sub>\<circ> \<circ>\<^sub>A\<^bsub>\<BB> \<times>\<^sub>C \<CC>\<^esub> [\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>, \<GG>\<lparr>ArrMap\<rparr>\<lparr>f'\<rparr>]\<^sub>\<circ>"
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_prod_cs_simps
               cs_intro: cat_cs_intros cat_prod_cs_intros
           )
@@ -3908,7 +3956,7 @@ proof-
         unfolding gg'_def ff'_def aa'_def bb'_def cc'_def
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_prod_cs_simps cat_cs_simps 
               cs_intro: cat_cs_intros cat_prod_cs_intros
           )
@@ -3928,7 +3976,7 @@ proof-
           (\<BB> \<times>\<^sub>C \<CC>)\<lparr>CId\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>c\<rparr>, \<GG>\<lparr>ObjMap\<rparr>\<lparr>c'\<rparr>\<rparr>\<^sub>\<bullet>"
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_prod_cs_simps
               cs_intro: cat_cs_intros cat_prod_cs_intros
           )
@@ -3936,7 +3984,7 @@ proof-
         unfolding cc'_def
         by
           (
-            cs_concl 
+            cs_concl  
               cs_simp: cat_prod_cs_simps cat_cs_simps
               cs_intro: cat_cs_intros cat_prod_cs_intros
           )
@@ -4053,7 +4101,7 @@ proof
     unfolding bc_def cat_op_simps
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps 
           cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
       )
@@ -4093,7 +4141,11 @@ lemma cf_cn_cov_bcomp_ArrMap_vrange:
     and "\<GG> : \<CC>' \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     and "\<SS> : op_cat \<BB> \<times>\<^sub>C \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
   shows "\<R>\<^sub>\<circ> (cf_cn_cov_bcomp \<SS> \<FF> \<GG>\<lparr>ArrMap\<rparr>) \<subseteq>\<^sub>\<circ> \<DD>\<lparr>Arr\<rparr>"
-proof(rule vsv.vsv_vrange_vsubset, unfold cf_cn_cov_bcomp_ArrMap_vdomain[OF assms(1,2)])
+proof
+  (
+    rule vsv.vsv_vrange_vsubset, 
+    unfold cf_cn_cov_bcomp_ArrMap_vdomain[OF assms(1,2)]
+  )
   interpret \<FF>: is_functor \<alpha> \<BB>' \<BB> \<FF> by (rule assms(1))
   interpret \<GG>: is_functor \<alpha> \<CC>' \<CC> \<GG> by (rule assms(2))
   fix gf assume "gf \<in>\<^sub>\<circ> (op_cat \<BB>' \<times>\<^sub>C \<CC>')\<lparr>Arr\<rparr>"
@@ -4108,7 +4160,7 @@ proof(rule vsv.vsv_vrange_vsubset, unfold cf_cn_cov_bcomp_ArrMap_vdomain[OF assm
     unfolding gf_def 
     by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps 
           cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
       )
@@ -4167,7 +4219,7 @@ proof-
         unfolding ff'_def aa'_def bb'_def cat_op_simps
         by (*slow*)
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_op_simps
               cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
           )
@@ -4216,7 +4268,7 @@ proof-
         unfolding cat_op_simps
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_prod_cs_simps cat_cs_simps cat_op_simps 
               cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
           )
@@ -4246,7 +4298,7 @@ proof-
         unfolding cat_op_simps
         by 
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_prod_cs_simps cat_op_simps 
               cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
           )
@@ -4254,7 +4306,7 @@ proof-
         unfolding cc'_def cat_op_simps
         by (*slow*)
           (
-            cs_concl 
+            cs_concl  
               cs_simp: cat_prod_cs_simps cat_cs_simps cat_op_simps 
               cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
           )
@@ -4322,7 +4374,7 @@ proof(rule cf_eqI)
         ((\<SS>\<^bsub>op_cat \<BB>,\<CC>\<^esub>(\<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>,-)\<^sub>C\<^sub>F) \<circ>\<^sub>C\<^sub>F \<GG>)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_op_simps 
             cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
         )
@@ -4574,7 +4626,7 @@ lemma cf_cn_cov_lcomp_ObjMap_app[cat_cs_simps]:
   unfolding cf_cn_cov_lcomp_def cat_op_simps
   by
     (
-      cs_concl
+      cs_concl 
         cs_simp: cat_cs_simps cat_op_simps 
         cs_intro: cat_cs_intros cat_prod_cs_intros
     )
@@ -4589,7 +4641,7 @@ lemma cf_cn_cov_rcomp_ObjMap_app[cat_cs_simps]:
   unfolding cf_cn_cov_rcomp_def cat_op_simps
   by
     (
-      cs_concl
+      cs_concl 
         cs_simp: cat_cs_simps cat_op_simps 
         cs_intro: cat_cs_intros cat_prod_cs_intros
     )
@@ -4782,7 +4834,11 @@ lemma cf_blcomp_def':
 proof-
   interpret \<SS>: is_functor \<alpha> \<open>\<CC> \<times>\<^sub>C \<CC>\<close> \<CC> \<SS> by (rule assms)
   show ?thesis
-    by (cs_concl cs_simp: cat_cs_simps cf_blcomp_def cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cf_blcomp_def cs_intro: cat_cs_intros
+      )
 qed
 
 lemma cf_brcomp_def':
@@ -4791,7 +4847,11 @@ lemma cf_brcomp_def':
 proof-
   interpret \<SS>: is_functor \<alpha> \<open>\<CC> \<times>\<^sub>C \<CC>\<close> \<CC> \<SS> by (rule assms)
   show ?thesis
-    by (cs_concl cs_simp: cat_cs_simps cf_brcomp_def cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cf_brcomp_def cs_intro: cat_cs_intros
+      )
 qed
 
 
@@ -4853,7 +4913,8 @@ proof-
   interpret \<SS>: is_functor \<alpha> \<open>\<CC> \<times>\<^sub>C \<CC>\<close> \<CC> \<SS> by (rule assms)
   interpret cf_blcomp: is_functor \<alpha> \<open>\<CC> \<times>\<^sub>C\<^sub>3 \<CC> \<times>\<^sub>C\<^sub>3 \<CC>\<close> \<CC> \<open>cf_blcomp \<SS>\<close>
     by (rule cf_blcomp_is_functor[OF assms])
-  show ?thesis by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  show ?thesis 
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 qed
 
 lemma cf_brcomp_ObjMap_vdomain[cat_cs_simps]: 
@@ -4863,7 +4924,8 @@ proof-
   interpret \<SS>: is_functor \<alpha> \<open>\<CC> \<times>\<^sub>C \<CC>\<close> \<CC> \<SS> by (rule assms)
   interpret cf_brcomp: is_functor \<alpha> \<open>\<CC> \<times>\<^sub>C\<^sub>3 \<CC> \<times>\<^sub>C\<^sub>3 \<CC>\<close> \<CC> \<open>cf_brcomp \<SS>\<close>
     by (rule cf_brcomp_is_functor[OF assms])
-  show ?thesis by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  show ?thesis 
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 qed
 
 lemma cf_blcomp_ObjMap_app[cat_cs_simps]: 
@@ -4881,7 +4943,7 @@ proof-
     unfolding assms(2)
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cat_prod_cs_simps cf_blcomp_def' 
           cs_intro: cat_cs_intros cat_prod_cs_intros
       )
@@ -4902,7 +4964,7 @@ proof-
     unfolding assms(2)
     by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cat_prod_cs_simps cf_brcomp_def'
           cs_intro: cat_cs_intros cat_prod_cs_intros
       )
@@ -4936,7 +4998,8 @@ proof-
   interpret \<SS>: is_functor \<alpha> \<open>\<CC> \<times>\<^sub>C \<CC>\<close> \<CC> \<SS> by (rule assms)
   interpret cf_blcomp: is_functor \<alpha> \<open>\<CC> \<times>\<^sub>C\<^sub>3 \<CC> \<times>\<^sub>C\<^sub>3 \<CC>\<close> \<CC> \<open>cf_blcomp \<SS>\<close>
     by (rule cf_blcomp_is_functor[OF assms])
-  show ?thesis by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  show ?thesis 
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 qed
 
 lemma cf_brcomp_ArrMap_vdomain[cat_cs_simps]: 
@@ -4946,7 +5009,8 @@ proof-
   interpret \<SS>: is_functor \<alpha> \<open>\<CC> \<times>\<^sub>C \<CC>\<close> \<CC> \<SS> by (rule assms)
   interpret cf_brcomp: is_functor \<alpha> \<open>\<CC> \<times>\<^sub>C\<^sub>3 \<CC> \<times>\<^sub>C\<^sub>3 \<CC>\<close> \<CC> \<open>cf_brcomp \<SS>\<close>
     by (rule cf_brcomp_is_functor[OF assms])
-  show ?thesis by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  show ?thesis 
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 qed
 
 lemma cf_blcomp_ArrMap_app[cat_cs_simps]: 
@@ -4964,7 +5028,7 @@ proof-
     unfolding assms(2)
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cat_prod_cs_simps cf_blcomp_def' 
           cs_intro: cat_cs_intros cat_prod_cs_intros
       )
@@ -4985,7 +5049,7 @@ proof-
     unfolding assms(2)
     by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cat_prod_cs_simps cf_brcomp_def'
           cs_intro: cat_cs_intros cat_prod_cs_intros
       )
@@ -5065,7 +5129,7 @@ proof-
   proof(rule vrange_VLambda_vsubset)
     fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"    
     with assms show "\<NN>\<lparr>NTMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet> \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_intro: cat_cs_intros cat_prod_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_prod_cs_intros)
   qed
 qed
 
@@ -5087,7 +5151,7 @@ proof-
   proof(rule vrange_VLambda_vsubset)
     fix b assume "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"    
     with assms show "\<NN>\<lparr>NTMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet> \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr>"
-      by (cs_concl cs_intro: cat_cs_intros cat_prod_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_prod_cs_intros)
   qed
 qed
 
@@ -5110,16 +5174,16 @@ proof-
     show "vcard (\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F) = 5\<^sub>\<nat>"
       unfolding bnt_proj_snd_def by (simp add: nat_omega_simps)
     from assms show "\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from assms show "\<SS>'\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     show "(\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>\<lparr>b\<rparr> :
       (\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>\<lparr>b\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> (\<SS>'\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
       if "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" for b
       using that assms 
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
         )
     show "(\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> =
@@ -5128,7 +5192,7 @@ proof-
       using that assms 
       by 
         (
-          cs_concl 
+          cs_concl  
             cs_simp: is_ntcf.ntcf_Comp_commute cat_cs_simps 
             cs_intro: cat_cs_intros cat_prod_cs_intros
         )
@@ -5161,16 +5225,16 @@ proof-
     show "vcard (\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>N\<^sub>T\<^sub>C\<^sub>F) = 5\<^sub>\<nat>"
       unfolding bnt_proj_fst_def by (simp add: nat_omega_simps)
     from assms show "\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F : \<AA>  \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     from assms show "\<SS>'\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     show "(\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> :
       (\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> (\<SS>'\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
       if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a
       using that assms 
       by
         (
-          cs_concl
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
         )
     show "(\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>\<lparr>b'\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> =
@@ -5179,7 +5243,7 @@ proof-
       using that assms 
       by
         (
-          cs_concl
+          cs_concl 
             cs_simp: is_ntcf.ntcf_Comp_commute cat_cs_simps 
             cs_intro: cat_cs_intros cat_prod_cs_intros
         )
@@ -5280,7 +5344,7 @@ proof-
           using that
           by
             (
-              cs_concl
+              cs_concl 
                 cs_simp: \<SS>'\<NN> category.cat_Comp_assoc[symmetric]  
                 cs_intro: cat_cs_intros cat_prod_cs_intros
             ) 
@@ -5290,13 +5354,13 @@ proof-
             \<SS>'\<lparr>ArrMap\<rparr>\<lparr>[\<AA>\<lparr>CId\<rparr>\<lparr>a'\<rparr>, f]\<^sub>\<circ> \<circ>\<^sub>A\<^bsub>\<AA> \<times>\<^sub>C \<BB>\<^esub> [g, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>]\<^sub>\<circ>\<rparr>"
           by 
             (
-              cs_concl 
+              cs_concl  
                 cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
             ) 
         also from assms(1-4) g f have "\<dots> = \<SS>'\<lparr>ArrMap\<rparr>\<lparr>g, f\<rparr>\<^sub>\<bullet>"
           by 
             (
-              cs_concl 
+              cs_concl  
                 cs_simp: cat_cs_simps cat_prod_cs_simps
                 cs_intro: cat_cs_intros cat_prod_cs_intros
             )
@@ -5308,13 +5372,13 @@ proof-
             \<SS>\<lparr>ArrMap\<rparr>\<lparr>[\<AA>\<lparr>CId\<rparr>\<lparr>a'\<rparr>, f]\<^sub>\<circ> \<circ>\<^sub>A\<^bsub>\<AA> \<times>\<^sub>C \<BB>\<^esub> [g, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>]\<^sub>\<circ>\<rparr>"
           by 
             (
-              cs_concl 
+              cs_concl  
                 cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
             ) 
         also from assms(1-4) g f have "\<dots> = \<SS>\<lparr>ArrMap\<rparr>\<lparr>g, f\<rparr>\<^sub>\<bullet>"
           by 
             (
-              cs_concl 
+              cs_concl  
                 cs_simp: cat_cs_simps cat_prod_cs_simps
                 cs_intro: cat_cs_intros cat_prod_cs_intros
             )
@@ -5328,7 +5392,7 @@ proof-
           unfolding \<SS>'_gf 
           by
             (
-              cs_concl
+              cs_concl 
                 cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
             )
         also from assms(1-4) g f have 
@@ -5336,7 +5400,7 @@ proof-
             \<SS>\<lparr>ArrMap\<rparr>\<lparr>g, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>\<rparr>\<^sub>\<bullet>"
           by
             (
-              cs_concl
+              cs_concl 
                 cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
             )
         also from assms(1-4) g f assms(13)[OF a' b'] have 
@@ -5344,7 +5408,7 @@ proof-
             (\<SS>\<lparr>ArrMap\<rparr>\<lparr>\<AA>\<lparr>CId\<rparr>\<lparr>a'\<rparr>,f\<rparr>\<^sub>\<bullet> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<SS>\<lparr>ArrMap\<rparr>\<lparr>g, \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>\<rparr>\<^sub>\<bullet>)"
           by 
             (
-              cs_concl 
+              cs_concl  
                 cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_prod_cs_intros
             )
         also from assms(1-4) g f assms(13)[OF a' b'] have 
@@ -5385,10 +5449,14 @@ proof-
       \<alpha> \<BB> \<CC> \<open>\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F\<close> \<open>\<SS>'\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F\<close> \<open>\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<close>
       by (rule assms(4)[OF a])
     from b have \<NN>ab: "\<NN>\<lparr>NTMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet> = (\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>\<lparr>b\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps)
-    from \<NN>a.iso_ntcf_is_arr_isomorphism[OF b] assms(1,2,3) a b show
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps)
+    from \<NN>a.iso_ntcf_is_iso_arr[OF b] assms(1,2,3) a b show
       "\<NN>\<lparr>NTMap\<rparr>\<lparr>ab\<rparr> : \<SS>\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> \<SS>'\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr>" 
-      by (cs_prems cs_simp: cat_cs_simps ab_def cs_intro: cat_prod_cs_intros)
+      by 
+        (
+          cs_prems cs_shallow 
+            cs_simp: cat_cs_simps ab_def cs_intro: cat_prod_cs_intros
+        )
   qed
 qed
 
@@ -5413,11 +5481,11 @@ proof-
       \<alpha> \<AA> \<CC> \<open>\<SS>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F\<close> \<open>\<SS>'\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>C\<^sub>F\<close> \<open>\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<close>
       by (rule assms(4)[OF b])
     from b have \<NN>ab: "\<NN>\<lparr>NTMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet> = (\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(a,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>\<lparr>b\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-    from \<NN>a.iso_ntcf_is_arr_isomorphism[OF a] assms(1,2,3) a b show
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    from \<NN>a.iso_ntcf_is_iso_arr[OF a] assms(1,2,3) a b show
       "\<NN>\<lparr>NTMap\<rparr>\<lparr>ab\<rparr> : \<SS>\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> \<SS>'\<lparr>ObjMap\<rparr>\<lparr>ab\<rparr>"
       unfolding ab_def 
-      by (cs_prems cs_simp: cat_cs_simps cs_intro: cat_prod_cs_intros)
+      by (cs_prems cs_shallow cs_simp: cat_cs_simps cs_intro: cat_prod_cs_intros)
   qed
 qed
 
@@ -5438,7 +5506,7 @@ proof(intro is_iso_ntcfI)
     using assms that 
     by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cs_intro: cat_prod_cs_intros cat_arrow_cs_intros
       )
 qed
@@ -5472,7 +5540,7 @@ proof(intro is_iso_ntcfI)
     using assms that 
     by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps
           cs_intro: cat_prod_cs_intros cat_arrow_cs_intros
       )
@@ -5547,7 +5615,11 @@ lemma bnt_flip_NTMap_app:
   shows "bnt_flip \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr>\<lparr>b, a\<rparr>\<^sub>\<bullet> = \<NN>\<lparr>NTMap\<rparr>\<lparr>a, b\<rparr>\<^sub>\<bullet>"
   using assms
   unfolding bnt_flip_components
-  by (cs_concl cs_simp: V_cs_simps cat_cs_simps cs_intro: cat_prod_cs_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: V_cs_simps cat_cs_simps cs_intro: cat_prod_cs_intros
+    )
 
 lemma bnt_flip_NTMap_app'[cat_cs_simps]:
   assumes "ba = [b, a]\<^sub>\<circ>"
@@ -5566,7 +5638,7 @@ lemma bnt_flip_NTMap_vdomain[cat_cs_simps]:
   shows "\<D>\<^sub>\<circ> (bnt_flip \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr>) = (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Obj\<rparr>"
   using assms
   unfolding bnt_flip_components
-  by (cs_concl cs_simp: V_cs_simps cat_cs_simps)
+  by (cs_concl cs_shallow cs_simp: V_cs_simps cat_cs_simps)
 
 lemma bnt_flip_NTMap_vrange[cat_cs_simps]:
   assumes "category \<alpha> \<AA>"
@@ -5597,10 +5669,10 @@ proof-
         unfolding ba_def
         by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cs_intro: V_cs_intros cat_prod_cs_intros
           )
-    qed (cs_concl cs_intro: cat_cs_intros)
+    qed (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
     show "\<R>\<^sub>\<circ> (\<NN>\<lparr>NTMap\<rparr>) \<subseteq>\<^sub>\<circ> \<R>\<^sub>\<circ> (bnt_flip \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr>)"
     proof(intro vsv.vsv_vrange_vsubset, unfold \<NN>.ntcf_NTMap_vdomain)
@@ -5611,11 +5683,11 @@ proof-
           and b: "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
         by (elim cat_prod_2_ObjE[OF assms(1,2)])
       from assms a b have ba: "[b, a]\<^sub>\<circ> \<in>\<^sub>\<circ> (\<BB> \<times>\<^sub>C \<AA>)\<lparr>Obj\<rparr>"
-        by (cs_concl cs_intro: cat_prod_cs_intros)
+        by (cs_concl cs_shallow cs_intro: cat_prod_cs_intros)
       from assms bnt_flip_NTMap_vsv prems a b ba show 
         "\<NN>\<lparr>NTMap\<rparr>\<lparr>ab\<rparr> \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (bnt_flip \<AA> \<BB> \<NN>\<lparr>NTMap\<rparr>)"
         unfolding ab_def 
-        by (cs_concl cs_simp: cat_cs_simps cs_intro: V_cs_intros)
+        by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: V_cs_intros)
     qed auto
 
   qed
@@ -5657,7 +5729,7 @@ proof-
       from assms a b show ?thesis 
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps ba_def 
               cs_intro: cat_cs_intros cat_prod_cs_intros
           )
@@ -5684,7 +5756,11 @@ proof-
           )
     qed
 
-  qed (use assms in \<open>cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros\<close>)+
+  qed 
+    (
+      use assms in 
+        \<open>cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros\<close>
+    )+
 
 qed
 
@@ -5712,13 +5788,13 @@ proof(rule ntcf_eqI)
   interpret \<NN>: is_ntcf \<alpha> \<open>\<AA> \<times>\<^sub>C \<BB>\<close> \<CC> \<SS> \<SS>' \<NN> by (rule assms(3))
   from assms show
     "bnt_flip \<BB> \<AA> (bnt_flip \<AA> \<BB> \<NN>) : \<SS> \<mapsto>\<^sub>C\<^sub>F \<SS>' : \<AA> \<times>\<^sub>C \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   then have dom_lhs:
     "\<D>\<^sub>\<circ> (bnt_flip \<BB> \<AA> (bnt_flip \<AA> \<BB> \<NN>)\<lparr>NTMap\<rparr>) = (\<AA> \<times>\<^sub>C \<BB>)\<lparr>Obj\<rparr>"
     by (cs_concl cs_simp: cat_cs_simps)
   show "\<NN> : \<SS> \<mapsto>\<^sub>C\<^sub>F \<SS>' : \<AA> \<times>\<^sub>C \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" by (rule assms(3))
   then have dom_rhs: "\<D>\<^sub>\<circ> (\<NN>\<lparr>NTMap\<rparr>) = (\<AA> \<times>\<^sub>C \<BB>)\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   show "bnt_flip \<BB> \<AA> (bnt_flip \<AA> \<BB> \<NN>)\<lparr>NTMap\<rparr> = \<NN>\<lparr>NTMap\<rparr>"
   proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
     fix ab assume "ab \<in>\<^sub>\<circ> (\<AA> \<times>\<^sub>C \<BB>)\<lparr>Obj\<rparr>"
@@ -5729,8 +5805,12 @@ proof(rule ntcf_eqI)
       by (rule cat_prod_2_ObjE[OF assms(1,2)])
     from assms a b show 
       "bnt_flip \<BB> \<AA> (bnt_flip \<AA> \<BB> \<NN>)\<lparr>NTMap\<rparr>\<lparr>ab\<rparr> = \<NN>\<lparr>NTMap\<rparr>\<lparr>ab\<rparr>" 
-      by (cs_concl cs_simp: cat_cs_simps ab_def cs_intro: cat_cs_intros)
-  qed (cs_concl cs_intro: V_cs_intros cat_cs_intros)+
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: cat_cs_simps ab_def cs_intro: cat_cs_intros
+        )
+  qed (cs_concl cs_shallow cs_intro: V_cs_intros cat_cs_intros)+
 qed simp_all
 
 
@@ -5746,22 +5826,22 @@ proof(rule ntcf_eqI)
   from assms show "bnt_flip \<AA> \<BB> \<NN>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F :
     bifunctor_flip \<AA> \<BB> \<SS>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F \<mapsto>\<^sub>C\<^sub>F bifunctor_flip \<AA> \<BB> \<SS>'\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F :
     \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from assms show "\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>N\<^sub>T\<^sub>C\<^sub>F :
     bifunctor_flip \<AA> \<BB> \<SS>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F \<mapsto>\<^sub>C\<^sub>F bifunctor_flip \<AA> \<BB> \<SS>'\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>C\<^sub>F :
     \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from assms have dom_lhs: 
     "\<D>\<^sub>\<circ> ((bnt_flip \<AA> \<BB> \<NN>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   from assms have dom_rhs: "\<D>\<^sub>\<circ> ((\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   show "(bnt_flip \<AA> \<BB> \<NN>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr> = (\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>"
   proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
     fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
     with assms show 
       "(bnt_flip \<AA> \<BB> \<NN>\<^bsub>\<BB>,\<AA>\<^esub>(b,-)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (\<NN>\<^bsub>\<AA>,\<BB>\<^esub>(-,b)\<^sub>N\<^sub>T\<^sub>C\<^sub>F)\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   qed (auto simp: cat_cs_intros)
 qed simp_all
 
@@ -5776,7 +5856,7 @@ proof-
     "bnt_flip \<AA> \<BB> \<NN> :
       bifunctor_flip \<AA> \<BB> \<SS> \<mapsto>\<^sub>C\<^sub>F bifunctor_flip \<AA> \<BB> \<SS>' :
       \<BB> \<times>\<^sub>C \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   show ?thesis
     by 
       (

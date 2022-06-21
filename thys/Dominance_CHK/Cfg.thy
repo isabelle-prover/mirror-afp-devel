@@ -184,7 +184,7 @@ lemma any_node_exits_path:
 proof (cases "v = 0")
   assume "v \<in> set (g_V G)" and "v = 0" 
   have "path_entry (g_E G) [] 0" by (auto simp add:path_entry0)
-  then show ?thesis using `v = 0` by auto
+  then show ?thesis using \<open>v = 0\<close> by auto
 next
   assume "v \<in> set (g_V G)" and "v \<noteq> 0" 
   with reachable have "v \<in> (g_E G)\<^sup>* `` {0}" by auto
@@ -207,14 +207,14 @@ lemma path_entry_reachable:
 lemma nin_nodes_reachable: "n \<notin> set (g_V G) \<Longrightarrow> \<not> reachable n"
 proof(rule ccontr)
   assume "n \<notin> set (g_V G)" and nn: " \<not> \<not> reachable n"
-  from `n \<notin> set (g_V G)` have "n \<noteq> 0" using verts_set len_verts_gt0 entry0  by auto
+  from \<open>n \<notin> set (g_V G)\<close> have "n \<noteq> 0" using verts_set len_verts_gt0 entry0  by auto
   from nn have "reachable n" by auto
   then have "n \<in> (g_E G)\<^sup>* `` {0}" by (simp add: reachable_def)
   then have " (0, n) \<in> (g_E G)\<^sup>* " by (auto simp add:Image_def)  
-  with `n \<noteq> 0` have "\<exists>n'. (0,n') \<in> (g_E G)\<^sup>* \<and> (n', n) \<in> (g_E G)" by (auto intro:rtranclE)
+  with \<open>n \<noteq> 0\<close> have "\<exists>n'. (0,n') \<in> (g_E G)\<^sup>* \<and> (n', n) \<in> (g_E G)" by (auto intro:rtranclE)
   then obtain n' where "(0,n') \<in> (g_E G)\<^sup>* " and " (n', n) \<in> (g_E G)"by auto
   then have "n \<in> set (g_V G)" using head_is_vert by auto
-  with `n \<notin> set (g_V G)` show False
+  with \<open>n \<notin> set (g_V G)\<close> show False
     by auto
 qed
 
@@ -227,7 +227,7 @@ proof-
   proof
     assume "0 = n" 
     have "path_entry (g_E G) [] 0" by (simp add:path_entry0)
-    with `0 = n` show ?thesis by auto
+    with \<open>0 = n\<close> show ?thesis by auto
   next
     assume "0 \<noteq> n \<and> (0,n) \<in> (g_E G)\<^sup>+"
     then have "(0,n) \<in> (g_E G)\<^sup>+"  by (auto simp add:rtranclpD)
@@ -559,13 +559,13 @@ next
       then show ?thesis using assms(1) by auto
     next
       case False
-      with `n1 \<noteq> n2` `n1 \<noteq> n3` show ?thesis
+      with \<open>n1 \<noteq> n2\<close> \<open>n1 \<noteq> n3\<close> show ?thesis
       proof (auto simp add: dominate_def)
         fix pa
         assume "n1 \<noteq> n2" and "n1 \<noteq> n3" and "n2 \<noteq> n3"
-        from `n1 \<noteq> n2` assms(1) have n1_n2_pa: "\<forall>pa. path_entry (g_E G) pa n2 \<longrightarrow> n1 \<in> set pa" 
+        from \<open>n1 \<noteq> n2\<close> assms(1) have n1_n2_pa: "\<forall>pa. path_entry (g_E G) pa n2 \<longrightarrow> n1 \<in> set pa" 
           by (auto simp add:dominate_def)
-        from `n2 \<noteq> n3` assms(2) have "\<forall>pa. path_entry (g_E G) pa n3 \<longrightarrow> n2 \<in> set pa" 
+        from \<open>n2 \<noteq> n3\<close> assms(2) have "\<forall>pa. path_entry (g_E G) pa n3 \<longrightarrow> n2 \<in> set pa" 
           by (auto simp add:dominate_def)
         with n1_n2_pa have "\<forall>pa. path_entry (g_E G) pa n3 \<longrightarrow> n1 \<in> set pa" 
           by (rule path_entry_gt)
@@ -644,7 +644,7 @@ next
       then  have t1: "takeWhile ((\<noteq>) n1) (rev xs @ [x]) = (rev xs) @ takeWhile  ((\<noteq>) n1) [x]" 
              and     "takeWhile ((\<noteq>) n2) (rev xs @ [x]) = (rev xs) @ takeWhile  ((\<noteq>) n2) [x]" 
         by (fastforce intro:takeWhile_append2)+
-      with `n1 = x` `n2 \<noteq> x`  have t1': "takeWhile ((\<noteq>) n1) (rev xs @ [x]) = rev xs" 
+      with \<open>n1 = x\<close> \<open>n2 \<noteq> x\<close>  have t1': "takeWhile ((\<noteq>) n1) (rev xs @ [x]) = rev xs" 
                                and      "takeWhile ((\<noteq>) n2) (rev xs @ [x]) = (rev xs) @ [x]" by auto      
       then have "length (takeWhile ((\<noteq>) n2) (rev xs @ [x])) = length ((rev xs) @ [x])" 
         using arg_cong[of "takeWhile ((\<noteq>) n2) (rev xs @ [x])" "rev xs @ [x]" "length"] by fastforce       
@@ -854,7 +854,7 @@ proof (cases "reachable n3")
   proof (rule ccontr)
     assume "\<not> n1 \<noteq> n3" then have "n1 = n3" by simp
     with assms(1) have "dominate n3 n2" by simp
-    with `reachable n3` n2_dom_n3 have "n2 = n3" by (auto dest:reachable_dom_acyclic)
+    with \<open>reachable n3\<close> n2_dom_n3 have "n2 = n3" by (auto dest:reachable_dom_acyclic)
     with n1_neq_n2 show False by auto
   qed
   with n1_dom_n3 show ?thesis by (simp add:strict_dominate_def dominate_def)

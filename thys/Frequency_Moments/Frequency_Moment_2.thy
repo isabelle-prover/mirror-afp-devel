@@ -601,7 +601,7 @@ theorem f2_exact_space_usage:
   using f2_exact_space_usage'[OF assms(1,2,3)]
   by (subst (asm) sketch_def[OF assms(1,2,3)], subst M_def, simp)
 
-theorem f2_asympotic_space_complexity:
+theorem f2_asymptotic_space_complexity:
   "f2_space_usage \<in> O[at_top \<times>\<^sub>F at_top \<times>\<^sub>F at_right 0 \<times>\<^sub>F at_right 0](\<lambda> (n, m, \<epsilon>, \<delta>). 
   (ln (1 / of_rat \<epsilon>)) / (of_rat \<delta>)\<^sup>2 * (ln (real n) + ln (real m)))"
   (is "_ \<in> O[?F](?rhs)")

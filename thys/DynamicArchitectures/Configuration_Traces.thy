@@ -1235,7 +1235,8 @@ proof cases
   thus ?thesis
   proof cases
     assume "n'\<ge>n"
-    thus ?thesis using lNactLe by (metis HOL.no_atp(11))
+    thus ?thesis
+      by (rule order_trans[OF lNactLe])
   next
     assume "\<not> n'\<ge>n"
     hence "n'<n" by simp

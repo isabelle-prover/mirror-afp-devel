@@ -6,7 +6,7 @@
 chapter SetCategory
 
 theory SetCategory
-imports Category Functor "HOL-Cardinals.Cardinals"
+imports Category Functor Subcategory
 begin
 
   text\<open>
@@ -79,7 +79,9 @@ begin
     on the arrow type of @{term S}.  The function @{term img} should be thought of
     as a mapping that takes a point @{term "x \<in> hom unity a"} to a corresponding
     terminal object @{term "img x"}.  Eventually, assumptions will be introduced so
-    that this is in fact the case.
+    that this is in fact the case.  The set of terminal objects of the category will
+    serve as abstract ``elements'' of sets; we will refer to the set of \emph{all}
+    terminal objects as the \emph{universe}.
 \<close>
 
   locale set_category_data = category S
@@ -121,42 +123,57 @@ begin
     that each terminal object @{term t} belongs to @{term "set t"},
     that two objects of @{term S} are equal if they determine the same set,
     that two parallel arrows of @{term S} are equal if they determine the same
-    function, that there is an object corresponding to each subset of the universe
-    whose cardinality is less than a specified cardinal \<open>\<AA>\<close>, and that for any objects
-    @{term a} and @{term b} and function @{term "F \<in> hom unity a \<rightarrow> hom unity b"}
-    there is an arrow @{term "f \<in> hom a b"} whose action under the composition
-    of @{term S} coincides with the function @{term F}.
+    function, and that for any objects @{term a} and @{term b} and function
+    @{term "F \<in> hom unity a \<rightarrow> hom unity b"} there is an arrow @{term "f \<in> hom a b"}
+    whose action under the composition of @{term S} coincides with the function @{term F}.
 
-    The cardinal \<open>\<AA>\<close>, which is given as a parameter to the locale, has been introduced
-    because most of the familiar properties of a set category do not depend on
-    there being an object corresponding to \emph{every} subset of the universe,
-    and we would like to consider such situations; for example, the situation in
-    which there only \emph{finite} subsets determine objects.
+    The parameter @{term setp} is a predicate that determines which subsets of the
+    universe are to be regarded as defining objects of the category.  This parameter
+    has been introduced because most of the characteristic properties of a category
+    of sets and functions do not depend on there being an object corresponding to
+    \emph{every} subset of the universe, and we intend to consider in particular the
+    cases in which only finite subsets or only ``small'' subsets of the universe
+    determine objects.  Accordingly, we assume that there is an object corresponding
+    to each subset of the universe that satisfies @{term setp}.
+    It is also necessary to assume some basic regularity properties of the predicate
+    @{term setp}; namely, that it holds for all subsets of the universe corresponding
+    to objects of @{term S}, and that it respects subset and union.
 \<close>
     
   locale set_category_given_img = set_category_data S img
   for S :: "'s comp"      (infixr "\<cdot>" 55)
   and img :: "'s \<Rightarrow> 's"
-  and \<AA> :: "'t rel" +
-  assumes nonempty_Univ: "Univ \<noteq> {}"
-  and img_mapsto: "ide a \<Longrightarrow> img \<in> hom unity a \<rightarrow> Univ"
-  and card_points: "ide a \<Longrightarrow> |hom unity a| <o \<AA>"
+  and setp :: "'s set \<Rightarrow> bool" +
+  assumes setp_imp_subset_Univ: "setp A \<Longrightarrow> A \<subseteq> Univ"
+  and setp_set_ide: "ide a \<Longrightarrow> setp (set a)"
+  and setp_respects_subset: "A' \<subseteq> A \<Longrightarrow> setp A \<Longrightarrow> setp A'"
+  and setp_respects_union: "\<lbrakk> setp A; setp B \<rbrakk> \<Longrightarrow> setp (A \<union> B)"
+  and nonempty_Univ: "Univ \<noteq> {}"
   and inj_img: "ide a \<Longrightarrow> inj_on img (hom unity a)"
   and stable_img: "terminal t \<Longrightarrow> t \<in> img ` hom unity t"
   and extensional_set: "\<lbrakk> ide a; ide b; set a = set b \<rbrakk> \<Longrightarrow> a = b"
   and extensional_arr: "\<lbrakk> par f f'; \<And>x. \<guillemotleft>x : unity \<rightarrow> dom f\<guillemotright> \<Longrightarrow> f \<cdot> x = f' \<cdot> x \<rbrakk> \<Longrightarrow> f = f'"
-  and set_complete: "\<lbrakk> A \<subseteq> Univ; |A| <o \<AA> \<rbrakk> \<Longrightarrow> \<exists>a. ide a \<and> set a = A"
-  and fun_complete1: "\<lbrakk> ide a; ide b; F \<in> hom unity a \<rightarrow> hom unity b \<rbrakk>
-                          \<Longrightarrow> \<exists>f. \<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> (\<forall>x. \<guillemotleft>x : unity \<rightarrow> dom f\<guillemotright> \<longrightarrow> f \<cdot> x = F x)"
-  and cardinal: "Card_order \<AA> \<and> infinite (Field \<AA>)"
+  and set_complete: "setp A \<Longrightarrow> \<exists>a. ide a \<and> set a = A"
+  and fun_complete_ax: "\<lbrakk> ide a; ide b; F \<in> hom unity a \<rightarrow> hom unity b \<rbrakk>
+                            \<Longrightarrow> \<exists>f. \<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> (\<forall>x. \<guillemotleft>x : unity \<rightarrow> dom f\<guillemotright> \<longrightarrow> f \<cdot> x = F x)"
   begin
 
-    text\<open>
-      The inverse of the map @{term set} is a map @{term mkIde} that takes each subset
-      of the universe of cardinality less than \<open>\<AA>\<close> to an identity of @{term[source=true] S}.
-\<close>
-    definition mkIde :: "'s set \<Rightarrow> 's"
-    where "mkIde A = (if A \<subseteq> Univ \<and> |A| <o \<AA> then inv_into (Collect ide) set A else null)"
+    lemma setp_singleton:
+    assumes "terminal a"
+    shows "setp {a}"
+      using assms
+      by (metis setp_set_ide Set.set_insert Un_upper1 insert_is_Un set_def
+          setp_respects_subset stable_img terminal_def)
+
+    lemma setp_empty:
+    shows "setp {}"
+      using setp_singleton setp_respects_subset nonempty_Univ by blast
+
+    lemma finite_imp_setp:
+    assumes "A \<subseteq> Univ" and "finite A"
+    shows "setp A"
+      using setp_empty setp_singleton setp_respects_union
+      by (metis assms(1-2) finite_subset_induct insert_is_Un mem_Collect_eq)
 
     text\<open>
       Each arrow @{term "f \<in> hom a b"} determines a function @{term "Fun f \<in> Univ \<rightarrow> Univ"},
@@ -194,65 +211,50 @@ begin
     shows "ide unity"
       using terminal_unity terminal_def by blast
 
-    lemma set_subset_Univ [simp]:
+    lemma setp_set' [simp]:
     assumes "ide a"
-    shows "set a \<subseteq> Univ"
-      using assms set_def img_mapsto by auto
+    shows "setp (set a)"
+      using assms setp_set_ide by auto
   
     lemma inj_on_set:
     shows "inj_on set (Collect ide)"
       using extensional_set by (intro inj_onI, auto)
       
     text\<open>
-      The mapping @{term mkIde}, which takes subsets of the universe to identities,
-      and @{term set}, which takes identities to subsets of the universe, are inverses.
+      The inverse of the map @{term set} is a map @{term mkIde} that takes each subset
+      of the universe to an identity of @{term[source=true] S}.
 \<close>
-
-    lemma set_card:
-    assumes "ide a"
-    shows "|set a| <o \<AA>"
-      using assms card_points set_def
-      by (metis card_of_image ordLeq_ordLess_trans)
+    definition mkIde :: "'s set \<Rightarrow> 's"
+    where "mkIde A = (if setp A then inv_into (Collect ide) set A else null)"
 
     lemma mkIde_set [simp]:
     assumes "ide a"
     shows "mkIde (set a) = a"
-      using assms mkIde_def inj_on_set inv_into_f_f set_card
-      by (simp add: ordLess_imp_ordLeq)
+      by (simp add: assms inj_on_set mkIde_def)
 
-    lemma set_mkIde:
-    assumes "A \<subseteq> Univ" and "|A| <o \<AA>"
+    lemma set_mkIde [simp]:
+    assumes "setp A"
     shows "set (mkIde A) = A"
       using assms mkIde_def set_complete someI_ex [of "\<lambda>a. a \<in> Collect ide \<and> set a = A"]
-      by (metis set_category_given_img.mkIde_set set_category_given_img_axioms)
+            mkIde_set
+      by metis
       
-    lemma ide_mkIde:
-    assumes "A \<subseteq> Univ" and "|A| <o \<AA>"
+    lemma ide_mkIde [simp]:
+    assumes "setp A"
     shows "ide (mkIde A)"
       using assms mkIde_def mkIde_set set_complete by metis
 
-    text\<open>
-      Because we have assumed the cardinal \<open>\<AA>\<close> to be infinite, there is an object corresponding
-      to every finite subset of the universe.
-    \<close>
-
-    lemma ide_mkIde_finite:
-    assumes "A \<subseteq> Univ" and "finite A"
-    shows "ide (mkIde A)"
-      by (meson assms card_of_Field_ordIso cardinal finite_ordLess_infinite2 ide_mkIde
-          ordLess_ordIso_trans)
-
-    lemma arr_mkIde:
-    shows "arr (mkIde A) \<longleftrightarrow> A \<subseteq> Univ \<and> |A| <o \<AA>"
-      using ide_mkIde mkIde_def not_arr_null by force
+    lemma arr_mkIde [iff]:
+    shows "arr (mkIde A) \<longleftrightarrow> setp A"
+      using not_arr_null mkIde_def ide_mkIde by auto
     
-    lemma dom_mkIde:
-    assumes "A \<subseteq> Univ" and "|A| <o \<AA>"
+    lemma dom_mkIde [simp]:
+    assumes "setp A"
     shows "dom (mkIde A) = mkIde A"
       using assms ide_mkIde by simp
     
-    lemma cod_mkIde:
-    assumes "A \<subseteq> Univ" and "|A| <o \<AA>"
+    lemma cod_mkIde [simp]:
+    assumes "setp A"
     shows "cod (mkIde A) = mkIde A"
       using assms ide_mkIde by simp
       
@@ -287,8 +289,8 @@ begin
     shows "Fun a = restrict (\<lambda>x. x) (set a)"
       using assms Fun_def inj_img set_def comp_cod_arr by fastforce
     
-    lemma Fun_mkIde:
-    assumes "A \<subseteq> Univ" and "|A| <o \<AA>"
+    lemma Fun_mkIde [simp]:
+    assumes "setp A"
     shows "Fun (mkIde A) = restrict (\<lambda>x. x) A"
       using assms ide_mkIde set_mkIde Fun_ide by simp
     
@@ -327,7 +329,8 @@ begin
           proof -
             have "Fun f t \<in> img ` hom unity (cod f)"
               using assms t Fun_mapsto set_def by fast
-            thus ?thesis using assms by (auto simp add: set_def Fun_def)
+            thus ?thesis
+              using assms by (auto simp add: set_def Fun_def)
           qed
           finally show "(img o S (g \<cdot> f) o ?img' (dom (g \<cdot> f))) t = (Fun g o Fun f) t"
             by auto
@@ -343,7 +346,7 @@ begin
 \<close>
     
     definition mkArr :: "'s set \<Rightarrow> 's set \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> 's"
-    where "mkArr A B F = (if A \<subseteq> Univ \<and> |A| <o \<AA> \<and> B \<subseteq> Univ \<and> |B| <o \<AA> \<and> F \<in> A \<rightarrow> B
+    where "mkArr A B F = (if setp A \<and> setp B \<and> F \<in> A \<rightarrow> B
                           then (THE f. f \<in> hom (mkIde A) (mkIde B) \<and> Fun f = restrict F A)
                           else null)"
 
@@ -368,10 +371,10 @@ begin
             assume x: "x \<in> hom unity a"
             have "F (img x) \<in> set b" using assms(3) x set_def by auto
             thus "inv_into (hom unity b) img (F (img x)) \<in> hom unity b"
-              using assms inj_img set_def by auto
+              using assms setp_set_ide inj_img set_def by auto
           qed
           hence "\<exists>f. \<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> (\<forall>x. \<guillemotleft>x : unity \<rightarrow> a\<guillemotright> \<longrightarrow> f \<cdot> x = ?F' x)"
-            using assms fun_complete1 [of a b] by force
+            using assms fun_complete_ax [of a b] by force
           from this obtain f where f: "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> (\<forall>x. \<guillemotleft>x : unity \<rightarrow> a\<guillemotright> \<longrightarrow> f \<cdot> x = ?F' x)"
             by blast
           let ?img' = "\<lambda>a. \<lambda>t. inv_into (hom unity a) img t"
@@ -408,10 +411,11 @@ begin
     qed
                           
     lemma mkArr_in_hom:
-    assumes "A \<subseteq> Univ" and "|A| <o \<AA>" and "B \<subseteq> Univ" and "|B| <o \<AA>" and "F \<in> A \<rightarrow> B"
+    assumes "setp A" and "setp B" and "F \<in> A \<rightarrow> B"
     shows "\<guillemotleft>mkArr A B F : mkIde A \<rightarrow> mkIde B\<guillemotright>"
       using assms mkArr_def fun_complete [of "mkIde A" "mkIde B" F] ide_mkIde set_mkIde
             theI' [of "\<lambda>f. f \<in> hom (mkIde A) (mkIde B) \<and> Fun f = restrict F A"]
+            setp_imp_subset_Univ
       by simp
 
     text\<open>
@@ -429,29 +433,27 @@ begin
       entire development.
 \<close>
 
-    (* TODO: This gets used as an introduction rule, but the conjunction on the right-hand side
-       is not very convenient. *)
-    lemma arr_mkArr:
-    shows "arr (mkArr A B F) \<longleftrightarrow>
-           A \<subseteq> Univ \<and> |A| <o \<AA> \<and> B \<subseteq> Univ \<and> |B| <o \<AA> \<and> F \<in> A \<rightarrow> B"
+    lemma arr_mkArr [iff]:
+    shows "arr (mkArr A B F) \<longleftrightarrow> setp A \<and> setp B \<and> F \<in> A \<rightarrow> B"
     proof
-      show "arr (mkArr A B F) \<Longrightarrow>
-              A \<subseteq> Univ \<and> |A| <o \<AA> \<and> B \<subseteq> Univ \<and> |B| <o \<AA> \<and> F \<in> A \<rightarrow> B"
-        using mkArr_def domains_null codomains_null has_domain_iff_arr has_codomain_iff_arr
-              not_arr_null
-        by (intro conjI) metis+
-      show "A \<subseteq> Univ \<and> |A| <o \<AA> \<and> B \<subseteq> Univ \<and> |B| <o \<AA> \<and> F \<in> A \<rightarrow> B
-               \<Longrightarrow> arr (mkArr A B F)"
+      show "arr (mkArr A B F) \<Longrightarrow> setp A \<and> setp B \<and> F \<in> A \<rightarrow> B"
+        using mkArr_def not_arr_null ex_un_null someI_ex [of "\<lambda>f. \<not>arr f"] setp_imp_subset_Univ
+        by metis
+      show "setp A \<and> setp B \<and> F \<in> A \<rightarrow> B \<Longrightarrow> arr (mkArr A B F)"
         using mkArr_in_hom by auto
     qed
     
+    lemma arr_mkArrI [intro]:
+    assumes "setp A" and "setp B" and "F \<in> A \<rightarrow> B"
+    shows "arr (mkArr A B F)"
+      using assms arr_mkArr by blast
+
     lemma Fun_mkArr':
     assumes "arr (mkArr A B F)"
     shows "\<guillemotleft>mkArr A B F : mkIde A \<rightarrow> mkIde B\<guillemotright>"
     and "Fun (mkArr A B F) = restrict F A"
     proof -
-      have 1: "A \<subseteq> Univ \<and> |A| <o \<AA> \<and> B \<subseteq> Univ \<and> |B| <o \<AA> \<and> F \<in> A \<rightarrow> B"
-        using assms arr_mkArr by simp
+      have 1: "setp A \<and> setp B \<and> F \<in> A \<rightarrow> B" using assms by fast
       have 2: "mkArr A B F \<in> hom (mkIde A) (mkIde B) \<and>
                      Fun (mkArr A B F) = restrict F (set (mkIde A))"
       proof -
@@ -467,11 +469,9 @@ begin
     assumes "arr f"
     shows "mkArr (set (dom f)) (set (cod f)) (Fun f) = f"
     proof -
-      have 1: "set (dom f) \<subseteq> Univ \<and> |set (dom f)| <o \<AA> \<and>
-               set (cod f) \<subseteq> Univ \<and> |set (cod f)| <o \<AA> \<and>
-               ide (dom f) \<and> ide (cod f) \<and>
+      have 1: "setp (set (dom f)) \<and> setp (set (cod f)) \<and> ide (dom f) \<and> ide (cod f) \<and>
                Fun f \<in> extensional (set (dom f)) \<inter> (set (dom f) \<rightarrow> set (cod f))"
-        using assms Fun_mapsto set_def set_card set_subset_Univ by auto
+        using Fun_mapsto assms ide_cod ide_dom setp_set' by presburger
       hence "\<exists>!f'. f' \<in> hom (dom f) (cod f) \<and> Fun f' = restrict (Fun f) (set (dom f))"
         using fun_complete by force
       moreover have "f \<in> hom (dom f) (cod f) \<and> Fun f = restrict (Fun f) (set (dom f))"
@@ -509,7 +509,7 @@ begin
     assumes "arr (mkArr A B F)"
     and "A = A'" and "B = B'" and "\<And>x. x \<in> A \<Longrightarrow> F x = F' x"
     shows "mkArr A B F = mkArr A' B' F'"
-      using assms arr_mkArr Fun_mkArr
+      using assms Fun_mkArr
       by (intro arr_eqI, auto simp add: Pi_iff)
 
     text\<open>
@@ -520,22 +520,22 @@ begin
     lemma mkArr_eqI' [intro]:
     assumes "arr (mkArr A B F)" and "\<And>x. x \<in> A \<Longrightarrow> F x = F' x"
     shows "mkArr A B F = mkArr A B F'"
-      using assms mkArr_eqI arr_mkArr by simp
+      using assms mkArr_eqI by simp
     
     lemma mkArr_restrict_eq:
     assumes "arr (mkArr A B F)"
     shows "mkArr A B (restrict F A) = mkArr A B F"
-      using assms arr_mkArr by (intro mkArr_eqI', auto)
+      using assms by (intro mkArr_eqI', auto)
       
     lemma mkArr_restrict_eq':
     assumes "arr (mkArr A B (restrict F A))"
     shows "mkArr A B (restrict F A) = mkArr A B F"
       using assms by (intro mkArr_eqI', auto)
       
-    lemma mkIde_as_mkArr:
-    assumes "A \<subseteq> Univ" and "|A| <o \<AA>"
+    lemma mkIde_as_mkArr [simp]:
+    assumes "setp A"
     shows "mkArr A A (\<lambda>x. x) = mkIde A"
-      using assms arr_mkIde arr_mkArr dom_mkIde cod_mkIde Fun_mkIde
+      using assms arr_mkIde dom_mkIde cod_mkIde Fun_mkIde
       by (intro arr_eqI, auto)
 
     lemma comp_mkArr:
@@ -543,12 +543,12 @@ begin
     shows "mkArr B C G \<cdot> mkArr A B F = mkArr A C (G \<circ> F)"
     proof (intro arr_eqI)
       have 1: "seq (mkArr B C G) (mkArr A B F)" using assms by force
-      have 2: "G o F \<in> A \<rightarrow> C" using assms arr_mkArr by auto
+      have 2: "G o F \<in> A \<rightarrow> C" using assms by auto
       show "par (mkArr B C G \<cdot> mkArr A B F) (mkArr A C (G \<circ> F))"
-        using assms 1 2 arr_mkArr
+        using assms 1 2
         by (intro conjI) simp_all
       show "Fun (mkArr B C G \<cdot> mkArr A B F) = Fun (mkArr A C (G \<circ> F))"
-        using 1 2 arr_mkArr set_mkIde by fastforce
+        using 1 2 by fastforce
     qed
     
     text\<open>
@@ -579,8 +579,8 @@ begin
       proof -
         assume t: "ide t \<and> (\<exists>!x. x \<in> set t)"
         from this obtain t' where "set t = {t'}" by blast
-        hence t': "set t = {t'} \<and> {t'} \<subseteq> Univ \<and> t = mkIde {t'}"
-          using t set_subset_Univ mkIde_set by metis
+        hence t': "set t = {t'} \<and> setp {t'} \<and> t = mkIde {t'}"
+          using t setp_set_ide mkIde_set by metis
         show "terminal t"
         proof
           show "ide t" using t by simp
@@ -591,8 +591,8 @@ begin
             show "\<exists>!f. \<guillemotleft>f : a \<rightarrow> t\<guillemotright>"
             proof
               show 1: "\<guillemotleft>mkArr (set a) {t'} (\<lambda>x. t') : a \<rightarrow> t\<guillemotright>"
-                by (metis Pi_I a mkIde_set set_card mkArr_in_hom set_subset_Univ
-                    singletonD t t')
+                using a t t' mkArr_in_hom
+                by (metis Pi_I' mkIde_set setp_set_ide singletonD)
               show "\<And>f. \<guillemotleft>f : a \<rightarrow> t\<guillemotright> \<Longrightarrow> f = mkArr (set a) {t'} (\<lambda>x. t')"
               proof -
                 fix f
@@ -658,91 +658,37 @@ begin
 
   locale set_category = category S
   for S :: "'s comp"      (infixr "\<cdot>" 55)
-  and \<AA> :: "'t rel" +
-  assumes ex_img: "\<exists>img. set_category_given_img S img \<AA>"
+  and setp :: "'s set \<Rightarrow> bool" +
+  assumes ex_img: "\<exists>img. set_category_given_img S img setp"
   begin
 
     notation in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
   
     definition some_img
-    where "some_img = (SOME img. set_category_given_img S img \<AA>)"
+    where "some_img = (SOME img. set_category_given_img S img setp)"
    
+    sublocale set_category_given_img S some_img setp
+    proof -
+      have "\<exists>img. set_category_given_img S img setp" using ex_img by auto
+      thus "set_category_given_img S some_img setp"
+        using someI_ex [of "\<lambda>img. set_category_given_img S img setp"] some_img_def
+        by metis
+    qed
+
   end
   
-  sublocale set_category \<subseteq> set_category_given_img S some_img \<AA>
-  proof -
-    have "\<exists>img. set_category_given_img S img \<AA>" using ex_img by auto
-    thus "set_category_given_img S some_img \<AA>"
-      using someI_ex [of "\<lambda>img. set_category_given_img S img \<AA>"] some_img_def
-      by metis
-  qed
-
-  text\<open>
-    For a set category, if the cardinal \<open>\<AA>\<close> is large enough, then it imposes no constraint
-    on what subsets of the universe determine objects.  In this case, we call the set category
-    \emph{replete} and we can eliminate the cardinality assumptions from various facts.
-  \<close>
+  text\<open>We call a set category \emph{replete} if there is an object corresponding to
+    every subset of the universe.
+\<close>
 
   locale replete_set_category =
-    set_category S \<open>cardSuc (cmax (card_of (UNIV :: 's set)) natLeq)\<close>
+    category S +
+    set_category S \<open>\<lambda>A. A \<subseteq> Collect terminal\<close>
   for S :: "'s comp"      (infixr "\<cdot>" 55)
   begin
 
-    lemma card_of_leq:
-    assumes "A \<subseteq> Univ"
-    shows "|A| <o cardSuc (cmax (card_of (UNIV :: 's set)) natLeq)"
-    proof -
-      have "|A| \<le>o cmax (card_of (UNIV :: 's set)) natLeq"
-        using assms card_of_Card_order natLeq_Card_order ordLeq_cmax1
-              ordLeq_transitive
-        by (metis card_of_UNIV)
-      thus ?thesis
-        by (simp add: Card_order_cmax natLeq_Card_order)
-    qed
-
-    lemma set_mkIde [simp]:
-    assumes "A \<subseteq> Univ"
-    shows "set (mkIde A) = A"
-      using assms card_of_leq set_mkIde by simp
-
-    lemma ide_mkIde [simp]:
-    assumes "A \<subseteq> Univ"
-    shows "ide (mkIde A)"
-      using assms card_of_leq ide_mkIde by simp
-
-    lemma arr_mkIde [iff]:
-    shows "arr (mkIde A) \<longleftrightarrow> A \<subseteq> Univ"
-      using card_of_leq arr_mkIde by auto
-
-    lemma dom_mkIde [simp]:
-    assumes "A \<subseteq> Univ"
-    shows "dom (mkIde A) = mkIde A"
-      using assms ide_mkIde by simp
-
-    lemma cod_mkIde [simp]:
-    assumes "A \<subseteq> Univ"
-    shows "cod (mkIde A) = mkIde A"
-      using assms ide_mkIde by simp
-
-    lemma Fun_mkIde [simp]:
-    assumes "A \<subseteq> Univ"
-    shows "Fun (mkIde A) = restrict (\<lambda>x. x) A"
-      using assms set_mkIde ide_mkIde Fun_ide by simp
-
-    lemma mkArr_in_hom [intro]:
-    assumes "A \<subseteq> Univ" and "B \<subseteq> Univ" and "F \<in> A \<rightarrow> B"
-    shows "\<guillemotleft>mkArr A B F : mkIde A \<rightarrow> mkIde B\<guillemotright>"
-      using assms card_of_leq arr_mkArr by auto
-
-    lemma arr_mkArr:
-    shows "arr (mkArr A B F) \<longleftrightarrow> A \<subseteq> Univ \<and> B \<subseteq> Univ \<and> F \<in> A \<rightarrow> B"
-      using card_of_leq arr_mkArr by auto
-
-    lemma mkIde_as_mkArr:
-    assumes "A \<subseteq> Univ"
-    shows "mkArr A A (\<lambda>x. x) = mkIde A"
-      using assms card_of_leq set_mkIde arr_mkIde arr_mkArr dom_mkIde cod_mkIde Fun_mkIde
-      by (intro arr_eqI, auto)
+    abbreviation setp
+    where "setp \<equiv> \<lambda>A. A \<subseteq> Univ"
 
   end
 
@@ -775,8 +721,8 @@ begin
         show "\<guillemotleft>mkArr (set a) (set b) (\<lambda>x. x) : a \<rightarrow> b\<guillemotright> \<and> incl (mkArr (set a) (set b) (\<lambda>x. x))"
         proof
           show "\<guillemotleft>mkArr (set a) (set b) (\<lambda>x. x) : a \<rightarrow> b\<guillemotright>"
-            by (metis 1 assms image_ident image_subset_iff_funcset mkIde_set set_card
-                mkArr_in_hom set_subset_Univ)
+            by (metis 1 assms image_ident image_subset_iff_funcset mkIde_set
+                mkArr_in_hom setp_set_ide)
           thus "incl (mkArr (set a) (set b) (\<lambda>x. x))"
             using 1 incl_def by force
         qed
@@ -790,19 +736,21 @@ begin
   text\<open>
     In this section we show that the \<open>set_category\<close> locale completely characterizes
     the structure of its interpretations as categories, in the sense that for any two
-    interpretations @{term S} and @{term S'} for the same cardinal \<open>\<AA>\<close>,
-    a bijection between the universe of @{term S} and the universe of @{term S'} extends
+    interpretations @{term S} and @{term S'}, a @{term setp}-respecting bijection
+    between the universe of @{term S} and the universe of @{term S'} extends
     to an isomorphism of @{term S} and @{term S'}.
 \<close>
   
   locale two_set_categories_bij_betw_Univ =
-    S: set_category S \<AA> +
-    S': set_category S' \<AA>
+    S: set_category S setp +
+    S': set_category S' setp'
   for S :: "'s comp"      (infixr "\<cdot>" 55)
+  and setp :: "'s set \<Rightarrow> bool"
   and S' :: "'t comp"     (infixr "\<cdot>\<acute>" 55)
-  and \<AA> :: "'u rel"
+  and setp' :: "'t set \<Rightarrow> bool"
   and \<phi> :: "'s \<Rightarrow> 't" +
   assumes bij_\<phi>: "bij_betw \<phi> S.Univ S'.Univ"
+  and \<phi>_respects_setp: "A \<subseteq> S.Univ \<Longrightarrow> setp' (\<phi> ` A) \<longleftrightarrow> setp A"
   begin
 
     notation S.in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
@@ -842,22 +790,15 @@ begin
     lemma set_\<Phi>o:
     assumes "S.ide a"
     shows "S'.set (\<Phi>o a) = \<phi> ` S.set a"
-    proof -
-      from assms have "S.set a \<subseteq> S.Univ \<and> |S.set a| <o \<AA>"
-        by (simp add: S.set_card)
-      moreover have "|\<phi> ` S.set a| <o \<AA>"
-        by (meson calculation card_of_image ordLeq_ordLess_trans)
-      ultimately show ?thesis
-        using S'.set_mkIde \<Phi>o_def assms bij_\<phi> bij_betw_def image_mono mem_Collect_eq restrict_def
-        by (metis (no_types, lifting))
-    qed
+      by (simp add: S.setp_imp_subset_Univ \<Phi>o_def \<phi>_respects_setp assms)
 
     lemma \<Phi>o_preserves_ide:
     assumes "S.ide a"
     shows "S'.ide (\<Phi>o a)"
-      using assms S'.ide_mkIde S.set_subset_Univ bij_\<phi> bij_betw_def image_mono restrict_apply'
+      using assms S'.ide_mkIde bij_\<phi> bij_betw_def image_mono restrict_apply' S.setp_set'
+            \<phi>_respects_setp S.setp_imp_subset_Univ
       unfolding \<Phi>o_def
-      by (metis (no_types, lifting) S.set_card card_of_image mem_Collect_eq ordLeq_ordLess_trans)
+      by simp
       
     text\<open>
       The map @{term \<Phi>a} assigns to each arrow @{term f} of @{term[source=true] S} the function on
@@ -878,7 +819,7 @@ begin
         fix x
         assume x: "x \<in> \<phi> ` S.set (S.dom f)"
         have "\<psi> x \<in> S.set (S.dom f)"
-          using assms x \<psi>_img_\<phi>_img [of "S.set (S.dom f)"] S.set_subset_Univ by auto
+          using assms x \<psi>_img_\<phi>_img [of "S.set (S.dom f)"] S.setp_imp_subset_Univ by auto
         hence "S.Fun f (\<psi> x) \<in> S.set (S.cod f)" using assms S.Fun_mapsto by auto
         hence "\<phi> (S.Fun f (\<psi> x)) \<in> \<phi> ` S.set (S.cod f)" by simp
         thus "\<Phi>a f x \<in> \<phi> ` S.set (S.cod f)" using x \<Phi>a_def by auto
@@ -908,7 +849,8 @@ begin
           fix x'
           assume X': "x' \<in> \<phi> ` S.set (S.dom f)"
           hence 1: "\<psi> x' \<in> S.set (S.dom f)"
-            using gf \<psi>_img_\<phi>_img [of "S.set (S.dom f)"] S.set_subset_Univ S.ide_dom by blast
+            using gf \<psi>_img_\<phi>_img S.setp_imp_subset_Univ S.ide_dom S.setp_set_ide
+            by blast
           hence "\<phi> (restrict (S.Fun g o S.Fun f) (S.set (S.dom f)) (\<psi> x'))
                    = \<phi> (S.Fun g (S.Fun f (\<psi> x')))"
             using restrict_apply by auto
@@ -917,7 +859,8 @@ begin
             have "S.Fun f (\<psi> x') \<in> S.set (S.cod f)"
               using gf 1 S.Fun_mapsto by fast
             hence "\<psi> (\<phi> (S.Fun f (\<psi> x'))) = S.Fun f (\<psi> x')"
-              using assms bij_\<phi> S.set_subset_Univ bij_betw_def inv_into_f_f subsetCE S.ide_cod
+              using assms bij_\<phi> S.setp_imp_subset_Univ bij_betw_def inv_into_f_f subsetCE
+                    S.ide_cod S.setp_set_ide
               by (metis S.seqE)
             thus ?thesis by auto
           qed
@@ -952,11 +895,10 @@ begin
     shows "\<Phi> f \<in> S'.hom (\<Phi>o (S.dom f)) (\<Phi>o (S.cod f))"
     proof -
       have "\<guillemotleft>\<Phi> f : S'.dom (\<Phi> f) \<rightarrow>' S'.cod (\<Phi> f)\<guillemotright>"
-        using assms \<Phi>_def [of f] \<Phi>a_mapsto [of f] \<Phi>o_preserves_ide S'.set_card S'.arr_mkArr
+        using assms \<Phi>_def \<Phi>a_mapsto \<Phi>o_preserves_ide
         by (intro S'.in_homI) auto
       thus ?thesis
-        using assms \<Phi>_def \<Phi>a_mapsto \<Phi>o_preserves_ide S'.set_card S'.arr_mkArr S'.mkIde_set
-        by auto
+        using assms \<Phi>_def \<Phi>a_mapsto \<Phi>o_preserves_ide by auto
     qed
 
     lemma \<Phi>_ide [simp]:
@@ -973,14 +915,16 @@ begin
             using assms \<Phi>a_def restrict_apply by auto
           also have "... = (\<lambda>x' \<in> S'.set (\<Phi>o a). \<phi> (\<psi> x'))"
           proof -
-            have "S.Fun a = (\<lambda>x \<in> S.set a. x)" using assms S.Fun_ide by simp
+            have "S.Fun a = (\<lambda>x \<in> S.set a. x)"
+              using assms S.Fun_ide by auto
             moreover have "\<And>x'. x' \<in> \<phi> ` S.set a \<Longrightarrow> \<psi> x' \<in> S.set a"
-              using assms bij_\<phi> S.set_subset_Univ image_iff by (metis \<psi>_img_\<phi>_img)
+              using assms bij_\<phi> S.setp_imp_subset_Univ image_iff S.setp_set_ide
+              by (metis \<psi>_img_\<phi>_img)
             ultimately show ?thesis
               using assms set_\<Phi>o by auto
           qed
           also have "... = restrict (\<lambda>x'. x') (S'.set (\<Phi>o a))"
-            using assms S'.set_subset_Univ \<Phi>o_preserves_ide \<phi>_\<psi>
+            using assms S'.setp_imp_subset_Univ S'.setp_set_ide \<Phi>o_preserves_ide \<phi>_\<psi>
             by (meson restr_eqI subsetCE)
           ultimately show ?thesis by auto
         qed
@@ -989,7 +933,7 @@ begin
           by (metis S'.arrI S.ide_char)
       qed
       thus ?thesis
-        using assms S'.mkIde_as_mkArr \<Phi>o_preserves_ide \<Phi>_in_hom S'.set_card S'.mkIde_set
+        using assms S'.mkIde_as_mkArr \<Phi>o_preserves_ide \<Phi>_in_hom S'.mkIde_set
         by simp
     qed
     
@@ -1011,7 +955,18 @@ begin
         by (metis S'.mkArr_restrict_eq' \<Phi>_in_hom assms calculation S'.in_homE mem_Collect_eq)
       also have "... = S' (S'.mkArr (S'.set (\<Phi>o (S.dom g))) (S'.set (\<Phi>o (S.cod g))) (\<Phi>a g))
                           (S'.mkArr (S'.set (\<Phi>o (S.dom f))) (S'.set (\<Phi>o (S.cod f))) (\<Phi>a f))"
-        by (metis S'.comp_mkArr S.seqE \<Phi>_def \<Phi>_in_hom assms S'.in_homE mem_Collect_eq)
+      proof -
+        have "S'.arr (S'.mkArr (S'.set (\<Phi>o (S.dom f))) (S'.set (\<Phi>o (S.cod f))) (\<Phi>a f))"
+          using assms \<Phi>a_mapsto set_\<Phi>o S.ide_dom S.ide_cod \<Phi>o_preserves_ide
+                S'.arr_mkArr S'.setp_imp_subset_Univ S'.setp_set_ide S.seqE
+          by metis
+        moreover have "S'.arr (S'.mkArr (S'.set (\<Phi>o (S.dom g))) (S'.set (\<Phi>o (S.cod g)))
+                              (\<Phi>a g))"
+          using assms \<Phi>a_mapsto set_\<Phi>o S.ide_dom S.ide_cod \<Phi>o_preserves_ide S'.arr_mkArr
+                S'.setp_imp_subset_Univ S'.setp_set_ide S.seqE
+          by metis
+        ultimately show ?thesis using assms S'.comp_mkArr by auto
+      qed
       also have "... = \<Phi> g \<cdot>\<acute> \<Phi> f" using assms \<Phi>_def by force
       finally show ?thesis by fast
     qed
@@ -1041,7 +996,7 @@ begin
       proof -
         fix x
         assume x: "x \<in> S.set a"
-        have 1: "S.terminal x" using assms x S.set_subset_Univ by blast
+        have 1: "S.terminal x" using assms x S.setp_imp_subset_Univ S.setp_set_ide by blast
         hence 2: "S'.terminal (\<phi> x)"
           by (metis CollectD CollectI bij_\<phi> bij_betw_def image_iff)
         have "\<Phi> x = \<Phi>o x"
@@ -1052,7 +1007,7 @@ begin
             using assms 1 x \<Phi>o_def S.terminal_def by auto
           moreover have "S'.mkIde (\<phi> ` S.set x) = \<phi> x"
             using assms x 1 2 S.terminal_char2 S'.terminal_char2 S'.mkIde_set bij_\<phi>
-            by (metis image_empty image_insert)
+            by (metis (no_types, lifting) empty_is_image image_insert)
           ultimately show ?thesis by auto
         qed
         finally show "\<Phi> x = \<phi> x" by auto
@@ -1070,8 +1025,7 @@ begin
         using assms S.incl_def by blast
       have "S'.arr (\<Phi> m)" using 1 by auto
       moreover have 2: "S'.set (S'.dom (\<Phi> m)) \<subseteq> S'.set (S'.cod (\<Phi> m))"
-        using 1 \<Phi>.preserves_dom \<Phi>.preserves_cod \<Phi>_acts_elementwise
-        by (metis (full_types) S.ide_cod S.ide_dom image_mono)
+        using 1 \<Phi>.preserves_dom \<Phi>.preserves_cod \<Phi>_acts_elementwise by auto
       moreover have "\<Phi> m =
                      S'.mkArr (S'.set (S'.dom (\<Phi> m))) (S'.set (S'.cod (\<Phi> m))) (\<lambda>x'. x')"
       proof -
@@ -1088,6 +1042,9 @@ begin
             using assms S.incl_def by (metis (full_types) S.Fun_mkArr)
           hence "\<Phi>a m = restrict (\<lambda>x'. x') (\<phi> ` (S.set (S.dom m)))"
           proof -
+            have 5: "\<And>x'. x' \<in> \<phi> ` S.set (S.dom m) \<Longrightarrow> \<phi> (\<psi> x') = x'"
+              by (meson 1 S.ide_dom S.setp_imp_subset_Univ S.setp_set' f_inv_into_f
+                        image_mono subset_eq)
             have "\<Phi>a m = restrict (\<lambda>x'. \<phi> (S.Fun m (\<psi> x'))) (\<phi> ` S.set (S.dom m))"
               using \<Phi>a_def by simp
             also have "... = restrict (\<lambda>x'. x') (\<phi> ` S.set (S.dom m))"
@@ -1097,10 +1054,9 @@ begin
                 fix x
                 assume x: "x \<in> \<phi> ` (S.set (S.dom m))"
                 hence "\<psi> x \<in> S.set (S.dom m)"
-                  using 1 S.ide_dom S.set_subset_Univ \<psi>_img_\<phi>_img image_eqI by metis
-                moreover have "\<And>x'. x' \<in> \<phi> ` S.set (S.dom m) \<Longrightarrow> \<phi> (\<psi> x') = x'"
-                  by (metis 1 S'.set_subset_Univ S.ide_dom \<Phi>o_preserves_ide \<phi>_\<psi> set_\<Phi>o subsetD)
-                ultimately show "\<phi> (S.Fun m (\<psi> x)) = x" using 1 4 x by simp
+                  using 1 S.ide_dom S.setp_imp_subset_Univ S.setp_set_ide \<psi>_img_\<phi>_img image_eqI
+                  by metis
+                thus "\<phi> (S.Fun m (\<psi> x)) = x" using 1 4 5 x by simp
               qed
               thus ?thesis by auto
             qed
@@ -1117,13 +1073,20 @@ begin
       ultimately show ?thesis using S'.incl_def by blast
     qed
 
+    lemma \<psi>_respects_sets:
+    assumes "A' \<subseteq> S'.Univ"
+    shows "setp (\<psi> ` A') \<longleftrightarrow> setp' A'"
+      using assms \<phi>_respects_setp \<phi>_img_\<psi>_img bij_\<phi>
+      by (metis \<psi>_img_\<phi>_img bij_betw_def image_mono order_refl)
+
     text\<open>
       Interchange the role of @{term \<phi>} and @{term \<psi>} to obtain a functor \<open>\<Psi>\<close>
       from @{term[source=true] S'} to @{term[source=true] S}.
 \<close>
 
-    interpretation INV: two_set_categories_bij_betw_Univ S' S \<AA> \<psi>
-      apply unfold_locales by (simp add: bij_\<phi> bij_betw_inv_into)
+    interpretation INV: two_set_categories_bij_betw_Univ S' setp' S setp \<psi>
+      using \<psi>_respects_sets bij_\<phi> bij_betw_inv_into
+      by unfold_locales auto
 
     abbreviation \<Psi>o
     where "\<Psi>o \<equiv> INV.\<Phi>o"
@@ -1150,7 +1113,7 @@ begin
     assumes "S.ide a"
     shows "\<Psi>o (\<Phi>o a) = a"
       using assms \<Phi>o_def INV.\<Phi>o_def \<psi>_img_\<phi>_img \<Phi>o_preserves_ide set_\<Phi>o S.mkIde_set
-      by force
+      by (simp add: S.setp_imp_subset_Univ)
      
     lemma \<Phi>\<Psi>:
     assumes "S.arr f"
@@ -1168,9 +1131,9 @@ begin
           have "\<Psi>a (\<Phi> f) = (\<lambda>x \<in> \<psi> ` S'.set (S'.dom (\<Phi> f)). \<psi> (S'.Fun (\<Phi> f) (\<phi> x)))"
           proof -
             have "\<And>x. x \<in> \<psi> ` S'.set (S'.dom (\<Phi> f)) \<Longrightarrow> INV.\<psi> x = \<phi> x"
-              using assms S.ide_dom S.set_subset_Univ \<Psi>.preserves_reflects_arr par bij_\<phi>
+              using assms S.ide_dom S.setp_imp_subset_Univ \<Psi>.preserves_reflects_arr par bij_\<phi>
                     inv_into_inv_into_eq subsetCE INV.set_dom_\<Phi>
-              by metis
+              by (metis (no_types) S.setp_set')
             thus ?thesis
               using INV.\<Phi>a_def by auto
           qed
@@ -1195,10 +1158,11 @@ begin
               have 2: "\<And>x. x \<in> S.Univ \<Longrightarrow> \<psi> (\<phi> x) = x"
                 using bij_\<phi> bij_betw_inv_into_left by fast
               have "S.Fun f (\<psi> (\<phi> x)) = S.Fun f x"
-                using assms x 2
-                by (metis S.ide_dom S.set_subset_Univ subsetCE)
+                using assms x 2 S.ide_dom S.setp_imp_subset_Univ
+                by (metis S.setp_set' subsetD)
               moreover have "S.Fun f x \<in> S.Univ"
-                using x assms S.Fun_mapsto S.set_subset_Univ S.ide_cod by blast
+                using x assms S.Fun_mapsto S.setp_imp_subset_Univ S.setp_set' S.ide_cod
+                by blast
               ultimately show ?thesis using 2 by auto
             qed
             finally show ?thesis by auto
@@ -1212,7 +1176,7 @@ begin
     assumes "S'.ide a'"
     shows "\<Phi>o (\<Psi>o a') = a'"
       using assms \<Phi>o_def INV.\<Phi>o_def \<phi>_img_\<psi>_img INV.\<Phi>o_preserves_ide \<psi>_\<phi> INV.set_\<Phi>o
-            S'.mkIde_set
+            S'.mkIde_set S'.setp_imp_subset_Univ
       by force
 
     lemma \<Psi>\<Phi>:
@@ -1244,18 +1208,19 @@ begin
             have "S'.Fun (\<Phi> (\<Psi> f')) x' = \<phi> (S.Fun (\<Psi> f') (\<psi> x'))"
               using x' 1 by auto
             also have "... = \<phi> (\<Psi>a f' (\<psi> x'))"
-              using Fun_\<Psi> x' assms S'.set_subset_Univ bij_\<phi> by metis
+              using Fun_\<Psi> x' assms S'.setp_imp_subset_Univ bij_\<phi> by metis
             also have "... = \<phi> (\<psi> (S'.Fun f' (\<phi> (\<psi> x'))))"
             proof -
               have "\<phi> (\<Psi>a f' (\<psi> x')) = \<phi> (\<psi> (S'.Fun f' x'))"
               proof -
                 have "x' \<in> S'.Univ"
-                  by (meson S'.ide_dom S'.set_subset_Univ assms subsetCE x')
+                  by (meson S'.ide_dom S'.setp_imp_subset_Univ S'.setp_set_ide assms subsetCE x')
                 thus ?thesis
                   by (simp add: INV.\<Phi>a_def INV.\<psi>_\<phi> x')
               qed
               also have "... = \<phi> (\<psi> (S'.Fun f' (\<phi> (\<psi> x'))))"
-                using assms x' \<phi>_\<psi> S'.set_subset_Univ S'.ide_dom by (metis subsetCE)
+                using assms x' \<phi>_\<psi> S'.setp_imp_subset_Univ S'.setp_set_ide S'.ide_dom
+                by (metis subsetCE)
               finally show ?thesis by auto
             qed
             also have "... = S'.Fun f' x'"
@@ -1263,9 +1228,11 @@ begin
               have 2: "\<And>x'. x' \<in> S'.Univ \<Longrightarrow> \<phi> (\<psi> x') = x'"
                 using bij_\<phi> bij_betw_inv_into_right by fast
               have "S'.Fun f' (\<phi> (\<psi> x')) = S'.Fun f' x'"
-                using assms x' 2 S'.set_subset_Univ S'.ide_dom by (metis subsetCE)
+                using assms x' 2 S'.setp_imp_subset_Univ S'.setp_set_ide S'.ide_dom
+                by (metis subsetCE)
               moreover have "S'.Fun f' x' \<in> S'.Univ"
-                using x' assms S'.Fun_mapsto S'.set_subset_Univ S'.ide_cod by blast
+                using x' assms S'.Fun_mapsto S'.setp_imp_subset_Univ S'.setp_set_ide S'.ide_cod
+                by blast
               ultimately show ?thesis using 2 by auto
             qed
             finally show ?thesis by auto
@@ -1306,22 +1273,23 @@ begin
   
   text\<open>
     The main result: @{locale set_category} is categorical, in the following (logical) sense:
-    If \<open>S\<close> and \<open>S'\<close> are two ``set categories'' for the same cardinal \<open>\<AA>\<close>,
-    and if the sets of terminal objects of \<open>S\<close> and \<open>S'\<close> are in bijective correspondence,
-    then \<open>S\<close> and \<open>S'\<close> are isomorphic as categories, via a functor that preserves inclusion maps,
-    hence the inclusion relation between sets.
-  \<close>
+    If \<open>S\<close> and \<open>S'\<close> are two "set categories", and if the sets of terminal objects of \<open>S\<close> and \<open>S'\<close>
+    are in correspondence via a @{term setp}-preserving bijection, then \<open>S\<close> and \<open>S'\<close> are
+    isomorphic as categories, via a functor that preserves inclusion maps, hence also the
+    inclusion relation between sets.
+\<close>
 
   theorem set_category_is_categorical:
-  assumes "set_category S \<AA>" and "set_category S' \<AA>"
+  assumes "set_category S setp" and "set_category S' setp'"
   and "bij_betw \<phi> (set_category_data.Univ S) (set_category_data.Univ S')"
+  and "\<And>A. A \<subseteq> set_category_data.Univ S \<Longrightarrow> setp' (\<phi> ` A) \<longleftrightarrow> setp A"
   shows "\<exists>\<Phi>. invertible_functor S S' \<Phi> \<and>
-             (\<forall>m. set_category.incl S \<AA> m \<longrightarrow> set_category.incl S' \<AA> (\<Phi> m))"
+             (\<forall>m. set_category.incl S setp m \<longrightarrow> set_category.incl S' setp' (\<Phi> m))"
   proof -
-    interpret S: set_category S using assms(1) by auto
-    interpret S': set_category S' using assms(2) by auto
-    interpret two_set_categories_bij_betw_Univ S S' \<AA> \<phi>
-      apply (unfold_locales) using assms(3) by auto
+    interpret S: set_category S setp using assms(1) by auto
+    interpret S': set_category S' setp' using assms(2) by auto
+    interpret two_set_categories_bij_betw_Univ S setp S' setp' \<phi>
+      apply (unfold_locales) using assms(3-4) by auto
     show ?thesis using are_isomorphic by auto
   qed
   
@@ -1355,8 +1323,7 @@ begin
     shows "initial empty"
     proof
       show 0: "ide empty"
-        using empty_def ide_mkIde
-        by (simp add: ide_mkIde_finite)
+        using empty_def by (simp add: setp_empty)
       show "\<And>b. ide b \<Longrightarrow> \<exists>!f. \<guillemotleft>f : empty \<rightarrow> b\<guillemotright>"
       proof -
         fix b
@@ -1364,8 +1331,8 @@ begin
         show "\<exists>!f. \<guillemotleft>f : empty \<rightarrow> b\<guillemotright>"
         proof
           show 1: "\<guillemotleft>mkArr {} (set b) (\<lambda>x. x) : empty \<rightarrow> b\<guillemotright>"
-            using 0 b empty_def mkArr_in_hom mkIde_set set_subset_Univ arr_mkIde
-            by (metis (no_types, lifting) Pi_I empty_iff ide_def mkIde_def)
+            using 0 b empty_def mkArr_in_hom mkIde_set setp_imp_subset_Univ arr_mkIde
+            by (metis Pi_I empty_iff ide_def mkIde_def)
           show "\<And>f. \<guillemotleft>f : empty \<rightarrow> b\<guillemotright> \<Longrightarrow> f = mkArr {} (set b) (\<lambda>x. x)"
             by (metis "1" arr_mkArr empty_iff in_homE empty_def mkArr_Fun mkArr_eqI set_mkIde)
         qed
@@ -1398,7 +1365,7 @@ begin
     lemma ide_implies_incl:
     assumes "ide a"
     shows "incl a"
-      by (simp add: assms set_card incl_def mkIde_as_mkArr)
+      by (simp add: assms incl_def)
     
     definition incl_in :: "'s \<Rightarrow> 's \<Rightarrow> bool"
     where "incl_in a b = (ide a \<and> ide b \<and> set a \<subseteq> set b)"
@@ -1411,8 +1378,8 @@ begin
     shows "set a = {a}"
     proof -
       have "ide b" using assms set_def by auto
-      thus ?thesis using assms set_subset_Univ terminal_char2
-        by (metis mem_Collect_eq subsetCE)
+      thus ?thesis using assms setp_imp_subset_Univ terminal_char2
+        by (metis setp_set' insert_subset mem_Collect_eq mk_disjoint_insert)
     qed
 
     lemma elem_set_implies_incl_in:
@@ -1420,9 +1387,9 @@ begin
     shows "incl_in a b"
     proof -
       have b: "ide b" using assms set_def by auto
-      hence "set b \<subseteq> Univ" by simp
+      hence "setp (set b)" by simp
       hence "a \<in> Univ \<and> set a \<subseteq> set b"
-        using assms elem_set_implies_set_eq_singleton by auto
+        using setp_imp_subset_Univ assms elem_set_implies_set_eq_singleton by auto
       hence "ide a \<and> set a \<subseteq> set b"
         using b terminal_char1 by simp
       thus ?thesis using b incl_in_def by simp
@@ -1434,8 +1401,8 @@ begin
     and "\<guillemotleft>incl_of a b : a \<rightarrow> b\<guillemotright>"
     proof -
       show "\<guillemotleft>incl_of a b : a \<rightarrow> b\<guillemotright>"
-        using assms incl_in_def mkArr_in_hom mkIde_set set_subset_Univ
-        by (metis image_ident image_subset_iff_funcset set_card)
+        using assms incl_in_def mkArr_in_hom
+        by (metis image_ident image_subset_iff_funcset mkIde_set setp_set_ide)
       thus "incl (incl_of a b)"
         using assms incl_def incl_in_def by fastforce
     qed
@@ -1469,9 +1436,9 @@ begin
           using assms 1 3 mkIde_set by auto
         show "Fun (g \<cdot> f) = Fun (mkArr (Dom f) (Cod g) (\<lambda>x\<in>Dom f. x))"
           using assms 3 4 Fun_comp Fun_mkArr
-          by (metis Fun_ide comp_cod_arr ide_cod mkArr_restrict_eq' incl_def)
+          by (metis comp_cod_arr dom_cod ide_cod ide_implies_incl incl_def mkArr_restrict_eq')
       qed
-      ultimately show ?thesis using incl_def arr_mkArr set_mkIde by force
+      ultimately show ?thesis using incl_def by force
     qed
 
     subsection "Image Factorization"
@@ -1492,22 +1459,20 @@ begin
     shows "ide (img f)"
     proof -
       have "Fun f ` Dom f \<subseteq> Cod f" using assms Fun_mapsto by blast
-      moreover have "Cod f \<subseteq> Univ \<and> |Cod f| <o \<AA>"
-        using assms by (simp add: set_card)
-      ultimately have "Fun f ` Dom f \<subseteq> Univ \<and> |Fun f ` Dom f| <o \<AA>"
-        by (meson assms card_of_image ide_dom ordLeq_ordLess_trans set_card subset_eq)
-      thus ?thesis using img_def ide_mkIde by simp
+      moreover have "setp (Cod f)" using assms by simp
+      ultimately show ?thesis using img_def setp_respects_subset by auto
     qed
     
     lemma set_img [simp]:
     assumes "arr f"
     shows "set (img f) = Img f"
     proof -
-      have "Fun f ` set (dom f) \<subseteq> set (cod f) \<and> set (cod f) \<subseteq> Univ"
+      have 1: "Img f \<subseteq> Cod f \<and> setp (set (cod f))"
         using assms Fun_mapsto by auto
-      hence "Fun f ` set (dom f) \<subseteq> Univ \<and> |Fun f ` Dom f| <o \<AA>"
-        by (metis assms ide_def ide_img img_def mkIde_def)
-      thus ?thesis using assms img_def set_mkIde by auto
+      hence "Fun f ` set (dom f) \<subseteq> Univ"
+        using setp_imp_subset_Univ by blast
+      thus ?thesis
+        using assms 1 img_def set_mkIde setp_respects_subset by auto
     qed
 
     lemma img_point_in_Univ:
@@ -1523,14 +1488,13 @@ begin
     assumes "arr f"
     shows "incl_in (img f) (cod f)"
     proof (unfold img_def)
-      have 1: "Img f \<subseteq> Cod f \<and> Cod f \<subseteq> Univ \<and> |Cod f| <o \<AA>"
-        using assms Fun_mapsto
-        by (metis arr_mkArr image_subset_iff_funcset mkArr_Fun)
+      have 1: "Img f \<subseteq> Cod f \<and> setp (Cod f)"
+        using assms Fun_mapsto by auto
       hence 2: "ide (mkIde (Img f))"
-        using assms ide_img img_def by auto
+        using setp_respects_subset by auto
+      moreover have "ide (cod f)" using assms by auto
       moreover have "set (mkIde (Img f)) \<subseteq> Cod f"
-        using 1 2
-        by (metis ideD(1) arr_mkIde set_mkIde)
+        using 1 2 using setp_respects_subset by force
       ultimately show "incl_in (mkIde (Img f)) (cod f)"
         using assms incl_in_def ide_cod by blast
     qed
@@ -1553,18 +1517,8 @@ begin
     lemma corestr_in_hom:
     assumes "arr f"
     shows "\<guillemotleft>corestr f : dom f \<rightarrow> img f\<guillemotright>"
-    proof -
-      have "Fun f \<in> Dom f \<rightarrow> Fun f ` Dom f \<and> Dom f \<subseteq> Univ"
-        using assms by auto
-      moreover have "Fun f ` Dom f \<subseteq> Univ"
-        by (metis assms ide_img set_img set_subset_Univ)
-      moreover have "|Fun f ` Dom f| <o \<AA>"
-        using assms by (metis ide_img set_card set_img)
-      ultimately have "mkArr (Dom f) (Fun f ` Dom f) (Fun f) \<in> hom (dom f) (img f)"
-        using assms img_def mkArr_in_hom [of "Dom f" "Fun f ` Dom f" "Fun f"] mkIde_set
-        by (simp add: set_card)
-      thus ?thesis using corestr_def by fastforce
-    qed
+      by (metis assms corestr_def equalityD2 ide_dom ide_img image_subset_iff_funcset
+          mkIde_set set_img mkArr_in_hom setp_set_ide)
     
     text\<open>
       Every arrow factors as a corestriction followed by an inclusion.
@@ -1581,31 +1535,14 @@ begin
       ultimately show P: "par (incl_of (img f) (cod f) \<cdot> corestr f) f"
         using assms in_homE by blast
       show "Fun (incl_of (img f) (cod f) \<cdot> corestr f) = Fun f"
-      proof -
-        have "Fun (incl_of (img f) (cod f) \<cdot> corestr f)
-                 = restrict (Fun (incl_of (img f) (cod f)) o Fun (corestr f)) (Dom f)"
-          using Fun_comp 1 2 P by auto
-        also have "... = Fun f"
-          by (metis 1 2 Fun_comp Fun_ide P comp_cod_arr corestr_def ide_img in_homE
-              mkArr_Fun Fun_mkArr)
-        finally show ?thesis by auto
-      qed
+        by (metis (no_types, lifting) 1 2 Fun_comp Fun_ide Fun_mkArr P comp_cod_arr
+            corestr_def ide_img in_homE mkArr_Fun)
     qed
 
     lemma Fun_corestr:
     assumes "arr f"
     shows "Fun (corestr f) = Fun f"
-    proof -
-      have 1: "f = incl_of (img f) (cod f) \<cdot> corestr f"
-        using assms img_fact by auto
-      hence 2: "Fun f = restrict (Fun (incl_of (img f) (cod f)) o Fun (corestr f)) (Dom f)"
-        using assms by (metis Fun_comp dom_comp)
-      also have "... = restrict (Fun (corestr f)) (Dom f)"
-        using assms by (metis 1 2 Fun_mkArr seqE mkArr_Fun corestr_def)
-      also have "... = Fun (corestr f)"
-        using assms 1 by (metis Fun_def dom_comp extensional_restrict restrict_extensional)
-      finally show ?thesis by auto
-    qed
+      by (metis Fun_mkArr arrI assms corestr_def corestr_in_hom mkArr_Fun)
     
     subsection "Points and Terminal Objects"
 
@@ -1621,14 +1558,13 @@ begin
     lemma mkPoint_in_hom:
     assumes "ide a" and "t \<in> set a"
     shows "\<guillemotleft>mkPoint a t : unity \<rightarrow> a\<guillemotright>"
-      using assms mkArr_in_hom mkIde_set set_subset_Univ terminal_char2 terminal_unity
-            mkPoint_def set_card
-      by (metis Pi_I)
+      using assms mkArr_in_hom
+      by (metis Pi_I mkIde_set setp_set_ide terminal_char2 terminal_unity mkPoint_def)
 
     lemma Fun_mkPoint:
     assumes "ide a" and "t \<in> set a"
     shows "Fun (mkPoint a t) = (\<lambda>_ \<in> {unity}. t)"
-      using assms mkPoint_def mkPoint_in_hom Fun_mkArr by force
+      using assms mkPoint_def terminal_unity mkPoint_in_hom by fastforce
 
     text\<open>
       For each object @{term a} the function @{term "mkPoint a"} has as its inverse
@@ -1656,17 +1592,9 @@ begin
           have "Fun (mkPoint a (img x)) = (\<lambda>_ \<in> {unity}. img x)"
             using 1 mkPoint_def by auto
           also have "... = Fun x"
-          proof
-            fix z
-            have "z \<noteq> unity \<Longrightarrow> (\<lambda>_ \<in> {unity}. img x) z = Fun x z"
-              using x Fun_mapsto Fun_def restrict_apply singletonD terminal_char2 terminal_unity
-              by auto
-            moreover have "(\<lambda>_ \<in> {unity}. img x) unity = Fun x unity"
-              by (metis (no_types, lifting) 0 image_empty image_insert in_homE insertI1
-                  restrict_apply elem_set_implies_set_eq_singleton set_img terminal_char2
-                  terminal_unity the_elem_eq x)
-            ultimately show "(\<lambda>_ \<in> {unity}. img x) z = Fun x z" by auto
-          qed
+            by (metis 0 Fun_corestr calculation elem_set_implies_set_eq_singleton
+                ide_cod ide_unity in_homE mem_Collect_eq Fun_mkPoint corestr_in_hom
+                img_point_in_Univ mkPoint_in_hom singletonI terminalE x)
           finally show "Fun (mkPoint a (img x)) = Fun x" by auto
         qed
       qed
@@ -1714,6 +1642,12 @@ begin
       show "\<And>t. t \<in> set a \<Longrightarrow> img (mkPoint a t) = t"
         using assms img_mkPoint by auto
     qed
+
+    lemma setp_img_points:
+    assumes "ide a"
+    shows "setp (img ` hom unity a)"
+      using assms
+      by (metis image_subset_iff_funcset mkPoint_img(1) setp_respects_subset setp_set_ide)
 
     text\<open>
       The function on the universe induced by an arrow @{term f} agrees, under the bijection
@@ -1812,15 +1746,9 @@ begin
     shows "\<guillemotleft>mkArr' a b F : a \<rightarrow> b\<guillemotright>"
     proof -
       have "img o F o mkPoint a \<in> set a \<rightarrow> set b"
-      proof
-        fix t
-        assume t: "t \<in> set a"
-        thus "(img o F o mkPoint a) t \<in> set b"
-          using assms mkPoint_in_hom img_point_elem_set [of "F (mkPoint a t)" b]
-          by auto
-      qed
+        using assms(1,3) img_mkPoint(1) mkPoint_img(1) by fastforce
       thus ?thesis
-        using assms mkArr'_def mkArr_in_hom [of "set a" "set b"] set_card mkIde_set by simp
+        using assms mkArr'_def mkArr_in_hom [of "set a" "set b"] mkIde_set by simp
     qed
 
     lemma comp_point_mkArr':
@@ -1831,8 +1759,8 @@ begin
       assume x: "\<guillemotleft>x : unity \<rightarrow> a\<guillemotright>"
       have "Fun (mkArr' a b F) (img x) = img (F x)"
         unfolding mkArr'_def
-        using assms x Fun_mkArr arr_mkArr img_point_elem_set mkPoint_img mkPoint_in_hom
-        by (simp add: set_card Pi_iff)
+        using assms x Fun_mkArr img_point_elem_set mkPoint_img mkPoint_in_hom
+        by (simp add: Pi_iff)
       hence "mkArr' a b F \<cdot> x = mkPoint b (img (F x))"
         using assms x mkArr'_in_hom [of a b F] comp_arr_point by auto
       thus "mkArr' a b F \<cdot> x = F x"
@@ -1900,21 +1828,18 @@ begin
       let ?b = "mkIde (Cod f \<union> Cod f')"
       let ?m = "incl_of (cod f) ?b"
       let ?m' = "incl_of (cod f') ?b"
-      have 1: "|Cod f \<union> Cod f'| <o \<AA>"
-        using assms set_card cardinal card_order_infinite_isLimOrd by simp
       have incl_m: "incl ?m"
-        using assms 1 incl_incl_of [of "cod f" ?b] incl_in_def ide_mkIde set_mkIde by simp
+        using assms incl_incl_of [of "cod f" ?b] incl_in_def setp_respects_union by simp
       have incl_m': "incl ?m'"
-        using assms 1 incl_incl_of [of "cod f'" ?b] incl_in_def ide_mkIde set_mkIde by simp
+        using assms incl_incl_of [of "cod f'" ?b] incl_in_def setp_respects_union by simp
       have m: "?m = mkArr (Cod f) (Cod f \<union> Cod f') (\<lambda>x. x)"
-        by (simp add: assms 1 set_mkIde)
+        using setp_respects_union by (simp add: assms)
       have m': "?m' = mkArr (Cod f') (Cod f \<union> Cod f') (\<lambda>x. x)"
-        by (simp add: assms 1 set_mkIde)
+        using setp_respects_union by (simp add: assms)
       have seq: "seq ?m f \<and> seq ?m' f'"
-        using assms m m'
-        by (metis ide_cod incl_m incl_m' mkIde_set seqI incl_def dom_mkArr)
+        using assms m m' using setp_respects_union by simp
       have "?m \<cdot> f = ?m' \<cdot> f'"
-        by (metis assms comp_mkArr ff' incl_m incl_m' mkArr_Fun incl_def)
+        by (metis assms comp_mkArr ff' incl_def incl_m incl_m' mkArr_Fun)
       hence "incl ?m \<and> incl ?m' \<and> seq ?m f \<and> seq ?m' f' \<and> ?m \<cdot> f = ?m' \<cdot> f'"
         using seq \<open>incl ?m\<close> \<open>incl ?m'\<close> by simp
       thus "\<exists>m m'. incl m \<and> incl m' \<and> seq m f \<and> seq m' f' \<and> m \<cdot> f = m' \<cdot> f'" by auto
@@ -1949,7 +1874,7 @@ begin
       let ?F = "inv_into (Dom g) (Fun g)"
       let ?f = "mkArr (Cod g) (Dom g) ?F"
       have f: "arr ?f"
-        by (simp add: assms inv_into_into set_card arr_mkArr)
+        by (simp add: assms inv_into_into)
       show "ide (g \<cdot> ?f)"
       proof -
         have "g = mkArr (Dom g) (Cod g) (Fun g)" using assms mkArr_Fun by auto
@@ -1958,12 +1883,12 @@ begin
         moreover have "mkArr (Cod g) (Cod g) (\<lambda>y. y) = ..."
         proof (intro mkArr_eqI')
           show "arr (mkArr (Cod g) (Cod g) (\<lambda>y. y))"
-            using assms arr_cod_iff_arr set_card arr_mkArr by auto
+            using assms arr_cod_iff_arr by auto
           show "\<And>y. y \<in> Cod g \<Longrightarrow> y = (Fun g o ?F) y"
             using assms by (simp add: f_inv_into_f)
         qed
         ultimately show ?thesis
-          using assms f mkIde_as_mkArr arr_mkArr mkIde_set by auto
+          using assms f mkIde_as_mkArr by auto
       qed
       thus "retraction g" by auto
     qed
@@ -2027,11 +1952,9 @@ begin
       let ?g = "mkArr (Cod f) (Dom f) ?G"
       have g: "arr ?g"
       proof -
-        have 1: "Cod f \<subseteq> Univ" using assms by simp
-        have 2: "Dom f \<subseteq> Univ" using assms by simp
-        have 3: "|Cod f| <o \<AA> \<and> |Dom f| <o \<AA>"
-          using assms set_card by simp
-        have 4: "?G \<in> Cod f \<rightarrow> Dom f"
+        have 1: "setp (Cod f)" using assms by simp
+        have 2: "setp (Dom f)" using assms by simp
+        have 3: "?G \<in> Cod f \<rightarrow> Dom f"
         proof
           fix y
           assume Y: "y \<in> Cod f"
@@ -2047,7 +1970,7 @@ begin
             thus "?G y \<in> Dom f" using someI_ex [of "\<lambda>x. x \<in> Dom f"] by argo
           qed
         qed
-        show ?thesis using 1 2 3 4 arr_mkArr by simp
+        show ?thesis using 1 2 3 by simp
       qed
       show "ide (?g \<cdot> f)"
       proof -
@@ -2057,7 +1980,7 @@ begin
         moreover have "mkArr (Dom f) (Dom f) (\<lambda>x. x) = ..."
         proof (intro mkArr_eqI')
           show "arr (mkArr (Dom f) (Dom f) (\<lambda>x. x))"
-            using assms set_card arr_mkArr by auto
+            using assms by auto
           show "\<And>x. x \<in> Dom f \<Longrightarrow> x = (?G o Fun f) x"
           proof -
             fix x
@@ -2073,7 +1996,7 @@ begin
           qed
         qed
         ultimately show ?thesis
-          using assms set_card mkIde_as_mkArr mkIde_set by auto
+          using assms mkIde_as_mkArr mkIde_set by auto
       qed
       thus "section f" by auto
     qed
@@ -2303,36 +2226,17 @@ begin
                                                      then tt else ff)"
               let ?b = "mkIde {ff, tt}"
               have b: "ide ?b"
-                using B ide_mkIde_finite by simp
+                by (metis B finite.emptyI finite_imp_setp finite_insert ide_mkIde
+                    insert_subset setp_imp_subset_Univ setp_singleton mem_Collect_eq)
               have g: "\<guillemotleft>?g : cod f \<rightarrow> ?b\<guillemotright> \<and> Fun ?g = (\<lambda>y \<in> Cod f. tt)"
-              proof -
-                have "arr ?g"
-                proof -
-                  have "arr (mkIde {ff, tt})"
-                    using b ideD(1) by presburger
-                  thus ?thesis
-                    by (simp add: f set_card arr_mkIde arr_mkArr)
-                qed
-                thus ?thesis
-                  using f b B in_homI [of ?g] mkIde_set by simp
-              qed
+                using f B in_homI [of ?g "cod f" "mkIde {ff, tt}"] finite_imp_setp by simp
               have g': "?g' \<in> hom (cod f) ?b \<and>
                         Fun ?g' = (\<lambda>y \<in> Cod f. if \<exists>x. x \<in> Dom f \<and> Fun f x = y then tt else ff)"
-              proof -
-                have "arr ?g"
-                proof -
-                  have "arr (mkIde {ff, tt})"
-                    using b ideD(1) by presburger
-                  thus ?thesis
-                    by (simp add: f set_card arr_mkIde arr_mkArr)
-                qed
-                thus ?thesis
-                  using f b B in_homI [of ?g'] arr_mkArr mkIde_set by simp
-              qed
+                using f B in_homI [of ?g'] finite_imp_setp by simp
               have "?g \<cdot> f = ?g' \<cdot> f"
               proof (intro arr_eqI)
                 show "par (?g \<cdot> f) (?g' \<cdot> f)"
-                  using f g g' arr_mkArr by auto
+                  using f g g' by auto
                 show "Fun (?g \<cdot> f) = Fun (?g' \<cdot> f)"
                   using f g g' Fun_comp comp_mkArr by fastforce
               qed
@@ -2368,7 +2272,7 @@ begin
             proof (intro arr_eqI)
               show "par f f'" using ff' by simp
               have "\<And>t t'. t \<in> Cod f \<and> t' \<in> Cod f \<Longrightarrow> t = t'"
-                using f ff' set_subset_Univ ide_cod subsetD by blast
+                using f ff' setp_imp_subset_Univ setp_set_ide ide_cod subsetD by blast
               thus "Fun f = Fun f'"
                 using ff' Fun_mapsto [of f] Fun_mapsto [of f']
                       extensional_arb [of "Fun f" "Dom f"] extensional_arb [of "Fun f'" "Dom f"]
@@ -2437,39 +2341,336 @@ begin
     back and forth between elements of type @{typ 'a} and the elements of \<open>S.Univ\<close>.
 \<close>
 
-  locale concrete_set_category = set_category S \<AA>
+  locale concrete_set_category = set_category S setp
     for S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
-    and \<AA> :: "'t rel"
+    and setp :: "'s set \<Rightarrow> bool"
     and U :: "'a set"
     and \<iota> :: "'a \<Rightarrow> 's" +
-    assumes \<iota>_mapsto: "\<iota> \<in> U \<rightarrow> Univ"
-    and inj_\<iota>: "inj_on \<iota> U"
+    assumes UP_mapsto: "\<iota> \<in> U \<rightarrow> Univ"
+    and inj_UP: "inj_on \<iota> U"
   begin
 
-    abbreviation \<o>
-    where "\<o> \<equiv> inv_into U \<iota>"
+    abbreviation UP
+    where "UP \<equiv> \<iota>"
 
-    lemma \<o>_mapsto:
-    shows "\<o> \<in> \<iota> ` U \<rightarrow> U"
+    abbreviation DN
+    where "DN \<equiv> inv_into U UP"
+
+    lemma DN_mapsto:
+    shows "DN \<in> UP ` U \<rightarrow> U"
       by (simp add: inv_into_into)
 
-    lemma \<o>_\<iota> [simp]:
+    lemma DN_UP [simp]:
     assumes "x \<in> U"
-    shows "\<o> (\<iota> x) = x"
-      using assms inj_\<iota> inv_into_f_f by simp
+    shows "DN (UP x) = x"
+      using assms inj_UP inv_into_f_f by simp
       
-    lemma \<iota>_\<o> [simp]:
-    assumes "t \<in> \<iota> ` U"
-    shows "\<iota> (\<o> t) = t"
-      using assms o_def inj_\<iota> by auto
+    lemma UP_DN [simp]:
+    assumes "t \<in> UP ` U"
+    shows "UP (DN t) = t"
+      using assms o_def inj_UP by auto
+
+    lemma bij_UP:
+    shows "bij_betw UP U (UP ` U)"
+      using inj_UP inj_on_imp_bij_betw by blast
+
+    lemma bij_DN:
+    shows "bij_betw DN (UP ` U) U"
+      using bij_UP bij_betw_inv_into by blast
 
   end
 
   locale replete_concrete_set_category =
     replete_set_category S +
-    concrete_set_category S \<open>cardSuc (cmax (card_of (UNIV :: 's set)) natLeq)\<close> U \<iota>
+    concrete_set_category S \<open>\<lambda>A. A \<subseteq> Univ\<close> U UP
     for S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
     and U :: "'a set"
-    and \<iota> :: "'a \<Rightarrow> 's"
+    and UP :: "'a \<Rightarrow> 's"
+
+  section "Sub-Set Categories"
+
+  text\<open>
+    In this section, we show that a full subcategory of a set category, obtained
+    by imposing suitable further restrictions on the subsets of the universe
+    that correspond to objects, is again a set category.
+\<close>
+
+  locale sub_set_category =
+    S: set_category +
+  fixes ssetp :: "'a set \<Rightarrow> bool"
+  assumes ssetp_singleton: "\<And>t. t \<in> S.Univ \<Longrightarrow> ssetp {t}"
+  and subset_closed: "\<And>B A. \<lbrakk>B \<subseteq> A; ssetp A\<rbrakk> \<Longrightarrow> ssetp B"
+  and union_closed: "\<And>A B. \<lbrakk>ssetp A; ssetp B\<rbrakk> \<Longrightarrow> ssetp (A \<union> B)"
+  and containment: "\<And>A. ssetp A \<Longrightarrow> setp A"
+  begin
+
+    sublocale full_subcategory S \<open>\<lambda>a. S.ide a \<and> ssetp (S.set a)\<close>
+      by unfold_locales auto
+
+    lemma is_full_subcategory:
+    shows "full_subcategory S (\<lambda>a. S.ide a \<and> ssetp (S.set a))"
+      ..
+
+    lemma ide_char:
+    shows "ide a \<longleftrightarrow> S.ide a \<and> ssetp (S.set a)"
+      using ide_char arr_char by fastforce
+
+    lemma terminal_unity:
+    shows "terminal S.unity"
+    proof
+      show "ide S.unity"
+        using S.terminal_unity S.terminal_def [of S.unity] S.terminal_char2 ide_char
+              ssetp_singleton
+        by force
+      thus "\<And>a. ide a \<Longrightarrow> \<exists>!f. in_hom f a S.unity"
+        using S.terminal_unity S.terminal_def ide_char ide_char' in_hom_char
+        by (metis (no_types, lifting))
+    qed
+
+    lemma terminal_char:
+    shows "terminal t \<longleftrightarrow> S.terminal t"
+    proof
+      fix t
+      assume t: "S.terminal t"
+      have "ide t"
+        using t ssetp_singleton ide_char S.terminal_char2 by force
+      thus "terminal t"
+        using t in_hom_char ide_char arr_char S.terminal_def terminalI by auto
+      next
+      assume t: "terminal t"
+      have 1: "S.ide t"
+        using t ide_char terminal_def by simp
+      moreover have "card (S.set t) = 1"
+      proof -
+        have "card (S.set t) = card (S.hom S.unity t)"
+          using S.set_def S.inj_img
+          by (metis 1 S.bij_betw_points_and_set bij_betw_same_card)
+        also have "... = card (hom S.unity t)"
+          using t in_hom_char terminal_def terminal_unity by auto
+        also have "... = 1"
+        proof -
+          have "\<exists>!f. f \<in> hom S.unity t"
+            using t terminal_def terminal_unity by force
+          moreover have "\<And>A. card A = 1 \<longleftrightarrow> (\<exists>!a. a \<in> A)"
+            apply (intro iffI)
+               apply (metis card_1_singletonE empty_iff insert_iff)
+            using card_1_singleton_iff by auto
+          ultimately show ?thesis by auto
+        qed
+        finally show ?thesis by blast
+      qed
+      ultimately show "S.terminal t"
+        using 1 S.terminal_char1 card_1_singleton_iff
+        by (metis One_nat_def singleton_iff)
+    qed
+
+    sublocale set_category comp ssetp
+    proof
+      text\<open>
+        Here things are simpler if we define \<open>img\<close> appropriately so that we have
+        \<open>set = T.set\<close> after accounting for the definition \<open>unity \<equiv> SOME t. terminal t\<close>,
+        which is different from that of S.unity.
+\<close>
+      have 1: "terminal (SOME t. terminal t)"
+        using terminal_unity someI_ex [of terminal] by blast
+      obtain i where i: "\<guillemotleft>i : S.unity \<rightarrow> SOME t. terminal t\<guillemotright>"
+        using terminal_unity someI_ex [of terminal] in_hom_char terminal_def
+        by auto
+      obtain i' where i': "\<guillemotleft>i' : (SOME t. terminal t) \<rightarrow> S.unity\<guillemotright>"
+        using terminal_unity someI_ex [of S.terminal] S.terminal_def
+        by (metis (no_types, lifting) 1 terminal_def)
+      have ii': "inverse_arrows i i'"
+      proof
+        have "i' \<cdot> i = S.unity"
+          using i i' terminal_unity
+          by (metis (no_types, lifting) S.comp_in_homI' S.ide_in_hom S.ide_unity S.in_homE
+              S.terminalE S.terminal_unity in_hom_char)
+        thus 2: "ide (comp i' i)"
+          by (metis (no_types, lifting) cod_comp comp_simp i i' ide_char' in_homE seqI')
+        have "i \<cdot> i' = (SOME t. terminal t)"
+          using 1
+          by (metis (no_types, lifting) 2 comp_simp i' ide_compE in_homE inverse_arrowsE
+              iso_iff_mono_and_retraction point_is_mono retractionI section_retraction_of_iso(2))
+        thus "ide (comp i i')"
+          using comp_char
+          by (metis (no_types, lifting) 2 ide_char' dom_comp i' ide_compE in_homE seq_char)
+      qed
+      interpret set_category_data comp \<open>\<lambda>x. S.some_img (x \<cdot> i)\<close> ..
+      have i_in_hom: "\<guillemotleft>i : S.unity \<rightarrow> unity\<guillemotright>"
+        using i unity_def by simp
+      have i'_in_hom: "\<guillemotleft>i' : unity \<rightarrow> S.unity\<guillemotright>"
+        using i' unity_def by simp
+      have "\<And>a. ide a \<Longrightarrow> set a = S.set a"
+      proof -
+        fix a
+        assume a: "ide a"
+        have "set a = (\<lambda>x. S.some_img (x \<cdot> i)) ` hom unity a"
+          using set_def by simp
+        also have "... = S.some_img ` S.hom S.unity a"
+        proof
+          show "(\<lambda>x. S.some_img (x \<cdot> i)) ` hom unity a \<subseteq> S.some_img ` S.hom S.unity a"
+            using i in_hom_char i_in_hom by auto
+          show "S.some_img ` S.hom S.unity a \<subseteq> (\<lambda>x. S.some_img (x \<cdot> i)) ` hom unity a"
+          proof
+            fix b
+            assume b: "b \<in> S.some_img ` S.hom S.unity a"
+            obtain x where x: "x \<in> S.hom S.unity a \<and> S.some_img x = b"
+              using b by blast
+            have "x \<cdot> i' \<in> hom unity a"
+              using x in_hom_char S.comp_in_homI a i' ideD(1) unity_def by force
+            moreover have "S.some_img ((x \<cdot> i') \<cdot> i) = b"
+              by (metis (no_types, lifting) i ii' x S.comp_assoc calculation comp_simp
+                  ide_compE in_homE inverse_arrowsE mem_Collect_eq S.comp_arr_ide seqI'
+                  seq_char S.ide_unity unity_def)
+            ultimately show "b \<in> (\<lambda>x. S.some_img (x \<cdot> i)) ` hom unity a" by blast
+          qed
+        qed
+        also have "... = S.set a"
+          using S.set_def by auto
+        finally show "set a = S.set a" by blast
+      qed
+      interpret T: set_category_given_img comp \<open>\<lambda>x. S.some_img (x \<cdot> i)\<close> ssetp
+      proof
+        show "Collect terminal \<noteq> {}"
+          using terminal_unity by blast
+        show "\<And>A' A. \<lbrakk>A' \<subseteq> A; ssetp A\<rbrakk> \<Longrightarrow> ssetp A'"
+          using subset_closed by blast
+        show "\<And>A B. \<lbrakk>ssetp A; ssetp B\<rbrakk> \<Longrightarrow> ssetp (A \<union> B)"
+          using union_closed by simp
+        show "\<And>A. ssetp A \<Longrightarrow> A \<subseteq> Univ"
+          using S.setp_imp_subset_Univ containment terminal_char by presburger
+        show "\<And>a b. \<lbrakk>ide a; ide b; set a = set b\<rbrakk> \<Longrightarrow> a = b"
+          using ide_char \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> S.extensional_set by auto
+        show "\<And>a. ide a \<Longrightarrow> ssetp (set a)"
+          using \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> ide_char by force
+        show "\<And>A. ssetp A \<Longrightarrow> \<exists>a. ide a \<and> set a = A"
+          using S.set_complete \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> containment ide_char by blast
+        show "\<And>t. terminal t \<Longrightarrow> t \<in> (\<lambda>x. S.some_img (x \<cdot> i)) ` hom unity t"
+          using S.set_def S.stable_img \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> set_def
+                terminal_char terminal_def
+          by force
+        show "\<And>a. ide a \<Longrightarrow> inj_on (\<lambda>x. S.some_img (x \<cdot> i)) (hom unity a)"
+        proof -
+          fix a
+          assume a: "ide a"
+          show "inj_on (\<lambda>x. S.some_img (x \<cdot> i)) (hom unity a)"
+          proof
+            fix x y
+            assume x: "x \<in> hom unity a" and y: "y \<in> hom unity a"
+            and eq: "S.some_img (x \<cdot> i) = S.some_img (y \<cdot> i)"
+            have "x \<cdot> i = y \<cdot> i"
+            proof -
+              have "x \<cdot> i \<in> S.hom S.unity a \<and> y \<cdot> i \<in> S.hom S.unity a"
+                using in_hom_char \<open>\<guillemotleft>i : S.unity \<rightarrow> unity\<guillemotright>\<close> x y by blast
+              thus ?thesis
+                using a eq ide_char S.inj_img [of a] inj_on_def [of S.some_img] by simp
+            qed
+            have "x = (x \<cdot> i) \<cdot> i'"
+              by (metis (no_types, lifting) S.comp_arr_ide S.comp_assoc S.inverse_arrowsE
+                  S.match_4 i i' ii' inclusion_preserves_inverse mem_Collect_eq seqI'
+                  seq_char unity_def x)
+            also have "... = (y \<cdot> i) \<cdot> i'"
+              using \<open>x \<cdot> i = y \<cdot> i\<close> by simp
+            also have "... = y"
+              by (metis (no_types, lifting) S.comp_arr_ide S.comp_assoc S.inverse_arrowsE
+                  S.match_4 i i' ii' inclusion_preserves_inverse mem_Collect_eq seqI'
+                  seq_char unity_def y)
+            finally show "x = y" by simp
+          qed
+        qed
+        show "\<And>f f'. \<lbrakk>par f f'; \<And>x. in_hom x unity (dom f) \<Longrightarrow> comp f x = comp f' x\<rbrakk>
+                        \<Longrightarrow> f = f'"
+        proof -
+          fix f f'
+          assume par: "par f f'"
+          assume eq: "\<And>x. in_hom x unity (dom f) \<Longrightarrow> comp f x = comp f' x"
+          have "S.par f f'"
+            using par arr_char dom_char cod_char by auto
+          moreover have "\<And>x. S.in_hom x S.unity (S.dom f) \<Longrightarrow> f \<cdot> x = f' \<cdot> x"
+          proof -
+            fix x
+            assume x: "S.in_hom x S.unity (S.dom f)"
+            have "S.in_hom (x \<cdot> i') unity (S.dom f)"
+              using i'_in_hom in_hom_char x by blast
+            hence 1: "in_hom (x \<cdot> i') unity (dom f)"
+              using arr_dom dom_simp i in_hom_char par unity_def by force
+            hence "comp f (x \<cdot> i') = comp f' (x \<cdot> i')"
+              using eq by blast
+            hence "(f \<cdot> (x \<cdot> i')) \<cdot> i = (f' \<cdot> (x \<cdot> i')) \<cdot> i"
+              using comp_char
+              by (metis (no_types, lifting) 1 comp_simp in_homE seqI par)
+            thus "f \<cdot> x = f' \<cdot> x"
+              by (metis (no_types, lifting) S.comp_arr_dom S.comp_assoc S.comp_inv_arr
+                  S.in_homE i_in_hom ii' in_hom_char inclusion_preserves_inverse x)
+          qed
+          ultimately show "f = f'"
+            using S.extensional_arr by blast
+        qed
+        show "\<And>a b F. \<lbrakk>ide a; ide b; F \<in> hom unity a \<rightarrow> hom unity b\<rbrakk>
+                        \<Longrightarrow> \<exists>f. in_hom f a b \<and>
+                                (\<forall>x. in_hom x unity (dom f) \<longrightarrow> comp f x = F x)"
+        proof -
+          fix a b F
+          assume a: "ide a" and b: "ide b" and F: "F \<in> hom unity a \<rightarrow> hom unity b"
+          have "S.ide a"
+            using a ide_char by blast
+          have "S.ide b"
+            using b ide_char by blast
+          have 1: "(\<lambda>x. F (x \<cdot> i') \<cdot> i) \<in> S.hom S.unity a \<rightarrow> S.hom S.unity b"
+          proof
+            fix x
+            assume x: "x \<in> S.hom S.unity a"
+            have "x \<cdot> i' \<in> S.hom unity a"
+              using i'_in_hom in_hom_char x by blast
+            hence "x \<cdot> i' \<in> hom unity a"
+              using a in_hom_char
+              by (metis (no_types, lifting) ideD(1) i'_in_hom in_hom_char mem_Collect_eq)
+            hence "F (x \<cdot> i') \<in> hom unity b"
+              using a b F by blast
+            hence "F (x \<cdot> i') \<in> S.hom unity b"
+              using b in_hom_char by blast
+            thus "F (x \<cdot> i') \<cdot> i \<in> S.hom S.unity b"
+              using i in_hom_char unity_def by auto
+          qed
+          obtain f where f: "S.in_hom f a b \<and> (\<forall>x. S.in_hom x S.unity (S.dom f)
+                               \<longrightarrow> f \<cdot> x = (\<lambda>x. F (x \<cdot> i') \<cdot> i) x)"
+            using 1 S.fun_complete_ax \<open>S.ide a\<close> \<open>S.ide b\<close> by presburger
+          show "\<exists>f. in_hom f a b \<and> (\<forall>x. in_hom x unity (dom f) \<longrightarrow> comp f x = F x)"
+          proof -
+            have "in_hom f a b"
+              using f in_hom_char ideD(1) a b by presburger
+            moreover have "\<forall>x. in_hom x unity (dom f) \<longrightarrow> comp f x = F x"
+            proof (intro allI impI)
+              fix x
+              assume x: "in_hom x unity (dom f)"
+              have xi: "S.in_hom (x \<cdot> i) S.unity (S.dom f)"
+                using f x i in_hom_char dom_char
+                by (metis (no_types, lifting) in_homE unity_def calculation S.comp_in_homI)
+              hence 1: "f \<cdot> (x \<cdot> i) = F ((x \<cdot> i) \<cdot> i') \<cdot> i"
+                using f by blast
+              hence "((f \<cdot> x) \<cdot> i) \<cdot> i' = (F x \<cdot> i) \<cdot> i'"
+                by (metis (no_types, lifting) xi S.comp_assoc S.inverse_arrowsE
+                    S.seqI' i' ii' in_hom_char inclusion_preserves_inverse S.comp_arr_ide)
+              hence "f \<cdot> x = F x"
+                by (metis (no_types, lifting) xi 1 S.invert_side_of_triangle(2) S.match_2 S.match_3
+                    S.seqI arr_char calculation S.in_homE S.inverse_unique S.isoI
+                    ii' in_homE inclusion_preserves_inverse)
+              thus "comp f x = F x"
+                using comp_char
+                by (metis (no_types, lifting) comp_simp in_homE seqI calculation x)
+            qed
+            ultimately show ?thesis by blast
+          qed
+        qed
+      qed
+      show "\<exists>img. set_category_given_img comp img ssetp"
+        using T.set_category_given_img_axioms by blast
+    qed
+
+    lemma is_set_category:
+    shows "set_category comp ssetp"
+      ..
+
+  end
 
 end

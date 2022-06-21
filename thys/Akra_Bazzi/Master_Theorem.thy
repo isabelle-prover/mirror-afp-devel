@@ -16,7 +16,7 @@ lemma fundamental_theorem_of_calculus_real:
   "a \<le> b \<Longrightarrow> \<forall>x\<in>{a..b}. (f has_real_derivative f' x) (at x within {a..b}) \<Longrightarrow>
       (f' has_integral (f b - f a)) {a..b}"
   by (intro fundamental_theorem_of_calculus ballI)
-     (simp_all add: has_field_derivative_iff_has_vector_derivative[symmetric])
+     (simp_all add: has_real_derivative_iff_has_vector_derivative[symmetric])
 
 lemma integral_powr:
   "y \<noteq> -1 \<Longrightarrow> a \<le> b \<Longrightarrow> a > 0 \<Longrightarrow> integral {a..b} (\<lambda>x. x powr y :: real) =

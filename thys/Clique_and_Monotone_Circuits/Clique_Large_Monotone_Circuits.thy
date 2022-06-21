@@ -455,7 +455,7 @@ definition \<P>L\<G>l :: "graph set set" where
   "\<P>L\<G>l = { X . X \<subseteq> \<G>l \<and> card (v_gs X) \<le> L}"
 
 definition odotl :: "graph set \<Rightarrow> graph set \<Rightarrow> graph set" (infixl "\<odot>l" 65) where
-  "X \<odot>l Y = {D \<union> E | D E. D \<in> X \<and> E \<in> Y \<and> D \<union> E \<in> \<G>l}" 
+  "X \<odot>l Y = (X \<odot> Y) \<inter> \<G>l" 
 
 
 lemma joinl_join: "X \<odot>l Y \<subseteq> X \<odot> Y" 
@@ -698,14 +698,6 @@ proof -
     from this[unfolded ACC_cf_def] Cf f have "\<not> (U \<tturnstile> C f)" by auto
     from this[unfolded accepts_def] 
     have UCf: "D \<in> U \<Longrightarrow> \<not> D \<subseteq> C f" for D by auto
-    {
-      fix x y
-      assume xy: "{x,y} \<in> Gs" 
-      with GsG have mem: "{x,y} \<in> [m]^\<two>" unfolding \<G>_def by auto
-      from xy have "{x,y} \<in> C f" using GsCf by auto
-      hence "f x \<noteq> f y" using mem unfolding C_def 
-        by (auto simp: doubleton_eq_iff)
-    } note Gs_f = this
     let ?prop = "\<lambda> i e. fstt e \<in> v (G i) - Vs \<and> 
            sndd e \<in> v (G i) \<and> e \<in> G i \<inter> ([m]^\<two>)
          \<and> f (fstt e) = f (sndd e) \<and> f (sndd e) \<in> [k - 1] \<and> {fstt e, sndd e} = e" 
@@ -1171,7 +1163,7 @@ proof -
         proof
           assume "H \<in> \<G>l"
           hence "H \<in> X \<odot>l Y"
-            unfolding odotl_def HDE using D E by blast
+            unfolding odotl_def HDE odot_def using D E by blast
           thus False using H by auto
         qed
         from HDL HD have HGl: "H \<notin> \<G>l" unfolding \<G>l_def by auto
@@ -1533,8 +1525,6 @@ proof -
   from finite_subset[OF V(2)] have finV: "finite V" by auto
   have finPart: "finite A" if "A \<subseteq> {P. partition_on [n] P}" for n A
     by (rule finite_subset[OF that finitely_many_partition_on], simp)
-  define um where "um n = uminus (int n)" for n
-  have um: "um n \<le> um m \<longleftrightarrow> n \<ge> m" for n m unfolding um_def by auto
   have finmv: "finite ([m] - V)" using finite_numbers[of m] by auto
   have finK: "finite [k - 1]" unfolding numbers_def by auto
   define F where "F = {f \<in> [m] \<rightarrow>\<^sub>E [k - 1]. inj_on f V}" 

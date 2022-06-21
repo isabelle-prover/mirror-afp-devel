@@ -36,6 +36,8 @@ end;
 structure NatSub : NAT_SUB =
 struct
 
+structure WfTerm = Auto2_Setup.WfTerm
+
 val fheads = [@{term "(+) :: (nat => nat => nat)"},
               @{term "(-) :: (nat => nat => nat)"},
               @{term "(*) :: (nat => nat => nat)"}]
@@ -238,7 +240,7 @@ fun move_outmost u wft =
 fun cancel_terms wft =
     let
       val (a, b) = wft |> WfTerm.term_of |> Util.dest_binop_args
-      val (ts1, ts2) = apply2 (ACUtil.dest_ac plus_info) (a, b)
+      val (ts1, ts2) = apply2 (Auto2_HOL_Extra_Setup.ACUtil.dest_ac plus_info) (a, b)
 
       fun find_same_arg (t1, t2) =
           case compare_monomial (t1, t2) of
@@ -482,7 +484,7 @@ fun get_sub_head_equiv ctxt (id, ct) =
       fun process_wf_head_equiv (id', (wft, eq_th)) =
           let
             val cts = subterms_of (Thm.rhs_of eq_th)
-            val simps = WellformData.simplify ctxt fheads cts (id', wft)
+            val simps = Auto2_Setup.WellformData.simplify ctxt fheads cts (id', wft)
 
             fun process_simp (id'', (wft', eq_th')) =
                 (BoxID.merge_boxes ctxt (id', id''),
@@ -491,7 +493,7 @@ fun get_sub_head_equiv ctxt (id, ct) =
             map process_simp simps
           end
     in
-      (id, ct) |> WellformData.get_head_equiv ctxt fheads
+      (id, ct) |> Auto2_Setup.WellformData.get_head_equiv ctxt fheads
                |> maps process_wf_head_equiv
                |> filter_out (Thm.is_reflexive o snd o snd)
     end
@@ -515,7 +517,7 @@ fun nat_sub_expand_once ctxt (id, wft) =
 (* Find all ways to write ct, up to a certain limit. *)
 fun nat_sub_expand ctxt (id, ct) =
     let
-      val max_ac = Config.get ctxt AC_ProofSteps.max_ac
+      val max_ac = Config.get ctxt Auto2_HOL_Extra_Setup.AC_ProofSteps.max_ac
 
       fun ac_equiv_eq_better (id, (_, th)) (id', (_, th')) =
           let
@@ -553,8 +555,8 @@ fun nat_sub_expand ctxt (id, ct) =
 
       (* Start term *)
       val ts = subterms_of ct
-      val start = (WellformData.cterm_to_wfterm ctxt fheads (id, ct))
-                      |> maps (WellformData.simplify ctxt fheads ts)
+      val start = (Auto2_Setup.WellformData.cterm_to_wfterm ctxt fheads (id, ct))
+                      |> maps (Auto2_Setup.WellformData.simplify ctxt fheads ts)
     in
       helper ([], start)
     end
@@ -574,7 +576,7 @@ fun nat_sub_expand_equiv_fn ctxt item1 item2 =
     in
       if not (is_nat_sub_form t1) orelse not (is_nat_sub_form t2) then []
       else if Term_Ord.term_ord (t2, t1) = LESS then []
-      else if RewriteTable.is_equiv id ctxt (ct1, ct2) then []
+      else if Auto2_Setup.RewriteTable.is_equiv id ctxt (ct1, ct2) then []
       else let
         val expand1 = nat_sub_expand ctxt (id, ct1)
         val expand2 = nat_sub_expand ctxt (id, ct2)
@@ -604,7 +606,7 @@ fun nat_sub_expand_equiv_fn ctxt item1 item2 =
         (maps get_equiv (Util.all_pairs (expand1, expand2)))
             |> filter (BoxID.has_incr_id o fst)
             |> Util.max_partial (BoxID.id_is_eq_ancestor ctxt)
-            |> map (fn (id, th) => Update.thm_update_sc 1 (id, th))
+            |> map (fn (id, th) => Auto2_Setup.Update.thm_update_sc 1 (id, th))
       end
     end
 
@@ -642,7 +644,7 @@ fun nat_sub_expand_unit_fn ctxt item =
       in
         (maps process_expand expand)
             |> filter (BoxID.has_incr_id o fst)
-            |> map (fn (id, th) => Update.thm_update_sc 1 (id, th))
+            |> map (fn (id, th) => Auto2_Setup.Update.thm_update_sc 1 (id, th))
       end
     end
 

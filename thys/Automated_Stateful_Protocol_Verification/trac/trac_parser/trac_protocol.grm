@@ -1,40 +1,4 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2020
-(C) Copyright Sebastian A. Mödersheim, DTU, 2020
-(C) Copyright Achim D. Brucker, University of Exeter, 2020
-(C) Copyright Anders Schlichtkrull, DTU, 2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
+(* SPDX-License-Identifier: BSD-3-Clause *)
 open Trac_Term
  
 exception NotYetSupported of string 
@@ -73,6 +37,7 @@ exception NotYetSupported of string
     | OPENSQB of string
     | CLOSESQB of string
     | UNION of string
+    | INFINITESET of string
     | PROTOCOL of string
     | KNOWLEDGE of string
     | WHERE of string
@@ -90,20 +55,25 @@ exception NotYetSupported of string
     | PRIVATE of string
     | RECEIVE of string
     | SEND of string
+    | LET of string
     | IN of string
     | NOTIN of string
     | INSERT of string
     | DELETE of string
     | NEW of string
     | ATTACK of string
-    | slash of string
+    | SLASH of string
+    | DOUBLESLASH of string
     | QUESTION of string
-    | equal of string
+    | EQUAL of string
+    | DOUBLEEQUAL of string
     | TYPES of string
+    | ENUMERATIONS of string
     | SETS of string
     | ARROW of string
     | ANALYSIS of string
     | TRANSACTIONS of string
+    | ABBREVIATIONS of string
     | STRING_LITERAL of string
     | UPPER_STRING_LITERAL of string
     | LOWER_STRING_LITERAL of string
@@ -111,23 +81,25 @@ exception NotYetSupported of string
     | INTEGER_LITERAL of string
     | STAR of string
     | OF of string
+    | OR of string
+    | FORALL of string
                    
 %nonterm START of TracProtocol.protocol
        | name of string 
-       | arity of string 
-       | uident of string 
-       | lident of string 
-       | ident of string 
+       | arity of int 
+       | uident of string
+       | lident of string
+       | ident of string
        | trac_protocol of TracProtocol.protocol
        | protocol_spec of TracProtocol.protocol
        | type_union of (string list)
-       | type_spec of (string * TracProtocol.type_spec_elem) 
-       | type_specs of (string * TracProtocol.type_spec_elem) list
-       | idents of string list
-       | uidents of string list
+       | enum_spec of (string * TracProtocol.enum_spec_elem) 
+       | enum_specs of (string * TracProtocol.enum_spec_elem) list
+       | type_specs of string list
        | lidents of string list
-       | set_specs of TracProtocol.set_spec list      
-       | set_spec of TracProtocol.set_spec     
+       | uidents of string list
+       | set_specs of TracProtocol.set_spec     
+       | set_spec of TracProtocol.set_spec_elem    
        | priv_or_pub_fun_spec of TracProtocol.fun_spec      
        | fun_specs of TracProtocol.funT list 
        | fun_spec of TracProtocol.funT     
@@ -141,18 +113,31 @@ exception NotYetSupported of string
        | head_params of string list 
        | keys of Trac_Term.Msg list
        | result of string list
+       | msg_atom of Trac_Term.Msg
        | msg of Trac_Term.Msg
        | msgs of Trac_Term.Msg list
        | setexp of string * Trac_Term.Msg list
        | action of TracProtocol.prot_label * TracProtocol.action  
        | actions of (TracProtocol.prot_label * TracProtocol.action) list
+       | action_ext of TracProtocol.labeled_action 
+       | actions_ext of TracProtocol.labeled_action list
        | ineq_aux of string
        | ineq of string * string
        | ineqs of (string * string) list
-       | transaction of TracProtocol.transaction_name
-       | typ of string                                             
-       | parameter of string * string
-       | parameters of (string * string) list 
+       | transaction_name of TracProtocol.transaction_name
+       | typ of Trac_Term.MsgType 
+       | typs of Trac_Term.MsgType list 
+       | parameter of string * Trac_Term.MsgType
+       | parameters of (string * Trac_Term.MsgType) list
+       | var_opt of string * Trac_Term.MsgType option
+       | vars_opt of (string * Trac_Term.MsgType option) list
+       | vars of (string * Trac_Term.MsgType) list
+       | negcheck_disj of TracProtocol.Negcheck list
+       | negcheck of TracProtocol.Negcheck
+       | abbrev of string * Trac_Term.Msg list
+       | abbrev_head of string * string list
+       | abbrev_decl of TracProtocol.abbreviation
+       | abbrev_spec of TracProtocol.abbreviation list
                      
 %pos (int * int * int)
 
@@ -163,34 +148,43 @@ exception NotYetSupported of string
 START:         trac_protocol                                    (trac_protocol)
 trac_protocol: PROTOCOL COLON name protocol_spec                (TracProtocol.update_name protocol_spec name)
 
-protocol_spec: TYPES COLON type_specs protocol_spec              (TracProtocol.update_type_spec protocol_spec type_specs)
-             | SETS COLON  set_specs protocol_spec               (TracProtocol.update_sets protocol_spec set_specs)
-             | FUNCTIONS COLON priv_or_pub_fun_spec protocol_spec       (TracProtocol.update_functions protocol_spec (SOME priv_or_pub_fun_spec))
-             | ANALYSIS COLON analysis_spec protocol_spec        (TracProtocol.update_analysis protocol_spec analysis_spec)
+protocol_spec: TYPES COLON enum_specs protocol_spec                       (error "Using the name \"Types\" for the section containing the enumeration declarations is deprecated - use \"Enumerations\" instead.")
+             | ENUMERATIONS COLON enum_specs protocol_spec                (TracProtocol.update_enum_spec protocol_spec enum_specs)
+             | TYPES COLON type_specs protocol_spec                       (TracProtocol.update_type_spec protocol_spec type_specs)
+             | SETS COLON  set_specs protocol_spec                        (TracProtocol.update_sets protocol_spec set_specs)
+             | FUNCTIONS COLON priv_or_pub_fun_spec protocol_spec         (TracProtocol.update_functions protocol_spec priv_or_pub_fun_spec)
+             | ANALYSIS COLON analysis_spec protocol_spec                 (TracProtocol.update_analysis protocol_spec analysis_spec)
              | transaction_spec_head COLON transaction_spec protocol_spec (TracProtocol.update_transactions transaction_spec_head protocol_spec transaction_spec)
-             |                                                   (TracProtocol.empty)
+             | ABBREVIATIONS COLON abbrev_spec protocol_spec              (TracProtocol.update_abbreviations protocol_spec abbrev_spec)
+             |                                                            (TracProtocol.empty)
 
 type_union:    ident                                             ([ident])
              | ident UNION type_union                            (ident::type_union)
-             
-type_specs:    type_spec                                         ([type_spec])
-             | type_spec type_specs                              (type_spec::type_specs)
-type_spec:     ident equal OPENB lidents CLOSEB                   ((ident, TracProtocol.Consts lidents))
-             | ident equal type_union                            ((ident, TracProtocol.Union type_union))
 
+
+type_specs:    ident                                             ([ident])
+             | ident type_specs                                  (ident::type_specs)
+ 
+enum_specs:    enum_spec                                         ([enum_spec])
+             | enum_spec enum_specs                              (enum_spec::enum_specs)
+enum_spec:     ident EQUAL OPENB lidents CLOSEB                  ((ident, TracProtocol.Consts lidents))
+             | ident EQUAL type_union                            ((ident, TracProtocol.Union type_union))
+             | ident EQUAL INFINITESET                           ((ident, TracProtocol.InfiniteSet))
 
 set_specs:     set_spec                                          ([set_spec])
              | set_spec set_specs                                (set_spec::set_specs)
-set_spec:      ident slash arity                                 ((ident, arity))
+set_spec:      ident SLASH arity                                 ((ident, arity, false))
+             | ident DOUBLESLASH arity                           ((ident, arity, true))
                             
 priv_or_pub_fun_spec: pub_fun_spec priv_or_pub_fun_spec       (TracProtocol.update_fun_public priv_or_pub_fun_spec pub_fun_spec)
                     | priv_fun_spec priv_or_pub_fun_spec      (TracProtocol.update_fun_private priv_or_pub_fun_spec priv_fun_spec)   
                     |                                         (TracProtocol.fun_empty)
-pub_fun_spec: PUBLIC fun_specs             (fun_specs)
-priv_fun_spec: PRIVATE fun_specs           (fun_specs)
-fun_specs: fun_spec ([fun_spec])
-                    | fun_spec fun_specs (fun_spec::fun_specs)
-fun_spec:      ident slash arity              ((ident, arity))
+pub_fun_spec: PUBLIC fun_specs                                (fun_specs)
+priv_fun_spec: PRIVATE fun_specs                              (fun_specs)
+fun_specs: fun_spec                                           ([fun_spec])
+         | fun_spec fun_specs                                 (fun_spec::fun_specs)
+fun_spec:      lident SLASH arity                             ((lident, arity, NONE))
+        |      lident SLASH arity COLON typ                   ((lident, arity, SOME(typ)))
 
 analysis_spec: rule                        	              ([rule])
              | rule analysis_spec                         (rule::analysis_spec)
@@ -212,8 +206,8 @@ result: UPPER_STRING_LITERAL                              ([UPPER_STRING_LITERAL
 transaction_spec_head: TRANSACTIONS                       (NONE)
                      | TRANSACTIONS OF LOWER_STRING_LITERAL (SOME LOWER_STRING_LITERAL)
 
-transaction_spec: transaction actions DOT               ([TracProtocol.mkTransaction transaction actions])
-                | transaction actions DOT transaction_spec ((TracProtocol.mkTransaction transaction actions)::transaction_spec)
+transaction_spec: transaction_name actions_ext DOT                  ([TracProtocol.mkTransaction transaction_name actions_ext])
+                | transaction_name actions_ext DOT transaction_spec ((TracProtocol.mkTransaction transaction_name actions_ext)::transaction_spec)
 
 ineq_aux: UNEQUAL UPPER_STRING_LITERAL                    (UPPER_STRING_LITERAL)
 
@@ -222,66 +216,109 @@ ineq: UPPER_STRING_LITERAL ineq_aux                       ((UPPER_STRING_LITERAL
 ineqs: ineq                                               ([ineq])
      | ineq COMMA ineqs                                   ([ineq]@ineqs)
                        
-transaction: ident OPENP parameters CLOSEP WHERE ineqs    ((ident,parameters,ineqs))
-           | ident OPENP parameters CLOSEP                ((ident,parameters,[]))
-           | ident OPENP CLOSEP                           ((ident,[],[]))
+transaction_name: ident OPENP parameters CLOSEP WHERE ineqs    ((ident,parameters,ineqs))
+                | ident OPENP parameters CLOSEP                ((ident,parameters,[]))
+                | ident OPENP CLOSEP                           ((ident,[],[]))
 
 parameters: parameter                                   ([parameter])
           | parameter COMMA parameters                  (parameter::parameters)
                   
 parameter: ident COLON typ                              ((ident, typ))
 
-typ: UPPER_STRING_LITERAL                               (UPPER_STRING_LITERAL)                                                
-   | LOWER_STRING_LITERAL                               (LOWER_STRING_LITERAL)                                                
-                                                
+typ: UPPER_STRING_LITERAL                               (Trac_Term.TAtom(UPPER_STRING_LITERAL))
+   | LOWER_STRING_LITERAL                               (Trac_Term.TAtom(LOWER_STRING_LITERAL))
+   | LOWER_STRING_LITERAL OPENP typs CLOSEP             (Trac_Term.TComp(LOWER_STRING_LITERAL,typs))
+
+typs: typ                                               ([typ])
+    | typ COMMA typs                                    (typ::typs)
+
+abbrev: ident EXCLAM OPENSQB CLOSESQB                   ((ident,[]))
+      | ident EXCLAM OPENSQB msgs CLOSESQB              ((ident,msgs))
+
 actions: action                                         ([action])
        | action actions                                 (action::actions)
 
-action: RECEIVE msg                                     ((TracProtocol.LabelN,TracProtocol.RECEIVE(msg)))
-      | SEND msg                                        ((TracProtocol.LabelN,TracProtocol.SEND(msg)))
-      | msg IN setexp                                   ((TracProtocol.LabelN,TracProtocol.IN(msg,setexp)))
-      | msg NOTIN setexp                                ((TracProtocol.LabelN,TracProtocol.NOTIN(msg,setexp)))
-      | msg NOTIN lident OPENP UNDERSCORE CLOSEP        ((TracProtocol.LabelN,TracProtocol.NOTINANY(msg,lident)))
-      | INSERT msg setexp                               ((TracProtocol.LabelN,TracProtocol.INSERT(msg,setexp)))
-      | DELETE msg setexp                               ((TracProtocol.LabelN,TracProtocol.DELETE(msg,setexp)))
-      | NEW uident                                      ((TracProtocol.LabelS,TracProtocol.NEW(uident)))
-      | ATTACK                                          ((TracProtocol.LabelN,TracProtocol.ATTACK))
-      | STAR RECEIVE msg                                ((TracProtocol.LabelS,TracProtocol.RECEIVE(msg)))
-      | STAR SEND msg                                   ((TracProtocol.LabelS,TracProtocol.SEND(msg)))
-      | STAR msg IN setexp                              ((TracProtocol.LabelS,TracProtocol.IN(msg,setexp)))
-      | STAR msg NOTIN setexp                           ((TracProtocol.LabelS,TracProtocol.NOTIN(msg,setexp)))
-      | STAR msg NOTIN lident OPENP UNDERSCORE CLOSEP   ((TracProtocol.LabelS,TracProtocol.NOTINANY(msg,lident)))
-      | STAR INSERT msg setexp                          ((TracProtocol.LabelS,TracProtocol.INSERT(msg,setexp)))
-      | STAR DELETE msg setexp                          ((TracProtocol.LabelS,TracProtocol.DELETE(msg,setexp)))
+action: RECEIVE msgs                                  ((TracProtocol.LabelN,TracProtocol.RECEIVE(msgs)))
+      | SEND msgs                                     ((TracProtocol.LabelN,TracProtocol.SEND(msgs)))
+      | msg DOUBLEEQUAL msg                           ((TracProtocol.LabelN,TracProtocol.EQUATION(msg1,msg2)))
+      | LET msg EQUAL msg                             ((TracProtocol.LabelN,TracProtocol.LETBINDING(msg1,msg2)))
+      | msg IN setexp                                 ((TracProtocol.LabelN,TracProtocol.IN(msg,setexp)))
+      | msg NOTIN lident OPENP UNDERSCORE CLOSEP      ((TracProtocol.LabelN,TracProtocol.NOTINANY(msg,lident)))
+      | negcheck_disj                                 ((TracProtocol.LabelN,TracProtocol.NEGCHECKS([],negcheck_disj)))
+      | negcheck_disj FORALL vars                     ((TracProtocol.LabelN,TracProtocol.NEGCHECKS(vars,negcheck_disj)))
+      | INSERT msg setexp                             ((TracProtocol.LabelN,TracProtocol.INSERT(msg,setexp)))
+      | DELETE msg setexp                             ((TracProtocol.LabelN,TracProtocol.DELETE(msg,setexp)))
+      | NEW vars_opt                                  ((TracProtocol.LabelS,TracProtocol.NEW(vars_opt)))
+      | ATTACK                                        ((TracProtocol.LabelN,TracProtocol.ATTACK))
+      | STAR RECEIVE msgs                             ((TracProtocol.LabelS,TracProtocol.RECEIVE(msgs)))
+      | STAR SEND msgs                                ((TracProtocol.LabelS,TracProtocol.SEND(msgs)))
+      | STAR msg DOUBLEEQUAL msg                      ((TracProtocol.LabelS,TracProtocol.EQUATION(msg1,msg2)))
+      | STAR LET msg EQUAL msg                        ((TracProtocol.LabelS,TracProtocol.LETBINDING(msg1,msg2)))
+      | STAR msg IN setexp                            ((TracProtocol.LabelS,TracProtocol.IN(msg,setexp)))
+      | STAR msg NOTIN lident OPENP UNDERSCORE CLOSEP ((TracProtocol.LabelS,TracProtocol.NOTINANY(msg,lident)))
+      | STAR negcheck_disj                            ((TracProtocol.LabelS,TracProtocol.NEGCHECKS([],negcheck_disj)))
+      | STAR negcheck_disj FORALL vars                ((TracProtocol.LabelS,TracProtocol.NEGCHECKS(vars,negcheck_disj)))
+      | STAR INSERT msg setexp                        ((TracProtocol.LabelS,TracProtocol.INSERT(msg,setexp)))
+      | STAR DELETE msg setexp                        ((TracProtocol.LabelS,TracProtocol.DELETE(msg,setexp)))
 
-setexp: lident                                          ((lident,[]))
-      | lident OPENP msgs CLOSEP                        ((lident,msgs))
+action_ext: abbrev                                    (TracProtocol.ABBREVIATION(abbrev))
+          | action                                    (TracProtocol.LABELED_ACTION(action))
 
-msg: uident                                             (Var uident)
-   | lident                                             (Const lident)
-   | lident OPENP msgs CLOSEP                           (Fun (lident,msgs))
+actions_ext: action_ext                               ([action_ext])
+           | action_ext actions_ext                   (action_ext::actions_ext)
 
-msgs: msg                                               ([msg])
-    | msg COMMA msgs                                    (msg::msgs)
+vars_opt: var_opt                                     ([var_opt])
+        | var_opt COMMA vars_opt                      (var_opt::vars_opt)
+ 
+var_opt: uident COLON typ                             ((uident, SOME(typ)))
+       | uident                                       ((uident, NONE))
 
-name: UPPER_STRING_LITERAL                              (UPPER_STRING_LITERAL)                         
-    | LOWER_STRING_LITERAL                              (LOWER_STRING_LITERAL) 
+vars: uident COLON typ                                ([(uident,typ)])
+    | uident COLON typ COMMA vars                     ((uident,typ)::vars)
 
-uident: UPPER_STRING_LITERAL                            (UPPER_STRING_LITERAL)
+setexp: lident                                        ((lident,[]))
+      | lident OPENP msgs CLOSEP                      ((lident,msgs))
 
-uidents: uident                                         ([uident])
-       | uident COMMA uidents                           (uident::uidents)
+negcheck_disj: negcheck                               ([negcheck])
+             | negcheck OR negcheck_disj              (negcheck::negcheck_disj)
 
-lident: LOWER_STRING_LITERAL                            (LOWER_STRING_LITERAL)
+negcheck: msg UNEQUAL msg                             (TracProtocol.INEQ(msg1,msg2))
+        | msg NOTIN setexp                            (TracProtocol.NOTIN(msg,setexp))
 
-lidents: lident                                         ([lident])
-       | lident COMMA lidents                           (lident::lidents)
+msg_atom: uident                                      (Var(uident))
+        | lident                                      (Const(lident))
 
-ident: uident                                           (uident)
-     | lident                                           (lident)
+msg: msg_atom                                         (msg_atom) 
+   | lident OPENP msgs CLOSEP                         (Fun(lident,msgs))
+   | abbrev                                           (Abbrev(abbrev))
 
-idents: ident                                           ([ident])
-      | ident COMMA idents                              (ident::idents)
+msgs: msg                                             ([msg])
+    | msg COMMA msgs                                  (msg::msgs)
 
-arity: INTEGER_LITERAL                                  (INTEGER_LITERAL)
+name: UPPER_STRING_LITERAL                            (UPPER_STRING_LITERAL)                         
+    | LOWER_STRING_LITERAL                            (LOWER_STRING_LITERAL) 
+
+uident: UPPER_STRING_LITERAL                          (UPPER_STRING_LITERAL)
+
+lident: LOWER_STRING_LITERAL                          (LOWER_STRING_LITERAL)
+
+lidents: lident                                       ([lident])
+       | lident COMMA lidents                         (lident::lidents)
+
+uidents: uident                                       ([uident])
+       | uident COMMA uidents                         (uident::uidents)
+
+ident: uident                                         (uident)
+     | lident                                         (lident)
+
+arity: INTEGER_LITERAL                                (Option.valOf(Int.fromString(INTEGER_LITERAL)))
+
+abbrev_head: ident EXCLAM OPENSQB CLOSESQB            ((ident,[]))
+           | ident EXCLAM OPENSQB uidents CLOSESQB    ((ident,uidents))
+
+abbrev_decl: abbrev_head EQUAL msg                    (TracProtocol.TermAbbreviation(abbrev_head,msg))
+           | abbrev_head actions_ext DOT              (TracProtocol.ActionsAbbreviation(abbrev_head,actions_ext))
+
+abbrev_spec: abbrev_decl                              ([abbrev_decl])
+           | abbrev_decl abbrev_spec                  (abbrev_decl::abbrev_spec)
 

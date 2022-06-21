@@ -1,43 +1,9 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2015-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Example_TLS.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section \<open>Proving Type-Flaw Resistance of the TLS Handshake Protocol\<close>
-text \<open>\label{sec:Example-TLS}\<close>
 theory Example_TLS
 imports "../Typed_Model"
 begin
@@ -167,17 +133,18 @@ proof -
   ultimately show ?thesis using infinite_super by blast
 qed
 
-lemma assm10: "TComp f T \<sqsubseteq> \<Gamma> t \<Longrightarrow> arity f > 0"
-proof (induction rule: \<Gamma>.induct)
-  case (1 x)
-  hence *: "TComp f T \<sqsubseteq> \<Gamma>\<^sub>v x" by simp
+lemma assm10:
+  assumes "TComp f T \<sqsubseteq> \<Gamma> (Var x)"
+  shows "arity f > 0"
+proof -
+  have *: "TComp f T \<sqsubseteq> \<Gamma>\<^sub>v x" using assms by simp
   hence "\<Gamma>\<^sub>v x \<noteq> TAtom Bot" unfolding \<Gamma>\<^sub>v_def by force
   hence "\<forall>t \<in> subterms (fst x). case t of
                 (TComp f T) \<Rightarrow> arity f > 0 \<and> arity f = length T
               | _ \<Rightarrow> True"
     unfolding \<Gamma>\<^sub>v_def by argo
-  thus ?case using * unfolding \<Gamma>\<^sub>v_def by fastforce 
-qed auto
+  thus ?thesis using * unfolding \<Gamma>\<^sub>v_def by fastforce
+qed
 
 lemma assm11: "im.wf\<^sub>t\<^sub>r\<^sub>m (\<Gamma> (Var x))"
 proof -
@@ -203,9 +170,9 @@ proof (induct t rule: Ana.induct)
 qed (auto elim!: Ana\<^sub>c\<^sub>r\<^sub>y\<^sub>p\<^sub>t.elims Ana\<^sub>s\<^sub>i\<^sub>g\<^sub>n.elims)
 
 global_interpretation tm: typed_model' arity public Ana \<Gamma>
-by (unfold_locales, unfold wf\<^sub>t\<^sub>r\<^sub>m_def[symmetric],
-    metis assm7, metis assm8, metis assm9, metis assm10, metis assm11, metis assm6,
-    metis assm12, metis Ana_const, metis Ana_keys_subterm)
+  by (unfold_locales, unfold wf\<^sub>t\<^sub>r\<^sub>m_def[symmetric])
+     (metis assm7, metis assm8, metis assm10, metis assm11, metis assm12, metis Ana_const,
+      metis Ana_keys_subterm)
 
 subsection \<open>TLS example: Proving type-flaw resistance\<close>
 abbreviation \<Gamma>\<^sub>v_clientHello where

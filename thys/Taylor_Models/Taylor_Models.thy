@@ -421,7 +421,7 @@ proof-
   have n_mod_4_cases: "n mod 4 = 0 | n mod 4 = 1 | n mod 4 = 2 | n mod 4 = 3"
     by auto
   have Sin_sin: "(\<lambda>xs. interpret_floatarith (Sin (Var 0)) xs) = (\<lambda>xs. sin (xs!0))"
-    by (simp add: )
+    by simp
   show "((\<lambda>x. interpret_floatarith (deriv_rec (Cos (Var 0)) n) (xs[0:=x])) has_real_derivative
          interpret_floatarith (deriv_rec (Cos (Var 0)) (Suc n)) (xs[0:=t]))
          (at t within S)"
@@ -903,7 +903,7 @@ proof (induction b rule: nat_less_induct)
   proof (cases n)
     case (Suc nat)
     then show ?thesis
-      apply (auto simp: )
+      apply auto
       apply (auto simp: Let_def div2_less_self 1 simp del: polypow.simps)
       apply (metis even_Suc even_two_times_div_two odd_Suc_div_two semiring_normalization_rules(27) semiring_normalization_rules(36))
       apply (metis even_two_times_div_two semiring_normalization_rules(36))
@@ -913,7 +913,7 @@ qed
 
 lemma insertion_polynate [simp]:
   "insertion bs (polynate p) = (insertion bs p :: 'a::comm_ring_1)"
-  by (induct p rule: polynate.induct) (auto simp: )
+  by (induct p rule: polynate.induct) auto
 
 lemma tm_norm_poly_range:
   assumes "x \<in>\<^sub>i range_tm e t"
@@ -1142,7 +1142,7 @@ lemmas [simp del] = tm_neg.simps
 
 
 lemma tm_bound_tm_add[simp]: "tm_bound (tm_add t1 t2) = tm_bound t1 + tm_bound t2"
-  by (cases t1; cases t2) (auto simp: )
+  by (cases t1; cases t2) auto
 
 lemma interval_of_add: "interval_of (a + b) = interval_of a + interval_of b"
   by (auto intro!: interval_eqI)
@@ -1602,7 +1602,7 @@ proof-
     subgoal
       by (rule compute_bound_tm_correct assms)+
     subgoal by (auto intro!: assms c_true)
-    subgoal by (auto simp: )
+    subgoal by auto
     done
   show ?thesis
     unfolding t_decomp

@@ -230,7 +230,7 @@ proof-
   from assms show "cat_simplicial \<alpha> A\<lparr>Dom\<rparr>\<lparr>f\<rparr> = cat_ordinal m"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: cat_cs_simps cat_simplicial_Dom_app 
           cs_intro: cat_simplicial_cs_intros
       )
@@ -258,7 +258,7 @@ proof-
   from assms show "cat_simplicial \<alpha> A\<lparr>Cod\<rparr>\<lparr>f\<rparr> = cat_ordinal n"
     by 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cat_simplicial_Cod_app 
           cs_intro: cat_simplicial_cs_intros
       )
@@ -276,7 +276,7 @@ proof(intro is_arrI cat_simplicial_ArrI, rule assms; (intro assms(2,3))?)
   from assms show 
     "cat_simplicial \<alpha> A\<lparr>Dom\<rparr>\<lparr>f\<rparr> = cat_ordinal m"
     "cat_simplicial \<alpha> A\<lparr>Cod\<rparr>\<lparr>f\<rparr> = cat_ordinal n"
-    by (cs_concl cs_simp: cat_simplicial_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: cat_simplicial_cs_simps)+
 qed
 
 lemma cat_simplicial_is_arrI'[cat_simplicial_cs_intros]: 
@@ -303,7 +303,7 @@ proof-
   then have 
     "cat_simplicial \<alpha> A\<lparr>Dom\<rparr>\<lparr>f\<rparr> = cat_ordinal m'"
     "cat_simplicial \<alpha> A\<lparr>Cod\<rparr>\<lparr>f\<rparr> = cat_ordinal n'"
-    by (cs_concl cs_simp: cat_simplicial_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: cat_simplicial_cs_simps)+
   with f(2,3) have 
     "cat_ordinal m' = cat_ordinal m" "cat_ordinal n' = cat_ordinal n"
     by auto
@@ -328,7 +328,7 @@ proof-
   then have 
     "cat_simplicial \<alpha> A\<lparr>Dom\<rparr>\<lparr>f\<rparr> = cat_ordinal m"
     "cat_simplicial \<alpha> A\<lparr>Cod\<rparr>\<lparr>f\<rparr> = cat_ordinal n"
-    by (cs_concl cs_simp: cat_simplicial_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: cat_simplicial_cs_simps)+
   with f(2,3) have "cat_ordinal m = a" "cat_ordinal n = b"
     by auto
   with f_is_preorder_functor m n that show ?thesis by auto
@@ -491,7 +491,7 @@ proof-
       using that  
       by (elim cat_simplicial_is_arrE; simp only: cat_ordinal_inj)
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_simplicial_cs_simps 
             cs_intro: cat_order_cs_intros cat_simplicial_cs_intros
         )
@@ -507,7 +507,7 @@ proof-
       subgoal for m n m' n' m'' n'' (*FIXME: investigate comp_no_flatten*)
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_simplicial_cs_simps 
               cs_intro: cat_order_cs_intros cat_simplicial_cs_intros
           )+
@@ -538,7 +538,7 @@ proof-
       using that
       by (elim cat_simplicial_is_arrE; simp only:)
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_simplicial_cs_simps
             cs_intro: cat_order_cs_intros cat_simplicial_cs_intros
         )
@@ -547,7 +547,7 @@ proof-
       using that
       by (elim cat_simplicial_is_arrE; simp only:)
         (
-          cs_concl
+          cs_concl 
             cs_simp: cat_cs_simps cat_simplicial_cs_simps
             cs_intro: cat_order_cs_intros cat_simplicial_cs_intros
         )

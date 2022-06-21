@@ -4,7 +4,7 @@
 
 theory Native_Word_Test_Emu imports
   Native_Word_Test
-  Code_Target_Bits_Int
+  Code_Target_Int_Bit
 begin
 
 section \<open>Test cases for emulation of native words\<close>
@@ -13,7 +13,7 @@ subsection \<open>Tests for @{typ uint16}\<close>
 
 text \<open>
   Test that @{typ uint16} is emulated for PolyML and OCaml via @{typ "16 word"} 
-  if @{theory Native_Word.Code_Target_Bits_Int} is imported.
+  if @{theory Native_Word.Code_Target_Int_Bit} is imported.
 \<close>
 
 definition test_uint16_emulation :: bool where
@@ -43,7 +43,7 @@ subsection \<open>Tests for @{typ uint8}\<close>
 
 text \<open>
   Test that @{typ uint8} is emulated for OCaml via @{typ "8 word"} 
-  if @{theory Native_Word.Code_Target_Bits_Int} is imported.
+  if @{theory Native_Word.Code_Target_Int_Bit} is imported.
 \<close>
 
 definition test_uint8_emulation :: bool where

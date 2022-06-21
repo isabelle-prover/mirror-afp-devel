@@ -242,7 +242,7 @@ proof -
   qed
 
   have s2: "config' (rTS h0) ([x,y],h) u = ([x, y], x # y # h)"
-    unfolding rTS_def uyx apply(simp add: )
+    unfolding rTS_def uyx apply simp
     unfolding Step_def by(simp add: firststep step_def oneTS_steps) 
   
   have ta: "T_on' (rTS h0) ([x,y],h) u = 1"
@@ -1173,15 +1173,8 @@ apply(induct i)
   by(simp add: split_def rTS_def Step_def step_def)
 
 lemma count_notin2: "count_list xs x = 0 \<Longrightarrow> x \<notin> set xs"
-apply (induction xs)  apply (auto del: count_notin)
-  apply(case_tac "a=x") by(simp_all)+
+by (simp add: count_list_0_iff)
 
-lemma count_append: "count_list (xs@ys) x = count_list xs x + count_list ys x"
-apply(induct xs) by(simp_all)
-
-lemma count_rev: "count_list (rev xs) x = count_list xs x"
-apply(induct xs) by(simp_all add: count_append )
- 
 lemma mtf2_q_passes: assumes "q \<in> set xs" "distinct xs" 
   and "index xs q - n \<le> index xs x" "index xs x < index xs q"
   shows "q < x in (mtf2 n q xs)"
@@ -1227,7 +1220,7 @@ proof -
                              count_list ?sincelast xa \<le> 1}"
 
   have y: "y \<in> ?S \<or> ~  y < x  in s_TS init h (as @ x # bs @ [x]) (Suc (length as + length bs))"
-    unfolding sl unfolding s_TS_def using assms(1) by(simp add: count_rev del: config'.simps)
+    unfolding sl unfolding s_TS_def using assms(1) by(simp del: config'.simps)
  
     have eklr: "length (as@[x]@bs@[x]) = Suc (length (as@[x]@bs))" by simp
   have 1: "s_TS init h (as@[x]@bs@[x]) (length (as@[x]@bs@[x]))
@@ -1305,7 +1298,7 @@ qed
 lemma count_drop: "count_list (drop n cs) x \<le> count_list cs x"
 proof -
   have "count_list cs x = count_list (take n cs @ drop n cs) x" by auto
-  also have "\<dots> = count_list (take n cs) x + count_list (drop n cs) x" by (rule count_append)
+  also have "\<dots> = count_list (take n cs) x + count_list (drop n cs) x" by (rule count_list_append)
   also have "\<dots> \<ge> count_list (drop n cs) x" by auto
   finally show ?thesis .
 qed
@@ -1314,7 +1307,7 @@ lemma count_take_less: assumes "n\<le>m"
   shows "count_list (take n cs) x \<le> count_list (take m cs) x"
 proof -
     from assms have "count_list (take n cs) x = count_list (take n (take m cs)) x" by auto
-    also have "\<dots> \<le> count_list (take n (take m cs) @ drop n (take m cs)) x" by (simp only: count_append)
+    also have "\<dots> \<le> count_list (take n (take m cs) @ drop n (take m cs)) x" by (simp)
     also have "\<dots> = count_list (take m cs) x" 
         by(simp only: append_take_drop_id)
     finally show ?thesis .
@@ -1323,7 +1316,7 @@ qed
 lemma count_take: "count_list (take n cs) x \<le> count_list cs x"
 proof -
   have "count_list cs x = count_list (take n cs @ drop n cs) x" by auto
-  also have "\<dots> = count_list (take n cs) x + count_list (drop n cs) x" by (rule count_append)
+  also have "\<dots> = count_list (take n cs) x + count_list (drop n cs) x" by (rule count_list_append)
   also have "\<dots> \<ge> count_list (take n cs) x" by auto
   finally show ?thesis .
 qed
@@ -1499,23 +1492,19 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
     case 1
      have " count_list (take ?lastoccy (rev (take i cs))) x \<le>
           count_list (drop (length cs - i) (rev cs)) x" by (simp add: count_take rev_take)
-     also have "\<dots> \<le> count_list (rev cs) x" by(simp add: count_drop ) 
-     also have "\<dots> = 0" using assms(2) by(simp add: count_rev)
+     also have "\<dots> \<le> count_list (rev cs) x" by (meson count_drop)
+     also have "\<dots> = 0" using assms(2) by(simp)
      finally have " count_list (take ?lastoccy (rev (take i cs))) x = 0" by auto
      have"
         2 \<le>
-        count_list ([x] @ rev bs @ [x]) x " apply(simp only: count_append) by(simp)
+        count_list ([x] @ rev bs @ [x]) x " by(simp)
      also have "\<dots> = count_list (take (1 + length bs + 1) (x # rev bs @ x # rev as @ h)) x" by auto
      also have "\<dots> \<le> count_list (take (?lastoccy - i) (x # rev bs @ x # rev as @ h)) x"
                 apply(rule count_take_less)
                     using lastoccy by linarith
      also have   "\<dots> \<le>  count_list (take ?lastoccy (rev (take i cs))) x
                       + count_list (take (?lastoccy - i) (x # rev bs @ x # rev as @ h)) x" by auto
-     also have "\<dots> = count_list (take ?lastoccy (rev (take i cs))
-                            @ take (?lastoccy - min (length cs) i)
-                            (x # rev bs @ x # rev as @ h)) x"
-               by(simp add: minlencsi count_append) 
-     finally show ?case by presburger
+     finally show ?case by(simp add: minlencsi)
   qed
 
   have "Min (index ?s ` ?S) \<in> (index ?s ` ?S)" apply(rule Min_in) using aha2 by (simp_all)
@@ -1681,16 +1670,16 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
  
   have "count_list (rev (take i cs) @ [x] @ rev bs @ [x]) z=
       count_list (take (i + 1 + length bs + 1) ?is) z" unfolding is_
-        using el_n_x by(simp add: minlencsi count_append ) 
+        using el_n_x by(simp add: minlencsi) 
   also from mind have "\<dots> 
           \<le> count_list (take (index ?is (cs ! i)) ?is) z"
           by(rule count_take_less) 
   also have "\<dots> \<le> 1" using zatmostonce by metis
   finally have aaa: "count_list (rev (take i cs) @ [x] @ rev bs @ [x]) z \<le> 1" .
   with el_n_x have "count_list bs z + count_list (take i cs) z \<le> 1"
-    by(simp add: count_append count_rev)
+    by(simp)
   moreover have "count_list (take (Suc i) cs) z = count_list (take i cs) z" 
-      using i_in_cs  el_n_y by(simp add: take_Suc_conv_app_nth count_append)
+      using i_in_cs  el_n_y by(simp add: take_Suc_conv_app_nth)
   ultimately have aaaa: "count_list bs z + count_list (take  (Suc i) cs) z \<le> 1" by simp
 
   have z_occurs_once_in_cs: "count_list (take (Suc i) cs) z = 1"
@@ -1787,7 +1776,6 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
                         unfolding un1 un2 by simp
     have "count_list ((take j (take k cs)) @ [cs!j] @ (drop (Suc j) (take k cs)) 
                         @ [cs!k] @ (drop (Suc k) (take (Suc i) cs))) z \<ge> 2"  
-                     apply(simp add: count_append)
                       using zcsk 1(2) by(simp)
     with A have "count_list (take (Suc i) cs) z \<ge> 2" by auto
     with z_occurs_once_in_cs show "False" by auto
@@ -1825,7 +1813,7 @@ length (snd (TSdet init h (as @ x # bs @ x # cs) (Suc (Suc (length as + length b
                                         @ z
                                           # drop (Suc j) (drop (Suc k) (take (Suc i) cs))) z
                                             \<ge> 2"
-                                            by(simp add: count_append)
+                                            by(simp)
     with A have "count_list (take (Suc i) cs) z \<ge> 2" by auto
     with z_occurs_once_in_cs show "False" by auto
 qed 
@@ -2439,7 +2427,7 @@ proof -
                 using nosuf axy bxy by(simp_all)
             also have "..."
               apply(rule twotox[unfolded s_TS_def, simplified])
-                using nosuf2 nosuf3 bxy apply(simp add: count_append)
+                using nosuf2 nosuf3 bxy apply(simp)
                 using assms apply(simp_all)
                 using axy xyininit apply(fast)
                 using bxy xyininit apply(fast)

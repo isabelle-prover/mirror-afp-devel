@@ -40,11 +40,11 @@ lemma lift_Sup_distrib: "small Y \<Longrightarrow> lift x (\<Squnion> Y) = \<Squ
   by (auto simp: lift_def Sup_V_def image_Union)
 
 lemma add_Sup_distrib:
-  fixes x::V shows "y \<noteq> 0 \<Longrightarrow> x + (SUP z\<in>elts y. f z) = (SUP z\<in>elts y. x + f z)"
+  fixes x::V shows "y \<noteq> 0 \<Longrightarrow> x + (\<Squnion>z\<in>elts y. f z) = (\<Squnion>z\<in>elts y. x + f z)"
   by (auto simp: plus_eq_lift SUP_sup_distrib lift_Sup_distrib image_image)
 
 lemma Limit_add_Sup_distrib:
-  fixes x::V shows "Limit \<alpha> \<Longrightarrow> x + (SUP z\<in>elts \<alpha>. f z) = (SUP z\<in>elts \<alpha>. x + f z)"
+  fixes x::V shows "Limit \<alpha> \<Longrightarrow> x + (\<Squnion>z\<in>elts \<alpha>. f z) = (\<Squnion>z\<in>elts \<alpha>. x + f z)"
   using add_Sup_distrib by force
 
 text\<open>Proposition 3.3(ii)\<close>
@@ -284,14 +284,14 @@ text\<open>Proposition 3.6\<close>
 proposition TC_add: "TC (x + y) = TC x \<squnion> lift x (TC y)"
 proof (induction y rule: eps_induct)
   case (step y)
-  have *: "\<Squnion> (TC ` (+) x ` elts y) = TC x \<squnion> (SUP u\<in>elts y. TC (set ((+) x ` elts u)))"
+  have *: "\<Squnion> (TC ` (+) x ` elts y) = TC x \<squnion> (\<Squnion>u\<in>elts y. TC (set ((+) x ` elts u)))"
     if "elts y \<noteq> {}"
   proof -
     obtain w where "w \<in> elts y"
       using \<open>elts y \<noteq> {}\<close> by blast
     then have "TC x \<le> TC (x + w)"
       by (simp add: step.IH)
-    then have \<dagger>: "TC x \<le> (SUP w\<in>elts y. TC (x + w))"
+    then have \<dagger>: "TC x \<le> (\<Squnion>w\<in>elts y. TC (x + w))"
       using \<open>w \<in> elts y\<close> by blast
     show ?thesis
       using that
@@ -330,9 +330,9 @@ corollary TC_lift:
 proof -
   have "TC (lift x y) = lift x y \<squnion> \<Squnion> ((\<lambda>u. TC(x+u)) ` elts y)"
     unfolding TC [of "lift x y"]  by (simp add: lift_def image_image)
-  also have "\<dots> = lift x y \<squnion> (SUP u\<in>elts y. TC x \<squnion> lift x (TC u))"
+  also have "\<dots> = lift x y \<squnion> (\<Squnion>u\<in>elts y. TC x \<squnion> lift x (TC u))"
     by (simp add: TC_add)
-  also have "\<dots> = lift x y \<squnion> TC x \<squnion> (SUP u\<in>elts y. lift x (TC u))"
+  also have "\<dots> = lift x y \<squnion> TC x \<squnion> (\<Squnion>u\<in>elts y. lift x (TC u))"
     using assms by (auto simp: SUP_sup_distrib)
   also have "\<dots> = TC x \<squnion> lift x (TC y)"
     by (simp add: TC [of y] sup_aci image_image lift_sup_distrib lift_Sup_distrib)
@@ -347,21 +347,21 @@ proof (induction y rule: eps_induct)
     case False
     then obtain e where e: "e \<in> elts y"
       by fastforce
-    have "rank (x+y) = (SUP u\<in>elts (x \<squnion> ZFC_in_HOL.set ((+) x ` elts y)). succ (rank u))"
+    have "rank (x+y) = (\<Squnion>u\<in>elts (x \<squnion> ZFC_in_HOL.set ((+) x ` elts y)). succ (rank u))"
       by (metis plus rank_Sup)
-    also have "\<dots> = (SUP x\<in>elts x. succ (rank x)) \<squnion> (SUP z\<in>elts y. succ (rank x + rank z))"
+    also have "\<dots> = (\<Squnion>x\<in>elts x. succ (rank x)) \<squnion> (\<Squnion>z\<in>elts y. succ (rank x + rank z))"
       apply (simp add: Sup_Un_distrib image_Un image_image)
       apply (simp add: step cong: SUP_cong_simp)
       done
-    also have "\<dots> = (SUP z \<in> elts y. rank x + succ (rank z))"
+    also have "\<dots> = (\<Squnion>z \<in> elts y. rank x + succ (rank z))"
     proof -
-      have "rank x \<le> (SUP z\<in>elts y. ZFC_in_HOL.succ (rank x + rank z))"
+      have "rank x \<le> (\<Squnion>z\<in>elts y. ZFC_in_HOL.succ (rank x + rank z))"
         using \<open>y \<noteq> 0\<close>
         by (auto simp: plus_eq_lift intro: order_trans [OF _ cSUP_upper [OF e]])
       then show ?thesis
         by (force simp: plus_V_succ_right simp flip: rank_Sup [of x] intro!: order_antisym)
     qed
-    also have "\<dots> = rank x + (SUP z \<in> elts y. succ (rank z))"
+    also have "\<dots> = rank x + (\<Squnion>z \<in> elts y. succ (rank z))"
       by (simp add: add_Sup_distrib False)
     also have "\<dots> = rank x + rank y"
       by (simp add: rank_Sup [of y])
@@ -376,10 +376,10 @@ proof (induction y rule: eps_induct)
     by (metis Ord_rank rank_add_distrib rank_of_Ord)
 qed
 
-lemma add_Sup_distrib_id: "A \<noteq> 0 \<Longrightarrow> x + \<Squnion>(elts A) = (SUP z\<in>elts A. x + z)"
+lemma add_Sup_distrib_id: "A \<noteq> 0 \<Longrightarrow> x + \<Squnion>(elts A) = (\<Squnion>z\<in>elts A. x + z)"
   by (metis add_Sup_distrib image_ident image_image)
 
-lemma add_Limit: "Limit \<alpha> \<Longrightarrow> x + \<alpha> = (SUP z\<in>elts \<alpha>. x + z)"
+lemma add_Limit: "Limit \<alpha> \<Longrightarrow> x + \<alpha> = (\<Squnion>z\<in>elts \<alpha>. x + z)"
   by (metis Limit_add_Sup_distrib Limit_eq_Sup_self image_ident image_image)
 
 lemma add_le_left:
@@ -395,11 +395,11 @@ next
     by (auto simp: plus_V_succ_right Ord_mem_iff_lt assms(1))
 next
   case (Limit \<mu>)
-  then have k: "\<mu> = (SUP \<beta> \<in> elts \<mu>. \<beta>)"
+  then have k: "\<mu> = (\<Squnion>\<beta> \<in> elts \<mu>. \<beta>)"
     by (simp add: Limit_eq_Sup_self)
-  also have "\<dots>  \<le> (SUP \<beta> \<in> elts \<mu>. \<alpha> + \<beta>)"
+  also have "\<dots>  \<le> (\<Squnion>\<beta> \<in> elts \<mu>. \<alpha> + \<beta>)"
     using Limit.IH by auto
-  also have "\<dots> = \<alpha> + (SUP \<beta> \<in> elts \<mu>. \<beta>)"
+  also have "\<dots> = \<alpha> + (\<Squnion>\<beta> \<in> elts \<mu>. \<beta>)"
     using Limit.hyps Limit_add_Sup_distrib by presburger
   finally show ?case
     using k by simp
@@ -714,7 +714,7 @@ definition times_V :: "V \<Rightarrow> V \<Rightarrow> V"
 instance ..
 end
 
-lemma mult: "x * y = (SUP u\<in>elts y. lift (x * u) x)"
+lemma mult: "x * y = (\<Squnion>u\<in>elts y. lift (x * u) x)"
   unfolding times_V_def  by (subst transrec) (force simp:)
 
 lemma elts_multE:
@@ -780,15 +780,15 @@ lemma mult_lift_imp_distrib: "x * (lift y z) = lift (x*y) (x*z) \<Longrightarrow
 lemma mult_lift: "x * (lift y z) = lift (x*y) (x*z)"
 proof (induction z rule: eps_induct)
   case (step z)
-  have "x * lift y z = (SUP u\<in>elts (lift y z). lift (x * u) x)"
+  have "x * lift y z = (\<Squnion>u\<in>elts (lift y z). lift (x * u) x)"
     using mult by blast
-  also have "\<dots> = (SUP v\<in>elts z. lift (x * (y + v)) x)"
+  also have "\<dots> = (\<Squnion>v\<in>elts z. lift (x * (y + v)) x)"
     using lift_def by auto
-  also have "\<dots> = (SUP v\<in>elts z. lift (x * y + x * v) x)"
+  also have "\<dots> = (\<Squnion>v\<in>elts z. lift (x * y + x * v) x)"
     using mult_lift_imp_distrib step.IH by auto
-  also have "\<dots> = (SUP v\<in>elts z. lift (x * y) (lift (x * v) x))"
+  also have "\<dots> = (\<Squnion>v\<in>elts z. lift (x * y) (lift (x * v) x))"
     by (simp add: lift_lift)
-  also have "\<dots> = lift (x * y) (SUP v\<in>elts z. lift (x * v) x)"
+  also have "\<dots> = lift (x * y) (\<Squnion>v\<in>elts z. lift (x * v) x)"
     by (simp add: image_image lift_Sup_distrib)
   also have "\<dots> = lift (x*y) (x*z)"
     by (metis mult)
@@ -816,13 +816,13 @@ proof
   show "(x * y) * z = x * (y * z)" for x y z::V
   proof (induction z rule: eps_induct)
     case (step z)
-    have "(x * y) * z = (SUP u\<in>elts z. lift (x * y * u) (x * y))"
+    have "(x * y) * z = (\<Squnion>u\<in>elts z. lift (x * y * u) (x * y))"
       using mult by blast
-    also have "\<dots> = (SUP u\<in>elts z. lift (x * (y * u)) (x * y))"
+    also have "\<dots> = (\<Squnion>u\<in>elts z. lift (x * (y * u)) (x * y))"
       using step.IH by auto
-    also have "\<dots> = (SUP u\<in>elts z. x * lift (y * u) y)"
+    also have "\<dots> = (\<Squnion>u\<in>elts z. x * lift (y * u) y)"
       using mult_lift by auto
-    also have "\<dots> = x * (SUP u\<in>elts z. lift (y * u) y)"
+    also have "\<dots> = x * (\<Squnion>u\<in>elts z. lift (y * u) y)"
       by (simp add: image_image mult_Sup_distrib)
     also have "\<dots> = x * (y * z)"
       by (metis mult)
@@ -879,31 +879,31 @@ subsubsection \<open>Proposition 4.4-5\<close>
 proposition rank_mult_distrib: "rank (x*y) = rank x * rank y"
 proof (induction y rule: eps_induct)
   case (step y)
-  have "rank (x*y) = (SUP y\<in>elts (SUP u\<in>elts y. lift (x * u) x). succ (rank y))"
+  have "rank (x*y) = (\<Squnion>y\<in>elts (\<Squnion>u\<in>elts y. lift (x * u) x). succ (rank y))"
     by (metis rank_Sup mult)
-  also have "\<dots> = (SUP u\<in>elts y. SUP r\<in>elts x. succ (rank (x * u + r)))"
+  also have "\<dots> = (\<Squnion>u\<in>elts y. \<Squnion>r\<in>elts x. succ (rank (x * u + r)))"
     apply (simp add: lift_def image_image image_UN)
     apply (simp add: Sup_V_def)
     done
-  also have "\<dots> = (SUP u\<in>elts y. SUP r\<in>elts x. succ (rank (x * u) + rank r))"
+  also have "\<dots> = (\<Squnion>u\<in>elts y. \<Squnion>r\<in>elts x. succ (rank (x * u) + rank r))"
     using rank_add_distrib by auto
-  also have "\<dots> = (SUP u\<in>elts y. SUP r\<in>elts x. succ (rank x * rank u + rank r))"
+  also have "\<dots> = (\<Squnion>u\<in>elts y. \<Squnion>r\<in>elts x. succ (rank x * rank u + rank r))"
     using step arg_cong [where f = Sup] by auto
-  also have "\<dots> = (SUP u\<in>elts y. rank x * rank u + rank x)"
+  also have "\<dots> = (\<Squnion>u\<in>elts y. rank x * rank u + rank x)"
   proof (rule SUP_cong)
-    show "(SUP r\<in>elts x. succ (rank x * rank u + rank r)) = rank x * rank u + rank x"
+    show "(\<Squnion>r\<in>elts x. succ (rank x * rank u + rank r)) = rank x * rank u + rank x"
       if "u \<in> elts y" for u
     proof (cases "x=0")
       case False
-      have "(SUP r\<in>elts x. succ (rank x * rank u + rank r)) = rank x * rank u + (SUP y\<in>elts x. succ (rank y))"
+      have "(\<Squnion>r\<in>elts x. succ (rank x * rank u + rank r)) = rank x * rank u + (\<Squnion>y\<in>elts x. succ (rank y))"
       proof (rule order_antisym)
-        show "(SUP r\<in>elts x. succ (rank x * rank u + rank r)) \<le> rank x * rank u + (SUP y\<in>elts x. succ (rank y))"
+        show "(\<Squnion>r\<in>elts x. succ (rank x * rank u + rank r)) \<le> rank x * rank u + (\<Squnion>y\<in>elts x. succ (rank y))"
           by (auto simp: Sup_le_iff simp flip: plus_V_succ_right)
-        have "rank x * rank u + (SUP y\<in>elts x. succ (rank y)) = (SUP y\<in>elts x. rank x * rank u + succ (rank y))"
+        have "rank x * rank u + (\<Squnion>y\<in>elts x. succ (rank y)) = (\<Squnion>y\<in>elts x. rank x * rank u + succ (rank y))"
           by (simp add: add_Sup_distrib False)
-        also have "\<dots> \<le> (SUP r\<in>elts x. succ (rank x * rank u + rank r))"
+        also have "\<dots> \<le> (\<Squnion>r\<in>elts x. succ (rank x * rank u + rank r))"
           using plus_V_succ_right by auto
-        finally show "rank x * rank u + (SUP y\<in>elts x. succ (rank y)) \<le> (SUP r\<in>elts x. succ (rank x * rank u + rank r))" .
+        finally show "rank x * rank u + (\<Squnion>y\<in>elts x. succ (rank y)) \<le> (\<Squnion>r\<in>elts x. succ (rank x * rank u + rank r))" .
       qed
       also have "\<dots> = rank x * rank u + rank x"
         by (metis rank_Sup)
@@ -1434,7 +1434,7 @@ proof -
     by (metis cardinal_eqpoll eqpoll_sym eqpoll_trans card_lift)
   have 2: "pairwise (\<lambda>u u'. disjnt (elts (lift (x * u) x)) (elts (lift (x * u') x)))  (elts y)"
     by (simp add: pairwise_def disjnt_def) (metis V_disjoint_iff lift_mult_disjoint)
-  have "x * y = (SUP u\<in>elts y. lift (x * u) x)"
+  have "x * y = (\<Squnion>u\<in>elts y. lift (x * u) x)"
     using mult by blast
   then have "elts (x * y) \<approx> (\<Union>u\<in>elts y. elts (lift (x * u) x))"
     by simp
@@ -1451,19 +1451,19 @@ proof -
     by (metis cadd_cmult_distrib cadd_def cardinal_cong cardinal_idem vsum_0_eqpoll)
 qed
 
-proposition TC_mult: "TC(x * y) = (SUP r \<in> elts (TC x). SUP u \<in> elts (TC y). set{x * u + r})"
+proposition TC_mult: "TC(x * y) = (\<Squnion>r \<in> elts (TC x). \<Squnion>u \<in> elts (TC y). set{x * u + r})"
 proof (cases "x = 0")
   case False
-  have *: "TC(x * y) = (SUP u \<in> elts (TC y). lift (x * u) (TC x))" for y
+  have *: "TC(x * y) = (\<Squnion>u \<in> elts (TC y). lift (x * u) (TC x))" for y
   proof (induction y rule: eps_induct)
     case (step y)
-    have "TC(x * y) = (SUP u \<in> elts y. TC (lift (x * u) x))"
+    have "TC(x * y) = (\<Squnion>u \<in> elts y. TC (lift (x * u) x))"
       by (simp add: mult [of x y] TC_Sup_distrib image_image)
-    also have "\<dots> = (SUP u \<in> elts y. TC(x * u) \<squnion> lift (x * u) (TC x))"
+    also have "\<dots> = (\<Squnion>u \<in> elts y. TC(x * u) \<squnion> lift (x * u) (TC x))"
       by (simp add: TC_lift False)
-    also have "\<dots> = (SUP u \<in> elts y. (SUP z \<in> elts (TC u). lift (x * z) (TC x)) \<squnion> lift (x * u) (TC x))"
+    also have "\<dots> = (\<Squnion>u \<in> elts y. (\<Squnion>z \<in> elts (TC u). lift (x * z) (TC x)) \<squnion> lift (x * u) (TC x))"
       by (simp add: step)
-    also have "\<dots> = (SUP u \<in> elts (TC y). lift (x * u) (TC x))"
+    also have "\<dots> = (\<Squnion>u \<in> elts (TC y). lift (x * u) (TC x))"
       by (auto simp: TC' [of y] image_Un Sup_Un_distrib TC_Sup_distrib cSUP_UNION SUP_sup_distrib)
     finally show ?case .
   qed

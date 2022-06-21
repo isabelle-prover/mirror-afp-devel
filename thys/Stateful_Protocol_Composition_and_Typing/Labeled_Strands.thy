@@ -1,43 +1,8 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2018-2020
-(C) Copyright Sebastian A. Mödersheim, DTU, 2018-2020
-(C) Copyright Achim D. Brucker, University of Sheffield, 2018-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Labeled_Strands.thy
     Author:     Andreas Viktor Hess, DTU
     Author:     Sebastian A. Mödersheim, DTU
     Author:     Achim D. Brucker, The University of Sheffield
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section \<open>Labeled Strands\<close>
@@ -54,11 +19,11 @@ text \<open>Labeled strands are strands whose steps are equipped with labels\<cl
 type_synonym ('a,'b,'c) labeled_strand_step = "'c strand_label \<times> ('a,'b) strand_step"
 type_synonym ('a,'b,'c) labeled_strand = "('a,'b,'c) labeled_strand_step list"
 
-abbreviation is_LabelN where "is_LabelN n x \<equiv> fst x = ln n"
-abbreviation is_LabelS where "is_LabelS x \<equiv> fst x = \<star>"
+abbreviation has_LabelN where "has_LabelN n x \<equiv> fst x = ln n"
+abbreviation has_LabelS where "has_LabelS x \<equiv> fst x = \<star>"
 
 definition unlabel where "unlabel S \<equiv> map snd S"
-definition proj where "proj n S \<equiv> filter (\<lambda>s. is_LabelN n s \<or> is_LabelS s) S"
+definition proj where "proj n S \<equiv> filter (\<lambda>s. has_LabelN n s \<or> has_LabelS s) S"
 abbreviation proj_unl where "proj_unl n S \<equiv> unlabel (proj n S)"
 
 abbreviation wfrestrictedvars\<^sub>l\<^sub>s\<^sub>t where "wfrestrictedvars\<^sub>l\<^sub>s\<^sub>t S \<equiv> wfrestrictedvars\<^sub>s\<^sub>t (unlabel S)"
@@ -82,12 +47,12 @@ abbreviation wf\<^sub>l\<^sub>s\<^sub>t where "wf\<^sub>l\<^sub>s\<^sub>t V S \<
 
 
 subsection \<open>Lemmata: Projections\<close>
-lemma is_LabelS_proj_iff_not_is_LabelN:
-  "list_all is_LabelS (proj l A) \<longleftrightarrow> \<not>list_ex (is_LabelN l) A"
+lemma has_LabelS_proj_iff_not_has_LabelN:
+  "list_all has_LabelS (proj l A) \<longleftrightarrow> \<not>list_ex (has_LabelN l) A"
 by (induct A) (auto simp add: proj_def)
 
 lemma proj_subset_if_no_label:
-  assumes "\<not>list_ex (is_LabelN l) A"
+  assumes "\<not>list_ex (has_LabelN l) A"
   shows "set (proj l A) \<subseteq> set (proj l' A)"
     and "set (proj_unl l A) \<subseteq> set (proj_unl l' A)"
 using assms by (induct A) (auto simp add: unlabel_def proj_def)
@@ -114,6 +79,16 @@ unfolding unlabel_def by force
 
 lemma unlabel_mem_has_label: "x \<in> set (unlabel A) \<Longrightarrow> \<exists>l. (l,x) \<in> set A"
 unfolding unlabel_def by auto
+
+lemma proj_ident:
+  assumes "list_all (\<lambda>s. has_LabelN l s \<or> has_LabelS s) S"
+  shows "proj l S = S"
+using assms unfolding proj_def list_all_iff by fastforce
+
+lemma proj_elims_label:
+  assumes "k \<noteq> l"
+  shows "\<not>list_ex (has_LabelN l) (proj k S)"
+using assms unfolding proj_def list_ex_iff by force
 
 lemma proj_nil[simp]: "proj n [] = []" "proj_unl n [] = []"
 unfolding unlabel_def proj_def by auto
@@ -257,11 +232,12 @@ lemma proj_idem[simp]: "proj l (proj l A) = proj l A"
 unfolding proj_def by auto
 
 lemma proj_ik\<^sub>s\<^sub>t_is_proj_rcv_set:
-  "ik\<^sub>s\<^sub>t (proj_unl n A) = {t. (ln n, Receive t) \<in> set A \<or> (\<star>, Receive t) \<in> set A} "
+  "ik\<^sub>s\<^sub>t (proj_unl n A) =
+    {t. \<exists>ts. ((ln n, Receive ts) \<in> set A \<or> (\<star>, Receive ts) \<in> set A) \<and> t \<in> set ts} "
 using ik\<^sub>s\<^sub>t_is_rcv_set unfolding unlabel_def proj_def by force
 
 lemma unlabel_ik\<^sub>s\<^sub>t_is_rcv_set:
-  "ik\<^sub>s\<^sub>t (unlabel A) = {t | l t. (l, Receive t) \<in> set A}"
+  "ik\<^sub>s\<^sub>t (unlabel A) = {t | l t ts. (l, Receive ts) \<in> set A \<and> t \<in> set ts}"
 using ik\<^sub>s\<^sub>t_is_rcv_set unfolding unlabel_def by force
 
 lemma proj_ik_union_is_unlabel_ik:
@@ -273,7 +249,7 @@ proof
   show "ik\<^sub>s\<^sub>t (unlabel A) \<subseteq> (\<Union>l. ik\<^sub>s\<^sub>t (proj_unl l A))"
   proof
     fix t assume "t \<in> ik\<^sub>s\<^sub>t (unlabel A)"
-    then obtain l where "(l, Receive t) \<in> set A"
+    then obtain l ts where "(l, Receive ts) \<in> set A" "t \<in> set ts"
       using ik\<^sub>s\<^sub>t_is_rcv_set unlabel_mem_has_label[of _ A]
       by moura
     thus "t \<in> (\<Union>l. ik\<^sub>s\<^sub>t (proj_unl l A))" using proj_ik\<^sub>s\<^sub>t_is_proj_rcv_set[of _ A] by (cases l) auto
@@ -291,11 +267,23 @@ using proj_ik_append[of l] by auto
 lemma ik_proj_subset[simp]: "ik\<^sub>s\<^sub>t (proj_unl n A) \<subseteq> trms_proj\<^sub>l\<^sub>s\<^sub>t n A"
 by auto
 
-lemma prefix_proj:
+lemma prefix_unlabel:
   "prefix A B \<Longrightarrow> prefix (unlabel A) (unlabel B)"
+unfolding prefix_def unlabel_def by auto
+
+lemma prefix_proj:
   "prefix A B \<Longrightarrow> prefix (proj n A) (proj n B)"
   "prefix A B \<Longrightarrow> prefix (proj_unl n A) (proj_unl n B)"
-unfolding prefix_def unlabel_def proj_def by auto
+unfolding prefix_def proj_def by auto
+
+lemma suffix_unlabel:
+  "suffix A B \<Longrightarrow> suffix (unlabel A) (unlabel B)"
+unfolding suffix_def unlabel_def by auto
+
+lemma suffix_proj:
+  "suffix A B \<Longrightarrow> suffix (proj n A) (proj n B)"
+  "suffix A B \<Longrightarrow> suffix (proj_unl n A) (proj_unl n B)"
+unfolding suffix_def proj_def by auto
 
 
 subsection \<open>Lemmata: Well-formedness\<close>
@@ -342,16 +330,16 @@ proof (induction A arbitrary: V rule: List.rev_induct)
     by (metis snoc.prems proj_append(2) singleton_lst_proj(1) proj_unl_cons(1,3))
   thus ?case using IH b snoc.prems proj_append(2)[of l A "[a]"] unlabel_append[of A "[a]"]
   proof (cases b)
-    case (Receive t)
-    have "fv t \<subseteq> wfvarsoccs\<^sub>s\<^sub>t (unlabel A) \<union> V"
+    case (Receive ts)
+    have "fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<subseteq> wfvarsoccs\<^sub>s\<^sub>t (unlabel A) \<union> V"
     proof
-      fix x assume "x \<in> fv t"
+      fix x assume "x \<in> fv\<^sub>s\<^sub>e\<^sub>t (set ts)"
       hence "x \<in> V \<union> wfvarsoccs\<^sub>s\<^sub>t (proj_unl l A)" using wf_append_exec[OF *] b Receive by auto
       thus "x \<in> wfvarsoccs\<^sub>s\<^sub>t (unlabel A) \<union> V" using wfvarsoccs\<^sub>s\<^sub>t_proj_union[of A] by auto
     qed
-    hence "fv t \<subseteq> wfrestrictedvars\<^sub>s\<^sub>t (unlabel A) \<union> V"
+    hence "fv\<^sub>s\<^sub>e\<^sub>t (set ts) \<subseteq> wfrestrictedvars\<^sub>s\<^sub>t (unlabel A) \<union> V"
       using vars_snd_rcv_strand_subset2(4)[of "unlabel A"] by blast
-    hence "wf\<^sub>s\<^sub>t V (unlabel A@[Receive t])" by (rule wf_rcv_append'''[OF IH])
+    hence "wf\<^sub>s\<^sub>t V (unlabel A@[Receive ts])" by (rule wf_rcv_append'''[OF IH])
     thus ?thesis using b Receive unlabel_append[of A "[a]"] by auto
   next
     case (Equality ac s t)

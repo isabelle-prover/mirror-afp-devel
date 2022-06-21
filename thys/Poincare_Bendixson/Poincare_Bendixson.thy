@@ -861,7 +861,7 @@ proof -
     unfolding split_beta'
     apply (rule topological_tendstoD tendsto_intros)+
     using set_mp[OF \<open>{a -- b} \<subseteq> X\<close> that] \<open>0 < d\<close> that \<open>open S\<close> \<open>{a -- b} \<subseteq> S\<close>
-    by (force simp: )+
+    by force+
   then obtain d' where d':
     "\<And>x. x \<in> {a--b} \<Longrightarrow> d' x > 0"
     "\<And>x y s. x \<in> {a--b} \<Longrightarrow> (s = 0 \<longrightarrow> y \<noteq> x) \<Longrightarrow> dist (s, y) (0, x) < d' x \<Longrightarrow> flow0 y s \<in> S"
@@ -1326,7 +1326,7 @@ proof -
       proof (cases "tt = e")
         case True
         with xxtte have "xx = flow0 x t1"
-          by (simp add: )
+          by simp
         with xx show ?thesis
           apply auto
           by (auto simp: open_segment_def)
@@ -1441,7 +1441,7 @@ proof -
       proof (cases "tt=-e")
         case True
         with xxtte have "xx = flow0 x t2"
-          by (simp add: )
+          by simp
         with xx show ?thesis
           apply auto
           by (auto simp: open_segment_def)
@@ -1671,7 +1671,7 @@ proof -
         apply (subst flow_trans)
         using exist \<open>t1 \<le> t2\<close>
         using d_ex[of "flow0 x t2"] \<open>flow0 x t2 \<in> {a -- b}\<close> \<open>d > 0\<close> T \<open>0 < dr\<close> \<open>dr < d\<close>
-          apply (auto simp: )
+          apply auto
         apply (rule set_rev_mp[where A="{0 .. t - (t2 + dr)}"], force)
         apply (rule ivl_subset_existence_ivl)
         apply (rule existence_ivl_trans')
@@ -1779,7 +1779,7 @@ proof -
         apply (subst flow_trans)
         using exist \<open>t1 \<le> t2\<close>
         using d_ex[of "flow0 x t2"] \<open>flow0 x t2 \<in> {a -- b}\<close> \<open>d > 0\<close> T \<open>0 < dr\<close> \<open>dr < d\<close>
-          apply (auto simp: )
+          apply auto
         apply (rule set_rev_mp[where A="{0 .. t - (t2 + dr)}"], force)
         apply (rule ivl_subset_existence_ivl)
         apply (rule existence_ivl_trans')
@@ -1988,7 +1988,7 @@ proof -
       by auto
     also have "\<dots> = flow0 x ` (insert t2 {tm<..<t2})"
       using \<open>tm \<le> t2\<close> 3
-      apply (auto simp: )
+      apply auto
       by (smt greaterThanLessThan_iff image_eqI)
     finally have "flow0 x t1 \<in> flow0 x ` (insert t2 {tm<..<t2})"
       by auto
@@ -2122,7 +2122,7 @@ proof -
     \<open>continuous_on (ball p \<delta>) \<tau>\<close> \<open>\<tau> p = 0\<close>
   define s where "s n = t n + \<tau> (flow0 x (t n))" for n
   have ev_in_ball: "\<forall>\<^sub>F n in at_top. flow0 x (t n) \<in> ball p \<delta>"
-    apply (simp add: )
+    apply simp
     apply (subst dist_commute)
     apply (rule tendstoD)
      apply (rule t[unfolded o_def])

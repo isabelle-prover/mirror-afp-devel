@@ -42,7 +42,7 @@ proof -
       unfolding M_def using ab
       by (intro partial_summation_strong [where X = "{}"])
          (auto intro!: derivative_eq_intros continuous_intros
-               simp flip: has_field_derivative_iff_has_vector_derivative)
+               simp flip: has_real_derivative_iff_has_vector_derivative)
   } note * = this
   {
     fix x :: real assume x: "x > 1"
@@ -459,7 +459,7 @@ proof -
       unfolding M_def A_def using ab
       by (intro partial_summation_strong [where X = "{}"])
          (auto intro!: derivative_eq_intros continuous_intros
-               simp flip: has_field_derivative_iff_has_vector_derivative)
+               simp flip: has_real_derivative_iff_has_vector_derivative)
   } note * = this
   {
     fix x :: real assume x: "x > 1"

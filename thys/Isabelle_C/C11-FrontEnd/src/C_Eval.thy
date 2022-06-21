@@ -93,12 +93,13 @@ end
 \<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/ML/ml_context.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/ML/ml_context.ML
     Author:     Makarius
 
 ML context and antiquotations.
-*)
+*)*)
 \<open>
 structure C_Context0 =
 struct
@@ -108,18 +109,88 @@ type env_direct = bool (* internal result for conditional directives: branch ski
                 * (C_Env.env_directives * C_Env.env_tree)
 
 structure Directives = Generic_Data
-  (type T = (Position.T list
-             * serial
-             * ( (* evaluated during lexing phase *)
-                 (C_Lex.token_kind_directive
-                  -> env_direct
-                  -> C_Env.antiq_language list (* nested annotations from the input *)
-                     * env_direct (*NOTE: remove the possibility of returning a too modified env?*))
-               * (* evaluated during parsing phase *)
-                 (C_Lex.token_kind_directive -> C_Env.env_propagation_directive)))
-            Symtab.table
-   val empty = Symtab.empty
-   val merge = Symtab.join (K #2));
+(
+  type T = (Position.T list
+            * serial
+            * ( (* evaluated during lexing phase *)
+                (C_Lex.token_kind_directive
+                 -> env_direct
+                 -> C_Env.antiq_language list (* nested annotations from the input *)
+                    * env_direct (*NOTE: remove the possibility of returning a too modified env?*))
+              * (* evaluated during parsing phase *)
+                (C_Lex.token_kind_directive -> C_Env.env_propagation_directive)))
+           Symtab.table
+  val empty = Symtab.empty
+  val merge = Symtab.join (K #2)
+);
+end
+\<close>
+
+ML \<comment> \<open>\<^theory>\<open>Isabelle_C.C_Environment\<close>\<close> \<open>
+structure C_Hook =
+struct
+fun add_stream0 (syms_shift, syms, ml_exec) stream_hook =
+  case
+     fold (fn _ => fn (eval1, eval2) =>
+         (case eval2 of e2 :: eval2 => (e2, eval2)
+                      | [] => ([], []))
+         |>> (fn e1 => e1 :: eval1))
+       syms_shift
+       ([], stream_hook)
+  of (eval1, eval2) => fold cons
+                            eval1
+                            (case eval2 of e :: es => ((syms_shift, syms, ml_exec) :: e) :: es
+                                         | [] => [[(syms_shift, syms, ml_exec)]])
+
+fun advance00 stack ml_exec =
+  case ml_exec of
+    (_, C_Env.Bottom_up (C_Env.Exec_annotation exec), env_dir, _) =>
+     (fn arg => C_Env.map_env_tree (C_Stack.stack_exec env_dir (stack, #env_lang arg) (exec NONE))
+                                   arg)
+  | (_, C_Env.Bottom_up (C_Env.Exec_directive exec), env_dir, _) =>
+     C_Env.map_env_lang_tree (curry (exec NONE env_dir))
+  | ((pos, _), C_Env.Top_down exec, env_dir, _) =>
+     tap (fn _ => warning ("Missing navigation, evaluating as bottom-up style instead of top-down"
+                           ^ Position.here pos))
+     #>
+     (fn arg => C_Env.map_env_tree (C_Stack.stack_exec env_dir (stack, #env_lang arg) (exec NONE))
+                                   arg)
+
+fun advance0 stack (_, syms_reduce, ml_exec) =
+  let
+    val len = length syms_reduce
+  in 
+    if len = 0 then
+      I #>> advance00 stack ml_exec
+    else
+      let
+        val len = len - 1
+      in
+        fn (arg, stack_ml) =>
+          if length stack_ml - 2 <= len then
+             ( C_Env.map_stream_hook_excess
+                 (add_stream0 (map_range I (len - length stack_ml + 2), syms_reduce, ml_exec))
+                 arg
+             , stack_ml)
+             |> tap (fn _ => warning ("Navigation out of bounds, "
+                                      ^ (if length stack_ml <= len then "maximum depth"
+                                                                   else "internal value")
+                                      ^ " reached ("
+                                      ^ Int.toString (len - length stack_ml + 3)
+                                      ^ " in excess)"
+                                      ^ Position.here (Symbol_Pos.range syms_reduce
+                                                       |> Position.range_position)))
+          else
+            (arg, nth_map len (cons ml_exec) stack_ml)
+      end
+  end
+
+fun advance stack = (fn f => fn (arg, stack_ml) => f (#stream_hook arg) (arg, stack_ml))
+ (fn [] => I
+   | l :: ls => fold_rev (advance0 stack) l #>> C_Env.map_stream_hook (K ls))
+
+fun add_stream exec =
+  C_Env.map_stream_hook (add_stream0 exec)
 end
 \<close>
 
@@ -139,83 +210,18 @@ end
 type stack =
        (LALR_Lex_Instance.state, LALR_Lex_Instance.svalue0, LALR_Lex_Instance.pos) C_Env.stack'
 
-fun advance_hook stack = (fn f => fn (arg, stack_ml) => f (#stream_hook arg) (arg, stack_ml))
- (fn [] => I | l :: ls =>
-  I
-  #> fold_rev 
-    (fn (_, syms, ml_exec) =>
-      let
-        val len = length syms
-      in 
-        if len = 0 then
-          I #>>
-          (case ml_exec of
-             (_, C_Env.Bottom_up (C_Env.Exec_annotation exec), env_dir, _) =>
-              (fn arg => C_Env.map_env_tree (C_Stack.stack_exec env_dir (stack, #env_lang arg)
-                                                                        (exec NONE))
-                                            arg)
-           | (_, C_Env.Bottom_up (C_Env.Exec_directive exec), env_dir, _) =>
-              C_Env.map_env_lang_tree (curry (exec NONE env_dir))
-           | ((pos, _), _, _, _) =>
-              C_Env_Ext.map_context (fn _ => error ( "Style of evaluation not yet implemented"
-                                                   ^ Position.here pos)))
-        else
-          I ##>
-          let
-            val len = len - 1
-          in
-            fn stack_ml =>
-              stack_ml
-              |> (if length stack_ml <= len then
-                   tap (fn _ => warning ("Maximum depth reached ("
-                                         ^ Int.toString (len - length stack_ml + 1)
-                                         ^ " in excess)"
-                                         ^ Position.here (Symbol_Pos.range syms
-                                                          |> Position.range_position)))
-                   #> tap (fn _ => warning ("Unevaluated code"
-                                            ^ Position.here (ml_exec |> #1
-                                                                     |> Position.range_position)))
-                   #> I
-                  else if length stack_ml - len <= 2 then
-                   tap
-                     (fn _ =>
-                       warning ("Unevaluated code\
-                                \ as the hook is pointing to an internal initial value"
-                                ^ Position.here (ml_exec |> #1 |> Position.range_position)))
-                   #> I
-                  else nth_map len (cons ml_exec))
-          end
-      end)
-    l
-  #>> C_Env.map_stream_hook (K ls))
-
-fun add_stream_hook (syms_shift, syms, ml_exec) =
-  C_Env.map_stream_hook
-   (fn stream_hook => 
-    case
-       fold (fn _ => fn (eval1, eval2) =>
-           (case eval2 of e2 :: eval2 => (e2, eval2)
-                        | [] => ([], []))
-           |>> (fn e1 => e1 :: eval1))
-         syms_shift
-         ([], stream_hook)
-    of (eval1, eval2) => fold cons
-                              eval1
-                              (case eval2 of e :: es => ((syms_shift, syms, ml_exec) :: e) :: es
-                                           | [] => [[(syms_shift, syms, ml_exec)]]))
-
 fun makeLexer ((stack, stack_ml, stack_pos, stack_tree), arg) =
   let val (token, arg) = C_Env_Ext.map_stream_lang' (fn (st, []) => (NONE, (st, []))
                                                       | (st, x :: xs) => (SOME x, (st, xs)))
                                                     arg
       fun return0' f =
         (arg, stack_ml)
-        |> advance_hook stack
+        |> C_Hook.advance stack
         |> f
         |> (fn (arg, stack_ml) => rpair ((stack, stack_ml, stack_pos, stack_tree), arg))
-      fun return0 x = \<comment> \<open>Warning: \<open>advance_hook\<close> must not be early evaluated here, as it might
+      fun return0 x = \<comment> \<open>Warning: \<open>C_Hook.advance\<close> must not be early evaluated here, as it might
                                    generate undesirable markup reporting (in annotation commands).\<close>
-                      \<comment> \<open>Todo: Arrange \<open>advance_hook\<close> as a pure function, so that the overall could
+                      \<comment> \<open>Todo: Arrange \<open>C_Hook.advance\<close> as a pure function, so that the overall could
                                 be eta-simplified.\<close>
         return0' I x
       val encoding = fn C_Lex.Encoding_L => true | _ => false
@@ -237,26 +243,13 @@ fun makeLexer ((stack, stack_ml, stack_pos, stack_tree), arg) =
   in
     case token
     of NONE => 
-        return0'
-          (tap (fn (arg, _) => 
-              fold (uncurry
-                     (fn pos => 
-                       fold_rev (fn (syms, _, _) => fn () =>
-                                  let val () = error ("Maximum depth reached ("
-                                                      ^ Int.toString (pos + 1)
-                                                      ^ " in excess)"
-                                                      ^ Position.here (Symbol_Pos.range syms
-                                                                       |> Position.range_position))
-                                  in () end)))
-                   (map_index I (#stream_hook arg))
-                   ()))
-          (C_Grammar.Tokens.x25_eof (Position.none, Position.none))
+        return0 (C_Grammar.Tokens.x25_eof (Position.none, Position.none))
      | SOME (Left (antiq_raw, l_antiq)) =>
         makeLexer
           ( (stack, stack_ml, stack_pos, stack_tree)
           , (arg, false)
              |> fold (fn C_Env.Antiq_stack (_, C_Env.Parsing ((syms_shift, syms), ml_exec)) =>
-                           I #>> add_stream_hook (syms_shift, syms, ml_exec)
+                           I #>> C_Hook.add_stream (syms_shift, syms, ml_exec)
                        | C_Env.Antiq_stack (_, C_Env.Never) => I ##> K true
                        | _ => I)
                      l_antiq
@@ -269,7 +262,7 @@ fun makeLexer ((stack, stack_ml, stack_pos, stack_tree), arg) =
             |> let val context = C_Env_Ext.get_context arg
                in
                 fold (fn dir_tok => 
-                      add_stream_hook
+                      C_Hook.add_stream
                         ( []
                         , []
                         , ( Position.no_range
@@ -295,10 +288,10 @@ fun makeLexer ((stack, stack_ml, stack_pos, stack_tree), arg) =
           (case tok of
              C_Lex.Char (b, [c]) =>
               C_Grammar.Tokens.cchar
-                (CChar (From_char_hd (case c of Left c => c | _ => chr 0)) (encoding b), pos1, pos2)
+                (CChar (From_char_hd (case c of Left (c, _) => c | _ => chr 0)) (encoding b), pos1, pos2)
            | C_Lex.String (b, s) =>
               C_Grammar.Tokens.cstr
-                (CString0 ( From_string ( implode (map (fn Left s => s | Right _ => chr 0) s))
+                (CString0 ( From_string ( implode (map (fn Left (s, _) => s | Right _ => chr 0) s))
                                         , encoding b)
                           , pos1
                           , pos2)
@@ -327,7 +320,7 @@ fun makeLexer ((stack, stack_ml, stack_pos, stack_tree), arg) =
                , pos2)
            | C_Lex.Float s =>
               C_Grammar.Tokens.cfloat (CFloat (From_string (implode (map #1 s))), pos1, pos2)
-           | C_Lex.Ident => 
+           | C_Lex.Ident _ => 
               let val (name, arg) = C_Grammar_Rule_Lib.getNewName arg
                   val ident0 = C_Grammar_Rule_Lib.mkIdent
                                  (C_Grammar_Rule_Lib.posOf' false (pos1, pos2))
@@ -392,14 +385,17 @@ fun exec_tree' l env_tree = env_tree
                      "")
           l
 
-fun uncurry_context f pos = uncurry (fn x => fn arg => map_env_tree' (f pos x (#env_lang arg)) arg)
+fun uncurry_context f pos = uncurry (fn (stack, stack_ml, stack_pos, stack_tree) =>
+  (* executing stack_tree *)
+   (fn arg => map_env_tree' (f pos stack stack_tree (#env_lang arg)) arg)
+  #> apfst (pair (stack, stack_ml, stack_pos, stack_tree)))
 
 fun eval env_lang start err accept stream_lang =
  make env_lang stream_lang
  #> C_Grammar_Parser.makeLexer
  #> C_Grammar_Parser.parse
       ( 0
-      , uncurry_context (fn (next_pos1, next_pos2) => fn (stack, _, _, stack_tree) => fn env_lang =>
+      , uncurry_context (fn (next_pos1, next_pos2) => fn stack => fn stack_tree => fn env_lang =>
           C_Env.map_reports_text
             (cons ( ( Position.range_position (case hd stack of (_, (_, pos1, pos2)) =>
                                                                   (pos1, pos2))
@@ -425,7 +421,7 @@ fun eval env_lang start err accept stream_lang =
                                           (rule_pos1, next_pos2))))
       , Position.none
       , start
-      , uncurry_context (fn _ => fn (stack, _, _, stack_tree) => fn env_lang =>
+      , uncurry_context (fn _ => fn stack => fn stack_tree => fn env_lang =>
           exec_tree' stack_tree
           #> accept env_lang (stack |> hd |> C_Stack.map_svalue0 C_Grammar_Rule.reduce0))
       , fn (stack, arg) => arg |> map_rule_input (K stack)
@@ -450,8 +446,50 @@ fun eval env_lang start err accept stream_lang =
                    actual
                    arg)
           end)
- #> snd
- #> apsnd #env_tree
+ #>
+ (fn (stream, (((stack, stack_ml, stack_pos, stack_tree), user), arg)) =>
+  let
+    fun shift_max acc stream =
+      let val (tok, stream) = C_Grammar_Parser.Stream.get stream
+      in
+        if LALR_Parser_Eval.Token.sameToken (tok, C_Grammar.Tokens.x25_eof (Position.none, Position.none)) then
+          (acc, stream)
+        else
+          shift_max (tok :: acc) stream
+      end
+  
+    (* executing stack_ml *)
+    val arg = fold (fold_rev (C_Hook.advance00 stack)) stack_ml arg
+  
+    (* executing stream_lang *)
+    val (_, (_, ((stack, stack_ml, _, _), arg))) =
+      shift_max [] (stream, ((stack, [[], []], stack_pos, stack_tree), arg))
+  in
+    arg
+    (* executing stream_hook *)
+    |> (fn arg => 
+        fold (uncurry
+              (fn pos => 
+                fold_rev (fn (syms_shift, syms_reduce, ml_exec) =>
+                           tap (fn _ => warning ("Navigation out of bounds,\
+                                                                        \ maximum breadth reached ("
+                                                 ^ Int.toString (pos + 1)
+                                                 ^ " in excess)"
+                                                 ^ Position.here (Symbol_Pos.range syms_shift
+                                                                  |> Position.range_position)))
+                           #> C_Hook.advance0 stack (syms_shift, syms_reduce, ml_exec))))
+             (map_index I (#stream_hook arg))
+             (arg, stack_ml)
+        |> fst)
+  
+    (* executing stream_hook_excess *)
+    |> (fn arg => fold (fold_rev (fn (_, _, ml_exec) => C_Hook.advance00 stack ml_exec))
+                       (#stream_hook_excess arg)
+                       arg)
+  
+    (**)
+    |> pair user o #env_tree
+  end)
 end
 \<close>
 
@@ -460,12 +498,13 @@ subsection \<open>Full Evaluation Engine (Core Language with Annotations)\<close
                                                                          \<^theory>\<open>Isabelle_C.C_Parser_Annotation\<close>\<close>
 
 ML \<comment> \<open>\<^file>\<open>~~/src/Pure/ML/ml_context.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Pure/ML/ml_context.ML
     Author:     Makarius
 
 ML context and antiquotations.
-*)
+*)*)
 \<open>
 structure C_Context =
 struct
@@ -477,18 +516,18 @@ fun fun_decl a v s ctxt =
     fun decl (_: Proof.context) = (env, body);
   in (decl, ctxt') end;
 
-(* parsing and evaluation *)
+(* parsing *)
 
 local
 
 fun scan_antiq context syms =
   let val keywords = C_Thy_Header.get_keywords' (Context.proof_of context)
-  in ( C_Token.read_antiq'
+  in ( C_Parse_Read.read_antiq'
          keywords
          (C_Parse.!!! (Scan.trace (C_Annotation.parse_command (Context.theory_of context))
                        >> (I #>> C_Env.Antiq_stack)))
          syms
-     , C_Token.read_with_commands'0 keywords syms)
+     , C_Parse_Read.read_with_commands'0 keywords syms)
   end
 
 fun print0 s =
@@ -545,6 +584,9 @@ fun markup_directive_define in_direct =
       #> (case err of C_Ast.Left _ => I
                     | C_Ast.Right (_, msg, f) => tap (fn _ => Output.information msg) #> f)
       #> (if def then cons' Markup.free else if in_direct then I else cons' Markup.antiquote))
+
+
+(* evaluation *)
 
 fun eval env start err accept (ants, ants_err) {context, reports_text, error_lines} =
   let val error_lines = ants_err error_lines
@@ -696,7 +738,7 @@ fun eval env start err accept (ants, ants_err) {context, reports_text, error_lin
                                  (C_Lex.token_list_of dir))
                       #> pair (Right (Left tok))
                   | C_Lex.Token (pos, (C_Lex.Keyword, cts)) => subst_directive tok pos cts
-                  | C_Lex.Token (pos, (C_Lex.Ident, cts)) => subst_directive tok pos cts
+                  | C_Lex.Token (pos, (C_Lex.Ident _, cts)) => subst_directive tok pos cts
                   | _ => pair (Right (Left tok))
                 end
                 ants

@@ -955,7 +955,7 @@ lemma open_segment_line_iff:
   apply (auto simp: in_segment line_convex_combination2 plus_times_less_one_lemma)
   subgoal for j
     apply (rule exI[where x="j/i"])
-    by (auto simp: )
+    by auto
   done
 
 lemma line_closed_segment_iff:
@@ -976,7 +976,7 @@ lemma closed_segment_line_iff:
   apply (auto simp: in_segment line_convex_combination2 plus_times_less_one_lemma)
   subgoal for j
     apply (rule exI[where x="j/i"])
-    by (auto simp: )
+    by auto
   done
 
 lemma closed_segment_line_line_iff: "{line a b i1--line a b i2} = line a b ` {i1..i2}" if "i1 \<le> i2"

@@ -25,6 +25,9 @@ datatype prfstep_descriptor = WithFact of term
                             | CreateCase of term | CreateConcl of term
                             | Filter of prfstep_filter
 
+(* Conditional prfstep_descriptors. *)
+type pre_prfstep_descriptor = Proof.context -> prfstep_descriptor
+
 signature PROOFSTEP =
 sig
   val eq_prfstep: proofstep * proofstep -> bool
@@ -60,7 +63,16 @@ sig
   val prfstep_conv: string -> prfstep_descriptor list -> conv -> proofstep
 end;
 
-structure ProofStep : PROOFSTEP =
+functor ProofStep(
+  structure ItemIO: ITEM_IO;
+  structure Matcher: MATCHER;
+  structure PropertyData: PROPERTY_DATA;
+  structure RewriteTable: REWRITE_TABLE;
+  structure UtilBase: UTIL_BASE;
+  structure UtilLogic: UTIL_LOGIC;
+  structure Update: UPDATE;
+  structure WellformData: WELLFORM_DATA;
+  ): PROOFSTEP =
 struct
 
 fun eq_prfstep (prfstep1, prfstep2) = (#name prfstep1 = #name prfstep2)
@@ -72,16 +84,16 @@ fun apply_prfstep ctxt items {func, ...} =
 
 fun WithGoal t =
     let
-      val _ = assert (type_of t = boolT) "WithGoal: pat should have type bool."
+      val _ = assert (type_of t = UtilBase.boolT) "WithGoal: pat should have type bool."
     in
-      WithFact (get_neg t)
+      WithFact (UtilLogic.get_neg t)
     end
 
 fun WithTerm t = WithItem (TY_TERM, t)
 
 fun WithProp t =
     let
-      val _ = assert (type_of t = boolT) "WithProp: pat should have type bool."
+      val _ = assert (type_of t = UtilBase.boolT) "WithProp: pat should have type bool."
     in
       WithItem (TY_PROP, t)
     end
@@ -92,7 +104,7 @@ fun string_of_desc thy desc =
     in
       case desc of
           WithFact t =>
-          if is_neg t then "WithGoal " ^ (print (get_neg t))
+          if UtilLogic.is_neg t then "WithGoal " ^ (print (UtilLogic.get_neg t))
           else "WithFact " ^ (print t)
         | WithItem (ty_str, t) =>
           if ty_str = TY_TERM then "WithTerm " ^ (print t)
@@ -103,8 +115,8 @@ fun string_of_desc thy desc =
         | GetFact (t, th) =>
           if t aconv @{term False} then
             "GetResolve " ^ (Util.name_of_thm th)
-          else if is_neg t then
-            "GetGoal (" ^ (print (get_neg t)) ^ ", " ^ (Util.name_of_thm th) ^ ")"
+          else if UtilLogic.is_neg t then
+            "GetGoal (" ^ (print (UtilLogic.get_neg t)) ^ ", " ^ (Util.name_of_thm th) ^ ")"
           else
             "GetFact (" ^ (print t) ^ ", " ^ (Util.name_of_thm th) ^ ")"
         | ShadowFirst => "Shadow first" | ShadowSecond => "Shadow second"
@@ -130,7 +142,7 @@ val all_insts = fn _ => fn _ => true
 fun neq_filter cond ctxt (id, inst) =
     let
       val (lhs, rhs) =
-          cond |> dest_not |> dest_eq
+          cond |> UtilLogic.dest_not |> UtilBase.dest_eq
           handle Fail "dest_not" => raise Fail "neq_filter: not an inequality."
                | Fail "dest_eq" => raise Fail "neq_filter: not an inequality."
       val _ = assert (null (Term.add_frees cond []))
@@ -162,7 +174,7 @@ fun not_type_filter s ty _ (_, inst) =
 (* First level proofstep writing functions. *)
 fun apply_pat_r ctxt ((_, inst), ths) (pat_r, th) =
     let
-      val _ = assert (fastype_of pat_r = boolT)
+      val _ = assert (fastype_of pat_r = UtilBase.boolT)
                      "apply_pat_r: pat_r should be of type bool"
 
       (* Split into meta equalities (usually produced by term
@@ -172,7 +184,7 @@ fun apply_pat_r ctxt ((_, inst), ths) (pat_r, th) =
       val _ = assert (length ths' = Thm.nprems_of th)
                      "apply_pat_r: wrong number of assumptions."
 
-      val inst_new = Util.subst_term_norm inst (mk_Trueprop pat_r)
+      val inst_new = Util.subst_term_norm inst (UtilLogic.mk_Trueprop pat_r)
       val th' = th |> Util.subst_thm ctxt inst |> fold Thm.elim_implies ths'
       val _ = if inst_new aconv (Thm.prop_of th') then () else
               raise Fail "apply_pat_r: conclusion mismatch"
@@ -209,8 +221,8 @@ fun retrieve_cases descs =
     let
       fun retrieve_case desc =
           case desc of
-              CreateCase assum => [mk_Trueprop assum]
-            | CreateConcl concl => [mk_Trueprop (get_neg concl)]
+              CreateCase assum => [UtilLogic.mk_Trueprop assum]
+            | CreateConcl concl => [UtilLogic.mk_Trueprop (UtilLogic.get_neg concl)]
             | _ => []
     in
       maps retrieve_case descs
@@ -248,7 +260,7 @@ fun get_side_ths ctxt (id, inst) side_args =
               PropertyData.get_property_t ctxt (id, prop)
             | WellFormMatch (t, req) =>
               (WellformData.get_wellform_t ctxt (id, t))
-                  |> filter (fn (_, th) => prop_of' th aconv req)
+                  |> filter (fn (_, th) => UtilLogic.prop_of' th aconv req)
             | _ => raise Fail "get_side_ths: wrong kind of arg."
       val side_ths = map process_side_arg side_args'
     in
@@ -362,7 +374,7 @@ fun gen_prfstep name descs =
             val ths = map (apply_pat_r ctxt inst_ths) pats_r
           in
             if length ths = 1 andalso
-               Thm.prop_of (the_single ths) aconv pFalse then
+               Thm.prop_of (the_single ths) aconv UtilLogic.pFalse then
               [ResolveBox {id = id, th = the_single ths}]
             else
               [AddItems {id = id, sc = sc,
@@ -408,7 +420,7 @@ fun prfstep_pre_conv name descs pre_cv =
                   if RewriteTable.is_equiv id ctxt (Thm.rhs_of eq1, Thm.rhs_of eq_th)
                   then []
                   else let
-                    val th = to_obj_eq (Util.transitive_list [meta_sym eq1, eq_th])
+                    val th = UtilLogic.to_obj_eq (Util.transitive_list [meta_sym eq1, eq_th])
                   in
                     [Update.thm_update (id, th)]
                   end
@@ -423,14 +435,6 @@ fun prfstep_pre_conv name descs pre_cv =
 fun prfstep_conv name descs cv = prfstep_pre_conv name descs (K cv)
 
 end  (* structure ProofStep *)
-
-val WithTerm = ProofStep.WithTerm
-val WithGoal = ProofStep.WithGoal
-val WithProp = ProofStep.WithProp
-val neq_filter = ProofStep.neq_filter
-val order_filter = ProofStep.order_filter
-val size1_filter = ProofStep.size1_filter
-val not_type_filter = ProofStep.not_type_filter
 
 signature PROOFSTEP_DATA =
 sig
@@ -454,7 +458,7 @@ sig
       string * prfstep_descriptor list * conv -> theory -> theory
 
   (* Constructing conditional prfstep_descriptors. *)
-  type pre_prfstep_descriptor = Proof.context -> prfstep_descriptor
+  type pre_prfstep_descriptor = pre_prfstep_descriptor
   val with_term: string -> pre_prfstep_descriptor
   val with_cond: string -> pre_prfstep_descriptor
   val with_conds: string list -> pre_prfstep_descriptor list
@@ -499,7 +503,14 @@ sig
   val setup_attrib: (thm -> theory -> theory) -> attribute context_parser
 end;
 
-structure ProofStepData : PROOFSTEP_DATA =
+functor ProofStepData(
+  structure ItemIO: ITEM_IO;
+  structure Normalizer: NORMALIZER;
+  structure ProofStep: PROOFSTEP;
+  structure Property: PROPERTY;
+  structure UtilBase: UTIL_BASE;
+  structure UtilLogic: UTIL_LOGIC;
+  ): PROOFSTEP_DATA =
 struct
 
 structure Data = Theory_Data (
@@ -517,7 +528,7 @@ fun add_prfstep (prfstep as {args, ...}) =
          val num_args = length (filter_out ItemIO.is_side_match args)
        in
          if num_args >= 1 andalso num_args <= 2 then prfsteps @ [prfstep]
-         else error "add_proofstep: need 1 or 2 patterns."
+         else error "add_prfstep: need 1 or 2 patterns."
        end)
 
 (* Deleting a proofstep. For string inputs, try adding theory
@@ -573,7 +584,7 @@ fun add_prfstep_conv (name, descs, cv) =
 
 (* Constructing conditional prfstep_descriptors. *)
 
-type pre_prfstep_descriptor = Proof.context -> prfstep_descriptor
+type pre_prfstep_descriptor = pre_prfstep_descriptor
 
 fun with_term str ctxt =
     let
@@ -581,11 +592,11 @@ fun with_term str ctxt =
       val _ = assert (null (Term.add_frees t []))
                      "with_term: should not contain free variable."
     in
-      WithTerm t
+      ProofStep.WithTerm t
     end
 
 fun with_cond str ctxt =
-    Filter (neq_filter (Proof_Context.read_term_pattern ctxt str))
+    Filter (ProofStep.neq_filter (Proof_Context.read_term_pattern ctxt str))
 
 fun with_conds strs = map with_cond strs
 
@@ -620,7 +631,7 @@ fun add_prfstep_check_req (t_str, req_str) thy =
       val req' = Term.subst_atomic subst req
     in
       add_and_print_prfstep
-          (c ^ "_case") [WithTerm t', CreateConcl req'] thy
+          (c ^ "_case") [ProofStep.WithTerm t', CreateConcl req'] thy
     end
 
 datatype prfstep_mode = MODE_FORWARD | MODE_FORWARD' | MODE_BACKWARD
@@ -658,13 +669,13 @@ fun get_side_prems thy mode ts th =
                 if null ts andalso length prems' >= 2 then
                   [hd prems', List.last prems']
                 else [List.last prems']
-              | MODE_BACKWARD => [get_neg concl]
-              | MODE_BACKWARD1 => [get_neg concl, List.last prems']
-              | MODE_BACKWARD2 => [get_neg concl, hd prems']
+              | MODE_BACKWARD => [UtilLogic.get_neg concl]
+              | MODE_BACKWARD1 => [UtilLogic.get_neg concl, List.last prems']
+              | MODE_BACKWARD2 => [UtilLogic.get_neg concl, hd prems']
               | MODE_RESOLVE =>
                 if null ts andalso length prems' > 0 then
-                  [get_neg concl, List.last prems']
-                else [get_neg concl]
+                  [UtilLogic.get_neg concl, List.last prems']
+                else [UtilLogic.get_neg concl]
           end
 
       (* Determine whether t is a valid side premises, relative to the
@@ -737,12 +748,12 @@ fun swap_prem_to_front ct =
 fun horn_conv cv ct =
     (case Thm.term_of ct of
          @{const Pure.imp} $ _ $ _ =>
-         (Conv.arg1_conv (Trueprop_conv cv))
+         (Conv.arg1_conv (UtilLogic.Trueprop_conv cv))
              then_conv (Conv.arg_conv (horn_conv cv))
-       | _ => Trueprop_conv cv) ct
+       | _ => UtilLogic.Trueprop_conv cv) ct
 
 (* Try to cancel terms of the form ~~A. *)
-val try_nn_cancel_cv = Conv.try_conv (rewr_obj_eq UtilBase.nn_cancel_th)
+val try_nn_cancel_cv = Conv.try_conv (UtilLogic.rewr_obj_eq UtilBase.nn_cancel_th)
 
 (* Post-processing of the given theorem according to mode. *)
 fun post_process_th ctxt mode side_count ts th =
@@ -794,7 +805,7 @@ fun post_process_th ctxt mode side_count ts th =
         let
           val rewr_th =
               case Thm.nprems_of th - side_count of
-                  0 => if is_neg (concl_of' th) then UtilBase.to_contra_form_th'
+                  0 => if UtilLogic.is_neg (UtilLogic.concl_of' th) then UtilBase.to_contra_form_th'
                        else UtilBase.to_contra_form_th
                 | 1 => UtilBase.resolve_conv_th
                 | _ => raise Fail "resolve: too many hypothesis in th."
@@ -911,21 +922,21 @@ fun add_rewrite_eq_rule_cond th conds thy =
     let
       val th = if Util.is_meta_eq (Thm.concl_of th) then
                  UtilLogic.to_obj_eq_th th else th
-      val (lhs, _) = th |> concl_of' |> strip_conj |> hd |> dest_eq
+      val (lhs, _) = th |> UtilLogic.concl_of' |> UtilLogic.strip_conj |> hd |> UtilBase.dest_eq
     in
-      thy |> add_forward_prfstep_cond th (K (WithTerm lhs) :: conds)
+      thy |> add_forward_prfstep_cond th (K (ProofStep.WithTerm lhs) :: conds)
     end
 
 fun add_rewrite_iff_rule_cond th conds thy =
     let
       val th = if Util.is_meta_eq (Thm.concl_of th) then
                  UtilLogic.to_obj_eq_iff_th th else th
-      val (lhs, _) = th |> concl_of' |> dest_eq
-      val _ = assert (fastype_of lhs = boolT)
+      val (lhs, _) = th |> UtilLogic.concl_of' |> UtilBase.dest_eq
+      val _ = assert (fastype_of lhs = UtilBase.boolT)
                      "add_rewrite_iff: argument not of type bool."
 
-      val forward_th = th |> equiv_forward_th
-      val nforward_th = th |> inv_backward_th
+      val forward_th = th |> UtilLogic.equiv_forward_th
+      val nforward_th = th |> UtilLogic.inv_backward_th
                            |> apply_to_thm (horn_conv try_nn_cancel_cv)
                            |> Util.update_name_of_thm th "@invbackward"
     in
@@ -935,17 +946,17 @@ fun add_rewrite_iff_rule_cond th conds thy =
 
 fun add_rewrite_rule_cond th conds thy =
     let
-      val th = if Util.is_meta_eq (Thm.concl_of th) then to_obj_eq_th th else th
-      val (lhs, _) = th |> concl_of' |> strip_conj |> hd |> dest_eq
+      val th = if Util.is_meta_eq (Thm.concl_of th) then UtilLogic.to_obj_eq_th th else th
+      val (lhs, _) = th |> UtilLogic.concl_of' |> UtilLogic.strip_conj |> hd |> UtilBase.dest_eq
     in
-      if fastype_of lhs = boolT then
+      if fastype_of lhs = UtilBase.boolT then
         add_rewrite_iff_rule_cond th conds thy
       else
         add_rewrite_eq_rule_cond th conds thy
     end
 
 fun add_rewrite_rule_back_cond th conds =
-    add_rewrite_rule_cond (obj_sym_th th) conds
+    add_rewrite_rule_cond (UtilLogic.obj_sym_th th) conds
 
 fun add_rewrite_rule_bidir_cond th conds =
     (add_rewrite_rule_cond th conds)
@@ -963,5 +974,3 @@ fun setup_attrib f =
             fn _ => fn _ => raise Fail "del_step: not implemented."))
 
 end  (* structure ProofStepData. *)
-
-open ProofStepData

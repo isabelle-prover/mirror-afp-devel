@@ -5,7 +5,8 @@
 chapter \<open>Unsigned words of 16 bits\<close>
 
 theory Uint16 imports
-  Code_Target_Word_Base Word_Type_Copies
+  Word_Type_Copies
+  Code_Target_Integer_Bit
 begin
 
 text \<open>
@@ -17,7 +18,7 @@ text \<open>
   works as long as \<open>uint16\<close> is not involved.
   For the target \<open>SML\<close> itself, no special code generation 
   for this type is set up. Nevertheless, it should work by emulation via \<^typ>\<open>16 word\<close>
-  if the theory \<open>Code_Target_Bits_Int\<close> is imported.
+  if the theory \<^text>\<open>Code_Target_Int_Bit\<close> is imported.
 
   Restriction for OCaml code generation:
   OCaml does not provide an int16 type, so no special code generation 

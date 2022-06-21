@@ -37,18 +37,19 @@
 chapter \<open>A Resume on Isabelle/C: Commands, Control Attributes and Programming Infrastructure\<close>
 
 theory C_Appendices
-  imports   "examples/C1" 
+  imports "../examples/C2"
           Isar_Ref.Base
 begin
 
 (*<*)
 ML \<comment> \<open>\<^file>\<open>~~/src/Doc/antiquote_setup.ML\<close>\<close>
-(*  Author:     Frédéric Tuong, Université Paris-Saclay *)
+(*  Author:     Frédéric Tuong, Université Paris-Saclay
+    Analogous to:
 (*  Title:      Doc/antiquote_setup.ML
     Author:     Makarius
 
 Auxiliary antiquotations for the Isabelle manuals.
-*)
+*)*)
 \<open>
 structure C_Antiquote_Setup =
 struct
@@ -321,19 +322,19 @@ text \<open>
 section \<open>Quick Start (for People More Familiar with C than Isabelle)\<close>
 
 text \<open>
-\<^item> Assuming we are working with Isabelle 2019
-\<^url>\<open>http://isabelle.in.tum.de/dist/Isabelle2019_app.tar.gz\<close>, the shortest way to
+\<^item> Assuming we are working with Isabelle 2021
+\<^url>\<open>https://isabelle.in.tum.de/website-Isabelle2021/dist/Isabelle2021_linux.tar.gz\<close>, the shortest way to
 start programming in C is to open a new theory file with the shell-command:
 
 \<^verbatim>\<open>$ISABELLE_HOME/bin/isabelle jedit -d $AFP_HOME/thys Scratch.thy\<close>
 
 where \<^verbatim>\<open>$ISABELLE_HOME\<close> is the path of the above extracted Isabelle source,
 and \<^verbatim>\<open>$AFP_HOME\<close> is the downloaded content of
-\<^url>\<open>https://bitbucket.org/isa-afp/afp-2019\<close>.\<^footnote>\<open>This folder
+\<^url>\<open>https://foss.heptapod.net/isa-afp/afp-2021\<close>.\<^footnote>\<open>This folder
 particularly contains the Isabelle/C project, located in
-\<^url>\<open>https://bitbucket.org/isa-afp/afp-2019/src/default/thys/Isabelle_C\<close>. To inspect
+\<^url>\<open>https://foss.heptapod.net/isa-afp/afp-2021/-/tree/branch/default/thys/Isabelle_C\<close>. To inspect
 the latest developper version, one can also replace \<^verbatim>\<open>$AFP_HOME/thys\<close> by the
-content downloaded from \<^url>\<open>https://gitlri.lri.fr/ftuong/isabelle_c\<close>.\<close>
+content downloaded from \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C\<close>.\<close>
 \<^item> The next step is to copy this minimal content inside the newly opened window:
 \<^verbatim>\<open>theory Scratch imports Isabelle_C.C_Main begin C \<open>
 // C code
@@ -405,12 +406,11 @@ topmost space or locally declared in a function. \<close>
 
 subsection \<open>Prerequisites\<close>
 
-text \<open> Even if \<^file>\<open>generated/c_grammar_fun.grm.sig\<close> and
-\<^file>\<open>generated/c_grammar_fun.grm.sml\<close> are files written in ML syntax, we have
-actually modified \<^dir>\<open>../src_ext/mlton/lib/mlyacc-lib\<close> in such a way that at run
-time, the overall loading and execution of
-\<^theory>\<open>Isabelle_C.C_Parser_Language\<close> will mimic all necessary features of the
-Haskell parser generator Happy
+text \<open> Even if \<^file>\<open>../generated/c_grammar_fun.grm.sig\<close> and
+\<^file>\<open>../generated/c_grammar_fun.grm.sml\<close> are files written in ML syntax, we have
+actually modified \<^dir>\<open>../../src_ext/mlton/lib/mlyacc-lib\<close> in such a way that at run
+time, the overall loading and execution of \<^theory>\<open>Isabelle_C.C_Parser_Language\<close>
+will mimic all necessary features of the Haskell parser generator Happy
 \<^footnote>\<open>\<^url>\<open>https://www.haskell.org/happy/doc/html/index.html\<close>\<close>,
 including any monadic interactions between the lexing
 (\<^theory>\<open>Isabelle_C.C_Lexer_Language\<close>) and parsing part
@@ -432,7 +432,7 @@ principally divided into two parts:
   \<^ML_structure>\<open>C_Grammar_Rule_Lib\<close>, which provides the ML implementation library
   used by any rule code written in the C grammar
   \<^url>\<open>https://github.com/visq/language-c/blob/master/src/Language/C/Parser/Parser.y\<close>
-  (\<^file>\<open>generated/c_grammar_fun.grm.sml\<close>).
+  (\<^file>\<open>../generated/c_grammar_fun.grm.sml\<close>).
   \<^item> a second part implementing \<^ML_structure>\<open>C_Grammar_Rule_Wrap\<close>, providing
   one wrapping function for each rule code, for potentially complementing the rule code with an
   additional action to be executed after its call. The use of wrapping functions is very optional:
@@ -450,7 +450,7 @@ different from \<^ML>\<open>I\<close>). \<close>
 
 text \<open> Because the grammar
 \<^url>\<open>https://github.com/visq/language-c/blob/master/src/Language/C/Parser/Parser.y\<close>
-(\<^file>\<open>generated/c_grammar_fun.grm.sml\<close>) has been defined in such a way that
+(\<^file>\<open>../generated/c_grammar_fun.grm.sml\<close>) has been defined in such a way that
 computation of variable scopes are completely handled by functions in
 \<^ML_structure>\<open>C_Grammar_Rule_Lib\<close> and not in rule code (which are just calling
 functions in \<^ML_structure>\<open>C_Grammar_Rule_Lib\<close>), it is enough to overload functions
@@ -508,7 +508,7 @@ subtree \<open>T2\<close>, it is useful to zoom on the different parsing evaluat
 as make precise when the evaluation of semantic back-ends are starting.
 
 \<^enum> Whereas annotations in Isabelle/C code have the potential of carrying arbitrary ML code (as
-in \<^theory>\<open>Isabelle_C.C1\<close>), the moment when they are effectively evaluated
+in \<^theory>\<open>Isabelle_C.C2\<close>), the moment when they are effectively evaluated
 will not be discussed here, because to closely follow the semantics of the language in embedding (so
 C), we suppose comments --- comprising annotations --- may not affect any parsed tokens living
 outside comments. So no matter when annotations are scheduled to be future evaluated in Isabelle/C,
@@ -524,7 +524,7 @@ occurs. Since in Isabelle/C, directives are relying on ML code, changing an AST 
 driving the parsing engine are principally rule code, this step means to execute
 \<^ML_structure>\<open>C_Grammar_Rule_Lib\<close> and
 \<^ML_structure>\<open>C_Grammar_Rule_Wrap\<close>, i.e., rules in
-\<^file>\<open>generated/c_grammar_fun.grm.sml\<close>.
+\<^file>\<open>../generated/c_grammar_fun.grm.sml\<close>.
 
 \<^enum> Once the parsing finishes, we have a final AST value, which topmost root type entry-point
 constitutes the last node built before the grammar parser
@@ -548,7 +548,7 @@ text \<open> Generally, semantic back-ends can be written in full ML starting fr
 \<^ML_type>\<open>C_Ast.CTranslUnit\<close>, but to additionally support formalizing tasks requiring
 to start from an AST defined in Isabelle/HOL, we provide an equivalent AST in HOL in the project,
 such as the one obtained after loading
-\<^url>\<open>https://gitlri.lri.fr/ftuong/citadelle-devel/blob/master/doc/Meta_C_generated.thy\<close>.
+\<^url>\<open>https://gitlab.lisn.upsaclay.fr/frederictuong/isabelle_contrib/-/blob/master/Citadelle/doc/Meta_C_generated.thy\<close>.
 (In fact, the ML AST is just generated from the HOL one.) \<close>
 
 
@@ -568,7 +568,7 @@ changing the C code, one can modify
 \<^url>\<open>https://github.com/visq/language-c/blob/master/src/Language/C/Parser/Parser.y\<close>
 by hand, by explicitly writing \<open>T2\<close> at the specific position of the rule code
 generating \<open>T1\<close>. However, this solution implies to re-generate
-\<^file>\<open>generated/c_grammar_fun.grm.sml\<close>.
+\<^file>\<open>../generated/c_grammar_fun.grm.sml\<close>.
 
 \<^item> \<^emph>\<open>At grammar loading time, while the source of Isabelle/C is still being
 processed.\<close> Instead of modifying the grammar, it should be possible to first locate which
@@ -576,7 +576,7 @@ rule code is building \<open>T1\<close>. Then it would remain to retrieve and mo
 function of \<^ML_structure>\<open>C_Grammar_Rule_Wrap\<close> executed after that rule code, by
 providing a replacement function to be put in
 \<^ML_structure>\<open>C_Grammar_Rule_Wrap_Overloading\<close>. However, as a design decision,
-wrapping functions generated in \<^file>\<open>generated/c_grammar_fun.grm.sml\<close> have only
+wrapping functions generated in \<^file>\<open>../generated/c_grammar_fun.grm.sml\<close> have only
 been generated to affect monadic states, not AST values. This is to prevent an erroneous replacement
 of an end-user while parsing C code. (It is currently left open about whether this feature will be
 implemented in future versions of the parser...)
@@ -627,7 +627,7 @@ one can either:
 \<close>
 
 text \<open> More generally, to better inspect the list of rule code really executed when a C code
-is parsed, it might be helpful to proceed as in \<^theory>\<open>Isabelle_C.C1\<close>, by activating
+is parsed, it might be helpful to proceed as in \<^theory>\<open>Isabelle_C.C2\<close>, by activating
 \<^theory_text>\<open>declare[[C_parser_trace]]\<close>. Then, the output window will display the
 sequence of Shift Reduce actions associated to the \<^theory_text>\<open>C\<close> command of
 interest.
@@ -691,7 +691,7 @@ val S' = @{term "a + b * c - a / b"};
 text\<open>This snippet is drawn from the C11-Example shown in Appendix III.\<close>
 
 section \<open>Known Limitations, Troubleshooting\<close>
-subsection \<open>The Document Model of the Isabelle/PIDE\<close>
+subsection \<open>The Document Model of the Isabelle/PIDE (applying since at least Isabelle 2019)\<close>
 subsubsection \<open>Introduction\<close>
 
 text \<open> Embedding C directives in C code is an act of common practice in numerous applications,
@@ -827,7 +827,7 @@ If the parser ever decides to stop, this can only be for two reasons:
 acceptance state. As acceptance states are encoded in the grammar, it is easy to find if this
 information is correct, or if it has to be adjusted in more detail by inspecting
 \<^url>\<open>https://github.com/visq/language-c/blob/master/src/Language/C/Parser/Parser.y\<close>
-(\<^file>\<open>generated/c_grammar_fun.grm.sml\<close>).
+(\<^file>\<open>../generated/c_grammar_fun.grm.sml\<close>).
 \<^item> The parser seems to be unable to correctly finish its parsing task. In this case, the user
 will see an error be explicitly raised by the prover IDE. However raising an error is just the
 default behavior of Isabelle/C: the decision to whether raise interruptive errors ultimately depends
@@ -857,10 +857,10 @@ make the error disappear at the position the error is indicated can be detailed 
   contains \<^C>\<open>#define i int\<close>, as the former directive has been left for semantic
   back-end treatment. One way of solving this would be to modify the C code in input for it to be
   already preprocessed (without directives, for example the C example of
-  \<^url>\<open>https://gitlri.lri.fr/ftuong/isabelle_c/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/TestSEL4.thy\<close> is already provided as
+  \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/TestSEL4.thy\<close> is already provided as
   preprocessed). Another way would be adding a specific new semantic back-end implementing the
   automation of the preprocessing task (as done in
-  \<^url>\<open>https://gitlri.lri.fr/ftuong/isabelle_c/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/IsPrime_TEC.thy\<close>, where the
+  \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/blob/C/C11-BackEnds/AutoCorres_wrapper/examples/IsPrime_linear_CCT.thy\<close>, where the
   back-end explicitly makes a call to \<open>cpp\<close> at run-time).
 
   \<^item> Ultimately, modifying the grammar with new rules cancelling the exception would only work
@@ -868,10 +868,10 @@ make the error disappear at the position the error is indicated can be detailed 
   \<close>
 
 text \<open> In terms of parsing correctness, Isabelle/C provides at least two different parsers:
-\<^item> a parser limited to C99/C11 code provided in \<^dir>\<open>../C11-FrontEnd\<close> that can
+\<^item> a parser limited to C99/C11 code provided in \<^dir>\<open>../../C11-FrontEnd\<close> that can
 parse certain liberal extensions out of the C
 standard~\<^footnote>\<open>\<^url>\<open>http://hackage.haskell.org/package/language-c\<close>\<close>;
-\<^item> and another parser accepting C99/C11/C18 code in \<^url>\<open>https://gitlri.lri.fr/ftuong/isabelle_c/tree/C/C18-FrontEnd\<close> that
+\<^item> and another parser accepting C99/C11/C18 code in \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/tree/C/C18-FrontEnd\<close> that
 is close to the C standard while focusing on resolving ambiguities of the
 standard~\<^footnote>\<open>\<^url>\<open>https://github.com/jhjourdan/C11parser\<close>\<close>~\cite{DBLP:journals/toplas/JourdanP17}. \<close>
 

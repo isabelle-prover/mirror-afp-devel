@@ -27,7 +27,7 @@ local
         val thy = Proof_Context.theory_of ctxt
         val th = assume_eq thy (t1, t2)
       in
-        ctxt |> RewriteTable.add_rewrite (id, th)
+        ctxt |> Auto2_Setup.RewriteTable.add_rewrite (id, th)
       end
 
   val ts = [@{term "[p::nat node ref option, n1, s1, s2]"},
@@ -36,7 +36,7 @@ local
             @{term "[xs::nat list, ys, zs]"}]
 
   val ctxt' = ctxt |> fold Proof_Context.augment ts
-                   |> RewriteTable.add_term ([], Thm.cterm_of ctxt (Free ("P", assnT))) |> snd
+                   |> Auto2_Setup.RewriteTable.add_term ([], Thm.cterm_of ctxt (Free ("P", assnT))) |> snd
                    |> add_rewrite [] ("n1", "None::nat node ref option") |> snd
                    |> add_rewrite [] ("s1", "Some pp") |> snd
                    |> add_rewrite [] ("s2", "Some pp'") |> snd

@@ -2,6 +2,8 @@ signature TracTransaction_TOKENS =
 sig
 type ('a,'b) token
 type svalue
+val FORALL: (string) *  'a * 'a -> (svalue,'a) token
+val OR: (string) *  'a * 'a -> (svalue,'a) token
 val OF: (string) *  'a * 'a -> (svalue,'a) token
 val STAR: (string) *  'a * 'a -> (svalue,'a) token
 val INTEGER_LITERAL: (string) *  'a * 'a -> (svalue,'a) token
@@ -9,20 +11,25 @@ val UNDERSCORE: (string) *  'a * 'a -> (svalue,'a) token
 val LOWER_STRING_LITERAL: (string) *  'a * 'a -> (svalue,'a) token
 val UPPER_STRING_LITERAL: (string) *  'a * 'a -> (svalue,'a) token
 val STRING_LITERAL: (string) *  'a * 'a -> (svalue,'a) token
+val ABBREVIATIONS: (string) *  'a * 'a -> (svalue,'a) token
 val TRANSACTIONS: (string) *  'a * 'a -> (svalue,'a) token
 val ANALYSIS: (string) *  'a * 'a -> (svalue,'a) token
 val ARROW: (string) *  'a * 'a -> (svalue,'a) token
 val SETS: (string) *  'a * 'a -> (svalue,'a) token
+val ENUMERATIONS: (string) *  'a * 'a -> (svalue,'a) token
 val TYPES: (string) *  'a * 'a -> (svalue,'a) token
-val equal: (string) *  'a * 'a -> (svalue,'a) token
+val DOUBLEEQUAL: (string) *  'a * 'a -> (svalue,'a) token
+val EQUAL: (string) *  'a * 'a -> (svalue,'a) token
 val QUESTION: (string) *  'a * 'a -> (svalue,'a) token
-val slash: (string) *  'a * 'a -> (svalue,'a) token
+val DOUBLESLASH: (string) *  'a * 'a -> (svalue,'a) token
+val SLASH: (string) *  'a * 'a -> (svalue,'a) token
 val ATTACK: (string) *  'a * 'a -> (svalue,'a) token
 val NEW: (string) *  'a * 'a -> (svalue,'a) token
 val DELETE: (string) *  'a * 'a -> (svalue,'a) token
 val INSERT: (string) *  'a * 'a -> (svalue,'a) token
 val NOTIN: (string) *  'a * 'a -> (svalue,'a) token
 val IN: (string) *  'a * 'a -> (svalue,'a) token
+val LET: (string) *  'a * 'a -> (svalue,'a) token
 val SEND: (string) *  'a * 'a -> (svalue,'a) token
 val RECEIVE: (string) *  'a * 'a -> (svalue,'a) token
 val PRIVATE: (string) *  'a * 'a -> (svalue,'a) token
@@ -40,6 +47,7 @@ val ACTIONS: (string) *  'a * 'a -> (svalue,'a) token
 val WHERE: (string) *  'a * 'a -> (svalue,'a) token
 val KNOWLEDGE: (string) *  'a * 'a -> (svalue,'a) token
 val PROTOCOL: (string) *  'a * 'a -> (svalue,'a) token
+val INFINITESET: (string) *  'a * 'a -> (svalue,'a) token
 val UNION: (string) *  'a * 'a -> (svalue,'a) token
 val CLOSESQB: (string) *  'a * 'a -> (svalue,'a) token
 val OPENSQB: (string) *  'a * 'a -> (svalue,'a) token

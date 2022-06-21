@@ -1781,9 +1781,8 @@ begin
         have 2: "\<mu> \<star> \<phi> \<noteq> null"
           using assms \<phi> \<mu> Right_a.arr_char right_def hom_connected by auto
         show "Right_a.dom (H\<^sub>R \<phi> \<mu>) = H\<^sub>R a (Right_a.dom \<mu>)"
-          using assms 2 \<phi> \<mu> Right_a.arr_char right_def hom_connected(1) [of \<phi> a]
-                weak_unit_self_composable match_3 Right_a.dom_char H\<^sub>R_def
-          by auto
+          by (metis "2" H\<^sub>R_def R'.is_extensional Right_a.dom_simp Right_a.null_char
+              \<open>Right_a.arr \<mu>\<close> \<phi> a' hcomp_simps\<^sub>W\<^sub>C(2) in_homE match_3)
         show "Right_a.cod (H\<^sub>R \<phi> \<mu>) = H\<^sub>R a' (Right_a.cod \<mu>)"
           using assms 2 a' \<phi> \<mu> Right_a.arr_char right_def hom_connected(3) [of \<phi> a]
                 weak_unit_self_composable match_3 Right_a.cod_char H\<^sub>R_def

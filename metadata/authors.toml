@@ -1282,7 +1282,7 @@ name = "Tobias Nipkow"
 nipkow_email = "nipkow@in.tum.de"
 
 [nipkow.homepages]
-nipkow_homepage = "https://www21.in.tum.de/~nipkow/"
+nipkow_homepage = "https://www.in.tum.de/~nipkow/"
 
 [divason]
 name = "Jose Divasón"
@@ -1652,8 +1652,7 @@ kaufmann_homepage = "http://fmv.jku.at/kaufmann"
 name = "Mihails Milehins"
 
 [milehins.emails]
-milehins_email = "user9716869@gmail.com"
-milehins_email1 = "mihailsmilehins@gmail.com"
+milehins_email = "mihailsmilehins@gmail.com"
 
 [milehins.homepages]
 
@@ -1794,7 +1793,6 @@ name = "Emin Karayel"
 
 [karayel.emails]
 karayel_email = "me@eminkarayel.de"
-karayel_email1 = "eminkarayel@google.com"
 
 [karayel.homepages]
 karayel_homepage = "https://orcid.org/0000-0003-3290-5034"

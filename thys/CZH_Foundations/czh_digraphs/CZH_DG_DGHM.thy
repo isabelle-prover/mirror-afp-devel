@@ -137,18 +137,20 @@ proof-
   interpret R: is_dghm \<alpha> \<CC> \<DD> \<FF> by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom: "\<D>\<^sub>\<circ> \<GG> = 4\<^sub>\<nat>" by (cs_concl cs_simp: dg_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<GG> = 4\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: dg_cs_simps V_cs_simps)
     from assms(5,6) have sup: "\<GG>\<lparr>HomDom\<rparr> = \<FF>\<lparr>HomDom\<rparr>" "\<GG>\<lparr>HomCod\<rparr> = \<FF>\<lparr>HomCod\<rparr>" 
       by (simp_all add: dg_cs_simps)
     show "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<GG> \<Longrightarrow> \<GG>\<lparr>a\<rparr> = \<FF>\<lparr>a\<rparr>" for a 
       by (unfold dom, elim_in_numeral, insert assms(3,4) sup)
         (auto simp: dghm_field_simps)
-  qed (cs_concl cs_simp: dg_cs_simps V_cs_simps cs_intro: V_cs_intros)+
+  qed (cs_concl cs_shallow cs_simp: dg_cs_simps V_cs_simps cs_intro: V_cs_intros)+
 qed
 
 lemma (in is_dghm) dghm_def: "\<FF> = [\<FF>\<lparr>ObjMap\<rparr>, \<FF>\<lparr>ArrMap\<rparr>, \<FF>\<lparr>HomDom\<rparr>, \<FF>\<lparr>HomCod\<rparr>]\<^sub>\<circ>"
 proof(rule vsv_eqI)
-  have dom_lhs: "\<D>\<^sub>\<circ> \<FF> = 4\<^sub>\<nat>" by (cs_concl cs_simp: dg_cs_simps V_cs_simps)
+  have dom_lhs: "\<D>\<^sub>\<circ> \<FF> = 4\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps V_cs_simps)
   have dom_rhs: "\<D>\<^sub>\<circ> [\<FF>\<lparr>ObjMap\<rparr>, \<FF>\<lparr>ArrMap\<rparr>, \<FF>\<lparr>HomDom\<rparr>, \<FF>\<lparr>HomCod\<rparr>]\<^sub>\<circ> = 4\<^sub>\<nat>"
     by (simp add: nat_omega_simps)
   then show "\<D>\<^sub>\<circ> \<FF> = \<D>\<^sub>\<circ> [\<FF>\<lparr>ObjMap\<rparr>, \<FF>\<lparr>ArrMap\<rparr>, \<FF>\<lparr>HomDom\<rparr>, \<FF>\<lparr>HomCod\<rparr>]\<^sub>\<circ>"
@@ -171,7 +173,7 @@ proof(rule vsv.vsv_vrange_vsubset, unfold dg_cs_simps)
   fix f assume "f \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>"
   then obtain a b where "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" by auto
   then have "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>" 
-    by (cs_concl cs_intro: dg_cs_intros)
+    by (cs_concl cs_shallow cs_intro: dg_cs_intros)
   then show "\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<in>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>" by auto
 qed auto
 
@@ -220,7 +222,10 @@ proof-
     dghm_ObjMap_in_Vset dghm_ArrMap_in_Vset HomDom.dg_in_Vset HomCod.dg_in_Vset
   from assms(2) show ?thesis
     by (subst dghm_def) 
-      (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros
+      )
 qed
 
 lemma (in is_dghm) dghm_is_dghm_if_ge_Limit:
@@ -231,7 +236,12 @@ proof(rule is_dghmI)
     by (cs_concl cs_intro: digraph.dg_digraph_if_ge_Limit dg_cs_intros)
   from is_dghm_axioms assms show "digraph \<beta> \<BB>"
     by (cs_concl cs_intro: digraph.dg_digraph_if_ge_Limit dg_cs_intros)
-qed (cs_concl cs_simp: dg_cs_simps cs_intro: assms(1) dg_cs_intros V_cs_intros dghm_ObjMap_vrange)+
+qed 
+  (
+    cs_concl 
+      cs_simp: dg_cs_simps 
+      cs_intro: assms(1) dg_cs_intros V_cs_intros dghm_ObjMap_vrange
+  )+
 
 lemma small_all_dghms[simp]: "small {\<FF>. \<exists>\<AA> \<BB>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>}"
 proof(cases \<open>\<Z> \<alpha>\<close>)
@@ -252,10 +262,12 @@ proof-
     dghm_ArrMap_vsubset_Vset 
   from HomDom.dg_digraph_in_Vset_4 have [dg_cs_intros]:
     "\<AA> \<in>\<^sub>\<circ> Vset (succ (succ (succ (succ \<alpha>))))"
-    by (succ_of_numeral) (cs_prems cs_simp: plus_V_succ_right V_cs_simps)
+    by (succ_of_numeral) 
+      (cs_prems cs_shallow cs_simp: plus_V_succ_right V_cs_simps)
   from HomCod.dg_digraph_in_Vset_4 have [dg_cs_intros]:
     "\<BB> \<in>\<^sub>\<circ> Vset (succ (succ (succ (succ \<alpha>))))"
-    by (succ_of_numeral) (cs_prems cs_simp: plus_V_succ_right V_cs_simps)
+    by (succ_of_numeral) 
+      (cs_prems cs_shallow cs_simp: plus_V_succ_right V_cs_simps)
   show ?thesis
     by (subst dghm_def, succ_of_numeral)
       (
@@ -278,14 +290,14 @@ proof(rule vsubset_in_VsetI)
     show "\<FF> \<in>\<^sub>\<circ> Vset (\<alpha> + 7\<^sub>\<nat>)" by (rule dghm_in_Vset_7)
   qed
   from assms(2) show "Vset (\<alpha> + 7\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
 
 lemma small_dghms[simp]: "small {\<FF>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>}"
   by (rule down[of _ \<open>set {\<FF>. \<exists>\<AA> \<BB>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>}\<close>]) auto
 
 
-text\<open>Further elementary properties.\<close>
+text\<open>Further properties.\<close>
 
 lemma (in is_dghm) dghm_is_arr_HomCod: 
   assumes "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b"
@@ -337,7 +349,7 @@ proof(intro is_dghmI, unfold dg_op_simps)
     unfolding op_dghm_def by (auto simp: nat_omega_simps)
 qed 
   (
-    cs_concl 
+    cs_concl cs_shallow 
       cs_intro: dghm_ObjMap_vrange dg_cs_intros dg_op_intros V_cs_intros 
       cs_simp: dg_cs_simps dg_op_simps
   )+
@@ -353,7 +365,7 @@ lemma (in is_dghm) dghm_op_dghm_op_dghm[dg_op_simps]: "op_dghm (op_dghm \<FF>) =
   using is_dghm_axioms
   by 
     (
-      cs_concl 
+      cs_concl cs_shallow 
         cs_simp: dg_op_simps 
         cs_intro: dg_op_intros dghm_eqI[where \<FF>=\<FF>]
     )
@@ -432,7 +444,7 @@ lemma dghm_comp_ObjMap_vrange:
   using assms 
   by 
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: dghm_comp_components 
         cs_intro: is_dghm.dghm_ObjMap_vrange V_cs_intros
     )
@@ -446,7 +458,7 @@ proof-
   from assms(3) show "(\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = \<GG>\<lparr>ObjMap\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>\<rparr>" 
     by 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: dghm_comp_components dg_cs_simps V_cs_simps 
           cs_intro: V_cs_intros dg_cs_intros
       )
@@ -461,7 +473,8 @@ lemma dghm_comp_ArrMap_vsv[dg_cs_intros]:
 proof-
   interpret L: is_dghm \<alpha> \<BB> \<CC> \<GG> by (rule assms(1)) 
   interpret R: is_dghm \<alpha> \<AA> \<BB> \<FF> by (rule assms(2))
-  show ?thesis by (cs_concl cs_simp: dghm_comp_components cs_intro: V_cs_intros)
+  show ?thesis 
+    by (cs_concl cs_simp: dghm_comp_components cs_intro: V_cs_intros)
 qed
 
 lemma dghm_comp_ArrMap_vdomain[dg_cs_simps]:
@@ -481,7 +494,7 @@ lemma dghm_comp_ArrMap_vrange[dg_cs_intros]:
   using assms 
   by 
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: dghm_comp_components 
         cs_intro: is_dghm.dghm_ArrMap_vrange V_cs_intros
     )
@@ -531,7 +544,7 @@ proof-
     (
       use assms in 
         \<open>
-          cs_concl
+          cs_concl cs_shallow
             cs_intro: dg_cs_intros dghm_comp_ObjMap_vrange 
             cs_simp: dg_cs_simps
         \<close>
@@ -548,8 +561,8 @@ proof(rule dghm_eqI [of \<alpha> \<AA> \<DD> _ \<AA> \<DD>])
       if "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ObjMap\<rparr>)" for a 
       using that assms
       by 
-        (cs_prems cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-        (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_prems cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   qed (use assms in \<open>cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>)+
   show "(\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr> = (\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M (\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>))\<lparr>ArrMap\<rparr>"
   proof(rule vsv_eqI)
@@ -557,10 +570,14 @@ proof(rule dghm_eqI [of \<alpha> \<AA> \<DD> _ \<AA> \<DD>])
       if "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((\<HH> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr>)" for a 
       using that assms
       by 
-        (cs_prems cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-        (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-  qed (use assms in \<open>cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>)+
-qed (use assms in \<open>cs_concl cs_intro: dg_cs_intros\<close>)+
+        (cs_prems cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+  qed 
+    (
+      use assms in 
+        \<open>cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>
+    )+
+qed (use assms in \<open>cs_concl cs_shallow cs_intro: dg_cs_intros\<close>)+
 
 
 
@@ -610,7 +627,7 @@ lemma dghm_cn_comp_ObjMap_vdomain[dg_cn_cs_simps]:
   using assms 
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: dghm_cn_comp_components dg_cs_simps dg_op_simps V_cs_simps
         cs_intro: is_dghm.dghm_ObjMap_vrange 
     )
@@ -621,7 +638,7 @@ lemma dghm_cn_comp_ObjMap_vrange:
   using assms 
   by 
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: dghm_cn_comp_components
         cs_intro: is_dghm.dghm_ObjMap_vrange V_cs_intros 
     )
@@ -660,7 +677,7 @@ lemma dghm_cn_comp_ArrMap_vdomain[dg_cs_simps]:
   using assms 
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: dghm_cn_comp_components dg_cs_simps dg_op_simps V_cs_simps
         cs_intro: is_dghm.dghm_ArrMap_vrange 
     )
@@ -671,7 +688,7 @@ lemma dghm_cn_comp_ArrMap_vrange:
   using assms 
   by 
     (
-      cs_concl 
+      cs_concl cs_shallow 
         cs_simp: dghm_cn_comp_components
         cs_intro: is_dghm.dghm_ArrMap_vrange V_cs_intros 
     )
@@ -710,7 +727,7 @@ lemma dghm_cn_cov_comp_ObjMap_vdomain[dg_cn_cs_simps]:
   using assms 
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: dghm_cn_comp_components dg_cs_simps dg_op_simps V_cs_simps
         cs_intro: is_dghm.dghm_ObjMap_vrange 
     )
@@ -721,7 +738,7 @@ lemma dghm_cn_cov_comp_ObjMap_vrange:
   using assms
   by
     (
-      cs_concl
+      cs_concl cs_shallow
         cs_simp: dghm_cn_comp_components
         cs_intro: is_dghm.dghm_ObjMap_vrange V_cs_intros 
     )
@@ -735,7 +752,7 @@ proof-
   from assms show "(\<GG> \<^sub>D\<^sub>G\<^sub>H\<^sub>M\<circ> \<FF>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = \<GG>\<lparr>ObjMap\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>\<rparr>" 
     by 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: dghm_cn_comp_components dg_cs_simps V_cs_simps 
           cs_intro: V_cs_intros dg_op_intros dg_cs_intros
       )
@@ -760,7 +777,7 @@ lemma dghm_cn_cov_comp_ArrMap_vdomain[dg_cn_cs_simps]:
   using assms 
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: dghm_cn_comp_components dg_cs_simps dg_op_simps V_cs_simps
         cs_intro: is_dghm.dghm_ArrMap_vrange 
     )
@@ -771,7 +788,7 @@ lemma dghm_cn_cov_comp_ArrMap_vrange:
   using assms 
   by 
     (
-      cs_concl 
+      cs_concl cs_shallow 
         cs_simp: dghm_cn_comp_components
         cs_intro: is_dghm.dghm_ArrMap_vrange V_cs_intros 
     )
@@ -785,7 +802,7 @@ proof-
   from assms(3) show "(\<GG> \<^sub>D\<^sub>G\<^sub>H\<^sub>M\<circ> \<FF>)\<lparr>ArrMap\<rparr>\<lparr>a\<rparr> = \<GG>\<lparr>ArrMap\<rparr>\<lparr>\<FF>\<lparr>ArrMap\<rparr>\<lparr>a\<rparr>\<rparr>" 
     by 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: dghm_cn_comp_components dg_cs_simps V_cs_simps 
           cs_intro: V_cs_intros dg_op_intros dg_cs_intros
       )
@@ -822,7 +839,7 @@ proof-
       (\<GG> \<^sub>D\<^sub>G\<^sub>H\<^sub>M\<circ> \<FF>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> (\<GG> \<^sub>D\<^sub>G\<^sub>H\<^sub>M\<circ> \<FF>)\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
       by 
         (
-          cs_concl 
+          cs_concl   
             cs_simp: dg_cn_cs_simps  
             cs_intro: dg_cs_intros dg_op_intros
         )
@@ -852,7 +869,7 @@ proof-
       by (cs_concl cs_simp: dg_cn_cs_simps dg_op_simps cs_intro: dg_cs_intros)
   qed
     ( 
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: dg_cs_simps dg_cn_cs_simps
         cs_intro:
           dghm_cn_cov_comp_ObjMap_vrange 
@@ -949,8 +966,8 @@ proof(rule dghm_eqI [of \<alpha> \<AA> \<BB> _ \<AA> \<BB>])
       if "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((dghm_id \<BB> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ObjMap\<rparr>)" for a 
       using that 
       by 
-        (cs_prems cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-        (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_prems cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   qed (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros)+
   show "(dghm_id \<BB> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr> = \<FF>\<lparr>ArrMap\<rparr>"
   proof(rule vsv_eqI)
@@ -958,10 +975,10 @@ proof(rule dghm_eqI [of \<alpha> \<AA> \<BB> _ \<AA> \<BB>])
       if "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((dghm_id \<BB> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr>)" for a 
       using that 
       by 
-        (cs_prems cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-        (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_prems cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   qed (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros)+
-qed (cs_concl cs_simp: cs_intro: dg_cs_intros)+
+qed (cs_concl cs_shallow cs_simp: cs_intro: dg_cs_intros)+
 
 lemmas [dg_cs_simps] = is_dghm.dghm_dghm_comp_dghm_id_left
 
@@ -974,8 +991,8 @@ proof(rule dghm_eqI [of \<alpha> \<AA> \<BB> _ \<AA> \<BB>])
       if "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((\<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M dghm_id \<AA>)\<lparr>ObjMap\<rparr>)" for a 
       using that 
       by 
-        (cs_prems cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-        (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_prems cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   qed (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros)+
   show "(\<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M dghm_id \<AA>)\<lparr>ArrMap\<rparr> = \<FF>\<lparr>ArrMap\<rparr>"
   proof(rule vsv_eqI)
@@ -983,10 +1000,10 @@ proof(rule dghm_eqI [of \<alpha> \<AA> \<BB> _ \<AA> \<BB>])
       if "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((\<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M dghm_id \<AA>)\<lparr>ArrMap\<rparr>)" for a 
       using that 
       by 
-        (cs_prems cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
-        (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_prems cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+        (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   qed (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros)+
-qed (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
+qed (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)+
 
 lemmas [dg_cs_simps] = is_dghm.dghm_dghm_comp_dghm_id_right
 
@@ -1081,23 +1098,28 @@ lemma (in is_dghm) dghm_dghm_comp_dghm_const[dg_cs_simps]:
 proof(rule dghm_eqI)
   interpret \<CC>: digraph \<alpha> \<CC> by (rule assms(1))
   from assms(2) show "dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: dg_cs_intros)
+    by (cs_concl cs_shallow cs_intro: dg_cs_intros)
   with assms(2) have ObjMap_dom_lhs: 
     "\<D>\<^sub>\<circ> ((dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
     and ArrMap_dom_lhs: "\<D>\<^sub>\<circ> ((dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>"
     by (cs_concl cs_simp: dg_cs_simps)+
   from assms(2) show "dghm_const \<AA> \<CC> a f : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: dg_cs_intros)
-  with assms(2) have ObjMap_dom_rhs: 
-    "\<D>\<^sub>\<circ> (dghm_const \<AA> \<CC> a f\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_shallow cs_intro: dg_cs_intros)
+  with assms(2) have ObjMap_dom_rhs: "\<D>\<^sub>\<circ> (dghm_const \<AA> \<CC> a f\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
     and ArrMap_dom_rhs: "\<D>\<^sub>\<circ> (dghm_const \<AA> \<CC> a f\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: dg_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps)+
   show "(dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ObjMap\<rparr> = dghm_const \<AA> \<CC> a f\<lparr>ObjMap\<rparr>"
     by (rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
-      (use assms(2) in \<open>cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>)+
+      (
+        use assms(2) in 
+          \<open>cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>
+      )+
   show "(dghm_const \<BB> \<CC> a f \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr> = dghm_const \<AA> \<CC> a f\<lparr>ArrMap\<rparr>"
     by (rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
-      (use assms(2) in \<open>cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>)+
+      (
+        use assms(2) in 
+          \<open>cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros\<close>
+      )+
 qed simp_all
 
 lemmas [dg_cs_simps] = is_dghm.dghm_dghm_comp_dghm_const
@@ -1135,6 +1157,34 @@ mk_ide rf is_ft_dghm_def[unfolded is_ft_dghm_axioms_def]
 
 lemmas [dghm_cs_intros] = is_ft_dghmD(1)
 
+lemma is_ft_dghmI'':
+  assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<And>a b g f.
+      \<lbrakk> g : a \<mapsto>\<^bsub>\<AA>\<^esub> b; f : a \<mapsto>\<^bsub>\<AA>\<^esub> b; \<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<rbrakk> \<Longrightarrow> g = f"
+  shows "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<^bsub>\<alpha>\<^esub> \<BB>"
+proof(intro is_ft_dghmI assms)
+  interpret \<FF>: is_dghm \<alpha> \<AA> \<BB> \<FF> by (rule assms(1))
+  fix a b assume prems: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" "b \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+  have dom_def: "\<D>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b) = Hom \<AA> a b"
+    by (intro vdomain_vlrestriction_vsubset vsubsetI) (auto simp: dg_cs_simps)
+  show "v11 (\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b)"
+  proof(intro vsv.vsv_valeq_v11I, unfold dom_def dg_cs_simps)
+    from prems show "vsv (\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b)" by auto
+    fix g f assume prems:
+      "g : a \<mapsto>\<^bsub>\<AA>\<^esub> b"
+      "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b"
+      "(\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b)\<lparr>g\<rparr> = (\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b)\<lparr>f\<rparr>"
+    from prems(3,1,2) have \<FF>g_\<FF>f: "\<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
+      by
+        (
+          cs_prems
+            cs_simp: V_cs_simps dg_cs_simps
+            cs_intro: V_cs_intros dg_cs_intros
+        )
+    show "g = f" by (rule assms(2)[OF prems(1,2) \<FF>g_\<FF>f])
+  qed
+qed
+
 
 subsubsection\<open>Opposite faithful digraph homomorphism\<close>
 
@@ -1144,7 +1194,7 @@ lemma (in is_ft_dghm) ft_dghm_op_dghm_is_ft_dghm:
     (
       rule is_ft_dghmI, 
       unfold dg_op_simps, 
-      cs_concl cs_simp: cs_intro: dg_cs_intros dg_op_intros
+      cs_concl cs_shallow cs_intro: dg_cs_intros dg_op_intros
     )
     (auto simp: ft_dghm_v11_on_Hom)
 
@@ -1177,21 +1227,46 @@ proof-
     then have \<GG>_hom_\<BB>: 
       "v11 (\<GG>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<BB> (\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>) (\<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>))" 
       by (intro L.ft_dghm_v11_on_Hom) 
-        (cs_concl cs_intro: dg_cs_intros)+
+        (cs_concl cs_shallow cs_intro: dg_cs_intros)+
     have "v11 (\<GG>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr> `\<^sub>\<circ> Hom \<AA> a b))"
     proof(intro v11_vlrestriction_vsubset[OF \<GG>_hom_\<BB>] vsubsetI)
       fix g assume "g \<in>\<^sub>\<circ> \<FF>\<lparr>ArrMap\<rparr> `\<^sub>\<circ> Hom \<AA> a b" 
       then obtain f where f: "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" and g_def: "g = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>" 
         by auto
       from f show "g \<in>\<^sub>\<circ> Hom \<BB> (\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>) (\<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)"
-        by (cs_concl cs_simp: g_def cs_intro: dg_cs_intros)
+        by (cs_concl cs_shallow cs_simp: g_def cs_intro: dg_cs_intros)
     qed
     then show "v11 ((\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b)"
       unfolding dghm_comp_components
       by (intro v11_vlrestriction_vcomp) (auto simp: R.ft_dghm_v11_on_Hom prems)
   qed
   then show "\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>a\<^sub>i\<^sub>t\<^sub>h\<^sub>f\<^sub>u\<^sub>l\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (intro is_ft_dghmI, cs_concl cs_intro: dg_cs_intros) auto
+    by (intro is_ft_dghmI, cs_concl cs_shallow cs_intro: dg_cs_intros) auto
+qed
+
+
+subsubsection\<open>Further properties\<close>
+
+lemma (in is_ft_dghm) ft_dghm_ArrMap_eqD:
+  assumes "g : a \<mapsto>\<^bsub>\<AA>\<^esub> b" and "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" and "\<FF>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
+  shows "g = f"
+proof- 
+  from assms(1) have a: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" and b: "b \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" by auto
+  interpret ArrMap: v11 \<open>\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b\<close> 
+    by (rule ft_dghm_v11_on_Hom[OF a b])
+  have dom_def: "\<D>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b) = Hom \<AA> a b"
+    by (intro vdomain_vlrestriction_vsubset vsubsetI) (auto simp: dg_cs_simps)
+  show ?thesis
+  proof(rule ArrMap.v11_injective[unfolded dom_def dg_cs_simps, OF assms(1,2)])
+    from assms(1,2) show 
+      "(\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b)\<lparr>g\<rparr> = (\<FF>\<lparr>ArrMap\<rparr> \<restriction>\<^sup>l\<^sub>\<circ> Hom \<AA> a b)\<lparr>f\<rparr>"
+      by 
+        (
+          cs_concl 
+            cs_simp: dg_cs_simps assms(3) vsv.vlrestriction_atI 
+            cs_intro: V_cs_intros dg_cs_intros
+        )
+  qed
 qed
 
 
@@ -1237,7 +1312,7 @@ lemma (in is_fl_dghm) fl_dghm_op_dghm_is_fl_dghm:
     (
       rule is_fl_dghmI,
       unfold dg_op_simps, 
-      cs_concl cs_intro: dg_cs_intros dg_op_intros
+      cs_concl cs_shallow cs_intro: dg_cs_intros dg_op_intros
     )
     (auto simp: fl_dghm_surj_on_Hom)
 
@@ -1289,7 +1364,7 @@ proof-
       by simp
   qed
   show ?thesis  
-    by (rule is_fl_dghmI, cs_concl cs_intro: dg_cs_intros)
+    by (rule is_fl_dghmI, cs_concl cs_shallow cs_intro: dg_cs_intros)
       (auto simp: surj)
 qed
 
@@ -1329,7 +1404,7 @@ subsubsection\<open>Opposite fully faithful digraph homomorphism.\<close>
 
 lemma (in is_ff_dghm) ff_dghm_op_dghm_is_ff_dghm: 
   "op_dghm \<FF> : op_dg \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>f\<^bsub>\<alpha>\<^esub> op_dg \<BB>"  
-  by (rule is_ff_dghmI) (cs_concl cs_intro: dg_op_intros)+
+  by (rule is_ff_dghmI) (cs_concl cs_shallow cs_intro: dg_op_intros)+
 
 lemma (in is_ff_dghm) ff_dghm_op_dghm_is_ff_dghm'[dg_op_intros]: 
   assumes "\<AA>' = op_dg \<AA>" and "\<BB>' = op_dg \<BB>"
@@ -1373,11 +1448,19 @@ translations "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<
 
 sublocale is_iso_dghm \<subseteq> ObjMap: v11 \<open>\<FF>\<lparr>ObjMap\<rparr>\<close>
   rewrites "\<D>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>" and "\<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>) = \<BB>\<lparr>Obj\<rparr>"
-  by (cs_concl cs_simp: dghm_cs_simps dg_cs_simps cs_intro: iso_dghm_ObjMap_v11)+
+  by
+    (
+      cs_concl cs_shallow 
+        cs_simp: dghm_cs_simps dg_cs_simps cs_intro: iso_dghm_ObjMap_v11
+    )+
 
 sublocale is_iso_dghm \<subseteq> ArrMap: v11 \<open>\<FF>\<lparr>ArrMap\<rparr>\<close>
   rewrites "\<D>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>" and "\<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>) = \<BB>\<lparr>Arr\<rparr>"
-  by (cs_concl cs_simp: dghm_cs_simps dg_cs_simps cs_intro: iso_dghm_ArrMap_v11)+
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: dghm_cs_simps dg_cs_simps cs_intro: iso_dghm_ArrMap_v11
+    )+
 
 lemmas [dghm_cs_simps] = 
   is_iso_dghm.iso_dghm_ObjMap_vrange
@@ -1426,7 +1509,7 @@ lemma (in is_iso_dghm) iso_dghm_ArrMap_eqE[elim]:
   using assms ArrMap.v11_eq_iff by auto
 
 sublocale is_iso_dghm \<subseteq> is_ft_dghm 
-  by (intro is_ft_dghmI, cs_concl cs_intro: dg_cs_intros) auto
+  by (intro is_ft_dghmI, cs_concl cs_shallow cs_intro: dg_cs_intros) auto
 
 sublocale is_iso_dghm \<subseteq> is_fl_dghm
 proof
@@ -1443,7 +1526,7 @@ proof
       by auto
     then obtain a' b' where f: "f : a' \<mapsto>\<^bsub>\<AA>\<^esub> b'"  by blast
     then have "g : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>" 
-      by (cs_concl cs_simp: g_def dg_cs_simps cs_intro: dg_cs_intros)
+      by (cs_concl cs_shallow cs_simp: g_def dg_cs_simps cs_intro: dg_cs_intros)
     with g have "\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = \<FF>\<lparr>ObjMap\<rparr>\<lparr>a'\<rparr>" and "\<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr> = \<FF>\<lparr>ObjMap\<rparr>\<lparr>b'\<rparr>"
       by (metis HomCod.dg_is_arrE cod_g)+
     with f have "a = \<AA>\<lparr>Dom\<rparr>\<lparr>f\<rparr>" "b = \<AA>\<lparr>Cod\<rparr>\<lparr>f\<rparr>" by auto (*slow*)
@@ -1464,7 +1547,7 @@ lemma (in is_iso_dghm) is_iso_dghm_op:
   "op_dghm \<FF> : op_dg \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> op_dg \<BB>"
   by (intro is_iso_dghmI, unfold dg_op_simps)
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: dghm_cs_simps cs_intro: V_cs_intros dg_cs_intros dg_op_intros
     )+
 
@@ -1533,7 +1616,7 @@ subsubsection\<open>Object map\<close>
 
 lemma (in is_iso_dghm) inv_dghm_ObjMap_v11[dghm_cs_intros]:
   "v11 (inv_dghm \<FF>\<lparr>ObjMap\<rparr>)"
-  unfolding inv_dghm_components by (cs_concl cs_intro: V_cs_intros)
+  unfolding inv_dghm_components by (cs_concl cs_shallow cs_intro: V_cs_intros)
 
 lemmas [dghm_cs_intros] = is_iso_dghm.inv_dghm_ObjMap_v11
 
@@ -1562,7 +1645,7 @@ subsubsection\<open>Arrow map\<close>
 
 lemma (in is_iso_dghm) inv_dghm_ArrMap_v11[dghm_cs_intros]:
   "v11 (inv_dghm \<FF>\<lparr>ArrMap\<rparr>)"
-  unfolding inv_dghm_components by (cs_concl cs_intro: V_cs_intros)
+  unfolding inv_dghm_components by (cs_concl cs_shallow cs_intro: V_cs_intros)
 
 lemmas [dghm_cs_intros] = is_iso_dghm.inv_dghm_ArrMap_v11
 
@@ -1643,7 +1726,7 @@ subsection\<open>An isomorphism of digraphs is an isomorphism in the category \<
 
 text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
 
-lemma is_arr_isomorphism_is_iso_dghm: 
+lemma is_iso_arr_is_iso_dghm: 
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<AA>"
     and "\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> = dghm_id \<AA>"
@@ -1654,7 +1737,7 @@ proof(intro is_iso_dghmI)
   interpret L: is_dghm \<alpha> \<BB> \<AA> \<GG> by (rule assms(2))
   interpret R: is_dghm \<alpha> \<AA> \<BB> \<FF> by (rule assms(1))
 
-  show "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>" by (cs_concl cs_intro: dg_cs_intros)
+  show "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>" by (cs_concl cs_shallow cs_intro: dg_cs_intros)
 
   show "v11 (\<FF>\<lparr>ObjMap\<rparr>)" 
   proof(rule R.ObjMap.vsv_valeq_v11I)
@@ -1671,7 +1754,7 @@ proof(intro is_iso_dghmI)
     assume prems[simp]: 
       "a \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>" "b \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>" "\<FF>\<lparr>ArrMap\<rparr>\<lparr>a\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>b\<rparr>"
     then have "\<FF>\<lparr>ArrMap\<rparr>\<lparr>a\<rparr> \<in>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>" 
-      by (cs_concl cs_intro: dg_cs_intros)
+      by (cs_concl cs_shallow cs_intro: dg_cs_intros)
     with R.dghm_ArrMap_vsv L.dghm_ArrMap_vsv R.dghm_ArrMap_vrange have 
       "(\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr>\<lparr>a\<rparr> = (\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr>\<lparr>b\<rparr>" 
       unfolding dghm_comp_components by (simp add: dg_cs_simps)
@@ -1688,7 +1771,10 @@ proof(intro is_iso_dghmI)
       unfolding assms(4) dghm_id_components by simp
     from prems show "a \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ObjMap\<rparr>)"
       by (subst a_def)
-        (cs_concl cs_intro: V_cs_intros dg_cs_intros cs_simp: dg_cs_simps)
+        (
+          cs_concl cs_shallow 
+            cs_intro: V_cs_intros dg_cs_intros cs_simp: dg_cs_simps
+        )
   qed
 
   show "\<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>) = \<BB>\<lparr>Arr\<rparr>"
@@ -1701,16 +1787,19 @@ proof(intro is_iso_dghmI)
       unfolding assms(4) dghm_id_components by simp
     with prems show "a \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<FF>\<lparr>ArrMap\<rparr>)" 
       by (subst a_def)
-        (cs_concl cs_intro: V_cs_intros dg_cs_intros cs_simp: dg_cs_simps)
+        (
+          cs_concl cs_shallow 
+            cs_intro: V_cs_intros dg_cs_intros cs_simp: dg_cs_simps
+        )
   qed
 
 qed
 
-lemma is_iso_dghm_is_arr_isomorphism:
+lemma is_iso_dghm_is_iso_arr:
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"
   shows [dghm_cs_intros]: "inv_dghm \<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<AA>"
-    and "inv_dghm \<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> = dghm_id \<AA>"
-    and "\<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M inv_dghm \<FF> = dghm_id \<BB>"
+    and [dghm_cs_simps]: "inv_dghm \<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> = dghm_id \<AA>"
+    and [dghm_cs_simps]: "\<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M inv_dghm \<FF> = dghm_id \<BB>"
 proof-
 
   let ?\<GG> = \<open>inv_dghm \<FF>\<close>
@@ -1737,7 +1826,7 @@ proof-
         )+
   qed 
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: dg_cs_simps 
         cs_intro: dg_cs_intros V_cs_intros dghm_cs_intros
     )+
@@ -1763,6 +1852,43 @@ proof-
   qed (use \<GG> in \<open>cs_concl cs_intro: dghm_cs_intros\<close>)
 
 qed
+
+
+subsubsection\<open>Further properties\<close>
+
+lemma (in is_iso_dghm) iso_inv_dghm_ObjMap_dghm_ObjMap_app[dghm_cs_simps]: 
+  assumes "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+  shows "inv_dghm \<FF>\<lparr>ObjMap\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>\<rparr> = a"
+proof-
+  from is_iso_dghm_is_iso_arr[OF is_iso_dghm_axioms] have 
+    "(inv_dghm \<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> = dghm_id \<AA>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+    by simp
+  from this assms show ?thesis
+    by 
+      (
+        cs_prems cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_cs_intros dghm_cs_intros
+      )
+qed
+
+lemmas [dghm_cs_simps] = is_iso_dghm.iso_inv_dghm_ObjMap_dghm_ObjMap_app
+
+lemma (in is_iso_dghm) iso_inv_dghm_ArrMap_dghm_ArrMap_app[dghm_cs_simps]:
+  assumes "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b"
+  shows "inv_dghm \<FF>\<lparr>ArrMap\<rparr>\<lparr>\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>\<rparr> = f"
+proof-
+  from is_iso_dghm_is_iso_arr[OF is_iso_dghm_axioms] have 
+    "(inv_dghm \<FF> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = dghm_id \<AA>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
+    by simp
+  from this assms show ?thesis
+    by 
+      (
+        cs_prems cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_cs_intros dghm_cs_intros
+      )
+qed
+
+lemmas [dghm_cs_simps] = is_iso_dghm.iso_inv_dghm_ArrMap_dghm_ArrMap_app
 
 
 
@@ -1825,8 +1951,9 @@ proof-
   from iso_digraph_is_iso_dghm obtain \<FF> where "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>" 
     by clarsimp
   then have "inv_dghm \<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<AA>" 
-    by (simp add: is_iso_dghm_is_arr_isomorphism(1))
-  then show ?thesis by (cs_concl cs_intro: dghm_cs_intros iso_digraphI)
+    by (simp add: is_iso_dghm_is_iso_arr(1))
+  then show ?thesis 
+    by (cs_concl cs_shallow cs_intro: dghm_cs_intros iso_digraphI)
 qed
 
 lemma iso_digraph_trans[trans]:

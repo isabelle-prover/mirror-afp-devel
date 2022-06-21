@@ -93,7 +93,7 @@ setup \<open>add_backward_prfstep (equiv_backward_th @{thm sorted_simps2})\<clos
 lemma sorted_ConsD1 [forward]: "sorted (x # xs) \<Longrightarrow> sorted xs"
  using sorted_simps(2) by simp
 lemma sorted_ConsD2 [forward, backward2]: "sorted (x # xs) \<Longrightarrow> y \<in> set xs \<Longrightarrow> x \<le> y"
- using sorted_simps(2) by simp
+ using sorted_simps(2) by auto
 
 lemma sorted_appendI [backward]:
  "sorted xs \<and> sorted ys \<and> (\<forall>x\<in>set xs. \<forall>y\<in>set ys. x \<le> y) \<Longrightarrow> sorted (xs @ ys)"
@@ -104,7 +104,7 @@ lemma sorted_appendE [forward]: "sorted (xs @ ys) \<Longrightarrow> sorted xs \<
 
 lemma sorted_appendE2 [forward]:
  "sorted (xs @ ys) \<Longrightarrow> x \<in> set xs \<Longrightarrow> \<forall>y\<in>set ys. x \<le> y"
- using sorted_append by (simp add: sorted_append)
+ using sorted_append by (auto simp add: sorted_append)
 
 lemma sorted_nth_mono' [backward]:
  "sorted xs \<Longrightarrow> j < length xs \<Longrightarrow> i \<le> j \<Longrightarrow> xs ! i \<le> xs ! j"
@@ -129,7 +129,7 @@ lemma sort_Nil [rewrite]: "sort [] = []" by auto
 lemma sort_singleton [rewrite]: "sort [a] = [a]" by auto
 
 subsection \<open>distinct\<close>
-  
+
 lemma distinct_Nil [resolve]: "distinct []" by simp
 setup \<open>add_resolve_prfstep @{thm List.distinct_singleton}\<close>
 setup \<open>add_rewrite_rule_cond @{thm distinct.simps(2)} [with_cond "?xs \<noteq> []"]\<close>

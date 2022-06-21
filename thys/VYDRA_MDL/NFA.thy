@@ -166,7 +166,7 @@ lemma step_eps_closure_set_step_id: "(\<And>q q'. q \<in> R \<Longrightarrow> \<
   step_eps_closure_set R bs = R"
   using step_eps_closure_empty step_eps_closure_set_refl unfolding step_eps_closure_set_def by blast
 
-(* wildcard step relation *)
+(* symbol step relation *)
 
 qualified definition step_symb :: "state \<Rightarrow> state \<Rightarrow> bool" where
   "step_symb q q' \<longleftrightarrow> q \<in> SQ \<and>
@@ -175,7 +175,7 @@ qualified definition step_symb :: "state \<Rightarrow> state \<Rightarrow> bool"
 lemma step_symb_dest: "step_symb q q' \<Longrightarrow> q \<in> SQ"
   by (auto simp add: step_symb_def)
 
-(* successors in wildcard step relation *)
+(* successors in symbol step relation *)
 
 qualified definition step_symb_sucs :: "state \<Rightarrow> state set" where
   "step_symb_sucs q = (if q \<in> SQ then

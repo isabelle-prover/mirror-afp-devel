@@ -30,6 +30,9 @@ named_theorems cat_Rel_cs_intros
 lemmas (in arr_Rel) [cat_Rel_cs_simps] = 
   dg_Rel_shared_cs_simps
 
+lemmas (in arr_Rel) [cat_cs_intros, cat_Rel_cs_intros] = 
+  arr_Rel_axioms'
+
 lemmas [cat_Rel_cs_simps] = 
   dg_Rel_shared_cs_simps
   arr_Rel.arr_Rel_length
@@ -45,6 +48,8 @@ lemmas [cat_Rel_cs_intros] =
   dg_Rel_shared_cs_intros
   arr_Rel_comp_Rel
   arr_Rel.arr_Rel_converse_Rel
+
+lemmas [cat_cs_simps] = incl_Rel_ArrVal_app
 
 
 
@@ -115,12 +120,21 @@ lemmas_with [folded cat_smc_cat_Rel, unfolded slicing_simps]:
   and cat_Rel_is_arrI[cat_Rel_cs_intros] = smc_Rel_is_arrI
   and cat_Rel_is_arrD = smc_Rel_is_arrD
   and cat_Rel_is_arrE = smc_Rel_is_arrE
+  and cat_Rel_is_arr_ArrValE = smc_Rel_is_arr_ArrValE
 
 lemmas_with [folded cat_smc_cat_Rel, unfolded slicing_simps, unfolded cat_smc_cat_Rel]: 
   cat_Rel_composable_arrs_dg_Rel = smc_Rel_composable_arrs_dg_Rel
   and cat_Rel_Comp = smc_Rel_Comp
   and cat_Rel_Comp_app[cat_Rel_cs_simps] = smc_Rel_Comp_app
   and cat_Rel_Comp_vdomain[simp] = smc_Rel_Comp_vdomain
+  and cat_Rel_is_monic_arrI = smc_Rel_is_monic_arrI
+  and cat_Rel_is_monic_arrD = smc_Rel_is_monic_arrD
+  and cat_Rel_is_monic_arr = smc_Rel_is_monic_arr
+  and cat_Rel_is_monic_arr_is_epic_arr = smc_Rel_is_monic_arr_is_epic_arr
+  and cat_Rel_is_epic_arr_is_monic_arr = smc_Rel_is_epic_arr_is_monic_arr
+  and cat_Rel_is_epic_arrI = smc_Rel_is_epic_arrI
+  and cat_Rel_is_epic_arrD = smc_Rel_is_epic_arrD
+  and cat_Rel_is_epic_arr = smc_Rel_is_epic_arr
 
 lemmas [cat_cs_simps] = cat_Rel_is_arrD(2,3)
 
@@ -130,16 +144,7 @@ lemmas_with (in \<Z>) [folded cat_smc_cat_Rel, unfolded slicing_simps]:
   cat_Rel_Hom_vifunion_in_Vset = smc_Rel_Hom_vifunion_in_Vset
   and cat_Rel_incl_Rel_is_arr = smc_Rel_incl_Rel_is_arr
   and cat_Rel_incl_Rel_is_arr'[cat_Rel_cs_intros] = smc_Rel_incl_Rel_is_arr'
-  and cat_Rel_is_arr_ArrValE = smc_Rel_is_arr_ArrValE
-  and cat_CAT_Comp_vrange = smc_CAT_Comp_vrange
-  and cat_Rel_is_monic_arrI = smc_Rel_is_monic_arrI
-  and cat_Rel_is_monic_arrD = smc_Rel_is_monic_arrD
-  and cat_Rel_is_monic_arr = smc_Rel_is_monic_arr
-  and cat_Rel_is_monic_arr_is_epic_arr = smc_Rel_is_monic_arr_is_epic_arr
-  and cat_Rel_is_epic_arr_is_monic_arr = smc_Rel_is_epic_arr_is_monic_arr
-  and cat_Rel_is_epic_arrI = smc_Rel_is_epic_arrI
-  and cat_Rel_is_epic_arrD = smc_Rel_is_epic_arrD
-  and cat_Rel_is_epic_arr = smc_Rel_is_epic_arr
+  and cat_Rel_Comp_vrange = smc_Rel_Comp_vrange
   and cat_Rel_obj_terminal = smc_Rel_obj_terminal
   and cat_Rel_obj_initial = smc_Rel_obj_initial
   and cat_Rel_obj_terminal_obj_initial = smc_Rel_obj_terminal_obj_initial
@@ -176,7 +181,7 @@ proof(rule categoryI, unfold cat_smc_cat_Rel)
     unfolding cat_Rel_Obj_iff
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_Rel_cs_simps cs_intro: cat_Rel_cs_intros arr_Rel_id_RelI 
       )
   show "cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>B\<rparr> \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> F = F"
@@ -187,7 +192,7 @@ proof(rule categoryI, unfold cat_smc_cat_Rel)
     with that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_Rel_cs_simps 
             cs_intro: cat_Rel_cs_intros arr_Rel_id_RelI
         )
@@ -201,7 +206,7 @@ proof(rule categoryI, unfold cat_smc_cat_Rel)
     with that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_Rel_cs_simps
             cs_intro: cat_Rel_cs_intros arr_Rel_id_RelI
         )
@@ -281,11 +286,7 @@ lemmas_with [folded cat_smc_cat_Rel cf_smcf_cf_dag_Rel, unfolded slicing_simps]:
   and cf_dag_Rel_ArrMap_vdomain[cat_Rel_cs_simps] = smcf_dag_Rel_ArrMap_vdomain
   and cf_dag_Rel_ArrMap_app[cat_Rel_cs_simps] = smcf_dag_Rel_ArrMap_app
   and cf_dag_Rel_ArrMap_vrange[cat_Rel_cs_simps] = smcf_dag_Rel_ArrMap_vrange
-
-lemmas_with (in \<Z>) [
-  folded cat_smc_cat_Rel cf_smcf_cf_dag_Rel, unfolded slicing_simps
-  ]: 
-  cf_dag_Rel_app_is_arr[cat_Rel_cs_intros] = smcf_dag_Rel_app_is_arr
+  and cf_dag_Rel_app_is_arr[cat_Rel_cs_intros] = smcf_dag_Rel_app_is_arr
   and cf_dag_Rel_ArrMap_app_vdomain[cat_cs_simps] =
     smcf_dag_Rel_ArrMap_app_vdomain
   and cf_dag_Rel_ArrMap_app_vrange[cat_cs_simps] =
@@ -293,11 +294,6 @@ lemmas_with (in \<Z>) [
   and cf_dag_Rel_ArrMap_app_iff[cat_cs_simps] = smcf_dag_Rel_ArrMap_app_iff
   and cf_dag_Rel_ArrMap_smc_Rel_Comp[cat_Rel_cs_simps] = 
     smcf_dag_Rel_ArrMap_smc_Rel_Comp
-
-lemmas [cat_cs_simps] = 
-  \<Z>.cf_dag_Rel_ArrMap_app_vdomain
-  \<Z>.cf_dag_Rel_ArrMap_app_vrange
-  \<Z>.cf_dag_Rel_ArrMap_app_iff
 
 
 subsubsection\<open>Canonical dagger is a contravariant isomorphism of \<open>Rel\<close>\<close>
@@ -342,7 +338,7 @@ proof
       with that show ?thesis
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_Rel_cs_simps cs_intro: cat_cs_intros arr_Rel_id_RelI
           )
     qed
@@ -385,13 +381,10 @@ qed simp_all
 
 subsection\<open>Isomorphism\<close>
 
-context \<Z>
-begin
-
 context
 begin
 
-private lemma cat_Rel_is_arr_isomorphism_right_vsubset:
+private lemma cat_Rel_is_iso_arr_right_vsubset:
   assumes "S : B \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> A"
     and "T : A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B"
     and "S \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> T = cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>A\<rparr>"
@@ -399,18 +392,17 @@ private lemma cat_Rel_is_arr_isomorphism_right_vsubset:
   shows "S\<lparr>ArrVal\<rparr> \<subseteq>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>)\<inverse>\<^sub>\<circ>"
 proof(rule vsubset_antisym vsubsetI)
 
-  interpret Rel: category \<alpha> \<open>cat_Rel \<alpha>\<close> by (simp add: category_cat_Rel)
-
   interpret S: arr_Rel \<alpha> S
     rewrites "S\<lparr>ArrDom\<rparr> = B" and "S\<lparr>ArrCod\<rparr> = A"
-    using assms(1)
-    by (all\<open>elim Rel.cat_is_arrE\<close>) (simp_all add: cat_Rel_components)
+    by (intro cat_Rel_is_arrD[OF assms(1)])+
   interpret T: arr_Rel \<alpha> T
     rewrites "T\<lparr>ArrDom\<rparr> = A" and "T\<lparr>ArrCod\<rparr> = B"
-    using assms(2)
-    by (all\<open>elim Rel.cat_is_arrE\<close>) (simp_all add: cat_Rel_components)
+    by (intro cat_Rel_is_arrD[OF assms(2)])+
+
+  interpret Rel: category \<alpha> \<open>cat_Rel \<alpha>\<close> by (simp add: S.category_cat_Rel)
+
   interpret dag: is_iso_functor \<alpha> \<open>op_cat (cat_Rel \<alpha>)\<close> \<open>cat_Rel \<alpha>\<close> \<open>\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<close>
-    by (auto simp: cf_dag_Rel_is_iso_functor)
+    by (auto simp: S.cf_dag_Rel_is_iso_functor)
 
   from assms(2) have A: "A \<in>\<^sub>\<circ> cat_Rel \<alpha>\<lparr>Obj\<rparr>" by auto
   from assms(3) have "(S \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> T)\<lparr>ArrVal\<rparr> = cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>A\<rparr>\<lparr>ArrVal\<rparr>"
@@ -444,25 +436,28 @@ proof(rule vsubset_antisym vsubsetI)
 
 qed
 
-private lemma cat_Rel_is_arr_isomorphism_left_vsubset:
+private lemma cat_Rel_is_iso_arr_left_vsubset:
   assumes "S : B \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> A" 
     and "T : A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B" 
     and "S \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> T = cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>A\<rparr>"
     and "T \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> S = cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>B\<rparr>"
   shows "(T\<lparr>ArrVal\<rparr>)\<inverse>\<^sub>\<circ> \<subseteq>\<^sub>\<circ> S\<lparr>ArrVal\<rparr>"
-  using assms(2,3,4) cat_Rel_is_arr_isomorphism_right_vsubset[OF assms(2,1)] 
+  using assms(2,3,4) cat_Rel_is_iso_arr_right_vsubset[OF assms(2,1)] 
   by auto
 
-private lemma is_arr_isomorphism_dag: 
+private lemma is_iso_arr_dag: 
   assumes "S : B \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> A" 
     and "T : A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B" 
     and "S \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> T = cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>A\<rparr>"
     and "T \<circ>\<^sub>A\<^bsub>cat_Rel \<alpha>\<^esub> S = cat_Rel \<alpha>\<lparr>CId\<rparr>\<lparr>B\<rparr>"
   shows "S = \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>"
 proof(rule arr_Rel_eqI[of \<alpha>])
-  interpret Rel: category \<alpha> \<open>cat_Rel \<alpha>\<close> by (rule category_cat_Rel)
+
+  interpret S: arr_Rel \<alpha> S by (intro cat_Rel_is_arrD(1)[OF assms(1)])
+  interpret Rel: category \<alpha> \<open>cat_Rel \<alpha>\<close> by (rule S.category_cat_Rel)
   interpret dag: is_iso_functor \<alpha> \<open>op_cat (cat_Rel \<alpha>)\<close> \<open>cat_Rel \<alpha>\<close> \<open>\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<close>
-    by (auto simp: cf_dag_Rel_is_iso_functor)
+    by (auto simp: S.cf_dag_Rel_is_iso_functor)
+
   from assms(1) show S: "arr_Rel \<alpha> S" by (fastforce simp: cat_Rel_components(2))
   from cf_dag_Rel_app_is_arr[OF assms(2)] show "arr_Rel \<alpha> (\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>)"
     by (auto elim!: cat_Rel_is_arrE)
@@ -472,8 +467,8 @@ proof(rule arr_Rel_eqI[of \<alpha>])
     by (intro vsubset_antisym) 
       (
         simp_all add: 
-          cat_Rel_is_arr_isomorphism_left_vsubset 
-          cat_Rel_is_arr_isomorphism_right_vsubset
+          cat_Rel_is_iso_arr_left_vsubset 
+          cat_Rel_is_iso_arr_right_vsubset
       )
   from T assms show "S\<lparr>ArrDom\<rparr> = \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<lparr>ArrDom\<rparr>"
     unfolding cf_dag_Rel_components 
@@ -485,25 +480,23 @@ proof(rule arr_Rel_eqI[of \<alpha>])
           cs_intro: cat_op_intros cat_cs_intros 
           cs_simp: cat_Rel_cs_simps cat_cs_simps
       )
+
 qed
 
-lemma cat_Rel_is_arr_isomorphismI[intro]:
+lemma cat_Rel_is_iso_arrI[intro]:
   assumes "T : A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B" 
     and "v11 (T\<lparr>ArrVal\<rparr>)"
     and "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A"
     and "\<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B"
   shows "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> B"
-proof(rule is_arr_isomorphismI[where ?g = \<open>\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<close>])
+proof(rule is_iso_arrI[where ?g = \<open>\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<close>])
 
-  interpret Rel: category \<alpha> \<open>cat_Rel \<alpha>\<close> by (rule category_cat_Rel)
+  interpret T: arr_Rel \<alpha> T by (intro cat_Rel_is_arrD[OF assms(1)])+
+  interpret Rel: category \<alpha> \<open>cat_Rel \<alpha>\<close> by (rule T.category_cat_Rel)
   interpret v11: v11 \<open>T\<lparr>ArrVal\<rparr>\<close> by (rule assms(2))
 
-  interpret T: arr_Rel \<alpha> T
-    rewrites [simp]: "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
-    using assms(1) 
-    by (all\<open>elim cat_Rel_is_arrE\<close>) (simp_all add: cat_Rel_components)
   interpret is_iso_functor \<alpha> \<open>op_cat (cat_Rel \<alpha>)\<close> \<open>cat_Rel \<alpha>\<close> \<open>\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<close>
-    by (simp add: cf_dag_Rel_is_iso_functor)
+    by (simp add: T.cf_dag_Rel_is_iso_functor)
 
   show "T : A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B" by (rule assms(1))
 
@@ -537,7 +530,7 @@ proof(rule is_arr_isomorphismI[where ?g = \<open>\<dagger>\<^sub>C\<^sub>.\<^sub
 
 qed
 
-lemma cat_Rel_is_arr_isomorphismD[dest]:
+lemma cat_Rel_is_iso_arrD[dest]:
   assumes "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> B"
   shows "T : A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B" 
     and "v11 (T\<lparr>ArrVal\<rparr>)"
@@ -546,17 +539,15 @@ lemma cat_Rel_is_arr_isomorphismD[dest]:
 proof-
 
   from assms show T: "T : A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B" 
-    by (simp add: is_arr_isomorphism_def)
+    by (simp add: is_iso_arr_def)
 
   interpret T: arr_Rel \<alpha> T
     rewrites [simp]: "T\<lparr>ArrDom\<rparr> = A" and [simp]: "T\<lparr>ArrCod\<rparr> = B"
-    using T
-    by (all\<open>elim cat_Rel_is_arrE\<close>) (simp_all add: cat_Rel_components)
-  
+    by (intro cat_Rel_is_arrD[OF T])+
   interpret is_iso_functor \<alpha> \<open>op_cat (cat_Rel \<alpha>)\<close> \<open>cat_Rel \<alpha>\<close> \<open>\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<close>
-    by (simp add: cf_dag_Rel_is_iso_functor)
+    by (simp add: T.cf_dag_Rel_is_iso_functor)
 
-  from is_arr_isomorphismD[OF assms(1)] obtain S where 
+  from is_iso_arrD[OF assms(1)] obtain S where 
     "is_inverse (cat_Rel \<alpha>) S T"
     by clarsimp
   from is_inverseD[OF this] obtain A' B' where "S : B' \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> A'" 
@@ -571,7 +562,7 @@ proof-
     by auto
   
   from S T ST TS have S_def: "S = \<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>"
-    by (rule is_arr_isomorphism_dag)
+    by (rule is_iso_arr_dag)
 
   interpret S: arr_Rel \<alpha> \<open>\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>\<close>
     rewrites "(\<dagger>\<^sub>C\<^sub>.\<^sub>R\<^sub>e\<^sub>l \<alpha>\<lparr>ArrMap\<rparr>\<lparr>T\<rparr>)\<lparr>ArrDom\<rparr> = B" 
@@ -637,11 +628,9 @@ qed
 
 end 
 
-end
+lemmas [cat_Rel_cs_simps] = cat_Rel_is_iso_arrD(3,4)
 
-lemmas [cat_Rel_cs_simps] = \<Z>.cat_Rel_is_arr_isomorphismD(3,4)
-
-lemma (in \<Z>) cat_Rel_is_arr_isomorphism:
+lemma cat_Rel_is_iso_arr:
   "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> B \<longleftrightarrow>
     T : A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B \<and>
     v11 (T\<lparr>ArrVal\<rparr>) \<and>
@@ -653,19 +642,15 @@ lemma (in \<Z>) cat_Rel_is_arr_isomorphism:
 
 subsection\<open>The inverse arrow\<close>
 
-lemma (in \<Z>) cat_Rel_the_inverse:
+lemma cat_Rel_the_inverse[cat_Rel_cs_simps]:
   assumes "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> B"
   shows "T\<inverse>\<^sub>C\<^bsub>cat_Rel \<alpha>\<^esub> = T\<inverse>\<^sub>R\<^sub>e\<^sub>l"
   unfolding the_inverse_def
 proof(rule the_equality)
-
-  interpret Rel: category \<alpha> \<open>cat_Rel \<alpha>\<close> by (rule category_cat_Rel)
   from assms have T: "T : A \<mapsto>\<^bsub>cat_Rel \<alpha>\<^esub> B" by auto
-  interpret T: arr_Rel \<alpha> T
-    rewrites "T\<lparr>ArrDom\<rparr> = A" and "T\<lparr>ArrCod\<rparr> = B"
-    using T by (all\<open>elim cat_Rel_is_arrE\<close>) (simp_all add: cat_Rel_components)
-  
-  from assms T T.arr_Rel_axioms cat_Rel_is_arr_isomorphismD(2)[OF assms] 
+  interpret T: arr_Rel \<alpha> T by (intro cat_Rel_is_arrD[OF T])+
+  interpret Rel: category \<alpha> \<open>cat_Rel \<alpha>\<close> by (rule T.category_cat_Rel)
+  from assms T T.arr_Rel_axioms cat_Rel_is_iso_arrD(2)[OF assms] 
   show inv_T_T: "is_inverse (cat_Rel \<alpha>) (T\<inverse>\<^sub>R\<^sub>e\<^sub>l) T"
     by (intro is_inverseI[where a=A and b=B])
       (
@@ -673,14 +658,10 @@ proof(rule the_equality)
           cs_simp: cat_cs_simps cat_Rel_cs_simps
           cs_intro: cat_Rel_cs_intros cat_cs_intros
       )+
-
-  fix S assume prems: "is_inverse (cat_Rel \<alpha>) S T"
-  show "S = T\<inverse>\<^sub>R\<^sub>e\<^sub>l"
-    by (rule category.cat_is_inverse_eq[OF Rel.category_axioms prems inv_T_T])
-
+  fix S assume "is_inverse (cat_Rel \<alpha>) S T"
+  then show "S = T\<inverse>\<^sub>R\<^sub>e\<^sub>l"
+    by (rule category.cat_is_inverse_eq[OF Rel.category_axioms _ inv_T_T])
 qed
-
-lemmas [cat_Rel_cs_simps] = \<Z>.cat_Rel_the_inverse
 
 text\<open>\newpage\<close>
 

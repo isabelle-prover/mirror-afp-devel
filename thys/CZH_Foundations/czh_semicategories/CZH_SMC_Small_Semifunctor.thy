@@ -212,7 +212,7 @@ proof(intro is_tm_semifunctorI)
     by (rule dghm_const_is_tm_dghm) 
       (auto simp: slicing_simps \<CC>.tiny_smc_tiny_digraph assms(3) \<DD>.smc_digraph)
   from assms show "smcf_const \<CC> \<DD> a f : \<CC> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
-    by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
 qed
 
 lemma smcf_const_is_tm_semifunctor':
@@ -364,7 +364,10 @@ proof-
     HomCod.tiny_smc_in_Vset 
   show ?thesis
     by (subst smcf_def) 
-      (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: smc_cs_simps cs_intro: smc_cs_intros V_cs_intros
+      )
 qed
 
 lemma small_all_tiny_smcfs[simp]: "small {\<FF>. \<exists>\<AA> \<BB>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> \<BB>}"
@@ -412,7 +415,7 @@ subsubsection\<open>Opposite tiny semifunctor\<close>
 lemma (in is_tiny_semifunctor) is_tiny_semifunctor_op: 
   "op_smcf \<FF> : op_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> op_smc \<BB>"
   by (intro is_tiny_semifunctorI') 
-    (cs_concl cs_intro: smc_small_cs_intros smc_op_intros)+
+    (cs_concl cs_shallow cs_intro: smc_small_cs_intros smc_op_intros)+
 
 lemma (in is_tiny_semifunctor) is_tiny_semifunctor_op'[smc_op_intros]:  
   assumes "\<AA>' = op_smc \<AA>" and "\<BB>' = op_smc \<BB>" and "\<alpha>' = \<alpha>"

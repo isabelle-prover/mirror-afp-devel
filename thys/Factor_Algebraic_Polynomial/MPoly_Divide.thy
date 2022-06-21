@@ -1,7 +1,7 @@
 subsection \<open>Exact Division of Multivariate Polynomials\<close>
 
 theory MPoly_Divide
-  imports 
+  imports
     Hermite_Lindemann.More_Multivariate_Polynomial_HLW
     Polynomials.MPoly_Type_Class
     Poly_Connection
@@ -18,8 +18,6 @@ text \<open>
   multivariate polynomials, we define the following division operator that performs an
   exact division if possible and returns 0 otherwise.
 \<close>
-
-no_notation MPoly_Type.div (infixl "div" 70)
 
 instantiation mpoly :: ("comm_semiring_1") divide
 begin
@@ -205,7 +203,7 @@ text \<open>
 \<close>
 lemma divide_option_mpoly_poly:
   fixes p q :: "'a :: idom_divide mpoly poly"
-  shows "p div? q = 
+  shows "p div? q =
             (if p = 0 then Some 0
             else if q = 0 then None
             else let dp = Polynomial.degree p; dq = Polynomial.degree q

@@ -56,7 +56,10 @@ sig
   val rewrite_on_eqs: term list -> (wfterm * thm) list -> wfconv
 end;
 
-structure WfTerm : WFTERM =
+functor WfTerm(
+  structure Basic_UtilBase: BASIC_UTIL_BASE;
+  structure UtilLogic : UTIL_LOGIC
+  ) : WFTERM =
 struct
 
 (* Extract a regular cterm from a wellformed term. *)
@@ -78,7 +81,7 @@ fun wellform_ths_of wft =
 
 fun find_target_on_ths ths prop =
     let
-      fun get_on_th th = if prop_of' th aconv prop then SOME th else NONE
+      fun get_on_th th = if UtilLogic.prop_of' th aconv prop then SOME th else NONE
     in
       the (get_first get_on_th ths)
       handle Option.Option =>
@@ -124,7 +127,7 @@ fun cterm_to_wfterm_assume fheads ct =
           if forall (fn fhead => not (Util.is_head fhead t)) fheads then
             WfTerm ct
           else let
-            val ths = map (Thm.assume o Thm.global_cterm_of thy o mk_Trueprop)
+            val ths = map (Thm.assume o Thm.global_cterm_of thy o UtilLogic.mk_Trueprop)
                           (WellForm.lookup_wellform_data thy t)
             val wfargs = map (cterm_to_wfterm_assume fheads) cargs
           in
@@ -167,13 +170,13 @@ fun argn_conv n wfcv wft =
                 (* Obtain pattern from theory. *)
                 val (pat, data_pat) =
                     the (WellForm.lookup_wellform_pattern
-                             thy (term_of wft, prop_of' th))
+                             thy (term_of wft, UtilLogic.prop_of' th))
                     handle Option.Option =>
                            raise Fail "convert_th: invalid input."
 
                 val pat_args = Util.dest_args pat
               in
-                apply_to_thm' (
+                UtilLogic.apply_to_thm' (
                   Util.pattern_rewr_conv data_pat (pat_args ~~ eq_ths')) th
               end
         in
@@ -206,12 +209,17 @@ fun rewr_obj_eq fheads th wft =
       val wf_ths = wellform_ths_of wft
 
       (* First need to instantiate th by matching l with the term of wft. *)
-      val pat_l = th |> concl_of' |> strip_conj |> hd |> dest_eq |> fst
+      val pat_l = th
+        |> UtilLogic.concl_of'
+        |> UtilLogic.strip_conj
+        |> hd
+        |> Basic_UtilBase.dest_eq
+        |> fst
       val inst = Pattern.first_order_match thy (pat_l, t) fo_init
       val th' = Util.subst_thm_thy thy inst th
 
       (* Second, find theorems justifying premises of th'. *)
-      val prems = map dest_Trueprop (Thm.prems_of th')
+      val prems = map UtilLogic.dest_Trueprop (Thm.prems_of th')
       val prems_th = map (find_target_on_ths wf_ths) prems
                      handle Fail "find_target_on_ths: not found" =>
                             raise Fail "WfTerm.rewr_obj_eq"
@@ -223,7 +231,7 @@ fun rewr_obj_eq fheads th wft =
       val c_rhs = eq_th |> Thm.cprop_of |> Thm.dest_arg |> Thm.dest_arg
       val wf_rhs = cterm_to_wfterm_on_ths (wf_ths @ wf_ths') fheads c_rhs
     in
-      (wf_rhs, to_meta_eq eq_th)
+      (wf_rhs, UtilLogic.to_meta_eq eq_th)
     end
     handle Pattern.MATCH => raise Fail "WfTerm.rewr_obj_eq failed"
 
@@ -309,6 +317,3 @@ fun rewrite_on_eqs fheads wf_eqs wft =
     end
 
 end  (* structure WfTerm *)
-
-fun (wfcv1 then_wfconv wfcv2) = WfTerm.then_wfconv (wfcv1, wfcv2)
-fun (wfcv1 else_wfconv wfcv2) = WfTerm.else_wfconv (wfcv1, wfcv2)

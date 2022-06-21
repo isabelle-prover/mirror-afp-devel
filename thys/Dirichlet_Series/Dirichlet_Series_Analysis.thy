@@ -204,7 +204,7 @@ next
   case (8 x c)
   hence "((\<lambda>y. real_power y c) has_vector_derivative c * real_power x (c - 1)) (at x)"
     by (auto intro!: derivative_eq_intros
-             simp: has_field_derivative_iff_has_vector_derivative [symmetric])
+             simp: has_real_derivative_iff_has_vector_derivative [symmetric])
   thus ?case by (simp add: has_vector_derivative_def has_derivative_def nhds_def)
 qed (simp_all add: powr_add)
 
@@ -464,7 +464,7 @@ proof (cases "B = {}")
           (is "(?l has_integral ?I) _") using mn s
           by (intro fundamental_theorem_of_calculus)
              (auto intro!: derivative_eq_intros 
-                   simp: has_field_derivative_iff_has_vector_derivative [symmetric] inner_diff_left)
+                   simp: has_real_derivative_iff_has_vector_derivative [symmetric] inner_diff_left)
         hence "integral {real m..real n} ?l = ?I" by (simp add: has_integral_iff)
         also have "\<dots> \<le> -(real m powr ((s0 - s) \<bullet> 1) / ((s0 - s) \<bullet> 1))" using s mn
           by (simp add: divide_simps inner_diff_left)
@@ -875,7 +875,7 @@ proof -
         have "(norm_g' has_integral (norm_g n - norm_g m)) {m..n}"
           unfolding norm_g'_def norm_g_def power2_eq_square using mn \<delta>_pos
           by (intro fundamental_theorem_of_calculus)
-             (auto simp: has_field_derivative_iff_has_vector_derivative [symmetric] 
+             (auto simp: has_real_derivative_iff_has_vector_derivative [symmetric] 
                  field_simps powr_diff intro!: derivative_eq_intros)
         hence "integral {m..n} norm_g' = norm_g n - norm_g m" by (simp add: has_integral_iff)
         also have "norm_g n \<le> 0" unfolding norm_g_def using \<delta>_pos mn

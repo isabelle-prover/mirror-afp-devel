@@ -125,28 +125,48 @@ lemma times_empty2 [simp]: "vtimes A 0 = 0"
 lemma times_empty_iff: "VSigma A B = 0 \<longleftrightarrow> A=0 \<or> (\<forall>x \<in> elts A. B x = 0)"
   by (metis VSigmaE VSigmaI elts_0 empty_iff trad_foundation)
 
-lemma elts_VSigma: "elts (VSigma a b) = (\<lambda>(x,y). vpair x y) ` Sigma (elts a) (\<lambda>x. elts (b x))"
+lemma elts_VSigma: "elts (VSigma A B) = (\<lambda>(x,y). vpair x y) ` Sigma (elts A) (\<lambda>x. elts (B x))"
   by auto
-
-lemma small_Times [simp]:
-  assumes "small A" "small B" 
-  shows "small (A \<times> B)"
+    
+lemma small_Sigma [simp]:
+  assumes A: "small A" and B: "\<And>x. x \<in> A \<Longrightarrow> small (B x)"
+  shows "small (Sigma A B)"
 proof -
-  obtain f a g b where "inj_on f A" "inj_on g B" and f: "f ` A = elts a" and g: "g ` B = elts b"
-    using assms by (auto simp: small_def)
-  define h where "h \<equiv> \<lambda>(x,y). \<langle>f x, g y\<rangle>"
-  show ?thesis
-    unfolding small_def
-  proof (intro exI conjI)
-    show "inj_on h (A \<times> B)"
-      using \<open>inj_on f A\<close> \<open>inj_on g B\<close> by (simp add: h_def inj_on_def)
-    have "h ` (A \<times> B) = elts (vtimes a b)"
-      using f g by (fastforce simp: h_def image_iff split: prod.split)
-    then show "h ` (A \<times> B) \<in> range elts"
-      by blast
-  qed
+  obtain a where "elts a \<approx> A" 
+    by (meson assms small_eqpoll)
+  then obtain f where f: "bij_betw f (elts a) A"
+    using eqpoll_def by blast
+  have "\<exists>y. elts y \<approx> B x" if "x \<in> A" for x
+    using B small_eqpoll that by blast
+  then obtain g where g: "\<And>x. x \<in> A \<Longrightarrow> elts (g x) \<approx> B x"
+    by metis 
+  with f have "elts (VSigma a (g \<circ> f)) \<approx> Sigma A B"
+    by (simp add: elts_VSigma Sigma_eqpoll_cong bij_betwE)
+  then show ?thesis
+    using small_eqpoll by blast
 qed
 
+lemma small_Times [simp]:
+  assumes "small A" "small B"  shows "small (A \<times> B)"
+  by (simp add: assms)
+
+lemma small_Times_iff: "small (A \<times> B) \<longleftrightarrow> small A \<and> small B \<or> A={} \<or> B={}"  (is "_ = ?rhs")
+proof
+  assume *: "small (A \<times> B)"
+  { have "small A \<and> small B" if "x \<in> A" "y \<in> B" for x y
+    proof -
+      have "A \<subseteq> fst ` (A \<times> B)" "B \<subseteq> snd ` (A \<times> B)"
+        using that by auto
+      with that show ?thesis
+        by (metis * replacement smaller_than_small)
+    qed    }
+  then show ?rhs
+    by (metis equals0I)
+next
+  assume ?rhs
+  then show "small (A \<times> B)"
+    by auto
+qed
 
 subsection \<open>Disjoint Sum\<close>
 
@@ -250,43 +270,34 @@ lemma small_Un:
   assumes X: "small X" and Y: "small Y"
   shows "small (X \<union> Y)"
 proof -
-  obtain f g :: "'a\<Rightarrow>V" where f: "inj_on f X" and g: "inj_on g Y" 
-    by (meson assms small_def)
-  define h where "h \<equiv> \<lambda>z. if z \<in> X then Inl (f z) else Inr (g z)"
-  show ?thesis
-    unfolding small_def
-  proof (intro exI conjI)
-    show "inj_on h (X \<union> Y)"
-      using f g by (auto simp add: inj_on_def h_def)
-    show "h ` (X \<union> Y) \<in> range elts"
-      by (metis X Y image_Un replacement small_iff_range small_sup_iff)
-  qed
+  obtain x y where "elts x \<approx> X" "elts y \<approx> Y"
+    by (meson assms small_eqpoll)
+  then have "X \<union> Y \<lesssim> Inl ` (elts x) \<union> Inr ` (elts y)"
+    by (metis (mono_tags, lifting) Inr_Inl_iff Un_lepoll_mono disjnt_iff eqpoll_imp_lepoll eqpoll_sym f_inv_into_f inj_on_Inl inj_on_Inr inj_on_image_lepoll_2)
+  then show ?thesis
+    by (metis lepoll_iff replacement small_elts small_sup_iff smaller_than_small)
 qed
 
 lemma small_UN [simp,intro]:
-  assumes X: "small X" and B: "\<And>x. x \<in> X \<Longrightarrow> small (B x)"
-  shows "small (\<Union>x\<in>X. B x)"
+  assumes A: "small A" and B: "\<And>x. x \<in> A \<Longrightarrow> small (B x)"
+  shows "small (\<Union>x\<in>A. B x)"
 proof -
-  obtain f :: "'a\<Rightarrow>V" where f: "inj_on f X" 
-    by (meson assms small_def)
-  have "\<exists>g. inj_on g (B x) \<and> g ` (B x) \<in> range elts" if "x \<in> X" for x
-    using B small_def that by auto
-  then obtain g::"'a \<Rightarrow> 'b \<Rightarrow> V" where g: "\<And>x. x \<in> X \<Longrightarrow> inj_on (g x) (B x)" 
+  obtain a where "elts a \<approx> A" 
+    by (meson assms small_eqpoll)
+  then obtain f where f: "bij_betw f (elts a) A"
+    using eqpoll_def by blast
+  have "\<exists>y. elts y \<approx> B x" if "x \<in> A" for x
+    using B small_eqpoll that by blast
+  then obtain g where g: "\<And>x. x \<in> A \<Longrightarrow> elts (g x) \<approx> B x" 
     by metis
-  define \<phi> where "\<phi> \<equiv> \<lambda>y. @x. x \<in> X \<and> y \<in> B x"
-  have \<phi>: "\<phi> y \<in> X \<and> y \<in> B (\<phi> y)" if "y \<in> (\<Union>x\<in>X. B x)" for y
-    unfolding \<phi>_def by (metis (mono_tags, lifting) UN_E someI that)
-  define h where "h \<equiv> \<lambda>y. \<langle>f (\<phi> y), g (\<phi> y) y\<rangle>"
-  show ?thesis
-    unfolding small_def
-  proof (intro exI conjI)
-    show "inj_on h (\<Union> (B ` X))"
-      using f g \<phi> unfolding h_def inj_on_def by (metis vpair_inject)
-  have "small (h ` \<Union> (B ` X))"
-    by (simp add: B X image_UN)
-  then show "h ` \<Union> (B ` X) \<in> range elts"
-    using small_iff_range by blast
-  qed
+  have sm: "small (Sigma (elts a) (elts \<circ> g \<circ> f))"
+    by simp
+  have "(\<Union>x\<in>A. B x) \<lesssim> Sigma A B"
+    by (metis image_lepoll snd_image_Sigma)
+  also have "...  \<lesssim> Sigma (elts a) (elts \<circ> g \<circ> f)"
+    by (smt (verit) Sigma_eqpoll_cong bij_betw_iff_bijections comp_apply eqpoll_imp_lepoll eqpoll_sym f g)
+  finally show ?thesis
+    using lepoll_small sm by blast
 qed
 
 lemma small_Union [simp,intro]:
@@ -499,11 +510,14 @@ lemma TC_sup_distrib: "TC (x \<squnion> y) = TC x \<squnion> TC y"
 lemma TC_Sup_distrib:
   assumes "small X" shows "TC (\<Squnion>X) = \<Squnion>(TC ` X)"
 proof -
+  have "\<Squnion>X \<le> \<Squnion> (TC ` X)"
+    using arg_subset_TC by fastforce
+  moreover have "\<Squnion> (\<Union>x\<in>X. TC ` elts x) \<le> \<Squnion> (TC ` X)"
+    using assms 
+    by clarsimp (meson TC_least Transset_TC Transset_def arg_subset_TC replacement vsubsetD)
+  ultimately
   have "\<Squnion> X \<squnion> \<Squnion> (\<Union>x\<in>X. TC ` elts x) \<le> \<Squnion> (TC ` X)"
-    using assms
-    apply (auto simp: Sup_le_iff)
-    using arg_subset_TC apply blast
-    by (metis TC_least Transset_TC Transset_def arg_subset_TC vsubsetD)
+    by simp
   moreover have "\<Squnion> (TC ` X) \<le> \<Squnion> X \<squnion> \<Squnion> (\<Union>x\<in>X. TC ` elts x)"
   proof (clarsimp simp add: Sup_le_iff assms)
     show "\<exists>x\<in>X. y \<in> elts x"
@@ -567,33 +581,27 @@ proof (induction a rule: eps_induct)
 qed
 
 lemma rank_of_Ord: "Ord i \<Longrightarrow> rank i = i"
-  apply (induction rule: Ord_induct)
-  by (metis (no_types, lifting) Ord_equality SUP_cong rank_Sup)
+  by (induction rule: Ord_induct) (metis (no_types, lifting) Ord_equality SUP_cong rank_Sup)
 
 lemma Ord_iff_rank: "Ord x \<longleftrightarrow> rank x = x"
   using Ord_rank [of x] rank_of_Ord by fastforce
 
 lemma rank_lt: "a \<in> elts b \<Longrightarrow> rank a < rank b"
-  apply (subst rank [of b])
-  by (metis (no_types, lifting) Ord_mem_iff_lt Ord_rank small_UN UN_iff elts_of_set elts_succ insert_iff rank small_elts)
+  by (metis Ord_linear2 Ord_rank ZFC_in_HOL.SUP_le_iff rank_Sup replacement small_elts succ_le_iff order.irrefl)
 
 lemma rank_0 [simp]: "rank 0 = 0"
-  unfolding rank_def
-  using transrec by fastforce
+  using transrec Ord_0 rank_def rank_of_Ord by presburger
 
 lemma rank_succ [simp]: "rank(succ x) = succ(rank x)"
 proof (rule order_antisym)
   show "rank (succ x) \<le> succ (rank x)"
-    apply (subst rank [of "succ x"])
-    apply (metis (no_types, lifting) Sup_insert elts_of_set elts_succ equals0D image_insert rank small_sup_iff subset_insertI sup.orderE vsubsetI)
-    done
+    by (metis (no_types, lifting) Sup_insert elts_of_set elts_succ image_insert rank small_UN small_elts subset_insertI sup.orderE vsubsetI)
   show "succ (rank x) \<le> rank (succ x)"
     by (metis (mono_tags, lifting) ZFC_in_HOL.Sup_upper elts_succ image_insert insertI1 rank_Sup replacement small_elts)
 qed
 
 lemma rank_mono: "a \<le> b \<Longrightarrow> rank a \<le> rank b"
-  apply (rule vsubsetI)
-  using rank [of a] rank [of b] small_UN by auto
+  using rank [of a] rank [of b] small_UN by force
 
 lemma VsetI: "rank b \<sqsubset> i \<Longrightarrow> b \<in> elts (Vset i)"
 proof (induction i arbitrary: b rule: eps_induct)
@@ -648,17 +656,15 @@ qed
 
 lemma rank_Union: "rank(\<Squnion> A) = \<Squnion> (rank ` A)"
 proof (rule order_antisym)
-  have "elts (SUP y\<in>elts (\<Squnion> A). succ (rank y)) \<subseteq> elts (\<Squnion> (rank ` A))"
-    apply auto(*SLOW*)
-    using Ord_mem_iff_lt Ord_rank rank_lt apply blast
-    by (meson less_le_not_le rank_lt vsubsetD)
+  have "elts (\<Squnion>y\<in>elts (\<Squnion> A). succ (rank y)) \<subseteq> elts (\<Squnion> (rank ` A))"
+    by clarsimp (meson Ord_mem_iff_lt Ord_rank less_V_def rank_lt vsubsetD)
   then show "rank (\<Squnion> A) \<le> \<Squnion> (rank ` A)"
     by (metis less_eq_V_def rank_Sup)
   show "\<Squnion> (rank ` A) \<le> rank (\<Squnion> A)"
   proof (cases "small A")
     case True
     then show ?thesis
-      by (metis (mono_tags, lifting) ZFC_in_HOL.Sup_least ZFC_in_HOL.Sup_upper image_iff rank_mono)
+      by (simp add: ZFC_in_HOL.SUP_le_iff ZFC_in_HOL.Sup_upper rank_mono)
   next
     case False
     then have "\<not> small (rank ` A)"
@@ -693,7 +699,7 @@ next
 next
   case small
   show ?case
-    apply (rule smaller_than_small [OF small_bounded_rank_le [of "rank b"]])
+    using smaller_than_small [OF small_bounded_rank_le [of "rank b"]]
     by (simp add: Collect_mono less_V_def)
 qed
 
@@ -717,18 +723,17 @@ proof (rule order_antisym)
   show "Vfrom A (rank x) \<le> Vfrom A x"
   proof (induction x rule: eps_induct)
     case (step x)
-    have "(SUP j\<in>elts (rank x). VPow (Vfrom A j)) \<le> (SUP j\<in>elts x. VPow (Vfrom A j))"
-      apply (rule Sup_least, clarify)
-      apply (simp add: rank [of x])
-      using step.IH
-      by (metis Ord_rank OrdmemD Vfrom_mono2 dual_order.trans inf_sup_aci(5) less_V_def sup.orderE)
+    have "(\<Squnion>j\<in>elts (rank x). VPow (Vfrom A j)) \<le> (\<Squnion>j\<in>elts x. VPow (Vfrom A j))"
+      apply (rule Sup_least)
+      apply (clarsimp simp add: rank [of x])
+      by (meson Ord_in_Ord Ord_rank OrdmemD Vfrom_mono order.trans less_imp_le order.refl step)
     then show ?case
       by (simp add: Vfrom [of _ x] Vfrom [of _ "rank(x)"] sup.coboundedI2)
 qed
   show "Vfrom A x \<le> Vfrom A (rank x)"
   proof (induction x rule: eps_induct)
     case (step x)
-    have "(SUP j\<in>elts x. VPow (Vfrom A j)) \<le> (SUP j\<in>elts (rank x). VPow (Vfrom A j))"
+    have "(\<Squnion>j\<in>elts x. VPow (Vfrom A j)) \<le> (\<Squnion>j\<in>elts (rank x). VPow (Vfrom A j))"
       using step.IH TC_rank_mem less_TC_iff by force
     then show ?case
       by (simp add: Vfrom [of _ x] Vfrom [of _ "rank(x)"] sup.coboundedI2)
@@ -742,8 +747,7 @@ lemma Vset_succ_TC:
   assumes "x \<in> elts (Vset (ZFC_in_HOL.succ k))" "u \<sqsubset> x"
   shows "u \<in> elts (Vset k)"
   using assms
-  apply (simp add: Vfrom_succ)
-  using TC_least Transset_Vfrom less_TC_def by auto
+  using TC_least Transset_Vfrom Vfrom_succ less_TC_def by auto
 
 subsection\<open>Cardinal Numbers\<close>
 
@@ -802,8 +806,7 @@ proof (induction y arbitrary: x rule: eps_induct)
 qed
 
 lemma le_TC_imp_VWO: "x \<sqsubseteq> y \<Longrightarrow> (x,y) \<in> VWO"
-  apply (auto simp: le_TC_def less_TC_imp_VWO)
-  by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id UNIV_I VWO)
+  by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id UNIV_I VWO le_TC_def less_TC_imp_VWO)
 
 lemma le_TC_0_iff [simp]: "x \<sqsubseteq> 0 \<longleftrightarrow> x = 0"
   by (simp add: le_TC_def)
@@ -834,7 +837,7 @@ lemma VWO_TC_le: "\<lbrakk>Ord \<alpha>; Ord \<beta>; (\<beta>, \<alpha>) \<in> 
 proof (induct \<alpha> arbitrary: \<beta> rule: Ord_induct)
   case (step \<alpha>)
   then show ?case
-    by (metis Diff_iff Linear_order_VWO Linear_order_in_diff_Id Ord_TC_less_iff Ord_linear2 UNIV_I VWO le_TC_def le_less less_TC_imp_VWO pair_in_Id_conv)
+    by (metis DiffI IdD Linear_order_VWO Linear_order_in_diff_Id Ord_linear Ord_mem_iff_less_TC VWO iso_tuple_UNIV_I le_TC_def mem_imp_VWO)
 qed
 
 lemma VWO_iff_Ord_le [simp]: "\<lbrakk>Ord \<alpha>; Ord \<beta>\<rbrakk> \<Longrightarrow> (\<beta>, \<alpha>) \<in> VWO \<longleftrightarrow> \<beta> \<le> \<alpha>"
@@ -1465,7 +1468,7 @@ proof
     by (meson ordermap_bij assms(4) bij_betw_def r)
   have B: "bij_betw (ordermap B s) B (ordermap B s ` B)"
     by (meson ordermap_bij assms(8) bij_betw_def s)
-  define f where "f \<equiv> inv_into B (ordermap B s) o ordermap A r"
+  define f where "f \<equiv> inv_into B (ordermap B s) \<circ> ordermap A r"
   show ?rhs
   proof (intro exI conjI)
     have bijA: "bij_betw (ordermap A r) A (elts \<gamma>)"
@@ -1751,19 +1754,42 @@ proof -
 qed
 
 
+subsection \<open>Cardinality of an arbitrary HOL set\<close>
+
+definition gcard :: "'a set \<Rightarrow> V" 
+  where "gcard X \<equiv> if small X then (LEAST i. Ord i \<and> elts i \<approx> X) else 0"
+
 subsection\<open>Cardinality of a set\<close>
 
-definition
-  vcard :: "V\<Rightarrow>V"
+definition vcard :: "V\<Rightarrow>V"
   where "vcard a \<equiv> (LEAST i. Ord i \<and> elts i \<approx> elts a)"
 
-definition
-  Card:: "V\<Rightarrow>bool" where "Card i \<equiv> i = vcard i"
+lemma gcard_eq_vcard [simp]: "gcard (elts x) = vcard x"
+  by (simp add: vcard_def gcard_def)
+
+definition Card:: "V\<Rightarrow>bool"
+  where "Card i \<equiv> i = vcard i"
 
 abbreviation CARD where "CARD \<equiv> Collect Card"
 
 lemma cardinal_cong: "elts x \<approx> elts y \<Longrightarrow> vcard x = vcard y"
   unfolding vcard_def by (meson eqpoll_sym eqpoll_trans)
+
+lemma gcardinal_cong:
+  assumes "X \<approx> Y" shows "gcard X = gcard Y"
+proof -
+  have "(LEAST i. Ord i \<and> elts i \<approx> X) = (LEAST i. Ord i \<and> elts i \<approx> Y)"
+    by (meson eqpoll_sym eqpoll_trans assms)
+  then show ?thesis
+    unfolding gcard_def
+    by (meson eqpoll_sym small_eqcong assms)
+qed
+
+lemma vcard_set_image: "inj_on f (elts x) \<Longrightarrow> vcard (set (f ` elts x)) = vcard x"
+  by (simp add: cardinal_cong)
+
+lemma gcard_image: "inj_on f X \<Longrightarrow> gcard (f ` X) = gcard X"
+  by (simp add: gcardinal_cong)
 
 lemma Card_cardinal_eq: "Card \<kappa> \<Longrightarrow> vcard \<kappa> = \<kappa>"
   by (simp add: Card_def)
@@ -1790,6 +1816,22 @@ lemma inj_into_vcard:
 
 lemma cardinal_idem [simp]: "vcard (vcard a) = vcard a"
   using cardinal_cong cardinal_eqpoll by blast
+
+lemma subset_smaller_vcard:
+  assumes "\<kappa> \<le> vcard x" "Card \<kappa>"
+  obtains y where "y \<le> x" "vcard y = \<kappa>"
+proof -
+  obtain \<phi> where \<phi>: "bij_betw \<phi> (elts (vcard x)) (elts x)"
+    using cardinal_eqpoll eqpoll_def by blast
+  show thesis
+  proof
+    let ?y = "ZFC_in_HOL.set (\<phi> ` elts \<kappa>)"
+    show "?y \<le> x"
+      by (meson \<phi> assms bij_betwE set_image_le_iff small_elts vsubsetD) 
+    show "vcard ?y = \<kappa>"
+      by (metis vcard_set_image Card_def assms bij_betw_def bij_betw_subset \<phi> less_eq_V_def)
+  qed
+qed
 
 text\<open>every natural number is a (finite) cardinal\<close>
 lemma nat_into_Card:
@@ -1827,53 +1869,70 @@ lemma vcard_0 [simp]: "vcard 0 = 0"
 lemma Ord_cardinal [simp,intro!]: "Ord(vcard a)"
   unfolding vcard_def by (metis Card_def Card_is_Ord cardinal_cong cardinal_eqpoll vcard_def)
 
-text\<open>The cardinals are the initial ordinals.\<close>
-lemma Card_iff_initial: "Card \<kappa> \<longleftrightarrow> Ord \<kappa> \<and> (\<forall>\<alpha>. Ord \<alpha> \<and> \<alpha> < \<kappa> \<longrightarrow> ~ elts \<alpha> \<approx> elts \<kappa>)"
+lemma gcard_big_0: "\<not> small X \<Longrightarrow> gcard X = 0"
+  by (simp add: gcard_def)
+
+lemma gcard_eq_card:
+  assumes "finite X" shows "gcard X = ord_of_nat (card X)"
 proof -
-  { fix j
-    assume \<kappa>: "Card \<kappa>" "elts j \<approx> elts \<kappa>" "Ord j"
-    assume "j < \<kappa>"
-    also have "\<dots> = (LEAST i. Ord i \<and> elts i \<approx> elts \<kappa>)" using \<kappa>
-      by (simp add: Card_def vcard_def)
-    finally have "j < (LEAST i. Ord i \<and> elts i \<approx> elts \<kappa>)" .
-    hence "False" using \<kappa>
-      using not_less_Ord_Least by fastforce
-  }
-  then show ?thesis
-    by (blast intro: CardI Card_is_Ord)
+  have "\<And>y. Ord y \<and> elts y \<approx> X \<Longrightarrow> ord_of_nat (card X) \<le> y"
+    by (metis assms eqpoll_finite_iff eqpoll_iff_card order_le_less ordertype_VWF_finite_nat ordertype_eq_Ord)
+  then have "(LEAST i. Ord i \<and> elts i \<approx> X) = ord_of_nat (card X)"
+    by (simp add: assms eqpoll_iff_card finite_Ord_omega Least_equality)
+  with assms show ?thesis
+    by (simp add: finite_imp_small gcard_def)
 qed
 
-lemma Card_\<omega> [iff]: "Card \<omega>"
+lemma gcard_empty_0 [simp]: "gcard {} = 0"
+  by (simp add: gcard_eq_card) 
+
+lemma gcard_single_1 [simp]: "gcard {x} = 1"
+  by (simp add: gcard_eq_card one_V_def)
+
+lemma Card_gcard [iff]: "Card (gcard X)"
+  by (metis Card_0 Card_def cardinal_idem gcard_big_0 gcardinal_cong small_eqpoll gcard_eq_vcard)
+
+lemma gcard_eqpoll: "small X \<Longrightarrow> elts (gcard X) \<approx> X"
+  by (metis cardinal_eqpoll eqpoll_trans gcard_eq_vcard gcardinal_cong small_eqpoll)
+
+lemma lepoll_imp_gcard_le:
+  assumes "A \<lesssim> B" "small B"
+  shows "gcard A \<le> gcard B"
 proof -
-  have "\<And>\<alpha> f. \<lbrakk>\<alpha> \<in> elts \<omega>; bij_betw f (elts \<alpha>) (elts \<omega>)\<rbrakk> \<Longrightarrow> False"
-  using bij_betw_finite finite_Ord_omega infinite_\<omega> by blast
-  then show ?thesis
-    by (meson CardI Ord_\<omega> Ord_mem_iff_lt eqpoll_def)
+  have "elts (gcard A) \<approx> A" "elts (gcard B) \<approx> B"
+    by (meson assms gcard_eqpoll lepoll_small)+
+  with \<open>A \<lesssim> B\<close> show ?thesis
+    by (metis Ord_cardinal Ord_linear2 eqpoll_sym gcard_eq_vcard gcardinal_cong lepoll_antisym
+              lepoll_trans2 less_V_def less_eq_V_def subset_imp_lepoll)
 qed
+
+lemma gcard_image_le:
+  assumes "small A" shows "gcard (f ` A) \<le> gcard A"
+  using assms image_lepoll lepoll_imp_gcard_le by blast
+
+lemma subset_imp_gcard_le:
+  assumes "A \<subseteq> B" "small B"
+  shows "gcard A \<le> gcard B"
+  by (simp add: assms lepoll_imp_gcard_le subset_imp_lepoll)
+
+lemma gcard_le_lepoll: "\<lbrakk>gcard A \<le> \<alpha>; small A\<rbrakk> \<Longrightarrow> A \<lesssim> elts \<alpha>"
+  by (meson eqpoll_sym gcard_eqpoll lepoll_trans1 less_eq_V_def subset_imp_lepoll)
+
+subsection\<open>Cardinality of a set\<close>
+
+text\<open>The cardinals are the initial ordinals.\<close>
+lemma Card_iff_initial: "Card \<kappa> \<longleftrightarrow> Ord \<kappa> \<and> (\<forall>\<alpha>. Ord \<alpha> \<and> \<alpha> < \<kappa> \<longrightarrow> ~ elts \<alpha> \<approx> elts \<kappa>)"
+  by (metis CardI Card_def Card_is_Ord not_less_Ord_Least vcard_def)
+
+lemma Card_\<omega> [iff]: "Card \<omega>"
+  by (meson CardI Ord_\<omega> eqpoll_finite_iff infinite_Ord_omega infinite_\<omega> leD)
 
 lemma lt_Card_imp_lesspoll: "\<lbrakk>i < a; Card a; Ord i\<rbrakk> \<Longrightarrow> elts i \<prec> elts a"
   by (meson Card_iff_initial less_eq_V_def less_imp_le lesspoll_def subset_imp_lepoll)
 
 lemma lepoll_imp_Card_le:
   assumes "elts a \<lesssim> elts b" shows "vcard a \<le> vcard b"
-using Ord_cardinal [of a] Ord_cardinal [of b]
-proof (cases rule: Ord_linear_le)
-  case le thus ?thesis .
-next
-  case ge
-  have "elts b \<approx> elts (vcard b)"
-    by (simp add: cardinal_eqpoll eqpoll_sym)
-  also have "\<dots> \<lesssim> elts (vcard a)"
-    by (meson ge less_eq_V_def subset_imp_lepoll)
-  also have "\<dots> \<approx> elts a"
-    by (simp add: cardinal_eqpoll)
-  finally have "elts b \<lesssim> elts a"  .
-  hence "elts a \<approx> elts b"
-    using assms lepoll_antisym by blast
-  hence "vcard a = vcard b"
-    by (rule cardinal_cong)
-  thus ?thesis by simp
-qed
+  using assms lepoll_imp_gcard_le by fastforce
 
 lemma lepoll_cardinal_le: "\<lbrakk>elts A \<lesssim> elts i; Ord i\<rbrakk> \<Longrightarrow> vcard A \<le> i"
   by (metis Ord_Least Ord_linear2 dual_order.trans eqpoll_refl lepoll_imp_Card_le not_less_Ord_Least vcard_def)
@@ -1883,7 +1942,7 @@ lemma cardinal_le_lepoll: "vcard A \<le> \<alpha> \<Longrightarrow> elts A \<les
 
 lemma lesspoll_imp_Card_less:
   assumes "elts a \<prec> elts b" shows "vcard a < vcard b"
-  by (metis assms cardinal_eqpoll eqpoll_sym eqpoll_trans le_neq_trans lepoll_imp_Card_le lesspoll_def)
+  by (metis assms cardinal_eqpoll eqpoll_sym eqpoll_trans lepoll_imp_Card_le less_V_def lesspoll_def)
 
 
 lemma Card_Union [simp,intro]:
@@ -1902,7 +1961,7 @@ next
     using j(2) lt_Card_imp_lesspoll by blast
   { assume eqp: "elts j \<approx> elts (\<Squnion>A)"
     have  "elts c \<lesssim> elts (\<Squnion>A)" using c
-      using Sup_V_def ZFC_in_HOL.Sup_upper j(1) less_eq_V_def subset_imp_lepoll by fastforce
+      by (metis Card_def Sup_V_def ZFC_in_HOL.Sup_upper cardinal_le_lepoll j(1) not_less_0)
     also have "... \<approx> elts j"  by (rule eqpoll_sym [OF eqp])
     also have "... \<prec> elts c"  by (rule jls)
     finally have "elts c \<prec> elts c" .
@@ -1991,6 +2050,10 @@ proof (unfold cadd_def, rule cardinal_cong)
   finally show "elts (vcard (i \<Uplus> j) \<Uplus> k) \<approx> elts (i \<Uplus> vcard (j \<Uplus> k))" .
 qed
 
+lemma cadd_left_commute: "j \<oplus> (i \<oplus> k) = i \<oplus> (j \<oplus> k)"
+  using cadd_assoc cadd_commute by force
+
+lemmas cadd_ac = cadd_assoc cadd_commute cadd_left_commute
 
 text\<open>0 is the identity for addition\<close>
 lemma vsum_0_eqpoll: "elts (0\<Uplus>a) \<approx> elts a"
@@ -2037,7 +2100,7 @@ lemma prod_bij: "\<lbrakk>bij_betw f A C; bij_betw g B D\<rbrakk>
 lemma cmult_commute: "i \<otimes> j = j \<otimes> i"
 proof -
   have "(\<lambda>(x, y). \<langle>x, y\<rangle>) ` (elts i \<times> elts j) \<approx> (\<lambda>(x, y). \<langle>x, y\<rangle>) ` (elts j \<times> elts i)"
-    by (simp add: inj_on_vpair times_commute_eqpoll)
+    by (simp add: times_commute_eqpoll)
   then show ?thesis
     unfolding cmult_def
     using cardinal_cong elts_VSigma by auto
@@ -2052,6 +2115,9 @@ proof -
   then show ?thesis
     using cardinal_eqpoll eqpoll_trans by blast
 qed
+
+lemma elts_cmult: "elts (\<kappa>' \<otimes> \<kappa>) \<approx> elts \<kappa>' \<times> elts \<kappa>"
+  by (simp add: cmult_def elts_vcard_VSigma_eqpoll)
 
 lemma cmult_assoc: "(i \<otimes> j) \<otimes> k = i \<otimes> (j \<otimes> k)"
   unfolding cmult_def
@@ -2132,6 +2198,36 @@ lemma cmult_le_mono: "\<lbrakk>\<kappa>' \<le> \<kappa>; \<mu>' \<le> \<mu>\<rbr
   unfolding cmult_def
   by (auto simp: elts_VSigma intro!: lepoll_imp_Card_le times_lepoll_mono subset_imp_lepoll)
 
+lemma vcard_Sup_le_cmult:
+  assumes "small U" and \<kappa>: "\<And>x. x \<in> U \<Longrightarrow> vcard x \<le> \<kappa>"
+  shows "vcard (\<Squnion>U) \<le> vcard (set U) \<otimes> \<kappa>"
+proof -
+  have "\<exists>f. f \<in> elts x \<rightarrow> elts \<kappa> \<and> inj_on f (elts x)" if "x \<in> U" for x
+    using \<kappa> [OF that] by (metis cardinal_le_lepoll image_subset_iff_funcset lepoll_def)
+  then obtain \<phi> where \<phi>: "\<And>x. x \<in> U \<Longrightarrow> (\<phi> x) \<in> elts x \<rightarrow> elts \<kappa> \<and> inj_on (\<phi> x) (elts x)"
+    by metis
+  define u where "u \<equiv> \<lambda>y. @x. x \<in> U \<and> y \<in> elts x"
+  have u: "u y \<in> U \<and> y \<in> elts (u y)" if "y \<in> \<Union>(elts ` U)" for y
+    unfolding u_def by (metis (mono_tags, lifting)that someI2_ex UN_iff)  
+  define \<psi> where "\<psi> \<equiv> \<lambda>y. (u y, \<phi> (u y) y)"
+  have U: "elts (vcard (set U)) \<approx> U"
+    by (metis \<open>small U\<close> cardinal_eqpoll elts_of_set)
+  have "elts (\<Squnion>U) = \<Union>(elts ` U)"
+    using \<open>small U\<close> by blast
+  also have "\<dots> \<lesssim> U \<times> elts \<kappa>"
+    unfolding lepoll_def
+  proof (intro exI conjI)
+    show "inj_on \<psi> (\<Union> (elts ` U))"
+      using \<phi> u by (smt (verit) \<psi>_def inj_on_def prod.inject)
+    show "\<psi> ` \<Union> (elts ` U) \<subseteq> U \<times> elts \<kappa>"
+      using \<phi> u by (auto simp: \<psi>_def)
+  qed
+  also have "\<dots>  \<approx> elts (vcard (set U) \<otimes> \<kappa>)"
+    using U elts_cmult eqpoll_sym eqpoll_trans times_eqpoll_cong by blast
+  finally have "elts (\<Squnion> U) \<lesssim> elts (vcard (set U) \<otimes> \<kappa>)" .
+  then show ?thesis
+    by (simp add: cmult_def lepoll_cardinal_le)
+qed
 
 subsection\<open>The finite cardinals\<close>
 
@@ -2186,6 +2282,21 @@ proof -
     by (metis cadd_commute cadd_def cardinal_cong cardinal_idem vsum_0_eqpoll cadd_assoc)
 qed
 
+lemma vcard_sup: "vcard (x \<squnion> y) \<le> vcard x \<oplus> vcard y"
+proof -
+  have "elts (x \<squnion> y) \<lesssim> elts (x \<Uplus> y)"
+    unfolding lepoll_def
+  proof (intro exI conjI)
+    let ?f = "\<lambda>z. if z \<in> elts x then Inl z else Inr z"
+    show "inj_on ?f (elts (x \<squnion> y))"
+      by (simp add: inj_on_def)
+    show "?f ` elts (x \<squnion> y) \<subseteq> elts (x \<Uplus> y)"
+      by force
+  qed
+  then show ?thesis
+    using cadd_ac
+    by (metis cadd_def cardinal_cong cardinal_idem lepoll_imp_Card_le vsum_0_eqpoll)
+qed
 
 subsection\<open>Infinite cardinals\<close>
 
@@ -2211,8 +2322,7 @@ lemma InfCard_ge_ord_of_nat:
 lemma InfCard_not_0[iff]: "\<not> InfCard 0"
   by (simp add: InfCard_iff)
 
-definition
-  csucc :: "V\<Rightarrow>V"
+definition csucc :: "V\<Rightarrow>V"
   where "csucc \<kappa> \<equiv> LEAST \<kappa>'. Ord \<kappa>' \<and> (Card \<kappa>' \<and> \<kappa> < \<kappa>')"
 
 
@@ -2325,9 +2435,21 @@ qed
 lemma Card_lt_csucc_iff: "\<lbrakk>Card \<kappa>'; Card \<kappa>\<rbrakk> \<Longrightarrow> (\<kappa>' < csucc \<kappa>) = (\<kappa>' \<le> \<kappa>)"
   by (simp add: lt_csucc_iff Card_cardinal_eq Card_is_Ord)
 
+lemma csucc_lt_csucc_iff: "\<lbrakk>Card \<kappa>'; Card \<kappa>\<rbrakk> \<Longrightarrow> (csucc \<kappa>' < csucc \<kappa>) = (\<kappa>' < \<kappa>)"
+  by (metis Card_csucc Card_is_Ord Card_lt_csucc_iff Ord_not_less)
+
+lemma csucc_le_csucc_iff: "\<lbrakk>Card \<kappa>'; Card \<kappa>\<rbrakk> \<Longrightarrow> (csucc \<kappa>' \<le> csucc \<kappa>) = (\<kappa>' \<le> \<kappa>)"
+  by (metis Card_csucc Card_is_Ord Card_lt_csucc_iff Ord_not_less)
+
+lemma csucc_0 [simp]: "csucc 0 = 1"
+  by (simp add: finite_csucc one_V_def)
+
+lemma Card_Un [simp,intro]:
+  assumes "Card x" "Card y" shows "Card(x \<squnion> y)"
+  by (metis Card_is_Ord Ord_linear_le assms sup.absorb2 sup.orderE)
+
 lemma InfCard_csucc: "InfCard \<kappa> \<Longrightarrow> InfCard (csucc \<kappa>)"
   using InfCard_def le_csucc by auto
-
 
 text\<open>Kunen's Lemma 10.11\<close>
 lemma InfCard_is_Limit:
@@ -2419,66 +2541,87 @@ lemma InfCard_le_cadd_eq: "\<lbrakk>InfCard \<kappa>; \<mu> \<le> \<kappa>\<rbra
 lemma InfCard_cadd_eq: "\<lbrakk>InfCard \<kappa>; InfCard \<mu>\<rbrakk> \<Longrightarrow> \<kappa> \<oplus> \<mu> = \<kappa> \<squnion> \<mu>"
   by (metis Card_iff_initial InfCard_def InfCard_le_cadd_eq Ord_linear_le cadd_commute sup.absorb2 sup.orderE)
 
+lemma csucc_le_Card_iff: "\<lbrakk>Card \<kappa>'; Card \<kappa>\<rbrakk> \<Longrightarrow> csucc \<kappa>' \<le> \<kappa> \<longleftrightarrow> \<kappa>' < \<kappa>"
+  by (metis Card_csucc Card_is_Ord Card_lt_csucc_iff Ord_not_le)
+
+lemma cadd_InfCard_le:
+  assumes "\<alpha> \<le> \<kappa>" "\<beta> \<le> \<kappa>" "InfCard \<kappa>"
+  shows "\<alpha> \<oplus> \<beta> \<le> \<kappa>"
+  using assms by (metis InfCard_cdouble_eq cadd_le_mono)
+
+lemma cmult_InfCard_le:
+  assumes "\<alpha> \<le> \<kappa>" "\<beta> \<le> \<kappa>" "InfCard \<kappa>"
+  shows "\<alpha> \<otimes> \<beta> \<le> \<kappa>"
+  using assms
+  by (metis InfCard_csquare_eq cmult_le_mono)
 
 subsection \<open>The Aleph-seqence\<close>
 
 text \<open>This is the well-known transfinite enumeration of the cardinal numbers.\<close>
 
-definition
-  Aleph :: "V \<Rightarrow> V"   (\<open>\<aleph>_\<close> [90] 90) 
-  where "Aleph \<equiv> transrec3 \<omega> (\<lambda>x r. csucc(r)) (\<lambda>i r . \<Squnion> (r ` elts i))"
+definition Aleph :: "V \<Rightarrow> V"    (\<open>\<aleph>_\<close> [90] 90)
+  where "Aleph \<equiv> transrec (\<lambda>f x. \<omega> \<squnion> \<Squnion>((\<lambda>y. csucc(f y)) ` elts x))"
 
-lemma Card_Aleph [simp, intro]:
-     "Ord \<alpha> \<Longrightarrow> Card(Aleph \<alpha>)"
-by (induction \<alpha> rule: Ord_induct3) (auto simp: Aleph_def)
+lemma Aleph: "Aleph \<alpha> = \<omega> \<squnion> (\<Squnion>y\<in>elts \<alpha>. csucc (Aleph y))"
+  by (simp add: Aleph_def transrec[of _ \<alpha>])
+
+lemma InfCard_Aleph [simp, intro]: "InfCard(Aleph x)"
+proof (induction x rule: eps_induct)
+  case (step x)
+  then show ?case
+    by (simp add: Aleph [of x] InfCard_def Card_UN step)
+qed
+
+lemma Card_Aleph [simp, intro]: "Card(Aleph x)"
+  using InfCard_def by auto
 
 lemma Aleph_0 [simp]: "\<aleph>0 = \<omega>"
-  by (simp add: Aleph_def)
+  by (simp add: Aleph [of 0])
 
-lemma Aleph_succ [simp]: "\<aleph>(succ x) = csucc (\<aleph> x)"
-  by (simp add: Aleph_def)
+lemma mem_Aleph_succ: "\<aleph>\<alpha> \<in> elts (Aleph (succ \<alpha>))"
+  apply (simp add: Aleph [of "succ \<alpha>"])
+  by (meson InfCard_Aleph Card_csucc Card_is_Ord InfCard_def Ord_mem_iff_lt less_csucc)
 
-lemma Aleph_Limit: "Limit \<gamma> \<Longrightarrow> \<aleph> \<gamma> = \<Squnion> (Aleph ` elts \<gamma>)"
-  by (simp add: Aleph_def)
+lemma Aleph_lt_succD [simp]: "\<aleph>\<alpha> < Aleph (succ \<alpha>)"
+  by (simp add: InfCard_is_Limit Limit_is_Ord OrdmemD mem_Aleph_succ)
 
-lemma mem_Aleph_succ: "Ord \<alpha> \<Longrightarrow> \<aleph>(\<alpha>) \<in> elts (\<aleph>(succ \<alpha>))"
-  by (simp add: Card_is_Ord Ord_mem_iff_lt)
+lemma Aleph_succ [simp]: "Aleph (succ x) = csucc (Aleph x)"
+proof (rule antisym)
+  show "Aleph (ZFC_in_HOL.succ x) \<le> csucc (Aleph x)"
+    apply (simp add: Aleph [of "succ x"])
+    by (metis Aleph InfCard_Aleph InfCard_def Sup_V_insert le_csucc le_sup_iff order_refl 
+         replacement small_elts)
+  show "csucc (Aleph x) \<le> Aleph (ZFC_in_HOL.succ x)"
+    by (force simp add: Aleph [of "succ x"])
+qed
+
+lemma csucc_Aleph_le_Aleph: "\<alpha> \<in> elts \<beta> \<Longrightarrow> csucc (\<aleph>\<alpha>) \<le> \<aleph>\<beta>"
+  by (metis Aleph ZFC_in_HOL.SUP_le_iff replacement small_elts sup_ge2)
+
+lemma Aleph_in_Aleph: "\<alpha> \<in> elts \<beta> \<Longrightarrow> \<aleph>\<alpha> \<in> elts (\<aleph>\<beta>)"
+  using csucc_Aleph_le_Aleph mem_Aleph_succ by auto
+
+lemma Aleph_Limit:
+  assumes "Limit \<gamma>"
+  shows "Aleph \<gamma> = \<Squnion> (Aleph ` elts \<gamma>)"
+proof -
+  have [simp]: "\<gamma> \<noteq> 0"
+    using assms by auto 
+  show ?thesis
+  proof (rule antisym)
+    show "Aleph \<gamma> \<le> \<Squnion> (Aleph ` elts \<gamma>)"
+      apply (simp add: Aleph [of \<gamma>])
+      by (metis (mono_tags, lifting) Aleph_0 Aleph_succ Limit_def ZFC_in_HOL.SUP_le_iff 
+           ZFC_in_HOL.Sup_upper assms imageI replacement small_elts)
+    show "\<Squnion> (Aleph ` elts \<gamma>) \<le> Aleph \<gamma>"
+      apply (simp add: cSup_le_iff)
+      by (meson InfCard_Aleph InfCard_def csucc_Aleph_le_Aleph le_csucc order_trans)
+  qed
+qed
 
 lemma Aleph_increasing:
-  assumes ab: "\<alpha> < \<beta>" "Ord \<alpha>" "Ord \<beta>" shows "Aleph(\<alpha>) < Aleph(\<beta>)"
-proof -
-  { fix x
-    have "\<lbrakk>Ord x; x \<in> elts \<beta>\<rbrakk> \<Longrightarrow> Aleph(x) \<in> elts (Aleph \<beta>)"
-      using \<open>Ord \<beta>\<close>
-    proof (induct \<beta> arbitrary: x rule: Ord_induct3)
-      case 0 thus ?case by simp
-    next
-      case (succ \<beta>)
-      then consider "x = \<beta>" |"x \<in> elts \<beta>"
-        using OrdmemD by auto
-      then show ?case
-      proof cases
-        case 1
-        then show ?thesis
-          by (simp add: Card_is_Ord Ord_mem_iff_lt succ.hyps(1))
-      next
-        case 2
-        with succ show ?thesis
-          by (metis Aleph_succ Card_Aleph le_csucc vsubsetD)
-      qed
-    next
-      case (Limit \<gamma>)
-      hence sc: "succ x \<in> elts \<gamma>"
-        by (simp add: Limit_def Ord_mem_iff_lt)
-      hence "\<aleph> x \<in> elts (\<Squnion> (Aleph ` elts \<gamma>))" 
-        using Limit
-        by blast
-      thus ?case using Limit
-        by (simp add: Aleph_Limit)
-    qed
-  } thus ?thesis using ab
-    by (simp add: Card_is_Ord Ord_mem_iff_lt)
-qed
+  assumes ab: "\<alpha> < \<beta>" "Ord \<alpha>" "Ord \<beta>" shows "\<aleph>\<alpha> < \<aleph>\<beta>"
+  by (meson Aleph_in_Aleph InfCard_Aleph Card_iff_initial InfCard_def Ord_mem_iff_lt assms)
 
 lemma countable_iff_le_Aleph0: "countable (elts A) \<longleftrightarrow> vcard A \<le> \<aleph>0"
 proof
@@ -2492,12 +2635,13 @@ proof
     case False
     then have "elts \<omega> \<approx> elts A"
       using countableE_infinite [OF that]     
-      by (simp add: eqpoll_def \<omega>_def) (meson bij_betw_def bij_betw_inv bij_betw_trans inj_ord_of_nat)
+      by (simp add: eqpoll_def \<omega>_def) 
+         (meson bij_betw_def bij_betw_inv bij_betw_trans inj_ord_of_nat)
     then show ?thesis
       using Card_\<omega> Card_def cardinal_cong vcard_def by auto
   qed
   show "countable (elts A)"
-    if "vcard A \<le> \<aleph>0"
+    if "vcard A \<le> Aleph 0"
   proof -
     have "elts A \<lesssim> elts \<omega>"
       using cardinal_le_lepoll [OF that] by simp
@@ -2506,15 +2650,38 @@ proof
   qed
 qed
 
+lemma Aleph_csquare_eq [simp]: "\<aleph>\<alpha> \<otimes> \<aleph>\<alpha> = \<aleph>\<alpha>"
+  using InfCard_csquare_eq by auto
+
+lemma vcard_Aleph [simp]: "vcard (\<aleph>\<alpha>) = \<aleph>\<alpha>"
+  using Card_def InfCard_Aleph InfCard_def by auto
+
+lemma omega_le_Aleph [simp]: "\<omega> \<le> \<aleph>\<alpha>"
+  using InfCard_def by auto
+
+lemma finite_iff_less_Aleph0: "finite (elts x) \<longleftrightarrow> vcard x < \<omega>"
+proof
+  show "finite (elts x) \<Longrightarrow> vcard x < \<omega>"
+    by (metis Card_\<omega> Card_def finite_lesspoll_infinite infinite_\<omega> lesspoll_imp_Card_less)
+  show "vcard x < \<omega> \<Longrightarrow> finite (elts x)"
+    by (meson Ord_cardinal cardinal_eqpoll eqpoll_finite_iff infinite_Ord_omega less_le_not_le)
+qed
+
+lemma countable_iff_vcard_less1: "countable (elts x) \<longleftrightarrow> vcard x < \<aleph>1"
+  by (simp add: countable_iff_le_Aleph0 lt_csucc_iff one_V_def)
+
+lemma countable_infinite_vcard: "countable (elts x) \<and> infinite (elts x) \<longleftrightarrow> vcard x = \<aleph>0"
+  by (metis Aleph_0 countable_iff_le_Aleph0 dual_order.refl finite_iff_less_Aleph0 less_V_def)
+
 subsection \<open>The ordinal @{term "\<omega>1"}\<close>
 
 abbreviation "\<omega>1 \<equiv> Aleph 1"
 
 lemma Ord_\<omega>1 [simp]: "Ord \<omega>1"
-  by (simp add: Card_is_Ord)
+  by (metis Ord_cardinal vcard_Aleph)
 
 lemma omega_\<omega>1 [iff]: "\<omega> \<in> elts \<omega>1"
-  using mem_Aleph_succ one_V_def by fastforce
+  by (metis Aleph_0 mem_Aleph_succ one_V_def)
 
 lemma ord_of_nat_\<omega>1 [iff]: "ord_of_nat n \<in> elts \<omega>1"
   using Ord_\<omega>1 Ord_trans by blast

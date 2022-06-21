@@ -225,7 +225,7 @@ lemma (in is_ntsmcf) ntsmcf_Comp_commute':
   using assms
   by 
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: ntsmcf_Comp_commute semicategory.smc_Comp_assoc[symmetric] 
         cs_intro: smc_cs_intros
     )
@@ -238,7 +238,7 @@ lemma (in is_ntsmcf) ntsmcf_Comp_commute'':
   using assms
   by 
     (
-      cs_concl 
+      cs_concl  
         cs_simp: ntsmcf_Comp_commute semicategory.smc_Comp_assoc[symmetric] 
         cs_intro: smc_cs_intros
     )
@@ -260,8 +260,10 @@ proof-
   interpret R: is_ntsmcf \<alpha> \<AA>' \<BB>' \<FF>' \<GG>' \<NN>' by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" by (cs_concl cs_simp: smc_cs_simps V_cs_simps)
-    show "\<D>\<^sub>\<circ> \<NN> = \<D>\<^sub>\<circ> \<NN>'" by (cs_concl cs_simp: smc_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: smc_cs_simps V_cs_simps)
+    show "\<D>\<^sub>\<circ> \<NN> = \<D>\<^sub>\<circ> \<NN>'" 
+      by (cs_concl cs_shallow cs_simp: smc_cs_simps V_cs_simps)
     from assms(4-7) have sup: 
       "\<NN>\<lparr>NTDom\<rparr> = \<NN>'\<lparr>NTDom\<rparr>" "\<NN>\<lparr>NTCod\<rparr> = \<NN>'\<lparr>NTCod\<rparr>" 
       "\<NN>\<lparr>NTDGDom\<rparr> = \<NN>'\<lparr>NTDGDom\<rparr>" "\<NN>\<lparr>NTDGCod\<rparr> = \<NN>'\<lparr>NTDGCod\<rparr>" 
@@ -290,7 +292,8 @@ qed (simp_all add: assms(1,2))
 lemma (in is_ntsmcf) ntsmcf_def:
   "\<NN> = [\<NN>\<lparr>NTMap\<rparr>, \<NN>\<lparr>NTDom\<rparr>, \<NN>\<lparr>NTCod\<rparr>, \<NN>\<lparr>NTDGDom\<rparr>, \<NN>\<lparr>NTDGCod\<rparr>]\<^sub>\<circ>"
 proof(rule vsv_eqI)
-  have dom_lhs: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" by (cs_concl cs_simp: smc_cs_simps V_cs_simps)
+  have dom_lhs: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps V_cs_simps)
   have dom_rhs:
     "\<D>\<^sub>\<circ> [\<NN>\<lparr>NTMap\<rparr>, \<NN>\<lparr>NTDGDom\<rparr>, \<NN>\<lparr>NTDGCod\<rparr>, \<NN>\<lparr>NTDom\<rparr>, \<NN>\<lparr>NTCod\<rparr>]\<^sub>\<circ> = 5\<^sub>\<nat>"
     by (simp add: nat_omega_simps)
@@ -319,7 +322,10 @@ proof-
     NTDom.HomCod.smc_in_Vset
   from assms(2) show ?thesis
     by (subst ntsmcf_def) 
-      (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: smc_cs_simps cs_intro: smc_cs_intros V_cs_intros
+      )
 qed
 
 lemma (in is_ntsmcf) ntsmcf_is_ntsmcf_if_ge_Limit:
@@ -331,10 +337,14 @@ proof(intro is_ntsmcfI )
     by (rule is_tdghm.tdghm_is_tdghm_if_ge_Limit[OF ntsmcf_is_tdghm assms])
   show "\<NN>\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = \<GG>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
     if "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b" for f a b
-    using that by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)+
+    by 
+      (
+        use that in 
+          \<open>cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros\<close>
+      )+
 qed 
   (
-    cs_concl 
+    cs_concl cs_shallow
       cs_simp: smc_cs_simps 
       cs_intro:
         smc_cs_intros
@@ -444,7 +454,7 @@ qed
   (
     insert is_ntsmcf_axioms,
     (
-      cs_concl 
+      cs_concl cs_shallow 
         cs_simp: smc_cs_simps slicing_commute[symmetric]
         cs_intro: smc_cs_intros smc_op_intros dg_op_intros slicing_intros
     )+
@@ -567,8 +577,8 @@ lemma ntsmcf_vcomp_NTMap_vrange:
 proof(rule vrange_VLambda_vsubset)
   fix x assume prems: "x \<in>\<^sub>\<circ> \<NN>\<lparr>NTDGDom\<rparr>\<lparr>Obj\<rparr>"
   from prems assms show "\<MM>\<lparr>NTMap\<rparr>\<lparr>x\<rparr> \<circ>\<^sub>A\<^bsub>\<NN>\<lparr>NTDGCod\<rparr>\<^esub> \<NN>\<lparr>NTMap\<rparr>\<lparr>x\<rparr> \<in>\<^sub>\<circ> \<BB>\<lparr>Arr\<rparr>"
-    by (cs_prems cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
-      (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+    by (cs_prems cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+      (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
 qed
 
 
@@ -608,14 +618,18 @@ proof-
       unfolding ntsmcf_vcomp_components by simp
     from assms show "(\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<BB>\<^esub> \<HH>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
       if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a
-      using that by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+      by 
+        (
+          use that in 
+            \<open>cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros\<close>
+        )
     fix f a b assume "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b"
     with assms show 
       "(\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> =
         \<HH>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> (\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
       by 
         (
-          cs_concl 
+          cs_concl  
             cs_simp: smc_cs_simps is_ntsmcf.ntsmcf_Comp_commute' 
             cs_intro: smc_cs_intros
         )
@@ -642,7 +656,7 @@ proof-
       with assms show 
         "((\<LL> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<MM>) \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> =
           (\<LL> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>))\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-        by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+        by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
     qed (simp_all add: ntsmcf_vcomp_components)
   qed (auto intro: smc_cs_intros)
 qed
@@ -807,13 +821,13 @@ proof-
   from a \<MM>.is_ntsmcf_axioms \<NN>.is_ntsmcf_axioms have \<MM>\<NN>a: 
     "(\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> =
       \<GG>'\<lparr>ArrMap\<rparr>\<lparr>\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<MM>\<lparr>NTMap\<rparr>\<lparr>\<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>\<rparr>"
-    by (cs_concl cs_simp: smc_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps)+
   note \<MM>.NTCod.smcf_ArrMap_Comp[smc_cs_simps del]
   from assms show ?thesis
     unfolding \<MM>\<NN>b \<MM>\<NN>a 
     by (intro \<MM>.NTDom.HomCod.smc_pattern_rectangle_left)
       (
-        cs_concl 
+        cs_concl  
           cs_simp: smc_cs_simps is_semifunctor.smcf_ArrMap_Comp[symmetric] 
           cs_intro: smc_cs_intros
       )+
@@ -835,7 +849,11 @@ proof-
     from assms show "(\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : 
       (\<FF>' \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^bsub>\<CC>\<^esub> (\<GG>' \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
       if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" for a
-      using that by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+      by 
+        (
+          use that in 
+            \<open>cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros\<close>
+        )
     fix f a b assume "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b"
     with ntsmcf_hcomp_composable_commute[OF assms] 
     show "(\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (\<FF>' \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF>)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = 
@@ -892,7 +910,7 @@ proof-
       with assms show
         "(\<LL> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> =
           (\<LL> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>))\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-        by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+        by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
     qed (simp_all add: ntsmcf_hcomp_components)
   qed 
     (
@@ -916,18 +934,30 @@ proof-
     op_smcf \<GG>' \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_smcf \<FF>' : op_smc \<BB> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> op_smc \<CC>"
     and op_\<NN>: "op_ntsmcf \<NN> :
     op_smcf \<GG> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_smcf \<FF> : op_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> op_smc \<BB>" 
-    by (cs_concl cs_simp: smc_op_simps cs_intro: smc_cs_intros smc_op_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: smc_op_simps cs_intro: smc_cs_intros smc_op_intros
+      )
   show ?thesis
   proof(rule sym, rule ntsmcf_eqI, unfold smc_op_simps slicing_simps)
     show 
       "op_ntsmcf \<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_ntsmcf \<NN> :
         op_smcf \<GG>' \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_smcf \<GG> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_smcf \<FF>' \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_smcf \<FF> :
         op_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> op_smc \<CC>"
-      by (cs_concl cs_simp: smc_op_simps cs_intro: smc_cs_intros smc_op_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: smc_op_simps cs_intro: smc_cs_intros smc_op_intros
+        )
     show "op_ntsmcf (\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>) :
       op_smcf \<GG>' \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_smcf \<GG> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_smcf \<FF>' \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_smcf \<FF> :
       op_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> op_smc \<CC>"
-      by (cs_concl cs_simp: smc_op_simps cs_intro: smc_cs_intros smc_op_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: smc_op_simps cs_intro: smc_cs_intros smc_op_intros
+        )
     show "(op_ntsmcf \<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_ntsmcf \<NN>)\<lparr>NTMap\<rparr> = (\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>"
     proof
       (
@@ -942,7 +972,7 @@ proof-
         "(op_ntsmcf \<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F op_ntsmcf \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: smc_cs_simps smc_op_simps 
               cs_intro: smc_cs_intros smc_op_intros
           )
@@ -991,7 +1021,7 @@ proof-
           ((\<MM>' \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<MM>) \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<NN>' \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>))\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
         by
           (
-            cs_concl
+            cs_concl 
               cs_simp: smc_cs_simps is_ntsmcf.ntsmcf_Comp_commute' 
               cs_intro: smc_cs_intros
           )
@@ -1135,7 +1165,7 @@ proof-
       "(\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG>) \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> :
         \<HH> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<HH>' \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> :
         \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
-      by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+      by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
     show "\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF>) :
       \<HH> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<HH>' \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> :
       \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
@@ -1145,7 +1175,7 @@ proof-
         ntsmcf_tdghm (\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF>))"
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: slicing_commute[symmetric] 
             cs_intro: slicing_intros tdghm_dghm_comp_tdghm_dghm_comp_assoc
         )
@@ -1158,11 +1188,11 @@ proof(rule ntsmcf_tdghm_eqI)
   show "\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F smcf_id \<AA> : \<FF> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
   show "\<NN> : \<FF> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-    by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
   show "ntsmcf_tdghm (\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F smcf_id \<AA>) = ntsmcf_tdghm \<NN>"
     by 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: slicing_simps slicing_commute[symmetric] 
           cs_intro: smc_cs_intros slicing_intros dg_cs_simps
       )
@@ -1180,15 +1210,15 @@ lemma ntsmcf_vcomp_ntsmcf_smcf_comp[smc_cs_simps]:
 proof(rule ntsmcf_eqI)
   from assms show "(\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>) \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK> : 
     \<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<HH> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_intro: smc_cs_intros)
   from assms show "\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK>) : 
     \<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<HH> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_intro: smc_cs_intros)
   from assms have dom_lhs: 
     "\<D>\<^sub>\<circ> ((\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK>))\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
   from assms have dom_rhs: "\<D>\<^sub>\<circ> ((\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
   show 
     "(\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK>))\<lparr>NTMap\<rparr> = 
       (\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK>)\<lparr>NTMap\<rparr>"
@@ -1197,8 +1227,8 @@ proof(rule ntsmcf_eqI)
     with assms show 
       "(\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK>))\<lparr>NTMap\<rparr>\<lparr>a\<rparr> =
         (\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN> \<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<KK>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
-  qed (cs_concl cs_intro: smc_cs_intros)+
+      by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+  qed (cs_concl cs_shallow cs_intro: smc_cs_intros)+
 qed simp_all
 
 
@@ -1297,7 +1327,7 @@ proof-
       smc_dg \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> smc_dg \<CC>"
       by 
         (
-          cs_concl 
+          cs_concl  
             cs_simp: slicing_commute[symmetric]  
             cs_intro: dg_cs_intros slicing_intros
         )
@@ -1308,7 +1338,7 @@ proof-
       using assms that 
       by 
         (
-          cs_concl 
+          cs_concl  
             cs_simp:
               is_ntsmcf.ntsmcf_Comp_commute 
               is_semifunctor.smcf_ArrMap_Comp[symmetric]
@@ -1348,13 +1378,13 @@ proof(rule ntsmcf_tdghm_eqI)
     by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
   from assms show "\<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>) :
     \<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<HH> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<HH>' : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
-    by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+    by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
   from assms show 
     "ntsmcf_tdghm (\<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>) =
       ntsmcf_tdghm (\<GG> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<FF> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>))"
     by
       (
-        cs_concl
+        cs_concl 
           cs_simp: slicing_commute[symmetric] 
           cs_intro: slicing_intros dghm_comp_dghm_tdghm_comp_assoc
       )
@@ -1370,7 +1400,7 @@ proof(rule ntsmcf_tdghm_eqI)
   show "ntsmcf_tdghm (dghm_id \<BB> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>-\<^sub>T\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<NN>) = ntsmcf_tdghm \<NN>"
     by 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: slicing_simps slicing_commute[symmetric] 
           cs_intro: smc_cs_intros slicing_intros dg_cs_simps
       )
@@ -1392,7 +1422,7 @@ proof-
       (
         use assms in
           \<open>
-            cs_concl
+            cs_concl 
               cs_simp: smc_cs_simps slicing_commute[symmetric]
               cs_intro:
                 smc_cs_intros
@@ -1429,9 +1459,9 @@ proof-
       then show 
         "(\<KK> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>))\<lparr>NTMap\<rparr>\<lparr>a\<rparr> =
           (\<KK> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F (\<KK> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>))\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-        by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
-    qed (cs_concl cs_intro: smc_cs_intros)+
-  qed (cs_concl cs_intro: smc_cs_intros)+
+        by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)
+    qed (cs_concl cs_shallow cs_intro: smc_cs_intros)+
+  qed (cs_concl cs_shallow cs_intro: smc_cs_intros)+
 qed
 
 text\<open>\newpage\<close>

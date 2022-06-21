@@ -715,7 +715,7 @@ proof -
   define I where "I = (\<lambda>N K e x. (indicator (- B N K e) x)::real)"
   have I_meas [measurable]: "I N K e \<in> borel_measurable M" for N K e unfolding I_def by auto
   have I_int: "integrable M (I N K e)" for N K e
-    unfolding I_def apply (subst integrable_cong[where ?g = "indicator (space M - B N K e)::_ \<Rightarrow> real"], auto)
+    unfolding I_def apply (subst Bochner_Integration.integrable_cong[where ?g = "indicator (space M - B N K e)::_ \<Rightarrow> real"], auto)
     by (auto split: split_indicator simp: less_top[symmetric])
 
   have main: "AE x in M. limsup (\<lambda>n. u n x / n) \<le> F K e x + abs(F K e x) * ereal(real_cond_exp M Invariants (I N K e) x)"
@@ -1857,7 +1857,7 @@ proof -
                       "subcocycle_lim_ereal v x = - real K"
                       "\<forall>n. real_cond_exp M Invariants (u n) x \<le> real_cond_exp M Invariants (w n) x"
       have "subcocycle_lim_ereal w x > -\<infinity>"
-        using H(2) H(3) 
+        using H(2) H(3)
         by auto (metis MInfty_neq_ereal(1) ereal_infty_less_eq2(2) max.cobounded2)
       then have "subcocycle_lim_ereal w x = ereal(subcocycle_lim w x)"
         unfolding subcocycle_lim_def using subcocycle_lim_ereal_not_PInf[of w x] ereal_real by force

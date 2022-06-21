@@ -1,40 +1,4 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2020
-(C) Copyright Sebastian A. Mödersheim, DTU, 2020
-(C) Copyright Achim D. Brucker, University of Exeter, 2020
-(C) Copyright Anders Schlichtkrull, DTU, 2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
+(* SPDX-License-Identifier: BSD-3-Clause *)
 structure Tokens = Tokens
 open Trac_Term
   
@@ -44,19 +8,18 @@ type svalue = Tokens.svalue
 type ('a,'b) token = ('a,'b) Tokens.token
 type lexresult= (svalue,pos) token
 
-
 val pos = ref (0,0,0)
 
-  fun eof () = Tokens.EOF((!pos,!pos))
-  fun error (e,p : (int * int * int),_) = TextIO.output (TextIO.stdOut, 
+fun eof () = Tokens.EOF((!pos,!pos))
+fun error' (e,p : (int * int * int),_) = error (
 							 String.concat[
-								       "line ", (Int.toString (#1 p)), "/",
+								       "Line ", (Int.toString (#1 p)), "/",
 								       (Int.toString (#2 p - #3 p)),": ", e, "\n"
 								       ])
   
- fun inputPos yypos = ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))),
-		     (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))) 
- fun inputPos_half yypos = (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))
+fun inputPos yypos = ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))),
+                      (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))))
+fun inputPos_half yypos = (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))
 
 
 
@@ -97,7 +60,6 @@ ws = [\ \t];
 {lower}({alpha}|{digit})*("'")*   => (Tokens.LOWER_STRING_LITERAL(yytext,inputPos_half yypos,inputPos_half yypos));
 
 
-.      => (error ("ignoring bad character "^yytext,
+.      => (error' ("Bad character: "^yytext,
 		    ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))),
-		    ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))));
-             lex());
+		    ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))))));

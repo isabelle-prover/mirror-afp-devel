@@ -91,7 +91,7 @@ fun declare binding descr lthy =
 val _ =
   Outer_Syntax.local_theory @{command_keyword named_theorems_rev}
     "declare named collection of theorems"
-    (Parse.and_list1 (Parse.binding -- Scan.optional Parse.text "") >>
+    (Parse.and_list1 (Parse.binding -- Scan.optional Parse.embedded "") >>
       fold (fn (b, descr) => snd o declare b descr));
 
 

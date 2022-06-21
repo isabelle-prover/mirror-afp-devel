@@ -7,23 +7,23 @@ begin
 definition insert_messages :: "('\<I>, '\<Sigma>) message set \<Rightarrow> ('\<I>, '\<Sigma>) insert_message set"
   where "insert_messages M = {x. Insert x \<in> M}"
 
-lemma insert_insert_message: 
+lemma insert_insert_message:
   "insert_messages (M \<union> {Insert m}) = insert_messages M \<union> {m}"
   by (simp add:insert_messages_def, simp add:set_eq_iff)
 
-definition delete_messages :: "('a, 's) message set \<Rightarrow> 'a delete_message set"
+definition delete_messages :: "('\<I>, '\<Sigma>) message set \<Rightarrow> '\<I> delete_message set"
   where "delete_messages M = {x. Delete x \<in> M}"
 
 fun depends_on where "depends_on M x y = (x \<in> M \<and> y \<in> M \<and> I x \<in> deps (Insert y))"
 
 definition a_conditions ::
-  "(('a :: linorder), 's) insert_message set \<Rightarrow> ('a extended \<Rightarrow> 'a position) \<Rightarrow> bool"
+  "('\<I> :: linorder, '\<Sigma>) insert_message set \<Rightarrow> ('\<I> extended \<Rightarrow> '\<I> position) \<Rightarrow> bool"
   where "a_conditions M a = (
     a \<turnstile> < a \<stileturn> \<and>
     (\<forall>m. m \<in> M \<longrightarrow> a (P m) < a (S m) \<and>
                    a \<lbrakk>I m\<rbrakk> = \<lbrakk>\<Psi> (a (P m), a (S m)) (I m)\<rbrakk>))"
 
-definition consistent :: "('a :: linorder, 's) message set \<Rightarrow> bool"
+definition consistent :: "('\<I> :: linorder, '\<Sigma>) message set \<Rightarrow> bool"
   where "consistent M \<equiv>
     inj_on I (insert_messages M) \<and>
     (\<Union> (deps ` M) \<subseteq> (I ` insert_messages M)) \<and>
@@ -97,7 +97,7 @@ lemma to_woot_character_insert_no_eff:
   by (rule HOL.ext, simp add:delete_maybe_def to_woot_character_def insert_message.case_eq_if)
 
 definition is_associated_string ::
-  "('a, 's) message set \<Rightarrow> ('a :: linorder, 's) woot_character list \<Rightarrow> bool"
+  "('\<I>, '\<Sigma>) message set \<Rightarrow> ('\<I> :: linorder, '\<Sigma>) woot_character list \<Rightarrow> bool"
   where "is_associated_string M s \<equiv> (
     consistent M \<and>
     set s = to_woot_character M ` (insert_messages M) \<and>

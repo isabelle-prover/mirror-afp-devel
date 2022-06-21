@@ -107,14 +107,14 @@ val gcd_ac =
      unitl_th = @{thm gcd_0_left_nat}, unitr_th = @{thm gcd_0_nat}}
 
 val add_arith_ac_data =
-    fold ACUtil.add_ac_data [plus_ac, times_ac, gcd_ac]
+    fold Auto2_HOL_Extra_Setup.ACUtil.add_ac_data [plus_ac, times_ac, gcd_ac]
 
 fun plus_ac_on_typ thy T =
-    the (ACUtil.inst_ac_info thy T plus_ac)
+    the (Auto2_HOL_Extra_Setup.ACUtil.inst_ac_info thy T plus_ac)
     handle Option.Option => raise Fail "plus_ac_on_typ: cannot inst ac_info."
 
 fun times_ac_on_typ thy T =
-    the (ACUtil.inst_ac_info thy T times_ac)
+    the (Auto2_HOL_Extra_Setup.ACUtil.inst_ac_info thy T times_ac)
     handle Option.Option => raise Fail "times_ac_on_typ: cannot inst ac_info."
 
 val add_arith_proofsteps =
@@ -125,21 +125,21 @@ val add_arith_proofsteps =
         Filter (fn _ => fn (_, inst) =>
                    lookup_numc1 inst <> lookup_numc2 inst)],
        fn ((id, _), ths) => fn _ => fn ctxt =>
-          [Update.thm_update (id, UtilArith.contra_by_arith ctxt ths)]),
+          [Auto2_Setup.Update.thm_update (id, UtilArith.contra_by_arith ctxt ths)]),
 
       ("compare_consts_le",
        [WithFact @{term_pat "(?NUMC1::nat) <= ?NUMC2"},
         Filter (fn _ => fn (_, inst) =>
                    lookup_numc1 inst > lookup_numc2 inst)],
        fn ((id, _), ths) => fn _ => fn ctxt =>
-          [Update.thm_update (id, UtilArith.contra_by_arith ctxt ths)]),
+          [Auto2_Setup.Update.thm_update (id, UtilArith.contra_by_arith ctxt ths)]),
 
       ("compare_consts_less",
        [WithFact @{term_pat "(?NUMC1::nat) < ?NUMC2"},
         Filter (fn _ => fn (_, inst) =>
                    lookup_numc1 inst >= lookup_numc2 inst)],
        fn ((id, _), ths) => fn _ => fn ctxt =>
-          [Update.thm_update (id, UtilArith.contra_by_arith ctxt ths)])
+          [Auto2_Setup.Update.thm_update (id, UtilArith.contra_by_arith ctxt ths)])
 
     ] #> fold add_prfstep_conv [
       ("eval_plus_consts",

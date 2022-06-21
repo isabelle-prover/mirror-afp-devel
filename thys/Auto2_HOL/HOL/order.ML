@@ -32,7 +32,7 @@ sig
   val to_normal_th: order_type -> thm -> thm
   val th_to_ritem: thm -> raw_item
   val th_to_normed_ritems: thm -> raw_item list
-  val nat_order_normalizer: Normalizer.normalizer
+  val nat_order_normalizer: Auto2_Setup.Normalizer.normalizer
   val nat_eq_diff_prfstep: proofstep
 
   val get_nat_order_info: box_item -> order_info
@@ -127,7 +127,7 @@ fun dest_ineq t =
     end
 
 fun dest_ineq_th th =
-    if UtilLogic.is_Trueprop (Thm.prop_of th) andalso
+    if Auto2_Setup.UtilLogic.is_Trueprop (Thm.prop_of th) andalso
        is_standard_ineq (prop_of' th) then
       dest_ineq (prop_of' th)
     else let
@@ -401,7 +401,7 @@ fun nat_order_normalizer _ ritem =
    constant.
  *)
 val nat_eq_diff_prfstep =
-    ProofStep.prfstep_custom
+    Auto2_Setup.ProofStep.prfstep_custom
       "nat_eq_diff"
       [WithItem (TY_EQ, @{term_pat "(?x::nat) = ?y"})]
       (fn ((id, _), _) => fn items => fn _ =>
@@ -414,7 +414,7 @@ val nat_eq_diff_prfstep =
               let
                 val prop' = to_meta_eq prop
                 val ths = (prop' RS @{thm eq_to_ineqs})
-                              |> UtilLogic.split_conj_th
+                              |> Auto2_Setup.UtilLogic.split_conj_th
               in
                 [AddItems {id = id, sc = NONE,
                            raw_items = maps th_to_normed_ritems ths}]
@@ -436,13 +436,13 @@ fun get_nat_order_info {tname, prop, ...} =
 val nat_order_typed_matcher =
     let
       fun pre_match pat {tname, ...} ctxt =
-          Matcher.pre_match_head
+          Auto2_Setup.Matcher.pre_match_head
               ctxt (pat, Thm.cterm_of ctxt (HOLogic.mk_tuple (map Thm.term_of tname)))
 
       fun match pat (item as {tname = cts, ...}) ctxt (id, inst) =
           let
             val pats = HOLogic.strip_tuple pat
-            val insts' = Matcher.rewrite_match_list
+            val insts' = Auto2_Setup.Matcher.rewrite_match_list
                              ctxt (map (pair false) (pats ~~ cts)) (id, inst)
             fun process_inst (inst, ths) =
                 let
@@ -494,7 +494,7 @@ fun order_trans th1 th2 =
 
 (* Apply transitivity to two NAT_ORDER infos. *)
 val transitive =
-    ProofStep.prfstep_custom
+    Auto2_Setup.ProofStep.prfstep_custom
         "nat_order_transitive"
         [WithItem (TY_NAT_ORDER, @{term_pat "(?x, ?y, ?m)"}),
          WithItem (TY_NAT_ORDER, @{term_pat "(?y, ?z, ?n)"}),
@@ -525,7 +525,7 @@ fun order_trans_resolve th1 th2 =
 
 (* Try to derive a contradiction from two NAT_ORDER items. *)
 val transitive_resolve =
-    ProofStep.prfstep_custom
+    Auto2_Setup.ProofStep.prfstep_custom
         "nat_order_transitive_resolve"
         [WithItem (TY_NAT_ORDER, @{term_pat "(?x, ?y, ?m)"}),
          WithItem (TY_NAT_ORDER, @{term_pat "(?y, ?x, ?n)"})]
@@ -548,7 +548,7 @@ val transitive_resolve =
                          |> apply_to_thm' (Conv.arg1_conv try_fold0l)]
                   else []
             in
-              map (fn th => Update.thm_update (id, th)) res_ths
+              map (fn th => Auto2_Setup.Update.thm_update (id, th)) res_ths
             end)
 
 (* Try to derive a contradiction from a single NAT_ORDER item. There
@@ -556,7 +556,7 @@ val transitive_resolve =
    right side is zero (both with negative diff).
  *)
 val single_resolve =
-    ProofStep.prfstep_custom
+    Auto2_Setup.ProofStep.prfstep_custom
         "nat_order_single_resolve"
         [WithItem (TY_NAT_ORDER, @{term_pat "(?x, ?x, ?n)"})]
         (fn ((id, inst), ths) => fn _ => fn _ =>
@@ -565,13 +565,13 @@ val single_resolve =
               val th = the_single ths
             in
               if n < 0 then
-                [Update.thm_update (
+                [Auto2_Setup.Update.thm_update (
                     id, [nat_less_th 0 (~n), th] MRS @{thm single_resolve})]
               else []
             end)
 
 val single_resolve_zero =
-    ProofStep.prfstep_custom
+    Auto2_Setup.ProofStep.prfstep_custom
         "nat_order_single_resolve_zero"
         [WithItem (TY_NAT_ORDER, @{term_pat "(?x, 0, ?n)"})]
         (fn ((id, inst), ths) => fn _ => fn _ =>
@@ -580,7 +580,7 @@ val single_resolve_zero =
               val th = the_single ths
             in
               if n < 0 then
-                [Update.thm_update (id, [nat_less_th 0 (~n), th]
+                [Auto2_Setup.Update.thm_update (id, [nat_less_th 0 (~n), th]
                                             MRS @{thm single_resolve_const})]
               else []
             end)
@@ -672,7 +672,7 @@ fun find_contradiction_item pat item ctxt (id, inst) =
             val pairs = [(false, (pat_l, y)), (false, (pat_r, x))]
           in
             map (pair order_ty)
-                (Matcher.rewrite_match_list ctxt pairs (id, inst))
+                (Auto2_Setup.Matcher.rewrite_match_list ctxt pairs (id, inst))
           end
 
       val insts = process_pattern (analyze_pattern pat)
@@ -694,7 +694,7 @@ fun find_contradiction_item pat item ctxt (id, inst) =
               [((id', inst'),
                 (order_trans_resolve th1 th2)
                     |> Thm.implies_intr assum
-                    |> apply_to_thm UtilLogic.rewrite_from_contra_form)]
+                    |> apply_to_thm Auto2_Setup.UtilLogic.rewrite_from_contra_form)]
             else []
           end
     in
@@ -719,8 +719,8 @@ fun nat_order_pre_match pat item ctxt =
       val (x, y, _, _) = get_nat_order_info item
 
       fun process_pattern (pat_l, pat_r, _) =
-          Matcher.pre_match ctxt (pat_l, y) andalso
-          Matcher.pre_match ctxt (pat_r, x)
+          Auto2_Setup.Matcher.pre_match ctxt (pat_l, y) andalso
+          Auto2_Setup.Matcher.pre_match ctxt (pat_r, x)
 
       val match1 = process_pattern (analyze_pattern neg_pat)
       val match2 = case analyze_pattern2 neg_pat of
@@ -743,9 +743,9 @@ val nat_order_noteq_matcher =
             val (cx, cy, n, _) = get_nat_order_info item
           in
             if n >= 0 then ([], [])
-            else (Matcher.rewrite_match_list
+            else (Auto2_Setup.Matcher.rewrite_match_list
                       ctxt [(false, (A, cx)), (false, (B, cy))] (id, inst),
-                  Matcher.rewrite_match_list
+                  Auto2_Setup.Matcher.rewrite_match_list
                       ctxt [(false, (B, cx)), (false, (A, cy))] (id, inst))
           end
 
@@ -755,10 +755,10 @@ val nat_order_noteq_matcher =
             val (A, B) = pat |> dest_not |> dest_eq
             val (cx, cy, n, _) = get_nat_order_info item
           in
-            n < 0 andalso ((Matcher.pre_match ctxt (A, cx) andalso
-                            Matcher.pre_match ctxt (B, cy)) orelse
-                           (Matcher.pre_match ctxt (A, cy) andalso
-                            Matcher.pre_match ctxt (A, cx)))
+            n < 0 andalso ((Auto2_Setup.Matcher.pre_match ctxt (A, cx) andalso
+                            Auto2_Setup.Matcher.pre_match ctxt (B, cy)) orelse
+                           (Auto2_Setup.Matcher.pre_match ctxt (A, cy) andalso
+                            Auto2_Setup.Matcher.pre_match ctxt (A, cx)))
           end
 
       fun match pat item ctxt (id, inst) =
@@ -793,7 +793,7 @@ fun find_contradiction pat ctxt (id, inst) =
           map (fn (id', eq_th) =>
                   (order_ty,
                    (id', eq_th, Thm.reflexive (Thm.cterm_of ctxt pat_r))))
-              (RewriteTable.equiv_info_t ctxt id (pat_l, pat_r))
+              (Auto2_Setup.RewriteTable.equiv_info_t ctxt id (pat_l, pat_r))
 
       val insts = process_pattern (analyze_pattern pat)
       val insts2 = case analyze_pattern2 pat of
@@ -818,7 +818,7 @@ fun find_contradiction pat ctxt (id, inst) =
                 [((id', inst),
                   ([nat_less_th 0 d, norm_th] MRS @{thm single_resolve})
                       |> Thm.implies_intr assum
-                      |> apply_to_thm UtilLogic.rewrite_from_contra_form)]
+                      |> apply_to_thm Auto2_Setup.UtilLogic.rewrite_from_contra_form)]
               end
             else []
           end
@@ -840,7 +840,7 @@ fun find_contradiction_trivial pat ctxt (id, inst) =
         [((id, inst),
           (UtilArith.contra_by_arith ctxt [Thm.assume assum])
               |> Thm.implies_intr assum
-              |> apply_to_thm UtilLogic.rewrite_from_contra_form)]
+              |> apply_to_thm Auto2_Setup.UtilLogic.rewrite_from_contra_form)]
       end
     end
 
@@ -854,9 +854,9 @@ fun find_contradiction_trivial2 pat ctxt (id, inst) =
           val assum = pat |> mk_Trueprop |> Thm.cterm_of ctxt
         in
           [((id, inst),
-            ([@{thm Nat.not_less0}, Thm.assume assum] MRS UtilBase.contra_triv_th)
+            ([@{thm Nat.not_less0}, Thm.assume assum] MRS Auto2_UtilBase.contra_triv_th)
                 |> Thm.implies_intr assum
-                |> apply_to_thm UtilLogic.rewrite_from_contra_form)]
+                |> apply_to_thm Auto2_Setup.UtilLogic.rewrite_from_contra_form)]
         end
       else []
     end
@@ -890,7 +890,7 @@ val nat_order_single_matcher =
    y, but larger diff.
  *)
 val shadow_nat_order_prfstep =
-    ProofStep.gen_prfstep
+    Auto2_Setup.ProofStep.gen_prfstep
         "shadow_nat_order"
         [WithItem (TY_NAT_ORDER, @{term_pat "(?x, ?y, ?m)"}),
          WithItem (TY_NAT_ORDER, @{term_pat "(?x, ?y, ?n)"}),
@@ -904,14 +904,14 @@ val shadow_nat_order_prfstep =
    nonnegative diff).
  *)
 val shadow_nat_order_single =
-    ProofStep.gen_prfstep
+    Auto2_Setup.ProofStep.gen_prfstep
         "shadow_nat_order_single"
         [WithItem (TY_NAT_ORDER, @{term_pat "(?x, ?x, ?n)"}),
          Filter (fn _ => fn (_, inst) => dest_numc (lookup_inst inst "n") >= 0),
          ShadowFirst]
 
 val shadow_nat_order_single_zero =
-    ProofStep.gen_prfstep
+    Auto2_Setup.ProofStep.gen_prfstep
         "shadow_nat_order_single_zero"
         [WithItem (TY_NAT_ORDER, @{term_pat "(0, ?x, ?n)"}),
          Filter (fn _ => fn (_, inst) => dest_numc (lookup_inst inst "n") >= 0),
@@ -950,18 +950,18 @@ fun shadow_nat_order _ _ (ts1, cts2) =
     end
 
 val add_nat_order_proofsteps =
-    ItemIO.add_item_type (
+    Auto2_Setup.ItemIO.add_item_type (
       TY_NAT_ORDER, SOME (take 2), SOME output_nat_order, SOME shadow_nat_order
 
-    ) #> ItemIO.add_typed_matcher (
+    ) #> Auto2_Setup.ItemIO.add_typed_matcher (
       TY_NAT_ORDER, nat_order_typed_matcher
 
-    ) #> fold ItemIO.add_prop_matcher [
+    ) #> fold Auto2_Setup.ItemIO.add_prop_matcher [
       (TY_NAT_ORDER, nat_order_matcher),
       (TY_NAT_ORDER, nat_order_noteq_matcher),
       (TY_NULL, nat_order_single_matcher)
 
-    ] #> Normalizer.add_normalizer (
+    ] #> Auto2_Setup.Normalizer.add_normalizer (
       ("nat_order", nat_order_normalizer)
 
     ) #> fold add_prfstep [

@@ -207,7 +207,7 @@ tts_lemma connected_Times_eq:
   shows 
     "connected (S \<times> T) = (S = {} \<or> T = {} \<or> ts\<^sub>1.connected S \<and> ts\<^sub>2.connected T)"
   is connected_Times_eq.
-
+                
 end
 
 tts_context

@@ -183,7 +183,7 @@ proof(intro obj_terminalI, unfold smc_op_simps smc_CAT_is_arr_iff smc_CAT_Obj_if
   show "\<exists>!f. f : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
   proof
     show cf_0: "cf_0 \<AA> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>"
-      by (simp add: cf_0_is_functor category_axioms is_ft_functor.axioms(1))
+      by (simp add: cf_0_is_ft_functor category_axioms is_ft_functor.axioms(1))
     fix \<FF> assume prems: "\<FF> : cat_0 \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" 
     interpret \<FF>: is_functor \<alpha> cat_0 \<AA> \<FF> using prems .
     show "\<FF> = cf_0 \<AA>"
@@ -310,7 +310,7 @@ proof(intro obj_terminalI, unfold smc_op_simps smc_CAT_is_arr_iff smc_CAT_Obj_if
         then show ?thesis 
           by 
             (
-              cs_concl 
+              cs_concl cs_shallow 
                 cs_simp: V_cs_simps cat_cs_simps cat_1_components
                 cs_intro: V_cs_intros vsv.vsv_is_vconst_onI
             )+

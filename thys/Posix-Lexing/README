@@ -33,15 +33,22 @@ second part we analyse the correctness argument by Sulzmann and Lu and
 explain why the gaps in this argument cannot be filled easily.
 
 
-New Theories:
+Theories:
 =============
 
  Lexer.thy
+ LexicalVals.thy
  Simplifying.thy
+ Positions.thy
 
-The repository can be checked using Isabelle 2016.
 
- isabelle build -c -v -d . Posix-Lexing
+Updated in June 2022:
+======================
+Christian Urban
+
+ added material on the Posix ordering by Okui and Suzuki
+ 
+ 
 
 
   

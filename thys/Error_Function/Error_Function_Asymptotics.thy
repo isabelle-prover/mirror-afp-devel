@@ -47,7 +47,7 @@ proof -
   also have "\<dots> = -exp (-x*(x + real m)) / x ^ (2*n+1) - (-exp (-x*x) / x ^ (2*n+1))"
     using assms
     by (intro integral_unique fundamental_theorem_of_calculus)
-       (auto simp: has_field_derivative_iff_has_vector_derivative [symmetric]
+       (auto simp: has_real_derivative_iff_has_vector_derivative [symmetric]
              intro!: derivative_eq_intros)
   also have "\<dots> \<le> exp (-x\<^sup>2) / x ^ (2*n+1)" using assms by (simp add: power2_eq_square)
   finally show *: "norm (integral {x..x + real m} (\<lambda>t. exp (-t\<^sup>2) / t ^ (2*n))) \<le>
@@ -147,7 +147,7 @@ proof -
     proof (rule integration_by_parts[OF bounded_bilinear_mult])
       fix t assume t: "t \<in> ?A m"
       with assms show "((\<lambda>t. exp (-(t^2))) has_vector_derivative -2*t*exp (-(t^2))) (at t)"
-        by (auto simp: has_field_derivative_iff_has_vector_derivative [symmetric]
+        by (auto simp: has_real_derivative_iff_has_vector_derivative [symmetric]
                        field_simps intro!: derivative_eq_intros)
       from assms t have "((\<lambda>t. -(1/2) * t powr (-2*n-1)) has_field_derivative
                            (2*n+1)/2 * t powr (-2*n-2)) (at t)"
@@ -161,7 +161,7 @@ proof -
                         powr_realpow power2_eq_square intro!: real_powr_eq_powerI)
       finally show "((\<lambda>t. inverse (-2*t^(2*n+1))) has_vector_derivative
                               (2*n+1)/2 / t ^ (2*Suc n)) (at t)"
-        by (simp add: has_field_derivative_iff_has_vector_derivative)
+        by (simp add: has_real_derivative_iff_has_vector_derivative)
     next
       have "((\<lambda>t. real (2*n+1)/2 * (exp (- t\<^sup>2) / t ^ (2 * Suc n))) has_integral
              real (2*n+1)/2 * ?J m (Suc n)) (?A m)" (is "(?f has_integral ?a) _")

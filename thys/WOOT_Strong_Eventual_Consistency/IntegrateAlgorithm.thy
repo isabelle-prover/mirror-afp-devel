@@ -19,11 +19,11 @@ fun substr :: "'a list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list
   "substr s l u = take (u - (Suc l)) (drop l s)"
 
 fun concurrent ::
-  "('a, 's) woot_character list
+  "('\<I>, '\<Sigma>) woot_character list
   \<Rightarrow> nat
   \<Rightarrow> nat
-  \<Rightarrow> ('a, 's) woot_character
-  \<Rightarrow> error + ('a extended list)"
+  \<Rightarrow> ('\<I>, '\<Sigma>) woot_character
+  \<Rightarrow> error + ('\<I> extended list)"
   where
     "concurrent s l u w =
       do {
@@ -52,9 +52,9 @@ function integrate_insert
   by fastforce+
 
 fun integrate_delete ::
-  "('a :: linorder) delete_message
-  \<Rightarrow> ('a, 's) woot_character list
-  \<Rightarrow> error + ('a, 's) woot_character list"
+  "('\<I> :: linorder) delete_message
+  \<Rightarrow> ('\<I>, '\<Sigma>) woot_character list
+  \<Rightarrow> error + ('\<I>, '\<Sigma>) woot_character list"
   where
     "integrate_delete (DeleteMessage i) s =
       do {
@@ -65,9 +65,9 @@ fun integrate_delete ::
       }"
 
 fun integrate ::
-  "('a, 's) woot_character list
-  \<Rightarrow> ('a :: linorder, 's) message
-  \<Rightarrow> error + ('a, 's) woot_character list"
+  "('\<I>, '\<Sigma>) woot_character list
+  \<Rightarrow> ('\<I> :: linorder, '\<Sigma>) message
+  \<Rightarrow> error + ('\<I>, '\<Sigma>) woot_character list"
   where
     "integrate s (Insert m) = integrate_insert m s (P m) (S m)" |
     "integrate s (Delete m) = integrate_delete m s"

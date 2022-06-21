@@ -1293,8 +1293,8 @@ fun list_encode :: "nat list \<Rightarrow> nat" where
   "list_encode [] = 0"
 | "list_encode (x # xs) = Suc (prod_encode (length xs, tuple_encode (length xs) (x # xs)))"
 
-lemma list_encode_0 [simp]: "list_encode xs = 0 \<Longrightarrow> xs = []"
-  using list_encode.elims by blast
+lemma list_encode_0 [simp]: "list_encode xs = 0 \<longleftrightarrow> xs = []"
+  using list_encode.elims Partial_Recursive.list_encode.simps(1) by blast
 
 lemma list_encode_1: "list_encode [0] = 1"
   by (simp add: prod_encode_def)

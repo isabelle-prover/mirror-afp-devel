@@ -63,6 +63,14 @@ fun add_record_cmd overloaded (params, binding) raw_parent fields thy =
     val params' = (map (Proof_Context.check_tfree ctxt3) params);
   in thy |> Record.add_record overloaded (params', binding) parent fields end;
 
+(* Get all the parents of a given named record *)
+
+fun get_parents thy nm = 
+  case Record.get_parent thy nm of
+    SOME (ts, nm') => (ts, nm') :: get_parents thy nm' |
+    NONE => [];
+
+
 (* Construct a theorem and proof that a given field lens is very well-behaved *)
 
 fun lens_proof tname x thy =
@@ -283,6 +291,16 @@ fun add_alphabet (params, binding) raw_parent ty_fields thy =
          |> Named_Target.theory_map (snd o Specification.theorems_cmd "" [((Binding.empty, []), [(Facts.named (tname ^ defs_suffix), snd lens_defs)])] [] false)
             (* Add the record splitting theorems to the alpha_splits set for proof automation *)
          |> Named_Target.theory_map (snd o Specification.theorems_cmd "" [((Binding.empty, []), [(Facts.named (tname ^ splits_suffix), alpha_splits)])] [] false)
+            (* Reorder parent splitting theorems, so the child ones have higher priority *)
+         |> (fn thy => 
+             let 
+                 (* Get the splitting theorems of all parents in reverse order *)
+                 val psplits = List.concat (map (#splits o Record.the_info thy) ((map snd (get_parents thy (Context.theory_name thy ^ "." ^ tname)))))
+                 (* Remove the splitting theorems *)
+                 val thy1 = Context.theory_map (fold (Named_Theorems.del_thm "Lens_Instances.alpha_splits") psplits) thy
+                 (* Add them again, so they have lower priority than the child splitting theorems *)
+                 val thy2 = Context.theory_map (fold (Named_Theorems.add_thm "Lens_Instances.alpha_splits") psplits) thy1
+             in thy2 end)
             (* Add definitions for each of the lenses corresponding to each record field in-situ *)
          |> Sign.qualified_path false binding
          |> Named_Target.theory_map

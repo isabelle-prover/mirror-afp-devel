@@ -49,8 +49,8 @@ proof -
   hence "P v x" by (rule proper_implies_part)
   assume antecedent: "\<forall>z. PP z x \<longrightarrow> P z y"
   hence "PP v x \<longrightarrow> P v y"..
-  hence "P v y" using `PP v x`..
-  with `P v x` have "P v x \<and> P v y"..
+  hence "P v y" using \<open>PP v x\<close>..
+  with \<open>P v x\<close> have "P v x \<and> P v y"..
   hence "\<exists>v. P v x \<and> P v y"..
   with overlap_eq have "O x y"..
   show "P x y"
@@ -65,15 +65,15 @@ proof -
       assume "z = x"
       moreover from z have "\<not> O z y"..
       ultimately have "\<not> O x y" by (rule subst)
-      thus "False"  using `O x y`..
+      thus "False"  using \<open>O x y\<close>..
     qed
     ultimately have "P z x \<and> z \<noteq> x"..
     with nip_eq have "PP z x"..
     from antecedent have "PP z x \<longrightarrow> P z y"..
-    hence "P z y" using `PP z x`..
+    hence "P z y" using \<open>PP z x\<close>..
     hence "O z y" by (rule part_implies_overlap)
     from z have "\<not> O z y"..
-    thus "False" using `O z y`..
+    thus "False" using \<open>O z y\<close>..
   qed
 qed
 
@@ -99,7 +99,7 @@ proof -
       proof
         assume "PP z x"
         from right have "PP z x \<longleftrightarrow> PP z y"..
-        hence "PP z y" using `PP z x`..
+        hence "PP z y" using \<open>PP z x\<close>..
         thus "P z y" by (rule proper_implies_part)
       qed
     qed
@@ -110,7 +110,7 @@ proof -
       proof
         assume "PP z y"
         from right have "PP z x \<longleftrightarrow> PP z y"..
-        hence "PP z x" using `PP z y`..
+        hence "PP z x" using \<open>PP z y\<close>..
         thus "P z x" by (rule proper_implies_part)
       qed
     qed
@@ -119,27 +119,27 @@ proof -
     proof (rule disjE)
       assume "PP z x"
       hence "\<exists>z. PP z x"..
-      hence "P x y" using `\<forall>z. PP z x \<longrightarrow> P z y`
+      hence "P x y" using \<open>\<forall>z. PP z x \<longrightarrow> P z y\<close>
         by (rule proper_parts_principle)
       from right have "PP z x \<longleftrightarrow> PP z y"..
-      hence "PP z y" using `PP z x`..
+      hence "PP z y" using \<open>PP z x\<close>..
       hence "\<exists>z. PP z y"..
-      hence "P y x" using `\<forall>z. PP z y \<longrightarrow> P z x`
+      hence "P y x" using \<open>\<forall>z. PP z y \<longrightarrow> P z x\<close>
         by (rule proper_parts_principle)
-      with `P x y` show "x = y"
+      with \<open>P x y\<close> show "x = y"
         by (rule part_antisymmetry)
     next
       assume "PP z y"
       hence "\<exists>z. PP z y"..
-      hence "P y x" using `\<forall>z. PP z y \<longrightarrow> P z x`
+      hence "P y x" using \<open>\<forall>z. PP z y \<longrightarrow> P z x\<close>
         by (rule proper_parts_principle)
       from right have "PP z x \<longleftrightarrow> PP z y"..
-      hence "PP z x" using `PP z y`..
+      hence "PP z x" using \<open>PP z y\<close>..
       hence "\<exists>z. PP z x"..
-      hence "P x y" using `\<forall>z. PP z x \<longrightarrow> P z y`
+      hence "P x y" using \<open>\<forall>z. PP z x \<longrightarrow> P z y\<close>
           by (rule proper_parts_principle)
       thus "x = y"
-        using `P y x` by (rule part_antisymmetry)
+        using \<open>P y x\<close> by (rule part_antisymmetry)
     qed
   qed
 qed
@@ -156,7 +156,7 @@ proof
     show "O z x \<longrightarrow> O z y"
     proof
       assume "O z x"
-      with `P x y` show "O z y"
+      with \<open>P x y\<close> show "O z y"
         by (rule overlap_monotonicity)
     qed
   qed
@@ -173,7 +173,7 @@ next
     moreover from z have "P z x"..
     hence "O z x" by (rule part_implies_overlap)
     ultimately have "O z y"..
-    with `\<not> O z y` show "False"..
+    with \<open>\<not> O z y\<close> show "False"..
   qed
 qed
 
@@ -206,7 +206,7 @@ next
   qed
   with part_overlap_eq have "P x y"..
   thus "x = y" 
-    using `P y x` by (rule part_antisymmetry)
+    using \<open>P y x\<close> by (rule part_antisymmetry)
 qed
 
 end

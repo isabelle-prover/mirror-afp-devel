@@ -157,8 +157,9 @@ lemma Inf_counterex_reducing:
   using bot_ni_n clausal_Inf_counterex_reducing d_in_n d_min n_ent_d by auto
 
 sublocale counterex_reducing_inference_system "{{#}}" "(\<TTurnstile>e)" Inf I_of
+  "(<) :: 'a clause \<Rightarrow> 'a clause \<Rightarrow> bool"
   using Inf_counterex_reducing
-  by unfold_locales simp_all
+  by unfold_locales (simp_all add: less_eq_multiset_def)
 
 end
 
@@ -166,7 +167,7 @@ end
 subsection \<open>Counterexample-Reducing Calculi Equipped with a Standard Redundancy Criterion\<close>
 
 locale clausal_counterex_reducing_calculus_with_standard_redundancy =
-  calculus_with_standard_redundancy Inf "{{#}}" "(\<TTurnstile>e)" +
+  calculus_with_standard_redundancy Inf "{{#}}" "(\<TTurnstile>e)" "(<) :: 'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" +
   clausal_counterex_reducing_inference_system Inf J_of
   for
     Inf :: "('a :: wellorder) clause inference set" and
@@ -174,8 +175,12 @@ locale clausal_counterex_reducing_calculus_with_standard_redundancy =
 begin
 
 sublocale counterex_reducing_calculus_with_standard_inferance_redundancy "{{#}}" Inf "(\<TTurnstile>e)" Red_I
-  Red_F I_of
-  by unfold_locales
+  Red_F I_of "(<) :: 'a clause \<Rightarrow> 'a clause \<Rightarrow> bool"
+proof unfold_locales
+  fix C D :: "'a clause"
+  show "C \<noteq> D \<Longrightarrow> C < D \<or> D < C"
+    by fastforce
+qed
 
 lemma clausal_saturated_model: "saturated N \<Longrightarrow> {#} \<notin> N \<Longrightarrow> J_of N \<TTurnstile>s N"
   by (simp add: saturated_model[simplified])

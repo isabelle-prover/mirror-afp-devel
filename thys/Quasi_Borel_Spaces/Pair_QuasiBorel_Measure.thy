@@ -120,7 +120,7 @@ proof -
     "p = qbs_prob_space (X, \<alpha>, \<mu>)" "qbs_prob X \<alpha> \<mu>"
     using rep_monadP_qbs_Px[OF assms(1)] by auto
   obtain \<beta> \<nu> where hq:
-   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>" 
+   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>"
     using rep_monadP_qbs_Px[OF assms(2)] by auto
   interpret pqp: pair_qbs_probs X \<alpha> \<mu> Y \<beta> \<nu>
     by(simp add: pair_qbs_probs_def hp hq)
@@ -178,7 +178,7 @@ lemma qbs_prob_ennintegral_indep1:
           (is "?lhs = _")
 proof -
  obtain Y \<beta> \<nu> where hq:
-   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>" 
+   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>"
     using rep_qbs_prob_space[of q] by auto
   have "?lhs = (\<integral>\<^sup>+\<^sub>Q y. \<integral>\<^sup>+\<^sub>Q x. f x \<partial>p \<partial>q)"
     using qbs_prob_ennintegral_Fubini_snd[OF assms(1) qbs_prob.qbs_prob_space_in_Px[OF hq(2)] qbs_morphism_fst''[OF assms(2)]]
@@ -212,7 +212,7 @@ lemma qbs_ennintegral_indep_mult:
           (is "?lhs = ?rhs")
 proof -
   have h:"(\<lambda>z. f (fst z) * g (snd z)) \<in> X \<Otimes>\<^sub>Q Y \<rightarrow>\<^sub>Q \<real>\<^sub>Q\<^sub>\<ge>\<^sub>0"
-    using assms(4,3) 
+    using assms(4,3)
     by(auto intro!: borel_measurable_subalgebra[OF l_product_sets[of X Y]] simp: space_pair_measure lr_adjunction_correspondence)
 
   have "?lhs = (\<integral>\<^sup>+\<^sub>Q x. \<integral>\<^sup>+\<^sub>Q y .f x * g y \<partial>q \<partial>p)"
@@ -248,7 +248,7 @@ qed
 lemma(in pair_qbs_probs) qbs_prob_pair_measure_integrable':
   assumes "f \<in> X \<Otimes>\<^sub>Q Y \<rightarrow>\<^sub>Q \<real>\<^sub>Q"
       and "integrable (\<mu> \<Otimes>\<^sub>M \<nu>) (f \<circ> (map_prod \<alpha> \<beta>))"
-    shows "qbs_integrable (qbs_prob_space (X,\<alpha>,\<mu>) \<Otimes>\<^sub>Q\<^sub>m\<^sub>e\<^sub>s qbs_prob_space (Y,\<beta>,\<nu>)) f" 
+    shows "qbs_integrable (qbs_prob_space (X,\<alpha>,\<mu>) \<Otimes>\<^sub>Q\<^sub>m\<^sub>e\<^sub>s qbs_prob_space (Y,\<beta>,\<nu>)) f"
 proof -
   have "integrable (distr (\<mu> \<Otimes>\<^sub>M \<nu>) real_borel real_real.f) (f \<circ> (map_prod \<alpha> \<beta> \<circ> real_real.g)) = integrable (\<mu> \<Otimes>\<^sub>M \<nu>) (\<lambda>x. (f \<circ> (map_prod \<alpha> \<beta> \<circ> real_real.g)) (real_real.f x))"
     by(intro integrable_distr_eq) (use assms(1) in auto)
@@ -265,13 +265,13 @@ proof -
     "p = qbs_prob_space (X, \<alpha>, \<mu>)" "qbs_prob X \<alpha> \<mu>"
     using rep_qbs_prob_space[of p] by auto
   obtain Y \<beta> \<nu> where hq:
-   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>" 
+   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>"
     using rep_qbs_prob_space[of q] by auto
   interpret pqp: pair_qbs_probs X \<alpha> \<mu> Y \<beta> \<nu>
     by(simp add: pair_qbs_probs_def hp hq)
   interpret pqp2: pair_qbs_probs Y \<beta> \<nu> X \<alpha> \<mu>
     by(simp add: pair_qbs_probs_def hp hq)
- 
+
   have "f \<in> X \<Otimes>\<^sub>Q Y \<rightarrow>\<^sub>Q \<real>\<^sub>Q"
        "integrable (\<mu> \<Otimes>\<^sub>M \<nu>) (f \<circ> map_prod \<alpha> \<beta>)"
     by(auto simp: pqp.qbs_prob_pair_measure_integrable[OF assms[simplified hp(1) hq(1)]])
@@ -295,7 +295,7 @@ proof -
     "p = qbs_prob_space (X, \<alpha>, \<mu>)" "qbs_prob X \<alpha> \<mu>"
     using rep_monadP_qbs_Px[OF assms(1)] by auto
   obtain \<beta> \<nu> where hq:
-   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>" 
+   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>"
     using rep_monadP_qbs_Px[OF assms(2)] by auto
   interpret pqp: pair_qbs_probs X \<alpha> \<mu> Y \<beta> \<nu>
     by(simp add: pair_qbs_probs_def hp hq)
@@ -352,7 +352,7 @@ proof -
     "p = qbs_prob_space (X, \<alpha>, \<mu>)" "qbs_prob X \<alpha> \<mu>"
     using rep_qbs_prob_space[of p] by auto
   obtain Y \<beta> \<nu> where hq:
-   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>" 
+   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>"
     using rep_qbs_prob_space[of q] by auto
   interpret pqp: pair_qbs_probs X \<alpha> \<mu> Y \<beta> \<nu>
     by(simp add: hp hq  pair_qbs_probs_def)
@@ -370,7 +370,7 @@ proof -
     moreover have "\<And>x. ((\<lambda>x. \<integral>\<^sub>Q y. f (x, y) \<partial>q) \<circ> \<alpha>) x = LINT y|\<nu>. (f \<circ> map_prod \<alpha> \<beta>) (x, y)"
      by(auto intro!: pqp.qp2.qbs_prob_integral_def qbs_morphism_Pair1'[OF qbs_Mx_to_X(2)[OF pqp.qp1.in_Mx] h0(3)] simp: hq)
     ultimately show "integrable \<mu> ((\<lambda>x. \<integral>\<^sub>Q y. f (x, y) \<partial>q) \<circ> \<alpha>)"
-      using integrable_cong[of \<mu> \<mu> "(\<lambda>x. \<integral>\<^sub>Q y. f (x, y) \<partial>q) \<circ> \<alpha>" " (\<lambda>x. LINT y|\<nu>. (f \<circ> map_prod \<alpha> \<beta>) (x, y))"]
+      using Bochner_Integration.integrable_cong[of \<mu> \<mu> "(\<lambda>x. \<integral>\<^sub>Q y. f (x, y) \<partial>q) \<circ> \<alpha>" " (\<lambda>x. LINT y|\<nu>. (f \<circ> map_prod \<alpha> \<beta>) (x, y))"]
       by simp
   qed
 qed
@@ -390,7 +390,7 @@ proof -
     "p = qbs_prob_space (X, \<alpha>, \<mu>)" "qbs_prob X \<alpha> \<mu>"
     using rep_qbs_prob_space[of p] by auto
   obtain Y \<beta> \<nu> where hq:
-   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>" 
+   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>"
     using rep_qbs_prob_space[of q] by auto
   interpret pqp: pair_qbs_probs X \<alpha> \<mu> Y \<beta> \<nu>
     by(simp add: hp hq  pair_qbs_probs_def)
@@ -431,7 +431,7 @@ proof -
     "p = qbs_prob_space (X, \<alpha>, \<mu>)" "qbs_prob X \<alpha> \<mu>"
     using rep_qbs_prob_space[of p] by auto
   obtain Y \<beta> \<nu> where hq:
-   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>" 
+   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>"
     using rep_qbs_prob_space[of q] by auto
   interpret pqp: pair_qbs_probs X \<alpha> \<mu> Y \<beta> \<nu>
     by(simp add: hp hq  pair_qbs_probs_def)
@@ -463,7 +463,7 @@ proof -
     "p = qbs_prob_space (X, \<alpha>, \<mu>)" "qbs_prob X \<alpha> \<mu>"
     using rep_qbs_prob_space[of p] by auto
   obtain Y \<beta> \<nu> where hq:
-   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>" 
+   "q = qbs_prob_space (Y, \<beta>, \<nu>)" "qbs_prob Y \<beta> \<nu>"
     using rep_qbs_prob_space[of q] by auto
   interpret pqp: pair_qbs_probs X \<alpha> \<mu> Y \<beta> \<nu>
     by(simp add: hp hq  pair_qbs_probs_def)
