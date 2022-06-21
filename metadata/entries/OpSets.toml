@@ -26,21 +26,21 @@ note = ""
 [authors]
 
 [authors.kleppmann]
-email = "kleppmann_email1"
+email = "kleppmann_email"
 
 [authors.gomes]
-email = "gomes_email3"
+email = "gomes_email"
 
 [authors.mulligan]
 email = "mulligan_email1"
 
 [authors.beresford]
-email = "beresford_email1"
+email = "beresford_email"
 
 [contributors]
 
 [notify]
-gomes = "gomes_email1"
+gomes = "gomes_email"
 
 [history]
 

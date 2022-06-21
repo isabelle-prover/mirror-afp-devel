@@ -18,7 +18,7 @@ email = "rauch_email"
 
 [notify]
 klein = "klein_email"
-schirmer = "schirmer_email1"
+schirmer = "schirmer_email"
 
 [history]
 

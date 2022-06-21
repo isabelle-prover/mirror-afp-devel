@@ -25,7 +25,7 @@ note = ""
 [authors]
 
 [authors.gomes]
-email = "gomes_email1"
+email = "gomes_email"
 
 [authors.kleppmann]
 email = "kleppmann_email"
@@ -39,7 +39,7 @@ email = "beresford_email"
 [contributors]
 
 [notify]
-gomes = "gomes_email1"
+gomes = "gomes_email"
 mulligan = "mulligan_email"
 
 [history]

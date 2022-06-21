@@ -17,13 +17,13 @@ note = ""
 [authors.lammich]
 
 [authors.wimmer]
-homepage = "wimmer_homepage1"
+homepage = "wimmer_homepage"
 
 [contributors]
 
 [notify]
 lammich = "lammich_email"
-wimmer = "wimmer_email1"
+wimmer = "wimmer_email"
 
 [history]
 

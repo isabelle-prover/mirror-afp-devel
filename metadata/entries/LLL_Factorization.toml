@@ -23,13 +23,13 @@ note = ""
 [authors]
 
 [authors.divason]
-homepage = "divason_homepage1"
+homepage = "divason_homepage"
 
 [authors.joosten]
-homepage = "joosten_homepage1"
+homepage = "joosten_homepage"
 
 [authors.thiemann]
-homepage = "thiemann_homepage2"
+homepage = "thiemann_homepage"
 
 [authors.yamada]
 email = "yamada_email1"
@@ -37,7 +37,7 @@ email = "yamada_email1"
 [contributors]
 
 [notify]
-divason = "divason_email1"
+divason = "divason_email"
 joosten = "joosten_email2"
 thiemann = "thiemann_email"
 yamada = "yamada_email1"

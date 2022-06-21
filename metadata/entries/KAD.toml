@@ -40,7 +40,7 @@ homepage = "weber_homepage"
 [contributors]
 
 [notify]
-guttmann = "guttmann_email1"
+guttmann = "guttmann_email"
 struth = "struth_email"
 weber = "weber_email"
 

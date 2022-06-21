@@ -31,7 +31,7 @@ homepage = "lammich_homepage"
 [contributors]
 
 [notify]
-wimmer = "wimmer_email1"
+wimmer = "wimmer_email"
 
 [history]
 

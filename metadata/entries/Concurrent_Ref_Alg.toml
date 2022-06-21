@@ -39,7 +39,7 @@ homepage = "velykis_homepage"
 [contributors]
 
 [notify]
-hayes = "hayes_email1"
+hayes = "hayes_email"
 
 [history]
 

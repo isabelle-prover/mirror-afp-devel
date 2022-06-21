@@ -23,13 +23,13 @@ note = ""
 email = "rizaldi_email"
 
 [authors.immler]
-homepage = "immler_homepage2"
+homepage = "immler_homepage"
 
 [contributors]
 
 [notify]
 rizaldi = "rizaldi_email"
-immler = "immler_email2"
+immler = "immler_email1"
 rau = "rau_email"
 
 [history]

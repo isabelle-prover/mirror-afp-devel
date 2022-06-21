@@ -15,7 +15,7 @@ homepage = "huffman_homepage"
 [contributors]
 
 [notify]
-paulson = "paulson_email1"
+paulson = "paulson_email"
 
 [history]
 

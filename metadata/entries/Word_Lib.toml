@@ -38,7 +38,7 @@ homepage = "klein_homepage"
 [contributors]
 
 [notify]
-klein = "klein_email1"
+klein = "klein_email"
 
 [history]
 

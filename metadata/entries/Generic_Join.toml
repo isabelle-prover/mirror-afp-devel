@@ -23,7 +23,7 @@ note = ""
 [contributors]
 
 [notify]
-dardinier = "dardinier_email1"
+dardinier = "dardinier_email"
 traytel = "traytel_email1"
 
 [history]

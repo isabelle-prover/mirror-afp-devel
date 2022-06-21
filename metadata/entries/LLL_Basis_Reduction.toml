@@ -26,16 +26,16 @@ note = ""
 [authors.bottesch]
 
 [authors.divason]
-homepage = "divason_homepage1"
+homepage = "divason_homepage"
 
 [authors.haslbeck]
 homepage = "haslbeck_homepage"
 
 [authors.joosten]
-homepage = "joosten_homepage1"
+homepage = "joosten_homepage"
 
 [authors.thiemann]
-homepage = "thiemann_homepage2"
+homepage = "thiemann_homepage"
 
 [authors.yamada]
 
@@ -43,7 +43,7 @@ homepage = "thiemann_homepage2"
 
 [notify]
 bottesch = "bottesch_email"
-divason = "divason_email1"
+divason = "divason_email"
 haslbeck = "haslbeck_email"
 joosten = "joosten_email2"
 thiemann = "thiemann_email"

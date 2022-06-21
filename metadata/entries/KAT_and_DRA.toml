@@ -31,7 +31,7 @@ homepage = "struth_homepage"
 [contributors]
 
 [notify]
-struth = "struth_email1"
+struth = "struth_email"
 
 [history]
 

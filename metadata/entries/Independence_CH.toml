@@ -20,7 +20,7 @@ email = "gunther_email"
 homepage = "pagano_homepage"
 
 [authors.terraf]
-homepage = "terraf_homepage2"
+homepage = "terraf_homepage"
 
 [authors.steinberg]
 email = "steinberg_email"
@@ -28,8 +28,8 @@ email = "steinberg_email"
 [contributors]
 
 [notify]
-terraf = "terraf_email1"
-pagano = "pagano_email1"
+terraf = "terraf_email"
+pagano = "pagano_email"
 
 [history]
 

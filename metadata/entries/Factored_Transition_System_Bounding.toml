@@ -36,7 +36,7 @@ homepage = "abdulaziz_homepage"
 
 [notify]
 kurz = "kurz_email"
-abdulaziz = "abdulaziz_email2"
+abdulaziz = "abdulaziz_email"
 
 [history]
 

@@ -25,7 +25,7 @@ homepage = "sickert_homepage"
 email = "seidl_email"
 
 [notify]
-sickert = "sickert_email1"
+sickert = "sickert_email"
 
 [history]
 

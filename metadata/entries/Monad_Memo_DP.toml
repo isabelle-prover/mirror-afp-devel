@@ -22,18 +22,18 @@ note = ""
 [authors]
 
 [authors.wimmer]
-homepage = "wimmer_homepage1"
+homepage = "wimmer_homepage"
 
 [authors.hu]
 email = "hu_email"
 
 [authors.nipkow]
-homepage = "nipkow_homepage4"
+homepage = "nipkow_homepage"
 
 [contributors]
 
 [notify]
-wimmer = "wimmer_email1"
+wimmer = "wimmer_email"
 
 [history]
 

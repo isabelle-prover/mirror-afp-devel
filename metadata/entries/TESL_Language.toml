@@ -46,13 +46,13 @@ email = "van_email"
 email = "boulanger_email"
 
 [authors.wolff]
-email = "wolff_email1"
+email = "wolff_email"
 
 [contributors]
 
 [notify]
 boulanger = "boulanger_email"
-wolff = "wolff_email1"
+wolff = "wolff_email"
 
 [history]
 

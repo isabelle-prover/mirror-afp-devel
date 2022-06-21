@@ -19,13 +19,13 @@ note = ""
 [authors]
 
 [authors.aransay]
-homepage = "aransay_homepage1"
+homepage = "aransay_homepage"
 
 [authors.campo]
 email = "campo_email"
 
 [authors.michaelis]
-homepage = "michaelis_homepage1"
+homepage = "michaelis_homepage"
 
 [contributors]
 

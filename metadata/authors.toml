@@ -59,7 +59,6 @@ name = "Salomon Sickert"
 
 [sickert.emails]
 sickert_email = "s.sickert@tum.de"
-sickert_email1 = "sickert@in.tum.de"
 
 [sickert.homepages]
 sickert_homepage = "https://www7.in.tum.de/~sickert"
@@ -186,8 +185,7 @@ name = "Vincent van Oostrom"
 name = "Gerwin Klein"
 
 [klein.emails]
-klein_email = "kleing@cse.unsw.edu.au"
-klein_email1 = "kleing@unsw.edu.au"
+klein_email = "kleing@unsw.edu.au"
 
 [klein.homepages]
 klein_homepage = "http://www.cse.unsw.edu.au/~kleing/"
@@ -213,11 +211,9 @@ name = "Walter Guttmann"
 
 [guttmann.emails]
 guttmann_email = "walter.guttmann@canterbury.ac.nz"
-guttmann_email1 = "walter.guttman@canterbury.ac.nz"
 
 [guttmann.homepages]
-guttmann_homepage = "http://www.cosc.canterbury.ac.nz/walter.guttmann/"
-guttmann_homepage1 = "https://www.cosc.canterbury.ac.nz/walter.guttmann/"
+guttmann_homepage = "https://www.cosc.canterbury.ac.nz/walter.guttmann/"
 
 [mantel]
 name = "Heiko Mantel"
@@ -313,7 +309,6 @@ li_email1 = "liwenda1990@hotmail.com"
 
 [li.homepages]
 li_homepage = "https://www.cl.cam.ac.uk/~wl302/"
-li_homepage1 = "http://www.cl.cam.ac.uk/~wl302/"
 
 [stevens]
 name = "Lukas Stevens"
@@ -331,7 +326,6 @@ tourret_email = "stourret@mpi-inf.mpg.de"
 
 [tourret.homepages]
 tourret_homepage = "https://www.mpi-inf.mpg.de/departments/automation-of-logic/people/sophie-tourret/"
-tourret_homepage1 = "https://www.mpi-inf.mpg.de/departments/automation-of-logic/people/sophie-tourret"
 
 [yu]
 name = "Lei Yu"
@@ -345,8 +339,7 @@ yu_email = "ly271@cam.ac.uk"
 name = "Sylvia Grewe"
 
 [grewe.emails]
-grewe_email = "grewe@st.informatik.tu-darmstadt.de"
-grewe_email1 = "grewe@cs.tu-darmstadt.de"
+grewe_email = "grewe@cs.tu-darmstadt.de"
 
 [grewe.homepages]
 
@@ -363,7 +356,6 @@ name = "Norbert Schirmer"
 
 [schirmer.emails]
 schirmer_email = "norbert.schirmer@web.de"
-schirmer_email1 = "schirmer@in.tum.de"
 
 [schirmer.homepages]
 
@@ -373,12 +365,9 @@ name = "Fabian Immler"
 [immler.emails]
 immler_email = "immler@in.tum.de"
 immler_email1 = "fimmler@cs.cmu.edu"
-immler_email2 = "fimmler@andrew.cmu.edu"
 
 [immler.homepages]
-immler_homepage = "http://www21.in.tum.de/~immler"
-immler_homepage1 = "https://home.in.tum.de/~immler/"
-immler_homepage2 = "http://home.in.tum.de/~immler/"
+immler_homepage = "https://home.in.tum.de/~immler/"
 
 [tiu]
 name = "Alwen Tiu"
@@ -404,8 +393,7 @@ name = "Christian Urban"
 urban_email = "christian.urban@kcl.ac.uk"
 
 [urban.homepages]
-urban_homepage = "http://www.inf.kcl.ac.uk/staff/urbanc/"
-urban_homepage1 = "https://nms.kcl.ac.uk/christian.urban/"
+urban_homepage = "https://nms.kcl.ac.uk/christian.urban/"
 
 [michaelis]
 name = "Julius Michaelis"
@@ -417,8 +405,7 @@ michaelis_email2 = "bdd@liftm.de"
 michaelis_email3 = "afp@liftm.de"
 
 [michaelis.homepages]
-michaelis_homepage = "http://liftm.de"
-michaelis_homepage1 = "http://liftm.de/"
+michaelis_homepage = "http://liftm.de/"
 
 [scott]
 name = "Dana Scott"
@@ -441,7 +428,6 @@ name = "Thibault Dardinier"
 
 [dardinier.emails]
 dardinier_email = "thibault.dardinier@inf.ethz.ch"
-dardinier_email1 = "tdardini@student.ethz.ch"
 
 [dardinier.homepages]
 dardinier_homepage = "https://dardinier.me/"
@@ -709,8 +695,7 @@ name = "Mnacho Echenim"
 echenim_email = "mnacho.echenim@univ-grenoble-alpes.fr"
 
 [echenim.homepages]
-echenim_homepage = "http://lig-membres.imag.fr/mechenim/"
-echenim_homepage1 = "https://lig-membres.imag.fr/mechenim/"
+echenim_homepage = "https://lig-membres.imag.fr/mechenim/"
 
 [vytiniotis]
 name = "Dimitrios Vytiniotis"
@@ -744,8 +729,7 @@ eberl_email = "manuel@pruvisto.org"
 eberl_email1 = "manuel.eberl@tum.de"
 
 [eberl.homepages]
-eberl_homepage = "https://pruvisto.org"
-eberl_homepage1 = "https://pruvisto.org/"
+eberl_homepage = "https://pruvisto.org/"
 eberl_homepage2 = "https://www.in.tum.de/~eberlm"
 
 [noce]
@@ -821,9 +805,7 @@ name = "René Thiemann"
 thiemann_email = "rene.thiemann@uibk.ac.at"
 
 [thiemann.homepages]
-thiemann_homepage = "http://cl-informatik.uibk.ac.at/~thiemann"
-thiemann_homepage1 = "http://cl-informatik.uibk.ac.at/~thiemann/"
-thiemann_homepage2 = "http://cl-informatik.uibk.ac.at/users/thiemann/"
+thiemann_homepage = "http://cl-informatik.uibk.ac.at/users/thiemann/"
 
 [campo]
 name = "Alejandro del Campo"
@@ -897,7 +879,6 @@ benzmueller_email1 = "c.benzmueller@fu-berlin.de"
 [benzmueller.homepages]
 benzmueller_homepage = "http://christoph-benzmueller.de"
 benzmueller_homepage1 = "http://page.mi.fu-berlin.de/cbenzmueller/"
-benzmueller_homepage2 = "http://www.christoph-benzmueller.de"
 
 [from]
 name = "Asta Halkjær From"
@@ -1086,7 +1067,6 @@ name = "Alastair R. Beresford"
 
 [beresford.emails]
 beresford_email = "arb33@cam.ac.uk"
-beresford_email1 = "arb33@cl.cam.ac.uk"
 
 [beresford.homepages]
 
@@ -1094,13 +1074,10 @@ beresford_email1 = "arb33@cl.cam.ac.uk"
 name = "Pedro Sánchez Terraf"
 
 [terraf.emails]
-terraf_email = "sterraf@famaf.unc.edu.ar"
-terraf_email1 = "psterraf@unc.edu.ar"
+terraf_email = "psterraf@unc.edu.ar"
 
 [terraf.homepages]
 terraf_homepage = "https://cs.famaf.unc.edu.ar/~pedro/home_en.html"
-terraf_homepage1 = "https://cs.famaf.unc.edu.ar/~pedro/home_en"
-terraf_homepage2 = "https://cs.famaf.unc.edu.ar/~pedro"
 
 [raumer]
 name = "Jakob von Raumer"
@@ -1114,8 +1091,7 @@ raumer_email = "psxjv4@nottingham.ac.uk"
 name = "Miguel Pagano"
 
 [pagano.emails]
-pagano_email = "pagano@famaf.unc.edu.ar"
-pagano_email1 = "miguel.pagano@unc.edu.ar"
+pagano_email = "miguel.pagano@unc.edu.ar"
 
 [pagano.homepages]
 pagano_homepage = "https://cs.famaf.unc.edu.ar/~mpagano/"
@@ -1236,7 +1212,6 @@ name = "Martin Kleppmann"
 
 [kleppmann.emails]
 kleppmann_email = "martin.kleppmann@cl.cam.ac.uk"
-kleppmann_email1 = "mk428@cl.cam.ac.uk"
 
 [kleppmann.homepages]
 
@@ -1307,23 +1282,16 @@ name = "Tobias Nipkow"
 nipkow_email = "nipkow@in.tum.de"
 
 [nipkow.homepages]
-nipkow_homepage = "http://www21.in.tum.de/~nipkow"
-nipkow_homepage1 = "http://www.in.tum.de/~nipkow/"
-nipkow_homepage2 = "http://www.in.tum.de/~nipkow"
-nipkow_homepage3 = "https://www.in.tum.de/~nipkow"
-nipkow_homepage4 = "http://www21.in.tum.de/~nipkow/"
+nipkow_homepage = "https://www21.in.tum.de/~nipkow/"
 
 [divason]
 name = "Jose Divasón"
 
 [divason.emails]
-divason_email = "jose.divasonm@unirioja.es"
-divason_email1 = "jose.divason@unirioja.es"
+divason_email = "jose.divason@unirioja.es"
 
 [divason.homepages]
-divason_homepage = "http://www.unirioja.es/cu/jodivaso"
-divason_homepage1 = "http://www.unirioja.es/cu/jodivaso/"
-divason_homepage2 = "https://www.unirioja.es/cu/jodivaso/"
+divason_homepage = "https://www.unirioja.es/cu/jodivaso/"
 
 [barsotti]
 name = "Damián Barsotti"
@@ -1354,9 +1322,8 @@ avigad_homepage = "http://www.andrew.cmu.edu/user/avigad/"
 name = "Mohammad Abdulaziz"
 
 [abdulaziz.emails]
-abdulaziz_email = "mansour@in.tum.de"
+abdulaziz_email = "mohammad.abdulaziz@in.tum.de"
 abdulaziz_email1 = "mohammad.abdulaziz8@gmail.com"
-abdulaziz_email2 = "mohammad.abdulaziz@in.tum.de"
 
 [abdulaziz.homepages]
 abdulaziz_homepage = "http://home.in.tum.de/~mansour/"
@@ -1406,11 +1373,9 @@ name = "Simon Wimmer"
 
 [wimmer.emails]
 wimmer_email = "simon.wimmer@tum.de"
-wimmer_email1 = "wimmers@in.tum.de"
 
 [wimmer.homepages]
-wimmer_homepage = "http://in.tum.de/~wimmers"
-wimmer_homepage1 = "http://home.in.tum.de/~wimmers/"
+wimmer_homepage = "http://home.in.tum.de/~wimmers/"
 
 [gammie]
 name = "Peter Gammie"
@@ -1502,7 +1467,6 @@ maricf_email = "filip@matf.bg.ac.rs"
 
 [maricf.homepages]
 maricf_homepage = "http://www.matf.bg.ac.rs/~filip"
-maricf_homepage1 = "http://poincare.matf.bg.ac.rs/~filip/"
 
 [popescu]
 name = "Andrei Popescu"
@@ -1566,11 +1530,9 @@ name = "Georg Struth"
 
 [struth.emails]
 struth_email = "g.struth@sheffield.ac.uk"
-struth_email1 = "g.struth@dcs.shef.ac.uk"
 
 [struth.homepages]
-struth_homepage = "http://www.dcs.shef.ac.uk/~georg"
-struth_homepage1 = "http://staffwww.dcs.shef.ac.uk/people/G.Struth/"
+struth_homepage = "http://staffwww.dcs.shef.ac.uk/people/G.Struth/"
 
 [mitsch]
 name = "Stefan Mitsch"
@@ -1670,7 +1632,6 @@ kaliszyk_email = "cezary.kaliszyk@uibk.ac.at"
 
 [kaliszyk.homepages]
 kaliszyk_homepage = "http://cl-informatik.uibk.ac.at/users/cek/"
-kaliszyk_homepage1 = "http://cl-informatik.uibk.ac.at/cek/"
 
 [voisin]
 name = "Frederic Voisin"
@@ -1744,8 +1705,7 @@ name = "Dominique Unruh"
 unruh_email = "unruh@ut.ee"
 
 [unruh.homepages]
-unruh_homepage = "http://kodu.ut.ee/~unruh/"
-unruh_homepage1 = "https://www.ut.ee/~unruh/"
+unruh_homepage = "https://www.ut.ee/~unruh/"
 
 [yamada]
 name = "Akihisa Yamada"
@@ -1820,8 +1780,7 @@ name = "Jesús Aransay"
 aransay_email = "jesus-maria.aransay@unirioja.es"
 
 [aransay.homepages]
-aransay_homepage = "http://www.unirioja.es/cu/jearansa"
-aransay_homepage1 = "https://www.unirioja.es/cu/jearansa"
+aransay_homepage = "https://www.unirioja.es/cu/jearansa"
 
 [gioiosa]
 name = "Gianpaolo Gioiosa"
@@ -1924,8 +1883,7 @@ rauch_email = "rauch@informatik.uni-kl.de"
 name = "Burkhart Wolff"
 
 [wolff.emails]
-wolff_email = "wolff@lri.fr"
-wolff_email1 = "burkhart.wolff@lri.fr"
+wolff_email = "burkhart.wolff@lri.fr"
 
 [wolff.homepages]
 wolff_homepage = "https://www.lri.fr/~wolff/"
@@ -1986,8 +1944,7 @@ name = "Toby Murray"
 murray_email = "toby.murray@unimelb.edu.au"
 
 [murray.homepages]
-murray_homepage = "http://people.eng.unimelb.edu.au/tobym/"
-murray_homepage1 = "https://people.eng.unimelb.edu.au/tobym/"
+murray_homepage = "https://people.eng.unimelb.edu.au/tobym/"
 
 [hupel]
 name = "Lars Hupel"
@@ -2050,7 +2007,6 @@ argyraki_email = "ak2110@cam.ac.uk"
 
 [argyraki.homepages]
 argyraki_homepage = "https://www.cl.cam.ac.uk/~ak2110/"
-argyraki_homepage1 = "http://www.cl.cam.ac.uk/~ak2110/"
 argyraki_homepage2 = "https://www.cst.cam.ac.uk/people/ak2110"
 
 [ye]
@@ -2150,8 +2106,7 @@ traytel_email1 = "traytel@inf.ethz.ch"
 traytel_email2 = "traytel@di.ku.dk"
 
 [traytel.homepages]
-traytel_homepage = "https://traytel.bitbucket.io"
-traytel_homepage1 = "https://traytel.bitbucket.io/"
+traytel_homepage = "https://traytel.bitbucket.io/"
 
 [tverdyshev]
 name = "Sergey Tverdyshev"
@@ -2298,7 +2253,6 @@ brucker_email2 = "adbrucker@0x5f.org"
 
 [brucker.homepages]
 brucker_homepage = "https://www.brucker.ch/"
-brucker_homepage1 = "https://www.brucker.ch"
 
 [sato]
 name = "Tetsuya Sato"
@@ -2317,8 +2271,7 @@ huffman_email = "huffman@in.tum.de"
 huffman_email1 = "brianh@cs.pdx.edu"
 
 [huffman.homepages]
-huffman_homepage = "http://web.cecs.pdx.edu/~brianh/"
-huffman_homepage1 = "http://cs.pdx.edu/~brianh"
+huffman_homepage = "http://cs.pdx.edu/~brianh/"
 
 [fleuriot]
 name = "Jacques D. Fleuriot"
@@ -2414,8 +2367,7 @@ joosten_email1 = "sjcjoosten@gmail.com"
 joosten_email2 = "s.j.c.joosten@utwente.nl"
 
 [joosten.homepages]
-joosten_homepage = "https://sjcjoosten.nl"
-joosten_homepage1 = "https://sjcjoosten.nl/"
+joosten_homepage = "https://sjcjoosten.nl/"
 
 [blumson]
 name = "Ben Blumson"
@@ -2424,8 +2376,7 @@ name = "Ben Blumson"
 blumson_email = "benblumson@gmail.com"
 
 [blumson.homepages]
-blumson_homepage = "https://philpapers.org/profile/805"
-blumson_homepage1 = "https://philpeople.org/profiles/ben-blumson"
+blumson_homepage = "https://philpeople.org/profiles/ben-blumson"
 
 [hosking]
 name = "Tony Hosking"
@@ -2466,7 +2417,6 @@ name = "Uwe Waldmann"
 
 [waldmann.emails]
 waldmann_email = "waldmann@mpi-inf.mpg.de"
-waldmann_email1 = "uwe@mpi-inf.mpg.de"
 
 [waldmann.homepages]
 
@@ -2672,7 +2622,6 @@ platzer_email = "aplatzer@cs.cmu.edu"
 
 [platzer.homepages]
 platzer_homepage = "https://www.cs.cmu.edu/~aplatzer/"
-platzer_homepage1 = "http://www.cs.cmu.edu/~aplatzer/"
 
 [matichuk]
 name = "Daniel Matichuk"
@@ -2757,9 +2706,7 @@ name = "Victor B. F. Gomes"
 
 [gomes.emails]
 gomes_email = "victor.gomes@cl.cam.ac.uk"
-gomes_email1 = "vb358@cam.ac.uk"
 gomes_email2 = "victorborgesfg@gmail.com"
-gomes_email3 = "vb358@cl.cam.ac.uk"
 gomes_email4 = "vborgesferreiragomes1@sheffield.ac.uk"
 
 [gomes.homepages]
@@ -2864,8 +2811,7 @@ name = "Johannes Hölzl"
 hoelzl_email = "hoelzl@in.tum.de"
 
 [hoelzl.homepages]
-hoelzl_homepage = "http://in.tum.de/~hoelzl"
-hoelzl_homepage1 = "http://home.in.tum.de/~hoelzl"
+hoelzl_homepage = "http://home.in.tum.de/~hoelzl"
 
 [ballarin]
 name = "Clemens Ballarin"
@@ -2888,11 +2834,9 @@ name = "Lawrence C. Paulson"
 
 [paulson.emails]
 paulson_email = "lp15@cam.ac.uk"
-paulson_email1 = "lcp@cl.cam.ac.uk"
 
 [paulson.homepages]
-paulson_homepage = "http://www.cl.cam.ac.uk/~lp15/"
-paulson_homepage1 = "https://www.cl.cam.ac.uk/~lp15/"
+paulson_homepage = "https://www.cl.cam.ac.uk/~lp15/"
 
 [paleo]
 name = "Bruno Woltzenlogel Paleo"
@@ -2918,8 +2862,7 @@ lochbihler_email = "andreas.lochbihler@digitalasset.com"
 lochbihler_email1 = "mail@andreas-lochbihler.de"
 
 [lochbihler.homepages]
-lochbihler_homepage = "http://www.andreas-lochbihler.de"
-lochbihler_homepage1 = "http://www.andreas-lochbihler.de/"
+lochbihler_homepage = "http://www.andreas-lochbihler.de/"
 
 [porter]
 name = "Benjamin Porter"
@@ -3303,7 +3246,6 @@ fosters_email = "simon.foster@york.ac.uk"
 
 [fosters.homepages]
 fosters_homepage = "https://www-users.cs.york.ac.uk/~simonf/"
-fosters_homepage1 = "http://www-users.cs.york.ac.uk/~simonf"
 
 [dubut]
 name = "Jérémy Dubut"
@@ -3458,8 +3400,7 @@ brinkop_email = "hauke.brinkop@googlemail.com"
 name = "René Neumann"
 
 [neumann.emails]
-neumann_email = "neumannr@in.tum.de"
-neumann_email1 = "rene.neumann@in.tum.de"
+neumann_email = "rene.neumann@in.tum.de"
 
 [neumann.homepages]
 
@@ -3481,7 +3422,6 @@ haslbeck_email2 = "max.haslbeck@gmx.de"
 
 [haslbeck.homepages]
 haslbeck_homepage = "http://cl-informatik.uibk.ac.at/users/mhaslbeck/"
-haslbeck_homepage1 = "http://cl-informatik.uibk.ac.at/users/mhaslbeck//"
 
 [reynaud]
 name = "Alban Reynaud"
@@ -3527,7 +3467,6 @@ name = "Ian J. Hayes"
 
 [hayes.emails]
 hayes_email = "ian.hayes@itee.uq.edu.au"
-hayes_email1 = "Ian.Hayes@itee.uq.edu.au"
 
 [hayes.homepages]
 
@@ -3538,14 +3477,12 @@ name = "Maximilian P. L. Haslbeck"
 haslbeckm_email = "haslbema@in.tum.de"
 
 [haslbeckm.homepages]
-haslbeckm_homepage = "http://www.in.tum.de/~haslbema"
-haslbeckm_homepage1 = "http://in.tum.de/~haslbema/"
+haslbeckm_homepage = "http://in.tum.de/~haslbema/"
 
 [bortin]
 name = "Maksym Bortin"
 
 [bortin.emails]
-bortin_email = "Maksym.Bortin@nicta.com.au"
-bortin_email1 = "maksym.bortin@nicta.com.au"
+bortin_email = "maksym.bortin@nicta.com.au"
 
 [bortin.homepages]

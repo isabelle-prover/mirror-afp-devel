@@ -10,12 +10,12 @@ note = ""
 [authors]
 
 [authors.sickert]
-email = "sickert_email1"
+email = "sickert_email"
 
 [contributors]
 
 [notify]
-sickert = "sickert_email1"
+sickert = "sickert_email"
 
 [history]
 2015-09-23 = """

@@ -25,12 +25,12 @@ note = ""
 homepage = "wimmer_homepage"
 
 [authors.hoelzl]
-homepage = "hoelzl_homepage1"
+homepage = "hoelzl_homepage"
 
 [contributors]
 
 [notify]
-wimmer = "wimmer_email1"
+wimmer = "wimmer_email"
 hoelzl = "hoelzl_email"
 
 [history]

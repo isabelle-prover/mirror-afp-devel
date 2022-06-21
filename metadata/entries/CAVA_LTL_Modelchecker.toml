@@ -32,7 +32,7 @@ homepage = "esparza_homepage"
 homepage = "lammich_homepage"
 
 [authors.neumann]
-email = "neumann_email1"
+email = "neumann_email"
 
 [authors.nipkow]
 homepage = "nipkow_homepage"

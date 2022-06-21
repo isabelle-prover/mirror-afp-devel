@@ -21,7 +21,7 @@ email = "bortin_email"
 [contributors]
 
 [notify]
-bortin = "bortin_email1"
+bortin = "bortin_email"
 
 [history]
 
