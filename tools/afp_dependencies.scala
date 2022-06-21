@@ -55,16 +55,12 @@ object AFP_Dependencies {
     }
   }
 
-  val isabelle_tool =
-    Isabelle_Tool(
-      "afp_dependencies",
-      "extract dependencies between AFP entries",
-      Scala_Project.here,
-      args => {
-        var output_file: Option[Path] = None
+  val isabelle_tool = Isabelle_Tool("afp_dependencies", "extract dependencies between AFP entries",
+    Scala_Project.here,
+    { args =>
+      var output_file: Option[Path] = None
 
-        val getopts = Getopts(
-          """
+      val getopts = Getopts("""
 Usage: isabelle afp_dependencies [OPTIONS]
 
   Options are:
@@ -72,21 +68,19 @@ Usage: isabelle afp_dependencies [OPTIONS]
 
   Extract dependencies between AFP entries.
 """,
-          "o:" -> (arg => output_file = Some(Path.explode(arg)))
-        )
+        "o:" -> (arg => output_file = Some(Path.explode(arg))))
 
-        getopts(args)
-        val afp_dir = Path.explode("$AFP").expand
+      getopts(args)
+      val afp_dir = Path.explode("$AFP").expand
 
-        val progress = new Console_Progress()
+      val progress = new Console_Progress()
 
-        val res = afp_dependencies(afp_dir).map(JSON.from_dependency)
-        val json = isabelle.JSON.Format(res)
+      val res = afp_dependencies(afp_dir).map(JSON.from_dependency)
+      val json = isabelle.JSON.Format(res)
 
-        output_file match {
-          case Some(file) => File.write(file, json)
-          case None => progress.echo(json)
-        }
+      output_file match {
+        case Some(file) => File.write(file, json)
+        case None => progress.echo(json)
       }
-    )
+    })
 }
