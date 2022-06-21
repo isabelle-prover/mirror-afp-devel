@@ -19,7 +19,7 @@ note = ""
 email = "essmann_email"
 
 [authors.nipkow]
-homepage = "nipkow_homepage1"
+homepage = "nipkow_homepage"
 
 [authors.robillard]
 homepage = "robillard_homepage"

@@ -28,7 +28,7 @@ homepage = "wimmer_homepage1"
 email = "hu_email"
 
 [authors.nipkow]
-homepage = "nipkow_homepage4"
+homepage = "nipkow_homepage"
 
 [contributors]
 
