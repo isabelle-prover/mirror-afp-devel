@@ -52,7 +52,8 @@ lemma conversep_is_dual[simp]: "conversep = dual" by auto
 
 text \<open>Monotonicity is already defined in the library, but we want one restricted to a domain.\<close>
 
-definition "monotone_on X r s f \<equiv> \<forall>x y. x \<in> X \<longrightarrow> y \<in> X \<longrightarrow> r x y \<longrightarrow> s (f x) (f y)"
+definition monotone_on where
+  "monotone_on X r s f \<equiv> \<forall>x y. x \<in> X \<longrightarrow> y \<in> X \<longrightarrow> r x y \<longrightarrow> s (f x) (f y)"
 
 lemmas monotone_onI = monotone_on_def[unfolded atomize_eq, THEN iffD2, rule_format]
 lemma monotone_onD: "monotone_on X r s f \<Longrightarrow> r x y \<Longrightarrow> x \<in> X \<Longrightarrow> y \<in> X \<Longrightarrow> s (f x) (f y)"
