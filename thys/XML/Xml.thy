@@ -165,7 +165,7 @@ lemma is_letter_code [code]:
     CHR ''A'' \<le> c \<and> c \<le> CHR ''Z'' \<or>
     CHR ''0'' \<le> c \<and> c \<le> CHR ''9'' \<or>
     c \<in> set ''_&;:-''"
-  by (cases c) (simp add: is_letter_def letters_def)
+  by (cases c) (simp add: less_eq_char_def is_letter_def letters_def)
 
 definition many_letters :: "string parser"
 where
