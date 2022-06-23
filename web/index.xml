@@ -8652,7 +8652,7 @@ How to refer to AFP entries: You can refer to AFP entries by using the AFP as an
       <guid>/help/</guid>
       <description>This section focuses on the Archive of Formal Proofs. For help with Isabelle, see the Isabelle Wiki and Documentation
 Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you can include its articles and theories in your own developments. If you would like to make your work available to others without having to include the AFP articles you depend on, here is how to do it.
-From Isabelle2021 on, the recommended method for making the whole AFP available to Isabelle is the isabelle components -u command.</description>
+From Isabelle2021-1 on, the recommended method for making the whole AFP available to Isabelle is the isabelle components -u command.</description>
     </item>
     
     <item>
