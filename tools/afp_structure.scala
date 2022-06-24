@@ -50,7 +50,7 @@ class AFP_Structure private(val base_dir: Path) {
     licenses: Map[Metadata.License.ID, Metadata.License],
     releases: Map[Metadata.Entry.Name, List[Metadata.Release]]
   ): Metadata.Entry = {
-    val entry_releases = releases.getOrElse(name, error("No releases for entry " + name))
+    val entry_releases = releases.getOrElse(name, Nil)
     load(entry_file(name), toml =>
       Metadata.TOML.to_entry(toml ++ TOML.T("name" -> name), authors, topics, licenses, entry_releases))
   }
