@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/security/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols</title>
+      <link>/entries/IsaNet.html</link>
+      <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IsaNet.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Logging-independent Message Anonymity in the Relational Method</title>
       <link>/entries/Logging_Independent_Anonymity.html</link>
       <pubDate>Thu, 26 Aug 2021 00:00:00 +0000</pubDate>

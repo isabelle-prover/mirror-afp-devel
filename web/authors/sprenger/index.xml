@@ -6,7 +6,16 @@
     <description>Recent content in sprenger on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 24 May 2017 00:00:00 +0000</lastBuildDate><atom:link href="/authors/sprenger/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 08 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/sprenger/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols</title>
+      <link>/entries/IsaNet.html</link>
+      <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IsaNet.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Developing Security Protocols by Refinement</title>
       <link>/entries/Security_Protocol_Refinement.html</link>

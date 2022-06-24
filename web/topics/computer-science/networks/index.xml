@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/networks/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols</title>
+      <link>/entries/IsaNet.html</link>
+      <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IsaNet.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Formal Network Models and Their Application to Firewall Policies</title>
       <link>/entries/UPF_Firewall.html</link>
       <pubDate>Sun, 08 Jan 2017 00:00:00 +0000</pubDate>

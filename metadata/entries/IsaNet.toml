@@ -1,0 +1,60 @@
+title = "IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols"
+date = 2022-06-08
+topics = [
+    "Computer science/Security",
+    "Computer science/Networks",
+]
+abstract = """
+Today's Internet is built on decades-old networking protocols
+that lack scalability, reliability and security. In response, the
+networking community has developed <em>path-aware</em> Internet
+architectures that solve these issues while simultaneously empowering
+end hosts. In these architectures, autonomous systems authorize
+forwarding paths in accordance with their routing policies, and
+protect paths using cryptographic authenticators. For each packet, the
+sending end host selects an authorized path and embeds it and its
+authenticators in the packet header. This allows routers to
+efficiently determine how to forward the packet. The central security
+property of the data plane, i.e., of forwarding, is that packets can
+only travel along authorized paths. This property, which we call
+<em>path authorization</em>, protects the routing policies of autonomous
+systems from malicious senders.  The fundamental role of packet
+forwarding in the Internet's ecosystem and the complexity of the
+authentication mechanisms employed call for a formal analysis. We
+develop IsaNet, a parameterized verification framework for data plane
+protocols in Isabelle/HOL. We first formulate an abstract model
+without an attacker for which we prove path authorization. We then
+refine this model by introducing a Dolev--Yao attacker and by
+protecting authorized paths using (generic) cryptographic validation
+fields. This model is parametrized by the path authorization mechanism
+and assumes five simple verification conditions. We propose novel
+attacker models and different sets of assumptions on the underlying
+routing protocol. We validate our framework by instantiating it with
+nine concrete protocols variants and prove that they each satisfy the
+verification conditions (and hence path authorization). The invariants
+needed for the security proof are proven in the parametrized model
+instead of the instance models. Our framework thus supports low-effort
+security proofs for data plane protocols. In contrast to what could be
+achieved with state-of-the-art automated protocol verifiers, our
+results hold for arbitrary network topologies and sets of authorized
+paths."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.klenze]
+email = "klenze_email"
+
+[authors.sprenger]
+email = "sprenger_email"
+
+[contributors]
+
+[notify]
+klenze = "klenze_email"
+sprenger = "sprenger_email"
+
+[history]
+
+[extra]

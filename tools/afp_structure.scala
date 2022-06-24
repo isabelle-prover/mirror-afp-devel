@@ -32,7 +32,9 @@ class AFP_Structure private(val base_dir: Path) {
 
   private def load[A](file: Path, parser: afp.TOML.T => A): A = {
     val content = File.read(file)
-    val toml = TOML.parse(content)
+    val toml =
+      try { TOML.parse(content) }
+      catch { case ERROR(msg) => error("Could not parse " + file.toString + ": " + msg) }
     parser(toml)
   }
 
@@ -50,7 +52,7 @@ class AFP_Structure private(val base_dir: Path) {
     licenses: Map[Metadata.License.ID, Metadata.License],
     releases: Map[Metadata.Entry.Name, List[Metadata.Release]]
   ): Metadata.Entry = {
-    val entry_releases = releases.getOrElse(name, error("No releases for entry " + name))
+    val entry_releases = releases.getOrElse(name, Nil)
     load(entry_file(name), toml =>
       Metadata.TOML.to_entry(toml ++ TOML.T("name" -> name), authors, topics, licenses, entry_releases))
   }
@@ -92,7 +94,7 @@ class AFP_Structure private(val base_dir: Path) {
     val Entry = """([a-zA-Z0-9+_-]+)\.toml""".r
     val file_entries = File.read_dir(entries_dir).map {
       case Entry(name) => name
-      case f => error("Unrecognized metadata entry: " + f)
+      case f => error("Unrecognized file in metadata: " + f)
     }
     val session_entries = Sessions.parse_roots(thys_dir + Path.basic("ROOTS"))
 
@@ -103,10 +105,10 @@ class AFP_Structure private(val base_dir: Path) {
       val inter = session_set.intersect(metadata_set)
       val session_without_metadata =
         if (session_set.subsetOf(inter)) ""
-        else "No metadata for session roots: " + commas_quote(session_set -- inter)
+        else "No metadata for session in ROOTS: " + commas_quote(session_set -- inter)
       val metadata_without_session =
         if (metadata_set.subsetOf(inter)) ""
-        else "Not session roots for metadata entries: " + commas_quote(metadata_set -- inter)
+        else "Metadata entries missing in ROOTS: " + commas_quote(metadata_set -- inter)
       error("Metadata does not match sessions:\n" + session_without_metadata + metadata_without_session)
     } else session_entries
   }

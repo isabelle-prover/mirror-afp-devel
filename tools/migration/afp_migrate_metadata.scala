@@ -232,7 +232,7 @@ object AFP_Migrate_Metadata {
       note = entry.get_string("note"),
       change_history = change_history,
       extra = extra.toMap,
-      releases = releases(entry.name),
+      releases = releases.getOrElse(entry.name, Nil),
       sitegen_ignore = sitegen_ignore
     )
   }
@@ -282,7 +282,6 @@ object AFP_Migrate_Metadata {
       case Isa_Release(isabelle_version, date) => context.parse_date(date) -> isabelle_version
       case line => error("Could not parse: " + quote(line))
     }
-    val current = release_dates.last
 
     def to_release(entry: Entry.Name, release_date: LocalDate): Release =
       Release(entry, release_date, release_dates.findLast { case (date, _) => date.isBefore(release_date) }.get._2)
@@ -295,7 +294,7 @@ object AFP_Migrate_Metadata {
           entry -> to_release(entry, date)
         case line => error("Could not parse: " + quote(line))
       }, (e: (Entry.Name, Release)) => e._1)
-    all_entries.flatMap(e => entry_releases.getOrElse(e, Nil).map(_._2) :+ to_release(e, current._1))
+    all_entries.flatMap(e => entry_releases.getOrElse(e, Nil).map(_._2))
   }
 
   def migrate_metadata(

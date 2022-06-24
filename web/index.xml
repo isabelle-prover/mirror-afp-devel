@@ -17,6 +17,15 @@
     </item>
     
     <item>
+      <title>IsaNet: Formalization of a Verification Framework for Secure Data Plane Protocols</title>
+      <link>/entries/IsaNet.html</link>
+      <pubDate>Wed, 08 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IsaNet.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Diophantine Equations and the DPRM Theorem</title>
       <link>/entries/DPRM_Theorem.html</link>
       <pubDate>Mon, 06 Jun 2022 00:00:00 +0000</pubDate>
@@ -8652,7 +8661,7 @@ How to refer to AFP entries: You can refer to AFP entries by using the AFP as an
       <guid>/help/</guid>
       <description>This section focuses on the Archive of Formal Proofs. For help with Isabelle, see the Isabelle Wiki and Documentation
 Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you can include its articles and theories in your own developments. If you would like to make your work available to others without having to include the AFP articles you depend on, here is how to do it.
-From Isabelle2021 on, the recommended method for making the whole AFP available to Isabelle is the isabelle components -u command.</description>
+From Isabelle2021-1 on, the recommended method for making the whole AFP available to Isabelle is the isabelle components -u command.</description>
     </item>
     
     <item>
@@ -9129,6 +9138,15 @@ From Isabelle2021 on, the recommended method for making the whole AFP available 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/isageocoq/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>IsaNet</title>
+      <link>/theories/isanet/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/isanet/</guid>
       <description></description>
     </item>
     
@@ -11829,7 +11847,7 @@ From Isabelle2021 on, the recommended method for making the whole AFP available 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>685 Entries   421 Authors   ~212,200 Lemmas   ~3,442,500 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>686 Entries   422 Authors   ~213,000 Lemmas   ~3,451,800 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>
