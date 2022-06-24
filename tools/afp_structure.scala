@@ -32,7 +32,9 @@ class AFP_Structure private(val base_dir: Path) {
 
   private def load[A](file: Path, parser: afp.TOML.T => A): A = {
     val content = File.read(file)
-    val toml = TOML.parse(content)
+    val toml =
+      try { TOML.parse(content) }
+      catch { case ERROR(msg) => error("Could not parse " + file.toString + ": " + msg) }
     parser(toml)
   }
 
