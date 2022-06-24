@@ -422,8 +422,8 @@ lemma sum_upto_asymptotics_lift_nat_real_aux:
   assumes g_bigo_self: "(\<lambda>n. g (real n) - g (real (Suc n))) \<in> O(\<lambda>n. h (real n))"
   assumes h_bigo_self: "(\<lambda>n. h (real n)) \<in> O(\<lambda>n. h (real (Suc n)))"
   assumes h_pos: "\<And>x. x \<ge> 1 \<Longrightarrow> h x > 0"
-  assumes mono_g: "mono_on g {1..} \<or> mono_on (\<lambda>x. - g x) {1..}"
-  assumes mono_h: "mono_on h {1..} \<or> mono_on (\<lambda>x. - h x) {1..}"
+  assumes mono_g: "mono_on {1..} g \<or> mono_on {1..} (\<lambda>x. - g x)"
+  assumes mono_h: "mono_on {1..} h \<or> mono_on {1..} (\<lambda>x. - h x)"
   shows   "\<exists>c>0. \<forall>x\<ge>1. sum_upto f x - g x \<le> c * h x"
 proof -
   have h_nz: "h (real n) \<noteq> 0" if "n \<ge> 1" for n
@@ -446,7 +446,7 @@ proof -
 
     have "(\<Sum>k = 1..n. f k) - g x \<le> (c1 + c2) * h (real n)" using mono_g
     proof
-      assume mono: "mono_on (\<lambda>x. -g x) {1..}"
+      assume mono: "mono_on {1..} (\<lambda>x. -g x)"
       from x have "x \<le> real (Suc n)"
         unfolding n_def by linarith
       hence "(\<Sum>k=1..n. f k) - g x \<le> (\<Sum>k=1..n. f k) - g n + (g n - g (Suc n))"
@@ -459,7 +459,7 @@ proof -
         using h_pos[of "real n"] n by (simp add: algebra_simps)
       finally show ?thesis .
     next
-      assume mono: "mono_on g {1..}"
+      assume mono: "mono_on {1..} g"
       have "(\<Sum>k=1..n. f k) - g x \<le> (\<Sum>k=1..n. f k) - g n"
         using x by (intro diff_mono mono_onD[OF mono]) (auto simp: n_def)
       also have "\<dots> \<le> c1 * h (real n)"
@@ -471,7 +471,7 @@ proof -
     also have "(c1 + c2) * h (real n) \<le> (c1 + c2) * (1 + c3) * h x"
       using mono_h
     proof
-      assume mono: "mono_on (\<lambda>x. -h x) {1..}"
+      assume mono: "mono_on {1..} (\<lambda>x. -h x)"
       have "(c1 + c2) * h (real n) \<le> (c1 + c2) * (c3 * h (real (Suc n)))"
         using c3(2)[of n] n h_pos[of n] h_pos[of "Suc n"] c1(1) c2(1)
         by (intro mult_left_mono) (auto)
@@ -486,7 +486,7 @@ proof -
         by (intro mult_left_mono) (auto simp: n_def)
       finally show "(c1 + c2) * h (real n) \<le> (c1 + c2) * (1 + c3) * h x" .
     next
-      assume mono: "mono_on h {1..}"
+      assume mono: "mono_on {1..} h"
       have "(c1 + c2) * h (real n) = 1 * ((c1 + c2) * h (real n))" by simp
       also have "\<dots> \<le> (1 + c3) * ((c1 + c2) * h (real n))"
         using c1(1) c2(1) c3(1) h_pos[of n] x n by (intro mult_right_mono) auto
@@ -513,8 +513,8 @@ lemma sum_upto_asymptotics_lift_nat_real:
   assumes g_bigo_self: "(\<lambda>n. g (real n) - g (real (Suc n))) \<in> O(\<lambda>n. h (real n))"
   assumes h_bigo_self: "(\<lambda>n. h (real n)) \<in> O(\<lambda>n. h (real (Suc n)))"
   assumes h_pos: "\<And>x. x \<ge> 1 \<Longrightarrow> h x > 0"
-  assumes mono_g: "mono_on g {1..} \<or> mono_on (\<lambda>x. - g x) {1..}"
-  assumes mono_h: "mono_on h {1..} \<or> mono_on (\<lambda>x. - h x) {1..}"
+  assumes mono_g: "mono_on {1..} g \<or> mono_on {1..} (\<lambda>x. - g x)"
+  assumes mono_h: "mono_on {1..} h \<or> mono_on {1..} (\<lambda>x. - h x)"
   shows   "\<exists>c>0. \<forall>x\<ge>1. \<bar>sum_upto f x - g x\<bar> \<le> c * h x"
 proof -
   have "\<exists>c>0. \<forall>x\<ge>1. sum_upto f x - g x \<le> c * h x"

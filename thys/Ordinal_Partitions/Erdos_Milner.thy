@@ -512,7 +512,7 @@ next
           using IX [of "{0}" A' "\<lambda>x. A"] that \<open>0 \<in> elts \<beta>\<close> by (force simp: M_def)
       qed
 
-      have 10: "\<exists>x0 \<in> A. \<exists>g \<in> elts \<beta> \<rightarrow> elts \<beta>. strict_mono_on g (elts \<beta>) \<and> (\<forall>\<nu> \<in> F. g \<nu> = \<nu>)
+      have 10: "\<exists>x0 \<in> A. \<exists>g \<in> elts \<beta> \<rightarrow> elts \<beta>. strict_mono_on (elts \<beta>) g \<and> (\<forall>\<nu> \<in> F. g \<nu> = \<nu>)
                                       \<and> (\<forall>\<nu> \<in> elts \<beta>. tp (K 1 x0 \<inter> \<AA> (g \<nu>)) \<ge> \<alpha>)"
         if F: "finite F" "F \<subseteq> elts \<beta>"
           and A: "A \<subseteq> elts (\<alpha>*\<beta>)" "tp A = \<alpha>"
@@ -522,7 +522,7 @@ next
         define p where "p \<equiv> card F"
         have "\<beta> \<notin> F"
           using that by auto
-        then obtain \<iota> :: "nat \<Rightarrow> V" where bij\<iota>: "bij_betw \<iota> {..p} (insert \<beta> F)" and mon\<iota>: "strict_mono_on \<iota> {..p}"
+        then obtain \<iota> :: "nat \<Rightarrow> V" where bij\<iota>: "bij_betw \<iota> {..p} (insert \<beta> F)" and mon\<iota>: "strict_mono_on {..p} \<iota>"
           using ZFC_Cardinals.ex_bij_betw_strict_mono_card [of "insert \<beta> F"] elts_subset_ON \<open>Ord \<beta>\<close> F
           by (simp add: p_def lessThan_Suc_atMost) blast
         have less_\<iota>_I: "\<iota> k < \<iota> l" if "k < l" "l \<le> p" for k l
@@ -647,7 +647,7 @@ next
         then obtain A' where A': "A' \<subseteq> A" "tp A' = \<alpha>" and FN: "\<And>x. x \<in> A' \<Longrightarrow> F \<subseteq> M (elts \<beta>) \<AA> x"
           by metis
         have False
-          if *: "\<And>x0 g. \<lbrakk>x0 \<in> A; g \<in> elts \<beta> \<rightarrow> elts \<beta>; strict_mono_on g (elts \<beta>)\<rbrakk>
+          if *: "\<And>x0 g. \<lbrakk>x0 \<in> A; g \<in> elts \<beta> \<rightarrow> elts \<beta>; strict_mono_on (elts \<beta>) g\<rbrakk>
                    \<Longrightarrow> (\<exists>\<nu>\<in>F. g \<nu> \<noteq> \<nu>) \<or> (\<exists>\<nu>\<in>elts \<beta>. tp (K 1 x0 \<inter> \<AA> (g \<nu>)) < \<alpha>)"
         proof -
           { fix x       \<comment> \<open>construction of the monotone map @{term g} mentioned above\<close>
@@ -658,14 +658,14 @@ next
               assume "\<not> ?P"
               then have le: "tp (D k) \<le> tp (M (D k) \<AA> x)" if "k \<le> p" for k
                 by (meson Ord_linear2 Ord_ordertype that)
-              have "\<exists>f\<in>D k \<rightarrow> M (D k) \<AA> x. inj_on f (D k) \<and> (strict_mono_on f (D k))"
+              have "\<exists>f\<in>D k \<rightarrow> M (D k) \<AA> x. inj_on f (D k) \<and> (strict_mono_on (D k) f)"
                 if "k \<le> p" for k
                 using le [OF that] that VWF_iff_Ord_less
                 apply (clarsimp simp: ordertype_le_ordertype strict_mono_on_def)
                 by (metis (full_types) D\<beta> M_sub_D Ord_in_Ord PiE VWF_iff_Ord_less ord(2) subsetD)
               then obtain h where fun_h: "\<And>k. k \<le> p \<Longrightarrow> h k \<in> D k \<rightarrow> M (D k) \<AA> x"
                 and inj_h: "\<And>k. k \<le> p \<Longrightarrow> inj_on (h k) (D k)"
-                and mono_h: "\<And>k x y. k \<le> p \<Longrightarrow> strict_mono_on (h k) (D k)"
+                and mono_h: "\<And>k x y. k \<le> p \<Longrightarrow> strict_mono_on (D k) (h k)"
                 by metis
               then have fun_hD: "\<And>k. k \<le> p \<Longrightarrow> h k \<in> D k \<rightarrow> D k"
                 by (auto simp: M_def)
@@ -733,7 +733,7 @@ next
                 ultimately show  ?thesis
                   using h_in_D [OF \<mu>] h_in_D [OF \<nu>] by (simp add: D_def split: if_split_asm)
               qed
-              ultimately have sm_g: "strict_mono_on g (elts \<beta>)"
+              ultimately have sm_g: "strict_mono_on (elts \<beta>) g"
                 by (auto simp: g_def strict_mono_on_def dest!: F_imp_Ex)
               have False if "\<nu> \<in> elts \<beta>" and \<nu>: "tp (K 1 x \<inter> \<AA> (g \<nu>)) < \<alpha>" for \<nu>
               proof -
@@ -831,7 +831,7 @@ next
                                         \<and> x ` {..<n} \<subseteq> elts (\<alpha>*\<beta>)
                                         \<and> (\<Union>\<nu> \<in> elts \<beta>. \<AA> \<nu>) \<subseteq> KI 1 (x ` {..<n}) 
                                         \<and> strict_mono_sets (elts \<beta>) \<AA>"
-      define \<Psi> where "\<Psi> \<equiv> \<lambda>n::nat. \<lambda>g \<AA> \<AA>' xn. g \<in> elts \<beta> \<rightarrow> elts \<beta> \<and> strict_mono_on g (elts \<beta>)
+      define \<Psi> where "\<Psi> \<equiv> \<lambda>n::nat. \<lambda>g \<AA> \<AA>' xn. g \<in> elts \<beta> \<rightarrow> elts \<beta> \<and> strict_mono_on (elts \<beta>) g
                   \<and> (\<forall>i\<le>n. g (\<mu> i) = \<mu> i)
                   \<and> (\<forall>\<nu> \<in> elts \<beta>. \<AA>' \<nu> \<subseteq> K 1 xn \<inter> \<AA> (g \<nu>))
                   \<and> {xn} \<lless> (\<AA>' (\<mu> n)) \<and> xn \<in> \<AA> (\<mu> n)"
@@ -848,7 +848,7 @@ next
           and \<AA>fun: "\<AA> \<in> elts \<beta> \<rightarrow> {X. X \<subseteq> elts (\<alpha>*\<beta>) \<and> tp X = \<alpha>}"
           using that by (auto simp: \<Phi>_def)
         then obtain xn g where xn: "xn \<in> \<AA> (\<mu> n)" and g: "g \<in> elts \<beta> \<rightarrow> elts \<beta>"
-          and sm_g: "strict_mono_on g (elts \<beta>)" and g_\<mu>: "\<forall>\<nu> \<in> \<mu>`{..n}. g \<nu> = \<nu>"
+          and sm_g: "strict_mono_on (elts \<beta>) g" and g_\<mu>: "\<forall>\<nu> \<in> \<mu>`{..n}. g \<nu> = \<nu>"
           and g_\<alpha>: "\<forall>\<nu> \<in> elts \<beta>. \<alpha> \<le> tp (K 1 xn \<inter> \<AA> (g \<nu>))"
           using 10 [OF _ \<mu>\<beta> \<AA>sub _ \<AA>fun] by (auto simp: \<AA>)
         have tp1: "tp (K 1 xn \<inter> \<AA> (g \<nu>)) = \<alpha>" if "\<nu> \<in> elts \<beta>" for \<nu>
@@ -895,7 +895,7 @@ next
       then have H_imp_\<Psi>: "(\<lambda>(g,\<AA>',x'). let (g0,\<AA>,x) = H n in \<Psi> n g \<AA> \<AA>' (x' n)) (H (Suc n))" for n
         using G\<Psi> by (fastforce simp: H_def split: prod.split)
       define g where "g \<equiv> \<lambda>n. (\<lambda>(g,\<AA>,x). g) (H (Suc n))"
-      have g: "g n \<in> elts \<beta> \<rightarrow> elts \<beta>" and sm_g: "strict_mono_on (g n) (elts \<beta>)"
+      have g: "g n \<in> elts \<beta> \<rightarrow> elts \<beta>" and sm_g: "strict_mono_on (elts \<beta>) (g n)"
         and 13: "\<And>i. i\<le>n \<Longrightarrow> g n (\<mu> i) = \<mu> i" for n
         using H_imp_\<Psi> [of n] by (auto simp: g_def \<Psi>_def)
       define \<AA> where "\<AA> \<equiv> \<lambda>n. (\<lambda>(g,\<AA>,x). \<AA>) (H n)"
@@ -947,7 +947,7 @@ next
         qed
         then have \<gg>_fun: "\<gg> i j \<in> elts \<beta> \<rightarrow> elts \<beta>" for i j
           by simp
-        have sm_\<gg>: "strict_mono_on (\<gg> i j) (elts \<beta>)" for i j
+        have sm_\<gg>: "strict_mono_on (elts \<beta>) (\<gg> i j)" for i j
           using wf_measure [of "\<lambda>k. j-k"]
         proof (induction i rule: wf_induct_rule)
           case (less i)
@@ -1032,7 +1032,7 @@ next
             by (auto simp: finite_nat_set_iff_bounded Bex_def not_less)
         qed
         let ?eqv = "\<lambda>m. {n. m \<le> n \<and> \<mu> m = \<mu> n}"
-        have sm_x: "strict_mono_on x (?eqv m)" for m
+        have sm_x: "strict_mono_on (?eqv m) x" for m
         proof (clarsimp simp: strict_mono_on_def)
           fix n p
           assume "m \<le> n" "\<mu> p = \<mu> n" "\<mu> m = \<mu> n" "n < p"
@@ -1053,7 +1053,7 @@ next
           then show ?thesis
             by (simp add: ordertype_infinite_ge_\<omega>)
         qed
-        have "\<exists>f \<in> elts \<omega> \<rightarrow> ZA m. strict_mono_on f (elts \<omega>)" for m
+        have "\<exists>f \<in> elts \<omega> \<rightarrow> ZA m. strict_mono_on (elts \<omega>) f" for m
         proof -
           obtain Z where "Z \<subseteq> ZA m" "tp Z = \<omega>"
             by (meson 19 Ord_\<omega> le_ordertype_obtains_subset small_ZA)
@@ -1063,7 +1063,7 @@ next
             by (metis strict_mono_on_ordertype Pi_mono small_ZA smaller_than_small subset_iff)
         qed
         then obtain \<phi> where \<phi>: "\<And>m. \<phi> m \<in> elts \<omega> \<rightarrow> ZA m"
-          and sm_\<phi>: "\<And>m. strict_mono_on (\<phi> m) (elts \<omega>)"
+          and sm_\<phi>: "\<And>m. strict_mono_on (elts \<omega>) (\<phi> m)"
           by metis
         have "Ex(\<lambda>(m,\<nu>). \<nu> \<in> elts \<beta> \<and> \<gamma> = \<omega> * \<nu> + ord_of_nat m)" if "\<gamma> \<in> elts (\<omega> * \<beta>)" for \<gamma>
           using that by (auto simp: mult [of \<omega> \<beta>] lift_def elts_\<omega>)

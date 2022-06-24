@@ -24,7 +24,7 @@ lemma rank_mono_2:
 lemma rank_mono_commute:
   assumes "finite S"
   assumes "S \<subseteq> T"
-  assumes "strict_mono_on f T"
+  assumes "strict_mono_on T f"
   assumes "x \<in> T"
   shows "rank_of x S = rank_of (f x) (f ` S)"
 proof -
@@ -49,7 +49,7 @@ text \<open>The function @{term "least"} returns the k smallest elements of a fi
 
 lemma rank_strict_mono: 
   assumes "finite S"
-  shows "strict_mono_on (\<lambda>x. rank_of x S) S"
+  shows "strict_mono_on S (\<lambda>x. rank_of x S)"
 proof -
   have "\<And>x y. x \<in> S \<Longrightarrow> y \<in> S \<Longrightarrow> x < y \<Longrightarrow> rank_of x S < rank_of y S"
     unfolding rank_of_def using assms 
@@ -106,7 +106,7 @@ lemma least_subset: "least k S \<subseteq> S"
 
 lemma least_mono_commute:
   assumes "finite S"
-  assumes "strict_mono_on f S"
+  assumes "strict_mono_on S f"
   shows "f ` least k S = least k (f ` S)"
 proof -
   have a:"inj_on f S" 

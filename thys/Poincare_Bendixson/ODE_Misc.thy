@@ -126,7 +126,7 @@ proof -
       finally show ?thesis
         by simp
     qed
-    have mono: "mono_on (\<lambda>x. w x * exp(-L*x)) {a0..d}"
+    have mono: "mono_on {a0..d} (\<lambda>x. w x * exp(-L*x))"
       apply (rule mono_onI)
       apply (rule DERIV_nonneg_imp_nondecreasing, assumption)
       using a0d

@@ -1158,11 +1158,11 @@ lemma inv_ordermap_VWF_strict_mono_iff:
 
 lemma strict_mono_on_ordertype:
   assumes "M \<subseteq> ON" "small M"
-  obtains f where "f \<in> elts (ordertype M VWF) \<rightarrow> M" "strict_mono_on f (elts (ordertype M VWF))"
+  obtains f where "f \<in> elts (ordertype M VWF) \<rightarrow> M" "strict_mono_on (elts (ordertype M VWF)) f"
 proof 
   show "inv_into M (ordermap M VWF) \<in> elts (ordertype M VWF) \<rightarrow> M"
     by (meson Pi_I' in_mono inv_into_into ordermap_surj)
-  show "strict_mono_on (inv_into M (ordermap M VWF)) (elts (ordertype M VWF))"
+  show "strict_mono_on (elts (ordertype M VWF)) (inv_into M (ordermap M VWF))"
   proof (clarsimp simp: strict_mono_on_def)
     fix x y
     assume "x \<in> elts (ordertype M VWF)" "y \<in> elts (ordertype M VWF)" "x < y"
@@ -1666,7 +1666,7 @@ qed
 
 lemma ex_bij_betw_strict_mono_card:
   assumes "finite M" "M \<subseteq> ON"
-  obtains h where "bij_betw h {..<card M} M" and "strict_mono_on h {..<card M}"
+  obtains h where "bij_betw h {..<card M} M" and "strict_mono_on {..<card M} h"
 proof -
   have bij: "bij_betw (ordermap M VWF) M (elts (card M))"
     using Finite_V \<open>finite M\<close> ordermap_bij ordertype_VWF_finite_nat by fastforce
@@ -1680,7 +1680,7 @@ proof -
       show "bij_betw (inv_into M (ordermap M VWF)) (elts (card M)) M"
         using Finite_V assms bij_betw_inv_into ordermap_bij ordertype_VWF_finite_nat by fastforce
     qed
-    show "strict_mono_on ?h {..<card M}"
+    show "strict_mono_on {..<card M} ?h"
     proof -
       have "?h m < ?h n"
         if "m < n" "n < card M" for m n
@@ -1724,7 +1724,7 @@ proof -
   also have "\<dots> = card A"
   proof (subst ordertype_eq_iff)
     let ?M = "ord_of_nat ` A"
-    obtain h where bijh: "bij_betw h {..<card A} ?M" and smh: "strict_mono_on h {..<card A}"
+    obtain h where bijh: "bij_betw h {..<card A} ?M" and smh: "strict_mono_on {..<card A} h"
       by (metis M card_image ex_bij_betw_strict_mono_card inj_on_def ord_of_nat_inject)
     define f where "f \<equiv> ord_of_nat \<circ> inv_into {..<card A} h"
     show "\<exists>f. bij_betw f ?M (elts (card A)) \<and> (\<forall>x\<in>?M. \<forall>y\<in>?M. f x < f y \<longleftrightarrow> ((x, y) \<in> VWF))"

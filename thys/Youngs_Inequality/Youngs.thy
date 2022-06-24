@@ -86,7 +86,7 @@ qed
 
 lemma integrable_mono_on_nonneg:
   fixes f :: "real \<Rightarrow> real"
-  assumes mon: "mono_on f {a..b}" and 0: "\<And>x. 0 \<le> f x"
+  assumes mon: "mono_on {a..b} f" and 0: "\<And>x. 0 \<le> f x"
   shows "integrable (lebesgue_on {a..b}) f" 
 proof -
   have "space lborel = space lebesgue" "sets borel \<subseteq> sets lebesgue"
@@ -141,11 +141,11 @@ qed
 
 lemma integrable_mono_on:
   fixes f :: "real \<Rightarrow> real"
-  assumes "mono_on f {a..b}" 
+  assumes "mono_on {a..b} f" 
   shows "integrable (lebesgue_on {a..b}) f" 
 proof -
   define f' where "f' \<equiv> \<lambda>x. if x \<in> {a..b} then f x - f a else 0"
-  have "mono_on f' {a..b}"
+  have "mono_on {a..b} f'"
     by (smt (verit, best) assms f'_def mono_on_def)
   moreover have 0: "\<And>x. 0 \<le> f' x"
     by (smt (verit, best) assms atLeastAtMost_iff f'_def mono_on_def)
@@ -164,13 +164,13 @@ qed
 
 lemma integrable_on_mono_on:
   fixes f :: "real \<Rightarrow> real"
-  assumes "mono_on f {a..b}" 
+  assumes "mono_on {a..b} f" 
   shows "f integrable_on {a..b}"
   by (simp add: assms integrable_mono_on integrable_on_lebesgue_on) 
 
 lemma strict_mono_image_endpoints:
   fixes f :: "'a::linear_continuum_topology \<Rightarrow> 'b::linorder_topology"
-  assumes "strict_mono_on f {a..b}" and f: "continuous_on {a..b} f" and "a \<le> b"
+  assumes "strict_mono_on {a..b} f" and f: "continuous_on {a..b} f" and "a \<le> b"
   shows "f ` {a..b} = {f a..f b}"
 proof
   show "f ` {a..b} \<subseteq> {f a..f b}"
@@ -184,7 +184,7 @@ subsection \<open>Toward Young's inequality\<close>
 text \<open>Generalisations of the type of @{term f} are not obvious\<close>
 lemma strict_mono_continuous_invD:
   fixes f :: "real \<Rightarrow> real"
-  assumes sm: "strict_mono_on f {a..}" and contf: "continuous_on {a..} f" 
+  assumes sm: "strict_mono_on {a..} f" and contf: "continuous_on {a..} f" 
     and fim: "f ` {a..} = {f a..}" and g: "\<And>x. x \<ge> a \<Longrightarrow> g (f x) = x"
   shows "continuous_on {f a..} g"
 proof (clarsimp simp add: continuous_on_eq_continuous_within)
@@ -194,13 +194,13 @@ proof (clarsimp simp add: continuous_on_eq_continuous_within)
     by (smt (verit, best) atLeast_iff fim imageE)
   have "continuous_on {f a..y+1} g" 
   proof -
-    obtain "continuous_on {a..u} f"  "strict_mono_on f {a..u}"
+    obtain "continuous_on {a..u} f"  "strict_mono_on {a..u} f"
       using contf sm continuous_on_subset by (force simp add: strict_mono_on_def)
     moreover have "continuous_on (f ` {a..u}) g"
       using assms continuous_on_subset
       by (intro continuous_on_inv) fastforce+
     ultimately show ?thesis
-      using strict_mono_image_endpoints [of f]
+      using strict_mono_image_endpoints [of _ _ f]
       by (simp add: strict_mono_image_endpoints u)
   qed
   then have *: "continuous (at y within {f a..y+1}) g"
@@ -357,7 +357,7 @@ lemma weighted_nesting_sum:
 
 theorem Youngs_exact:
   fixes f :: "real \<Rightarrow> real"
-  assumes sm: "strict_mono_on f {0..}" and cont: "continuous_on {0..} f" and a: "a\<ge>0" 
+  assumes sm: "strict_mono_on {0..} f" and cont: "continuous_on {0..} f" and a: "a\<ge>0" 
     and f: "f 0 = 0" "f a = b"
     and g: "\<And>x. \<lbrakk>0 \<le> x; x \<le> a\<rbrakk> \<Longrightarrow> g (f x) = x"
   shows "a*b = integral {0..a} f + integral {0..b} g" 
@@ -366,7 +366,7 @@ proof (cases "a=0")
   with \<open>a \<ge> 0\<close> have "a > 0" by linarith
   then have "b \<ge> 0"
     by (smt (verit, best) atLeast_iff f sm strict_mono_onD)
-  have sm_0a: "strict_mono_on f {0..a}"
+  have sm_0a: "strict_mono_on {0..a} f"
     by (metis atLeastAtMost_iff atLeast_iff sm strict_mono_on_def)
   have cont_0a: "continuous_on {0..a} f"
     using cont continuous_on_subset by fastforce
@@ -765,7 +765,7 @@ qed (use assms in force)
 
 corollary Youngs_strict:
   fixes f :: "real \<Rightarrow> real"
-  assumes sm: "strict_mono_on f {0..}" and cont: "continuous_on {0..} f" and "a>0" "b\<ge>0"
+  assumes sm: "strict_mono_on {0..} f" and cont: "continuous_on {0..} f" and "a>0" "b\<ge>0"
     and f: "f 0 = 0" "f a \<noteq> b" and fim: "f ` {0..} = {0..}"
     and g: "\<And>x. 0 \<le> x \<Longrightarrow> g (f x) = x"
   shows "a*b < integral {0..a} f + integral {0..b} g"
@@ -776,7 +776,7 @@ proof -
   let ?b' = "f a"
   have "?b' \<ge> 0"
     by (smt (verit, best) \<open>0 < a\<close> atLeast_iff f sm strict_mono_onD)
-  then have sm_gx: "strict_mono_on g {0..}"
+  then have sm_gx: "strict_mono_on {0..} g"
     unfolding strict_mono_on_def
     by (smt (verit, best) atLeast_iff f_iff(1) f_inv_into_f fim g inv_into_into)
   show ?thesis
@@ -794,7 +794,7 @@ proof -
       by (metis cont f(1) fim g sm strict_mono_continuous_invD)
     then have contg: "continuous_on {?b'..b} g"
       by (meson Icc_subset_Ici_iff \<open>0 \<le> f a\<close> continuous_on_subset)
-    have "mono_on g {0..}"
+    have "mono_on {0..} g"
       by (simp add: sm_gx strict_mono_on_imp_mono_on)
     then have int_g0b: "g integrable_on {0..b}"
       by (simp add: integrable_on_mono_on mono_on_subset)
@@ -848,7 +848,7 @@ qed
 
 corollary Youngs_inequality:
   fixes f :: "real \<Rightarrow> real"
-  assumes sm: "strict_mono_on f {0..}" and cont: "continuous_on {0..} f" and "a\<ge>0" "b\<ge>0"
+  assumes sm: "strict_mono_on {0..} f" and cont: "continuous_on {0..} f" and "a\<ge>0" "b\<ge>0"
     and f: "f 0 = 0" and fim: "f ` {0..} = {0..}"
     and g: "\<And>x. 0 \<le> x \<Longrightarrow> g (f x) = x"
   shows "a*b \<le> integral {0..a} f + integral {0..b} g"
