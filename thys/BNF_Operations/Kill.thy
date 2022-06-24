@@ -101,14 +101,15 @@ bnf F1: "('p, 'a1, 'a2, 'a3) F"
   sets: F1set1 F1set2
   bd: "bd_F :: ('p bd_type_F) rel"
   rel: F1rel
-            apply -
-            apply (rule F1map_id)
-           apply (rule F1map_comp)
-          apply (erule F1map_cong) apply assumption
-         apply (rule F1set1_natural)
-        apply (rule F1set2_natural)
-       apply (rule F.bd_card_order)
-      apply (rule F.bd_cinfinite)
+             apply -
+             apply (rule F1map_id)
+            apply (rule F1map_comp)
+           apply (erule F1map_cong) apply assumption
+          apply (rule F1set1_natural)
+         apply (rule F1set2_natural)
+        apply (rule F.bd_card_order)
+       apply (rule F.bd_cinfinite)
+      apply (rule F.bd_regularCard)
      apply (rule F.set_bd(2))
     apply (rule F.set_bd(3))
    apply (unfold F1rel_unfold F.rel_compp[symmetric] eq_OO) [1] apply (rule order_refl)
@@ -120,13 +121,14 @@ bnf F2: "('p, 'a1, 'a2, 'a3) F"
   sets: F2set
   bd: "bd_F :: ('p bd_type_F) rel"
   rel: F2rel
-          apply -
-          apply (rule F2map_id)
-         apply (rule F2map_comp)
-        apply (erule F2map_cong)
-       apply (rule F2set_natural)
-      apply (rule F.bd_card_order)
-     apply (rule F.bd_cinfinite)
+           apply -
+           apply (rule F2map_id)
+          apply (rule F2map_comp)
+         apply (erule F2map_cong)
+        apply (rule F2set_natural)
+       apply (rule F.bd_card_order)
+      apply (rule F.bd_cinfinite)
+     apply (rule F.bd_regularCard)
     apply (rule F.set_bd(3))
    apply (unfold F2rel_unfold F.rel_compp[symmetric] eq_OO) [1] apply (rule order_refl)
   apply (rule F2rel_def[unfolded OO_Grp_alt mem_Collect_eq])

@@ -297,6 +297,7 @@ bnf "('live1, 'live2, 'co1, 'co2, 'contra1, 'contra2, 'fixed) S"
     done
   subgoal by(rule bd_G_card_order)
   subgoal by(rule bd_G_cinfinite)
+  subgoal by(rule bd_G_regularCard)
   subgoal
     apply (simp add: set1_S_def)
     apply (rule set1_G_bound)
@@ -563,7 +564,7 @@ proof -
   then have "pred_H (Domainp (\<lambda>a (b :: ('a \<times> 'c)). a \<in> set_H z)) z'"
     by (auto simp add: H.Domainp_rel[symmetric] Domainp_iff)
   then have "set_H z' \<subseteq> set_H z"
-    unfolding H.axiom10_H by auto
+    unfolding H.axiom11_H by auto
   moreover have "map_H fst z' = map_H fst z"
     apply (rule sym)
     apply (subst H.rel_eq[symmetric])

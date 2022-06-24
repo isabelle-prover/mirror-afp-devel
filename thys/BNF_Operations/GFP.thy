@@ -914,35 +914,52 @@ lemma equiv_lsbis2: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B2 (lsbis2 B1 B2 
 
 subsection \<open>The Tree Coalgebra\<close>
 
-typedef bd_type_F = "UNIV :: (bd_type_F1 + bd_type_F2) set"
+typedef bd_type_F = "UNIV :: (bd_type_F1 + bd_type_F2) suc set"
   apply (rule exI) apply (rule UNIV_I)
   done
 
 type_synonym 'a carrier = "((bd_type_F + bd_type_F) list set \<times>
-  ((bd_type_F + bd_type_F) list \<Rightarrow> ('a, bd_type_F, bd_type_F) F1 + ('a, bd_type_F, bd_type_F) F2))"
+  ((bd_type_F + bd_type_F) list \<Rightarrow> (('a, bd_type_F, bd_type_F) F1 + ('a, bd_type_F, bd_type_F) F2)))"
 
-abbreviation "bd_F \<equiv> dir_image (bd_F1 +c bd_F2) Abs_bd_type_F"
-lemmas bd_F = dir_image[OF Abs_bd_type_F_inject[OF UNIV_I UNIV_I] Card_order_csum]
-lemmas bd_F_Cinfinite = Cinfinite_cong[OF bd_F Cinfinite_csum1[OF F1.bd_Cinfinite]]
-lemmas bd_F_Card_order = Card_order_ordIso[OF Card_order_csum ordIso_symmetric[OF bd_F]]
+abbreviation "bd_F \<equiv> dir_image (card_suc (bd_F1 +c bd_F2)) Abs_bd_type_F"
+
+lemmas sum_card_order = card_order_csum[OF F1.bd_card_order F2.bd_card_order]
+lemmas sum_Cinfinite = Cinfinite_csum1[OF F1.bd_Cinfinite]
+lemmas bd_F = dir_image[OF Abs_bd_type_F_inject[OF UNIV_I UNIV_I] Card_order_card_suc[OF sum_card_order]]
+lemmas bd_F_Cinfinite = Cinfinite_cong[OF bd_F Cinfinite_card_suc[OF sum_Cinfinite sum_card_order]]
+lemmas bd_F_Card_order = Card_order_ordIso[OF Card_order_card_suc[OF sum_card_order] ordIso_symmetric[OF bd_F]]
 lemma bd_F_card_order: "card_order bd_F"
   apply (rule card_order_dir_image)
    apply (rule bijI')
     apply (rule Abs_bd_type_F_inject[OF UNIV_I UNIV_I])
    apply (rule Abs_bd_type_F_cases)
    apply (erule exI)
-  apply (rule card_order_csum)
-   apply (rule F1.bd_card_order)
-  apply (rule F2.bd_card_order)
+  apply (rule card_order_card_suc)
+  apply (rule sum_card_order)
   done
+lemmas bd_F_regularCard = regularCard_ordIso[OF bd_F Cinfinite_card_suc[OF sum_Cinfinite sum_card_order]
+  regular_card_suc[OF sum_card_order sum_Cinfinite]
+]
 
-lemmas F1set1_bd' = ordLeq_transitive[OF F1.set_bd(1) ordLeq_ordIso_trans[OF ordLeq_csum1[OF F1.bd_Card_order] bd_F]]
-lemmas F1set2_bd' = ordLeq_transitive[OF F1.set_bd(2) ordLeq_ordIso_trans[OF ordLeq_csum1[OF F1.bd_Card_order] bd_F]]
-lemmas F1set3_bd' = ordLeq_transitive[OF F1.set_bd(3) ordLeq_ordIso_trans[OF ordLeq_csum1[OF F1.bd_Card_order] bd_F]]
+lemmas F1set1_bd' = ordLess_transitive[OF F1.set_bd(1) ordLess_ordIso_trans[OF
+  ordLeq_ordLess_trans[OF ordLeq_csum1[OF F1.bd_Card_order] card_suc_greater[OF sum_card_order]]
+bd_F]]
+lemmas F1set2_bd' = ordLess_transitive[OF F1.set_bd(2) ordLess_ordIso_trans[OF
+  ordLeq_ordLess_trans[OF ordLeq_csum1[OF F1.bd_Card_order] card_suc_greater[OF sum_card_order]]
+bd_F]]
+lemmas F1set3_bd' = ordLess_transitive[OF F1.set_bd(3) ordLess_ordIso_trans[OF
+  ordLeq_ordLess_trans[OF ordLeq_csum1[OF F1.bd_Card_order] card_suc_greater[OF sum_card_order]]
+bd_F]]
 
-lemmas F2set1_bd' = ordLeq_transitive[OF F2.set_bd(1) ordLeq_ordIso_trans[OF ordLeq_csum2[OF F2.bd_Card_order] bd_F]]
-lemmas F2set2_bd' = ordLeq_transitive[OF F2.set_bd(2) ordLeq_ordIso_trans[OF ordLeq_csum2[OF F2.bd_Card_order] bd_F]]
-lemmas F2set3_bd' = ordLeq_transitive[OF F2.set_bd(3) ordLeq_ordIso_trans[OF ordLeq_csum2[OF F2.bd_Card_order] bd_F]]
+lemmas F2set1_bd' = ordLess_transitive[OF F2.set_bd(1) ordLess_ordIso_trans[OF
+  ordLeq_ordLess_trans[OF ordLeq_csum2[OF F2.bd_Card_order] card_suc_greater[OF sum_card_order]]
+bd_F]]
+lemmas F2set2_bd' = ordLess_transitive[OF F2.set_bd(2) ordLess_ordIso_trans[OF
+  ordLeq_ordLess_trans[OF ordLeq_csum2[OF F2.bd_Card_order] card_suc_greater[OF sum_card_order]]
+bd_F]]
+lemmas F2set3_bd' = ordLess_transitive[OF F2.set_bd(3) ordLess_ordIso_trans[OF
+  ordLeq_ordLess_trans[OF ordLeq_csum2[OF F2.bd_Card_order] card_suc_greater[OF sum_card_order]]
+bd_F]]
 
 abbreviation "Succ1 Kl kl \<equiv> {k1. Inl k1 \<in> BNF_Greatest_Fixpoint.Succ Kl kl}"
 abbreviation "Succ2 Kl kl \<equiv> {k2. Inr k2 \<in> BNF_Greatest_Fixpoint.Succ Kl kl}"
@@ -1435,14 +1452,14 @@ abbreviation frombd_F13 where "frombd_F13 s1 x \<equiv> fromCard (F1set3 (s1 x))
 abbreviation frombd_F22 where "frombd_F22 s2 x \<equiv> fromCard (F2set2 (s2 x)) bd_F"
 abbreviation frombd_F23 where "frombd_F23 s2 x \<equiv> fromCard (F2set3 (s2 x)) bd_F"
 
-lemmas tobd_F12_inj = toCard_inj[OF F1set2_bd' bd_F_Card_order]
-lemmas tobd_F13_inj = toCard_inj[OF F1set3_bd' bd_F_Card_order]
-lemmas tobd_F22_inj = toCard_inj[OF F2set2_bd' bd_F_Card_order]
-lemmas tobd_F23_inj = toCard_inj[OF F2set3_bd' bd_F_Card_order]
-lemmas frombd_F12_tobd_F12 = fromCard_toCard[OF F1set2_bd' bd_F_Card_order]
-lemmas frombd_F13_tobd_F13 = fromCard_toCard[OF F1set3_bd' bd_F_Card_order]
-lemmas frombd_F22_tobd_F22 = fromCard_toCard[OF F2set2_bd' bd_F_Card_order]
-lemmas frombd_F23_tobd_F23 = fromCard_toCard[OF F2set3_bd' bd_F_Card_order]
+lemmas tobd_F12_inj = toCard_inj[OF ordLess_imp_ordLeq[OF F1set2_bd'] bd_F_Card_order]
+lemmas tobd_F13_inj = toCard_inj[OF ordLess_imp_ordLeq[OF F1set3_bd'] bd_F_Card_order]
+lemmas tobd_F22_inj = toCard_inj[OF ordLess_imp_ordLeq[OF F2set2_bd'] bd_F_Card_order]
+lemmas tobd_F23_inj = toCard_inj[OF ordLess_imp_ordLeq[OF F2set3_bd'] bd_F_Card_order]
+lemmas frombd_F12_tobd_F12 = fromCard_toCard[OF ordLess_imp_ordLeq[OF F1set2_bd'] bd_F_Card_order]
+lemmas frombd_F13_tobd_F13 = fromCard_toCard[OF ordLess_imp_ordLeq[OF F1set3_bd'] bd_F_Card_order]
+lemmas frombd_F22_tobd_F22 = fromCard_toCard[OF ordLess_imp_ordLeq[OF F2set2_bd'] bd_F_Card_order]
+lemmas frombd_F23_tobd_F23 = fromCard_toCard[OF ordLess_imp_ordLeq[OF F2set3_bd'] bd_F_Card_order]
 
 (* the levels of the behavior of a via s, through the embedding in Field bd_F *)
 definition Lev where
@@ -4735,88 +4752,94 @@ theorem JFmap_cong0:
 lemmas JF1map_cong0 = mp[OF conjunct1[OF JFmap_cong0]]
 lemmas JF2map_cong0 = mp[OF conjunct2[OF JFmap_cong0]]
 
-lemma JFcol_bd: "\<forall>(j1 :: 'a JF1) (j2 :: 'a JF2). |JF1col n j1| \<le>o bd_F \<and> |JF2col n j2| \<le>o bd_F"
+lemma JFcol_bd: "\<forall>(j1 :: 'a JF1) (j2 :: 'a JF2). |JF1col n j1| <o bd_F \<and> |JF2col n j2| <o bd_F"
   apply (rule nat_induct)
    apply (rule allI)+
    apply (rule conjI)
-    apply (rule ordIso_ordLeq_trans)
+    apply (rule ordIso_ordLess_trans)
      apply (rule card_of_ordIso_subst)
      apply (rule JF1col_0)
-    apply (rule Card_order_empty)
-    apply (rule bd_F_Card_order)
-   apply (rule ordIso_ordLeq_trans)
+    apply (rule Cinfinite_gt_empty)
+    apply (rule bd_F_Cinfinite)
+   apply (rule ordIso_ordLess_trans)
     apply (rule card_of_ordIso_subst)
     apply (rule JF2col_0)
-   apply (rule Card_order_empty)
-   apply (rule bd_F_Card_order)
+   apply (rule Cinfinite_gt_empty)
+   apply (rule bd_F_Cinfinite)
 
   apply (rule allI)+
   apply (rule conjI)
-   apply (rule ordIso_ordLeq_trans)
+   apply (rule ordIso_ordLess_trans)
     apply (rule card_of_ordIso_subst)
     apply (rule JF1col_Suc)
-   apply (rule Un_Cinfinite_bound)
+   apply (rule Un_Cinfinite_bound_strict)
      apply (rule F1set1_bd')
-    apply (rule Un_Cinfinite_bound)
-      apply (rule UNION_Cinfinite_bound)
-        apply (rule F1set2_bd')
-       apply (rule ballI)
-       apply (erule allE)+
-       apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
-      apply (rule bd_F_Cinfinite)
-     apply (rule UNION_Cinfinite_bound)
-       apply (rule F1set3_bd')
-      apply (rule ballI)
-      apply (erule allE)+
-      apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
-     apply (rule bd_F_Cinfinite)
-    apply (rule bd_F_Cinfinite)
-   apply (rule bd_F_Cinfinite)
-
-  apply (rule ordIso_ordLeq_trans)
-   apply (rule card_of_ordIso_subst)
-   apply (rule JF2col_Suc)
-  apply (rule Un_Cinfinite_bound)
-    apply (rule F2set1_bd')
-   apply (rule Un_Cinfinite_bound)
-     apply (rule UNION_Cinfinite_bound)
-       apply (rule F2set2_bd')
-      apply (rule ballI)
+    apply (rule Un_Cinfinite_bound_strict)
+      apply (rule regularCard_UNION_bound)
+         apply (rule bd_F_Cinfinite)
+        apply (rule bd_F_regularCard)
+       apply (rule F1set2_bd')
       apply (erule allE)+
       apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
-     apply (rule bd_F_Cinfinite)
-    apply (rule UNION_Cinfinite_bound)
-      apply (rule F2set3_bd')
-     apply (rule ballI)
+     apply (rule regularCard_UNION_bound)
+        apply (rule bd_F_Cinfinite)
+       apply (rule bd_F_regularCard)
+      apply (rule F1set3_bd')
      apply (erule allE)+
      apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (rule bd_F_Cinfinite)
    apply (rule bd_F_Cinfinite)
+
+  apply (rule ordIso_ordLess_trans)
+   apply (rule card_of_ordIso_subst)
+   apply (rule JF2col_Suc)
+  apply (rule Un_Cinfinite_bound_strict)
+    apply (rule F2set1_bd')
+   apply (rule Un_Cinfinite_bound_strict)
+     apply (rule regularCard_UNION_bound)
+        apply (rule bd_F_Cinfinite)
+       apply (rule bd_F_regularCard)
+      apply (rule F2set2_bd')
+     apply (erule allE)+
+     apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
+    apply (rule regularCard_UNION_bound)
+       apply (rule bd_F_Cinfinite)
+      apply (rule bd_F_regularCard)
+     apply (rule F2set3_bd')
+    apply (erule allE)+
+    apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
+   apply (rule bd_F_Cinfinite)
   apply (rule bd_F_Cinfinite)
   done
 
-theorem JF1set_bd: "|JF1set j| \<le>o bd_F"
-  apply (rule UNION_Cinfinite_bound)
-    apply (rule ordIso_ordLeq_trans)
-     apply (rule card_of_nat)
-    apply (rule natLeq_ordLeq_cinfinite)
-    apply (rule bd_F_Cinfinite)
-   apply (rule ballI)
-   apply (tactic \<open>rtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
-   apply (rule spec[OF spec[OF JFcol_bd]])
-  apply (rule bd_F_Cinfinite)
+theorem JF1set_bd: "|JF1set j| <o bd_F"
+  apply (rule regularCard_UNION_bound)
+     apply (rule bd_F_Cinfinite)
+    apply (rule bd_F_regularCard)
+   apply (rule ordIso_ordLess_trans)
+    apply (rule card_of_nat)
+   apply (rule ordLess_ordIso_trans)
+    apply (rule natLeq_ordLess_cinfinite)
+     apply (rule sum_Cinfinite)
+    apply (rule sum_card_order)
+   apply (rule bd_F)
+  apply (tactic \<open>rtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
+  apply (rule spec[OF spec[OF JFcol_bd]])
   done
 
-theorem JF2set_bd: "|JF2set j| \<le>o bd_F"
-  apply (rule UNION_Cinfinite_bound)
-    apply (rule ordIso_ordLeq_trans)
-     apply (rule card_of_nat)
-    apply (rule natLeq_ordLeq_cinfinite)
-    apply (rule bd_F_Cinfinite)
-   apply (rule ballI)
-   apply (tactic \<open>rtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
-   apply (rule spec[OF spec[OF JFcol_bd]])
-  apply (rule bd_F_Cinfinite)
+theorem JF2set_bd: "|JF2set j| <o bd_F"
+  apply (rule regularCard_UNION_bound)
+     apply (rule bd_F_Cinfinite)
+    apply (rule bd_F_regularCard)
+   apply (rule ordIso_ordLess_trans)
+    apply (rule card_of_nat)
+   apply (rule ordLess_ordIso_trans)
+    apply (rule natLeq_ordLess_cinfinite)
+     apply (rule sum_Cinfinite)
+    apply (rule sum_card_order)
+   apply (rule bd_F)
+  apply (tactic \<open>rtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
+  apply (rule spec[OF spec[OF JFcol_bd]])
   done
 
 abbreviation "JF2wit \<equiv> ctor2 wit_F2"
@@ -5829,13 +5852,14 @@ bnf "'a JF1"
   bd: bd_F
   wits: JF1wit
   rel: JF1rel
-           apply -
-           apply (rule JF1map_id)
-          apply (rule JF1map_comp)
-         apply (erule JF1map_cong0[OF ballI])
-        apply (rule JF1set_natural)
-       apply (rule bd_F_card_order)
-      apply (rule conjunct1[OF bd_F_Cinfinite])
+            apply -
+            apply (rule JF1map_id)
+           apply (rule JF1map_comp)
+          apply (erule JF1map_cong0[OF ballI])
+         apply (rule JF1set_natural)
+        apply (rule bd_F_card_order)
+       apply (rule conjunct1[OF bd_F_Cinfinite])
+      apply (rule bd_F_regularCard)
      apply (rule JF1set_bd)
     apply (rule conjunct1[OF JFrel_Comp_le])
    apply (rule JF1rel_def[unfolded OO_Grp_alt mem_Collect_eq])
@@ -5848,13 +5872,14 @@ bnf "'a JF2"
   bd: bd_F
   wits: JF2wit
   rel: JF2rel
-           apply -
-           apply (rule JF2map_id)
-          apply (rule JF2map_comp)
-         apply (erule JF2map_cong0[OF ballI])
-        apply (rule JF2set_natural)
-       apply (rule bd_F_card_order)
-      apply (rule conjunct1[OF bd_F_Cinfinite])
+            apply -
+            apply (rule JF2map_id)
+           apply (rule JF2map_comp)
+          apply (erule JF2map_cong0[OF ballI])
+         apply (rule JF2set_natural)
+        apply (rule bd_F_card_order)
+       apply (rule conjunct1[OF bd_F_Cinfinite])
+      apply (rule bd_F_regularCard)
      apply (rule JF2set_bd)
     apply (rule conjunct2[OF JFrel_Comp_le])
    apply (rule JF2rel_def[unfolded OO_Grp_alt mem_Collect_eq])

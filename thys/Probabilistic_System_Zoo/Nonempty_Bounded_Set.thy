@@ -74,7 +74,7 @@ qed
 bnf "'a set!['k]"
   map: map_nebset
   sets: set_nebset
-  bd: "natLeq +c |UNIV :: 'k set|"
+  bd: "card_suc (natLeq +c |UNIV :: 'k set| )"
   rel: rel_nebset
 proof -
   show "map_nebset id = id" by (rule ext, transfer) simp
@@ -90,8 +90,11 @@ next
   show "set_nebset \<circ> map_nebset f = (`) f \<circ> set_nebset" by (rule ext, transfer) auto
 next
   fix X :: "'a set!['k]"
-  show "|set_nebset X| \<le>o natLeq +c |UNIV :: 'k set|"
+  have "|set_nebset X| \<le>o natLeq +c |UNIV :: 'k set|"
     by transfer (blast dest: ordLess_imp_ordLeq)
+  then show "|set_nebset X| <o card_suc (natLeq +c |UNIV :: 'k set| )"
+    using card_suc_greater ordLeq_ordLess_trans card_order_csum natLeq_card_order
+      card_of_card_order_on by blast
 next
   fix R S
   show "rel_nebset R OO rel_nebset S \<le> rel_nebset (R OO S)"
@@ -102,7 +105,8 @@ next
     map_nebset fst z = x \<and> map_nebset snd z = y) :: 'a set!['k] \<Rightarrow> 'b set!['k] \<Rightarrow> bool)"
     by (simp add: rel_nebset_def map_fun_def o_def rel_set_def
       rel_nebset_aux_infinite[unfolded OO_Grp_alt])
-qed (simp_all add: card_order_csum natLeq_card_order cinfinite_csum natLeq_cinfinite)
+qed (simp_all add: card_order_card_suc_natLeq_UNIV cinfinite_card_suc_natLeq_UNIV
+    regularCard_card_suc_natLeq_UNIV)
 
 lemma map_nebset_nebinsert[simp]: "map_nebset f (nebinsert x X) = nebinsert (f x) (map_nebset f X)"
   by transfer auto

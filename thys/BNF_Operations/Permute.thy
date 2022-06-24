@@ -62,13 +62,16 @@ theorem F'bd_card_order: "card_order F'bd"
 theorem F'bd_cinfinite: "cinfinite F'bd"
   by (rule F.bd_cinfinite)
 
-theorem F'set1_bd: "|F'set1 (x :: ('c, 'a, 'b, 'd) F)| \<le>o (F'bd :: 'c bd_type_F rel)"
+theorem F'bd_regularCard: "regularCard F'bd"
+  by (rule F.bd_regularCard)
+
+theorem F'set1_bd: "|F'set1 (x :: ('c, 'a, 'b, 'd) F)| <o (F'bd :: 'c bd_type_F rel)"
   by (rule F.set_bd(2))
 
-theorem F'set2_bd: "|F'set2 (x :: ('c, 'a, 'b, 'd) F)| \<le>o (F'bd :: 'c bd_type_F rel)"
+theorem F'set2_bd: "|F'set2 (x :: ('c, 'a, 'b, 'd) F)| <o (F'bd :: 'c bd_type_F rel)"
   by (rule F.set_bd(3))
 
-theorem F'set3_bd: "|F'set3 (x :: ('c, 'a, 'b, 'd) F)| \<le>o (F'bd :: 'c bd_type_F rel)"
+theorem F'set3_bd: "|F'set3 (x :: ('c, 'a, 'b, 'd) F)| <o (F'bd :: 'c bd_type_F rel)"
   by (rule F.set_bd(1))
 
 abbreviation F'in :: "'a1 set \<Rightarrow> 'a2 set \<Rightarrow> 'a3 set \<Rightarrow> (('p, 'a1, 'a2, 'a3) F') set" where
@@ -92,15 +95,16 @@ bnf F': "('p, 'a1, 'a2, 'a3) F'"
   sets: F'set1 F'set2 F'set3
   bd: "F'bd :: 'p bd_type_F rel"
   rel: F'rel
-              apply -
-              apply (rule F'map_id)
-             apply (rule F'map_comp)
-            apply (erule F'map_cong) apply assumption+
-           apply (rule F'set1_natural)
-          apply (rule F'set2_natural)
-         apply (rule F'set3_natural)
-        apply (rule F'bd_card_order)
-       apply (rule F'bd_cinfinite)
+               apply -
+               apply (rule F'map_id)
+              apply (rule F'map_comp)
+             apply (erule F'map_cong) apply assumption+
+            apply (rule F'set1_natural)
+           apply (rule F'set2_natural)
+          apply (rule F'set3_natural)
+         apply (rule F'bd_card_order)
+        apply (rule F'bd_cinfinite)
+       apply (rule F'bd_regularCard)
       apply (rule F'set1_bd)
      apply (rule F'set2_bd)
     apply (rule F'set3_bd)

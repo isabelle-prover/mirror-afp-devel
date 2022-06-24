@@ -89,19 +89,36 @@ theorem Hbd_cinfinite: "cinfinite Hbd"
   by (tactic \<open>BNF_Comp_Tactics.mk_comp_bd_cinfinite_tac @{context}
   @{thm F1.bd_cinfinite} @{thm G.bd_cinfinite}\<close>)
 
-theorem Hset1_bd: "|Hset1 (x :: ('p1, 'p2, 'p3, 'p, 'a1, 'a2) H )| \<le>o
+theorem Hbd_regularCard: "regularCard Hbd"
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_bd_regularCard_tac @{context}
+  @{thms F1.bd_regularCard F2.bd_regularCard F3.bd_regularCard} @{thm G.bd_regularCard}
+  @{thms F1.bd_Cinfinite F2.bd_Cinfinite F3.bd_Cinfinite} @{thm G.bd_Cinfinite}\<close>)
+
+theorem Hset1_bd: "|Hset1 (x :: ('p1, 'p2, 'p3, 'p, 'a1, 'a2) H )| <o
   (Hbd :: ('p1, 'p2, 'p3, 'p) Hbd_type rel)"
   by (tactic \<open>BNF_Comp_Tactics.mk_comp_set_bd_tac @{context} @{thm refl} NONE @{thm Hset1_alt}
-      @{thms comp_single_set_bd[OF F1.bd_Card_order F1.set_bd(1) G.set_bd(1)]
-             comp_single_set_bd[OF F2.bd_Card_order F2.set_bd(1) G.set_bd(2)]
-             comp_single_set_bd[OF F3.bd_Card_order F3.set_bd(1) G.set_bd(3)]}\<close>)
+      @{thms comp_single_set_bd_strict[OF F1.bd_Cinfinite F1.bd_regularCard G.bd_Cinfinite
+               G.bd_regularCard F1.set_bd(1) G.set_bd(1)]
+             comp_single_set_bd_strict[OF F2.bd_Cinfinite F2.bd_regularCard G.bd_Cinfinite
+               G.bd_regularCard F2.set_bd(1) G.set_bd(2)]
+             comp_single_set_bd_strict[OF F3.bd_Cinfinite F3.bd_regularCard G.bd_Cinfinite
+               G.bd_regularCard F3.set_bd(1) G.set_bd(3)]}
+      @{thms Cinfinite_cprod2[OF Cinfinite_Cnotzero[OF G.bd_Cinfinite] F1.bd_Cinfinite]
+             Cinfinite_cprod2[OF Cinfinite_Cnotzero[OF G.bd_Cinfinite] F2.bd_Cinfinite]
+             Cinfinite_cprod2[OF Cinfinite_Cnotzero[OF G.bd_Cinfinite] F3.bd_Cinfinite]}\<close>)
 
-theorem Hset2_bd: "|Hset2 (x :: ('p1, 'p2, 'p3, 'p, 'a1, 'a2) H )| \<le>o
+theorem Hset2_bd: "|Hset2 (x :: ('p1, 'p2, 'p3, 'p, 'a1, 'a2) H )| <o
   (Hbd :: ('p1, 'p2, 'p3, 'p) Hbd_type rel)"
   by (tactic \<open>BNF_Comp_Tactics.mk_comp_set_bd_tac @{context} @{thm refl} NONE @{thm Hset2_alt}
-      @{thms comp_single_set_bd[OF F1.bd_Card_order F1.set_bd(2) G.set_bd(1)]
-             comp_single_set_bd[OF F2.bd_Card_order F2.set_bd(2) G.set_bd(2)]
-             comp_single_set_bd[OF F3.bd_Card_order F3.set_bd(2) G.set_bd(3)]}\<close>)
+      @{thms comp_single_set_bd_strict[OF F1.bd_Cinfinite F1.bd_regularCard G.bd_Cinfinite
+               G.bd_regularCard F1.set_bd(2) G.set_bd(1)]
+             comp_single_set_bd_strict[OF F2.bd_Cinfinite F2.bd_regularCard G.bd_Cinfinite
+               G.bd_regularCard F2.set_bd(2) G.set_bd(2)]
+             comp_single_set_bd_strict[OF F3.bd_Cinfinite F3.bd_regularCard G.bd_Cinfinite
+               G.bd_regularCard F3.set_bd(2) G.set_bd(3)]}
+      @{thms Cinfinite_cprod2[OF Cinfinite_Cnotzero[OF G.bd_Cinfinite] F1.bd_Cinfinite]
+             Cinfinite_cprod2[OF Cinfinite_Cnotzero[OF G.bd_Cinfinite] F2.bd_Cinfinite]
+             Cinfinite_cprod2[OF Cinfinite_Cnotzero[OF G.bd_Cinfinite] F3.bd_Cinfinite]}\<close>)
 
 abbreviation Hin where "Hin A1 A2 \<equiv> {x. Hset1 x \<subseteq> A1 \<and> Hset2 x \<subseteq> A2}"
 
@@ -152,14 +169,15 @@ bnf H: "('p1, 'p2, 'p3, 'p, 'a1, 'a2) H"
   sets: Hset1 Hset2
   bd: "Hbd :: ('p1, 'p2, 'p3, 'p) Hbd_type rel"
   rel: Hrel
-            apply -
-            apply (rule Hmap_id)
-           apply (rule Hmap_comp)
-          apply (erule Hmap_cong) apply assumption
-         apply (rule Hset1_natural)
-        apply (rule Hset2_natural)
-       apply (rule Hbd_card_order)
-      apply (rule Hbd_cinfinite)
+             apply -
+             apply (rule Hmap_id)
+            apply (rule Hmap_comp)
+           apply (erule Hmap_cong) apply assumption
+          apply (rule Hset1_natural)
+         apply (rule Hset2_natural)
+        apply (rule Hbd_card_order)
+       apply (rule Hbd_cinfinite)
+      apply (rule Hbd_regularCard)
      apply (rule Hset1_bd)
     apply (rule Hset2_bd)
    apply (unfold Hrel_unfold G.rel_compp[symmetric] F1.rel_compp[symmetric] F2.rel_compp[symmetric] F3.rel_compp[symmetric] eq_OO) [1] apply (rule order_refl)
