@@ -3484,3 +3484,12 @@ name = "Maksym Bortin"
 bortin_email = "maksym.bortin@nicta.com.au"
 
 [bortin.homepages]
+
+[klenze]
+name = "Tobias Klenze"
+
+[klenze.emails]
+klenze_email = "tobias.klenze@inf.ethz.ch"
+
+[klenze.homepages]
+
