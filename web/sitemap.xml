@@ -20,7 +20,16 @@
     <loc>/entries/Finite_Fields.html</loc>
     <lastmod>2022-06-08T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/IsaNet.html</loc>
+    <lastmod>2022-06-08T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/karayel/</loc>
+    <lastmod>2022-06-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/klenze/</loc>
+    <lastmod>2022-06-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/sprenger/</loc>
     <lastmod>2022-06-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/bayer/</loc>
@@ -2352,9 +2361,6 @@
     <lastmod>2017-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/somaini/</loc>
-    <lastmod>2017-05-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/sprenger/</loc>
     <lastmod>2017-05-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Floyd_Warshall.html</loc>
@@ -4897,6 +4903,8 @@
     <loc>/theories/isabelle_meta_model/</loc>
   </url><url>
     <loc>/theories/isageocoq/</loc>
+  </url><url>
+    <loc>/theories/isanet/</loc>
   </url><url>
     <loc>/theories/jacobson_basic_algebra/</loc>
   </url><url>
