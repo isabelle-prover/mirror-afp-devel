@@ -148,13 +148,13 @@ object Metadata
 
     def from_releases(releases: List[Release]): T =
       T(Utils.group_sorted(releases, (r: Release) => r.entry).view.mapValues { entry_releases =>
-        T(entry_releases.map(r => r.isabelle -> r.date))
+        T(entry_releases.map(r => r.date.toString -> r.isabelle))
       }.toList)
 
     def to_releases(map: T): List[Release] =
       split_as[T](map).flatMap {
-        case (entry, releases) => split_as[Date](releases).map {
-          case (version, date) => Release(entry = entry, date = date, isabelle = version)
+        case (entry, releases) => split_as[String](releases).map {
+          case (date, version) => Release(entry = entry, date = LocalDate.parse(date), isabelle = version)
         }
       }
 
