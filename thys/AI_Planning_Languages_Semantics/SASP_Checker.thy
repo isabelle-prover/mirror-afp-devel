@@ -343,6 +343,5 @@ section \<open>An Executable Checker for Multi-Valued Planning Problem Solutions
   export_code verify_plan nat_of_integer integer_of_nat nat_opt_of_integer Inl Inr String.explode String.implode
     in SML
     module_name SASP_Checker_Exported
-    file "code/SASP_Checker_Exported.sml"
 
 end

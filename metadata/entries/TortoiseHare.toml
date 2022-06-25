@@ -1,0 +1,22 @@
+title = "The Tortoise and Hare Algorithm"
+date = 2015-11-18
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = "We formalize the Tortoise and Hare cycle-finding algorithm ascribed to Floyd by Knuth, and an improved version due to Brent."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gammie]
+homepage = "gammie_homepage"
+
+[contributors]
+
+[notify]
+gammie = "gammie_email"
+
+[history]
+
+[extra]

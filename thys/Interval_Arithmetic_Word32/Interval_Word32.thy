@@ -1,4 +1,4 @@
-(* Author:     Brandon Bohrer *)
+(* Author:     Rose Bohrer *)
 theory Interval_Word32
 imports
   Complex_Main

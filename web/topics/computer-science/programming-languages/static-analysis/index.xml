@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Computer science/Programming languages/Static analysis on Archive of Formal Proofs</title>
+    <link>/topics/computer-science/programming-languages/static-analysis/</link>
+    <description>Recent content in Computer science/Programming languages/Static analysis on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/computer-science/programming-languages/static-analysis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A data flow analysis algorithm for computing dominators</title>
+      <link>/entries/Dominance_CHK.html</link>
+      <pubDate>Sun, 05 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Dominance_CHK.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Abstract Interpretation of Annotated Commands</title>
+      <link>/entries/Abs_Int_ITP2012.html</link>
+      <pubDate>Wed, 23 Nov 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Abs_Int_ITP2012.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Infeasible Paths Elimination by Symbolic Execution Techniques: Proof of Correctness and Preservation of Paths</title>
+      <link>/entries/InfPathElimination.html</link>
+      <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/InfPathElimination.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>RIPEMD-160</title>
+      <link>/entries/RIPEMD-160-SPARK.html</link>
+      <pubDate>Mon, 10 Jan 2011 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/RIPEMD-160-SPARK.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Shivers&#39; Control Flow Analysis</title>
+      <link>/entries/Shivers-CFA.html</link>
+      <pubDate>Tue, 16 Nov 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Shivers-CFA.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer</title>
+      <link>/entries/HRB-Slicing.html</link>
+      <pubDate>Fri, 13 Nov 2009 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/HRB-Slicing.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Towards Certified Slicing</title>
+      <link>/entries/Slicing.html</link>
+      <pubDate>Tue, 16 Sep 2008 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Slicing.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Conflict Analysis of Programs with Procedures, Thread Creation, and Monitors</title>
+      <link>/entries/Program-Conflict-Analysis.html</link>
+      <pubDate>Fri, 14 Dec 2007 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Program-Conflict-Analysis.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

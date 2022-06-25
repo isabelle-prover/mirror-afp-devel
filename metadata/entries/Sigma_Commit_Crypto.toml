@@ -1,0 +1,39 @@
+title = "Sigma Protocols and Commitment Schemes"
+date = 2019-10-07
+topics = [
+  "Computer science/Security/Cryptography",
+]
+abstract = """
+We use CryptHOL to formalise commitment schemes and Sigma-protocols.
+Both are widely used fundamental two party cryptographic primitives.
+Security for commitment schemes is considered using game-based
+definitions whereas the security of Sigma-protocols is considered
+using both the game-based and simulation-based security paradigms. In
+this work, we first define security for both primitives and then prove
+secure multiple case studies: the Schnorr, Chaum-Pedersen and
+Okamoto Sigma-protocols as well as a construction that allows for
+compound (AND and OR statements) Sigma-protocols and the Pedersen and
+Rivest commitment schemes. We also prove that commitment schemes can
+be constructed from Sigma-protocols. We formalise this proof at an
+abstract level, only assuming the existence of a Sigma-protocol;
+consequently, the instantiations of this result for the concrete
+Sigma-protocols we consider come for free."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.butler]
+homepage = "butler_homepage"
+
+[authors.lochbihler]
+homepage = "lochbihler_homepage"
+
+[contributors]
+
+[notify]
+butler = "butler_email"
+
+[history]
+
+[extra]

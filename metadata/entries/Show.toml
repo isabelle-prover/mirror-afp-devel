@@ -1,0 +1,37 @@
+title = "Haskell's Show Class in Isabelle/HOL"
+date = 2014-07-29
+topics = [
+  "Computer science/Functional programming",
+]
+abstract = """
+We implemented a type class for \"to-string\" functions, similar to
+Haskell's Show class. Moreover, we provide instantiations for Isabelle/HOL's
+standard types like bool, prod, sum, nats, ints, and rats. It is further
+possible, to automatically derive show functions for arbitrary user defined
+datatypes similar to Haskell's \"deriving Show\"."""
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+sternagel = "sternagel_email1"
+thiemann = "thiemann_email"
+
+[history]
+2015-03-11 = """
+Adapted development to new-style (BNF-based) datatypes.<br>
+"""
+2015-04-10 = """
+Moved development for old-style datatypes into subdirectory
+\"Old_Datatype\".<br>"""
+
+[extra]

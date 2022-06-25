@@ -1,0 +1,41 @@
+title = "A Formalization of Weighted Path Orders and Recursive Path Orders"
+date = 2021-09-16
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+We define the weighted path order (WPO) and formalize several
+properties such as strong normalization, the subterm property, and
+closure properties under substitutions and contexts. Our definition of
+WPO extends the original definition by also permitting multiset
+comparisons of arguments instead of just lexicographic extensions.
+Therefore, our WPO not only subsumes lexicographic path orders (LPO),
+but also recursive path orders (RPO). We formally prove these
+subsumptions and therefore all of the mentioned properties of WPO are
+automatically transferable to LPO and RPO as well. Such a
+transformation is not required for Knuth&ndash;Bendix orders
+(KBO), since they have already been formalized. Nevertheless, we still
+provide a proof that WPO subsumes KBO and thereby underline the
+generality of WPO."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[authors.yamada]
+email = "yamada_email2"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

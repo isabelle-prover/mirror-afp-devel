@@ -1,0 +1,39 @@
+title = "Von-Neumann-Morgenstern Utility Theorem"
+date = 2018-07-04
+topics = [
+  "Mathematics/Games and economics",
+]
+abstract = """
+Utility functions form an essential part of game theory and economics.
+In order to guarantee the existence of utility functions most of the
+time sufficient properties are assumed in an axiomatic manner. One
+famous and very common set of such assumptions is that of expected
+utility theory. Here, the rationality, continuity, and independence of
+preferences is assumed. The von-Neumann-Morgenstern Utility theorem
+shows that these assumptions are necessary and sufficient for an
+expected utility function to exists. This theorem was proven by
+Neumann and Morgenstern in ``Theory of Games and Economic
+Behavior'' which is regarded as one of the most influential
+works in game theory. The formalization includes formal definitions of
+the underlying concepts including continuity and independence of
+preferences."""
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.parsert]
+email = "parsert_email"
+
+[authors.kaliszyk]
+homepage = "kaliszyk_homepage"
+
+[contributors]
+
+[notify]
+parsert = "parsert_email1"
+kaliszyk = "kaliszyk_email"
+
+[history]
+
+[extra]

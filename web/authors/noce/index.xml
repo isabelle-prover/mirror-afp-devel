@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>noce on Archive of Formal Proofs</title>
+    <link>/authors/noce/</link>
+    <description>Recent content in noce on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 26 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/noce/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Logging-independent Message Anonymity in the Relational Method</title>
+      <link>/entries/Logging_Independent_Anonymity.html</link>
+      <pubDate>Thu, 26 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Logging_Independent_Anonymity.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Shorter Compiler Correctness Proof for Language IMP</title>
+      <link>/entries/IMP_Compiler.html</link>
+      <pubDate>Fri, 04 Jun 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMP_Compiler.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Relational Method with Message Anonymity for the Verification of Cryptographic Protocols</title>
+      <link>/entries/Relational_Method.html</link>
+      <pubDate>Sat, 05 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Method.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
+      <link>/entries/Generalized_Counting_Sort.html</link>
+      <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Generalized_Counting_Sort.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verification of a Diffie-Hellman Password-based Authentication Protocol by Extending the Inductive Method</title>
+      <link>/entries/Password_Authentication_Protocol.html</link>
+      <pubDate>Tue, 03 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Password_Authentication_Protocol.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Conservation of CSP Noninterference Security under Concurrent Composition</title>
+      <link>/entries/Noninterference_Concurrent_Composition.html</link>
+      <pubDate>Mon, 13 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Concurrent_Composition.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Conservation of CSP Noninterference Security under Sequential Composition</title>
+      <link>/entries/Noninterference_Sequential_Composition.html</link>
+      <pubDate>Tue, 26 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Sequential_Composition.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Inductive Unwinding Theorem for CSP Noninterference Security</title>
+      <link>/entries/Noninterference_Inductive_Unwinding.html</link>
+      <pubDate>Tue, 18 Aug 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Inductive_Unwinding.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reasoning about Lists via List Interleaving</title>
+      <link>/entries/List_Interleaving.html</link>
+      <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/List_Interleaving.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Generic Unwinding Theorem for CSP Noninterference Security</title>
+      <link>/entries/Noninterference_Generic_Unwinding.html</link>
+      <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Generic_Unwinding.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Ipurge Unwinding Theorem for CSP Noninterference Security</title>
+      <link>/entries/Noninterference_Ipurge_Unwinding.html</link>
+      <pubDate>Thu, 11 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_Ipurge_Unwinding.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Noninterference Security in Communicating Sequential Processes</title>
+      <link>/entries/Noninterference_CSP.html</link>
+      <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Noninterference_CSP.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A General Method for the Proof of Theorems on Tail-recursive Functions</title>
+      <link>/entries/Tail_Recursive_Functions.html</link>
+      <pubDate>Sun, 01 Dec 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Tail_Recursive_Functions.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

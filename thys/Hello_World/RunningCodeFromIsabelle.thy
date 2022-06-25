@@ -31,7 +31,7 @@ val cmd =
 
 Isabelle_System.make_directory target;
 
-List.app (fn ([file], content) => File.write (target + Path.basic file) content) files;
+List.app (fn ([file], content) => Bytes.write (target + Path.basic file) content) files;
 
 val exitcode =
   if ghc <> "" then
@@ -62,7 +62,7 @@ val cmd =
     " --eval 'HelloWorld.main ()'";
 
 Isabelle_System.make_directory target;
-File.write file content;
+Bytes.write file content;
 
 val exitcode = Isabelle_System.bash cmd;
 

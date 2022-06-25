@@ -1,0 +1,15 @@
+{{- $.Scratch.Add "index" slice -}}
+{{- if (eq .Section "authors") -}}
+  {{- range $index, $element := .Data.Pages.ByTitle -}}
+    {{- $.Scratch.Add "index" (dict
+      "id" $index
+      "name" (index (index .Site.Data.authors $element.Name) "name")
+      "link" $element.Permalink)
+    -}}
+  {{- end -}}
+{{- else -}}
+  {{- range $index, $element := .Data.Pages.ByTitle -}}
+    {{- $.Scratch.Add "index" (dict "id" $index "name" $element.Name "link" $element.Permalink) -}}
+  {{- end -}}
+{{- end -}}
+{{- $.Scratch.Get "index" | jsonify -}}

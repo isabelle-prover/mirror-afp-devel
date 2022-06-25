@@ -1,117 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Transition Systems and Automata - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Transition Systems and Automata - Archive of Formal Proofs</title><meta name="description" content="This entry provides a very abstract theory of transition systems that
+can be instantiated to express various types of automata. A transition
+system is..."><meta property="og:title" content="Transition Systems and Automata" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Transition_Systems_and_Automata.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2017-10-19T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-19T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Transition Systems and Automata"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>ransition
-  
-          <font class="first">S</font>ystems
-  
-          and
-  
-          <font class="first">A</font>utomata
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>T</span>ransition <span class='first'>S</span>ystems and <span class='first'>A</span>utomata</h1>
+  <div>
+    
+    <p><a href="../authors/brunner">Julian Brunner</a> <a href="http://www21.in.tum.de/~brunnerj/">🌐</a>
+    </p>
+    
+    
+    <p class="date">October 19, 2017</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Transition Systems and Automata</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              <a href="http://www21.in.tum.de/~brunnerj/">Julian Brunner</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2017-10-19</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-This entry provides a very abstract theory of transition systems that
+  <div class="abstract mathjax_process">This entry provides a very abstract theory of transition systems that
 can be instantiated to express various types of automata. A transition
 system is typically instantiated by providing a set of initial states,
 a predicate for enabled transitions, and a transition execution
@@ -120,104 +106,127 @@ paths as well as the set of reachable states, among other things. Many
 useful theorems, from basic path manipulation rules to coinduction and
 run construction rules, are proven in this abstract transition system
 context. The library comes with instantiations for DFAs, NFAs, and
-Büchi automata.</td>
-</tr>
+Büchi automata.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li></ul>
+  <h3>Theories of Transition_Systems_and_Automata</h3>
+  <ul>
+    <li><a href="../theories/transition_systems_and_automata/#Basic">Basic</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Sequence">Sequence</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Sequence_LTL">Sequence_LTL</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Sequence_Zip">Sequence_Zip</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Maps">Maps</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Acceptance">Acceptance</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Degeneralization">Degeneralization</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Transition_System">Transition_System</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Transition_System_Extra">Transition_System_Extra</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Transition_System_Construction">Transition_System_Construction</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Deterministic">Deterministic</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DFA">DFA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Nondeterministic">Nondeterministic</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NFA">NFA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DBA">DBA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DGBA">DGBA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DBA_Combine">DBA_Combine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DBTA">DBTA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DGBTA">DGBTA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DBTA_Combine">DBTA_Combine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DCA">DCA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DGCA">DGCA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DCA_Combine">DCA_Combine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DRA">DRA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DRA_Combine">DRA_Combine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Refine">Refine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Acceptance_Refine">Acceptance_Refine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Transition_System_Refine">Transition_System_Refine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DRA_Refine">DRA_Refine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Implement">Implement</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DRA_Implement">DRA_Implement</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DRA_Nodes">DRA_Nodes</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DRA_Explicit">DRA_Explicit</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#DRA_Translate">DRA_Translate</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NBA">NBA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NGBA">NGBA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NBA_Combine">NBA_Combine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NBA_Graphs">NBA_Graphs</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NBA_Refine">NBA_Refine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NBA_Implement">NBA_Implement</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NBA_Algorithms">NBA_Algorithms</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NBA_Explicit">NBA_Explicit</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NBA_Translate">NBA_Translate</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NGBA_Graphs">NGBA_Graphs</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NGBA_Refine">NGBA_Refine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NGBA_Implement">NGBA_Implement</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#Degeneralization_Refine">Degeneralization_Refine</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NGBA_Algorithms">NGBA_Algorithms</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NBTA">NBTA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NGBTA">NGBTA</a></li>
+    <li><a href="../theories/transition_systems_and_automata/#NBTA_Combine">NBTA_Combine</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Collections.html">Collections</a></li><li><a href="../entries/DFS_Framework.html">DFS_Framework</a></li><li><a href="../entries/Gabow_SCC.html">Gabow_SCC</a></li></ul>
+  </div><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Adaptive_State_Counting.html">Adaptive_State_Counting</a></li><li><a href="../entries/LTL_Master_Theorem.html">LTL_Master_Theorem</a></li><li><a href="../entries/Partial_Order_Reduction.html">Partial_Order_Reduction</a></li><li><a href="../entries/Buchi_Complementation.html">Buchi_Complementation</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Factored_Transition_System_Bounding.html">Upper Bounding Diameters of State Spaces of Factored Transition Systems</a></li>
+      
+      <li><a href="../entries/Partial_Order_Reduction.html">Partial Order Reduction</a></li>
+      
+      <li><a href="../entries/LTL_to_GBA.html">Converting Linear-Time Temporal Logic to Generalized Büchi Automata</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Transition_Systems_and_Automata/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Transition_Systems_and_Automata/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Transition_Systems_and_Automata/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Transition_Systems_and_Automata-AFP,
-  author  = {Julian Brunner},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Transition_Systems_and_Automata-AFP</p>
+      <pre id="copyText">@article{Transition_Systems_and_Automata-AFP,
+  author  = {brunner},
   title   = {Transition Systems and Automata},
   journal = {Archive of Formal Proofs},
-  month   = oct,
+  month   = October,
   year    = 2017,
   note    = {\url{https://isa-afp.org/entries/Transition_Systems_and_Automata.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Collections.html">Collections</a>, <a href="DFS_Framework.html">DFS_Framework</a>, <a href="Gabow_SCC.html">Gabow_SCC</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Adaptive_State_Counting.html">Adaptive_State_Counting</a>, <a href="Buchi_Complementation.html">Buchi_Complementation</a>, <a href="LTL_Master_Theorem.html">LTL_Master_Theorem</a>, <a href="Partial_Order_Reduction.html">Partial_Order_Reduction</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Transition_Systems_and_Automata/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Transition_Systems_and_Automata/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Transition_Systems_and_Automata/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Transition_Systems_and_Automata-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Transition_Systems_and_Automata-2021-02-23.tar.gz">
-              afp-Transition_Systems_and_Automata-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Transition_Systems_and_Automata-2020-04-20.tar.gz">
-              afp-Transition_Systems_and_Automata-2020-04-20.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Transition_Systems_and_Automata-2019-06-11.tar.gz">
-              afp-Transition_Systems_and_Automata-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Transition_Systems_and_Automata-2018-08-16.tar.gz">
-              afp-Transition_Systems_and_Automata-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Transition_Systems_and_Automata-2017-10-27.tar.gz">
-              afp-Transition_Systems_and_Automata-2017-10-27.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Transition_Systems_and_Automata-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

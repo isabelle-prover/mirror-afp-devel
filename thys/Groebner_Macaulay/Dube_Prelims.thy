@@ -105,25 +105,16 @@ lemma sum_split_nat_ivl:
 
 subsection \<open>@{const count_list}\<close>
 
-lemma count_list_eq_0_iff: "count_list xs x = 0 \<longleftrightarrow> x \<notin> set xs"
-  by (induct xs) simp_all
-
-lemma count_list_append: "count_list (xs @ ys) x = count_list xs x + count_list ys x"
-  by (induct xs) simp_all
-
-lemma count_list_map_ge: "count_list xs x \<le> count_list (map f xs) (f x)"
-  by (induct xs) simp_all
-
 lemma count_list_gr_1_E:
   assumes "1 < count_list xs x"
   obtains i j where "i < j" and "j < length xs" and "xs ! i = x" and "xs ! j = x"
 proof -
   from assms have "count_list xs x \<noteq> 0" by simp
-  hence "x \<in> set xs" by (simp only: count_list_eq_0_iff not_not)
+  hence "x \<in> set xs" by (simp only: count_list_0_iff not_not)
   then obtain ys zs where xs: "xs = ys @ x # zs" and "x \<notin> set ys" by (meson split_list_first)
-  hence "count_list xs x = Suc (count_list zs x)" by (simp add: count_list_append)
+  hence "count_list xs x = Suc (count_list zs x)" by (simp)
   with assms have "count_list zs x \<noteq> 0" by simp
-  hence "x \<in> set zs" by (simp only: count_list_eq_0_iff not_not)
+  hence "x \<in> set zs" by (simp only: count_list_0_iff not_not)
   then obtain j where "j < length zs" and "x = zs ! j" by (metis in_set_conv_nth)
   show ?thesis
   proof

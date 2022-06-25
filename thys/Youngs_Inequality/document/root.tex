@@ -1,0 +1,43 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Young's Inequality for Increasing Functions}
+\author{Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+Young's inequality states that
+$$ ab \leq \int_0^a f(x)dx + \int_0^b f^{-1}(y) dy $$
+where $a\geq 0$, $b\geq 0$ and $f$ is strictly increasing and continuous.
+Its proof is formalised following the development by Cunningham and Grossman~\cite{cunningham-youngs}.
+Their idea is to make the intuitive, geometric folklore proof rigorous by reasoning about step functions.
+The lack of the Riemann integral makes the development longer than one would like, but their argument is reproduced faithfully.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Acknowledgements}
+The author was supported by the ERC Advanced Grant ALEXANDRIA (Project 742178) funded by the European Research Council. 
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

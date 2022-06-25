@@ -1,0 +1,27 @@
+title = "Putting the `K' into Bird's derivation of Knuth-Morris-Pratt string matching"
+date = 2020-08-25
+topics = [
+  "Computer science/Functional programming",
+]
+abstract = """
+Richard Bird and collaborators have proposed a derivation of an
+intricate cyclic program that implements the Morris-Pratt string
+matching algorithm. Here we provide a proof of total correctness for
+Bird's derivation and complete it by adding Knuth's
+optimisation."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gammie]
+homepage = "gammie_homepage"
+
+[contributors]
+
+[notify]
+gammie = "gammie_email"
+
+[history]
+
+[extra]

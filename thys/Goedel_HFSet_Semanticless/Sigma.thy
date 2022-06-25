@@ -167,7 +167,7 @@ proof -
   show ?thesis
     apply (rule Sigma_fm_Iff [where A = "Ex i (Ex j (Var i IN Var j))"])
     using ij
-    apply (auto simp: )
+    apply auto
     apply (rule Ex_I [where x=Zero], simp)
     apply (rule Ex_I [where x="Eats Zero Zero"])
     apply (auto intro: Mem_Eats_I2 assms thin0)

@@ -33,6 +33,9 @@ where
 | "flat (Stars []) = []"
 | "flat (Stars (v#vs)) = (flat v) @ (flat (Stars vs))" 
 
+abbreviation
+  "flats vs \<equiv> concat (map flat vs)"
+
 lemma flat_Stars [simp]:
  "flat (Stars vs) = concat (map flat vs)"
 by (induct vs) (auto)
@@ -47,8 +50,7 @@ where
 | "\<turnstile> v2 : r2 \<Longrightarrow> \<turnstile> Right v2 : Plus r1 r2"
 | "\<turnstile> Void : One"
 | "\<turnstile> Atm c : Atom c"
-| "\<turnstile> Stars [] : Star r"
-| "\<lbrakk>\<turnstile> v : r; \<turnstile> Stars vs : Star r\<rbrakk> \<Longrightarrow> \<turnstile> Stars (v # vs) : Star r"
+| "\<lbrakk>\<forall>v \<in> set vs. \<turnstile> v : r \<and> flat v \<noteq> []\<rbrakk> \<Longrightarrow> \<turnstile> Stars vs : Star r"
 
 inductive_cases Prf_elims:
   "\<turnstile> v : Zero"
@@ -56,18 +58,14 @@ inductive_cases Prf_elims:
   "\<turnstile> v : Plus r1 r2"
   "\<turnstile> v : One"
   "\<turnstile> v : Atom c"
-(*  "\<turnstile> vs : Star r"*)
+  "\<turnstile> vs : Star r"
 
 lemma Prf_flat_lang:
   assumes "\<turnstile> v : r" shows "flat v \<in> lang r"
 using assms
-by(induct v r rule: Prf.induct) (auto)
-
-lemma Prf_Stars:
-  assumes "\<forall>v \<in> set vs. \<turnstile> v : r"
-  shows "\<turnstile> Stars vs : Star r"
-using assms
-by(induct vs) (auto intro: Prf.intros)
+  by (induct v r rule: Prf.induct) 
+     (auto simp add: concat_in_star subset_eq)
+  
 
 lemma Star_string:
   assumes "s \<in> star A"
@@ -77,17 +75,20 @@ by (metis in_star_iff_concat subsetD)
 
 lemma Star_val:
   assumes "\<forall>s\<in>set ss. \<exists>v. s = flat v \<and> \<turnstile> v : r"
-  shows "\<exists>vs. concat (map flat vs) = concat ss \<and> (\<forall>v\<in>set vs. \<turnstile> v : r)"
+  shows "\<exists>vs. flats vs = concat ss \<and> (\<forall>v\<in>set vs. \<turnstile> v : r \<and> flat v \<noteq> [])"
 using assms
 apply(induct ss)
 apply(auto)
 apply (metis empty_iff list.set(1))
-by (metis concat.simps(2) list.simps(9) set_ConsD)
+by (metis append.simps(1) flat.simps(7) flat_Stars set_ConsD)
 
 lemma L_flat_Prf1:
   assumes "\<turnstile> v : r" shows "flat v \<in> lang r"
 using assms
-by (induct)(auto)
+  apply (induct) 
+  apply(auto)
+  by (metis Prf.intros(6) Prf_flat_lang flat_Stars lang.simps(6)) 
+  
 
 lemma L_flat_Prf2:
   assumes "s \<in> lang r" shows "\<exists>v. \<turnstile> v : r \<and> flat v = s"
@@ -97,16 +98,14 @@ apply(auto intro: Prf.intros)
 using Prf.intros(2) flat.simps(3) apply blast
 using Prf.intros(3) flat.simps(4) apply blast
 apply (metis Prf.intros(1) concE flat.simps(5))
-apply(subgoal_tac "\<exists>vs::('a val) list. concat (map flat vs) = s \<and> (\<forall>v \<in> set vs. \<turnstile> v : r)")
+apply(subgoal_tac "\<exists>vs::('a val) list. concat (map flat vs) = s \<and> (\<forall>v \<in> set vs. \<turnstile> v : r \<and> flat v \<noteq> [])")
 apply(auto)[1]
 apply(rule_tac x="Stars vs" in exI)
 apply(simp)
-apply (simp add: Prf_Stars)
 apply(drule Star_string)
 apply(auto)
-apply(rule Star_val)
-apply(auto)
-done
+using Prf.intros(6) apply blast
+by (smt (verit) Star_val in_star_iff_concat subset_iff)
 
 lemma L_flat_Prf:
   "lang r = {flat v | v. \<turnstile> v : r}"
@@ -149,6 +148,13 @@ lemma mkeps_flat:
 using assms
 by (induct r) (auto)
 
+lemma Prf_injval_flat:
+  assumes "\<turnstile> v : deriv c r" 
+  shows "flat (injval r c v) = c # (flat v)"
+using assms
+apply(induct c r arbitrary: v rule: deriv.induct)
+apply(auto elim!: Prf_elims intro: mkeps_flat split: if_splits)
+done
 
 lemma Prf_injval:
   assumes "\<turnstile> v : deriv c r" 
@@ -157,26 +163,8 @@ using assms
 apply(induct r arbitrary: c v rule: rexp.induct)
 apply(auto intro!: Prf.intros mkeps_nullable elim!: Prf_elims split: if_splits)
 (* Star *)
-apply(rotate_tac 2)
-apply(erule Prf.cases)
-apply(simp_all)[7]
-apply(auto)
-apply (metis Prf.intros(6) Prf.intros(7))
-by (metis Prf.intros(7))
+by (simp add: Prf_injval_flat)
 
-lemma Prf_injval_flat:
-  assumes "\<turnstile> v : deriv c r" 
-  shows "flat (injval r c v) = c # (flat v)"
-using assms
-apply(induct r arbitrary: v c)
-apply(auto elim!: Prf_elims split: if_splits)
-apply(metis mkeps_flat)
-apply(rotate_tac 2)
-apply(erule Prf.cases)
-apply(simp_all)[7]
-done
-
-(* HERE *)
 
 section \<open>Our Alternative Posix definition\<close>
 
@@ -214,8 +202,10 @@ lemma Posix1a:
   assumes "s \<in> r \<rightarrow> v"
   shows "\<turnstile> v : r"
 using assms
-by (induct s r v rule: Posix.induct)(auto intro: Prf.intros)
-
+  apply(induct s r v rule: Posix.induct)
+  apply(auto intro: Prf.intros)
+  by (metis Prf.intros(6) Prf_elims(6) set_ConsD val.inject(5))
+  
 
 lemma Posix_mkeps:
   assumes "nullable r"
@@ -486,6 +476,8 @@ using lexer_correct_None lexer_correct_Some apply fastforce
 using Posix1(1) Posix_determ lexer_correct_Some apply blast
 using Posix1(1) lexer_correct_None apply blast
 using lexer_correct_None lexer_correct_Some by blast
+
+
 
 
 end

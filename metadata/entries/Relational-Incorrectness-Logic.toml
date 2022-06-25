@@ -1,0 +1,35 @@
+title = "An Under-Approximate Relational Logic"
+date = 2020-03-12
+topics = [
+  "Computer science/Programming languages/Logics",
+  "Computer science/Security",
+]
+abstract = """
+Recently, authors have proposed under-approximate logics for reasoning
+about programs. So far, all such logics have been confined to
+reasoning about individual program behaviours. Yet there exist many
+over-approximate relational logics for reasoning about pairs of
+programs and relating their behaviours. We present the first
+under-approximate relational logic, for the simple imperative language
+IMP. We prove our logic is both sound and complete. Additionally, we
+show how reasoning in this logic can be decomposed into non-relational
+reasoning in an under-approximate Hoare logic, mirroring Beringer’s
+result for over-approximate relational logics. We illustrate the
+application of our logic on some small examples in which we provably
+demonstrate the presence of insecurity."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.murray]
+homepage = "murray_homepage"
+
+[contributors]
+
+[notify]
+murray = "murray_email"
+
+[history]
+
+[extra]

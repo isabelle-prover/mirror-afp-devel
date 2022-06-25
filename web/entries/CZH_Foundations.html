@@ -1,137 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories - Archive of Formal Proofs</title><meta name="description" content="This article provides a foundational framework for the formalization of category theory in the object logic ZFC in HOL of the formal proof assistant..."><meta property="og:title" content="Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/CZH_Foundations.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2021-09-06T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-09-06T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>ategory
-  
-          <font class="first">T</font>heory
-  
-          for
-  
-          <font class="first">Z</font>FC
-  
-          in
-  
-          <font class="first">H</font>OL
-  
-          <font class="first">I</font>:
-  
-          <font class="first">F</font>oundations:
-  
-          <font class="first">D</font>esign
-  
-          <font class="first">P</font>atterns,
-  
-          <font class="first">S</font>et
-  
-          <font class="first">T</font>heory,
-  
-          <font class="first">D</font>igraphs,
-  
-          <font class="first">S</font>emicategories
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>C</span>ategory <span class='first'>T</span>heory for <span class='first'>Z</span><span class='first'>F</span><span class='first'>C</span> in <span class='first'>H</span><span class='first'>O</span><span class='first'>L</span> <span class='first'>I</span>: <span class='first'>F</span>oundations: <span class='first'>D</span>esign <span class='first'>P</span>atterns, <span class='first'>S</span>et <span class='first'>T</span>heory, <span class='first'>D</span>igraphs, <span class='first'>S</span>emicategories</h1>
+  <div>
+    
+    <p><a href="../authors/milehins">Mihails Milehins</a> <a href="mailto:mihailsmilehins@gmail.com">📧</a>
+    </p>
+    
+    
+    <p class="date">September 6, 2021</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              Mihails Milehins (user9716869 /at/ gmail /dot/ com)
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2021-09-06</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-This article provides a foundational framework for the formalization
+  <div class="abstract mathjax_process">This article provides a foundational framework for the formalization
 of category theory in the object logic ZFC in HOL of the formal proof
 assistant Isabelle. More specifically, this article provides a
 formalization of canonical set-theoretic constructions internalized in
@@ -147,89 +111,125 @@ Category Theory</i> written by Solomon Feferman and Georg
 Kreisel. Thus, in the context of this work, each of the aforementioned
 mathematical structures is represented as a term of the type
 <i>V</i> embedded into a stage of the von Neumann
-hierarchy.</td>
-</tr>
+hierarchy.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/category-theory">Mathematics/Category theory</a></li><li><a href="../topics/logic/set-theory">Logic/Set theory</a></li></ul>
+  <h3>Theories of CZH_Foundations</h3>
+  <ul>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_MIF">CZH_Sets_MIF</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Utilities">CZH_Utilities</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Introduction">CZH_Introduction</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_Introduction">CZH_Sets_Introduction</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_Sets">CZH_Sets_Sets</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_Nat">CZH_Sets_Nat</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_BRelations">CZH_Sets_BRelations</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_IF">CZH_Sets_IF</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_Equipollence">CZH_Sets_Equipollence</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_Cardinality">CZH_Sets_Cardinality</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_Ordinals">CZH_Sets_Ordinals</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_FSequences">CZH_Sets_FSequences</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_FBRelations">CZH_Sets_FBRelations</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_VNHS">CZH_Sets_VNHS</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_NOP">CZH_Sets_NOP</a></li>
+    <li><a href="../theories/czh_foundations/#HOL_CContinuum">HOL_CContinuum</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_ZQR">CZH_Sets_ZQR</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_EX_Replacement">CZH_EX_Replacement</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_EX_TS">CZH_EX_TS</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_EX_Algebra">CZH_EX_Algebra</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_Sets_Conclusions">CZH_Sets_Conclusions</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Introduction">CZH_DG_Introduction</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Digraph">CZH_DG_Digraph</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Small_Digraph">CZH_DG_Small_Digraph</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_DGHM">CZH_DG_DGHM</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Small_DGHM">CZH_DG_Small_DGHM</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_TDGHM">CZH_DG_TDGHM</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Small_TDGHM">CZH_DG_Small_TDGHM</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_PDigraph">CZH_DG_PDigraph</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Subdigraph">CZH_DG_Subdigraph</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Simple">CZH_DG_Simple</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_GRPH">CZH_DG_GRPH</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Rel">CZH_DG_Rel</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Par">CZH_DG_Par</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Set">CZH_DG_Set</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_Conclusions">CZH_DG_Conclusions</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Introduction">CZH_SMC_Introduction</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Semicategory">CZH_SMC_Semicategory</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Small_Semicategory">CZH_SMC_Small_Semicategory</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Semifunctor">CZH_SMC_Semifunctor</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Small_Semifunctor">CZH_SMC_Small_Semifunctor</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_NTSMCF">CZH_SMC_NTSMCF</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Small_NTSMCF">CZH_SMC_Small_NTSMCF</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_PSemicategory">CZH_SMC_PSemicategory</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Subsemicategory">CZH_SMC_Subsemicategory</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Simple">CZH_SMC_Simple</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Rel">CZH_SMC_Rel</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Par">CZH_SMC_Par</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Set">CZH_SMC_Set</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_GRPH">CZH_SMC_GRPH</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_DG_SemiCAT">CZH_DG_SemiCAT</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_SemiCAT">CZH_SMC_SemiCAT</a></li>
+    <li><a href="../theories/czh_foundations/#CZH_SMC_Conclusions">CZH_SMC_Conclusions</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Conditional_Simplification.html">Conditional_Simplification</a></li><li><a href="../entries/Intro_Dest_Elim.html">Intro_Dest_Elim</a></li><li><a href="../entries/ZFC_in_HOL.html">ZFC_in_HOL</a></li></ul>
+  </div><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/CZH_Elementary_Categories.html">CZH_Elementary_Categories</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/AxiomaticCategoryTheory.html">Axiom Systems for Category Theory in Free Logic</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/CZH_Foundations/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/CZH_Foundations/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/CZH_Foundations/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{CZH_Foundations-AFP,
-  author  = {Mihails Milehins},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">CZH_Foundations-AFP</p>
+      <pre id="copyText">@article{CZH_Foundations-AFP,
+  author  = {milehins},
   title   = {Category Theory for ZFC in HOL I: Foundations: Design Patterns, Set Theory, Digraphs, Semicategories},
   journal = {Archive of Formal Proofs},
-  month   = sep,
+  month   = September,
   year    = 2021,
   note    = {\url{https://isa-afp.org/entries/CZH_Foundations.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Conditional_Simplification.html">Conditional_Simplification</a>, <a href="Intro_Dest_Elim.html">Intro_Dest_Elim</a>, <a href="ZFC_in_HOL.html">ZFC_in_HOL</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="CZH_Elementary_Categories.html">CZH_Elementary_Categories</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/CZH_Foundations/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/CZH_Foundations/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/CZH_Foundations/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-CZH_Foundations-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-CZH_Foundations-2021-10-05.tar.gz">
-              afp-CZH_Foundations-2021-10-05.tar.gz
-            </a>
-            </li>
-                      <li>Isabelle 2021:
-            <a href="../release/afp-CZH_Foundations-2021-09-14.tar.gz">
-              afp-CZH_Foundations-2021-09-14.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-CZH_Foundations-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

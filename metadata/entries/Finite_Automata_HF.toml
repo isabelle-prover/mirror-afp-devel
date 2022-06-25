@@ -1,0 +1,27 @@
+title = "Finite Automata in Hereditarily Finite Set Theory"
+date = 2015-02-05
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+Finite Automata, both deterministic and non-deterministic, for regular languages.
+The Myhill-Nerode Theorem. Closure under intersection, concatenation, etc.
+Regular expressions define regular languages. Closure under reversal;
+the powerset construction mapping NFAs to DFAs. Left and right languages; minimal DFAs.
+Brzozowski's minimization algorithm. Uniqueness up to isomorphism of minimal DFAs."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+homepage = "paulson_homepage"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]

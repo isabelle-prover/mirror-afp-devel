@@ -1,0 +1,30 @@
+title = "No Faster-Than-Light Observers"
+date = 2016-04-28
+topics = [
+  "Mathematics/Physics",
+]
+abstract = """
+We provide a formal proof within First Order Relativity Theory that no
+observer can travel faster than the speed of light. Originally
+reported in Stannett & Németi (2014) \"Using Isabelle/HOL to verify
+first-order relativity theory\", Journal of Automated Reasoning 52(4),
+pp. 361-378."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.stannett]
+email = "stannett_email"
+
+[authors.nemeti]
+homepage = "nemeti_homepage"
+
+[contributors]
+
+[notify]
+stannett = "stannett_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,31 @@
+title = "Binary Multirelations"
+date = 2015-06-11
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+Binary multirelations associate elements of a set with its subsets; hence
+they are binary relations from a set to its power set. Applications include
+alternating automata, models and logics for games, program semantics with
+dual demonic and angelic nondeterministic choices and concurrent dynamic
+logics. This proof document supports an arXiv article that formalises the
+basic algebra of multirelations and proposes axiom systems for them,
+ranging from weak bi-monoids to weak bi-quantales."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.furusawa]
+homepage = "furusawa_homepage"
+
+[authors.struth]
+homepage = "struth_homepage"
+
+[contributors]
+
+[notify]
+
+[history]
+
+[extra]

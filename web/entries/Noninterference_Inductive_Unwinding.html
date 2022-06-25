@@ -1,239 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>The Inductive Unwinding Theorem for CSP Noninterference Security - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>The Inductive Unwinding Theorem for CSP Noninterference Security - Archive of Formal Proofs</title><meta name="description" content=" The necessary and sufficient condition for CSP noninterference security stated by the Ipurge Unwinding Theorem is expressed in terms of a pair of event..."><meta property="og:title" content="The Inductive Unwinding Theorem for CSP Noninterference Security" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Noninterference_Inductive_Unwinding.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2015-08-18T00:00:00+00:00" />
+<meta property="article:modified_time" content="2015-08-18T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="The Inductive Unwinding Theorem for CSP Noninterference Security"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>he
-  
-          <font class="first">I</font>nductive
-  
-          <font class="first">U</font>nwinding
-  
-          <font class="first">T</font>heorem
-  
-          for
-  
-          <font class="first">C</font>SP
-  
-          <font class="first">N</font>oninterference
-  
-          <font class="first">S</font>ecurity
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>T</span>he <span class='first'>I</span>nductive <span class='first'>U</span>nwinding <span class='first'>T</span>heorem for <span class='first'>C</span><span class='first'>S</span><span class='first'>P</span> <span class='first'>N</span>oninterference <span class='first'>S</span>ecurity</h1>
+  <div>
+    
+    <p><a href="../authors/noce">Pasquale Noce</a> <a href="mailto:pasquale.noce.lavoro@gmail.com">📧</a>
+    </p>
+    
+    
+    <p class="date">August 18, 2015</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">The Inductive Unwinding Theorem for CSP Noninterference Security</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              Pasquale Noce (pasquale /dot/ noce /dot/ lavoro /at/ gmail /dot/ com)
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2015-08-18</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-<p>
+  <div class="abstract mathjax_process"><p>
 The necessary and sufficient condition for CSP noninterference security stated by the Ipurge Unwinding Theorem is expressed in terms of a pair of event lists varying over the set of process traces. This does not render it suitable for the subsequent application of rule induction in the case of a process defined inductively, since rule induction may rather be applied to a single variable ranging over an inductively defined set.
 </p><p>
 Starting from the Ipurge Unwinding Theorem, this paper derives a necessary and sufficient condition for CSP noninterference security that involves a single event list varying over the set of process traces, and is thus suitable for rule induction; hence its name, Inductive Unwinding Theorem. Similarly to the Ipurge Unwinding Theorem, the new theorem only requires to consider individual accepted and refused events for each process trace, and applies to the general case of a possibly intransitive noninterference policy. Specific variants of this theorem are additionally proven for deterministic processes and trace set processes.
-</p></td>
-</tr>
+</p></div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/security">Computer science/Security</a></li></ul>
+  <h3>Theories of Noninterference_Inductive_Unwinding</h3>
+  <ul>
+    <li><a href="../theories/noninterference_inductive_unwinding/#InductiveUnwinding">InductiveUnwinding</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Noninterference_Ipurge_Unwinding.html">Noninterference_Ipurge_Unwinding</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Noninterference_Ipurge_Unwinding.html">The Ipurge Unwinding Theorem for CSP Noninterference Security</a></li>
+      
+      <li><a href="../entries/Noninterference_Generic_Unwinding.html">The Generic Unwinding Theorem for CSP Noninterference Security</a></li>
+      
+      <li><a href="../entries/Lehmer.html">Lehmer&rsquo;s Theorem</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Noninterference_Inductive_Unwinding/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Noninterference_Inductive_Unwinding/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Noninterference_Inductive_Unwinding/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Noninterference_Inductive_Unwinding-AFP,
-  author  = {Pasquale Noce},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Noninterference_Inductive_Unwinding-AFP</p>
+      <pre id="copyText">@article{Noninterference_Inductive_Unwinding-AFP,
+  author  = {noce},
   title   = {The Inductive Unwinding Theorem for CSP Noninterference Security},
   journal = {Archive of Formal Proofs},
-  month   = aug,
+  month   = August,
   year    = 2015,
   note    = {\url{https://isa-afp.org/entries/Noninterference_Inductive_Unwinding.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Noninterference_Ipurge_Unwinding.html">Noninterference_Ipurge_Unwinding</a>      </td></tr>
-          
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Noninterference_Inductive_Unwinding/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Noninterference_Inductive_Unwinding/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Noninterference_Inductive_Unwinding/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Noninterference_Inductive_Unwinding-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Noninterference_Inductive_Unwinding-2021-02-23.tar.gz">
-              afp-Noninterference_Inductive_Unwinding-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Noninterference_Inductive_Unwinding-2020-04-20.tar.gz">
-              afp-Noninterference_Inductive_Unwinding-2020-04-20.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Noninterference_Inductive_Unwinding-2019-06-11.tar.gz">
-              afp-Noninterference_Inductive_Unwinding-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Noninterference_Inductive_Unwinding-2018-08-16.tar.gz">
-              afp-Noninterference_Inductive_Unwinding-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Noninterference_Inductive_Unwinding-2017-10-10.tar.gz">
-              afp-Noninterference_Inductive_Unwinding-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Noninterference_Inductive_Unwinding-2016-12-17.tar.gz">
-              afp-Noninterference_Inductive_Unwinding-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-Noninterference_Inductive_Unwinding-2016-02-22.tar.gz">
-              afp-Noninterference_Inductive_Unwinding-2016-02-22.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2015:
-            <a href="../release/afp-Noninterference_Inductive_Unwinding-2015-08-19.tar.gz">
-              afp-Noninterference_Inductive_Unwinding-2015-08-19.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Noninterference_Inductive_Unwinding-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

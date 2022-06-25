@@ -1,0 +1,37 @@
+title = "A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles"
+date = 2020-06-01
+topics = [
+  "Computer science/Algorithms/Mathematical",
+  "Mathematics/Physics",
+]
+abstract = """
+The Vienna Convention on Road Traffic defines the safe distance
+traffic rules informally. This could make autonomous vehicle liable
+for safe-distance-related accidents because there is no clear
+definition of how large a safe distance is. We provide a formally
+proven prescriptive definition of a safe distance, and checkers which
+can decide whether an autonomous vehicle is obeying the safe distance
+rule. Not only does our work apply to the domain of law, but it also
+serves as a specification for autonomous vehicle manufacturers and for
+online verification of path planners."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.rizaldi]
+email = "rizaldi_email"
+
+[authors.immler]
+homepage = "immler_homepage"
+
+[contributors]
+
+[notify]
+rizaldi = "rizaldi_email"
+immler = "immler_email1"
+rau = "rau_email"
+
+[history]
+
+[extra]

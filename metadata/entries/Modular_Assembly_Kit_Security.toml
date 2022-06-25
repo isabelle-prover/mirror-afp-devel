@@ -1,0 +1,44 @@
+title = "An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties"
+date = 2018-05-07
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+The \"Modular Assembly Kit for Security Properties\" (MAKS) is
+a framework for both the definition and verification of possibilistic
+information-flow security properties at the specification-level. MAKS
+supports the uniform representation of a wide range of possibilistic
+information-flow properties and provides support for the verification
+of such properties via unwinding results and compositionality results.
+We provide a formalization of this framework in Isabelle/HOL."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bracevac]
+email = "bracevac_email"
+
+[authors.gay]
+email = "gay_email"
+
+[authors.grewe]
+email = "grewe_email"
+
+[authors.mantel]
+email = "mantel_email"
+
+[authors.sudbrock]
+email = "sudbrock_email"
+
+[authors.tasch]
+email = "tasch_email"
+
+[contributors]
+
+[notify]
+tasch = "tasch_email"
+
+[history]
+
+[extra]

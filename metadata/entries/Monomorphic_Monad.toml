@@ -1,0 +1,31 @@
+title = "Effect polymorphism in higher-order logic"
+date = 2017-05-05
+topics = [
+  "Computer science/Functional programming",
+]
+abstract = """
+The notion of a monad cannot be expressed within higher-order logic
+(HOL) due to type system restrictions. We show that if a monad is used
+with values of only one type, this notion can be formalised in HOL.
+Based on this idea, we develop a library of effect specifications and
+implementations of monads and monad transformers. Hence, we can
+abstract over the concrete monad in HOL definitions and thus use the
+same definition for different (combinations of) effects. We illustrate
+the usefulness of effect polymorphism with a monadic interpreter for a
+simple language."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochbihler]
+homepage = "lochbihler_homepage"
+
+[contributors]
+
+[notify]
+lochbihler = "lochbihler_email1"
+
+[history]
+
+[extra]

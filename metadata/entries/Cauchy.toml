@@ -1,0 +1,21 @@
+title = "Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality"
+date = 2006-03-14
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = "This document presents the mechanised proofs of two popular theorems attributed to Augustin Louis Cauchy - Cauchy's Mean Theorem and the Cauchy-Schwarz Inequality."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.porter]
+
+[contributors]
+
+[notify]
+klein = "klein_email"
+
+[history]
+
+[extra]

@@ -132,7 +132,9 @@ lemmas [cat_cs_intros] = category.cat_CId_is_arr'
 lemma (in category) cat_CId_is_arr''[cat_cs_intros]:
   assumes "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" and "f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
   shows "f : a \<mapsto>\<^bsub>\<CC>\<^esub> a"
-  using assms(1) unfolding assms(2) by (cs_concl cs_intro: cat_cs_intros)
+  using assms(1) 
+  unfolding assms(2) 
+  by (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
 lemmas [cat_cs_intros] = category.cat_CId_is_arr''
 
@@ -334,6 +336,7 @@ lemmas [cat_cs_simps] = category.cat_Comp_assoc
 
 lemmas [cat_cs_intros] =
   category.cat_Comp_vdomainI
+  category.cat_Hom_in_Vset
   category.cat_is_arrD(1-3)
   category.cat_Comp_is_arr'
   category.cat_Comp_is_arr
@@ -367,8 +370,10 @@ proof-
   interpret \<BB>: category \<alpha> \<BB> by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom: "\<D>\<^sub>\<circ> \<AA> = 6\<^sub>\<nat>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
-    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<AA> = 6\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
+    show "\<D>\<^sub>\<circ> \<AA> = \<D>\<^sub>\<circ> \<BB>" 
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
     show "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<AA> \<Longrightarrow> \<AA>\<lparr>a\<rparr> = \<BB>\<lparr>a\<rparr>" for a 
       by (unfold dom, elim_in_numeral, insert assms) (auto simp: dg_field_simps)
   qed auto
@@ -400,7 +405,8 @@ qed (auto simp: assms)
 lemma (in category) cat_def: 
   "\<CC> = [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Comp\<rparr>, \<CC>\<lparr>CId\<rparr>]\<^sub>\<circ>"
 proof(rule vsv_eqI)
-  have dom_lhs: "\<D>\<^sub>\<circ> \<CC> = 6\<^sub>\<nat>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
+  have dom_lhs: "\<D>\<^sub>\<circ> \<CC> = 6\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
   have dom_rhs: "\<D>\<^sub>\<circ> [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Comp\<rparr>, \<CC>\<lparr>CId\<rparr>]\<^sub>\<circ> = 6\<^sub>\<nat>"
     by (simp add: nat_omega_simps)
   then show "\<D>\<^sub>\<circ> \<CC> = \<D>\<^sub>\<circ> [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Dom\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Comp\<rparr>, \<CC>\<lparr>CId\<rparr>]\<^sub>\<circ>"
@@ -467,7 +473,8 @@ proof-
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
   show ?thesis
   proof(rule vsv.vsv_Limit_vsv_in_VsetI)
-    have dom: "\<D>\<^sub>\<circ> \<CC> = 6\<^sub>\<nat>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<CC> = 6\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
     from assms show "\<D>\<^sub>\<circ> \<CC> \<in>\<^sub>\<circ> Vset \<beta>"
       unfolding dom by (simp add: \<Z>.ord_of_nat_in_Vset)
     have "n \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> \<CC> \<Longrightarrow> \<CC>\<lparr>n\<rparr> \<in>\<^sub>\<circ> Vset \<beta>" for n
@@ -527,7 +534,7 @@ proof(rule vsubset_in_VsetI)
       unfolding VPow_iff by (rule cat_category_in_Vset_4)
   qed
   from assms(2) show "Vset (\<alpha> + 4\<^sub>\<nat>) \<in>\<^sub>\<circ> Vset \<beta>"
-    by (cs_concl cs_intro: V_cs_intros Ord_cs_intros)
+    by (cs_concl cs_shallow cs_intro: V_cs_intros Ord_cs_intros)
 qed
 
 lemma category_if_category:
@@ -690,7 +697,11 @@ next
 next
   fix f b c assume "f : c \<mapsto>\<^bsub>\<CC>\<^esub> b" 
   with category_axioms show "f \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> \<CC>\<lparr>CId\<rparr>\<lparr>b\<rparr> = f"
-    by (cs_concl cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros
+      )
 qed 
   (
     auto simp:
@@ -926,7 +937,11 @@ proof(elim is_inverseE)
   from prems(1) have "h = (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h" 
     unfolding gf by (simp add: cat_cs_simps)
   also with category_axioms prems(1,2) g have "\<dots> = g"
-    by (cs_concl cs_simp: prems(4) cat_cs_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: prems(4) cat_cs_simps cs_intro: cat_cs_intros
+      )
   finally show "h = g" by simp
 qed
 
@@ -1010,7 +1025,11 @@ proof(elim is_right_inverseE is_left_inverseE)
   then have dbca: "d = b" "c = a" by auto
   note [cat_cs_simps] = prems(3,6)[unfolded dbca]
   from prems(1,2) show "is_inverse \<CC> g f"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros is_inverseI)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros is_inverseI
+      )
 qed
 
 
@@ -1020,33 +1039,33 @@ subsection\<open>Isomorphism\<close>
 
 text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
 
-definition is_arr_isomorphism :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
-  where "is_arr_isomorphism \<CC> a b f \<longleftrightarrow>
+definition is_iso_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
+  where "is_iso_arr \<CC> a b f \<longleftrightarrow>
     (f : a \<mapsto>\<^bsub>\<CC>\<^esub> b \<and> (\<exists>g. is_inverse \<CC> g f))"
 
-syntax "_is_arr_isomorphism" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
+syntax "_is_iso_arr" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   (\<open>_ : _ \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<index> _\<close> [51, 51, 51] 51)
-translations "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b" \<rightleftharpoons> "CONST is_arr_isomorphism \<CC> a b f"
+translations "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b" \<rightleftharpoons> "CONST is_iso_arr \<CC> a b f"
 
 
 text\<open>Rules.\<close>
 
-lemma is_arr_isomorphismI:
+lemma is_iso_arrI:
   assumes "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" and "is_inverse \<CC> g f"
   shows "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
-  using assms unfolding is_arr_isomorphism_def by auto
+  using assms unfolding is_iso_arr_def by auto
 
-lemma is_arr_isomorphismD[dest]:
+lemma is_iso_arrD[dest]:
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   shows "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" and "\<exists>g. is_inverse \<CC> g f"
-  using assms unfolding is_arr_isomorphism_def by auto
+  using assms unfolding is_iso_arr_def by auto
 
-lemma is_arr_isomorphismE[elim]:
+lemma is_iso_arrE[elim]:
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   obtains g where "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" and "is_inverse \<CC> g f"
   using assms by force
 
-lemma is_arr_isomorphismE':
+lemma is_iso_arrE':
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   obtains g where "g : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> a"
     and "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
@@ -1059,22 +1078,22 @@ proof-
     and fg: "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g = \<CC>\<lparr>CId\<rparr>\<lparr>b\<rparr>"
     by auto
   then have g: "g : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> a" 
-    by (cs_concl cs_intro: is_inverseI is_arr_isomorphismI)
+    by (cs_concl cs_shallow cs_intro: is_inverseI is_iso_arrI)
   from that f g gf fg show ?thesis by simp
 qed
 
 
 text\<open>Elementary properties.\<close>
 
-lemma (in category) op_cat_is_arr_isomorphism[cat_op_simps]:
+lemma (in category) op_cat_is_iso_arr[cat_op_simps]:
   "f : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>op_cat \<CC>\<^esub> a \<longleftrightarrow> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
-  unfolding is_arr_isomorphism_def cat_op_simps by simp
+  unfolding is_iso_arr_def cat_op_simps by simp
 
-lemmas [cat_op_simps] = category.op_cat_is_arr_isomorphism
+lemmas [cat_op_simps] = category.op_cat_is_iso_arr
 
-lemmas [cat_op_intros] = category.op_cat_is_arr_isomorphism[THEN iffD2]
+lemmas [cat_op_intros] = category.op_cat_is_iso_arr[THEN iffD2]
 
-lemma (in category) is_arr_isomorphismI':
+lemma (in category) is_iso_arrI':
   assumes "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" 
     and "g : b \<mapsto>\<^bsub>\<CC>\<^esub> a"
     and "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
@@ -1087,15 +1106,15 @@ proof-
     by 
       (
         intro 
-          is_arr_isomorphismI[OF assms(1) gf]
-          is_arr_isomorphismI[OF assms(2) fg]
+          is_iso_arrI[OF assms(1) gf]
+          is_iso_arrI[OF assms(2) fg]
       )+
 qed
 
-lemma (in category) cat_is_inverse_is_arr_isomorphism:
+lemma (in category) cat_is_inverse_is_iso_arr:
   assumes "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" and "is_inverse \<CC> g f"
   shows "g : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> a"
-proof(intro is_arr_isomorphismI is_inverseI) 
+proof(intro is_iso_arrI is_inverseI) 
   from assms(2) obtain a' b' 
     where g: "g : b' \<mapsto>\<^bsub>\<CC>\<^esub> a'"
       and f: "f : a' \<mapsto>\<^bsub>\<CC>\<^esub> b'"
@@ -1112,7 +1131,7 @@ proof(intro is_arr_isomorphismI is_inverseI)
     unfolding a'b' by auto
 qed
 
-lemma (in category) cat_Comp_is_arr_isomorphism[cat_arrow_cs_intros]:
+lemma (in category) cat_Comp_is_iso_arr[cat_arrow_cs_intros]:
   assumes "g : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> c" and "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   shows "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> c"
 proof-
@@ -1120,33 +1139,33 @@ proof-
     by (auto intro: cat_cs_intros)
   from assms(1) obtain g' where g'g: "is_inverse \<CC> g' g" by force
   with assms(1) have [intro]: "g' : c \<mapsto>\<^bsub>\<CC>\<^esub> b" 
-    by (elim is_arr_isomorphismE)
-      (auto simp: is_arr_isomorphismD cat_is_inverse_is_arr_isomorphism)
+    by (elim is_iso_arrE)
+      (auto simp: is_iso_arrD cat_is_inverse_is_iso_arr)
   from assms(2) obtain f' where f'f: "is_inverse \<CC> f' f" by auto
   with assms(2) have [intro]: "f' : b \<mapsto>\<^bsub>\<CC>\<^esub> a"
-    by (elim is_arr_isomorphismE)
-      (auto simp: is_arr_isomorphismD cat_is_inverse_is_arr_isomorphism)
+    by (elim is_iso_arrE)
+      (auto simp: is_iso_arrD cat_is_inverse_is_iso_arr)
   have "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g' : c \<mapsto>\<^bsub>\<CC>\<^esub> a" by (auto intro: cat_cs_intros)
   from cat_is_inverse_Comp[OF _ _ g'g f'f] assms 
   have "is_inverse \<CC> (f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g') (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)" 
-    by (elim is_arr_isomorphismE) simp
-  then show ?thesis by (auto intro: is_arr_isomorphismI)
+    by (elim is_iso_arrE) simp
+  then show ?thesis by (auto intro: is_iso_arrI)
 qed
 
-lemmas [cat_arrow_cs_intros] = category.cat_Comp_is_arr_isomorphism
+lemmas [cat_arrow_cs_intros] = category.cat_Comp_is_iso_arr
 
-lemma (in category) cat_CId_is_arr_isomorphism: 
+lemma (in category) cat_CId_is_iso_arr: 
   assumes "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" 
   shows "\<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> a"
   using assms 
   by 
     (
-      cs_concl 
-        cs_intro: cat_cs_intros is_inverseI cat_is_inverse_is_arr_isomorphism 
+      cs_concl cs_shallow 
+        cs_intro: cat_cs_intros is_inverseI cat_is_inverse_is_iso_arr 
         cs_simp: cat_cs_simps
     )
 
-lemma (in category) cat_CId_is_arr_isomorphism'[cat_arrow_cs_intros]:
+lemma (in category) cat_CId_is_iso_arr'[cat_arrow_cs_intros]:
   assumes "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>"
     and "\<CC>' = \<CC>"
     and "b = a"
@@ -1154,46 +1173,90 @@ lemma (in category) cat_CId_is_arr_isomorphism'[cat_arrow_cs_intros]:
   shows "\<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>'\<^esub> c"
   using assms(1) 
   unfolding assms(2-4)
-  by (rule cat_CId_is_arr_isomorphism)
+  by (rule cat_CId_is_iso_arr)
 
-lemmas [cat_arrow_cs_intros] = category.cat_CId_is_arr_isomorphism'
+lemmas [cat_arrow_cs_intros] = category.cat_CId_is_iso_arr'
 
-lemma (in category) cat_is_arr_isomorphism_is_monic_arr[cat_arrow_cs_intros]:
+lemma (in category) cat_is_iso_arr_is_monic_arr[cat_arrow_cs_intros]:
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   shows "f : a \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>\<CC>\<^esub> b"
 proof(intro is_monic_arrI)
-  note [cat_cs_intros] = is_arr_isomorphismD(1)
-  show "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" by (intro is_arr_isomorphismD(1)[OF assms])
+  note [cat_cs_intros] = is_iso_arrD(1)
+  show "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" by (intro is_iso_arrD(1)[OF assms])
   fix h g c assume prems: 
     "h : c \<mapsto>\<^bsub>\<CC>\<^esub> a" "g : c \<mapsto>\<^bsub>\<CC>\<^esub> a" "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g"
   from assms obtain f' 
     where f': "f' : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> a" 
       and [cat_cs_simps]: "f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>" 
-    by (auto elim: is_arr_isomorphismE')
+    by (auto elim: is_iso_arrE')
   from category_axioms assms prems(1,2) have "h = (f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> h"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   also from category_axioms assms prems(1,2) f' have "\<dots> = (f' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g"
     by (cs_concl cs_simp: prems(3) cat_cs_simps cs_intro: cat_cs_intros)
   also from category_axioms assms prems(1,2) f' have "\<dots> = g"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   finally show "h = g" by simp
 qed
 
-lemmas [cat_arrow_cs_intros] = category.cat_is_arr_isomorphism_is_monic_arr
+lemmas [cat_arrow_cs_intros] = category.cat_is_iso_arr_is_monic_arr
 
-lemma (in category) cat_is_arr_isomorphism_is_epic_arr:
+lemma (in category) cat_is_iso_arr_is_epic_arr:
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   shows "f : a \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>\<CC>\<^esub> b"
   using assms
   by 
     (
       rule 
-        category.cat_is_arr_isomorphism_is_monic_arr[
+        category.cat_is_iso_arr_is_monic_arr[
           OF category_op, unfolded cat_op_simps
           ]
     )
 
-lemmas [cat_arrow_cs_intros] = category.cat_is_arr_isomorphism_is_epic_arr
+lemmas [cat_arrow_cs_intros] = category.cat_is_iso_arr_is_epic_arr
+
+lemma (in category) cat_is_iso_arr_if_is_monic_arr_is_right_inverse:
+  assumes "f : a \<mapsto>\<^sub>m\<^sub>o\<^sub>n\<^bsub>\<CC>\<^esub> b" and "is_right_inverse \<CC> g f"
+  shows "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
+proof-
+  note f_is_monic_arrD = is_monic_arrD[OF assms(1)]
+  from is_right_inverseD[OF assms(2)] f_is_monic_arrD(1) 
+  have g: "g : b \<mapsto>\<^bsub>\<CC>\<^esub> a" and fg: "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g = \<CC>\<lparr>CId\<rparr>\<lparr>b\<rparr>"
+    by auto
+  from f_is_monic_arrD(1) g have gf: "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f : a \<mapsto>\<^bsub>\<CC>\<^esub> a"
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
+  from g have CId_a: "\<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr> : a \<mapsto>\<^bsub>\<CC>\<^esub> a" 
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
+  show ?thesis
+  proof
+    (
+      intro 
+        is_iso_arrI 
+        cat_is_right_left_inverse_is_inverse 
+        is_left_inverseI, 
+      rule f_is_monic_arrD(1), 
+      rule assms(2),
+      rule g,
+      rule f_is_monic_arrD(1)
+    )
+    from f_is_monic_arrD(1) g have "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    also from f_is_monic_arrD(1) g have "\<dots> = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps fg cs_intro: cat_cs_intros)
+    finally have "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f) = f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>" by simp
+    from f_is_monic_arrD(2)[OF gf CId_a this] show "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>".
+  qed
+qed
+
+lemma (in category) cat_is_iso_arr_if_is_epic_arr_is_left_inverse:
+  assumes "f : a \<mapsto>\<^sub>e\<^sub>p\<^sub>i\<^bsub>\<CC>\<^esub> b" and "is_left_inverse \<CC> g f"
+  shows "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
+  using assms
+  by 
+    (
+      rule category.cat_is_iso_arr_if_is_monic_arr_is_right_inverse[
+        OF category_op, unfolded cat_op_simps
+        ]
+    )
 
 
 
@@ -1234,23 +1297,23 @@ proof-
     by (rule cat_is_inverse_is_inverse_the_inverse)
 qed
 
-lemma (in category) cat_the_inverse_is_arr_isomorphism:
+lemma (in category) cat_the_inverse_is_iso_arr:
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   shows "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> a"
 proof-
   from assms have f: "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b" by auto
   have "is_inverse \<CC> (f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>) f" by (rule cat_the_inverse_is_inverse[OF assms])
-  from cat_is_inverse_is_arr_isomorphism[OF f this] show ?thesis .
+  from cat_is_inverse_is_iso_arr[OF f this] show ?thesis .
 qed
 
-lemma (in category) cat_the_inverse_is_arr_isomorphism':
+lemma (in category) cat_the_inverse_is_iso_arr':
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b" and "\<CC>' = \<CC>"
   shows "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>'\<^esub> a"
   using assms(1) 
   unfolding assms(2)
-  by (rule cat_the_inverse_is_arr_isomorphism)
+  by (rule cat_the_inverse_is_iso_arr)
 
-lemmas [cat_cs_intros] = category.cat_the_inverse_is_arr_isomorphism'
+lemmas [cat_cs_intros] = category.cat_the_inverse_is_iso_arr'
 
 lemma (in category) op_cat_the_inverse:
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
@@ -1275,14 +1338,14 @@ lemma (in category) cat_Comp_the_inverse:
   shows "(g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>"
 proof-
   from assms have "g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> c" 
-    by (cs_concl cs_intro: cat_arrow_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_arrow_cs_intros)
   then have inv_gf: "is_inverse \<CC> ((g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>) (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)"
     by (intro cat_the_inverse_is_inverse)
   from assms have "is_inverse \<CC> (g\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>) g" "is_inverse \<CC> (f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>) f"
     by (auto intro: cat_the_inverse_is_inverse)
   with category_axioms assms have 
     "is_inverse \<CC> (f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>) (g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)"
-    by (cs_concl cs_intro: cat_cs_intros cat_arrow_cs_intros) 
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_arrow_cs_intros) 
   from inv_gf this show "(g \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> g\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>"
     by (meson cat_is_inverse_eq)
 qed
@@ -1316,8 +1379,7 @@ lemma (in category) cat_the_inverse_the_inverse:
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   shows "(f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = f"
 proof-
-  from assms have 
-    "(f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = (f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
+  from assms have "(f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = (f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>)\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f"
     by (*slow*)
       (
         cs_concl 
@@ -1326,7 +1388,7 @@ proof-
   also from assms have "\<dots> = f"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_arrow_cs_intros
       )
   finally show ?thesis .
@@ -1388,13 +1450,13 @@ lemma (in category) cat_obj_iso_sym[sym]:
   assumes "a \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>\<CC>\<^esub> b" 
   shows "b \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>\<CC>\<^esub> a"
   using assms 
-  by (elim obj_isoE is_arr_isomorphismE) 
-    (metis obj_iso_def cat_is_inverse_is_arr_isomorphism)
+  by (elim obj_isoE is_iso_arrE) 
+    (metis obj_iso_def cat_is_inverse_is_iso_arr)
 
 lemma (in category) cat_obj_iso_trans[trans]:
   assumes "a \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>\<CC>\<^esub> b" and "b \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>\<CC>\<^esub> c" 
   shows "a \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>\<CC>\<^esub> c"
-  using assms by (auto intro: cat_Comp_is_arr_isomorphism obj_isoI)
+  using assms by (auto intro: cat_Comp_is_iso_arr obj_isoI)
 
 
 
@@ -1423,7 +1485,8 @@ proof-
   from f f' cat_obj_terminal_CId cat_Comp_is_arr 
   have f'f: "is_inverse \<CC> f' f"
     by (intro is_inverseI[OF f' f]) (metis assms(1), metis assms(2))
-  with f show ?thesis by (cs_concl cs_intro: obj_isoI is_arr_isomorphismI)
+  with f show ?thesis 
+    by (cs_concl cs_shallow cs_intro: obj_isoI is_iso_arrI)
 qed
 
 lemma (in category) cat_obj_initial_obj_iso:
@@ -1441,7 +1504,7 @@ qed
 subsection\<open>Null object\<close>
 
 lemma (in category) cat_obj_null_obj_iso:
-  \<comment>\<open>see Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+  \<comment>\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
   assumes "obj_null \<CC> z" and "obj_null \<CC> z'"
   shows "z \<approx>\<^sub>o\<^sub>b\<^sub>j\<^bsub>\<CC>\<^esub> z'"
   using assms by (simp add: cat_obj_terminal_obj_iso obj_nullD(2))
@@ -1454,7 +1517,7 @@ subsection\<open>Groupoid\<close>
 text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
 
 locale groupoid = category \<alpha> \<CC> for \<alpha> \<CC> +
-  assumes grpd_is_arr_isomorphism: "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b \<Longrightarrow> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
+  assumes grpd_is_iso_arr: "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b \<Longrightarrow> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
 
 
 text\<open>Rules.\<close>

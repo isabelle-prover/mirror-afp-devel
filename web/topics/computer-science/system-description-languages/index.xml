@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Computer science/System description languages on Archive of Formal Proofs</title>
+    <link>/topics/computer-science/system-description-languages/</link>
+    <description>Recent content in Computer science/System description languages on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/computer-science/system-description-languages/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Formal Development of a Polychronous Polytimed Coordination Language</title>
+      <link>/entries/TESL_Language.html</link>
+      <pubDate>Tue, 30 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/TESL_Language.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Theory of Architectural Design Patterns</title>
+      <link>/entries/Architectural_Design_Patterns.html</link>
+      <pubDate>Thu, 01 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Architectural_Design_Patterns.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Dynamic Architectures</title>
+      <link>/entries/DynamicArchitectures.html</link>
+      <pubDate>Fri, 28 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/DynamicArchitectures.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Promela Formalization</title>
+      <link>/entries/Promela.html</link>
+      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Promela.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalisation and Analysis of Component Dependencies</title>
+      <link>/entries/ComponentDependencies.html</link>
+      <pubDate>Mon, 28 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ComponentDependencies.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5</title>
+      <link>/entries/Featherweight_OCL.html</link>
+      <pubDate>Thu, 16 Jan 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Featherweight_OCL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Isabelle/Circus</title>
+      <link>/entries/Circus.html</link>
+      <pubDate>Sun, 27 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Circus.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

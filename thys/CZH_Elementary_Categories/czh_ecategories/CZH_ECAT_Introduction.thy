@@ -33,8 +33,7 @@ named_theorems cat_arrow_cs_intros
 
 subsection\<open>CS setup for foundations\<close>
 
-lemmas (in \<Z>) [cat_cs_intros] = 
-  \<Z>_\<beta>
+lemmas (in \<Z>) [cat_cs_intros] = \<Z>_\<beta>
   
 text\<open>\newpage\<close>
 

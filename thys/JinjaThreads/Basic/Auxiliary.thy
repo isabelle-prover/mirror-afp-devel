@@ -51,10 +51,6 @@ lemma Option_bind_eq_None_conv:
   "x \<bind> y = None \<longleftrightarrow> x = None \<or> (\<exists>x'. x = Some x' \<and> y x' = None)"
 by(cases x) simp_all
 
-lemma Option_bind_eq_Some_conv:
-  "x \<bind> y = Some z \<longleftrightarrow> (\<exists>x'. x = Some x' \<and> y x' = Some z)"
-by(cases x) simp_all
-
 lemma map_upds_xchg_snd:
   "\<lbrakk> length xs \<le> length ys; length xs \<le> length zs; \<forall>i. i < length xs \<longrightarrow> ys ! i = zs ! i \<rbrakk>
   \<Longrightarrow> f(xs [\<mapsto>] ys) = f(xs [\<mapsto>] zs)"
@@ -103,15 +99,7 @@ by(induct xs) auto
 
 lemma map_of_SomeI:
   "\<lbrakk> distinct_fst kxs; (k,x) \<in> set kxs \<rbrakk> \<Longrightarrow> map_of kxs k = Some x"
-(*<*)by (induct kxs) (auto simp:fun_upd_apply)(*>*)
-
-lemma rel_option_Some1:
-  "rel_option R (Some x) y \<longleftrightarrow> (\<exists>y'. y = Some y' \<and> R x y')"
-by(cases y) simp_all
-
-lemma rel_option_Some2:
-  "rel_option R x (Some y) \<longleftrightarrow> (\<exists>x'. x = Some x' \<and> R x' y)"
-by(cases x) simp_all
+(*<*)by (induct kxs) (auto)(*>*)
 
 subsection \<open>Using @{term list_all2} for relations\<close>
 
@@ -170,25 +158,12 @@ lemma rel_list_all2I:
 (*<*)declare fun_of_def [simp del](*>*)
 
 
-lemma list_all2_induct[consumes 1, case_names Nil Cons]:
-  assumes major: "list_all2 P xs ys"
-  and Nil: "Q [] []"
-  and Cons: "\<And>x xs y ys. \<lbrakk> P x y; list_all2 P xs ys; Q xs ys \<rbrakk> \<Longrightarrow> Q (x # xs) (y # ys)"
-  shows "Q xs ys"
-using major
-by(induct xs arbitrary: ys)(auto simp add: list_all2_Cons1 Nil intro!: Cons)
-
 lemma list_all2_split:
   assumes major: "list_all2 P xs ys"
   and split: "\<And>x y. P x y \<Longrightarrow> \<exists>z. Q x z \<and> R z y"
   shows "\<exists>zs. list_all2 Q xs zs \<and> list_all2 R zs ys"
 using major
 by(induct rule: list_all2_induct)(auto dest: split)
-
-lemma list_all2_refl_conv:
-  "list_all2 P xs xs \<longleftrightarrow> (\<forall>x\<in>set xs. P x x)"
-unfolding list_all2_conv_all_nth Ball_def in_set_conv_nth
-by auto
 
 lemma list_all2_op_eq [simp]:
   "list_all2 (=) xs ys \<longleftrightarrow> xs = ys"
@@ -200,9 +175,6 @@ lemma length_greater_Suc_0_conv: "Suc 0 < length xs \<longleftrightarrow> (\<exi
 by(cases xs, auto simp add: neq_Nil_conv)
 
 lemmas zip_same_conv = zip_same_conv_map
-
-lemma nth_Cons_subtract: "0 < n \<Longrightarrow> (x # xs) ! n = xs ! (n - 1)"
-by(auto simp add: nth_Cons split: nat.split)
 
 lemma f_nth_set:
   "\<lbrakk> f (xs ! n) = v; n < length xs \<rbrakk> \<Longrightarrow> v \<in> f ` set xs"
@@ -284,14 +256,6 @@ lemma take_eq_take_le_eq:
   "\<lbrakk> take n xs = take n ys; m \<le> n \<rbrakk> \<Longrightarrow> take m xs = take m ys"
 by(metis min.absorb_iff1 take_take)
 
-lemma take_list_update_beyond:
-  "n \<le> m \<Longrightarrow> take n (xs[m := x]) = take n xs"
-by(cases "n \<le> length xs")(rule nth_take_lemma, simp_all)
-
-lemma hd_drop_conv_nth:
-  "n < length xs \<Longrightarrow> hd (drop n xs) = xs ! n"
-by(rule hd_drop_conv_nth) (metis list.size(3) not_less0)
-
 lemma set_tl_subset: "set (tl xs) \<subseteq> set xs"
 by(cases xs) auto
 
@@ -302,10 +266,6 @@ lemma takeWhile_eq_Nil_dropWhile_eq_Nil_imp_Nil:
   "\<lbrakk> takeWhile P xs = []; dropWhile P xs = [] \<rbrakk> \<Longrightarrow> xs = []"
 by (metis dropWhile_eq_drop drop_0 list.size(3))
 
-lemma takeWhile_eq_Nil_conv:
-  "takeWhile P xs = [] \<longleftrightarrow> (xs = [] \<or> \<not> P (hd xs))"
-by(cases xs) simp_all
-
 lemma dropWhile_append1': "dropWhile P xs \<noteq> [] \<Longrightarrow> dropWhile P (xs @ ys) = dropWhile P xs @ ys"
 by(cases xs) auto
 
@@ -315,18 +275,12 @@ by(simp)
 lemma takeWhile_append1': "dropWhile P xs \<noteq> [] \<Longrightarrow> takeWhile P (xs @ ys) = takeWhile P xs"
 by auto
 
-lemma takeWhile_takeWhile: "takeWhile P (takeWhile Q xs) = takeWhile (\<lambda>x. P x \<and> Q x) xs"
-by(induct xs) simp_all
-
 lemma dropWhile_eq_ConsD:
   "dropWhile P xs = y # ys \<Longrightarrow> y \<in> set xs \<and> \<not> P y"
 by(induct xs)(auto split: if_split_asm)
 
 lemma dropWhile_eq_hd_conv: "dropWhile P xs = hd xs # rest \<longleftrightarrow> xs \<noteq> [] \<and> rest = tl xs \<and> \<not> P (hd xs)"
-by (metis append_Nil append_is_Nil_conv dropWhile_eq_Cons_conv list.sel(1) neq_Nil_conv takeWhile_dropWhile_id takeWhile_eq_Nil_conv list.sel(3))
-
-lemma dropWhile_eq_same_conv: "dropWhile P xs = xs \<longleftrightarrow> (xs = [] \<or> \<not> P (hd xs))"
-by (metis dropWhile.simps(1) eq_Nil_appendI hd_dropWhile takeWhile_dropWhile_id takeWhile_eq_Nil_conv)
+by (metis append_Nil dropWhile_eq_Cons_conv list.sel(1) neq_Nil_conv takeWhile_dropWhile_id takeWhile_eq_Nil_iff list.sel(3))
 
 lemma subset_code [code_unfold]:
   "set xs \<subseteq> set ys \<longleftrightarrow> (\<forall>x \<in> set xs. x \<in> set ys)"
@@ -489,21 +443,6 @@ apply(rule equal_intr_rule)
 apply(erule meta_allE)+
 apply simp
 done
-
-lemma inj_on_image_mem_iff:
-  "\<lbrakk> inj_on f A; B \<subseteq> A; a \<in> A \<rbrakk> \<Longrightarrow> f a \<in> f ` B \<longleftrightarrow> a \<in> B"
-by(metis inv_into_f_eq inv_into_image_cancel rev_image_eqI)
-
-lemma sum_hom:
-  assumes hom_add [simp]: "\<And>a b. f (a + b) = f a + f b"
-  and hom_0 [simp]: "f 0 = 0"
-  shows "sum (f \<circ> h) A = f (sum h A)"
-proof(cases "finite A")
-  case False thus ?thesis by simp
-next
-  case True thus ?thesis
-    by(induct) simp_all
-qed
 
 lemma sum_upto_add_nat:
   "a \<le> b \<Longrightarrow> sum f {..<(a :: nat)} + sum f {a..<b} = sum f {..<b}"

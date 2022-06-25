@@ -1,0 +1,37 @@
+title = "The Poincaré-Bendixson Theorem"
+date = 2019-12-18
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+The Poincaré-Bendixson theorem is a classical result in the study of
+(continuous) dynamical systems. Colloquially, it restricts the
+possible behaviors of planar dynamical systems: such systems cannot be
+chaotic. In practice, it is a useful tool for proving the existence of
+(limiting) periodic behavior in planar systems. The theorem is an
+interesting and challenging benchmark for formalized mathematics
+because proofs in the literature rely on geometric sketches and only
+hint at symmetric cases. It also requires a substantial background of
+mathematical theories, e.g., the Jordan curve theorem, real analysis,
+ordinary differential equations, and limiting (long-term) behavior of
+dynamical systems."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.immler]
+homepage = "immler_homepage"
+
+[authors.tan]
+homepage = "tan_homepage"
+
+[contributors]
+
+[notify]
+immler = "immler_email1"
+tan = "tan_email"
+
+[history]
+
+[extra]

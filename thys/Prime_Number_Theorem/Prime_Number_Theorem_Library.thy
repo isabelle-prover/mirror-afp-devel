@@ -1054,7 +1054,7 @@ proof -
       have "((\<lambda>t. t powr (x - 1)) has_integral (real m powr x / x - real 1 powr x / x))
               {real 1..real m}"
         by (intro fundamental_theorem_of_calculus)
-           (insert x m, auto simp flip: has_field_derivative_iff_has_vector_derivative
+           (insert x m, auto simp flip: has_real_derivative_iff_has_vector_derivative
                              intro!: derivative_eq_intros)
       thus "((\<lambda>t. t powr (x - 1)) has_integral (real m powr x / x - 1 / x)) {real 1..real m}"
         by simp
@@ -1653,7 +1653,7 @@ proof (rule landau_o.smallI)
       using assms b' by (intro integral_cong) auto
     also have "(g' has_integral (g x - g b')) {b'..x}" using b' elim
       by (intro fundamental_theorem_of_calculus)
-         (auto simp flip: has_field_derivative_iff_has_vector_derivative
+         (auto simp flip: has_real_derivative_iff_has_vector_derivative
                intro!: has_field_derivative_at_within[OF deriv])
     hence "integral {b'..x} g' = g x - g b'"
       by (simp add: has_integral_iff)
@@ -1704,7 +1704,7 @@ proof -
       using assms b' by (intro integral_cong) auto
     also have "(g' has_integral (g x - g b')) {b'..x}" using b' elim
       by (intro fundamental_theorem_of_calculus)
-         (auto simp flip: has_field_derivative_iff_has_vector_derivative
+         (auto simp flip: has_real_derivative_iff_has_vector_derivative
                intro!: DERIV_subset[OF deriv])
     hence "integral {b'..x} g' = g x - g b'"
       by (simp add: has_integral_iff)

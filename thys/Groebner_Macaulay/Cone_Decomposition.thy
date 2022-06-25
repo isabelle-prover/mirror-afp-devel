@@ -3798,7 +3798,7 @@ proof -
   proof (rule ccontr)
     from assms(1, 3) have "h \<noteq> 0" by (rule valid_decompD)
     assume "count_list ps2 (h, U) \<noteq> 0"
-    hence "1 < count_list ps (h, U)" by (simp add: ps count_list_append)
+    hence "1 < count_list ps (h, U)" by (simp add: ps)
     also have "\<dots> \<le> count_list (map cone ps) (cone (h, U))" by (fact count_list_map_ge)
     finally have "1 < count_list (map cone ps) (cone (h, U))" .
     with cone_decompD have "cone (h, U) = {0}"
@@ -3810,7 +3810,7 @@ proof -
     with tip_in_cone[of h U] have "h = 0" by simp
     with \<open>h \<noteq> 0\<close> show False ..
   qed
-  hence **: "(h, U) \<notin> set ps2" by (simp add: count_list_eq_0_iff)
+  hence **: "(h, U) \<notin> set ps2" by (simp add: count_list_0_iff)
   have "mset ps = mset ((h, U) # ps1 @ ps2)" (is "mset _ = mset ?ps")
     by (simp add: ps)
   with assms(2) have "cone_decomp T ?ps" by (rule cone_decomp_perm)

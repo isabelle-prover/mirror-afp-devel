@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Hyperdual Numbers and Forward Differentiation - Archive of Formal Proofs</title><meta name="description" content="Hyperdual numbers are ones with a real component and a number of infinitesimal components, usually written as $a_0 &#43; a_1 \cdot \epsilon_1 &#43; a_2 \cdot..."><meta property="og:title" content="Hyperdual Numbers and Forward Differentiation" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Hyperdual.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2021-12-31T00:00:00+00:00" />
+<meta property="article:modified_time" content="2021-12-31T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Hyperdual Numbers and Forward Differentiation"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>H</span>yperdual <span class='first'>N</span>umbers and <span class='first'>F</span>orward <span class='first'>D</span>ifferentiation</h1>
+  <div>
+    
+    <p><a href="../authors/smola">Filip Smola</a> and <a href="../authors/fleuriot">Jacques D. Fleuriot</a> <a href="https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html">🌐</a>
+    </p>
+    
+    
+    <p class="date">December 31, 2021</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process"><p>Hyperdual numbers are ones with a real component and a number
+of infinitesimal components, usually written as $a_0 + a_1 \cdot
+\epsilon_1 + a_2 \cdot \epsilon_2 + a_3 \cdot \epsilon_1\epsilon_2$.
+They have been proposed by <a
+href="https://doi.org/10.2514/6.2011-886">Fike and
+Alonso</a> in an approach to automatic
+differentiation.</p> <p>In this entry we formalise
+hyperdual numbers and their application to forward differentiation. We
+show them to be an instance of multiple algebraic structures and then,
+along with facts about twice-differentiability, we define what we call
+the hyperdual extensions of functions on real-normed fields. This
+extension formally represents the proposed way that the first and
+second derivatives of a function can be automatically calculated. We
+demonstrate it on the standard logistic function $f(x) = \frac{1}{1 +
+e^{-x}}$ and also reproduce the example analytic function $f(x) =
+\frac{e^x}{\sqrt{sin(x)^3 + cos(x)^3}}$ used for demonstration by Fike
+and Alonso.</p></div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li><li><a href="../topics/mathematics/analysis">Mathematics/Analysis</a></li></ul>
+  <h3>Theories of Hyperdual</h3>
+  <ul>
+    <li><a href="../theories/hyperdual/#Hyperdual">Hyperdual</a></li>
+    <li><a href="../theories/hyperdual/#TwiceFieldDifferentiable">TwiceFieldDifferentiable</a></li>
+    <li><a href="../theories/hyperdual/#HyperdualFunctionExtension">HyperdualFunctionExtension</a></li>
+    <li><a href="../theories/hyperdual/#LogisticFunction">LogisticFunction</a></li>
+    <li><a href="../theories/hyperdual/#AnalyticTestFunction">AnalyticTestFunction</a></li></ul><div class="flex-wrap">
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Hyperdual/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Hyperdual/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Hyperdual/session_graph.pdf">Dependencies</a></nav>
+
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Hyperdual-AFP</p>
+      <pre id="copyText">@article{Hyperdual-AFP,
+  author  = {smola and fleuriot},
+  title   = {Hyperdual Numbers and Forward Differentiation},
+  journal = {Archive of Formal Proofs},
+  month   = December,
+  year    = 2021,
+  note    = {\url{https://isa-afp.org/entries/Hyperdual.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Hyperdual-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>

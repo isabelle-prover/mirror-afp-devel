@@ -1,0 +1,26 @@
+chapter AFP
+
+session Frequency_Moments (AFP) = "HOL-Probability" +
+  options [timeout = 1200]
+  sessions
+    Bertrands_Postulate
+    Equivalence_Relation_Enumeration
+    "HOL-Algebra"
+    Interpolation_Polynomials_HOL_Algebra
+    Lp
+    Prefix_Free_Code_Combinators
+    Median_Method
+    Universal_Hash_Families
+  theories
+    Frequency_Moments_Preliminary_Results
+    Frequency_Moments
+    Frequency_Moment_0
+    Frequency_Moment_2
+    Frequency_Moment_k
+    Landau_Ext
+    K_Smallest
+    Probability_Ext
+    Product_PMF_Ext
+  document_files
+    "root.tex"
+    "root.bib"

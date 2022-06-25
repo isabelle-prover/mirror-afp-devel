@@ -188,7 +188,7 @@ proof -
        (auto simp: cong)
   then show ?thesis
     using at_within_open[OF that] cong open_dom
-    by (auto simp: )
+    by auto
 qed
 
 lemma c1_on_open_euclidean_congI: "c1_on_open_euclidean g f' Y"
@@ -331,7 +331,7 @@ proof -
     apply eventually_elim
     using ivl_subset_existence_ivl[OF \<open>t \<in> _\<close>]
     apply (subst (asm) flow0_cong[OF cong])
-    by (auto simp: )
+    by auto
 
   moreover have "\<exists>t>0. t \<in> Y.existence_ivl0 x \<and> Y.flow0 x t \<in> A"
     using t

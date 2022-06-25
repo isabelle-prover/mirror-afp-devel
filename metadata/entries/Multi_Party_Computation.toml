@@ -1,0 +1,37 @@
+title = "Multi-Party Computation"
+date = 2019-05-09
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+We use CryptHOL to consider Multi-Party Computation (MPC) protocols.
+MPC was first considered by Yao in 1983 and recent advances in
+efficiency and an increased demand mean it is now deployed in the real
+world. Security is considered using the real/ideal world paradigm. We
+first define security in the semi-honest security setting where
+parties are assumed not to deviate from the protocol transcript. In
+this setting we prove multiple Oblivious Transfer (OT) protocols
+secure and then show security for the gates of the GMW protocol. We
+then define malicious security, this is a stronger notion of security
+where parties are assumed to be fully corrupted by an adversary. In
+this setting we again consider OT, as it is a fundamental building
+block of almost all MPC protocols."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.aspinall]
+homepage = "aspinall_homepage"
+
+[authors.butler]
+email = "butler_email"
+
+[contributors]
+
+[notify]
+butler = "butler_email"
+
+[history]
+
+[extra]

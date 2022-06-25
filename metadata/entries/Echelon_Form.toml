@@ -1,0 +1,27 @@
+title = "Echelon Form"
+date = 2015-02-12
+topics = [
+  "Computer science/Algorithms/Mathematical",
+  "Mathematics/Algebra",
+]
+abstract = "We formalize an algorithm to compute the Echelon Form of a matrix. We have proved its existence over Bézout domains and made it executable over Euclidean domains, such as the integer ring and the univariate polynomials over a field. This allows us to compute determinants, inverses and characteristic polynomials of matrices. The work is based on the HOL-Multivariate Analysis library, and on both the Gauss-Jordan and Cayley-Hamilton AFP entries. As a by-product, some algebraic structures have been implemented (principal ideal domains, Bézout domains...). The algorithm has been refined to immutable arrays and code can be generated to functional languages as well."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.divason]
+homepage = "divason_homepage"
+
+[authors.aransay]
+homepage = "aransay_homepage"
+
+[contributors]
+
+[notify]
+divason = "divason_email"
+aransay = "aransay_email"
+
+[history]
+
+[extra]

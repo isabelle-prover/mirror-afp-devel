@@ -1,0 +1,34 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{pdfsetup}
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{A Combinator Library for Prefix-Free Codes}
+\author{Emin Karayel}
+\maketitle
+
+\abstract{This entry contains a set of binary encodings for primitive data types, such as
+natural numbers, integers, floating-point numbers as well as combinators to construct
+encodings for products, lists, sets or functions of/between such types.
+
+For natural numbers and integers, the entry contains various encodings, such as Elias-Gamma-Codes
+and exponential Golomb Codes, which are efficient variable-length codes in use by current
+compression formats.
+
+A use-case for this library is measuring the persisted size of a complex data structure without
+having to hand-craft a dedicated encoding for it, independent of Isabelle's internal
+representation.}
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

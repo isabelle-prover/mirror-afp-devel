@@ -1,0 +1,45 @@
+title = "Stateful Protocol Composition and Typing"
+date = 2020-04-08
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+We provide in this AFP entry several relative soundness results for
+security protocols. In particular, we prove typing and
+compositionality results for stateful protocols (i.e., protocols with
+mutable state that may span several sessions), and that focuses on
+reachability properties. Such results are useful to simplify protocol
+verification by reducing it to a simpler problem: Typing results give
+conditions under which it is safe to verify a protocol in a typed
+model where only \"well-typed\" attacks can occur whereas
+compositionality results allow us to verify a composed protocol by
+only verifying the component protocols in isolation. The conditions on
+the protocols under which the results hold are furthermore syntactic
+in nature allowing for full automation. The foundation presented here
+is used in another entry to provide fully automated and formalized
+security proofs of stateful protocols."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hess]
+email = "hess_email"
+
+[authors.moedersheim]
+homepage = "moedersheim_homepage"
+
+[authors.brucker]
+homepage = "brucker_homepage"
+
+[contributors]
+
+[notify]
+hess = "hess_email1"
+moedersheim = "moedersheim_email"
+brucker = "brucker_email1"
+schlichtkrull = "schlichtkrull_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,29 @@
+title = "A Verified Code Generator from Isabelle/HOL to CakeML"
+date = 2019-07-08
+topics = [
+  "Computer science/Programming languages/Compiling",
+  "Logic/Rewriting",
+]
+abstract = """
+This entry contains the formalization that accompanies my PhD thesis
+(see https://lars.hupel.info/research/codegen/). I develop a verified
+compilation toolchain from executable specifications in Isabelle/HOL
+to CakeML abstract syntax trees. This improves over the
+state-of-the-art in Isabelle by providing a trustworthy procedure for
+code generation."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hupel]
+homepage = "hupel_homepage1"
+
+[contributors]
+
+[notify]
+hupel = "hupel_email1"
+
+[history]
+
+[extra]

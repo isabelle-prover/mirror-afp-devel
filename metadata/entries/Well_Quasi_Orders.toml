@@ -1,0 +1,58 @@
+title = "Well-Quasi-Orders"
+date = 2012-04-13
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+Based on Isabelle/HOL's type class for preorders,
+we introduce a type class for well-quasi-orders (wqo)
+which is characterized by the absence of \"bad\" sequences
+(our proofs are along the lines of the proof of Nash-Williams,
+from which we also borrow terminology). Our main results are
+instantiations for the product type, the list type, and a type of finite trees,
+which (almost) directly follow from our proofs of (1) Dickson's Lemma, (2)
+Higman's Lemma, and (3) Kruskal's Tree Theorem. More concretely:
+<ul>
+<li>If the sets A and B are wqo then their Cartesian product is wqo.</li>
+<li>If the set A is wqo then the set of finite lists over A is wqo.</li>
+<li>If the set A is wqo then the set of finite trees over A is wqo.</li>
+</ul>
+The research was funded by the Austrian Science Fund (FWF): J3202."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[contributors]
+
+[notify]
+sternagel = "sternagel_email"
+
+[history]
+2016-01-03 = """
+An alternative proof of Higman's lemma by open induction.<br>
+"""
+2017-06-08 = """
+Proved (classical) equivalence to inductive definition of
+almost-full relations according to the ITP 2012 paper \"Stop When You Are
+Almost-Full\" by Vytiniotis, Coquand, and Wahlstedt."""
+2012-12-19 = """
+New variant of Kruskal's tree theorem for terms (as opposed to
+variadic terms, i.e., trees), plus finite version of the tree theorem as
+corollary.<br>
+"""
+2013-05-16 = """
+Simplified construction of minimal bad sequences.<br>
+"""
+2014-07-09 = """
+Simplified proofs of Higman's lemma and Kruskal's tree theorem,
+based on homogeneous sequences.<br>
+"""
+2012-06-11 = """
+Added Kruskal's Tree Theorem.<br>
+"""
+
+[extra]

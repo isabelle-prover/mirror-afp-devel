@@ -1,0 +1,35 @@
+title = "Automatic Data Refinement"
+date = 2013-10-02
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = """
+We present the Autoref tool for Isabelle/HOL, which automatically
+refines algorithms specified over abstract concepts like maps
+and sets to algorithms over concrete implementations like red-black-trees,
+and produces a refinement theorem. It is based on ideas borrowed from
+relational parametricity due to Reynolds and Wadler.
+The tool allows for rapid prototyping of verified, executable algorithms.
+Moreover, it can be configured to fine-tune the result to the user~s needs.
+Our tool is able to automatically instantiate generic algorithms, which
+greatly simplifies the implementation of executable data structures.
+<p>
+This AFP-entry provides the basic tool, which is then used by the
+Refinement and Collection Framework to provide automatic data refinement for
+the nondeterminism monad and various collection datastructures."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lammich]
+email = "lammich_email"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,34 @@
+title = "Formalization of Forcing in Isabelle/ZF"
+date = 2020-05-06
+topics = [
+  "Logic/Set theory",
+]
+abstract = """
+We formalize the theory of forcing in the set theory framework of
+Isabelle/ZF. Under the assumption of the existence of a countable
+transitive model of ZFC, we construct a proper generic extension and
+show that the latter also satisfies ZFC."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gunther]
+email = "gunther_email"
+
+[authors.pagano]
+homepage = "pagano_homepage"
+
+[authors.terraf]
+homepage = "terraf_homepage"
+
+[contributors]
+
+[notify]
+gunther = "gunther_email"
+pagano = "pagano_email"
+terraf = "terraf_email"
+
+[history]
+
+[extra]

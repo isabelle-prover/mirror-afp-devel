@@ -1,0 +1,34 @@
+title = "The string search algorithm by Knuth, Morris and Pratt"
+date = 2017-12-18
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+The Knuth-Morris-Pratt algorithm is often used to show that the
+problem of finding a string <i>s</i> in a text
+<i>t</i> can be solved deterministically in
+<i>O(|s| + |t|)</i> time. We use the Isabelle
+Refinement Framework to formulate and verify the algorithm. Via
+refinement, we apply some optimisations and finally use the
+<em>Sepref</em> tool to obtain executable code in
+<em>Imperative/HOL</em>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hellauer]
+email = "hellauer_email"
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[contributors]
+
+[notify]
+hellauer = "hellauer_email"
+lammich = "lammich_email"
+
+[history]
+
+[extra]

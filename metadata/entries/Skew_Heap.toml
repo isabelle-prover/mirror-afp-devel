@@ -1,0 +1,29 @@
+title = "Skew Heap"
+date = 2014-08-13
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+Skew heaps are an amazingly simple and lightweight implementation of
+priority queues. They were invented by Sleator and Tarjan [SIAM 1986]
+and have logarithmic amortized complexity. This entry provides executable
+and verified functional skew heaps.
+<p>
+The amortized complexity of skew heaps is analyzed in the AFP entry
+<a href=\"http://isa-afp.org/entries/Amortized_Complexity.html\">Amortized Complexity</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

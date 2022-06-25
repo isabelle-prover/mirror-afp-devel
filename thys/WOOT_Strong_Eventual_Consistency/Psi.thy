@@ -4,7 +4,7 @@ theory Psi
   imports SortKeys "HOL-Eisbach.Eisbach"
 begin
 
-fun extended_size :: "('a sort_key) extended \<Rightarrow> nat"
+fun extended_size :: "('\<I> sort_key) extended \<Rightarrow> nat"
   where
     "extended_size \<lbrakk>x\<rbrakk> = size x" |
     "extended_size _ = 0"
@@ -16,7 +16,7 @@ lemma extended_simps [simp]:
   "\<not>(\<lbrakk>x'\<rbrakk> < \<turnstile>)"
   "\<not>(\<stileturn> < x)"
   "\<turnstile> \<le> x"
-  "(\<lbrakk>x'\<rbrakk> \<le> \<lbrakk>y'\<rbrakk>) = ((x' :: 'a :: linorder) \<le> y')"
+  "(\<lbrakk>x'\<rbrakk> \<le> \<lbrakk>y'\<rbrakk>) = ((x' :: '\<I> :: linorder) \<le> y')"
   "x \<le> \<stileturn>"
   "\<not>(\<lbrakk>x'\<rbrakk> \<le> \<turnstile>)"
   "(\<stileturn> \<le> x) = (x = \<stileturn>)"
@@ -34,7 +34,7 @@ lemma position_cases:
   by (metis assms embed_dir.cases extended_size.cases sort_key_embedding.cases)
 
 fun derive_pos ::
-  "('a :: linorder) \<times> sort_dir \<Rightarrow> 'a sort_key extended \<Rightarrow> 'a sort_key extended"
+  "('\<I> :: linorder) \<times> sort_dir \<Rightarrow> '\<I> sort_key extended \<Rightarrow> '\<I> sort_key extended"
   where
     "derive_pos h \<lbrakk>NonFinal x y\<rbrakk> = 
       (if h < x then \<stileturn> else (if x < h then \<turnstile> else \<lbrakk>y\<rbrakk>))" |
@@ -49,7 +49,7 @@ lemma derive_pos_mono: "x \<le> y \<Longrightarrow> derive_pos h x \<le> derive_
   apply (rule_tac [!] position_cases [where x=y])
   by (simp_all, auto)
 
-fun \<gamma> :: "('a :: linorder) position \<Rightarrow> sort_dir \<Rightarrow> 'a \<times> sort_dir"
+fun \<gamma> :: "('\<I> :: linorder) position \<Rightarrow> sort_dir \<Rightarrow> '\<I> \<times> sort_dir"
   where
     "\<gamma> \<lbrakk>NonFinal x y\<rbrakk> _ = x" |
     "\<gamma> \<lbrakk>Final x\<rbrakk> d = (x,d)" |
@@ -68,7 +68,7 @@ fun elem where "elem x (l,u) = (l < x \<and> x < u)"
 
 fun subset where "subset (l,u) (l',u') = (l' \<le> l \<and> u \<le> u')"
 
-method interval_split for x :: "('a :: linorder) position \<times> 'a position" = 
+method interval_split for x :: "('\<I> :: linorder) position \<times> '\<I> position" = 
   (case_tac [!] x, 
    rule_tac [!] position_cases [where x="fst x"], 
    rule_tac [!] position_cases [where x="snd x"])
@@ -83,7 +83,7 @@ lemma derive_interval:
   "snd x \<le> \<lbrakk>Final i\<rbrakk> \<Longrightarrow> is_interval x \<Longrightarrow> is_interval (derive_right x)"
   by (interval_split x, simp_all, auto)
 
-function \<Psi> :: "('a :: linorder) position \<times> 'a position \<Rightarrow> 'a \<Rightarrow> 'a sort_key"
+function \<Psi> :: "('\<I> :: linorder) position \<times> '\<I> position \<Rightarrow> '\<I> \<Rightarrow> '\<I> sort_key"
   where
     "\<Psi> (l,u) i = Final i"
       if "l < \<lbrakk>Final i\<rbrakk> \<and> \<lbrakk>Final i\<rbrakk> < u" |

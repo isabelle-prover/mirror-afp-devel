@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>gunther on Archive of Formal Proofs</title>
+    <link>/authors/gunther/</link>
+    <description>Recent content in gunther on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 06 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/gunther/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Independence of the Continuum Hypothesis in Isabelle/ZF</title>
+      <link>/entries/Independence_CH.html</link>
+      <pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Independence_CH.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Transitive Models of Fragments of ZFC</title>
+      <link>/entries/Transitive_Models.html</link>
+      <pubDate>Thu, 03 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transitive_Models.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Forcing in Isabelle/ZF</title>
+      <link>/entries/Forcing.html</link>
+      <pubDate>Wed, 06 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Forcing.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

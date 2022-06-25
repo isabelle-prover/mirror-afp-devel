@@ -1,0 +1,32 @@
+title = "Lyndon words"
+date = 2021-05-24
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+Lyndon words are words lexicographically minimal in their conjugacy
+class. We formalize their basic properties and characterizations, in
+particular the concepts of the longest Lyndon suffix and the Lyndon
+factorization. Most of the work assumes a fixed lexicographical order.
+Nevertheless we also define the smallest relation guaranteeing
+lexicographical minimality of a given word (in its conjugacy class)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.holub]
+homepage = "holub_homepage"
+
+[authors.starosta]
+homepage = "starosta_homepage"
+
+[contributors]
+
+[notify]
+holub = "holub_email"
+starosta = "starosta_email"
+
+[history]
+
+[extra]

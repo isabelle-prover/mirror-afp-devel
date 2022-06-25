@@ -1,0 +1,41 @@
+title = "The BKR Decision Procedure for Univariate Real Arithmetic"
+date = 2021-04-24
+topics = [
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = """
+We formalize the univariate case of Ben-Or, Kozen, and Reif's
+decision procedure for first-order real arithmetic (the BKR
+algorithm). We also formalize the univariate case of Renegar's
+variation of the BKR algorithm. The two formalizations differ
+mathematically in minor ways (that have significant impact on the
+multivariate case), but are quite similar in proof structure.  Both
+rely on sign-determination (finding the set of consistent sign
+assignments for a set of polynomials).  The method used for
+sign-determination is similar to Tarski's original quantifier
+elimination algorithm (it stores key information in a matrix
+equation), but with a reduction step to keep complexity low."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.cordwell]
+homepage = "cordwell_homepage"
+
+[authors.tan]
+homepage = "tan_homepage"
+
+[authors.platzer]
+homepage = "platzer_homepage"
+
+[contributors]
+
+[notify]
+cordwell = "cordwell_email"
+tan = "tan_email"
+platzer = "platzer_email"
+
+[history]
+
+[extra]

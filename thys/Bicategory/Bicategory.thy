@@ -575,21 +575,8 @@ begin
       have 4: "Left.in_hom (Left.L \<mu>) (?b \<star> dom \<mu>) (?b \<star> cod \<mu>)"
         using 1 Left.L.preserves_hom [of \<mu> "dom \<mu>" "cod \<mu>"] H\<^sub>L_def by auto
       show ?thesis
-      proof -
-        have "\<mu> \<cdot> \<l>[dom \<mu>] = Left.comp \<mu> \<l>[Left.dom \<mu>]"
-          using 1 2 Left.comp_simp by fastforce
-        also have "... = Left.comp \<mu> (Left.lunit (Left.dom \<mu>))"
-          using assms 1 lunit_def by auto
-        also have "... = Left.comp (Left.lunit (Left.cod \<mu>)) (Left.L \<mu>)"
-          using 1 Left.lunit_naturality Left.cod_simp by auto
-        also have "... = Left.comp (lunit (Left.cod \<mu>)) (Left.L \<mu>)"
-          using assms 1 lunit_def by auto
-        also have "... = \<l>[cod \<mu>] \<cdot> Left.L \<mu>"
-          using 1 3 4 Left.comp_char Left.cod_char Left.in_hom_char by auto
-        also have "... = \<l>[cod \<mu>] \<cdot> (trg \<mu> \<star> \<mu>)"
-          using 1 by (simp add: H\<^sub>L_def)
-        finally show ?thesis by simp
-      qed
+        by (metis "1" "2" H\<^sub>L_def Left.comp_simp Left.in_homE Left.lunit_naturality
+            Left.seqI' lunit_def trg_cod trg_dom)
     qed
 
     lemma runit_naturality:
@@ -619,21 +606,8 @@ begin
       have 4: "Right.R \<mu> \<in> Right.hom (dom \<mu> \<star> ?a) (cod \<mu> \<star> ?a)"
         using 1 Right.R.preserves_hom [of \<mu> "dom \<mu>" "cod \<mu>"] H\<^sub>R_def by auto
       show ?thesis
-      proof -
-        have "\<mu> \<cdot> \<r>[dom \<mu>] = Right.comp \<mu> \<r>[Right.dom \<mu>]"
-          by (metis 1 2 Right.comp_char Right.in_homE Right.seqI' Right.seq_char)
-        also have "... = Right.comp \<mu> (Right.runit (Right.dom \<mu>))"
-          using assms 1 src_dom trg_dom Right.hom_char runit_def by auto
-        also have "... = Right.comp (Right.runit (Right.cod \<mu>)) (Right.R \<mu>)"
-          using 1 Right.runit_naturality Right.cod_simp by auto
-        also have "... = Right.comp (runit (Right.cod \<mu>)) (Right.R \<mu>)"
-          using assms 1 runit_def by auto
-        also have "... = \<r>[cod \<mu>] \<cdot> Right.R \<mu>"
-          using 1 3 4 Right.comp_char Right.cod_char Right.in_hom_char by auto
-        also have "... = \<r>[cod \<mu>] \<cdot> (\<mu> \<star> ?a)"
-          using 1 by (simp add: H\<^sub>R_def)
-        finally show ?thesis by simp
-      qed
+        by (metis "1" "2" H\<^sub>R_def Right.comp_simp Right.in_homE Right.runit_naturality
+            Right.seqI' runit_def src_cod src_dom)
     qed
 
     interpretation L: endofunctor V L
@@ -1010,14 +984,8 @@ begin
     assumes "obj a"
     shows "a \<star> a \<noteq> null"
     and "isomorphic (a \<star> a) a"
-    proof -
-      show 1: "isomorphic (a \<star> a) a"
-        using assms unit_in_hom iso_unit isomorphic_def by blast
-      obtain \<phi> where \<phi>: "iso \<phi> \<and> \<guillemotleft>\<phi> : a \<star> a \<Rightarrow> a\<guillemotright>"
-        using 1 isomorphic_def by blast
-      have "ide (a \<star> a)" using 1 \<phi> ide_dom [of \<phi>] by fastforce
-      thus "a \<star> a \<noteq> null" using ideD(1) not_arr_null by metis
-    qed
+       apply (metis arr_dom_iff_arr assms in_homE not_arr_null unit_in_vhom)
+      by (meson assms iso_unit isomorphic_def unit_in_vhom)
 
     lemma obj_is_weak_unit:
     assumes "obj a"
@@ -1161,20 +1129,9 @@ begin
       obtain \<phi> where \<phi>: "iso \<phi> \<and> \<guillemotleft>\<phi> : a \<star> f \<Rightarrow> a \<star> g\<guillemotright>"
         using assms by blast
       have 1: "Left_a.iso \<phi> \<and> Left_a.in_hom \<phi> (a \<star> f) (a \<star> g)"
-      proof
-        have "a \<star> \<phi> \<noteq> null"
-        proof -
-          have "a \<star> dom \<phi> \<noteq> null"
-            using assms \<phi> weak_unit_self_composable
-            by (metis arr_dom_iff_arr hseq_char' in_homE match_4)
-          thus ?thesis
-            using hom_connected by simp
-        qed
-        thus "Left_a.in_hom \<phi> (a \<star> f) (a \<star> g)"
-          using \<phi> Left_a.hom_char left_def by auto
-        thus "Left_a.iso \<phi>"
-          using \<phi> Left_a.iso_char by auto
-      qed
+        by (metis H\<^sub>L_def La.is_extensional La.preserves_arr Left_a.arrI Left_a.dom_closed
+            Left_a.in_hom_char Left_a.iso_char Left_a.not_arr_null Left_a.null_char \<phi> assms(4)
+            hom_connected(4) hseq_char' ide_char' in_homE isomorphic_implies_ide(2) left_def)
       hence 2: "Left_a.ide (a \<star> f) \<and> Left_a.ide (a \<star> g)"
         using Left_a.ide_dom [of \<phi>] Left_a.ide_cod [of \<phi>] Left_a.dom_simp Left_a.cod_simp
         by auto
@@ -1207,13 +1164,8 @@ begin
       have 1: "Right_a.iso \<phi> \<and> \<phi> \<in> Right_a.hom (f \<star> a) (g \<star> a)"
       proof
         have "\<phi> \<star> a \<noteq> null"
-        proof -
-          have "dom \<phi> \<star> a \<noteq> null"
-            using assms \<phi> weak_unit_self_composable
-            by (metis arr_dom_iff_arr hseq_char' in_homE match_3)
-          thus ?thesis
-            using hom_connected by simp
-        qed
+          by (metis \<phi> assms(1,4) hom_connected(3) ideD(1) in_homE isomorphic_implies_ide(2)
+              match_3 not_arr_null weak_unit_self_composable(3))
         thus "\<phi> \<in> Right_a.hom (f \<star> a) (g \<star> a)"
           using \<phi> Right_a.hom_char right_def by simp
         thus "Right_a.iso \<phi>"
@@ -1349,39 +1301,11 @@ begin
           using a composable_implies_arr by auto
         have \<nu>: "arr \<nu>"
           using a composable_implies_arr by auto
-        have 1: "\<And>a'. a' \<in> sources \<nu> \<Longrightarrow> src a' = src a \<and> trg a' = trg a"
-        proof
-          fix a'
-          assume a': "a' \<in> sources \<nu>"
-          have 1: "a' \<cong> a"
-            using a a' \<nu> src_dom sources_dom source_iso_src isomorphic_transitive
-                  isomorphic_symmetric
-            by (meson IntD1)
-          obtain \<phi> where \<phi>: "iso \<phi> \<and> \<phi> \<in> hom a' a"
-            using 1 by auto
-          show "src a' = src a"
-            using \<phi> src_dom src_cod by auto
-          show "trg a' = trg a"
-            using \<phi> trg_dom trg_cod by auto
-        qed
-        have 2: "\<And>a'. a' \<in> targets \<mu> \<Longrightarrow> src a' = src a \<and> trg a' = trg a"
-        proof
-          fix a'
-          assume a': "a' \<in> targets \<mu>"
-          have 1: "a' \<cong> a"
-            using a a' \<mu> trg_dom targets_dom target_iso_trg isomorphic_transitive
-                  isomorphic_symmetric
-            by (meson IntD2)
-          obtain \<phi> where \<phi>: "iso \<phi> \<and> \<phi> \<in> hom a' a"
-            using 1 by auto
-          show "src a' = src a"
-            using \<phi> src_dom src_cod by auto
-          show "trg a' = trg a"
-            using \<phi> trg_dom trg_cod by auto
-        qed
+        have 2: "\<And>a'. a' \<in> sources \<nu> \<Longrightarrow> src a' = src a \<and> trg a' = trg a"
+          by (metis IntE a seq_if_composable sourcesD(2-3) weak_unit_self_composable(3))
         have "src \<nu> = src (src \<nu>)" using \<nu> by simp
         also have "... = src (trg \<mu>)"
-          using \<nu> 1 [of "src \<nu>"] src_in_sources a weak_unit_self_composable seq_if_composable
+          using \<nu> 2 [of "src \<nu>"] src_in_sources a weak_unit_self_composable seq_if_composable
           by auto
         also have "... = trg (trg \<mu>)" using \<mu> by simp
         also have "... = trg \<mu>" using \<mu> by simp
@@ -1462,25 +1386,9 @@ begin
     lemma harr_is_varr:
     assumes "H.arr \<mu>"
     shows "arr \<mu>"
-    proof -
-      have "H.domains \<mu> \<noteq> {} \<Longrightarrow> arr \<mu>"
-      proof -
-        assume 1: "H.domains \<mu> \<noteq> {}"
-        obtain a where a: "H.ide a \<and> \<mu> \<star> a \<noteq> null"
-          using 1 H.domains_def by auto
-        show "arr \<mu>"
-          using a hseq_char' H.ide_def by blast
-      qed
-      moreover have "H.codomains \<mu> \<noteq> {} \<Longrightarrow> arr \<mu>"
-      proof -
-        assume 1: "H.codomains \<mu> \<noteq> {}"
-        obtain a where a: "H.ide a \<and> a \<star> \<mu> \<noteq> null"
-          using 1 H.codomains_def by auto
-        show "arr \<mu>"
-          using a hseq_char' ide_def by blast
-      qed
-      ultimately show ?thesis using assms H.arr_def by auto
-    qed
+      using H.arr_def H.codomains_def H.domains_def assms composable_implies_arr(1)
+            composable_implies_arr(2)
+      by auto
 
     text \<open>
       An identity for horizontal composition is also an identity for vertical composition.
@@ -2363,13 +2271,7 @@ begin
     lemma triangle':
     assumes "ide f" and "ide g" and "src f = trg g"
     shows "(f \<star> \<l>[g]) = (\<r>[f] \<star> g) \<cdot> \<a>\<^sup>-\<^sup>1[f, src f, g]"
-    proof -
-      have "(\<r>[f] \<star> g) \<cdot> \<a>\<^sup>-\<^sup>1[f, src f, g] = ((f \<star> \<l>[g]) \<cdot> \<a>[f, src f, g]) \<cdot> \<a>\<^sup>-\<^sup>1[f, src f, g]"
-        using assms triangle by auto
-      also have "... = (f \<star> \<l>[g])"
-        using assms comp_arr_dom comp_assoc comp_assoc_assoc' by auto
-      finally show ?thesis by auto
-    qed
+      using assms(1-3) invert_side_of_triangle(2) triangle by force
 
     lemma pentagon':
     assumes "ide f" and "ide g" and "ide h" and "ide k"

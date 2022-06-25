@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Computer science/Hardware on Archive of Formal Proofs</title>
+    <link>/topics/computer-science/hardware/</link>
+    <description>Recent content in Computer science/Hardware on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/computer-science/hardware/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>X86 instruction semantics and basic block symbolic execution</title>
+      <link>/entries/X86_Semantics.html</link>
+      <pubDate>Wed, 13 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/X86_Semantics.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor</title>
+      <link>/entries/SPARCv8.html</link>
+      <pubDate>Wed, 19 Oct 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SPARCv8.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

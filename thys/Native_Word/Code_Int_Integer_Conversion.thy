@@ -12,7 +12,7 @@ begin
 text \<open>
   Use this function to convert numeral @{typ integer}s quickly into @{typ int}s.
   By default, it works only for symbolic evaluation; normally generated code raises
-  an exception at run-time. If theory \<open>Code_Target_Bits_Int\<close> is imported,
+  an exception at run-time. If theory \<^text>\<open>Code_Target_Int_Bit\<close> is imported,
   it works again, because then @{typ int} is implemented in terms of @{typ integer}
   even for symbolic evaluation.
 \<close>

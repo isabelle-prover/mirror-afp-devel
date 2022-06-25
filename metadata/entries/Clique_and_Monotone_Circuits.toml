@@ -1,0 +1,30 @@
+title = "Clique is not solvable by monotone circuits of polynomial size"
+date = 2022-05-08
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+<p> Given a graph $G$ with $n$ vertices and a number $s$, the
+decision problem Clique asks whether $G$ contains a fully connected
+subgraph with $s$ vertices. For this NP-complete problem there exists
+a non-trivial lower bound: no monotone circuit of a size that is
+polynomial in $n$ can solve Clique. </p><p> This entry
+provides an Isabelle/HOL formalization of a concrete lower bound (the
+bound is $\\sqrt[7]{n}^{\\sqrt[8]{n}}$ for the fixed choice of $s =
+\\sqrt[4]{n}$), following a proof by Gordeev. </p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

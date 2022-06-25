@@ -1,0 +1,37 @@
+title = "Formalization of Refinement Calculus for Reactive Systems"
+date = 2014-10-08
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = """
+We present a formalization of refinement calculus for reactive systems.
+Refinement calculus is based on monotonic predicate transformers
+(monotonic functions from sets of post-states to sets of pre-states),
+and it is a powerful formalism for reasoning about imperative programs.
+We model reactive systems as monotonic property transformers
+that transform sets of output infinite sequences into sets of input
+infinite sequences. Within this semantics we can model
+refinement of reactive systems, (unbounded) angelic and
+demonic nondeterminism, sequential composition, and
+other semantic properties. We can model systems that may
+fail for some inputs, and we can model compatibility of systems.
+We can specify systems that have liveness properties using
+linear temporal logic, and we can refine system specifications
+into systems based on symbolic transitions systems, suitable
+for implementations."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.preoteasa]
+email = "preoteasa_email"
+
+[contributors]
+
+[notify]
+preoteasa = "preoteasa_email"
+
+[history]
+
+[extra]

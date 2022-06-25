@@ -62,7 +62,7 @@ proof(rule digraphI)
   with tiny_dg_Arr_in_Vset show "(\<Union>\<^sub>\<circ>a\<in>\<^sub>\<circ>A. \<Union>\<^sub>\<circ>b\<in>\<^sub>\<circ>B. Hom \<CC> a b) \<in>\<^sub>\<circ> Vset \<alpha>" by blast
 qed 
   (
-    cs_concl 
+    cs_concl cs_shallow
       cs_simp: dg_cs_simps  
       cs_intro: tiny_dg_Cod_vrange tiny_dg_Dom_vrange dg_cs_intros V_cs_intros
   )+
@@ -102,7 +102,7 @@ proof-
     tiny_dg_Dom_in_Vset
     tiny_dg_Cod_in_Vset
   show ?thesis
-    by (subst dg_def) (cs_concl cs_intro: dg_cs_intros V_cs_intros)
+    by (subst dg_def) (cs_concl cs_shallow cs_intro: dg_cs_intros V_cs_intros)
 qed
 
 lemma small_tiny_digraphs[simp]: "small {\<CC>. tiny_digraph \<alpha> \<CC>}"
@@ -121,7 +121,7 @@ proof(intro tiny_digraphI')
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
   show "digraph \<beta> \<CC>"
     by (intro dg_digraph_if_ge_Limit)
-      (use assms(2) in \<open>cs_concl cs_intro: dg_cs_intros\<close>)+
+      (use assms(2) in \<open>cs_concl cs_shallow cs_intro: dg_cs_intros\<close>)+
   show "\<CC>\<lparr>Obj\<rparr> \<in>\<^sub>\<circ> Vset \<beta>" "\<CC>\<lparr>Arr\<rparr> \<in>\<^sub>\<circ> Vset \<beta>" 
     by (auto simp: \<beta>.\<Z>_\<beta> assms(2) dg_Obj_in_Vset dg_Arr_in_Vset)
 qed
@@ -180,14 +180,14 @@ proof(rule tiny_digraphI')
   show "\<CC>\<lparr>Obj\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
     by
       (
-        cs_concl cs_intro: 
+        cs_concl cs_shallow cs_intro: 
           dg_small_cs_intros V_cs_intros 
           dg_Obj_vsubset_Vset Limit_vfinite_in_VsetI
       )
   show "\<CC>\<lparr>Arr\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
     by 
       (
-        cs_concl cs_intro: 
+        cs_concl cs_shallow cs_intro: 
           dg_small_cs_intros V_cs_intros 
           dg_Arr_vsubset_Vset Limit_vfinite_in_VsetI
       )

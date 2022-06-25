@@ -1,0 +1,40 @@
+title = "A Sound Type System for Physical Quantities, Units, and Measurements"
+date = 2020-10-20
+topics = [
+  "Mathematics/Physics",
+  "Computer science/Programming languages/Type systems",
+]
+abstract = """
+The present Isabelle theory builds a formal model for both the
+International System of Quantities (ISQ) and the International System
+of Units (SI), which are both fundamental for physics and engineering.
+Both the ISQ and the SI are deeply integrated into Isabelle's
+type system. Quantities are parameterised by dimension types, which
+correspond to base vectors, and thus only quantities of the same
+dimension can be equated. Since the underlying \"algebra of
+quantities\" induces congruences on quantity and SI types,
+specific tactic support is developed to capture these. Our
+construction is validated by a test-set of known equivalences between
+both quantities and SI units. Moreover, the presented theory can be
+used for type-safe conversions between the SI system and others, like
+the British Imperial System (BIS)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.fosters]
+homepage = "fosters_homepage"
+
+[authors.wolff]
+homepage = "wolff_homepage"
+
+[contributors]
+
+[notify]
+fosters = "fosters_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]

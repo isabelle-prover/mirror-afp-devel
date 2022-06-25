@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>paleo on Archive of Formal Proofs</title>
+    <link>/authors/paleo/</link>
+    <description>Recent content in paleo on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 12 Nov 2013 00:00:00 +0000</lastBuildDate><atom:link href="/authors/paleo/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gödel&#39;s God in Isabelle/HOL</title>
+      <link>/entries/GoedelGod.html</link>
+      <pubDate>Tue, 12 Nov 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/GoedelGod.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>argyraki on Archive of Formal Proofs</title>
+    <link>/authors/argyraki/</link>
+    <description>Recent content in argyraki on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 26 May 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/argyraki/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Plünnecke-Ruzsa Inequality</title>
+      <link>/entries/Pluennecke_Ruzsa_Inequality.html</link>
+      <pubDate>Thu, 26 May 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Pluennecke_Ruzsa_Inequality.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Roth&#39;s Theorem on Arithmetic Progressions</title>
+      <link>/entries/Roth_Arithmetic_Progressions.html</link>
+      <pubDate>Tue, 28 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Roth_Arithmetic_Progressions.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Szemerédi&#39;s Regularity Lemma</title>
+      <link>/entries/Szemeredi_Regularity.html</link>
+      <pubDate>Fri, 05 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Szemeredi_Regularity.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Amicable Numbers</title>
+      <link>/entries/Amicable_Numbers.html</link>
+      <pubDate>Tue, 04 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Amicable_Numbers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Irrationality Criteria for Series by Erdős and Straus</title>
+      <link>/entries/Irrational_Series_Erdos_Straus.html</link>
+      <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Irrational_Series_Erdos_Straus.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Aristotle&#39;s Assertoric Syllogistic</title>
+      <link>/entries/Aristotles_Assertoric_Syllogistic.html</link>
+      <pubDate>Tue, 08 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Aristotles_Assertoric_Syllogistic.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Transcendence of Certain Infinite Series</title>
+      <link>/entries/Transcendence_Series_Hancl_Rucki.html</link>
+      <pubDate>Wed, 27 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transcendence_Series_Hancl_Rucki.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Octonions</title>
+      <link>/entries/Octonions.html</link>
+      <pubDate>Fri, 14 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Octonions.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Irrational Rapidly Convergent Series</title>
+      <link>/entries/Irrationality_J_Hancl.html</link>
+      <pubDate>Wed, 23 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Irrationality_J_Hancl.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

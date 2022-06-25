@@ -1,0 +1,29 @@
+title = "The meta theory of the Incredible Proof Machine"
+date = 2016-05-20
+topics = [
+  "Logic/Proof theory",
+]
+abstract = """
+The <a href=\"http://incredible.pm\">Incredible Proof Machine</a> is an
+interactive visual theorem prover which represents proofs as port
+graphs. We model this proof representation in Isabelle, and prove that
+it is just as powerful as natural deduction."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.breitner]
+homepage = "breitner_homepage"
+
+[authors.lohner]
+homepage = "lohner_homepage"
+
+[contributors]
+
+[notify]
+breitner = "breitner_email"
+
+[history]
+
+[extra]

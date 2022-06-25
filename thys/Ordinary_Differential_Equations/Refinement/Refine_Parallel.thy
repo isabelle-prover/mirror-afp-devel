@@ -15,7 +15,7 @@ lemma dres_of_dress_impl:
   if [refine_transfer]: "\<And>x. nres_of (f x) \<le> f' x"
   unfolding Parallel.map_def nres_of_nress_impl_map
   apply (induction x)
-   apply (auto simp: )
+   apply auto
   apply refine_transfer
   done
 concrete_definition dres_of_dress_impl uses dres_of_dress_impl
@@ -62,7 +62,7 @@ lemma nres_of_nress_Parallel_map_SPEC[le, refine_vcg]:
       SPEC (\<lambda>xrs. map fst xrs = xs \<and> (\<forall>(x, r) \<in> set xrs. I x r))"
   using assms
   apply (induction xs)
-  subgoal by (simp add: )
+  subgoal by simp
   apply clarsimp
   apply (rule refine_vcg)
   subgoal for x xs

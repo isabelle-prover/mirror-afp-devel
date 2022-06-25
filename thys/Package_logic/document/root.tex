@@ -1,0 +1,78 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\newcommand{\wand}{\ensuremath{\mathbin{-\!\!*}}}
+\newcommand{\cwand}{\ensuremath{\mathbin{-\!\!*}_c}}
+\newcommand{\twand}{\ensuremath{\mathbin{-\!\!*}_{\mathcal{T}}}}
+
+\begin{document}
+
+\title{Formalization of a Framework for the Sound Automation of Magic Wands}
+\author{Thibault Dardinier}
+\maketitle
+
+\begin{abstract}
+The magic wand $\wand$ (also called separating implication) is a separation logic~\cite{Reynolds02a} connective % I find it a bit tricky that we talk about the connective and a formula built from it as if these were the same thing
+commonly used to specify properties of partial data structures,
+for instance during iterative traversals.
+A \emph{footprint} of a magic wand formula $A \wand B$ is a state that, combined with any state in which $A$ holds, yields a state in which $B$ holds.
+The key challenge of proving a magic wand (also called \emph{packaging} a wand) is to find such a footprint.
+Existing package algorithms either have a high annotation overhead or are unsound.
+
+In this entry, we formally define a framework for the sound automation of magic wands, described in a paper at CAV~2022~\cite{Dardinier22},
+and prove that it is sound and complete.
+This framework, called the \emph{package logic}, precisely characterises a wide design space of possible package algorithms applicable to a large class of separation logics.
+%Moreover, we define a novel, restricted definition of wands, called \emph{combinable wands}, and prove that it is possible to soundly combine fractions of such wands, which is not the case for arbitrary wands.
+%Finally, we instantiate the package logic to show our framework can also be used with combinable wands.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

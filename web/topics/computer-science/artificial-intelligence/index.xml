@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Computer science/Artificial intelligence on Archive of Formal Proofs</title>
+    <link>/topics/computer-science/artificial-intelligence/</link>
+    <description>Recent content in Computer science/Artificial intelligence on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/computer-science/artificial-intelligence/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AI Planning Languages Semantics</title>
+      <link>/entries/AI_Planning_Languages_Semantics.html</link>
+      <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/AI_Planning_Languages_Semantics.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified SAT-Based AI Planning</title>
+      <link>/entries/Verified_SAT_Based_AI_Planning.html</link>
+      <pubDate>Thu, 29 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Verified_SAT_Based_AI_Planning.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

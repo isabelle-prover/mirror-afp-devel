@@ -1,0 +1,32 @@
+title = "Verified SAT-Based AI Planning"
+date = 2020-10-29
+topics = [
+  "Computer science/Artificial intelligence",
+]
+abstract = """
+We present an executable formally verified SAT encoding of classical
+AI planning that is based on the encodings by Kautz and Selman and the
+one by Rintanen et al. The encoding was experimentally tested and
+shown to be usable for reasonably sized standard AI planning
+benchmarks. We also use it as a reference to test a state-of-the-art
+SAT-based planner, showing that it sometimes falsely claims that
+problems have no solutions of certain lengths. The formalisation in
+this submission was described in an independent publication."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.abdulaziz]
+homepage = "abdulaziz_homepage"
+
+[authors.kurz]
+
+[contributors]
+
+[notify]
+abdulaziz = "abdulaziz_email1"
+
+[history]
+
+[extra]

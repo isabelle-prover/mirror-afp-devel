@@ -1,0 +1,43 @@
+title = "Authenticated Data Structures As Functors"
+date = 2020-04-16
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+Authenticated data structures allow several systems to convince each
+other that they are referring to the same data structure, even if each
+of them knows only a part of the data structure. Using inclusion
+proofs, knowledgeable systems can selectively share their knowledge
+with other systems and the latter can verify the authenticity of what
+is being shared.  In this article, we show how to modularly define
+authenticated data structures, their inclusion proofs, and operations
+thereon as datatypes in Isabelle/HOL, using a shallow embedding.
+Modularity allows us to construct complicated trees from reusable
+building blocks, which we call Merkle functors. Merkle functors
+include sums, products, and function spaces and are closed under
+composition and least fixpoints.  As a practical application, we model
+the hierarchical transactions of <a
+href=\"https://www.canton.io\">Canton</a>, a
+practical interoperability protocol for distributed ledgers, as
+authenticated data structures. This is a first step towards
+formalizing the Canton protocol and verifying its integrity and
+security guarantees."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochbihler]
+homepage = "lochbihler_homepage"
+
+[authors.maric]
+email = "maric_email"
+
+[contributors]
+
+[notify]
+lochbihler = "lochbihler_email1"
+
+[history]
+
+[extra]

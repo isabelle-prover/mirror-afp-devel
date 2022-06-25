@@ -1,0 +1,35 @@
+title = "Axiom Systems for Category Theory in Free Logic"
+date = 2018-05-23
+topics = [
+  "Mathematics/Category theory",
+]
+abstract = """
+This document provides a concise overview on the core results of our
+previous work on the exploration of axioms systems for category
+theory. Extending the previous studies
+(http://arxiv.org/abs/1609.01493) we include one further axiomatic
+theory in our experiments. This additional theory has been suggested
+by Mac Lane in 1948. We show that the axioms proposed by Mac Lane are
+equivalent to the ones we studied before, which includes an axioms set
+suggested by Scott in the 1970s and another axioms set proposed by
+Freyd and Scedrov in 1990, which we slightly modified to remedy a
+minor technical issue."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.benzmueller]
+homepage = "benzmueller_homepage"
+
+[authors.scott]
+homepage = "scott_homepage"
+
+[contributors]
+
+[notify]
+benzmueller = "benzmueller_email"
+
+[history]
+
+[extra]

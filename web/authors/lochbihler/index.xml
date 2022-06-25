@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>lochbihler on Archive of Formal Proofs</title>
+    <link>/authors/lochbihler/</link>
+    <description>Recent content in lochbihler on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 17 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/lochbihler/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Constructive Cryptography in HOL: the Communication Modeling Aspect</title>
+      <link>/entries/Constructive_Cryptography_CM.html</link>
+      <pubDate>Wed, 17 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Constructive_Cryptography_CM.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Authenticated Data Structures As Functors</title>
+      <link>/entries/ADS_Functor.html</link>
+      <pubDate>Thu, 16 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ADS_Functor.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Sigma Protocols and Commitment Schemes</title>
+      <link>/entries/Sigma_Commit_Crypto.html</link>
+      <pubDate>Mon, 07 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Sigma_Commit_Crypto.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Constructive Cryptography in HOL</title>
+      <link>/entries/Constructive_Cryptography.html</link>
+      <pubDate>Mon, 17 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Constructive_Cryptography.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bounded Natural Functors with Covariance and Contravariance</title>
+      <link>/entries/BNF_CC.html</link>
+      <pubDate>Tue, 24 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/BNF_CC.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CryptHOL</title>
+      <link>/entries/CryptHOL.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CryptHOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Effect polymorphism in higher-order logic</title>
+      <link>/entries/Monomorphic_Monad.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Monomorphic_Monad.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Game-based cryptography in HOL</title>
+      <link>/entries/Game_Based_Crypto.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Game_Based_Crypto.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Monad normalisation</title>
+      <link>/entries/Monad_Normalisation.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Monad_Normalisation.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Probabilistic while loop</title>
+      <link>/entries/Probabilistic_While.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_While.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks</title>
+      <link>/entries/MFMC_Countable.html</link>
+      <pubDate>Mon, 09 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MFMC_Countable.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Applicative Lifting</title>
+      <link>/entries/Applicative_Lifting.html</link>
+      <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Applicative_Lifting.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Stern-Brocot Tree</title>
+      <link>/entries/Stern_Brocot.html</link>
+      <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stern_Brocot.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Zoo of Probabilistic Systems</title>
+      <link>/entries/Probabilistic_System_Zoo.html</link>
+      <pubDate>Wed, 27 May 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_System_Zoo.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Trie</title>
+      <link>/entries/Trie.html</link>
+      <pubDate>Mon, 30 Mar 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Trie.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stream Fusion in HOL with Code Generation</title>
+      <link>/entries/Stream_Fusion_Code.html</link>
+      <pubDate>Fri, 10 Oct 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stream_Fusion_Code.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Native Word</title>
+      <link>/entries/Native_Word.html</link>
+      <pubDate>Tue, 17 Sep 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Native_Word.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Light-weight Containers</title>
+      <link>/entries/Containers.html</link>
+      <pubDate>Mon, 15 Apr 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Containers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Multivariate Polynomials</title>
+      <link>/entries/Polynomials.html</link>
+      <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Polynomials.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Coinductive</title>
+      <link>/entries/Coinductive.html</link>
+      <pubDate>Fri, 12 Feb 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Coinductive.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Code Generation for Functions as Data</title>
+      <link>/entries/FinFun.html</link>
+      <pubDate>Wed, 06 May 2009 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/FinFun.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Jinja with Threads</title>
+      <link>/entries/JinjaThreads.html</link>
+      <pubDate>Mon, 03 Dec 2007 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/JinjaThreads.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

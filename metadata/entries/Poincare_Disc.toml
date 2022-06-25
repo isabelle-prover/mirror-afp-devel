@@ -1,0 +1,40 @@
+title = "Poincaré Disc Model"
+date = 2019-12-16
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+We describe formalization of the Poincaré disc model of hyperbolic
+geometry within the Isabelle/HOL proof assistant. The model is defined
+within the extended complex plane (one dimensional complex projectives
+space &#8450;P1), formalized in the AFP entry “Complex Geometry”.
+Points, lines, congruence of pairs of points, betweenness of triples
+of points, circles, and isometries are defined within the model. It is
+shown that the model satisfies all Tarski's axioms except the
+Euclid's axiom. It is shown that it satisfies its negation and
+the limiting parallels axiom (which proves it to be a model of
+hyperbolic geometry)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.simic]
+homepage = "simic_homepage"
+
+[authors.maricf]
+homepage = "maricf_homepage"
+
+[authors.boutry]
+email = "boutry_email"
+
+[contributors]
+
+[notify]
+simic = "simic_email"
+maricf = "maricf_email"
+boutry = "boutry_email"
+
+[history]
+
+[extra]

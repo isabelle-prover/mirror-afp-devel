@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Markov_Models on Archive of Formal Proofs</title>
+    <link>/dependencies/markov_models/</link>
+    <description>Recent content in Markov_Models on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 25 May 2018 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/markov_models/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hidden Markov Models</title>
+      <link>/entries/Hidden_Markov_Models.html</link>
+      <pubDate>Fri, 25 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Hidden_Markov_Models.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Probabilistic Timed Automata</title>
+      <link>/entries/Probabilistic_Timed_Automata.html</link>
+      <pubDate>Thu, 24 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_Timed_Automata.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
+      <link>/entries/Stochastic_Matrices.html</link>
+      <pubDate>Wed, 22 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stochastic_Matrices.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Probabilistic Noninterference</title>
+      <link>/entries/Probabilistic_Noninterference.html</link>
+      <pubDate>Tue, 11 Mar 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_Noninterference.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

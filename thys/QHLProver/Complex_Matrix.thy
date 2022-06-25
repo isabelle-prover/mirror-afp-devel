@@ -1828,7 +1828,8 @@ proof -
     moreover have "inner_prod v ((-A) *\<^sub>v v) \<ge> 0" using dimv pnA dimnA positive_def by auto
     ultimately have "B$$(i, i) \<le> 0" using dimB i by auto
     moreover have "B$$(i, i) \<ge> 0" using i geq0 by auto
-    ultimately have "B$$(i, i) = 0" by (metis no_atp(10))
+    ultimately have "B$$(i, i) = 0"
+      by (metis antisym)
   }
   then have "B = 0\<^sub>m n n" using dimB dB[unfolded diagonal_mat_def]
     by (subst eq_matI, auto)

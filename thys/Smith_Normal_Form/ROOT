@@ -16,5 +16,6 @@ session Smith_Normal_Form (AFP) = Hermite +
     SNF_Algorithm_HOL_Analysis
     SNF_Algorithm_Euclidean_Domain
     Smith_Certified
+    Alternative_Proofs
   document_files
     "root.tex"

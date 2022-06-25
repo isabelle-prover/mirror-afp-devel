@@ -1,0 +1,42 @@
+title = "Compositional BD Security"
+date = 2021-08-16
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+Building on a previous <a
+href=\"https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html\">AFP
+entry</a> that formalizes the Bounded-Deducibility Security (BD
+Security) framework <a href=\"https://doi.org/10.4230/LIPIcs.ITP.2021.3\">[1]</a>,
+we formalize compositionality and transport theorems for information
+flow security. These results allow lifting BD Security properties from
+individual components specified as transition systems, to a
+composition of systems specified as communicating products of
+transition systems. The underlying ideas of these results are
+presented in the papers <a href=\"https://doi.org/10.4230/LIPIcs.ITP.2021.3\">[1]</a>
+and <a href=\"https://doi.org/10.1109/SP.2017.24\">[2]</a>.
+The latter paper also describes a major case study where these results
+have been used: on verifying the CoSMeDis distributed social media
+platform (itself formalized as an <a
+href=\"https://www.isa-afp.org/entries/CoSMeDis.html\">AFP
+entry</a> that builds on this entry)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bauereiss]
+email = "bauereiss_email"
+
+[authors.popescu]
+homepage = "popescu_homepage"
+
+[contributors]
+
+[notify]
+bauereiss = "bauereiss_email"
+popescu = "popescu_email"
+
+[history]
+
+[extra]

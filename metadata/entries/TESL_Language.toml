@@ -1,0 +1,59 @@
+title = "A Formal Development of a Polychronous Polytimed Coordination Language"
+date = 2019-07-30
+topics = [
+  "Computer science/System description languages",
+  "Computer science/Semantics",
+  "Computer science/Concurrency",
+]
+abstract = """
+The design of complex systems involves different formalisms for
+modeling their different parts or aspects. The global model of a
+system may therefore consist of a coordination of concurrent
+sub-models that use different paradigms.  We develop here a theory for
+a language used to specify the timed coordination of such
+heterogeneous subsystems by addressing the following issues:
+<ul><li>the
+behavior of the sub-systems is observed only at a series of discrete
+instants,</li><li>events may occur in different sub-systems at unrelated
+times, leading to polychronous systems, which do not necessarily have
+a common base clock,</li><li>coordination between subsystems involves
+causality, so the occurrence of an event may enforce the occurrence of
+other events, possibly after a certain duration has elapsed or an
+event has occurred a given number of times,</li><li>the domain of time
+(discrete, rational, continuous...) may be different in the
+subsystems, leading to polytimed systems,</li><li>the time frames of
+different sub-systems may be related (for instance, time in a GPS
+satellite and in a GPS receiver on Earth are related although they are
+not the same).</li></ul>
+Firstly, a denotational semantics of the language is
+defined. Then, in order to be able to incrementally check the behavior
+of systems, an operational semantics is given, with proofs of
+progress, soundness and completeness with regard to the denotational
+semantics. These proofs are made according to a setup that can scale
+up when new operators are added to the language. In order for
+specifications to be composed in a clean way, the language should be
+invariant by stuttering (i.e., adding observation instants at which
+nothing happens). The proof of this invariance is also given."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.van]
+email = "van_email"
+
+[authors.boulanger]
+email = "boulanger_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+boulanger = "boulanger_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]

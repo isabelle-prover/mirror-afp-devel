@@ -1,0 +1,32 @@
+title = "Linear Temporal Logic"
+date = 2016-03-01
+topics = [
+  "Logic/General logic/Temporal logic",
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+This theory provides a formalisation of linear temporal logic (LTL)
+and unifies previous formalisations within the AFP. This entry
+establishes syntax and semantics for this logic and decouples it from
+existing entries, yielding a common environment for theories reasoning
+about LTL. Furthermore a parser written in SML and an executable
+simplifier are provided."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sickert]
+homepage = "sickert_homepage"
+
+[contributors]
+
+[contributors.seidl]
+email = "seidl_email"
+
+[notify]
+sickert = "sickert_email"
+
+[history]
+
+[extra]

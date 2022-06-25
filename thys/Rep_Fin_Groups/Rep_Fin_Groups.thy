@@ -8053,8 +8053,8 @@ proof (induct n rule: full_nat_induct)
           using inner_dirsumD2[of "[U,W]"] inner_dirsumD[of Us]
                 inner_dirsumD[of Ws]
           by    auto
-        ultimately have "add_independentS (Us@Ws)" 
-          using add_independentS_double_sum_conv_append by auto
+        ultimately have "add_independentS (Us@Ws)"
+          by (metis add_independentS_double_sum_conv_append) 
         moreover from W(1) Ws(3) indWs have "0 \<in> (\<Sum>X\<leftarrow>Ws. X)"
           using inner_dirsumD GSubspace_def RModule.zero_closed by fast
         ultimately show ?thesis

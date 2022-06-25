@@ -1,0 +1,38 @@
+title = "Root-Balanced Tree"
+date = 2017-08-20
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+<p>
+Andersson introduced <em>general balanced trees</em>,
+search trees based on the design principle of partial rebuilding:
+perform update operations naively until the tree becomes too
+unbalanced, at which point a whole subtree is rebalanced.  This article
+defines and analyzes a functional version of general balanced trees,
+which we call <em>root-balanced trees</em>. Using a lightweight model
+of execution time, amortized logarithmic complexity is verified in
+the theorem prover Isabelle.
+</p>
+<p>
+This is the Isabelle formalization of the material decribed in the APLAS 2017 article
+<a href=\"http://www21.in.tum.de/~nipkow/pubs/aplas17.html\">Verified Root-Balanced Trees</a>
+by the same author, which also presents experimental results that show
+competitiveness of root-balanced with AVL and red-black trees.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

@@ -110,10 +110,10 @@ proof(intro tiny_digraphI)
     then obtain \<FF> where "\<FF> \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (dg_CAT \<alpha>\<lparr>Cod\<rparr>)" and "\<BB> = \<FF>\<lparr>HomCod\<rparr>"
       unfolding dg_CAT_components by auto
     then obtain \<AA> \<FF> 
-      where dghm: "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" and \<BB>_def: "\<BB> = \<FF>\<lparr>HomCod\<rparr>"
+      where \<FF>: "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" and \<BB>_def: "\<BB> = \<FF>\<lparr>HomCod\<rparr>"
       unfolding dg_CAT_components by auto
     have "\<BB> = \<FF>\<lparr>HomCod\<rparr>" unfolding \<BB>_def by simp
-    interpret is_functor \<alpha> \<AA> \<BB> \<FF> by (rule dghm)
+    interpret is_functor \<alpha> \<AA> \<BB> \<FF> by (rule \<FF>)
     show "\<BB> \<in>\<^sub>\<circ> dg_CAT \<alpha>\<lparr>Obj\<rparr>"
       by (simp add: HomCod.category_axioms dg_CAT_components)
   qed

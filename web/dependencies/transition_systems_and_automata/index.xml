@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Transition_Systems_and_Automata on Archive of Formal Proofs</title>
+    <link>/dependencies/transition_systems_and_automata/</link>
+    <description>Recent content in Transition_Systems_and_Automata on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 16 Aug 2019 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/transition_systems_and_automata/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Formalisation of an Adaptive State Counting Algorithm</title>
+      <link>/entries/Adaptive_State_Counting.html</link>
+      <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Adaptive_State_Counting.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Compositional and Unified Translation of LTL into ω-Automata</title>
+      <link>/entries/LTL_Master_Theorem.html</link>
+      <pubDate>Tue, 16 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LTL_Master_Theorem.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Partial Order Reduction</title>
+      <link>/entries/Partial_Order_Reduction.html</link>
+      <pubDate>Tue, 05 Jun 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Partial_Order_Reduction.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Büchi Complementation</title>
+      <link>/entries/Buchi_Complementation.html</link>
+      <pubDate>Thu, 19 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Buchi_Complementation.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

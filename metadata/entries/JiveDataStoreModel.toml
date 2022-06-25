@@ -1,0 +1,25 @@
+title = "Jive Data and Store Model"
+date = 2005-06-20
+topics = [
+  "Computer science/Programming languages/Misc",
+]
+abstract = "This document presents the formalization of an object-oriented data and store model in Isabelle/HOL. This model is being used in the Java Interactive Verification Environment, Jive."
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.rauch]
+email = "rauch_email"
+
+[authors.schirmer]
+
+[contributors]
+
+[notify]
+klein = "klein_email"
+schirmer = "schirmer_email"
+
+[history]
+
+[extra]

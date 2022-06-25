@@ -1,0 +1,38 @@
+title = "A General Theory of Syntax with Bindings"
+date = 2019-04-06
+topics = [
+  "Computer science/Programming languages/Lambda calculi",
+  "Computer science/Functional programming",
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = """
+We formalize a theory of syntax with bindings that has been developed
+and refined over the last decade to support several large
+formalization efforts. Terms are defined for an arbitrary number of
+constructors of varying numbers of inputs, quotiented to
+alpha-equivalence and sorted according to a binding signature. The
+theory includes many properties of the standard operators on terms:
+substitution, swapping and freshness. It also includes bindings-aware
+induction and recursion principles and support for semantic
+interpretation. This work has been presented in the ITP 2017 paper “A
+Formalized General Theory of Syntax with Bindings”."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gheri]
+email = "gheri_email"
+
+[authors.popescu]
+homepage = "popescu_homepage"
+
+[contributors]
+
+[notify]
+popescu = "popescu_email2"
+gheri = "gheri_email"
+
+[history]
+
+[extra]

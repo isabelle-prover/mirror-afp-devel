@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>boyton on Archive of Formal Proofs</title>
+    <link>/authors/boyton/</link>
+    <description>Recent content in boyton on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 11 May 2012 00:00:00 +0000</lastBuildDate><atom:link href="/authors/boyton/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Separation Algebra</title>
+      <link>/entries/Separation_Algebra.html</link>
+      <pubDate>Fri, 11 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Separation_Algebra.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

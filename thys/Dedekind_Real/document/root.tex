@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Constructing the Reals as Dedekind Cuts of Rationals}
+\author{Jacques D. Fleuriot and Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+The type of real numbers is constructed from the positive rationals using the method of Dedekind cuts. This development, briefly described in papers by the authors \cite{fleuriot-real-analysis,fleuriot-jcm}, follows the textbook presentation by Gleason~\cite{gleason-fundamentals}.
+It's notable that the first formalisation of a significant piece of mathematics, by Jutting~\cite{jutting77} in 1977, involved a similar construction.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Remark.}
+This development was part of the Isabelle distribution from about 1999 to 2022. 
+It has been transferred to the AFP, where it may be more useful.
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

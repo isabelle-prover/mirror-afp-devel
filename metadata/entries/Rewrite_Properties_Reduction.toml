@@ -1,0 +1,28 @@
+title = "Reducing Rewrite Properties to Properties on Ground Terms"
+date = 2022-06-02
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+This AFP entry relates important rewriting properties between the set
+of terms and the set of ground terms induced by a given signature. The
+properties considered are confluence, strong/local confluence, the
+normal form property, unique normal forms with respect to reduction
+and conversion, commutation, conversion equivalence, and normalization
+equivalence."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochmann]
+email = "lochmann_email"
+
+[contributors]
+
+[notify]
+lochmann = "lochmann_email"
+
+[history]
+
+[extra]

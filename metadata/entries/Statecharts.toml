@@ -1,0 +1,37 @@
+title = "Formalizing Statecharts using Hierarchical Automata"
+date = 2010-08-08
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+We formalize in Isabelle/HOL the abtract syntax and a synchronous
+step semantics for the specification language Statecharts. The formalization
+is based on Hierarchical Automata which allow a structural decomposition of
+Statecharts into Sequential Automata. To support the composition of
+Statecharts, we introduce calculating operators to construct a Hierarchical
+Automaton in a stepwise manner. Furthermore, we present a complete semantics
+of Statecharts including a theory of data spaces, which enables the modelling
+of racing effects. We also adapt CTL for
+Statecharts to build a bridge for future combinations with model
+checking. However the main motivation of this work is to provide a sound and
+complete basis for reasoning on Statecharts. As a central meta theorem we
+prove that the well-formedness of a Statechart is preserved by the semantics."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.helke]
+email = "helke_email"
+
+[authors.kammueller]
+email = "kammueller_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

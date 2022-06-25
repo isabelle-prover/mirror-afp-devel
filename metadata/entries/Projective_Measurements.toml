@@ -1,0 +1,28 @@
+title = "Quantum projective measurements and the CHSH inequality"
+date = 2021-03-03
+topics = [
+  "Computer science/Algorithms/Quantum computing",
+  "Mathematics/Physics/Quantum information",
+]
+abstract = """
+This work contains a formalization of quantum projective measurements,
+also known as von Neumann measurements, which are based on elements of
+spectral theory. We also formalized the CHSH inequality, an inequality
+involving expectations in a probability space that is violated by
+quantum measurements, thus proving that quantum mechanics cannot be modeled with an underlying local hidden-variable theory."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.echenim]
+homepage = "echenim_homepage"
+
+[contributors]
+
+[notify]
+echenim = "echenim_email"
+
+[history]
+
+[extra]

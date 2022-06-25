@@ -1,0 +1,31 @@
+title = "Octonions"
+date = 2018-09-14
+topics = [
+  "Mathematics/Algebra",
+  "Mathematics/Geometry",
+]
+abstract = """
+We develop the basic theory of Octonions, including various identities
+and properties of the octonions and of the octonionic product, a
+description of 7D isometries and representations of orthogonal
+transformations. To this end we first develop the theory of the vector
+cross product in 7 dimensions. The development of the theory of
+Octonions is inspired by that of the theory of Quaternions by Lawrence
+Paulson. However, we do not work within the type class real_algebra_1
+because the octonionic product is not associative."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.argyraki]
+homepage = "argyraki_homepage"
+
+[contributors]
+
+[notify]
+argyraki = "argyraki_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pratt_Certificate on Archive of Formal Proofs</title>
+    <link>/dependencies/pratt_certificate/</link>
+    <description>Recent content in Pratt_Certificate on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 04 Aug 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/pratt_certificate/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Amicable Numbers</title>
+      <link>/entries/Amicable_Numbers.html</link>
+      <pubDate>Tue, 04 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Amicable_Numbers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bertrand&#39;s postulate</title>
+      <link>/entries/Bertrands_Postulate.html</link>
+      <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Bertrands_Postulate.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

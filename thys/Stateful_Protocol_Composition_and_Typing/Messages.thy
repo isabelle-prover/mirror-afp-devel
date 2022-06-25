@@ -1,39 +1,6 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2015-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Messages.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section \<open>Protocol Messages as (First-Order) Terms\<close>
@@ -110,8 +77,7 @@ using subterm_of_iff_subtermeq by blast
 
 
 subsection \<open>The subterm relation is a partial order on terms\<close>
-
-interpretation "term": ordering "(\<sqsubseteq>)" "(\<sqsubset>)"
+interpretation "term": order "(\<sqsubseteq>)" "(\<sqsubset>)"
 proof
   show "s \<sqsubseteq> s" for s :: "('a,'b) term"
     by (induct s rule: subterms.induct) auto
@@ -138,11 +104,10 @@ proof
     }
     thus ?case by auto
   qed simp
-  show \<open>s \<sqsubset> t \<longleftrightarrow> s \<sqsubset> t\<close> for s t :: "('a,'b) term" ..
+  thus "(s \<sqsubset> t) = (s \<sqsubseteq> t \<and> \<not>(t \<sqsubseteq> s))" for s t :: "('a,'b) term"
+    by blast
 qed
 
-interpretation "term": order "(\<sqsubseteq>)" "(\<sqsubset>)"
-  by (rule ordering_orderI) (fact term.ordering_axioms)
 
 subsection \<open>Lemmata concerning subterms and free variables\<close>
 lemma fv_list\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_append: "fv_list\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (F@G) = fv_list\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F@fv_list\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s G"
@@ -179,6 +144,15 @@ proof (induction t rule: fv_list.induct)
       unfolding U_def by force
   qed (use IH "2.prems"(2) in auto)
 qed force
+
+lemma distinct_fv_list_Fun_param:
+  assumes f: "distinct (fv_list (Fun f ts))"
+    and t: "t \<in> set ts"
+  shows "distinct (fv_list t)"
+proof -
+  obtain pre suf where "ts = pre@t#suf" using t by (meson split_list)
+  thus ?thesis using distinct_append f by simp
+qed
 
 lemmas subtermeqI'[intro] = term.eq_refl
 
@@ -336,23 +310,33 @@ by (induct t arbitrary: s) auto
 lemma subterms_const: "subterms (Fun f []) = {Fun f []}" by simp
 
 lemma subterm_subtermeq_neq: "\<lbrakk>t \<sqsubset> u; u \<sqsubseteq> v\<rbrakk> \<Longrightarrow> t \<noteq> v"
-by (metis term.eq_iff)
+  using term.dual_order.strict_trans1 by blast 
 
 lemma subtermeq_subterm_neq: "\<lbrakk>t \<sqsubseteq> u; u \<sqsubset> v\<rbrakk> \<Longrightarrow> t \<noteq> v"
-by (metis term.eq_iff)
+by (metis term.order.eq_iff)
 
 lemma subterm_size_lt: "x \<sqsubset> y \<Longrightarrow> size x < size y"
 using not_less_eq size_list_estimation by (induct y, simp, fastforce)
 
 lemma in_subterms_eq: "\<lbrakk>x \<in> subterms y; y \<in> subterms x\<rbrakk> \<Longrightarrow> subterms x = subterms y"
-using term.antisym by auto
+  using term.order.antisym by auto
+
+lemma Fun_param_size_lt:
+  "t \<in> set ts \<Longrightarrow> size t < size (Fun f ts)"
+by (induct ts) auto
+
+lemma Fun_zip_size_lt:
+  assumes "(t,s) \<in> set (zip ts ss)"
+  shows "size t < size (Fun f ts)"
+    and "size s < size (Fun g ss)"
+by (metis assms Fun_param_size_lt in_set_zipE)+
 
 lemma Fun_gt_params: "Fun f X \<notin> (\<Union>x \<in> set X. subterms x)"
 proof -
   have "size_list size X < size (Fun f X)" by simp
   hence "Fun f X \<notin> set X" by (meson less_not_refl size_list_estimation) 
   hence "\<forall>x \<in> set X. Fun f X \<notin> subterms x \<or> x \<notin> subterms (Fun f X)"
-    by (metis term.antisym[of "Fun f X" _])
+    using subtermeq_subterm_neq by blast 
   moreover have "\<forall>x \<in> set X. x \<in> subterms (Fun f X)" by fastforce
   ultimately show ?thesis by auto
 qed
@@ -371,7 +355,7 @@ lemma Fun_param_in_subterms: "x \<in> set X \<Longrightarrow> x \<in> subterms (
 using Fun_subterm_inside_params by fastforce
 
 lemma Fun_not_in_param: "x \<in> set X \<Longrightarrow> \<not>Fun f X \<sqsubset> x"
-using term.antisym by fast
+  by (meson Fun_param_in_subterms term.less_le_not_le) 
 
 lemma Fun_ex_if_subterm: "t \<sqsubset> s \<Longrightarrow> \<exists>f T. Fun f T \<sqsubseteq> s \<and> t \<in> set T"
 proof (induction s)
@@ -479,7 +463,11 @@ using assms
 proof (induction T arbitrary: S)
   case (Cons t T S')
   then obtain s S where S': "S' = s#S" by (cases S') simp_all
-  thus ?case using Cons by fastforce
+  have "fv (T ! i) = fv (S ! i)" when "i < length T" for i
+    using that Cons.prems(2)[of "Suc i"] unfolding S' by simp
+  hence "fv (Fun f T) = fv (Fun g S)"
+    using Cons.prems(1) Cons.IH[of S] unfolding S' by simp
+  thus ?case using Cons.prems(2)[of 0] unfolding S' by auto
 qed simp
 
 lemma fv_eq_FunI':
@@ -489,7 +477,21 @@ using assms
 proof (induction T arbitrary: S)
   case (Cons t T S')
   then obtain s S where S': "S' = s#S" by (cases S') simp_all
-  thus ?case using Cons by fastforce
+  show ?case using Cons.prems Cons.IH[of S] unfolding S' by fastforce
+qed simp
+
+lemma funs_term_eq_FunI:
+  assumes "length T = length S" "\<And>i. i < length T \<Longrightarrow> funs_term (T ! i) = funs_term (S ! i)"
+  shows "funs_term (Fun f T) = funs_term (Fun f S)"
+using assms
+proof (induction T arbitrary: S)
+  case (Cons t T S')
+  then obtain s S where S': "S' = s#S" by (cases S') simp_all
+  have "funs_term (T ! i) = funs_term (S ! i)" when "i < length T" for i
+    using that Cons.prems(2)[of "Suc i"] unfolding S' by simp
+  hence "funs_term (Fun f T) = funs_term (Fun f S)"
+    using Cons.prems(1) Cons.IH[of S] unfolding S' by simp
+  thus ?case using Cons.prems(2)[of 0] unfolding S' by auto
 qed simp
 
 lemma finite_fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s[simp]: "finite (fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s x)" by auto
@@ -514,6 +516,15 @@ using UN_I by fastforce+
 
 lemma fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_cons_subset: "fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F \<subseteq> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s (f#F)"
 by auto
+
+lemma in_Fun_fv_iff_in_args_nth_fv:
+  "x \<in> fv (Fun f ts) \<longleftrightarrow> (\<exists>i < length ts. x \<in> fv (ts ! i))"
+  (is "?A \<longleftrightarrow> ?B")
+proof
+  assume ?A
+  hence "x \<in> \<Union>(fv ` set ts)" by auto
+  thus ?B by (metis UN_E in_set_conv_nth)
+qed auto
 
 
 subsection \<open>Other lemmata\<close>

@@ -1,0 +1,36 @@
+title = "The Independence of the Continuum Hypothesis in Isabelle/ZF"
+date = 2022-03-06
+topics = [
+  "Logic/Set theory",
+]
+abstract = """
+We redeveloped our formalization of forcing in the set theory
+framework of Isabelle/ZF. Under the assumption of the existence of a
+countable transitive model of ZFC, we construct proper generic
+extensions that satisfy the Continuum Hypothesis and its negation."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gunther]
+email = "gunther_email"
+
+[authors.pagano]
+homepage = "pagano_homepage"
+
+[authors.terraf]
+homepage = "terraf_homepage"
+
+[authors.steinberg]
+email = "steinberg_email"
+
+[contributors]
+
+[notify]
+terraf = "terraf_email"
+pagano = "pagano_email"
+
+[history]
+
+[extra]

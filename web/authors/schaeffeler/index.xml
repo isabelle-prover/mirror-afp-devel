@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>schaeffeler on Archive of Formal Proofs</title>
+    <link>/authors/schaeffeler/</link>
+    <description>Recent content in schaeffeler on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 16 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/schaeffeler/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Markov Decision Processes with Rewards</title>
+      <link>/entries/MDP-Rewards.html</link>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MDP-Rewards.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Algorithms for Solving Markov Decision Processes</title>
+      <link>/entries/MDP-Algorithms.html</link>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MDP-Algorithms.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

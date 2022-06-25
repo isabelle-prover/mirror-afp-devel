@@ -64,7 +64,7 @@ text \<open> The following C examples or entry-points of documentation can be ex
 \<^item> \<^verbatim>\<open>isabelle jedit -d\<close> \<^dir>\<open>.\<close> \<^file>\<open>C11-FrontEnd/examples/C0.thy\<close>
 \<^item> \<^verbatim>\<open>isabelle jedit -d\<close> \<^dir>\<open>.\<close> \<^file>\<open>C11-FrontEnd/examples/C2.thy\<close>
 \<^item> \<^verbatim>\<open>isabelle jedit -d\<close> \<^dir>\<open>.\<close> \<^file>\<open>C11-FrontEnd/examples/C1.thy\<close>
-\<^item> \<^verbatim>\<open>isabelle jedit -d\<close> \<^dir>\<open>.\<close> \<^file>\<open>C11-FrontEnd/C_Appendices.thy\<close>
+\<^item> \<^verbatim>\<open>isabelle jedit -d\<close> \<^dir>\<open>.\<close> \<^file>\<open>C11-FrontEnd/appendices/C_Appendices.thy\<close>
 \<close>
 
 text \<open>
@@ -74,7 +74,7 @@ demonstrate the faithfulness of the C11 parser implementation.
 C editing support in PIDE; it also contains annotation commands without any semantics.
 \<^item> The example \<^file>\<open>C11-FrontEnd/examples/C1.thy\<close> is a show-case for markup
 generation and the use of bindings resulting from the static C environment.
-\<^item> The example \<^file>\<open>C11-FrontEnd/C_Appendices.thy\<close> shows the use of
+\<^item> The example \<^file>\<open>C11-FrontEnd/appendices/C_Appendices.thy\<close> shows the use of
 Isabelle/C documentation facilities.
 \<close>
 

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Open_Induction on Archive of Formal Proofs</title>
+    <link>/dependencies/open_induction/</link>
+    <description>Recent content in Open_Induction on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 23 Nov 2018 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/open_induction/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Verified Functional Implementation of Bachmair and Ganzinger&#39;s Ordered Resolution Prover</title>
+      <link>/entries/Functional_Ordered_Resolution_Prover.html</link>
+      <pubDate>Fri, 23 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Functional_Ordered_Resolution_Prover.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Decreasing Diagrams II</title>
+      <link>/entries/Decreasing-Diagrams-II.html</link>
+      <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Decreasing-Diagrams-II.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Well-Quasi-Orders</title>
+      <link>/entries/Well_Quasi_Orders.html</link>
+      <pubDate>Fri, 13 Apr 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Well_Quasi_Orders.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Myhill-Nerode Theorem Based on Regular Expressions</title>
+      <link>/entries/Myhill-Nerode.html</link>
+      <pubDate>Fri, 26 Aug 2011 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Myhill-Nerode.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

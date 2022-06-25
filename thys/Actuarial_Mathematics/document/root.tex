@@ -1,0 +1,70 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Actuarial Mathematics}
+\author{Yosuke Ito}
+\maketitle
+
+\begin{abstract}
+  Actuarial Mathematics is a theory in applied mathematics,
+  which is mainly used for determining the prices of insurance products
+  and evaluating the liability of a company associating with insurance contracts.
+  It is related to calculus, probability theory and financial theory, etc.
+
+  In this entry, I formalize the very basic part of Actuarial Mathematics in Isabelle/HOL.
+  The first formalization is about the theory of interest
+  which deals with interest rates, present value factors, an annuity certain, etc.
+
+  I have already formalized the basic part of Actuarial Mathematics in Coq
+  (https://github.com/Yosuke-Ito-345/Actuary).
+  This entry is currently the partial translation and
+  a little generalization of the Coq formalization.
+  The further translation in Isabelle/HOL is now proceeding.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

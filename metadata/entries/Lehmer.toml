@@ -1,0 +1,30 @@
+title = "Lehmer's Theorem"
+date = 2013-07-22
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+In 1927, Lehmer presented criterions for primality, based on the converse of Fermat's litte theorem. This work formalizes the second criterion from Lehmer's paper, a necessary and sufficient condition for primality.
+<p>
+As a side product we formalize some properties of Euler's phi-function,
+the notion of the order of an element of a group, and the cyclicity of the multiplicative group of a finite field."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.wimmer]
+email = "wimmer_email"
+
+[authors.noschinski]
+homepage = "noschinski_homepage"
+
+[contributors]
+
+[notify]
+noschinski = "noschinski_email"
+wimmer = "wimmer_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,41 @@
+title = "The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency"
+date = 2018-03-22
+topics = [
+  "Mathematics/Games and economics",
+]
+abstract = """
+<p>This formalisation contains the proof that there is no
+anonymous Social Choice Function for at least three agents and
+alternatives that fulfils both Pareto-Efficiency and
+Fishburn-Strategyproofness. It was derived from a proof of <a
+href=\"http://dss.in.tum.de/files/brandt-research/stratset.pdf\">Brandt
+<em>et al.</em></a>, which relies on an unverified
+translation of a fixed finite instance of the original problem to SAT.
+This Isabelle proof contains a machine-checked version of both the
+statement for exactly three agents and alternatives and the lifting to
+the general case.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brandt]
+homepage = "brandt_homepage"
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[authors.saile]
+homepage = "saile_homepage"
+
+[authors.stricker]
+homepage = "stricker_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,60 @@
+{
+    "baseURL": "/",
+    "languageCode": "en-gb",
+    "title": "Archive of Formal Proofs",
+    "theme": "afp",
+    "publishDir": "..",
+    "taxonomies": {
+        "author": "authors",
+        "topic": "topics",
+        "dependency": "dependencies"
+    },
+    "params": {
+        "description": "A collection of proof libraries, examples, and larger scientific developments, mechanically checked in the theorem prover Isabelle.",
+        "images": [
+            "/images/afp.png"
+        ],
+        "title": "Archive of Formal Proofs",
+        "mainSections": ["entries"],
+        "afpUrls": {
+          "html": "https://www.isa-afp.org/browser_info/current/AFP",
+          "htmlDevel": "https://devel.isa-afp.org/browser_info/current/AFP"
+        }
+    },
+    "markup": {
+        "goldmark": {
+            "renderer": {
+                "unsafe": true
+            }
+        }
+    },
+    "menu": {
+        "main": [
+           {
+              "name": "Topics",
+              "url": "/topics/",
+              "weight": 2
+           }
+        ]
+    },
+    "outputs": {
+        "home": ["html", "rss", "json"],
+        "taxonomyTerm": ["html", "json"]
+    },
+    "related": {
+        "includeNewer": true,
+        "indices": [
+            {
+              "name": "topics",
+              "weight": 1
+            },
+            {
+              "name": "keywords",
+              "weight": 3
+            }
+        ],
+        "threshold": 80,
+        "toLower": true
+    },
+    "relativeURLs": true
+}

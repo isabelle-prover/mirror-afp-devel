@@ -1,0 +1,37 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{pdfsetup}
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Finite Fields}
+\author{Emin Karayel}
+\maketitle
+
+\abstract{This entry formalizes the classification of the finite fields (also called Galois fields):
+For each prime power $p^n$ there exists exactly one (up to isomorphisms) finite field of that size
+and there are no other finite fields.
+The derivation includes a formalization of the characteristic of rings, the Frobenius endomorphism, 
+formal differentiation for polynomials in HOL-Algebra and Gauss' formula for the number of
+monic irreducible polynomials over finite fields:
+\[
+\frac{1}{n} \sum_{d | n} \mu(d) p^{n/d} \textrm{.}
+\]
+The proofs are based on the books from Ireland and Rosen~\cite{ireland1982}, as well as,
+Lidl and Niederreiter~\cite{lidl1986}.
+}
+  
+\parindent 0pt\parskip 0.5ex
+
+\tableofcontents
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

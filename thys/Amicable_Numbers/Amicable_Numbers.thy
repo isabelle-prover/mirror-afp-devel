@@ -243,7 +243,7 @@ image_iff le_zero_eq power_add power_one_right prime_power_inj sum.insert zero_n
   have B: "(\<Sum> i\<le>k.( m^i)) = ( m^Suc k -(1::nat)) /(m-(1::nat))"
 
     using assms \<open>m > 1\<close> Set_Interval.geometric_sum  [of m "Suc k"]
-    apply (simp add: )
+    apply simp
     by (metis One_nat_def lessThan_Suc_atMost nat_one_le_power of_nat_1 of_nat_diff of_nat_mult
 of_nat_power one_le_mult_iff prime_ge_Suc_0_nat sum.lessThan_Suc)
   show ?thesis using A B assms

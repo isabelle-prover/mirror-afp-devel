@@ -1,0 +1,24 @@
+title = "Concurrent IMP"
+date = 2015-04-13
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = """
+ConcurrentIMP extends the small imperative language IMP with control
+non-determinism and constructs for synchronous message passing."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gammie]
+homepage = "gammie_homepage"
+
+[contributors]
+
+[notify]
+gammie = "gammie_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,19 @@
+{{ define "main" }}
+
+
+<table class="entries">
+  <tbody>
+    <tr>
+      <td>
+        <ul>
+          {{ range .Data.Pages.ByTitle }}
+          <li><a href="{{ .Permalink }}">{{ (index (index .Site.Data.authors .Name) "name") }}</a></li>
+          {{ end }}
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+{{ end }}

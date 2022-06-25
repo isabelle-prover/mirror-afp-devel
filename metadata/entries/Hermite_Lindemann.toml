@@ -1,0 +1,47 @@
+title = "The Hermite–Lindemann–Weierstraß Transcendence Theorem"
+date = 2021-03-03
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This article provides a formalisation of the
+Hermite-Lindemann-Weierstraß Theorem (also known as simply
+Hermite-Lindemann or Lindemann-Weierstraß). This theorem is one of the
+crowning achievements of 19th century number theory.</p>
+<p>The theorem states that if $\\alpha_1, \\ldots,
+\\alpha_n\\in\\mathbb{C}$ are algebraic numbers that are linearly
+independent over $\\mathbb{Z}$, then $e^{\\alpha_1},\\ldots,e^{\\alpha_n}$
+are algebraically independent over $\\mathbb{Q}$.</p>
+<p>Like the <a
+href=\"https://doi.org/10.1007/978-3-319-66107-0_5\">previous
+formalisation in Coq by Bernard</a>, I proceeded by formalising
+<a
+href=\"https://doi.org/10.1017/CBO9780511565977\">Baker's
+version of the theorem and proof</a> and then deriving the
+original one from that. Baker's version states that for any
+algebraic numbers $\\beta_1, \\ldots, \\beta_n\\in\\mathbb{C}$ and distinct
+algebraic numbers $\\alpha_i, \\ldots, \\alpha_n\\in\\mathbb{C}$, we have
+$\\beta_1 e^{\\alpha_1} + \\ldots + \\beta_n e^{\\alpha_n} = 0$ if and only
+if all the $\\beta_i$ are zero.</p> <p>This has a number of
+direct corollaries, e.g.:</p> <ul> <li>$e$ and $\\pi$
+are transcendental</li> <li>$e^z$, $\\sin z$, $\\tan z$,
+etc. are transcendental for algebraic
+$z\\in\\mathbb{C}\\setminus\\{0\\}$</li> <li>$\\ln z$ is
+transcendental for algebraic $z\\in\\mathbb{C}\\setminus\\{0,
+1\\}$</li> </ul>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

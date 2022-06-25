@@ -1,0 +1,27 @@
+title = "IDE: Introduction, Destruction, Elimination"
+date = 2021-09-06
+topics = [
+  "Tools",
+]
+abstract = """
+The article provides the command <b>mk_ide</b> for the
+object logic Isabelle/HOL of the formal proof assistant Isabelle. The
+command <b>mk_ide</b> enables the automated synthesis of
+the introduction, destruction and elimination rules from arbitrary
+definitions of constant predicates stated in Isabelle/HOL."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.milehins]
+email = "milehins_email"
+
+[contributors]
+
+[notify]
+milehins = "milehins_email"
+
+[history]
+
+[extra]

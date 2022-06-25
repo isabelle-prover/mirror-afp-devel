@@ -1,0 +1,36 @@
+title = "Taylor Models"
+date = 2018-01-08
+topics = [
+  "Computer science/Algorithms/Mathematical",
+  "Computer science/Data structures",
+  "Mathematics/Analysis",
+  "Mathematics/Algebra",
+]
+abstract = """
+We present a formally verified implementation of multivariate Taylor
+models. Taylor models are a form of rigorous polynomial approximation,
+consisting of an approximation polynomial based on Taylor expansions,
+combined with a rigorous bound on the approximation error. Taylor
+models were introduced as a tool to mitigate the dependency problem of
+interval arithmetic. Our implementation automatically computes Taylor
+models for the class of elementary functions, expressed by composition
+of arithmetic operations and basic functions like exp, sin, or square
+root."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.traut]
+
+[authors.immler]
+homepage = "immler_homepage"
+
+[contributors]
+
+[notify]
+immler = "immler_email"
+
+[history]
+
+[extra]

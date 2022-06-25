@@ -1,0 +1,38 @@
+title = "Relation Algebra"
+date = 2014-01-25
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+Tarski's algebra of binary relations is formalised along the lines of
+the standard textbooks of Maddux and Schmidt and Ströhlein. This
+includes relation-algebraic concepts such as subidentities, vectors and
+a domain operation as well as various notions associated to functions.
+Relation algebras are also expanded by a reflexive transitive closure
+operation, and they are linked with Kleene algebras and models of binary
+relations and Boolean matrices."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.armstrong]
+
+[authors.fosters]
+email = "fosters_email"
+
+[authors.struth]
+homepage = "struth_homepage"
+
+[authors.weber]
+homepage = "weber_homepage"
+
+[contributors]
+
+[notify]
+struth = "struth_email"
+weber = "weber_email"
+
+[history]
+
+[extra]

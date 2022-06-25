@@ -885,14 +885,14 @@ lemma sorted_distinct_imp_sorted_wrt:
 
 
 lemma sorted_map_strict:
-  assumes "strict_mono_on g {0..<n}"
+  assumes "strict_mono_on {0..<n} g"
   shows "sorted (map g [0..<n])"
   using assms
   by (induct n, auto simp add: sorted_append strict_mono_on_def less_imp_le)
 
 
 lemma sorted_list_of_set_map_strict:
-  assumes "strict_mono_on g {0..<n}"
+  assumes "strict_mono_on {0..<n} g"
   shows "sorted_list_of_set (g ` {0..<n}) = map g [0..<n]"
   using assms
   proof (induct n)
@@ -901,7 +901,7 @@ lemma sorted_list_of_set_map_strict:
 next
   case (Suc n)
   note sg = Suc.prems
-  have sg_n: "strict_mono_on g {0..<n}" using sg unfolding strict_mono_on_def by auto
+  have sg_n: "strict_mono_on {0..<n} g" using sg unfolding strict_mono_on_def by auto
   have g_image_rw: "g ` {0..<Suc n} = insert (g n) (g ` {0..<n})"
     by (simp add: set_upt_Suc)
   have "sorted_list_of_set (g ` {0..<Suc n}) = sorted_list_of_set (insert (g n) (g ` {0..<n}))"

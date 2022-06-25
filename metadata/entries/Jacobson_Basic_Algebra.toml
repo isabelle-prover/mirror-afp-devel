@@ -1,0 +1,28 @@
+title = "A Case Study in Basic Algebra"
+date = 2019-08-30
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+The focus of this case study is re-use in abstract algebra.  It
+contains locale-based formalisations of selected parts of set, group
+and ring theory from Jacobson's <i>Basic Algebra</i>
+leading to the respective fundamental homomorphism theorems.  The
+study is not intended as a library base for abstract algebra.  It
+rather explores an approach towards abstract algebra in Isabelle."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ballarin]
+homepage = "ballarin_homepage"
+
+[contributors]
+
+[notify]
+ballarin = "ballarin_email"
+
+[history]
+
+[extra]

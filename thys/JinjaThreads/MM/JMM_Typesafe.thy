@@ -324,7 +324,7 @@ proof -
       apply(simp add: w_sum)
       apply(subst llength_lconcat_lfinite_conv_sum)
       apply(simp_all add: split_beta plus_enat_simps(1)[symmetric] add_Suc_right[symmetric] del: plus_enat_simps(1) add_Suc_right)
-      apply(subst sum_hom[symmetric, where f=enat])
+      apply(subst sum_comp_morphism[symmetric, where h=enat])
       apply(simp_all add: zero_enat_def min_def le_Suc_eq)
       apply(rule sum.cong)
       apply(auto simp add: lnth_ltake less_trans[where y="enat m_w"])

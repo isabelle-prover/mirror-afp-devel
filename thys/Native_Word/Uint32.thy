@@ -5,7 +5,8 @@
 chapter \<open>Unsigned words of 32 bits\<close>
 
 theory Uint32 imports
-  Code_Target_Word_Base Word_Type_Copies
+  Word_Type_Copies
+  Code_Target_Integer_Bit
 begin
 
 section \<open>Type definition and primitive operations\<close>
@@ -293,7 +294,7 @@ lemma Uint32_code [code]:
 lemma Uint32_signed_code [code]:
   "Rep_uint32 (Uint32_signed i) = 
   (if i < -(0x80000000) \<or> i \<ge> 0x80000000 then Rep_uint32 (undefined Uint32 i) else word_of_int (int_of_integer_symbolic i))"
-unfolding Uint32_signed_def Uint32_def int_of_integer_symbolic_def word_of_integer_def
+unfolding Uint32_signed_def Uint32_def int_of_integer_symbolic_def 
 by(simp add: Abs_uint32_inverse)
 
 end

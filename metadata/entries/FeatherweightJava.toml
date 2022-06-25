@@ -1,0 +1,25 @@
+title = "A Theory of Featherweight Java in Isabelle/HOL"
+date = 2006-03-31
+topics = [
+  "Computer science/Programming languages/Language definitions",
+]
+abstract = "We formalize the type system, small-step operational semantics, and type soundness proof for Featherweight Java, a simple object calculus, in Isabelle/HOL."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.fosterj]
+homepage = "fosterj_homepage"
+
+[authors.vytiniotis]
+homepage = "vytiniotis_homepage"
+
+[contributors]
+
+[notify]
+klein = "klein_email"
+
+[history]
+
+[extra]

@@ -618,7 +618,7 @@ tts_lemma topological_basisE:
     and "x \<in> O'"
     and "\<And>B'. \<lbrakk>B' \<subseteq> U; B' \<in> B; x \<in> B'; B' \<subseteq> O'\<rbrakk> \<Longrightarrow> thesis"
   shows thesis
-is topological_space_class.topological_basisE.
+    is topological_space_class.topological_basisE.
     
 tts_lemma islimptE:
   assumes "x \<in> U"
@@ -1076,7 +1076,7 @@ begin
 
 tts_lemma Heine_Borel_imp_Bolzano_Weierstrass:
   assumes "s \<subseteq> U"
-    and "local.compact s"
+    and "compact s"
     and "infinite t"
     and "t \<subseteq> s"
   shows "\<exists>x\<in>s. x \<guillemotleft>islimpt\<guillemotright> t"

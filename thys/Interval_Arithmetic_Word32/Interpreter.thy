@@ -7,7 +7,7 @@ Our language is a version of first order dynamic logic-style regular programs.
 We use a finite identifier space for compatibility with Differential-Dynamic-Logic, where identifier
 finiteness is required to treat program states as Banach spaces to enable differentiation.
 \<close>
-(* Author:     Brandon Bohrer *)
+(* Author:     Rose Bohrer *)
 theory Interpreter
 imports
   Complex_Main

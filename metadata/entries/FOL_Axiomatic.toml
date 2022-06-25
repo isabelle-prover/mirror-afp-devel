@@ -1,0 +1,32 @@
+title = "Soundness and Completeness of an Axiomatic System for First-Order Logic"
+date = 2021-09-24
+topics = [
+  "Logic/General logic/Classical first-order logic",
+  "Logic/Proof theory",
+]
+abstract = """
+This work is a formalization of the soundness and completeness of an
+axiomatic system for first-order logic. The proof system is based on
+System Q1 by Smullyan and the completeness proof follows his textbook
+\"First-Order Logic\" (Springer-Verlag 1968). The completeness
+proof is in the Henkin style where a consistent set is extended to a
+maximal consistent set using Lindenbaum's construction and Henkin
+witnesses are added during the construction to ensure saturation as
+well. The resulting set is a Hintikka set which, by the model
+existence theorem, is satisfiable in the Herbrand universe."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.from]
+homepage = "from_homepage"
+
+[contributors]
+
+[notify]
+from = "from_email"
+
+[history]
+
+[extra]

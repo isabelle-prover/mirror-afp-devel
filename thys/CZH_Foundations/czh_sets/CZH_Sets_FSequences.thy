@@ -99,6 +99,16 @@ lemma vfsequence_vcpower:
   shows "vfsequence xs"
   using assms vfsequence_vproduct by auto
 
+lemma vfsequence_vcomp_vsv_vfsequence:
+  assumes "vsv f" and "vfsequence xs" and "\<R>\<^sub>\<circ> xs \<subseteq>\<^sub>\<circ> \<D>\<^sub>\<circ> f"
+  shows "vfsequence (f \<circ>\<^sub>\<circ> xs)"
+proof(intro vfsequenceI vsv_vcomp)
+  interpret xs: vfsequence xs by (rule assms(2))
+  show "\<D>\<^sub>\<circ> (f \<circ>\<^sub>\<circ> xs) \<in>\<^sub>\<circ> \<omega>"
+    unfolding vdomain_vcomp_vsubset[OF assms(3)]
+    by (force simp: xs.vfsequence_vdomain_in_omega)
+qed (auto intro: assms)
+
 
 text\<open>Special properties.\<close>
 
@@ -757,6 +767,17 @@ end
 
 text\<open>Corollaries.\<close>
 
+lemma vdomain_vfsequence_of_vlist: "\<D>\<^sub>\<circ> (vfsequence_of_vlist xs) = length xs"
+proof-
+  define ys where "ys = vfsequence_of_vlist xs"
+  interpret vfsequence ys
+    unfolding ys_def by (rule vfsequence_vfsequence_of_vlist)
+  have [transfer_rule]: "cr_vfsequence ys xs"  
+    unfolding ys_def cr_vfsequence_def by simp_all
+  show ?thesis
+    by (fold ys_def, unfold vfsequence_vdomain, transfer) simp
+qed
+
 lemma vrange_vfsequence_of_vlist: 
   "\<R>\<^sub>\<circ> (vfsequence_of_vlist xs) = set (list.set xs)"
 proof(intro vsubset_antisym vsubsetI)
@@ -1373,6 +1394,71 @@ proof-
     by (metis ord_of_nat_succ_vempty succ_inject_iff xs'.vfsequence_vcard_vcons)
   then have "xs = [x]\<^sub>\<circ>" unfolding xs_def by (simp add: vcard_vempty)
   with x that show ?thesis by simp
+qed
+
+
+
+subsection\<open>The set of all finite sequences on a set\<close>
+
+
+subsubsection\<open>Definition and elementary properties\<close>
+
+definition vfsequences_on :: "V \<Rightarrow> V"
+  where "vfsequences_on X = set {x. vfsequence x \<and> (\<forall>i\<in>\<^sub>\<circ>\<D>\<^sub>\<circ> x. x\<lparr>i\<rparr> \<in>\<^sub>\<circ> X)}"
+
+lemma vfsequences_on_subset_\<omega>_set:
+  "{x. vfsequence x \<and> (\<forall>i\<in>elts (\<D>\<^sub>\<circ> x). x\<lparr>i\<rparr> \<in>\<^sub>\<circ> X)} \<subseteq> elts (VPow (\<omega> \<times>\<^sub>\<circ> X))"
+proof
+  (
+    intro subsetI, 
+    unfold mem_Collect_eq VPow_iff, 
+    elim conjE, 
+    intro vsubsetI
+  )
+  fix xs nx
+  assume prems[rule_format]: 
+    "vfsequence xs"
+    "\<forall>i\<in>\<^sub>\<circ>\<D>\<^sub>\<circ> xs. xs\<lparr>i\<rparr> \<in>\<^sub>\<circ> X"
+    "nx \<in>\<^sub>\<circ> xs"
+  interpret vfsequence xs by (rule prems(1))
+  from prems(3) vbrelation obtain n x where nx_def: "nx = \<langle>n, x\<rangle>" by auto
+  from vsv_appI[OF prems(3)[unfolded this]] have xsn: "xs\<lparr>n\<rparr> = x" . 
+  from prems(3) nx_def have "n \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> xs" by auto
+  with prems(2) show "nx \<in>\<^sub>\<circ> \<omega> \<times>\<^sub>\<circ> X"
+    by (auto simp: nx_def xsn[symmetric] Ord_trans vfsequence_vdomain_in_omega)
+qed
+
+lemma small_vfsequences_on[simp]: 
+  "small {x. vfsequence x \<and> (\<forall>i\<in>\<^sub>\<circ>\<D>\<^sub>\<circ> x. x\<lparr>i\<rparr> \<in>\<^sub>\<circ> X)}"
+  by (rule down, rule vfsequences_on_subset_\<omega>_set)
+
+
+text\<open>Rules.\<close>
+
+lemma vfsequences_onI:
+  assumes "vfsequence xs" and "\<And>i. i \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> xs \<Longrightarrow> xs\<lparr>i\<rparr> \<in>\<^sub>\<circ> X"
+  shows "xs \<in>\<^sub>\<circ> vfsequences_on X"
+  using assms unfolding vfsequences_on_def by simp
+
+lemma vfsequences_onD[dest]:
+  assumes "xs \<in>\<^sub>\<circ> vfsequences_on X"
+  shows "vfsequence xs" and "\<And>i. i \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> xs \<Longrightarrow> xs\<lparr>i\<rparr> \<in>\<^sub>\<circ> X"
+  using assms unfolding vfsequences_on_def by auto
+
+lemma vfsequences_onE[elim]:
+  assumes "xs \<in>\<^sub>\<circ> vfsequences_on X"
+  obtains "vfsequence xs" and "\<And>i. i \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> xs \<Longrightarrow> xs\<lparr>i\<rparr> \<in>\<^sub>\<circ> X"
+  using assms unfolding vfsequences_on_def by auto
+
+
+subsubsection\<open>Further properties\<close>
+
+lemma vfsequences_on_vsubset_mono: 
+  assumes "A \<subseteq>\<^sub>\<circ> B "
+  shows "vfsequences_on A \<subseteq>\<^sub>\<circ> vfsequences_on B"
+proof(intro vsubsetI vfsequences_onI; elim vfsequences_onE)
+  fix i xs assume prems: "i \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> xs" "\<And>i. i \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> xs \<Longrightarrow> xs\<lparr>i\<rparr> \<in>\<^sub>\<circ> A"
+  from assms prems(2)[OF prems(1)] show "xs\<lparr>i\<rparr> \<in>\<^sub>\<circ> B" by auto
 qed
 
 text\<open>\newpage\<close>

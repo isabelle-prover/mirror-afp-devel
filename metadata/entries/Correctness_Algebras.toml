@@ -1,0 +1,34 @@
+title = "Algebras for Iteration, Infinite Executions and Correctness of Sequential Computations"
+date = 2021-10-12
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = """
+We study models of state-based non-deterministic sequential
+computations and describe them using algebras. We propose algebras
+that describe iteration for strict and non-strict computations. They
+unify computation models which differ in the fixpoints used to
+represent iteration. We propose algebras that describe the infinite
+executions of a computation. They lead to a unified approximation
+order and results that connect fixpoints in the approximation and
+refinement orders. This unifies the semantics of recursion for a range
+of computation models. We propose algebras that describe preconditions
+and the effect of while-programs under postconditions. They unify
+correctness statements in two dimensions: one statement applies in
+various computation models to various correctness claims."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.guttmann]
+homepage = "guttmann_homepage"
+
+[contributors]
+
+[notify]
+guttmann = "guttmann_email"
+
+[history]
+
+[extra]

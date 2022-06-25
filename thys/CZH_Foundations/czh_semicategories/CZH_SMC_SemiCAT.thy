@@ -200,7 +200,7 @@ proof
       by 
         (
           simp add: 
-            smcf_0_is_semifunctor semicategory_axioms is_ft_semifunctor.axioms(1)
+            smcf_0_is_ft_semifunctor semicategory_axioms is_ft_semifunctor.axioms(1)
         )
     fix \<FF> assume prems: "\<FF> : smc_0 \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> \<AA>" 
     then interpret \<FF>: is_semifunctor \<alpha> smc_0 \<AA> \<FF> .
@@ -456,9 +456,9 @@ proof
           by (metis \<BB>.smc_is_arrD(3) is_arr_def vsingleton_iff)
       qed (auto simp: g)
       then have "smcf_const \<BB> \<BB> a f\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = f" 
-        by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)       
+        by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)       
       moreover from g have "smcf_id \<BB>\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> = g"
-        by (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros)       
+        by (cs_concl cs_shallow cs_simp: smc_cs_simps cs_intro: smc_cs_intros)       
       ultimately show False using const_eq_id by (simp add: gf)
     qed
     with f_ss_\<BB> have "\<BB>\<lparr>Arr\<rparr> = set {f}" by simp

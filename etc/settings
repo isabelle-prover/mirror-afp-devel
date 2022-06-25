@@ -8,4 +8,6 @@ isabelle_directory '$AFP'
 
 AFP_BUILD_OPTIONS='-v -o browser_info -o "document=pdf" -o "document_variants=document:outline=/proof,/ML"'
 
-ISABELLE_TOOLS="$ISABELLE_TOOLS:$AFP_BASE/tools"
+ISABELLE_TOOLS="$ISABELLE_TOOLS:$AFP_BASE/tools/lib"
+
+init_components "$ISABELLE_HOME_USER/contrib" "$AFP_BASE/admin/components/afp"

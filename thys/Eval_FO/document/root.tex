@@ -1,0 +1,70 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{a4wide}
+\usepackage[english]{babel}
+\usepackage{eufrak}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{literal}
+
+
+\begin{document}
+
+\title{First-Order Query Evaluation}
+\author{Martin Raszyk}
+
+\maketitle
+
+\begin{abstract}
+We formalize first-order query evaluation over an infinite domain with equality.
+We first define the syntax and semantics of first-order logic with equality.
+Next we define a locale $\mathit{eval\_fo}$ abstracting a representation of a
+potentially infinite set of tuples satisfying a first-order query over finite
+relations. Inside the locale, we define a function $\mathit{eval}$ checking if
+the set of tuples satisfying a first-order query over a database (an
+interpretation of the query's predicates) is finite (i.e., deciding
+\emph{relative safety}) and computing the set of satisfying tuples if it is
+finite. Altogether the function $\mathit{eval}$ solves
+\emph{capturability}~\cite{DBLP:conf/lics/AvronH91} of first-order logic with
+equality. We also use the function $\mathit{eval}$ to prove a code equation for
+the semantics of first-order logic, i.e., the function checking if a first-order
+query over a database is satisfied by a variable assignment.
+
+We provide an interpretation of the locale $\mathit{eval\_fo}$ based on the
+approach by Ailamazyan et al.~\cite{AGSS86}. A core notion in the interpretation
+is the active domain of a query and a database that contains all domain elements
+that occur in the database or interpret the query's constants. We prove the main
+theorem of Ailamazyan et al.~\cite{AGSS86} relating the satisfaction of a
+first-order query over an infinite domain to the satisfaction of this query over
+a finite domain consisting of the active domain and a few additional domain
+elements (outside the active domain) whose number only depends on the query. In
+our interpretation of the locale $\mathit{eval\_fo}$, we use a potentially
+higher number of the additional domain elements, but their number still only
+depends on the query and thus has no effect on the data
+complexity~\cite{DBLP:conf/stoc/Vardi82} of query evaluation. Our interpretation
+yields an \emph{executable} function $\mathit{eval}$. The time complexity of
+$\mathit{eval}$ on a query is linear in the total number of tuples in the
+intermediate relations for the subqueries. Specifically, we build a database
+index to evaluate a conjunction. We also optimize the case of a negated subquery
+in a conjunction. Finally, we export code for the infinite domain of natural
+numbers.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

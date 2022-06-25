@@ -1,0 +1,11 @@
+chapter AFP
+
+session Median_Method (AFP) = "HOL-Probability" +
+  options [timeout = 300]
+  sessions
+    "HOL-Library"
+  theories
+    Median
+  document_files
+    "root.tex"
+    "root.bib"

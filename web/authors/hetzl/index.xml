@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hetzl on Archive of Formal Proofs</title>
+    <link>/authors/hetzl/</link>
+    <description>Recent content in hetzl on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 15 Sep 2014 00:00:00 +0000</lastBuildDate><atom:link href="/authors/hetzl/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Cayley-Hamilton Theorem</title>
+      <link>/entries/Cayley_Hamilton.html</link>
+      <pubDate>Mon, 15 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Cayley_Hamilton.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bondy&#39;s Theorem</title>
+      <link>/entries/Bondy.html</link>
+      <pubDate>Sat, 27 Oct 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Bondy.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

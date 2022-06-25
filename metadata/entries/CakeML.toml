@@ -1,0 +1,32 @@
+title = "CakeML"
+date = 2018-03-12
+topics = [
+  "Computer science/Programming languages/Language definitions",
+]
+abstract = """
+CakeML is a functional programming language with a proven-correct
+compiler and runtime system. This entry contains an unofficial version
+of the CakeML semantics that has been exported from the Lem
+specifications to Isabelle. Additionally, there are some hand-written
+theory files that adapt the exported code to Isabelle and port proofs
+from the HOL4 formalization, e.g. termination and equivalence proofs."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hupel]
+homepage = "hupel_homepage"
+
+[authors.zhang]
+
+[contributors]
+
+[contributors.pohjola]
+
+[notify]
+hupel = "hupel_email"
+
+[history]
+
+[extra]

@@ -40,7 +40,7 @@ proof (cases "(a \<le> b \<and> poly p a = 0 \<and> p \<noteq> 0) \<or> (a = b \
         with True False have "card {x. a < x \<and> x \<le> b} = 0" "card {x. a \<le> x \<and> x \<le> b} = 0"
           by (auto simp add: card_eq_0_iff infinite_Ioc infinite_Icc)
         with True False show ?thesis
-            using count_roots_between_correct by (simp add: )
+            using count_roots_between_correct by simp
     qed
 next
   case True

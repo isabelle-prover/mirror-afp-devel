@@ -1,0 +1,31 @@
+title = "Trie"
+date = 2015-03-30
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+This article formalizes the ``trie'' data structure invented by
+Fredkin [CACM 1960]. It also provides a specialization where the entries
+in the trie are lists."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochbihler]
+homepage = "lochbihler_homepage"
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+extra-0 = """
+
+Origin: This article was extracted from existing articles by the authors."""

@@ -37,7 +37,7 @@
 chapter \<open>Appendix III: Examples for the SML Interfaces to Generic and Specific C11 ASTs\<close>
 
 theory C1
-  imports "../C_Main"
+  imports "../main/C_Main"
 begin
 
 section\<open>Access to Main C11 AST Categories via the Standard Interface \<close>
@@ -71,7 +71,7 @@ declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "expression"]]
 ML\<open>
 val src = \<open>a + d\<close>;
 val ctxt = (Context.Theory @{theory});
-val ctxt' = C_Module.C' @{C\<^sub>e\<^sub>n\<^sub>v} src ctxt;
+val ctxt' = C_Module.C' (SOME @{C\<^sub>e\<^sub>n\<^sub>v}) src ctxt;
 val tt  = Context.the_theory ctxt';
 \<close>
 
@@ -147,9 +147,11 @@ text\<open>The following setup just stores the result of the parsed values in th
 
 ML\<open>
 structure Data_Out = Generic_Data
-  (type T = (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list
-   val empty = []
-   val merge = K empty)
+(
+  type T = (C_Grammar_Rule.ast_generic * C_Antiquote.antiq C_Env.stream) list
+  val empty = []
+  val merge = K empty
+)
 
 fun get_CTranslUnit thy =
   let val context = Context.Theory thy
@@ -233,9 +235,11 @@ its definition in its environment. \<close>
 
 ML \<open>
 structure Directive_include = Generic_Data
-  (type T = (Input.source * C_Env.markup_ident) list Symtab.table
-   val empty = Symtab.empty
-   val merge = K empty)
+(
+  type T = (Input.source * C_Env.markup_ident) list Symtab.table
+  val empty = Symtab.empty
+  val merge = K empty
+)
 \<close>
 
 ML \<comment> \<open>\<^theory>\<open>Pure\<close>\<close> \<open>
@@ -270,7 +274,7 @@ val _ =
                            end)
                          (these (Symtab.lookup (Directive_include.get (#context env_tree))
                                                (String.concat
-                                                 (maps (fn C_Scan.Left s => [s] | _ => []) file))))
+                                                 (maps (fn C_Scan.Left (s, _) => [s] | _ => []) file))))
                          (env_lang, env_tree)
                in
                  case tok of
@@ -635,8 +639,6 @@ void display(int a[],const int size)
 
 
 section \<open>C Code: Floats Exist\<close>
-
-declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
 
 C\<open>
 int a;

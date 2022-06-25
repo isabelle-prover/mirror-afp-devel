@@ -1,0 +1,36 @@
+title = "Farkas' Lemma and Motzkin's Transposition Theorem"
+date = 2019-01-17
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+We formalize a proof of Motzkin's transposition theorem and
+Farkas' lemma in Isabelle/HOL. Our proof is based on the
+formalization of the simplex algorithm which, given a set of linear
+constraints, either returns a satisfying assignment to the problem or
+detects unsatisfiability. By reusing facts about the simplex algorithm
+we show that a set of linear constraints is unsatisfiable if and only
+if there is a linear combination of the constraints which evaluates to
+a trivially unsatisfiable inequality."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bottesch]
+homepage = "bottesch_homepage"
+
+[authors.haslbeck]
+homepage = "haslbeck_homepage"
+
+[authors.thiemann]
+homepage = "thiemann_homepage"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

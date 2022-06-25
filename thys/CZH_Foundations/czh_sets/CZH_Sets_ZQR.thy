@@ -817,8 +817,8 @@ qed
 text\<open>Unary minus.\<close>
 
 global_interpretation vreal_uminus: v11 vreal_uminus
-  rewrites "\<D>\<^sub>\<circ> vreal_uminus = \<real>\<^sub>\<circ>"
-    and "\<R>\<^sub>\<circ> vreal_uminus = \<real>\<^sub>\<circ>"
+  rewrites vreal_uminus_vdomain[simp]: "\<D>\<^sub>\<circ> vreal_uminus = \<real>\<^sub>\<circ>"
+    and vreal_uminus_vrange[simp]: "\<R>\<^sub>\<circ> vreal_uminus = \<real>\<^sub>\<circ>"
 proof-
   show v11: "v11 vreal_uminus" 
   proof(intro v11I)
@@ -894,8 +894,8 @@ qed
 text\<open>Multiplicative inverse.\<close>
 
 global_interpretation vreal_inverse: v11 vreal_inverse
-  rewrites "\<D>\<^sub>\<circ> vreal_inverse = \<real>\<^sub>\<circ>"
-    and "\<R>\<^sub>\<circ> vreal_inverse = \<real>\<^sub>\<circ>"
+  rewrites vreal_inverse_vdomain[simp]: "\<D>\<^sub>\<circ> vreal_inverse = \<real>\<^sub>\<circ>"
+    and vreal_inverse_vrange[simp]: "\<R>\<^sub>\<circ> vreal_inverse = \<real>\<^sub>\<circ>"
 proof-
   show v11: "v11 vreal_inverse" 
   proof(intro v11I)
@@ -1130,8 +1130,7 @@ abbreviation vint_minus_app (infixl "-\<^sub>\<int>" 65)
 
 lemma vint_minus_transfer[transfer_rule]: 
   includes lifting_syntax
-  shows "(cr_vint ===> cr_vint ===> cr_vint) 
-    (-\<^sub>\<int>) (-)"
+  shows "(cr_vint ===> cr_vint ===> cr_vint) (-\<^sub>\<int>) (-)"
   using vint_fpair_in_fproduct_vint
   by (intro rel_funI, unfold vint_minus_def cr_vint_def cr_scalar_def) 
     (simp add: nat_omega_simps)
@@ -1454,8 +1453,8 @@ qed
 text\<open>Unary minus.\<close>
 
 global_interpretation vint_uminus: v11 vint_uminus
-  rewrites "\<D>\<^sub>\<circ> vint_uminus = \<int>\<^sub>\<circ>"
-    and "\<R>\<^sub>\<circ> vint_uminus = \<int>\<^sub>\<circ>"
+  rewrites vint_uminus_vdomain[simp]: "\<D>\<^sub>\<circ> vint_uminus = \<int>\<^sub>\<circ>"
+    and vint_uminus_vrange[simp]: "\<R>\<^sub>\<circ> vint_uminus = \<int>\<^sub>\<circ>"
 proof-
   show v11: "v11 vint_uminus" 
   proof(intro v11I)
@@ -1526,6 +1525,12 @@ proof-
     qed
   qed
 qed
+
+
+text\<open>Misc.\<close>
+
+lemma (in \<Z>) vint_in_Vset[intro]: "\<int>\<^sub>\<circ> \<in>\<^sub>\<circ> Vset \<alpha>"
+  using vint_in_Vset_\<omega>2 vsubsetD by (auto intro!: \<Z>_Vset_\<omega>2_vsubset_Vset)
 
 
 
@@ -2049,8 +2054,8 @@ qed
 text\<open>Unary minus.\<close>
 
 global_interpretation vrat_uminus: v11 vrat_uminus
-  rewrites "\<D>\<^sub>\<circ> vrat_uminus = \<rat>\<^sub>\<circ>"
-    and "\<R>\<^sub>\<circ> vrat_uminus = \<rat>\<^sub>\<circ>"
+  rewrites vrat_uminus_vdomain[simp]: "\<D>\<^sub>\<circ> vrat_uminus = \<rat>\<^sub>\<circ>"
+    and vrat_uminus_vrange[simp]: "\<R>\<^sub>\<circ> vrat_uminus = \<rat>\<^sub>\<circ>"
 proof-
   show v11: "v11 vrat_uminus" 
   proof(intro v11I)
@@ -2126,8 +2131,8 @@ qed
 text\<open>Multiplicative inverse.\<close>
 
 global_interpretation vrat_inverse: v11 vrat_inverse
-  rewrites "\<D>\<^sub>\<circ> vrat_inverse = \<rat>\<^sub>\<circ>"
-    and "\<R>\<^sub>\<circ> vrat_inverse = \<rat>\<^sub>\<circ>"
+  rewrites vrat_inverse_vdomain[simp]: "\<D>\<^sub>\<circ> vrat_inverse = \<rat>\<^sub>\<circ>"
+    and vrat_inverse_vrange[simp]: "\<R>\<^sub>\<circ> vrat_inverse = \<rat>\<^sub>\<circ>"
 proof-
   show v11: "v11 vrat_inverse" 
   proof(intro v11I)
@@ -2162,6 +2167,12 @@ proof-
 qed
 
 
+text\<open>Misc.\<close>
+
+lemma (in \<Z>) vrat_in_Vset[intro]: "\<rat>\<^sub>\<circ> \<in>\<^sub>\<circ> Vset \<alpha>"
+  using vrat_in_Vset_\<omega>2 vsubsetD by (auto intro!: \<Z>_Vset_\<omega>2_vsubset_Vset)
+
+
 
 subsection\<open>Upper bound on the cardinality of the continuum for \<^typ>\<open>V\<close>\<close>
 
@@ -2174,6 +2185,9 @@ proof-
     unfolding lepoll_def by (auto intro: inj_on_inv_vreal_of_real)
   from vlepoll_VPow_omega_if_vreal_lepoll_real[OF this] show ?thesis by simp
 qed
+
+lemma (in \<Z>) vreal_in_Vset[intro]: "\<real>\<^sub>\<circ> \<in>\<^sub>\<circ> Vset \<alpha>"
+  using vreal_in_Vset_\<omega>2 vsubsetD by (auto intro!: \<Z>_Vset_\<omega>2_vsubset_Vset)
 
 text\<open>\newpage\<close>
 

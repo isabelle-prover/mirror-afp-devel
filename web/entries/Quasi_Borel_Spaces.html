@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Quasi-Borel Spaces - Archive of Formal Proofs</title><meta name="description" content="The notion of quasi-Borel spaces was introduced by Heunen et al. The theory provides a suitable denotational model for higher-order probabilistic..."><meta property="og:title" content="Quasi-Borel Spaces" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Quasi_Borel_Spaces.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2022-02-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-02-03T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Quasi-Borel Spaces"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>Q</span>uasi-<span class='first'>B</span>orel <span class='first'>S</span>paces</h1>
+  <div>
+    
+    <p><a href="../authors/hirata">Michikazu Hirata</a>, <a href="../authors/minamide">Yasuhiko Minamide</a> <a href="https://sv.c.titech.ac.jp/minamide/index.en.html">🌐</a> and <a href="../authors/sato">Tetsuya Sato</a> <a href="https://sites.google.com/view/tetsuyasato/">🌐</a>
+    </p>
+    
+    
+    <p class="date">February 3, 2022</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">The notion of quasi-Borel spaces was introduced by <a
+href="https://dl.acm.org/doi/10.5555/3329995.3330072">
+Heunen et al</a>. The theory provides a suitable
+denotational model for higher-order probabilistic programming
+languages with continuous distributions. This entry is a formalization
+of the theory of quasi-Borel spaces, including construction of
+quasi-Borel spaces (product, coproduct, function spaces), the
+adjunction between the category of measurable spaces and the category
+of quasi-Borel spaces, and the probability monad on quasi-Borel
+spaces. This entry also contains the formalization of the Bayesian
+regression presented in the work of Heunen et al. This work is a part
+of the work by same authors, <i>Program Logic for Higher-Order
+Probabilistic Programs in Isabelle/HOL</i>, which will be
+published in the proceedings of the 16th International Symposium on
+Functional and Logic Programming (FLOPS 2022).</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/semantics">Computer science/Semantics</a></li></ul>
+  <h3>Theories of Quasi_Borel_Spaces</h3>
+  <ul>
+    <li><a href="../theories/quasi_borel_spaces/#StandardBorel">StandardBorel</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#QuasiBorel">QuasiBorel</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#Measure_QuasiBorel_Adjunction">Measure_QuasiBorel_Adjunction</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#Binary_Product_QuasiBorel">Binary_Product_QuasiBorel</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#Product_QuasiBorel">Product_QuasiBorel</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#Binary_CoProduct_QuasiBorel">Binary_CoProduct_QuasiBorel</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#CoProduct_QuasiBorel">CoProduct_QuasiBorel</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#Exponent_QuasiBorel">Exponent_QuasiBorel</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#Probability_Space_QuasiBorel">Probability_Space_QuasiBorel</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#Monad_QuasiBorel">Monad_QuasiBorel</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#Pair_QuasiBorel_Measure">Pair_QuasiBorel_Measure</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#Measure_as_QuasiBorel_Measure">Measure_as_QuasiBorel_Measure</a></li>
+    <li><a href="../theories/quasi_borel_spaces/#Bayesian_Linear_Regression">Bayesian_Linear_Regression</a></li></ul><div class="flex-wrap">
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/ADS_Functor.html">Authenticated Data Structures As Functors</a></li>
+      
+      <li><a href="../entries/Lp.html">Lp spaces</a></li>
+      
+      <li><a href="../entries/FO_Theory_Rewriting.html">First-Order Theory of Rewriting</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Quasi_Borel_Spaces/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Quasi_Borel_Spaces/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Quasi_Borel_Spaces/session_graph.pdf">Dependencies</a></nav>
+
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Quasi_Borel_Spaces-AFP</p>
+      <pre id="copyText">@article{Quasi_Borel_Spaces-AFP,
+  author  = {hirata, minamide and sato},
+  title   = {Quasi-Borel Spaces},
+  journal = {Archive of Formal Proofs},
+  month   = February,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/Quasi_Borel_Spaces.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Quasi_Borel_Spaces-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>

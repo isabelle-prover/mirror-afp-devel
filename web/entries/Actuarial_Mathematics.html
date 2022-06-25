@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Actuarial Mathematics - Archive of Formal Proofs</title><meta name="description" content="Actuarial Mathematics is a theory in applied mathematics, which is
+mainly used for determining the prices of insurance products and
+evaluating the..."><meta property="og:title" content="Actuarial Mathematics" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Actuarial_Mathematics.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2022-01-23T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-01-23T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Actuarial Mathematics"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>A</span>ctuarial <span class='first'>M</span>athematics</h1>
+  <div>
+    
+    <p><a href="../authors/ito">Yosuke Ito</a> <a href="mailto:glacier345@gmail.com">📧</a>
+    </p>
+    
+    
+    <p class="date">January 23, 2022</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">Actuarial Mathematics is a theory in applied mathematics, which is
+mainly used for determining the prices of insurance products and
+evaluating the liability of a company associating with insurance
+contracts. It is related to calculus, probability theory and financial
+theory, etc. In this entry, I formalize the very basic part of
+Actuarial Mathematics in Isabelle/HOL. The first formalization is
+about the theory of interest which deals with interest rates, present
+value factors, an annuity certain, etc. I have already formalized the
+basic part of Actuarial Mathematics in Coq
+(https://github.com/Yosuke-Ito-345/Actuary). This entry is currently
+the partial translation and a little generalization of the Coq
+formalization. The further translation in Isabelle/HOL is now
+proceeding.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/games-and-economics">Mathematics/Games and economics</a></li></ul>
+  <h3>Theories of Actuarial_Mathematics</h3>
+  <ul>
+    <li><a href="../theories/actuarial_mathematics/#Preliminaries">Preliminaries</a></li>
+    <li><a href="../theories/actuarial_mathematics/#Interest">Interest</a></li></ul><div class="flex-wrap">
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/First_Welfare_Theorem.html">Microeconomics and the First Welfare Theorem</a></li>
+      
+      <li><a href="../entries/Parity_Game.html">Positional Determinacy of Parity Games</a></li>
+      
+      <li><a href="../entries/Quasi_Borel_Spaces.html">Quasi-Borel Spaces</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Actuarial_Mathematics/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Actuarial_Mathematics/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Actuarial_Mathematics/session_graph.pdf">Dependencies</a></nav>
+
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Actuarial_Mathematics-AFP</p>
+      <pre id="copyText">@article{Actuarial_Mathematics-AFP,
+  author  = {ito},
+  title   = {Actuarial Mathematics},
+  journal = {Archive of Formal Proofs},
+  month   = January,
+  year    = 2022,
+  note    = {\url{https://isa-afp.org/entries/Actuarial_Mathematics.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Actuarial_Mathematics-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -189,7 +189,7 @@ interpretation ntsmcf:
   by (rule ntcf_is_ntsmcf)
 
 lemmas_with [unfolded slicing_simps]:
-  ntcf_NTMap_vsv = ntsmcf.ntsmcf_NTMap_vsv
+  ntcf_NTMap_vsv(*not cat_cs_intros: clash*) = ntsmcf.ntsmcf_NTMap_vsv
   and ntcf_NTMap_vdomain[cat_cs_simps] = ntsmcf.ntsmcf_NTMap_vdomain
   and ntcf_NTMap_is_arr = ntsmcf.ntsmcf_NTMap_is_arr
   and ntcf_NTMap_is_arr'[cat_cs_intros] = ntsmcf.ntsmcf_NTMap_is_arr'
@@ -216,6 +216,7 @@ end
 lemmas [cat_cs_simps] = is_ntcf.ntcf_NTMap_vdomain
 
 lemmas [cat_cs_intros] = 
+  is_ntcf.ntcf_NTMap_vsv
   is_ntcf.ntcf_NTMap_is_arr'
   ntsmcf_hcomp_NTMap_vsv
 
@@ -236,8 +237,10 @@ proof-
   interpret R: is_ntcf \<alpha> \<AA>' \<BB>' \<FF>' \<GG>' \<NN>' by (rule assms(2))
   show ?thesis
   proof(rule vsv_eqI)
-    have dom: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
-    show "\<D>\<^sub>\<circ> \<NN> = \<D>\<^sub>\<circ> \<NN>'" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
+    have dom: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" 
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
+    show "\<D>\<^sub>\<circ> \<NN> = \<D>\<^sub>\<circ> \<NN>'" 
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
     from assms(4-7) have sup: 
       "\<NN>\<lparr>NTDom\<rparr> = \<NN>'\<lparr>NTDom\<rparr>" "\<NN>\<lparr>NTCod\<rparr> = \<NN>'\<lparr>NTCod\<rparr>" 
       "\<NN>\<lparr>NTDGDom\<rparr> = \<NN>'\<lparr>NTDGDom\<rparr>" "\<NN>\<lparr>NTDGCod\<rparr> = \<NN>'\<lparr>NTDGCod\<rparr>" 
@@ -266,7 +269,8 @@ qed (auto simp: assms(1,2))
 lemma (in is_ntcf) ntcf_def:
   "\<NN> = [\<NN>\<lparr>NTMap\<rparr>, \<NN>\<lparr>NTDom\<rparr>, \<NN>\<lparr>NTCod\<rparr>, \<NN>\<lparr>NTDGDom\<rparr>, \<NN>\<lparr>NTDGCod\<rparr>]\<^sub>\<circ>"
 proof(rule vsv_eqI)
-  have dom_lhs: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" by (cs_concl cs_simp: cat_cs_simps V_cs_simps)
+  have dom_lhs: "\<D>\<^sub>\<circ> \<NN> = 5\<^sub>\<nat>" 
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps V_cs_simps)
   have dom_rhs:
     "\<D>\<^sub>\<circ> [\<NN>\<lparr>NTMap\<rparr>, \<NN>\<lparr>NTDGDom\<rparr>, \<NN>\<lparr>NTDGCod\<rparr>, \<NN>\<lparr>NTDom\<rparr>, \<NN>\<lparr>NTCod\<rparr>]\<^sub>\<circ> = 5\<^sub>\<nat>"
     by (simp add: nat_omega_simps)
@@ -293,7 +297,10 @@ proof-
     NTDom.HomCod.cat_in_Vset
   from assms(2) show ?thesis
     by (subst ntcf_def) 
-      (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros V_cs_intros
+      )
 qed
 
 lemma (in is_ntcf) ntcf_is_ntcf_if_ge_Limit:
@@ -305,7 +312,7 @@ proof(intro is_ntcfI)
     by (rule is_ntsmcf.ntsmcf_is_ntsmcf_if_ge_Limit[OF ntcf_is_ntsmcf assms])
 qed 
   (
-    cs_concl 
+    cs_concl cs_shallow 
       cs_simp: cat_cs_simps 
       cs_intro:
         V_cs_intros
@@ -410,7 +417,7 @@ qed
   (
     use is_ntcf_axioms in
     \<open>
-      cs_concl 
+      cs_concl cs_shallow 
         cs_simp: cat_cs_simps slicing_commute[symmetric]
         cs_intro: cat_cs_intros cat_op_intros smc_op_intros slicing_intros
     \<close>
@@ -799,7 +806,7 @@ proof-
   proof(rule ntcf_eqI[of \<alpha>])
     show "\<LL> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>) : 
       \<FF>'' \<circ>\<^sub>C\<^sub>F \<FF>' \<circ>\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG>'' \<circ>\<^sub>C\<^sub>F \<GG>' \<circ>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from ntsmcf_hcomp_assoc[
       OF \<LL>.ntcf_is_ntsmcf \<MM>.ntcf_is_ntsmcf \<NN>.ntcf_is_ntsmcf,
       unfolded slicing_commute
@@ -993,8 +1000,9 @@ proof(rule is_ntcfI, unfold is_functor_ntcf_id_components(2,3,4,5))
             intro: slicing_intros
         )
     fix f a b assume "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b"
-    with is_functor_axioms show "ntcf_id \<FF>\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = 
-      \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> ntcf_id \<FF>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
+    with is_functor_axioms show 
+      "ntcf_id \<FF>\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = 
+        \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> ntcf_id \<FF>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
       by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (auto simp: ntcf_ntsmcf_def nat_omega_simps intro: slicing_intros)
 qed (auto simp: ntcf_id_def nat_omega_simps intro: cat_cs_intros)
@@ -1020,7 +1028,7 @@ proof(rule ntcf_eqI[of \<alpha>])
     fix a assume "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((ntcf_id \<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>)"
     then have "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" by (simp add: cat_cs_simps)
     then show "(ntcf_id \<GG> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (auto simp: ntsmcf_vcomp_components)
 qed (auto intro: cat_cs_intros)
 
@@ -1039,7 +1047,7 @@ proof(rule ntcf_eqI[of \<alpha>])
     fix a assume "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF>)\<lparr>NTMap\<rparr>)"
     then have "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" by (simp add: cat_cs_simps)
     then show "(\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>" 
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (auto simp: ntsmcf_vcomp_components)
 qed (auto intro: cat_cs_intros)
 
@@ -1057,7 +1065,7 @@ proof(rule ntcf_eqI)
       )
   show "ntcf_id (cf_id \<BB>) \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN> : 
     cf_id \<BB> \<circ>\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>C\<^sub>F cf_id \<BB> \<circ>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   show "(ntcf_id (cf_id \<BB>) \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr> = \<NN>\<lparr>NTMap\<rparr>"
   proof(rule vsv_eqI)
     fix a assume "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((ntcf_id (cf_id \<BB>) \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>)"    
@@ -1065,7 +1073,7 @@ proof(rule ntcf_eqI)
       unfolding ntcf_hcomp_NTMap_vdomain[OF is_ntcf_axioms] by simp
     with is_ntcf_axioms show 
       "(ntcf_id (cf_id \<BB>) \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (auto simp: ntsmcf_hcomp_components(1) cat_cs_simps)
 qed (auto simp: cat_cs_simps intro: cat_cs_intros)
 
@@ -1083,7 +1091,7 @@ proof(rule ntcf_eqI[of \<alpha>])
       )
   show "\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id (cf_id \<AA>) :
     \<FF> \<circ>\<^sub>C\<^sub>F cf_id \<AA> \<mapsto>\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>C\<^sub>F cf_id \<AA> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   show "(\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id (cf_id \<AA>))\<lparr>NTMap\<rparr> = \<NN>\<lparr>NTMap\<rparr>"
   proof(rule vsv_eqI)
     fix a assume "a \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> ((\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id (cf_id \<AA>))\<lparr>NTMap\<rparr>)"
@@ -1091,7 +1099,7 @@ proof(rule ntcf_eqI[of \<alpha>])
       unfolding ntcf_hcomp_NTMap_vdomain[OF id.is_ntcf_axioms] by simp
     with is_ntcf_axioms show 
       "(\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id (cf_id \<AA>))\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (auto simp: ntsmcf_hcomp_components(1) cat_cs_simps)
 qed (auto simp: cat_cs_simps cat_cs_intros)
 
@@ -1127,7 +1135,7 @@ proof(rule ntcf_eqI)
     by (rule \<GG>\<FF>)
   from assms show \<GG>_\<FF>:
     "ntcf_id \<GG> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF> : \<GG> \<circ>\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   interpret \<GG>_\<FF>: is_ntcf \<alpha> \<AA> \<CC> \<open>\<GG> \<circ>\<^sub>C\<^sub>F \<FF>\<close> \<open>\<GG> \<circ>\<^sub>C\<^sub>F \<FF>\<close> \<open>ntcf_id \<GG> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF>\<close>
     by (rule \<GG>_\<FF>)
   show "ntcf_id (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>)\<lparr>NTMap\<rparr> = (ntcf_id \<GG> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF>)\<lparr>NTMap\<rparr>"
@@ -1270,7 +1278,7 @@ proof-
     from assms show
       "(\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<GG>) \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF> :
         \<HH> \<circ>\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>C\<^sub>F \<HH>' \<circ>\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     show "\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>) :
       \<HH> \<circ>\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>C\<^sub>F \<HH>' \<circ>\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
       by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
@@ -1279,7 +1287,7 @@ proof-
         ntcf_ntsmcf (\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F (\<GG> \<circ>\<^sub>C\<^sub>F \<FF>))"
       by 
         (
-          cs_concl
+          cs_concl 
             cs_simp: slicing_commute[symmetric] 
             cs_intro: slicing_intros ntsmcf_smcf_comp_ntsmcf_smcf_comp_assoc
         )
@@ -1292,11 +1300,11 @@ proof(rule ntcf_ntsmcf_eqI)
   show "\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F cf_id \<AA> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   show "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   show "ntcf_ntsmcf (\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F cf_id \<AA>) = ntcf_ntsmcf \<NN>"
     by
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: slicing_commute[symmetric] 
           cs_intro: cat_cs_intros slicing_intros smc_cs_simps
       )
@@ -1313,14 +1321,14 @@ proof(rule ntcf_ntsmcf_eqI)
   from assms show 
     "\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>) :
       \<FF> \<circ>\<^sub>C\<^sub>F \<KK> \<mapsto>\<^sub>C\<^sub>F \<HH> \<circ>\<^sub>C\<^sub>F \<KK> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from assms show 
     "ntcf_ntsmcf (\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)) =
       ntcf_ntsmcf (\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)"
     unfolding slicing_commute[symmetric]
     by (intro ntsmcf_vcomp_ntsmcf_smcf_comp)
       (cs_concl cs_intro: slicing_intros)
-qed (use assms in \<open>cs_concl cs_intro: cat_cs_intros\<close>)+
+qed (use assms in \<open>cs_concl cs_shallow cs_intro: cat_cs_intros\<close>)+
 
 
 
@@ -1450,7 +1458,7 @@ proof(rule ntcf_ntsmcf_eqI)
     by (cs_concl cs_intro: cat_cs_intros)
   from assms show "\<GG> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>) :
     \<GG> \<circ>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F \<HH> \<mapsto>\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F \<HH>' : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<DD>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   from assms show 
     "ntcf_ntsmcf (\<GG> \<circ>\<^sub>C\<^sub>F \<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>) =
       ntcf_ntsmcf (\<GG> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>))"
@@ -1468,11 +1476,11 @@ proof(rule ntcf_ntsmcf_eqI)
   show "cf_id \<BB> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   show "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   show "ntcf_ntsmcf (smcf_id \<BB> \<circ>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<NN>) = ntcf_ntsmcf \<NN>"
     by 
       (
-        cs_concl
+        cs_concl cs_shallow
           cs_simp: slicing_commute[symmetric] 
           cs_intro: cat_cs_intros slicing_intros smc_cs_simps
       )
@@ -1494,7 +1502,7 @@ proof-
       (
         use assms in
           \<open>
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps slicing_commute[symmetric]
               cs_intro:
                 cat_cs_intros
@@ -1509,7 +1517,7 @@ lemma ntcf_cf_comp_ntcf_id[cat_cs_simps]:
   shows "ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK> = ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<KK>"
 proof(rule ntcf_eqI)
   from assms have dom_lhs: "\<D>\<^sub>\<circ> ((ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   from assms have dom_rhs: "\<D>\<^sub>\<circ> ((ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<KK>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
     by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   show "(ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)\<lparr>NTMap\<rparr> = (ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<KK>)\<lparr>NTMap\<rparr>"
@@ -1519,53 +1527,7 @@ proof(rule ntcf_eqI)
       "(ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<KK>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = (ntcf_id \<FF> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<KK>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
       by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (auto intro: cat_cs_intros)
-qed (use assms in \<open>cs_concl cs_intro: cat_cs_intros\<close>)+
-
-lemma cf_comp_cf_const_right[cat_cs_simps]:
-  assumes "category \<alpha> \<AA>"
-    and "category \<alpha> \<BB>"
-    and "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    and "\<aa> \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>"
-  shows "\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> \<aa> = cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>)"
-proof(rule cf_eqI)
-
-  interpret \<AA>: category \<alpha> \<AA> by (rule assms(1))
-  interpret \<BB>: category \<alpha> \<BB> by (rule assms(2))
-  interpret \<GG>: is_functor \<alpha> \<BB> \<CC> \<GG> by (rule assms(3))
-
-  from assms(4) show "\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> \<aa> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_intro: cat_cs_intros)
-  from assms(4) show "cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>) : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-  from assms(4) have ObjMap_dom_lhs: 
-    "\<D>\<^sub>\<circ> ((\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> \<aa>)\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-  from assms(4) have ObjMap_dom_rhs: 
-    "\<D>\<^sub>\<circ> (cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>)\<lparr>ObjMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
-  show "(\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> \<aa>)\<lparr>ObjMap\<rparr> = cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>)\<lparr>ObjMap\<rparr>"
-  proof(rule vsv_eqI, unfold ObjMap_dom_lhs ObjMap_dom_rhs)
-    fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
-    with assms(4) show "(\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> \<aa>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> =
-      cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-  qed (auto intro: assms(4) cat_cs_intros)
-  from assms(4) have ArrMap_dom_lhs: 
-    "\<D>\<^sub>\<circ> ((\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> \<aa>)\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-  from assms(4) have ArrMap_dom_rhs: 
-    "\<D>\<^sub>\<circ> (cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>)\<lparr>ArrMap\<rparr>) = \<AA>\<lparr>Arr\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-  show
-    "(\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> \<aa>)\<lparr>ArrMap\<rparr> = cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>)\<lparr>ArrMap\<rparr>"
-  proof(rule vsv_eqI, unfold ArrMap_dom_lhs ArrMap_dom_rhs)
-    fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Arr\<rparr>"
-    with assms(4) show "(\<GG> \<circ>\<^sub>C\<^sub>F cf_const \<AA> \<BB> \<aa>)\<lparr>ArrMap\<rparr>\<lparr>a\<rparr> =
-      cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>\<aa>\<rparr>)\<lparr>ArrMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
-  qed (auto intro: assms(4) cat_cs_intros)
-
-qed simp_all
+qed (use assms in \<open>cs_concl cs_shallow cs_intro: cat_cs_intros\<close>)+
 
 lemma cf_ntcf_comp_ntcf_vcomp: 
   assumes "\<KK> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
@@ -1581,7 +1543,7 @@ proof-
       (
         use assms in
           \<open>
-            cs_concl
+            cs_concl 
               cs_simp: smc_cs_simps slicing_commute[symmetric]
               cs_intro:
                 cat_cs_intros
@@ -1774,13 +1736,13 @@ proof-
     from assms(3) show "ntcf_const \<AA> \<CC> (\<NN>\<lparr>NTMap\<rparr>\<lparr>b\<rparr>) :
       cf_const \<AA> \<CC> (\<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>) \<mapsto>\<^sub>C\<^sub>F cf_const \<AA> \<CC> (\<GG>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>) :
       \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from assms(3) have dom_lhs: 
       "\<D>\<^sub>\<circ> ((\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F cf_const \<AA> \<BB> b)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
       by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from assms(3) have dom_rhs: 
       "\<D>\<^sub>\<circ> (ntcf_const \<AA> \<CC> (\<NN>\<lparr>NTMap\<rparr>\<lparr>b\<rparr>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     show 
       "(\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F cf_const \<AA> \<BB> b)\<lparr>NTMap\<rparr> = ntcf_const \<AA> \<CC> (\<NN>\<lparr>NTMap\<rparr>\<lparr>b\<rparr>)\<lparr>NTMap\<rparr>"
     proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
@@ -1802,11 +1764,11 @@ proof-
   show ?thesis
   proof(rule ntcf_eqI)
     show "\<GG> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF> : \<GG> \<circ>\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     show "ntcf_id \<GG> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF> : \<GG> \<circ>\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> \<circ>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     have dom_lhs: "\<D>\<^sub>\<circ> ((\<GG> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     have dom_rhs: "\<D>\<^sub>\<circ> ((ntcf_id \<GG> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
       by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     show "(\<GG> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF>)\<lparr>NTMap\<rparr> = (ntcf_id \<GG> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF>)\<lparr>NTMap\<rparr>"
@@ -1829,22 +1791,55 @@ proof(rule ntcf_eqI)
     cf_const \<AA> \<CC> a \<mapsto>\<^sub>C\<^sub>F cf_const \<AA> \<CC> b : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   then have dom_lhs: "\<D>\<^sub>\<circ> ((ntcf_const \<BB> \<CC> f \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   from assms(2) show 
     "ntcf_const \<AA> \<CC> f : cf_const \<AA> \<CC> a \<mapsto>\<^sub>C\<^sub>F cf_const \<AA> \<CC> b : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   then have dom_rhs: "\<D>\<^sub>\<circ> (ntcf_const \<AA> \<CC> f\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   show "(ntcf_const \<BB> \<CC> f \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>)\<lparr>NTMap\<rparr> = ntcf_const \<AA> \<CC> f\<lparr>NTMap\<rparr>"
   proof(rule vsv_eqI, unfold dom_lhs dom_rhs)
     fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
     then show 
       "(ntcf_const \<BB> \<CC> f \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<FF>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = ntcf_const \<AA> \<CC> f\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
-      by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   qed (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 qed simp_all
 
 lemmas [cat_cs_simps] = is_functor.cf_ntcf_cf_comp_ntcf_const
+
+lemma (in is_functor) cf_ntcf_comp_cf_ntcf_const[cat_cs_simps]:
+  assumes "category \<alpha> \<JJ>"
+    and "f : r' \<mapsto>\<^bsub>\<AA>\<^esub> r"
+  shows "\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<AA> f = ntcf_const \<JJ> \<BB> (\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>)"
+proof(rule ntcf_eqI)
+  interpret \<JJ>: category \<alpha> \<JJ> by (rule assms(1))
+  from assms(2) have r': "r' \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" and r: "r \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" by auto
+  from assms(2) show "\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<AA> f :
+    cf_const \<JJ> \<BB> (\<FF>\<lparr>ObjMap\<rparr>\<lparr>r'\<rparr>) \<mapsto>\<^sub>C\<^sub>F cf_const \<JJ> \<BB> (\<FF>\<lparr>ObjMap\<rparr>\<lparr>r\<rparr>) :
+    \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  with assms(2) have dom_lhs: 
+    "\<D>\<^sub>\<circ> ((\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<AA> f)\<lparr>NTMap\<rparr>) = \<JJ>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)
+  from assms(2) show "ntcf_const \<JJ> \<BB> (\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>) :
+    cf_const \<JJ> \<BB> (\<FF>\<lparr>ObjMap\<rparr>\<lparr>r'\<rparr>) \<mapsto>\<^sub>C\<^sub>F cf_const \<JJ> \<BB> (\<FF>\<lparr>ObjMap\<rparr>\<lparr>r\<rparr>) :
+    \<JJ> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  with assms(2) have dom_rhs:
+    "\<D>\<^sub>\<circ> (ntcf_const \<JJ> \<BB> (\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>)\<lparr>NTMap\<rparr>) = \<JJ>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
+  show 
+    "(\<FF> \<circ>\<^sub>C\<^sub>F\<^sub>-\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_const \<JJ> \<AA> f)\<lparr>NTMap\<rparr> = 
+      ntcf_const \<JJ> \<BB> (\<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>)\<lparr>NTMap\<rparr>"
+    by (rule vsv_eqI, unfold dom_lhs dom_rhs)
+      (
+        use assms(2) in 
+          \<open>cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros\<close>
+      )+
+qed simp_all
+
+lemmas [cat_cs_simps] = is_functor.cf_ntcf_comp_cf_ntcf_const
 
 
 
@@ -1854,7 +1849,7 @@ subsection\<open>Natural isomorphism\<close>
 text\<open>See Chapter I-4 in \cite{mac_lane_categories_2010}.\<close>
 
 locale is_iso_ntcf = is_ntcf +
-  assumes iso_ntcf_is_arr_isomorphism[cat_arrow_cs_intros]: 
+  assumes iso_ntcf_is_iso_arr[cat_arrow_cs_intros]: 
     "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<Longrightarrow> \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
 
 syntax "_is_iso_ntcf" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
@@ -1862,7 +1857,7 @@ syntax "_is_iso_ntcf" :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Ri
 translations "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" \<rightleftharpoons> 
   "CONST is_iso_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN>"
 
-lemma (in is_iso_ntcf) iso_ntcf_is_arr_isomorphism':
+lemma (in is_iso_ntcf) iso_ntcf_is_iso_arr':
   assumes "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
     and "A = \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
     and "B = \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
@@ -1870,9 +1865,9 @@ lemma (in is_iso_ntcf) iso_ntcf_is_arr_isomorphism':
   using assms by (auto intro: cat_arrow_cs_intros)
 
 lemmas [cat_arrow_cs_intros] = 
-  is_iso_ntcf.iso_ntcf_is_arr_isomorphism'
+  is_iso_ntcf.iso_ntcf_is_iso_arr'
 
-lemma (in is_iso_ntcf) iso_ntcf_is_arr_isomorphism'':
+lemma (in is_iso_ntcf) iso_ntcf_is_iso_arr'':
   assumes "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
     and "A = \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
     and "B = \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
@@ -1990,7 +1985,7 @@ lemma (in is_iso_ntcf) is_iso_ntcf_op:
 proof-
   from is_iso_ntcf_axioms have 
     "op_ntcf \<NN> : op_cf \<GG> \<mapsto>\<^sub>C\<^sub>F op_cf \<FF> : op_cat \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> op_cat \<BB>"
-    by (cs_concl cs_intro: cat_cs_intros cat_op_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros cat_op_intros)
   then show ?thesis 
     by (intro is_iso_ntcfI) (auto simp: cat_op_simps cat_arrow_cs_intros)
 qed
@@ -2016,7 +2011,7 @@ https://ncatlab.org/nlab/show/natural+isomorphism
 }}).
 \<close>
 
-lemma is_arr_isomorphism_is_iso_ntcf:
+lemma is_iso_arr_is_iso_ntcf:
   assumes "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<MM> : \<GG> \<mapsto>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<MM> = ntcf_id \<GG>"
@@ -2029,7 +2024,7 @@ proof-
   proof(rule is_iso_ntcfI)
     fix a assume prems: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" 
     show "\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
-    proof(rule is_arr_isomorphismI)
+    proof(rule is_iso_arrI)
       show "is_inverse \<BB> (\<MM>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>) (\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>)"  
       proof(rule is_inverseI)
         from prems have 
@@ -2053,7 +2048,7 @@ proof-
   qed (auto simp: cat_cs_intros)
 qed
 
-lemma iso_ntcf_is_arr_isomorphism:
+lemma iso_ntcf_is_iso_arr:
   assumes "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
   shows [ntcf_cs_intros]: "inv_ntcf \<NN> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     and "\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F inv_ntcf \<NN> = ntcf_id \<GG>"
@@ -2065,7 +2060,7 @@ proof-
   define m where "m a = inv_ntcf \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>" for a
   have is_inverse[intro]: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<Longrightarrow> is_inverse \<BB> (m a) (\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>)" 
     for a
-    unfolding m_def by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    unfolding m_def by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   have [dest, intro, simp]: 
     "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<Longrightarrow> m a : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>" for a
   proof-
@@ -2076,7 +2071,7 @@ proof-
       by 
         (
           meson 
-            NTDom.HomCod.cat_is_inverse_is_arr_isomorphism is_arr_isomorphismD
+            NTDom.HomCod.cat_is_inverse_is_iso_arr is_iso_arrD
         )
   qed
   have [intro]: 
@@ -2103,12 +2098,12 @@ proof-
       using \<NN>a inv_ma ma by (meson is_inverse_Comp_CId_right)
     from \<GG>f have "m b \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = 
       m b \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> (\<GG>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> (\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> m a))"
-      unfolding \<NN>a_ma by (cs_concl cs_simp: cat_cs_simps)
+      unfolding \<NN>a_ma by (cs_concl cs_shallow cs_simp: cat_cs_simps)
     also have "\<dots> = m b \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> ((\<GG>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>) \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> m a)"
       by 
          (
           metis 
-            ma \<GG>f \<NN>a NTDom.HomCod.cat_Comp_assoc is_arr_isomorphismD(1)
+            ma \<GG>f \<NN>a NTDom.HomCod.cat_Comp_assoc is_iso_arrD(1)
         )
     also from prems have 
       "\<dots> = m b \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> ((\<NN>\<lparr>NTMap\<rparr>\<lparr>b\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>) \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> m a)"
@@ -2117,11 +2112,11 @@ proof-
       by 
         (
           metis 
-            \<NN>b\<FF>f ma mb NTDom.HomCod.cat_Comp_assoc is_arr_isomorphismD(1)
+            \<NN>b\<FF>f ma mb NTDom.HomCod.cat_Comp_assoc is_iso_arrD(1)
         )
     also from \<FF>f \<NN>b mb NTDom.HomCod.cat_Comp_assoc have 
       "\<dots> =  ((m b \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<NN>\<lparr>NTMap\<rparr>\<lparr>b\<rparr>) \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>) \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> m a"
-      by (metis is_arr_isomorphismD(1))
+      by (metis is_iso_arrD(1))
     also from \<FF>f have "\<dots> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> m a" 
       unfolding mb_\<NN>b by (simp add: cat_cs_simps)
     finally show "m b \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = \<FF>\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> m a" by simp
@@ -2148,7 +2143,7 @@ proof-
       then show "(\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F inv_ntcf \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = ntcf_id \<GG>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps 
               cs_intro: cat_cs_intros cat_arrow_cs_intros
           )
@@ -2172,7 +2167,7 @@ proof-
       then show "(inv_ntcf \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = ntcf_id \<FF>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow 
               cs_simp: cat_cs_simps 
               cs_intro: cat_cs_intros cat_arrow_cs_intros
           )
@@ -2188,15 +2183,110 @@ proof-
 qed
 
 
+subsubsection\<open>
+The operation of taking the inverse natural transformation is an involution
+\<close>
+
+lemma (in is_iso_ntcf) iso_ntcf_inv_ntcf_inv_ntcf[ntcf_cs_simps]: 
+  "inv_ntcf (inv_ntcf \<NN>) = \<NN>"
+proof(rule ntcf_eqI)
+  show "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by (cs_concl cs_intro: cat_cs_intros)
+  show "inv_ntcf (inv_ntcf \<NN>) : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    by (cs_concl cs_shallow cs_intro: ntcf_cs_intros cat_cs_intros)
+  then have dom_lhs: "\<D>\<^sub>\<circ> (inv_ntcf (inv_ntcf \<NN>)\<lparr>NTMap\<rparr>) = \<AA>\<lparr>Obj\<rparr>"
+    by (cs_concl cs_simp: cat_cs_simps)
+  show "inv_ntcf (inv_ntcf \<NN>)\<lparr>NTMap\<rparr> = \<NN>\<lparr>NTMap\<rparr>"
+  proof(rule vsv_eqI, unfold cat_cs_simps dom_lhs)
+    fix a assume prems: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+    then show "inv_ntcf (inv_ntcf \<NN>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
+      by
+        (
+          cs_concl cs_shallow
+            cs_simp: cat_cs_simps
+            cs_intro: cat_arrow_cs_intros ntcf_cs_intros cat_cs_intros
+        )
+  qed (auto intro: cat_cs_intros)
+qed simp_all
+
+lemmas [ntcf_cs_simps] = is_iso_ntcf.iso_ntcf_inv_ntcf_inv_ntcf
+
+
+subsubsection\<open>Natural isomorphisms from natural transformations\<close>
+
+lemma iso_ntcf_if_is_inverse:
+  assumes "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<MM> : \<GG> \<mapsto>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<And>a. a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr> \<Longrightarrow> is_inverse \<BB> (\<MM>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>) (\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>)"
+  shows "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<MM> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<MM> = inv_ntcf \<NN>"
+    and "\<NN> = inv_ntcf \<MM>"
+proof-
+  interpret \<NN>: is_ntcf \<alpha> \<AA> \<BB> \<FF> \<GG> \<NN> by (rule assms(1))
+  interpret \<MM>: is_ntcf \<alpha> \<AA> \<BB> \<GG> \<FF> \<MM> by (rule assms(2))
+  show \<NN>: "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+  proof(intro is_iso_ntcfI assms(1))
+    fix a assume prems: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+    show "\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+      by
+        (
+          rule is_iso_arrI[
+            OF \<NN>.ntcf_NTMap_is_arr[OF prems] assms(3)[OF prems]
+            ]
+        )
+  qed
+  show \<MM>: "\<MM> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+  proof(intro is_iso_ntcfI assms(2))
+    fix a assume prems: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+    show "\<MM>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : \<GG>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> \<FF>\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+      by
+        (
+          rule is_iso_arrI
+            [
+              OF 
+                \<MM>.ntcf_NTMap_is_arr[OF prems] 
+                is_inverse_sym[THEN iffD1, OF assms(3)[OF prems]]
+            ]
+        )
+  qed
+  have \<MM>_NTMap_unique: "g = \<MM>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>" 
+    if "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>" and "is_inverse \<BB> g (\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>)" for g a
+    by (rule \<NN>.NTDom.HomCod.cat_is_inverse_eq[OF that(2) assms(3)[OF that(1)]])
+  show "\<MM> = inv_ntcf \<NN>"
+  proof(rule ntcf_eqI, rule assms(2))
+    from \<NN> show "inv_ntcf \<NN> : \<GG> \<mapsto>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+      by (cs_concl cs_shallow cs_intro: ntcf_cs_intros)
+    show "\<MM>\<lparr>NTMap\<rparr> = inv_ntcf \<NN>\<lparr>NTMap\<rparr>"
+    proof(rule vsv_eqI, unfold cat_cs_simps)
+      fix a assume prems: "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+      show "\<MM>\<lparr>NTMap\<rparr>\<lparr>a\<rparr> = inv_ntcf \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>"
+      proof(intro \<MM>_NTMap_unique[symmetric] prems)
+        from prems assms(3)[OF prems] show 
+          "is_inverse \<BB> (inv_ntcf \<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>) (\<NN>\<lparr>NTMap\<rparr>\<lparr>a\<rparr>)"
+          unfolding inv_ntcf_components cat_cs_simps
+          by 
+            (
+              cs_concl cs_shallow 
+                cs_intro: V_cs_intros cs_simp: some_eq_ex V_cs_simps
+            )
+      qed
+    qed (auto simp: inv_ntcf_components)
+  qed simp_all
+  then have "inv_ntcf (inv_ntcf \<NN>) = inv_ntcf \<MM>" by simp
+  from this \<MM> \<NN> show "\<NN> = inv_ntcf \<MM>" 
+    by (cs_prems cs_shallow cs_simp: ntcf_cs_simps)
+qed
+
+
 subsubsection\<open>Vertical composition of natural isomorphisms\<close>
 
 lemma ntcf_vcomp_is_iso_ntcf[cat_cs_intros]:
   assumes "\<MM> : \<GG> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<HH> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" 
     and "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
   shows "\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<HH> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-proof(intro is_arr_isomorphism_is_iso_ntcf)
-  note inv_ntcf_\<MM> = iso_ntcf_is_arr_isomorphism[OF assms(1)]
-    and inv_ntcf_\<NN> = iso_ntcf_is_arr_isomorphism[OF assms(2)]
+proof(intro is_iso_arr_is_iso_ntcf)
+  note inv_ntcf_\<MM> = iso_ntcf_is_iso_arr[OF assms(1)]
+    and inv_ntcf_\<NN> = iso_ntcf_is_iso_arr[OF assms(2)]
   note [cat_cs_simps] = inv_ntcf_\<MM>(2,3) inv_ntcf_\<NN>(2,3)
   from assms show "\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<HH> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
     by (cs_concl cs_intro: cat_cs_intros ntcf_cs_intros)
@@ -2208,11 +2298,11 @@ proof(intro is_arr_isomorphism_is_iso_ntcf)
       \<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F inv_ntcf \<NN>) \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F inv_ntcf \<MM>"
     by 
       (
-        cs_concl
+        cs_concl 
           cs_simp: ntcf_vcomp_assoc cs_intro: cat_cs_intros ntcf_cs_intros
       )
   also from assms have "\<dots> = ntcf_id \<HH>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: ntcf_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: ntcf_cs_intros)
   finally show "\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (inv_ntcf \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F inv_ntcf \<MM>) = ntcf_id \<HH>"
     by simp
   from assms inv_ntcf_\<MM>(1) inv_ntcf_\<NN>(1) have 
@@ -2224,7 +2314,7 @@ proof(intro is_arr_isomorphism_is_iso_ntcf)
           cs_simp: ntcf_vcomp_assoc cs_intro: cat_cs_intros ntcf_cs_intros
       )
   also from assms have "\<dots> = ntcf_id \<FF>"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: ntcf_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: ntcf_cs_intros)
   finally show "inv_ntcf \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F inv_ntcf \<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (\<MM> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN>) = ntcf_id \<FF>"
     by simp
 qed
@@ -2236,9 +2326,9 @@ lemma ntcf_hcomp_is_iso_ntcf:
   assumes "\<MM> : \<FF>' \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG>' : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
     and "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
   shows "\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN> : \<FF>' \<circ>\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG>' \<circ>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
-proof(intro is_arr_isomorphism_is_iso_ntcf)
-  note inv_ntcf_\<MM> = iso_ntcf_is_arr_isomorphism[OF assms(1)]
-    and inv_ntcf_\<NN> = iso_ntcf_is_arr_isomorphism[OF assms(2)]
+proof(intro is_iso_arr_is_iso_ntcf)
+  note inv_ntcf_\<MM> = iso_ntcf_is_iso_arr[OF assms(1)]
+    and inv_ntcf_\<NN> = iso_ntcf_is_iso_arr[OF assms(2)]
   note [cat_cs_simps] = inv_ntcf_\<MM>(2,3) inv_ntcf_\<NN>(2,3)
   from assms show "\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN> : \<FF>' \<circ>\<^sub>C\<^sub>F \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG>' \<circ>\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
     by (cs_concl cs_intro: cat_cs_intros ntcf_cs_intros)
@@ -2255,7 +2345,11 @@ proof(intro is_arr_isomorphism_is_iso_ntcf)
           cs_intro: ntcf_cs_intros
       )
   also from assms have "\<dots> = ntcf_id (\<GG>' \<circ>\<^sub>C\<^sub>F \<GG>)"
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros ntcf_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros ntcf_cs_intros
+      )
   finally show 
     "\<MM> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F \<NN> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F (inv_ntcf \<MM> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F inv_ntcf \<NN>) = ntcf_id (\<GG>' \<circ>\<^sub>C\<^sub>F \<GG>)"
     by simp
@@ -2284,6 +2378,33 @@ lemma ntcf_hcomp_is_iso_ntcf'[ntcf_cs_intros]:
   using assms(1,2) unfolding assms(3,4) by (rule ntcf_hcomp_is_iso_ntcf)
 
 
+subsubsection\<open>Composition of a natural isomorphism and a functor\<close>
+
+lemma ntcf_cf_comp_is_iso_ntcf: 
+  assumes "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<HH> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+  shows "\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<HH> : \<FF> \<circ>\<^sub>C\<^sub>F \<HH> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> \<circ>\<^sub>C\<^sub>F \<HH> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+proof(intro is_iso_ntcfI ntcf_cf_comp_is_ntcf)
+  interpret \<NN>: is_iso_ntcf \<alpha> \<BB> \<CC> \<FF> \<GG> \<NN> by (rule assms(1))
+  show "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" by (rule \<NN>.is_ntcf_axioms)
+  fix a assume "a \<in>\<^sub>\<circ> \<AA>\<lparr>Obj\<rparr>"
+  with assms(2) show
+    "(\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<HH>)\<lparr>NTMap\<rparr>\<lparr>a\<rparr> : (\<FF> \<circ>\<^sub>C\<^sub>F \<HH>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr> \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> (\<GG> \<circ>\<^sub>C\<^sub>F \<HH>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
+    by
+      (
+        cs_concl
+          cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_arrow_cs_intros
+      )
+qed (rule assms(2))
+
+lemma ntcf_cf_comp_is_iso_ntcf'[cat_cs_intros]:
+  assumes "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
+    and "\<HH> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
+    and "\<FF>' = \<FF> \<circ>\<^sub>C\<^sub>F \<HH>"
+    and "\<GG>' = \<GG> \<circ>\<^sub>C\<^sub>F \<HH>"
+  shows "\<NN> \<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<^sub>-\<^sub>C\<^sub>F \<HH> : \<FF>' \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG>' : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
+  using assms(1,2) unfolding assms(3,4) by (rule ntcf_cf_comp_is_iso_ntcf)
+
+
 subsubsection\<open>An identity natural transformation is a natural isomorphism\<close>
 
 lemma (in is_functor) cf_ntcf_id_is_iso_ntcf:
@@ -2291,8 +2412,8 @@ lemma (in is_functor) cf_ntcf_id_is_iso_ntcf:
 proof-
   have "ntcf_id \<FF> : \<FF> \<mapsto>\<^sub>C\<^sub>F \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by (auto intro: cat_cs_intros)
   moreover then have "ntcf_id \<FF> \<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F ntcf_id \<FF> = ntcf_id \<FF>" 
-    by (cs_concl cs_simp: cat_cs_simps)
-  ultimately show ?thesis by (auto intro: is_arr_isomorphism_is_iso_ntcf)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
+  ultimately show ?thesis by (auto intro: is_iso_arr_is_iso_ntcf)
 qed
 
 lemma (in is_functor) cf_ntcf_id_is_iso_ntcf'[ntcf_cs_intros]:
@@ -2344,7 +2465,7 @@ lemma iso_functor_refl:
   shows "\<FF> \<approx>\<^sub>C\<^sub>F\<^bsub>\<alpha>\<^esub> \<FF>"
 proof(rule iso_functorI)
   from assms show "ntcf_id \<FF> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
-    by (cs_concl cs_intro: ntcf_cs_intros)
+    by (cs_concl cs_shallow cs_intro: ntcf_cs_intros)
 qed
 
 lemma iso_functor_sym[sym]:
@@ -2352,7 +2473,7 @@ lemma iso_functor_sym[sym]:
   shows "\<GG> \<approx>\<^sub>C\<^sub>F\<^bsub>\<alpha>\<^esub> \<FF>"
 proof-
   from assms obtain \<AA> \<BB> \<NN> where \<NN>: "\<NN> : \<FF> \<mapsto>\<^sub>C\<^sub>F\<^sub>.\<^sub>i\<^sub>s\<^sub>o \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>" by auto
-  from iso_ntcf_is_arr_isomorphism(1)[OF \<NN>] show "\<GG> \<approx>\<^sub>C\<^sub>F\<^bsub>\<alpha>\<^esub> \<FF>" 
+  from iso_ntcf_is_iso_arr(1)[OF \<NN>] show "\<GG> \<approx>\<^sub>C\<^sub>F\<^bsub>\<alpha>\<^esub> \<FF>" 
     by (auto simp: iso_functorI)
 qed
 

@@ -106,7 +106,7 @@ lemma strict_mono_setsD:
   shows "less_sets (f x) (f y)"
   using assms by (auto simp: strict_mono_sets_def)
 
-lemma strict_mono_on_o: "\<lbrakk>strict_mono_on r A; strict_mono_on s B; s ` B \<subseteq> A\<rbrakk> \<Longrightarrow> strict_mono_on (r \<circ> s) B"
+lemma strict_mono_on_o: "\<lbrakk>strict_mono_on A r; strict_mono_on B s; s ` B \<subseteq> A\<rbrakk> \<Longrightarrow> strict_mono_on B (r \<circ> s)"
   by (auto simp: image_subset_iff strict_mono_on_def)
 
 lemma strict_mono_sets_imp_disjoint:
@@ -245,7 +245,7 @@ qed
 lemma enum_works_finite:
   fixes N :: "nat set"
   assumes "finite N"
-  shows "N = enum N ` {..<card N} \<and> strict_mono_on (enum N) {..<card N}"
+  shows "N = enum N ` {..<card N} \<and> strict_mono_on {..<card N} (enum N)"
   using assms
   by (metis bij_betw_imp_surj_on finite_bij_enumerate finite_enumerate_mono lessThan_iff strict_mono_onI)
 

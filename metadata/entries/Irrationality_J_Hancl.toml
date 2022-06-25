@@ -1,0 +1,33 @@
+title = "Irrational Rapidly Convergent Series"
+date = 2018-05-23
+topics = [
+  "Mathematics/Number theory",
+  "Mathematics/Analysis",
+]
+abstract = """
+We formalize with Isabelle/HOL a proof of a theorem by J. Hancl asserting the
+irrationality of the sum of a series consisting of rational numbers, built up
+by sequences that fulfill certain properties. Even though the criterion is a
+number theoretic result, the proof makes use only of analytical arguments. We
+also formalize a corollary of the theorem for a specific series fulfilling the
+assumptions of the theorem."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.argyraki]
+homepage = "argyraki_homepage"
+
+[authors.li]
+homepage = "li_homepage"
+
+[contributors]
+
+[notify]
+argyraki = "argyraki_email"
+li = "li_email"
+
+[history]
+
+[extra]

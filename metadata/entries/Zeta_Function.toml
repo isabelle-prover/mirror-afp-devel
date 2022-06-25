@@ -1,0 +1,44 @@
+title = "The Hurwitz and Riemann ζ Functions"
+date = 2017-10-12
+topics = [
+  "Mathematics/Number theory",
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This entry builds upon the results about formal and analytic Dirichlet
+series to define the Hurwitz &zeta; function &zeta;(<em>a</em>,<em>s</em>) and,
+based on that, the Riemann &zeta; function &zeta;(<em>s</em>).
+This is done by first defining them for &real;(<em>z</em>) > 1
+and then successively extending the domain to the left using the
+Euler&ndash;MacLaurin formula.</p>
+<p>Apart from the most basic facts such as analyticity, the following
+results are provided:</p>
+<ul>
+<li>the Stieltjes constants and the Laurent expansion of
+&zeta;(<em>s</em>) at <em>s</em> = 1</li>
+<li>the non-vanishing of &zeta;(<em>s</em>)
+for &real;(<em>z</em>) &ge; 1</li>
+<li>the relationship between &zeta;(<em>a</em>,<em>s</em>) and &Gamma;</li>
+<li>the special values at negative integers and positive even integers</li>
+<li>Hurwitz's formula and the reflection formula for &zeta;(<em>s</em>)</li>
+<li>the <a href=\"https://arxiv.org/abs/math/0405478\">
+Hadjicostas&ndash;Chapman formula</a></li>
+</ul>
+<p>The entry also contains Euler's analytic proof of the infinitude of primes,
+based on the fact that &zeta;(<i>s</i>) has a pole at <i>s</i> = 1.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

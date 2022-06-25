@@ -1,0 +1,32 @@
+title = "Logical Relations for PCF"
+date = 2012-07-01
+topics = [
+  "Computer science/Programming languages/Lambda calculi",
+]
+abstract = """
+We apply Andy Pitts's methods of defining relations over domains to
+several classical results in the literature. We show that the Y
+combinator coincides with the domain-theoretic fixpoint operator,
+that parallel-or and the Plotkin existential are not definable in
+PCF, that the continuation semantics for PCF coincides with the
+direct semantics, and that our domain-theoretic semantics for PCF is
+adequate for reasoning about contextual equivalence in an
+operational semantics. Our version of PCF is untyped and has both
+strict and non-strict function abstractions. The development is
+carried out in HOLCF."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.gammie]
+email = "gammie_email"
+
+[contributors]
+
+[notify]
+gammie = "gammie_email"
+
+[history]
+
+[extra]

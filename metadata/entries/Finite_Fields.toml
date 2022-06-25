@@ -1,0 +1,35 @@
+title = "Finite Fields"
+date = 2022-06-08
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+This entry formalizes the classification of the finite fields (also
+called Galois fields): For each prime power $p^n$ there exists exactly
+one (up to isomorphisms) finite field of that size and there are no
+other finite fields. The derivation includes a formalization of the
+characteristic of rings, the Frobenius endomorphism, formal
+differentiation for polynomials in HOL-Algebra and Gauss' formula
+for the number of monic irreducible polynomials over finite fields: \\[
+\\frac{1}{n} \\sum_{d | n} \\mu(d) p^{n/d} \\textrm{.} \\] The proofs are
+based on the books from <a
+href=\"https://doi.org/10.1007/978-1-4757-2103-4\">Ireland
+and Rosen</a>, as well as, <a
+href=\"https://doi.org/10.1017/CBO9781139172769\">Lidl and
+Niederreiter</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.karayel]
+homepage = "karayel_homepage"
+
+[contributors]
+
+[notify]
+karayel = "karayel_email"
+
+[history]
+
+[extra]

@@ -149,7 +149,7 @@ proof -
   have "((\<lambda>x. sqrt ((4 - x) / x)) has_integral G 4 - G 0) {0..4}"
     using cont_G deriv_G
     by (intro fundamental_theorem_of_calculus_interior)
-       (auto simp: has_field_derivative_iff_has_vector_derivative)
+       (auto simp: has_real_derivative_iff_has_vector_derivative)
   also have "G 4 - G 0 = 2 * pi" by (simp add: G_def)
   finally show ?thesis .
 qed

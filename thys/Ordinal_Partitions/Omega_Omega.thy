@@ -1579,7 +1579,7 @@ next
       by (metis IntE \<open>infinite N\<close> enumerate_in_set infinite_nxtN nxt_def)
   qed
 
-  have sm_enum_DF: "strict_mono_on (enum (DF k i)) {..k}" for k i
+  have sm_enum_DF: "strict_mono_on {..k} (enum (DF k i))" for k i
     by (metis card_DF enum_works_finite finite_DF lessThan_Suc_atMost)
 
   define AF where "AF \<equiv> \<lambda>k i. enum (nxt N (Max (DF k i))) ` {..<Inf (DF k i)}"

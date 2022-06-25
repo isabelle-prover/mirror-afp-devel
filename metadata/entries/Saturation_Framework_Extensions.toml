@@ -1,0 +1,38 @@
+title = "Extensions to the Comprehensive Framework for Saturation Theorem Proving"
+date = 2020-08-25
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = """
+This Isabelle/HOL formalization extends the AFP entry
+<em>Saturation_Framework</em> with the following
+contributions:  <ul> <li>an application of the framework
+to prove Bachmair and Ganzinger's resolution prover RP
+refutationally complete, which was formalized in a more ad hoc fashion
+by Schlichtkrull et al. in the AFP entry
+<em>Ordered_Resultion_Prover</em>;</li>
+<li>generalizations of various basic concepts formalized by
+Schlichtkrull et al., which were needed to verify RP and could be
+useful to formalize other calculi, such as superposition;</li>
+<li>alternative proofs of fairness (and hence saturation and
+ultimately refutational completeness) for the given clause procedures
+GC and LGC, based on invariance.</li> </ul>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.blanchette]
+homepage = "blanchette_homepage1"
+
+[authors.tourret]
+homepage = "tourret_homepage"
+
+[contributors]
+
+[notify]
+blanchette = "blanchette_email"
+
+[history]
+
+[extra]

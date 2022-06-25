@@ -119,7 +119,7 @@ proof (simp add: line_integral_def)
         path_start_le_path_end' subset_cd field_cont_on_path_cd gamm_cont,
         of "(\<lambda>x. vector_derivative (\<lambda>x. \<gamma>(x) \<bullet> i) (at x within ({0..1})))"]
       gamma_is_in_terms_of_i
-    by (auto simp only: has_field_derivative_iff_has_vector_derivative)
+    by (auto simp only: has_real_derivative_iff_has_vector_derivative)
   then have has_int':"((\<lambda>x. (F(\<gamma>(x)) \<bullet> i)*(vector_derivative (\<lambda>x. \<gamma>(x) \<bullet> i) (at x within ({0..1})))) has_integral
            integral {((pathstart \<gamma>) \<bullet> i)..((pathfinish \<gamma>) \<bullet> i)} (\<lambda>f_var. F (f_var *\<^sub>R i + g f_var) \<bullet> i)) {0..1}"
     using  gamma_is_in_terms_of_i i_norm_1
@@ -2222,7 +2222,7 @@ proof-
     using has_vector_derivative_at_within
     by blast
   then have vi: "(\<And>x. x \<in> ({0..1} - ?s) \<Longrightarrow> (\<phi> has_real_derivative D x) (at x within {0..1}))"
-    using has_field_derivative_iff_has_vector_derivative
+    using has_real_derivative_iff_has_vector_derivative
     by blast
   have a:"((\<lambda>x. D x * (F (\<gamma>2 (\<phi> x)) \<bullet> b * (vector_derivative \<gamma>2 (at (\<phi> x) within {0..1}) \<bullet> b))) has_integral
               integral {\<phi> 0..\<phi> 1} (\<lambda>x. F (\<gamma>2 x) \<bullet> b * (vector_derivative \<gamma>2 (at x within {0..1}) \<bullet> b)))
@@ -2456,7 +2456,7 @@ proof-
   then have "(\<And>x. x \<in> ({0..1} -s) \<Longrightarrow> (\<phi> has_vector_derivative D x) (at x within {0..1}))"
     using has_vector_derivative_at_within  by blast
   then have vi: "(\<And>x. x \<in> ({0..1} - s) \<Longrightarrow> (\<phi> has_real_derivative D x) (at x within {0..1}))"
-    using has_field_derivative_iff_has_vector_derivative
+    using has_real_derivative_iff_has_vector_derivative
     by blast
   have a:"((\<lambda>x. D x * (F (\<gamma>2 (\<phi> x)) \<bullet> b * (vector_derivative \<gamma>2 (at (\<phi> x) within {0..1}) \<bullet> b))) has_integral
               integral {\<phi> 0..\<phi> 1} (\<lambda>x. F (\<gamma>2 x) \<bullet> b * (vector_derivative \<gamma>2 (at x within {0..1}) \<bullet> b)))

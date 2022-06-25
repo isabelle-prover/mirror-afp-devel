@@ -655,7 +655,7 @@ proof -
       unfolding primes_M_def prime_sum_upto_altdef1 using x
       by (intro partial_summation_strong[of "{}"])
          (auto intro!: continuous_intros derivative_eq_intros simp: power2_eq_square
-               simp flip: has_field_derivative_iff_has_vector_derivative)
+               simp flip: has_real_derivative_iff_has_vector_derivative)
     also have "\<MM> x * (1 / ln x) - \<MM> 2 * (1 / ln 2) - 
                  (\<Sum>n\<in>real -` {2<..x}. ind prime n * (ln n / n) * (1 / ln n)) =
                \<MM> x / ln x - (\<Sum>n\<in>insert 2 (real -` {2<..x}). ind prime n * (ln n / n) * (1 / ln n))" 
@@ -672,7 +672,7 @@ proof -
     hence "((\<lambda>t. \<MM> t / (t * ln t ^ 2) - 1 / (t * ln t)) has_integral
              (f x - \<MM> x / ln x - (ln (ln x) - ln (ln 2)))) {2..x}" using x
       by (intro has_integral_diff fundamental_theorem_of_calculus)
-         (auto simp flip: has_field_derivative_iff_has_vector_derivative
+         (auto simp flip: has_real_derivative_iff_has_vector_derivative
                intro!: derivative_eq_intros)
     also have "?this \<longleftrightarrow> (r has_integral (f x - \<MM> x / ln x - (ln (ln x) - ln (ln 2)))) {2..x}"
       by (intro has_integral_cong) (auto simp: r_def field_simps power2_eq_square)

@@ -162,7 +162,15 @@ fun hammer_logtac (pstate:Proof.state) =
                              [("isar_proofs", "false"),("smt_proofs", "false")]
     val Auto_Try           = Sledgehammer_Prover.Auto_Try;
     val fact_override      = Sledgehammer_Fact.no_fact_override;
-    val run_sledgehammer   = Sledgehammer.run_sledgehammer params Auto_Try NONE 1 fact_override
+    val run_sledgehammer   = (fn state =>
+                              let
+                                val string_of_outcome =
+                                  Sledgehammer.short_string_of_sledgehammer_outcome
+                              in
+                                Sledgehammer.run_sledgehammer params Auto_Try NONE 1 fact_override
+                                  state
+                                |> apsnd (ATP_Util.map_prod string_of_outcome single)
+                              end)
                            : Proof.state -> bool * (string * string list);
     (*function body*)
     val result             = SOME (run_sledgehammer pstate)

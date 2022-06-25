@@ -1,121 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Lower bound on comparison-based sorting algorithms - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Lower bound on comparison-based sorting algorithms - Archive of Formal Proofs</title><meta name="description" content="This article contains a formal proof of the well-known fact that number of comparisons that a comparison-based sorting algorithm needs to perform to sort a..."><meta property="og:title" content="Lower bound on comparison-based sorting algorithms" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Comparison_Sort_Lower_Bound.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2017-03-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-03-15T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Lower bound on comparison-based sorting algorithms"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">L</font>ower
-  
-          bound
-  
-          on
-  
-          comparison-based
-  
-          sorting
-  
-          algorithms
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>L</span>ower <span class='first'>B</span>ound on <span class='first'>C</span>omparison-<span class='first'>B</span>ased <span class='first'>S</span>orting <span class='first'>A</span>lgorithms</h1>
+  <div>
+    
+    <p><a href="../authors/eberl">Manuel Eberl</a> <a href="https://pruvisto.org/">🌐</a>
+    </p>
+    
+    
+    <p class="date">March 15, 2017</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Lower bound on comparison-based sorting algorithms</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              <a href="https://pruvisto.org">Manuel Eberl</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2017-03-15</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-<p>This article contains a formal proof of the well-known fact
+  <div class="abstract mathjax_process"><p>This article contains a formal proof of the well-known fact
 that number of comparisons that a comparison-based sorting algorithm
 needs to perform to sort a list of length <em>n</em> is at
 least <em>log<sub>2</sub>&nbsp;(n!)</em>
@@ -126,109 +106,78 @@ sorting algorithm is a recursive datatype containing either a HOL
 function or a query of a comparison oracle with a continuation
 containing the remaining computation. This makes it possible to force
 the algorithm to use only comparisons and to track the number of
-comparisons made.</p></td>
-</tr>
+comparisons made.</p></div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li></ul>
+  <h3>Theories of Comparison_Sort_Lower_Bound</h3>
+  <ul>
+    <li><a href="../theories/comparison_sort_lower_bound/#Linorder_Relations">Linorder_Relations</a></li>
+    <li><a href="../theories/comparison_sort_lower_bound/#Comparison_Sort_Lower_Bound">Comparison_Sort_Lower_Bound</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Landau_Symbols.html">Landau_Symbols</a></li><li><a href="../entries/List-Index.html">List-Index</a></li><li><a href="../entries/Stirling_Formula.html">Stirling_Formula</a></li></ul>
+  </div><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Treaps.html">Treaps</a></li><li><a href="../entries/Quick_Sort_Cost.html">Quick_Sort_Cost</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Generic_Join.html">Formalization of Multiway-Join Algorithms</a></li>
+      
+      <li><a href="../entries/Quick_Sort_Cost.html">The number of comparisons in QuickSort</a></li>
+      
+      <li><a href="../entries/PAL.html">Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Comparison_Sort_Lower_Bound/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Comparison_Sort_Lower_Bound/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Comparison_Sort_Lower_Bound/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Comparison_Sort_Lower_Bound-AFP,
-  author  = {Manuel Eberl},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Comparison_Sort_Lower_Bound-AFP</p>
+      <pre id="copyText">@article{Comparison_Sort_Lower_Bound-AFP,
+  author  = {eberl},
   title   = {Lower bound on comparison-based sorting algorithms},
   journal = {Archive of Formal Proofs},
-  month   = mar,
+  month   = March,
   year    = 2017,
   note    = {\url{https://isa-afp.org/entries/Comparison_Sort_Lower_Bound.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Landau_Symbols.html">Landau_Symbols</a>, <a href="List-Index.html">List-Index</a>, <a href="Stirling_Formula.html">Stirling_Formula</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Quick_Sort_Cost.html">Quick_Sort_Cost</a>, <a href="Treaps.html">Treaps</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Comparison_Sort_Lower_Bound/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Comparison_Sort_Lower_Bound/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Comparison_Sort_Lower_Bound/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Comparison_Sort_Lower_Bound-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Comparison_Sort_Lower_Bound-2021-02-23.tar.gz">
-              afp-Comparison_Sort_Lower_Bound-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Comparison_Sort_Lower_Bound-2020-04-18.tar.gz">
-              afp-Comparison_Sort_Lower_Bound-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Comparison_Sort_Lower_Bound-2019-06-11.tar.gz">
-              afp-Comparison_Sort_Lower_Bound-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Comparison_Sort_Lower_Bound-2018-08-16.tar.gz">
-              afp-Comparison_Sort_Lower_Bound-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Comparison_Sort_Lower_Bound-2017-10-10.tar.gz">
-              afp-Comparison_Sort_Lower_Bound-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Comparison_Sort_Lower_Bound-2017-03-16.tar.gz">
-              afp-Comparison_Sort_Lower_Bound-2017-03-16.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Comparison_Sort_Lower_Bound-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

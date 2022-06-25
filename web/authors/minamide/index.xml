@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>minamide on Archive of Formal Proofs</title>
+    <link>/authors/minamide/</link>
+    <description>Recent content in minamide on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 03 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/minamide/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Quasi-Borel Spaces</title>
+      <link>/entries/Quasi_Borel_Spaces.html</link>
+      <pubDate>Thu, 03 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Quasi_Borel_Spaces.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Depth First Search</title>
+      <link>/entries/Depth-First-Search.html</link>
+      <pubDate>Thu, 24 Jun 2004 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Depth-First-Search.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

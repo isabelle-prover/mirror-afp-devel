@@ -1,120 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Homogeneous Linear Diophantine Equations - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Homogeneous Linear Diophantine Equations - Archive of Formal Proofs</title><meta name="description" content="We formalize the theory of homogeneous linear diophantine equations,
+focusing on two main results: (1) an abstract characterization of
+minimal complete..."><meta property="og:title" content="Homogeneous Linear Diophantine Equations" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Diophantine_Eqns_Lin_Hom.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2017-10-14T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-14T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Homogeneous Linear Diophantine Equations"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">H</font>omogeneous
-  
-          <font class="first">L</font>inear
-  
-          <font class="first">D</font>iophantine
-  
-          <font class="first">E</font>quations
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>H</span>omogeneous <span class='first'>L</span>inear <span class='first'>D</span>iophantine <span class='first'>E</span>quations</h1>
+  <div>
+    
+    <p><a href="../authors/messner">Florian Messner</a> <a href="mailto:florian.g.messner@uibk.ac.at">📧</a>, <a href="../authors/parsert">Julian Parsert</a> <a href="mailto:julian.parsert@gmail.com">📧</a>, <a href="../authors/schoepf">Jonas Schöpf</a> <a href="mailto:jonas.schoepf@uibk.ac.at">📧</a> and <a href="../authors/sternagel">Christian Sternagel</a> <a href="mailto:c.sternagel@gmail.com">📧</a>
+    </p>
+    
+    
+    <p class="date">October 14, 2017</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Homogeneous Linear Diophantine Equations</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                      Florian Messner (florian /dot/ g /dot/ messner /at/ uibk /dot/ ac /dot/ at),
-                  <a href="http://www.parsert.com/">Julian Parsert</a>,
-                Jonas Schöpf (jonas /dot/ schoepf /at/ uibk /dot/ ac /dot/ at) and
-          Christian Sternagel (c /dot/ sternagel /at/ gmail /dot/ com)
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2017-10-14</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-We formalize the theory of homogeneous linear diophantine equations,
+  <div class="abstract mathjax_process">We formalize the theory of homogeneous linear diophantine equations,
 focusing on two main results: (1) an abstract characterization of
 minimal complete sets of solutions, and (2) an algorithm computing
 them. Both, the characterization and the algorithm are based on
@@ -123,100 +106,77 @@ variant of Huet's lexicographic algorithm incorporating improved
 bounds due to Clausen and Fortenbacher. We proceed by proving its
 soundness and completeness. Finally, we employ code equations to
 obtain a reasonably efficient implementation. Thus, we provide a
-formally verified solver for homogeneous linear diophantine equations.</td>
-</tr>
+formally verified solver for homogeneous linear diophantine equations.</div><a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a><h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/algorithms/mathematical">Computer science/Algorithms/Mathematical</a></li><li><a href="../topics/mathematics/number-theory">Mathematics/Number theory</a></li><li><a href="../topics/tools">Tools</a></li></ul>
+  <h3>Theories of Diophantine_Eqns_Lin_Hom</h3>
+  <ul>
+    <li><a href="../theories/diophantine_eqns_lin_hom/#List_Vector">List_Vector</a></li>
+    <li><a href="../theories/diophantine_eqns_lin_hom/#Linear_Diophantine_Equations">Linear_Diophantine_Equations</a></li>
+    <li><a href="../theories/diophantine_eqns_lin_hom/#Sorted_Wrt">Sorted_Wrt</a></li>
+    <li><a href="../theories/diophantine_eqns_lin_hom/#Minimize_Wrt">Minimize_Wrt</a></li>
+    <li><a href="../theories/diophantine_eqns_lin_hom/#Simple_Algorithm">Simple_Algorithm</a></li>
+    <li><a href="../theories/diophantine_eqns_lin_hom/#Algorithm">Algorithm</a></li>
+    <li><a href="../theories/diophantine_eqns_lin_hom/#Solver_Code">Solver_Code</a></li></ul><div class="flex-wrap">
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Bicategory.html">Bicategories</a></li>
+      
+      <li><a href="../entries/Equivalence_Relation_Enumeration.html">Enumeration of Equivalence Relations</a></li>
+      
+      <li><a href="../entries/ResiduatedTransitionSystem.html">Residuated Transition Systems</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Diophantine_Eqns_Lin_Hom/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Diophantine_Eqns_Lin_Hom/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Diophantine_Eqns_Lin_Hom/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Diophantine_Eqns_Lin_Hom-AFP,
-  author  = {Florian Messner and Julian Parsert and Jonas Schöpf and Christian Sternagel},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Diophantine_Eqns_Lin_Hom-AFP</p>
+      <pre id="copyText">@article{Diophantine_Eqns_Lin_Hom-AFP,
+  author  = {messner, parsert, schoepf and sternagel},
   title   = {Homogeneous Linear Diophantine Equations},
   journal = {Archive of Formal Proofs},
-  month   = oct,
+  month   = October,
   year    = 2017,
   note    = {\url{https://isa-afp.org/entries/Diophantine_Eqns_Lin_Hom.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a></td></tr>
-
-    
-                    
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Diophantine_Eqns_Lin_Hom/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Diophantine_Eqns_Lin_Hom/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Diophantine_Eqns_Lin_Hom/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Diophantine_Eqns_Lin_Hom-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Diophantine_Eqns_Lin_Hom-2021-02-23.tar.gz">
-              afp-Diophantine_Eqns_Lin_Hom-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Diophantine_Eqns_Lin_Hom-2020-04-18.tar.gz">
-              afp-Diophantine_Eqns_Lin_Hom-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Diophantine_Eqns_Lin_Hom-2019-06-11.tar.gz">
-              afp-Diophantine_Eqns_Lin_Hom-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Diophantine_Eqns_Lin_Hom-2018-08-16.tar.gz">
-              afp-Diophantine_Eqns_Lin_Hom-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Diophantine_Eqns_Lin_Hom-2017-10-15.tar.gz">
-              afp-Diophantine_Eqns_Lin_Hom-2017-10-15.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Diophantine_Eqns_Lin_Hom-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

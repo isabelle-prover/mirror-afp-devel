@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kammueller on Archive of Formal Proofs</title>
+    <link>/authors/kammueller/</link>
+    <description>Recent content in kammueller on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 27 Apr 2020 00:00:00 +0000</lastBuildDate><atom:link href="/authors/kammueller/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Attack Trees in Isabelle for GDPR compliance of IoT healthcare systems</title>
+      <link>/entries/Attack_Trees.html</link>
+      <pubDate>Mon, 27 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Attack_Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalizing Statecharts using Hierarchical Automata</title>
+      <link>/entries/Statecharts.html</link>
+      <pubDate>Sun, 08 Aug 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Statecharts.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Locally Nameless Sigma Calculus</title>
+      <link>/entries/Locally-Nameless-Sigma.html</link>
+      <pubDate>Fri, 30 Apr 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Locally-Nameless-Sigma.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

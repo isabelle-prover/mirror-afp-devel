@@ -1,0 +1,40 @@
+title = "Fisher's Inequality: Linear Algebraic Proof Techniques for Combinatorics"
+date = 2022-04-21
+topics = [
+  "Mathematics/Combinatorics",
+  "Mathematics/Algebra",
+]
+abstract = """
+Linear algebraic techniques are powerful, yet often underrated tools
+in combinatorial proofs. This formalisation provides a library
+including matrix representations of incidence set systems, general
+formal proof techniques for the rank argument and linear bound
+argument, and finally a formalisation of a number of variations of the
+well-known Fisher's inequality. We build on our prior work
+formalising combinatorial design theory using a locale-centric
+approach, including extensions such as constant intersect designs and
+dual incidence systems. In addition to Fisher's inequality, we
+also formalise proofs on other incidence system properties using the
+incidence matrix representation, such as design existence, dual system
+relationships and incidence system isomorphisms. This formalisation is
+presented in the paper \"Formalising Fisher's Inequality:
+Formal Linear Algebraic Techniques in Combinatorics\", accepted to
+ITP 2022."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.edmonds]
+homepage = "edmonds_homepage"
+
+[authors.paulson]
+
+[contributors]
+
+[notify]
+edmonds = "edmonds_email"
+
+[history]
+
+[extra]

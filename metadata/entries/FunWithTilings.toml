@@ -1,0 +1,25 @@
+title = "Fun With Tilings"
+date = 2008-11-07
+topics = [
+  "Mathematics/Misc",
+]
+abstract = "Tilings are defined inductively. It is shown that one form of mutilated chess board cannot be tiled with dominoes, while another one can be tiled with L-shaped tiles. Please add further fun examples of this kind!"
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[authors.paulson]
+homepage = "paulson_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

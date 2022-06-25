@@ -1,0 +1,10 @@
+chapter AFP
+
+session Dedekind_Real (AFP) = HOL +
+  options [timeout = 300]
+  theories
+    Dedekind_Real
+  document_files
+    "root.tex"
+    "root.bib"
+

@@ -1,0 +1,40 @@
+title = "Monadification, Memoization and Dynamic Programming"
+date = 2018-05-22
+topics = [
+  "Computer science/Programming languages/Transformations",
+  "Computer science/Algorithms",
+  "Computer science/Functional programming",
+]
+abstract = """
+We present a lightweight framework for the automatic verified
+(functional or imperative) memoization of recursive functions. Our
+tool can turn a pure Isabelle/HOL function definition into a
+monadified version in a state monad or the Imperative HOL heap monad,
+and prove a correspondence theorem. We provide a variety of memory
+implementations for the two types of monads. A number of simple
+techniques allow us to achieve bottom-up computation and
+space-efficient memoization. The framework’s utility is demonstrated
+on a number of representative dynamic programming problems. A detailed
+description of our work can be found in the accompanying paper [2]."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.wimmer]
+homepage = "wimmer_homepage"
+
+[authors.hu]
+email = "hu_email"
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+wimmer = "wimmer_email"
+
+[history]
+
+[extra]

@@ -1,0 +1,50 @@
+title = "Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model"
+date = 2012-07-27
+topics = [
+  "Computer science/Algorithms/Distributed",
+]
+abstract = """
+Distributed computing is inherently based on replication, promising
+increased tolerance to failures of individual computing nodes or
+communication channels. Realizing this promise, however, involves
+quite subtle algorithmic mechanisms, and requires precise statements
+about the kinds and numbers of faults that an algorithm tolerates (such
+as process crashes, communication faults or corrupted values).  The
+landmark theorem due to Fischer, Lynch, and Paterson shows that it is
+impossible to achieve Consensus among N asynchronously communicating
+nodes in the presence of even a single permanent failure. Existing
+solutions must rely on assumptions of \"partial synchrony\".
+<p>
+Indeed, there have been numerous misunderstandings on what exactly a given
+algorithm is supposed to realize in what kinds of environments. Moreover, the
+abundance of subtly different computational models complicates comparisons
+between different algorithms. Charron-Bost and Schiper introduced the Heard-Of
+model for representing algorithms and failure assumptions in a uniform
+framework, simplifying comparisons between algorithms.
+<p>
+In this contribution, we represent the Heard-Of model in Isabelle/HOL. We define
+two semantics of runs of algorithms with different unit of atomicity and relate
+these through a reduction theorem that allows us to verify algorithms in the
+coarse-grained semantics (where proofs are easier) and infer their correctness
+for the fine-grained one (which corresponds to actual executions). We
+instantiate the framework by verifying six Consensus algorithms that differ in
+the underlying algorithmic mechanisms and the kinds of faults they tolerate."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.debrat]
+email = "debrat_email"
+
+[authors.merz]
+homepage = "merz_homepage"
+
+[contributors]
+
+[notify]
+merz = "merz_email"
+
+[history]
+
+[extra]

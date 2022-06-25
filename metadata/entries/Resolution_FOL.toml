@@ -1,0 +1,58 @@
+title = "The Resolution Calculus for First-Order Logic"
+date = 2016-06-30
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = """
+This theory is a formalization of the resolution calculus for
+first-order logic. It is proven sound and complete. The soundness
+proof uses the substitution lemma, which shows a correspondence
+between substitutions and updates to an environment. The completeness
+proof uses semantic trees, i.e. trees whose paths are partial Herbrand
+interpretations. It employs Herbrand's theorem in a formulation which
+states that an unsatisfiable set of clauses has a finite closed
+semantic tree. It also uses the lifting lemma which lifts resolution
+derivation steps from the ground world up to the first-order world.
+The theory is presented in a paper in the Journal of Automated Reasoning
+[Sch18] which extends a paper presented at the International Conference
+on Interactive Theorem Proving [Sch16]. An earlier version was
+presented in an MSc thesis [Sch15]. The formalization mostly follows
+textbooks by Ben-Ari [BA12], Chang and Lee [CL73], and Leitsch [Lei97].
+The theory is part of the IsaFoL project [IsaFoL]. <p>
+<a name=\"Sch18\"></a>[Sch18] Anders Schlichtkrull. \"Formalization of the
+Resolution Calculus for First-Order Logic\". Journal of Automated
+Reasoning, 2018.<br> <a name=\"Sch16\"></a>[Sch16] Anders
+Schlichtkrull. \"Formalization of the Resolution Calculus for First-Order
+Logic\". In: ITP 2016. Vol. 9807. LNCS. Springer, 2016.<br>
+<a name=\"Sch15\"></a>[Sch15] Anders Schlichtkrull. <a href=\"https://people.compute.dtu.dk/andschl/Thesis.pdf\">
+\"Formalization of Resolution Calculus in Isabelle\"</a>.
+<a href=\"https://people.compute.dtu.dk/andschl/Thesis.pdf\">https://people.compute.dtu.dk/andschl/Thesis.pdf</a>.
+MSc thesis. Technical University of Denmark, 2015.<br>
+<a name=\"BA12\"></a>[BA12] Mordechai Ben-Ari. <i>Mathematical Logic for
+Computer Science</i>. 3rd. Springer, 2012.<br> <a
+name=\"CL73\"></a>[CL73] Chin-Liang Chang and Richard Char-Tung Lee.
+<i>Symbolic Logic and Mechanical Theorem Proving</i>. 1st. Academic
+Press, Inc., 1973.<br> <a name=\"Lei97\"></a>[Lei97] Alexander
+Leitsch. <i>The Resolution Calculus</i>. Texts in theoretical computer
+science. Springer, 1997.<br> <a name=\"IsaFoL\"></a>[IsaFoL]
+IsaFoL authors. <a href=\"https://bitbucket.org/jasmin_blanchette/isafol\">
+IsaFoL: Isabelle Formalization of Logic</a>.
+<a href=\"https://bitbucket.org/jasmin_blanchette/isafol\">https://bitbucket.org/jasmin_blanchette/isafol</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schlichtkrull]
+homepage = "schlichtkrull_homepage"
+
+[contributors]
+
+[notify]
+schlichtkrull = "schlichtkrull_email"
+
+[history]
+2018-01-24 = "added several new versions of the soundness and completeness theorems as described in the paper "
+2018-03-20 = "added a concrete instance of the unification and completeness theorems using the First-Order Terms AFP-entry from IsaFoR as described in the papers "
+
+[extra]

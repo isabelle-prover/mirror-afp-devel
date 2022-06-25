@@ -1,45 +1,9 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2020
-(C) Copyright Sebastian A. Mödersheim, DTU, 2020
-(C) Copyright Achim D. Brucker, University of Exeter, 2020
-(C) Copyright Anders Schlichtkrull, DTU, 2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Term_Abstraction.thy
     Author:     Andreas Viktor Hess, DTU
     Author:     Sebastian A. Mödersheim, DTU
     Author:     Achim D. Brucker, University of Exeter
     Author:     Anders Schlichtkrull, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section\<open>Term Abstraction\<close>
@@ -70,8 +34,8 @@ definition abs_apply_pairs (infixl "\<cdot>\<^sub>\<alpha>\<^sub>p\<^sub>a\<^sub
 
 definition abs_apply_strand_step (infixl "\<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>t\<^sub>p" 67) where
   "s \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>t\<^sub>p \<alpha> \<equiv> (case s of
-    (l,send\<langle>t\<rangle>) \<Rightarrow> (l,send\<langle>t \<cdot>\<^sub>\<alpha> \<alpha>\<rangle>)
-  | (l,receive\<langle>t\<rangle>) \<Rightarrow> (l,receive\<langle>t \<cdot>\<^sub>\<alpha> \<alpha>\<rangle>)
+    (l,send\<langle>ts\<rangle>) \<Rightarrow> (l,send\<langle>ts \<cdot>\<^sub>\<alpha>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<alpha>\<rangle>)
+  | (l,receive\<langle>ts\<rangle>) \<Rightarrow> (l,receive\<langle>ts \<cdot>\<^sub>\<alpha>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<alpha>\<rangle>)
   | (l,\<langle>ac: t \<doteq> t'\<rangle>) \<Rightarrow> (l,\<langle>ac: (t \<cdot>\<^sub>\<alpha> \<alpha>) \<doteq> (t' \<cdot>\<^sub>\<alpha> \<alpha>)\<rangle>)
   | (l,insert\<langle>t,t'\<rangle>) \<Rightarrow> (l,insert\<langle>t \<cdot>\<^sub>\<alpha> \<alpha>,t' \<cdot>\<^sub>\<alpha> \<alpha>\<rangle>)
   | (l,delete\<langle>t,t'\<rangle>) \<Rightarrow> (l,delete\<langle>t \<cdot>\<^sub>\<alpha> \<alpha>,t' \<cdot>\<^sub>\<alpha> \<alpha>\<rangle>)
@@ -131,7 +95,7 @@ qed simp
 
 lemma abs_ik_append: "(ik\<^sub>s\<^sub>s\<^sub>t (A@B) \<cdot>\<^sub>s\<^sub>e\<^sub>t I) \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t a = (ik\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>s\<^sub>e\<^sub>t I) \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t a \<union> (ik\<^sub>s\<^sub>s\<^sub>t B \<cdot>\<^sub>s\<^sub>e\<^sub>t I) \<cdot>\<^sub>\<alpha>\<^sub>s\<^sub>e\<^sub>t a"
 unfolding abs_apply_terms_def ik\<^sub>s\<^sub>s\<^sub>t_def
-by auto
+by fastforce
 
 lemma to_abs_in:
   assumes "(Fun (Val n) [], Fun (Set s) []) \<in> set D"
@@ -209,7 +173,7 @@ proof -
 qed
 
 lemma abs_term_subst_eq:
-  fixes \<delta> \<theta>::"(('a,'b,'c) prot_fun, ('d,'e prot_atom) term \<times> nat) subst"
+  fixes \<delta> \<theta>::"(('a,'b,'c,'d) prot_fun, ('e,'f prot_atom) term \<times> nat) subst"
   assumes "\<forall>x \<in> fv t. \<delta> x \<cdot>\<^sub>\<alpha> a = \<theta> x \<cdot>\<^sub>\<alpha> b"
     and "\<nexists>n T. Fun (Val n) T \<in> subterms t"
   shows "t \<cdot> \<delta> \<cdot>\<^sub>\<alpha> a = t \<cdot> \<theta> \<cdot>\<^sub>\<alpha> b"
@@ -224,7 +188,7 @@ proof (induction t)
 qed simp
 
 lemma abs_term_subst_eq':
-  fixes \<delta> \<theta>::"(('a,'b,'c) prot_fun, ('d,'e prot_atom) term \<times> nat) subst"
+  fixes \<delta> \<theta>::"(('a,'b,'c,'d) prot_fun, ('e,'f prot_atom) term \<times> nat) subst"
   assumes "\<forall>x \<in> fv t. \<delta> x \<cdot>\<^sub>\<alpha> a = \<theta> x"
     and "\<nexists>n T. Fun (Val n) T \<in> subterms t"
   shows "t \<cdot> \<delta> \<cdot>\<^sub>\<alpha> a = t \<cdot> \<theta>"

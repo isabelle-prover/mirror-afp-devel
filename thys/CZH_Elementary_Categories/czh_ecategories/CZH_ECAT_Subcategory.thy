@@ -187,14 +187,14 @@ lemma (in subcategory) subcat_is_inverseD[cat_sub_fw_cs_intros]:
 
 lemmas [cat_sub_fw_cs_intros] = subcategory.subcat_is_inverseD
 
-lemma (in subcategory) subcat_is_arr_isomorphismD[cat_sub_fw_cs_intros]:
+lemma (in subcategory) subcat_is_iso_arrD[cat_sub_fw_cs_intros]:
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> b" 
   shows "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
-proof(intro is_arr_isomorphismI)
-  from subcategory_axioms is_arr_isomorphismD(1)[OF assms] show "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b"
+proof(intro is_iso_arrI)
+  from subcategory_axioms is_iso_arrD(1)[OF assms] show "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_sub_bw_cs_simps[symmetric] cs_intro: cat_sub_fw_cs_intros
       )
   from assms have "is_inverse \<BB> (f\<inverse>\<^sub>C\<^bsub>\<BB>\<^esub>) f"
@@ -208,7 +208,7 @@ proof(intro is_arr_isomorphismI)
       )
 qed
 
-lemmas [cat_sub_fw_cs_intros] = subcategory.subcat_is_arr_isomorphismD
+lemmas [cat_sub_fw_cs_intros] = subcategory.subcat_is_iso_arrD
 
 lemma (in subcategory) subcat_the_inverse_simp[cat_sub_bw_cs_simps]:
   assumes "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> b" 
@@ -232,7 +232,7 @@ lemma (in subcategory) subcat_obj_isoD:
   using assms subcategory_axioms
   by (elim obj_isoE) 
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: cat_sub_bw_cs_simps cs_intro: obj_isoI cat_sub_fw_cs_intros
     )
 
@@ -415,7 +415,7 @@ proof(rule is_fl_functorI)
   interpret fl_subsemicategory \<alpha> \<open>cat_smc \<BB>\<close> \<open>cat_smc \<CC>\<close>
     by (rule fl_subcat_fl_subsemicategory)
   from inc.is_fl_semifunctor_axioms show 
-    "cf_smcf (dghm_inc \<BB> \<CC>) : cat_smc \<BB> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> cat_smc \<CC>"
+    "cf_smcf (cf_inc \<BB> \<CC>) : cat_smc \<BB> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> cat_smc \<CC>"
     unfolding slicing_commute by simp
 qed (rule inc.is_functor_axioms)
 
@@ -531,7 +531,7 @@ See nLab
 \<close>
 
 locale replete_subcategory = subcategory \<alpha> \<BB> \<CC> for \<alpha> \<BB> \<CC> +
-  assumes rep_subcat_is_arr_isomorphism_is_arr: 
+  assumes rep_subcat_is_iso_arr_is_arr: 
     "a \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr> \<Longrightarrow> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b \<Longrightarrow> f : a \<mapsto>\<^bsub>\<BB>\<^esub> b"
 
 abbreviation is_replete_subcategory ("(_/ \<subseteq>\<^sub>C\<^sub>.\<^sub>r\<^sub>e\<^sub>p\<index> _)" [51, 51] 50)
@@ -551,23 +551,23 @@ lemmas [cat_sub_cs_intros] = replete_subcategoryD(1)
 text\<open>Elementary properties.\<close>
 
 lemma (in replete_subcategory) (*not cat_sub_intro*)
-  rep_subcat_is_arr_isomorphism_is_arr_isomorphism_left:
+  rep_subcat_is_iso_arr_is_iso_arr_left:
   assumes "a \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   shows "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> b"
-proof(intro is_arr_isomorphismI is_inverseI)
+proof(intro is_iso_arrI is_inverseI)
   from assms show f: "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b" 
-    by (auto intro: rep_subcat_is_arr_isomorphism_is_arr)
+    by (auto intro: rep_subcat_is_iso_arr_is_arr)
   have "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> a"
-    by (rule dg.cat_the_inverse_is_arr_isomorphism[OF assms(2)])
+    by (rule dg.cat_the_inverse_is_iso_arr[OF assms(2)])
   with f show inv_f: "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> : b \<mapsto>\<^bsub>\<BB>\<^esub> a" 
-    by (auto intro: rep_subcat_is_arr_isomorphism_is_arr)
+    by (auto intro: rep_subcat_is_iso_arr_is_arr)
   show "f : a \<mapsto>\<^bsub>\<BB>\<^esub> b" by (rule f)
   from dg.category_axioms assms have [cat_sub_bw_cs_simps]: 
     "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = \<CC>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   from dg.category_axioms assms have [cat_sub_bw_cs_simps]: 
     "f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = \<CC>\<lparr>CId\<rparr>\<lparr>b\<rparr>"
-    by (cs_concl cs_simp: cat_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)
   from subcategory_axioms f inv_f show "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f = \<BB>\<lparr>CId\<rparr>\<lparr>a\<rparr>"
     by (cs_concl cs_simp: cat_sub_bw_cs_simps cs_intro: cat_cs_intros)
   from subcategory_axioms f inv_f show "f \<circ>\<^sub>A\<^bsub>\<BB>\<^esub> f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = \<BB>\<lparr>CId\<rparr>\<lparr>b\<rparr>"
@@ -575,46 +575,46 @@ proof(intro is_arr_isomorphismI is_inverseI)
 qed
 
 lemma (in replete_subcategory) (*not cat_sub_intro*)
-  rep_subcat_is_arr_isomorphism_is_arr_isomorphism_right:
+  rep_subcat_is_iso_arr_is_iso_arr_right:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" and "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   shows "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> b"
 proof-
   from assms(2) have "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> a"
-    by (rule dg.cat_the_inverse_is_arr_isomorphism)
+    by (rule dg.cat_the_inverse_is_iso_arr)
   with assms(1) have inv_f: "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> : b \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> a"
-    by (intro rep_subcat_is_arr_isomorphism_is_arr_isomorphism_left)
+    by (intro rep_subcat_is_iso_arr_is_iso_arr_left)
   then have "(f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>)\<inverse>\<^sub>C\<^bsub>\<BB>\<^esub> : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> b" 
-    by (rule sdg.cat_the_inverse_is_arr_isomorphism)
+    by (rule sdg.cat_the_inverse_is_iso_arr)
   moreover from replete_subcategory_axioms assms inv_f have "(f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub>)\<inverse>\<^sub>C\<^bsub>\<BB>\<^esub> = f"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_sub_bw_cs_simps cat_cs_simps cs_intro: cat_cs_intros 
       )
   ultimately show ?thesis by simp
 qed
 
 lemma (in replete_subcategory) (*not cat_sub_bw_cs_simps*)
-  rep_subcat_is_arr_isomorphism_is_arr_isomorphism_left_iff:
+  rep_subcat_is_iso_arr_is_iso_arr_left_iff:
   assumes "a \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
   shows "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> b \<longleftrightarrow> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   using assms replete_subcategory_axioms 
   by (intro iffI)
     (
       cs_concl cs_intro: 
-        rep_subcat_is_arr_isomorphism_is_arr_isomorphism_left 
+        rep_subcat_is_iso_arr_is_iso_arr_left 
         cat_sub_fw_cs_intros
     )
 
 lemma (in replete_subcategory) (*not cat_sub_bw_cs_simps*)
-  rep_subcat_is_arr_isomorphism_is_arr_isomorphism_right_iff:
+  rep_subcat_is_iso_arr_is_iso_arr_right_iff:
   assumes "b \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" 
   shows "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> b \<longleftrightarrow> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   using assms replete_subcategory_axioms 
   by (intro iffI)
     (
       cs_concl cs_intro: 
-        rep_subcat_is_arr_isomorphism_is_arr_isomorphism_right
+        rep_subcat_is_iso_arr_is_iso_arr_right
         cat_sub_fw_cs_intros
     )
 
@@ -627,7 +627,7 @@ lemma rep_subcat_refl:
 proof-
   interpret category \<alpha> \<AA> by (rule assms)
   show ?thesis 
-    by (intro replete_subcategoryI subcat_refl assms is_arr_isomorphismD(1))
+    by (intro replete_subcategoryI subcat_refl assms is_iso_arrD(1))
 qed
 
 lemma rep_subcat_trans[trans]:
@@ -649,7 +649,7 @@ proof-
         (
           rule \<AA>\<BB>.dg.cat_is_arrD(3)
             [
-              OF \<BB>\<CC>.rep_subcat_is_arr_isomorphism_is_arr[
+              OF \<BB>\<CC>.rep_subcat_is_iso_arr_is_arr[
                 OF \<AA>\<BB>.subcat_objD[OF prems(1)] prems(2)
                 ]
             ]
@@ -657,12 +657,12 @@ proof-
     then have "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> b"
       by 
         (
-          rule \<BB>\<CC>.rep_subcat_is_arr_isomorphism_is_arr_isomorphism_right[
+          rule \<BB>\<CC>.rep_subcat_is_iso_arr_is_iso_arr_right[
             OF _ prems(2)
             ]
         )
     then show "f : a \<mapsto>\<^bsub>\<AA>\<^esub> b"
-      by (rule \<AA>\<BB>.rep_subcat_is_arr_isomorphism_is_arr[OF prems(1)])
+      by (rule \<AA>\<BB>.rep_subcat_is_iso_arr_is_arr[OF prems(1)])
   qed
 qed
 
@@ -703,22 +703,22 @@ lemmas [cat_sub_cs_intros] = wide_replete_subcategoryD
 text\<open>Wide replete subcategory preserves isomorphisms.\<close>
 
 lemma (in wide_replete_subcategory) 
-  wr_subcat_is_arr_isomorphism_is_arr_isomorphism:
+  wr_subcat_is_iso_arr_is_iso_arr:
   "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> b \<longleftrightarrow> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
 proof(rule iffI)
   assume prems: "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"
   then have "a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" by auto
   then have a: "a \<in>\<^sub>\<circ> \<BB>\<lparr>Obj\<rparr>" by (simp add: wide_subcat_obj_eq)
   show "f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<BB>\<^esub> b"
-    by (intro rep_subcat_is_arr_isomorphism_is_arr_isomorphism_left[OF a prems])
+    by (intro rep_subcat_is_iso_arr_is_iso_arr_left[OF a prems])
 qed 
   (
     use wide_replete_subcategory_axioms in
-      \<open>cs_concl cs_intro: cat_sub_fw_cs_intros \<close>
+      \<open>cs_concl cs_shallow cs_intro: cat_sub_fw_cs_intros \<close>
   )
 
 lemmas [cat_sub_bw_cs_simps] = 
-  wide_replete_subcategory.wr_subcat_is_arr_isomorphism_is_arr_isomorphism
+  wide_replete_subcategory.wr_subcat_is_iso_arr_is_iso_arr
 
 
 subsubsection\<open>The wide replete subcategory relation is a partial order\<close>

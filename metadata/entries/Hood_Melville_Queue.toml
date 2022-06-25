@@ -1,0 +1,27 @@
+title = "Hood-Melville Queue"
+date = 2021-01-18
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+This is a verified implementation of a constant time queue. The
+original design is due to <a
+href=\"https://doi.org/10.1016/0020-0190(81)90030-2\">Hood
+and Melville</a>. This formalization follows the presentation in
+<em>Purely Functional Data Structures</em>by Okasaki."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.londono]
+email = "londono_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]

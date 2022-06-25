@@ -1,0 +1,76 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\newcommand{\wand}{\ensuremath{\mathbin{-\!\!*}}}
+
+\begin{document}
+
+\title{A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand}
+  
+\author{Thibault Dardinier}
+\maketitle
+
+\begin{abstract}
+Many separation logics support \emph{fractional permissions}~\cite{Boyland03} to distinguish between read and write access to a heap location, for instance, to allow concurrent reads while enforcing exclusive writes.
+The concept has been generalized to fractional assertions~\cite{Boyland10,JacobsPiessens11,LeHobor18,Brotherston20}. $A^p$ (where $A$ is a separation logic assertion and $p$ a fraction between $0$ and $1$) represents a fraction $p$ of $A$.
+$A^p$ holds in a state $\sigma$ iff there exists a state $\sigma_A$ in which $A$ holds and $\sigma$ is obtained from $\sigma_A$ by multiplying all permission amounts held by $p$.
+
+While $A^{p + q}$ can always be split into $A^p * A^q$, recombining $A^p * A^q$ into $A^{p+q}$ is not always sound.
+We say that $A$ is \emph{combinable} iff the entailment $A^p * A^q \models A^{p+q}$ holds for any two positive fractions $p$ and $q$ such that $p + q \le 1$.
+Combinable assertions are particularly useful to reason about concurrent programs, for instance, to combine the postconditions of parallel branches when they terminate.
+Unfortunately, the magic wand assertion $A \wand B$, commonly used to specify properties of partial data structures, is typically \emph{not} combinable.
+
+In this entry, we formalize a novel, restricted definition of the magic wand, described in a paper at CAV 22~\cite{Dardinier22}, which we call the \emph{combinable wand}.
+We prove some key properties of the combinable wand; in particular, a combinable wand is combinable if its right-hand side is combinable.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

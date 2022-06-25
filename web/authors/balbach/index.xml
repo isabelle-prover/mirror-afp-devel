@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>balbach on Archive of Formal Proofs</title>
+    <link>/authors/balbach/</link>
+    <description>Recent content in balbach on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 31 Aug 2020 00:00:00 +0000</lastBuildDate><atom:link href="/authors/balbach/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Some classical results in inductive inference of recursive functions</title>
+      <link>/entries/Inductive_Inference.html</link>
+      <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Inductive_Inference.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

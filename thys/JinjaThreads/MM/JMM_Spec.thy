@@ -1360,7 +1360,7 @@ next
     moreover from r' CnCSn have "?\<phi> (Suc n) r \<in> ?\<phi> (Suc n) ` ?C (Suc n)" 
       unfolding r_r' by auto
     hence "r \<in> ?C (Suc n)"
-      unfolding inj_on_image_mem_iff[OF injSn C_sub_A \<open>r \<in> actions (?E (Suc n))\<close>] .
+      unfolding inj_on_image_mem_iff[OF injSn \<open>r \<in> actions (?E (Suc n))\<close> C_sub_A] .
     with wfaSn have "action_tid (?E (Suc n)) r = action_tid E (?\<phi> (Suc n) r)"
       and "action_obs (?E (Suc n)) r \<approx> action_obs E (?\<phi> (Suc n) r)"
       by(blast dest: wf_action_translation_on_actionD)+
@@ -1382,7 +1382,7 @@ next
       by(simp add: Let_def write_seen_committed_def)
     with ws CnCSn have "?\<phi> (Suc n) (?ws (Suc n) r) \<in> ?\<phi> (Suc n) ` ?C (Suc n)" by auto
     hence "?ws (Suc n) r \<in> ?C (Suc n)"
-      by(subst (asm) inj_on_image_mem_iff[OF injSn C_sub_A wsSn])
+      by(subst (asm) inj_on_image_mem_iff[OF injSn wsSn C_sub_A])
     moreover from ws CnCSn have "ws (?\<phi> (Suc n) r) \<in> ?\<phi> (Suc n) ` ?C (Suc n)"
       unfolding r_r' by auto
     ultimately show ?thesis by simp
@@ -1394,7 +1394,7 @@ next
       by blast
     hence "ws (?\<phi> (Suc n) r) \<in> ?\<phi> (Suc n) ` ?C (Suc n)"
       using CnCSn by blast+
-    thus ?thesis by(simp add: inj_on_image_mem_iff[OF injSn C_sub_A wsSn])
+    thus ?thesis by(simp add: inj_on_image_mem_iff[OF injSn wsSn C_sub_A])
   qed
 qed
 
@@ -1448,7 +1448,7 @@ proof -
       moreover from r' CnCSn have "?\<phi> (Suc n) r \<in> ?\<phi> (Suc n) ` ?C (Suc n)" 
         unfolding r_r' by auto
       hence "r \<in> ?C (Suc n)"
-        unfolding inj_on_image_mem_iff[OF injSn C_sub_A \<open>r \<in> actions (?E (Suc n))\<close>] .
+        unfolding inj_on_image_mem_iff[OF injSn \<open>r \<in> actions (?E (Suc n))\<close> C_sub_A] .
       with wfaSn have "action_tid (?E (Suc n)) r = action_tid E (?\<phi> (Suc n) r)"
         and "action_obs (?E (Suc n)) r \<approx> action_obs E (?\<phi> (Suc n) r)"
         by(blast dest: wf_action_translation_on_actionD)+
@@ -1471,7 +1471,7 @@ proof -
         by(simp add: Let_def write_seen_committed_def)
       with ws CnCSn have "?\<phi> (Suc n) (?ws (Suc n) r) \<in> ?\<phi> (Suc n) ` ?C (Suc n)" by auto
       hence "?ws (Suc n) r \<in> ?C (Suc n)"
-        by(subst (asm) inj_on_image_mem_iff[OF injSn C_sub_A wsSn])
+        by(subst (asm) inj_on_image_mem_iff[OF injSn wsSn C_sub_A])
       moreover from ws CnCSn have "ws (?\<phi> (Suc n) r) \<in> ?\<phi> (Suc n) ` ?C (Suc n)"
         unfolding r_r' by auto
       ultimately show ?thesis by simp
@@ -1485,7 +1485,7 @@ proof -
       hence "?\<phi> (Suc n) (?ws (Suc n) r) \<in> ?\<phi> (Suc n) ` ?C (Suc n)"
         and "ws (?\<phi> (Suc n) r) \<in> ?\<phi> (Suc n) ` ?C (Suc n)"
         using CnCSn by blast+
-      thus ?thesis by(simp add: inj_on_image_mem_iff[OF injSn C_sub_A wsSn])
+      thus ?thesis by(simp add: inj_on_image_mem_iff[OF injSn wsSn C_sub_A])
     qed
   qed
   thus ?thesis1 ?thesis2 by simp_all

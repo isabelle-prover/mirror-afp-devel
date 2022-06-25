@@ -1,228 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Count the Number of Complex Roots - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Count the Number of Complex Roots - Archive of Formal Proofs</title><meta name="description" content="Based on evaluating Cauchy indices through remainder sequences, this
+entry provides an effective procedure to count the number of complex
+roots (with..."><meta property="og:title" content="Count the Number of Complex Roots" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Count_Complex_Roots.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2017-10-17T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-10-17T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Count the Number of Complex Roots"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>ount
-  
-          the
-  
-          <font class="first">N</font>umber
-  
-          of
-  
-          <font class="first">C</font>omplex
-  
-          <font class="first">R</font>oots
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>C</span>ount the <span class='first'>N</span>umber of <span class='first'>C</span>omplex <span class='first'>R</span>oots</h1>
+  <div>
+    
+    <p><a href="../authors/li">Wenda Li</a> <a href="https://www.cl.cam.ac.uk/~wl302/">🌐</a>
+    </p>
+    
+    
+    <p class="date">October 17, 2017</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Count the Number of Complex Roots</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              <a href="https://www.cl.cam.ac.uk/~wl302/">Wenda Li</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2017-10-17</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-Based on evaluating Cauchy indices through remainder sequences, this
+  <div class="abstract mathjax_process">Based on evaluating Cauchy indices through remainder sequences, this
 entry provides an effective procedure to count the number of complex
 roots (with multiplicity) of a polynomial within various shapes (e.g., rectangle,
 circle and half-plane). Potential applications of this entry include certified
 complex root isolation (of a polynomial) and testing the Routh-Hurwitz
 stability criterion (i.e., to check whether all the roots of some
-characteristic polynomial have negative real parts).</td>
-</tr>
+characteristic polynomial have negative real parts).</div>BSD License<h3>Change history</h3>
 
-  <tr>
-    <td class="datahead" valign="top">Change history:</td>
-    <td class="abstract">[2021-10-26]: resolved the roots-on-the-border problem in the rectangular case (revision 82a159e398cf).</td>
-  </tr>
+  <p>[2021-10-26] resolved the roots-on-the-border problem in the rectangular case (revision 82a159e398cf).</p><h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/analysis">Mathematics/Analysis</a></li></ul>
+  <h3>Theories of Count_Complex_Roots</h3>
+  <ul>
+    <li><a href="../theories/count_complex_roots/#CC_Polynomials_Extra">CC_Polynomials_Extra</a></li>
+    <li><a href="../theories/count_complex_roots/#Extended_Sturm">Extended_Sturm</a></li>
+    <li><a href="../theories/count_complex_roots/#Count_Line">Count_Line</a></li>
+    <li><a href="../theories/count_complex_roots/#Count_Half_Plane">Count_Half_Plane</a></li>
+    <li><a href="../theories/count_complex_roots/#Count_Circle">Count_Circle</a></li>
+    <li><a href="../theories/count_complex_roots/#Count_Rectangle">Count_Rectangle</a></li>
+    <li><a href="../theories/count_complex_roots/#Count_Complex_Roots">Count_Complex_Roots</a></li>
+    <li><a href="../theories/count_complex_roots/#Count_Complex_Roots_Examples">Count_Complex_Roots_Examples</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Polynomial_Interpolation.html">Polynomial_Interpolation</a></li><li><a href="../entries/Sturm_Tarski.html">Sturm_Tarski</a></li><li><a href="../entries/Winding_Number_Eval.html">Winding_Number_Eval</a></li></ul>
+  </div><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Linear_Recurrences.html">Linear_Recurrences</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Sturm_Sequences.html">Sturm&rsquo;s Theorem</a></li>
+      
+      <li><a href="../entries/Sqrt_Babylonian.html">Computing N-th Roots using the Babylonian Method</a></li>
+      
+      <li><a href="../entries/Interpolation_Polynomials_HOL_Algebra.html">Interpolation Polynomials (in HOL-Algebra)</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Count_Complex_Roots-AFP,
-  author  = {Wenda Li},
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Count_Complex_Roots/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Count_Complex_Roots/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Count_Complex_Roots/session_graph.pdf">Dependencies</a></nav>
+
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Count_Complex_Roots-AFP</p>
+      <pre id="copyText">@article{Count_Complex_Roots-AFP,
+  author  = {li},
   title   = {Count the Number of Complex Roots},
   journal = {Archive of Formal Proofs},
-  month   = oct,
+  month   = October,
   year    = 2017,
   note    = {\url{https://isa-afp.org/entries/Count_Complex_Roots.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Polynomial_Interpolation.html">Polynomial_Interpolation</a>, <a href="Sturm_Tarski.html">Sturm_Tarski</a>, <a href="Winding_Number_Eval.html">Winding_Number_Eval</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Linear_Recurrences.html">Linear_Recurrences</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Count_Complex_Roots/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Count_Complex_Roots/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Count_Complex_Roots/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Count_Complex_Roots-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Count_Complex_Roots-2021-02-23.tar.gz">
-              afp-Count_Complex_Roots-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Count_Complex_Roots-2020-04-18.tar.gz">
-              afp-Count_Complex_Roots-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Count_Complex_Roots-2019-06-11.tar.gz">
-              afp-Count_Complex_Roots-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Count_Complex_Roots-2018-08-16.tar.gz">
-              afp-Count_Complex_Roots-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Count_Complex_Roots-2017-10-18.tar.gz">
-              afp-Count_Complex_Roots-2017-10-18.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Count_Complex_Roots-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

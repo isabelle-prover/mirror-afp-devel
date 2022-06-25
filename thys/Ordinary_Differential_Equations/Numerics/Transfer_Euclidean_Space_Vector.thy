@@ -435,7 +435,7 @@ lemma cast_v_flow_cast_eq:
    done
   subgoal
     using mem_existence_ivl_iv_defined[OF assms]
-    apply (auto simp: )
+    apply auto
     apply (subst v.flow_initial_time)
     subgoal by simp
     subgoal by transfer

@@ -339,7 +339,7 @@ lemma coll_zero1[intro, simp]: "coll 0 0 z"
   by (auto simp: det3_def')
 
 lemma coll_self[intro, simp]: "coll 0 z z"
-  by (auto simp: )
+  by auto
 
 lemma ccw'_not_coll:
   "ccw' a b c \<Longrightarrow> \<not>coll a b c"

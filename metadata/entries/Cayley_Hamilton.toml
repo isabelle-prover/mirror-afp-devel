@@ -1,0 +1,30 @@
+title = "The Cayley-Hamilton Theorem"
+date = 2014-09-15
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+This document contains a proof of the Cayley-Hamilton theorem
+based on the development of matrices in HOL/Multivariate Analysis."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.adelsberger]
+homepage = "adelsberger_homepage"
+
+[authors.hetzl]
+homepage = "hetzl_homepage"
+
+[authors.pollak]
+email = "pollak_email"
+
+[contributors]
+
+[notify]
+adelsberger = "adelsberger_email"
+
+[history]
+
+[extra]

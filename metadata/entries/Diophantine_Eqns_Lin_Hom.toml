@@ -1,0 +1,44 @@
+title = "Homogeneous Linear Diophantine Equations"
+date = 2017-10-14
+topics = [
+  "Computer science/Algorithms/Mathematical",
+  "Mathematics/Number theory",
+  "Tools",
+]
+abstract = """
+We formalize the theory of homogeneous linear diophantine equations,
+focusing on two main results: (1) an abstract characterization of
+minimal complete sets of solutions, and (2) an algorithm computing
+them. Both, the characterization and the algorithm are based on
+previous work by Huet. Our starting point is a simple but inefficient
+variant of Huet's lexicographic algorithm incorporating improved
+bounds due to Clausen and Fortenbacher. We proceed by proving its
+soundness and completeness. Finally, we employ code equations to
+obtain a reasonably efficient implementation. Thus, we provide a
+formally verified solver for homogeneous linear diophantine equations."""
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.messner]
+email = "messner_email"
+
+[authors.parsert]
+email = "parsert_email"
+
+[authors.schoepf]
+email = "schoepf_email"
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[contributors]
+
+[notify]
+sternagel = "sternagel_email"
+parsert = "parsert_email"
+
+[history]
+
+[extra]

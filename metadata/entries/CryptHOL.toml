@@ -1,0 +1,40 @@
+title = "CryptHOL"
+date = 2017-05-05
+topics = [
+  "Computer science/Security/Cryptography",
+  "Computer science/Functional programming",
+  "Mathematics/Probability theory",
+]
+abstract = """
+<p>CryptHOL provides a framework for formalising cryptographic arguments
+in Isabelle/HOL. It shallowly embeds a probabilistic functional
+programming language in higher order logic. The language features
+monadic sequencing, recursion, random sampling, failures and failure
+handling, and black-box access to oracles. Oracles are probabilistic
+functions which maintain hidden state between different invocations.
+All operators are defined in the new semantic domain of
+generative probabilistic values, a codatatype. We derive proof rules for
+the operators and establish a connection with the theory of relational
+parametricity. Thus, the resuting proofs are trustworthy and
+comprehensible, and the framework is extensible and widely applicable.
+</p><p>
+The framework is used in the accompanying AFP entry \"Game-based
+Cryptography in HOL\". There, we show-case our framework by formalizing
+different game-based proofs from the literature. This formalisation
+continues the work described in the author's ESOP 2016 paper.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochbihler]
+homepage = "lochbihler_homepage"
+
+[contributors]
+
+[notify]
+lochbihler = "lochbihler_email1"
+
+[history]
+
+[extra]

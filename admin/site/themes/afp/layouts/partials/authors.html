@@ -1,0 +1,28 @@
+{{- $Scratch := newScratch -}}
+{{ $site := .site}}
+
+{{- $affiliations := .affiliations -}}
+{{- range .authors -}}
+
+{{- $affils := "" -}}
+{{- if eq (isset $affiliations .) true -}}
+  {{- $affil := index $affiliations . -}}
+  {{- if eq (isset $affil "homepage") true -}}
+    {{- $affils = printf "%s [🌐](%s)" $affils (index $affil "homepage") -}}
+  {{- end -}}
+  {{- if eq (isset $affil "email") true -}}
+    {{- $affils = printf "%s [📧](mailto:%s)" $affils (index $affil "email") -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $author := printf "[%s](%s%s)%s"
+  (index (index $site.Site.Data.authors .) "name")
+  ("/authors/" | relLangURL)
+  (. | urlize)
+  $affils
+-}}
+{{- $Scratch.Add "authors" (slice $author) -}}
+
+{{- end -}}
+
+{{- delimit ($Scratch.Get "authors")  ", " | replaceRE "(, )([^,]+$)" " and $2" | .site.RenderString -}}

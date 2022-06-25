@@ -416,36 +416,24 @@ proof -
     then have \<eta>: "bij_betw \<eta> UNIV H"
       unfolding \<eta>_def
       by (metis \<omega>_def bij_betw_comp_iff2 bij_betw_def elts_of_set inf inj_ord_of_nat order_refl)
-    have Ord\<eta>: "Ord (\<eta> k)" for k
+    moreover have Ord\<eta>: "Ord (\<eta> k)" for k
       by (meson H Ord_in_Ord UNIV_I \<eta> assms bij_betw_apply subsetD)
-    obtain k where k: "((\<pi> \<circ> \<eta>)(Suc k), (\<pi> \<circ> \<eta>) k) \<notin> VWF"
-      using wf_VWF wf_iff_no_infinite_down_chain by blast
-    have \<pi>: "\<pi> y < \<pi> x" if "x\<in>H" "y\<in>H" "x<y" for x y
+    moreover obtain k where k: "(\<pi> (\<eta>(Suc k)), \<pi> (\<eta> k)) \<notin> VWF"
+      by (meson wf_VWF wf_iff_no_infinite_down_chain)
+    moreover have \<pi>: "\<pi> y < \<pi> x" if "x\<in>H" "y\<in>H" "x<y" for x y
       using 1 [of "{x,y}"] that H fiff by (fastforce simp: nsets_2_eq)
-    have False if "\<eta> (Suc k) \<le> \<eta> k"
-    proof -
-      have "(\<eta> (Suc k), \<eta> k) \<in> VWF \<or> \<eta> (Suc k) = \<eta> k"
-        using that Ord\<eta> Ord_mem_iff_lt by auto
-      then have "ordermap H VWF (\<eta> (Suc k)) \<le> ordermap H VWF (\<eta> k)"
-        by (metis \<eta> \<open>small H\<close> bij_betw_imp_surj_on ordermap_mono_le rangeI trans_VWF wf_VWF)
-      moreover have "ordermap H VWF (\<eta> (Suc k)) = succ (ord_of_nat k)"
-        unfolding \<eta>_def using bij bij_betw_inv_into_right by force
-      moreover have "ordermap H VWF (\<eta> k) = ord_of_nat k"
-        apply (simp add: \<eta>_def)
-        by (meson bij bij_betw_inv_into_right ord_of_nat_\<omega>)
-      ultimately have "succ (ord_of_nat k) \<le> ord_of_nat k"
-        by simp
-      then show False
-        by (simp add: less_eq_V_def)
-    qed
-    then have "\<eta> k < \<eta> (Suc k)"
-      by (metis Ord\<eta> Ord_linear_lt dual_order.strict_implies_order eq_refl)
-    then have "(\<pi> \<circ> \<eta>)(Suc k) < (\<pi> \<circ> \<eta>)k"
-      using \<pi> \<eta> bij_betw_apply by force
-    then show False
-      using k
-      apply (simp add: subset_iff)
-      by (metis H Ord\<pi> UNIV_I VWF_iff_Ord_less \<eta> bij_betw_imp_surj_on image_subset_iff)
+    ultimately have "\<eta> (Suc k) \<le> \<eta> k"
+      by (metis H Ord\<pi> Ord_linear2 VWF_iff_Ord_less bij_betw_def rangeI subset_iff)
+    then have "(\<eta> (Suc k), \<eta> k) \<in> VWF \<or> \<eta> (Suc k) = \<eta> k"
+      using Ord\<eta> Ord_mem_iff_lt by auto
+    then have "ordermap H VWF (\<eta> (Suc k)) \<le> ordermap H VWF (\<eta> k)"
+      by (metis \<eta> \<open>small H\<close> bij_betw_imp_surj_on ordermap_mono_le rangeI trans_VWF wf_VWF)
+    moreover have "ordermap H VWF (\<eta> (Suc k)) = succ (ord_of_nat k)"
+      unfolding \<eta>_def using bij bij_betw_inv_into_right by force
+    moreover have "ordermap H VWF (\<eta> k) = ord_of_nat k"
+      using \<eta>_def bij bij_betw_inv_into_right by force
+    ultimately show False
+      by (simp add: less_eq_V_def)
   qed
   ultimately show ?thesis
     apply (simp add: partn_lst_def image_subset_iff)

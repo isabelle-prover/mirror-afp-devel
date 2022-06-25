@@ -1,134 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Matrices, Jordan Normal Forms, and Spectral Radius Theory - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Matrices, Jordan Normal Forms, and Spectral Radius Theory - Archive of Formal Proofs</title><meta name="description" content=" Matrix interpretations are useful as measure functions in termination proving. In order to use these interpretations also for complexity analysis, the..."><meta property="og:title" content="Matrices, Jordan Normal Forms, and Spectral Radius Theory" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Jordan_Normal_Form.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2015-08-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2015-08-21T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Matrices, Jordan Normal Forms, and Spectral Radius Theory"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">M</font>atrices,
-  
-          <font class="first">J</font>ordan
-  
-          <font class="first">N</font>ormal
-  
-          <font class="first">F</font>orms,
-  
-          and
-  
-          <font class="first">S</font>pectral
-  
-          <font class="first">R</font>adius
-  
-          <font class="first">T</font>heory
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>M</span>atrices, <span class='first'>J</span>ordan <span class='first'>N</span>ormal <span class='first'>F</span>orms, and <span class='first'>S</span>pectral <span class='first'>R</span>adius <span class='first'>T</span>heory</h1>
+  <div>
+    
+    <p><a href="../authors/thiemann">René Thiemann</a> <a href="mailto:rene.thiemann@uibk.ac.at">📧</a> and <a href="../authors/yamada">Akihisa Yamada</a> <a href="mailto:akihisa.yamada@uibk.ac.at">📧</a>
+      with contributions from <a href="../authors/bentkamp">Alexander Bentkamp</a> <a href="mailto:bentkamp@gmail.com">📧</a>
+    </p>
+    
+    
+    <p class="date">August 21, 2015</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Matrices, Jordan Normal Forms, and Spectral Radius Theory</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                    René Thiemann (rene /dot/ thiemann /at/ uibk /dot/ ac /dot/ at) and
-          Akihisa Yamada (akihisa /dot/ yamada /at/ aist /dot/ go /dot/ jp)
-      </td>
-</tr>
-
-  <tr>
-    <td class="datahead">
-              Contributor:
-          </td>
-    <td class="data">
-                  Alexander Bentkamp (bentkamp /at/ gmail /dot/ com)
-           </td>
-  </tr>
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2015-08-21</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-<p>
+  <div class="abstract mathjax_process"><p>
 Matrix interpretations are useful as measure functions in termination proving. In order to use these interpretations also for complexity analysis, the growth rate of matrix powers has to examined. Here, we formalized a central result of spectral radius theory, namely that the growth rate is polynomially bounded if and only if the spectral radius of a matrix is at most one.
 </p><p>
 To formally prove this result we first studied the growth rates of matrices in Jordan normal form, and prove the result that every complex matrix has a Jordan normal form using a constructive prove via Schur decomposition.
@@ -136,124 +104,111 @@ To formally prove this result we first studied the growth rates of matrices in J
 The whole development is based on a new abstract type for matrices, which is also executable by a suitable setup of the code generator. It completely subsumes our former AFP-entry on executable matrices, and its main advantage is its close connection to the HMA-representation which allowed us to easily adapt existing proofs on determinants.
 </p><p>
 All the results have been applied to improve CeTA, our certifier to validate termination and complexity proof certificates.
-</p></td>
-</tr>
+</p></div>BSD License<h3>Change history</h3>
 
-  <tr>
-    <td class="datahead" valign="top">Change history:</td>
-    <td class="abstract">[2016-01-07]: Added Schur-decomposition, Gram-Schmidt orthogonalization, uniqueness of Jordan normal forms<br/>
-[2018-04-17]: Integrated lemmas from deep-learning AFP-entry of Alexander Bentkamp</td>
-  </tr>
+  <p>[2016-01-07] Added Schur-decomposition, Gram-Schmidt orthogonalization, uniqueness of Jordan normal forms<br/>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Jordan_Normal_Form-AFP,
-  author  = {René Thiemann and Akihisa Yamada},
+[2018-04-17] Integrated lemmas from deep-learning AFP-entry of Alexander Bentkamp</p><h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li></ul>
+  <h3>Theories of Jordan_Normal_Form</h3>
+  <ul>
+    <li><a href="../theories/jordan_normal_form/#Missing_Misc">Missing_Misc</a></li>
+    <li><a href="../theories/jordan_normal_form/#Missing_Ring">Missing_Ring</a></li>
+    <li><a href="../theories/jordan_normal_form/#Conjugate">Conjugate</a></li>
+    <li><a href="../theories/jordan_normal_form/#Matrix">Matrix</a></li>
+    <li><a href="../theories/jordan_normal_form/#Matrix_IArray_Impl">Matrix_IArray_Impl</a></li>
+    <li><a href="../theories/jordan_normal_form/#Gauss_Jordan_Elimination">Gauss_Jordan_Elimination</a></li>
+    <li><a href="../theories/jordan_normal_form/#Gauss_Jordan_IArray_Impl">Gauss_Jordan_IArray_Impl</a></li>
+    <li><a href="../theories/jordan_normal_form/#Column_Operations">Column_Operations</a></li>
+    <li><a href="../theories/jordan_normal_form/#Determinant">Determinant</a></li>
+    <li><a href="../theories/jordan_normal_form/#Determinant_Impl">Determinant_Impl</a></li>
+    <li><a href="../theories/jordan_normal_form/#Show_Matrix">Show_Matrix</a></li>
+    <li><a href="../theories/jordan_normal_form/#Char_Poly">Char_Poly</a></li>
+    <li><a href="../theories/jordan_normal_form/#Jordan_Normal_Form">Jordan_Normal_Form</a></li>
+    <li><a href="../theories/jordan_normal_form/#Missing_VectorSpace">Missing_VectorSpace</a></li>
+    <li><a href="../theories/jordan_normal_form/#VS_Connect">VS_Connect</a></li>
+    <li><a href="../theories/jordan_normal_form/#Gram_Schmidt">Gram_Schmidt</a></li>
+    <li><a href="../theories/jordan_normal_form/#Schur_Decomposition">Schur_Decomposition</a></li>
+    <li><a href="../theories/jordan_normal_form/#Jordan_Normal_Form_Existence">Jordan_Normal_Form_Existence</a></li>
+    <li><a href="../theories/jordan_normal_form/#Matrix_Impl">Matrix_Impl</a></li>
+    <li><a href="../theories/jordan_normal_form/#Strassen_Algorithm">Strassen_Algorithm</a></li>
+    <li><a href="../theories/jordan_normal_form/#Strassen_Algorithm_Code">Strassen_Algorithm_Code</a></li>
+    <li><a href="../theories/jordan_normal_form/#Matrix_Comparison">Matrix_Comparison</a></li>
+    <li><a href="../theories/jordan_normal_form/#Ring_Hom_Matrix">Ring_Hom_Matrix</a></li>
+    <li><a href="../theories/jordan_normal_form/#Derivation_Bound">Derivation_Bound</a></li>
+    <li><a href="../theories/jordan_normal_form/#Complexity_Carrier">Complexity_Carrier</a></li>
+    <li><a href="../theories/jordan_normal_form/#Show_Arctic">Show_Arctic</a></li>
+    <li><a href="../theories/jordan_normal_form/#Matrix_Complexity">Matrix_Complexity</a></li>
+    <li><a href="../theories/jordan_normal_form/#Matrix_Kernel">Matrix_Kernel</a></li>
+    <li><a href="../theories/jordan_normal_form/#Jordan_Normal_Form_Uniqueness">Jordan_Normal_Form_Uniqueness</a></li>
+    <li><a href="../theories/jordan_normal_form/#Spectral_Radius">Spectral_Radius</a></li>
+    <li><a href="../theories/jordan_normal_form/#DL_Missing_List">DL_Missing_List</a></li>
+    <li><a href="../theories/jordan_normal_form/#DL_Rank">DL_Rank</a></li>
+    <li><a href="../theories/jordan_normal_form/#DL_Missing_Sublist">DL_Missing_Sublist</a></li>
+    <li><a href="../theories/jordan_normal_form/#DL_Submatrix">DL_Submatrix</a></li>
+    <li><a href="../theories/jordan_normal_form/#DL_Rank_Submatrix">DL_Rank_Submatrix</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Polynomial_Factorization.html">Polynomial_Factorization</a></li></ul>
+  </div><div>
+    <h3>Used by</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Simplicial_complexes_and_boolean_functions.html">Simplicial_complexes_and_boolean_functions</a></li><li><a href="../entries/Complex_Bounded_Operators.html">Complex_Bounded_Operators</a></li><li><a href="../entries/Modular_arithmetic_LLL_and_HNF_algorithms.html">Modular_arithmetic_LLL_and_HNF_algorithms</a></li><li><a href="../entries/Isabelle_Marries_Dirac.html">Isabelle_Marries_Dirac</a></li><li><a href="../entries/Linear_Programming.html">Linear_Programming</a></li><li><a href="../entries/QHLProver.html">QHLProver</a></li><li><a href="../entries/Farkas.html">Farkas</a></li><li><a href="../entries/Stochastic_Matrices.html">Stochastic_Matrices</a></li><li><a href="../entries/Subresultants.html">Subresultants</a></li><li><a href="../entries/Deep_Learning.html">Deep_Learning</a></li><li><a href="../entries/Perron_Frobenius.html">Perron_Frobenius</a></li><li><a href="../entries/Groebner_Bases.html">Groebner_Bases</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Perron_Frobenius.html">Perron-Frobenius Theorem for Spectral Radius Analysis</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Jordan_Normal_Form/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Jordan_Normal_Form/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Jordan_Normal_Form/session_graph.pdf">Dependencies</a></nav>
+
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Jordan_Normal_Form-AFP</p>
+      <pre id="copyText">@article{Jordan_Normal_Form-AFP,
+  author  = {thiemann and yamada},
   title   = {Matrices, Jordan Normal Forms, and Spectral Radius Theory},
   journal = {Archive of Formal Proofs},
-  month   = aug,
+  month   = August,
   year    = 2015,
   note    = {\url{https://isa-afp.org/entries/Jordan_Normal_Form.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Polynomial_Factorization.html">Polynomial_Factorization</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Complex_Bounded_Operators.html">Complex_Bounded_Operators</a>, <a href="Deep_Learning.html">Deep_Learning</a>, <a href="Farkas.html">Farkas</a>, <a href="Groebner_Bases.html">Groebner_Bases</a>, <a href="Isabelle_Marries_Dirac.html">Isabelle_Marries_Dirac</a>, <a href="Linear_Programming.html">Linear_Programming</a>, <a href="Modular_arithmetic_LLL_and_HNF_algorithms.html">Modular_arithmetic_LLL_and_HNF_algorithms</a>, <a href="Perron_Frobenius.html">Perron_Frobenius</a>, <a href="QHLProver.html">QHLProver</a>, <a href="Simplicial_complexes_and_boolean_functions.html">Simplicial_complexes_and_boolean_functions</a>, <a href="Stochastic_Matrices.html">Stochastic_Matrices</a>, <a href="Subresultants.html">Subresultants</a>      </td></tr>
-          
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Jordan_Normal_Form/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Jordan_Normal_Form/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Jordan_Normal_Form/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Jordan_Normal_Form-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Jordan_Normal_Form-2021-02-23.tar.gz">
-              afp-Jordan_Normal_Form-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Jordan_Normal_Form-2020-04-18.tar.gz">
-              afp-Jordan_Normal_Form-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Jordan_Normal_Form-2019-06-11.tar.gz">
-              afp-Jordan_Normal_Form-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Jordan_Normal_Form-2018-08-16.tar.gz">
-              afp-Jordan_Normal_Form-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Jordan_Normal_Form-2017-10-10.tar.gz">
-              afp-Jordan_Normal_Form-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Jordan_Normal_Form-2016-12-17.tar.gz">
-              afp-Jordan_Normal_Form-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-Jordan_Normal_Form-2016-02-22.tar.gz">
-              afp-Jordan_Normal_Form-2016-02-22.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2015:
-            <a href="../release/afp-Jordan_Normal_Form-2015-08-23.tar.gz">
-              afp-Jordan_Normal_Form-2015-08-23.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Jordan_Normal_Form-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

@@ -1,0 +1,35 @@
+title = "Linear Inequalities"
+date = 2019-06-21
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+We formalize results about linear inqualities, mainly from
+Schrijver's book. The main results are the proof of the
+fundamental theorem on linear inequalities, Farkas' lemma,
+Carathéodory's theorem, the Farkas-Minkowsky-Weyl theorem, the
+decomposition theorem of polyhedra, and Meyer's result that the
+integer hull of a polyhedron is a polyhedron itself. Several theorems
+include bounds on the appearing numbers, and in particular we provide
+an a-priori bound on mixed-integer solutions of linear inequalities."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bottesch]
+homepage = "bottesch_homepage"
+
+[authors.reynaud]
+
+[authors.thiemann]
+homepage = "thiemann_homepage"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

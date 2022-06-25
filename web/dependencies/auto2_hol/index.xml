@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Auto2_HOL on Archive of Formal Proofs</title>
+    <link>/dependencies/auto2_hol/</link>
+    <description>Recent content in Auto2_HOL on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 21 Dec 2018 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/auto2_hol/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Verifying Imperative Programs using Auto2</title>
+      <link>/entries/Auto2_Imperative_HOL.html</link>
+      <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Auto2_Imperative_HOL.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

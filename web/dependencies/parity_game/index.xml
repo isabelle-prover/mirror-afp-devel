@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Parity_Game on Archive of Formal Proofs</title>
+    <link>/dependencies/parity_game/</link>
+    <description>Recent content in Parity_Game on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 23 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/parity_game/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Gale-Stewart Games</title>
+      <link>/entries/GaleStewart_Games.html</link>
+      <pubDate>Fri, 23 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/GaleStewart_Games.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

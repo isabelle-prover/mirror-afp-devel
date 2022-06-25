@@ -1,0 +1,26 @@
+title = "The Error Function"
+date = 2018-02-06
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p> This entry provides the definitions and basic properties of
+the complex and real error function erf and the complementary error
+function erfc. Additionally, it gives their full asymptotic
+expansions. </p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

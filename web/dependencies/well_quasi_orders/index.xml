@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Well_Quasi_Orders on Archive of Formal Proofs</title>
+    <link>/dependencies/well_quasi_orders/</link>
+    <description>Recent content in Well_Quasi_Orders on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Tue, 25 Aug 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/well_quasi_orders/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Extensions to the Comprehensive Framework for Saturation Theorem Proving</title>
+      <link>/entries/Saturation_Framework_Extensions.html</link>
+      <pubDate>Tue, 25 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Saturation_Framework_Extensions.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Comprehensive Framework for Saturation Theorem Proving</title>
+      <link>/entries/Saturation_Framework.html</link>
+      <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Saturation_Framework.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Decreasing Diagrams II</title>
+      <link>/entries/Decreasing-Diagrams-II.html</link>
+      <pubDate>Thu, 20 Aug 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Decreasing-Diagrams-II.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Myhill-Nerode Theorem Based on Regular Expressions</title>
+      <link>/entries/Myhill-Nerode.html</link>
+      <pubDate>Fri, 26 Aug 2011 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Myhill-Nerode.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Multivariate Polynomials</title>
+      <link>/entries/Polynomials.html</link>
+      <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Polynomials.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

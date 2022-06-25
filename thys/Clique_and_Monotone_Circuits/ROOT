@@ -1,0 +1,16 @@
+chapter AFP
+
+session Clique_and_Monotone_Circuits (AFP) = Stirling_Formula +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+    Sunflowers
+    Stirling_Formula
+  theories
+    Preliminaries
+    Monotone_Formula
+  theories
+    Clique_Large_Monotone_Circuits
+  document_files
+    "root.tex"
+    "root.bib"

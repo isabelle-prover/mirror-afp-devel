@@ -488,27 +488,6 @@ lemma pmod_code:
   "p pmod q = snd (pdivmod p q)"
   by (simp add: pdivmod_def)
 
-(*TODO ERROR: Ambiguous input produces n parse trees ???...*)
-definition div :: "'a::{euclidean_ring,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "div" 70)
-where
-  "x div y = (THE q'. \<exists>a q r. (pseudo_divmod_rel a x y q r) \<and> (q' = smult (inverse a) q))"
-
-definition mod :: "'a::{euclidean_ring,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly" (infixl "mod" 70)
-where
-  "x mod y = (THE r'. \<exists>a q r. (pseudo_divmod_rel a x y q r) \<and> (r' = smult (inverse a) r))"
-
-definition divmod :: "'a::{euclidean_ring,field} mpoly \<Rightarrow> 'a mpoly \<Rightarrow> 'a mpoly \<times> 'a mpoly"
-where
-  "divmod p q = (p div q, p mod q)"
-
-lemma div_poly_code:
-  "p div q = fst (divmod p q)"
-  by (simp add: divmod_def)
-
-lemma mod_poly_code:
-  "p mod q = snd (divmod p q)"
-  by (simp add: divmod_def)
-
 subsection \<open>Primitive poly, etc\<close>
 
 lift_definition coeffs :: "'a :: zero mpoly \<Rightarrow> 'a set"

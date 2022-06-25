@@ -287,7 +287,7 @@ proof -
   from eventually_bound_pairE[OF this]
   obtain B where B:
     "1 \<le> B" "\<forall>\<^sub>F e in at_right 0. \<forall>t\<in>cball t0 e. \<forall>x\<in>cball x0 e. norm (f t x) \<le> B"
-    by (force simp: )
+    by force
   note B(2)
   moreover
 
@@ -941,7 +941,7 @@ proof -
     by (auto simp: a)
 
   have "(\<lambda>t. t + s) = (+) s"
-    by (auto simp: )
+    by auto
   with shift_autonomous_solution[OF flow_solves_ode[OF a], of "-s"]
     flow_in_domain
   have sol: "((\<lambda>t. flow 0 x (t - s)) solves_ode f) ?T X"

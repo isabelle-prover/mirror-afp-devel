@@ -1,0 +1,184 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage[numbers]{natbib}
+\usepackage{babel}
+
+\usepackage{relsize}
+\DeclareRobustCommand{\isactrlbsub}{\emph\bgroup\math{}\sb\bgroup\mbox\bgroup\isaspacing\itshape\smaller}
+\DeclareRobustCommand{\isactrlesub}{\egroup\egroup\endmath\egroup}
+\DeclareRobustCommand{\isactrlbsup}{\emph\bgroup\math{}\sp\bgroup\mbox\bgroup\isaspacing\itshape\smaller}
+\DeclareRobustCommand{\isactrlesup}{\egroup\egroup\endmath\egroup}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+\newcommand{\forces}{\Vdash}
+\newcommand{\dom}{\mathsf{dom}}
+\renewcommand{\isacharunderscorekeyword}{\mbox{\_}}
+\renewcommand{\isacharunderscore}{\mbox{\_}}
+\renewcommand{\isasymtturnstile}{\isamath{\Vdash}}
+\renewcommand{\isacharminus}{-}
+\newcommand{\session}[1]{\textit{#1}}
+\newcommand{\theory}[1]{\texttt{#1}}
+\newcommand{\axiomas}[1]{\mathit{#1}}
+\newcommand{\ZFC}{\axiomas{ZFC}}
+\newcommand{\ZF}{\axiomas{ZF}}
+\newcommand{\AC}{\axiomas{AC}}
+\newcommand{\CH}{\axiomas{CH}}
+
+\begin{document}
+
+\title{Transitive Models of Fragments of ZF}
+\author{Emmanuel Gunther\thanks{Universidad Nacional de C\'ordoba.
+    Facultad de Matem\'atica, Astronom\'{\i}a,  F\'{\i}sica y
+    Computaci\'on.}
+  \and
+  Miguel Pagano\footnotemark[1]
+  \and
+  Pedro S\'anchez Terraf\footnotemark[1] \thanks{Centro de Investigaci\'on y Estudios de Matem\'atica
+    (CIEM-FaMAF), Conicet. C\'ordoba. Argentina.
+    Supported by Secyt-UNC project 33620180100465CB.}
+  \and
+  Mat\'{\i}as Steinberg\footnotemark[1]
+}
+\maketitle
+
+\begin{abstract}
+  We extend the ZF-Constructibility library by relativizing theories
+  of the Isabelle/ZF and Delta System Lemma sessions to a transitive
+  class. We also relativize Paulson's work on Aleph and our former
+  treatment of the Axiom of Dependent Choices. This work is a
+  prerequisite to our formalization of the independence of the
+  Continuum Hypothesis.
+\end{abstract}
+
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+Relativization of concepts is a key tool to obtain results in forcing,
+as it is explained in \cite[Sect.~3]{2020arXiv200109715G} and elsewhere.
+
+In this session, we cast some theories in relative form, in a
+way that they now refer to a fixed class $M$ as the universe of
+discourse. Whenever it was possible, we tried to minimize the changes
+to the structure and proof scripts of the absolute concepts. For
+this reason, some comments of the original text as well as
+outdated \textbf{apply} commands appear profusely in the following
+theories.
+
+A repeated pattern that appears is that the relativized result can be
+proved \emph{mutatis mutandis}, with remaining proof obligations that
+the objects constructed actually belong to the model $M$. Another
+aspect was that the management of higher order constructs always posed
+some extra problems, already noted by Paulson \cite[Sect.~7.3]{MR2051585}.
+
+In the theory \theory{Lambda\_Replacement} we introduce a new locale assuming
+two instances of separation and twelve instances of ``lambda replacements''
+(i.e., replacements using definable functions of the form $\lambda x y. y=\langle x, f(x) \rangle$)
+that allow for having some form of compositionality of further instances
+of separations and replacements.
+
+We proceed to enumerate the theories that were ``ported'' to relative
+form, briefly commenting on each of them. Below, we refer to the
+original theories as the \emph{source} and, correspondingly, call
+\emph{target} the relativized version. We omit the \theory{.thy}
+suffixes.
+
+\begin{enumerate}
+\item From \session{ZF}:
+  \begin{enumerate}
+  \item \theory{Univ}. Here we decided to relativize only the term
+    \isatt{Vfrom} that constructs the cumulative hierarchy up to some
+    ordinal length and starting from an arbitrary set.
+  \item \theory{Cardinal}. There are two targets for this source,
+    \theory{Least} and \theory{Cardinal\_Relative}. Both require some
+    fair amount of preparation, trying to take advantage of absolute
+    concepts. It is not straightforward to compare source and targets
+    in a line-by-line fashion at this point.
+  \item \theory{CardinalArith}. The hardest part was to formalize the
+    cardinal successor function. We also disregarded the part treating
+    finite cardinals since it is an absolute concept. Apart from that,
+    the relative version closely parallels the source.
+  \item \theory{Cardinal\_AC}. After some boilerplate, porting was
+    rather straightforward, excepting cardinal arithmetic involving
+    the higher-order union operator.
+  \end{enumerate}
+\item From \session{ZF-Constructible}:
+  \begin{enumerate}
+  \item \theory{Normal}. The target here is \theory{Aleph\_Relative}
+    since that is the only concept that we ported. Instead of porting
+    all the machinery of normal functions (since it involved
+    higher-order variables), we particularized the results for the
+    Aleph function. We also used an alternative definition of the
+    latter that worked better with our relativization discipline.
+  \end{enumerate}
+\item From \session{Delta\_System\_Lemma}:
+  \begin{enumerate}
+  \item \theory{ZF\_Library}. The target includes a big section of
+    auxiliary lemmas and commands that aid the relativization. We
+    needed to make explicit the witnesses (mainly functions) in some of the
+    existential results proved in the source, since only in that way
+    we would be able to show that they belonged to the model.
+  \item \theory{Cardinal\_Library}. Porting was relatively
+    straightforward; most of the extra work laid in adjusting locale
+    assumptions to obtain an appropriate context to state and prove
+    the theorems.
+  \item \theory{Delta\_System}. Same comments as in the case of
+    \theory{Cardinal\_Library} apply here.
+  \end{enumerate}
+\item From \session{Forcing}:
+  \begin{enumerate}
+  \item \theory{Pointed\_DC}. This case was similar to
+    \theory{Cardinal\_AC} above, although a bit of care was needed to
+    handle the recursive construction. Also, a fraction of the theory
+    \theory{AC} from \session{ZF} was ported here as it was a
+    prerequisite. A complete relativization of \theory{AC} would be
+    desirable but still missing.
+  \end{enumerate}
+\end{enumerate}
+% generated text of all theories
+
+\input{session}
+
+\bibliographystyle{root}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% ispell-local-dictionary: "american"
+%%% End:

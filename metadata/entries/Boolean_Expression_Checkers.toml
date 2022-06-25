@@ -1,0 +1,28 @@
+title = "Boolean Expression Checkers"
+date = 2014-06-08
+topics = [
+  "Computer science/Algorithms",
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = """
+This entry provides executable checkers for the following properties of
+boolean expressions: satisfiability, tautology and equivalence. Internally,
+the checkers operate on binary decision trees and are reasonably efficient
+(for purely functional algorithms)."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+2015-09-23 = "Salomon Sickert added an interface that does not require the usage of the Boolean formula datatype. Furthermore the general Mapping type is used instead of an association list."
+
+[extra]

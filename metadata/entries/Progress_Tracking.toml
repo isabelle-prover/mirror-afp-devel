@@ -1,0 +1,41 @@
+title = "Formalization of Timely Dataflow's Progress Tracking Protocol"
+date = 2021-04-13
+topics = [
+  "Computer science/Algorithms/Distributed",
+]
+abstract = """
+Large-scale stream processing systems often follow the dataflow
+paradigm, which enforces a program structure that exposes a high
+degree of parallelism. The Timely Dataflow distributed system supports
+expressive cyclic dataflows for which it offers low-latency data- and
+pipeline-parallel stream processing. To achieve high expressiveness
+and performance, Timely Dataflow uses an intricate distributed
+protocol for tracking the computation’s progress. We formalize this
+progress tracking protocol and verify its safety. Our formalization is
+described in detail in our forthcoming <a
+href=\"https://traytel.bitbucket.io/papers/itp21-progress_tracking/safe.pdf\">ITP'21
+paper</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brun]
+
+[authors.decova]
+
+[authors.lattuada]
+homepage = "lattuada_homepage"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+brun = "brun_email"
+traytel = "traytel_email2"
+
+[history]
+
+[extra]

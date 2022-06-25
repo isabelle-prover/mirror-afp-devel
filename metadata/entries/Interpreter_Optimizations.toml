@@ -1,0 +1,38 @@
+title = "Inline Caching and Unboxing Optimization for Interpreters"
+date = 2020-12-07
+topics = [
+  "Computer science/Programming languages/Misc",
+]
+abstract = """
+This Isabelle/HOL formalization builds on the
+<em>VeriComp</em> entry of the <em>Archive of Formal
+Proofs</em> to provide the following contributions:  <ul>
+<li>an operational semantics for a realistic virtual machine
+(Std) for dynamically typed programming languages;</li>
+<li>the formalization of an inline caching optimization (Inca),
+a proof of bisimulation with (Std), and a compilation
+function;</li> <li>the formalization of an unboxing
+optimization (Ubx), a proof of bisimulation with (Inca), and a simple
+compilation function.</li> </ul>  This formalization was
+described in the CPP 2021 paper <em>Towards Efficient and
+Verified Virtual Machines for Dynamic Languages</em>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.desharnais]
+homepage = "desharnais_homepage"
+
+[contributors]
+
+[notify]
+desharnais = "desharnais_email"
+
+[history]
+2021-06-14 = """
+refactored function definitions to contain explicit basic blocks<br>
+"""
+2021-06-25 = "proved conditional completeness of compilation<br>"
+
+[extra]

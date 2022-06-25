@@ -1,0 +1,33 @@
+title = "Wetzel's Problem and the Continuum Hypothesis"
+date = 2022-02-18
+topics = [
+  "Mathematics/Analysis",
+  "Logic/Set theory",
+]
+abstract = """
+Let $F$ be a set of analytic functions on the complex plane such that,
+for each $z\\in\\mathbb{C}$, the set $\\{f(z) \\mid f\\in F\\}$ is
+countable; must then $F$ itself be countable? The answer is yes if the
+Continuum Hypothesis is false, i.e., if the cardinality of
+$\\mathbb{R}$ exceeds $\\aleph_1$. But if CH is true then such an $F$,
+of cardinality $\\aleph_1$, can be constructed by transfinite
+recursion.  The formal proof illustrates reasoning about complex
+analysis (analytic and homomorphic functions) and set theory
+(transfinite cardinalities) in a single setting. The mathematical text
+comes from <em>Proofs from THE BOOK</em> by Aigner and
+Ziegler."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]

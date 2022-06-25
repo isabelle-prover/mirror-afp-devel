@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sturm_Sequences on Archive of Formal Proofs</title>
+    <link>/dependencies/sturm_sequences/</link>
+    <description>Recent content in Sturm_Sequences on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 01 Jun 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/sturm_sequences/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
+      <link>/entries/Safe_Distance.html</link>
+      <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Safe_Distance.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Perron-Frobenius Theorem for Spectral Radius Analysis</title>
+      <link>/entries/Perron_Frobenius.html</link>
+      <pubDate>Fri, 20 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Perron_Frobenius.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Algebraic Numbers in Isabelle/HOL</title>
+      <link>/entries/Algebraic_Numbers.html</link>
+      <pubDate>Tue, 22 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Algebraic_Numbers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Real-Valued Special Functions: Upper and Lower Bounds</title>
+      <link>/entries/Special_Function_Bounds.html</link>
+      <pubDate>Fri, 29 Aug 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Special_Function_Bounds.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

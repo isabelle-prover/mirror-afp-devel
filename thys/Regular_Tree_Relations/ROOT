@@ -1,0 +1,47 @@
+chapter AFP
+
+session Regular_Tree_Relations (AFP) = "HOL-Library" +
+  options
+    [timeout = 600]
+  sessions
+    "Knuth_Bendix_Order"
+  directories
+    "Util"
+    "Horn_Setup"
+    "Tree_Automata"
+  theories
+    "Util/Term_Context"
+    "Util/Basic_Utils"
+    "Util/FSet_Utils"
+    "Util/Ground_Terms"
+    "Util/Ground_Ctxt"
+    "Util/Ground_Closure"
+  theories
+    "Horn_Setup/Horn_Inference"
+    "Horn_Setup/Horn_List"
+    "Horn_Setup/Horn_Fset"
+  theories
+    "Tree_Automata/Tree_Automata"
+    "Tree_Automata/Tree_Automata_Det"
+    "Tree_Automata/Tree_Automata_Complement"
+    "Tree_Automata/Tree_Automata_Pumping"
+    "Tree_Automata/Myhill_Nerode"
+  theories
+    "GTT"
+    "GTT_Compose"
+    "GTT_Transitive_Closure"
+    "Pair_Automaton"
+    "AGTT"
+    "RRn_Automata"
+    "RR2_Infinite"
+  theories
+    "Tree_Automata/Tree_Automata_Abstract_Impl"
+    "Tree_Automata/Tree_Automata_Impl"
+    "Tree_Automata/Tree_Automata_Class_Instances_Impl"
+    "Regular_Relation_Abstract_Impl"
+    "RR2_Infinite_Q_infinity"
+    "Regular_Relation_Impl"
+  document_files
+    "root.bib"
+    "root.tex"
+

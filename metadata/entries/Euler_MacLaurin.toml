@@ -1,0 +1,35 @@
+title = "The Euler–MacLaurin Formula"
+date = 2017-03-10
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>The Euler-MacLaurin formula relates the value of a
+discrete sum to that of the corresponding integral in terms of the
+derivatives at the borders of the summation and a remainder term.
+Since the remainder term is often very small as the summation bounds
+grow, this can be used to compute asymptotic expansions for
+sums.</p>  <p>This entry contains a proof of this formula
+for functions from the reals to an arbitrary Banach space. Two
+variants of the formula are given: the standard textbook version and a
+variant outlined in <em>Concrete Mathematics</em> that is
+more useful for deriving asymptotic estimates.</p>  <p>As
+example applications, we use that formula to derive the full
+asymptotic expansion of the harmonic numbers and the sum of inverse
+squares.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

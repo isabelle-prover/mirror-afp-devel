@@ -1,0 +1,38 @@
+title = "Bounded-Deducibility Security"
+date = 2014-04-22
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+This is a formalization of bounded-deducibility security (BD
+security), a flexible notion of information-flow security applicable
+to arbitrary transition systems. It generalizes Sutherland's
+classic notion of nondeducibility by factoring in declassification
+bounds and trigger, whereas nondeducibility states that, in a
+system, information cannot flow between specified sources and sinks,
+BD security indicates upper bounds for the flow and triggers under
+which these upper bounds are no longer guaranteed."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.popescu]
+homepage = "popescu_homepage"
+
+[authors.lammich]
+homepage = "lammich_homepage"
+
+[authors.bauereiss]
+email = "bauereiss_email"
+
+[contributors]
+
+[notify]
+popescu = "popescu_email1"
+lammich = "lammich_email"
+bauereiss = "bauereiss_email"
+
+[history]
+
+[extra]

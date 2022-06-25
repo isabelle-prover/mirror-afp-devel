@@ -1,0 +1,29 @@
+title = "The Irrationality of ζ(3)"
+date = 2019-12-27
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This article provides a formalisation of Beukers's
+straightforward analytic proof that ζ(3) is irrational. This was first
+proven by Apéry (which is why this result is also often called
+‘Apéry's Theorem’) using a more algebraic approach. This
+formalisation follows <a
+href=\"http://people.math.sc.edu/filaseta/gradcourses/Math785/Math785Notes4.pdf\">Filaseta's
+presentation</a> of Beukers's proof.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email1"
+
+[history]
+
+[extra]

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bauereiss on Archive of Formal Proofs</title>
+    <link>/authors/bauereiss/</link>
+    <description>Recent content in bauereiss on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 16 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/bauereiss/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CoCon: A Confidentiality-Verified Conference Management System</title>
+      <link>/entries/CoCon.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CoCon.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Compositional BD Security</title>
+      <link>/entries/BD_Security_Compositional.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/BD_Security_Compositional.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CoSMed: A confidentiality-verified social media platform</title>
+      <link>/entries/CoSMed.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CoSMed.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>CoSMeDis: A confidentiality-verified distributed social media platform</title>
+      <link>/entries/CoSMeDis.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CoSMeDis.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fresh identifiers</title>
+      <link>/entries/Fresh_Identifiers.html</link>
+      <pubDate>Mon, 16 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Fresh_Identifiers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Bounded-Deducibility Security</title>
+      <link>/entries/Bounded_Deducibility_Security.html</link>
+      <pubDate>Tue, 22 Apr 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Bounded_Deducibility_Security.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

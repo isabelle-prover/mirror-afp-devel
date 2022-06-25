@@ -2,7 +2,7 @@
 
 section \<open>The Sunflower Lemma\<close>
 
-text \<open>We formalize the proof of the sunflower lemma of Erdős and Rado~\cite{erdos_rado}, 
+text \<open>We formalize the proof of the sunflower lemma of Erd\H{o}s and Rado~\cite{erdos_rado}, 
 as it is presented in the textbook~\cite[Chapter~6]{book}.  
 We further integrate Exercise 6.2 from the textbook,
 which provides a lower bound on the existence of sunflowers.\<close>
@@ -56,7 +56,7 @@ proof (intro exI[of _ "insert a ` S"] conjI refl)
   qed
 qed
 
-text \<open>The sunflower-lemma of Erdős and Rado: 
+text \<open>The sunflower-lemma of Erd\H{o}s and Rado: 
   if a set has a certain size and all elements
   have the same cardinality, then a sunflower exists.\<close>
 
@@ -104,10 +104,10 @@ next
     from Suc(3) have "card F > 0" by simp
     hence "finite F" by (rule card_ge_0_finite)
     from GF \<open>finite F\<close> have finG: "finite G" by (rule finite_subset)
-    have "card (\<Union> G) \<le> sum card G" 
-      by (rule card_Union_le_sum_card, insert Suc(2) GF, auto)
-    also have "\<dots> \<le> of_nat (card G) * Suc k" 
-      by (rule sum_bounded_above, insert GF Suc(2), auto)
+    have "card (\<Union> G) \<le> sum card G"
+      using card_Union_le_sum_card by blast 
+    also have "\<dots> \<le> of_nat (card G) * Suc k"
+      by (metis GF Suc.prems(1) le_Suc_eq subsetD sum_bounded_above) 
     also have "\<dots> \<le> (r - 1) * Suc k" 
       using tr[folded cardG] by (metis id_apply mult_le_mono1 of_nat_eq_id)
     finally have cardA: "card A \<le> (r - 1) * Suc k" unfolding A_def .
@@ -329,9 +329,9 @@ text \<open>The difference between the lower and the
 upper bound on the existence of sunflowers as they have been formalized
 is @{term \<open>fact k\<close>}. There is more recent work with tighter bounds
 \cite{sunflower_new}, but we only integrate the initial 
-result of Erdős and Rado in this theory.\<close>
+result of Erd\H{o}s and Rado in this theory.\<close>
 
-text \<open>We further provide the Erdős Rado lemma 
+text \<open>We further provide the Erd\H{o}s Rado lemma 
   lifted to obtain non-empty cores or cores of arbitrary cardinality.\<close>
 
 lemma Erdos_Rado_sunflower_card_core: 

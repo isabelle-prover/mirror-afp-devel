@@ -1,0 +1,38 @@
+title = "A Variant of the Superposition Calculus"
+date = 2016-09-06
+topics = [
+  "Logic/Proof theory",
+]
+abstract = """
+We provide a formalization of a variant of the superposition
+calculus, together with formal proofs of soundness and refutational
+completeness (w.r.t. the usual redundancy criteria based on clause
+ordering). This version of the calculus uses all the standard
+restrictions of the superposition rules, together with the following
+refinement, inspired by the basic superposition calculus: each clause
+is associated with a set of terms which are assumed to be in normal
+form -- thus any application of the replacement rule on these terms is
+blocked. The set is initially empty and terms may be added or removed
+at each inference step. The set of terms that are assumed to be in
+normal form includes any term introduced by previous unifiers as well
+as any term occurring in the parent clauses at a position that is
+smaller (according to some given ordering on positions) than a
+previously replaced term. The standard superposition calculus
+corresponds to the case where the set of irreducible terms is always
+empty."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.peltier]
+homepage = "peltier_homepage"
+
+[contributors]
+
+[notify]
+peltier = "peltier_email"
+
+[history]
+
+[extra]

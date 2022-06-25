@@ -1,0 +1,36 @@
+title = "Schutz' Independent Axioms for Minkowski Spacetime"
+date = 2021-07-27
+topics = [
+  "Mathematics/Physics",
+  "Mathematics/Geometry",
+]
+abstract = """
+This is a formalisation of Schutz' system of axioms for Minkowski
+spacetime published under the name \"Independent axioms for
+Minkowski space-time\" in 1997, as well as most of the results in
+the third chapter (\"Temporal Order on a Path\") of the above
+monograph. Many results are proven here that cannot be found in
+Schutz, either preceding the theorem they are needed for, or within
+their own thematic section."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.schmoetten]
+email = "schmoetten_email"
+
+[authors.palmer]
+email = "palmer_email"
+
+[authors.fleuriot]
+homepage = "fleuriot_homepage"
+
+[contributors]
+
+[notify]
+schmoetten = "schmoetten_email"
+
+[history]
+
+[extra]

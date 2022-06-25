@@ -1,0 +1,46 @@
+title = "A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand"
+date = 2022-05-30
+topics = [
+  "Computer science/Programming languages/Logics",
+]
+abstract = """
+Many separation logics support <em>fractional
+permissions</em> to distinguish between read and write access to
+a heap location, for instance, to allow concurrent reads while
+enforcing exclusive writes. The concept has been generalized to
+fractional assertions. $A^p$ (where $A$ is a separation logic
+assertion and $p$ a fraction between $0$ and $1$) represents a
+fraction $p$ of $A$. $A^p$ holds in a state $\\sigma$ iff there exists
+a state $\\sigma_A$ in which $A$ holds and $\\sigma$ is obtained from
+$\\sigma_A$ by multiplying all permission amounts held by $p$.  While
+$A^{p + q}$ can always be split into $A^p * A^q$, recombining $A^p *
+A^q$ into $A^{p+q}$ is not always sound. We say that $A$ is
+<em>combinable</em> iff the entailment $A^p * A^q \\models
+A^{p+q}$ holds for any two positive fractions $p$ and $q$ such that $p
++ q \\le 1$. Combinable assertions are particularly useful to reason
+about concurrent programs, for instance, to combine the postconditions
+of parallel branches when they terminate. Unfortunately, the magic
+wand assertion $A \\mathbin{-\\!\\!*} B$, commonly used to specify properties of
+partial data structures, is typically <em>not</em>
+combinable.  In this entry, we formalize a novel, restricted
+definition of the magic wand, described in <a
+href=\"https://arxiv.org/abs/2205.11325\">a paper at CAV
+22</a>, which we call the <em>combinable wand</em>.
+We prove some key properties of the combinable wand; in particular, a
+combinable wand is combinable if its right-hand side is combinable."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.dardinier]
+homepage = "dardinier_homepage"
+
+[contributors]
+
+[notify]
+dardinier = "dardinier_email"
+
+[history]
+
+[extra]

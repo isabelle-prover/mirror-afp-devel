@@ -71,7 +71,7 @@ begin
   lemma correct_aux: "\<lbrakk>distinct (map fst ts); \<forall>((r,c),_)\<in>set ts. r<n\<rbrakk> 
     \<Longrightarrow> \<forall>i. fold (\<lambda>((r,c),v) y. y(c:=y c + x r * v)) ts m i = m i + pr (\<alpha> ts) x i"  
     apply (induction ts arbitrary: m)
-    apply (auto simp: )
+    apply auto
     subgoal
       apply (subst 2)
       apply auto 

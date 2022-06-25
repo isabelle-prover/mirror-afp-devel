@@ -1,4 +1,6 @@
+(*<*)
 theory Order imports Incidence begin
+(*>*)
 
 section\<open>Order\<close>
 
@@ -9,26 +11,26 @@ locale Definition_2 = Incidence_Rule +
     and Line_on_Line :: "Line \<Rightarrow> Line \<Rightarrow> bool"
     and Plane_sameside :: "Line \<Rightarrow> Point \<Rightarrow> Point \<Rightarrow> bool"
     and Plane_diffside :: "Line \<Rightarrow> Point \<Rightarrow> Point \<Rightarrow> bool"
-  assumes Bet_Point_def : "\<lbrakk>Bet_Point (Se p1 p2) p3\<rbrakk> \<Longrightarrow> \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)
+  assumes Bet_Point_def : "\<lbrakk>Bet_Point (Se p1 p2) p3\<rbrakk> \<Longrightarrow> \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp) 
         \<and> \<not> Eq (Geos (Poi p2) add Emp) (Geos (Poi p3) add Emp) \<and> \<not> Eq (Geos (Poi p3) add Emp) (Geos (Poi p1) add Emp)"
     and Bet_rev : "\<lbrakk>Bet_Point (Se p1 p2) p3\<rbrakk> \<Longrightarrow> Bet_Point (Se p2 p1) p3"
     and Line_Bet_exist : "\<lbrakk>Bet_Point (Se p1 p2) p3\<rbrakk> \<Longrightarrow> \<exists>l. Line_on l p1 \<and> Line_on l p2 \<and> Line_on l p3"
     and Seg_rev : "Eq (Geos (Seg (Se p1 p2)) add Emp) (Geos (Seg (Se p2 p1)) add Emp)"
     and Plane_sameside_def : "Plane_sameside l1 p1 p2 \<longleftrightarrow> \<not> Line_on_Seg l1 (Se p1 p2) \<and> \<not> Line_on l1 p1 \<and> \<not> Line_on l1 p2 \<and> \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)"
     and Plane_diffside_def : "Plane_diffside l1 p1 p2 \<longleftrightarrow> (\<exists>p. Bet_Point (Se p1 p2) p \<and> Line_on l1 p \<and> \<not> Line_on l1 p1 \<and> \<not> Line_on l1 p2)"
-
+        
 locale Axiom_2 = Definition_2 +
   assumes Bet_extension : "\<lbrakk>Line_on l1 p1; Line_on l1 p2; \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)\<rbrakk> \<Longrightarrow> \<exists>p. Bet_Point (Se p1 p) p2 \<and> Line_on l1 p"
     and Bet_iff : "\<lbrakk>Bet_Point (Se p1 p2) p3\<rbrakk> \<Longrightarrow> Inv (Bet_Point (Se p2 p3) p1) \<and> Inv (Bet_Point (Se p3 p1) p2)"
     and Pachets_axiom : "\<lbrakk>\<not> Line_on (Li p1 p2) p3; Bet_Point (Se p1 p2) p4; Line_on l1 p4;
-        \<not> Line_on l1 p1; \<not> Line_on l1 p2; \<not> Line_on l1 p3\<rbrakk> \<Longrightarrow>
+        \<not> Line_on l1 p1; \<not> Line_on l1 p2; \<not> Line_on l1 p3\<rbrakk> \<Longrightarrow> 
         Line_on_Seg l1 (Se p1 p3) \<and> \<not> Line_on_Seg l1 (Se p2 p3)
         \<or> Line_on_Seg l1 (Se p2 p3) \<and> \<not> Line_on_Seg l1 (Se p1 p3)"
     and Seg_move_sameside : "\<lbrakk>Line_on l1 p1; Line_on l1 p2; \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp);
-        \<not> Eq (Geos (Poi p3) add Emp) (Geos (Poi p4) add Emp)\<rbrakk> \<Longrightarrow>
+        \<not> Eq (Geos (Poi p3) add Emp) (Geos (Poi p4) add Emp)\<rbrakk> \<Longrightarrow> 
         \<exists>p. Eq (Geos (Seg (Se p3 p4)) add Emp) (Geos (Seg (Se p1 p)) add Emp) \<and> \<not> Bet_Point (Se p p2) p1 \<and> Line_on l1 p \<and> \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p) add Emp)"
     and Seg_move_diffside : "\<lbrakk>Line_on l1 p1; Line_on l1 p2; \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp);
-        \<not> Eq (Geos (Poi p3) add Emp) (Geos (Poi p4) add Emp)\<rbrakk> \<Longrightarrow>
+        \<not> Eq (Geos (Poi p3) add Emp) (Geos (Poi p4) add Emp)\<rbrakk> \<Longrightarrow> 
         \<exists>p. Eq (Geos (Seg (Se p3 p4)) add Emp) (Geos (Seg (Se p1 p)) add Emp) \<and> Bet_Point (Se p p2) p1 \<and> Line_on l1 p \<and> \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p) add Emp)"
 
 locale Order_Rule = Axiom_2 +
@@ -38,7 +40,7 @@ locale Order_Rule = Axiom_2 +
     and Line_on_Line_rule : "Line_on_Line l1 l2 \<longleftrightarrow> (\<exists>p. Line_on l1 p \<and> Line_on l2 p)"
     and Seg_Point_Eq : "\<lbrakk>Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)\<rbrakk> \<Longrightarrow> Eq (Geos (Seg (Se p3 p1)) add Emp) (Geos (Seg (Se p3 p2)) add Emp)"
 
-lemma(in Order_Rule) Line_Bet_on :
+lemma(in Order_Rule) Line_Bet_on : 
   assumes
     "Bet_Point (Se p1 p2) p3"
   shows "Line_on (Li p1 p2) p3" and "Line_on (Li p2 p1) p3"
@@ -67,9 +69,9 @@ lemma(in Order_Rule) Line_Bet_not_Eq :
   assumes N :
     "Bet_Point (Se p1 p2) p3"
     "\<not> Line_on (Li p1 p2) p4"
-  shows "\<not> Eq (Geos (Lin (Li p4 p3)) add Emp) (Geos (Lin (Li p4 p2)) add Emp)"
-proof
-  assume W : "Eq (Geos (Lin (Li p4 p3)) add Emp) (Geos (Lin (Li p4 p2)) add Emp)"
+  shows "\<not> Eq (Geos (Lin (Li p4 p3)) add Emp) (Geos (Lin (Li p4 p2)) add Emp)" 
+proof 
+  assume W : "Eq (Geos (Lin (Li p4 p3)) add Emp) (Geos (Lin (Li p4 p2)) add Emp)" 
   have P1 : "Line_on (Li p4 p3) p3" by (simp add:Line_on_rule)
   from W P1 have P2 : "Line_on (Li p4 p2) p3" by (simp add:Line_on_trans)
   have P3 : "Line_on (Li p4 p2) p2" by (simp add:Line_on_rule)
@@ -86,7 +88,7 @@ text\<open>Theorem3\<close>
 
 theorem(in Order_Rule) Seg_density :
   assumes "\<not> Eq (Geos (Poi A) add Emp) (Geos (Poi C) add Emp)"
-  shows "\<exists>p. Bet_Point (Se A C) p"
+  shows "\<exists>p. Bet_Point (Se A C) p" 
 proof -
   have "\<exists>p q r. \<not> Line_on (Li A C) p \<and> \<not> Line_on (Li A C) q \<and> \<not> Line_on (Li A C) r
         \<and> \<not> Eq (Geos (Poi p) add Emp) (Geos (Poi q) add Emp) \<and> \<not> Eq (Geos (Poi q) add Emp) (Geos (Poi r) add Emp)
@@ -144,23 +146,23 @@ proof -
   from P46 have P47 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow> Line_on (Li F D) C" by (simp add:Line_Bet_on)
   have P48 : "Line_on (Li F D) F" by (simp add:Line_on_rule)
   have P49 : "Line_on (Li F G) F" by (simp add:Line_on_rule)
-  from P16 P19 P47 P48 P49 have P50 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow>
+  from P16 P19 P47 P48 P49 have P50 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow>  
     Eq (Geos (Lin (Li F D)) add Emp) (Geos (Lin (Li F G)) add Emp)" by (simp add:Line_unique)
   have P51 : "Line_on (Li F D) D" by (simp add:Line_on_rule)
   from P50 P51 have P52 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow> Line_on (Li F G) D" by (simp add:Line_on_trans)
   have P53 : "Line_on (Li F G) G" by (simp add:Line_on_rule)
   have P54 : "Line_on (Li E G) G" by (simp add:Line_on_rule)
-  from P46 have P55 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow> Eq (Geos (Poi D) add Emp) (Geos (Poi G) add Emp)
+  from P46 have P55 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow> Eq (Geos (Poi D) add Emp) (Geos (Poi G) add Emp) 
     \<Longrightarrow> Bet_Point (Se F C) G" by (simp add:Point_Eq)
   from P20 have "Inv (Bet_Point (Se G C) F) \<and> Inv (Bet_Point (Se C F) G)" by (simp add:Bet_iff)
   then have "\<not> Bet_Point (Se C F) G" by (simp add:Inv_def)
   then have P56 : "\<not> Bet_Point (Se F C) G" by (blast intro:Bet_rev)
   from P55 P56 have P57 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow> \<not> Eq (Geos (Poi D) add Emp) (Geos (Poi G) add Emp)" by blast
-  from P44 P52 P53 P54 P57 have P58 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow>
+  from P44 P52 P53 P54 P57 have P58 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow> 
     Eq (Geos (Lin (Li E G)) add Emp) (Geos (Lin (Li F G)) add Emp)" by (blast intro:Line_unique)
   from P26 have P59 : "Eq (Geos (Lin (Li E G)) add Emp) (Geos (Lin (Li G E)) add Emp)" by (simp add:Line_rev Eq_rev)
   from P27 have P60 : "Eq (Geos (Lin (Li F G)) add Emp) (Geos (Lin (Li G F)) add Emp)" by (simp add:Line_rev Eq_rev)
-  from P58 P59 P60 have P61 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow>
+  from P58 P59 P60 have P61 : "Line_on_Seg (Li E G) (Se F C) \<Longrightarrow> 
     Eq (Geos (Lin (Li G E)) add Emp) (Geos (Lin (Li G F)) add Emp)" by (blast intro:Eq_trans Eq_rev)
   from P24 P61 have P62 : "\<not> Line_on_Seg (Li E G) (Se F C)" by blast
   from P43 P62 have "Line_on_Seg (Li E G) (Se A C) \<and> \<not> Line_on_Seg (Li E G) (Se F C)" by blast
@@ -168,12 +170,12 @@ proof -
   thus "\<exists>p. Bet_Point (Se A C) p" by blast
 qed
 
-lemma(in Order_Rule) Line_Bet_not_on :
-  assumes
+lemma(in Order_Rule) Line_Bet_not_on : 
+  assumes 
     "Line_on (Li p1 p2) p3"
     "\<not> Line_on (Li p1 p2) p4"
     "Bet_Point (Se p3 p4) p5"
-  shows "Inv (Line_on (Li p1 p2) p5)"
+  shows "Inv (Line_on (Li p1 p2) p5)" 
 proof -
   from assms have "\<not> Eq (Geos (Poi p5) add Emp) (Geos (Poi p3) add Emp)" by (simp add:Bet_Point_def)
   then have P1 : "\<not> Eq (Geos (Poi p3) add Emp) (Geos (Poi p5) add Emp)" by (blast intro:Eq_rev)
@@ -186,14 +188,14 @@ proof -
   thus "Inv (Line_on (Li p1 p2) p5)" by (simp add:Inv_def)
 qed
 
-lemma(in Order_Rule) Line_not_on_ex :
+lemma(in Order_Rule) Line_not_on_ex : 
   assumes N :
     "\<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)"
     "\<not> Line_on (Li p1 p2) p3"
     "Line_on (Li p1 p4) p2"
-  shows "\<not> Line_on (Li p1 p4) p3"
-proof
-  assume W : "Line_on (Li p1 p4) p3"
+  shows "\<not> Line_on (Li p1 p4) p3" 
+proof 
+  assume W : "Line_on (Li p1 p4) p3" 
   have P1 : "Line_on (Li p1 p2) p2" by (simp add:Line_on_rule)
   have P2 : "Line_on (Li p1 p2) p1" by (simp add:Line_on_rule)
   have P3 : "Line_on (Li p1 p4) p1" by (simp add:Line_on_rule)
@@ -202,13 +204,13 @@ proof
   from N P5 show False by simp
 qed
 
-lemma(in Order_Rule) Line_on_dens :
+lemma(in Order_Rule) Line_on_dens : 
   assumes
     "\<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p3) add Emp)"
     "\<not> Eq (Geos (Poi p2) add Emp) (Geos (Poi p4) add Emp)"
     "Line_on (Li p1 p2) p3"
     "Line_on (Li p1 p4) p3"
-  shows "Line_on (Li p2 p4) p3"
+  shows "Line_on (Li p2 p4) p3" 
 proof -
   have P1 : "Line_on (Li p1 p2) p1" by (simp add:Line_on_rule)
   have P2 : "Line_on (Li p1 p4) p1" by (simp add:Line_on_rule)
@@ -222,8 +224,8 @@ proof -
   from assms P9 show "Line_on (Li p2 p4) p3" by (simp add:Line_on_trans)
 qed
 
-lemma(in Order_Rule) Bet_case_lemma1 :
-  assumes
+lemma(in Order_Rule) Bet_case_lemma1 : 
+  assumes 
     "Line_on l1 A"
     "Line_on l1 B"
     "Line_on l1 C"
@@ -281,8 +283,8 @@ proof -
   thus "\<exists>p. Line_on (Li A D) p \<and> Bet_Point (Se G C) p" by (simp add:Line_on_Seg_rule)
 qed
 
-lemma(in Order_Rule) Bet_case_lemma2 :
-  assumes
+lemma(in Order_Rule) Bet_case_lemma2 : 
+  assumes 
     "Line_on l1 A"
     "Line_on l1 B"
     "Line_on l1 C"
@@ -368,7 +370,7 @@ proof -
   from P27 have P64 : "\<not> Eq (Geos (Poi G) add Emp) (Geos (Poi E) add Emp)" by (simp add:Bet_Point_def)
   from P27 have P66 : "Line_on (Li G E) C" by (simp add:Line_Bet_on)
   from P59 have P67 : "Line_on_Seg (Li C F) (Se G E) \<Longrightarrow> Line_on (Li C F) D2" by simp
-  from P60 have P68 : "Line_on_Seg (Li C F) (Se G E) \<Longrightarrow> Eq (Geos (Poi D2) add Emp) (Geos (Poi C) add Emp) \<Longrightarrow>
+  from P60 have P68 : "Line_on_Seg (Li C F) (Se G E) \<Longrightarrow> Eq (Geos (Poi D2) add Emp) (Geos (Poi C) add Emp) \<Longrightarrow> 
     Bet_Point (Se G E) C" by (simp add:Point_Eq)
   from P27 have "Inv (Bet_Point (Se G E) C) \<and> Inv (Bet_Point (Se E C) G)" by (simp add:Bet_iff)
   then have P69 : "\<not> Bet_Point (Se G E) C \<and> \<not> Bet_Point (Se E C) G" by (simp add:Inv_def)
@@ -439,8 +441,8 @@ qed
 
 text\<open>Theorem4\<close>
 
-lemma(in Order_Rule) Bet_case :
-  assumes
+lemma(in Order_Rule) Bet_case : 
+  assumes 
     "Line_on l1 A"
     "Line_on l1 B"
     "Line_on l1 C"
@@ -455,10 +457,10 @@ proof -
   from P1 P2 P3 show "Bet_Point (Se A C) B \<or> Bet_Point (Se C B) A \<or> Bet_Point (Se B A) C" by blast
 qed
 
-lemma(in Order_Rule) Bet_case_fact :
-  assumes
+lemma(in Order_Rule) Bet_case_fact : 
+  assumes 
     "Bet_Point (Se A C) B \<or> Bet_Point (Se C B) A \<or> Bet_Point (Se B A) C"
-  shows
+  shows 
     "Bet_Point (Se A C) B \<and> \<not> Bet_Point (Se C B) A \<and> \<not> Bet_Point (Se B A) C
     \<or> \<not> Bet_Point (Se A C) B \<and> Bet_Point (Se C B) A \<and> \<not> Bet_Point (Se B A) C
     \<or> \<not> Bet_Point (Se A C) B \<and> \<not> Bet_Point (Se C B) A \<and> Bet_Point (Se B A) C"
@@ -474,7 +476,7 @@ proof -
     \<or> \<not> Bet_Point (Se A C) B \<and> \<not> Bet_Point (Se C B) A \<and> Bet_Point (Se B A) C" by blast
 qed
 
-lemma(in Order_Rule) Bet_swap_lemma_1 :
+lemma(in Order_Rule) Bet_swap_lemma_1 : 
   assumes
     "\<not> Eq (Geos (Poi A) add Emp) (Geos (Poi D) add Emp)"
     "Bet_Point (Se A C) B"
@@ -499,7 +501,7 @@ proof -
   from P10 P14 show "Line_on (Li A D) B \<and> Line_on (Li A D) C" by simp
 qed
 
-lemma(in Order_Rule) Bet_swap_lemma_2 :
+lemma(in Order_Rule) Bet_swap_lemma_2 : 
   assumes
     "Bet_Point (Se p1 p3) p2"
     "\<not> Line_on (Li p1 p3) p4"
@@ -507,7 +509,7 @@ lemma(in Order_Rule) Bet_swap_lemma_2 :
     "\<not> Line_on (Li p2 p5) p1"
     "\<not> Line_on (Li p2 p5) p4"
     "Bet_Point (Se p3 p5) p4"
-  shows "\<exists>p. Line_on (Li p2 p5) p \<and> Bet_Point (Se p1 p4) p"
+  shows "\<exists>p. Line_on (Li p2 p5) p \<and> Bet_Point (Se p1 p4) p" 
 proof -
   have P1 : "Line_on (Li p2 p5) p2" by (simp add:Line_on_rule)
   from assms P1 have P2 : "Line_on_Seg (Li p2 p5) (Se p1 p4) \<and> \<not> Line_on_Seg (Li p2 p5) (Se p3 p4) \<or> Line_on_Seg (Li p2 p5) (Se p3 p4) \<and> \<not> Line_on_Seg (Li p2 p5) (Se p1 p4)" by (simp add:Pachets_axiom)
@@ -517,10 +519,10 @@ proof -
   then have P4 : "\<not> Eq (Geos (Poi p3) add Emp) (Geos (Poi p4) add Emp)" by (blast intro:Eq_rev)
   from P3 have P5 : "Line_on_Seg (Li p2 p5) (Se p3 p4) \<Longrightarrow> Bet_Point (Se p3 p4) p6" by simp
   from P3 have P6 : "Line_on_Seg (Li p2 p5) (Se p3 p4) \<Longrightarrow> Line_on (Li p3 p6) p4" by (simp add:Line_Bet_on)
-  from assms have P7 : "Line_on (Li p3 p5) p4" by (simp add:Line_Bet_on)
+  from assms have P7 : "Line_on (Li p3 p5) p4" by (simp add:Line_Bet_on)    
   have P8 : "Line_on (Li p3 p6) p3" by (simp add:Line_on_rule)
   have P9 : "Line_on (Li p3 p5) p3" by (simp add:Line_on_rule)
-  from P4 P6 P7 P8 P9 have P10 : "Line_on_Seg (Li p2 p5) (Se p3 p4) \<Longrightarrow>
+  from P4 P6 P7 P8 P9 have P10 : "Line_on_Seg (Li p2 p5) (Se p3 p4) \<Longrightarrow> 
     Eq (Geos (Lin (Li p3 p5)) add Emp) (Geos (Lin (Li p3 p6)) add Emp)" by (simp add:Line_unique)
   have P11 : "Line_on (Li p3 p5) p5" by (simp add:Line_on_rule)
   from P10 P11 have P12 : "Line_on_Seg (Li p2 p5) (Se p3 p4) \<Longrightarrow> Line_on (Li p3 p6) p5" by (simp add:Line_on_trans)
@@ -532,7 +534,7 @@ proof -
   then have "\<not> Bet_Point (Se p4 p3) p5" by (simp add:Inv_def)
   then have P16 : "\<not> Bet_Point (Se p3 p4) p5" by (blast intro:Bet_rev)
   from P15 P16 have P17 : "Line_on_Seg (Li p2 p5) (Se p3 p4) \<Longrightarrow> \<not> Eq (Geos (Poi p6) add Emp) (Geos (Poi p5) add Emp)" by blast
-  from P3 P12 P13 P14 P17 have P18 : "Line_on_Seg (Li p2 p5) (Se p3 p4) \<Longrightarrow>
+  from P3 P12 P13 P14 P17 have P18 : "Line_on_Seg (Li p2 p5) (Se p3 p4) \<Longrightarrow> 
     Eq (Geos (Lin (Li p3 p6)) add Emp) (Geos (Lin (Li p2 p5)) add Emp)" by (simp add:Line_unique)
   from P8 P18 have P19 : "Line_on_Seg (Li p2 p5) (Se p3 p4) \<Longrightarrow> Line_on (Li p2 p5) p3" by (simp add:Line_on_trans)
   from assms P19 have P20 : "\<not> Line_on_Seg (Li p2 p5) (Se p3 p4)" by blast
@@ -540,12 +542,12 @@ proof -
   thus "\<exists>p. Line_on (Li p2 p5) p \<and> Bet_Point (Se p1 p4) p" by (simp add:Line_on_Seg_rule)
 qed
 
-lemma(in Order_Rule) Bet_swap_lemma_3 :
+lemma(in Order_Rule) Bet_swap_lemma_3 : 
   assumes
     "Bet_Point (Se p1 p3) p2"
     "Bet_Point (Se p3 p5) p4"
     "\<not> Line_on (Li p1 p3) p5"
-  shows "\<exists>p. Bet_Point (Se p1 p4) p \<and> Bet_Point (Se p5 p2) p"
+  shows "\<exists>p. Bet_Point (Se p1 p4) p \<and> Bet_Point (Se p5 p2) p" 
 proof -
   from assms have P1 : "\<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p3) add Emp)" by (simp add:Bet_Point_def)
   then have P2 : "Eq (Geos (Lin (Li p1 p3)) add Emp) (Geos (Lin (Li p3 p1)) add Emp)" by (simp add:Line_rev)
@@ -562,7 +564,7 @@ proof -
   from P6 P11 have "\<not> Eq (Geos (Poi p4) add Emp) (Geos (Poi p1) add Emp)" by blast
   then have P12 : "\<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p4) add Emp)" by (blast intro:Eq_rev)
   from P1 P10 P12 have P13 : "\<not> Line_on (Li p1 p4) p3" by (simp add:Line_not_Eq_on)
-  from P1 P12 P13 have P14 : "\<not> Line_on (Li p1 p3) p4" by (blast intro:Line_on_rev)
+  from P1 P12 P13 have P14 : "\<not> Line_on (Li p1 p3) p4" by (blast intro:Line_on_rev) 
   from assms have P15 : "\<not> Eq (Geos (Lin (Li p5 p2)) add Emp) (Geos (Lin (Li p5 p3)) add Emp)" by (simp add:Line_Bet_not_Eq)
   from assms have P16 : "Line_on (Li p1 p3) p2" by (simp add:Line_Bet_on)
   then have P17 : "Eq (Geos (Poi p2) add Emp) (Geos (Poi p5) add Emp) \<Longrightarrow> Line_on (Li p1 p3) p5" by (simp add:Point_Eq)
@@ -571,7 +573,7 @@ proof -
   from P4 have P19 : "\<not> Eq (Geos (Poi p5) add Emp) (Geos (Poi p3) add Emp)" by (blast intro:Eq_rev)
   from P15 P18 P19 have P20 : "\<not> Line_on (Li p5 p2) p3" by (simp add:Line_not_Eq_on)
   from P18 have P21 : "Eq (Geos (Lin (Li p5 p2)) add Emp) (Geos (Lin (Li p2 p5)) add Emp)" by (simp add:Line_rev)
-  from P20 P21 have P22 : "\<not> Line_on (Li p2 p5) p3" by (simp add:Line_not_on_trans)
+  from P20 P21 have P22 : "\<not> Line_on (Li p2 p5) p3" by (simp add:Line_not_on_trans) 
   from assms have P23 :"Bet_Point (Se p3 p1) p2" by (blast intro:Bet_rev)
   from P3 P23 have P24 : "\<not> Eq (Geos (Lin (Li p5 p2)) add Emp) (Geos (Lin (Li p5 p1)) add Emp)" by (simp add:Line_Bet_not_Eq)
   have "Line_on (Li p3 p1) p1" by (simp add:Line_on_rule)
@@ -579,7 +581,7 @@ proof -
   from P3 P25 have P26 : "\<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p5) add Emp)" by blast
   then have P27 : "\<not> Eq (Geos (Poi p5) add Emp) (Geos (Poi p1) add Emp)" by (blast intro:Eq_rev)
   from P18 P24 P27 have P28 : "\<not> Line_on (Li p5 p2) p1" by (simp add:Line_not_Eq_on)
-  from P21 P28 have P29 : "\<not> Line_on (Li p2 p5) p1" by (simp add:Line_not_on_trans)
+  from P21 P28 have P29 : "\<not> Line_on (Li p2 p5) p1" by (simp add:Line_not_on_trans) 
   from assms have P31 : "Line_on (Li p3 p4) p5" by (simp add:Line_Bet_on)
   have P32 : "Line_on (Li p3 p4) p4" by (simp add:Line_on_rule)
   have P33 : "Line_on (Li p2 p5) p5" by (simp add:Line_on_rule)
@@ -591,7 +593,7 @@ proof -
   from assms P14 P22 P29 P38 have "\<exists>p. Line_on (Li p2 p5) p \<and> Bet_Point (Se p1 p4) p" by (simp add:Bet_swap_lemma_2)
   then obtain p6 :: Point where P39 : "Line_on (Li p2 p5) p6 \<and> Bet_Point (Se p1 p4) p6" by blast
   from P12 have P40 : "Eq (Geos (Lin (Li p1 p4)) add Emp) (Geos (Lin (Li p4 p1)) add Emp)" by (simp add:Line_rev)
-  from P13 P40 have P41 : "\<not> Line_on (Li p4 p1) p3" by (simp add:Line_not_on_trans)
+  from P13 P40 have P41 : "\<not> Line_on (Li p4 p1) p3" by (simp add:Line_not_on_trans) 
   from assms P6 have P42 : "\<not> Eq (Geos (Lin (Li p1 p4)) add Emp) (Geos (Lin (Li p1 p5)) add Emp)" by (simp add:Line_Bet_not_Eq)
   from P12 P26 P42 have P43 : "\<not> Line_on (Li p1 p4) p5" by (simp add:Line_not_Eq_on)
   from P40 P43 have P44 : "\<not> Line_on (Li p4 p1) p5" by (simp add:Line_not_on_trans)
@@ -602,7 +604,7 @@ proof -
   from P13 P48 have P49 : "\<not> Eq (Geos (Lin (Li p1 p2)) add Emp) (Geos (Lin (Li p1 p4)) add Emp)" by blast
   from P12 P45 P49 have P50 : "\<not> Line_on (Li p1 p2) p4" by (simp add:Line_not_Eq_on)
   from P12 P45 P50 have P51 : "\<not> Line_on (Li p1 p4) p2" by (blast intro:Line_on_rev)
-  from P40 P51 have P52 : "\<not> Line_on (Li p4 p1) p2" by (simp add:Line_not_on_trans)
+  from P40 P51 have P52 : "\<not> Line_on (Li p4 p1) p2" by (simp add:Line_not_on_trans) 
   from P18 P19 P20 have P53 : "\<not> Line_on (Li p5 p3) p2" by (blast intro:Line_on_rev)
   from P7 P23 P41 P44 P52 P53 have "\<exists>p. Line_on (Li p4 p1) p \<and> Bet_Point (Se p5 p2) p" by (simp add:Bet_swap_lemma_2)
   then obtain p7 :: Point where P54 : "Line_on (Li p4 p1) p7 \<and> Bet_Point (Se p5 p2) p7" by blast
@@ -615,8 +617,8 @@ proof -
   from P39 P60 show "\<exists>p. Bet_Point (Se p1 p4) p \<and> Bet_Point (Se p5 p2) p" by blast
 qed
 
-lemma(in Order_Rule) Bet_swap_lemma_4 :
-  assumes
+lemma(in Order_Rule) Bet_swap_lemma_4 : 
+  assumes 
     "\<not> Eq (Geos (Poi A) add Emp) (Geos (Poi D) add Emp)"
     "Bet_Point (Se A E) G"
     "Bet_Point (Se D G) H"
@@ -677,7 +679,7 @@ proof -
   from assms have "Inv (Bet_Point (Se E G) A) \<and> Inv (Bet_Point (Se G A) E)" by (simp add:Bet_iff)
   then have P45 : "\<not> Bet_Point (Se G A) E" by (simp add:Inv_def)
   from P44 P45 have P46 : "Line_on_Seg (Li H E) (Se G A) \<Longrightarrow> \<not> Eq (Geos (Poi C2) add Emp) (Geos (Poi E) add Emp)" by blast
-  from P40 P41 P42 P43 P46 have P47 : "Line_on_Seg (Li H E) (Se G A) \<Longrightarrow>
+  from P40 P41 P42 P43 P46 have P47 : "Line_on_Seg (Li H E) (Se G A) \<Longrightarrow> 
     Eq (Geos (Lin (Li G A)) add Emp) (Geos (Lin (Li H E)) add Emp)" by (simp add:Line_unique)
   have P48 : "Line_on (Li G A) G" by (simp add:Line_on_rule)
   from P47 P48 have P49 : "Line_on_Seg (Li H E) (Se G A) \<Longrightarrow> Line_on (Li H E) G" by (simp add:Line_on_trans)
@@ -686,8 +688,8 @@ proof -
   thus "\<exists>p. Line_on (Li H E) p \<and> Bet_Point (Se D A) p" by (simp add:Line_on_Seg_rule)
 qed
 
-lemma(in Order_Rule) Bet_swap_lemma_5 :
-  assumes
+lemma(in Order_Rule) Bet_swap_lemma_5 : 
+  assumes 
     "Bet_Point (Se A C) B"
     "Bet_Point (Se B D) C"
     "Bet_Point (Se C F) E"
@@ -702,7 +704,7 @@ proof -
   from assms P3 have P4 : "Line_on (Li A D) B \<and> Line_on (Li A D) C" by (simp add:Bet_swap_lemma_1)
   then have P5 : "Line_on (Li A D) C" by simp
   from assms have "\<exists>p. Bet_Point (Se A E) p \<and> Bet_Point (Se F B) p" by (simp add:Bet_swap_lemma_3)
-  then obtain G :: Point where P6 : "Bet_Point (Se A E) G \<and> Bet_Point (Se F B) G" by blast
+  then obtain G :: Point where P6 : "Bet_Point (Se A E) G \<and> Bet_Point (Se F B) G" by blast 
   from P3 have P7 : "Eq (Geos (Lin (Li A D)) add Emp) (Geos (Lin (Li D A)) add Emp)" by (simp add:Line_rev)
   from P4 P7 have P8 : "Line_on (Li D A) B" by (blast intro:Line_on_trans)
   from assms P7 have P9 : "\<not> Line_on (Li D A) F" by (simp add:Line_not_on_trans)
@@ -711,7 +713,7 @@ proof -
   have P12 : "Line_on (Li D B) B" by (simp add:Line_on_rule)
   from assms have P13 : "\<not> Eq (Geos (Poi B) add Emp) (Geos (Poi D) add Emp)" by (simp add:Bet_Point_def)
   from P8 P10 P11 P12 P13 have P14 : "Eq (Geos (Lin (Li D A)) add Emp) (Geos (Lin (Li D B)) add Emp)" by (simp add:Line_unique)
-  from P9 P14 have P15 : "\<not> Line_on (Li D B) F" by (simp add:Line_not_on_trans)
+  from P9 P14 have P15 : "\<not> Line_on (Li D B) F" by (simp add:Line_not_on_trans) 
   from assms have P16 : "Bet_Point (Se D B) C" by (simp add:Bet_rev)
   from P6 have P17 : "Bet_Point (Se B F) G" by (simp add:Bet_rev)
   from P15 P16 P17 have "\<exists>p. Bet_Point (Se D G) p \<and> Bet_Point (Se F C) p" by (simp add:Bet_swap_lemma_3)
@@ -731,8 +733,8 @@ proof -
   from P27 P29 have "\<not> Eq (Geos (Poi E) add Emp) (Geos (Poi A) add Emp)" by blast
   then have P30 : "\<not> Eq (Geos (Poi A) add Emp) (Geos (Poi E) add Emp)" by (blast intro:Eq_rev)
   from P19 P28 P30 have P31 : "\<not> Line_on (Li A E) C" by (simp add:Line_not_Eq_on)
-  from P19 P30 P31 have P32 : "\<not> Line_on (Li A C) E" by (blast intro:Line_on_rev)
-  from P5 P19 P32 have P33 : "\<not> Line_on (Li A D) E" by (simp add:Line_not_on_ex)
+  from P19 P30 P31 have P32 : "\<not> Line_on (Li A C) E" by (blast intro:Line_on_rev) 
+  from P5 P19 P32 have P33 : "\<not> Line_on (Li A D) E" by (simp add:Line_not_on_ex) 
   from P3 P30 P33 have P34 : "\<not> Line_on (Li A E) D" by (blast intro:Line_on_rev)
   from P30 have P35 : "Eq (Geos (Lin (Li A E)) add Emp) (Geos (Lin (Li E A)) add Emp)" by (simp add:Line_rev)
   from P18 have P36 : "Bet_Point (Se D G) H" by simp
@@ -766,8 +768,8 @@ proof -
   thus "Bet_Point (Se A D) C" by (simp add:Bet_rev)
 qed
 
-theorem(in Order_Rule) Bet_swap_234_134 :
-  assumes
+theorem(in Order_Rule) Bet_swap_234_134 : 
+  assumes 
     "Bet_Point (Se A C) B"
     "Bet_Point (Se B D) C"
   shows "Bet_Point (Se A D) C"
@@ -785,7 +787,7 @@ proof -
   from P4 have P6 : "Eq (Geos (Poi C) add Emp) (Geos (Poi F) add Emp) \<Longrightarrow> Line_on (Li A D) F" by (simp add:Point_Eq)
   from P5 P6 have "\<not> Eq (Geos (Poi C) add Emp) (Geos (Poi F) add Emp)" by blast
   then have "\<exists>p. Bet_Point (Se C F) p" by (simp add:Seg_density)
-  then obtain E :: Point where P7 : "Bet_Point (Se C F) E" by blast
+  then obtain E :: Point where P7 : "Bet_Point (Se C F) E" by blast 
   have P8 : "Line_on (Li A D) A" by (simp add:Line_on_rule)
   have P9 : "Line_on (Li A C) C" by (simp add:Line_on_rule)
   have P10 : "Line_on (Li A C) A" by (simp add:Line_on_rule)
@@ -796,8 +798,8 @@ proof -
   from assms P5 P7 P13 show "Bet_Point (Se A D) C" by (blast intro:Bet_swap_lemma_5)
 qed
 
-theorem(in Order_Rule) Bet_swap_234_124 :
-  assumes
+theorem(in Order_Rule) Bet_swap_234_124 : 
+  assumes 
     "Bet_Point (Se A C) B"
     "Bet_Point (Se B D) C"
   shows "Bet_Point (Se A D) B"
@@ -815,7 +817,7 @@ proof -
   from P4 have P6 : "Eq (Geos (Poi B) add Emp) (Geos (Poi F) add Emp) \<Longrightarrow> Line_on (Li A D) F" by (simp add:Point_Eq)
   from P5 P6 have "\<not> Eq (Geos (Poi B) add Emp) (Geos (Poi F) add Emp)" by blast
   then have "\<exists>p. Bet_Point (Se B F) p" by (simp add:Seg_density)
-  then obtain E :: Point where P7 : "Bet_Point (Se B F) E" by blast
+  then obtain E :: Point where P7 : "Bet_Point (Se B F) E" by blast 
   from assms have P8 : "Bet_Point (Se D B) C" by (simp add:Bet_rev)
   from assms have P9 : "Bet_Point (Se C A) B" by (simp add:Bet_rev)
   from P3 have P10 : "Eq (Geos (Lin (Li A D)) add Emp) (Geos (Lin (Li D A)) add Emp)" by (simp add:Line_rev)
@@ -832,8 +834,8 @@ proof -
   thus "Bet_Point (Se A D) B" by (blast intro:Bet_rev)
 qed
 
-theorem(in Order_Rule) Bet_swap_134_234 :
-  assumes
+theorem(in Order_Rule) Bet_swap_134_234 : 
+  assumes 
     "Bet_Point (Se A C) B"
     "Bet_Point (Se A D) C"
   shows "Bet_Point (Se B D) C"
@@ -870,9 +872,9 @@ proof -
   from P11 have P26 : "Eq (Geos (Poi B) add Emp) (Geos (Poi F) add Emp) \<Longrightarrow> Line_on (Li A D) F" by (simp add:Point_Eq)
   from P25 P26 have "\<not> Eq (Geos (Poi B) add Emp) (Geos (Poi F) add Emp)" by blast
   then have "\<exists>p. Bet_Point (Se B F) p" by (simp add:Seg_density)
-  then obtain G :: Point where P27 : "Bet_Point (Se B F) G" by blast
+  then obtain G :: Point where P27 : "Bet_Point (Se B F) G" by blast 
   from P11 P25 P27 have "Inv (Line_on (Li A D) G)" by (simp add:Line_Bet_not_on)
-  then have P28 : "\<not> Line_on (Li A D) G" by (simp add:Inv_def)
+  then have P28 : "\<not> Line_on (Li A D) G" by (simp add:Inv_def) 
   from assms P25 have P29 : "\<not> Eq (Geos (Lin (Li F C)) add Emp) (Geos (Lin (Li F D)) add Emp)" by (simp add:Line_Bet_not_Eq)
   from P7 have P30 : "Eq (Geos (Poi C) add Emp) (Geos (Poi F) add Emp) \<Longrightarrow> Line_on (Li A D) F" by (simp add:Point_Eq)
   from P25 P30 have P31 : "\<not> Eq (Geos (Poi F) add Emp) (Geos (Poi C) add Emp)" by (blast intro:Eq_rev)
@@ -881,14 +883,14 @@ proof -
   from P25 P33 have P34 : "\<not> Eq (Geos (Poi F) add Emp) (Geos (Poi D) add Emp)" by (blast intro:Eq_rev)
   from P29 P31 P34 have P35 : "\<not> Line_on (Li F C) D" by (simp add:Line_not_Eq_on)
   from P31 have P36 : "Eq (Geos (Lin (Li F C)) add Emp) (Geos (Lin (Li C F)) add Emp)" by (simp add:Line_rev)
-  from P35 P36 have P37 : "\<not> Line_on (Li C F) D" by (simp add:Line_not_on_trans)
+  from P35 P36 have P37 : "\<not> Line_on (Li C F) D" by (simp add:Line_not_on_trans) 
   from assms have P38 : "Bet_Point (Se D A) C" by (simp add:Bet_rev)
   from P13 P25 have P39 : "\<not> Line_on (Li D A) F" by (simp add:Line_not_on_trans)
   from P38 P39 have P40 : "\<not> Eq (Geos (Lin (Li F C)) add Emp) (Geos (Lin (Li F A)) add Emp)" by (simp add:Line_Bet_not_Eq)
   from P8 have P41 : "Eq (Geos (Poi A) add Emp) (Geos (Poi F) add Emp) \<Longrightarrow> Line_on (Li A D) F" by (simp add:Point_Eq)
   from P25 P41 have P42 : "\<not> Eq (Geos (Poi F) add Emp) (Geos (Poi A) add Emp)" by (blast intro:Eq_rev)
   from P31 P40 P42 have P43 : "\<not> Line_on (Li F C) A" by (simp add:Line_not_Eq_on)
-  from P36 P43 have P44 : "\<not> Line_on (Li C F) A" by (simp add:Line_not_on_trans)
+  from P36 P43 have P44 : "\<not> Line_on (Li C F) A" by (simp add:Line_not_on_trans) 
   from P2 have P45 : "\<not> Eq (Geos (Poi C) add Emp) (Geos (Poi A) add Emp)" by (blast intro:Eq_rev)
   from P31 have P46 : "\<not> Eq (Geos (Poi C) add Emp) (Geos (Poi F) add Emp)" by (blast intro:Eq_rev)
   from P44 P45 P46 have P47 : "\<not> Line_on (Li C A) F" by (blast intro:Line_on_rev)
@@ -921,9 +923,9 @@ proof -
   from P36 have P73 : "Eq (Geos (Lin (Li C F)) add Emp) (Geos (Lin (Li F C)) add Emp)" by (simp add:Eq_rev)
   from P66 P73 have P74 : "Line_on_Seg (Li C F) (Se A G) \<Longrightarrow> Line_on (Li F C) H" by (simp add:Line_on_trans)
   from P66 have "Line_on_Seg (Li C F) (Se A G) \<Longrightarrow> Bet_Point (Se A G) H" by simp
-  then have "Line_on_Seg (Li C F) (Se A G) \<Longrightarrow> Eq (Geos (Poi H) add Emp) (Geos (Poi F) add Emp) \<Longrightarrow>
+  then have "Line_on_Seg (Li C F) (Se A G) \<Longrightarrow> Eq (Geos (Poi H) add Emp) (Geos (Poi F) add Emp) \<Longrightarrow> 
     Bet_Point (Se A G) F" by (simp add:Point_Eq)
-  then have P75 : "Line_on_Seg (Li C F) (Se A G) \<Longrightarrow> Eq (Geos (Poi H) add Emp) (Geos (Poi F) add Emp) \<Longrightarrow>
+  then have P75 : "Line_on_Seg (Li C F) (Se A G) \<Longrightarrow> Eq (Geos (Poi H) add Emp) (Geos (Poi F) add Emp) \<Longrightarrow> 
     Line_on (Li A G) F" by (simp add:Line_Bet_on)
   have P76 : "Line_on (Li A G) G" by (simp add:Line_on_rule)
   have P77 : "Line_on (Li B F) F" by (simp add:Line_on_rule)
@@ -955,7 +957,7 @@ proof -
   have P95 : "Line_on (Li C F) F" by (simp add:Line_on_rule)
   have P96 : "Line_on (Li H F) H" by (simp add:Line_on_rule)
   have P97 : "Line_on (Li H F) F" by (simp add:Line_on_rule)
-  from P66 P84 P95 P96 P97 have P98 : "Line_on_Seg (Li C F) (Se A G) \<Longrightarrow>
+  from P66 P84 P95 P96 P97 have P98 : "Line_on_Seg (Li C F) (Se A G) \<Longrightarrow> 
     Eq (Geos (Lin (Li H F)) add Emp) (Geos (Lin (Li C F)) add Emp)" by (simp add:Line_unique)
   from P94 P98 have P99 : "Line_on_Seg (Li C F) (Se A G) \<Longrightarrow> Line_on (Li C F) D" by (simp add:Line_on_trans)
   from P37 P99 have P100 : "\<not> Line_on_Seg (Li C F) (Se A G)" by blast
@@ -994,8 +996,8 @@ proof -
   thus "Bet_Point (Se B D) C" by (blast intro:Bet_rev)
 qed
 
-lemma(in Order_Rule) Bet_swap_134_124 :
-  assumes
+lemma(in Order_Rule) Bet_swap_134_124 : 
+  assumes 
     "Bet_Point (Se A C) B"
     "Bet_Point (Se A D) C"
   shows "Bet_Point (Se A D) B"
@@ -1004,8 +1006,8 @@ proof -
   from assms P1 show "Bet_Point (Se A D) B" by (blast intro:Bet_swap_234_124)
 qed
 
-theorem(in Order_Rule) Bet_swap_243_124 :
-  assumes
+theorem(in Order_Rule) Bet_swap_243_124 : 
+  assumes 
     "Bet_Point (Se A D) B"
     "Bet_Point (Se B D) C"
   shows "Bet_Point (Se A C) B"
@@ -1016,8 +1018,8 @@ proof -
   thus "Bet_Point (Se A C) B" by (simp add:Bet_rev)
 qed
 
-theorem(in Order_Rule) Bet_swap_243_143 :
-  assumes
+theorem(in Order_Rule) Bet_swap_243_143 : 
+  assumes 
     "Bet_Point (Se A D) B"
     "Bet_Point (Se B D) C"
   shows "Bet_Point (Se A D) C"
@@ -1030,8 +1032,8 @@ qed
 
 text\<open>Theorem5\<close>
 
-lemma(in Order_Rule) Bet_four_Point_case :
-  assumes
+lemma(in Order_Rule) Bet_four_Point_case : 
+  assumes 
     "Line_on l1 P"
     "Line_on l1 Q"
     "Line_on l1 R"
@@ -1057,8 +1059,8 @@ proof -
     \<or> Bet_Point (Se P Q) S \<or> Bet_Point (Se Q S) P" by blast
 qed
 
-lemma(in Order_Rule) Plane_diffside_rev :
-  assumes
+lemma(in Order_Rule) Plane_diffside_rev : 
+  assumes 
     "Plane_diffside l1 p1 p2"
   shows "Plane_diffside l1 p2 p1"
 proof -
@@ -1069,30 +1071,30 @@ proof -
   thus "Plane_diffside l1 p2 p1" by (simp add:Plane_diffside_def)
 qed
 
-lemma(in Order_Rule) Plane_sameside_rev :
-  assumes
+lemma(in Order_Rule) Plane_sameside_rev : 
+  assumes 
     "Plane_sameside l1 p1 p2"
   shows "Plane_sameside l1 p2 p1"
 proof -
   have "Line_on_Seg l1 (Se p2 p1) \<Longrightarrow> \<exists>p. Line_on l1 p \<and> Bet_Point (Se p2 p1) p" by (simp add:Line_on_Seg_rule)
-  then obtain p3 :: Point where P1 : "Line_on_Seg l1 (Se p2 p1) \<Longrightarrow>
+  then obtain p3 :: Point where P1 : "Line_on_Seg l1 (Se p2 p1) \<Longrightarrow> 
     Line_on l1 p3 \<and> Bet_Point (Se p2 p1) p3" by blast
   then have P2 : "Line_on_Seg l1 (Se p2 p1) \<Longrightarrow> Bet_Point (Se p1 p2) p3" by (simp add:Bet_rev)
   from P1 P2 have "Line_on_Seg l1 (Se p2 p1) \<Longrightarrow> \<exists>p. Line_on l1 p \<and> Bet_Point (Se p1 p2) p" by blast
   then have "Line_on_Seg l1 (Se p2 p1) \<Longrightarrow> Line_on_Seg l1 (Se p1 p2)" by (simp add:Line_on_Seg_rule)
   then have P3 : "\<not> Line_on_Seg l1 (Se p1 p2) \<Longrightarrow> \<not> Line_on_Seg l1 (Se p2 p1)" by blast
-  from assms have P4 : "\<not> Line_on_Seg l1 (Se p1 p2) \<and> \<not> Line_on l1 p1
+  from assms have P4 : "\<not> Line_on_Seg l1 (Se p1 p2) \<and> \<not> Line_on l1 p1 
     \<and> \<not> Line_on l1 p2 \<and> \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)" by (simp add:Plane_sameside_def)
   from P3 P4 have P5 : "\<not> Line_on_Seg l1 (Se p2 p1)" by blast
   from P4 have P6 : "\<not> Eq (Geos (Poi p2) add Emp) (Geos (Poi p1) add Emp)" by (blast intro:Eq_rev)
   from P4 P5 P6 show "Plane_sameside l1 p2 p1" by (simp add:Plane_sameside_def)
 qed
 
-lemma(in Order_Rule) Plane_sameside_not_diffside :
-  assumes N :
+lemma(in Order_Rule) Plane_sameside_not_diffside : 
+  assumes N : 
     "Plane_sameside l1 p1 p2"
   shows "\<not> Plane_diffside l1 p1 p2"
-proof
+proof 
   assume W : "Plane_diffside l1 p1 p2"
   then have "\<exists>p. Bet_Point (Se p1 p2) p \<and> Line_on l1 p \<and> \<not> Line_on l1 p1 \<and> \<not> Line_on l1 p2" by (simp add:Plane_diffside_def)
   then have "\<exists>p. Line_on l1 p \<and> Bet_Point (Se p1 p2) p" by blast
@@ -1101,17 +1103,17 @@ proof
   from P1 P2 show False by blast
 qed
 
-lemma(in Order_Rule) Plane_diffside_not_sameside :
+lemma(in Order_Rule) Plane_diffside_not_sameside : 
   assumes N :
     "Plane_diffside l1 p1 p2"
   shows "\<not> Plane_sameside l1 p1 p2"
-proof
+proof 
   assume W : "Plane_sameside l1 p1 p2"
   then have P1 : "\<not> Plane_diffside l1 p1 p2" by (simp add:Plane_sameside_not_diffside)
   from N P1 show False by blast
 qed
 
-lemma(in Order_Rule) Plane_not_sameside_diffside :
+lemma(in Order_Rule) Plane_not_sameside_diffside : 
   assumes "\<not> Plane_sameside l1 p1 p2"
     "\<not> Line_on l1 p1" "\<not> Line_on l1 p2"
     "\<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)"
@@ -1125,7 +1127,7 @@ proof -
   thus "Plane_diffside l1 p1 p2" by (simp add:Plane_diffside_def)
 qed
 
-lemma(in Order_Rule) Plane_not_diffside_sameside :
+lemma(in Order_Rule) Plane_not_diffside_sameside : 
   assumes "\<not> Plane_diffside l1 p1 p2"
     "\<not> Line_on l1 p1" "\<not> Line_on l1 p2"
     "\<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)"
@@ -1135,8 +1137,8 @@ proof -
   from assms P1 show "Plane_sameside l1 p1 p2" by blast
 qed
 
-lemma(in Order_Rule) Plane_Line_diff_trans :
-  assumes
+lemma(in Order_Rule) Plane_Line_diff_trans : 
+  assumes 
     "Plane_diffside l1 p1 p2"
     "Eq (Geos (Lin l1) add Emp) (Geos (Lin l2) add Emp)"
   shows "Plane_diffside l2 p1 p2"
@@ -1150,8 +1152,8 @@ proof -
   thus "Plane_diffside l2 p1 p2" by (simp add:Plane_diffside_def)
 qed
 
-lemma(in Order_Rule) Plane_Line_trans :
-  assumes
+lemma(in Order_Rule) Plane_Line_trans : 
+  assumes 
     "Plane_sameside l1 p1 p2"
     "Eq (Geos (Lin l1) add Emp) (Geos (Lin l2) add Emp)"
   shows "Plane_sameside l2 p1 p2"
@@ -1161,7 +1163,7 @@ proof -
   from assms P1 have P2 : "Line_on_Seg l2 (Se p1 p2) \<Longrightarrow> Line_on l1 p3" by (blast intro:Line_on_trans Eq_rev)
   from P1 P2 have "Line_on_Seg l2 (Se p1 p2) \<Longrightarrow> \<exists>p. Line_on l1 p \<and> Bet_Point (Se p1 p2) p" by blast
   then have P3 : "Line_on_Seg l2 (Se p1 p2) \<Longrightarrow> Line_on_Seg l1 (Se p1 p2)" by (simp add:Line_on_Seg_rule)
-  from assms have P4 : "\<not> Line_on_Seg l1 (Se p1 p2) \<and> \<not> Line_on l1 p1
+  from assms have P4 : "\<not> Line_on_Seg l1 (Se p1 p2) \<and> \<not> Line_on l1 p1 
     \<and> \<not> Line_on l1 p2 \<and> \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p2) add Emp)" by (simp add:Plane_sameside_def)
   from P3 P4 have P5 : "\<not> Line_on_Seg l2 (Se p1 p2)" by blast
   from assms P4 have P6 : "Line_on l2 p1 \<Longrightarrow> Line_on l1 p1" by (blast intro:Line_on_trans Eq_rev)
@@ -1171,7 +1173,7 @@ proof -
   from P4 P5 P7 P9 show "Plane_sameside l2 p1 p2" by (simp add:Plane_sameside_def)
 qed
 
-lemma(in Order_Rule) Line_other_Point :
+lemma(in Order_Rule) Line_other_Point : 
   assumes "Line_on l1 p1"
   shows "\<exists>p. Line_on l1 p \<and> \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p) add Emp)"
 proof -
@@ -1192,8 +1194,8 @@ proof -
   from P3 P4 P5 P6 show "\<exists>p. Line_on l1 p \<and> \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p) add Emp)" by blast
 qed
 
-lemma(in Order_Rule) Plane_Bet_sameside :
-  assumes
+lemma(in Order_Rule) Plane_Bet_sameside : 
+  assumes 
     "Bet_Point (Se p1 p3) p2"
     "Line_on l1 p1"
     "\<not> Eq (Geos (Lin (Li p1 p3)) add Emp) (Geos (Lin l1) add Emp)"
@@ -1203,9 +1205,9 @@ proof -
   then obtain p4 :: Point where P1 : "Line_on l1 p4 \<and> \<not> Eq (Geos (Poi p1) add Emp) (Geos (Poi p4) add Emp)" by blast
   have P2 : "Line_on (Li p4 p1) p4" by (simp add:Line_on_rule)
   have P3 : "Line_on (Li p4 p1) p1" by (simp add:Line_on_rule)
-  have "Plane_diffside (Li p4 p1) p2 p3 \<Longrightarrow>
+  have "Plane_diffside (Li p4 p1) p2 p3 \<Longrightarrow> 
     (\<exists>p. Bet_Point (Se p2 p3) p \<and> Line_on (Li p4 p1) p \<and> \<not> Line_on (Li p4 p1) p2 \<and> \<not> Line_on (Li p4 p1) p3)" by (simp add:Plane_diffside_def)
-  then obtain p5 :: Point where P4 : "Plane_diffside (Li p4 p1) p2 p3 \<Longrightarrow>
+  then obtain p5 :: Point where P4 : "Plane_diffside (Li p4 p1) p2 p3 \<Longrightarrow> 
     Bet_Point (Se p2 p3) p5 \<and> Line_on (Li p4 p1) p5 \<and> \<not> Line_on (Li p4 p1) p2 \<and> \<not> Line_on (Li p4 p1) p3" by blast
   then have P5 : "Plane_diffside (Li p4 p1) p2 p3 \<Longrightarrow> Bet_Point (Se p3 p2) p5" by (simp add:Bet_rev)
   from assms have P6 : "Bet_Point (Se p3 p1) p2" by (simp add:Bet_rev)
@@ -1219,7 +1221,7 @@ proof -
   then have "\<not> Bet_Point (Se p3 p2) p1" by (simp add:Inv_def)
   then have P10 : "\<not> Bet_Point (Se p2 p3) p1" by (blast intro:Bet_rev)
   from P9 P10 have P11 : "Plane_diffside (Li p4 p1) p2 p3 \<Longrightarrow> \<not> Eq (Geos (Poi p5) add Emp) (Geos (Poi p1) add Emp)" by blast
-  from P3 P4 P7 P8 P11 have P12 : "Plane_diffside (Li p4 p1) p2 p3 \<Longrightarrow>
+  from P3 P4 P7 P8 P11 have P12 : "Plane_diffside (Li p4 p1) p2 p3 \<Longrightarrow> 
     Eq (Geos (Lin (Li p3 p1)) add Emp) (Geos (Lin (Li p4 p1)) add Emp)" by (simp add:Line_unique)
   have P13 : "Line_on (Li p3 p1) p3" by (simp add:Line_on_rule)
   from P12 P13 have P14 : "Plane_diffside (Li p4 p1) p2 p3 \<Longrightarrow> Line_on (Li p4 p1) p3" by (simp add:Line_on_trans)
@@ -1241,8 +1243,8 @@ proof -
   from P17 P23 P26 P27 show "Plane_sameside l1 p2 p3" by (simp add:Plane_not_diffside_sameside)
 qed
 
-lemma(in Order_Rule) Plane_Bet_diffside :
-  assumes
+lemma(in Order_Rule) Plane_Bet_diffside : 
+  assumes 
     "Bet_Point (Se p1 p3) p2"
     "Line_on l1 p2"
     "\<not> Eq (Geos (Lin (Li p1 p3)) add Emp) (Geos (Lin l1) add Emp)"
@@ -1278,8 +1280,8 @@ proof -
   from P20 P21 show "Plane_diffside l1 p1 p3" by (simp add:Plane_Line_diff_trans)
 qed
 
-lemma(in Order_Rule) Plane_trans_inv :
-  assumes
+lemma(in Order_Rule) Plane_trans_inv : 
+  assumes 
     "Plane_diffside l1 A B"
     "Plane_diffside l1 A C"
     "\<not> Eq (Geos (Poi B) add Emp) (Geos (Poi C) add Emp)"
@@ -1309,7 +1311,7 @@ proof -
   from P2 have P16 : "Line_on (Li A B) A" by (simp add:Line_on_rule)
   from P2 have P17 : "Line_on (Li A B) B" by (simp add:Line_on_rule)
   from assms P2 P4 P14 P15 P16 P17 have P18 : "Line_on (Li A B) C \<Longrightarrow> Bet_Point (Se A C) B \<or> Bet_Point (Se B C) A
-    \<or> Bet_Point (Se A B) C \<and> Bet_Point (Se A C) D \<or> Bet_Point (Se A D) C \<or> Bet_Point (Se D C) A" by (simp add:Bet_four_Point_case)
+    \<or> Bet_Point (Se A B) C \<and> Bet_Point (Se A C) D \<or> Bet_Point (Se A D) C \<or> Bet_Point (Se D C) A" by (simp add:Bet_four_Point_case)  
   from P2 have P19 : "Line_on (Li A B) C \<Longrightarrow> Bet_Point (Se A C) B \<Longrightarrow> Bet_Point (Se D C) B" by (blast intro:Bet_swap_134_234)
   have "Line_on (Li D C) C" by (simp add:Line_on_rule)
   then have P20 : "Eq (Geos (Lin (Li D C)) add Emp) (Geos (Lin l1) add Emp) \<Longrightarrow> Line_on l1 C" by (simp add:Line_on_trans)
@@ -1319,7 +1321,7 @@ proof -
   then have P23 : "Bet_Point (Se B C) A \<Longrightarrow> Bet_Point (Se D C) A" by (blast intro:Bet_swap_134_234)
   from P6 P21 P23 have P24 : "Bet_Point (Se B C) A \<Longrightarrow> Plane_sameside l1 A C" by (simp add:Plane_Bet_sameside)
   from assms have P25 : "\<not> Plane_sameside l1 A C" by (simp add:Plane_diffside_not_sameside)
-  from P24 P25 have P26 : "\<not> Bet_Point (Se B C) A" by blast
+  from P24 P25 have P26 : "\<not> Bet_Point (Se B C) A" by blast 
   have "Bet_Point (Se A B) C \<and> Bet_Point (Se A C) D \<Longrightarrow> Bet_Point (Se B A) C \<and> Bet_Point (Se C A) D" by (simp add:Bet_rev)
   then have P27 : "Bet_Point (Se A B) C \<and> Bet_Point (Se A C) D \<Longrightarrow> Bet_Point (Se D B) C" by (blast intro:Bet_swap_243_124 Bet_rev)
   have "Line_on (Li D B) B" by (simp add:Line_on_rule)
@@ -1336,10 +1338,10 @@ proof -
   from P25 P36 have P37 : "\<not> Bet_Point (Se D C) A" by blast
   from P18 P22 P26 P30 P35 P37 have P38 : "Line_on (Li A B) C \<Longrightarrow> Plane_sameside l1 B C" by blast
   from P12 P38 show "Plane_sameside l1 B C" by blast
-qed
+qed 
 
-lemma(in Order_Rule) Plane_trans :
-  assumes
+lemma(in Order_Rule) Plane_trans : 
+  assumes 
     "Plane_sameside l1 A B"
     "Plane_diffside l1 A C"
   shows "Plane_diffside l1 B C"
@@ -1387,7 +1389,7 @@ proof -
   then have P29 : "Eq (Geos (Lin (Li C B)) add Emp) (Geos (Lin l1) add Emp) \<Longrightarrow> Line_on l1 B" by (simp add:Line_on_trans)
   from P2 P29 have P30 : "\<not> Eq (Geos (Lin (Li C B)) add Emp) (Geos (Lin l1) add Emp)" by blast
   from P6 P28 P30 have "Bet_Point (Se C B) A \<Longrightarrow> Plane_diffside l1 C B" by (simp add:Plane_Bet_diffside)
-  then have P31 : "Bet_Point (Se C B) A \<Longrightarrow> Plane_diffside l1 B C" by (blast intro:Plane_diffside_rev)
+  then have P31 : "Bet_Point (Se C B) A \<Longrightarrow> Plane_diffside l1 B C" by (blast intro:Plane_diffside_rev)  
   from P6 P24 have "Bet_Point (Se A B) D \<Longrightarrow> Plane_diffside l1 A B" by (simp add:Plane_Bet_diffside)
   then have P32 : "Bet_Point (Se A B) D \<Longrightarrow> \<not> Plane_sameside l1 A B" by (simp add:Plane_diffside_not_sameside)
   from assms P32 have "\<not> Bet_Point (Se A B) D" by blast
@@ -1402,8 +1404,8 @@ proof -
   from P12 P38 show "Plane_diffside l1 B C" by blast
 qed
 
-lemma(in Order_Rule) Plane_sameside_trans :
-  assumes
+lemma(in Order_Rule) Plane_sameside_trans : 
+  assumes 
     "Plane_sameside l1 A B"
     "Plane_sameside l1 B C"
     "\<not> Eq (Geos (Poi C) add Emp) (Geos (Poi A) add Emp)"
@@ -1418,8 +1420,8 @@ proof -
   from P3 P4 P5 P6 show "Plane_sameside l1 A C" by (simp add:Plane_not_diffside_sameside)
 qed
 
-lemma (in Order_Rule) Seg_Bet_not_on :
-  assumes
+lemma (in Order_Rule) Seg_Bet_not_on : 
+  assumes 
     "Bet_Point (Se p1 p3) p2"
   shows "\<not> Seg_on_Seg (Se p1 p2) (Se p2 p3)"
 proof -
@@ -1473,3 +1475,4 @@ proof -
 qed
 
 end
+  

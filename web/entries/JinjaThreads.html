@@ -1,345 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Jinja with Threads - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Jinja with Threads - Archive of Formal Proofs</title><meta name="description" content="We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics..."><meta property="og:title" content="Jinja with Threads" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/JinjaThreads.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2007-12-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2007-12-03T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Jinja with Threads"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">J</font>inja
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>J</span>inja <span class='first'>W</span>ith <span class='first'>T</span>hreads</h1>
+  <div>
+    
+    <p><a href="../authors/lochbihler">Andreas Lochbihler</a> <a href="http://www.andreas-lochbihler.de/">🌐</a>
+    </p>
+    
+    
+    <p class="date">December 3, 2007</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. On top of this, we formalise the JMM and show the DRF guarantee and consistency. For description of the different parts, see Lochbihler's papers at FOOL 2008, ESOP 2010, ITP 2011, and ESOP 2012.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/programming-languages/language-definitions">Computer science/Programming languages/Language definitions</a></li></ul>
+  <h3>Theories of JinjaThreads</h3>
+  <ul>
+    <li><a href="../theories/jinjathreads/#Set_without_equal">Set_without_equal</a></li>
+    <li><a href="../theories/jinjathreads/#Set_Monad">Set_Monad</a></li>
+    <li><a href="../theories/jinjathreads/#JT_ICF">JT_ICF</a></li>
+    <li><a href="../theories/jinjathreads/#Auxiliary">Auxiliary</a></li>
+    <li><a href="../theories/jinjathreads/#Basic_Main">Basic_Main</a></li>
+    <li><a href="../theories/jinjathreads/#FWState">FWState</a></li>
+    <li><a href="../theories/jinjathreads/#FWLock">FWLock</a></li>
+    <li><a href="../theories/jinjathreads/#FWLocking">FWLocking</a></li>
+    <li><a href="../theories/jinjathreads/#FWThread">FWThread</a></li>
+    <li><a href="../theories/jinjathreads/#FWWait">FWWait</a></li>
+    <li><a href="../theories/jinjathreads/#FWCondAction">FWCondAction</a></li>
+    <li><a href="../theories/jinjathreads/#FWWellform">FWWellform</a></li>
+    <li><a href="../theories/jinjathreads/#FWLockingThread">FWLockingThread</a></li>
+    <li><a href="../theories/jinjathreads/#FWInterrupt">FWInterrupt</a></li>
+    <li><a href="../theories/jinjathreads/#FWSemantics">FWSemantics</a></li>
+    <li><a href="../theories/jinjathreads/#FWProgressAux">FWProgressAux</a></li>
+    <li><a href="../theories/jinjathreads/#FWDeadlock">FWDeadlock</a></li>
+    <li><a href="../theories/jinjathreads/#FWProgress">FWProgress</a></li>
+    <li><a href="../theories/jinjathreads/#FWLifting">FWLifting</a></li>
+    <li><a href="../theories/jinjathreads/#LTS">LTS</a></li>
+    <li><a href="../theories/jinjathreads/#FWLTS">FWLTS</a></li>
+    <li><a href="../theories/jinjathreads/#Bisimulation">Bisimulation</a></li>
+    <li><a href="../theories/jinjathreads/#FWBisimulation">FWBisimulation</a></li>
+    <li><a href="../theories/jinjathreads/#FWBisimDeadlock">FWBisimDeadlock</a></li>
+    <li><a href="../theories/jinjathreads/#FWLiftingSem">FWLiftingSem</a></li>
+    <li><a href="../theories/jinjathreads/#FWInitFinLift">FWInitFinLift</a></li>
+    <li><a href="../theories/jinjathreads/#FWBisimLift">FWBisimLift</a></li>
+    <li><a href="../theories/jinjathreads/#Semilat">Semilat</a></li>
+    <li><a href="../theories/jinjathreads/#Err">Err</a></li>
+    <li><a href="../theories/jinjathreads/#Opt">Opt</a></li>
+    <li><a href="../theories/jinjathreads/#Product">Product</a></li>
+    <li><a href="../theories/jinjathreads/#Listn">Listn</a></li>
+    <li><a href="../theories/jinjathreads/#Semilattices">Semilattices</a></li>
+    <li><a href="../theories/jinjathreads/#Typing_Framework">Typing_Framework</a></li>
+    <li><a href="../theories/jinjathreads/#SemilatAlg">SemilatAlg</a></li>
+    <li><a href="../theories/jinjathreads/#Typing_Framework_err">Typing_Framework_err</a></li>
+    <li><a href="../theories/jinjathreads/#Kildall">Kildall</a></li>
+    <li><a href="../theories/jinjathreads/#LBVSpec">LBVSpec</a></li>
+    <li><a href="../theories/jinjathreads/#LBVCorrect">LBVCorrect</a></li>
+    <li><a href="../theories/jinjathreads/#LBVComplete">LBVComplete</a></li>
+    <li><a href="../theories/jinjathreads/#Abstract_BV">Abstract_BV</a></li>
+    <li><a href="../theories/jinjathreads/#Type">Type</a></li>
+    <li><a href="../theories/jinjathreads/#Decl">Decl</a></li>
+    <li><a href="../theories/jinjathreads/#TypeRel">TypeRel</a></li>
+    <li><a href="../theories/jinjathreads/#Value">Value</a></li>
+    <li><a href="../theories/jinjathreads/#Exceptions">Exceptions</a></li>
+    <li><a href="../theories/jinjathreads/#SystemClasses">SystemClasses</a></li>
+    <li><a href="../theories/jinjathreads/#Heap">Heap</a></li>
+    <li><a href="../theories/jinjathreads/#Observable_Events">Observable_Events</a></li>
+    <li><a href="../theories/jinjathreads/#StartConfig">StartConfig</a></li>
+    <li><a href="../theories/jinjathreads/#Conform">Conform</a></li>
+    <li><a href="../theories/jinjathreads/#ExternalCall">ExternalCall</a></li>
+    <li><a href="../theories/jinjathreads/#WellForm">WellForm</a></li>
+    <li><a href="../theories/jinjathreads/#ExternalCallWF">ExternalCallWF</a></li>
+    <li><a href="../theories/jinjathreads/#ConformThreaded">ConformThreaded</a></li>
+    <li><a href="../theories/jinjathreads/#BinOp">BinOp</a></li>
+    <li><a href="../theories/jinjathreads/#SemiType">SemiType</a></li>
+    <li><a href="../theories/jinjathreads/#Common_Main">Common_Main</a></li>
+    <li><a href="../theories/jinjathreads/#State">State</a></li>
+    <li><a href="../theories/jinjathreads/#Expr">Expr</a></li>
+    <li><a href="../theories/jinjathreads/#JHeap">JHeap</a></li>
+    <li><a href="../theories/jinjathreads/#SmallStep">SmallStep</a></li>
+    <li><a href="../theories/jinjathreads/#WWellForm">WWellForm</a></li>
+    <li><a href="../theories/jinjathreads/#WellType">WellType</a></li>
+    <li><a href="../theories/jinjathreads/#DefAss">DefAss</a></li>
+    <li><a href="../theories/jinjathreads/#JWellForm">JWellForm</a></li>
+    <li><a href="../theories/jinjathreads/#Threaded">Threaded</a></li>
+    <li><a href="../theories/jinjathreads/#WellTypeRT">WellTypeRT</a></li>
+    <li><a href="../theories/jinjathreads/#Progress">Progress</a></li>
+    <li><a href="../theories/jinjathreads/#DefAssPreservation">DefAssPreservation</a></li>
+    <li><a href="../theories/jinjathreads/#TypeSafe">TypeSafe</a></li>
+    <li><a href="../theories/jinjathreads/#ProgressThreaded">ProgressThreaded</a></li>
+    <li><a href="../theories/jinjathreads/#Deadlocked">Deadlocked</a></li>
+    <li><a href="../theories/jinjathreads/#Annotate">Annotate</a></li>
+    <li><a href="../theories/jinjathreads/#J_Main">J_Main</a></li>
+    <li><a href="../theories/jinjathreads/#JVMState">JVMState</a></li>
+    <li><a href="../theories/jinjathreads/#JVMInstructions">JVMInstructions</a></li>
+    <li><a href="../theories/jinjathreads/#JVMHeap">JVMHeap</a></li>
+    <li><a href="../theories/jinjathreads/#JVMExecInstr">JVMExecInstr</a></li>
+    <li><a href="../theories/jinjathreads/#JVMExceptions">JVMExceptions</a></li>
+    <li><a href="../theories/jinjathreads/#JVMExec">JVMExec</a></li>
+    <li><a href="../theories/jinjathreads/#JVMDefensive">JVMDefensive</a></li>
+    <li><a href="../theories/jinjathreads/#JVMThreaded">JVMThreaded</a></li>
+    <li><a href="../theories/jinjathreads/#JVM_Main">JVM_Main</a></li>
+    <li><a href="../theories/jinjathreads/#JVM_SemiType">JVM_SemiType</a></li>
+    <li><a href="../theories/jinjathreads/#Effect">Effect</a></li>
+    <li><a href="../theories/jinjathreads/#BVSpec">BVSpec</a></li>
+    <li><a href="../theories/jinjathreads/#BVConform">BVConform</a></li>
+    <li><a href="../theories/jinjathreads/#BVSpecTypeSafe">BVSpecTypeSafe</a></li>
+    <li><a href="../theories/jinjathreads/#BVNoTypeError">BVNoTypeError</a></li>
+    <li><a href="../theories/jinjathreads/#BVProgressThreaded">BVProgressThreaded</a></li>
+    <li><a href="../theories/jinjathreads/#JVMDeadlocked">JVMDeadlocked</a></li>
+    <li><a href="../theories/jinjathreads/#EffectMono">EffectMono</a></li>
+    <li><a href="../theories/jinjathreads/#TF_JVM">TF_JVM</a></li>
+    <li><a href="../theories/jinjathreads/#LBVJVM">LBVJVM</a></li>
+    <li><a href="../theories/jinjathreads/#BVExec">BVExec</a></li>
+    <li><a href="../theories/jinjathreads/#BCVExec">BCVExec</a></li>
+    <li><a href="../theories/jinjathreads/#BV_Main">BV_Main</a></li>
+    <li><a href="../theories/jinjathreads/#CallExpr">CallExpr</a></li>
+    <li><a href="../theories/jinjathreads/#J0">J0</a></li>
+    <li><a href="../theories/jinjathreads/#J0Bisim">J0Bisim</a></li>
+    <li><a href="../theories/jinjathreads/#J1State">J1State</a></li>
+    <li><a href="../theories/jinjathreads/#J1Heap">J1Heap</a></li>
+    <li><a href="../theories/jinjathreads/#J1">J1</a></li>
+    <li><a href="../theories/jinjathreads/#J1Deadlock">J1Deadlock</a></li>
+    <li><a href="../theories/jinjathreads/#PCompiler">PCompiler</a></li>
+    <li><a href="../theories/jinjathreads/#Compiler2">Compiler2</a></li>
+    <li><a href="../theories/jinjathreads/#Exception_Tables">Exception_Tables</a></li>
+    <li><a href="../theories/jinjathreads/#J1WellType">J1WellType</a></li>
+    <li><a href="../theories/jinjathreads/#J1WellForm">J1WellForm</a></li>
+    <li><a href="../theories/jinjathreads/#TypeComp">TypeComp</a></li>
+    <li><a href="../theories/jinjathreads/#JVMTau">JVMTau</a></li>
+    <li><a href="../theories/jinjathreads/#Execs">Execs</a></li>
+    <li><a href="../theories/jinjathreads/#J1JVMBisim">J1JVMBisim</a></li>
+    <li><a href="../theories/jinjathreads/#J1JVM">J1JVM</a></li>
+    <li><a href="../theories/jinjathreads/#JVMJ1">JVMJ1</a></li>
+    <li><a href="../theories/jinjathreads/#Correctness2">Correctness2</a></li>
+    <li><a href="../theories/jinjathreads/#ListIndex">ListIndex</a></li>
+    <li><a href="../theories/jinjathreads/#Compiler1">Compiler1</a></li>
+    <li><a href="../theories/jinjathreads/#J0J1Bisim">J0J1Bisim</a></li>
+    <li><a href="../theories/jinjathreads/#Correctness1Threaded">Correctness1Threaded</a></li>
+    <li><a href="../theories/jinjathreads/#Correctness1">Correctness1</a></li>
+    <li><a href="../theories/jinjathreads/#JJ1WellForm">JJ1WellForm</a></li>
+    <li><a href="../theories/jinjathreads/#Compiler">Compiler</a></li>
+    <li><a href="../theories/jinjathreads/#Correctness">Correctness</a></li>
+    <li><a href="../theories/jinjathreads/#Preprocessor">Preprocessor</a></li>
+    <li><a href="../theories/jinjathreads/#Compiler_Main">Compiler_Main</a></li>
+    <li><a href="../theories/jinjathreads/#MM">MM</a></li>
+    <li><a href="../theories/jinjathreads/#SC">SC</a></li>
+    <li><a href="../theories/jinjathreads/#SC_Interp">SC_Interp</a></li>
+    <li><a href="../theories/jinjathreads/#SC_Collections">SC_Collections</a></li>
+    <li><a href="../theories/jinjathreads/#Orders">Orders</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Spec">JMM_Spec</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_DRF">JMM_DRF</a></li>
+    <li><a href="../theories/jinjathreads/#SC_Legal">SC_Legal</a></li>
+    <li><a href="../theories/jinjathreads/#Non_Speculative">Non_Speculative</a></li>
+    <li><a href="../theories/jinjathreads/#SC_Completion">SC_Completion</a></li>
+    <li><a href="../theories/jinjathreads/#HB_Completion">HB_Completion</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Heap">JMM_Heap</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Framework">JMM_Framework</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Typesafe">JMM_Typesafe</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Common">JMM_Common</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_J">JMM_J</a></li>
+    <li><a href="../theories/jinjathreads/#DRF_J">DRF_J</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_JVM">JMM_JVM</a></li>
+    <li><a href="../theories/jinjathreads/#DRF_JVM">DRF_JVM</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Type">JMM_Type</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Compiler">JMM_Compiler</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Type2">JMM_Type2</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Interp">JMM_Interp</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Typesafe2">JMM_Typesafe2</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_J_Typesafe">JMM_J_Typesafe</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_JVM_Typesafe">JMM_JVM_Typesafe</a></li>
+    <li><a href="../theories/jinjathreads/#JMM_Compiler_Type2">JMM_Compiler_Type2</a></li>
+    <li><a href="../theories/jinjathreads/#JMM">JMM</a></li>
+    <li><a href="../theories/jinjathreads/#MM_Main">MM_Main</a></li>
+    <li><a href="../theories/jinjathreads/#State_Refinement">State_Refinement</a></li>
+    <li><a href="../theories/jinjathreads/#Scheduler">Scheduler</a></li>
+    <li><a href="../theories/jinjathreads/#Random_Scheduler">Random_Scheduler</a></li>
+    <li><a href="../theories/jinjathreads/#Round_Robin">Round_Robin</a></li>
+    <li><a href="../theories/jinjathreads/#SC_Schedulers">SC_Schedulers</a></li>
+    <li><a href="../theories/jinjathreads/#TypeRelRefine">TypeRelRefine</a></li>
+    <li><a href="../theories/jinjathreads/#PCompilerRefine">PCompilerRefine</a></li>
+    <li><a href="../theories/jinjathreads/#J_Execute">J_Execute</a></li>
+    <li><a href="../theories/jinjathreads/#ExternalCall_Execute">ExternalCall_Execute</a></li>
+    <li><a href="../theories/jinjathreads/#JVMExec_Execute2">JVMExec_Execute2</a></li>
+    <li><a href="../theories/jinjathreads/#JVM_Execute2">JVM_Execute2</a></li>
+    <li><a href="../theories/jinjathreads/#Code_Generation">Code_Generation</a></li>
+    <li><a href="../theories/jinjathreads/#JVMExec_Execute">JVMExec_Execute</a></li>
+    <li><a href="../theories/jinjathreads/#JVM_Execute">JVM_Execute</a></li>
+    <li><a href="../theories/jinjathreads/#ToString">ToString</a></li>
+    <li><a href="../theories/jinjathreads/#Java2Jinja">Java2Jinja</a></li>
+    <li><a href="../theories/jinjathreads/#Execute_Main">Execute_Main</a></li>
+    <li><a href="../theories/jinjathreads/#ApprenticeChallenge">ApprenticeChallenge</a></li>
+    <li><a href="../theories/jinjathreads/#BufferExample">BufferExample</a></li>
+    <li><a href="../theories/jinjathreads/#Examples_Main">Examples_Main</a></li>
+    <li><a href="../theories/jinjathreads/#JinjaThreads">JinjaThreads</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Automatic_Refinement.html">Automatic_Refinement</a></li><li><a href="../entries/Binomial-Heaps.html">Binomial-Heaps</a></li><li><a href="../entries/Coinductive.html">Coinductive</a></li><li><a href="../entries/Collections.html">Collections</a></li><li><a href="../entries/FinFun.html">FinFun</a></li><li><a href="../entries/Finger-Trees.html">Finger-Trees</a></li><li><a href="../entries/Native_Word.html">Native_Word</a></li><li><a href="../entries/Refine_Monadic.html">Refine_Monadic</a></li><li><a href="../entries/Trie.html">Trie</a></li></ul>
+  </div>
   
-          with
-  
-          <font class="first">T</font>hreads
-  
-</h1>
-  <p>&nbsp;</p>
+  </div>
+</main>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Jinja with Threads</td>
-</tr>
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/JinjaThreads/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/JinjaThreads/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/JinjaThreads/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead">
-          Author:
-      </td>
-  <td class="data">
-              <a href="http://www.andreas-lochbihler.de">Andreas Lochbihler</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2007-12-03</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. On top of this, we formalise the JMM and show the DRF guarantee and consistency. For description of the different parts, see Lochbihler's papers at FOOL 2008, ESOP 2010, ITP 2011, and ESOP 2012.</td>
-</tr>
-
-  <tr>
-    <td class="datahead" valign="top">Change history:</td>
-    <td class="abstract">[2008-04-23]:
-added bytecode formalisation with arrays and threads, added thread joins
-(revision f74a8be156a7)<br>
-[2009-04-27]:
-added verified compiler from source code to bytecode;
-encapsulate native methods in separate semantics
-(revision e4f26541e58a)<br>
-[2009-11-30]:
-extended compiler correctness proof to infinite and deadlocking computations
-(revision e50282397435)<br>
-[2010-06-08]:
-added thread interruption;
-new abstract memory model with sequential consistency as implementation
-(revision 0cb9e8dbd78d)<br>
-[2010-06-28]:
-new thread interruption model
-(revision c0440d0a1177)<br>
-[2010-10-15]:
-preliminary version of the Java memory model for source code
-(revision 02fee0ef3ca2)<br>
-[2010-12-16]:
-improved version of the Java memory model, also for bytecode
-executable scheduler for source code semantics
-(revision 1f41c1842f5a)<br>
-[2011-02-02]:
-simplified code generator setup
-new random scheduler
-(revision 3059dafd013f)<br>
-[2011-07-21]:
-new interruption model,
-generalized JMM proof of DRF guarantee,
-allow class Object to declare methods and fields,
-simplified subtyping relation,
-corrected division and modulo implementation
-(revision 46e4181ed142)<br>
-[2012-02-16]:
-added example programs
-(revision bf0b06c8913d)<br>
-[2012-11-21]:
-type safety proof for the Java memory model,
-allow spurious wake-ups
-(revision 76063d860ae0)<br>
-[2013-05-16]:
-support for non-deterministic memory allocators
-(revision cc3344a49ced)<br>
-[2017-10-20]:
-add an atomic compare-and-swap operation for volatile fields
-(revision a6189b1d6b30)<br></td>
-  </tr>
-
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{JinjaThreads-AFP,
-  author  = {Andreas Lochbihler},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">JinjaThreads-AFP</p>
+      <pre id="copyText">@article{JinjaThreads-AFP,
+  author  = {lochbihler},
   title   = {Jinja with Threads},
   journal = {Archive of Formal Proofs},
-  month   = dec,
+  month   = December,
   year    = 2007,
   note    = {\url{https://isa-afp.org/entries/JinjaThreads.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Automatic_Refinement.html">Automatic_Refinement</a>, <a href="Binomial-Heaps.html">Binomial-Heaps</a>, <a href="Coinductive.html">Coinductive</a>, <a href="Collections.html">Collections</a>, <a href="FinFun.html">FinFun</a>, <a href="Finger-Trees.html">Finger-Trees</a>, <a href="Native_Word.html">Native_Word</a>, <a href="Refine_Monadic.html">Refine_Monadic</a>, <a href="Trie.html">Trie</a>      </td></tr>
-          
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/JinjaThreads/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/JinjaThreads/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/JinjaThreads/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-JinjaThreads-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-JinjaThreads-2021-02-23.tar.gz">
-              afp-JinjaThreads-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-JinjaThreads-2020-04-18.tar.gz">
-              afp-JinjaThreads-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-JinjaThreads-2019-06-11.tar.gz">
-              afp-JinjaThreads-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-JinjaThreads-2018-08-17.tar.gz">
-              afp-JinjaThreads-2018-08-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-JinjaThreads-2017-10-10.tar.gz">
-              afp-JinjaThreads-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-JinjaThreads-2016-12-17.tar.gz">
-              afp-JinjaThreads-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-JinjaThreads-2016-02-22.tar.gz">
-              afp-JinjaThreads-2016-02-22.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2015:
-            <a href="../release/afp-JinjaThreads-2015-05-27.tar.gz">
-              afp-JinjaThreads-2015-05-27.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2014:
-            <a href="../release/afp-JinjaThreads-2014-08-28.tar.gz">
-              afp-JinjaThreads-2014-08-28.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2013-2:
-            <a href="../release/afp-JinjaThreads-2013-12-11.tar.gz">
-              afp-JinjaThreads-2013-12-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2013-1:
-            <a href="../release/afp-JinjaThreads-2013-11-17.tar.gz">
-              afp-JinjaThreads-2013-11-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2013:
-            <a href="../release/afp-JinjaThreads-2013-02-16.tar.gz">
-              afp-JinjaThreads-2013-02-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2012:
-            <a href="../release/afp-JinjaThreads-2012-05-26.tar.gz">
-              afp-JinjaThreads-2012-05-26.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2011-1:
-            <a href="../release/afp-JinjaThreads-2011-10-12.tar.gz">
-              afp-JinjaThreads-2011-10-12.tar.gz
-            </a>
-            </li>
-                      <li>Isabelle 2011-1:
-            <a href="../release/afp-JinjaThreads-2011-10-11.tar.gz">
-              afp-JinjaThreads-2011-10-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2011:
-            <a href="../release/afp-JinjaThreads-2011-02-11.tar.gz">
-              afp-JinjaThreads-2011-02-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2009-2:
-            <a href="../release/afp-JinjaThreads-2010-07-02.tar.gz">
-              afp-JinjaThreads-2010-07-02.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2009-1:
-            <a href="../release/afp-JinjaThreads-2009-12-12.tar.gz">
-              afp-JinjaThreads-2009-12-12.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2009:
-            <a href="../release/afp-JinjaThreads-2009-04-30.tar.gz">
-              afp-JinjaThreads-2009-04-30.tar.gz
-            </a>
-            </li>
-                      <li>Isabelle 2009:
-            <a href="../release/afp-JinjaThreads-2009-04-29.tar.gz">
-              afp-JinjaThreads-2009-04-29.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2008:
-            <a href="../release/afp-JinjaThreads-2008-06-10.tar.gz">
-              afp-JinjaThreads-2008-06-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2007:
-            <a href="../release/afp-JinjaThreads-2007-12-03.tar.gz">
-              afp-JinjaThreads-2007-12-03.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-JinjaThreads-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

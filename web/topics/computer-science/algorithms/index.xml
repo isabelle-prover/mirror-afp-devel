@@ -1,0 +1,856 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Computer science/Algorithms on Archive of Formal Proofs</title>
+    <link>/topics/computer-science/algorithms/</link>
+    <description>Recent content in Computer science/Algorithms on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language><atom:link href="/topics/computer-science/algorithms/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Combinator Library for Prefix-Free Codes</title>
+      <link>/entries/Prefix_Free_Code_Combinators.html</link>
+      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Prefix_Free_Code_Combinators.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Randomized Approximation Algorithms for Frequency Moments</title>
+      <link>/entries/Frequency_Moments.html</link>
+      <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Frequency_Moments.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Universal Hash Families</title>
+      <link>/entries/Universal_Hash_Families.html</link>
+      <pubDate>Sun, 20 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Universal_Hash_Families.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Multi-Head Monitoring of Metric Dynamic Logic</title>
+      <link>/entries/VYDRA_MDL.html</link>
+      <pubDate>Sun, 13 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/VYDRA_MDL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Enumeration of Equivalence Relations</title>
+      <link>/entries/Equivalence_Relation_Enumeration.html</link>
+      <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Equivalence_Relation_Enumeration.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gale-Shapley Algorithm</title>
+      <link>/entries/Gale_Shapley.html</link>
+      <pubDate>Wed, 29 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Gale_Shapley.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Algorithms for Solving Markov Decision Processes</title>
+      <link>/entries/MDP-Algorithms.html</link>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MDP-Algorithms.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Quantum and Classical Registers</title>
+      <link>/entries/Registers.html</link>
+      <pubDate>Thu, 28 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Registers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Quadratic Virtual Substitution for Real Arithmetic</title>
+      <link>/entries/Virtual_Substitution.html</link>
+      <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Virtual_Substitution.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Regression Test Selection</title>
+      <link>/entries/Regression_Test_Selection.html</link>
+      <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Regression_Test_Selection.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
+      <link>/entries/BenOr_Kozen_Reif.html</link>
+      <pubDate>Sat, 24 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/BenOr_Kozen_Reif.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Timely Dataflow&#39;s Progress Tracking Protocol</title>
+      <link>/entries/Progress_Tracking.html</link>
+      <pubDate>Tue, 13 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Progress_Tracking.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Two algorithms based on modular arithmetic: lattice basis reduction and Hermite normal form computation</title>
+      <link>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</link>
+      <pubDate>Fri, 12 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Modular_arithmetic_LLL_and_HNF_algorithms.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Quantum projective measurements and the CHSH inequality</title>
+      <link>/entries/Projective_Measurements.html</link>
+      <pubDate>Wed, 03 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Projective_Measurements.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Relational Minimum Spanning Tree Algorithms</title>
+      <link>/entries/Relational_Minimum_Spanning_Trees.html</link>
+      <pubDate>Tue, 08 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Relational_Minimum_Spanning_Trees.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Isabelle Marries Dirac: a Library for Quantum Computation and Quantum Information</title>
+      <link>/entries/Isabelle_Marries_Dirac.html</link>
+      <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Isabelle_Marries_Dirac.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Practical Algebraic Calculus Checker</title>
+      <link>/entries/PAC_Checker.html</link>
+      <pubDate>Mon, 31 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/PAC_Checker.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm</title>
+      <link>/entries/Chandy_Lamport.html</link>
+      <pubDate>Tue, 21 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Chandy_Lamport.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Formally Verified Checker of the Safe Distance Traffic Rules for Autonomous Vehicles</title>
+      <link>/entries/Safe_Distance.html</link>
+      <pubDate>Mon, 01 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Safe_Distance.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A verified algorithm for computing the Smith normal form of a matrix</title>
+      <link>/entries/Smith_Normal_Form.html</link>
+      <pubDate>Sat, 23 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Smith_Normal_Form.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of an Algorithm for Greedily Computing Associative Aggregations on Sliding Windows</title>
+      <link>/entries/Sliding_Window_Algorithm.html</link>
+      <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Sliding_Window_Algorithm.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations</title>
+      <link>/entries/MFODL_Monitor_Optimized.html</link>
+      <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MFODL_Monitor_Optimized.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Strong Eventual Consistency of the Collaborative Editing Framework WOOT</title>
+      <link>/entries/WOOT_Strong_Eventual_Consistency.html</link>
+      <pubDate>Wed, 25 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/WOOT_Strong_Eventual_Consistency.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Approximation Algorithms</title>
+      <link>/entries/Approximation_Algorithms.html</link>
+      <pubDate>Thu, 16 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Approximation_Algorithms.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Closest Pair of Points Algorithms</title>
+      <link>/entries/Closest_Pair_Points.html</link>
+      <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Closest_Pair_Points.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>An Efficient Generalization of Counting Sort for Large, possibly Infinite Key Ranges</title>
+      <link>/entries/Generalized_Counting_Sort.html</link>
+      <pubDate>Wed, 04 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Generalized_Counting_Sort.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>VerifyThis 2019 -- Polished Isabelle Solutions</title>
+      <link>/entries/VerifyThis2019.html</link>
+      <pubDate>Wed, 16 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/VerifyThis2019.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of Multiway-Join Algorithms</title>
+      <link>/entries/Generic_Join.html</link>
+      <pubDate>Mon, 16 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Generic_Join.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalisation of an Adaptive State Counting Algorithm</title>
+      <link>/entries/Adaptive_State_Counting.html</link>
+      <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Adaptive_State_Counting.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stellar Quorum Systems</title>
+      <link>/entries/Stellar_Quorums.html</link>
+      <pubDate>Thu, 01 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stellar_Quorums.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</title>
+      <link>/entries/MFOTL_Monitor.html</link>
+      <pubDate>Thu, 04 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MFOTL_Monitor.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Purely Functional, Simple, and Efficient Implementation of Prim and Dijkstra</title>
+      <link>/entries/Prim_Dijkstra_Simple.html</link>
+      <pubDate>Tue, 25 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Prim_Dijkstra_Simple.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Binary Heaps for IMP2</title>
+      <link>/entries/IMP2_Binary_Heap.html</link>
+      <pubDate>Thu, 13 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMP2_Binary_Heap.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Kruskal&#39;s Algorithm for Minimum Spanning Forest</title>
+      <link>/entries/Kruskal.html</link>
+      <pubDate>Thu, 14 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Kruskal.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Inversions of a List</title>
+      <link>/entries/List_Inversions.html</link>
+      <pubDate>Fri, 01 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/List_Inversions.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>IMP2 – Simple Program Verification in Isabelle/HOL</title>
+      <link>/entries/IMP2.html</link>
+      <pubDate>Tue, 15 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMP2.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verifying Imperative Programs using Auto2</title>
+      <link>/entries/Auto2_Imperative_HOL.html</link>
+      <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Auto2_Imperative_HOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Signature-Based Gröbner Basis Algorithms</title>
+      <link>/entries/Signature_Groebner.html</link>
+      <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Signature_Groebner.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
+      <link>/entries/Simplex.html</link>
+      <pubDate>Fri, 24 Aug 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Simplex.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Optimal Binary Search Trees</title>
+      <link>/entries/Optimal_BST.html</link>
+      <pubDate>Sun, 27 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Optimal_BST.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hidden Markov Models</title>
+      <link>/entries/Hidden_Markov_Models.html</link>
+      <pubDate>Fri, 25 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Hidden_Markov_Models.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Monadification, Memoization and Dynamic Programming</title>
+      <link>/entries/Monad_Memo_DP.html</link>
+      <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Monad_Memo_DP.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
+      <link>/entries/OpSets.html</link>
+      <pubDate>Thu, 10 May 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/OpSets.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>VerifyThis 2018 - Polished Isabelle Solutions</title>
+      <link>/entries/VerifyThis2018.html</link>
+      <pubDate>Fri, 27 Apr 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/VerifyThis2018.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>First-Order Terms</title>
+      <link>/entries/First_Order_Terms.html</link>
+      <pubDate>Tue, 06 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/First_Order_Terms.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A verified LLL algorithm</title>
+      <link>/entries/LLL_Basis_Reduction.html</link>
+      <pubDate>Fri, 02 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/LLL_Basis_Reduction.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Taylor Models</title>
+      <link>/entries/Taylor_Models.html</link>
+      <pubDate>Mon, 08 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Taylor_Models.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Median-of-Medians Selection Algorithm</title>
+      <link>/entries/Median_Of_Medians_Selection.html</link>
+      <pubDate>Thu, 21 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Median_Of_Medians_Selection.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The string search algorithm by Knuth, Morris and Pratt</title>
+      <link>/entries/Knuth_Morris_Pratt.html</link>
+      <pubDate>Mon, 18 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Knuth_Morris_Pratt.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The IMAP CmRDT</title>
+      <link>/entries/IMAP-CRDT.html</link>
+      <pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMAP-CRDT.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Homogeneous Linear Diophantine Equations</title>
+      <link>/entries/Diophantine_Eqns_Lin_Hom.html</link>
+      <pubDate>Sat, 14 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Diophantine_Eqns_Lin_Hom.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A framework for establishing Strong Eventual Consistency for Conflict-free Replicated Datatypes</title>
+      <link>/entries/CRDT.html</link>
+      <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CRDT.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalizing Push-Relabel Algorithms</title>
+      <link>/entries/Prpu_Maxflow.html</link>
+      <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Prpu_Maxflow.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Floyd-Warshall Algorithm for Shortest Paths</title>
+      <link>/entries/Floyd_Warshall.html</link>
+      <pubDate>Mon, 08 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Floyd_Warshall.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Probabilistic while loop</title>
+      <link>/entries/Probabilistic_While.html</link>
+      <pubDate>Fri, 05 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Probabilistic_While.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lower bound on comparison-based sorting algorithms</title>
+      <link>/entries/Comparison_Sort_Lower_Bound.html</link>
+      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Comparison_Sort_Lower_Bound.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The number of comparisons in QuickSort</title>
+      <link>/entries/Quick_Sort_Cost.html</link>
+      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Quick_Sort_Cost.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fisher–Yates shuffle</title>
+      <link>/entries/Fisher_Yates.html</link>
+      <pubDate>Fri, 30 Sep 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Fisher_Yates.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalizing the Edmonds-Karp Algorithm</title>
+      <link>/entries/EdmondsKarp_Maxflow.html</link>
+      <pubDate>Fri, 12 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/EdmondsKarp_Maxflow.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Framework for Verifying Depth-First Search Algorithms</title>
+      <link>/entries/DFS_Framework.html</link>
+      <pubDate>Tue, 05 Jul 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/DFS_Framework.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gröbner Bases Theory</title>
+      <link>/entries/Groebner_Bases.html</link>
+      <pubDate>Mon, 02 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Groebner_Bases.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A formalisation of the Cocke-Younger-Kasami algorithm</title>
+      <link>/entries/CYK.html</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CYK.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Algorithms for Reduced Ordered Binary Decision Diagrams</title>
+      <link>/entries/ROBDD.html</link>
+      <pubDate>Wed, 27 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ROBDD.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Analysis of List Update Algorithms</title>
+      <link>/entries/List_Update.html</link>
+      <pubDate>Wed, 17 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/List_Update.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Construction of Static Single Assignment Form</title>
+      <link>/entries/Formal_SSA.html</link>
+      <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Formal_SSA.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Tortoise and Hare Algorithm</title>
+      <link>/entries/TortoiseHare.html</link>
+      <pubDate>Wed, 18 Nov 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/TortoiseHare.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hermite Normal Form</title>
+      <link>/entries/Hermite.html</link>
+      <pubDate>Tue, 07 Jul 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Hermite.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO</title>
+      <link>/entries/ConcurrentGC.html</link>
+      <pubDate>Mon, 13 Apr 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ConcurrentGC.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Consensus Refined</title>
+      <link>/entries/Consensus_Refined.html</link>
+      <pubDate>Wed, 18 Mar 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Consensus_Refined.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Echelon Form</title>
+      <link>/entries/Echelon_Form.html</link>
+      <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Echelon_Form.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>QR Decomposition</title>
+      <link>/entries/QR_Decomposition.html</link>
+      <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/QR_Decomposition.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verification of the UpDown Scheme</title>
+      <link>/entries/UpDown_Scheme.html</link>
+      <pubDate>Wed, 28 Jan 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/UpDown_Scheme.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Imperative Insertion Sort</title>
+      <link>/entries/Imperative_Insertion_Sort.html</link>
+      <pubDate>Thu, 25 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Imperative_Insertion_Sort.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gauss-Jordan Algorithm and Its Applications</title>
+      <link>/entries/Gauss_Jordan.html</link>
+      <pubDate>Wed, 03 Sep 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Gauss_Jordan.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Boolean Expression Checkers</title>
+      <link>/entries/Boolean_Expression_Checkers.html</link>
+      <pubDate>Sun, 08 Jun 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Boolean_Expression_Checkers.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Efficient Implementation of Gabow&#39;s Strongly Connected Components Algorithm</title>
+      <link>/entries/Gabow_SCC.html</link>
+      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Gabow_SCC.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Transitive closure according to Roy-Floyd-Warshall</title>
+      <link>/entries/Roy_Floyd_Warshall.html</link>
+      <pubDate>Fri, 23 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Roy_Floyd_Warshall.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verification of Selection and Heap Sort Using Locales</title>
+      <link>/entries/Selection_Heap_Sort.html</link>
+      <pubDate>Tue, 11 Feb 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Selection_Heap_Sort.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verifying Fault-Tolerant Distributed Algorithms in the Heard-Of Model</title>
+      <link>/entries/Heard_Of.html</link>
+      <pubDate>Fri, 27 Jul 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Heard_Of.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Abortable Linearizable Modules</title>
+      <link>/entries/Abortable_Linearizable_Modules.html</link>
+      <pubDate>Thu, 01 Mar 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Abortable_Linearizable_Modules.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Transitive Closures</title>
+      <link>/entries/Transitive-Closure-II.html</link>
+      <pubDate>Wed, 29 Feb 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transitive-Closure-II.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Dijkstra&#39;s Shortest Path Algorithm</title>
+      <link>/entries/Dijkstra_Shortest_Path.html</link>
+      <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Dijkstra_Shortest_Path.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Efficient Mergesort</title>
+      <link>/entries/Efficient-Mergesort.html</link>
+      <pubDate>Wed, 09 Nov 2011 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Efficient-Mergesort.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gauss-Jordan Elimination for Matrices Represented as Functions</title>
+      <link>/entries/Gauss-Jordan-Elim-Fun.html</link>
+      <pubDate>Fri, 19 Aug 2011 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Gauss-Jordan-Elim-Fun.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Transitive Closures of Finite Relations</title>
+      <link>/entries/Transitive-Closure.html</link>
+      <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transitive-Closure.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Multivariate Polynomials</title>
+      <link>/entries/Polynomials.html</link>
+      <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Polynomials.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verification of the Deutsch-Schorr-Waite Graph Marking Algorithm using Data Refinement</title>
+      <link>/entries/GraphMarkingIBP.html</link>
+      <pubDate>Fri, 28 May 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/GraphMarkingIBP.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formal Verification of Modern SAT Solvers</title>
+      <link>/entries/SATSolverVerification.html</link>
+      <pubDate>Wed, 23 Jul 2008 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SATSolverVerification.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Much Ado About Two</title>
+      <link>/entries/MuchAdoAboutTwo.html</link>
+      <pubDate>Tue, 06 Nov 2007 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/MuchAdoAboutTwo.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Instances of Schneider&#39;s generalized protocol of clock synchronization</title>
+      <link>/entries/ClockSynchInst.html</link>
+      <pubDate>Wed, 15 Mar 2006 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/ClockSynchInst.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Fast Fourier Transform</title>
+      <link>/entries/FFT.html</link>
+      <pubDate>Wed, 12 Oct 2005 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/FFT.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Formalization of a Generalized Protocol for Clock Synchronization</title>
+      <link>/entries/GenClock.html</link>
+      <pubDate>Fri, 24 Jun 2005 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/GenClock.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Proving the Correctness of Disk Paxos</title>
+      <link>/entries/DiskPaxos.html</link>
+      <pubDate>Wed, 22 Jun 2005 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/DiskPaxos.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Depth First Search</title>
+      <link>/entries/Depth-First-Search.html</link>
+      <pubDate>Thu, 24 Jun 2004 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Depth-First-Search.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -14,7 +14,7 @@ lemma derivative_quotient_bound:
 proof -
   have g_deriv: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (g has_real_derivative g' t) (at t within {a .. b})"
     using g_deriv_on
-    by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative[symmetric])
+    by (auto simp: has_vderiv_on_def has_real_derivative_iff_has_vector_derivative[symmetric])
   from assms have g_nonzero: "\<And>t. t \<in> {a .. b} \<Longrightarrow> g t \<noteq> 0"
     by fastforce
   have frac_integrable: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (\<lambda>t. g' t / g t) integrable_on {a..t}"
@@ -24,7 +24,7 @@ proof -
   have "\<And>t. t \<in> {a..b} \<Longrightarrow> ((\<lambda>t. g' t / g t) has_integral ln (g t) - ln (g a)) {a .. t}"
     by (rule fundamental_theorem_of_calculus)
       (auto intro!: derivative_eq_intros assms has_field_derivative_subset[OF g_deriv]
-        simp: has_field_derivative_iff_has_vector_derivative[symmetric])
+        simp: has_real_derivative_iff_has_vector_derivative[symmetric])
   hence *: "\<And>t. t \<in> {a .. b} \<Longrightarrow> ln (g t) - ln (g a) = integral {a .. t} (\<lambda>t. g' t / g t)"
     using integrable_integral[OF frac_integrable]
     by (rule has_integral_unique[where f = "\<lambda>t. g' t / g t"])
@@ -53,7 +53,7 @@ lemma derivative_quotient_bound_left:
 proof -
   have g_deriv: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (g has_real_derivative g' t) (at t within {a .. b})"
     using g_deriv_on
-    by (auto simp: has_vderiv_on_def has_field_derivative_iff_has_vector_derivative[symmetric])
+    by (auto simp: has_vderiv_on_def has_real_derivative_iff_has_vector_derivative[symmetric])
   from assms have g_nonzero: "\<And>t. t \<in> {a..b} \<Longrightarrow> g t \<noteq> 0"
     by fastforce
   have frac_integrable: "\<And>t. t \<in> {a .. b} \<Longrightarrow> (\<lambda>t. g' t / g t) integrable_on {t..b}"
@@ -63,7 +63,7 @@ proof -
   have "\<And>t. t \<in> {a..b} \<Longrightarrow> ((\<lambda>t. g' t / g t) has_integral ln (g b) - ln (g t)) {t..b}"
     by (rule fundamental_theorem_of_calculus)
       (auto intro!: derivative_eq_intros assms has_field_derivative_subset[OF g_deriv]
-        simp: has_field_derivative_iff_has_vector_derivative[symmetric])
+        simp: has_real_derivative_iff_has_vector_derivative[symmetric])
   hence *: "\<And>t. t \<in> {a..b} \<Longrightarrow> ln (g b) - ln (g t) = integral {t..b} (\<lambda>t. g' t / g t)"
     using integrable_integral[OF frac_integrable]
     by (rule has_integral_unique[where f = "\<lambda>t. g' t / g t"])

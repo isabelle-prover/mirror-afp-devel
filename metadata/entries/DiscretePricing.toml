@@ -1,0 +1,29 @@
+title = "Pricing in discrete financial models"
+date = 2018-07-16
+topics = [
+  "Mathematics/Probability theory",
+  "Mathematics/Games and economics",
+]
+abstract = """
+We have formalized the computation of fair prices for derivative
+products in discrete financial models. As an application, we derive a
+way to compute fair prices of derivative products in the
+Cox-Ross-Rubinstein model of a financial market, thus completing the
+work that was presented in this <a
+href=\"https://hal.archives-ouvertes.fr/hal-01562944\">paper</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.echenim]
+homepage = "echenim_homepage"
+
+[contributors]
+
+[notify]
+echenim = "echenim_email"
+
+[history]
+
+[extra]

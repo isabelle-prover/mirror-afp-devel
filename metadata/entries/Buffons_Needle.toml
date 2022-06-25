@@ -1,0 +1,34 @@
+title = "Buffon's Needle Problem"
+date = 2017-06-06
+topics = [
+  "Mathematics/Probability theory",
+  "Mathematics/Geometry",
+]
+abstract = """
+In the 18th century, Georges-Louis Leclerc, Comte de Buffon posed and
+later solved the following problem, which is often called the first
+problem ever solved in geometric probability: Given a floor divided
+into vertical strips of the same width, what is the probability that a
+needle thrown onto the floor randomly will cross two strips?  This
+entry formally defines the problem in the case where the needle's
+position is chosen uniformly at random in a single strip around the
+origin (which is equivalent to larger arrangements due to symmetry).
+It then provides proofs of the simple solution in the case where the
+needle's length is no greater than the width of the strips and
+the more complicated solution in the opposite case."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

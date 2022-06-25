@@ -1,0 +1,31 @@
+title = "Expected Shape of Random Binary Search Trees"
+date = 2017-04-04
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+<p>This entry contains proofs for the textbook results about the
+distributions of the height and internal path length of random binary
+search trees (BSTs), i.&thinsp;e. BSTs that are formed by taking
+an empty BST and inserting elements from a fixed set in random
+order.</p>  <p>In particular, we prove a logarithmic upper
+bound on the expected height and the <em>Θ(n log n)</em>
+closed-form solution for the expected internal path length in terms of
+the harmonic numbers. We also show how the internal path length
+relates to the average-case cost of a lookup in a BST.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

@@ -686,7 +686,7 @@ proof -
     with exec invar have schedule: "schedule \<sigma> s = \<lfloor>(t, None, \<sigma>')\<rfloor>"
       and ta: "ta = (K$ [], [], [], [], [], convert_RA (snd (the (thr_\<alpha> (thr s) t))))"
       and s': "s' = (acquire_all (locks s) t (snd (the (thr_\<alpha> (thr s) t))), (thr_update t (fst (the (thr_\<alpha> (thr s) t)), no_wait_locks) (thr s), shr s), wset s, interrupts s)"
-      by(auto simp add: execT_def Option_bind_eq_Some_conv thr.lookup_correct split_beta split del: option.split_asm)
+      by(auto simp add: execT_def bind_eq_Some_conv thr.lookup_correct split_beta split del: option.split_asm)
     from schedule_Some_NoneD[OF schedule invar]
 
     obtain x ln n where t: "thr_\<alpha> (thr s) t = \<lfloor>(x, ln)\<rfloor>"
@@ -701,7 +701,7 @@ proof -
     with exec invar obtain x' m' 
       where schedule: "schedule \<sigma> s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
       and s': "s' = exec_upd \<sigma> s t ta x' m'"
-      by(cases taxm)(fastforce simp add: execT_def Option_bind_eq_Some_conv split del: option.split_asm)
+      by(cases taxm)(fastforce simp add: execT_def bind_eq_Some_conv split del: option.split_asm)
     from schedule_Some_SomeD[OF schedule invar]
     obtain x where t: "thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor>" 
       and "Predicate.eval (r t (x, shr s)) (ta, x', m')" 

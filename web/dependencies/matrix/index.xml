@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Matrix on Archive of Formal Proofs</title>
+    <link>/dependencies/matrix/</link>
+    <description>Recent content in Matrix on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 13 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/matrix/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Formalization of Knuth–Bendix Orders</title>
+      <link>/entries/Knuth_Bendix_Order.html</link>
+      <pubDate>Wed, 13 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Knuth_Bendix_Order.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Polynomial Factorization</title>
+      <link>/entries/Polynomial_Factorization.html</link>
+      <pubDate>Fri, 29 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Polynomial_Factorization.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tensor Product of Matrices</title>
+      <link>/entries/Matrix_Tensor.html</link>
+      <pubDate>Mon, 18 Jan 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Matrix_Tensor.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Transitive Closures of Finite Relations</title>
+      <link>/entries/Transitive-Closure.html</link>
+      <pubDate>Mon, 14 Mar 2011 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transitive-Closure.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Executable Multivariate Polynomials</title>
+      <link>/entries/Polynomials.html</link>
+      <pubDate>Tue, 10 Aug 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Polynomials.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

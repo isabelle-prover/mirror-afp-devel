@@ -1,0 +1,31 @@
+title = "A Formal Proof of The Chandy--Lamport Distributed Snapshot Algorithm"
+date = 2020-07-21
+topics = [
+  "Computer science/Algorithms/Distributed",
+]
+abstract = """
+We provide a suitable distributed system model and implementation of the
+Chandy--Lamport distributed snapshot algorithm [ACM Transactions on
+Computer Systems, 3, 63-75, 1985]. Our main result is a formal
+termination and correctness proof of the Chandy--Lamport algorithm and
+its use in stable property detection."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.fiedler]
+email = "fiedler_email"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+fiedler = "fiedler_email"
+traytel = "traytel_email1"
+
+[history]
+
+[extra]

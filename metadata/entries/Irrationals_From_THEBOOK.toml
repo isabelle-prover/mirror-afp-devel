@@ -1,0 +1,32 @@
+title = "Irrational numbers from THE BOOK"
+date = 2022-01-08
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+An elementary proof is formalised: that <em>exp r</em> is irrational for
+every nonzero rational number <em>r</em>. The mathematical development comes
+from the well-known volume <em>Proofs from THE BOOK</em>,
+by Aigner and Ziegler, who credit the idea to Hermite. The development
+illustrates a number of basic Isabelle techniques: the manipulation of
+summations, the calculation of quite complicated derivatives and the
+estimation of integrals. We also see how to import another AFP entry (Stirling's formula).
+As for the theorem itself, note that a much stronger and more general
+result (the Hermite--Lindemann--Weierstraß transcendence theorem) is
+already available in the AFP."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+homepage = "paulson_homepage"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]

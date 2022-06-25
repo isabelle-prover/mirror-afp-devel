@@ -1,0 +1,47 @@
+title = "A verified factorization algorithm for integer polynomials with polynomial complexity"
+date = 2018-02-06
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+Short vectors in lattices and factors of integer polynomials are
+related. Each factor of an integer polynomial belongs to a certain
+lattice. When factoring polynomials, the condition that we are looking
+for an irreducible polynomial means that we must look for a small
+element in a lattice, which can be done by a basis reduction
+algorithm. In this development we formalize this connection and
+thereby one main application of the LLL basis reduction algorithm: an
+algorithm to factor square-free integer polynomials which runs in
+polynomial time. The work is based on our previous
+Berlekamp–Zassenhaus development, where the exponential reconstruction
+phase has been replaced by the polynomial-time basis reduction
+algorithm. Thanks to this formalization we found a serious flaw in a
+textbook."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.divason]
+homepage = "divason_homepage"
+
+[authors.joosten]
+homepage = "joosten_homepage"
+
+[authors.thiemann]
+homepage = "thiemann_homepage"
+
+[authors.yamada]
+email = "yamada_email1"
+
+[contributors]
+
+[notify]
+divason = "divason_email"
+joosten = "joosten_email2"
+thiemann = "thiemann_email"
+yamada = "yamada_email1"
+
+[history]
+
+[extra]

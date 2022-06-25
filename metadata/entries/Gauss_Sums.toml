@@ -1,0 +1,35 @@
+title = "Gauss Sums and the Pólya–Vinogradov Inequality"
+date = 2019-12-10
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This article provides a full formalisation of Chapter 8 of
+Apostol's <em><a
+href=\"https://www.springer.com/de/book/9780387901633\">Introduction
+to Analytic Number Theory</a></em>. Subjects that are
+covered are:</p> <ul> <li>periodic arithmetic
+functions and their finite Fourier series</li>
+<li>(generalised) Ramanujan sums</li> <li>Gauss sums
+and separable characters</li> <li>induced moduli and
+primitive characters</li> <li>the
+Pólya&mdash;Vinogradov inequality</li> </ul>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.raya]
+homepage = "raya_homepage"
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email1"
+
+[history]
+
+[extra]

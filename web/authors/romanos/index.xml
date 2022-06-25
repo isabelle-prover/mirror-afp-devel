@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>romanos on Archive of Formal Proofs</title>
+    <link>/authors/romanos/</link>
+    <description>Recent content in romanos on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sun, 05 Aug 2012 00:00:00 +0000</lastBuildDate><atom:link href="/authors/romanos/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Proving the Impossibility of Trisecting an Angle and Doubling the Cube</title>
+      <link>/entries/Impossible_Geometry.html</link>
+      <pubDate>Sun, 05 Aug 2012 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Impossible_Geometry.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

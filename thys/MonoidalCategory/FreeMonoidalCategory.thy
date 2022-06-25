@@ -2767,7 +2767,8 @@ begin
     assumes "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>g : c \<rightarrow> d\<guillemotright>"
     shows "\<guillemotleft>f \<otimes>\<^sub>S g : a \<otimes>\<^sub>S c \<rightarrow> b \<otimes>\<^sub>S d\<guillemotright>"
       unfolding tensor\<^sub>S_def
-      using assms D.preserves_hom D.preserves_arr arr_char in_hom_char by simp
+      using assms D.preserves_hom arr_char in_hom_char
+      by (metis (no_types, lifting) \<F>C.T_simp \<F>C.tensor_in_hom in_homE)
 
     lemma arr_tensor [simp]:
     assumes "arr f" and "arr g"
@@ -3261,9 +3262,8 @@ begin
           using f \<F>\<^sub>SC.map_simp EQ.F.preserves_arr
           by (intro \<F>C.in_homI, simp_all)
         show "\<guillemotleft>\<F>\<^sub>SC.map (\<F>C.D f) : \<F>C.D (\<F>C.dom f) \<rightarrow> \<F>C.cod (\<F>C.D f)\<guillemotright>"
-          using f \<F>\<^sub>SC.map_simp \<F>C.arr_iff_in_hom EQ.F.preserves_hom \<F>\<^sub>SC.arr_char
-                \<F>\<^sub>SC.in_hom_char [of "\<F>C.D f" "\<F>C.D (\<F>C.dom f)" "\<F>C.D (\<F>C.cod f)"]
-          by (intro \<F>C.in_homI, auto)
+          by (metis (no_types, lifting) EQ.F.preserves_dom EQ.F.preserves_reflects_arr
+              \<F>\<^sub>SC.arr_iff_in_hom \<F>\<^sub>SC.cod_simp \<F>\<^sub>SC.in_hom_char \<F>\<^sub>SC.map_simp f)
       qed
       have "E.map (\<F>C.\<nu> (\<F>C.cod f)) \<cdot>\<^sub>D E.map f =
             E.map (\<F>C.D f) \<cdot>\<^sub>D E.map (\<F>C.\<nu> (\<F>C.dom f))"

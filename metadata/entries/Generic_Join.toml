@@ -1,0 +1,31 @@
+title = "Formalization of Multiway-Join Algorithms"
+date = 2019-09-16
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+Worst-case optimal multiway-join algorithms are recent seminal
+achievement of the database community. These algorithms compute the
+natural join of multiple relational databases and improve in the worst
+case over traditional query plan optimizations of nested binary joins.
+In 2014, <a
+href=\"https://doi.org/10.1145/2590989.2590991\">Ngo, Ré,
+and Rudra</a> gave a unified presentation of different multi-way
+join algorithms. We formalized and proved correct their \"Generic
+Join\" algorithm and extended it to support negative joins."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.dardinier]
+
+[contributors]
+
+[notify]
+dardinier = "dardinier_email"
+traytel = "traytel_email1"
+
+[history]
+
+[extra]

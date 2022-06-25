@@ -1,0 +1,34 @@
+title = "Skip Lists"
+date = 2020-01-09
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+<p> Skip lists are sorted linked lists enhanced with shortcuts
+and are an alternative to binary search trees. A skip lists consists
+of multiple levels of sorted linked lists where a list on level n is a
+subsequence of the list on level n − 1. In the ideal case, elements
+are skipped in such a way that a lookup in a skip lists takes O(log n)
+time. In a randomised skip list the skipped elements are choosen
+randomly. </p> <p> This entry contains formalized proofs
+of the textbook results about the expected height and the expected
+length of a search path in a randomised skip list. </p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.haslbeck]
+homepage = "haslbeck_homepage"
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+haslbeck = "haslbeck_email2"
+
+[history]
+
+[extra]

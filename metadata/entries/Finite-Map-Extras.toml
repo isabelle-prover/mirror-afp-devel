@@ -1,0 +1,25 @@
+title = "Finite Map Extras"
+date = 2020-10-12
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+This entry includes useful syntactic sugar, new operators and functions, and
+their associated lemmas for finite maps which currently are not
+present in the standard Finite_Map theory."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.diaz]
+email = "diaz_email"
+
+[contributors]
+
+[notify]
+diaz = "diaz_email"
+
+[history]
+
+[extra]

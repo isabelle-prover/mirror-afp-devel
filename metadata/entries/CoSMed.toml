@@ -1,0 +1,38 @@
+title = "CoSMed: A confidentiality-verified social media platform"
+date = 2021-08-16
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+This entry contains the confidentiality verification of the
+(functional kernel of) the CoSMed  social media platform. The
+confidentiality properties are formalized as instances of BD Security
+[<a href=\"https://doi.org/10.4230/LIPIcs.ITP.2021.3\">1</a>,
+<a href=\"https://www.isa-afp.org/entries/Bounded_Deducibility_Security.html\">2</a>].
+An innovation in the deployment of BD Security compared to previous
+work is the use of dynamic declassification triggers, incorporated as
+part of inductive bounds, for providing stronger guarantees that
+account for the repeated opening and closing of access windows. To
+further strengthen the confidentiality guarantees, we also prove
+\"traceback\" properties about the accessibility decisions
+affecting the information managed by the system."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.bauereiss]
+email = "bauereiss_email"
+
+[authors.popescu]
+homepage = "popescu_homepage"
+
+[contributors]
+
+[notify]
+bauereiss = "bauereiss_email"
+popescu = "popescu_email"
+
+[history]
+
+[extra]

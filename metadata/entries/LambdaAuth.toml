@@ -1,0 +1,40 @@
+title = "Formalization of Generic Authenticated Data Structures"
+date = 2019-05-14
+topics = [
+  "Computer science/Security",
+  "Computer science/Programming languages/Lambda calculi",
+]
+abstract = """
+Authenticated data structures are a technique for outsourcing data
+storage and maintenance to an untrusted server. The server is required
+to produce an efficiently checkable and cryptographically secure proof
+that it carried out precisely the requested computation. <a
+href=\"https://doi.org/10.1145/2535838.2535851\">Miller et
+al.</a> introduced &lambda;&bull; (pronounced
+<i>lambda auth</i>)&mdash;a functional programming
+language with a built-in primitive authentication construct, which
+supports a wide range of user-specified authenticated data structures
+while guaranteeing certain correctness and security properties for all
+well-typed programs. We formalize &lambda;&bull; and prove its
+correctness and security properties. With Isabelle's help, we
+uncover and repair several mistakes in the informal proofs and lemma
+statements. Our findings are summarized in an <a
+href=\"https://doi.org/10.4230/LIPIcs.ITP.2019.10\">ITP'19 paper</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brun]
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+traytel = "traytel_email1"
+
+[history]
+
+[extra]

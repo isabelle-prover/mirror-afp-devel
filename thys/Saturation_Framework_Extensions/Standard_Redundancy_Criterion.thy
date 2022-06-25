@@ -21,12 +21,6 @@ counterexample'' property. This material is partly based on Section 4.2 of Bachm
 \emph{Handbook} chapter, but adapted to the saturation framework of Waldmann et al.
 \<close>
 
-subsection \<open>Generic Lemmas about HOL\<close>
-
-lemma wfP_imp_asymp: "wfP R \<Longrightarrow> asymp R"
-  by (metis asymp.intros mem_Collect_eq prod.simps(2) wfP_def wf_asym)
-
-
 subsection \<open>Counterexample-Reducing Inference Systems\<close>
 
 abbreviation main_prem_of :: "'f inference \<Rightarrow> 'f" where
@@ -186,59 +180,47 @@ lemma wlog_non_Red_F:
     dd0_lt: "\<forall>D' \<in> DD0. D' \<prec> D"
   shows "\<exists>DD \<subseteq> N - Red_F N. finite DD \<and> DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in> DD. D' \<prec> D)"
 proof -
-  obtain DD1 where
-    "finite DD1" and
-    "DD1 \<subseteq> N" and
-    "DD1 \<union> CC \<Turnstile> {E}" and
-    "\<forall>D' \<in> DD1. D' \<prec> D"
-    using dd0_fin dd0_sub dd0_ent dd0_lt by blast
-  then obtain DD2 :: "'f multiset" where
-    "set_mset DD2 \<subseteq> N \<and> set_mset DD2 \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in> set_mset DD2. D' \<prec> D)"
-    using assms by (metis finite_set_mset_mset_set)
-  hence dd2: "DD2 \<in> {DD. set_mset DD \<subseteq> N \<and> set_mset DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in> set_mset DD. D' \<prec> D)}"
-    by blast
+  have mset_DD0_in: "mset_set DD0 \<in>
+    {DD. set_mset DD \<subseteq> N \<and> set_mset DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D' \<in> set_mset DD. D' \<prec> D)}"
+    using assms finite_set_mset_mset_set by simp
   obtain DD :: "'f multiset" where
     dd_subs_n: "set_mset DD \<subseteq> N" and
     ddcc_ent_e: "set_mset DD \<union> CC \<Turnstile> {E}" and
     dd_lt_d: "\<forall>D' \<in># DD. D' \<prec> D" and
     d_min: "\<forall>y. multp (\<prec>) y DD \<longrightarrow>
       y \<notin> {DD. set_mset DD \<subseteq> N \<and> set_mset DD \<union> CC \<Turnstile> {E} \<and> (\<forall>D'\<in>#DD. D' \<prec> D)}"
-    using wfP_eq_minimal[THEN iffD1, rule_format, OF wfP_less[THEN wfP_multp] dd2]
+    using wfP_eq_minimal[THEN iffD1, rule_format, OF wfP_less[THEN wfP_multp] mset_DD0_in]
     by blast
 
   have "\<forall>Da \<in># DD. Da \<notin> Red_F N"
   proof clarify
-    fix Da
+    fix Da :: 'f
     assume
       da_in_dd: "Da \<in># DD" and
       da_rf: "Da \<in> Red_F N"
 
-    obtain DDa0 where
-      "DDa0 \<subseteq> N"
-      "finite DDa0"
-      "DDa0 \<Turnstile> {Da}"
-      "\<forall>D \<in> DDa0. D \<prec> Da"
+    obtain DDa0 :: "'f set" where
+      dda0_subs_n: "DDa0 \<subseteq> N" and
+      dda0_fin: "finite DDa0" and
+      dda0_ent_da: "DDa0 \<Turnstile> {Da}" and
+      dda0_lt_da: "\<forall>D \<in> DDa0. D \<prec> Da"
       using da_rf unfolding Red_F_def mem_Collect_eq
       by blast
-    then obtain DDa1 :: "'f multiset" where
-      dda1_subs_n: "set_mset DDa1 \<subseteq> N" and
-      dda1_ent_da: "set_mset DDa1 \<Turnstile> {Da}" and
-      dda1_lt_da: "\<forall>D' \<in># DDa1. D' \<prec> Da"
-      by (metis finite_set_mset_mset_set)
 
     define DDa :: "'f multiset" where
-      "DDa = DD - {#Da#} + DDa1"
+      "DDa = DD - {#Da#} + mset_set DDa0"
 
     have "set_mset DDa \<subseteq> N"
-      unfolding DDa_def using dd_subs_n dda1_subs_n
-      by (meson contra_subsetD in_diffD subsetI union_iff)
+      unfolding DDa_def using dd_subs_n dda0_subs_n finite_set_mset_mset_set[OF dda0_fin]
+      by (smt (verit, best) contra_subsetD in_diffD subsetI union_iff)
     moreover have "set_mset DDa \<union> CC \<Turnstile> {E}"
     proof (rule entails_trans_strong[of _ "{Da}"])
       show "set_mset DDa \<union> CC \<Turnstile> {Da}"
-        unfolding DDa_def set_mset_union
-        by (rule entails_trans[OF _ dda1_ent_da]) (auto intro: subset_entailed)
+        unfolding DDa_def set_mset_union finite_set_mset_mset_set[OF dda0_fin]
+        by (rule entails_trans[OF _ dda0_ent_da]) (auto intro: subset_entailed)
     next
-      have H: "set_mset (DD - {#Da#} + DDa1) \<union> CC \<union> {Da} = set_mset (DD + DDa1) \<union> CC"
+      have H: "set_mset (DD - {#Da#} + mset_set DDa0) \<union> CC \<union> {Da} =
+        set_mset (DD + mset_set DDa0) \<union> CC"
         by (smt (verit) Un_insert_left Un_insert_right da_in_dd insert_DiffM
             set_mset_add_mset_insert set_mset_union sup_bot.right_neutral)
       show "set_mset DDa \<union> CC \<union> {Da} \<Turnstile> {E}"
@@ -246,15 +228,17 @@ proof -
         by (rule entails_trans[OF _ ddcc_ent_e]) (auto intro: subset_entailed)
     qed
     moreover have "\<forall>D' \<in># DDa. D' \<prec> D"
-      using dd_lt_d dda1_lt_da da_in_dd unfolding DDa_def
+      using dd_lt_d dda0_lt_da da_in_dd unfolding DDa_def
       using transp_less[THEN transpD]
+      using finite_set_mset_mset_set[OF dda0_fin]
       by (metis insert_DiffM2 union_iff)
     moreover have "multp (\<prec>) DDa DD"
       unfolding DDa_def multp_eq_multp\<^sub>D\<^sub>M[OF wfP_imp_asymp[OF wfP_less] transp_less] multp\<^sub>D\<^sub>M_def
-      by (metis da_in_dd dda1_lt_da mset_subset_eq_single multi_self_add_other_not_self
+      using finite_set_mset_mset_set[OF dda0_fin]
+      by (metis da_in_dd dda0_lt_da mset_subset_eq_single multi_self_add_other_not_self
           union_single_eq_member)
     ultimately show False
-      using d_min unfolding less_eq_multiset_def by (auto intro!: antisym)
+      using d_min by (auto intro!: antisym)
   qed
   then show ?thesis
     using dd_subs_n ddcc_ent_e dd_lt_d by blast

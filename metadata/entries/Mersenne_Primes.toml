@@ -1,0 +1,29 @@
+title = "Mersenne primes and the Lucas–Lehmer test"
+date = 2020-01-17
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This article provides formal proofs of basic properties of
+Mersenne numbers, i. e. numbers of the form
+2<sup><em>n</em></sup> - 1, and especially of
+Mersenne primes.</p> <p>In particular, an efficient,
+verified, and executable version of the Lucas&ndash;Lehmer test is
+developed. This test decides primality for Mersenne numbers in time
+polynomial in <em>n</em>.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

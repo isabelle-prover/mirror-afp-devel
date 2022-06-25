@@ -532,7 +532,7 @@ proof
     then have njm_prec_njm: "njm_prec < nj_min" by blast
     then have njm_prec_njm_enat: "enat njm_prec < enat nj_min" by simp
     have njm_prec_smaller_d: "njm_prec < llength Ns"
-      using HOL.no_atp(15)[OF njm_smaller_D njm_prec_njm_enat] .
+      by (rule less_trans[OF njm_prec_njm_enat njm_smaller_D])
     have njm_prec_all_suc: "\<forall>k>njm_prec. enat k < llength Ns \<longrightarrow> (C, active) \<in> lnth Ns k"
       using nj_prec_is in_allk by simp
     have notin_njm_prec: "(C, active) \<notin> lnth Ns njm_prec"
@@ -855,7 +855,7 @@ proof
     then have njm_prec_njm: "njm_prec < nj_min" by blast
     then have njm_prec_njm_enat: "enat njm_prec < enat nj_min" by simp
     have njm_prec_smaller_d: "njm_prec < llength Ns"
-      using HOL.no_atp(15)[OF njm_smaller_D njm_prec_njm_enat] .
+      by (rule less_trans[OF njm_prec_njm_enat njm_smaller_D])
     have njm_prec_all_suc: "\<forall>k>njm_prec. enat k < llength Ns \<longrightarrow> (C, active) \<in> snd (lnth Ns k)"
       using nj_prec_is in_allk by simp
     have notin_njm_prec: "(C, active) \<notin> snd (lnth Ns njm_prec)"

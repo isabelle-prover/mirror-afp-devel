@@ -1,0 +1,28 @@
+title = "Duality of Linear Programming"
+date = 2022-02-03
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+We formalize the weak and strong duality theorems of linear
+programming. For the strong duality theorem we provide three
+sufficient preconditions: both the primal problem and the dual problem
+are satisfiable, the primal problem is satisfiable and bounded, or the
+dual problem is satisfiable and bounded. The proofs are based on an
+existing formalization of Farkas' Lemma."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

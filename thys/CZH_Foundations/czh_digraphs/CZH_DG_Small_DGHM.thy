@@ -74,7 +74,7 @@ proof(rule tiny_digraphI')
     by (rule vdomain_in_VsetI[OF tm_dghm_ObjMap_in_Vset, simplified dg_cs_simps])
   show "\<AA>\<lparr>Arr\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
     by (rule vdomain_in_VsetI[OF tm_dghm_ArrMap_in_Vset, simplified dg_cs_simps])
-qed (cs_concl cs_intro: dg_cs_intros)
+qed (cs_concl cs_shallow cs_intro: dg_cs_intros)
 
 lemmas (in is_tm_dghm) 
   tm_dghm_HomDom_is_tiny_digraph = HomDom.tiny_digraph_axioms
@@ -144,14 +144,14 @@ proof-
     from assms show "(\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ObjMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: dghm_comp_components 
             cs_intro: dg_small_cs_intros Limit_vcomp_in_VsetI \<FF>.Limit_\<alpha> 
         )+
     from assms show "(\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF>)\<lparr>ArrMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: dghm_comp_components 
             cs_intro: dg_small_cs_intros Limit_vcomp_in_VsetI \<FF>.Limit_\<alpha> 
         )+
@@ -198,11 +198,12 @@ proof(intro is_tm_dghmI')
   interpret \<CC>: tiny_digraph \<alpha> \<CC> by (rule assms(1))
   interpret \<DD>: digraph \<alpha> \<DD> by (rule assms(2))
   from assms show "dghm_const \<CC> \<DD> a f : \<CC> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<DD>"
-    by (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
+    by (cs_concl cs_shallow cs_simp: dg_cs_simps cs_intro: dg_cs_intros)
   show "dghm_const \<CC> \<DD> a f\<lparr>ObjMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
     unfolding dghm_const_components
   proof(rule vbrelation.vbrelation_Limit_in_VsetI)
-    from assms(3) have "a \<in>\<^sub>\<circ> set {a}" by (cs_concl  cs_intro: V_cs_intros)
+    from assms(3) have "a \<in>\<^sub>\<circ> set {a}" 
+      by (cs_concl cs_shallow cs_intro: V_cs_intros)
     with assms(3) show "\<R>\<^sub>\<circ> (vconst_on (\<CC>\<lparr>Obj\<rparr>) a) \<in>\<^sub>\<circ> Vset \<alpha>"
       by 
         (
@@ -297,7 +298,7 @@ proof-
   ultimately show "\<FF>\<lparr>ObjMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>" 
     by 
       (
-        cs_concl cs_intro: 
+        cs_concl cs_shallow cs_intro: 
           V_cs_intros dg_small_cs_intros ObjMap.vbrelation_Limit_in_VsetI 
       )
 qed
@@ -315,7 +316,7 @@ proof-
   ultimately show "\<FF>\<lparr>ArrMap\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>" 
     by 
       (
-        cs_concl cs_intro:  
+        cs_concl cs_shallow cs_intro:  
           V_cs_intros dg_small_cs_intros ArrMap.vbrelation_Limit_in_VsetI
       )
 qed
@@ -331,7 +332,10 @@ proof-
     HomCod.tiny_dg_in_Vset 
   show ?thesis
     by (subst dghm_def) 
-      (cs_concl cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: dg_cs_simps cs_intro: dg_cs_intros V_cs_intros
+      )
 qed
 
 sublocale is_tiny_dghm \<subseteq> is_tm_dghm
@@ -374,7 +378,7 @@ proof(intro is_tiny_dghmI)
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
   show "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<beta>\<^esub> \<BB>"
     by (intro dghm_is_dghm_if_ge_Limit)
-      (use assms(2) in \<open>cs_concl cs_intro: dg_cs_intros\<close>)+
+      (use assms(2) in \<open>cs_concl cs_shallow cs_intro: dg_cs_intros\<close>)+
   show "tiny_digraph \<beta> \<AA>" "tiny_digraph \<beta> \<BB>"
     by 
       (
@@ -391,7 +395,7 @@ subsubsection\<open>Opposite tiny digraph homomorphism\<close>
 lemma (in is_tiny_dghm) is_tiny_dghm_op: 
   "op_dghm \<FF> : op_dg \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> op_dg \<BB>"
   by (intro is_tiny_dghmI) 
-    (cs_concl cs_intro: dg_small_cs_intros dg_cs_intros dg_op_intros)+
+    (cs_concl cs_shallow cs_intro: dg_small_cs_intros dg_cs_intros dg_op_intros)+
 
 lemma (in is_tiny_dghm) is_tiny_dghm_op'[dg_op_intros]:  
   assumes "\<AA>' = op_dg \<AA>" and "\<BB>' = op_dg \<BB>" and "\<alpha>' = \<alpha>"

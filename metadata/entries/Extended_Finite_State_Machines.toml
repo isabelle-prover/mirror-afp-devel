@@ -1,0 +1,40 @@
+title = "A Formal Model of Extended Finite State Machines"
+date = 2020-09-07
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+In this AFP entry, we provide a formalisation of extended finite state
+machines (EFSMs) where models are represented as finite sets of
+transitions between states. EFSMs execute traces to produce observable
+outputs. We also define various simulation and equality metrics for
+EFSMs in terms of traces and prove their strengths in relation to each
+other. Another key contribution is a framework of function definitions
+such that LTL properties can be phrased over EFSMs. Finally, we
+provide a simple example case study in the form of a drinks machine."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.foster]
+email = "foster_email"
+
+[authors.brucker]
+email = "brucker_email"
+
+[authors.taylor]
+email = "taylor_email"
+
+[authors.derrick]
+email = "derrick_email"
+
+[contributors]
+
+[notify]
+foster = "foster_email"
+brucker = "brucker_email2"
+
+[history]
+
+[extra]

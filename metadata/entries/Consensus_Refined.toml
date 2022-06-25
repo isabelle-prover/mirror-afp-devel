@@ -1,0 +1,40 @@
+title = "Consensus Refined"
+date = 2015-03-18
+topics = [
+  "Computer science/Algorithms/Distributed",
+]
+abstract = """
+Algorithms for solving the consensus problem are fundamental to
+distributed computing. Despite their brevity, their
+ability to operate in concurrent, asynchronous and failure-prone
+environments comes at the cost of complex and subtle
+behaviors. Accordingly, understanding how they work and proving
+their correctness is a non-trivial endeavor where abstraction
+is immensely helpful.
+Moreover, research on consensus has yielded a large number of
+algorithms, many of which appear to share common algorithmic
+ideas. A natural question is whether and how these similarities can
+be distilled and described in a precise, unified way.
+In this work, we combine stepwise refinement and
+lockstep models to provide an abstract and unified
+view of a sizeable family of consensus algorithms. Our models
+provide insights into the design choices underlying the different
+algorithms, and classify them based on those choices."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.maric]
+
+[authors.sprenger]
+email = "sprenger_email"
+
+[contributors]
+
+[notify]
+sprenger = "sprenger_email"
+
+[history]
+
+[extra]

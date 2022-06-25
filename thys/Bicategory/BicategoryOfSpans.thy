@@ -1134,25 +1134,12 @@ $$
               \<close>
               have "C.commutative_square r0 ?u1 ?p1 \<theta>.chine"
                 using ru.legs_form_cospan(1) Dom_\<theta>.is_span Dom_\<theta>_1 Cod_\<theta>_1 \<theta>.leg1_commutes
-                apply (intro C.commutative_squareI) by auto
+                by (intro C.commutative_squareI) auto
               have "C.commutative_square r0 ?u1 (?p1' \<cdot> \<beta>.chine) (\<theta>'.chine \<cdot> \<beta>.chine)"
-              proof
-                have 1: "r0 \<cdot> ?p1' = ?u1 \<cdot> \<theta>'.chine"
-                  using \<theta>'.leg1_commutes Cod_\<theta>'_1 Dom_\<theta>'_1 fw'.leg1_composite by simp
-                show "C.cospan r0 ?u1"
-                  using ru.legs_form_cospan(1) by blast
-                show "C.span (?p1' \<cdot> \<beta>.chine) (\<theta>'.chine \<cdot> \<beta>.chine)"
-                  using \<beta>.chine_in_hom \<theta>'.chine_in_hom
-                  by (metis "1" C.dom_comp C.in_homE C.prj1_simps(1) C.prj1_simps(2)
-                      C.seqI Cod_\<theta>'_1 Dom_\<theta>'.leg_simps(3) Chn_\<beta> \<theta>'.leg1_commutes cospan')
-                show "C.dom r0 = C.cod (?p1' \<cdot> \<beta>.chine)"
-                  using \<beta>.chine_in_hom
-                  by (metis C.cod_comp C.prj1_simps(3)
-                      \<open>C.span (?p1' \<cdot> \<beta>.chine) (\<theta>'.chine \<cdot> \<beta>.chine)\<close>
-                      cospan' r.dom.apex_def r.chine_eq_apex r.chine_simps(2))
-                show "r0 \<cdot> ?p1' \<cdot> \<beta>.chine = ?u1 \<cdot> \<theta>'.chine \<cdot> \<beta>.chine"
-                  using 1 \<beta>.chine_in_hom C.comp_assoc by metis
-              qed
+                by (metis (mono_tags, lifting) C.commutative_square_comp_arr C.dom_comp
+                    C.seqE Cod_\<theta>'_1 Dom_\<beta>.leg_simps(3) Dom_\<beta>_eq Dom_\<theta>'.leg_simps(3)
+                    Dom_\<theta>'_1 \<beta>1 \<theta>'.leg1_commutes C.commutative_squareI
+                    ru.legs_form_cospan(1) span_data.simps(2))
               have "C.commutative_square r0 ?u1 \<p>\<^sub>1[r0, r0 \<cdot> ?p1] (\<theta>.chine \<cdot> \<p>\<^sub>0[r0, r0 \<cdot> ?p1])"
                 using ru.legs_form_cospan(1) Dom_\<theta>.is_span Dom_\<theta>_1
                       C.comp_assoc C.pullback_commutes' r\<theta>.legs_form_cospan(1)
@@ -1166,14 +1153,12 @@ $$
               have "C.commutative_square ra ?w1 rfw.Prj\<^sub>0\<^sub>1 rfw.Prj\<^sub>0"
                 using C.pullback_commutes' gw.legs_form_cospan(1) rfw.prj_simps(2) C.comp_assoc
                       C.comp_cod_arr
-                apply (intro C.commutative_squareI) by auto
+                by (intro C.commutative_squareI) auto
               have "C.commutative_square ?R ?w1' rfw'.Prj\<^sub>0\<^sub>1 rfw'.Prj\<^sub>0"
-                using cospan'
-                apply (intro C.commutative_squareI)
-                   apply simp_all
-                by (metis C.comp_assoc C.prj0_simps_arr C.pullback_commutes'
-                    arrow_of_spans_data.select_convs(2) rfw'.prj_simps(3)
-                    span_data.select_convs(1-2))
+                by (metis (no_types, lifting) C.commutative_square_comp_arr C.comp_assoc
+                    C.pullback_commutes select_convs(2) rfw'.cospan_\<nu>\<pi>
+                    rfw'.prj_chine_assoc(2) rfw'.prj_chine_assoc(3) rfw'.prj_simps(2)
+                    span_data.select_convs(1))
               have "C.commutative_square r0 (r0 \<cdot> ?p1) rfw.Prj\<^sub>1\<^sub>1 \<langle>rfw.Prj\<^sub>0\<^sub>1 \<lbrakk>ra, ?w1\<rbrakk> rfw.Prj\<^sub>0\<rangle>"
               proof -
                 have "C.arr rfw.chine_assoc"
@@ -1693,16 +1678,7 @@ $$
                 ultimately show ?thesis by simp
               qed
               have Chn_\<beta>_eq: "\<beta>.chine = Chn (g \<star> ?\<gamma>)"
-              proof -
-                have "Chn (g \<star> ?\<gamma>) = \<langle>?p1 \<lbrakk>?R, ?w1'\<rbrakk> ?p0' \<cdot> Chn \<beta>\<rangle>"
-                  using Chn_g\<gamma> by simp
-                also have "... = \<beta>.chine"
-                  text \<open>Here was another score by sledgehammer while I was still trying
-                    to understand it.\<close>
-                  using ** C.prj_joint_monic
-                  by (metis C.prj1_simps(1) C.tuple_prj cospan cospan')
-                finally show ?thesis by simp
-              qed
+                by (metis "**" C.span_prj C.tuple_prj Chn_g\<gamma> cospan cospan')
               have \<beta>_eq_g\<gamma>: "\<beta> = g \<star> ?\<gamma>"
               proof (intro arr_eqI)
                 show "par \<beta> (g \<star> ?\<gamma>)"
@@ -2167,11 +2143,11 @@ $$
         have "(g \<star> w) \<star> src w \<cong> g \<star> w"
           by (metis assms(3) iso_runit ideD(1) isomorphic_def left_adjoint_is_ide
               runit_in_hom(2) src_hcomp)
-        moreover have "isomorphic ((g \<star> w) \<star> (src w)\<^sup>*) (g \<star> w)"
+        moreover have "(g \<star> w) \<star> (src w)\<^sup>* \<cong> g \<star> w"
         proof -
           have "(g \<star> w) \<star> src (g \<star> w) \<cong> g \<star> w"
             using calculation isomorphic_implies_ide(2) by auto
-          moreover have "isomorphic (src (g \<star> w)) (src w)\<^sup>*"
+          moreover have "src (g \<star> w) \<cong> (src w)\<^sup>*"
           proof -
             interpret src_w: map_in_bicategory V H \<a> \<i> src trg \<open>src w\<close>
               using assms obj_is_self_adjoint by unfold_locales auto
@@ -2308,10 +2284,10 @@ $$
 
       have "hseq m e"
         using * ide_dom [of \<theta>]
-        apply (elim conjE in_homE) by simp
+        by (elim conjE in_homE) simp
       have "hseq (src w) e'"
         using * ide_dom [of \<theta>']
-        apply (elim conjE in_homE) by simp
+        by (elim conjE in_homE) simp
 
       have "e'e.trnr\<^sub>\<eta> m \<theta> \<in> hom m (src w \<star> e')"
       proof -
@@ -5522,15 +5498,9 @@ $$
                using 1 F G H B.isomorphic_implies_hpar in_HomD B.left_adjoint_is_ide
                by (metis (mono_tags, lifting))
              have "h \<star> g \<star> f \<cong>\<^sub>B x"
-             proof -
-               have "h \<star> g \<star> f \<cong>\<^sub>B h \<star> gf"
-                 using 1 hgf B.hcomp_ide_isomorphic
-                 by (metis (full_types) B.isomorphic_implies_hpar(1) B.isomorphic_reflexive
-                     B.isomorphic_symmetric B.seq_if_composable)
-               also have "h \<star> gf \<cong>\<^sub>B x"
-                 using 1 by simp
-               finally show ?thesis by blast
-             qed
+               by (metis "1" B.hcomp_ide_isomorphic B.hseqE B.ide_char'
+                   B.isomorphic_implies_hpar(4) B.isomorphic_implies_ide(1)
+                   B.isomorphic_transitive hgf)
              moreover have "(h \<star> g) \<star> f \<cong>\<^sub>B h \<star> g \<star> f"
                using 1 hgf B.iso_assoc B.assoc_in_hom B.isomorphic_def
                by (metis B.hseq_char B.ideD(1-3) B.isomorphic_implies_hpar(1)
@@ -5543,13 +5513,7 @@ $$
                      B.isomorphic_reflexive B.hcomp_ide_isomorphic B.hseqI'
                by (metis (no_types, lifting) B.hseqE B.hseqI mem_Collect_eq)
              ultimately show "x \<in> Comp (Comp H G) F"
-               using 1 F G H hgf B.is_iso_class_def is_iso_class_Comp [of H G]
-                     B.isomorphic_reflexive [of "h \<star> g"]
-               apply (intro in_CompI)
-                           apply auto[7]
-                 apply blast
-                apply simp
-               by (meson B.isomorphic_symmetric B.isomorphic_transitive)
+               by (metis "1" B.isomorphic_transitive emptyE in_CompI is_iso_class_Comp)
            qed
            show "Comp (Comp H G) F \<subseteq> Comp H (Comp G F)"
            proof
@@ -5565,14 +5529,8 @@ $$
                    B.in_homE B.isomorphic_def B.isomorphic_symmetric B.seqI'
                    B.seq_if_composable B.src_dom B.src_hcomp B.vseq_implies_hpar(1))
              have 2: "(h \<star> g) \<star> f \<cong>\<^sub>B x"
-             proof -
-               have "(h \<star> g) \<star> f \<cong>\<^sub>B hg \<star> f"
-                 using 1 F G H hgf
-                 by (simp add: B.hcomp_isomorphic_ide)
-               also have "hg \<star> f \<cong>\<^sub>B x"
-                 using 1 by simp
-               finally show ?thesis by blast
-             qed
+               by (meson "1" B.hcomp_isomorphic_ide B.hseqE B.ideD(1) B.isomorphic_implies_ide(1)
+                   B.isomorphic_symmetric B.isomorphic_transitive hgf)
              moreover have "(h \<star> g) \<star> f \<cong>\<^sub>B h \<star> g \<star> f"
                using hgf B.iso_assoc B.assoc_in_hom B.isomorphic_def by auto
              moreover have "g \<star> f \<in> Comp G F"
@@ -8786,7 +8744,7 @@ $$
                 moreover have 2: "spn \<mu> \<in> \<lbrakk>spn \<mu>\<rbrakk>"
                   using seq ide_in_iso_class by auto
                 moreover have "spn \<nu> \<star> spn \<mu> \<cong> h"
-                 proof -
+                proof -
                   have "spn \<nu> \<star> spn \<mu> \<cong> spn (\<nu> \<cdot> \<mu>)"
                     using seq spn_hcomp 1 2 iso_class_def isomorphic_reflexive
                           isomorphic_symmetric

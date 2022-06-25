@@ -1,0 +1,48 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage{isabelle,isabellesym}
+\usepackage[english]{babel}  % for guillemots
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Roth's Theorem on Arithmetic Progressions}
+\author{Chelsea Edmonds, Angeliki Koutsoukou-Argyraki and Lawrence C. Paulson\\
+Computer Laboratory, University of Cambridge CB3 0FD\\
+\texttt{\{cle47,ak2110,lp15\}@cam.ac.uk}}
+
+\maketitle
+
+\begin{abstract}
+We formalise a proof of Roth's Theorem on Arithmetic Progressions, a major result in additive 
+combinatorics on the existence of 3-term arithmetic progressions in subsets of natural numbers.
+To this end, we follow a proof using graph regularity. We employ our recent formalisation of Szemer\'{e}di's 
+Regularity Lemma, a major result in extremal graph theory, which we use here to prove
+the Triangle Counting Lemma and the Triangle Removal Lemma. 
+Our sources are Yufei Zhao's MIT lecture notes ``Graph Theory and Additive Combinatorics''%
+\footnote{\url{https://yufeizhao.com/gtacbook/} and \url{https://yufeizhao.com/gtac/gtac.pdf}}
+and W.T. Gowers's Cambridge lecture notes ``Topics in Combinatorics''.%
+\footnote{\url{https://www.dpmms.cam.ac.uk/~par31/notes/tic.pdf}}
+We also refer to the University of Georgia notes by Stephanie Bell and Will Grodzicki
+``Using Szemerédi's Regularity Lemma to Prove Roth's Theorem''.%
+\footnote{\url{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.432.327}}
+\end{abstract}
+
+\tableofcontents
+
+\subsection*{Acknowledgements}
+The authors were supported by the ERC Advanced Grant ALEXANDRIA (Project 742178) funded by the European Research Council. 
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\end{document}

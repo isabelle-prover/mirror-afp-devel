@@ -1,0 +1,25 @@
+title = "Coinductive"
+date = 2010-02-12
+topics = [
+  "Computer science/Functional programming",
+]
+abstract = "This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of König's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochbihler]
+homepage = "lochbihler_homepage"
+
+[contributors]
+
+[contributors.hoelzl]
+email = "hoelzl_email"
+
+[notify]
+lochbihler = "lochbihler_email1"
+
+[history]
+
+[extra]

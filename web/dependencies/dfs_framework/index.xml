@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DFS_Framework on Archive of Formal Proofs</title>
+    <link>/dependencies/dfs_framework/</link>
+    <description>Recent content in DFS_Framework on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 19 Oct 2017 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/dfs_framework/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Transition Systems and Automata</title>
+      <link>/entries/Transition_Systems_and_Automata.html</link>
+      <pubDate>Thu, 19 Oct 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Transition_Systems_and_Automata.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Flow Networks and the Min-Cut-Max-Flow Theorem</title>
+      <link>/entries/Flow_Networks.html</link>
+      <pubDate>Thu, 01 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Flow_Networks.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Imperative Refinement Framework</title>
+      <link>/entries/Refine_Imperative_HOL.html</link>
+      <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Refine_Imperative_HOL.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Fully Verified Executable LTL Model Checker</title>
+      <link>/entries/CAVA_LTL_Modelchecker.html</link>
+      <pubDate>Wed, 28 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/CAVA_LTL_Modelchecker.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

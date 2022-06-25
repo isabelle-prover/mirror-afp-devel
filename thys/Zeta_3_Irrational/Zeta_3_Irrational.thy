@@ -107,7 +107,7 @@ proof (rule Fubini_integrable)
   also have "set_integrable M1 A (\<lambda>x. \<integral>y\<in>B. norm (f (x, y)) \<partial>M2) \<longleftrightarrow>
         integrable M1 (\<lambda>x. LINT y|M2. norm (indicat_real (A \<times> B) (x, y) *\<^sub>R f (x, y)))"
     unfolding set_integrable_def
-    by (intro integrable_cong) (auto simp: indicator_def set_lebesgue_integral_def)
+    by (intro Bochner_Integration.integrable_cong) (auto simp: indicator_def set_lebesgue_integral_def)
   finally show \<dots> .
 next
   from integ2 show "AE x in M1. integrable M2 (\<lambda>y. indicat_real (A \<times> B) (x, y) *\<^sub>R f (x, y))"
@@ -119,7 +119,7 @@ next
       with elim have "set_integrable M2 B (\<lambda>y. f (x, y))" by simp
       also have "?this \<longleftrightarrow> ?thesis"
         unfolding set_integrable_def using True
-        by (intro integrable_cong) (auto simp: indicator_def)
+        by (intro Bochner_Integration.integrable_cong) (auto simp: indicator_def)
       finally show ?thesis .
     qed auto
   qed
@@ -276,7 +276,7 @@ lemma
     and integral_FTC_Icc_real: "(\<integral>x. f x * indicator {a .. b} x \<partial>lborel) = F b - F a" (is ?eq)
 proof -
   have 1: "\<And>x. a \<le> x \<Longrightarrow> x \<le> b \<Longrightarrow> (F has_vector_derivative f x) (at x within {a .. b})"
-    unfolding has_field_derivative_iff_has_vector_derivative[symmetric]
+    unfolding has_real_derivative_iff_has_vector_derivative[symmetric]
     using deriv by auto
   show ?has ?eq
     using has_bochner_integral_FTC_Icc[OF \<open>a \<le> b\<close> 1 cont] integral_FTC_Icc[OF \<open>a \<le> b\<close> 1 cont]
@@ -1475,7 +1475,7 @@ proof -
   next
     case (deriv z)
     show ?case
-      unfolding has_field_derivative_iff_has_vector_derivative [symmetric]
+      unfolding has_real_derivative_iff_has_vector_derivative [symmetric]
       by (insert less[of z] xy \<open>x * y < 1\<close> deriv)
          (rule derivative_eq_intros refl | simp)+
   qed
@@ -1899,7 +1899,7 @@ proof -
     also have "?this \<longleftrightarrow> set_integrable (lborel \<Otimes>\<^sub>M lborel) ({0<..<1} \<times> D)
                            (\<lambda>(z,x,y). P x * P y / (1 - (1 - x * y) * z))"
       unfolding set_integrable_def
-      by (subst lborel_pair.integrable_product_swap_iff [symmetric], intro integrable_cong)
+      by (subst lborel_pair.integrable_product_swap_iff [symmetric], intro Bochner_Integration.integrable_cong)
          (auto simp: indicator_def case_prod_unfold lborel_prod D_def)
     finally show \<dots> .
   qed (auto simp: case_prod_unfold)

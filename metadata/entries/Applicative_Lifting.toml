@@ -1,0 +1,35 @@
+title = "Applicative Lifting"
+date = 2015-12-22
+topics = [
+  "Computer science/Functional programming",
+]
+abstract = """
+Applicative functors augment computations with effects by lifting function application to types which model the effects.  As the structure of the computation cannot depend on the effects, applicative expressions can be analysed statically.  This allows us to lift universally quantified equations to the effectful types, as observed by Hinze. Thus, equational reasoning over effectful computations can be reduced to pure types.
+</p><p>
+This entry provides a package for registering applicative functors and two proof methods for lifting of equations over applicative functors. The first method normalises applicative expressions according to the laws of applicative functors. This way, equations whose two sides contain the same list of variables can be lifted to every applicative functor.
+</p><p>
+To lift larger classes of equations, the second method exploits a number of additional properties (e.g., commutativity of effects) provided the properties have been declared for the concrete applicative functor at hand upon registration.
+</p><p>
+We declare several types from the Isabelle library as applicative functors and illustrate the use of the methods with two examples: the lifting of the arithmetic type class hierarchy to streams and the verification of a relabelling function on binary trees. We also formalise and verify the normalisation algorithm used by the first proof method.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lochbihler]
+homepage = "lochbihler_homepage"
+
+[authors.schneider]
+
+[contributors]
+
+[notify]
+lochbihler = "lochbihler_email1"
+
+[history]
+2016-03-03 = """
+added formalisation of lifting with combinators<br>
+"""
+
+[extra]

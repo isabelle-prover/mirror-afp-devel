@@ -1,0 +1,36 @@
+title = "First-Order Terms"
+date = 2018-02-06
+topics = [
+  "Logic/Rewriting",
+  "Computer science/Algorithms",
+]
+abstract = """
+We formalize basic results on first-order terms, including matching and a
+first-order unification algorithm, as well as well-foundedness of the
+subsumption order. This entry is part of the <i>Isabelle
+Formalization of Rewriting</i> <a
+href=\"http://cl-informatik.uibk.ac.at/isafor\">IsaFoR</a>,
+where first-order terms are omni-present: the unification algorithm is
+used to certify several confluence and termination techniques, like
+critical-pair computation and dependency graph approximations; and the
+subsumption order is a crucial ingredient for completion."""
+license = "lgpl"
+note = ""
+
+[authors]
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[authors.thiemann]
+homepage = "thiemann_homepage"
+
+[contributors]
+
+[notify]
+sternagel = "sternagel_email"
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

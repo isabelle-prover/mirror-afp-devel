@@ -1,0 +1,73 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{The Median Method}
+\author{Emin Karayel}
+\maketitle
+\begin{abstract}
+The median method is an amplification result for randomized approximation algorithms described in \cite{alon1999}.
+Given an algorithm whose result is in a desired interval with a probability larger than
+$\frac{1}{2}$, it is possible to improve the success probability, by running the algorithm multiple
+times independently and using the median. In contrast to using the mean, the amplification of the
+success probability grows exponentially with the number of independent runs.
+
+This entry contains a formalization of the underlying theorem:
+Given a sequence of $n$ independent random variables, which are in a desired interval with a
+probability $\frac{1}{2} + \alpha$. Then their median will be in the desired interval with a
+probability of $1 - \exp (-2 \alpha^2 n)$. In particular, the success probability approaches $1$
+exponentially with the number of variables.
+
+In addition to that, this entry also contains a proof that order-statistics of Borel-measurable
+random variables are themselves measurable and that generalized intervals in linearly ordered 
+Borel-spaces are measurable.
+\end{abstract}
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>fell on Archive of Formal Proofs</title>
+    <link>/authors/fell/</link>
+    <description>Recent content in fell on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Fri, 30 Dec 2016 00:00:00 +0000</lastBuildDate><atom:link href="/authors/fell/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Concurrent Refinement Algebra and Rely Quotients</title>
+      <link>/entries/Concurrent_Ref_Alg.html</link>
+      <pubDate>Fri, 30 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Concurrent_Ref_Alg.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -536,7 +536,7 @@ proof -
   qed
 qed      
 
-lift_definition roots_of_3 :: "int poly \<Rightarrow> real_alg_3 list" is roots_of_2
+lift_definition (code_dt) roots_of_3 :: "int poly \<Rightarrow> real_alg_3 list" is roots_of_2
   by (insert roots_of_2, auto simp: list_all_iff)
 
 lemma roots_of_3: 
@@ -560,77 +560,6 @@ proof -
   show "distinct (map real_of (roots_of_real_alg p))"      
     by (transfer, insert roots_of_3(2), auto)
 qed
-
-text \<open>It follows an implementation for @{const roots_of_3}, 
-  since the current definition does not provide a code equation.\<close>
-context
-begin
-private typedef real_alg_2_list = "{xs. Ball (set xs) invariant_2}" by (intro exI[of _ Nil], auto)
-
-setup_lifting type_definition_real_alg_2_list
-
-private lift_definition roots_of_2_list :: "int poly \<Rightarrow> real_alg_2_list" is roots_of_2
-  by (insert roots_of_2, auto)
-private lift_definition real_alg_2_list_nil :: "real_alg_2_list \<Rightarrow> bool" is "\<lambda> xs. case xs of Nil \<Rightarrow> True | _ \<Rightarrow> False" .
-
-private fun real_alg_2_list_hd_intern :: "real_alg_2 list \<Rightarrow> real_alg_2" where
-  "real_alg_2_list_hd_intern (Cons x xs) = x"
-| "real_alg_2_list_hd_intern Nil = of_rat_2 0"
-
-private lift_definition real_alg_2_list_hd :: "real_alg_2_list \<Rightarrow> real_alg_3" is real_alg_2_list_hd_intern
-proof (goal_cases)
-  case (1 xs)
-  thus ?case using of_rat_2[of 0] by (cases xs, auto)
-qed
-
-private lift_definition real_alg_2_list_tl :: "real_alg_2_list \<Rightarrow> real_alg_2_list" is tl 
-proof (goal_cases)
-  case (1 xs)
-  thus ?case by (cases xs, auto)
-qed
-
-private lift_definition real_alg_2_list_length :: "real_alg_2_list \<Rightarrow> nat" is length .
-
-private lemma real_alg_2_list_length[simp]: "\<not> real_alg_2_list_nil xs \<Longrightarrow> real_alg_2_list_length (real_alg_2_list_tl xs) < real_alg_2_list_length xs"
-  by (transfer, auto split: list.splits)
-
-private function real_alg_2_list_convert :: "real_alg_2_list \<Rightarrow> real_alg_3 list" where
-  "real_alg_2_list_convert xs = (if real_alg_2_list_nil xs then [] else real_alg_2_list_hd xs 
-    # real_alg_2_list_convert (real_alg_2_list_tl xs))" by pat_completeness auto
-
-termination by (relation "measure real_alg_2_list_length", auto)
-
-private definition roots_of_3_impl :: "int poly \<Rightarrow> real_alg_3 list" where
-  "roots_of_3_impl p = real_alg_2_list_convert (roots_of_2_list p)"
-
-private lift_definition real_alg_2_list_convert_id :: "real_alg_2_list \<Rightarrow> real_alg_3 list" is id
-  by (auto simp: list_all_iff)
-
-lemma real_alg_2_list_convert: "real_alg_2_list_convert xs = real_alg_2_list_convert_id xs"
-proof (induct xs rule: wf_induct[OF wf_measure[of real_alg_2_list_length], rule_format])
-  case (1 xs)
-  show ?case
-  proof (cases "real_alg_2_list_nil xs")
-    case True
-    hence "real_alg_2_list_convert xs = []" by auto
-    also have "[] = real_alg_2_list_convert_id xs" using True
-      by (transfer', auto split: list.splits)
-    finally show ?thesis .
-  next
-    case False
-    hence "real_alg_2_list_convert xs = real_alg_2_list_hd xs # real_alg_2_list_convert (real_alg_2_list_tl xs)" by simp
-    also have "real_alg_2_list_convert (real_alg_2_list_tl xs) = real_alg_2_list_convert_id (real_alg_2_list_tl xs)"
-      by (rule 1, insert False, simp)
-    also have "real_alg_2_list_hd xs # \<dots> = real_alg_2_list_convert_id xs" using False
-      by (transfer', auto split: list.splits)
-    finally show ?thesis .
-  qed
-qed
-
-lemma roots_of_3_code[code]: "roots_of_3 p = roots_of_3_impl p" 
-  unfolding roots_of_3_impl_def real_alg_2_list_convert
-  by (transfer, simp)
-end
 
 definition real_roots_of_int_poly :: "int poly \<Rightarrow> real list" where
   "real_roots_of_int_poly p = map real_of (roots_of_real_alg p)"

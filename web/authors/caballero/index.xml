@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>caballero on Archive of Formal Proofs</title>
+    <link>/authors/caballero/</link>
+    <description>Recent content in caballero on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sat, 18 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/caballero/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Complex Bounded Operators</title>
+      <link>/entries/Complex_Bounded_Operators.html</link>
+      <pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Complex_Bounded_Operators.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Banach-Steinhaus Theorem</title>
+      <link>/entries/Banach_Steinhaus.html</link>
+      <pubDate>Sat, 02 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Banach_Steinhaus.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Arithmetic progressions and relative primes</title>
+      <link>/entries/Arith_Prog_Rel_Primes.html</link>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Arith_Prog_Rel_Primes.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

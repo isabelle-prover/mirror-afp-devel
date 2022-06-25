@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Real_Impl on Archive of Formal Proofs</title>
+    <link>/dependencies/real_impl/</link>
+    <description>Recent content in Real_Impl on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Sat, 18 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/real_impl/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Complex Bounded Operators</title>
+      <link>/entries/Complex_Bounded_Operators.html</link>
+      <pubDate>Sat, 18 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Complex_Bounded_Operators.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>QR Decomposition</title>
+      <link>/entries/QR_Decomposition.html</link>
+      <pubDate>Thu, 12 Feb 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/QR_Decomposition.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,42 @@
+title = "A formal model for the SPARCv8 ISA and a proof of non-interference for the LEON3 processor"
+date = 2016-10-19
+topics = [
+  "Computer science/Security",
+  "Computer science/Hardware",
+]
+abstract = """
+We formalise the SPARCv8 instruction set architecture (ISA) which is
+used in processors such as LEON3. Our formalisation can be specialised
+to any SPARCv8 CPU, here we use LEON3 as a running example. Our model
+covers the operational semantics for all the instructions in the
+integer unit of the SPARCv8 architecture and it supports Isabelle code
+export, which effectively turns the Isabelle model into a SPARCv8 CPU
+simulator. We prove the language-based non-interference property for
+the LEON3 processor.  Our model is based on deterministic monad, which
+is a modified version of the non-deterministic monad from NICTA/l4v."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hou]
+email = "hou_email"
+
+[authors.sanan]
+email = "sanan_email"
+
+[authors.tiu]
+email = "tiu_email"
+
+[authors.liuy]
+email = "liuy_email"
+
+[contributors]
+
+[notify]
+hou = "hou_email"
+sanan = "sanan_email"
+
+[history]
+
+[extra]

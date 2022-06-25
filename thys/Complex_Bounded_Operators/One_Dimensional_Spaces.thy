@@ -98,7 +98,7 @@ proof
       by (simp add: complex_inner_class.Cauchy_Schwarz_ineq2)
 
     have q1: "\<langle>(1::'a), 1\<rangle> = 1"
-      by (simp add: )
+      by simp
     hence "(norm (1::'a))^2 = 1"
       by (simp add: cnorm_eq_1 power2_eq_1_iff)
     hence "norm (1::'a) = 1"

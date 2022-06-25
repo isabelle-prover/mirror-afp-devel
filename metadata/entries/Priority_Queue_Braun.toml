@@ -1,0 +1,26 @@
+title = "Priority Queues Based on Braun Trees"
+date = 2014-09-04
+topics = [
+  "Computer science/Data structures",
+]
+abstract = """
+This entry verifies priority queues based on Braun trees. Insertion
+and deletion take logarithmic time and preserve the balanced nature
+of Braun trees. Two implementations of deletion are provided."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nipkow]
+homepage = "nipkow_homepage"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+2019-12-16 = "Added theory Priority_Queue_Braun2 with second version of del_min"
+
+[extra]

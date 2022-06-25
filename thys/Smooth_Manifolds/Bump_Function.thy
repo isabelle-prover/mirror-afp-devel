@@ -162,7 +162,7 @@ next
     then have "((\<lambda>x. nth_derivative k f x 1) has_derivative
       (\<lambda>v. v * rp t * (exp (-inverse t) / t^(2*k+2)))) (at t within {0<..})"
       apply (rule has_derivative_transform_within[OF _ zero_less_one])
-      using that p2 by (auto simp: )
+      using that p2 by auto
     then have "((\<lambda>x. nth_derivative k f x 1) has_derivative
       (\<lambda>v. v * rp t * (exp (-inverse t) / t^(2*k+2)))) (at t)"
       using that
@@ -405,11 +405,11 @@ next
       next
         case 2
         with neg show ?thesis
-          by (subst (asm) higher_differentiable_on_real_Suc') (auto simp: )
+          by (subst (asm) higher_differentiable_on_real_Suc') auto
       next
         case 3
         with pos show ?thesis
-          by (subst (asm) higher_differentiable_on_real_Suc') (auto simp: )
+          by (subst (asm) higher_differentiable_on_real_Suc') auto
       qed
     qed
     moreover have "higher_differentiable_on UNIV f k" by fact

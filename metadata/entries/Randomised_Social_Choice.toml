@@ -1,0 +1,38 @@
+title = "Randomised Social Choice Theory"
+date = 2016-05-05
+topics = [
+  "Mathematics/Games and economics",
+]
+abstract = """
+This work contains a formalisation of basic Randomised Social Choice,
+including Stochastic Dominance and Social Decision Schemes (SDSs)
+along with some of their most important properties (Anonymity,
+Neutrality, ex-post- and SD-Efficiency, SD-Strategy-Proofness) and two
+particular SDSs – Random Dictatorship and Random Serial Dictatorship
+(with proofs of the properties that they satisfy). Many important
+properties of these concepts are also proven – such as the two
+equivalent characterisations of Stochastic Dominance and the fact that
+SD-efficiency of a lottery only depends on the support.  The entry
+also provides convenient commands to define Preference Profiles, prove
+their well-formedness, and automatically derive restrictions that
+sufficiently nice SDSs need to satisfy on the defined profiles.
+Currently, the formalisation focuses on weak preferences and
+Stochastic Dominance, but it should be easy to extend it to other
+domains – such as strict preferences – or other lottery extensions –
+such as Bilinear Dominance or Pairwise Comparison."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

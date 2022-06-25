@@ -1,0 +1,51 @@
+title = "Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5"
+date = 2014-01-16
+topics = [
+  "Computer science/System description languages",
+]
+abstract = """
+The Unified Modeling Language (UML) is one of the few
+modeling languages that is widely used in industry. While
+UML is mostly known as diagrammatic modeling language
+(e.g., visualizing class models), it is complemented by a
+textual language, called Object Constraint Language
+(OCL). The current version of OCL is based on a four-valued
+logic that turns UML into a formal language. Any type
+comprises the elements \"invalid\" and \"null\" which are
+propagated as strict and non-strict, respectively.
+Unfortunately, the former semi-formal semantics of this
+specification language, captured in the \"Annex A\" of the
+OCL standard, leads to different interpretations of corner
+cases. We formalize the core of OCL: denotational
+definitions, a logical calculus and operational rules that
+allow for the execution of OCL expressions by a mixture of
+term rewriting and code compilation. Our formalization
+reveals several inconsistencies and contradictions in the
+current version of the OCL standard. Overall, this document
+is intended to provide the basis for a machine-checked text
+\"Annex A\" of the OCL standard targeting at tool
+implementors."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brucker]
+email = "brucker_email1"
+
+[authors.tuong]
+email = "tuong_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+brucker = "brucker_email1"
+tuong = "tuong_email"
+wolff = "wolff_email"
+
+[history]
+
+[extra]

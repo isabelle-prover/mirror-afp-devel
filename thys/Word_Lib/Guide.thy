@@ -6,7 +6,7 @@
 
 (*<*)
 theory Guide
-  imports Word_Lib_Sumo Machine_Word_32 Machine_Word_64 Ancient_Numeral
+  imports Word_Lib_Sumo Machine_Word_32 Machine_Word_64
 begin
 
 context semiring_bit_operations
@@ -388,9 +388,13 @@ text \<open>
 section \<open>Changelog\<close>
 
 text \<open>
+  \<^descr>[Changes since AFP 2022] ~
+
+    \<^item> Theory \<^text>\<open>Word_Lib.Ancient_Numeral\<close> has been removed from session.
+
   \<^descr>[Changes since AFP 2021] ~
 
-    \<^item> Theory \<^theory>\<open>Word_Lib.Ancient_Numeral\<close> is not part of \<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>
+    \<^item> Theory \<^text>\<open>Word_Lib.Ancient_Numeral\<close> is not part of \<^theory>\<open>Word_Lib.Word_Lib_Sumo\<close>
       any longer.
 
     \<^item> Infix syntax for \<^term>\<open>(AND)\<close>, \<^term>\<open>(OR)\<close>, \<^term>\<open>(XOR)\<close> organized in

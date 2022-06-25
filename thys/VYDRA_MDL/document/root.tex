@@ -1,0 +1,68 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{a4wide}
+\usepackage[english]{babel}
+\usepackage{eufrak}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{literal}
+
+
+\begin{document}
+
+\title{Multi-Head Monitoring of Metric Dynamic Logic}
+\author{Martin Raszyk}
+
+\maketitle
+
+\begin{abstract}
+Runtime monitoring (or runtime verification) is an approach to checking
+compliance of a system's execution with a specification (e.g., a temporal
+formula). The system's execution is logged into a \emph{trace}---a sequence of
+time-points, each consisting of a time-stamp and observed events. A
+\emph{monitor} is an algorithm that produces \emph{verdicts} on the satisfaction
+of a temporal formula on a trace.
+
+We formalize the time-stamps as an abstract algebraic structure satisfying
+certain assumptions. Instances of this structure include natural numbers, real
+numbers, and lexicographic combinations of them. We also include the
+formalization of a conversion from the abstract time domain introduced by
+Koymans~\cite{DBLP:journals/rts/Koymans90} to our time-stamps.
+
+We formalize a monitoring algorithm for metric dynamic logic, an extension of
+metric temporal logic with regular expressions. The monitor computes whether a
+given formula is satisfied at every position in an input trace of time-stamped
+events. Our monitor follows the multi-head paradigm: it reads the input
+simultaneously at multiple positions and moves its reading heads asynchronously.
+This mode of operation results in unprecedented time and space complexity
+guarantees for metric dynamic logic: The monitor's amortized time complexity to
+process a time-point and the monitor's space complexity neither depends on the
+event-rate, i.e., the number of events within a fixed time-unit, nor on the
+numeric constants occurring in the quantitative temporal constraints in the
+given formula.
+
+The multi-head monitoring algorithm for metric dynamic logic is reported in our
+paper ``Multi-Head Monitoring of Metric Dynamic
+Logic''~\cite{DBLP:conf/atva/RaszykBT20} published at ATVA 2020. We have also
+formalized unpublished specialized algorithms for the temporal operators of
+metric temporal logic.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

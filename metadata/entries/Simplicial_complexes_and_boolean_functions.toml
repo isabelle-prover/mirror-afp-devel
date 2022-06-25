@@ -1,0 +1,37 @@
+title = "Simplicial Complexes and Boolean functions"
+date = 2021-11-29
+topics = [
+  "Mathematics/Topology",
+]
+abstract = """
+In this work we formalise the isomorphism between simplicial complexes
+of dimension $n$ and monotone Boolean functions in $n$ variables,
+mainly following the definitions and results as introduced by N. A.
+Scoville. We also take advantage of the AFP
+representation of <a href=\"https://www.isa-afp.org/entries/ROBDD.html\">ROBDD</a>
+(Reduced Ordered Binary Decision Diagrams) to compute the ROBDD representation of a
+given simplicial complex (by means of the isomorphism to Boolean
+functions). Some examples of simplicial complexes and associated
+Boolean functions are also presented."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.aransay]
+homepage = "aransay_homepage"
+
+[authors.campo]
+email = "campo_email"
+
+[authors.michaelis]
+homepage = "michaelis_homepage"
+
+[contributors]
+
+[notify]
+aransay = "aransay_email"
+
+[history]
+
+[extra]

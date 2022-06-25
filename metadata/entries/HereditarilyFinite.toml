@@ -1,0 +1,32 @@
+title = "The Hereditarily Finite Sets"
+date = 2013-11-17
+topics = [
+  "Logic/Set theory",
+]
+abstract = """
+The theory of hereditarily finite sets is formalised, following
+the <a href=\"http://journals.impan.gov.pl/dm/Inf/422-0-1.html\">development</a> of Swierczkowski.
+An HF set is a finite collection of other HF sets; they enjoy an induction principle
+and satisfy all the axioms of ZF set theory apart from the axiom of infinity, which is negated.
+All constructions that are possible in ZF set theory (Cartesian products, disjoint sums, natural numbers,
+functions) without using infinite sets are possible here.
+The definition of addition for the HF sets follows Kirby.
+This development forms the foundation for the Isabelle proof of Gödel's incompleteness theorems,
+which has been <a href=\"Incompleteness.html\">formalised separately</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.paulson]
+homepage = "paulson_homepage"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+2015-02-23 = "Added the theory \"Finitary\" defining the class of types that can be embedded in hf, including int, char, option, list, etc."
+
+[extra]

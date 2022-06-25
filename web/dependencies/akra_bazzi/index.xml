@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Akra_Bazzi on Archive of Formal Proofs</title>
+    <link>/dependencies/akra_bazzi/</link>
+    <description>Recent content in Akra_Bazzi on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 13 Jan 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/akra_bazzi/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Closest Pair of Points Algorithms</title>
+      <link>/entries/Closest_Pair_Points.html</link>
+      <pubDate>Mon, 13 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Closest_Pair_Points.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

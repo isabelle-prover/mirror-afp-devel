@@ -1,0 +1,36 @@
+title = "Information Flow Control via Dependency Tracking"
+date = 2021-04-01
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+We provide a characterisation of how information is propagated by
+program executions based on the tracking data and control dependencies
+within executions themselves.  The characterisation might be used for
+deriving approximative safety properties to be targeted by static
+analyses or checked at runtime.  We utilise a simple yet versatile
+control flow graph model as a program representation.  As our model is
+not assumed to be finite it can be instantiated for a broad class of
+programs.  The targeted security property is indistinguishable
+security where executions produce sequences of observations and only
+non-terminating executions are allowed to drop a tail of those.  A
+very crude approximation of our characterisation is slicing based on
+program dependence graphs, which we use as a minimal example and
+derive a corresponding soundness result.  For further details and
+applications refer to the authors upcoming dissertation."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.nordhoff]
+email = "nordhoff_email"
+
+[contributors]
+
+[notify]
+nordhoff = "nordhoff_email"
+
+[history]
+
+[extra]

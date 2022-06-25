@@ -1,0 +1,16 @@
+chapter AFP
+
+session Fishers_Inequality (AFP) = "Berlekamp_Zassenhaus" + 
+  options [timeout = 600]
+  sessions
+    Design_Theory
+    "HOL-Combinatorics"
+    Groebner_Bases
+    Polynomial_Factorization
+    "List-Index"
+    BenOr_Kozen_Reif
+  theories
+    Fishers_Inequality_Root
+  document_files
+    "root.bib"
+    "root.tex"

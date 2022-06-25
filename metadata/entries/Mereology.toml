@@ -1,0 +1,24 @@
+title = "Mereology"
+date = 2021-03-01
+topics = [
+  "Logic/Philosophical aspects",
+]
+abstract = """
+We use Isabelle/HOL to verify elementary theorems and alternative
+axiomatizations of classical extensional mereology."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.blumson]
+homepage = "blumson_homepage"
+
+[contributors]
+
+[notify]
+blumson = "blumson_email"
+
+[history]
+
+[extra]

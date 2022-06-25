@@ -1,0 +1,35 @@
+title = "The Divergence of the Prime Harmonic Series"
+date = 2015-12-28
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>
+In this work, we prove the lower bound <span class=\"nobr\">ln(H_n) -
+ln(5/3)</span> for the
+partial sum of the Prime Harmonic series and, based on this, the divergence of
+the Prime Harmonic Series
+<span class=\"nobr\">∑[p&thinsp;prime]&thinsp;·&thinsp;1/p.</span>
+</p><p>
+The proof relies on the unique squarefree decomposition of natural numbers. This
+is similar to Euler's original proof (which was highly informal and morally
+questionable). Its advantage over proofs by contradiction, like the famous one
+by Paul Erdős, is that it provides a relatively good lower bound for the partial
+sums.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]

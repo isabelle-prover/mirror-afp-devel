@@ -1,0 +1,38 @@
+title = "A Comprehensive Framework for Saturation Theorem Proving"
+date = 2020-04-09
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = """
+This Isabelle/HOL formalization is the companion of the technical
+report “A comprehensive framework for saturation theorem proving”,
+itself companion of the eponym IJCAR 2020 paper, written by Uwe
+Waldmann, Sophie Tourret, Simon Robillard and Jasmin Blanchette. It
+verifies a framework for formal refutational completeness proofs of
+abstract provers that implement saturation calculi, such as ordered
+resolution or superposition, and allows to model entire prover
+architectures in such a way that the static refutational completeness
+of a calculus immediately implies the dynamic  refutational
+completeness of a prover implementing the calculus using a variant of
+the given clause loop.  The technical report “A comprehensive
+framework for saturation theorem proving” is available <a
+href=\"http://matryoshka.gforge.inria.fr/pubs/satur_report.pdf\">on
+the Matryoshka website</a>. The names of the Isabelle lemmas and
+theorems corresponding to the results in the report are indicated in
+the margin of the report."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.tourret]
+homepage = "tourret_homepage"
+
+[contributors]
+
+[notify]
+tourret = "tourret_email"
+
+[history]
+
+[extra]

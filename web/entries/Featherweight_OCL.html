@@ -1,134 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5 - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5 - Archive of Formal Proofs</title><meta name="description" content="The Unified Modeling Language (UML) is one of the few
+modeling languages that is widely used in industry. While
+UML is mostly known as diagrammatic..."><meta property="og:title" content="Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Featherweight_OCL.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2014-01-16T00:00:00+00:00" />
+<meta property="article:modified_time" content="2014-01-16T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>eatherweight
-  
-          <font class="first">O</font>CL:
-  
-          <font class="first">A</font>
-  
-          <font class="first">P</font>roposal
-  
-          for
-  
-          a
-  
-          <font class="first">M</font>achine-Checked
-  
-          <font class="first">F</font>ormal
-  
-          <font class="first">S</font>emantics
-  
-          for
-  
-          <font class="first">O</font>CL
-  
-          <font class="first">2</font>.5
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>F</span>eatherweight <span class='first'>O</span><span class='first'>C</span><span class='first'>L</span>: <span class='first'>A</span> <span class='first'>P</span>roposal for a <span class='first'>M</span>achine-<span class='first'>C</span>hecked <span class='first'>F</span>ormal <span class='first'>S</span>emantics for <span class='first'>O</span><span class='first'>C</span><span class='first'>L</span> 2.5</h1>
+  <div>
+    
+    <p><a href="../authors/brucker">Achim D. Brucker</a> <a href="mailto:brucker@spamfence.net">📧</a>, <a href="../authors/tuong">Frédéric Tuong</a> <a href="mailto:tuong@users.gforge.inria.fr">📧</a> and <a href="../authors/wolff">Burkhart Wolff</a> <a href="mailto:burkhart.wolff@lri.fr">📧</a>
+    </p>
+    
+    
+    <p class="date">January 16, 2014</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                      <a href="https://www.brucker.ch">Achim D. Brucker</a>,
-                <a href="https://www.lri.fr/~ftuong/">Frédéric Tuong</a> and
-          <a href="https://www.lri.fr/~wolff/">Burkhart Wolff</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2014-01-16</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">The Unified Modeling Language (UML) is one of the few
+  <div class="abstract mathjax_process">The Unified Modeling Language (UML) is one of the few
 modeling languages that is widely used in industry. While
 UML is mostly known as diagrammatic modeling language
 (e.g., visualizing class models), it is complemented by a
@@ -148,136 +117,78 @@ reveals several inconsistencies and contradictions in the
 current version of the OCL standard. Overall, this document
 is intended to provide the basis for a machine-checked text
 "Annex A" of the OCL standard targeting at tool
-implementors.</td>
-</tr>
+implementors.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/system-description-languages">Computer science/System description languages</a></li></ul>
+  <h3>Theories of Featherweight_OCL</h3>
+  <ul>
+    <li><a href="../theories/featherweight_ocl/#UML_Types">UML_Types</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Logic">UML_Logic</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_PropertyProfiles">UML_PropertyProfiles</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Boolean">UML_Boolean</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Void">UML_Void</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Integer">UML_Integer</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Real">UML_Real</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_String">UML_String</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Pair">UML_Pair</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Bag">UML_Bag</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Set">UML_Set</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Sequence">UML_Sequence</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Library">UML_Library</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_State">UML_State</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Contracts">UML_Contracts</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Tools">UML_Tools</a></li>
+    <li><a href="../theories/featherweight_ocl/#UML_Main">UML_Main</a></li>
+    <li><a href="../theories/featherweight_ocl/#Analysis_UML">Analysis_UML</a></li>
+    <li><a href="../theories/featherweight_ocl/#Analysis_OCL">Analysis_OCL</a></li>
+    <li><a href="../theories/featherweight_ocl/#Design_UML">Design_UML</a></li>
+    <li><a href="../theories/featherweight_ocl/#Design_OCL">Design_OCL</a></li></ul><div class="flex-wrap">
+  
+  </div>
+</main>
 
-  <tr>
-    <td class="datahead" valign="top">Change history:</td>
-    <td class="abstract">[2015-10-13]:
-<a href="https://foss.heptapod.net/isa-afp/afp-devel/-/commit/e68e1996d5d4926397c9244e786446e99ab17e63">afp-devel@ea3b38fc54d6</a> and
-<a href="https://projects.brucker.ch/hol-testgen/log/trunk?rev=12148">hol-testgen@12148</a><br>
-&nbsp;&nbsp;&nbsp;Update of Featherweight OCL including a change in the abstract.<br>
-[2014-01-16]:
-<a href="https://foss.heptapod.net/isa-afp/afp-devel/-/commit/6217cc5b29c560f24ecc64c81047778becb69f51">afp-devel@9091ce05cb20</a> and
-<a href="https://projects.brucker.ch/hol-testgen/log/trunk?rev=10241">hol-testgen@10241</a><br>
-&nbsp;&nbsp;&nbsp;New Entry: Featherweight OCL</td>
-  </tr>
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Featherweight_OCL/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Featherweight_OCL/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Featherweight_OCL/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Featherweight_OCL-AFP,
-  author  = {Achim D. Brucker and Frédéric Tuong and Burkhart Wolff},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Featherweight_OCL-AFP</p>
+      <pre id="copyText">@article{Featherweight_OCL-AFP,
+  author  = {brucker, tuong and wolff},
   title   = {Featherweight OCL: A Proposal for a Machine-Checked Formal Semantics for OCL 2.5},
   journal = {Archive of Formal Proofs},
-  month   = jan,
+  month   = January,
   year    = 2014,
   note    = {\url{https://isa-afp.org/entries/Featherweight_OCL.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                    
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Featherweight_OCL/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Featherweight_OCL/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Featherweight_OCL/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Featherweight_OCL-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Featherweight_OCL-2021-02-23.tar.gz">
-              afp-Featherweight_OCL-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Featherweight_OCL-2020-04-18.tar.gz">
-              afp-Featherweight_OCL-2020-04-18.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2019:
-            <a href="../release/afp-Featherweight_OCL-2019-06-11.tar.gz">
-              afp-Featherweight_OCL-2019-06-11.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2018:
-            <a href="../release/afp-Featherweight_OCL-2018-08-16.tar.gz">
-              afp-Featherweight_OCL-2018-08-16.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2017:
-            <a href="../release/afp-Featherweight_OCL-2017-10-10.tar.gz">
-              afp-Featherweight_OCL-2017-10-10.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016-1:
-            <a href="../release/afp-Featherweight_OCL-2016-12-17.tar.gz">
-              afp-Featherweight_OCL-2016-12-17.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2016:
-            <a href="../release/afp-Featherweight_OCL-2016-02-22.tar.gz">
-              afp-Featherweight_OCL-2016-02-22.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2015:
-            <a href="../release/afp-Featherweight_OCL-2015-05-27.tar.gz">
-              afp-Featherweight_OCL-2015-05-27.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2014:
-            <a href="../release/afp-Featherweight_OCL-2014-08-28.tar.gz">
-              afp-Featherweight_OCL-2014-08-28.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2013-2:
-            <a href="../release/afp-Featherweight_OCL-2014-01-16.tar.gz">
-              afp-Featherweight_OCL-2014-01-16.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Featherweight_OCL-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

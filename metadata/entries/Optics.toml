@@ -1,0 +1,38 @@
+title = "Optics"
+date = 2017-05-25
+topics = [
+  "Computer science/Functional programming",
+  "Mathematics/Algebra",
+]
+abstract = """
+Lenses provide an abstract interface for manipulating data types
+through spatially-separated views. They are defined abstractly in
+terms of two functions, <em>get</em>, the return a value
+from the source type, and <em>put</em> that updates the
+value. We mechanise the underlying theory of lenses, in terms of an
+algebraic hierarchy of lenses, including well-behaved and very
+well-behaved lenses, each lens class being characterised by a set of
+lens laws. We also mechanise a lens algebra in Isabelle that enables
+their composition and comparison, so as to allow construction of
+complex lenses. This is accompanied by a large library of algebraic
+laws. Moreover we also show how the lens classes can be applied by
+instantiating them with a number of Isabelle data types."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.fosters]
+email = "fosters_email"
+
+[authors.zeyda]
+email = "zeyda_email"
+
+[contributors]
+
+[notify]
+fosters = "fosters_email"
+
+[history]
+
+[extra]

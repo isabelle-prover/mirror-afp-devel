@@ -1,0 +1,25 @@
+title = "Quantales"
+date = 2018-12-11
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+These mathematical components formalise basic properties of quantales,
+together with some important models, constructions, and concepts,
+including quantic nuclei and conuclei."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.struth]
+homepage = "struth_homepage"
+
+[contributors]
+
+[notify]
+struth = "struth_email"
+
+[history]
+
+[extra]

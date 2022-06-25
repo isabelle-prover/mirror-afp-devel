@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HereditarilyFinite on Archive of Formal Proofs</title>
+    <link>/dependencies/hereditarilyfinite/</link>
+    <description>Recent content in HereditarilyFinite on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Wed, 16 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/hereditarilyfinite/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part II</title>
+      <link>/entries/Goedel_HFSet_Semanticless.html</link>
+      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Goedel_HFSet_Semanticless.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Category Theory with Adjunctions and Limits</title>
+      <link>/entries/Category3.html</link>
+      <pubDate>Sun, 26 Jun 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Category3.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Finite Automata in Hereditarily Finite Set Theory</title>
+      <link>/entries/Finite_Automata_HF.html</link>
+      <pubDate>Thu, 05 Feb 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Finite_Automata_HF.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gödel&#39;s Incompleteness Theorems</title>
+      <link>/entries/Incompleteness.html</link>
+      <pubDate>Sun, 17 Nov 2013 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Incompleteness.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

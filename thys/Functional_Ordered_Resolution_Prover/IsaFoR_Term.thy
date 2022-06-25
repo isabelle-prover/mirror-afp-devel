@@ -138,6 +138,69 @@ lemma same_on_vars_clause:
   by (smt assms image_eqI image_mset_cong2 mem_simps(9) same_on_vars_lit set_image_mset
       subst_cls_def vars_clause_def)
 
+interpretation substitution "(\<cdot>)" "Var :: _ \<Rightarrow> ('f, nat) term" "(\<circ>\<^sub>s)"
+proof unfold_locales
+  show "\<And>A. A \<cdot> Var = A"
+    by auto
+next
+  show "\<And>A \<tau> \<sigma>. A \<cdot> \<tau> \<circ>\<^sub>s \<sigma> = A \<cdot> \<tau> \<cdot> \<sigma>"
+    by auto
+next
+  show "\<And>\<sigma> \<tau>. (\<And>A. A \<cdot> \<sigma> = A \<cdot> \<tau>) \<Longrightarrow> \<sigma> = \<tau>"
+    by (simp add: subst_term_eqI)
+next
+  fix C :: "('f, nat) term clause"
+  fix \<sigma>
+  assume "is_ground_cls (subst_cls C \<sigma>)"
+  then have ground_atms_\<sigma>: "\<And>v. v \<in> vars_clause C \<Longrightarrow> is_ground_atm (\<sigma> v)"
+    by (meson is_ground_cls_is_ground_on_var)
+
+  define some_ground_trm :: "('f, nat) term" where "some_ground_trm = (Fun undefined [])"
+  have ground_trm: "is_ground_atm some_ground_trm"
+    unfolding is_ground_atm_def some_ground_trm_def by auto
+  define \<tau> where "\<tau> = (\<lambda>v. if v \<in> vars_clause C then \<sigma> v else some_ground_trm)"
+  then have \<tau>_\<sigma>: "\<forall>v \<in> vars_clause C. \<sigma> v = \<tau> v"
+    unfolding \<tau>_def by auto
+
+  have all_ground_\<tau>: "is_ground_atm (\<tau> v)" for v
+  proof (cases "v \<in> vars_clause C")
+    case True
+    then show ?thesis
+      using ground_atms_\<sigma> \<tau>_\<sigma> by auto
+  next
+    case False
+    then show ?thesis
+      unfolding \<tau>_def using ground_trm by auto
+  qed
+  have "is_ground_subst \<tau>"
+    unfolding is_ground_subst_def
+  proof
+    fix A
+    show "is_ground_atm (subst_atm_abbrev A \<tau>)"
+    proof (induction A)
+      case (Var v)
+      then show ?case using all_ground_\<tau> by auto
+    next
+      case (Fun f As)
+      then show ?case using all_ground_\<tau>
+        by (simp add: is_ground_atm_def)
+    qed
+  qed
+  moreover have "\<forall>v \<in> vars_clause C. \<sigma> v = \<tau> v"
+    using \<tau>_\<sigma> unfolding vars_clause_list_def
+    by blast
+  then have "subst_cls C \<sigma> = subst_cls C \<tau>"
+    using same_on_vars_clause by auto
+  ultimately show "\<exists>\<tau>. is_ground_subst \<tau> \<and> subst_cls C \<tau> = subst_cls C \<sigma>"
+    by auto
+next
+  show "wfP (strictly_generalizes_atm :: ('f, 'v) term \<Rightarrow> _ \<Rightarrow> _)"
+    unfolding wfP_def
+    by (rule wf_subset[OF wf_subsumes])
+      (auto simp: strictly_generalizes_atm_def generalizes_atm_def term_subsumable.subsumes_def
+        subsumeseq_term.simps)
+qed
+
 lemma vars_partitioned_var_disjoint:
   assumes "vars_partitioned Cs"
   shows "var_disjoint Cs"
@@ -355,62 +418,8 @@ proof (induction Cs)
         length_nth_simps(2) length_zip min.idem nat.inject not_less_eq subst_cls_lists_def)
 qed auto
 
-interpretation substitution "(\<cdot>)" "Var :: _ \<Rightarrow> ('f, nat) term" "(\<circ>\<^sub>s)" renamings_apart "Fun undefined"
-proof (standard)
-  show "\<And>A. A \<cdot> Var = A"
-    by auto
-next
-  show "\<And>A \<tau> \<sigma>. A \<cdot> \<tau> \<circ>\<^sub>s \<sigma> = A \<cdot> \<tau> \<cdot> \<sigma>"
-    by auto
-next
-  show "\<And>\<sigma> \<tau>. (\<And>A. A \<cdot> \<sigma> = A \<cdot> \<tau>) \<Longrightarrow> \<sigma> = \<tau>"
-    by (simp add: subst_term_eqI)
-next
-  fix C :: "('f, nat) term clause"
-  fix \<sigma>
-  assume "is_ground_cls (subst_cls C \<sigma>)"
-  then have ground_atms_\<sigma>: "\<And>v. v \<in> vars_clause C \<Longrightarrow> is_ground_atm (\<sigma> v)"
-    by (meson is_ground_cls_is_ground_on_var)
-
-  define some_ground_trm :: "('f, nat) term" where "some_ground_trm = (Fun undefined [])"
-  have ground_trm: "is_ground_atm some_ground_trm"
-    unfolding is_ground_atm_def some_ground_trm_def by auto
-  define \<tau> where "\<tau> = (\<lambda>v. if v \<in> vars_clause C then \<sigma> v else some_ground_trm)"
-  then have \<tau>_\<sigma>: "\<forall>v \<in> vars_clause C. \<sigma> v = \<tau> v"
-    unfolding \<tau>_def by auto
-
-  have all_ground_\<tau>: "is_ground_atm (\<tau> v)" for v
-  proof (cases "v \<in> vars_clause C")
-    case True
-    then show ?thesis
-      using ground_atms_\<sigma> \<tau>_\<sigma> by auto
-  next
-    case False
-    then show ?thesis
-      unfolding \<tau>_def using ground_trm by auto
-  qed
-  have "is_ground_subst \<tau>"
-    unfolding is_ground_subst_def
-  proof
-    fix A
-    show "is_ground_atm (subst_atm_abbrev A \<tau>)"
-    proof (induction A)
-      case (Var v)
-      then show ?case using all_ground_\<tau> by auto
-    next
-      case (Fun f As)
-      then show ?case using all_ground_\<tau>
-        by (simp add: is_ground_atm_def)
-    qed
-  qed
-  moreover have "\<forall>v \<in> vars_clause C. \<sigma> v = \<tau> v"
-    using \<tau>_\<sigma> unfolding vars_clause_list_def
-    by blast
-  then have "subst_cls C \<sigma> = subst_cls C \<tau>"
-    using same_on_vars_clause by auto
-  ultimately show "\<exists>\<tau>. is_ground_subst \<tau> \<and> subst_cls C \<tau> = subst_cls C \<sigma>"
-    by auto
-next
+interpretation substitution_renamings "(\<cdot>)" "Var :: _ \<Rightarrow> ('f, nat) term" "(\<circ>\<^sub>s)" renamings_apart "Fun undefined"
+proof unfold_locales
   fix Cs :: "('f, nat) term clause list"
   show "length (renamings_apart Cs) = length Cs"
     using len_renamings_apart by auto
@@ -460,12 +469,6 @@ next
 next
   show "\<And>\<sigma> As Bs. Fun undefined As \<cdot> \<sigma> = Fun undefined Bs \<longleftrightarrow> map (\<lambda>A. A \<cdot> \<sigma>) As = Bs"
     by simp
-next
-  show "wfP (strictly_generalizes_atm :: ('f, 'v) term \<Rightarrow> _ \<Rightarrow> _)"
-    unfolding wfP_def
-    by (rule wf_subset[OF wf_subsumes])
-      (auto simp: strictly_generalizes_atm_def generalizes_atm_def term_subsumable.subsumes_def
-        subsumeseq_term.simps)
 qed
 
 fun pairs :: "'a list \<Rightarrow> ('a \<times> 'a) list" where
@@ -611,15 +614,25 @@ end
 
 definition "mgu_sets AAA = map_option subst_of (unify (Pairs AAA) [])"
 
-interpretation mgu "(\<cdot>)" "Var :: _ \<Rightarrow> ('f :: compare, nat) term" "(\<circ>\<^sub>s)" "Fun undefined"
-  renamings_apart mgu_sets
-proof
+lemma mgu_sets_is_imgu:
+  fixes AAA :: "('a :: compare, nat) term set set" and \<sigma> :: "('a, nat) subst"
+  assumes fin: "finite AAA" "\<forall>AA \<in> AAA. finite AA" and "mgu_sets AAA = Some \<sigma>"
+  shows "is_imgu \<sigma> AAA"
+proof -
+  have "Unifiers.is_imgu \<sigma> (set (Pairs AAA))"
+    using assms unify_sound unfolding mgu_sets_def by blast
+  thus ?thesis
+    unfolding Unifiers.is_imgu_def is_imgu_def unifiers_Pairs[OF fin]
+    by simp
+qed
+
+interpretation mgu "(\<cdot>)" "Var :: _ \<Rightarrow> ('f :: compare, nat) term" "(\<circ>\<^sub>s)" renamings_apart
+  "Fun undefined" mgu_sets
+proof unfold_locales
   fix AAA :: "('a :: compare, nat) term set set" and \<sigma> :: "('a, nat) subst"
   assume fin: "finite AAA" "\<forall>AA \<in> AAA. finite AA" and "mgu_sets AAA = Some \<sigma>"
-  then have "is_imgu \<sigma> (set (Pairs AAA))"
-    using unify_sound unfolding mgu_sets_def by blast
-  then show "is_mgu \<sigma> AAA"
-    unfolding is_imgu_def is_mgu_def unifiers_Pairs[OF fin] by auto
+  thus "is_mgu \<sigma> AAA"
+    using mgu_sets_is_imgu by auto
 next
   fix AAA :: "('a :: compare, nat) term set set" and \<sigma> :: "('a, nat) subst"
   assume fin: "finite AAA" "\<forall>AA \<in> AAA. finite AA" and "is_unifiers \<sigma> AAA"
@@ -627,6 +640,15 @@ next
     unfolding is_mgu_def unifiers_Pairs[OF fin] by auto
   then show "\<exists>\<tau>. mgu_sets AAA = Some \<tau>"
     using unify_complete unfolding mgu_sets_def by blast
+qed
+
+interpretation imgu "(\<cdot>)" "Var :: _ \<Rightarrow> ('f :: compare, nat) term" "(\<circ>\<^sub>s)" renamings_apart
+  "Fun undefined" mgu_sets
+proof unfold_locales
+  fix AAA :: "('a :: compare, nat) term set set" and \<sigma> :: "('a, nat) subst"
+  assume fin: "finite AAA" "\<forall>AA \<in> AAA. finite AA" and "mgu_sets AAA = Some \<sigma>"
+  thus "is_imgu \<sigma> AAA"
+    by (rule mgu_sets_is_imgu)
 qed
 
 derive linorder prod

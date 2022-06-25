@@ -1,0 +1,31 @@
+title = "Furstenberg's topology and his proof of the infinitude of primes"
+date = 2020-03-22
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This article gives a formal version of Furstenberg's
+topological proof of the infinitude of primes. He defines a topology
+on the integers based on arithmetic progressions (or, equivalently,
+residue classes). Using some fairly obvious properties of this
+topology, the infinitude of primes is then easily obtained.</p>
+<p>Apart from this, this topology is also fairly ‘nice’ in
+general: it is second countable, metrizable, and perfect. All of these
+(well-known) facts are formally proven, including an explicit metric
+for the topology given by Zulfeqarr.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email1"
+
+[history]
+
+[extra]

@@ -1802,7 +1802,7 @@ text "Approximation of the Term for Free exchanges"
             apply(simp)
             apply(simp)
             apply(simp only: card_image index_inj_on_S cardS ) apply(simp add: k'inbound2 del: k'_def)
-            using indexnotin apply(simp add: )
+            using indexnotin apply simp
             apply(simp)
             using Ssubso queryinlist apply(simp)
             apply(simp only: card_image[OF index_inj_on_S]) by simp 

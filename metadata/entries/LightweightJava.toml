@@ -1,0 +1,25 @@
+title = "Lightweight Java"
+date = 2011-02-07
+topics = [
+  "Computer science/Programming languages/Language definitions",
+]
+abstract = "A fully-formalized and extensible minimal imperative fragment of Java."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.strnisa]
+homepage = "strnisa_homepage"
+
+[authors.parkinson]
+homepage = "parkinson_homepage"
+
+[contributors]
+
+[notify]
+strnisa = "strnisa_email"
+
+[history]
+
+[extra]

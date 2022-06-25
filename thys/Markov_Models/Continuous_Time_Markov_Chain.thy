@@ -1349,7 +1349,7 @@ lemma wf_times_shiftD: "wf_times t' (smap (\<lambda>(t', y). (t' + t, y)) \<omeg
   apply (coinduction arbitrary: t' t \<omega>)
   subgoal for t' t \<omega>
     apply (cases \<omega>; cases "shd \<omega>")
-    apply (auto simp: )
+    apply auto
     subgoal for \<omega>' j x
       by (rule exI[of _ "j + t"]) auto
     done

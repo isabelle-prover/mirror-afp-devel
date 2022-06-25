@@ -1,0 +1,34 @@
+title = "Banach-Steinhaus Theorem"
+date = 2020-05-02
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+We formalize in Isabelle/HOL a result
+due to S. Banach and H. Steinhaus known as
+the Banach-Steinhaus theorem or Uniform boundedness principle: a
+pointwise-bounded family of continuous linear operators from a Banach
+space to a normed space is uniformly bounded. Our approach is an
+adaptation to Isabelle/HOL of a proof due to A. Sokal."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.unruh]
+homepage = "unruh_homepage"
+email = "unruh_email"
+
+[authors.caballero]
+homepage = "caballero_homepage"
+email = "caballero_email"
+
+[contributors]
+
+[notify]
+caballero = "caballero_email"
+unruh = "unruh_email"
+
+[history]
+
+[extra]

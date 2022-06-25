@@ -1,0 +1,40 @@
+title = "A Theory of Architectural Design Patterns"
+date = 2018-03-01
+topics = [
+  "Computer science/System description languages",
+]
+abstract = """
+The following document formalizes and verifies several architectural
+design patterns. Each pattern specification is formalized in terms of
+a locale where the locale assumptions correspond to the assumptions
+which a pattern poses on an architecture. Thus, pattern specifications
+may build on top of each other by interpreting the corresponding
+locale. A pattern is verified using the framework provided by the AFP
+entry Dynamic Architectures. Currently, the document consists of
+formalizations of 4 different patterns: the singleton, the publisher
+subscriber, the blackboard pattern, and the blockchain pattern.
+Thereby, the publisher component of the publisher subscriber pattern
+is modeled as an instance of the singleton pattern and the blackboard
+pattern is modeled as an instance of the publisher subscriber pattern.
+In general, this entry provides the first steps towards an overall
+theory of architectural design patterns."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.marmsoler]
+homepage = "marmsoler_homepage"
+
+[contributors]
+
+[notify]
+marmsoler = "marmsoler_email"
+
+[history]
+2018-05-25 = """
+changing the major assumption for blockchain architectures from alternative minings to relative mining frequencies (revision 5043c5c71685)<br>
+"""
+2019-04-08 = "adapting the terminology: honest instead of trusted, dishonest instead of untrusted (revision 7af3431a22ae)"
+
+[extra]

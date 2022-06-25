@@ -1,0 +1,52 @@
+title = "Kleene Algebra"
+date = 2013-01-15
+topics = [
+  "Computer science/Programming languages/Logics",
+  "Computer science/Automata and formal languages",
+  "Mathematics/Algebra",
+]
+abstract = """
+These files contain a formalisation of variants of Kleene algebras and
+their most important models as axiomatic type classes in Isabelle/HOL.
+Kleene algebras are foundational structures in computing with
+applications ranging from automata and language theory to computational
+modeling, program construction and verification.
+<p>
+We start with formalising dioids, which are additively idempotent
+semirings, and expand them by axiomatisations of the Kleene star for
+finite iteration and an omega operation for infinite iteration. We
+show that powersets over a given monoid, (regular) languages, sets of
+paths in a graph, sets of computation traces, binary relations and
+formal power series form Kleene algebras, and consider further models
+based on lattices, max-plus semirings and min-plus semirings. We also
+demonstrate that dioids are closed under the formation of matrices
+(proofs for Kleene algebras remain to be completed).
+<p>
+On the one hand we have aimed at a reference formalisation of variants
+of Kleene algebras that covers a wide range of variants and the core
+theorems in a structured and modular way and provides readable proofs
+at text book level. On the other hand, we intend to use this algebraic
+hierarchy and its models as a generic algebraic middle-layer from which
+programming applications can quickly be explored, implemented and verified."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.armstrong]
+
+[authors.struth]
+homepage = "struth_homepage"
+
+[authors.weber]
+homepage = "weber_homepage"
+
+[contributors]
+
+[notify]
+struth = "struth_email"
+weber = "weber_email"
+
+[history]
+
+[extra]

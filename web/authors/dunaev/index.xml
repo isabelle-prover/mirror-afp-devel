@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>dunaev on Archive of Formal Proofs</title>
+    <link>/authors/dunaev/</link>
+    <description>Recent content in dunaev on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Mon, 11 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="/authors/dunaev/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Recursion Theorem in ZF</title>
+      <link>/entries/Recursion-Addition.html</link>
+      <pubDate>Mon, 11 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Recursion-Addition.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

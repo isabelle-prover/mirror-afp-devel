@@ -1659,7 +1659,7 @@ proof
   qed
   thus "g = (\<lambda>_. 0)" by(simp add: fun_eq_iff)
 next
-  have 0: "current ?\<Gamma> zero_current" by(simp add: )
+  have 0: "current ?\<Gamma> zero_current" by simp
   show "\<not> hindrance ?\<Gamma> zero_current"
   proof
     assume "hindrance ?\<Gamma> zero_current"

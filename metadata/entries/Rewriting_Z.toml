@@ -1,0 +1,35 @@
+title = "The Z Property"
+date = 2016-06-30
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+We formalize the Z property introduced by Dehornoy and van Oostrom.
+First we show that for any abstract rewrite system, Z implies
+confluence. Then we give two examples of proofs using Z: confluence of
+lambda-calculus with respect to beta-reduction and confluence of
+combinatory logic."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.felgenhauer]
+
+[authors.nagele]
+
+[authors.oostrom]
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[contributors]
+
+[notify]
+felgenhauer = "felgenhauer_email"
+nagele = "nagele_email"
+sternagel = "sternagel_email"
+
+[history]
+
+[extra]

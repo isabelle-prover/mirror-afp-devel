@@ -1,0 +1,23 @@
+chapter AFP
+
+session "Transitive_Models" (AFP) =  "Delta_System_Lemma" +
+  description "
+    Transitive Models of Fragments of ZFC
+
+    We extend the ZF-Constructibility library by relativizing theories
+    of the Isabelle/ZF and Delta System Lemma sessions to a transitive
+    class. We also relativize Paulson's work on Aleph and our former
+    treatment of the Axiom of Dependent Choices. This work is a
+    prerrequisite to our formalization of the independence of the
+    Continuum Hypothesis.
+  "
+  options [timeout=300]
+ theories
+    "Renaming_Auto"
+    "Delta_System_Relative"
+    "Pointed_DC_Relative"
+    "Partial_Functions_Relative"
+  document_files
+    "root.tex"
+    "root.bib"
+    "root.bst"

@@ -1,0 +1,42 @@
+title = "HOL-CSP Version 2.0"
+date = 2019-04-26
+topics = [
+  "Computer science/Concurrency/Process calculi",
+  "Computer science/Semantics",
+]
+abstract = """
+This is a complete formalization of the work of Hoare and Roscoe on
+the denotational semantics of the Failure/Divergence Model of CSP. It
+follows essentially the presentation of CSP in Roscoe’s Book ”Theory
+and Practice of Concurrency” [8] and the semantic details in a joint
+Paper of Roscoe and Brooks ”An improved failures model for
+communicating processes\".  The present work is based on a prior
+formalization attempt, called HOL-CSP 1.0, done in 1997 by H. Tej and
+B. Wolff with the Isabelle proof technology available at that time.
+This work revealed minor, but omnipresent foundational errors in key
+concepts like the process invariant. The present version HOL-CSP
+profits from substantially improved libraries (notably HOLCF),
+improved automated proof techniques, and structured proof techniques
+in Isar and is substantially shorter but more complete."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.taha]
+email = "taha_email"
+
+[authors.ye]
+email = "ye_email"
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+wolff = "wolff_email"
+
+[history]
+
+[extra]

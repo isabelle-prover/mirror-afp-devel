@@ -1,0 +1,41 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Irrational numbers from THE BOOK}
+\author{Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+An elementary proof is formalised: that $\exp r$ is irrational for every nonzero rational number~$r$. The mathematical development comes from the well-known volume \emph{Proofs from THE BOOK}~\cite[pp.\thinspace51--2]{aigner-proofs}, by Aigner and Ziegler, who credit the idea to Hermite. The development illustrates a number of basic Isabelle techniques: the manipulation of summations, the calculation of quite complicated derivatives and the estimation of integrals.
+We also see how to import another AFP entry (Stirling's formula)~\cite{Stirling_Formula-AFP}.
+
+As for the theorem itself, note that a much stronger and more general result (the Hermite--Lindemann--Weierstra\ss{} transcendence theorem) is already available in the AFP~\cite{Hermite_Lindemann-AFP}.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Acknowledgements}
+The author was supported by the ERC Advanced Grant ALEXANDRIA (Project 742178) funded by the European Research Council. 
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

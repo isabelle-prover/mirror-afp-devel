@@ -1,0 +1,31 @@
+title = "A Formalization of Knuth–Bendix Orders"
+date = 2020-05-13
+topics = [
+  "Logic/Rewriting",
+]
+abstract = """
+We define a generalized version of Knuth&ndash;Bendix orders,
+including subterm coefficient functions. For these orders we formalize
+several properties such as strong normalization, the subterm property,
+closure properties under substitutions and contexts, as well as ground
+totality."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sternagel]
+email = "sternagel_email"
+
+[authors.thiemann]
+homepage = "thiemann_homepage"
+
+[contributors]
+
+[notify]
+sternagel = "sternagel_email"
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

@@ -342,7 +342,7 @@ proof -
     using assms
     by (intro fundamental_theorem_of_calculus)
        (auto intro!: derivative_eq_intros 
-             simp: has_field_derivative_iff_has_vector_derivative [symmetric])
+             simp: has_real_derivative_iff_has_vector_derivative [symmetric])
   thus ?thesis by (simp add: field_simps)
 qed
 

@@ -1,0 +1,45 @@
+title = "Separata: Isabelle tactics for Separation Algebra"
+date = 2016-11-16
+topics = [
+  "Computer science/Programming languages/Logics",
+  "Tools",
+]
+abstract = """
+We bring the labelled sequent calculus $LS_{PASL}$ for propositional
+abstract separation logic to Isabelle. The tactics given here are
+directly applied on an extension of the Separation Algebra in the AFP.
+In addition to the cancellative separation algebra, we further
+consider some useful properties in the heap model of separation logic,
+such as indivisible unit, disjointness, and cross-split. The tactics
+are essentially a proof search procedure for the calculus $LS_{PASL}$.
+We wrap the tactics in an Isabelle method called separata, and give a
+few examples of separation logic formulae which are provable by
+separata."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hou]
+email = "hou_email"
+
+[authors.sanan]
+email = "sanan_email"
+
+[authors.tiu]
+email = "tiu_email"
+
+[authors.gore]
+email = "gore_email"
+
+[authors.clouston]
+email = "clouston_email"
+
+[contributors]
+
+[notify]
+hou = "hou_email"
+
+[history]
+
+[extra]

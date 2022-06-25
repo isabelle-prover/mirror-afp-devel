@@ -532,7 +532,7 @@ lemma push_forward_id:
   apply (rule extensional0_restrict0)
    apply (rule tangent_space_restrict)
    apply (rule that)
-  apply (auto simp: )
+  apply auto
   apply (rule arg_cong[where f=X])
   apply (rule ext_extensional0)
     apply (rule extensional0_restrict0)
@@ -669,7 +669,7 @@ lemma dim_tangent_space_src_dest_eq2: "dim (src.tangent_space p) = dim (dest.tan
   if p: "p \<in> src.carrier" and "dim (src.tangent_space p) > 0"
 proof -
   interpret rev: diffeomorphism k charts2 charts1 f' f
-    by unfold_locales (auto simp: )
+    by unfold_locales auto
   from that rev.dim_tangent_space_src_dest_eq[of "f p"]
   show ?thesis
     by auto (metis contra_subsetD defined image_eqI)
@@ -1398,7 +1398,7 @@ proof -
       apply (rule b.dim_tangent_space2[of "c p"])
       subgoal
         using \<open>p \<in> domain c\<close> that
-        by (auto simp: )
+        by auto
       subgoal unfolding *[symmetric] by simp
       done
     finally show ?thesis .

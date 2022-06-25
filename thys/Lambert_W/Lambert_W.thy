@@ -912,7 +912,7 @@ proof -
     have "continuous_on {-exp(-1)<..<b * exp b} Lambert_W"
       by (rule continuous_on_subset[OF *[of b]]) (use \<open>b \<ge> 0\<close> in auto)
     moreover have "x \<in> {-exp(-1)<..<b * exp b}"
-      using \<open>b * exp b > x\<close> x by (auto simp: )
+      using \<open>b * exp b > x\<close> x by auto
     ultimately show "continuous (at x) Lambert_W"
       by (subst (asm) continuous_on_eq_continuous_at) auto
   qed

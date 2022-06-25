@@ -1,0 +1,35 @@
+title = "Factorization of Polynomials with Algebraic Coefficients"
+date = 2021-11-08
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+The AFP already contains a verified implementation of algebraic
+numbers. However, it is has a severe limitation in its factorization
+algorithm of real and complex polynomials: the factorization is only
+guaranteed to succeed if the coefficients of the polynomial are
+rational numbers. In this work, we verify an algorithm to factor all
+real and complex polynomials whose coefficients are algebraic. The
+existence of such an algorithm proves in a constructive way that the
+set of complex algebraic numbers is algebraically closed. Internally,
+the algorithm is based on resultants of multivariate polynomials and
+an approximation algorithm using interval arithmetic."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[authors.thiemann]
+email = "thiemann_email"
+
+[contributors]
+
+[notify]
+thiemann = "thiemann_email"
+
+[history]
+
+[extra]

@@ -1,126 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I - Archive of Formal Proofs
-</title>
-<link rel="stylesheet" type="text/css" href="../front.css">
-<link rel="icon" href="../images/favicon.ico" type="image/icon">
-<link rel="alternate" type="application/rss+xml" title="RSS" href="../rss.xml">
-<!-- MathJax for LaTeX support in abstracts -->
-<script>
-MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  processEscapes: true,
-  svg: {
-    fontCache: 'global'
-  }
-};
-</script>
-<script id="MathJax-script" async src="../components/mathjax/es5/tex-mml-chtml.js"></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>From Abstract to Concrete G&ouml;del&#39;s Incompleteness Theorems&mdash;Part I - Archive of Formal Proofs</title><meta name="description" content="We validate an abstract formulation of G&amp;ouml;del&#39;s First and Second Incompleteness Theorems from a separate AFP entry by instantiating them to the case of..."><meta property="og:title" content="From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Goedel_HFSet_Semantic.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2020-09-16T00:00:00+00:00" />
+<meta property="article:modified_time" content="2020-09-16T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="From Abstract to Concrete G&amp;ouml;del&#39;s Incompleteness Theorems&amp;mdash;Part I"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
 </head>
 
-<body class="mathjax_ignore">
 
-<table width="100%">
-<tbody>
-<tr>
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
 
-<!-- Navigation -->
-<td width="20%" align="center" valign="top">
-  <p>&nbsp;</p>
-  <a href="https://www.isa-afp.org/">
-    <img src="../images/isabelle.png" width="100" height="88" border=0>
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
   </a>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  <table class="nav" width="80%">
-    <tr>
-      <td class="nav" width="100%"><a href="../index.html">Home</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../about.html">About</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../submitting.html">Submission</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../updating.html">Updating Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../using.html">Using Entries</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../search.html">Search</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../statistics.html">Statistics</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../topics.html">Index</a></td>
-    </tr>
-    <tr>
-      <td class="nav"><a href="../download.html">Download</a></td>
-    </tr>
-  </table>
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-</td>
 
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <li ><a href="../">Home</a></li>
+        <li ><a href="../topics/">Topics</a></li>
+        <li ><a href="../download/">Download</a></li>
+        <li ><a href="../help/">Help</a></li>
+        <li ><a href="../submission/">Submission</a></li>
+        <li ><a href="../statistics/">Statistics</a></li>
+        <li ><a href="../about/">About</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
 
-<!-- Content -->
-<td width="80%" valign="top">
-<div align="center">
-  <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>rom
-  
-          <font class="first">A</font>bstract
-  
-          to
-  
-          <font class="first">C</font>oncrete
-  
-          <font class="first">G</font>&ouml;del's
-  
-          <font class="first">I</font>ncompleteness
-  
-          <font class="first">T</font>heorems&mdash;Part
-  
-          <font class="first">I</font>
-  
-</h1>
-  <p>&nbsp;</p>
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>F</span>rom <span class='first'>A</span>bstract to <span class='first'>C</span>oncrete <span class='first'>G</span>&ouml;del's <span class='first'>I</span>ncompleteness <span class='first'>T</span>heorems&mdash;<span class='first'>P</span>art <span class='first'>I</span></h1>
+  <div>
+    
+    <p><a href="../authors/popescu">Andrei Popescu</a> <a href="https://www.andreipopescu.uk">🌐</a> and <a href="../authors/traytel">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
+    </p>
+    
+    
+    <p class="date">September 16, 2020</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
 
-<table width="80%" class="data">
-<tbody>
-<tr>
-  <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I</td>
-</tr>
-
-<tr>
-  <td class="datahead">
-          Authors:
-      </td>
-  <td class="data">
-                    <a href="https://www.andreipopescu.uk">Andrei Popescu</a> and
-          <a href="https://traytel.bitbucket.io/">Dmitriy Traytel</a>
-      </td>
-</tr>
-
-
-
-<tr>
-  <td class="datahead">Submission date:</td>
-  <td class="data">2020-09-16</td>
-</tr>
-
-<tr>
-  <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract mathjax_process">
-We validate an abstract formulation of G&ouml;del's First and
+  <div class="abstract mathjax_process">We validate an abstract formulation of G&ouml;del's First and
 Second Incompleteness Theorems from a <a
 href="https://www.isa-afp.org/entries/Goedel_Incompleteness.html">separate
 AFP entry</a> by instantiating them to the case of
@@ -130,87 +105,74 @@ a finite set of axioms that are sound in the standard model. The
 concrete results had been previously formalised in an <a
 href="https://www.isa-afp.org/entries/Incompleteness.html">AFP
 entry by Larry Paulson</a>; our instantiation reuses the
-infrastructure developed in that entry.</td>
-</tr>
+infrastructure developed in that entry.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/logic/proof-theory">Logic/Proof theory</a></li></ul>
+  <h3>Theories of Goedel_HFSet_Semantic</h3>
+  <ul>
+    <li><a href="../theories/goedel_hfset_semantic/#Instance">Instance</a></li></ul><div class="flex-wrap"><div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Goedel_Incompleteness.html">Goedel_Incompleteness</a></li><li><a href="../entries/Incompleteness.html">Incompleteness</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Goedel_HFSet_Semanticless.html">From Abstract to Concrete Gödel&rsquo;s Incompleteness Theorems—Part II</a></li>
+      
+      <li><a href="../entries/CZH_Elementary_Categories.html">Category Theory for ZFC in HOL II: Elementary Theory of 1-Categories</a></li>
+      
+      <li><a href="../entries/Recursion-Addition.html">Recursion Theorem in ZF</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
 
+<nav class='links'>
+  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Goedel_HFSet_Semantic/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Goedel_HFSet_Semantic/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Goedel_HFSet_Semantic/session_graph.pdf">Dependencies</a></nav>
 
-<tr>
-  <td class="datahead" valign="top">BibTeX:</td>
-  <td class="formatted">
-        <pre>@article{Goedel_HFSet_Semantic-AFP,
-  author  = {Andrei Popescu and Dmitriy Traytel},
-  title   = {From Abstract to Concrete G&ouml;del's Incompleteness Theorems&mdash;Part I},
+<div id="citePopUp" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtexFileName">Goedel_HFSet_Semantic-AFP</p>
+      <pre id="copyText">@article{Goedel_HFSet_Semantic-AFP,
+  author  = {popescu and traytel},
+  title   = {From Abstract to Concrete Gödel&#39;s Incompleteness Theorems—Part I},
   journal = {Archive of Formal Proofs},
-  month   = sep,
+  month   = September,
   year    = 2020,
   note    = {\url{https://isa-afp.org/entries/Goedel_HFSet_Semantic.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-  </td>
-</tr>
-
-    <tr><td class="datahead">License:</td>
-        <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
-
-    
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Goedel_Incompleteness.html">Goedel_Incompleteness</a>, <a href="Incompleteness.html">Incompleteness</a>      </td></tr>
-          
-                    
-
-        
-  </tbody>
-</table>
-
-<p></p>
-
-<table class="links">
-  <tbody>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Goedel_HFSet_Semantic/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Goedel_HFSet_Semantic/document.pdf">Proof document</a>
-    </td>
-    </tr>
-    <tr>
-    <td class="links">
-      <a href="../browser_info/current/AFP/Goedel_HFSet_Semantic/index.html">Browse theories</a>
-      </td></tr>
-    <tr>
-    <td class="links">
-      <a href="../release/afp-Goedel_HFSet_Semantic-current.tar.gz">Download this entry</a>
-    </td>
-    </tr>
-
-
-          <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2021:
-            <a href="../release/afp-Goedel_HFSet_Semantic-2021-02-23.tar.gz">
-              afp-Goedel_HFSet_Semantic-2021-02-23.tar.gz
-            </a>
-            </li>
-                                        <li>Isabelle 2020:
-            <a href="../release/afp-Goedel_HFSet_Semantic-2020-09-18.tar.gz">
-              afp-Goedel_HFSet_Semantic-2020-09-18.tar.gz
-            </a>
-            </li>
-                          </ul>
-            </td></tr>
-    
-  </tbody>
-</table>
-
+      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+    </div>
+  </div>
 </div>
-</td>
 
-</tr>
-</tbody>
-</table>
-
-<script src="../jquery.min.js"></script>
-<script src="../script.js"></script>
-
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://isa-afp.org/release/afp-Goedel_HFSet_Semantic-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
 </body>
+
 </html>

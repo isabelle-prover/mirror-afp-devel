@@ -1,0 +1,45 @@
+title = "Bicategories"
+date = 2020-01-06
+topics = [
+  "Mathematics/Category theory",
+]
+abstract = """
+<p>
+Taking as a starting point the author's previous work on
+developing aspects of category theory in Isabelle/HOL, this article
+gives a compatible formalization of the notion of
+\"bicategory\" and develops a framework within which formal
+proofs of facts about bicategories can be given.  The framework
+includes a number of basic results, including the Coherence Theorem,
+the Strictness Theorem, pseudofunctors and biequivalence, and facts
+about internal equivalences and adjunctions in a bicategory.  As a
+driving application and demonstration of the utility of the framework,
+it is used to give a formal proof of a theorem, due to Carboni,
+Kasangian, and Street, that characterizes up to biequivalence the
+bicategories of spans in a category with pullbacks.  The formalization
+effort necessitated the filling-in of many details that were not
+evident from the brief presentation in the original paper, as well as
+identifying a few minor corrections along the way.
+</p><p>
+Revisions made subsequent to the first version of this article added
+additional material on pseudofunctors, pseudonatural transformations,
+modifications, and equivalence of bicategories; the main thrust being
+to give a proof that a pseudofunctor is a biequivalence if and only
+if it can be extended to an equivalence of bicategories.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.stark]
+email = "stark_email"
+
+[contributors]
+
+[notify]
+stark = "stark_email"
+
+[history]
+
+[extra]

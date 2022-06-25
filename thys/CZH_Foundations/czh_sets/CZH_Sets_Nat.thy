@@ -106,6 +106,10 @@ lemma ord_of_nat_card_transfer[transfer_rule]:
   shows "(rel_set (=) ===> cr_omega) (\<lambda>x. ord_of_nat (card x)) card"
   by (intro rel_funI) (simp add: cr_omega_def rel_set_eq)
 
+lemma ord_of_nat_transfer[transfer_rule]: 
+  "(rel_fun cr_omega (=)) id ord_of_nat"
+  unfolding cr_omega_def by auto
+
 
 
 subsection\<open>Elementary results\<close>
@@ -227,6 +231,8 @@ method elim_in_numeral = (succ_of_numeral, use nothing in \<open>elim_in_succ\<c
 
 subsection\<open>Auxiliary\<close>
 
+lemma one: "1\<^sub>\<nat> = set {0}" by auto
+
 lemma two: "2\<^sub>\<nat> = set {0, 1\<^sub>\<nat>}" by force
 
 lemma three: "3\<^sub>\<nat> = set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>}" by force
@@ -235,7 +241,6 @@ lemma four: "4\<^sub>\<nat> = set {0, 1\<^sub>\<nat>, 2\<^sub>\<nat>, 3\<^sub>\<
 
 lemma two_vdiff_zero[simp]: "set {0, 1\<^sub>\<nat>} -\<^sub>\<circ> set {0} = set {1\<^sub>\<nat>}" by auto
 lemma two_vdiff_one[simp]: "set {0, 1\<^sub>\<nat>} -\<^sub>\<circ> set {1\<^sub>\<nat>} = set {0}" by auto
-
 
 text\<open>\newpage\<close>
 

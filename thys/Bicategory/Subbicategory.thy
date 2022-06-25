@@ -324,9 +324,8 @@ begin
           by (simp add: \<mu>\<nu>\<tau>)
         also have "... = \<a>\<^sub>B (cod (fst \<mu>\<nu>\<tau>)) (cod (fst (snd \<mu>\<nu>\<tau>))) (cod (snd (snd \<mu>\<nu>\<tau>))) \<cdot>
                            ((fst \<mu>\<nu>\<tau> \<star> fst (snd \<mu>\<nu>\<tau>)) \<star> snd (snd \<mu>\<nu>\<tau>))"
-          using 1 3 \<mu>\<nu>\<tau> hcomp_closed assoc_closed cod_closed hcomp_def comp_def inclusion
-            comp_char cod_char VVV.arr_char VV.arr_char
-          by auto
+          by (simp add: "3" arrI assoc_closed cod_char cod_closed hcomp_closed hcomp_def
+              inclusion comp_def)
         also have "... = \<alpha>\<^sub>S\<^sub>B (VVV.cod \<mu>\<nu>\<tau>) \<cdot> HoHV \<mu>\<nu>\<tau>"
           using \<mu>\<nu>\<tau> B.\<alpha>_def HoHV_def VVV.cod_char VV.cod_char VxVxV.cod_char
                 VVV.arr_char VV.arr_char arr_cod src_cod trg_cod
@@ -416,9 +415,8 @@ begin
         have \<mu>_eq: "?\<mu> = B.\<ll> f' \<cdot> \<nu> \<cdot> B.inv (B.\<ll> f)"
         proof -
           have "?\<mu> = B.\<ll> f' \<cdot> \<nu> \<cdot>\<^sub>B B.inv (B.\<ll> f)"
-            using f f' \<nu> \<mu> arr_char inclusion comp_char comp_closed ide_char
-                 lunit'_closed lunit_closed
-            by (metis (no_types, lifting) B.seqE in_homE)
+            by (metis (no_types, lifting) B.arrI B.seqE \<mu> \<nu> arrE comp_closed f f'
+                ide_char in_hom_char local.comp_def lunit'_closed lunit_closed)
           also have "... = B.\<ll> f' \<cdot> \<nu> \<cdot> B.inv (B.\<ll> f)"
             using f f' \<nu> \<mu> arr_char inclusion comp_char comp_closed ide_char
                   lunit'_closed lunit_closed
@@ -1263,7 +1261,7 @@ begin
               by (intro hcomp_in_vhom, auto)
           qed
           ultimately show "iso (\<rr> f \<cdot> (dom f \<star> \<phi>))"
-            using isos_compose by simp
+            using isos_compose by blast
          qed
       qed
       show "equivalence_functor (\<cdot>) (\<cdot>) (\<lambda>f. fst (f, w) \<star> snd (f, w))"

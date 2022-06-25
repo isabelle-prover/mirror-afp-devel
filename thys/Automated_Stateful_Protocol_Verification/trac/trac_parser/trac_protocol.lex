@@ -1,40 +1,4 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2020
-(C) Copyright Sebastian A. Mödersheim, DTU, 2020
-(C) Copyright Achim D. Brucker, University of Exeter, 2020
-(C) Copyright Anders Schlichtkrull, DTU, 2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
+(* SPDX-License-Identifier: BSD-3-Clause *)
 structure Tokens = Tokens
 open TracProtocol
   
@@ -44,19 +8,18 @@ type svalue = Tokens.svalue
 type ('a,'b) token = ('a,'b) Tokens.token
 type lexresult= (svalue,pos) token
 
-
 val pos = ref (0,0,0)
 
-  fun eof () = Tokens.EOF((!pos,!pos))
-  fun error (e,p : (int * int * int),_) = TextIO.output (TextIO.stdOut, 
+fun eof () = Tokens.EOF((!pos,!pos))
+fun error' (e,p : (int * int * int),_) = error (
 							 String.concat[
 								       "Line ", (Int.toString (#1 p)), "/",
 								       (Int.toString (#2 p - #3 p)),": ", e, "\n"
 								       ])
   
- fun inputPos yypos = ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))),
-		     (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))) 
- fun inputPos_half yypos = (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))
+fun inputPos yypos = ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))),
+                      (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))))
+fun inputPos_half yypos = (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))
 
 
 
@@ -93,10 +56,12 @@ ws = [\ \t];
 "["             => (Tokens.OPENSQB(yytext,inputPos_half yypos,inputPos_half yypos));
 "]"             => (Tokens.CLOSESQB(yytext,inputPos_half yypos,inputPos_half yypos));
 "++"            => (Tokens.UNION(yytext,inputPos_half yypos,inputPos_half yypos));
+"{..}"          => (Tokens.INFINITESET(yytext,inputPos_half yypos,inputPos_half yypos));
 "Protocol"      => (Tokens.PROTOCOL(yytext,inputPos_half yypos,inputPos_half yypos));
 "Knowledge"     => (Tokens.KNOWLEDGE(yytext,inputPos_half yypos,inputPos_half yypos));
 "where"         => (Tokens.WHERE(yytext,inputPos_half yypos,inputPos_half yypos));
 "Types"         => (Tokens.TYPES(yytext,inputPos_half yypos,inputPos_half yypos));
+"Enumerations"  => (Tokens.ENUMERATIONS(yytext,inputPos_half yypos,inputPos_half yypos));
 "Actions"       => (Tokens.ACTIONS(yytext,inputPos_half yypos,inputPos_half yypos));
 "Abstraction"   => (Tokens.ABSTRACTION(yytext,inputPos_half yypos,inputPos_half yypos));
 "Goals"         => (Tokens.GOALS(yytext,inputPos_half yypos,inputPos_half yypos));
@@ -111,20 +76,26 @@ ws = [\ \t];
 "Private"       => (Tokens.PRIVATE(yytext,inputPos_half yypos,inputPos_half yypos));
 "Analysis"      => (Tokens.ANALYSIS(yytext,inputPos_half yypos,inputPos_half yypos));
 "Transactions"  => (Tokens.TRANSACTIONS(yytext,inputPos_half yypos,inputPos_half yypos));
+"Abbreviations" => (Tokens.ABBREVIATIONS(yytext,inputPos_half yypos,inputPos_half yypos));
 "receive"       => (Tokens.RECEIVE(yytext,inputPos_half yypos,inputPos_half yypos));
 "send"          => (Tokens.SEND(yytext,inputPos_half yypos,inputPos_half yypos));
+"let"           => (Tokens.LET(yytext,inputPos_half yypos,inputPos_half yypos));
 "in"            => (Tokens.IN(yytext,inputPos_half yypos,inputPos_half yypos));
 "notin"         => (Tokens.NOTIN(yytext,inputPos_half yypos,inputPos_half yypos));
 "insert"        => (Tokens.INSERT(yytext,inputPos_half yypos,inputPos_half yypos));
 "delete"        => (Tokens.DELETE(yytext,inputPos_half yypos,inputPos_half yypos));
 "new"           => (Tokens.NEW(yytext,inputPos_half yypos,inputPos_half yypos));
 "attack"        => (Tokens.ATTACK(yytext,inputPos_half yypos,inputPos_half yypos));
-"/"             => (Tokens.slash(yytext,inputPos_half yypos,inputPos_half yypos));
+"/"             => (Tokens.SLASH(yytext,inputPos_half yypos,inputPos_half yypos));
+"//"            => (Tokens.DOUBLESLASH(yytext,inputPos_half yypos,inputPos_half yypos));
 "?"             => (Tokens.QUESTION(yytext,inputPos_half yypos,inputPos_half yypos));
-"="             => (Tokens.equal(yytext,inputPos_half yypos,inputPos_half yypos));
+"="             => (Tokens.EQUAL(yytext,inputPos_half yypos,inputPos_half yypos));
+"=="            => (Tokens.DOUBLEEQUAL(yytext,inputPos_half yypos,inputPos_half yypos));
 "_"             => (Tokens.UNDERSCORE(yytext,inputPos_half yypos,inputPos_half yypos));
 "*"             => (Tokens.STAR(yytext,inputPos_half yypos,inputPos_half yypos));
-"of"           => (Tokens.OF(yytext,inputPos_half yypos,inputPos_half yypos));
+"of"            => (Tokens.OF(yytext,inputPos_half yypos,inputPos_half yypos));
+"or"            => (Tokens.OR(yytext,inputPos_half yypos,inputPos_half yypos));
+"forall"        => (Tokens.FORALL(yytext,inputPos_half yypos,inputPos_half yypos));
 
 
 {digit}+                          => (Tokens.INTEGER_LITERAL(yytext,inputPos_half yypos,inputPos_half yypos));
@@ -133,7 +104,6 @@ ws = [\ \t];
 {upper}({alpha}|{digit})*("'")*   => (Tokens.UPPER_STRING_LITERAL(yytext,inputPos_half yypos,inputPos_half yypos));
 
 
-.      => (error ("ignoring bad character "^yytext,
+.      => (error' ("Bad character: "^yytext,
 		    ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))),
-		    ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))));
-             lex());
+		    ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))))));

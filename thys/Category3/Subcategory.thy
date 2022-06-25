@@ -314,6 +314,10 @@ begin
   context full_subcategory
   begin
 
+    lemma in_hom_char:
+    shows "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<longleftrightarrow> arr a \<and> arr b \<and> \<guillemotleft>f : a \<rightarrow>\<^sub>C b\<guillemotright>"
+      using arr_char in_hom_char by auto
+
     text \<open>
       Isomorphisms in a full subcategory are inherited from the ambient category.
 \<close>

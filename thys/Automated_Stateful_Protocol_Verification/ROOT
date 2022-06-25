@@ -1,16 +1,22 @@
 chapter AFP
 
-session "Automated_Stateful_Protocol_Verification" (AFP) = "Stateful_Protocol_Composition_and_Typing" +
-  options [timeout = 2400]
-  sessions
+session "Automated_Stateful_Protocol_Verification" (AFP) = "Stateful_Protocol_Composition_and_Typing" + 
+  options [timeout = 3600]
+  sessions 
     "HOL-Eisbach"
   directories
     "trac"
     "examples"
     "examples/PKCS"
-  theories
+    "PSPSP-Manual"
+  theories 
     "PSPSP"
+    "manual"
     "Examples"
   document_files
+    "lh-listings.sty"
     "root.tex"
     "root.bib"
+    "jedit-keyserver.png"
+    "jedit-select-session.png"
+

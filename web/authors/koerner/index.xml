@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>koerner on Archive of Formal Proofs</title>
+    <link>/authors/koerner/</link>
+    <description>Recent content in koerner on Archive of Formal Proofs</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-gb</language>
+    <lastBuildDate>Thu, 28 Oct 2010 00:00:00 +0000</lastBuildDate><atom:link href="/authors/koerner/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Finger Trees</title>
+      <link>/entries/Finger-Trees.html</link>
+      <pubDate>Thu, 28 Oct 2010 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Finger-Trees.html</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,7 +1,7 @@
 theory Heap_Default
   imports
     Heap_Main
-    "../Index"
+    "../Indexing"
 begin
 
 locale dp_consistency_heap_default =

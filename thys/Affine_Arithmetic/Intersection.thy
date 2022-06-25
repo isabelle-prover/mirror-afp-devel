@@ -53,7 +53,7 @@ proof (induction Ps arbitrary: Pc z rule: list.induct)
       } moreover {
         assume "e < length Ps"
         have 0: "\<And>e. e < length Ps \<Longrightarrow> ccw' 0 P (Ps ! e)"
-          by (rule ccw') (simp add: )
+          by (rule ccw') simp
         have 2: "0 < e \<Longrightarrow> ccw' 0 (P + sum_list (take e Ps)) (Ps ! e)"
           using \<open>e < length Ps\<close>
           by (auto intro!: ccw'.add1 0 ccw'.sum2 sorted' ccw'.sorted_nth_less
