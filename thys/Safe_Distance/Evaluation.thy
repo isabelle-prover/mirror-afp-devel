@@ -126,7 +126,7 @@ fun check_line chk n l (y, i) =
 in
 
 fun check_file chk path n =
-  File.fold_lines (check_line chk n) path (0, 0)
+  fold (check_line chk n) (File.read_lines path) (0, 0)
     handle Result res => res;
 
 end

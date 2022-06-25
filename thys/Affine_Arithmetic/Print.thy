@@ -27,7 +27,7 @@ subsection \<open>Write to File\<close>
 
 definition file_output::"String.literal \<Rightarrow> ((String.literal \<Rightarrow> unit) \<Rightarrow> 'a) \<Rightarrow> 'a" where
   "file_output _ f = f (\<lambda>_. ())"
-code_printing constant file_output \<rightharpoonup> (SML) "(fn s => fn f => File.open'_output (fn os => f (File.output os)) (Path.explode s))"
+code_printing constant file_output \<rightharpoonup> (SML) "(fn s => fn f => File'_Stream.open'_output (fn os => f (File'_Stream.output os)) (Path.explode s))"
 
 
 subsection \<open>Show for Floats\<close>
