@@ -72,8 +72,7 @@ definition "triords \<equiv> {flat_ge,(\<le>)}"
 lemma trimono_alt: 
   "trimono B \<longleftrightarrow> (\<forall>ord\<in>fun_ord`triords. monotone ord ord B)"
   unfolding trimono_def
-  by (auto simp: ccpo_mono_simp[symmetric] triords_def 
-    fun_ord_def[abs_def] le_fun_def[abs_def])
+  by (auto simp: triords_def fun_ord_def[abs_def] le_fun_def[abs_def])
 
 lemma trimonoI': 
   assumes "\<And>ord. ord\<in>triords \<Longrightarrow> monotone (fun_ord ord) (fun_ord ord) B"

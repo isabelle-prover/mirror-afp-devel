@@ -106,9 +106,6 @@ lemma strict_mono_setsD:
   shows "less_sets (f x) (f y)"
   using assms by (auto simp: strict_mono_sets_def)
 
-lemma strict_mono_on_o: "\<lbrakk>strict_mono_on A r; strict_mono_on B s; s ` B \<subseteq> A\<rbrakk> \<Longrightarrow> strict_mono_on B (r \<circ> s)"
-  by (auto simp: image_subset_iff strict_mono_on_def)
-
 lemma strict_mono_sets_imp_disjoint:
   fixes A :: "'a::linorder set"
   assumes "strict_mono_sets A f"

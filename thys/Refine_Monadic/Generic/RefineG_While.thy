@@ -21,7 +21,6 @@ definition "iWHILET bind return \<equiv> iWHILEIT bind return (\<lambda>_. True)
 (* TODO: Move to refine_mono_prover*)
 lemma mono_prover_monoI[refine_mono]: 
   "monotone (fun_ord (\<le>)) (fun_ord (\<le>)) B \<Longrightarrow> mono B"
-  apply (rule ccpo_monoD)
   apply (simp add: le_fun_def[abs_def] fun_ord_def[abs_def])
   done
 
