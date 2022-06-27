@@ -938,7 +938,7 @@ lemma bd_F_card_order: "card_order bd_F"
   apply (rule sum_card_order)
   done
 lemmas bd_F_regularCard = regularCard_ordIso[OF bd_F Cinfinite_card_suc[OF sum_Cinfinite sum_card_order]
-  regular_card_suc[OF sum_card_order sum_Cinfinite]
+  regularCard_card_suc[OF sum_card_order sum_Cinfinite]
 ]
 
 lemmas F1set1_bd' = ordLess_transitive[OF F1.set_bd(1) ordLess_ordIso_trans[OF
