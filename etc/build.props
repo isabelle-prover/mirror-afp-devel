@@ -15,10 +15,11 @@ sources = \
   tools/afp_tool.scala \
   tools/hugo.scala \
   tools/metadata.scala \
-  tools/python.scala \
+  tools/rake.scala \
   tools/toml.scala \
   tools/utils.scala
 resources = \
+  tools/SmartStoplist.txt:SmartStoplist.txt \
   tools/migration/public_suffix_list.dat:public_suffix_list.dat
 services = \
   afp.Tools \
