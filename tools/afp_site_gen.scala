@@ -77,25 +77,6 @@ object AFP_Site_Gen {
   }
 
 
-  /* keyword extraction */
-
-  private val replacements = List(
-    "<[^>]*>".r -> "",
-    "[^\\w\\s()'.,;:-]".r -> " ",
-    "\\s+".r -> " ")
-
-  def extract_keywords(text: String): List[String] = {
-    val stripped_text =
-      replacements.foldLeft(text) { case (res, (regex, replacement)) => regex.replaceAllIn(res, replacement) }
-
-    val arg = quote(stripped_text.replaceAll("\"", "\\\""))
-
-    val keyword_cmd = "from keywords import *; print_keywords(" + arg + ")"
-
-    Python.run(keyword_cmd).check.out_lines
-  }
-
-
   /* stats */
 
   def afp_stats(deps: Sessions.Deps, structure: AFP_Structure, entries: List[Entry], progress: Progress): JSON.T = {
@@ -236,11 +217,7 @@ object AFP_Site_Gen {
 
     var seen_keywords = Set.empty[String]
     val entry_keywords = entries.map { entry =>
-      val Keyword = """\('([^']*)', ([^)]*)\)""".r
-      val scored_keywords = extract_keywords(entry.`abstract`).map {
-        case Keyword(keyword, score) => keyword -> score.toDouble
-        case s => error("Could not parse: " + s)
-      }
+      val scored_keywords = Rake.extract_keywords(entry.`abstract`)
       seen_keywords ++= scored_keywords.map(_._1)
 
       entry.name -> scored_keywords.filter(_._2 > 1.0).map(_._1)
