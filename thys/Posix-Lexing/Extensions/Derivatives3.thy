@@ -20,7 +20,8 @@ where
 | "deriv c (Times r1 r2) = 
     (if nullable r1 then Plus (Times (deriv c r1) r2) (deriv c r2) else Times (deriv c r1) r2)"
 | "deriv c (Star r) = Times (deriv c r) (Star r)"
-| "deriv c (NTimes r n) = (if n = 0 then Zero else Times (deriv c r) (NTimes r (n-1)))"
+| "deriv c (NTimes r n) = (if n = 0 then Zero else Times (deriv c r) (NTimes r (n - 1)))"
+| "deriv c (Upto r n) = (if n = 0 then Zero else Times (deriv c r) (Upto r (n - 1)))"
 
 fun 
   derivs :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
@@ -44,7 +45,11 @@ lemma deriv_pow [simp]:
   by (metis Suc_pred concI_if_Nil2 conc_assoc conc_pow_comm lang_pow.simps(2))
 
 lemma lang_deriv: "lang (deriv c r) = Deriv c (lang r)"
-  by (induct r) (simp_all add: nullable_iff)
+  apply (induct r rule: lang.induct) 
+  apply(auto simp add: nullable_iff conc_UNION_distrib)
+  apply (metis IntI Suc_pred atMost_iff diff_Suc_1 mem_Collect_eq not_less_eq_eq zero_less_Suc)
+  apply(auto)
+  done    
   
 
 lemma lang_derivs: "lang (derivs s r) = Derivs s (lang r)"

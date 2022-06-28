@@ -178,6 +178,11 @@ lemma finite_NTimes_empty:
   apply(simp add: inj_on_def)
   done
 
+lemma subseteq_Upto_Star:
+  shows "LV (Upto r n) s \<subseteq> LV (Star r) s"
+  apply(auto simp add: LV_def)
+  by (metis Prf.intros(6) Prf_elims(8))
+
 lemma LV_finite:
   shows "finite (LV r s)"
 proof(induct r arbitrary: s)
@@ -221,6 +226,14 @@ next
     using finite_NTimes_empty by blast
   then show "finite (LV (NTimes r n) s)"
     by (metis LV_NTimes_5 finite_subset)
+next
+  case (Upto r n s)
+  then have "finite (LV (Star r) s)" by (simp add: LV_STAR_finite)
+  moreover
+  have "LV (Upto r n) s \<subseteq> LV (Star r) s"
+    by (meson subseteq_Upto_Star) 
+  ultimately show "finite (LV (Upto r n) s)"
+    using rev_finite_subset by blast    
 qed
 
 
@@ -228,6 +241,7 @@ qed
 text \<open>
   Our POSIX values are lexical values.
 \<close>
+
 
 lemma Posix_LV:
   assumes "s \<in> r \<rightarrow> v"
@@ -244,5 +258,6 @@ lemma Posix_Prf:
   using assms Posix_LV LV_def
   by blast
 
+thm Posix1a
 
 end

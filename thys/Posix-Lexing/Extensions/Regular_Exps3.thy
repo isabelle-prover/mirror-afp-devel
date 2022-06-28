@@ -14,23 +14,25 @@ datatype (atoms: 'a) rexp =
   Plus "('a rexp)" "('a rexp)" |
   Times "('a rexp)" "('a rexp)" |
   Star "('a rexp)" |
-  NTimes  "('a rexp)" "nat"
+  NTimes "('a rexp)" "nat" | (* r{n}    - exactly n-times *)
+  Upto "('a rexp)" "nat"     (* r{..n}  - up to n-times *)  
 
-
-primrec lang :: "'a rexp => 'a lang" where
+fun lang :: "'a rexp => 'a lang" where
 "lang Zero = {}" |
 "lang One = {[]}" |
 "lang (Atom a) = {[a]}" |
 "lang (Plus r s) = (lang r) Un (lang s)" |
 "lang (Times r s) = conc (lang r) (lang s)" |
 "lang (Star r) = star(lang r)" |
-"lang (NTimes r n) = ((lang r) ^^ n)" 
+"lang (NTimes r n) = ((lang r) ^^ n)" | 
+"lang (Upto r n) = (\<Union>i \<in> {..n}. (lang r) ^^ i)"
 
 
 lemma lang_subset_lists: 
   "atoms r \<subseteq> A \<Longrightarrow> lang r \<subseteq> lists A"
-  by (induction r)
-     (auto simp: conc_subset_lists star_subset_lists lang_pow_subset_lists)
+  apply (induction r)
+  apply(auto simp: conc_subset_lists star_subset_lists lang_pow_subset_lists)
+  by (meson in_listsD lang_pow_subset_lists subsetD)
   
 
 primrec nullable :: "'a rexp \<Rightarrow> bool" where
@@ -40,7 +42,8 @@ primrec nullable :: "'a rexp \<Rightarrow> bool" where
 "nullable (Plus r1 r2) = (nullable r1 \<or> nullable r2)" |
 "nullable (Times r1 r2) = (nullable r1 \<and> nullable r2)" |
 "nullable (Star r) = True" |
-"nullable (NTimes r n) = (if n = 0 then True else nullable r)"
+"nullable (NTimes r n) = (if n = 0 then True else nullable r)" |
+"nullable (Upto r n) = True"
 
 
 lemma pow_empty_iff:
