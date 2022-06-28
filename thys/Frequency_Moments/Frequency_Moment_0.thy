@@ -928,7 +928,7 @@ qed
 private lemma median_bounds:
   "\<P>(\<omega> in measure_pmf \<Omega>\<^sub>0. \<bar>median s (\<lambda>i. estimate (sketch_rv (\<omega> i))) - F 0 as\<bar> \<le> \<delta> * F 0 as) \<ge> 1 - real_of_rat \<epsilon>"
 proof -
-  have "strict_mono_on real_of_float A" for A by (meson less_float.rep_eq strict_mono_onI)
+  have "strict_mono_on A real_of_float" for A by (meson less_float.rep_eq strict_mono_onI)
   hence real_g_2: "\<And>\<omega>.  sketch_rv' \<omega> = real_of_float ` sketch_rv \<omega>" 
     by (simp add: sketch_rv'_def sketch_rv_def tr_hash_def least_mono_commute image_comp)
 

@@ -209,7 +209,7 @@ proof (rule, unfold simplicial_complex_induced_by_monotone_boolean_function_def,
     proof (rule exI [of _ "vec n (\<lambda>i. if i \<in> \<tau> then False else True)"], intro conjI)
      show "dim_vec (vec n (\<lambda>i. if i \<in> \<tau> then False else True)) = dim_vec x"
       unfolding dim_vec using dim_vec_x .
-     from mon have mono: "mono_on f (carrier_vec n)"
+     from mon have mono: "mono_on (carrier_vec n) f"
       unfolding boolean_functions.monotone_bool_fun_def .
      show "f (vec n (\<lambda>i. if i \<in> \<tau> then False else True))"
      proof -

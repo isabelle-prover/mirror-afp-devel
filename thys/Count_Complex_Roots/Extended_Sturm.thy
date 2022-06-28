@@ -498,7 +498,7 @@ proof  -
     finally show ?thesis .
   qed
   ultimately show ?thesis
-    unfolding psign_diff_def by argo
+    unfolding psign_diff_def by auto
 qed
 
 lemma psign_diff_clear: "psign_diff p q x = psign_diff 1 (p * q) x"
@@ -578,8 +578,8 @@ proof -
   proof (rule ccontr)
     assume "sign (poly pq b) - sign (poly pq a) \<noteq> 0"
     then have "poly pq a * poly pq b < 0" 
-      by (smt (z3) sign_def assms(1) assms(2) no_zero_divisors pq_def
-          zero_less_mult_pos zero_less_mult_pos2)
+      by (smt (verit, best) Sturm_Tarski.sign_def assms(1) assms(2) 
+          divisors_zero eq_iff_diff_eq_0 pq_def zero_less_mult_pos zero_less_mult_pos2)
     from poly_IVT[OF \<open>a<b\<close> this] 
     have "\<exists>x>a. x < b \<and> poly pq x = 0" .
     then show False using \<open>\<forall>x. a\<le>x \<and> x\<le>b \<longrightarrow> poly (p*q) x\<noteq>0\<close> \<open>a<b\<close> 
@@ -1766,9 +1766,9 @@ proof (induct "degree p" arbitrary:p rule:nat_less_induct)
       qed
       have ?thesis when "even (order max_r p)"
       proof -
-        have "sign (poly p x) =  sign (poly p' x)" when "x\<noteq>max_r" for x
+        have "sign (poly p x) =  (sign (poly p' x)::int)" when "x\<noteq>max_r" for x
         proof -
-          have "sign (poly max_rp x) = 1"
+          have "sign (poly max_rp x) = (1::int)"
             unfolding max_rp_def using \<open>even (order max_r p)\<close> that 
             apply (simp add:sign_power )
             by (simp add: Sturm_Tarski.sign_def)
@@ -1924,8 +1924,13 @@ qed
 lemma cindex_polyE_smult_1: 
   fixes p q::"real poly" and c::real
   shows "cindex_polyE a b (smult c q) p =  (sgn c) * cindex_polyE a b q p"
-  unfolding cindex_polyE_def jumpF_polyL_smult_1 jumpF_polyR_smult_1 cindex_poly_smult_1 
-  by (auto simp add:sgn_sign_eq[symmetric] algebra_simps) 
+proof -
+  have "real_of_int (sign c) = sgn c"
+    by (simp add: sgn_if)
+  then show ?thesis
+    unfolding cindex_polyE_def jumpF_polyL_smult_1 jumpF_polyR_smult_1 cindex_poly_smult_1 
+    by (auto simp add: algebra_simps)
+qed
 
 lemma cindex_polyE_smult_2: 
   fixes p q::"real poly" and c::real

@@ -224,7 +224,7 @@ proof (rule subprob_density_distr_real_eq[OF dens])
     let ?a = "inverse (Suc i)"
     from \<open>a \<le> b\<close> have A: "?A i \<inter> {a..b} = {max ?a a..b}" (is "?E = ?F") by auto
     hence "emeasure ?M1 ?E = emeasure ?M1 ?F" by simp
-    also have "strict_mono_on ln {max (inverse (real (Suc i))) a..b}"
+    also have "strict_mono_on {max (inverse (real (Suc i))) a..b} ln"
       by (rule strict_mono_onI, subst ln_less_cancel_iff)
          (auto dest: inv_le simp del: of_nat_Suc)
     with \<open>a \<le> b\<close> True dens
@@ -309,7 +309,7 @@ proof (rule subprob_density_distr_real_eq[OF dens])
     let ?a = "-inverse (Suc i)"
     from \<open>a \<le> b\<close> have A: "?A1 i \<inter> {a..b} = {a..min ?a b}" (is "?F = ?G") by auto
     hence "emeasure ?M1 ?F = emeasure ?M1 ?G" by simp
-    also have "strict_mono_on (\<lambda>x. -inverse x) {a..min ?a b}"
+    also have "strict_mono_on {a..min ?a b} (\<lambda>x. -inverse x)"
       by (rule strict_mono_onI)
          (auto simp: le_minus_iff[of _ "inverse x" for x] dest!: inv_le simp del: of_nat_Suc)
     with \<open>a \<le> b\<close> True dens
@@ -333,7 +333,7 @@ proof (rule subprob_density_distr_real_eq[OF dens])
     let ?a = "inverse (Suc i)"
     from \<open>a \<le> b\<close> have A: "?A2 i \<inter> {a..b} = {max ?a a..b}" (is "?F = ?G") by auto
     hence "emeasure ?M1 ?F = emeasure ?M1 ?G" by simp
-    also have "strict_mono_on (\<lambda>x. -inverse x) {max ?a a..b}"
+    also have "strict_mono_on {max ?a a..b} (\<lambda>x. -inverse x)"
       by (rule strict_mono_onI) (auto dest!: inv_le simp: not_le simp del: of_nat_Suc)
     with \<open>a \<le> b\<close> True dens
       have "emeasure ?M1 ?G = emeasure ?M2 ?G"

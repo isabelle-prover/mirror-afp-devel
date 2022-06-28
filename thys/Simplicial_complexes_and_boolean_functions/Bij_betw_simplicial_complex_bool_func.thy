@@ -79,7 +79,7 @@ lemma
   assumes mon: "simplicial_complex (K::nat set set)"
   shows "boolean_functions.monotone_bool_fun n (boolean_function_from_simplicial_complex K)"
 proof (unfold boolean_functions.monotone_bool_fun_def)
-  show "mono_on (boolean_function_from_simplicial_complex K) (carrier_vec n)"
+  show "mono_on (carrier_vec n) (boolean_function_from_simplicial_complex K)"
   proof (intro mono_onI)
   fix r and s::"bool vec"
   assume r_le_s: "r \<le> s"

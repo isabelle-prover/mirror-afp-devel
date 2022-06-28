@@ -228,7 +228,7 @@ definition "strict_from_inj n f = (\<lambda>i. if i\<in>{0..<n} then (sorted_lis
 
 lemma strict_strict_from_inj:
   fixes f::"nat \<Rightarrow> nat"
-  assumes "inj_on f {0..<n}" shows "strict_mono_on (strict_from_inj n f) {0..<n}"
+  assumes "inj_on f {0..<n}" shows "strict_mono_on {0..<n} (strict_from_inj n f)"
 proof -
   let ?I="f`{0..<n}"
   have "strict_from_inj n f x < strict_from_inj n f y"
@@ -609,10 +609,10 @@ private definition "Z_not_inj = ({f. f \<in> {0..<n} \<rightarrow> {0..<m} \<and
   \<and> \<not> inj_on f {0..<n}} \<times> {\<pi>. \<pi> permutes {0..<n}})"
 
 private definition "Z_strict = ({f. f \<in> {0..<n} \<rightarrow> {0..<m} \<and> (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i)
-  \<and> strict_mono_on f {0..<n}} \<times> {\<pi>. \<pi> permutes {0..<n}})"
+  \<and> strict_mono_on {0..<n} f} \<times> {\<pi>. \<pi> permutes {0..<n}})"
 
 private definition "Z_not_strict = ({f. f \<in> {0..<n} \<rightarrow> {0..<m} \<and> (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i)
-  \<and> \<not> strict_mono_on f {0..<n}} \<times> {\<pi>. \<pi> permutes {0..<n}})"
+  \<and> \<not> strict_mono_on {0..<n} f} \<times> {\<pi>. \<pi> permutes {0..<n}})"
 
 private definition "weight f \<pi>
   = (signof \<pi>) * (prod (\<lambda>i. A$$(i,f i) * B $$ (f i, \<pi> i)) {0..<n})"
@@ -621,7 +621,7 @@ private definition "Z_good g = ({f. f \<in> {0..<n} \<rightarrow> {0..<m} \<and>
   \<and> inj_on f {0..<n} \<and> (f`{0..<n} = g`{0..<n})} \<times> {\<pi>. \<pi> permutes {0..<n}})"
 
 private definition "F_strict = {f. f \<in> {0..<n} \<rightarrow> {0..<m}
-  \<and> (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i) \<and> strict_mono_on f {0..<n}}"
+  \<and> (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i) \<and> strict_mono_on {0..<n} f}"
 
 private definition "F_inj = {f. f \<in> {0..<n} \<rightarrow> {0..<m}
   \<and> (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i) \<and> inj_on f {0..<n}}"
@@ -1015,7 +1015,7 @@ qed (simp)
 lemma finite_Z_strict[simp]: "finite Z_strict"
 proof (unfold Z_strict_def, rule finite_cartesian_product)
   have finN: "finite {0..<n}" and finM: "finite {0..<m}" by auto
-  let ?A="{f \<in> {0..<n} \<rightarrow> {0..<m}. (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i) \<and> strict_mono_on f {0..<n}}"
+  let ?A="{f \<in> {0..<n} \<rightarrow> {0..<m}. (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i) \<and> strict_mono_on {0..<n} f}"
   let ?B="{f \<in> {0..<n} \<rightarrow> {0..<m}. (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i)}"
   have B: "{f. (\<forall>i\<in>{0..<n}. f i \<in> {0..<m}) \<and> (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i)} = ?B" by auto
   have "?A\<subseteq>?B" by auto
@@ -1027,7 +1027,7 @@ qed
 lemma finite_Z_not_strict[simp]: "finite Z_not_strict"
 proof (unfold Z_not_strict_def, rule finite_cartesian_product)
   have finN: "finite {0..<n}" and finM: "finite {0..<m}" by auto
-  let ?A="{f \<in> {0..<n} \<rightarrow> {0..<m}. (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i) \<and> \<not> strict_mono_on f {0..<n}}"
+  let ?A="{f \<in> {0..<n} \<rightarrow> {0..<m}. (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i) \<and> \<not> strict_mono_on {0..<n} f}"
   let ?B="{f \<in> {0..<n} \<rightarrow> {0..<m}. (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i)}"
   have B: "{f. (\<forall>i\<in>{0..<n}. f i \<in> {0..<m}) \<and> (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i)} = ?B" by auto
   have "?A\<subseteq>?B" by auto
@@ -1062,7 +1062,7 @@ qed
 lemma finite_F_strict[simp]: "finite F_strict"
 proof -
  have finN: "finite {0..<n}" and finM: "finite {0..<m}" by auto
-  let ?A="{f \<in> {0..<n} \<rightarrow> {0..<m}. (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i) \<and> strict_mono_on f {0..<n}}"
+  let ?A="{f \<in> {0..<n} \<rightarrow> {0..<m}. (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i) \<and> strict_mono_on {0..<n} f}"
   let ?B="{f \<in> {0..<n} \<rightarrow> {0..<m}. (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i)}"
   have B: "{f. (\<forall>i\<in>{0..<n}. f i \<in> {0..<m}) \<and> (\<forall>i. i \<notin> {0..<n} \<longrightarrow> f i = i)} = ?B" by auto
   have "?A\<subseteq>?B" by auto
@@ -1118,7 +1118,7 @@ qed
 
 lemma nth_strict_mono_on:
   fixes f::"nat \<Rightarrow> nat"
-  assumes  strictf: "strict_mono_on f {0..<n}" and i: "i<n"
+  assumes  strictf: "strict_mono_on {0..<n} f" and i: "i<n"
 shows "f i = (sorted_list_of_set (f`{0..<n})) ! i"
 proof -
   let ?I = "f`{0..<n}"
@@ -1176,7 +1176,7 @@ proof (unfold fun_eq_iff, auto)
   show "f x = g x"
   proof (cases "x<n")
     case True
-    have strictf: "strict_mono_on f {0..<n}" and strictg: "strict_mono_on g {0..<n}"
+    have strictf: "strict_mono_on {0..<n} f" and strictg: "strict_mono_on {0..<n} g"
       using f g unfolding F_strict_def by auto
     have "f x = (sorted_list_of_set (f`{0..<n})) ! x" by (rule nth_strict_mono_on[OF strictf True])
     also have "... = (sorted_list_of_set (g`{0..<n})) ! x" unfolding fg by simp
@@ -1217,7 +1217,7 @@ qed
 lemma strict_from_inj_F_strict: "strict_from_inj n xa \<in> F_strict"
   if xa: "xa \<in> F_inj" for xa
 proof -
-  have "strict_mono_on (strict_from_inj n xa) {0..<n}"
+  have "strict_mono_on {0..<n} (strict_from_inj n xa)"
     by (rule strict_strict_from_inj, insert xa, simp add: F_inj_def)
   thus ?thesis using strict_from_inj_preserves_F[OF xa] unfolding F_def F_strict_def by auto
 qed
@@ -1390,14 +1390,14 @@ proof -
       by (metis I \<open>xa < card I\<close> atLeast0LessThan distinct_card finite_atLeastLessThan lessThan_iff
           pick_in_set_le rev_finite_subset sorted_list_of_set(1)
           sorted_list_of_set(3) sorted_list_of_set_eq_pick subsetCE)
-    moreover have "strict_mono_on (\<lambda>i. if i < card I then sorted_list_of_set I ! i else i) {0..<card I}"
+    moreover have "strict_mono_on {0..<card I} (\<lambda>i. if i < card I then sorted_list_of_set I ! i else i)"
       if "I \<subseteq> {0..<m}" and "n = card I" for I
       by (smt \<open>I \<subseteq> {0..<m}\<close> atLeastLessThan_iff distinct_card finite_atLeastLessThan pick_mono_le
           rev_finite_subset sorted_list_of_set(1) sorted_list_of_set(3)
           sorted_list_of_set_eq_pick strict_mono_on_def)
     moreover have "x \<in> ?f ` {I. I \<subseteq> {0..<m} \<and> card I = n}"
       if x1: "x \<in> {0..<n} \<rightarrow> {0..<m}" and x2: "\<forall>i. \<not> i < n \<longrightarrow> x i = i"
-      and s: "strict_mono_on x {0..<n}" for x
+      and s: "strict_mono_on {0..<n} x" for x
     proof -
       have inj_x: "inj_on x {0..<n}"
         using s strict_mono_on_imp_inj_on by blast

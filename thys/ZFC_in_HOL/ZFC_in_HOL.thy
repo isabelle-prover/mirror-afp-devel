@@ -1095,7 +1095,7 @@ qed
 
 lemma Ord_mono_imp_increasing:
   assumes fun_hD: "h \<in> D \<rightarrow> D"
-    and mono_h: "strict_mono_on h D" 
+    and mono_h: "strict_mono_on D h" 
     and "D \<subseteq> ON" and \<nu>: "\<nu> \<in> D"
   shows "\<nu> \<le> h \<nu>"
 proof (rule ccontr)

@@ -12,10 +12,10 @@ text \<open>Based on @{term sorted_list_of_set} and @{term the_inv_into} we cons
 
 lemma bij_betw_mono_on_the_inv_into:
   fixes A::"'a::linorder set" and B::"'b::linorder set"
-  assumes b: "bij_betw f A B" and m: "mono_on f A"
-  shows "mono_on (the_inv_into A f) B"
+  assumes b: "bij_betw f A B" and m: "mono_on A f"
+  shows "mono_on B (the_inv_into A f)"
 proof (rule ccontr)
-  assume "\<not> mono_on (the_inv_into A f) B"
+  assume "\<not> mono_on B (the_inv_into A f)"
   then have "\<exists>r s. r \<in> B \<and> s \<in> B \<and> r \<le> s \<and> \<not> the_inv_into A f s \<ge> the_inv_into A f r"
     unfolding mono_on_def by blast
   then obtain r s where rs: "r \<in> B" "s \<in> B" "r \<le> s" "the_inv_into A f s < the_inv_into A f r"
@@ -105,7 +105,7 @@ proof -
 qed
 
 lemma sorted_list_of_set_image:
-  assumes "mono_on g A" "inj_on g A"
+  assumes "mono_on A g" "inj_on g A"
   shows "(sorted_list_of_set (g ` A)) = map g (sorted_list_of_set A)"
 proof (cases "finite A")
   case True
@@ -121,7 +121,7 @@ proof (cases "finite A")
     have *: "Min (g ` A) = g (Min A)"
     proof -
       have "g (Min A) \<le> g a" if "a \<in> A" for a
-        using that Cons Min_in Min_le not_empty_A by (auto intro!: mono_onD[of g])
+        using that Cons Min_in Min_le not_empty_A by (auto intro!: mono_onD[of _ g])
       then show ?thesis
         using Cons not_empty_A by (intro Min_eqI) auto
     qed
@@ -133,7 +133,7 @@ proof (cases "finite A")
     also have "(g ` A) - {Min (g ` A)} = g ` (A - {Min A})"
       using Cons Min_in not_empty_A * by (subst inj_on_image_set_diff[of _ A]) auto
     also have "sorted_list_of_set (g ` (A - {Min A})) = map g (sorted_list_of_set (A - {Min A}))"
-      using not_empty_A Cons mono_on_subset[of _ A "A - {Min A}"] inj_on_subset[of _ A "A - {Min A}"]
+      using not_empty_A Cons mono_on_subset[of A _ "A - {Min A}"] inj_on_subset[of _ A "A - {Min A}"]
       by (intro Cons) (auto simp add: sorted_list_of_set_Min_Cons)
     finally show ?case
       using Cons not_empty_A * by (auto simp add: sorted_list_of_set_Min_Cons)
@@ -154,11 +154,11 @@ lemma sorted_list_of_set_bij_betw:
 
 lemma nth_mono_on:
   assumes "sorted xs" "distinct xs" "set xs = A"
-  shows "mono_on (\<lambda>n. xs ! n) {..<card A}"
+  shows "mono_on {..<card A} (\<lambda>n. xs ! n)"
   using assms by (intro mono_onI sorted_nth_mono) (auto simp add: distinct_card)
 
 lemma sorted_list_of_set_mono_on:
-  "finite A \<Longrightarrow> mono_on (\<lambda>n. sorted_list_of_set A ! n) {..<card A}"
+  "finite A \<Longrightarrow> mono_on {..<card A} (\<lambda>n. sorted_list_of_set A ! n)"
   by (rule nth_mono_on) (auto)
 
 definition bij_mono_map_set_to_nat :: "'a::linorder set \<Rightarrow> 'a \<Rightarrow> nat" where
@@ -169,7 +169,7 @@ definition bij_mono_map_set_to_nat :: "'a::linorder set \<Rightarrow> 'a \<Right
 lemma bij_mono_map_set_to_nat:
   assumes "finite A"
   shows "bij_betw (bij_mono_map_set_to_nat A) A {..<card A}"
-        "mono_on (bij_mono_map_set_to_nat A) A"
+        "mono_on A (bij_mono_map_set_to_nat A)"
         "(bij_mono_map_set_to_nat A) ` A = {..<card A}"
 proof -
   let ?f = "bij_mono_map_set_to_nat A"
@@ -180,10 +180,10 @@ proof -
     unfolding bij_mono_map_set_to_nat_def by (rule bij_betw_cong) simp
   ultimately show *: "bij_betw (bij_mono_map_set_to_nat A) A {..<card A}"
     by blast
-  have "mono_on (the_inv_into {..<card A} ((!) (sorted_list_of_set A))) A"
+  have "mono_on A (the_inv_into {..<card A} ((!) (sorted_list_of_set A)))"
     using assms sorted_list_of_set_bij_betw
       sorted_list_of_set_mono_on by (intro bij_betw_mono_on_the_inv_into) auto
-  then show "mono_on (bij_mono_map_set_to_nat A) A"
+  then show "mono_on A (bij_mono_map_set_to_nat A)"
     unfolding bij_mono_map_set_to_nat_def using mono_onD by (intro mono_onI) (auto)
   show "?f ` A = {..<card A}"
       using assms bij_betw_imp_surj_on * by blast
