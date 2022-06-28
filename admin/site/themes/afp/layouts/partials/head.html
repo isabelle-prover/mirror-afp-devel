@@ -6,6 +6,8 @@
   {{- $siteTitle := ( .Site.Title ) -}}
   {{- if or .IsHome (not .Params.title) -}}
   <title>{{- $siteTitle -}} </title>
+  {{- else if eq .Section "authors" -}}
+  <title>{{- index (index .Site.Data.authors .Params.title) "name" -}} - {{ $siteTitle -}}</title>
   {{- else -}}
   <title>{{- .Params.title | safeHTML }} - {{ $siteTitle -}}</title>
   {{- end -}}

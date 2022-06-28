@@ -50,7 +50,7 @@ The bibtex entry for this would be:
   journal =  {Archive of Formal Proofs},
   month =    Jun,
   year =     2005,
-  note =     {\\url{https://isa-afp.org/entries/DiskPaxos.html}, Formal proof development},
+  note =     {\url{https://isa-afp.org/entries/DiskPaxos.html}, Formal proof development},
   ISSN =     {2150-914x}
 }
 ```
