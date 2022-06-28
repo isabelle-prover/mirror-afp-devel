@@ -220,7 +220,7 @@ object AFP_Site_Gen {
       val scored_keywords = Rake.extract_keywords(entry.`abstract`)
       seen_keywords ++= scored_keywords.map(_._1)
 
-      entry.name -> scored_keywords.filter(_._2 > 1.0).map(_._1)
+      entry.name -> scored_keywords.map(_._1)
     }.toMap
     
     seen_keywords = seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
