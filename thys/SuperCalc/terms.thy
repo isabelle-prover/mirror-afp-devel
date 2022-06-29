@@ -1024,6 +1024,18 @@ proof (induction \<sigma>,simp)
    qed
 qed
 
+
+subsubsection \<open>Minimum Idempotent Most General Unifier\<close>
+
+definition min_IMGU :: "'a subst \<Rightarrow> 'a trm \<Rightarrow> 'a trm \<Rightarrow> bool" where
+  "min_IMGU \<mu> t u \<longleftrightarrow>
+    IMGU \<mu> t u \<and> fst ` set \<mu> \<subseteq> vars_of t \<union> vars_of u \<and> range_vars \<mu> \<subseteq> vars_of t \<union> vars_of u"
+
+lemma unify_computes_min_IMGU:
+  "unify M N = Some \<sigma> \<Longrightarrow> min_IMGU \<sigma> M N"
+  by (simp add: min_IMGU_def IMGU_iff_Idem_and_MGU unify_computes_MGU unify_gives_Idem
+      unify_gives_minimal_domain unify_gives_minimal_range)
+
 subsection \<open>Congruences\<close>
 
 text \<open>We now define the notion of a congruence on ground terms, i.e., an equivalence relation

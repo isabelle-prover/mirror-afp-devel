@@ -1522,12 +1522,12 @@ text \<open>The following function checks whether a given substitution is a unif
 If the inference is first-order then the unifier must be maximal.\<close>
 
 definition ck_unifier where
-  "ck_unifier t s \<sigma> type \<longleftrightarrow> (if type = FirstOrder then IMGU \<sigma> t s else Unifier \<sigma> t s)"
+  "ck_unifier t s \<sigma> type \<longleftrightarrow> (if type = FirstOrder then min_IMGU \<sigma> t s else Unifier \<sigma> t s)"
 
 lemma ck_unifier_thm:
   assumes "ck_unifier t s \<sigma> k"
   shows "(subst t \<sigma>) = (subst s \<sigma>)"
-  by (metis assms IMGU_iff_Idem_and_MGU MGU_is_Unifier ck_unifier_def Unifier_def)
+  by (metis assms min_IMGU_def IMGU_iff_Idem_and_MGU MGU_is_Unifier ck_unifier_def Unifier_def)
 
 lemma subst_preserve_ck_unifier:
   assumes "ck_unifier t s \<sigma> k"
@@ -5798,14 +5798,14 @@ proof (rule ccontr)
     from this have "(subst u' \<sigma>) = (subst u \<sigma>)" unfolding Unifier_def by auto
     from this have "unify u' u \<noteq> None" using MGU_exists by auto
     from this obtain \<theta> where "unify u' u = Some \<theta>" by auto
-    hence "IMGU \<theta> u' u" by (rule unify_computes_IMGU)
+    hence "min_IMGU \<theta> u' u" by (rule unify_computes_min_IMGU)
     with \<open>Unifier \<sigma> u' u\<close> obtain \<eta> where "\<sigma> \<doteq> \<theta> \<lozenge> \<eta>"
-      unfolding IMGU_iff_Idem_and_MGU MGU_def by auto
+      unfolding min_IMGU_def IMGU_iff_Idem_and_MGU MGU_def by auto
     from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and \<open>(eligible_literal L P1 \<sigma>)\<close> have "eligible_literal L P1 \<theta>" 
       using lift_eligible_literal by auto
     from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and \<open>(eligible_literal M P2 \<sigma>)\<close> have "eligible_literal M P2 \<theta>" 
       using lift_eligible_literal by auto
-    from \<open>IMGU \<theta> u' u\<close> have "ck_unifier u' u \<theta> FirstOrder" unfolding ck_unifier_def by auto
+    from \<open>min_IMGU \<theta> u' u\<close> have "ck_unifier u' u \<theta> FirstOrder" unfolding ck_unifier_def by auto
     from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst u \<sigma>) = (subst (subst u \<theta>) \<eta>)" by auto
     from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst v \<sigma>) = (subst (subst v \<theta>) \<eta>)" by auto
     from \<open>((subst u \<sigma>) \<noteq> (subst v \<sigma>))\<close> 
@@ -5921,12 +5921,12 @@ proof (rule ccontr)
     from this have "(subst t \<sigma>) = (subst u \<sigma>)" unfolding Unifier_def by auto
     from this have "unify t u \<noteq> None" using MGU_exists by auto
     from this obtain \<theta> where "unify t u = Some \<theta>" by auto
-    hence "IMGU \<theta> t u" by (rule unify_computes_IMGU)
+    hence "min_IMGU \<theta> t u" by (rule unify_computes_min_IMGU)
     with \<open>Unifier \<sigma> t u\<close> obtain \<eta> where "\<sigma> \<doteq> \<theta> \<lozenge> \<eta>"
-      unfolding IMGU_iff_Idem_and_MGU MGU_def by auto
+      unfolding min_IMGU_def IMGU_iff_Idem_and_MGU MGU_def by auto
     from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and \<open>(eligible_literal L1 P1 \<sigma>)\<close> have "eligible_literal L1 P1 \<theta>" 
       using lift_eligible_literal by auto
-    from \<open>IMGU \<theta> t u\<close> have "ck_unifier t u \<theta> FirstOrder" unfolding ck_unifier_def by auto
+    from \<open>min_IMGU \<theta> t u\<close> have "ck_unifier t u \<theta> FirstOrder" unfolding ck_unifier_def by auto
     from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst t \<sigma>) = (subst (subst t \<theta>) \<eta>)" by auto
     from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst s \<sigma>) = (subst (subst s \<theta>) \<eta>)" by auto
     from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst v \<sigma>) = (subst (subst v \<theta>) \<eta>)" by auto
@@ -6043,12 +6043,12 @@ proof (rule ccontr)
     from this have "(subst t \<sigma>) = (subst s \<sigma>)" unfolding Unifier_def by auto
     from this have "unify t s \<noteq> None" using MGU_exists by auto
     from this obtain \<theta> where "unify t s = Some \<theta>" by auto
-    hence "IMGU \<theta> t s" by (rule unify_computes_IMGU)
+    hence "min_IMGU \<theta> t s" by (rule unify_computes_min_IMGU)
     with \<open>Unifier \<sigma> t s\<close> obtain \<eta> where "\<sigma> \<doteq> \<theta> \<lozenge> \<eta>"
-      unfolding IMGU_iff_Idem_and_MGU MGU_def by auto
+      unfolding min_IMGU_def IMGU_iff_Idem_and_MGU MGU_def by auto
     from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and \<open>(eligible_literal L1 P1 \<sigma>)\<close> have "eligible_literal L1 P1 \<theta>" 
       using lift_eligible_literal by auto
-    from \<open>IMGU \<theta> t s\<close> have "ck_unifier t s \<theta> FirstOrder" unfolding ck_unifier_def by auto
+    from \<open>min_IMGU \<theta> t s\<close> have "ck_unifier t s \<theta> FirstOrder" unfolding ck_unifier_def by auto
 
     from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> \<open>orient_lit_inst L1 t s neg \<sigma>\<close> have "orient_lit_inst L1 t s neg \<theta>"
       using lift_orient_lit_inst by auto
