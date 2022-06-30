@@ -71,7 +71,7 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     def warn_unused(name: String, unused: Set[String]): Unit =
       if (unused.nonEmpty) warn("Extra (unused) " + name + ": " + commas_quote(unused.toList))
 
-    progress.echo("Checing for unused values...")
+    progress.echo("Checking for unused values...")
 
     val all_affils = entries.flatMap(entry => entry.authors ++ entry.contributors ++ entry.notifies)
     warn_unused("authors", authors.keySet diff all_affils.map(_.author).toSet)
