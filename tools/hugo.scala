@@ -21,18 +21,26 @@ object Hugo {
 
     val data_dir = src_dir + Path.basic("data")
 
+    private def format(json: JSON.T): String = {
+      json match {
+        case elems: List[_] => elems.map(format).mkString("[", ",\n", "]")
+        case JSON.Object(m) => m.map { case (k,v) => format(k) + ": " + format(v) }.mkString("{", ",\n", "}")
+        case _ => isabelle.JSON.Format(json)
+      }
+    }
+
     def write_data(file: Path, content: JSON.T): Unit =
-      write(Path.basic("data") + file, isabelle.JSON.Format(content))
+      write(Path.basic("data") + file, format(content))
 
     val content_dir = src_dir + Path.basic("content")
 
     def write_content(file: Path, content: JSON.T): Unit =
-      write(Path.basic("content") + file, isabelle.JSON.Format(content))
+      write(Path.basic("content") + file, format(content))
 
     val static_dir = src_dir + Path.basic("static")
     
     def write_static(file: Path, content: JSON.T): Unit =
-      write(Path.basic("static") + file, isabelle.JSON.Format(content))
+      write(Path.basic("static") + file, format(content))
 
     private val generated_dirs = List(
       List("content", "entries"),
