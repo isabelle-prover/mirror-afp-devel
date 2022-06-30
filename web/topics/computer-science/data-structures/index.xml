@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/data-structures/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Real-Time Double-Ended Queue</title>
+      <link>/entries/Real_Time_Deque.html</link>
+      <pubDate>Thu, 23 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Real_Time_Deque.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>A Combinator Library for Prefix-Free Codes</title>
       <link>/entries/Prefix_Free_Code_Combinators.html</link>
       <pubDate>Fri, 08 Apr 2022 00:00:00 +0000</pubDate>

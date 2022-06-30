@@ -3495,3 +3495,10 @@ klenze_email = "tobias.klenze@inf.ethz.ch"
 
 [klenze.homepages]
 
+[toth]
+name = "Balazs Toth"
+
+[toth.emails]
+toth_email = "balazs.toth@tum.de"
+
+[toth.homepages]

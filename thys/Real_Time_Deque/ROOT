@@ -1,7 +1,8 @@
 chapter AFP
 
-session Real_Time_Deque (AFP) = HOL +
-  theories [timeout = 300]
+session Real_Time_Deque (AFP) = HOL + 
+  options [timeout = 300]
+  theories
     RealTimeDeque_Proof
   document_files
     "root.bib"
