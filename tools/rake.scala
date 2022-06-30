@@ -15,7 +15,7 @@ import java.io.{BufferedReader, InputStreamReader}
 
 
 object Rake {
-  private val max_words = 2
+  private val max_words = 4
   private val min_chars = 3
 
   private val number = "^[0-9]+$".r
@@ -28,7 +28,8 @@ object Rake {
     val stream = getClass.getClassLoader.getResourceAsStream("SmartStoplist.txt")
     val reader = new BufferedReader(new InputStreamReader(stream))
     val stop_words = File.read_lines(reader, _ => ()).filterNot(_.startsWith("#")).map(_.strip)
-    val regex = "\\b(?i)(" + stop_words.map(l => l + "(?![\\w-])").mkString("|") + ")"
+    // Allow s,n,d stems
+    val regex = "\\b(?i)(" + stop_words.map(l => l + "[s,n,d]?(?![\\w-])").mkString("|") + ")"
     regex.r
   }
 
@@ -75,6 +76,7 @@ object Rake {
     val keywords = phrases.filter(_.split(' ').length <= max_words).map(phrase =>
       phrase -> separate_words(phrase).map(word_scores.getOrElse(_, 0.0)).sum)
 
-    keywords.sortBy(_._2).toList.reverse
+    // Only takes first third taken as keywords
+    keywords.sortBy(_._2).toList.reverse.take(keywords.length / 3)
   }
 }

@@ -45,12 +45,12 @@
         "includeNewer": true,
         "indices": [
             {
-              "name": "topics",
-              "weight": 1
+                "name": "topic",
+                "weight": 10
             },
             {
-              "name": "keywords",
-              "weight": 3
+                "name": "keywords",
+                "weight": 100
             }
         ],
         "threshold": 80,

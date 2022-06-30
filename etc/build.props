@@ -5,7 +5,6 @@ requirements = \
   $ISABELLE_HOME_USER/contrib/ci-extras-1/lib/ci-extras.jar
 sources = \
   tools/admin/afp_build_hugo.scala \
-  tools/admin/afp_build_python.scala \
   tools/migration/afp_migrate_metadata.scala \
   tools/afp_build.scala \
   tools/afp_check_roots.scala \

@@ -1,4 +1,5 @@
 #stop word list from SMART (Salton,1971).  Available at ftp://ftp.cs.cornell.edu/pub/smart/english.stop
+#tuned for Isabelle/AFP
 a
 a's
 able
@@ -48,7 +49,9 @@ as
 aside
 ask
 asking
+assert
 associated
+assume
 at
 available
 away
@@ -63,6 +66,7 @@ becoming
 been
 before
 beforehand
+behave
 behind
 being
 believe
@@ -86,7 +90,6 @@ can't
 cannot
 cant
 cause
-causes
 certain
 certainly
 changes
@@ -94,10 +97,11 @@ clearly
 co
 com
 come
-comes
+commonly
 concerning
 consequently
 consider
+considered
 considering
 contain
 containing
@@ -108,9 +112,12 @@ couldn't
 course
 currently
 d
+define
 definitely
 described
 despite
+develop
+developed
 did
 didn't
 different
@@ -132,6 +139,7 @@ either
 else
 elsewhere
 enough
+ensure
 entirely
 especially
 et
@@ -147,6 +155,7 @@ ex
 exactly
 example
 except
+extend
 f
 far
 few
@@ -157,6 +166,8 @@ followed
 following
 follows
 for
+formalise
+formalize
 former
 formerly
 forth
@@ -168,8 +179,7 @@ g
 get
 gets
 getting
-given
-gives
+give
 go
 goes
 going
@@ -204,6 +214,7 @@ herself
 hi
 him
 himself
+hint
 his
 hither
 hopefully
@@ -218,20 +229,25 @@ i've
 ie
 if
 ignored
+illustrate
 immediate
+improve
 in
 inasmuch
 inc
+include
+including
 indeed
 indicate
-indicated
-indicates
 inner
 insofar
+instantiate
 instead
 into
+introduce
 inward
 is
+isabelle
 isn't
 it
 it'd
@@ -243,11 +259,8 @@ j
 just
 k
 keep
-keeps
 kept
 know
-knows
-known
 l
 last
 lately
@@ -268,7 +281,9 @@ looking
 looks
 ltd
 m
+made
 mainly
+make
 many
 may
 maybe
@@ -314,6 +329,7 @@ now
 nowhere
 o
 obviously
+occur
 of
 off
 often
@@ -324,7 +340,6 @@ old
 on
 once
 one
-ones
 only
 onto
 or
@@ -349,9 +364,13 @@ placed
 please
 plus
 possible
+possibly
+potentially
 presumably
 probably
-provides
+prove
+provide
+published
 q
 que
 quite
@@ -362,6 +381,7 @@ rd
 re
 really
 reasonably
+recent
 regarding
 regardless
 regards
@@ -390,12 +410,18 @@ sensible
 sent
 serious
 seriously
+serve
 seven
 several
 shall
 she
 should
 shouldn't
+show
+showed
+simplified
+simplifies
+simplifying
 since
 six
 so
@@ -405,7 +431,6 @@ somehow
 someone
 something
 sometime
-sometimes
 somewhat
 somewhere
 soon
@@ -413,6 +438,7 @@ sorry
 specified
 specify
 specifying
+start
 still
 sub
 such
@@ -471,8 +497,10 @@ too
 took
 toward
 towards
+tractable
 tried
 tries
+trivial
 truly
 try
 trying
@@ -490,9 +518,7 @@ up
 upon
 us
 use
-used
 useful
-uses
 using
 usually
 uucp
@@ -559,6 +585,7 @@ x
 y
 yes
 yet
+yield
 you
 you'd
 you'll

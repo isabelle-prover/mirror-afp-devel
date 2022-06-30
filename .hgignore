@@ -74,4 +74,3 @@ admin/venv
 tools/**.jar
 web/hugo
 out/
-admin/site
