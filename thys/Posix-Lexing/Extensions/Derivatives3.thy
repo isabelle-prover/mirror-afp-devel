@@ -22,6 +22,7 @@ where
 | "deriv c (Star r) = Times (deriv c r) (Star r)"
 | "deriv c (NTimes r n) = (if n = 0 then Zero else Times (deriv c r) (NTimes r (n - 1)))"
 | "deriv c (Upto r n) = (if n = 0 then Zero else Times (deriv c r) (Upto r (n - 1)))"
+| "deriv c (From r n) = (if n = 0 then Times (deriv c r) (Star r) else Times (deriv c r) (From r (n - 1)))"
 
 fun 
   derivs :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
@@ -49,6 +50,9 @@ lemma lang_deriv: "lang (deriv c r) = Deriv c (lang r)"
   apply(auto simp add: nullable_iff conc_UNION_distrib)
   apply (metis IntI Suc_pred atMost_iff diff_Suc_1 mem_Collect_eq not_less_eq_eq zero_less_Suc)
   apply(auto)
+  apply(simp add: conc_def)
+  apply(metis diff_Suc_Suc minus_nat.diff_0 star_pow zero_less_Suc)
+  apply(metis IntI Suc_le_mono Suc_pred atLeast_iff diff_Suc_1 mem_Collect_eq zero_less_Suc)
   done    
   
 
