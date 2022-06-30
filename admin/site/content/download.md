@@ -16,11 +16,9 @@ Please use the [sourceforge download system](https://sourceforge.net/projects/af
 
 ### Mercurial access:
 
-At [Heptapod](https://foss.heptapod.net/isa-afp/afp-devel/) (development version of the Archive, for the development version of Isabelle)
-
-### Metadata download
-
-The metadata of all entries is available as an array of JSON objects: {{< download href="/release/metadata.json" label="metadata.json (~1 MB)" >}}
+The AFP repositories with tooling and metadata can be found at [Heptapod](https://foss.heptapod.net/isa-afp).
+In particular, the [development version](https://foss.heptapod.net/isa-afp/afp-devel/) of the Archive 
+(for the development version of Isabelle) is available there.
 
 ### How to refer to AFP entries:
 

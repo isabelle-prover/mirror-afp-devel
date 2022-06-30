@@ -7729,8 +7729,7 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
       <guid>/download/</guid>
       <description>Current stable version (for most recent Isabelle release): Download all sessions: afp-current.tar.gz (~70 MB)
 Older stable versions: Please use the sourceforge download system to access older versions of the archive.
-Mercurial access: At Heptapod (development version of the Archive, for the development version of Isabelle)
-Metadata download The metadata of all entries is available as an array of JSON objects: metadata.json (~1 MB)
+Mercurial access: The AFP repositories with tooling and metadata can be found at Heptapod. In particular, the development version of the Archive (for the development version of Isabelle) is available there.
 How to refer to AFP entries: You can refer to AFP entries by using the AFP as an Isabelle component.</description>
     </item>
     
@@ -11847,7 +11846,7 @@ From Isabelle2021-1 on, the recommended method for making the whole AFP availabl
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>686 Entries   422 Authors   ~213,000 Lemmas   ~3,451,800 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>686 Entries   422 Authors   ~213,000 Lemmas   ~3,452,300 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>

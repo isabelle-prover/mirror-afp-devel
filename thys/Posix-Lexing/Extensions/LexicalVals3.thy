@@ -20,8 +20,8 @@ lemma LV_simps:
   and   "LV (NTimes r 0) s = (if s = [] then {Stars []} else {})"
 unfolding LV_def
   apply(auto intro: Prf.intros elim: Prf.cases)
-  by (simp add: Prf_NTimes_empty)
-  
+  apply(simp add: Prf_NTimes_empty)
+  done  
 
 abbreviation
   "Prefixes s \<equiv> {s'. prefix s' s}"
@@ -106,7 +106,32 @@ proof(induct s rule: length_induct)
 qed  
 
 definition
+  "Stars_Cons V Vs \<equiv> {Stars (v # vs) | v vs. v \<in> V \<and> Stars vs \<in> Vs}"
+
+definition
   "Stars_Append Vs1 Vs2 \<equiv> {Stars (vs1 @ vs2) | vs1 vs2. Stars vs1 \<in> Vs1 \<and> Stars vs2 \<in> Vs2}"
+
+fun Stars_Pow :: "('a val) set \<Rightarrow> nat \<Rightarrow> ('a val) set"
+where  
+  "Stars_Pow Vs 0 = {Stars []}"
+| "Stars_Pow Vs (Suc n) = Stars_Cons Vs (Stars_Pow Vs n)"
+  
+lemma finite_Stars_Cons:
+  assumes "finite V" "finite Vs"
+  shows "finite (Stars_Cons V Vs)"
+  using assms  
+proof -
+  from assms(2) have "finite (Stars -` Vs)"
+    by(simp add: finite_vimageI inj_on_def) 
+  with assms(1) have "finite (V \<times> (Stars -` Vs))"
+    by(simp)
+  then have "finite ((\<lambda>(v, vs). Stars (v # vs)) ` (V \<times> (Stars -` Vs)))"
+    by simp
+  moreover have "Stars_Cons V Vs = (\<lambda>(v, vs). Stars (v # vs)) ` (V \<times> (Stars -` Vs))"
+    unfolding Stars_Cons_def by auto    
+  ultimately show "finite (Stars_Cons V Vs)"   
+    by simp
+qed
 
 lemma finite_Stars_Append:
   assumes "finite Vs1" "finite Vs2"
@@ -126,6 +151,11 @@ proof -
   ultimately show "finite (Stars_Append Vs1 Vs2)"   
     by simp
 qed 
+ 
+lemma finite_Stars_Pow:
+  assumes "finite Vs"
+  shows "finite (Stars_Pow Vs n)"    
+by (induct n) (simp_all add: finite_Stars_Cons assms)
 
 lemma LV_NTimes_5:
   "LV (NTimes r n) s \<subseteq> Stars_Append (LV (Star r) s) (\<Union>i\<le>n. LV (NTimes r i) [])"
@@ -178,10 +208,85 @@ lemma finite_NTimes_empty:
   apply(simp add: inj_on_def)
   done
 
+lemma LV_From_5:
+  shows "LV (From r n) s \<subseteq> Stars_Append (LV (Star r) s) (\<Union>i\<le>n. LV (From r i) [])"
+apply(auto simp add: LV_def)
+apply(auto elim!: Prf_elims)
+apply(auto simp add: Stars_Append_def)
+apply(rule_tac x="vs1" in exI)
+apply(rule_tac x="vs2" in exI)  
+apply(auto)
+    using Prf.intros(6) apply(auto)
+      apply(rule_tac x="length vs2" in bexI)
+    thm Prf.intros
+      apply(subst append.simps(1)[symmetric])
+    apply(rule Prf.intros)
+      apply(auto)[1]
+      apply(auto)[1]
+     apply(simp)
+     apply(simp)
+      apply(rule_tac x="vs" in exI)
+    apply(rule_tac x="[]" in exI) 
+    apply(auto)
+    by (metis Prf.intros(9) append_Nil atMost_iff empty_iff le_imp_less_Suc less_antisym list.set(1) nth_mem zero_le)
+
+lemma LV_FROMNTIMES_3:
+  shows "LV (From r (Suc n)) [] = 
+    (\<lambda>(v,vs). Stars (v#vs)) ` (LV r [] \<times> (Stars -` (LV (From r n) [])))"
+unfolding LV_def
+apply(auto elim!: Prf_elims simp add: image_def)
+apply(case_tac vs1)
+apply(auto)
+apply(case_tac vs2)
+apply(auto)
+apply(subst append.simps(1)[symmetric])
+apply(rule Prf.intros)
+     apply(auto)
+  apply (metis le_imp_less_Suc length_greater_0_conv less_antisym list.exhaust list.set_intros(1) not_less_eq zero_le)
+  prefer 2
+  using nth_mem apply blast
+  apply(case_tac vs1)
+  apply (smt Groups.add_ac(2) Prf.intros(9) add.right_neutral add_Suc_right append.simps(1) insert_iff length_append list.set(2) list.size(3) list.size(4))
+    apply(auto)
+done   
+
+lemma LV_From_empty:
+ "LV (From r n) [] = Stars_Pow (LV r []) n" 
+  apply(induct n)
+   apply(simp add: LV_def)    
+   apply(auto elim: Prf_elims simp add: image_def)[1]
+   prefer 2
+    apply(subst append.simps[symmetric])
+    apply(rule Prf.intros)
+      apply(simp_all)
+   apply(erule Prf_elims) 
+    apply(case_tac vs1)
+     apply(simp)
+    apply(simp)
+   apply(case_tac x)
+    apply(simp_all)
+    apply(simp add: LV_FROMNTIMES_3 image_def Stars_Cons_def)
+  apply blast
+ done   
+
+lemma finite_From_empty:
+  assumes "\<forall>s. finite (LV r s)"
+  shows "finite (LV (From r n) s)"
+  apply(rule finite_subset)
+   apply(rule LV_From_5)
+  apply(rule finite_Stars_Append)
+    apply(rule LV_STAR_finite)
+   apply(rule assms)
+  apply(rule finite_UN_I)
+   apply(auto)
+  by (simp add: assms finite_Stars_Pow LV_From_empty)
+    
+
 lemma subseteq_Upto_Star:
   shows "LV (Upto r n) s \<subseteq> LV (Star r) s"
   apply(auto simp add: LV_def)
   by (metis Prf.intros(6) Prf_elims(8))
+
 
 lemma LV_finite:
   shows "finite (LV r s)"
@@ -233,7 +338,11 @@ next
   have "LV (Upto r n) s \<subseteq> LV (Star r) s"
     by (meson subseteq_Upto_Star) 
   ultimately show "finite (LV (Upto r n) s)"
-    using rev_finite_subset by blast    
+    using rev_finite_subset by blast 
+next 
+  case (From r n)
+  then show "finite (LV (From r n) s)"
+    by (simp add: finite_From_empty)
 qed
 
 
@@ -248,16 +357,25 @@ lemma Posix_LV:
   shows "v \<in> LV r s"
   using assms unfolding LV_def
   apply(induct rule: Posix.induct)
-          apply(auto simp add: intro!: Prf.intros elim!: Prf_elims Posix1a)
-  apply (smt (verit, best) One_nat_def Posix1a Posix_NTimes1 lang.simps(7))
-  using Prf_NTimes_empty by blast
+  using Prf.intros(4) flat.simps(1) apply blast
+  apply (simp add: Prf.intros(5))
+  apply (simp add: Prf.intros(2))
+  apply (simp add: Prf.intros(3))
+  apply (simp add: Prf.intros(1))
+  apply (smt (verit, best) CollectI Posix1(2) Posix1a Posix_Star1)
+  apply (simp add: Prf.intros(6))
+  apply (smt (verit, best) Posix1(2) Posix1a Posix_NTimes1 mem_Collect_eq)
+  using Posix1a Posix_NTimes2 apply fastforce
+  apply (smt (verit, ccfv_threshold) Posix1(2) Posix1a Posix_Upto1 mem_Collect_eq)
+  using Posix1a Posix_Upto2 apply fastforce
+  using Posix1a Posix_From2 apply fastforce
+  apply (smt (verit, best) Posix1(2) Posix1a Posix_From1 mem_Collect_eq)
+  by (smt (verit, best) Posix1a Posix_From3 flat.simps(7) mem_Collect_eq)
 
 lemma Posix_Prf:
   assumes "s \<in> r \<rightarrow> v"
   shows "\<turnstile> v : r"
   using assms Posix_LV LV_def
   by blast
-
-thm Posix1a
 
 end

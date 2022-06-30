@@ -21,8 +21,8 @@
       {{ $currentPage := . -}}
       <ul>
         {{- range .Site.Menus.main }}
-        <li {{ if $currentPage.IsMenuCurrent "main" . }}class="active" {{ end }}><a href="{{- .URL -}}">{{- .Name -}}
-          </a></li>
+        <a href="{{- .URL -}}"><li {{ if $currentPage.IsMenuCurrent "main" . }}class="active" {{ end }}>{{- .Name -}}
+          </li></a>
         {{- end }}
       </ul>
     </div>

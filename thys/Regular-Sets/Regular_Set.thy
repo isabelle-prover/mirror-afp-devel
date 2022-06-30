@@ -119,6 +119,14 @@ by(induct n arbitrary: w) (fastforce simp: conc_def)+
 lemma lang_pow_subset_lists: "A \<subseteq> lists S \<Longrightarrow> A ^^ n \<subseteq> lists S"
 by(induct n)(auto simp: conc_subset_lists)
 
+lemma empty_pow_add:
+  assumes "[] \<in> A" "s \<in> A ^^ n"
+  shows "s \<in> A ^^ (n + m)"
+  using assms
+  apply(induct m arbitrary: n)
+  apply(auto simp add: concI_if_Nil1)
+  done
+
 
 subsection\<open>@{const star}\<close>
 
@@ -231,6 +239,17 @@ lemma star_decom:
   assumes a: "x \<in> star A" "x \<noteq> []"
   shows "\<exists>a b. x = a @ b \<and> a \<noteq> [] \<and> a \<in> A \<and> b \<in> star A"
 using a by (induct rule: star_induct) (blast)+
+
+lemma star_pow:
+  assumes "s \<in> star A"
+  shows "\<exists>n. s \<in> A ^^ n"
+using assms
+apply(induct)
+apply(rule_tac x="0" in exI)
+apply(auto)
+apply(rule_tac x="Suc n" in exI)
+apply(auto)
+done
 
 
 subsection \<open>Left-Quotients of languages\<close>
