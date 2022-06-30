@@ -7729,8 +7729,7 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
       <guid>/download/</guid>
       <description>Current stable version (for most recent Isabelle release): Download all sessions: afp-current.tar.gz (~70 MB)
 Older stable versions: Please use the sourceforge download system to access older versions of the archive.
-Mercurial access: At Heptapod (development version of the Archive, for the development version of Isabelle)
-Metadata download The metadata of all entries is available as an array of JSON objects: metadata.json (~1 MB)
+Mercurial access: The AFP repositories with tooling and metadata can be found at Heptapod. In particular, the development version of the Archive (for the development version of Isabelle) is available there.
 How to refer to AFP entries: You can refer to AFP entries by using the AFP as an Isabelle component.</description>
     </item>
     
