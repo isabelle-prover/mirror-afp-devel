@@ -17,7 +17,7 @@ import org.jline.utils.InputStreamReader
 
 
 object AFP_Migrate_Metadata {
-  private class Context(
+  class Context private[AFP_Migrate_Metadata](
     names_mapping: Map[String, String],
     email_names: Map[String, String],
     dates_mapping: Map[String, String]

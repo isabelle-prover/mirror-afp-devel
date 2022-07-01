@@ -72,8 +72,9 @@ object AFP_Site_Gen {
           else Nil): _*)
 
     def from_keywords(keywords: List[String]): T =
-      keywords.zipWithIndex.map
-        { case (keyword, i) => isabelle.JSON.Object("id" -> i, "keyword" -> keyword) }
+      keywords.zipWithIndex.map {
+        case (keyword, i) => isabelle.JSON.Object("id" -> i, "keyword" -> keyword)
+      }
   }
 
 

@@ -11,7 +11,7 @@ import scala.collection.immutable.ListMap
 import scala.reflect.{ClassTag, classTag}
 import scala.util.Try
 import scala.util.matching.Regex
-import scala.util.parsing.combinator.Parsers
+import scala.util.parsing.combinator
 import scala.util.parsing.combinator.lexical.Scanners
 import scala.util.parsing.input.CharArrayReader.EofCh
 
@@ -118,7 +118,7 @@ object TOML {
 
   /* parser */
 
-  trait Parser extends Parsers {
+  trait Parsers extends combinator.Parsers {
     type Elem = Token
 
     def keys: Parser[List[Key]] = rep1sep(key, $$$("."))
@@ -226,12 +226,12 @@ object TOML {
     }
   }
 
-  object Parser extends Parser
+  object Parsers extends Parsers
 
 
   /* standard format */
 
-  def parse(s: String): T = Parser.parse(s)
+  def parse(s: String): T = Parsers.parse(s)
 
   /* format to a subset of TOML */
 
@@ -308,7 +308,7 @@ object TOML {
 
       /* inline: string, float, To_String, value array */
 
-      def inline(v: V, indent: Int = 0): Unit = {
+      def `inline`(v: V, indent: Int = 0): Unit = {
         def indentation(i: Int): Unit = for (_ <- Range(0, i)) result ++= "  "
 
         indentation(indent)
@@ -324,7 +324,7 @@ object TOML {
             } else {
               result ++= "[\n"
               list.foreach { elem =>
-                inline(elem, indent + 1)
+                `inline`(elem, indent + 1)
                 result ++= ",\n"
               }
               indentation(indent)
@@ -342,7 +342,7 @@ object TOML {
           case _ =>
             keys(path)
             result ++= " = "
-            inline(v)
+            `inline`(v)
             result += '\n'
         }
       }
