@@ -1,0 +1,34 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Real-Time Double-Ended Queue}
+\author{Balazs Toth and Tobias Nipkow\\Technical University of Munich}
+\maketitle
+
+\begin{abstract}
+A double-ended queue (\emph{deque}) is a queue where one can
+enqueue and dequeue at both ends. We define and verify the deque
+implementation by Chuang and Goldberg \cite{ChuangG93}. It is purely functional and all
+operations run in constant time.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

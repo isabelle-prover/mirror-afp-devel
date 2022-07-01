@@ -1,5 +1,5 @@
 {{ with $.Scratch.Get "index" }}
-	{{-  jsonify . -}}
+	{{-  jsonify (dict "indent" " ") . -}}
 {{ else }}
 	{{- $.Scratch.Add "index" slice -}}
 	{{- range $index, $element := where .Site.RegularPages "Type" "eq" "entries" -}}
@@ -22,5 +22,5 @@
           "link" $element.RelPermalink)
         -}}
 	{{- end -}}
-	{{- $.Scratch.Get "index" | jsonify -}}
+	{{- $.Scratch.Get "index" | jsonify (dict "indent" " ") -}}
 {{ end }}

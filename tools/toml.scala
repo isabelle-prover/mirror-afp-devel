@@ -91,7 +91,7 @@ object TOML {
 
     def multiline_basic_string: Parser[Token] =
       "\"\"\"" ~>!
-        rep(multiline_string_body | ("\"" | "\"\"") ~ multiline_string_body) <~
+        rep(multiline_string_body | ("\"" | "\"\"") ~ multiline_string_body ^^ { case s ~ t => s + t }) <~
         "\"\"\"" ^^
           (cs => Token(Kind.STRING, cs.mkString.stripPrefix("\n")))
 
