@@ -835,7 +835,7 @@ export_code
   String.explode String.implode
   in SML
   module_name PDDL_Checker_Exported
-  file "code/PDDL_STRIPS_Checker_Exported.sml"
+  file "PDDL_STRIPS_Checker_Exported.sml"
 
 export_code ast_domain.apply_effect_exec in SML module_name ast_domain
 
