@@ -139,29 +139,32 @@ proof
   thus "cone C \<subseteq> integer_hull (cone C)" by blast
 qed
 
-theorem decomposition_theorem_integer_hull_of_polyhedron: assumes A: "A \<in> carrier_mat nr n"
+theorem decomposition_theorem_integer_hull_of_polyhedron: 
+  assumes db: "is_det_bound db"
+  and A: "A \<in> carrier_mat nr n"
   and b: "b \<in> carrier_vec nr"
   and AI: "A \<in> \<int>\<^sub>m"
   and bI: "b \<in> \<int>\<^sub>v"
   and P: "P = polyhedron A b"
-  and Bnd: "Bnd = Max (abs ` (elements_mat A \<union> vec_set b))"
+  and Bnd: "of_int Bnd \<ge> Max (abs ` (elements_mat A \<union> vec_set b))"
 shows "\<exists> H C. H \<union> C \<subseteq> carrier_vec n \<inter> \<int>\<^sub>v 
-  \<and> H \<subseteq> Bounded_vec (fact (n+1) * (max 1 Bnd)^n)
-  \<and> C \<subseteq> Bounded_vec (fact n * (max 1 Bnd)^n)
+  \<and> H \<subseteq> Bounded_vec (of_nat (n + 1) * of_int (db n (max 1 Bnd)))
+  \<and> C \<subseteq> Bounded_vec (of_int (db n (max 1 Bnd)))
   \<and> finite (H \<union> C) 
   \<and> integer_hull P = convex_hull H + cone C"
 proof -
-  define DBnd where "DBnd = det_bound n (max 1 Bnd)" 
+  define MBnd where "MBnd = Max (abs ` (elements_mat A \<union> set\<^sub>v b))" 
+  define DBnd :: 'a where "DBnd = of_int (db n (max 1 Bnd))" 
   define nBnd where "nBnd = of_nat (n+1) * DBnd" 
-  have DBnd: "DBnd = fact n * (max 1 Bnd)^n" unfolding DBnd_def det_bound_def by auto
-  have nBnd: "nBnd = fact (n+1) * (max 1 Bnd)^n" unfolding nBnd_def DBnd
-    by auto
-  have DBnd0: "DBnd \<ge> 0" unfolding DBnd_def det_bound_def by auto
+  have DBnd0: "DBnd \<ge> 0" unfolding DBnd_def of_int_0_le_iff
+    by (rule is_det_bound_ge_zero[OF db], auto)
   have Pn: "P \<subseteq> carrier_vec n" unfolding P polyhedron_def by auto
-  have "A \<in> Bounded_mat Bnd \<and> b \<in> Bounded_vec Bnd"
-    unfolding Bnd Bounded_mat_elements_mat Bounded_vec_vec_set
+  have "A \<in> Bounded_mat MBnd \<and> b \<in> Bounded_vec MBnd"
+    unfolding MBnd_def Bounded_mat_elements_mat Bounded_vec_vec_set
     by (intro ballI conjI Max_ge finite_imageI imageI finite_UnI, auto)
-  from decomposition_theorem_polyhedra_1[OF A b P, of Bnd] AI bI this
+  hence "A \<in> Bounded_mat (of_int Bnd) \<and> b \<in> Bounded_vec (of_int Bnd)" 
+    using Bounded_mat_mono[OF Bnd] Bounded_vec_mono[OF Bnd] unfolding MBnd_def by auto
+  from decomposition_theorem_polyhedra_1[OF A b P, of db Bnd] db AI bI this
   obtain QQ Q C where C: "C \<subseteq> carrier_vec n" and finC: "finite C"
     and QQ: "QQ \<subseteq> carrier_vec n" and finQ: "finite QQ" and BndQQ: "QQ \<subseteq> Bounded_vec DBnd"
     and P: "P = Q + cone C"
@@ -297,7 +300,7 @@ proof -
   qed
   finally have "integer_hull (Q + B) + cone C \<subseteq> integer_hull P" .
   with one_dir have id: "integer_hull P = integer_hull (Q + B) + cone C" by auto
-  show ?thesis unfolding id unfolding integer_hull_def nBnd[symmetric] DBnd[symmetric]
+  show ?thesis unfolding id unfolding integer_hull_def DBnd_def[symmetric] nBnd_def[symmetric]
   proof (rule exI[of _ "(Q + B) \<inter> \<int>\<^sub>v"], intro exI[of _ C] conjI refl BndC)
     from QB_Bnd show "(Q + B) \<inter> \<int>\<^sub>v \<subseteq> Bounded_vec nBnd" by auto
     show "(Q + B) \<inter> \<int>\<^sub>v \<union> C \<subseteq> carrier_vec n \<inter> \<int>\<^sub>v" 
@@ -311,9 +314,12 @@ corollary integer_hull_of_polyhedron: assumes A: "A \<in> carrier_mat nr n"
   and AI: "A \<in> \<int>\<^sub>m"
   and bI: "b \<in> \<int>\<^sub>v"
   and P: "P = polyhedron A b"
-shows "\<exists> A' b' nr'. A' \<in> carrier_mat nr' n \<and> b' \<in> carrier_vec nr' \<and> integer_hull P = polyhedron A' b'"
+shows "\<exists> A' b' nr'. A' \<in> carrier_mat nr' n \<and> b' \<in> carrier_vec nr' \<and> 
+  integer_hull P = polyhedron A' b'"
 proof -
-  from decomposition_theorem_integer_hull_of_polyhedron[OF A b AI bI P refl]
+  obtain Bnd where Bnd: "Max (abs ` (elements_mat A \<union> set\<^sub>v b)) \<le> of_int Bnd"
+    by (meson ex_le_of_int) 
+  from decomposition_theorem_integer_hull_of_polyhedron[OF det_bound_fact A b AI bI P Bnd]
   obtain H C
     where HC: "H \<union> C \<subseteq> carrier_vec n \<inter> \<int>\<^sub>v" "finite (H \<union> C)" 
       and decomp: "integer_hull P = convex_hull H + cone C" by auto
@@ -322,11 +328,12 @@ proof -
 qed
 
 corollary small_integer_solution_nonstrict_via_decomp: fixes A :: "'a mat"
-  assumes A: "A \<in> carrier_mat nr n"
+  assumes db: "is_det_bound db"
+    and A: "A \<in> carrier_mat nr n"
     and b: "b \<in> carrier_vec nr"
     and AI: "A \<in> \<int>\<^sub>m"
     and bI: "b \<in> \<int>\<^sub>v"
-    and Bnd: "Bnd = Max (abs ` (elements_mat A \<union> vec_set b))"
+    and Bnd: "of_int Bnd \<ge> Max (abs ` (elements_mat A \<union> vec_set b))"
     and x: "x \<in> carrier_vec n"
     and xI: "x \<in> \<int>\<^sub>v"
     and sol: "A *\<^sub>v x \<le> b"
@@ -334,14 +341,14 @@ corollary small_integer_solution_nonstrict_via_decomp: fixes A :: "'a mat"
   y \<in> carrier_vec n \<and>
   y \<in> \<int>\<^sub>v \<and>
   A *\<^sub>v y \<le> b \<and>
-  y \<in> Bounded_vec (fact (n+1) * (max 1 Bnd)^n)"
+  y \<in> Bounded_vec (of_nat (n+1) * of_int (db n (max 1 Bnd)))"
 proof -
   from x sol have "x \<in> polyhedron A b" unfolding polyhedron_def by auto
   with xI x have xsol: "x \<in> integer_hull (polyhedron A b)" unfolding integer_hull_def
     by (meson IntI convex_hull_mono in_mono inf_sup_ord(1) inf_sup_ord(2) set_in_convex_hull)
-  from decomposition_theorem_integer_hull_of_polyhedron[OF A b AI bI refl Bnd]
+  from decomposition_theorem_integer_hull_of_polyhedron[OF db A b AI bI refl Bnd]
   obtain H C where HC: "H \<union> C \<subseteq> carrier_vec n \<inter> \<int>\<^sub>v" 
-    "H \<subseteq> Bounded_vec (fact (n + 1) * max 1 Bnd ^ n)" 
+    "H \<subseteq> Bounded_vec (of_nat (n + 1) * of_int (db n (max 1 Bnd)))" 
     "finite (H \<union> C)" and
     id: "integer_hull (polyhedron A b) = convex_hull H + cone C" 
     by auto
@@ -359,6 +366,9 @@ proof -
   show ?thesis
     by (intro exI[of _ h] conjI h, insert HC hH, auto)
 qed
+
+lemmas small_integer_solution_nonstrict_via_decomp_gram = 
+  small_integer_solution_nonstrict_via_decomp[OF det_bound_gram, unfolded det_bound_gram_def]
 
 end
 end
