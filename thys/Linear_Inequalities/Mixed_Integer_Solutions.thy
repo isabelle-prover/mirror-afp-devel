@@ -364,34 +364,111 @@ qed
 lemmas small_mixed_integer_solution_int_mat_gram = 
   small_mixed_integer_solution_int_mat[OF det_bound_gram, unfolded det_bound_gram_def of_int_mult of_int_of_nat_eq]
 
+end
 
+lemma of_int_hom_le: "(of_int_hom.vec_hom v :: 'a :: linordered_field vec) \<le> of_int_hom.vec_hom w \<longleftrightarrow> v \<le> w"
+  unfolding less_eq_vec_def by auto
 
-corollary small_integer_solution_nonstrict: fixes A :: "'a mat"
+lemma of_int_hom_less: "(of_int_hom.vec_hom v :: 'a :: linordered_field vec) <\<^sub>v of_int_hom.vec_hom w \<longleftrightarrow> v <\<^sub>v w"
+  unfolding less_vec_def by auto
+
+lemma Ints_vec_to_int_vec: assumes "v \<in> \<int>\<^sub>v" 
+  shows "\<exists> w. v = map_vec of_int w" 
+proof -
+  have "\<forall> i. \<exists> x. i < dim_vec v \<longrightarrow> v $ i = of_int x" 
+    using assms unfolding Ints_vec_def Ints_def by auto
+  from choice[OF this] obtain x where "\<And> i. i < dim_vec v \<Longrightarrow> v $ i = of_int (x i)" 
+    by auto
+  thus ?thesis
+    by (intro exI[of _ "vec (dim_vec v) x"], auto)
+qed
+
+lemma small_integer_solution: fixes A\<^sub>1 :: "int mat"
+  assumes db: "is_det_bound db" 
+    and A1: "A\<^sub>1 \<in> carrier_mat nr\<^sub>1 n"
+    and A2: "A\<^sub>2 \<in> carrier_mat nr\<^sub>2 n"
+    and b1: "b\<^sub>1 \<in> carrier_vec nr\<^sub>1"
+    and b2: "b\<^sub>2 \<in> carrier_vec nr\<^sub>2"
+    and A1Bnd: "A\<^sub>1 \<in> Bounded_mat Bnd"
+    and b1Bnd: "b\<^sub>1 \<in> Bounded_vec Bnd"
+    and A2Bnd: "A\<^sub>2 \<in> Bounded_mat Bnd"
+    and b2Bnd: "b\<^sub>2 \<in> Bounded_vec Bnd"
+    and x: "x \<in> carrier_vec n"
+    and sol_nonstrict: "A\<^sub>1 *\<^sub>v x \<le> b\<^sub>1"
+    and sol_strict: "A\<^sub>2 *\<^sub>v x <\<^sub>v b\<^sub>2"
+    and non_degenerate: "nr\<^sub>1 \<noteq> 0 \<or> nr\<^sub>2 \<noteq> 0 \<or> Bnd \<ge> 0" 
+  shows "\<exists> x.
+    x \<in> carrier_vec n \<and>
+    A\<^sub>1 *\<^sub>v x \<le> b\<^sub>1 \<and>
+    A\<^sub>2 *\<^sub>v x <\<^sub>v b\<^sub>2 \<and>
+    x \<in> Bounded_vec (of_nat (n+1) * db n Bnd)"
+proof -
+  let ?oi = rat_of_int
+  let ?x = "map_vec ?oi x" 
+  let ?oiM = "map_mat ?oi"
+  let ?oiv = "map_vec ?oi"
+  from x have xx: "?x \<in> carrier_vec n" by auto
+  have Int: "?x \<in> indexed_Ints_vec UNIV" unfolding indexed_Ints_vec_def Ints_def by auto
+  interpret gram_schmidt_floor n "TYPE(rat)" .
+  from  
+    small_mixed_integer_solution_int_mat[OF db A1 A2 b1 b2 A1Bnd b1Bnd A2Bnd b2Bnd xx Int 
+      _ _ non_degenerate, 
+      folded of_int_hom.mult_mat_vec_hom[OF A1 x] of_int_hom.mult_mat_vec_hom[OF A2 x],
+      unfolded of_int_hom_less of_int_hom_le, OF sol_nonstrict sol_strict, folded indexed_Ints_vec_UNIV] 
+  obtain x where
+    x: "x \<in> carrier_vec n" and
+    xI: "x \<in> \<int>\<^sub>v" and
+    le: "?oiM A\<^sub>1 *\<^sub>v x \<le> ?oiv b\<^sub>1" and
+    less: "?oiM A\<^sub>2 *\<^sub>v x <\<^sub>v ?oiv b\<^sub>2" and
+    Bnd: "x \<in> Bounded_vec (?oi (int (n + 1) * db n Bnd))" 
+    by blast
+  from Ints_vec_to_int_vec[OF xI] obtain xI where xI: "x = ?oiv xI" by auto
+  from x[unfolded xI] have x: "xI \<in> carrier_vec n" by auto
+  from le[unfolded xI, folded of_int_hom.mult_mat_vec_hom[OF A1 x], unfolded of_int_hom_le]
+  have le: "A\<^sub>1 *\<^sub>v xI \<le> b\<^sub>1" .
+  from less[unfolded xI, folded of_int_hom.mult_mat_vec_hom[OF A2 x], unfolded of_int_hom_less]
+  have less: "A\<^sub>2 *\<^sub>v xI <\<^sub>v b\<^sub>2" .
+  show ?thesis
+  proof (intro exI[of _ xI] conjI x le less)
+     show "xI \<in> Bounded_vec (int (n + 1) * db n Bnd)" 
+      unfolding Bounded_vec_def
+    proof clarsimp
+      fix i
+      assume i: "i < dim_vec xI" 
+      with Bnd[unfolded Bounded_vec_def]
+      have "\<bar>x $ i\<bar> \<le> ?oi (int (n + 1) * db n Bnd)" by (auto simp: xI)
+      also have "\<bar>x $ i\<bar> = ?oi (\<bar>xI $ i\<bar>)" unfolding xI using i by simp
+      finally show "\<bar>xI $ i\<bar> \<le> (1 + int n) * db n Bnd" unfolding of_int_le_iff by auto
+    qed
+  qed
+qed  
+
+corollary small_integer_solution_nonstrict: fixes A :: "int mat"
   assumes db: "is_det_bound db" 
     and A: "A \<in> carrier_mat nr n"
     and b: "b \<in> carrier_vec nr"
-    and ABnd: "A \<in> \<int>\<^sub>m \<inter> Bounded_mat (of_int Bnd)"
-    and bBnd: "b \<in> \<int>\<^sub>v \<inter> Bounded_vec (of_int Bnd)"
+    and ABnd: "A \<in> Bounded_mat Bnd"
+    and bBnd: "b \<in> Bounded_vec Bnd"
     and x: "x \<in> carrier_vec n"
-    and xI: "x \<in> \<int>\<^sub>v"
     and sol: "A *\<^sub>v x \<le> b"
     and non_degenerate: "nr \<noteq> 0 \<or> Bnd \<ge> 0" 
   shows "\<exists> y.
   y \<in> carrier_vec n \<and>
-  y \<in> \<int>\<^sub>v \<and>
   A *\<^sub>v y \<le> b \<and>
-  y \<in> Bounded_vec (of_int (of_nat (n+1) * db n Bnd))"
+  y \<in> Bounded_vec (of_nat (n+1) * db n Bnd)"
 proof -
-  let ?A2 = "0\<^sub>m 0 n :: 'a mat"
-  let ?b2 = "0\<^sub>v 0 :: 'a vec"
+  let ?A2 = "0\<^sub>m 0 n :: int mat"
+  let ?b2 = "0\<^sub>v 0 :: int vec"
   from non_degenerate have degen: "nr \<noteq> 0 \<or> (0 :: nat) \<noteq> 0 \<or> Bnd \<ge> 0" by auto
-  have "\<exists>y. y \<in> carrier_vec n \<and> y \<in> \<int>\<^sub>v \<and> A *\<^sub>v y \<le> b \<and> ?A2 *\<^sub>v y <\<^sub>v ?b2
-  \<and> y \<in> Bounded_vec (of_int (of_nat (n+1) * db n Bnd))"
-    by (rule small_mixed_integer_solution[OF db A _ b _ ABnd bBnd _ _ x _ sol, of ?A2 0 ?b2 UNIV,
-          folded indexed_Ints_vec_UNIV], insert xI degen,
-        auto simp: Ints_vec_def Ints_mat_def Bounded_mat_def Bounded_vec_def less_vec_def)
+  have "\<exists>y. y \<in> carrier_vec n \<and> A *\<^sub>v y \<le> b \<and> ?A2 *\<^sub>v y <\<^sub>v ?b2
+  \<and> y \<in> Bounded_vec (of_nat (n+1) * db n Bnd)"
+    apply (rule small_integer_solution[OF db A _ b _ ABnd bBnd _ _ x sol _ degen])
+    by (auto simp: Bounded_mat_def Bounded_vec_def less_vec_def)
   thus ?thesis by blast
 qed
 
-end
+lemmas small_integer_solution_nonstrict_gram = 
+  small_integer_solution_nonstrict[OF det_bound_gram, unfolded det_bound_gram_def]
+
+
 end
