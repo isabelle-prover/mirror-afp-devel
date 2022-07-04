@@ -236,7 +236,7 @@ proof -
 qed
 
 
-lemma det_bound_gram_squared: fixes A::"'a :: trivial_conjugatable_linordered_field mat"
+lemma det_bound_hadamard_squared: fixes A::"'a :: trivial_conjugatable_linordered_field mat"
   assumes A: "A \<in> carrier_mat n n" 
     and Bnd: "A \<in> Bounded_mat c"  
   shows "(abs (det A))^2 \<le> of_nat n ^ n * c ^ (2 * n)"
@@ -269,24 +269,46 @@ next
   with A show ?thesis by auto 
 qed
 
-definition det_bound_gram :: "nat \<Rightarrow> int \<Rightarrow> int" where
-  "det_bound_gram n c = sqrt_int_floor ((int n * c^2)^n)" 
+definition det_bound_hadamard :: "nat \<Rightarrow> int \<Rightarrow> int" where
+  "det_bound_hadamard n c = (sqrt_int_floor ((int n * c^2)^n))" 
 
-lemma det_bound_gram: "is_det_bound det_bound_gram" 
+lemma det_bound_hadamard_altdef[code]: 
+  "det_bound_hadamard n c = (if n = 1 \<or> even n then int n ^ (n div 2) * (abs c)^n else sqrt_int_floor ((int n * c^2)^n))" 
+proof (cases "n = 1 \<or> even n")
+  case False
+  thus ?thesis unfolding det_bound_hadamard_def by auto
+next
+  case True
+  define thesis where "thesis = ?thesis" 
+  have "thesis \<longleftrightarrow> sqrt_int_floor ((int n * c^2)^n) = int n ^ (n div 2) * abs c^n" 
+    using True unfolding thesis_def det_bound_hadamard_def by auto
+  also have "(int n * c^2)^n = int n^n * c^(2 * n)" 
+    unfolding power_mult[symmetric] power_mult_distrib by (simp add: ac_simps)
+  also have "int n^n = int n ^ (2 * (n div 2))" using True by auto
+  also have "\<dots> * c^(2 * n) = (int n ^ (n div 2) * c^n)^2" 
+    unfolding power_mult_distrib power_mult[symmetric] by (simp add: ac_simps)
+  also have "sqrt_int_floor \<dots> = int n ^ (n div 2) * \<bar>c\<bar> ^ n" 
+    unfolding sqrt_int_floor of_int_power real_sqrt_abs of_int_abs[symmetric] floor_of_int
+     abs_mult power_abs by simp
+  finally have thesis by auto
+  thus ?thesis unfolding thesis_def by auto
+qed
+  
+lemma det_bound_hadamard: "is_det_bound det_bound_hadamard" 
   unfolding is_det_bound_def
 proof (intro allI impI)
   fix A :: "int mat" and n c
-  assume A: "A \<in> carrier_mat n n" and Bnd: "A \<in> Bounded_mat c"  
+  assume A: "A \<in> carrier_mat n n" and BndA: "A \<in> Bounded_mat c"  
   let ?h = rat_of_int
   let ?hA = "map_mat ?h A"
   let ?hc = "?h c" 
   from A have hA: "?hA \<in> carrier_mat n n" by auto
-  from Bnd have Bnd: "?hA \<in> Bounded_mat ?hc" 
+  from BndA have Bnd: "?hA \<in> Bounded_mat ?hc" 
     unfolding Bounded_mat_def 
     by (auto, unfold of_int_abs[symmetric] of_int_le_iff, auto)
   have sqrt: "sqrt ((real n * (real_of_int c)\<^sup>2) ^ n) \<ge> 0" 
     by simp
-  from det_bound_gram_squared[OF hA Bnd, unfolded of_int_hom.hom_det of_int_abs[symmetric]]
+  from det_bound_hadamard_squared[OF hA Bnd, unfolded of_int_hom.hom_det of_int_abs[symmetric]]
   have "?h ( \<bar>det A\<bar>^2) \<le> ?h (int n ^ n * c ^ (2 * n))" by simp
   from this[unfolded of_int_le_iff]
   have "\<bar>det A\<bar>^2 \<le> int n ^ n * c ^ (2 * n)" .
@@ -295,7 +317,7 @@ proof (intro allI impI)
   hence "sqrt_int_floor (\<bar>det A\<bar>\<^sup>2) \<le> sqrt_int_floor ((int n * c\<^sup>2) ^ n)" 
     unfolding sqrt_int_floor by (intro floor_mono real_sqrt_le_mono, linarith)
   also have "sqrt_int_floor (\<bar>det A\<bar>\<^sup>2) = \<bar>det A\<bar>" by (simp del: of_int_abs add: of_int_abs[symmetric])
-  finally show "\<bar>det A\<bar> \<le> det_bound_gram n c" unfolding det_bound_gram_def by simp
+  finally show "\<bar>det A\<bar> \<le> det_bound_hadamard n c" unfolding det_bound_hadamard_def by simp
 qed
 
 lemma n_pow_n_le_fact_square: "n ^ n \<le> (fact n)^2" 
@@ -342,22 +364,103 @@ lemma sqrt_int_floor_bound: "0 \<le> x \<Longrightarrow> (sqrt_int_floor x)^2 \<
   unfolding sqrt_int_floor_def
   using root_int_floor_def root_int_floor_pos_lower by auto
 
-lemma det_bound_gram_improves_det_bound_fact: assumes c: "c \<ge> 0" 
-  shows "det_bound_gram n c \<le> det_bound_fact n c" 
+lemma det_bound_hadamard_improves_det_bound_fact: assumes c: "c \<ge> 0" 
+  shows "det_bound_hadamard n c \<le> det_bound_fact n c" 
 proof -
-  have "(det_bound_gram n c)^2 \<le> (int n * c\<^sup>2) ^ n" unfolding det_bound_gram_def
+  have "(det_bound_hadamard n c)^2 \<le> (int n * c\<^sup>2) ^ n" unfolding det_bound_hadamard_def
     by (rule sqrt_int_floor_bound, auto)
   also have "\<dots> = int (n ^ n) * c^(2 * n)" by (simp add: power_mult power_mult_distrib)
   also have "\<dots> \<le> int ((fact n)^2) * c^(2 * n)"
     by (intro mult_right_mono, unfold of_nat_le_iff, rule n_pow_n_le_fact_square, auto)
   also have "\<dots> = (det_bound_fact n c)^2" unfolding det_bound_fact_def
     by (simp add: power_mult_distrib power_mult[symmetric] ac_simps)
-  finally have "abs (det_bound_gram n c) \<le> abs (det_bound_fact n c)" 
+  finally have "abs (det_bound_hadamard n c) \<le> abs (det_bound_fact n c)" 
     unfolding abs_le_square_iff .
-  hence "det_bound_gram n c \<le> abs (det_bound_fact n c)" by simp
+  hence "det_bound_hadamard n c \<le> abs (det_bound_fact n c)" by simp
   also have "\<dots> = det_bound_fact n c" unfolding det_bound_fact_def using c by auto
   finally show ?thesis .
 qed
+
+(* TODO: move *)
+lemma det_single: assumes "A \<in> carrier_mat 1 1" 
+  shows "det A = A $$ (0,0)" 
+  by (subst det_upper_triangular[of _ 1], insert assms, auto simp: diag_mat_def)
+
+lemma det_four_block_mat: assumes A: "A \<in> carrier_mat n n"
+  and B: "B \<in> carrier_mat n n" 
+  and C: "C \<in> carrier_mat n n"
+  and D: "D \<in> carrier_mat n n"
+  and comm: "C * D = D * C" 
+shows "det (four_block_mat A B C D) = det (A * D - B * C)" oops
+
+context
+  assumes det_four_block_mat:
+  "\<And> A B C D :: int mat. A \<in> carrier_mat n n \<Longrightarrow>
+ B \<in> carrier_mat n n \<Longrightarrow>
+ C \<in> carrier_mat n n \<Longrightarrow>
+ D \<in> carrier_mat n n \<Longrightarrow>
+ C * D = D * C \<Longrightarrow> det (four_block_mat A B C D) = det (A * D - B * C)" 
+begin
+private fun syl :: "int \<Rightarrow> nat \<Rightarrow> int mat" where
+  "syl c 0 = mat 1 1 (\<lambda> _. c)" 
+| "syl c (Suc n) = (let A = syl c n in
+     four_block_mat A A (-A) A)" 
+
+private lemma syl: assumes c: "c \<ge> 0" 
+  shows "syl c n \<in> Bounded_mat c \<and> syl c n \<in> carrier_mat (2^n) (2^n)
+    \<and> det (syl c n) = det_bound_hadamard (2^n) c"
+proof (cases "n = 0")
+  case True
+  thus ?thesis using c 
+    unfolding det_bound_hadamard_altdef 
+    by (auto simp: Bounded_mat_def det_single)
+next
+  case False
+  then obtain m where n: "n = Suc m" by (cases n, auto)
+  show ?thesis unfolding n
+  proof (induct m)
+    case 0
+    show ?case unfolding syl.simps Let_def using c
+      by ((subst det_four_block_mat[of _ 1]; force?), subst det_single, 
+        auto simp: Bounded_mat_def scalar_prod_def det_bound_hadamard_altdef power2_eq_square)
+  next
+    case (Suc m)
+    define A where "A = syl c (Suc m)" 
+    let ?FB = "four_block_mat A A (- A) A" 
+    define n :: nat where "n = 2 ^ Suc m" 
+    from Suc[folded A_def n_def]
+    have Bnd: "A \<in> Bounded_mat c" 
+      and A: "A \<in> carrier_mat n n" 
+      and detA: "det A = det_bound_hadamard n c" 
+      by auto
+    have n2: "2 ^ Suc (Suc m) = 2 * n" unfolding n_def by auto
+    show ?case unfolding syl.simps(2)[of _ "Suc m"] A_def[symmetric] Let_def n2
+    proof (intro conjI)
+      show "?FB \<in> carrier_mat (2 * n) (2 * n)" using A by auto
+      show "?FB \<in> Bounded_mat c" using Bnd A unfolding Bounded_mat_elements_mat
+        by (subst elements_four_block_mat_id, auto)
+      have ev: "even n" and sum: "n div 2 + n div 2 = n" unfolding n_def by auto
+      have n2: "n * 2 = n + n" by simp
+      have "det ?FB = det (A * A - A * - A)"
+        by (rule det_four_block_mat[OF A A _ A], insert A, auto)
+      also have "A * A - A * - A = A * A + A * A" using A by auto
+      also have "\<dots> = 2 \<cdot>\<^sub>m (A * A)" using A by auto
+      also have "det \<dots> = 2^n * det (A * A)"
+        by (subst det_smult, insert A, auto)
+      also have "det (A * A) = det A * det A" by (rule det_mult[OF A A])
+      also have "2^n * \<dots> = det_bound_hadamard (2 * n) c" unfolding detA
+        unfolding det_bound_hadamard_altdef by (simp add: ev ac_simps power_add[symmetric] sum n2)
+      finally show "det ?FB = det_bound_hadamard (2 * n) c" .
+    qed
+  qed
+qed
+
+lemma det_bound_hadamard_tight: 
+    assumes c: "c \<ge> 0" 
+      and "n = 2^m" 
+    shows "\<exists> A. A \<in> carrier_mat n n \<and> A \<in> Bounded_mat c \<and> det A = det_bound_hadamard n c" 
+  by (rule exI[of _ "syl c m"], insert syl[OF c, of m, folded assms(2)], auto)
+end
 
 lemma Ints_matE: assumes "A \<in> \<int>\<^sub>m" 
   shows "\<exists> B. A = map_mat of_int B" 

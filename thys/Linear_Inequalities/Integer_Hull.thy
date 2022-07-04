@@ -367,8 +367,8 @@ proof -
     by (intro exI[of _ h] conjI h, insert HC hH, auto)
 qed
 
-lemmas small_integer_solution_nonstrict_via_decomp_gram = 
-  small_integer_solution_nonstrict_via_decomp[OF det_bound_gram, unfolded det_bound_gram_def]
+lemmas small_integer_solution_nonstrict_via_decomp_hadamard = 
+  small_integer_solution_nonstrict_via_decomp[OF det_bound_hadamard, unfolded det_bound_hadamard_def]
 
 end
 end

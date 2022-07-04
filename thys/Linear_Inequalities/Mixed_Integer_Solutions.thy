@@ -299,8 +299,8 @@ next
   qed
 qed
 
-lemmas small_mixed_integer_solution_gram = 
-  small_mixed_integer_solution[OF det_bound_gram, unfolded det_bound_gram_def of_int_mult of_int_of_nat_eq]
+lemmas small_mixed_integer_solution_hadamard = 
+  small_mixed_integer_solution[OF det_bound_hadamard, unfolded det_bound_hadamard_def of_int_mult of_int_of_nat_eq]
 
 lemma Bounded_vec_of_int: assumes "v \<in> Bounded_vec bnd" 
   shows "(map_vec of_int v :: 'a vec) \<in> \<int>\<^sub>v \<inter> Bounded_vec (of_int bnd)" 
@@ -362,7 +362,7 @@ proof -
 qed
 
 lemmas small_mixed_integer_solution_int_mat_gram = 
-  small_mixed_integer_solution_int_mat[OF det_bound_gram, unfolded det_bound_gram_def of_int_mult of_int_of_nat_eq]
+  small_mixed_integer_solution_int_mat[OF det_bound_hadamard, unfolded det_bound_hadamard_def of_int_mult of_int_of_nat_eq]
 
 end
 
@@ -468,7 +468,7 @@ proof -
 qed
 
 lemmas small_integer_solution_nonstrict_gram = 
-  small_integer_solution_nonstrict[OF det_bound_gram, unfolded det_bound_gram_def]
+  small_integer_solution_nonstrict[OF det_bound_hadamard, unfolded det_bound_hadamard_def]
 
 
 end
