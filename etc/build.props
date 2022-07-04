@@ -6,6 +6,7 @@ requirements = \
 sources = \
   tools/admin/afp_build_hugo.scala \
   tools/migration/afp_migrate_metadata.scala \
+  tools/migration/afp_obfuscate_emails.scala \
   tools/afp_build.scala \
   tools/afp_check_metadata.scala \
   tools/afp_check_roots.scala \
