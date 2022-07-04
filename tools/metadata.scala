@@ -20,10 +20,20 @@ object Metadata
     extends Affiliation(author)
 
   case class Email(override val author: Author.ID, id: Email.ID, address: String)
-    extends Affiliation(author)
+    extends Affiliation(author) {
+
+    private val Address = "([^@]+)@(.+)".r
+    val (user, host) = address match {
+      case Address(user, host) => (user, host)
+      case _ => error("Invalid address: " + address)
+    }
+  }
 
   object Email {
     type ID = String
+
+    def apply(author: Author.ID, id: Email.ID, user: String, host: String): Email =
+      Email(author, id, user + "@" + host)
   }
 
   case class Homepage(override val author: Author.ID, id: Homepage.ID, url: String)
@@ -95,36 +105,48 @@ object Metadata
       elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.map(_.toString))))
 
 
+    /* email */
+
+    def from_email(email: Email): T = {
+      T(
+        "user" -> email.user.split('.').toList,
+        "host" -> email.host.split('.').toList)
+    }
+
+    def to_email(author_id: Author.ID, email_id: Email.ID, email: T): Email = {
+      val user = get_as[List[String]](email, "user")
+      val host = get_as[List[String]](email, "host")
+      Email(author_id, email_id, user.mkString("."), host.mkString("."))
+    }
+
+
     /* author */
 
-    def from_authors(authors: List[Author]): T = {
-      def from_author(author: Author): T =
-        T(
-          "name" -> author.name,
-          "emails" -> T(author.emails.map(email => email.id -> email.address)),
-          "homepages" -> T(author.homepages.map(homepage => homepage.id -> homepage.url)))
+    def from_author(author: Author): T =
+      T(
+        "name" -> author.name,
+        "emails" -> T(author.emails.map(email => email.id -> from_email(email))),
+        "homepages" -> T(author.homepages.map(homepage => homepage.id -> homepage.url)))
 
-      T(authors.map(author => author.id -> from_author(author)))
-    }
-
-    def to_authors(authors: T): List[Author] = {
-      def to_author(author_id: Author.ID, author: T): Author = {
-        val emails = split_as[String](get_as[T](author, "emails")) map {
-          case (id, address) => Email(author = author_id, id = id, address = address)
-        }
-        val homepages = split_as[String](get_as[T](author, "homepages")) map {
-          case (id, url) => Homepage(author = author_id, id = id, url = url)
-        }
-        Author(
-          id = author_id,
-          name = get_as[String](author, "name"),
-          emails = emails,
-          homepages = homepages
-        )
+    def to_author(author_id: Author.ID, author: T): Author = {
+      val emails = split_as[T](get_as[T](author, "emails")) map {
+        case (id, email) => to_email(author_id, id, email)
       }
-
-      split_as[T](authors).map { case (id, author) => to_author(id, author) }
+      val homepages = split_as[String](get_as[T](author, "homepages")) map {
+        case (id, url) => Homepage(author = author_id, id = id, url = url)
+      }
+      Author(
+        id = author_id,
+        name = get_as[String](author, "name"),
+        emails = emails,
+        homepages = homepages)
     }
+
+    def from_authors(authors: List[Author]): T =
+      T(authors.map(author => author.id -> from_author(author)))
+
+    def to_authors(authors: T): List[Author] =
+      split_as[T](authors).map { case (id, author) => to_author(id, author) }
 
 
     /* topics */

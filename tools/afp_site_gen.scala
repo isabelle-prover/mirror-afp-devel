@@ -7,7 +7,7 @@ package afp
 
 import isabelle._
 
-import afp.Metadata.{Affiliation, Author, Email, Entry, Homepage}
+import afp.Metadata._
 
 
 object AFP_Site_Gen {
@@ -20,29 +20,38 @@ object AFP_Site_Gen {
       type T = isabelle.JSON.Object.T
     }
 
-    def from_authors(authors: List[Metadata.Author]): T = {
+    def from_email(email: Email): T = {
+      def rev_spans(elems: List[String]): String =
+        elems.map(e => "<span class=\"rev\">" + e.reverse + "</span>").toList.reverse.mkString(".")
+      val address = rev_spans(email.host.split('.').toList) + "@" + rev_spans(email.user.split('.').toList)
+      isabelle.JSON.Object(
+        "user" -> email.user.split('.').toList,
+        "host" -> email.host.split('.').toList)
+    }
+
+    def from_authors(authors: List[Author]): T = {
       authors.map(author => author.id -> isabelle.JSON.Object(
         "name" -> author.name,
-        "emails" -> author.emails.map(_.address),
+        "emails" -> author.emails.map(from_email),
         "homepages" -> author.homepages.map(_.url))).toMap
     }
 
-    def from_topics(topics: List[Metadata.Topic]): T =
+    def from_topics(topics: List[Topic]): T =
       topics.map(topic => isabelle.JSON.Object(topic.name -> from_topics(topic.sub_topics)))
 
-    def from_affiliations(affiliations: List[Metadata.Affiliation]): Object.T = {
-      Utils.group_sorted(affiliations, (a: Metadata.Affiliation) => a.author).view.mapValues(
+    def from_affiliations(affiliations: List[Affiliation]): Object.T = {
+      Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues(
       { author_affiliations =>
-        val homepage = author_affiliations.collectFirst { case Metadata.Homepage(_, _, url) => url }
-        val email = author_affiliations.collectFirst { case Metadata.Email(_, _, address) => address }
+        val homepage = author_affiliations.collectFirst { case homepage: Homepage => homepage }
+        val email = author_affiliations.collectFirst { case email: Email => email }
 
         isabelle.JSON.Object(
-          homepage.map(s => List("homepage" -> s)).getOrElse(Nil) :::
-            email.map(s => List("email" -> s)).getOrElse(Nil): _*)
+          homepage.map(homepage => List("homepage" -> homepage.url)).getOrElse(Nil) :::
+            email.map(email => List("email" -> from_email(email))).getOrElse(Nil): _*)
       }).toMap
     }
 
-    def from_change_history(history: Metadata.Change_History): Object.T = {
+    def from_change_history(history: Change_History): Object.T = {
       if (history.isEmpty) {
         Map.empty
       } else {
@@ -52,7 +61,7 @@ object AFP_Site_Gen {
       }
     }
 
-    def from_entry(entry: Metadata.Entry): JSON.Object.T =
+    def from_entry(entry: Entry): JSON.Object.T =
       isabelle.JSON.Object(
         "title" -> entry.title ::
           "authors" -> entry.authors.map(_.author).distinct ::

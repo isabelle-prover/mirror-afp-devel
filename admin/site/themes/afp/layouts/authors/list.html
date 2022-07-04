@@ -12,7 +12,7 @@
 <h2>E-Mails 📧</h2>
 <ul>
 {{- range . -}}
-  <li><a href="mailto:{{ . }}">{{ . }}</a></li>
+  <li><a class="obfuscated" data="{{ . | jsonify | base64Encode }}">{{ partial "partials/email.html" . }}</a></li>
 {{- end -}}
 </ul>
 {{ end }}
