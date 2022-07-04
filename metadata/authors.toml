@@ -1,1149 +1,140 @@
 
-[lange]
-name = "Christoph Lange"
-
-[lange.emails]
-lange_email = "math.semantic.web@gmail.com"
-
-[lange.homepages]
-
-[petrovic]
-name = "Danijela Petrovic"
-
-[petrovic.emails]
-
-[petrovic.homepages]
-petrovic_homepage = "http://www.matf.bg.ac.rs/~danijela"
-
-[schimpf]
-name = "Alexander Schimpf"
-
-[schimpf.emails]
-schimpf_email = "schimpfa@informatik.uni-freiburg.de"
-
-[schimpf.homepages]
-
-[murao]
-name = "H. Murao"
-
-[murao.emails]
-
-[murao.homepages]
-
-[bourke]
-name = "Timothy Bourke"
-
-[bourke.emails]
-bourke_email = "tim@tbrk.org"
-
-[bourke.homepages]
-bourke_homepage = "http://www.tbrk.org"
-
-[schaeffeler]
-name = "Maximilian Schäffeler"
-
-[schaeffeler.emails]
-schaeffeler_email = "schaeffm@in.tum.de"
-
-[schaeffeler.homepages]
-
-[liut]
-name = "Tao Liu"
-
-[liut.emails]
-
-[liut.homepages]
-
-[sickert]
-name = "Salomon Sickert"
-
-[sickert.emails]
-sickert_email = "s.sickert@tum.de"
-
-[sickert.homepages]
-sickert_homepage = "https://www7.in.tum.de/~sickert"
-
-[lutz]
-name = "Bianca Lutz"
-
-[lutz.emails]
-lutz_email = "sowilo@cs.tu-berlin.de"
-
-[lutz.homepages]
-
-[rizkallah]
-name = "Christine Rizkallah"
-
-[rizkallah.emails]
-
-[rizkallah.homepages]
-rizkallah_homepage = "https://www.mpi-inf.mpg.de/~crizkall/"
-
-[pollak]
-name = "Florian Pollak"
-
-[pollak.emails]
-pollak_email = "florian.pollak@gmail.com"
-
-[pollak.homepages]
-
-[sulejmani]
-name = "Ujkan Sulejmani"
-
-[sulejmani.emails]
-
-[sulejmani.homepages]
-
-[biendarra]
-name = "Julian Biendarra"
-
-[biendarra.emails]
-
-[biendarra.homepages]
-
-[saile]
-name = "Christian Saile"
-
-[saile.emails]
-
-[saile.homepages]
-saile_homepage = "http://dss.in.tum.de/staff/christian-saile.html"
-
-[friedrich]
-name = "Stefan Friedrich"
-
-[friedrich.emails]
-
-[friedrich.homepages]
-
-[maximova]
-name = "Alexandra Maximova"
-
-[maximova.emails]
-maximova_email = "amaximov@student.ethz.ch"
-
-[maximova.homepages]
-
-[stricker]
-name = "Christian Stricker"
-
-[stricker.emails]
-
-[stricker.homepages]
-stricker_homepage = "http://dss.in.tum.de/staff/christian-stricker.html"
-
-[dyckhoff]
-name = "Roy Dyckhoff"
-
-[dyckhoff.emails]
-
-[dyckhoff.homepages]
-dyckhoff_homepage = "https://rd.host.cs.st-andrews.ac.uk"
-
-[weidner]
-name = "Arno Wilhelm-Weidner"
-
-[weidner.emails]
-weidner_email = "arno.wilhelm-weidner@tu-berlin.de"
-
-[weidner.homepages]
-
-[thomson]
-name = "Fox Thomson"
-
-[thomson.emails]
-thomson_email = "foxthomson0@gmail.com"
-
-[thomson.homepages]
-
-[he]
-name = "Yijun He"
-
-[he.emails]
-he_email = "yh403@cam.ac.uk"
-
-[he.homepages]
-
-[kammueller]
-name = "Florian Kammüller"
-
-[kammueller.emails]
-kammueller_email = "flokam@cs.tu-berlin.de"
-kammueller_email1 = "florian.kammuller@gmail.com"
-
-[kammueller.homepages]
-kammueller_homepage = "http://www.cs.mdx.ac.uk/people/florian-kammueller/"
-
-[oostrom]
-name = "Vincent van Oostrom"
-
-[oostrom.emails]
-
-[oostrom.homepages]
-
-[klein]
-name = "Gerwin Klein"
-
-[klein.emails]
-klein_email = "kleing@unsw.edu.au"
-
-[klein.homepages]
-klein_homepage = "http://www.cse.unsw.edu.au/~kleing/"
-
-[simic]
-name = "Danijela Simić"
-
-[simic.emails]
-simic_email = "danijela@matf.bg.ac.rs"
-
-[simic.homepages]
-simic_homepage = "http://poincare.matf.bg.ac.rs/~danijela"
-
-[gao]
-name = "Xin Gao"
-
-[gao.emails]
-
-[gao.homepages]
-
-[guttmann]
-name = "Walter Guttmann"
-
-[guttmann.emails]
-guttmann_email = "walter.guttmann@canterbury.ac.nz"
-
-[guttmann.homepages]
-guttmann_homepage = "https://www.cosc.canterbury.ac.nz/walter.guttmann/"
-
-[mantel]
-name = "Heiko Mantel"
-
-[mantel.emails]
-mantel_email = "mantel@mais.informatik.tu-darmstadt.de"
-
-[mantel.homepages]
-
-[schlichtkrull]
-name = "Anders Schlichtkrull"
-
-[schlichtkrull.emails]
-schlichtkrull_email = "andschl@dtu.dk"
-
-[schlichtkrull.homepages]
-schlichtkrull_homepage = "https://people.compute.dtu.dk/andschl/"
-
-[jaskolka]
-name = "Jason Jaskolka"
-
-[jaskolka.emails]
-jaskolka_email = "jason.jaskolka@carleton.ca"
-
-[jaskolka.homepages]
-jaskolka_homepage = "https://carleton.ca/jaskolka/"
-
-[rau]
-name = "Martin Rau"
-
-[rau.emails]
-rau_email = "martin.rau@tum.de"
-rau_email1 = "mrtnrau@googlemail.com"
-
-[rau.homepages]
-
-[bottesch]
-name = "Ralph Bottesch"
-
-[bottesch.emails]
-bottesch_email = "ralph.bottesch@uibk.ac.at"
-
-[bottesch.homepages]
-bottesch_homepage = "http://cl-informatik.uibk.ac.at/users/bottesch/"
-
-[bella]
-name = "Giampaolo Bella"
-
-[bella.emails]
-bella_email = "giamp@dmi.unict.it"
-
-[bella.homepages]
-bella_homepage = "http://www.dmi.unict.it/~giamp/"
-
-[dirix]
-name = "Stefan Dirix"
-
-[dirix.emails]
-
-[dirix.homepages]
-
-[nielsen]
-name = "Finn Nielsen"
-
-[nielsen.emails]
-nielsen_email = "finn.nielsen@uni-muenster.de"
-
-[nielsen.homepages]
-
-[mansky]
-name = "Susannah Mansky"
-
-[mansky.emails]
-mansky_email = "sjohnsn2@illinois.edu"
-mansky_email1 = "susannahej@gmail.com"
-
-[mansky.homepages]
-
-[dunaev]
-name = "Georgy Dunaev"
-
-[dunaev.emails]
-dunaev_email = "georgedunaev@gmail.com"
-
-[dunaev.homepages]
-
-[li]
-name = "Wenda Li"
-
-[li.emails]
-li_email = "wl302@cam.ac.uk"
-li_email1 = "liwenda1990@hotmail.com"
-
-[li.homepages]
-li_homepage = "https://www.cl.cam.ac.uk/~wl302/"
-
-[stevens]
-name = "Lukas Stevens"
-
-[stevens.emails]
-
-[stevens.homepages]
-stevens_homepage = "https://www21.in.tum.de/team/stevensl"
-
-[tourret]
-name = "Sophie Tourret"
-
-[tourret.emails]
-tourret_email = "stourret@mpi-inf.mpg.de"
-
-[tourret.homepages]
-tourret_homepage = "https://www.mpi-inf.mpg.de/departments/automation-of-logic/people/sophie-tourret/"
-
-[yu]
-name = "Lei Yu"
-
-[yu.emails]
-yu_email = "ly271@cam.ac.uk"
-
-[yu.homepages]
-
-[grewe]
-name = "Sylvia Grewe"
-
-[grewe.emails]
-grewe_email = "grewe@cs.tu-darmstadt.de"
-
-[grewe.homepages]
-
-[coghetto]
-name = "Roland Coghetto"
-
-[coghetto.emails]
-coghetto_email = "roland_coghetto@hotmail.com"
-
-[coghetto.homepages]
-
-[schirmer]
-name = "Norbert Schirmer"
-
-[schirmer.emails]
-schirmer_email = "norbert.schirmer@web.de"
-
-[schirmer.homepages]
-
-[immler]
-name = "Fabian Immler"
-
-[immler.emails]
-immler_email = "immler@in.tum.de"
-immler_email1 = "fimmler@cs.cmu.edu"
-
-[immler.homepages]
-immler_homepage = "https://home.in.tum.de/~immler/"
-
-[tiu]
-name = "Alwen Tiu"
-
-[tiu.emails]
-tiu_email = "ATiu@ntu.edu.sg"
-
-[tiu.homepages]
-tiu_homepage = "http://users.cecs.anu.edu.au/~tiu/"
-
-[henrio]
-name = "Ludovic Henrio"
-
-[henrio.emails]
-henrio_email = "Ludovic.Henrio@sophia.inria.fr"
-
-[henrio.homepages]
-
-[urban]
-name = "Christian Urban"
-
-[urban.emails]
-urban_email = "christian.urban@kcl.ac.uk"
-
-[urban.homepages]
-urban_homepage = "https://nms.kcl.ac.uk/christian.urban/"
-
-[michaelis]
-name = "Julius Michaelis"
-
-[michaelis.emails]
-michaelis_email = "isabelleopenflow@liftm.de"
-michaelis_email1 = "maintainafpppt@liftm.de"
-michaelis_email2 = "bdd@liftm.de"
-michaelis_email3 = "afp@liftm.de"
-
-[michaelis.homepages]
-michaelis_homepage = "http://liftm.de/"
-
-[scott]
-name = "Dana Scott"
-
-[scott.emails]
-
-[scott.homepages]
-scott_homepage = "http://www.cs.cmu.edu/~scott/"
-
-[wenzel]
-name = "Makarius Wenzel"
-
-[wenzel.emails]
-wenzel_email = "Makarius.wenzel@lri.fr"
-
-[wenzel.homepages]
-
-[dardinier]
-name = "Thibault Dardinier"
-
-[dardinier.emails]
-dardinier_email = "thibault.dardinier@inf.ethz.ch"
-
-[dardinier.homepages]
-dardinier_homepage = "https://dardinier.me/"
-
-[lallemand]
-name = "Joseph Lallemand"
-
-[lallemand.emails]
-lallemand_email = "joseph.lallemand@loria.fr"
-
-[lallemand.homepages]
-
-[schmoetten]
-name = "Richard Schmoetten"
-
-[schmoetten.emails]
-schmoetten_email = "s1311325@sms.ed.ac.uk"
-
-[schmoetten.homepages]
-
-[cohen]
-name = "Ernie Cohen"
-
-[cohen.emails]
-cohen_email = "ecohen@amazon.com"
-
-[cohen.homepages]
-
-[chapman]
-name = "Peter Chapman"
-
-[chapman.emails]
-chapman_email = "pc@cs.st-andrews.ac.uk"
-
-[chapman.homepages]
-
-[rickmann]
-name = "Christina Rickmann"
-
-[rickmann.emails]
-rickmann_email = "c.rickmann@tu-berlin.de"
-
-[rickmann.homepages]
-
-[raya]
-name = "Rodrigo Raya"
-
-[raya.emails]
-
-[raya.homepages]
-raya_homepage = "https://people.epfl.ch/rodrigo.raya"
-
-[kadzioka]
-name = "Jakub Kądziołka"
-
-[kadzioka.emails]
-kadzioka_email = "kuba@kadziolka.net"
-
-[kadzioka.homepages]
-
-[foster]
-name = "Michael Foster"
-
-[foster.emails]
-foster_email = "m.foster@sheffield.ac.uk"
-
-[foster.homepages]
-
-[zhann]
-name = "Naijun Zhan"
-
-[zhann.emails]
-
-[zhann.homepages]
-
-[fuenmayor]
-name = "David Fuenmayor"
-
-[fuenmayor.emails]
-fuenmayor_email = "davfuenmayor@gmail.com"
-
-[fuenmayor.homepages]
-
-[iwama]
-name = "Fumiya Iwama"
-
-[iwama.emails]
-iwama_email = "d1623001@s.konan-u.ac.jp"
-
-[iwama.homepages]
-
-[feliachi]
-name = "Abderrahmane Feliachi"
-
-[feliachi.emails]
-feliachi_email = "abderrahmane.feliachi@lri.fr"
-
-[feliachi.homepages]
-
-[sudbrock]
-name = "Henning Sudbrock"
-
-[sudbrock.emails]
-sudbrock_email = "sudbrock@mais.informatik.tu-darmstadt.de"
-
-[sudbrock.homepages]
-
-[bauer]
-name = "Gertrud Bauer"
-
-[bauer.emails]
-
-[bauer.homepages]
-
-[lux]
-name = "Alexander Lux"
-
-[lux.emails]
-lux_email = "lux@mais.informatik.tu-darmstadt.de"
-
-[lux.homepages]
-
-[seidler]
-name = "Henning Seidler"
-
-[seidler.emails]
-seidler_email = "henning.seidler@mailbox.tu-berlin.de"
-
-[seidler.homepages]
-
-[desharnais]
-name = "Martin Desharnais"
-
-[desharnais.emails]
-desharnais_email = "martin.desharnais@unibw.de"
-
-[desharnais.homepages]
-desharnais_homepage = "https://martin.desharnais.me"
-
-[wasserrab]
-name = "Daniel Wasserrab"
-
-[wasserrab.emails]
-
-[wasserrab.homepages]
-wasserrab_homepage = "http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php"
-
-[fell]
-name = "Julian Fell"
-
-[fell.emails]
-fell_email = "julian.fell@uq.net.au"
-
-[fell.homepages]
-
-[zhan]
-name = "Bohua Zhan"
-
-[zhan.emails]
-zhan_email = "bzhan@ios.ac.cn"
-
-[zhan.homepages]
-zhan_homepage = "http://lcs.ios.ac.cn/~bzhan/"
-
-[stephan]
-name = "Werner Stephan"
-
-[stephan.emails]
-stephan_email = "stephan@dfki.de"
-
-[stephan.homepages]
-
-[david]
-name = "Marco David"
-
-[david.emails]
-david_email = "marco.david@hotmail.de"
-
-[david.homepages]
-
-[olm]
-name = "Markus Müller-Olm"
-
-[olm.emails]
-
-[olm.homepages]
-olm_homepage = "http://cs.uni-muenster.de/u/mmo/"
-
-[havle]
-name = "Oto Havle"
-
-[havle.emails]
-havle_email = "oha@sysgo.com"
-
-[havle.homepages]
-
-[margetson]
-name = "James Margetson"
-
-[margetson.emails]
-
-[margetson.homepages]
-
-[scharager]
-name = "Matias Scharager"
-
-[scharager.emails]
-scharager_email = "mscharag@cs.cmu.edu"
-
-[scharager.homepages]
-
-[haftmann]
-name = "Florian Haftmann"
-
-[haftmann.emails]
-haftmann_email = "florian.haftmann@informatik.tu-muenchen.de"
-
-[haftmann.homepages]
-haftmann_homepage = "http://isabelle.in.tum.de/~haftmann"
-
-[schoepe]
-name = "Daniel Schoepe"
-
-[schoepe.emails]
-schoepe_email = "daniel@schoepe.org"
-
-[schoepe.homepages]
-
-[nagele]
-name = "Julian Nagele"
-
-[nagele.emails]
-nagele_email = "julian.nagele@uibk.ac.at"
-
-[nagele.homepages]
-
-[hoefner]
-name = "Peter Höfner"
-
-[hoefner.emails]
-hoefner_email = "peter@hoefner-online.de"
-
-[hoefner.homepages]
-hoefner_homepage = "http://www.hoefner-online.de/"
-
-[derrick]
-name = "John Derrick"
-
-[derrick.emails]
-derrick_email = "j.derrick@sheffield.ac.uk"
-
-[derrick.homepages]
-
-[beeren]
-name = "Joel Beeren"
-
-[beeren.emails]
-
-[beeren.homepages]
-
-[echenim]
-name = "Mnacho Echenim"
-
-[echenim.emails]
-echenim_email = "mnacho.echenim@univ-grenoble-alpes.fr"
-
-[echenim.homepages]
-echenim_homepage = "https://lig-membres.imag.fr/mechenim/"
-
-[vytiniotis]
-name = "Dimitrios Vytiniotis"
-
-[vytiniotis.emails]
-
-[vytiniotis.homepages]
-vytiniotis_homepage = "http://research.microsoft.com/en-us/people/dimitris/"
-
-[beringer]
-name = "Lennart Beringer"
-
-[beringer.emails]
-beringer_email = "lennart.beringer@ifi.lmu.de"
-
-[beringer.homepages]
-
-[wickerson]
-name = "John Wickerson"
-
-[wickerson.emails]
-
-[wickerson.homepages]
-wickerson_homepage = "http://www.doc.ic.ac.uk/~jpw48"
-
-[eberl]
-name = "Manuel Eberl"
-
-[eberl.emails]
-eberl_email = "manuel@pruvisto.org"
-eberl_email1 = "manuel.eberl@tum.de"
-
-[eberl.homepages]
-eberl_homepage = "https://pruvisto.org/"
-eberl_homepage2 = "https://www.in.tum.de/~eberlm"
-
-[noce]
-name = "Pasquale Noce"
-
-[noce.emails]
-noce_email = "pasquale.noce.lavoro@gmail.com"
-
-[noce.homepages]
-
-[gunther]
-name = "Emmanuel Gunther"
-
-[gunther.emails]
-gunther_email = "gunther@famaf.unc.edu.ar"
-
-[gunther.homepages]
-
-[nemouchi]
-name = "Yakoub Nemouchi"
-
-[nemouchi.emails]
-nemouchi_email = "nemouchi@lri.fr"
-nemouchi_email1 = "yakoub.nemouchi@york.ac.uk"
-
-[nemouchi.homepages]
-
-[stueber]
-name = "Anke Stüber"
-
-[stueber.emails]
-stueber_email = "anke.stueber@campus.tu-berlin.de"
-
-[stueber.homepages]
-
-[sternagel]
-name = "Christian Sternagel"
-
-[sternagel.emails]
-sternagel_email = "c.sternagel@gmail.com"
-sternagel_email1 = "christian.sternagel@uibk.ac.at"
-
-[sternagel.homepages]
-sternagel_homepage = "http://cl-informatik.uibk.ac.at/users/griff/"
-
-[sachtleben]
-name = "Robert Sachtleben"
-
-[sachtleben.emails]
-sachtleben_email = "rob_sac@uni-bremen.de"
-
-[sachtleben.homepages]
-
-[kastermans]
-name = "Bart Kastermans"
-
-[kastermans.emails]
-
-[kastermans.homepages]
-kastermans_homepage = "http://kasterma.net"
-
-[pal]
-name = "Abhik Pal"
-
-[pal.emails]
-
-[pal.homepages]
-
-[thiemann]
-name = "René Thiemann"
-
-[thiemann.emails]
-thiemann_email = "rene.thiemann@uibk.ac.at"
-
-[thiemann.homepages]
-thiemann_homepage = "http://cl-informatik.uibk.ac.at/users/thiemann/"
-
-[campo]
-name = "Alejandro del Campo"
-
-[campo.emails]
-campo_email = "alejandro.del-campo@alum.unirioja.es"
-
-[campo.homepages]
-
-[raska]
-name = "Martin Raška"
-
-[raska.emails]
-
-[raska.homepages]
-
-[stannett]
-name = "Mike Stannett"
-
-[stannett.emails]
-stannett_email = "m.stannett@sheffield.ac.uk"
-
-[stannett.homepages]
-
-[back]
-name = "Ralph-Johan Back"
-
-[back.emails]
-
-[back.homepages]
-back_homepage = "http://users.abo.fi/Ralph-Johan.Back/"
-
-[bruegger]
-name = "Lukas Brügger"
-
-[bruegger.emails]
-bruegger_email = "lukas.a.bruegger@gmail.com"
-
-[bruegger.homepages]
-
-[kuncak]
-name = "Viktor Kuncak"
-
-[kuncak.emails]
-
-[kuncak.homepages]
-kuncak_homepage = "http://lara.epfl.ch/~kuncak/"
-
-[gaudel]
-name = "Marie-Claude Gaudel"
-
-[gaudel.emails]
-gaudel_email = "mcg@lri.fr"
-
-[gaudel.homepages]
-
-[sison]
-name = "Robert Sison"
-
-[sison.emails]
-
-[sison.homepages]
-
-[benzmueller]
-name = "Christoph Benzmüller"
-
-[benzmueller.emails]
-benzmueller_email = "c.benzmueller@gmail.com"
-benzmueller_email1 = "c.benzmueller@fu-berlin.de"
-
-[benzmueller.homepages]
-benzmueller_homepage = "http://christoph-benzmueller.de"
-benzmueller_homepage1 = "http://page.mi.fu-berlin.de/cbenzmueller/"
-
-[from]
-name = "Asta Halkjær From"
-
-[from.emails]
-from_email = "ahfrom@dtu.dk"
-
-[from.homepages]
-from_homepage = "https://people.compute.dtu.dk/ahfrom/"
-
-[tuongj]
-name = "Joseph Tuong"
-
-[tuongj.emails]
-
-[tuongj.homepages]
-
-[zeller]
-name = "Peter Zeller"
-
-[zeller.emails]
-zeller_email = "p_zeller@cs.uni-kl.de"
-
-[zeller.homepages]
-
-[schmidinger]
-name = "Lukas Schmidinger"
-
-[schmidinger.emails]
-
-[schmidinger.homepages]
-
-[ravindran]
-name = "Binoy Ravindran"
-
-[ravindran.emails]
-
-[ravindran.homepages]
-
-[rizaldi]
-name = "Albert Rizaldi"
-
-[rizaldi.emails]
-rizaldi_email = "albert.rizaldi@ntu.edu.sg"
-
-[rizaldi.homepages]
-
-[sabouret]
-name = "Nicolas Sabouret"
-
-[sabouret.emails]
-
-[sabouret.homepages]
-
-[butler]
-name = "David Butler"
-
-[butler.emails]
-butler_email = "dbutler@turing.ac.uk"
-
-[butler.homepages]
-butler_homepage = "https://www.turing.ac.uk/people/doctoral-students/david-butler"
-
-[sprenger]
-name = "Christoph Sprenger"
-
-[sprenger.emails]
-sprenger_email = "sprenger@inf.ethz.ch"
-
-[sprenger.homepages]
-
-[bordg]
-name = "Anthony Bordg"
-
-[bordg.emails]
-bordg_email = "apdb3@cam.ac.uk"
-
-[bordg.homepages]
-bordg_homepage = "https://sites.google.com/site/anthonybordg/"
-
-[bhatt]
-name = "Bhargav Bhatt"
-
-[bhatt.emails]
-bhatt_email = "bhargav.bhatt@inf.ethz.ch"
-
-[bhatt.homepages]
-
-[gonzalez]
-name = "Edgar Gonzàlez"
-
-[gonzalez.emails]
-gonzalez_email = "edgargip@google.com"
-
-[gonzalez.homepages]
+[abdulaziz]
+name = "Mohammad Abdulaziz"
+
+[abdulaziz.emails]
+
+[abdulaziz.emails.abdulaziz_email]
+user = [
+  "mohammad",
+  "abdulaziz",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[abdulaziz.emails.abdulaziz_email1]
+user = [
+  "mohammad",
+  "abdulaziz8",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[abdulaziz.homepages]
+abdulaziz_homepage = "http://home.in.tum.de/~mansour/"
 
 [adelsberger]
 name = "Stephan Adelsberger"
 
 [adelsberger.emails]
-adelsberger_email = "stvienna@gmail.com"
+
+[adelsberger.emails.adelsberger_email]
+user = [
+  "stvienna",
+]
+host = [
+  "gmail",
+  "com",
+]
 
 [adelsberger.homepages]
 adelsberger_homepage = "http://nm.wu.ac.at/nm/sadelsbe"
 
-[schleicher]
-name = "Dierk Schleicher"
+[aehlig]
+name = "Klaus Aehlig"
 
-[schleicher.emails]
+[aehlig.emails]
 
-[schleicher.homepages]
+[aehlig.homepages]
+aehlig_homepage = "http://www.linta.de/~aehlig/"
 
-[ying]
-name = "Shenggang Ying"
+[aissat]
+name = "Romain Aissat"
 
-[ying.emails]
+[aissat.emails]
 
-[ying.homepages]
+[aissat.homepages]
 
-[brien]
-name = "Nicolas Robinson-O'Brien"
+[amani]
+name = "Sidney Amani"
 
-[brien.emails]
+[amani.emails]
 
-[brien.homepages]
+[amani.emails.amani_email]
+user = [
+  "sidney",
+  "amani",
+]
+host = [
+  "data61",
+  "csiro",
+  "au",
+]
 
-[kobayashi]
-name = "Hidetsune Kobayashi"
+[amani.homepages]
 
-[kobayashi.emails]
+[ammer]
+name = "Thomas Ammer"
 
-[kobayashi.homepages]
+[ammer.emails]
 
-[krauss]
-name = "Alexander Krauss"
+[ammer.homepages]
 
-[krauss.emails]
-krauss_email = "krauss@in.tum.de"
+[andronick]
+name = "June Andronick"
 
-[krauss.homepages]
-krauss_homepage = "http://www.in.tum.de/~krauss"
+[andronick.emails]
 
-[somaini]
-name = "Ivano Somaini"
+[andronick.homepages]
 
-[somaini.emails]
+[aransay]
+name = "Jesús Aransay"
 
-[somaini.homepages]
+[aransay.emails]
 
-[seidl]
-name = "Benedikt Seidl"
+[aransay.emails.aransay_email]
+user = [
+  "jesus-maria",
+  "aransay",
+]
+host = [
+  "unirioja",
+  "es",
+]
 
-[seidl.emails]
-seidl_email = "benedikt.seidl@tum.de"
+[aransay.homepages]
+aransay_homepage = "https://www.unirioja.es/cu/jearansa"
 
-[seidl.homepages]
+[argyraki]
+name = "Angeliki Koutsoukou-Argyraki"
 
-[edmonds]
-name = "Chelsea Edmonds"
+[argyraki.emails]
 
-[edmonds.emails]
-edmonds_email = "cle47@cam.ac.uk"
+[argyraki.emails.argyraki_email]
+user = [
+  "ak2110",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
 
-[edmonds.homepages]
-edmonds_homepage = "https://www.cst.cam.ac.uk/people/cle47"
+[argyraki.homepages]
+argyraki_homepage = "https://www.cl.cam.ac.uk/~ak2110/"
+argyraki_homepage2 = "https://www.cst.cam.ac.uk/people/ak2110"
 
-[debrat]
-name = "Henri Debrat"
+[armstrong]
+name = "Alasdair Armstrong"
 
-[debrat.emails]
-debrat_email = "henri.debrat@loria.fr"
+[armstrong.emails]
 
-[debrat.homepages]
-
-[holub]
-name = "Štěpán Holub"
-
-[holub.emails]
-holub_email = "holub@karlin.mff.cuni.cz"
-
-[holub.homepages]
-holub_homepage = "https://www2.karlin.mff.cuni.cz/~holub/"
-
-[beresford]
-name = "Alastair R. Beresford"
-
-[beresford.emails]
-beresford_email = "arb33@cam.ac.uk"
-
-[beresford.homepages]
-
-[terraf]
-name = "Pedro Sánchez Terraf"
-
-[terraf.emails]
-terraf_email = "psterraf@unc.edu.ar"
-
-[terraf.homepages]
-terraf_homepage = "https://cs.famaf.unc.edu.ar/~pedro/home_en.html"
-
-[raumer]
-name = "Jakob von Raumer"
-
-[raumer.emails]
-raumer_email = "psxjv4@nottingham.ac.uk"
-
-[raumer.homepages]
-
-[pagano]
-name = "Miguel Pagano"
-
-[pagano.emails]
-pagano_email = "miguel.pagano@unc.edu.ar"
-
-[pagano.homepages]
-pagano_homepage = "https://cs.famaf.unc.edu.ar/~mpagano/"
-
-[coglio]
-name = "Alessandro Coglio"
-
-[coglio.emails]
-coglio_email = "coglio@kestrel.edu"
-
-[coglio.homepages]
-coglio_homepage = "http://www.kestrel.edu/~coglio"
-
-[caballero]
-name = "José Manuel Rodríguez Caballero"
-
-[caballero.emails]
-caballero_email = "jose.manuel.rodriguez.caballero@ut.ee"
-
-[caballero.homepages]
-caballero_homepage = "https://josephcmac.github.io/"
-
-[grechuk]
-name = "Bogdan Grechuk"
-
-[grechuk.emails]
-grechuk_email = "grechukbogdan@yandex.ru"
-
-[grechuk.homepages]
-
-[sewell]
-name = "Thomas Sewell"
-
-[sewell.emails]
-
-[sewell.homepages]
-
-[leustean]
-name = "Laurentiu Leustean"
-
-[leustean.emails]
-
-[leustean.homepages]
-
-[rosskopf]
-name = "Simon Roßkopf"
-
-[rosskopf.emails]
-rosskopf_email = "rosskops@in.tum.de"
-
-[rosskopf.homepages]
-rosskopf_homepage = "http://www21.in.tum.de/~rosskops"
+[armstrong.homepages]
 
 [aspinall]
 name = "David Aspinall"
@@ -1161,137 +152,64 @@ name = "Fahad Ausaf"
 [ausaf.homepages]
 ausaf_homepage = "http://kcl.academia.edu/FahadAusaf"
 
-[diekmann]
-name = "Cornelius Diekmann"
+[avigad]
+name = "Jeremy Avigad"
 
-[diekmann.emails]
-diekmann_email = "diekmann@net.in.tum.de"
+[avigad.emails]
 
-[diekmann.homepages]
-diekmann_homepage = "http://net.in.tum.de/~diekmann"
+[avigad.emails.avigad_email]
+user = [
+  "avigad",
+]
+host = [
+  "cmu",
+  "edu",
+]
 
-[fouillard]
-name = "Valentin Fouillard"
+[avigad.homepages]
+avigad_homepage = "http://www.andrew.cmu.edu/user/avigad/"
 
-[fouillard.emails]
-fouillard_email = "valentin.fouillard@limsi.fr"
+[back]
+name = "Ralph-Johan Back"
 
-[fouillard.homepages]
+[back.emails]
 
-[willenbrink]
-name = "Sebastian Willenbrink"
+[back.homepages]
+back_homepage = "http://users.abo.fi/Ralph-Johan.Back/"
 
-[willenbrink.emails]
-willenbrink_email = "sebastian.willenbrink@tum.de"
+[balbach]
+name = "Frank J. Balbach"
 
-[willenbrink.homepages]
+[balbach.emails]
 
-[xu]
-name = "Jian Xu"
+[balbach.emails.balbach_email]
+user = [
+  "frank-balbach",
+]
+host = [
+  "gmx",
+  "de",
+]
 
-[xu.emails]
+[balbach.homepages]
 
-[xu.homepages]
+[ballarin]
+name = "Clemens Ballarin"
 
-[wang]
-name = "Shuling Wang"
+[ballarin.emails]
 
-[wang.emails]
+[ballarin.emails.ballarin_email]
+user = [
+  "ballarin",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
 
-[wang.homepages]
-
-[ridge]
-name = "Tom Ridge"
-
-[ridge.emails]
-
-[ridge.homepages]
-
-[kleppmann]
-name = "Martin Kleppmann"
-
-[kleppmann.emails]
-kleppmann_email = "martin.kleppmann@cl.cam.ac.uk"
-
-[kleppmann.homepages]
-
-[kreuzer]
-name = "Katharina Kreuzer"
-
-[kreuzer.emails]
-kreuzer_email = "kreuzerk@in.tum.de"
-
-[kreuzer.homepages]
-kreuzer_homepage = "https://www21.in.tum.de/team/kreuzer/"
-
-[traut]
-name = "Christoph Traut"
-
-[traut.emails]
-
-[traut.homepages]
-
-[blanchette]
-name = "Jasmin Christian Blanchette"
-
-[blanchette.emails]
-blanchette_email = "jasmin.blanchette@gmail.com"
-blanchette_email1 = "j.c.blanchette@vu.nl"
-
-[blanchette.homepages]
-blanchette_homepage = "http://www21.in.tum.de/~blanchet"
-blanchette_homepage1 = "https://www.cs.vu.nl/~jbe248/"
-
-[van]
-name = "Hai Nguyen Van"
-
-[van.emails]
-van_email = "hai.nguyenvan.phie@gmail.com"
-
-[van.homepages]
-
-[brunner]
-name = "Julian Brunner"
-
-[brunner.emails]
-brunner_email = "brunnerj@in.tum.de"
-
-[brunner.homepages]
-brunner_homepage = "http://www21.in.tum.de/~brunnerj/"
-
-[reiche]
-name = "Sebastian Reiche"
-
-[reiche.emails]
-
-[reiche.homepages]
-reiche_homepage = "https://www.linkedin.com/in/sebastian-reiche-0b2093178"
-
-[eriksson]
-name = "Lars-Henrik Eriksson"
-
-[eriksson.emails]
-eriksson_email = "lhe@it.uu.se"
-
-[eriksson.homepages]
-
-[nipkow]
-name = "Tobias Nipkow"
-
-[nipkow.emails]
-nipkow_email = "nipkow@in.tum.de"
-
-[nipkow.homepages]
-nipkow_homepage = "https://www.in.tum.de/~nipkow/"
-
-[divason]
-name = "Jose Divasón"
-
-[divason.emails]
-divason_email = "jose.divason@unirioja.es"
-
-[divason.homepages]
-divason_homepage = "https://www.unirioja.es/cu/jodivaso/"
+[ballarin.homepages]
+ballarin_homepage = "http://www21.in.tum.de/~ballarin/"
 
 [barsotti]
 name = "Damián Barsotti"
@@ -1301,1859 +219,86 @@ name = "Damián Barsotti"
 [barsotti.homepages]
 barsotti_homepage = "http://www.cs.famaf.unc.edu.ar/~damian/"
 
-[nagashima]
-name = "Yutaka Nagashima"
+[bauer]
+name = "Gertrud Bauer"
 
-[nagashima.emails]
-nagashima_email = "Yutaka.Nagashima@data61.csiro.au"
+[bauer.emails]
 
-[nagashima.homepages]
-
-[avigad]
-name = "Jeremy Avigad"
-
-[avigad.emails]
-avigad_email = "avigad@cmu.edu"
-
-[avigad.homepages]
-avigad_homepage = "http://www.andrew.cmu.edu/user/avigad/"
-
-[abdulaziz]
-name = "Mohammad Abdulaziz"
-
-[abdulaziz.emails]
-abdulaziz_email = "mohammad.abdulaziz@in.tum.de"
-abdulaziz_email1 = "mohammad.abdulaziz8@gmail.com"
-
-[abdulaziz.homepages]
-abdulaziz_homepage = "http://home.in.tum.de/~mansour/"
-
-[kuncar]
-name = "Ondřej Kunčar"
-
-[kuncar.emails]
-
-[kuncar.homepages]
-kuncar_homepage = "http://www21.in.tum.de/~kuncar/"
-
-[borgstroem]
-name = "Johannes Borgström"
-
-[borgstroem.emails]
-borgstroem_email = "johannes.borgstrom@it.uu.se"
-
-[borgstroem.homepages]
-
-[kurz]
-name = "Friedrich Kurz"
-
-[kurz.emails]
-kurz_email = "friedrich.kurz@tum.de"
-
-[kurz.homepages]
-
-[noschinski]
-name = "Lars Noschinski"
-
-[noschinski.emails]
-noschinski_email = "noschinl@gmail.com"
-
-[noschinski.homepages]
-noschinski_homepage = "http://www21.in.tum.de/~noschinl/"
-
-[liy]
-name = "Yangjia Li"
-
-[liy.emails]
-
-[liy.homepages]
-
-[wimmer]
-name = "Simon Wimmer"
-
-[wimmer.emails]
-wimmer_email = "simon.wimmer@tum.de"
-
-[wimmer.homepages]
-wimmer_homepage = "http://home.in.tum.de/~wimmers/"
-
-[gammie]
-name = "Peter Gammie"
-
-[gammie.emails]
-gammie_email = "peteg42@gmail.com"
-
-[gammie.homepages]
-gammie_homepage = "http://peteg.org"
-
-[snelting]
-name = "Gregor Snelting"
-
-[snelting.emails]
-
-[snelting.homepages]
-snelting_homepage = "http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php"
-
-[stark]
-name = "Eugene W. Stark"
-
-[stark.emails]
-stark_email = "stark@cs.stonybrook.edu"
-
-[stark.homepages]
-
-[engelhardt]
-name = "Kai Engelhardt"
-
-[engelhardt.emails]
-
-[engelhardt.homepages]
-
-[fleury]
-name = "Mathias Fleury"
-
-[fleury.emails]
-fleury_email = "fleury@mpi-inf.mpg.de"
-fleury_email1 = "mathias.fleury@jku.at"
-
-[fleury.homepages]
-fleury_homepage = "http://fmv.jku.at/fleury"
-
-[griebel]
-name = "Simon Griebel"
-
-[griebel.emails]
-griebel_email = "s.griebel@tum.de"
-
-[griebel.homepages]
-
-[zhang]
-name = "Yu Zhang"
-
-[zhang.emails]
-
-[zhang.homepages]
-
-[spichkova]
-name = "Maria Spichkova"
-
-[spichkova.emails]
-spichkova_email = "maria.spichkova@rmit.edu.au"
-
-[spichkova.homepages]
-
-[andronick]
-name = "June Andronick"
-
-[andronick.emails]
-
-[andronick.homepages]
-
-[lammich]
-name = "Peter Lammich"
-
-[lammich.emails]
-lammich_email = "lammich@in.tum.de"
-lammich_email1 = "peter.lammich@uni-muenster.de"
-
-[lammich.homepages]
-lammich_homepage = "http://www21.in.tum.de/~lammich"
-
-[maricf]
-name = "Filip Marić"
-
-[maricf.emails]
-maricf_email = "filip@matf.bg.ac.rs"
-
-[maricf.homepages]
-maricf_homepage = "http://www.matf.bg.ac.rs/~filip"
-
-[popescu]
-name = "Andrei Popescu"
-
-[popescu.emails]
-popescu_email = "a.popescu@sheffield.ac.uk"
-popescu_email1 = "uuomul@yahoo.com"
-popescu_email2 = "a.popescu@mdx.ac.uk"
-
-[popescu.homepages]
-popescu_homepage = "https://www.andreipopescu.uk"
-
-[chen]
-name = "L. Chen"
-
-[chen.emails]
-
-[chen.homepages]
-
-[helke]
-name = "Steffen Helke"
-
-[helke.emails]
-helke_email = "helke@cs.tu-berlin.de"
-
-[helke.homepages]
-
-[pohjola]
-name = "Johannes Åman Pohjola"
-
-[pohjola.emails]
-
-[pohjola.homepages]
-
-[yingm]
-name = "Mingsheng Ying"
-
-[yingm.emails]
-
-[yingm.homepages]
-
-[fosterj]
-name = "J. Nathan Foster"
-
-[fosterj.emails]
-
-[fosterj.homepages]
-fosterj_homepage = "http://www.cs.cornell.edu/~jnfoster/"
-
-[verbeek]
-name = "Freek Verbeek"
-
-[verbeek.emails]
-verbeek_email = "Freek.Verbeek@ou.nl"
-verbeek_email1 = "freek@vt.edu"
-
-[verbeek.homepages]
-
-[struth]
-name = "Georg Struth"
-
-[struth.emails]
-struth_email = "g.struth@sheffield.ac.uk"
-
-[struth.homepages]
-struth_homepage = "http://staffwww.dcs.shef.ac.uk/people/G.Struth/"
-
-[mitsch]
-name = "Stefan Mitsch"
-
-[mitsch.emails]
-mitsch_email = "smitsch@cs.cmu.edu"
-
-[mitsch.homepages]
-
-[nordhoff]
-name = "Benedikt Nordhoff"
-
-[nordhoff.emails]
-nordhoff_email = "b.n@wwu.de"
-nordhoff_email1 = "b_nord01@uni-muenster.de"
-
-[nordhoff.homepages]
-
-[kirchner]
-name = "Daniel Kirchner"
-
-[kirchner.emails]
-kirchner_email = "daniel@ekpyron.org"
-
-[kirchner.homepages]
-
-[merz]
-name = "Stephan Merz"
-
-[merz.emails]
-merz_email = "Stephan.Merz@loria.fr"
-
-[merz.homepages]
-merz_homepage = "http://www.loria.fr/~merz"
-
-[fernandez]
-name = "Matthew Fernandez"
-
-[fernandez.emails]
-
-[fernandez.homepages]
-
-[kolanski]
-name = "Rafal Kolanski"
-
-[kolanski.emails]
-kolanski_email = "rafal.kolanski@nicta.com.au"
-
-[kolanski.homepages]
-
-[strnisa]
-name = "Rok Strniša"
-
-[strnisa.emails]
-strnisa_email = "rok@strnisa.com"
-
-[strnisa.homepages]
-strnisa_homepage = "http://rok.strnisa.com/lj/"
-
-[liuy]
-name = "Yang Liu"
-
-[liuy.emails]
-liuy_email = "yangliu@ntu.edu.sg"
-
-[liuy.homepages]
-
-[jacobsen]
-name = "Frederik Krogsdal Jacobsen"
-
-[jacobsen.emails]
-jacobsen_email = "fkjac@dtu.dk"
-
-[jacobsen.homepages]
-jacobsen_homepage = "http://people.compute.dtu.dk/fkjac/"
-
-[crighton]
-name = "Aaron Crighton"
-
-[crighton.emails]
-crighton_email = "crightoa@mcmaster.ca"
-
-[crighton.homepages]
-
-[matiyasevich]
-name = "Yuri Matiyasevich"
-
-[matiyasevich.emails]
-
-[matiyasevich.homepages]
-
-[kaliszyk]
-name = "Cezary Kaliszyk"
-
-[kaliszyk.emails]
-kaliszyk_email = "cezary.kaliszyk@uibk.ac.at"
-
-[kaliszyk.homepages]
-kaliszyk_homepage = "http://cl-informatik.uibk.ac.at/users/cek/"
-
-[voisin]
-name = "Frederic Voisin"
-
-[voisin.emails]
-
-[voisin.homepages]
-
-[kaufmann]
-name = "Daniela Kaufmann"
-
-[kaufmann.emails]
-
-[kaufmann.homepages]
-kaufmann_homepage = "http://fmv.jku.at/kaufmann"
-
-[milehins]
-name = "Mihails Milehins"
-
-[milehins.emails]
-milehins_email = "mihailsmilehins@gmail.com"
-
-[milehins.homepages]
-
-[cordwell]
-name = "Katherine Cordwell"
-
-[cordwell.emails]
-cordwell_email = "kcordwel@cs.cmu.edu"
-
-[cordwell.homepages]
-cordwell_homepage = "https://www.cs.cmu.edu/~kcordwel/"
-
-[smaus]
-name = "Jan-Georg Smaus"
-
-[smaus.emails]
-
-[smaus.homepages]
-smaus_homepage = "http://www.irit.fr/~Jan-Georg.Smaus"
-
-[sefidgar]
-name = "S. Reza Sefidgar"
-
-[sefidgar.emails]
-sefidgar_email = "reza.sefidgar@inf.ethz.ch"
-
-[sefidgar.homepages]
-
-[steinberg]
-name = "Matías Steinberg"
-
-[steinberg.emails]
-steinberg_email = "matias.steinberg@mi.unc.edu.ar"
-
-[steinberg.homepages]
-
-[furusawa]
-name = "Hitoshi Furusawa"
-
-[furusawa.emails]
-
-[furusawa.homepages]
-furusawa_homepage = "http://www.sci.kagoshima-u.ac.jp/~furusawa/"
-
-[unruh]
-name = "Dominique Unruh"
-
-[unruh.emails]
-unruh_email = "unruh@ut.ee"
-
-[unruh.homepages]
-unruh_homepage = "https://www.ut.ee/~unruh/"
-
-[yamada]
-name = "Akihisa Yamada"
-
-[yamada.emails]
-yamada_email = "akihisa.yamada@uibk.ac.at"
-yamada_email1 = "ayamada@trs.cm.is.nagoya-u.ac.jp"
-yamada_email2 = "akihisa.yamada@aist.go.jp"
-yamada_email3 = "akihisayamada@nii.ac.jp"
-
-[yamada.homepages]
-yamada_homepage = "http://group-mmm.org/~ayamada/"
-
-[smola]
-name = "Filip Smola"
-
-[smola.emails]
-smola_email = "f.smola@sms.ed.ac.uk"
-
-[smola.homepages]
-
-[pusch]
-name = "Cornelia Pusch"
-
-[pusch.emails]
-
-[pusch.homepages]
-
-[ogawa]
-name = "Mizuhito Ogawa"
-
-[ogawa.emails]
-
-[ogawa.homepages]
-
-[bulwahn]
-name = "Lukas Bulwahn"
-
-[bulwahn.emails]
-bulwahn_email = "lukas.bulwahn@gmail.com"
-
-[bulwahn.homepages]
-
-[obua]
-name = "Steven Obua"
-
-[obua.emails]
-obua_email = "steven@recursivemind.com"
-
-[obua.homepages]
-
-[bayer]
-name = "Jonas Bayer"
-
-[bayer.emails]
-bayer_email = "jonas.bayer999@gmail.com"
-
-[bayer.homepages]
-
-[brun]
-name = "Matthias Brun"
-
-[brun.emails]
-brun_email = "matthias.brun@inf.ethz.ch"
-
-[brun.homepages]
-
-[aransay]
-name = "Jesús Aransay"
-
-[aransay.emails]
-aransay_email = "jesus-maria.aransay@unirioja.es"
-
-[aransay.homepages]
-aransay_homepage = "https://www.unirioja.es/cu/jearansa"
-
-[gioiosa]
-name = "Gianpaolo Gioiosa"
-
-[gioiosa.emails]
-
-[gioiosa.homepages]
-
-[karayel]
-name = "Emin Karayel"
-
-[karayel.emails]
-karayel_email = "me@eminkarayel.de"
-
-[karayel.homepages]
-karayel_homepage = "https://orcid.org/0000-0003-3290-5034"
-
-[koller]
-name = "Lukas Koller"
-
-[koller.emails]
-koller_email = "lukas.koller@tum.de"
-
-[koller.homepages]
-
-[starosta]
-name = "Štěpán Starosta"
-
-[starosta.emails]
-starosta_email = "stepan.starosta@fit.cvut.cz"
-
-[starosta.homepages]
-starosta_homepage = "https://users.fit.cvut.cz/~staroste/"
-
-[zhangx]
-name = "Xingyuan Zhang"
-
-[zhangx.emails]
-
-[zhangx.homepages]
-
-[katovsky]
-name = "Alexander Katovsky"
-
-[katovsky.emails]
-katovsky_email = "apk32@cam.ac.uk"
-katovsky_email1 = "alexander.katovsky@cantab.net"
-
-[katovsky.homepages]
-
-[roessle]
-name = "Ian Roessle"
-
-[roessle.emails]
-
-[roessle.homepages]
-
-[schoepf]
-name = "Jonas Schöpf"
-
-[schoepf.emails]
-schoepf_email = "jonas.schoepf@uibk.ac.at"
-
-[schoepf.homepages]
-
-[gheri]
-name = "Lorenzo Gheri"
-
-[gheri.emails]
-gheri_email = "lor.gheri@gmail.com"
-
-[gheri.homepages]
-
-[oosterhuis]
-name = "Roelof Oosterhuis"
-
-[oosterhuis.emails]
-oosterhuis_email = "roelofoosterhuis@gmail.com"
-
-[oosterhuis.homepages]
-
-[robillard]
-name = "Simon Robillard"
-
-[robillard.emails]
-
-[robillard.homepages]
-robillard_homepage = "https://simon-robillard.net/"
-
-[rauch]
-name = "Nicole Rauch"
-
-[rauch.emails]
-rauch_email = "rauch@informatik.uni-kl.de"
-
-[rauch.homepages]
-
-[wolff]
-name = "Burkhart Wolff"
-
-[wolff.emails]
-wolff_email = "burkhart.wolff@lri.fr"
-
-[wolff.homepages]
-wolff_homepage = "https://www.lri.fr/~wolff/"
-
-[lattuada]
-name = "Andrea Lattuada"
-
-[lattuada.emails]
-
-[lattuada.homepages]
-lattuada_homepage = "https://andrea.lattuada.me"
-
-[pierzchalski]
-name = "Edward Pierzchalski"
-
-[pierzchalski.emails]
-
-[pierzchalski.homepages]
-
-[chaieb]
-name = "Amine Chaieb"
-
-[chaieb.emails]
-
-[chaieb.homepages]
-
-[raszyk]
-name = "Martin Raszyk"
-
-[raszyk.emails]
-raszyk_email = "martin.raszyk@inf.ethz.ch"
-raszyk_email1 = "m.raszyk@gmail.com"
-
-[raszyk.homepages]
-
-[zee]
-name = "Karen Zee"
-
-[zee.emails]
-zee_email = "kkz@mit.edu"
-
-[zee.homepages]
-zee_homepage = "http://www.mit.edu/~kkz/"
-
-[jensen]
-name = "Alexander Birch Jensen"
-
-[jensen.emails]
-jensen_email = "aleje@dtu.dk"
-
-[jensen.homepages]
-jensen_homepage = "https://people.compute.dtu.dk/aleje/"
-
-[murray]
-name = "Toby Murray"
-
-[murray.emails]
-murray_email = "toby.murray@unimelb.edu.au"
-
-[murray.homepages]
-murray_homepage = "https://people.eng.unimelb.edu.au/tobym/"
-
-[hupel]
-name = "Lars Hupel"
-
-[hupel.emails]
-hupel_email = "hupel@in.tum.de"
-hupel_email1 = "lars@hupel.info"
-
-[hupel.homepages]
-hupel_homepage = "https://www21.in.tum.de/~hupel/"
-hupel_homepage1 = "https://lars.hupel.info/"
-
-[rowat]
-name = "Colin Rowat"
-
-[rowat.emails]
-rowat_email = "c.rowat@bham.ac.uk"
-
-[rowat.homepages]
-
-[schneider]
-name = "Joshua Schneider"
-
-[schneider.emails]
-schneider_email = "joshua.schneider@inf.ethz.ch"
-
-[schneider.homepages]
-
-[cousin]
-name = "Marie Cousin"
-
-[cousin.emails]
-cousin_email = "marie.cousin@grenoble-inp.org"
-
-[cousin.homepages]
-
-[parsert]
-name = "Julian Parsert"
-
-[parsert.emails]
-parsert_email = "julian.parsert@gmail.com"
-parsert_email1 = "julian.parsert@uibk.ac.at"
-
-[parsert.homepages]
-parsert_homepage = "http://www.parsert.com/"
-
-[aehlig]
-name = "Klaus Aehlig"
-
-[aehlig.emails]
-
-[aehlig.homepages]
-aehlig_homepage = "http://www.linta.de/~aehlig/"
-
-[argyraki]
-name = "Angeliki Koutsoukou-Argyraki"
-
-[argyraki.emails]
-argyraki_email = "ak2110@cam.ac.uk"
-
-[argyraki.homepages]
-argyraki_homepage = "https://www.cl.cam.ac.uk/~ak2110/"
-argyraki_homepage2 = "https://www.cst.cam.ac.uk/people/ak2110"
-
-[ye]
-name = "Lina Ye"
-
-[ye.emails]
-ye_email = "lina.ye@lri.fr"
-
-[ye.homepages]
-
-[moeller]
-name = "Bernhard Möller"
-
-[moeller.emails]
-
-[moeller.homepages]
-moeller_homepage = "https://www.informatik.uni-augsburg.de/en/chairs/dbis/pmi/staff/moeller/"
-
-[zankl]
-name = "Harald Zankl"
-
-[zankl.emails]
-zankl_email = "Harald.Zankl@uibk.ac.at"
-
-[zankl.homepages]
-zankl_homepage = "http://cl-informatik.uibk.ac.at/users/hzankl"
-
-[langenstein]
-name = "Bruno Langenstein"
-
-[langenstein.emails]
-langenstein_email = "langenstein@dfki.de"
-
-[langenstein.homepages]
-
-[breitner]
-name = "Joachim Breitner"
-
-[breitner.emails]
-breitner_email = "mail@joachim-breitner.de"
-breitner_email1 = "joachim@cis.upenn.edu"
-
-[breitner.homepages]
-breitner_homepage = "http://pp.ipd.kit.edu/~breitner"
-
-[thommes]
-name = "Joseph Thommes"
-
-[thommes.emails]
-thommes_email = "joseph-thommes@gmx.de"
-
-[thommes.homepages]
-
-[loibl]
-name = "Matthias Loibl"
-
-[loibl.emails]
-
-[loibl.homepages]
-
-[cock]
-name = "David Cock"
-
-[cock.emails]
-cock_email = "david.cock@nicta.com.au"
-
-[cock.homepages]
-
-[stuewe]
-name = "Daniel Stüwe"
-
-[stuewe.emails]
-
-[stuewe.homepages]
-
-[decova]
-name = "Sára Decova"
-
-[decova.emails]
-
-[decova.homepages]
-
-[nikiforov]
-name = "Denis Nikiforov"
-
-[nikiforov.emails]
-nikiforov_email = "denis.nikif@gmail.com"
-
-[nikiforov.homepages]
-
-[traytel]
-name = "Dmitriy Traytel"
-
-[traytel.emails]
-traytel_email = "traytel@in.tum.de"
-traytel_email1 = "traytel@inf.ethz.ch"
-traytel_email2 = "traytel@di.ku.dk"
-
-[traytel.homepages]
-traytel_homepage = "https://traytel.bitbucket.io/"
-
-[tverdyshev]
-name = "Sergey Tverdyshev"
-
-[tverdyshev.emails]
-tverdyshev_email = "stv@sysgo.com"
-
-[tverdyshev.homepages]
-
-[wassell]
-name = "Mark Wassell"
-
-[wassell.emails]
-wassell_email = "mpwassell@gmail.com"
-
-[wassell.homepages]
-
-[ijbema]
-name = "Mark Ijbema"
-
-[ijbema.emails]
-ijbema_email = "ijbema@fmf.nl"
-
-[ijbema.homepages]
-
-[wirt]
-name = "Kai Wirt"
-
-[wirt.emails]
-
-[wirt.homepages]
-
-[matache]
-name = "Cristina Matache"
-
-[matache.emails]
-matache_email = "cris.matache@gmail.com"
-
-[matache.homepages]
-
-[ito]
-name = "Yosuke Ito"
-
-[ito.emails]
-ito_email = "glacier345@gmail.com"
-
-[ito.homepages]
-
-[maric]
-name = "Ognjen Marić"
-
-[maric.emails]
-maric_email = "ogi.afp@mynosefroze.com"
-
-[maric.homepages]
-
-[heimes]
-name = "Lukas Heimes"
-
-[heimes.emails]
-heimes_email = "heimesl@student.ethz.ch"
-
-[heimes.homepages]
-
-[parrow]
-name = "Joachim Parrow"
-
-[parrow.emails]
-parrow_email = "joachim.parrow@it.uu.se"
-
-[parrow.homepages]
-
-[naraschewski]
-name = "Wolfgang Naraschewski"
-
-[naraschewski.emails]
-
-[naraschewski.homepages]
-
-[amani]
-name = "Sidney Amani"
-
-[amani.emails]
-amani_email = "sidney.amani@data61.csiro.au"
-
-[amani.homepages]
-
-[palmer]
-name = "Jake Palmer"
-
-[palmer.emails]
-palmer_email = "jake.palmer@ed.ac.uk"
-
-[palmer.homepages]
-
-[bockenek]
-name = "Joshua Bockenek"
-
-[bockenek.emails]
-
-[bockenek.homepages]
-
-[lachnitt]
-name = "Hanna Lachnitt"
-
-[lachnitt.emails]
-lachnitt_email = "lachnitt@stanford.edu"
-
-[lachnitt.homepages]
-
-[rabe]
-name = "Markus N. Rabe"
-
-[rabe.emails]
-
-[rabe.homepages]
-rabe_homepage = "http://www.react.uni-saarland.de/people/rabe.html"
-
-[munive]
-name = "Jonathan Julian Huerta y Munive"
-
-[munive.emails]
-munive_email = "jjhuertaymunive1@sheffield.ac.uk"
-munive_email1 = "jonjulian23@gmail.com"
-
-[munive.homepages]
-
-[gouezel]
-name = "Sebastien Gouezel"
-
-[gouezel.emails]
-gouezel_email = "sebastien.gouezel@univ-rennes1.fr"
-
-[gouezel.homepages]
-gouezel_homepage = "http://www.math.sciences.univ-nantes.fr/~gouezel/"
-
-[brucker]
-name = "Achim D. Brucker"
-
-[brucker.emails]
-brucker_email = "a.brucker@exeter.ac.uk"
-brucker_email1 = "brucker@spamfence.net"
-brucker_email2 = "adbrucker@0x5f.org"
-
-[brucker.homepages]
-brucker_homepage = "https://www.brucker.ch/"
-
-[sato]
-name = "Tetsuya Sato"
-
-[sato.emails]
-sato_email = "tsato@c.titech.ac.jp"
-
-[sato.homepages]
-sato_homepage = "https://sites.google.com/view/tetsuyasato/"
-
-[huffman]
-name = "Brian Huffman"
-
-[huffman.emails]
-huffman_email = "huffman@in.tum.de"
-huffman_email1 = "brianh@cs.pdx.edu"
-
-[huffman.homepages]
-huffman_homepage = "http://cs.pdx.edu/~brianh/"
-
-[fleuriot]
-name = "Jacques D. Fleuriot"
-
-[fleuriot.emails]
-fleuriot_email = "Jacques.Fleuriot@ed.ac.uk"
-fleuriot_email1 = "jdf@ed.ac.uk"
-
-[fleuriot.homepages]
-fleuriot_homepage = "https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html"
-
-[hess]
-name = "Andreas V. Hess"
-
-[hess.emails]
-hess_email = "avhe@dtu.dk"
-hess_email1 = "andreasvhess@gmail.com"
-
-[hess.homepages]
-
-[marmsoler]
-name = "Diego Marmsoler"
-
-[marmsoler.emails]
-marmsoler_email = "diego.marmsoler@tum.de"
-
-[marmsoler.homepages]
-marmsoler_homepage = "http://marmsoler.com"
-
-[hibon]
-name = "Quentin Hibon"
-
-[hibon.emails]
-hibon_email = "qh225@cl.cam.ac.uk"
-
-[hibon.homepages]
-
-[tasch]
-name = "Markus Tasch"
-
-[tasch.emails]
-tasch_email = "tasch@mais.informatik.tu-darmstadt.de"
-
-[tasch.homepages]
-
-[doty]
-name = "Matthew Wampler-Doty"
-
-[doty.emails]
-
-[doty.homepages]
-
-[berghofer]
-name = "Stefan Berghofer"
-
-[berghofer.emails]
-berghofer_email = "berghofe@in.tum.de"
-
-[berghofer.homepages]
-berghofer_homepage = "http://www.in.tum.de/~berghofe"
-
-[hirata]
-name = "Michikazu Hirata"
-
-[hirata.emails]
-hirata_email = "hirata.m.ac@m.titech.ac.jp"
-
-[hirata.homepages]
-
-[sylvestre]
-name = "Jeremy Sylvestre"
-
-[sylvestre.emails]
-sylvestre_email = "jeremy.sylvestre@ualberta.ca"
-sylvestre_email1 = "jsylvest@ualberta.ca"
-
-[sylvestre.homepages]
-sylvestre_homepage = "http://ualberta.ca/~jsylvest/"
-
-[lindenberg]
-name = "Christina Lindenberg"
-
-[lindenberg.emails]
-
-[lindenberg.homepages]
-
-[joosten]
-name = "Sebastiaan J. C. Joosten"
-
-[joosten.emails]
-joosten_email = "sebastiaan.joosten@uibk.ac.at"
-joosten_email1 = "sjcjoosten@gmail.com"
-joosten_email2 = "s.j.c.joosten@utwente.nl"
-
-[joosten.homepages]
-joosten_homepage = "https://sjcjoosten.nl/"
-
-[blumson]
-name = "Ben Blumson"
-
-[blumson.emails]
-blumson_email = "benblumson@gmail.com"
-
-[blumson.homepages]
-blumson_homepage = "https://philpeople.org/profiles/ben-blumson"
-
-[hosking]
-name = "Tony Hosking"
-
-[hosking.emails]
-
-[hosking.homepages]
-hosking_homepage = "https://www.cs.purdue.edu/homes/hosking/"
-
-[preoteasa]
-name = "Viorel Preoteasa"
-
-[preoteasa.emails]
-preoteasa_email = "viorel.preoteasa@aalto.fi"
-
-[preoteasa.homepages]
-preoteasa_homepage = "http://users.abo.fi/vpreotea/"
-
-[gutkovas]
-name = "Ramunas Gutkovas"
-
-[gutkovas.emails]
-gutkovas_email = "ramunas.gutkovas@it.uu.se"
-
-[gutkovas.homepages]
-
-[minamide]
-name = "Yasuhiko Minamide"
-
-[minamide.emails]
-minamide_email = "minamide@is.titech.ac.jp"
-
-[minamide.homepages]
-minamide_homepage = "https://sv.c.titech.ac.jp/minamide/index.en.html"
-
-[waldmann]
-name = "Uwe Waldmann"
-
-[waldmann.emails]
-waldmann_email = "waldmann@mpi-inf.mpg.de"
-
-[waldmann.homepages]
-
-[lewis]
-name = "Corey Lewis"
-
-[lewis.emails]
-lewis_email = "corey.lewis@data61.csiro.au"
-
-[lewis.homepages]
-
-[peters]
-name = "Kirstin Peters"
-
-[peters.emails]
-peters_email = "kirstin.peters@tu-berlin.de"
-
-[peters.homepages]
-
-[ortner]
-name = "Veronika Ortner"
-
-[ortner.emails]
-
-[ortner.homepages]
-
-[fiedler]
-name = "Ben Fiedler"
-
-[fiedler.emails]
-fiedler_email = "ben.fiedler@inf.ethz.ch"
-
-[fiedler.homepages]
-
-[becker]
-name = "Heiko Becker"
-
-[becker.emails]
-becker_email = "hbecker@mpi-sws.org"
-
-[becker.homepages]
-
-[bracevac]
-name = "Oliver Bračevac"
-
-[bracevac.emails]
-bracevac_email = "bracevac@st.informatik.tu-darmstadt.de"
-
-[bracevac.homepages]
-
-[bohrer]
-name = "Rose Bohrer"
-
-[bohrer.emails]
-bohrer_email = "rose.bohrer.cs@gmail.com"
-
-[bohrer.homepages]
-
-[londono]
-name = "Alejandro Gómez-Londoño"
-
-[londono.emails]
-londono_email = "alejandro.gomez@chalmers.se"
-
-[londono.homepages]
-
-[armstrong]
-name = "Alasdair Armstrong"
-
-[armstrong.emails]
-
-[armstrong.homepages]
-
-[glabbeek]
-name = "Rob van Glabbeek"
-
-[glabbeek.emails]
-
-[glabbeek.homepages]
-glabbeek_homepage = "http://theory.stanford.edu/~rvg/"
-
-[jiangd]
-name = "Dongchen Jiang"
-
-[jiangd.emails]
-jiangd_email = "dongchenjiang@googlemail.com"
-
-[jiangd.homepages]
-
-[meis]
-name = "Rene Meis"
-
-[meis.emails]
-meis_email = "rene.meis@uni-muenster.de"
-meis_email1 = "rene.meis@uni-due.de"
-
-[meis.homepages]
-
-[hofmann]
-name = "Martin Hofmann"
-
-[hofmann.emails]
-
-[hofmann.homepages]
-hofmann_homepage = "http://www.tcs.informatik.uni-muenchen.de/~mhofmann"
-
-[kerber]
-name = "Manfred Kerber"
-
-[kerber.emails]
-kerber_email = "mnfrd.krbr@gmail.com"
-
-[kerber.homepages]
-kerber_homepage = "http://www.cs.bham.ac.uk/~mmk"
-
-[linker]
-name = "Sven Linker"
-
-[linker.emails]
-linker_email = "s.linker@liverpool.ac.uk"
-
-[linker.homepages]
-
-[balbach]
-name = "Frank J. Balbach"
-
-[balbach.emails]
-balbach_email = "frank-balbach@gmx.de"
-
-[balbach.homepages]
-
-[weber]
-name = "Tjark Weber"
-
-[weber.emails]
-weber_email = "tjark.weber@it.uu.se"
-
-[weber.homepages]
-weber_homepage = "http://user.it.uu.se/~tjawe125/"
-
-[hellauer]
-name = "Fabian Hellauer"
-
-[hellauer.emails]
-hellauer_email = "hellauer@in.tum.de"
-
-[hellauer.homepages]
-
-[reiter]
-name = "Markus Reiter"
-
-[reiter.emails]
-
-[reiter.homepages]
-
-[herzberg]
-name = "Michael Herzberg"
-
-[herzberg.emails]
-herzberg_email = "mail@michael-herzberg.de"
-
-[herzberg.homepages]
-herzberg_homepage = "http://www.dcs.shef.ac.uk/cgi-bin/makeperson?M.Herzberg"
-
-[overbeek]
-name = "Roy Overbeek"
-
-[overbeek.emails]
-overbeek_email = "Roy.Overbeek@cwi.nl"
-
-[overbeek.homepages]
-
-[koerner]
-name = "Stefan Körner"
-
-[koerner.emails]
-koerner_email = "s_koer03@uni-muenster.de"
-
-[koerner.homepages]
-
-[tan]
-name = "Yong Kiam Tan"
-
-[tan.emails]
-tan_email = "yongkiat@cs.cmu.edu"
-
-[tan.homepages]
-tan_homepage = "https://www.cs.cmu.edu/~yongkiat/"
-
-[esparza]
-name = "Javier Esparza"
-
-[esparza.emails]
-
-[esparza.homepages]
-esparza_homepage = "https://www7.in.tum.de/~esparza/"
-
-[platzer]
-name = "André Platzer"
-
-[platzer.emails]
-platzer_email = "aplatzer@cs.cmu.edu"
-
-[platzer.homepages]
-platzer_homepage = "https://www.cs.cmu.edu/~aplatzer/"
-
-[matichuk]
-name = "Daniel Matichuk"
-
-[matichuk.emails]
-
-[matichuk.homepages]
-
-[rawson]
-name = "Michael Rawson"
-
-[rawson.emails]
-rawson_email = "michaelrawson76@gmail.com"
-rawson_email1 = "mr644@cam.ac.uk"
-
-[rawson.homepages]
-
-[bisping]
-name = "Benjamin Bisping"
-
-[bisping.emails]
-bisping_email = "benjamin.bisping@campus.tu-berlin.de"
-
-[bisping.homepages]
-
-[sanan]
-name = "David Sanan"
-
-[sanan.emails]
-sanan_email = "sanan@ntu.edu.sg"
-
-[sanan.homepages]
-
-[jungnickel]
-name = "Tim Jungnickel"
-
-[jungnickel.emails]
-jungnickel_email = "tim.jungnickel@tu-berlin.de"
-
-[jungnickel.homepages]
-
-[ammer]
-name = "Thomas Ammer"
-
-[ammer.emails]
-
-[ammer.homepages]
-
-[mulligan]
-name = "Dominic P. Mulligan"
-
-[mulligan.emails]
-mulligan_email = "dominic.p.mulligan@googlemail.com"
-mulligan_email1 = "Dominic.Mulligan@arm.com"
-
-[mulligan.homepages]
-
-[georgescu]
-name = "George Georgescu"
-
-[georgescu.emails]
-
-[georgescu.homepages]
-
-[aissat]
-name = "Romain Aissat"
-
-[aissat.emails]
-
-[aissat.homepages]
-
-[gore]
-name = "Rajeev Gore"
-
-[gore.emails]
-gore_email = "rajeev.gore@anu.edu.au"
-
-[gore.homepages]
-
-[gomes]
-name = "Victor B. F. Gomes"
-
-[gomes.emails]
-gomes_email = "victor.gomes@cl.cam.ac.uk"
-gomes_email2 = "victorborgesfg@gmail.com"
-gomes_email4 = "vborgesferreiragomes1@sheffield.ac.uk"
-
-[gomes.homepages]
-gomes_homepage = "http://www.dcs.shef.ac.uk/~victor"
-
-[trachtenherz]
-name = "David Trachtenherz"
-
-[trachtenherz.emails]
-
-[trachtenherz.homepages]
-
-[lohner]
-name = "Denis Lohner"
-
-[lohner.emails]
-lohner_email = "denis.lohner@kit.edu"
-
-[lohner.homepages]
-lohner_homepage = "http://pp.ipd.kit.edu/person.php?id=88"
-
-[richter]
-name = "Stefan Richter"
-
-[richter.emails]
-richter_email = "richter@informatik.rwth-aachen.de"
-
-[richter.homepages]
-richter_homepage = "http://www-lti.informatik.rwth-aachen.de/~richter/"
-
-[nemeti]
-name = "István Németi"
-
-[nemeti.emails]
-
-[nemeti.homepages]
-nemeti_homepage = "http://www.renyi.hu/~nemeti/"
-
-[bentkamp]
-name = "Alexander Bentkamp"
-
-[bentkamp.emails]
-bentkamp_email = "bentkamp@gmail.com"
-bentkamp_email1 = "a.bentkamp@vu.nl"
-
-[bentkamp.homepages]
-bentkamp_homepage = "https://www.cs.vu.nl/~abp290/"
-
-[zeyda]
-name = "Frank Zeyda"
-
-[zeyda.emails]
-zeyda_email = "frank.zeyda@york.ac.uk"
-
-[zeyda.homepages]
-
-[tuerk]
-name = "Thomas Tuerk"
-
-[tuerk.emails]
-
-[tuerk.homepages]
-
-[ribeiro]
-name = "Pedro Ribeiro"
-
-[ribeiro.emails]
-
-[ribeiro.homepages]
-
-[raedle]
-name = "Jonas Rädle"
-
-[raedle.emails]
-raedle_email = "jonas.raedle@gmail.com"
-raedle_email1 = "jonas.raedle@tum.de"
-
-[raedle.homepages]
-
-[peltier]
-name = "Nicolas Peltier"
-
-[peltier.emails]
-peltier_email = "Nicolas.Peltier@imag.fr"
-
-[peltier.homepages]
-peltier_homepage = "http://membres-lig.imag.fr/peltier/"
-
-[kappelmann]
-name = "Kevin Kappelmann"
-
-[kappelmann.emails]
-kappelmann_email = "kevin.kappelmann@tum.de"
-
-[kappelmann.homepages]
-kappelmann_homepage = "https://www21.in.tum.de/team/kappelmk/"
-
-[hoelzl]
-name = "Johannes Hölzl"
-
-[hoelzl.emails]
-hoelzl_email = "hoelzl@in.tum.de"
-
-[hoelzl.homepages]
-hoelzl_homepage = "http://home.in.tum.de/~hoelzl"
-
-[ballarin]
-name = "Clemens Ballarin"
-
-[ballarin.emails]
-ballarin_email = "ballarin@in.tum.de"
-
-[ballarin.homepages]
-ballarin_homepage = "http://www21.in.tum.de/~ballarin/"
-
-[wu]
-name = "Chunhan Wu"
-
-[wu.emails]
-
-[wu.homepages]
-
-[paulson]
-name = "Lawrence C. Paulson"
-
-[paulson.emails]
-paulson_email = "lp15@cam.ac.uk"
-
-[paulson.homepages]
-paulson_homepage = "https://www.cl.cam.ac.uk/~lp15/"
-
-[paleo]
-name = "Bruno Woltzenlogel Paleo"
-
-[paleo.emails]
-
-[paleo.homepages]
-paleo_homepage = "http://www.logic.at/staff/bruno/"
-
-[wagner]
-name = "Max Wagner"
-
-[wagner.emails]
-wagner_email = "max@trollbu.de"
-
-[wagner.homepages]
-
-[lochbihler]
-name = "Andreas Lochbihler"
-
-[lochbihler.emails]
-lochbihler_email = "andreas.lochbihler@digitalasset.com"
-lochbihler_email1 = "mail@andreas-lochbihler.de"
-
-[lochbihler.homepages]
-lochbihler_homepage = "http://www.andreas-lochbihler.de/"
-
-[porter]
-name = "Benjamin Porter"
-
-[porter.emails]
-
-[porter.homepages]
-
-[boehme]
-name = "Sascha Böhme"
-
-[boehme.emails]
-boehme_email = "boehmes@in.tum.de"
-
-[boehme.homepages]
-boehme_homepage = "http://www21.in.tum.de/~boehmes/"
-
-[hou]
-name = "Zhe Hou"
-
-[hou.emails]
-hou_email = "zhe.hou@ntu.edu.sg"
-
-[hou.homepages]
-
-[mitchell]
-name = "Neil Mitchell"
-
-[mitchell.emails]
-
-[mitchell.homepages]
-
-[gay]
-name = "Richard Gay"
-
-[gay.emails]
-gay_email = "gay@mais.informatik.tu-darmstadt.de"
-
-[gay.homepages]
-
-[oldenburg]
-name = "Lennart Oldenburg"
-
-[oldenburg.emails]
-
-[oldenburg.homepages]
-
-[lochmann]
-name = "Alexander Lochmann"
-
-[lochmann.emails]
-lochmann_email = "alexander.lochmann@uibk.ac.at"
-
-[lochmann.homepages]
-
-[lim]
-name = "Japheth Lim"
-
-[lim.emails]
-
-[lim.homepages]
-
-[keinholz]
-name = "Jonas Keinholz"
-
-[keinholz.emails]
-
-[keinholz.homepages]
-
-[taylor]
-name = "Ramsay G. Taylor"
-
-[taylor.emails]
-taylor_email = "r.g.taylor@sheffield.ac.uk"
-
-[taylor.homepages]
+[bauer.homepages]
 
 [bauereiss]
 name = "Thomas Bauereiss"
 
 [bauereiss.emails]
-bauereiss_email = "thomas@bauereiss.name"
+
+[bauereiss.emails.bauereiss_email]
+user = [
+  "thomas",
+]
+host = [
+  "bauereiss",
+  "name",
+]
 
 [bauereiss.homepages]
 
-[lee]
-name = "Holden Lee"
-
-[lee.emails]
-lee_email = "holdenl@princeton.edu"
-
-[lee.homepages]
-
-[weerwag]
-name = "Timmy Weerwag"
-
-[weerwag.emails]
-
-[weerwag.homepages]
-
-[sudhof]
-name = "Henry Sudhof"
-
-[sudhof.emails]
-sudhof_email = "hsudhof@cs.tu-berlin.de"
-
-[sudhof.homepages]
-
-[nedzelsky]
-name = "Michael Nedzelsky"
-
-[nedzelsky.emails]
-nedzelsky_email = "MichaelNedzelsky@yandex.ru"
-
-[nedzelsky.homepages]
-
-[romanos]
-name = "Ralph Romanos"
-
-[romanos.emails]
-romanos_email = "ralph.romanos@student.ecp.fr"
-
-[romanos.homepages]
-
-[doczkal]
-name = "Christian Doczkal"
-
-[doczkal.emails]
-doczkal_email = "doczkal@ps.uni-saarland.de"
-
-[doczkal.homepages]
-
-[buyse]
-name = "Maxime Buyse"
-
-[buyse.emails]
-buyse_email = "maxime.buyse@polytechnique.edu"
-
-[buyse.homepages]
-
-[guiol]
-name = "Hervé Guiol"
-
-[guiol.emails]
-guiol_email = "herve.guiol@univ-grenoble-alpes.fr"
-
-[guiol.homepages]
-
-[brodmann]
-name = "Paul-David Brodmann"
-
-[brodmann.emails]
-brodmann_email = "p.brodmann@tu-berlin.de"
-
-[brodmann.homepages]
-
-[moedersheim]
-name = "Sebastian Mödersheim"
-
-[moedersheim.emails]
-moedersheim_email = "samo@dtu.dk"
-
-[moedersheim.homepages]
-moedersheim_homepage = "https://people.compute.dtu.dk/samo/"
-
-[hu]
-name = "Shuwei Hu"
-
-[hu.emails]
-hu_email = "shuwei.hu@tum.de"
-
-[hu.homepages]
-
-[wand]
-name = "Daniel Wand"
-
-[wand.emails]
-wand_email = "dwand@mpi-inf.mpg.de"
-
-[wand.homepages]
-
-[velykis]
-name = "Andrius Velykis"
-
-[velykis.emails]
-
-[velykis.homepages]
-velykis_homepage = "http://andrius.velykis.lt"
-
-[felgenhauer]
-name = "Bertram Felgenhauer"
-
-[felgenhauer.emails]
-felgenhauer_email = "bertram.felgenhauer@uibk.ac.at"
-felgenhauer_email1 = "int-e@gmx.de"
-
-[felgenhauer.homepages]
-
-[sauer]
-name = "Jens Sauer"
-
-[sauer.emails]
-sauer_email = "sauer@mais.informatik.tu-darmstadt.de"
-
-[sauer.homepages]
-
-[dittmann]
-name = "Christoph Dittmann"
-
-[dittmann.emails]
-dittmann_email = "isabelle@christoph-d.de"
-
-[dittmann.homepages]
-dittmann_homepage = "http://logic.las.tu-berlin.de/Members/Dittmann/"
-
-[muendler]
-name = "Niels Mündler"
-
-[muendler.emails]
-muendler_email = "n.muendler@tum.de"
-
-[muendler.homepages]
-
-[somogyi]
-name = "Dániel Somogyi"
-
-[somogyi.emails]
-
-[somogyi.homepages]
-
-[makarios]
-name = "T. J. M. Makarios"
-
-[makarios.emails]
-makarios_email = "tjm1983@gmail.com"
-
-[makarios.homepages]
-
-[nishihara]
-name = "Toshiaki Nishihara"
-
-[nishihara.emails]
-
-[nishihara.homepages]
-
-[losa]
-name = "Giuliano Losa"
-
-[losa.emails]
-losa_email = "giuliano.losa@epfl.ch"
-losa_email1 = "giuliano@galois.com"
-losa_email2 = "giuliano@losa.fr"
-
-[losa.homepages]
-
-[grov]
-name = "Gudmund Grov"
-
-[grov.emails]
-grov_email = "ggrov@inf.ed.ac.uk"
-
-[grov.homepages]
-grov_homepage = "http://homepages.inf.ed.ac.uk/ggrov"
-
-[bharadwaj]
-name = "Abhijith Bharadwaj"
-
-[bharadwaj.emails]
-
-[bharadwaj.homepages]
-
-[clouston]
-name = "Ranald Clouston"
-
-[clouston.emails]
-clouston_email = "ranald.clouston@cs.au.dk"
-
-[clouston.homepages]
-
-[jaskelioff]
-name = "Mauro Jaskelioff"
-
-[jaskelioff.emails]
-
-[jaskelioff.homepages]
-jaskelioff_homepage = "http://www.fceia.unr.edu.ar/~mauro/"
-
-[caminati]
-name = "Marco B. Caminati"
-
-[caminati.emails]
-
-[caminati.homepages]
+[bayer]
+name = "Jonas Bayer"
+
+[bayer.emails]
+
+[bayer.emails.bayer_email]
+user = [
+  "jonas",
+  "bayer999",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[bayer.homepages]
+
+[becker]
+name = "Heiko Becker"
+
+[becker.emails]
+
+[becker.emails.becker_email]
+user = [
+  "hbecker",
+]
+host = [
+  "mpi-sws",
+  "org",
+]
+
+[becker.homepages]
+
+[beeren]
+name = "Joel Beeren"
+
+[beeren.emails]
+
+[beeren.homepages]
+
+[bella]
+name = "Giampaolo Bella"
+
+[bella.emails]
+
+[bella.emails.bella_email]
+user = [
+  "giamp",
+]
+host = [
+  "dmi",
+  "unict",
+  "it",
+]
+
+[bella.homepages]
+bella_homepage = "http://www.dmi.unict.it/~giamp/"
 
 [bengtson]
 name = "Jesper Bengtson"
@@ -3163,139 +308,430 @@ name = "Jesper Bengtson"
 [bengtson.homepages]
 bengtson_homepage = "http://www.itu.dk/people/jebe"
 
+[bentkamp]
+name = "Alexander Bentkamp"
+
+[bentkamp.emails]
+
+[bentkamp.emails.bentkamp_email]
+user = [
+  "bentkamp",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[bentkamp.emails.bentkamp_email1]
+user = [
+  "a",
+  "bentkamp",
+]
+host = [
+  "vu",
+  "nl",
+]
+
+[bentkamp.homepages]
+bentkamp_homepage = "https://www.cs.vu.nl/~abp290/"
+
+[benzmueller]
+name = "Christoph Benzmüller"
+
+[benzmueller.emails]
+
+[benzmueller.emails.benzmueller_email]
+user = [
+  "c",
+  "benzmueller",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[benzmueller.emails.benzmueller_email1]
+user = [
+  "c",
+  "benzmueller",
+]
+host = [
+  "fu-berlin",
+  "de",
+]
+
+[benzmueller.homepages]
+benzmueller_homepage = "http://christoph-benzmueller.de"
+benzmueller_homepage1 = "http://page.mi.fu-berlin.de/cbenzmueller/"
+
+[beresford]
+name = "Alastair R. Beresford"
+
+[beresford.emails]
+
+[beresford.emails.beresford_email]
+user = [
+  "arb33",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[beresford.homepages]
+
+[berghofer]
+name = "Stefan Berghofer"
+
+[berghofer.emails]
+
+[berghofer.emails.berghofer_email]
+user = [
+  "berghofe",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[berghofer.homepages]
+berghofer_homepage = "http://www.in.tum.de/~berghofe"
+
+[beringer]
+name = "Lennart Beringer"
+
+[beringer.emails]
+
+[beringer.emails.beringer_email]
+user = [
+  "lennart",
+  "beringer",
+]
+host = [
+  "ifi",
+  "lmu",
+  "de",
+]
+
+[beringer.homepages]
+
+[bharadwaj]
+name = "Abhijith Bharadwaj"
+
+[bharadwaj.emails]
+
+[bharadwaj.homepages]
+
+[bhatt]
+name = "Bhargav Bhatt"
+
+[bhatt.emails]
+
+[bhatt.emails.bhatt_email]
+user = [
+  "bhargav",
+  "bhatt",
+]
+host = [
+  "inf",
+  "ethz",
+  "ch",
+]
+
+[bhatt.homepages]
+
+[biendarra]
+name = "Julian Biendarra"
+
+[biendarra.emails]
+
+[biendarra.homepages]
+
+[bisping]
+name = "Benjamin Bisping"
+
+[bisping.emails]
+
+[bisping.emails.bisping_email]
+user = [
+  "benjamin",
+  "bisping",
+]
+host = [
+  "campus",
+  "tu-berlin",
+  "de",
+]
+
+[bisping.homepages]
+
+[blanchette]
+name = "Jasmin Christian Blanchette"
+
+[blanchette.emails]
+
+[blanchette.emails.blanchette_email]
+user = [
+  "jasmin",
+  "blanchette",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[blanchette.emails.blanchette_email1]
+user = [
+  "j",
+  "c",
+  "blanchette",
+]
+host = [
+  "vu",
+  "nl",
+]
+
+[blanchette.homepages]
+blanchette_homepage = "http://www21.in.tum.de/~blanchet"
+blanchette_homepage1 = "https://www.cs.vu.nl/~jbe248/"
+
+[blasum]
+name = "Holger Blasum"
+
+[blasum.emails]
+
+[blasum.emails.blasum_email]
+user = [
+  "holger",
+  "blasum",
+]
+host = [
+  "sysgo",
+  "com",
+]
+
+[blasum.homepages]
+
+[blumson]
+name = "Ben Blumson"
+
+[blumson.emails]
+
+[blumson.emails.blumson_email]
+user = [
+  "benblumson",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[blumson.homepages]
+blumson_homepage = "https://philpeople.org/profiles/ben-blumson"
+
+[bockenek]
+name = "Joshua Bockenek"
+
+[bockenek.emails]
+
+[bockenek.homepages]
+
+[boehme]
+name = "Sascha Böhme"
+
+[boehme.emails]
+
+[boehme.emails.boehme_email]
+user = [
+  "boehmes",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[boehme.homepages]
+boehme_homepage = "http://www21.in.tum.de/~boehmes/"
+
+[bohrer]
+name = "Rose Bohrer"
+
+[bohrer.emails]
+
+[bohrer.emails.bohrer_email]
+user = [
+  "rose",
+  "bohrer",
+  "cs",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[bohrer.homepages]
+
+[bordg]
+name = "Anthony Bordg"
+
+[bordg.emails]
+
+[bordg.emails.bordg_email]
+user = [
+  "apdb3",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[bordg.homepages]
+bordg_homepage = "https://sites.google.com/site/anthonybordg/"
+
+[borgstroem]
+name = "Johannes Borgström"
+
+[borgstroem.emails]
+
+[borgstroem.emails.borgstroem_email]
+user = [
+  "johannes",
+  "borgstrom",
+]
+host = [
+  "it",
+  "uu",
+  "se",
+]
+
+[borgstroem.homepages]
+
+[bortin]
+name = "Maksym Bortin"
+
+[bortin.emails]
+
+[bortin.emails.bortin_email]
+user = [
+  "maksym",
+  "bortin",
+]
+host = [
+  "nicta",
+  "com",
+  "au",
+]
+
+[bortin.homepages]
+
+[bottesch]
+name = "Ralph Bottesch"
+
+[bottesch.emails]
+
+[bottesch.emails.bottesch_email]
+user = [
+  "ralph",
+  "bottesch",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[bottesch.homepages]
+bottesch_homepage = "http://cl-informatik.uibk.ac.at/users/bottesch/"
+
+[boulanger]
+name = "Frédéric Boulanger"
+
+[boulanger.emails]
+
+[boulanger.emails.boulanger_email]
+user = [
+  "frederic",
+  "boulanger",
+]
+host = [
+  "centralesupelec",
+  "fr",
+]
+
+[boulanger.homepages]
+
+[bourke]
+name = "Timothy Bourke"
+
+[bourke.emails]
+
+[bourke.emails.bourke_email]
+user = [
+  "tim",
+]
+host = [
+  "tbrk",
+  "org",
+]
+
+[bourke.homepages]
+bourke_homepage = "http://www.tbrk.org"
+
 [boutry]
 name = "Pierre Boutry"
 
 [boutry.emails]
-boutry_email = "boutry@unistra.fr"
+
+[boutry.emails.boutry_email]
+user = [
+  "boutry",
+]
+host = [
+  "unistra",
+  "fr",
+]
 
 [boutry.homepages]
 
-[sternagelt]
-name = "Thomas Sternagel"
+[boyton]
+name = "Andrew Boyton"
 
-[sternagelt.emails]
+[boyton.emails]
 
-[sternagelt.homepages]
+[boyton.emails.boyton_email]
+user = [
+  "andrew",
+  "boyton",
+]
+host = [
+  "nicta",
+  "com",
+  "au",
+]
 
-[guerraoui]
-name = "Rachid Guerraoui"
+[boyton.homepages]
 
-[guerraoui.emails]
-guerraoui_email = "rachid.guerraoui@epfl.ch"
+[bracevac]
+name = "Oliver Bračevac"
 
-[guerraoui.homepages]
+[bracevac.emails]
 
-[dongol]
-name = "Brijesh Dongol"
+[bracevac.emails.bracevac_email]
+user = [
+  "bracevac",
+]
+host = [
+  "st",
+  "informatik",
+  "tu-darmstadt",
+  "de",
+]
 
-[dongol.emails]
-dongol_email = "brijesh.dongol@brunel.ac.uk"
-
-[dongol.homepages]
-
-[tuong]
-name = "Frédéric Tuong"
-
-[tuong.emails]
-tuong_email = "tuong@users.gforge.inria.fr"
-tuong_email1 = "ftuong@lri.fr"
-
-[tuong.homepages]
-tuong_homepage = "https://www.lri.fr/~ftuong/"
-
-[ullrich]
-name = "Sebastian Ullrich"
-
-[ullrich.emails]
-ullrich_email = "sebasti@nullri.ch"
-
-[ullrich.homepages]
-
-[essmann]
-name = "Robin Eßmann"
-
-[essmann.emails]
-essmann_email = "robin.essmann@tum.de"
-
-[essmann.homepages]
-
-[liu]
-name = "Junyi Liu"
-
-[liu.emails]
-
-[liu.homepages]
-
-[villadsen]
-name = "Jørgen Villadsen"
-
-[villadsen.emails]
-villadsen_email = "jovi@dtu.dk"
-
-[villadsen.homepages]
-villadsen_homepage = "https://people.compute.dtu.dk/jovi/"
-
-[fosters]
-name = "Simon Foster"
-
-[fosters.emails]
-fosters_email = "simon.foster@york.ac.uk"
-
-[fosters.homepages]
-fosters_homepage = "https://www-users.cs.york.ac.uk/~simonf/"
-
-[dubut]
-name = "Jérémy Dubut"
-
-[dubut.emails]
-dubut_email = "dubut@nii.ac.jp"
-
-[dubut.homepages]
-dubut_homepage = "http://group-mmm.org/~dubut/"
-
-[jiang]
-name = "Nan Jiang"
-
-[jiang.emails]
-jiang_email = "nanjiang@whu.edu.cn"
-
-[jiang.homepages]
-
-[hetzl]
-name = "Stefan Hetzl"
-
-[hetzl.emails]
-hetzl_email = "hetzl@logic.at"
-
-[hetzl.homepages]
-hetzl_homepage = "http://www.logic.at/people/hetzl/"
-
-[parkinson]
-name = "Matthew Parkinson"
-
-[parkinson.emails]
-
-[parkinson.homepages]
-parkinson_homepage = "http://research.microsoft.com/people/mattpark/"
-
-[maletzky]
-name = "Alexander Maletzky"
-
-[maletzky.emails]
-maletzky_email = "alexander.maletzky@risc.jku.at"
-maletzky_email1 = "alexander.maletzky@risc-software.at"
-
-[maletzky.homepages]
-maletzky_homepage = "https://risc.jku.at/m/alexander-maletzky/"
-
-[keefe]
-name = "Greg O'Keefe"
-
-[keefe.emails]
-
-[keefe.homepages]
-keefe_homepage = "http://users.rsise.anu.edu.au/~okeefe/"
+[bracevac.homepages]
 
 [brandt]
 name = "Felix Brandt"
@@ -3305,37 +741,3457 @@ name = "Felix Brandt"
 [brandt.homepages]
 brandt_homepage = "http://dss.in.tum.de/staff/brandt.html"
 
-[blasum]
-name = "Holger Blasum"
+[breitner]
+name = "Joachim Breitner"
 
-[blasum.emails]
-blasum_email = "holger.blasum@sysgo.com"
+[breitner.emails]
 
-[blasum.homepages]
+[breitner.emails.breitner_email]
+user = [
+  "mail",
+]
+host = [
+  "joachim-breitner",
+  "de",
+]
 
-[messner]
-name = "Florian Messner"
+[breitner.emails.breitner_email1]
+user = [
+  "joachim",
+]
+host = [
+  "cis",
+  "upenn",
+  "edu",
+]
 
-[messner.emails]
-messner_email = "florian.g.messner@uibk.ac.at"
+[breitner.homepages]
+breitner_homepage = "http://pp.ipd.kit.edu/~breitner"
 
-[messner.homepages]
+[brien]
+name = "Nicolas Robinson-O'Brien"
+
+[brien.emails]
+
+[brien.homepages]
+
+[brinkop]
+name = "Hauke Brinkop"
+
+[brinkop.emails]
+
+[brinkop.emails.brinkop_email]
+user = [
+  "hauke",
+  "brinkop",
+]
+host = [
+  "googlemail",
+  "com",
+]
+
+[brinkop.homepages]
+
+[brodmann]
+name = "Paul-David Brodmann"
+
+[brodmann.emails]
+
+[brodmann.emails.brodmann_email]
+user = [
+  "p",
+  "brodmann",
+]
+host = [
+  "tu-berlin",
+  "de",
+]
+
+[brodmann.homepages]
+
+[brucker]
+name = "Achim D. Brucker"
+
+[brucker.emails]
+
+[brucker.emails.brucker_email]
+user = [
+  "a",
+  "brucker",
+]
+host = [
+  "exeter",
+  "ac",
+  "uk",
+]
+
+[brucker.emails.brucker_email1]
+user = [
+  "brucker",
+]
+host = [
+  "spamfence",
+  "net",
+]
+
+[brucker.emails.brucker_email2]
+user = [
+  "adbrucker",
+]
+host = [
+  "0x5f",
+  "org",
+]
+
+[brucker.homepages]
+brucker_homepage = "https://www.brucker.ch/"
+
+[bruegger]
+name = "Lukas Brügger"
+
+[bruegger.emails]
+
+[bruegger.emails.bruegger_email]
+user = [
+  "lukas",
+  "a",
+  "bruegger",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[bruegger.homepages]
+
+[brun]
+name = "Matthias Brun"
+
+[brun.emails]
+
+[brun.emails.brun_email]
+user = [
+  "matthias",
+  "brun",
+]
+host = [
+  "inf",
+  "ethz",
+  "ch",
+]
+
+[brun.homepages]
+
+[brunner]
+name = "Julian Brunner"
+
+[brunner.emails]
+
+[brunner.emails.brunner_email]
+user = [
+  "brunnerj",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[brunner.homepages]
+brunner_homepage = "http://www21.in.tum.de/~brunnerj/"
+
+[bulwahn]
+name = "Lukas Bulwahn"
+
+[bulwahn.emails]
+
+[bulwahn.emails.bulwahn_email]
+user = [
+  "lukas",
+  "bulwahn",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[bulwahn.homepages]
+
+[butler]
+name = "David Butler"
+
+[butler.emails]
+
+[butler.emails.butler_email]
+user = [
+  "dbutler",
+]
+host = [
+  "turing",
+  "ac",
+  "uk",
+]
+
+[butler.homepages]
+butler_homepage = "https://www.turing.ac.uk/people/doctoral-students/david-butler"
+
+[buyse]
+name = "Maxime Buyse"
+
+[buyse.emails]
+
+[buyse.emails.buyse_email]
+user = [
+  "maxime",
+  "buyse",
+]
+host = [
+  "polytechnique",
+  "edu",
+]
+
+[buyse.homepages]
+
+[caballero]
+name = "José Manuel Rodríguez Caballero"
+
+[caballero.emails]
+
+[caballero.emails.caballero_email]
+user = [
+  "jose",
+  "manuel",
+  "rodriguez",
+  "caballero",
+]
+host = [
+  "ut",
+  "ee",
+]
+
+[caballero.homepages]
+caballero_homepage = "https://josephcmac.github.io/"
+
+[caminati]
+name = "Marco B. Caminati"
+
+[caminati.emails]
+
+[caminati.homepages]
+
+[campo]
+name = "Alejandro del Campo"
+
+[campo.emails]
+
+[campo.emails.campo_email]
+user = [
+  "alejandro",
+  "del-campo",
+]
+host = [
+  "alum",
+  "unirioja",
+  "es",
+]
+
+[campo.homepages]
+
+[chaieb]
+name = "Amine Chaieb"
+
+[chaieb.emails]
+
+[chaieb.homepages]
+
+[chapman]
+name = "Peter Chapman"
+
+[chapman.emails]
+
+[chapman.emails.chapman_email]
+user = [
+  "pc",
+]
+host = [
+  "cs",
+  "st-andrews",
+  "ac",
+  "uk",
+]
+
+[chapman.homepages]
+
+[chen]
+name = "L. Chen"
+
+[chen.emails]
+
+[chen.homepages]
+
+[clouston]
+name = "Ranald Clouston"
+
+[clouston.emails]
+
+[clouston.emails.clouston_email]
+user = [
+  "ranald",
+  "clouston",
+]
+host = [
+  "cs",
+  "au",
+  "dk",
+]
+
+[clouston.homepages]
+
+[cock]
+name = "David Cock"
+
+[cock.emails]
+
+[cock.emails.cock_email]
+user = [
+  "david",
+  "cock",
+]
+host = [
+  "nicta",
+  "com",
+  "au",
+]
+
+[cock.homepages]
+
+[coghetto]
+name = "Roland Coghetto"
+
+[coghetto.emails]
+
+[coghetto.emails.coghetto_email]
+user = [
+  "roland_coghetto",
+]
+host = [
+  "hotmail",
+  "com",
+]
+
+[coghetto.homepages]
+
+[coglio]
+name = "Alessandro Coglio"
+
+[coglio.emails]
+
+[coglio.emails.coglio_email]
+user = [
+  "coglio",
+]
+host = [
+  "kestrel",
+  "edu",
+]
+
+[coglio.homepages]
+coglio_homepage = "http://www.kestrel.edu/~coglio"
+
+[cohen]
+name = "Ernie Cohen"
+
+[cohen.emails]
+
+[cohen.emails.cohen_email]
+user = [
+  "ecohen",
+]
+host = [
+  "amazon",
+  "com",
+]
+
+[cohen.homepages]
+
+[cordwell]
+name = "Katherine Cordwell"
+
+[cordwell.emails]
+
+[cordwell.emails.cordwell_email]
+user = [
+  "kcordwel",
+]
+host = [
+  "cs",
+  "cmu",
+  "edu",
+]
+
+[cordwell.homepages]
+cordwell_homepage = "https://www.cs.cmu.edu/~kcordwel/"
+
+[cousin]
+name = "Marie Cousin"
+
+[cousin.emails]
+
+[cousin.emails.cousin_email]
+user = [
+  "marie",
+  "cousin",
+]
+host = [
+  "grenoble-inp",
+  "org",
+]
+
+[cousin.homepages]
+
+[crighton]
+name = "Aaron Crighton"
+
+[crighton.emails]
+
+[crighton.emails.crighton_email]
+user = [
+  "crightoa",
+]
+host = [
+  "mcmaster",
+  "ca",
+]
+
+[crighton.homepages]
+
+[dardinier]
+name = "Thibault Dardinier"
+
+[dardinier.emails]
+
+[dardinier.emails.dardinier_email]
+user = [
+  "thibault",
+  "dardinier",
+]
+host = [
+  "inf",
+  "ethz",
+  "ch",
+]
+
+[dardinier.homepages]
+dardinier_homepage = "https://dardinier.me/"
+
+[david]
+name = "Marco David"
+
+[david.emails]
+
+[david.emails.david_email]
+user = [
+  "marco",
+  "david",
+]
+host = [
+  "hotmail",
+  "de",
+]
+
+[david.homepages]
+
+[debrat]
+name = "Henri Debrat"
+
+[debrat.emails]
+
+[debrat.emails.debrat_email]
+user = [
+  "henri",
+  "debrat",
+]
+host = [
+  "loria",
+  "fr",
+]
+
+[debrat.homepages]
+
+[decova]
+name = "Sára Decova"
+
+[decova.emails]
+
+[decova.homepages]
+
+[derrick]
+name = "John Derrick"
+
+[derrick.emails]
+
+[derrick.emails.derrick_email]
+user = [
+  "j",
+  "derrick",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[derrick.homepages]
+
+[desharnais]
+name = "Martin Desharnais"
+
+[desharnais.emails]
+
+[desharnais.emails.desharnais_email]
+user = [
+  "martin",
+  "desharnais",
+]
+host = [
+  "unibw",
+  "de",
+]
+
+[desharnais.homepages]
+desharnais_homepage = "https://martin.desharnais.me"
 
 [diaz]
 name = "Javier Díaz"
 
 [diaz.emails]
-diaz_email = "javier.diaz.manzi@gmail.com"
+
+[diaz.emails.diaz_email]
+user = [
+  "javier",
+  "diaz",
+  "manzi",
+]
+host = [
+  "gmail",
+  "com",
+]
 
 [diaz.homepages]
 
-[prathamesh]
-name = "T.V.H. Prathamesh"
+[diekmann]
+name = "Cornelius Diekmann"
 
-[prathamesh.emails]
-prathamesh_email = "prathamesh@imsc.res.in"
+[diekmann.emails]
 
-[prathamesh.homepages]
+[diekmann.emails.diekmann_email]
+user = [
+  "diekmann",
+]
+host = [
+  "net",
+  "in",
+  "tum",
+  "de",
+]
+
+[diekmann.homepages]
+diekmann_homepage = "http://net.in.tum.de/~diekmann"
+
+[dirix]
+name = "Stefan Dirix"
+
+[dirix.emails]
+
+[dirix.homepages]
+
+[dittmann]
+name = "Christoph Dittmann"
+
+[dittmann.emails]
+
+[dittmann.emails.dittmann_email]
+user = [
+  "isabelle",
+]
+host = [
+  "christoph-d",
+  "de",
+]
+
+[dittmann.homepages]
+dittmann_homepage = "http://logic.las.tu-berlin.de/Members/Dittmann/"
+
+[divason]
+name = "Jose Divasón"
+
+[divason.emails]
+
+[divason.emails.divason_email]
+user = [
+  "jose",
+  "divason",
+]
+host = [
+  "unirioja",
+  "es",
+]
+
+[divason.homepages]
+divason_homepage = "https://www.unirioja.es/cu/jodivaso/"
+
+[doczkal]
+name = "Christian Doczkal"
+
+[doczkal.emails]
+
+[doczkal.emails.doczkal_email]
+user = [
+  "doczkal",
+]
+host = [
+  "ps",
+  "uni-saarland",
+  "de",
+]
+
+[doczkal.homepages]
+
+[dongol]
+name = "Brijesh Dongol"
+
+[dongol.emails]
+
+[dongol.emails.dongol_email]
+user = [
+  "brijesh",
+  "dongol",
+]
+host = [
+  "brunel",
+  "ac",
+  "uk",
+]
+
+[dongol.homepages]
+
+[doty]
+name = "Matthew Wampler-Doty"
+
+[doty.emails]
+
+[doty.homepages]
+
+[dubut]
+name = "Jérémy Dubut"
+
+[dubut.emails]
+
+[dubut.emails.dubut_email]
+user = [
+  "dubut",
+]
+host = [
+  "nii",
+  "ac",
+  "jp",
+]
+
+[dubut.homepages]
+dubut_homepage = "http://group-mmm.org/~dubut/"
+
+[dunaev]
+name = "Georgy Dunaev"
+
+[dunaev.emails]
+
+[dunaev.emails.dunaev_email]
+user = [
+  "georgedunaev",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[dunaev.homepages]
+
+[dyckhoff]
+name = "Roy Dyckhoff"
+
+[dyckhoff.emails]
+
+[dyckhoff.homepages]
+dyckhoff_homepage = "https://rd.host.cs.st-andrews.ac.uk"
+
+[eberl]
+name = "Manuel Eberl"
+
+[eberl.emails]
+
+[eberl.emails.eberl_email]
+user = [
+  "manuel",
+]
+host = [
+  "pruvisto",
+  "org",
+]
+
+[eberl.emails.eberl_email1]
+user = [
+  "manuel",
+  "eberl",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[eberl.homepages]
+eberl_homepage = "https://pruvisto.org/"
+eberl_homepage2 = "https://www.in.tum.de/~eberlm"
+
+[echenim]
+name = "Mnacho Echenim"
+
+[echenim.emails]
+
+[echenim.emails.echenim_email]
+user = [
+  "mnacho",
+  "echenim",
+]
+host = [
+  "univ-grenoble-alpes",
+  "fr",
+]
+
+[echenim.homepages]
+echenim_homepage = "https://lig-membres.imag.fr/mechenim/"
+
+[edmonds]
+name = "Chelsea Edmonds"
+
+[edmonds.emails]
+
+[edmonds.emails.edmonds_email]
+user = [
+  "cle47",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[edmonds.homepages]
+edmonds_homepage = "https://www.cst.cam.ac.uk/people/cle47"
+
+[engelhardt]
+name = "Kai Engelhardt"
+
+[engelhardt.emails]
+
+[engelhardt.homepages]
+
+[eriksson]
+name = "Lars-Henrik Eriksson"
+
+[eriksson.emails]
+
+[eriksson.emails.eriksson_email]
+user = [
+  "lhe",
+]
+host = [
+  "it",
+  "uu",
+  "se",
+]
+
+[eriksson.homepages]
+
+[esparza]
+name = "Javier Esparza"
+
+[esparza.emails]
+
+[esparza.homepages]
+esparza_homepage = "https://www7.in.tum.de/~esparza/"
+
+[essmann]
+name = "Robin Eßmann"
+
+[essmann.emails]
+
+[essmann.emails.essmann_email]
+user = [
+  "robin",
+  "essmann",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[essmann.homepages]
+
+[felgenhauer]
+name = "Bertram Felgenhauer"
+
+[felgenhauer.emails]
+
+[felgenhauer.emails.felgenhauer_email]
+user = [
+  "bertram",
+  "felgenhauer",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[felgenhauer.emails.felgenhauer_email1]
+user = [
+  "int-e",
+]
+host = [
+  "gmx",
+  "de",
+]
+
+[felgenhauer.homepages]
+
+[feliachi]
+name = "Abderrahmane Feliachi"
+
+[feliachi.emails]
+
+[feliachi.emails.feliachi_email]
+user = [
+  "abderrahmane",
+  "feliachi",
+]
+host = [
+  "lri",
+  "fr",
+]
+
+[feliachi.homepages]
+
+[fell]
+name = "Julian Fell"
+
+[fell.emails]
+
+[fell.emails.fell_email]
+user = [
+  "julian",
+  "fell",
+]
+host = [
+  "uq",
+  "net",
+  "au",
+]
+
+[fell.homepages]
+
+[fernandez]
+name = "Matthew Fernandez"
+
+[fernandez.emails]
+
+[fernandez.homepages]
+
+[fiedler]
+name = "Ben Fiedler"
+
+[fiedler.emails]
+
+[fiedler.emails.fiedler_email]
+user = [
+  "ben",
+  "fiedler",
+]
+host = [
+  "inf",
+  "ethz",
+  "ch",
+]
+
+[fiedler.homepages]
+
+[fleuriot]
+name = "Jacques D. Fleuriot"
+
+[fleuriot.emails]
+
+[fleuriot.emails.fleuriot_email]
+user = [
+  "Jacques",
+  "Fleuriot",
+]
+host = [
+  "ed",
+  "ac",
+  "uk",
+]
+
+[fleuriot.emails.fleuriot_email1]
+user = [
+  "jdf",
+]
+host = [
+  "ed",
+  "ac",
+  "uk",
+]
+
+[fleuriot.homepages]
+fleuriot_homepage = "https://www.inf.ed.ac.uk/people/staff/Jacques_Fleuriot.html"
+
+[fleury]
+name = "Mathias Fleury"
+
+[fleury.emails]
+
+[fleury.emails.fleury_email]
+user = [
+  "fleury",
+]
+host = [
+  "mpi-inf",
+  "mpg",
+  "de",
+]
+
+[fleury.emails.fleury_email1]
+user = [
+  "mathias",
+  "fleury",
+]
+host = [
+  "jku",
+  "at",
+]
+
+[fleury.homepages]
+fleury_homepage = "http://fmv.jku.at/fleury"
+
+[foster]
+name = "Michael Foster"
+
+[foster.emails]
+
+[foster.emails.foster_email]
+user = [
+  "m",
+  "foster",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[foster.homepages]
+
+[fosterj]
+name = "J. Nathan Foster"
+
+[fosterj.emails]
+
+[fosterj.homepages]
+fosterj_homepage = "http://www.cs.cornell.edu/~jnfoster/"
+
+[fosters]
+name = "Simon Foster"
+
+[fosters.emails]
+
+[fosters.emails.fosters_email]
+user = [
+  "simon",
+  "foster",
+]
+host = [
+  "york",
+  "ac",
+  "uk",
+]
+
+[fosters.homepages]
+fosters_homepage = "https://www-users.cs.york.ac.uk/~simonf/"
+
+[fouillard]
+name = "Valentin Fouillard"
+
+[fouillard.emails]
+
+[fouillard.emails.fouillard_email]
+user = [
+  "valentin",
+  "fouillard",
+]
+host = [
+  "limsi",
+  "fr",
+]
+
+[fouillard.homepages]
+
+[friedrich]
+name = "Stefan Friedrich"
+
+[friedrich.emails]
+
+[friedrich.homepages]
+
+[from]
+name = "Asta Halkjær From"
+
+[from.emails]
+
+[from.emails.from_email]
+user = [
+  "ahfrom",
+]
+host = [
+  "dtu",
+  "dk",
+]
+
+[from.homepages]
+from_homepage = "https://people.compute.dtu.dk/ahfrom/"
+
+[fuenmayor]
+name = "David Fuenmayor"
+
+[fuenmayor.emails]
+
+[fuenmayor.emails.fuenmayor_email]
+user = [
+  "davfuenmayor",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[fuenmayor.homepages]
+
+[furusawa]
+name = "Hitoshi Furusawa"
+
+[furusawa.emails]
+
+[furusawa.homepages]
+furusawa_homepage = "http://www.sci.kagoshima-u.ac.jp/~furusawa/"
+
+[gammie]
+name = "Peter Gammie"
+
+[gammie.emails]
+
+[gammie.emails.gammie_email]
+user = [
+  "peteg42",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[gammie.homepages]
+gammie_homepage = "http://peteg.org"
+
+[gao]
+name = "Xin Gao"
+
+[gao.emails]
+
+[gao.homepages]
+
+[gaudel]
+name = "Marie-Claude Gaudel"
+
+[gaudel.emails]
+
+[gaudel.emails.gaudel_email]
+user = [
+  "mcg",
+]
+host = [
+  "lri",
+  "fr",
+]
+
+[gaudel.homepages]
+
+[gay]
+name = "Richard Gay"
+
+[gay.emails]
+
+[gay.emails.gay_email]
+user = [
+  "gay",
+]
+host = [
+  "mais",
+  "informatik",
+  "tu-darmstadt",
+  "de",
+]
+
+[gay.homepages]
+
+[georgescu]
+name = "George Georgescu"
+
+[georgescu.emails]
+
+[georgescu.homepages]
+
+[gheri]
+name = "Lorenzo Gheri"
+
+[gheri.emails]
+
+[gheri.emails.gheri_email]
+user = [
+  "lor",
+  "gheri",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[gheri.homepages]
+
+[ghourabi]
+name = "Fadoua Ghourabi"
+
+[ghourabi.emails]
+
+[ghourabi.emails.ghourabi_email]
+user = [
+  "fadouaghourabi",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[ghourabi.homepages]
+
+[gioiosa]
+name = "Gianpaolo Gioiosa"
+
+[gioiosa.emails]
+
+[gioiosa.homepages]
+
+[glabbeek]
+name = "Rob van Glabbeek"
+
+[glabbeek.emails]
+
+[glabbeek.homepages]
+glabbeek_homepage = "http://theory.stanford.edu/~rvg/"
+
+[gomes]
+name = "Victor B. F. Gomes"
+
+[gomes.emails]
+
+[gomes.emails.gomes_email]
+user = [
+  "victor",
+  "gomes",
+]
+host = [
+  "cl",
+  "cam",
+  "ac",
+  "uk",
+]
+
+[gomes.emails.gomes_email2]
+user = [
+  "victorborgesfg",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[gomes.emails.gomes_email4]
+user = [
+  "vborgesferreiragomes1",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[gomes.homepages]
+gomes_homepage = "http://www.dcs.shef.ac.uk/~victor"
+
+[gonzalez]
+name = "Edgar Gonzàlez"
+
+[gonzalez.emails]
+
+[gonzalez.emails.gonzalez_email]
+user = [
+  "edgargip",
+]
+host = [
+  "google",
+  "com",
+]
+
+[gonzalez.homepages]
+
+[gore]
+name = "Rajeev Gore"
+
+[gore.emails]
+
+[gore.emails.gore_email]
+user = [
+  "rajeev",
+  "gore",
+]
+host = [
+  "anu",
+  "edu",
+  "au",
+]
+
+[gore.homepages]
+
+[gouezel]
+name = "Sebastien Gouezel"
+
+[gouezel.emails]
+
+[gouezel.emails.gouezel_email]
+user = [
+  "sebastien",
+  "gouezel",
+]
+host = [
+  "univ-rennes1",
+  "fr",
+]
+
+[gouezel.homepages]
+gouezel_homepage = "http://www.math.sciences.univ-nantes.fr/~gouezel/"
+
+[grechuk]
+name = "Bogdan Grechuk"
+
+[grechuk.emails]
+
+[grechuk.emails.grechuk_email]
+user = [
+  "grechukbogdan",
+]
+host = [
+  "yandex",
+  "ru",
+]
+
+[grechuk.homepages]
+
+[grewe]
+name = "Sylvia Grewe"
+
+[grewe.emails]
+
+[grewe.emails.grewe_email]
+user = [
+  "grewe",
+]
+host = [
+  "cs",
+  "tu-darmstadt",
+  "de",
+]
+
+[grewe.homepages]
+
+[griebel]
+name = "Simon Griebel"
+
+[griebel.emails]
+
+[griebel.emails.griebel_email]
+user = [
+  "s",
+  "griebel",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[griebel.homepages]
+
+[grov]
+name = "Gudmund Grov"
+
+[grov.emails]
+
+[grov.emails.grov_email]
+user = [
+  "ggrov",
+]
+host = [
+  "inf",
+  "ed",
+  "ac",
+  "uk",
+]
+
+[grov.homepages]
+grov_homepage = "http://homepages.inf.ed.ac.uk/ggrov"
+
+[guerraoui]
+name = "Rachid Guerraoui"
+
+[guerraoui.emails]
+
+[guerraoui.emails.guerraoui_email]
+user = [
+  "rachid",
+  "guerraoui",
+]
+host = [
+  "epfl",
+  "ch",
+]
+
+[guerraoui.homepages]
+
+[guiol]
+name = "Hervé Guiol"
+
+[guiol.emails]
+
+[guiol.emails.guiol_email]
+user = [
+  "herve",
+  "guiol",
+]
+host = [
+  "univ-grenoble-alpes",
+  "fr",
+]
+
+[guiol.homepages]
+
+[gunther]
+name = "Emmanuel Gunther"
+
+[gunther.emails]
+
+[gunther.emails.gunther_email]
+user = [
+  "gunther",
+]
+host = [
+  "famaf",
+  "unc",
+  "edu",
+  "ar",
+]
+
+[gunther.homepages]
+
+[gutkovas]
+name = "Ramunas Gutkovas"
+
+[gutkovas.emails]
+
+[gutkovas.emails.gutkovas_email]
+user = [
+  "ramunas",
+  "gutkovas",
+]
+host = [
+  "it",
+  "uu",
+  "se",
+]
+
+[gutkovas.homepages]
+
+[guttmann]
+name = "Walter Guttmann"
+
+[guttmann.emails]
+
+[guttmann.emails.guttmann_email]
+user = [
+  "walter",
+  "guttmann",
+]
+host = [
+  "canterbury",
+  "ac",
+  "nz",
+]
+
+[guttmann.homepages]
+guttmann_homepage = "https://www.cosc.canterbury.ac.nz/walter.guttmann/"
+
+[haftmann]
+name = "Florian Haftmann"
+
+[haftmann.emails]
+
+[haftmann.emails.haftmann_email]
+user = [
+  "florian",
+  "haftmann",
+]
+host = [
+  "informatik",
+  "tu-muenchen",
+  "de",
+]
+
+[haftmann.homepages]
+haftmann_homepage = "http://isabelle.in.tum.de/~haftmann"
+
+[haslbeck]
+name = "Max W. Haslbeck"
+
+[haslbeck.emails]
+
+[haslbeck.emails.haslbeck_email]
+user = [
+  "maximilian",
+  "haslbeck",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[haslbeck.emails.haslbeck_email1]
+user = [
+  "haslbecm",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[haslbeck.emails.haslbeck_email2]
+user = [
+  "max",
+  "haslbeck",
+]
+host = [
+  "gmx",
+  "de",
+]
+
+[haslbeck.homepages]
+haslbeck_homepage = "http://cl-informatik.uibk.ac.at/users/mhaslbeck/"
+
+[haslbeckm]
+name = "Maximilian P. L. Haslbeck"
+
+[haslbeckm.emails]
+
+[haslbeckm.emails.haslbeckm_email]
+user = [
+  "haslbema",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[haslbeckm.homepages]
+haslbeckm_homepage = "http://in.tum.de/~haslbema/"
+
+[havle]
+name = "Oto Havle"
+
+[havle.emails]
+
+[havle.emails.havle_email]
+user = [
+  "oha",
+]
+host = [
+  "sysgo",
+  "com",
+]
+
+[havle.homepages]
+
+[hayes]
+name = "Ian J. Hayes"
+
+[hayes.emails]
+
+[hayes.emails.hayes_email]
+user = [
+  "ian",
+  "hayes",
+]
+host = [
+  "itee",
+  "uq",
+  "edu",
+  "au",
+]
+
+[hayes.homepages]
+
+[he]
+name = "Yijun He"
+
+[he.emails]
+
+[he.emails.he_email]
+user = [
+  "yh403",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[he.homepages]
+
+[heimes]
+name = "Lukas Heimes"
+
+[heimes.emails]
+
+[heimes.emails.heimes_email]
+user = [
+  "heimesl",
+]
+host = [
+  "student",
+  "ethz",
+  "ch",
+]
+
+[heimes.homepages]
+
+[helke]
+name = "Steffen Helke"
+
+[helke.emails]
+
+[helke.emails.helke_email]
+user = [
+  "helke",
+]
+host = [
+  "cs",
+  "tu-berlin",
+  "de",
+]
+
+[helke.homepages]
+
+[hellauer]
+name = "Fabian Hellauer"
+
+[hellauer.emails]
+
+[hellauer.emails.hellauer_email]
+user = [
+  "hellauer",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[hellauer.homepages]
+
+[heller]
+name = "Armin Heller"
+
+[heller.emails]
+
+[heller.homepages]
+
+[henrio]
+name = "Ludovic Henrio"
+
+[henrio.emails]
+
+[henrio.emails.henrio_email]
+user = [
+  "Ludovic",
+  "Henrio",
+]
+host = [
+  "sophia",
+  "inria",
+  "fr",
+]
+
+[henrio.homepages]
+
+[herzberg]
+name = "Michael Herzberg"
+
+[herzberg.emails]
+
+[herzberg.emails.herzberg_email]
+user = [
+  "mail",
+]
+host = [
+  "michael-herzberg",
+  "de",
+]
+
+[herzberg.homepages]
+herzberg_homepage = "http://www.dcs.shef.ac.uk/cgi-bin/makeperson?M.Herzberg"
+
+[hess]
+name = "Andreas V. Hess"
+
+[hess.emails]
+
+[hess.emails.hess_email]
+user = [
+  "avhe",
+]
+host = [
+  "dtu",
+  "dk",
+]
+
+[hess.emails.hess_email1]
+user = [
+  "andreasvhess",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[hess.homepages]
+
+[hetzl]
+name = "Stefan Hetzl"
+
+[hetzl.emails]
+
+[hetzl.emails.hetzl_email]
+user = [
+  "hetzl",
+]
+host = [
+  "logic",
+  "at",
+]
+
+[hetzl.homepages]
+hetzl_homepage = "http://www.logic.at/people/hetzl/"
+
+[hibon]
+name = "Quentin Hibon"
+
+[hibon.emails]
+
+[hibon.emails.hibon_email]
+user = [
+  "qh225",
+]
+host = [
+  "cl",
+  "cam",
+  "ac",
+  "uk",
+]
+
+[hibon.homepages]
+
+[hirata]
+name = "Michikazu Hirata"
+
+[hirata.emails]
+
+[hirata.emails.hirata_email]
+user = [
+  "hirata",
+  "m",
+  "ac",
+]
+host = [
+  "m",
+  "titech",
+  "ac",
+  "jp",
+]
+
+[hirata.homepages]
+
+[hoefner]
+name = "Peter Höfner"
+
+[hoefner.emails]
+
+[hoefner.emails.hoefner_email]
+user = [
+  "peter",
+]
+host = [
+  "hoefner-online",
+  "de",
+]
+
+[hoefner.homepages]
+hoefner_homepage = "http://www.hoefner-online.de/"
+
+[hoelzl]
+name = "Johannes Hölzl"
+
+[hoelzl.emails]
+
+[hoelzl.emails.hoelzl_email]
+user = [
+  "hoelzl",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[hoelzl.homepages]
+hoelzl_homepage = "http://home.in.tum.de/~hoelzl"
+
+[hofmann]
+name = "Martin Hofmann"
+
+[hofmann.emails]
+
+[hofmann.homepages]
+hofmann_homepage = "http://www.tcs.informatik.uni-muenchen.de/~mhofmann"
+
+[holub]
+name = "Štěpán Holub"
+
+[holub.emails]
+
+[holub.emails.holub_email]
+user = [
+  "holub",
+]
+host = [
+  "karlin",
+  "mff",
+  "cuni",
+  "cz",
+]
+
+[holub.homepages]
+holub_homepage = "https://www2.karlin.mff.cuni.cz/~holub/"
+
+[hosking]
+name = "Tony Hosking"
+
+[hosking.emails]
+
+[hosking.homepages]
+hosking_homepage = "https://www.cs.purdue.edu/homes/hosking/"
+
+[hou]
+name = "Zhe Hou"
+
+[hou.emails]
+
+[hou.emails.hou_email]
+user = [
+  "zhe",
+  "hou",
+]
+host = [
+  "ntu",
+  "edu",
+  "sg",
+]
+
+[hou.homepages]
+
+[hu]
+name = "Shuwei Hu"
+
+[hu.emails]
+
+[hu.emails.hu_email]
+user = [
+  "shuwei",
+  "hu",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[hu.homepages]
+
+[huffman]
+name = "Brian Huffman"
+
+[huffman.emails]
+
+[huffman.emails.huffman_email]
+user = [
+  "huffman",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[huffman.emails.huffman_email1]
+user = [
+  "brianh",
+]
+host = [
+  "cs",
+  "pdx",
+  "edu",
+]
+
+[huffman.homepages]
+huffman_homepage = "http://cs.pdx.edu/~brianh/"
+
+[hupel]
+name = "Lars Hupel"
+
+[hupel.emails]
+
+[hupel.emails.hupel_email]
+user = [
+  "hupel",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[hupel.emails.hupel_email1]
+user = [
+  "lars",
+]
+host = [
+  "hupel",
+  "info",
+]
+
+[hupel.homepages]
+hupel_homepage = "https://www21.in.tum.de/~hupel/"
+hupel_homepage1 = "https://lars.hupel.info/"
+
+[ijbema]
+name = "Mark Ijbema"
+
+[ijbema.emails]
+
+[ijbema.emails.ijbema_email]
+user = [
+  "ijbema",
+]
+host = [
+  "fmf",
+  "nl",
+]
+
+[ijbema.homepages]
+
+[immler]
+name = "Fabian Immler"
+
+[immler.emails]
+
+[immler.emails.immler_email]
+user = [
+  "immler",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[immler.emails.immler_email1]
+user = [
+  "fimmler",
+]
+host = [
+  "cs",
+  "cmu",
+  "edu",
+]
+
+[immler.homepages]
+immler_homepage = "https://home.in.tum.de/~immler/"
+
+[ito]
+name = "Yosuke Ito"
+
+[ito.emails]
+
+[ito.emails.ito_email]
+user = [
+  "glacier345",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[ito.homepages]
+
+[iwama]
+name = "Fumiya Iwama"
+
+[iwama.emails]
+
+[iwama.emails.iwama_email]
+user = [
+  "d1623001",
+]
+host = [
+  "s",
+  "konan-u",
+  "ac",
+  "jp",
+]
+
+[iwama.homepages]
+
+[jacobsen]
+name = "Frederik Krogsdal Jacobsen"
+
+[jacobsen.emails]
+
+[jacobsen.emails.jacobsen_email]
+user = [
+  "fkjac",
+]
+host = [
+  "dtu",
+  "dk",
+]
+
+[jacobsen.homepages]
+jacobsen_homepage = "http://people.compute.dtu.dk/fkjac/"
+
+[jaskelioff]
+name = "Mauro Jaskelioff"
+
+[jaskelioff.emails]
+
+[jaskelioff.homepages]
+jaskelioff_homepage = "http://www.fceia.unr.edu.ar/~mauro/"
+
+[jaskolka]
+name = "Jason Jaskolka"
+
+[jaskolka.emails]
+
+[jaskolka.emails.jaskolka_email]
+user = [
+  "jason",
+  "jaskolka",
+]
+host = [
+  "carleton",
+  "ca",
+]
+
+[jaskolka.homepages]
+jaskolka_homepage = "https://carleton.ca/jaskolka/"
+
+[jensen]
+name = "Alexander Birch Jensen"
+
+[jensen.emails]
+
+[jensen.emails.jensen_email]
+user = [
+  "aleje",
+]
+host = [
+  "dtu",
+  "dk",
+]
+
+[jensen.homepages]
+jensen_homepage = "https://people.compute.dtu.dk/aleje/"
+
+[jiang]
+name = "Nan Jiang"
+
+[jiang.emails]
+
+[jiang.emails.jiang_email]
+user = [
+  "nanjiang",
+]
+host = [
+  "whu",
+  "edu",
+  "cn",
+]
+
+[jiang.homepages]
+
+[jiangd]
+name = "Dongchen Jiang"
+
+[jiangd.emails]
+
+[jiangd.emails.jiangd_email]
+user = [
+  "dongchenjiang",
+]
+host = [
+  "googlemail",
+  "com",
+]
+
+[jiangd.homepages]
+
+[joosten]
+name = "Sebastiaan J. C. Joosten"
+
+[joosten.emails]
+
+[joosten.emails.joosten_email]
+user = [
+  "sebastiaan",
+  "joosten",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[joosten.emails.joosten_email1]
+user = [
+  "sjcjoosten",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[joosten.emails.joosten_email2]
+user = [
+  "s",
+  "j",
+  "c",
+  "joosten",
+]
+host = [
+  "utwente",
+  "nl",
+]
+
+[joosten.homepages]
+joosten_homepage = "https://sjcjoosten.nl/"
+
+[jungnickel]
+name = "Tim Jungnickel"
+
+[jungnickel.emails]
+
+[jungnickel.emails.jungnickel_email]
+user = [
+  "tim",
+  "jungnickel",
+]
+host = [
+  "tu-berlin",
+  "de",
+]
+
+[jungnickel.homepages]
+
+[kadzioka]
+name = "Jakub Kądziołka"
+
+[kadzioka.emails]
+
+[kadzioka.emails.kadzioka_email]
+user = [
+  "kuba",
+]
+host = [
+  "kadziolka",
+  "net",
+]
+
+[kadzioka.homepages]
+
+[kaliszyk]
+name = "Cezary Kaliszyk"
+
+[kaliszyk.emails]
+
+[kaliszyk.emails.kaliszyk_email]
+user = [
+  "cezary",
+  "kaliszyk",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[kaliszyk.homepages]
+kaliszyk_homepage = "http://cl-informatik.uibk.ac.at/users/cek/"
+
+[kammueller]
+name = "Florian Kammüller"
+
+[kammueller.emails]
+
+[kammueller.emails.kammueller_email]
+user = [
+  "flokam",
+]
+host = [
+  "cs",
+  "tu-berlin",
+  "de",
+]
+
+[kammueller.emails.kammueller_email1]
+user = [
+  "florian",
+  "kammuller",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[kammueller.homepages]
+kammueller_homepage = "http://www.cs.mdx.ac.uk/people/florian-kammueller/"
+
+[kappelmann]
+name = "Kevin Kappelmann"
+
+[kappelmann.emails]
+
+[kappelmann.emails.kappelmann_email]
+user = [
+  "kevin",
+  "kappelmann",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[kappelmann.homepages]
+kappelmann_homepage = "https://www21.in.tum.de/team/kappelmk/"
+
+[karayel]
+name = "Emin Karayel"
+
+[karayel.emails]
+
+[karayel.emails.karayel_email]
+user = [
+  "me",
+]
+host = [
+  "eminkarayel",
+  "de",
+]
+
+[karayel.homepages]
+karayel_homepage = "https://orcid.org/0000-0003-3290-5034"
+
+[kastermans]
+name = "Bart Kastermans"
+
+[kastermans.emails]
+
+[kastermans.homepages]
+kastermans_homepage = "http://kasterma.net"
+
+[katovsky]
+name = "Alexander Katovsky"
+
+[katovsky.emails]
+
+[katovsky.emails.katovsky_email]
+user = [
+  "apk32",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[katovsky.emails.katovsky_email1]
+user = [
+  "alexander",
+  "katovsky",
+]
+host = [
+  "cantab",
+  "net",
+]
+
+[katovsky.homepages]
+
+[kaufmann]
+name = "Daniela Kaufmann"
+
+[kaufmann.emails]
+
+[kaufmann.homepages]
+kaufmann_homepage = "http://fmv.jku.at/kaufmann"
+
+[keefe]
+name = "Greg O'Keefe"
+
+[keefe.emails]
+
+[keefe.homepages]
+keefe_homepage = "http://users.rsise.anu.edu.au/~okeefe/"
+
+[keinholz]
+name = "Jonas Keinholz"
+
+[keinholz.emails]
+
+[keinholz.homepages]
+
+[kerber]
+name = "Manfred Kerber"
+
+[kerber.emails]
+
+[kerber.emails.kerber_email]
+user = [
+  "mnfrd",
+  "krbr",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[kerber.homepages]
+kerber_homepage = "http://www.cs.bham.ac.uk/~mmk"
+
+[kirchner]
+name = "Daniel Kirchner"
+
+[kirchner.emails]
+
+[kirchner.emails.kirchner_email]
+user = [
+  "daniel",
+]
+host = [
+  "ekpyron",
+  "org",
+]
+
+[kirchner.homepages]
+
+[klein]
+name = "Gerwin Klein"
+
+[klein.emails]
+
+[klein.emails.klein_email]
+user = [
+  "kleing",
+]
+host = [
+  "unsw",
+  "edu",
+  "au",
+]
+
+[klein.homepages]
+klein_homepage = "http://www.cse.unsw.edu.au/~kleing/"
+
+[klenze]
+name = "Tobias Klenze"
+
+[klenze.emails]
+
+[klenze.emails.klenze_email]
+user = [
+  "tobias",
+  "klenze",
+]
+host = [
+  "inf",
+  "ethz",
+  "ch",
+]
+
+[klenze.homepages]
+
+[kleppmann]
+name = "Martin Kleppmann"
+
+[kleppmann.emails]
+
+[kleppmann.emails.kleppmann_email]
+user = [
+  "martin",
+  "kleppmann",
+]
+host = [
+  "cl",
+  "cam",
+  "ac",
+  "uk",
+]
+
+[kleppmann.homepages]
+
+[kobayashi]
+name = "Hidetsune Kobayashi"
+
+[kobayashi.emails]
+
+[kobayashi.homepages]
+
+[koerner]
+name = "Stefan Körner"
+
+[koerner.emails]
+
+[koerner.emails.koerner_email]
+user = [
+  "s_koer03",
+]
+host = [
+  "uni-muenster",
+  "de",
+]
+
+[koerner.homepages]
+
+[kolanski]
+name = "Rafal Kolanski"
+
+[kolanski.emails]
+
+[kolanski.emails.kolanski_email]
+user = [
+  "rafal",
+  "kolanski",
+]
+host = [
+  "nicta",
+  "com",
+  "au",
+]
+
+[kolanski.homepages]
+
+[koller]
+name = "Lukas Koller"
+
+[koller.emails]
+
+[koller.emails.koller_email]
+user = [
+  "lukas",
+  "koller",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[koller.homepages]
+
+[krauss]
+name = "Alexander Krauss"
+
+[krauss.emails]
+
+[krauss.emails.krauss_email]
+user = [
+  "krauss",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[krauss.homepages]
+krauss_homepage = "http://www.in.tum.de/~krauss"
+
+[kreuzer]
+name = "Katharina Kreuzer"
+
+[kreuzer.emails]
+
+[kreuzer.emails.kreuzer_email]
+user = [
+  "kreuzerk",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[kreuzer.homepages]
+kreuzer_homepage = "https://www21.in.tum.de/team/kreuzer/"
+
+[kuncak]
+name = "Viktor Kuncak"
+
+[kuncak.emails]
+
+[kuncak.homepages]
+kuncak_homepage = "http://lara.epfl.ch/~kuncak/"
+
+[kuncar]
+name = "Ondřej Kunčar"
+
+[kuncar.emails]
+
+[kuncar.homepages]
+kuncar_homepage = "http://www21.in.tum.de/~kuncar/"
+
+[kurz]
+name = "Friedrich Kurz"
+
+[kurz.emails]
+
+[kurz.emails.kurz_email]
+user = [
+  "friedrich",
+  "kurz",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[kurz.homepages]
+
+[lachnitt]
+name = "Hanna Lachnitt"
+
+[lachnitt.emails]
+
+[lachnitt.emails.lachnitt_email]
+user = [
+  "lachnitt",
+]
+host = [
+  "stanford",
+  "edu",
+]
+
+[lachnitt.homepages]
+
+[lallemand]
+name = "Joseph Lallemand"
+
+[lallemand.emails]
+
+[lallemand.emails.lallemand_email]
+user = [
+  "joseph",
+  "lallemand",
+]
+host = [
+  "loria",
+  "fr",
+]
+
+[lallemand.homepages]
+
+[lammich]
+name = "Peter Lammich"
+
+[lammich.emails]
+
+[lammich.emails.lammich_email]
+user = [
+  "lammich",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[lammich.emails.lammich_email1]
+user = [
+  "peter",
+  "lammich",
+]
+host = [
+  "uni-muenster",
+  "de",
+]
+
+[lammich.homepages]
+lammich_homepage = "http://www21.in.tum.de/~lammich"
+
+[lange]
+name = "Christoph Lange"
+
+[lange.emails]
+
+[lange.emails.lange_email]
+user = [
+  "math",
+  "semantic",
+  "web",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[lange.homepages]
+
+[langenstein]
+name = "Bruno Langenstein"
+
+[langenstein.emails]
+
+[langenstein.emails.langenstein_email]
+user = [
+  "langenstein",
+]
+host = [
+  "dfki",
+  "de",
+]
+
+[langenstein.homepages]
+
+[lattuada]
+name = "Andrea Lattuada"
+
+[lattuada.emails]
+
+[lattuada.homepages]
+lattuada_homepage = "https://andrea.lattuada.me"
+
+[lee]
+name = "Holden Lee"
+
+[lee.emails]
+
+[lee.emails.lee_email]
+user = [
+  "holdenl",
+]
+host = [
+  "princeton",
+  "edu",
+]
+
+[lee.homepages]
+
+[leustean]
+name = "Laurentiu Leustean"
+
+[leustean.emails]
+
+[leustean.homepages]
+
+[lewis]
+name = "Corey Lewis"
+
+[lewis.emails]
+
+[lewis.emails.lewis_email]
+user = [
+  "corey",
+  "lewis",
+]
+host = [
+  "data61",
+  "csiro",
+  "au",
+]
+
+[lewis.homepages]
+
+[li]
+name = "Wenda Li"
+
+[li.emails]
+
+[li.emails.li_email]
+user = [
+  "wl302",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[li.emails.li_email1]
+user = [
+  "liwenda1990",
+]
+host = [
+  "hotmail",
+  "com",
+]
+
+[li.homepages]
+li_homepage = "https://www.cl.cam.ac.uk/~wl302/"
+
+[lim]
+name = "Japheth Lim"
+
+[lim.emails]
+
+[lim.homepages]
+
+[lindenberg]
+name = "Christina Lindenberg"
+
+[lindenberg.emails]
+
+[lindenberg.homepages]
+
+[linker]
+name = "Sven Linker"
+
+[linker.emails]
+
+[linker.emails.linker_email]
+user = [
+  "s",
+  "linker",
+]
+host = [
+  "liverpool",
+  "ac",
+  "uk",
+]
+
+[linker.homepages]
+
+[liu]
+name = "Junyi Liu"
+
+[liu.emails]
+
+[liu.homepages]
+
+[liut]
+name = "Tao Liu"
+
+[liut.emails]
+
+[liut.homepages]
+
+[liuy]
+name = "Yang Liu"
+
+[liuy.emails]
+
+[liuy.emails.liuy_email]
+user = [
+  "yangliu",
+]
+host = [
+  "ntu",
+  "edu",
+  "sg",
+]
+
+[liuy.homepages]
+
+[liy]
+name = "Yangjia Li"
+
+[liy.emails]
+
+[liy.homepages]
+
+[lochbihler]
+name = "Andreas Lochbihler"
+
+[lochbihler.emails]
+
+[lochbihler.emails.lochbihler_email]
+user = [
+  "andreas",
+  "lochbihler",
+]
+host = [
+  "digitalasset",
+  "com",
+]
+
+[lochbihler.emails.lochbihler_email1]
+user = [
+  "mail",
+]
+host = [
+  "andreas-lochbihler",
+  "de",
+]
+
+[lochbihler.homepages]
+lochbihler_homepage = "http://www.andreas-lochbihler.de/"
+
+[lochmann]
+name = "Alexander Lochmann"
+
+[lochmann.emails]
+
+[lochmann.emails.lochmann_email]
+user = [
+  "alexander",
+  "lochmann",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[lochmann.homepages]
+
+[lohner]
+name = "Denis Lohner"
+
+[lohner.emails]
+
+[lohner.emails.lohner_email]
+user = [
+  "denis",
+  "lohner",
+]
+host = [
+  "kit",
+  "edu",
+]
+
+[lohner.homepages]
+lohner_homepage = "http://pp.ipd.kit.edu/person.php?id=88"
+
+[loibl]
+name = "Matthias Loibl"
+
+[loibl.emails]
+
+[loibl.homepages]
+
+[londono]
+name = "Alejandro Gómez-Londoño"
+
+[londono.emails]
+
+[londono.emails.londono_email]
+user = [
+  "alejandro",
+  "gomez",
+]
+host = [
+  "chalmers",
+  "se",
+]
+
+[londono.homepages]
+
+[losa]
+name = "Giuliano Losa"
+
+[losa.emails]
+
+[losa.emails.losa_email]
+user = [
+  "giuliano",
+  "losa",
+]
+host = [
+  "epfl",
+  "ch",
+]
+
+[losa.emails.losa_email1]
+user = [
+  "giuliano",
+]
+host = [
+  "galois",
+  "com",
+]
+
+[losa.emails.losa_email2]
+user = [
+  "giuliano",
+]
+host = [
+  "losa",
+  "fr",
+]
+
+[losa.homepages]
+
+[lutz]
+name = "Bianca Lutz"
+
+[lutz.emails]
+
+[lutz.emails.lutz_email]
+user = [
+  "sowilo",
+]
+host = [
+  "cs",
+  "tu-berlin",
+  "de",
+]
+
+[lutz.homepages]
+
+[lux]
+name = "Alexander Lux"
+
+[lux.emails]
+
+[lux.emails.lux_email]
+user = [
+  "lux",
+]
+host = [
+  "mais",
+  "informatik",
+  "tu-darmstadt",
+  "de",
+]
+
+[lux.homepages]
+
+[makarios]
+name = "T. J. M. Makarios"
+
+[makarios.emails]
+
+[makarios.emails.makarios_email]
+user = [
+  "tjm1983",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[makarios.homepages]
+
+[maletzky]
+name = "Alexander Maletzky"
+
+[maletzky.emails]
+
+[maletzky.emails.maletzky_email]
+user = [
+  "alexander",
+  "maletzky",
+]
+host = [
+  "risc",
+  "jku",
+  "at",
+]
+
+[maletzky.emails.maletzky_email1]
+user = [
+  "alexander",
+  "maletzky",
+]
+host = [
+  "risc-software",
+  "at",
+]
+
+[maletzky.homepages]
+maletzky_homepage = "https://risc.jku.at/m/alexander-maletzky/"
+
+[mansky]
+name = "Susannah Mansky"
+
+[mansky.emails]
+
+[mansky.emails.mansky_email]
+user = [
+  "sjohnsn2",
+]
+host = [
+  "illinois",
+  "edu",
+]
+
+[mansky.emails.mansky_email1]
+user = [
+  "susannahej",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[mansky.homepages]
+
+[mantel]
+name = "Heiko Mantel"
+
+[mantel.emails]
+
+[mantel.emails.mantel_email]
+user = [
+  "mantel",
+]
+host = [
+  "mais",
+  "informatik",
+  "tu-darmstadt",
+  "de",
+]
+
+[mantel.homepages]
+
+[margetson]
+name = "James Margetson"
+
+[margetson.emails]
+
+[margetson.homepages]
+
+[maric]
+name = "Ognjen Marić"
+
+[maric.emails]
+
+[maric.emails.maric_email]
+user = [
+  "ogi",
+  "afp",
+]
+host = [
+  "mynosefroze",
+  "com",
+]
+
+[maric.homepages]
+
+[maricf]
+name = "Filip Marić"
+
+[maricf.emails]
+
+[maricf.emails.maricf_email]
+user = [
+  "filip",
+]
+host = [
+  "matf",
+  "bg",
+  "ac",
+  "rs",
+]
+
+[maricf.homepages]
+maricf_homepage = "http://www.matf.bg.ac.rs/~filip"
+
+[marmsoler]
+name = "Diego Marmsoler"
+
+[marmsoler.emails]
+
+[marmsoler.emails.marmsoler_email]
+user = [
+  "diego",
+  "marmsoler",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[marmsoler.homepages]
+marmsoler_homepage = "http://marmsoler.com"
+
+[matache]
+name = "Cristina Matache"
+
+[matache.emails]
+
+[matache.emails.matache_email]
+user = [
+  "cris",
+  "matache",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[matache.homepages]
+
+[matichuk]
+name = "Daniel Matichuk"
+
+[matichuk.emails]
+
+[matichuk.homepages]
+
+[matiyasevich]
+name = "Yuri Matiyasevich"
+
+[matiyasevich.emails]
+
+[matiyasevich.homepages]
+
+[maximova]
+name = "Alexandra Maximova"
+
+[maximova.emails]
+
+[maximova.emails.maximova_email]
+user = [
+  "amaximov",
+]
+host = [
+  "student",
+  "ethz",
+  "ch",
+]
+
+[maximova.homepages]
+
+[meis]
+name = "Rene Meis"
+
+[meis.emails]
+
+[meis.emails.meis_email]
+user = [
+  "rene",
+  "meis",
+]
+host = [
+  "uni-muenster",
+  "de",
+]
+
+[meis.emails.meis_email1]
+user = [
+  "rene",
+  "meis",
+]
+host = [
+  "uni-due",
+  "de",
+]
+
+[meis.homepages]
+
+[merz]
+name = "Stephan Merz"
+
+[merz.emails]
+
+[merz.emails.merz_email]
+user = [
+  "Stephan",
+  "Merz",
+]
+host = [
+  "loria",
+  "fr",
+]
+
+[merz.homepages]
+merz_homepage = "http://www.loria.fr/~merz"
+
+[messner]
+name = "Florian Messner"
+
+[messner.emails]
+
+[messner.emails.messner_email]
+user = [
+  "florian",
+  "g",
+  "messner",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[messner.homepages]
+
+[michaelis]
+name = "Julius Michaelis"
+
+[michaelis.emails]
+
+[michaelis.emails.michaelis_email]
+user = [
+  "isabelleopenflow",
+]
+host = [
+  "liftm",
+  "de",
+]
+
+[michaelis.emails.michaelis_email1]
+user = [
+  "maintainafpppt",
+]
+host = [
+  "liftm",
+  "de",
+]
+
+[michaelis.emails.michaelis_email2]
+user = [
+  "bdd",
+]
+host = [
+  "liftm",
+  "de",
+]
+
+[michaelis.emails.michaelis_email3]
+user = [
+  "afp",
+]
+host = [
+  "liftm",
+  "de",
+]
+
+[michaelis.homepages]
+michaelis_homepage = "http://liftm.de/"
+
+[milehins]
+name = "Mihails Milehins"
+
+[milehins.emails]
+
+[milehins.emails.milehins_email]
+user = [
+  "mihailsmilehins",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[milehins.homepages]
+
+[minamide]
+name = "Yasuhiko Minamide"
+
+[minamide.emails]
+
+[minamide.emails.minamide_email]
+user = [
+  "minamide",
+]
+host = [
+  "is",
+  "titech",
+  "ac",
+  "jp",
+]
+
+[minamide.homepages]
+minamide_homepage = "https://sv.c.titech.ac.jp/minamide/index.en.html"
+
+[mitchell]
+name = "Neil Mitchell"
+
+[mitchell.emails]
+
+[mitchell.homepages]
+
+[mitsch]
+name = "Stefan Mitsch"
+
+[mitsch.emails]
+
+[mitsch.emails.mitsch_email]
+user = [
+  "smitsch",
+]
+host = [
+  "cs",
+  "cmu",
+  "edu",
+]
+
+[mitsch.homepages]
+
+[moedersheim]
+name = "Sebastian Mödersheim"
+
+[moedersheim.emails]
+
+[moedersheim.emails.moedersheim_email]
+user = [
+  "samo",
+]
+host = [
+  "dtu",
+  "dk",
+]
+
+[moedersheim.homepages]
+moedersheim_homepage = "https://people.compute.dtu.dk/samo/"
+
+[moeller]
+name = "Bernhard Möller"
+
+[moeller.emails]
+
+[moeller.homepages]
+moeller_homepage = "https://www.informatik.uni-augsburg.de/en/chairs/dbis/pmi/staff/moeller/"
+
+[muendler]
+name = "Niels Mündler"
+
+[muendler.emails]
+
+[muendler.emails.muendler_email]
+user = [
+  "n",
+  "muendler",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[muendler.homepages]
+
+[mulligan]
+name = "Dominic P. Mulligan"
+
+[mulligan.emails]
+
+[mulligan.emails.mulligan_email]
+user = [
+  "dominic",
+  "p",
+  "mulligan",
+]
+host = [
+  "googlemail",
+  "com",
+]
+
+[mulligan.emails.mulligan_email1]
+user = [
+  "Dominic",
+  "Mulligan",
+]
+host = [
+  "arm",
+  "com",
+]
+
+[mulligan.homepages]
+
+[munive]
+name = "Jonathan Julian Huerta y Munive"
+
+[munive.emails]
+
+[munive.emails.munive_email]
+user = [
+  "jjhuertaymunive1",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[munive.emails.munive_email1]
+user = [
+  "jonjulian23",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[munive.homepages]
+
+[murao]
+name = "H. Murao"
+
+[murao.emails]
+
+[murao.homepages]
+
+[murray]
+name = "Toby Murray"
+
+[murray.emails]
+
+[murray.emails.murray_email]
+user = [
+  "toby",
+  "murray",
+]
+host = [
+  "unimelb",
+  "edu",
+  "au",
+]
+
+[murray.homepages]
+murray_homepage = "https://people.eng.unimelb.edu.au/tobym/"
+
+[nagashima]
+name = "Yutaka Nagashima"
+
+[nagashima.emails]
+
+[nagashima.emails.nagashima_email]
+user = [
+  "Yutaka",
+  "Nagashima",
+]
+host = [
+  "data61",
+  "csiro",
+  "au",
+]
+
+[nagashima.homepages]
+
+[nagele]
+name = "Julian Nagele"
+
+[nagele.emails]
+
+[nagele.emails.nagele_email]
+user = [
+  "julian",
+  "nagele",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[nagele.homepages]
+
+[naraschewski]
+name = "Wolfgang Naraschewski"
+
+[naraschewski.emails]
+
+[naraschewski.homepages]
+
+[nedzelsky]
+name = "Michael Nedzelsky"
+
+[nedzelsky.emails]
+
+[nedzelsky.emails.nedzelsky_email]
+user = [
+  "MichaelNedzelsky",
+]
+host = [
+  "yandex",
+  "ru",
+]
+
+[nedzelsky.homepages]
+
+[nemeti]
+name = "István Németi"
+
+[nemeti.emails]
+
+[nemeti.homepages]
+nemeti_homepage = "http://www.renyi.hu/~nemeti/"
+
+[nemouchi]
+name = "Yakoub Nemouchi"
+
+[nemouchi.emails]
+
+[nemouchi.emails.nemouchi_email]
+user = [
+  "nemouchi",
+]
+host = [
+  "lri",
+  "fr",
+]
+
+[nemouchi.emails.nemouchi_email1]
+user = [
+  "yakoub",
+  "nemouchi",
+]
+host = [
+  "york",
+  "ac",
+  "uk",
+]
+
+[nemouchi.homepages]
 
 [nestmann]
 name = "Uwe Nestmann"
@@ -3345,81 +4201,719 @@ name = "Uwe Nestmann"
 [nestmann.homepages]
 nestmann_homepage = "https://www.mtv.tu-berlin.de/nestmann/"
 
-[siek]
-name = "Jeremy Siek"
-
-[siek.emails]
-siek_email = "jsiek@indiana.edu"
-
-[siek.homepages]
-siek_homepage = "http://homes.soic.indiana.edu/jsiek/"
-
-[stock]
-name = "Benedikt Stock"
-
-[stock.emails]
-stock_email = "benedikt1999@freenet.de"
-
-[stock.homepages]
-
-[boyton]
-name = "Andrew Boyton"
-
-[boyton.emails]
-boyton_email = "andrew.boyton@nicta.com.au"
-
-[boyton.homepages]
-
-[taha]
-name = "Safouan Taha"
-
-[taha.emails]
-taha_email = "safouan.taha@lri.fr"
-
-[taha.homepages]
-
-[ghourabi]
-name = "Fadoua Ghourabi"
-
-[ghourabi.emails]
-ghourabi_email = "fadouaghourabi@gmail.com"
-
-[ghourabi.homepages]
-
-[brinkop]
-name = "Hauke Brinkop"
-
-[brinkop.emails]
-brinkop_email = "hauke.brinkop@googlemail.com"
-
-[brinkop.homepages]
-
 [neumann]
 name = "René Neumann"
 
 [neumann.emails]
-neumann_email = "rene.neumann@in.tum.de"
+
+[neumann.emails.neumann_email]
+user = [
+  "rene",
+  "neumann",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
 
 [neumann.homepages]
 
-[schmaltz]
-name = "Julien Schmaltz"
+[nielsen]
+name = "Finn Nielsen"
 
-[schmaltz.emails]
-schmaltz_email = "Julien.Schmaltz@ou.nl"
+[nielsen.emails]
 
-[schmaltz.homepages]
+[nielsen.emails.nielsen_email]
+user = [
+  "finn",
+  "nielsen",
+]
+host = [
+  "uni-muenster",
+  "de",
+]
 
-[haslbeck]
-name = "Max W. Haslbeck"
+[nielsen.homepages]
 
-[haslbeck.emails]
-haslbeck_email = "maximilian.haslbeck@uibk.ac.at"
-haslbeck_email1 = "haslbecm@in.tum.de"
-haslbeck_email2 = "max.haslbeck@gmx.de"
+[nikiforov]
+name = "Denis Nikiforov"
 
-[haslbeck.homepages]
-haslbeck_homepage = "http://cl-informatik.uibk.ac.at/users/mhaslbeck/"
+[nikiforov.emails]
+
+[nikiforov.emails.nikiforov_email]
+user = [
+  "denis",
+  "nikif",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[nikiforov.homepages]
+
+[nipkow]
+name = "Tobias Nipkow"
+
+[nipkow.emails]
+
+[nipkow.emails.nipkow_email]
+user = [
+  "nipkow",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[nipkow.homepages]
+nipkow_homepage = "https://www.in.tum.de/~nipkow/"
+
+[nishihara]
+name = "Toshiaki Nishihara"
+
+[nishihara.emails]
+
+[nishihara.homepages]
+
+[noce]
+name = "Pasquale Noce"
+
+[noce.emails]
+
+[noce.emails.noce_email]
+user = [
+  "pasquale",
+  "noce",
+  "lavoro",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[noce.homepages]
+
+[nordhoff]
+name = "Benedikt Nordhoff"
+
+[nordhoff.emails]
+
+[nordhoff.emails.nordhoff_email]
+user = [
+  "b",
+  "n",
+]
+host = [
+  "wwu",
+  "de",
+]
+
+[nordhoff.emails.nordhoff_email1]
+user = [
+  "b_nord01",
+]
+host = [
+  "uni-muenster",
+  "de",
+]
+
+[nordhoff.homepages]
+
+[noschinski]
+name = "Lars Noschinski"
+
+[noschinski.emails]
+
+[noschinski.emails.noschinski_email]
+user = [
+  "noschinl",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[noschinski.homepages]
+noschinski_homepage = "http://www21.in.tum.de/~noschinl/"
+
+[obua]
+name = "Steven Obua"
+
+[obua.emails]
+
+[obua.emails.obua_email]
+user = [
+  "steven",
+]
+host = [
+  "recursivemind",
+  "com",
+]
+
+[obua.homepages]
+
+[ogawa]
+name = "Mizuhito Ogawa"
+
+[ogawa.emails]
+
+[ogawa.homepages]
+
+[oldenburg]
+name = "Lennart Oldenburg"
+
+[oldenburg.emails]
+
+[oldenburg.homepages]
+
+[olm]
+name = "Markus Müller-Olm"
+
+[olm.emails]
+
+[olm.homepages]
+olm_homepage = "http://cs.uni-muenster.de/u/mmo/"
+
+[oosterhuis]
+name = "Roelof Oosterhuis"
+
+[oosterhuis.emails]
+
+[oosterhuis.emails.oosterhuis_email]
+user = [
+  "roelofoosterhuis",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[oosterhuis.homepages]
+
+[oostrom]
+name = "Vincent van Oostrom"
+
+[oostrom.emails]
+
+[oostrom.homepages]
+
+[ortner]
+name = "Veronika Ortner"
+
+[ortner.emails]
+
+[ortner.homepages]
+
+[overbeek]
+name = "Roy Overbeek"
+
+[overbeek.emails]
+
+[overbeek.emails.overbeek_email]
+user = [
+  "Roy",
+  "Overbeek",
+]
+host = [
+  "cwi",
+  "nl",
+]
+
+[overbeek.homepages]
+
+[pagano]
+name = "Miguel Pagano"
+
+[pagano.emails]
+
+[pagano.emails.pagano_email]
+user = [
+  "miguel",
+  "pagano",
+]
+host = [
+  "unc",
+  "edu",
+  "ar",
+]
+
+[pagano.homepages]
+pagano_homepage = "https://cs.famaf.unc.edu.ar/~mpagano/"
+
+[pal]
+name = "Abhik Pal"
+
+[pal.emails]
+
+[pal.homepages]
+
+[paleo]
+name = "Bruno Woltzenlogel Paleo"
+
+[paleo.emails]
+
+[paleo.homepages]
+paleo_homepage = "http://www.logic.at/staff/bruno/"
+
+[palmer]
+name = "Jake Palmer"
+
+[palmer.emails]
+
+[palmer.emails.palmer_email]
+user = [
+  "jake",
+  "palmer",
+]
+host = [
+  "ed",
+  "ac",
+  "uk",
+]
+
+[palmer.homepages]
+
+[parkinson]
+name = "Matthew Parkinson"
+
+[parkinson.emails]
+
+[parkinson.homepages]
+parkinson_homepage = "http://research.microsoft.com/people/mattpark/"
+
+[parrow]
+name = "Joachim Parrow"
+
+[parrow.emails]
+
+[parrow.emails.parrow_email]
+user = [
+  "joachim",
+  "parrow",
+]
+host = [
+  "it",
+  "uu",
+  "se",
+]
+
+[parrow.homepages]
+
+[parsert]
+name = "Julian Parsert"
+
+[parsert.emails]
+
+[parsert.emails.parsert_email]
+user = [
+  "julian",
+  "parsert",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[parsert.emails.parsert_email1]
+user = [
+  "julian",
+  "parsert",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[parsert.homepages]
+parsert_homepage = "http://www.parsert.com/"
+
+[paulson]
+name = "Lawrence C. Paulson"
+
+[paulson.emails]
+
+[paulson.emails.paulson_email]
+user = [
+  "lp15",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[paulson.homepages]
+paulson_homepage = "https://www.cl.cam.ac.uk/~lp15/"
+
+[peltier]
+name = "Nicolas Peltier"
+
+[peltier.emails]
+
+[peltier.emails.peltier_email]
+user = [
+  "Nicolas",
+  "Peltier",
+]
+host = [
+  "imag",
+  "fr",
+]
+
+[peltier.homepages]
+peltier_homepage = "http://membres-lig.imag.fr/peltier/"
+
+[peters]
+name = "Kirstin Peters"
+
+[peters.emails]
+
+[peters.emails.peters_email]
+user = [
+  "kirstin",
+  "peters",
+]
+host = [
+  "tu-berlin",
+  "de",
+]
+
+[peters.homepages]
+
+[petrovic]
+name = "Danijela Petrovic"
+
+[petrovic.emails]
+
+[petrovic.homepages]
+petrovic_homepage = "http://www.matf.bg.ac.rs/~danijela"
+
+[pierzchalski]
+name = "Edward Pierzchalski"
+
+[pierzchalski.emails]
+
+[pierzchalski.homepages]
+
+[platzer]
+name = "André Platzer"
+
+[platzer.emails]
+
+[platzer.emails.platzer_email]
+user = [
+  "aplatzer",
+]
+host = [
+  "cs",
+  "cmu",
+  "edu",
+]
+
+[platzer.homepages]
+platzer_homepage = "https://www.cs.cmu.edu/~aplatzer/"
+
+[pohjola]
+name = "Johannes Åman Pohjola"
+
+[pohjola.emails]
+
+[pohjola.homepages]
+
+[pollak]
+name = "Florian Pollak"
+
+[pollak.emails]
+
+[pollak.emails.pollak_email]
+user = [
+  "florian",
+  "pollak",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[pollak.homepages]
+
+[popescu]
+name = "Andrei Popescu"
+
+[popescu.emails]
+
+[popescu.emails.popescu_email]
+user = [
+  "a",
+  "popescu",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[popescu.emails.popescu_email1]
+user = [
+  "uuomul",
+]
+host = [
+  "yahoo",
+  "com",
+]
+
+[popescu.emails.popescu_email2]
+user = [
+  "a",
+  "popescu",
+]
+host = [
+  "mdx",
+  "ac",
+  "uk",
+]
+
+[popescu.homepages]
+popescu_homepage = "https://www.andreipopescu.uk"
+
+[porter]
+name = "Benjamin Porter"
+
+[porter.emails]
+
+[porter.homepages]
+
+[prathamesh]
+name = "T.V.H. Prathamesh"
+
+[prathamesh.emails]
+
+[prathamesh.emails.prathamesh_email]
+user = [
+  "prathamesh",
+]
+host = [
+  "imsc",
+  "res",
+  "in",
+]
+
+[prathamesh.homepages]
+
+[preoteasa]
+name = "Viorel Preoteasa"
+
+[preoteasa.emails]
+
+[preoteasa.emails.preoteasa_email]
+user = [
+  "viorel",
+  "preoteasa",
+]
+host = [
+  "aalto",
+  "fi",
+]
+
+[preoteasa.homepages]
+preoteasa_homepage = "http://users.abo.fi/vpreotea/"
+
+[pusch]
+name = "Cornelia Pusch"
+
+[pusch.emails]
+
+[pusch.homepages]
+
+[rabe]
+name = "Markus N. Rabe"
+
+[rabe.emails]
+
+[rabe.homepages]
+rabe_homepage = "http://www.react.uni-saarland.de/people/rabe.html"
+
+[raedle]
+name = "Jonas Rädle"
+
+[raedle.emails]
+
+[raedle.emails.raedle_email]
+user = [
+  "jonas",
+  "raedle",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[raedle.emails.raedle_email1]
+user = [
+  "jonas",
+  "raedle",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[raedle.homepages]
+
+[raska]
+name = "Martin Raška"
+
+[raska.emails]
+
+[raska.homepages]
+
+[raszyk]
+name = "Martin Raszyk"
+
+[raszyk.emails]
+
+[raszyk.emails.raszyk_email]
+user = [
+  "martin",
+  "raszyk",
+]
+host = [
+  "inf",
+  "ethz",
+  "ch",
+]
+
+[raszyk.emails.raszyk_email1]
+user = [
+  "m",
+  "raszyk",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[raszyk.homepages]
+
+[rau]
+name = "Martin Rau"
+
+[rau.emails]
+
+[rau.emails.rau_email]
+user = [
+  "martin",
+  "rau",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[rau.emails.rau_email1]
+user = [
+  "mrtnrau",
+]
+host = [
+  "googlemail",
+  "com",
+]
+
+[rau.homepages]
+
+[rauch]
+name = "Nicole Rauch"
+
+[rauch.emails]
+
+[rauch.emails.rauch_email]
+user = [
+  "rauch",
+]
+host = [
+  "informatik",
+  "uni-kl",
+  "de",
+]
+
+[rauch.homepages]
+
+[raumer]
+name = "Jakob von Raumer"
+
+[raumer.emails]
+
+[raumer.emails.raumer_email]
+user = [
+  "psxjv4",
+]
+host = [
+  "nottingham",
+  "ac",
+  "uk",
+]
+
+[raumer.homepages]
+
+[ravindran]
+name = "Binoy Ravindran"
+
+[ravindran.emails]
+
+[ravindran.homepages]
+
+[rawson]
+name = "Michael Rawson"
+
+[rawson.emails]
+
+[rawson.emails.rawson_email]
+user = [
+  "michaelrawson76",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[rawson.emails.rawson_email1]
+user = [
+  "mr644",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[rawson.homepages]
+
+[raya]
+name = "Rodrigo Raya"
+
+[raya.emails]
+
+[raya.homepages]
+raya_homepage = "https://people.epfl.ch/rodrigo.raya"
+
+[reiche]
+name = "Sebastian Reiche"
+
+[reiche.emails]
+
+[reiche.homepages]
+reiche_homepage = "https://www.linkedin.com/in/sebastian-reiche-0b2093178"
+
+[reiter]
+name = "Markus Reiter"
+
+[reiter.emails]
+
+[reiter.homepages]
 
 [reynaud]
 name = "Alban Reynaud"
@@ -3428,75 +4922,1827 @@ name = "Alban Reynaud"
 
 [reynaud.homepages]
 
-[boulanger]
-name = "Frédéric Boulanger"
+[ribeiro]
+name = "Pedro Ribeiro"
 
-[boulanger.emails]
-boulanger_email = "frederic.boulanger@centralesupelec.fr"
+[ribeiro.emails]
 
-[boulanger.homepages]
+[ribeiro.homepages]
+
+[richter]
+name = "Stefan Richter"
+
+[richter.emails]
+
+[richter.emails.richter_email]
+user = [
+  "richter",
+]
+host = [
+  "informatik",
+  "rwth-aachen",
+  "de",
+]
+
+[richter.homepages]
+richter_homepage = "http://www-lti.informatik.rwth-aachen.de/~richter/"
+
+[rickmann]
+name = "Christina Rickmann"
+
+[rickmann.emails]
+
+[rickmann.emails.rickmann_email]
+user = [
+  "c",
+  "rickmann",
+]
+host = [
+  "tu-berlin",
+  "de",
+]
+
+[rickmann.homepages]
+
+[ridge]
+name = "Tom Ridge"
+
+[ridge.emails]
+
+[ridge.homepages]
+
+[rizaldi]
+name = "Albert Rizaldi"
+
+[rizaldi.emails]
+
+[rizaldi.emails.rizaldi_email]
+user = [
+  "albert",
+  "rizaldi",
+]
+host = [
+  "ntu",
+  "edu",
+  "sg",
+]
+
+[rizaldi.homepages]
+
+[rizkallah]
+name = "Christine Rizkallah"
+
+[rizkallah.emails]
+
+[rizkallah.homepages]
+rizkallah_homepage = "https://www.mpi-inf.mpg.de/~crizkall/"
+
+[robillard]
+name = "Simon Robillard"
+
+[robillard.emails]
+
+[robillard.homepages]
+robillard_homepage = "https://simon-robillard.net/"
+
+[roessle]
+name = "Ian Roessle"
+
+[roessle.emails]
+
+[roessle.homepages]
+
+[romanos]
+name = "Ralph Romanos"
+
+[romanos.emails]
+
+[romanos.emails.romanos_email]
+user = [
+  "ralph",
+  "romanos",
+]
+host = [
+  "student",
+  "ecp",
+  "fr",
+]
+
+[romanos.homepages]
+
+[rosskopf]
+name = "Simon Roßkopf"
+
+[rosskopf.emails]
+
+[rosskopf.emails.rosskopf_email]
+user = [
+  "rosskops",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[rosskopf.homepages]
+rosskopf_homepage = "http://www21.in.tum.de/~rosskops"
+
+[rowat]
+name = "Colin Rowat"
+
+[rowat.emails]
+
+[rowat.emails.rowat_email]
+user = [
+  "c",
+  "rowat",
+]
+host = [
+  "bham",
+  "ac",
+  "uk",
+]
+
+[rowat.homepages]
+
+[sabouret]
+name = "Nicolas Sabouret"
+
+[sabouret.emails]
+
+[sabouret.homepages]
+
+[sachtleben]
+name = "Robert Sachtleben"
+
+[sachtleben.emails]
+
+[sachtleben.emails.sachtleben_email]
+user = [
+  "rob_sac",
+]
+host = [
+  "uni-bremen",
+  "de",
+]
+
+[sachtleben.homepages]
+
+[saile]
+name = "Christian Saile"
+
+[saile.emails]
+
+[saile.homepages]
+saile_homepage = "http://dss.in.tum.de/staff/christian-saile.html"
+
+[sanan]
+name = "David Sanan"
+
+[sanan.emails]
+
+[sanan.emails.sanan_email]
+user = [
+  "sanan",
+]
+host = [
+  "ntu",
+  "edu",
+  "sg",
+]
+
+[sanan.homepages]
+
+[sato]
+name = "Tetsuya Sato"
+
+[sato.emails]
+
+[sato.emails.sato_email]
+user = [
+  "tsato",
+]
+host = [
+  "c",
+  "titech",
+  "ac",
+  "jp",
+]
+
+[sato.homepages]
+sato_homepage = "https://sites.google.com/view/tetsuyasato/"
+
+[sauer]
+name = "Jens Sauer"
+
+[sauer.emails]
+
+[sauer.emails.sauer_email]
+user = [
+  "sauer",
+]
+host = [
+  "mais",
+  "informatik",
+  "tu-darmstadt",
+  "de",
+]
+
+[sauer.homepages]
+
+[schaeffeler]
+name = "Maximilian Schäffeler"
+
+[schaeffeler.emails]
+
+[schaeffeler.emails.schaeffeler_email]
+user = [
+  "schaeffm",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[schaeffeler.homepages]
+
+[scharager]
+name = "Matias Scharager"
+
+[scharager.emails]
+
+[scharager.emails.scharager_email]
+user = [
+  "mscharag",
+]
+host = [
+  "cs",
+  "cmu",
+  "edu",
+]
+
+[scharager.homepages]
+
+[schimpf]
+name = "Alexander Schimpf"
+
+[schimpf.emails]
+
+[schimpf.emails.schimpf_email]
+user = [
+  "schimpfa",
+]
+host = [
+  "informatik",
+  "uni-freiburg",
+  "de",
+]
+
+[schimpf.homepages]
+
+[schirmer]
+name = "Norbert Schirmer"
+
+[schirmer.emails]
+
+[schirmer.emails.schirmer_email]
+user = [
+  "norbert",
+  "schirmer",
+]
+host = [
+  "web",
+  "de",
+]
+
+[schirmer.homepages]
+
+[schleicher]
+name = "Dierk Schleicher"
+
+[schleicher.emails]
+
+[schleicher.homepages]
+
+[schlichtkrull]
+name = "Anders Schlichtkrull"
+
+[schlichtkrull.emails]
+
+[schlichtkrull.emails.schlichtkrull_email]
+user = [
+  "andschl",
+]
+host = [
+  "dtu",
+  "dk",
+]
+
+[schlichtkrull.homepages]
+schlichtkrull_homepage = "https://people.compute.dtu.dk/andschl/"
+
+[schmaltz]
+name = "Julien Schmaltz"
+
+[schmaltz.emails]
+
+[schmaltz.emails.schmaltz_email]
+user = [
+  "Julien",
+  "Schmaltz",
+]
+host = [
+  "ou",
+  "nl",
+]
+
+[schmaltz.homepages]
+
+[schmidinger]
+name = "Lukas Schmidinger"
+
+[schmidinger.emails]
+
+[schmidinger.homepages]
+
+[schmoetten]
+name = "Richard Schmoetten"
+
+[schmoetten.emails]
+
+[schmoetten.emails.schmoetten_email]
+user = [
+  "s1311325",
+]
+host = [
+  "sms",
+  "ed",
+  "ac",
+  "uk",
+]
+
+[schmoetten.homepages]
+
+[schneider]
+name = "Joshua Schneider"
+
+[schneider.emails]
+
+[schneider.emails.schneider_email]
+user = [
+  "joshua",
+  "schneider",
+]
+host = [
+  "inf",
+  "ethz",
+  "ch",
+]
+
+[schneider.homepages]
+
+[schoepe]
+name = "Daniel Schoepe"
+
+[schoepe.emails]
+
+[schoepe.emails.schoepe_email]
+user = [
+  "daniel",
+]
+host = [
+  "schoepe",
+  "org",
+]
+
+[schoepe.homepages]
+
+[schoepf]
+name = "Jonas Schöpf"
+
+[schoepf.emails]
+
+[schoepf.emails.schoepf_email]
+user = [
+  "jonas",
+  "schoepf",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[schoepf.homepages]
+
+[scott]
+name = "Dana Scott"
+
+[scott.emails]
+
+[scott.homepages]
+scott_homepage = "http://www.cs.cmu.edu/~scott/"
+
+[sefidgar]
+name = "S. Reza Sefidgar"
+
+[sefidgar.emails]
+
+[sefidgar.emails.sefidgar_email]
+user = [
+  "reza",
+  "sefidgar",
+]
+host = [
+  "inf",
+  "ethz",
+  "ch",
+]
+
+[sefidgar.homepages]
+
+[seidl]
+name = "Benedikt Seidl"
+
+[seidl.emails]
+
+[seidl.emails.seidl_email]
+user = [
+  "benedikt",
+  "seidl",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[seidl.homepages]
+
+[seidler]
+name = "Henning Seidler"
+
+[seidler.emails]
+
+[seidler.emails.seidler_email]
+user = [
+  "henning",
+  "seidler",
+]
+host = [
+  "mailbox",
+  "tu-berlin",
+  "de",
+]
+
+[seidler.homepages]
+
+[sewell]
+name = "Thomas Sewell"
+
+[sewell.emails]
+
+[sewell.homepages]
+
+[sickert]
+name = "Salomon Sickert"
+
+[sickert.emails]
+
+[sickert.emails.sickert_email]
+user = [
+  "s",
+  "sickert",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[sickert.homepages]
+sickert_homepage = "https://www7.in.tum.de/~sickert"
+
+[siek]
+name = "Jeremy Siek"
+
+[siek.emails]
+
+[siek.emails.siek_email]
+user = [
+  "jsiek",
+]
+host = [
+  "indiana",
+  "edu",
+]
+
+[siek.homepages]
+siek_homepage = "http://homes.soic.indiana.edu/jsiek/"
+
+[simic]
+name = "Danijela Simić"
+
+[simic.emails]
+
+[simic.emails.simic_email]
+user = [
+  "danijela",
+]
+host = [
+  "matf",
+  "bg",
+  "ac",
+  "rs",
+]
+
+[simic.homepages]
+simic_homepage = "http://poincare.matf.bg.ac.rs/~danijela"
+
+[sison]
+name = "Robert Sison"
+
+[sison.emails]
+
+[sison.homepages]
+
+[smaus]
+name = "Jan-Georg Smaus"
+
+[smaus.emails]
+
+[smaus.homepages]
+smaus_homepage = "http://www.irit.fr/~Jan-Georg.Smaus"
+
+[smola]
+name = "Filip Smola"
+
+[smola.emails]
+
+[smola.emails.smola_email]
+user = [
+  "f",
+  "smola",
+]
+host = [
+  "sms",
+  "ed",
+  "ac",
+  "uk",
+]
+
+[smola.homepages]
+
+[snelting]
+name = "Gregor Snelting"
+
+[snelting.emails]
+
+[snelting.homepages]
+snelting_homepage = "http://pp.info.uni-karlsruhe.de/personhp/gregor_snelting.php"
+
+[somaini]
+name = "Ivano Somaini"
+
+[somaini.emails]
+
+[somaini.homepages]
+
+[somogyi]
+name = "Dániel Somogyi"
+
+[somogyi.emails]
+
+[somogyi.homepages]
 
 [spasic]
 name = "Mirko Spasić"
 
 [spasic.emails]
-spasic_email = "mirko@matf.bg.ac.rs"
+
+[spasic.emails.spasic_email]
+user = [
+  "mirko",
+]
+host = [
+  "matf",
+  "bg",
+  "ac",
+  "rs",
+]
 
 [spasic.homepages]
 
-[heller]
-name = "Armin Heller"
+[spichkova]
+name = "Maria Spichkova"
 
-[heller.emails]
+[spichkova.emails]
 
-[heller.homepages]
+[spichkova.emails.spichkova_email]
+user = [
+  "maria",
+  "spichkova",
+]
+host = [
+  "rmit",
+  "edu",
+  "au",
+]
 
-[watt]
-name = "Conrad Watt"
+[spichkova.homepages]
 
-[watt.emails]
-watt_email = "caw77@cam.ac.uk"
+[sprenger]
+name = "Christoph Sprenger"
 
-[watt.homepages]
-watt_homepage = "http://www.cl.cam.ac.uk/~caw77/"
+[sprenger.emails]
 
-[hayes]
-name = "Ian J. Hayes"
+[sprenger.emails.sprenger_email]
+user = [
+  "sprenger",
+]
+host = [
+  "inf",
+  "ethz",
+  "ch",
+]
 
-[hayes.emails]
-hayes_email = "ian.hayes@itee.uq.edu.au"
+[sprenger.homepages]
 
-[hayes.homepages]
+[stannett]
+name = "Mike Stannett"
 
-[haslbeckm]
-name = "Maximilian P. L. Haslbeck"
+[stannett.emails]
 
-[haslbeckm.emails]
-haslbeckm_email = "haslbema@in.tum.de"
+[stannett.emails.stannett_email]
+user = [
+  "m",
+  "stannett",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
 
-[haslbeckm.homepages]
-haslbeckm_homepage = "http://in.tum.de/~haslbema/"
+[stannett.homepages]
 
-[bortin]
-name = "Maksym Bortin"
+[stark]
+name = "Eugene W. Stark"
 
-[bortin.emails]
-bortin_email = "maksym.bortin@nicta.com.au"
+[stark.emails]
 
-[bortin.homepages]
+[stark.emails.stark_email]
+user = [
+  "stark",
+]
+host = [
+  "cs",
+  "stonybrook",
+  "edu",
+]
 
-[klenze]
-name = "Tobias Klenze"
+[stark.homepages]
 
-[klenze.emails]
-klenze_email = "tobias.klenze@inf.ethz.ch"
+[starosta]
+name = "Štěpán Starosta"
 
-[klenze.homepages]
+[starosta.emails]
+
+[starosta.emails.starosta_email]
+user = [
+  "stepan",
+  "starosta",
+]
+host = [
+  "fit",
+  "cvut",
+  "cz",
+]
+
+[starosta.homepages]
+starosta_homepage = "https://users.fit.cvut.cz/~staroste/"
+
+[steinberg]
+name = "Matías Steinberg"
+
+[steinberg.emails]
+
+[steinberg.emails.steinberg_email]
+user = [
+  "matias",
+  "steinberg",
+]
+host = [
+  "mi",
+  "unc",
+  "edu",
+  "ar",
+]
+
+[steinberg.homepages]
+
+[stephan]
+name = "Werner Stephan"
+
+[stephan.emails]
+
+[stephan.emails.stephan_email]
+user = [
+  "stephan",
+]
+host = [
+  "dfki",
+  "de",
+]
+
+[stephan.homepages]
+
+[sternagel]
+name = "Christian Sternagel"
+
+[sternagel.emails]
+
+[sternagel.emails.sternagel_email]
+user = [
+  "c",
+  "sternagel",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[sternagel.emails.sternagel_email1]
+user = [
+  "christian",
+  "sternagel",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[sternagel.homepages]
+sternagel_homepage = "http://cl-informatik.uibk.ac.at/users/griff/"
+
+[sternagelt]
+name = "Thomas Sternagel"
+
+[sternagelt.emails]
+
+[sternagelt.homepages]
+
+[stevens]
+name = "Lukas Stevens"
+
+[stevens.emails]
+
+[stevens.homepages]
+stevens_homepage = "https://www21.in.tum.de/team/stevensl"
+
+[stock]
+name = "Benedikt Stock"
+
+[stock.emails]
+
+[stock.emails.stock_email]
+user = [
+  "benedikt1999",
+]
+host = [
+  "freenet",
+  "de",
+]
+
+[stock.homepages]
+
+[stricker]
+name = "Christian Stricker"
+
+[stricker.emails]
+
+[stricker.homepages]
+stricker_homepage = "http://dss.in.tum.de/staff/christian-stricker.html"
+
+[strnisa]
+name = "Rok Strniša"
+
+[strnisa.emails]
+
+[strnisa.emails.strnisa_email]
+user = [
+  "rok",
+]
+host = [
+  "strnisa",
+  "com",
+]
+
+[strnisa.homepages]
+strnisa_homepage = "http://rok.strnisa.com/lj/"
+
+[struth]
+name = "Georg Struth"
+
+[struth.emails]
+
+[struth.emails.struth_email]
+user = [
+  "g",
+  "struth",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[struth.homepages]
+struth_homepage = "http://staffwww.dcs.shef.ac.uk/people/G.Struth/"
+
+[stueber]
+name = "Anke Stüber"
+
+[stueber.emails]
+
+[stueber.emails.stueber_email]
+user = [
+  "anke",
+  "stueber",
+]
+host = [
+  "campus",
+  "tu-berlin",
+  "de",
+]
+
+[stueber.homepages]
+
+[stuewe]
+name = "Daniel Stüwe"
+
+[stuewe.emails]
+
+[stuewe.homepages]
+
+[sudbrock]
+name = "Henning Sudbrock"
+
+[sudbrock.emails]
+
+[sudbrock.emails.sudbrock_email]
+user = [
+  "sudbrock",
+]
+host = [
+  "mais",
+  "informatik",
+  "tu-darmstadt",
+  "de",
+]
+
+[sudbrock.homepages]
+
+[sudhof]
+name = "Henry Sudhof"
+
+[sudhof.emails]
+
+[sudhof.emails.sudhof_email]
+user = [
+  "hsudhof",
+]
+host = [
+  "cs",
+  "tu-berlin",
+  "de",
+]
+
+[sudhof.homepages]
+
+[sulejmani]
+name = "Ujkan Sulejmani"
+
+[sulejmani.emails]
+
+[sulejmani.homepages]
+
+[sylvestre]
+name = "Jeremy Sylvestre"
+
+[sylvestre.emails]
+
+[sylvestre.emails.sylvestre_email]
+user = [
+  "jeremy",
+  "sylvestre",
+]
+host = [
+  "ualberta",
+  "ca",
+]
+
+[sylvestre.emails.sylvestre_email1]
+user = [
+  "jsylvest",
+]
+host = [
+  "ualberta",
+  "ca",
+]
+
+[sylvestre.homepages]
+sylvestre_homepage = "http://ualberta.ca/~jsylvest/"
+
+[taha]
+name = "Safouan Taha"
+
+[taha.emails]
+
+[taha.emails.taha_email]
+user = [
+  "safouan",
+  "taha",
+]
+host = [
+  "lri",
+  "fr",
+]
+
+[taha.homepages]
+
+[tan]
+name = "Yong Kiam Tan"
+
+[tan.emails]
+
+[tan.emails.tan_email]
+user = [
+  "yongkiat",
+]
+host = [
+  "cs",
+  "cmu",
+  "edu",
+]
+
+[tan.homepages]
+tan_homepage = "https://www.cs.cmu.edu/~yongkiat/"
+
+[tasch]
+name = "Markus Tasch"
+
+[tasch.emails]
+
+[tasch.emails.tasch_email]
+user = [
+  "tasch",
+]
+host = [
+  "mais",
+  "informatik",
+  "tu-darmstadt",
+  "de",
+]
+
+[tasch.homepages]
+
+[taylor]
+name = "Ramsay G. Taylor"
+
+[taylor.emails]
+
+[taylor.emails.taylor_email]
+user = [
+  "r",
+  "g",
+  "taylor",
+]
+host = [
+  "sheffield",
+  "ac",
+  "uk",
+]
+
+[taylor.homepages]
+
+[terraf]
+name = "Pedro Sánchez Terraf"
+
+[terraf.emails]
+
+[terraf.emails.terraf_email]
+user = [
+  "psterraf",
+]
+host = [
+  "unc",
+  "edu",
+  "ar",
+]
+
+[terraf.homepages]
+terraf_homepage = "https://cs.famaf.unc.edu.ar/~pedro/home_en.html"
+
+[thiemann]
+name = "René Thiemann"
+
+[thiemann.emails]
+
+[thiemann.emails.thiemann_email]
+user = [
+  "rene",
+  "thiemann",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[thiemann.homepages]
+thiemann_homepage = "http://cl-informatik.uibk.ac.at/users/thiemann/"
+
+[thommes]
+name = "Joseph Thommes"
+
+[thommes.emails]
+
+[thommes.emails.thommes_email]
+user = [
+  "joseph-thommes",
+]
+host = [
+  "gmx",
+  "de",
+]
+
+[thommes.homepages]
+
+[thomson]
+name = "Fox Thomson"
+
+[thomson.emails]
+
+[thomson.emails.thomson_email]
+user = [
+  "foxthomson0",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[thomson.homepages]
+
+[tiu]
+name = "Alwen Tiu"
+
+[tiu.emails]
+
+[tiu.emails.tiu_email]
+user = [
+  "ATiu",
+]
+host = [
+  "ntu",
+  "edu",
+  "sg",
+]
+
+[tiu.homepages]
+tiu_homepage = "http://users.cecs.anu.edu.au/~tiu/"
 
 [toth]
 name = "Balazs Toth"
 
 [toth.emails]
-toth_email = "balazs.toth@tum.de"
+
+[toth.emails.toth_email]
+user = [
+  "balazs",
+  "toth",
+]
+host = [
+  "tum",
+  "de",
+]
 
 [toth.homepages]
+
+[tourret]
+name = "Sophie Tourret"
+
+[tourret.emails]
+
+[tourret.emails.tourret_email]
+user = [
+  "stourret",
+]
+host = [
+  "mpi-inf",
+  "mpg",
+  "de",
+]
+
+[tourret.homepages]
+tourret_homepage = "https://www.mpi-inf.mpg.de/departments/automation-of-logic/people/sophie-tourret/"
+
+[trachtenherz]
+name = "David Trachtenherz"
+
+[trachtenherz.emails]
+
+[trachtenherz.homepages]
+
+[traut]
+name = "Christoph Traut"
+
+[traut.emails]
+
+[traut.homepages]
+
+[traytel]
+name = "Dmitriy Traytel"
+
+[traytel.emails]
+
+[traytel.emails.traytel_email]
+user = [
+  "traytel",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[traytel.emails.traytel_email1]
+user = [
+  "traytel",
+]
+host = [
+  "inf",
+  "ethz",
+  "ch",
+]
+
+[traytel.emails.traytel_email2]
+user = [
+  "traytel",
+]
+host = [
+  "di",
+  "ku",
+  "dk",
+]
+
+[traytel.homepages]
+traytel_homepage = "https://traytel.bitbucket.io/"
+
+[tuerk]
+name = "Thomas Tuerk"
+
+[tuerk.emails]
+
+[tuerk.homepages]
+
+[tuong]
+name = "Frédéric Tuong"
+
+[tuong.emails]
+
+[tuong.emails.tuong_email]
+user = [
+  "tuong",
+]
+host = [
+  "users",
+  "gforge",
+  "inria",
+  "fr",
+]
+
+[tuong.emails.tuong_email1]
+user = [
+  "ftuong",
+]
+host = [
+  "lri",
+  "fr",
+]
+
+[tuong.homepages]
+tuong_homepage = "https://www.lri.fr/~ftuong/"
+
+[tuongj]
+name = "Joseph Tuong"
+
+[tuongj.emails]
+
+[tuongj.homepages]
+
+[tverdyshev]
+name = "Sergey Tverdyshev"
+
+[tverdyshev.emails]
+
+[tverdyshev.emails.tverdyshev_email]
+user = [
+  "stv",
+]
+host = [
+  "sysgo",
+  "com",
+]
+
+[tverdyshev.homepages]
+
+[ullrich]
+name = "Sebastian Ullrich"
+
+[ullrich.emails]
+
+[ullrich.emails.ullrich_email]
+user = [
+  "sebasti",
+]
+host = [
+  "nullri",
+  "ch",
+]
+
+[ullrich.homepages]
+
+[unruh]
+name = "Dominique Unruh"
+
+[unruh.emails]
+
+[unruh.emails.unruh_email]
+user = [
+  "unruh",
+]
+host = [
+  "ut",
+  "ee",
+]
+
+[unruh.homepages]
+unruh_homepage = "https://www.ut.ee/~unruh/"
+
+[urban]
+name = "Christian Urban"
+
+[urban.emails]
+
+[urban.emails.urban_email]
+user = [
+  "christian",
+  "urban",
+]
+host = [
+  "kcl",
+  "ac",
+  "uk",
+]
+
+[urban.homepages]
+urban_homepage = "https://nms.kcl.ac.uk/christian.urban/"
+
+[van]
+name = "Hai Nguyen Van"
+
+[van.emails]
+
+[van.emails.van_email]
+user = [
+  "hai",
+  "nguyenvan",
+  "phie",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[van.homepages]
+
+[velykis]
+name = "Andrius Velykis"
+
+[velykis.emails]
+
+[velykis.homepages]
+velykis_homepage = "http://andrius.velykis.lt"
+
+[verbeek]
+name = "Freek Verbeek"
+
+[verbeek.emails]
+
+[verbeek.emails.verbeek_email]
+user = [
+  "Freek",
+  "Verbeek",
+]
+host = [
+  "ou",
+  "nl",
+]
+
+[verbeek.emails.verbeek_email1]
+user = [
+  "freek",
+]
+host = [
+  "vt",
+  "edu",
+]
+
+[verbeek.homepages]
+
+[villadsen]
+name = "Jørgen Villadsen"
+
+[villadsen.emails]
+
+[villadsen.emails.villadsen_email]
+user = [
+  "jovi",
+]
+host = [
+  "dtu",
+  "dk",
+]
+
+[villadsen.homepages]
+villadsen_homepage = "https://people.compute.dtu.dk/jovi/"
+
+[voisin]
+name = "Frederic Voisin"
+
+[voisin.emails]
+
+[voisin.homepages]
+
+[vytiniotis]
+name = "Dimitrios Vytiniotis"
+
+[vytiniotis.emails]
+
+[vytiniotis.homepages]
+vytiniotis_homepage = "http://research.microsoft.com/en-us/people/dimitris/"
+
+[wagner]
+name = "Max Wagner"
+
+[wagner.emails]
+
+[wagner.emails.wagner_email]
+user = [
+  "max",
+]
+host = [
+  "trollbu",
+  "de",
+]
+
+[wagner.homepages]
+
+[waldmann]
+name = "Uwe Waldmann"
+
+[waldmann.emails]
+
+[waldmann.emails.waldmann_email]
+user = [
+  "waldmann",
+]
+host = [
+  "mpi-inf",
+  "mpg",
+  "de",
+]
+
+[waldmann.homepages]
+
+[wand]
+name = "Daniel Wand"
+
+[wand.emails]
+
+[wand.emails.wand_email]
+user = [
+  "dwand",
+]
+host = [
+  "mpi-inf",
+  "mpg",
+  "de",
+]
+
+[wand.homepages]
+
+[wang]
+name = "Shuling Wang"
+
+[wang.emails]
+
+[wang.homepages]
+
+[wassell]
+name = "Mark Wassell"
+
+[wassell.emails]
+
+[wassell.emails.wassell_email]
+user = [
+  "mpwassell",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[wassell.homepages]
+
+[wasserrab]
+name = "Daniel Wasserrab"
+
+[wasserrab.emails]
+
+[wasserrab.homepages]
+wasserrab_homepage = "http://pp.info.uni-karlsruhe.de/personhp/daniel_wasserrab.php"
+
+[watt]
+name = "Conrad Watt"
+
+[watt.emails]
+
+[watt.emails.watt_email]
+user = [
+  "caw77",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[watt.homepages]
+watt_homepage = "http://www.cl.cam.ac.uk/~caw77/"
+
+[weber]
+name = "Tjark Weber"
+
+[weber.emails]
+
+[weber.emails.weber_email]
+user = [
+  "tjark",
+  "weber",
+]
+host = [
+  "it",
+  "uu",
+  "se",
+]
+
+[weber.homepages]
+weber_homepage = "http://user.it.uu.se/~tjawe125/"
+
+[weerwag]
+name = "Timmy Weerwag"
+
+[weerwag.emails]
+
+[weerwag.homepages]
+
+[weidner]
+name = "Arno Wilhelm-Weidner"
+
+[weidner.emails]
+
+[weidner.emails.weidner_email]
+user = [
+  "arno",
+  "wilhelm-weidner",
+]
+host = [
+  "tu-berlin",
+  "de",
+]
+
+[weidner.homepages]
+
+[wenzel]
+name = "Makarius Wenzel"
+
+[wenzel.emails]
+
+[wenzel.emails.wenzel_email]
+user = [
+  "Makarius",
+  "wenzel",
+]
+host = [
+  "lri",
+  "fr",
+]
+
+[wenzel.homepages]
+
+[wickerson]
+name = "John Wickerson"
+
+[wickerson.emails]
+
+[wickerson.homepages]
+wickerson_homepage = "http://www.doc.ic.ac.uk/~jpw48"
+
+[willenbrink]
+name = "Sebastian Willenbrink"
+
+[willenbrink.emails]
+
+[willenbrink.emails.willenbrink_email]
+user = [
+  "sebastian",
+  "willenbrink",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[willenbrink.homepages]
+
+[wimmer]
+name = "Simon Wimmer"
+
+[wimmer.emails]
+
+[wimmer.emails.wimmer_email]
+user = [
+  "simon",
+  "wimmer",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[wimmer.homepages]
+wimmer_homepage = "http://home.in.tum.de/~wimmers/"
+
+[wirt]
+name = "Kai Wirt"
+
+[wirt.emails]
+
+[wirt.homepages]
+
+[wolff]
+name = "Burkhart Wolff"
+
+[wolff.emails]
+
+[wolff.emails.wolff_email]
+user = [
+  "burkhart",
+  "wolff",
+]
+host = [
+  "lri",
+  "fr",
+]
+
+[wolff.homepages]
+wolff_homepage = "https://www.lri.fr/~wolff/"
+
+[wu]
+name = "Chunhan Wu"
+
+[wu.emails]
+
+[wu.homepages]
+
+[xu]
+name = "Jian Xu"
+
+[xu.emails]
+
+[xu.homepages]
+
+[yamada]
+name = "Akihisa Yamada"
+
+[yamada.emails]
+
+[yamada.emails.yamada_email]
+user = [
+  "akihisa",
+  "yamada",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[yamada.emails.yamada_email1]
+user = [
+  "ayamada",
+]
+host = [
+  "trs",
+  "cm",
+  "is",
+  "nagoya-u",
+  "ac",
+  "jp",
+]
+
+[yamada.emails.yamada_email2]
+user = [
+  "akihisa",
+  "yamada",
+]
+host = [
+  "aist",
+  "go",
+  "jp",
+]
+
+[yamada.emails.yamada_email3]
+user = [
+  "akihisayamada",
+]
+host = [
+  "nii",
+  "ac",
+  "jp",
+]
+
+[yamada.homepages]
+yamada_homepage = "http://group-mmm.org/~ayamada/"
+
+[ye]
+name = "Lina Ye"
+
+[ye.emails]
+
+[ye.emails.ye_email]
+user = [
+  "lina",
+  "ye",
+]
+host = [
+  "lri",
+  "fr",
+]
+
+[ye.homepages]
+
+[ying]
+name = "Shenggang Ying"
+
+[ying.emails]
+
+[ying.homepages]
+
+[yingm]
+name = "Mingsheng Ying"
+
+[yingm.emails]
+
+[yingm.homepages]
+
+[yu]
+name = "Lei Yu"
+
+[yu.emails]
+
+[yu.emails.yu_email]
+user = [
+  "ly271",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[yu.homepages]
+
+[zankl]
+name = "Harald Zankl"
+
+[zankl.emails]
+
+[zankl.emails.zankl_email]
+user = [
+  "Harald",
+  "Zankl",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+[zankl.homepages]
+zankl_homepage = "http://cl-informatik.uibk.ac.at/users/hzankl"
+
+[zee]
+name = "Karen Zee"
+
+[zee.emails]
+
+[zee.emails.zee_email]
+user = [
+  "kkz",
+]
+host = [
+  "mit",
+  "edu",
+]
+
+[zee.homepages]
+zee_homepage = "http://www.mit.edu/~kkz/"
+
+[zeller]
+name = "Peter Zeller"
+
+[zeller.emails]
+
+[zeller.emails.zeller_email]
+user = [
+  "p_zeller",
+]
+host = [
+  "cs",
+  "uni-kl",
+  "de",
+]
+
+[zeller.homepages]
+
+[zeyda]
+name = "Frank Zeyda"
+
+[zeyda.emails]
+
+[zeyda.emails.zeyda_email]
+user = [
+  "frank",
+  "zeyda",
+]
+host = [
+  "york",
+  "ac",
+  "uk",
+]
+
+[zeyda.homepages]
+
+[zhan]
+name = "Bohua Zhan"
+
+[zhan.emails]
+
+[zhan.emails.zhan_email]
+user = [
+  "bzhan",
+]
+host = [
+  "ios",
+  "ac",
+  "cn",
+]
+
+[zhan.homepages]
+zhan_homepage = "http://lcs.ios.ac.cn/~bzhan/"
+
+[zhang]
+name = "Yu Zhang"
+
+[zhang.emails]
+
+[zhang.homepages]
+
+[zhangx]
+name = "Xingyuan Zhang"
+
+[zhangx.emails]
+
+[zhangx.homepages]
+
+[zhann]
+name = "Naijun Zhan"
+
+[zhann.emails]
+
+[zhann.homepages]

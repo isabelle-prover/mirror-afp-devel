@@ -118,12 +118,19 @@ name = "<name>"
 
 Optional:
 
-- in [<name>.emails]:
+- in `[<name>.emails]`:
   ```toml
-  <id> = "<address>"
+  [<id>]
+  user = [
+    <parts>
+  ]
+  host = [
+    <parts>
+  ]
   ```
+  User and host are represented as lists of parts split by dots.
 
-- in [<name>.homepages]
+- in `[<name>.homepages]`:
   ```toml
   <id> = "<url>"
   ```
