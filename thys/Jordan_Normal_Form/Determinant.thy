@@ -1376,16 +1376,14 @@ proof -
     done
 qed
 
-lemma det_four_block_mat: assumes A: "(A :: 'a :: idom mat) \<in> carrier_mat n n"
+context
+begin
+private lemma det_four_block_mat_preliminary: assumes A: "(A :: 'a :: idom mat) \<in> carrier_mat n n"
   and B: "B \<in> carrier_mat n n" 
   and C: "C \<in> carrier_mat n n"
   and D: "D \<in> carrier_mat n n"
   and commute: "C * D = D * C" 
   and detD: "det D \<noteq> 0" 
-  (* detD should be removed, cf. trick in 
-     https://hal.archives-ouvertes.fr/hal-01509379/document
-    (Determinants of Block Matrices, John R Silvester)
-    where lifting into uni-variate polynomials is performed  *)
 shows "det (four_block_mat A B C D) = det (A * D - B * C)"
 proof -
   let ?m = "n + n" 
@@ -1403,6 +1401,122 @@ proof -
   finally have "det ?M * det D = det (A * D - B * C) * det D" .
   with detD show ?thesis by simp
 qed
+
+lemma det_four_block_mat: assumes A: "(A :: 'a :: idom mat) \<in> carrier_mat n n"
+  and B: "B \<in> carrier_mat n n" 
+  and C: "C \<in> carrier_mat n n"
+  and D: "D \<in> carrier_mat n n"
+  and commute: "C * D = D * C" 
+shows "det (four_block_mat A B C D) = det (A * D - B * C)"
+proof (cases "n = 0")
+  case True
+  hence "four_block_mat A B C D = A * D - B * C" using four_block_carrier_mat[OF A D, of B C]
+    A B C D by auto
+  thus ?thesis by simp
+next
+  case n: False     
+  define l where "l = map_mat (\<lambda> x :: 'a. [: x :])" 
+  have coeff: "coeff [: x :] n = (if n = 0 then x else 0)" for x :: 'a and n 
+    by (simp add: coeff_eq_0) 
+  have l_mult: "l (A * B) = l A * l B" if "A \<in> carrier_mat n n" "B \<in> carrier_mat n n" for A B :: "'a mat"
+    unfolding l_def using that 
+    apply (intro eq_matI, auto simp: scalar_prod_def coeff_sum intro!: poly_eqI)
+    subgoal for i j n
+      by (cases n, auto simp: coeff ac_simps)
+    done
+  let ?p0 = "map_mat (\<lambda>p. poly p (0 :: 'a))" 
+  have poly_det: "poly (det A) 0 = det (?p A)" if "A \<in> carrier_mat n n" for A n
+    apply (subst (1 2) det_def', use that in force, rule that)
+    unfolding poly_sum poly_mult poly_prod using that
+    by (intro sum.cong[OF refl] arg_cong2[of _ _ _ _ "(*)"] prod.cong[OF refl], auto simp: sign_def)
+  let ?A = "l A" 
+  let ?B = "l B" 
+  let ?C = "l C" 
+  let ?D = "l D" 
+  let ?Dx = "?D + monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n" 
+  from A B C D 
+  have 
+    lA: "?A \<in> carrier_mat n n" and
+    lB: "?B \<in> carrier_mat n n" and
+    lC: "?C \<in> carrier_mat n n" and
+    lD: "?D \<in> carrier_mat n n" and
+    lDx: "?Dx \<in> carrier_mat n n" 
+    unfolding l_def by auto
+  have "?C * ?Dx = ?C * ?D + ?C * (monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n)" 
+    by (subst mult_add_distrib_mat[OF lC lD], auto)
+  also have "?C * ?D = l (C * D)" using l_mult[OF C D] by simp
+  also have "\<dots> = l (D * C)" using commute by auto
+  also have "\<dots> = ?D * ?C" using l_mult[OF D C] by simp
+  also have "?C * (monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n) = (monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n) * ?C" using lC by auto
+  also have "?D * ?C + \<dots> = ?Dx * ?C" 
+    by (subst add_mult_distrib_mat[OF lD _ lC], auto)
+  finally have comm: "?C * ?Dx = ?Dx * ?C" .
+  have "det (four_block_mat ?A ?B ?C ?Dx) =
+    det (?A * ?Dx - ?B * ?C)" 
+  proof (rule det_four_block_mat_preliminary[OF lA lB lC lDx comm])
+    define f where "f = (\<lambda> p. of_int (sign p) * (\<Prod>i = 0..<n. (l D + monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n) $$ (i, p i)))" 
+    have deg: "degree ([:D $$ ij:] + monom 1 (Suc 0)) = 1" for ij 
+      by (subst degree_add_eq_right, auto simp: degree_monom_eq)
+    have deg_id: "degree (f id) = n" unfolding f_def
+      apply (simp, subst degree_prod_eq_sum_degree, insert D, auto simp: l_def deg) 
+      subgoal for i using deg[of "(i,i)"] by auto
+      done
+    have "degree (det ?Dx) = degree (sum f {p. p permutes {0..<n}})" 
+      by (subst det_def', use lD in force, auto simp: f_def)
+    also have "sum f {p. p permutes {0..<n}} = f id + sum f ({p. p permutes {0..<n}} - {id})"
+      by (rule sum.remove, auto intro: finite_permutations)
+    also have "degree \<dots> = degree (f id)" 
+    proof (rule degree_add_eq_left, unfold deg_id, 
+        rule le_less_trans[of _ "n - 1"], rule degree_sum_le,
+        force intro: finite_permutations)
+      fix p
+      assume p: "p \<in> {p. p permutes {0..<n}} - {id}"  
+      then obtain i where i: "i \<in> {0 ..< n}" and pi: "p i \<noteq> i"
+        by (metis Diff_iff mem_Collect_eq permutes_empty permutes_superset singletonI)
+      from p i have pin: "p i < n" by auto
+      define g where "g = (\<lambda> i. (l D + monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n) $$ (i, p i))" 
+      have "degree (f p) \<le> degree (of_int (sign p) :: 'a poly) + degree (\<Prod>i = 0..<n. g i)" 
+        unfolding f_def g_def by (rule degree_mult_le)
+      also have "degree (of_int (sign p) :: 'a poly) = 0" unfolding sign_def by auto
+      also have "0 + degree (\<Prod>i = 0..<n. g i) = degree (\<Prod>i = 0..<n. g i)" by simp
+      also have "(\<Prod>i = 0..<n. g i) = g i * (prod g ({0..<n} - {i}))" 
+        by (subst prod.remove[OF _ i], auto)
+      also have "degree \<dots> \<le> degree (g i) + degree (prod g ({0..<n} - {i}))" 
+        by (rule degree_mult_le)
+      also have "\<dots> = degree (prod g ({0..<n} - {i}))" unfolding g_def l_def using i D pi pin by auto
+      also have "\<dots> \<le> sum (degree \<circ> g) ({0..<n} - {i})" 
+        by (rule degree_prod_sum_le, auto)
+      also have "\<dots> \<le> sum (\<lambda> i. 1) ({0..<n} - {i})" 
+        by (rule sum_mono, insert p D, auto simp: g_def o_def l_def deg)
+      also have "\<dots> = n - 1" using i by simp
+      finally show "degree (f p) \<le> n - 1" .
+    qed (insert n, auto)
+    also have "\<dots> = n" by fact
+    finally show "det ?Dx \<noteq> 0" using n by auto
+  qed
+  hence "poly (det (four_block_mat ?A ?B ?C ?Dx)) 0 = poly (det (?A * ?Dx - ?B * ?C)) 0" by simp
+  also have "\<dots> = det (?p0 (?A * (?D + monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n) - ?B * ?C))" 
+    by (rule poly_det, use lA lB lC lD in force)
+  also have "?A * (?D + monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n) = ?A * ?D + l A * (monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n)" 
+    by (rule mult_add_distrib_mat[OF lA lD], auto) 
+  also have "?A * (monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n) = monom 1 1 \<cdot>\<^sub>m ?A" using lA by auto
+  also have "?p0 (?A * ?D + \<dots> - ?B * ?C) = ?p0 (?A * ?D) - ?p0 (?B * ?C)" 
+    by (intro eq_matI, insert lA lB lC lD, auto simp: poly_monom)
+  also have "?A * ?D = l (A * D)" using l_mult[OF A D] by auto
+  also have "?p0 \<dots> = A * D" unfolding l_def by fastforce
+  also have "?B * ?C = l (B * C)" using l_mult[OF B C] by auto
+  also have "?p0 \<dots> = B * C" unfolding l_def by fastforce
+  also have "poly (det (four_block_mat ?A ?B ?C ?Dx)) 0 = det (?p0 (four_block_mat ?A ?B ?C ?Dx))" 
+    by (rule poly_det[OF four_block_carrier_mat[OF lA]], insert lD, auto)
+  also have "?p0 (four_block_mat ?A ?B ?C ?Dx) = four_block_mat (?p0 ?A) (?p0 ?B) (?p0 ?C) (?p0 ?Dx)" 
+    by (rule map_four_block_mat[OF lA lB lC], insert lD, auto)
+  also have "?p0 ?A = A" unfolding l_def by fastforce
+  also have "?p0 ?B = B" unfolding l_def by fastforce
+  also have "?p0 ?C = C" unfolding l_def by fastforce
+  also have "?p0 ?Dx = D" unfolding l_def using D by (intro eq_matI, auto simp: poly_monom)
+  finally show ?thesis .
+qed  
+end
 
   
 lemma det_swapcols: 

@@ -380,7 +380,7 @@ private fun syl :: "int \<Rightarrow> nat \<Rightarrow> int mat" where
 | "syl c (Suc n) = (let A = syl c n in
      four_block_mat A A (-A) A)" 
 
-private lemma syl: assumes c: "c \<ge> 1" 
+private lemma syl: assumes c: "c \<ge> 0" 
   shows "syl c n \<in> Bounded_mat c \<and> syl c n \<in> carrier_mat (2^n) (2^n)
     \<and> det (syl c n) = det_bound_hadamard (2^n) c"
 proof (cases "n = 0")
@@ -396,7 +396,6 @@ next
     case 0
     show ?case unfolding syl.simps Let_def using c
       apply (subst det_four_block_mat[of _ 1]; force?)
-       apply (subst det_single, force, force)
       apply (subst det_single, 
         auto simp: Bounded_mat_def scalar_prod_def det_bound_hadamard_altdef power2_eq_square)
       done
@@ -418,10 +417,8 @@ next
         by (subst elements_four_block_mat_id, auto)
       have ev: "even n" and sum: "n div 2 + n div 2 = n" unfolding n_def by auto
       have n2: "n * 2 = n + n" by simp
-      have detA0: "det A > 0" unfolding detA det_bound_hadamard_altdef using ev c 
-        by (auto intro!: mult_pos_pos)
       have "det ?FB = det (A * A - A * - A)"
-        by (rule det_four_block_mat[OF A A _ A], insert A detA0, auto)
+        by (rule det_four_block_mat[OF A A _ A], insert A, auto)
       also have "A * A - A * - A = A * A + A * A" using A by auto
       also have "\<dots> = 2 \<cdot>\<^sub>m (A * A)" using A by auto
       also have "det \<dots> = 2^n * det (A * A)"
@@ -435,7 +432,7 @@ next
 qed
 
 lemma det_bound_hadamard_tight: 
-    assumes c: "c \<ge> 1" 
+    assumes c: "c \<ge> 0" 
       and "n = 2^m" 
     shows "\<exists> A. A \<in> carrier_mat n n \<and> A \<in> Bounded_mat c \<and> det A = det_bound_hadamard n c" 
   by (rule exI[of _ "syl c m"], insert syl[OF c, of m, folded assms(2)], auto)
