@@ -135,11 +135,11 @@
         {{- $authors = $authors | append (index (index $site.Site.Data.authors .) "name") -}}
       {{- end -}}
       <pre id="copyText">@article{{- "{" -}}{{- $entry_name -}}-AFP,
-  author  = {{ "{" -}}{{- delimit $authors ", " | replaceRE "(, )([^,]+$)" " and $2" -}}},
+  author  = {{ "{" -}}{{- delimit $authors " and " -}}},
   title   = {{ "{" -}}{{- htmlUnescape .Params.title -}}},
   journal = {Archive of Formal Proofs},
-  month   = {{ dateFormat "January" .Params.date -}},
-  year    = {{ dateFormat "2006" .Params.date -}},
+  month   = { {{- dateFormat "January" .Params.date -}} },
+  year    = { {{- dateFormat "2006" .Params.date -}} },
   note    = {\url{https://isa-afp.org/entries/{{- $entry_name -}}.html},
             Formal proof development},
   ISSN    = {2150-914x},
