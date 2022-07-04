@@ -160,6 +160,10 @@ proof -
   finally show ?thesis using m by (auto simp: prod_list_diag_prod)
 qed
 
+lemma det_single: assumes "A \<in> carrier_mat 1 1" 
+  shows "det A = A $$ (0,0)" 
+  by (subst det_upper_triangular[of _ 1], insert assms, auto simp: diag_mat_def)
+
 lemma det_one[simp]: "det (1\<^sub>m n) = 1"
 proof -
   have "det (1\<^sub>m n) = prod_list (diag_mat (1\<^sub>m n))"
@@ -1356,6 +1360,50 @@ next
   from this[folded det] have "v * det ?A = v * (det A1 * det A4)" by simp
   with v show "det ?A = det A1 * det A4" by simp
 qed
+
+lemma det_four_block_mat_lower_left_zero: fixes A1 :: "'a :: idom mat" 
+  assumes A1: "A1 \<in> carrier_mat n n"
+  and A2: "A2 \<in> carrier_mat n m" and A30: "A3 = 0\<^sub>m m n"
+  and A4: "A4 \<in> carrier_mat m m"  
+shows "det (four_block_mat A1 A2 A3 A4) = det A1 * det A4" 
+proof -
+  have A3: "A3 \<in> carrier_mat m n" using A30 by auto
+  show ?thesis
+    apply (subst det_transpose[OF four_block_carrier_mat[OF A1 A4], symmetric])
+    apply (subst transpose_four_block_mat[OF A1 A2 A3 A4])
+    apply (subst det_four_block_mat_upper_right_zero[of _ n _ m], 
+        insert A1 A2 A30 A4, auto simp: det_transpose)
+    done
+qed
+
+lemma det_four_block_mat: assumes A: "(A :: 'a :: idom mat) \<in> carrier_mat n n"
+  and B: "B \<in> carrier_mat n n" 
+  and C: "C \<in> carrier_mat n n"
+  and D: "D \<in> carrier_mat n n"
+  and commute: "C * D = D * C" 
+  and detD: "det D \<noteq> 0" 
+  (* detD should be removed, cf. trick in 
+     https://hal.archives-ouvertes.fr/hal-01509379/document
+    (Determinants of Block Matrices, John R Silvester)
+    where lifting into uni-variate polynomials is performed  *)
+shows "det (four_block_mat A B C D) = det (A * D - B * C)"
+proof -
+  let ?m = "n + n" 
+  let ?M = "four_block_mat A B C D" 
+  let ?N = "four_block_mat D (0\<^sub>m n n) (-C) (1\<^sub>m n)" 
+  have M: "?M \<in> carrier_mat ?m ?m" using A B C D by auto
+  have N: "?N \<in> carrier_mat ?m ?m" using A B C D by auto
+  have "det ?M * det ?N = det (?M * ?N)" using det_mult[OF M N] ..
+  also have "?M * ?N = four_block_mat (A * D - B * C) B (0\<^sub>m n n) D" 
+    by (subst mult_four_block_mat[OF A B C D D], insert A B C D, auto simp: commute)
+  also have "det \<dots> = det (A * D - B * C) * det D" 
+    by (rule det_four_block_mat_lower_left_zero, insert A B C D, auto)
+  also have "det ?N = det D" 
+    by (subst det_four_block_mat_upper_right_zero[OF D], insert C, auto)
+  finally have "det ?M * det D = det (A * D - B * C) * det D" .
+  with detD show ?thesis by simp
+qed
+
   
 lemma det_swapcols: 
   assumes *: "k < n" "l < n" "k \<noteq> l" and A: "A \<in> carrier_mat n n"

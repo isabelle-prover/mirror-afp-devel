@@ -436,8 +436,6 @@ lemma transpose_mat_mult_entries: "i < dim_row A \<Longrightarrow> j < dim_row A
   by (simp add: times_mat_def scalar_prod_def)
 
 lemma transpose_mat_elems: "elements_mat A = elements_mat A\<^sup>T"
-  apply (auto simp add: transpose_mat_def)
-   apply (metis elements_matD elements_matI index_transpose_mat(1) mat_carrier transpose_mat_def)
   by fastforce
 
 lemma row_elems_subset_mat: "i < dim_row N \<Longrightarrow> vec_set (row N i) \<subseteq> elements_mat N"
@@ -477,17 +475,7 @@ lemma map_vec_mat_cols: "map (map_vec f) (cols M) = cols ((map_mat f) M)"
 lemma map_mat_compose: "map_mat f (map_mat g A) = map_mat (f \<circ> g) A"
   by (auto)
 
-lemma map_mat_elements: "elements_mat (map_mat f A) = f ` (elements_mat A)"
-proof (auto)
-  fix x assume "x \<in> elements_mat (map_mat f A)"
-  then obtain i j where "i < dim_row (map_mat f A)" and "j < dim_col (map_mat f A)" and "(map_mat f A) $$ (i, j) = x"
-    by auto
-  then show "x \<in> f ` elements_mat A" by auto
-next
-  fix xa assume "xa \<in> elements_mat A" 
-  then obtain i j where "i < dim_row A" and "j < dim_col A" and "A $$ (i, j) = xa" by auto
-  then show "f xa \<in> elements_mat (map_mat f A)" by auto
-qed  
+lemmas map_mat_elements = elements_mat_map
 
 text \<open> Reasoning on sets and multisets of matrix elements \<close>
 lemma set_cols_carrier: "A \<in> carrier_mat m n \<Longrightarrow> v \<in> set (cols A) \<Longrightarrow> v \<in> carrier_vec m"

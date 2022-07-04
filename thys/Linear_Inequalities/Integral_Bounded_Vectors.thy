@@ -9,14 +9,6 @@ theory Integral_Bounded_Vectors
     LLL_Basis_Reduction.Gram_Schmidt_2 (* for some simp-rules *)
 begin
 
-(* TODO: move *)
-
-lemma elements_mat_map[simp]: "elements_mat (map_mat f A) = f ` elements_mat A" 
-  by fastforce
-  
-lemma vec_set_map[simp]: "set\<^sub>v (map_vec f v) = f ` set\<^sub>v v" 
-  unfolding vec_set_def by auto
-
 (* TODO: move into theory Norms *)
 lemma sq_norm_unit_vec[simp]: assumes i: "i < n"
   shows "\<parallel>unit_vec n i\<parallel>\<^sup>2 = (1 :: 'a :: {comm_ring_1,conjugatable_ring})"
@@ -379,34 +371,16 @@ proof -
   hence "det_bound_hadamard n c \<le> abs (det_bound_fact n c)" by simp
   also have "\<dots> = det_bound_fact n c" unfolding det_bound_fact_def using c by auto
   finally show ?thesis .
-qed
-
-(* TODO: move *)
-lemma det_single: assumes "A \<in> carrier_mat 1 1" 
-  shows "det A = A $$ (0,0)" 
-  by (subst det_upper_triangular[of _ 1], insert assms, auto simp: diag_mat_def)
-
-lemma det_four_block_mat: assumes A: "A \<in> carrier_mat n n"
-  and B: "B \<in> carrier_mat n n" 
-  and C: "C \<in> carrier_mat n n"
-  and D: "D \<in> carrier_mat n n"
-  and comm: "C * D = D * C" 
-shows "det (four_block_mat A B C D) = det (A * D - B * C)" oops
+qed  
 
 context
-  assumes det_four_block_mat:
-  "\<And> A B C D :: int mat. A \<in> carrier_mat n n \<Longrightarrow>
- B \<in> carrier_mat n n \<Longrightarrow>
- C \<in> carrier_mat n n \<Longrightarrow>
- D \<in> carrier_mat n n \<Longrightarrow>
- C * D = D * C \<Longrightarrow> det (four_block_mat A B C D) = det (A * D - B * C)" 
 begin
 private fun syl :: "int \<Rightarrow> nat \<Rightarrow> int mat" where
   "syl c 0 = mat 1 1 (\<lambda> _. c)" 
 | "syl c (Suc n) = (let A = syl c n in
      four_block_mat A A (-A) A)" 
 
-private lemma syl: assumes c: "c \<ge> 0" 
+private lemma syl: assumes c: "c \<ge> 1" 
   shows "syl c n \<in> Bounded_mat c \<and> syl c n \<in> carrier_mat (2^n) (2^n)
     \<and> det (syl c n) = det_bound_hadamard (2^n) c"
 proof (cases "n = 0")
@@ -421,8 +395,11 @@ next
   proof (induct m)
     case 0
     show ?case unfolding syl.simps Let_def using c
-      by ((subst det_four_block_mat[of _ 1]; force?), subst det_single, 
+      apply (subst det_four_block_mat[of _ 1]; force?)
+       apply (subst det_single, force, force)
+      apply (subst det_single, 
         auto simp: Bounded_mat_def scalar_prod_def det_bound_hadamard_altdef power2_eq_square)
+      done
   next
     case (Suc m)
     define A where "A = syl c (Suc m)" 
@@ -441,8 +418,10 @@ next
         by (subst elements_four_block_mat_id, auto)
       have ev: "even n" and sum: "n div 2 + n div 2 = n" unfolding n_def by auto
       have n2: "n * 2 = n + n" by simp
+      have detA0: "det A > 0" unfolding detA det_bound_hadamard_altdef using ev c 
+        by (auto intro!: mult_pos_pos)
       have "det ?FB = det (A * A - A * - A)"
-        by (rule det_four_block_mat[OF A A _ A], insert A, auto)
+        by (rule det_four_block_mat[OF A A _ A], insert A detA0, auto)
       also have "A * A - A * - A = A * A + A * A" using A by auto
       also have "\<dots> = 2 \<cdot>\<^sub>m (A * A)" using A by auto
       also have "det \<dots> = 2^n * det (A * A)"
@@ -456,7 +435,7 @@ next
 qed
 
 lemma det_bound_hadamard_tight: 
-    assumes c: "c \<ge> 0" 
+    assumes c: "c \<ge> 1" 
       and "n = 2^m" 
     shows "\<exists> A. A \<in> carrier_mat n n \<and> A \<in> Bounded_mat c \<and> det A = det_bound_hadamard n c" 
   by (rule exI[of _ "syl c m"], insert syl[OF c, of m, folded assms(2)], auto)
