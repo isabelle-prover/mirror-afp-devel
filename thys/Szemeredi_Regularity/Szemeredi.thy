@@ -1,7 +1,7 @@
 section \<open>Szemerédi's Regularity Lemma\<close>
 
 theory Szemeredi
-  imports Complex_Main "HOL-Library.Disjoint_Sets" "Girth_Chromatic.Ugraphs"
+  imports Complex_Main "HOL-Library.Disjoint_Sets" "Girth_Chromatic.Ugraphs" "HOL-Analysis.Convex"
 
 begin
 
@@ -14,32 +14,7 @@ and W.T. Gowers's notes ``Topics in Combinatorics'' (University of Cambridge, Le
 We also used an earlier version of Zhao's book: \<^url>\<open>https://yufeizhao.com/gtac/gtac.pdf\<close>.\<close>
 
 
-subsection \<open>Miscellaneous\<close>
-
-text \<open>A technical lemma used below in @{text \<open>energy_graph_partition_half\<close>}\<close>
-lemma sum_products_le:
-  fixes a :: "'a \<Rightarrow> 'b::linordered_idom"
-  assumes "\<And>i. i \<in> I \<Longrightarrow> a i \<ge> 0"
-  shows "(\<Sum>i\<in>I. a i * b i)\<^sup>2 \<le> (\<Sum>i\<in>I. a i) * (\<Sum>i\<in>I. a i * (b i)\<^sup>2)"
-  using assms
-proof (induction I rule: infinite_finite_induct)
-  case (insert j I)
-  then have "(\<Sum>i\<in>insert j I. a i * b i)\<^sup>2
-          \<le> (a j * b j)\<^sup>2 + 2 * a j * b j * (\<Sum>i\<in>I. a i * b i) + (\<Sum>i\<in>I. a i) * (\<Sum>i\<in>I. a i * (b i)\<^sup>2)"
-    using insert by (simp add: algebra_simps power2_eq_square)
-  also have "\<dots> \<le> a j * (a j * (b j)\<^sup>2) + (a j * (sum a I * (b j)\<^sup>2 + (\<Sum>i\<in>I. a i * (b i)\<^sup>2)) 
-                 + sum a I * (\<Sum>i\<in>I. a i * (b i)\<^sup>2))"
-  proof -
-    have "0 \<le> (\<Sum>i\<in>I. a i * (b i - b j)\<^sup>2)"
-      by (simp add: insert.prems sum_nonneg)
-    then have "2 * b j * (\<Sum>i\<in>I. a i * b i) \<le> (sum a I * (b j)\<^sup>2) + (\<Sum>i\<in>I. a i * (b i)\<^sup>2)"
-      by (simp add: power2_eq_square algebra_simps sum_subtractf sum.distrib sum_distrib_left)
-    then show ?thesis
-      by (simp add: insert.prems power2_eq_square mult.commute mult.left_commute mult_left_mono)
-  qed
-  finally show ?case 
-    by (simp add: insert algebra_simps)
-qed auto
+subsection \<open>Partitions\<close>
 
 subsubsection \<open>Partitions indexed by integers\<close>
 
@@ -362,6 +337,20 @@ subsection \<open>Partitioning and Energy\<close>
 text\<open>See Gowers's remark after Lemma 11. 
  Further partitioning of subsets of the vertex set cannot make the energy decrease. 
  We follow Gowers's proof, which avoids the use of probability.\<close>
+
+lemma sum_products_le:
+  fixes a :: "'a \<Rightarrow> real"
+  assumes "\<And>i. i \<in> I \<Longrightarrow> a i \<ge> 0"
+  shows "(\<Sum>i\<in>I. a i * b i)\<^sup>2 \<le> (\<Sum>i\<in>I. a i) * (\<Sum>i\<in>I. a i * (b i)\<^sup>2)"  (is "?L \<le> ?R")
+proof -
+  have "?L = (\<Sum>i\<in>I. sqrt (a i) * (sqrt (a i) * b i))\<^sup>2"
+    by (smt (verit, ccfv_SIG) assms mult.assoc real_sqrt_mult_self sum.cong)
+  also have "... \<le> (\<Sum>i\<in>I. (sqrt (a i))\<^sup>2) * (\<Sum>i\<in>I. (sqrt (a i) * b i)\<^sup>2)"
+    by (rule Cauchy_Schwarz_ineq_sum)
+  also have "... = ?R"
+    by (smt (verit) assms mult.assoc mult.commute power2_eq_square real_sqrt_pow2 sum.cong)
+  finally show ?thesis .
+qed
 
 lemma energy_graph_partition_half:
   assumes P: "finite_graph_partition U P n"
