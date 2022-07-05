@@ -361,7 +361,7 @@ proof -
   show ?thesis .
 qed
 
-lemmas small_mixed_integer_solution_int_mat_gram = 
+lemmas small_mixed_integer_solution_int_mat_hadamard = 
   small_mixed_integer_solution_int_mat[OF det_bound_hadamard, unfolded det_bound_hadamard_def of_int_mult of_int_of_nat_eq]
 
 end
@@ -467,7 +467,7 @@ proof -
   thus ?thesis by blast
 qed
 
-lemmas small_integer_solution_nonstrict_gram = 
+lemmas small_integer_solution_nonstrict_hadamard = 
   small_integer_solution_nonstrict[OF det_bound_hadamard, unfolded det_bound_hadamard_def]
 
 
