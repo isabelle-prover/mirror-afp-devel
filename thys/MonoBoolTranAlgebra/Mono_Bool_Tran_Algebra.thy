@@ -358,7 +358,8 @@ lemma mbta_MonoTran_disjunctive: "Rep_MonoTran ` disjunctive = Apply.disjunctive
       show "?P \<le> ?Q"
         using * [of "\<lambda>_. a" "\<lambda>_. b"] by (simp add: comp_def fun_eq_iff)
     next
-      from \<open>mono f\<close> show "?Q \<le> ?P" by (rule Lattices.semilattice_sup_class.mono_sup)
+      from \<open>mono f\<close> show "?Q \<le> ?P"
+        using Fun.semilattice_sup_class.mono_sup by blast
     qed
   next
     fix f :: "'a \<Rightarrow> 'a"

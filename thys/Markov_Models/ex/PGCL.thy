@@ -32,7 +32,7 @@ primrec wp :: "'s pgcl \<Rightarrow> ('s \<Rightarrow> ennreal) \<Rightarrow> ('
 
 lemma wp_mono: "mono (wp c)"
   by (induction c)
-     (auto simp: mono_def le_fun_def intro: order_trans le_infI1 le_infI2
+     (auto simp: monotone_def le_fun_def intro: order_trans le_infI1 le_infI2
            intro!: add_mono mult_left_mono lfp_mono[THEN le_funD])
 
 abbreviation det :: "'s pgcl \<Rightarrow> 's \<Rightarrow> ('s pgcl \<times> 's) pmf set" ("\<lless> _, _ \<ggreater>") where
