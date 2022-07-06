@@ -110,9 +110,6 @@ instance
 end
 end
 
-abbreviation (input) wf_set_bits_integer
-where "wf_set_bits_integer \<equiv> wf_set_bits_int"
-
 
 section \<open>Target language implementations\<close>
 

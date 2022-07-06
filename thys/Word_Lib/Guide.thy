@@ -364,8 +364,13 @@ text \<open>
   \<^descr>[\<^theory>\<open>Word_Lib.Bit_Comprehension\<close>]
 
     Comprehension syntax for bit values over predicates
-    \<^typ>\<open>nat \<Rightarrow> bool\<close>.  For \<^typ>\<open>'a::len word\<close>, straightforward
-    alternatives exist; difficult to handle for \<^typ>\<open>int\<close>.
+    \<^typ>\<open>nat \<Rightarrow> bool\<close>, for \<^typ>\<open>'a::len word\<close>; straightforward
+    alternatives exist.
+
+  \<^descr>[\<^theory>\<open>Word_Lib.Bit_Comprehension_Int\<close>]
+
+    Comprehension syntax for bit values over predicates
+    \<^typ>\<open>nat \<Rightarrow> bool\<close>, for \<^typ>\<open>int\<close>; inherently non-computational.
 
   \<^descr>[\<^theory>\<open>Word_Lib.Reversed_Bit_Lists\<close>]
 
@@ -391,6 +396,9 @@ text \<open>
   \<^descr>[Changes since AFP 2022] ~
 
     \<^item> Theory \<^text>\<open>Word_Lib.Ancient_Numeral\<close> has been removed from session.
+
+    \<^item> Bit comprehension syntax for \<^typ>\<open>int\<close> moved to separate theory
+      \<^theory>\<open>Word_Lib.Bit_Comprehension_Int\<close>.
 
   \<^descr>[Changes since AFP 2021] ~
 
