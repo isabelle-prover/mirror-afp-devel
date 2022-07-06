@@ -28,86 +28,41 @@ using assms unfolding Quotient_alt_def by blast
 
 bundle undefined_transfer = undefined_transfer[transfer_rule]
 
+
 section \<open>More lemmas about @{typ integer}s\<close>
 
 context
-includes integer.lifting
+  includes integer.lifting
 begin
 
-lemma bitval_integer_transfer [transfer_rule]:
-  "(rel_fun (=) pcr_integer) of_bool of_bool"
-by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def)
-
 lemma integer_of_nat_less_0_conv [simp]: "\<not> integer_of_nat n < 0"
-by(transfer) simp
+  by transfer simp
 
 lemma int_of_integer_pow: "int_of_integer (x ^ n) = int_of_integer x ^ n"
-by(induct n) simp_all
-
-lemma pow_integer_transfer [transfer_rule]:
-  "(rel_fun pcr_integer (rel_fun (=) pcr_integer)) (^) (^)"
-by(auto 4 3 simp add: integer.pcr_cr_eq cr_integer_def int_of_integer_pow)
+  by transfer rule
 
 lemma sub1_lt_0_iff [simp]: "Code_Numeral.sub n num.One < 0 \<longleftrightarrow> False"
-by(cases n)(simp_all add: Code_Numeral.sub_code)
+  by transfer (simp add: sub_negative)
 
 lemma nat_of_integer_numeral [simp]: "nat_of_integer (numeral n) = numeral n"
-by transfer simp
+  by transfer simp
 
 lemma nat_of_integer_sub1_conv_pred_numeral [simp]:
   "nat_of_integer (Code_Numeral.sub n num.One) = pred_numeral n"
-by(cases n)(simp_all add: Code_Numeral.sub_code)
+  by transfer (simp only: pred_numeral_def int_nat_eq numeral_One int_minus flip: int_int_eq, simp)
 
 lemma nat_of_integer_1 [simp]: "nat_of_integer 1 = 1"
-by transfer simp
+  by transfer simp
 
 lemma dup_1 [simp]: "Code_Numeral.dup 1 = 2"
-by transfer simp
-
-
-section \<open>Bit operations on @{typ integer}\<close>
-
-text \<open>Bit operations on @{typ integer} are the same as on @{typ int}\<close>
+  by transfer simp
 
 lift_definition bin_rest_integer :: "integer \<Rightarrow> integer" is \<open>\<lambda>k . k div 2\<close> .
+
 lift_definition bin_last_integer :: "integer \<Rightarrow> bool" is odd .
+
 lift_definition Bit_integer :: "integer \<Rightarrow> bool \<Rightarrow> integer" is \<open>\<lambda>k b. of_bool b + 2 * k\<close> .
 
-end
-
-instantiation integer :: lsb begin
-context includes integer.lifting begin
-
-lift_definition lsb_integer :: "integer \<Rightarrow> bool" is lsb .
-
-instance
-  by (standard; transfer) (fact lsb_odd)
-
-end
-end
-
-instantiation integer :: msb begin
-context includes integer.lifting begin
-
-lift_definition msb_integer :: "integer \<Rightarrow> bool" is msb .
-
-instance ..
-
-end
-end
-
-instantiation integer :: set_bit begin
-context includes integer.lifting begin
-
-lift_definition set_bit_integer :: "integer \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> integer" is set_bit .
-
-instance
-  apply standard
-  apply transfer
-  apply (simp add: bit_simps)
-  done
-
-end
 end
 
 
@@ -584,7 +539,7 @@ lemma msb_integer_code [code]:
 end
 
 context
-  includes integer.lifting natural.lifting bit_operations_syntax
+  includes integer.lifting bit_operations_syntax
 begin
 
 lemma bitAND_integer_unfold [code]:
