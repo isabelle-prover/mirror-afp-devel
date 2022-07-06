@@ -825,9 +825,9 @@ object Array {
     }
     a
   }
-  def make[A](n: BigInt)(f: BigInt => A): T[A] = init(n.intValue)((i: Int) => f(BigInt(i)))
+  def make[A](n: BigInt)(f: BigInt => A): T[A] = init(n.toInt)((i: Int) => f(BigInt(i)))
   def copy[A](a: T[A]): T[A] = init(a.length)(i => a(i))
-  def alloc[A](n: BigInt)(x: A): T[A] = init(n.intValue)(_ => x)
+  def alloc[A](n: BigInt)(x: A): T[A] = init(n.toInt)(_ => x)
   def len[A](a: T[A]): BigInt = BigInt(a.length)
   def nth[A](a: T[A], n: BigInt): A = a(n.toInt)
   def upd[A](a: T[A], n: BigInt, x: A): Unit = a.update(n.toInt, x)
