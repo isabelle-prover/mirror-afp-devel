@@ -40,9 +40,9 @@ lemma bit_set_bits_word_iff [bit_simps]:
 lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. bit i n)"
   by (rule bit_eqI) (auto simp add: bit_simps)
 
-lemma set_bits_K_False [simp]:
+lemma set_bits_K_False:
   \<open>set_bits (\<lambda>_. False) = (0 :: 'a :: len word)\<close>
-  by (rule bit_word_eqI) (simp add: bit_set_bits_word_iff)
+  by (fact set_bits_False_eq)
 
 lemma word_test_bit_set_bits: "bit (BITS n. f n :: 'a :: len word) n \<longleftrightarrow> n < LENGTH('a) \<and> f n"
   by (fact bit_set_bits_word_iff)

@@ -15,10 +15,7 @@ context
 begin
 
 declare [[code drop:
-  "(AND) :: int \<Rightarrow> _" "(OR) :: int \<Rightarrow> _" "(XOR) :: int \<Rightarrow> _" "NOT :: int \<Rightarrow> _"
-  "lsb :: int \<Rightarrow> _" "set_bit :: int \<Rightarrow> _" "bit :: int \<Rightarrow> _"
-  "push_bit :: _ \<Rightarrow> int \<Rightarrow> _" "drop_bit :: _ \<Rightarrow> int \<Rightarrow> _"
-  int_of_integer_symbolic
+  "lsb :: int \<Rightarrow> _" int_of_integer_symbolic
   ]]
 
 lemma [code_unfold]:
@@ -32,38 +29,6 @@ lemma [code_unfold]:
 context
 includes integer.lifting
 begin
-
-lemma bit_int_code [code]:
-  "bit (int_of_integer x) n = bit x n"
-  by transfer simp
-
-lemma and_int_code [code]:
-  "int_of_integer i AND int_of_integer j = int_of_integer (i AND j)"
-  by transfer simp
-
-lemma or_int_code [code]:
-  "int_of_integer i OR int_of_integer j = int_of_integer (i OR j)"
-  by transfer simp
-
-lemma xor_int_code [code]:
-  "int_of_integer i XOR int_of_integer j = int_of_integer (i XOR j)"
-  by transfer simp
-
-lemma not_int_code [code]:
-  "NOT (int_of_integer i) = int_of_integer (NOT i)"
-  by transfer simp
-
-lemma push_bit_int_code [code]:
-  \<open>push_bit n (int_of_integer x) = int_of_integer (push_bit n x)\<close>
-  by transfer simp
-
-lemma drop_bit_int_code [code]:
-  \<open>drop_bit n (int_of_integer x) = int_of_integer (drop_bit n x)\<close>
-  by transfer simp
-
-lemma take_bit_int_code [code]:
-  \<open>take_bit n (int_of_integer x) = int_of_integer (take_bit n x)\<close>
-  by transfer simp
 
 lemma lsb_int_code [code]:
   "lsb (int_of_integer x) = lsb x"
