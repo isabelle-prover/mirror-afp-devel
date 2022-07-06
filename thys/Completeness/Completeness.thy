@@ -890,7 +890,6 @@ lemma path_evalF':
 
 lemmas path_evalF'' = mp[OF path_evalF']
 
-
 subsection "adequacy"
 
 lemma counterAssignModelAssign: "counterAssign : modelAssigns (counterModel gamma)"
