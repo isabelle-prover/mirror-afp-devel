@@ -148,7 +148,7 @@ proof
     by (induct p) simp_all
 qed
 
-lemma tautology: \<open>tautology p \<Longrightarrow> \<lbrakk>E, F, G\<rbrakk> p\<close>
+lemma tautology[simp]: \<open>tautology p \<Longrightarrow> \<lbrakk>E, F, G\<rbrakk> p\<close>
   using boolean_semantics by metis
 
 proposition \<open>\<exists>p. (\<forall>E F G. \<lbrakk>E, F, G\<rbrakk> p) \<and> \<not> tautology p\<close>
@@ -156,17 +156,13 @@ proposition \<open>\<exists>p. (\<forall>E F G. \<lbrakk>E, F, G\<rbrakk> p) \<a
 
 section \<open>Calculus\<close>
 
-text \<open>Adapted from System Q1 by Smullyan in First-Order Logic (1968)\<close>
+text \<open>Adapted from System Q1 by Smullyan in First-Order Logic (1968).\<close>
 
 inductive Axiomatic (\<open>\<turnstile> _\<close> [50] 50) where
   TA: \<open>tautology p \<Longrightarrow> \<turnstile> p\<close>
 | IA: \<open>\<turnstile> \<^bold>\<forall>p \<^bold>\<longrightarrow> \<langle>t/0\<rangle>p\<close>
 | MP: \<open>\<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> \<turnstile> p \<Longrightarrow> \<turnstile> q\<close>
 | GR: \<open>\<turnstile> q \<^bold>\<longrightarrow> \<langle>\<^bold>\<star>a/0\<rangle>p \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> q \<^bold>\<longrightarrow> \<^bold>\<forall>p\<close>
-
-lemmas
-  MP[trans, dest]
-  GR[intro]
 
 text \<open>We simulate assumptions on the lhs of \<open>\<turnstile>\<close> with a chain of implications on the rhs.\<close>
 
@@ -187,7 +183,7 @@ proof (induct p arbitrary: F rule: Axiomatic.induct)
     by blast
   ultimately show ?case
     by fastforce
-qed (auto simp: tautology)
+qed auto
 
 corollary \<open>\<not> (\<turnstile> \<^bold>\<bottom>)\<close>
   using soundness by fastforce
@@ -202,7 +198,7 @@ lemma Imp1: \<open>\<turnstile> q \<^bold>\<longrightarrow> p \<^bold>\<longrigh
 text \<open>The tautology axiom TA is not used directly beyond this point.\<close>
 
 lemma Tran: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
-  by (metis Imp1 Imp2 MP)
+  by (meson Imp1 Imp2 MP)
 
 lemma Chu1: \<open>\<turnstile> ((p \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> q)) \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> q))\<close>
   by (meson Tran Imp1 Imp2 MP)
@@ -216,8 +212,10 @@ lemma Chu3: \<open>\<turnstile> ((p \<^bold>\<longrightarrow> (q \<^bold>\<longr
 lemma Chu4: \<open>\<turnstile> ((q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> ((p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> r)))\<close>
   by (meson Tran Chu1 Chu2 Chu3 Imp1 Imp2 MP)
 
+text \<open>Note that contraposition in the other direction is an instance of the lemma Tran.\<close>
+
 lemma contraposition: \<open>\<turnstile> (\<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> p) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> q\<close>
-  by (metis Chu3 Chu4 Neg MP)
+  by (meson Chu3 Chu4 Neg MP)
 
 lemma GR': \<open>\<turnstile> \<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p \<^bold>\<longrightarrow> q \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> \<^bold>\<not> (\<^bold>\<forall>p) \<^bold>\<longrightarrow> q\<close>
 proof -
@@ -227,9 +225,9 @@ proof -
   then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<langle>\<^bold>\<star>a/0\<rangle>p\<close>
     by (meson Imp1 Imp2 Neg MP)
   then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<forall>p\<close>
-    using a by auto
+    using a by (auto intro: GR)
   then have \<open>\<turnstile> \<^bold>\<not> (\<^bold>\<forall>p) \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> q\<close>
-    by (meson Imp1 Imp2 MP)
+    using Imp1 Imp2 MP by metis
   then show ?thesis
     by (meson Imp1 Imp2 Neg MP)
 qed
@@ -249,8 +247,8 @@ next
     by simp
 qed
 
-lemma MP' [trans, dest]: \<open>ps \<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> ps \<turnstile> p \<Longrightarrow> ps \<turnstile> q\<close>
-  using imply_ImpE by fast
+lemma MP': \<open>ps \<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> ps \<turnstile> p \<Longrightarrow> ps \<turnstile> q\<close>
+  using imply_ImpE MP by metis
 
 lemma imply_Cons [intro]: \<open>ps \<turnstile> q \<Longrightarrow> p # ps \<turnstile> q\<close>
   by (auto intro: MP Imp1)
@@ -282,7 +280,7 @@ lemma deduct2: \<open>p # ps \<turnstile> q \<Longrightarrow> ps \<turnstile> p 
 
 lemmas deduct [iff] = deduct1 deduct2
 
-lemma cut [trans, dest]: \<open>p # ps \<turnstile> r \<Longrightarrow> q # ps \<turnstile> p \<Longrightarrow> q # ps \<turnstile> r\<close>
+lemma cut: \<open>p # ps \<turnstile> r \<Longrightarrow> q # ps \<turnstile> p \<Longrightarrow> q # ps \<turnstile> r\<close>
   by (meson MP' deduct(2) imply_Cons)
 
 lemma Boole: \<open>(\<^bold>\<not> p) # ps \<turnstile> \<^bold>\<bottom> \<Longrightarrow> ps \<turnstile> p\<close>
