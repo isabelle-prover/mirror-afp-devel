@@ -126,7 +126,7 @@ primrec size_fm where
 | \<open>size_fm (\<^bold>\<forall>p) = 1 + size_fm p\<close>
 
 lemma size_inst_fm [simp]: \<open>size_fm (\<langle>t/m\<rangle>p) = size_fm p\<close>
-  by (induct p arbitrary: m t) auto
+  by (induct p arbitrary: m t) simp_all
 
 section \<open>Propositional Semantics\<close>
 
@@ -178,8 +178,7 @@ section \<open>Soundness\<close>
 theorem soundness: \<open>\<turnstile> p \<Longrightarrow> \<lbrakk>E, F, G\<rbrakk> p\<close>
 proof (induct p arbitrary: F rule: Axiomatic.induct)
   case (GR q a p)
-  moreover from this
-  have \<open>\<lbrakk>E, F(a := x), G\<rbrakk> (q \<^bold>\<longrightarrow> \<langle>\<^bold>\<star>a/0\<rangle>p)\<close> for x
+  moreover from this have \<open>\<lbrakk>E, F(a := x), G\<rbrakk> (q \<^bold>\<longrightarrow> \<langle>\<^bold>\<star>a/0\<rangle>p)\<close> for x
     by blast
   ultimately show ?case
     by fastforce
@@ -200,22 +199,13 @@ text \<open>The tautology axiom TA is not used directly beyond this point.\<clos
 lemma Tran: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
   by (meson Imp1 Imp2 MP)
 
-lemma Chu1: \<open>\<turnstile> ((p \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> q)) \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> q))\<close>
-  by (meson Tran Imp1 Imp2 MP)
-
-lemma Chu2: \<open>\<turnstile> (p \<^bold>\<longrightarrow> ((p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> q))\<close>
-  by (meson Tran Chu1 Imp1 Imp2 MP)
-
-lemma Chu3: \<open>\<turnstile> ((p \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> r)) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> r)))\<close>
-  by (meson Tran Chu1 Chu2 Imp1 Imp2 MP)
-
-lemma Chu4: \<open>\<turnstile> ((q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> ((p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> r)))\<close>
-  by (meson Tran Chu1 Chu2 Chu3 Imp1 Imp2 MP)
+lemma Swap: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r)\<close>
+  by (meson Imp1 Imp2 Tran MP)
 
 text \<open>Note that contraposition in the other direction is an instance of the lemma Tran.\<close>
 
 lemma contraposition: \<open>\<turnstile> (\<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> p) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> q\<close>
-  by (meson Chu3 Chu4 Neg MP)
+  by (meson Neg Swap Tran MP)
 
 lemma GR': \<open>\<turnstile> \<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p \<^bold>\<longrightarrow> q \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> \<^bold>\<not> (\<^bold>\<forall>p) \<^bold>\<longrightarrow> q\<close>
 proof -
@@ -227,7 +217,7 @@ proof -
   then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<forall>p\<close>
     using a by (auto intro: GR)
   then have \<open>\<turnstile> \<^bold>\<not> (\<^bold>\<forall>p) \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> q\<close>
-    using Imp1 Imp2 MP by metis
+    using Tran MP by metis
   then show ?thesis
     by (meson Imp1 Imp2 Neg MP)
 qed
@@ -236,12 +226,12 @@ lemma imply_ImpE: \<open>\<turnstile> ps \<^bold>\<leadsto> p \<^bold>\<longrigh
 proof (induct ps)
   case Nil
   then show ?case
-    by (metis Imp1 Imp2 MP imply.simps(1))
+    by (metis Imp1 Swap MP imply.simps(1))
 next
   case (Cons r ps)
-  have \<open>\<turnstile> ((r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> p) \<^bold>\<longrightarrow> r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q)\<close>
+  have \<open>\<turnstile> (r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> p) \<^bold>\<longrightarrow> r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q\<close>
     by (meson Cons.hyps Imp1 Imp2 MP)
-  then have \<open>\<turnstile> ((r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> p) \<^bold>\<longrightarrow> (r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q)) \<^bold>\<longrightarrow> r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q)\<close>
+  then have \<open>\<turnstile> (r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> p) \<^bold>\<longrightarrow> (r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q)) \<^bold>\<longrightarrow> r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q\<close>
     by (meson Imp1 Imp2 MP)
   then show ?case
     by simp
@@ -276,7 +266,7 @@ proof (induct qs arbitrary: ps)
 qed simp
 
 lemma deduct2: \<open>p # ps \<turnstile> q \<Longrightarrow> ps \<turnstile> p \<^bold>\<longrightarrow> q\<close>
-  by (metis imply.simps(1-2) imply_append imply_swap_append)
+  by (metis imply.simps imply_append imply_swap_append)
 
 lemmas deduct [iff] = deduct1 deduct2
 
@@ -454,7 +444,7 @@ proof (induct n)
   case (Suc n)
   moreover from this have \<open>infinite (UNIV - params ({f n} \<union> extend S f n))\<close>
     using infinite_params_extend Diff_infinite_finite Set_Diff_Un UN_Un finite.emptyI
-      finite.insertI finite_UN_I finite_params_fm sup_commute by (metis (no_types, lifting))
+      finite.insertI finite_UN_I finite_params_fm sup_commute by (metis (no_types))
   ultimately show ?case
     using consistent_witness[where S=\<open>{f n} \<union> _\<close>] by (simp add: Let_def)
 qed simp
@@ -468,7 +458,7 @@ proof
   then obtain S' where \<open>S' \<turnstile> \<^bold>\<bottom>\<close> and \<open>set S' \<subseteq> Extend S f\<close>
     unfolding consistent_def by blast
   then obtain m where \<open>set S' \<subseteq> (\<Union>n \<le> m. extend S f n)\<close>
-    unfolding Extend_def using UN_finite_bound by (metis List.finite_set)
+    unfolding Extend_def using UN_finite_bound by (metis finite_set)
   then have \<open>set S' \<subseteq> extend S f m\<close>
     using extend_bound by blast
   moreover have \<open>consistent (extend S f m)\<close>
@@ -595,7 +585,7 @@ proof (induct p rule: wf_induct[where r=\<open>measure size_fm\<close>])
 next
   case (2 x)
   then show ?case
-    using assms Hintikka_def by (cases x) auto
+    using assms unfolding Hintikka_def by (cases x) auto
 qed
 
 subsection \<open>Maximal Consistent Sets are Hintikka Sets\<close>
@@ -605,7 +595,7 @@ lemma deriv_iff_MCS:
   shows \<open>(\<exists>ps. set ps \<subseteq> S \<and> ps \<turnstile> p) \<longleftrightarrow> p \<in> S\<close>
 proof
   show \<open>\<exists>ps. set ps \<subseteq> S \<and> ps \<turnstile> p \<Longrightarrow> p \<in> S\<close>
-    using maximal_exactly_one[OF assms(1)] using assms deduct1 unfolding consistent_def
+    using maximal_exactly_one[OF assms(1)] assms deduct1 unfolding consistent_def
     by (metis MP' add_imply imply.simps(1) imply_ImpE insert_absorb insert_mono list.simps(15))
 next
   show \<open>p \<in> S \<Longrightarrow> \<exists>ps. set ps \<subseteq> S \<and> ps \<turnstile> p\<close>
