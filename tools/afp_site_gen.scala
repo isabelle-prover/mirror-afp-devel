@@ -133,7 +133,13 @@ object AFP_Site_Gen {
 
     val sorted = entries.sortBy(_.date)
 
+    def map_repetitions(elems: List[String], to: String): List[String] =
+      elems.foldLeft(("", List.empty[String])) {
+        case((last, acc), s) => (s, acc :+ (if (last == s) to else s))
+      }._2
+
     isabelle.JSON.Object(
+      "years" -> all_years,
       "num_lemmas" -> num_lemmas,
       "num_loc" -> num_lines,
       "articles_year" -> all_years.map(total_articles),
@@ -141,7 +147,8 @@ object AFP_Site_Gen {
       "author_years" -> all_years.map(fresh_authors),
       "author_years_cumulative" -> all_years.map(total_authors),
       "loc_articles" -> sorted.map(entry_lines),
-      "all_articles" -> sorted.map(_.name))
+      "all_articles" -> sorted.map(_.name),
+      "article_years_unique" -> map_repetitions(sorted.map(_.date.getYear.toString), ""))
   }
 
 
