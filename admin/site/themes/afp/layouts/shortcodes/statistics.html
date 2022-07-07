@@ -34,49 +34,23 @@
   {{ end }}
 </table>
 
-{{- $Scratch := newScratch -}}
-
-{{- range ((where site.RegularPages "Section" "entries").GroupByDate "2006" ).Reverse -}}
-  {{- $collection := . -}}
-  {{- $Scratch.Add "years" (slice .Key) -}}
-  {{- with $Scratch.Get "articles_year" -}}
-    {{- $lastYearArticleCount := index (last 1 .) 0 -}}
-    {{- $articleCount := len $collection.Pages -}}
-    {{- $Scratch.Add "articles_year" (slice (int (add $articleCount $lastYearArticleCount))) -}}
-  {{- else }}
-    {{- $Scratch.Add "articles_year" (slice (len .Pages)) -}}
-  {{- end }}
-{{- end }}
-
-{{- range (where site.RegularPages "Section" "entries").Reverse -}}
-{{- $Scratch.Add "all_articles" (slice (printf "'%s'" .File.BaseFileName )) -}}
-{{- end }}
-
 <script>
-  // DATA
-  var years = [{{- delimit ($Scratch.Get "years") ", " | safeJS -}}];
-  var no_articles = [{{- delimit ($Scratch.Get "articles_year") ", " | safeJS -}}];
-  var no_loc = [{{- delimit .Site.Data.statistics.loc_years  ", " | safeJS -}} ];
-  var no_authors = [{{- delimit .Site.Data.statistics.author_years  ", " | safeJS -}}];
-  var no_authors_series = [{{- delimit .Site.Data.statistics.author_years_cumulative  ", " | safeJS -}}];
-  var all_articles = [{{- delimit ($Scratch.Get "all_articles") ", " | safeJS -}}];
-  var years_loc_articles = [{{ index ($Scratch.Get "years") 0 | safeJS }}];
-  {{ range $index, $value := ($Scratch.Get "articles_year") -}}
-    {{- with (index ($Scratch.Get "years") (add $index 1)) -}}
-      years_loc_articles[{{- $value | safeJS -}}] = {{ . | safeJS -}};
-    {{ end -}}
-  {{- end }}
-  years_loc_articles.length = {{ index (last 1 ($Scratch.Get "articles_year")) 0 | safeJS }};
-  var loc_articles = [{{- delimit .Site.Data.statistics.loc_articles  ", " | safeJS -}}];
+  const years = [{{- delimit .Site.Data.statistics.years "," | safeJS -}}]
+  const no_articles = [{{- delimit .Site.Data.statistics.articles_year "," | safeJS -}}]
+  const no_loc = [{{- delimit .Site.Data.statistics.loc_years  "," | safeJS -}} ]
+  const no_authors = [{{- delimit .Site.Data.statistics.author_years  "," | safeJS -}}]
+  const no_authors_series = [{{- delimit .Site.Data.statistics.author_years_cumulative  "," | safeJS -}}]
+  const all_articles = [{{- delimit (apply .Site.Data.statistics.all_articles "printf" "'%s'" ".") "," | safeJS -}}]
+  const article_years_unique = [{{- delimit (apply .Site.Data.statistics.article_years_unique "printf" "'%s'" ".") "," | safeJS -}}]
+  const loc_articles = [{{- delimit .Site.Data.statistics.loc_articles "," | safeJS -}}]
 </script>
 <h4>Growth in number of articles:</h4>
 <script src="/js/Chart.js"></script>
 <div class="chart">
-  <canvas id="NumberOfArticles"></canvas>
+  <canvas id="num-articles-canvas"></canvas>
 </div>
 <script>
-  var ctx = document.getElementById("NumberOfArticles");
-  var myChart = new Chart(ctx, {
+  new Chart(document.getElementById("num-articles-canvas"), {
     type: 'bar',
     data: {
       labels: years,
@@ -97,16 +71,15 @@
         }]
       },
     }
-  });
+  })
 </script>
 
 <h4>Growth in lines of code:</h4>
 <div class="chart">
-  <canvas id="NumberOfLoc"></canvas>
+  <canvas id="loc-years-canvas"></canvas>
 </div>
 <script>
-  var ctx = document.getElementById("NumberOfLoc");
-  var myChart = new Chart(ctx, {
+  new Chart(document.getElementById("loc-years-canvas"), {
     type: 'bar',
     data: {
       labels: years,
@@ -127,16 +100,15 @@
         }]
       },
     }
-  });
+  })
 </script>
 
 <h4>Growth in number of authors:</h4>
 <div class="chart">
-  <canvas id="NumberOfAuthors"></canvas>
+  <canvas id="author-years-canvas"></canvas>
 </div>
 <script>
-  var ctx = document.getElementById("NumberOfAuthors");
-  var myChart = new Chart(ctx, {
+  new Chart(document.getElementById("author-years-canvas"), {
     type: 'bar',
     data: {
       labels: years,
@@ -162,23 +134,22 @@
         }]
       },
     }
-  });
+  })
 </script>
 
 <h4>Size of articles:</h4>
 <div class="chart">
-  <canvas id="LocArticles"></canvas>
+  <canvas id="loc-articles-canvas"></canvas>
 </div>
 <script>
-  var ctx = document.getElementById("LocArticles");
-  var myChart = new Chart(ctx, {
+  new Chart(document.getElementById("loc-articles-canvas"), {
     type: 'bar',
     data: {
-      labels: years_loc_articles,
+      labels: article_years_unique,
       datasets: [{
         label: 'loc per article',
         data: loc_articles,
-        backgroundColor: "rgba(101, 99, 136, 1)"
+        backgroundColor: 'rgba(101, 99, 136, 1)'
       }]
     },
     options: {
@@ -200,13 +171,11 @@
       },
       tooltips: {
         callbacks: {
-          title: function (tooltipItem, data) {
-            return all_articles[tooltipItem[0].index];
-          }
+          title: tooltipItem => all_articles[tooltipItem[0].index]
         }
       }
     }
-  });
+  })
 </script>
 
 </td>

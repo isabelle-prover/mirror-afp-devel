@@ -3017,6 +3017,22 @@ host = [
 [kerber.homepages]
 kerber_homepage = "http://www.cs.bham.ac.uk/~mmk"
 
+[ketland]
+name = "Jeffrey Ketland"
+
+[ketland.emails]
+
+[ketland.emails.ketland_email]
+user = [
+"jeffreyketland",
+]
+host = [
+"gmail",
+"com",
+]
+
+[ketland.homepages]
+
 [kirchner]
 name = "Daniel Kirchner"
 

@@ -21,9 +21,6 @@ object AFP_Site_Gen {
     }
 
     def from_email(email: Email): T = {
-      def rev_spans(elems: List[String]): String =
-        elems.map(e => "<span class=\"rev\">" + e.reverse + "</span>").toList.reverse.mkString(".")
-      val address = rev_spans(email.host.split('.').toList) + "@" + rev_spans(email.user.split('.').toList)
       isabelle.JSON.Object(
         "user" -> email.user.split('.').toList,
         "host" -> email.host.split('.').toList)
@@ -89,7 +86,7 @@ object AFP_Site_Gen {
 
   /* stats */
 
-  def afp_stats(deps: Sessions.Deps, structure: AFP_Structure, entries: List[Entry], progress: Progress): JSON.T = {
+  def afp_stats(deps: Sessions.Deps, structure: AFP_Structure, entries: List[Entry]): JSON.T = {
     def round(int: Int): Int = Math.round(int.toFloat / 100) * 100
 
     def nodes(entry: Entry): List[Document.Node.Name] =
@@ -137,7 +134,13 @@ object AFP_Site_Gen {
 
     val sorted = entries.sortBy(_.date)
 
+    def map_repetitions(elems: List[String], to: String): List[String] =
+      elems.foldLeft(("", List.empty[String])) {
+        case((last, acc), s) => (s, acc :+ (if (last == s) to else s))
+      }._2
+
     isabelle.JSON.Object(
+      "years" -> all_years,
       "num_lemmas" -> num_lemmas,
       "num_loc" -> num_lines,
       "articles_year" -> all_years.map(total_articles),
@@ -145,7 +148,8 @@ object AFP_Site_Gen {
       "author_years" -> all_years.map(fresh_authors),
       "author_years_cumulative" -> all_years.map(total_authors),
       "loc_articles" -> sorted.map(entry_lines),
-      "all_articles" -> sorted.map(_.name))
+      "all_articles" -> sorted.map(_.name),
+      "article_years_unique" -> map_repetitions(sorted.map(_.date.getYear.toString), ""))
   }
 
 
@@ -283,7 +287,7 @@ object AFP_Site_Gen {
 
     progress.echo("Preparing statistics...")
 
-    val statistics_json = afp_stats(sessions_deps, afp_structure, entries, progress)
+    val statistics_json = afp_stats(sessions_deps, afp_structure, entries)
 
     layout.write_data(Path.basic("statistics.json"), statistics_json)
 
