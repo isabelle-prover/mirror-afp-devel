@@ -833,11 +833,11 @@ next
 
         have "(1-\<epsilon>/2) * (\<epsilon>/4)^3 * (\<epsilon>/(4*M))^3 * ?n^3 \<le> (1-\<epsilon>/2) * (\<epsilon>/4)^3 * card R * card S * card T"
           using cardgtbound ordered_comm_semiring_class.comm_mult_left_mono True e4gt by fastforce
-        also have "... \<le> (1-2*(\<epsilon>/4)) * (edge_density R S Gnew - \<epsilon>/4)*(edge_density R T Gnew - \<epsilon>/4) * (edge_density S T Gnew - \<epsilon>/4) * card R * card S * card T"
+        also have "... \<le> (1-2*(\<epsilon>/4)) * (edge_density R S Gnew - \<epsilon>/4) * (edge_density R T Gnew - \<epsilon>/4) 
+                        * (edge_density S T Gnew - \<epsilon>/4) * card R * card S * card T"
           using gtcube c1 \<open>\<epsilon> < 1\<close> mincard0 by (simp add: mult.commute mult.left_commute mult_left_mono)
         also have "... \<le> card (triangle_triples R S T Gnew)"
-          by (smt (verit, best) e4gt ilt jlt klt min_dens_diff new_fin new_wf rp
- subsets triangle_counting_lemma)
+          by (smt (verit, best) e4gt ilt jlt klt min_dens_diff new_fin new_wf rp subsets triangle_counting_lemma)
         finally have "card (triangle_set Gnew) \<ge> D * ?n^3"
           using card_convert_triangle_rep_bound new_wf new_fin subsets 
           by (auto simp: triangle_triples_def D_def)
@@ -877,10 +877,9 @@ proof -
   have "\<epsilon>/3 > 0"
     using assms by auto
   then obtain \<delta>::real where "\<delta> > 0"
-    and \<delta>: "\<And>G. \<lbrakk>card(uverts G) > 0; uwellformed G;
-          card (triangle_set G) \<le> \<delta> * card(uverts G) ^ 3\<rbrakk> \<Longrightarrow>
-          (\<exists>Gnew. triangle_free_graph Gnew \<and> uverts Gnew = uverts G \<and> (uedges Gnew \<subseteq> uedges G) \<and> 
-          card (uedges G - uedges Gnew) \<le> \<epsilon>/3 * (card (uverts G))\<^sup>2)"
+    and \<delta>: "\<And>G. \<lbrakk>card(uverts G) > 0; uwellformed G; card (triangle_set G) \<le> \<delta> * card(uverts G) ^ 3\<rbrakk> 
+                \<Longrightarrow> \<exists>G'. triangle_free_graph G' \<and> uverts G' = uverts G \<and> (uedges G' \<subseteq> uedges G) \<and> 
+                         card (uedges G - uedges G') \<le> \<epsilon>/3 * (card (uverts G))\<^sup>2"
     using triangle_removal_lemma by metis
   obtain N::nat where N: "real N \<ge> 1 / (3*\<delta>)"
     by (meson real_arch_simple)
@@ -895,16 +894,13 @@ proof -
       and uniq: "unique_triangles G"
     have G_ne: "?n > 0"
       using G_gt_N by linarith
-    obtain TF where TF: "\<And>e. e \<in> uedges G \<Longrightarrow> \<exists>x y z. TF e = {x,y,z} \<and> triangle_in_graph x y z G \<and> e \<subseteq> TF e"
-      using uniq unfolding unique_triangles_def by metis
     let ?TWO = "(\<lambda>t. [t]\<^bsup>2\<^esup>)"
     have tri_nsets_2: "[{x,y,z}]\<^bsup>2\<^esup> = {{x,y},{y,z},{x,z}}" if "triangle_in_graph x y z G" for x y z
       using that unfolding nsets_def triangle_in_graph_def card_2_iff doubleton_eq_iff
       by (blast dest!: edge_vertices_not_equal [OF wf])
     have tri_nsets_3: "{{x,y},{y,z},{x,z}} \<in> [uedges G]\<^bsup>3\<^esup>" if "triangle_in_graph x y z G" for x y z
-      using that 
-      by (simp add: nsets_def card_3_iff triangle_in_graph_def) (metis doubleton_eq_iff 
-edge_vertices_not_equal [OF wf])
+      using that by (simp add: nsets_def card_3_iff triangle_in_graph_def) 
+                    (metis doubleton_eq_iff edge_vertices_not_equal [OF wf])
     have sub: "?TWO ` triangle_set G \<subseteq> [uedges G]\<^bsup>3\<^esup>"
       using tri_nsets_2 tri_nsets_3 triangle_set_def by auto
     have "\<And>i. i \<in> triangle_set G \<Longrightarrow> ?TWO i \<noteq> {}"
@@ -934,21 +930,17 @@ edge_vertices_not_equal [OF wf])
       then show "(\<Sum>i\<in>triangle_set G. card ([i]\<^bsup>2\<^esup>)) = 3 * card (triangle_set G)"
         by simp
     qed
-    ultimately have A: "3 * card (triangle_set G) = card (uedges G)" 
+    ultimately have 3: "3 * card (triangle_set G) = card (uedges G)" 
       by auto
     have "card (uedges G) \<le> card (all_edges(uverts G))"
       by (meson G_ne all_edges_finite card_gt_0_iff card_mono local.wf wellformed_all_edges)
-    also have "\<dots> = card (uverts G) choose 2"
+    also have "\<dots> = ?n choose 2"
       by (metis G_ne card_all_edges card_eq_0_iff not_less0)
-    also have "\<dots> = card (uverts G) * (card (uverts G) - 1) div 2"
-      by (meson n_choose_2_nat) 
-    also have "\<dots> < (card (uverts G))\<^sup>2"
-      by (simp add: G_ne less_imp_diff_less less_mult_imp_div_less power2_eq_square)
-    finally have B: "card (uedges G) < (card (uverts G))\<^sup>2" .
-
-    have "card (triangle_set G) \<le> (card (uverts G))\<^sup>2 / 3"
-      using A B by linarith
-    also have "\<dots> \<le> \<delta> * card(uverts G) ^ 3"
+    also have "\<dots> \<le> ?n\<^sup>2"
+      by (metis binomial_eq_0_iff binomial_le_pow linorder_not_le zero_le)
+    finally have "card (uedges G) \<le> ?n\<^sup>2" .
+    with 3 have "card (triangle_set G) \<le> ?n\<^sup>2 / 3" by linarith
+    also have "\<dots> \<le> \<delta> * ?n ^ 3"
     proof -
       have "1 \<le> 3 * \<delta> * N"
         using N \<open>\<delta> > 0\<close> by (simp add: field_simps)
@@ -967,6 +959,8 @@ edge_vertices_not_equal [OF wf])
     text\<open>Deleting an edge removes at most one triangle from the graph by assumption,
          so the number of edges removed in this process is at least the number of triangles.\<close>
     
+    obtain TF where TF: "\<And>e. e \<in> uedges G \<Longrightarrow> \<exists>x y z. TF e = {x,y,z} \<and> triangle_in_graph x y z G \<and> e \<subseteq> TF e"
+      using uniq unfolding unique_triangles_def by metis
     have False
       if non: "\<And>e. e \<in> uedges G - uedges Gnew \<Longrightarrow> {x,y,z} \<noteq> TF e"
         and tri: "triangle_in_graph x y z G" for x y z
@@ -985,7 +979,7 @@ edge_vertices_not_equal [OF wf])
     ultimately have "card (triangle_set G) \<le> card (uedges G - uedges Gnew)"
       by (meson surj_card_le)
     then show "card (uedges G) \<le> \<epsilon> * ?n\<^sup>2"
-      using A card_edge_diff by linarith
+      using 3 card_edge_diff by linarith
   qed
 qed
 
