@@ -169,8 +169,8 @@ proof (intro conjI impI notI allI; (elim exE conjE)?)
   }
 qed
 
-lemma incremental_atom_ops: "Incremental_Atom_Ops 
-  init assert_s check_s \<V> checkpoint_s backtrack_s \<triangle> weak_invariant_s invariant_s checked_s" 
+sublocale Incremental_Atom_Ops 
+  init assert_s check_s \<V> checkpoint_s backtrack_s \<triangle> weak_invariant_s invariant_s checked_s
 proof (unfold_locales, goal_cases)
   case (1 t as s a s') (* assert ok *)
   from 1(2)[unfolded assert_s_def Let_def]
@@ -421,15 +421,6 @@ fun prod_wrap :: "('c \<Rightarrow> 's \<Rightarrow> 's \<times> ('i list option
 lemma prod_wrap_def': "prod_wrap f (asi,s) = map_prod (Pair asi) id (f asi s)" 
   unfolding prod_wrap.simps by (auto split: prod.splits)
 
-definition check_nsc where "check_nsc check_s = prod_wrap (\<lambda> asitv. check_s)" 
-
-definition assert_nsc where "assert_nsc assert_all_s i = (\<lambda> ((asi,tv,ui),s). 
-  if i \<in> set ui then Unsat [i] else 
-  case assert_all_s (list_map_to_fun asi i) s of Unsat I \<Rightarrow> Unsat I | Inr s' \<Rightarrow> Inr ((asi,tv,ui),s'))"
-fun checkpoint_nsc where "checkpoint_nsc checkpoint_s (asi_tv_ui,s) = checkpoint_s s" 
-fun backtrack_nsc where "backtrack_nsc backtrack_s c (asi_tv_ui,s) = (asi_tv_ui, backtrack_s c s)" 
-fun solution_nsc where "solution_nsc solution_s ((asi,tv,ui),s) = tv (solution_s s)" 
-
 
 locale Incremental_Atom_Ops_For_NS_Constraint_Ops =
   Incremental_Atom_Ops init_s assert_s check_s solution_s checkpoint_s backtrack_s \<triangle>
@@ -447,6 +438,16 @@ locale Incremental_Atom_Ops_For_NS_Constraint_Ops =
     checked_s :: "tableau \<Rightarrow> ('i,'a) i_atom set \<Rightarrow> 's \<Rightarrow> bool" and
     preprocess :: "('i,'a) i_ns_constraint list \<Rightarrow> tableau \<times> ('i,'a) i_atom list \<times> ((var,'a)mapping \<Rightarrow> (var,'a)mapping) \<times> 'i list" 
 begin
+
+definition check_nsc where "check_nsc = prod_wrap (\<lambda> asitv. check_s)" 
+
+definition assert_nsc where "assert_nsc i = (\<lambda> ((asi,tv,ui),s). 
+  if i \<in> set ui then Unsat [i] else 
+  case assert_all_s (list_map_to_fun asi i) s of Unsat I \<Rightarrow> Unsat I | Inr s' \<Rightarrow> Inr ((asi,tv,ui),s'))"
+
+fun checkpoint_nsc where "checkpoint_nsc (asi_tv_ui,s) = checkpoint_s s" 
+fun backtrack_nsc where "backtrack_nsc c (asi_tv_ui,s) = (asi_tv_ui, backtrack_s c s)" 
+fun solution_nsc where "solution_nsc ((asi,tv,ui),s) = tv (solution_s s)" 
 
 definition "init_nsc nsc = (case preprocess nsc of (t,as,trans_v,ui) \<Rightarrow> 
    ((create_map as, trans_v, remdups ui), init_s t))"
@@ -471,8 +472,8 @@ lemma i_satisfies_atom_set_inter_right: "((I, v) \<Turnstile>\<^sub>i\<^sub>a\<^
   by (rule arg_cong[of _ _ "\<lambda> x. v \<Turnstile>\<^sub>a\<^sub>s x"], auto)
 
 
-lemma ns_constraints_ops: "Incremental_NS_Constraint_Ops init_nsc (assert_nsc assert_all_s)
-  (check_nsc check_s) (solution_nsc solution_s) (checkpoint_nsc checkpoint_s) (backtrack_nsc backtrack_s)
+lemma ns_constraints_ops: "Incremental_NS_Constraint_Ops init_nsc assert_nsc
+  check_nsc solution_nsc checkpoint_nsc backtrack_nsc
   weak_invariant_nsc invariant_nsc checked_nsc"
 proof (unfold_locales, goal_cases)
   case (1 nsc J S j S') (* assert ok *)
@@ -610,17 +611,6 @@ assumes
 
 text \<open>Implementation via the Simplex-operation To-Ns and the Incremental Operations for Non-Strict Constraints\<close>
 
-fun assert_cs where "assert_cs ass i (cs,s) = (case ass i s of 
-    Unsat I \<Rightarrow> Unsat I 
-  | Inr s' \<Rightarrow> Inr (cs, s'))" 
-
-definition "init_cs init tons cs = (let tons_cs = tons cs in (map snd (tons_cs), init tons_cs))" 
-
-definition "check_cs check s = prod_wrap (\<lambda> cs. check) s" 
-fun checkpoint_cs where "checkpoint_cs checkp (cs,s) = (checkp s)" 
-fun backtrack_cs where "backtrack_cs backt c (cs,s) = (cs, backt c s)" 
-fun solution_cs where "solution_cs sol from (cs,s) = (\<langle>from (sol s) cs\<rangle>)" 
-
 locale Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex =
   Incremental_NS_Constraint_Ops init_nsc assert_nsc check_nsc solution_nsc checkpoint_nsc backtrack_nsc 
   weak_invariant_nsc invariant_nsc checked_nsc + To_ns to_ns from_ns
@@ -638,6 +628,17 @@ locale Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex =
     from_ns :: "(var, 'a) mapping \<Rightarrow> 'a ns_constraint list \<Rightarrow> (var, rat) mapping"
 begin
 
+fun assert_cs where "assert_cs i (cs,s) = (case assert_nsc i s of 
+    Unsat I \<Rightarrow> Unsat I 
+  | Inr s' \<Rightarrow> Inr (cs, s'))" 
+
+definition "init_cs cs = (let tons_cs = to_ns cs in (map snd (tons_cs), init_nsc tons_cs))" 
+
+definition "check_cs s = prod_wrap (\<lambda> cs. check_nsc) s" 
+fun checkpoint_cs where "checkpoint_cs (cs,s) = (checkpoint_nsc s)" 
+fun backtrack_cs where "backtrack_cs c (cs,s) = (cs, backtrack_nsc c s)" 
+fun solution_cs where "solution_cs (cs,s) = (\<langle>from_ns (solution_nsc s) cs\<rangle>)" 
+
 fun weak_invariant_cs where 
   "weak_invariant_cs cs J (ds,s) = (ds = map snd (to_ns cs) \<and> weak_invariant_nsc (to_ns cs) J s)" 
 fun invariant_cs where 
@@ -645,9 +646,16 @@ fun invariant_cs where
 fun checked_cs where 
   "checked_cs cs J (ds,s) = (ds = map snd (to_ns cs) \<and> checked_nsc (to_ns cs) J s)" 
 
-sublocale Incremental_Simplex_Ops "init_cs init_nsc to_ns" "assert_cs assert_nsc"
-  "check_cs check_nsc" "solution_cs solution_nsc from_ns" "checkpoint_cs checkpoint_nsc" "backtrack_cs backtrack_nsc" 
-  weak_invariant_cs invariant_cs checked_cs
+sublocale Incremental_Simplex_Ops 
+  init_cs 
+  assert_cs  
+  check_cs 
+  solution_cs 
+  checkpoint_cs 
+  backtrack_cs
+  weak_invariant_cs 
+  invariant_cs 
+  checked_cs
 proof (unfold_locales, goal_cases)
   case (1 cs J S j S') (* assert ok *)
   then obtain s where S: "S = (map snd (to_ns cs),s)" by (cases S, auto)
@@ -722,150 +730,72 @@ subsection \<open>Concrete Implementation\<close>
 
 subsubsection \<open>Connecting all the locales\<close>
 
-definition "assert_s = Incremental_State_Ops_Simplex.assert_s assert_bound_code"  
-definition "check_s = Incremental_State_Ops_Simplex.check_s check_code" 
-definition "checkpoint_s = Incremental_State_Ops_Simplex.checkpoint_s" 
-definition "backtrack_s = Incremental_State_Ops_Simplex.backtrack_s" 
-definition "weak_invariant_s = Incremental_State_Ops_Simplex.weak_invariant_s" 
-definition "invariant_s = Incremental_State_Ops_Simplex.invariant_s" 
-definition "checked_s = Incremental_State_Ops_Simplex.checked_s"  
-
 global_interpretation Incremental_State_Ops_Simplex_Default:
   Incremental_State_Ops_Simplex assert_bound_code init_state check_code 
-  rewrites
-    "Incremental_State_Ops_Simplex.assert_s assert_bound_code = assert_s" and
-    "Incremental_State_Ops_Simplex.check_s check_code = check_s" and
-    "Incremental_State_Ops_Simplex.backtrack_s = backtrack_s" and
-    "Incremental_State_Ops_Simplex.checkpoint_s = checkpoint_s" and 
-    "Incremental_State_Ops_Simplex.weak_invariant_s = weak_invariant_s" and
-    "Incremental_State_Ops_Simplex.invariant_s = invariant_s" and
-    "Incremental_State_Ops_Simplex.checked_s = checked_s" 
-  by (unfold_locales, auto simp: 
-      assert_s_def 
-      check_s_def 
-      checkpoint_s_def
-      backtrack_s_def
-      checked_s_def
-      invariant_s_def
-      weak_invariant_s_def)
+  defines assert_s = Incremental_State_Ops_Simplex_Default.assert_s and
+          check_s  = Incremental_State_Ops_Simplex_Default.check_s and 
+          backtrack_s  = Incremental_State_Ops_Simplex_Default.backtrack_s and
+          checkpoint_s = Incremental_State_Ops_Simplex_Default.checkpoint_s and
+          weak_invariant_s = Incremental_State_Ops_Simplex_Default.weak_invariant_s and
+          invariant_s = Incremental_State_Ops_Simplex_Default.invariant_s and
+          checked_s = Incremental_State_Ops_Simplex_Default.checked_s and
+          assert_all_s = Incremental_State_Ops_Simplex_Default.assert_all_s
+  ..
 
-definition "assert_all_s = Incremental_Atom_Ops.assert_all_s assert_s" 
+(* RT: I don't know why the following two lemmas and the declare are required,
+   and not done automatically via the global-interpretation *)
+lemma Incremental_State_Ops_Simplex_Default_assert_all_s[simp]: 
+  "Incremental_State_Ops_Simplex_Default.assert_all_s = assert_all_s"
+  by (metis assert_all_s_def assert_s_def)
 
-global_interpretation Incremental_Atom_Ops_Default:  
-  Incremental_Atom_Ops init_state assert_s check_s \<V> checkpoint_s backtrack_s \<triangle> weak_invariant_s invariant_s checked_s
-  rewrites "Incremental_Atom_Ops.assert_all_s assert_s = assert_all_s" 
-  using Incremental_State_Ops_Simplex_Default.incremental_atom_ops
-  by (auto simp: assert_all_s_def)
+lemmas assert_all_s_code = Incremental_State_Ops_Simplex_Default.assert_all_s.simps[unfolded 
+  Incremental_State_Ops_Simplex_Default_assert_all_s]
 
+declare assert_all_s_code[code]
 
-definition "init_nsc_code = (Incremental_Atom_Ops_For_NS_Constraint_Ops.init_nsc init_state preprocess :: _ \<Rightarrow> (('a :: linorder, ('a \<times> QDelta atom) list) mapping \<times> _) \<times> ('a, QDelta) state)" 
-definition "assert_nsc_code = assert_nsc assert_all_s" 
-definition "check_nsc_code = check_nsc check_s" 
-definition "checkpoint_nsc_code = checkpoint_nsc checkpoint_s" 
-definition "solution_nsc_code = solution_nsc \<V>" 
-definition "backtrack_nsc_code = backtrack_nsc backtrack_s" 
-definition "invariant_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops.invariant_nsc invariant_s preprocess" 
-definition "weak_invariant_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops.weak_invariant_nsc weak_invariant_s preprocess" 
-definition "checked_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops.checked_nsc checked_s preprocess" 
 
 global_interpretation Incremental_Atom_Ops_For_NS_Constraint_Ops_Default: 
   Incremental_Atom_Ops_For_NS_Constraint_Ops init_state assert_s check_s \<V> 
   checkpoint_s backtrack_s weak_invariant_s invariant_s checked_s preprocess
-  rewrites 
-    "Incremental_Atom_Ops_For_NS_Constraint_Ops.init_nsc init_state preprocess = init_nsc_code" and
-    "check_nsc check_s = check_nsc_code" and
-    "checkpoint_nsc checkpoint_s = checkpoint_nsc_code" and
-    "solution_nsc \<V> = solution_nsc_code" and
-    "backtrack_nsc backtrack_s = backtrack_nsc_code" and 
-    "assert_nsc assert_all_s = assert_nsc_code" and 
-    "Incremental_Atom_Ops_For_NS_Constraint_Ops.weak_invariant_nsc weak_invariant_s preprocess = weak_invariant_nsc" and
-    "Incremental_Atom_Ops_For_NS_Constraint_Ops.invariant_nsc invariant_s preprocess = invariant_nsc" and
-    "Incremental_Atom_Ops_For_NS_Constraint_Ops.checked_nsc checked_s preprocess = checked_nsc" and
-    "Incremental_Atom_Ops.assert_all_s assert_s = assert_all_s" 
-  by (unfold_locales, auto simp: 
-      init_nsc_code_def
-      assert_nsc_code_def
-      check_nsc_code_def
-      checkpoint_nsc_code_def
-      solution_nsc_code_def
-      backtrack_nsc_code_def
-      weak_invariant_nsc_def
-      invariant_nsc_def
-      checked_nsc_def
-      assert_all_s_def
-      )
+  defines
+    init_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.init_nsc and
+    check_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.check_nsc and
+    assert_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.assert_nsc and
+    checkpoint_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.checkpoint_nsc and
+    solution_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.solution_nsc and
+    backtrack_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.backtrack_nsc and
+    invariant_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.invariant_nsc and
+    weak_invariant_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.weak_invariant_nsc and
+    checked_nsc = Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.checked_nsc 
+  ..
 
 type_synonym 'i simplex_state' = "QDelta ns_constraint list 
   \<times> (('i, ('i \<times> QDelta atom) list) mapping \<times> ((var,QDelta)mapping \<Rightarrow> (var,QDelta)mapping) \<times> 'i list) 
   \<times> ('i, QDelta) state"
 
-definition "init_simplex' = (init_cs init_nsc_code to_ns :: 'i :: linorder i_constraint list \<Rightarrow> 'i simplex_state')" 
-definition "assert_simplex' = (assert_cs assert_nsc_code :: 'i \<Rightarrow> 'i simplex_state' \<Rightarrow> 'i list + 'i simplex_state')" 
-definition "check_simplex' = (check_cs check_nsc_code :: 'i simplex_state' \<Rightarrow> 'i simplex_state' \<times> 'i list option)" 
-definition "solution_simplex' = (solution_cs solution_nsc_code from_ns :: 'i simplex_state' \<Rightarrow> _)" 
-definition "backtrack_simplex' = (backtrack_cs backtrack_nsc_code :: _ \<Rightarrow> 'i simplex_state' \<Rightarrow> _)" 
-definition "checkpoint_simplex' = (checkpoint_cs checkpoint_nsc_code :: 'i simplex_state' \<Rightarrow> _)" 
-definition "weak_invariant_simplex' = Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.weak_invariant_cs weak_invariant_nsc to_ns" 
-definition "invariant_simplex' = Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.invariant_cs invariant_nsc to_ns" 
-definition "checked_simplex' = Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.checked_cs checked_nsc to_ns" 
-
-lemma case_sum_case_sum: "(case (case x of Inl y \<Rightarrow> Inl (f1 y) | Inr z \<Rightarrow> Inr (f2 z)) 
-  of Inl y \<Rightarrow> Inl (g1 y) | Inr z \<Rightarrow> Inr (g2 z)) = (case x of Inl y \<Rightarrow> Inl (g1 (f1 y)) | Inr z \<Rightarrow> Inr (g2 (f2 z)))" 
-  by (cases x, auto)
-
-text \<open>The following code-lemmas unfold some layers in the code of the simplex-operations, 
-  so that the implementation immediately points to
-  the operations working on simplex type @{typ "('i,QDelta) state"}.\<close>
-
-lemmas code_lemmas =
-  fun_cong[OF init_simplex'_def, of cs for cs, unfolded init_cs_def 
-    Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.init_nsc_def]
-  fun_cong[OF fun_cong[OF assert_simplex'_def], of i "(cs,((asi,tv,ui),s))" for i cs asi tv ui s, 
-    unfolded assert_cs.simps assert_nsc_code_def assert_nsc_def case_sum_case_sum split]
-  fun_cong[OF check_simplex'_def, of "(cs,(asi_tv,s))" for cs asi_tv s,
-   unfolded check_cs_def check_nsc_code_def check_nsc_def prod_wrap_def' prod.map_comp o_def id_def,
-   unfolded map_prod_def]
-  fun_cong[OF solution_simplex'_def, of "(cs,((asi,tv),s))" for cs asi tv s, 
-    unfolded solution_cs.simps solution_nsc_code_def solution_nsc.simps]
-  fun_cong[OF checkpoint_simplex'_def, of "(cs,(asi_tv,s))" for cs asi_tv s,
-    unfolded checkpoint_nsc_code_def checkpoint_cs.simps checkpoint_nsc.simps]
-  fun_cong[OF fun_cong[OF backtrack_simplex'_def], of c "(cs,(asi_tv,s))" for c cs asi_tv s,
-    unfolded backtrack_nsc_code_def backtrack_nsc.simps backtrack_cs.simps]
-
-declare code_lemmas[code]
 
 global_interpretation Incremental_Simplex:
   Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex 
-  init_nsc_code assert_nsc_code check_nsc_code solution_nsc_code checkpoint_nsc_code backtrack_nsc_code 
+  init_nsc assert_nsc check_nsc solution_nsc checkpoint_nsc backtrack_nsc
   weak_invariant_nsc invariant_nsc checked_nsc to_ns from_ns
-  rewrites 
-    "init_cs init_nsc_code to_ns = init_simplex'" and
-    "backtrack_cs backtrack_nsc_code = backtrack_simplex'" and
-    "checkpoint_cs checkpoint_nsc_code = checkpoint_simplex'" and
-    "check_cs check_nsc_code = check_simplex'" and
-    "assert_cs assert_nsc_code = assert_simplex'" and
-    "solution_cs solution_nsc_code from_ns = solution_simplex'" and
-    "Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.weak_invariant_cs weak_invariant_nsc to_ns = weak_invariant_simplex'" and
-    "Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.invariant_cs invariant_nsc to_ns = invariant_simplex'" and
-    "Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.checked_cs checked_nsc to_ns = checked_simplex'" 
+  defines 
+    init_simplex' = Incremental_Simplex.init_cs and
+    assert_simplex' = Incremental_Simplex.assert_cs and
+    check_simplex' = Incremental_Simplex.check_cs and
+    backtrack_simplex' = Incremental_Simplex.backtrack_cs and
+    checkpoint_simplex' = Incremental_Simplex.checkpoint_cs and
+    solution_simplex' = Incremental_Simplex.solution_cs and
+    weak_invariant_simplex' = Incremental_Simplex.weak_invariant_cs and
+    invariant_simplex' = Incremental_Simplex.invariant_cs and
+    checked_simplex' = Incremental_Simplex.checked_cs 
 proof -
-  interpret Incremental_NS_Constraint_Ops init_nsc_code assert_nsc_code check_nsc_code solution_nsc_code checkpoint_nsc_code
-    backtrack_nsc_code weak_invariant_nsc invariant_nsc checked_nsc
+  interpret Incremental_NS_Constraint_Ops init_nsc assert_nsc check_nsc solution_nsc checkpoint_nsc
+    backtrack_nsc weak_invariant_nsc invariant_nsc checked_nsc
     using Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.ns_constraints_ops .
-  show "Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex init_nsc_code assert_nsc_code check_nsc_code
-     solution_nsc_code checkpoint_nsc_code backtrack_nsc_code weak_invariant_nsc invariant_nsc checked_nsc to_ns from_ns" 
+  show "Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex init_nsc assert_nsc check_nsc
+     solution_nsc checkpoint_nsc backtrack_nsc weak_invariant_nsc invariant_nsc checked_nsc to_ns from_ns" 
     ..
-qed (auto simp: 
-    init_simplex'_def
-    check_simplex'_def
-    solution_simplex'_def
-    backtrack_simplex'_def
-    checkpoint_simplex'_def
-    assert_simplex'_def
-    weak_invariant_simplex'_def
-    invariant_simplex'_def
-    checked_simplex'_def
-    )
+qed 
 
 subsubsection \<open>An implementation which encapsulates the state\<close>
 
@@ -902,24 +832,25 @@ fun backtrack_simplex where
 subsubsection \<open>Soundness of the incremental simplex implementation\<close>
 
 text \<open>First link the unprimed constants against their primed counterparts.\<close>
-
 lemma init_simplex': "init_simplex cs = Simplex_State (init_simplex' cs)" 
-  by (simp add: code_lemmas Let_def)
+  by (simp add: Let_def Incremental_Simplex.init_cs_def Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.init_nsc_def)
 
-lemma assert_simplex': "assert_simplex i (Simplex_State s) = map_sum id Simplex_State (assert_simplex' i s)" 
-  by (cases s, auto simp: code_lemmas split: sum.splits)
+lemma assert_simplex': "assert_simplex i (Simplex_State s) = map_sum id Simplex_State (assert_simplex' i s)"
+  by (cases s, cases "fst (snd s)", auto 
+    simp add: Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.assert_nsc_def split: sum.splits)
 
 lemma check_simplex': "check_simplex (Simplex_State s) = map_prod Simplex_State id (check_simplex' s)" 
-  by (cases s, auto simp: code_lemmas split: prod.splits)
+  by (cases s, simp add: Incremental_Simplex.check_cs_def
+    Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.check_nsc_def split: prod.splits)
 
 lemma solution_simplex': "solution_simplex (Simplex_State s) = solution_simplex' s" 
-  by (cases s, auto simp: code_lemmas)
+  by (cases s, auto)
 
 lemma checkpoint_simplex': "checkpoint_simplex (Simplex_State s) = Simplex_Checkpoint (checkpoint_simplex' s)" 
-  by (cases s, auto simp: code_lemmas split: sum.splits)
+  by (cases s, auto split: sum.splits)
 
 lemma backtrack_simplex': "backtrack_simplex (Simplex_Checkpoint c) (Simplex_State s) = Simplex_State (backtrack_simplex' c s)" 
-  by (cases s, auto simp: code_lemmas split: sum.splits)
+  by (cases s, auto split: sum.splits)
 
 fun invariant_simplex where
   "invariant_simplex cs J (Simplex_State s) = invariant_simplex' cs J s" 
