@@ -1648,10 +1648,10 @@ locale Check = fixes check::"('i,'a::lrv) state \<Rightarrow> ('i,'a) state"
 
 check_unsat_id: "\<U> s \<Longrightarrow> check s = s"  and
 
-\<comment> \<open>The tableau remains equivalent to the previous one, normalized and valuated.\<close>
+\<comment> \<open>The tableau remains equivalent to the previous one, normalized and valuated, the state stays consistent.\<close>
 
 check_tableau:  "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
-   let s' = check s in ((v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> s') \<and> \<triangle> (\<T> s') \<and> \<nabla> s'" and
+   let s' = check s in ((v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> s') \<and> \<triangle> (\<T> s') \<and> \<nabla> s' \<and> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s' \<and> \<diamond> s'" and
 
 \<comment> \<open>The bounds remain unchanged.\<close>
 
@@ -1682,6 +1682,12 @@ lemma check_tableau_index_valid: assumes "\<not> \<U> s" " \<Turnstile>\<^sub>n\
 lemma check_tableau_normalized: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> \<triangle> (\<T> (check s))"
   using check_tableau
   by (simp add: Let_def)
+
+lemma check_bounds_consistent: assumes "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<diamond> s" "\<triangle> (\<T> s)" "\<nabla> s"
+  shows "\<diamond> (check s)"
+  using check_bounds_id[OF assms] assms(3) 
+  unfolding Let_def bounds_consistent_def boundsl_def boundsu_def 
+  by (metis Pair_inject)
 
 lemma check_tableau_valuated: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> \<nabla> (check s)"
   using check_tableau
@@ -6064,6 +6070,13 @@ proof (transfer, simp, goal_cases)
   show ?case unfolding l r r_def ..
 qed
 
+lemma bounds_consistent_set_unsat[simp]: "\<diamond> (set_unsat I s) = \<diamond> s" 
+  unfolding bounds_consistent_def boundsl_def boundsu_def set_unsat_simps by simp
+
+lemma curr_val_satisfies_no_lhs_set_unsat[simp]: "(\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s (set_unsat I s)) = (\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s)" 
+  unfolding curr_val_satisfies_no_lhs_def boundsl_def boundsu_def set_unsat_simps by auto
+  
+
 context PivotUpdateMinVars
 begin
 context
@@ -6435,6 +6448,12 @@ next
   have "\<triangle> (\<T> (check s))"
     by (rule check_induct', simp_all add: * pivotandupdate_tableau_normalized)
   moreover
+  have "\<diamond> (check s)"
+    by (rule check_induct', simp_all add: * pivotandupdate_tableau_normalized pivotandupdate_bounds_consistent)
+  moreover 
+  have "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s (check s)" 
+    by (rule check_induct'', simp_all add: *) 
+  moreover
   have "\<nabla> (check s)"
   proof (rule check_induct', simp_all add: * pivotandupdate_tableau_valuated)
     fix s I
@@ -6442,7 +6461,7 @@ next
       by (simp add: tableau_valuated_def)
   qed
   ultimately
-  show "let s' = check s in v \<Turnstile>\<^sub>t \<T> s = v \<Turnstile>\<^sub>t \<T> s' \<and> \<triangle> (\<T> s') \<and> \<nabla> s'"
+  show "let s' = check s in v \<Turnstile>\<^sub>t \<T> s = v \<Turnstile>\<^sub>t \<T> s' \<and> \<triangle> (\<T> s') \<and> \<nabla> s' \<and> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s' \<and> \<diamond> s'"
     by (simp add: Let_def)
 next
   fix s :: "('i,'a) state"
