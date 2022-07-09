@@ -1016,7 +1016,7 @@ proof -
     have "odd M" "M>0" "N<M" by (auto simp: M_def)
     have "coprime M (Suc N)"
       unfolding M_def
-      by (metis add.commute coprime_Suc_right_nat coprime_mult_right_iff mult_2 nat_arith.suc1)
+      by (metis add_2_eq_Suc coprime_Suc_right_nat coprime_mult_right_iff mult_Suc_right)
     then have cop: "coprime M (1 + int N)"
       by (metis coprime_int_iff of_nat_Suc)
     have A_sub_M: "int ` A \<subseteq> {..<M}"
