@@ -1,0 +1,47 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{pgfplots}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{P\'{o}lya's Proof of the Weighted Arithmetic--Geometric Mean Inequality}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This article provides a formalisation of the Weighted Arithmetic--Geometric Mean Inequality: given non-negative reals $a_1, \ldots, a_n$ and non-negative weights $w_1, \ldots, w_n$ such that $w_1 + \ldots + w_n = 1$, we have
+\[\prod\limits_{i=1}^n a_i^{w_i} \leq \sum\limits_{i=1}^n w_i a_i\ .\]
+If the weights are additionally all non-zero, equality holds if and only if $a_1 = \ldots = a_n$.
+
+As a corollary with $w_1 = \ldots = w_n = \frac{1}{n}$, the regular arithmetic--geometric mean inequality follows, namely that
+\[\sqrt[n]{a_1\ldots a_n} \leq \frac{1}{n}(a_1 + \ldots + a_n)\ .\]
+
+I follow P\'{o}lya's elegant proof, which uses the inequality $1 + x \leq e^x$ as a starting point. P\'{o}lya claims that this proof came to him in a dream, and that it was `the best mathematics he had ever
+dreamt.'' \cite[pp.\ 22--26]{steele04}
+\end{abstract}
+
+\tableofcontents
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{steele04}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

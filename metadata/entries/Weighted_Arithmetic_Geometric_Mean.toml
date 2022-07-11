@@ -1,0 +1,35 @@
+title = "Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality"
+date = 2022-07-11
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This article provides a formalisation of the Weighted
+Arithmetic–Geometric Mean Inequality: given non-negative reals $a_1,
+\\ldots, a_n$ and non-negative weights $w_1, \\ldots, w_n$ such that
+$w_1 + \\ldots + w_n = 1$, we have \\[\\prod\\limits_{i=1}^n a_i^{w_i}
+\\leq \\sum\\limits_{i=1}^n w_i a_i\\ .\\] If the weights are additionally
+all non-zero, equality holds if and only if $a_1 = \\ldots =
+a_n$.</p> <p>As a corollary with $w_1 = \\ldots = w_n =
+1/n$, the regular arithmetic–geometric mean inequality follows, namely
+that \\[\\sqrt[n]{a_1\\,\\cdots\\, a_n} \\leq \\tfrac{1}{n}(a_1 + \\ldots +
+a_n)\\ .\\]</p> <p>I follow Pólya's elegant proof,
+which uses the inequality $1 + x \\leq e^x$ as a starting point. Pólya
+claims that this proof came to him in a dream, and that it was “the
+best mathematics he had ever dreamt.”</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+homepage = "eberl_homepage"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
