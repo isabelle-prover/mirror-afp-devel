@@ -3,13 +3,19 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-06-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-07-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/IMP_Compiler_Reuse.html</loc>
+    <lastmod>2022-07-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-06-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-07-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2022-06-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-07-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/noce/</loc>
+    <lastmod>2022-07-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/nipkow/</loc>
     <lastmod>2022-06-23T00:00:00+00:00</lastmod>
@@ -636,9 +642,6 @@
     <lastmod>2021-09-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Logging_Independent_Anonymity.html</loc>
-    <lastmod>2021-08-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/noce/</loc>
     <lastmod>2021-08-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/budan_fourier/</loc>
@@ -4865,6 +4868,8 @@
     <loc>/theories/imp2_binary_heap/</loc>
   </url><url>
     <loc>/theories/imp_compiler/</loc>
+  </url><url>
+    <loc>/theories/imp_compiler_reuse/</loc>
   </url><url>
     <loc>/theories/imperative_insertion_sort/</loc>
   </url><url>

@@ -6,7 +6,16 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 23 Jun 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 10 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Reuse-Based Multi-Stage Compiler Verification for Language IMP</title>
+      <link>/entries/IMP_Compiler_Reuse.html</link>
+      <pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMP_Compiler_Reuse.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Real-Time Double-Ended Queue</title>
       <link>/entries/Real_Time_Deque.html</link>
@@ -8934,6 +8943,15 @@ From Isabelle2021-1 on, the recommended method for making the whole AFP availabl
     </item>
     
     <item>
+      <title>IMP_Compiler_Reuse</title>
+      <link>/theories/imp_compiler_reuse/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/imp_compiler_reuse/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Imperative_Insertion_Sort</title>
       <link>/theories/imperative_insertion_sort/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11882,7 +11900,7 @@ From Isabelle2021-1 on, the recommended method for making the whole AFP availabl
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>688 Entries   424 Authors   ~212,400 Lemmas   ~3,434,100 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>689 Entries   424 Authors   ~212,400 Lemmas   ~3,435,600 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>
