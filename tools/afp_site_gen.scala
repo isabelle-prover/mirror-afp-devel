@@ -30,7 +30,7 @@ object AFP_Site_Gen {
       authors.map(author => author.id -> isabelle.JSON.Object(
         "name" -> author.name,
         "emails" -> author.emails.map(from_email),
-        "homepages" -> author.homepages.map(_.url))).toMap
+        "homepages" -> author.homepages.map(_.url.toString))).toMap
     }
 
     def from_topics(topics: List[Topic]): T =
@@ -43,7 +43,7 @@ object AFP_Site_Gen {
         val email = author_affiliations.collectFirst { case email: Email => email }
 
         isabelle.JSON.Object(
-          homepage.map(homepage => List("homepage" -> homepage.url)).getOrElse(Nil) :::
+          homepage.map(homepage => List("homepage" -> homepage.url.toString)).getOrElse(Nil) :::
             email.map(email => List("email" -> from_email(email))).getOrElse(Nil): _*)
       }).toMap
     }
@@ -207,7 +207,7 @@ object AFP_Site_Gen {
     val full_authors = afp_structure.load_authors
     val authors_by_id = Utils.grouped_sorted(full_authors, (a: Metadata.Author) => a.id)
 
-    var seen_affiliations = Set.empty[Affiliation]
+    var seen_affiliations: List[Affiliation] = Nil
 
     val entries = afp_structure.entries.flatMap { name =>
       val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
@@ -215,12 +215,12 @@ object AFP_Site_Gen {
 
       if (entry.sitegen_ignore) None
       else {
-        seen_affiliations ++= entry.authors ++ entry.contributors
+        seen_affiliations = seen_affiliations :++ entry.authors ++ entry.contributors
         Some(entry)
       }
     }
 
-    val authors = Utils.group_sorted(seen_affiliations.toList, (a: Affiliation) => a.author).map {
+    val authors = Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
       case (id, affiliations) =>
         val emails = affiliations.collect { case e: Email => e }
         val homepages = affiliations.collect { case h: Homepage => h }
@@ -240,7 +240,7 @@ object AFP_Site_Gen {
 
       entry.name -> scored_keywords.map(_._1)
     }.toMap
-    
+
     seen_keywords = seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
     layout.write_static(Path.make(List("data", "keywords.json")), JSON.from_keywords(seen_keywords.toList))
 
@@ -283,8 +283,6 @@ object AFP_Site_Gen {
 
       layout.write_content(Path.make(List("entries", entry.name + ".md")), entry_json)
     }
-
-    /* add authors */
 
 
     /* add statistics */

@@ -10,6 +10,7 @@ import isabelle._
 import afp.TOML._
 
 import java.time.LocalDate
+import java.net.URL
 
 
 object Metadata
@@ -36,7 +37,7 @@ object Metadata
       Email(author, id, user + "@" + host)
   }
 
-  case class Homepage(override val author: Author.ID, id: Homepage.ID, url: String)
+  case class Homepage(override val author: Author.ID, id: Homepage.ID, url: URL)
     extends Affiliation(author)
 
   object Homepage {
@@ -126,14 +127,14 @@ object Metadata
       T(
         "name" -> author.name,
         "emails" -> T(author.emails.map(email => email.id -> from_email(email))),
-        "homepages" -> T(author.homepages.map(homepage => homepage.id -> homepage.url)))
+        "homepages" -> T(author.homepages.map(homepage => homepage.id -> homepage.url.toString)))
 
     def to_author(author_id: Author.ID, author: T): Author = {
       val emails = split_as[T](get_as[T](author, "emails")) map {
         case (id, email) => to_email(author_id, id, email)
       }
       val homepages = split_as[String](get_as[T](author, "homepages")) map {
-        case (id, url) => Homepage(author = author_id, id = id, url = url)
+        case (id, url) => Homepage(author = author_id, id = id, url = new URL(url))
       }
       Author(
         id = author_id,
