@@ -1,0 +1,74 @@
+\documentclass[11pt,a4paper,fleqn]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{A Reuse-Based Multi-Stage Compiler Verification\\for Language IMP}
+\author{Pasquale Noce\\Senior Staff Engineer at HID Global, Italy\\pasquale dot noce dot lavoro at gmail dot com\\pasquale dot noce at hidglobal dot com}
+\maketitle
+
+\begin{abstract}
+After introducing the didactic imperative programming language IMP, Nipkow and Klein's book on
+formal programming language semantics (version of March 2021) specifies compilation of IMP commands
+into a lower-level language based on a stack machine, and expounds a formal verification of that
+compiler. Exercise 8.4 asks the reader to adjust such proof for a new compilation target, consisting
+of a machine language that (i) accesses memory locations through their addresses instead of variable
+names, and (ii) maintains a stack in memory via a stack pointer rather than relying upon a built-in
+stack. A natural strategy to maximize reuse of the original proof is keeping the original language
+as an assembly one and splitting compilation into multiple steps, namely a source-to-assembly step
+matching the original compilation process followed by an assembly-to-machine step. In this way,
+proving assembly code-machine code equivalence is the only extant task.
+
+A previous paper by the present author introduces a reasoning toolbox that allows for a compiler
+correctness proof shorter than the book's one, as such promising to constitute a further enhanced
+reference for the formal verification of real-world compilers. This paper in turn shows that such
+toolbox can be reused to accomplish the aforesaid task as well, which demonstrates that the proposed
+approach also promotes proof reuse in multi-stage compiler verifications.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

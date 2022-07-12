@@ -7,6 +7,8 @@ import afp._
 import afp.Metadata._
 import afp.TOML._
 
+import java.net.URL
+
 
 object AFP_Obfuscate_Emails {
 
@@ -18,7 +20,7 @@ object AFP_Obfuscate_Emails {
         case (id, address) => Email(author = author_id, id = id, address = address)
       }
       val homepages = split_as[String](get_as[T](author, "homepages")) map {
-        case (id, url) => Homepage(author = author_id, id = id, url = url)
+        case (id, url) => Homepage(author = author_id, id = id, url = new URL(url))
       }
       Author(
         id = author_id,

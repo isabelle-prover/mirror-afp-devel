@@ -15,17 +15,17 @@ class AFP_Structure private(val base_dir: Path) {
 
   val thys_dir = base_dir + Path.basic("thys")
 
-  private val authors_file = metadata_dir + Path.basic("authors.toml")
+  val authors_file = metadata_dir + Path.basic("authors.toml")
 
-  private val releases_file = metadata_dir + Path.basic("releases.toml")
+  val releases_file = metadata_dir + Path.basic("releases.toml")
   
-  private val licenses_file = metadata_dir + Path.basic("licenses.toml")
+  val licenses_file = metadata_dir + Path.basic("licenses.toml")
 
-  private val topics_file = metadata_dir + Path.basic("topics.toml")
+  val topics_file = metadata_dir + Path.basic("topics.toml")
 
-  private val entries_dir = metadata_dir + Path.basic("entries")
+  val entries_dir = metadata_dir + Path.basic("entries")
 
-  private def entry_file(name: Metadata.Entry.Name): Path = entries_dir + Path.basic(name + ".toml")
+  def entry_file(name: Metadata.Entry.Name): Path = entries_dir + Path.basic(name + ".toml")
 
 
   /* load */
@@ -54,7 +54,7 @@ class AFP_Structure private(val base_dir: Path) {
   ): Metadata.Entry = {
     val entry_releases = releases.getOrElse(name, Nil)
     load(entry_file(name), toml =>
-      Metadata.TOML.to_entry(toml ++ TOML.T("name" -> name), authors, topics, licenses, entry_releases))
+      Metadata.TOML.to_entry(name, toml, authors, topics, licenses, entry_releases))
   }
 
   def load(): List[Metadata.Entry] = {

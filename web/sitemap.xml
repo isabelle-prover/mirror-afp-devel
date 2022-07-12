@@ -3,13 +3,25 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-06-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-07-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-06-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/eberl/</loc>
+    <lastmod>2022-07-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2022-06-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Weighted_Arithmetic_Geometric_Mean.html</loc>
+    <lastmod>2022-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/IMP_Compiler_Reuse.html</loc>
+    <lastmod>2022-07-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/noce/</loc>
+    <lastmod>2022-07-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/nipkow/</loc>
     <lastmod>2022-06-23T00:00:00+00:00</lastmod>
@@ -154,9 +166,6 @@
   </url><url>
     <loc>/dependencies/weighted_path_order/</loc>
     <lastmod>2022-04-20T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/eberl/</loc>
-    <lastmod>2022-04-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Sophomores_Dream.html</loc>
     <lastmod>2022-04-10T00:00:00+00:00</lastmod>
@@ -636,9 +645,6 @@
     <lastmod>2021-09-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Logging_Independent_Anonymity.html</loc>
-    <lastmod>2021-08-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/noce/</loc>
     <lastmod>2021-08-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/budan_fourier/</loc>
@@ -4866,6 +4872,8 @@
   </url><url>
     <loc>/theories/imp_compiler/</loc>
   </url><url>
+    <loc>/theories/imp_compiler_reuse/</loc>
+  </url><url>
     <loc>/theories/imperative_insertion_sort/</loc>
   </url><url>
     <loc>/theories/impossible_geometry/</loc>
@@ -5728,6 +5736,8 @@
     <loc>/theories/webassembly/</loc>
   </url><url>
     <loc>/theories/weight_balanced_trees/</loc>
+  </url><url>
+    <loc>/theories/weighted_arithmetic_geometric_mean/</loc>
   </url><url>
     <loc>/theories/weighted_path_order/</loc>
   </url><url>

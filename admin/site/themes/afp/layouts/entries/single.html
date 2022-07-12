@@ -22,6 +22,20 @@
     {{- printf "%s License" .Params.license -}}
   {{- end -}}
 
+  {{- with .Params.note -}}
+  <p><em>{{ . }}</em></p>
+  {{- end -}}
+
+  {{- with.Params.history -}}
+  <h3>Change history</h3>
+  {{- range . -}}
+    <p>
+    <h4>{{ dateFormat "January 2, 2006" .date }}</h4>
+    {{ safeHTML .value }}
+    </p>
+  {{- end -}}
+  {{- end -}}
+
   {{- with .Params.extra -}}
   {{- range $key, $value := . -}}
   <h3>{{- humanize $key -}}</h3>
@@ -154,18 +168,16 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
-    {{ with .Params.olderReleases -}}
+    <a href="{{ $site.Site.Params.afpUrls.releases }}//afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
+    {{ with .Params.releases -}}
     <p>Older releases:</p>
     <ul>
-      {{- range $map := . -}}
-      {{- range $key, $value := $map -}}
-      <li>Isabelle {{- $key -}}:
-        <a href="https://isa-afp.org/release/afp-{{- $entry_name -}}-{{- $value -}}.tar.gz">
-          afp-{{- $entry_name -}}-{{- $value -}}.tar.gz
-        </a>
+      {{- range . -}}
+      <li>
+        <a href="{{ $site.Site.Params.afpUrls.releases }}/afp-{{- $entry_name -}}-{{- .date -}}.tar.gz">
+          {{- dateFormat "Jan 2, 2006" .date -}}
+        </a>: Isabelle{{ .isabelle }}
       </li>
-      {{- end -}}
       {{- end -}}
     </ul>
     {{- end }}

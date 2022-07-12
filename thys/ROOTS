@@ -289,6 +289,7 @@ IMO2019
 IMP2
 IMP2_Binary_Heap
 IMP_Compiler
+IMP_Compiler_Reuse
 IP_Addresses
 Imperative_Insertion_Sort
 Impossible_Geometry
@@ -674,6 +675,7 @@ WHATandWHERE_Security
 WOOT_Strong_Eventual_Consistency
 WebAssembly
 Weight_Balanced_Trees
+Weighted_Arithmetic_Geometric_Mean
 Weighted_Path_Order
 Well_Quasi_Orders
 Wetzels_Problem

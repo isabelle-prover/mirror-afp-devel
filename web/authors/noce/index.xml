@@ -6,7 +6,16 @@
     <description>Recent content in noce on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 26 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/noce/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 10 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/noce/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Reuse-Based Multi-Stage Compiler Verification for Language IMP</title>
+      <link>/entries/IMP_Compiler_Reuse.html</link>
+      <pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMP_Compiler_Reuse.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Logging-independent Message Anonymity in the Relational Method</title>
       <link>/entries/Logging_Independent_Anonymity.html</link>
