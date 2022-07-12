@@ -265,10 +265,16 @@ object Metadata
         (if (entry.sitegen_ignore) T("sitegen_ignore" -> true) else T())
     }
 
-    def to_entry(entry: T, authors: Map[Author.ID, Author], topics: Map[Topic.ID, Topic],
-      licenses: Map[License.ID, License], releases: List[Release]): Entry =
+    def to_entry(
+      name: Entry.Name,
+      entry: T,
+      authors: Map[Author.ID, Author],
+      topics: Map[Topic.ID, Topic],
+      licenses: Map[License.ID, License],
+      releases: List[Release]
+    ): Entry =
       Entry(
-        name = get_as[String](entry, "name"),
+        name = name,
         title = get_as[String](entry, "title"),
         authors = to_affiliations(get_as[T](entry, "authors"), authors),
         date = get_as[Date](entry, "date"),
