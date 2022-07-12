@@ -37,3 +37,5 @@ add support for going from partial functions to mappings (revision 7a6fc957e8ed)
 2018-03-05 = "add two application examples: depth-first search and 2SAT (revision e5e1a1da2411)"
 
 [extra]
+
+[related]

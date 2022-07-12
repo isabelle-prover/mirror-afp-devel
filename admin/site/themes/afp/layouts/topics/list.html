@@ -1,0 +1,36 @@
+{{ define "main" }}
+{{- $site := . -}}
+{{- $topic := .Site.Data.topics -}}
+
+{{- range (split .Title "/") -}}
+{{- with $topic.topics -}}
+{{- $topic = $topic.topics}}
+{{- end -}}
+{{- $topic = index $topic . -}}
+{{- end -}}
+
+{{- with $topic.classification -}}
+<h2>Subject Classification</h2>
+{{- range . -}}
+<h3>{{ .type }}</h3>
+<a href="{{ .url }}">{{ .desc }}</a>
+{{- end -}}
+{{- end -}}
+
+{{- range (.Data.Pages).GroupByDate "2006" -}}
+{{- if ne .Key "0001" -}}
+<h2 class="head">{{- .Key -}}</h2>
+{{- range .Pages -}}
+<article class="entry">
+  <div class="item-text">
+    <h5><a class="title" href="{{ .RelPermalink }}">{{- htmlUnescape .Title -}}</a></h5> <br>
+    {{- with .Params.authors -}}by {{ partial "authors.html" (dict "site" $site "authors" .) -}}{{- end -}}
+  </div>
+  <span class="date">
+    {{ .Date.Format "Jan 02" }}
+  </span>
+</article>
+{{ end }}
+{{ end }}
+{{ end }}
+{{ end }}

@@ -31,3 +31,5 @@ klein = "klein_email"
 
 [extra]
 extra-no-index = "no-index: true"
+
+[related]

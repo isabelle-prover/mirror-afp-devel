@@ -55,6 +55,26 @@
   </ul>
   {{- end -}}
 
+  {{- with .Params.related -}}
+  <h3>Related References</h3>
+  <ul>
+  {{- range . -}}
+    <li>
+      {{- if isSet . "url" -}}
+        <a href="{{ .url }}">
+          {{- if isSet . "text" -}}
+            {{ .text }}
+          {{- else -}}
+            {{ .url }}
+          {{- end -}}
+        </a>
+      {{- else -}}
+        {{ safeHTML .text }}
+      {{- end -}}
+    </li>
+  {{- end -}}
+  </ul>
+  {{- end -}}
 
   {{- range .Params.sessions -}}
   {{ $session := .session }}
