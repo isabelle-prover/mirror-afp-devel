@@ -1060,7 +1060,7 @@ proof -
       proof
         assume "diff y x = int a"
         with that \<open>a<M\<close> have "int y = int (x+a) mod int M"
-          unfolding diff_def by (smt (verit, ccfv_SIG) eq_mod_M mod_less of_nat_add zmod_int)
+          by (smt (verit) diff_def eq_mod_M mod_less of_nat_add zmod_int)
         with that show "y = (x + a) mod M"
           by (metis nat_int zmod_int)
       qed (simp add: \<open>a < M\<close> diff_def mod_diff_left_eq zmod_int)
@@ -1199,7 +1199,6 @@ proof -
     qed
 
     text\<open>Every edge of the graph G lies in exactly one triangle.\<close>
-
     have "unique_triangles G"
       unfolding unique_triangles_def
     proof (intro strip)
@@ -1388,36 +1387,9 @@ proof -
       using L \<open>L < card (uverts G)\<close> \<open>unique_triangles G\<close> \<open>uwellformed G\<close> by blast
 
     have diff_cancel: "\<exists>j<M. diff j i = int a" if "a \<in> A" for i a
-    proof -
-      have "int a < int M"
-        using A M_def that by auto
-      then have "(int ((i + a) mod M) - int i) mod int M = int a"
-        by (simp add: mod_diff_left_eq of_nat_mod)
-      then show ?thesis
-        using \<open>0 < M\<close> diff_def mod_less_divisor by blast
-    qed
-    have diff2_cancel: "\<exists>j<M. diff2 j i = int a" if "a \<in> A" "i<M" for i a
-    proof -
-      have "a<M"
-        using that M_def A by auto
-      have "(int ((i + 2*a) mod M) - int i) * (1 + int N) mod int M =
-        (((int i + 2 * int a) mod M) - int i) * (1 + int N) mod int M"
-        by (simp add: zmod_int)
-      also have "\<dots> = 2 * int a * (1 + int N) mod int M"
-        by (smt (verit) mod_diff_left_eq mod_mult_eq mod_mult_right_eq)
-      also have "\<dots> = int a mod int M"
-      proof -
-        have "(2 * int a * (1 + int N) - int a) = M * a"
-          by (simp add: M_def algebra_simps)
-        then have "M dvd (2 * int a * (1 + int N) - int a)"
-          by simp
-        then show ?thesis
-          using mod_eq_dvd_iff by blast
-      qed
-      also have "\<dots> = a" by (simp add: \<open>a < M\<close>)
-      finally show ?thesis
-        by (metis \<open>0 < M\<close> diff2_def mod_less_divisor of_nat_Suc) 
-    qed
+      using M_mod_bound diff_invert that by blast
+    have diff2_cancel: "\<exists>j<M. diff2 j i = int a" if "a \<in> A" for i a
+      using M_mod_bound diff2_invert that by blast
 
     have card_Edges: "card (Edges (part_of \<xi>) (part_of \<zeta>) df) = M * card A" (is "card ?E = _")
       if "\<xi> \<noteq> \<zeta>" and df_cancel: "\<forall>a\<in>A. \<forall>i<M. \<exists>j<M. df j i = int a" 
@@ -1457,10 +1429,8 @@ proof -
         moreover have "from_part y = from_part y'"
           using df df' \<open>x = x'\<close> \<open>a' = a\<close> df_inj u'(3) u(3) 
           by (clarsimp simp add: inj_on_def) (metis part_of_M lessThan_iff)
-        then have "y = y'"
-          using part_of_def u'(3) u(3) by fastforce
         ultimately show "u = u'"
-          using u'(1) u(1) by force
+          using u u' by (metis enc_iff from_part_def prod.collapse prod_decode_inverse)
       next
         have "f \<xi> (part_of \<zeta>) df ` ?E \<subseteq> {..<M} \<times> A"
         proof (clarsimp simp: Edges_def)
@@ -1499,10 +1469,10 @@ proof -
       by (simp_all add: XY_def YZ_def card_Edges diff_cancel inj_on_diff)
     have [simp]: "card XZ = M * card A"
       by (simp_all add: XZ_def card_Edges diff2_cancel inj_on_diff2)
-    have card_edges: "card (uedges G) = 3 * M * card A"
+    have "card (uedges G) = 3 * M * card A"
       by (simp add: G_def card_Un_disjnt)
-    have "card A \<le> \<epsilon> * (real M / 4)"
-      using * \<open>0 < M\<close> by (simp add: cardG card_edges power2_eq_square)
+    then have "card A \<le> \<epsilon> * (real M / 4)"
+      using * \<open>0 < M\<close> by (simp add: cardG power2_eq_square)
     also have "\<dots> < \<epsilon> * N"
       using \<open>N>0\<close> by (simp add: M_def assms)
     finally show "card A < \<epsilon> * N" .
