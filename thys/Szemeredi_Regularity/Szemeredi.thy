@@ -247,7 +247,7 @@ definition energy_graph_subsets:: "[uvert set, uvert set, ugraph] \<Rightarrow> 
 
 text \<open>Definition for partitions\<close>
 definition energy_graph_partitions :: "[ugraph, uvert set set, uvert set set] \<Rightarrow> real"
-  where "energy_graph_partitions G U W \<equiv> \<Sum>R\<in>U.\<Sum>S\<in>W. energy_graph_subsets R S G"
+  where "energy_graph_partitions G P Q \<equiv> \<Sum>R\<in>P.\<Sum>S\<in>Q. energy_graph_subsets R S G"
 
 lemma energy_graph_subsets_0 [simp]: 
      "energy_graph_subsets {} B G = 0" "energy_graph_subsets A {} G = 0"
@@ -273,7 +273,7 @@ text\<open>Definition 3.7 (Energy of a Partition), or following Gowers, mean squ
  a version of energy for a single partition of the vertex set. \<close> 
 
 abbreviation mean_square_density :: "[ugraph, uvert set set] \<Rightarrow> real"
-  where "mean_square_density G U \<equiv> energy_graph_partitions G U U"
+  where "mean_square_density G P \<equiv> energy_graph_partitions G P P"
 
 lemma mean_square_density: 
   "mean_square_density G U \<equiv> 
@@ -409,65 +409,65 @@ Further partitioning of subsets of the vertex set cannot make the energy decreas
 Note that @{term V} should be @{term "uverts G"} even though this more general version holds.\<close>
 
 lemma energy_graph_partitions_increase_half:
-  assumes ref: "refines V Y X" and "finite V" and part_VX: "partition_on V X"
+  assumes ref: "refines V Q P" and "finite V" and part_VP: "partition_on V P"
     and U: "{} \<notin> U"
-  shows "energy_graph_partitions G Y U \<ge> energy_graph_partitions G X U" 
-        (is "?Y \<ge> ?X")
+  shows "energy_graph_partitions G Q U \<ge> energy_graph_partitions G P U" 
+        (is "?egQ \<ge> ?egP")
 proof -
-  have "\<exists>F. partition_on R F \<and> F = {S\<in>Y. S \<subseteq> R}" if "R\<in>X" for R
+  have "\<exists>F. partition_on R F \<and> F = {S\<in>Q. S \<subseteq> R}" if "R\<in>P" for R
     using ref refines_obtains_subset that by blast
-  then obtain F where F: "\<And>R. R \<in> X \<Longrightarrow> partition_on R (F R) \<and> F R = {S\<in>Y. S \<subseteq> R}"
+  then obtain F where F: "\<And>R. R \<in> P \<Longrightarrow> partition_on R (F R) \<and> F R = {S\<in>Q. S \<subseteq> R}"
     by fastforce
-  have injF: "inj_on F X"
+  have injF: "inj_on F P"
     by (metis F inj_on_inverseI partition_on_def)
-  have finite_X: "finite R" if "R \<in> X" for R
-    by (metis Union_upper \<open>finite V\<close> part_VX finite_subset partition_on_def that)
-  then have finite_F: "finite (F R)" if "R \<in> X" for R
+  have finite_P: "finite R" if "R \<in> P" for R
+    by (metis Union_upper \<open>finite V\<close> part_VP finite_subset partition_on_def that)
+  then have finite_F: "finite (F R)" if "R \<in> P" for R
     using that by (simp add: F)
-  have dFX: "disjoint (F ` X)"
-    using part_VX 
+  have dFP: "disjoint (F ` P)"
+    using part_VP 
     by (smt (verit, best) F Union_upper disjnt_iff disjointD le_inf_iff pairwise_imageI partition_on_def subset_empty)
-  have F_ne: "F R \<noteq> {}" if "R \<in> X" for R
-    by (metis F Sup_empty part_VX partition_on_def that)
-  have F_sums_Y: "(\<Sum>R\<in>X. \<Sum>U\<in>F R. f U) = (\<Sum>S\<in>Y. f S)" for f :: "nat set \<Rightarrow> real"
+  have F_ne: "F R \<noteq> {}" if "R \<in> P" for R
+    by (metis F Sup_empty part_VP partition_on_def that)
+  have F_sums_Q: "(\<Sum>R\<in>P. \<Sum>U\<in>F R. f U) = (\<Sum>S\<in>Q. f S)" for f :: "nat set \<Rightarrow> real"
   proof -
-    have Yn_eq: "Y = (\<Union>R \<in> X. F R)"
+    have "Q = (\<Union>R \<in> P. F R)"
       using ref by (force simp add: refines_def dest: F)
-    then have "(\<Sum>S\<in>Y. f S) = sum f (\<Union>R \<in> X. F R)"
+    then have "(\<Sum>S\<in>Q. f S) = sum f (\<Union>R \<in> P. F R)"
       by blast
-    also have "\<dots> = (sum \<circ> sum) f (F ` X)"
-      by (smt (verit, best) dFX disjnt_def finite_F image_iff pairwiseD sum.Union_disjoint)
-    also have "\<dots> = (\<Sum>R \<in> X. \<Sum>U\<in>F R. f U)"
+    also have "\<dots> = (sum \<circ> sum) f (F ` P)"
+      by (smt (verit, best) dFP disjnt_def finite_F image_iff pairwiseD sum.Union_disjoint)
+    also have "\<dots> = (\<Sum>R \<in> P. \<Sum>U\<in>F R. f U)"
       unfolding comp_apply by (metis injF sum.reindex_cong)
     finally show ?thesis
       by simp
   qed
-  have "?X = (\<Sum>R \<in> X. \<Sum>T\<in>U. energy_graph_subsets R T G)"
+  have "?egP = (\<Sum>R \<in> P. \<Sum>T\<in>U. energy_graph_subsets R T G)"
     by (simp add: energy_graph_partitions_def)
-  also have "\<dots> \<le> (\<Sum>R\<in>X. \<Sum>T\<in>U. energy_graph_partitions G (F R) {T})"
+  also have "\<dots> \<le> (\<Sum>R\<in>P. \<Sum>T\<in>U. energy_graph_partitions G (F R) {T})"
   proof -
     have "finite_graph_partition R (F R) (card (F R))"
-      if "R \<in> X" for R
+      if "R \<in> P" for R
       by (meson F finite_F finite_graph_partition_def that) 
     moreover have "finite_graph_partition T {T} (Suc 0)"
       if "T \<in> U" for T
       using U by (metis that trivial_graph_partition_exists)
     ultimately show ?thesis
-      using finite_X  by (intro sum_mono energy_graph_partition_increase) auto
+      using finite_P by (intro sum_mono energy_graph_partition_increase) auto
   qed
-  also have "\<dots> = (\<Sum>R \<in> X. \<Sum>D \<in> F R. \<Sum>T\<in>U. energy_graph_subsets D T G)"
+  also have "\<dots> = (\<Sum>R \<in> P. \<Sum>D \<in> F R. \<Sum>T\<in>U. energy_graph_subsets D T G)"
     by (simp add: energy_graph_partitions_def sum.swap [where B = "U"])
-  also have "\<dots> = ?Y"
-    by (simp add: energy_graph_partitions_def F_sums_Y)
+  also have "\<dots> = ?egQ"
+    by (simp add: energy_graph_partitions_def F_sums_Q)
   finally show ?thesis .
 qed
 
 proposition energy_graph_partitions_increase:
-  assumes "refines V Y X" "refines V' W U" 
+  assumes "refines V Q P" "refines V' Q' P'" 
     and "finite V" "finite V'" 
-  shows "energy_graph_partitions G Y W \<ge> energy_graph_partitions G X U"
+  shows "energy_graph_partitions G Q Q' \<ge> energy_graph_partitions G P P'"
 proof -
-  obtain "{} \<notin> U" "{} \<notin> Y"
+  obtain "{} \<notin> P'" "{} \<notin> Q"
     using assms unfolding refines_def partition_on_def by presburger
   then show ?thesis
     using assms unfolding refines_def
@@ -477,8 +477,8 @@ qed
 text \<open>The original version of Gowers's Lemma 11 (also in Zhao)
       is not general enough to be used for anything.\<close>
 corollary mean_square_density_increase:
-  assumes "refines V Y X" "finite V"
-  shows "mean_square_density G Y \<ge> mean_square_density G X"
+  assumes "refines V Q P" "finite V"
+  shows "mean_square_density G Q \<ge> mean_square_density G P"
   using assms energy_graph_partitions_increase by presburger 
 
 
