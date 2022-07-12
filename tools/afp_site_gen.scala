@@ -54,8 +54,10 @@ object AFP_Site_Gen {
       }).toMap
     }
 
-    def from_change_history(history: Map[Metadata.Date, String]): String =
-      history.map { case (date, value) => "[" + date + "] " + value } mkString("\n")
+    def from_change_history(entry: (Metadata.Date, String)): Object.T =
+      Object(
+        "date" -> entry._1.toString,
+        "value" -> entry._2)
 
     def from_release(release: Release): Object.T =
       Object(
@@ -74,7 +76,8 @@ object AFP_Site_Gen {
         opt("contributors", entry.contributors.map(_.author).distinct) ++
         opt("releases", entry.releases.sortBy(_.isabelle).reverse.map(from_release)) ++
         opt("note", entry.note) ++
-        opt("extra", opt("Change history", from_change_history(entry.change_history)) ++ entry.extra))
+        opt("history", entry.change_history.toList.sortBy(_._1).reverse.map(from_change_history)) ++
+        opt("extra", entry.extra))
 
     def from_keywords(keywords: List[String]): T =
       keywords.zipWithIndex.map { case (keyword, i) => Object(

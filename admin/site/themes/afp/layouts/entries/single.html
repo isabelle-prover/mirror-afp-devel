@@ -22,6 +22,20 @@
     {{- printf "%s License" .Params.license -}}
   {{- end -}}
 
+  {{- with .Params.note -}}
+  <p><em>{{ . }}</em></p>
+  {{- end -}}
+
+  {{- with.Params.history -}}
+  <h3>Change history</h3>
+  {{- range . -}}
+    <p>
+    <h4>{{ dateFormat "January 2, 2006" .date }}</h4>
+    {{ safeHTML .value }}
+    </p>
+  {{- end -}}
+  {{- end -}}
+
   {{- with .Params.extra -}}
   {{- range $key, $value := . -}}
   <h3>{{- humanize $key -}}</h3>
