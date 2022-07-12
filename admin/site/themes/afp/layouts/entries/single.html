@@ -154,17 +154,16 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
+    <a href="{{ $site.Site.Params.afpUrls.releases }}//afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
     {{ with .Params.releases -}}
     <p>Older releases:</p>
     <ul>
-      {{- range $key, $value := . -}}
-      <li>Isabelle {{- $key -}}:
-        <a href="https://isa-afp.org/release/afp-{{- $entry_name -}}-{{- $value -}}.tar.gz">
-          afp-{{- $entry_name -}}-{{- $value -}}.tar.gz
-        </a>
+      {{- range . -}}
+      <li>
+        <a href="{{ $site.Site.Params.afpUrls.releases }}/afp-{{- $entry_name -}}-{{- .date -}}.tar.gz">
+          {{- dateFormat "Jan 2, 2006" .date -}}
+        </a>: Isabelle{{ .isabelle }}
       </li>
-      {{- end -}}
       {{- end -}}
     </ul>
     {{- end }}

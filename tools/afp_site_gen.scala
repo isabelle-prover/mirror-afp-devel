@@ -58,6 +58,11 @@ object AFP_Site_Gen {
       }
     }
 
+    def from_release(release: Release): JSON.Object.T =
+      isabelle.JSON.Object(
+        "date" -> release.date.toString,
+        "isabelle" -> release.isabelle)
+
     def from_entry(entry: Entry): JSON.Object.T =
       isabelle.JSON.Object(
         "title" -> entry.title ::
@@ -70,7 +75,7 @@ object AFP_Site_Gen {
           "abstract" -> entry.`abstract` ::
           "license" -> entry.license.name ::
           (if (entry.releases.nonEmpty)
-            "releases" -> entry.releases.map(r => r.isabelle -> r.date.toString).toMap :: Nil
+            "releases" -> entry.releases.sortBy(_.isabelle).reverse.map(from_release) :: Nil
           else Nil) :::
           (if (entry.note.nonEmpty) "note" -> entry.note :: Nil else Nil) :::
           (if (entry.change_history.nonEmpty || entry.extra.nonEmpty)

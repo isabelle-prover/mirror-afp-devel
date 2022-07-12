@@ -17,6 +17,7 @@
         "title": "Archive of Formal Proofs",
         "mainSections": ["entries"],
         "afpUrls": {
+          "releases": "https://www.isa-afp.org/release",
           "html": "https://www.isa-afp.org/browser_info/current/AFP",
           "htmlDevel": "https://devel.isa-afp.org/browser_info/current/AFP"
         }
