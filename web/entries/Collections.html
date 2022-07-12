@@ -97,24 +97,31 @@
   </div>
 </header><div><main><h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.</div>BSD License<h3>Change history</h3>
+  <div class="abstract mathjax_process">This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.</div>BSD License<h3>Change history</h3><p>
+    <h4>April 25, 2012</h4>
+    New iterator foundation by Tuerk. Various maintenance changes.<br>
 
-  <p>[2010-10-08] New Interfaces: OrderedSet, OrderedMap, List.
+    </p><p>
+    <h4>October 10, 2011</h4>
+    SetSpec: Added operations: sng, isSng, bexists, size_abort, diff, filter, iterate_rule_insertP
+MapSpec: Added operations: sng, isSng, iterate_rule_insertP, bexists, size, size_abort, restrict,
+map_image_filter, map_value_image_filter
+Some maintenance changes<br>
+
+    </p><p>
+    <h4>December 1, 2010</h4>
+    New Interfaces: Priority Queues, Annotated Lists. Implemented by finger trees, (skew) binomial queues.<br>
+
+    </p><p>
+    <h4>October 8, 2010</h4>
+    New Interfaces: OrderedSet, OrderedMap, List.
 Fifo now implements list-interface: Function names changed: put/get --> enqueue/dequeue.
 New Implementations: ArrayList, ArrayHashMap, ArrayHashSet, TrieMap, TrieSet.
 Invariant-free datastructures: Invariant implicitely hidden in typedef.
 Record-interfaces: All operations of an interface encapsulated as record.
 Examples moved to examples subdirectory.<br>
 
-[2010-12-01] New Interfaces: Priority Queues, Annotated Lists. Implemented by finger trees, (skew) binomial queues.<br>
-
-[2011-10-10] SetSpec: Added operations: sng, isSng, bexists, size_abort, diff, filter, iterate_rule_insertP
-MapSpec: Added operations: sng, isSng, iterate_rule_insertP, bexists, size, size_abort, restrict,
-map_image_filter, map_value_image_filter
-Some maintenance changes<br>
-
-[2012-04-25] New iterator foundation by Tuerk. Various maintenance changes.<br>
-</p><h3>Topics</h3>
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
   <h3>Theories of Collections</h3>
   <ul>
