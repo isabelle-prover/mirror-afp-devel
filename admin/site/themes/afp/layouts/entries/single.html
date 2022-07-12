@@ -155,11 +155,10 @@
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
     <a href="https://isa-afp.org/release/afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
-    {{ with .Params.olderReleases -}}
+    {{ with .Params.releases -}}
     <p>Older releases:</p>
     <ul>
-      {{- range $map := . -}}
-      {{- range $key, $value := $map -}}
+      {{- range $key, $value := . -}}
       <li>Isabelle {{- $key -}}:
         <a href="https://isa-afp.org/release/afp-{{- $entry_name -}}-{{- $value -}}.tar.gz">
           afp-{{- $entry_name -}}-{{- $value -}}.tar.gz
