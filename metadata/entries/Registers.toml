@@ -3,7 +3,7 @@ date = 2021-10-28
 topics = [
   "Computer science/Algorithms/Quantum computing",
   "Computer science/Programming languages/Logics",
-  "Computer science/Semantics",
+  "Computer science/Semantics and reasoning",
 ]
 abstract = """
 A formalization of the theory of quantum and classical registers as

@@ -1,7 +1,7 @@
 title = "Minimal Static Single Assignment Form"
 date = 2017-01-17
 topics = [
-  "Computer science/Programming languages/Transformations",
+  "Computer science/Programming languages/Compiling",
 ]
 abstract = """
 <p>This formalization is an extension to <a

@@ -1,7 +1,6 @@
 title = "Monadification, Memoization and Dynamic Programming"
 date = 2018-05-22
 topics = [
-  "Computer science/Programming languages/Transformations",
   "Computer science/Algorithms",
   "Computer science/Functional programming",
 ]

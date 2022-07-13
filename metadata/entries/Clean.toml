@@ -2,7 +2,7 @@ title = "Clean - An Abstract Imperative Programming Language and its Theory"
 date = 2019-10-04
 topics = [
   "Computer science/Programming languages",
-  "Computer science/Semantics",
+  "Computer science/Semantics and reasoning",
 ]
 abstract = """
 Clean is based on a simple, abstract execution model for an imperative

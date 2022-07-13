@@ -1,7 +1,7 @@
 title = "Refinement for Monadic Programs"
 date = 2012-01-30
 topics = [
-  "Computer science/Programming languages/Logics",
+  "Computer science/Semantics and reasoning",
 ]
 abstract = """
 We provide a framework for program and data refinement in Isabelle/HOL.
