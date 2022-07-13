@@ -43,6 +43,24 @@
     </item>
     
     <item>
+      <title>Minimal Static Single Assignment Form</title>
+      <link>/entries/Minimal_SSA.html</link>
+      <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Minimal_SSA.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Construction of Static Single Assignment Form</title>
+      <link>/entries/Formal_SSA.html</link>
+      <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Formal_SSA.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>A Verified Compiler for Probability Density Functions</title>
       <link>/entries/Density_Compiler.html</link>
       <pubDate>Thu, 09 Oct 2014 00:00:00 +0000</pubDate>

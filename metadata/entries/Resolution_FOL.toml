@@ -56,3 +56,5 @@ schlichtkrull = "schlichtkrull_email"
 2018-03-20 = "added a concrete instance of the unification and completeness theorems using the First-Order Terms AFP-entry from IsaFoR as described in the papers "
 
 [extra]
+
+[related]

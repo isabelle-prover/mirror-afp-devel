@@ -4480,15 +4480,13 @@
   </url><url>
     <loc>/topics/computer-science/programming-languages/static-analysis/</loc>
   </url><url>
-    <loc>/topics/computer-science/programming-languages/transformations/</loc>
-  </url><url>
     <loc>/topics/computer-science/programming-languages/type-systems/</loc>
   </url><url>
     <loc>/topics/computer-science/security/</loc>
   </url><url>
     <loc>/topics/computer-science/security/cryptography/</loc>
   </url><url>
-    <loc>/topics/computer-science/semantics/</loc>
+    <loc>/topics/computer-science/semantics-and-reasoning/</loc>
   </url><url>
     <loc>/topics/computer-science/system-description-languages/</loc>
   </url><url>
@@ -5053,8 +5051,6 @@
     <loc>/topics/logic/general-logic/classical-propositional-logic/</loc>
   </url><url>
     <loc>/topics/logic/general-logic/decidability-of-theories/</loc>
-  </url><url>
-    <loc>/topics/logic/general-logic/lambda-calculus/</loc>
   </url><url>
     <loc>/topics/logic/general-logic/logics-of-knowledge-and-belief/</loc>
   </url><url>

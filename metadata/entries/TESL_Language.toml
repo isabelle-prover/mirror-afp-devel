@@ -2,7 +2,7 @@ title = "A Formal Development of a Polychronous Polytimed Coordination Language"
 date = 2019-07-30
 topics = [
   "Computer science/System description languages",
-  "Computer science/Semantics",
+  "Computer science/Semantics and reasoning",
   "Computer science/Concurrency",
 ]
 abstract = """
@@ -57,3 +57,5 @@ wolff = "wolff_email"
 [history]
 
 [extra]
+
+[related]

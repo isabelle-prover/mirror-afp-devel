@@ -646,10 +646,10 @@
   "shortname": "Quasi_Borel_Spaces",
   "title": "Quasi-Borel Spaces",
   "topic_links": [
-   "computer-science/semantics"
+   "computer-science/semantics-and-reasoning"
   ],
   "topics": [
-   "Computer science/Semantics"
+   "Computer science/Semantics and reasoning"
   ],
   "used_by": 0
  },
@@ -1144,12 +1144,12 @@
   "topic_links": [
    "computer-science/algorithms/quantum-computing",
    "computer-science/programming-languages/logics",
-   "computer-science/semantics"
+   "computer-science/semantics-and-reasoning"
   ],
   "topics": [
    "Computer science/Algorithms/Quantum computing",
    "Computer science/Programming languages/Logics",
-   "Computer science/Semantics"
+   "Computer science/Semantics and reasoning"
   ],
   "used_by": 0
  },
@@ -1193,11 +1193,11 @@
   "title": "X86 instruction semantics and basic block symbolic execution",
   "topic_links": [
    "computer-science/hardware",
-   "computer-science/semantics"
+   "computer-science/semantics-and-reasoning"
   ],
   "topics": [
    "Computer science/Hardware",
-   "Computer science/Semantics"
+   "Computer science/Semantics and reasoning"
   ],
   "used_by": 0
  },
@@ -2429,11 +2429,11 @@
   "title": "The HOL-CSP Refinement Toolkit",
   "topic_links": [
    "computer-science/concurrency/process-calculi",
-   "computer-science/semantics"
+   "computer-science/semantics-and-reasoning"
   ],
   "topics": [
    "Computer science/Concurrency/Process calculi",
-   "Computer science/Semantics"
+   "Computer science/Semantics and reasoning"
   ],
   "used_by": 0
  },
@@ -3823,12 +3823,12 @@
   "title": "Isabelle/C",
   "topic_links": [
    "computer-science/programming-languages/language-definitions",
-   "computer-science/semantics",
+   "computer-science/semantics-and-reasoning",
    "tools"
   ],
   "topics": [
    "Computer science/Programming languages/Language definitions",
-   "Computer science/Semantics",
+   "Computer science/Semantics and reasoning",
    "Tools"
   ],
   "used_by": 0
@@ -3906,11 +3906,11 @@
   "title": "Clean - An Abstract Imperative Programming Language and its Theory",
   "topic_links": [
    "computer-science/programming-languages",
-   "computer-science/semantics"
+   "computer-science/semantics-and-reasoning"
   ],
   "topics": [
    "Computer science/Programming languages",
-   "Computer science/Semantics"
+   "Computer science/Semantics and reasoning"
   ],
   "used_by": 0
  },
@@ -4127,12 +4127,12 @@
   "title": "A Formal Development of a Polychronous Polytimed Coordination Language",
   "topic_links": [
    "computer-science/system-description-languages",
-   "computer-science/semantics",
+   "computer-science/semantics-and-reasoning",
    "computer-science/concurrency"
   ],
   "topics": [
    "Computer science/System description languages",
-   "Computer science/Semantics",
+   "Computer science/Semantics and reasoning",
    "Computer science/Concurrency"
   ],
   "used_by": 0
@@ -4458,11 +4458,11 @@
   "title": "HOL-CSP Version 2.0",
   "topic_links": [
    "computer-science/concurrency/process-calculi",
-   "computer-science/semantics"
+   "computer-science/semantics-and-reasoning"
   ],
   "topics": [
    "Computer science/Concurrency/Process calculi",
-   "Computer science/Semantics"
+   "Computer science/Semantics and reasoning"
   ],
   "used_by": 1
  },
@@ -4552,11 +4552,11 @@
   "title": "Quantum Hoare Logic",
   "topic_links": [
    "computer-science/programming-languages/logics",
-   "computer-science/semantics"
+   "computer-science/semantics-and-reasoning"
   ],
   "topics": [
    "Computer science/Programming languages/Logics",
-   "Computer science/Semantics"
+   "Computer science/Semantics and reasoning"
   ],
   "used_by": 1
  },
@@ -4920,11 +4920,11 @@
   "title": "Transformer Semantics",
   "topic_links": [
    "mathematics/algebra",
-   "computer-science/semantics"
+   "computer-science/semantics-and-reasoning"
   ],
   "topics": [
    "Mathematics/Algebra",
-   "Computer science/Semantics"
+   "Computer science/Semantics and reasoning"
   ],
   "used_by": 1
  },
@@ -5586,12 +5586,10 @@
   "shortname": "Monad_Memo_DP",
   "title": "Monadification, Memoization and Dynamic Programming",
   "topic_links": [
-   "computer-science/programming-languages/transformations",
    "computer-science/algorithms",
    "computer-science/functional-programming"
   ],
   "topics": [
-   "Computer science/Programming languages/Transformations",
    "Computer science/Algorithms",
    "Computer science/Functional programming"
   ],
@@ -6497,12 +6495,10 @@
   "shortname": "LambdaMu",
   "title": "The LambdaMu-calculus",
   "topic_links": [
-   "computer-science/programming-languages/lambda-calculi",
-   "logic/general-logic/lambda-calculus"
+   "computer-science/programming-languages/lambda-calculi"
   ],
   "topics": [
-   "Computer science/Programming languages/Lambda calculi",
-   "Logic/General logic/Lambda calculus"
+   "Computer science/Programming languages/Lambda calculi"
   ],
   "used_by": 0
  },
@@ -7332,10 +7328,10 @@
   "shortname": "Minimal_SSA",
   "title": "Minimal Static Single Assignment Form",
   "topic_links": [
-   "computer-science/programming-languages/transformations"
+   "computer-science/programming-languages/compiling"
   ],
   "topics": [
-   "Computer science/Programming languages/Transformations"
+   "Computer science/Programming languages/Compiling"
   ],
   "used_by": 0
  },
@@ -8036,11 +8032,11 @@
   "shortname": "Refine_Imperative_HOL",
   "title": "The Imperative Refinement Framework",
   "topic_links": [
-   "computer-science/programming-languages/transformations",
+   "computer-science/semantics-and-reasoning",
    "computer-science/data-structures"
   ],
   "topics": [
-   "Computer science/Programming languages/Transformations",
+   "Computer science/Semantics and reasoning",
    "Computer science/Data structures"
   ],
   "used_by": 5
@@ -8827,12 +8823,10 @@
   "shortname": "Formal_SSA",
   "title": "Verified Construction of Static Single Assignment Form",
   "topic_links": [
-   "computer-science/algorithms",
-   "computer-science/programming-languages/transformations"
+   "computer-science/programming-languages/compiling"
   ],
   "topics": [
-   "Computer science/Algorithms",
-   "Computer science/Programming languages/Transformations"
+   "Computer science/Programming languages/Compiling"
   ],
   "used_by": 1
  },
@@ -9739,10 +9733,10 @@
   "shortname": "Call_Arity",
   "title": "The Safety of Call Arity",
   "topic_links": [
-   "computer-science/programming-languages/transformations"
+   "computer-science/programming-languages/static-analysis"
   ],
   "topics": [
-   "Computer science/Programming languages/Transformations"
+   "Computer science/Programming languages/Static analysis"
   ],
   "used_by": 0
  },
@@ -11350,11 +11344,11 @@
   "title": "The Correctness of Launchbury's Natural Semantics for Lazy Evaluation",
   "topic_links": [
    "computer-science/programming-languages/lambda-calculi",
-   "computer-science/semantics"
+   "computer-science/semantics-and-reasoning"
   ],
   "topics": [
    "Computer science/Programming languages/Lambda calculi",
-   "Computer science/Semantics"
+   "Computer science/Semantics and reasoning"
   ],
   "used_by": 1
  },
@@ -11910,10 +11904,10 @@
   "shortname": "Refine_Monadic",
   "title": "Refinement for Monadic Programs",
   "topic_links": [
-   "computer-science/programming-languages/logics"
+   "computer-science/semantics-and-reasoning"
   ],
   "topics": [
-   "Computer science/Programming languages/Logics"
+   "Computer science/Semantics and reasoning"
   ],
   "used_by": 3
  },
@@ -12842,10 +12836,10 @@
   "shortname": "WorkerWrapper",
   "title": "The Worker/Wrapper Transformation",
   "topic_links": [
-   "computer-science/programming-languages/transformations"
+   "computer-science/functional-programming"
   ],
   "topics": [
-   "Computer science/Programming languages/Transformations"
+   "Computer science/Functional programming"
   ],
   "used_by": 0
  },

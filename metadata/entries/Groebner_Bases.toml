@@ -36,3 +36,5 @@ Specialized Gröbner bases to less abstract representation of polynomials, where
 power-products are represented as polynomial mappings.<br>"""
 
 [extra]
+
+[related]

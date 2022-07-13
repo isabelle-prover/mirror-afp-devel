@@ -24,3 +24,5 @@ berghofer = "berghofer_email"
 2018-07-21 = "Proved completeness theorem for open formulas. Proofs are now written in the declarative style. Enumeration of pairs and datatypes is automated using the Countable theory."
 
 [extra]
+
+[related]

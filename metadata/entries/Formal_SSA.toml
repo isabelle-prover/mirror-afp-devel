@@ -1,8 +1,7 @@
 title = "Verified Construction of Static Single Assignment Form"
 date = 2016-02-05
 topics = [
-  "Computer science/Algorithms",
-  "Computer science/Programming languages/Transformations",
+  "Computer science/Programming languages/Compiling",
 ]
 abstract = """
 <p>
@@ -49,3 +48,5 @@ lohner = "lohner_email"
 [history]
 
 [extra]
+
+[related]

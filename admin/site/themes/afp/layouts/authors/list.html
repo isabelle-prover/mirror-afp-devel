@@ -1,6 +1,14 @@
 {{ define "main" }}
 {{- $site := . -}}
-{{ with (index (index .Site.Data.authors .Title) "homepages") }}
+{{- $author := (index .Site.Data.authors .Title) -}}
+{{- with (index $author "orcid") -}}
+<a href="{{ .url }}">
+  <img alt="ORCID logo" src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" width="16" height="16" />
+  {{ .id }}
+</a>
+{{- end -}}
+
+{{ with (index $author "homepages") }}
 <h2>Homepages 🌐</h2>
 <ul>
 {{- range . -}}
@@ -8,7 +16,7 @@
 {{- end -}}
 </ul>
 {{ end }}
-{{ with (index (index .Site.Data.authors .Title) "emails") }}
+{{ with (index $author "emails") }}
 <h2>E-Mails 📧</h2>
 <ul>
 {{- range . -}}

@@ -31,3 +31,5 @@ nipkow = "nipkow_email"
 
 [extra]
 extra-0 = "Origin: This library was extracted from Amortized Complexity and extended."
+
+[related]

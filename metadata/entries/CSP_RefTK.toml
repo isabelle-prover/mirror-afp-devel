@@ -2,7 +2,7 @@ title = "The HOL-CSP Refinement Toolkit"
 date = 2020-11-19
 topics = [
   "Computer science/Concurrency/Process calculi",
-  "Computer science/Semantics",
+  "Computer science/Semantics and reasoning",
 ]
 abstract = """
 We use a formal development for CSP, called HOL-CSP2.0, to analyse a
@@ -43,3 +43,5 @@ wolff = "wolff_email"
 [history]
 
 [extra]
+
+[related]

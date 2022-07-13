@@ -33,14 +33,28 @@ object AFP_Site_Gen {
 
     def from_authors(authors: List[Author]): Object.T =
       authors.map(author =>
-        author.id -> Object(
+        author.id -> (Object(
           "name" -> author.name,
           "emails" -> author.emails.map(from_email),
-          "homepages" -> author.homepages.map(_.url.toString))).toMap
+          "homepages" -> author.homepages.map(_.url.toString)) ++
+          opt("orcid", author.orcid.map(orcid => Object(
+            "id" -> orcid.identifier,
+            "url" -> orcid.url.toString))))).toMap
 
-    def from_topics(topics: List[Topic]): T =
-      topics.map(topic => Object(
-        topic.name -> from_topics(topic.sub_topics)))
+    def from_classification(classification: Classification): Object.T =
+      Object(
+        "desc" -> classification.desc,
+        "url" -> classification.url.toString,
+        "type" -> (classification match {
+          case _: ACM => "ACM"
+          case _: AMS => "AMS"
+        }))
+
+    def from_topics(topics: List[Topic]): Object.T =
+        Object(topics.map(topic =>
+          topic.name -> (
+            opt("classification", topic.classification.map(from_classification)) ++
+            opt("topics", from_topics(topic.sub_topics)))): _*)
 
     def from_affiliations(affiliations: List[Affiliation]): Object.T = {
       Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues(
@@ -64,6 +78,17 @@ object AFP_Site_Gen {
         "date" -> release.date.toString,
         "isabelle" -> release.isabelle)
 
+    def from_related(related: Reference): Object.T =
+      related match {
+        case d: DOI => Object(
+          "url" -> d.url.toString,
+          "text" -> d.uri.toString)
+        case Formatted(text) => Object(
+          "text" -> text)
+        case Link(url) => Object(
+          "url" -> url.toString)
+      }
+
     def from_entry(entry: Entry): Object.T = (
       Object(
         "title" -> entry.title,
@@ -77,7 +102,8 @@ object AFP_Site_Gen {
         opt("releases", entry.releases.sortBy(_.isabelle).reverse.map(from_release)) ++
         opt("note", entry.note) ++
         opt("history", entry.change_history.toList.sortBy(_._1).reverse.map(from_change_history)) ++
-        opt("extra", entry.extra))
+        opt("extra", entry.extra) ++
+        opt("related", entry.related.map(from_related)))
 
     def from_keywords(keywords: List[String]): T =
       keywords.zipWithIndex.map {
@@ -223,9 +249,9 @@ object AFP_Site_Gen {
 
     val authors = Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
       case (id, affiliations) =>
-        val emails = affiliations.collect { case e: Email => e }
-        val homepages = affiliations.collect { case h: Homepage => h }
-        Author(id, authors_by_id(id).name, emails, homepages)
+        val seen_emails = affiliations.collect { case e: Email => e }
+        val seen_homepages = affiliations.collect { case h: Homepage => h }
+        authors_by_id(id).copy(emails = seen_emails, homepages = seen_homepages)
     }
 
     layout.write_data(Path.basic("authors.json"), JSON.from_authors(authors.toList))

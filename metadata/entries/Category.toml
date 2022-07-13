@@ -21,3 +21,5 @@ paulson = "paulson_email"
 2010-04-23 = "The definition of the constant <tt>equinumerous</tt> was slightly too weak in the original submission and has been fixed in revision <a href=\"https://foss.heptapod.net/isa-afp/afp-devel/-/commit/3498bb1e4c7ba468db8588eb7184c1849641f7d3\">8c2b5b3c995f</a>."
 
 [extra]
+
+[related]

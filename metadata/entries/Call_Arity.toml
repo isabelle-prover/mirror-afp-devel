@@ -1,7 +1,7 @@
 title = "The Safety of Call Arity"
 date = 2015-02-20
 topics = [
-  "Computer science/Programming languages/Transformations",
+  "Computer science/Programming languages/Static analysis",
 ]
 abstract = """
 We formalize the Call Arity analysis, as implemented in GHC, and prove
@@ -39,3 +39,5 @@ and the equivalency proof of the natural and the small-step semantics
 was added."""
 
 [extra]
+
+[related]

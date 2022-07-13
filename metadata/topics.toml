@@ -1,132 +1,255 @@
-
 ["Computer science"]
+
+["Computer science".classification]
 
 ["Computer science"."Artificial intelligence"]
 
+["Computer science"."Artificial intelligence".classification]
+
 ["Computer science"."Automata and formal languages"]
+
+["Computer science"."Automata and formal languages".classification]
 
 ["Computer science".Algorithms]
 
+["Computer science".Algorithms.classification]
+
 ["Computer science".Algorithms.Graph]
+
+["Computer science".Algorithms.Graph.classification]
 
 ["Computer science".Algorithms.Distributed]
 
+["Computer science".Algorithms.Distributed.classification]
+
 ["Computer science".Algorithms.Concurrent]
+
+["Computer science".Algorithms.Concurrent.classification]
 
 ["Computer science".Algorithms.Online]
 
+["Computer science".Algorithms.Online.classification]
+
 ["Computer science".Algorithms.Geometry]
+
+["Computer science".Algorithms.Geometry.classification]
 
 ["Computer science".Algorithms.Approximation]
 
+["Computer science".Algorithms.Approximation.classification]
+
 ["Computer science".Algorithms.Mathematical]
+
+["Computer science".Algorithms.Mathematical.classification]
 
 ["Computer science".Algorithms.Optimization]
 
+["Computer science".Algorithms.Optimization.classification]
+
 ["Computer science".Algorithms."Quantum computing"]
+
+["Computer science".Algorithms."Quantum computing".classification]
 
 ["Computer science".Concurrency]
 
+["Computer science".Concurrency.classification]
+
 ["Computer science".Concurrency."Process calculi"]
+
+["Computer science".Concurrency."Process calculi".classification]
 
 ["Computer science"."Data structures"]
 
+["Computer science"."Data structures".classification]
+
 ["Computer science"."Functional programming"]
+
+["Computer science"."Functional programming".classification]
 
 ["Computer science".Hardware]
 
+["Computer science".Hardware.classification]
+
 ["Computer science"."Machine learning"]
+
+["Computer science"."Machine learning".classification]
 
 ["Computer science".Networks]
 
+["Computer science".Networks.classification]
+
 ["Computer science"."Programming languages"]
+
+["Computer science"."Programming languages".classification]
 
 ["Computer science"."Programming languages"."Language definitions"]
 
+["Computer science"."Programming languages"."Language definitions".classification]
+
 ["Computer science"."Programming languages"."Lambda calculi"]
+
+["Computer science"."Programming languages"."Lambda calculi".classification]
 
 ["Computer science"."Programming languages"."Type systems"]
 
+["Computer science"."Programming languages"."Type systems".classification]
+
 ["Computer science"."Programming languages".Logics]
+
+["Computer science"."Programming languages".Logics.classification]
 
 ["Computer science"."Programming languages".Compiling]
 
+["Computer science"."Programming languages".Compiling.classification]
+
 ["Computer science"."Programming languages"."Static analysis"]
 
-["Computer science"."Programming languages".Transformations]
+["Computer science"."Programming languages"."Static analysis".classification]
 
 ["Computer science"."Programming languages".Misc]
 
+["Computer science"."Programming languages".Misc.classification]
+
 ["Computer science".Security]
+
+["Computer science".Security.classification]
 
 ["Computer science".Security.Cryptography]
 
-["Computer science".Semantics]
+["Computer science".Security.Cryptography.classification]
+
+["Computer science"."Semantics and reasoning"]
+
+["Computer science"."Semantics and reasoning".classification]
 
 ["Computer science"."System description languages"]
 
+["Computer science"."System description languages".classification]
+
 [Logic]
+
+[Logic.classification]
 
 [Logic."Philosophical aspects"]
 
+[Logic."Philosophical aspects".classification]
+
 [Logic."General logic"]
+
+[Logic."General logic".classification]
 
 [Logic."General logic"."Classical propositional logic"]
 
+[Logic."General logic"."Classical propositional logic".classification]
+
 [Logic."General logic"."Classical first-order logic"]
+
+[Logic."General logic"."Classical first-order logic".classification]
 
 [Logic."General logic"."Decidability of theories"]
 
+[Logic."General logic"."Decidability of theories".classification]
+
 [Logic."General logic"."Mechanization of proofs"]
 
-[Logic."General logic"."Lambda calculus"]
+[Logic."General logic"."Mechanization of proofs".classification]
 
 [Logic."General logic"."Logics of knowledge and belief"]
 
+[Logic."General logic"."Logics of knowledge and belief".classification]
+
 [Logic."General logic"."Temporal logic"]
+
+[Logic."General logic"."Temporal logic".classification]
 
 [Logic."General logic"."Modal logic"]
 
+[Logic."General logic"."Modal logic".classification]
+
 [Logic."General logic"."Paraconsistent logics"]
+
+[Logic."General logic"."Paraconsistent logics".classification]
 
 [Logic.Computability]
 
+[Logic.Computability.classification]
+
 [Logic."Set theory"]
+
+[Logic."Set theory".classification]
 
 [Logic."Proof theory"]
 
+[Logic."Proof theory".classification]
+
 [Logic.Rewriting]
+
+[Logic.Rewriting.classification]
 
 [Mathematics]
 
+[Mathematics.classification]
+
 [Mathematics.Order]
+
+[Mathematics.Order.classification]
 
 [Mathematics.Algebra]
 
+[Mathematics.Algebra.classification]
+
 [Mathematics.Analysis]
+
+[Mathematics.Analysis.classification]
 
 [Mathematics."Measure theory"]
 
+[Mathematics."Measure theory".classification]
+
 [Mathematics."Probability theory"]
+
+[Mathematics."Probability theory".classification]
 
 [Mathematics."Number theory"]
 
+[Mathematics."Number theory".classification]
+
 [Mathematics."Games and economics"]
+
+[Mathematics."Games and economics".classification]
 
 [Mathematics.Geometry]
 
+[Mathematics.Geometry.classification]
+
 [Mathematics.Topology]
+
+[Mathematics.Topology.classification]
 
 [Mathematics."Graph theory"]
 
+[Mathematics."Graph theory".classification]
+
 [Mathematics.Combinatorics]
+
+[Mathematics.Combinatorics.classification]
 
 [Mathematics."Category theory"]
 
+[Mathematics."Category theory".classification]
+
 [Mathematics.Physics]
+
+[Mathematics.Physics.classification]
 
 [Mathematics.Physics."Quantum information"]
 
+[Mathematics.Physics."Quantum information".classification]
+
 [Mathematics.Misc]
 
+[Mathematics.Misc.classification]
+
 [Tools]
+
+[Tools.classification]
