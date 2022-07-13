@@ -112,7 +112,7 @@
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="{{- $path -}}/{{- $entry_name -}}/outline.pdf">Proof
@@ -137,18 +137,18 @@
   {{- end -}}
 </nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">{{- $entry_name -}}-AFP</p>
+      <p style="display:none;" id="bibtex-filename">{{- $entry_name -}}-AFP</p>
       {{- $authors := slice }}
       {{- range .Params.authors -}}
         {{- $authors = $authors | append (index (index $site.Site.Data.authors .) "name") -}}
       {{- end -}}
-      <pre id="copyText">@article{{- "{" -}}{{- $entry_name -}}-AFP,
+      <pre id="copy-text">@article{{- "{" -}}{{- $entry_name -}}-AFP,
   author  = {{ "{" -}}{{- delimit $authors " and " -}}},
   title   = {{ "{" -}}{{- htmlUnescape .Params.title -}}},
   journal = {Archive of Formal Proofs},
@@ -158,7 +158,7 @@
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
