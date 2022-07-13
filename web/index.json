@@ -6495,12 +6495,10 @@
   "shortname": "LambdaMu",
   "title": "The LambdaMu-calculus",
   "topic_links": [
-   "computer-science/programming-languages/lambda-calculi",
-   "logic/general-logic/lambda-calculus"
+   "computer-science/programming-languages/lambda-calculi"
   ],
   "topics": [
-   "Computer science/Programming languages/Lambda calculi",
-   "Logic/General logic/Lambda calculus"
+   "Computer science/Programming languages/Lambda calculi"
   ],
   "used_by": 0
  },

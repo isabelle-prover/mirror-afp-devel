@@ -2,7 +2,6 @@ title = "The LambdaMu-calculus"
 date = 2017-08-16
 topics = [
   "Computer science/Programming languages/Lambda calculi",
-  "Logic/General logic/Lambda calculus",
 ]
 abstract = """
 The propositions-as-types correspondence is ordinarily presented as
