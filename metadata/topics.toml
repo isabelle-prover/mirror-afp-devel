@@ -1,34 +1,92 @@
 ["Computer science"]
 
 ["Computer science".classification]
+ams.id = "68"
+ams.hierarchy = [
+  "Computer science",
+]
 
 ["Computer science"."Artificial intelligence"]
 
 ["Computer science"."Artificial intelligence".classification]
+ams.id = "68T"
+ams.hierarchy = [
+  "Computer science",
+  "Artificial intelligence",
+]
+acm.id = "10010147.10010178"
+acm.desc = "Computing methodologies~Artificial intelligence"
 
 ["Computer science"."Automata and formal languages"]
 
 ["Computer science"."Automata and formal languages".classification]
+ams.id = "68Q45"
+ams.hierarchy = [
+  "Computer scienece",
+  "Theory of computing",
+  "Formal languages and automata",
+]
+acm.id = "10003752.10003766"
+acm.desc = "Theory of computation~Formal languages and automata theory"
 
 ["Computer science".Algorithms]
 
 ["Computer science".Algorithms.classification]
+ams.id = "68W"
+ams.hierarchy = [
+  "Computer science",
+  "Algorithms in computer science",
+]
+acm.id = "10003752.10003809"
+acm.desc = "Theory of computation~Design and analysis of algorithms"
 
 ["Computer science".Algorithms.Graph]
 
 ["Computer science".Algorithms.Graph.classification]
+ams.id = "05C85"
+ams.hierarchy = [
+  "Combinatorics",
+  "Graph theory",
+  "Graph algorithms",
+]
+acm.id = "10003752.10003809.10003635"
+acm.desc = "Theory of computation~Graph algorithms analysis"
 
 ["Computer science".Algorithms.Distributed]
 
 ["Computer science".Algorithms.Distributed.classification]
+ams.id = "68W15"
+ams.hierarchy = [
+  "Computer science",
+  "Algorithms in computer science",
+  "Distributed algorithms",
+]
+acm.id = "10003752.10003809.10010172"
+acm.desc = "Theory of computation~Distributed algorithms"
 
 ["Computer science".Algorithms.Concurrent]
 
 ["Computer science".Algorithms.Concurrent.classification]
+ams.id = "68W10"
+ams.hierarchy = [
+  "Computer science",
+  "Algorithms in computer science",
+  "Parallel algorithms in computer science",
+]
+acm.id = "10003752.10003809.10011778"
+acm.desc = "Theory of computation~Concurrent algorithms"
 
 ["Computer science".Algorithms.Online]
 
 ["Computer science".Algorithms.Online.classification]
+ams.id = "68W27"
+ams.hierarchy = [
+  "Computer science",
+  "Algorithms in computer science",
+  "Online algorithms; streaming algorithms",
+]
+acm.id = "10003752.10003809.10010047"
+acm.desc = "Theory of computation~Online algorithms"
 
 ["Computer science".Algorithms.Geometry]
 
@@ -37,6 +95,14 @@
 ["Computer science".Algorithms.Approximation]
 
 ["Computer science".Algorithms.Approximation.classification]
+ams.id = "68W25"
+ams.hierarchy = [
+  "Computer science",
+  "Algorithms in computer science",
+  "Approximation algorithms",
+]
+acm.id = "10003752.10003809.10003636"
+acm.desc = "Theory of computation~Approximation algorithms analysis"
 
 ["Computer science".Algorithms.Mathematical]
 
@@ -45,66 +111,144 @@
 ["Computer science".Algorithms.Optimization]
 
 ["Computer science".Algorithms.Optimization.classification]
+acm.id = "10003752.10003809.10003716"
+acm.desc = "Theory of computation~Mathematical optimization"
 
 ["Computer science".Algorithms."Quantum computing"]
 
 ["Computer science".Algorithms."Quantum computing".classification]
+ams.id = "68Q12"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of computing",
+  "Quantum algorithms and complexity in the theory of computing",
+]
 
 ["Computer science".Concurrency]
 
 ["Computer science".Concurrency.classification]
+ams.id = "68Q85"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of computing",
+  "Models and methods for concurrent and distributed computing (process algebras, bisimulation, transition nets, etc.)",
+]
+acm.id = "10003752.10003753.10003761"
+acm.desc = "Theory of computation~Concurrency"
 
 ["Computer science".Concurrency."Process calculi"]
 
 ["Computer science".Concurrency."Process calculi".classification]
+ams.id = "68Q85"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of computing",
+  "Models and methods for concurrent and distributed computing (process algebras, bisimulation, transition nets, etc.)",
+]
+acm.id = "10003752.10003753.10003761.10003764"
+acm.desc = "Theory of computation~Process calculi"
 
 ["Computer science"."Data structures"]
 
 ["Computer science"."Data structures".classification]
+ams.id = "68P05"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of data",
+  "Data structures",
+]
+acm.id = "10003752.10003809.10010031"
+acm.desc = "Theory of computation~Data structures design and analysis"
 
 ["Computer science"."Functional programming"]
 
 ["Computer science"."Functional programming".classification]
+ams.id = "68N18"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of software",
+  "Functional programming and lambda calculus",
+]
+acm.id = "10011007.10011006.10011008.10011009.10011012"
+acm.desc = "Software and its engineering~Functional languages"
 
 ["Computer science".Hardware]
 
 ["Computer science".Hardware.classification]
+acm.id = "10010583"
+acm.desc = "Hardware"
 
 ["Computer science"."Machine learning"]
 
 ["Computer science"."Machine learning".classification]
+acm.id = "10010147.10010257"
+acm.desc = "Computing methodologies~Machine learning"
 
 ["Computer science".Networks]
 
 ["Computer science".Networks.classification]
+acm.id = "10003033"
+acm.desc = "Networks"
 
 ["Computer science"."Programming languages"]
 
 ["Computer science"."Programming languages".classification]
+ams.id = "68N15"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of software",
+  "Theory of programming languages",
+]
+acm.id = "10011007.10011006.10011008"
+acm.desc = "Software and its engineering~General programming languages"
 
 ["Computer science"."Programming languages"."Language definitions"]
 
 ["Computer science"."Programming languages"."Language definitions".classification]
+acm.id = "10011007.10011006.10011039"
+acm.desc = "Software and its engineering~Formal language definitions"
 
 ["Computer science"."Programming languages"."Lambda calculi"]
 
 ["Computer science"."Programming languages"."Lambda calculi".classification]
+ams.id = "68N18"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of software",
+  "Functional programming and lambda calculus",
+]
+acm.id = "10002950.10003714.10003732.10003733"
+acm.desc = "Mathematics of computing~Lambda calculus"
 
 ["Computer science"."Programming languages"."Type systems"]
 
 ["Computer science"."Programming languages"."Type systems".classification]
+acm.id = "10011007.10011006.10011008.10011024.10011028"
+acm.desc = "Software and its engineering~Data types and structures"
 
 ["Computer science"."Programming languages".Logics]
 
 ["Computer science"."Programming languages".Logics.classification]
+acm.id = "10011007.10011006.10011008.10011009.10011015"
+acm.desc = "Software and its engineering~Constraint and logic languages"
 
 ["Computer science"."Programming languages".Compiling]
 
 ["Computer science"."Programming languages".Compiling.classification]
+ams.id = "68N20"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of software",
+  "Theory of compilers and interpreters",
+]
+acm.id = "10011007.10011006.10011041"
+acm.desc = "Software and its engineering~Compilers"
 
 ["Computer science"."Programming languages"."Static analysis"]
 
 ["Computer science"."Programming languages"."Static analysis".classification]
+acm.id = "10011007.10010940.10010992.10010998.10011000"
+acm.desc = "Software and its engineering~Automated static analysis"
 
 ["Computer science"."Programming languages".Misc]
 
@@ -113,78 +257,189 @@
 ["Computer science".Security]
 
 ["Computer science".Security.classification]
+ams.id = "68M25"
+ams.hierarchy = [
+  "Computer science",
+  "Computer system organization",
+  "Computer security",
+]
+acm.id = "10002978"
+acm.desc = "Security and privacy"
 
 ["Computer science".Security.Cryptography]
 
 ["Computer science".Security.Cryptography.classification]
+acm.id = "10002978.10002979"
+acm.desc = "Security and privacy~Cryptography"
 
 ["Computer science"."Semantics and reasoning"]
 
 ["Computer science"."Semantics and reasoning".classification]
+ams.id = "68Q55"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of computing",
+  "Semantics in the theory of computing",
+]
+acm.id = "10003752.10010124"
+acm.desc = "Theory of computation~Semantics and reasoning"
 
 ["Computer science"."System description languages"]
 
 ["Computer science"."System description languages".classification]
+acm.id = "10011007.10011006.10011060"
+acm.desc = "Software and its engineering~System description languages"
 
 [Logic]
 
 [Logic.classification]
+ams.id = "03"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+]
+acm.id = "10003752.10003790"
+acm.desc = "Theory of computation~Logic"
 
 [Logic."Philosophical aspects"]
 
 [Logic."Philosophical aspects".classification]
+ams.id = "03A"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "Philosophical aspects of logic and foundations",
+]
 
 [Logic."General logic"]
 
 [Logic."General logic".classification]
+ams.id = "03B"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "General logic",
+]
 
 [Logic."General logic"."Classical propositional logic"]
 
 [Logic."General logic"."Classical propositional logic".classification]
+ams.id = "03B05"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "General logic",
+  "Classical propositional logic",
+]
 
 [Logic."General logic"."Classical first-order logic"]
 
 [Logic."General logic"."Classical first-order logic".classification]
+ams.id = "03B10"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "General logic",
+  "Classical first-order logic",
+]
 
 [Logic."General logic"."Decidability of theories"]
 
 [Logic."General logic"."Decidability of theories".classification]
+ams.id = "03B25"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "General logic",
+  "Decidability of theories and sets of sentences",
+]
 
 [Logic."General logic"."Mechanization of proofs"]
 
 [Logic."General logic"."Mechanization of proofs".classification]
+ams.id = "03B35"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "General logic",
+  "Mechanization of proofs and logical operations",
+]
 
 [Logic."General logic"."Logics of knowledge and belief"]
 
 [Logic."General logic"."Logics of knowledge and belief".classification]
+ams.id = "03B42"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "General logic",
+  "Logics of knowledge and belief (including belief change)",
+]
+acm.id = "10010147.10010178.10010187.10010198"
+acm.desc = "Computing methodologies~Reasoning about belief and knowledge"
 
 [Logic."General logic"."Temporal logic"]
 
 [Logic."General logic"."Temporal logic".classification]
+ams.id = "03B44"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "General logic",
+  "Temporal logic",
+]
+acm.id = "10003752.10003790.10003793"
+acm.desc = "Theory of computation~Modal and temporal logics"
 
 [Logic."General logic"."Modal logic"]
 
 [Logic."General logic"."Modal logic".classification]
+ams.id = "03B45"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "General logic",
+  "Modal logic (including the logic of norms)",
+]
+acm.id = "10003752.10003790.10003793"
+acm.desc = "Theory of computation~Modal and temporal logics"
 
 [Logic."General logic"."Paraconsistent logics"]
 
 [Logic."General logic"."Paraconsistent logics".classification]
+ams.id = "03B53"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "General logic",
+  "Paraconsistent logics",
+]
 
 [Logic.Computability]
 
 [Logic.Computability.classification]
+ams.id = "03D"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "Computability and recursion theory",
+]
+acm.id = "10003752.10003753.10003754"
+acm.desc = "Theory of computation~Computability"
 
 [Logic."Set theory"]
 
 [Logic."Set theory".classification]
+ams.id = "03E"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "Set theory",
+]
 
 [Logic."Proof theory"]
 
 [Logic."Proof theory".classification]
+ams.id = "03F"
+ams.hierarchy = [
+  "Mathematical logic and foundations",
+  "Proof theory and constructive mathematics",
+]
+acm.id = "10003752.10003790.10003792"
+acm.desc = "Theory of computation~Proof theory"
 
 [Logic.Rewriting]
 
 [Logic.Rewriting.classification]
+acm.id = "10003752.10003790.10003798"
+acm.desc = "Theory of computation~Equational logic and rewriting"
 
 [Mathematics]
 
@@ -193,58 +448,127 @@
 [Mathematics.Order]
 
 [Mathematics.Order.classification]
+ams.id = "06"
+ams.hierarchy = [
+  "Order, lattices, ordered algebraic structures",
+]
 
 [Mathematics.Algebra]
 
 [Mathematics.Algebra.classification]
+ams.id = "08"
+ams.hierarchy = [
+  "General algebraic systems",
+]
 
 [Mathematics.Analysis]
 
 [Mathematics.Analysis.classification]
+acm.id = "10002950.10003714"
+acm.desc = "Mathematics of computing~Mathematical analysis"
 
-[Mathematics."Measure theory"]
+[Mathematics."Measure and integration"]
 
-[Mathematics."Measure theory".classification]
+[Mathematics."Measure and integration".classification]
+ams.id = "28"
+ams.hierarchy = [
+  "Measure and integration",
+]
 
 [Mathematics."Probability theory"]
 
 [Mathematics."Probability theory".classification]
+ams.id = "60"
+ams.hierarchy = [
+  "Probability theory and stochastic processes",
+]
+acm.id = "10002950.10003648"
+acm.desc = "Mathematics of computing~Probability and statistics"
 
 [Mathematics."Number theory"]
 
 [Mathematics."Number theory".classification]
+ams.id = "11"
+ams.hierarchy = [
+  "Number theory",
+]
 
 [Mathematics."Games and economics"]
 
 [Mathematics."Games and economics".classification]
+ams.id = "91"
+ams.hierarchy = [
+  "Game theory, economics, finance, and other social and behavioral sciences",
+]
 
 [Mathematics.Geometry]
 
 [Mathematics.Geometry.classification]
+ams.id = "51"
+ams.hierarchy = [
+  "Geometry",
+]
 
 [Mathematics.Topology]
 
 [Mathematics.Topology.classification]
+ams.id = "54"
+ams.hierarchy = [
+  "General topology",
+]
+acm.id = "10002950.10003741.10003742"
+acm.desc = "Mathematics of computing~Topology"
 
 [Mathematics."Graph theory"]
 
 [Mathematics."Graph theory".classification]
+ams.id = "05C"
+ams.hierarchy = [
+  "Combinatorics",
+  "Graph theory",
+]
+acm.id = "10002950.10003624.10003633"
+acm.desc = "Mathematics of computing~Graph theory"
 
 [Mathematics.Combinatorics]
 
 [Mathematics.Combinatorics.classification]
+ams.id = "05"
+ams.hierarchy = [
+  "Combinatorics",
+]
+acm.id = "10002950.10003624.10003625"
+acm.desc = "Mathematics of computing~Combinatorics"
 
 [Mathematics."Category theory"]
 
 [Mathematics."Category theory".classification]
+ams.id = "18"
+ams.hierarchy = [
+  "Category theory; homological algebra",
+]
 
 [Mathematics.Physics]
 
 [Mathematics.Physics.classification]
+ams.id = "00A79"
+ams.hierarchy = [
+  "General and overarching topics; collections",
+  "General applied mathematics",
+  "Physics",
+]
 
 [Mathematics.Physics."Quantum information"]
 
 [Mathematics.Physics."Quantum information".classification]
+ams.id = "81P45"
+ams.hierarchy = [
+  "Quantum theory",
+  "Foundations, quantum information and its processing, quantum axioms, and philosophy",
+  "Quantum information, communication, networks (quantum-theoretic aspects)",
+]
+acm.id = "10003752.10003753.10003758.10010626"
+acm.desc = "Theory of computation~Quantum information theory"
 
 [Mathematics.Misc]
 
