@@ -1020,10 +1020,10 @@
   "shortname": "Hahn_Jordan_Decomposition",
   "title": "The Hahn and Jordan Decomposition Theorems",
   "topic_links": [
-   "mathematics/measure-theory"
+   "mathematics/measure-and-integration"
   ],
   "topics": [
-   "Mathematics/Measure theory"
+   "Mathematics/Measure and integration"
   ],
   "used_by": 0
  },
@@ -1900,7 +1900,7 @@
  {
   "abstract": "We formalize the \u003ci\u003eLifting the Exponent Lemma\u003c/i\u003e, which shows how to find the largest power of $p$ dividing $a^n \\pm b^n$, for a prime $p$ and positive integers $a$ and $b$. The proof follows \u003ca href=\"https://s3.amazonaws.com/aops-cdn.artofproblemsolving.com/resources/articles/lifting-the-exponent.pdf\"\u003eAmir Hossein Parvardi's\u003c/a\u003e.",
   "authors": [
-   "Jakub Kądziołka"
+   "Maya Kądziołka"
   ],
   "date": "2021-04-27",
   "id": 93,
@@ -2239,7 +2239,7 @@
  {
   "abstract": "In a \u003ca href=\"https://xkcd.com/blue_eyes.html\"\u003epuzzle published by Randall Munroe\u003c/a\u003e, perfect logicians forbidden from communicating are stranded on an island, and may only leave once they have figured out their own eye color. We present a method of modeling the behavior of perfect logicians and formalize a solution of the puzzle.",
   "authors": [
-   "Jakub Kądziołka"
+   "Maya Kądziołka"
   ],
   "date": "2021-01-30",
   "id": 110,
