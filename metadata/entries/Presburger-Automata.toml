@@ -21,7 +21,7 @@ homepage = "berghofer_homepage"
 berghofer = "berghofer_email"
 
 [related]
-dois = ["https://doi.org/10.1007/978-3-642-03359-9_12"]
+dois = ["10.1007/978-3-642-03359-9_12"]
 
 [history]
 
