@@ -4271,6 +4271,7 @@ host = [
 
 [nipkow]
 name = "Tobias Nipkow"
+orcid = "0000-0003-0730-515X"
 
 [nipkow.emails]
 
