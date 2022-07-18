@@ -54,9 +54,12 @@ lemma nth_rk_of_pref: "\<lbrakk> length P \<le> length rs; i \<in> set P; distin
  \<Longrightarrow> rk_of_pref r rs P ! i = index P i + r"
 by(induction P arbitrary: r i) (auto simp add: nth_list_update)
 
+lemma ranking_index: "\<lbrakk> length P = n; set P = {<n} \<rbrakk> \<Longrightarrow> ranking P = map (index P) [0..<length P]"
+by(simp add: list_eq_iff_nth_eq ranking_def card_distinct nth_rk_of_pref)
+
 lemma ranking_iff_pref:  "\<lbrakk> set P = {<length P}; i < length P; j < length P \<rbrakk>
  \<Longrightarrow> ranking P ! i < ranking P ! j \<longleftrightarrow> P \<turnstile> i < j"
-by(simp add: ranking_def prefers_def nth_rk_of_pref card_distinct)
+by(simp add: ranking_index prefers_def)
 
 
 subsection \<open>Fixing the preference lists\<close>
