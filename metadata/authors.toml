@@ -2844,17 +2844,17 @@ host = [
 [jungnickel.homepages]
 
 [kadzioka]
-name = "Jakub Kądziołka"
+name = "Maya Kądziołka"
 
 [kadzioka.emails]
 
 [kadzioka.emails.kadzioka_email]
 user = [
-  "kuba",
+  "afp",
 ]
 host = [
-  "kadziolka",
-  "net",
+  "compilercrim",
+  "es",
 ]
 
 [kadzioka.homepages]
