@@ -78,15 +78,10 @@ object AFP_Site_Gen {
         "date" -> release.date.toString,
         "isabelle" -> release.isabelle)
 
-    def from_related(related: Reference): Object.T =
+    def from_related(related: Reference): T =
       related match {
-        case d: DOI => Object(
-          "url" -> d.url.toString,
-          "text" -> d.uri.toString)
-        case Formatted(text) => Object(
-          "text" -> text)
-        case Link(url) => Object(
-          "url" -> url.toString)
+        case d: DOI => d.formatted()
+        case Formatted(text) => text
       }
 
     def from_entry(entry: Entry): Object.T = (

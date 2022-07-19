@@ -56,21 +56,11 @@
   {{- end -}}
 
   {{- with .Params.related -}}
-  <h3>Related References</h3>
+  <h3>Related Publications</h3>
   <ul>
   {{- range . -}}
     <li>
-      {{- if isSet . "url" -}}
-        <a href="{{ .url }}">
-          {{- if isSet . "text" -}}
-            {{ .text }}
-          {{- else -}}
-            {{ .url }}
-          {{- end -}}
-        </a>
-      {{- else -}}
-        {{ safeHTML .text }}
-      {{- end -}}
+      {{ safeHTML . }}
     </li>
   {{- end -}}
   </ul>

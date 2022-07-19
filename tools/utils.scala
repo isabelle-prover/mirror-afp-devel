@@ -9,6 +9,9 @@ import isabelle._
 
 import scala.collection.immutable.ListMap
 
+import java.net.URL
+import java.io.{BufferedReader, InputStreamReader, IOException}
+
 
 object Utils {
   def group_sorted[A, K](l: List[A], f: A => K): ListMap[K, List[A]] =
@@ -27,4 +30,13 @@ object Utils {
     }
 
   def the_entry[K, V](m: Map[K, V], k: K): V = m.getOrElse(k, error("Expected key " + quote(k.toString)))
+
+  def fetch_text(url: URL, params: Map[String, String]): String =
+    try {
+      val conn = url.openConnection()
+      params.foreach { case (param, value) => conn.setRequestProperty(param, value) }
+      File.read_stream(conn.getInputStream)
+    } catch {
+      case _: IOException => error("Could not read from " + quote(url.toString))
+    }
 }

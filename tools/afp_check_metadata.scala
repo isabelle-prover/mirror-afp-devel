@@ -136,6 +136,12 @@ Usage: isabelle afp_check_metadata [OPTIONS]
     warn_unused("topics", leaf_topics.toSet diff entries.flatMap(_.topics).map(_.id).toSet)
     warn_unused("licenses", licenses.keySet diff entries.map(_.license.id).toSet)
 
+
+    /* extra */
+
+    progress.echo("Checking dois...")
+    entries.flatMap(entry => entry.related).collect { case d: DOI => d.formatted() }
+
     progress.echo("Checked " + authors.size + " authors with " + affils.size + " affiliations, " +
       topics.size + " topics, " + releases.values.flatten.size + " releases, " + licenses.size +
       " licenses, and " + entries.size + " entries.")
