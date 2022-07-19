@@ -126,7 +126,7 @@ object Metadata {
 
   /* references */
 
-  sealed abstract class Reference
+  sealed trait Reference
 
   case class DOI(identifier: String) extends Reference {
     require("^10.([1-9][0-9]{3})/(.+)".r.matches(identifier),
@@ -137,8 +137,6 @@ object Metadata {
   }
 
   case class Formatted(rep: String) extends Reference
-
-  case class Link(url: URL) extends Reference
 
 
   /* misc */
@@ -369,20 +367,17 @@ object Metadata {
     def from_related(references: List[Reference]): T = {
       val dois = references collect { case d: DOI => d }
       val formatted = references collect { case f: Formatted => f }
-      val links = references collect { case l: Link => l }
 
       T(
         "dois" -> dois.map(_.identifier),
-        "pubs" -> formatted.map(_.rep),
-        "links" -> links.map(_.url.toString))
+        "pubs" -> formatted.map(_.rep))
     }
 
     def to_related(references: T): List[Reference] = {
       val dois = optional_as[List[String]](references, "dois").getOrElse(Nil)
       val pubs = optional_as[List[String]](references, "pubs").getOrElse(Nil)
-      val links = optional_as[List[String]](references, "links").getOrElse(Nil)
 
-      dois.map(DOI.apply) ++ pubs.map(Formatted.apply) ++ links.map(new URL(_)).map(Link.apply)
+      dois.map(DOI.apply) ++ pubs.map(Formatted.apply)
     }
 
 

@@ -53,7 +53,6 @@ Optional:
   ```toml
   dois = [ "<doi>", ... ]
   pubs = [ "<text>", ... ] 
-  links = [ "<link>", ... ]
   ```
 
 [Example](/metadata/entries/Presburger-Automata.toml)
@@ -97,7 +96,7 @@ Details:
 - **related**:
   A Place for references related to this article, e.g., print publications. DOIs are preferred and
   stored by name only (e.g., `10.1000/182`). If there is none, use a formatted citation (html tags
-  are allowed). Hyperlinks are to be listed as plain-text urls.
+  are allowed).
 
 `topics.toml`
 -------------

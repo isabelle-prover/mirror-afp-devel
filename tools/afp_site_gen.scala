@@ -85,8 +85,6 @@ object AFP_Site_Gen {
           "text" -> d.uri.toString)
         case Formatted(text) => Object(
           "text" -> text)
-        case Link(url) => Object(
-          "url" -> url.toString)
       }
 
     def from_entry(entry: Entry): Object.T = (
