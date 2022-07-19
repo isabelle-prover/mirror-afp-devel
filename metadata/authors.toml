@@ -1946,6 +1946,7 @@ gomes_homepage = "http://www.dcs.shef.ac.uk/~victor"
 
 [gonzalez]
 name = "Edgar Gonzàlez"
+orcid = "0000-0002-9169-0769"
 
 [gonzalez.emails]
 
@@ -2927,6 +2928,7 @@ kappelmann_homepage = "https://www21.in.tum.de/team/kappelmk/"
 
 [karayel]
 name = "Emin Karayel"
+orcid = "0000-0003-3290-5034"
 
 [karayel.emails]
 
