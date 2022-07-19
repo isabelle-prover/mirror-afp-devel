@@ -134,6 +134,11 @@ object Metadata {
 
     def uri: URI = new URI("doi:" + identifier)
     def url: URL = new URL("https", "doi.org", "/" + identifier)
+    def formatted(): String = {
+      val href = url.toString
+      val res = Utils.fetch_text(url, Map("Accept" -> "text/x-bibliography; style=apa"))
+      res.replace(href, "<a href=" + quote(href) + ">" + href + "</a>")
+    }
   }
 
   case class Formatted(rep: String) extends Reference
