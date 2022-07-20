@@ -17,6 +17,7 @@ homepage = "nipkow_homepage"
 [related]
 dois = ["10.1023/A:1006277616879"]
 pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/jar10.html\">Open access</a>"]
+
 [contributors]
 
 [notify]

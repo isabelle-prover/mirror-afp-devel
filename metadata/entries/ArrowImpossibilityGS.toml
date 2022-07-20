@@ -17,6 +17,10 @@ homepage = "nipkow_homepage"
 [notify]
 nipkow = "nipkow_email"
 
+[related]
+dois = ["10.1007/s10817-009-9147-4"]
+pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/arrow.html\">Open access</a>"]
+
 [history]
 
 [extra]
