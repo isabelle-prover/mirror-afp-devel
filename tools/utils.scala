@@ -14,6 +14,8 @@ import java.io.{BufferedReader, InputStreamReader, IOException}
 
 
 object Utils {
+  val TIMEOUT = 30*1000
+
   def group_sorted[A, K](l: List[A], f: A => K): ListMap[K, List[A]] =
     l.foldLeft(ListMap.empty[K, List[A]]) {
       case (m, a) =>
@@ -34,6 +36,8 @@ object Utils {
   def fetch_text(url: URL, params: Map[String, String]): String =
     try {
       val conn = url.openConnection()
+      conn.setConnectTimeout(TIMEOUT)
+      conn.setReadTimeout(TIMEOUT)
       params.foreach { case (param, value) => conn.setRequestProperty(param, value) }
       File.read_stream(conn.getInputStream)
     } catch {
