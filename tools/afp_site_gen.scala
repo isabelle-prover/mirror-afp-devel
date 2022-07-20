@@ -11,6 +11,34 @@ import afp.Metadata._
 
 
 object AFP_Site_Gen {
+  /* cache */
+  class Cache(layout: Hugo.Layout) {
+    private val doi_cache = Path.basic("dois.json")
+
+    private var dois: Map[String, String] = {
+      val file = layout.cache_dir + doi_cache
+
+      if (file.file.exists) {
+        val content = File.read(file)
+        val json =
+          try { isabelle.JSON.parse(content) }
+          catch { case ERROR(msg) => error("Could not parse " + file.toString + ": " + msg) }
+        JSON.to_dois(json)
+      } else Map.empty
+    }
+
+    def resolve_doi(doi: DOI): String = {
+      dois.get(doi.identifier) match {
+        case Some(value) => value
+        case None =>
+          val res = doi.formatted()
+          dois += (doi.identifier -> res)
+          layout.write_cache(doi_cache, JSON.from_dois(dois))
+          res
+      }
+    }
+  }
+
   /* json */
 
   object JSON {
@@ -25,6 +53,14 @@ object AFP_Site_Gen {
     def opt(k: String, v: Option[T]): Object.T = v.map(v => Object(k -> v)).getOrElse(Object())
     def opt[A <: Iterable[_]](k: String, vals: A): Object.T =
       if (vals.isEmpty) Object() else Object(k -> vals)
+
+    def from_dois(dois: Map[String, String]): Object.T = dois
+    def to_dois(dois: T): Map[String, String] = dois match {
+      case m: Map[_, _] if m.keySet.forall(_.isInstanceOf[String]) &&
+          m.values.forall(_.isInstanceOf[String]) =>
+        m.asInstanceOf[Map[String, String]]
+      case _ => error("Could not read dois")
+    }
 
     def from_email(email: Email): Object.T =
       Object(
@@ -78,13 +114,15 @@ object AFP_Site_Gen {
         "date" -> release.date.toString,
         "isabelle" -> release.isabelle)
 
-    def from_related(related: Reference): T =
+    def from_related(related: Reference, cache: Cache): T =
       related match {
-        case d: DOI => d.formatted()
+        case d: DOI =>
+          val href = d.url.toString
+          cache.resolve_doi(d).replace(href, "<a href=" + quote(href) + ">" + href + "</a>")
         case Formatted(text) => text
       }
 
-    def from_entry(entry: Entry): Object.T = (
+    def from_entry(entry: Entry, cache: Cache): Object.T = (
       Object(
         "title" -> entry.title,
         "authors" -> entry.authors.map(_.author).distinct,
@@ -98,7 +136,7 @@ object AFP_Site_Gen {
         opt("note", entry.note) ++
         opt("history", entry.change_history.toList.sortBy(_._1).reverse.map(from_change_history)) ++
         opt("extra", entry.extra) ++
-        opt("related", entry.related.map(from_related)))
+        opt("related", entry.related.map(from_related(_, cache))))
 
     def from_keywords(keywords: List[String]): T =
       keywords.zipWithIndex.map { case (keyword, i) => Object(
@@ -277,6 +315,7 @@ object AFP_Site_Gen {
 
     val sessions_structure = afp_structure.sessions_structure
     val sessions_deps = Sessions.deps(sessions_structure)
+    val cache = new Cache(layout)
 
     entries.foreach { entry =>
       val deps =
@@ -298,7 +337,7 @@ object AFP_Site_Gen {
         isabelle.JSON.Object("session" -> session.name, "theories" -> theories)
       }
 
-      val entry_json = JSON.from_entry(entry) ++ isabelle.JSON.Object(
+      val entry_json = JSON.from_entry(entry, cache) ++ isabelle.JSON.Object(
       "dependencies" -> deps.distinct,
       "sessions" -> theories,
       "url" -> ("/entries/" + entry.name + ".html"),
