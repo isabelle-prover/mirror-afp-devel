@@ -21,6 +21,10 @@ homepage = "nipkow_homepage"
 klein = "klein_email"
 nipkow = "nipkow_email"
 
+[related]
+dois = ["10.1145/1146809.1146811"]
+pubs = ["https://www.in.tum.de/~nipkow/pubs/Jinja/"]
+
 [history]
 
 [extra]
