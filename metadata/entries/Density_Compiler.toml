@@ -20,7 +20,7 @@ concrete version that returns a target-language expression.
 An article with the same title and authors is published in the proceedings
 of ESOP 2015.
 A detailed presentation of this work can be found in the first author's
-master's thesis."""
+master's thesis with the same title."""
 license = "bsd"
 note = ""
 
@@ -39,6 +39,9 @@ homepage = "nipkow_homepage"
 
 [notify]
 hoelzl = "hoelzl_email"
+
+[related]
+dois = ["10.1007/978-3-662-46669-8_4"]
 
 [history]
 
