@@ -39,6 +39,9 @@ homepage = "nipkow_homepage"
 traytel = "traytel_email"
 nipkow = "nipkow_email"
 
+[related]
+dois = ["10.1017/S0956796815000246"]
+pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/jfp15.html\">Open access</a>"]
 [history]
 
 [extra]
