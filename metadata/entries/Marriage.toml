@@ -20,6 +20,10 @@ homepage = "nipkow_homepage"
 [notify]
 nipkow = "nipkow_email"
 
+[related]
+dois = ["10.1007/978-3-642-25379-9_28"]
+pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/cpp11.html\">Open access</a>"]
+
 [history]
 2011-09-09 = "Added Rado's proof"
 
