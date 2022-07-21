@@ -15,11 +15,7 @@ implementations of efficient structures like red-black trees and
 functional arrays. This leads to a checker that,
 while still slower than unverified checkers, can already be used as a
 trusted reference implementation against which advanced implementations
-can be tested.
-<p>
-An early version of this model checker is described in the
-<a href=\"http://www21.in.tum.de/~nipkow/pubs/cav13.html\">CAV 2013 paper</a>
-with the same title."""
+can be tested."""
 license = "bsd"
 note = ""
 
@@ -47,6 +43,10 @@ homepage = "smaus_homepage"
 
 [notify]
 lammich = "lammich_email"
+
+[related]
+dois = ["10.1007/978-3-642-39799-8_31"]
+pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/cav13.html\">Open access</a>", "<a href=\"https://cava.in.tum.de\">Projekt home page</a>"]
 
 [history]
 
