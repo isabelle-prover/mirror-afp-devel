@@ -3551,7 +3551,7 @@
   "used_by": 0
  },
  {
-  "abstract": "We present the first formal verification of approximation algorithms for NP-complete optimization problems: vertex cover, set cover, independent set, center selection, load balancing, and bin packing. The proofs correct incompletenesses in existing proofs and improve the approximation ratio in one case. A detailed description of our work (excluding center selection) has been published in the proceedings of \u003ca href=\"https://doi.org/10.1007/978-3-030-51054-1_17\"\u003eIJCAR 2020\u003c/a\u003e.",
+  "abstract": "We present the first formal verification of approximation algorithms for NP-complete optimization problems: vertex cover, set cover, independent set, center selection, load balancing, and bin packing. The proofs correct incompletenesses in existing proofs and improve the approximation ratio in one case.",
   "authors": [
    "Robin Eßmann",
    "Tobias Nipkow",
