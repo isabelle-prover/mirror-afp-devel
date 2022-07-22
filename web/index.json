@@ -13080,7 +13080,7 @@
   "used_by": 0
  },
  {
-  "abstract": "This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.\u003cbr\u003e\u003cbr\u003eAn article about these proofs is found \u003ca href=\"http://www21.in.tum.de/~nipkow/pubs/arrow.html\"\u003ehere\u003c/a\u003e.",
+  "abstract": "This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.",
   "authors": [
    "Tobias Nipkow"
   ],
