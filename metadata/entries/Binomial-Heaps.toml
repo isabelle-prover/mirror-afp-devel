@@ -34,7 +34,7 @@ homepage = "lammich_homepage"
 lammich = "lammich_email1"
 
 [related]
-pubs = ["<a href=\"https://en.wikipedia.org/wiki/Binomial_heap\">Wikipedia</a>", "Binomial Heaps in <a href=\"https://functional-algorithms-verified.org\">Functional Algorithms, Verified!</a>"]
+pubs = ["Binomial Heaps in <a href=\"https://functional-algorithms-verified.org\">Functional Algorithms, Verified!</a>", "<a href=\"https://en.wikipedia.org/wiki/Binomial_heap\">Wikipedia</a>"]
 
 [history]
 

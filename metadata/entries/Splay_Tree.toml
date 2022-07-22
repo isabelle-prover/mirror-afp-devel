@@ -23,6 +23,9 @@ homepage = "nipkow_homepage"
 [notify]
 nipkow = "nipkow_email"
 
+[related]
+pubs = ["Splay Trees in <a href=\"https://functional-algorithms-verified.org\">Functional Algorithms, Verified!</a>", "<a href=\"https://en.wikipedia.org/wiki/Splay_tree\">Wikipedia</a>"]
+
 [history]
 2016-07-12 = "Moved splay heaps here from Amortized_Complexity"
 
