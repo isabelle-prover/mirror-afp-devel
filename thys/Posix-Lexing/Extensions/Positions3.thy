@@ -705,27 +705,26 @@ next
   then show "Stars vs :\<sqsubseteq>val v2" using eq by simp 
 next
   case (Posix_NTimes1 s1 r v s2 n vs)
-  have "s1 \<in> r \<rightarrow> v" "s2 \<in> NTimes r (n - 1) \<rightarrow> Stars vs" by fact+
+  have "s1 \<in> r \<rightarrow> v" "s2 \<in> NTimes r n \<rightarrow> Stars vs" by fact+
   then have as1: "s1 = flat v" "s2 = flat (Stars vs)" by (auto dest: Posix1(2))
   have IH1: "\<And>v3. v3 \<in> LV r s1 \<Longrightarrow> v :\<sqsubseteq>val v3" by fact
-  have IH2: "\<And>v3. v3 \<in> LV (NTimes r (n - 1)) s2 \<Longrightarrow> Stars vs :\<sqsubseteq>val v3" by fact
-  have cond: "\<not> (\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> s1 @ s\<^sub>3 \<in> lang r \<and> s\<^sub>4 \<in> lang (NTimes r (n - 1)))" by fact
+  have IH2: "\<And>v3. v3 \<in> LV (NTimes r n) s2 \<Longrightarrow> Stars vs :\<sqsubseteq>val v3" by fact
+  have cond: "\<not> (\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> s1 @ s\<^sub>3 \<in> lang r \<and> s\<^sub>4 \<in> lang (NTimes r n))" by fact
   have cond2: "flat v \<noteq> []" by fact
-  have "v2 \<in> LV (NTimes r n) (s1 @ s2)" by fact
+  have "v2 \<in> LV (NTimes r (n + 1)) (s1 @ s2)" by fact
   then consider 
     (NonEmpty) v3a vs3 where "v2 = Stars (v3a # vs3)" 
-    "\<turnstile> v3a : r" "\<turnstile> Stars vs3 : NTimes r (n - 1)"
+    "\<turnstile> v3a : r" "\<turnstile> Stars vs3 : NTimes r n"
     "flat (Stars (v3a # vs3)) = s1 @ s2"
   | (Empty) "v2 = Stars []"
   unfolding LV_def  
   apply(auto)
   apply(erule Prf_elims)
   apply(case_tac vs1)
-   apply(simp)
-   defer
+  apply(simp add: as1(1) cond2 flats_empty)
    apply(simp)
   using Prf.simps apply fastforce
-  by (simp add: Aux as1(1) cond2)  
+  done
   then show "Stars (v # vs) :\<sqsubseteq>val v2" 
     proof (cases)
       case (NonEmpty v3a vs3)
@@ -737,7 +736,7 @@ next
         by (simp add: sprefix_list_def append_eq_conv_conj)
       then have q2: "v :\<sqsubset>val v3a \<or> (flat v3a = s1 \<and> flat (Stars vs3) = s2)" 
         using PosOrd_spreI as1(1) NonEmpty(4) by blast
-      then have "v :\<sqsubset>val v3a \<or> (v3a \<in> LV r s1 \<and> Stars vs3 \<in> LV (NTimes r (n - 1)) s2)" 
+      then have "v :\<sqsubset>val v3a \<or> (v3a \<in> LV r s1 \<and> Stars vs3 \<in> LV (NTimes r n) s2)" 
         using NonEmpty(2,3) by (auto simp add: LV_def)
       then have "v :\<sqsubset>val v3a \<or> (v :\<sqsubseteq>val v3a \<and> Stars vs :\<sqsubseteq>val Stars vs3)" using IH1 IH2 by blast
       then have "v :\<sqsubset>val v3a \<or> (v = v3a \<and> Stars vs :\<sqsubseteq>val Stars vs3)" 
@@ -756,16 +755,16 @@ next
   qed  
 next
   case (Posix_Upto1 s1 r v s2 n vs v3)
-    have "s1 \<in> r \<rightarrow> v" "s2 \<in> Upto r (n - 1) \<rightarrow> Stars vs" by fact+
+    have "s1 \<in> r \<rightarrow> v" "s2 \<in> Upto r n \<rightarrow> Stars vs" by fact+
   then have as1: "s1 = flat v" "s2 = flat (Stars vs)" by (auto dest: Posix1(2))
   have IH1: "\<And>v3. v3 \<in> LV r s1 \<Longrightarrow> v :\<sqsubseteq>val v3" by fact
-  have IH2: "\<And>v3. v3 \<in> LV (Upto r (n - 1)) s2 \<Longrightarrow> Stars vs :\<sqsubseteq>val v3" by fact
-  have cond: "\<not> (\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> s1 @ s\<^sub>3 \<in> lang r \<and> s\<^sub>4 \<in> lang (Upto r (n - 1)))" by fact
+  have IH2: "\<And>v3. v3 \<in> LV (Upto r n) s2 \<Longrightarrow> Stars vs :\<sqsubseteq>val v3" by fact
+  have cond: "\<not> (\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> s1 @ s\<^sub>3 \<in> lang r \<and> s\<^sub>4 \<in> lang (Upto r n))" by fact
   have cond2: "flat v \<noteq> []" by fact
-  have "v3 \<in> LV (Upto r n) (s1 @ s2)" by fact
+  have "v3 \<in> LV (Upto r (n + 1)) (s1 @ s2)" by fact
   then consider 
     (NonEmpty) v3a vs3 where "v3 = Stars (v3a # vs3)" 
-    "\<turnstile> v3a : r" "\<turnstile> Stars vs3 : Upto r (n - 1)"
+    "\<turnstile> v3a : r" "\<turnstile> Stars vs3 : Upto r n"
     "flat (Stars (v3a # vs3)) = s1 @ s2"
   | (Empty) "v3 = Stars []"
   unfolding LV_def  
@@ -785,8 +784,9 @@ next
         by (simp add: sprefix_list_def append_eq_conv_conj)
       then have q2: "v :\<sqsubset>val v3a \<or> (flat v3a = s1 \<and> flat (Stars vs3) = s2)" 
         using PosOrd_spreI as1(1) NonEmpty(4) by blast
-      then have "v :\<sqsubset>val v3a \<or> (v3a \<in> LV r s1 \<and> Stars vs3 \<in> LV (Upto r (n - 1)) s2)" 
-        using NonEmpty(2,3) by (auto simp add: LV_def)
+      then have "v :\<sqsubset>val v3a \<or> (v3a \<in> LV r s1 \<and> Stars vs3 \<in> LV (Upto r n) s2)" 
+        using NonEmpty(2,3) 
+        by (auto simp add: LV_def)
       then have "v :\<sqsubset>val v3a \<or> (v :\<sqsubseteq>val v3a \<and> Stars vs :\<sqsubseteq>val Stars vs3)" using IH1 IH2 by blast
       then have "v :\<sqsubset>val v3a \<or> (v = v3a \<and> Stars vs :\<sqsubseteq>val Stars vs3)" 
          unfolding PosOrd_ex_eq_def by auto     
