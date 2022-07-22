@@ -23,7 +23,7 @@ nipkow = "nipkow_email"
 
 [related]
 dois = ["10.1007/s10817-018-9459-3"]
-pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/jar18.html\">Open access</a>"]
+pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/jar18.html\">Open access</a>","<a href=\"https://en.wikipedia.org/wiki/Amortized_analysis\">Wikipedia</a>"]
 
 [history]
 2015-03-17 = """
