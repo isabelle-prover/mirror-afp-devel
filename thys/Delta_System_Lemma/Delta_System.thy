@@ -6,50 +6,6 @@ theory Delta_System
 
 begin
 
-text\<open>A \<^emph>\<open>delta system\<close> is family of sets with a common pairwise
-intersection.\<close>
-
-definition
-  delta_system :: "i \<Rightarrow> o" where
-  "delta_system(D) \<equiv> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-
-lemma delta_systemI[intro]: 
-  assumes "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-  shows "delta_system(D)"
-  using assms unfolding delta_system_def by simp
-
-lemma delta_systemD[dest]:
-  "delta_system(D) \<Longrightarrow> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-  unfolding delta_system_def by simp
-
-text\<open>Hence, pairwise intersections equal the intersection of the whole
-family.\<close>
-
-lemma delta_system_root_eq_Inter:
-  assumes "delta_system(D)"
-  shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
-proof (clarify, intro equalityI, auto)
-  fix A' B' x C
-  assume hyp:"A'\<in>D" "B'\<in> D" "A'\<noteq>B'" "x\<in>A'" "x\<in>B'" "C\<in>D"
-  with assms
-  obtain r where delta:"\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-    by auto
-  show "x \<in> C"
-  proof (cases "C=A'")
-    case True
-    with hyp and assms
-    show ?thesis by simp
-  next
-    case False
-    moreover
-    note hyp
-    moreover from calculation and delta
-    have "r = C \<inter> A'" "A' \<inter> B' = r" "x\<in>r" by auto
-    ultimately
-    show ?thesis by simp
-  qed
-qed
-
 text\<open>The \<^emph>\<open>Delta System Lemma\<close> (DSL) states that any uncountable family of
 finite sets includes an uncountable delta system. This is the simplest
 non trivial version; others, for cardinals greater than \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>  assume
@@ -187,7 +143,7 @@ proof -
       ultimately
       have "countable(S) \<Longrightarrow> countable({A \<in> G . S \<inter> A \<noteq> 0})" for S
         using InfCard_nat Card_nat
-         le_Card_iff[THEN iffD2, THEN [3] leqpoll_imp_cardinal_UN_le,
+         le_Card_iff[THEN iffD2, THEN [3] lepoll_imp_cardinal_UN_le,
            THEN [2] le_Card_iff[THEN iffD1], of \<omega> S]
         unfolding countable_def by simp
       text\<open>For every countable subfamily of \<^term>\<open>G\<close> there is another some

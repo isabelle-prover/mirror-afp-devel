@@ -5,7 +5,7 @@ theory Demonstrations
     Definitions_Main
 begin
 
-txt\<open>The following theory is only intended to explore some details of the
+text\<open>The following theory is only intended to explore some details of the
 formalization and to show the appearance of relevant internalized formulas.
 It is \<^bold>\<open>not\<close> intended as the entry point of the session. For that purpose,
 consult \<^theory>\<open>Independence_CH.Definitions_Main\<close>\<close>
@@ -18,9 +18,9 @@ locale Demo = M_trivial + M_AC +
     power_infty: "power_ax(M)" "M(\<omega>)"
 begin
 
-txt\<open>The next fake lemma is intended to explore the instances of the axiom
+text\<open>The next fake lemma is intended to explore the instances of the axiom
 schemes that are needed to build our forcing models. They are categorized as
-plain replacements (using \<^term>\<open>strong_replacement\<close>), “lambda-replacements” with
+plain replacements (using \<^term>\<open>strong_replacement\<close>), “lambda-replacements”
 using a higher order function, replacements  to perform
 transfinite and general well-founded recursion (using \<^term>\<open>transrec_replacement\<close> and
 \<^term>\<open>wfrec_replacement\<close> respectively) and for the construction of fixpoints
@@ -35,8 +35,9 @@ lemma
     "\<And>Q S. wfrec_replacement(M,Q,S)"
     "\<And>Q S. transrec_replacement(M,Q,S)"
     and
-    sorried_separations:
-    "\<And>Q. separation(M,Q)"shows "M_master(M)"
+    sorried_separations: "\<And>Q. separation(M,Q)"
+  shows
+    "M_master(M)"
   apply unfold_locales
                       apply
     (simp_all add:
@@ -137,7 +138,8 @@ the recursive function \<^term>\<open>incr_bv\<close>. Here we have an apparentl
 exponential bottleneck, since all the propositional connectives (even \<^term>\<open>Neg\<close>)
 duplicate the appearances of \<^term>\<open>incr_bv\<close>.
 
-Not even the double negation of an atomic formula can be managed by the system.\<close>
+Not even the double negation of an atomic formula can be managed by the
+system (in version 2021-1).\<close>
 (* 
 
 schematic_goal "forces(\<not>\<not>0\<in>1) = ?x"

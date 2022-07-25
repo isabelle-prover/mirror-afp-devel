@@ -88,7 +88,7 @@ abbreviation
   Finite_to_one_r_set :: "[i,i,i] \<Rightarrow> i" (\<open>Finite'_to'_one\<^bsup>_\<^esup>'(_,_')\<close>) where
   "Finite_to_one\<^bsup>M\<^esup>(X,Y) \<equiv> Finite_to_one_rel(##M,X,Y)"
 
-locale M_ZF_library =  M_cardinal_arith + M_aleph + M_FiniteFun + M_replacement_extra
+locale M_ZF_library = M_aleph + M_FiniteFun
 begin
 
 lemma Finite_Collect_imp: "Finite({x\<in>X . Q(x)}) \<Longrightarrow> Finite({x\<in>X . M(x) \<and> Q(x)})"
@@ -184,16 +184,7 @@ end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions\<close>\<close>
 context M_ZF_library
 begin
 
-lemma mem_bij_rel: "\<lbrakk>f \<in> bij\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>bij(A,B)"
-  using bij_rel_char by simp
-
-lemma mem_inj_rel: "\<lbrakk>f \<in> inj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>inj(A,B)"
-  using inj_rel_char by simp
-
-lemma mem_surj_rel: "\<lbrakk>f \<in> surj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>surj(A,B)"
-  using surj_rel_char by simp
-
-lemmas rel_apply_in_range = apply_in_range[OF _ _ mem_function_space_rel]
+lemmas rel_apply_in_range = apply_in_codomain_Ord[OF _ _ mem_function_space_rel]
 
 lemmas rel_range_eq_image = ZF_Library.range_eq_image[OF mem_function_space_rel]
 

@@ -1,12 +1,13 @@
 theory Discipline_Base
   imports
     "ZF-Constructible.Rank"
-    ZF_Miscellanea
     M_Basic_No_Repl
     Relativization
+    ZF_Miscellanea
 
 begin
 
+hide_const (open) Order.pred
 declare [[syntax_ambiguity_warning = false]]
 
 subsection\<open>Discipline of relativization of basic concepts\<close>

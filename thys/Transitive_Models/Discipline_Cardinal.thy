@@ -3,8 +3,6 @@ theory Discipline_Cardinal
     Discipline_Function
 begin
 
-declare [[syntax_ambiguity_warning = false]]
-
 relativize functional "cardinal" "cardinal_rel" external
 relationalize "cardinal_rel" "is_cardinal"
 synthesize "is_cardinal" from_definition assuming "nonempty"

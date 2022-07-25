@@ -5,34 +5,15 @@ theory Cardinal_Preservation
     Forcing_Main
 begin
 
-context forcing_notion
-begin
-
-definition
-  antichain :: "i\<Rightarrow>o" where
-  "antichain(A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A. p \<noteq> q \<longrightarrow> p \<bottom> q)"
-
-definition
-  ccc :: "o" where
-  "ccc \<equiv> \<forall>A. antichain(A) \<longrightarrow> |A| \<le> \<omega>"
-
-end \<comment> \<open>\<^locale>\<open>forcing_notion\<close>\<close>
-
 context forcing_data1
 
 begin
-abbreviation
-  antichain_r' :: "i \<Rightarrow> o" where
-  "antichain_r'(A) \<equiv> antichain_rel(##M,P,leq,A)"
 
 lemma antichain_abs' [absolut]:
-  "\<lbrakk> A\<in>M \<rbrakk> \<Longrightarrow> antichain_r'(A) \<longleftrightarrow> antichain(A)"
+  "\<lbrakk> A\<in>M \<rbrakk> \<Longrightarrow> antichain\<^bsup>M\<^esup>(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
   unfolding antichain_rel_def antichain_def compat_def
-  using P_in_M leq_in_M transitivity[of _ A]
+  using transitivity[of _ A]
   by (auto simp add:absolut)
-
-lemma (in forcing_notion) Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
-  using refl_leq by blast
 
 lemma inconsistent_imp_incompatible:
   assumes "p \<tturnstile> \<phi> env" "q \<tturnstile> Neg(\<phi>) env" "p\<in>P" "q\<in>P"
@@ -49,22 +30,22 @@ proof
     using strengthening_lemma by simp_all
   ultimately
   show "False"
-    using Forces_Neg[of d env \<phi>] refl_leq P_in_M
-    by (auto dest:transM; drule_tac bspec; auto dest:transM)
+    using Forces_Neg[of d env \<phi>] refl_leq
+    by (auto dest:transitivity; drule_tac bspec; auto dest:transitivity)
 qed
 
 notation check (\<open>_\<^sup>v\<close> [101] 100)
 
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
-locale G_generic2 = G_generic1 + forcing_data2
-locale G_generic2_AC = G_generic1_AC + G_generic2 + M_ctm2_AC
 
 locale G_generic3 = G_generic2 + forcing_data3
 locale G_generic3_AC = G_generic2_AC + G_generic3
 
 locale G_generic4 = G_generic3 + forcing_data4
 locale G_generic4_AC = G_generic3_AC + G_generic4
+
+locale G_generic4_AC_CH = G_generic4_AC + M_ZFC3_ground_CH_trans
 
 sublocale G_generic4_AC \<subseteq> ext:M_ZFC3_trans "M[G]"
   using ground_replacements4 replacement_assm_MG
@@ -94,28 +75,29 @@ proof -
          instances, one for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close> *)
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
-    have "M[G], map(val(P,G),[f,a,b'\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
-      using truth_lemma[of "\<cdot>0`1 is 2\<cdot>" G "[f,a,b'\<^sup>v]"]
+    have "M[G], map(val(G),[f,a,b'\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
+      using truth_lemma[of "\<cdot>0`1 is 2\<cdot>" "[f,a,b'\<^sup>v]"]
       by (auto simp add:ord_simp_union arity_fun_apply_fm
           fun_apply_type)
     with \<open>b \<noteq> b'\<close> types
-    have "M[G], map(val(P,G),[f,a,b\<^sup>v]) \<Turnstile> \<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot>"
+    have "M[G], map(val(G),[f,a,b\<^sup>v]) \<Turnstile> \<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot>"
       using GenExtI by auto
   }
   with types
   have "q \<tturnstile> \<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot> [f,a,b\<^sup>v]"
-    using definition_of_forcing[where \<phi>="\<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot>" ] check_in_M
+    using definition_of_forcing[where \<phi>="\<cdot>\<not>\<cdot>0`1 is 2\<cdot>\<cdot>" ]
     by (auto simp add:ord_simp_union arity_fun_apply_fm)
   with \<open>p \<tturnstile> \<cdot>0`1 is 2\<cdot> [f,a,b\<^sup>v]\<close> and types
   show "p \<bottom> q"
-    using check_in_M inconsistent_imp_incompatible
+    using inconsistent_imp_incompatible
     by (simp add:ord_simp_union arity_fun_apply_fm fun_apply_type)
 qed
 
 context M_ctm3_AC
 begin
 
-\<comment> \<open>Simplifying simp rules (because of the occurrence of "\#\#")\<close>
+\<comment> \<open>Simplifying simp rules (because of the occurrence of
+   \<^term>\<open>setclass\<close>)\<close>
 lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   Cons_abs Cons_in_M_iff Diff_closed Equal_abs Equal_in_M_iff Finite_abs
   Forall_abs Forall_in_M_iff Inl_abs Inl_in_M_iff Inr_abs Inr_in_M_iff
@@ -232,14 +214,14 @@ declare mg_sharp_intros[rule del, simplified setclass_iff, intro]
 
 \<comment> \<open>Kunen IV.2.31\<close>
 lemma forces_below_filter:
-  assumes "M[G], map(val(P,G),env) \<Turnstile> \<phi>" "p \<in> G"
+  assumes "M[G], map(val(G),env) \<Turnstile> \<phi>" "p \<in> G"
     "arity(\<phi>) \<le> length(env)" "\<phi> \<in> formula" "env \<in> list(M)"
   shows "\<exists>q\<in>G. q \<preceq> p \<and> q \<tturnstile> \<phi> env"
 proof -
   note assms
   moreover from this
   obtain r where "r \<tturnstile> \<phi> env" "r\<in>G"
-    using generic truth_lemma[of  \<phi> _ env]
+    using generic truth_lemma[of \<phi> env]
     by blast
   moreover from this and \<open>p\<in>G\<close>
   obtain q where "q \<preceq> p" "q \<preceq> r" "q \<in> G" by auto
@@ -250,28 +232,15 @@ qed
 
 subsection\<open>Preservation by ccc forcing notions\<close>
 
-\<comment> \<open>This definition has the arguments in the expected order by most of the lemmas:
-first the parameters, the only argument in the penultimate place and the result in
-the last place.\<close>
-definition check_fm' where
-  "check_fm'(ofm,arg,res) \<equiv> check_fm(arg,ofm,res)"
-
 lemma ccc_fun_closed_lemma_aux:
   assumes "f_dot\<in>M" "p\<in>M" "a\<in>M" "b\<in>M"
   shows "{q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))} \<in> M"
-proof -
-  have "\<cdot>0`1 is 2\<cdot> \<in> formula" "arity(\<cdot>0`1 is 2\<cdot> ) = 3"
-    using arity_fun_apply_fm union_abs1
-    by simp_all
-  then
-  show ?thesis
-    using separation_forces[where env="[f_dot, a\<^sup>v, b\<^sup>v]" and \<phi>="\<cdot>0`1 is 2\<cdot>",simplified]
-      assms G_subset_M[THEN subsetD] generic one_in_M P_in_M
-      separation_in lam_replacement_constant lam_replacement_identity
-      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] leq_in_M check_in_M
-      separation_conj separation_forces
-    by simp_all
-qed
+  using separation_forces[where env="[f_dot, a\<^sup>v, b\<^sup>v]" and \<phi>="\<cdot>0`1 is 2\<cdot>",simplified]
+    assms G_subset_M[THEN subsetD] generic
+    separation_in lam_replacement_constant lam_replacement_identity
+    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
+    separation_conj arity_fun_apply_fm union_abs1
+  by simp_all
 
 lemma ccc_fun_closed_lemma_aux2:
   assumes "B\<in>M" "f_dot\<in>M" "p\<in>M" "a\<in>M"
@@ -281,21 +250,22 @@ proof -
     if "\<tau>\<in>M" for \<tau>
   proof -
     let ?f_fm="snd_fm(1,0)"
-    let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(fst_fm,fst_fm),2,0)"
-    note types = assms leq_in_M P_in_M one_in_M
+    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,fst_fm),2,0)"
+    note assms
+    moreover
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
       using arity_fun_apply_fm union_abs1 arity_forces[of "\<cdot>0`1 is 2\<cdot> "]
       by simp
     moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
       using ord_simp_union
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by (simp_all add:arity)
     ultimately
     show ?thesis
-      using separation_sat_after_function types that sats_fst_fm
-        snd_abs types sats_snd_fm sats_check_fm check_abs check_in_M fst_abs
-      unfolding hcomp_fm_def check_fm'_def
+      using separation_sat_after_function assms that sats_fst_fm
+        snd_abs sats_snd_fm sats_check_fm check_abs fst_abs
+      unfolding hcomp_fm_def
       by simp
   qed
   then
@@ -305,7 +275,7 @@ proof -
       lam_replacement_Pair[THEN [5] lam_replacement_hcomp2] lam_replacement_identity
       lam_replacement_constant lam_replacement_snd lam_replacement_fst lam_replacement_hcomp
       ccc_fun_closed_lemma_aux arity_fun_apply_fm union_abs1
-      transitivity[of _ B] leq_in_M assms
+      transitivity[of _ B] assms
     by simp
 qed
 
@@ -315,55 +285,58 @@ lemma ccc_fun_closed_lemma:
 proof -
   have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, fst(fst(fst(z)))\<^sup>v, snd(fst(z))\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
   proof -
-    note types = assms leq_in_M P_in_M one_in_M
     let ?f_fm="snd_fm(1,0)"
     let ?g="\<lambda>z . fst(fst(fst(z)))\<^sup>v"
-    let ?g_fm="hcomp_fm(check_fm'(6),hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)),2,0)"
-    let ?h_fm="hcomp_fm(check_fm'(7),hcomp_fm(snd_fm,fst_fm),3,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)),2,0)"
+    let ?h_fm="hcomp_fm(check_fm(7),hcomp_fm(snd_fm,fst_fm),3,0)"
+    note assms
+    moreover
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
-      using arity_fun_apply_fm union_abs1 arity_forces[of "\<cdot>0`1 is 2\<cdot> "] by simp
+      using arity_fun_apply_fm union_abs1 arity_forces[of "\<cdot>0`1 is 2\<cdot> "]
+      by simp
     moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 6" "?g_fm \<in> formula" "arity(?g_fm) \<le> 7"
       "?h_fm \<in> formula" "arity(?h_fm) \<le> 8"
       using ord_simp_union
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by (simp_all add:arity)
     ultimately
     show ?thesis
-      using separation_sat_after_function3 assms types sats_check_fm check_abs check_in_M
+      using separation_sat_after_function3 assms sats_check_fm check_abs
         fst_abs snd_abs
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by simp
   qed
   moreover
-  have  "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, \<tau>, fst(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, \<tau>, fst(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
     if "\<tau>\<in>M" for \<tau>
   proof -
     let ?f_fm="snd_fm(1,0)"
-    let ?g_fm="hcomp_fm(check_fm'(6),fst_fm,2,0)"
-    note types = assms leq_in_M P_in_M one_in_M
+    let ?g_fm="hcomp_fm(check_fm(6),fst_fm,2,0)"
+    note assms
+    moreover
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
       using arity_forces[of "\<cdot>0`1 is 2\<cdot> "] arity_fun_apply_fm union_abs1
       by simp
     moreover
     have "?f_fm \<in> formula" "arity(?f_fm) \<le> 7" "?g_fm \<in> formula" "arity(?g_fm) \<le> 8"
       using ord_simp_union
-      unfolding hcomp_fm_def check_fm'_def
+      unfolding hcomp_fm_def
       by (simp_all add:arity)
     ultimately
     show ?thesis
-      using separation_sat_after_function assms types that fst_abs
-        snd_abs types sats_check_fm check_abs check_in_M
-      unfolding hcomp_fm_def check_fm'_def
+      using separation_sat_after_function that fst_abs snd_abs sats_check_fm check_abs
+      unfolding hcomp_fm_def
       by simp
   qed
+  moreover note assms
   ultimately
   show ?thesis
     using lam_replacement_imp_lam_closed lam_replacement_Collect
       lam_replacement_constant lam_replacement_identity lam_replacement_snd lam_replacement_fst
       lam_replacement_hcomp lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
       separation_conj separation_in  separation_ball separation_bex separation_iff'
-      transitivity[of _ A] leq_in_M assms
+      transitivity[of _ A]
     by simp
 qed
 
@@ -375,11 +348,10 @@ lemma ccc_fun_approximation_lemma:
     "\<exists>F\<in>M. F : A \<rightarrow> Pow\<^bsup>M\<^esup>(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^bsup>M\<^esup> \<le> \<omega>)"
 proof -
   from \<open>f\<in>M[G]\<close>
-  obtain f_dot where "f = val(P,G,f_dot)" "f_dot\<in>M" using GenExtD by force
+  obtain f_dot where "f = val(G,f_dot)" "f_dot\<in>M" using GenExtD by force
   with assms
   obtain p where "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "p\<in>G" "p\<in>M"
-    using transitivity[OF M_genericD P_in_M]
-      generic truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" G "[f_dot, A\<^sup>v, B\<^sup>v]"]
+    using G_subset_M truth_lemma[of "\<cdot>0:1\<rightarrow>2\<cdot>" "[f_dot, A\<^sup>v, B\<^sup>v]"]
     by (auto simp add:ord_simp_union arity_typed_function_fm
         \<comment> \<open>NOTE: type-checking is not performed here by the Simplifier\<close>
         typed_function_type)
@@ -397,12 +369,12 @@ proof -
     note \<open>f\<in>M[G]\<close> \<open>A\<in>M\<close>
     moreover from calculation
     have "M[G], [f, a, f`a] \<Turnstile> \<cdot>0`1 is 2\<cdot>"
-      by (auto dest:transM)
+      by (auto dest:transitivity)
     moreover
-    note \<open>B\<in>M\<close> \<open>f = val(P,G,f_dot)\<close>
+    note \<open>B\<in>M\<close> \<open>f = val(G,f_dot)\<close>
     moreover from calculation
-    have "a\<in>M" "val(P,G, f_dot)`a\<in>M"
-      by (auto dest:transM)
+    have "a\<in>M" "val(G, f_dot)`a\<in>M"
+      by (auto dest:transitivity)
     moreover
     note \<open>f_dot\<in>M\<close> \<open>p\<in>G\<close>
     ultimately
@@ -446,9 +418,9 @@ proof -
       by unfold_locales simp_all
     from \<open>F`a \<in> M\<close>
     interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
-      using P_in_M lam_replacement_imp_strong_replacement[OF
+      using lam_replacement_imp_strong_replacement[OF
           lam_replacement_Sigfun[OF lam_replacement_constant]]
-        Pi_replacement1 transM[of _ "F`a"]
+        Pi_replacement1 transitivity[of _ "F`a"]
       by unfold_locales simp_all
     from \<open>p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]\<close> \<open>a\<in>A\<close>
     have "\<exists>y. y \<in> ?Q(b)" if "b \<in> F`a" for b
@@ -482,12 +454,12 @@ proof -
         by auto
     qed
     moreover from calculation
-    have "antichain(range(q))"
+    have "antichain(P,leq,range(q))"
       using Pi_range_eq[of _  _ "\<lambda>_ . P"]
-      unfolding antichain_def by auto
+      unfolding antichain_def compat_in_def by auto
     moreover from this and \<open>q\<in>M\<close>
-    have "antichain_r'(range(q))"
-      by (simp add:absolut)
+    have "antichain\<^bsup>M\<^esup>(P,leq,range(q))"
+      by (simp add:absolut del:P_in_M)
     moreover from calculation
     have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c
       using that Incompatible_imp_not_eq apply_type
@@ -499,7 +471,7 @@ proof -
     have "|F`a|\<^bsup>M\<^esup> \<le> |range(q)|\<^bsup>M\<^esup>"
       using def_lepoll_rel
       by (rule_tac lepoll_rel_imp_cardinal_rel_le) auto
-    also from \<open>antichain_r'(range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>q\<in>M\<close>
+    also from \<open>antichain\<^bsup>M\<^esup>(P,leq,range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>q\<in>M\<close>
     have "|range(q)|\<^bsup>M\<^esup> \<le> \<omega>"
       using def_ccc_rel by simp
     finally

@@ -11,8 +11,27 @@ locale M_AC =
   assumes
     choice_ax: "choice_ax(M)"
 
-locale M_cardinal_AC = M_cardinal_arith + M_AC
+locale M_cardinal_AC = M_cardinal_arith + M_AC +
+  assumes
+    lam_replacement_minimum:"lam_replacement(M, \<lambda>p. minimum(fst(p),snd(p)))"
 begin
+
+lemma lam_replacement_minimum_vimage:
+  "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x. minimum(r, f -`` {x}))"
+  using lam_replacement_minimum lam_replacement_vimage_sing_fun lam_replacement_constant
+  by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
+    (force intro: lam_replacement_identity)+
+
+lemmas surj_imp_inj_replacement4 = lam_replacement_minimum_vimage[unfolded lam_replacement_def]
+
+lemma lam_replacement_min: "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x . minimum(r, f -`` {x}))"
+  using lam_replacement_hcomp2[OF lam_replacement_constant[of r] lam_replacement_vimage_sing_fun]
+    lam_replacement_minimum
+  by simp
+
+lemmas surj_imp_inj_replacement =
+  surj_imp_inj_replacement1 surj_imp_inj_replacement2 surj_imp_inj_replacement4
+  lam_replacement_vimage_sing_fun[THEN lam_replacement_imp_strong_replacement]
 
 lemma well_ord_surj_imp_lepoll_rel:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)" and

@@ -73,14 +73,14 @@ lemma empty_rel_abs : "M(x) \<Longrightarrow> M(0) \<Longrightarrow> x = 0 \<lon
 
 lemma fst_rel_abs:
   assumes "M(p)"
-  shows "fst(p) = fst_rel(M,p)"
+  shows "fst_rel(M,p) = fst(p)"
   using fst_abs assms
   unfolding fst_def fst_rel_def
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto;rule_tac the_equality[symmetric],simp_all)
 
 lemma snd_rel_abs:
   assumes "M(p)"
-  shows "snd(p) = snd_rel(M,p)"
+  shows " snd_rel(M,p) = snd(p)"
   using snd_abs assms
   unfolding snd_def snd_rel_def
   by (cases "\<exists>a. \<exists>b. p = \<langle>a, b\<rangle>";auto;rule_tac the_equality[symmetric],simp_all)
@@ -759,6 +759,20 @@ end \<comment> \<open>\<^locale>\<open>M_N_Perm\<close>\<close>
 
 (***************  end Discipline  *********************)
 
+context M_Perm
+begin
+
+lemma mem_bij_rel: "\<lbrakk>f \<in> bij\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>bij(A,B)"
+  using bij_rel_char by simp
+
+lemma mem_inj_rel: "\<lbrakk>f \<in> inj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>inj(A,B)"
+  using inj_rel_char by simp
+
+lemma mem_surj_rel: "\<lbrakk>f \<in> surj\<^bsup>M\<^esup>(A,B); M(A); M(B)\<rbrakk> \<Longrightarrow> f\<in>surj(A,B)"
+  using surj_rel_char by simp
+
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
+
 (******************************************************)
 subsection\<open>Discipline for \<^term>\<open>eqpoll\<close>\<close>
 
@@ -913,5 +927,37 @@ theorem for it.\<close>
 
 text\<open>Note that \<^term>\<open>lesspoll_rel\<close> is neither $\Sigma_1^{\mathit{ZF}}$ nor
  $\Pi_1^{\mathit{ZF}}$, so there is no ``transfer'' theorem for it.\<close>
+
+definition
+  Powapply :: "[i,i] \<Rightarrow> i"  where
+  "Powapply(f,y) \<equiv> Pow(f`y)"
+
+reldb_add functional "Pow" "Pow_rel"
+reldb_add relational "Pow" "is_Pow"
+
+declare Replace_iff_sats[iff_sats]
+synthesize "is_Pow" from_definition assuming "nonempty"
+arity_theorem for "is_Pow_fm"
+
+relativize functional "Powapply" "Powapply_rel"
+relationalize "Powapply_rel" "is_Powapply"
+synthesize "is_Powapply" from_definition assuming "nonempty"
+arity_theorem for "is_Powapply_fm"
+
+notation Powapply_rel (\<open>Powapply\<^bsup>_\<^esup>'(_,_')\<close>)
+
+context M_basic
+begin
+
+rel_closed for "Powapply"
+  unfolding Powapply_rel_def
+  by simp
+
+is_iff_rel for "Powapply"
+  using Pow_rel_iff
+  unfolding is_Powapply_def Powapply_rel_def
+  by simp
+
+end \<comment>\<open>\<^locale>\<open>M_basic\<close>\<close>
 
 end

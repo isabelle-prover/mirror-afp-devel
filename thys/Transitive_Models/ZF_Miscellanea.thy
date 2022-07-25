@@ -6,6 +6,11 @@ theory ZF_Miscellanea
     Nat_Miscellanea
 begin
 
+lemma rex_mono :
+  assumes "\<exists> d \<in> A . P(d)" "A\<subseteq>B"
+  shows "\<exists> d \<in> B. P(d)"
+  using assms by auto
+
 lemma function_subset:
   "function(f) \<Longrightarrow> g\<subseteq>f \<Longrightarrow> function(g)"
   unfolding function_def subset_def by auto
@@ -39,6 +44,9 @@ lemma function_space_nonempty:
   shows "(\<lambda>x\<in>A. b) : A \<rightarrow> B"
   using assms lam_type by force
 
+lemma lam_constant_eq_cartprod: "(\<lambda>_\<in>A. y) = A \<times> {y}"
+  unfolding lam_def by auto
+
 lemma vimage_lam: "(\<lambda>x\<in>A. f(x)) -`` B = { x\<in>A . f(x) \<in> B }"
   using lam_funtype[of A f, THEN [2] domain_type]
     lam_funtype[of A f, THEN [2] apply_equality] lamI[of _ A f]
@@ -65,6 +73,11 @@ lemma Pi_vimage_subset : "f \<in> Pi(A,B) \<Longrightarrow> f-``C \<subseteq> A"
 definition
   minimum :: "i \<Rightarrow> i \<Rightarrow> i" where
   "minimum(r,B) \<equiv> THE b. first(b,B,r)"
+
+lemma minimum_in': "minimum(r,B) \<in> B \<union> {0}"
+  using the_0 first_is_elem unfolding minimum_def
+  by (cases "\<exists>!b. first(b, B, r)")
+    (auto dest!:theI[of "\<lambda>b. first(b, B, r)"])
 
 lemma minimum_in: "\<lbrakk> well_ord(A,r); B\<subseteq>A; B\<noteq>0 \<rbrakk> \<Longrightarrow> minimum(r,B) \<in> B"
   using the_first_in unfolding minimum_def by simp
@@ -177,5 +190,15 @@ lemma Finite_imp_lesspoll_nat:
   using assms subset_imp_lepoll[OF naturals_subset_nat] eq_lepoll_trans
     n_lesspoll_nat eq_lesspoll_trans
   unfolding Finite_def lesspoll_def by auto
+
+definition curry :: "[i,i,i] \<Rightarrow> i" where
+  "curry(A,B,f) \<equiv> \<lambda>x\<in>A . \<lambda>y\<in>B . f`\<langle>x,y\<rangle>"
+
+lemma curry_type :
+  assumes "f \<in> A\<times>B \<rightarrow> C"
+  shows "curry(A,B,f) \<in> A \<rightarrow> (B \<rightarrow> C)"
+  using assms lam_funtype
+  unfolding curry_def
+  by auto
 
 end

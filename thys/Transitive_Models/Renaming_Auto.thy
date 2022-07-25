@@ -1,7 +1,7 @@
 theory Renaming_Auto
   imports
-    Renaming
     Utils
+    Renaming
 keywords
   "rename" :: thy_decl % "ML"
 and
@@ -14,6 +14,8 @@ abbrevs
   "simple_rename" = ""
 
 begin
+
+hide_const (open) Order.pred
 
 lemmas nat_succI = nat_succ_iff[THEN iffD2]
 ML_file\<open>Renaming_ML.ml\<close>

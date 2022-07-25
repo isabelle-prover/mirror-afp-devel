@@ -45,35 +45,39 @@ proof
 qed
 
 end \<comment> \<open>\<^locale>\<open>separative_notion\<close>\<close>
-
-locale ctm_separative = forcing_data1 + separative_notion
+locale ctm_separative = forcing_data2 + separative_notion
 begin
 
+context
+  fixes G
+  assumes generic: "M_generic(G)"
+begin
+
+interpretation G_generic1 P leq \<one> M enum G
+  by unfold_locales (simp add:generic)
+
 lemma generic_not_in_M:
-  assumes "M_generic(G)"
   shows "G \<notin> M"
 proof
   assume "G\<in>M"
   then
   have "P - G \<in> M"
-    using P_in_M Diff_closed by simp
+    using Diff_closed by simp
   moreover
   have "\<not>(\<exists>q\<in>G. q \<in> P - G)" "(P - G) \<subseteq> P"
     unfolding Diff_def by auto
   moreover
-  note assms
+  note generic
   ultimately
   show "False"
-    using filter_complement_dense[of G] M_generic_denseD[of G "P-G"]
-      M_generic_def by simp \<comment> \<open>need to put generic ==> filter in claset\<close>
+    using filter_complement_dense[of G] M_generic_denseD[of "P-G"]
+      M_generic_def[of G] by simp (*TODO: put generic ==> filter in claset ?*)
 qed
 
-theorem proper_extension:
-  assumes "M_generic(G)"
-  shows "M \<noteq> M[G]"
-  using assms G_in_Gen_Ext[of G] one_in_G[of G] generic_not_in_M
+theorem proper_extension: "M \<noteq> M[G]"
+  using generic G_in_Gen_Ext one_in_G generic_not_in_M
   by force
-
+end
 end \<comment> \<open>\<^locale>\<open>ctm_separative\<close>\<close>
 
 end

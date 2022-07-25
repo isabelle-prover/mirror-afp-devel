@@ -198,14 +198,6 @@ lemma dcwit_body_abs:
   unfolding dcwit_body_def is_dcwit_body_def
   by (auto dest:transM simp:absolut dc_witness_rel_char del:bexI intro!:bexI)
 
-lemma separation_eq_dc_witness:
-  "M(A) \<Longrightarrow>
-    M(a) \<Longrightarrow>
-    M(g) \<Longrightarrow>
-    M(R) \<Longrightarrow>  separation(M,\<lambda>p. fst(p)\<in>\<omega> \<longrightarrow> snd(p) = dc_witness(fst(p), A, a, g, R))"
-  using separation_is_dcwit_body dcwit_body_abs unfolding is_dcwit_body_def
-  oops
-
 lemma Lambda_dc_witness_closed:
   assumes "g \<in> Pow\<^bsup>M\<^esup>(A)-{0} \<rightarrow> A" "a\<in>A" "\<forall>y\<in>A. {x \<in> A . \<langle>y, x\<rangle> \<in> R} \<noteq> 0"
     "M(g)" "M(A)" "M(a)" "M(R)"

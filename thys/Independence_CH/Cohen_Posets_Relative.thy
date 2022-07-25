@@ -16,6 +16,49 @@ lemmas zero_lesspoll_kappa = zero_lesspoll[OF zero_lt_kappa]
 
 end \<comment> \<open>\<^locale>\<open>cohen_data\<close>\<close>
 
+abbreviation
+  inj_dense :: "[i,i,i,i]\<Rightarrow>i" where
+  "inj_dense(I,J,w,x) \<equiv>
+    { p\<in>Fn(\<omega>,I\<times>\<omega>,J) . (\<exists>n\<in>\<omega>. \<langle>\<langle>w,n\<rangle>,1\<rangle> \<in> p \<and> \<langle>\<langle>x,n\<rangle>,0\<rangle> \<in> p) }"
+
+(* TODO write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close> *)
+lemma dense_inj_dense:
+  assumes "w \<in> I" "x \<in> I" "w \<noteq> x" "p\<in>Fn(\<omega>,I\<times>\<omega>,J)" "0\<in>J" "1\<in>J"
+  shows "\<exists>d\<in>inj_dense(I,J,w,x). \<langle>d ,p\<rangle> \<in> Fnle(\<omega>,I\<times>\<omega>,J)"
+proof -
+  obtain n where "\<langle>w,n\<rangle> \<notin> domain(p)" "\<langle>x,n\<rangle> \<notin> domain(p)" "n \<in> \<omega>"
+  proof -
+    {
+      assume "\<langle>w,n\<rangle> \<in> domain(p) \<or> \<langle>x,n\<rangle> \<in> domain(p)" if "n \<in> \<omega>" for n
+      then
+      have "\<omega> \<subseteq> range(domain(p))" by blast
+      then
+      have "\<not> Finite(p)"
+        using Finite_range Finite_domain subset_Finite nat_not_Finite
+        by auto
+      with \<open>p \<in> _\<close>
+      have False
+        using Fn_nat_eq_FiniteFun FiniteFun.dom_subset[of "I\<times>\<omega>" J]
+          Fin_into_Finite by auto
+    }
+    with that\<comment> \<open>the shape of the goal puts assumptions in this variable\<close>
+    show ?thesis by auto
+  qed
+  moreover
+  note \<open>p \<in> _\<close> assms
+  moreover from calculation
+  have "cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p) \<in> Fn(\<omega>,I\<times>\<omega>,J)"
+    using FiniteFun.consI[of "\<langle>x,n\<rangle>" "I\<times>\<omega>" 0 J p]
+      Fn_nat_eq_FiniteFun by auto
+  ultimately
+  have "cons(\<langle>\<langle>w,n\<rangle>,1\<rangle>, cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p) ) \<in> Fn(\<omega>,I\<times>\<omega>,J)"
+    using FiniteFun.consI[of "\<langle>w,n\<rangle>" "I \<times> \<omega>" 1 J "cons(\<langle>\<langle>x,n\<rangle>,0\<rangle>, p)"]
+      Fn_nat_eq_FiniteFun by auto
+  with \<open>n \<in> \<omega>\<close>
+  show ?thesis
+    using \<open>p \<in> _\<close> by (intro bexI) auto
+qed
+
 locale add_reals = cohen_data nat _ 2
 
 subsection\<open>Combinatorial results on Cohen posets\<close>
@@ -34,8 +77,10 @@ next
     by blast
 qed
 
+
 context cohen_data
 begin
+
 
 lemma compat_imp_Un_is_function:
   assumes "G \<subseteq> Fn(\<kappa>, I, J)" "\<And>p q. p \<in> G \<Longrightarrow> q \<in> G \<Longrightarrow> compat(p,q)"
@@ -78,158 +123,6 @@ locale M_cohen = M_delta +
     "M(A) \<Longrightarrow> M(f) \<Longrightarrow> M(b) \<Longrightarrow> M(D) \<Longrightarrow> M(r') \<Longrightarrow> M(A')\<Longrightarrow>
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(drSR_Y(r', D, A), b, f, i)\<rangle>)"
 
-context M_cardinal_library
-begin
-
-lemma lesspoll_nat_imp_lesspoll_rel:
-  assumes "A \<prec> \<omega>" "M(A)"
-  shows "A \<prec>\<^bsup>M\<^esup> \<omega>"
-proof -
-  note assms
-  moreover from this
-  obtain f n where "f\<in>bij\<^bsup>M\<^esup>(A,n)" "n\<in>\<omega>" "A \<approx>\<^bsup>M\<^esup> n"
-    using lesspoll_nat_is_Finite Finite_rel_def[of M A]
-    by auto
-  moreover from calculation
-  have "A \<lesssim>\<^bsup>M\<^esup> \<omega>"
-    using lesspoll_nat_is_Finite Infinite_imp_nats_lepoll_rel[of \<omega> n]
-      nat_not_Finite eq_lepoll_rel_trans[of A n \<omega>]
-    by auto
-  moreover from calculation
-  have "\<not> g \<in> bij\<^bsup>M\<^esup>(A,\<omega>)" for g
-    using mem_bij_rel unfolding lesspoll_def by auto
-  ultimately
-  show ?thesis
-    unfolding lesspoll_rel_def
-    by auto
-qed
-
-lemma Finite_imp_lesspoll_rel_nat:
-  assumes "Finite(A)" "M(A)"
-  shows "A \<prec>\<^bsup>M\<^esup> \<omega>"
-  using Finite_imp_lesspoll_nat assms lesspoll_nat_imp_lesspoll_rel
-  by auto
-
-lemma InfCard_rel_lesspoll_rel_Un:
-  includes Ord_dests
-  assumes "InfCard_rel(M,\<kappa>)" "A \<prec>\<^bsup>M\<^esup> \<kappa>" "B \<prec>\<^bsup>M\<^esup> \<kappa>"
-    and types: "M(\<kappa>)" "M(A)" "M(B)"
-  shows "A \<union> B \<prec>\<^bsup>M\<^esup> \<kappa>"
-proof -
-  from assms
-  have "|A|\<^bsup>M\<^esup> < \<kappa>" "|B|\<^bsup>M\<^esup> < \<kappa>"
-    using lesspoll_rel_cardinal_rel_lt InfCard_rel_is_Card_rel
-    by auto
-  show ?thesis
-  proof (cases "Finite(A) \<and> Finite(B)")
-    case True
-    with assms
-    show ?thesis
-      using lesspoll_rel_trans2[OF _ le_imp_lepoll_rel, of _ nat \<kappa>]
-        Finite_imp_lesspoll_rel_nat[OF Finite_Un]
-      unfolding InfCard_rel_def
-      by simp
-  next
-    case False
-    with types
-    have "InfCard_rel(M,max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>))"
-      using Infinite_InfCard_rel_cardinal_rel InfCard_rel_is_Card_rel
-        le_trans[of nat] not_le_iff_lt[THEN iffD1, THEN leI, of "|A|\<^bsup>M\<^esup>" "|B|\<^bsup>M\<^esup>"]
-      unfolding max_def InfCard_rel_def
-      by auto
-    with \<open>M(A)\<close> \<open>M(B)\<close>
-    have "|A \<union> B|\<^bsup>M\<^esup> \<le> max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>)"
-      using cardinal_rel_Un_le[of "max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>)" A B]
-        not_le_iff_lt[THEN iffD1, THEN leI, of "|A|\<^bsup>M\<^esup>" "|B|\<^bsup>M\<^esup>" ]
-      unfolding max_def
-      by simp
-    moreover from \<open>|A|\<^bsup>M\<^esup> < \<kappa>\<close> \<open>|B|\<^bsup>M\<^esup> < \<kappa>\<close>
-    have "max(|A|\<^bsup>M\<^esup>,|B|\<^bsup>M\<^esup>) < \<kappa>"
-      unfolding max_def
-      by simp
-    ultimately
-    have "|A \<union> B|\<^bsup>M\<^esup> <  \<kappa>"
-      using lt_trans1
-      by blast
-    moreover
-    note \<open>InfCard_rel(M,\<kappa>)\<close>
-    moreover from calculation types
-    have "|A \<union> B|\<^bsup>M\<^esup> \<prec>\<^bsup>M\<^esup> \<kappa>"
-      using lt_Card_rel_imp_lesspoll_rel InfCard_rel_is_Card_rel
-      by simp
-    ultimately
-    show ?thesis
-      using cardinal_rel_eqpoll_rel eq_lesspoll_rel_trans[of "A \<union> B" "|A \<union> B|\<^bsup>M\<^esup>" \<kappa>]
-        eqpoll_rel_sym types
-      by simp
-  qed
-qed
-
-end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
-
-lemma (in M_cohen) Fn_rel_unionI:
-  assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "q\<in>Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
-    "M(\<kappa>)" "M(I)" "M(J)" "domain(p) \<inter> domain(q) = 0"
-  shows "p\<union>q \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
-proof -
-  note assms
-  moreover from calculation
-  have "p \<prec>\<^bsup>M\<^esup> \<kappa>" "q \<prec>\<^bsup>M\<^esup> \<kappa>" "M(p)" "M(q)"
-    using Fn_rel_is_function by simp_all
-  moreover from calculation
-  have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
-    using eqpoll_rel_sym cardinal_rel_eqpoll_rel InfCard_rel_lesspoll_rel_Un
-    by simp_all
-  ultimately
-  show ?thesis
-    unfolding Fn_rel_def
-    using pfun_unionI cardinal_rel_eqpoll_rel eq_lesspoll_rel_trans[OF _ \<open>p\<union>q \<prec>\<^bsup>M\<^esup> _\<close>]
-    by auto
-qed
-
-lemma (in M_cohen) restrict_eq_imp_compat_rel:
-  assumes "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "q \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)" "InfCard\<^bsup>M\<^esup>(\<kappa>)" "M(J)" "M(\<kappa>)"
-    "restrict(p, domain(p) \<inter> domain(q)) = restrict(q, domain(p) \<inter> domain(q))"
-  shows "p \<union> q \<in> Fn\<^bsup>M\<^esup>(\<kappa>, I, J)"
-proof -
-  note assms
-  moreover from calculation
-  have "p \<prec>\<^bsup>M\<^esup> \<kappa>" "q \<prec>\<^bsup>M\<^esup> \<kappa>" "M(p)" "M(q)"
-    using Fn_rel_is_function by simp_all
-  moreover from calculation
-  have "p\<union>q \<prec>\<^bsup>M\<^esup> \<kappa>"
-    using InfCard_rel_lesspoll_rel_Un cardinal_rel_eqpoll_rel[THEN eqpoll_rel_sym]
-    by auto
-  ultimately
-  show ?thesis
-    unfolding Fn_rel_def
-    using pfun_restrict_eq_imp_compat cardinal_rel_eqpoll_rel
-      eq_lesspoll_rel_trans[OF _ \<open>p\<union>q \<prec>\<^bsup>M\<^esup> _\<close>]
-    by auto
-qed
-
-lemma (in M_cohen) InfCard_rel_imp_n_lesspoll_rel :
-  assumes "InfCard\<^bsup>M\<^esup>(\<kappa>)" "M(\<kappa>)" "n\<in>\<omega>"
-  shows "n \<prec>\<^bsup>M\<^esup> \<kappa>"
-proof -
-  note assms
-  moreover from this
-  have "n \<prec>\<^bsup>M\<^esup> \<omega>"
-    using n_lesspoll_rel_nat by simp
-  ultimately
-  show ?thesis
-    using lesspoll_rel_trans2 Infinite_iff_lepoll_rel_nat InfCard_rel_imp_Infinite nat_into_M
-    by simp
-qed
-
-lemma (in M_cohen) cons_in_Fn_rel:
-  assumes "x \<notin> domain(p)" "p \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)" "x \<in> I" "j \<in> J" "InfCard\<^bsup>M\<^esup>(\<kappa>)"
-    "M(\<kappa>)" "M(I)" "M(J)"
-  shows "cons(\<langle>x,j\<rangle>, p) \<in> Fn\<^bsup>M\<^esup>(\<kappa>,I,J)"
-  using assms cons_eq Fn_rel_unionI[OF Fn_rel_singletonI[of x I j J] \<open>p\<in>_\<close>]
-    InfCard_rel_imp_n_lesspoll_rel
-  by auto
-
 lemma (in M_library) Fnle_rel_Aleph_rel1_closed[intro,simp]:
   "M(Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2))"
   by simp
@@ -263,6 +156,7 @@ definition
   "antichain(P,leq,A) \<equiv> A\<subseteq>P \<and> (\<forall>p\<in>A. \<forall>q\<in>A. p\<noteq>q \<longrightarrow> \<not>compat_in(P,leq,p,q))"
 
 relativize relational  "antichain" "antichain_rel"
+
 definition
   ccc :: "i \<Rightarrow> i \<Rightarrow> o" where
   "ccc(P,leq) \<equiv> \<forall>A. antichain(P,leq,A) \<longrightarrow> |A| \<le> nat"
@@ -399,7 +293,7 @@ proof -
     have "uncountable_rel(M,{domain(p) . p \<in> A})"
     proof
       interpret M_replacement_lepoll M dC_F
-        using lam_replacement_dC_F domain_eq_separation lam_replacement_inj_rel
+        using lam_replacement_dC_F domain_eq_separation lam_replacement_inj_rel lam_replacement_minimum
         unfolding dC_F_def
       proof(unfold_locales,simp_all)
         fix X b f
@@ -418,7 +312,7 @@ proof -
       ultimately
       interpret M_cardinal_UN_lepoll _ "dC_F(A)" "{domain(p). p\<in>A}"
         using lam_replacement_dC_F lam_replacement_inj_rel \<open>M(A)\<close>
-          lepoll_assumptions domain_eq_separation
+          lepoll_assumptions domain_eq_separation lam_replacement_minimum
           countable_lepoll_assms2 repFun_dom_closed
           lepoll_assumptions1[OF \<open>M(A)\<close> repFun_dom_closed[OF \<open>M(A)\<close>]]
         apply(unfold_locales)
@@ -578,7 +472,7 @@ proof -
       moreover from calculation
       interpret M_replacement_lepoll M "drSR_Y(r,D)"
         using countable_lepoll_assms3 lam_replacement_inj_rel lam_replacement_drSR_Y
-          drSR_Y_closed lam_Least_assumption_drSR_Y
+          drSR_Y_closed lam_Least_assumption_drSR_Y lam_replacement_minimum
         by (unfold_locales,simp_all add:drSR_Y_def,rule_tac 1,simp_all)
       from calculation
       have "x \<in> Pow\<^bsup>M\<^esup>(r \<times> 2) \<Longrightarrow> M(drSR_Y(r, D, A, x))" for x
@@ -587,10 +481,10 @@ proof -
       interpret M_cardinal_UN_lepoll _ "?Y(A)" "Pow_rel(M,r\<times>2)"
         using countable_lepoll_assms3 lam_replacement_drSR_Y
           lepoll_assumptions[where S="Pow_rel(M,r\<times>2)", unfolded lepoll_assumptions_defs]
-          lam_Least_assumption_drSR_Y[unfolded drSR_Y_def]
+          lam_Least_assumption_drSR_Y[unfolded drSR_Y_def] lam_replacement_minimum
         unfolding drSR_Y_def
         apply unfold_locales
-                        apply (simp_all add:lam_replacement_inj_rel del: if_range_F_else_F_def,rule_tac 1,simp_all)
+             apply (simp_all add:lam_replacement_inj_rel del: if_range_F_else_F_def,rule_tac 1,simp_all)
         by ((fastforce dest:transM[OF _ \<open>M(A)\<close>])+)
       {
         from \<open>Finite(r)\<close> \<open>M(r)\<close>

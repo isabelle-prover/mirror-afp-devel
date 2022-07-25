@@ -7,6 +7,8 @@ theory Internalizations
     Nat_Miscellanea
 begin
 
+hide_const (open) Order.pred
+
 definition
   infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where
   "infinity_ax(M) \<equiv>

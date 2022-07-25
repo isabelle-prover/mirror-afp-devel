@@ -317,7 +317,7 @@ end \<comment> \<open>\<^locale>\<open>M_pre_aleph\<close>\<close>
 
 locale M_aleph = M_pre_aleph +
   assumes
-    aleph_rel_replacement: "strong_replacement(M, \<lambda>x y. Ord(x) \<and> y = \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>)"
+    aleph_rel_separation: "Ord(x) \<Longrightarrow> M(x) \<Longrightarrow> separation(M, \<lambda>y. \<exists>z\<in>x. y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>)"
 begin
 
 lemma Aleph_rel_cont: "Limit(l) \<Longrightarrow> M(l) \<Longrightarrow> \<aleph>\<^bsub>l\<^esub>\<^bsup>M\<^esup> = (\<Union>i<l. \<aleph>\<^bsub>i\<^esub>\<^bsup>M\<^esup>)"
@@ -350,37 +350,6 @@ next
     by auto
   with limit
   show ?case using Ord_UN trans by auto
-qed
-
-lemma Card_rel_Aleph_rel [simp, intro]:
-  assumes "Ord(a)" and types: "M(a)" shows "Card\<^bsup>M\<^esup>(\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>)"
-  using assms
-proof (induct rule:trans_induct3)
-  case 0
-  then
-  show ?case
-    using Aleph_rel_zero Card_rel_nat by simp
-next
-  case (succ x)
-  then
-  show ?case
-    using Card_rel_csucc_rel Ord_Aleph_rel Aleph_rel_succ
-    by simp
-next
-  case (limit x)
-  moreover
-  from this
-  have "M({y . z \<in> x, M(y) \<and> M(z) \<and> Ord(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>})"
-    using aleph_rel_replacement
-    by auto
-  moreover
-  have "{y . z \<in> x, M(y) \<and> M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>} = {y . z \<in> x, M(y) \<and> M(z) \<and> Ord(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>}"
-    using Ord_in_Ord Limit_is_Ord[OF limit(1)] by simp
-  ultimately
-  show ?case
-    using Ord_Aleph_rel Card_nat Limit_is_Ord Card_relI
-    by (subst def_transrec [OF Aleph_rel_def'])
-      (auto simp add:HAleph_rel_def)
 qed
 
 lemma Aleph_rel_increasing:
@@ -439,6 +408,52 @@ proof -
   }
   with types assms
   show ?thesis by simp
+qed
+
+lemma Card_rel_Aleph_rel [simp, intro]:
+  assumes "Ord(a)" and types: "M(a)" shows "Card\<^bsup>M\<^esup>(\<aleph>\<^bsub>a\<^esub>\<^bsup>M\<^esup>)"
+  using assms
+proof (induct rule:trans_induct3)
+  case 0
+  then
+  show ?case
+    using Aleph_rel_zero Card_rel_nat by simp
+next
+  case (succ x)
+  then
+  show ?case
+    using Card_rel_csucc_rel Ord_Aleph_rel Aleph_rel_succ
+    by simp
+next
+  case (limit x)
+  moreover from this
+  have "Ord(x)"
+    using Limit_is_Ord by simp
+  from this
+  have "{y . z \<in> x, M(y) \<and> M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>} = {y . z \<in> x, M(y) \<and> M(z) \<and> Ord(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>}"
+    using Ord_in_Ord by simp
+  moreover from \<open>Ord(x)\<close>
+  have "{y . z \<in> x, M(y) \<and> M(z) \<and> Ord(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>} = {y . z \<in> x, M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>}"
+    using Ord_in_Ord by blast
+  moreover from \<open>Ord(x)\<close> \<open>M(x)\<close>
+  have "{y . z \<in> x, M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>} \<subseteq>  \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup>"
+    using Aleph_rel_increasing
+    by (auto dest:ltD transM intro:ltI)
+  with calculation
+  have "{y . z \<in> x, M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>} = {y \<in> \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup> . (\<exists>z \<in> x. y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>)}"
+    by (blast dest:transM)
+  with calculation
+  have "{y . z \<in> x, M(y) \<and> M(z) \<and> y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>} = {y \<in> \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup> . (\<exists>z \<in> x. y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>)}"
+    by simp
+  moreover from \<open>Ord(x)\<close> \<open>M(x)\<close>
+  have "M({y \<in> \<aleph>\<^bsub>x\<^esub>\<^bsup>M\<^esup> . (\<exists>z \<in> x. y = \<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>)})"
+    using aleph_rel_separation
+    by simp
+  ultimately
+  show ?case
+    using Ord_Aleph_rel Card_nat Limit_is_Ord Card_relI
+    by (subst def_transrec [OF Aleph_rel_def'])
+      (auto simp add:HAleph_rel_def)
 qed
 
 lemmas nat_subset_Aleph_rel_1 =

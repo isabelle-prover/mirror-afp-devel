@@ -5,6 +5,8 @@ theory Recursion_Thms
 
 begin
 
+hide_const (open) Order.pred
+
 \<comment> \<open>Removing arities from inherited simpset\<close>
 declare arity_And [simp del] arity_Or[simp del] arity_Implies[simp del]
   arity_Exists[simp del] arity_Iff[simp del]

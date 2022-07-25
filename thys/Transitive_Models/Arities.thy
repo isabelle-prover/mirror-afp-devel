@@ -26,7 +26,7 @@ lemma Un_trasposition_aux2:
   "r \<union> (s \<union> (r \<union> u))= r \<union> (s \<union> u)"
   "r \<union> (s \<union> (t \<union> (r \<union> u)))= r \<union> (s \<union> (t \<union> u))" by auto
 
-txt\<open>Using the previous lemmas to guide the automatic arity calculation.\<close>
+text\<open>We use the previous lemmas to guide automatic arity calculations.\<close>
 
 context
   notes Un_assoc[symmetric,simp] Un_trasposition_aux1[simp]
@@ -69,7 +69,7 @@ begin
 
 lemma arity_is_recfun_fm [arity]:
   "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; Z\<in>nat;i\<in>nat\<rbrakk> \<Longrightarrow>  arity(p) = i \<Longrightarrow>
-  arity(is_recfun_fm(p,v,n,Z)) = succ(v) \<union> succ(n) \<union> succ(Z) \<union> pred(pred(pred(pred(i))))"
+  arity(is_recfun_fm(p,v,n,Z)) = succ(v) \<union> succ(n) \<union> succ(Z) \<union> (pred^4(i))"
   unfolding is_recfun_fm_def
   using arity_upair_fm arity_pair_fm arity_pre_image_fm arity_restriction_fm
     union_abs2 pred_Un_distrib
@@ -77,7 +77,7 @@ lemma arity_is_recfun_fm [arity]:
 
 lemma arity_is_wfrec_fm [arity]:
   "\<lbrakk>p\<in>formula ; v\<in>nat ; n\<in>nat; Z\<in>nat ; i\<in>nat\<rbrakk> \<Longrightarrow> arity(p) = i \<Longrightarrow>
-    arity(is_wfrec_fm(p,v,n,Z)) = succ(v) \<union> succ(n) \<union> succ(Z) \<union> pred(pred(pred(pred(pred(i)))))"
+    arity(is_wfrec_fm(p,v,n,Z)) = succ(v) \<union> succ(n) \<union> succ(Z) \<union> (pred^5(i))"
   unfolding is_wfrec_fm_def
   using arity_succ_fm  arity_is_recfun_fm
     union_abs2 pred_Un_distrib
@@ -95,10 +95,10 @@ lemma arity_iterates_MH_fm [arity]:
   assumes "isF\<in>formula" "v\<in>nat" "n\<in>nat" "g\<in>nat" "z\<in>nat" "i\<in>nat"
     "arity(isF) = i"
   shows "arity(iterates_MH_fm(isF,v,n,g,z)) =
-           succ(v) \<union> succ(n) \<union> succ(g) \<union> succ(z) \<union> pred(pred(pred(pred(i))))"
+           succ(v) \<union> succ(n) \<union> succ(g) \<union> succ(z) \<union> (pred^4(i))"
 proof -
-  let ?\<phi> = "Exists(And(fun_apply_fm(succ(succ(succ(g))), 2, 0), Forall(Implies(Equal(0, 2), isF))))"
-  let ?ar = "succ(succ(succ(g))) \<union> pred(pred(i))"
+  let ?\<phi> = "(\<cdot>\<exists>\<cdot>\<cdot>g +\<^sub>\<omega> 3`2 is 0\<cdot> \<and> (\<cdot>\<forall>\<cdot>\<cdot>0 = 2\<cdot> \<rightarrow> isF\<cdot>\<cdot>)\<cdot>\<cdot>)"
+  let ?ar = "(g +\<^sub>\<omega> 3) \<union> pred(pred(i))"
   from assms
   have "arity(?\<phi>) =?ar" "?\<phi>\<in>formula"
     using arity_fun_apply_fm
@@ -115,17 +115,16 @@ lemma arity_is_iterates_fm [arity]:
   assumes "p\<in>formula" "v\<in>nat" "n\<in>nat" "Z\<in>nat" "i\<in>nat"
     "arity(p) = i"
   shows "arity(is_iterates_fm(p,v,n,Z)) = succ(v) \<union> succ(n) \<union> succ(Z) \<union>
-          pred(pred(pred(pred(pred(pred(pred(pred(pred(pred(pred(i)))))))))))"
+          (pred^11(i))"
 proof -
   let ?\<phi> = "iterates_MH_fm(p, 7+\<^sub>\<omega>v, 2, 1, 0)"
-  let ?\<psi> = "is_wfrec_fm(?\<phi>, 0, succ(succ(n)),succ(succ(Z)))"
+  let ?\<psi> = "is_wfrec_fm(?\<phi>, 0, n +\<^sub>\<omega> 2, Z +\<^sub>\<omega> 2)"
   from \<open>v\<in>_\<close>
-  have "arity(?\<phi>) = (8+\<^sub>\<omega>v) \<union> pred(pred(pred(pred(i))))" "?\<phi>\<in>formula"
+  have "arity(?\<phi>) = (8+\<^sub>\<omega>v) \<union> (pred^4(i))" "?\<phi>\<in>formula"
     using assms arity_iterates_MH_fm union_abs2
     by simp_all
   then
-  have "arity(?\<psi>) = succ(succ(succ(n))) \<union> succ(succ(succ(Z))) \<union> (3+\<^sub>\<omega>v) \<union>
-      pred(pred(pred(pred(pred(pred(pred(pred(pred(i)))))))))"
+  have "arity(?\<psi>) = n +\<^sub>\<omega> 3 \<union> (Z +\<^sub>\<omega> 3) \<union> (3+\<^sub>\<omega>v) \<union> (pred^9(i))"
     using assms arity_is_wfrec_fm[OF \<open>?\<phi>\<in>_\<close> _ _ _ _ \<open>arity(?\<phi>) = _\<close>] union_abs1 pred_Un_distrib
     by auto
   then

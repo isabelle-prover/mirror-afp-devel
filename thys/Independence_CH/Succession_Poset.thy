@@ -2,7 +2,7 @@ section\<open>A poset of successions\<close>
 
 theory Succession_Poset
   imports
-    Replacement_Instances
+    ZF_Trans_Interpretations
     Proper_Extension
 begin
 
@@ -16,10 +16,7 @@ The order relation of the poset is that of being less defined as functions
 (cf. \<^term>\<open>Fnlerel(A\<^bsup><\<omega>\<^esup>)\<close>), so it could be surprising that we have not used
 \<^term>\<open>Fn(\<omega>,\<omega>,2)\<close> for the set. The only reason why we keep this alternative
 definition is because we can prove \<^term>\<open>A\<^bsup><\<omega>\<^esup> \<in> M\<close> (and therefore
-\<^term>\<open>Fnlerel(A\<^bsup><\<omega>\<^esup>) \<in> M\<close>) using only one instance of replacement.\<close>
-
-sublocale M_ZF2_trans \<subseteq> M_seqspace "##M"
-  by (unfold_locales, simp add:replacement_omega_funspace)
+\<^term>\<open>Fnlerel(A\<^bsup><\<omega>\<^esup>) \<in> M\<close>) using only one instance of separation.\<close>
 
 definition seq_upd :: "i \<Rightarrow> i \<Rightarrow> i" where
   "seq_upd(f,a) \<equiv> \<lambda> j \<in> succ(domain(f)) . if j < domain(f) then f`j else a"
@@ -145,7 +142,6 @@ interpretation sp:forcing_notion "2\<^bsup><\<omega>\<^esup>" "seqle" "0"
 
 notation sp.Leq (infixl "\<preceq>s" 50)
 notation sp.Incompatible (infixl "\<bottom>s" 50)
-notation sp.GenExt_at_P ("_\<^bsup>s\<^esup>[_]" [71,1])
 
 lemma seqspace_separative:
   assumes "f\<in>2\<^bsup><\<omega>\<^esup>"
@@ -192,12 +188,6 @@ lemma (in M_ctm1) seqleR_fm_sats :
   using assms trans_M sats_subset_fm pair_iff_sats
   by auto
 
-locale M_ctm2 = M_ctm1 + M_ZF2_trans
-
-locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
-
-locale forcing_data2 = forcing_data1 + M_ctm2
-
 context M_ctm2
 begin
 
@@ -231,7 +221,7 @@ next
     using seqle_in_M .
 qed
 
-lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> M\<^bsup>2\<^bsup><\<omega>\<^esup>\<^esup>[G]"
+lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> M[G]"
   using proper_extension generic_filter_existence zero_in_seqspace
   by force
 

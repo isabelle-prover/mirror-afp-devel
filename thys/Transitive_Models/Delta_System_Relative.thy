@@ -5,59 +5,17 @@ theory Delta_System_Relative
     Cardinal_Library_Relative
 begin
 
-(* FIXME: The following code (definition and 3 lemmas) is extracted
-   from Delta_System where it is unnecesarily under the context of AC *)
-definition
-  delta_system :: "i \<Rightarrow> o" where
-  "delta_system(D) \<equiv> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-
-lemma delta_systemI[intro]:
-  assumes "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-  shows "delta_system(D)"
-  using assms unfolding delta_system_def by simp
-
-lemma delta_systemD[dest]:
-  "delta_system(D) \<Longrightarrow> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-  unfolding delta_system_def by simp
-
-lemma delta_system_root_eq_Inter:
-  assumes "delta_system(D)"
-  shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
-proof (clarify, intro equalityI, auto)
-  fix A' B' x C
-  assume hyp:"A'\<in>D" "B'\<in> D" "A'\<noteq>B'" "x\<in>A'" "x\<in>B'" "C\<in>D"
-  with assms
-  obtain r where delta:"\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
-    by auto
-  show "x \<in> C"
-  proof (cases "C=A'")
-    case True
-    with hyp and assms
-    show ?thesis by simp
-  next
-    case False
-    moreover
-    note hyp
-    moreover from calculation and delta
-    have "r = C \<inter> A'" "A' \<inter> B' = r" "x\<in>r" by auto
-    ultimately
-    show ?thesis by simp
-  qed
-qed
-
 relativize functional "delta_system" "delta_system_rel" external
 
-locale M_delta = M_cardinal_library +
+locale M_delta = M_cardinal_library_extra +
   assumes
     countable_lepoll_assms:
     "M(G) \<Longrightarrow> M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> separation(M, \<lambda>y. \<exists>x\<in>A.
                           y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>x. {xa \<in> G . x \<in> xa}, b, f, i)\<rangle>)"
 begin
 
-lemmas cardinal_replacement = lam_replacement_cardinal_rel[unfolded lam_replacement_def]
-
 lemma disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<exists>a. \<exists>b. x=\<langle>a,b\<rangle> \<and> a \<inter> b = c)"
-  using separation_pair separation_eq lam_replacement_constant lam_replacement_Int
+  using separation_Pair separation_eq lam_replacement_constant lam_replacement_Int
   by simp
 
 lemma insnd_ball: "M(G) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> fst(p) \<in> x)"
@@ -84,10 +42,11 @@ proof -
     with \<open>M(G)\<close> \<open>M(p)\<close>
     show ?thesis by simp
   qed
-  from \<open>M(F)\<close>
+  from \<open>\<forall>A\<in>F. Finite(A)\<close> \<open>M(F)\<close>
   have "M(\<lambda>A\<in>F. |A|\<^bsup>M\<^esup>)"
-    using cardinal_replacement
-    by (rule_tac lam_closed) (auto dest:transM)
+    using cardinal_rel_separation Finite_cardinal_rel_in_nat[OF _ transM[of _ F]]
+      separation_imp_lam_closed[of _ "cardinal_rel(M)" \<omega>]
+    by simp
   text\<open>Since all members are finite,\<close>
   with \<open>\<forall>A\<in>F. Finite(A)\<close> \<open>M(F)\<close>
   have "(\<lambda>A\<in>F. |A|\<^bsup>M\<^esup>) : F \<rightarrow>\<^bsup>M\<^esup> \<omega>" (is "?cards : _")
@@ -273,6 +232,7 @@ proof -
         interpret M_replacement_lepoll M "\<lambda>_ x. Collect(G, (\<in>)(x))"
           using countable_lepoll_assms lam_replacement_inj_rel separation_in_rev
             lam_replacement_Collect[OF _ _ insnd_ball] mem_F_bound6[of _ G]
+            lam_replacement_minimum
           by unfold_locales
             (auto dest:transM intro:lam_Least_assumption_general[of _  _ _ _ Union])
         fix S

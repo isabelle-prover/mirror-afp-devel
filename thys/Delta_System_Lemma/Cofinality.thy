@@ -448,7 +448,7 @@ definition
   factor_rec :: "[i,i] \<Rightarrow> i" where
   "factor_rec(\<beta>,h) \<equiv>  \<mu> x. factor_body(\<beta>,h,x)"
 
-txt\<open>\<^term>\<open>factor_rec\<close> is the inductive step for the definition by transfinite
+text\<open>\<^term>\<open>factor_rec\<close> is the inductive step for the definition by transfinite
 recursion of the \<^emph>\<open>factor\<close> function (called \<^term>\<open>g\<close> above), which in
 turn is obtained by minimizing the predicate \<^term>\<open>factor_body\<close>. Next we show
 that this predicate is monotonous.\<close>
@@ -638,7 +638,7 @@ proof (intro CollectI ballI impI comp_fun[of _ _ \<delta>])
   ultimately
   show "\<langle>(f O fun_factor) ` \<alpha>, (f O fun_factor) ` \<beta>\<rangle> \<in> Memrel(\<gamma>)"
     using ltD[of "f ` factor(\<alpha>)" "f ` factor(\<beta>)"]
-      f_factor_increasing apply_in_range f_type
+      f_factor_increasing apply_in_codomain_Ord f_type
     unfolding fun_factor_def by auto
 qed
 
@@ -732,7 +732,7 @@ proof -
       unfolding linear_def by blast
     from \<open>\<alpha>_0 \<in> \<gamma>\<close> \<open>j \<in> mono_map(_,_,\<gamma>,_)\<close> \<open>Ord(\<gamma>)\<close>
     have "j`\<beta> \<in> \<gamma>"
-      using mono_map_is_fun apply_in_range by force
+      using mono_map_is_fun apply_in_codomain_Ord by force
     with \<open>\<alpha>_0 \<in> \<gamma>\<close> \<open>Ord(\<gamma>)\<close>
     have "\<alpha>_0 \<union> j`\<beta> \<in> \<gamma>"
       using Un_least_mem_iff Ord_in_Ord by auto
@@ -745,7 +745,7 @@ proof -
     note \<open>Ord(\<gamma>)\<close>
     moreover from this and \<open>f:\<delta>\<rightarrow>\<gamma>\<close>  \<open>\<alpha>_0 \<in> \<gamma>\<close>
     have "Ord(f`\<theta>)"
-      using apply_in_range Ord_in_Ord by blast
+      using apply_in_codomain_Ord Ord_in_Ord by blast
     moreover from calculation and \<open>\<alpha>_0 \<in> \<gamma>\<close> and \<open>Ord(\<delta>)\<close> and \<open>j`\<beta> \<in> \<gamma>\<close>
     have "Ord(\<alpha>_0)" "Ord(j`\<beta>)" "Ord(\<theta>)"
       using Ord_in_Ord by auto
@@ -813,7 +813,7 @@ proof -
     note \<open>a \<in> \<gamma>\<close>
     moreover from calculation and \<open>Ord(\<gamma>)\<close> and factor_not_delta
     have "(f O fun_factor) `x \<in> \<gamma>"
-      using Limit_nonzero apply_in_range mono_map_is_fun[of "f O fun_factor"]
+      using Limit_nonzero apply_in_codomain_Ord mono_map_is_fun[of "f O fun_factor"]
         f_fun_factor_is_mono_map by blast
     ultimately
     show "\<exists>x \<in> domain(f O fun_factor). \<langle>a, (f O fun_factor) ` x\<rangle> \<in> Memrel(\<gamma>)

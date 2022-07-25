@@ -6,7 +6,11 @@ theory Fm_Definitions
     FrecR_Arities
 begin
 
-txt\<open>In this theory we put every concept that should be synthesized in a formula
+(* Really, I have no idea why is this needed again. At the end of the
+   imported theories, notation works just fine. *)
+no_notation Aleph (\<open>\<aleph>_\<close> [90] 90)
+
+text\<open>In this theory we put every concept that should be synthesized in a formula
 to have an instance of replacement.
 
 The automatic synthesis of a concept /foo/ requires that every concept used to
@@ -25,7 +29,84 @@ on its theory.
 declare arity_subset_fm [simp del] arity_ordinal_fm[simp del, arity] arity_transset_fm[simp del]
   FOL_arities[simp del]
 
-txt\<open>Formulas for particular replacement instances\<close>
+synthesize "setdiff" from_definition "setdiff" assuming "nonempty"
+arity_theorem for "setdiff_fm"
+
+synthesize "is_converse" from_definition assuming "nonempty"
+arity_theorem for "is_converse_fm"
+
+relationalize "first_rel" "is_first" external
+synthesize "first_fm" from_definition "is_first" assuming "nonempty"
+
+relationalize "minimum_rel" "is_minimum" external
+definition is_minimum' where
+  "is_minimum'(M,R,X,u) \<equiv> (M(u) \<and> u \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> u \<longrightarrow> a \<in> R) \<and> pair(M, u, v, a))) \<and>
+    (\<exists>x[M].
+        (M(x) \<and> x \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> x \<longrightarrow> a \<in> R) \<and> pair(M, x, v, a))) \<and>
+        (\<forall>y[M]. M(y) \<and> y \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> y \<longrightarrow> a \<in> R) \<and> pair(M, y, v, a)) \<longrightarrow> y = x)) \<or>
+    \<not> (\<exists>x[M]. (M(x) \<and> x \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> x \<longrightarrow> a \<in> R) \<and> pair(M, x, v, a))) \<and>
+               (\<forall>y[M]. M(y) \<and> y \<in> X \<and> (\<forall>v[M]. \<exists>a[M]. (v \<in> X \<longrightarrow> v \<noteq> y \<longrightarrow> a \<in> R) \<and> pair(M, y, v, a)) \<longrightarrow> y = x)) \<and>
+    empty(M, u)"
+
+synthesize "minimum" from_definition "is_minimum'" assuming "nonempty"
+arity_theorem for "minimum_fm"
+
+lemma is_lambda_iff_sats[iff_sats]:
+  assumes is_F_iff_sats:
+    "!!a0 a1 a2.
+        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa|]
+        ==> is_F(a1, a0) \<longleftrightarrow> sats(Aa, is_F_fm, Cons(a0,Cons(a1,Cons(a2,env))))"
+  shows
+    "nth(A, env) = Ab \<Longrightarrow>
+    nth(r, env) = ra \<Longrightarrow>
+    A \<in> nat \<Longrightarrow>
+    r \<in> nat \<Longrightarrow>
+    env \<in> list(Aa) \<Longrightarrow>
+    is_lambda(##Aa, Ab, is_F, ra) \<longleftrightarrow> Aa, env \<Turnstile> lambda_fm(is_F_fm,A, r)"
+  using sats_lambda_fm[OF assms, of A r] by simp
+
+\<comment> \<open>same as @{thm sats_is_wfrec_fm}, but changing length assumptions to
+    \<^term>\<open>0\<close> being in the model\<close>
+lemma sats_is_wfrec_fm':
+  assumes MH_iff_sats:
+    "!!a0 a1 a2 a3 a4.
+        [|a0\<in>A; a1\<in>A; a2\<in>A; a3\<in>A; a4\<in>A|]
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(A, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+  shows
+    "[|x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(A); 0 \<in> A|]
+       ==> sats(A, is_wfrec_fm(p,x,y,z), env) \<longleftrightarrow>
+           is_wfrec(##A, MH, nth(x,env), nth(y,env), nth(z,env))"
+  using MH_iff_sats [THEN iff_sym] nth_closed sats_is_recfun_fm
+  by (simp add: is_wfrec_fm_def is_wfrec_def) blast
+
+lemma is_wfrec_iff_sats'[iff_sats]:
+  assumes MH_iff_sats:
+    "!!a0 a1 a2 a3 a4.
+        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+    "nth(x, env) = xx" "nth(y, env) = yy" "nth(z, env) = zz"
+    "x \<in> nat" "y \<in> nat" "z \<in> nat" "env \<in> list(Aa)" "0 \<in> Aa"
+  shows
+    "is_wfrec(##Aa, MH, xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
+  using assms(2-4) sats_is_wfrec_fm'[OF assms(1,5-9)] by simp
+
+lemma is_wfrec_on_iff_sats[iff_sats]:
+  assumes MH_iff_sats:
+    "!!a0 a1 a2 a3 a4.
+        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
+        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
+  shows
+    "nth(x, env) = xx \<Longrightarrow>
+    nth(y, env) = yy \<Longrightarrow>
+    nth(z, env) = zz \<Longrightarrow>
+    x \<in> nat \<Longrightarrow>
+    y \<in> nat \<Longrightarrow>
+    z \<in> nat \<Longrightarrow>
+    env \<in> list(Aa) \<Longrightarrow>
+    0 \<in> Aa \<Longrightarrow> is_wfrec_on(##Aa, MH, aa,xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
+  using assms sats_is_wfrec_fm'[OF assms] unfolding is_wfrec_on_def by simp
+
+text\<open>Formulas for particular replacement instances\<close>
 
 text\<open>Now we introduce some definitions used in the definition of check; which
 is defined by well-founded recursion using replacement in the recursive call.\<close>
@@ -73,7 +154,7 @@ definition
 \<comment> \<open>Finally, we internalize the formula.\<close>
 definition
   check_fm :: "[i,i,i] \<Rightarrow> i" where
-  "check_fm(x,o,z) \<equiv> Exists(And(is_rcheck_fm(1+\<^sub>\<omega>x,0),
+  "check_fm(o,x,z) \<equiv> Exists(And(is_rcheck_fm(1+\<^sub>\<omega>x,0),
                       is_wfrec_fm(is_Hcheck_fm(6+\<^sub>\<omega>o,2,1,0),0,1+\<^sub>\<omega>x,1+\<^sub>\<omega>z)))"
 
 lemma check_fm_type[TC]: "x\<in>nat \<Longrightarrow> o\<in>nat \<Longrightarrow> z\<in>nat \<Longrightarrow> check_fm(x,o,z) \<in> formula"
@@ -83,7 +164,7 @@ lemma sats_check_fm :
   assumes
     "o\<in>nat" "x\<in>nat" "z\<in>nat" "env\<in>list(M)" "0\<in>M"
   shows
-    "(M , env \<Turnstile> check_fm(x,o,z)) \<longleftrightarrow> is_check(##M,nth(o,env),nth(x,env),nth(z,env))"
+    "(M , env \<Turnstile> check_fm(o,x,z)) \<longleftrightarrow> is_check(##M,nth(o,env),nth(x,env),nth(z,env))"
 proof -
   have sats_is_Hcheck_fm:
     "\<And>a0 a1 a2 a3 a4 a6. \<lbrakk> a0\<in>M; a1\<in>M; a2\<in>M; a3\<in>M; a4\<in>M;a6 \<in>M\<rbrakk> \<Longrightarrow>
@@ -107,7 +188,7 @@ qed
 lemma iff_sats_check_fm[iff_sats] :
   assumes
     "nth(o, env) = oa" "nth(x, env) = xa" "nth(z, env) = za" "o \<in> nat" "x \<in> nat" "z \<in> nat" "env \<in> list(A)" "0 \<in> A"
-  shows "is_check(##A, oa,xa, za) \<longleftrightarrow> A, env \<Turnstile> check_fm(x,o, z)"
+  shows "is_check(##A, oa,xa, za) \<longleftrightarrow> A, env \<Turnstile> check_fm(o,x,z)"
   using assms sats_check_fm[symmetric]
   by auto
 
@@ -120,31 +201,6 @@ lemma arity_check_fm[arity]:
   by (auto simp add:arity)
 
 notation check_fm (\<open>\<cdot>_\<^sup>v_ is _\<cdot>\<close>)
-
-subsection\<open>Names for forcing the Axiom of Choice.\<close>
-definition
-  upair_name :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "upair_name(\<tau>,\<rho>,on) \<equiv> Upair(\<langle>\<tau>,on\<rangle>,\<langle>\<rho>,on\<rangle>)"
-
-relativize "upair_name" "is_upair_name"
-synthesize "upair_name" from_definition "is_upair_name"
-arity_theorem for "upair_name_fm"
-
-definition
-  opair_name :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
-  "opair_name(\<tau>,\<rho>,on) \<equiv> upair_name(upair_name(\<tau>,\<tau>,on),upair_name(\<tau>,\<rho>,on),on)"
-
-relativize "opair_name" "is_opair_name"
-synthesize "opair_name" from_definition "is_opair_name"
-arity_theorem for "opair_name_fm"
-
-definition
-  is_opname_check :: "[i\<Rightarrow>o,i,i,i,i] \<Rightarrow> o" where
-  "is_opname_check(M,on,s,x,y) \<equiv> \<exists>chx[M]. \<exists>sx[M]. is_check(M,on,x,chx) \<and>
-        fun_apply(M,s,x,sx) \<and> is_opair_name(M,chx,sx,on,y)"
-
-synthesize "is_opname_check" from_definition assuming "nonempty"
-arity_theorem for "is_opname_check_fm"
 
 \<comment> \<open>The pair of elements belongs to some set. The intended set is the preorder.\<close>
 definition
@@ -257,8 +313,8 @@ arity_theorem for "is_tuple_fm"
 subsection\<open>Definition of Forces\<close>
 
 subsubsection\<open>Definition of \<^term>\<open>forces\<close> for equality and membership\<close>
-text\<open>$p\forces \tau = \theta$ if every $q\leqslant p$ both $q\forces \sigma \in \tau$
-and $q\forces \sigma \in \theta$ for every $\sigma \in \dom(\tau)\cup \dom(\theta)$.\<close>
+text\<open>$p\forces \tau = \theta$ if for every $q\leqslant p$ both $q\forces \sigma \in \tau$
+and $q\forces \sigma \in \theta$ hold for all $\sigma \in \dom(\tau)\cup \dom(\theta)$.\<close>
 definition
   eq_case :: "[i,i,i,i,i,i] \<Rightarrow> o" where
   "eq_case(\<tau>,\<theta>,p,P,leq,f) \<equiv> \<forall>\<sigma>. \<sigma> \<in> domain(\<tau>) \<union> domain(\<theta>) \<longrightarrow>
@@ -268,7 +324,7 @@ relativize "eq_case" "is_eq_case"
 synthesize "eq_case" from_definition "is_eq_case"
 
 text\<open>$p\forces \tau \in \theta$ if for every $v\leqslant p$
-  there exists $q$, $r$, and $\sigma$ such that
+  there exist $q$, $r$, and $\sigma$ such that
   $v\leqslant q$, $q\leqslant r$, $\langle \sigma,r\rangle \in \tau$, and
   $q\forces \pi = \sigma$.\<close>
 definition
@@ -840,60 +896,16 @@ proof -
     by(simp only: Un_commute, subst Un_commute, simp add:ord_simp_union,force)
 qed
 
-simple_rename "ren_F" src "[x_P, x_leq, x_o, x_f, y_c, x_bc, p, x, b]"
-  tgt "[x_bc, y_c,b,x, x_P, x_leq, x_o, x_f, p]"
+synthesize "is_ordermap" from_definition assuming "nonempty"
 
-simple_rename "ren_G" src "[x,x_P, x_leq, x_one, x_f,x_p,y,x_B]"
-  tgt "[x,y,x_P, x_leq, x_one, x_f,x_p,x_B]"
-
-simple_rename "ren_F_aux" src "[q,x_P, x_leq, x_one, f_dot, x_a, x_bc,x_p,x_b]"
-  tgt "[x_bc, q, x_b, x_P, x_leq, x_one, f_dot,x_a,x_p]"
-
-simple_rename "ren_G_aux" src "[ x_b, x_P, x_leq, x_one, f_dot,x_a,x_p,y]"
-  tgt "[ x_b, y, x_P, x_leq, x_one, f_dot,x_a,x_p]"
-
-definition ccc_fun_closed_lemma_aux2_fm where [simp]:
-  "ccc_fun_closed_lemma_aux2_fm \<equiv> ren(Collect_fm(1, (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> ren(\<cdot>\<cdot>0\<preceq>\<^bsup>2\<^esup>7\<cdot>
-  \<and> forces(\<cdot>0`1 is 2\<cdot> ) \<cdot> ) ` 9 ` 9 ` ren_F_aux_fn\<cdot>\<cdot>), 7)) ` 8 ` 8 ` ren_G_aux_fn"
-
-lemma ccc_fun_closed_lemma_aux2_fm_type [TC] :
-  "ccc_fun_closed_lemma_aux2_fm \<in> formula"
-proof -
-  let ?\<psi>="\<cdot>\<cdot>0\<preceq>\<^bsup>2\<^esup>7\<cdot>  \<and> forces(\<cdot>0`1 is 2\<cdot> ) \<cdot> "
-  let ?G="(\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> ren(?\<psi>) ` 9 ` 9 ` ren_F_aux_fn\<cdot>\<cdot>)"
-  have "ren(?\<psi>)`9`9`ren_F_aux_fn \<in> formula"
-    using ren_tc ren_F_aux_thm check_fm_type is_leq_fm_type ren_F_aux_fn_def pred_le
-    by simp_all
-  then
-  show ?thesis
-    using ren_tc ren_G_aux_thm ren_G_aux_fn_def
-    by simp
-qed
-
-definition ccc_fun_closed_lemma_fm where [simp]:
-  "ccc_fun_closed_lemma_fm \<equiv> ren(Collect_fm(7, (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v6 is 0\<cdot> \<and>
-   ren((\<cdot>\<exists>\<cdot>\<cdot>0 \<in> 1\<cdot> \<and> \<cdot>\<cdot>0\<preceq>\<^bsup>2\<^esup>7\<cdot> \<and> forces(\<cdot>0`1 is 2\<cdot> ) \<cdot>\<cdot>\<cdot>)) ` 9 ` 9 ` ren_F_fn\<cdot>\<cdot>)\<cdot>\<cdot>), 6))
-   ` 8 ` 8 ` ren_G_fn"
-
-lemma ccc_fun_closed_lemma_fm_type [TC] :
-  "ccc_fun_closed_lemma_fm \<in> formula"
-proof -
-  let ?\<psi>="(\<cdot>\<exists>\<cdot>\<cdot>0 \<in> 1\<cdot> \<and> \<cdot> \<cdot>0 \<preceq>\<^bsup>2\<^esup> 7\<cdot> \<and> forces(\<cdot>0`1 is 2\<cdot> ) \<cdot>\<cdot>\<cdot>)"
-  let ?G="(\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v5 is 0\<cdot> \<and> (\<cdot>\<exists>\<cdot>\<cdot>2\<^sup>v6 is 0\<cdot> \<and> ren(?\<psi>) ` 9 ` 9 ` ren_F_fn\<cdot>\<cdot>)\<cdot>\<cdot>)"
-  have "ren(?\<psi>)`9`9`ren_F_fn \<in> formula"
-    using ren_tc ren_F_thm check_fm_type is_leq_fm_type ren_F_fn_def pred_le
-    by simp_all
-  then
-  show ?thesis
-    using ren_tc ren_G_thm ren_G_fn_def
-    by simp
-qed
+synthesize "is_ordertype" from_definition assuming "nonempty"
 
 definition is_order_body
-  where "is_order_body(M,X,x,z) \<equiv> \<exists>A[M]. cartprod(M,X,X,A) \<and> subset(M,x,A) \<and> M(z) \<and> M(x) \<and>
-           is_well_ord(M,X, x) \<and> is_ordertype(M,X, x,z)"
+  where "is_order_body(M,X,x,z) \<equiv>
+           is_well_ord(M,X,x) \<and> is_ordertype(M,X,x,z)"
 
 synthesize "is_order_body" from_definition assuming "nonempty"
+arity_theorem for "is_order_body_fm"
 
 definition omap_wfrec_body where
   "omap_wfrec_body(A,r) \<equiv> (\<cdot>\<exists>\<cdot>image_fm(2, 0, 1) \<and> pred_set_fm(9+\<^sub>\<omega>A, 3,9+\<^sub>\<omega>r, 0) \<cdot>\<cdot>)"
@@ -925,8 +937,6 @@ lemma arity_is_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarro
   unfolding is_ordertype_fm_def
   using arity_isordermap arity_image_fm pred_Un_distrib FOL_arities
   by auto
-
-arity_theorem for "is_order_body_fm"
 
 lemma arity_is_order_body: "arity(is_order_body_fm(2,0,1)) = 3"
   using arity_is_order_body_fm arity_is_ordertype ord_simp_union
@@ -962,10 +972,14 @@ definition order_pred_wfrec_body where
 
 synthesize "order_pred_wfrec_body" from_definition
 arity_theorem for "order_pred_wfrec_body_fm"
+synthesize "is_jump_cardinal_body_rel" from_definition assuming "nonempty"
+arity_theorem for "is_jump_cardinal_body_rel_fm"
+synthesize "is_jump_cardinal_body'_rel" from_definition assuming "nonempty"
+arity_theorem for "is_jump_cardinal_body'_rel_fm"
 
 definition replacement_is_order_body_fm where "replacement_is_order_body_fm \<equiv> is_order_body_fm(2,0,1)"
 definition wfrec_replacement_order_pred_fm where "wfrec_replacement_order_pred_fm \<equiv> order_pred_wfrec_body_fm(3,2,1,0)"
-definition replacement_is_jump_cardinal_body_fm where "replacement_is_jump_cardinal_body_fm \<equiv> is_jump_cardinal_body'_fm(0,1)"
+definition replacement_is_jump_cardinal_body_fm where "replacement_is_jump_cardinal_body_fm \<equiv> is_jump_cardinal_body'_rel_fm(0,1)"
 definition replacement_is_aleph_fm where "replacement_is_aleph_fm \<equiv> \<cdot>\<cdot>0 is ordinal\<cdot> \<and> \<cdot>\<aleph>(0) is 1\<cdot>\<cdot>"
 
 definition
@@ -982,29 +996,19 @@ synthesize "is_funspace_succ_rep_intf" from_definition
 
 arity_theorem for "is_funspace_succ_rep_intf_fm"
 
-definition
-  PHrank :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> o" where
-  "PHrank(M,f,y,z) \<equiv> (\<exists>fy[M]. fun_apply(M,f,y,fy) \<and> successor(M,fy,z))"
-
-synthesize "PHrank" from_definition assuming "nonempty"
-
 definition wfrec_Hfrc_at_fm where "wfrec_Hfrc_at_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(Hfrc_at_fm(8, 9, 2, 1, 0), 5, 1, 0) \<cdot>\<cdot>)"
 definition list_repl1_intf_fm where "list_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(list_functor_fm(13, 1, 0), 10, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 definition list_repl2_intf_fm where "list_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 4\<cdot> \<and> is_iterates_fm(list_functor_fm(13, 1, 0), 3, 0, 1) \<cdot>"
 definition formula_repl2_intf_fm where "formula_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 3\<cdot> \<and> is_iterates_fm(formula_functor_fm(1, 0), 2, 0, 1) \<cdot>"
 definition eclose_repl2_intf_fm where "eclose_repl2_intf_fm \<equiv> \<cdot>\<cdot>0 \<in> 3\<cdot> \<and> is_iterates_fm(\<cdot>\<Union>1 is 0\<cdot>, 2, 0, 1) \<cdot>"
 definition powapply_repl_fm where "powapply_repl_fm \<equiv> is_Powapply_fm(2,0,1)"
-definition phrank_repl_fm where "phrank_repl_fm \<equiv> PHrank_fm(2,0,1)"
 definition wfrec_rank_fm where "wfrec_rank_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_Hrank_fm(2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 definition trans_repl_HVFrom_fm where "trans_repl_HVFrom_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_HVfrom_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>)"
 definition wfrec_Hcheck_fm where "wfrec_Hcheck_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(is_Hcheck_fm(8, 2, 1, 0), 4, 1, 0) \<cdot>\<cdot>) "
 definition repl_PHcheck_fm where "repl_PHcheck_fm \<equiv> PHcheck_fm(2,3,0,1)"
-definition check_replacement_fm where "check_replacement_fm \<equiv> \<cdot>check_fm(0,2,1) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
-definition G_dot_in_M_fm where "G_dot_in_M_fm \<equiv>  \<cdot>(\<cdot>\<exists>\<cdot>\<cdot>1\<^sup>v3 is 0\<cdot> \<and> pair_fm(0, 1, 2) \<cdot>\<cdot>) \<and> \<cdot>0 \<in> 3\<cdot>\<cdot>"
-definition repl_opname_check_fm where "repl_opname_check_fm \<equiv> \<cdot>is_opname_check_fm(3,2,0,1) \<and> \<cdot>0 \<in> 4\<cdot>\<cdot>"
 definition tl_repl_intf_fm where "tl_repl_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(tl_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 definition formula_repl1_intf_fm where "formula_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(formula_functor_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
-definition eclose_repl1_intf_fm where "eclose_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(big_union_fm(1,0), 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
+definition eclose_repl1_intf_fm where "eclose_repl1_intf_fm \<equiv> (\<cdot>\<exists>\<cdot>pair_fm(1, 0, 2) \<and> is_wfrec_fm(iterates_MH_fm(\<cdot>\<Union>1 is 0\<cdot>, 9, 2, 1, 0), 3, 1, 0) \<cdot>\<cdot>)"
 
 definition replacement_assm where
   "replacement_assm(M,env,\<phi>) \<equiv> \<phi> \<in> formula \<longrightarrow> env \<in> list(M) \<longrightarrow>

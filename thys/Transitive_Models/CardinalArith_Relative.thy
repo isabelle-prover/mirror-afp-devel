@@ -6,8 +6,6 @@ theory CardinalArith_Relative
 
 begin
 
-
-(* rvimage(?A, ?f, ?r) \<equiv> {z \<in> ?A \<times> ?A . \<exists>x y. z = \<langle>x, y\<rangle> \<and> \<langle>?f ` x, ?f ` y\<rangle> \<in> ?r} *)
 relativize functional "rvimage" "rvimage_rel" external
 relationalize "rvimage_rel" "is_rvimage"
 
@@ -24,9 +22,12 @@ definition
   "is_csquare_lam(M,K,l) \<equiv> \<exists>K2[M]. cartprod(M,K,K,K2) \<and>
         is_lambda(M,K2,is_csquare_lam_body(M),l)"
 
-definition jump_cardinal_body :: "[i\<Rightarrow>o,i] \<Rightarrow> i" where
-  "jump_cardinal_body(M,X) \<equiv>
-    {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype(X, r)} "
+definition jump_cardinal_body :: "[i,i] \<Rightarrow> i" where
+  "jump_cardinal_body(U,X) \<equiv>
+    {z . r \<in> U, well_ord(X, r) \<and> z = ordertype(X, r)}"
+
+definition jump_cardinal_body'  where
+  "jump_cardinal_body'(x) \<equiv> jump_cardinal_body(Pow(x\<times>x),x)"
 
 lemma (in M_cardinals) csquare_lam_closed[intro,simp]: "M(K) \<Longrightarrow> M(csquare_lam(K))"
   using csquare_lam_replacement  unfolding csquare_lam_def
@@ -36,30 +37,6 @@ locale M_pre_cardinal_arith = M_cardinals +
   assumes
     wfrec_pred_replacement:"M(A) \<Longrightarrow> M(r) \<Longrightarrow>
       wfrec_replacement(M, \<lambda>x f z. z = f `` Order.pred(A, x, r), r)"
-begin
-
-lemma ord_iso_separation: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(s) \<Longrightarrow>
-      separation(M, \<lambda>f. \<forall>x\<in>A. \<forall>y\<in>A. \<langle>x, y\<rangle> \<in> r \<longleftrightarrow> \<langle>f ` x, f ` y\<rangle> \<in> s)"
-  using
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
-    lam_replacement_hcomp lam_replacement_fst  lam_replacement_snd
-    separation_in lam_replacement_fst lam_replacement_apply2[THEN[5] lam_replacement_hcomp2]
-    lam_replacement_identity  lam_replacement_constant
-  by(rule_tac separation_ball,rule_tac separation_ball,simp_all,rule_tac separation_iff',simp_all)
-
-end
-
-locale M_cardinal_arith = M_pre_cardinal_arith +
-  assumes
-    ordertype_replacement :
-    "M(X) \<Longrightarrow> strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> x\<in>Pow_rel(M,X\<times>X) \<and> well_ord(X, x) \<and> z=ordertype(X,x))"
-    and
-    strong_replacement_jc_body :
-    "strong_replacement(M,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(M,x))"
-
-lemmas (in M_cardinal_arith) surj_imp_inj_replacement =
-  surj_imp_inj_replacement1 surj_imp_inj_replacement2 surj_imp_inj_replacement4
-  lam_replacement_vimage_sing_fun[THEN lam_replacement_imp_strong_replacement]
 
 relativize_tm "\<exists>x' y' x y. z = \<langle>\<langle>x', y'\<rangle>, x, y\<rangle> \<and> (\<langle>x', x\<rangle> \<in> r \<or> x' = x \<and> \<langle>y', y\<rangle> \<in> s)"
   "is_rmultP"
@@ -691,88 +668,69 @@ end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 (*** An infinite cardinal equals its square (Kunen, Thm 10.12, page 29) ***)
 
-
 lemma (in M_ordertype) ordertype_abs[absolut]:
   assumes "wellordered(M,A,r)" "M(A)" "M(r)" "M(i)"
   shows "otype(M,A,r,i) \<longleftrightarrow> i = ordertype(A,r)"
-    \<comment> \<open>Awful proof, it essentially repeats the same argument twice\<close>
-proof (intro iffI)
-  note assms
-  moreover
-  assume "otype(M, A, r, i)"
-  moreover from calculation
-  obtain f j where "M(f)"  "M(j)"  "Ord(j)" "f \<in> \<langle>A, r\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>"
-    using ordertype_exists[of A r] by auto
-  moreover from calculation
-  have "\<exists>f[M]. f \<in> \<langle>A, r\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>" by auto
-  moreover
-  have "\<exists>f[M]. f \<in> \<langle>A, r\<rangle> \<cong> \<langle>i, Memrel(i)\<rangle>"
+proof -
+  have eq:"j = k" if
+    "g \<in> \<langle>A, r\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>" "Ord(j)"
+    "h \<in> \<langle>A, r\<rangle> \<cong> \<langle>k, Memrel(k)\<rangle>" "Ord(k)"
+  for j k g h
   proof -
-    note calculation
+    from that
+    have "h O converse(g) \<in> \<langle>j, Memrel(j)\<rangle> \<cong> \<langle>k, Memrel(k)\<rangle>"
+      using ord_iso_sym ord_iso_trans by blast
+    with \<open>Ord(j)\<close> \<open>Ord(k)\<close>
+    show "j=k"
+      using Ord_iso_implies_eq[of j k "h O converse(g)"]
+      by simp
+  qed
+  have otypeE: "\<exists> h . h \<in> \<langle>A, r\<rangle> \<cong> \<langle>k, Memrel(k)\<rangle>" if "otype(M, A, r, k)" "M(k)" for k
+  proof -
+    note that assms
     moreover from this
     obtain h where "omap(M, A, r, h)" "M(h)"
-      using omap_exists by auto
+      using that omap_exists[of A r] by auto
     moreover from calculation
-    have "h \<in> \<langle>A, r\<rangle> \<cong> \<langle>i, Memrel(i)\<rangle>"
-      using omap_ord_iso obase_equals by simp
-    moreover from calculation
-    have "h O converse(f) \<in> \<langle>j, Memrel(j)\<rangle> \<cong> \<langle>i, Memrel(i)\<rangle>"
-      using ord_iso_sym ord_iso_trans by blast
-    moreover from calculation
-    have "i=j"
-      using Ord_iso_implies_eq[of j i "h O converse(f)"]
-        Ord_otype[OF _ well_ord_is_trans_on] by simp
-    ultimately
-    show ?thesis by simp
+    have "h \<in> \<langle>A, r\<rangle> \<cong> \<langle>k, Memrel(k)\<rangle>"
+      using that omap_ord_iso obase_equals by simp
+    then
+    show ?thesis ..
   qed
-  ultimately
-  show "i = ordertype(A, r)"
-    by (force intro:ordertypes_are_absolute[of A r _ i]
-        simp add:Ord_otype[OF _ well_ord_is_trans_on])
-next
-  note assms
-  moreover
-  assume "i = ordertype(A, r)"
-  moreover from calculation
-  obtain h where "omap(M, A, r, h)" "M(h)"
-    using omap_exists by auto
-  moreover from calculation
-  obtain j where "otype(M,A,r,j)" "M(j)"
-    using otype_exists by auto
-  moreover from calculation
-  have "h \<in> \<langle>A, r\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>"
-    using omap_ord_iso_otype by simp
-  moreover from calculation
-  obtain f where "f \<in> \<langle>A, r\<rangle> \<cong> \<langle>i, Memrel(i)\<rangle>"
-    using ordertype_ord_iso by auto
-  moreover
-  have "j=i"
-  proof -
-    note calculation
-    moreover from this
-    have "h O converse(f) \<in> \<langle>i, Memrel(i)\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>"
-      using ord_iso_sym ord_iso_trans by blast
+  show ?thesis
+  proof(intro iffI)
+    note assms
+    moreover
+    assume "otype(M, A, r, i)"
     moreover from calculation
-    have "Ord(i)" using Ord_ordertype by simp
+    obtain f j where "M(f)" "Ord(j)" "f \<in> \<langle>A, r\<rangle> \<cong> \<langle>j, Memrel(j)\<rangle>"
+      using ordertype_exists[of A r] by auto
     ultimately
-    show "j=i"
-      using Ord_iso_implies_eq[of i j "h O converse(f)"]
-        Ord_otype[OF _ well_ord_is_trans_on] by simp
+    show "i = ordertype(A, r)"
+      using Ord_otype[OF _ well_ord_is_trans_on] eq[of f j _ i] ordertypes_are_absolute
+        otypeE[of i]
+      by auto
+  next
+    note assms
+    moreover
+    assume "i = ordertype(A, r)"
+    moreover from calculation
+    obtain j where "otype(M,A,r,j)" "M(j)"
+      using otype_exists by auto
+    ultimately
+    show "otype(M, A, r, i)"
+      using Ord_ordertype eq[of _ i _ j] Ord_otype[OF _ well_ord_is_trans_on]
+        otypeE[of j] ordertype_ord_iso[of A r]
+      by auto
   qed
-  ultimately
-  show "otype(M, A, r, i)" by simp
 qed
 
 lemma (in M_ordertype) ordertype_closed[intro,simp]: "\<lbrakk> wellordered(M,A,r);M(A);M(r)\<rbrakk> \<Longrightarrow> M(ordertype(A,r))"
   using ordertype_exists ordertypes_are_absolute by blast
 
 (*
-definition
-  jump_cardinal :: "i=>i"  where
-    \<comment> \<open>This definition is more complex than Kunen's but it more easily proved to
-        be a cardinal\<close>
-    "jump_cardinal(K) ==
-         \<Union>X\<in>Pow(K). {z. r \<in> Pow(K*K), well_ord(X,r) & z = ordertype(X,r)}"
+This apparent duplication of definitions is needed because in ZF-Constructible
+pairs are in their absolute version and this breaks the synthesis of formulas.
 *)
 
 relationalize "transitive_rel" "is_transitive" external
@@ -786,6 +744,10 @@ lemma (in M_trivial) is_transitive_iff_transitive_rel:
 relationalize "linear_rel" "is_linear" external
 synthesize "is_linear" from_definition assuming "nonempty"
 arity_theorem for "is_linear_fm"
+reldb_add relational "transitive_on" "transitive_rel"
+reldb_add relational "linear_on" "linear_rel"
+reldb_add functional "transitive_on" "transitive_rel"
+reldb_add functional "linear_on" "linear_rel"
 
 lemma (in M_trivial) is_linear_iff_linear_rel:
   "M(A)\<Longrightarrow> M(r) \<Longrightarrow> is_linear(M,A, r) \<longleftrightarrow> linear_rel(M, A, r)"
@@ -811,10 +773,10 @@ lemma (in M_trivial) is_well_ord_iff_wellordered:
     is_transitive_iff_transitive_rel
   unfolding wellordered_def is_well_ord_def by simp
 
-reldb_add relational "well_ord" "is_well_ord"
-reldb_add functional "well_ord" "well_ord"
 synthesize "is_well_ord" from_definition assuming "nonempty"
 arity_theorem for "is_well_ord_fm"
+reldb_add relational "well_ord" "is_well_ord"
+reldb_add functional "well_ord" "well_ord"
 
 \<comment> \<open>One keyword (functional or relational) means going
     from an absolute term to that kind of term\<close>
@@ -849,61 +811,6 @@ end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 synthesize "is_ord_iso" from_definition assuming "nonempty"
 
-lemma is_lambda_iff_sats[iff_sats]:
-  assumes is_F_iff_sats:
-    "!!a0 a1 a2.
-        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa|]
-        ==> is_F(a1, a0) \<longleftrightarrow> sats(Aa, is_F_fm, Cons(a0,Cons(a1,Cons(a2,env))))"
-  shows
-    "nth(A, env) = Ab \<Longrightarrow>
-    nth(r, env) = ra \<Longrightarrow>
-    A \<in> nat \<Longrightarrow>
-    r \<in> nat \<Longrightarrow>
-    env \<in> list(Aa) \<Longrightarrow>
-    is_lambda(##Aa, Ab, is_F, ra) \<longleftrightarrow> Aa, env \<Turnstile> lambda_fm(is_F_fm,A, r)"
-  using sats_lambda_fm[OF assms, of A r] by simp
-
-\<comment> \<open>same as @{thm sats_is_wfrec_fm}, but changing length assumptions to
-    \<^term>\<open>0\<close> being in the model\<close>
-lemma sats_is_wfrec_fm':
-  assumes MH_iff_sats:
-    "!!a0 a1 a2 a3 a4.
-        [|a0\<in>A; a1\<in>A; a2\<in>A; a3\<in>A; a4\<in>A|]
-        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(A, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
-  shows
-    "[|x \<in> nat; y \<in> nat; z \<in> nat; env \<in> list(A); 0 \<in> A|]
-       ==> sats(A, is_wfrec_fm(p,x,y,z), env) \<longleftrightarrow>
-           is_wfrec(##A, MH, nth(x,env), nth(y,env), nth(z,env))"
-  using MH_iff_sats [THEN iff_sym] nth_closed sats_is_recfun_fm
-  by (simp add: is_wfrec_fm_def is_wfrec_def) blast
-
-lemma is_wfrec_iff_sats'[iff_sats]:
-  assumes MH_iff_sats:
-    "!!a0 a1 a2 a3 a4.
-        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
-        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
-    "nth(x, env) = xx" "nth(y, env) = yy" "nth(z, env) = zz"
-    "x \<in> nat" "y \<in> nat" "z \<in> nat" "env \<in> list(Aa)" "0 \<in> Aa"
-  shows
-    "is_wfrec(##Aa, MH, xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
-  using assms(2-4) sats_is_wfrec_fm'[OF assms(1,5-9)] by simp
-
-lemma is_wfrec_on_iff_sats[iff_sats]:
-  assumes MH_iff_sats:
-    "!!a0 a1 a2 a3 a4.
-        [|a0\<in>Aa; a1\<in>Aa; a2\<in>Aa; a3\<in>Aa; a4\<in>Aa|]
-        ==> MH(a2, a1, a0) \<longleftrightarrow> sats(Aa, p, Cons(a0,Cons(a1,Cons(a2,Cons(a3,Cons(a4,env))))))"
-  shows
-    "nth(x, env) = xx \<Longrightarrow>
-    nth(y, env) = yy \<Longrightarrow>
-    nth(z, env) = zz \<Longrightarrow>
-    x \<in> nat \<Longrightarrow>
-    y \<in> nat \<Longrightarrow>
-    z \<in> nat \<Longrightarrow>
-    env \<in> list(Aa) \<Longrightarrow>
-    0 \<in> Aa \<Longrightarrow> is_wfrec_on(##Aa, MH, aa,xx, yy, zz) \<longleftrightarrow> Aa, env \<Turnstile> is_wfrec_fm(p,x,y,z)"
-  using assms sats_is_wfrec_fm'[OF assms] unfolding is_wfrec_on_def by simp
-
 lemma trans_on_iff_trans: "trans[A](r) \<longleftrightarrow> trans(r \<inter> A\<times>A)"
   unfolding trans_on_def trans_def by auto
 
@@ -919,168 +826,133 @@ text\<open>Discipline for \<^term>\<open>ordermap\<close>\<close>
 relativize functional "ordermap" "ordermap_rel" external
 relationalize "ordermap_rel" "is_ordermap"
 
-context M_pre_cardinal_arith
-begin
-
 lemma wfrec_on_pred_eq:
-  assumes "r \<in> Pow(A\<times>A)" "M(A)" "M(r)"
+  assumes "r \<in> Pow(A\<times>A)"
   shows "wfrec[A](r, x, \<lambda>x f. f `` Order.pred(A, x, r)) = wfrec(r, x, \<lambda>x f. f `` Order.pred(A, x, r))"
 proof -
   from \<open>r \<in> Pow(A\<times>A)\<close>
   have "r \<inter> A\<times>A = r" by auto
-  moreover from this
+  then
   show ?thesis
     unfolding wfrec_on_def by simp
 qed
 
+context M_pre_cardinal_arith
+begin
+
 lemma wfrec_on_pred_closed:
-  assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow(A\<times>A)" "M(A)" "M(r)" "x \<in> A"
+  assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "M(A)" "x \<in> A"
   shows "M(wfrec(r, x, \<lambda>x f. f `` Order.pred(A, x, r)))"
 proof -
-  from assms
+  note assms
+  moreover from this
+  have "M(r)" "M(x)"
+    using transM[of _ "Pow\<^bsup>M\<^esup>(A\<times>A)"] transM[of _ A]
+    by simp_all
+  moreover from calculation
   have "wfrec[A](r, x, \<lambda>x f. f `` Order.pred(A, x, r)) = wfrec(r, x, \<lambda>x f. f `` Order.pred(A, x, r))"
-    using wfrec_on_pred_eq by simp
-  moreover from assms
+    using wfrec_on_pred_eq Pow_rel_char
+    by simp
+  moreover from calculation
   have "M(wfrec(r, x, \<lambda>x f. f `` Order.pred(A, x, r)))"
     using wfrec_pred_replacement wf_on_imp_wf trans_on_imp_trans subset_Sigma_imp_relation
+      Pow_rel_char
     by (rule_tac MH="\<lambda>x f b. \<exists>a[M]. image(M, f, a, b) \<and> pred_set(M, A, x, r, a)" in trans_wfrec_closed)
       (auto dest:transM simp:relation2_def)
   ultimately
-  show ?thesis by simp
+  show ?thesis
+    by simp
 qed
 
 lemma wfrec_on_pred_closed':
-  assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow(A\<times>A)" "M(A)" "M(r)" "x \<in> A"
+  assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "M(A)" "x \<in> A"
   shows "M(wfrec[A](r, x, \<lambda>x f. f `` Order.pred(A, x, r)))"
-  using assms wfrec_on_pred_closed wfrec_on_pred_eq by simp
+  using assms wfrec_on_pred_closed wfrec_on_pred_eq Pow_rel_char
+  by simp
 
-
-lemma ordermap_rel_closed':
-  assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow(A\<times>A)" "M(A)" "M(r)"
+lemma ordermap_rel_closed[intro,simp]:
+  assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "M(A)"
   shows "M(ordermap_rel(M, A, r))"
 proof -
   from assms
-  have "r \<inter> A\<times>A = r" by auto
-  with assms have "wf(r)" "trans(r)" "relation(r)"
-    unfolding wf_on_def using trans_on_iff_trans relation_def by auto
-  then
+  have "r \<inter> A\<times>A = r" "r\<in>Pow(A\<times>A)" "M(r)"
+    using Pow_rel_char
+    by auto
+  with assms
+  have "wf(r)" "trans(r)" "relation(r)"
+    unfolding wf_on_def
+    using trans_on_iff_trans relation_def by auto
+  with \<open>M(A)\<close> \<open>M(r)\<close>
   have 1:"\<And> x z . M(x) \<Longrightarrow> M(z) \<Longrightarrow>
     (\<exists>y[M]. pair(M, x, y, z) \<and> is_wfrec(M, \<lambda>x f z. z = f `` Order.pred(A, x, r), r, x, y))
       \<longleftrightarrow>
     z = <x,wfrec(r,x,\<lambda>x f. f `` Order.pred(A, x, r))>"
     using trans_wfrec_abs[of r,where
         H="\<lambda>x f. f `` Order.pred(A, x, r)" and
-        MH="\<lambda>x f z . z= f `` Order.pred(A, x, r)",simplified] assms
-      wfrec_pred_replacement unfolding relation2_def
+        MH="\<lambda>x f z . z= f `` Order.pred(A, x, r)",simplified]
+      wfrec_pred_replacement
+    unfolding relation2_def
     by auto
-  then
+  with \<open>M(A)\<close> \<open>M(r)\<close>
   have "strong_replacement(M,\<lambda>x z. z = <x,wfrec(r,x,\<lambda>x f. f `` Order.pred(A, x, r))>)"
     using strong_replacement_cong[of M,OF 1,THEN iffD1,OF _ _
-        wfrec_pred_replacement[unfolded wfrec_replacement_def]] assms by simp
-  then show ?thesis
-    using Pow_iff assms
-    unfolding ordermap_rel_def
-    apply(subst lam_cong[OF refl wfrec_on_pred_eq],simp_all)
-    using wfrec_on_pred_closed lam_closed
+        wfrec_pred_replacement[unfolded wfrec_replacement_def]]
     by simp
+  with \<open>M(A)\<close> \<open>M(r)\<close> \<open>r \<in> Pow(A\<times>A)\<close> assms
+  show ?thesis
+    unfolding ordermap_rel_def
+    using lam_cong[OF refl wfrec_on_pred_eq] wfrec_on_pred_closed lam_closed
+    by auto
 qed
 
-lemma ordermap_rel_closed[intro,simp]:
-  assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow(A\<times>A)"
-  shows "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(ordermap_rel(M, A, r))"
-  using ordermap_rel_closed' assms by simp
-
 lemma is_ordermap_iff:
-  assumes "r \<in> Pow(A\<times>A)" "wf[A](r)" "trans[A](r)"
-    "M(A)" "M(r)" "M(res)"
+  assumes "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "wf[A](r)" "trans[A](r)"
+    "M(A)" "M(res)"
   shows "is_ordermap(M, A, r, res) \<longleftrightarrow> res = ordermap_rel(M, A, r)"
 proof -
-  from \<open>r \<in> Pow(A\<times>A)\<close>
-  have "r \<inter> A\<times>A = r" by auto
-  with assms have 1:"wf(r)" "trans(r)" "relation(r)"
-    unfolding wf_on_def using trans_on_iff_trans relation_def by auto
-  from assms
-  have "r \<inter> A\<times>A = r" "r \<subseteq> A\<times>A" "<x,y> \<in> r \<Longrightarrow> x\<in>A \<and> y\<in>A" for x y by auto
-  then
+  from \<open>r \<in> _\<close> \<open>M(A)\<close>
+  have "r \<inter> A\<times>A = r" "M(r)" "r \<in> Pow(A\<times>A)" "\<And> x y . <x,y>\<in>r \<Longrightarrow> x\<in>A"
+    using Pow_rel_char
+    by auto
+  with assms
+  have 1:"wf(r)" "trans(r)" "relation(r)"
+    unfolding wf_on_def
+    using trans_on_iff_trans relation_def by auto
+  with \<open>r\<in>Pow(A\<times>A)\<close>
   show ?thesis
     using ordermap_rel_closed[of r A] assms wfrec_on_pred_closed wfrec_pred_replacement 1
     unfolding is_ordermap_def ordermap_rel_def
-    apply (rule_tac lambda_abs2)
-       apply (simp_all add:Relation1_def)
-     apply clarify
-     apply (rule trans_wfrec_on_abs)
-               apply (auto dest:transM simp add: relation_Int relation2_def)
+    apply (rule_tac lambda_abs2,simp_all add:Relation1_def,clarify)
+    apply (rule trans_wfrec_on_abs)
+    apply (auto dest:transM simp add: relation_Int relation2_def)
     by(rule_tac wfrec_on_pred_closed'[of A r],auto)
 qed
 
 end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
-synthesize "is_ordermap" from_definition assuming "nonempty"
-
 text\<open>Discipline for \<^term>\<open>ordertype\<close>\<close>
 relativize functional "ordertype" "ordertype_rel" external
 relationalize "ordertype_rel" "is_ordertype"
+
+definition is_order_body
+  where "is_order_body(M,X,r,z) \<equiv> \<exists>A[M]. cartprod(M,X,X,A) \<and> subset(M,r,A) \<and> M(z) \<and> M(r) \<and>
+           wellordered(M,X,r) \<and> is_ordertype(M,X,r,z)"
 
 context M_pre_cardinal_arith
 begin
 
 lemma is_ordertype_iff:
-  assumes "r \<in> Pow(A\<times>A)" "wf[A](r)" "trans[A](r)"
-  shows "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(res) \<Longrightarrow> is_ordertype(M, A, r, res) \<longleftrightarrow> res = ordertype_rel(M, A, r)"
+  assumes "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "wf[A](r)" "trans[A](r)"
+  shows "M(A) \<Longrightarrow> M(res) \<Longrightarrow> is_ordertype(M, A, r, res) \<longleftrightarrow> res = ordertype_rel(M, A, r)"
   using assms is_ordermap_iff[of r A] trans_on_iff_trans
     ordermap_rel_closed[of A r]
   unfolding is_ordertype_def ordertype_rel_def wf_on_def by simp
 
 lemma is_ordertype_iff':
-  assumes "r \<in> Pow_rel(M,A\<times>A)" "well_ord(A,r)"
-  shows "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(res) \<Longrightarrow> is_ordertype(M, A, r, res) \<longleftrightarrow> res = ordertype_rel(M, A, r)"
+  assumes "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "well_ord(A,r)"
+  shows "M(A) \<Longrightarrow> M(res) \<Longrightarrow> is_ordertype(M, A, r, res) \<longleftrightarrow> res = ordertype_rel(M, A, r)"
   using assms is_ordertype_iff Pow_rel_char
   unfolding well_ord_def part_ord_def tot_ord_def by simp
-
-lemma is_ordertype_iff'':
-  assumes "well_ord(A,r)" "r\<subseteq>A\<times>A"
-  shows "M(A) \<Longrightarrow> M(r) \<Longrightarrow> M(res) \<Longrightarrow> is_ordertype(M, A, r, res) \<longleftrightarrow> res = ordertype_rel(M, A, r)"
-  using assms is_ordertype_iff
-  unfolding well_ord_def part_ord_def tot_ord_def by simp
-
-end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
-
-synthesize "is_ordertype" from_definition assuming "nonempty"
-
-\<comment> \<open>NOTE: not quite the same as \<^term>\<open>jump_cardinal\<close>,
-    note \<^term>\<open>Pow(X*X)\<close>.\<close>
-definition
-  jump_cardinal' :: "i\<Rightarrow>i"  where
-  "jump_cardinal'(K) \<equiv>
-         \<Union>X\<in>Pow(K). {z. r \<in> Pow(X*X), well_ord(X,r) & z = ordertype(X,r)}"
-
-relativize functional "jump_cardinal'" "jump_cardinal'_rel" external
-relationalize "jump_cardinal'_rel" "is_jump_cardinal'"
-synthesize "is_jump_cardinal'" from_definition assuming "nonempty"
-arity_theorem for "is_jump_cardinal'_fm"
-definition jump_cardinal_body' where
-  "jump_cardinal_body'(X) \<equiv> {z . r \<in> Pow(X \<times> X),  well_ord(X, r) \<and> z = ordertype(X, r)}"
-
-relativize functional "jump_cardinal_body'" "jump_cardinal_body'_rel" external
-relationalize "jump_cardinal_body'_rel" "is_jump_cardinal_body'"
-synthesize "is_jump_cardinal_body'" from_definition assuming "nonempty"
-arity_theorem for "is_jump_cardinal_body'_fm"
-
-context M_pre_cardinal_arith
-begin
-
-lemma ordertype_rel_closed':
-  assumes "wf[A](r)" "trans[A](r)" "r \<in> Pow(A\<times>A)" "M(r)" "M(A)"
-  shows "M(ordertype_rel(M,A,r))"
-  unfolding ordertype_rel_def
-  using ordermap_rel_closed image_closed assms by simp
-
-lemma ordertype_rel_closed[intro,simp]:
-  assumes "well_ord(A,r)" "r \<in> Pow_rel(M,A\<times>A)" "M(A)"
-  shows "M(ordertype_rel(M,A,r))"
-  using assms Pow_rel_char ordertype_rel_closed'
-  unfolding well_ord_def tot_ord_def part_ord_def
-  by simp
 
 lemma ordertype_rel_abs:
   assumes "wellordered(M,X,r)" "M(X)" "M(r)"
@@ -1089,83 +961,57 @@ lemma ordertype_rel_abs:
   unfolding ordertype_def ordertype_rel_def ordermap_rel_def ordermap_def
   by simp
 
-lemma univalent_aux1: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
-  \<lambda>r z. M(z) \<and> M(r) \<and> r\<in>Pow_rel(M,X\<times>X) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))"
-  using is_well_ord_iff_wellordered
-    is_ordertype_iff[of _ X]
-    trans_on_subset[OF well_ord_is_trans_on]
-    well_ord_is_wf[THEN wf_on_subset_A] mem_Pow_rel_abs
-  unfolding univalent_def
-  by (simp)
+lemma (in M_pre_cardinal_arith) is_order_body_abs :
+  "M(X) \<Longrightarrow> M(x) \<Longrightarrow> M(z) \<Longrightarrow> is_order_body(M, X, x, z) \<longleftrightarrow>
+   M(z) \<and> x\<in>Pow\<^bsup>M\<^esup>(X\<times>X) \<and> well_ord(X, x) \<and> z = ordertype(X, x)"
+  using is_ordertype_iff' ordertype_rel_abs well_ord_is_linear Pow_rel_char
+  unfolding is_order_body_def
+  by simp
 
-lemma jump_cardinal_body_eq :
-  "M(X) \<Longrightarrow> jump_cardinal_body(M,X) = jump_cardinal_body'_rel(M,X)"
-  unfolding jump_cardinal_body_def jump_cardinal_body'_rel_def
-  using ordertype_rel_abs
-  by auto
+lemma well_ord_restr: "well_ord(X, r) \<Longrightarrow> well_ord(X, r \<inter> X\<times>X)"
+proof -
+  have "r \<inter> X\<times>X \<inter> X\<times>X = r \<inter> X\<times>X" by auto
+  moreover
+  assume "well_ord(X, r)"
+  ultimately
+  show ?thesis
+    unfolding well_ord_def tot_ord_def part_ord_def linear_def
+      irrefl_def wf_on_def
+    by simp_all (simp only: trans_on_def, blast)
+qed
+
+lemma ordertype_restr_eq :
+  assumes "well_ord(X,r)"
+  shows "ordertype(X, r) = ordertype(X, r \<inter> X\<times>X)"
+  using ordermap_restr_eq assms unfolding ordertype_def
+  by simp
+
+lemma ordertype_rel_closed[intro,simp]:
+  assumes "well_ord(A,r)" "r \<in> Pow\<^bsup>M\<^esup>(A\<times>A)" "M(A)"
+  shows "M(ordertype_rel(M,A,r))"
+  using assms Pow_rel_char
+  unfolding well_ord_def tot_ord_def part_ord_def ordertype_rel_def
+  by simp
 
 end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
-context M_cardinal_arith
-begin
-lemma jump_cardinal_closed_aux1:
-  assumes "M(X)"
-  shows
-    "M(jump_cardinal_body(M,X))"
-  unfolding jump_cardinal_body_def
-  using \<open>M(X)\<close> ordertype_rel_abs
-    ordertype_replacement[OF \<open>M(X)\<close>] univalent_aux1[OF \<open>M(X)\<close>]
-    strong_replacement_closed[where A="Pow\<^bsup>M\<^esup>(X \<times> X)" and
-      P="\<lambda> r z . M(z) \<and> M(r) \<and>  r \<in> Pow\<^bsup>M\<^esup>(X \<times> X) \<and> well_ord(X, r) \<and> z = ordertype(X, r)"]
-  by auto
+relativize functional "jump_cardinal_body" "jump_cardinal_body_rel"
+relationalize "jump_cardinal_body_rel" "is_jump_cardinal_body_rel"
 
-lemma univalent_jc_body: "M(X) \<Longrightarrow> univalent(M,X,\<lambda> x z . M(z) \<and> M(x) \<and> z = jump_cardinal_body(M,x))"
-  using transM[of _ X]  jump_cardinal_closed_aux1 by auto
+relativize functional "jump_cardinal_body'" "jump_cardinal_body'_rel"
+relationalize "jump_cardinal_body'_rel" "is_jump_cardinal_body'_rel"
 
-lemma jump_cardinal_body_closed:
-  assumes "M(K)"
-  shows "M({a . X \<in> Pow\<^bsup>M\<^esup>(K), M(a) \<and> M(X) \<and> a = jump_cardinal_body(M,X)})"
-  using assms univalent_jc_body jump_cardinal_closed_aux1 strong_replacement_jc_body
-  by simp
+\<comment> \<open>NOTE: not quite the same as \<^term>\<open>jump_cardinal\<close>,
+    note \<^term>\<open>Pow(X*X)\<close>.\<close>
+definition
+  jump_cardinal' :: "i\<Rightarrow>i"  where
+  "jump_cardinal'(K) \<equiv>
+         \<Union>X\<in>Pow(K). {z. r \<in> Pow(X*X), z = jump_cardinal_body(Pow(X*X),X)}"
 
-rel_closed for "jump_cardinal'"
-  using jump_cardinal_body_closed ordertype_rel_abs
-  unfolding jump_cardinal_body_def jump_cardinal'_rel_def
-  by simp
+relativize functional "jump_cardinal" "jump_cardinal_rel" external
+relativize functional "trans_on" "transitivie_rel" external
+relationalize "jump_cardinal_rel" "is_jump_cardinal"
 
-is_iff_rel for "jump_cardinal'"
-proof -
-  assume types: "M(K)" "M(res)"
-  have "is_Replace(M, Pow_rel(M,X\<times>X), \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z),
-   a) \<longleftrightarrow> a = {z . r \<in> Pow_rel(M,X\<times>X), M(z) \<and> M(r) \<and> is_well_ord(M,X,r) \<and> is_ordertype(M, X, r, z)}"
-    if "M(X)" "M(a)" for X a
-    using that univalent_aux1
-    by (rule_tac Replace_abs) (simp_all)
-  then
-  have "is_Replace(M, Pow_rel(M,X\<times>X), \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z),
-   a) \<longleftrightarrow> a = {z . r \<in> Pow_rel(M,X\<times>X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M, X, r)}"
-    if "M(X)" "M(a)" for X a
-    using that univalent_aux1 is_ordertype_iff' is_well_ord_iff_wellordered well_ord_abs by auto
-  moreover
-  have "is_Replace(M, d, \<lambda>X a. M(a) \<and> M(X) \<and>
-      a = {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype(X, r)}, e)
-    \<longleftrightarrow>
-    e ={a . X \<in> d, M(a) \<and> M(X) \<and> a = jump_cardinal_body(M,X)}"
-    if "M(d)" "M(e)" for d e
-    using jump_cardinal_closed_aux1 that
-    unfolding jump_cardinal_body_def
-    by (rule_tac Replace_abs) simp_all
-  ultimately
-  show ?thesis
-    using Pow_rel_iff jump_cardinal_body_closed[of K] ordertype_rel_abs
-    unfolding is_jump_cardinal'_def jump_cardinal'_rel_def jump_cardinal_body_def
-    by (simp add: types)
-qed
-
-end
-
-context M_cardinal_arith
-begin
 
 lemma (in M_ordertype) ordermap_closed[intro,simp]:
   assumes "wellordered(M,A,r)" and types:"M(A)" "M(r)"
@@ -1186,16 +1032,94 @@ proof -
   show ?thesis by simp
 qed
 
+context M_pre_cardinal_arith
+begin
+
+lemma def_jump_cardinal_body:
+  "M(X) \<Longrightarrow> M(U) \<Longrightarrow>
+  jump_cardinal_body(U,X) = {z . r \<in> U, M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)}"
+  unfolding jump_cardinal_body_def
+  using ordertype_closed
+  by(rule_tac Replace_cong,auto dest:transM)
+
+lemma jump_cardinal_body_abs:
+  shows "M(A) \<Longrightarrow> jump_cardinal_body_rel(M,Pow\<^bsup>M\<^esup>(A\<times>A),A) = jump_cardinal_body(Pow\<^bsup>M\<^esup>(A\<times>A),A)"
+  unfolding jump_cardinal_body_rel_def
+  using def_jump_cardinal_body ordertype_rel_abs transM[of _ "Pow\<^bsup>M\<^esup>(A\<times>A)"]
+  by simp
+
+end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
+
+locale M_cardinal_arith = M_pre_cardinal_arith +
+  assumes
+    ordertype_replacement_ax :
+    "M(X) \<Longrightarrow> strong_replacement(M,\<lambda> x z . is_well_ord(M,X, x) \<and> is_ordertype(M,X,x,z))"
+    and
+    strong_replacement_jc_body :
+    "strong_replacement(M,\<lambda> x z . z = jump_cardinal_body_rel(M,Pow\<^bsup>M\<^esup>(x\<times>x),x))"
+begin
+
+lemma jump_cardinal_closed_aux1:
+  assumes "M(X)"
+  shows "M(jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X),X))"
+proof -
+  note \<open>M(X)\<close>
+  moreover from this
+  have "univalent(M,Pow\<^bsup>M\<^esup>(X\<times>X),
+  \<lambda>r z. M(z) \<and> r\<in>Pow\<^bsup>M\<^esup>(X\<times>X) \<and> well_ord(X, r) \<and> is_ordertype(M, X, r, z))"
+    using
+      is_ordertype_iff[of _ X]
+      trans_on_subset[OF well_ord_is_trans_on]
+      well_ord_is_wf[THEN wf_on_subset_A] mem_Pow_rel_abs
+    unfolding univalent_def
+    by simp
+  moreover from calculation
+  have "jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X),X) =
+    jump_cardinal_body_rel(M,Pow\<^bsup>M\<^esup>(X \<times> X),X)"
+    using jump_cardinal_body_abs
+    by simp
+  moreover from calculation
+  have "jump_cardinal_body_rel(M,Pow\<^bsup>M\<^esup>(X \<times> X),X) =
+  {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> is_ordertype(M,X, r,z)}"
+    using ordertype_rel_closed transM[of _ "Pow\<^bsup>M\<^esup>(X\<times>X)"] is_ordertype_iff'
+    unfolding jump_cardinal_body_rel_def
+    by auto
+  moreover from calculation
+  have "M({z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> M(r) \<and> well_ord(X, r) \<and> is_ordertype(M,X, r,z)})"
+    using ordertype_replacement_ax is_well_ord_iff_wellordered
+    by(rule_tac strong_replacement_closed,auto)
+  ultimately
+  show ?thesis by simp
+qed
+
+lemma jump_cardinal_body_closed:
+  assumes "M(K)"
+  shows "M({jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X),X) . X \<in> Pow\<^bsup>M\<^esup>(K)})"
+proof -
+  have "univalent(M,X,\<lambda> x z . z = jump_cardinal_body(Pow\<^bsup>M\<^esup>(x \<times> x),x))" if "M(X)" for X
+    using transM[of _ X]  jump_cardinal_closed_aux1
+    by auto
+  then
+  show ?thesis
+    using assms jump_cardinal_closed_aux1 strong_replacement_jc_body
+      transM[of _ "Pow\<^bsup>M\<^esup>(K)"] jump_cardinal_body_abs
+    by(rule_tac RepFun_closed,auto)
+qed
+
+end \<comment> \<open>\<^locale>\<open>M_cardinal_arith\<close>\<close>
+
+context M_pre_cardinal_arith
+begin
 
 (*A general fact about ordermap*)
 lemma ordermap_eqpoll_pred:
   "[| well_ord(A,r);  x \<in> A ; M(A);M(r);M(x)|] ==> ordermap(A,r)`x \<approx>\<^bsup>M\<^esup> Order.pred(A,x,r)"
   apply (simp add: def_eqpoll_rel)
   apply (rule rexI)
-   apply (simp add: ordermap_eq_image well_ord_is_wf)
-   apply (erule ordermap_bij [THEN bij_is_inj, THEN restrict_bij,
+  apply (simp add: ordermap_eq_image well_ord_is_wf)
+  apply (erule ordermap_bij [THEN bij_is_inj, THEN restrict_bij,
         THEN bij_converse_bij])
-   apply (rule pred_subset, simp)
+  apply (rule pred_subset, simp)
   done
 
 text\<open>Kunen: "each \<^term>\<open>\<langle>x,y\<rangle> \<in> K \<times> K\<close> has no more than \<^term>\<open>z \<times> z\<close> predecessors..." (page 29)\<close>
@@ -1356,8 +1280,8 @@ lemma InfCard_rel_square_eqpoll:
   assumes "InfCard\<^bsup>M\<^esup>(K)" and types:"M(K)" shows "K \<times> K \<approx>\<^bsup>M\<^esup> K"
   using assms
   apply (rule_tac well_ord_InfCard_rel_square_eq)
-     apply (erule InfCard_rel_is_Card_rel [THEN Card_rel_is_Ord, THEN well_ord_Memrel])
-      apply (simp_all add: InfCard_rel_is_Card_rel [THEN Card_rel_cardinal_rel_eq] types)
+  apply (erule InfCard_rel_is_Card_rel [THEN Card_rel_is_Ord, THEN well_ord_Memrel])
+  apply (simp_all add: InfCard_rel_is_Card_rel [THEN Card_rel_cardinal_rel_eq] types)
   done
 
 lemma Inf_Card_rel_is_InfCard_rel: "[| Card\<^bsup>M\<^esup>(i); ~ Finite_rel(M,i) ; M(i) |] ==> InfCard\<^bsup>M\<^esup>(i)"
@@ -1367,20 +1291,20 @@ subsubsection\<open>Toward's Kunen's Corollary 10.13 (1)\<close>
 
 lemma InfCard_rel_le_cmult_rel_eq: "[| InfCard\<^bsup>M\<^esup>(K);  L \<le> K;  0<L; M(K) ; M(L) |] ==> K \<otimes>\<^bsup>M\<^esup> L = K"
   apply (rule le_anti_sym)
-   prefer 2
-   apply (erule ltE, blast intro: cmult_rel_le_self InfCard_rel_is_Card_rel)
+  prefer 2
+  apply (erule ltE, blast intro: cmult_rel_le_self InfCard_rel_is_Card_rel)
   apply (frule InfCard_rel_is_Card_rel [THEN Card_rel_is_Ord, THEN le_refl]) prefer 3
-    apply (rule cmult_rel_le_mono [THEN le_trans], assumption+)
-    apply (simp_all add: InfCard_rel_csquare_eq)
+  apply (rule cmult_rel_le_mono [THEN le_trans], assumption+)
+  apply (simp_all add: InfCard_rel_csquare_eq)
   done
 
 (*Corollary 10.13 (1), for cardinal multiplication*)
 lemma InfCard_rel_cmult_rel_eq: "[| InfCard\<^bsup>M\<^esup>(K);  InfCard\<^bsup>M\<^esup>(L); M(K) ; M(L) |] ==> K \<otimes>\<^bsup>M\<^esup> L = K \<union> L"
   apply (rule_tac i = K and j = L in Ord_linear_le)
-     apply (typecheck add: InfCard_rel_is_Card_rel Card_rel_is_Ord)
-   apply (rule cmult_rel_commute [THEN ssubst]) prefer 3
-     apply (rule Un_commute [THEN ssubst])
-     apply (simp_all add: InfCard_rel_is_Limit [THEN Limit_has_0] InfCard_rel_le_cmult_rel_eq
+  apply (typecheck add: InfCard_rel_is_Card_rel Card_rel_is_Ord)
+  apply (rule cmult_rel_commute [THEN ssubst]) prefer 3
+  apply (rule Un_commute [THEN ssubst])
+  apply (simp_all add: InfCard_rel_is_Limit [THEN Limit_has_0] InfCard_rel_le_cmult_rel_eq
       subset_Un_iff2 [THEN iffD1] le_imp_subset)
   done
 
@@ -1392,19 +1316,19 @@ lemma InfCard_rel_cdouble_eq: "InfCard\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K
 (*Corollary 10.13 (1), for cardinal addition*)
 lemma InfCard_rel_le_cadd_rel_eq: "[| InfCard\<^bsup>M\<^esup>(K);  L \<le> K ; M(K) ; M(L)|] ==> K \<oplus>\<^bsup>M\<^esup> L = K"
   apply (rule le_anti_sym)
-   prefer 2
-   apply (erule ltE, blast intro: cadd_rel_le_self InfCard_rel_is_Card_rel)
+  prefer 2
+  apply (erule ltE, blast intro: cadd_rel_le_self InfCard_rel_is_Card_rel)
   apply (frule InfCard_rel_is_Card_rel [THEN Card_rel_is_Ord, THEN le_refl]) prefer 3
-    apply (rule cadd_rel_le_mono [THEN le_trans], assumption+)
-    apply (simp_all add: InfCard_rel_cdouble_eq)
+  apply (rule cadd_rel_le_mono [THEN le_trans], assumption+)
+  apply (simp_all add: InfCard_rel_cdouble_eq)
   done
 
 lemma InfCard_rel_cadd_rel_eq: "[| InfCard\<^bsup>M\<^esup>(K);  InfCard\<^bsup>M\<^esup>(L); M(K) ; M(L) |] ==> K \<oplus>\<^bsup>M\<^esup> L = K \<union> L"
   apply (rule_tac i = K and j = L in Ord_linear_le)
-     apply (typecheck add: InfCard_rel_is_Card_rel Card_rel_is_Ord)
-   apply (rule cadd_rel_commute [THEN ssubst]) prefer 3
-     apply (rule Un_commute [THEN ssubst])
-     apply (simp_all add: InfCard_rel_le_cadd_rel_eq subset_Un_iff2 [THEN iffD1] le_imp_subset)
+  apply (typecheck add: InfCard_rel_is_Card_rel Card_rel_is_Ord)
+  apply (rule cadd_rel_commute [THEN ssubst]) prefer 3
+  apply (rule Un_commute [THEN ssubst])
+  apply (simp_all add: InfCard_rel_le_cadd_rel_eq subset_Un_iff2 [THEN iffD1] le_imp_subset)
   done
 
 (*The other part, Corollary 10.13 (2), refers to the cardinality of the set
@@ -1412,7 +1336,7 @@ lemma InfCard_rel_cadd_rel_eq: "[| InfCard\<^bsup>M\<^esup>(K);  InfCard\<^bsup>
   might be  InfCard(K) ==> |list(K)| = K.
 *)
 
-end \<comment> \<open>\<^locale>\<open>M_cardinal_arith\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_pre_cardinal_arith\<close>\<close>
 
 subsection\<open>For Every Cardinal Number There Exists A Greater One\<close>
 
@@ -1421,26 +1345,8 @@ text\<open>This result is Kunen's Theorem 10.16, which would be trivial using AC
 locale M_cardinal_arith_jump = M_cardinal_arith + M_ordertype
 begin
 
-lemma well_ord_restr: "well_ord(X, r) \<Longrightarrow> well_ord(X, r \<inter> X\<times>X)"
-proof -
-  have "r \<inter> X\<times>X \<inter> X\<times>X = r \<inter> X\<times>X" by auto
-  moreover
-  assume "well_ord(X, r)"
-  ultimately
-  show ?thesis
-    unfolding well_ord_def tot_ord_def part_ord_def linear_def
-      irrefl_def wf_on_def
-    by simp_all (simp only: trans_on_def, blast)
-qed
-
-lemma ordertype_restr_eq :
-  assumes "well_ord(X,r)"
-  shows "ordertype(X, r) = ordertype(X, r \<inter> X\<times>X)"
-  using ordermap_restr_eq assms unfolding ordertype_def
-  by simp
-
 lemma def_jump_cardinal_rel_aux:
-  "X \<in> Pow\<^bsup>M\<^esup>(K) \<Longrightarrow> well_ord(X, w) \<Longrightarrow> M(K) \<Longrightarrow>
+  "X \<in> Pow\<^bsup>M\<^esup>(K) \<Longrightarrow> M(K) \<Longrightarrow>
   {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)} =
   {z . r \<in> Pow\<^bsup>M\<^esup>(K \<times> K), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)}"
 proof(rule,auto simp:Pow_rel_char dest:transM)
@@ -1459,61 +1365,72 @@ proof(rule,auto simp:Pow_rel_char dest:transM)
         ReplaceI[of "\<lambda> z r . M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)" "ordertype(X,r\<inter>X\<times>X)"]
       by auto
     ultimately
-    show ?thesis using Pow_rel_char by auto
+    show ?thesis
+      using Pow_rel_char by auto
   qed
+qed
+
+lemma def_jump_cardinal_rel_aux2:
+  assumes "X \<in> Pow\<^bsup>M\<^esup>(K)" "M(K)"
+  shows "jump_cardinal_body(Pow\<^bsup>M\<^esup>(K\<times>K),X) = jump_cardinal_body(Pow\<^bsup>M\<^esup>(X\<times>X),X)"
+proof -
+  from assms
+  have "jump_cardinal_body(Pow\<^bsup>M\<^esup>(K\<times>K),X) = {z . r \<in>Pow\<^bsup>M\<^esup>(K\<times>K), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)}"
+    using def_jump_cardinal_body transM[of _ "Pow\<^bsup>M\<^esup>(K)"]
+    by simp
+  also from assms
+  have "... = {z . r \<in>Pow\<^bsup>M\<^esup>(X\<times>X), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)}"
+    using def_jump_cardinal_rel_aux  transM[of _ "Pow\<^bsup>M\<^esup>(K)"]
+    by simp
+  also from assms
+  have "... = jump_cardinal_body(Pow\<^bsup>M\<^esup>(X\<times>X),X)"
+    using def_jump_cardinal_body transM[of _ "Pow\<^bsup>M\<^esup>(K)"] by auto
+  finally
+  show ?thesis .
 qed
 
 lemma def_jump_cardinal_rel:
   assumes "M(K)"
-  shows "jump_cardinal'_rel(M,K) =
-         (\<Union>X\<in>Pow_rel(M,K). {z. r \<in> Pow_rel(M,K*K), well_ord(X,r) & z = ordertype(X,r)})"
+  shows "jump_cardinal_rel(M,K) =
+         (\<Union>{jump_cardinal_body(Pow\<^bsup>M\<^esup>(K*K),X) . X\<in> Pow\<^bsup>M\<^esup>(K)})"
 proof -
-  have "M({z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)})"
-    (is "M(Replace(_,?P))")
+  have "jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X),X) = {z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> well_ord(X, r) \<and> z=ordertype(X, r)}"
     if "M(X)" for X
-    using that jump_cardinal_closed_aux1[of X] ordertype_rel_abs[of X]
-      jump_cardinal_body_def
-    by (subst Replace_cong[where P="?P"
-          and Q="\<lambda>r z. M(z) \<and> M(r) \<and> well_ord(X, r) \<and> z = ordertype_rel(M,X,r)",
-          OF refl, of "Pow\<^bsup>M\<^esup>(X \<times> X)"]) (auto dest:transM)
+    using that ordertype_closed transM[of _ "Pow\<^bsup>M\<^esup>(X\<times>X)"]
+    unfolding jump_cardinal_body_def
+    by(intro equalityI subsetI,auto)
   then
-  have "M({z . r \<in> Pow\<^bsup>M\<^esup>(Y \<times> Y), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)})"
-    if "M(Y)" "M(X)" "X \<in> Pow\<^bsup>M\<^esup>(Y)" "well_ord(X,r)" for Y X r
-    using that def_jump_cardinal_rel_aux[of X Y r, symmetric] by simp
+  have "M({z . r \<in> Pow\<^bsup>M\<^esup>(X \<times> X), M(z) \<and> well_ord(X, r) \<and> z = ordertype(X, r)})"
+    if "M(Y)" "X \<in> Pow\<^bsup>M\<^esup>(Y)" for Y X
+    using jump_cardinal_closed_aux1[of X] that transM[of _ "Pow\<^bsup>M\<^esup>(Y)"]
+      ordertype_closed transM[of _ "Pow\<^bsup>M\<^esup>(X\<times>X)"]
+    unfolding jump_cardinal_body_def
+    by auto
   moreover from \<open>M(K)\<close>
   have "R \<in> Pow\<^bsup>M\<^esup>(X \<times> X) \<Longrightarrow> X \<in> Pow\<^bsup>M\<^esup>(K) \<Longrightarrow> R \<in> Pow\<^bsup>M\<^esup>(K \<times> K)"
     for X R using mem_Pow_rel_abs transM[OF _ Pow_rel_closed, of R "X\<times>X"]
       transM[OF _ Pow_rel_closed, of X K] by auto
   ultimately
   show ?thesis
-    using assms is_ordertype_iff is_well_ord_iff_wellordered
+    using assms is_ordertype_iff
       ordertype_rel_abs transM[of _ "Pow\<^bsup>M\<^esup>(K)"] transM[of _ "Pow\<^bsup>M\<^esup>(K\<times>K)"]
-      def_jump_cardinal_rel_aux
-    unfolding jump_cardinal'_rel_def
-    apply (intro equalityI)
-     apply (auto dest:transM)
-     apply (rename_tac X R)
-     apply (rule_tac x=X in bexI)
-      apply (rule_tac x=R in ReplaceI)
-        apply auto
-    apply (rule_tac x="{y . xa \<in> Pow\<^bsup>M\<^esup>(K \<times> K), M(y) \<and> M(xa) \<and> well_ord(X, xa) \<and> y = ordertype(X, xa)}" in bexI)
-     apply auto
-    by (rule_tac x=X in ReplaceI) auto
+      def_jump_cardinal_rel_aux jump_cardinal_body_closed ordertype_closed
+    unfolding jump_cardinal_rel_def jump_cardinal_body_def
+    apply(intro equalityI subsetI,auto dest:transM[of _ "Pow\<^bsup>M\<^esup>(K)"])
+    by(rule_tac x="{z . xa \<in> Pow\<^bsup>M\<^esup>(K \<times> K), M(z) \<and> well_ord(y, xa) \<and> z = ordertype(y, xa)}" in bexI,auto)
 qed
 
-notation jump_cardinal'_rel (\<open>jump'_cardinal'_rel\<close>)
-
 lemma Ord_jump_cardinal_rel: "M(K) \<Longrightarrow> Ord(jump_cardinal_rel(M,K))"
-  apply (unfold def_jump_cardinal_rel)
+  apply (unfold def_jump_cardinal_rel jump_cardinal_body_def )
   apply (rule Ord_is_Transset [THEN [2] OrdI])
-   prefer 2 apply (blast intro!: Ord_ordertype)
+  prefer 2 apply (blast intro!: Ord_ordertype)
   apply (unfold Transset_def)
   apply (safe del: subsetI)
   apply (subst ordertype_pred_unfold, simp, safe)
   apply (rule UN_I)
-   apply (rule_tac [2] ReplaceI)
-     prefer 4 apply (blast intro: well_ord_subset elim!: predE, simp_all)
-   prefer 2 apply (blast intro: well_ord_subset elim!: predE)
+  apply (rule_tac [2] ReplaceI)
+  prefer 4 apply (blast intro: well_ord_subset elim!: predE, simp_all)
+  prefer 2 apply (blast intro: well_ord_subset elim!: predE)
 proof -
   fix X r xb
   assume "M(K)" "X \<in> Pow\<^bsup>M\<^esup>(K)" "r \<in> Pow\<^bsup>M\<^esup>(K \<times> K)" "well_ord(X, r)" "xb \<in> X"
@@ -1533,19 +1450,19 @@ declare conj_cong [cong del]
 lemma jump_cardinal_rel_iff_old:
   "M(i) \<Longrightarrow> M(K) \<Longrightarrow> i \<in> jump_cardinal_rel(M,K) \<longleftrightarrow>
       (\<exists>r[M]. \<exists>X[M]. r \<subseteq> K*K & X \<subseteq> K & well_ord(X,r) & i = ordertype(X,r))"
-  apply (unfold def_jump_cardinal_rel)
+  apply (unfold def_jump_cardinal_rel jump_cardinal_body_def)
   apply (auto del: subsetI)
-   apply (rename_tac y r)
-   apply (rule_tac x=r in rexI, intro conjI) prefer 2
-     apply (rule_tac x=y in rexI, intro conjI)
-        apply (auto dest:mem_Pow_rel transM)
-   apply (rule_tac A=r in rev_subsetD, assumption)
-   defer
-   apply (rename_tac r y)
-   apply (rule_tac x=y in bexI)
-    apply (rule_tac x=r in ReplaceI, auto)
+  apply (rename_tac y r)
+  apply (rule_tac x=r in rexI, intro conjI) prefer 2
+  apply (rule_tac x=y in rexI, intro conjI)
+  apply (auto dest:mem_Pow_rel transM)
+  apply (rule_tac A=r in rev_subsetD, assumption)
+  defer
+  apply (rename_tac r y)
+  apply (rule_tac x=y in bexI)
+  apply (rule_tac x=r in ReplaceI, auto)
   using def_Pow_rel
-    apply (force+)[2]
+  apply (force+)[2]
   apply (rule_tac A=r in rev_subsetD, assumption)
   using mem_Pow_rel[THEN conjunct1]
   apply auto
@@ -1554,13 +1471,50 @@ lemma jump_cardinal_rel_iff_old:
 (*The easy part of Theorem 10.16: jump_cardinal_rel(K) exceeds K*)
 lemma K_lt_jump_cardinal_rel: "Ord(K) ==> M(K) \<Longrightarrow> K < jump_cardinal_rel(M,K)"
   apply (rule Ord_jump_cardinal_rel [THEN [2] ltI])
-   apply (rule jump_cardinal_rel_iff_old [THEN iffD2], assumption+)
-   apply (rule_tac x="Memrel(K)" in rexI)
-    apply (rule_tac x=K in rexI)
-     apply (simp add: ordertype_Memrel well_ord_Memrel)
+  apply (rule jump_cardinal_rel_iff_old [THEN iffD2], assumption+)
+  apply (rule_tac x="Memrel(K)" in rexI)
+  apply (rule_tac x=K in rexI)
+  apply (simp add: ordertype_Memrel well_ord_Memrel)
   using Memrel_closed
-     apply (simp_all add: Memrel_def subset_iff)
+  apply (simp_all add: Memrel_def subset_iff)
   done
+
+lemma def_jump_cardinal_rel':
+  assumes "M(K)"
+  shows "jump_cardinal_rel(M,K) =
+         (\<Union>X\<in>Pow\<^bsup>M\<^esup>(K). {z. r \<in> Pow\<^bsup>M\<^esup>(X*X), well_ord(X,r) & z = ordertype(X,r)})"
+proof -
+  from assms
+  have "jump_cardinal_rel(M, K) = (\<Union>X\<in>Pow\<^bsup>M\<^esup>(K). jump_cardinal_body(Pow\<^bsup>M\<^esup>(K \<times> K), X))"
+    using def_jump_cardinal_rel
+    by simp
+  also from \<open>M(K)\<close>
+  have " ... = (\<Union>X\<in>Pow\<^bsup>M\<^esup>(K). jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X), X))"
+    using def_jump_cardinal_rel_aux2
+    by simp
+  finally
+  show ?thesis
+    unfolding jump_cardinal_body_def by simp
+qed
+
+rel_closed for "jump_cardinal"
+proof -
+  fix K
+  assume "M(K)"
+  moreover from this
+  have "jump_cardinal_rel(M, K) =
+    \<Union>{jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X), X) . X\<in>Pow\<^bsup>M\<^esup>(K)}"
+    using def_jump_cardinal_rel'
+    unfolding jump_cardinal_body_def[symmetric]
+    by simp
+  moreover from calculation
+  have "M((\<Union>{jump_cardinal_body(Pow\<^bsup>M\<^esup>(X \<times> X), X) . X\<in>Pow\<^bsup>M\<^esup>(K)}))"
+    using def_jump_cardinal_rel_aux jump_cardinal_body_closed
+    by simp
+  ultimately
+  show "M(jump_cardinal_rel(M,K))"
+    by simp
+qed
 
 (*The proof by contradiction: the bijection f yields a wellordering of X
   whose ordertype is jump_cardinal_rel(K).  *)
@@ -1570,20 +1524,20 @@ lemma Card_rel_jump_cardinal_rel_lemma:
          M(X); M(r); M(K); M(f) |]
       ==> jump_cardinal_rel(M,K) \<in> jump_cardinal_rel(M,K)"
   apply (subgoal_tac "f O ordermap (X,r) \<in> bij (X, jump_cardinal_rel (M,K))")
-   prefer 2 apply (blast intro: comp_bij ordermap_bij)
-  apply (rule jump_cardinal_rel_iff_old [THEN iffD2], simp+)
+  prefer 2 apply (blast intro: comp_bij ordermap_bij)
+  apply (rule jump_cardinal_rel_iff_old [THEN iffD2],simp+)
   apply (intro rexI conjI)
-       apply (rule subset_trans [OF rvimage_type Sigma_mono], assumption+)
-     apply (erule bij_is_inj [THEN well_ord_rvimage])
-     apply (rule Ord_jump_cardinal_rel [THEN well_ord_Memrel])
-     apply (simp_all add: well_ord_Memrel [THEN [2] bij_ordertype_vimage]
+  apply (rule subset_trans [OF rvimage_type Sigma_mono], assumption+)
+  apply (erule bij_is_inj [THEN well_ord_rvimage])
+  apply (rule Ord_jump_cardinal_rel [THEN well_ord_Memrel])
+  apply (simp_all add: well_ord_Memrel [THEN [2] bij_ordertype_vimage]
       ordertype_Memrel Ord_jump_cardinal_rel)
   done
 
 (*The hard part of Theorem 10.16: jump_cardinal_rel(K) is itself a cardinal*)
 lemma Card_rel_jump_cardinal_rel: "M(K) \<Longrightarrow> Card_rel(M,jump_cardinal_rel(M,K))"
   apply (rule Ord_jump_cardinal_rel [THEN Card_relI])
-    apply (simp_all add: def_eqpoll_rel)
+  apply (simp_all add: def_eqpoll_rel)
   apply (drule_tac i1=j in jump_cardinal_rel_iff_old [THEN iffD1, OF _ _ ltD, of _ K], safe)
   apply (blast intro: Card_rel_jump_cardinal_rel_lemma [THEN mem_irrefl])
   done
@@ -1593,7 +1547,7 @@ subsection\<open>Basic Properties of Successor Cardinals\<close>
 lemma csucc_rel_basic: "Ord(K) ==> M(K) \<Longrightarrow> Card_rel(M,csucc_rel(M,K)) & K < csucc_rel(M,K)"
   apply (unfold csucc_rel_def)
   apply (rule LeastI[of "\<lambda>i. M(i) \<and> Card_rel(M,i) \<and> K < i", THEN conjunct2])
-   apply (blast intro: Card_rel_jump_cardinal_rel K_lt_jump_cardinal_rel Ord_jump_cardinal_rel)+
+  apply (blast intro: Card_rel_jump_cardinal_rel K_lt_jump_cardinal_rel Ord_jump_cardinal_rel)+
   done
 
 lemmas Card_rel_csucc_rel = csucc_rel_basic [THEN conjunct1]
@@ -1606,18 +1560,18 @@ lemma Ord_0_lt_csucc_rel: "Ord(K) ==> M(K) \<Longrightarrow> 0 < csucc_rel(M,K)"
 lemma csucc_rel_le: "[| Card_rel(M,L);  K<L; M(K); M(L) |] ==> csucc_rel(M,K) \<le> L"
   apply (unfold csucc_rel_def)
   apply (rule Least_le)
-   apply (blast intro: Card_rel_is_Ord)+
+  apply (blast intro: Card_rel_is_Ord)+
   done
 
 lemma lt_csucc_rel_iff: "[| Ord(i); Card_rel(M,K); M(K); M(i)|] ==> i < csucc_rel(M,K) \<longleftrightarrow> |i|\<^bsup>M\<^esup> \<le> K"
   apply (rule iffI)
-   apply (rule_tac [2] Card_rel_lt_imp_lt)
-       apply (erule_tac [2] lt_trans1)
-       apply (simp_all add: lt_csucc_rel Card_rel_csucc_rel Card_rel_is_Ord)
+  apply (rule_tac [2] Card_rel_lt_imp_lt)
+  apply (erule_tac [2] lt_trans1)
+  apply (simp_all add: lt_csucc_rel Card_rel_csucc_rel Card_rel_is_Ord)
   apply (rule notI [THEN not_lt_imp_le])
-    apply (rule Card_rel_cardinal_rel [THEN csucc_rel_le, THEN lt_trans1, THEN lt_irrefl], simp_all+)
-   apply (rule Ord_cardinal_rel_le [THEN lt_trans1])
-     apply (simp_all add: Card_rel_is_Ord)
+  apply (rule Card_rel_cardinal_rel [THEN csucc_rel_le, THEN lt_trans1, THEN lt_irrefl], simp_all+)
+  apply (rule Ord_cardinal_rel_le [THEN lt_trans1])
+  apply (simp_all add: Card_rel_is_Ord)
   done
 
 lemma Card_rel_lt_csucc_rel_iff:
@@ -1645,4 +1599,5 @@ lemma Ord_nat_subset_into_Card_rel: "[| Ord(i); i \<subseteq> nat |] ==> Card\<^
   by (blast dest: Ord_subset_natD intro: Card_rel_nat nat_into_Card_rel)
 
 end \<comment> \<open>\<^locale>\<open>M_cardinal_arith_jump\<close>\<close>
+
 end

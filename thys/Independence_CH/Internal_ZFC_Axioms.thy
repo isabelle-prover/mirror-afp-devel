@@ -1,7 +1,7 @@
 section\<open>The ZFC axioms, internalized\<close>
 theory Internal_ZFC_Axioms
   imports
-    Forcing_Data
+    Fm_Definitions
 
 begin
 
@@ -471,7 +471,7 @@ definition
 lemma ZFC_subset_formula: "ZFC \<subseteq> formula"
   by (simp add:ZFC_def Un_subset_formula)
 
-txt\<open>Satisfaction of a set of sentences\<close>
+text\<open>Satisfaction of a set of sentences\<close>
 definition
   satT :: "[i,i] \<Rightarrow> o"  ("_ \<Turnstile> _" [36,36] 60) where
   "A \<Turnstile> \<Phi>  \<equiv>  \<forall>\<phi>\<in>\<Phi>. (A,[] \<Turnstile> \<phi>)"

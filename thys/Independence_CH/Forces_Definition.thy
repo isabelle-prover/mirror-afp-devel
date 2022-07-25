@@ -21,7 +21,7 @@ begin
 (* Absoluteness of components *)
 lemma ftype_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_ftype(##M,x,y) \<longleftrightarrow> y = ftype(x)"
-  unfolding ftype_def  is_ftype_def by (simp add:absolut)
+  unfolding ftype_def is_ftype_def by (simp add:absolut)
 
 lemma name1_abs:
   "\<lbrakk>x\<in>M; y\<in>M \<rbrakk> \<Longrightarrow> is_name1(##M,x,y) \<longleftrightarrow> y = name1(x)"
@@ -55,7 +55,7 @@ lemmas components_abs = ftype_abs name1_abs name2_abs cond_of_abs
 lemma comp_in_M:
   "p \<preceq> q \<Longrightarrow> p\<in>M"
   "p \<preceq> q \<Longrightarrow> q\<in>M"
-  using leq_in_M transitivity[of _ leq] pair_in_M_iff by auto
+  using transitivity[of _ leq] pair_in_M_iff by auto
 
 (* Absoluteness of Hfrc *)
 
@@ -79,7 +79,7 @@ proof -
   then
   show ?thesis
     unfolding eq_case_def is_eq_case_def
-    using assms pair_in_M_iff nat_into_M domain_closed apply_closed leq_in_M zero_in_M Un_closed
+    using assms pair_in_M_iff nat_into_M domain_closed apply_closed zero_in_M Un_closed
     by (simp add:components_abs)
 qed
 
@@ -118,7 +118,7 @@ next
     moreover
     from this \<open>t2\<in>M\<close>
     have "r\<in>M" "q\<in>M" "s\<in>M" "r \<in> P \<and> q \<in> P \<and> q \<preceq> v \<and> \<langle>s, r\<rangle> \<in> t2 \<and> q \<preceq> r \<and> f ` \<langle>0, t1, s, q\<rangle> = 1"
-      using transitivity domainI[of s r] P_in_M domain_closed
+      using transitivity domainI[of s r] domain_closed
       by auto
     moreover
     note \<open>t1\<in>M\<close>
@@ -242,27 +242,27 @@ proof -
   have "ft \<in> 2" "a \<in> 2"
     unfolding frecR_def by (auto simp add:components_simp)
   from assms
-  consider (e) "n1 \<in> domain(b) \<union> domain(c) \<and> (n2 = b \<or> n2 =c)"
-    | (m) "n1 = b \<and> n2 \<in> domain(c)"
+  consider (eq) "n1 \<in> domain(b) \<union> domain(c) \<and> (n2 = b \<or> n2 =c)"
+    | (mem) "n1 = b \<and> n2 \<in> domain(c)"
     unfolding frecR_def by (auto simp add:components_simp)
   then show ?thesis
   proof cases
-    case e
+    case eq
     then
     have "n1 \<in> eclose(b) \<or> n1 \<in> eclose(c)"
       using Un_iff in_dom_in_eclose by auto
-    with e
+    with eq
     have "n1 \<in> ecloseN(?y)" "n2 \<in> ecloseN(?y)"
       using ecloseNI components_in_eclose by auto
     with \<open>ft\<in>2\<close> \<open>p\<in>P\<close>
     show ?thesis
       unfolding names_below_def by  auto
   next
-    case m
+    case mem
     then
     have "n1 \<in> ecloseN(?y)" "n2 \<in> ecloseN(?y)"
-      using mem_eclose_trans  ecloseNI
-        in_dom_in_eclose components_in_eclose by auto
+      using mem_eclose_trans ecloseNI in_dom_in_eclose components_in_eclose
+      by auto
     with \<open>ft\<in>2\<close> \<open>p\<in>P\<close>
     show ?thesis
       unfolding names_below_def
@@ -599,7 +599,7 @@ lemma forcerel_in_M :
 proof -
   let ?Q = "2 \<times> ecloseN(x) \<times> ecloseN(x) \<times> P"
   have "?Q \<times> ?Q \<in> M"
-    using \<open>x\<in>M\<close> P_in_M nat_into_M ecloseN_closed cartprod_closed by simp
+    using \<open>x\<in>M\<close> nat_into_M ecloseN_closed cartprod_closed by simp
   moreover
   have "separation(##M,\<lambda>z. frecrelP(##M,z))"
     using separation_in_ctm[of "frecrelP_fm(0)",OF _ _ _ sats_frecrelP_fm]
@@ -632,20 +632,20 @@ proof -
         sats(M,Hfrc_at_fm(8,9,2,1,0),[c,b,a,d,e,y,x,z,P,leq,forcerel(P,X)])"
     if "a\<in>M" "b\<in>M" "c\<in>M" "d\<in>M" "e\<in>M" "y\<in>M" "x\<in>M" "z\<in>M"
     for a b c d e y x z
-    using that P_in_M leq_in_M \<open>X\<in>M\<close> forcerel_in_M
-      Hfrc_at_iff_sats[of concl:M P leq a b c 8 9 2 1 0
-        "[c,b,a,d,e,y,x,z,P,leq,forcerel(P,X)]"] by simp
+    using that \<open>X\<in>M\<close> forcerel_in_M
+      Hfrc_at_iff_sats[of concl:M P leq a b c 8 9 2 1 0]
+    by simp
   have 1:"sats(M,is_wfrec_fm(Hfrc_at_fm(8,9,2,1,0),5,1,0),[y,x,z,P,leq,forcerel(P,X)]) \<longleftrightarrow>
                    is_wfrec(##M, is_Hfrc_at(##M,P,leq),forcerel(P,X), x, y)"
     if "x\<in>M" "y\<in>M" "z\<in>M" for x y z
-    using that \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M sats_is_wfrec_fm[OF 0]
+    using that \<open>X\<in>M\<close> forcerel_in_M sats_is_wfrec_fm[OF 0]
     by simp
   let
     ?f="Exists(And(pair_fm(1,0,2),is_wfrec_fm(Hfrc_at_fm(8,9,2,1,0),5,1,0)))"
   have satsf:"sats(M, ?f, [x,z,P,leq,forcerel(P,X)]) \<longleftrightarrow>
               (\<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hfrc_at(##M,P,leq),forcerel(P,X), x, y))"
     if "x\<in>M" "z\<in>M" for x z
-    using that 1 \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M by (simp del:pair_abs)
+    using that 1 \<open>X\<in>M\<close> forcerel_in_M by (simp del:pair_abs)
   have artyf:"arity(?f) = 5"
     using arity_wfrec_replacement_fm[where p="Hfrc_at_fm(8,9,2,1,0)" and i=10]
       arity_Hfrc_at_fm ord_simp_union
@@ -654,8 +654,8 @@ proof -
   have "?f\<in>formula" by simp
   ultimately
   have "strong_replacement(##M,\<lambda>x z. sats(M,?f,[x,z,P,leq,forcerel(P,X)]))"
-    using replacement_ax1(1) 1 artyf \<open>X\<in>M\<close> forcerel_in_M P_in_M leq_in_M
-    unfolding replacement_assm_def by simp
+    using ZF_ground_replacements(1) 1 artyf \<open>X\<in>M\<close> forcerel_in_M
+    unfolding replacement_assm_def wfrec_Hfrc_at_fm_def by simp
   then
   have "strong_replacement(##M,\<lambda>x z.
           \<exists>y\<in>M. pair(##M,x,y,z) & is_wfrec(##M, is_Hfrc_at(##M,P,leq),forcerel(P,X), x, y))"
@@ -685,7 +685,7 @@ lemma "names_below_productE" :
 lemma forcerel_abs :
   "\<lbrakk>x\<in>M;z\<in>M\<rbrakk> \<Longrightarrow> is_forcerel(##M,P,x,z) \<longleftrightarrow> z = forcerel(P,x)"
   unfolding is_forcerel_def forcerel_def
-  using frecrel_abs names_below_abs trancl_abs P_in_M ecloseN_closed names_below_closed
+  using frecrel_abs names_below_abs trancl_abs ecloseN_closed names_below_closed
     names_below_productE[of concl:"\<lambda>p. is_frecrel(##M,p,_) \<longleftrightarrow>  _ = frecrel(p)"] frecrel_closed
   by simp
 
@@ -721,7 +721,7 @@ lemma forces_neq'_abs :
   shows "is_forces_neq'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_neq'(P,leq,p,t1,t2)"
 proof -
   have "q\<in>M" if "q\<in>P" for q
-    using that transitivity P_in_M by simp
+    using that transitivity by simp
   with assms
   show ?thesis
     unfolding is_forces_neq'_def forces_neq'_def
@@ -729,21 +729,18 @@ proof -
     by (auto simp add:components_abs,blast)
 qed
 
-
 lemma forces_nmem'_abs :
   assumes "p\<in>M" "t1\<in>M" "t2\<in>M"
   shows "is_forces_nmem'(##M,P,leq,p,t1,t2) \<longleftrightarrow> forces_nmem'(P,leq,p,t1,t2)"
 proof -
   have "q\<in>M" if "q\<in>P" for q
-    using that transitivity P_in_M by simp
+    using that transitivity by simp
   with assms
   show ?thesis
     unfolding is_forces_nmem'_def forces_nmem'_def
     using forces_mem'_abs pair_in_M_iff
     by (auto simp add:components_abs,blast)
 qed
-
-subsection\<open>Forcing for general formulas\<close>
 
 lemma leq_abs:
   "\<lbrakk> l\<in>M ; q\<in>M ; p\<in>M \<rbrakk> \<Longrightarrow> is_leq(##M,l,q,p) \<longleftrightarrow> \<langle>q,p\<rangle>\<in>l"
@@ -821,36 +818,35 @@ lemma sats_forces_Member :
     "nth(x,env)=xx" "nth(y,env)=yy" "q\<in>M"
   shows "q \<tturnstile> \<cdot>x \<in> y\<cdot> env \<longleftrightarrow> q \<in> P \<and> is_forces_mem(q, xx, yy)"
   unfolding forces_def
-  using assms P_in_M leq_in_M one_in_M
+  using assms
   by simp
 
 lemma sats_forces_Equal :
   assumes "a\<in>nat" "b\<in>nat" "env\<in>list(M)" "nth(a,env)=x" "nth(b,env)=y" "q\<in>M"
   shows "q \<tturnstile> \<cdot>a = b\<cdot> env \<longleftrightarrow> q \<in> P \<and> is_forces_eq(q, x, y)"
   unfolding forces_def
-  using assms P_in_M leq_in_M one_in_M
+  using assms
   by simp
 
 lemma sats_forces_Nand :
   assumes "\<phi>\<in>formula" "\<psi>\<in>formula" "env\<in>list(M)" "p\<in>M"
   shows "p \<tturnstile> \<cdot>\<not>(\<phi> \<and> \<psi>)\<cdot> env \<longleftrightarrow>
-    p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and>
-    (M,[q,P,leq,\<one>]@env \<Turnstile> forces(\<phi>)) \<and> (M,[q,P,leq,\<one>]@env \<Turnstile> forces(\<psi>)))"
+    p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> (q \<tturnstile> \<phi> env) \<and> (q \<tturnstile> \<psi> env))"
   unfolding forces_def
-  using sats_is_leq_fm_auto assms sats_ren_forces_nand P_in_M leq_in_M one_in_M zero_in_M
+  using sats_is_leq_fm_auto assms sats_ren_forces_nand zero_in_M
   by simp
 
 lemma sats_forces_Neg :
   assumes "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M"
   shows "p \<tturnstile> \<cdot>\<not>\<phi>\<cdot> env \<longleftrightarrow>
-         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> (M, [q, P, leq, \<one>] @ env \<Turnstile> forces(\<phi>))))"
+         (p\<in>P \<and> \<not>(\<exists>q\<in>M. q\<in>P \<and> is_leq(##M,leq,q,p) \<and> (q \<tturnstile> \<phi> env)))"
   unfolding Neg_def using assms sats_forces_Nand
   by simp
 
 lemma sats_forces_Forall :
   assumes "\<phi>\<in>formula" "env\<in>list(M)" "p\<in>M"
-  shows "p \<tturnstile> (\<cdot>\<forall>\<phi>\<cdot>) env \<longleftrightarrow> p \<in> P \<and> (\<forall>x\<in>M. M,[p,P,leq,\<one>,x] @ env \<Turnstile> forces(\<phi>))"
-  unfolding forces_def using assms sats_ren_forces_forall P_in_M leq_in_M one_in_M
+  shows "p \<tturnstile> (\<cdot>\<forall>\<phi>\<cdot>) env \<longleftrightarrow> p \<in> P \<and> (\<forall>x\<in>M. p \<tturnstile> \<phi> ([x] @ env))"
+  unfolding forces_def using assms sats_ren_forces_forall
   by simp
 
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
