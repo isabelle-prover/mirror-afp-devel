@@ -196,11 +196,14 @@ lemma Imp1: \<open>\<turnstile> q \<^bold>\<longrightarrow> p \<^bold>\<longrigh
 
 text \<open>The tautology axiom TA is not used directly beyond this point.\<close>
 
-lemma Tran: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
+lemma Tran': \<open>\<turnstile> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
   by (meson Imp1 Imp2 MP)
 
-lemma Swap: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r)\<close>
-  by (meson Imp1 Imp2 Tran MP)
+lemma Swap: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> q \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
+  by (meson Imp1 Imp2 Tran' MP)
+
+lemma Tran: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
+  by (meson Swap Tran' MP)
 
 text \<open>Note that contraposition in the other direction is an instance of the lemma Tran.\<close>
 
@@ -211,15 +214,15 @@ lemma GR': \<open>\<turnstile> \<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangl
 proof -
   assume *: \<open>\<turnstile> \<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p \<^bold>\<longrightarrow> q\<close> and a: \<open>a \<notin> params {p, q}\<close>
   have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p\<close>
-    using * Imp1 Imp2 MP by metis
+    using * Tran MP by metis
   then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<langle>\<^bold>\<star>a/0\<rangle>p\<close>
-    by (meson Imp1 Imp2 Neg MP)
+    using Neg Tran MP by metis
   then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<forall>p\<close>
     using a by (auto intro: GR)
   then have \<open>\<turnstile> \<^bold>\<not> (\<^bold>\<forall>p) \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> q\<close>
     using Tran MP by metis
   then show ?thesis
-    by (meson Imp1 Imp2 Neg MP)
+    using Neg Tran MP by metis
 qed
 
 lemma imply_ImpE: \<open>\<turnstile> ps \<^bold>\<leadsto> p \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q\<close>
@@ -414,7 +417,7 @@ proof -
   also have \<open>\<dots> = infinite (UNIV - extra - params S)\<close>
     by (simp add: Set_Diff_Un)
   also have \<open>\<dots> = infinite (UNIV - params S)\<close>
-    using \<open>finite extra\<close> by (metis Set_Diff_Un finite_Diff2 sup_commute)
+    using \<open>finite extra\<close> by (metis Set_Diff_Un Un_commute finite_Diff2)
   finally show ?thesis
     using assms ..
 qed
@@ -439,15 +442,15 @@ qed (auto simp: assms)
 lemma consistent_extend:
   assumes \<open>consistent S\<close> and \<open>infinite (UNIV - params S)\<close>
   shows \<open>consistent (extend S f n)\<close>
-  using assms
 proof (induct n)
   case (Suc n)
-  moreover from this have \<open>infinite (UNIV - params ({f n} \<union> extend S f n))\<close>
-    using infinite_params_extend Diff_infinite_finite Set_Diff_Un UN_Un finite.emptyI
-      finite.insertI finite_UN_I finite_params_fm sup_commute by (metis (no_types))
-  ultimately show ?case
-    using consistent_witness[where S=\<open>{f n} \<union> _\<close>] by (simp add: Let_def)
-qed simp
+  have \<open>infinite (UNIV - params (extend S f n))\<close>
+    using assms(2) infinite_params_extend by fast
+  with finite_params_fm have \<open>infinite (UNIV - (params_fm (f n) \<union> params (extend S f n)))\<close>
+    by (metis Set_Diff_Un Un_commute finite_Diff2)
+  with Suc consistent_witness[where S=\<open>{f n} \<union> extend S f n\<close>] show ?case
+    by (simp add: Let_def)
+qed (use assms(1) in simp)
 
 lemma consistent_Extend:
   assumes \<open>consistent S\<close> and \<open>infinite (UNIV - params S)\<close>
@@ -594,12 +597,12 @@ lemma deriv_iff_MCS:
   assumes \<open>consistent S\<close> and \<open>maximal S\<close>
   shows \<open>(\<exists>ps. set ps \<subseteq> S \<and> ps \<turnstile> p) \<longleftrightarrow> p \<in> S\<close>
 proof
-  show \<open>\<exists>ps. set ps \<subseteq> S \<and> ps \<turnstile> p \<Longrightarrow> p \<in> S\<close>
-    using maximal_exactly_one[OF assms(1)] assms deduct1 unfolding consistent_def
-    by (metis MP' add_imply imply.simps(1) imply_ImpE insert_absorb insert_mono list.simps(15))
+  from assms maximal_exactly_one[OF assms(1)] show \<open>\<exists>ps. set ps \<subseteq> S \<and> ps \<turnstile> p \<Longrightarrow> p \<in> S\<close>
+    unfolding consistent_def using MP add_imply deduct1 imply.simps(1) imply_ImpE
+    by (metis insert_absorb insert_mono list.simps(15))
 next
   show \<open>p \<in> S \<Longrightarrow> \<exists>ps. set ps \<subseteq> S \<and> ps \<turnstile> p\<close>
-    by (metis empty_subsetI imply_head insert_absorb insert_mono list.set(1) list.simps(15))
+    using imply_head by (metis empty_subsetI insert_absorb insert_mono list.set(1) list.simps(15))
 qed
 
 lemma Hintikka_Extend:
@@ -631,7 +634,7 @@ instance fm :: (countable, countable) countable
 section \<open>Completeness\<close>
 
 lemma infinite_Diff_fin_Un: \<open>infinite (X - Y) \<Longrightarrow> finite Z \<Longrightarrow> infinite (X - (Z \<union> Y))\<close>
-  by (simp add: Set_Diff_Un sup_commute)
+  by (simp add: Set_Diff_Un Un_commute)
 
 theorem strong_completeness:
   fixes p :: \<open>('f :: countable, 'p :: countable) fm\<close>
@@ -646,8 +649,8 @@ proof (rule ccontr)
   let ?S = \<open>{\<^bold>\<not> p} \<union> X\<close>
   let ?H = \<open>Extend ?S from_nat\<close>
 
-  have \<open>consistent ?S\<close>
-    using * by (metis consistent_def imply_Cons inconsistent_fm)
+  from inconsistent_fm have \<open>consistent ?S\<close>
+    unfolding consistent_def using * imply_Cons by metis
   moreover have \<open>infinite (UNIV - params ?S)\<close>
     using assms(2) finite_params_fm by (simp add: infinite_Diff_fin_Un)
   ultimately have \<open>consistent ?H\<close> and \<open>maximal ?H\<close>
