@@ -14,7 +14,7 @@ theory Lazy_List_Chain
 begin
 
 text \<open>
-A chain is a lazy lists of elements such that all pairs of consecutive elements are related by a
+A chain is a lazy list of elements such that all pairs of consecutive elements are related by a
 given relation. A full chain is either an infinite chain or a finite chain that cannot be extended.
 The inspiration for this theory is Section 4.1 (``Theorem Proving Processes'') of Bachmair and
 Ganzinger's chapter.
