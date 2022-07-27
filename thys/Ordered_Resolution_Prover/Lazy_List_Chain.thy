@@ -611,6 +611,20 @@ lemma full_chain_lnth_rel:
   "full_chain R xs \<Longrightarrow> enat (Suc j) < llength xs \<Longrightarrow> R (lnth xs j) (lnth xs (Suc j))"
   by (fact chain_lnth_rel[OF full_chain_imp_chain])
 
+lemma full_chain_lnth_not_rel:
+  assumes
+    full: "full_chain R xs" and
+    sj: "enat (Suc j) = llength xs"
+  shows "\<not> R (lnth xs j) y"
+proof -
+  have "lfinite xs"
+    by (metis llength_eq_enat_lfiniteD sj)
+  hence "\<not> R (llast xs) y"
+    using full_chain_iff_chain full by metis
+  thus ?thesis
+    by (metis eSuc_enat llast_conv_lnth sj)
+qed
+
 inductive_cases full_chain_consE: "full_chain R (LCons x xs)"
 inductive_cases full_chain_nontrivE: "full_chain R (LCons x (LCons y xs))"
 
