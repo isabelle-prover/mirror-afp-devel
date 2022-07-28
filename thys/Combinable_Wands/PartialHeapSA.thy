@@ -271,12 +271,12 @@ lemma commutative:
   "a \<oplus> b = b \<oplus> a"
 proof (cases "compatible_heaps (get_h a) (get_h b) \<and> valid_mask (add_masks (get_m a) (get_m b))")
   case True
-  then have "compatible_heaps (get_h b) (get_h a) \<and> add_masks (get_m a) (get_m b) = add_masks (get_m b) (get_m a)"
+  then have r0: "compatible_heaps (get_h b) (get_h a) \<and> add_masks (get_m a) (get_m b) = add_masks (get_m b) (get_m a)"
     by (metis add_masks_comm compatible_heapsI compatible_heaps_def compatible_options.simps(1))
   then have "(get_h a) ++ (get_h b) = (get_h b) ++ (get_h a)"
     by (simp add: compatible_heaps_comm)
   then show ?thesis
-    by (metis True \<open>compatible_heaps (get_h b) (get_h a) \<and> add_masks (get_m a) (get_m b) = add_masks (get_m b) (get_m a)\<close> add_states.simps get_h_m plus_ab_defined plus_def)
+    by (metis True r0 add_states.simps get_h_m plus_ab_defined plus_def)
 next
   case False
   then show ?thesis
@@ -535,7 +535,7 @@ lemma greaterI:
     shows "a \<succeq> b"
 proof -
   let ?m = "\<lambda>l. SOME p. get_m a l = padd (get_m b l) p"
-  have "get_m a = add_masks (get_m b) ?m"
+  have r0: "get_m a = add_masks (get_m b) ?m"
   proof (rule ext)
     fix l
     have "pgte (get_m a l) (get_m b l)"
@@ -558,7 +558,7 @@ proof -
   qed
   moreover have "compatible_heaps (get_h b) (get_h a)"
     by (metis (mono_tags, lifting) assms(1) compatible_heapsI larger_heap_def option.inject)
-  ultimately have "(get_m a, get_h a) = add_states (get_m b, get_h b) (?m, get_h a)"
+  ultimately have r2: "(get_m a, get_h a) = add_states (get_m b, get_h b) (?m, get_h a)"
   proof -
     have "get_h b ++ get_h a = get_h a"
     proof (rule ext)
@@ -566,20 +566,20 @@ proof -
         by (metis assms(1) domIff larger_heap_def map_add_dom_app_simps(1) map_add_dom_app_simps(3) not_Some_eq)
     qed
     then show ?thesis
-      by (metis \<open>get_m a = add_masks (get_m b) (\<lambda>l. SOME p. get_m a l = padd (get_m b l) p)\<close> add_states.simps)
+      by (metis r0 add_states.simps)
   qed
-  moreover have "compatible_heaps (get_h b) (get_h a) \<and> valid_mask (add_masks (get_m b) ?m)"
-    by (metis Rep_state \<open>compatible_heaps (get_h b) (get_h a)\<close> \<open>get_m a = add_masks (get_m b) (\<lambda>l. SOME p. get_m a l = padd (get_m b l) p)\<close> get_h_m mem_Collect_eq valid_state.simps)
+  moreover have r1: "compatible_heaps (get_h b) (get_h a) \<and> valid_mask (add_masks (get_m b) ?m)"
+    by (metis Rep_state \<open>compatible_heaps (get_h b) (get_h a)\<close> r0 get_h_m mem_Collect_eq valid_state.simps)
   ultimately have "Some a = b \<oplus> Abs_state (?m, get_h a)"
   proof -
     have "Rep_state (Abs_state (?m, get_h a)) = (?m, get_h a)"
       using Abs_state_inverse \<open>valid_state (\<lambda>l. SOME p. get_m a l = padd (get_m b l) p, get_h a)\<close> by blast
     moreover have "compatible (Rep_state b) (?m, get_h a)"
-      using \<open>compatible_heaps (get_h b) (get_h a) \<and> valid_mask (add_masks (get_m b) (\<lambda>l. SOME p. get_m a l = padd (get_m b l) p))\<close> compatible_def by auto
+      using r1 compatible_def by auto
     moreover have "valid_state (add_states (Rep_state b) (?m, get_h a))"
-      by (metis Rep_state \<open>(get_m a, get_h a) = add_states (get_m b, get_h b) (\<lambda>l. SOME p. get_m a l = padd (get_m b l) p, get_h a)\<close> get_h_m mem_Collect_eq)
+      by (metis Rep_state r2 get_h_m mem_Collect_eq)
     ultimately show ?thesis
-      by (metis (no_types, lifting) Rep_state_inverse \<open>(get_m a, get_h a) = add_states (get_m b, get_h b) (\<lambda>l. SOME p. get_m a l = padd (get_m b l) p, get_h a)\<close> get_h_m plus_def)
+      by (metis (no_types, lifting) Rep_state_inverse r2 get_h_m plus_def)
   qed
   then show ?thesis
     by (meson PartialSA.greater_def)

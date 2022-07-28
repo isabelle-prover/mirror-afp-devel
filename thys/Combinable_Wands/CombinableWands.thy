@@ -324,18 +324,18 @@ proof (rule subsetI)
     by (simp add: wand_equiv_def)
   show "w \<in> cwand A B"
   proof (rule in_cwand)
-    fix a x assume "a \<in> A \<and> Some x = R a w \<oplus> a"
+    fix a x assume asm1: "a \<in> A \<and> Some x = R a w \<oplus> a"
     show "x \<in> B"
     proof (cases "scalable w a")
       case True
       then show ?thesis
-        by (metis PartialSA.commutative PartialSA.defined_def R_def \<open>a \<in> A \<and> Some x = R a w \<oplus> a\<close> option.distinct(1) scalable_def w_in_scaled)
+        by (metis PartialSA.commutative PartialSA.defined_def R_def asm1 option.distinct(1) scalable_def w_in_scaled)
     next
       case False
-      then have "get_m (R a w) = comp_min_mask (get_m a) (get_m w) \<and> get_h (R a w) = get_h w"
+      then have r0: "get_m (R a w) = comp_min_mask (get_m a) (get_m w) \<and> get_h (R a w) = get_h w"
         using non_scalable_R_charact by blast
       moreover have "Abs_state (binary_mask (get_m a), get_h a) \<in> A"
-        using \<open>a \<in> A \<and> Some x = R a w \<oplus> a\<close> assms(1) binary_def by blast
+        using asm1 assms(1) binary_def by blast
       moreover have "greater_mask (add_masks (comp_min_mask (get_m a) (get_m w)) (get_m a))
   (add_masks (binary_mask (get_m a)) (get_m w))"
       proof (rule greater_maskI)
@@ -388,9 +388,9 @@ proof (rule subsetI)
         qed
       qed
       then have "valid_mask (add_masks (binary_mask (get_m a)) (get_m w))"
-        by (metis \<open>a \<in> A \<and> Some x = R a w \<oplus> a\<close> calculation(1) greater_mask_def option.distinct(1) plus_ab_defined upper_valid_aux)
+        by (metis asm1 calculation(1) greater_mask_def option.distinct(1) plus_ab_defined upper_valid_aux)
       moreover have "compatible_heaps (get_h a) (get_h w)"
-        by (metis PartialSA.commutative \<open>a \<in> A \<and> Some x = R a w \<oplus> a\<close> \<open>get_m (R a w) = comp_min_mask (get_m a) (get_m w) \<and> get_h (R a w) = get_h w\<close> option.simps(3) plus_ab_defined)
+        by (metis PartialSA.commutative asm1 r0 option.simps(3) plus_ab_defined)
       then obtain xx where "Some xx = Abs_state (binary_mask (get_m a), get_h a) \<oplus> w"
         using Abs_state_inverse calculation compatible_def fst_conv plus_def valid_bin by auto
       then have "xx \<in> B" using asm0
@@ -398,12 +398,12 @@ proof (rule subsetI)
       moreover have "x \<succeq> xx"
       proof (rule greaterI)
         show "greater_mask (get_m x) (get_m xx)"
-          using Abs_state_inverse \<open>Some xx = Abs_state (binary_mask (get_m a), get_h a) \<oplus> w\<close> \<open>a \<in> A \<and> Some x = R a w \<oplus> a\<close> \<open>greater_mask (add_masks (comp_min_mask (get_m a) (get_m w)) (get_m a)) (add_masks (binary_mask (get_m a)) (get_m w))\<close> calculation(1) plus_charact(1) valid_bin by auto
+          using Abs_state_inverse \<open>Some xx = Abs_state (binary_mask (get_m a), get_h a) \<oplus> w\<close> asm1 \<open>greater_mask (add_masks (comp_min_mask (get_m a) (get_m w)) (get_m a)) (add_masks (binary_mask (get_m a)) (get_m w))\<close> calculation(1) plus_charact(1) valid_bin by auto
         show "larger_heap (get_h x) (get_h xx)"
         proof (rule larger_heapI)
           fix hl xa assume "get_h xx hl = Some xa"
           then show "get_h x hl = Some xa"
-            by (metis PartialSA.commutative Rep_state_cases Rep_state_inverse \<open>Some xx = Abs_state (binary_mask (get_m a), get_h a) \<oplus> w\<close> \<open>a \<in> A \<and> Some x = R a w \<oplus> a\<close> calculation(1) get_h.simps mem_Collect_eq plus_charact(2) snd_conv valid_bin)
+            by (metis PartialSA.commutative Rep_state_cases Rep_state_inverse \<open>Some xx = Abs_state (binary_mask (get_m a), get_h a) \<oplus> w\<close> asm1 calculation(1) get_h.simps mem_Collect_eq plus_charact(2) snd_conv valid_bin)
         qed
       qed
       ultimately show ?thesis
@@ -433,7 +433,7 @@ proof -
         by (meson in_multiply_sem)
       let ?a = "pdiv a (padd a b)"
       let ?b = "pdiv b (padd a b)"
-      have "pgte pwrite ?a \<and> pgte pwrite ?b"
+      have r0: "pgte pwrite ?a \<and> pgte pwrite ?b"
         using asm0 p_greater_exists padd_comm pdiv_smaller ppos_add by blast
       have "multiply ?a wa |#| multiply ?b wb"
       proof (rule compatibleI)
@@ -461,9 +461,9 @@ proof -
                       = padd (pmult ?a (get_m wa hl)) (pmult ?b (get_m wb hl))"
           proof -
             have "get_m (multiply ?a wa) hl = pmult ?a (get_m wa hl)"
-              using Abs_state_inverse \<open>pgte pwrite (pdiv a (padd a b)) \<and> pgte pwrite (pdiv b (padd a b))\<close> multiply_mask_def multiply_valid by auto
+              using Abs_state_inverse r0 multiply_mask_def multiply_valid by auto
             moreover have "get_m (multiply ?b wb) hl = pmult ?b (get_m wb hl)"
-              using Abs_state_inverse \<open>pgte pwrite (pdiv a (padd a b)) \<and> pgte pwrite (pdiv b (padd a b))\<close> multiply_mask_def multiply_valid by auto
+              using Abs_state_inverse r0 multiply_mask_def multiply_valid by auto
             ultimately show ?thesis by simp
           qed
           moreover have "pgte pwrite (padd (pmult ?a (get_m wa hl)) (pmult ?b (get_m wb hl)))"
@@ -479,9 +479,9 @@ proof -
             by presburger
         qed
       qed
-      then obtain xx where "Some xx = multiply ?a wa \<oplus> multiply ?b wb"        
+      then obtain xx where xx_def: "Some xx = multiply ?a wa \<oplus> multiply ?b wb"        
         using PartialSA.defined_def by auto
-      moreover have "(multiply_sem_assertion ?a (cwand A B)) \<otimes> (multiply_sem_assertion ?b (cwand A B)) \<subseteq> cwand A B"
+      moreover have inclusion: "(multiply_sem_assertion ?a (cwand A B)) \<otimes> (multiply_sem_assertion ?b (cwand A B)) \<subseteq> cwand A B"
       proof (rule assms)
         show "ppos (pdiv a (padd a b)) \<and> ppos (pdiv b (padd a b)) \<and> padd (pdiv a (padd a b)) (pdiv b (padd a b)) = pwrite"
           using asm0 padd.rep_eq pdiv.rep_eq ppos.rep_eq sum_coeff by auto
@@ -493,7 +493,7 @@ proof -
         moreover have "multiply ?b wb \<in> multiply_sem_assertion ?b (cwand A B)"
           by (meson \<open>wb \<in> cwand A B\<close> in_multiply_refl)
         ultimately show ?thesis
-          using PartialSA.add_set_def \<open>Some xx = multiply (pdiv a (padd a b)) wa \<oplus> multiply (pdiv b (padd a b)) wb\<close> \<open>multiply_sem_assertion (pdiv a (padd a b)) (cwand A B) \<otimes> multiply_sem_assertion (pdiv b (padd a b)) (cwand A B) \<subseteq> cwand A B\<close> by fastforce
+          using PartialSA.add_set_def xx_def inclusion by fastforce
       qed
       moreover have "x \<succeq> multiply (padd a b) xx"
       proof (rule greaterI)
@@ -504,7 +504,7 @@ proof -
           have "get_h (multiply (padd a b) xx) = get_h xx"
             using asm0 get_h_multiply by blast
           moreover have "get_h xx = get_h wa ++ get_h wb"
-            by (metis \<open>Some xx = multiply (pdiv a (padd a b)) wa \<oplus> multiply (pdiv b (padd a b)) wb\<close> asm0 get_h_multiply p_greater_exists padd_comm plus_charact(2) sum_coeff)
+            by (metis xx_def asm0 get_h_multiply p_greater_exists padd_comm plus_charact(2) sum_coeff)
           moreover have "get_h x = get_h xa ++ get_h xb"
             using \<open>Some x = xa \<oplus> xb\<close> plus_charact(2) by presburger
           moreover have "get_h wa = get_h (multiply a wa) \<and> get_h wb = get_h (multiply b wb)"
@@ -530,7 +530,7 @@ proof -
             moreover have "get_m (multiply ?b wb) hl = pmult ?b (get_m wb hl)"
               by (metis Abs_state_inverse asm0 fst_conv get_pre(2) mem_Collect_eq multiply.simps multiply_mask_def multiply_valid p_greater_exists padd_comm pdiv_smaller ppos_add)
             ultimately have "get_m xx hl = padd (pmult ?a (get_m wa hl)) (pmult ?b (get_m wb hl))"
-              using \<open>Some xx = multiply (pdiv a (padd a b)) wa \<oplus> multiply (pdiv b (padd a b)) wb\<close> plus_charact(1) by fastforce
+              using xx_def plus_charact(1) by fastforce
             then show ?thesis
               by (simp add: pmult_padd)
           qed
@@ -567,7 +567,7 @@ proof (rule combinableI)
     by (metis p_greater_exists padd_comm)
   show "multiply_sem_assertion \<alpha> (cwand A B) \<otimes> multiply_sem_assertion \<beta> (cwand A B) \<subseteq> cwand A B"
   proof
-    fix w assume "w \<in> multiply_sem_assertion \<alpha> (cwand A B) \<otimes> multiply_sem_assertion \<beta> (cwand A B)"
+    fix w assume asm: "w \<in> multiply_sem_assertion \<alpha> (cwand A B) \<otimes> multiply_sem_assertion \<beta> (cwand A B)"
     then obtain xa xb where "Some w = xa \<oplus> xb" "xa \<in> multiply_sem_assertion \<alpha> (cwand A B)" "xb \<in> multiply_sem_assertion \<beta> (cwand A B)"
       by (meson PartialSA.add_set_elem)
     then obtain wa wb where "wa \<in> cwand A B" "wb \<in> cwand A B" "xa \<succeq> multiply \<alpha> wa" "xb \<succeq> multiply \<beta> wb"
@@ -585,7 +585,7 @@ proof (rule combinableI)
         then show False
           using PartialSA.commutative PartialSA.defined_def asm1 by auto
       qed
-      then have "get_h (R a w) = get_h w \<and> get_m (R a w) = comp_min_mask (get_m a) (get_m w)"
+      then have r3: "get_h (R a w) = get_h w \<and> get_m (R a w) = comp_min_mask (get_m a) (get_m w)"
         using non_scalable_R_charact by blast
       moreover obtain p where "a |#| multiply p w" "ppos p \<and> pgte pwrite p"
         using \<open>\<not> scalable w a\<close> non_scalable_instantiate by blast
@@ -611,7 +611,7 @@ proof (rule combinableI)
         ultimately show ?thesis
           using scalable_def scaled_def by auto
       qed
-      then have "get_h (R a wa) = get_h wa \<and> get_m (R a wa) = comp_min_mask (get_m a) (get_m wa)"
+      then have r1: "get_h (R a wa) = get_h wa \<and> get_m (R a wa) = comp_min_mask (get_m a) (get_m wa)"
         using non_scalable_R_charact by blast
       moreover have "R a wa |#| a"
       proof (rule compatibleI)
@@ -648,7 +648,7 @@ proof (rule combinableI)
         ultimately show ?thesis
           using scalable_def scaled_def by auto
       qed
-      then have "get_h (R a wb) = get_h wb \<and> get_m (R a wb) = comp_min_mask (get_m a) (get_m wb)"
+      then have r2: "get_h (R a wb) = get_h wb \<and> get_m (R a wb) = comp_min_mask (get_m a) (get_m wb)"
         using non_scalable_R_charact by blast
       moreover have "R a wb |#| a"
       proof (rule compatibleI)
@@ -677,11 +677,11 @@ proof (rule combinableI)
       moreover have "(multiply \<alpha> ya) |#| (multiply \<beta> yb)"
       proof (rule compatibleI)
         have "get_h ya = get_h wa ++ get_h a"
-          using \<open>Some ya = R a wa \<oplus> a\<close> \<open>get_h (R a wa) = get_h wa \<and> get_m (R a wa) = comp_min_mask (get_m a) (get_m wa)\<close> plus_charact(2) by presburger
+          using \<open>Some ya = R a wa \<oplus> a\<close> r1 plus_charact(2) by presburger
         then have "get_h (multiply \<alpha> ya) = get_h wa ++ get_h a"
           using \<open>pgte pwrite \<alpha> \<and> pgte pwrite \<beta>\<close> get_h_multiply by presburger
         moreover have "get_h yb = get_h wb ++ get_h a"
-          using \<open>Some yb = R a wb \<oplus> a\<close> \<open>get_h (R a wb) = get_h wb \<and> get_m (R a wb) = comp_min_mask (get_m a) (get_m wb)\<close> plus_charact(2) by presburger
+          using \<open>Some yb = R a wb \<oplus> a\<close> r2 plus_charact(2) by presburger
         then have "get_h (multiply \<beta> yb) = get_h wb ++ get_h a"
           using \<open>pgte pwrite \<alpha> \<and> pgte pwrite \<beta>\<close> get_h_multiply by presburger
         moreover have "compatible_heaps (get_h wa) (get_h wb)"
@@ -696,7 +696,8 @@ proof (rule combinableI)
             by (metis compatible_heaps_def compatible_options.simps(1))
         qed
         ultimately show "compatible_heaps (get_h (multiply \<alpha> ya)) (get_h (multiply \<beta> yb))"
-          by (metis PartialSA.commutative PartialSA.core_is_smaller \<open>Some ya = R a wa \<oplus> a\<close> \<open>Some yb = R a wb \<oplus> a\<close> \<open>get_h (R a wa) = get_h wa \<and> get_m (R a wa) = comp_min_mask (get_m a) (get_m wa)\<close> \<open>get_h (R a wb) = get_h wb \<and> get_m (R a wb) = comp_min_mask (get_m a) (get_m wb)\<close> compatible_heaps_sum core_defined(1) core_defined(2) option.distinct(1) plus_ab_defined)
+          by (metis PartialSA.commutative PartialSA.core_is_smaller \<open>Some ya = R a wa \<oplus> a\<close> \<open>Some yb = R a wb \<oplus> a\<close>
+              r1 r2 compatible_heaps_sum core_defined(1) core_defined(2) option.distinct(1) plus_ab_defined)
         show "valid_mask (add_masks (get_m (multiply \<alpha> ya)) (get_m (multiply \<beta> yb)))"
         proof (rule valid_maskI)
           show "\<And>f. add_masks (get_m (multiply \<alpha> ya)) (get_m (multiply \<beta> yb)) (null, f) = pnone"
@@ -717,13 +718,13 @@ proof (rule combinableI)
         have "get_h y = get_h ya ++ get_h yb"
           using \<open>pgte pwrite \<alpha> \<and> pgte pwrite \<beta>\<close> calculation(10) get_h_multiply plus_charact(2) by presburger
         moreover have "get_h ya = get_h wa ++ get_h a"
-          using \<open>Some ya = R a wa \<oplus> a\<close> \<open>get_h (R a wa) = get_h wa \<and> get_m (R a wa) = comp_min_mask (get_m a) (get_m wa)\<close> plus_charact(2) by presburger
+          using \<open>Some ya = R a wa \<oplus> a\<close> r1 plus_charact(2) by presburger
         moreover have "get_h yb = get_h wb ++ get_h a"
-          using \<open>Some yb = R a wb \<oplus> a\<close> \<open>get_h (R a wb) = get_h wb \<and> get_m (R a wb) = comp_min_mask (get_m a) (get_m wb)\<close> plus_charact(2) by presburger
+          using \<open>Some yb = R a wb \<oplus> a\<close> r2 plus_charact(2) by presburger
         moreover have "larger_heap (get_h x) (get_h wa)"
         proof -
           have "larger_heap (get_h x) (get_h xa)"
-            by (metis PartialSA.greater_def \<open>Some w = xa \<oplus> xb\<close> \<open>get_h (R a w) = get_h w \<and> get_m (R a w) = comp_min_mask (get_m a) (get_m w)\<close> asm1 larger_heap_trans larger_implies_larger_heap)
+            by (metis PartialSA.greater_def \<open>Some w = xa \<oplus> xb\<close> r3 asm1 larger_heap_trans larger_implies_larger_heap)
           moreover have "larger_heap (get_h xa) (get_h wa)"
             by (metis \<open>pgte pwrite \<alpha> \<and> pgte pwrite \<beta>\<close> \<open>xa \<succeq> multiply \<alpha> wa\<close> get_h_multiply larger_implies_larger_heap)
           ultimately show ?thesis
@@ -732,7 +733,7 @@ proof (rule combinableI)
         moreover have "larger_heap (get_h x) (get_h wb)"
         proof -
           have "larger_heap (get_h x) (get_h xb)"
-            by (metis PartialSA.greater_def PartialSA.greater_equiv \<open>Some w = xa \<oplus> xb\<close> \<open>get_h (R a w) = get_h w \<and> get_m (R a w) = comp_min_mask (get_m a) (get_m w)\<close> asm1 larger_heap_trans larger_implies_larger_heap)
+            by (metis PartialSA.greater_def PartialSA.greater_equiv \<open>Some w = xa \<oplus> xb\<close> r3 asm1 larger_heap_trans larger_implies_larger_heap)
           moreover have "larger_heap (get_h xb) (get_h wb)"
             by (metis \<open>pgte pwrite \<alpha> \<and> pgte pwrite \<beta>\<close> \<open>xb \<succeq> multiply \<beta> wb\<close> get_h_multiply larger_implies_larger_heap)
           ultimately show ?thesis
@@ -750,7 +751,7 @@ proof (rule combinableI)
           moreover have "get_m y hl = padd (pmult \<alpha> (padd (get_m (R a wa) hl) (get_m a hl))) (pmult \<beta> (padd (get_m (R a wb) hl) (get_m a hl)))"
             by (metis \<open>Some y = multiply \<alpha> ya \<oplus> multiply \<beta> yb\<close> \<open>Some ya = R a wa \<oplus> a\<close> \<open>Some yb = R a wb \<oplus> a\<close> \<open>pgte pwrite \<alpha> \<and> pgte pwrite \<beta>\<close> add_masks.simps get_m_smaller plus_charact(1))
 
-          moreover have "padd (pmult \<alpha> (padd (get_m (R a wa) hl) (get_m a hl))) (pmult \<beta> (padd (get_m (R a wb) hl) (get_m a hl)))
+          moreover have equ: "padd (pmult \<alpha> (padd (get_m (R a wa) hl) (get_m a hl))) (pmult \<beta> (padd (get_m (R a wb) hl) (get_m a hl)))
 = padd (padd (pmult \<alpha> (get_m a hl)) (pmult \<beta> (get_m a hl))) (padd (pmult \<alpha> (get_m (R a wa) hl)) (pmult \<beta> (get_m (R a wb) hl)))"
             using padd_asso padd_comm pmult_distr by force
 
@@ -758,13 +759,13 @@ proof (rule combinableI)
           proof (cases "pgte (get_m w hl) (comp_one (get_m a hl))")
             case True
             then have "get_m (R a w) hl = (comp_one (get_m a hl))"
-              using \<open>get_h (R a w) = get_h w \<and> get_m (R a w) = comp_min_mask (get_m a) (get_m w)\<close> comp_min_mask_def pmin_is by presburger
+              using r3 comp_min_mask_def pmin_is by presburger
             moreover have "pgte (comp_one (get_m a hl)) (get_m (R a wa) hl)"
-              by (metis \<open>get_h (R a wa) = get_h wa \<and> get_m (R a wa) = comp_min_mask (get_m a) (get_m wa)\<close> comp_min_mask_def pmin_comm pmin_greater)
+              by (metis r1 comp_min_mask_def pmin_comm pmin_greater)
             then have "pgte (pmult \<alpha> (comp_one (get_m a hl))) (pmult \<alpha> (get_m (R a wa) hl))"
               by (metis pmult_comm pmult_order)
             moreover have "pgte (comp_one (get_m a hl)) (get_m (R a wb) hl)"
-              by (metis \<open>get_h (R a wb) = get_h wb \<and> get_m (R a wb) = comp_min_mask (get_m a) (get_m wb)\<close> comp_min_mask_def pmin_comm pmin_greater)
+              by (metis r2 comp_min_mask_def pmin_comm pmin_greater)
             then have "pgte (pmult \<beta> (comp_one (get_m a hl))) (pmult \<beta> (get_m (R a wb) hl))"
               by (metis pmult_comm pmult_order)
             ultimately show ?thesis
@@ -772,7 +773,7 @@ proof (rule combinableI)
           next
             case False
             then have "get_m (R a w) hl = get_m w hl"
-              by (metis \<open>get_h (R a w) = get_h w \<and> get_m (R a w) = comp_min_mask (get_m a) (get_m w)\<close> comp_min_mask_def not_pgte_charact pgt_implies_pgte pmin_comm pmin_is)
+              by (metis r3 comp_min_mask_def not_pgte_charact pgt_implies_pgte pmin_comm pmin_is)
             moreover have "pgte (get_m w hl) (padd (pmult \<alpha> (get_m wa hl)) (pmult \<beta> (get_m wb hl)))"
             proof -
               have "pgte (get_m w hl) (padd (get_m xa hl) (get_m xb hl))"
@@ -799,7 +800,7 @@ proof (rule combinableI)
 padd (pmult \<alpha> (padd (get_m (R a wa) hl) (get_m a hl))) (pmult \<beta> (padd (get_m (R a wb) hl) (get_m a hl)))"
             using calculation(2) calculation(5) by presburger
           moreover have "... = padd (pmult (padd \<alpha> \<beta>) (get_m a hl)) (padd (pmult \<alpha> (get_m (R a wa) hl)) (pmult \<beta> (get_m (R a wb) hl)))"
-            by (metis \<open>padd (pmult \<alpha> (padd (get_m (R a wa) hl) (get_m a hl))) (pmult \<beta> (padd (get_m (R a wb) hl) (get_m a hl))) = padd (padd (pmult \<alpha> (get_m a hl)) (pmult \<beta> (get_m a hl))) (padd (pmult \<alpha> (get_m (R a wa) hl)) (pmult \<beta> (get_m (R a wb) hl)))\<close> pmult_comm pmult_distr)
+            by (metis equ pmult_comm pmult_distr)
           ultimately show "pgte (get_m x hl) (get_m y hl)"
             using asm0 p_greater_exists padd_asso padd_comm pmult_special(1) by force
         qed
