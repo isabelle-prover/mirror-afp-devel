@@ -6464,15 +6464,15 @@ name = "Makarius Wenzel"
 
 [wenzel.emails.wenzel_email]
 user = [
-  "Makarius",
-  "wenzel",
+  "makarius",
 ]
 host = [
-  "lri",
-  "fr",
+  "sketis",
+  "net",
 ]
 
 [wenzel.homepages]
+wenzel_homepage = "https://sketis.net"
 
 [wickerson]
 name = "John Wickerson"
