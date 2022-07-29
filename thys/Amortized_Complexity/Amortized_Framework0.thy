@@ -348,12 +348,6 @@ datatype op\<^sub>t\<^sub>b = Ins | Del
 locale DynTable2 = DynTable1
 begin
 
-fun ins :: "nat*nat \<Rightarrow> nat*nat" where
-"ins (n,l) = (n+1, if n<l then l else if l=0 then 1 else 2*l)"
-
-fun T_ins :: "nat*nat \<Rightarrow> real" where
-"T_ins (n,l) = (if n<l then 1 else n+1)"
-
 fun del :: "nat*nat \<Rightarrow> nat*nat" where
 "del (n,l) = (n - 1, if n=1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
 
@@ -382,14 +376,14 @@ and U = "\<lambda>f _. case f of Ins \<Rightarrow> 3 | Del \<Rightarrow> 2"
 proof (standard, goal_cases)
   case 1 show ?case by auto
 next
-  case (2 s f) thus ?case by(cases s, cases f) (auto split: if_splits)
+  case (2 s f) thus ?case by(cases s, cases f) (auto)
 next
-  case (3 s) thus ?case by(cases s)(simp split: if_splits)
+  case (3 s) thus ?case by(cases s)(simp)
 next
   case 4 show ?case by(simp)
 next
   case (5 s f) thus ?case apply(cases s) apply(cases f)
-    by (auto simp: field_simps)
+    by (auto)
 qed
 
 end
