@@ -44,7 +44,6 @@ locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     active_minimal: "l2 \<noteq> active \<Longrightarrow> active \<sqsubset>L l2" and
     at_least_two_labels: "\<exists>l2. active \<sqsubset>L l2" and
-    inf_never_active: "\<iota> \<in> Inf_FL \<Longrightarrow> snd (concl_of \<iota>) \<noteq> active" and
     static_ref_comp: "statically_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
       no_labels.Red_I_\<G> no_labels.Red_F_\<G>_empty"
 begin
@@ -417,7 +416,7 @@ inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rig
     active_subset M' = {} \<Longrightarrow> N1 \<leadsto>GC N2"
 | infer: "N1 = N \<union> {(C, L)} \<Longrightarrow> N2 = N \<union> {(C, active)} \<union> M \<Longrightarrow> L \<noteq> active \<Longrightarrow>
     active_subset M = {} \<Longrightarrow>
-    no_labels.Inf_between (fst ` (active_subset N)) {C}
+    no_labels.Inf_between (fst ` active_subset N) {C}
     \<subseteq> no_labels.Red_I (fst ` (N \<union> {(C, active)} \<union> M)) \<Longrightarrow>
     N1 \<leadsto>GC N2"
   
