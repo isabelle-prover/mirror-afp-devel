@@ -17,7 +17,8 @@ begin
 subsection \<open>Basis of the Given Clause Prover Architectures\<close>
 
 locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G Q
-  entails_q Inf_G_q Red_I_q Red_F_q \<G>_F_q \<G>_I_q Inf_FL
+  entails_q Inf_G_q Red_I_q Red_F_q \<G>_F_q \<G>_I_q
+  "{\<iota>\<^sub>F\<^sub>L :: ('f \<times> 'l) inference. Infer (map fst (prems_of \<iota>\<^sub>F\<^sub>L)) (fst (concl_of \<iota>\<^sub>F\<^sub>L)) \<in> Inf_F}"
   for
     Bot_F :: "'f set"
     and Inf_F :: "'f inference set"
@@ -29,7 +30,6 @@ locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G
     and Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set"
     and \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"
     and \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option"
-    and Inf_FL :: \<open>('f \<times> 'l) inference set\<close>
   + fixes
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
@@ -47,6 +47,9 @@ locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G
     static_ref_comp: "statically_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
       no_labels.Red_I_\<G> no_labels.Red_F_\<G>_empty"
 begin
+
+abbreviation Inf_FL :: "('f \<times> 'l) inference set" where
+  "Inf_FL \<equiv> {\<iota>\<^sub>F\<^sub>L. Infer (map fst (prems_of \<iota>\<^sub>F\<^sub>L)) (fst (concl_of \<iota>\<^sub>F\<^sub>L)) \<in> Inf_F}"
 
 abbreviation Prec_eq_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<preceq>\<cdot>" 50) where
   "C \<preceq>\<cdot> D \<equiv> C \<doteq> D \<or> C \<prec>\<cdot> D"
@@ -250,7 +253,8 @@ proof
         unfolding no_labels.Red_I_\<G>_q_def by blast
       obtain \<iota>0_FL where i0_FL_in: "\<iota>0_FL \<in> Inf_FL" and i0_to_i0_FL: "\<iota>0 = to_F \<iota>0_FL"
         using Inf_F_to_Inf_FL[OF i0_in2] unfolding to_F_def
-        by (metis Ex_list_of_length fst_conv inference.exhaust_sel inference.inject map_fst_zip)
+        by (smt (verit) Ex_list_of_length fst_conv inference.exhaust_sel inference.sel(1)
+            inference.sel(2) map_fst_zip)
       have concl_swap: "fst (concl_of \<iota>0_FL) = concl_of \<iota>0"
         unfolding concl_of_def i0_to_i0_FL to_F_def by simp
       have subs1: "((\<G>_I_L_q q0 \<iota>0_FL) \<noteq> None \<and>
@@ -284,7 +288,7 @@ next
       have i1_in2: "\<iota>1 \<in> Inf_FL"
         using i1_in unfolding Red_I_\<G>_q_def by blast
       then have to_F_i1_in: "to_F \<iota>1 \<in> Inf_F"
-        using Inf_FL_to_Inf_F unfolding to_F_def by simp
+        using Inf_FL_to_Inf_F unfolding to_F_def by blast
       have concl_swap: "fst (concl_of \<iota>1) = concl_of (to_F \<iota>1)"
         unfolding concl_of_def to_F_def by simp
       then have i1_to_F_in: "to_F \<iota>1 \<in> no_labels.Red_I_\<G>_q q0 (fst ` N)"
@@ -300,7 +304,7 @@ next
         i1_in: "\<iota>1 \<in> {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_I_\<G>_q q0 (fst ` N)}"
       then have i1_in2: "\<iota>1 \<in> Inf_FL" by blast
       then have to_F_i1_in: "to_F \<iota>1 \<in> Inf_F"
-        using Inf_FL_to_Inf_F unfolding to_F_def by simp
+        using Inf_FL_to_Inf_F unfolding to_F_def by blast
       have concl_swap: "fst (concl_of \<iota>1) = concl_of (to_F \<iota>1)"
         unfolding concl_of_def to_F_def by simp
       then have "((\<G>_I_L_q q0 \<iota>1) \<noteq> None \<and> the (\<G>_I_L_q q0 \<iota>1) \<subseteq> Red_I_q q0 (\<G>_Fset_q q0 N))
@@ -387,7 +391,7 @@ end
 subsection \<open>Given Clause Procedure\<close>
 
 locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q
-  Red_F_q \<G>_F_q \<G>_I_q Inf_FL Equiv_F Prec_F Prec_L active
+  Red_F_q \<G>_F_q \<G>_I_q Equiv_F Prec_F Prec_L active
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -399,7 +403,6 @@ locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q R
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"  and
     \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option" and
-    Inf_FL :: \<open>('f \<times> 'l) inference set\<close> and
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
     Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>L" 50) and
@@ -407,9 +410,9 @@ locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q R
   assumes
     inf_have_prems: "\<iota>F \<in> Inf_F \<Longrightarrow> prems_of \<iota>F \<noteq> []"
 begin
-  
+
 lemma labeled_inf_have_prems: "\<iota> \<in> Inf_FL \<Longrightarrow> prems_of \<iota> \<noteq> []"
-  using inf_have_prems Inf_FL_to_Inf_F by fastforce
+  using inf_have_prems by fastforce
 
 inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<leadsto>GC" 50) where
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> M \<subseteq> Red_F (N \<union> M') \<Longrightarrow>
@@ -716,7 +719,7 @@ end
 subsection \<open>Lazy Given Clause Procedure\<close>
 
 locale lazy_given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q
-  Red_F_q \<G>_F_q \<G>_I_q Inf_FL Equiv_F Prec_F Prec_L active
+  Red_F_q \<G>_F_q \<G>_I_q Equiv_F Prec_F Prec_L active
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -728,7 +731,6 @@ locale lazy_given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"  and
     \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option" and
-    Inf_FL :: \<open>('f \<times> 'l) inference set\<close> and
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
     Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>L" 50) and
