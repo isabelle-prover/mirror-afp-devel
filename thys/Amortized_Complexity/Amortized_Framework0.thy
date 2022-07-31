@@ -68,12 +68,12 @@ fun T_incr :: "bool list \<Rightarrow> real" where
 "T_incr (False#bs) = 1" |
 "T_incr (True#bs) = T_incr bs + 1"
 
-definition p_incr :: "bool list \<Rightarrow> real" ("\<Phi>") where
+definition \<Phi> :: "bool list \<Rightarrow> real" where
 "\<Phi> bs = length(filter id bs)"
 
 lemma A_incr: "T_incr bs + \<Phi>(incr bs) - \<Phi> bs = 2"
 apply(induction bs rule: incr.induct)
-apply (simp_all add: p_incr_def)
+apply (simp_all add: \<Phi>_def)
 done
 
 interpretation incr: Amortized
@@ -84,9 +84,9 @@ proof (standard, goal_cases)
 next
   case 2 show ?case by simp
 next
-  case 3 show ?case by(simp add: p_incr_def)
+  case 3 show ?case by(simp add: \<Phi>_def)
 next
-  case 4 show ?case by(simp add: p_incr_def)
+  case 4 show ?case by(simp add: \<Phi>_def)
 next
   case 5 show ?case by(simp add: A_incr)
 qed
