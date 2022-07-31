@@ -107,7 +107,7 @@ fun T_ins :: "nat*nat \<Rightarrow> real" where
 "T_ins (n,l) = (if n<l then 1 else n+1)"
 
 fun invar :: "nat*nat \<Rightarrow> bool" where
-"invar (n,l) = (if l=0 then n=0 else n \<le> l \<and> l < 2*n)"
+"invar (n,l) = (if l=0 then n=0 else n \<le> l)"
 
 fun \<Phi> :: "nat*nat \<Rightarrow> real" where
 "\<Phi> (n,l) = 2*n - l"
@@ -361,9 +361,6 @@ fun nxt_tb :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> nat*nat" w
 fun T_tb :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> real" where
 "T_tb Ins = T_ins" |
 "T_tb Del = T_del"
-
-fun invar :: "nat*nat \<Rightarrow> bool" where
-"invar (n,l) = (if l=0 then n=0 else n \<le> l \<and> l \<le> 4*n)"
 
 fun \<Phi> :: "nat*nat \<Rightarrow> real" where
 "\<Phi> (n,l) = (if 2*n < l then l/2 - n else 2*n - l)"
