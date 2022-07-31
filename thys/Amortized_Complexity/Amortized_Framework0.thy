@@ -107,10 +107,10 @@ fun T_ins :: "nat*nat \<Rightarrow> real" where
 "T_ins (n,l) = (if n<l then 1 else n+1)"
 
 fun invar :: "nat*nat \<Rightarrow> bool" where
-"invar (n,l) = (if l=0 then n=0 else n \<le> l)"
+"invar (n,l) = (l/2 \<le> n \<and> n \<le> l)"
 
 fun \<Phi> :: "nat*nat \<Rightarrow> real" where
-"\<Phi> (n,l) = 2*n - l"
+"\<Phi> (n,l) = 2*(real n) - l"
 
 interpretation ins: Amortized
 where init = "(0::nat,0::nat)"
@@ -362,8 +362,11 @@ fun T_tb :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> real" where
 "T_tb Ins = T_ins" |
 "T_tb Del = T_del"
 
+fun invar :: "nat*nat \<Rightarrow> bool" where
+"invar (n,l) = (n \<le> l)"
+
 fun \<Phi> :: "nat*nat \<Rightarrow> real" where
-"\<Phi> (n,l) = (if 2*n < l then l/2 - n else 2*n - l)"
+"\<Phi> (n,l) = (if n < l/2 then l/2 - n else 2*n - l)"
 
 interpretation tb: Amortized
 where init = "(0,0)" and nxt = nxt_tb
@@ -375,7 +378,7 @@ proof (standard, goal_cases)
 next
   case (2 s f) thus ?case by(cases s, cases f) (auto)
 next
-  case (3 s) thus ?case by(cases s)(simp)
+  case (3 s) show ?case by(cases s)(simp)
 next
   case 4 show ?case by(simp)
 next
