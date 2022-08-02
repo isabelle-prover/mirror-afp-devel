@@ -806,7 +806,7 @@ lemma lgc_fair:
     deriv: "chain (\<leadsto>LGC) Ns" and
     init_state: "active_subset (snd (lhd Ns)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd Ns)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
+    no_prems_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
     final_schedule: "Liminf_llist (lmap fst Ns) = {}"
   shows "fair (lmap snd Ns)"
   unfolding fair_def
@@ -899,7 +899,7 @@ proof
   {
     assume m_null: "m = 0"
     then have "enat 0 < llength Ns \<and> to_F \<iota> \<in> fst (lhd Ns)"
-      using no_prems_init_active i_in_F m_def_F zero_enat_def chain_length_pos[OF deriv] by auto
+      using no_prems_init i_in_F m_def_F zero_enat_def chain_length_pos[OF deriv] by auto
     then have "\<exists>n. enat n < llength Ns \<and> to_F \<iota> \<in> fst (lnth Ns n)"
       unfolding lhd_is by blast
   }
@@ -1133,7 +1133,7 @@ theorem lgc_complete_Liminf:
     deriv: "chain (\<leadsto>LGC) Ns" and
     init_state: "active_subset (snd (lhd Ns)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd Ns)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
+    no_prems_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
     final_schedule: "Liminf_llist (lmap fst Ns) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G> (fst ` snd (lhd Ns)) {B}"
@@ -1145,7 +1145,7 @@ proof -
   have labeled_bot_entailed: "entails_\<G>_L (snd (lhd Ns)) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
   have "fair (lmap snd Ns)"
-    using lgc_fair[OF deriv init_state final_state no_prems_init_active final_schedule] .
+    using lgc_fair[OF deriv init_state final_state no_prems_init final_schedule] .
   then show ?thesis
     using dynamically_complete_Liminf labeled_b_in lgc_to_red[OF deriv]
       labeled_bot_entailed simp_snd_lmap std_Red_I_eq
@@ -1158,7 +1158,7 @@ theorem lgc_complete:
     deriv: "chain (\<leadsto>LGC) Ns" and
     init_state: "active_subset (snd (lhd Ns)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd Ns)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
+    no_prems_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
     final_schedule: "Liminf_llist (lmap fst Ns) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G> (fst ` snd (lhd Ns)) {B}"
