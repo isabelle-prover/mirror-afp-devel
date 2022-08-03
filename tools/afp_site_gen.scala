@@ -156,6 +156,8 @@ object AFP_Site_Gen {
       structure.entry_sessions(entry.name)
         .flatMap(session => deps(session.name).proper_session_theories)
 
+    val theorem_commands = List("theorem", "lemma", "corollary", "proposition", "schematic_goal")
+
     var entry_lines = Map.empty[Entry, Int]
     var entry_lemmas = Map.empty[Entry, Int]
     for {
@@ -165,7 +167,7 @@ object AFP_Site_Gen {
     } {
       entry_lines += entry -> (entry_lines.getOrElse(entry, 0) + lines.count(_.nonEmpty))
       entry_lemmas += entry -> (entry_lemmas.getOrElse(entry, 0) +
-        lines.count(line => List("lemma", "theorem", "corollary").exists(line.startsWith)))
+        lines.count(line => theorem_commands.exists(line.startsWith)))
     }
 
     val first_year = entries.flatMap(_.releases).map(_.date.getYear).min
