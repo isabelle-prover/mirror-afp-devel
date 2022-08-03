@@ -153,7 +153,8 @@ object AFP_Site_Gen {
     def round(int: Int): Int = Math.round(int.toFloat / 100) * 100
 
     def nodes(entry: Entry): List[Document.Node.Name] =
-      structure.entry_sessions(entry.name).flatMap(session => deps(session.name).session_theories)
+      structure.entry_sessions(entry.name)
+        .flatMap(session => deps(session.name).proper_session_theories)
 
     var entry_lines = Map.empty[Entry, Int]
     var entry_lemmas = Map.empty[Entry, Int]
@@ -328,7 +329,7 @@ object AFP_Site_Gen {
 
       val theories = afp_structure.entry_sessions(entry.name).map { session =>
         val base = sessions_deps(session.name)
-        val theories = base.session_theories.map(_.theory_base_name)
+        val theories = base.proper_session_theories.map(_.theory_base_name)
         val session_json = isabelle.JSON.Object(
             "title" -> session.name,
             "entry" -> entry.name,
