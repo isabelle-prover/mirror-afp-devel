@@ -168,6 +168,35 @@ lemma chain_mono:
   shows "chain R' xs"
   using assms by (rule chain_lmap[of _ _ "\<lambda>x. x", unfolded llist.map_ident])
 
+lemma chain_ldropnI:
+  assumes
+    rel: "\<forall>j. j \<ge> i \<longrightarrow> enat (Suc j) < llength xs \<longrightarrow> R (lnth xs j) (lnth xs (Suc j))" and
+    si_lt: "enat (Suc i) < llength xs"
+  shows "chain R (ldropn i xs)"
+proof (rule lnth_rel_chain)
+  show "\<not> lnull (ldropn i xs)"
+    using si_lt by (simp add: Suc_ile_eq less_le_not_le)
+next
+  show "\<forall>j. enat (j + 1) < llength (ldropn i xs) \<longrightarrow>
+    R (lnth (ldropn i xs) j) (lnth (ldropn i xs) (j + 1))"
+    using rel by (smt (z3) One_nat_def Suc_ile_eq add.commute add.right_neutral add_Suc_right
+        add_le_cancel_right ldropn_eq_LNil ldropn_ldropn less_le_not_le linorder_not_less
+        lnth_ldropn not_less_zero)
+qed
+
+lemma chain_ldropn_lmapI:
+  assumes
+    rel: "\<forall>j. j \<ge> i \<longrightarrow> enat (Suc j) < llength xs \<longrightarrow> R (f (lnth xs j)) (f (lnth xs (Suc j)))" and
+    si_lt: "enat (Suc i) < llength xs"
+  shows "chain R (ldropn i (lmap f xs))"
+proof -
+  have "chain R (lmap f (ldropn i xs))"
+    using chain_lmap[of "\<lambda>x y. R (f x) (f y)" R f, of "ldropn i xs"] chain_ldropnI[OF rel si_lt]
+    by auto
+  thus ?thesis
+    by auto
+qed
+
 lemma lfinite_chain_imp_rtranclp_lhd_llast: "lfinite xs \<Longrightarrow> chain R xs \<Longrightarrow> R\<^sup>*\<^sup>* (lhd xs) (llast xs)"
 proof (induct rule: lfinite.induct)
   case (lfinite_LConsI xs x)
