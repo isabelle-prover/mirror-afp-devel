@@ -417,7 +417,7 @@ proof cases
     then show ?thesis
       unfolding lgc_invar_def lim_Si tSi nSi by blast
   next
-    case (delete_orphan_formulas T1 T2 T' N)
+    case (delete_orphan_infers T1 T2 T' N)
     note tni = this(1) and tnSi = this(2) and t1 = this(3) and t'_orph = this(4)
 
     have ni: "lnth (lmap snd TNs) i = N"
