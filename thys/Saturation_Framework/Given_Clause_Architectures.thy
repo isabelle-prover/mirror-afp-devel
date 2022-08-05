@@ -746,7 +746,7 @@ inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
     (T1, N1) \<leadsto>LGC (T2, N2)" |
   compute_infer: "T1 = T2 \<union> {\<iota>} \<Longrightarrow> N2 = N1 \<union> M \<Longrightarrow> active_subset M = {} \<Longrightarrow>
     \<iota> \<in> no_labels.Red_I (fst ` (N1 \<union> M)) \<Longrightarrow> (T1, N1) \<leadsto>LGC (T2, N2)" |
-  delete_orphan_formulas: "T1 = T2 \<union> T' \<Longrightarrow>
+  delete_orphan_infers: "T1 = T2 \<union> T' \<Longrightarrow>
     T' \<inter> no_labels.Inf_from (fst ` (active_subset N)) = {} \<Longrightarrow> (T1, N) \<leadsto>LGC (T2, N)"
 
 lemma premise_free_inf_always_from: "\<iota> \<in> Inf_F \<Longrightarrow> prems_of \<iota> = [] \<Longrightarrow> \<iota> \<in> no_labels.Inf_from N"
