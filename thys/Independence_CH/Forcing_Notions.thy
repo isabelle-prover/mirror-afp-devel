@@ -142,6 +142,9 @@ definition
 lemma filterD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> x \<in> P"
   by (auto simp add : subsetD filter_def)
 
+lemma filter_subset_notion[dest]: "filter(G) \<Longrightarrow> G \<subseteq> P"
+  by (auto dest:filterD)
+
 lemma filter_leqD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> y \<in> P \<Longrightarrow> x\<preceq>y \<Longrightarrow> y \<in> G"
   by (simp add: filter_def increasing_def)
 

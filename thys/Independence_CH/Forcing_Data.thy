@@ -42,6 +42,9 @@ definition
 
 declare iff_trans [trans]
 
+lemma M_generic_imp_filter[dest]: "M_generic(G) \<Longrightarrow> filter(G)"
+  unfolding M_generic_def by blast
+
 lemma generic_filter_existence:
   "p\<in>P \<Longrightarrow> \<exists>G. p\<in>G \<and> M_generic(G)"
 proof -
@@ -122,23 +125,22 @@ lemma G_nonempty: "G\<noteq>0"
 
 lemma M_genericD [dest]: "x\<in>G \<Longrightarrow> x\<in>P"
   using generic
-  unfolding M_generic_def by (blast dest:filterD)
+  by (blast dest:filterD)
 
 lemma M_generic_leqD [dest]: "p\<in>G \<Longrightarrow> q\<in>P \<Longrightarrow> p\<preceq>q \<Longrightarrow> q\<in>G"
   using generic
-  unfolding M_generic_def by (blast dest:filter_leqD)
+  by (blast dest:filter_leqD)
 
 lemma M_generic_compatD [dest]: "p\<in>G \<Longrightarrow> r\<in>G \<Longrightarrow> \<exists>q\<in>G. q\<preceq>p \<and> q\<preceq>r"
   using generic
-  unfolding M_generic_def by (blast dest:low_bound_filter)
+  by (blast dest:low_bound_filter)
 
 lemma M_generic_denseD [dest]: "dense(D) \<Longrightarrow> D\<subseteq>P \<Longrightarrow> D\<in>M \<Longrightarrow> \<exists>q\<in>G. q\<in>D"
   using generic
   unfolding M_generic_def by blast
 
 lemma G_subset_P: "G\<subseteq>P"
-  using generic
-  unfolding M_generic_def filter_def by simp
+  using generic by auto
 
 lemma one_in_G : "\<one> \<in> G"
 proof -

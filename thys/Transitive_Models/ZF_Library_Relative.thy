@@ -2,10 +2,24 @@ section\<open>Library of basic $\mathit{ZF}$ results\label{sec:zf-lib}\<close>
 
 theory ZF_Library_Relative
   imports
-    Aleph_Relative\<comment> \<open>must be before Cardinal\_AC\_Relative!\<close>
+    Aleph_Relative \<comment> \<open>must be before \<^theory>\<open>Transitive_Models.Cardinal_AC_Relative\<close>!\<close>
     Cardinal_AC_Relative
     FiniteFun_Relative
 begin
+
+locale M_Pi_assumption_repl = M_Pi_replacement +
+  fixes A f
+  assumes A_in_M: "M(A)" and
+  f_repl : "lam_replacement(M,f)" and
+  f_closed : "\<forall>x[M]. M(f(x))"
+begin
+
+sublocale M_Pi_assumptions M A f
+    using Pi_replacement Pi_separation  A_in_M f_repl f_closed
+      lam_replacement_Sigfun[THEN lam_replacement_imp_strong_replacement]
+    by unfold_locales (simp_all add:transM[of _ A])
+
+end \<comment> \<open>\<^locale>\<open>M_Pi_assumption_repl\<close>\<close>
 
 no_notation sum (infixr \<open>+\<close> 65)
 notation oadd (infixl \<open>+\<close> 65)
@@ -13,7 +27,7 @@ notation oadd (infixl \<open>+\<close> 65)
 lemma (in M_cardinal_arith_jump) csucc_rel_cardinal_rel:
   assumes "Ord(\<kappa>)" "M(\<kappa>)"
   shows "(|\<kappa>|\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup> = (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
-proof (intro le_anti_sym)\<comment> \<open>show both inequalities\<close>
+proof (intro le_anti_sym) \<comment> \<open>we show both inequalities\<close>
   from assms
   have hips:"M((\<kappa>\<^sup>+)\<^bsup>M\<^esup>)" "Ord((\<kappa>\<^sup>+)\<^bsup>M\<^esup>)" "\<kappa> < (\<kappa>\<^sup>+)\<^bsup>M\<^esup>"
     using Card_rel_csucc_rel[THEN Card_rel_is_Ord]
@@ -26,8 +40,7 @@ proof (intro le_anti_sym)\<comment> \<open>show both inequalities\<close>
     by (rule_tac Least_antitone) (assumption, simp_all add:assms)
   from assms
   have "\<kappa> < L" if "Card\<^bsup>M\<^esup>(L)" "|\<kappa>|\<^bsup>M\<^esup> < L" "M(L)" for L
-    using (* Card_rel_le_iff[THEN iffD1, THEN le_trans, of \<kappa> _ L] *) that
-      Card_rel_is_Ord leI Card_rel_le_iff[of \<kappa> L]
+    using that Card_rel_is_Ord leI Card_rel_le_iff[of \<kappa> L]
     by (rule_tac ccontr, auto dest:not_lt_imp_le) (fast dest: le_imp_not_lt)
   with hips
   show "(\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<le> (|\<kappa>|\<^bsup>M\<^esup>\<^sup>+)\<^bsup>M\<^esup>"
@@ -47,7 +60,7 @@ next
   case False
   with assms
   have "\<kappa> < \<nu>" using le_neq_imp_lt by simp
-  show ?thesis\<comment> \<open>by way of contradiction\<close>
+  show ?thesis \<comment> \<open>by way of contradiction\<close>
   proof (rule ccontr)
     assume "\<not> (\<kappa>\<^sup>+)\<^bsup>M\<^esup> \<le> (\<nu>\<^sup>+)\<^bsup>M\<^esup>"
     with assms
@@ -79,8 +92,8 @@ lemma (in M_cardinal_AC) cardinal_rel_succ_not_0:   "|A|\<^bsup>M\<^esup> = succ
 (* "Finite_to_one(X,Y) \<equiv> {f:X\<rightarrow>Y. \<forall>y\<in>Y. Finite({x\<in>X . f`x = y})}" *)
 reldb_add functional "Finite" "Finite" \<comment> \<open>wrongly done? Finite is absolute\<close>
 relativize functional "Finite_to_one" "Finite_to_one_rel" external
-  (* reldb_add relational "Finite" "is_Finite" \<comment> \<open>don't have is_Finite yet\<close>
-relationalize "Finite_to_one_rel" "is_Finite_to_one" *)
+(* reldb_add relational "Finite" "is_Finite" *) \<comment> \<open>don't have \<^term>\<open>is_Finite\<close> yet\<close>
+(* relationalize "Finite_to_one_rel" "is_Finite_to_one" *)
 
 notation Finite_to_one_rel (\<open>Finite'_to'_one\<^bsup>_\<^esup>'(_,_')\<close>)
 
@@ -117,27 +130,24 @@ lemma Finite_to_one_relD[dest]:
 lemma Diff_bij_rel:
   assumes "\<forall>A\<in>F. X \<subseteq> A"
     and types: "M(F)" "M(X)" shows "(\<lambda>A\<in>F. A-X) \<in> bij\<^bsup>M\<^esup>(F, {A-X. A\<in>F})"
-  using assms  def_inj_rel def_surj_rel unfolding bij_rel_def
-  apply (auto)
-   apply (subgoal_tac "M(\<lambda>A\<in>F. A - X)" "M({A - X . A \<in> F})")
-     apply (auto simp add:mem_function_space_rel_abs)
-      apply (rule_tac lam_type, auto)
-     prefer 4
-     apply (subgoal_tac "M(\<lambda>A\<in>F. A - X)" "M({A - X . A \<in> F})")
-       apply(tactic \<open>distinct_subgoals_tac\<close>)
-     apply (auto simp add:mem_function_space_rel_abs)
-     apply (rule_tac lam_type, auto) prefer 3
-    apply (subst subset_Diff_Un[of X])
-     apply auto
 proof -
-  from types
-  show "M({A - X . A \<in> F})"
-    using diff_replacement
-    by (rule_tac RepFun_closed) (auto dest:transM[of _ F])
-  from types
-  show "M(\<lambda>A\<in>F. A - X)"
-    using Pair_diff_replacement
-    by (rule_tac lam_closed, auto dest:transM)
+  from assms
+  have "A - X = C - X \<Longrightarrow> A = C" if "A\<in>F" "C\<in>F" for A C
+    using that subset_Diff_Un[of X A] subset_Diff_Un[of X C]
+    by simp
+  moreover
+  note assms
+  moreover from this
+  have "M({A-X . A\<in>F})"  "(\<lambda>A\<in>F. A-X) \<in> F \<rightarrow> {A-X. A\<in>F}" (is "?H \<in> _") "M(\<lambda>A\<in>F. A-X)"
+    using lam_type lam_replacement_Diff[THEN [5] lam_replacement_hcomp2] lam_replacement_constant
+      lam_replacement_identity transM[of _ F] lam_replacement_imp_strong_replacement RepFun_closed
+      lam_replacement_imp_lam_closed
+    by (simp,rule_tac lam_type,auto)
+  ultimately
+  show ?thesis
+    using assms def_inj_rel def_surj_rel function_space_rel_char
+    unfolding bij_rel_def
+    by auto
 qed
 
 lemma function_space_rel_nonempty:
@@ -297,7 +307,8 @@ lemma fg_imp_bijective_rel:
 
 end \<comment> \<open>\<^locale>\<open>M_ZF_library\<close>\<close>
 
-(*************   Discipline for cexp   ****************)
+subsection\<open>Discipline for \<^term>\<open>cexp\<close>\<close>
+
 relativize functional "cexp" "cexp_rel" external
 relationalize "cexp_rel" "is_cexp"
 
@@ -330,7 +341,7 @@ begin
 lemma Card_rel_cexp_rel: "M(\<kappa>) \<Longrightarrow> M(\<nu>) \<Longrightarrow> Card\<^bsup>M\<^esup>(\<kappa>\<^bsup>\<up>\<nu>,M\<^esup>)"
   unfolding cexp_rel_def by simp
 
-\<comment> \<open>Restoring congruence rule, but NOTE: beware\<close>
+\<comment> \<open>Restoring congruence rule\<close>
 declare conj_cong[cong]
 
 lemma eq_csucc_rel_ord:
@@ -720,9 +731,7 @@ lemma f_imp_injective_rel:
   assumes "f \<in> A \<rightarrow>\<^bsup>M\<^esup> B" "\<forall>x\<in>A. d(f ` x) = x" "M(A)" "M(B)"
   shows "f \<in> inj\<^bsup>M\<^esup>(A, B)"
   using assms
-  apply (simp (no_asm_simp) add: def_inj_rel)
-  apply (auto intro: subst_context [THEN box_equals])
-  done
+  by (simp (no_asm_simp) add: def_inj_rel,auto intro: subst_context [THEN box_equals])
 
 lemma lam_injective_rel:
   assumes "\<And>x. x \<in> A \<Longrightarrow> c(x) \<in> B"
@@ -761,9 +770,8 @@ lemma lam_bijective_rel:
     "M(A)" "M(B)"
   shows "(\<lambda>x\<in>A. c(x)) \<in> bij\<^bsup>M\<^esup>(A, B)"
   using assms
-  apply (unfold bij_rel_def)
-  apply (blast intro!: lam_injective_rel lam_surjective_rel)
-  done
+  unfolding bij_rel_def
+  by (blast intro!: lam_injective_rel lam_surjective_rel)
 
 lemma function_space_rel_eqpoll_rel_cong:
   assumes
@@ -963,11 +971,8 @@ lemma Pow_rel_eqpoll_rel_function_space_rel:
   shows "Pow\<^bsup>M\<^esup>(X) \<approx>\<^bsup>M\<^esup> X \<rightarrow>\<^bsup>M\<^esup> 2"
 proof -
   from assms
-  interpret M_Pi_assumptions M X "\<lambda>_. 2"
-    using Pi_replacement Pi_separation lam_replacement_identity
-      lam_replacement_Sigfun[THEN lam_replacement_imp_strong_replacement]
-      Pi_replacement1[of _ 2] transM[of _ X] lam_replacement_constant
-    by unfold_locales auto
+  interpret M_Pi_assumption_repl M X "\<lambda>x . 2"
+    by unfold_locales (simp_all add:lam_replacement_constant)
   have "lam_replacement(M, \<lambda>x. bool_of_o(x\<in>A))" if "M(A)" for A
     using that lam_replacement_if lam_replacement_constant
       separation_in_constant by simp

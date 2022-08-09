@@ -255,17 +255,6 @@ lemma cardinal_cases:
 
 subsection\<open>Countable and uncountable sets\<close>
 
-\<comment> \<open>Kunen's Definition I.10.5\<close>
-definition
-  countable :: "i\<Rightarrow>o" where
-  "countable(X) \<equiv> X \<lesssim> \<omega>"
-
-lemma countableI[intro]: "X \<lesssim> \<omega> \<Longrightarrow> countable(X)"
-  unfolding countable_def by simp
-
-lemma countableD[dest]: "countable(X) \<Longrightarrow> X \<lesssim> \<omega>"
-  unfolding countable_def by simp
-
 lemma countable_iff_cardinal_le_nat: "countable(X) \<longleftrightarrow> |X| \<le> \<omega>"
   using le_Card_iff[of \<omega> X] Card_nat
   unfolding countable_def by simp

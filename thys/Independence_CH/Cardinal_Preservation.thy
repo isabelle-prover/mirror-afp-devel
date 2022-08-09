@@ -71,8 +71,6 @@ proof -
     then
     interpret G_generic1 _ _ _ _ _ G by unfold_locales
     include G_generic1_lemmas
-      (* NOTE: might be useful to have a locale containg two \<open>M_ZF1_trans\<close>
-         instances, one for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close> *)
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
     have "M[G], map(val(G),[f,a,b'\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
@@ -238,7 +236,7 @@ lemma ccc_fun_closed_lemma_aux:
   using separation_forces[where env="[f_dot, a\<^sup>v, b\<^sup>v]" and \<phi>="\<cdot>0`1 is 2\<cdot>",simplified]
     assms G_subset_M[THEN subsetD] generic
     separation_in lam_replacement_constant lam_replacement_identity
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
+    lam_replacement_product
     separation_conj arity_fun_apply_fm union_abs1
   by simp_all
 
@@ -246,11 +244,11 @@ lemma ccc_fun_closed_lemma_aux2:
   assumes "B\<in>M" "f_dot\<in>M" "p\<in>M" "a\<in>M"
   shows "(##M)(\<lambda>b\<in>B. {q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))})"
 proof -
-  have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, \<tau>, fst(fst(z))\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, \<tau>, fst(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
     if "\<tau>\<in>M" for \<tau>
   proof -
     let ?f_fm="snd_fm(1,0)"
-    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,fst_fm),2,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),fst_fm,2,0)"
     note assms
     moreover
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
@@ -268,14 +266,11 @@ proof -
       unfolding hcomp_fm_def
       by simp
   qed
-  then
+  with assms
   show ?thesis
-    using lam_replacement_imp_lam_closed lam_replacement_Collect
-      separation_conj separation_in separation_forces separation_ball separation_iff'
-      lam_replacement_Pair[THEN [5] lam_replacement_hcomp2] lam_replacement_identity
-      lam_replacement_constant lam_replacement_snd lam_replacement_fst lam_replacement_hcomp
-      ccc_fun_closed_lemma_aux arity_fun_apply_fm union_abs1
-      transitivity[of _ B] assms
+    using lam_replacement_imp_lam_closed separation_conj separation_in
+      lam_replacement_product lam_replacement_constant transitivity[of _ B]
+      lam_replacement_snd lam_replacement_Collect' ccc_fun_closed_lemma_aux
     by simp
 qed
 
@@ -283,11 +278,11 @@ lemma ccc_fun_closed_lemma:
   assumes "A\<in>M" "B\<in>M" "f_dot\<in>M" "p\<in>M"
   shows "(\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}) \<in> M"
 proof -
-  have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, fst(fst(fst(z)))\<^sup>v, snd(fst(z))\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, fst(fst(z))\<^sup>v, snd(fst(z))\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
   proof -
     let ?f_fm="snd_fm(1,0)"
     let ?g="\<lambda>z . fst(fst(fst(z)))\<^sup>v"
-    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)),2,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,fst_fm),2,0)"
     let ?h_fm="hcomp_fm(check_fm(7),hcomp_fm(snd_fm,fst_fm),3,0)"
     note assms
     moreover
@@ -308,7 +303,7 @@ proof -
       by simp
   qed
   moreover
-  have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, \<tau>, fst(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  have 1:"separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, \<tau>, fst(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
     if "\<tau>\<in>M" for \<tau>
   proof -
     let ?f_fm="snd_fm(1,0)"
@@ -332,11 +327,9 @@ proof -
   moreover note assms
   ultimately
   show ?thesis
-    using lam_replacement_imp_lam_closed lam_replacement_Collect
-      lam_replacement_constant lam_replacement_identity lam_replacement_snd lam_replacement_fst
-      lam_replacement_hcomp lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
-      separation_conj separation_in  separation_ball separation_bex separation_iff'
-      transitivity[of _ A]
+    using lam_replacement_imp_lam_closed lam_replacement_Collect' transitivity[of _ A]
+      lam_replacement_constant lam_replacement_identity lam_replacement_snd
+      lam_replacement_product separation_conj separation_in separation_bex separation_iff'
     by simp
 qed
 

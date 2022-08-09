@@ -163,7 +163,7 @@ proof -
     using separation_ax leI separation_iff by auto
   from generic
   have "filter(G)" "G\<subseteq>P"
-    unfolding M_generic_def filter_def by simp_all
+    by auto
   from \<open>val(G,\<pi>) = A\<close>
   have "val(G,?m) =
                {z . t\<in>domain(\<pi>) , (\<exists>q\<in>P .

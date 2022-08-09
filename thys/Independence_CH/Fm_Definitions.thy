@@ -900,10 +900,6 @@ synthesize "is_ordermap" from_definition assuming "nonempty"
 
 synthesize "is_ordertype" from_definition assuming "nonempty"
 
-definition is_order_body
-  where "is_order_body(M,X,x,z) \<equiv>
-           is_well_ord(M,X,x) \<and> is_ordertype(M,X,x,z)"
-
 synthesize "is_order_body" from_definition assuming "nonempty"
 arity_theorem for "is_order_body_fm"
 
@@ -931,14 +927,13 @@ lemma arity_isordermap: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>
       unfolded omap_wfrec_body_def] pred_Un_distrib union_abs1
   by auto
 
-
 lemma arity_is_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow>d\<in>nat\<Longrightarrow>
    arity(is_ordertype_fm(A,r,d)) = succ(d) \<union> (succ(A) \<union> succ(r))"
   unfolding is_ordertype_fm_def
   using arity_isordermap arity_image_fm pred_Un_distrib FOL_arities
   by auto
 
-lemma arity_is_order_body: "arity(is_order_body_fm(2,0,1)) = 3"
+lemma arity_is_order_body: "arity(is_order_body_fm(0,1)) = 2"
   using arity_is_order_body_fm arity_is_ordertype ord_simp_union
   by (simp add:FOL_arities)
 
@@ -972,14 +967,9 @@ definition order_pred_wfrec_body where
 
 synthesize "order_pred_wfrec_body" from_definition
 arity_theorem for "order_pred_wfrec_body_fm"
-synthesize "is_jump_cardinal_body_rel" from_definition assuming "nonempty"
-arity_theorem for "is_jump_cardinal_body_rel_fm"
-synthesize "is_jump_cardinal_body'_rel" from_definition assuming "nonempty"
-arity_theorem for "is_jump_cardinal_body'_rel_fm"
 
-definition replacement_is_order_body_fm where "replacement_is_order_body_fm \<equiv> is_order_body_fm(2,0,1)"
+definition replacement_is_order_body_fm where "replacement_is_order_body_fm \<equiv>  (\<cdot>\<exists>\<cdot>is_order_body_fm(1, 0) \<and> \<cdot>\<langle>1,0\<rangle> is 2 \<cdot>\<cdot>\<cdot>)"
 definition wfrec_replacement_order_pred_fm where "wfrec_replacement_order_pred_fm \<equiv> order_pred_wfrec_body_fm(3,2,1,0)"
-definition replacement_is_jump_cardinal_body_fm where "replacement_is_jump_cardinal_body_fm \<equiv> is_jump_cardinal_body'_rel_fm(0,1)"
 definition replacement_is_aleph_fm where "replacement_is_aleph_fm \<equiv> \<cdot>\<cdot>0 is ordinal\<cdot> \<and> \<cdot>\<aleph>(0) is 1\<cdot>\<cdot>"
 
 definition

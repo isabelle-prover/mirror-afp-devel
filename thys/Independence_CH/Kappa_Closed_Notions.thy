@@ -30,7 +30,7 @@ rel_closed for "mono_seqspace"
   unfolding mono_seqspace_rel_def mono_map_rel_def
   using separation_closed separation_ball separation_imp separation_in
     lam_replacement_fst lam_replacement_snd lam_replacement_hcomp lam_replacement_constant
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
+    lam_replacement_product
     lam_replacement_apply2[THEN[5] lam_replacement_hcomp2]
   by simp_all
 
@@ -279,26 +279,23 @@ proof -
   with assms
   show ?thesis
     using separation_in lam_replacement_constant lam_replacement_snd lam_replacement_fst
-      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2] pred_nat_closed
+      lam_replacement_product pred_nat_closed
       arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
     by(clarify,rule_tac separation_conj,simp_all,rule_tac separation_bex,simp_all)
 qed
 
-lemma separation_ball_leq_and_forces_apply_aux:
+lemma separation_leq_and_forces_apply_aux':
   assumes "f_dot\<in>M" "p\<in>M" "B\<in>M"
   shows "separation
-     (##M,
-      \<lambda>pa. \<forall>x\<in>P. x \<preceq> p \<longrightarrow>
-            (\<forall>y\<in>P. y \<preceq> p \<longrightarrow>
-              \<langle>x, y\<rangle> \<in> snd(pa) \<longleftrightarrow>
-                y \<preceq> x \<and> (\<exists>b\<in>B. M, [y, P, leq, \<one>, f_dot, (\<Union>(fst(pa)))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))))"
+     (##M, \<lambda>p .  snd(snd(p)) \<preceq> fst(snd(p)) \<and>
+    (\<exists>b\<in>B. M, [snd(snd(p)), P, leq, \<one>, f_dot, (\<Union>fst(p))\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> )))"
 proof -
-  have "separation(##M, \<lambda>z. M, [snd(fst(z)), P, leq, \<one>, f_dot, (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
+  have "separation(##M, \<lambda>z. M, [snd(snd(fst(z))), P, leq, \<one>, f_dot, (\<Union>fst(fst(z)))\<^sup>v, snd(z)\<^sup>v] \<Turnstile> \<chi>)"
     if "\<chi>\<in>formula" "arity(\<chi>) \<le> 7" for \<chi>
   proof -
-    let ?f_fm="hcomp_fm(snd_fm,fst_fm,1,0)"
-    let ?g="\<lambda>z . (\<Union>(fst(fst(fst(fst(z))))))\<^sup>v"
-    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(big_union_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)))),2,0)"
+    let ?f_fm="hcomp_fm(snd_fm,hcomp_fm(snd_fm,fst_fm),1,0)"
+    let ?g="\<lambda>z . (\<Union>(fst(fst(z))))\<^sup>v"
+    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(big_union_fm,hcomp_fm(fst_fm,fst_fm)),2,0)"
     let ?h_fm="hcomp_fm(check_fm(7),snd_fm,3,0)"
     note assms
     moreover
@@ -314,22 +311,18 @@ proof -
     ultimately
     show ?thesis
       using separation_sat_after_function3[OF _ _ _ f_fm_facts] check_abs
-        sats_check_fm that fst_abs snd_abs
+        sats_check_fm that fst_abs snd_abs sats_fst_fm sats_snd_fm
       unfolding hcomp_fm_def
       by simp
   qed
   with assms
   show ?thesis
     using
-      separation_ball separation_imp separation_conj separation_bex separation_in separation_iff'
-      lam_replacement_constant lam_replacement_identity lam_replacement_hcomp
+      separation_conj separation_bex
+      lam_replacement_constant lam_replacement_hcomp
       lam_replacement_fst lam_replacement_snd
-      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
-      lam_replacement_hcomp[OF
-        lam_replacement_hcomp[OF lam_replacement_fst lam_replacement_fst]
-        lam_replacement_snd]
       arity_forces[of " \<cdot>0`1 is 2\<cdot>"] arity_fun_apply_fm[of 0 1 2] ord_simp_union
-      separation_in[OF _ lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]]
+      separation_in[OF _ lam_replacement_product]
     by simp
 qed
 
@@ -357,10 +350,8 @@ proof -
   qed
   with assms
   show ?thesis
-    using separation_conj separation_in
-      lam_replacement_constant lam_replacement_fst
-      lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
-      G_subset_M[THEN subsetD]
+    using separation_conj separation_in G_subset_M[THEN subsetD]
+      lam_replacement_constant lam_replacement_fst lam_replacement_product
       arity_forces[of "\<cdot>0 = 1\<cdot>",simplified] ord_simp_union
     by(rule_tac separation_closed[OF separation_bex],simp_all)
 qed
@@ -457,10 +448,10 @@ proof -
       using nat_into_M by simp
     moreover from calculation
     have "S \<in> M"
-      using separation_ball_leq_and_forces_apply_aux separation_leq_and_forces_apply_aux
+      using  separation_leq_and_forces_apply_aux separation_leq_and_forces_apply_aux'
         transitivity[OF \<open>p\<in>P\<close>]
       unfolding S_def split_def
-      by(rule_tac lam_replacement_Collect[THEN lam_replacement_imp_lam_closed,simplified], simp_all)
+      by(rule_tac lam_replacement_Collect'[THEN lam_replacement_imp_lam_closed,simplified], simp_all)
     ultimately
     have "S' \<in> M"
       by simp

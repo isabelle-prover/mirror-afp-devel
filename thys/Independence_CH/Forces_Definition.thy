@@ -746,8 +746,6 @@ lemma leq_abs:
   "\<lbrakk> l\<in>M ; q\<in>M ; p\<in>M \<rbrakk> \<Longrightarrow> is_leq(##M,l,q,p) \<longleftrightarrow> \<langle>q,p\<rangle>\<in>l"
   unfolding is_leq_def using pair_in_M_iff by simp
 
-(* TODO: MOVE THIS to an appropriate place: subsubsection\<open>The primitive recursion\<close> *)
-
 subsection\<open>Forcing for atomic formulas in context\<close>
 
 definition

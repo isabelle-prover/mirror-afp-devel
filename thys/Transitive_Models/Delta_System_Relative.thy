@@ -18,11 +18,6 @@ lemma disjoint_separation: "M(c) \<Longrightarrow> separation(M, \<lambda> x. \<
   using separation_Pair separation_eq lam_replacement_constant lam_replacement_Int
   by simp
 
-lemma insnd_ball: "M(G) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> fst(p) \<in> x)"
-  using separation_ball separation_iff' lam_replacement_fst lam_replacement_snd
-    separation_in lam_replacement_hcomp
-  by simp
-
 lemma (in M_trans) mem_F_bound6:
   fixes F G
   defines "F \<equiv> \<lambda>_ x. Collect(G, (\<in>)(x))"
@@ -231,9 +226,9 @@ proof -
         from \<open>M(G)\<close>
         interpret M_replacement_lepoll M "\<lambda>_ x. Collect(G, (\<in>)(x))"
           using countable_lepoll_assms lam_replacement_inj_rel separation_in_rev
-            lam_replacement_Collect[OF _ _ insnd_ball] mem_F_bound6[of _ G]
-            lam_replacement_minimum
-          by unfold_locales
+            lam_replacement_Collect'[of G "\<lambda>x y. x\<in>y"] mem_F_bound6[of _ G]
+            lam_replacement_minimum separation_in lam_replacement_fst lam_replacement_snd
+          by  unfold_locales
             (auto dest:transM intro:lam_Least_assumption_general[of _  _ _ _ Union])
         fix S
         assume "M(S)"
@@ -245,7 +240,7 @@ proof -
         with \<open>M(S)\<close> calculation(6) calculation(7,8)[of S]
         show "countable_rel(M,{A \<in> G . S \<inter> A \<noteq> 0})"
           using InfCard_rel_nat Card_rel_nat
-            le_Card_rel_iff[THEN iffD2, THEN [3] leqpoll_rel_imp_cardinal_rel_UN_le,
+            le_Card_rel_iff[THEN iffD2, THEN [3] lepoll_rel_imp_cardinal_rel_UN_le,
               THEN [4] le_Card_rel_iff[THEN iffD1], of \<omega>] j.UN_closed
           unfolding countable_rel_def by (auto dest: transM)
       qed

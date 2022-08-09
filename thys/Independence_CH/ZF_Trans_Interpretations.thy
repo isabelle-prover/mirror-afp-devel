@@ -12,16 +12,13 @@ locale M_ZF3 = M_ZF2 +
     replacement_ax3:
     "replacement_assm(M,env,replacement_is_order_body_fm)"
     "replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
-    "replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
 
 definition instances3_fms where "instances3_fms \<equiv>
   { replacement_is_order_body_fm,
-    wfrec_replacement_order_pred_fm,
-    replacement_is_jump_cardinal_body_fm }"
+    wfrec_replacement_order_pred_fm }"
 
 lemmas replacement_instances3_defs =
   replacement_is_order_body_fm_def wfrec_replacement_order_pred_fm_def
-  replacement_is_jump_cardinal_body_fm_def
   replacement_is_aleph_fm_def
 
 declare (in M_ZF3) replacement_instances3_defs [simp]
@@ -32,40 +29,30 @@ locale M_ZFC3 = M_ZFC2 + M_ZF3
 
 locale M_ZFC3_trans = M_ZFC2_trans + M_ZF3_trans
 
-locale M_ZF3_ground = M_ZF3 + M_ZF_ground
+locale M_ZF3_ground_notCH = M_ZF3 + M_ZF_ground_notCH
 
-locale M_ZF3_ground_trans = M_ZF3_trans + M_ZF3_ground + M_ZF_ground_trans
+locale M_ZF3_ground_notCH_trans = M_ZF3_trans + M_ZF3_ground_notCH + M_ZF_ground_notCH_trans
 
-locale M_ZFC3_ground = M_ZFC3 + M_ZF3_ground
+locale M_ZFC3_ground_notCH = M_ZFC3 + M_ZF3_ground_notCH
 
-locale M_ZFC3_ground_trans = M_ZFC3_trans + M_ZF3_ground_trans
+locale M_ZFC3_ground_notCH_trans = M_ZFC3_trans + M_ZFC3_ground_notCH + M_ZF3_ground_notCH_trans
 
-locale M_ZFC3_ground_CH_trans = M_ZFC3_ground_trans + M_ZF_ground_CH_trans
+locale M_ZFC3_ground_CH_trans = M_ZFC3_ground_notCH_trans + M_ZF_ground_CH_trans
 
-locale M_ctm3 = M_ctm2 + M_ZF3_ground_trans
+locale M_ctm3 = M_ctm2 + M_ZF3_ground_notCH_trans
 
-locale M_ctm3_AC = M_ctm3 + M_ctm1_AC + M_ZFC3_ground_trans
+locale M_ctm3_AC = M_ctm3 + M_ctm1_AC + M_ZFC3_ground_notCH_trans
 
 locale M_ctm3_AC_CH = M_ctm3_AC + M_ZFC3_ground_CH_trans
 
 lemmas (in M_ZF2_trans) separation_instances =
-  separation_well_ord
+  separation_well_ord_iso
   separation_obase_equals separation_is_obase
   separation_PiP_rel separation_surjP_rel
   separation_radd_body separation_rmult_body
 
-arity_theorem for "is_transitive_fm"
-arity_theorem for "is_linear_fm"
-arity_theorem for "is_wellfounded_on_fm"
-arity_theorem for "is_well_ord_fm"
-
-arity_theorem for "pred_set_fm"
-arity_theorem for "image_fm"
 definition omap_wfrec_body where
-  "omap_wfrec_body(A,r) \<equiv> (\<cdot>\<exists>\<cdot>image_fm(2, 0, 1) \<and>
-               pred_set_fm
-                (succ(succ(succ(succ(succ(succ(succ(succ(succ(A))))))))), 3,
-                 succ(succ(succ(succ(succ(succ(succ(succ(succ(r))))))))), 0) \<cdot>\<cdot>)"
+  "omap_wfrec_body(A,r) \<equiv> (\<cdot>\<exists>\<cdot>image_fm(2, 0, 1) \<and> pred_set_fm(A #+ 9, 3, r #+ 9, 0) \<cdot>\<cdot>)"
 
 lemma type_omap_wfrec_body_fm :"A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarrow> omap_wfrec_body(A,r)\<in>formula"
   unfolding omap_wfrec_body_def by simp
@@ -95,20 +82,19 @@ lemma arity_is_ordertype: "A\<in>nat \<Longrightarrow> r\<in>nat \<Longrightarro
   using arity_isordermap arity_image_fm pred_Un_distrib FOL_arities
   by auto
 
-arity_theorem for "is_order_body_fm"
+lemma arity_is_order_body: "arity(is_order_body_fm(1,0)) = 2"
+   using arity_is_order_body_fm arity_is_ordertype ord_simp_union
+   by (simp add:FOL_arities)
 
-lemma arity_is_order_body: "arity(is_order_body_fm(2,0,1)) = 3"
-  using arity_is_order_body_fm arity_is_ordertype ord_simp_union
-  by (simp add:FOL_arities)
 
 lemma (in M_ZF3_trans) replacement_is_order_body:
-  "X\<in>M \<Longrightarrow> strong_replacement(##M, is_order_body(##M,X))"
+  "strong_replacement(##M, \<lambda>x z . \<exists>y[##M]. is_order_body(##M,x,y) \<and> z = \<langle>x,y\<rangle>)"
   apply(rule_tac strong_replacement_cong[
-        where P="\<lambda> x f. M,[x,f,X] \<Turnstile> is_order_body_fm(2,0,1)",THEN iffD1])
-   apply(rule_tac is_order_body_iff_sats[where env="[_,_,X]",symmetric])
-          apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax3(1)[unfolded replacement_assm_def, rule_format, where env="[X]",simplified])
-    apply(simp_all add: arity_is_order_body )
+        where P="\<lambda> x f. M,[x,f] \<Turnstile> (\<cdot>\<exists> \<cdot>is_order_body_fm(1,0) \<and> pair_fm(1,0,2) \<cdot>\<cdot>)",THEN iffD1])
+   apply(simp add: is_order_body_iff_sats[where env="[_,_]",symmetric])
+   apply(simp_all add:zero_in_M )
+  apply(rule_tac replacement_ax3(1)[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
+    apply(simp_all add:arity_is_order_body arity pred_Un_distrib ord_simp_union)
   done
 
 definition H_order_pred where
@@ -144,58 +130,26 @@ lemma (in M_ZF3_trans) wfrec_replacement_order_pred':
 
 sublocale M_ZF3_trans \<subseteq> M_pre_cardinal_arith "##M"
   using separation_instances wfrec_replacement_order_pred'[unfolded H_order_pred_def]
-    replacement_is_order_eq_map[unfolded order_eq_map_def] banach_replacement
+    replacement_is_order_eq_map[unfolded order_eq_map_def]
   by unfold_locales simp_all
 
-lemma arity_is_jump_cardinal_body: "arity(is_jump_cardinal_body_rel_fm(0,2,3)) = 4"
-  unfolding is_jump_cardinal_body_rel_fm_def
-  using arity_is_ordertype arity_is_well_ord_fm arity_is_Pow_fm arity_cartprod_fm
-    arity_Replace_fm[where i=5] ord_simp_union FOL_arities
-  by simp
 
-lemma arity_is_jump_cardinal_body': "arity(is_jump_cardinal_body'_rel_fm(0,1)) = 2"
-  unfolding is_jump_cardinal_body'_rel_fm_def
-  using arity_is_jump_cardinal_body arity_is_Pow_fm arity_cartprod_fm
-     ord_simp_union FOL_arities
-  by simp
+definition is_well_ord_fst_snd where
+  "is_well_ord_fst_snd(A,x) \<equiv> (\<exists>a[A]. \<exists>b[A]. is_well_ord(A,a,b) \<and> is_snd(A, x, b) \<and> is_fst(A, x, a))"
 
-lemma (in M_ZF3_trans) replacement_is_jump_cardinal_body:
-  "strong_replacement(##M, is_jump_cardinal_body'_rel(##M))"
-  apply(rule_tac strong_replacement_cong[
-        where P="\<lambda> x f. M,[x,f] \<Turnstile> is_jump_cardinal_body'_rel_fm(0,1)",THEN iffD1])
-   apply(rule_tac is_jump_cardinal_body'_rel_iff_sats[where env="[_,_]",symmetric])
-        apply(simp_all add:zero_in_M)
-  apply(rule_tac replacement_ax3(3)[unfolded replacement_assm_def, rule_format, where env="[]",simplified])
-   apply(simp_all add: arity_is_jump_cardinal_body' )
-  done
+synthesize "is_well_ord_fst_snd" from_definition assuming "nonempty"
+arity_theorem for "is_well_ord_fst_snd_fm"
 
-lemma (in M_pre_cardinal_arith) univalent_aux2: "M(X) \<Longrightarrow> univalent(M,Pow_rel(M,X\<times>X),
-  \<lambda>r z. M(z) \<and> M(r) \<and> is_well_ord(M, X, r) \<and> is_ordertype(M, X, r, z))"
-  using is_well_ord_iff_wellordered
-    is_ordertype_iff[of _ X]
-    trans_on_subset[OF well_ord_is_trans_on]
-    well_ord_is_wf[THEN wf_on_subset_A] mem_Pow_rel_abs
-  unfolding univalent_def
-  by (simp)
+lemma (in M_ZF3_trans) separation_well_ord: "separation(##M, \<lambda>x. is_well_ord(##M,fst(x), snd(x)))"
+  using arity_is_well_ord_fst_snd_fm is_well_ord_iff_sats[symmetric] nonempty
+    fst_closed snd_closed fst_abs snd_abs
+    separation_in_ctm[where env="[]" and \<phi>="is_well_ord_fst_snd_fm(0)"]
+  by(simp_all add: is_well_ord_fst_snd_def)
 
-lemma (in M_pre_cardinal_arith) is_jump_cardinal_body_abs :
-  "M(X) \<Longrightarrow> M(c) \<Longrightarrow> is_jump_cardinal_body'_rel(M, X, c) \<longleftrightarrow> c = jump_cardinal_body'_rel(M,X)"
-  using well_ord_abs is_well_ord_iff_wellordered is_ordertype_iff' ordertype_rel_abs
-    well_ord_is_linear subset_abs Pow_rel_iff
-    Replace_abs[of "Pow_rel(M,X\<times>X)",OF _ _univalent_aux2,simplified]
-  unfolding is_jump_cardinal_body'_rel_def jump_cardinal_body'_rel_def
-    is_jump_cardinal_body_rel_def  jump_cardinal_body_rel_def
-  by simp
-
-lemma (in M_ZF3_trans) replacement_jump_cardinal_body:
-  "strong_replacement(##M, \<lambda>x z.  z = jump_cardinal_body'_rel(##M,x))"
-  using strong_replacement_cong[THEN iffD1,OF _ replacement_is_jump_cardinal_body,simplified]
-     is_jump_cardinal_body_abs
-  by simp
 
 sublocale M_ZF3_trans \<subseteq> M_pre_aleph "##M"
-  using  replacement_jump_cardinal_body[unfolded jump_cardinal_body'_rel_def]
-    HAleph_wfrec_repl replacement_is_order_body[unfolded is_order_body_def]
+  using HAleph_wfrec_repl replacement_is_order_body
+    separation_well_ord separation_Pow_rel
   by unfold_locales (simp_all add: transrec_replacement_def
       wfrec_replacement_def is_wfrec_def M_is_recfun_def flip:setclass_iff)
 
@@ -312,7 +266,6 @@ locale M_ZF4 = M_ZF3 +
     ground_replacements4:
     "ground_replacement_assm(M,env,replacement_is_order_body_fm)"
     "ground_replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
-    "ground_replacement_assm(M,env,replacement_is_jump_cardinal_body_fm)"
     "ground_replacement_assm(M,env,list_repl1_intf_fm)"
     "ground_replacement_assm(M,env,list_repl2_intf_fm)"
     "ground_replacement_assm(M,env,formula_repl2_intf_fm)"
@@ -324,12 +277,10 @@ locale M_ZF4 = M_ZF3 +
     "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
     "ground_replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "ground_replacement_assm(M,env,replacement_is_order_eq_map_fm)"
-    "ground_replacement_assm(M,env,banach_iterates_fm)"
 
 definition instances4_fms where "instances4_fms \<equiv>
   { ground_repl_fm(replacement_is_order_body_fm),
     ground_repl_fm(wfrec_replacement_order_pred_fm),
-    ground_repl_fm(replacement_is_jump_cardinal_body_fm),
     ground_repl_fm(list_repl1_intf_fm),
     ground_repl_fm(list_repl2_intf_fm),
     ground_repl_fm(formula_repl2_intf_fm),
@@ -340,40 +291,48 @@ definition instances4_fms where "instances4_fms \<equiv>
     ground_repl_fm(formula_repl1_intf_fm),
     ground_repl_fm(eclose_repl1_intf_fm),
     ground_repl_fm(replacement_HAleph_wfrec_repl_body_fm),
-    ground_repl_fm(replacement_is_order_eq_map_fm),
-    ground_repl_fm(banach_iterates_fm) }"
+    ground_repl_fm(replacement_is_order_eq_map_fm) }"
 
-text\<open>This set has 15 internalized formulas, corresponding to the total
-count of previous replacement instances (apart from those 5 in
-\<^term>\<open>instances_ground_fms\<close>, and \<^term>\<open>replacement_dcwit_repl_body_fm\<close>).\<close>
+text\<open>This set has $13$ internalized formulas, corresponding to the total
+count of previous replacement instances (apart from those $5$ in
+\<^term>\<open>instances_ground_fms\<close> and \<^term>\<open>instances_ground_notCH_fms\<close>,
+and \<^term>\<open>replacement_dcwit_repl_body_fm\<close>).\<close>
 
 definition overhead where
-  "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union>
-     instances4_fms \<union> instances_ground_fms"
+  "overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances_ground_fms"
+
+definition overhead_notCH where
+  "overhead_notCH \<equiv> overhead \<union> instances3_fms \<union>
+     instances4_fms \<union> instances_ground_notCH_fms"
 
 definition overhead_CH where
-  "overhead_CH \<equiv> overhead \<union> { replacement_dcwit_repl_body_fm }"
+  "overhead_CH \<equiv> overhead_notCH \<union> { replacement_dcwit_repl_body_fm }"
 
-text\<open>Hence, the “overhead” to force $\neg\CH$ consists
-of 35 replacement instances, and one further instance is needed to
+text\<open>Hence, the “overhead” to create a proper extension of a ctm by forcing
+consists of $16$ replacement instances. To force $\neg\CH$,
+31 instances are need, and one further instance is required to
 force $\CH$.\<close>
 
 lemma instances3_fms_type[TC] : "instances3_fms \<subseteq> formula"
   unfolding instances3_fms_def replacement_is_order_body_fm_def
-    wfrec_replacement_order_pred_fm_def replacement_is_jump_cardinal_body_fm_def
-    replacement_is_aleph_fm_def
+    wfrec_replacement_order_pred_fm_def replacement_is_aleph_fm_def
   by (auto simp del: Lambda_in_M_fm_def)
 
 lemma overhead_type: "overhead \<subseteq> formula"
   using instances1_fms_type instances2_fms_type instances_ground_fms_type
-  unfolding overhead_def instances3_fms_def instances4_fms_def
-    replacement_instances1_defs replacement_instances2_defs replacement_instances3_defs
-    replacement_instances_ground_defs
-  using ground_repl_fm_type Lambda_in_M_fm_type
-  by (auto simp del: Lambda_in_M_fm_def)
+  unfolding overhead_def replacement_instances1_defs replacement_instances2_defs
+  by simp
+
+lemma overhead_notCH_type: "overhead_notCH \<subseteq> formula"
+  using overhead_type
+  unfolding overhead_notCH_def replacement_transrec_apply_image_body_fm_def
+    replacement_is_trans_apply_image_fm_def instances_ground_notCH_fms_def
+    instances3_fms_def instances4_fms_def
+  by (auto simp: replacement_instances1_defs replacement_instances2_defs
+      replacement_instances3_defs simp del: Lambda_in_M_fm_def)
 
 lemma overhead_CH_type: "overhead_CH \<subseteq> formula"
-  using overhead_type unfolding overhead_CH_def replacement_dcwit_repl_body_fm_def
+  using overhead_notCH_type unfolding overhead_CH_def replacement_dcwit_repl_body_fm_def
   by auto
 
 locale M_ZF4_trans = M_ZF3_trans + M_ZF4
@@ -462,13 +421,13 @@ proof -
 qed
 
 theorem M_satT_imp_M_ZF_ground_trans:
-  assumes "Transset(M)" "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms}"
+  assumes "Transset(M)" "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
   shows "M_ZF_ground_trans(M)"
 proof -
   from \<open>M \<Turnstile> \<cdot>Z\<cdot> \<union> _\<close>
   have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms}"
        "M \<Turnstile> {\<cdot>Replacement(p)\<cdot> . p \<in> instances_ground_fms }"
-    by auto
+    unfolding overhead_def by auto
   then
   interpret M_ZF2 M
     using M_satT_instances12_imp_M_ZF2
@@ -492,21 +451,45 @@ proof -
     by unfold_locales (simp_all add:replacement_assm_def)
 qed
 
-theorem M_satT_imp_M_ZF_ground_CH_trans:
+theorem M_satT_imp_M_ZF_ground_notCH_trans:
   assumes
     "Transset(M)"
-    "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms
-          \<union> instances_ground_fms \<union> {replacement_dcwit_repl_body_fm}}"
-  shows "M_ZF_ground_CH_trans(M)"
+    "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}"
+  shows "M_ZF_ground_notCH_trans(M)"
 proof -
   from assms
   interpret M_ZF_ground_trans M
-    using M_satT_imp_M_ZF_ground_trans by auto
+    using M_satT_imp_M_ZF_ground_trans unfolding overhead_notCH_def by force
+  {
+    fix \<phi> env
+    assume "\<phi> \<in> instances_ground_notCH_fms" "env\<in>list(M)"
+    moreover from this and assms
+    have "M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>"
+      unfolding overhead_notCH_def by auto
+    ultimately
+    have "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
+      using sats_ZF_replacement_fm_iff[of \<phi>] instances_ground_notCH_fms_type by auto
+  }
+  then
+  show ?thesis
+    by unfold_locales (simp_all add:replacement_assm_def instances_ground_notCH_fms_def)
+qed
+
+theorem M_satT_imp_M_ZF_ground_CH_trans:
+  assumes
+    "Transset(M)"
+    "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH }"
+  shows "M_ZF_ground_CH_trans(M)"
+proof -
+  from assms
+  interpret M_ZF_ground_notCH_trans M
+    using M_satT_imp_M_ZF_ground_notCH_trans unfolding overhead_CH_def by auto
   {
     fix env
     assume "env \<in> list(M)"
     moreover from assms
-    have "M, [] \<Turnstile> \<cdot>Replacement(replacement_dcwit_repl_body_fm)\<cdot>" by auto
+    have "M, [] \<Turnstile> \<cdot>Replacement(replacement_dcwit_repl_body_fm)\<cdot>"
+      unfolding overhead_CH_def by auto
     ultimately
     have "arity(replacement_dcwit_repl_body_fm) \<le> succ(succ(length(env)))
       \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,replacement_dcwit_repl_body_fm,Cons(x,Cons(y, env))))"
@@ -624,9 +607,9 @@ proof -
 qed
 
 lemma M_satT_overhead_imp_M_ZF4:
-  "(M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}) \<longrightarrow> M_ZFC4(M)"
+  "(M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}) \<longrightarrow> M_ZFC4(M)"
 proof
-  assume "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
+  assume "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}"
   then
   have fin: "upair_ax(##M)" "Union_ax(##M)" "power_ax(##M)" "choice_ax(##M)"
     "extensionality(##M)" "foundation_ax(##M)" "infinity_ax(##M)"
@@ -635,10 +618,9 @@ proof
   moreover
   {
     fix \<phi> env
-    from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+    from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}\<close>
     have "\<forall>p\<in>formula. (M, [] \<Turnstile> (ZF_separation_fm(p)))"
-      unfolding ZC_def Zermelo_fms_def ZF_def overhead_def instances1_fms_def
-        instances2_fms_def instances3_fms_def instances4_fms_def by auto
+      unfolding ZC_def Zermelo_fms_def ZF_def by auto
     moreover
     assume "\<phi> \<in> formula" "env\<in>list(M)"
     ultimately
@@ -648,16 +630,16 @@ proof
   moreover
   {
     fix \<phi> env
-    assume "\<phi> \<in> overhead" "env\<in>list(M)"
-    moreover from this and \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+    assume "\<phi> \<in> overhead_notCH" "env\<in>list(M)"
+    moreover from this and \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}\<close>
     have "M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>" by auto
     ultimately
     have "arity(\<phi>) \<le> succ(succ(length(env))) \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,\<phi>,Cons(x,Cons(y, env))))"
-      using sats_ZF_replacement_fm_iff[of \<phi>] overhead_type by auto
+      using sats_ZF_replacement_fm_iff[of \<phi>] overhead_notCH_type by auto
   }
   ultimately
   show "M_ZFC4(M)"
-    unfolding overhead_def instances1_fms_def
+    unfolding overhead_def overhead_notCH_def instances1_fms_def
       instances2_fms_def instances3_fms_def instances4_fms_def
     by unfold_locales (simp_all add:replacement_assm_def ground_replacement_assm_def)
 qed

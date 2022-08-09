@@ -71,7 +71,7 @@ proof
   ultimately
   show "False"
     using filter_complement_dense[of G] M_generic_denseD[of "P-G"]
-      M_generic_def[of G] by simp (*TODO: put generic ==> filter in claset ?*)
+    by auto
 qed
 
 theorem proper_extension: "M \<noteq> M[G]"

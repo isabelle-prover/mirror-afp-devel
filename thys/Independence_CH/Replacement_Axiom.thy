@@ -150,7 +150,7 @@ proof -
       by auto
     with \<open>\<langle>\<rho>,p\<rangle>\<in>\<pi>'\<close> \<open>\<langle>\<rho>,q\<rangle>\<in>?\<pi> \<Longrightarrow> f(\<langle>\<rho>,q\<rangle>)\<in>Y\<close>
     have "f(\<langle>\<rho>,q\<rangle>)\<in>Y"
-      using generic unfolding M_generic_def filter_def by blast
+      using generic by blast
     let ?\<alpha>="succ(rank(\<sigma>))"
     note \<open>\<sigma>\<in>M\<close>
     moreover from this

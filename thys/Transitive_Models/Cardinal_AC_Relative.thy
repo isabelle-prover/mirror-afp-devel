@@ -19,15 +19,10 @@ begin
 lemma lam_replacement_minimum_vimage:
   "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x. minimum(r, f -`` {x}))"
   using lam_replacement_minimum lam_replacement_vimage_sing_fun lam_replacement_constant
-  by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
-    (force intro: lam_replacement_identity)+
+    lam_replacement_identity lam_replacement_hcomp2[of _ _ minimum]
+  by simp
 
 lemmas surj_imp_inj_replacement4 = lam_replacement_minimum_vimage[unfolded lam_replacement_def]
-
-lemma lam_replacement_min: "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x . minimum(r, f -`` {x}))"
-  using lam_replacement_hcomp2[OF lam_replacement_constant[of r] lam_replacement_vimage_sing_fun]
-    lam_replacement_minimum
-  by simp
 
 lemmas surj_imp_inj_replacement =
   surj_imp_inj_replacement1 surj_imp_inj_replacement2 surj_imp_inj_replacement4

@@ -15,7 +15,6 @@ declare arity_And [simp del] arity_Or[simp del] arity_Implies[simp del]
 text\<open>We prove results concerning definitions by well-founded
 recursion on some relation \<^term>\<open>R\<close> and its transitive closure
 \<^term>\<open>R^*\<close>\<close>
-  (* Restrict the relation r to the field A*A *)
 
 lemma fld_restrict_eq : "a \<in> A \<Longrightarrow> (r \<inter> A\<times>A)-``{a} = (r-``{a} \<inter> A)"
   by(force)
@@ -152,9 +151,9 @@ lemma Rrel_mono : "A \<subseteq> B \<Longrightarrow> Rrel(R,A) \<subseteq> Rrel(
 lemma Rrel_restr_eq : "Rrel(R,A) \<inter> B\<times>B = Rrel(R,A\<inter>B)"
   unfolding Rrel_def by blast
 
-(* now a consequence of the previous lemmas *)
+\<comment> \<open>We obtain this lemmas as a consequence of the previous one;
+alternatively it can be obtained using @{thm Ordinal.Memrel_type}\<close>
 lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
-  (* unfolding field_def using Ordinal.Memrel_type by blast *)
   using Rrel_mem field_Rrel by blast
 
 lemma restrict_trancl_Rrel:

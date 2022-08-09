@@ -982,6 +982,21 @@ proof -
     using Inf_Card_is_InfCard by simp
 qed
 
+text\<open>Most properties of cardinals depend on $\AC$, even for the countable.
+Here we just state the definition of this concept, and most proofs will
+appear after assuming Choice.\<close>
+\<comment> \<open>Kunen's Definition I.10.5\<close>
+definition
+  countable :: "i\<Rightarrow>o" where
+  "countable(X) \<equiv> X \<lesssim> \<omega>"
+
+lemma countableI[intro]: "X \<lesssim> \<omega> \<Longrightarrow> countable(X)"
+  unfolding countable_def by simp
+
+lemma countableD[dest]: "countable(X) \<Longrightarrow> X \<lesssim> \<omega>"
+  unfolding countable_def by simp
+
+
 text\<open>A \<^emph>\<open>delta system\<close> is family of sets with a common pairwise
 intersection. We will work with this notion in Section~\ref{sec:dsl},
 but we state the definition here in order to have it available in a

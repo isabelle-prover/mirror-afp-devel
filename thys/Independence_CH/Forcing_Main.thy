@@ -69,7 +69,8 @@ end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 theorem extensions_of_ctms:
   assumes
-    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms}"
+    "M \<approx> \<omega>" "Transset(M)"
+    "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
     "\<Phi> \<subseteq> formula" "M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}"
   shows
     "\<exists>N.
@@ -128,9 +129,9 @@ proof -
     by (rule_tac x="M[G]" in exI, auto)
 qed
 
-lemma ZF_replacement_instances12_sub_ZF: "{\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms} \<subseteq> ZF"
+lemma ZF_replacement_instances12_sub_ZF: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<subseteq> ZF"
   using instances1_fms_type instances2_fms_type instances_ground_fms_type
-  unfolding ZF_def ZF_schemes_def by auto
+  unfolding overhead_def ZF_def ZF_schemes_def by auto
 
 theorem extensions_of_ctms_ZF:
   assumes

@@ -1496,7 +1496,7 @@ next
       by (unfold_locales,simp)
     from calculation 2 \<open>p\<in>P\<close>
     have "p\<in>G"
-      unfolding M_generic_def using filter_leqD by simp
+      using filter_leqD by auto
     moreover note 1
     ultimately
     have "M[G], map(val(G),env) \<Turnstile> \<phi>"

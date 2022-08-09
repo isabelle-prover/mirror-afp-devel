@@ -24,8 +24,7 @@ proof -
     using image_eq_UN RepFun_def UN_iff by force
   moreover from calculation
   have "M(\<lambda>x\<in>A. S ` x)" "M({S ` a . a \<in> A})"
-    using lam_closed[of "\<lambda> x. S`x"] apply_type[OF \<open>S\<in>_\<close>]
-      transM[OF _ \<open>M(B)\<close>] image_closed
+    using lam_closed[of "\<lambda> x. S`x"] apply_type[OF \<open>S\<in>_\<close>] transM[OF _ \<open>M(B)\<close>]
     by auto
   moreover from assms this
   have "(\<lambda>x\<in>A. S`x) \<in> surj_rel(M,A, {S`a . a\<in>A})"
@@ -129,8 +128,7 @@ locale M_cardinal_UN_lepoll = M_library + M_replacement_lepoll _ "\<lambda>_. X"
   j:M_cardinal_UN _ J for J
 begin
 
-(* FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System *)
-lemma leqpoll_rel_imp_cardinal_rel_UN_le:
+lemma lepoll_rel_imp_cardinal_rel_UN_le:
   notes [dest] = InfCard_is_Card Card_is_Ord
   assumes "InfCard\<^bsup>M\<^esup>(K)" "J \<lesssim>\<^bsup>M\<^esup> K" "\<And>i. i\<in>J \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K"
     "M(K)"
@@ -278,10 +276,6 @@ end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 
 subsection\<open>Countable and uncountable sets\<close>
 
-definition (* FIXME: From Cardinal_Library, on the context of AC *)
-  countable :: "i\<Rightarrow>o" where
-  "countable(X) \<equiv> X \<lesssim> \<omega>"
-
 relativize functional "countable" "countable_rel" external
 relationalize "countable_rel" "is_countable"
 
@@ -323,7 +317,7 @@ end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 lemma (in M_cardinal_UN_lepoll) countable_rel_imp_countable_rel_UN:
   assumes "countable_rel(M,J)" "\<And>i. i\<in>J \<Longrightarrow> countable_rel(M,X(i))"
   shows "countable_rel(M,\<Union>i\<in>J. X(i))"
-  using assms leqpoll_rel_imp_cardinal_rel_UN_le[of \<omega>] InfCard_rel_nat
+  using assms lepoll_rel_imp_cardinal_rel_UN_le[of \<omega>] InfCard_rel_nat
     InfCard_rel_is_Card_rel j.UN_closed
     countable_rel_iff_cardinal_rel_le_nat j.Pi_assumptions
     Card_rel_le_imp_lepoll_rel[of J \<omega>] Card_rel_cardinal_rel_eq[of \<omega>]
@@ -353,17 +347,9 @@ locale M_cardinal_library = M_library + M_replacement +
 
 begin
 
-lemma cdlt_assms: "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
-  using lam_replacement_snd lam_replacement_fst lam_replacement_hcomp separation_in
-    lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
-  by (rule_tac separation_ball,simp_all,rule_tac separation_iff',auto)
-    (rule_tac separation_all,auto simp:lam_replacement_constant)
-
-lemma cdlt_assms': "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
-  using separation_in[OF _
-      lam_replacement_hcomp2[OF _ _ _ _ lam_replacement_Pair] _
-      lam_replacement_constant]
-    separation_ball lam_replacement_hcomp lam_replacement_fst lam_replacement_snd
+lemma cdlt_assms: "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
+  using separation_in[OF _ lam_replacement_product] separation_ball
+    lam_replacement_fst lam_replacement_snd lam_replacement_constant
   by simp_all
 
 lemma countable_rel_union_countable_rel:
@@ -552,7 +538,7 @@ proof -
     assume "n\<in>?N"
     with Eq1 \<open>M(G)\<close>
     have "|G`n|\<^bsup>M\<^esup> \<le> \<omega>"
-      using le_Aleph_rel1_nat[of "|G ` n|\<^bsup>M\<^esup>"] leqpoll_rel_imp_cardinal_rel_UN_le
+      using le_Aleph_rel1_nat[of "|G ` n|\<^bsup>M\<^esup>"] lepoll_rel_imp_cardinal_rel_UN_le
         UN_if_zero[of "domain(G)" G]
       by (auto dest:transM)
   }
@@ -580,7 +566,7 @@ proof -
   qed
   ultimately
   show ?thesis
-    using InfCard_rel_nat leqpoll_rel_imp_cardinal_rel_UN_le[of \<omega>]
+    using InfCard_rel_nat lepoll_rel_imp_cardinal_rel_UN_le[of \<omega>]
       UN_if_zero[of "domain(G)" G]
       le_trans[of "|if M(_) then G ` _ else 0|\<^bsup>M\<^esup>" "|G ` _|\<^bsup>M\<^esup>" \<omega>]
     by auto blast
@@ -828,14 +814,12 @@ proof -
       by (auto dest:transM)
     with\<open>M(G)\<close> \<open>\<And>x. M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<close> \<open>M(Q)\<close> \<open>M(?cdlt\<gamma>)\<close>
     interpret M_Pi_assumptions_choice M ?cdlt\<gamma> ?inQ
-      using cdlt_assms[where Q=Q] lam_replacement_Collect_ball_Pair[THEN
-          lam_replacement_imp_strong_replacement] surj_imp_inj_replacement3
-        lam_replacement_hcomp2[OF lam_replacement_constant
-          lam_replacement_Collect_ball_Pair _ _ lam_replacement_minimum,
-          unfolded lam_replacement_def]
-        lam_replacement_hcomp lam_replacement_Sigfun[OF
-          lam_replacement_Collect_ball_Pair, of G Q, THEN
-          lam_replacement_imp_strong_replacement] separation_orthogonal
+      using cdlt_assms[where Q=Q] surj_imp_inj_replacement3
+        lam_replacement_Collect_ball_Pair[THEN lam_replacement_imp_strong_replacement]
+        lam_replacement_minimum[THEN [5] lam_replacement_hcomp2,OF
+          lam_replacement_constant lam_replacement_Collect_ball_Pair,unfolded lam_replacement_def]
+        lam_replacement_Sigfun[OF lam_replacement_Collect_ball_Pair,THEN
+          lam_replacement_imp_strong_replacement]
       by unfold_locales (blast dest: transM, auto dest:transM)
     show ?thesis using AC_Pi_rel Pi_rel_char H by auto
   qed
@@ -846,8 +830,7 @@ proof -
   define Cb where "Cb \<equiv> \<lambda>_\<in>Pow_rel(M,G)-?cdlt\<gamma>. b"
   moreover from \<open>b\<in>G\<close> \<open>M(?cdlt\<gamma>)\<close> \<open>M(G)\<close>
   have "Cb \<in> Pow_rel(M,G)-?cdlt\<gamma> \<rightarrow> G" "M(Cb)"
-    using lam_closed[of "\<lambda>_.b" "Pow_rel(M,G)-?cdlt\<gamma>"]
-      tag_replacement transM[OF \<open>b\<in>G\<close>]
+    using lam_closed[of "\<lambda>_.b" "Pow_rel(M,G)-?cdlt\<gamma>"] tag_replacement transM[OF \<open>b\<in>G\<close>]
     unfolding Cb_def by auto
   moreover
   note \<open>Card_rel(M,\<gamma>)\<close>
@@ -1078,7 +1061,7 @@ proof -
       by auto
     ultimately
     have "|\<Union>y\<in>Y. {x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>"
-      using leqpoll_rel_imp_cardinal_rel_UN_le
+      using lepoll_rel_imp_cardinal_rel_UN_le
         Infinite_InfCard_rel_cardinal_rel[of Y] vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close>]
       by(auto simp add:transM[OF _ \<open>M(Y)\<close>])
     moreover from \<open>F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)\<close> \<open>M(Z)\<close> \<open>M(F)\<close> \<open>M(Y)\<close>

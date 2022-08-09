@@ -40,15 +40,10 @@ subsection\<open>Non-absolute concepts between extensions\<close>
 sublocale M_master \<subseteq> M_Pi_replacement
   by unfold_locales
 
-\<comment> \<open>Note that in L. 132 we interpret \<^locale>\<open>M_master\<close> from \<^locale>\<open>M_ZFC3_trans\<close>, so
-the assumption \<^locale>\<open>M_aleph\<close> for \<^term>\<open>N\<close> is misleading.\<close>
 locale M_master_sub = M_master + N:M_aleph N for N +
   assumes
     M_imp_N: "M(x) \<Longrightarrow> N(x)" and
     Ord_iff: "Ord(x) \<Longrightarrow> M(x) \<longleftrightarrow> N(x)"
-    (* TODO: update ground replacement assms in M_ZF4: those stemming from
-  M_DC, M_cardinal_library, and M_seqspace should no longer be needed
-  (5 total). At least M_cardinal_library is needed for CH and M_library for Not_CH. *)
 
 sublocale M_master_sub \<subseteq> M_N_Perm
   using M_imp_N by unfold_locales
@@ -128,7 +123,7 @@ lemmas (in M_ZF3_trans) sep_instances =
 
 lemmas (in M_ZF3_trans) repl_instances = lam_replacement_inj_rel
 
-sublocale M_ZFC3_ground_trans \<subseteq> M_master "##M"
+sublocale M_ZFC3_ground_notCH_trans \<subseteq> M_master "##M"
   using replacement_trans_apply_image
   by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
       add: transrec_replacement_def wfrec_replacement_def)
@@ -263,7 +258,7 @@ proof (rule ccontr)
         of "\<Union>\<beta>\<in>\<alpha>. F`\<beta>" "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"] Aleph_rel_succ
       Aleph_rel_increasing[THEN leI, THEN [2] le_trans, of _ 0 z]
       Ord_0_lt_iff[THEN iffD1, of z]
-    by (cases "0<z"; rule_tac leqpoll_rel_imp_cardinal_rel_UN_le) (auto, force)
+    by (cases "0<z"; rule_tac lepoll_rel_imp_cardinal_rel_UN_le) (auto, force)
   moreover
   note \<open>z\<in>M\<close> \<open>Ord(z)\<close>
   moreover from \<open>\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>\<close> \<open>f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close>
@@ -272,7 +267,7 @@ proof (rule ccontr)
     using ext.mem_surj_abs by (force simp add:surj_def)
   moreover from \<open>F \<in> M\<close> \<open>\<alpha> \<in> M\<close>
   have "(\<Union>x\<in>\<alpha>. F ` x) \<in> M"
-    using j.B_replacement\<comment> \<open>NOTE: it didn't require @{thm j.UN_closed} before!\<close>
+    using j.B_replacement
     by (intro Union_closed[simplified] RepFun_closed[simplified])
       (auto dest:transM)
   ultimately
@@ -384,13 +379,12 @@ lemma f_G_funtype:
   shows "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"
   using generic domain_f_G Pi_iff Un_filter_is_function generic
     subset_trans[OF filter_subset_notion Fn_nat_subset_Pow]
-  unfolding M_generic_def
   by force
 
 lemma inj_dense_closed[intro,simp]:
   "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x) \<in> M"
   using transM[OF _ Aleph_rel2_closed] separation_conj separation_bex
-    lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_product
     separation_in lam_replacement_fst lam_replacement_snd lam_replacement_constant
     lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_restrict']
     separation_bex separation_conj
@@ -501,24 +495,20 @@ notation is_ContHyp_fm (\<open>\<cdot>CH\<cdot>\<close>)
 
 theorem ctm_of_not_CH:
   assumes
-    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
+    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}"
     "\<Phi> \<subseteq> formula" "M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}"
   shows
     "\<exists>N.
       M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
 proof -
-  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}\<close>
   interpret M_ZFC4 M
-    using M_satT_overhead_imp_M_ZF4 by simp
-  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
-  have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms }"
-    unfolding overhead_def ZC_def
-    by auto
-  with \<open>Transset(M)\<close>
-  interpret M_ZF_ground_trans M
-    using M_satT_imp_M_ZF_ground_trans
-    by simp
+    using M_satT_overhead_imp_M_ZF4 unfolding overhead_notCH_def by force
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}\<close> \<open>Transset(M)\<close>
+  interpret M_ZF_ground_notCH_trans M
+    using M_satT_imp_M_ZF_ground_notCH_trans
+    unfolding ZC_def by auto
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
@@ -560,6 +550,9 @@ qed
 lemma ZF_replacement_overhead_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<subseteq> ZFC"
   using overhead_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
 
+lemma ZF_replacement_overhead_notCH_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH} \<subseteq> ZFC"
+  using overhead_notCH_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
+
 lemma ZF_replacement_overhead_CH_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH} \<subseteq> ZFC"
   using overhead_CH_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
 
@@ -579,7 +572,7 @@ proof-
         N \<Turnstile> ZC \<and> N \<Turnstile> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<and> N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula} \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)"
     using ctm_of_not_CH[of M formula] satT_ZFC_imp_satT_ZC[of M]
       satT_mono[OF _ ground_repl_fm_sub_ZFC, of M]
-      satT_mono[OF _ ZF_replacement_overhead_sub_ZFC, of M]
+      satT_mono[OF _ ZF_replacement_overhead_notCH_sub_ZFC, of M]
       satT_mono[OF _ ZF_replacement_fms_sub_ZFC, of M]
     by (simp add: satT_Un_iff)
   then

@@ -189,7 +189,7 @@ sublocale G_generic1 \<subseteq> ext:M_Z_trans "M[G]"
 lemma (in M_replacement) upair_name_lam_replacement :
   "M(z) \<Longrightarrow> lam_replacement(M,\<lambda>x . upair_name(fst(x),snd(x),z))"
   using lam_replacement_Upair[THEN [5] lam_replacement_hcomp2]
-    lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_product
     lam_replacement_fst lam_replacement_snd lam_replacement_constant
   unfolding upair_name_def
   by simp

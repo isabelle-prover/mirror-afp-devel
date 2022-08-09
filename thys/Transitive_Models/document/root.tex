@@ -105,9 +105,9 @@ aspect was that the management of higher order constructs always posed
 some extra problems, already noted by Paulson \cite[Sect.~7.3]{MR2051585}.
 
 In the theory \theory{Lambda\_Replacement} we introduce a new locale assuming
-two instances of separation and twelve instances of ``lambda replacements''
+two instances of separation and six instances of ``lambda replacements''
 (i.e., replacements using definable functions of the form $\lambda x y. y=\langle x, f(x) \rangle$)
-that allow for having some form of compositionality of further instances
+that allow some form of compositionality of further instances
 of separations and replacements.
 
 We proceed to enumerate the theories that were ``ported'' to relative
@@ -128,7 +128,8 @@ suffixes.
     concepts. It is not straightforward to compare source and targets
     in a line-by-line fashion at this point.
   \item \theory{CardinalArith}. The hardest part was to formalize the
-    cardinal successor function. We also disregarded the part treating
+    cardinal successor function and ordertypes.
+    We also disregarded the part treating
     finite cardinals since it is an absolute concept. Apart from that,
     the relative version closely parallels the source.
   \item \theory{Cardinal\_AC}. After some boilerplate, porting was
@@ -168,6 +169,12 @@ suffixes.
     desirable but still missing.
   \end{enumerate}
 \end{enumerate}
+
+Finally, we had to repeat some material from \theory{Relative} in
+\session{ZF-Constructible} (in our theory \theory{M\_Basic\_No\_Repl})
+in order to eliminate one replacement instance appearing in the locale
+\texttt{M\_Basic}.
+
 % generated text of all theories
 
 \input{session}

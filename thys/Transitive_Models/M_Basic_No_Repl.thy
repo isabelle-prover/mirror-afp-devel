@@ -284,22 +284,6 @@ lemma (in M_basic_no_repl) succ_fun_eq2:
   apply (blast dest: transM)
   done
 
-(* lemma (in M_basic_no_repl) funspace_succ:
-     "[|M(n); M(B); M(n->B) |] ==> M(succ(n) -> B)"
-apply (insert funspace_succ_replacement [of n], simp)
-apply (force simp add: succ_fun_eq2 univalent_def)
-done
-
-text\<open>\<^term>\<open>M\<close> contains all finite function spaces.  Needed to prove the
-absoluteness of transitive closure.  See the definition of
-\<open>rtrancl_alt\<close> in in \<open>WF_absolute.thy\<close>.\<close>
-lemma (in M_basic_no_repl) finite_funspace_closed [intro,simp]:
-     "[|n\<in>nat; M(B)|] ==> M(n->B)"
-apply (induct_tac n, simp)
-apply (simp add: funspace_succ nat_into_M)
-done
- *)
-
 lemma (in M_basic_no_repl) list_case'_closed [intro,simp]:
   "[|M(k); M(a); \<forall>x[M]. \<forall>y[M]. M(b(x,y))|] ==> M(list_case'(a,b,k))"
   apply (case_tac "quasilist(k)")

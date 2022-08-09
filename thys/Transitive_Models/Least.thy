@@ -39,7 +39,6 @@ lemma least_fm_type[TC] :"i \<in> nat \<Longrightarrow> q\<in>formula \<Longrigh
   unfolding least_fm_def
   by simp
 
-(* Refactorize Formula and Relative to include the following three lemmas *)
 lemmas basic_fm_simps = sats_subset_fm' sats_transset_fm' sats_ordinal_fm'
 
 lemma sats_least_fm :

@@ -269,7 +269,7 @@ proof -
   moreover
   have "function(f\<^bsub>G\<^esub>)"
     using Un_filter_is_function generic
-    unfolding M_generic_def by fast
+    by fast
   ultimately
   show ?thesis
     using generic domain_f_G Pi_iff by auto
@@ -361,16 +361,11 @@ theorem ctm_of_CH:
 proof -
   from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH}\<close>
   interpret M_ZFC4 M
-    using M_satT_overhead_imp_M_ZF4 unfolding overhead_CH_def by auto
-  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH}\<close>
-  have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union>
-            instances_ground_fms \<union> {replacement_dcwit_repl_body_fm}}"
-    unfolding overhead_CH_def overhead_def ZC_def
-    by auto
-  with \<open>Transset(M)\<close>
+    using M_satT_overhead_imp_M_ZF4 unfolding overhead_CH_def overhead_notCH_def by auto
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH}\<close> \<open>Transset(M)\<close>
   interpret M_ZF_ground_CH_trans M
     using M_satT_imp_M_ZF_ground_CH_trans
-    by simp
+    unfolding ZC_def by auto
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
