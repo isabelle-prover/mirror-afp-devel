@@ -20,7 +20,7 @@ code_printing
   type_constructor real \<rightharpoonup> (Haskell) "Prelude.Double" (*Double precission*)
   | constant "0 :: real" \<rightharpoonup> (Haskell) "0.0"
   | constant "1 :: real" \<rightharpoonup> (Haskell) "1.0"
-  | constant "real_of_integer" \<rightharpoonup> (Haskell) "Prelude.fromIntegral (_)"
+  | constant "Code_Real_Approx_By_Float.real_of_integer" \<rightharpoonup> (Haskell) "Prelude.fromIntegral (_)"
   | class_instance real :: "HOL.equal" => (Haskell) - (*This is necessary. See the tutorial on code generation, page 29*)
   | constant "HOL.equal :: real \<Rightarrow> real \<Rightarrow> bool" \<rightharpoonup>
     (Haskell) "(_) == (_)"
@@ -40,7 +40,7 @@ code_printing
     (Haskell) "Prelude.negate"
   | constant "sqrt :: real => real" \<rightharpoonup>
     (Haskell) "Prelude.sqrt" 
-  | constant Code_Real_Approx_By_Float.real_exp \<rightharpoonup>
+  | constant Code_Real_Approx_By_Float.exp_real \<rightharpoonup>
     (Haskell) "Prelude.exp"
   | constant ln \<rightharpoonup>
     (Haskell) "Prelude.log"
@@ -58,9 +58,5 @@ code_printing
     (Haskell) "Prelude.acos"
   | constant arcsin \<rightharpoonup>
     (Haskell) "Prelude.asin"
-
-text\<open>The following lemmas have to be removed from the code generator in order to be able to execute @{term "(<)"} and @{term "(\<le>)"}\<close>
-declare real_less_code[code del]
-declare real_less_eq_code[code del]
 
 end
