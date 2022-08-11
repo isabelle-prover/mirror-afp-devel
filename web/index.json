@@ -1,6 +1,6 @@
 [
  {
-  "abstract": "This entry provides executable formalisations of complete test generation algorithms for finite state machines. It covers testing for the language-equivalence and reduction conformance relations, supporting the former via the W, Wp, HSI, H, SPY and SPYH-methods, and the latter via adaptive state counting. The test strategies are implemented using generic frameworks, allowing for reuse of shared components between related strategies. This work is described in the author\u0026#x27;s \u003chref=\"https://doi.org/10.26092/elib/1665\"\u003edoctoral thesis\u003c/a\u003e.",
+  "abstract": "This entry provides executable formalisations of complete test generation algorithms for finite state machines. It covers testing for the language-equivalence and reduction conformance relations, supporting the former via the W, Wp, HSI, H, SPY and SPYH-methods, and the latter via adaptive state counting. The test strategies are implemented using generic frameworks, allowing for reuse of shared components between related strategies. This work is described in the author\u0026#x27;s \u003ca href=\"https://doi.org/10.26092/elib/1665\"\u003edoctoral thesis\u003c/a\u003e.",
   "authors": [
    "Robert Sachtleben"
   ],
