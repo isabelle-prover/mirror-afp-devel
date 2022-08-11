@@ -5,7 +5,7 @@ section \<open>Formalizing the CFG\<close>
 theory JVMCFG imports "../StaticInter/BasicDefs" Jinja.BVExample begin
 
 declare lesub_list_impl_same_size [simp del]
-declare listE_length [simp del]
+declare nlistsE_length [simp del]
 
 subsection \<open>Type definitions\<close>
 

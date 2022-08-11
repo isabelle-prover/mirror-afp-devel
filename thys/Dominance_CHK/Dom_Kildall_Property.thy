@@ -123,10 +123,10 @@ lemma wf_listn_termination_rel:
 lemma inA_is_sorted: "xs \<in> A \<Longrightarrow> sorted (rev xs)" 
   by (auto simp add:A_def sorted_less_sorted_list_of_set)
 
-lemma list_nA_lt_refl: "xs \<in> list n A \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] xs"
+lemma list_nA_lt_refl: "xs \<in> nlists n A \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] xs"
 proof
-  assume "xs \<in> list n A"
-  then have "set xs \<subseteq> A" by (rule listE_set)
+  assume "xs \<in> nlists n A"
+  then have "set xs \<subseteq> A" by (rule nlistsE_set)
   then have "\<forall>i<length xs. xs!i \<in> A" by auto
   then have "\<forall>i<length xs. sorted (rev (xs!i))" by (simp add:inA_is_sorted)
   then show "xs [\<sqsubseteq>\<^bsub>r\<^esub>] xs" by(unfold Listn.le_def lesub_def) 
@@ -163,8 +163,8 @@ lemma start_len_gt_0: "length start > 0"
 lemma start_subset_A: "set start \<subseteq> A" 
   by(auto simp add:nil_inA rev_all_inA start_def)
 
-lemma start_in_A : "start \<in> (list n A)" 
-  by (insert start_subset_A len_start_is_n)(fastforce intro:listI)
+lemma start_in_A : "start \<in> (nlists n A)" 
+  by (insert start_subset_A len_start_is_n)(fastforce intro:nlistsI)
 
 lemma sorted_start_nth: "i < n \<Longrightarrow> sorted (rev (start!i))" 
   apply(subgoal_tac "start!i \<in> A")    
@@ -299,7 +299,7 @@ proof
   fix x
   assume "x \<in> set qs"
   from dist have \<tau>: "\<forall>(q, \<tau>) \<in> set qs. (map snd (filter (\<lambda>(x,y). x = q) qs)) = [\<tau>]" using distinct_pair_filter' by fastforce  
-  from len_ss_n subset_ss_A have "ss \<in> list n A" by (rule listI)
+  from len_ss_n subset_ss_A have "ss \<in> nlists n A" by (rule nlistsI)
   with step_bounded_pres have merge_nth: "\<forall>(q, \<tau>) \<in> set qs. (merges f qs ss)!q = map snd [(p',t') \<leftarrow> qs. p'=q] \<Squnion>\<^bsub>f\<^esub> ss!q" 
     by (fastforce intro:Semilat.nth_merges[OF Semilat.intro, OF is_semi]) \<comment> \<open>use lemma:  listE_length\<close>
   with \<tau> have "\<forall>(q, \<tau>) \<in> set qs. (merges f qs ss)!q = [\<tau>]\<Squnion>\<^bsub>f\<^esub> ss!q" by fastforce
@@ -329,7 +329,7 @@ lemma merges_property2:
       and q_lt_len_ss:       "q < length ss "
     shows "(merges f qs ss)!q = ss!q" 
 proof- 
-  from len_ss_n subset_ss_A have "ss \<in> list n A" by (rule listI)
+  from len_ss_n subset_ss_A have "ss \<in> nlists n A" by (rule nlistsI)
   with step_bounded_pres q_lt_len_ss have merge_nth: "(merges f qs ss)!q = map snd [(p',t') \<leftarrow> qs. p'=q] \<Squnion>\<^bsub>f\<^esub> ss!q" 
     by (fastforce intro:Semilat.nth_merges[OF Semilat.intro, OF is_semi])
   from dist have "q \<notin> set(map fst qs) \<Longrightarrow> (map snd (filter (\<lambda>(x,y). x = q) qs)) = []" using distinct_pair_filter_n by fastforce
@@ -353,13 +353,13 @@ lemma propa_property2:
   by (auto dest:decomp_propa)
 
 lemma merges_incr_lemma_dom:
- "\<forall>xs. xs \<in> list n A \<longrightarrow> distinct (map fst ps) \<longrightarrow> (\<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A) \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
+ "\<forall>xs. xs \<in> nlists n A \<longrightarrow> distinct (map fst ps) \<longrightarrow> (\<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A) \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
 proof(intro strip)
   fix xs
-  assume xs_inA: "xs \<in> list n A " 
+  assume xs_inA: "xs \<in> nlists n A " 
      and step_bounded_pres: "\<forall>(p, x)\<in>set ps. p < length xs \<and> x \<in> A"
      and dist: "distinct (map fst ps)" 
-  then have len_xs_n: "length xs = n" and subset_xs_inA: "set xs \<subseteq> A" by (auto simp add:listE_length)
+  then have len_xs_n: "length xs = n" and subset_xs_inA: "set xs \<subseteq> A" by (auto simp add:nlistsE_length)
   with step_bounded_pres dist have merge1: "\<forall>(q, \<tau>) \<in> set ps. (merges f ps xs)!q = \<tau> \<squnion>\<^bsub>f\<^esub>xs!q" 
     using merges_property1 by auto
 
@@ -396,11 +396,11 @@ proof(intro strip)
 qed
    
 lemma merges_incr_dom:
- "\<lbrakk> xs \<in> list n A; distinct (map fst ps); \<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A \<rbrakk> \<Longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
+ "\<lbrakk> xs \<in> nlists n A; distinct (map fst ps); \<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A \<rbrakk> \<Longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
   by (simp add: merges_incr_lemma_dom)
 
 lemma merges_same_conv_dom [rule_format]:
- "(\<forall>xs. xs \<in> list n A \<longrightarrow> distinct (map fst ps) \<longrightarrow>
+ "(\<forall>xs. xs \<in> nlists n A \<longrightarrow> distinct (map fst ps) \<longrightarrow>
         (\<forall>(p,x)\<in>set ps. p<size xs \<and> x\<in>A) \<longrightarrow> 
         (merges f ps xs = xs) = (\<forall>(p,x)\<in>set ps. x \<sqsubseteq>\<^bsub>r\<^esub> xs!p))"
   apply (induct_tac ps)
@@ -417,7 +417,7 @@ lemma merges_same_conv_dom [rule_format]:
 Semilat.lub[OF Semilat.intro,OF is_semi] 
  )
     apply (erule subst, rule merges_incr_dom)
-      apply (blast intro!: listE_set intro: closedD listE_length [THEN nth_in]
+      apply (blast intro!: nlistsE_set intro: closedD nlistsE_length [THEN nth_in]
                             Semilat.closed_f[OF Semilat.intro, OF is_semi])
      apply clarify
   apply(intro strip)
@@ -474,7 +474,7 @@ qed
 (*>*)
 
 lemma termination_lemma: 
-shows "\<lbrakk>ss \<in> list n A; distinct (map fst qs); \<forall>(q,t)\<in>set qs. q<n \<and> t\<in>A; sorted w; w \<noteq> [] \<rbrakk> \<Longrightarrow> 
+shows "\<lbrakk>ss \<in> nlists n A; distinct (map fst qs); \<forall>(q,t)\<in>set qs. q<n \<and> t\<in>A; sorted w; w \<noteq> [] \<rbrakk> \<Longrightarrow> 
         ss [\<sqsubset>\<^sub>r] merges f qs ss \<or> 
         merges f qs ss = ss \<and> 
        (sorted_list_of_set ({q. \<exists>t. (q,t)\<in>set qs \<and> t \<squnion>\<^bsub>f\<^esub> ss!q \<noteq> ss!q} \<union> set (tl w)),w) \<in>
@@ -544,8 +544,8 @@ lemma wf_dom_len_eq:
 
 lemma  wf_dom_inA: 
   assumes "wf_dom ss w"
-  shows "ss \<in> list n A" 
-  using assms by (auto simp add:wf_dom_def intro: listI)
+  shows "ss \<in> nlists n A" 
+  using assms by (auto simp add:wf_dom_def intro: nlistsI)
 
 lemma wf_dom_le: 
   assumes wf_ss_w: "wf_dom ss w"
@@ -678,7 +678,7 @@ proof-
   let ?q_a_wl = "{q. \<exists>t.(q,t)\<in>set ?qs_a \<and> t \<squnion>\<^bsub>f\<^esub> (a!q) \<noteq> a!q}"
   let ?q_ss_wl = "{q. \<exists>t.(q,t)\<in>set ?qs_ss \<and> t \<squnion>\<^bsub>f\<^esub> (ss!q) \<noteq> ss!q}" 
 
-  from a_in_A len_eq have a_in_list_nA: "a \<in> list n A" by (auto intro: listI)
+  from a_in_A len_eq have a_in_list_nA: "a \<in> nlists n A" by (auto intro: nlistsI)
   from a_in_A have "\<forall>p< length a. a!p \<in> A" by (auto simp add:A_def)
   then have a_p_subset: "\<forall>p< length a. set (a!p) \<subseteq> set nodes" by (auto simp add:inpow_subset_nodes A_def)
 
@@ -741,13 +741,13 @@ proof-
 
   from step_pres_bounded sorted_tl_b set_a propa have ss_merge: "ss = merges f ?qs_a a" by (auto dest: decomp_propa)
   from step_pres_bounded a_in_list_nA have "\<forall>(q, \<tau>)\<in>set (step (hd b) (a ! hd b)). q < n \<and> \<tau> \<in> A" using len_eq by simp
-  with a_in_list_nA have "merges f ?qs_a a  \<in> list n A"  
+  with a_in_list_nA have "merges f ?qs_a a  \<in> nlists n A"  
     by (rule Semilat.merges_preserves_type[OF Semilat.intro, OF is_semi])
-  with ss_merge have ss_in_A: "ss \<in> list n A" by simp
+  with ss_merge have ss_in_A: "ss \<in> nlists n A" by simp
   then have len_ss_n: "length ss = n"  using  len_eq by simp
   with len_eq  have len_ss_n: "length ss = n" by auto
 
-  from ss_in_A have set_ss: "set ss \<subseteq> A " by (rule listE_set)
+  from ss_in_A have set_ss: "set ss \<subseteq> A " by (rule nlistsE_set)
   then have ss_inA:  "\<forall>\<tau>\<in>set ss. \<tau> \<in> A" by auto
   then have ss_p_subset: "\<forall>p< length ss.  set (ss!p) \<subseteq> set nodes" by (auto simp add:inpow_subset_nodes A_def)
 
@@ -1409,7 +1409,7 @@ proof-
   from wf_a_b have "\<forall>x\<in>set b. x < n" and n_len: "length a = n"  and sorted_b: "sorted b" 
                and set_a: "set a \<subseteq> A" by (auto simp add:wf_dom_def)
   then have sorted_tl_b: "sorted (tl b)" and hd_b_lt_n: "hd b < n" using b_n_nil by (induct b) (auto simp add:sorted_wrt_append)
-  from set_a have a_inA: "a \<in> list n A" using n_len by (auto intro: listI)
+  from set_a have a_inA: "a \<in> nlists n A" using n_len by (auto intro: nlistsI)
 
   from hd_b_lt_n have dist: "distinct (map fst ?qs)" using distinct_p  by auto   
 
@@ -1461,14 +1461,14 @@ lemma propa_dom_invariant_aux2:
       and propa: "propa f (step (hd w) (ss ! hd w)) ss (tl w) = (ssa, wa) "
       and wf_ss_w: "wf_dom ss w "
       and ss0_lt_ss: "ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ss"
-      and sta: " \<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ts \<and> (\<forall>p<n. stable r step ts p) \<longrightarrow> ss [\<sqsubseteq>\<^bsub>r\<^esub>] ts"    
+      and sta: " \<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ts \<and> (\<forall>p<n. stable r step ts p) \<longrightarrow> ss [\<sqsubseteq>\<^bsub>r\<^esub>] ts"    
     shows "ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ssa \<and> 
-           (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ts \<and> (\<forall>p<n. stable r step ts p) \<longrightarrow> ssa [\<sqsubseteq>\<^bsub>r\<^esub>] ts)"
+           (\<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ts \<and> (\<forall>p<n. stable r step ts p) \<longrightarrow> ssa [\<sqsubseteq>\<^bsub>r\<^esub>] ts)"
   using assms
 proof-
   let ?ss_hdw = "ss!hd w"
   from wf_dom_ss0_w0 have len_ss0: "length ss0 = n" and "\<forall>x\<in> set ss0. x \<in> A" by (auto simp add:wf_dom_def)
-  then have ss0_inA:  "ss0 \<in> list n A"  and set_ss0: "set ss0 \<subseteq> A"by (auto intro:listI)
+  then have ss0_inA:  "ss0 \<in> nlists n A"  and set_ss0: "set ss0 \<subseteq> A"by (auto intro:nlistsI)
   then have ss0_nth_inA: "\<forall>i<length ss0. ss0!i \<in> A" by auto
   then have ss0_p_subset: "\<forall>p< length ss0. set (ss0!p) \<subseteq> set nodes" by (auto simp add:inpow_subset_nodes A_def)
 
@@ -1486,7 +1486,7 @@ proof-
                 and sorted_w: "sorted w" 
                 and len_ss: "length ss = n" 
                 and w_lt_n: "\<forall>x\<in>set w. x < n  "by (auto simp add:wf_dom_def)
-  then have ss_inA: "ss \<in> list n A" and set_ss: "set ss \<subseteq> A" by (auto intro:listI)
+  then have ss_inA: "ss \<in> nlists n A" and set_ss: "set ss \<subseteq> A" by (auto intro:nlistsI)
   then have ss_nth_inA: "\<forall>i<length ss. ss!i \<in> A"  by auto
   then have ss_p_subset: "\<forall>p< length ss. set (ss!p) \<subseteq> set nodes" by (auto simp add:inpow_subset_nodes A_def)
   then have ss_hdw_nodes: "set ?ss_hdw \<subseteq> set nodes" using w_lt_n w_n_nil len_ss by auto
@@ -1521,7 +1521,7 @@ proof-
         and len_ssa: "length ssa = n" 
         and wa_lt_n: "\<forall>x\<in> set wa. x < n" 
     by (auto simp add:wf_dom_def)
-  then have ssa_inA: "ssa\<in> list n A" and set_ssa: "set ssa \<subseteq> A"by (auto intro:listI)
+  then have ssa_inA: "ssa\<in> nlists n A" and set_ssa: "set ssa \<subseteq> A"by (auto intro:nlistsI)
   then have ssa_nth_inA: "\<forall>i<length ssa. ssa!i \<in> A" by auto
   then have ssa_p_subset: "\<forall>p< length ssa. set (ssa!p) \<subseteq> set nodes" by (auto simp add:inpow_subset_nodes A_def)
 
@@ -1569,10 +1569,10 @@ proof-
   with len_ss0_ssa
   have g1: "ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ssa" by (auto simp only:Listn.le_def lesssub_def lesub_def intro:list_all2_all_nthI)
 
-  have "(\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ts \<and> (\<forall>p<n. stable r step ts p) \<longrightarrow> ssa [\<sqsubseteq>\<^bsub>r\<^esub>] ts)" 
+  have "(\<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ts \<and> (\<forall>p<n. stable r step ts p) \<longrightarrow> ssa [\<sqsubseteq>\<^bsub>r\<^esub>] ts)" 
   proof(intro strip)
     fix ts     
-    assume ts_inA: "ts \<in> list n A" and ass: "ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ts \<and> (\<forall>p<n. stable r step ts p)" 
+    assume ts_inA: "ts \<in> nlists n A" and ass: "ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ts \<and> (\<forall>p<n. stable r step ts p)" 
     let ?ts_hdw = "ts!(hd w)" 
 
     from ts_inA sta ass have ss_ts: "ss [\<sqsubseteq>\<^bsub>r\<^esub>] ts" and sta_ts: "(\<forall>p<n. stable r step ts p)" by auto 
@@ -1666,10 +1666,10 @@ proof-
   with g1 show ?thesis by auto
 qed
 
-lemma in_list_nA_refl: "ss \<in> list n A  \<Longrightarrow>  ss [\<sqsubseteq>\<^bsub>r\<^esub>] ss"
+lemma in_list_nA_refl: "ss \<in> nlists n A  \<Longrightarrow>  ss [\<sqsubseteq>\<^bsub>r\<^esub>] ss"
   apply (unfold Listn.le_def lesssub_def lesub_def)
 proof-
-  assume "ss \<in> list n A"
+  assume "ss \<in> nlists n A"
   then have "set ss \<subseteq> A" and "length ss = n" by auto
   then have "\<forall>i<n. ss!i \<in> A" by auto
   then have "\<forall>i<length ss. ss!i \<sqsubseteq>\<^bsub>r\<^esub> ss!i" 
@@ -1683,10 +1683,10 @@ lemma iter_dom:
         wf_dom ss' w' \<and> 
         stables r step ss' \<and> 
         ss0 [\<sqsubseteq>\<^sub>r] ss' \<and>
-        (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss' [\<sqsubseteq>\<^sub>r] ts)"
+        (\<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss' [\<sqsubseteq>\<^sub>r] ts)"
   using assms
   apply (unfold iter_def stables_def)
-  apply (rule_tac P = "\<lambda>(ss,w). wf_dom ss w \<and> ss0 [\<sqsubseteq>\<^sub>r] ss \<and> (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts)" 
+  apply (rule_tac P = "\<lambda>(ss,w). wf_dom ss w \<and> ss0 [\<sqsubseteq>\<^sub>r] ss \<and> (\<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts)" 
               and r =  "{(ss',ss). ss [\<sqsubset>\<^sub>r] ss'} <*lex*> (\<lambda>(x,y). (sorted_list_of_set x, sorted_list_of_set y)) ` finite_psubset"  
          in while_rule)
 
@@ -1753,12 +1753,12 @@ lemma iter_dom_properties:
   wf_dom ss' w' \<and> 
   stables r step ss' \<and> 
   start [\<sqsubseteq>\<^sub>r] ss' \<and>
-  (\<forall>ts\<in>list n A. start [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss' [\<sqsubseteq>\<^sub>r] ts)"
+  (\<forall>ts\<in>nlists n A. start [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss' [\<sqsubseteq>\<^sub>r] ts)"
   using iter_dom[OF wf_start] by auto
 
 lemma iter_dom_properties2:
- "iter f step start (unstables r step start) = (ss',w') \<longrightarrow> ss' \<in> list n A"
-  using iter_dom_properties by (auto simp only:wf_dom_def list_def)
+ "iter f step start (unstables r step start) = (ss',w') \<longrightarrow> ss' \<in> nlists n A"
+  using iter_dom_properties by (auto simp only:wf_dom_def nlists_def)
 
 lemma iter_dom_termination: 
   "iter f step start (unstables r step start) = (ss,w) \<longrightarrow> 
@@ -1861,8 +1861,8 @@ proof(intro strip)
   have "wf_dom ss w" 
    and stas: "stables r step ss" 
    and start_le_ss: "start [\<sqsubseteq>\<^sub>r] ss" 
-   and ss_inA: "ss \<in> list n A" by auto
-  then have len_ss_n: "length ss = n" by (auto simp only:list_def)
+   and ss_inA: "ss \<in> nlists n A" by auto
+  then have len_ss_n: "length ss = n" by (auto simp only:nlists_def)
 
   from start_le_ss have "start!0 \<sqsubseteq>\<^sub>r ss!0" using start_len_gt_0
     by (unfold Listn.le_def lesssub_def lesub_def) (auto simp add:lesssub_def lesub_def intro:list_all2_nthD)
@@ -1921,10 +1921,10 @@ proof(intro strip)
 qed
 
 lemma kildall_dom_properties:
-  "kildall r f step start \<in> list n A \<and> 
+  "kildall r f step start \<in> nlists n A \<and> 
    stables r step (kildall r f step start) \<and> 
    start [\<sqsubseteq>\<^sub>r] (kildall r f step start) \<and>
-   (\<forall>ts\<in>list n A. start [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> (kildall r f step start) [\<sqsubseteq>\<^sub>r] ts)"  (is "PROP ?P")
+   (\<forall>ts\<in>nlists n A. start [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> (kildall r f step start) [\<sqsubseteq>\<^sub>r] ts)"  (is "PROP ?P")
   by (case_tac "iter f step start (unstables r step start)")(simp add: kildall_def iter_dom_properties iter_dom_properties2)
 
 lemma dom_kildall_stables: "stables r step (dom_kildall start)" 
@@ -2035,7 +2035,7 @@ proof-
                and sorted_b: "sorted b" 
                and len_a: "length a = n" 
                and b_lt_n: "\<forall>x\<in>set b. x < n  "by (auto simp add:wf_dom_def)
-  then have set_a: "set a \<subseteq> A" by (auto intro:listI)
+  then have set_a: "set a \<subseteq> A" by (auto intro:nlistsI)
   from sorted_b have sorted_tl_b: "sorted (tl b)" using b_n_nil by (induct b) auto
   from b_lt_n b_n_nil have hd_b_lt_n: "hd b < n" by auto
   with n_def nodes_def verts_set have "hd b \<in> set (g_V G)" using b_n_nil  by auto
@@ -2155,6 +2155,4 @@ lemma iter_dom_invariant_complete:
 end
 
 end
-
-
 
