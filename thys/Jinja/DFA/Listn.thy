@@ -8,12 +8,8 @@ Lists of a fixed length.
 section \<open>Fixed Length Lists\<close>
 
 theory Listn
-imports Err
+imports Err "HOL-Library.NList"
 begin
-
-definition list :: "nat \<Rightarrow> 'a set \<Rightarrow> 'a list set"
-where
-  "list n A = {xs. size xs = n \<and> set xs \<subseteq> A}"
 
 definition le :: "'a ord \<Rightarrow> ('a list)ord"
 where
@@ -64,7 +60,7 @@ where
 
 definition sl :: "nat \<Rightarrow> 'a sl \<Rightarrow> 'a list sl"
 where
-  "sl n = (\<lambda>(A,r,f). (list n A, le r, map2 f))"
+  "sl n = (\<lambda>(A,r,f). (nlists n A, le r, map2 f))"
 
 definition sup :: "('a \<Rightarrow> 'b \<Rightarrow> 'c err) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'c list err"
 where
@@ -72,7 +68,7 @@ where
 
 definition upto_esl :: "nat \<Rightarrow> 'a esl \<Rightarrow> 'a list esl"
 where
-  "upto_esl m = (\<lambda>(A,r,f). (Union{list n A |n. n \<le> m}, le r, sup f))"
+  "upto_esl m = (\<lambda>(A,r,f). (Union{nlists n A |n. n \<le> m}, le r, sup f))"
 
 
 lemmas [simp] = set_update_subsetI
@@ -99,14 +95,6 @@ lemma Cons_le_Cons [iff]: "x#xs [\<sqsubseteq>\<^bsub>r\<^esub>] y#ys = (x \<sqs
 by (simp add: lesub_def Listn.le_def)
 (*>*)
 
-
-
-
-
-
-
-
-
 lemma list_update_le_cong:
   "\<lbrakk> i<size xs; xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys; x \<sqsubseteq>\<^sub>r y \<rbrakk> \<Longrightarrow> xs[i:=x] [\<sqsubseteq>\<^bsub>r\<^esub>] ys[i:=y]"
 (*<*)
@@ -131,7 +119,7 @@ done
 
 lemma le_list_trans: 
   assumes ord: "order r A"
-      and xs:  "xs \<in> list n A" and ys: "ys \<in> list n A" and zs: "zs \<in> list n A"
+      and xs:  "xs \<in> nlists n A" and ys: "ys \<in> nlists n A" and zs: "zs \<in> nlists n A"
       and      "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys" and "ys [\<sqsubseteq>\<^bsub>r\<^esub>] zs"
     shows      "xs [\<sqsubseteq>\<^bsub>r\<^esub>] zs"
 (*<*)
@@ -140,7 +128,7 @@ proof (unfold le_def lesssub_def lesub_def)
   assume "list_all2 r xs ys" and "list_all2 r ys zs"
   hence xs_ys_zs:  "\<forall>i < length xs. r (xs!i) (ys!i) \<and> r (ys!i) (zs!i)" 
         and len_xs_zs: "length xs = length zs" by (auto simp add: list_all2_conv_all_nth)
-  from xs ys zs have inA: "\<forall>i<length xs. xs!i \<in> A \<and> ys!i \<in> A \<and> zs!i \<in> A" by (unfold list_def) auto
+  from xs ys zs have inA: "\<forall>i<length xs. xs!i \<in> A \<and> ys!i \<in> A \<and> zs!i \<in> A" by (unfold nlists_def) auto
   
   from ord have "\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r z \<longrightarrow> x \<sqsubseteq>\<^sub>r z" by (unfold order_def) blast
   hence "\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. r x y \<and> r y z \<longrightarrow> r x z" by (unfold lesssub_def lesub_def)
@@ -162,7 +150,7 @@ qed
 
 lemma le_list_antisym: 
   assumes ord: "order r A"
-      and xs:  "xs \<in> list n A" and ys: "ys \<in> list n A"
+      and xs:  "xs \<in> nlists n A" and ys: "ys \<in> nlists n A"
       and      "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys" and "ys [\<sqsubseteq>\<^bsub>r\<^esub>] xs"
     shows      "xs = ys"
 (*<*)
@@ -171,7 +159,7 @@ proof (simp add: le_def lesssub_def lesub_def)
   assume "list_all2 r xs ys" and "list_all2 r ys xs"
   hence xs_ys:  "\<forall>i < length xs. r (xs!i) (ys!i) \<and> r (ys!i) (xs!i)" 
         and len_xs_ys: "length xs = length ys" by (auto simp add: list_all2_conv_all_nth)
-  from xs ys have inA: "\<forall>i<length xs. xs!i \<in> A \<and> ys!i \<in> A" by (unfold list_def) auto
+  from xs ys have inA: "\<forall>i<length xs. xs!i \<in> A \<and> ys!i \<in> A" by (unfold nlists_def) auto
   
   from ord have "\<forall>x\<in>A. \<forall>y\<in>A. x \<sqsubseteq>\<^sub>r y \<and> y \<sqsubseteq>\<^sub>r x \<longrightarrow> x = y" by (unfold order_def) blast
   hence "\<forall>x\<in>A. \<forall>y\<in>A. r x y \<and> r y x \<longrightarrow> x = y" by (unfold lesssub_def lesub_def)
@@ -188,14 +176,6 @@ done
 *)
 (*>*)
 
-lemma listE_set [simp]: "xs \<in> list n A \<Longrightarrow> set xs \<subseteq> A"
-(*<*)
-apply (unfold list_def)
-apply blast
-done
-(*>*)
-
-
 lemma nth_in [rule_format, simp]:
   "\<forall>i n. size xs = n \<longrightarrow> set xs \<subseteq> A \<longrightarrow> i < n \<longrightarrow> (xs!i) \<in> A"
 (*<*)
@@ -205,34 +185,22 @@ apply (simp add: nth_Cons split: nat.split)
 done
 (*>*)
 
-(* FIXME: remove simp *)
-lemma listE_length [simp]: "xs \<in> list n A \<Longrightarrow> size xs = n"
-(*<*)
-apply (unfold list_def)
-apply blast
-done
-(*>*)
-
-lemma listE_nth_in: "\<lbrakk> xs \<in> list n A; i < n \<rbrakk> \<Longrightarrow> xs!i \<in> A"
-(*<*) by auto (*>*)
-
-
-lemma le_list_refl': "order r A \<Longrightarrow> xs \<in> list n A \<Longrightarrow> xs \<sqsubseteq>\<^bsub>Listn.le r\<^esub> xs"  
+lemma le_list_refl': "order r A \<Longrightarrow> xs \<in> nlists n A \<Longrightarrow> xs \<sqsubseteq>\<^bsub>Listn.le r\<^esub> xs"  
   apply (unfold le_def lesssub_def lesub_def list_all2_conv_all_nth)
   apply auto  
   apply (subgoal_tac "xs ! i \<in> A")  
    apply (subgoal_tac "(xs ! i) \<sqsubseteq>\<^sub>r (xs ! i)")
     apply (simp only: lesssub_def lesub_def)
-   apply (fastforce dest: listE_nth_in)
+   apply (fastforce dest: nlistsE_nth_in)
    apply (fastforce dest: order_refl)
   done
 
-lemma order_listI [simp, intro!]: "order r A \<Longrightarrow> order(Listn.le r) (list n A)"  
+lemma order_listI [simp, intro!]: "order r A \<Longrightarrow> order(Listn.le r) (nlists n A)"  
 (*<*)
 proof-
   assume ord: "order r A"
   let ?r = "Listn.le r"
-  let ?A = "list n A" 
+  let ?A = "nlists n A" 
   have "\<forall>x\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub> x" using ord le_list_refl' by auto
   moreover have "\<forall>x\<in>?A. \<forall>y\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub> y \<and> y \<sqsubseteq>\<^bsub>?r\<^esub>  x \<longrightarrow> x=y" using ord le_list_antisym by auto
   moreover have "\<forall>x\<in>?A. \<forall>y\<in>?A. \<forall>z\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub>y \<and> y \<sqsubseteq>\<^bsub>?r\<^esub> z \<longrightarrow> x \<sqsubseteq>\<^bsub>?r\<^esub> z" using ord le_list_trans by auto
@@ -240,15 +208,15 @@ proof-
 qed
 (*>*)
 
-lemma le_list_refl2': "order r A \<Longrightarrow> xs \<in> (\<Union>{list n A |n. n \<le> mxs})\<Longrightarrow> xs \<sqsubseteq>\<^bsub>Listn.le r\<^esub> xs"  
+lemma le_list_refl2': "order r A \<Longrightarrow> xs \<in> (\<Union>{nlists n A |n. n \<le> mxs})\<Longrightarrow> xs \<sqsubseteq>\<^bsub>Listn.le r\<^esub> xs"  
   by (auto simp add:le_list_refl')
 lemma le_list_trans2: 
   assumes "order r A"
-      and "xs \<in> (\<Union>{list n A |n. n \<le> mxs})" and "ys \<in>(\<Union>{list n A |n. n \<le> mxs})" and "zs \<in>(\<Union>{list n A |n. n \<le> mxs})"
+      and "xs \<in> (\<Union>{nlists n A |n. n \<le> mxs})" and "ys \<in>(\<Union>{nlists n A |n. n \<le> mxs})" and "zs \<in>(\<Union>{nlists n A |n. n \<le> mxs})"
       and "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys" and "ys [\<sqsubseteq>\<^bsub>r\<^esub>] zs"
     shows "xs [\<sqsubseteq>\<^bsub>r\<^esub>] zs"
 (*<*)using assms
-proof(auto simp only:list_def le_def lesssub_def lesub_def)
+proof(auto simp only:nlists_def le_def lesssub_def lesub_def)
   assume xA: "set xs \<subseteq> A" and "length xs \<le> mxs " and " length ys \<le> mxs "
      and yA: "set ys \<subseteq> A" and len_zs: "length zs \<le> mxs" 
      and zA: "set zs \<subseteq> A" and xy: "list_all2 r xs ys" and yz: "list_all2 r ys zs"
@@ -273,12 +241,12 @@ qed
 
 lemma le_list_antisym2: 
   assumes "order r A"
-      and "xs \<in>(\<Union>{list n A |n. n \<le> mxs})" and "ys \<in>(\<Union>{list n A |n. n \<le> mxs})" 
+      and "xs \<in>(\<Union>{nlists n A |n. n \<le> mxs})" and "ys \<in>(\<Union>{nlists n A |n. n \<le> mxs})" 
       and "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys" and "ys [\<sqsubseteq>\<^bsub>r\<^esub>] xs"
     shows " xs = ys"
 (*<*)
   using assms
-proof(auto simp only:list_def le_def lesssub_def lesub_def)
+proof(auto simp only:nlists_def le_def lesssub_def lesub_def)
   assume xA: "set xs \<subseteq> A" and len_ys: "length ys \<le> mxs" and len_xs: "length xs \<le> mxs" 
      and yA: "set ys \<subseteq> A" and xy: "list_all2 r xs ys" and yx: "list_all2 r ys xs" 
      and ord: "order r A"
@@ -294,12 +262,12 @@ qed
 (*<*)
 
 
-lemma order_listI2[intro!] : "order r A \<Longrightarrow> order(Listn.le r) (\<Union>{list n A |n. n \<le> mxs})"
+lemma order_listI2[intro!] : "order r A \<Longrightarrow> order(Listn.le r) (\<Union>{nlists n A |n. n \<le> mxs})"
 (*<*)
 proof-
   assume ord: "order r A"  
   let ?r = "Listn.le r"
-  let ?A = "(\<Union>{list n A |n. n \<le> mxs})" 
+  let ?A = "(\<Union>{nlists n A |n. n \<le> mxs})" 
   have "\<forall>x\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub> x" using ord le_list_refl2' by auto  \<comment>\<open> use order_listI \<close>
   moreover have "\<forall>x\<in>?A. \<forall>y\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub> y \<and> y \<sqsubseteq>\<^bsub>?r\<^esub>  x \<longrightarrow> x=y" using ord le_list_antisym2 by blast
   moreover have "\<forall>x\<in>?A.  \<forall>y\<in>?A. \<forall>z\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub>y \<and> y \<sqsubseteq>\<^bsub>?r\<^esub> z \<longrightarrow> x \<sqsubseteq>\<^bsub>?r\<^esub> z" using ord le_list_trans2 by blast
@@ -340,100 +308,6 @@ proof -
   then show ?thesis by (simp add: Listn.le_def lesub_def)
 qed
 (*>*)
-
-lemma listI: "\<lbrakk> size xs = n; set xs \<subseteq> A \<rbrakk> \<Longrightarrow> xs \<in> list n A"
-(*<*)
-apply (unfold list_def)
-apply blast
-done
-(*>*)
-
-lemma less_lengthI: "\<lbrakk> xs \<in> list n A; p < n \<rbrakk> \<Longrightarrow> p < size xs"
-(*<*) by simp (*>*)
-
-lemma list_0 [simp]: "list 0 A = {[]}"
-(*<*)
-apply (unfold list_def)
-apply auto
-done
-(*>*)
-
-lemma in_list_Suc_iff:
-  "(xs \<in> list (Suc n) A) = (\<exists>y\<in>A. \<exists>ys \<in> list n A. xs = y#ys)"
-(*<*)
-apply (unfold list_def)
-apply (case_tac "xs")
-apply auto
-done
-(*>*)
-
-
-lemma Cons_in_list_Suc [iff]:
-  "(x#xs \<in> list (Suc n) A) = (x\<in>A \<and> xs \<in> list n A)"
-(*<*)
-apply (simp add: in_list_Suc_iff)
-done
-(*>*)
-
-lemma list_not_empty:
-  "\<exists>a. a\<in>A \<Longrightarrow> \<exists>xs. xs \<in> list n A"
-(*<*)
-apply (induct "n")
- apply simp
-apply (simp add: in_list_Suc_iff)
-apply blast
-done
-(*>*)
-
-lemma listn_Cons_Suc [elim!]:
-  "l#xs \<in> list n A \<Longrightarrow> (\<And>n'. n = Suc n' \<Longrightarrow> l \<in> A \<Longrightarrow> xs \<in> list n' A \<Longrightarrow> P) \<Longrightarrow> P"
-(*<*) by (cases n) auto (*>*)
-
-lemma listn_appendE [elim!]:
-  "a@b \<in> list n A \<Longrightarrow> (\<And>n1 n2. n=n1+n2 \<Longrightarrow> a \<in> list n1 A \<Longrightarrow> b \<in> list n2 A \<Longrightarrow> P) \<Longrightarrow> P"
-(*<*)
-proof -
-  have "\<And>n. a@b \<in> list n A \<Longrightarrow> \<exists>n1 n2. n=n1+n2 \<and> a \<in> list n1 A \<and> b \<in> list n2 A"
-    (is "\<And>n. ?list a n \<Longrightarrow> \<exists>n1 n2. ?P a n n1 n2")
-  proof (induct a)
-    fix n assume "?list [] n"
-    hence "?P [] n 0 n" by simp
-    thus "\<exists>n1 n2. ?P [] n n1 n2" by fast
-  next
-    fix n l ls
-    assume "?list (l#ls) n"
-    then obtain n' where n: "n = Suc n'" "l \<in> A" and n': "ls@b \<in> list n' A" by fastforce
-    assume "\<And>n. ls @ b \<in> list n A \<Longrightarrow> \<exists>n1 n2. n = n1 + n2 \<and> ls \<in> list n1 A \<and> b \<in> list n2 A"
-    from this and n' have "\<exists>n1 n2. n' = n1 + n2 \<and> ls \<in> list n1 A \<and> b \<in> list n2 A" .
-    then obtain n1 n2 where "n' = n1 + n2" "ls \<in> list n1 A" "b \<in> list n2 A" by fast
-    with n have "?P (l#ls) n (n1+1) n2" by simp
-    thus "\<exists>n1 n2. ?P (l#ls) n n1 n2" by fastforce
-  qed
-  moreover
-  assume "a@b \<in> list n A" "\<And>n1 n2. n=n1+n2 \<Longrightarrow> a \<in> list n1 A \<Longrightarrow> b \<in> list n2 A \<Longrightarrow> P"
-  ultimately
-  show ?thesis by blast
-qed
-(*>*)
-
-
-lemma listt_update_in_list [simp, intro!]:
-  "\<lbrakk> xs \<in> list n A; x\<in>A \<rbrakk> \<Longrightarrow> xs[i := x] \<in> list n A"
-(*<*)
-apply (unfold list_def)
-apply simp
-done
-(*>*)
-
-lemma list_appendI [intro?]:
-  "\<lbrakk> a \<in> list n A; b \<in> list m A \<rbrakk> \<Longrightarrow> a @ b \<in> list (n+m) A"
-(*<*) by (unfold list_def) auto (*>*)
-
-lemma list_map [simp]: "(map f xs \<in> list (size xs) A) = (f ` set xs \<subseteq> A)"
-(*<*) by (unfold list_def) simp (*>*)
-
-lemma list_replicateI [intro]: "x \<in> A \<Longrightarrow> replicate n x \<in> list n A"
-(*<*) by (induct n) auto (*>*)
 
 lemma plus_list_Nil [simp]: "[] [\<squnion>\<^bsub>f\<^esub>] xs = []"
 (*<*)
@@ -504,21 +378,21 @@ apply (unfold unfold_lesub_list)
 apply (simp add: Listn.le_def list_all2_conv_all_nth)
 apply (induct xs)
  apply simp
-apply (simp add: in_list_Suc_iff)
+apply (simp add: in_nlists_Suc_iff)
 apply clarify
 apply (simp add: nth_Cons split: nat.split)
 done
 (*>*)
 
 
-lemma closed_listI:
-  "closed S f \<Longrightarrow> closed (list n S) (map2 f)"
+lemma closed_nlistsI:
+  "closed S f \<Longrightarrow> closed (nlists n S) (map2 f)"
 (*<*)
 apply (unfold closed_def)
 apply (induct n)
  apply simp
 apply clarify
-apply (simp add: in_list_Suc_iff)
+apply (simp add: in_nlists_Suc_iff)
 apply clarify
 apply simp
 done
@@ -536,8 +410,8 @@ proof -
   apply (rule conjI)
    apply simp
   apply (rule conjI)
-   apply (simp only: closedI closed_listI)
-  apply (simp (no_asm) only: list_def)
+   apply (simp only: closedI closed_nlistsI)
+  apply (simp (no_asm) only: nlists_def)
   apply (simp (no_asm_simp) add: plus_list_ub1 plus_list_ub2 plus_list_lub)
   done
 qed
@@ -549,12 +423,12 @@ apply (drule Semilat.intro)
 by (simp add: Listn_sl_aux split_tupled_all) (*>*)
 
 lemma coalesce_in_err_list [rule_format]:
-  "\<forall>xes. xes \<in> list n (err A) \<longrightarrow> coalesce xes \<in> err(list n A)"
+  "\<forall>xes. xes \<in> nlists n (err A) \<longrightarrow> coalesce xes \<in> err(nlists n A)"
 (*<*)
 apply (induct n)
  apply simp
 apply clarify
-apply (simp add: in_list_Suc_iff)
+apply (simp add: in_nlists_Suc_iff)
 apply clarify
 apply (simp (no_asm) add: plussub_def Err.sup_def lift2_def split: err.split)
 apply force
@@ -566,13 +440,13 @@ lemma lem: "\<And>x xs. x \<squnion>\<^bsub>(#)\<^esub> xs = x#xs"
 
 lemma coalesce_eq_OK1_D [rule_format]:
   "semilat(err A, Err.le r, lift2 f) \<Longrightarrow>
-  \<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>ys. ys \<in> list n A \<longrightarrow>
+  \<forall>xs. xs \<in> nlists n A \<longrightarrow> (\<forall>ys. ys \<in> nlists n A \<longrightarrow>
   (\<forall>zs. coalesce (xs [\<squnion>\<^bsub>f\<^esub>] ys) = OK zs \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] zs))"
 (*<*)
 apply (induct n)
   apply simp
 apply clarify
-apply (simp add: in_list_Suc_iff)
+apply (simp add: in_nlists_Suc_iff)
 apply clarify
 apply (simp split: err.split_asm add: lem Err.sup_def lift2_def)
 apply (force simp add: semilat_le_err_OK1)
@@ -581,13 +455,13 @@ done
 
 lemma coalesce_eq_OK2_D [rule_format]:
   "semilat(err A, Err.le r, lift2 f) \<Longrightarrow>
-  \<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>ys. ys \<in> list n A \<longrightarrow>
+  \<forall>xs. xs \<in> nlists n A \<longrightarrow> (\<forall>ys. ys \<in> nlists n A \<longrightarrow>
   (\<forall>zs. coalesce (xs [\<squnion>\<^bsub>f\<^esub>] ys) = OK zs \<longrightarrow> ys [\<sqsubseteq>\<^bsub>r\<^esub>] zs))"
 (*<*)
 apply (induct n)
  apply simp
 apply clarify
-apply (simp add: in_list_Suc_iff)
+apply (simp add: in_nlists_Suc_iff)
 apply clarify
 apply (simp split: err.split_asm add: lem Err.sup_def lift2_def)
 apply (force simp add: semilat_le_err_OK2)
@@ -610,14 +484,14 @@ done
 
 lemma coalesce_eq_OK_ub_D [rule_format]:
   "semilat(err A, Err.le r, lift2 f) \<Longrightarrow>
-  \<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>ys. ys \<in> list n A \<longrightarrow>
+  \<forall>xs. xs \<in> nlists n A \<longrightarrow> (\<forall>ys. ys \<in> nlists n A \<longrightarrow>
   (\<forall>zs us. coalesce (xs [\<squnion>\<^bsub>f\<^esub>] ys) = OK zs \<and> xs [\<sqsubseteq>\<^bsub>r\<^esub>] us \<and> ys [\<sqsubseteq>\<^bsub>r\<^esub>] us
-           \<and> us \<in> list n A \<longrightarrow> zs [\<sqsubseteq>\<^bsub>r\<^esub>] us))"
+           \<and> us \<in> nlists n A \<longrightarrow> zs [\<sqsubseteq>\<^bsub>r\<^esub>] us))"
 (*<*)
 apply (induct n)
  apply simp
 apply clarify
-apply (simp add: in_list_Suc_iff)
+apply (simp add: in_nlists_Suc_iff)
 apply clarify
 apply (simp (no_asm_use) split: err.split_asm add: lem Err.sup_def lift2_def)
 apply clarify
@@ -635,14 +509,14 @@ lemma lift2_eq_ErrD:
 
 lemma coalesce_eq_Err_D [rule_format]:
   "\<lbrakk> semilat(err A, Err.le r, lift2 f) \<rbrakk>
-  \<Longrightarrow> \<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>ys. ys \<in> list n A \<longrightarrow>
+  \<Longrightarrow> \<forall>xs. xs \<in> nlists n A \<longrightarrow> (\<forall>ys. ys \<in> nlists n A \<longrightarrow>
       coalesce (xs [\<squnion>\<^bsub>f\<^esub>] ys) = Err \<longrightarrow>
-      \<not>(\<exists>zs \<in> list n A. xs [\<sqsubseteq>\<^bsub>r\<^esub>] zs \<and> ys [\<sqsubseteq>\<^bsub>r\<^esub>] zs))"
+      \<not>(\<exists>zs \<in> nlists n A. xs [\<sqsubseteq>\<^bsub>r\<^esub>] zs \<and> ys [\<sqsubseteq>\<^bsub>r\<^esub>] zs))"
 (*<*)
 apply (induct n)
  apply simp
 apply clarify
-apply (simp add: in_list_Suc_iff)
+apply (simp add: in_nlists_Suc_iff)
 apply clarify
 apply (simp split: err.split_asm add: lem Err.sup_def lift2_def)
  apply (blast dest: lift2_eq_ErrD)
@@ -659,13 +533,13 @@ done
 
 lemma closed_map2_list [rule_format]:
   "closed (err A) (lift2 f) \<Longrightarrow>
-  \<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>ys. ys \<in> list n A \<longrightarrow>
-  map2 f xs ys \<in> list n (err A))"
+  \<forall>xs. xs \<in> nlists n A \<longrightarrow> (\<forall>ys. ys \<in> nlists n A \<longrightarrow>
+  map2 f xs ys \<in> nlists n (err A))"
 (*<*)
 apply (induct n)
  apply simp
 apply clarify
-apply (simp add: in_list_Suc_iff)
+apply (simp add: in_nlists_Suc_iff)
 apply clarify
 apply (simp add: plussub_def closed_err_lift2_conv)
 done
@@ -673,14 +547,14 @@ done
 
 lemma closed_lift2_sup:
   "closed (err A) (lift2 f) \<Longrightarrow>
-  closed (err (list n A)) (lift2 (sup f))"
+  closed (err (nlists n A)) (lift2 (sup f))"
 (*<*) by (fastforce  simp add: closed_def plussub_def sup_def lift2_def
                           coalesce_in_err_list closed_map2_list
                 split: err.split) (*>*)
 
 lemma err_semilat_sup:
   "err_semilat (A,r,f) \<Longrightarrow>
-  err_semilat (list n A, Listn.le r, sup f)"
+  err_semilat (nlists n A, Listn.le r, sup f)"
 (*<*)
 apply (unfold Err.sl_def)
 apply (simp only: split_conv)

@@ -76,11 +76,11 @@ lemma special_ex_swap_lemma [iff]:
   by blast
 
 lemma ex_in_list [iff]:
-  "(\<exists>n. ST \<in> list n A \<and> n \<le> mxs) = (set ST \<subseteq> A \<and> size ST \<le> mxs)"
-  by (unfold list_def) auto
+  "(\<exists>n. ST \<in> nlists n A \<and> n \<le> mxs) = (set ST \<subseteq> A \<and> size ST \<le> mxs)"
+  by (unfold nlists_def) auto
 
-lemma singleton_list: 
-  "(\<exists>n. [Class C] \<in> list n (types P) \<and> n \<le> mxs) = (is_class P C \<and> 0 < mxs)"
+lemma singleton_nlists: 
+  "(\<exists>n. [Class C] \<in> nlists n (types P) \<and> n \<le> mxs) = (is_class P C \<and> 0 < mxs)"
   by auto
 
 lemma set_drop_subset:
@@ -91,9 +91,9 @@ lemma Suc_minus_minus_le:
   "n < mxs \<Longrightarrow> Suc (n - (n - b)) \<le> mxs"
   by arith
 
-lemma in_listE:
-  "\<lbrakk> xs \<in> list n A; \<lbrakk>size xs = n; set xs \<subseteq> A\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  by (unfold list_def) blast
+lemma in_nlistsE:
+  "\<lbrakk> xs \<in> nlists n A; \<lbrakk>size xs = n; set xs \<subseteq> A\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  by (unfold nlists_def) blast
 
 declare is_relevant_entry_def [simp]
 declare set_drop_subset [simp]
@@ -104,8 +104,8 @@ theorem (in start_context) exec_pres_type:
 proof -
   let ?n = "size is" and ?app = app and ?step = eff
   let ?mxl = "(case b of Static \<Rightarrow> 0 | NonStatic \<Rightarrow> 1) + length Ts + mxl\<^sub>0"
-  let ?A = "opt((Union {list n (types P) |n. n <= mxs}) \<times>
-                                 list ?mxl (err(types P)))"
+  let ?A = "opt((Union {nlists n (types P) |n. n <= mxs}) \<times>
+                                 nlists ?mxl (err(types P)))"
   have "pres_type (err_step ?n ?app ?step) ?n (err ?A)"
   proof(rule pres_type_lift)
     have "\<And>s pc pc' s'. s\<in>?A \<Longrightarrow> pc < ?n \<Longrightarrow> ?app pc s
@@ -124,7 +124,7 @@ proof -
           then show ?thesis using asms
             by (fastforce simp: Effect.app_def xcpt_app_def Effect.eff_def  
                                 xcpt_eff_def norm_eff_def
-                          dest: listE_nth_in)
+                          dest: nlistsE_nth_in)
         next
           case Push
           then show ?thesis using asms Some
@@ -335,7 +335,7 @@ qed
 
 
 lemma (in start_context) first_in_A [iff]: "OK first \<in> A"
-  using Ts C by (cases b; force intro!: list_appendI simp add: JVM_states_unfold)
+  using Ts C by (cases b; force intro!: nlists_appendI simp add: JVM_states_unfold)
 
 
 lemma (in JVM_sl) wt_method_def2:
