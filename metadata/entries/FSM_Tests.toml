@@ -1,0 +1,35 @@
+title = "FSM_Tests"
+date = 2022-08-09
+topics = [
+  "Computer science/Automata and formal languages",
+  "Computer science/Algorithms",
+]
+abstract = """
+This entry provides executable formalisations of complete test
+generation algorithms for finite state machines. It covers testing for
+the language-equivalence and reduction conformance relations,
+supporting the former via the W, Wp, HSI, H, SPY and SPYH-methods, and
+the latter via adaptive state counting. The test strategies are
+implemented using generic frameworks, allowing for reuse of shared
+components between related strategies. This work is described in the
+author&#x27;s <href=\"https://doi.org/10.26092/elib/1665\">doctoral
+thesis</a>."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sachtleben]
+email = "sachtleben_email"
+
+[contributors]
+
+[notify]
+sachtleben = "sachtleben_email"
+
+[history]
+
+[extra]
+
+[related]
+
