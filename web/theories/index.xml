@@ -2113,6 +2113,15 @@
     </item>
     
     <item>
+      <title>FSM_Tests</title>
+      <link>/theories/fsm_tests/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/fsm_tests/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Functional-Automata</title>
       <link>/theories/functional-automata/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
