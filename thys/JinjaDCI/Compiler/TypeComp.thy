@@ -80,8 +80,8 @@ lemma (in TC0) ty\<^sub>l_incr:
 
 
 lemma (in TC0) ty\<^sub>l_in_types:
- "set E \<subseteq> types P \<Longrightarrow> ty\<^sub>l E A \<in> list mxl (err (types P))"
-(*<*)by(auto simp add:ty\<^sub>l_def intro!:listI dest!: nth_mem)(*>*)
+ "set E \<subseteq> types P \<Longrightarrow> ty\<^sub>l E A \<in> nlists mxl (err (types P))"
+(*<*)by(auto simp add:ty\<^sub>l_def intro!:nlistsI dest!: nth_mem)(*>*)
 
 locale TC1 = TC0
 begin
@@ -234,7 +234,7 @@ proof -
     by fastforce
   then show ?thesis using assms
     by(simp add: after_def ty\<^sub>i'_def JVM_states_unfold ty\<^sub>l_in_types)
-      (blast intro!:listI WT\<^sub>1_is_type)
+      (blast intro!:nlistsI WT\<^sub>1_is_type)
 qed
 (*>*)
 
@@ -244,7 +244,7 @@ lemma (in TC0) OK_ty\<^sub>i'_in_statesI[simp]:
   \<Longrightarrow> OK (ty\<^sub>i' ST E A) \<in> states P mxs mxl"
 (*<*)
 by(simp add:ty\<^sub>i'_def JVM_states_unfold ty\<^sub>l_in_types)
-  (blast intro!:listI)
+  (blast intro!:nlistsI)
 (*>*)
 
 
