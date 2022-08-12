@@ -29,6 +29,15 @@
     <loc>/entries/FSM_Tests.html</loc>
     <lastmod>2022-08-09T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/brucker/</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Solidity.html</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/marmsoler/</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/eberl/</loc>
     <lastmod>2022-07-11T00:00:00+00:00</lastmod>
   </url><url>
@@ -1067,9 +1076,6 @@
     <loc>/entries/DOM_Components.html</loc>
     <lastmod>2020-09-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/brucker/</loc>
-    <lastmod>2020-09-28T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/core_dom/</loc>
     <lastmod>2020-09-28T00:00:00+00:00</lastmod>
   </url><url>
@@ -2103,9 +2109,6 @@
     <lastmod>2018-03-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/dynamicarchitectures/</loc>
-    <lastmod>2018-03-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/marmsoler/</loc>
     <lastmod>2018-03-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Hoare_Time.html</loc>
@@ -5567,6 +5570,8 @@
     <loc>/theories/smith_normal_form/</loc>
   </url><url>
     <loc>/theories/smooth_manifolds/</loc>
+  </url><url>
+    <loc>/theories/solidity/</loc>
   </url><url>
     <loc>/theories/sophomores_dream/</loc>
   </url><url>

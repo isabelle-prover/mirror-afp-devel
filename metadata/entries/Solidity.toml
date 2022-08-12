@@ -1,0 +1,45 @@
+title = "Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HO"
+date = 2022-07-18
+topics = [
+  "Computer science/Programming languages",
+  "Computer science/Semantics and reasoning",
+]
+abstract = """
+Smart contracts are automatically executed programs, usually
+representing legal agreements such as financial transactions. Thus,
+bugs in smart contracts can lead to large financial losses. For
+example, an incorrectly initialized contract was the root cause of the
+Parity Wallet bug that saw $280M worth of Ether destroyed. Ether is
+the cryptocurrency of the Ethereum blockchain that uses Solidity for
+expressing smart contracts.  We address this problem by formalizing an
+executable denotational semantics for Solidity in the interactive
+theorem prover Isabelle/HOL.  This formal semantics builds the
+foundation of an interactive program verification environment for
+Solidity programs and allows for inspecting them by (symbolic)
+execution. We combine the latter with grammar based fuzzing to ensure
+that our formal semantics complies to the Solidity implementation on
+the Ethereum Blockchain.  Finally, we demonstrate the formal
+verification of Solidity programs by two examples: constant folding
+and a simple verified token."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.marmsoler]
+homepage = "marmsoler_homepage"
+
+[authors.brucker]
+homepage = "brucker_homepage"
+
+[contributors]
+
+[notify]
+marmsoler = "marmsoler_email1"
+brucker = "brucker_email2"
+
+[history]
+
+[extra]
+
+[related]
