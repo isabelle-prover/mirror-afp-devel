@@ -3219,6 +3219,87 @@ begin
     definition has_equalizers
     where "has_equalizers = (\<forall>f0 f1. par f0 f1 \<longrightarrow> (\<exists>e. has_as_equalizer f0 f1 e))"
 
+    lemma has_as_equalizerI [intro]:
+    assumes "par f g" and "seq f e" and "f \<cdot> e = g \<cdot> e"
+    and "\<And>e'. \<lbrakk>seq f e'; f \<cdot> e' = g \<cdot> e'\<rbrakk> \<Longrightarrow> \<exists>!h. e \<cdot> h = e'"
+    shows "has_as_equalizer f g e"
+    proof (unfold has_as_equalizer_def, intro conjI)
+      show "arr f" and "arr g" and "dom f = dom g" and "cod f = cod g"
+        using assms(1) by auto
+      interpret J: parallel_pair .
+      interpret D: parallel_pair_diagram C f g
+        using assms(1) by unfold_locales
+      show "D.has_as_equalizer e"
+      proof -
+        let ?\<chi> = "D.mkCone e"
+        let ?a = "dom e"
+        interpret \<chi>: cone J.comp C D.map ?a ?\<chi>
+           using assms(2-3) D.cone_mkCone [of e] by simp
+        interpret \<chi>: limit_cone J.comp C D.map ?a ?\<chi>
+        proof
+          fix a' \<chi>'
+          assume \<chi>': "D.cone a' \<chi>'"
+          interpret \<chi>': cone J.comp C D.map a' \<chi>'
+            using \<chi>' by blast
+          have "seq f (\<chi>' J.Zero)"
+            using J.ide_char J.arr_char \<chi>'.preserves_hom
+            by (metis (no_types, lifting) D.map_simp(3) \<chi>'.is_natural_1
+              \<chi>'.natural_transformation_axioms natural_transformation.preserves_reflects_arr
+              parallel_pair.dom_simp(3))
+          moreover have "f \<cdot> (\<chi>' J.Zero) = g \<cdot> (\<chi>' J.Zero)"
+            using \<chi>' D.is_equalized_by_cone by blast
+          ultimately have 1: "\<exists>!h. e \<cdot> h = \<chi>' J.Zero"
+            using assms by blast
+          obtain h where h: "e \<cdot> h = \<chi>' J.Zero"
+            using 1 by blast
+          have 2: "D.is_equalized_by e"
+          using assms(2-3) by blast
+          have "\<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h (D.mkCone e) = \<chi>'"
+          proof
+            show 3: "\<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright>"
+              using h \<chi>'.preserves_dom
+              by (metis (no_types, lifting) \<chi>'.component_in_hom \<open>seq f (\<chi>' J.Zero)\<close>
+                category.has_codomain_iff_arr category.seqE category_axioms cod_in_codomains
+                domains_comp in_hom_def parallel_pair.arr_char)
+            show "D.cones_map h (D.mkCone e) = \<chi>'"
+            proof
+              fix j
+              have "D.cone (cod h) (D.mkCone e)"
+                using 2 3 D.cone_mkCone by auto
+              thus "D.cones_map h (D.mkCone e) j = \<chi>' j"
+                using h 2 3 D.cone_mkCone [of e] J.arr_char D.mkCone_def comp_assoc
+                apply (cases "J.arr j")
+                 apply simp_all
+                 apply (metis (no_types, lifting) D.mkCone_cone \<chi>')
+                using \<chi>'.is_extensional
+                by presburger
+            qed
+          qed
+          hence "\<exists>h. \<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h (D.mkCone e) = \<chi>'"
+            by blast
+          moreover have "\<And>h'. \<guillemotleft>h' : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h' (D.mkCone e) = \<chi>' \<Longrightarrow> h' = h"
+          proof (elim conjE)
+            fix h'
+            assume h': "\<guillemotleft>h' : a' \<rightarrow> dom e\<guillemotright>"
+            assume eq: "D.cones_map h' (D.mkCone e) = \<chi>'"
+            have "e \<cdot> h' = \<chi>' J.Zero"
+              using eq D.cone_mkCone D.mkCone_def \<chi>'.preserves_reflects_arr \<chi>.cone_axioms
+                    \<open>seq f (\<chi>' J.Zero)\<close> eq h' in_homE mem_Collect_eq restrict_apply seqE
+              apply simp
+              by fastforce
+            moreover have "\<exists>!h. e \<cdot> h = \<chi>' J.Zero"
+              using assms(2,4) 1 category.seqI by blast
+            ultimately show "h' = h"
+              using h by auto
+          qed
+          ultimately show "\<exists>!h. \<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h (D.mkCone e) = \<chi>'"
+            by blast
+        qed
+        show "D.has_as_equalizer e"
+          using assms \<chi>.limit_cone_axioms by blast
+      qed
+    qed
+
   end
 
   section "Limits by Products and Equalizers"

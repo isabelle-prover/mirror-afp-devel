@@ -18,7 +18,7 @@ text\<open>
 \<close>
 
 theory CartesianCategory
-imports Limit SetCat
+imports Limit SetCat CategoryWithPullbacks
 begin
 
   section "Category with Binary Products"
@@ -175,6 +175,51 @@ begin
         by fastforce
     qed
 
+    lemma cone_iff_span:
+    shows "cone (C.dom h) (mkCone h k) \<longleftrightarrow> C.span h k \<and> C.cod h = a0 \<and> C.cod k = a1"
+      using cone_mkCone mkCone_def J.arr_char J.ide_char is_rendered_commutative_by_cone
+      apply (intro iffI)
+        apply (metis (no_types, lifting) C.cod_eqI C.comp_ide_arr J.arr.inject is_discrete)
+      by auto
+
+    lemma cones_map_mkCone_eq_iff:
+    assumes "is_rendered_commutative_by p0 p1" and "is_rendered_commutative_by p0' p1'"
+    and "\<guillemotleft>h : C.dom p0' \<rightarrow> C.dom p0\<guillemotright>"
+    shows "cones_map h (mkCone p0 p1) = mkCone p0' p1' \<longleftrightarrow> p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
+    proof -
+      interpret \<chi>: cone J.comp C map \<open>C.dom p0\<close> \<open>mkCone p0 p1\<close>
+        using assms(1) cone_mkCone [of p0 p1] by blast
+      interpret \<chi>': cone J.comp C map \<open>C.dom p0'\<close> \<open>mkCone p0' p1'\<close>
+        using assms(2) cone_mkCone [of p0' p1'] by blast
+      show ?thesis
+      proof
+        assume 3: "cones_map h (mkCone p0 p1) = mkCone p0' p1'"
+        show "p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
+        proof
+          show "p0 \<cdot> h = p0'"
+          proof -
+            have "p0' = cones_map h (mkCone p0 p1) J.FF"
+              using 3 mkCone_def J.arr_char by simp
+            also have "... = p0 \<cdot> h"
+              using assms mkCone_def J.arr_char \<chi>.cone_axioms by auto
+            finally show ?thesis by auto
+          qed
+          show "p1 \<cdot> h = p1'"
+          proof -
+            have "p1' = cones_map h (mkCone p0 p1) J.TT"
+              using 3 mkCone_def J.arr_char by simp
+            also have "... = p1 \<cdot> h"
+              using assms mkCone_def J.arr_char \<chi>.cone_axioms by auto
+            finally show ?thesis by auto
+          qed
+        qed
+        next
+        assume "p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
+        thus "cones_map h (mkCone p0 p1) = mkCone p0' p1'"
+          using assms \<chi>.cone_axioms mkCone_def J.arr_char by auto
+      qed
+    qed
+
   end
 
   locale binary_product_cone =
@@ -191,8 +236,8 @@ begin
 
     lemma renders_commutative:
     shows "D.is_rendered_commutative_by p0 p1"
-      using cone_axioms D.is_rendered_commutative_by_cone D.mkCone_def \<Phi>.Ya.Cop_S.arr.simps(1)
-      by (metis (no_types, lifting))  (* TODO: pretty opaque *)
+      using cone_axioms D.is_rendered_commutative_by_cone D.mkCone_def D.cone_iff_span
+      by force
 
     lemma is_universal':
     assumes "D.is_rendered_commutative_by p0' p1'"
@@ -206,42 +251,8 @@ begin
       moreover have "\<And>h. \<guillemotleft>h : C.dom p0' \<rightarrow> C.dom p0\<guillemotright> \<Longrightarrow>
                            D.cones_map h (D.mkCone p0 p1) = D.mkCone p0' p1' \<longleftrightarrow>
                            p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
-      proof -
-        fix h
-        assume h: "\<guillemotleft>h : C.dom p0' \<rightarrow> C.dom p0\<guillemotright>"
-        show "D.cones_map h (D.mkCone p0 p1) = D.mkCone p0' p1' \<longleftrightarrow>
-              p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
-        proof
-          assume 1: "D.cones_map h (D.mkCone p0 p1) = D.mkCone p0' p1'"
-          show "p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
-          proof
-            show "p0 \<cdot> h = p0'"
-            proof -
-              have "p0' = D.mkCone p0' p1' J.FF"
-                using D.mkCone_def J.arr_char by simp
-              also have "... = D.cones_map h (D.mkCone p0 p1) J.FF"
-                using 1 by simp
-              also have "... = p0 \<cdot> h"
-                using h D.mkCone_def J.arr_char cone_\<chi> by auto
-              finally show ?thesis by auto
-            qed
-            show "p1 \<cdot> h = p1'"
-            proof -
-              have "p1' = D.mkCone p0' p1' J.TT"
-                using D.mkCone_def J.arr_char by simp
-              also have "... = D.cones_map h (D.mkCone p0 p1) J.TT"
-                using 1 by simp
-              also have "... = p1 \<cdot> h"
-                using h D.mkCone_def J.arr_char cone_\<chi> by auto
-              finally show ?thesis by auto
-            qed
-          qed
-          next
-          assume 1: "p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
-          show "D.cones_map h (D.mkCone p0 p1) = D.mkCone p0' p1'"
-            using h 1 cone_\<chi> D.mkCone_def by auto
-        qed
-      qed
+        using assms D.cones_map_mkCone_eq_iff [of p0 p1 p0' p1'] renders_commutative
+        by blast
       ultimately show ?thesis by blast
     qed
 
@@ -305,6 +316,156 @@ begin
     definition has_binary_products
     where "has_binary_products =
            (\<forall>a0 a1. ide a0 \<and> ide a1 \<longrightarrow> (\<exists>p0 p1. has_as_binary_product a0 a1 p0 p1))"
+
+    lemma has_as_binary_productI [intro]:
+    assumes "ide a" and "ide b"
+    and "\<guillemotleft>p : c \<rightarrow> a\<guillemotright>" and "\<guillemotleft>q : c \<rightarrow> b\<guillemotright>"
+    and "\<And>x f g. \<lbrakk>\<guillemotleft>f : x \<rightarrow> a\<guillemotright>; \<guillemotleft>g : x \<rightarrow> b\<guillemotright>\<rbrakk> \<Longrightarrow> \<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = f \<and> q \<cdot> h = g"
+    shows "has_as_binary_product a b p q"
+    proof (unfold has_as_binary_product_def, intro conjI)
+      show "ide a" by fact
+      show "ide b" by fact
+      interpret J: binary_product_shape .
+      interpret D: binary_product_diagram C a b
+        using assms(1-2) by unfold_locales auto
+      show "D.has_as_binary_product p q"
+      proof -
+        have 2: "D.is_rendered_commutative_by p q"
+          using assms ide_in_hom by blast
+        let ?\<chi> = "D.mkCone p q"
+        interpret \<chi>: cone J.comp C D.map c ?\<chi>
+           using assms(4) D.cone_mkCone 2 by auto
+        interpret \<chi>: limit_cone J.comp C D.map c ?\<chi>
+        proof
+          fix x \<chi>'
+          assume \<chi>': "D.cone x \<chi>'"
+          interpret \<chi>': cone J.comp C D.map x \<chi>'
+            using \<chi>' by simp
+          have 1: "\<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
+          proof -
+            have "\<guillemotleft>\<chi>' J.FF : x \<rightarrow> a\<guillemotright> \<and> \<guillemotleft>\<chi>' J.TT : x \<rightarrow> b\<guillemotright>"
+              by auto
+            thus ?thesis
+              using assms(5) [of "\<chi>' J.FF" x "\<chi>' J.TT"] by simp
+          qed
+          have 3: "D.is_rendered_commutative_by (\<chi>' J.FF) (\<chi>' J.TT)"
+            using assms(1-2) by force
+          obtain h where h: "\<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
+            using 1 by blast
+          have 4: "\<guillemotleft>h : dom (\<chi>' (J.MkIde False)) \<rightarrow> dom p\<guillemotright>"
+            using assms(3) h by auto
+          have "\<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h (D.mkCone p q) = \<chi>'"
+          proof (intro conjI)
+            show "\<guillemotleft>h : x \<rightarrow> c\<guillemotright>"
+              using h by blast
+            show "D.cones_map h (D.mkCone p q) = \<chi>'"
+            proof
+              fix j
+              show "D.cones_map h (D.mkCone p q) j = \<chi>' j"
+                using h 2 3 4 D.cones_map_mkCone_eq_iff [of p q "\<chi>' J.FF" "\<chi>' J.TT"]
+                      \<chi>.cone_axioms J.is_discrete \<chi>'.is_extensional
+                      D.mkCone_def binary_product_shape.ide_char
+                apply (cases "J.ide j")
+                 apply auto[1]
+                 by auto
+            qed
+          qed
+          moreover have "\<And>h'. \<guillemotleft>h' : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h' (D.mkCone p q) = \<chi>' \<Longrightarrow> h' = h"
+          proof -
+            fix h'
+            assume 1: "\<guillemotleft>h' : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h' (D.mkCone p q) = \<chi>'"
+            have "\<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> p \<cdot> h = \<chi>' J.FF \<and> q \<cdot> h = \<chi>' J.TT"
+            proof -
+              have "\<guillemotleft>\<chi>' J.FF : x \<rightarrow> a\<guillemotright> \<and> \<guillemotleft>\<chi>' J.TT : x \<rightarrow> b\<guillemotright>"
+                by auto
+              thus ?thesis
+                using h assms(5) [of "\<chi>' J.FF" x "\<chi>' J.TT"] J.ide_char by auto
+            qed
+            moreover have "\<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> \<chi>' J.FF = p \<cdot> h \<and> q \<cdot> h = \<chi>' J.TT"
+              using h by simp
+            moreover have "\<guillemotleft>h' : x \<rightarrow> c\<guillemotright> \<and> \<chi>' J.FF = p \<cdot> h' \<and> q \<cdot> h' = \<chi>' J.TT"
+              using 1 \<chi>.cone_axioms D.mkCone_def [of p q] by auto
+            ultimately show "h' = h" by auto
+          qed
+          ultimately show "\<exists>!h. \<guillemotleft>h : x \<rightarrow> c\<guillemotright> \<and> D.cones_map h (D.mkCone p q) = \<chi>'"
+            by blast
+        qed
+        show "D.has_as_binary_product p q"
+          using assms \<chi>.limit_cone_axioms by blast
+      qed
+    qed
+
+    lemma has_as_binary_productE [elim]:
+    assumes "has_as_binary_product a b p q"
+    and "\<lbrakk>\<guillemotleft>p : dom p \<rightarrow> a\<guillemotright>; \<guillemotleft>q : dom p \<rightarrow> b\<guillemotright>;
+          \<And>x f g. \<lbrakk>\<guillemotleft>f : x \<rightarrow> a\<guillemotright>; \<guillemotleft>g : x \<rightarrow> b\<guillemotright>\<rbrakk> \<Longrightarrow> \<exists>!h. p \<cdot> h = f \<and> q \<cdot> h = g\<rbrakk> \<Longrightarrow> T"
+    shows T
+    proof -
+      interpret J: binary_product_shape .
+      interpret D: binary_product_diagram C a b
+        using assms(1) has_as_binary_product_def
+        by (simp add: binary_product_diagram.intro binary_product_diagram_axioms.intro
+                      category_axioms)
+      have 1: "\<And>h k. span h k \<and> cod h = a \<and> cod k = b \<longleftrightarrow> D.cone (dom h) (D.mkCone h k)"
+        using D.cone_iff_span by presburger
+      let ?\<chi> = "D.mkCone p q"
+      interpret \<chi>: limit_cone J.comp C D.map \<open>dom p\<close> ?\<chi>
+        using assms(1) has_as_binary_product_def D.cone_mkCone by blast
+      have span: "span p q"
+        using 1 \<chi>.cone_axioms by blast
+      moreover have "\<guillemotleft>p : dom p \<rightarrow> a\<guillemotright> \<and> \<guillemotleft>q : dom p \<rightarrow> b\<guillemotright>"
+        using span \<chi>.preserves_hom \<chi>.cone_axioms binary_product_shape.arr_char
+        by (metis D.cone_iff_span arr_iff_in_hom)
+      moreover have "\<And>x f g. \<lbrakk>\<guillemotleft>f : x \<rightarrow> a\<guillemotright>; \<guillemotleft>g : x \<rightarrow> b\<guillemotright>\<rbrakk> \<Longrightarrow> \<exists>!l. p \<cdot> l = f \<and> q \<cdot> l = g"
+      proof -
+        fix x f g
+        assume f: "\<guillemotleft>f : x \<rightarrow> a\<guillemotright>" and g: "\<guillemotleft>g : x \<rightarrow> b\<guillemotright>"
+        let ?\<chi>' = "D.mkCone f g"
+        interpret \<chi>': cone J.comp C D.map x ?\<chi>'
+          using 1 f g by blast
+        have 3: "\<exists>!l. \<guillemotleft>l : x \<rightarrow> dom p\<guillemotright> \<and> D.cones_map l ?\<chi> = ?\<chi>'"
+          using 1 f g \<chi>.is_universal [of x "D.mkCone f g"] \<chi>'.cone_axioms by fastforce
+        obtain l where l: "\<guillemotleft>l : x \<rightarrow> dom p\<guillemotright> \<and> D.cones_map l ?\<chi> = ?\<chi>'"
+          using 3 by blast
+        have "p \<cdot> l = f \<and> q \<cdot> l = g"
+        proof
+          have "p \<cdot> l = ?\<chi> J.FF \<cdot> l"
+            using D.mkCone_def by presburger
+          also have "... = D.cones_map l ?\<chi> J.FF"
+            using \<chi>.cone_axioms
+            apply simp
+            using l by fastforce
+          also have "... = f"
+            using D.mkCone_def l by presburger
+          finally show "p \<cdot> l = f" by blast
+          have "q \<cdot> l = ?\<chi> J.TT \<cdot> l"
+            using D.mkCone_def by simp
+          also have "... = D.cones_map l ?\<chi> J.TT"
+            using \<chi>.cone_axioms
+            apply simp
+            using l by fastforce
+          also have "... = g"
+            using D.mkCone_def l by simp
+          finally show "q \<cdot> l = g" by blast
+        qed
+        moreover have "\<And>l'. p \<cdot> l' = f \<and> q \<cdot> l' = g\<Longrightarrow> l' = l"
+        proof -
+          fix l'
+          assume 1: "p \<cdot> l' = f \<and> q \<cdot> l' = g"
+          have 2: "\<guillemotleft>l' : x \<rightarrow> dom p\<guillemotright>"
+            using 1 f by blast
+          moreover have "D.cones_map l' ?\<chi> = ?\<chi>'"
+            using 1 2 D.cones_map_mkCone_eq_iff [of p q f g l']
+            by (metis (no_types, lifting) f g \<open>\<guillemotleft>p : dom p \<rightarrow> a\<guillemotright> \<and> \<guillemotleft>q : dom p \<rightarrow> b\<guillemotright>\<close>
+                      comp_cod_arr in_homE)
+          ultimately show "l' = l"
+            using l \<chi>.is_universal \<chi>'.cone_axioms by blast
+        qed
+        ultimately show "\<exists>!l. p \<cdot> l = f \<and> q \<cdot> l = g" by blast
+      qed
+      ultimately show T
+        using assms(2) by simp
+    qed
 
   end
 
@@ -653,79 +814,27 @@ begin
     interpretation category_with_binary_products C
     proof
       show "has_binary_products"
-      proof (unfold has_binary_products_def)
-        have "\<And>a b. ide a \<and> ide b \<Longrightarrow> \<exists>p0 p1. has_as_binary_product a b p0 p1"
+      proof (unfold has_binary_products_def, intro allI impI)
+        show "\<And>a b. ide a \<and> ide b \<Longrightarrow> \<exists>p0 p1. has_as_binary_product a b p0 p1"
         proof -
           fix a b
           assume ab: "ide a \<and> ide b"
-          interpret J: binary_product_shape .
-          interpret D: binary_product_diagram C a b
-            using ab by unfold_locales auto
-          have 2: "D.is_rendered_commutative_by \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]"
-            using ab by simp
-          let ?\<chi> = "D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]"
-          interpret \<chi>: cone J.comp C D.map \<open>dom \<pp>\<^sub>1[a, b]\<close> ?\<chi>
-            using D.cone_mkCone 2 by auto
-          interpret \<chi>: limit_cone J.comp C D.map \<open>dom \<pp>\<^sub>1[a, b]\<close> ?\<chi>
+          have "has_as_binary_product a b \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]"
           proof
-            fix a' \<chi>'
-            assume \<chi>': "D.cone a' \<chi>'"
-            interpret \<chi>': cone J.comp C D.map a' \<chi>'
-              using \<chi>' by simp
-            show "\<exists>!h. \<guillemotleft>h : a' \<rightarrow> dom \<pp>\<^sub>1[a, b]\<guillemotright> \<and>
-                       D.cones_map h (D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]) = \<chi>'"
-            proof
-              let ?h = "\<langle>\<chi>' J.FF, \<chi>' J.TT\<rangle>"
-              show h': "\<guillemotleft>?h : a' \<rightarrow> dom \<pp>\<^sub>1[a, b]\<guillemotright> \<and>
-                        D.cones_map ?h (D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]) = \<chi>'"
-              proof
-                show h: "\<guillemotleft>?h : a' \<rightarrow> dom \<pp>\<^sub>1[a, b]\<guillemotright>"
-                  using ab tuple_in_hom J.ide_char by fastforce
-                show "D.cones_map ?h (D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]) = \<chi>'"
-                proof -
-                  interpret \<chi>'h: cone J.comp C D.map a'
-                                   \<open>D.cones_map ?h (D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b])\<close>
-                  proof -
-                    have "D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b] \<in> D.cones (cod \<langle>\<chi>' J.FF, \<chi>' J.TT\<rangle>)"
-                      using ab h D.cone_mkCone D.is_rendered_commutative_by_cone
-                            \<chi>.cone_axioms
-                      by auto
-                    hence "D.cones_map ?h (D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]) \<in> D.cones a'"
-                      using ab h D.cones_map_mapsto by blast
-                    thus "D.cone a' (D.cones_map ?h (D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]))"
-                      by simp
-                  qed
-                  show ?thesis
-                  proof -
-                    have "\<And>j. J.ide j \<Longrightarrow> D.cones_map ?h (D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]) j = \<chi>' j"
-                      using ab h J.ide_char D.mkCone_def \<chi>.cone_axioms by auto
-                    thus ?thesis
-                      using NaturalTransformation.eqI
-                            \<chi>'.natural_transformation_axioms \<chi>'h.natural_transformation_axioms
-                      by blast
-                  qed
-                qed
-              qed
-              show "\<And>h. \<guillemotleft>h : a' \<rightarrow> dom \<pp>\<^sub>1[a, b]\<guillemotright> \<and>
-                        D.cones_map h (D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]) = \<chi>' \<Longrightarrow> h = ?h"
-              proof -
-                fix h
-                assume 1: "\<guillemotleft>h : a' \<rightarrow> dom \<pp>\<^sub>1[a, b]\<guillemotright> \<and>
-                           D.cones_map h (D.mkCone \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]) = \<chi>'"
-                hence "cod h = dom \<pp>\<^sub>1[a, b]" by auto
-                show "h = ?h"
-                  using 1 ab \<chi>.cone_axioms D.mkCone_def h' pr_joint_monic [of a b h ?h]
-                  by auto
-              qed
+            show "ide a" and "ide b" and "\<guillemotleft>\<pp>\<^sub>1[a, b] : a \<otimes> b \<rightarrow> a\<guillemotright>" and "\<guillemotleft>\<pp>\<^sub>0[a, b] : a \<otimes> b \<rightarrow> b\<guillemotright>"
+              using ab by auto
+            show "\<And>x f g. \<lbrakk>\<guillemotleft>f : x \<rightarrow> a\<guillemotright>; \<guillemotleft>g : x \<rightarrow> b\<guillemotright>\<rbrakk>
+                             \<Longrightarrow> \<exists>!h. \<guillemotleft>h : x \<rightarrow> a \<otimes> b\<guillemotright> \<and> \<pp>\<^sub>1[a, b] \<cdot> h = f \<and> \<pp>\<^sub>0[a, b] \<cdot> h = g"
+            proof -
+              fix x f g
+              assume f: "\<guillemotleft>f : x \<rightarrow> a\<guillemotright>" and g: "\<guillemotleft>g : x \<rightarrow> b\<guillemotright>"
+              show "\<exists>!h. \<guillemotleft>h : x \<rightarrow> a \<otimes> b\<guillemotright> \<and> \<pp>\<^sub>1[a, b] \<cdot> h = f \<and> \<pp>\<^sub>0[a, b] \<cdot> h = g"
+                using ab f g tuple_pr_arr pr_tuple [of f g a b] tuple_in_hom'
+                by (metis in_homE)
             qed
           qed
-          have "has_as_binary_product a b \<pp>\<^sub>1[a, b] \<pp>\<^sub>0[a, b]"
-            using ab has_as_binary_product_def \<chi>.limit_cone_axioms by blast
-          thus "\<exists>p0 p1. has_as_binary_product a b p0 p1"
-            by blast
+          thus "\<exists>p0 p1. has_as_binary_product a b p0 p1" by blast
         qed
-        thus "\<forall>a b. ide a \<and> ide b \<longrightarrow> (\<exists>p0 p1. has_as_binary_product a b p0 p1)"
-          by simp
       qed
     qed
 
@@ -1268,6 +1377,55 @@ begin
   locale cartesian_category =
     category_with_binary_products +
     category_with_terminal_object
+
+  locale category_with_pullbacks_and_terminal_object =
+    category_with_pullbacks +
+    category_with_terminal_object
+  begin
+
+    sublocale category_with_binary_products C
+    proof
+      show "has_binary_products"
+      proof -
+        have "\<And>a0 a1. \<lbrakk>ide a0; ide a1\<rbrakk> \<Longrightarrow> \<exists>p0 p1. has_as_binary_product a0 a1 p0 p1"
+        proof -
+          fix a0 a1
+          assume a0: "ide a0" and a1: "ide a1"
+          obtain p0 p1 where p0p1: "has_as_pullback \<t>[a0] \<t>[a1] p0 p1"
+            using a0 a1 has_pullbacks has_pullbacks_def by force
+          have "has_as_binary_product a0 a1 p0 p1"
+            using a0 a1 p0p1
+            apply (elim has_as_pullbackE, intro has_as_binary_productI)
+                apply blast
+               apply blast
+              apply fastforce
+             apply fastforce
+          proof -
+            fix x f g
+            assume f: "\<guillemotleft>f : x \<rightarrow> a0\<guillemotright>" and g: "\<guillemotleft>g : x \<rightarrow> a1\<guillemotright>"
+            assume "\<And>h k. commutative_square \<t>[a0] \<t>[a1] h k \<Longrightarrow> \<exists>!l. p0 \<cdot> l = h \<and> p1 \<cdot> l = k"
+            moreover have "commutative_square \<t>[a0] \<t>[a1] f g"
+              using f g
+              by (metis a0 commutative_squareI in_homE
+                        elementary_category_with_terminal_object.trm_simps(2)
+                        extends_to_elementary_category_with_terminal_object
+                        has_as_pullbackE p0p1 trm_naturality)
+            moreover have "\<And>l. p0 \<cdot> l = f \<and> p1 \<cdot> l = g \<Longrightarrow> \<guillemotleft>l : x \<rightarrow> dom p1\<guillemotright>"
+              using f g by blast
+            ultimately show "\<exists>!l. \<guillemotleft>l : x \<rightarrow> dom p1\<guillemotright> \<and> p0 \<cdot> l = f \<and> p1 \<cdot> l = g"
+              by metis
+          qed
+          thus "\<exists>p0 p1. has_as_binary_product a0 a1 p0 p1"
+            by auto
+        qed
+        thus ?thesis
+          using has_binary_products_def by force
+      qed
+    qed
+
+    sublocale cartesian_category C ..
+
+  end
 
   locale elementary_cartesian_category =
     elementary_category_with_binary_products +

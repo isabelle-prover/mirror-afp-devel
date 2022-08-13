@@ -1706,15 +1706,36 @@ begin
     proof
       show "\<And>f. \<not> \<Lambda>x\<Lambda>.arr f \<Longrightarrow> Beta\<^sub>e\<^sub>x\<^sub>t f = null"
         by simp
-      show "\<And>f. \<Lambda>x\<Lambda>.arr f \<Longrightarrow> src (Beta\<^sub>e\<^sub>x\<^sub>t f) = App_o_Lam_Id.map (\<Lambda>x\<Lambda>.src f)"
+      show "\<And>f. \<Lambda>x\<Lambda>.ide f \<Longrightarrow> src (Beta\<^sub>e\<^sub>x\<^sub>t f) = App_o_Lam_Id.map (\<Lambda>x\<Lambda>.src f)"
         using \<Lambda>x\<Lambda>.src_char Lam_Id.map_def by simp
-      show "\<And>f. \<Lambda>x\<Lambda>.arr f \<Longrightarrow> trg (Beta\<^sub>e\<^sub>x\<^sub>t f) = subst\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.trg f)"
+      show "\<And>f. \<Lambda>x\<Lambda>.ide f \<Longrightarrow> trg (Beta\<^sub>e\<^sub>x\<^sub>t f) = subst\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.trg f)"
         using \<Lambda>x\<Lambda>.trg_char by simp
       show "\<And>f. \<Lambda>x\<Lambda>.arr f \<Longrightarrow>
                   Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \\ App_o_Lam_Id.map f = Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.trg f)"
           using \<Lambda>x\<Lambda>.src_char \<Lambda>x\<Lambda>.trg_char Arr_Trg Arr_not_Nil Lam_Id.map_def by simp
       show "\<And>f. \<Lambda>x\<Lambda>.arr f \<Longrightarrow> App_o_Lam_Id.map f \\ Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) = subst\<^sub>e\<^sub>x\<^sub>t f"
           using \<Lambda>x\<Lambda>.src_char \<Lambda>x\<Lambda>.trg_char Lam_Id.map_def by auto
+      show "\<And>f. \<Lambda>x\<Lambda>.arr f \<Longrightarrow> join_of (Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f)) (App_o_Lam_Id.map f) (Beta\<^sub>e\<^sub>x\<^sub>t f)"
+      proof -
+        fix f
+        assume f: "\<Lambda>x\<Lambda>.arr f"
+        show "join_of (Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f)) (App_o_Lam_Id.map f) (Beta\<^sub>e\<^sub>x\<^sub>t f)"
+        proof (intro join_ofI composite_ofI)
+          show "App_o_Lam_Id.map f \<lesssim> Beta\<^sub>e\<^sub>x\<^sub>t f"
+            using f Lam_Id.map_def Ide_Subst arr_char prfx_char prfx_reflexive by auto
+          show "Beta\<^sub>e\<^sub>x\<^sub>t f \\ Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \<sim> App_o_Lam_Id.map f \\ Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f)"
+            using f Lam_Id.map_def \<Lambda>x\<Lambda>.src_char trg_char trg_def
+            apply auto
+            by (metis Arr_Subst Ide_Trg)
+          show 1: "Beta\<^sub>e\<^sub>x\<^sub>t f \\ App_o_Lam_Id.map f \<sim> Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \\ App_o_Lam_Id.map f"
+            using f Lam_Id.map_def Ide_Subst \<Lambda>x\<Lambda>.src_char Ide_Trg Arr_resid_ind Coinitial_iff_Con
+                  resid_Arr_self
+            apply simp
+            by metis
+          show "Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \<lesssim> Beta\<^sub>e\<^sub>x\<^sub>t f"
+            using f 1 Lam_Id.map_def Ide_Subst \<Lambda>x\<Lambda>.src_char resid_Arr_self by auto
+        qed
+      qed
     qed
 
     text \<open>

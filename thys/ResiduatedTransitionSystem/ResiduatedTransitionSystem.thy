@@ -1867,10 +1867,11 @@ begin
   and G :: "'a \<Rightarrow> 'b"
   and \<tau> :: "'a \<Rightarrow> 'b" +
   assumes extensional: "\<not> A.arr f \<Longrightarrow> \<tau> f = B.null"
-  and preserves_src: "A.arr f \<Longrightarrow> B.src (\<tau> f) = F (A.src f)"
-  and preserves_trg: "A.arr f \<Longrightarrow> B.trg (\<tau> f) = G (A.trg f)"
+  and preserves_src: "A.ide f \<Longrightarrow> B.src (\<tau> f) = F (A.src f)"
+  and preserves_trg: "A.ide f \<Longrightarrow> B.trg (\<tau> f) = G (A.trg f)"
   and naturality1: "A.arr f \<Longrightarrow> \<tau> (A.src f) \\\<^sub>B F f = \<tau> (A.trg f)"
   and naturality2: "A.arr f \<Longrightarrow> F f \\\<^sub>B \<tau> (A.src f) = G f"
+  and naturality3: "A.arr f \<Longrightarrow> B.join_of (\<tau> (A.src f)) (F f) (\<tau> f)"
 
   section "Normal Sub-RTS's and Congruence"
 
