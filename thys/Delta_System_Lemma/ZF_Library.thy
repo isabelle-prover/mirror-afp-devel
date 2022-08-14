@@ -114,7 +114,7 @@ lemma cardinal_succ_not_0: "|A| = succ(n) \<Longrightarrow> A \<noteq> 0"
   by auto
 
 lemma Ord_eq_Collect_lt: "i<\<alpha> \<Longrightarrow> {j\<in>\<alpha>. j<i} = i"
-  \<comment> \<open>almost the same proof as @{thm nat_eq_Collect_lt}\<close>
+  \<comment> \<open>almost the same proof as @{thm [source] nat_eq_Collect_lt}\<close>
   apply (rule equalityI)
   apply (blast dest: ltD)
   apply (auto simp add: Ord_mem_iff_lt)
@@ -770,7 +770,7 @@ lemmas Memrel_mono_map_reflects = linear_mono_map_reflects
   [OF well_ord_is_linear[OF well_ord_Memrel] well_ord_is_trans_on[OF well_ord_Memrel]
     irrefl_Memrel]
 
-\<comment> \<open>Same proof as Paulson's @{thm mono_map_is_inj}\<close>
+\<comment> \<open>Same proof as Paulson's @{thm [source] mono_map_is_inj}\<close>
 lemma mono_map_is_inj':
   "\<lbrakk> linear(A,r);  irrefl(B,s);  f \<in> mono_map(A,r,B,s) \<rbrakk> \<Longrightarrow> f \<in> inj(A,B)"
   unfolding irrefl_def mono_map_def inj_def using linearE

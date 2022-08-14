@@ -299,7 +299,7 @@ next
     by (auto del:the_equality intro:the_equality[symmetric])
 qed
 
-text\<open>The next "def\_" result really corresponds to @{thm Pow_iff}\<close>
+text\<open>The next "def\_" result really corresponds to @{thm [source] Pow_iff}\<close>
 lemma def_Pow_rel: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> A\<in>Pow_rel(M,r) \<longleftrightarrow> A \<subseteq> r"
   using Pow_rel_iff[OF _ Pow_rel_closed, of r r]
   unfolding is_Pow_def by simp

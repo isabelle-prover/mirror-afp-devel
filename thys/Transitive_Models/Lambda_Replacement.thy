@@ -7,8 +7,8 @@ begin
 
 text\<open>In this theory we prove several instances of separation and replacement
 in @{locale M_basic}. Moreover we introduce a new locale assuming two instances
-of separation and twelve instances of lambda replacements (ie, replacement of
-the form $\lambda x y. y=\langle x, f(x) \rangle$) we prove a bunch of other
+of separation and six instances of lambda replacements (ie, replacement of
+the form $\lambda x y.\ y=\langle x, f(x) \rangle$) and we prove a bunch of other
 instances.\<close>
 
 
@@ -657,8 +657,8 @@ locale M_replacement = M_basic +
     separation_fst_in_snd: "separation(M, \<lambda>y. fst(snd(y)) \<in> snd(snd(y)))"
 begin
 
-\<comment> \<open>This lemma is similar to @{thm strong_lam_replacement_imp_strong_replacement}
-and @{thm lam_replacement_imp_strong_replacement_aux} but does not require
+\<comment> \<open>This lemma is similar to @{thm [source] strong_lam_replacement_imp_strong_replacement}
+and @{thm [source] lam_replacement_imp_strong_replacement_aux} but does not require
 \<^term>\<open>g\<close> to be closed under \<^term>\<open>M\<close>.\<close>
 lemma lam_replacement_imp_strong_replacement:
   assumes "lam_replacement(M, f)"

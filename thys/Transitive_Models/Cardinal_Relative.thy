@@ -564,7 +564,7 @@ lemma inj_rel_is_fun_M: "f \<in> inj\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(f
 
 \<comment> \<open>In porting the following theorem, I tried to follow the Discipline
 strictly, though finally only an approach maximizing the use of
-absoluteness results (@{thm function_space_rel_char inj_rel_char}) was
+absoluteness results (@{thm [source] function_space_rel_char inj_rel_char}) was
  the one paying dividends.\<close>
 lemma inj_rel_not_surj_rel_succ:
   notes mem_inj_abs[simp del]
@@ -1351,7 +1351,7 @@ lemma eqpoll_rel_imp_Finite_rel_iff: "A \<approx>\<^bsup>M\<^esup> B ==> M(A) \<
 and deduce the rest of the results from this.
 
 Perhaps modularize that proof to have absoluteness of injections and
-bijections of finite sets (cf. @{thm lesspoll_rel_succ_imp_lepoll_rel}.\<close>
+bijections of finite sets (cf. @{thm [source] lesspoll_rel_succ_imp_lepoll_rel}.\<close>
 
 lemma Finite_abs[simp]:
   assumes "M(A)"
@@ -1387,7 +1387,7 @@ next
 qed
 
 \<comment> \<open>From the next result, the relative versions of
-@{thm Finite_Fin_lemma} and @{thm Fin_lemma} should follow\<close>
+@{thm [source] Finite_Fin_lemma} and @{thm [source] Fin_lemma} should follow\<close>
 
 lemma lepoll_rel_nat_imp_Finite_rel:
   assumes A: "A \<lesssim>\<^bsup>M\<^esup> n" and n: "n \<in> nat"

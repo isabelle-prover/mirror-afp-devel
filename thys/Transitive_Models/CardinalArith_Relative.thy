@@ -1173,7 +1173,7 @@ qed (simp_all add:types)
 text\<open>Kunen: "... so the order type is \<open>\<le>\<close> K"\<close>
 lemma ordertype_csquare_le_M:
   assumes IK: "InfCard\<^bsup>M\<^esup>(K)" and eq: "\<And>y. y\<in>K \<Longrightarrow> InfCard\<^bsup>M\<^esup>(y) \<Longrightarrow> M(y) \<Longrightarrow> y \<otimes>\<^bsup>M\<^esup> y = y"
-    \<comment> \<open>Note the weakened hypothesis @{thm eq}\<close>
+    \<comment> \<open>Note the weakened hypothesis @{thm [source] eq}\<close>
     and types: "M(K)"
   shows "ordertype(K*K, csquare_rel(K)) \<le> K"
 proof -

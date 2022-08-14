@@ -108,7 +108,7 @@ thm forces_0_mem_1_def[
     is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def
     is_If_fm_def least_fm_def Replace_fm_def Collect_fm_def
     fm_definitions,simplified]
-  (* NOTE: in view of the above, @{thm fm_definitions} might be incomplete *)
+  (* NOTE: in view of the above, @{thm [source] fm_definitions} might be incomplete *)
 
 named_theorems incr_bv_new_simps
 

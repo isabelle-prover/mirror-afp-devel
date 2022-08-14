@@ -296,10 +296,10 @@ begin
 
 \<comment> \<open>I'm undecided on keeping the relative quantifiers here.
     Same with \<^term>\<open>surjP\<close> below. It might relieve from changing
-    @{thm exI allI} to @{thm rexI rallI} in some proofs.
+    @{thm [source] exI allI} to @{thm [source] rexI rallI} in some proofs.
     I wonder if this escalates well. Assuming that all terms
     appearing in the "def\_" theorem are in \<^term>\<open>M\<close> and using
-    @{thm transM}, it might do.\<close>
+    @{thm [source] transM}, it might do.\<close>
 lemma def_injP_rel:
   assumes
     "M(A)" "M(f)"
@@ -658,7 +658,7 @@ proof -
     using assms is_Int_abs by simp
 qed
 
-text\<open>Note: @{thm Int_closed} already in \<^theory>\<open>ZF-Constructible.Relative\<close>.\<close>
+text\<open>Note: @{thm [source] Int_closed} already in \<^theory>\<open>ZF-Constructible.Relative\<close>.\<close>
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 

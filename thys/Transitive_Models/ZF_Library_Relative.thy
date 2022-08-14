@@ -245,7 +245,7 @@ lemma lepoll_relI[intro]: "f \<in> inj\<^bsup>M\<^esup>(A, B) \<Longrightarrow> 
 lemma eqpollD[dest]: "A \<approx>\<^bsup>M\<^esup> B \<Longrightarrow> \<exists>f[M]. f \<in> bij\<^bsup>M\<^esup>(A, B)"
   unfolding eqpoll_rel_def .
 
-\<comment> \<open>Same as @{thm lepoll_relI}\<close>
+\<comment> \<open>Same as @{thm [source] lepoll_relI}\<close>
 lemma bij_rel_imp_eqpoll_rel[intro]: "f \<in> bij\<^bsup>M\<^esup>(A,B) \<Longrightarrow> M(f) \<Longrightarrow> A \<approx>\<^bsup>M\<^esup> B"
   unfolding eqpoll_rel_def by blast
 
@@ -646,7 +646,7 @@ qed
 lemma Finite_cardinal_rel_eq_cardinal:
   assumes "Finite(A)" "M(A)" shows "|A|\<^bsup>M\<^esup> = |A|"
 proof -
-  \<comment> \<open>Copy-paste from @{thm Finite_cardinal_rel_in_nat}\<close>
+  \<comment> \<open>Copy-paste from @{thm [source] Finite_cardinal_rel_in_nat}\<close>
   note assms
   moreover from this
   obtain n where "n \<in> \<omega>" "M(n)" "A \<approx> n"

@@ -65,7 +65,7 @@ lemma is_lambda_iff_sats[iff_sats]:
     is_lambda(##Aa, Ab, is_F, ra) \<longleftrightarrow> Aa, env \<Turnstile> lambda_fm(is_F_fm,A, r)"
   using sats_lambda_fm[OF assms, of A r] by simp
 
-\<comment> \<open>same as @{thm sats_is_wfrec_fm}, but changing length assumptions to
+\<comment> \<open>same as @{thm [source] sats_is_wfrec_fm}, but changing length assumptions to
     \<^term>\<open>0\<close> being in the model\<close>
 lemma sats_is_wfrec_fm':
   assumes MH_iff_sats:

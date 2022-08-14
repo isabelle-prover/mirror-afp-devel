@@ -590,7 +590,7 @@ lemma fun_factor_is_mono_map:
   shows "fun_factor \<in> mono_map(\<xi>, Memrel(\<xi>), \<delta>, Memrel(\<delta>))"
   unfolding mono_map_def
 proof (intro CollectI ballI impI)
-  (* Proof that \<^term>\<open>fun_factor\<close> respects membership *)
+  text\<open>Proof that \<^term>\<open>fun_factor\<close> respects membership:\<close>
   fix \<alpha> \<beta>
   assume "\<alpha>\<in>\<xi>" "\<beta>\<in>\<xi>"
   moreover
@@ -606,7 +606,7 @@ proof (intro CollectI ballI impI)
     using ltI factor_increasing[THEN ltD] factor_in_delta
     by simp
 next
-  (* Proof of type *)
+  text\<open>Proof that it has the appropriate type:\<close>
   from assms
   show "fun_factor : \<xi> \<rightarrow> \<delta>"
     unfolding fun_factor_def
@@ -622,7 +622,7 @@ proof (intro CollectI ballI impI comp_fun[of _ _ \<delta>])
   from assms
   show "fun_factor : \<xi> \<rightarrow> \<delta>"
     using fun_factor_is_mono_map mono_map_is_fun by simp
-      (* Proof that f O ?g respects membership *)
+  text\<open>Proof that \<^term>\<open>f O fun_factor\<close> respects membership\<close>
   fix \<alpha> \<beta>
   assume "\<langle>\<alpha>, \<beta>\<rangle> \<in> Memrel(\<xi>)"
   then
@@ -642,7 +642,7 @@ proof (intro CollectI ballI impI comp_fun[of _ _ \<delta>])
     unfolding fun_factor_def by auto
 qed
 
-end (* cofinal_factor *)
+end \<comment> \<open>\<^locale>\<open>cofinal_factor\<close>\<close>
 
 text\<open>We state next the factorization lemma.\<close>
 
@@ -903,6 +903,7 @@ lemma cf_ordertype_cofinal:
   shows
     "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))"
 proof (intro le_anti_sym)
+  text\<open>We show the result by proving the two inequalities.\<close>
   from \<open>Limit(\<gamma>)\<close>
   have "Ord(\<gamma>)"
     using Limit_is_Ord by simp
@@ -946,7 +947,7 @@ proof (intro le_anti_sym)
   show "cf(\<gamma>) \<le> cf(ordertype(A,Memrel(\<gamma>)))"
     using cf_le_domain_cofinal_fun[of _ _ "f O h"]
     by (auto simp add:cf_fun_def)
-      (********************************************************)
+  text\<open>That finishes the first inequality. Now we go the other side.\<close>
   from \<open>f:\<langle>\<alpha>, _\<rangle> \<cong> \<langle>A,_\<rangle>\<close> \<open>A\<subseteq>\<gamma>\<close>
   have "f :\<alpha> \<rightarrow>\<^sub>< \<gamma>"
     using mono_map_mono[OF ord_iso_is_mono_map] by simp
@@ -1022,7 +1023,7 @@ qed
 
 lemma Limit_cf: assumes "Limit(\<kappa>)" shows "Limit(cf(\<kappa>))"
   using Ord_cf[of \<kappa>, THEN Ord_cases]
-    \<comment> \<open>\<^term>\<open>cf(\<kappa>)\<close> being 0 or successor leads to contradiction\<close>
+    \<comment> \<open>\<^term>\<open>cf(\<kappa>)\<close> being $0$ or successor leads to contradiction\<close>
 proof (cases)
   case 1
   with \<open>Limit(\<kappa>)\<close>
@@ -1200,6 +1201,6 @@ proof -
       Limit_is_Ord by simp 
 qed
 
-end (* includes *)
+end \<comment> \<open>includes\<close>
 
 end

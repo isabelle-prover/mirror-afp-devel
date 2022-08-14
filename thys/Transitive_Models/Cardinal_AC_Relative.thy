@@ -348,7 +348,7 @@ qed
 
 locale M_cardinal_UN =  M_Pi_assumptions_choice _ K X for K X +
   assumes
-    \<comment> \<open>The next assumption is required by @{thm Least_closed}\<close>
+    \<comment> \<open>The next assumption is required by @{thm [source] Least_closed}\<close>
     X_witness_in_M: "w \<in> X(x) \<Longrightarrow> M(x)"
     and
     lam_m_replacement:"M(f) \<Longrightarrow> strong_replacement(M,

@@ -152,7 +152,7 @@ lemma Rrel_restr_eq : "Rrel(R,A) \<inter> B\<times>B = Rrel(R,A\<inter>B)"
   unfolding Rrel_def by blast
 
 \<comment> \<open>We obtain this lemmas as a consequence of the previous one;
-alternatively it can be obtained using @{thm Ordinal.Memrel_type}\<close>
+alternatively it can be obtained using @{thm [source] Ordinal.Memrel_type}\<close>
 lemma field_Memrel : "field(Memrel(A)) \<subseteq> A"
   using Rrel_mem field_Rrel by blast
 
@@ -262,7 +262,7 @@ proof -
   show ?thesis by simp
 qed
 
-\<comment> \<open>Next theorem is very similar to @{thm transrec_equal_on_Ord}\<close>
+\<comment> \<open>Next theorem is very similar to @{thm [source] transrec_equal_on_Ord}\<close>
 lemma (in M_eclose) transrec_equal_on_M:
   assumes
     "\<And>x f . M(x) \<Longrightarrow> M(f) \<Longrightarrow> foo(x,f) = bar(x,f)"

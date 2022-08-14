@@ -198,7 +198,7 @@ text\<open>The following result proves to be very useful when combining
 
 lemma cardinal_Card_eqpoll_iff: "Card(\<kappa>) \<Longrightarrow> |X| = \<kappa> \<longleftrightarrow> X \<approx> \<kappa>"
   using Card_cardinal_eq[of \<kappa>] cardinal_eqpoll_iff[of X \<kappa>] by auto
-    \<comment> \<open>Compare @{thm "le_Card_iff"}\<close>
+    \<comment> \<open>Compare @{thm [source] "le_Card_iff"}\<close>
 
 lemma lepoll_imp_lepoll_cardinal: assumes "X \<lesssim> Y" shows "X \<lesssim> |Y|"
   using assms cardinal_Card_eqpoll_iff[of "|Y|" Y]
@@ -230,7 +230,7 @@ lemma cardinal_Un_le:
   using assms lepoll_Un le_Card_iff InfCard_is_Card by auto
 
 text\<open>This is the unconditional version under choice of 
-     @{thm Cardinal.Finite_cardinal_iff}.\<close>
+     @{thm [source] Cardinal.Finite_cardinal_iff}.\<close>
 lemma Finite_cardinal_iff': "Finite(|i|) \<longleftrightarrow> Finite(i)"
   using cardinal_eqpoll_iff eqpoll_imp_Finite_iff by fastforce
 

@@ -202,7 +202,7 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.csucc_rel_closed ext.Card_rel_Aleph_rel
 
 \<comment> \<open>The following was motivated by the fact that
-    @{thm ext.apply_closed} did not simplify appropriately.\<close>
+    @{thm [source] ext.apply_closed} did not simplify appropriately.\<close>
 declare mg_sharp_simps[simp del, simplified setclass_iff, simp]
 
 lemmas mg_sharp_intros = ext.nat_into_M ext.Aleph_rel_closed
