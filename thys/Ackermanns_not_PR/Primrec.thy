@@ -52,13 +52,10 @@ next
 qed
 
 
-text \<open>PROPERTY A 7-, the single-step lemma\<close>
+text \<open>PROPERTY A 4'? Extra lemma needed for \<^term>\<open>CONSTANT\<close> case, constant functions\<close>
 
 lemma ack_less_ack_Suc1 [iff]: "ack i j < ack (Suc i) j"
   by (blast intro: ack_less_mono2 less_le_trans)
-
-
-text \<open>PROPERTY A 4'? Extra lemma needed for \<^term>\<open>CONSTANT\<close> case, constant functions\<close>
 
 lemma less_ack1 [iff]: "i < ack i j"
 proof (induct i)
@@ -97,7 +94,7 @@ qed
 text \<open>PROPERTY A 7, monotonicity for \<open><\<close> [not clear why
   @{thm [source] ack_1} is now needed first!]\<close>
 
-lemma ack_less_mono1_aux: "ack i k < ack (Suc (i +i')) k"
+lemma ack_less_mono1_aux: "ack i k < ack (Suc (i+j)) k"
 proof (induct i k rule: ack.induct)
   case (1 n) show ?case
     using less_le_trans by auto
