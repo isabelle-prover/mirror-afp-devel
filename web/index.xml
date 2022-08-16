@@ -35,6 +35,15 @@
     </item>
     
     <item>
+      <title>Simultaneous diagonalization of pairwise commuting Hermitian matrices</title>
+      <link>/entries/Commuting_Hermitian.html</link>
+      <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Commuting_Hermitian.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality</title>
       <link>/entries/Weighted_Arithmetic_Geometric_Mean.html</link>
       <pubDate>Mon, 11 Jul 2022 00:00:00 +0000</pubDate>
@@ -7191,6 +7200,15 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
     </item>
     
     <item>
+      <title>Commuting_Hermitian</title>
+      <link>/theories/commuting_hermitian/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/commuting_hermitian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Comparison_Sort_Lower_Bound</title>
       <link>/theories/comparison_sort_lower_bound/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11962,7 +11980,7 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>693 Entries   424 Authors   ~214,000 Lemmas   ~3,505,500 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>694 Entries   424 Authors   ~214,300 Lemmas   ~3,511,300 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>

@@ -38,10 +38,19 @@
     <loc>/authors/brucker/</loc>
     <lastmod>2022-07-18T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/echenim/</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Solidity.html</loc>
     <lastmod>2022-07-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/marmsoler/</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/projective_measurements/</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Commuting_Hermitian.html</loc>
     <lastmod>2022-07-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/eberl/</loc>
@@ -465,9 +474,6 @@
     <lastmod>2021-11-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/cousin/</loc>
-    <lastmod>2021-11-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/echenim/</loc>
     <lastmod>2021-11-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/guiol/</loc>
@@ -4420,6 +4426,8 @@
     <loc>/theories/combinatorics_words_graph_lemma/</loc>
   </url><url>
     <loc>/theories/combinatorics_words_lyndon/</loc>
+  </url><url>
+    <loc>/theories/commuting_hermitian/</loc>
   </url><url>
     <loc>/theories/comparison_sort_lower_bound/</loc>
   </url><url>
