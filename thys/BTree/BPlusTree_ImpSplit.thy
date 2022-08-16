@@ -293,7 +293,7 @@ sorted_less xs \<Longrightarrow>
   apply (sep_auto simp add: is_pfa_def)
   done
 
-text "We can fortunately directly use this function as the split_list interpretation"
+text "We can fortunately directly use this function as the split-list interpretation."
 
 
 text "Then, using the same loop invariant, a binary split for B-tree-like arrays
