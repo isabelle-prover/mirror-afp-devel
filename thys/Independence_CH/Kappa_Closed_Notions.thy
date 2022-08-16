@@ -109,7 +109,7 @@ abbreviation
   kappa_closed_r_set (\<open>_-closed\<^bsup>_\<^esup>'(_,_')\<close> [61] 60) where
   "\<kappa>-closed\<^bsup>M\<^esup>(P,leq) \<equiv> kappa_closed_rel(##M,\<kappa>,P,leq)"
 
-lemma (in forcing_data4) forcing_a_value:
+lemma (in forcing_data3) forcing_a_value:
   assumes "p \<tturnstile> \<cdot>0:1\<rightarrow>2\<cdot> [f_dot, A\<^sup>v, B\<^sup>v]" "a \<in> A"
     "q \<preceq> p" "q \<in> P" "p\<in>P" "f_dot \<in> M" "A\<in>M" "B\<in>M"
   shows "\<exists>d\<in>P. \<exists>b\<in>B. d \<preceq> q \<and> d \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]"
@@ -130,7 +130,7 @@ proof -
   obtain G where "M_generic(G)" "q\<in>G"
     using generic_filter_existence by blast
   then
-  interpret G_generic4_AC _ _ _ _ _ G by unfold_locales
+  interpret G_generic3_AC _ _ _ _ _ G by unfold_locales
   include G_generic1_lemmas
   note \<open>q\<in>G\<close>
   moreover
@@ -175,12 +175,12 @@ qed
 
 locale M_master_CH = M_master + M_library_DC
 
-sublocale M_ZFC3_ground_CH_trans \<subseteq> M_master_CH "##M"
+sublocale M_ZFC2_ground_CH_trans \<subseteq> M_master_CH "##M"
   using replacement_dcwit_repl_body
   by unfold_locales (simp_all add:sep_instances del:setclass_iff
       add: transrec_replacement_def wfrec_replacement_def dcwit_repl_body_def)
 
-context G_generic4_AC_CH begin
+context G_generic3_AC_CH begin
 
 context
   includes G_generic1_lemmas
@@ -718,6 +718,6 @@ qed
 
 end \<comment> \<open>bundle G\_generic1\_lemmas\<close>
 
-end \<comment> \<open>\<^locale>\<open>G_generic4_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic3_AC\<close>\<close>
 
 end

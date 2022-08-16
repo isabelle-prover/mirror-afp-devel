@@ -45,7 +45,8 @@ proof
 qed
 
 end \<comment> \<open>\<^locale>\<open>separative_notion\<close>\<close>
-locale ctm_separative = forcing_data2 + separative_notion
+
+locale ctm_separative = forcing_data1 + separative_notion
 begin
 
 context

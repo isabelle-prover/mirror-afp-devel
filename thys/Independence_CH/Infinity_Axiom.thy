@@ -2,8 +2,6 @@ section\<open>The Axiom of Infinity in $M[G]$\<close>
 theory Infinity_Axiom
   imports Union_Axiom Pairing_Axiom
 begin
-sublocale G_generic1 \<subseteq> forcing_data1
-  by unfold_locales
 
 context G_generic1 begin
 

@@ -39,16 +39,16 @@ notation check (\<open>_\<^sup>v\<close> [101] 100)
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 
+locale G_generic2 = G_generic1 + forcing_data2
+locale G_generic2_AC = G_generic1_AC + G_generic2
+
 locale G_generic3 = G_generic2 + forcing_data3
 locale G_generic3_AC = G_generic2_AC + G_generic3
 
-locale G_generic4 = G_generic3 + forcing_data4
-locale G_generic4_AC = G_generic3_AC + G_generic4
+locale G_generic3_AC_CH = G_generic3_AC + M_ZFC2_ground_CH_trans
 
-locale G_generic4_AC_CH = G_generic4_AC + M_ZFC3_ground_CH_trans
-
-sublocale G_generic4_AC \<subseteq> ext:M_ZFC3_trans "M[G]"
-  using ground_replacements4 replacement_assm_MG
+sublocale G_generic3_AC \<subseteq> ext:M_ZFC2_trans "M[G]"
+  using ground_replacements3 replacement_assm_MG
   by unfold_locales simp_all
 
 lemma (in forcing_data1) forces_neq_apply_imp_incompatible:
@@ -91,7 +91,7 @@ proof -
     by (simp add:ord_simp_union arity_fun_apply_fm fun_apply_type)
 qed
 
-context M_ctm3_AC
+context M_ctm2_AC
 begin
 
 \<comment> \<open>Simplifying simp rules (because of the occurrence of
@@ -140,9 +140,9 @@ lemmas sharp_intros = nat_into_M Aleph_rel_closed Card_rel_Aleph_rel
 
 declare sharp_intros[rule del, simplified setclass_iff, intro]
 
-end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm2_AC\<close>\<close>
 
-context G_generic4_AC begin
+context G_generic3_AC begin
 
 context
   includes G_generic1_lemmas
@@ -483,6 +483,6 @@ qed
 
 end \<comment> \<open>G\_generic1\_lemmas bundle\<close>
 
-end \<comment> \<open>\<^locale>\<open>G_generic4_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic3_AC\<close>\<close>
 
 end
