@@ -23,20 +23,8 @@ text \<open>The results are taken from the textbook \cite[pages 329ff]{AlgNumber
 
 theory Real_Algebraic_Numbers
 imports 
-  "Abstract-Rewriting.SN_Order_Carrier"
-  Deriving.Compare_Rat
-  Deriving.Compare_Real
-  Jordan_Normal_Form.Gauss_Jordan_IArray_Impl
-  Algebraic_Numbers
-  Sturm_Rat
-  Factors_of_Int_Poly
-  Min_Int_Poly
+  Algebraic_Numbers_Pre_Impl
 begin
-
-text \<open>For algebraic numbers, it turned out that @{const gcd_int_poly} is not
-  preferable to the default implementation of @{const gcd}, which just implements
-  Collin's primitive remainder sequence.\<close>
-declare gcd_int_poly_code[code_unfold del]
 
 (*TODO: move *)
 lemma ex1_imp_Collect_singleton: "(\<exists>!x. P x) \<and> P x \<longleftrightarrow> Collect P = {x}"
@@ -55,56 +43,6 @@ lemma ex1_Collect_singleton[consumes 2]:
 
 lemma ex1_iff_Collect_singleton: "P x \<Longrightarrow> (\<exists>!x. P x) \<longleftrightarrow> Collect P = {x}"
   by (subst ex1_imp_Collect_singleton[symmetric], auto)
-
-context
-  fixes f
-  assumes bij: "bij f"
-begin
-lemma bij_imp_ex1_iff: "(\<exists>!x. P (f x)) \<longleftrightarrow> (\<exists>!y. P y)" (is "?l = ?r")
-proof (intro iffI)
-  assume l: ?l
-  then obtain x where "P (f x)" by auto
-  with l have *: "{x} = Collect (P o f)" by auto
-  also have "f ` \<dots> = {y. P (f (Hilbert_Choice.inv f y))}" using bij_image_Collect_eq[OF bij] by auto
-  also have "\<dots> = {y. P y}"
-  proof-
-    have "f (Hilbert_Choice.inv f y) = y" for y by (meson bij bij_inv_eq_iff)
-    then show ?thesis by simp
-  qed
-  finally have "Collect P = {f x}" by auto
-  then show ?r by (fold ex1_imp_Collect_singleton, auto)
-next
-  assume r: ?r
-  then obtain y where "P y" by auto
-  with r have "{y} = Collect P" by auto
-  also have "Hilbert_Choice.inv f ` \<dots> = Collect (P \<circ> f)"
-    using bij_image_Collect_eq[OF bij_imp_bij_inv[OF bij]] bij by (auto simp: inv_inv_eq)
-  finally have "Collect (P o f) = {Hilbert_Choice.inv f y}" by (simp add: o_def)
-  then show ?l by (fold ex1_imp_Collect_singleton, auto)
-qed
-
-lemma bij_ex1_imp_the_shift:
-  assumes ex1: "\<exists>!y. P y" shows "(THE x. P (f x)) = Hilbert_Choice.inv f (THE y. P y)" (is "?l = ?r")
-proof-
-  from ex1 have "P (THE y. P y)" by (rule the1I2)
-  moreover from ex1[folded bij_imp_ex1_iff] have "P (f (THE x. P (f x)))" by (rule the1I2)
-  ultimately have "(THE y. P y) = f (THE x. P (f x))" using ex1 by auto
-  also have "Hilbert_Choice.inv f \<dots> = (THE x. P (f x))" using bij by (simp add: bij_is_inj)
-  finally show "?l = ?r" by auto
-qed
-
-lemma bij_imp_Collect_image: "{x. P (f x)} = Hilbert_Choice.inv f ` {y. P y}" (is "?l = ?g ` _")
-proof-
-  have "?l = ?g ` f ` ?l" by (simp add: image_comp inv_o_cancel[OF bij_is_inj[OF bij]])
-  also have "f ` ?l = {f x | x. P (f x)}" by auto
-  also have "\<dots> = {y. P y}" by (metis bij bij_iff)
-  finally show ?thesis.
-qed
-
-lemma bij_imp_card_image: "card (f ` X) = card X"
-  by (metis bij bij_iff card.infinite finite_imageD inj_onI inj_on_iff_eq_card)
-
-end
 
 lemma bij_imp_card: assumes bij: "bij f" shows "card {x. P (f x)} = card {x. P x}"
 unfolding bij_imp_Collect_image[OF bij] bij_imp_card_image[OF bij_imp_bij_inv[OF bij]]..
@@ -226,23 +164,6 @@ lemma unique_rootE:
 lemma unique_rootI:
   assumes "\<And> y. root_cond plr y \<Longrightarrow> x = y" "root_cond plr x"
   shows "unique_root plr" using assms by blast
-
-definition poly_cond :: "int poly \<Rightarrow> bool" where
-  "poly_cond p = (lead_coeff p > 0 \<and> irreducible p)"
-
-lemma poly_condI[intro]:
-  assumes "lead_coeff p > 0" and "irreducible p" shows "poly_cond p" using assms by (auto simp: poly_cond_def)
-
-lemma poly_condD:
-  assumes "poly_cond p"
-  shows "irreducible p" and "lead_coeff p > 0" and "root_free p" and "square_free p" and "p \<noteq> 0"
-  using assms unfolding poly_cond_def using irreducible_root_free irreducible_imp_square_free cf_pos_def by auto
-
-lemma poly_condE[elim]:
-  assumes "poly_cond p"
-      and "irreducible p \<Longrightarrow> lead_coeff p > 0 \<Longrightarrow> root_free p \<Longrightarrow> square_free p \<Longrightarrow> p \<noteq> 0 \<Longrightarrow> thesis"
-  shows thesis
-  using assms by (auto dest:poly_condD)
 
 definition invariant_1 :: "real_alg_1 \<Rightarrow> bool" where
   "invariant_1 tup \<equiv> case tup of (p,l,r) \<Rightarrow>
@@ -474,9 +395,6 @@ end
 interpretation of_int_poly_hom:
   map_poly_zero_hom_0 "of_int :: int \<Rightarrow> 'a :: {ring_1, ring_char_0}" ..
 
-lemma ipoly_roots_finite: "p \<noteq> 0 \<Longrightarrow> finite {x :: 'a :: {idom, ring_char_0}. ipoly p x = 0}"
-  by (rule poly_roots_finite, simp)
-
 
 lemma roots_below_the_unique_root:
   assumes ur: "unique_root (p,l,r)"
@@ -553,55 +471,6 @@ proof -
   with between ur rc show "invariant_1 (p,l',r')" by (auto simp add: invariant_1_def id)
 qed
 
-lemma root_sign_change: assumes
-    p0: "poly (p::real poly) x = 0" and
-    pd_ne0: "poly (pderiv p) x \<noteq> 0"
-  obtains d where
-    "0 < d"
-    "sgn (poly p (x - d)) \<noteq> sgn (poly p (x + d))"
-    "sgn (poly p (x - d)) \<noteq> 0"
-    "0 \<noteq> sgn (poly p (x + d))"
-    "\<forall> d' > 0. d' \<le> d \<longrightarrow> sgn (poly p (x + d')) = sgn (poly p (x + d)) \<and> sgn (poly p (x - d')) = sgn (poly p (x - d))"
-proof -
-  assume a:"(\<And>d. 0 < d \<Longrightarrow>
-          sgn (poly p (x - d)) \<noteq> sgn (poly p (x + d)) \<Longrightarrow>
-          sgn (poly p (x - d)) \<noteq> 0 \<Longrightarrow>
-          0 \<noteq> sgn (poly p (x + d)) \<Longrightarrow>
-          \<forall>d'>0. d' \<le> d \<longrightarrow>
-                 sgn (poly p (x + d')) = sgn (poly p (x + d)) \<and> sgn (poly p (x - d')) = sgn (poly p (x - d)) \<Longrightarrow>
-          thesis)"
-  from pd_ne0 consider "poly (pderiv p) x > 0" | "poly (pderiv p) x < 0" by linarith
-  thus ?thesis proof(cases)
-    case 1
-    obtain d1 where d1:"\<And>h. 0<h \<Longrightarrow> h < d1 \<Longrightarrow> poly p (x - h) < 0" "d1 > 0"
-      using DERIV_pos_inc_left[OF poly_DERIV 1] p0 by auto
-    obtain d2 where d2:"\<And>h. 0<h \<Longrightarrow> h < d2 \<Longrightarrow> poly p (x + h) > 0" "d2 > 0"
-      using DERIV_pos_inc_right[OF poly_DERIV 1] p0 by auto
-    have g0:"0 < (min d1 d2) / 2" using d1 d2 by auto
-    hence m1:"min d1 d2 / 2 < d1" and m2:"min d1 d2 / 2 < d2" by auto
-    { fix d
-      assume a1:"0 < d" and a2:"d < min d1 d2"
-      have "sgn (poly p (x - d)) = -1" "sgn (poly p (x + d)) = 1"
-        using d1(1)[OF a1] d2(1)[OF a1] a2 by auto
-    } note d=this
-    show ?thesis by(rule a[OF g0];insert d g0 m1 m2, simp)
-  next
-    case 2
-    obtain d1 where d1:"\<And>h. 0<h \<Longrightarrow> h < d1 \<Longrightarrow> poly p (x - h) > 0" "d1 > 0"
-      using DERIV_neg_dec_left[OF poly_DERIV 2] p0 by auto
-    obtain d2 where d2:"\<And>h. 0<h \<Longrightarrow> h < d2 \<Longrightarrow> poly p (x + h) < 0" "d2 > 0"
-      using DERIV_neg_dec_right[OF poly_DERIV 2] p0 by auto
-    have g0:"0 < (min d1 d2) / 2" using d1 d2 by auto
-    hence m1:"min d1 d2 / 2 < d1" and m2:"min d1 d2 / 2 < d2" by auto
-    { fix d
-      assume a1:"0 < d" and a2:"d < min d1 d2"
-      have "sgn (poly p (x - d)) = 1" "sgn (poly p (x + d)) = -1"
-        using d1(1)[OF a1] d2(1)[OF a1] a2 by auto
-    } note d=this
-    show ?thesis by(rule a[OF g0];insert d g0 m1 m2, simp)
-  qed
-qed
-
 lemma rational_root_free_degree_iff: assumes rf: "root_free (map_poly rat_of_int p)" and rt: "ipoly p x = 0"
   shows "(x \<in> \<rat>) = (degree p = 1)"
 proof 
@@ -643,120 +512,21 @@ context
   and x :: "rat"
 begin
 
-lemma gt_rat_sign_change_square_free:
-  assumes ur: "unique_root plr"
-  defines "p \<equiv> poly_real_alg_1 plr" and "l \<equiv> rai_lb plr" and "r \<equiv> rai_ub plr"
-  assumes sf: "square_free p" and in_interval: "l \<le> y" "y \<le> r"
-  and py0: "ipoly p y \<noteq> 0" and pr0: "ipoly p r \<noteq> 0" 
-shows "(sgn (ipoly p y) = sgn (ipoly p r)) = (of_rat y > the_unique_root plr)" (is "?gt = _")
-proof (rule ccontr)
-  have plr[simp]: "plr = (p,l,r)" by (cases plr, auto simp: p_def l_def r_def)
-  assume "?gt \<noteq> (real_of_rat y > the_unique_root plr)"
-  note a = this[unfolded plr]
-  from py0 have "p \<noteq> 0" unfolding irreducible_def by auto
-  hence p0_real: "real_of_int_poly p \<noteq> (0::real poly)" by auto
-  let ?p = "real_of_int_poly p"
-  note urD = unique_rootD[OF ur, simplified]
-  let ?ur = "the_unique_root (p, l, r)"
-  let ?r = real_of_rat
-  from in_interval have in':"?r l \<le> ?r y" "?r y \<le> ?r r" unfolding of_rat_less_eq by auto
-  from sf square_free_of_int_poly[of p] square_free_rsquarefree
-  have rsf:"rsquarefree ?p" by auto
-  have ur3:"poly ?p ?ur = 0" using urD(3) by simp
-  from ur have "?ur \<le> of_rat r" by (auto elim!: unique_rootE)
-  moreover
-    from pr0 have "ipoly p (real_of_rat r) \<noteq> 0" by auto
-    with ur3 have "real_of_rat r \<noteq> real_of_1 (p,l,r)" by force
-  ultimately have "?ur < ?r r" by auto
-  hence ur2: "0 < ?r r - ?ur" by linarith
-  from rsquarefree_roots rsf ur3
-  have pd_nonz:"poly (pderiv ?p) ?ur \<noteq> 0" by auto
-  obtain d where d':"\<And>d'. d'>0 \<Longrightarrow> d' \<le> d \<Longrightarrow>
-             sgn (poly ?p (?ur + d')) = sgn (poly ?p (?ur + d)) \<and>
-             sgn (poly ?p (?ur - d')) = sgn (poly ?p (?ur - d))"
-      "sgn (poly ?p (?ur - d)) \<noteq> sgn (poly ?p (?ur + d))"
-      "sgn (poly ?p (?ur + d)) \<noteq> 0"
-      and d_ge_0:"d > 0"
-    by (metis root_sign_change[OF ur3 pd_nonz])
-  have sr:"sgn (poly ?p (?ur + d)) = sgn (poly ?p (?r r))"
-  proof (cases "?r r - ?ur \<le> d")
-    case True show ?thesis using d'(1)[OF ur2 True] by auto
-  next
-    case False hence less:"?ur + d < ?r r" by auto
-    show ?thesis
-    proof(rule no_roots_inbetween_imp_same_sign[OF less,rule_format],goal_cases)
-      case (1 x)
-      from ur 1 d_ge_0 have ran: "real_of_rat l \<le> x" "x \<le> real_of_rat r" by (auto elim!: unique_rootE)
-      from 1 d_ge_0 have "the_unique_root (p, l, r) \<noteq> x" by auto
-      with ur have "\<not> root_cond (p,l,r) x" by auto
-      with ran show ?case by auto
-    qed
-  qed
-  consider "?r l < ?ur - d" "?r l < ?ur" | "0 < ?ur - ?r l" "?ur - ?r l \<le> d" | "?ur = ?r l"
-    using urD by argo
-  hence sl:"sgn (poly ?p (?ur - d)) = sgn (poly ?p (?r l)) \<or> 0 = sgn (poly ?p (?r l))"
-  proof (cases)
-    case 1
-    have "sgn (poly ?p (?r l)) = sgn (poly ?p (?ur - d))"
-    proof(rule no_roots_inbetween_imp_same_sign[OF 1(1),rule_format],goal_cases)
-      case (1 x)
-      from ur 1 d_ge_0 have ran: "real_of_rat l \<le> x" "x \<le> real_of_rat r" by (auto elim!: unique_rootE)
-      from 1 d_ge_0 have "the_unique_root (p, l, r) \<noteq> x" by auto
-      with ur have "\<not> root_cond (p,l,r) x" by auto
-      with ran show ?case by auto
-    qed
-    thus ?thesis by auto
-  next case 2 show ?thesis using d'(1)[OF 2] by simp
-  qed (insert ur3,simp)
-  have diff_sign: "sgn (ipoly p l) \<noteq> sgn (ipoly p r)"
-    using d'(2-) sr sl real_of_rat_sgn by auto
-  have ur':"\<And>x. real_of_rat l \<le> x \<and> x \<le> real_of_rat y \<Longrightarrow> ipoly p x = 0 \<Longrightarrow> \<not> (?r y \<le> the_unique_root (p,l,r))"
-  proof(standard+,goal_cases)
-    case (1 x)
-    {
-      assume id: "the_unique_root (p,l,r) = ?r y" 
-      with unique_rootE[OF ur] ur py0 have False by auto
-    } note neq = this
-    have "root_cond (p, l, r) x" unfolding root_cond_def
-      using 1 a ur by (auto elim!: unique_rootE)
-    with conjunct2[OF 1(1)] 1(2-) the_unique_root_eqI[OF ur]
-    show ?case by (auto intro!: neq)
-  qed
-  hence ur'':"\<forall>x. real_of_rat y \<le> x \<and> x \<le> real_of_rat r \<longrightarrow> poly (real_of_int_poly p) x \<noteq> 0 \<Longrightarrow> \<not> (?r y \<le> the_unique_root (p,l,r))"
-    using urD(2,3) by auto
-  have "(sgn (ipoly p y) = sgn (ipoly p r)) = (?r y > the_unique_root (p,l,r))"
-  proof(cases "sgn (ipoly p r) = sgn (ipoly p y)")
-    case True
-    have sgn:"sgn (poly ?p (real_of_rat l)) \<noteq> sgn (poly ?p (real_of_rat y))" using True diff_sign
-      by (simp add: real_of_rat_sgn)
-    have ly:"of_rat l < (of_rat y::real)" using in_interval True diff_sign less_eq_rat_def of_rat_less by auto
-    with no_roots_inbetween_imp_same_sign[OF ly,of ?p] sgn ur' True
-    show ?thesis by force
-  next
-    case False
-    hence ne:"sgn (ipoly p (real_of_rat y)) \<noteq> sgn (ipoly p (real_of_rat r))" by (simp add: real_of_rat_sgn)
-    have ry:"of_rat y < (of_rat r::real)" using in_interval False diff_sign less_eq_rat_def of_rat_less by auto
-    obtain x where x:"real_of_rat y \<le> x" "x \<le> real_of_rat r" "ipoly p x = 0"
-      using no_roots_inbetween_imp_same_sign[OF ry,of ?p] ne by auto
-    hence lx:"real_of_rat l \<le> x" using in_interval
-      using False a urD by auto
-    have "?ur = x" using x lx ur by (intro the_unique_root_eqI, auto)
-    then show ?thesis using False x by auto
-  qed
-  thus False using diff_sign(1) a py0 by(cases "ipoly p r = 0";auto simp:sgn_0_0)
-qed
-
 lemma gt_rat_sign_change:
   assumes ur: "unique_root plr"
   defines "p \<equiv> poly_real_alg_1 plr" and "l \<equiv> rai_lb plr" and "r \<equiv> rai_ub plr"
   assumes p: "poly_cond2 p" and in_interval: "l \<le> y" "y \<le> r"
-  shows "(sgn (ipoly p y) = sgn (ipoly p r)) = (of_rat y > the_unique_root plr)" (is "?gt = _")
-proof (rule gt_rat_sign_change_square_free[of plr, folded p_def l_def r_def, OF ur _ in_interval])
-  note nz = poly_cond2_no_rat_root[OF p]
-  from nz[of y] show "ipoly p y \<noteq> 0" by auto
-  from nz[of r] show "ipoly p r \<noteq> 0" by auto
-  from p have "irreducible p" by auto
-  thus "square_free p" by (rule irreducible_imp_square_free)
+  shows "(sgn (ipoly p y) = sgn (ipoly p r)) = (of_rat y > the_unique_root plr)" 
+proof -
+  have plr: "plr = (p,l,r)" by (cases plr, auto simp: p_def l_def r_def)
+  show ?thesis
+  proof (rule gt_rat_sign_change_square_free[OF ur plr _ in_interval])
+    note nz = poly_cond2_no_rat_root[OF p]
+    from nz[of y] show "ipoly p y \<noteq> 0" by auto
+    from nz[of r] show "ipoly p r \<noteq> 0" by auto
+    from p have "irreducible p" by auto
+    thus "square_free p" by (rule irreducible_imp_square_free)
+  qed
 qed
   
 definition tighten_poly_bounds :: "rat \<Rightarrow> rat \<Rightarrow> rat \<Rightarrow> rat \<times> rat \<times> rat" where
@@ -3569,12 +3339,6 @@ lemma is_rat_real_alg: "is_rat (real_of x) = (is_rat_real_alg x)"
 
 lemma to_rat_real_alg: "to_rat (real_of x) = (to_rat_real_alg x)"
   unfolding to_rat to_rat_real_alg_def to_rat_real_alg_main by auto
-
-
-definition algebraic_real :: "real \<Rightarrow> bool" where 
-  [simp]: "algebraic_real = algebraic" 
-
-lemma algebraic_real_iff[code_unfold]: "algebraic = algebraic_real" by simp
 
 lemma algebraic_real_code[code]: "algebraic_real (real_of x) = True" 
 proof (cases "info_real_alg x")
