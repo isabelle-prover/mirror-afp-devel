@@ -55,7 +55,7 @@ session Isabelle_C (AFP) = HOL +
     "C11-FrontEnd/examples/C_paper"
   theories (* document *)
     "C11-FrontEnd/appendices/C_Appendices"
-    "./README"
+    README
   document_files (in "C11-FrontEnd/document/generated")
     "DOF-COL.sty"
     "DOF-core.sty"
