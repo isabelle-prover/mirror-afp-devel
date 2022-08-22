@@ -36,7 +36,16 @@
     <lastmod>2022-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/brucker/</loc>
-    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+    <lastmod>2022-07-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Nano_JSON.html</loc>
+    <lastmod>2022-07-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/tools/</loc>
+    <lastmod>2022-07-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2022-07-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/echenim/</loc>
     <lastmod>2022-07-18T00:00:00+00:00</lastmod>
@@ -651,12 +660,6 @@
     <lastmod>2021-09-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/speccheck/</loc>
-    <lastmod>2021-09-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/tools/</loc>
-    <lastmod>2021-09-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2021-09-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Dominance_CHK.html</loc>
@@ -5224,6 +5227,8 @@
     <loc>/theories/myhill-nerode/</loc>
   </url><url>
     <loc>/theories/name_carrying_type_inference/</loc>
+  </url><url>
+    <loc>/theories/nano_json/</loc>
   </url><url>
     <loc>/theories/nash_williams/</loc>
   </url><url>

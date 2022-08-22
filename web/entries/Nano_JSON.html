@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML - Archive of Formal Proofs</title><meta name="description" content="JSON (JavaScript Object Notation) is a common format for exchanging
+data, based on a collection of key/value-pairs (the JSON objects) and
+lists. Its syntax..."><meta property="og:title" content="Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Nano_JSON.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2022-07-29T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-07-29T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <a href="../"><li >Home</li></a>
+        <a href="../topics/"><li >Topics</li></a>
+        <a href="../download/"><li >Download</li></a>
+        <a href="../help/"><li >Help</li></a>
+        <a href="../submission/"><li >Submission</li></a>
+        <a href="../statistics/"><li >Statistics</li></a>
+        <a href="../about/"><li >About</li></a>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>N</span>ano <span class='first'>J</span><span class='first'>S</span><span class='first'>O</span><span class='first'>N</span>: <span class='first'>W</span>orking <span class='first'>W</span>ith <span class='first'>J</span><span class='first'>S</span><span class='first'>O</span><span class='first'>N</span> <span class='first'>F</span>ormatted <span class='first'>D</span>ata in <span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span> and <span class='first'>I</span>sabelle/<span class='first'>M</span><span class='first'>L</span></h1>
+  <div>
+    
+    <p><a href="../authors/brucker">Achim D. Brucker</a> <a href="https://www.brucker.ch/">🌐</a>
+    </p>
+    
+    
+    <p class="date">July 29, 2022</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">JSON (JavaScript Object Notation) is a common format for exchanging
+data, based on a collection of key/value-pairs (the JSON objects) and
+lists. Its syntax is inspired by JavaScript with the aim of being easy
+to read and write for humans and easy to parse and generate for
+machines.  Despite its origin in the JavaScript world, JSON is
+language-independent and many programming languages support working
+with JSON-encoded data. This makes JSON an interesting format for
+exchanging data with Isabelle/HOL.  This AFP entry provides a
+JSON-like import-expert format for both Isabelle/ML and Isabelle/HOL.
+On the one hand, this AFP entry provides means for Isabelle/HOL users
+to work with JSON encoded data without the need using Isabelle/ML. On
+the other and, the provided Isabelle/ML interfaces allow additional
+extensions or integration into Isabelle extensions written in
+Isabelle/ML. While format is not fully JSON compliant (e.g., due to
+limitations in the range of supported Unicode characters), it works in
+most situations: the provided implementation in Isabelle/ML and its
+representation in Isabelle/HOL have been used successfully in several
+projects for exchanging data sets of several hundredths of megabyte
+between Isabelle and external tools.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/tools">Tools</a></li><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
+  <h3>Theories of Nano_JSON</h3>
+  <ul>
+    <li><a href="../theories/nano_json/#Nano_JSON">Nano_JSON</a></li>
+    <li><a href="../theories/nano_json/#Nano_JSON_Query">Nano_JSON_Query</a></li>
+    <li><a href="../theories/nano_json/#Nano_JSON_Main">Nano_JSON_Main</a></li>
+    <li><a href="../theories/nano_json/#Nano_JSON_Manual">Nano_JSON_Manual</a></li>
+    <li><a href="../theories/nano_json/#Example">Example</a></li>
+    <li><a href="../theories/nano_json/#Example_Real">Example_Real</a></li></ul><div class="flex-wrap">
+  
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#cite-popup">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Nano_JSON/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Nano_JSON/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Nano_JSON/session_graph.pdf">Dependencies</a></nav>
+
+<div id="cite-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtex-filename">Nano_JSON-AFP</p><pre id="copy-text">@article{Nano_JSON-AFP,
+  author  = {Achim D. Brucker},
+  title   = {Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2022},
+  note    = {\url{https://isa-afp.org/entries/Nano_JSON.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://www.isa-afp.org/release//afp-Nano_JSON-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>

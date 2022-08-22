@@ -1,0 +1,16 @@
+chapter AFP
+
+session "Nano_JSON" (AFP) = HOL +
+  description "Nano JSON"
+  options [timeout = 600]
+  theories
+    Nano_JSON
+    Nano_JSON_Query
+    Nano_JSON_Main
+    Nano_JSON_Manual
+    Example
+    Example_Real
+  document_files
+    "root.tex"
+    "root.bib"
+    "orcidlink.sty"

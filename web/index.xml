@@ -26,6 +26,15 @@
     </item>
     
     <item>
+      <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
+      <link>/entries/Nano_JSON.html</link>
+      <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Nano_JSON.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
       <link>/entries/Solidity.html</link>
       <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
@@ -10256,6 +10265,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Nano_JSON</title>
+      <link>/theories/nano_json/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/nano_json/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Nash_Williams</title>
       <link>/theories/nash_williams/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11980,7 +11998,7 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>694 Entries   424 Authors   ~214,300 Lemmas   ~3,511,300 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>695 Entries   424 Authors   ~214,300 Lemmas   ~3,512,300 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>
