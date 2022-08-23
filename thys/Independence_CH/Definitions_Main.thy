@@ -394,13 +394,24 @@ text\<open>@{thm [display] ZF_union_iff_sats ZF_power_iff_sats
       arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env) \<longrightarrow> separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>))
 
   \<phi> \<in> formula \<Longrightarrow>
-  (M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>) \<longleftrightarrow>
-  (\<forall>env\<in>list(M).
-      arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
-      strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>))
+  (M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>) \<longleftrightarrow> (\<forall>env. replacement_assm(M, env, \<phi>))
 
   choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>AC\<cdot>
 *)
+
+text\<open>Above, we use the following:\<close>
+
+thm replacement_assm_def
+text\<open>@{thm [display] replacement_assm_def}\<close>
+(*
+replacement_assm(M, env, \<phi>) \<equiv>
+\<phi> \<in> formula \<longrightarrow>
+env \<in> list(M) \<longrightarrow>
+arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
+strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>
+*)
+
+text\<open>Finally, the axiom sets are defined as follows.\<close>
 
 thm ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def ZFC_def
 text\<open>@{thm [display] ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def
@@ -531,9 +542,9 @@ text\<open>@{thm [display] ctm_ZFC_imp_ctm_CH}\<close>
 text\<open>These results can be strengthened by enumerating six finite sets of
 replacement instances which are sufficient to develop forcing and for
 the construction of the aforementioned models: \<^term>\<open>instances1_fms\<close>
-through \<^term>\<open>instances4_fms\<close>, \<^term>\<open>instances_ground_fms\<close>, and
+through \<^term>\<open>instances3_fms\<close>, \<^term>\<open>instances_ground_fms\<close>, and
 \<^term>\<open>instances_ground_notCH_fms\<close>,
-which are then collected into the $33$-element set \<^term>\<open>overhead_notCH\<close>.
+which are then collected into the $31$-element set \<^term>\<open>overhead_notCH\<close>.
 For example, we have:\<close>
 
 thm instances1_fms_def
@@ -548,10 +559,10 @@ instances1_fms \<equiv>
 thm overhead_def overhead_notCH_def
 text\<open>@{thm [display] overhead_def overhead_notCH_def overhead_CH_def}\<close>
 (*
-  overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances_ground_fms
+  overhead \<equiv> instances1_fms \<union> instances_ground_fms
 
   overhead_notCH \<equiv> overhead \<union>
-    instances3_fms \<union> instances4_fms \<union> instances_ground_notCH_fms
+    instances2_fms \<union> instances3_fms \<union> instances_ground_notCH_fms
 *)
 
 text\<open>One further instance is needed to force $\CH$, with a total count

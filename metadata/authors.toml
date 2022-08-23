@@ -3778,6 +3778,18 @@ host = [
   "de",
 ]
 
+[marmsoler.emails.marmsoler_email1]
+user = [
+  "d",
+  "marmsoler",
+]
+host = [
+  "exeter",
+  "ac",
+  "uk",
+]
+
+
 [marmsoler.homepages]
 marmsoler_homepage = "http://marmsoler.com"
 

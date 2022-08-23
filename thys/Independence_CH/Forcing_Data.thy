@@ -24,11 +24,9 @@ locale forcing_data1 = forcing_notion + M_ctm1 + M_ZF_ground_trans +
   assumes P_in_M:           "P \<in> M"
     and leq_in_M:         "leq \<in> M"
 
-locale forcing_data2 = forcing_data1 + M_ctm2
+locale forcing_data2 = forcing_data1 + M_ctm2_AC
 
 locale forcing_data3 = forcing_data2 + M_ctm3_AC
-
-locale forcing_data4 = forcing_data3 + M_ctm4_AC
 
 context forcing_data1
 begin

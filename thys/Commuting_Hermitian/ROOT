@@ -1,0 +1,11 @@
+chapter AFP
+
+session Commuting_Hermitian (AFP) = "Projective_Measurements" +
+  options [timeout = 1800]
+  theories [document = false]
+    Commuting_Hermitian_Misc
+  theories
+    Spectral_Theory_Complements
+    Commuting_Hermitian
+  document_files
+    "root.tex"

@@ -371,11 +371,9 @@ lemma sats_ZF_replacement_fm_iff:
   assumes
     "\<phi>\<in>formula"
   shows
-  "(M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>)
-   \<longleftrightarrow>
-   (\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
-      strong_replacement(##M,\<lambda>x y. M,[x,y] @ env \<Turnstile> \<phi>))"
-proof (intro iffI ballI impI)
+  "(M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>) \<longleftrightarrow> (\<forall>env. replacement_assm(M,env,\<phi>))"
+  unfolding replacement_assm_def
+proof (intro iffI allI impI)
   let ?n="pred(pred(arity(\<phi>)))"
   fix env
   assume "M, [] \<Turnstile> ZF_replacement_fm(\<phi>)" "arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env)" "env\<in>list(M)"
@@ -406,7 +404,8 @@ proof (intro iffI ballI impI)
     by simp
 next \<comment> \<open>almost equal to the previous implication\<close>
   let ?n="pred(pred(arity(\<phi>)))"
-  assume asm:"\<forall>env\<in>list(M). arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
+  assume asm:"\<forall>env. \<phi> \<in> formula \<longrightarrow>
+          env \<in> list(M) \<longrightarrow> arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
     strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>)"
   {
     fix some

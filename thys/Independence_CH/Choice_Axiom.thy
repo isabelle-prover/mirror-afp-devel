@@ -137,9 +137,7 @@ lemma (in M_ZF1_trans) upair_name_closed :
   using upair_in_M_iff pair_in_M_iff Upair_eq_cons
   by simp
 
-locale G_generic2 = G_generic1 + forcing_data2
-
-context G_generic2
+context G_generic1
 begin
 
 lemma val_upair_name : "val(G,upair_name(\<tau>,\<rho>,\<one>)) = {val(G,\<tau>),val(G,\<rho>)}"
@@ -175,7 +173,7 @@ proof -
     by simp
 qed
 
-end\<comment> \<open>\<^locale>\<open>G_generic2\<close>\<close>
+end\<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 subsection\<open>$M[G]$ is a transitive model of ZF\<close>
 
@@ -194,7 +192,7 @@ lemma (in M_replacement) upair_name_lam_replacement :
   unfolding upair_name_def
   by simp
 
-lemma (in forcing_data2) repl_opname_check :
+lemma (in forcing_data1) repl_opname_check :
   assumes "A\<in>M" "f\<in>M"
   shows "{opair_name(check(x),f`x,\<one>). x\<in>A}\<in>M"
     using assms lam_replacement_constant check_lam_replacement lam_replacement_identity
@@ -205,7 +203,7 @@ lemma (in forcing_data2) repl_opname_check :
     unfolding opair_name_def
     by simp
 
-theorem (in G_generic2) choice_in_MG:
+theorem (in G_generic1) choice_in_MG:
   assumes "choice_ax(##M)"
   shows "choice_ax(##M[G])"
 proof -
@@ -317,9 +315,7 @@ proof -
     by simp
 qed
 
-locale G_generic2_AC = G_generic1_AC + G_generic2 + M_ctm2_AC
-
-sublocale G_generic2_AC \<subseteq> ext:M_ZC_basic "M[G]"
+sublocale G_generic1_AC \<subseteq> ext:M_ZC_basic "M[G]"
   using choice_ax choice_in_MG
   by unfold_locales
 

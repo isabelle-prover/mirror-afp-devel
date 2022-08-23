@@ -943,6 +943,15 @@
     </item>
     
     <item>
+      <title>Commuting_Hermitian</title>
+      <link>/theories/commuting_hermitian/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/commuting_hermitian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Comparison_Sort_Lower_Bound</title>
       <link>/theories/comparison_sort_lower_bound/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -2113,6 +2122,15 @@
     </item>
     
     <item>
+      <title>FSM_Tests</title>
+      <link>/theories/fsm_tests/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/fsm_tests/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Functional-Automata</title>
       <link>/theories/functional-automata/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -2838,6 +2856,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/intro_dest_elim/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Involutions2Squares</title>
+      <link>/theories/involutions2squares/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/involutions2squares/</guid>
       <description></description>
     </item>
     
@@ -3936,6 +3963,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/name_carrying_type_inference/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Nano_JSON</title>
+      <link>/theories/nano_json/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/nano_json/</guid>
       <description></description>
     </item>
     
@@ -5538,6 +5574,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/smooth_manifolds/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Solidity</title>
+      <link>/theories/solidity/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/solidity/</guid>
       <description></description>
     </item>
     

@@ -3934,7 +3934,7 @@ lemma sint_neg_hom:
     have lem:"\<And>x::int. \<And>n::nat.   x \<in> {1..(2^n)-1} \<Longrightarrow> ((- x) mod (2^n)) - (2^n) = - x"
       subgoal for x n
         apply(cases "x mod 2^n = 0")
-        by(auto simp add: Divides.zmod_zminus1_eq_if[of x  "2^n"])
+        by(auto simp add: zmod_zminus1_eq_if[of x  "2^n"])
       done
     have lem_rule:"uint w \<in> {1..2 ^ 32 - 1} 
       \<Longrightarrow> (- uint w mod  4294967296) - 4294967296 = - uint w"
@@ -3955,7 +3955,7 @@ next
       subgoal for x n
         apply(auto)
         apply(cases "x mod 2^n = 0")
-        by (simp add: Divides.zmod_zminus1_eq_if[of x  "2^n"])+
+        by (simp add: zmod_zminus1_eq_if[of x  "2^n"])+
       done
   from bound 
   have  wLeq: "uint w \<le> 4294967295"

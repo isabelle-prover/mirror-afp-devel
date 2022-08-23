@@ -10,6 +10,17 @@ formalization and to show the appearance of relevant internalized formulas.
 It is \<^bold>\<open>not\<close> intended as the entry point of the session. For that purpose,
 consult \<^theory>\<open>Independence_CH.Definitions_Main\<close>\<close>
 
+
+text\<open>The snippet (by M. Pagano) commented out below outputs a directed
+graph picturing the locale structure.\<close>
+\<comment> \<open>
+ML\<open>Locale.pretty_locale_deps @{theory} |>
+map (fn n => let val nom = #name n
+    in  map (writeln o (fn p => "\"" ^ p ^ "\" -> \"" ^ nom ^ "\";")) (#parents n)
+end)
+\<close>
+\<close>
+
 locale Demo = M_trivial + M_AC +
   fixes t\<^sub>1 t\<^sub>2
   assumes

@@ -34,7 +34,7 @@ definition i :: "(unit \<times> (bool list \<times> string \<times> nat option) 
 
 experiment begin
 
-text \<open>This currently requires @{theory Lazy_Case.Lazy_Case} because of @{const divmod_nat}.\<close>
+text \<open>This currently requires @{theory Lazy_Case.Lazy_Case} because of @{const Euclidean_Division.divmod_nat}.\<close>
 
 (* FIXME get rid of Lazy_Case dependency *)
 declassify valid: i

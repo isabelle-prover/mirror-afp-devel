@@ -1,0 +1,36 @@
+title = "Simultaneous diagonalization of pairwise commuting Hermitian matrices"
+date = 2022-07-18
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+A Hermitian matrix is a square complex matrix that is equal to its
+conjugate transpose. The (finite-dimensional) spectral theorem states
+that any such matrix can be decomposed into a product of a unitary
+matrix and a diagonal matrix containing only real elements. We
+formalize the generalization of this result, which states that any
+finite set of Hermitian and pairwise commuting matrices can be
+decomposed as previously, using the same unitary matrix; in other
+words, they are simultaneously diagonalizable. Sets of pairwise
+commuting Hermitian matrices are called <em>Complete Sets of
+Commuting Observables</em> in Quantum Mechanics, where they represent
+physical quantities that can be simultaneously measured to uniquely
+distinguish quantum states."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.echenim]
+homepage = "echenim_homepage"
+
+[contributors]
+
+[notify]
+echenim = "echenim_email"
+
+[history]
+
+[extra]
+
+[related]

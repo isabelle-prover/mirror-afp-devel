@@ -6,7 +6,16 @@
     <description>Recent content in bortin on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 29 Nov 2016 00:00:00 +0000</lastBuildDate><atom:link href="/authors/bortin/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 15 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/bortin/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>From THE BOOK: Two Squares via Involutions</title>
+      <link>/entries/Involutions2Squares.html</link>
+      <pubDate>Mon, 15 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Involutions2Squares.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>COMPLX: A Verification Framework for Concurrent Imperative Programs</title>
       <link>/entries/Complx.html</link>

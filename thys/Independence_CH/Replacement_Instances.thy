@@ -300,44 +300,19 @@ definition replacement_is_trans_apply_image_fm where "replacement_is_trans_apply
 (* definition banach_iterates_fm where "banach_iterates_fm \<equiv> banach_body_iterates_fm(7,6,5,4,3,2,0,1)" *)
 definition replacement_dcwit_repl_body_fm where "replacement_dcwit_repl_body_fm \<equiv> dcwit_repl_body_fm(6,5,4,3,2,0,1)"
 
-locale M_ZF2 = M_ZF1 +
-  assumes
-    replacement_ax2:
-    "replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
-    "replacement_assm(M,env,replacement_is_order_eq_map_fm)"
-
-definition instances2_fms where "instances2_fms \<equiv>
-  { replacement_HAleph_wfrec_repl_body_fm,
-    replacement_is_order_eq_map_fm }"
-
-text\<open>This set has 12 internalized formulas.\<close>
-
-lemmas replacement_instances2_defs =
-  replacement_HAleph_wfrec_repl_body_fm_def
-  replacement_is_order_eq_map_fm_def
-  (* banach_iterates_fm_def *)
-
-declare (in M_ZF2) replacement_instances2_defs [simp]
-
-lemma instances2_fms_type[TC]: "instances2_fms \<subseteq> formula"
-  unfolding replacement_instances2_defs instances2_fms_def
-  by (simp del:Lambda_in_M_fm_def)
-
-locale M_ZF2_trans = M_ZF1_trans + M_ZF2
-
 text\<open>The following instances are needed only on the ground model. The
 first one corresponds to the recursive definition of forces for atomic
 formulas; the next two corresponds to \<^term>\<open>PHcheck\<close>; the following
 is used to get a generic filter using some form of choice.\<close>
 
-locale M_ZF_ground = M_ZF2 +
+locale M_ZF_ground = M_ZF1 +
   assumes
     ZF_ground_replacements:
     "replacement_assm(M,env,wfrec_Hfrc_at_fm)"
     "replacement_assm(M,env,wfrec_Hcheck_fm)"
     "replacement_assm(M,env,Lambda_in_M_fm(check_fm(2,0,1),1))"
 
-locale M_ZF_ground_trans = M_ZF2_trans + M_ZF_ground
+locale M_ZF_ground_trans = M_ZF1_trans + M_ZF_ground
 
 definition instances_ground_fms where "instances_ground_fms \<equiv>
   { wfrec_Hfrc_at_fm,
@@ -382,55 +357,16 @@ declare (in M_ZF_ground_CH) replacement_dcwit_repl_body_fm_def [simp]
 
 locale M_ZF_ground_CH_trans = M_ZF_ground_notCH_trans + M_ZF_ground_CH
 
-locale M_ZFC2 = M_ZFC1 + M_ZF2
-
-locale M_ZFC2_trans = M_ZFC1_trans + M_ZF2_trans + M_ZFC2
-
-locale M_ctm1 = M_ZF1_trans +
+locale M_ctm1 = M_ZF1_trans + M_ZF_ground_trans +
   fixes enum
   assumes M_countable:      "enum\<in>bij(nat,M)"
 
 locale M_ctm1_AC = M_ctm1 + M_ZFC1_trans
 
-locale M_ctm2 = M_ctm1 + M_ZF_ground_trans
-
-locale M_ctm2_AC = M_ctm2 + M_ZFC2_trans
-
-context M_ZF2_trans
+context M_ZF_ground_CH_trans
 begin
 
-lemma replacement_HAleph_wfrec_repl_body:
-  "B\<in>M \<Longrightarrow> strong_replacement(##M, HAleph_wfrec_repl_body(##M,B))"
-  using strong_replacement_rel_in_ctm[where \<phi>="HAleph_wfrec_repl_body_fm(2,0,1)" and env="[B]"]
-    zero_in_M arity_HAleph_wfrec_repl_body_fm replacement_ax2(1) ord_simp_union
-  by simp
-
-lemma HAleph_wfrec_repl:
-  "(##M)(sa) \<Longrightarrow>
-        (##M)(esa) \<Longrightarrow>
-        (##M)(mesa) \<Longrightarrow>
-        strong_replacement
-         (##M,
-          \<lambda>x z. \<exists>y[##M].
-                   pair(##M, x, y, z) \<and>
-                   (\<exists>f[##M].
-                       (\<forall>z[##M].
-                           z \<in> f \<longleftrightarrow>
-                           (\<exists>xa[##M].
-                               \<exists>y[##M].
-                                  \<exists>xaa[##M].
-                                     \<exists>sx[##M].
-                                        \<exists>r_sx[##M].
-                                           \<exists>f_r_sx[##M].
-                                              pair(##M, xa, y, z) \<and>
-                                              pair(##M, xa, x, xaa) \<and>
-                                              upair(##M, xa, xa, sx) \<and>
-                                              pre_image(##M, mesa, sx, r_sx) \<and> restriction(##M, f, r_sx, f_r_sx) \<and> xaa \<in> mesa \<and> is_HAleph(##M, xa, f_r_sx, y))) \<and>
-                       is_HAleph(##M, x, f, y)))"
-  using replacement_HAleph_wfrec_repl_body unfolding HAleph_wfrec_repl_body_def by simp
-
-
-lemma (in M_ZF_ground_CH_trans) replacement_dcwit_repl_body:
+lemma replacement_dcwit_repl_body:
   "(##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
    strong_replacement(##M, dcwit_repl_body(##M,mesa,A,a,s,R))"
   using strong_replacement_rel_in_ctm[where \<phi>="dcwit_repl_body_fm(6,5,4,3,2,0,1)"
@@ -439,7 +375,7 @@ lemma (in M_ZF_ground_CH_trans) replacement_dcwit_repl_body:
   unfolding replacement_dcwit_repl_body_fm_def
   by simp
 
-lemma (in M_ZF_ground_CH_trans) dcwit_repl:
+lemma dcwit_repl:
   "(##M)(sa) \<Longrightarrow>
         (##M)(esa) \<Longrightarrow>
         (##M)(mesa) \<Longrightarrow> (##M)(A) \<Longrightarrow> (##M)(a) \<Longrightarrow> (##M)(s) \<Longrightarrow> (##M)(R) \<Longrightarrow>
@@ -458,13 +394,18 @@ lemma (in M_ZF_ground_CH_trans) dcwit_repl:
                                   mesa, x, y))"
   using replacement_dcwit_repl_body unfolding dcwit_repl_body_def by simp
 
+end \<comment> \<open>\<^locale>\<open>M_ZF_ground_CH_trans\<close>\<close>
+
+context M_ZF1_trans
+begin
+
 lemmas M_replacement_ZF_instances = lam_replacement_fst lam_replacement_snd
   lam_replacement_Union lam_replacement_Image
   lam_replacement_middle_del lam_replacement_prodRepl
 
 lemmas M_separation_ZF_instances = separation_fstsnd_in_sndsnd separation_sndfst_eq_fstsnd
 
-lemma (in M_ZF1_trans) separation_is_dcwit_body:
+lemma separation_is_dcwit_body:
   assumes "(##M)(A)" "(##M)(a)" "(##M)(g)" "(##M)(R)"
   shows "separation(##M,is_dcwit_body(##M, A, a, g, R))"
   using assms separation_in_ctm[where env="[A,a,g,R]" and \<phi>="is_dcwit_body_fm(1,2,3,4,0)",
@@ -473,13 +414,13 @@ lemma (in M_ZF1_trans) separation_is_dcwit_body:
     nonempty arity_is_dcwit_body_fm is_dcwit_body_fm_type
   by (simp add:ord_simp_union)
 
-end
+end \<comment> \<open>\<^locale>\<open>M_ZF1_trans\<close>\<close>
 
-sublocale M_ZF2_trans \<subseteq> M_replacement "##M"
+sublocale M_ZF1_trans \<subseteq> M_replacement "##M"
   using M_replacement_ZF_instances M_separation_ZF_instances
   by unfold_locales simp
 
-context M_ZF2_trans
+context M_ZF1_trans
 begin
 
 lemma separation_Pow_rel: "A\<in>M \<Longrightarrow>
@@ -493,23 +434,23 @@ lemma strong_replacement_Powapply_rel:
   using Powapply_rel_replacement separation_Pow_rel transM
   by simp
 
-end
+end \<comment> \<open>\<^locale>\<open>M_ZF1_trans\<close>\<close>
 
-sublocale M_ZF2_trans \<subseteq> M_Vfrom "##M"
+sublocale M_ZF1_trans \<subseteq> M_Vfrom "##M"
   using power_ax strong_replacement_Powapply_rel phrank_repl trans_repl_HVFrom wfrec_rank
   by unfold_locales auto
 
-sublocale M_ZF2_trans \<subseteq> M_Perm "##M"
+sublocale M_ZF1_trans \<subseteq> M_Perm "##M"
   using separation_PiP_rel separation_injP_rel separation_surjP_rel
     lam_replacement_imp_strong_replacement[OF
       lam_replacement_Sigfun[OF lam_replacement_constant]]
     Pi_replacement1 unfolding Sigfun_def
   by unfold_locales simp_all
 
-sublocale M_ZF2_trans \<subseteq> M_pre_seqspace "##M"
+sublocale M_ZF1_trans \<subseteq> M_pre_seqspace "##M"
   by unfold_locales
 
-context M_ZF2_trans
+context M_ZF1_trans
 begin
 
 lemma separation_inj_rel: "A\<in>M \<Longrightarrow>
@@ -521,13 +462,6 @@ lemma separation_inj_rel: "A\<in>M \<Longrightarrow>
 
 lemma lam_replacement_inj_rel: "lam_replacement(##M, \<lambda>x . inj_rel(##M,fst(x),snd(x)))"
   using lam_replacement_inj_rel' separation_inj_rel
-  by simp
-
-lemma replacement_is_order_eq_map:
-  "A\<in>M \<Longrightarrow> r\<in>M \<Longrightarrow> strong_replacement(##M, order_eq_map(##M,A,r))"
-  using strong_replacement_rel_in_ctm[where \<phi>="order_eq_map_fm(2,3,0,1)" and env="[A,r]"  and f="order_eq_map(##M,A,r)"]
-    order_eq_map_iff_sats[where env="[_,_,A,r]"] zero_in_M fst_snd_closed pair_in_M_iff
-    arity_order_eq_map_fm ord_simp_union replacement_ax2(2)
   by simp
 
 (*
@@ -592,6 +526,8 @@ lemma banach_replacement:
 
 *)
 
+end \<comment> \<open>\<^locale>\<open>M_ZF1_trans\<close>\<close>
+
 lemma (in M_basic) rel2_trans_apply:
   "M(f) \<Longrightarrow> relation2(M,is_trans_apply_image(M,f),trans_apply_image(f))"
   unfolding is_trans_apply_image_def trans_apply_image_def relation2_def
@@ -600,8 +536,6 @@ lemma (in M_basic) rel2_trans_apply:
 lemma (in M_basic) apply_image_closed:
   shows "M(f) \<Longrightarrow> \<forall>x[M]. \<forall>g[M]. M(trans_apply_image(f, x, g))"
   unfolding trans_apply_image_def by simp
-
-end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
 
 context M_ZF_ground_notCH_trans
 begin
@@ -1116,7 +1050,7 @@ lemma (in M_basic) is_ifrFb_body6_closed: "M(G) \<Longrightarrow> M(r) \<Longrig
   unfolding ifrangeF_body6_def is_ifrangeF_body6_def is_ifrFb_body6_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemma (in M_ZF2_trans) ifrangeF_body6_abs:
+lemma (in M_ZF1_trans) ifrangeF_body6_abs:
   assumes "(##M)(A)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body6(##M,A,G,r,s,x) \<longleftrightarrow> ifrangeF_body6(##M,A,G,r,s,x)"
 proof -
@@ -1157,7 +1091,7 @@ proof -
     by (auto dest:transM)
 qed
 
-lemma (in M_ZF2_trans) separation_ifrangeF_body6:
+lemma (in M_ZF1_trans) separation_ifrangeF_body6:
   "(##M)(A) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
        separation(##M,
       \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. {p \<in> G . domain(p) = a}, b, f, i)\<rangle>)"
@@ -1211,7 +1145,7 @@ lemma (in M_basic) is_ifrFb_body7_closed: "M(B) \<Longrightarrow> M(D) \<Longrig
   unfolding ifrangeF_body7_def is_ifrangeF_body7_def is_ifrFb_body7_def fun_apply_def
   by (cases "i\<in>range(s)"; cases "r=0"; auto dest:transM)
 
-lemma (in M_ZF2_trans) ifrangeF_body7_abs:
+lemma (in M_ZF1_trans) ifrangeF_body7_abs:
   assumes "(##M)(A)"  "(##M)(B)" "(##M)(D)" "(##M)(G)" "(##M)(r)" "(##M)(s)" "(##M)(x)"
   shows "is_ifrangeF_body7(##M,A,B,D,G,r,s,x) \<longleftrightarrow> ifrangeF_body7(##M,A,B,D,G,r,s,x)"
 proof -
@@ -1263,7 +1197,7 @@ proof -
     by (auto dest:transM)
 qed
 
-lemma (in M_ZF2_trans) separation_ifrangeF_body7:
+lemma (in M_ZF1_trans) separation_ifrangeF_body7:
   "(##M)(A) \<Longrightarrow> (##M)(B) \<Longrightarrow> (##M)(D) \<Longrightarrow> (##M)(G) \<Longrightarrow> (##M)(b) \<Longrightarrow> (##M)(f) \<Longrightarrow>
     separation(##M,
       \<lambda>y. \<exists>x\<in>A. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(drSR_Y(B, D, G), b, f, i)\<rangle>)"
@@ -1289,7 +1223,7 @@ is_iff_rel for "omfunspace"
 
 end \<comment> \<open>\<^locale>\<open>M_pre_seqspace\<close>\<close>
 
-context M_ZF2_trans
+context M_ZF1_trans
 begin
 
 lemma separation_omfunspace:
@@ -1302,9 +1236,9 @@ lemma separation_omfunspace:
   unfolding omfunspace_rel_def
   by (auto simp add:ord_simp_union)
 
-end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ZF1_trans\<close>\<close>
 
-sublocale M_ZF2_trans \<subseteq> M_seqspace "##M"
+sublocale M_ZF1_trans \<subseteq> M_seqspace "##M"
   using separation_omfunspace by unfold_locales
 
 definition cdltgamma :: "[i,i] \<Rightarrow> o" where
@@ -1341,7 +1275,7 @@ lemma is_cdeqgamma_iff_split: "M(Z) \<Longrightarrow> cdeqgamma_rel(M, Z) \<long
 
 end
 
-context M_ZF2_trans
+context M_ZF1_trans
 begin
 
 lemma separation_cdltgamma:
@@ -1362,6 +1296,6 @@ lemma separation_cdeqgamma:
   unfolding cdeqgamma_rel_def
   by (simp add:ord_simp_union)
 
-end \<comment> \<open>\<^locale>\<open>M_ZF2_trans\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ZF1_trans\<close>\<close>
 
 end
