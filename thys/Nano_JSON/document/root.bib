@@ -1,0 +1,167 @@
+@STRING{j-ar	= "Journal of Automated Reasoning" }
+@STRING{pub-springer={Springer-Verlag} }
+@STRING{pub-springer-london={Springer-Verlag} }
+@STRING{pub-springer-london:adr={London} }
+@STRING{pub-springer-netherlands={Springer Netherlands} }
+@STRING{pub-springer-netherlands:adr={} }
+@STRING{pub-springer-ny={Springer-Verlag} }
+@STRING{pub-springer-ny:adr={New York, NY, USA} }
+@STRING{pub-springer:adr={Heidelberg} }
+
+@Booklet{	  ecma:json:2017,
+  title		= {{ECMA-404}:The {JSON} data interchange syntax},
+  howpublished	= {Online: \url{https://www.ecma-international.org/publications-and-standards/standards/ecma-404/}.},
+  edition	= {2nd},
+  month		= dec,
+  year		= 2017
+}
+
+@Misc{		  ietf:rfc8259-json:2017,
+  issn		= {2070-1721},
+  title		= {The {JavaScript} Object Notation ({JSON}) Data Interchange Format},
+  howpublished	= {Online: \url{https://datatracker.ietf.org/doc/html/rfc8259}.},
+  month		= dec,
+  year		= 2017,
+  editor	= {T. Bray}
+}
+
+@Article{	  sternagel.ea:xml:2014,
+  author	= {Christian Sternagel and Ren{\`{e}} Thiemann},
+  title		= {{XML}},
+  journal	= {Archive of Formal Proofs},
+  month		= oct,
+  year		= 2014,
+  note		= {\url{http://isa-afp.org/entries/XML.shtml}, Formal proof development},
+  issn		= {2150-914x},
+  abstract	= {This entry provides an XML library for Isabelle/HOL. This includes parsing and pretty printing of XML
+		  trees as well as combinators for transforming XML trees into arbitrary user-defined data. The main
+		  contribution of this entry is an interface (fit for code generation) that allows for communication
+		  between verified programs formalized in Isabelle/HOL and the outside world via XML. This library was
+		  developed as part of the IsaFoR/CeTA project to which we refer for examples of its usage.}
+}
+
+@Misc{		  bray.ea:extensible:2008,
+  author	= {Bray, Tim and Paoli, Jean and Sperberg-McQueen, C. M. and Maler, Eve and Yergeau, Fran{\c{c}}ois},
+  howpublished	= {{W3C} Recommendation},
+  note		= {Available at \url{http://www.w3.org/TR/REC-xml/}.},
+  title		= {Extensible Markup Language (XML) 1.0 (Fifth Edition)},
+  year		= 2008
+}
+
+@Article{	  brucker.ea:extensible:2008-b,
+  abstract	= {We present an extensible encoding of object-oriented data models into HOL. Our encoding is supported
+		  by a datatype package that leverages the use of the shallow embedding technique to object-oriented
+		  specification and programming languages. The package incrementally compiles an object-oriented data
+		  model, i.e., a class model, to a theory containing object-universes, constructors, accessor functions,
+		  coercions (casts) between dynamic and static types, characteristic sets, and co-inductive class
+		  invariants. The package is conservative, i.e., all properties are derived entirely from constant
+		  definitions, including the constraints over object structures. As an application, we use the package
+		  for an object-oriented core-language called IMP++, for which we formally prove the correctness of a
+		  Hoare-Logic with respect to a denotational semantics.},
+  author	= {Achim D. Brucker and Burkhart Wolff},
+  language	= {USenglish},
+  public	= {yes},
+  classification= {journal},
+  areas		= {formal methods, software},
+  keywords	= {object-oriented data models, HOL, theorem proving, verification},
+  title		= {An Extensible Encoding of Object-oriented Data Models in {HOL}},
+  year		= 2008,
+  journal	= j-ar,
+  volume	= 41,
+  issue		= 3,
+  pages		= {219--249},
+  issn		= {0168-7433},
+  doi		= {10.1007/s10817-008-9108-3},
+  categories	= {holocl},
+  publisher	= pub-springer,
+  address	= pub-springer:adr,
+  pdf		= {http://www.brucker.ch/bibliography/download/2008/brucker.ea-extensible-2008-b.pdf},
+  url		= {http://www.brucker.ch/bibliography/abstract/brucker.ea-extensible-2008-b}
+}
+
+@Article{	  brucker.ea:afp-core-sc-dom:2020,
+  author	= {Achim D. Brucker and Michael Herzberg},
+  title		= {The Safely Composable {DOM}},
+  journal	= {Archive of Formal Proofs},
+  month		= sep,
+  year		= 2020,
+  date		= {2020-09-28},
+  note		= {\url{http://www.isa-afp.org/entries/Core_SC_DOM.html}, Formal proof development},
+  issn		= {2150-914x},
+  abstract	= { In this AFP entry, we formalize the core of the Safely Composable Document Object Model (SC DOM).
+		  The SC DOM improve the standard DOM by strengthening the tree boundaries set by shadow roots: in the
+		  SC DOM, the shadow root is a sub-class of the document class (instead of a base class).
+		  
+		  This modifications also results in changes to some API methods (e.g., getOwnerDocument) to return the
+		  nearest shadow root rather than the document root. As a result, many API methods that, when called on
+		  a node inside a shadow tree, would previously ``break out'' and return or modify nodes that are
+		  possibly outside the shadow tree, now stay within its boundaries. This change in behavior makes
+		  programs that operate on shadow trees more predictable for the developer and allows them to make more
+		  assumptions about other code accessing the DOM. },
+  public	= {yes},
+  classification= {formal},
+  categories	= {websecurity},
+  pdf		= {http://www.brucker.ch/bibliography/download/2020/brucker.ea-afp-core-sc-dom-2020.pdf},
+  filelabel	= {Outline},
+  file		= {http://www.brucker.ch/bibliography/download/2020/brucker.ea-afp-core-sc-dom-outline-2020.pdf},
+  areas		= {formal methods, security, software engineering},
+  url		= {http://www.brucker.ch/bibliography/abstract/brucker.ea-afp-core-sc-dom-2020}
+}
+
+@Article{         brucker.ea:afp-core-dom:2018,
+  author        = {Achim D. Brucker and Michael Herzberg},
+  title         = {The {Core} {DOM}},
+  journal       = {Archive of Formal Proofs},
+  month         = dec,
+  year          = 2018,
+  date          = {2018-12-26},
+  note          = {\url{http://www.isa-afp.org/entries/Core_DOM.html}, Formal proof development},
+  issn          = {2150-914x},
+  abstract      = {In this AFP entry, we formalize the core of the Document Object Model (DOM). At its core, the DOM
+                  defines a tree-like data structure for representing documents in general and HTML documents in
+                  particular. It is the heart of any modern web browser. Formalizing the key concepts of the DOM is a
+                  prerequisite for the formal reasoning over client-side JavaScript programs and for the analysis of
+                  security concepts in modern web browsers. We present a formalization of the core DOM, with focus on
+                  the node-tree and the operations defined on node-trees, in Isabelle/HOL. We use the formalization to
+                  verify the functional correctness of the most important functions defined in the DOM standard.
+                  Moreover, our formalization is 1) extensible, i.e., can be extended without the need of re-proving
+                  already proven properties and 2) executable, i.e., we can generate executable code from our
+                  specification.},
+  public        = {yes},
+  classification= {formal},
+  categories    = {websecurity},
+  pdf           = {http://www.brucker.ch/bibliography/download/2018/brucker.ea-afp-core-dom-2018.pdf},
+  filelabel     = {Outline},
+  file          = {http://www.brucker.ch/bibliography/download/2018/brucker.ea-afp-core-dom-outline-2018.pdf},
+  areas         = {formal methods, security, software engineering},
+  url           = {http://www.brucker.ch/bibliography/abstract/brucker.ea-afp-core-dom-2018}
+}
+
+@PhDThesis{       wenzel:isabelleisar:2002,
+  author        = {Markus M. Wenzel},
+  title         = {Isabelle/Isar --- a versatile environment for human-readable formal proof documents},
+  school        = {TU M{\"u}nchen},
+  year          = 2002,
+  url           = {http://tumb1.biblio.tu-muenchen.de/publ/diss/in/2002/wenzel.html},
+  abstract      = {The basic motivation of this work is to make formal theory developments with machine-checked proofs
+                  accessible to a broader audience. Our particular approach is centered around the Isar formal proof
+                  language that is intended to support adequate composition of proof documents that are suitable for
+                  human consumption. Such primary proofs written in Isar may be both checked by the machine and read by
+                  human-beings; final presentation merely involves trivial pretty printing of the sources. Sound logical
+                  foundations of Isar are achieved by interpretation within the generic Natural Deduction framework of
+                  Isabelle, reducing all high-level reasoning steps to primitive inferences.
+
+                  The resulting Isabelle/Isar system is generic with respect to object-logics and proof tools, just as
+                  pure Isabelle itself. The full Isar language emerges from a small core by means of several derived
+                  elements, which may be combined freely with existing ones. This results in a very rich space of
+                  expressions of formal reasoning, supporting many viable proof techniques. The general paradigms of
+                  Natural Deduction and Calculational Reasoning are both covered particularly well. Concrete examples
+                  from logic, mathematics, and computer-science demonstrate that the Isar concepts are indeed
+                  sufficiently versatile to cover a broad range of applications.},
+  address       = {M{\"u}nchen},
+  month         = feb,
+  acknowledgement={none},
+  bibkey        = {wenzel:isabelleisar:2002}
+}
+
+
