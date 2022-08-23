@@ -392,7 +392,7 @@ lemma sum_single:
   using assms by auto
 
 lemma has_sum_comm_additive_general: 
-  \<comment> \<open>This is a strengthening of @{thm [source] has_sum_comm_additive_general}}\<close>
+  \<comment> \<open>This is a strengthening of @{thm [source] has_sum_comm_additive_general}.\<close>
   fixes f :: \<open>'b :: {comm_monoid_add,topological_space} \<Rightarrow> 'c :: {comm_monoid_add,topological_space}\<close>
   assumes f_sum: \<open>\<And>F. finite F \<Longrightarrow> F \<subseteq> S \<Longrightarrow> sum (f o g) F = f (sum g F)\<close>
       \<comment> \<open>Not using \<^const>\<open>additive\<close> because it would add sort constraint \<^class>\<open>ab_group_add\<close>\<close>
@@ -415,7 +415,7 @@ proof -
 qed
 
 lemma summable_on_comm_additive_general:
-  \<comment> \<open>This is a strengthening of @{thm [source] summable_on_comm_additive_general}}\<close>
+  \<comment> \<open>This is a strengthening of @{thm [source] summable_on_comm_additive_general}.\<close>
   fixes g :: \<open>'a \<Rightarrow> 'b :: {comm_monoid_add,topological_space}\<close> and f :: \<open>'b \<Rightarrow> 'c :: {comm_monoid_add,topological_space}\<close>
   assumes \<open>\<And>F. finite F \<Longrightarrow> F \<subseteq> S \<Longrightarrow> sum (f o g) F = f (sum g F)\<close>
     \<comment> \<open>Not using \<^const>\<open>additive\<close> because it would add sort constraint \<^class>\<open>ab_group_add\<close>\<close>

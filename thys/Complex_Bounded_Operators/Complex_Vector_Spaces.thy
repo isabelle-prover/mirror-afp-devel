@@ -1784,7 +1784,7 @@ lemma infsum_scaleR_left:
   \<comment> \<open>This result has nothing to do with the bounded operator library but it
       uses @{thm [source] finite_span_closed} so it is proven here.
 
-      It is a strengthening of @{thm [source] infsum_scaleR_left}}\<close>
+      It is a strengthening of @{thm [source] infsum_scaleR_left}.\<close>
   fixes c :: \<open>'a :: real_normed_vector\<close>
   shows "infsum (\<lambda>x. f x *\<^sub>R c) A = infsum f A *\<^sub>R c"
 proof (cases \<open>f summable_on A\<close>)
