@@ -18,25 +18,25 @@ type_synonym sequent = \<open>fm list \<times> fm list\<close>
 
 subsubsection \<open>Substitution\<close>
 
-primrec add_env (infix \<open>\<Zsemi>\<close> 0) where
+primrec add_env :: \<open>'a \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a\<close> (infix \<open>\<Zsemi>\<close> 0) where
   \<open>(t \<Zsemi> s) 0 = t\<close>
 | \<open>(t \<Zsemi> s) (Suc n) = s n\<close>
 
-primrec lift_tm where
+primrec lift_tm :: \<open>tm \<Rightarrow> tm\<close> where
   \<open>lift_tm (\<^bold>#n) = \<^bold>#(n+1)\<close>
 | \<open>lift_tm (\<^bold>\<dagger>f ts) = \<^bold>\<dagger>f (map lift_tm ts)\<close>
 
-primrec sub_tm where
+primrec sub_tm :: \<open>(nat \<Rightarrow> tm) \<Rightarrow> tm \<Rightarrow> tm\<close> where
   \<open>sub_tm s (\<^bold>#n) = s n\<close>
 | \<open>sub_tm s (\<^bold>\<dagger>f ts) = \<^bold>\<dagger>f (map (sub_tm s) ts)\<close>
 
-primrec sub_fm where
+primrec sub_fm :: \<open>(nat \<Rightarrow> tm) \<Rightarrow> fm \<Rightarrow> fm\<close> where
   \<open>sub_fm s \<^bold>\<bottom> = \<^bold>\<bottom>\<close>
 | \<open>sub_fm s (\<^bold>\<ddagger>P ts) = \<^bold>\<ddagger>P (map (sub_tm s) ts)\<close>
 | \<open>sub_fm s (p \<^bold>\<longrightarrow> q) = sub_fm s p \<^bold>\<longrightarrow> sub_fm s q\<close>
 | \<open>sub_fm s (\<^bold>\<forall>p) = \<^bold>\<forall>(sub_fm (\<^bold>#0 \<Zsemi> \<lambda>n. lift_tm (s n)) p)\<close>
 
-abbreviation inst_single (\<open>\<langle>_\<rangle>\<close>) where
+abbreviation inst_single :: \<open>tm \<Rightarrow> fm \<Rightarrow> fm\<close> (\<open>\<langle>_\<rangle>\<close>) where
   \<open>\<langle>t\<rangle>p \<equiv> sub_fm (t \<Zsemi> \<^bold>#) p\<close>
 
 subsubsection \<open>Variables\<close>
