@@ -7,6 +7,7 @@ theory Extra_Vector_Spaces
     "HOL-Library.Indicator_Function"
     "HOL-Analysis.Topology_Euclidean_Space"
     "HOL-Analysis.Line_Segment"
+    "HOL-Analysis.Bounded_Linear_Function"
     Extra_General
 begin
 
@@ -116,6 +117,8 @@ proof intro_classes
 qed
 end (* euclidean_space :: (finite) euclidean_space *)
 
+subsection \<open>Misc\<close>
+
 lemma closure_bounded_linear_image_subset_eq:
   assumes f: "bounded_linear f"
   shows "closure (f ` closure S) = closure (f ` S)"
@@ -124,5 +127,52 @@ lemma closure_bounded_linear_image_subset_eq:
 lemma not_singleton_real_normed_is_perfect_space[simp]: \<open>class.perfect_space (open :: 'a::{not_singleton,real_normed_vector} set \<Rightarrow> bool)\<close>
   apply standard
   by (metis UNIV_not_singleton clopen closed_singleton empty_not_insert)
+
+lemma infsum_bounded_linear:
+  assumes \<open>bounded_linear f\<close>
+  assumes \<open>g summable_on S\<close>
+  shows \<open>infsum (f \<circ> g) S = f (infsum g S)\<close>
+  apply (rule infsum_comm_additive)
+  using assms blinfun_apply_induct blinfun.additive_right
+  by (auto simp: linear_continuous_within)
+
+lemma has_sum_bounded_linear: 
+  assumes \<open>bounded_linear f\<close>
+  assumes \<open>has_sum g S x\<close>
+  shows \<open>has_sum (f o g) S (f x)\<close>
+  apply (rule has_sum_comm_additive)
+  using assms blinfun_apply_induct blinfun.additive_right apply auto
+  using isCont_def linear_continuous_at by fastforce
+
+lemma abs_summable_on_bounded_linear:
+  assumes \<open>bounded_linear f\<close>
+  assumes \<open>g abs_summable_on S\<close>
+  shows \<open>(f o g) abs_summable_on S\<close>
+proof -
+  have bound: \<open>norm (f (g x)) \<le> onorm f * norm (g x)\<close> for x
+    apply (rule onorm)
+    by (simp add: assms(1))
+
+  from assms(2) have \<open>(\<lambda>x. onorm f *\<^sub>R g x) abs_summable_on S\<close>
+    by (auto intro!: summable_on_cmult_right)
+  then have \<open>(\<lambda>x. f (g x)) abs_summable_on S\<close>
+    apply (rule abs_summable_on_comparison_test)
+    using bound by (auto simp: assms(1) onorm_pos_le)
+  then show ?thesis
+    by auto
+qed
+
+lemma norm_plus_leq_norm_prod: \<open>norm (a + b) \<le> sqrt 2 * norm (a, b)\<close>
+proof -
+  have \<open>(norm (a + b))\<^sup>2 \<le> (norm a + norm b)\<^sup>2\<close>
+    using norm_triangle_ineq by auto
+  also have \<open>\<dots> \<le> 2 * ((norm a)\<^sup>2 + (norm b)\<^sup>2)\<close>
+    by (smt (verit, best) power2_sum sum_squares_bound)
+  also have \<open>\<dots> \<le> (sqrt 2 * norm (a, b))\<^sup>2\<close>
+    by (auto simp: power_mult_distrib norm_prod_def simp del: power_mono_iff)
+  finally show ?thesis
+    by auto
+qed
+
 
 end
