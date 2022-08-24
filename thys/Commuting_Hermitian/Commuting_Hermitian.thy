@@ -2055,10 +2055,8 @@ next
   then show ?case 
   proof (cases "x = y")
     case True
-    then show ?thesis using eq_comps.simps(3)[of x y l]  3 
-      unfolding Let_def
-      by (metis eq_comps_not_empty hd_Cons_tl length_Cons list.discI 
-          semiring_norm(164) sum_list.Cons) 
+    then show ?thesis using eq_comps.simps(3)[of x y l] 3
+      by (cases \<open>eq_comps (y # l)\<close>) simp_all
   next
     case False
     then show ?thesis using eq_comps.simps(3)[of x y l]  3 
