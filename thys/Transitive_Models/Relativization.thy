@@ -5,7 +5,7 @@ far as possible; assuming that the witnesses for the relativized terms are alway
 
 theory Relativization
   imports
-    "ZF-Constructible.Datatype_absolute"
+    "Eclose_Absolute"
     Higher_Order_Constructs
   keywords
     "relativize" :: thy_decl % "ML"
@@ -107,23 +107,14 @@ lemmas relative_abs =
   M_trancl.trans_wfrec_on_abs
 
 lemmas datatype_abs =
-  M_datatypes.list_N_abs
-  M_datatypes.list_abs
-  M_datatypes.formula_N_abs
-  M_datatypes.formula_abs
   M_eclose.is_eclose_n_abs
   M_eclose.eclose_abs
-  M_datatypes.length_abs
-  M_datatypes.nth_abs
   M_trivial.Member_abs
   M_trivial.Equal_abs
   M_trivial.Nand_abs
   M_trivial.Forall_abs
-  M_datatypes.depth_abs
-  M_datatypes.formula_case_abs
 
 declare relative_abs[absolut]
-declare datatype_abs[absolut]
 
 ML_file\<open>Relativization.ml\<close>
 

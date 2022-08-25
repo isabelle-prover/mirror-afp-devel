@@ -1,4 +1,4 @@
-section\<open>The main theorem\<close>
+section\<open>The existence of generic extensions\<close>
 
 theory Forcing_Main
   imports

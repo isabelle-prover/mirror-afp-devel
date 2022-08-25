@@ -35,101 +35,99 @@ lemma refl_monot_domain: "refl(B,r) \<Longrightarrow> A\<subseteq>B \<Longrighta
   unfolding refl_def by blast
 
 locale forcing_notion =
-  fixes P leq one
-  assumes one_in_P:       "one \<in> P"
-    and leq_preord:       "preorder_on(P,leq)"
-    and one_max:          "\<forall>p\<in>P. \<langle>p,one\<rangle>\<in>leq"
+  fixes P (\<open>\<bbbP>\<close>) and leq and one (\<open>\<one>\<close>)
+  assumes one_in_P:       "\<one> \<in> \<bbbP>"
+    and leq_preord:       "preorder_on(\<bbbP>,leq)"
+    and one_max:          "\<forall>p\<in>\<bbbP>. \<langle>p,\<one>\<rangle>\<in>leq"
 begin
-
-notation one (\<open>\<one>\<close>)
 
 abbreviation Leq :: "[i, i] \<Rightarrow> o"  (infixl "\<preceq>" 50)
   where "x \<preceq> y \<equiv> \<langle>x,y\<rangle>\<in>leq"
 
 lemma refl_leq:
-  "r\<in>P \<Longrightarrow> r\<preceq>r"
+  "r\<in>\<bbbP> \<Longrightarrow> r\<preceq>r"
   using leq_preord unfolding preorder_on_def refl_def by simp
 
-text\<open>A set $D$ is \<^emph>\<open>dense\<close> if every element $p\in P$ has a lower
+text\<open>A set $D$ is \<^emph>\<open>dense\<close> if every element $p\in \mathbb{P}$ has a lower
 bound in $D$.\<close>
 definition
   dense :: "i\<Rightarrow>o" where
-  "dense(D) \<equiv> \<forall>p\<in>P. \<exists>d\<in>D . d\<preceq>p"
+  "dense(D) \<equiv> \<forall>p\<in>\<bbbP>. \<exists>d\<in>D . d\<preceq>p"
 
 text\<open>There is also a weaker definition which asks for
 a lower bound in $D$ only for the elements below some fixed
 element $q$.\<close>
 definition
   dense_below :: "i\<Rightarrow>i\<Rightarrow>o" where
-  "dense_below(D,q) \<equiv> \<forall>p\<in>P. p\<preceq>q \<longrightarrow> (\<exists>d\<in>D. d\<in>P \<and> d\<preceq>p)"
+  "dense_below(D,q) \<equiv> \<forall>p\<in>\<bbbP>. p\<preceq>q \<longrightarrow> (\<exists>d\<in>D. d\<in>\<bbbP> \<and> d\<preceq>p)"
 
-lemma P_dense: "dense(P)"
+lemma P_dense: "dense(\<bbbP>)"
   by (insert leq_preord, auto simp add: preorder_on_def refl_def dense_def)
 
 definition
   increasing :: "i\<Rightarrow>o" where
-  "increasing(F) \<equiv> \<forall>x\<in>F. \<forall> p \<in> P . x\<preceq>p \<longrightarrow> p\<in>F"
+  "increasing(F) \<equiv> \<forall>x\<in>F. \<forall> p \<in> \<bbbP> . x\<preceq>p \<longrightarrow> p\<in>F"
 
 definition
   compat :: "i\<Rightarrow>i\<Rightarrow>o" where
-  "compat(p,q) \<equiv> compat_in(P,leq,p,q)"
+  "compat(p,q) \<equiv> compat_in(\<bbbP>,leq,p,q)"
 
-lemma leq_transD:  "a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> P\<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> a\<preceq>c"
+lemma leq_transD:  "a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> \<bbbP>\<Longrightarrow> b \<in> \<bbbP>\<Longrightarrow> c \<in> \<bbbP>\<Longrightarrow> a\<preceq>c"
   using leq_preord trans_onD unfolding preorder_on_def by blast
 
-lemma leq_transD':  "A\<subseteq>P \<Longrightarrow> a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> A \<Longrightarrow> b \<in> P\<Longrightarrow> c \<in> P\<Longrightarrow> a\<preceq>c"
+lemma leq_transD':  "A\<subseteq>\<bbbP> \<Longrightarrow> a\<preceq>b \<Longrightarrow> b\<preceq>c \<Longrightarrow> a \<in> A \<Longrightarrow> b \<in> \<bbbP>\<Longrightarrow> c \<in> \<bbbP>\<Longrightarrow> a\<preceq>c"
   using leq_preord trans_onD subsetD unfolding preorder_on_def by blast
 
-lemma compatD[dest!]: "compat(p,q) \<Longrightarrow> \<exists>d\<in>P. d\<preceq>p \<and> d\<preceq>q"
+lemma compatD[dest!]: "compat(p,q) \<Longrightarrow> \<exists>d\<in>\<bbbP>. d\<preceq>p \<and> d\<preceq>q"
   unfolding compat_def compat_in_def .
 
 abbreviation Incompatible :: "[i, i] \<Rightarrow> o"  (infixl "\<bottom>" 50)
   where "p \<bottom> q \<equiv> \<not> compat(p,q)"
 
-lemma compatI[intro!]: "d\<in>P \<Longrightarrow> d\<preceq>p \<Longrightarrow> d\<preceq>q \<Longrightarrow> compat(p,q)"
+lemma compatI[intro!]: "d\<in>\<bbbP> \<Longrightarrow> d\<preceq>p \<Longrightarrow> d\<preceq>q \<Longrightarrow> compat(p,q)"
   unfolding compat_def compat_in_def by blast
 
-lemma Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>P; q\<in>P \<rbrakk>\<Longrightarrow> p \<noteq> q"
+lemma Incompatible_imp_not_eq: "\<lbrakk> p \<bottom> q; p\<in>\<bbbP>; q\<in>\<bbbP> \<rbrakk>\<Longrightarrow> p \<noteq> q"
   using refl_leq by blast
 
-lemma denseD [dest]: "dense(D) \<Longrightarrow> p\<in>P \<Longrightarrow>  \<exists>d\<in>D. d\<preceq> p"
+lemma denseD [dest]: "dense(D) \<Longrightarrow> p\<in>\<bbbP> \<Longrightarrow>  \<exists>d\<in>D. d\<preceq> p"
   unfolding dense_def by blast
 
-lemma denseI [intro!]: "\<lbrakk> \<And>p. p\<in>P \<Longrightarrow> \<exists>d\<in>D. d\<preceq> p \<rbrakk> \<Longrightarrow> dense(D)"
+lemma denseI [intro!]: "\<lbrakk> \<And>p. p\<in>\<bbbP> \<Longrightarrow> \<exists>d\<in>D. d\<preceq> p \<rbrakk> \<Longrightarrow> dense(D)"
   unfolding dense_def by blast
 
 lemma dense_belowD [dest]:
-  assumes "dense_below(D,p)" "q\<in>P" "q\<preceq>p"
-  shows "\<exists>d\<in>D. d\<in>P \<and> d\<preceq>q"
+  assumes "dense_below(D,p)" "q\<in>\<bbbP>" "q\<preceq>p"
+  shows "\<exists>d\<in>D. d\<in>\<bbbP> \<and> d\<preceq>q"
   using assms unfolding dense_below_def by simp
 
 lemma dense_belowI [intro!]:
-  assumes "\<And>q. q\<in>P \<Longrightarrow> q\<preceq>p \<Longrightarrow> \<exists>d\<in>D. d\<in>P \<and> d\<preceq>q"
+  assumes "\<And>q. q\<in>\<bbbP> \<Longrightarrow> q\<preceq>p \<Longrightarrow> \<exists>d\<in>D. d\<in>\<bbbP> \<and> d\<preceq>q"
   shows "dense_below(D,p)"
   using assms unfolding dense_below_def by simp
 
-lemma dense_below_cong: "p\<in>P \<Longrightarrow> D = D' \<Longrightarrow> dense_below(D,p) \<longleftrightarrow> dense_below(D',p)"
+lemma dense_below_cong: "p\<in>\<bbbP> \<Longrightarrow> D = D' \<Longrightarrow> dense_below(D,p) \<longleftrightarrow> dense_below(D',p)"
   by blast
 
-lemma dense_below_cong': "p\<in>P \<Longrightarrow> \<lbrakk>\<And>x. x\<in>P \<Longrightarrow> Q(x) \<longleftrightarrow> Q'(x)\<rbrakk> \<Longrightarrow>
-           dense_below({q\<in>P. Q(q)},p) \<longleftrightarrow> dense_below({q\<in>P. Q'(q)},p)"
+lemma dense_below_cong': "p\<in>\<bbbP> \<Longrightarrow> \<lbrakk>\<And>x. x\<in>\<bbbP> \<Longrightarrow> Q(x) \<longleftrightarrow> Q'(x)\<rbrakk> \<Longrightarrow>
+           dense_below({q\<in>\<bbbP>. Q(q)},p) \<longleftrightarrow> dense_below({q\<in>\<bbbP>. Q'(q)},p)"
   by blast
 
-lemma dense_below_mono: "p\<in>P \<Longrightarrow> D \<subseteq> D' \<Longrightarrow> dense_below(D,p) \<Longrightarrow> dense_below(D',p)"
+lemma dense_below_mono: "p\<in>\<bbbP> \<Longrightarrow> D \<subseteq> D' \<Longrightarrow> dense_below(D,p) \<Longrightarrow> dense_below(D',p)"
   by blast
 
 lemma dense_below_under:
-  assumes "dense_below(D,p)" "p\<in>P" "q\<in>P" "q\<preceq>p"
+  assumes "dense_below(D,p)" "p\<in>\<bbbP>" "q\<in>\<bbbP>" "q\<preceq>p"
   shows "dense_below(D,q)"
   using assms leq_transD by blast
 
 lemma ideal_dense_below:
-  assumes "\<And>q. q\<in>P \<Longrightarrow> q\<preceq>p \<Longrightarrow> q\<in>D"
+  assumes "\<And>q. q\<in>\<bbbP> \<Longrightarrow> q\<preceq>p \<Longrightarrow> q\<in>D"
   shows "dense_below(D,p)"
   using assms refl_leq by blast
 
 lemma dense_below_dense_below:
-  assumes "dense_below({q\<in>P. dense_below(D,q)},p)" "p\<in>P"
+  assumes "dense_below({q\<in>\<bbbP>. dense_below(D,q)},p)" "p\<in>\<bbbP>"
   shows "dense_below(D,p)"
   using assms leq_transD refl_leq  by blast
 
@@ -137,15 +135,15 @@ text\<open>A filter is an increasing set $G$ with all its elements
 being compatible in $G$.\<close>
 definition
   filter :: "i\<Rightarrow>o" where
-  "filter(G) \<equiv> G\<subseteq>P \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(G,leq,p,q))"
+  "filter(G) \<equiv> G\<subseteq>\<bbbP> \<and> increasing(G) \<and> (\<forall>p\<in>G. \<forall>q\<in>G. compat_in(G,leq,p,q))"
 
-lemma filterD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> x \<in> P"
+lemma filterD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> x \<in> \<bbbP>"
   by (auto simp add : subsetD filter_def)
 
-lemma filter_subset_notion[dest]: "filter(G) \<Longrightarrow> G \<subseteq> P"
+lemma filter_subset_notion[dest]: "filter(G) \<Longrightarrow> G \<subseteq> \<bbbP>"
   by (auto dest:filterD)
 
-lemma filter_leqD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> y \<in> P \<Longrightarrow> x\<preceq>y \<Longrightarrow> y \<in> G"
+lemma filter_leqD : "filter(G) \<Longrightarrow> x \<in> G \<Longrightarrow> y \<in> \<bbbP> \<Longrightarrow> x\<preceq>y \<Longrightarrow> y \<in> G"
   by (simp add: filter_def increasing_def)
 
 lemma filter_imp_compat: "filter(G) \<Longrightarrow> p\<in>G \<Longrightarrow> q\<in>G \<Longrightarrow> compat(p,q)"
@@ -162,37 +160,37 @@ and prove that the closure of $A$ is a filter if its elements are
 compatible in $A$.\<close>
 definition
   upclosure :: "i\<Rightarrow>i" where
-  "upclosure(A) \<equiv> {p\<in>P.\<exists>a\<in>A. a\<preceq>p}"
+  "upclosure(A) \<equiv> {p\<in>\<bbbP>.\<exists>a\<in>A. a\<preceq>p}"
 
-lemma  upclosureI [intro] : "p\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> a\<preceq>p \<Longrightarrow> p\<in>upclosure(A)"
+lemma  upclosureI [intro] : "p\<in>\<bbbP> \<Longrightarrow> a\<in>A \<Longrightarrow> a\<preceq>p \<Longrightarrow> p\<in>upclosure(A)"
   by (simp add:upclosure_def, auto)
 
 lemma  upclosureE [elim] :
-  "p\<in>upclosure(A) \<Longrightarrow> (\<And>x a. x\<in>P \<Longrightarrow> a\<in>A \<Longrightarrow> a\<preceq>x \<Longrightarrow> R) \<Longrightarrow> R"
+  "p\<in>upclosure(A) \<Longrightarrow> (\<And>x a. x\<in>\<bbbP> \<Longrightarrow> a\<in>A \<Longrightarrow> a\<preceq>x \<Longrightarrow> R) \<Longrightarrow> R"
   by (auto simp add:upclosure_def)
 
 lemma  upclosureD [dest] :
-  "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(a\<preceq>p) \<and> p\<in>P"
+  "p\<in>upclosure(A) \<Longrightarrow> \<exists>a\<in>A.(a\<preceq>p) \<and> p\<in>\<bbbP>"
   by (simp add:upclosure_def)
 
 lemma upclosure_increasing :
-  assumes "A\<subseteq>P"
+  assumes "A\<subseteq>\<bbbP>"
   shows "increasing(upclosure(A))"
   unfolding increasing_def upclosure_def
-  using leq_transD'[OF \<open>A\<subseteq>P\<close>] by auto
+  using leq_transD'[OF \<open>A\<subseteq>\<bbbP>\<close>] by auto
 
-lemma  upclosure_in_P: "A \<subseteq> P \<Longrightarrow> upclosure(A) \<subseteq> P"
+lemma  upclosure_in_P: "A \<subseteq> \<bbbP> \<Longrightarrow> upclosure(A) \<subseteq> \<bbbP>"
   using subsetI upclosure_def by simp
 
-lemma  A_sub_upclosure: "A \<subseteq> P \<Longrightarrow> A\<subseteq>upclosure(A)"
+lemma  A_sub_upclosure: "A \<subseteq> \<bbbP> \<Longrightarrow> A\<subseteq>upclosure(A)"
   using subsetI leq_preord
   unfolding upclosure_def preorder_on_def refl_def by auto
 
-lemma  elem_upclosure: "A\<subseteq>P \<Longrightarrow> x\<in>A  \<Longrightarrow> x\<in>upclosure(A)"
+lemma  elem_upclosure: "A\<subseteq>\<bbbP> \<Longrightarrow> x\<in>A  \<Longrightarrow> x\<in>upclosure(A)"
   by (blast dest:A_sub_upclosure)
 
 lemma  closure_compat_filter:
-  assumes "A\<subseteq>P" "(\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,leq,p,q))"
+  assumes "A\<subseteq>\<bbbP>" "(\<forall>p\<in>A.\<forall>q\<in>A. compat_in(A,leq,p,q))"
   shows "filter(upclosure(A))"
   unfolding filter_def
 proof(auto)
@@ -203,26 +201,26 @@ next
   show "compat_in(upclosure(A), leq, p, q)" if "p\<in>?UA" "q\<in>?UA" for p q
   proof -
     from that
-    obtain a b where 1:"a\<in>A" "b\<in>A" "a\<preceq>p" "b\<preceq>q" "p\<in>P" "q\<in>P"
+    obtain a b where 1:"a\<in>A" "b\<in>A" "a\<preceq>p" "b\<preceq>q" "p\<in>\<bbbP>" "q\<in>\<bbbP>"
       using upclosureD[OF \<open>p\<in>?UA\<close>] upclosureD[OF \<open>q\<in>?UA\<close>] by auto
     with assms(2)
     obtain d where "d\<in>A" "d\<preceq>a" "d\<preceq>b"
       unfolding compat_in_def by auto
     with 1
     have "d\<preceq>p" "d\<preceq>q" "d\<in>?UA"
-      using A_sub_upclosure[THEN subsetD] \<open>A\<subseteq>P\<close>
+      using A_sub_upclosure[THEN subsetD] \<open>A\<subseteq>\<bbbP>\<close>
         leq_transD'[of A d a] leq_transD'[of A d b] by auto
     then
     show ?thesis unfolding compat_in_def by auto
   qed
 qed
 
-lemma  aux_RS1:  "f \<in> N \<rightarrow> P \<Longrightarrow> n\<in>N \<Longrightarrow> f`n \<in> upclosure(f ``N)"
+lemma  aux_RS1:  "f \<in> N \<rightarrow> \<bbbP> \<Longrightarrow> n\<in>N \<Longrightarrow> f`n \<in> upclosure(f ``N)"
   using elem_upclosure[OF subset_fun_image] image_fun
   by (simp, blast)
 
 lemma decr_succ_decr:
-  assumes "f \<in> nat \<rightarrow> P" "preorder_on(P,leq)"
+  assumes "f \<in> nat \<rightarrow> \<bbbP>" "preorder_on(\<bbbP>,leq)"
     "\<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq"
     "m\<in>nat"
   shows "n\<in>nat \<Longrightarrow> n\<le>m \<Longrightarrow> \<langle>f ` m, f ` n\<rangle> \<in> leq"
@@ -233,7 +231,7 @@ proof(induct m)
 next
   case (succ x)
   then
-  have 1:"f`succ(x) \<preceq> f`x" "f`n\<in>P" "f`x\<in>P" "f`succ(x)\<in>P"
+  have 1:"f`succ(x) \<preceq> f`x" "f`n\<in>\<bbbP>" "f`x\<in>\<bbbP>" "f`succ(x)\<in>\<bbbP>"
     using assms by simp_all
   consider (lt) "n<succ(x)" | (eq) "n=succ(x)"
     using succ le_succ_iff by auto
@@ -249,12 +247,12 @@ next
 qed
 
 lemma decr_seq_linear:
-  assumes "refl(P,leq)" "f \<in> nat \<rightarrow> P"
+  assumes "refl(\<bbbP>,leq)" "f \<in> nat \<rightarrow> \<bbbP>"
     "\<forall>n\<in>nat.  \<langle>f ` succ(n), f ` n\<rangle> \<in> leq"
-    "trans[P](leq)"
+    "trans[\<bbbP>](leq)"
   shows "linear(f `` nat, leq)"
 proof -
-  have "preorder_on(P,leq)"
+  have "preorder_on(\<bbbP>,leq)"
     unfolding preorder_on_def using assms by simp
   {
     fix n m
@@ -265,12 +263,12 @@ proof -
       case True
       with \<open>n\<in>_\<close> \<open>m\<in>_\<close>
       show ?thesis
-        using decr_succ_decr[of f n m] assms leI \<open>preorder_on(P,leq)\<close> by simp
+        using decr_succ_decr[of f n m] assms leI \<open>preorder_on(\<bbbP>,leq)\<close> by simp
     next
       case False
       with \<open>n\<in>_\<close> \<open>m\<in>_\<close>
       show ?thesis
-        using decr_succ_decr[of f m n] assms leI not_le_iff_lt \<open>preorder_on(P,leq)\<close> by simp
+        using decr_succ_decr[of f m n] assms leI not_le_iff_lt \<open>preorder_on(\<bbbP>,leq)\<close> by simp
     qed
   }
   then
@@ -283,7 +281,7 @@ end \<comment> \<open>\<^locale>\<open>forcing_notion\<close>\<close>
 subsection\<open>Towards Rasiowa-Sikorski Lemma (RSL)\<close>
 locale countable_generic = forcing_notion +
   fixes \<D>
-  assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(P)"
+  assumes countable_subs_of_P:  "\<D> \<in> nat\<rightarrow>Pow(\<bbbP>)"
     and     seq_of_denses:        "\<forall>n \<in> nat. dense(\<D>`n)"
 
 begin
@@ -296,17 +294,17 @@ text\<open>The next lemma identifies a sufficient condition for obtaining
 RSL.\<close>
 lemma RS_sequence_imp_rasiowa_sikorski:
   assumes
-    "p\<in>P" "f : nat\<rightarrow>P" "f ` 0 = p"
+    "p\<in>\<bbbP>" "f : nat\<rightarrow>\<bbbP>" "f ` 0 = p"
     "\<And>n. n\<in>nat \<Longrightarrow> f ` succ(n)\<preceq> f ` n \<and> f ` succ(n) \<in> \<D> ` n"
   shows
     "\<exists>G. p\<in>G \<and> D_generic(G)"
 proof -
   note assms
   moreover from this
-  have "f``nat  \<subseteq> P"
+  have "f``nat  \<subseteq> \<bbbP>"
     by (simp add:subset_fun_image)
   moreover from calculation
-  have "refl(f``nat, leq) \<and> trans[P](leq)"
+  have "refl(f``nat, leq) \<and> trans[\<bbbP>](leq)"
     using leq_preord unfolding preorder_on_def by (blast intro:refl_monot_domain)
   moreover from calculation
   have "\<forall>n\<in>nat.  f ` succ(n)\<preceq> f ` n" by (simp)
@@ -353,37 +351,37 @@ begin
 
 lemma countable_RS_sequence_aux:
   fixes p enum
-  defines "f(n) \<equiv> RS_seq(n,P,leq,p,enum,\<D>)"
+  defines "f(n) \<equiv> RS_seq(n,\<bbbP>,leq,p,enum,\<D>)"
     and   "Q(q,k,m) \<equiv> enum`m\<preceq> q \<and> enum`m \<in> \<D> ` k"
-  assumes "n\<in>nat" "p\<in>P" "P \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
-    "\<And>x k. x\<in>P \<Longrightarrow> k\<in>nat \<Longrightarrow>  \<exists>q\<in>P. q\<preceq> x \<and> q \<in> \<D> ` k"
+  assumes "n\<in>nat" "p\<in>\<bbbP>" "\<bbbP> \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
+    "\<And>x k. x\<in>\<bbbP> \<Longrightarrow> k\<in>nat \<Longrightarrow>  \<exists>q\<in>\<bbbP>. q\<preceq> x \<and> q \<in> \<D> ` k"
   shows
-    "f(succ(n)) \<in> P \<and> f(succ(n))\<preceq> f(n) \<and> f(succ(n)) \<in> \<D> ` n"
+    "f(succ(n)) \<in> \<bbbP> \<and> f(succ(n))\<preceq> f(n) \<and> f(succ(n)) \<in> \<D> ` n"
   using \<open>n\<in>nat\<close>
 proof (induct)
   case 0
   from assms
-  obtain q where "q\<in>P" "q\<preceq> p" "q \<in> \<D> ` 0" by blast
-  moreover from this and \<open>P \<subseteq> range(enum)\<close>
+  obtain q where "q\<in>\<bbbP>" "q\<preceq> p" "q \<in> \<D> ` 0" by blast
+  moreover from this and \<open>\<bbbP> \<subseteq> range(enum)\<close>
   obtain m where "m\<in>nat" "enum`m = q"
     using Pi_rangeD[OF \<open>enum:nat\<rightarrow>M\<close>] by blast
   moreover
-  have "\<D>`0 \<subseteq> P"
+  have "\<D>`0 \<subseteq> \<bbbP>"
     using apply_funtype[OF countable_subs_of_P] by simp
-  moreover note \<open>p\<in>P\<close>
+  moreover note \<open>p\<in>\<bbbP>\<close>
   ultimately
   show ?case
     using LeastI[of "Q(p,0)" m] unfolding Q_def f_def by auto
 next
   case (succ n)
   with assms
-  obtain q where "q\<in>P" "q\<preceq> f(succ(n))" "q \<in> \<D> ` succ(n)" by blast
-  moreover from this and \<open>P \<subseteq> range(enum)\<close>
+  obtain q where "q\<in>\<bbbP>" "q\<preceq> f(succ(n))" "q \<in> \<D> ` succ(n)" by blast
+  moreover from this and \<open>\<bbbP> \<subseteq> range(enum)\<close>
   obtain m where "m\<in>nat" "enum`m\<preceq> f(succ(n))" "enum`m \<in> \<D> ` succ(n)"
     using Pi_rangeD[OF \<open>enum:nat\<rightarrow>M\<close>] by blast
   moreover note succ
   moreover from calculation
-  have "\<D>`succ(n) \<subseteq> P"
+  have "\<D>`succ(n) \<subseteq> \<bbbP>"
     using apply_funtype[OF countable_subs_of_P] by auto
   ultimately
   show ?case
@@ -392,36 +390,36 @@ qed
 
 lemma countable_RS_sequence:
   fixes p enum
-  defines "f \<equiv> \<lambda>n\<in>nat. RS_seq(n,P,leq,p,enum,\<D>)"
+  defines "f \<equiv> \<lambda>n\<in>nat. RS_seq(n,\<bbbP>,leq,p,enum,\<D>)"
     and   "Q(q,k,m) \<equiv> enum`m\<preceq> q \<and> enum`m \<in> \<D> ` k"
-  assumes "n\<in>nat" "p\<in>P" "P \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
+  assumes "n\<in>nat" "p\<in>\<bbbP>" "\<bbbP> \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
   shows
-    "f`0 = p" "f`succ(n)\<preceq> f`n \<and> f`succ(n) \<in> \<D> ` n" "f`succ(n) \<in> P"
+    "f`0 = p" "f`succ(n)\<preceq> f`n \<and> f`succ(n) \<in> \<D> ` n" "f`succ(n) \<in> \<bbbP>"
 proof -
   from assms
   show "f`0 = p" by simp
   {
     fix x k
-    assume "x\<in>P" "k\<in>nat"
+    assume "x\<in>\<bbbP>" "k\<in>nat"
     then
-    have "\<exists>q\<in>P. q\<preceq> x \<and> q \<in> \<D> ` k"
+    have "\<exists>q\<in>\<bbbP>. q\<preceq> x \<and> q \<in> \<D> ` k"
       using seq_of_denses apply_funtype[OF countable_subs_of_P]
       unfolding dense_def by blast
   }
   with assms
-  show "f`succ(n)\<preceq> f`n \<and> f`succ(n) \<in> \<D> ` n" "f`succ(n)\<in>P"
+  show "f`succ(n)\<preceq> f`n \<and> f`succ(n) \<in> \<D> ` n" "f`succ(n)\<in>\<bbbP>"
     unfolding f_def using countable_RS_sequence_aux by simp_all
 qed
 
 lemma RS_seq_type:
-  assumes "n \<in> nat" "p\<in>P" "P \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
-  shows "RS_seq(n,P,leq,p,enum,\<D>) \<in> P"
+  assumes "n \<in> nat" "p\<in>\<bbbP>" "\<bbbP> \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
+  shows "RS_seq(n,\<bbbP>,leq,p,enum,\<D>) \<in> \<bbbP>"
   using assms countable_RS_sequence(1,3)
   by (induct;simp)
 
 lemma RS_seq_funtype:
-  assumes "p\<in>P" "P \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
-  shows "(\<lambda>n\<in>nat. RS_seq(n,P,leq,p,enum,\<D>)): nat \<rightarrow> P"
+  assumes "p\<in>\<bbbP>" "\<bbbP> \<subseteq> range(enum)" "enum:nat\<rightarrow>M"
+  shows "(\<lambda>n\<in>nat. RS_seq(n,\<bbbP>,leq,p,enum,\<D>)): nat \<rightarrow> \<bbbP>"
   using assms lam_type RS_seq_type by auto
 
 lemmas countable_rasiowa_sikorski =

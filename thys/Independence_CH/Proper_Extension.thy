@@ -9,7 +9,7 @@ text\<open>The key ingredient to obtain a proper extension is to have
 a \<^emph>\<open>separative preorder\<close>:\<close>
 
 locale separative_notion = forcing_notion +
-  assumes separative: "p\<in>P \<Longrightarrow> \<exists>q\<in>P. \<exists>r\<in>P. q \<preceq> p \<and> r \<preceq> p \<and> q \<bottom> r"
+  assumes separative: "p\<in>\<bbbP> \<Longrightarrow> \<exists>q\<in>\<bbbP>. \<exists>r\<in>\<bbbP>. q \<preceq> p \<and> r \<preceq> p \<and> q \<bottom> r"
 begin
 
 text\<open>For separative preorders, the complement of every filter is
@@ -17,20 +17,20 @@ dense. Hence an $M$-generic filter cannot belong to the ground model.\<close>
 
 lemma filter_complement_dense:
   assumes "filter(G)"
-  shows "dense(P - G)"
+  shows "dense(\<bbbP> - G)"
 proof
   fix p
-  assume "p\<in>P"
-  show "\<exists>d\<in>P - G. d \<preceq> p"
+  assume "p\<in>\<bbbP>"
+  show "\<exists>d\<in>\<bbbP> - G. d \<preceq> p"
   proof (cases "p\<in>G")
     case True
-    note \<open>p\<in>P\<close> assms
+    note \<open>p\<in>\<bbbP>\<close> assms
     moreover
-    obtain q r where "q \<preceq> p" "r \<preceq> p" "q \<bottom> r" "q\<in>P" "r\<in>P"
-      using separative[OF \<open>p\<in>P\<close>]
+    obtain q r where "q \<preceq> p" "r \<preceq> p" "q \<bottom> r" "q\<in>\<bbbP>" "r\<in>\<bbbP>"
+      using separative[OF \<open>p\<in>\<bbbP>\<close>]
       by force
     with \<open>filter(G)\<close>
-    obtain s where "s \<preceq> p" "s \<notin> G" "s \<in> P"
+    obtain s where "s \<preceq> p" "s \<notin> G" "s \<in> \<bbbP>"
       using filter_imp_compat[of G q r]
       by auto
     then
@@ -38,7 +38,7 @@ proof
       by blast
   next
     case False
-    with \<open>p\<in>P\<close>
+    with \<open>p\<in>\<bbbP>\<close>
     show ?thesis
       using refl_leq unfolding Diff_def by auto
   qed
@@ -54,7 +54,7 @@ context
   assumes generic: "M_generic(G)"
 begin
 
-interpretation G_generic1 P leq \<one> M enum G
+interpretation G_generic1 \<bbbP> leq \<one> M enum G
   by unfold_locales (simp add:generic)
 
 lemma generic_not_in_M:
@@ -62,16 +62,16 @@ lemma generic_not_in_M:
 proof
   assume "G\<in>M"
   then
-  have "P - G \<in> M"
+  have "\<bbbP> - G \<in> M"
     using Diff_closed by simp
   moreover
-  have "\<not>(\<exists>q\<in>G. q \<in> P - G)" "(P - G) \<subseteq> P"
+  have "\<not>(\<exists>q\<in>G. q \<in> \<bbbP> - G)" "(\<bbbP> - G) \<subseteq> \<bbbP>"
     unfolding Diff_def by auto
   moreover
   note generic
   ultimately
   show "False"
-    using filter_complement_dense[of G] M_generic_denseD[of "P-G"]
+    using filter_complement_dense[of G] M_generic_denseD[of "\<bbbP>-G"]
     by auto
 qed
 

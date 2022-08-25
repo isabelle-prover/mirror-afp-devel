@@ -309,14 +309,9 @@ locale M_ZF3 = M_ZF2 +
     ground_replacements3:
     "ground_replacement_assm(M,env,replacement_is_order_body_fm)"
     "ground_replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
-    "ground_replacement_assm(M,env,list_repl1_intf_fm)"
-    "ground_replacement_assm(M,env,list_repl2_intf_fm)"
-    "ground_replacement_assm(M,env,formula_repl2_intf_fm)"
     "ground_replacement_assm(M,env,eclose_repl2_intf_fm)"
     "ground_replacement_assm(M,env,wfrec_rank_fm)"
     "ground_replacement_assm(M,env,trans_repl_HVFrom_fm)"
-    "ground_replacement_assm(M,env,tl_repl_intf_fm)"
-    "ground_replacement_assm(M,env,formula_repl1_intf_fm)"
     "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
     "ground_replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
     "ground_replacement_assm(M,env,replacement_is_order_eq_map_fm)"
@@ -324,19 +319,14 @@ locale M_ZF3 = M_ZF2 +
 definition instances3_fms where "instances3_fms \<equiv>
   { ground_repl_fm(replacement_is_order_body_fm),
     ground_repl_fm(wfrec_replacement_order_pred_fm),
-    ground_repl_fm(list_repl1_intf_fm),
-    ground_repl_fm(list_repl2_intf_fm),
-    ground_repl_fm(formula_repl2_intf_fm),
     ground_repl_fm(eclose_repl2_intf_fm),
     ground_repl_fm(wfrec_rank_fm),
     ground_repl_fm(trans_repl_HVFrom_fm),
-    ground_repl_fm(tl_repl_intf_fm),
-    ground_repl_fm(formula_repl1_intf_fm),
     ground_repl_fm(eclose_repl1_intf_fm),
     ground_repl_fm(replacement_HAleph_wfrec_repl_body_fm),
     ground_repl_fm(replacement_is_order_eq_map_fm) }"
 
-text\<open>This set has $13$ internalized formulas, corresponding to the total
+text\<open>This set has $8$ internalized formulas, corresponding to the total
 count of previous replacement instances (apart from those $5$ in
 \<^term>\<open>instances_ground_fms\<close> and \<^term>\<open>instances_ground_notCH_fms\<close>,
 and \<^term>\<open>replacement_dcwit_repl_body_fm\<close>).\<close>
@@ -352,8 +342,8 @@ definition overhead_CH where
   "overhead_CH \<equiv> overhead_notCH \<union> { replacement_dcwit_repl_body_fm }"
 
 text\<open>Hence, the “overhead” to create a proper extension of a ctm by forcing
-consists of $16$ replacement instances. To force $\neg\CH$,
-31 instances are need, and one further instance is required to
+consists of $7$ replacement instances. To force $\neg\CH$,
+21 instances are need, and one further instance is required to
 force $\CH$.\<close>
 
 lemma instances2_fms_type[TC] : "instances2_fms \<subseteq> formula"

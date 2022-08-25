@@ -83,22 +83,22 @@ proof -
   from assms
   obtain \<tau> where "\<tau> \<in> M" "val(G, \<tau>) = a"
     using GenExtD by auto
-  let ?Q="Pow(domain(\<tau>)\<times>P) \<inter> M"
+  let ?Q="Pow(domain(\<tau>)\<times>\<bbbP>) \<inter> M"
   from \<open>\<tau>\<in>M\<close>
-  have "domain(\<tau>)\<times>P \<in> M" "domain(\<tau>) \<in> M"
+  have "domain(\<tau>)\<times>\<bbbP> \<in> M" "domain(\<tau>) \<in> M"
     by simp_all
   then
   have "?Q \<in> M"
   proof -
-    from power_ax \<open>domain(\<tau>)\<times>P \<in> M\<close>
-    obtain Q where "powerset(##M,domain(\<tau>)\<times>P,Q)" "Q \<in> M"
+    from power_ax \<open>domain(\<tau>)\<times>\<bbbP> \<in> M\<close>
+    obtain Q where "powerset(##M,domain(\<tau>)\<times>\<bbbP>,Q)" "Q \<in> M"
       unfolding power_ax_def by auto
     moreover from calculation
     have "z\<in>Q \<Longrightarrow> z\<in>M" for z
       using transitivity by blast
     ultimately
-    have "Q = {a\<in>Pow(domain(\<tau>)\<times>P) . a\<in>M}"
-      using \<open>domain(\<tau>)\<times>P \<in> M\<close> powerset_abs[of "domain(\<tau>)\<times>P" Q]
+    have "Q = {a\<in>Pow(domain(\<tau>)\<times>\<bbbP>) . a\<in>M}"
+      using \<open>domain(\<tau>)\<times>\<bbbP> \<in> M\<close> powerset_abs[of "domain(\<tau>)\<times>\<bbbP>" Q]
       by (simp flip: setclass_iff)
     also
     have " ... = ?Q"
@@ -122,7 +122,7 @@ proof -
     then
     obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
       using GenExt_iff by auto
-    let ?\<theta>="{\<langle>\<sigma>,p\<rangle> \<in>domain(\<tau>)\<times>P . p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>] }"
+    let ?\<theta>="{\<langle>\<sigma>,p\<rangle> \<in>domain(\<tau>)\<times>\<bbbP> . p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>] }"
     have "arity(forces(Member(0,1))) = 6"
       using arity_forces_at by auto
     with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close>
@@ -147,7 +147,7 @@ proof -
       have "\<sigma>\<in>M"
         using name_components_in_M[of _ _ ?\<theta>] by auto
       moreover from 1
-      have "p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>]" "p\<in>P"
+      have "p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>]" "p\<in>\<bbbP>"
         by simp_all
       moreover
       note \<open>val(G,\<chi>) = c\<close> \<open>\<chi> \<in> M\<close>
@@ -195,7 +195,7 @@ proof -
         using generic truth_lemma[of "\<cdot>0 \<in> 1\<cdot>" "[\<sigma>,\<chi>]" ] ord_simp_union
         by auto
       moreover from \<open>p\<in>G\<close>
-      have "p\<in>P"
+      have "p\<in>\<bbbP>"
         using generic by blast
       ultimately
       have "\<langle>\<sigma>,p\<rangle>\<in>?\<theta>"

@@ -175,7 +175,7 @@ lemma val_mono : "x\<subseteq>y \<Longrightarrow> val(G,x) \<subseteq> val(G,y)"
 text\<open>Check-names are the canonical names for elements of the
 ground model. Here we show that this is the case.\<close>
 
-lemma val_check : "\<one> \<in> G \<Longrightarrow>  \<one> \<in> P \<Longrightarrow> val(G,check(y))  = y"
+lemma val_check : "\<one> \<in> G \<Longrightarrow>  \<one> \<in> \<bbbP> \<Longrightarrow> val(G,check(y))  = y"
 proof (induct rule:eps_induct)
   case (1 y)
   then show ?case
@@ -201,10 +201,10 @@ proof (induct rule:eps_induct)
 qed
 
 lemma val_of_name :
-  "val(G,{x\<in>A\<times>P. Q(x)}) = {z . t\<in>A , (\<exists>p\<in>P .  Q(\<langle>t,p\<rangle>) \<and> p \<in> G) \<and> z=val(G,t)}"
+  "val(G,{x\<in>A\<times>\<bbbP>. Q(x)}) = {z . t\<in>A , (\<exists>p\<in>\<bbbP> .  Q(\<langle>t,p\<rangle>) \<and> p \<in> G) \<and> z=val(G,t)}"
 proof -
   let
-    ?n="{x\<in>A\<times>P. Q(x)}" and
+    ?n="{x\<in>A\<times>\<bbbP>. Q(x)}" and
     ?r="\<lambda>\<tau> . edrel(eclose({\<tau>}))"
   let
     ?f="\<lambda>z\<in>?r(?n)-``{?n}. val(G,z)"
@@ -213,26 +213,26 @@ proof -
     by (simp add: wf_edrel)
   have "domain(?n) \<subseteq> A" by auto
   { fix t
-    assume H:"t \<in> domain({x \<in> A \<times> P . Q(x)})"
+    assume H:"t \<in> domain({x \<in> A \<times> \<bbbP> . Q(x)})"
     then have "?f ` t = (if t \<in> ?r(?n)-``{?n} then val(G,t) else 0)"
       by simp
     moreover have "... = val(G,t)"
       using dom_under_edrel_eclose H if_P by auto
   }
   then
-  have Eq1: "t \<in> domain({x \<in> A \<times> P . Q(x)}) \<Longrightarrow> val(G,t) = ?f` t"  for t
+  have Eq1: "t \<in> domain({x \<in> A \<times> \<bbbP> . Q(x)}) \<Longrightarrow> val(G,t) = ?f` t"  for t
     by simp
   have "val(G,?n) = {z . t\<in>domain(?n), (\<exists>p \<in> G . \<langle>t,p\<rangle> \<in> ?n) \<and> z=val(G,t)}"
     by (subst def_val,simp)
   also
-  have "... = {z . t\<in>domain(?n), (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=?f`t}"
+  have "... = {z . t\<in>domain(?n), (\<exists>p\<in>\<bbbP> . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=?f`t}"
     unfolding Hv_def
     by (auto simp add:Eq1)
   also
-  have "... = {z . t\<in>domain(?n), (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=(if t\<in>?r(?n)-``{?n} then val(G,t) else 0)}"
+  have "... = {z . t\<in>domain(?n), (\<exists>p\<in>\<bbbP> . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=(if t\<in>?r(?n)-``{?n} then val(G,t) else 0)}"
     by (simp)
   also
-  have "... = { z . t\<in>domain(?n), (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=val(G,t)}"
+  have "... = { z . t\<in>domain(?n), (\<exists>p\<in>\<bbbP> . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=val(G,t)}"
   proof -
     have "domain(?n) \<subseteq> ?r(?n)-``{?n}"
       using dom_under_edrel_eclose by simp
@@ -240,20 +240,20 @@ proof -
     have "\<forall>t\<in>domain(?n). (if t\<in>?r(?n)-``{?n} then val(G,t) else 0) = val(G,t)"
       by auto
     then
-    show "{ z . t\<in>domain(?n), (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=(if t\<in>?r(?n)-``{?n} then val(G,t) else 0)} =
-          { z . t\<in>domain(?n), (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=val(G,t)}"
+    show "{ z . t\<in>domain(?n), (\<exists>p\<in>\<bbbP> . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=(if t\<in>?r(?n)-``{?n} then val(G,t) else 0)} =
+          { z . t\<in>domain(?n), (\<exists>p\<in>\<bbbP> . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=val(G,t)}"
       by auto
   qed
   also
-  have " ... = { z . t\<in>A, (\<exists>p\<in>P . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=val(G,t)}"
+  have " ... = { z . t\<in>A, (\<exists>p\<in>\<bbbP> . \<langle>t,p\<rangle>\<in>?n \<and> p\<in>G) \<and> z=val(G,t)}"
     by force
   finally
-  show " val(G,?n)  = { z . t\<in>A, (\<exists>p\<in>P . Q(\<langle>t,p\<rangle>) \<and> p\<in>G) \<and> z=val(G,t)}"
+  show " val(G,?n)  = { z . t\<in>A, (\<exists>p\<in>\<bbbP> . Q(\<langle>t,p\<rangle>) \<and> p\<in>G) \<and> z=val(G,t)}"
     by auto
 qed
 
 lemma val_of_name_alt :
-  "val(G,{x\<in>A\<times>P. Q(x)}) = {z . t\<in>A , (\<exists>p\<in>P\<inter>G .  Q(\<langle>t,p\<rangle>)) \<and> z=val(G,t) }"
+  "val(G,{x\<in>A\<times>\<bbbP>. Q(x)}) = {z . t\<in>A , (\<exists>p\<in>\<bbbP>\<inter>G .  Q(\<langle>t,p\<rangle>)) \<and> z=val(G,t) }"
   using val_of_name by force
 
 lemma val_only_names: "val(F,\<tau>) = val(F,{x\<in>\<tau>. \<exists>t\<in>domain(\<tau>). \<exists>p\<in>F. x=\<langle>t,p\<rangle>})"
@@ -557,7 +557,7 @@ proof -
     by simp
 qed
 
-lemma check_replacement: "{check(x). x\<in>P} \<in> M"
+lemma check_replacement: "{check(x). x\<in>\<bbbP>} \<in> M"
   using lam_replacement_imp_strong_replacement_aux[OF check_lam_replacement]
     transitivity check_in_M RepFun_closed
     by simp_all
@@ -569,7 +569,7 @@ lemma M_subset_MG : "\<one> \<in> G \<Longrightarrow> M \<subseteq> M[G]"
 text\<open>The name for the generic filter\<close>
 definition
   G_dot :: "i" where
-  "G_dot \<equiv> {\<langle>check(p),p\<rangle> . p\<in>P}"
+  "G_dot \<equiv> {\<langle>check(p),p\<rangle> . p\<in>\<bbbP>}"
 
 lemma G_dot_in_M : "G_dot \<in> M"
   using lam_replacement_Pair[THEN [5] lam_replacement_hcomp2,OF
@@ -610,7 +610,7 @@ proof (intro equalityI subsetI)
 next
   fix p
   assume "p\<in>G"
-  have "\<langle>check(q),q\<rangle> \<in> G_dot" if "q\<in>P" for q
+  have "\<langle>check(q),q\<rangle> \<in> G_dot" if "q\<in>\<bbbP>" for q
     unfolding G_dot_def using that by simp
   with \<open>p\<in>G\<close>
   have "val(G,check(p)) \<in> val(G,G_dot)"

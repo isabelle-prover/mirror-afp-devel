@@ -153,16 +153,16 @@ lemma val_RepFun_one: "val(G,{\<langle>f(x),\<one>\<rangle> . x\<in>a}) = {val(G
 proof -
   let ?A = "{f(x) . x \<in> a}"
   let ?Q = "\<lambda>\<langle>x,p\<rangle> . p = \<one>"
-  have "\<one> \<in> P\<inter>G" using generic one_in_G one_in_P by simp
-  have "{\<langle>f(x),\<one>\<rangle> . x \<in> a} = {t \<in> ?A \<times> P . ?Q(t)}"
+  have "\<one> \<in> \<bbbP>\<inter>G" using generic one_in_G one_in_P by simp
+  have "{\<langle>f(x),\<one>\<rangle> . x \<in> a} = {t \<in> ?A \<times> \<bbbP> . ?Q(t)}"
     using one_in_P by force
   then
-  have "val(G,{\<langle>f(x),\<one>\<rangle>  . x \<in> a}) = val(G,{t \<in> ?A \<times> P . ?Q(t)})"
+  have "val(G,{\<langle>f(x),\<one>\<rangle>  . x \<in> a}) = val(G,{t \<in> ?A \<times> \<bbbP> . ?Q(t)})"
     by simp
   also
-  have "... = {z . t \<in> ?A , (\<exists>p\<in>P\<inter>G . ?Q(\<langle>t,p\<rangle>)) \<and> z= val(G,t)}"
+  have "... = {z . t \<in> ?A , (\<exists>p\<in>\<bbbP>\<inter>G . ?Q(\<langle>t,p\<rangle>)) \<and> z= val(G,t)}"
     using val_of_name_alt by simp
-  also from \<open>\<one>\<in>P\<inter>G\<close>
+  also from \<open>\<one>\<in>\<bbbP>\<inter>G\<close>
   have "... = {val(G,t) . t \<in> ?A }"
     by force
   also
@@ -224,7 +224,7 @@ proof -
     have "\<alpha>\<in>M[G]"
       using M_subset_MG generic one_in_G subsetD
       by blast
-    let ?A="domain(\<tau>)\<times>P"
+    let ?A="domain(\<tau>)\<times>\<bbbP>"
     let ?g = "{opair_name(check(\<beta>),s`\<beta>,\<one>). \<beta>\<in>\<alpha>}"
     have "?g \<in> M"
       using \<open>s\<in>M\<close> \<open>\<alpha>\<in>M\<close> repl_opname_check

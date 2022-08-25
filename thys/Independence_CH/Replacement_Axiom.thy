@@ -14,11 +14,11 @@ bundle sharp_simps1 = snd_abs[simp] fst_abs[simp] fst_closed[simp del, simplifie
 lemma sats_body_ground_repl_fm:
   includes sharp_simps1
   assumes
-    "\<exists>t p. x=\<langle>t,p\<rangle>" "[x,\<alpha>,m,P,leq,\<one>] @ nenv \<in>list(M)"
+    "\<exists>t p. x=\<langle>t,p\<rangle>" "[x,\<alpha>,m,\<bbbP>,leq,\<one>] @ nenv \<in>list(M)"
     "\<phi>\<in>formula"
   shows
     "(\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. (##M)(a),\<alpha>,V) \<and> \<tau> \<in> V \<and> (snd(x) \<tturnstile> \<phi> ([fst(x),\<tau>]@nenv)))
-    \<longleftrightarrow> M, [\<alpha>, x, m, P, leq, \<one>] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)"
+    \<longleftrightarrow> M, [\<alpha>, x, m, \<bbbP>, leq, \<one>] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)"
   unfolding body_ground_repl_fm_def rename_split_fm_def
   by ((insert assms,rule iff_sats | simp add:nonempty[simplified])+,
       insert sats_incr_bv_iff[where bvs="[_,_,_,_,_,_]", simplified],auto del: iffI)
@@ -35,7 +35,7 @@ lemma Replace_sats_in_MG:
     "univalent(##M[G], c, \<lambda>x v. (M[G] , [x,v]@env \<Turnstile> \<phi>) )"
     and
     ground_replacement:
-    "\<And>nenv. ground_replacement_assm(M,[P,leq,\<one>] @ nenv, \<phi>)"
+    "\<And>nenv. ground_replacement_assm(M,[\<bbbP>,leq,\<one>] @ nenv, \<phi>)"
   shows
     "{v. x\<in>c, v\<in>M[G] \<and> (M[G] , [x,v]@env \<Turnstile> \<phi>)} \<in> M[G]"
 proof -
@@ -44,7 +44,7 @@ proof -
   obtain \<pi>' where "val(G, \<pi>') = c" "\<pi>' \<in> M"
     using GenExt_def by auto
   then
-  have "domain(\<pi>')\<times>P\<in>M" (is "?\<pi>\<in>M")
+  have "domain(\<pi>')\<times>\<bbbP>\<in>M" (is "?\<pi>\<in>M")
     using cartprod_closed domain_closed by simp
   from \<open>val(G, \<pi>') = c\<close>
   have "c \<subseteq> val(G,?\<pi>)"
@@ -77,29 +77,29 @@ proof -
   from 1
   have "least(##M,\<lambda>\<alpha>. QQ(\<rho>p,\<alpha>),f(\<rho>p))" for \<rho>p
     unfolding QQ_def .
-  have body:"(M, [\<rho>p,m,P,leq,\<one>] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+  have body:"(M, [\<rho>p,m,\<bbbP>,leq,\<one>] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
     if "\<rho>p\<in>M" "\<rho>p\<in>?\<pi>" "m\<in>M" for \<rho>p m
   proof -
     note inM that
     moreover from this assms 1
-    have "(M , [\<alpha>,\<rho>p,m,P,leq,\<one>] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)" if "\<alpha>\<in>M" for \<alpha>
+    have "(M , [\<alpha>,\<rho>p,m,\<bbbP>,leq,\<one>] @ nenv \<Turnstile> body_ground_repl_fm(\<phi>)) \<longleftrightarrow> ?Q(\<rho>p,\<alpha>)" if "\<alpha>\<in>M" for \<alpha>
       using that sats_body_ground_repl_fm[of \<rho>p \<alpha> m nenv \<phi>]
       by auto
     moreover from calculation
     have body:"\<And>\<alpha>. \<alpha> \<in> M \<Longrightarrow> (\<exists>\<tau>\<in>M. \<exists>V\<in>M. is_Vset(\<lambda>a. a\<in>M, \<alpha>, V) \<and> \<tau> \<in> V \<and>
           (snd(\<rho>p) \<tturnstile> \<phi> ([fst(\<rho>p),\<tau>] @ nenv))) \<longleftrightarrow>
-          M, Cons(\<alpha>, [\<rho>p, m, P, leq, \<one>] @ nenv) \<Turnstile> body_ground_repl_fm(\<phi>)"
+          M, Cons(\<alpha>, [\<rho>p, m, \<bbbP>, leq, \<one>] @ nenv) \<Turnstile> body_ground_repl_fm(\<phi>)"
       by simp
     ultimately
-    show "(M , [\<rho>p,m,P,leq,\<one>] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
+    show "(M , [\<rho>p,m,\<bbbP>,leq,\<one>] @ nenv \<Turnstile> ground_repl_fm(\<phi>)) \<longleftrightarrow> least(##M, QQ(\<rho>p), m)"
       using sats_least_fm[OF body,of 1] unfolding QQ_def ground_repl_fm_def
       by (simp, simp flip: setclass_iff)
   qed
   then
-  have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. M , [\<rho>p,m] @ ([P,leq,\<one>] @ nenv) \<Turnstile> ground_repl_fm(\<phi>))"
+  have "univalent(##M, ?\<pi>, \<lambda>\<rho>p m. M , [\<rho>p,m] @ ([\<bbbP>,leq,\<one>] @ nenv) \<Turnstile> ground_repl_fm(\<phi>))"
     unfolding univalent_def by (auto intro:unique_least)
   moreover from \<open>length(_) = _\<close> \<open>env \<in> _\<close>
-  have "length([P,leq,\<one>] @ nenv) = 3 +\<^sub>\<omega> length(env)" by simp
+  have "length([\<bbbP>,leq,\<one>] @ nenv) = 3 +\<^sub>\<omega> length(env)" by simp
   moreover from \<open>arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(nenv)\<close>
     \<open>length(_) = length(_)\<close>[symmetric] \<open>nenv\<in>_\<close> \<open>\<phi>\<in>_\<close>
   have "arity(ground_repl_fm(\<phi>)) \<le> 5 +\<^sub>\<omega> length(env)"
@@ -110,7 +110,7 @@ proof -
   note \<open>length(nenv) = length(env)\<close> inM
   ultimately
   obtain Y where "Y\<in>M"
-    "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> (M, [\<rho>p,m] @ ([P,leq,\<one>] @ nenv) \<Turnstile> ground_repl_fm(\<phi>)))"
+    "\<forall>m\<in>M. m \<in> Y \<longleftrightarrow> (\<exists>\<rho>p\<in>M. \<rho>p \<in> ?\<pi> \<and> (M, [\<rho>p,m] @ ([\<bbbP>,leq,\<one>] @ nenv) \<Turnstile> ground_repl_fm(\<phi>)))"
     using ground_replacement[of nenv]
     unfolding strong_replacement_def ground_replacement_assm_def replacement_assm_def by auto
   with \<open>least(_,QQ(_),f(_))\<close> \<open>f(_) \<in> M\<close> \<open>?\<pi>\<in>M\<close> body
@@ -145,7 +145,7 @@ proof -
     moreover
     note \<open>\<phi>\<in>_\<close> \<open>nenv\<in>_\<close> \<open>env = _\<close> \<open>arity(\<phi>)\<le> 2 +\<^sub>\<omega> length(env)\<close>
     ultimately
-    obtain q where "q\<in>G" "q \<tturnstile> \<phi> ([\<rho>,\<sigma>]@nenv)" "q\<in>P"
+    obtain q where "q\<in>G" "q \<tturnstile> \<phi> ([\<rho>,\<sigma>]@nenv)" "q\<in>\<bbbP>"
       using truth_lemma[OF \<open>\<phi>\<in>_\<close>,of "[\<rho>,\<sigma>] @ nenv"]
       by auto
     with \<open>\<langle>\<rho>,p\<rangle>\<in>\<pi>'\<close> \<open>\<langle>\<rho>,q\<rangle>\<in>?\<pi> \<Longrightarrow> f(\<langle>\<rho>,q\<rangle>)\<in>Y\<close>
@@ -246,7 +246,7 @@ theorem strong_replacement_in_MG:
     "\<phi>\<in>formula" and "arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env)" "env \<in> list(M[G])"
     and
     ground_replacement:
-    "\<And>nenv. ground_replacement_assm(M,[P,leq,\<one>] @ nenv, \<phi>)"
+    "\<And>nenv. ground_replacement_assm(M,[\<bbbP>,leq,\<one>] @ nenv, \<phi>)"
   shows
     "strong_replacement(##M[G],\<lambda>x v. M[G],[x,v] @ env \<Turnstile> \<phi>)"
 proof -
@@ -295,7 +295,7 @@ qed
 lemma replacement_assm_MG:
   assumes
     ground_replacement:
-    "\<And>nenv. ground_replacement_assm(M,[P,leq,\<one>] @ nenv, \<phi>)"
+    "\<And>nenv. ground_replacement_assm(M,[\<bbbP>,leq,\<one>] @ nenv, \<phi>)"
   shows
     "replacement_assm(M[G],env,\<phi>)"
   using assms strong_replacement_in_MG

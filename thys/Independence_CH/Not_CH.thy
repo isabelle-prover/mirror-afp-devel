@@ -189,7 +189,7 @@ lemma G_in_MG: "G \<in> M[G]"
   by blast
 
 lemma ccc_preserves_Aleph_succ:
-  assumes "ccc\<^bsup>M\<^esup>(P,leq)" "Ord(z)" "z \<in> M"
+  assumes "ccc\<^bsup>M\<^esup>(\<bbbP>,leq)" "Ord(z)" "z \<in> M"
   shows "Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
 proof (rule ccontr)
   assume "\<not> Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
@@ -207,7 +207,7 @@ proof (rule ccontr)
     using ext.trans_surj_rel_closed
     by (auto dest:transM ext.transM dest!:ltD)
   moreover
-  note \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>z\<in>M\<close>
+  note \<open>ccc\<^bsup>M\<^esup>(\<bbbP>,leq)\<close> \<open>z\<in>M\<close>
   ultimately
   obtain F where "F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)" "\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>" "\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>"
     "F \<in> M"
