@@ -606,14 +606,14 @@ proof
     using deriv chain_lnth_rel n_in unfolding nj_set_def by blast
   have "\<exists>N C L M. (lnth Ns n = N \<union> {(C, L)} \<and>
       lnth Ns (Suc n) = N \<union> {(C, active)} \<union> M \<and> L \<noteq> active \<and> active_subset M = {} \<and>
-      no_labels.Inf_between (fst ` (active_subset N)) {C}
+      no_labels.Inf_between (fst ` active_subset N) {C}
       \<subseteq> no_labels.Red_I (fst ` (N \<union> {(C, active)} \<union> M)))"
   proof -
     have proc_or_infer: "(\<exists>N1 N M N2 M'. lnth Ns n = N1 \<and> lnth Ns (Suc n) = N2 \<and> N1 = N \<union> M \<and>
          N2 = N \<union> M' \<and> M \<subseteq> Red_F (N \<union> M') \<and> active_subset M' = {}) \<or>
        (\<exists>N1 N C L N2 M. lnth Ns n = N1 \<and> lnth Ns (Suc n) = N2 \<and> N1 = N \<union> {(C, L)} \<and>
          N2 = N \<union> {(C, active)} \<union> M \<and> L \<noteq> active \<and> active_subset M = {} \<and>
-         no_labels.Inf_between (fst ` (active_subset N)) {C} \<subseteq>
+         no_labels.Inf_between (fst ` active_subset N) {C} \<subseteq>
            no_labels.Red_I (fst ` (N \<union> {(C, active)} \<union> M)))"
       using step.simps[of "lnth Ns n" "lnth Ns (Suc n)"] step_n by blast
     show ?thesis
@@ -621,7 +621,7 @@ proof
       by (smt Un_iff active_subset_def mem_Collect_eq snd_conv sup_bot.right_neutral)
   qed
   then obtain N M L where inf_from_subs:
-    "no_labels.Inf_between (fst ` (active_subset N)) {C0}
+    "no_labels.Inf_between (fst ` active_subset N) {C0}
      \<subseteq> no_labels.Red_I (fst ` (N \<union> {(C0, active)} \<union> M))" and
     nth_d_is: "lnth Ns n = N \<union> {(C0, L)}" and
     suc_nth_d_is: "lnth Ns (Suc n) = N \<union> {(C0, active)} \<union> M" and
@@ -658,7 +658,7 @@ proof
   moreover have "\<not> (set (prems_of \<iota>) \<subseteq> active_subset N - {(C0, active)})" using C0_prems_i by blast
   ultimately have "\<iota> \<in> Inf_between (active_subset N) {(C0, active)}"
     using i_in_inf_fl unfolding Inf_between_def Inf_from_def by blast
-  then have "to_F \<iota> \<in> no_labels.Inf_between (fst ` (active_subset N)) {C0}"
+  then have "to_F \<iota> \<in> no_labels.Inf_between (fst ` active_subset N) {C0}"
     unfolding to_F_def Inf_between_def Inf_from_def
       no_labels.Inf_between_def no_labels.Inf_from_def using Inf_FL_to_Inf_F
     by force
@@ -742,12 +742,12 @@ inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> M \<subseteq> Red_F (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> (T, N1) \<leadsto>LGC (T, N2)" |
   schedule_infer: "T2 = T1 \<union> T' \<Longrightarrow> N1 = N \<union> {(C, L)} \<Longrightarrow> N2 = N \<union> {(C, active)} \<Longrightarrow>
-    L \<noteq> active \<Longrightarrow> T' = no_labels.Inf_between (fst ` (active_subset N)) {C} \<Longrightarrow>
+    L \<noteq> active \<Longrightarrow> T' = no_labels.Inf_between (fst ` active_subset N) {C} \<Longrightarrow>
     (T1, N1) \<leadsto>LGC (T2, N2)" |
   compute_infer: "T1 = T2 \<union> {\<iota>} \<Longrightarrow> N2 = N1 \<union> M \<Longrightarrow> active_subset M = {} \<Longrightarrow>
     \<iota> \<in> no_labels.Red_I (fst ` (N1 \<union> M)) \<Longrightarrow> (T1, N1) \<leadsto>LGC (T2, N2)" |
   delete_orphan_infers: "T1 = T2 \<union> T' \<Longrightarrow>
-    T' \<inter> no_labels.Inf_from (fst ` (active_subset N)) = {} \<Longrightarrow> (T1, N) \<leadsto>LGC (T2, N)"
+    T' \<inter> no_labels.Inf_from (fst ` active_subset N) = {} \<Longrightarrow> (T1, N) \<leadsto>LGC (T2, N)"
 
 lemma premise_free_inf_always_from: "\<iota> \<in> Inf_F \<Longrightarrow> prems_of \<iota> = [] \<Longrightarrow> \<iota> \<in> no_labels.Inf_from N"
   unfolding no_labels.Inf_from_def by simp
@@ -980,7 +980,7 @@ proof
     moreover have "\<not> (set (prems_of \<iota>) \<subseteq> active_subset N - {(C0, active)})" using C0_prems_i by blast
     ultimately have "\<iota> \<in> Inf_between (active_subset N) {(C0, active)}"
       using i_in_inf_fl prems_i_active unfolding Inf_between_def Inf_from_def by blast
-    then have "to_F \<iota> \<in> no_labels.Inf_between (fst ` (active_subset N)) {C0}"
+    then have "to_F \<iota> \<in> no_labels.Inf_between (fst ` active_subset N) {C0}"
       unfolding to_F_def Inf_between_def Inf_from_def
         no_labels.Inf_between_def no_labels.Inf_from_def
       using Inf_FL_to_Inf_F by force
