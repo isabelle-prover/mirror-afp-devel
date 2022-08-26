@@ -1358,45 +1358,6 @@ begin
       then it is not necessarily the case that \<open>u \<squnion> v \<noteq> null\<close>.
     \<close>
 
-    lemma join_assoc:
-    assumes "joinable (t \<squnion> u) v" and "joinable t (u \<squnion> v)"
-    shows "t \<squnion> (u \<squnion> v) = (t \<squnion> u) \<squnion> v"
-    proof -
-      have vt_ut: "v \\ t \<frown> u \\ t"
-        using assms(1)
-        by (metis con_with_join_of_iff(2) join_def join_is_join_of joinable_implies_con
-            not_arr_null con_implies_arr(1))
-      have tv_uv: "t \\ v \<frown> u \\ v"
-        using vt_ut cube con_sym
-        by (metis arr_resid_iff_con)
-      have 2: "(t \<squnion> u) \<squnion> v = (t \<cdot> (u \\ t)) \<cdot> (v \\ (t \<cdot> (u \\ t)))"
-        using assms(1)
-        by (metis comp_is_composite_of(2) join_def join_is_join_of joinable_implies_con
-            not_arr_null con_implies_arr(1) join_ofE)
-      also have "... = t \<cdot> ((u \\ t) \<cdot> (v \\ (t \<cdot> (u \\ t))))"
-        using assms(1)
-        by (metis calculation comp_def joinable_iff_join_not_null comp_assoc)
-      also have "... = t \<cdot> ((u \\ t) \<cdot> ((v \\ t) \\ (u \\ t)))"
-        using assms(1)
-        by (metis "2" comp_null(2) con_sym joinable_iff_join_not_null resid_comp(1) conI)
-      also have "... = t \<cdot> ((v \\ t) \<squnion> (u \\ t))"
-      proof -
-        have "(v \\ t) \<squnion> (u \\ t) = (u \\ t) \<cdot> ((v \\ t) \\ (u \\ t))"
-          by (metis assms(2) comp_null(2) arr_comp comp_is_composite_of(2) con_comp_iff
-              join_is_join_of joinable_iff_join_not_null join_of_resid joinable_def
-              not_arr_null join_of_def joinable_implies_con)
-        thus ?thesis by simp
-      qed
-      also have "... = t \<cdot> ((u \\ t) \<squnion> (v \\ t))"
-        using join_sym by metis
-      also have "... = t \<cdot> ((u \<squnion> v) \\ t)"
-        by (metis assms(2) join_def resid_join\<^sub>E(3) joinable_implies_con null_is_zero(2) conE)
-      also have "... = t \<squnion> (u \<squnion> v)"
-        using assms(2) comp_is_composite_of(2) join_is_join_of by blast
-      finally show "t \<squnion> (u \<squnion> v) = (t \<squnion> u) \<squnion> v"
-        by simp
-    qed
-
   end
 
   subsubsection "Extensional RTS with Joins"
@@ -1428,7 +1389,7 @@ begin
     and "(t \<squnion> u) \\ v = (t \\ v) \<squnion> (u \\ v)"
       using assms has_joins resid_join\<^sub>E by blast+
 
-    lemma join_assoc\<^sub>E\<^sub>J:
+    lemma join_assoc:
     shows "t \<squnion> (u \<squnion> v) = (t \<squnion> u) \<squnion> v"
     proof -
       have *: "\<And>t u v. con (t \<squnion> u) v \<Longrightarrow> t \<squnion> (u \<squnion> v) = (t \<squnion> u) \<squnion> v"
@@ -1476,7 +1437,7 @@ begin
     proof -
       have "(t \<squnion> u) \\ v = (t \\ v) \<squnion> (u \\ v)"
         using assms resid_join\<^sub>E(3) [of t u v]
-        by (metis arr_prfx_join_self con_target con_sym join_assoc\<^sub>E\<^sub>J joinable_iff_con
+        by (metis arr_prfx_join_self con_target con_sym join_assoc joinable_iff_con
             joinable_iff_join_not_null prfx_implies_con resid_reflects_con)
       also have "... = trg v \<squnion> trg v"
         using assms
