@@ -270,8 +270,8 @@ begin
       by (cases t) auto
 
     lemma FV_Raise:
-    shows "\<And>d n. FV (Raise d n t) = (\<lambda>x. if x \<ge> d then x + n else x) ` FV t"
-      apply (induct t)
+    shows "FV (Raise d n t) = (\<lambda>x. if x \<ge> d then x + n else x) ` FV t"
+      apply (induct t arbitrary: d n)
           apply auto[3]
             apply force
            apply force
@@ -296,21 +296,21 @@ begin
     qed
 
     lemma Arr_Raise:
-    shows "\<And>d n. Arr t \<longleftrightarrow> Arr (Raise d n t)"
+    shows "Arr t \<longleftrightarrow> Arr (Raise d n t)"
       using FV_Raise
-      by (induct t) auto
+      by (induct t arbitrary: d n) auto
 
     lemma Ide_Raise:
-    shows "\<And>d n. Ide t \<longleftrightarrow> Ide (Raise d n t)"
-      by (induct t) auto
+    shows "Ide t \<longleftrightarrow> Ide (Raise d n t)"
+      by (induct t arbitrary: d n) auto
 
     lemma Raise_0:
-    shows "\<And>d n. Raise d 0 t = t"
-      by (induct t) auto
+    shows "Raise d 0 t = t"
+      by (induct t arbitrary: d) auto
 
     lemma Raise_Suc:
-    shows "\<And>d n. Raise d (Suc n) t = Raise d 1 (Raise d n t)"
-      by (induct t) auto
+    shows "Raise d (Suc n) t = Raise d 1 (Raise d n t)"
+      by (induct t arbitrary: d n) auto
 
     lemma Raise_Var:
     shows "Raise d n \<^bold>\<guillemotleft>i\<^bold>\<guillemotright> = \<^bold>\<guillemotleft>if i < d then i else i + n\<^bold>\<guillemotright>"
@@ -324,28 +324,28 @@ begin
     \<close>
 
     lemma Raise_plus:
-    shows "\<And>d m n. Raise d (m + n) t = Raise (d + m) n (Raise d m t)"
-      by (induct t) auto
+    shows "Raise d (m + n) t = Raise (d + m) n (Raise d m t)"
+      by (induct t arbitrary: d m n) auto
 
     lemma Raise_plus':
-    shows "\<And>n m d d'. \<lbrakk>d' \<le> d + n; d \<le> d'\<rbrakk> \<Longrightarrow> Raise d (m + n) t = Raise d' m (Raise d n t)"
-      by (induct t) auto
+    shows "\<lbrakk>d' \<le> d + n; d \<le> d'\<rbrakk> \<Longrightarrow> Raise d (m + n) t = Raise d' m (Raise d n t)"
+      by (induct t arbitrary: n m d d') auto
 
     lemma Raise_Raise:
-    shows "\<And>i k n p. i \<le> n \<Longrightarrow> Raise i p (Raise n k t) = Raise (p + n) k (Raise i p t)"
-      by (induct t) auto
+    shows "i \<le> n \<Longrightarrow> Raise i p (Raise n k t) = Raise (p + n) k (Raise i p t)"
+      by (induct t arbitrary: i k n p) auto
 
     lemma raise_plus:
-    shows "\<And>n m d. d \<le> n \<Longrightarrow> raise (m + n) t = Raise d m (raise n t)"
+    shows "d \<le> n \<Longrightarrow> raise (m + n) t = Raise d m (raise n t)"
       using Raise_plus' by auto
 
     lemma raise_Raise:
-    shows "\<And>k p n. raise p (Raise n k t) = Raise (p + n) k (raise p t)"
+    shows "raise p (Raise n k t) = Raise (p + n) k (raise p t)"
       by (simp add: Raise_Raise)
 
     lemma Raise_inj:
-    shows "\<And>d n u. Raise d n t = Raise d n u \<Longrightarrow> t = u"
-    proof (induct t)
+    shows "Raise d n t = Raise d n u \<Longrightarrow> t = u"
+    proof (induct t arbitrary: d n u)
       show "\<And>d n u. Raise d n \<^bold>\<sharp> = Raise d n u \<Longrightarrow> \<^bold>\<sharp> = u"
         by (metis Raise.simps(1) Raise_not_Nil)
       show "\<And>x d n. Raise d n \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> = Raise d n u \<Longrightarrow> \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> = u" for u
@@ -406,7 +406,7 @@ begin
 
     lemma Subst_not_Nil:
     assumes "v \<noteq> \<^bold>\<sharp>" and "t \<noteq> \<^bold>\<sharp>"
-    shows "\<And>n. t \<noteq> \<^bold>\<sharp> \<Longrightarrow> Subst n v t \<noteq> \<^bold>\<sharp>"
+    shows "t \<noteq> \<^bold>\<sharp> \<Longrightarrow> Subst n v t \<noteq> \<^bold>\<sharp>"
       using assms Raise_not_Nil
       by (induct t) auto
 
@@ -423,8 +423,8 @@ begin
                         (\<lambda>x. x + d) ` {x. d \<in> FV t \<and> x \<in> FV v}"
 
     lemma FV_Subst:
-    shows "\<And>d v. FV (Subst d v t) = FVS d v t"
-    proof (induct t)
+    shows "FV (Subst d v t) = FVS d v t"
+    proof (induct t arbitrary: d v)
       have "\<And>d t v. (\<lambda>x. x - 1) ` (FVS (Suc d) v t - {0}) = FVS d v \<^bold>\<lambda>\<^bold>[t\<^bold>]"
         by auto force+  (* 8 sec *)
       thus "\<And>d t v. (\<And>d v. FV (Subst d v t) = FVS d v t)
@@ -440,41 +440,40 @@ begin
 
     lemma Arr_Subst:
     assumes "Arr v"
-    shows "\<And>n. Arr t \<Longrightarrow> Arr (Subst n v t)"
+    shows "Arr t \<Longrightarrow> Arr (Subst n v t)"
       using assms Arr_Raise FV_Subst
-      by (induct t) auto
+      by (induct t arbitrary: n) auto
 
     lemma vacuous_Subst:
-    shows "\<And>i v. \<lbrakk>Arr v; i \<notin> FV t\<rbrakk> \<Longrightarrow> Raise i 1 (Subst i v t) = t"
-      apply (induct t, auto)
+    shows "\<lbrakk>Arr v; i \<notin> FV t\<rbrakk> \<Longrightarrow> Raise i 1 (Subst i v t) = t"
+      apply (induct t arbitrary: i v, auto)
       by force+
 
     lemma Ide_Subst_iff:
-    shows "\<And>n. Ide (Subst n v t) \<longleftrightarrow> Ide t \<and> (n \<in> FV t \<longrightarrow> Ide v)"
+    shows "Ide (Subst n v t) \<longleftrightarrow> Ide t \<and> (n \<in> FV t \<longrightarrow> Ide v)"
       using Ide_Raise vacuous_Subst
-      apply (induct t)
+      apply (induct t arbitrary: n)
           apply auto[5]
        apply fastforce
       by (metis Diff_empty Diff_insert0 One_nat_def diff_Suc_1 image_iff insertE
                 insert_Diff nat.distinct(1))
 
     lemma Ide_Subst:
-    shows "\<And>n. \<lbrakk>Ide t; Ide v\<rbrakk> \<Longrightarrow> Ide (Subst n v t)"
+    shows "\<lbrakk>Ide t; Ide v\<rbrakk> \<Longrightarrow> Ide (Subst n v t)"
       using Ide_Raise
-      by (induct t) auto
+      by (induct t arbitrary: n) auto
 
     lemma Raise_Subst:
-    shows "\<And>v k p n. Raise (p + n) k (Subst p v t) =
-                      Subst p (Raise n k v) (Raise (Suc (p + n)) k t)"
+    shows "Raise (p + n) k (Subst p v t) = Subst p (Raise n k v) (Raise (Suc (p + n)) k t)"
       using raise_Raise
-      apply (induct t, auto)
+      apply (induct t arbitrary: v k n p, auto)
       by (metis add_Suc)+
 
     lemma Raise_Subst':
     assumes "t \<noteq> \<^bold>\<sharp>"
-    shows "\<And>v n p k. \<lbrakk>v \<noteq> \<^bold>\<sharp>; k \<le> n\<rbrakk> \<Longrightarrow> Raise k p (Subst n v t) = Subst (p + n) v (Raise k p t)"
+    shows "\<lbrakk>v \<noteq> \<^bold>\<sharp>; k \<le> n\<rbrakk> \<Longrightarrow> Raise k p (Subst n v t) = Subst (p + n) v (Raise k p t)"
       using assms raise_plus
-      apply (induct t, auto)
+      apply (induct t arbitrary: v k n p, auto)
           apply (metis Raise.simps(1) Subst_Nil Suc_le_mono add_Suc_right)
          apply fastforce
         apply fastforce
@@ -482,34 +481,32 @@ begin
       by fastforce
 
     lemma Raise_subst:
-    shows "\<And>v k n. Raise n k (subst v t) = subst (Raise n k v) (Raise (Suc n) k t)"
+    shows "Raise n k (subst v t) = subst (Raise n k v) (Raise (Suc n) k t)"
       using Raise_0
-      apply (induct t, auto)
+      apply (induct t arbitrary: v k n, auto)
       by (metis One_nat_def Raise_Subst plus_1_eq_Suc)+
 
     lemma raise_Subst:
     assumes "t \<noteq> \<^bold>\<sharp>"
-    shows "\<And>v n p. v \<noteq> \<^bold>\<sharp> \<Longrightarrow> raise p (Subst n v t) = Subst (p + n) v (raise p t)"
+    shows "v \<noteq> \<^bold>\<sharp> \<Longrightarrow> raise p (Subst n v t) = Subst (p + n) v (raise p t)"
       using assms Raise_plus raise_Raise Raise_Subst'
-      apply (induct t)
+      apply (induct t arbitrary: v n p)
       by (meson zero_le)+
 
     lemma Subst_Raise:
-    shows "\<And>v m n d. \<lbrakk>v \<noteq> \<^bold>\<sharp>; d \<le> m; m \<le> n + d\<rbrakk>
-                        \<Longrightarrow> Subst m v (Raise d (Suc n) t) = Raise d n t"
-      by (induct t) auto
+    shows "\<lbrakk>v \<noteq> \<^bold>\<sharp>; d \<le> m; m \<le> n + d\<rbrakk> \<Longrightarrow> Subst m v (Raise d (Suc n) t) = Raise d n t"
+      by (induct t arbitrary: v m n d) auto
 
     lemma Subst_raise:
-    shows "\<And>v m n. \<lbrakk>v \<noteq> \<^bold>\<sharp>; m \<le> n\<rbrakk> \<Longrightarrow> Subst m v (raise (Suc n) t) = raise n t"
+    shows "\<lbrakk>v \<noteq> \<^bold>\<sharp>; m \<le> n\<rbrakk> \<Longrightarrow> Subst m v (raise (Suc n) t) = raise n t"
       using Subst_Raise
-      by (induct t) auto
+      by (induct t arbitrary: v m n) auto
 
     lemma Subst_Subst:
-    shows "\<And>v w m n. \<lbrakk>v \<noteq> \<^bold>\<sharp>; w \<noteq> \<^bold>\<sharp>\<rbrakk> \<Longrightarrow>
-                        Subst (m + n) w (Subst m v t) =
-                        Subst m (Subst n w v) (Subst (Suc (m + n)) w t)"
+    shows "\<lbrakk>v \<noteq> \<^bold>\<sharp>; w \<noteq> \<^bold>\<sharp>\<rbrakk> \<Longrightarrow>
+             Subst (m + n) w (Subst m v t) = Subst m (Subst n w v) (Subst (Suc (m + n)) w t)"
       using Raise_0 raise_Subst Subst_not_Nil Subst_raise
-      apply (induct t, auto)
+      apply (induct t arbitrary: v w m n, auto)
       by (metis add_Suc)+
 
     text \<open>
@@ -517,12 +514,8 @@ begin
     \<close>
 
     lemma substitution_lemma:
-    shows "\<And>v w n. \<lbrakk>v \<noteq> \<^bold>\<sharp>; w \<noteq> \<^bold>\<sharp>\<rbrakk> \<Longrightarrow>
-                     Subst n v (subst w t) = subst (Subst n v w) (Subst (Suc n) v t)"
-      using Subst_not_Nil Raise_0 Subst_Subst Subst_raise
-      apply (induct t, auto)
-       apply (metis Suc_lessD Suc_pred less_imp_le zero_less_diff)
-      by (metis One_nat_def plus_1_eq_Suc)+
+    shows "\<lbrakk>v \<noteq> \<^bold>\<sharp>; w \<noteq> \<^bold>\<sharp>\<rbrakk> \<Longrightarrow> Subst n v (subst w t) = subst (Subst n v w) (Subst (Suc n) v t)"
+      by (metis Subst_Subst add_0)
 
     section "Lambda-Calculus as an RTS"
 
@@ -590,10 +583,8 @@ begin
     \<close>
 
     lemma Con_implies_Arr1:
-    shows "\<And>u. t \<frown> u \<Longrightarrow> Arr t"
-      apply (induct t)
-          apply auto[3]
-    proof -
+    shows "t \<frown> u \<Longrightarrow> Arr t"
+    proof (induct t arbitrary: u)
       fix u v t'
       assume ind1: "\<And>u'. u \<frown> u' \<Longrightarrow> Arr u"
       assume ind2: "\<And>v'. v \<frown> v' \<Longrightarrow> Arr v"
@@ -608,13 +599,11 @@ begin
         apply (cases t', simp_all)
          apply (cases "un_App1 t'", simp_all)
         by metis+
-    qed
+    qed auto
 
     lemma Con_implies_Arr2:
-    shows "\<And>t. t \<frown> u \<Longrightarrow> Arr u"
-      apply (induct u)
-          apply auto[3]
-    proof -
+    shows "t \<frown> u \<Longrightarrow> Arr u"
+    proof (induct u arbitrary: t)
       fix u' v' t
       assume ind1: "\<And>u. u \<frown> u' \<Longrightarrow> Arr u'"
       assume ind2: "\<And>v. v \<frown> v' \<Longrightarrow> Arr v'"
@@ -629,7 +618,7 @@ begin
         apply (cases t, simp_all)
         apply (cases "un_App1 t", simp_all)
         by metis+
-    qed
+    qed auto
 
     lemma ConD:
     shows "t \<^bold>\<circ> u \<frown> t' \<^bold>\<circ> u' \<Longrightarrow> t \<frown> t' \<and> u \<frown> u'"
@@ -642,11 +631,9 @@ begin
       Residuation on consistent terms preserves arrows.
     \<close>
 
-    lemma Arr_resid_ind:
-    shows "\<And>u. t \<frown> u \<Longrightarrow> Arr (t \\ u)"
-      apply (induct t)
-          apply auto
-    proof -
+    lemma Arr_resid:
+    shows "t \<frown> u \<Longrightarrow> Arr (t \\ u)"
+    proof (induct t arbitrary: u)
       fix t1 t2 u
       assume ind1: "\<And>u. t1 \<frown> u \<Longrightarrow> Arr (t1 \\ u)"
       assume ind2: "\<And>u. t2 \<frown> u \<Longrightarrow> Arr (t2 \\ u)"
@@ -658,11 +645,7 @@ begin
       show "\<^bold>\<lambda>\<^bold>[t1\<^bold>] \<^bold>\<Zspot> t2 \<frown> u \<Longrightarrow> Arr ((\<^bold>\<lambda>\<^bold>[t1\<^bold>] \<^bold>\<Zspot> t2) \\ u)"
         using ind1 ind2 Arr_Subst
         by (cases u) auto
-    qed
-
-    lemma Arr_resid:
-    shows "\<And>u. t \<frown> u \<Longrightarrow> Arr (t \\ u)"
-      using Arr_resid_ind by auto
+    qed auto
 
     subsection "Source and Target"
 
@@ -708,8 +691,8 @@ begin
       using assms Ide_Src Ide_implies_Arr by blast
 
     lemma Con_Src:
-    shows "\<And>t u. \<lbrakk>size t + size u \<le> n; t \<frown> u\<rbrakk> \<Longrightarrow> Src t \<frown> Src u"
-      by (induct n) auto
+    shows "\<lbrakk>size t + size u \<le> n; t \<frown> u\<rbrakk> \<Longrightarrow> Src t \<frown> Src u"
+      by (induct n arbitrary: t u) auto
 
     lemma Src_eq_iff:
     shows "Src \<^bold>\<guillemotleft>i\<^bold>\<guillemotright> = Src \<^bold>\<guillemotleft>i'\<^bold>\<guillemotright> \<longleftrightarrow> i = i'"
@@ -719,13 +702,13 @@ begin
       by auto
 
     lemma Src_Raise:
-    shows "\<And>d. Src (Raise d n t) = Raise d n (Src t)"
-      by (induct t) auto
+    shows "Src (Raise d n t) = Raise d n (Src t)"
+      by (induct t arbitrary: d) auto
 
     lemma Src_Subst [simp]:
-    shows "\<And>d X. \<lbrakk>Arr t; Arr u\<rbrakk> \<Longrightarrow> Src (Subst d t u) = Subst d (Src t) (Src u)"
+    shows "\<lbrakk>Arr t; Arr u\<rbrakk> \<Longrightarrow> Src (Subst d t u) = Subst d (Src t) (Src u)"
       using Src_Raise
-      by (induct u) auto
+      by (induct u arbitrary: d X) auto
 
     lemma Ide_Trg:
     shows "Arr t \<Longrightarrow> Ide (Trg t)"
@@ -788,13 +771,13 @@ begin
       by (cases t; cases t') auto
 
     lemma Con_implies_Coinitial_ind:
-    shows "\<And>t u. \<lbrakk>size t + size u \<le> n; t \<frown> u\<rbrakk> \<Longrightarrow> Coinitial t u"
+    shows "\<lbrakk>size t + size u \<le> n; t \<frown> u\<rbrakk> \<Longrightarrow> Coinitial t u"
       using Con_implies_Arr1 Con_implies_Arr2
-      by (induct n) auto
+      by (induct n arbitrary: t u) auto
 
     lemma Coinitial_implies_Con_ind:
-    shows "\<And>t u. \<lbrakk>size (Src t) \<le> n; Coinitial t u\<rbrakk> \<Longrightarrow> t \<frown> u"
-    proof (induct n)
+    shows "\<lbrakk>size (Src t) \<le> n; Coinitial t u\<rbrakk> \<Longrightarrow> t \<frown> u"
+    proof (induct n arbitrary: t u)
       show "\<And>t u. \<lbrakk>size (Src t) \<le> 0; Coinitial t u\<rbrakk> \<Longrightarrow> t \<frown> u"
         by auto
       fix n t u
@@ -810,9 +793,9 @@ begin
       using Coinitial_implies_Con_ind Con_implies_Coinitial_ind by blast
 
     lemma Coinitial_Raise_Raise:
-    shows "\<And>d n u. Coinitial t u \<Longrightarrow> Coinitial (Raise d n t) (Raise d n u)"
+    shows "Coinitial t u \<Longrightarrow> Coinitial (Raise d n t) (Raise d n u)"
       using Arr_Raise Src_Raise
-      apply (induct t, auto)
+      apply (induct t arbitrary: d n u, auto)
       by (metis Raise.simps(3-4))
 
     lemma Con_sym:
@@ -854,17 +837,7 @@ begin
       assume a: "Ide \<^bold>\<lambda>\<^bold>[a\<^bold>]"
       assume ind: "Ide a \<Longrightarrow> finite {t. Arr t \<and> Src t = a}"
       have "{t. Arr t \<and> Src t = \<^bold>\<lambda>\<^bold>[a\<^bold>]} = Lam ` {t. Arr t \<and> Src t = a}"
-      proof
-        show "Lam ` {t. Arr t \<and> Src t = a} \<subseteq> {t. Arr t \<and> Src t = \<^bold>\<lambda>\<^bold>[a\<^bold>]}"
-          by auto
-        show "{t. Arr t \<and> Src t = \<^bold>\<lambda>\<^bold>[a\<^bold>]} \<subseteq> Lam ` {t. Arr t \<and> Src t = a}"
-        proof
-          fix t
-          assume t: "t \<in> {t. Arr t \<and> Src t = \<^bold>\<lambda>\<^bold>[a\<^bold>]}"
-          show "t \<in> Lam ` {t. Arr t \<and> Src t = a}"
-            using t by (cases t) auto
-        qed
-      qed
+        using Coinitial_cases by fastforce
       thus "finite {t. Arr t \<and> Src t = \<^bold>\<lambda>\<^bold>[a\<^bold>]}"
         using a ind by simp
       next
@@ -969,14 +942,13 @@ begin
     \<close>
 
     lemma Raise_resid:
-    shows "\<And>t u k n. t \<frown> u \<Longrightarrow> Raise k n (t \\ u) = Raise k n t \\ Raise k n u"
+    shows "t \<frown> u \<Longrightarrow> Raise k n (t \\ u) = Raise k n t \\ Raise k n u"
     proof -
       (*
        * Note: This proof uses subterm induction because the hypothesis Con t u yields
        * cases in which App and Beta terms are compared, so that the first argument to App
        * needs to be unfolded.
        *)
-      fix t u k n
       let ?P = "\<lambda>(t, u). \<forall>k n. t \<frown> u \<longrightarrow> Raise k n (t \\ u) = Raise k n t \\ Raise k n u"
       have "\<And>t u.
                \<forall>t' u'. ((t', u'), (t, u)) \<in> subterm_pair_rel \<longrightarrow>
@@ -984,15 +956,13 @@ begin
                                 Raise k n (t' \\ u') = Raise k n t' \\ Raise k n u') \<Longrightarrow>
                (\<And>k n. t \<frown> u \<Longrightarrow> Raise k n (t \\ u) = Raise k n t \\ Raise k n u)"
         using subterm_lemmas Coinitial_iff_Con Coinitial_Raise_Raise Raise_subst by auto
-      thus "\<And>t u k n. t \<frown> u \<Longrightarrow> Raise k n (t \\ u) = Raise k n t \\ Raise k n u"
+      thus "t \<frown> u \<Longrightarrow> Raise k n (t \\ u) = Raise k n t \\ Raise k n u"
         using wf_subterm_pair_rel wf_induct [of subterm_pair_rel ?P] by blast
     qed
 
     lemma Con_Raise:
-    shows "\<And>d n u. t \<frown> u \<Longrightarrow> Raise d n t \<frown> Raise d n u"
-      apply (induct t)
-         apply auto[3]
-      by (metis Raise_not_Nil Raise_resid)+
+    shows "t \<frown> u \<Longrightarrow> Raise d n t \<frown> Raise d n u"
+      by (metis Raise_not_Nil Raise_resid)
 
     text \<open>
       The following is Huet's Commutation Theorem \cite{huet-residual-theory}:
@@ -1012,17 +982,17 @@ begin
                               Subst n t u \\ Subst n t' u' = Subst n (t \\ t') (u \\ u')"
         using subterm_lemmas Raise_resid Subst_not_Nil Con_Raise Raise_subst substitution_lemma
         by auto
-      thus "Subst n t u \\ Subst n t' u' = Subst n (t \\ t') (u \\ u')"
+      thus ?thesis
         using assms wf_subterm_pair_rel wf_induct [of subterm_pair_rel ?P] by auto
     qed
 
     lemma Trg_Subst [simp]:
-    shows "\<And>d t. \<lbrakk>Arr t; Arr u\<rbrakk> \<Longrightarrow> Trg (Subst d t u) = Subst d (Trg t) (Trg u)"
+    shows "\<lbrakk>Arr t; Arr u\<rbrakk> \<Longrightarrow> Trg (Subst d t u) = Subst d (Trg t) (Trg u)"
       by (metis Arr_Subst Arr_Trg Arr_not_Nil resid_Arr_self resid_Subst)
 
     lemma Src_resid:
-    shows "\<And>t. t \<frown> u \<Longrightarrow> Src (t \\ u) = Trg u"
-    proof (induct u, auto simp add: Arr_resid_ind)
+    shows "t \<frown> u \<Longrightarrow> Src (t \\ u) = Trg u"
+    proof (induct u arbitrary: t, auto simp add: Arr_resid)
       fix t t1'
       show "\<And>t2'. \<lbrakk>\<And>t1. t1 \<frown> t1' \<Longrightarrow> Src (t1 \\ t1') = Trg t1';
                    \<And>t2. t2 \<frown> t2' \<Longrightarrow> Src (t2 \\ t2') = Trg t2';
@@ -1136,15 +1106,13 @@ begin
           resid_Arr_self)
 
     lemma resid_Arr_Ide:
-    shows "\<And>a. \<lbrakk>Ide a; Coinitial t a\<rbrakk> \<Longrightarrow> t \\ a = t"
+    shows "\<lbrakk>Ide a; Coinitial t a\<rbrakk> \<Longrightarrow> t \\ a = t"
       using Ide_iff_Src_self
-      by (induct t, auto)
+      by (induct t arbitrary: a, auto)
 
     lemma resid_Ide_Arr:
-    shows "\<And>t. \<lbrakk>Ide a; Coinitial a t\<rbrakk> \<Longrightarrow> Ide (a \\ t)"
-      apply (induct a)
-          apply auto[2]
-      by (metis ConI conI cube ideI ide_char null_char resid_Arr_Ide)+
+    shows "\<lbrakk>Ide a; Coinitial a t\<rbrakk> \<Longrightarrow> Ide (a \\ t)"
+      by (metis Coinitial_resid_resid ConI Ide_iff_Trg_self cube resid_Arr_Ide resid_Arr_self)
 
     lemma resid_Arr_Src [simp]:
     assumes "Arr t"
@@ -1421,8 +1389,8 @@ begin
       using Join.induct [of "\<lambda>t u. t \<squnion> u = u \<squnion> t"] by auto
 
     lemma Src_Join:
-    shows "\<And>u. Coinitial t u \<Longrightarrow> Src (t \<squnion> u) = Src t"
-    proof (induct t)
+    shows "Coinitial t u \<Longrightarrow> Src (t \<squnion> u) = Src t"
+    proof (induct t arbitrary: u)
       show "\<And>u. Coinitial \<^bold>\<sharp> u \<Longrightarrow> Src (\<^bold>\<sharp> \<squnion> u) = Src \<^bold>\<sharp>"
         by simp
       show "\<And>x u. Coinitial \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> u \<Longrightarrow> Src (\<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \<squnion> u) = Src \<^bold>\<guillemotleft>x\<^bold>\<guillemotright>"
@@ -1455,8 +1423,8 @@ begin
     qed
 
     lemma resid_Join:
-    shows "\<And>u. Coinitial t u \<Longrightarrow> (t \<squnion> u) \\ u = t \\ u"
-    proof (induct t)
+    shows "Coinitial t u \<Longrightarrow> (t \<squnion> u) \\ u = t \\ u"
+    proof (induct t arbitrary: u)
       show "\<And>u. Coinitial \<^bold>\<sharp> u \<Longrightarrow> (\<^bold>\<sharp> \<squnion> u) \\ u = \<^bold>\<sharp> \\ u"
         by auto
       show "\<And>x u. Coinitial \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> u \<Longrightarrow> (\<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \<squnion> u) \\ u = \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \\ u"
@@ -1547,8 +1515,8 @@ begin
     qed
 
     lemma prfx_Join:
-    shows "\<And>u. Coinitial t u \<Longrightarrow> u \<lesssim> t \<squnion> u"
-    proof (induct t)
+    shows "Coinitial t u \<Longrightarrow> u \<lesssim> t \<squnion> u"
+    proof (induct t arbitrary: u)
       show "\<And>u. Coinitial \<^bold>\<sharp> u \<Longrightarrow> u \<lesssim> \<^bold>\<sharp> \<squnion> u"
         by simp
       show "\<And>x u. Coinitial \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> u \<Longrightarrow> u \<lesssim> \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \<squnion> u"
@@ -1596,7 +1564,7 @@ begin
     qed
 
     lemma Ide_resid_Join:
-    shows "\<And>u. Coinitial t u \<Longrightarrow> Ide (u \\ (t \<squnion> u))"
+    shows "Coinitial t u \<Longrightarrow> Ide (u \\ (t \<squnion> u))"
       using ide_char prfx_Join by blast
 
     lemma join_of_Join:
@@ -1663,7 +1631,7 @@ begin
       show "\<And>t u. \<Lambda>x\<Lambda>.con t u \<Longrightarrow> App\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.resid t u) = App\<^sub>e\<^sub>x\<^sub>t t \\ App\<^sub>e\<^sub>x\<^sub>t u"
         using \<Lambda>x\<Lambda>.arr_char \<Lambda>x\<Lambda>.resid_def
         apply simp
-        by (metis Arr_resid_ind Con_implies_Arr1 Con_implies_Arr2)
+        by (metis Arr_resid Con_implies_Arr1 Con_implies_Arr2)
     qed
 
     interpretation App: binary_simulation resid resid resid App\<^sub>e\<^sub>x\<^sub>t
@@ -1685,7 +1653,7 @@ begin
       show "\<And>t u. \<Lambda>x\<Lambda>.con t u \<Longrightarrow> subst\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.resid t u) = subst\<^sub>e\<^sub>x\<^sub>t t \\ subst\<^sub>e\<^sub>x\<^sub>t u"
         using \<Lambda>x\<Lambda>.arr_char \<Lambda>x\<Lambda>.resid_def
         apply simp
-        by (metis Arr_resid_ind Con_implies_Arr1 Con_implies_Arr2 resid_Subst)
+        by (metis Arr_resid Con_implies_Arr1 Con_implies_Arr2 resid_Subst)
     qed
 
     interpretation subst: binary_simulation resid resid resid subst\<^sub>e\<^sub>x\<^sub>t
@@ -1728,7 +1696,7 @@ begin
             apply auto
             by (metis Arr_Subst Ide_Trg)
           show 1: "Beta\<^sub>e\<^sub>x\<^sub>t f \\ App_o_Lam_Id.map f \<sim> Beta\<^sub>e\<^sub>x\<^sub>t (\<Lambda>x\<Lambda>.src f) \\ App_o_Lam_Id.map f"
-            using f Lam_Id.map_def Ide_Subst \<Lambda>x\<Lambda>.src_char Ide_Trg Arr_resid_ind Coinitial_iff_Con
+            using f Lam_Id.map_def Ide_Subst \<Lambda>x\<Lambda>.src_char Ide_Trg Arr_resid Coinitial_iff_Con
                   resid_Arr_self
             apply simp
             by metis
@@ -1944,7 +1912,7 @@ begin
     proof -
       have "cnv b b'"
         using assms
-        by (metis cnv.intros(1) cnv.intros(3) cnv_sym red.induct)
+        by (metis cnv.intros(1,3) cnv_sym red.induct)
       thus ?thesis
         using that church_rosser by blast
     qed
@@ -2044,11 +2012,11 @@ begin
       have "\<Lambda>.Ide u"
         using assms a \<Lambda>.NF_def uU by force
       thus "Ide (u # U)"
-        using uU ind
-        apply (cases "U = []")
-         apply simp
-        by (metis Arr_consE Con_Arr_self Con_initial_right Ide.simps(2) Ide_consI
-            Resid_Arr_Ide_ind Src_resid Trg.simps(2) a \<Lambda>.ide_char)
+        using a uU ind
+        by (metis Arr_consE Con_Arr_self Con_imp_eq_Srcs Con_initial_right Ide.simps(2)
+                  Ide_consI Srcs.simps(2) Srcs_simp\<^sub>P\<^sub>W\<^sub>E \<Lambda>.Ide_iff_Src_self \<Lambda>.Ide_implies_Arr
+                  \<Lambda>.sources_char\<^sub>\<Lambda> \<Lambda>.trg_ide \<Lambda>.ide_char
+                  singleton_insert_inj_eq)
     qed
 
     lemma NF_reduct_is_trivial:
@@ -2305,7 +2273,7 @@ begin
       show "\<lbrakk>\<Lambda>.Arr t \<and> \<Lambda>.is_App t; \<Lambda>.Arr u \<and> \<Lambda>.is_App u; \<Lambda>.con t u\<rbrakk>
                  \<Longrightarrow> \<Lambda>.Arr (t \\ u) \<and> \<Lambda>.is_App (t \\ u)"
             for t u
-        using \<Lambda>.Arr_resid_ind
+        using \<Lambda>.Arr_resid
         by (cases t; cases u) auto
     qed
 
@@ -2319,7 +2287,7 @@ begin
         by auto
       show "\<Lambda>\<^sub>A\<^sub>p\<^sub>p.con t u \<Longrightarrow> ?un_App1 (\<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid t u) = ?un_App1 t \\ ?un_App1 u"
               for t u
-        using \<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid_def \<Lambda>.Arr_resid_ind
+        using \<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid_def \<Lambda>.Arr_resid
         by (cases t; cases u) auto
     qed
 
@@ -2333,7 +2301,7 @@ begin
         by auto
       show "\<Lambda>\<^sub>A\<^sub>p\<^sub>p.con t u \<Longrightarrow> ?un_App2 (\<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid t u) = ?un_App2 t \\ ?un_App2 u"
               for t u
-        using \<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid_def \<Lambda>.Arr_resid_ind
+        using \<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid_def \<Lambda>.Arr_resid
         by (cases t; cases u) auto
     qed
 
@@ -2463,23 +2431,23 @@ begin
     qed
 
     lemma cong_map_Lam:
-    shows "\<And>T. T \<^sup>*\<sim>\<^sup>* U \<Longrightarrow> map \<Lambda>.Lam T \<^sup>*\<sim>\<^sup>* map \<Lambda>.Lam U"
-      apply (induct U)
+    shows "T \<^sup>*\<sim>\<^sup>* U \<Longrightarrow> map \<Lambda>.Lam T \<^sup>*\<sim>\<^sup>* map \<Lambda>.Lam U"
+      apply (induct U arbitrary: T)
        apply (simp add: ide_char)
       by (metis map_Lam_Resid cong_implies_coinitial cong_reflexive ideE
           map_is_Nil_conv Con_imp_Arr_Resid arr_char)
 
     lemma cong_map_App1:
-    shows "\<And>x T. \<lbrakk>\<Lambda>.Ide x; T \<^sup>*\<sim>\<^sup>* U\<rbrakk> \<Longrightarrow> map (\<Lambda>.App x) T \<^sup>*\<sim>\<^sup>* map (\<Lambda>.App x) U"
-      apply (induct U)
+    shows "\<lbrakk>\<Lambda>.Ide x; T \<^sup>*\<sim>\<^sup>* U\<rbrakk> \<Longrightarrow> map (\<Lambda>.App x) T \<^sup>*\<sim>\<^sup>* map (\<Lambda>.App x) U"
+      apply (induct U arbitrary: x T)
        apply (simp add: ide_char)
       apply (intro conjI)
       by (metis Nil_is_map_conv arr_resid_iff_con con_char con_imp_coinitial
                 cong_reflexive ideE map_App1_Resid)+
 
     lemma cong_map_App2:
-    shows "\<And>x T. \<lbrakk>\<Lambda>.Ide x; T \<^sup>*\<sim>\<^sup>* U\<rbrakk> \<Longrightarrow> map (\<lambda>X. X \<^bold>\<circ> x) T \<^sup>*\<sim>\<^sup>* map (\<lambda>X. X \<^bold>\<circ> x) U"
-      apply (induct U)
+    shows "\<lbrakk>\<Lambda>.Ide x; T \<^sup>*\<sim>\<^sup>* U\<rbrakk> \<Longrightarrow> map (\<lambda>X. X \<^bold>\<circ> x) T \<^sup>*\<sim>\<^sup>* map (\<lambda>X. X \<^bold>\<circ> x) U"
+      apply (induct U arbitrary: x T)
        apply (simp add: ide_char)
       apply (intro conjI)
       by (metis Nil_is_map_conv arr_resid_iff_con con_char cong_implies_coinitial
@@ -2501,10 +2469,10 @@ begin
       using assms arr_char \<Lambda>.Arr_not_Nil by auto
 
     lemma orthogonal_App_single_Arr:
-    shows "\<And>t. \<lbrakk>Arr [t]; Arr U\<rbrakk> \<Longrightarrow>
-                  map (\<Lambda>.App (\<Lambda>.Src t)) U \<^sup>*\\\<^sup>* [t \<^bold>\<circ> \<Lambda>.Src (hd U)] = map (\<Lambda>.App (\<Lambda>.Trg t)) U \<and>
-                  [t \<^bold>\<circ> \<Lambda>.Src (hd U)] \<^sup>*\\\<^sup>* map (\<Lambda>.App (\<Lambda>.Src t)) U = [t \<^bold>\<circ> \<Lambda>.Trg (last U)]"
-    proof (induct U)
+    shows "\<lbrakk>Arr [t]; Arr U\<rbrakk> \<Longrightarrow>
+              map (\<Lambda>.App (\<Lambda>.Src t)) U \<^sup>*\\\<^sup>* [t \<^bold>\<circ> \<Lambda>.Src (hd U)] = map (\<Lambda>.App (\<Lambda>.Trg t)) U \<and>
+              [t \<^bold>\<circ> \<Lambda>.Src (hd U)] \<^sup>*\\\<^sup>* map (\<Lambda>.App (\<Lambda>.Src t)) U = [t \<^bold>\<circ> \<Lambda>.Trg (last U)]"
+    proof (induct U arbitrary: t)
       show "\<And>t. \<lbrakk>Arr [t]; Arr []\<rbrakk> \<Longrightarrow>
                    map (\<Lambda>.App (\<Lambda>.Src t)) [] \<^sup>*\\\<^sup>* [t \<^bold>\<circ> \<Lambda>.Src (hd [])] = map (\<Lambda>.App (\<Lambda>.Trg t)) [] \<and>
                    [t \<^bold>\<circ> \<Lambda>.Src (hd [])] \<^sup>*\\\<^sup>* map (\<Lambda>.App (\<Lambda>.Src t)) [] = [t \<^bold>\<circ> \<Lambda>.Trg (last [])]"
@@ -2588,12 +2556,12 @@ begin
     qed
 
     lemma orthogonal_App_Arr_Arr:
-    shows "\<And>U. \<lbrakk>Arr T; Arr U\<rbrakk> \<Longrightarrow>
-                  map (\<Lambda>.App (\<Lambda>.Src (hd T))) U \<^sup>*\\\<^sup>* map (\<lambda>X. \<Lambda>.App X (\<Lambda>.Src (hd U))) T =
-                  map (\<Lambda>.App (\<Lambda>.Trg (last T))) U \<and>
-                  map (\<lambda>X. X \<^bold>\<circ> \<Lambda>.Src (hd U)) T \<^sup>*\\\<^sup>* map (\<Lambda>.App (\<Lambda>.Src (hd T))) U =
-                  map (\<lambda>X. X \<^bold>\<circ> \<Lambda>.Trg (last U)) T"
-    proof (induct T)
+    shows "\<lbrakk>Arr T; Arr U\<rbrakk> \<Longrightarrow>
+              map (\<Lambda>.App (\<Lambda>.Src (hd T))) U \<^sup>*\\\<^sup>* map (\<lambda>X. \<Lambda>.App X (\<Lambda>.Src (hd U))) T =
+              map (\<Lambda>.App (\<Lambda>.Trg (last T))) U \<and>
+              map (\<lambda>X. X \<^bold>\<circ> \<Lambda>.Src (hd U)) T \<^sup>*\\\<^sup>* map (\<Lambda>.App (\<Lambda>.Src (hd T))) U =
+              map (\<lambda>X. X \<^bold>\<circ> \<Lambda>.Trg (last U)) T"
+    proof (induct T arbitrary: U)
       show "\<And>U. \<lbrakk>Arr []; Arr U\<rbrakk>
                   \<Longrightarrow> map (\<Lambda>.App (\<Lambda>.Src (hd []))) U \<^sup>*\\\<^sup>* map (\<lambda>X. X \<^bold>\<circ> \<Lambda>.Src (hd U)) [] =
                       map (\<Lambda>.App (\<Lambda>.Trg (last []))) U \<and>
@@ -3005,8 +2973,8 @@ begin
     \<close>
 
     lemma seq_Lam_Arr_implies:
-    shows "\<And>t. \<lbrakk>seq [t] U; \<Lambda>.is_Lam t\<rbrakk> \<Longrightarrow> set U \<subseteq> Collect \<Lambda>.is_Lam"
-    proof (induct U)
+    shows "\<lbrakk>seq [t] U; \<Lambda>.is_Lam t\<rbrakk> \<Longrightarrow> set U \<subseteq> Collect \<Lambda>.is_Lam"
+    proof (induct U arbitrary: t)
       show "\<And>t. \<lbrakk>seq [t] []; \<Lambda>.is_Lam t\<rbrakk> \<Longrightarrow> set [] \<subseteq> Collect \<Lambda>.is_Lam"
         by simp
       fix u U t
@@ -3016,13 +2984,9 @@ begin
       show "set (u # U) \<subseteq> Collect \<Lambda>.is_Lam"
       proof -
         have "\<Lambda>.is_Lam u"
-        proof -
-          have "\<Lambda>.seq t u"
-            by (metis Arr_imp_arr_hd Trg_last_Src_hd_eqI \<Lambda>.arr_char \<Lambda>.seq_char last_ConsL
-                list.sel(1) seq_char uU)
-          thus ?thesis
-            using \<Lambda>.seq_cases t by blast
-        qed
+          by (metis Trg_last_Src_hd_eqI \<Lambda>.Src.simps(1-2,4-5) \<Lambda>.Trg.simps(2) \<Lambda>.is_App_def
+            \<Lambda>.is_Beta_def \<Lambda>.is_Lam_def \<Lambda>.is_Var_def \<Lambda>.lambda.disc(9) \<Lambda>.lambda.exhaust_disc
+            last_ConsL list.sel(1) t uU)
         moreover have "set U \<subseteq> Collect \<Lambda>.is_Lam"
         proof (cases "U = []")
           show "U = [] \<Longrightarrow> ?thesis"
@@ -3135,8 +3099,8 @@ begin
       by (metis elementary_reduction.simps(5) lambda.collapse(4))
 
     lemma cong_elementary_reductions_are_equal:
-    shows "\<And>u. \<lbrakk>elementary_reduction t; elementary_reduction u; t \<sim> u\<rbrakk> \<Longrightarrow> t = u"
-    proof (induct t)
+    shows "\<lbrakk>elementary_reduction t; elementary_reduction u; t \<sim> u\<rbrakk> \<Longrightarrow> t = u"
+    proof (induct t arbitrary: u)
       show "\<And>u. \<lbrakk>elementary_reduction \<^bold>\<sharp>; elementary_reduction u; \<^bold>\<sharp> \<sim> u\<rbrakk> \<Longrightarrow> \<^bold>\<sharp> = u"
         by simp
       show "\<And>x u. \<lbrakk>elementary_reduction \<^bold>\<guillemotleft>x\<^bold>\<guillemotright>; elementary_reduction u; \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \<sim> u\<rbrakk> \<Longrightarrow> \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> = u"
@@ -3207,8 +3171,8 @@ begin
         | "_ \<sqsubseteq> _ \<longleftrightarrow> False"
 
     lemma subs_implies_prfx:
-    shows "\<And>u. t \<sqsubseteq> u \<Longrightarrow> t \<lesssim> u"
-      apply (induct t)
+    shows "t \<sqsubseteq> u \<Longrightarrow> t \<lesssim> u"
+      apply (induct t arbitrary: u)
           apply auto[1]
       using subs.elims(2)
          apply fastforce
@@ -3245,9 +3209,9 @@ begin
       by auto
 
     lemma subs_Ide:
-    shows "\<And>u. \<lbrakk>ide u; Src t = Src u\<rbrakk> \<Longrightarrow> u \<sqsubseteq> t"
+    shows "\<lbrakk>ide u; Src t = Src u\<rbrakk> \<Longrightarrow> u \<sqsubseteq> t"
       using Ide_Src Ide_implies_Arr Ide_iff_Src_self
-      by (induct t, simp_all) force+
+      by (induct t arbitrary: u, simp_all) force+
 
     lemma subs_App:
     shows "u \<sqsubseteq> t1 \<^bold>\<circ> t2 \<longleftrightarrow> is_App u \<and> un_App1 u \<sqsubseteq> t1 \<and> un_App2 u \<sqsubseteq> t2"
@@ -3279,16 +3243,16 @@ begin
           development.elims(2))
 
     lemma development_Ide:
-    shows "\<And>t. \<Lambda>.Ide t \<Longrightarrow> development t U \<longleftrightarrow> U = []"
+    shows "\<Lambda>.Ide t \<Longrightarrow> development t U \<longleftrightarrow> U = []"
       using \<Lambda>.Ide_implies_Arr
-      apply (induct U)
+      apply (induct U arbitrary: t)
        apply auto
       by (meson \<Lambda>.elementary_reduction_not_ide \<Lambda>.ide_backward_stable \<Lambda>.ide_char
           \<Lambda>.subs_implies_prfx)
 
     lemma development_implies:
-    shows "\<And>t. development t U \<Longrightarrow> elementary_reduction_path U \<and> (U \<noteq> [] \<longrightarrow> U \<^sup>*\<lesssim>\<^sup>* [t])"
-      apply (induct U)
+    shows "development t U \<Longrightarrow> elementary_reduction_path U \<and> (U \<noteq> [] \<longrightarrow> U \<^sup>*\<lesssim>\<^sup>* [t])"
+      apply (induct U arbitrary: t)
       using elementary_reduction_path_def
        apply simp
     proof -
@@ -3341,21 +3305,20 @@ begin
     \<close>
 
     lemma development_append:
-    shows "\<And>t V. \<lbrakk>development t U; development (t \<^sup>1\\\<^sup>* U) V\<rbrakk> \<Longrightarrow> development t (U @ V)"
+    shows "\<lbrakk>development t U; development (t \<^sup>1\\\<^sup>* U) V\<rbrakk> \<Longrightarrow> development t (U @ V)"
       using development_imp_Arr null_char
-      apply (induct U)
+      apply (induct U arbitrary: t V)
        apply auto
       by (metis Resid1x.simps(2-3) append_Nil neq_Nil_conv)
 
     lemma development_map_Lam:
-    shows "\<And>t. development t T \<Longrightarrow> development \<^bold>\<lambda>\<^bold>[t\<^bold>] (map \<Lambda>.Lam T)"
+    shows "development t T \<Longrightarrow> development \<^bold>\<lambda>\<^bold>[t\<^bold>] (map \<Lambda>.Lam T)"
       using \<Lambda>.Arr_not_Nil development_imp_Arr
-      by (induct T) auto
+      by (induct T arbitrary: t) auto
 
     lemma development_map_App_1:
-    shows "\<And>t. \<lbrakk>development t T; \<Lambda>.Arr u\<rbrakk>
-                  \<Longrightarrow> development (t \<^bold>\<circ> u) (map (\<lambda>x. x \<^bold>\<circ> \<Lambda>.Src u) T)"
-      apply (induct T)
+    shows "\<lbrakk>development t T; \<Lambda>.Arr u\<rbrakk> \<Longrightarrow> development (t \<^bold>\<circ> u) (map (\<lambda>x. x \<^bold>\<circ> \<Lambda>.Src u) T)"
+      apply (induct T arbitrary: t)
        apply (simp add: \<Lambda>.Ide_implies_Arr)
     proof -
       fix t T t'
@@ -3370,9 +3333,8 @@ begin
     qed
 
     lemma development_map_App_2:
-    shows "\<And>u. \<lbrakk>\<Lambda>.Arr t; development u U\<rbrakk>
-                  \<Longrightarrow> development (t \<^bold>\<circ> u) (map (\<lambda>x. \<Lambda>.App (\<Lambda>.Src t) x) U)"
-      apply (induct U)
+    shows "\<lbrakk>\<Lambda>.Arr t; development u U\<rbrakk> \<Longrightarrow> development (t \<^bold>\<circ> u) (map (\<lambda>x. \<Lambda>.App (\<Lambda>.Src t) x) U)"
+      apply (induct U arbitrary: u)
        apply (simp add: \<Lambda>.Ide_implies_Arr)
     proof -
       fix u U u'
@@ -3494,8 +3456,8 @@ begin
     \<close>
 
     lemma mtp_gt_0_iff_in_FV:
-    shows "\<And>x. mtp x t > 0 \<longleftrightarrow> x \<in> FV t"
-    proof (induct t)
+    shows "mtp x t > 0 \<longleftrightarrow> x \<in> FV t"
+    proof (induct t arbitrary: x)
       show "\<And>x. 0 < mtp x \<^bold>\<sharp> \<longleftrightarrow> x \<in> FV \<^bold>\<sharp>"
         by simp
       show "\<And>x z. 0 < mtp x \<^bold>\<guillemotleft>z\<^bold>\<guillemotright> \<longleftrightarrow> x \<in> FV \<^bold>\<guillemotleft>z\<^bold>\<guillemotright>"
@@ -3538,12 +3500,12 @@ begin
     \<close>
 
     lemma mtpE_eq_Raise:
-    shows "\<And>x k d. x < d \<Longrightarrow> mtp x (Raise d k t) = mtp x t"
-      by (induct t) auto
+    shows "x < d \<Longrightarrow> mtp x (Raise d k t) = mtp x t"
+      by (induct t arbitrary: x k d) auto
 
     lemma mtp_Raise_ind:
-    shows "\<And>d x k l t. \<lbrakk>l \<le> d; size t \<le> s\<rbrakk> \<Longrightarrow> mtp (x + d + k) (Raise l k t) = mtp (x + d) t"
-    proof (induct s)
+    shows "\<lbrakk>l \<le> d; size t \<le> s\<rbrakk> \<Longrightarrow> mtp (x + d + k) (Raise l k t) = mtp (x + d) t"
+    proof (induct s arbitrary: d x k l t)
       show "\<And>d x k l. \<lbrakk>l \<le> d; size t \<le> 0\<rbrakk> \<Longrightarrow> mtp (x + d + k) (Raise l k t) = mtp (x + d) t"
               for t
         by (cases t) auto
@@ -3651,33 +3613,33 @@ begin
       using assms mtp_Raise_ind by blast
 
     lemma mtp_Raise':
-    shows "\<And>k l. mtp l (Raise l (Suc k) t) = 0"
-      by (induct t) auto
+    shows "mtp l (Raise l (Suc k) t) = 0"
+      by (induct t arbitrary: k l) auto
 
     lemma mtp_raise:
     shows "mtp (x + Suc d) (raise d t) = mtp (Suc x) t"
        by (metis Suc_eq_plus1 add.assoc le_add2 le_add_same_cancel2 mtp_Raise plus_1_eq_Suc)
 
     lemma mtp_Subst_cancel:
-    shows "\<And>k d n. mtp k (Subst (Suc d + k) u t) = mtp k t"
-    proof (induct t)
-      show "\<And>k d n. mtp k (Subst (Suc d + k) u \<^bold>\<sharp>) = mtp k \<^bold>\<sharp>"
+    shows "mtp k (Subst (Suc d + k) u t) = mtp k t"
+    proof (induct t arbitrary: k d)
+      show "\<And>k d. mtp k (Subst (Suc d + k) u \<^bold>\<sharp>) = mtp k \<^bold>\<sharp>"
         by simp
-      show "\<And>k z d n. mtp k (Subst (Suc d + k) u \<^bold>\<guillemotleft>z\<^bold>\<guillemotright>) = mtp k \<^bold>\<guillemotleft>z\<^bold>\<guillemotright>"
+      show "\<And>k z d. mtp k (Subst (Suc d + k) u \<^bold>\<guillemotleft>z\<^bold>\<guillemotright>) = mtp k \<^bold>\<guillemotleft>z\<^bold>\<guillemotright>"
       using mtp_Raise'
         apply auto
         by (metis add_Suc_right add_Suc_shift order_refl raise_plus)
-      show "\<And>t k d n. (\<And>k d n. mtp k (Subst (Suc d + k) u t) = mtp k t)
+      show "\<And>t k d. (\<And>k d. mtp k (Subst (Suc d + k) u t) = mtp k t)
                         \<Longrightarrow> mtp k (Subst (Suc d + k) u \<^bold>\<lambda>\<^bold>[t\<^bold>]) = mtp k \<^bold>\<lambda>\<^bold>[t\<^bold>]"
         by (metis Subst.simps(3) add_Suc_right mtp.simps(3))
-      show "\<And>t1 t2 k d n.
-               \<lbrakk>\<And>k d n. mtp k (Subst (Suc d + k) u t1) = mtp k t1;
-                \<And>k d n. mtp k (Subst (Suc d + k) u t2) = mtp k t2\<rbrakk>
+      show "\<And>t1 t2 k d.
+               \<lbrakk>\<And>k d. mtp k (Subst (Suc d + k) u t1) = mtp k t1;
+                \<And>k d. mtp k (Subst (Suc d + k) u t2) = mtp k t2\<rbrakk>
                    \<Longrightarrow> mtp k (Subst (Suc d + k) u (t1 \<^bold>\<circ> t2)) = mtp k (t1 \<^bold>\<circ> t2)"
         by auto
-      show "\<And>t1 t2 k d n.
-         \<lbrakk>\<And>k d n. mtp k (Subst (Suc d + k) u t1) = mtp k t1;
-          \<And>k d n. mtp k (Subst (Suc d + k) u t2) = mtp k t2\<rbrakk>
+      show "\<And>t1 t2 k d.
+         \<lbrakk>\<And>k d. mtp k (Subst (Suc d + k) u t1) = mtp k t1;
+          \<And>k d. mtp k (Subst (Suc d + k) u t2) = mtp k t2\<rbrakk>
              \<Longrightarrow> mtp k (Subst (Suc d + k) u (\<^bold>\<lambda>\<^bold>[t1\<^bold>] \<^bold>\<Zspot> t2)) = mtp k (\<^bold>\<lambda>\<^bold>[t1\<^bold>] \<^bold>\<Zspot> t2)"
         using mtp_Raise'
         apply auto
@@ -3696,9 +3658,8 @@ begin
     \<close>
 
     lemma mtp_Subst':
-    shows "\<And>d x u. mtp (x + Suc d) (Subst d u t) =
-                    mtp (x + Suc (Suc d)) t + mtp (Suc x) u * mtp d t"
-    proof (induct t)
+    shows "mtp (x + Suc d) (Subst d u t) = mtp (x + Suc (Suc d)) t + mtp (Suc x) u * mtp d t"
+    proof (induct t arbitrary: d x u)
       show "\<And>d x u. mtp (x + Suc d) (Subst d u \<^bold>\<sharp>) =
             mtp (x + Suc (Suc d)) \<^bold>\<sharp> + mtp (Suc x) u * mtp d \<^bold>\<sharp>"
         by simp
@@ -3791,8 +3752,8 @@ begin
     \<close>
 
     lemma mtp_Subst:
-    shows "\<And>u k. mtp k (Subst k u t) = mtp (Suc k) t + mtp k (raise k u) * mtp k t"
-    proof (induct t)
+    shows "mtp k (Subst k u t) = mtp (Suc k) t + mtp k (raise k u) * mtp k t"
+    proof (induct t arbitrary: u k)
       show "\<And>u k. mtp k (Subst k u \<^bold>\<sharp>) = mtp (Suc k) \<^bold>\<sharp> + mtp k (raise k u) * mtp k \<^bold>\<sharp>"
         by simp
       show "\<And>x u k. mtp k (Subst k u \<^bold>\<guillemotleft>x\<^bold>\<guillemotright>) =
@@ -3871,8 +3832,8 @@ begin
     qed
 
     lemma elementary_reduction_nonincreases_mtp:
-    shows "\<And>u x. \<lbrakk>elementary_reduction u; u \<sqsubseteq> t\<rbrakk> \<Longrightarrow> mtp x (resid t u) \<le> mtp x t"
-    proof (induct t)
+    shows "\<lbrakk>elementary_reduction u; u \<sqsubseteq> t\<rbrakk> \<Longrightarrow> mtp x (resid t u) \<le> mtp x t"
+    proof (induct t arbitrary: u x)
       show "\<And>u x. \<lbrakk>elementary_reduction u; u \<sqsubseteq> \<^bold>\<sharp>\<rbrakk> \<Longrightarrow> mtp x (resid \<^bold>\<sharp> u) \<le> mtp x \<^bold>\<sharp>"
         by simp
       show "\<And>x u i. \<lbrakk>elementary_reduction u; u \<sqsubseteq> \<^bold>\<guillemotleft>i\<^bold>\<guillemotright>\<rbrakk>
@@ -3989,13 +3950,13 @@ begin
       by (metis con_sym eq_imp_le resid_arr_ide prfx_implies_con subs_implies_prfx)
 
     lemma hgt_Raise:
-    shows "\<And>l k. hgt (Raise l k t) = hgt t"
+    shows "hgt (Raise l k t) = hgt t"
       using mtpE_eq_Raise
-      by (induct t) auto
+      by (induct t arbitrary: l k) auto
 
     lemma hgt_Subst:
-    shows "\<And>u k. Arr u \<Longrightarrow> hgt (Subst k u t) = hgt t + hgt u * mtp k t"
-    proof (induct t)
+    shows "Arr u \<Longrightarrow> hgt (Subst k u t) = hgt t + hgt u * mtp k t"
+    proof (induct t arbitrary: u k)
       show "\<And>u k. Arr u \<Longrightarrow> hgt (Subst k u \<^bold>\<sharp>) = hgt \<^bold>\<sharp> + hgt u * mtp k \<^bold>\<sharp>"
         by simp
       show "\<And>x u k. Arr u \<Longrightarrow> hgt (Subst k u \<^bold>\<guillemotleft>x\<^bold>\<guillemotright>) = hgt \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> + hgt u * mtp k \<^bold>\<guillemotleft>x\<^bold>\<guillemotright>"
@@ -4050,8 +4011,8 @@ begin
     qed
 
     lemma elementary_reduction_decreases_hgt:
-    shows "\<And>u. \<lbrakk>elementary_reduction u; u \<sqsubseteq> t\<rbrakk> \<Longrightarrow> hgt (t \\ u) < hgt t"
-    proof (induct t)
+    shows "\<lbrakk>elementary_reduction u; u \<sqsubseteq> t\<rbrakk> \<Longrightarrow> hgt (t \\ u) < hgt t"
+    proof (induct t arbitrary: u)
       show "\<And>u. \<lbrakk>elementary_reduction u; u \<sqsubseteq> \<^bold>\<sharp>\<rbrakk> \<Longrightarrow> hgt (\<^bold>\<sharp> \\ u) < hgt \<^bold>\<sharp>"
         by simp
       show "\<And>u x. \<lbrakk>elementary_reduction u; u \<sqsubseteq> \<^bold>\<guillemotleft>x\<^bold>\<guillemotright>\<rbrakk> \<Longrightarrow> hgt (\<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \\ u) < hgt \<^bold>\<guillemotleft>x\<^bold>\<guillemotright>"
@@ -4212,9 +4173,9 @@ begin
   begin
 
     lemma length_devel_le_hgt:
-    shows "\<And>t. development t U \<Longrightarrow> length U \<le> \<Lambda>.hgt t"
+    shows "development t U \<Longrightarrow> length U \<le> \<Lambda>.hgt t"
       using \<Lambda>.elementary_reduction_decreases_hgt
-      by (induct U, auto, fastforce)
+      by (induct U arbitrary: t, auto, fastforce)
 
     text \<open>
       We finally arrive at the main result of this section:
@@ -4249,7 +4210,7 @@ begin
           \<Lambda>.ide_char list.simps(3))
 
     lemma complete_development_cong:
-    shows "\<And>t. \<lbrakk>complete_development t U; \<not> \<Lambda>.Ide t\<rbrakk> \<Longrightarrow> [t] \<^sup>*\<sim>\<^sup>* U"
+    shows "\<lbrakk>complete_development t U; \<not> \<Lambda>.Ide t\<rbrakk> \<Longrightarrow> [t] \<^sup>*\<sim>\<^sup>* U"
       using complete_development_def development_implies
       by (induct U) auto
 
@@ -4260,7 +4221,7 @@ begin
       by blast
 
     lemma Trgs_complete_development:
-    shows "\<And>t. \<lbrakk>complete_development t U; \<not> \<Lambda>.Ide t\<rbrakk> \<Longrightarrow> Trgs U = {\<Lambda>.Trg t}"
+    shows "\<lbrakk>complete_development t U; \<not> \<Lambda>.Ide t\<rbrakk> \<Longrightarrow> Trgs U = {\<Lambda>.Trg t}"
       using complete_development_cong Ide.simps(1) Srcs_Resid Trgs.simps(2)
             Trgs_Resid_sym ide_char complete_development_def development_imp_Arr \<Lambda>.targets_char\<^sub>\<Lambda>
       apply simp
@@ -4312,9 +4273,9 @@ begin
       by (relation "measure \<Lambda>.hgt") auto
 
     lemma complete_development_bottom_up_development_ind:
-    shows "\<And>t. \<lbrakk>\<Lambda>.Arr t; length (bottom_up_development t) \<le> n\<rbrakk>
-                  \<Longrightarrow> complete_development t (bottom_up_development t)"
-    proof (induct n)
+    shows "\<lbrakk>\<Lambda>.Arr t; length (bottom_up_development t) \<le> n\<rbrakk>
+              \<Longrightarrow> complete_development t (bottom_up_development t)"
+    proof (induct n arbitrary: t)
       show "\<And>t. \<lbrakk>\<Lambda>.Arr t; length (bottom_up_development t) \<le> 0\<rbrakk>
                    \<Longrightarrow> complete_development t (bottom_up_development t)"
         using complete_development_def development_Ide by auto
@@ -4381,8 +4342,8 @@ begin
 
     lemma red_reduce:
     assumes "reduction_strategy f"
-    shows "\<And>a. Ide a \<Longrightarrow> red a (reduce f a n)"
-      apply (induct n, auto)
+    shows "Ide a \<Longrightarrow> red a (reduce f a n)"
+      apply (induct n arbitrary: a, auto)
        apply (metis Ide_iff_Src_self Ide_iff_Trg_self Ide_implies_Arr red.simps)
       by (metis Ide_Trg Ide_iff_Src_self assms red.intros(1) red.intros(2) reduction_strategy_def)
 
@@ -4410,11 +4371,11 @@ begin
 
     lemma apply_strategy_gives_path_ind:
     assumes "\<Lambda>.reduction_strategy f"
-    shows "\<And>a. \<lbrakk>\<Lambda>.Ide a; n > 0\<rbrakk> \<Longrightarrow> Arr (apply_strategy f a n) \<and>
-                                    length (apply_strategy f a n) = n \<and>
-                                    Src (apply_strategy f a n) = a \<and>
-                                    Trg (apply_strategy f a n) = \<Lambda>.reduce f a n"
-    proof (induct n, simp)
+    shows "\<lbrakk>\<Lambda>.Ide a; n > 0\<rbrakk> \<Longrightarrow> Arr (apply_strategy f a n) \<and>
+                                length (apply_strategy f a n) = n \<and>
+                                Src (apply_strategy f a n) = a \<and>
+                                Trg (apply_strategy f a n) = \<Lambda>.reduce f a n"
+    proof (induct n arbitrary: a, simp)
       fix n a
       assume ind: "\<And>a. \<lbrakk>\<Lambda>.Ide a; 0 < n\<rbrakk> \<Longrightarrow> Arr (apply_strategy f a n) \<and>
                                             length (apply_strategy f a n) = n \<and>
@@ -4517,9 +4478,9 @@ begin
     \<close>
 
     lemma parallel_strategy_is_universal:
-    shows "\<And>U. \<lbrakk>n > 0; n \<le> length U; Arr U\<rbrakk>
-                   \<Longrightarrow> take n U \<^sup>*\<lesssim>\<^sup>* apply_strategy \<Lambda>.parallel_strategy (Src U) n"
-    proof (induct n, simp)
+    shows "\<lbrakk>n > 0; n \<le> length U; Arr U\<rbrakk>
+              \<Longrightarrow> take n U \<^sup>*\<lesssim>\<^sup>* apply_strategy \<Lambda>.parallel_strategy (Src U) n"
+    proof (induct n arbitrary: U, simp)
       fix n a and U :: "\<Lambda>.lambda list"
       assume n: "Suc n \<le> length U"
       assume U: "Arr U"
@@ -5001,9 +4962,8 @@ begin
     \<close>
 
     lemma is_head_reduction_resid:
-    shows "\<And>u. \<lbrakk>is_head_reduction t; Arr u; Src t = Src u\<rbrakk>
-                  \<Longrightarrow> t \<lesssim> u \<or> is_head_reduction (t \\ u)"
-    proof (induct t)
+    shows "\<lbrakk>is_head_reduction t; Arr u; Src t = Src u\<rbrakk> \<Longrightarrow> t \<lesssim> u \<or> is_head_reduction (t \\ u)"
+    proof (induct t arbitrary: u)
       show "\<And>u. \<lbrakk>is_head_reduction \<^bold>\<sharp>; Arr u; Src \<^bold>\<sharp> = Src u\<rbrakk>
                    \<Longrightarrow> \<^bold>\<sharp> \<lesssim> u \<or> is_head_reduction (\<^bold>\<sharp> \\ u)"
         by auto
@@ -5137,9 +5097,9 @@ begin
     \<close>
 
     lemma is_internal_reduction_resid:
-    shows "\<And>u. \<lbrakk>is_internal_reduction t; is_internal_reduction u; Src t = Src u\<rbrakk>
-                  \<Longrightarrow> is_internal_reduction (t \\ u)"
-      apply (induct t)
+    shows "\<lbrakk>is_internal_reduction t; is_internal_reduction u; Src t = Src u\<rbrakk>
+              \<Longrightarrow> is_internal_reduction (t \\ u)"
+      apply (induct t arbitrary: u)
           apply auto
       apply (metis Con_implies_Arr2 con_char weak_extensionality Arr.simps(2) Src.simps(2)
                    parallel_strategy.simps(1) prfx_implies_con resid_Arr_Src subs_Ide
@@ -5188,9 +5148,9 @@ begin
     \<close>
 
     lemma is_head_reduction_resid':
-    shows "\<And>u. \<lbrakk>is_head_reduction t; is_internal_reduction u; Src t = Src u\<rbrakk>
-                   \<Longrightarrow> is_head_reduction (t \\ u)"
-    proof (induct t)
+    shows "\<lbrakk>is_head_reduction t; is_internal_reduction u; Src t = Src u\<rbrakk>
+               \<Longrightarrow> is_head_reduction (t \\ u)"
+    proof (induct t arbitrary: u)
       show "\<And>u. \<lbrakk>is_head_reduction \<^bold>\<sharp>; is_internal_reduction u; Src \<^bold>\<sharp> = Src u\<rbrakk>
                    \<Longrightarrow> is_head_reduction (\<^bold>\<sharp> \\ u)"
         by simp
@@ -5538,9 +5498,9 @@ begin
     qed
 
     lemma leftmost_reduction_preservation:
-    shows "\<And>u. \<lbrakk>is_leftmost_reduction t; elementary_reduction u; \<not> is_leftmost_reduction u;
-                coinitial t u\<rbrakk> \<Longrightarrow> is_leftmost_reduction (t \\ u)"
-    proof (induct t)
+    shows "\<lbrakk>is_leftmost_reduction t; elementary_reduction u; \<not> is_leftmost_reduction u;
+            coinitial t u\<rbrakk> \<Longrightarrow> is_leftmost_reduction (t \\ u)"
+    proof (induct t arbitrary: u)
       show "\<And>u. coinitial \<^bold>\<sharp> u \<Longrightarrow> is_leftmost_reduction (\<^bold>\<sharp> \\ u)"
         by simp
       show "\<And>x u. is_leftmost_reduction \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \<Longrightarrow> is_leftmost_reduction (\<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \\ u)"
@@ -5770,8 +5730,8 @@ begin
         | "sseq _ _ = False"
 
     lemma sseq_imp_seq:
-    shows "\<And>u. sseq t u \<Longrightarrow> seq t u"
-    proof (induct t)
+    shows "sseq t u \<Longrightarrow> seq t u"
+    proof (induct t arbitrary: u)
       show "\<And>u. sseq \<^bold>\<sharp> u \<Longrightarrow> seq \<^bold>\<sharp> u"
         using sseq.elims(1) by blast
       fix u
@@ -5807,8 +5767,8 @@ begin
     qed
 
     lemma sseq_imp_elementary_reduction1:
-    shows "\<And>t. sseq t u \<Longrightarrow> elementary_reduction t"
-    proof (induct u)
+    shows "sseq t u \<Longrightarrow> elementary_reduction t"
+    proof (induct u arbitrary: t)
       show "\<And>t. sseq t \<^bold>\<sharp> \<Longrightarrow> elementary_reduction t"
         by simp
       show "\<And>x t. sseq t \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \<Longrightarrow> elementary_reduction t"
@@ -5835,8 +5795,8 @@ begin
     qed
 
     lemma sseq_imp_elementary_reduction2:
-    shows "\<And>t. sseq t u \<Longrightarrow> elementary_reduction u"
-    proof (induct u)
+    shows "sseq t u \<Longrightarrow> elementary_reduction u"
+    proof (induct u arbitrary: t)
       show "\<And>t. sseq t \<^bold>\<sharp> \<Longrightarrow> elementary_reduction \<^bold>\<sharp>"
         by simp
       show "\<And>x t. sseq t \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> \<Longrightarrow> elementary_reduction \<^bold>\<guillemotleft>x\<^bold>\<guillemotright>"
@@ -5876,8 +5836,8 @@ begin
     \<close>
 
     lemma sseq_head_reductionI:
-    shows "\<And>u. \<lbrakk>is_head_reduction t; elementary_reduction u; seq t u\<rbrakk> \<Longrightarrow> sseq t u"
-    proof (induct t)
+    shows "\<lbrakk>is_head_reduction t; elementary_reduction u; seq t u\<rbrakk> \<Longrightarrow> sseq t u"
+    proof (induct t arbitrary: u)
       show "\<And>u. \<lbrakk>is_head_reduction \<^bold>\<sharp>; elementary_reduction u; seq \<^bold>\<sharp> u\<rbrakk> \<Longrightarrow> sseq \<^bold>\<sharp> u"
         by simp
       show "\<And>x u. \<lbrakk>is_head_reduction \<^bold>\<guillemotleft>x\<^bold>\<guillemotright>; elementary_reduction u; seq \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> u\<rbrakk> \<Longrightarrow> sseq \<^bold>\<guillemotleft>x\<^bold>\<guillemotright> u"
@@ -5910,9 +5870,9 @@ begin
     \<close>
 
     lemma sseq_preserves_App_and_no_head_reduction:
-    shows "\<And>u. \<lbrakk>sseq t u; is_App t \<and> \<not> contains_head_reduction t\<rbrakk>
-                   \<Longrightarrow> is_App u \<and> \<not> contains_head_reduction u"
-      apply (induct t)
+    shows "\<lbrakk>sseq t u; is_App t \<and> \<not> contains_head_reduction t\<rbrakk>
+               \<Longrightarrow> is_App u \<and> \<not> contains_head_reduction u"
+      apply (induct t arbitrary: u)
           apply simp_all
     proof -
       fix t1 t2 u
@@ -6032,8 +5992,8 @@ begin
     qed
 
     lemma Std_imp_sseq_last_hd:
-    shows "\<And>U. \<lbrakk>Std (T @ U); T \<noteq> []; U \<noteq> []\<rbrakk> \<Longrightarrow> \<Lambda>.sseq (last T) (hd U)"
-      apply (induct T)
+    shows "\<lbrakk>Std (T @ U); T \<noteq> []; U \<noteq> []\<rbrakk> \<Longrightarrow> \<Lambda>.sseq (last T) (hd U)"
+      apply (induct T arbitrary: U)
        apply simp_all
       by (metis Std.elims(3) Std.simps(3) append_self_conv2 neq_Nil_conv)
 
@@ -6166,8 +6126,8 @@ begin
     qed
 
     lemma Std_append:
-    shows "\<And>T. \<lbrakk>Std T; Std U; T = [] \<or> U = [] \<or> \<Lambda>.sseq (last T) (hd U)\<rbrakk> \<Longrightarrow> Std (T @ U)"
-    proof (induct U)
+    shows "\<lbrakk>Std T; Std U; T = [] \<or> U = [] \<or> \<Lambda>.sseq (last T) (hd U)\<rbrakk> \<Longrightarrow> Std (T @ U)"
+    proof (induct U arbitrary: T)
       show "\<And>T. \<lbrakk>Std T; Std []; T = [] \<or> [] = [] \<or> \<Lambda>.sseq (last T) (hd [])\<rbrakk> \<Longrightarrow> Std (T @ [])"
         by simp
       fix u T U
@@ -6517,9 +6477,9 @@ begin
     \<close>
 
     lemma seq_App_Std_implies:
-    shows "\<And>t. \<lbrakk>Std (t # U); \<Lambda>.is_App t \<and> \<not> \<Lambda>.contains_head_reduction t\<rbrakk>
-                  \<Longrightarrow> set U \<subseteq> Collect \<Lambda>.is_App"
-    proof (induct U)
+    shows "\<lbrakk>Std (t # U); \<Lambda>.is_App t \<and> \<not> \<Lambda>.contains_head_reduction t\<rbrakk>
+              \<Longrightarrow> set U \<subseteq> Collect \<Lambda>.is_App"
+    proof (induct U arbitrary: t)
       show "\<And>t. \<lbrakk>Std [t]; \<Lambda>.is_App t \<and> \<not> \<Lambda>.contains_head_reduction t\<rbrakk>
                    \<Longrightarrow> set [] \<subseteq> Collect \<Lambda>.is_App"
         by simp
@@ -7185,8 +7145,8 @@ begin
       by (meson dual_order.eq_iff length_filter_le not_less_eq_eq)+
 
     lemma stdz_insert_Ide:
-    shows "\<And>t. Ide (t # U) \<Longrightarrow> stdz_insert t U = []"
-    proof (induct U)
+    shows "Ide (t # U) \<Longrightarrow> stdz_insert t U = []"
+    proof (induct U arbitrary: t)
       show "\<And>t. Ide [t] \<Longrightarrow> stdz_insert t [] = []"
         by (metis Ide_iff_standard_development_empty \<Lambda>.Ide_implies_Arr Ide.simps(2)
             \<Lambda>.ide_char stdz_insert.simps(1))
@@ -7200,8 +7160,8 @@ begin
     qed
 
     lemma stdz_insert_Ide_Std:
-    shows "\<And>u. \<lbrakk>\<Lambda>.Ide u; seq [u] U; Std U\<rbrakk> \<Longrightarrow> stdz_insert u U = stdz_insert (hd U) (tl U)"
-    proof (induct U)
+    shows "\<lbrakk>\<Lambda>.Ide u; seq [u] U; Std U\<rbrakk> \<Longrightarrow> stdz_insert u U = stdz_insert (hd U) (tl U)"
+    proof (induct U arbitrary: u)
       show "\<And>u. \<lbrakk>\<Lambda>.Ide u; seq [u] []; Std []\<rbrakk> \<Longrightarrow> stdz_insert u [] = stdz_insert (hd []) (tl [])"
         by (simp add: seq_char)
       fix u v U
@@ -7239,9 +7199,9 @@ begin
     \<close>
 
     lemma stdz_insert_Beta_ind:
-    shows "\<And>t U. \<lbrakk>\<Lambda>.hgt t + length U \<le> n; \<Lambda>.is_Beta t; seq [t] U\<rbrakk>
-                    \<Longrightarrow> \<Lambda>.is_Beta (hd (stdz_insert t U))"
-    proof (induct n)
+    shows "\<lbrakk>\<Lambda>.hgt t + length U \<le> n; \<Lambda>.is_Beta t; seq [t] U\<rbrakk>
+              \<Longrightarrow> \<Lambda>.is_Beta (hd (stdz_insert t U))"
+    proof (induct n arbitrary: t U)
       show "\<And>t U. \<lbrakk>\<Lambda>.hgt t + length U \<le> 0; \<Lambda>.is_Beta t; seq [t] U\<rbrakk>
                       \<Longrightarrow> \<Lambda>.is_Beta (hd (stdz_insert t U))"
         using Arr.simps(1) seq_char by blast
@@ -8381,7 +8341,7 @@ begin
                                                  ((M \<^bold>\<circ> N) \\ \<Lambda>.head_strategy (M \<^bold>\<circ> N))))"
                             by (metis 4 Ide_iff_standard_development_empty MN Std_consE
                                 Std_standard_development hd_Cons_tl \<Lambda>.Arr.simps(4)
-                                \<Lambda>.Arr_resid_ind \<Lambda>.Con_head_strategy
+                                \<Lambda>.Arr_resid \<Lambda>.Con_head_strategy
                                 \<Lambda>.sseq_imp_elementary_reduction1 Std.simps(2))
                           ultimately show ?thesis
                             using \<Lambda>.sseq_head_reductionI Std_standard_development
@@ -8393,7 +8353,7 @@ begin
                         qed
                         thus ?thesis
                           by (metis 4 5 MN Ide_iff_standard_development_empty
-                              Std_standard_development \<Lambda>.Arr.simps(4) \<Lambda>.Arr_resid_ind
+                              Std_standard_development \<Lambda>.Arr.simps(4) \<Lambda>.Arr_resid
                               \<Lambda>.Con_head_strategy list.exhaust_sel Std.simps(3))
                       qed
                       show "\<not> Ide ((M \<^bold>\<circ> N) # u # U) \<longrightarrow>
@@ -8419,7 +8379,7 @@ begin
                           show "standard_development ((M \<^bold>\<circ> N) \\ \<Lambda>.head_strategy (M \<^bold>\<circ> N)) \<^sup>*\<sim>\<^sup>*
                                 [(M \<^bold>\<circ> N) \\ \<Lambda>.head_strategy (M \<^bold>\<circ> N)]"
                             using 4 MN cong_standard_development \<Lambda>.Arr.simps(4)
-                                  \<Lambda>.Arr_resid_ind \<Lambda>.Con_head_strategy
+                                  \<Lambda>.Arr_resid \<Lambda>.Con_head_strategy
                             by presburger
                         qed
                         also have "[\<Lambda>.head_strategy (M \<^bold>\<circ> N)] @
@@ -8453,7 +8413,7 @@ begin
                       have "seq [(M \<^bold>\<circ> N) \\ \<Lambda>.head_strategy (M \<^bold>\<circ> N)] U"
                       proof
                         show "Arr [(M \<^bold>\<circ> N) \\ \<Lambda>.head_strategy (M \<^bold>\<circ> N)]"
-                          by (simp add: MN lambda_calculus.Arr_resid_ind \<Lambda>.Con_head_strategy)
+                          by (simp add: MN \<Lambda>.Arr_resid \<Lambda>.Con_head_strategy)
                         show "Arr U"
                           using U \<open>U \<noteq> [] \<Longrightarrow> Arr U\<close> by blast
                         show "\<Lambda>.Trg (last [(M \<^bold>\<circ> N) \\ \<Lambda>.head_strategy (M \<^bold>\<circ> N)]) = \<Lambda>.Src (hd U)"
@@ -10690,7 +10650,7 @@ begin
                    u = \<Lambda>.leftmost_strategy (\<Lambda>.App (\<Lambda>.Src t1) (\<Lambda>.Src t2)) \\ \<Lambda>.App t1 t2\<rbrakk>
                      \<Longrightarrow> \<not> \<Lambda>.sseq (\<Lambda>.App t1 t2)
                                   (\<Lambda>.leftmost_strategy (\<Lambda>.App (\<Lambda>.Src t1) (\<Lambda>.Src t2)) \\ \<Lambda>.App t1 t2)"
-            by (metis \<Lambda>.sseq_imp_elementary_reduction1 \<Lambda>.Arr.simps(5) \<Lambda>.Arr_resid_ind
+            by (metis \<Lambda>.sseq_imp_elementary_reduction1 \<Lambda>.Arr.simps(5) \<Lambda>.Arr_resid
                       \<Lambda>.Coinitial_iff_Con \<Lambda>.Ide.simps(5) \<Lambda>.Ide_iff_Src_self \<Lambda>.Src.simps(4)
                       \<Lambda>.Src_resid \<Lambda>.contains_head_reduction.simps(8) \<Lambda>.is_head_reduction_if
                       \<Lambda>.lambda.discI(3) \<Lambda>.lambda.distinct(7)
@@ -10831,22 +10791,14 @@ begin
       qed
       show "\<lbrakk>Std T; \<Lambda>.NF (Trg T)\<rbrakk> \<Longrightarrow> set T \<subseteq> Collect \<Lambda>.is_leftmost_reduction"
       proof (induct T)
-        show "set [] \<subseteq> Collect \<Lambda>.is_leftmost_reduction"
+        show 2: "set [] \<subseteq> Collect \<Lambda>.is_leftmost_reduction"
           by simp
         fix t T
         assume ind: "\<lbrakk>Std T; \<Lambda>.NF (Trg T)\<rbrakk> \<Longrightarrow> set T \<subseteq> Collect \<Lambda>.is_leftmost_reduction"
         assume Std: "Std (t # T)" and NF: "\<Lambda>.NF (Trg (t # T))"
         show "set (t # T) \<subseteq> Collect \<Lambda>.is_leftmost_reduction"
-        proof (cases "T = []")
-          show "T = [] \<Longrightarrow> ?thesis"
-            by (metis 1 NF Std \<open>set [] \<subseteq> Collect \<Lambda>.is_leftmost_reduction\<close>
-                mem_Collect_eq set_ConsD subset_code(1))
-          assume T: "T \<noteq> []"
-          have "\<Lambda>.is_leftmost_reduction t"
-            using 1 NF Std elementary_reduction_to_NF_is_leftmost by blast
-          thus ?thesis
-            using T NF Std ind by auto
-        qed
+          by (metis 1 2 NF Std Std_consE Trg.elims ind insert_subset list.inject list.simps(15)
+                    mem_Collect_eq)
       qed
     qed
 

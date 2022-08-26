@@ -1358,6 +1358,45 @@ begin
       then it is not necessarily the case that \<open>u \<squnion> v \<noteq> null\<close>.
     \<close>
 
+    lemma join_assoc:
+    assumes "joinable (t \<squnion> u) v" and "joinable t (u \<squnion> v)"
+    shows "t \<squnion> (u \<squnion> v) = (t \<squnion> u) \<squnion> v"
+    proof -
+      have vt_ut: "v \\ t \<frown> u \\ t"
+        using assms(1)
+        by (metis con_with_join_of_iff(2) join_def join_is_join_of joinable_implies_con
+            not_arr_null con_implies_arr(1))
+      have tv_uv: "t \\ v \<frown> u \\ v"
+        using vt_ut cube con_sym
+        by (metis arr_resid_iff_con)
+      have 2: "(t \<squnion> u) \<squnion> v = (t \<cdot> (u \\ t)) \<cdot> (v \\ (t \<cdot> (u \\ t)))"
+        using assms(1)
+        by (metis comp_is_composite_of(2) join_def join_is_join_of joinable_implies_con
+            not_arr_null con_implies_arr(1) join_ofE)
+      also have "... = t \<cdot> ((u \\ t) \<cdot> (v \\ (t \<cdot> (u \\ t))))"
+        using assms(1)
+        by (metis calculation comp_def joinable_iff_join_not_null comp_assoc)
+      also have "... = t \<cdot> ((u \\ t) \<cdot> ((v \\ t) \\ (u \\ t)))"
+        using assms(1)
+        by (metis "2" comp_null(2) con_sym joinable_iff_join_not_null resid_comp(1) conI)
+      also have "... = t \<cdot> ((v \\ t) \<squnion> (u \\ t))"
+      proof -
+        have "(v \\ t) \<squnion> (u \\ t) = (u \\ t) \<cdot> ((v \\ t) \\ (u \\ t))"
+          by (metis assms(2) comp_null(2) arr_comp comp_is_composite_of(2) con_comp_iff
+              join_is_join_of joinable_iff_join_not_null join_of_resid joinable_def
+              not_arr_null join_of_def joinable_implies_con)
+        thus ?thesis by simp
+      qed
+      also have "... = t \<cdot> ((u \\ t) \<squnion> (v \\ t))"
+        using join_sym by metis
+      also have "... = t \<cdot> ((u \<squnion> v) \\ t)"
+        by (metis assms(2) join_def resid_join\<^sub>E(3) joinable_implies_con null_is_zero(2) conE)
+      also have "... = t \<squnion> (u \<squnion> v)"
+        using assms(2) comp_is_composite_of(2) join_is_join_of by blast
+      finally show "t \<squnion> (u \<squnion> v) = (t \<squnion> u) \<squnion> v"
+        by simp
+    qed
+
   end
 
   subsubsection "Extensional RTS with Joins"
@@ -1389,7 +1428,7 @@ begin
     and "(t \<squnion> u) \\ v = (t \\ v) \<squnion> (u \\ v)"
       using assms has_joins resid_join\<^sub>E by blast+
 
-    lemma join_assoc:
+    lemma join_assoc\<^sub>E\<^sub>J:
     shows "t \<squnion> (u \<squnion> v) = (t \<squnion> u) \<squnion> v"
     proof -
       have *: "\<And>t u v. con (t \<squnion> u) v \<Longrightarrow> t \<squnion> (u \<squnion> v) = (t \<squnion> u) \<squnion> v"
@@ -1437,7 +1476,7 @@ begin
     proof -
       have "(t \<squnion> u) \\ v = (t \\ v) \<squnion> (u \\ v)"
         using assms resid_join\<^sub>E(3) [of t u v]
-        by (metis arr_prfx_join_self con_target con_sym join_assoc joinable_iff_con
+        by (metis arr_prfx_join_self con_target con_sym join_assoc\<^sub>E\<^sub>J joinable_iff_con
             joinable_iff_join_not_null prfx_implies_con resid_reflects_con)
       also have "... = trg v \<squnion> trg v"
         using assms
@@ -1769,12 +1808,12 @@ begin
   begin
 
     lemma preserves_src:
-    shows "\<And>a. a \<in> A.sources t \<Longrightarrow> B.src (F t) = F a"
+    shows "a \<in> A.sources t \<Longrightarrow> B.src (F t) = F a"
       by (metis equals0D image_subset_iff B.arr_iff_has_source
           preserves_sources B.arr_has_un_source B.src_in_sources)
 
     lemma preserves_trg:
-    shows "\<And>b. b \<in> A.targets t \<Longrightarrow> B.trg (F t) = F b"
+    shows "b \<in> A.targets t \<Longrightarrow> B.trg (F t) = F b"
       by (metis equals0D image_subset_iff B.arr_iff_has_target
           preserves_targets B.arr_has_un_target B.trg_in_targets)
 
@@ -3838,7 +3877,7 @@ begin
       by (metis Srcs.simps(2-3) assms neq_Nil_conv)
 
     lemma Trgs_are_con:
-    shows "\<And>b b'. \<lbrakk>b \<in> Trgs T; b' \<in> Trgs T\<rbrakk> \<Longrightarrow> b \<frown> b'"
+    shows "\<lbrakk>b \<in> Trgs T; b' \<in> Trgs T\<rbrakk> \<Longrightarrow> b \<frown> b'"
       apply (induct T)
        apply auto
       by (metis R.targets_are_con Trgs.simps(2-3) list.exhaust_sel)
@@ -3926,8 +3965,8 @@ begin
     \<close>
 
     lemma length_Residx1:
-    shows "\<And>u. length (T \<^sup>*\\\<^sup>1 u) \<le> length T"
-    proof (induct T)
+    shows "length (T \<^sup>*\\\<^sup>1 u) \<le> length T"
+    proof (induct T arbitrary: u)
       show "\<And>u. length ([] \<^sup>*\\\<^sup>1 u) \<le> length []"
         by simp
       fix t T u
@@ -3969,8 +4008,8 @@ begin
       by (metis R.null_is_zero(1) Resid1x.simps(2-3) list.exhaust)
 
     lemma Resid1x_ide:
-    shows "\<And>a. \<lbrakk>R.ide a; a \<^sup>1\\\<^sup>* T \<noteq> R.null\<rbrakk> \<Longrightarrow> R.ide (a \<^sup>1\\\<^sup>* T)"
-    proof (induct T)
+    shows "\<lbrakk>R.ide a; a \<^sup>1\\\<^sup>* T \<noteq> R.null\<rbrakk> \<Longrightarrow> R.ide (a \<^sup>1\\\<^sup>* T)"
+    proof (induct T arbitrary: a)
       show "\<And>a. a \<^sup>1\\\<^sup>* [] \<noteq> R.null \<Longrightarrow> R.ide (a \<^sup>1\\\<^sup>* [])"
         by simp
       fix a t T
@@ -3996,8 +4035,8 @@ begin
     where "T \<^sup>*\<frown>\<^sup>* U \<equiv> T \<^sup>*\\\<^sup>* U \<noteq> []"
 
     lemma Con_sym1:
-    shows "\<And>u. T \<^sup>*\\\<^sup>1 u \<noteq> [] \<longleftrightarrow> u \<^sup>1\\\<^sup>* T \<noteq> R.null"
-    proof (induct T)
+    shows "T \<^sup>*\\\<^sup>1 u \<noteq> [] \<longleftrightarrow> u \<^sup>1\\\<^sup>* T \<noteq> R.null"
+    proof (induct T arbitrary: u)
       show "\<And>u. [] \<^sup>*\\\<^sup>1 u \<noteq> [] \<longleftrightarrow> u \<^sup>1\\\<^sup>* [] \<noteq> R.null"
         by simp
       show "\<And>t T u. (\<And>u. T \<^sup>*\\\<^sup>1 u \<noteq> [] \<longleftrightarrow> u \<^sup>1\\\<^sup>* T \<noteq> R.null)
@@ -4020,8 +4059,8 @@ begin
     qed
 
     lemma Con_sym_ind:
-    shows "\<And>T U. length T + length U \<le> n \<Longrightarrow> T \<^sup>*\<frown>\<^sup>* U \<longleftrightarrow> U \<^sup>*\<frown>\<^sup>* T"
-    proof (induct n)
+    shows "length T + length U \<le> n \<Longrightarrow> T \<^sup>*\<frown>\<^sup>* U \<longleftrightarrow> U \<^sup>*\<frown>\<^sup>* T"
+    proof (induct n arbitrary: T U)
       show "\<And>T U. length T + length U \<le> 0 \<Longrightarrow> T \<^sup>*\<frown>\<^sup>* U \<longleftrightarrow> U \<^sup>*\<frown>\<^sup>* T"
         by simp
       fix n and T U :: "'a list"
@@ -4201,8 +4240,8 @@ begin
     \<close>
 
     lemma length_Resid_ind:
-    shows "\<And>T U. \<lbrakk>length T + length U \<le> n; T \<^sup>*\<frown>\<^sup>* U\<rbrakk> \<Longrightarrow> length (T \<^sup>*\\\<^sup>* U) = length T"
-      apply (induct n)
+    shows "\<lbrakk>length T + length U \<le> n; T \<^sup>*\<frown>\<^sup>* U\<rbrakk> \<Longrightarrow> length (T \<^sup>*\\\<^sup>* U) = length T"
+      apply (induct n arbitrary: T U)
        apply simp
     proof -
       fix n T U
@@ -4233,24 +4272,24 @@ begin
       using assms length_Resid_ind by auto
 
     lemma Con_initial_left:
-    shows "\<And>t T. t # T \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> [t] \<^sup>*\<frown>\<^sup>* U"
+    shows "t # T \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> [t] \<^sup>*\<frown>\<^sup>* U"
       apply (induct U)
        apply simp
       by (metis Con_rec(1-4))
 
     lemma Con_initial_right:
-    shows "\<And>u U. T \<^sup>*\<frown>\<^sup>* u # U \<Longrightarrow> T \<^sup>*\<frown>\<^sup>* [u]"
+    shows "T \<^sup>*\<frown>\<^sup>* u # U \<Longrightarrow> T \<^sup>*\<frown>\<^sup>* [u]"
       apply (induct T)
         apply simp
       by (metis Con_rec(1-4))
 
     lemma Resid_cons_ind:
-    shows "\<And>T U. \<lbrakk>T \<noteq> []; U \<noteq> []; length T + length U \<le> n\<rbrakk> \<Longrightarrow>
-                   (\<forall>t. t # T \<^sup>*\<frown>\<^sup>* U \<longleftrightarrow> [t] \<^sup>*\<frown>\<^sup>* U \<and> T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* [t]) \<and>
-                   (\<forall>u. T \<^sup>*\<frown>\<^sup>* u # U \<longleftrightarrow> T \<^sup>*\<frown>\<^sup>* [u] \<and> T \<^sup>*\\\<^sup>* [u] \<^sup>*\<frown>\<^sup>* U) \<and>
-                   (\<forall>t. t # T \<^sup>*\<frown>\<^sup>* U \<longrightarrow> (t # T) \<^sup>*\\\<^sup>* U = [t] \<^sup>*\\\<^sup>* U @ T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t])) \<and>
-                   (\<forall>u. T \<^sup>*\<frown>\<^sup>* u # U \<longrightarrow> T \<^sup>*\\\<^sup>* (u # U) = (T \<^sup>*\\\<^sup>* [u]) \<^sup>*\\\<^sup>* U)"
-    proof (induct n)
+    shows "\<lbrakk>T \<noteq> []; U \<noteq> []; length T + length U \<le> n\<rbrakk> \<Longrightarrow>
+             (\<forall>t. t # T \<^sup>*\<frown>\<^sup>* U \<longleftrightarrow> [t] \<^sup>*\<frown>\<^sup>* U \<and> T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* [t]) \<and>
+             (\<forall>u. T \<^sup>*\<frown>\<^sup>* u # U \<longleftrightarrow> T \<^sup>*\<frown>\<^sup>* [u] \<and> T \<^sup>*\\\<^sup>* [u] \<^sup>*\<frown>\<^sup>* U) \<and>
+             (\<forall>t. t # T \<^sup>*\<frown>\<^sup>* U \<longrightarrow> (t # T) \<^sup>*\\\<^sup>* U = [t] \<^sup>*\\\<^sup>* U @ T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t])) \<and>
+             (\<forall>u. T \<^sup>*\<frown>\<^sup>* u # U \<longrightarrow> T \<^sup>*\\\<^sup>* (u # U) = (T \<^sup>*\\\<^sup>* [u]) \<^sup>*\\\<^sup>* U)"
+    proof (induct n arbitrary: T U)
       show "\<And>T U. \<lbrakk>T \<noteq> []; U \<noteq> []; length T + length U \<le> 0\<rbrakk> \<Longrightarrow>
                    (\<forall>t. t # T \<^sup>*\<frown>\<^sup>* U \<longleftrightarrow> [t] \<^sup>*\<frown>\<^sup>* U \<and> T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* [t]) \<and>
                    (\<forall>u. T \<^sup>*\<frown>\<^sup>* u # U \<longleftrightarrow> T \<^sup>*\<frown>\<^sup>* [u] \<and> T \<^sup>*\\\<^sup>* [u] \<^sup>*\<frown>\<^sup>* U) \<and>
@@ -4487,8 +4526,8 @@ begin
     qed
 
     lemma Srcs_Resid_single_Arr:
-    shows "\<And>u. [u] \<^sup>*\<frown>\<^sup>* T \<Longrightarrow> Srcs ([u] \<^sup>*\\\<^sup>* T) = Trgs T"
-    proof (induct T)
+    shows "[u] \<^sup>*\<frown>\<^sup>* T \<Longrightarrow> Srcs ([u] \<^sup>*\\\<^sup>* T) = Trgs T"
+    proof (induct T arbitrary: u)
       show "\<And>u. [u] \<^sup>*\<frown>\<^sup>* [] \<Longrightarrow> Srcs ([u] \<^sup>*\\\<^sup>* []) = Trgs []"
         by simp
       fix t u T
@@ -4510,8 +4549,8 @@ begin
     qed
 
     lemma Trgs_Resid_sym_Arr_single:
-    shows "\<And>u. T \<^sup>*\<frown>\<^sup>* [u] \<Longrightarrow> Trgs (T \<^sup>*\\\<^sup>* [u]) = Trgs ([u] \<^sup>*\\\<^sup>* T)"
-    proof (induct T)
+    shows "T \<^sup>*\<frown>\<^sup>* [u] \<Longrightarrow> Trgs (T \<^sup>*\\\<^sup>* [u]) = Trgs ([u] \<^sup>*\\\<^sup>* T)"
+    proof (induct T arbitrary: u)
       show "\<And>u. [] \<^sup>*\<frown>\<^sup>* [u] \<Longrightarrow> Trgs ([] \<^sup>*\\\<^sup>* [u]) = Trgs ([u] \<^sup>*\\\<^sup>* [])"
         by simp
       fix t u T
@@ -4540,8 +4579,8 @@ begin
     qed
 
     lemma Srcs_Resid [simp]:
-    shows "\<And>T. T \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> Srcs (T \<^sup>*\\\<^sup>* U) = Trgs U"
-    proof (induct U)
+    shows "T \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> Srcs (T \<^sup>*\\\<^sup>* U) = Trgs U"
+    proof (induct U arbitrary: T)
       show "\<And>T. T \<^sup>*\<frown>\<^sup>* [] \<Longrightarrow> Srcs (T \<^sup>*\\\<^sup>* []) = Trgs []"
         using Con_sym Resid.simps(1) by blast
       fix u U T
@@ -4553,8 +4592,8 @@ begin
     qed
 
     lemma Trgs_Resid_sym [simp]:
-    shows "\<And>T. T \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> Trgs (T \<^sup>*\\\<^sup>* U) = Trgs (U \<^sup>*\\\<^sup>* T)"
-    proof (induct U)
+    shows "T \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> Trgs (T \<^sup>*\\\<^sup>* U) = Trgs (U \<^sup>*\\\<^sup>* T)"
+    proof (induct U arbitrary: T)
       show "\<And>T. T \<^sup>*\<frown>\<^sup>* [] \<Longrightarrow> Trgs (T \<^sup>*\\\<^sup>* []) = Trgs ([] \<^sup>*\\\<^sup>* T)"
         by (meson Con_sym Resid.simps(1))
       fix u U T
@@ -4621,8 +4660,8 @@ begin
     qed
 
     lemma Resid_Arr_Src:
-    shows "\<And>a. \<lbrakk>Arr T; a \<in> Srcs T\<rbrakk> \<Longrightarrow> T \<^sup>*\\\<^sup>* [a] = T"
-    proof (induct T)
+    shows "\<lbrakk>Arr T; a \<in> Srcs T\<rbrakk> \<Longrightarrow> T \<^sup>*\\\<^sup>* [a] = T"
+    proof (induct T arbitrary: a)
       show "\<And>a. \<lbrakk>Arr []; a \<in> Srcs []\<rbrakk> \<Longrightarrow> [] \<^sup>*\\\<^sup>* [a] = []"
         by simp
       fix a t T
@@ -4657,8 +4696,8 @@ begin
     qed
 
     lemma Con_single_ide_ind:
-    shows "\<And>a. R.ide a \<Longrightarrow> [a] \<^sup>*\<frown>\<^sup>* T \<longleftrightarrow> Arr T \<and> a \<in> Srcs T"
-    proof (induct T)
+    shows "R.ide a \<Longrightarrow> [a] \<^sup>*\<frown>\<^sup>* T \<longleftrightarrow> Arr T \<and> a \<in> Srcs T"
+    proof (induct T arbitrary: a)
       show "\<And>a. [a] \<^sup>*\<frown>\<^sup>* [] \<longleftrightarrow> Arr [] \<and> a \<in> Srcs []"
         by simp
       fix a t T
@@ -4936,8 +4975,8 @@ begin
     qed
 
     lemma Arr_Resid_single:
-    shows "\<And>u. T \<^sup>*\<frown>\<^sup>* [u] \<Longrightarrow> Arr (T \<^sup>*\\\<^sup>* [u])"
-    proof (induct T)
+    shows "T \<^sup>*\<frown>\<^sup>* [u] \<Longrightarrow> Arr (T \<^sup>*\\\<^sup>* [u])"
+    proof (induct T arbitrary: u)
       show "\<And>u. [] \<^sup>*\<frown>\<^sup>* [u] \<Longrightarrow> Arr ([] \<^sup>*\\\<^sup>* [u])"
         by simp
       fix t u T
@@ -4965,8 +5004,8 @@ begin
     qed
 
     lemma Con_imp_Arr_Resid:
-    shows "\<And>T. T \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> Arr (T \<^sup>*\\\<^sup>* U)"
-    proof (induct U)
+    shows "T \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> Arr (T \<^sup>*\\\<^sup>* U)"
+    proof (induct U arbitrary: T)
       show "\<And>T. T \<^sup>*\<frown>\<^sup>* [] \<Longrightarrow> Arr (T \<^sup>*\\\<^sup>* [])"
         by (meson Con_sym Resid.simps(1))
       fix u U T
@@ -4977,11 +5016,11 @@ begin
     qed
 
     lemma Cube_ind:
-    shows "\<And>T U V. \<lbrakk>T \<^sup>*\<frown>\<^sup>* U; V \<^sup>*\<frown>\<^sup>* T; length T + length U + length V \<le> n\<rbrakk> \<Longrightarrow>
-                    (V \<^sup>*\\\<^sup>* T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* T \<longleftrightarrow> V \<^sup>*\\\<^sup>* U \<^sup>*\<frown>\<^sup>* T \<^sup>*\\\<^sup>* U) \<and>
-                    (V \<^sup>*\\\<^sup>* T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* T \<longrightarrow>
-                      (V \<^sup>*\\\<^sup>* T) \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* T) = (V \<^sup>*\\\<^sup>* U) \<^sup>*\\\<^sup>* (T \<^sup>*\\\<^sup>* U))"
-    proof (induct n)
+    shows "\<lbrakk>T \<^sup>*\<frown>\<^sup>* U; V \<^sup>*\<frown>\<^sup>* T; length T + length U + length V \<le> n\<rbrakk> \<Longrightarrow>
+             (V \<^sup>*\\\<^sup>* T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* T \<longleftrightarrow> V \<^sup>*\\\<^sup>* U \<^sup>*\<frown>\<^sup>* T \<^sup>*\\\<^sup>* U) \<and>
+             (V \<^sup>*\\\<^sup>* T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* T \<longrightarrow>
+               (V \<^sup>*\\\<^sup>* T) \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* T) = (V \<^sup>*\\\<^sup>* U) \<^sup>*\\\<^sup>* (T \<^sup>*\\\<^sup>* U))"
+    proof (induct n arbitrary: T U V)
       show "\<And>T U V. \<lbrakk>T \<^sup>*\<frown>\<^sup>* U; V \<^sup>*\<frown>\<^sup>* T; length T + length U + length V \<le> 0\<rbrakk> \<Longrightarrow>
                        (V \<^sup>*\\\<^sup>* T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* T \<longleftrightarrow> V \<^sup>*\\\<^sup>* U \<^sup>*\<frown>\<^sup>* T \<^sup>*\\\<^sup>* U) \<and>
                        (V \<^sup>*\\\<^sup>* T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* T \<longrightarrow>
@@ -5718,8 +5757,8 @@ begin
       by (metis inf.orderE Arr_has_Trg seqI\<^sub>P seq_char)
 
     lemma Arr_append_iff\<^sub>P:
-    shows "\<And>U. \<lbrakk>T \<noteq> []; U \<noteq> []\<rbrakk> \<Longrightarrow> Arr (T @ U) \<longleftrightarrow> Arr T \<and> Arr U \<and> Trgs T \<subseteq> Srcs U"
-    proof (induct T)
+    shows "\<lbrakk>T \<noteq> []; U \<noteq> []\<rbrakk> \<Longrightarrow> Arr (T @ U) \<longleftrightarrow> Arr T \<and> Arr U \<and> Trgs T \<subseteq> Srcs U"
+    proof (induct T arbitrary: U)
       show "\<And>U. \<lbrakk>[] \<noteq> []; U \<noteq> []\<rbrakk> \<Longrightarrow> Arr ([] @ U) = (Arr [] \<and> Arr U \<and> Trgs [] \<subseteq> Srcs U)"
         by simp
       fix t T and U :: "'a list"
@@ -5763,7 +5802,7 @@ begin
       using assms Arr_append_iff\<^sub>P seq_implies_Trgs_eq_Srcs by force
 
     lemma Ide_append_iff\<^sub>P:
-    shows "\<And>U. \<lbrakk>T \<noteq> []; U \<noteq> []\<rbrakk> \<Longrightarrow> Ide (T @ U) \<longleftrightarrow> Ide T \<and> Ide U \<and> Trgs T \<subseteq> Srcs U"
+    shows "\<lbrakk>T \<noteq> []; U \<noteq> []\<rbrakk> \<Longrightarrow> Ide (T @ U) \<longleftrightarrow> Ide T \<and> Ide U \<and> Trgs T \<subseteq> Srcs U"
       using Ide_char by auto
 
     lemma Ide_appendI\<^sub>P [intro, simp]:
@@ -5773,12 +5812,12 @@ begin
       by (metis Ide.simps(1) Ide_append_iff\<^sub>P)
 
     lemma Resid_append_ind:
-    shows "\<And>T U. \<lbrakk>T \<noteq> []; U \<noteq> []; V \<noteq> []\<rbrakk> \<Longrightarrow>
-                 (V @ T \<^sup>*\<frown>\<^sup>* U \<longleftrightarrow> V \<^sup>*\<frown>\<^sup>* U \<and> T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* V) \<and>
-                 (T \<^sup>*\<frown>\<^sup>* V @ U \<longleftrightarrow> T \<^sup>*\<frown>\<^sup>* V \<and> T \<^sup>*\\\<^sup>* V \<^sup>*\<frown>\<^sup>* U) \<and>
-                 (V @ T \<^sup>*\<frown>\<^sup>* U \<longrightarrow> (V @ T) \<^sup>*\\\<^sup>* U = V \<^sup>*\\\<^sup>* U @ T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* V)) \<and>
-                 (T \<^sup>*\<frown>\<^sup>* V @ U \<longrightarrow> T \<^sup>*\\\<^sup>* (V @ U) = (T \<^sup>*\\\<^sup>* V) \<^sup>*\\\<^sup>* U)"
-    proof (induct V)
+    shows "\<lbrakk>T \<noteq> []; U \<noteq> []; V \<noteq> []\<rbrakk> \<Longrightarrow>
+             (V @ T \<^sup>*\<frown>\<^sup>* U \<longleftrightarrow> V \<^sup>*\<frown>\<^sup>* U \<and> T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* V) \<and>
+             (T \<^sup>*\<frown>\<^sup>* V @ U \<longleftrightarrow> T \<^sup>*\<frown>\<^sup>* V \<and> T \<^sup>*\\\<^sup>* V \<^sup>*\<frown>\<^sup>* U) \<and>
+             (V @ T \<^sup>*\<frown>\<^sup>* U \<longrightarrow> (V @ T) \<^sup>*\\\<^sup>* U = V \<^sup>*\\\<^sup>* U @ T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* V)) \<and>
+             (T \<^sup>*\<frown>\<^sup>* V @ U \<longrightarrow> T \<^sup>*\\\<^sup>* (V @ U) = (T \<^sup>*\\\<^sup>* V) \<^sup>*\\\<^sup>* U)"
+    proof (induct V arbitrary: T U)
       show "\<And>T U. \<lbrakk>T \<noteq> []; U \<noteq> []; [] \<noteq> []\<rbrakk> \<Longrightarrow>
                    ([] @ T \<^sup>*\<frown>\<^sup>* U \<longleftrightarrow> [] \<^sup>*\<frown>\<^sup>* U \<and> T \<^sup>*\<frown>\<^sup>* U \<^sup>*\\\<^sup>* []) \<and>
                    (T \<^sup>*\<frown>\<^sup>* [] @ U \<longleftrightarrow> T \<^sup>*\<frown>\<^sup>* [] \<and> T \<^sup>*\\\<^sup>* [] \<^sup>*\<frown>\<^sup>* U) \<and>
@@ -6268,8 +6307,8 @@ begin
 
     lemma confluence_single:
     assumes "\<And>t u. R.coinitial t u \<Longrightarrow> t \<frown> u"
-    shows "\<And>t. \<lbrakk>R.arr t; Arr U; R.sources t = Srcs U\<rbrakk> \<Longrightarrow> [t] \<^sup>*\<frown>\<^sup>* U"
-    proof (induct U)
+    shows "\<lbrakk>R.arr t; Arr U; R.sources t = Srcs U\<rbrakk> \<Longrightarrow> [t] \<^sup>*\<frown>\<^sup>* U"
+    proof (induct U arbitrary: t)
       show "\<And>t. \<lbrakk>R.arr t; Arr []; R.sources t = Srcs []\<rbrakk> \<Longrightarrow> [t] \<^sup>*\<frown>\<^sup>* []"
         by simp
       fix t u U
@@ -6305,8 +6344,8 @@ begin
     qed
 
     lemma confluence_ind:
-    shows "\<And>U. \<lbrakk>Arr T; Arr U; Srcs T = Srcs U\<rbrakk> \<Longrightarrow> T \<^sup>*\<frown>\<^sup>* U"
-    proof (induct T)
+    shows "\<lbrakk>Arr T; Arr U; Srcs T = Srcs U\<rbrakk> \<Longrightarrow> T \<^sup>*\<frown>\<^sup>* U"
+    proof (induct T arbitrary: U)
       show "\<And>U. \<lbrakk>Arr []; Arr U; Srcs [] = Srcs U\<rbrakk> \<Longrightarrow> [] \<^sup>*\<frown>\<^sup>* U"
         by simp
       fix t T U
@@ -6368,8 +6407,8 @@ begin
       ..
 
     lemma map_Resid_single:
-    shows "\<And>u. P\<^sub>A.con T [u] \<Longrightarrow> map F (P\<^sub>A.Resid T [u]) = P\<^sub>B.Resid (map F T) [F u]"
-      apply (induct T)
+    shows "P\<^sub>A.con T [u] \<Longrightarrow> map F (P\<^sub>A.Resid T [u]) = P\<^sub>B.Resid (map F T) [F u]"
+      apply (induct T arbitrary: u)
        apply simp
     proof -
       fix t u T
@@ -6389,8 +6428,8 @@ begin
     qed
 
     lemma map_Resid:
-    shows "\<And>T. P\<^sub>A.con T U \<Longrightarrow> map F (P\<^sub>A.Resid T U) = P\<^sub>B.Resid (map F T) (map F U)"
-      apply (induct U)
+    shows "P\<^sub>A.con T U \<Longrightarrow> map F (P\<^sub>A.Resid T U) = P\<^sub>B.Resid (map F T) (map F U)"
+      apply (induct U arbitrary: T)
       using P\<^sub>A.Resid.simps(1) P\<^sub>A.con_char P\<^sub>A.con_sym
        apply blast
     proof -
@@ -6483,8 +6522,8 @@ begin
       using assms NPath_def by simp
 
     lemma NPath_Resid_single_Arr:
-    shows "\<And>t. \<lbrakk>t \<in> \<NN>; Arr U; R.sources t = Srcs U\<rbrakk> \<Longrightarrow> NPath (Resid [t] U)"
-    proof (induct U)
+    shows "\<lbrakk>t \<in> \<NN>; Arr U; R.sources t = Srcs U\<rbrakk> \<Longrightarrow> NPath (Resid [t] U)"
+    proof (induct U arbitrary: t)
       show "\<And>t. \<lbrakk>t \<in> \<NN>; Arr []; R.sources t = Srcs []\<rbrakk> \<Longrightarrow> NPath (Resid [t] [])"
         by simp
       fix t u U
@@ -6527,8 +6566,8 @@ begin
     qed
 
     lemma NPath_Resid_Arr_single:
-    shows "\<And>u. \<lbrakk> NPath T; R.arr u; Srcs T = R.sources u \<rbrakk> \<Longrightarrow> NPath (Resid T [u])"
-    proof (induct T)
+    shows "\<lbrakk> NPath T; R.arr u; Srcs T = R.sources u \<rbrakk> \<Longrightarrow> NPath (Resid T [u])"
+    proof (induct T arbitrary: u)
       show "\<And>u. \<lbrakk>NPath []; R.arr u; Srcs [] = R.sources u\<rbrakk> \<Longrightarrow> NPath (Resid [] [u])"
         by simp
       fix t u T
@@ -6598,8 +6637,8 @@ begin
     qed
 
     lemma NPath_Resid [simp]:
-    shows "\<And>U. \<lbrakk>NPath T; Arr U; Srcs T = Srcs U\<rbrakk> \<Longrightarrow> NPath (T \<^sup>*\\\<^sup>* U)"
-    proof (induct T)
+    shows "\<lbrakk>NPath T; Arr U; Srcs T = Srcs U\<rbrakk> \<Longrightarrow> NPath (T \<^sup>*\\\<^sup>* U)"
+    proof (induct T arbitrary: U)
       show "\<And>U. \<lbrakk>NPath []; Arr U; Srcs [] = Srcs U\<rbrakk> \<Longrightarrow> NPath ([] \<^sup>*\\\<^sup>* U)"
         by simp
       fix t T U
@@ -6663,8 +6702,8 @@ begin
     qed
 
     lemma Backward_stable_single:
-    shows "\<And>t. \<lbrakk>NPath U; NPath ([t] \<^sup>*\\\<^sup>* U)\<rbrakk> \<Longrightarrow> NPath [t]"
-    proof (induct U)
+    shows "\<lbrakk>NPath U; NPath ([t] \<^sup>*\\\<^sup>* U)\<rbrakk> \<Longrightarrow> NPath [t]"
+    proof (induct U arbitrary: t)
       show "\<And>t. \<lbrakk>NPath []; NPath ([t] \<^sup>*\\\<^sup>* [])\<rbrakk> \<Longrightarrow> NPath [t]"
         using NPath_def by simp
       fix t u U
@@ -6678,8 +6717,8 @@ begin
     qed
 
     lemma Backward_stable:
-    shows "\<And>U. \<lbrakk>NPath U; NPath (T \<^sup>*\\\<^sup>* U)\<rbrakk> \<Longrightarrow> NPath T"
-    proof (induct T)
+    shows "\<lbrakk>NPath U; NPath (T \<^sup>*\\\<^sup>* U)\<rbrakk> \<Longrightarrow> NPath T"
+    proof (induct T arbitrary: U)
       show "\<And>U. \<lbrakk>NPath U; NPath ([] \<^sup>*\\\<^sup>* U)\<rbrakk> \<Longrightarrow> NPath []"
         by simp
       fix t T U
@@ -6935,10 +6974,10 @@ begin
     qed
 
     lemma Coherent:
-    shows "\<And>U U'. \<lbrakk> Arr T; NPath U; NPath U'; Srcs T = Srcs U;
-                    Srcs U = Srcs U'; Trgs U = Trgs U' \<rbrakk>
-                       \<Longrightarrow> T \<^sup>*\\\<^sup>* U \<approx>\<^sup>*\<^sub>0 T \<^sup>*\\\<^sup>* U'"
-    proof (induct T)
+    shows "\<lbrakk> Arr T; NPath U; NPath U'; Srcs T = Srcs U;
+             Srcs U = Srcs U'; Trgs U = Trgs U' \<rbrakk>
+                \<Longrightarrow> T \<^sup>*\\\<^sup>* U \<approx>\<^sup>*\<^sub>0 T \<^sup>*\\\<^sup>* U'"
+    proof (induct T arbitrary: U U')
       show "\<And>U U'. \<lbrakk> Arr []; NPath U; NPath U'; Srcs [] = Srcs U;
                     Srcs U = Srcs U'; Trgs U = Trgs U' \<rbrakk>
                       \<Longrightarrow> [] \<^sup>*\\\<^sup>* U \<approx>\<^sup>*\<^sub>0 [] \<^sup>*\\\<^sup>* U'"
@@ -7206,8 +7245,8 @@ begin
     qed
 
     lemma PCong_permute_single:
-    shows "\<And>t. [t] \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> PCong ([t] @ (U \<^sup>*\\\<^sup>* [t])) (U @ ([t] \<^sup>*\\\<^sup>* U))"
-    proof (induct U)
+    shows "[t] \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> PCong ([t] @ (U \<^sup>*\\\<^sup>* [t])) (U @ ([t] \<^sup>*\\\<^sup>* U))"
+    proof (induct U arbitrary: t)
       show "\<And>t. [t] \<^sup>*\<frown>\<^sup>* [] \<Longrightarrow> PCong ([t] @ [] \<^sup>*\\\<^sup>* [t]) ([] @ [t] \<^sup>*\\\<^sup>* [])"
         by auto
       fix t u U
@@ -7271,8 +7310,8 @@ begin
     qed
 
     lemma PCong_permute:
-    shows "\<And>U. T \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> PCong (T @ (U \<^sup>*\\\<^sup>* T)) (U @ (T \<^sup>*\\\<^sup>* U))"
-    proof (induct T)
+    shows "T \<^sup>*\<frown>\<^sup>* U \<Longrightarrow> PCong (T @ (U \<^sup>*\\\<^sup>* T)) (U @ (T \<^sup>*\\\<^sup>* U))"
+    proof (induct T arbitrary: U)
       show "\<And>U. [] \<^sup>*\\\<^sup>* U \<noteq> [] \<Longrightarrow> PCong ([] @ U \<^sup>*\\\<^sup>* []) (U @ [] \<^sup>*\\\<^sup>* U)"
          by simp
       fix t T U
@@ -7924,8 +7963,8 @@ begin
       by (metis A.Arr.simps(2) map.elims)
 
     lemma preserves_comp:
-    shows "\<And>U. \<lbrakk>T \<noteq> []; U \<noteq> []; A.Arr (T @ U)\<rbrakk> \<Longrightarrow> map (T @ U) = map T \<cdot>\<^sub>B map U"
-    proof (induct T)
+    shows "\<lbrakk>T \<noteq> []; U \<noteq> []; A.Arr (T @ U)\<rbrakk> \<Longrightarrow> map (T @ U) = map T \<cdot>\<^sub>B map U"
+    proof (induct T arbitrary: U)
       show "\<And>U. [] \<noteq> [] \<Longrightarrow> map ([] @ U) = map [] \<cdot>\<^sub>B map U"
         by simp
       fix t and T U :: "'a list"
@@ -7962,8 +8001,8 @@ begin
     qed
 
     lemma preserves_arr_ind:
-    shows "\<And>a. \<lbrakk>A.arr T; a \<in> A.Srcs T\<rbrakk> \<Longrightarrow> B.arr (map T) \<and> B.src (map T) = F a"
-    proof (induct T)
+    shows "\<lbrakk>A.arr T; a \<in> A.Srcs T\<rbrakk> \<Longrightarrow> B.arr (map T) \<and> B.src (map T) = F a"
+    proof (induct T arbitrary: a)
       show "\<And>a. \<lbrakk>A.arr []; a \<in> A.Srcs []\<rbrakk> \<Longrightarrow> B.arr (map []) \<and> B.src (map []) = F a"
         using A.arr_char by simp
       fix a t T
@@ -8047,8 +8086,8 @@ begin
     qed
 
     lemma preserves_Resid1x_ind:
-    shows "\<And>t. t \<^sup>1\\\<^sub>A\<^sup>* U \<noteq> A.R.null \<Longrightarrow> F t \<frown>\<^sub>B map U \<and> F (t \<^sup>1\\\<^sub>A\<^sup>* U) = F t \\\<^sub>B map U"
-    proof (induct U)
+    shows "t \<^sup>1\\\<^sub>A\<^sup>* U \<noteq> A.R.null \<Longrightarrow> F t \<frown>\<^sub>B map U \<and> F (t \<^sup>1\\\<^sub>A\<^sup>* U) = F t \\\<^sub>B map U"
+    proof (induct U arbitrary: t)
       show "\<And>t. t \<^sup>1\\\<^sub>A\<^sup>* [] \<noteq> A.R.null \<Longrightarrow> F t \<frown>\<^sub>B map [] \<and> F (t \<^sup>1\\\<^sub>A\<^sup>* []) = F t \\\<^sub>B map []"
         by simp
       fix t u U
@@ -8101,8 +8140,8 @@ begin
     qed
 
     lemma preserves_Residx1_ind:
-    shows "\<And>t. U \<^sup>*\\\<^sub>A\<^sup>1 t \<noteq> [] \<Longrightarrow> map U \<frown>\<^sub>B F t \<and> map (U \<^sup>*\\\<^sub>A\<^sup>1 t) = map U \\\<^sub>B F t"
-    proof (induct U)
+    shows "U \<^sup>*\\\<^sub>A\<^sup>1 t \<noteq> [] \<Longrightarrow> map U \<frown>\<^sub>B F t \<and> map (U \<^sup>*\\\<^sub>A\<^sup>1 t) = map U \\\<^sub>B F t"
+    proof (induct U arbitrary: t)
       show "\<And>t. [] \<^sup>*\\\<^sub>A\<^sup>1 t \<noteq> [] \<Longrightarrow> map [] \<frown>\<^sub>B F t \<and> map ([] \<^sup>*\\\<^sub>A\<^sup>1 t) = map [] \\\<^sub>B F t"
         by simp
       fix t u U
@@ -8144,8 +8183,8 @@ begin
     qed
 
     lemma preserves_resid_ind:
-    shows "\<And>U. A.con T U \<Longrightarrow> map T \<frown>\<^sub>B map U \<and> map (T \<^sup>*\\\<^sub>A\<^sup>* U) = map T \\\<^sub>B map U"
-    proof (induct T)
+    shows "A.con T U \<Longrightarrow> map T \<frown>\<^sub>B map U \<and> map (T \<^sup>*\\\<^sub>A\<^sup>* U) = map T \\\<^sub>B map U"
+    proof (induct T arbitrary: U)
       show "\<And>U. A.con [] U \<Longrightarrow> map [] \<frown>\<^sub>B map U \<and> map ([] \<^sup>*\\\<^sub>A\<^sup>* U) = map [] \\\<^sub>B map U"
         using A.con_char A.Resid.simps(1) by blast
       fix t T U
