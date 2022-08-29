@@ -163,7 +163,7 @@ definition SC :: "nat list \<Rightarrow> nat"
   where "SC l = Suc (hd0 l)"
 
 definition CONSTANT :: "nat \<Rightarrow> nat list \<Rightarrow> nat"
-  where "CONSTANT k l = k"
+  where "CONSTANT n l = n"
 
 definition PROJ :: "nat \<Rightarrow> nat list \<Rightarrow> nat"
   where "PROJ i l = hd0 (drop i l)"
