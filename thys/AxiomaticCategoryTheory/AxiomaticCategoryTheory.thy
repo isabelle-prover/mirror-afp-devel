@@ -8,9 +8,7 @@ abbrevs
 
 begin
  (*Begin: some useful parameter settings*)
-  declare [[ smt_solver = cvc4, smt_oracle = true ]]
   nitpick_params[user_axioms, show_all, format = 2, expect = genuine]
-  sledgehammer_params[overlord]
  (*End: some useful parameter settings*)
 (*>*)
 
@@ -110,8 +108,8 @@ subsection\<open>AxiomsSet1\<close>
 
    lemma E\<^sub>iImpl: "E(x\<cdot>y) \<^bold>\<rightarrow> (E x \<^bold>\<and> E y \<^bold>\<and> (\<^bold>\<exists>z. z\<cdot>z \<cong> z \<^bold>\<and> x\<cdot>z \<cong> x \<^bold>\<and> z\<cdot>y \<cong> y))" by (metis A\<^sub>i C\<^sub>i S\<^sub>i)
    \<comment> \<open>Uniqueness of i and j in the latter two axioms.\<close>
-   lemma UC\<^sub>i: "\<^bold>\<forall>y.\<^bold>\<exists>i. ID i \<^bold>\<and> i\<cdot>y \<cong> y \<^bold>\<and> (\<^bold>\<forall>j.(ID j \<^bold>\<and> j\<cdot>y \<cong> y) \<^bold>\<rightarrow> i \<cong> j)" by (smt A\<^sub>i C\<^sub>i S\<^sub>i)
-   lemma UD\<^sub>i: "\<^bold>\<forall>x.\<^bold>\<exists>j. ID j \<^bold>\<and> x\<cdot>j \<cong> x \<^bold>\<and> (\<^bold>\<forall>i.(ID i \<^bold>\<and> x\<cdot>i \<cong> x) \<^bold>\<rightarrow> j \<cong> i)" by (smt A\<^sub>i D\<^sub>i S\<^sub>i)
+   lemma UC\<^sub>i: "\<^bold>\<forall>y.\<^bold>\<exists>i. ID i \<^bold>\<and> i\<cdot>y \<cong> y \<^bold>\<and> (\<^bold>\<forall>j.(ID j \<^bold>\<and> j\<cdot>y \<cong> y) \<^bold>\<rightarrow> i \<cong> j)" by (smt (verit) A\<^sub>i C\<^sub>i S\<^sub>i)
+   lemma UD\<^sub>i: "\<^bold>\<forall>x.\<^bold>\<exists>j. ID j \<^bold>\<and> x\<cdot>j \<cong> x \<^bold>\<and> (\<^bold>\<forall>i.(ID i \<^bold>\<and> x\<cdot>i \<cong> x) \<^bold>\<rightarrow> j \<cong> i)" by (smt (verit) A\<^sub>i D\<^sub>i S\<^sub>i)
    \<comment> \<open>But i and j need not to equal.\<close>
    lemma "(\<exists>C D. (\<^bold>\<forall>y. ID (C y) \<^bold>\<and> (C y)\<cdot>y \<cong> y) \<^bold>\<and> (\<^bold>\<forall>x. ID (D x) \<^bold>\<and> x\<cdot>(D x) \<cong> x) \<^bold>\<and> \<^bold>\<not>(D \<^bold>= C))"
      nitpick [satisfy] oops \<comment> \<open>Model found\<close>
@@ -351,7 +349,7 @@ end
    lemma S6: "x\<cdot>(dom x) \<cong> x" using A3a by blast
 
    lemma A4aRedundant: "dom(x\<cdot>y) \<cong> dom((dom x)\<cdot>y)" using A1 A2a A3a A5 by metis
-   lemma A4bRedundant: "cod(x\<cdot>y) \<cong> cod(x\<cdot>(cod y))" using A1 A2b A3b A5 by smt
+   lemma A4bRedundant: "cod(x\<cdot>y) \<cong> cod(x\<cdot>(cod y))" using A1 A2b A3b A5 by (smt (verit))
    lemma A2aRedundant: "cod(dom x) \<cong> dom x" using A1 A3a A3b A4a A4b by smt
    lemma A2bRedundant: "dom(cod y) \<cong> cod y" using  A1 A3a A3b A4a A4b by smt
   end
