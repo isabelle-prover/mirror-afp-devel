@@ -843,7 +843,9 @@ proof
         (C, active) \<in> \<Inter> (snd ` (lnth Ns ` {k. nj \<le> k \<and> enat k < llength Ns})))" by blast
     then have in_allk: "\<forall>k. k \<ge> nj_min \<longrightarrow> enat k < llength Ns \<longrightarrow> (C, active) \<in> snd (lnth Ns k)"
       using c_in3 nj_is c_in2 INT_E LeastI_ex
-      by (smt INT_iff INT_simps(10) c_is image_eqI mem_Collect_eq)
+        [of "\<lambda>n. enat n < llength Ns
+            \<and> (C, active) \<in> \<Inter> (snd ` lnth Ns ` {na. n \<le> na \<and> enat na < llength Ns})"]
+      by blast
     have njm_smaller_D: "enat nj_min < llength Ns"
       using nj_min_is
       by (smt LeastI_ex \<open>\<And>thesis. (\<And>nj. \<lbrakk>enat nj < llength Ns;
