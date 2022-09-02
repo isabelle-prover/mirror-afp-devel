@@ -5759,20 +5759,18 @@ proof -
   from this and \<open>T = ?E'\<close> \<open>?T' = get_trms C' ?E FirstOrder\<close> show ?thesis by auto
 qed
 
-text \<open>We eventually deduce the following lemma, which allows one to transform ground derivations
+text \<open>We eventually deduce the following lemmas, which allows one to transform ground derivations
 into first-order derivations.\<close>
- 
-lemma lifting_lemma:
-  assumes "derivable C P S \<sigma> Ground C'"
-  shows "\<exists> D \<theta> \<eta>. ((derivable D P S \<theta> FirstOrder C') \<and> (\<sigma> \<doteq> \<theta> \<lozenge> \<eta>) \<and> (trms_subsumes D C \<eta>))"
+
+lemma lifting_lemma_superposition:
+  assumes "superposition P1 P2 C \<sigma> Ground C'"
+  shows "\<exists>D \<theta>. superposition P1 P2 D \<theta> FirstOrder C' \<and> \<sigma> \<doteq> \<theta> \<lozenge> \<sigma> \<and> trms_subsumes D C \<sigma>"
 proof (rule ccontr)
-  assume hyp: "\<not> (\<exists> D \<theta> \<eta>. ((derivable D P S \<theta> FirstOrder C') \<and> (\<sigma> \<doteq> \<theta> \<lozenge> \<eta>) 
-                \<and> (trms_subsumes D C \<eta>)))" 
-  from assms(1) have "P \<subseteq> S" unfolding derivable_def by auto
-  have not_sup: "\<not> (\<exists>P1 P2. (P = { P1, P2 } \<and> superposition P1 P2 C \<sigma> Ground C'))"
-  proof
-    assume "(\<exists>P1 P2. (P = { P1, P2 } \<and> superposition P1 P2 C \<sigma> Ground C'))"
-    then obtain P1 P2 where "P = { P1, P2 }" "superposition P1 P2 C \<sigma> Ground C'" by auto
+  assume hyp: "\<nexists>D \<theta>. superposition P1 P2 D \<theta> FirstOrder C' \<and> \<sigma> \<doteq> \<theta> \<lozenge> \<sigma> \<and> trms_subsumes D C \<sigma>"
+
+  have not_sup: "\<not> superposition P1 P2 C \<sigma> Ground C'"
+  proof (rule notI)
+    assume "superposition P1 P2 C \<sigma> Ground C'"
     from this obtain L t s u v M p Cl_P1 Cl_P2 Cl_C polarity t' u' L' trms_C
       where "L \<in> Cl_P1" "(M \<in> Cl_P2)" "(eligible_literal L P1 \<sigma>)" "(eligible_literal M P2 \<sigma>)"
       "(variable_disjoint P1 P2)"
@@ -5799,26 +5797,26 @@ proof (rule ccontr)
     from this have "unify u' u \<noteq> None" using MGU_exists by auto
     from this obtain \<theta> where "unify u' u = Some \<theta>" by auto
     hence "min_IMGU \<theta> u' u" by (rule unify_computes_min_IMGU)
-    with \<open>Unifier \<sigma> u' u\<close> obtain \<eta> where "\<sigma> \<doteq> \<theta> \<lozenge> \<eta>"
-      unfolding min_IMGU_def IMGU_iff_Idem_and_MGU MGU_def by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and \<open>(eligible_literal L P1 \<sigma>)\<close> have "eligible_literal L P1 \<theta>" 
+    with \<open>Unifier \<sigma> u' u\<close> have "\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>"
+      unfolding min_IMGU_def IMGU_def by simp
+    with \<open>(eligible_literal L P1 \<sigma>)\<close> have "eligible_literal L P1 \<theta>" 
       using lift_eligible_literal by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and \<open>(eligible_literal M P2 \<sigma>)\<close> have "eligible_literal M P2 \<theta>" 
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> and \<open>(eligible_literal M P2 \<sigma>)\<close> have "eligible_literal M P2 \<theta>" 
       using lift_eligible_literal by auto
     from \<open>min_IMGU \<theta> u' u\<close> have "ck_unifier u' u \<theta> FirstOrder" unfolding ck_unifier_def by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst u \<sigma>) = (subst (subst u \<theta>) \<eta>)" by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst v \<sigma>) = (subst (subst v \<theta>) \<eta>)" by auto
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> have "(subst u \<sigma>) = (subst (subst u \<theta>) \<sigma>)" by auto
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> have "(subst v \<sigma>) = (subst (subst v \<theta>) \<sigma>)" by auto
     from \<open>((subst u \<sigma>) \<noteq> (subst v \<sigma>))\<close> 
-      \<open>(subst u \<sigma>) = (subst (subst u \<theta>) \<eta>)\<close> 
-      \<open>(subst v \<sigma>) = (subst (subst v \<theta>) \<eta>)\<close>
-      have "(subst (subst u \<theta>) \<eta>) \<noteq> (subst (subst v \<theta>) \<eta>)" by auto
+      \<open>(subst u \<sigma>) = (subst (subst u \<theta>) \<sigma>)\<close> 
+      \<open>(subst v \<sigma>) = (subst (subst v \<theta>) \<sigma>)\<close>
+      have "(subst (subst u \<theta>) \<sigma>) \<noteq> (subst (subst v \<theta>) \<sigma>)" by auto
     from this have "(subst u \<theta>) \<noteq> (subst v \<theta>)" by auto
     
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> \<open>(allowed_redex u' P1 \<sigma>)\<close> have "(allowed_redex u' P1 \<theta>)" 
-      using lift_allowed_redex [of \<sigma> \<theta> \<eta> ] by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> \<open>orient_lit_inst M u v pos \<sigma>\<close> have "orient_lit_inst M u v pos \<theta>"
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> \<open>allowed_redex u' P1 \<sigma>\<close> have "allowed_redex u' P1 \<theta>"
+      using lift_allowed_redex[of \<sigma> \<theta> \<sigma>] by auto
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> \<open>orient_lit_inst M u v pos \<sigma>\<close> have "orient_lit_inst M u v pos \<theta>"
       using lift_orient_lit_inst by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> \<open>orient_lit_inst L t s polarity \<sigma>\<close> have "orient_lit_inst L t s polarity \<theta>"
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> \<open>orient_lit_inst L t s polarity \<sigma>\<close> have "orient_lit_inst L t s polarity \<theta>"
       using lift_orient_lit_inst by auto
 
     from \<open>(Cl_C = (subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) \<sigma>))\<close> 
@@ -5837,13 +5835,13 @@ proof (rule ccontr)
        by auto
   
     let ?Cl_C' = "(subst_cl C' \<theta>)"
-    from  \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> \<open>trms_C = (get_trms Cl_C 
+    from  \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> \<open>trms_C = (get_trms Cl_C 
         (dom_trms (subst_cl C' \<sigma>) (subst_set 
         E  \<sigma>)) Ground)\<close> 
-        obtain "\<exists>T'. ( (subst_set T' \<eta>) \<subseteq> trms_C \<and> T' = get_trms ?Cl_C' 
+        obtain "\<exists>T'. ((subst_set T' \<sigma>) \<subseteq> trms_C \<and> T' = get_trms ?Cl_C' 
     (dom_trms (subst_cl C' \<theta>) (subst_set E \<theta>)) FirstOrder)"
     using lift_irreducible_terms by auto
-    from this obtain T' where "(subst_set T' \<eta>) \<subseteq> trms_C" 
+    from this obtain T' where "(subst_set T' \<sigma>) \<subseteq> trms_C" 
       and "T' = get_trms ?Cl_C' 
     (dom_trms (subst_cl C' \<theta>) (subst_set E \<theta>)) FirstOrder" by auto
 
@@ -5869,38 +5867,38 @@ proof (rule ccontr)
       \<open>(C' = (Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } ))\<close> 
       \<open>E = ((trms_ecl P1) \<union> (trms_ecl P2) \<union> 
           { r. \<exists> q. (q,p) \<in> (pos_ord P1 t) \<and> (subterm t q r) })\<close>
-      have "superposition P1 P2 C_fo \<theta> FirstOrder C'" unfolding superposition_def by blast
-    from this \<open>P = { P1, P2 }\<close>  \<open>P \<subseteq> S\<close> have "(derivable C_fo P S \<theta> FirstOrder C')" 
-      unfolding derivable_def by auto
-    
-    from \<open>(?Cl_C' = (subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) \<theta>))\<close> 
-      have 
-      i: "(subst_cl ?Cl_C' \<eta>) = 
-      (subst_cl (subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) \<theta>)) \<eta>"
-        by auto
-    have ii: "(subst_cl (subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) \<theta>) \<eta>)
-      =  (subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) (\<theta> \<lozenge> \<eta>))"
+    have "superposition P1 P2 C_fo \<theta> FirstOrder C'" unfolding superposition_def by blast
+     
+    have "subst_cl ?Cl_C' \<sigma> = subst_cl (subst_cl ((Cl_P1 - { L }) \<union> (Cl_P2 - { M }) \<union> { L' }) \<theta>) \<sigma>"
+      using \<open>?Cl_C' = subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' })) \<theta>\<close> by auto
+    also have "... = (subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) (\<theta> \<lozenge> \<sigma>))"
       using composition_of_substs_cl [of "((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } ))" ] by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) \<sigma>) 
-      = (subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) (\<theta> \<lozenge> \<eta>))" 
-      using subst_eq_cl [of \<sigma> "\<theta> \<lozenge> \<eta>" "((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } ))" ] by auto
-    from this and i ii  \<open>Cl_C = (subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) \<sigma>)\<close> 
-      have "(subst_cl ?Cl_C' \<eta>) = Cl_C" by metis
-    from this and \<open>(C = (Ecl Cl_C trms_C))\<close> and \<open>(C_fo = (Ecl ?Cl_C' T'))\<close> 
-      have "(subst_cl (cl_ecl C_fo) \<eta>) = (cl_ecl C)" by auto
-    from \<open>(subst_set T' \<eta>) \<subseteq> trms_C\<close> 
-      and \<open>(C = (Ecl Cl_C trms_C))\<close> and \<open>(C_fo = (Ecl ?Cl_C' T'))\<close>
-      have "(subst_set (trms_ecl C_fo) \<eta>) \<subseteq> (trms_ecl C)" by auto
-    from \<open>(subst_cl (cl_ecl C_fo) \<eta>) = (cl_ecl C)\<close> \<open>(subst_set (trms_ecl C_fo) \<eta>) \<subseteq> (trms_ecl C)\<close>
-      have "(trms_subsumes C_fo C \<eta>)"
+    also have "... = (subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) \<sigma>)"
+      using subst_eq_cl[OF \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close>] by blast
+    also have "... = Cl_C"
+      using \<open>Cl_C = (subst_cl ((Cl_P1 - { L }) \<union> ((Cl_P2 - { M }) \<union> { L' } )) \<sigma>)\<close> by argo
+    finally have "subst_cl (cl_ecl C_fo) \<sigma> = cl_ecl C"
+      using \<open>C = Ecl Cl_C trms_C\<close> \<open>C_fo = Ecl ?Cl_C' T'\<close> by simp
+    moreover have "(subst_set (trms_ecl C_fo) \<sigma>) \<subseteq> (trms_ecl C)"
+      using \<open>subst_set T' \<sigma> \<subseteq> trms_C\<close> \<open>C = Ecl Cl_C trms_C\<close> \<open>C_fo = Ecl ?Cl_C' T'\<close> by auto
+    ultimately have "(trms_subsumes C_fo C \<sigma>)"
       unfolding trms_subsumes_def by auto
-    from this and \<open>(derivable C_fo P S \<theta> FirstOrder C')\<close> and \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and hyp show False by auto
- qed
+    with \<open>superposition P1 P2 C_fo \<theta> FirstOrder C'\<close> \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> hyp show False by auto
+  qed
 
-  have not_fact: "\<not> (\<exists>P1. ({ P1 } =  P \<and> factorization P1 C \<sigma> Ground C'))"
-  proof
-    assume "(\<exists>P1. ({ P1 } = P \<and> factorization P1 C \<sigma> Ground C'))"
-    then obtain P1 where "P = { P1 }" "factorization P1 C \<sigma> Ground C'" by auto
+  from not_sup and assms(1) show False by blast
+qed
+
+
+lemma lifting_lemma_factorization:
+  assumes "factorization P1 C \<sigma> Ground C'"
+  shows "\<exists>D \<theta>. factorization P1 D \<theta> FirstOrder C' \<and> \<sigma> \<doteq> \<theta> \<lozenge> \<sigma> \<and> trms_subsumes D C \<sigma>"
+proof (rule ccontr)
+  assume hyp: "\<nexists>D \<theta>. factorization P1 D \<theta> FirstOrder C' \<and> \<sigma> \<doteq> \<theta> \<lozenge> \<sigma> \<and> trms_subsumes D C \<sigma>"
+
+  have not_fact: "\<not> factorization P1 C \<sigma> Ground C'"
+  proof (rule notI)
+    assume "factorization P1 C \<sigma> Ground C'"
     from this obtain L1 L2 L' t s u v Cl_P Cl_C trms_C where
       "eligible_literal L1 P1 \<sigma>"
       "L1 \<in> (cl_ecl P1)" "L2 \<in> (cl_ecl P1) - { L1 }" "Cl_C = (cl_ecl C)" "(Cl_P = (cl_ecl P1))" 
@@ -5922,30 +5920,30 @@ proof (rule ccontr)
     from this have "unify t u \<noteq> None" using MGU_exists by auto
     from this obtain \<theta> where "unify t u = Some \<theta>" by auto
     hence "min_IMGU \<theta> t u" by (rule unify_computes_min_IMGU)
-    with \<open>Unifier \<sigma> t u\<close> obtain \<eta> where "\<sigma> \<doteq> \<theta> \<lozenge> \<eta>"
-      unfolding min_IMGU_def IMGU_iff_Idem_and_MGU MGU_def by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and \<open>(eligible_literal L1 P1 \<sigma>)\<close> have "eligible_literal L1 P1 \<theta>" 
+    with \<open>Unifier \<sigma> t u\<close> have "\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>"
+      unfolding min_IMGU_def IMGU_def by simp
+    with \<open>(eligible_literal L1 P1 \<sigma>)\<close> have "eligible_literal L1 P1 \<theta>" 
       using lift_eligible_literal by auto
     from \<open>min_IMGU \<theta> t u\<close> have "ck_unifier t u \<theta> FirstOrder" unfolding ck_unifier_def by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst t \<sigma>) = (subst (subst t \<theta>) \<eta>)" by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst s \<sigma>) = (subst (subst s \<theta>) \<eta>)" by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst v \<sigma>) = (subst (subst v \<theta>) \<eta>)" by auto
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> have "(subst t \<sigma>) = (subst (subst t \<theta>) \<sigma>)" by auto
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> have "(subst s \<sigma>) = (subst (subst s \<theta>) \<sigma>)" by auto
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> have "(subst v \<sigma>) = (subst (subst v \<theta>) \<sigma>)" by auto
 
     from \<open>((subst t \<sigma>) \<noteq> (subst s \<sigma>))\<close> 
-      \<open>(subst t \<sigma>) = (subst (subst t \<theta>) \<eta>)\<close> 
-      \<open>(subst s \<sigma>) = (subst (subst s \<theta>) \<eta>)\<close>
-      have "(subst (subst t \<theta>) \<eta>) \<noteq> (subst (subst s \<theta>) \<eta>)" by auto
+      \<open>(subst t \<sigma>) = (subst (subst t \<theta>) \<sigma>)\<close> 
+      \<open>(subst s \<sigma>) = (subst (subst s \<theta>) \<sigma>)\<close>
+      have "(subst (subst t \<theta>) \<sigma>) \<noteq> (subst (subst s \<theta>) \<sigma>)" by auto
     from this have "(subst t \<theta>) \<noteq> (subst s \<theta>)" by auto
 
     from \<open>((subst t \<sigma>) \<noteq> (subst v \<sigma>))\<close> 
-      \<open>(subst t \<sigma>) = (subst (subst t \<theta>) \<eta>)\<close> 
-      \<open>(subst v \<sigma>) = (subst (subst v \<theta>) \<eta>)\<close>
-      have "(subst (subst t \<theta>) \<eta>) \<noteq> (subst (subst v \<theta>) \<eta>)" by auto
+      \<open>(subst t \<sigma>) = (subst (subst t \<theta>) \<sigma>)\<close> 
+      \<open>(subst v \<sigma>) = (subst (subst v \<theta>) \<sigma>)\<close>
+      have "(subst (subst t \<theta>) \<sigma>) \<noteq> (subst (subst v \<theta>) \<sigma>)" by auto
     from this have "(subst t \<theta>) \<noteq> (subst v \<theta>)" by auto
     
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> \<open>orient_lit_inst L1 t s pos \<sigma>\<close> have "orient_lit_inst L1 t s pos \<theta>"
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> \<open>orient_lit_inst L1 t s pos \<sigma>\<close> have "orient_lit_inst L1 t s pos \<theta>"
       using lift_orient_lit_inst by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> \<open>orient_lit_inst L2 u v pos \<sigma>\<close> have "orient_lit_inst L2 u v pos \<theta>"
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> \<open>orient_lit_inst L2 u v pos \<sigma>\<close> have "orient_lit_inst L2 u v pos \<theta>"
       using lift_orient_lit_inst by auto
 
     from \<open>(Cl_C = (subst_cl ( (Cl_P - { L2 }) \<union> { L' } )) \<sigma>)\<close> 
@@ -5962,15 +5960,13 @@ proof (rule ccontr)
        by auto
   
     let ?Cl_C' = "(subst_cl C' \<theta>)"
-    from  \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> \<open>trms_C = (get_trms Cl_C 
+    from  \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> \<open>trms_C = (get_trms Cl_C 
         (dom_trms (subst_cl C' \<sigma>) (subst_set 
         (E \<union> (proper_subterms_of t))  \<sigma>)) Ground)\<close> 
-        have "\<exists>T'. ( (subst_set T' \<eta>) \<subseteq> trms_C \<and> T' = get_trms ?Cl_C' 
-    (dom_trms (subst_cl C' \<theta>) (subst_set (E \<union> (proper_subterms_of t)) \<theta>)) FirstOrder)"
-    using lift_irreducible_terms by blast
-    from this obtain T' where "(subst_set T' \<eta>) \<subseteq> trms_C" 
+    obtain T' where "(subst_set T' \<sigma>) \<subseteq> trms_C" 
       and "T' = get_trms ?Cl_C' 
-    (dom_trms (subst_cl C' \<theta>) (subst_set (E \<union> (proper_subterms_of t)) \<theta>)) FirstOrder" by auto
+    (dom_trms (subst_cl C' \<theta>) (subst_set (E \<union> (proper_subterms_of t)) \<theta>)) FirstOrder"
+      using lift_irreducible_terms by blast
 
     obtain C_fo where "C_fo = (Ecl ?Cl_C' T')" by auto
     from \<open>C' = ( (Cl_P - { L2 }) \<union> { L' } )\<close> 
@@ -5994,136 +5990,156 @@ proof (rule ccontr)
       \<open>C' = ( (Cl_P - { L2 }) \<union> { L' } )\<close>
       \<open>E = (trms_ecl P1)\<close>
       have "factorization P1 C_fo \<theta> FirstOrder C'" unfolding factorization_def by blast
-
-    from this \<open>P = { P1 }\<close>  \<open>P \<subseteq> S\<close> have "(derivable C_fo P S \<theta> FirstOrder C')" 
-      unfolding derivable_def by auto
     
-    from \<open>(?Cl_C' = (subst_cl ( (Cl_P - { L2 }) \<union> { L' } ) \<theta>))\<close> 
-      have 
-      i: "(subst_cl ?Cl_C' \<eta>) = 
-      (subst_cl (subst_cl ( (Cl_P - { L2 }) \<union> { L' } ) \<theta>)) \<eta>"
-        by auto
-    have ii: "(subst_cl (subst_cl ( (Cl_P - { L2 }) \<union> { L' } ) \<theta>) \<eta>)
-      =  (subst_cl ( (Cl_P - { L2 }) \<union> { L' } ) (\<theta> \<lozenge> \<eta>))"
+    have i: "subst_cl ?Cl_C' \<sigma> = subst_cl (subst_cl (Cl_P - { L2 } \<union> { L' }) \<theta>) \<sigma>"
+      using \<open>?Cl_C' = subst_cl ((Cl_P - { L2 }) \<union> { L' }) \<theta>\<close> by auto
+    have ii: "subst_cl (subst_cl ((Cl_P - { L2 }) \<union> { L' }) \<theta>) \<sigma>
+      = subst_cl ((Cl_P - { L2 }) \<union> { L' }) (\<theta> \<lozenge> \<sigma>)"
       using composition_of_substs_cl [of "( (Cl_P - { L2 }) \<union> { L' } )" ] by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst_cl ( (Cl_P - { L2 }) \<union> { L' } ) \<sigma>) 
-      = (subst_cl ( (Cl_P - { L2 }) \<union> { L' } ) (\<theta> \<lozenge> \<eta>))" 
-      using subst_eq_cl [of \<sigma> "\<theta> \<lozenge> \<eta>" "( (Cl_P - { L2 }) \<union> { L' } )" ] by auto
-    from this and i ii  \<open>Cl_C = (subst_cl ( (Cl_P - { L2 }) \<union> { L' } ) \<sigma>)\<close> 
-      have "(subst_cl ?Cl_C' \<eta>) = Cl_C" by metis
-    from this and \<open>(C = (Ecl Cl_C trms_C))\<close> and \<open>(C_fo = (Ecl ?Cl_C' T'))\<close> 
-      have "(subst_cl (cl_ecl C_fo) \<eta>) = (cl_ecl C)" by auto
-    from \<open>(subst_set T' \<eta>) \<subseteq> trms_C\<close> 
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> have "(subst_cl ( (Cl_P - { L2 }) \<union> { L' } ) \<sigma>) 
+      = (subst_cl ( (Cl_P - { L2 }) \<union> { L' } ) (\<theta> \<lozenge> \<sigma>))" 
+      using subst_eq_cl [of \<sigma> "\<theta> \<lozenge> \<sigma>" "( (Cl_P - { L2 }) \<union> { L' } )" ] by auto
+    with i ii \<open>Cl_C = (subst_cl ( (Cl_P - { L2 }) \<union> { L' } ) \<sigma>)\<close> 
+    have "(subst_cl ?Cl_C' \<sigma>) = Cl_C" by metis
+    with \<open>C = Ecl Cl_C trms_C\<close> \<open>C_fo = Ecl ?Cl_C' T'\<close> have "subst_cl (cl_ecl C_fo) \<sigma> = cl_ecl C"
+      by auto
+    from \<open>(subst_set T' \<sigma>) \<subseteq> trms_C\<close> 
       and \<open>(C = (Ecl Cl_C trms_C))\<close> and \<open>(C_fo = (Ecl ?Cl_C' T'))\<close>
-      have "(subst_set (trms_ecl C_fo) \<eta>) \<subseteq> (trms_ecl C)" by auto
-    from \<open>(subst_cl (cl_ecl C_fo) \<eta>) = (cl_ecl C)\<close> \<open>(subst_set (trms_ecl C_fo) \<eta>) \<subseteq> (trms_ecl C)\<close>
-      have "(trms_subsumes C_fo C \<eta>)"
+      have "(subst_set (trms_ecl C_fo) \<sigma>) \<subseteq> (trms_ecl C)" by auto
+    from \<open>(subst_cl (cl_ecl C_fo) \<sigma>) = (cl_ecl C)\<close> \<open>(subst_set (trms_ecl C_fo) \<sigma>) \<subseteq> (trms_ecl C)\<close>
+      have "(trms_subsumes C_fo C \<sigma>)"
       unfolding trms_subsumes_def by auto
-    from this and \<open>(derivable C_fo P S \<theta> FirstOrder C')\<close> and \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and hyp show False by auto
- qed
+    with \<open>factorization P1 C_fo \<theta> FirstOrder C'\<close> \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> hyp show False by auto
+  qed
 
-  have not_ref: "\<not> (\<exists>P1. ({ P1 } = P \<and> reflexion P1 C \<sigma> Ground C'))"
-  proof
-    assume "(\<exists>P1. ({ P1 } = P  \<and> reflexion P1 C \<sigma> Ground C'))"
-    then obtain P1 where "{ P1 } = P" "reflexion P1 C \<sigma> Ground C'" by auto
-    from this obtain L1 t s Cl_P Cl_C trms_C
-  where "(eligible_literal L1 P1 \<sigma>)"
-      "(L1 \<in> (cl_ecl P1))"  "(Cl_C = (cl_ecl C))" "(Cl_P = (cl_ecl P1))" 
-      "(orient_lit_inst L1 t s neg \<sigma>)"
-      "(ck_unifier t s \<sigma> Ground)"
-      "(C = (Ecl Cl_C trms_C))"
-      "(trms_C = get_trms Cl_C
-          (dom_trms Cl_C (subst_set ( (trms_ecl P1) \<union> { t } ) \<sigma>)) Ground)" 
-     "(Cl_C = (subst_cl ((Cl_P - { L1 }) )) \<sigma>)"
-     "(C' = ((Cl_P - { L1 }) ))"
+  from not_fact and assms(1) show False by blast
+qed
+
+
+lemma lifting_lemma_reflexion:
+  assumes "reflexion P1 C \<sigma> Ground C'"
+  shows "\<exists>D \<theta>. reflexion P1 D \<theta> FirstOrder C' \<and> \<sigma> \<doteq> \<theta> \<lozenge> \<sigma> \<and> trms_subsumes D C \<sigma>"
+proof (rule ccontr)
+  assume hyp: "\<nexists>D \<theta>. reflexion P1 D \<theta> FirstOrder C' \<and> \<sigma> \<doteq> \<theta> \<lozenge> \<sigma> \<and> trms_subsumes D C \<sigma>" 
+
+  have not_ref: "\<not> reflexion P1 C \<sigma> Ground C'"
+  proof (rule notI)
+    assume "reflexion P1 C \<sigma> Ground C'"
+    from this obtain L1 t s Cl_P Cl_C trms_C where
+      "eligible_literal L1 P1 \<sigma>"
+      "L1 \<in> cl_ecl P1"  "Cl_C = cl_ecl C" "Cl_P = cl_ecl P1"
+      "orient_lit_inst L1 t s neg \<sigma>"
+      "ck_unifier t s \<sigma> Ground"
+      "C = Ecl Cl_C trms_C"
+      "trms_C = get_trms Cl_C
+        (dom_trms Cl_C (subst_set (trms_ecl P1 \<union> { t }) \<sigma>)) Ground"
+      "Cl_C = subst_cl (Cl_P - { L1 }) \<sigma>"
+      "C' = Cl_P - { L1 }"
       unfolding reflexion_def get_trms_def by auto
 
-    from \<open>(ck_unifier t s \<sigma> Ground)\<close> have " Unifier \<sigma> t s" 
+    from \<open>ck_unifier t s \<sigma> Ground\<close> have " Unifier \<sigma> t s"
       unfolding ck_unifier_def Unifier_def by auto
-    from this have "(subst t \<sigma>) = (subst s \<sigma>)" unfolding Unifier_def by auto
-    from this have "unify t s \<noteq> None" using MGU_exists by auto
-    from this obtain \<theta> where "unify t s = Some \<theta>" by auto
+
+    hence "subst t \<sigma> = subst s \<sigma>" unfolding Unifier_def by auto
+    hence "unify t s \<noteq> None" using MGU_exists by auto
+    then obtain \<theta> where "unify t s = Some \<theta>" by auto
     hence "min_IMGU \<theta> t s" by (rule unify_computes_min_IMGU)
-    with \<open>Unifier \<sigma> t s\<close> obtain \<eta> where "\<sigma> \<doteq> \<theta> \<lozenge> \<eta>"
-      unfolding min_IMGU_def IMGU_iff_Idem_and_MGU MGU_def by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and \<open>(eligible_literal L1 P1 \<sigma>)\<close> have "eligible_literal L1 P1 \<theta>" 
+    with \<open>Unifier \<sigma> t s\<close> have "\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>"
+      unfolding IMGU_def min_IMGU_def by simp
+    with \<open>eligible_literal L1 P1 \<sigma>\<close> have "eligible_literal L1 P1 \<theta>"
       using lift_eligible_literal by auto
+
     from \<open>min_IMGU \<theta> t s\<close> have "ck_unifier t s \<theta> FirstOrder" unfolding ck_unifier_def by auto
 
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> \<open>orient_lit_inst L1 t s neg \<sigma>\<close> have "orient_lit_inst L1 t s neg \<theta>"
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> \<open>orient_lit_inst L1 t s neg \<sigma>\<close> have "orient_lit_inst L1 t s neg \<theta>"
       using lift_orient_lit_inst by auto
 
-    from \<open>(Cl_C = (subst_cl ((Cl_P - { L1 }) )) \<sigma>)\<close> 
-      and \<open>C' = ((Cl_P - { L1 }) )\<close> 
-      have "(Cl_C = (subst_cl C' \<sigma>))" by auto
+    from \<open>Cl_C = subst_cl (Cl_P - { L1 }) \<sigma>\<close> and \<open>C' = Cl_P - { L1 }\<close>
+    have "Cl_C = subst_cl C' \<sigma>" by auto
 
     obtain E where "E = (trms_ecl P1)" by auto
-    from this and \<open>(Cl_C = (subst_cl C' \<sigma>))\<close> 
-      \<open>trms_C = (get_trms Cl_C 
-          (dom_trms Cl_C (subst_set ( (trms_ecl P1)  \<union> { t } ) \<sigma>))) Ground\<close>
-        have "trms_C = (get_trms Cl_C 
-        (dom_trms (subst_cl C' \<sigma>) (subst_set 
-        (E  \<union> { t })  \<sigma>)) Ground)" 
-       by auto
-  
-    let ?Cl_C' = "(subst_cl C' \<theta>)"
-    from  \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> \<open>trms_C = (get_trms  Cl_C 
-        (dom_trms (subst_cl C' \<sigma>) (subst_set 
-        (E  \<union> { t })  \<sigma>)) Ground)\<close> 
-        have "\<exists>T'. ( (subst_set T' \<eta>) \<subseteq> trms_C \<and> T' = get_trms ?Cl_C' 
-    (dom_trms (subst_cl C' \<theta>) (subst_set (E  \<union> { t }) \<theta>)) FirstOrder)"
-    using lift_irreducible_terms by blast
-    from this obtain T' where "(subst_set T' \<eta>) \<subseteq> trms_C" 
-      and "T' = get_trms ?Cl_C' 
-    (dom_trms (subst_cl C' \<theta>) (subst_set (E  \<union> { t }) \<theta>)) FirstOrder" by auto
+    with \<open>Cl_C = subst_cl C' \<sigma>\<close>
+      \<open>trms_C = get_trms Cl_C (dom_trms Cl_C (subst_set (trms_ecl P1 \<union> { t }) \<sigma>)) Ground\<close>
 
-    obtain C_fo where "C_fo = (Ecl ?Cl_C' T')" by auto
-    from \<open>C' = ((Cl_P - { L1 }) )\<close> 
-      have "(?Cl_C' = (subst_cl ((Cl_P - { L1 }) ) \<theta>))" 
+    have "trms_C = get_trms Cl_C (dom_trms (subst_cl C' \<sigma>) (subst_set (E \<union> { t }) \<sigma>)) Ground"
       by auto
-    from \<open>C_fo = (Ecl ?Cl_C' T')\<close> have "?Cl_C' = (cl_ecl C_fo)" by auto
+
+    let ?Cl_C' = "subst_cl C' \<theta>"
+
+    from  \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close>
+      \<open>trms_C = get_trms  Cl_C (dom_trms (subst_cl C' \<sigma>) (subst_set (E \<union> { t }) \<sigma>)) Ground\<close>
+    obtain T' where
+      "subst_set T' \<sigma> \<subseteq> trms_C" and
+      "T' = get_trms ?Cl_C' (dom_trms (subst_cl C' \<theta>) (subst_set (E \<union> { t }) \<theta>)) FirstOrder"
+      using lift_irreducible_terms by blast
+
+    obtain C_fo where "C_fo = Ecl ?Cl_C' T'" by auto
+
+    from \<open>C' = Cl_P - { L1 }\<close>
+    have "?Cl_C' = subst_cl (Cl_P - { L1 }) \<theta>" by auto
+
+    from \<open>C_fo = Ecl ?Cl_C' T'\<close> have "?Cl_C' = cl_ecl C_fo" by auto
     have "?Cl_C' = (subst_cl C' \<theta>)" by auto
-    from 
-      \<open>(eligible_literal L1 P1 \<theta>)\<close>
-      \<open>(L1 \<in> (cl_ecl P1))\<close> \<open>?Cl_C' = (cl_ecl C_fo)\<close> \<open>(Cl_P = (cl_ecl P1))\<close> 
-      \<open>(orient_lit_inst L1 t s neg \<theta>)\<close>
-      \<open>(ck_unifier t s \<theta> FirstOrder)\<close>
-      \<open>(C_fo = (Ecl ?Cl_C' T'))\<close>
-      \<open>(T' = get_trms  ?Cl_C'
-          (dom_trms (subst_cl C' \<theta>) (subst_set (E \<union> { t }) \<theta>)) FirstOrder)\<close> 
-     \<open>(?Cl_C' = (subst_cl ((Cl_P - { L1 }) )) \<theta>)\<close>
-     \<open>(C' = ((Cl_P - { L1 }) ))\<close>
-     \<open>E = (trms_ecl P1)\<close>
-      have "reflexion P1 C_fo \<theta> FirstOrder C'" unfolding reflexion_def by metis
 
-    from this \<open>{ P1 } = P\<close>  \<open>P \<subseteq> S\<close> have "(derivable C_fo P S \<theta> FirstOrder C')" 
-      unfolding derivable_def by auto
-    
-    from \<open>(?Cl_C' = (subst_cl ((Cl_P - { L1 }) )) \<theta>)\<close> 
-      have 
-      i: "(subst_cl ?Cl_C' \<eta>) = 
-      (subst_cl (subst_cl ((Cl_P - { L1 }) ) \<theta>)) \<eta>"
-        by auto
-    have ii: "(subst_cl (subst_cl ((Cl_P - { L1 }) ) \<theta>) \<eta>)
-      =  (subst_cl ((Cl_P - { L1 }) ) (\<theta> \<lozenge> \<eta>))"
-      using composition_of_substs_cl [of "((Cl_P - { L1 }) )" ] by auto
-    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "(subst_cl((Cl_P - { L1 }) ) \<sigma>) 
-      = (subst_cl ((Cl_P - { L1 }) ) (\<theta> \<lozenge> \<eta>))" 
-      using subst_eq_cl [of \<sigma> "\<theta> \<lozenge> \<eta>" "((Cl_P - { L1 }) )" ] by auto
-    from this and i ii  \<open>Cl_C = (subst_cl ((Cl_P - { L1 }) ) \<sigma>)\<close> 
-      have "(subst_cl ?Cl_C' \<eta>) = Cl_C" by metis
-    from this and \<open>(C = (Ecl Cl_C trms_C))\<close> and \<open>(C_fo = (Ecl ?Cl_C' T'))\<close> 
-      have "(subst_cl (cl_ecl C_fo) \<eta>) = (cl_ecl C)" by auto
-    from \<open>(subst_set T' \<eta>) \<subseteq> trms_C\<close> 
-      and \<open>(C = (Ecl Cl_C trms_C))\<close> and \<open>(C_fo = (Ecl ?Cl_C' T'))\<close>
-      have "(subst_set (trms_ecl C_fo) \<eta>) \<subseteq> (trms_ecl C)" by auto
-    from \<open>(subst_cl (cl_ecl C_fo) \<eta>) = (cl_ecl C)\<close> 
-        \<open>(subst_set (trms_ecl C_fo) \<eta>) \<subseteq> (trms_ecl C)\<close>
-      have "(trms_subsumes C_fo C \<eta>)" unfolding trms_subsumes_def by auto
-    from this and \<open>(derivable C_fo P S \<theta> FirstOrder C')\<close> and \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> and hyp show False by auto
- qed
+    from
+      \<open>eligible_literal L1 P1 \<theta>\<close>
+      \<open>L1 \<in> cl_ecl P1\<close> \<open>?Cl_C' = cl_ecl C_fo\<close> \<open>Cl_P = cl_ecl P1\<close> 
+      \<open>orient_lit_inst L1 t s neg \<theta>\<close>
+      \<open>ck_unifier t s \<theta> FirstOrder\<close>
+      \<open>C_fo = Ecl ?Cl_C' T'\<close>
+      \<open>T' = get_trms  ?Cl_C'
+          (dom_trms (subst_cl C' \<theta>) (subst_set (E \<union> { t }) \<theta>)) FirstOrder\<close>
+      \<open>?Cl_C' = subst_cl (Cl_P - { L1 }) \<theta>\<close>
+      \<open>C' = Cl_P - { L1 }\<close>
+      \<open>E = trms_ecl P1\<close>
+    have "reflexion P1 C_fo \<theta> FirstOrder C'"
+      unfolding reflexion_def by metis
 
-   from not_sup not_ref not_fact and assms(1) show False unfolding derivable_def by blast
+    have i: "subst_cl ?Cl_C' \<sigma> = subst_cl (subst_cl (Cl_P - { L1 }) \<theta>) \<sigma>"
+      using \<open>?Cl_C' = subst_cl (Cl_P - { L1 }) \<theta>\<close> by auto
+
+    have ii: "subst_cl (subst_cl (Cl_P - { L1 }) \<theta>) \<sigma> = subst_cl (Cl_P - { L1 }) (\<theta> \<lozenge> \<sigma>)"
+      using composition_of_substs_cl[of "Cl_P - { L1 }"] by auto
+
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> have "subst_cl (Cl_P - { L1 }) \<sigma> = subst_cl (Cl_P - { L1 }) (\<theta> \<lozenge> \<sigma>)"
+      using subst_eq_cl[of \<sigma> "\<theta> \<lozenge> \<sigma>" "Cl_P - { L1 }"] by auto
+    with i ii \<open>Cl_C = (subst_cl ((Cl_P - { L1 }) ) \<sigma>)\<close>
+    have "subst_cl ?Cl_C' \<sigma> = Cl_C" by metis
+    with \<open>C = Ecl Cl_C trms_C\<close> \<open>C_fo = Ecl ?Cl_C' T'\<close>
+    have "subst_cl (cl_ecl C_fo) \<sigma> = cl_ecl C" by auto
+
+    from \<open>subst_set T' \<sigma> \<subseteq> trms_C\<close> \<open>C = Ecl Cl_C trms_C\<close> \<open>C_fo = Ecl ?Cl_C' T'\<close>
+    have "subst_set (trms_ecl C_fo) \<sigma> \<subseteq> trms_ecl C" by auto
+
+    from \<open>subst_cl (cl_ecl C_fo) \<sigma> = cl_ecl C\<close> \<open>subst_set (trms_ecl C_fo) \<sigma> \<subseteq> trms_ecl C\<close>
+    have "trms_subsumes C_fo C \<sigma>" unfolding trms_subsumes_def by auto
+    with \<open>reflexion P1 C_fo \<theta> FirstOrder C'\<close> \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>\<close> hyp show False by auto
+  qed
+
+  from not_ref and assms(1) show False by blast
+qed
+ 
+lemma lifting_lemma:
+  assumes deriv: "derivable C P S \<sigma> Ground C'"
+  shows "\<exists> D \<theta>. ((derivable D P S \<theta> FirstOrder C') \<and> (\<sigma> \<doteq> \<theta> \<lozenge> \<sigma>) \<and> (trms_subsumes D C \<sigma>))"
+proof (rule ccontr)
+  assume hyp: "\<not> (\<exists> D \<theta>. derivable D P S \<theta> FirstOrder C' \<and> \<sigma> \<doteq> \<theta> \<lozenge> \<sigma> \<and> trms_subsumes D C \<sigma>)"
+
+  from deriv have "P \<subseteq> S" unfolding derivable_def by auto
+
+  have not_sup: "\<not> (\<exists>P1 P2. P = { P1, P2 } \<and> superposition P1 P2 C \<sigma> Ground C')"
+    using lifting_lemma_superposition
+    by (metis \<open>P \<subseteq> S\<close> derivable_def hyp insert_subset)
+
+  have not_fact: "\<not> (\<exists>P1. { P1 } =  P \<and> factorization P1 C \<sigma> Ground C')"
+    using lifting_lemma_factorization
+    by (metis \<open>P \<subseteq> S\<close> derivable_def hyp insert_subset)
+
+  have not_ref: "\<not> (\<exists>P1. { P1 } = P \<and> reflexion P1 C \<sigma> Ground C')"
+    using lifting_lemma_reflexion
+    by (metis \<open>P \<subseteq> S\<close> derivable_def hyp insert_subset)
+
+  from not_sup not_ref not_fact deriv show False unfolding derivable_def by blast
 qed
 
 lemma trms_subsumes_and_red_inf:
