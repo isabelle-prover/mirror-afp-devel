@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Category3" (AFP) = "HOL-Library" +
-  options [timeout = 3000, names_unique = false]
+  options [timeout = 3600, names_unique = false]
   sessions
     "HereditarilyFinite" "ZFC_in_HOL"
   theories
