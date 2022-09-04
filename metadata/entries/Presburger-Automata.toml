@@ -20,6 +20,11 @@ homepage = "berghofer_homepage"
 [notify]
 berghofer = "berghofer_email"
 
+[related]
+dois = ["10.1007/978-3-642-03359-9_12"]
+
 [history]
 
 [extra]
+
+[related]

@@ -34,7 +34,8 @@ standard..."><meta property="og:title" content="Haskell&#39;s Show Class in Isab
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -88,7 +89,7 @@ standard..."><meta property="og:title" content="Haskell&#39;s Show Class in Isab
     <span class='first'>H</span>askell's <span class='first'>S</span>how <span class='first'>C</span>lass in <span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span></h1>
   <div>
     
-    <p><a href="../authors/sternagel">Christian Sternagel</a> <a href="mailto:c.sternagel@gmail.com">📧</a> and <a href="../authors/thiemann">René Thiemann</a> <a href="mailto:rene.thiemann@uibk.ac.at">📧</a>
+    <p><a href="../authors/sternagel">Christian Sternagel</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYyIsInN0ZXJuYWdlbCJdfQ==">📧</a> and <a href="../authors/thiemann">René Thiemann</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsicmVuZSIsInRoaWVtYW5uIl19">📧</a>
     </p>
     
     
@@ -101,12 +102,15 @@ standard..."><meta property="og:title" content="Haskell&#39;s Show Class in Isab
 Haskell's Show class. Moreover, we provide instantiations for Isabelle/HOL's
 standard types like bool, prod, sum, nats, ints, and rats. It is further
 possible, to automatically derive show functions for arbitrary user defined
-datatypes similar to Haskell's "deriving Show".</div><a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a><h3>Change history</h3>
+datatypes similar to Haskell's "deriving Show".</div><a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a><h3>Change history</h3><p>
+    <h4>April 10, 2015</h4>
+    Moved development for old-style datatypes into subdirectory
+"Old_Datatype".<br>
+    </p><p>
+    <h4>March 11, 2015</h4>
+    Adapted development to new-style (BNF-based) datatypes.<br>
 
-  <p>[2015-03-11] Adapted development to new-style (BNF-based) datatypes.<br>
-
-[2015-04-10] Moved development for old-style datatypes into subdirectory
-"Old_Datatype".<br></p><h3>Topics</h3>
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/functional-programming">Computer science/Functional programming</a></li></ul>
   <h3>Theories of Show</h3>
   <ul>
@@ -143,7 +147,7 @@ datatypes similar to Haskell's "deriving Show".</div><a href="https://isa-afp.or
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Show/outline.pdf">Proof
@@ -152,23 +156,23 @@ datatypes similar to Haskell's "deriving Show".</div><a href="https://isa-afp.or
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Show/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Show-AFP</p><pre id="copyText">@article{Show-AFP,
+      <p style="display:none;" id="bibtex-filename">Show-AFP</p><pre id="copy-text">@article{Show-AFP,
   author  = {Christian Sternagel and René Thiemann},
   title   = {Haskell&#39;s Show Class in Isabelle/HOL},
   journal = {Archive of Formal Proofs},
-  month   = July,
-  year    = 2014,
+  month   = {July},
+  year    = {2014},
   note    = {\url{https://isa-afp.org/entries/Show.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -178,8 +182,31 @@ datatypes similar to Haskell's "deriving Show".</div><a href="https://isa-afp.or
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Show-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Show-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2014-08-29.tar.gz">Aug 29, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Show-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li></ul>
   </div>
 </div>
     </div>

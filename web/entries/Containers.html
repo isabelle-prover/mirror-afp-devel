@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -87,7 +88,7 @@
   <div>
     
     <p><a href="../authors/lochbihler">Andreas Lochbihler</a> <a href="http://www.andreas-lochbihler.de/">🌐</a>
-      with contributions from <a href="../authors/thiemann">René Thiemann</a> <a href="mailto:rene.thiemann@uibk.ac.at">📧</a>
+      with contributions from <a href="../authors/thiemann">René Thiemann</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsicmVuZSIsInRoaWVtYW5uIl19">📧</a>
     </p>
     
     
@@ -102,13 +103,18 @@ Heuristics automatically pick one of the available data structures depending on 
 The extensible design permits to add more implementations at any time.
 <p>
 To support arbitrary nesting of sets, we define a linear order on sets based on a linear order of the elements and provide efficient implementations.
-It even allows to compare complements with non-complements.</div>BSD License<h3>Change history</h3>
+It even allows to compare complements with non-complements.</div>BSD License<h3>Change history</h3><p>
+    <h4>March 5, 2018</h4>
+    add two application examples: depth-first search and 2SAT (revision e5e1a1da2411)
+    </p><p>
+    <h4>July 8, 2014</h4>
+    add support for going from partial functions to mappings (revision 7a6fc957e8ed)<br>
 
-  <p>[2013-07-11] add pretty printing for sets (revision 7f3f52c5f5fa)<br>
+    </p><p>
+    <h4>July 11, 2013</h4>
+    add pretty printing for sets (revision 7f3f52c5f5fa)<br>
 
-[2014-07-08] add support for going from partial functions to mappings (revision 7a6fc957e8ed)<br>
-
-[2018-03-05] add two application examples: depth-first search and 2SAT (revision e5e1a1da2411)</p><h3>Topics</h3>
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
   <h3>Theories of Containers</h3>
   <ul>
@@ -158,7 +164,7 @@ It even allows to compare complements with non-complements.</div>BSD License<h3>
     <ul class="horizontal-list"><li><a href="../entries/Automatic_Refinement.html">Automatic Data Refinement</a></li><li><a href="../entries/Collections.html">Collections Framework</a></li><li><a href="../entries/Deriving.html">Deriving class instances for datatypes</a></li><li><a href="../entries/Finger-Trees.html">Finger Trees</a></li><li><a href="../entries/Regular-Sets.html">Regular Sets and Expressions</a></li><li><a href="../entries/Containers.html">Light-weight Containers</a></li><li><a href="../entries/Trie.html">Trie</a></li></ul>
   </div><div>
     <h3>Used by</h3>
-    <ul class="horizontal-list"><li><a href="../entries/Eval_FO.html">First-Order Query Evaluation</a></li><li><a href="../entries/VYDRA_MDL.html">Multi-Head Monitoring of Metric Dynamic Logic</a></li><li><a href="../entries/AI_Planning_Languages_Semantics.html">AI Planning Languages Semantics</a></li><li><a href="../entries/MFOTL_Monitor.html">Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</a></li><li><a href="../entries/Polynomial_Factorization.html">Polynomial Factorization</a></li><li><a href="../entries/Containers.html">Light-weight Containers</a></li><li><a href="../entries/Collections.html">Collections Framework</a></li></ul>
+    <ul class="horizontal-list"><li><a href="../entries/FSM_Tests.html">Verified Complete Test Strategies for Finite State Machines</a></li><li><a href="../entries/Eval_FO.html">First-Order Query Evaluation</a></li><li><a href="../entries/VYDRA_MDL.html">Multi-Head Monitoring of Metric Dynamic Logic</a></li><li><a href="../entries/AI_Planning_Languages_Semantics.html">AI Planning Languages Semantics</a></li><li><a href="../entries/MFOTL_Monitor.html">Formalization of a Monitoring Algorithm for Metric First-Order Temporal Logic</a></li><li><a href="../entries/Polynomial_Factorization.html">Polynomial Factorization</a></li><li><a href="../entries/Containers.html">Light-weight Containers</a></li><li><a href="../entries/Collections.html">Collections Framework</a></li></ul>
   </div>
   
   <div>
@@ -180,7 +186,7 @@ It even allows to compare complements with non-complements.</div>BSD License<h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Containers/outline.pdf">Proof
@@ -189,23 +195,23 @@ It even allows to compare complements with non-complements.</div>BSD License<h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Containers/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Containers-AFP</p><pre id="copyText">@article{Containers-AFP,
+      <p style="display:none;" id="bibtex-filename">Containers-AFP</p><pre id="copy-text">@article{Containers-AFP,
   author  = {Andreas Lochbihler},
   title   = {Light-weight Containers},
   journal = {Archive of Formal Proofs},
-  month   = April,
-  year    = 2013,
+  month   = {April},
+  year    = {2013},
   note    = {\url{https://isa-afp.org/entries/Containers.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -215,8 +221,35 @@ It even allows to compare complements with non-complements.</div>BSD License<h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Containers-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Containers-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Containers-2013-04-23.tar.gz">Apr 23, 2013</a>: Isabelle2013
+      </li></ul>
   </div>
 </div>
     </div>

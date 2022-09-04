@@ -31,5 +31,8 @@ homepage = "thiemann_homepage"
 thiemann = "thiemann_email"
 
 [history]
+2022-07-03 = "improved bounds on determinants to get smaller mixed integer solutions (revision 6cf62d8e618e)"
 
 [extra]
+
+[related]

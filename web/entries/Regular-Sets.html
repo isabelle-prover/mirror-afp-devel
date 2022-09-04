@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -96,12 +97,21 @@
   </div>
 </header><div><main><h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">This is a library of constructions on regular expressions and languages. It provides the operations of concatenation, Kleene star and derivative on languages. Regular expressions and their meaning are defined. An executable equivalence checker for regular expressions is verified; it does not need automata but works directly on regular expressions. <i>By mapping regular expressions to binary relations, an automatic and complete proof method for (in)equalities of binary relations over union, concatenation and (reflexive) transitive closure is obtained.</i> <P> Extended regular expressions with complement and intersection are also defined and an equivalence checker is provided.</div>BSD License<h3>Change history</h3>
+  <div class="abstract mathjax_process">This is a library of constructions on regular expressions and languages. It provides the operations of concatenation, Kleene star and derivative on languages. Regular expressions and their meaning are defined. An executable equivalence checker for regular expressions is verified; it does not need automata but works directly on regular expressions. <i>By mapping regular expressions to binary relations, an automatic and complete proof method for (in)equalities of binary relations over union, concatenation and (reflexive) transitive closure is obtained.</i> <P> Extended regular expressions with complement and intersection are also defined and an equivalence checker is provided.</div>BSD License<h3>Change history</h3><p>
+    <h4>May 10, 2012</h4>
+    Tobias Nipkow added equivalence checking with partial derivatives
+    </p><p>
+    <h4>August 26, 2011</h4>
+    Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
 
-  <p>[2011-08-26] Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
+    </p><h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li></ul><h3>Related Publications</h3>
+  <ul><li>
+      Krauss, A., & Nipkow, T. (2011). Proof Pearl: Regular Expression Equivalence and Relation Algebra. Journal of Automated Reasoning, 49(1), 95–106. <a href="https://doi.org/10.1007/s10817-011-9223-4">https://doi.org/10.1007/s10817-011-9223-4</a>
 
-[2012-05-10] Tobias Nipkow added equivalence checking with partial derivatives</p><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li></ul>
+    </li><li>
+      <a href="https://www.in.tum.de/~nipkow/pubs/jar12.html">Open access</a>
+    </li></ul>
   <h3>Theories of Regular-Sets</h3>
   <ul>
     <li><a href="../theories/regular-sets/#Regular_Set">Regular_Set</a></li>
@@ -124,7 +134,7 @@
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Regular-Sets/outline.pdf">Proof
@@ -133,23 +143,23 @@
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Regular-Sets/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Regular-Sets-AFP</p><pre id="copyText">@article{Regular-Sets-AFP,
+      <p style="display:none;" id="bibtex-filename">Regular-Sets-AFP</p><pre id="copy-text">@article{Regular-Sets-AFP,
   author  = {Alexander Krauss and Tobias Nipkow},
   title   = {Regular Sets and Expressions},
   journal = {Archive of Formal Proofs},
-  month   = May,
-  year    = 2010,
+  month   = {May},
+  year    = {2010},
   note    = {\url{https://isa-afp.org/entries/Regular-Sets.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -159,8 +169,45 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Regular-Sets-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Regular-Sets-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2013-03-02.tar.gz">Mar 2, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2011-02-11.tar.gz">Feb 11, 2011</a>: Isabelle2011
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Regular-Sets-2010-07-01.tar.gz">Jul 1, 2010</a>: Isabelle2009-2
+      </li></ul>
   </div>
 </div>
     </div>

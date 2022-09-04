@@ -96,6 +96,11 @@ lemma ell2_norm_finite:
 lemma ell2_norm_finite_L2_set: "ell2_norm (x::'a::finite\<Rightarrow>complex) = L2_set (norm o x) UNIV"
   by (simp add: ell2_norm_finite L2_set_def)
 
+lemma ell2_norm_square: \<open>(ell2_norm x)\<^sup>2 = (\<Sum>\<^sub>\<infinity>i. (cmod (x i))\<^sup>2)\<close>
+  unfolding ell2_norm_def
+  apply (subst real_sqrt_pow2)
+  by (simp_all add: infsum_nonneg)
+
 lemma ell2_ket:
   fixes a
   defines \<open>f \<equiv> (\<lambda>i. if a = i then 1 else 0)\<close>
@@ -676,7 +681,6 @@ proof (intro_classes; transfer)
 qed (auto simp add: divide_complex_def mult.commute ring_class.ring_distribs)
 end
 
-
 subsection \<open>Orthogonality\<close>
 
 lemma ell2_pointwise_ortho:
@@ -704,6 +708,9 @@ proof (rename_tac S x)
 qed
 
 lemma trunc_ell2_empty[simp]: \<open>trunc_ell2 {} x = 0\<close>
+  apply transfer by simp
+
+lemma trunc_ell2_UNIV[simp]: \<open>trunc_ell2 UNIV \<psi> = \<psi>\<close>
   apply transfer by simp
 
 lemma norm_id_minus_trunc_ell2:
@@ -774,6 +781,85 @@ proof -
   then show ?thesis
     apply (rule Lim_transform2[where f=\<open>\<lambda>_. \<psi>\<close>, rotated])
     by simp
+qed
+
+lemma trunc_ell2_norm_mono: \<open>M \<subseteq> N \<Longrightarrow> norm (trunc_ell2 M \<psi>) \<le> norm (trunc_ell2 N \<psi>)\<close>
+proof (rule power2_le_imp_le[rotated], force, transfer)
+  fix M N :: \<open>'a set\<close> and \<psi> :: \<open>'a \<Rightarrow> complex\<close>
+  assume \<open>M \<subseteq> N\<close> and \<open>has_ell2_norm \<psi>\<close>
+  have \<open>(ell2_norm (\<lambda>i. if i \<in> M then \<psi> i else 0))\<^sup>2 = (\<Sum>\<^sub>\<infinity>i\<in>M. (cmod (\<psi> i))\<^sup>2)\<close>
+    unfolding ell2_norm_square
+    apply (rule infsum_cong_neutral)
+    by auto
+  also have \<open>\<dots> \<le> (\<Sum>\<^sub>\<infinity>i\<in>N. (cmod (\<psi> i))\<^sup>2)\<close>
+    apply (rule infsum_mono2)
+    using \<open>has_ell2_norm \<psi>\<close> \<open>M \<subseteq> N\<close>
+    by (auto simp add: ell2_norm_square has_ell2_norm_def simp flip: norm_power intro: summable_on_subset_banach)
+  also have \<open>\<dots> = (ell2_norm (\<lambda>i. if i \<in> N then \<psi> i else 0))\<^sup>2\<close>
+    unfolding ell2_norm_square
+    apply (rule infsum_cong_neutral)
+    by auto
+  finally show \<open>(ell2_norm (\<lambda>i. if i \<in> M then \<psi> i else 0))\<^sup>2 \<le> (ell2_norm (\<lambda>i. if i \<in> N then \<psi> i else 0))\<^sup>2\<close>
+    by -
+qed
+
+lemma trunc_ell2_twice[simp]: \<open>trunc_ell2 M (trunc_ell2 N \<psi>) = trunc_ell2 (M\<inter>N) \<psi>\<close>
+  apply transfer by auto
+
+lemma trunc_ell2_union: \<open>trunc_ell2 (M \<union> N) \<psi> = trunc_ell2 M \<psi> + trunc_ell2 N \<psi> - trunc_ell2 (M\<inter>N) \<psi>\<close>
+  apply transfer by auto
+
+lemma trunc_ell2_union_disjoint: \<open>M\<inter>N = {} \<Longrightarrow> trunc_ell2 (M \<union> N) \<psi> = trunc_ell2 M \<psi> + trunc_ell2 N \<psi>\<close>
+  by (simp add: trunc_ell2_union)
+
+lemma trunc_ell2_union_Diff: \<open>M \<subseteq> N \<Longrightarrow> trunc_ell2 (N-M) \<psi> = trunc_ell2 N \<psi> - trunc_ell2 M \<psi>\<close>
+  using trunc_ell2_union_disjoint[where M=\<open>N-M\<close> and N=M and \<psi>=\<psi>]
+  by (simp add: Un_commute inf.commute le_iff_sup)
+
+lemma trunc_ell2_lim: \<open>((\<lambda>S. trunc_ell2 S \<psi>) \<longlongrightarrow> trunc_ell2 M \<psi>) (finite_subsets_at_top M)\<close>
+proof -
+  have \<open>((\<lambda>S. trunc_ell2 S (trunc_ell2 M \<psi>)) \<longlongrightarrow> trunc_ell2 M \<psi>) (finite_subsets_at_top UNIV)\<close>
+    using trunc_ell2_lim_at_UNIV by blast
+  then have \<open>((\<lambda>S. trunc_ell2 (S\<inter>M) \<psi>) \<longlongrightarrow> trunc_ell2 M \<psi>) (finite_subsets_at_top UNIV)\<close>
+    by simp
+  then show \<open>((\<lambda>S. trunc_ell2 S \<psi>) \<longlongrightarrow> trunc_ell2 M \<psi>) (finite_subsets_at_top M)\<close>
+    unfolding filterlim_def
+    apply (subst (asm) filtermap_filtermap[where g=\<open>\<lambda>S. S\<inter>M\<close>, symmetric])
+    apply (subst (asm) finite_subsets_at_top_inter[where A=M and B=UNIV])
+    by auto
+qed
+
+lemma trunc_ell2_lim_general:
+  assumes big: \<open>\<And>G. finite G \<Longrightarrow> G \<subseteq> M \<Longrightarrow> (\<forall>\<^sub>F H in F. H \<supseteq> G)\<close>
+  assumes small: \<open>\<forall>\<^sub>F H in F. H \<subseteq> M\<close>
+  shows \<open>((\<lambda>S. trunc_ell2 S \<psi>) \<longlongrightarrow> trunc_ell2 M \<psi>) F\<close>
+proof (rule tendstoI)
+  fix e :: real assume \<open>e > 0\<close>
+  from trunc_ell2_lim[THEN tendsto_iff[THEN iffD1], rule_format, OF \<open>e > 0\<close>, where M=M and \<psi>=\<psi>]
+  obtain G where \<open>finite G\<close> and \<open>G \<subseteq> M\<close> and 
+    close: \<open>dist (trunc_ell2 G \<psi>) (trunc_ell2 M \<psi>) < e\<close>
+    apply atomize_elim
+    unfolding eventually_finite_subsets_at_top
+    by blast
+  from \<open>finite G\<close> \<open>G \<subseteq> M\<close> and big
+  have \<open>\<forall>\<^sub>F H in F. H \<supseteq> G\<close>
+    by -
+  with small have \<open>\<forall>\<^sub>F H in F. H \<subseteq> M \<and> H \<supseteq> G\<close>
+    by (simp add: eventually_conj_iff)
+  then show \<open>\<forall>\<^sub>F H in F. dist (trunc_ell2 H \<psi>) (trunc_ell2 M \<psi>) < e\<close>
+  proof (rule eventually_mono)
+    fix H assume GHM: \<open>H \<subseteq> M \<and> H \<supseteq> G\<close>
+    have \<open>dist (trunc_ell2 H \<psi>) (trunc_ell2 M \<psi>) = norm (trunc_ell2 (M-H) \<psi>)\<close>
+      by (simp add: GHM dist_ell2_def norm_minus_commute trunc_ell2_union_Diff)
+    also have \<open>\<dots> \<le> norm (trunc_ell2 (M-G) \<psi>)\<close>
+      by (simp add: Diff_mono GHM trunc_ell2_norm_mono)
+    also have \<open>\<dots>  = dist (trunc_ell2 G \<psi>) (trunc_ell2 M \<psi>)\<close>
+      by (simp add: \<open>G \<subseteq> M\<close> dist_ell2_def norm_minus_commute trunc_ell2_union_Diff)
+    also have \<open>\<dots> < e\<close>
+      using close by simp
+    finally show \<open>dist (trunc_ell2 H \<psi>) (trunc_ell2 M \<psi>) < e\<close>
+      by -
+  qed
 qed
 
 subsection \<open>Kets and bras\<close>
@@ -1042,6 +1128,32 @@ lemma cdim_UNIV_ell2[simp]: \<open>cdim (UNIV::'a::finite ell2 set) = CARD('a)\<
 lemma is_ortho_set_ket[simp]: \<open>is_ortho_set (range ket)\<close>
   using is_ortho_set_def by fastforce
 
+lemma bounded_clinear_equal_ket:
+  fixes f g :: \<open>'a ell2 \<Rightarrow> _\<close>
+  assumes \<open>bounded_clinear f\<close>
+  assumes \<open>bounded_clinear g\<close>
+  assumes \<open>\<And>i. f (ket i) = g (ket i)\<close>
+  shows \<open>f = g\<close>
+  apply (rule ext)
+  apply (rule bounded_clinear_eq_on[of f g \<open>range ket\<close>])
+  using assms by auto
+
+lemma bounded_antilinear_equal_ket:
+  fixes f g :: \<open>'a ell2 \<Rightarrow> _\<close>
+  assumes \<open>bounded_antilinear f\<close>
+  assumes \<open>bounded_antilinear g\<close>
+  assumes \<open>\<And>i. f (ket i) = g (ket i)\<close>
+  shows \<open>f = g\<close>
+  apply (rule ext)
+  apply (rule bounded_antilinear_eq_on[of f g \<open>range ket\<close>])
+  using assms by auto
+
+lemma ket_CARD_1_is_1: \<open>ket x = 1\<close> for x :: \<open>'a::CARD_1\<close>
+  apply transfer by simp
+
+lemma is_onb_ket[simp]: \<open>is_onb (range ket)\<close>
+  by (auto simp: is_onb_def)
+
 subsection \<open>Butterflies\<close>
 
 lemma cspan_butterfly_ket: \<open>cspan {butterfly (ket i) (ket j)| (i::'b::finite) (j::'a::finite). True} = UNIV\<close>
@@ -1132,83 +1244,26 @@ lemma classical_operator_existsI:
 lemma classical_operator_exists_inj:
   assumes "inj_map \<pi>"
   shows "classical_operator_exists \<pi>"
-proof -
-  define f where \<open>f t = (case \<pi> (inv ket t) of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x)\<close> for t
-  define g where \<open>g = cconstruct (range ket) f\<close>
-  have g_f: \<open>g (ket x) = f (ket x)\<close> for x
-    unfolding g_def apply (rule complex_vector.construct_basis)
-    using cindependent_ket by auto
-  have \<open>clinear g\<close>
-    unfolding g_def apply (rule complex_vector.linear_construct)
-    using cindependent_ket by blast
-  then have \<open>g (x + y) = g x + g y\<close> if \<open>x \<in> cspan (range ket)\<close> and \<open>y \<in> cspan (range ket)\<close> for x y
-    using clinear_iff by blast
-  moreover from \<open>clinear g\<close> have \<open>g (c *\<^sub>C x) = c *\<^sub>C g x\<close> if \<open>x \<in> cspan (range ket)\<close> for x c
-    by (simp add: complex_vector.linear_scale)
-  moreover have \<open>norm (g x) \<le> norm x\<close> if \<open>x \<in> cspan (range ket)\<close> for x
-  proof -
-    from that obtain t r where x_sum: \<open>x = (\<Sum>a\<in>t. r a *\<^sub>C a)\<close> and \<open>finite t\<close> and \<open>t \<subseteq> range ket\<close>
-      unfolding complex_vector.span_explicit by auto
-    then obtain T where tT: \<open>t = ket ` T\<close> and [simp]: \<open>finite T\<close>
-      by (meson finite_subset_image)
-    define R where \<open>R i = r (ket i)\<close> for i
-    have x_sum: \<open>x = (\<Sum>i\<in>T. R i *\<^sub>C ket i)\<close>
-      unfolding R_def tT x_sum
-      apply (rule sum.reindex_cong)
-      by (auto simp add: inj_on_def)
-
-    define T' \<pi>' \<pi>T \<pi>R where \<open>T' = {i\<in>T. \<pi> i \<noteq> None}\<close> and \<open>\<pi>' = the o \<pi>\<close> and \<open>\<pi>T = \<pi>' ` T'\<close> and \<open>\<pi>R i = R (inv_into T' \<pi>' i)\<close> for i
-    have \<open>inj_on \<pi>' T'\<close>
-      by (smt (z3) T'_def \<pi>'_def assms comp_apply inj_map_def inj_on_def mem_Collect_eq option.expand)
-    have [simp]: \<open>finite \<pi>T\<close>
-      by (simp add: T'_def \<pi>T_def)
-
-    have \<open>g x = (\<Sum>i\<in>T. R i *\<^sub>C g (ket i))\<close>
-      by (smt (verit, ccfv_threshold) \<open>clinear g\<close> complex_vector.linear_scale complex_vector.linear_sum sum.cong x_sum)
-    also have \<open>\<dots> = (\<Sum>i\<in>T. R i *\<^sub>C f (ket i))\<close>
-      using g_f by presburger
-    also have \<open>\<dots> = (\<Sum>i\<in>T. R i *\<^sub>C (case \<pi> i of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x))\<close>
-      unfolding f_def by auto
-    also have \<open>\<dots> = (\<Sum>i\<in>T'. R i *\<^sub>C ket (\<pi>' i))\<close>
-      apply (rule sum.mono_neutral_cong_right)
-      unfolding T'_def \<pi>'_def
-      by auto
-    also have \<open>\<dots> = (\<Sum>i\<in>\<pi>' ` T'. R (inv_into T' \<pi>' i) *\<^sub>C ket i)\<close>
-      apply (subst sum.reindex)
-      using \<open>inj_on \<pi>' T'\<close> apply assumption
-      apply (rule sum.cong)
-      using \<open>inj_on \<pi>' T'\<close> by auto
-    finally have gx_sum: \<open>g x = (\<Sum>i\<in>\<pi>T. \<pi>R i *\<^sub>C ket i)\<close>
-      using \<pi>R_def \<pi>T_def by auto
-
-    have \<open>(norm (g x))\<^sup>2 = (\<Sum>a\<in>\<pi>T. (cmod (\<pi>R a))\<^sup>2)\<close>
-      unfolding gx_sum 
-      apply (subst pythagorean_theorem_sum)
-      by auto
-    also have \<open>\<dots> = (\<Sum>i\<in>T'. (cmod (R i))\<^sup>2)\<close>
-      unfolding \<pi>R_def \<pi>T_def
-      apply (subst sum.reindex)
-      using \<open>inj_on \<pi>' T'\<close> apply assumption
-      apply (rule sum.cong)
-      using \<open>inj_on \<pi>' T'\<close> by auto
-    also have \<open>\<dots> \<le> (\<Sum>a\<in>T. (cmod (R a))\<^sup>2)\<close>
-      apply (rule sum_mono2)
-      using T'_def by auto
-    also have \<open>\<dots> = (norm x)\<^sup>2\<close>
-      unfolding x_sum 
-      apply (subst pythagorean_theorem_sum)
-      using \<open>finite T\<close> by auto
-    finally show \<open>norm (g x) \<le> norm x\<close>
-      by auto
-  qed
-  ultimately have \<open>cblinfun_extension_exists (cspan (range ket)) g\<close>
-    apply (rule_tac cblinfun_extension_exists_bounded_dense[where B=1])
-    by auto
-
-  then have \<open>cblinfun_extension_exists (range ket) f\<close>
-    by (metis (mono_tags, opaque_lifting) g_f cblinfun_extension_apply cblinfun_extension_existsI complex_vector.span_base rangeE)
-  then show \<open>classical_operator_exists \<pi>\<close>
-    unfolding classical_operator_exists_def f_def by simp
+proof (unfold classical_operator_exists_def, rule cblinfun_extension_exists_ortho)
+  show \<open>is_ortho_set (range ket)\<close>
+    by simp
+  show \<open>closure (cspan (range ket)) = UNIV\<close>
+    by simp
+  have \<open>is_orthogonal (case \<pi> x of None \<Rightarrow> 0 | Some x' \<Rightarrow> ket x')
+                      (case \<pi> y of None \<Rightarrow> 0 | Some y' \<Rightarrow> ket y')\<close>
+    if \<open>x \<noteq> y\<close> for x y
+    apply (cases \<open>\<pi> x\<close>; cases \<open>\<pi> y\<close>)
+    using that assms
+    by (auto simp add: inj_map_def)
+  then show \<open>is_orthogonal (case \<pi> (inv ket x) of None \<Rightarrow> 0 | Some x' \<Rightarrow> ket x')
+                      (case \<pi> (inv ket y) of None \<Rightarrow> 0 | Some y' \<Rightarrow> ket y')\<close>
+    if \<open>x \<in> range ket\<close> and \<open>y \<in> range ket\<close> and \<open>x \<noteq> y\<close> for x y
+    using that by auto
+  have \<open>norm (case \<pi> x of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x) \<le> 1 * norm (ket x)\<close> for x
+    apply (cases \<open>\<pi> x\<close>) by auto
+  then show \<open>norm (case \<pi> (inv ket x) of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x) \<le> 1 * norm x\<close>
+    if \<open>x \<in> range ket\<close> for x
+    using that by auto
 qed
 
 lemma classical_operator_exists_finite[simp]: "classical_operator_exists (\<pi> :: _::finite \<Rightarrow> _)"

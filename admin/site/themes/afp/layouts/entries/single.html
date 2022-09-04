@@ -22,6 +22,20 @@
     {{- printf "%s License" .Params.license -}}
   {{- end -}}
 
+  {{- with .Params.note -}}
+  <p><em>{{ . }}</em></p>
+  {{- end -}}
+
+  {{- with.Params.history -}}
+  <h3>Change history</h3>
+  {{- range . -}}
+    <p>
+    <h4>{{ dateFormat "January 2, 2006" .date }}</h4>
+    {{ safeHTML .value }}
+    </p>
+  {{- end -}}
+  {{- end -}}
+
   {{- with .Params.extra -}}
   {{- range $key, $value := . -}}
   <h3>{{- humanize $key -}}</h3>
@@ -41,6 +55,16 @@
   </ul>
   {{- end -}}
 
+  {{- with .Params.related -}}
+  <h3>Related Publications</h3>
+  <ul>
+  {{- range . -}}
+    <li>
+      {{ safeHTML . }}
+    </li>
+  {{- end -}}
+  </ul>
+  {{- end -}}
 
   {{- range .Params.sessions -}}
   {{ $session := .session }}
@@ -98,7 +122,7 @@
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="{{- $path -}}/{{- $entry_name -}}/outline.pdf">Proof
@@ -123,28 +147,28 @@
   {{- end -}}
 </nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">{{- $entry_name -}}-AFP</p>
+      <p style="display:none;" id="bibtex-filename">{{- $entry_name -}}-AFP</p>
       {{- $authors := slice }}
       {{- range .Params.authors -}}
         {{- $authors = $authors | append (index (index $site.Site.Data.authors .) "name") -}}
       {{- end -}}
-      <pre id="copyText">@article{{- "{" -}}{{- $entry_name -}}-AFP,
-  author  = {{ "{" -}}{{- delimit $authors ", " | replaceRE "(, )([^,]+$)" " and $2" -}}},
+      <pre id="copy-text">@article{{- "{" -}}{{- $entry_name -}}-AFP,
+  author  = {{ "{" -}}{{- delimit $authors " and " -}}},
   title   = {{ "{" -}}{{- htmlUnescape .Params.title -}}},
   journal = {Archive of Formal Proofs},
-  month   = {{ dateFormat "January" .Params.date -}},
-  year    = {{ dateFormat "2006" .Params.date -}},
+  month   = { {{- dateFormat "January" .Params.date -}} },
+  year    = { {{- dateFormat "2006" .Params.date -}} },
   note    = {\url{https://isa-afp.org/entries/{{- $entry_name -}}.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -154,18 +178,16 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
-    {{ with .Params.olderReleases -}}
+    <a href="{{ $site.Site.Params.afpUrls.releases }}//afp-{{- $entry_name -}}-current.tar.gz" download>Download latest</a>
+    {{ with .Params.releases -}}
     <p>Older releases:</p>
     <ul>
-      {{- range $map := . -}}
-      {{- range $key, $value := $map -}}
-      <li>Isabelle {{- $key -}}:
-        <a href="https://isa-afp.org/release/afp-{{- $entry_name -}}-{{- $value -}}.tar.gz">
-          afp-{{- $entry_name -}}-{{- $value -}}.tar.gz
-        </a>
+      {{- range . -}}
+      <li>
+        <a href="{{ $site.Site.Params.afpUrls.releases }}/afp-{{- $entry_name -}}-{{- .date -}}.tar.gz">
+          {{- dateFormat "Jan 2, 2006" .date -}}
+        </a>: Isabelle{{ .isabelle }}
       </li>
-      {{- end -}}
       {{- end -}}
     </ul>
     {{- end }}

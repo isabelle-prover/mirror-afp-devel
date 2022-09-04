@@ -41,7 +41,7 @@ We encourage authors of publications that contain Isabelle developments to make 
 
 ## License
 
-All entries in the Archive of Formal Proofs are licensed under a [BSD-style License](LICENSE) or the [GNU LGPL](https://www.gnu.org/copyleft/lesser.html). This means they are free to download, free to use, free to change, and free to redistribute with minimal restrictions.
+All entries in the Archive of Formal Proofs are licensed under a [BSD-style License](https://isa-afp.org/LICENSE) or the [GNU LGPL](https://www.gnu.org/copyleft/lesser.html). This means they are free to download, free to use, free to change, and free to redistribute with minimal restrictions.
 
 The authors retain their full copyright on their original work, including their right to make the development available under another, additional license in the future.
 

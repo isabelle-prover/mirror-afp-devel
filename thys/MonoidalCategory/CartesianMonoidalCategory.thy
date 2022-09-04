@@ -351,6 +351,9 @@ begin
         by simp blast
     qed
 
+    abbreviation \<alpha>
+    where "\<alpha> \<equiv> \<alpha>.map"
+
     interpretation \<alpha>: natural_isomorphism CCC.comp C T.ToTC T.ToCT \<alpha>.map
     proof
       show "\<And>a. CCC.ide a \<Longrightarrow> iso (\<alpha>.map a)"

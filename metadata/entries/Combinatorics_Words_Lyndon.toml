@@ -30,3 +30,7 @@ starosta = "starosta_email"
 [history]
 
 [extra]
+
+[related]
+dois = ["10.1007/978-3-030-81508-0_18"]
+pubs = ["<a  href=\"https://gitlab.com/formalcow/combinatorics-on-words-formalized\">Development repository</a>"]

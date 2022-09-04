@@ -6,6 +6,8 @@ theory Absolute_Versions
     ZF.Cardinal_AC
 begin
 
+hide_const (open) Order.pred
+
 subsection\<open>Locales of a class \<^term>\<open>M\<close> hold in \<^term>\<open>\<V>\<close>\<close>
 
 interpretation V: M_trivial \<V>
@@ -80,7 +82,7 @@ lemma cardinal_rel_absolute[V_simps]: "|x|\<^bsup>\<V>\<^esup> = |x|"
   unfolding cardinal_def cardinal_rel_def by (simp add:V_simps)
 
 lemma Card_rel_absolute[V_simps]:"Card\<^bsup>\<V>\<^esup>(a) \<longleftrightarrow> Card(a)"
-  unfolding Card_rel_def Card_def by (simp add:V_simps)
+  unfolding Card_rel_def Card_def by (simp only:V_simps)
 
 lemma csucc_rel_absolute[V_simps]:"(a\<^sup>+)\<^bsup>\<V>\<^esup> = a\<^sup>+"
   unfolding csucc_rel_def csucc_def by (simp add:V_simps)
@@ -89,7 +91,7 @@ lemma function_space_rel_absolute[V_simps]:"x \<rightarrow>\<^bsup>\<V>\<^esup> 
   using V.function_space_rel_char by (simp add:V_simps)
 
 lemma cexp_rel_absolute[V_simps]:"x\<^bsup>\<up>y,\<V>\<^esup> = x\<^bsup>\<up>y\<^esup>"
-  unfolding cexp_rel_def cexp_def by (simp add:V_simps)
+  unfolding cexp_rel_def cexp_def by (simp only:V_simps)
 
 lemma HAleph_rel_absolute[V_simps]:"HAleph_rel(\<V>,a,b) = HAleph(a,b)"
   unfolding HAleph_rel_def HAleph_def by (auto simp add:V_simps)
@@ -101,7 +103,7 @@ proof -
     unfolding Aleph_rel_def by simp
   also
   have "\<dots> = transrec(x, HAleph)"
-    by (simp add:V_simps)
+    by (simp only:V_simps)
   also from \<open>Ord(x)\<close>
   have "\<dots> = \<aleph>\<^bsub>x\<^esub>"
     using Aleph'_eq_Aleph unfolding Aleph'_def by simp
@@ -109,7 +111,7 @@ proof -
   show ?thesis .
 qed
 
-txt\<open>Example of absolute lemmas obtained from the relative versions.
+text\<open>Example of absolute lemmas obtained from the relative versions.
     Note the \<^emph>\<open>only\<close> declarations\<close>
 lemma Ord_cardinal_idem': "Ord(A) \<Longrightarrow> ||A|| = |A|"
   using V.Ord_cardinal_rel_idem by (simp only:V_simps)
@@ -117,17 +119,17 @@ lemma Ord_cardinal_idem': "Ord(A) \<Longrightarrow> ||A|| = |A|"
 lemma Aleph_succ': "Ord(\<alpha>) \<Longrightarrow> \<aleph>\<^bsub>succ(\<alpha>)\<^esub> = \<aleph>\<^bsub>\<alpha>\<^esub>\<^sup>+"
   using V.Aleph_rel_succ by (simp only:V_simps)
 
-txt\<open>These two results are new, first obtained in relative form
+text\<open>These two results are new, first obtained in relative form
     (not ported).\<close>
 lemma csucc_cardinal:
   assumes "Ord(\<kappa>)" shows "|\<kappa>|\<^sup>+ = \<kappa>\<^sup>+"
-  using assms V.csucc_rel_cardinal_rel by (simp add:V_simps)
+  using assms V.csucc_rel_cardinal_rel by (simp only:V_simps)
 
 lemma csucc_le_mono:
   assumes "\<kappa> \<le> \<nu>"  shows "\<kappa>\<^sup>+ \<le> \<nu>\<^sup>+"
-  using assms V.csucc_rel_le_mono by (simp add:V_simps)
+  using assms V.csucc_rel_le_mono by (simp only:V_simps)
 
-txt\<open>Example of transferring results from a transitive model to \<^term>\<open>\<V>\<close>\<close>
+text\<open>Example of transferring results from a transitive model to \<^term>\<open>\<V>\<close>\<close>
 lemma (in M_Perm) eqpoll_rel_transfer_absolute:
   assumes "M(A)" "M(B)" "A \<approx>\<^bsup>M\<^esup> B"
   shows "A \<approx> B"
@@ -139,7 +141,7 @@ proof -
     by (simp only:V_simps)
 qed
 
-txt\<open>The “relationalized” $\CH$ with respect to \<^term>\<open>\<V>\<close> corresponds
+text\<open>The “relationalized” $\CH$ with respect to \<^term>\<open>\<V>\<close> corresponds
     to the real $\CH$.\<close>
 lemma is_ContHyp_iff_CH: "is_ContHyp(\<V>) \<longleftrightarrow> ContHyp"
   using V.is_ContHyp_iff

@@ -28,6 +28,11 @@ homepage = "rosskopf_homepage"
 [notify]
 rosskopf = "rosskopf_email"
 
+[related]
+dois = ["10.1007/978-3-030-79876-5_6"] #, "10.48550/arXiv.2104.12224"]
+
 [history]
 
 [extra]
+
+[related]

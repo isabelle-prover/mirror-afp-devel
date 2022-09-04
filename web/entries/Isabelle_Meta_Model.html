@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +87,7 @@
     <span class='first'>A</span> <span class='first'>M</span>eta-<span class='first'>M</span>odel for the <span class='first'>I</span>sabelle <span class='first'>A</span><span class='first'>P</span><span class='first'>I</span></h1>
   <div>
     
-    <p><a href="../authors/tuong">Frédéric Tuong</a> <a href="mailto:tuong@users.gforge.inria.fr">📧</a> and <a href="../authors/wolff">Burkhart Wolff</a> <a href="https://www.lri.fr/~wolff/">🌐</a>
+    <p><a href="../authors/tuong">Frédéric Tuong</a> <a class="obfuscated" data="eyJob3N0IjpbInVzZXJzIiwiZ2ZvcmdlIiwiaW5yaWEiLCJmciJdLCJ1c2VyIjpbInR1b25nIl19">📧</a> and <a href="../authors/wolff">Burkhart Wolff</a> <a href="https://www.lri.fr/~wolff/">🌐</a>
     </p>
     
     
@@ -180,7 +181,7 @@ transformations, correctness, etc.</div>BSD License<h3>Topics</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Isabelle_Meta_Model/outline.pdf">Proof
@@ -189,23 +190,23 @@ transformations, correctness, etc.</div>BSD License<h3>Topics</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Isabelle_Meta_Model/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Isabelle_Meta_Model-AFP</p><pre id="copyText">@article{Isabelle_Meta_Model-AFP,
+      <p style="display:none;" id="bibtex-filename">Isabelle_Meta_Model-AFP</p><pre id="copy-text">@article{Isabelle_Meta_Model-AFP,
   author  = {Frédéric Tuong and Burkhart Wolff},
   title   = {A Meta-Model for the Isabelle API},
   journal = {Archive of Formal Proofs},
-  month   = September,
-  year    = 2015,
+  month   = {September},
+  year    = {2015},
   note    = {\url{https://isa-afp.org/entries/Isabelle_Meta_Model.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -215,8 +216,29 @@ transformations, correctness, etc.</div>BSD License<h3>Topics</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Isabelle_Meta_Model-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Isabelle_Meta_Model-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2015-09-28.tar.gz">Sep 28, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Isabelle_Meta_Model-2015-09-25.tar.gz">Sep 25, 2015</a>: Isabelle2015
+      </li></ul>
   </div>
 </div>
     </div>

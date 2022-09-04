@@ -34,7 +34,8 @@ analysis enables..."><meta property="og:title" content="The HOL-CSP Refinement T
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -88,7 +89,7 @@ analysis enables..."><meta property="og:title" content="The HOL-CSP Refinement T
     <span class='first'>T</span>he <span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>-<span class='first'>C</span><span class='first'>S</span><span class='first'>P</span> <span class='first'>R</span>efinement <span class='first'>T</span>oolkit</h1>
   <div>
     
-    <p><a href="../authors/taha">Safouan Taha</a> <a href="mailto:safouan.taha@lri.fr">📧</a>, <a href="../authors/wolff">Burkhart Wolff</a> <a href="https://www.lri.fr/~wolff/">🌐</a> and <a href="../authors/ye">Lina Ye</a> <a href="mailto:lina.ye@lri.fr">📧</a>
+    <p><a href="../authors/taha">Safouan Taha</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsic2Fmb3VhbiIsInRhaGEiXX0=">📧</a>, <a href="../authors/wolff">Burkhart Wolff</a> <a href="https://www.lri.fr/~wolff/">🌐</a> and <a href="../authors/ye">Lina Ye</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsibGluYSIsInllIl19">📧</a>
     </p>
     
     
@@ -113,7 +114,7 @@ ones in a logically safe way. We demonstrate these
 verification-techniques for classical, generalised examples: The
 CopyBuffer for arbitrary data and the Dijkstra's Dining
 Philosopher Problem of arbitrary size.</div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/concurrency/process-calculi">Computer science/Concurrency/Process calculi</a></li><li><a href="../topics/computer-science/semantics">Computer science/Semantics</a></li></ul>
+  <ul><li><a href="../topics/computer-science/concurrency/process-calculi">Computer science/Concurrency/Process calculi</a></li><li><a href="../topics/computer-science/semantics-and-reasoning">Computer science/Semantics and reasoning</a></li></ul>
   <h3>Theories of CSP_RefTK</h3>
   <ul>
     <li><a href="../theories/csp_reftk/#Introduction">Introduction</a></li>
@@ -133,7 +134,7 @@ Philosopher Problem of arbitrary size.</div>BSD License<h3>Topics</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/CSP_RefTK/outline.pdf">Proof
@@ -142,23 +143,23 @@ Philosopher Problem of arbitrary size.</div>BSD License<h3>Topics</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/CSP_RefTK/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">CSP_RefTK-AFP</p><pre id="copyText">@article{CSP_RefTK-AFP,
-  author  = {Safouan Taha, Burkhart Wolff and Lina Ye},
+      <p style="display:none;" id="bibtex-filename">CSP_RefTK-AFP</p><pre id="copy-text">@article{CSP_RefTK-AFP,
+  author  = {Safouan Taha and Burkhart Wolff and Lina Ye},
   title   = {The HOL-CSP Refinement Toolkit},
   journal = {Archive of Formal Proofs},
-  month   = November,
-  year    = 2020,
+  month   = {November},
+  year    = {2020},
   note    = {\url{https://isa-afp.org/entries/CSP_RefTK.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -168,8 +169,15 @@ Philosopher Problem of arbitrary size.</div>BSD License<h3>Topics</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-CSP_RefTK-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-CSP_RefTK-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-CSP_RefTK-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CSP_RefTK-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CSP_RefTK-2021-01-12.tar.gz">Jan 12, 2021</a>: Isabelle2020
+      </li></ul>
   </div>
 </div>
     </div>

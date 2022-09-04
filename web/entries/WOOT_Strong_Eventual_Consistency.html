@@ -34,7 +34,8 @@ that only..."><meta property="og:title" content="Strong Eventual Consistency of 
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -88,7 +89,7 @@ that only..."><meta property="og:title" content="Strong Eventual Consistency of 
     <span class='first'>S</span>trong <span class='first'>E</span>ventual <span class='first'>C</span>onsistency of the <span class='first'>C</span>ollaborative <span class='first'>E</span>diting <span class='first'>F</span>ramework <span class='first'>W</span><span class='first'>O</span><span class='first'>O</span><span class='first'>T</span></h1>
   <div>
     
-    <p><a href="../authors/karayel">Emin Karayel</a> <a href="https://orcid.org/0000-0003-3290-5034">🌐</a> and <a href="../authors/gonzalez">Edgar Gonzàlez</a> <a href="mailto:edgargip@google.com">📧</a>
+    <p><a href="../authors/karayel">Emin Karayel</a> <a href="https://orcid.org/0000-0003-3290-5034">🌐</a> and <a href="../authors/gonzalez">Edgar Gonzàlez</a> <a class="obfuscated" data="eyJob3N0IjpbImdvb2dsZSIsImNvbSJdLCJ1c2VyIjpbImVkZ2FyZ2lwIl19">📧</a>
     </p>
     
     
@@ -104,7 +105,11 @@ Transforms (WOOT) framework is a CRDT for collaborative text editing
 introduced by Oster et al. (CSCW 2006) for which the eventual
 consistency property was verified only for a bounded model to date. We
 contribute a formal proof for WOOTs strong eventual consistency.</div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/algorithms/distributed">Computer science/Algorithms/Distributed</a></li></ul>
+  <ul><li><a href="../topics/computer-science/algorithms/distributed">Computer science/Algorithms/Distributed</a></li></ul><h3>Related Publications</h3>
+  <ul><li>
+      Karayel, E., & Gonzàlez, E. (2022). Strong eventual consistency of the collaborative editing framework WOOT. Distributed Computing, 35(2), 145–164. <a href="https://doi.org/10.1007/s00446-021-00414-6">https://doi.org/10.1007/s00446-021-00414-6</a>
+
+    </li></ul>
   <h3>Theories of WOOT_Strong_Eventual_Consistency</h3>
   <ul>
     <li><a href="../theories/woot_strong_eventual_consistency/#ErrorMonad">ErrorMonad</a></li>
@@ -140,7 +145,7 @@ contribute a formal proof for WOOTs strong eventual consistency.</div>BSD Licens
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/WOOT_Strong_Eventual_Consistency/outline.pdf">Proof
@@ -149,23 +154,23 @@ contribute a formal proof for WOOTs strong eventual consistency.</div>BSD Licens
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/WOOT_Strong_Eventual_Consistency/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">WOOT_Strong_Eventual_Consistency-AFP</p><pre id="copyText">@article{WOOT_Strong_Eventual_Consistency-AFP,
+      <p style="display:none;" id="bibtex-filename">WOOT_Strong_Eventual_Consistency-AFP</p><pre id="copy-text">@article{WOOT_Strong_Eventual_Consistency-AFP,
   author  = {Emin Karayel and Edgar Gonzàlez},
   title   = {Strong Eventual Consistency of the Collaborative Editing Framework WOOT},
   journal = {Archive of Formal Proofs},
-  month   = March,
-  year    = 2020,
+  month   = {March},
+  year    = {2020},
   note    = {\url{https://isa-afp.org/entries/WOOT_Strong_Eventual_Consistency.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -175,8 +180,17 @@ contribute a formal proof for WOOTs strong eventual consistency.</div>BSD Licens
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-WOOT_Strong_Eventual_Consistency-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-WOOT_Strong_Eventual_Consistency-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-WOOT_Strong_Eventual_Consistency-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-WOOT_Strong_Eventual_Consistency-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-WOOT_Strong_Eventual_Consistency-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-WOOT_Strong_Eventual_Consistency-2020-03-26.tar.gz">Mar 26, 2020</a>: Isabelle2019
+      </li></ul>
   </div>
 </div>
     </div>

@@ -25,3 +25,5 @@ Moved the results about conjunctive and disjunctive functions to a new theory.
 Removed the syntactic classes for inf and sup which are in the standard library now."""
 
 [extra]
+
+[related]

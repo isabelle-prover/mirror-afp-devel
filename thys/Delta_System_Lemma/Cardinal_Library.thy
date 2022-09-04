@@ -125,7 +125,7 @@ lemma cardinal_UN_le_nat:
   "(\<And>i. i\<in>\<omega> \<Longrightarrow> |X(i)| \<le> \<omega>) \<Longrightarrow> |\<Union>i\<in>\<omega>. X(i)| \<le> \<omega>"
   by (simp add: cardinal_UN_le InfCard_nat)
 
-lemma leqpoll_imp_cardinal_UN_le:
+lemma lepoll_imp_cardinal_UN_le:
   notes [dest] = InfCard_is_Card Card_is_Ord
   assumes "InfCard(K)" "J \<lesssim> K" "\<And>i. i\<in>J \<Longrightarrow> |X(i)| \<le> K"
   shows "|\<Union>i\<in>J. X(i)| \<le> K"
@@ -155,6 +155,9 @@ proof -
     using inj_converse_fun[OF \<open>f \<in> inj(J,K)\<close>] unfolding Y_def
     by (rule_tac le_trans[OF _ cardinal_UN_le]) (auto intro:Ord_0_le)+
 qed
+
+\<comment> \<open>For backwards compatibility\<close>
+lemmas leqpoll_imp_cardinal_UN_le = lepoll_imp_cardinal_UN_le
 
 lemma cardinal_lt_csucc_iff':
   includes Ord_dests
@@ -195,7 +198,7 @@ text\<open>The following result proves to be very useful when combining
 
 lemma cardinal_Card_eqpoll_iff: "Card(\<kappa>) \<Longrightarrow> |X| = \<kappa> \<longleftrightarrow> X \<approx> \<kappa>"
   using Card_cardinal_eq[of \<kappa>] cardinal_eqpoll_iff[of X \<kappa>] by auto
-    \<comment> \<open>Compare @{thm "le_Card_iff"}\<close>
+    \<comment> \<open>Compare @{thm [source] "le_Card_iff"}\<close>
 
 lemma lepoll_imp_lepoll_cardinal: assumes "X \<lesssim> Y" shows "X \<lesssim> |Y|"
   using assms cardinal_Card_eqpoll_iff[of "|Y|" Y]
@@ -227,7 +230,7 @@ lemma cardinal_Un_le:
   using assms lepoll_Un le_Card_iff InfCard_is_Card by auto
 
 text\<open>This is the unconditional version under choice of 
-     @{thm Cardinal.Finite_cardinal_iff}.\<close>
+     @{thm [source] Cardinal.Finite_cardinal_iff}.\<close>
 lemma Finite_cardinal_iff': "Finite(|i|) \<longleftrightarrow> Finite(i)"
   using cardinal_eqpoll_iff eqpoll_imp_Finite_iff by fastforce
 
@@ -252,17 +255,6 @@ lemma cardinal_cases:
 
 subsection\<open>Countable and uncountable sets\<close>
 
-\<comment> \<open>Kunen's Definition I.10.5\<close>
-definition
-  countable :: "i\<Rightarrow>o" where
-  "countable(X) \<equiv> X \<lesssim> \<omega>"
-
-lemma countableI[intro]: "X \<lesssim> \<omega> \<Longrightarrow> countable(X)"
-  unfolding countable_def by simp
-
-lemma countableD[dest]: "countable(X) \<Longrightarrow> X \<lesssim> \<omega>"
-  unfolding countable_def by simp
-
 lemma countable_iff_cardinal_le_nat: "countable(X) \<longleftrightarrow> |X| \<le> \<omega>"
   using le_Card_iff[of \<omega> X] Card_nat
   unfolding countable_def by simp
@@ -283,7 +275,7 @@ lemma Finite_imp_countable: "Finite(X) \<Longrightarrow> countable(X)"
 lemma countable_imp_countable_UN:
   assumes "countable(J)" "\<And>i. i\<in>J \<Longrightarrow> countable(X(i))"
   shows "countable(\<Union>i\<in>J. X(i))"
-  using assms leqpoll_imp_cardinal_UN_le[of \<omega> J X] InfCard_nat
+  using assms lepoll_imp_cardinal_UN_le[of \<omega> J X] InfCard_nat
     countable_iff_cardinal_le_nat
   by auto
 
@@ -390,7 +382,7 @@ proof -
   have "n\<in>?N \<Longrightarrow> |G`n| \<le> \<omega>" for n .
   with \<open>?N \<lesssim> \<omega>\<close>
   show ?thesis
-    using InfCard_nat leqpoll_imp_cardinal_UN_le by simp
+    using InfCard_nat lepoll_imp_cardinal_UN_le by simp
 qed
 
 lemma Aleph1_eq_cardinal_vimage: "f:\<aleph>\<^bsub>1\<^esub>\<rightarrow>\<omega> \<Longrightarrow> \<exists>n\<in>\<omega>. |f-``{n}| = \<aleph>\<^bsub>1\<^esub>"
@@ -484,26 +476,6 @@ qed
 
 
 subsection\<open>Applications of transfinite recursive constructions\<close>
-
-definition
-  rec_constr :: "[i,i] \<Rightarrow> i" where
-  "rec_constr(f,\<alpha>) \<equiv> transrec(\<alpha>,\<lambda>a g. f`(g``a))"
-
-text\<open>The function \<^term>\<open>rec_constr\<close> allows to perform \<^emph>\<open>recursive
-     constructions\<close>: given a choice function on the powerset of some
-     set, a transfinite sequence is created by successively choosing
-     some new element.
-
-     The next result explains its use.\<close>
-
-lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<beta>\<in>\<alpha>})"
-  using def_transrec[OF rec_constr_def, of f \<alpha>] image_lam by simp
-
-lemma rec_constr_type: assumes "f:Pow(G)\<rightarrow> G" "Ord(\<alpha>)"
-  shows "rec_constr(f,\<alpha>) \<in> G"
-  using assms(2,1)
-  by (induct rule:trans_induct)
-    (subst rec_constr_unfold, rule apply_type[of f "Pow(G)" "\<lambda>_. G"], auto)
 
 text\<open>The next lemma is an application of recursive constructions.
      It works under the assumption that whenever the already constructed
@@ -654,7 +626,7 @@ proof -
           "|{x\<in>X . F`x = y}|"] cardinal_idem by auto
     ultimately
     have "|\<Union>y\<in>Y. {x\<in>X . F`x = y}| \<le> |Y|"
-      using leqpoll_imp_cardinal_UN_le[of "|Y|" Y]
+      using lepoll_imp_cardinal_UN_le[of "|Y|" Y]
         Infinite_InfCard_cardinal[of Y] by simp
     moreover from \<open>F \<in> Finite_to_one(X,Y) \<inter> surj(X,Y)\<close>
     have "|Y| \<le> |X|"

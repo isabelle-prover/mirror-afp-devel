@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -95,9 +96,10 @@
   </div>
 </header><div><main><h3>Abstract</h3>
 
-  <div class="abstract mathjax_process"><p>Two omega-sequences are stuttering equivalent if they differ only by finite repetitions of elements. Stuttering equivalence is a fundamental concept in the theory of concurrent and distributed systems. Notably, Lamport argues that refinement notions for such systems should be insensitive to finite stuttering. Peled and Wilke showed that all PLTL (propositional linear-time temporal logic) properties that are insensitive to stuttering equivalence can be expressed without the next-time operator. Stuttering equivalence is also important for certain verification techniques such as partial-order reduction for model checking.</p> <p>We formalize stuttering equivalence in Isabelle/HOL. Our development relies on the notion of stuttering sampling functions that may skip blocks of identical sequence elements. We also encode PLTL and prove the theorem due to Peled and Wilke.</p></div>BSD License<h3>Change history</h3>
-
-  <p>[2013-01-31] Added encoding of PLTL and proved Peled and Wilke's theorem. Adjusted abstract accordingly.</p><h3>Topics</h3>
+  <div class="abstract mathjax_process"><p>Two omega-sequences are stuttering equivalent if they differ only by finite repetitions of elements. Stuttering equivalence is a fundamental concept in the theory of concurrent and distributed systems. Notably, Lamport argues that refinement notions for such systems should be insensitive to finite stuttering. Peled and Wilke showed that all PLTL (propositional linear-time temporal logic) properties that are insensitive to stuttering equivalence can be expressed without the next-time operator. Stuttering equivalence is also important for certain verification techniques such as partial-order reduction for model checking.</p> <p>We formalize stuttering equivalence in Isabelle/HOL. Our development relies on the notion of stuttering sampling functions that may skip blocks of identical sequence elements. We also encode PLTL and prove the theorem due to Peled and Wilke.</p></div>BSD License<h3>Change history</h3><p>
+    <h4>January 31, 2013</h4>
+    Added encoding of PLTL and proved Peled and Wilke's theorem. Adjusted abstract accordingly.
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li></ul>
   <h3>Theories of Stuttering_Equivalence</h3>
   <ul>
@@ -116,7 +118,7 @@
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Stuttering_Equivalence/outline.pdf">Proof
@@ -125,23 +127,23 @@
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Stuttering_Equivalence/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Stuttering_Equivalence-AFP</p><pre id="copyText">@article{Stuttering_Equivalence-AFP,
+      <p style="display:none;" id="bibtex-filename">Stuttering_Equivalence-AFP</p><pre id="copy-text">@article{Stuttering_Equivalence-AFP,
   author  = {Stephan Merz},
   title   = {Stuttering Equivalence},
   journal = {Archive of Formal Proofs},
-  month   = May,
-  year    = 2012,
+  month   = {May},
+  year    = {2012},
   note    = {\url{https://isa-afp.org/entries/Stuttering_Equivalence.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -151,8 +153,41 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Stuttering_Equivalence-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Stuttering_Equivalence-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2013-02-02.tar.gz">Feb 2, 2013</a>: Isabelle2012
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Stuttering_Equivalence-2012-05-08.tar.gz">May 8, 2012</a>: Isabelle2011-1
+      </li></ul>
   </div>
 </div>
     </div>

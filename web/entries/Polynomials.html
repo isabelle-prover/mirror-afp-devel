@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +87,7 @@
     <span class='first'>E</span>xecutable <span class='first'>M</span>ultivariate <span class='first'>P</span>olynomials</h1>
   <div>
     
-    <p><a href="../authors/sternagel">Christian Sternagel</a> <a href="mailto:c.sternagel@gmail.com">📧</a>, <a href="../authors/thiemann">René Thiemann</a> <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">🌐</a>, <a href="../authors/maletzky">Alexander Maletzky</a> <a href="https://risc.jku.at/m/alexander-maletzky/">🌐</a>, <a href="../authors/immler">Fabian Immler</a> <a href="https://home.in.tum.de/~immler/">🌐</a>, <a href="../authors/haftmann">Florian Haftmann</a> <a href="http://isabelle.in.tum.de/~haftmann">🌐</a>, <a href="../authors/lochbihler">Andreas Lochbihler</a> <a href="http://www.andreas-lochbihler.de/">🌐</a> and <a href="../authors/bentkamp">Alexander Bentkamp</a> <a href="mailto:bentkamp@gmail.com">📧</a>
+    <p><a href="../authors/sternagel">Christian Sternagel</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYyIsInN0ZXJuYWdlbCJdfQ==">📧</a>, <a href="../authors/thiemann">René Thiemann</a> <a href="http://cl-informatik.uibk.ac.at/users/thiemann/">🌐</a>, <a href="../authors/maletzky">Alexander Maletzky</a> <a href="https://risc.jku.at/m/alexander-maletzky/">🌐</a>, <a href="../authors/immler">Fabian Immler</a> <a href="https://home.in.tum.de/~immler/">🌐</a>, <a href="../authors/haftmann">Florian Haftmann</a> <a href="http://isabelle.in.tum.de/~haftmann">🌐</a>, <a href="../authors/lochbihler">Andreas Lochbihler</a> <a href="http://www.andreas-lochbihler.de/">🌐</a> and <a href="../authors/bentkamp">Alexander Bentkamp</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiYmVudGthbXAiXX0=">📧</a>
     </p>
     
     
@@ -113,18 +114,25 @@ additional notions, such as leading power-product, leading coefficient etc., are
 well. Furthermore, a lot of generic properties of, and functions on, multivariate polynomials are
 formalized, including the substitution and evaluation homomorphisms, embeddings of polynomial rings
 into larger rings (i.e. with one additional indeterminate), homogenization and dehomogenization of
-polynomials, and the canonical isomorphism between R[X,Y] and R[X][Y].</div><a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a><h3>Change history</h3>
-
-  <p>[2010-09-17] Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.<br>
-
-[2016-10-28] Added abstract representation of polynomials and authors Maletzky/Immler.<br>
-
-[2018-01-23] Added authors Haftmann, Lochbihler after incorporating
+polynomials, and the canonical isomorphism between R[X,Y] and R[X][Y].</div><a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a><h3>Change history</h3><p>
+    <h4>April 18, 2019</h4>
+    Added material about polynomials whose power-products are represented themselves
+by polynomial mappings.
+    </p><p>
+    <h4>January 23, 2018</h4>
+    Added authors Haftmann, Lochbihler after incorporating
 their formalization of multivariate polynomials based on Polynomial mappings.
 Moved material from Bentkamp's entry "Deep Learning".<br>
 
-[2019-04-18] Added material about polynomials whose power-products are represented themselves
-by polynomial mappings.</p><h3>Topics</h3>
+    </p><p>
+    <h4>October 28, 2016</h4>
+    Added abstract representation of polynomials and authors Maletzky/Immler.<br>
+
+    </p><p>
+    <h4>September 17, 2010</h4>
+    Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.<br>
+
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/mathematics/analysis">Mathematics/Analysis</a></li><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li><li><a href="../topics/computer-science/algorithms/mathematical">Computer science/Algorithms/Mathematical</a></li></ul>
   <h3>Theories of Polynomials</h3>
   <ul>
@@ -160,7 +168,7 @@ by polynomial mappings.</p><h3>Topics</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomials/outline.pdf">Proof
@@ -169,23 +177,23 @@ by polynomial mappings.</p><h3>Topics</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Polynomials/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Polynomials-AFP</p><pre id="copyText">@article{Polynomials-AFP,
-  author  = {Christian Sternagel, René Thiemann, Alexander Maletzky, Fabian Immler, Florian Haftmann, Andreas Lochbihler and Alexander Bentkamp},
+      <p style="display:none;" id="bibtex-filename">Polynomials-AFP</p><pre id="copy-text">@article{Polynomials-AFP,
+  author  = {Christian Sternagel and René Thiemann and Alexander Maletzky and Fabian Immler and Florian Haftmann and Andreas Lochbihler and Alexander Bentkamp},
   title   = {Executable Multivariate Polynomials},
   journal = {Archive of Formal Proofs},
-  month   = August,
-  year    = 2010,
+  month   = {August},
+  year    = {2010},
   note    = {\url{https://isa-afp.org/entries/Polynomials.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -195,8 +203,45 @@ by polynomial mappings.</p><h3>Topics</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Polynomials-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Polynomials-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2020-01-14.tar.gz">Jan 14, 2020</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2011-02-11.tar.gz">Feb 11, 2011</a>: Isabelle2011
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Polynomials-2010-08-11.tar.gz">Aug 11, 2010</a>: Isabelle2009-2
+      </li></ul>
   </div>
 </div>
     </div>

@@ -3,7 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>A Fully Verified Executable LTL Model Checker - Archive of Formal Proofs</title><meta name="description" content="We present an LTL model checker whose code has been completely verified using the Isabelle theorem prover. The checker consists of over 4000 lines of ML..."><meta property="og:title" content="A Fully Verified Executable LTL Model Checker" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>A Fully Verified Executable LTL Model Checker - Archive of Formal Proofs</title><meta name="description" content="We present an LTL model checker whose code has been completely verified
+using the Isabelle theorem prover. The checker consists of over 4000
+lines of ML..."><meta property="og:title" content="A Fully Verified Executable LTL Model Checker" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/CAVA_LTL_Modelchecker.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
@@ -32,7 +34,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +89,7 @@
     <span class='first'>A</span> <span class='first'>F</span>ully <span class='first'>V</span>erified <span class='first'>E</span>xecutable <span class='first'>L</span><span class='first'>T</span><span class='first'>L</span> <span class='first'>M</span>odel <span class='first'>C</span>hecker</h1>
   <div>
     
-    <p><a href="../authors/esparza">Javier Esparza</a> <a href="https://www7.in.tum.de/~esparza/">🌐</a>, <a href="../authors/lammich">Peter Lammich</a> <a href="http://www21.in.tum.de/~lammich">🌐</a>, <a href="../authors/neumann">René Neumann</a> <a href="mailto:rene.neumann@in.tum.de">📧</a>, <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>, <a href="../authors/schimpf">Alexander Schimpf</a> <a href="mailto:schimpfa@informatik.uni-freiburg.de">📧</a> and <a href="../authors/smaus">Jan-Georg Smaus</a> <a href="http://www.irit.fr/~Jan-Georg.Smaus">🌐</a>
+    <p><a href="../authors/esparza">Javier Esparza</a> <a href="https://www7.in.tum.de/~esparza/">🌐</a>, <a href="../authors/lammich">Peter Lammich</a> <a href="http://www21.in.tum.de/~lammich">🌐</a>, <a href="../authors/neumann">René Neumann</a> <a class="obfuscated" data="eyJob3N0IjpbImluIiwidHVtIiwiZGUiXSwidXNlciI6WyJyZW5lIiwibmV1bWFubiJdfQ==">📧</a>, <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>, <a href="../authors/schimpf">Alexander Schimpf</a> <a class="obfuscated" data="eyJob3N0IjpbImluZm9ybWF0aWsiLCJ1bmktZnJlaWJ1cmciLCJkZSJdLCJ1c2VyIjpbInNjaGltcGZhIl19">📧</a> and <a href="../authors/smaus">Jan-Georg Smaus</a> <a href="http://www.irit.fr/~Jan-Georg.Smaus">🌐</a>
     </p>
     
     
@@ -106,12 +109,16 @@ implementations of efficient structures like red-black trees and
 functional arrays. This leads to a checker that,
 while still slower than unverified checkers, can already be used as a
 trusted reference implementation against which advanced implementations
-can be tested.
-<p>
-An early version of this model checker is described in the
-<a href="http://www21.in.tum.de/~nipkow/pubs/cav13.html">CAV 2013 paper</a>
-with the same title.</div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li></ul>
+can be tested.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li></ul><h3>Related Publications</h3>
+  <ul><li>
+      Esparza, J., Lammich, P., Neumann, R., Nipkow, T., Schimpf, A., & Smaus, J.-G. (2013). A Fully Verified Executable LTL Model Checker. Lecture Notes in Computer Science, 463–478. <a href="https://doi.org/10.1007/978-3-642-39799-8_31">https://doi.org/10.1007/978-3-642-39799-8_31</a>
+
+    </li><li>
+      <a href="https://www.in.tum.de/~nipkow/pubs/cav13.html">Open access</a>
+    </li><li>
+      <a href="https://cava.in.tum.de">Projekt home page</a>
+    </li></ul>
   <h3>Theories of SM_Base</h3>
   <ul></ul>
   <h3>Theories of SM</h3>
@@ -170,6 +177,8 @@ with the same title.</div>BSD License<h3>Topics</h3>
       
       <li><a href="../entries/Knuth_Morris_Pratt.html">The string search algorithm by Knuth, Morris and Pratt</a></li>
       
+      <li><a href="../entries/Root_Balanced_Tree.html">Root-Balanced Tree</a></li>
+      
     </ul>
   </div>
   
@@ -177,7 +186,7 @@ with the same title.</div>BSD License<h3>Topics</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/CAVA_LTL_Modelchecker/outline.pdf">Proof
@@ -186,23 +195,23 @@ with the same title.</div>BSD License<h3>Topics</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/CAVA_LTL_Modelchecker/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">CAVA_LTL_Modelchecker-AFP</p><pre id="copyText">@article{CAVA_LTL_Modelchecker-AFP,
-  author  = {Javier Esparza, Peter Lammich, René Neumann, Tobias Nipkow, Alexander Schimpf and Jan-Georg Smaus},
+      <p style="display:none;" id="bibtex-filename">CAVA_LTL_Modelchecker-AFP</p><pre id="copy-text">@article{CAVA_LTL_Modelchecker-AFP,
+  author  = {Javier Esparza and Peter Lammich and René Neumann and Tobias Nipkow and Alexander Schimpf and Jan-Georg Smaus},
   title   = {A Fully Verified Executable LTL Model Checker},
   journal = {Archive of Formal Proofs},
-  month   = May,
-  year    = 2014,
+  month   = {May},
+  year    = {2014},
   note    = {\url{https://isa-afp.org/entries/CAVA_LTL_Modelchecker.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -212,8 +221,33 @@ with the same title.</div>BSD License<h3>Topics</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-CAVA_LTL_Modelchecker-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-CAVA_LTL_Modelchecker-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2014-05-30.tar.gz">May 30, 2014</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CAVA_LTL_Modelchecker-2014-05-29.tar.gz">May 29, 2014</a>: Isabelle2013-2
+      </li></ul>
   </div>
 </div>
     </div>

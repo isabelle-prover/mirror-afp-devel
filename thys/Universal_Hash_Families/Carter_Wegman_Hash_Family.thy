@@ -1,7 +1,7 @@
 section \<open>Carter-Wegman Hash Family\label{sec:carter_wegman}\<close>
 
 theory Carter_Wegman_Hash_Family
-  imports 
+  imports
     Interpolation_Polynomials_HOL_Algebra.Interpolation_Polynomial_Cardinalities
     Preliminary_Results
 begin
@@ -16,14 +16,14 @@ over the field with degree less than $k$. The hash function is the evaluation of
 polynomial.
 
 Using the property that the fraction of polynomials interpolating a given set of $s \leq k$
-points is @{term "1/(card (carrier R)^s)"}, which is shown in 
-\cite{Interpolation_Polynomials_HOL_Algebra-AFP}, it is possible to obtain both that 
+points is @{term "1/(card (carrier R)^s)"}, which is shown in
+\cite{Interpolation_Polynomials_HOL_Algebra-AFP}, it is possible to obtain both that
 the hash functions are $k$-wise independent and uniformly distributed.
 
 In the following two locales are introduced, the main reason for both is to make the statements
 of the theorems and proofs more concise. The first locale @{term "poly_hash_family"} fixes a finite
-ring $R$ and the probability space of the polynomials of degree less than $k$. Because the ring is 
-not a field, the family is not yet $k$-universal, but it is still possible to state a few results such 
+ring $R$ and the probability space of the polynomials of degree less than $k$. Because the ring is
+not a field, the family is not yet $k$-universal, but it is still possible to state a few results such
 as the fact that the range of the hash function is a subset of the carrier of the ring.
 
 The second locale @{term "carter_wegman_hash_family"} is an extension of the former with the
@@ -51,7 +51,7 @@ lemma finite_space[simp]:"finite space"
 lemma non_empty_bounded_degree_polynomials[simp]:"space \<noteq> {}"
     unfolding space_def using non_empty_bounded_degree_polynomials by simp
 
-text \<open>This is to add @{thm [source] carrier_not_empty} to the simp set in the context of 
+text \<open>This is to add @{thm [source] carrier_not_empty} to the simp set in the context of
 @{locale "poly_hash_family"}:\<close>
 
 lemma non_empty_carrier[simp]: "carrier R \<noteq> {}"
@@ -64,7 +64,7 @@ lemma hash_range[simp]:
   assumes "\<omega> \<in> space"
   assumes "x \<in> carrier R"
   shows "hash x \<omega> \<in> carrier R"
-  using assms unfolding hash_def space_def bounded_degree_polynomials_def 
+  using assms unfolding hash_def space_def bounded_degree_polynomials_def
   by (simp, metis eval_in_carrier polynomial_incl univ_poly_carrier)
 
 lemma  hash_range_2:
@@ -92,7 +92,7 @@ lemma poly_cards:
   assumes "K \<subseteq> carrier R"
   assumes "card K \<le> k"
   assumes "y ` K \<subseteq> (carrier R)"
-  shows 
+  shows
     "card {\<omega> \<in> space. (\<forall>k \<in> K. eval \<omega> k = y k)} = field_size^(k-card K)"
   unfolding space_def
   using interpolating_polynomials_card[where n="k-card K" and K="K"] assms
@@ -108,15 +108,15 @@ lemma hash_prob:
   assumes "K \<subseteq> carrier R"
   assumes "card K \<le> k"
   assumes "y ` K \<subseteq> carrier R"
-  shows 
-    "prob {\<omega>. (\<forall>x \<in> K. hash x \<omega> = y x)} = 1/(real field_size)^card K" 
+  shows
+    "prob {\<omega>. (\<forall>x \<in> K. hash x \<omega> = y x)} = 1/(real field_size)^card K"
 proof -
   have "\<zero> \<in> carrier R" by simp
 
   hence a:"field_size > 0"
     using finite_carrier card_gt_0_iff by blast
 
-  have b:"real (card {\<omega> \<in> space. \<forall>x\<in>K. eval \<omega> x = y x}) / real (card space) = 
+  have b:"real (card {\<omega> \<in> space. \<forall>x\<in>K. eval \<omega> x = y x}) / real (card space) =
     1 / real field_size ^ card K"
     using a assms(2)
     apply (simp add: frac_eq_eq poly_cards[OF assms(1,2,3)] power_add[symmetric])
@@ -129,7 +129,7 @@ qed
 
 lemma prob_single:
   assumes "x \<in> carrier R" "y \<in> carrier R"
-  shows "prob {\<omega>. hash x \<omega> = y} = 1/(real field_size)" 
+  shows "prob {\<omega>. hash x \<omega> = y} = 1/(real field_size)"
   using hash_prob[where K="{x}"] assms finite_carrier k_ge_0 by simp
 
 lemma prob_range:
@@ -172,22 +172,22 @@ proof -
     proof (cases "a ` J' \<subseteq> carrier R")
       case True
       have a_carr: "\<And>x. x \<in> J' \<Longrightarrow> a x \<in> carrier R"  using True by force
-      have "prob {\<omega>. \<forall>x\<in>J'. hash x \<omega> = a x} = 
+      have "prob {\<omega>. \<forall>x\<in>J'. hash x \<omega> = a x} =
         real (card {\<omega> \<in> space. \<forall>x\<in>J'. eval \<omega> x = a x}) / real (card space)"
         by (simp add:M_def measure_pmf_of_set Int_def hash_def)
       also have "... = real (field_size ^ (k - card J')) / real (card space)"
         using True by (simp add: poly_cards[OF J'_in_carr card_J'])
-      also have 
+      also have
         "... = real field_size ^ (k - card J') / real field_size ^ k"
         by (simp add:space_def bounded_degree_polynomials_card)
-      also have 
+      also have
         "... = real field_size ^ ((k - 1) * card J') / real field_size ^ (k * card J')"
-        using card_J' by (simp add:power_add[symmetric] power_mult[symmetric] 
+        using card_J' by (simp add:power_add[symmetric] power_mult[symmetric]
             diff_mult_distrib frac_eq_eq add.commute)
-      also have 
+      also have
         "... = (real field_size ^ (k - 1)) ^ card J' / (real field_size ^ k) ^ card J'"
         by (simp add:power_add power_mult)
-      also have 
+      also have
         "... =  (\<Prod>x\<in>J'. real (card {\<omega> \<in> space. eval \<omega> x = a x}) / real (card space))"
         using a_carr poly_cards_single[OF subsetD[OF J'_in_carr]]
         by (simp add:space_def bounded_degree_polynomials_card power_divide)
@@ -204,11 +204,11 @@ proof -
       hence "real (card ({\<omega> \<in> space. hash j \<omega> = a j})) = 0" by simp
       hence "(\<Prod>x\<in>J'. real (card {\<omega> \<in> space. hash x \<omega> = a x})) = 0"
         using a(2) prod_zero[OF a(2)] j_def(1) by auto
-      moreover have 
-        "{\<omega> \<in> space. \<forall>x\<in>J'. hash x \<omega> = a x} \<subseteq> {\<omega> \<in> space. hash j \<omega> = a j}"  
+      moreover have
+        "{\<omega> \<in> space. \<forall>x\<in>J'. hash x \<omega> = a x} \<subseteq> {\<omega> \<in> space. hash j \<omega> = a j}"
         using j_def by blast
       hence "{\<omega> \<in> space. \<forall>x\<in>J'. hash x \<omega> = a x} = {}" using b by blast
-      ultimately show ?thesis 
+      ultimately show ?thesis
         by (simp add:measure_pmf_of_set M_def Int_def prod_dividef)
     qed
   qed
@@ -263,7 +263,7 @@ lemma carter_wegman_hash_familyI:
 lemma hash_k_wise_indep:
   assumes "field F \<and> finite (carrier F)"
   assumes "1 \<le> n"
-  shows 
+  shows
     "prob_space.k_wise_indep_vars (pmf_of_set (bounded_degree_polynomials F n)) n
     (\<lambda>_. pmf_of_set (carrier F)) (ring.hash F) (carrier F)"
 proof -
@@ -280,9 +280,9 @@ lemma hash_prob_single:
   assumes "x \<in> carrier F"
   assumes "1 \<le> n"
   assumes "y \<in> carrier F"
-  shows 
+  shows
     "\<P>(\<omega> in pmf_of_set (bounded_degree_polynomials F n). ring.hash F x \<omega> = y)
-      = 1/(real (card (carrier F)))" 
+      = 1/(real (card (carrier F)))"
 proof -
   interpret carter_wegman_hash_family "F" "n"
     using assms carter_wegman_hash_familyI by force

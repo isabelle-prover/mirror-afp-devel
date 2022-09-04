@@ -1,6 +1,8 @@
 (*  Title:      CoW_Lyndon.Lyndon_Addition
     Author:     Štěpán Holub, Charles University
     Author:     Štěpán Starosta, CTU in Prague
+
+Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 *)
 
 theory Lyndon_Addition
@@ -65,7 +67,6 @@ next
   assume "?L" thus "?R"
     using acyclic_order_extension by auto
 qed
-
 
 lemma slo_linorder: "strict_linear_order r \<Longrightarrow> class.linorder (\<lambda> a b. (a,b) \<in> r\<^sup>=) (\<lambda> a b. (a,b) \<in> r)"
     unfolding strict_linear_order_on_def strict_partial_order_def irrefl_def trans_def total_on_def

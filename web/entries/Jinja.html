@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -96,7 +97,13 @@
 </header><div><main><h3>Abstract</h3>
 
   <div class="abstract mathjax_process">We introduce Jinja, a Java-like programming language with a formal semantics designed to exhibit core features of the Java language architecture. Jinja is a compromise between realism of the language and tractability and clarity of the formal semantics. The following aspects are formalised: a big and a small step operational semantics for Jinja and a proof of their equivalence; a type system and a definite initialisation analysis; a type safety proof of the small step semantics; a virtual machine (JVM), its operational semantics and its type system; a type safety proof for the JVM; a bytecode verifier, i.e. data flow analyser for the JVM; a correctness proof of the bytecode verifier w.r.t. the type system; a compiler and a proof that it preserves semantics and well-typedness. The emphasis of this work is not on particular language features but on providing a unified model of the source language, the virtual machine and the compiler. The whole development has been carried out in the theorem prover Isabelle/HOL.</div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/language-definitions">Computer science/Programming languages/Language definitions</a></li></ul>
+  <ul><li><a href="../topics/computer-science/programming-languages/language-definitions">Computer science/Programming languages/Language definitions</a></li></ul><h3>Related Publications</h3>
+  <ul><li>
+      Klein, G., & Nipkow, T. (2006). A machine-checked model for a Java-like language, virtual machine, and compiler. ACM Transactions on Programming Languages and Systems, 28(4), 619–695. <a href="https://doi.org/10.1145/1146809.1146811">https://doi.org/10.1145/1146809.1146811</a>
+
+    </li><li>
+      <a href="https://www.in.tum.de/~nipkow/pubs/Jinja/">Alternate versions</a>
+    </li></ul>
   <h3>Theories of Jinja</h3>
   <ul>
     <li><a href="../theories/jinja/#Auxiliary">Auxiliary</a></li>
@@ -192,7 +199,7 @@
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Jinja/outline.pdf">Proof
@@ -201,23 +208,23 @@
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Jinja/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Jinja-AFP</p><pre id="copyText">@article{Jinja-AFP,
+      <p style="display:none;" id="bibtex-filename">Jinja-AFP</p><pre id="copy-text">@article{Jinja-AFP,
   author  = {Gerwin Klein and Tobias Nipkow},
   title   = {Jinja is not Java},
   journal = {Archive of Formal Proofs},
-  month   = June,
-  year    = 2005,
+  month   = {June},
+  year    = {2005},
   note    = {\url{https://isa-afp.org/entries/Jinja.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -227,8 +234,55 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Jinja-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Jinja-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2011-02-11.tar.gz">Feb 11, 2011</a>: Isabelle2011
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2010-07-01.tar.gz">Jul 1, 2010</a>: Isabelle2009-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2009-12-12.tar.gz">Dec 12, 2009</a>: Isabelle2009-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2009-04-29.tar.gz">Apr 29, 2009</a>: Isabelle2009
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2008-06-10.tar.gz">Jun 10, 2008</a>: Isabelle2008
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2007-11-27.tar.gz">Nov 27, 2007</a>: Isabelle2007
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2006-08-08.tar.gz">Aug 8, 2006</a>: Isabelle2005
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Jinja-2005-10-14.tar.gz">Oct 14, 2005</a>: Isabelle2005
+      </li></ul>
   </div>
 </div>
     </div>

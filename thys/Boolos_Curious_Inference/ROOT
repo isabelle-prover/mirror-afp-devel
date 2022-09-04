@@ -1,0 +1,11 @@
+chapter AFP
+
+session Boolos_Curious_Inference (AFP) = HOL +
+  options [timeout = 300]
+  theories
+    Boo1
+    Boo2
+  document_files
+    "root.tex"
+    "root.bib"
+

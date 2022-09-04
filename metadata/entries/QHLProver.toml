@@ -2,7 +2,7 @@ title = "Quantum Hoare Logic"
 date = 2019-03-24
 topics = [
   "Computer science/Programming languages/Logics",
-  "Computer science/Semantics",
+  "Computer science/Semantics and reasoning",
 ]
 abstract = """
 We formalize quantum Hoare logic as given in [1]. In particular, we
@@ -41,3 +41,5 @@ zhan = "zhan_email"
 [history]
 
 [extra]
+
+[related]

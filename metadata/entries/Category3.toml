@@ -45,6 +45,9 @@ categories with pullbacks, categories with finite limits, and
 cartesian closed categories.  A construction was given of the category
 of hereditarily finite sets and functions between them, and it was
 shown that this category is cartesian closed.
+Using \"ZFC_in_HOL\", a construction was also given of the (large)
+category of small sets and functions between them, and it was shown
+that this category is small-complete.
 </p>"""
 license = "bsd"
 note = ""
@@ -62,3 +65,5 @@ stark = "stark_email"
 [history]
 
 [extra]
+
+[related]

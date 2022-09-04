@@ -25,38 +25,6 @@ lemma family_union_closed': "\<lbrakk>strong_replacement(M, \<lambda>x y. x\<in>
 end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 
 definition
-  Powapply :: "[i,i] \<Rightarrow> i"  where
-  "Powapply(f,y) \<equiv> Pow(f`y)"
-
-reldb_add functional "Pow" "Pow_rel"
-reldb_add relational "Pow" "is_Pow"
-
-declare Replace_iff_sats[iff_sats]
-synthesize "is_Pow" from_definition assuming "nonempty"
-arity_theorem for "is_Pow_fm"
-
-relativize functional "Powapply" "Powapply_rel"
-relationalize "Powapply_rel" "is_Powapply"
-synthesize "is_Powapply" from_definition assuming "nonempty"
-arity_theorem for "is_Powapply_fm"
-
-notation Powapply_rel (\<open>Powapply\<^bsup>_\<^esup>'(_,_')\<close>)
-
-context M_basic
-begin
-
-rel_closed for "Powapply"
-  unfolding Powapply_rel_def
-  by simp
-
-is_iff_rel for "Powapply"
-  using Pow_rel_iff
-  unfolding is_Powapply_def Powapply_rel_def
-  by simp
-
-end \<comment>\<open>\<^locale>\<open>M_basic\<close>\<close>
-
-definition
   HVfrom :: "[i,i,i] \<Rightarrow> i" where
   "HVfrom(A,x,f) \<equiv> A \<union> (\<Union>y\<in>x. Powapply(f,y))"
 

@@ -2,7 +2,7 @@ title = "Isabelle/C"
 date = 2019-10-22
 topics = [
   "Computer science/Programming languages/Language definitions",
-  "Computer science/Semantics",
+  "Computer science/Semantics and reasoning",
   "Tools",
 ]
 abstract = """
@@ -47,3 +47,5 @@ wolff = "wolff_email"
 [history]
 
 [extra]
+
+[related]

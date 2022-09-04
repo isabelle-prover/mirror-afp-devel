@@ -91,4 +91,20 @@ lemma word_lsb_nat:"lsb w = (unat w mod 2 = 1)"
   apply (simp add: even_nat_iff)
   done
 
+instantiation integer :: lsb
+begin
+
+context
+  includes integer.lifting
+begin
+
+lift_definition lsb_integer :: \<open>integer \<Rightarrow> bool\<close> is lsb .
+
+instance
+  by (standard; transfer) (fact lsb_odd)
+
+end
+
+end
+
 end

@@ -355,6 +355,65 @@ text \<open>
       qed
     qed
 
+    lemma cone_iff_commutative_square:
+    shows "cone (C.dom h) (mkCone h k) \<longleftrightarrow> C.commutative_square f0 f1 h k"
+      using cone_mkCone mkCone_def J.arr_char J.ide_char is_rendered_commutative_by_cone
+            is_cospan C.commutative_square_def cospan_shape.Arr.simps(11)
+            C.dom_comp C.seqE C.seqI
+      apply (intro iffI)
+      by (intro C.commutative_squareI) metis+
+
+    lemma cones_map_mkCone_eq_iff:
+    assumes "is_rendered_commutative_by p0 p1" and "is_rendered_commutative_by p0' p1'"
+    and "\<guillemotleft>h : C.dom p0' \<rightarrow> C.dom p0\<guillemotright>"
+    shows "cones_map h (mkCone p0 p1) = mkCone p0' p1' \<longleftrightarrow> p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
+    proof -
+      interpret \<chi>: cone J.comp C map \<open>C.dom p0\<close> \<open>mkCone p0 p1\<close>
+        using assms(1) cone_mkCone [of p0 p1] by blast
+      interpret \<chi>': cone J.comp C map \<open>C.dom p0'\<close> \<open>mkCone p0' p1'\<close>
+        using assms(2) cone_mkCone [of p0' p1'] by blast
+      show ?thesis
+      proof
+        assume 3: "cones_map h (mkCone p0 p1) = mkCone p0' p1'"
+        show "p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
+        proof
+          show "p0 \<cdot> h = p0'"
+          proof -
+            have "p0' = mkCone p0' p1' J.AA"
+              using mkCone_def J.arr_char by simp
+            also have "... = cones_map h (mkCone p0 p1) J.AA"
+              using 3 by simp
+            also have "... = p0 \<cdot> h"
+              using assms mkCone_def J.arr_char \<chi>.cone_axioms by auto
+            finally show ?thesis by auto
+          qed
+          show "p1 \<cdot> h = p1'"
+          proof -
+            have "p1' = mkCone p0' p1' J.BB"
+              using mkCone_def J.arr_char by simp
+            also have "... = cones_map h (mkCone p0 p1) J.BB"
+              using 3 by simp
+            also have "... = p1 \<cdot> h"
+              using assms mkCone_def J.arr_char \<chi>.cone_axioms by auto
+            finally show ?thesis by auto
+          qed
+        qed
+        next
+        assume 4: "p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
+        show "cones_map h (mkCone p0 p1) = mkCone p0' p1'"
+        proof
+          fix j
+          have "\<not> J.arr j \<Longrightarrow> cones_map h (mkCone p0 p1) j = mkCone p0' p1' j"
+            using assms \<chi>.cone_axioms mkCone_def J.arr_char by auto
+          moreover have "J.arr j \<Longrightarrow> cones_map h (mkCone p0 p1) j = mkCone p0' p1' j"
+            using assms 4 \<chi>.cone_axioms mkCone_def J.arr_char C.comp_assoc
+            by fastforce
+          ultimately show "cones_map h (mkCone p0 p1) j = mkCone p0' p1' j"
+            using J.arr_char J.Dom.cases by blast
+        qed
+      qed
+    qed
+
   end
 
   locale pullback_cone =
@@ -388,53 +447,8 @@ text \<open>
       have 2: "\<And>h. \<guillemotleft>h : C.dom p0' \<rightarrow> C.dom p0\<guillemotright> \<Longrightarrow>
                     D.cones_map h (D.mkCone p0 p1) = D.mkCone p0' p1' \<longleftrightarrow>
                     p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
-      proof -
-        fix h
-        assume h: "\<guillemotleft>h : C.dom p0' \<rightarrow> C.dom p0\<guillemotright>"
-        show "D.cones_map h (D.mkCone p0 p1) = D.mkCone p0' p1' \<longleftrightarrow>
-              p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
-        proof
-          assume 3: "D.cones_map h (D.mkCone p0 p1) = D.mkCone p0' p1'"
-          show "p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
-          proof
-            show "p0 \<cdot> h = p0'"
-            proof -
-              have "p0' = D.mkCone p0' p1' J.AA"
-                using D.mkCone_def J.arr_char by simp
-              also have "... = D.cones_map h (D.mkCone p0 p1) J.AA"
-                using 3 by simp
-              also have "... = p0 \<cdot> h"
-                using h D.mkCone_def J.arr_char cone_\<chi> by auto
-              finally show ?thesis by auto
-            qed
-            show "p1 \<cdot> h = p1'"
-            proof -
-              have "p1' = D.mkCone p0' p1' J.BB"
-                using D.mkCone_def J.arr_char by simp
-              also have "... = D.cones_map h (D.mkCone p0 p1) J.BB"
-                using 3 by simp
-              also have "... = p1 \<cdot> h"
-                using h D.mkCone_def J.arr_char cone_\<chi> by auto
-              finally show ?thesis by auto
-            qed
-          qed
-          next
-          assume 4: "p0 \<cdot> h = p0' \<and> p1 \<cdot> h = p1'"
-          show "D.cones_map h (D.mkCone p0 p1) = D.mkCone p0' p1'"
-          proof
-            fix j
-            have "\<not> J.arr j \<Longrightarrow> D.cones_map h (D.mkCone p0 p1) j = D.mkCone p0' p1' j"
-              using h cone_axioms D.mkCone_def J.arr_char by auto
-            moreover have "J.arr j \<Longrightarrow>
-                           D.cones_map h (D.mkCone p0 p1) j = D.mkCone p0' p1' j"
-              using assms h 4 cone_\<chi> D.mkCone_def J.arr_char renders_commutative
-                    C.comp_assoc
-              by fastforce
-            ultimately show "D.cones_map h (D.mkCone p0 p1) j = D.mkCone p0' p1' j"
-              using J.arr_char J.Dom.cases by blast
-          qed
-        qed
-      qed
+        using assms D.cones_map_mkCone_eq_iff [of p0 p1 p0' p1'] renders_commutative
+        by fastforce
       thus ?thesis using 1 by blast
     qed
 
@@ -502,6 +516,130 @@ text \<open>
 
     definition has_pullbacks
     where "has_pullbacks = (\<forall>f0 f1. cospan f0 f1 \<longrightarrow> (\<exists>p0 p1. has_as_pullback f0 f1 p0 p1))"
+
+    lemma has_as_pullbackI [intro]:
+    assumes "cospan f g" and "commutative_square f g p q"
+    and "\<And>h k. commutative_square f g h k \<Longrightarrow> \<exists>!l. p \<cdot> l = h \<and> q \<cdot> l = k"
+    shows "has_as_pullback f g p q"
+    proof (unfold has_as_pullback_def, intro conjI)
+      show "arr f" and "arr g" and "cod f = cod g"
+        using assms(1) by auto
+      interpret J: cospan_shape .
+      interpret D: cospan_diagram C f g
+        using assms(1-2) by unfold_locales auto
+      show "D.has_as_pullback p q"
+      proof -
+        have 1: "D.is_rendered_commutative_by p q"
+          using assms ide_in_hom by blast
+        let ?\<chi> = "D.mkCone p q"
+        let ?a = "dom p"
+        interpret \<chi>: cone J.comp C D.map ?a ?\<chi>
+           using assms(2) D.cone_mkCone 1 by auto
+        interpret \<chi>: limit_cone J.comp C D.map ?a ?\<chi>
+        proof
+          fix x \<chi>'
+          assume \<chi>': "D.cone x \<chi>'"
+          interpret \<chi>': cone J.comp C D.map x \<chi>'
+            using \<chi>' by simp
+          have 2: "D.is_rendered_commutative_by (\<chi>' J.AA) (\<chi>' J.BB)"
+            using \<chi>' D.is_rendered_commutative_by_cone [of x \<chi>'] by blast
+          have 3: "\<exists>!l. p \<cdot> l = \<chi>' J.AA \<and> q \<cdot> l = \<chi>' J.BB"
+            using assms(1,3) 2 \<chi>'.preserves_hom J.arr_char J.ide_char by simp
+          obtain l where l: "p \<cdot> l = \<chi>' J.AA \<and> q \<cdot> l = \<chi>' J.BB"
+            using 3 by blast
+          have "\<guillemotleft>l : x \<rightarrow> ?a\<guillemotright>"
+            using l 2 \<chi>'.preserves_hom J.arr_char J.ide_char \<chi>'.component_in_hom
+                  \<chi>'.is_extensional \<chi>'.preserves_reflects_arr comp_in_homE comp_null(2) in_homE
+            by metis
+          moreover have "D.cones_map l (D.mkCone p q) = \<chi>'"
+            using l D.cones_map_mkCone_eq_iff [of p q "\<chi>' J.AA" "\<chi>' J.BB" l]
+            by (metis (no_types, lifting) 1 2 D.mkCone_cone \<chi>' calculation dom_comp in_homE seqE)
+          ultimately have "\<exists>l. \<guillemotleft>l : x \<rightarrow> ?a\<guillemotright> \<and> D.cones_map l (D.mkCone p q) = \<chi>'"
+            by blast
+          moreover have "\<And>l'. \<lbrakk>\<guillemotleft>l' : x \<rightarrow> ?a\<guillemotright>; D.cones_map l' (D.mkCone p q) = \<chi>'\<rbrakk> \<Longrightarrow> l' = l"
+          proof -
+            fix l'
+            assume l': "\<guillemotleft>l' : x \<rightarrow> ?a\<guillemotright>"
+            assume eq: "D.cones_map l' (D.mkCone p q) = \<chi>'"
+            have "p \<cdot> l' = \<chi>' J.AA \<and> q \<cdot> l' = \<chi>' J.BB"
+              using l' eq J.arr_char \<chi>.cone_axioms D.mkCone_def by auto
+            thus "l' = l"
+              using 3 l by blast
+          qed
+          ultimately show "\<exists>!l. \<guillemotleft>l : x \<rightarrow> ?a\<guillemotright> \<and> D.cones_map l (D.mkCone p q) = \<chi>'"
+            by blast
+        qed
+        show "D.has_as_pullback p q"
+          using assms \<chi>.limit_cone_axioms by blast
+      qed
+    qed
+
+    lemma has_as_pullbackE [elim]:
+    assumes "has_as_pullback f g p q"
+    and "\<lbrakk>cospan f g; commutative_square f g p q;
+          \<And>h k. commutative_square f g h k \<Longrightarrow> \<exists>!l. p \<cdot> l = h \<and> q \<cdot> l = k\<rbrakk> \<Longrightarrow> T"
+    shows T
+    proof -
+      interpret J: cospan_shape .
+      interpret D: cospan_diagram C f g
+        using assms(1) has_as_pullback_def
+        by (meson category_axioms cospan_diagram.intro cospan_diagram_axioms.intro)
+      have 1: "\<And>h k. commutative_square f g h k \<longleftrightarrow> D.cone (dom h) (D.mkCone h k)"
+        using D.cone_iff_commutative_square by presburger
+      let ?\<chi> = "D.mkCone p q"
+      interpret \<chi>: limit_cone J.comp C D.map \<open>dom p\<close> ?\<chi>
+        using assms(1) has_as_pullback_def D.cone_mkCone by blast
+      have "cospan f g"
+        using D.is_cospan by blast
+      moreover have csq: "commutative_square f g p q"
+        using 1 \<chi>.cone_axioms by blast
+      moreover have "\<And>h k. commutative_square f g h k \<Longrightarrow> \<exists>!l. p \<cdot> l = h \<and> q \<cdot> l = k"
+      proof -
+        fix h k
+        assume 2: "commutative_square f g h k"
+        let ?\<chi>' = "D.mkCone h k"
+        interpret \<chi>': cone J.comp C D.map \<open>dom h\<close> ?\<chi>'
+          using 1 2 by blast
+        have 3: "\<exists>!l. \<guillemotleft>l : dom h \<rightarrow> dom p\<guillemotright> \<and> D.cones_map l ?\<chi> = ?\<chi>'"
+          using 1 2 \<chi>.is_universal [of "dom h" "D.mkCone h k"] by blast
+        obtain l where l: "\<guillemotleft>l : dom h \<rightarrow> dom p\<guillemotright> \<and> D.cones_map l ?\<chi> = ?\<chi>'"
+          using 3 by blast
+        have "p \<cdot> l = h \<and> q \<cdot> l = k"
+        proof
+          have "p \<cdot> l = D.cones_map l ?\<chi> J.AA"
+            using \<chi>.cone_axioms D.mkCone_def J.seq_char in_homE
+            apply simp
+            by (metis J.seqE l)
+          also have "... = h"
+            using l \<chi>'.cone_axioms D.mkCone_def J.seq_char in_homE by simp
+          finally show "p \<cdot> l = h" by blast
+          have "q \<cdot> l = D.cones_map l ?\<chi> J.BB"
+            using \<chi>.cone_axioms D.mkCone_def J.seq_char in_homE
+            apply simp
+            by (metis J.seqE l)
+          also have "... = k"
+            using l \<chi>'.cone_axioms D.mkCone_def J.seq_char in_homE by simp
+          finally show "q \<cdot> l = k" by blast
+        qed
+        moreover have "\<And>l'. p \<cdot> l' = h \<and> q \<cdot> l' = k \<Longrightarrow> l' = l"
+        proof -
+          fix l'
+          assume 1: "p \<cdot> l' = h \<and> q \<cdot> l' = k"
+          have 2: "\<guillemotleft>l' : dom h \<rightarrow> dom p\<guillemotright>"
+            using 1
+            by (metis \<chi>'.ide_apex arr_dom_iff_arr arr_iff_in_hom ideD(1) seqE dom_comp)
+          moreover have "D.cones_map l' ?\<chi> = ?\<chi>'"
+            using D.cones_map_mkCone_eq_iff
+            by (meson 1 2 csq D.cone_iff_commutative_square \<chi>'.cone_axioms
+                      commutative_squareE seqI)
+          ultimately show "l' = l"
+            using l \<chi>.is_universal \<chi>'.cone_axioms by blast
+        qed
+        ultimately show "\<exists>!l. p \<cdot> l = h \<and> q \<cdot> l = k" by blast
+      qed
+      ultimately show T
+        using assms(2) by blast
+    qed
 
   end
 
@@ -1017,84 +1155,9 @@ text \<open>
         proof -
           fix f g
           assume fg: "cospan f g"
-          interpret J: cospan_shape .
-          interpret D: cospan_diagram C f g
-            using fg by (unfold_locales, auto)
-          let ?\<chi> = "D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]"
-          interpret \<chi>: cone J.comp C D.map \<open>dom \<p>\<^sub>1[f, g]\<close> ?\<chi>
-          proof -
-            have "D.is_rendered_commutative_by \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]"
-              using fg pullback_commutes' by simp
-            thus "cone J.comp C D.map (dom \<p>\<^sub>1[f, g]) ?\<chi>"
-              using D.cone_mkCone by auto
-          qed
-          interpret \<chi>: limit_cone J.comp C D.map \<open>dom \<p>\<^sub>1[f, g]\<close> ?\<chi>
-          proof
-            fix a' \<chi>'
-            assume \<chi>': "D.cone a' \<chi>'"
-            interpret \<chi>': cone J.comp C D.map a' \<chi>'
-              using \<chi>' by simp
-            have 1: "commutative_square f g (\<chi>' J.AA) (\<chi>' J.BB)"
-              using fg J.ide_char J.cod_char D.is_rendered_commutative_by_cone \<chi>'.cone_axioms
-              by auto
-            show "\<exists>!h. \<guillemotleft>h : a' \<rightarrow> dom \<p>\<^sub>1[f, g]\<guillemotright> \<and>
-                       D.cones_map h (D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]) = \<chi>'"
-            proof
-              let ?h = "\<langle>\<chi>' J.AA \<lbrakk>f, g\<rbrakk> \<chi>' J.BB\<rangle>"
-              show h': "\<guillemotleft>?h : a' \<rightarrow> dom \<p>\<^sub>1[f, g]\<guillemotright> \<and>
-                        D.cones_map ?h (D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]) = \<chi>'"
-              proof
-                show h: "\<guillemotleft>?h : a' \<rightarrow> dom \<p>\<^sub>1[f, g]\<guillemotright>"
-                  using fg 1 by fastforce
-                show "D.cones_map ?h (D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]) = \<chi>'"
-                proof -
-                  have "D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g] \<in> D.cones (cod \<langle>\<chi>' J.AA \<lbrakk>f, g\<rbrakk> \<chi>' J.BB\<rangle>)"
-                    using fg h D.cone_mkCone D.is_rendered_commutative_by_cone
-                          \<chi>.cone_axioms
-                    by auto
-                  hence 2: "D.cones_map ?h (D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]) \<in> D.cones a'"
-                    using fg h D.cones_map_mapsto by blast
-                  interpret \<chi>'h: cone J.comp C D.map a'
-                                   \<open>D.cones_map ?h (D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g])\<close>
-                    using 2 by simp
-                  show ?thesis
-                  proof -
-                    have "\<And>j. J.ide j \<Longrightarrow> D.cones_map ?h (D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]) j = \<chi>' j"
-                    proof -
-                      fix j
-                      show "J.ide j \<Longrightarrow> D.cones_map ?h (D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]) j = \<chi>' j"
-                        using fg h 1 J.ide_char D.mkCone_def \<chi>.cone_axioms
-                        apply (cases j, simp_all)
-                        by (metis D.map.simps(4) J.dom_eqI \<chi>'.is_natural_1 \<chi>'.naturality
-                            J.seqE \<chi>'.A.map_simp J.comp.simps(3,7) J.seq_char
-                            prj_tuple(2) comp_assoc)
-                    qed
-                    thus ?thesis
-                      using NaturalTransformation.eqI
-                            \<chi>'.natural_transformation_axioms \<chi>'h.natural_transformation_axioms
-                      by blast
-                  qed
-                qed
-              qed
-              show "\<And>h. \<guillemotleft>h : a' \<rightarrow> dom \<p>\<^sub>1[f, g]\<guillemotright> \<and>
-                        D.cones_map h (D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]) = \<chi>' \<Longrightarrow>
-                          h = ?h"
-              proof -
-                fix h
-                assume 2: "\<guillemotleft>h : a' \<rightarrow> dom \<p>\<^sub>1[f, g]\<guillemotright> \<and>
-                        D.cones_map h (D.mkCone \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]) = \<chi>'"
-                show "h = ?h"
-                proof -
-                  have "\<p>\<^sub>0[f, g] \<cdot> h = \<p>\<^sub>0[f, g] \<cdot> ?h \<and> \<p>\<^sub>1[f, g] \<cdot> h = \<p>\<^sub>1[f, g] \<cdot> ?h"
-                    using 1 2 fg J.arr_char \<chi>.cone_axioms D.mkCone_def by auto
-                  thus ?thesis
-                    using fg 2 h' prj_joint_monic by blast
-                qed
-              qed
-            qed
-          qed
-          show "\<exists>p0 p1. has_as_pullback f g p0 p1"
-            using fg has_as_pullback_def \<chi>.limit_cone_axioms by blast
+          have "has_as_pullback f g \<p>\<^sub>1[f, g] \<p>\<^sub>0[f, g]"
+            using fg has_as_pullbackI pullback_commutes universal by presburger
+          thus "\<exists>p0 p1. has_as_pullback f g p0 p1" by blast
         qed
         thus "\<forall>f g. cospan f g \<longrightarrow> (\<exists>p0 p1. has_as_pullback f g p0 p1)"
           by simp

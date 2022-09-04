@@ -124,7 +124,7 @@ qed
 
 
 text \<open>This is the canonical isomorphism between any two one dimensional spaces. Specifically,
-  if 1 denotes the element of the canonical basis (which is specified by type class \<^class>\<open>basis_enum\<close>,
+  if 1 denotes the element of the canonical basis (which is specified by type class \<^class>\<open>basis_enum\<close>),
   then \<^term>\<open>one_dim_iso\<close> is the unique isomorphism that maps 1 to 1.\<close>
 definition one_dim_iso :: "'a::one_dim \<Rightarrow> 'b::one_dim"
   where "one_dim_iso a = of_complex (\<langle>1, a\<rangle>)"

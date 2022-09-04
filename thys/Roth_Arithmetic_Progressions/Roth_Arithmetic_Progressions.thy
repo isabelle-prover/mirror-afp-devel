@@ -833,11 +833,11 @@ next
 
         have "(1-\<epsilon>/2) * (\<epsilon>/4)^3 * (\<epsilon>/(4*M))^3 * ?n^3 \<le> (1-\<epsilon>/2) * (\<epsilon>/4)^3 * card R * card S * card T"
           using cardgtbound ordered_comm_semiring_class.comm_mult_left_mono True e4gt by fastforce
-        also have "... \<le> (1-2*(\<epsilon>/4)) * (edge_density R S Gnew - \<epsilon>/4)*(edge_density R T Gnew - \<epsilon>/4) * (edge_density S T Gnew - \<epsilon>/4) * card R * card S * card T"
+        also have "... \<le> (1-2*(\<epsilon>/4)) * (edge_density R S Gnew - \<epsilon>/4) * (edge_density R T Gnew - \<epsilon>/4) 
+                        * (edge_density S T Gnew - \<epsilon>/4) * card R * card S * card T"
           using gtcube c1 \<open>\<epsilon> < 1\<close> mincard0 by (simp add: mult.commute mult.left_commute mult_left_mono)
         also have "... \<le> card (triangle_triples R S T Gnew)"
-          by (smt (verit, best) e4gt ilt jlt klt min_dens_diff new_fin new_wf rp
- subsets triangle_counting_lemma)
+          by (smt (verit, best) e4gt ilt jlt klt min_dens_diff new_fin new_wf rp subsets triangle_counting_lemma)
         finally have "card (triangle_set Gnew) \<ge> D * ?n^3"
           using card_convert_triangle_rep_bound new_wf new_fin subsets 
           by (auto simp: triangle_triples_def D_def)
@@ -877,10 +877,9 @@ proof -
   have "\<epsilon>/3 > 0"
     using assms by auto
   then obtain \<delta>::real where "\<delta> > 0"
-    and \<delta>: "\<And>G. \<lbrakk>card(uverts G) > 0; uwellformed G;
-          card (triangle_set G) \<le> \<delta> * card(uverts G) ^ 3\<rbrakk> \<Longrightarrow>
-          (\<exists>Gnew. triangle_free_graph Gnew \<and> uverts Gnew = uverts G \<and> (uedges Gnew \<subseteq> uedges G) \<and> 
-          card (uedges G - uedges Gnew) \<le> \<epsilon>/3 * (card (uverts G))\<^sup>2)"
+    and \<delta>: "\<And>G. \<lbrakk>card(uverts G) > 0; uwellformed G; card (triangle_set G) \<le> \<delta> * card(uverts G) ^ 3\<rbrakk> 
+                \<Longrightarrow> \<exists>G'. triangle_free_graph G' \<and> uverts G' = uverts G \<and> (uedges G' \<subseteq> uedges G) \<and> 
+                         card (uedges G - uedges G') \<le> \<epsilon>/3 * (card (uverts G))\<^sup>2"
     using triangle_removal_lemma by metis
   obtain N::nat where N: "real N \<ge> 1 / (3*\<delta>)"
     by (meson real_arch_simple)
@@ -895,16 +894,13 @@ proof -
       and uniq: "unique_triangles G"
     have G_ne: "?n > 0"
       using G_gt_N by linarith
-    obtain TF where TF: "\<And>e. e \<in> uedges G \<Longrightarrow> \<exists>x y z. TF e = {x,y,z} \<and> triangle_in_graph x y z G \<and> e \<subseteq> TF e"
-      using uniq unfolding unique_triangles_def by metis
     let ?TWO = "(\<lambda>t. [t]\<^bsup>2\<^esup>)"
     have tri_nsets_2: "[{x,y,z}]\<^bsup>2\<^esup> = {{x,y},{y,z},{x,z}}" if "triangle_in_graph x y z G" for x y z
       using that unfolding nsets_def triangle_in_graph_def card_2_iff doubleton_eq_iff
       by (blast dest!: edge_vertices_not_equal [OF wf])
     have tri_nsets_3: "{{x,y},{y,z},{x,z}} \<in> [uedges G]\<^bsup>3\<^esup>" if "triangle_in_graph x y z G" for x y z
-      using that 
-      by (simp add: nsets_def card_3_iff triangle_in_graph_def) (metis doubleton_eq_iff 
-edge_vertices_not_equal [OF wf])
+      using that by (simp add: nsets_def card_3_iff triangle_in_graph_def) 
+                    (metis doubleton_eq_iff edge_vertices_not_equal [OF wf])
     have sub: "?TWO ` triangle_set G \<subseteq> [uedges G]\<^bsup>3\<^esup>"
       using tri_nsets_2 tri_nsets_3 triangle_set_def by auto
     have "\<And>i. i \<in> triangle_set G \<Longrightarrow> ?TWO i \<noteq> {}"
@@ -934,21 +930,17 @@ edge_vertices_not_equal [OF wf])
       then show "(\<Sum>i\<in>triangle_set G. card ([i]\<^bsup>2\<^esup>)) = 3 * card (triangle_set G)"
         by simp
     qed
-    ultimately have A: "3 * card (triangle_set G) = card (uedges G)" 
+    ultimately have 3: "3 * card (triangle_set G) = card (uedges G)" 
       by auto
     have "card (uedges G) \<le> card (all_edges(uverts G))"
       by (meson G_ne all_edges_finite card_gt_0_iff card_mono local.wf wellformed_all_edges)
-    also have "\<dots> = card (uverts G) choose 2"
+    also have "\<dots> = ?n choose 2"
       by (metis G_ne card_all_edges card_eq_0_iff not_less0)
-    also have "\<dots> = card (uverts G) * (card (uverts G) - 1) div 2"
-      by (meson n_choose_2_nat) 
-    also have "\<dots> < (card (uverts G))\<^sup>2"
-      by (simp add: G_ne less_imp_diff_less less_mult_imp_div_less power2_eq_square)
-    finally have B: "card (uedges G) < (card (uverts G))\<^sup>2" .
-
-    have "card (triangle_set G) \<le> (card (uverts G))\<^sup>2 / 3"
-      using A B by linarith
-    also have "\<dots> \<le> \<delta> * card(uverts G) ^ 3"
+    also have "\<dots> \<le> ?n\<^sup>2"
+      by (metis binomial_eq_0_iff binomial_le_pow linorder_not_le zero_le)
+    finally have "card (uedges G) \<le> ?n\<^sup>2" .
+    with 3 have "card (triangle_set G) \<le> ?n\<^sup>2 / 3" by linarith
+    also have "\<dots> \<le> \<delta> * ?n ^ 3"
     proof -
       have "1 \<le> 3 * \<delta> * N"
         using N \<open>\<delta> > 0\<close> by (simp add: field_simps)
@@ -967,6 +959,8 @@ edge_vertices_not_equal [OF wf])
     text\<open>Deleting an edge removes at most one triangle from the graph by assumption,
          so the number of edges removed in this process is at least the number of triangles.\<close>
     
+    obtain TF where TF: "\<And>e. e \<in> uedges G \<Longrightarrow> \<exists>x y z. TF e = {x,y,z} \<and> triangle_in_graph x y z G \<and> e \<subseteq> TF e"
+      using uniq unfolding unique_triangles_def by metis
     have False
       if non: "\<And>e. e \<in> uedges G - uedges Gnew \<Longrightarrow> {x,y,z} \<noteq> TF e"
         and tri: "triangle_in_graph x y z G" for x y z
@@ -985,7 +979,7 @@ edge_vertices_not_equal [OF wf])
     ultimately have "card (triangle_set G) \<le> card (uedges G - uedges Gnew)"
       by (meson surj_card_le)
     then show "card (uedges G) \<le> \<epsilon> * ?n\<^sup>2"
-      using A card_edge_diff by linarith
+      using 3 card_edge_diff by linarith
   qed
 qed
 
@@ -1022,7 +1016,7 @@ proof -
     have "odd M" "M>0" "N<M" by (auto simp: M_def)
     have "coprime M (Suc N)"
       unfolding M_def
-      by (metis add.commute coprime_Suc_right_nat coprime_mult_right_iff mult_2 nat_arith.suc1)
+      by (metis add_2_eq_Suc coprime_Suc_right_nat coprime_mult_right_iff mult_Suc_right)
     then have cop: "coprime M (1 + int N)"
       by (metis coprime_int_iff of_nat_Suc)
     have A_sub_M: "int ` A \<subseteq> {..<M}"
@@ -1066,7 +1060,7 @@ proof -
       proof
         assume "diff y x = int a"
         with that \<open>a<M\<close> have "int y = int (x+a) mod int M"
-          unfolding diff_def by (smt (verit, ccfv_SIG) eq_mod_M mod_less of_nat_add zmod_int)
+          by (smt (verit) diff_def eq_mod_M mod_less of_nat_add zmod_int)
         with that show "y = (x + a) mod M"
           by (metis nat_int zmod_int)
       qed (simp add: \<open>a < M\<close> diff_def mod_diff_left_eq zmod_int)
@@ -1205,7 +1199,6 @@ proof -
     qed
 
     text\<open>Every edge of the graph G lies in exactly one triangle.\<close>
-
     have "unique_triangles G"
       unfolding unique_triangles_def
     proof (intro strip)
@@ -1394,36 +1387,9 @@ proof -
       using L \<open>L < card (uverts G)\<close> \<open>unique_triangles G\<close> \<open>uwellformed G\<close> by blast
 
     have diff_cancel: "\<exists>j<M. diff j i = int a" if "a \<in> A" for i a
-    proof -
-      have "int a < int M"
-        using A M_def that by auto
-      then have "(int ((i + a) mod M) - int i) mod int M = int a"
-        by (simp add: mod_diff_left_eq of_nat_mod)
-      then show ?thesis
-        using \<open>0 < M\<close> diff_def mod_less_divisor by blast
-    qed
-    have diff2_cancel: "\<exists>j<M. diff2 j i = int a" if "a \<in> A" "i<M" for i a
-    proof -
-      have "a<M"
-        using that M_def A by auto
-      have "(int ((i + 2*a) mod M) - int i) * (1 + int N) mod int M =
-        (((int i + 2 * int a) mod M) - int i) * (1 + int N) mod int M"
-        by (simp add: zmod_int)
-      also have "\<dots> = 2 * int a * (1 + int N) mod int M"
-        by (smt (verit) mod_diff_left_eq mod_mult_eq mod_mult_right_eq)
-      also have "\<dots> = int a mod int M"
-      proof -
-        have "(2 * int a * (1 + int N) - int a) = M * a"
-          by (simp add: M_def algebra_simps)
-        then have "M dvd (2 * int a * (1 + int N) - int a)"
-          by simp
-        then show ?thesis
-          using mod_eq_dvd_iff by blast
-      qed
-      also have "\<dots> = a" by (simp add: \<open>a < M\<close>)
-      finally show ?thesis
-        by (metis \<open>0 < M\<close> diff2_def mod_less_divisor of_nat_Suc) 
-    qed
+      using M_mod_bound diff_invert that by blast
+    have diff2_cancel: "\<exists>j<M. diff2 j i = int a" if "a \<in> A" for i a
+      using M_mod_bound diff2_invert that by blast
 
     have card_Edges: "card (Edges (part_of \<xi>) (part_of \<zeta>) df) = M * card A" (is "card ?E = _")
       if "\<xi> \<noteq> \<zeta>" and df_cancel: "\<forall>a\<in>A. \<forall>i<M. \<exists>j<M. df j i = int a" 
@@ -1463,10 +1429,8 @@ proof -
         moreover have "from_part y = from_part y'"
           using df df' \<open>x = x'\<close> \<open>a' = a\<close> df_inj u'(3) u(3) 
           by (clarsimp simp add: inj_on_def) (metis part_of_M lessThan_iff)
-        then have "y = y'"
-          using part_of_def u'(3) u(3) by fastforce
         ultimately show "u = u'"
-          using u'(1) u(1) by force
+          using u u' by (metis enc_iff from_part_def prod.collapse prod_decode_inverse)
       next
         have "f \<xi> (part_of \<zeta>) df ` ?E \<subseteq> {..<M} \<times> A"
         proof (clarsimp simp: Edges_def)
@@ -1505,10 +1469,10 @@ proof -
       by (simp_all add: XY_def YZ_def card_Edges diff_cancel inj_on_diff)
     have [simp]: "card XZ = M * card A"
       by (simp_all add: XZ_def card_Edges diff2_cancel inj_on_diff2)
-    have card_edges: "card (uedges G) = 3 * M * card A"
+    have "card (uedges G) = 3 * M * card A"
       by (simp add: G_def card_Un_disjnt)
-    have "card A \<le> \<epsilon> * (real M / 4)"
-      using * \<open>0 < M\<close> by (simp add: cardG card_edges power2_eq_square)
+    then have "card A \<le> \<epsilon> * (real M / 4)"
+      using * \<open>0 < M\<close> by (simp add: cardG power2_eq_square)
     also have "\<dots> < \<epsilon> * N"
       using \<open>N>0\<close> by (simp add: M_def assms)
     finally show "card A < \<epsilon> * N" .

@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -101,12 +102,28 @@ book <i>Dense Sphere Packings. A Blueprint for Formal Proofs.</i> [CUP 2012].
 The values of the constants in the definition of tameness are identical to
 those in the <a href="https://code.google.com/p/flyspeck/">Flyspeck project</a>.
 The <a href="http://www21.in.tum.de/~nipkow/pubs/Flyspeck/">IJCAR 2006 paper by Nipkow, Bauer and Schultz</a> refers to the original version of Hales' proof,
-the <a href="http://www21.in.tum.de/~nipkow/pubs/itp11.html">ITP 2011 paper by Nipkow</a> refers to the Blueprint version of the proof.</div>BSD License<h3>Change history</h3>
+the <a href="http://www21.in.tum.de/~nipkow/pubs/itp11.html">ITP 2011 paper by Nipkow</a> refers to the Blueprint version of the proof.</div>BSD License<h3>Change history</h3><p>
+    <h4>July 3, 2014</h4>
+    modified constants in def of tameness and Archive according to the final state of the Flyspeck proof.
+    </p><p>
+    <h4>November 2, 2010</h4>
+    modified theories to reflect the modified definition of tameness in Hales' revised proof.<br>
 
-  <p>[2010-11-02] modified theories to reflect the modified definition of tameness in Hales' revised proof.<br>
+    </p><h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/graph-theory">Mathematics/Graph theory</a></li></ul><h3>Related Publications</h3>
+  <ul><li>
+      Nipkow, T., Bauer, G., & Schultz, P. (2006). Flyspeck I: Tame Graphs. Lecture Notes in Computer Science, 21–35. <a href="https://doi.org/10.1007/11814771_4">https://doi.org/10.1007/11814771_4</a>
 
-[2014-07-03] modified constants in def of tameness and Archive according to the final state of the Flyspeck proof.</p><h3>Topics</h3>
-  <ul><li><a href="../topics/mathematics/graph-theory">Mathematics/Graph theory</a></li></ul>
+    </li><li>
+      Nipkow, T. (2011). Verified Efficient Enumeration of Plane Graphs Modulo Isomorphism. Lecture Notes in Computer Science, 281–296. <a href="https://doi.org/10.1007/978-3-642-22863-6_21">https://doi.org/10.1007/978-3-642-22863-6_21</a>
+
+    </li><li>
+      Hales, T. C., Harrison, J., McLaughlin, S., Nipkow, T., Obua, S., & Zumkeller, R. (2009). A Revision of the Proof of the Kepler Conjecture. Discrete &amp; Computational Geometry, 44(1), 1–34. <a href="https://doi.org/10.1007/s00454-009-9148-4">https://doi.org/10.1007/s00454-009-9148-4</a>
+
+    </li><li>
+      HALES, T., ADAMS, M., BAUER, G., DANG, T. D., HARRISON, J., HOANG, L. T., KALISZYK, C., MAGRON, V., MCLAUGHLIN, S., NGUYEN, T. T., NGUYEN, Q. T., NIPKOW, T., OBUA, S., PLESO, J., RUTE, J., SOLOVYEV, A., TA, T. H. A., TRAN, N. T., TRIEU, T. D., … ZUMKELLER, R. (2017). A FORMAL PROOF OF THE KEPLER CONJECTURE. Forum of Mathematics, Pi, 5. <a href="https://doi.org/10.1017/fmp.2017.1">https://doi.org/10.1017/fmp.2017.1</a>
+
+    </li></ul>
   <h3>Theories of Flyspeck-Tame</h3>
   <ul>
     <li><a href="../theories/flyspeck-tame/#ListAux">ListAux</a></li>
@@ -166,7 +183,7 @@ the <a href="http://www21.in.tum.de/~nipkow/pubs/itp11.html">ITP 2011 paper by N
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Flyspeck-Tame/outline.pdf">Proof
@@ -175,23 +192,23 @@ the <a href="http://www21.in.tum.de/~nipkow/pubs/itp11.html">ITP 2011 paper by N
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Flyspeck-Tame/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Flyspeck-Tame-AFP</p><pre id="copyText">@article{Flyspeck-Tame-AFP,
+      <p style="display:none;" id="bibtex-filename">Flyspeck-Tame-AFP</p><pre id="copy-text">@article{Flyspeck-Tame-AFP,
   author  = {Gertrud Bauer and Tobias Nipkow},
   title   = {Flyspeck I: Tame Graphs},
   journal = {Archive of Formal Proofs},
-  month   = May,
-  year    = 2006,
+  month   = {May},
+  year    = {2006},
   note    = {\url{https://isa-afp.org/entries/Flyspeck-Tame.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -201,8 +218,55 @@ the <a href="http://www21.in.tum.de/~nipkow/pubs/itp11.html">ITP 2011 paper by N
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Flyspeck-Tame-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Flyspeck-Tame-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2018-08-17.tar.gz">Aug 17, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2013-03-02.tar.gz">Mar 2, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2012-05-25.tar.gz">May 25, 2012</a>: Isabelle2012
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2011-02-11.tar.gz">Feb 11, 2011</a>: Isabelle2011
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2010-06-30.tar.gz">Jun 30, 2010</a>: Isabelle2009-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2009-12-12.tar.gz">Dec 12, 2009</a>: Isabelle2009-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2009-04-29.tar.gz">Apr 29, 2009</a>: Isabelle2009
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2008-06-10.tar.gz">Jun 10, 2008</a>: Isabelle2008
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2008-01-04.tar.gz">Jan 4, 2008</a>: Isabelle2007
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Flyspeck-Tame-2007-11-27.tar.gz">Nov 27, 2007</a>: Isabelle2007
+      </li></ul>
   </div>
 </div>
     </div>

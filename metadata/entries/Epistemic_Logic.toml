@@ -30,3 +30,5 @@ from = "from_email"
 2021-04-15 = "Added completeness of modal logics T, KB, K4, S4 and S5."
 
 [extra]
+
+[related]

@@ -34,7 +34,8 @@ for words, printing..."><meta property="og:title" content="Finite Machine Word L
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -130,6 +131,7 @@ commonly used 32 and 64-bit bases.</div>BSD License<h3>Topics</h3>
     <li><a href="../theories/word_lib/#Reversed_Bit_Lists">Reversed_Bit_Lists</a></li>
     <li><a href="../theories/word_lib/#Bitwise">Bitwise</a></li>
     <li><a href="../theories/word_lib/#Examples">Examples</a></li>
+    <li><a href="../theories/word_lib/#Bit_Comprehension_Int">Bit_Comprehension_Int</a></li>
     <li><a href="../theories/word_lib/#Signed_Words">Signed_Words</a></li>
     <li><a href="../theories/word_lib/#Bitwise_Signed">Bitwise_Signed</a></li>
     <li><a href="../theories/word_lib/#Enumeration">Enumeration</a></li>
@@ -163,7 +165,7 @@ commonly used 32 and 64-bit bases.</div>BSD License<h3>Topics</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Word_Lib/outline.pdf">Proof
@@ -172,23 +174,23 @@ commonly used 32 and 64-bit bases.</div>BSD License<h3>Topics</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Word_Lib/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Word_Lib-AFP</p><pre id="copyText">@article{Word_Lib-AFP,
-  author  = {Joel Beeren, Matthew Fernandez, Xin Gao, Gerwin Klein, Rafal Kolanski, Japheth Lim, Corey Lewis, Daniel Matichuk and Thomas Sewell},
+      <p style="display:none;" id="bibtex-filename">Word_Lib-AFP</p><pre id="copy-text">@article{Word_Lib-AFP,
+  author  = {Joel Beeren and Matthew Fernandez and Xin Gao and Gerwin Klein and Rafal Kolanski and Japheth Lim and Corey Lewis and Daniel Matichuk and Thomas Sewell},
   title   = {Finite Machine Word Library},
   journal = {Archive of Formal Proofs},
-  month   = June,
-  year    = 2016,
+  month   = {June},
+  year    = {2016},
   note    = {\url{https://isa-afp.org/entries/Word_Lib.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -198,8 +200,25 @@ commonly used 32 and 64-bit bases.</div>BSD License<h3>Topics</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Word_Lib-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Word_Lib-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Word_Lib-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Word_Lib-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Word_Lib-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Word_Lib-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Word_Lib-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Word_Lib-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Word_Lib-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Word_Lib-2016-06-09.tar.gz">Jun 9, 2016</a>: Isabelle2016
+      </li></ul>
   </div>
 </div>
     </div>

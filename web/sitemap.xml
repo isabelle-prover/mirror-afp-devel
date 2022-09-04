@@ -3,13 +3,76 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-06-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-08-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-06-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-08-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/bortin/</loc>
+    <lastmod>2022-08-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2022-06-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-08-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Involutions2Squares.html</loc>
+    <lastmod>2022-08-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/containers/</loc>
+    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/datatype_order_generator/</loc>
+    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/native_word/</loc>
+    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/sachtleben/</loc>
+    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/FSM_Tests.html</loc>
+    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/brucker/</loc>
+    <lastmod>2022-07-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Nano_JSON.html</loc>
+    <lastmod>2022-07-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/tools/</loc>
+    <lastmod>2022-07-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2022-07-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/echenim/</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Solidity.html</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/marmsoler/</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/projective_measurements/</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Commuting_Hermitian.html</loc>
+    <lastmod>2022-07-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/eberl/</loc>
+    <lastmod>2022-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Weighted_Arithmetic_Geometric_Mean.html</loc>
+    <lastmod>2022-07-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/IMP_Compiler_Reuse.html</loc>
+    <lastmod>2022-07-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/noce/</loc>
+    <lastmod>2022-07-10T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/nipkow/</loc>
     <lastmod>2022-06-23T00:00:00+00:00</lastmod>
@@ -20,8 +83,11 @@
     <loc>/authors/toth/</loc>
     <lastmod>2022-06-23T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2022-06-08T00:00:00+00:00</lastmod>
+    <loc>/entries/Boolos_Curious_Inference.html</loc>
+    <lastmod>2022-06-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/ketland/</loc>
+    <lastmod>2022-06-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/dirichlet_series/</loc>
     <lastmod>2022-06-08T00:00:00+00:00</lastmod>
@@ -149,9 +215,6 @@
     <loc>/dependencies/weighted_path_order/</loc>
     <lastmod>2022-04-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/eberl/</loc>
-    <lastmod>2022-04-10T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Sophomores_Dream.html</loc>
     <lastmod>2022-04-10T00:00:00+00:00</lastmod>
   </url><url>
@@ -236,6 +299,9 @@
     <loc>/authors/stark/</loc>
     <lastmod>2022-02-28T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/finite_fields/</loc>
+    <lastmod>2022-02-20T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Universal_Hash_Families.html</loc>
     <lastmod>2022-02-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -244,9 +310,6 @@
   </url><url>
     <loc>/dependencies/zfc_in_hol/</loc>
     <lastmod>2022-02-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/containers/</loc>
-    <lastmod>2022-02-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Eval_FO.html</loc>
     <lastmod>2022-02-15T00:00:00+00:00</lastmod>
@@ -423,9 +486,6 @@
     <lastmod>2021-11-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/cousin/</loc>
-    <lastmod>2021-11-19T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/echenim/</loc>
     <lastmod>2021-11-19T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/guiol/</loc>
@@ -605,12 +665,6 @@
     <loc>/dependencies/speccheck/</loc>
     <lastmod>2021-09-06T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/topics/tools/</loc>
-    <lastmod>2021-09-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
-    <lastmod>2021-09-06T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Dominance_CHK.html</loc>
     <lastmod>2021-09-05T00:00:00+00:00</lastmod>
   </url><url>
@@ -630,9 +684,6 @@
     <lastmod>2021-09-03T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Logging_Independent_Anonymity.html</loc>
-    <lastmod>2021-08-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/noce/</loc>
     <lastmod>2021-08-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/budan_fourier/</loc>
@@ -729,9 +780,6 @@
     <lastmod>2021-06-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/MiniSail.html</loc>
-    <lastmod>2021-06-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/native_word/</loc>
     <lastmod>2021-06-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/nominal2/</loc>
@@ -1046,9 +1094,6 @@
     <loc>/entries/DOM_Components.html</loc>
     <lastmod>2020-09-28T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/brucker/</loc>
-    <lastmod>2020-09-28T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/core_dom/</loc>
     <lastmod>2020-09-28T00:00:00+00:00</lastmod>
   </url><url>
@@ -1337,9 +1382,6 @@
     <loc>/entries/Lucas_Theorem.html</loc>
     <lastmod>2020-04-07T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/datatype_order_generator/</loc>
-    <lastmod>2020-03-25T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/gonzalez/</loc>
     <lastmod>2020-03-25T00:00:00+00:00</lastmod>
   </url><url>
@@ -1536,9 +1578,6 @@
     <lastmod>2019-08-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Adaptive_State_Counting.html</loc>
-    <lastmod>2019-08-16T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/sachtleben/</loc>
     <lastmod>2019-08-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/transition_systems_and_automata/</loc>
@@ -2090,9 +2129,6 @@
     <loc>/dependencies/dynamicarchitectures/</loc>
     <lastmod>2018-03-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/marmsoler/</loc>
-    <lastmod>2018-03-01T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Hoare_Time.html</loc>
     <lastmod>2018-02-26T00:00:00+00:00</lastmod>
   </url><url>
@@ -2547,9 +2583,6 @@
     <lastmod>2016-11-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/andronick/</loc>
-    <lastmod>2016-11-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/bortin/</loc>
     <lastmod>2016-11-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Complx.html</loc>
@@ -4304,6 +4337,8 @@
   </url><url>
     <loc>/theories/boolean_expression_checkers/</loc>
   </url><url>
+    <loc>/theories/boolos_curious_inference/</loc>
+  </url><url>
     <loc>/theories/bounded_deducibility_security/</loc>
   </url><url>
     <loc>/theories/btree/</loc>
@@ -4398,6 +4433,8 @@
   </url><url>
     <loc>/theories/combinatorics_words_lyndon/</loc>
   </url><url>
+    <loc>/theories/commuting_hermitian/</loc>
+  </url><url>
     <loc>/theories/comparison_sort_lower_bound/</loc>
   </url><url>
     <loc>/theories/compiling-exceptions-correctly/</loc>
@@ -4466,15 +4503,13 @@
   </url><url>
     <loc>/topics/computer-science/programming-languages/static-analysis/</loc>
   </url><url>
-    <loc>/topics/computer-science/programming-languages/transformations/</loc>
-  </url><url>
     <loc>/topics/computer-science/programming-languages/type-systems/</loc>
   </url><url>
     <loc>/topics/computer-science/security/</loc>
   </url><url>
     <loc>/topics/computer-science/security/cryptography/</loc>
   </url><url>
-    <loc>/topics/computer-science/semantics/</loc>
+    <loc>/topics/computer-science/semantics-and-reasoning/</loc>
   </url><url>
     <loc>/topics/computer-science/system-description-languages/</loc>
   </url><url>
@@ -4726,6 +4761,8 @@
   </url><url>
     <loc>/theories/fresh_identifiers/</loc>
   </url><url>
+    <loc>/theories/fsm_tests/</loc>
+  </url><url>
     <loc>/theories/functional-automata/</loc>
   </url><url>
     <loc>/theories/functional_ordered_resolution_prover/</loc>
@@ -4858,6 +4895,8 @@
   </url><url>
     <loc>/theories/imp_compiler/</loc>
   </url><url>
+    <loc>/theories/imp_compiler_reuse/</loc>
+  </url><url>
     <loc>/theories/imperative_insertion_sort/</loc>
   </url><url>
     <loc>/theories/impossible_geometry/</loc>
@@ -4887,6 +4926,8 @@
     <loc>/theories/interval_arithmetic_word32/</loc>
   </url><url>
     <loc>/theories/intro_dest_elim/</loc>
+  </url><url>
+    <loc>/theories/involutions2squares/</loc>
   </url><url>
     <loc>/theories/ip_addresses/</loc>
   </url><url>
@@ -5038,8 +5079,6 @@
   </url><url>
     <loc>/topics/logic/general-logic/decidability-of-theories/</loc>
   </url><url>
-    <loc>/topics/logic/general-logic/lambda-calculus/</loc>
-  </url><url>
     <loc>/topics/logic/general-logic/logics-of-knowledge-and-belief/</loc>
   </url><url>
     <loc>/topics/logic/general-logic/mechanization-of-proofs/</loc>
@@ -5104,7 +5143,7 @@
   </url><url>
     <loc>/topics/mathematics/graph-theory/</loc>
   </url><url>
-    <loc>/topics/mathematics/measure-theory/</loc>
+    <loc>/topics/mathematics/measure-and-integration/</loc>
   </url><url>
     <loc>/topics/mathematics/misc/</loc>
   </url><url>
@@ -5191,6 +5230,8 @@
     <loc>/theories/myhill-nerode/</loc>
   </url><url>
     <loc>/theories/name_carrying_type_inference/</loc>
+  </url><url>
+    <loc>/theories/nano_json/</loc>
   </url><url>
     <loc>/theories/nash_williams/</loc>
   </url><url>
@@ -5551,6 +5592,8 @@
   </url><url>
     <loc>/theories/smooth_manifolds/</loc>
   </url><url>
+    <loc>/theories/solidity/</loc>
+  </url><url>
     <loc>/theories/sophomores_dream/</loc>
   </url><url>
     <loc>/theories/sort_encodings/</loc>
@@ -5720,6 +5763,8 @@
     <loc>/theories/webassembly/</loc>
   </url><url>
     <loc>/theories/weight_balanced_trees/</loc>
+  </url><url>
+    <loc>/theories/weighted_arithmetic_geometric_mean/</loc>
   </url><url>
     <loc>/theories/weighted_path_order/</loc>
   </url><url>

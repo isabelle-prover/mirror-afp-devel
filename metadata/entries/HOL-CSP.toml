@@ -2,7 +2,7 @@ title = "HOL-CSP Version 2.0"
 date = 2019-04-26
 topics = [
   "Computer science/Concurrency/Process calculi",
-  "Computer science/Semantics",
+  "Computer science/Semantics and reasoning",
 ]
 abstract = """
 This is a complete formalization of the work of Hoare and Roscoe on
@@ -40,3 +40,5 @@ wolff = "wolff_email"
 [history]
 
 [extra]
+
+[related]

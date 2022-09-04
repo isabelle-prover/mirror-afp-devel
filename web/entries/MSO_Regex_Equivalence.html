@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -109,10 +110,14 @@ expressions with a projection operation is required. We prove total
 correctness and completeness of an equivalence checker for regular
 expressions extended in that way. We also define a language-preserving
 translation of formulas into regular expressions with respect to two
-different semantics of MSO.
-<p>
-The formalization is described in this <a href="http://www21.in.tum.de/~nipkow/pubs/icfp13.html">ICFP 2013 functional pearl</a>.</div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li><li><a href="../topics/logic/general-logic/decidability-of-theories">Logic/General logic/Decidability of theories</a></li></ul>
+different semantics of MSO.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li><li><a href="../topics/logic/general-logic/decidability-of-theories">Logic/General logic/Decidability of theories</a></li></ul><h3>Related Publications</h3>
+  <ul><li>
+      TRAYTEL, D., & NIPKOW, T. (2015). Verified decision procedures for MSO on words based on derivatives of regular expressions. Journal of Functional Programming, 25. https://doi.org/10.1017/s0956796815000246
+
+    </li><li>
+      <a href="https://www.in.tum.de/~nipkow/pubs/jfp15.html">Open access</a>
+    </li></ul>
   <h3>Theories of MSO_Regex_Equivalence</h3>
   <ul>
     <li><a href="../theories/mso_regex_equivalence/#List_More">List_More</a></li>
@@ -146,6 +151,8 @@ The formalization is described in this <a href="http://www21.in.tum.de/~nipkow/p
       
       <li><a href="../entries/Coinductive_Languages.html">A Codatatype of Formal Languages</a></li>
       
+      <li><a href="../entries/Myhill-Nerode.html">The Myhill-Nerode Theorem Based on Regular Expressions</a></li>
+      
     </ul>
   </div>
   
@@ -153,7 +160,7 @@ The formalization is described in this <a href="http://www21.in.tum.de/~nipkow/p
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/MSO_Regex_Equivalence/outline.pdf">Proof
@@ -162,23 +169,23 @@ The formalization is described in this <a href="http://www21.in.tum.de/~nipkow/p
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/MSO_Regex_Equivalence/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">MSO_Regex_Equivalence-AFP</p><pre id="copyText">@article{MSO_Regex_Equivalence-AFP,
+      <p style="display:none;" id="bibtex-filename">MSO_Regex_Equivalence-AFP</p><pre id="copy-text">@article{MSO_Regex_Equivalence-AFP,
   author  = {Dmitriy Traytel and Tobias Nipkow},
   title   = {Decision Procedures for MSO on Words Based on Derivatives of Regular Expressions},
   journal = {Archive of Formal Proofs},
-  month   = June,
-  year    = 2014,
+  month   = {June},
+  year    = {2014},
   note    = {\url{https://isa-afp.org/entries/MSO_Regex_Equivalence.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -188,8 +195,31 @@ The formalization is described in this <a href="http://www21.in.tum.de/~nipkow/p
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-MSO_Regex_Equivalence-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-MSO_Regex_Equivalence-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MSO_Regex_Equivalence-2014-06-12.tar.gz">Jun 12, 2014</a>: Isabelle2013-2
+      </li></ul>
   </div>
 </div>
     </div>

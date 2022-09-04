@@ -1,0 +1,45 @@
+title = "A Reuse-Based Multi-Stage Compiler Verification for Language IMP"
+date = 2022-07-10
+topics = [
+  "Computer science/Programming languages/Compiling",
+]
+abstract = """
+After introducing the didactic imperative programming language IMP,
+Nipkow and Klein's book on formal programming language semantics
+(version of March 2021) specifies compilation of IMP commands into a
+lower-level language based on a stack machine, and expounds a formal
+verification of that compiler. Exercise 8.4 asks the reader to adjust
+such proof for a new compilation target, consisting of a machine
+language that (i) accesses memory locations through their addresses
+instead of variable names, and (ii) maintains a stack in memory via a
+stack pointer rather than relying upon a built-in stack. A natural
+strategy to maximize reuse of the original proof is keeping the
+original language as an assembly one and splitting compilation into
+multiple steps, namely a source-to-assembly step matching the original
+compilation process followed by an assembly-to-machine step. In this
+way, proving assembly code-machine code equivalence is the only extant
+task.  A previous paper by the present author introduces a reasoning
+toolbox that allows for a compiler correctness proof shorter than the
+book's one, as such promising to constitute a further enhanced
+reference for the formal verification of real-world compilers. This
+paper in turn shows that such toolbox can be reused to accomplish the
+aforesaid task as well, which demonstrates that the proposed approach
+also promotes proof reuse in multi-stage compiler verifications."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.noce]
+email = "noce_email"
+
+[contributors]
+
+[notify]
+noce = "noce_email"
+
+[history]
+
+[extra]
+
+[related]

@@ -28,6 +28,10 @@ nipkow = "nipkow_email"
 krauss = "krauss_email"
 urban = "urban_email"
 
+[related]
+dois = ["10.1007/s10817-011-9223-4"]
+pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/jar12.html\">Open access</a>"]
+
 [history]
 2011-08-26 = """
 Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
@@ -35,3 +39,5 @@ Christian Urban added a theory about derivatives and partial derivatives of regu
 2012-05-10 = "Tobias Nipkow added equivalence checking with partial derivatives"
 
 [extra]
+
+[related]

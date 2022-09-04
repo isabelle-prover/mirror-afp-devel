@@ -4,6 +4,8 @@ theory Separation_Rename
     Interface
 begin
 
+no_notation Aleph (\<open>\<aleph>_\<close> [90] 90)
+
 lemmas apply_fun = apply_iff[THEN iffD1]
 
 lemma nth_concat : "[p,t] \<in> list(A) \<Longrightarrow> env\<in> list(A) \<Longrightarrow> nth(1 +\<^sub>\<omega> length(env),[p]@ env @ [t]) = t"

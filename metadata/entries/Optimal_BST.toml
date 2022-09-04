@@ -26,6 +26,11 @@ homepage = "nipkow_homepage"
 [notify]
 nipkow = "nipkow_email"
 
+[related]
+pubs = ["<a href=\"https://en.wikipedia.org/wiki/Optimal_binary_search_tree\">Wikipedia</a>"]
+
 [history]
 
 [extra]
+
+[related]

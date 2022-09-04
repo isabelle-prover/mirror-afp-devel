@@ -133,4 +133,20 @@ lemma one_bit_shiftl: "set_bit 0 n True = (1 :: 'a :: len word) << n"
 lemma one_bit_pow: "set_bit 0 n True = (2 :: 'a :: len word) ^ n"
   by (simp add: one_bit_shiftl shiftl_def)
 
+instantiation integer :: set_bit
+begin
+
+context
+  includes integer.lifting
+begin
+
+lift_definition set_bit_integer :: \<open>integer \<Rightarrow> nat \<Rightarrow> bool \<Rightarrow> integer\<close> is set_bit .
+
+instance
+  by (standard; transfer) (simp add: bit_simps)
+
+end
+
+end
+
 end

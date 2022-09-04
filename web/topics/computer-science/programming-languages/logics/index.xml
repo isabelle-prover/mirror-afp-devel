@@ -205,15 +205,6 @@
     </item>
     
     <item>
-      <title>Refinement for Monadic Programs</title>
-      <link>/entries/Refine_Monadic.html</link>
-      <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Refine_Monadic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
       <link>/entries/TLA.html</link>
       <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>

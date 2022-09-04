@@ -34,7 +34,8 @@ trivial or..."><meta property="og:title" content="Analysing and Comparing Encoda
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -88,7 +89,7 @@ trivial or..."><meta property="og:title" content="Analysing and Comparing Encoda
     <span class='first'>A</span>nalysing and <span class='first'>C</span>omparing <span class='first'>E</span>ncodability <span class='first'>C</span>riteria for <span class='first'>P</span>rocess <span class='first'>C</span>alculi</h1>
   <div>
     
-    <p><a href="../authors/peters">Kirstin Peters</a> <a href="mailto:kirstin.peters@tu-berlin.de">📧</a> and <a href="../authors/glabbeek">Rob van Glabbeek</a> <a href="http://theory.stanford.edu/~rvg/">🌐</a>
+    <p><a href="../authors/peters">Kirstin Peters</a> <a class="obfuscated" data="eyJob3N0IjpbInR1LWJlcmxpbiIsImRlIl0sInVzZXIiOlsia2lyc3RpbiIsInBldGVycyJdfQ==">📧</a> and <a href="../authors/glabbeek">Rob van Glabbeek</a> <a href="http://theory.stanford.edu/~rvg/">🌐</a>
     </p>
     
     
@@ -133,7 +134,7 @@ relations on processes.</div>BSD License<h3>Topics</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Encodability_Process_Calculi/outline.pdf">Proof
@@ -142,23 +143,23 @@ relations on processes.</div>BSD License<h3>Topics</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Encodability_Process_Calculi/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Encodability_Process_Calculi-AFP</p><pre id="copyText">@article{Encodability_Process_Calculi-AFP,
+      <p style="display:none;" id="bibtex-filename">Encodability_Process_Calculi-AFP</p><pre id="copy-text">@article{Encodability_Process_Calculi-AFP,
   author  = {Kirstin Peters and Rob van Glabbeek},
   title   = {Analysing and Comparing Encodability Criteria for Process Calculi},
   journal = {Archive of Formal Proofs},
-  month   = August,
-  year    = 2015,
+  month   = {August},
+  year    = {2015},
   note    = {\url{https://isa-afp.org/entries/Encodability_Process_Calculi.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -168,8 +169,27 @@ relations on processes.</div>BSD License<h3>Topics</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Encodability_Process_Calculi-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Encodability_Process_Calculi-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Encodability_Process_Calculi-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Encodability_Process_Calculi-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Encodability_Process_Calculi-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Encodability_Process_Calculi-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Encodability_Process_Calculi-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Encodability_Process_Calculi-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Encodability_Process_Calculi-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Encodability_Process_Calculi-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Encodability_Process_Calculi-2015-08-11.tar.gz">Aug 11, 2015</a>: Isabelle2015
+      </li></ul>
   </div>
 </div>
     </div>

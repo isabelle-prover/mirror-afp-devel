@@ -6,7 +6,16 @@
     <description>Recent content in Native_Word on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 18 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/native_word/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 09 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/native_word/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Verified Complete Test Strategies for Finite State Machines</title>
+      <link>/entries/FSM_Tests.html</link>
+      <pubDate>Tue, 09 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/FSM_Tests.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>MiniSail - A kernel language for the ISA specification language SAIL</title>
       <link>/entries/MiniSail.html</link>

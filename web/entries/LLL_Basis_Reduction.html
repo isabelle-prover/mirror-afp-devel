@@ -34,7 +34,8 @@ orthogonal vectors of..."><meta property="og:title" content="A verified LLL algo
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -109,11 +110,14 @@ specially well-known since it was used to implement the first
 polynomial-time algorithm to factor polynomials. In this work we
 present the first mechanized soundness proof of the LLL algorithm to
 compute short vectors in lattices. The formalization follows a
-textbook by von zur Gathen and Gerhard.</div>BSD License<h3>Change history</h3>
+textbook by von zur Gathen and Gerhard.</div>BSD License<h3>Change history</h3><p>
+    <h4>May 25, 2018</h4>
+    Integrated much faster LLL implementation based on integer arithmetic (Bottesch, Haslbeck, Thiemann)
+    </p><p>
+    <h4>April 16, 2018</h4>
+    Integrated formal complexity bounds (Haslbeck, Thiemann)
 
-  <p>[2018-04-16] Integrated formal complexity bounds (Haslbeck, Thiemann)
-
-[2018-05-25] Integrated much faster LLL implementation based on integer arithmetic (Bottesch, Haslbeck, Thiemann)</p><h3>Topics</h3>
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/algorithms/mathematical">Computer science/Algorithms/Mathematical</a></li><li><a href="../topics/mathematics/algebra">Mathematics/Algebra</a></li></ul>
   <h3>Theories of LLL_Basis_Reduction</h3>
   <ul>
@@ -143,7 +147,7 @@ textbook by von zur Gathen and Gerhard.</div>BSD License<h3>Change history</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/LLL_Basis_Reduction/outline.pdf">Proof
@@ -152,23 +156,23 @@ textbook by von zur Gathen and Gerhard.</div>BSD License<h3>Change history</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/LLL_Basis_Reduction/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">LLL_Basis_Reduction-AFP</p><pre id="copyText">@article{LLL_Basis_Reduction-AFP,
-  author  = {Ralph Bottesch, Jose Divasón, Max W. Haslbeck, Sebastiaan J. C. Joosten, René Thiemann and Akihisa Yamada},
+      <p style="display:none;" id="bibtex-filename">LLL_Basis_Reduction-AFP</p><pre id="copy-text">@article{LLL_Basis_Reduction-AFP,
+  author  = {Ralph Bottesch and Jose Divasón and Max W. Haslbeck and Sebastiaan J. C. Joosten and René Thiemann and Akihisa Yamada},
   title   = {A verified LLL algorithm},
   journal = {Archive of Formal Proofs},
-  month   = February,
-  year    = 2018,
+  month   = {February},
+  year    = {2018},
   note    = {\url{https://isa-afp.org/entries/LLL_Basis_Reduction.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -178,8 +182,23 @@ textbook by von zur Gathen and Gerhard.</div>BSD License<h3>Change history</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-LLL_Basis_Reduction-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-LLL_Basis_Reduction-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-LLL_Basis_Reduction-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LLL_Basis_Reduction-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LLL_Basis_Reduction-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LLL_Basis_Reduction-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LLL_Basis_Reduction-2018-09-07.tar.gz">Sep 7, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LLL_Basis_Reduction-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LLL_Basis_Reduction-2018-02-03.tar.gz">Feb 3, 2018</a>: Isabelle2017
+      </li></ul>
   </div>
 </div>
     </div>

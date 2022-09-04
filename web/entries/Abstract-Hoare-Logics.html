@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -96,7 +97,18 @@
 </header><div><main><h3>Abstract</h3>
 
   <div class="abstract mathjax_process">These therories describe Hoare logics for a number of imperative language constructs, from while-loops to mutually recursive procedures. Both partial and total correctness are treated. In particular a proof system for total correctness of recursive procedures in the presence of unbounded nondeterminism is presented.</div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/logics">Computer science/Programming languages/Logics</a></li></ul>
+  <ul><li><a href="../topics/computer-science/programming-languages/logics">Computer science/Programming languages/Logics</a></li></ul><h3>Related Publications</h3>
+  <ul><li>
+      Nipkow, T. (2002). Hoare Logics in Isabelle/HOL. Proof and System-Reliability, 341–367. <a href="https://doi.org/10.1007/978-94-010-0413-8_11">https://doi.org/10.1007/978-94-010-0413-8_11</a>
+
+    </li><li>
+      Nipkow, T. (2002). Hoare Logics for Recursive Procedures and Unbounded Nondeterminism. Lecture Notes in Computer Science, 103–119. <a href="https://doi.org/10.1007/3-540-45793-3_8">https://doi.org/10.1007/3-540-45793-3_8</a>
+
+    </li><li>
+      <a href="https://www.in.tum.de/~nipkow/pubs/MOD2001.html">Open access</a>
+    </li><li>
+      <a href="https://www.in.tum.de/~nipkow/pubs/csl02.html">Open access</a>
+    </li></ul>
   <h3>Theories of Abstract-Hoare-Logics</h3>
   <ul>
     <li><a href="../theories/abstract-hoare-logics/#Lang">Lang</a></li>
@@ -117,7 +129,7 @@
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Abstract-Hoare-Logics/outline.pdf">Proof
@@ -126,23 +138,23 @@
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Abstract-Hoare-Logics/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Abstract-Hoare-Logics-AFP</p><pre id="copyText">@article{Abstract-Hoare-Logics-AFP,
+      <p style="display:none;" id="bibtex-filename">Abstract-Hoare-Logics-AFP</p><pre id="copy-text">@article{Abstract-Hoare-Logics-AFP,
   author  = {Tobias Nipkow},
   title   = {Abstract Hoare Logics},
   journal = {Archive of Formal Proofs},
-  month   = August,
-  year    = 2006,
+  month   = {August},
+  year    = {2006},
   note    = {\url{https://isa-afp.org/entries/Abstract-Hoare-Logics.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -152,8 +164,51 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Abstract-Hoare-Logics-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Abstract-Hoare-Logics-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2011-02-11.tar.gz">Feb 11, 2011</a>: Isabelle2011
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2010-06-30.tar.gz">Jun 30, 2010</a>: Isabelle2009-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2009-12-12.tar.gz">Dec 12, 2009</a>: Isabelle2009-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2009-04-29.tar.gz">Apr 29, 2009</a>: Isabelle2009
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2008-06-10.tar.gz">Jun 10, 2008</a>: Isabelle2008
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Abstract-Hoare-Logics-2007-11-27.tar.gz">Nov 27, 2007</a>: Isabelle2007
+      </li></ul>
   </div>
 </div>
     </div>

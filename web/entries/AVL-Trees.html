@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -95,9 +96,10 @@
   </div>
 </header><div><main><h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">Two formalizations of AVL trees with room for extensions. The first formalization is monolithic and shorter, the second one in two stages, longer and a bit simpler. The final implementation is the same. If you are interested in developing this further, please contact <tt>gerwin.klein@nicta.com.au</tt>.</div>BSD License<h3>Change history</h3>
-
-  <p>[2011-04-11] Ondrej Kuncar added delete function</p><h3>Topics</h3>
+  <div class="abstract mathjax_process">Two formalizations of AVL trees with room for extensions. The first formalization is monolithic and shorter, the second one in two stages, longer and a bit simpler. The final implementation is the same. If you are interested in developing this further, please contact <tt>gerwin.klein@nicta.com.au</tt>.</div>BSD License<h3>Change history</h3><p>
+    <h4>April 11, 2011</h4>
+    Ondrej Kuncar added delete function
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
   <h3>Theories of AVL-Trees</h3>
   <ul>
@@ -109,7 +111,7 @@
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/AVL-Trees/outline.pdf">Proof
@@ -118,23 +120,23 @@
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/AVL-Trees/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">AVL-Trees-AFP</p><pre id="copyText">@article{AVL-Trees-AFP,
+      <p style="display:none;" id="bibtex-filename">AVL-Trees-AFP</p><pre id="copy-text">@article{AVL-Trees-AFP,
   author  = {Tobias Nipkow and Cornelia Pusch},
   title   = {AVL Trees},
   journal = {Archive of Formal Proofs},
-  month   = March,
-  year    = 2004,
+  month   = {March},
+  year    = {2004},
   note    = {\url{https://isa-afp.org/entries/AVL-Trees.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -144,8 +146,59 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-AVL-Trees-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-AVL-Trees-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2011-02-11.tar.gz">Feb 11, 2011</a>: Isabelle2011
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2010-06-30.tar.gz">Jun 30, 2010</a>: Isabelle2009-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2009-12-12.tar.gz">Dec 12, 2009</a>: Isabelle2009-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2009-04-29.tar.gz">Apr 29, 2009</a>: Isabelle2009
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2008-06-10.tar.gz">Jun 10, 2008</a>: Isabelle2008
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2007-11-27.tar.gz">Nov 27, 2007</a>: Isabelle2007
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2005-10-14.tar.gz">Oct 14, 2005</a>: Isabelle2005
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2004-05-21.tar.gz">May 21, 2004</a>: Isabelle2004
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2004-04-20.tar.gz">Apr 20, 2004</a>: Isabelle2004
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-AVL-Trees-2004-03-19.tar.gz">Mar 19, 2004</a>: Isabelle2003
+      </li></ul>
   </div>
 </div>
     </div>

@@ -2,7 +2,7 @@ title = "X86 instruction semantics and basic block symbolic execution"
 date = 2021-10-13
 topics = [
   "Computer science/Hardware",
-  "Computer science/Semantics",
+  "Computer science/Semantics and reasoning",
 ]
 abstract = """
 This AFP entry provides semantics for roughly 120 different X86-64
@@ -56,3 +56,5 @@ verbeek = "verbeek_email1"
 [history]
 
 [extra]
+
+[related]

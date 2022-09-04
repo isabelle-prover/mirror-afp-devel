@@ -1,0 +1,37 @@
+title = "Boolos's Curious Inference in Isabelle/HOL"
+date = 2022-06-20
+topics = [
+  "Logic/Philosophical aspects",
+]
+abstract = """
+In 1987, George Boolos gave an interesting and vivid concrete example
+of the considerable speed-up afforded by higher-order logic over
+first-order logic. (A phenomenon first noted by Kurt Gödel in 1936.)
+Boolos's example concerned an inference $I$ with five premises,
+and a conclusion, such that the shortest derivation of the conclusion
+from the premises in a standard system for first-order logic is
+astronomically huge; while there exists a second-order derivation
+whose length is of the order of a page or two. Boolos gave a short
+sketch of that second-order derivation, which relies on the
+comprehension principle of second-order logic. Here, Boolos's
+inference is formalized into fourteen lemmas, each quickly verified by
+the automated-theorem-proving assistant Isabelle/HOL."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ketland]
+
+email = "ketland_email"
+
+[contributors]
+
+[notify]
+ketland = "ketland_email"
+
+[history]
+
+[extra]
+
+[related]

@@ -1,7 +1,7 @@
 section \<open>Integral and Bounded Matrices and Vectors\<close>
 
 text \<open>We define notions of integral vectors and matrices and bounded vectors and matrices
-  and prove some preservation lemmas. Moreover, we prove a bound on determinants.\<close>
+  and prove some preservation lemmas. Moreover, we prove two bounds on determinants.\<close>
 theory Integral_Bounded_Vectors
   imports
     Missing_VS_Connect
@@ -100,6 +100,9 @@ lemma Bounded_vec_rows_Bounded_mat[simp]: "set (rows A) \<subseteq> Bounded_vec 
 lemma unit_vec_Bounded_vec[simp,intro]: "unit_vec n i \<in> Bounded_vec (max 1 Bnd)"
   unfolding Bounded_vec_def unit_vec_def by auto
 
+lemma unit_vec_int_bounds: "set (unit_vecs n) \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (of_int (max 1 Bnd))" 
+  unfolding unit_vecs_def by (auto simp: Bounded_vec_def)
+
 lemma Bounded_matD: assumes "A \<in> Bounded_mat b"
   "A \<in> carrier_mat nr nc"
 shows "i < nr \<Longrightarrow> j < nc \<Longrightarrow> abs (A $$ (i,j)) \<le> b"
@@ -126,24 +129,346 @@ proof
     by (standard, intro allI impI Max_ge[OF fin], insert a A, force)
 qed
 
-definition det_bound :: "nat \<Rightarrow> 'a :: linordered_idom \<Rightarrow> 'a" where
-  "det_bound n x = fact n * (x^n)"
+definition is_det_bound :: "(nat \<Rightarrow> 'a :: linordered_idom \<Rightarrow> 'a) \<Rightarrow> bool" where
+  "is_det_bound f = (\<forall> A n x. A \<in> carrier_mat n n \<longrightarrow> A \<in> Bounded_mat x \<longrightarrow> abs (det A) \<le> f n x)" 
 
-lemma det_bound: assumes A: "A \<in> carrier_mat n n"
-  and x: "A \<in> Bounded_mat x"
-shows "abs (det A) \<le> det_bound n x"
-proof -
-  have "abs (det A) = abs (\<Sum>p | p permutes {0..<n}. signof p * (\<Prod>i = 0..<n. A $$ (i, p i)))"
-    unfolding det_def'[OF A] ..
-  also have "\<dots> \<le> (\<Sum>p | p permutes {0..<n}. abs (signof p * (\<Prod>i = 0..<n. A $$ (i, p i))))"
-    by (rule sum_abs)
-  also have "\<dots> = (\<Sum>p | p permutes {0..<n}. (\<Prod>i = 0..<n. abs (A $$ (i, p i))))"
-    by (rule sum.cong[OF refl], auto simp: abs_mult abs_prod sign_def simp flip: of_int_abs)
-  also have "\<dots> \<le> (\<Sum>p | p permutes {0..<n}. (\<Prod>i = 0..<n. x))"
-    by (intro sum_mono prod_mono conjI Bounded_matD[OF x A], auto)
-  also have "\<dots> = fact n * x^n" by (auto simp add: card_permutations)
-  finally show "abs (det A) \<le> det_bound n x" unfolding det_bound_def by auto
+lemma is_det_bound_ge_zero: assumes "is_det_bound f"
+  and "x \<ge> 0" 
+  shows "f n x \<ge> 0" 
+  using assms(1)[unfolded is_det_bound_def, rule_format, of "0\<^sub>m n n" n x]
+  using assms(2) unfolding Bounded_mat_def by auto
+
+definition det_bound_fact :: "nat \<Rightarrow> 'a :: linordered_idom \<Rightarrow> 'a" where
+  "det_bound_fact n x = fact n * (x^n)"
+
+lemma det_bound_fact: "is_det_bound det_bound_fact" 
+  unfolding is_det_bound_def
+proof (intro allI impI)
+  fix A :: "'a :: linordered_idom mat" and n x
+  assume A: "A \<in> carrier_mat n n"
+    and x: "A \<in> Bounded_mat x"
+  show "abs (det A) \<le> det_bound_fact n x"
+  proof -
+    have "abs (det A) = abs (\<Sum>p | p permutes {0..<n}. signof p * (\<Prod>i = 0..<n. A $$ (i, p i)))"
+      unfolding det_def'[OF A] ..
+    also have "\<dots> \<le> (\<Sum>p | p permutes {0..<n}. abs (signof p * (\<Prod>i = 0..<n. A $$ (i, p i))))"
+      by (rule sum_abs)
+    also have "\<dots> = (\<Sum>p | p permutes {0..<n}. (\<Prod>i = 0..<n. abs (A $$ (i, p i))))"
+      by (rule sum.cong[OF refl], auto simp: abs_mult abs_prod sign_def simp flip: of_int_abs)
+    also have "\<dots> \<le> (\<Sum>p | p permutes {0..<n}. (\<Prod>i = 0..<n. x))"
+      by (intro sum_mono prod_mono conjI Bounded_matD[OF x A], auto)
+    also have "\<dots> = fact n * x^n" by (auto simp add: card_permutations)
+    finally show "abs (det A) \<le> det_bound_fact n x" unfolding det_bound_fact_def by auto
+  qed
 qed
+
+
+lemma (in gram_schmidt_fs) Gramian_determinant_det: assumes A: "A \<in> carrier_mat n n"
+  shows "Gramian_determinant (rows A) n = det A * det A" 
+proof -
+  have [simp]: "mat_of_rows n (rows A) = A" using A
+    by (intro eq_matI, auto)
+  show ?thesis using A
+  unfolding Gramian_determinant_def
+  by (subst Gramian_matrix_alt_def, force, simp add: Let_def, subst det_mult[of _ n], 
+    auto simp: det_transpose)
+qed
+
+lemma (in gram_schmidt_fs_lin_indpt) det_bound_main: assumes rows: "rows A = fs"
+  and A: "A \<in> carrier_mat n n" 
+  and n0: "n > 0" 
+  and Bnd: "A \<in> Bounded_mat c"  
+shows 
+  "(abs (det A))^2 \<le> of_nat n ^ n * c ^ (2 * n)" 
+proof -
+  from n0 A Bnd have "abs (A $$ (0,0)) \<le> c" by (auto simp: Bounded_mat_def)
+  hence c0: "c \<ge> 0" by auto
+  from n0 A rows have fs: "set fs \<noteq> {}" by (auto simp: rows_def)
+  from rows A have len: "length fs = n" by auto
+  have "(abs (det A))^2 = det A * det A" unfolding power2_eq_square by simp
+  also have "\<dots> = d n" using Gramian_determinant_det[OF A] unfolding rows by simp 
+  also have "\<dots> = (\<Prod>j<n. \<parallel>gso j\<parallel>\<^sup>2)" 
+    by (rule Gramian_determinant(1), auto simp: len)
+  also have "\<dots> \<le> (\<Prod>j<n. N)" 
+    by (rule prod_mono, insert N_gso, auto simp: len)
+  also have "\<dots> = N^n" by simp
+  also have "\<dots> \<le> (of_nat n * c^2)^n" 
+  proof (rule power_mono)
+    show "0 \<le> N" using N_ge_0 len n0 by auto
+    show "N \<le> of_nat n * c^2" unfolding N_def
+    proof (intro Max.boundedI, force, use fs in force, clarify)
+      fix f
+      assume "f \<in> set fs" 
+      from this[folded rows] obtain i where i: "i < n" and f: "f = row A i" 
+        using A unfolding rows_def by auto
+      have "\<parallel>f\<parallel>\<^sup>2 = (\<Sum>x\<leftarrow>list_of_vec (row A i). x^2)" 
+        unfolding f sq_norm_vec_def power2_eq_square by simp
+      also have "list_of_vec (row A i) = map (\<lambda> j. A $$ (i,j)) [0..<n]" 
+        using i A by (intro nth_equalityI, auto)
+      also have "sum_list (map power2 (map (\<lambda>j. A $$ (i, j)) [0..<n])) \<le>
+          sum_list (map (\<lambda> j. c^2) [0..<n])" unfolding map_map o_def
+      proof (intro sum_list_mono)
+        fix j
+        assume "j \<in> set [0 ..< n]" 
+        hence j: "j < n" by auto
+        from Bnd i j A have "\<bar>A $$ (i, j)\<bar> \<le> c" by (auto simp: Bounded_mat_def)
+        thus "(A $$ (i, j))\<^sup>2 \<le> c\<^sup>2"
+          by (meson abs_ge_zero order_trans power2_le_iff_abs_le)
+      qed
+      also have "\<dots> = (\<Sum>j <n. c\<^sup>2)"
+        unfolding interv_sum_list_conv_sum_set_nat by auto
+      also have "\<dots> = of_nat n * c\<^sup>2" by auto
+      finally show "\<parallel>f\<parallel>\<^sup>2 \<le> of_nat n * c\<^sup>2" .
+    qed
+  qed
+  also have "\<dots> = (of_nat n)^n * (c\<^sup>2 ^ n)" by (auto simp: algebra_simps)
+  also have "\<dots> =  of_nat n ^n * c^(2 * n)" unfolding power_mult[symmetric] 
+    by (simp add: ac_simps)
+  finally show ?thesis .
+qed
+
+
+lemma det_bound_hadamard_squared: fixes A::"'a :: trivial_conjugatable_linordered_field mat"
+  assumes A: "A \<in> carrier_mat n n" 
+    and Bnd: "A \<in> Bounded_mat c"  
+  shows "(abs (det A))^2 \<le> of_nat n ^ n * c ^ (2 * n)"
+proof (cases "n > 0")
+  case n: True
+  from n A Bnd have "abs (A $$ (0,0)) \<le> c" by (auto simp: Bounded_mat_def)
+  hence c0: "c \<ge> 0" by auto
+  let ?us = "map (row A) [0 ..< n]"
+  interpret gso: gram_schmidt_fs n ?us .
+  have len: "length ?us = n" by simp
+  have us: "set ?us \<subseteq> carrier_vec n" using A by auto
+  let ?vs = "map gso.gso [0..<n]" 
+  show ?thesis
+  proof (cases "carrier_vec n \<subseteq> gso.span (set ?us)")
+    case False
+    from mat_of_rows_rows[unfolded rows_def,of A] A gram_schmidt.non_span_det_zero[OF len False us]
+    have zero: "det A = 0" by auto
+    show ?thesis unfolding zero using c0 by simp
+  next
+    case True
+    with us len have basis: "gso.basis_list ?us" unfolding gso.basis_list_def by auto
+    note in_dep = gso.basis_list_imp_lin_indpt_list[OF basis]
+    interpret gso: gram_schmidt_fs_lin_indpt n ?us
+      by (standard) (use in_dep gso.lin_indpt_list_def in auto)
+    from gso.det_bound_main[OF _ A n Bnd]
+    show ?thesis using A by (auto simp: rows_def)
+  qed
+next
+  case False
+  with A show ?thesis by auto 
+qed
+
+definition det_bound_hadamard :: "nat \<Rightarrow> int \<Rightarrow> int" where
+  "det_bound_hadamard n c = (sqrt_int_floor ((int n * c^2)^n))" 
+
+lemma det_bound_hadamard_altdef[code]: 
+  "det_bound_hadamard n c = (if n = 1 \<or> even n then int n ^ (n div 2) * (abs c)^n else sqrt_int_floor ((int n * c^2)^n))" 
+proof (cases "n = 1 \<or> even n")
+  case False
+  thus ?thesis unfolding det_bound_hadamard_def by auto
+next
+  case True
+  define thesis where "thesis = ?thesis" 
+  have "thesis \<longleftrightarrow> sqrt_int_floor ((int n * c^2)^n) = int n ^ (n div 2) * abs c^n" 
+    using True unfolding thesis_def det_bound_hadamard_def by auto
+  also have "(int n * c^2)^n = int n^n * c^(2 * n)" 
+    unfolding power_mult[symmetric] power_mult_distrib by (simp add: ac_simps)
+  also have "int n^n = int n ^ (2 * (n div 2))" using True by auto
+  also have "\<dots> * c^(2 * n) = (int n ^ (n div 2) * c^n)^2" 
+    unfolding power_mult_distrib power_mult[symmetric] by (simp add: ac_simps)
+  also have "sqrt_int_floor \<dots> = int n ^ (n div 2) * \<bar>c\<bar> ^ n" 
+    unfolding sqrt_int_floor of_int_power real_sqrt_abs of_int_abs[symmetric] floor_of_int
+     abs_mult power_abs by simp
+  finally have thesis by auto
+  thus ?thesis unfolding thesis_def by auto
+qed
+  
+lemma det_bound_hadamard: "is_det_bound det_bound_hadamard" 
+  unfolding is_det_bound_def
+proof (intro allI impI)
+  fix A :: "int mat" and n c
+  assume A: "A \<in> carrier_mat n n" and BndA: "A \<in> Bounded_mat c"  
+  let ?h = rat_of_int
+  let ?hA = "map_mat ?h A"
+  let ?hc = "?h c" 
+  from A have hA: "?hA \<in> carrier_mat n n" by auto
+  from BndA have Bnd: "?hA \<in> Bounded_mat ?hc" 
+    unfolding Bounded_mat_def 
+    by (auto, unfold of_int_abs[symmetric] of_int_le_iff, auto)
+  have sqrt: "sqrt ((real n * (real_of_int c)\<^sup>2) ^ n) \<ge> 0" 
+    by simp
+  from det_bound_hadamard_squared[OF hA Bnd, unfolded of_int_hom.hom_det of_int_abs[symmetric]]
+  have "?h ( \<bar>det A\<bar>^2) \<le> ?h (int n ^ n * c ^ (2 * n))" by simp
+  from this[unfolded of_int_le_iff]
+  have "\<bar>det A\<bar>^2 \<le> int n ^ n * c ^ (2 * n)" .
+  also have "\<dots> = (int n * c^2)^n" unfolding power_mult power_mult_distrib by simp
+  finally have "\<bar>det A\<bar>\<^sup>2 \<le> (int n * c\<^sup>2) ^ n" by simp
+  hence "sqrt_int_floor (\<bar>det A\<bar>\<^sup>2) \<le> sqrt_int_floor ((int n * c\<^sup>2) ^ n)" 
+    unfolding sqrt_int_floor by (intro floor_mono real_sqrt_le_mono, linarith)
+  also have "sqrt_int_floor (\<bar>det A\<bar>\<^sup>2) = \<bar>det A\<bar>" by (simp del: of_int_abs add: of_int_abs[symmetric])
+  finally show "\<bar>det A\<bar> \<le> det_bound_hadamard n c" unfolding det_bound_hadamard_def by simp
+qed
+
+lemma n_pow_n_le_fact_square: "n ^ n \<le> (fact n)^2" 
+proof -
+  define ii where "ii (i :: nat) = (n + 1 - i)" for i
+  have id: "ii ` {1..n} = {1..n}" unfolding ii_def 
+  proof (auto, goal_cases)
+    case (1 i)
+    hence i: "i = (-) (Suc n) (ii i)" unfolding ii_def by auto
+    show ?case by (subst i, rule imageI, insert 1, auto simp: ii_def)
+  qed
+  have "(fact n) = (\<Prod>{1..n})" 
+    by (simp add: fact_prod)
+  hence "(fact n)^2 = ((\<Prod>{1..n}) * (\<Prod>{1..n}))" by (auto simp: power2_eq_square)
+  also have "\<dots> = ((\<Prod>{1..n}) * prod (\<lambda> i. i) (ii ` {1..n}))" 
+    by (rule arg_cong[of _ _ "\<lambda> x. (_ * x)"], rule prod.cong[OF id[symmetric]], auto) 
+  also have "\<dots> = ((\<Prod>{1..n}) * prod ii {1..n})" 
+    by (subst prod.reindex, auto simp: ii_def inj_on_def)
+  also have "\<dots> = (prod (\<lambda> i. i * ii i) {1..n})" 
+    by (subst prod.distrib, auto)
+  also have "\<dots> \<ge> (prod (\<lambda> i. n) {1..n})" 
+  proof (intro prod_mono conjI, simp)
+    fix i
+    assume i: "i \<in> {1 .. n}" 
+    let ?j = "ii i" 
+    show "n \<le> i * ?j" 
+    proof (cases "i = 1 \<or> i = n")
+      case True
+      thus ?thesis unfolding ii_def by auto
+    next
+      case False
+      hence min: "min i ?j \<ge> 2" using i by (auto simp: ii_def)
+      have max: "n \<le> 2 * max i ?j" using i by (auto simp: ii_def)
+      also have "\<dots> \<le> min i ?j * max i ?j" using min
+        by (intro mult_mono, auto)
+      also have "\<dots> = i * ?j" by (cases "i < ?j", auto simp: ac_simps)
+      finally show ?thesis .
+    qed
+  qed
+  finally show ?thesis by simp
+qed
+
+lemma sqrt_int_floor_bound: "0 \<le> x \<Longrightarrow> (sqrt_int_floor x)^2 \<le> x"
+  unfolding sqrt_int_floor_def
+  using root_int_floor_def root_int_floor_pos_lower by auto
+
+lemma det_bound_hadamard_improves_det_bound_fact: assumes c: "c \<ge> 0" 
+  shows "det_bound_hadamard n c \<le> det_bound_fact n c" 
+proof -
+  have "(det_bound_hadamard n c)^2 \<le> (int n * c\<^sup>2) ^ n" unfolding det_bound_hadamard_def
+    by (rule sqrt_int_floor_bound, auto)
+  also have "\<dots> = int (n ^ n) * c^(2 * n)" by (simp add: power_mult power_mult_distrib)
+  also have "\<dots> \<le> int ((fact n)^2) * c^(2 * n)"
+    by (intro mult_right_mono, unfold of_nat_le_iff, rule n_pow_n_le_fact_square, auto)
+  also have "\<dots> = (det_bound_fact n c)^2" unfolding det_bound_fact_def
+    by (simp add: power_mult_distrib power_mult[symmetric] ac_simps)
+  finally have "abs (det_bound_hadamard n c) \<le> abs (det_bound_fact n c)" 
+    unfolding abs_le_square_iff .
+  hence "det_bound_hadamard n c \<le> abs (det_bound_fact n c)" by simp
+  also have "\<dots> = det_bound_fact n c" unfolding det_bound_fact_def using c by auto
+  finally show ?thesis .
+qed  
+
+context
+begin
+private fun syl :: "int \<Rightarrow> nat \<Rightarrow> int mat" where
+  "syl c 0 = mat 1 1 (\<lambda> _. c)" 
+| "syl c (Suc n) = (let A = syl c n in
+     four_block_mat A A (-A) A)" 
+
+private lemma syl: assumes c: "c \<ge> 0" 
+  shows "syl c n \<in> Bounded_mat c \<and> syl c n \<in> carrier_mat (2^n) (2^n)
+    \<and> det (syl c n) = det_bound_hadamard (2^n) c"
+proof (cases "n = 0")
+  case True
+  thus ?thesis using c 
+    unfolding det_bound_hadamard_altdef 
+    by (auto simp: Bounded_mat_def det_single)
+next
+  case False
+  then obtain m where n: "n = Suc m" by (cases n, auto)
+  show ?thesis unfolding n
+  proof (induct m)
+    case 0
+    show ?case unfolding syl.simps Let_def using c
+      apply (subst det_four_block_mat[of _ 1]; force?)
+      apply (subst det_single, 
+        auto simp: Bounded_mat_def scalar_prod_def det_bound_hadamard_altdef power2_eq_square)
+      done
+  next
+    case (Suc m)
+    define A where "A = syl c (Suc m)" 
+    let ?FB = "four_block_mat A A (- A) A" 
+    define n :: nat where "n = 2 ^ Suc m" 
+    from Suc[folded A_def n_def]
+    have Bnd: "A \<in> Bounded_mat c" 
+      and A: "A \<in> carrier_mat n n" 
+      and detA: "det A = det_bound_hadamard n c" 
+      by auto
+    have n2: "2 ^ Suc (Suc m) = 2 * n" unfolding n_def by auto
+    show ?case unfolding syl.simps(2)[of _ "Suc m"] A_def[symmetric] Let_def n2
+    proof (intro conjI)
+      show "?FB \<in> carrier_mat (2 * n) (2 * n)" using A by auto
+      show "?FB \<in> Bounded_mat c" using Bnd A unfolding Bounded_mat_elements_mat
+        by (subst elements_four_block_mat_id, auto)
+      have ev: "even n" and sum: "n div 2 + n div 2 = n" unfolding n_def by auto
+      have n2: "n * 2 = n + n" by simp
+      have "det ?FB = det (A * A - A * - A)"
+        by (rule det_four_block_mat[OF A A _ A], insert A, auto)
+      also have "A * A - A * - A = A * A + A * A" using A by auto
+      also have "\<dots> = 2 \<cdot>\<^sub>m (A * A)" using A by auto
+      also have "det \<dots> = 2^n * det (A * A)"
+        by (subst det_smult, insert A, auto)
+      also have "det (A * A) = det A * det A" by (rule det_mult[OF A A])
+      also have "2^n * \<dots> = det_bound_hadamard (2 * n) c" unfolding detA
+        unfolding det_bound_hadamard_altdef by (simp add: ev ac_simps power_add[symmetric] sum n2)
+      finally show "det ?FB = det_bound_hadamard (2 * n) c" .
+    qed
+  qed
+qed
+
+lemma det_bound_hadamard_tight: 
+    assumes c: "c \<ge> 0" 
+      and "n = 2^m" 
+    shows "\<exists> A. A \<in> carrier_mat n n \<and> A \<in> Bounded_mat c \<and> det A = det_bound_hadamard n c" 
+  by (rule exI[of _ "syl c m"], insert syl[OF c, of m, folded assms(2)], auto)
+end
+
+lemma Ints_matE: assumes "A \<in> \<int>\<^sub>m" 
+  shows "\<exists> B. A = map_mat of_int B" 
+proof -
+  have "\<forall> ij. \<exists> x. fst ij < dim_row A \<longrightarrow> snd ij < dim_col A \<longrightarrow> A $$ ij = of_int x" 
+    using assms unfolding Ints_mat_def Ints_def by auto
+  from choice[OF this] obtain f where 
+    f: "\<forall> i j. i < dim_row A \<longrightarrow> j < dim_col A \<longrightarrow> A $$ (i,j) = of_int (f (i,j))" 
+    by auto
+  show ?thesis
+    by (intro exI[of _ "mat (dim_row A) (dim_col A) f"] eq_matI, insert f, auto)
+qed
+  
+lemma is_det_bound_of_int: fixes A :: "'a :: linordered_idom mat" 
+  assumes db: "is_det_bound db" 
+  and A: "A \<in> carrier_mat n n" 
+  and "A \<in> \<int>\<^sub>m \<inter> Bounded_mat (of_int bnd)" 
+shows "abs (det A) \<le> of_int (db n bnd)" 
+proof -
+  from assms have "A \<in> \<int>\<^sub>m" by auto
+  from Ints_matE[OF this] obtain B where
+    AB: "A = map_mat of_int B" by auto
+  from assms have "A \<in> Bounded_mat (of_int bnd)" by auto
+  hence "B \<in> Bounded_mat bnd" unfolding AB Bounded_mat_elements_mat 
+    by (auto simp flip: of_int_abs)
+  from db[unfolded is_det_bound_def, rule_format, OF _ this, of n] AB A
+  have "\<bar>det B\<bar> \<le> db n bnd" by auto
+  thus ?thesis unfolding AB of_int_hom.hom_det 
+    by (simp flip: of_int_abs)
+qed
+  
+
 
 lemma minus_in_Bounded_vec[simp]:
   "(-x) \<in> Bounded_vec b \<longleftrightarrow> x \<in> Bounded_vec b"

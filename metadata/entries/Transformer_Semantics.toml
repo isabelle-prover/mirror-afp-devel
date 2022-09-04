@@ -2,7 +2,7 @@ title = "Transformer Semantics"
 date = 2018-12-11
 topics = [
   "Mathematics/Algebra",
-  "Computer science/Semantics",
+  "Computer science/Semantics and reasoning",
 ]
 abstract = """
 These mathematical components formalise predicate transformer
@@ -31,3 +31,5 @@ struth = "struth_email"
 [history]
 
 [extra]
+
+[related]

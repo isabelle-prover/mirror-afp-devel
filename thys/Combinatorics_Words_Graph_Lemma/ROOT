@@ -3,6 +3,7 @@ chapter AFP
 session Combinatorics_Words_Graph_Lemma (AFP) = Combinatorics_Words +
   options [timeout = 300]
   theories
+    Glued_Codes
     Graph_Lemma
   document_files
     root.tex

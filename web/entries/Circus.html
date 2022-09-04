@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,8 +87,8 @@
     <span class='first'>I</span>sabelle/<span class='first'>C</span>ircus</h1>
   <div>
     
-    <p><a href="../authors/feliachi">Abderrahmane Feliachi</a> <a href="mailto:abderrahmane.feliachi@lri.fr">📧</a>, <a href="../authors/wolff">Burkhart Wolff</a> <a href="mailto:burkhart.wolff@lri.fr">📧</a> and <a href="../authors/gaudel">Marie-Claude Gaudel</a> <a href="mailto:mcg@lri.fr">📧</a>
-      with contributions from <a href="../authors/wenzel">Makarius Wenzel</a> <a href="mailto:Makarius.wenzel@lri.fr">📧</a>
+    <p><a href="../authors/feliachi">Abderrahmane Feliachi</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsiYWJkZXJyYWhtYW5lIiwiZmVsaWFjaGkiXX0=">📧</a>, <a href="../authors/wolff">Burkhart Wolff</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsiYnVya2hhcnQiLCJ3b2xmZiJdfQ==">📧</a> and <a href="../authors/gaudel">Marie-Claude Gaudel</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsibWNnIl19">📧</a>
+      with contributions from <a href="../authors/wenzel">Makarius Wenzel</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsiTWFrYXJpdXMiLCJ3ZW56ZWwiXX0=">📧</a>
     </p>
     
     
@@ -98,9 +99,10 @@
 
   <div class="abstract mathjax_process">The Circus specification language combines elements for complex data and behavior specifications, using an integration of Z and CSP with a refinement calculus. Its semantics is based on Hoare and He's Unifying Theories of Programming (UTP). Isabelle/Circus is a formalization of the UTP and the Circus language in Isabelle/HOL. It contains proof rules and tactic support that allows for proofs of refinement for Circus processes (involving both data and behavioral aspects).
 <p>
-The Isabelle/Circus environment supports a syntax for the semantic definitions which is close to textbook presentations of Circus. This article contains an extended version of corresponding VSTTE Paper together with the complete formal development of its underlying commented theories.</div>BSD License<h3>Change history</h3>
-
-  <p>[2014-06-05] More polishing, shorter proofs, added Circus syntax, added Makarius Wenzel as contributor.</p><h3>Topics</h3>
+The Isabelle/Circus environment supports a syntax for the semantic definitions which is close to textbook presentations of Circus. This article contains an extended version of corresponding VSTTE Paper together with the complete formal development of its underlying commented theories.</div>BSD License<h3>Change history</h3><p>
+    <h4>June 5, 2014</h4>
+    More polishing, shorter proofs, added Circus syntax, added Makarius Wenzel as contributor.
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/concurrency/process-calculi">Computer science/Concurrency/Process calculi</a></li><li><a href="../topics/computer-science/system-description-languages">Computer science/System description languages</a></li></ul>
   <h3>Theories of Circus</h3>
   <ul>
@@ -121,7 +123,7 @@ The Isabelle/Circus environment supports a syntax for the semantic definitions w
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Circus/outline.pdf">Proof
@@ -130,23 +132,23 @@ The Isabelle/Circus environment supports a syntax for the semantic definitions w
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Circus/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Circus-AFP</p><pre id="copyText">@article{Circus-AFP,
-  author  = {Abderrahmane Feliachi, Burkhart Wolff and Marie-Claude Gaudel},
+      <p style="display:none;" id="bibtex-filename">Circus-AFP</p><pre id="copy-text">@article{Circus-AFP,
+  author  = {Abderrahmane Feliachi and Burkhart Wolff and Marie-Claude Gaudel},
   title   = {Isabelle/Circus},
   journal = {Archive of Formal Proofs},
-  month   = May,
-  year    = 2012,
+  month   = {May},
+  year    = {2012},
   note    = {\url{https://isa-afp.org/entries/Circus.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -156,8 +158,37 @@ The Isabelle/Circus environment supports a syntax for the semantic definitions w
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Circus-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Circus-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Circus-2012-05-29.tar.gz">May 29, 2012</a>: Isabelle2012
+      </li></ul>
   </div>
 </div>
     </div>

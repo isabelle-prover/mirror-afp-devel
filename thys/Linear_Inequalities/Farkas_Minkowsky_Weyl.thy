@@ -1,7 +1,7 @@
 section \<open>The Theorem of Farkas, Minkowsky and Weyl\<close>
 
 text \<open>We prove the theorem of Farkas, Minkowsky and Weyl that a cone is finitely generated
-  iff it is polyhedral. Moreover, we provide quantative bounds.\<close>
+  iff it is polyhedral. Moreover, we provide quantative bounds via determinant bounds.\<close>
 
 theory Farkas_Minkowsky_Weyl
   imports Fundamental_Theorem_Linear_Inequalities
@@ -18,9 +18,10 @@ lemma farkas_minkowsky_weyl_theorem_1_full_dim:
     and fin: "finite X"
     and span: "span X = carrier_vec n"
   shows "\<exists> nr A. A \<in> carrier_mat nr n \<and> cone X = polyhedral_cone A
-  \<and> (X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd \<longrightarrow> A \<in> \<int>\<^sub>m \<inter> Bounded_mat (det_bound (n-1) Bnd))"
+  \<and> (is_det_bound db \<longrightarrow> X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (of_int Bnd) \<longrightarrow> A \<in> \<int>\<^sub>m \<inter> Bounded_mat (of_int (db (n-1) Bnd)))"
 proof -
   define cond where "cond = (\<lambda> W. Suc (card W) = n \<and> lin_indpt W \<and> W \<subseteq> X)"
+  let ?oi = "of_int :: int \<Rightarrow> 'a" 
   {
     fix W
     assume "cond W"
@@ -28,7 +29,7 @@ proof -
       using finite_subset[OF _ fin] X by auto
     note nv = normal_vector[OF *]
     hence "normal_vector W \<in> carrier_vec n" "\<And> w. w \<in> W \<Longrightarrow> normal_vector W \<bullet> w = 0"
-      "normal_vector W \<noteq> 0\<^sub>v n" "X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd \<Longrightarrow> normal_vector W \<in> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n - 1) Bnd)"
+      "normal_vector W \<noteq> 0\<^sub>v n" "is_det_bound db \<Longrightarrow> X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi Bnd) \<Longrightarrow> normal_vector W \<in> \<int>\<^sub>v \<inter> Bounded_vec (?oi (db (n - 1) Bnd))"
       using WX by blast+
   } note condD = this
   define Ns where "Ns = { normal_vector W | W. cond W \<and> (\<forall> w \<in> X. normal_vector W \<bullet> w \<ge> 0) }
@@ -63,7 +64,7 @@ proof -
       by (intro Collect_cong conj_cong refl, unfold not_le[symmetric] not_ex not_conj not_not id, blast)
     finally show "cone X = polyhedral_cone (- A)" ..
     {
-      assume XI: "X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd"
+      assume XI: "X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi Bnd)" and db: "is_det_bound db" 
       {
         fix v
         assume "v \<in> set (rows (- A))"
@@ -74,12 +75,12 @@ proof -
         from cW[unfolded cond_def] have WX: "W \<subseteq> X" by auto
         from v have v: "v = normal_vector W \<or> v = - normal_vector W"
           by (metis uminus_uminus_vec)
-        from condD(4)[OF cW XI]
-        have "normal_vector W \<in> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n - 1) Bnd)" by auto
-        hence "v \<in> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n - 1) Bnd)" using v by auto
+        from condD(4)[OF cW db XI]
+        have "normal_vector W \<in> \<int>\<^sub>v \<inter> Bounded_vec (?oi (db (n - 1) Bnd))" by auto
+        hence "v \<in> \<int>\<^sub>v \<inter> Bounded_vec (?oi (db (n - 1) Bnd))" using v by auto
       }
-      hence "set (rows (- A)) \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n - 1) Bnd)" by blast
-      thus "- A \<in> \<int>\<^sub>m \<inter> Bounded_mat (det_bound (n - 1) Bnd)" by simp
+      hence "set (rows (- A)) \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi (db (n - 1) Bnd))" by blast
+      thus "- A \<in> \<int>\<^sub>m \<inter> Bounded_mat (?oi (db (n - 1) Bnd))" by simp
     }
   qed
 qed
@@ -92,8 +93,9 @@ lemma farkas_minkowsky_weyl_theorem_1:
   assumes X: "X \<subseteq> carrier_vec n"
     and finX: "finite X"
   shows "\<exists> nr A. A \<in> carrier_mat nr n \<and> cone X = polyhedral_cone A \<and>
-    (X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd \<longrightarrow> A \<in> \<int>\<^sub>m \<inter> Bounded_mat (det_bound (n-1) (max 1 Bnd)))"
+    (is_det_bound db \<longrightarrow> X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (of_int Bnd) \<longrightarrow> A \<in> \<int>\<^sub>m \<inter> Bounded_mat (of_int (db (n-1) (max 1 Bnd))))"
 proof -
+  let ?oi = "of_int :: int \<Rightarrow> 'a" 
   from exists_lin_indpt_sublist[OF X]
   obtain Ls where lin_Ls: "lin_indpt_list Ls" and
     spanL: "span (set Ls) = span X" and LX: "set Ls \<subseteq> X" by auto
@@ -105,17 +107,17 @@ proof -
     and len_Ls_Bs: "length (Ls @ Bs) = n"
     by auto
   note nv = normal_vectors[OF lin_Ls, folded Ns_def]
-  from nv(1-6) nv(7)[of Bnd]
+  from nv(1-6) nv(7)[of db Bnd]
   have N: "set Ns \<subseteq> carrier_vec n"
     and LN': "lin_indpt_list (Ls @ Ns)" "length (Ls @ Ns) = n"
     and ortho: "\<And> l w. l \<in> set Ls \<Longrightarrow> w \<in> set Ns \<Longrightarrow> w \<bullet> l = 0"
-    and Ns_bnd: "set Ls \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd
-     \<Longrightarrow> set Ns \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n-1) (max 1 Bnd))"
+    and Ns_bnd: "is_det_bound db \<Longrightarrow> set Ls \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi Bnd)
+     \<Longrightarrow> set Ns \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi (db (n-1) (max 1 Bnd)))"
     by auto
   from lin_indpt_list_length_eq_n[OF LN']
   have spanLN: "span (set Ls \<union> set Ns) = carrier_vec n" by auto
-  let ?Bnd = "Bounded_vec (det_bound (n-1) (max 1 Bnd))"
-  let ?Bndm = "Bounded_mat (det_bound (n-1) (max 1 Bnd))"
+  let ?Bnd = "Bounded_vec (?oi (db (n-1) (max 1 Bnd)))"
+  let ?Bndm = "Bounded_mat (?oi (db (n-1) (max 1 Bnd)))"
   define Y where "Y = X \<union> set Bs"
   from lin_Ls_Bs[unfolded lin_indpt_list_def] have
     Ls: "set Ls \<subseteq> carrier_vec n" and
@@ -140,7 +142,7 @@ proof -
   have finY: "finite Y" using finX unfolding Y_def by auto
   from farkas_minkowsky_weyl_theorem_1_full_dim[OF Y finY span]
   obtain A nr where A: "A \<in> carrier_mat nr n" and YA: "cone Y = polyhedral_cone A"
-    and Y_Ints: "Y \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (max 1 Bnd) \<Longrightarrow> A \<in> \<int>\<^sub>m \<inter> ?Bndm" by blast
+    and Y_Ints: "is_det_bound db \<Longrightarrow> Y \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi (max 1 Bnd)) \<Longrightarrow> A \<in> \<int>\<^sub>m \<inter> ?Bndm" by blast
   have fin: "finite ({row A i | i. i < nr} \<union> set Ns \<union> uminus ` set Ns)" by auto
   from finite_list[OF this] obtain rs where rs_def: "set rs = {row A i |i. i < nr} \<union> set Ns \<union> uminus ` set Ns" by auto
   from A N have rs: "set rs \<subseteq> carrier_vec n" unfolding rs_def by auto
@@ -182,15 +184,15 @@ proof -
     also have "\<dots> = cone X" unfolding Y_def
       by (rule orthogonal_cone(1)[OF X N finX spanLN ortho refl spanL LX lin_Ls_Bs len_Ls_Bs])
     finally show "cone X = polyhedral_cone B" ..
-    assume X_I: "X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd"
-    with LX have "set Ls \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd" by auto
-    from Ns_bnd[OF this] have N_I_Bnd: "set Ns \<subseteq> \<int>\<^sub>v \<inter> ?Bnd" by auto
+    assume X_I: "X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi Bnd)" and db: "is_det_bound db" 
+    with LX have "set Ls \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi Bnd)" by auto
+    from Ns_bnd[OF db this] have N_I_Bnd: "set Ns \<subseteq> \<int>\<^sub>v \<inter> ?Bnd" by auto
     from lin_Ls_Bs have linLs: "lin_indpt_list Ls" unfolding lin_indpt_list_def
       using subset_li_is_li[of _ "set Ls"] by auto
     from X_I LX have L_I: "set Ls \<subseteq> \<int>\<^sub>v" by auto
-    have Y_I: "Y \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (max 1 Bnd)" unfolding Y_def using X_I BU
-        Bounded_vec_mono[of Bnd "max 1 Bnd"] by (auto simp: unit_vecs_def Ints_vec_def)
-    from Y_Ints[OF Y_I]
+    have Y_I: "Y \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi (max 1 Bnd))" unfolding Y_def using X_I order.trans[OF BU unit_vec_int_bounds, of Bnd]
+        Bounded_vec_mono[of "?oi Bnd" "?oi (max 1 Bnd)"] by auto
+    from Y_Ints[OF db Y_I]
     have A_I_Bnd: "set (rows A) \<subseteq> \<int>\<^sub>v \<inter> ?Bnd" by auto
     have "set (rows B) = set (rows (mat_of_rows n rs))" unfolding B_def by auto
     also have "\<dots> = set rs" using rs by auto
@@ -205,17 +207,18 @@ text \<open>Now for the other direction.\<close>
 lemma farkas_minkowsky_weyl_theorem_2:
   assumes A: "A \<in> carrier_mat nr n"
   shows "\<exists> X. X \<subseteq> carrier_vec n \<and> finite X \<and> polyhedral_cone A = cone X
-    \<and> (A \<in> \<int>\<^sub>m \<inter> Bounded_mat Bnd \<longrightarrow> X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n-1) (max 1 Bnd)))"
+    \<and> (is_det_bound db \<longrightarrow> A \<in> \<int>\<^sub>m \<inter> Bounded_mat (of_int Bnd) \<longrightarrow> X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (of_int (db (n-1) (max 1 Bnd))))"
 proof -
+  let ?oi = "of_int :: int \<Rightarrow> 'a" 
   let ?rows_A = "{row A i | i. i < nr}"
-  let ?Bnd = "Bounded_vec (det_bound (n-1) (max 1 Bnd))"
+  let ?Bnd = "Bounded_vec (?oi (db (n-1) (max 1 Bnd)))"
   have rows_A_n: "?rows_A \<subseteq> carrier_vec n" using row_carrier_vec A by auto
   hence "\<exists> mr B. B \<in> carrier_mat mr n \<and> cone ?rows_A = polyhedral_cone B
-    \<and> (?rows_A \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd \<longrightarrow> set (rows B) \<subseteq> \<int>\<^sub>v \<inter> ?Bnd)"
+    \<and> (is_det_bound db \<longrightarrow> ?rows_A \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi Bnd) \<longrightarrow> set (rows B) \<subseteq> \<int>\<^sub>v \<inter> ?Bnd)"
     using farkas_minkowsky_weyl_theorem_1[of ?rows_A] by auto
   then obtain mr B
     where mr: "B \<in> carrier_mat mr n" and B: "cone ?rows_A = polyhedral_cone B"
-      and Bnd: "?rows_A \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd \<Longrightarrow> set (rows B) \<subseteq> \<int>\<^sub>v \<inter> ?Bnd"
+      and Bnd: "is_det_bound db \<Longrightarrow> ?rows_A \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi Bnd) \<Longrightarrow> set (rows B) \<subseteq> \<int>\<^sub>v \<inter> ?Bnd"
     by blast
   let ?rows_B = "{row B i | i. i < mr}"
   have rows_B: "?rows_B \<subseteq> carrier_vec n" using mr by auto
@@ -307,9 +310,9 @@ proof -
   moreover {
     have rA: "set (rows A) = ?rows_A" using A unfolding rows_def by auto
     have rB: "set (rows B) = ?rows_B" using mr unfolding rows_def by auto
-    assume "A \<in> \<int>\<^sub>m \<inter> Bounded_mat Bnd"
-    hence "set (rows A) \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd" by simp
-    from Bnd[OF this[unfolded rA]]
+    assume "A \<in> \<int>\<^sub>m \<inter> Bounded_mat (?oi Bnd)" and db: "is_det_bound db"
+    hence "set (rows A) \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi Bnd)" by simp
+    from Bnd[OF db this[unfolded rA]]
     have "?rows_B \<subseteq> \<int>\<^sub>v \<inter> ?Bnd" unfolding rA rB .
   }
   ultimately show ?thesis by blast

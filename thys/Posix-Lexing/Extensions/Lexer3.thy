@@ -405,14 +405,14 @@ where
     \<not>(\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> (s1 @ s\<^sub>3) \<in> lang r \<and> s\<^sub>4 \<in> lang (Star r))\<rbrakk>
     \<Longrightarrow> (s1 @ s2) \<in> Star r \<rightarrow> Stars (v # vs)"
 | Posix_Star2: "[] \<in> Star r \<rightarrow> Stars []"
-| Posix_NTimes1: "\<lbrakk>s1 \<in> r \<rightarrow> v; s2 \<in> NTimes r (n - 1) \<rightarrow> Stars vs; flat v \<noteq> []; 0 < n;
-    \<not>(\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> (s1 @ s\<^sub>3) \<in> lang r \<and> s\<^sub>4 \<in> lang (NTimes r (n - 1)))\<rbrakk>
-    \<Longrightarrow> (s1 @ s2) \<in> NTimes r n \<rightarrow> Stars (v # vs)"
+| Posix_NTimes1: "\<lbrakk>s1 \<in> r \<rightarrow> v; s2 \<in> NTimes r n \<rightarrow> Stars vs; flat v \<noteq> []; 
+    \<not>(\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> (s1 @ s\<^sub>3) \<in> lang r \<and> s\<^sub>4 \<in> lang (NTimes r n))\<rbrakk>
+    \<Longrightarrow> (s1 @ s2) \<in> NTimes r (n + 1) \<rightarrow> Stars (v # vs)"
 | Posix_NTimes2: "\<lbrakk>\<forall>v \<in> set vs. [] \<in> r \<rightarrow> v; length vs = n\<rbrakk>
     \<Longrightarrow> [] \<in> NTimes r n \<rightarrow> Stars vs" 
-| Posix_Upto1: "\<lbrakk>s1 \<in> r \<rightarrow> v; s2 \<in> Upto r (n - 1) \<rightarrow> Stars vs; flat v \<noteq> []; 0 < n;
-    \<not>(\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> (s1 @ s\<^sub>3) \<in> lang r \<and> s\<^sub>4 \<in> lang (Upto r (n - 1)))\<rbrakk>
-    \<Longrightarrow> (s1 @ s2) \<in> Upto r n \<rightarrow> Stars (v # vs)"
+| Posix_Upto1: "\<lbrakk>s1 \<in> r \<rightarrow> v; s2 \<in> Upto r n \<rightarrow> Stars vs; flat v \<noteq> [];
+    \<not>(\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> (s1 @ s\<^sub>3) \<in> lang r \<and> s\<^sub>4 \<in> lang (Upto r n))\<rbrakk>
+    \<Longrightarrow> (s1 @ s2) \<in> Upto r (n + 1) \<rightarrow> Stars (v # vs)"
 | Posix_Upto2: "[] \<in> Upto r n \<rightarrow> Stars []"
 | Posix_From2: "\<lbrakk>\<forall>v \<in> set vs. [] \<in> r \<rightarrow> v; length vs = n\<rbrakk>
     \<Longrightarrow> [] \<in> From r n \<rightarrow> Stars vs"
@@ -441,8 +441,7 @@ lemma Posix1:
 using assms
   apply (induct s r v rule: Posix.induct) 
   apply(auto simp add: pow_empty_iff)
-  apply (metis Suc_pred concI lang_pow.simps(2))
-  apply(meson ex_in_conv set_empty)
+  apply (meson ex_in_conv set_empty)
   apply(metis Suc_pred atMost_iff concI lang_pow.simps(2) not_less_eq_eq)
   apply (meson atLeast_iff dual_order.refl in_set_conv_nth)
   apply (metis Suc_le_mono Suc_pred atLeast_iff concI lang_pow.simps(2))
@@ -463,7 +462,7 @@ using assms
   apply(subst append.simps(2)[symmetric])
   apply(rule Prf.intros)
   apply(auto)
-  apply (metis (mono_tags, lifting) Prf.intros(8) Prf_elims(8) Suc_le_mono Suc_pred length_Cons set_ConsD val.inject(5))
+  apply (metis (no_types, lifting) Prf.intros(8) Prf_elims(8) Suc_le_mono length_Cons set_ConsD val.inject(5))
   apply (metis Posix1(2) Prf.intros(9) append_Nil empty_iff list.set(1))
   apply(erule Prf_elims)
   apply(auto)
@@ -578,31 +577,31 @@ next
     by (meson in_set_zipE)
 next
   case (Posix_NTimes1 s1 r v s2 n vs)
-  have "(s1 @ s2) \<in> NTimes r n \<rightarrow> v2" 
-       "s1 \<in> r \<rightarrow> v" "s2 \<in> NTimes r (n - 1) \<rightarrow> Stars vs" "flat v \<noteq> []"
-       "\<not> (\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> s1 @ s\<^sub>3 \<in> lang r \<and> s\<^sub>4 \<in> lang (NTimes r (n - 1 )))" by fact+
-  then obtain v' vs' where "v2 = Stars (v' # vs')" "s1 \<in> r \<rightarrow> v'" "s2 \<in> (NTimes r (n - 1)) \<rightarrow> (Stars vs')"
+  have "(s1 @ s2) \<in> NTimes r (n + 1) \<rightarrow> v2" 
+       "s1 \<in> r \<rightarrow> v" "s2 \<in> NTimes r n \<rightarrow> Stars vs" "flat v \<noteq> []"
+       "\<not> (\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> s1 @ s\<^sub>3 \<in> lang r \<and> s\<^sub>4 \<in> lang (NTimes r n))" by fact+
+  then obtain v' vs' where "v2 = Stars (v' # vs')" "s1 \<in> r \<rightarrow> v'" "s2 \<in> (NTimes r n) \<rightarrow> (Stars vs')"
   apply(cases) apply (auto simp add: append_eq_append_conv2)
     using Posix1(1) apply fastforce
-    apply (metis One_nat_def Posix1(1) Posix_NTimes1.hyps(7) append.right_neutral append_self_conv2)
+    apply (metis Posix1(1) Posix_NTimes1.hyps(6) append.right_neutral append_Nil)
   using Posix1(2) by blast
   moreover
   have IHs: "\<And>v2. s1 \<in> r \<rightarrow> v2 \<Longrightarrow> v = v2"
-            "\<And>v2. s2 \<in> NTimes r (n - 1) \<rightarrow> v2 \<Longrightarrow> Stars vs = v2" by fact+
+            "\<And>v2. s2 \<in> NTimes r n \<rightarrow> v2 \<Longrightarrow> Stars vs = v2" by fact+
   ultimately show "Stars (v # vs) = v2" by auto
 next
   case (Posix_Upto1 s1 r v s2 n vs)
-  have "(s1 @ s2) \<in> Upto r n \<rightarrow> v2" 
-       "s1 \<in> r \<rightarrow> v" "s2 \<in> Upto r (n - 1) \<rightarrow> Stars vs" "flat v \<noteq> []"
-       "\<not> (\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> s1 @ s\<^sub>3 \<in> lang r \<and> s\<^sub>4 \<in> lang (Upto r (n - 1)))" by fact+
-  then obtain v' vs' where "v2 = Stars (v' # vs')" "s1 \<in> r \<rightarrow> v'" "s2 \<in> (Upto r (n - 1)) \<rightarrow> (Stars vs')"
+  have "(s1 @ s2) \<in> Upto r (n + 1) \<rightarrow> v2" 
+       "s1 \<in> r \<rightarrow> v" "s2 \<in> Upto r n \<rightarrow> Stars vs" "flat v \<noteq> []"
+       "\<not> (\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> s1 @ s\<^sub>3 \<in> lang r \<and> s\<^sub>4 \<in> lang (Upto r n))" by fact+
+  then obtain v' vs' where "v2 = Stars (v' # vs')" "s1 \<in> r \<rightarrow> v'" "s2 \<in> (Upto r n) \<rightarrow> (Stars vs')"
     apply(cases) apply (auto simp add: append_eq_append_conv2)
     using Posix1(1) apply fastforce
-    apply (metis One_nat_def Posix1(1) Posix_Upto1.hyps(7) append_Nil2 self_append_conv2)
+    apply (metis Posix1(1) Posix_Upto1.hyps(6) append.right_neutral append_Nil)
   using Posix1(2) by blast
   moreover
   have IHs: "\<And>v2. s1 \<in> r \<rightarrow> v2 \<Longrightarrow> v = v2"
-            "\<And>v2. s2 \<in> Upto r (n - 1) \<rightarrow> v2 \<Longrightarrow> Stars vs = v2" by fact+
+            "\<And>v2. s2 \<in> Upto r n \<rightarrow> v2 \<Longrightarrow> Stars vs = v2" by fact+
   ultimately show "Stars (v # vs) = v2" by auto
 next
   case (Posix_Upto2 r n)
@@ -840,7 +839,7 @@ next
             by (simp add: lang_deriv Deriv_def)
         ultimately 
         have "((c # s1) @ s2) \<in> NTimes r n \<rightarrow> Stars (injval r c v1 # vs)"
-          by (meson Posix_NTimes1 cons(5)) 
+          by (metis One_nat_def Posix_NTimes1 Suc_pred add.commute cons(5) plus_1_eq_Suc)
         then show "(c # s) \<in> NTimes r n \<rightarrow> injval (NTimes r n) c v" using cons by(simp)
       qed  
 next
@@ -849,7 +848,7 @@ next
   have "s \<in> deriv c (Upto r n) \<rightarrow> v" by fact
   then consider
       (cons) v1 vs s1 s2 where 
-        "v = Seq v1 (Stars vs)" "s = s1 @ s2" "0 < n"
+        "v = Seq v1 (Stars vs)" "s = s1 @ s2" 
         "s1 \<in> deriv c r \<rightarrow> v1" "s2 \<in> (Upto r (n - 1)) \<rightarrow> (Stars vs)"
         "\<not> (\<exists>s\<^sub>3 s\<^sub>4. s\<^sub>3 \<noteq> [] \<and> s\<^sub>3 @ s\<^sub>4 = s2 \<and> s1 @ s\<^sub>3 \<in> lang (deriv c r) \<and> s\<^sub>4 \<in> lang (Upto r (n - 1)))" 
     apply(auto elim!: Posix_elims simp add: lang_deriv Deriv_def intro: Posix.intros)    
@@ -858,7 +857,7 @@ next
     using Posix_elims(1) apply blast
     apply(erule_tac Posix_elims)
     apply(auto)
-    by (metis Posix1a Prf_elims(8) UN_E cons diff_Suc_1 lang.simps(8) zero_less_Suc)
+    by (metis Posix1a Prf_elims(8) UN_E cons diff_Suc_1 lang.simps(8))
     then show "(c # s) \<in> Upto r n \<rightarrow> injval (Upto r n) c v" 
     proof (cases)
       case cons
@@ -876,7 +875,7 @@ next
             by (simp add: lang_deriv Deriv_def)
         ultimately 
         have "((c # s1) @ s2) \<in> Upto r n \<rightarrow> Stars (injval r c v1 # vs)"
-          by (meson Posix_Upto1 cons(3)) 
+          by (metis One_nat_def Posix_Upto1 Posix_elims(1) Suc_pred Upto.prems add.commute bot_nat_0.not_eq_extremum deriv.simps(8) plus_1_eq_Suc)
         then show "(c # s) \<in> Upto r n \<rightarrow> injval (Upto r n) c v" using cons by(simp)
       qed
 next

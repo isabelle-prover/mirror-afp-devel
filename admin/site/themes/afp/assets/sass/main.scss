@@ -168,6 +168,7 @@ aside {
   }
 
   a:not(.entity_ref) {
+    &.link,
     &:link,
     &:visited {
       color: $white;
@@ -523,6 +524,7 @@ header {
     color: $white;
   }
 
+  &.link,
   &:link {
     border: none;
     padding: 0.75rem 0;
@@ -542,6 +544,7 @@ header {
 }
 
 a:not(.entity_ref) {
+  &.link,
   &:link {
     color: $link;
     text-decoration: none;
@@ -940,6 +943,18 @@ iframe {
       animation: loader 2s linear infinite;
     }
   }
+}
+
+.obfuscated {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.rev {
+  unicode-bidi: bidi-override;
+  direction: rtl;
 }
 
 @keyframes loader {

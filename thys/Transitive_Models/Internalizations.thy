@@ -2,10 +2,12 @@ section\<open>Aids to internalize formulas\<close>
 
 theory Internalizations
   imports
-    "ZF-Constructible.DPow_absolute"
+    DPow_absolute
     Synthetic_Definition
     Nat_Miscellanea
 begin
+
+hide_const (open) Order.pred
 
 definition
   infinity_ax :: "(i \<Rightarrow> o) \<Rightarrow> o" where

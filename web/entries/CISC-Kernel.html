@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +87,7 @@
     <span class='first'>F</span>ormal <span class='first'>S</span>pecification of a <span class='first'>G</span>eneric <span class='first'>S</span>eparation <span class='first'>K</span>ernel</h1>
   <div>
     
-    <p><a href="../authors/verbeek">Freek Verbeek</a> <a href="mailto:Freek.Verbeek@ou.nl">📧</a>, <a href="../authors/tverdyshev">Sergey Tverdyshev</a> <a href="mailto:stv@sysgo.com">📧</a>, <a href="../authors/havle">Oto Havle</a> <a href="mailto:oha@sysgo.com">📧</a>, <a href="../authors/blasum">Holger Blasum</a> <a href="mailto:holger.blasum@sysgo.com">📧</a>, <a href="../authors/langenstein">Bruno Langenstein</a> <a href="mailto:langenstein@dfki.de">📧</a>, <a href="../authors/stephan">Werner Stephan</a> <a href="mailto:stephan@dfki.de">📧</a>, <a href="../authors/nemouchi">Yakoub Nemouchi</a> <a href="mailto:nemouchi@lri.fr">📧</a>, <a href="../authors/feliachi">Abderrahmane Feliachi</a> <a href="mailto:abderrahmane.feliachi@lri.fr">📧</a>, <a href="../authors/wolff">Burkhart Wolff</a> <a href="mailto:burkhart.wolff@lri.fr">📧</a> and <a href="../authors/schmaltz">Julien Schmaltz</a> <a href="mailto:Julien.Schmaltz@ou.nl">📧</a>
+    <p><a href="../authors/verbeek">Freek Verbeek</a> <a class="obfuscated" data="eyJob3N0IjpbIm91IiwibmwiXSwidXNlciI6WyJGcmVlayIsIlZlcmJlZWsiXX0=">📧</a>, <a href="../authors/tverdyshev">Sergey Tverdyshev</a> <a class="obfuscated" data="eyJob3N0IjpbInN5c2dvIiwiY29tIl0sInVzZXIiOlsic3R2Il19">📧</a>, <a href="../authors/havle">Oto Havle</a> <a class="obfuscated" data="eyJob3N0IjpbInN5c2dvIiwiY29tIl0sInVzZXIiOlsib2hhIl19">📧</a>, <a href="../authors/blasum">Holger Blasum</a> <a class="obfuscated" data="eyJob3N0IjpbInN5c2dvIiwiY29tIl0sInVzZXIiOlsiaG9sZ2VyIiwiYmxhc3VtIl19">📧</a>, <a href="../authors/langenstein">Bruno Langenstein</a> <a class="obfuscated" data="eyJob3N0IjpbImRma2kiLCJkZSJdLCJ1c2VyIjpbImxhbmdlbnN0ZWluIl19">📧</a>, <a href="../authors/stephan">Werner Stephan</a> <a class="obfuscated" data="eyJob3N0IjpbImRma2kiLCJkZSJdLCJ1c2VyIjpbInN0ZXBoYW4iXX0=">📧</a>, <a href="../authors/nemouchi">Yakoub Nemouchi</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsibmVtb3VjaGkiXX0=">📧</a>, <a href="../authors/feliachi">Abderrahmane Feliachi</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsiYWJkZXJyYWhtYW5lIiwiZmVsaWFjaGkiXX0=">📧</a>, <a href="../authors/wolff">Burkhart Wolff</a> <a class="obfuscated" data="eyJob3N0IjpbImxyaSIsImZyIl0sInVzZXIiOlsiYnVya2hhcnQiLCJ3b2xmZiJdfQ==">📧</a> and <a href="../authors/schmaltz">Julien Schmaltz</a> <a class="obfuscated" data="eyJob3N0IjpbIm91IiwibmwiXSwidXNlciI6WyJKdWxpZW4iLCJTY2htYWx0eiJdfQ==">📧</a>
     </p>
     
     
@@ -133,7 +134,7 @@ Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p></div>BS
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/CISC-Kernel/outline.pdf">Proof
@@ -142,23 +143,23 @@ Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p></div>BS
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/CISC-Kernel/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">CISC-Kernel-AFP</p><pre id="copyText">@article{CISC-Kernel-AFP,
-  author  = {Freek Verbeek, Sergey Tverdyshev, Oto Havle, Holger Blasum, Bruno Langenstein, Werner Stephan, Yakoub Nemouchi, Abderrahmane Feliachi, Burkhart Wolff and Julien Schmaltz},
+      <p style="display:none;" id="bibtex-filename">CISC-Kernel-AFP</p><pre id="copy-text">@article{CISC-Kernel-AFP,
+  author  = {Freek Verbeek and Sergey Tverdyshev and Oto Havle and Holger Blasum and Bruno Langenstein and Werner Stephan and Yakoub Nemouchi and Abderrahmane Feliachi and Burkhart Wolff and Julien Schmaltz},
   title   = {Formal Specification of a Generic Separation Kernel},
   journal = {Archive of Formal Proofs},
-  month   = July,
-  year    = 2014,
+  month   = {July},
+  year    = {2014},
   note    = {\url{https://isa-afp.org/entries/CISC-Kernel.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -168,8 +169,31 @@ Project <a href="http://www.euromils.eu">http://www.euromils.eu</a>.</p></div>BS
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-CISC-Kernel-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-CISC-Kernel-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-CISC-Kernel-2014-07-18.tar.gz">Jul 18, 2014</a>: Isabelle2013-2
+      </li></ul>
   </div>
 </div>
     </div>

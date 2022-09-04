@@ -33,6 +33,12 @@ homepage = "nipkow_homepage"
 [notify]
 nipkow = "nipkow_email"
 
+[related]
+dois = ["10.1007/978-3-319-71237-6_13"]
+pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/aplas17.html\">Open access</a>"]
+
 [history]
 
 [extra]
+
+[related]

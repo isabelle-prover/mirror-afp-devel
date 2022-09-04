@@ -27,7 +27,13 @@ homepage = "nipkow_homepage"
 rau = "rau_email"
 nipkow = "nipkow_email"
 
+[related]
+dois = ["10.1007/978-3-030-51054-1_20"]
+pubs = ["<a href=\"https://en.wikipedia.org/wiki/Closest_pair_of_points_problem\">Wikipedia</a>"]
+
 [history]
 2020-04-14 = "Incorporate Time_Monad of the AFP entry Root_Balanced_Tree."
 
 [extra]
+
+[related]

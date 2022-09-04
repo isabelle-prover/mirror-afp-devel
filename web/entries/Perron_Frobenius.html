@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +87,7 @@
     <span class='first'>P</span>erron-<span class='first'>F</span>robenius <span class='first'>T</span>heorem for <span class='first'>S</span>pectral <span class='first'>R</span>adius <span class='first'>A</span>nalysis</h1>
   <div>
     
-    <p><a href="../authors/divason">Jose Divasón</a> <a href="https://www.unirioja.es/cu/jodivaso/">🌐</a>, <a href="../authors/kuncar">Ondřej Kunčar</a> <a href="http://www21.in.tum.de/~kuncar/">🌐</a>, <a href="../authors/thiemann">René Thiemann</a> <a href="mailto:rene.thiemann@uibk.ac.at">📧</a> and <a href="../authors/yamada">Akihisa Yamada</a> <a href="mailto:akihisa.yamada@uibk.ac.at">📧</a>
+    <p><a href="../authors/divason">Jose Divasón</a> <a href="https://www.unirioja.es/cu/jodivaso/">🌐</a>, <a href="../authors/kuncar">Ondřej Kunčar</a> <a href="http://www21.in.tum.de/~kuncar/">🌐</a>, <a href="../authors/thiemann">René Thiemann</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsicmVuZSIsInRoaWVtYW5uIl19">📧</a> and <a href="../authors/yamada">Akihisa Yamada</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsiYWtpaGlzYSIsInlhbWFkYSJdfQ==">📧</a>
     </p>
     
     
@@ -152,7 +153,7 @@ larger than one, then A<sup>n</sup> is polynomially bounded in n. </p></div>BSD 
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Perron_Frobenius/outline.pdf">Proof
@@ -161,23 +162,23 @@ larger than one, then A<sup>n</sup> is polynomially bounded in n. </p></div>BSD 
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Perron_Frobenius/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Perron_Frobenius-AFP</p><pre id="copyText">@article{Perron_Frobenius-AFP,
-  author  = {Jose Divasón, Ondřej Kunčar, René Thiemann and Akihisa Yamada},
+      <p style="display:none;" id="bibtex-filename">Perron_Frobenius-AFP</p><pre id="copy-text">@article{Perron_Frobenius-AFP,
+  author  = {Jose Divasón and Ondřej Kunčar and René Thiemann and Akihisa Yamada},
   title   = {Perron-Frobenius Theorem for Spectral Radius Analysis},
   journal = {Archive of Formal Proofs},
-  month   = May,
-  year    = 2016,
+  month   = {May},
+  year    = {2016},
   note    = {\url{https://isa-afp.org/entries/Perron_Frobenius.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -187,8 +188,27 @@ larger than one, then A<sup>n</sup> is polynomially bounded in n. </p></div>BSD 
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Perron_Frobenius-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Perron_Frobenius-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Perron_Frobenius-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Perron_Frobenius-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Perron_Frobenius-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Perron_Frobenius-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Perron_Frobenius-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Perron_Frobenius-2017-10-18.tar.gz">Oct 18, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Perron_Frobenius-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Perron_Frobenius-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Perron_Frobenius-2016-05-20.tar.gz">May 20, 2016</a>: Isabelle2016
+      </li></ul>
   </div>
 </div>
     </div>

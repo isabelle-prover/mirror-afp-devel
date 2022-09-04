@@ -39,3 +39,5 @@ Split off Polynomial Interpolation and Polynomial Factorization<br>
 2017-04-16 = "Use certified Berlekamp-Zassenhaus factorization, use subresultant algorithm for computing resultants, improved bisection algorithm"
 
 [extra]
+
+[related]

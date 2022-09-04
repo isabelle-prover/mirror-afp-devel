@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +87,7 @@
     <span class='first'>V</span>erified <span class='first'>C</span>onstruction of <span class='first'>S</span>tatic <span class='first'>S</span>ingle <span class='first'>A</span>ssignment <span class='first'>F</span>orm</h1>
   <div>
     
-    <p><a href="../authors/ullrich">Sebastian Ullrich</a> <a href="mailto:sebasti@nullri.ch">📧</a> and <a href="../authors/lohner">Denis Lohner</a> <a href="http://pp.ipd.kit.edu/person.php?id=88">🌐</a>
+    <p><a href="../authors/ullrich">Sebastian Ullrich</a> <a class="obfuscated" data="eyJob3N0IjpbIm51bGxyaSIsImNoIl0sInVzZXIiOlsic2ViYXN0aSJdfQ==">📧</a> and <a href="../authors/lohner">Denis Lohner</a> <a href="http://pp.ipd.kit.edu/person.php?id=88">🌐</a>
     </p>
     
     
@@ -120,7 +121,7 @@ A more detailed description of the verified SSA construction can be found
 in the paper <a href="https://doi.org/10.1145/2892208.2892211">Verified
 Construction of Static Single Assignment Form</a>, CC 2016.
 </p></div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li><li><a href="../topics/computer-science/programming-languages/transformations">Computer science/Programming languages/Transformations</a></li></ul>
+  <ul><li><a href="../topics/computer-science/programming-languages/compiling">Computer science/Programming languages/Compiling</a></li></ul>
   <h3>Theories of Formal_SSA</h3>
   <ul>
     <li><a href="../theories/formal_ssa/#FormalSSA_Misc">FormalSSA_Misc</a></li>
@@ -163,7 +164,7 @@ Construction of Static Single Assignment Form</a>, CC 2016.
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Formal_SSA/outline.pdf">Proof
@@ -172,23 +173,23 @@ Construction of Static Single Assignment Form</a>, CC 2016.
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Formal_SSA/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Formal_SSA-AFP</p><pre id="copyText">@article{Formal_SSA-AFP,
+      <p style="display:none;" id="bibtex-filename">Formal_SSA-AFP</p><pre id="copy-text">@article{Formal_SSA-AFP,
   author  = {Sebastian Ullrich and Denis Lohner},
   title   = {Verified Construction of Static Single Assignment Form},
   journal = {Archive of Formal Proofs},
-  month   = February,
-  year    = 2016,
+  month   = {February},
+  year    = {2016},
   note    = {\url{https://isa-afp.org/entries/Formal_SSA.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -198,8 +199,27 @@ Construction of Static Single Assignment Form</a>, CC 2016.
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Formal_SSA-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Formal_SSA-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Formal_SSA-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Formal_SSA-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Formal_SSA-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Formal_SSA-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Formal_SSA-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Formal_SSA-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Formal_SSA-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Formal_SSA-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Formal_SSA-2016-02-08.tar.gz">Feb 8, 2016</a>: Isabelle2015
+      </li></ul>
   </div>
 </div>
     </div>

@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +87,7 @@
     <span class='first'>M</span>inimal <span class='first'>S</span>tatic <span class='first'>S</span>ingle <span class='first'>A</span>ssignment <span class='first'>F</span>orm</h1>
   <div>
     
-    <p><a href="../authors/wagner">Max Wagner</a> <a href="mailto:max@trollbu.de">📧</a> and <a href="../authors/lohner">Denis Lohner</a> <a href="http://pp.ipd.kit.edu/person.php?id=88">🌐</a>
+    <p><a href="../authors/wagner">Max Wagner</a> <a class="obfuscated" data="eyJob3N0IjpbInRyb2xsYnUiLCJkZSJdLCJ1c2VyIjpbIm1heCJdfQ==">📧</a> and <a href="../authors/lohner">Denis Lohner</a> <a href="http://pp.ipd.kit.edu/person.php?id=88">🌐</a>
     </p>
     
     
@@ -112,7 +113,7 @@ aims for removing so-called redundant strongly connected components of
 phi functions, we show that this suffices to guarantee minimality
 according to <a href="https://doi.org/10.1145/115372.115320">Cytron et
 al.</a>.</p></div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/transformations">Computer science/Programming languages/Transformations</a></li></ul>
+  <ul><li><a href="../topics/computer-science/programming-languages/compiling">Computer science/Programming languages/Compiling</a></li></ul>
   <h3>Theories of Minimal_SSA</h3>
   <ul>
     <li><a href="../theories/minimal_ssa/#Irreducible">Irreducible</a></li></ul><div class="flex-wrap">
@@ -134,7 +135,7 @@ al.</a>.</p></div>BSD License<h3>Topics</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Minimal_SSA/outline.pdf">Proof
@@ -143,23 +144,23 @@ al.</a>.</p></div>BSD License<h3>Topics</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Minimal_SSA/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Minimal_SSA-AFP</p><pre id="copyText">@article{Minimal_SSA-AFP,
+      <p style="display:none;" id="bibtex-filename">Minimal_SSA-AFP</p><pre id="copy-text">@article{Minimal_SSA-AFP,
   author  = {Max Wagner and Denis Lohner},
   title   = {Minimal Static Single Assignment Form},
   journal = {Archive of Formal Proofs},
-  month   = January,
-  year    = 2017,
+  month   = {January},
+  year    = {2017},
   note    = {\url{https://isa-afp.org/entries/Minimal_SSA.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -169,8 +170,23 @@ al.</a>.</p></div>BSD License<h3>Topics</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Minimal_SSA-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Minimal_SSA-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Minimal_SSA-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Minimal_SSA-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Minimal_SSA-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Minimal_SSA-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Minimal_SSA-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Minimal_SSA-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Minimal_SSA-2017-01-19.tar.gz">Jan 19, 2017</a>: Isabelle2016-1
+      </li></ul>
   </div>
 </div>
     </div>

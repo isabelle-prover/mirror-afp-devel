@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -110,13 +111,14 @@ found in the PLAS'09 paper by Wasserrab et al.
 This entry contains the part for intra-procedural slicing. See entry
 <a href="InformationFlowSlicing_Inter.html">InformationFlowSlicing_Inter</a>
 for the inter-procedural part.
-</p></div>BSD License<h3>Change history</h3>
-
-  <p>[2016-06-10] The original entry <a
+</p></div>BSD License<h3>Change history</h3><p>
+    <h4>June 10, 2016</h4>
+    The original entry <a
 href="InformationFlowSlicing.html">InformationFlowSlicing</a> contained both
 the <a href="InformationFlowSlicing_Inter.html">inter-</a> and <a
 href="InformationFlowSlicing.html">intra-procedural</a> case was split into
-two for easier maintenance.</p><h3>Topics</h3>
+two for easier maintenance.
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/security">Computer science/Security</a></li></ul>
   <h3>Theories of InformationFlowSlicing</h3>
   <ul>
@@ -134,8 +136,6 @@ two for easier maintenance.</p><h3>Topics</h3>
       
       <li><a href="../entries/InformationFlowSlicing_Inter.html">Inter-Procedural Information Flow Noninterference via Slicing</a></li>
       
-      <li><a href="../entries/Approximation_Algorithms.html">Verified Approximation Algorithms</a></li>
-      
       <li><a href="../entries/Monad_Memo_DP.html">Monadification, Memoization and Dynamic Programming</a></li>
       
       <li><a href="../entries/Simple_Firewall.html">Simple Firewall</a></li>
@@ -149,7 +149,7 @@ two for easier maintenance.</p><h3>Topics</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/InformationFlowSlicing/outline.pdf">Proof
@@ -158,23 +158,23 @@ two for easier maintenance.</p><h3>Topics</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/InformationFlowSlicing/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">InformationFlowSlicing-AFP</p><pre id="copyText">@article{InformationFlowSlicing-AFP,
+      <p style="display:none;" id="bibtex-filename">InformationFlowSlicing-AFP</p><pre id="copy-text">@article{InformationFlowSlicing-AFP,
   author  = {Daniel Wasserrab},
   title   = {Information Flow Noninterference via Slicing},
   journal = {Archive of Formal Proofs},
-  month   = March,
-  year    = 2010,
+  month   = {March},
+  year    = {2010},
   note    = {\url{https://isa-afp.org/entries/InformationFlowSlicing.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -184,8 +184,45 @@ two for easier maintenance.</p><h3>Topics</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-InformationFlowSlicing-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-InformationFlowSlicing-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2011-02-11.tar.gz">Feb 11, 2011</a>: Isabelle2011
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2010-07-01.tar.gz">Jul 1, 2010</a>: Isabelle2009-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-InformationFlowSlicing-2010-03-23.tar.gz">Mar 23, 2010</a>: Isabelle2009-1
+      </li></ul>
   </div>
 </div>
     </div>

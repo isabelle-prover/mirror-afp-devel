@@ -97,10 +97,10 @@ lemma wf_jvm: " wf {(ss', ss). ss [\<sqsubset>\<^bsub>r\<^esub>] ss'}"
   by (simp add: acc_def r_def) 
 
 lemma iter_properties_bv[rule_format]:
-shows "\<lbrakk> \<forall>p\<in>w0. p < n; ss0 \<in> list n A; \<forall>p<n. p \<notin> w0 \<longrightarrow> stable r step ss0 p \<rbrakk> \<Longrightarrow>
+shows "\<lbrakk> \<forall>p\<in>w0. p < n; ss0 \<in> nlists n A; \<forall>p<n. p \<notin> w0 \<longrightarrow> stable r step ss0 p \<rbrakk> \<Longrightarrow>
          iter f step ss0 w0 = (ss',w') \<longrightarrow>
-         ss' \<in> list n A \<and> stables r step ss' \<and> ss0 [\<sqsubseteq>\<^sub>r] ss' \<and>
-         (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss' [\<sqsubseteq>\<^sub>r] ts)"
+         ss' \<in> nlists n A \<and> stables r step ss' \<and> ss0 [\<sqsubseteq>\<^sub>r] ss' \<and>
+         (\<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss' [\<sqsubseteq>\<^sub>r] ts)"
 (*<*) (is "PROP ?P")
 
 proof -
@@ -109,8 +109,8 @@ proof -
     apply (unfold iter_def stables_def)
 
     apply (rule_tac P = "\<lambda>(ss,w).
-                ss \<in> list n A \<and> (\<forall>p<n. p \<notin> w \<longrightarrow> stable r step ss p) \<and> ss0 [\<sqsubseteq>\<^sub>r] ss \<and>
-   (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts) \<and>
+                ss \<in> nlists n A \<and> (\<forall>p<n. p \<notin> w \<longrightarrow> stable r step ss p) \<and> ss0 [\<sqsubseteq>\<^sub>r] ss \<and>
+   (\<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow> ss [\<sqsubseteq>\<^sub>r] ts) \<and>
    (\<forall>p\<in>w. p < n)" and
    r = "{(ss',ss) . ss [\<sqsubset>\<^sub>r] ss'} <*lex*> finite_psubset"
          in while_rule)
@@ -146,12 +146,12 @@ proof -
         apply (erule pres_typeD)
           prefer 3
           apply assumption
-         apply (erule listE_nth_in)
+         apply (erule nlistsE_nth_in)
          apply blast
         apply (simp only:n_def)
        apply (rule conjI)
         apply clarify
-        apply (subgoal_tac "ss \<in> list (length is) A" "\<forall>p\<in>w. p <  (length is) " "\<forall>p<(length is). p \<notin> w \<longrightarrow> stable r step ss p "
+        apply (subgoal_tac "ss \<in> nlists (length is) A" "\<forall>p\<in>w. p <  (length is) " "\<forall>p<(length is). p \<notin> w \<longrightarrow> stable r step ss p "
  "p < length is")
             apply (blast   intro!: Semilat.stable_pres_lemma[OF Semilat.intro, OF semi])
            apply (simp only:n_def)
@@ -159,11 +159,11 @@ proof -
          apply (simp only:n_def)
         apply (simp only:n_def)
        apply (rule conjI)
-        apply (subgoal_tac "ss \<in> list (length is) A" 
+        apply (subgoal_tac "ss \<in> nlists (length is) A" 
                "\<forall>(q,t)\<in>set (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))). q < length is \<and> t \<in> A"
-               "ss [\<sqsubseteq>\<^bsub>r\<^esub>] merges f (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))) ss" "ss0\<in> list (size is) A"
-               "merges f (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))) ss \<in> list (size is) A" 
-               "ss \<in>list (size is) A" "order r A" "ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ss ")
+               "ss [\<sqsubseteq>\<^bsub>r\<^esub>] merges f (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))) ss" "ss0\<in> nlists (size is) A"
+               "merges f (step (SOME p. p \<in> w) (ss ! (SOME p. p \<in> w))) ss \<in> nlists (size is) A" 
+               "ss \<in>nlists (size is) A" "order r A" "ss0 [\<sqsubseteq>\<^bsub>r\<^esub>] ss ")
                 apply (blast dest: le_list_trans)
                apply simp
               apply (simp only:semilat_Def)
@@ -173,12 +173,12 @@ proof -
           apply (blast intro:Semilat.merges_incr[OF Semilat.intro, OF semi])
          apply (subgoal_tac "length ss = n")
           apply (simp only:n_def)
-         apply (subgoal_tac "ss \<in>list n A")
+         apply (subgoal_tac "ss \<in>nlists n A")
           defer
           apply simp
          apply (simp only:n_def)
         prefer 5
-        apply (simp only:listE_length n_def)
+        apply (simp only:nlistsE_length n_def)
        apply(rule conjI)
         apply (clarsimp simp del: A_def r_def f_def step_def)
         apply (blast intro!: Semilat.merges_bounded_lemma[OF Semilat.intro, OF semi])       
@@ -207,13 +207,13 @@ proof -
       apply (erule pres_typeD)
         prefer 3
         apply assumption
-       apply (erule listE_nth_in)
+       apply (erule nlistsE_nth_in)
        apply blast
       apply blast
      apply (subst decomp_propa)
       apply blast
      apply clarify
-  apply (simp del: listE_length  A_def r_def f_def step_def
+  apply (simp del: nlistsE_length  A_def r_def f_def step_def
       add: lex_prod_def finite_psubset_def 
            bounded_nat_set_is_finite)
      apply (rule termination_lemma)
@@ -230,11 +230,11 @@ qed
 
 
 lemma kildall_properties_bv: 
-shows "\<lbrakk> ss0 \<in> list n A \<rbrakk> \<Longrightarrow>
-  kildall r f step ss0 \<in> list n A \<and>
+shows "\<lbrakk> ss0 \<in> nlists n A \<rbrakk> \<Longrightarrow>
+  kildall r f step ss0 \<in> nlists n A \<and>
   stables r step (kildall r f step ss0) \<and>
   ss0 [\<sqsubseteq>\<^sub>r] kildall r f step ss0 \<and>
-  (\<forall>ts\<in>list n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow>
+  (\<forall>ts\<in>nlists n A. ss0 [\<sqsubseteq>\<^sub>r] ts \<and> stables r step ts \<longrightarrow>
                  kildall r f step ss0 [\<sqsubseteq>\<^sub>r] ts)"
 (*<*) (is "PROP ?P")
 proof -
@@ -258,7 +258,7 @@ shows "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^sub>r is xt)"
   apply(insert semi  kildall_properties_bv)
   apply(simp only:stables_def)
   apply clarify
-  apply(subgoal_tac "kildall r f step \<tau>s\<^sub>0 \<in> list n A")
+  apply(subgoal_tac "kildall r f step \<tau>s\<^sub>0 \<in> nlists n A")
    prefer 2
    apply (fastforce intro: kildall_properties_bv)
   apply (rule iffI)
@@ -295,11 +295,11 @@ qed
 (*>*)
 
 lemma (in start_context) start_in_A [intro?]:
-  "0 < size is \<Longrightarrow> start \<in> list (size is) A"
+  "0 < size is \<Longrightarrow> start \<in> nlists (size is) A"
   using Ts C
 (*<*)
   apply (simp add: JVM_states_unfold) 
-  apply (force intro!: listI list_appendI dest!: in_set_replicate)
+  apply (force intro!: nlistsI nlists_appendI dest!: in_set_replicate)
   done   
 (*>*)
 
@@ -318,12 +318,12 @@ proof -
   have bcv: "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^sub>r is xt)"
     by (rule is_bcv_kiljvm)
     
-  from instrs have "start \<in> list (size is) A" ..
+  from instrs have "start \<in> nlists (size is) A" ..
   with bcv success result have 
-    "\<exists>ts\<in>list (size is) A. start [\<sqsubseteq>\<^sub>r] ts \<and> wt_step r Err step ts"
+    "\<exists>ts\<in>nlists (size is) A. start [\<sqsubseteq>\<^sub>r] ts \<and> wt_step r Err step ts"
     by (unfold is_bcv_def) blast
   then obtain \<tau>s' where
-    in_A: "\<tau>s' \<in> list (size is) A" and
+    in_A: "\<tau>s' \<in> nlists (size is) A" and
     s:    "start [\<sqsubseteq>\<^sub>r] \<tau>s'" and
     w:    "wt_step r Err step \<tau>s'"
     by blast
@@ -387,7 +387,7 @@ proof -
     by (simp add: length)
   have is_bcv: "is_bcv r Err step (size is) A (kiljvm P mxs mxl T\<^sub>r is xt)"
     by (rule is_bcv_kiljvm)
-  moreover from instrs have "start \<in> list (size is) A" ..
+  moreover from instrs have "start \<in> nlists (size is) A" ..
   moreover
   let ?\<tau>s = "map OK \<tau>s"  
   have less_\<tau>s: "start [\<sqsubseteq>\<^sub>r] ?\<tau>s"
@@ -413,8 +413,8 @@ proof -
   qed
   moreover
   from ck_type length
-  have "?\<tau>s \<in> list (size is) A"
-    by (auto intro!: listI simp add: check_types_def)
+  have "?\<tau>s \<in> nlists (size is) A"
+    by (auto intro!: nlistsI simp add: check_types_def)
   moreover
   from wt_err have "wt_step r Err step ?\<tau>s" 
     by (simp add: wt_err_step_def JVM_le_Err_conv)

@@ -1,5 +1,7 @@
 (*  Title:      CoW/Reverse_Symmetry.thy
     Author:     Martin Raška, Charles University
+
+Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 *)
 
 theory Reverse_Symmetry
@@ -91,103 +93,26 @@ lemma Bex_inj_conv: assumes "inj f" shows "(\<exists>y\<in>f ` A. P (inv f y)) \
 
 subsection \<open>Quantifications and reverse\<close>
 
-lemma rev_involution: "rev \<circ> rev = id"
+lemma rev_involution': "rev \<circ> rev = id"
   by auto
 
-lemma rev_bij: "bij rev" 
-  using o_bij[OF rev_involution rev_involution].
-
 lemma rev_inv: "inv rev = rev"
-  using inv_unique_comp[OF rev_involution rev_involution].
-
-lemmas all_rev_conv = all_surj_conv[OF bij_is_surj[OF rev_bij]]
-   and All_rev_conv = All_surj_conv[OF bij_is_surj[OF rev_bij]]
-   and Ex_rev_conv = Ex_surj_conv[OF bij_is_surj[OF rev_bij]]
-   and Ex1_rev_conv = Ex1_bij_conv[OF rev_bij]
-   and Ball_rev_conv = Ball_inj_conv[OF bij_is_inj[OF rev_bij], unfolded rev_inv]
-   and Bex_rev_conv = Bex_inj_conv[OF bij_is_inj[OF rev_bij], unfolded rev_inv]
+  using inv_unique_comp[OF rev_involution' rev_involution'].
 
 section \<open>Attributes\<close>
 
 context
 begin
 
-subsection \<open>Definitons of reverse wrapers\<close>
-
-private definition rev_Nil_wrap :: "'a list"
-  where "rev_Nil_wrap = rev Nil" 
-
-private definition all_rev_wrap :: "('a list \<Rightarrow> prop) \<Rightarrow> prop"
-  where "all_rev_wrap P \<equiv> (\<And>x. PROP P (rev x))"
-
-private definition All_rev_wrap :: "('a list \<Rightarrow> bool) \<Rightarrow> bool"
-  where "All_rev_wrap P = (\<forall>x. P (rev x))"
-
-private definition Ex_rev_wrap :: "('a list \<Rightarrow> bool) \<Rightarrow> bool"
-  where "Ex_rev_wrap P = (\<exists>x. P (rev x))"
-
-private definition Ex1_rev_wrap :: "('a list \<Rightarrow> bool) \<Rightarrow> bool"
-  where "Ex1_rev_wrap P = (\<exists>!x. P (rev x))"
-
-private definition Ball_rev_wrap :: "'a list set \<Rightarrow> ('a list \<Rightarrow> bool) \<Rightarrow> bool"
-  where "Ball_rev_wrap A P = (\<forall>x \<in> rev ` A. P (rev x))"
-
-private definition Bex_rev_wrap :: "'a list set \<Rightarrow> ('a list \<Rightarrow> bool) \<Rightarrow> bool"
-  where "Bex_rev_wrap A P = (\<exists>x \<in> rev ` A. P (rev x))"
-
-subsection \<open>Initial reversal rules\<close>
-
-private lemma rev_Nil: "rev Nil = Nil"
-  by simp
-
-private lemmas init_rev_wrap =
-  eq_reflection[OF trans[OF rev_Nil[symmetric] rev_Nil_wrap_def[symmetric]]]
-  transitive[OF all_rev_conv[symmetric] all_rev_wrap_def[symmetric], of P P for P]
-  eq_reflection[OF trans[OF All_rev_conv[symmetric] All_rev_wrap_def[symmetric], of P P for P]]
-  eq_reflection[OF trans[OF Ex_rev_conv[symmetric] Ex_rev_wrap_def[symmetric], of P P for P]] (* Ex_rev_wrapI *)
-  eq_reflection[OF trans[OF Ex1_rev_conv[symmetric] Ex1_rev_wrap_def[symmetric], of P P for P]]
-  eq_reflection[OF trans[OF Ball_rev_conv[symmetric] Ball_rev_wrap_def[symmetric], of P P for P]]
-  eq_reflection[OF trans[OF Bex_rev_conv[symmetric] Bex_rev_wrap_def[symmetric], of P P for P]]
-
-private lemma all_rev_unwrap: "all_rev_wrap (\<lambda>x. PROP P x) \<equiv> (\<And>x. PROP P (rev x))"
-  using all_rev_wrap_def.
-
-private lemma All_rev_unwrap: "All_rev_wrap (\<lambda>x. P x) = (\<forall>x. P (rev x))"
-  using All_rev_wrap_def.
-
-private lemma Ex_rev_unwrap: "Ex_rev_wrap (\<lambda>x. P x) = (\<exists>x. P (rev x))"
-  using Ex_rev_wrap_def.
-
-private lemma Ex1_rev_unwrap: "Ex1_rev_wrap (\<lambda>x. P x) = (\<exists>!x. P (rev x))"
-  using Ex1_rev_wrap_def.
-
-private lemma Ball_rev_unwrap: "Ball_rev_wrap A (\<lambda>x. P x) = (\<forall>x \<in> rev ` A. P (rev x))"
-  using Ball_rev_wrap_def.
-
-private lemma Bex_rev_unwrap: "Bex_rev_wrap A (\<lambda>x. P x) = (\<exists>x \<in> rev ` A. P (rev x))"
-  using Bex_rev_wrap_def.
-
-private lemmas init_rev_unwrap =
-  eq_reflection[OF rev_Nil_wrap_def]
-  all_rev_unwrap
-  eq_reflection[OF All_rev_unwrap]
-  eq_reflection[OF Ex_rev_unwrap]
-  eq_reflection[OF Ex1_rev_unwrap]
-  eq_reflection[OF Ball_rev_unwrap]
-  eq_reflection[OF Bex_rev_unwrap]
-
 subsection \<open>Cons reversion\<close>
 
 definition snocs :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
   where "snocs xs ys  = xs @ ys"
 
-lemma Cons_rev: "a # rev u = rev (snocs u [a])"
-  unfolding snocs_def by simp
+subsection \<open>Final corrections\<close>
 
 lemma snocs_snocs: "snocs (snocs xs (y # ys)) zs = snocs xs (y # snocs ys zs)"
   unfolding snocs_def by simp
-
-subsection \<open>Final corrections\<close>
 
 lemma snocs_Nil: "snocs [] xs = xs"
   unfolding snocs_def by simp
@@ -196,9 +121,12 @@ lemma snocs_is_append: "snocs xs ys = xs @ ys"
   unfolding snocs_def..
 
 private lemmas final_correct1 =
-  snocs_Nil
+  snocs_snocs
 
 private lemmas final_correct2 =
+  snocs_Nil
+
+private lemmas final_correct3 =
   snocs_is_append
 
 subsection \<open>Declaration attribute \<open>reversal_rule\<close>\<close>
@@ -217,54 +145,284 @@ attribute_setup reversal_rule =
     (Thm.declaration_attribute Reversal_Rules.del_thm)\<close>
   "maintaining a list of reversal rules"
 
-subsection \<open>Rule attribute \<open>reversed\<close>\<close>
+subsection \<open>Tracing attribute\<close>
 
 ML \<open>
-val eq_refl = @{thm eq_reflection}
+  val reversed_trace = Config.declare_bool ("reversed_trace", \<^here>) (K false);
+  val enable_tracing = Config.put_generic reversed_trace true
+  val tracing_attr = Thm.declaration_attribute (K enable_tracing)
+  val tracing_parser : attribute context_parser = Scan.lift (Scan.succeed tracing_attr)
+\<close>
 
-fun pure_eq_of th =
-  case Thm.prop_of th of
-    Const (\<^const_name>\<open>Pure.eq\<close>, _) $ _ $ _
-      => SOME (th)
-  | Const (\<^const_name>\<open>Trueprop\<close>, _) $ (Const (\<^const_name>\<open>HOL.eq\<close>, _) $ _ $ _ )
-      => SOME (th RS eq_refl)
-  | _ => NONE
+attribute_setup reversed_trace = tracing_parser "reversed trace configuration"
 
-val init_rev_wrap = @{thms init_rev_wrap}
-val init_unwrap = @{thms init_rev_unwrap}
-val final_correct1 = map_filter pure_eq_of @{thms final_correct1}
-val final_correct2 = map_filter pure_eq_of @{thms final_correct2}
+subsection \<open>Rule attribute \<open>reversed\<close>\<close>
 
-fun reverse ths context th =
+private lemma rev_Nil: "rev [] \<equiv> []"
+  by simp
+
+private lemma map_Nil: "map f [] \<equiv> []"
+  by simp
+
+private lemma image_empty: "f ` Set.empty \<equiv> Set.empty"
+  by simp
+
+definition COMP :: "('b \<Rightarrow> prop) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> prop" (infixl "oo" 55)
+  where "F oo g \<equiv> (\<lambda>x. F (g x))"
+
+lemma COMP_assoc: "F oo (f o g) \<equiv> (F oo f) oo g"
+  unfolding COMP_def o_def.
+
+private lemma image_comp_image: "(`) f \<circ> (`) g \<equiv> (`) (f \<circ> g)"
+  unfolding comp_def image_comp.
+
+private lemma rev_involution: "rev \<circ> rev \<equiv> id"
+  unfolding comp_def rev_rev_ident id_def.
+
+private lemma map_involution: assumes "f \<circ> f \<equiv> id" shows "(map f) \<circ> (map f) \<equiv> id"
+  unfolding map_comp_map \<open>f \<circ> f \<equiv> id\<close> List.map.id.
+
+private lemma image_involution: assumes "f \<circ> f \<equiv> id" shows "(image f) \<circ> (image f) \<equiv> id"
+  unfolding image_comp_image \<open>f \<circ> f \<equiv> id\<close> image_id.
+
+private lemma rev_map_comm: "rev \<circ> map f \<equiv> map f \<circ> rev"
+  unfolding comp_def rev_map.
+
+private lemma involut_comm_comp: assumes "f o f \<equiv> id" and "g o g \<equiv> id" and "f o g \<equiv> g o f"
+  shows "(f \<circ> g) \<circ> (f \<circ> g) \<equiv> id"
+  by (simp add: comp_assoc comp_assoc[symmetric] assms)
+
+private lemma rev_map_involution: assumes "g o g \<equiv> id"
+  shows "(rev \<circ> map g) \<circ> (rev \<circ> map g) \<equiv> id"
+  using involut_comm_comp[OF rev_involution map_involution[OF \<open>g o g \<equiv> id\<close>] rev_map_comm].
+
+private lemma prop_abs_subst: assumes "f o f \<equiv> id" shows "(\<lambda>x. F (f x)) oo f \<equiv> (\<lambda>x. F x)"
+  unfolding COMP_def o_apply[symmetric] unfolding \<open>f o f \<equiv> id\<close> id_def.
+
+private lemma prop_abs_subst_comm: assumes "f o f \<equiv> id" and "g o g \<equiv> id" and "f o g \<equiv> g o f"
+  shows "(\<lambda>x. F (f (g x))) oo (f o g) \<equiv> (\<lambda>x. F x)"
+  unfolding \<open>f o g \<equiv> g o f\<close> unfolding COMP_assoc
+  unfolding prop_abs_subst[OF \<open>g o g \<equiv> id\<close>, of "\<lambda>x. F (f x)"] prop_abs_subst[OF \<open>f o f \<equiv> id\<close>].
+
+private lemma prop_abs_subst_rev_map: assumes "g o g \<equiv> id"
+  shows "(\<lambda>x. F (rev (map g x))) oo (rev o map g) \<equiv> (\<lambda>x. F x)"
+  using prop_abs_subst_comm[OF rev_involution map_involution[OF \<open>g o g \<equiv> id\<close>] rev_map_comm].
+
+private lemma obj_abs_subst: assumes "f o f \<equiv> id" shows "(\<lambda>x. F (f x)) o f \<equiv> (\<lambda>x. F x)"
+  unfolding comp_def unfolding o_apply[of f, symmetric] \<open>f o f \<equiv> id\<close> id_def.
+
+private lemma obj_abs_subst_comm: assumes "f o f \<equiv> id" and "g o g \<equiv> id" and "f o g \<equiv> g o f"
+  shows "(\<lambda>x. F (f (g x))) o (f o g) \<equiv> (\<lambda>x. F x)"
+  unfolding \<open>f o g \<equiv> g o f\<close> unfolding comp_assoc[symmetric]
+  unfolding obj_abs_subst[OF \<open>g o g \<equiv> id\<close>, of "\<lambda>x. F (f x)"] obj_abs_subst[OF \<open>f o f \<equiv> id\<close>].
+
+private lemma obj_abs_subst_rev_map: assumes "g o g \<equiv> id"
+  shows "(\<lambda>x. F (rev (map g x))) o (rev o map g) \<equiv> (\<lambda>x. F x)"
+  using obj_abs_subst_comm[OF rev_involution map_involution[OF \<open>g o g \<equiv> id\<close>] rev_map_comm].
+
+ML \<open>
+
+local
+  fun comp_const T = Const(\<^const_name>\<open>comp\<close>, (T --> T) --> (T --> T) --> T --> T)
+  fun rev_const T = Const(\<^const_name>\<open>rev\<close>, T --> T)
+  fun map_const S T = Const(\<^const_name>\<open>map\<close>, (S --> S) --> T --> T)
+  fun image_const S T = Const(\<^const_name>\<open>image\<close>, (S --> S) --> T --> T)
+
+  val rev_Nil_thm = @{thm rev_Nil}
+  val map_Nil_thm = @{thm map_Nil}
+  val image_empty_thm = @{thm image_empty}
+  val rev_involut_thm = @{thm rev_involution}
+  val map_involut_thm = @{thm map_involution}
+  val image_involut_thm = @{thm image_involution}
+  val rev_map_comm_thm = @{thm rev_map_comm}
+  val involut_comm_comp_thm = @{thm involut_comm_comp}
+  fun abs_subst_thm T =
+    if T = propT then @{thm prop_abs_subst} else @{thm obj_abs_subst}
+  fun abs_subst_rev_map_thm T =
+    if T = propT then @{thm prop_abs_subst_rev_map} else @{thm obj_abs_subst_rev_map}
+
+  fun comp T f gs = fold (fn f => fn g =>
+        (comp_const T $ f $ g)) gs f
+  fun app ctxt gs ct = fold_rev (fn g => fn ct' =>
+        Thm.apply (Thm.cterm_of ctxt g) ct') gs ct
+in
+
+  fun subst ctxt T ct =
+    let
+      fun tr (T as Type(\<^type_name>\<open>list\<close>, [S])) = [rev_const T] @ (
+          case tr S of
+            [] => []
+          | (g :: gs') => [map_const S T $ comp S g gs'])
+        | tr (T as Type(\<^type_name>\<open>set\<close>, [S])) = (
+          case tr S of
+            [] => []
+          | (g :: gs') => [image_const S T $ comp S g gs'])
+        | tr _ = []
+    in app ctxt (tr T) ct end
+
+  fun abs_cv T U ct =
+    let
+      fun tr_eq (T as Type(\<^type_name>\<open>list\<close>, [S])) =
+            rev_involut_thm :: (
+            case tr_eq S of
+              [] => []
+            | [f_eq] => [f_eq RS map_involut_thm]
+            | [f_eq, g_eq] =>
+                [([f_eq, g_eq, rev_map_comm_thm] MRS involut_comm_comp_thm) RS map_involut_thm])
+        | tr_eq (T as Type(\<^type_name>\<open>set\<close>, [S])) = (
+            case tr_eq S of
+              [] => []
+            | [f_eq] => [f_eq RS image_involut_thm]
+            | [f_eq, g_eq] =>
+                [([f_eq, g_eq, rev_map_comm_thm] MRS involut_comm_comp_thm) RS image_involut_thm])
+        | tr_eq _ = []
+    in case tr_eq T of
+      [] => Thm.reflexive ct
+    | [f_inv] =>
+        [Thm.reflexive ct, Thm.symmetric (f_inv RS abs_subst_thm U)] MRS transitive_thm
+    | [f_inv, g_inv] =>
+        [Thm.reflexive ct, Thm.symmetric (g_inv RS abs_subst_rev_map_thm U)] MRS transitive_thm
+    end;
+
+  fun Nil_cv ctxt T ct =
+    ((Conv.try_conv o Conv.arg_conv o Conv.rewr_conv) map_Nil_thm
+    then_conv (Conv.try_conv o Conv.rewr_conv) rev_Nil_thm) (subst ctxt T ct)
+      |> Thm.symmetric
+  
+  fun empty_cv ctxt T ct =
+    (Conv.try_conv o Conv.rewr_conv) image_empty_thm (subst ctxt T ct)
+      |> Thm.symmetric
+
+end
+
+fun initiate_cv ctxt ct =
+  case Thm.term_of ct of
+    _ $ _ => Conv.comb_conv (initiate_cv ctxt) ct
+  | Abs(_, T, b) => (Conv.abs_conv (initiate_cv o snd) ctxt then_conv abs_cv T (fastype_of b)) ct
+  | Const(\<^const_name>\<open>Nil\<close>, T) => Nil_cv ctxt T ct
+  | Const(\<^const_name>\<open>bot\<close>, T as Type(\<^type_name>\<open>set\<close>, _)) => empty_cv ctxt T ct
+  | _ => Thm.reflexive ct
+\<close>
+
+ML \<open>
+
+fun trace_rule_prems_proof ctxt rule goals rule_prems rule' =
+  if not (Config.get ctxt reversed_trace) then () else
+    let
+      val ctxt_prems = Raw_Simplifier.prems_of ctxt
+      val np = Thm.nprems_of rule
+      val np' = Thm.nprems_of rule'
+      val pretty_term = Syntax.pretty_term ctxt
+      val pretty_thm = pretty_term o Thm.prop_of
+      val success = rule_prems |> List.all is_some
+      val sendback = Active.make_markup Markup.sendbackN
+        {implicit = false, properties = [Markup.padding_command]}
+      val _ = [
+        [ 
+          "Trying to use conditional reverse rule:" |> Pretty.para,
+          rule |> pretty_thm
+        ] |> Pretty.fbreaks |> Pretty.block,
+        [(if null ctxt_prems 
+          then "No context premises."
+          else "Context premises:"
+         ) |> Pretty.para
+        ] @ (
+          ctxt_prems |> map (Pretty.item o single o pretty_thm)
+        ) |> Pretty.fbreaks |> Pretty.block,
+        ( if success then [
+          "Successfully derived unconditional reverse rule:" |> Pretty.para,
+          rule' |> pretty_thm
+        ] else [
+          "Unable to prove " ^ string_of_int np ^ " out of " ^ string_of_int np' ^ " rule premises:\n"
+            |> Pretty.para
+        ] @ (
+          (goals ~~ rule_prems) |> map_filter (
+            fn (goal, NONE) => SOME ([
+                "lemma" |> Pretty.str, Pretty.brk 1,
+                goal |> pretty_term |> Pretty.quote, Pretty.fbrk,
+                "sorry" |> Pretty.str
+              ] |> curry Pretty.blk 0 |> Pretty.mark sendback |> single |> Pretty.item)
+            | _ => NONE
+          )
+        )) |> Pretty.fbreaks |> Pretty.block
+      ] |> Pretty.chunks |> Pretty.string_of |> tracing
+    in () end
+
+fun full_resolve ctxt prem i =
+  let
+    val tac = resolve_tac ctxt [prem] THEN_ALL_NEW blast_tac ctxt
+  in rule_by_tactic ctxt (tac i) end
+
+fun prover method ss ctxt rule =
+  let
+    val ctxt_prems = Raw_Simplifier.prems_of ctxt
+    val rule_prems' = Logic.strip_imp_prems (Thm.prop_of rule)
+    val goals = rule_prems' |> map (fn prem =>
+      Logic.list_implies (map Thm.prop_of ctxt_prems, prem));
+    val ctxt' = ctxt |> put_simpset ss
+    fun prove t = SOME (Goal.prove ctxt' [] [] t
+      (fn {context = goal_ctxt, prems} => NO_CONTEXT_TACTIC goal_ctxt (method goal_ctxt prems)))
+      handle ERROR _ =>  NONE
+    val ths = goals |> map prove
+    val gen_ctxt_prems = map (Variable.gen_all ctxt) ctxt_prems
+    fun full_resolve1 prem = full_resolve ctxt prem 1
+    val rule_prems = ths |> (map o Option.map) (fold full_resolve1 gen_ctxt_prems)
+    val rule' = (fold o curry) (
+      fn (SOME th, rule') => rule' |> full_resolve1 th
+      | (NONE, rule') => Drule.rotate_prems 1 rule'
+      ) rule_prems rule
+    val nprems = Thm.nprems_of rule'
+    val _ = trace_rule_prems_proof ctxt rule goals rule_prems rule'
+  in if nprems = 0 then SOME rule' else NONE end
+
+fun rewrite _ _ [] = Thm.reflexive
+  | rewrite method ctxt thms =
+      let
+        val p = prover method (simpset_of ctxt)
+        val ctxt' = Raw_Simplifier.init_simpset thms ctxt
+      in
+        Raw_Simplifier.rewrite_cterm (true, true, true) p ctxt'
+      end
+
+fun rewrite_rule method ctxt = Conv.fconv_rule o rewrite method ctxt;
+
+fun meta_reversal_rules ctxt extra =
+  map (Local_Defs.meta_rewrite_rule ctxt) (extra @ Reversal_Rules.get ctxt)
+
+fun reverse method extra_rules context th =
   let
     val ctxt = Context.proof_of context
-    val rules = map_filter pure_eq_of (ths @ Reversal_Rules.get ctxt)
-    val vars = Term.add_vars (Thm.full_prop_of th) []
-    fun add_inst_vars [] inst_vars = inst_vars
-      | add_inst_vars ( ((v, i), T) :: vars ) inst_vars =
-          case T of
-            Type(\<^type_name>\<open>list\<close>, _) =>
-              add_inst_vars vars (
-                (
-                  ((v, i), T),
-                  Thm.cterm_of ctxt 
-                    ( Const(\<^const_name>\<open>rev\<close>, Type(\<^type_name>\<open>fun\<close>, [T, T])) $ Var((v, i), T) )
-                ) :: inst_vars
-              )
-          | _ => add_inst_vars vars inst_vars
+    val final_correct1 = map (Local_Defs.meta_rewrite_rule ctxt) @{thms final_correct1}
+    val final_correct2 = map (Local_Defs.meta_rewrite_rule ctxt) @{thms final_correct2}
+    val final_correct3 = map (Local_Defs.meta_rewrite_rule ctxt) @{thms final_correct3}
+    val rules = meta_reversal_rules ctxt extra_rules
+    val cvars = Thm.add_vars th Vars.empty
+    val cvars' = Vars.map ((subst ctxt o snd)) cvars
+    val th_subst = Thm.instantiate (TVars.empty, cvars') th
+    val ((_, [th_import]), ctxt') = Variable.import true [th_subst] ctxt
+    val th_init = th_import |> Conv.fconv_rule (initiate_cv ctxt')
+    val th_rev = th_init |> rewrite_rule method ctxt' rules
+    val th_corr = th_rev
+          |> Raw_Simplifier.rewrite_rule ctxt' final_correct1
+          |> Raw_Simplifier.rewrite_rule ctxt' final_correct2
+          |> Raw_Simplifier.rewrite_rule ctxt' final_correct3
+    val th_export = th_corr |> singleton (Variable.export ctxt' ctxt)
   in
-    th
-    |> Drule.instantiate_normalize
-       (TVars.empty, Vars.make (add_inst_vars vars []))
-    |> Simplifier.rewrite_rule ctxt init_rev_wrap
-    |> Simplifier.rewrite_rule ctxt init_unwrap
-    |> Simplifier.rewrite_rule ctxt rules
-    |> Simplifier.rewrite_rule ctxt final_correct1
-    |> Simplifier.rewrite_rule ctxt final_correct2
+    Drule.zero_var_indexes th_export
   end
 
-val reversed = Scan.optional (Scan.lift (Args.add -- Args.colon) |-- Attrib.thms) []
-  >> (fn ths => Thm.rule_attribute [] (reverse ths))
+val default_method = SIMPLE_METHOD o CHANGED_PROP o auto_tac
+
+val solve_arg = Args.$$$ "solve"
+
+val extra_rules_parser = Scan.optional (Scan.lift (Args.add -- Args.colon) |-- Attrib.thms) []
+
+val solve_parser = Scan.lift (Scan.optional
+    (solve_arg -- Args.colon |-- Method.parse >> (fst #> Method.evaluate)) default_method
+  )
+
+val reversed = extra_rules_parser -- solve_parser
+  >> (fn (ths, method) => Thm.rule_attribute [] (reverse method ths))
 \<close>
 
 attribute_setup reversed =
@@ -275,58 +433,189 @@ end
 
 section \<open>Declaration of basic reversal rules\<close>
 
-lemma hd_last_Nil: "hd [] = last []"
-  unfolding hd_def last_def by simp 
+subsection \<open>Pure\<close>
 
-lemma last_rev_hd: "last(rev xs) = hd xs"
-  by (induct xs, simp add: hd_last_Nil, simp)
+  \<comment> \<open>\<^const>\<open>Pure.all\<close>\<close>
+lemma all_surj_conv' [reversal_rule]: assumes "surj f" shows "Pure.all (P oo f) \<equiv> Pure.all P"
+  unfolding COMP_def using all_surj_conv[OF assms].
 
-lemma hd_rev_last: "hd(rev xs) = last xs"
-  by (induct xs, simp add: hd_last_Nil, simp)
+subsection \<open>\<^theory>\<open>HOL.HOL\<close>\<close>
 
-lemma tl_rev: "tl (rev xs) = rev (butlast xs)"
-  unfolding rev_swap[symmetric] butlast_rev[of "rev xs", symmetric] rev_rev_ident..
+  \<comment> \<open>\<^const>\<open>HOL.eq\<close>\<close>
+lemmas [reversal_rule] = rev_is_rev_conv inj_eq
 
-lemma if_rev: "(if P then rev u else rev v) = rev (if P then u else v)"
+  \<comment> \<open>\<^const>\<open>All\<close>\<close>
+lemma All_surj_conv' [reversal_rule]: assumes "surj f" shows "All (P o f) = All P"
+  unfolding comp_def using All_surj_conv[OF assms].
+
+  \<comment> \<open>\<^const>\<open>Ex\<close>\<close>
+lemma Ex_surj_conv' [reversal_rule]: assumes "surj f" shows "Ex (P o f) \<longleftrightarrow> Ex P"
+  unfolding comp_def using Ex_surj_conv[OF assms].
+
+  \<comment> \<open>\<^const>\<open>Ex1\<close>\<close>
+lemma Ex1_bij_conv' [reversal_rule]: assumes "bij f" shows "Ex1 (P o f) \<longleftrightarrow> Ex1 P"
+  unfolding comp_def using Ex1_bij_conv[OF assms].
+
+  \<comment> \<open>\<^const>\<open>If\<close>\<close>
+lemma if_image [reversal_rule]: "(if P then f u else f v) = f (if P then u else v)"
   by simp
 
-lemma rev_in_conv: "rev u \<in> A \<longleftrightarrow> u \<in> rev ` A"
-  using image_iff by fastforce
+subsection \<open>\<^theory>\<open>HOL.Set\<close>\<close>
 
-lemma in_lists_rev: "u \<in> lists A \<Longrightarrow> rev u \<in> lists A"
-  by auto
+  \<comment> \<open>\<^const>\<open>Collect\<close>\<close>
+lemma collect_image: "Collect (P \<circ> f) = f -` (Collect P)"
+  by fastforce
 
-lemma rev_in_lists: "rev u \<in> lists A \<Longrightarrow> u \<in> lists A"
-  by auto
+lemma collect_image' [reversal_rule]: assumes "f \<circ> f = id" shows "Collect (P \<circ> f) = f ` (Collect P)"
+  unfolding collect_image
+  unfolding bij_vimage_eq_inv_image[OF o_bij[OF assms assms]]
+  unfolding inv_unique_comp[OF assms assms]..
 
-lemma rev_lists_conv: "rev ` lists A = lists A"
-proof (intro equalityI subsetI)
-  fix x
-  show "x \<in> rev ` lists A \<Longrightarrow> x \<in> lists A"
-    unfolding rev_in_conv[symmetric] using rev_in_lists.
-  show "x \<in> lists A \<Longrightarrow> x \<in> rev ` lists A"
-    unfolding rev_in_conv[symmetric] using in_lists_rev.
-qed
+  \<comment> \<open>\<^const>\<open>Ball\<close>\<close>
+lemma Ball_image [reversal_rule]: assumes "(g \<circ> f) ` A = A" shows "Ball (f ` A) (P \<circ> g) = Ball A P"
+  unfolding Ball_image_comp[symmetric] image_comp \<open>(g \<circ> f) ` A = A\<close>..
 
+  \<comment> \<open>\<^const>\<open>Bex\<close>\<close>
+lemma Bex_image_comp: "Bex (f ` A) g = Bex A (g \<circ> f)"
+  by simp
+
+lemma Bex_image [reversal_rule]: assumes "(g \<circ> f) ` A = A" shows "Bex (f ` A) (P \<circ> g) = Bex A P"
+  unfolding Bex_image_comp[symmetric] image_comp \<open>(g \<circ> f) ` A = A\<close>..
+                      
+  \<comment> \<open>\<^const>\<open>insert\<close>\<close>
+lemma insert_image [reversal_rule]: "insert (f x) (f ` X) = f ` (insert x X)"
+  by blast
+
+  \<comment> \<open>\<^const>\<open>List.member\<close>\<close>
+lemmas [reversal_rule] = inj_image_mem_iff
+
+subsection \<open>\<^theory>\<open>HOL.List\<close>\<close>
+
+  \<comment> \<open>\<^const>\<open>set\<close>\<close>
+lemmas [reversal_rule] = set_rev set_map
+
+  \<comment> \<open>\<^const>\<open>Cons\<close>\<close>
+lemma Cons_rev: "a # rev u = rev (snocs u [a])"
+  unfolding snocs_def by simp
+
+lemma Cons_map: "(f x) # (map f xs) = map f (x # xs)"
+  using list.simps(9)[symmetric].
+
+lemmas [reversal_rule] = Cons_rev Cons_map
+
+  \<comment> \<open>\<^const>\<open>hd\<close>\<close>
+lemmas [reversal_rule] = hd_rev hd_map
+
+  \<comment> \<open>\<^const>\<open>tl\<close>\<close>
+lemma tl_rev: "tl (rev xs) = rev (butlast xs)"
+  using butlast_rev[of "rev xs", symmetric] unfolding rev_swap rev_rev_ident.
+
+lemmas [reversal_rule] = tl_rev map_tl[symmetric]
+
+  \<comment> \<open>\<^const>\<open>last\<close>\<close>
+lemmas [reversal_rule] = last_rev last_map
+
+  \<comment> \<open>\<^const>\<open>butlast\<close>\<close>
+lemmas [reversal_rule] = butlast_rev map_butlast[symmetric]
+
+  \<comment> \<open>\<^const>\<open>List.coset\<close>\<close>
 lemma coset_rev: "List.coset (rev xs) = List.coset xs"
- by simp
+  by simp
 
-lemmas [reversal_rule] =
-  Cons_rev
-  snocs_snocs
-  rev_append[symmetric]
-  last_rev_hd hd_rev_last
-  tl_rev butlast_rev
-  rev_is_rev_conv
-  length_rev
-  take_rev
-  drop_rev
-  rotate_rev
-  if_rev
-  rev_in_conv
-  rev_lists_conv
-  set_rev
-  coset_rev
+lemma coset_map: assumes "bij f" shows "List.coset (map f xs) =  f ` List.coset xs"
+  using bij_image_Compl_eq[OF \<open>bij f\<close>, symmetric] unfolding coset_def set_map.
+
+lemmas [reversal_rule] = coset_rev coset_map
+
+  \<comment> \<open>\<^const>\<open>append\<close>\<close>
+lemmas [reversal_rule] = rev_append[symmetric] map_append[symmetric]
+
+  \<comment> \<open>\<^const>\<open>concat\<close>\<close>
+lemma concat_rev_map_rev: "concat (rev (map rev xs)) = rev (concat xs)"
+  using rev_concat[symmetric] unfolding rev_map.
+
+lemma concat_rev_map_rev': "concat (rev (map (rev \<circ> f) xs)) = rev (concat (map f xs))"
+  unfolding map_comp_map[symmetric] o_apply using concat_rev_map_rev.
+
+lemmas [reversal_rule] = concat_rev_map_rev concat_rev_map_rev'
+
+  \<comment> \<open>\<^const>\<open>drop\<close>\<close>
+lemmas [reversal_rule] = drop_rev drop_map
+  
+  \<comment> \<open>\<^const>\<open>take\<close>\<close>
+lemmas [reversal_rule] = take_rev take_map
+
+  \<comment> \<open>\<^const>\<open>nth\<close>\<close>
+lemmas [reversal_rule] = rev_nth nth_map
+
+  \<comment> \<open>\<^const>\<open>List.insert\<close>\<close>
+lemma list_insert_map [reversal_rule]:
+  assumes "inj f" shows "List.insert (f  x) (map f xs) = map f (List.insert x xs)"
+  unfolding List.insert_def set_map inj_image_mem_iff[OF \<open>inj f\<close>] Cons_map if_image..
+
+  \<comment> \<open>\<^const>\<open>List.union\<close>\<close>
+lemma list_union_map [reversal_rule]:
+  assumes "inj f" shows "List.union (map f xs) (map f ys) = map f (List.union xs ys)"
+proof (induction xs arbitrary: ys)
+  case (Cons a xs)
+  show ?case using Cons.IH unfolding List.union_def Cons_map[symmetric] fold.simps(2) o_apply
+    unfolding list_insert_map[OF \<open>inj f\<close>].
+qed (simp add: List.union_def)
+
+  \<comment> \<open>\<^const>\<open>length\<close>\<close>
+lemmas [reversal_rule] = length_rev length_map
+ 
+  \<comment> \<open>\<^const>\<open>rotate\<close>\<close>
+lemmas [reversal_rule] = rotate_rev rotate_map
+
+  \<comment> \<open>\<^const>\<open>lists\<close>\<close>
+lemma rev_in_lists: "rev u \<in> lists A \<longleftrightarrow> u \<in> lists A"
+  by auto
+
+lemma map_in_lists: "inj f \<Longrightarrow> map f u \<in> lists (f ` A) \<longleftrightarrow> u \<in> lists A"
+  by (simp add: lists_image inj_image_mem_iff inj_mapI)
+
+lemmas [reversal_rule] = rev_in_lists map_in_lists
+
+subsection \<open>Reverse Symmetry\<close>
+
+  \<comment> \<open>\<^const>\<open>snocs\<close>\<close>
+lemma snocs_map [reversal_rule]: "snocs (map f u) [f a] = map f (snocs u [a])"
+  unfolding snocs_def by simp
+
+section \<open>\<close>
+
+lemma bij_rev: "bij rev"
+  using o_bij[OF rev_involution' rev_involution'].
+
+lemma bij_map: "bij f \<Longrightarrow> bij (map f)"
+  using bij_betw_def inj_mapI lists_UNIV lists_image by metis
+
+lemma surj_map: "surj f \<Longrightarrow> surj (map f)"
+  using lists_UNIV lists_image by metis
+
+lemma bij_image: "bij f \<Longrightarrow> bij (image f)"
+  using bij_betw_Pow by force
+
+lemma inj_image: "inj f \<Longrightarrow> inj (image f)"
+  by (simp add: inj_on_image)
+
+lemma surj_image: "surj f \<Longrightarrow> surj (image f)"
+  using Pow_UNIV image_Pow_surj by metis
+
+lemmas [simp] =
+  bij_rev
+  bij_is_inj
+  bij_is_surj
+  bij_comp
+  inj_compose
+  comp_surj
+  bij_map
+  inj_mapI
+  surj_map
+  bij_image
+  inj_image
+  surj_image
 
 section \<open>Examples\<close>
 
@@ -412,12 +701,12 @@ thm
 
 subsection \<open>rotate\<close>
 
-private lemma rotate1_hd_tl': "xs \<noteq> [] \<Longrightarrow> rotate 1 xs = tl xs @ [hd xs]"
+private lemma rotate1_hd_tl: "xs \<noteq> [] \<Longrightarrow> rotate 1 xs = tl xs @ [hd xs]"
   by (cases xs) simp_all
 
 thm
-  rotate1_hd_tl'
-  rotate1_hd_tl'[reversed]
+  rotate1_hd_tl
+  rotate1_hd_tl[reversed]
 
 end
 

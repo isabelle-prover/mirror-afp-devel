@@ -10,45 +10,101 @@ import isabelle._
 import afp.TOML._
 
 import java.time.LocalDate
+import java.net.{URL, URI}
 
 
-object Metadata
-{
-  sealed abstract class Affiliation(val author: Author.ID)
+object Metadata {
+  /* affiliations */
+
+  sealed trait Affiliation {
+    def author: Author.ID
+  }
 
   case class Unaffiliated(override val author: Author.ID)
-    extends Affiliation(author)
+    extends Affiliation
 
   case class Email(override val author: Author.ID, id: Email.ID, address: String)
-    extends Affiliation(author)
+    extends Affiliation {
+
+    private val Address = "([^@]+)@(.+)".r
+    val (user, host) = address match {
+      case Address(user, host) => (user, host)
+      case _ => error("Invalid address: " + address)
+    }
+  }
 
   object Email {
     type ID = String
+
+    def apply(author: Author.ID, id: Email.ID, user: String, host: String): Email =
+      Email(author, id, user + "@" + host)
   }
 
-  case class Homepage(override val author: Author.ID, id: Homepage.ID, url: String)
-    extends Affiliation(author)
+  case class Homepage(override val author: Author.ID, id: Homepage.ID, url: URL)
+    extends Affiliation
 
   object Homepage {
     type ID = String
   }
 
+
+  /* authors */
+
+  case class Orcid(identifier: String) {
+    require(
+      "^([0-9]{4})-([0-9]{4})-([0-9]{4})-([0-9]{3}[0-9X])$".r.matches(identifier),
+      "Invalid format for orcid: " + quote(identifier))
+
+    def url: URL = new URL("https", "orcid.org", "/" + identifier)
+  }
+
   case class Author(
     id: Author.ID,
     name: String,
-    emails: List[Email],
-    homepages: List[Homepage]
+    emails: List[Email] = Nil,
+    homepages: List[Homepage] = Nil,
+    orcid: Option[Orcid] = None
   )
 
   object Author {
     type ID = String
   }
 
-  case class Topic(id: Topic.ID, name: String, sub_topics: List[Topic])
+
+  /* topics */
+
+  sealed trait Classification {
+    def desc: String
+    def url: URL
+  }
+
+  case class ACM(id: String, override val desc: String) extends Classification {
+    val url = new URL("https", "dl.acm.org", "/topic/ccs2012/" + id)
+  }
+
+  case class AMS(id: String, hierarchy: List[String]) extends Classification {
+    val code: String = id.length match {
+      case 2 => id + "-XX"
+      case 3 => id + "xx"
+      case 5 => id
+      case _ => error("Invalid ams id:" + id)
+    }
+    override val desc: String = hierarchy.mkString(" / ")
+    override val url: URL =
+      new URL("https", "mathscinet.ams.org", "/mathscinet/msc/msc2020.html?t=" + code)
+  }
+
+  case class Topic(
+    id: Topic.ID,
+    name: String,
+    classification: List[Classification] = Nil,
+    sub_topics: List[Topic] = Nil)
 
   object Topic {
     type ID = String
   }
+
+  /* releases */
 
   type Date = LocalDate
 
@@ -58,14 +114,40 @@ object Metadata
 
   case class Release(entry: Entry.Name, date: Date, isabelle: Isabelle.Version)
 
+
+  /* license */
+
   case class License(id: License.ID, name: String)
 
   object License {
     type ID = String
   }
 
+
+  /* references */
+
+  sealed trait Reference
+
+  case class DOI(identifier: String) extends Reference {
+    require("^10.([1-9][0-9]{3})/(.+)".r.matches(identifier),
+      "invalid format for DOI: " + quote(identifier))
+
+    def uri: URI = new URI("doi:" + identifier)
+    def url: URL = new URL("https", "doi.org", "/" + identifier)
+    def formatted(style: String = "apa"): String =
+      Utils.fetch_text(url, Map("Accept" -> ("text/x-bibliography; style=" + style)))
+  }
+
+  case class Formatted(rep: String) extends Reference
+
+
+  /* misc */
+
   type Change_History = Map[Date, String]
   type Extra = Map[String, String]
+
+
+  /* entry */
 
   case class Entry(
     name: Entry.Name,
@@ -75,13 +157,14 @@ object Metadata
     topics: List[Topic],
     `abstract`: String,
     notifies: List[Email],
-    contributors: List[Affiliation],
     license: License,
     note: String,
-    change_history: Change_History,
-    extra: Extra,
-    releases: List[Release],
-    sitegen_ignore: Boolean)
+    contributors: List[Affiliation] = Nil,
+    change_history: Change_History = Map.empty,
+    extra: Extra = Map.empty,
+    releases: List[Release] = Nil,
+    sitegen_ignore: Boolean = false,
+    related: List[Reference] = Nil)
 
   object Entry {
     type Name = String
@@ -95,52 +178,108 @@ object Metadata
       elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.map(_.toString))))
 
 
+    /* email */
+
+    def from_email(email: Email): T =
+      T(
+        "user" -> email.user.split('.').toList,
+        "host" -> email.host.split('.').toList)
+
+    def to_email(author_id: Author.ID, email_id: Email.ID, email: T): Email = {
+      val user = get_as[List[String]](email, "user")
+      val host = get_as[List[String]](email, "host")
+      Email(author_id, email_id, user.mkString("."), host.mkString("."))
+    }
+
+
     /* author */
 
-    def from_authors(authors: List[Author]): T = {
-      def from_author(author: Author): T =
-        T(
-          "name" -> author.name,
-          "emails" -> T(author.emails.map(email => email.id -> email.address)),
-          "homepages" -> T(author.homepages.map(homepage => homepage.id -> homepage.url)))
+    def from_author(author: Author): T =
+      T(
+        "name" -> author.name,
+        "emails" -> T(author.emails.map(email => email.id -> from_email(email))),
+        "homepages" -> T(author.homepages.map(homepage => homepage.id -> homepage.url.toString))) ++
+        author.orcid.map(orcid => T("orcid" -> orcid.identifier)).getOrElse(T())
 
-      T(authors.map(author => author.id -> from_author(author)))
-    }
-
-    def to_authors(authors: T): List[Author] = {
-      def to_author(author_id: Author.ID, author: T): Author = {
-        val emails = split_as[String](get_as[T](author, "emails")) map {
-          case (id, address) => Email(author = author_id, id = id, address = address)
-        }
-        val homepages = split_as[String](get_as[T](author, "homepages")) map {
-          case (id, url) => Homepage(author = author_id, id = id, url = url)
-        }
-        Author(
-          id = author_id,
-          name = get_as[String](author, "name"),
-          emails = emails,
-          homepages = homepages
-        )
+    def to_author(author_id: Author.ID, author: T): Author = {
+      val emails = split_as[T](get_as[T](author, "emails")) map {
+        case (id, email) => to_email(author_id, id, email)
       }
-
-      split_as[T](authors).map { case (id, author) => to_author(id, author) }
+      val homepages = split_as[String](get_as[T](author, "homepages")) map {
+        case (id, url) => Homepage(author = author_id, id = id, url = new URL(url))
+      }
+      val orcid = author.get("orcid").flatMap {
+        case orcid: String => Some(Orcid(orcid))
+        case o => error("Could not read oricid: " + quote(o.toString))
+      }
+      Author(
+        id = author_id,
+        name = get_as[String](author, "name"),
+        orcid = orcid,
+        emails = emails,
+        homepages = homepages)
     }
+
+    def from_authors(authors: List[Author]): T =
+      T(authors.map(author => author.id -> from_author(author)))
+
+    def to_authors(authors: T): List[Author] =
+      split_as[T](authors).map { case (id, author) => to_author(id, author) }
 
 
     /* topics */
 
+    def from_acm(acm: ACM): T =
+      T("id" -> acm.id, "desc" -> acm.desc)
+
+    def to_acm(acm: T): ACM =
+      ACM(get_as[String](acm, "id"), get_as[String](acm, "desc"))
+
+    def from_ams(ams: AMS): T =
+      T("id" -> ams.id, "hierarchy" -> ams.hierarchy)
+
+    def to_ams(ams: T): AMS =
+      AMS(get_as[String](ams, "id"), get_as[List[String]](ams, "hierarchy"))
+
+    def from_classifications(classifications: List[Classification]): T =
+      T(classifications map {
+        case acm: ACM => "acm" -> from_acm(acm)
+        case ams: AMS => "ams" -> from_ams(ams)
+      })
+
+    def to_classifications(classifications: T): List[Classification] = {
+      split_as[T](classifications).map {
+        case ("ams", ams) => to_ams(ams)
+        case ("acm", acm) => to_acm(acm)
+        case (c, _) => error("Unknown topic classification: " + quote(c))
+      }
+    }
+
     def from_topics(root_topics: List[Topic]): T =
-      T(root_topics.map(t => t.name -> from_topics(t.sub_topics)))
+      T(root_topics.map { t =>
+        t.name -> (
+          T("classification" -> from_classifications(t.classification)) ++
+          from_topics(t.sub_topics))
+      })
 
     def to_topics(root_topics: T): List[Topic] = {
-      def to_topics_rec(topics: T, root: Topic.ID): List[Topic] =
-        split_as[T](topics).map {
-          case (name, sub_topics) =>
+      def to_topics_rec(topics: List[(String, T)], root: Topic.ID): List[Topic] = {
+        topics.map {
+          case (name, data) =>
             val id = (if (root.nonEmpty) root + "/" else "") + name
-            Topic(id, name, to_topics_rec(sub_topics, id))
-        }
 
-      to_topics_rec(root_topics, "")
+            val classifications = data.get("classification").map {
+              case T(t) => to_classifications(t)
+              case o => error("Could not read classifications: " + quote(o.toString))
+            } getOrElse Nil
+            val sub_topics =
+              split_as[T](data).filterNot { case (name, _ ) => name == "classification" }
+
+            Topic(id, name, classifications, to_topics_rec(sub_topics, id))
+        }
+      }
+
+      to_topics_rec(split_as[T](root_topics), "")
     }
 
 
@@ -225,6 +364,25 @@ object Metadata
       }
 
 
+    /* references */
+
+    def from_related(references: List[Reference]): T = {
+      val dois = references collect { case d: DOI => d }
+      val formatted = references collect { case f: Formatted => f }
+
+      T(
+        "dois" -> dois.map(_.identifier),
+        "pubs" -> formatted.map(_.rep))
+    }
+
+    def to_related(references: T): List[Reference] = {
+      val dois = optional_as[List[String]](references, "dois").getOrElse(Nil)
+      val pubs = optional_as[List[String]](references, "pubs").getOrElse(Nil)
+
+      dois.map(DOI.apply) ++ pubs.map(Formatted.apply)
+    }
+
+
     /* entry */
 
     def from_entry(entry: Entry): T = {
@@ -239,26 +397,34 @@ object Metadata
         "license" -> entry.license.id,
         "note" -> entry.note,
         "history" -> from_change_history(entry.change_history),
-        "extra" -> entry.extra) ++
+        "extra" -> entry.extra,
+        "related" -> from_related(entry.related)) ++
         (if (entry.sitegen_ignore) T("sitegen_ignore" -> true) else T())
     }
 
-    def to_entry(entry: T, authors: Map[Author.ID, Author], topics: Map[Topic.ID, Topic],
-      licenses: Map[License.ID, License], releases: List[Release]): Entry =
+    def to_entry(
+      name: Entry.Name,
+      entry: T,
+      authors: Map[Author.ID, Author],
+      topics: Map[Topic.ID, Topic],
+      licenses: Map[License.ID, License],
+      releases: List[Release]
+    ): Entry =
       Entry(
-        name = get_as[String](entry, "name"),
+        name = name,
         title = get_as[String](entry, "title"),
         authors = to_affiliations(get_as[T](entry, "authors"), authors),
         date = get_as[Date](entry, "date"),
         topics = get_as[List[String]](entry, "topics").map(by_id(topics, _)),
         `abstract` = get_as[String](entry, "abstract"),
         notifies = to_emails(get_as[T](entry, "notify"), authors),
-        contributors = to_affiliations(get_as[T](entry, "contributors"), authors),
         license = to_license(get_as[String](entry, "license"), licenses),
         note = get_as[String](entry, "note"),
+        contributors = to_affiliations(get_as[T](entry, "contributors"), authors),
         change_history = to_change_history(get_as[T](entry, "history")),
         extra = get_as[Extra](entry, "extra"),
         releases = releases,
-        sitegen_ignore = optional_as[Boolean](entry, "sitegen_ignore").getOrElse(false))
+        sitegen_ignore = optional_as[Boolean](entry, "sitegen_ignore").getOrElse(false),
+        related = to_related(get_as[T](entry, "related")))
   }
 }

@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/programming-languages/compiling/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>A Reuse-Based Multi-Stage Compiler Verification for Language IMP</title>
+      <link>/entries/IMP_Compiler_Reuse.html</link>
+      <pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMP_Compiler_Reuse.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>A Shorter Compiler Correctness Proof for Language IMP</title>
       <link>/entries/IMP_Compiler.html</link>
       <pubDate>Fri, 04 Jun 2021 00:00:00 +0000</pubDate>
@@ -30,6 +39,24 @@
       <pubDate>Mon, 08 Jul 2019 00:00:00 +0000</pubDate>
       
       <guid>/entries/CakeML_Codegen.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Minimal Static Single Assignment Form</title>
+      <link>/entries/Minimal_SSA.html</link>
+      <pubDate>Tue, 17 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Minimal_SSA.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Construction of Static Single Assignment Form</title>
+      <link>/entries/Formal_SSA.html</link>
+      <pubDate>Fri, 05 Feb 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Formal_SSA.html</guid>
       <description></description>
     </item>
     

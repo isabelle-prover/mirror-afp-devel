@@ -98,7 +98,7 @@ shows "normal_vector W \<in> carrier_vec n"
   "w \<in> W \<Longrightarrow> normal_vector W \<bullet> w = 0"
   "lin_indpt (insert (normal_vector W) W)"
   "normal_vector W \<notin> W"
-  "W \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd \<Longrightarrow> normal_vector W \<in> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n-1) Bnd)"
+  "is_det_bound db \<Longrightarrow> W \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (of_int Bnd) \<Longrightarrow> normal_vector W \<in> \<int>\<^sub>v \<inter> Bounded_vec (of_int (db (n-1) Bnd))"
 proof -
   define ws where "ws = (SOME ws. set ws = W \<and> distinct ws)"
   from finite_distinct_list[OF fin]
@@ -180,25 +180,34 @@ proof -
   with lin_dep_iff_in_span[OF W lin nv nvW]
   show "lin_indpt (insert ?nv W)" by auto
   {
-    assume "W \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd"
-    hence wsI: "set ws \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd" unfolding id by auto
+    assume db: "is_det_bound db" 
+    assume "W \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (of_int Bnd)"
+    hence wsI: "set ws \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (of_int Bnd)" unfolding id by auto
     have ws: "set ws \<subseteq> carrier_vec n" using W unfolding id by auto
-    from wsI ws have wsI: "i < ?n \<Longrightarrow> ws ! i \<in> \<int>\<^sub>v \<inter> Bounded_vec Bnd \<inter> carrier_vec n" for i
+    from wsI ws have wsI: "i < ?n \<Longrightarrow> ws ! i \<in> \<int>\<^sub>v \<inter> Bounded_vec (of_int Bnd) \<inter> carrier_vec n" for i
       using len wsI unfolding set_conv_nth by auto
     have ints: "i < ?n \<Longrightarrow> j < n \<Longrightarrow> ws ! i $ j \<in> \<int>" for i j
       using wsI[of i, unfolded Ints_vec_def] by force
-    have bnd: "i < ?n \<Longrightarrow> j < n \<Longrightarrow> abs (ws ! i $ j) \<le> Bnd" for i j
+    have bnd: "i < ?n \<Longrightarrow> j < n \<Longrightarrow> abs (ws ! i $ j) \<le> of_int Bnd" for i j
       using wsI[unfolded Bounded_vec_def, of i] by auto
     {
       fix i
       assume i: "i < n"
-      have ints: "nv $ i \<in> \<int>" unfolding nv_def using wsI len ws
+      have ints_nv: "nv $ i \<in> \<int>" unfolding nv_def using wsI len ws
         by (auto simp: i B_def set_conv_nth intro!: Ints_mult Ints_det ints)
-      have "\<bar>nv $ i\<bar> \<le> det_bound (n - 1) Bnd" unfolding nv_def using wsI len ws i
-        by (auto simp: B_def Bounded_mat_def abs_mult intro!: det_bound bnd)
-      note ints this
+      have "B i \<in> \<int>\<^sub>m \<inter> Bounded_mat (of_int Bnd)" 
+        unfolding B_def using len ws i bnd ints_nv
+        apply (simp add: Ints_mat_def Ints_vec_def Bounded_mat_def, intro allI impI)
+        subgoal for ii j using ints[of ii j] ints[of ii "Suc j"]
+          by auto
+        done
+      from is_det_bound_of_int[OF db _ this, of ?n]
+      have "\<bar>nv $ i\<bar> \<le> of_int (db (n - 1) Bnd)" 
+        unfolding nv_def using wsI len ws i
+        by (auto simp: B_def abs_mult bnd)
+      note ints_nv this
     }
-    with nv nv2 show "?nv \<in> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n - 1) Bnd)"
+    with nv nv2 show "?nv \<in> \<int>\<^sub>v \<inter> Bounded_vec (of_int (db (n - 1) Bnd))"
       unfolding Ints_vec_def Bounded_vec_def by auto
   }
 qed
@@ -262,8 +271,8 @@ lemma normal_vectors:
     "lin_indpt_list (ws @ normal_vectors ws)"
     "length ws + length (normal_vectors ws) = n"
     "set ws \<inter> set (normal_vectors ws) = {}"
-    "set ws \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd \<Longrightarrow>
-       set (normal_vectors ws) \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n-1) (max 1 Bnd))"
+    "is_det_bound db \<Longrightarrow> set ws \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (of_int Bnd) \<Longrightarrow>
+       set (normal_vectors ws) \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (of_int (db (n-1) (max 1 Bnd)))"
 proof -
   define us where "us = basis_extension ws"
   from basis_extension[OF assms, folded us_def]
@@ -324,19 +333,21 @@ proof -
   } note scalar_0 = this
   show "length ws + length ?nv = n" using len by simp
   {
-    assume wsI: "set ws \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec Bnd"
+    let ?oi = "of_int :: int \<Rightarrow> 'a" 
+    assume wsI: "set ws \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi Bnd)" and db: "is_det_bound db" 
     {
       fix nv
       assume "nv \<in> set ?nv"
       then obtain i where nv: "nv = ?nv ! i" and i: "i < ?n" unfolding set_conv_nth by auto
-      from wsI have "set (ws @ us) - {us ! i} \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (max 1 Bnd)" using units
-          Bounded_vec_mono[of Bnd "max 1 Bnd"]
-        by (auto simp: unit_vecs_def)
-      from nvi(7)[OF i this] nv
-      have "nv \<in> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n - 1) (max 1 Bnd))"
+      from order.trans[OF units unit_vec_int_bounds]
+        wsI have "set (ws @ us) - {us ! i} \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi (max 1 Bnd))" using
+          Bounded_vec_mono[of "?oi Bnd" "?oi (max 1 Bnd)", unfolded of_int_le_iff]
+        by auto
+      from nvi(7)[OF i db this] nv
+      have "nv \<in> \<int>\<^sub>v \<inter> Bounded_vec (?oi (db (n - 1) (max 1 Bnd)))"
         by auto
     }
-    thus "set ?nv \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (det_bound (n - 1) (max 1 Bnd))" by auto
+    thus "set ?nv \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi (db (n - 1) (max 1 Bnd)))" by auto
   }
   have dist_nv: "distinct ?nv" unfolding distinct_conv_nth lnv
   proof (intro allI impI)

@@ -34,7 +34,8 @@ intuitionistic logic...."><meta property="og:title" content="The LambdaMu-calcul
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -88,7 +89,7 @@ intuitionistic logic...."><meta property="og:title" content="The LambdaMu-calcul
     <span class='first'>T</span>he <span class='first'>L</span>ambda<span class='first'>M</span>u-<span class='first'>C</span>alculus</h1>
   <div>
     
-    <p><a href="../authors/matache">Cristina Matache</a> <a href="mailto:cris.matache@gmail.com">📧</a>, <a href="../authors/gomes">Victor B. F. Gomes</a> <a href="mailto:victorborgesfg@gmail.com">📧</a> and <a href="../authors/mulligan">Dominic P. Mulligan</a> <a href="mailto:dominic.p.mulligan@googlemail.com">📧</a>
+    <p><a href="../authors/matache">Cristina Matache</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiY3JpcyIsIm1hdGFjaGUiXX0=">📧</a>, <a href="../authors/gomes">Victor B. F. Gomes</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsidmljdG9yYm9yZ2VzZmciXX0=">📧</a> and <a href="../authors/mulligan">Dominic P. Mulligan</a> <a class="obfuscated" data="eyJob3N0IjpbImdvb2dsZW1haWwiLCJjb20iXSwidXNlciI6WyJkb21pbmljIiwicCIsIm11bGxpZ2FuIl19">📧</a>
     </p>
     
     
@@ -105,7 +106,7 @@ This observation set off a flurry of further research, leading to the
 development of Parigots λμ-calculus. In this work, we formalise λμ-
 calculus in Isabelle/HOL and prove several metatheoretical properties
 such as type preservation and progress.</div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/lambda-calculi">Computer science/Programming languages/Lambda calculi</a></li><li><a href="../topics/logic/general-logic/lambda-calculus">Logic/General logic/Lambda calculus</a></li></ul>
+  <ul><li><a href="../topics/computer-science/programming-languages/lambda-calculi">Computer science/Programming languages/Lambda calculi</a></li></ul>
   <h3>Theories of LambdaMu</h3>
   <ul>
     <li><a href="../theories/lambdamu/#Syntax">Syntax</a></li>
@@ -123,7 +124,7 @@ such as type preservation and progress.</div>BSD License<h3>Topics</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/LambdaMu/outline.pdf">Proof
@@ -132,23 +133,23 @@ such as type preservation and progress.</div>BSD License<h3>Topics</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/LambdaMu/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">LambdaMu-AFP</p><pre id="copyText">@article{LambdaMu-AFP,
-  author  = {Cristina Matache, Victor B. F. Gomes and Dominic P. Mulligan},
+      <p style="display:none;" id="bibtex-filename">LambdaMu-AFP</p><pre id="copy-text">@article{LambdaMu-AFP,
+  author  = {Cristina Matache and Victor B. F. Gomes and Dominic P. Mulligan},
   title   = {The LambdaMu-calculus},
   journal = {Archive of Formal Proofs},
-  month   = August,
-  year    = 2017,
+  month   = {August},
+  year    = {2017},
   note    = {\url{https://isa-afp.org/entries/LambdaMu.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -158,8 +159,23 @@ such as type preservation and progress.</div>BSD License<h3>Topics</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-LambdaMu-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-LambdaMu-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-LambdaMu-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LambdaMu-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LambdaMu-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LambdaMu-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LambdaMu-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LambdaMu-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-LambdaMu-2017-08-21.tar.gz">Aug 21, 2017</a>: Isabelle2016-1
+      </li></ul>
   </div>
 </div>
     </div>

@@ -55,7 +55,7 @@ object TOML {
   /* lexer */
 
   object Kind extends Enumeration {
-    val KEYWORD, IDENT, STRING, COMMENT, ERROR = Value
+    val KEYWORD, IDENT, STRING, ERROR = Value
   }
 
   sealed case class Token(kind: Kind.Value, text: String) {
@@ -74,11 +74,10 @@ object TOML {
     val white_space: String = " \t\n\r"
     override val whiteSpace: Regex = ("[" + white_space + "]+").r
 
-    override def whitespace: Parser[Any] = many(character(white_space.contains(_)))
-
     override def comment: Parser[String] =
-      '#' ~>! rep(elem("", c => c != EofCh && c != '\n')) ~ elem("", c => c == EofCh || c == '\n') ^^
-        { case s ~ t => s.mkString + t }
+      '#' ~>! rep(elem("", c => c != EofCh && c != '\n' && c != '\r')) ^^ (s => s.mkString)
+
+    override def whitespace: Parser[Any] = rep(comment | many1(character(white_space.contains(_))))
 
     def keyword: Parser[Token] = ("[[" | "]]" | one(character("{}[],=.".contains(_)))) ^^ (s => Token(Kind.KEYWORD, s))
 
@@ -139,7 +138,7 @@ object TOML {
 
     def local_time: Parser[LocalTime] = token("local time", _.is_ident, LocalTime.parse)
 
-    def array: Parser[V] = $$$("[") ~>! rep(toml_value <~ $$$(",")) <~ $$$("]")
+    def array: Parser[V] = $$$("[") ~>! repsep(toml_value, $$$(",")) <~ opt($$$(",")) ~ $$$("]")
 
     def table: Parser[T] = $$$("[") ~>! (keys <~ $$$("]")) ~! content ^?
       { case base ~ T(map) => to_map(List(base -> map)) }

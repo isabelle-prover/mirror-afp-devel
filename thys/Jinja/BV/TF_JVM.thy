@@ -58,12 +58,12 @@ lemma special_ex_swap_lemma [iff]:
   "(? X. (? n. X = A n & P n) & Q X) = (? n. Q(A n) & P n)"
   by blast
 
-lemma ex_in_list [iff]:
-  "(\<exists>n. ST \<in> list n A \<and> n \<le> mxs) = (set ST \<subseteq> A \<and> size ST \<le> mxs)"
-  by (unfold list_def) auto
+lemma ex_in_nlists [iff]:
+  "(\<exists>n. ST \<in> nlists n A \<and> n \<le> mxs) = (set ST \<subseteq> A \<and> size ST \<le> mxs)"
+  by (unfold nlists_def) auto
 
-lemma singleton_list: 
-  "(\<exists>n. [Class C] \<in> list n (types P) \<and> n \<le> mxs) = (is_class P C \<and> 0 < mxs)"
+lemma singleton_nlists: 
+  "(\<exists>n. [Class C] \<in> nlists n (types P) \<and> n \<le> mxs) = (is_class P C \<and> 0 < mxs)"
   by auto
 
 lemma set_drop_subset:
@@ -74,9 +74,9 @@ lemma Suc_minus_minus_le:
   "n < mxs \<Longrightarrow> Suc (n - (n - b)) \<le> mxs"
   by arith
 
-lemma in_listE:
-  "\<lbrakk> xs \<in> list n A; \<lbrakk>size xs = n; set xs \<subseteq> A\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  by (unfold list_def) blast
+lemma in_nlistsE:
+  "\<lbrakk> xs \<in> nlists n A; \<lbrakk>size xs = n; set xs \<subseteq> A\<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  by (unfold nlists_def) blast
 
 declare is_relevant_entry_def [simp]
 declare set_drop_subset [simp]
@@ -100,7 +100,7 @@ theorem (in start_context) exec_pres_type:
 
   \<comment> \<open>Load\<close>
   apply clarsimp
-  apply (frule listE_nth_in, assumption)
+  apply (frule nlistsE_nth_in, assumption)
   apply fastforce
 
   \<comment> \<open>Store\<close>
@@ -258,7 +258,7 @@ theorem (in JVM_sl) step_mono:
 
 
 lemma (in start_context) first_in_A [iff]: "OK first \<in> A"
-  using Ts C by (force intro!: list_appendI simp add: JVM_states_unfold)
+  using Ts C by (force intro!: nlists_appendI simp add: JVM_states_unfold)
 
 
 lemma (in JVM_sl) wt_method_def2:

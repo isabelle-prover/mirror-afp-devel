@@ -12,13 +12,13 @@ imports
   Main
 begin
 
-declare divmod_nat_def[termination_simp]
+declare Euclidean_Division.divmod_nat_def[termination_simp]
 
 context monoid_mult
 begin
 fun binary_power :: "'a \<Rightarrow> nat \<Rightarrow> 'a" where
   "binary_power x n = (if n = 0 then 1 else
-    let (d,r) = Divides.divmod_nat n 2; 
+    let (d,r) = Euclidean_Division.divmod_nat n 2; 
        rec = binary_power (x * x) d in 
     if r = 0 then rec else rec * x)"
 
@@ -32,8 +32,8 @@ proof (intro ext)
     proof (cases "n = 0")
       case False
       note IH = 1[OF False]
-      obtain d r where n2: "Divides.divmod_nat n 2 = (d,r)" by force
-      from divmod_nat_def[of n 2] n2 have dr: "d = n div 2" "r = n mod 2" by auto
+      obtain d r where n2: "Euclidean_Division.divmod_nat n 2 = (d,r)" by force
+      from Euclidean_Division.divmod_nat_def[of n 2] n2 have dr: "d = n div 2" "r = n mod 2" by auto
       hence r: "r = 0 \<or> r = 1" by auto
       let ?rec = "binary_power (x * x) d"
       have "binary_power x n = (if r = 0 then ?rec else ?rec * x)"

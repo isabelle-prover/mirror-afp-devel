@@ -1,0 +1,10 @@
+chapter AFP
+
+session Weighted_Arithmetic_Geometric_Mean (AFP) = HOL +
+  options [timeout = 600]
+  theories
+    Weighted_Arithmetic_Geometric_Mean
+  document_files
+    "root.tex"
+    "root.bib"
+

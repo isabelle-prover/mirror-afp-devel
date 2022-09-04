@@ -5,7 +5,7 @@ requirements = \
   $ISABELLE_HOME_USER/contrib/ci-extras-1/lib/ci-extras.jar
 sources = \
   tools/admin/afp_build_hugo.scala \
-  tools/migration/afp_migrate_metadata.scala \
+  tools/migration/afp_obfuscate_emails.scala \
   tools/afp_build.scala \
   tools/afp_check_metadata.scala \
   tools/afp_check_roots.scala \
@@ -19,8 +19,7 @@ sources = \
   tools/toml.scala \
   tools/utils.scala
 resources = \
-  tools/SmartStoplist.txt:SmartStoplist.txt \
-  tools/migration/public_suffix_list.dat:public_suffix_list.dat
+  tools/SmartStoplist.txt:SmartStoplist.txt
 services = \
   afp.Tools \
   afp.Build_Tools

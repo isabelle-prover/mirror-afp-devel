@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality - Archive of Formal Proofs</title><meta name="description" content="This article provides a formalisation of the Weighted Arithmetic–Geometric Mean Inequality: given non-negative reals $a_1, \ldots, a_n$ and non-negative..."><meta property="og:title" content="Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Weighted_Arithmetic_Geometric_Mean.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2022-07-11T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-07-11T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <a href="../"><li >Home</li></a>
+        <a href="../topics/"><li >Topics</li></a>
+        <a href="../download/"><li >Download</li></a>
+        <a href="../help/"><li >Help</li></a>
+        <a href="../submission/"><li >Submission</li></a>
+        <a href="../statistics/"><li >Statistics</li></a>
+        <a href="../about/"><li >About</li></a>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>P</span>ólya’s <span class='first'>P</span>roof of the <span class='first'>W</span>eighted <span class='first'>A</span>rithmetic–<span class='first'>G</span>eometric <span class='first'>M</span>ean <span class='first'>I</span>nequality</h1>
+  <div>
+    
+    <p><a href="../authors/eberl">Manuel Eberl</a> <a href="https://pruvisto.org/">🌐</a>
+    </p>
+    
+    
+    <p class="date">July 11, 2022</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process"><p>This article provides a formalisation of the Weighted
+Arithmetic–Geometric Mean Inequality: given non-negative reals $a_1,
+\ldots, a_n$ and non-negative weights $w_1, \ldots, w_n$ such that
+$w_1 + \ldots + w_n = 1$, we have \[\prod\limits_{i=1}^n a_i^{w_i}
+\leq \sum\limits_{i=1}^n w_i a_i\ .\] If the weights are additionally
+all non-zero, equality holds if and only if $a_1 = \ldots =
+a_n$.</p> <p>As a corollary with $w_1 = \ldots = w_n =
+1/n$, the regular arithmetic–geometric mean inequality follows, namely
+that \[\sqrt[n]{a_1\,\cdots\, a_n} \leq \tfrac{1}{n}(a_1 + \ldots +
+a_n)\ .\]</p> <p>I follow Pólya's elegant proof,
+which uses the inequality $1 + x \leq e^x$ as a starting point. Pólya
+claims that this proof came to him in a dream, and that it was “the
+best mathematics he had ever dreamt.”</p></div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/analysis">Mathematics/Analysis</a></li></ul>
+  <h3>Theories of Weighted_Arithmetic_Geometric_Mean</h3>
+  <ul>
+    <li><a href="../theories/weighted_arithmetic_geometric_mean/#Weighted_Arithmetic_Geometric_Mean">Weighted_Arithmetic_Geometric_Mean</a></li></ul><div class="flex-wrap">
+  
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#cite-popup">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Weighted_Arithmetic_Geometric_Mean/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Weighted_Arithmetic_Geometric_Mean/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Weighted_Arithmetic_Geometric_Mean/session_graph.pdf">Dependencies</a></nav>
+
+<div id="cite-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtex-filename">Weighted_Arithmetic_Geometric_Mean-AFP</p><pre id="copy-text">@article{Weighted_Arithmetic_Geometric_Mean-AFP,
+  author  = {Manuel Eberl},
+  title   = {Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2022},
+  note    = {\url{https://isa-afp.org/entries/Weighted_Arithmetic_Geometric_Mean.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://www.isa-afp.org/release//afp-Weighted_Arithmetic_Geometric_Mean-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>

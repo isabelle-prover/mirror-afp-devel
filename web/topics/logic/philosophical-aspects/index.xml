@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/logic/philosophical-aspects/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Boolos&#39;s Curious Inference in Isabelle/HOL</title>
+      <link>/entries/Boolos_Curious_Inference.html</link>
+      <pubDate>Mon, 20 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Boolos_Curious_Inference.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Exploring Simplified Variants of Gödel’s Ontological Argument in Isabelle/HOL</title>
       <link>/entries/SimplifiedOntologicalArgument.html</link>
       <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>

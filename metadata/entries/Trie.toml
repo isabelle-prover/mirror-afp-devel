@@ -29,3 +29,5 @@ nipkow = "nipkow_email"
 extra-0 = """
 
 Origin: This article was extracted from existing articles by the authors."""
+
+[related]

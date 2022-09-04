@@ -32,7 +32,7 @@ proof -
     ring_hom_ring "R \<lparr> carrier := K \<rparr>"
       "Rupt K f" "rupture_surj K f \<circ> poly_of_const"
     using rupture_surj_norm_is_hom[OF e assms(2)]
-    using ring_hom_ringI2 subring_is_ring d.is_ring e
+    using ring_hom_ringI2 subring_is_ring d.ring_axioms e
     by blast
 
   have "field (R \<lparr>carrier := K\<rparr>)"

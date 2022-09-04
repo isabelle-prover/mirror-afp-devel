@@ -9,6 +9,7 @@ theory Extra_General
     "HOL-Types_To_Sets.Types_To_Sets"
     "HOL-Library.Complex_Order"
     "HOL-Analysis.Infinite_Sum"
+    "HOL-Cardinals.Cardinals"
 begin
 
 subsection \<open>Misc\<close>
@@ -21,13 +22,6 @@ lemma reals_zero_comparable:
 
 lemma unique_choice: "\<forall>x. \<exists>!y. Q x y \<Longrightarrow> \<exists>!f. \<forall>x. Q x (f x)"
   apply (auto intro!: choice ext) by metis
-
-lemma sum_single: 
-  assumes "finite A"
-  assumes "\<And>j. j \<noteq> i \<Longrightarrow> j\<in>A \<Longrightarrow> f j = 0"
-  shows "sum f A = (if i\<in>A then f i else 0)"
-  apply (subst sum.mono_neutral_cong_right[where S=\<open>A \<inter> {i}\<close> and h=f])
-  using assms by auto
 
 lemma image_set_plus: 
   assumes \<open>linear U\<close>
@@ -106,6 +100,16 @@ in
   Scan.lift Args.var >> internalize_sort_attr
 end\<close>
   "internalize a sort"
+
+lemma card_prod_omega: \<open>X *c natLeq =o X\<close> if \<open>Cinfinite X\<close>
+  by (simp add: Cinfinite_Cnotzero cprod_infinite1' natLeq_Card_order natLeq_cinfinite natLeq_ordLeq_cinfinite that)
+
+lemma countable_leq_natLeq: \<open>|X| \<le>o natLeq\<close> if \<open>countable X\<close>
+  using subset_range_from_nat_into[OF that]
+  by (meson card_of_nat ordIso_iff_ordLeq ordLeq_transitive surj_imp_ordLeq)
+
+lemma set_Times_plus_distrib: \<open>(A \<times> B) + (C \<times> D) = (A + C) \<times> (B + D)\<close>
+  by (auto simp: Sigma_def set_plus_def)
 
 subsection \<open>Not singleton\<close>
 
@@ -265,19 +269,31 @@ proof (rule filter_leI)
     unfolding eventually_finite_subsets_at_top by meson
 qed
 
-
 lemma finite_subsets_at_top_inter: 
   assumes "A\<subseteq>B"
-  shows "filtermap (\<lambda>F. F \<inter> A) (finite_subsets_at_top B) \<le> finite_subsets_at_top A"
-proof (rule filter_leI)
-  show "eventually P (filtermap (\<lambda>F. F \<inter> A) (finite_subsets_at_top B))"
-    if "eventually P (finite_subsets_at_top A)"
-    for P :: "'a set \<Rightarrow> bool"
-    using that unfolding eventually_filtermap
+  shows "filtermap (\<lambda>F. F \<inter> A) (finite_subsets_at_top B) = finite_subsets_at_top A"
+proof (subst filter_eq_iff, intro allI iffI)
+  fix P :: "'a set \<Rightarrow> bool"
+  assume "eventually P (finite_subsets_at_top A)"
+  then show "eventually P (filtermap (\<lambda>F. F \<inter> A) (finite_subsets_at_top B))"
+    unfolding eventually_filtermap
     unfolding eventually_finite_subsets_at_top
     by (metis Int_subset_iff assms finite_Int inf_le2 subset_trans)
+next
+  fix P :: "'a set \<Rightarrow> bool"
+  assume "eventually P (filtermap (\<lambda>F. F \<inter> A) (finite_subsets_at_top B))"
+  then obtain X where \<open>finite X\<close> \<open>X \<subseteq> B\<close> and P: \<open>finite Y \<Longrightarrow> X \<subseteq> Y \<Longrightarrow> Y \<subseteq> B \<Longrightarrow> P (Y \<inter> A)\<close> for Y
+    unfolding eventually_filtermap eventually_finite_subsets_at_top by metis
+  have *: \<open>finite Y \<Longrightarrow> X \<inter> A \<subseteq> Y \<Longrightarrow> Y \<subseteq> A \<Longrightarrow> P Y\<close> for Y
+    using P[where Y=\<open>Y \<union> (B-A)\<close>]
+    apply (subgoal_tac \<open>(Y \<union> (B - A)) \<inter> A = Y\<close>)
+    apply (smt (verit, best) Int_Un_distrib2 Int_Un_eq(4) P Un_subset_iff \<open>X \<subseteq> B\<close> \<open>finite X\<close> assms finite_UnI inf.orderE sup_ge2)
+    by auto
+  show "eventually P (finite_subsets_at_top A)"
+    unfolding eventually_finite_subsets_at_top
+    apply (rule exI[of _ \<open>X\<inter>A\<close>])
+    by (auto simp: \<open>finite X\<close> intro!: *)
 qed
-
 
 lemma tendsto_principal_singleton:
   shows "(f \<longlongrightarrow> f x) (principal {x})"
@@ -292,6 +308,171 @@ proof-
   thus ?thesis
     unfolding complete_uniform
     by simp
+qed
+
+lemma on_closure_eqI:
+  fixes f g :: \<open>'a::topological_space \<Rightarrow> 'b::t2_space\<close>
+  assumes eq: \<open>\<And>x. x \<in> S \<Longrightarrow> f x = g x\<close>
+  assumes xS: \<open>x \<in> closure S\<close>
+  assumes cont: \<open>continuous_on UNIV f\<close> \<open>continuous_on UNIV g\<close>
+  shows \<open>f x = g x\<close>
+proof -
+  define X where \<open>X = {x. f x = g x}\<close>
+  have \<open>closed X\<close>
+    using cont by (simp add: X_def closed_Collect_eq)
+  moreover have \<open>S \<subseteq> X\<close>
+    by (simp add: X_def eq subsetI)
+  ultimately have \<open>closure S \<subseteq> X\<close>
+    using closure_minimal by blast
+  with xS have \<open>x \<in> X\<close>
+    by auto
+  then show ?thesis
+    using X_def by blast
+qed
+
+lemma on_closure_leI:
+  fixes f g :: \<open>'a::topological_space \<Rightarrow> 'b::linorder_topology\<close>
+  assumes eq: \<open>\<And>x. x \<in> S \<Longrightarrow> f x \<le> g x\<close>
+  assumes xS: \<open>x \<in> closure S\<close>
+  assumes cont: \<open>continuous_on UNIV f\<close> \<open>continuous_on UNIV g\<close> (* Is "isCont f x" "isCont g x" sufficient? *)
+  shows \<open>f x \<le> g x\<close>
+proof -
+  define X where \<open>X = {x. f x \<le> g x}\<close>
+  have \<open>closed X\<close>
+    using cont by (simp add: X_def closed_Collect_le)
+  moreover have \<open>S \<subseteq> X\<close>
+    by (simp add: X_def eq subsetI)
+  ultimately have \<open>closure S \<subseteq> X\<close>
+    using closure_minimal by blast
+  with xS have \<open>x \<in> X\<close>
+    by auto
+  then show ?thesis
+    using X_def by blast
+qed
+
+
+lemma tendsto_compose_at_within:
+  assumes f: "(f \<longlongrightarrow> y) F" and g: "(g \<longlongrightarrow> z) (at y within S)" 
+    and fg: "eventually (\<lambda>w. f w = y \<longrightarrow> g y = z) F"
+    and fS: \<open>\<forall>\<^sub>F w in F. f w \<in> S\<close>
+  shows "((g \<circ> f) \<longlongrightarrow> z) F"
+proof (cases \<open>g y = z\<close>)
+  case False
+  then have 1: "(\<forall>\<^sub>F a in F. f a \<noteq> y)"
+    using fg by force
+  have 2: "(g \<longlongrightarrow> z) (filtermap f F) \<or> \<not> (\<forall>\<^sub>F a in F. f a \<noteq> y)"
+    by (smt (verit, best) eventually_elim2 f fS filterlim_at filterlim_def g tendsto_mono)
+  show ?thesis
+    using "1" "2" tendsto_compose_filtermap by blast
+next
+  case True
+  have *: ?thesis if \<open>(g \<longlongrightarrow> z) (filtermap f F)\<close>
+    using that by (simp add: tendsto_compose_filtermap)
+  from g
+  have \<open>(g \<longlongrightarrow> g y) (inf (nhds y) (principal (S-{y})))\<close>
+    by (simp add: True at_within_def)
+  then have g': \<open>(g \<longlongrightarrow> g y) (inf (nhds y) (principal S))\<close>
+    using True g tendsto_at_iff_tendsto_nhds_within by blast
+  from f have \<open>filterlim f (nhds y) F\<close>
+    by -
+  then have f': \<open>filterlim f (inf (nhds y) (principal S)) F\<close>
+    using fS
+    by (simp add: filterlim_inf filterlim_principal)
+  from f' g' show ?thesis
+    by (simp add: * True filterlim_compose filterlim_filtermap)
+qed
+
+subsection \<open>Sums\<close>
+
+lemma sum_single: 
+  assumes "finite A"
+  assumes "\<And>j. j \<noteq> i \<Longrightarrow> j\<in>A \<Longrightarrow> f j = 0"
+  shows "sum f A = (if i\<in>A then f i else 0)"
+  apply (subst sum.mono_neutral_cong_right[where S=\<open>A \<inter> {i}\<close> and h=f])
+  using assms by auto
+
+lemma has_sum_comm_additive_general: 
+  \<comment> \<open>This is a strengthening of @{thm [source] has_sum_comm_additive_general}.\<close>
+  fixes f :: \<open>'b :: {comm_monoid_add,topological_space} \<Rightarrow> 'c :: {comm_monoid_add,topological_space}\<close>
+  assumes f_sum: \<open>\<And>F. finite F \<Longrightarrow> F \<subseteq> S \<Longrightarrow> sum (f o g) F = f (sum g F)\<close>
+      \<comment> \<open>Not using \<^const>\<open>additive\<close> because it would add sort constraint \<^class>\<open>ab_group_add\<close>\<close>
+  assumes inS: \<open>\<And>F. finite F \<Longrightarrow> sum g F \<in> T\<close>
+  assumes cont: \<open>(f \<longlongrightarrow> f x) (at x within T)\<close>
+    \<comment> \<open>For \<^class>\<open>t2_space\<close> and \<^term>\<open>T=UNIV\<close>, this is equivalent to \<open>isCont f x\<close> by @{thm [source] isCont_def}.\<close>
+  assumes infsum: \<open>has_sum g S x\<close>
+  shows \<open>has_sum (f o g) S (f x)\<close> 
+proof -
+  have \<open>(sum g \<longlongrightarrow> x) (finite_subsets_at_top S)\<close>
+    using infsum has_sum_def by blast
+  then have \<open>((f o sum g) \<longlongrightarrow> f x) (finite_subsets_at_top S)\<close>
+    apply (rule tendsto_compose_at_within[where S=T])
+    using assms by auto
+  then have \<open>(sum (f o g) \<longlongrightarrow> f x) (finite_subsets_at_top S)\<close>
+    apply (rule tendsto_cong[THEN iffD1, rotated])
+    using f_sum by fastforce
+  then show \<open>has_sum (f o g) S (f x)\<close>
+    using has_sum_def by blast 
+qed
+
+lemma summable_on_comm_additive_general:
+  \<comment> \<open>This is a strengthening of @{thm [source] summable_on_comm_additive_general}.\<close>
+  fixes g :: \<open>'a \<Rightarrow> 'b :: {comm_monoid_add,topological_space}\<close> and f :: \<open>'b \<Rightarrow> 'c :: {comm_monoid_add,topological_space}\<close>
+  assumes \<open>\<And>F. finite F \<Longrightarrow> F \<subseteq> S \<Longrightarrow> sum (f o g) F = f (sum g F)\<close>
+    \<comment> \<open>Not using \<^const>\<open>additive\<close> because it would add sort constraint \<^class>\<open>ab_group_add\<close>\<close>
+  assumes inS: \<open>\<And>F. finite F \<Longrightarrow> sum g F \<in> T\<close>
+  assumes cont: \<open>\<And>x. has_sum g S x \<Longrightarrow> (f \<longlongrightarrow> f x) (at x within T)\<close>
+    \<comment> \<open>For \<^class>\<open>t2_space\<close> and \<^term>\<open>T=UNIV\<close>, this is equivalent to \<open>isCont f x\<close> by @{thm [source] isCont_def}.\<close>
+  assumes \<open>g summable_on S\<close>
+  shows \<open>(f o g) summable_on S\<close>
+  by (meson assms summable_on_def has_sum_comm_additive_general has_sum_def infsum_tendsto)
+
+lemma has_sum_metric:
+  fixes l :: \<open>'a :: {metric_space, comm_monoid_add}\<close>
+  shows \<open>has_sum f A l \<longleftrightarrow> (\<forall>e. e > 0 \<longrightarrow> (\<exists>X. finite X \<and> X \<subseteq> A \<and> (\<forall>Y. finite Y \<and> X \<subseteq> Y \<and> Y \<subseteq> A \<longrightarrow> dist (sum f Y) l < e)))\<close>
+  unfolding has_sum_def
+  apply (subst tendsto_iff)
+  unfolding eventually_finite_subsets_at_top
+  by simp
+
+lemma summable_on_product_finite_left:
+  fixes f :: \<open>'a\<times>'b \<Rightarrow> 'c::{topological_comm_monoid_add}\<close>
+  assumes sum: \<open>\<And>x. x\<in>X \<Longrightarrow> (\<lambda>y. f(x,y)) summable_on Y\<close>
+  assumes \<open>finite X\<close>
+  shows \<open>f summable_on (X\<times>Y)\<close>
+  using \<open>finite X\<close> subset_refl[of X]
+proof (induction rule: finite_subset_induct')
+  case empty
+  then show ?case
+    by simp
+next
+  case (insert x F)
+  have *: \<open>bij_betw (Pair x) Y ({x} \<times> Y)\<close>
+    apply (rule bij_betwI')
+    by auto
+  from sum[of x]
+  have \<open>f summable_on {x} \<times> Y\<close>
+    apply (rule summable_on_reindex_bij_betw[THEN iffD1, rotated])
+    by (simp_all add: * insert.hyps(2))
+  then have \<open>f summable_on {x} \<times> Y \<union> F \<times> Y\<close>
+    apply (rule summable_on_Un_disjoint)
+    using insert by auto
+  then show ?case
+    by (metis Sigma_Un_distrib1 insert_is_Un)
+qed
+
+lemma summable_on_product_finite_right:
+  fixes f :: \<open>'a\<times>'b \<Rightarrow> 'c::{topological_comm_monoid_add}\<close>
+  assumes sum: \<open>\<And>y. y\<in>Y \<Longrightarrow> (\<lambda>x. f(x,y)) summable_on X\<close>
+  assumes \<open>finite Y\<close>
+  shows \<open>f summable_on (X\<times>Y)\<close>
+proof -
+  have \<open>(\<lambda>(y,x). f(x,y)) summable_on (Y\<times>X)\<close>
+    apply (rule summable_on_product_finite_left)
+    using assms by auto
+  then show ?thesis
+    apply (subst summable_on_reindex_bij_betw[where g=prod.swap and A=\<open>Y\<times>X\<close>, symmetric])
+    apply (simp add: bij_betw_def product_swap)
+    by (metis (mono_tags, lifting) case_prod_unfold prod.swap_def summable_on_cong)
 qed
 
 subsection \<open>Complex numbers\<close>
@@ -323,9 +504,13 @@ qed
 lemma cnj_x_x_geq0[simp]: \<open>cnj x * x \<ge> 0\<close>
   by (simp add: less_eq_complex_def)
 
+lemma complex_of_real_leq_1_iff[iff]: \<open>complex_of_real x \<le> 1 \<longleftrightarrow> x \<le> 1\<close>
+  by (simp add: less_eq_complex_def)
+
+lemma x_cnj_x: \<open>x * cnj x = (abs x)\<^sup>2\<close>
+  by (metis cnj_x_x mult.commute)
 
 subsection \<open>List indices and enum\<close>
-
 
 fun index_of where
   "index_of x [] = (0::nat)"
@@ -498,59 +683,5 @@ proof (unfold inj_map_def, rule allI, rule allI, rule impI, erule conjE)
   thus "x = y"
     by (meson inv_into_injective option.inject x_pi y_pi)
 qed
-
-(* lemma abs_summable_bdd_above:
-  fixes f :: \<open>'a \<Rightarrow> 'b::real_normed_vector\<close>
-  shows \<open>f abs_summable_on A \<longleftrightarrow> bdd_above (sum (\<lambda>x. norm (f x)) ` {F. F\<subseteq>A \<and> finite F})\<close>
-proof (rule iffI)
-  assume \<open>f abs_summable_on A\<close>
-  have \<open>(\<Sum>x\<in>F. norm (f x)) = (\<Sum>\<^sub>\<infinity>x\<in>F. norm (f x))\<close> if \<open>finite F\<close> for F
-    by (simp add: that)
-  also have \<open>(\<Sum>\<^sub>\<infinity>x\<in>F. norm (f x)) \<le> (\<Sum>\<^sub>\<infinity>x\<in>A. norm (f x))\<close> if \<open>F \<subseteq> A\<close> for F
-    by (smt (verit) Diff_subset \<open>f abs_summable_on A\<close> infsum_Diff infsum_nonneg norm_ge_zero summable_on_subset_banach that)
-  finally show \<open>bdd_above (sum (\<lambda>x. norm (f x)) ` {F. F \<subseteq> A \<and> finite F})\<close>
-    by (auto intro!: bdd_aboveI)
-next
-  assume \<open>bdd_above (sum (\<lambda>x. norm (f x)) ` {F. F\<subseteq>A \<and> finite F})\<close>
-  then show \<open>f abs_summable_on A\<close>
-    by (simp add: nonneg_bdd_above_summable_on)
-qed
-
-lemma infsum_nonneg:
-  fixes f :: "'a \<Rightarrow> 'b::{ordered_comm_monoid_add,linorder_topology}"
-  assumes "\<And>x. x \<in> M \<Longrightarrow> 0 \<le> f x"
-  shows "infsum f M \<ge> 0" (is "?lhs \<ge> _")
-  apply (cases \<open>f summable_on M\<close>)
-   apply (rule infsum_nonneg)
-  using assms by (auto simp add: infsum_not_exists)
-
-lemma abs_summable_product:
-  fixes x :: "'a \<Rightarrow> 'b::{real_normed_div_algebra,banach,second_countable_topology}"
-  assumes x2_sum: "(\<lambda>i. (x i) * (x i)) abs_summable_on A"
-    and y2_sum: "(\<lambda>i. (y i) * (y i)) abs_summable_on A"
-  shows "(\<lambda>i. x i * y i) abs_summable_on A"
-proof (rule nonneg_bdd_above_summable_on, simp, rule bdd_aboveI2, rename_tac F)
-  fix F assume \<open>F \<in> {F. F \<subseteq> A \<and> finite F}\<close>
-  then have r1: "finite F" and b4: "F \<subseteq> A"
-    by auto
-
-  have a1: "(\<Sum>\<^sub>\<infinity>i\<in>F. norm (x i * x i)) \<le> (\<Sum>\<^sub>\<infinity>i\<in>A. norm (x i * x i))"
-    apply (rule infsum_mono_neutral)
-    using b4 r1 x2_sum by auto
-
-  have "norm (x i * y i) \<le> norm (x i * x i) + norm (y i * y i)" for i
-    unfolding norm_mult
-    by (smt mult_left_mono mult_nonneg_nonneg mult_right_mono norm_ge_zero)
-  hence "(\<Sum>i\<in>F. norm (x i * y i)) \<le> (\<Sum>i\<in>F. norm (x i * x i) + norm (y i * y i))"
-    by (simp add: sum_mono)
-  also have "\<dots> = (\<Sum>i\<in>F. norm (x i * x i)) + (\<Sum>i\<in>F. norm (y i * y i))"
-    by (simp add: sum.distrib)
-  also have "\<dots> = (\<Sum>\<^sub>\<infinity>i\<in>F. norm (x i * x i)) + (\<Sum>\<^sub>\<infinity>i\<in>F. norm (y i * y i))"
-    by (simp add: \<open>finite F\<close>)
-  also have "\<dots> \<le> (\<Sum>\<^sub>\<infinity>i\<in>A. norm (x i * x i)) + (\<Sum>\<^sub>\<infinity>i\<in>A. norm (y i * y i))" 
-    by (smt (verit, del_insts) a1 Diff_iff Infinite_Sum.infsum_nonneg assms(2) b4 infsum_def infsum_mono_neutral norm_ge_zero subset_eq)
-  finally show \<open>(\<Sum>xa\<in>F. norm (x xa * y xa)) \<le> (\<Sum>\<^sub>\<infinity>i\<in>A. norm (x i * x i)) + (\<Sum>\<^sub>\<infinity>i\<in>A. norm (y i * y i))\<close>
-    by simp
-qed *)
 
 end

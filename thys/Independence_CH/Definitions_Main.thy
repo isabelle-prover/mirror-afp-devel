@@ -5,7 +5,8 @@ theory Definitions_Main
     Absolute_Versions
 begin
 
-text\<open>This theory gathers the main definitions of the Forcing session.
+text\<open>This theory gathers the main definitions of the
+\<^session>\<open>Transitive_Models\<close> session and the present one.
 
 It might be considered as the bare minimum reading requisite to
 trust that our development indeed formalizes the theory of
@@ -15,10 +16,12 @@ preserving the ordinals.
 
 The main theorem of this session and all of its relevant definitions
 appear in Section~\ref{sec:def-main-forcing}. The reader trusting
-all the libraries in which our development is based, might jump
-directly there. But in case one wants to dive deeper, the following
-sections treat some basic concepts in the ZF logic
-(Section~\ref{sec:def-main-ZF})  and in the
+all the libraries on which our development is based, might jump
+directly to Section~\ref{sec:relative-arith}, which treats relative
+cardinal arithmetic as implemented in
+\<^session>\<open>Transitive_Models\<close>. But in case one wants to dive deeper, the
+following sections treat some basic concepts of the ZF logic
+(Section~\ref{sec:def-main-ZF}) and in the
 ZF-Constructible library (Section~\ref{sec:def-main-relative})
 on which our definitions are built.
 \<close>
@@ -33,8 +36,9 @@ concepts.\<close>
 thm bij_def[unfolded inj_def surj_def]
 text\<open>@{thm [display] bij_def[unfolded inj_def surj_def]}\<close>
 (*
-  bij(A, B) \<equiv> {f \<in> A \<rightarrow> B . \<forall>w\<in>A. \<forall>x\<in>A. f ` w = f ` x \<longrightarrow> w = x}
-               \<inter> {f \<in> A \<rightarrow> B . \<forall>y\<in>B. \<exists>x\<in>A. f ` x = y}
+bij(A, B) \<equiv>
+  {f \<in> A \<rightarrow> B . \<forall>w\<in>A. \<forall>x\<in>A. f ` w = f ` x \<longrightarrow> w = x} \<inter>
+  {f \<in> A \<rightarrow> B . \<forall>y\<in>B. \<exists>x\<in>A. f ` x = y}
 *)
 
 thm eqpoll_def
@@ -77,8 +81,8 @@ text\<open>@{thm [display] Limit_nat[unfolded Limit_def]
   Ord(i) \<and> 0 < i \<and> (\<forall>y. y < i \<longrightarrow> succ(y) < i) \<Longrightarrow> \<omega> \<le> i
 *)
 
-text\<open>Then, addition and predecessor are inductively characterized
-as follows:\<close>
+text\<open>Then, addition and predecessor on \<^term>\<open>\<omega>\<close> are inductively
+characterized as follows:\<close>
 thm add_0_right add_succ_right pred_0 pred_succ_eq
 text\<open>@{thm [display] add_succ_right add_0_right pred_0 pred_succ_eq}\<close>
 (*
@@ -100,7 +104,8 @@ text\<open>@{thm [display] Nil Cons list.induct }\<close>
 (*
   [] \<in> list(A)
   a \<in> A \<Longrightarrow> l \<in> list(A) \<Longrightarrow> Cons(a, l) \<in> list(A)
-  x \<in> list(A) \<Longrightarrow> P([]) \<Longrightarrow> (\<And>a l. a \<in> A \<Longrightarrow> l \<in> list(A) \<Longrightarrow> P(l) \<Longrightarrow> P(Cons(a, l))) \<Longrightarrow> P(x)
+  x \<in> list(A) \<Longrightarrow>
+  P([]) \<Longrightarrow> (\<And>a l. a \<in> A \<Longrightarrow> l \<in> list(A) \<Longrightarrow> P(l) \<Longrightarrow> P(Cons(a, l))) \<Longrightarrow> P(x)
 *)
 
 text\<open>Length, concatenation, and \<^term>\<open>n\<close>th element of lists are
@@ -117,18 +122,18 @@ text\<open>@{thm [display] length.simps app.simps nth_0 nth_Cons}\<close>
   nth(0, Cons(a, l)) = a
   n \<in> \<omega> \<Longrightarrow> nth(succ(n), Cons(a, l)) = nth(n, l)
 *)
-txt\<open>We have the usual Haskell-like notation for iterated applications
+text\<open>We have the usual Haskell-like notation for iterated applications
 of \<^term>\<open>Cons\<close>:\<close>
 lemma Cons_app: "[a,b,c] = Cons(a,Cons(b,Cons(c,[])))" ..
 
-txt\<open>Relative quantifiers restrict the range of the bound variable to a
+text\<open>Relative quantifiers restrict the range of the bound variable to a
 class \<^term>\<open>M\<close> of type \<^typ>\<open>i\<Rightarrow>o\<close>; that is, a truth-valued function with
 set arguments.\<close>
 lemma "\<forall>x[M]. P(x) \<equiv> \<forall>x. M(x) \<longrightarrow> P(x)"
       "\<exists>x[M]. P(x) \<equiv> \<exists>x. M(x) \<and> P(x)"
   unfolding rall_def rex_def .
 
-txt\<open>Finally, a set can be viewed (“cast”) as a class using the
+text\<open>Finally, a set can be viewed (“cast”) as a class using the
 following function of type \<^typ>\<open>i\<Rightarrow>(i\<Rightarrow>o)\<close>.\<close>
 thm setclass_iff
 text\<open>@{thm [display] setclass_iff}\<close>
@@ -137,7 +142,7 @@ text\<open>@{thm [display] setclass_iff}\<close>
 *)
 
 subsection\<open>Relative concepts\label{sec:def-main-relative}\<close>
-txt\<open>A list of relative concepts (mostly from the ZF-Constructible
+text\<open>A list of relative concepts (mostly from the ZF-Constructible
     library) follows next.\<close>
 
 thm big_union_def
@@ -243,7 +248,7 @@ text\<open>@{thm [display] is_function_space_def[unfolded is_funspace_def]
 *)
 
 
-txt\<open>Relative version of the $\ZFC$ axioms\<close>
+text\<open>Relative version of the $\ZFC$ axioms\<close>
 thm extensionality_def
 text\<open>@{thm [display] extensionality_def}\<close>
 (*
@@ -309,7 +314,7 @@ text\<open>@{thm [display] strong_replacement_def}\<close>
 
 text\<open>Internalized formulas\<close>
 
-txt\<open>“Codes” for formulas (as sets) are constructed from natural
+text\<open>“Codes” for formulas (as sets) are constructed from natural
 numbers using \<^term>\<open>Member\<close>, \<^term>\<open>Equal\<close>, \<^term>\<open>Nand\<close>,
 and \<^term>\<open>Forall\<close>.\<close>
 
@@ -328,10 +333,13 @@ text\<open>@{thm [display] Member Equal Nand Forall formula.induct}\<close>
   (\<And>p. p \<in> formula \<Longrightarrow> P(p) \<Longrightarrow> P((\<forall>p))) \<Longrightarrow> P(x)
 *)
 
-txt\<open>Definitions for the other connectives and the internal existential
+text\<open>Definitions for the other connectives and the internal existential
 quantifier are also provided. For instance, negation:\<close>
 thm Neg_def
 text\<open>@{thm [display] Neg_def}\<close>
+(*
+  \<cdot>\<not>p\<cdot> \<equiv> \<cdot>\<not>(p \<and> p)\<cdot>
+*)
 
 thm arity.simps
 text\<open>@{thm [display] arity.simps}\<close>
@@ -342,7 +350,7 @@ text\<open>@{thm [display] arity.simps}\<close>
   arity((\<forall>p)) = pred(arity(p))
 *)
 
-txt\<open>We have the satisfaction relation between $\in$-models and
+text\<open>We have the satisfaction relation between $\in$-models and
     first order formulas (given a “environment” list representing
     the assignment of free variables),\<close>
 thm mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall_iff
@@ -353,14 +361,14 @@ text\<open>@{thm [display] mem_iff_sats equal_iff_sats sats_Nand_iff sats_Forall
   env \<in> list(A) \<Longrightarrow> (A, env \<Turnstile> \<cdot>\<not>(p \<and> q)\<cdot>) \<longleftrightarrow> \<not> ((A, env \<Turnstile> p) \<and> (A, env \<Turnstile> q))
   env \<in> list(A) \<Longrightarrow> (A, env \<Turnstile> (\<cdot>\<forall>p\<cdot>)) \<longleftrightarrow> (\<forall>x\<in>A. A, Cons(x, env) \<Turnstile> p)*)
 
-txt\<open>as well as the satisfaction of an arbitrary set of sentences.\<close>
+text\<open>as well as the satisfaction of an arbitrary set of sentences.\<close>
 thm satT_def
 text\<open>@{thm [display] satT_def}\<close>
 (*
   A \<Turnstile> \<Phi>  \<equiv>  \<forall>\<phi>\<in>\<Phi>. A, [] \<Turnstile> \<phi>
 *)
 
-txt\<open>The internalized (viz. as elements of the set \<^term>\<open>formula\<close>)
+text\<open>The internalized (viz. as elements of the set \<^term>\<open>formula\<close>)
     version of the axioms follow next.\<close>
 
 thm ZF_union_iff_sats ZF_power_iff_sats ZF_pairing_iff_sats
@@ -386,13 +394,24 @@ text\<open>@{thm [display] ZF_union_iff_sats ZF_power_iff_sats
       arity(\<phi>) \<le> 1 +\<^sub>\<omega> length(env) \<longrightarrow> separation(##M, \<lambda>x. M, [x] @ env \<Turnstile> \<phi>))
 
   \<phi> \<in> formula \<Longrightarrow>
-  (M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>) \<longleftrightarrow>
-  (\<forall>env\<in>list(M).
-      arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
-      strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>))
+  (M, [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>) \<longleftrightarrow> (\<forall>env. replacement_assm(M, env, \<phi>))
 
   choice_ax(##A) \<longleftrightarrow> A, [] \<Turnstile> \<cdot>AC\<cdot>
 *)
+
+text\<open>Above, we use the following:\<close>
+
+thm replacement_assm_def
+text\<open>@{thm [display] replacement_assm_def}\<close>
+(*
+replacement_assm(M, env, \<phi>) \<equiv>
+\<phi> \<in> formula \<longrightarrow>
+env \<in> list(M) \<longrightarrow>
+arity(\<phi>) \<le> 2 +\<^sub>\<omega> length(env) \<longrightarrow>
+strong_replacement(##M, \<lambda>x y. M, [x, y] @ env \<Turnstile> \<phi>
+*)
+
+text\<open>Finally, the axiom sets are defined as follows.\<close>
 
 thm ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def ZFC_def
 text\<open>@{thm [display] ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_def
@@ -406,9 +425,9 @@ text\<open>@{thm [display] ZF_fin_def ZF_schemes_def Zermelo_fms_def ZC_def ZF_d
   ZFC \<equiv> ZF \<union> {\<cdot>AC\<cdot>}
 *)
 
-subsection\<open>Relativization of infinitary arithmetic\<close>
+subsection\<open>Relativization of infinitary arithmetic\label{sec:relative-arith}\<close>
 
-txt\<open>In order to state the defining property of the relative
+text\<open>In order to state the defining property of the relative
     equipotence relation, we work under the assumptions of the
     locale \<^term>\<open>M_cardinals\<close>. They comprise a finite set
     of instances of Separation and Replacement to prove
@@ -418,7 +437,7 @@ lemma (in M_cardinals) eqpoll_def':
   assumes "M(A)" "M(B)" shows "A \<approx>\<^bsup>M\<^esup> B \<longleftrightarrow> (\<exists>f[M]. f \<in> bij(A,B))"
   using assms unfolding eqpoll_rel_def by auto
 
-txt\<open>Below, $\mu$ denotes the minimum operator on the ordinals.\<close>
+text\<open>Below, $\mu$ denotes the minimum operator on the ordinals.\<close>
 lemma cardinalities_defs:
   fixes M::"i\<Rightarrow>o"
   shows
@@ -432,7 +451,7 @@ lemma cardinalities_defs:
 context M_aleph
 begin
 
-txt\<open>As in the previous Lemma @{thm [source] eqpoll_def'}, we are now under
+text\<open>Analogous to the previous Lemma @{thm [source] eqpoll_def'}, we are now under
     the assumptions of the locale \<^term>\<open>M_aleph\<close>. The axiom instances
     included are sufficient to state and prove the defining
     properties of the relativized \<^term>\<open>Aleph\<close> function
@@ -454,20 +473,20 @@ lemma ContHyp_rel_def':
     "CH\<^bsup>N\<^esup> \<equiv> \<aleph>\<^bsub>1\<^esub>\<^bsup>N\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>N\<^esup>,N\<^esup>"
   unfolding ContHyp_rel_def .
 
-txt\<open>Under appropriate hypothesis (this time, from the locale \<^term>\<open>M_master\<close>),
+text\<open>Under appropriate hypotheses (this time, from the locale \<^term>\<open>M_ZF_library\<close>),
    \<^term>\<open>CH\<^bsup>M\<^esup>\<close> is equivalent to its fully relational version \<^term>\<open>is_ContHyp\<close>.
     As a sanity check, we see that if the transitive class is indeed \<^term>\<open>\<V>\<close>,
     we recover the original $\CH$.\<close>
 
-thm M_master.is_ContHyp_iff is_ContHyp_iff_CH[unfolded ContHyp_def]
-text\<open>@{thm [display] M_master.is_ContHyp_iff
+thm M_ZF_library.is_ContHyp_iff is_ContHyp_iff_CH[unfolded ContHyp_def]
+text\<open>@{thm [display] M_ZF_library.is_ContHyp_iff
     is_ContHyp_iff_CH[unfolded ContHyp_def]}\<close>
 (*
-  M_master(M) \<Longrightarrow> is_ContHyp(M) \<longleftrightarrow> CH\<^bsup>M\<^esup>
+  M_ZF_library(M) \<Longrightarrow> is_ContHyp(M) \<longleftrightarrow> CH\<^bsup>M\<^esup>
   is_ContHyp(\<V>) \<longleftrightarrow> \<aleph>\<^bsub>1\<^esub> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^esup>
 *)
 
-txt\<open>In turn, the fully relational version evaluated on a nonempty
+text\<open>In turn, the fully relational version evaluated on a nonempty
     transitive \<^term>\<open>A\<close> is equivalent to the satisfaction of the
     first-order formula \<^term>\<open>\<cdot>CH\<cdot>\<close>.\<close>
 thm is_ContHyp_iff_sats
@@ -479,8 +498,8 @@ text\<open>@{thm [display] is_ContHyp_iff_sats}\<close>
 
 subsection\<open>Forcing \label{sec:def-main-forcing}\<close>
 
-txt\<open>Our first milestone was to obtain a proper extension using forcing.
-It's original proof didn't required the previous developments involving
+text\<open>Our first milestone was to obtain a proper extension using forcing.
+Its original proof didn't required the previous developments involving
 the relativization of material on cardinal arithmetic. Now it is
 derived from a stronger result, namely @{thm [source] extensions_of_ctms}
 below.\<close>
@@ -495,7 +514,7 @@ text\<open>@{thm [display] extensions_of_ctms_ZF}\<close>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N) \<and> ((M, [] \<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N \<Turnstile> ZFC)
 *)
 
-txt\<open>We can finally state our main results, namely, the existence of models
+text\<open>We can finally state our main results, namely, the existence of models
 for $\ZFC + \CH$ and $\ZFC + \neg\CH$ under the assumption of a ctm of $\ZFC$.\<close>
 
 thm ctm_ZFC_imp_ctm_not_CH
@@ -520,27 +539,37 @@ text\<open>@{thm [display] ctm_ZFC_imp_ctm_CH}\<close>
       Transset(N) \<and> N \<Turnstile> ZFC \<union> {\<cdot>CH\<cdot>} \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 
-txt\<open>These results can be strengthened by enumerating four finite sets of
+text\<open>These results can be strengthened by enumerating six finite sets of
 replacement instances which are sufficient to develop forcing and for
 the construction of the aforementioned models: \<^term>\<open>instances1_fms\<close>
-through \<^term>\<open>instances4_fms\<close>, which are then collected into
-\<^term>\<open>overhead\<close>. For example, we have:\<close>
+through \<^term>\<open>instances3_fms\<close>, \<^term>\<open>instances_ground_fms\<close>, and
+\<^term>\<open>instances_ground_notCH_fms\<close>,
+which are then collected into the $31$-element set \<^term>\<open>overhead_notCH\<close>.
+For example, we have:\<close>
 
 thm instances1_fms_def
 text\<open>@{thm [display] instances1_fms_def}\<close>
 (*
 instances1_fms \<equiv>
-{ wfrec_Hfrc_at_fm, list_repl1_intf_fm, list_repl2_intf_fm,
- formula_repl2_intf_fm, eclose_repl2_intf_fm, powapply_repl_fm,
- phrank_repl_fm, wfrec_rank_fm, trans_repl_HVFrom_fm, wfrec_Hcheck_fm,
- repl_PHcheck_fm, check_replacement_fm, G_dot_in_M_fm, repl_opname_check_fm,
- tl_repl_intf_fm, formula_repl1_intf_fm, eclose_repl1_intf_fm }
+{ eclose_repl1_intf_fm, eclose_repl2_intf_fm,
+  wfrec_rank_fm, trans_repl_HVFrom_fm }
 *)
 
-thm overhead_def
-text\<open>@{thm [display] overhead_def}\<close>
+thm overhead_def overhead_notCH_def
+text\<open>@{thm [display] overhead_def overhead_notCH_def overhead_CH_def}\<close>
 (*
-overhead \<equiv> instances1_fms \<union> instances2_fms \<union> instances3_fms \<union> instances4_fms
+  overhead \<equiv> instances1_fms \<union> instances_ground_fms
+
+  overhead_notCH \<equiv> overhead \<union>
+    instances2_fms \<union> instances3_fms \<union> instances_ground_notCH_fms
+*)
+
+text\<open>One further instance is needed to force $\CH$, with a total count
+of $32$ instances:\<close>
+thm overhead_CH_def
+text\<open>@{thm [display] overhead_CH_def}\<close>
+(*
+  overhead_CH \<equiv> overhead_notCH \<union> {replacement_dcwit_repl_body_fm}
 *)
 
 thm extensions_of_ctms
@@ -548,7 +577,7 @@ text\<open>@{thm [display] extensions_of_ctms}\<close>
 (*
 M \<approx> \<omega> \<Longrightarrow>
 Transset(M) \<Longrightarrow>
-M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms} \<Longrightarrow>
+M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<Longrightarrow>
 \<Phi> \<subseteq> formula \<Longrightarrow>
 M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>} \<Longrightarrow>
 \<exists>N. M \<subseteq> N \<and>
@@ -556,8 +585,7 @@ M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in>
     Transset(N) \<and>
     M \<noteq> N \<and>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N) \<and>
-    ((M, [] \<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N, [] \<Turnstile> \<cdot>AC\<cdot>) \<and>
-    N \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>}
+    ((M, [] \<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N, [] \<Turnstile> \<cdot>AC\<cdot>) \<and> N \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>}
 *)
 
 thm ctm_of_not_CH
@@ -565,21 +593,22 @@ text\<open>@{thm [display] ctm_of_not_CH}\<close>
 (*
 M \<approx> \<omega> \<Longrightarrow>
 Transset(M) \<Longrightarrow>
-M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<Longrightarrow>
+M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH} \<Longrightarrow>
 \<Phi> \<subseteq> formula \<Longrightarrow>
 M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>} \<Longrightarrow>
 \<exists>N. M \<subseteq> N \<and>
     N \<approx> \<omega> \<and>
     Transset(N) \<and>
     N \<Turnstile> ZC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<union> {\<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
-    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)*)
+    (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
+*)
 
 thm ctm_of_CH
 text\<open>@{thm [display] ctm_of_CH}\<close>
 (*
 M \<approx> \<omega> \<Longrightarrow>
 Transset(M) \<Longrightarrow>
-M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<Longrightarrow>
+M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH} \<Longrightarrow>
 \<Phi> \<subseteq> formula \<Longrightarrow>
 M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>} \<Longrightarrow>
 \<exists>N. M \<subseteq> N \<and>
@@ -589,8 +618,8 @@ M \<Turnstile> {\<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in>
     (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)
 *)
 
-txt\<open>In the above three statements, the function \<^term>\<open>ground_repl_fm\<close>
-takes an element \<^term>\<open>\<phi>\<close>of \<^term>\<open>formula\<close> and returns the
+text\<open>In the above three statements, the function \<^term>\<open>ground_repl_fm\<close>
+takes an element \<^term>\<open>\<phi>\<close> of \<^term>\<open>formula\<close> and returns the
 replacement instance in the ground model that produces the
 \<^term>\<open>\<phi>\<close>-replacement instance in the generic extension. The next
 result is stated in the context \<^locale>\<open>G_generic1\<close>, which assumes
@@ -602,7 +631,8 @@ begin
 thm sats_ground_repl_fm_imp_sats_ZF_replacement_fm
 text\<open>@{thm [display] sats_ground_repl_fm_imp_sats_ZF_replacement_fm}\<close>
 (*
-\<phi> \<in> formula \<Longrightarrow> M, [] \<Turnstile> \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> \<Longrightarrow> M[G], [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>
+  \<phi> \<in> formula \<Longrightarrow>
+  M, [] \<Turnstile> \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> \<Longrightarrow> M[G], [] \<Turnstile> \<cdot>Replacement(\<phi>)\<cdot>
 *)
 
 end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>

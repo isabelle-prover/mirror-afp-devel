@@ -25,6 +25,11 @@ homepage = "nipkow_homepage"
 [notify]
 nipkow = "nipkow_email"
 
+[related]
+pubs = ["<a href=\"https://en.wikipedia.org/wiki/Stable_marriage_problem\">Wikipedia</a>"]
+
 [history]
 
 [extra]
+
+[related]

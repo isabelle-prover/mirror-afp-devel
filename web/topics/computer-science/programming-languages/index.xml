@@ -7,6 +7,24 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/computer-science/programming-languages/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
+      <link>/entries/Solidity.html</link>
+      <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Solidity.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Reuse-Based Multi-Stage Compiler Verification for Language IMP</title>
+      <link>/entries/IMP_Compiler_Reuse.html</link>
+      <pubDate>Sun, 10 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/IMP_Compiler_Reuse.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>A Restricted Definition of the Magic Wand to Soundly Combine Fractions of a Wand</title>
       <link>/entries/Combinable_Wands.html</link>
       <pubDate>Mon, 30 May 2022 00:00:00 +0000</pubDate>
@@ -223,15 +241,6 @@
     </item>
     
     <item>
-      <title>Monadification, Memoization and Dynamic Programming</title>
-      <link>/entries/Monad_Memo_DP.html</link>
-      <pubDate>Tue, 22 May 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Monad_Memo_DP.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>WebAssembly</title>
       <link>/entries/WebAssembly.html</link>
       <pubDate>Sun, 29 Apr 2018 00:00:00 +0000</pubDate>
@@ -345,15 +354,6 @@
       <pubDate>Thu, 18 Aug 2016 00:00:00 +0000</pubDate>
       
       <guid>/entries/InfPathElimination.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Imperative Refinement Framework</title>
-      <link>/entries/Refine_Imperative_HOL.html</link>
-      <pubDate>Mon, 08 Aug 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Refine_Imperative_HOL.html</guid>
       <description></description>
     </item>
     
@@ -583,15 +583,6 @@
     </item>
     
     <item>
-      <title>Refinement for Monadic Programs</title>
-      <link>/entries/Refine_Monadic.html</link>
-      <pubDate>Mon, 30 Jan 2012 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/Refine_Monadic.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>A Definitional Encoding of TLA* in Isabelle/HOL</title>
       <link>/entries/TLA.html</link>
       <pubDate>Sat, 19 Nov 2011 00:00:00 +0000</pubDate>
@@ -678,15 +669,6 @@
       <pubDate>Fri, 13 Nov 2009 00:00:00 +0000</pubDate>
       
       <guid>/entries/HRB-Slicing.html</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Worker/Wrapper Transformation</title>
-      <link>/entries/WorkerWrapper.html</link>
-      <pubDate>Fri, 30 Oct 2009 00:00:00 +0000</pubDate>
-      
-      <guid>/entries/WorkerWrapper.html</guid>
       <description></description>
     </item>
     

@@ -7,10 +7,38 @@ package afp
 
 import isabelle._
 
-import afp.Metadata.{Affiliation, Author, Email, Entry, Homepage}
+import afp.Metadata._
 
 
 object AFP_Site_Gen {
+  /* cache */
+  class Cache(layout: Hugo.Layout) {
+    private val doi_cache = Path.basic("dois.json")
+
+    private var dois: Map[String, String] = {
+      val file = layout.cache_dir + doi_cache
+
+      if (file.file.exists) {
+        val content = File.read(file)
+        val json =
+          try { isabelle.JSON.parse(content) }
+          catch { case ERROR(msg) => error("Could not parse " + file.toString + ": " + msg) }
+        JSON.to_dois(json)
+      } else Map.empty
+    }
+
+    def resolve_doi(doi: DOI): String = {
+      dois.get(doi.identifier) match {
+        case Some(value) => value
+        case None =>
+          val res = doi.formatted()
+          dois += (doi.identifier -> res)
+          layout.write_cache(doi_cache, JSON.from_dois(dois))
+          res
+      }
+    }
+  }
+
   /* json */
 
   object JSON {
@@ -18,73 +46,117 @@ object AFP_Site_Gen {
 
     object Object {
       type T = isabelle.JSON.Object.T
+      def apply(entries: isabelle.JSON.Object.Entry*): T = isabelle.JSON.Object.apply(entries: _*)
     }
 
-    def from_authors(authors: List[Metadata.Author]): T = {
-      authors.map(author => author.id -> isabelle.JSON.Object(
-        "name" -> author.name,
-        "emails" -> author.emails.map(_.address),
-        "homepages" -> author.homepages.map(_.url))).toMap
+    def opt(k: String, v: String): Object.T = if (v.isEmpty) Object() else Object(k -> v)
+    def opt(k: String, v: Option[T]): Object.T = v.map(v => Object(k -> v)).getOrElse(Object())
+    def opt[A <: Iterable[_]](k: String, vals: A): Object.T =
+      if (vals.isEmpty) Object() else Object(k -> vals)
+
+    def from_dois(dois: Map[String, String]): Object.T = dois
+    def to_dois(dois: T): Map[String, String] = dois match {
+      case m: Map[_, _] if m.keySet.forall(_.isInstanceOf[String]) &&
+          m.values.forall(_.isInstanceOf[String]) =>
+        m.asInstanceOf[Map[String, String]]
+      case _ => error("Could not read dois")
     }
 
-    def from_topics(topics: List[Metadata.Topic]): T =
-      topics.map(topic => isabelle.JSON.Object(topic.name -> from_topics(topic.sub_topics)))
+    def from_email(email: Email): Object.T =
+      Object(
+        "user" -> email.user.split('.').toList,
+        "host" -> email.host.split('.').toList)
 
-    def from_affiliations(affiliations: List[Metadata.Affiliation]): Object.T = {
-      Utils.group_sorted(affiliations, (a: Metadata.Affiliation) => a.author).view.mapValues(
+    def from_authors(authors: List[Author]): Object.T =
+      authors.map(author =>
+        author.id -> (Object(
+          "name" -> author.name,
+          "emails" -> author.emails.map(from_email),
+          "homepages" -> author.homepages.map(_.url.toString)) ++
+          opt("orcid", author.orcid.map(orcid => Object(
+            "id" -> orcid.identifier,
+            "url" -> orcid.url.toString))))).toMap
+
+    def from_classification(classification: Classification): Object.T =
+      Object(
+        "desc" -> classification.desc,
+        "url" -> classification.url.toString,
+        "type" -> (classification match {
+          case _: ACM => "ACM"
+          case _: AMS => "AMS"
+        }))
+
+    def from_topics(topics: List[Topic]): Object.T =
+        Object(topics.map(topic =>
+          topic.name -> (
+            opt("classification", topic.classification.map(from_classification)) ++
+            opt("topics", from_topics(topic.sub_topics)))): _*)
+
+    def from_affiliations(affiliations: List[Affiliation]): Object.T = {
+      Utils.group_sorted(affiliations, (a: Affiliation) => a.author).view.mapValues(
       { author_affiliations =>
-        val homepage = author_affiliations.collectFirst { case Metadata.Homepage(_, _, url) => url }
-        val email = author_affiliations.collectFirst { case Metadata.Email(_, _, address) => address }
+        val homepage = author_affiliations.collectFirst { case homepage: Homepage => homepage }
+        val email = author_affiliations.collectFirst { case email: Email => email }
 
-        isabelle.JSON.Object(
-          homepage.map(s => List("homepage" -> s)).getOrElse(Nil) :::
-            email.map(s => List("email" -> s)).getOrElse(Nil): _*)
+        Object() ++
+          opt("homepage", homepage.map(_.url.toString)) ++
+          opt("email", email.map(from_email))
       }).toMap
     }
 
-    def from_change_history(history: Metadata.Change_History): Object.T = {
-      if (history.isEmpty) {
-        Map.empty
-      } else {
-        Map("Change history" -> history.map {
-          case (date, str) => "[" + date.toString + "] " + str
-        }.mkString("\n"))
-      }
-    }
+    def from_change_history(entry: (Metadata.Date, String)): Object.T =
+      Object(
+        "date" -> entry._1.toString,
+        "value" -> entry._2)
 
-    def from_entry(entry: Metadata.Entry): JSON.Object.T =
-      isabelle.JSON.Object(
-        "title" -> entry.title ::
-          "authors" -> entry.authors.map(_.author).distinct ::
-          "affiliations" -> from_affiliations(entry.authors ++ entry.contributors) ::
-          (if (entry.contributors.nonEmpty) "contributors" -> entry.contributors.map(_.author).distinct :: Nil
-          else Nil) :::
-          "date" -> entry.date.toString ::
-          "topics" -> entry.topics.map(_.id) ::
-          "abstract" -> entry.`abstract` ::
-          "license" -> entry.license.name ::
-          (if (entry.releases.nonEmpty)
-            "releases" -> entry.releases.map(r => r.isabelle -> r.date.toString).toMap :: Nil
-          else Nil) :::
-          (if (entry.note.nonEmpty) "note" -> entry.note :: Nil else Nil) :::
-          (if (entry.change_history.nonEmpty || entry.extra.nonEmpty)
-            "extra" -> (from_change_history(entry.change_history) ++ entry.extra) :: Nil
-          else Nil): _*)
+    def from_release(release: Release): Object.T =
+      Object(
+        "date" -> release.date.toString,
+        "isabelle" -> release.isabelle)
+
+    def from_related(related: Reference, cache: Cache): T =
+      related match {
+        case d: DOI =>
+          val href = d.url.toString
+          cache.resolve_doi(d).replace(href, "<a href=" + quote(href) + ">" + href + "</a>")
+        case Formatted(text) => text
+      }
+
+    def from_entry(entry: Entry, cache: Cache): Object.T = (
+      Object(
+        "title" -> entry.title,
+        "authors" -> entry.authors.map(_.author).distinct,
+        "affiliations" -> from_affiliations(entry.authors ++ entry.contributors),
+        "date" -> entry.date.toString,
+        "topics" -> entry.topics.map(_.id),
+        "abstract" -> entry.`abstract`,
+        "license" -> entry.license.name) ++
+        opt("contributors", entry.contributors.map(_.author).distinct) ++
+        opt("releases", entry.releases.sortBy(_.isabelle).reverse.map(from_release)) ++
+        opt("note", entry.note) ++
+        opt("history", entry.change_history.toList.sortBy(_._1).reverse.map(from_change_history)) ++
+        opt("extra", entry.extra) ++
+        opt("related", entry.related.map(from_related(_, cache))))
 
     def from_keywords(keywords: List[String]): T =
       keywords.zipWithIndex.map {
-        case (keyword, i) => isabelle.JSON.Object("id" -> i, "keyword" -> keyword)
+        case (keyword, i) => Object(
+          "id" -> i,
+          "keyword" -> keyword)
       }
   }
 
 
   /* stats */
 
-  def afp_stats(deps: Sessions.Deps, structure: AFP_Structure, entries: List[Entry], progress: Progress): JSON.T = {
+  def afp_stats(deps: Sessions.Deps, structure: AFP_Structure, entries: List[Entry]): JSON.T = {
     def round(int: Int): Int = Math.round(int.toFloat / 100) * 100
 
     def nodes(entry: Entry): List[Document.Node.Name] =
-      structure.entry_sessions(entry.name).flatMap(session => deps(session.name).session_theories)
+      structure.entry_sessions(entry.name)
+        .flatMap(session => deps(session.name).proper_session_theories)
+
+    val theorem_commands = List("theorem", "lemma", "corollary", "proposition", "schematic_goal")
 
     var entry_lines = Map.empty[Entry, Int]
     var entry_lemmas = Map.empty[Entry, Int]
@@ -95,7 +167,7 @@ object AFP_Site_Gen {
     } {
       entry_lines += entry -> (entry_lines.getOrElse(entry, 0) + lines.count(_.nonEmpty))
       entry_lemmas += entry -> (entry_lemmas.getOrElse(entry, 0) +
-        lines.count(line => List("lemma", "theorem", "corollary").exists(line.startsWith)))
+        lines.count(line => theorem_commands.exists(line.startsWith)))
     }
 
     val first_year = entries.flatMap(_.releases).map(_.date.getYear).min
@@ -128,7 +200,13 @@ object AFP_Site_Gen {
 
     val sorted = entries.sortBy(_.date)
 
+    def map_repetitions(elems: List[String], to: String): List[String] =
+      elems.foldLeft(("", List.empty[String])) {
+        case((last, acc), s) => (s, acc :+ (if (last == s) to else s))
+      }._2
+
     isabelle.JSON.Object(
+      "years" -> all_years,
       "num_lemmas" -> num_lemmas,
       "num_loc" -> num_lines,
       "articles_year" -> all_years.map(total_articles),
@@ -136,7 +214,8 @@ object AFP_Site_Gen {
       "author_years" -> all_years.map(fresh_authors),
       "author_years_cumulative" -> all_years.map(total_authors),
       "loc_articles" -> sorted.map(entry_lines),
-      "all_articles" -> sorted.map(_.name))
+      "all_articles" -> sorted.map(_.name),
+      "article_years_unique" -> map_repetitions(sorted.map(_.date.getYear.toString), ""))
   }
 
 
@@ -161,7 +240,8 @@ object AFP_Site_Gen {
     progress.echo("Preparing topics...")
 
     val topics = afp_structure.load_topics
-    def sub_topics(topic: Metadata.Topic): List[Metadata.Topic] = topic :: topic.sub_topics.flatMap(sub_topics)
+    def sub_topics(topic: Metadata.Topic): List[Metadata.Topic] =
+      topic :: topic.sub_topics.flatMap(sub_topics)
 
     val topics_by_id = Utils.grouped_sorted(topics.flatMap(sub_topics), (t: Metadata.Topic) => t.id)
 
@@ -190,7 +270,7 @@ object AFP_Site_Gen {
     val full_authors = afp_structure.load_authors
     val authors_by_id = Utils.grouped_sorted(full_authors, (a: Metadata.Author) => a.id)
 
-    var seen_affiliations = Set.empty[Affiliation]
+    var seen_affiliations: List[Affiliation] = Nil
 
     val entries = afp_structure.entries.flatMap { name =>
       val entry = afp_structure.load_entry(name, authors_by_id, topics_by_id, licenses_by_id,
@@ -198,16 +278,16 @@ object AFP_Site_Gen {
 
       if (entry.sitegen_ignore) None
       else {
-        seen_affiliations ++= entry.authors ++ entry.contributors
+        seen_affiliations = seen_affiliations :++ entry.authors ++ entry.contributors
         Some(entry)
       }
     }
 
-    val authors = Utils.group_sorted(seen_affiliations.toList, (a: Affiliation) => a.author).map {
+    val authors = Utils.group_sorted(seen_affiliations.distinct, (a: Affiliation) => a.author).map {
       case (id, affiliations) =>
-        val emails = affiliations.collect { case e: Email => e }
-        val homepages = affiliations.collect { case h: Homepage => h }
-        Author(id, authors_by_id(id).name, emails, homepages)
+        val seen_emails = affiliations.collect { case e: Email => e }
+        val seen_homepages = affiliations.collect { case h: Homepage => h }
+        authors_by_id(id).copy(emails = seen_emails, homepages = seen_homepages)
     }
 
     layout.write_data(Path.basic("authors.json"), JSON.from_authors(authors.toList))
@@ -223,9 +303,11 @@ object AFP_Site_Gen {
 
       entry.name -> scored_keywords.map(_._1)
     }.toMap
-    
-    seen_keywords = seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
-    layout.write_static(Path.make(List("data", "keywords.json")), JSON.from_keywords(seen_keywords.toList))
+
+    seen_keywords =
+      seen_keywords.filter(k => !k.endsWith("s") || !seen_keywords.contains(k.stripSuffix("s")))
+    layout.write_static(Path.make(List("data", "keywords.json")),
+      JSON.from_keywords(seen_keywords.toList))
 
     def get_keywords(name: Metadata.Entry.Name): List[String] =
       entry_keywords(name).filter(seen_keywords.contains).take(8)
@@ -237,6 +319,7 @@ object AFP_Site_Gen {
 
     val sessions_structure = afp_structure.sessions_structure
     val sessions_deps = Sessions.deps(sessions_structure)
+    val cache = new Cache(layout)
 
     entries.foreach { entry =>
       val deps =
@@ -248,7 +331,7 @@ object AFP_Site_Gen {
 
       val theories = afp_structure.entry_sessions(entry.name).map { session =>
         val base = sessions_deps(session.name)
-        val theories = base.session_theories.map(_.theory_base_name)
+        val theories = base.proper_session_theories.map(_.theory_base_name)
         val session_json = isabelle.JSON.Object(
             "title" -> session.name,
             "entry" -> entry.name,
@@ -258,7 +341,7 @@ object AFP_Site_Gen {
         isabelle.JSON.Object("session" -> session.name, "theories" -> theories)
       }
 
-      val entry_json = JSON.from_entry(entry) ++ isabelle.JSON.Object(
+      val entry_json = JSON.from_entry(entry, cache) ++ isabelle.JSON.Object(
       "dependencies" -> deps.distinct,
       "sessions" -> theories,
       "url" -> ("/entries/" + entry.name + ".html"),
@@ -267,14 +350,12 @@ object AFP_Site_Gen {
       layout.write_content(Path.make(List("entries", entry.name + ".md")), entry_json)
     }
 
-    /* add authors */
-
 
     /* add statistics */
 
     progress.echo("Preparing statistics...")
 
-    val statistics_json = afp_stats(sessions_deps, afp_structure, entries, progress)
+    val statistics_json = afp_stats(sessions_deps, afp_structure, entries)
 
     layout.write_data(Path.basic("statistics.json"), statistics_json)
 

@@ -866,6 +866,9 @@ proof (rule eq_matI[OF _ dims])
     by auto
 qed
 
+lemma elements_mat_map[simp]: "elements_mat (map_mat f A) = f ` elements_mat A" 
+  by fastforce
+
 lemma row_mat[simp]: "i < nr \<Longrightarrow> row (mat nr nc f) i = vec nc (\<lambda> j. f (i,j))"
   by auto
 
@@ -2048,6 +2051,7 @@ proof (induct k)
   finally show ?case .
 qed (insert A B, auto)
 
+
 lemma uminus_scalar_prod:
   assumes [simp]: "v : carrier_vec n" "w : carrier_vec n"
   shows "- ((v::'a::field vec) \<bullet> w) = (- v) \<bullet> w"
@@ -2874,8 +2878,12 @@ lemma list_of_vec_index: "list_of_vec v ! j = v $ j"
 lemma list_of_vec_map: "list_of_vec xs = map (($) xs) [0..<dim_vec xs]" by transfer auto
 
 definition "component_mult v w = vec (min (dim_vec v) (dim_vec w)) (\<lambda>i. v $ i * w $ i)"
+
 definition vec_set::"'a vec \<Rightarrow> 'a set" ("set\<^sub>v")
   where "vec_set v = vec_index v ` {..<dim_vec v}"
+
+lemma vec_set_map[simp]: "set\<^sub>v (map_vec f v) = f ` set\<^sub>v v" 
+  unfolding vec_set_def by auto
 
 lemma index_component_mult:
 assumes "i < dim_vec v" "i < dim_vec w"

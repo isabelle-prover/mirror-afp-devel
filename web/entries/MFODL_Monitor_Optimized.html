@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +87,7 @@
     <span class='first'>F</span>ormalization of an <span class='first'>O</span>ptimized <span class='first'>M</span>onitoring <span class='first'>A</span>lgorithm for <span class='first'>M</span>etric <span class='first'>F</span>irst-<span class='first'>O</span>rder <span class='first'>D</span>ynamic <span class='first'>L</span>ogic <span class='first'>W</span>ith <span class='first'>A</span>ggregations</h1>
   <div>
     
-    <p><a href="../authors/dardinier">Thibault Dardinier</a>, <a href="../authors/heimes">Lukas Heimes</a>, <a href="../authors/raszyk">Martin Raszyk</a> <a href="mailto:martin.raszyk@inf.ethz.ch">📧</a>, <a href="../authors/schneider">Joshua Schneider</a> <a href="mailto:joshua.schneider@inf.ethz.ch">📧</a> and <a href="../authors/traytel">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
+    <p><a href="../authors/dardinier">Thibault Dardinier</a>, <a href="../authors/heimes">Lukas Heimes</a>, <a href="../authors/raszyk">Martin Raszyk</a> <a class="obfuscated" data="eyJob3N0IjpbImluZiIsImV0aHoiLCJjaCJdLCJ1c2VyIjpbIm1hcnRpbiIsInJhc3p5ayJdfQ==">📧</a>, <a href="../authors/schneider">Joshua Schneider</a> <a class="obfuscated" data="eyJob3N0IjpbImluZiIsImV0aHoiLCJjaCJdLCJ1c2VyIjpbImpvc2h1YSIsInNjaG5laWRlciJdfQ==">📧</a> and <a href="../authors/traytel">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
     </p>
     
     
@@ -112,10 +113,11 @@ work on a verified monitor</a> for MFOTL. Apart from the
 addition of regular expressions and aggregations, we implemented <a
 href="https://www.isa-afp.org/entries/Generic_Join.html">multi-way
 joins</a> and a specialized sliding window algorithm to further
-optimize the monitor.</div>BSD License<h3>Change history</h3>
-
-  <p>[2021-10-19] corrected a mistake in the calculation of median aggregations
-(reported by Nicolas Kaletsch, revision 02b14c9bf3da)<br></p><h3>Topics</h3>
+optimize the monitor.</div>BSD License<h3>Change history</h3><p>
+    <h4>October 19, 2021</h4>
+    corrected a mistake in the calculation of median aggregations
+(reported by Nicolas Kaletsch, revision 02b14c9bf3da)<br>
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li><li><a href="../topics/logic/general-logic/modal-logic">Logic/General logic/Modal logic</a></li><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li></ul>
   <h3>Theories of MFODL_Monitor_Optimized</h3>
   <ul>
@@ -146,7 +148,7 @@ optimize the monitor.</div>BSD License<h3>Change history</h3>
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/MFODL_Monitor_Optimized/outline.pdf">Proof
@@ -155,23 +157,23 @@ optimize the monitor.</div>BSD License<h3>Change history</h3>
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/MFODL_Monitor_Optimized/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">MFODL_Monitor_Optimized-AFP</p><pre id="copyText">@article{MFODL_Monitor_Optimized-AFP,
-  author  = {Thibault Dardinier, Lukas Heimes, Martin Raszyk, Joshua Schneider and Dmitriy Traytel},
+      <p style="display:none;" id="bibtex-filename">MFODL_Monitor_Optimized-AFP</p><pre id="copy-text">@article{MFODL_Monitor_Optimized-AFP,
+  author  = {Thibault Dardinier and Lukas Heimes and Martin Raszyk and Joshua Schneider and Dmitriy Traytel},
   title   = {Formalization of an Optimized Monitoring Algorithm for Metric First-Order Dynamic Logic with Aggregations},
   journal = {Archive of Formal Proofs},
-  month   = April,
-  year    = 2020,
+  month   = {April},
+  year    = {2020},
   note    = {\url{https://isa-afp.org/entries/MFODL_Monitor_Optimized.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -181,8 +183,19 @@ optimize the monitor.</div>BSD License<h3>Change history</h3>
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-MFODL_Monitor_Optimized-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-MFODL_Monitor_Optimized-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2020-04-12.tar.gz">Apr 12, 2020</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-MFODL_Monitor_Optimized-2020-04-11.tar.gz">Apr 11, 2020</a>: Isabelle2019
+      </li></ul>
   </div>
 </div>
     </div>

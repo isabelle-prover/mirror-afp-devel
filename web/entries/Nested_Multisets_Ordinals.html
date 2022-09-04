@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +87,7 @@
     <span class='first'>F</span>ormalization of <span class='first'>N</span>ested <span class='first'>M</span>ultisets, <span class='first'>H</span>ereditary <span class='first'>M</span>ultisets, and <span class='first'>S</span>yntactic <span class='first'>O</span>rdinals</h1>
   <div>
     
-    <p><a href="../authors/blanchette">Jasmin Christian Blanchette</a> <a href="mailto:jasmin.blanchette@gmail.com">📧</a>, <a href="../authors/fleury">Mathias Fleury</a> <a href="mailto:fleury@mpi-inf.mpg.de">📧</a> and <a href="../authors/traytel">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
+    <p><a href="../authors/blanchette">Jasmin Christian Blanchette</a> <a class="obfuscated" data="eyJob3N0IjpbImdtYWlsIiwiY29tIl0sInVzZXIiOlsiamFzbWluIiwiYmxhbmNoZXR0ZSJdfQ==">📧</a>, <a href="../authors/fleury">Mathias Fleury</a> <a class="obfuscated" data="eyJob3N0IjpbIm1waS1pbmYiLCJtcGciLCJkZSJdLCJ1c2VyIjpbImZsZXVyeSJdfQ==">📧</a> and <a href="../authors/traytel">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
     </p>
     
     
@@ -136,7 +137,7 @@
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Nested_Multisets_Ordinals/outline.pdf">Proof
@@ -145,23 +146,23 @@
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Nested_Multisets_Ordinals/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Nested_Multisets_Ordinals-AFP</p><pre id="copyText">@article{Nested_Multisets_Ordinals-AFP,
-  author  = {Jasmin Christian Blanchette, Mathias Fleury and Dmitriy Traytel},
+      <p style="display:none;" id="bibtex-filename">Nested_Multisets_Ordinals-AFP</p><pre id="copy-text">@article{Nested_Multisets_Ordinals-AFP,
+  author  = {Jasmin Christian Blanchette and Mathias Fleury and Dmitriy Traytel},
   title   = {Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals},
   journal = {Archive of Formal Proofs},
-  month   = November,
-  year    = 2016,
+  month   = {November},
+  year    = {2016},
   note    = {\url{https://isa-afp.org/entries/Nested_Multisets_Ordinals.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -171,8 +172,23 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Nested_Multisets_Ordinals-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Nested_Multisets_Ordinals-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Nested_Multisets_Ordinals-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Nested_Multisets_Ordinals-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Nested_Multisets_Ordinals-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Nested_Multisets_Ordinals-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Nested_Multisets_Ordinals-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Nested_Multisets_Ordinals-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Nested_Multisets_Ordinals-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li></ul>
   </div>
 </div>
     </div>

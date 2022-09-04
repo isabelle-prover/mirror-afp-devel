@@ -34,7 +34,8 @@ tool can turn a pure..."><meta property="og:title" content="Monadification, Memo
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -88,7 +89,7 @@ tool can turn a pure..."><meta property="og:title" content="Monadification, Memo
     <span class='first'>M</span>onadification, <span class='first'>M</span>emoization and <span class='first'>D</span>ynamic <span class='first'>P</span>rogramming</h1>
   <div>
     
-    <p><a href="../authors/wimmer">Simon Wimmer</a> <a href="http://home.in.tum.de/~wimmers/">🌐</a>, <a href="../authors/hu">Shuwei Hu</a> <a href="mailto:shuwei.hu@tum.de">📧</a> and <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>
+    <p><a href="../authors/wimmer">Simon Wimmer</a> <a href="http://home.in.tum.de/~wimmers/">🌐</a>, <a href="../authors/hu">Shuwei Hu</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsic2h1d2VpIiwiaHUiXX0=">📧</a> and <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>
     </p>
     
     
@@ -107,7 +108,7 @@ techniques allow us to achieve bottom-up computation and
 space-efficient memoization. The framework’s utility is demonstrated
 on a number of representative dynamic programming problems. A detailed
 description of our work can be found in the accompanying paper [2].</div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/transformations">Computer science/Programming languages/Transformations</a></li><li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li><li><a href="../topics/computer-science/functional-programming">Computer science/Functional programming</a></li></ul>
+  <ul><li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li><li><a href="../topics/computer-science/functional-programming">Computer science/Functional programming</a></li></ul>
   <h3>Theories of Monad_Memo_DP</h3>
   <ul>
     <li><a href="../theories/monad_memo_dp/#State_Monad_Ext">State_Monad_Ext</a></li>
@@ -151,8 +152,6 @@ description of our work can be found in the accompanying paper [2].</div>BSD Lic
     <h3>Related Entries</h3>
     <ul class="horizontal-list">
       
-      <li><a href="../entries/Approximation_Algorithms.html">Verified Approximation Algorithms</a></li>
-      
       <li><a href="../entries/Simple_Firewall.html">Simple Firewall</a></li>
       
       <li><a href="../entries/UpDown_Scheme.html">Verification of the UpDown Scheme</a></li>
@@ -168,7 +167,7 @@ description of our work can be found in the accompanying paper [2].</div>BSD Lic
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/outline.pdf">Proof
@@ -177,23 +176,23 @@ description of our work can be found in the accompanying paper [2].</div>BSD Lic
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Monad_Memo_DP/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Monad_Memo_DP-AFP</p><pre id="copyText">@article{Monad_Memo_DP-AFP,
-  author  = {Simon Wimmer, Shuwei Hu and Tobias Nipkow},
+      <p style="display:none;" id="bibtex-filename">Monad_Memo_DP-AFP</p><pre id="copy-text">@article{Monad_Memo_DP-AFP,
+  author  = {Simon Wimmer and Shuwei Hu and Tobias Nipkow},
   title   = {Monadification, Memoization and Dynamic Programming},
   journal = {Archive of Formal Proofs},
-  month   = May,
-  year    = 2018,
+  month   = {May},
+  year    = {2018},
   note    = {\url{https://isa-afp.org/entries/Monad_Memo_DP.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -203,8 +202,21 @@ description of our work can be found in the accompanying paper [2].</div>BSD Lic
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Monad_Memo_DP-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Monad_Memo_DP-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Monad_Memo_DP-2018-05-23.tar.gz">May 23, 2018</a>: Isabelle2017
+      </li></ul>
   </div>
 </div>
     </div>

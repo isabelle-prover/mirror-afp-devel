@@ -49,6 +49,10 @@ object Hugo {
       List("resources"),
       List("static")).map(Path.make)
 
+    val cache_dir = src_dir + Path.basic("cache")
+
+    def write_cache(file: Path, content: JSON.T): Unit =
+      write(Path.basic("cache") + file, format(content))
 
     /* Static project files */
 

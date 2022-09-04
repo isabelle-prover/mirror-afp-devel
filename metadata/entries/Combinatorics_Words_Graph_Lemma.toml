@@ -27,5 +27,11 @@ holub = "holub_email"
 starosta = "starosta_email"
 
 [history]
+2022-08-24 = """
+Reworked version. Added theory Glued_Codes.
+"""
 
 [extra]
+
+[related]
+pubs = ["<a  href=\"https://gitlab.com/formalcow/combinatorics-on-words-formalized\">Development repository</a>"]

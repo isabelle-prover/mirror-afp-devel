@@ -23,6 +23,7 @@ note = "<text>"
 [notify]
 [history]
 [extra]
+[related]
 ```
 
 Optional:
@@ -48,6 +49,11 @@ Optional:
   ```toml
   extra-<key> = "<heading>: <text>"
   ```
+- in `[related]`:
+  ```toml
+  dois = [ "<doi>", ... ]
+  pubs = [ "<text>", ... ] 
+  ```
 
 [Example](/metadata/entries/Presburger-Automata.toml)
 
@@ -68,16 +74,16 @@ Details:
 - **license**:
   Allowed values for the license are "bsd" and "lgpl".
 
-- **authors**
+- **authors**:
   Authors and affiliations must appear in the `authors` file (see below). For each author, you may
   provide an affiliation as homepage and/or email.
 
-- **contributors**
+- **contributors**:
   Sometimes existing entries get significant contributions from other authors. These authors can be
   listed on a 'contributors' line. A separate change-history entry should indicate what these people
   have contributed.
 
-- **extra**
+- **extra**:
   If you want to have some additional text fields below the 'Abstract' column, you can use
   the `extra` facility, where `<key>` denotes an identifier (most cases 0, 1, ...) unique for each
   entry. The particular
@@ -87,6 +93,10 @@ Details:
   ```toml
   extra-0 = "Warning: Untested..."
   ```
+- **related**:
+  A Place for references related to this article, e.g., print publications. DOIs are preferred and
+  stored by name only (e.g., `10.1000/182`). If there is none, use a formatted citation (html tags
+  are allowed).
 
 `topics.toml`
 -------------
@@ -95,14 +105,52 @@ Each topic and its subtopics must go into there. Format:
 ```toml
 ["First level topic"]
 
+["First level topic".classification]
+<classification>
+
 ["First level topic"."Second level topic"]
+
+["First level topic"."Second level topic".classification]
+<classification>
 
 ["First level topic"."Second level topic"."Third level topic"]
 
+["First level topic"."Second level topic"."Third level topic".classification]
+<classification>
+
 ["First level topic"."Another second level topic"]
+
+["First level topic"."Another second level topic".classification]
+<classification>
 ```
 
 Topics without space may omit quotes. Only three levels of indentation are supported currently.
+
+Optional:
+- in `[<...>.classification]`:
+  - AMS:
+    ```toml
+    ams.id = "<id>"
+    ams.hierarchy = [
+      "<descriptions>",
+    ]
+    ```
+  - ACM:
+    ```toml
+    acm.id = "<id>"
+    acm.desc = "<description>"
+    ```
+
+Details:
+- **classification**:
+  A corresponding topic for each AMS and ACM subject classification can be put here.
+  - AMS:
+    Data comes from [MSC2020 database](https://mathscinet.ams.org/mathscinet/msc/msc2020.html). IDs
+    are used without `-XX` or `xx`. In the hierarchy, descriptions are stored for each level (text 
+    in `{...}` is omitted), top level first.
+  - ACM:
+    Data comes from [2012 ACM CCS](https://dl.acm.org/ccs), and the fields can be directly copied 
+    from the xml output.
 
 
 `authors.toml`
@@ -112,25 +160,61 @@ Name, alphanumeric short name, and affiliations for each author. Format:
 ```toml
 [<shortname>]
 name = "<name>"
-[<name>.emails]
-[<name>.homepages]
+[<shortname>.emails]
+[<shortname>.homepages]
 ```
 
 Optional:
-
-- in [<name>.emails]:
+- in `[<shortname>]`:
   ```toml
-  <id> = "<address>"
+  orcid = "<id>"
   ```
-
-- in [<name>.homepages]
+- in `[<shortname>.emails]`:
+  ```toml
+  [<shortname>.emails.<id>]
+  user = [
+    <parts>
+  ]
+  host = [
+    <parts>
+  ]
+  ```
+- in `[<shortname>.homepages]`:
   ```toml
   <id> = "<url>"
   ```
 
-Author shortnames are derived from last name and characters from the first name until unique,
-e.g. `haslbeck` and `haslbeckm`. Homepage and email ids are usually of form `<shortname>_email` (
-or `<shortname>_homepage`) and are incremented for multiples, e.g. `haslbeckm_email1`.
+Example:
+```toml
+[huch]
+name = "Fabian Huch"
+orcid = "0000-0002-9418-1580"
+
+[huch.emails]
+
+[huch.emails.huch_email]
+user = [
+  "huch",
+]
+host = [
+  "in",
+  "tum",
+  "de",
+]
+
+[huch.homepages]
+huch_homepage = "https://home.in.tum.de/~huch"
+```
+
+Details:
+- **shortname**:
+  Author shortnames are derived from last name and characters from the first name until unique,
+  e.g. `haslbeck` and `haslbeckm`. Homepage and email ids are usually of form `<shortname>_email` (
+  or `<shortname>_homepage`) and are incremented for multiples, e.g. `haslbeckm_email1`.
+- **orcid**:
+  Orcid id, identifier only.
+- **parts**:
+  User and host are represented as lists of parts split by dots. 
 
 
 `releases.toml`

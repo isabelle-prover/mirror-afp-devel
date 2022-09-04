@@ -1,0 +1,66 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\newcommand{\mnset}[1]{\left\{#1\right\}}\newcommand{\set}[1]{\left\{#1\right\}}
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Simultaneous diagonalization of pairwise commuting Hermitian matrices}
+\author{Mnacho Echenim}
+\maketitle
+
+\begin{abstract}
+	A Hermitian matrix is a square complex matrix $A$ that is equal to its conjugate transpose $A^\dagger$. The (finite-dimensional) spectral theorem states that for any such matrix $A$, we have the equality $A = U\cdot B\cdot U^\dagger$, where $U$ is a unitary matrix and $B$ is a diagonal matrix containing only real elements. We formalize the generalization of this result, which states that if $\mnset{A_1, \ldots, A_n}$ are Hermitian and pairwise commuting matrices, then there exists a unitary matrix $U$ such that $A_i = U\cdot B_i \cdot U^\dagger$, for $i = 1,\ldots, n$, and each $B_i$ is diagonal and contains only real elements. Sets of pairwise commuting Hermitian matrices are called \emph{Complete Sets of Commuting Observables} in Quantum Mechanics, where they represent physical quantities that can be simultaneously measured to uniquely distinguish quantum states.
+\end{abstract}
+
+\tableofcontents
+
+\paragraph{Acknowledgments} This work was partially supported by Agence Nationale de la Recherche, through \emph{Plan France 2030 (ref. ANR-22-PETQ-0007)}.
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

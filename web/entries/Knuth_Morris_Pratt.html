@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +87,7 @@
     <span class='first'>T</span>he <span class='first'>S</span>tring <span class='first'>S</span>earch <span class='first'>A</span>lgorithm by <span class='first'>K</span>nuth, <span class='first'>M</span>orris and <span class='first'>P</span>ratt</h1>
   <div>
     
-    <p><a href="../authors/hellauer">Fabian Hellauer</a> <a href="mailto:hellauer@in.tum.de">📧</a> and <a href="../authors/lammich">Peter Lammich</a> <a href="http://www21.in.tum.de/~lammich">🌐</a>
+    <p><a href="../authors/hellauer">Fabian Hellauer</a> <a class="obfuscated" data="eyJob3N0IjpbImluIiwidHVtIiwiZGUiXSwidXNlciI6WyJoZWxsYXVlciJdfQ==">📧</a> and <a href="../authors/lammich">Peter Lammich</a> <a href="http://www21.in.tum.de/~lammich">🌐</a>
     </p>
     
     
@@ -129,7 +130,7 @@ refinement, we apply some optimisations and finally use the
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Knuth_Morris_Pratt/outline.pdf">Proof
@@ -138,23 +139,23 @@ refinement, we apply some optimisations and finally use the
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Knuth_Morris_Pratt/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Knuth_Morris_Pratt-AFP</p><pre id="copyText">@article{Knuth_Morris_Pratt-AFP,
+      <p style="display:none;" id="bibtex-filename">Knuth_Morris_Pratt-AFP</p><pre id="copy-text">@article{Knuth_Morris_Pratt-AFP,
   author  = {Fabian Hellauer and Peter Lammich},
   title   = {The string search algorithm by Knuth, Morris and Pratt},
   journal = {Archive of Formal Proofs},
-  month   = December,
-  year    = 2017,
+  month   = {December},
+  year    = {2017},
   note    = {\url{https://isa-afp.org/entries/Knuth_Morris_Pratt.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -164,8 +165,21 @@ refinement, we apply some optimisations and finally use the
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Knuth_Morris_Pratt-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Knuth_Morris_Pratt-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Knuth_Morris_Pratt-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Knuth_Morris_Pratt-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Knuth_Morris_Pratt-2020-04-18.tar.gz">Apr 18, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Knuth_Morris_Pratt-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Knuth_Morris_Pratt-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Knuth_Morris_Pratt-2017-12-18.tar.gz">Dec 18, 2017</a>: Isabelle2017
+      </li></ul>
   </div>
 </div>
     </div>

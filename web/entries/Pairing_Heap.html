@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -86,7 +87,7 @@
     <span class='first'>P</span>airing <span class='first'>H</span>eap</h1>
   <div>
     
-    <p><a href="../authors/brinkop">Hauke Brinkop</a> <a href="mailto:hauke.brinkop@googlemail.com">📧</a> and <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>
+    <p><a href="../authors/brinkop">Hauke Brinkop</a> <a class="obfuscated" data="eyJob3N0IjpbImdvb2dsZW1haWwiLCJjb20iXSwidXNlciI6WyJoYXVrZSIsImJyaW5rb3AiXX0=">📧</a> and <a href="../authors/nipkow">Tobias Nipkow</a> <a href="https://www.in.tum.de/~nipkow/">🌐</a>
     </p>
     
     
@@ -104,7 +105,12 @@ The amortized complexity of pairing heaps is analyzed in the AFP article
 <a href="http://isa-afp.org/entries/Amortized_Complexity.html">Amortized Complexity</a>.</div>BSD License<h3>Extra 0</h3>
 
   <p>Origin: This library was extracted from Amortized Complexity and extended.</p><h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
+  <ul><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul><h3>Related Publications</h3>
+  <ul><li>
+      Pairing Heaps in <a href="https://functional-algorithms-verified.org">Functional Algorithms, Verified!</a>
+    </li><li>
+      <a href="https://en.wikipedia.org/wiki/Pairing_heap">Wikipedia</a>
+    </li></ul>
   <h3>Theories of Pairing_Heap</h3>
   <ul>
     <li><a href="../theories/pairing_heap/#Pairing_Heap_Tree">Pairing_Heap_Tree</a></li>
@@ -119,7 +125,7 @@ The amortized complexity of pairing heaps is analyzed in the AFP article
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Pairing_Heap/outline.pdf">Proof
@@ -128,23 +134,23 @@ The amortized complexity of pairing heaps is analyzed in the AFP article
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/Pairing_Heap/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">Pairing_Heap-AFP</p><pre id="copyText">@article{Pairing_Heap-AFP,
+      <p style="display:none;" id="bibtex-filename">Pairing_Heap-AFP</p><pre id="copy-text">@article{Pairing_Heap-AFP,
   author  = {Hauke Brinkop and Tobias Nipkow},
   title   = {Pairing Heap},
   journal = {Archive of Formal Proofs},
-  month   = July,
-  year    = 2016,
+  month   = {July},
+  year    = {2016},
   note    = {\url{https://isa-afp.org/entries/Pairing_Heap.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -154,8 +160,23 @@ The amortized complexity of pairing heaps is analyzed in the AFP article
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-Pairing_Heap-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-Pairing_Heap-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-Pairing_Heap-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Pairing_Heap-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Pairing_Heap-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Pairing_Heap-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Pairing_Heap-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Pairing_Heap-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-Pairing_Heap-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li></ul>
   </div>
 </div>
     </div>

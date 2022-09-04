@@ -3,7 +3,7 @@
                 University of Edinburgh, 2021          
 *)
 theory TernaryOrdering
-  imports Util
+imports Util
 
 begin
 
@@ -27,7 +27,7 @@ text \<open>
   \end{verbatim}
   I've made it strict for simplicity, and because that's how Schutz's ordering is. It could be
   made more generic by taking in the function corresponding to $<$ as a paramater.
-  Main difference to Schutz: he has local order, not total (cf Theorem 2 and \<open>ordering2\<close>).
+  Main difference to Schutz: he has local order, not total (cf Theorem 2 and \<open>local_ordering\<close>).
 \<close>
 
 definition ordering :: "(nat \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
@@ -36,18 +36,34 @@ definition ordering :: "(nat \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> '
                      \<and> (\<forall>n n' n''. (finite X \<longrightarrow> n'' < card X) \<and> n < n' \<and> n' < n''
                                    \<longrightarrow> ord (f n) (f n') (f n''))"
 
+lemma finite_ordering_intro:
+  assumes "finite X"
+    and "\<forall>n < card X. f n \<in> X"
+    and "\<forall>x \<in> X. \<exists>n < card X. f n = x"
+    and "\<forall>n n' n''. n < n' \<and> n' < n'' \<and> n'' < card X \<longrightarrow> ord (f n) (f n') (f n'')"
+  shows "ordering f ord X"
+  unfolding ordering_def by (simp add: assms)
+
+lemma infinite_ordering_intro:
+  assumes "infinite X"
+    and "\<forall>n::nat. f n \<in> X"
+    and "\<forall>x \<in> X. \<exists>n::nat. f n = x"
+    and "\<forall>n n' n''. n < n' \<and> n' < n'' \<longrightarrow> ord (f n) (f n') (f n'')"
+  shows "ordering f ord X"
+  unfolding ordering_def by (simp add: assms)
+
 lemma ordering_ord_ijk:
   assumes "ordering f ord X"
       and "i < j \<and> j < k \<and> (finite X \<longrightarrow> k < card X)"
   shows "ord (f i) (f j) (f k)"
-by (metis ordering_def assms)
+  by (metis ordering_def assms)
 
 lemma empty_ordering [simp]: "\<exists>f. ordering f ord {}"
-by (simp add: ordering_def)
+  by (simp add: ordering_def)
 
 lemma singleton_ordering [simp]: "\<exists>f. ordering f ord {a}"
-apply (rule_tac x = "\<lambda>n. a" in exI)
-by (simp add: ordering_def)
+  apply (rule_tac x = "\<lambda>n. a" in exI)
+  by (simp add: ordering_def)
 
 lemma two_ordering [simp]: "\<exists>f. ordering f ord {a, b}"
 proof cases
@@ -57,11 +73,11 @@ next
   assume a_neq_b: "a \<noteq> b"
   let ?f = "\<lambda>n. if n = 0 then a else b"
   have ordering1: "(\<forall>n. (finite {a,b} \<longrightarrow> n < card {a,b}) \<longrightarrow> ?f n \<in> {a,b})" by simp
-  have ordering2: "(\<forall>x\<in>{a,b}. \<exists>n. (finite {a,b} \<longrightarrow> n < card {a,b}) \<and> ?f n = x)"
+  have local_ordering: "(\<forall>x\<in>{a,b}. \<exists>n. (finite {a,b} \<longrightarrow> n < card {a,b}) \<and> ?f n = x)"
     using a_neq_b all_not_in_conv card_Suc_eq card_0_eq card_gt_0_iff insert_iff lessI by auto
   have ordering3: "(\<forall>n n' n''. (finite {a,b} \<longrightarrow> n'' < card {a,b}) \<and> n < n' \<and> n' < n''
                                 \<longrightarrow> ord (?f n) (?f n') (?f n''))" using a_neq_b by auto
-  have "ordering ?f ord {a, b}" using ordering_def ordering1 ordering2 ordering3 by blast
+  have "ordering ?f ord {a, b}" using ordering_def ordering1 local_ordering ordering3 by blast
   thus ?thesis by auto
 qed
 
@@ -81,9 +97,9 @@ lemma ord_ordered:
   assumes abc: "ord a b c"
       and abc_neq: "a \<noteq> b \<and> a \<noteq> c \<and> b \<noteq> c"
   shows "\<exists>f. ordering f ord {a,b,c}"
-apply (rule_tac x = "\<lambda>n. if n = 0 then a else if n = 1 then b else c" in exI)
-apply (unfold ordering_def)
-using abc abc_neq by auto
+  apply (rule_tac x = "\<lambda>n. if n = 0 then a else if n = 1 then b else c" in exI)
+  apply (unfold ordering_def)
+  using abc abc_neq by auto
 
 lemma overlap_ordering:
   assumes abc: "ord a b c"
@@ -97,7 +113,7 @@ proof -
   let ?f = "\<lambda>n. if n = 0 then a else if n = 1 then b else if n = 2 then c else d"
   have card4: "card ?X = 4" using abc bcd abd abc_neq by simp
   have ordering1: "\<forall>n. (finite ?X \<longrightarrow> n < card ?X) \<longrightarrow> ?f n \<in> ?X" by simp
-  have ordering2: "\<forall>x\<in>?X. \<exists>n. (finite ?X \<longrightarrow> n < card ?X) \<and> ?f n = x"
+  have local_ordering: "\<forall>x\<in>?X. \<exists>n. (finite ?X \<longrightarrow> n < card ?X) \<and> ?f n = x"
     by (metis card4 One_nat_def Suc_1 Suc_lessI empty_iff insertE numeral_3_eq_3 numeral_eq_iff
               numeral_eq_one_iff rel_simps(51) semiring_norm(85) semiring_norm(86) semiring_norm(87)
               semiring_norm(89) zero_neq_numeral)
@@ -105,7 +121,7 @@ proof -
                                  \<longrightarrow> ord (?f n) (?f n') (?f n''))"
     using card4 abc bcd abd acd card_0_eq card_insert_if finite.emptyI finite_insert less_antisym
           less_one less_trans_Suc not_less_eq not_one_less_zero numeral_2_eq_2 by auto
-  have "ordering ?f ord ?X" using ordering1 ordering2 ordering3 ordering_def by blast
+  have "ordering ?f ord ?X" using ordering1 local_ordering ordering3 ordering_def by blast
   thus ?thesis by auto
 qed
 
@@ -116,7 +132,7 @@ lemma overlap_ordering_alt1:
       and abc_bcd_acd: "\<forall> a b c d. ord a b c \<and> ord b c d \<longrightarrow> ord a c d"
       and ord_distinct: "\<forall>a b c. (ord a b c \<longrightarrow> a \<noteq> b \<and> a \<noteq> c \<and> b \<noteq> c)"
   shows "\<exists>f. ordering f ord {a,b,c,d}"
-by (metis (full_types) assms overlap_ordering)
+  by (metis (full_types) assms overlap_ordering)
 
 lemma overlap_ordering_alt2:
   assumes abc: "ord a b c"
@@ -125,7 +141,7 @@ lemma overlap_ordering_alt2:
       and acd: "ord a c d"
       and ord_distinct: "\<forall>a b c. (ord a b c \<longrightarrow> a \<noteq> b \<and> a \<noteq> c \<and> b \<noteq> c)"
   shows "\<exists>f. ordering f ord {a,b,c,d}"
-by (metis assms overlap_ordering)
+  by (metis assms overlap_ordering)
 
 lemma overlap_ordering_alt:
   assumes abc: "ord a b c"
@@ -134,7 +150,7 @@ lemma overlap_ordering_alt:
       and abc_bcd_acd: "\<forall> a b c d. ord a b c \<and> ord b c d \<longrightarrow> ord a c d"
       and abc_neq: "a \<noteq> b \<and> a \<noteq> c \<and> a \<noteq> d \<and> b \<noteq> c \<and> b \<noteq> d \<and> c \<noteq> d"
   shows "\<exists>f. ordering f ord {a,b,c,d}"
-by (meson assms overlap_ordering)
+  by (meson assms overlap_ordering)
 
 text \<open>
   The lemmas below are easy to prove for \<open>X = {}\<close>, and if I included that case then I would have
@@ -142,24 +158,20 @@ text \<open>
 \<close>
 
 lemma finite_ordering_img: "\<lbrakk>X \<noteq> {}; finite X; ordering f ord X\<rbrakk> \<Longrightarrow> f ` {0..card X - 1} = X"
-by (force simp add: ordering_def image_def)
+  by (force simp add: ordering_def image_def)
 
 lemma inf_ordering_img: "\<lbrakk>infinite X; ordering f ord X\<rbrakk> \<Longrightarrow> f ` {0..} = X"
-by (auto simp add: ordering_def image_def)
-
-lemma finite_ordering_inv_img: "\<lbrakk>X \<noteq> {}; finite X; ordering f ord X\<rbrakk> \<Longrightarrow> f -` X = {0..card X - 1}"
-apply (auto simp add: ordering_def)
-oops
+  by (auto simp add: ordering_def image_def)
 
 lemma inf_ordering_inv_img: "\<lbrakk>infinite X; ordering f ord X\<rbrakk> \<Longrightarrow> f -` X = {0..}"
-by (auto simp add: ordering_def image_def)
+  by (auto simp add: ordering_def image_def)
 
 lemma inf_ordering_img_inv_img: "\<lbrakk>infinite X; ordering f ord X\<rbrakk> \<Longrightarrow> f ` f -` X = X"
-using inf_ordering_img by auto
+  using inf_ordering_img by auto
 
 lemma finite_ordering_inj_on: "\<lbrakk>finite X; ordering f ord X\<rbrakk> \<Longrightarrow> inj_on f {0..card X - 1}"
-by (metis finite_ordering_img Suc_diff_1 atLeastAtMost_iff card_atLeastAtMost card_eq_0_iff
-          diff_0_eq_0 diff_zero eq_card_imp_inj_on gr0I inj_onI le_0_eq)
+  by (metis finite_ordering_img Suc_diff_1 atLeastAtMost_iff card_atLeastAtMost card_eq_0_iff
+        diff_0_eq_0 diff_zero eq_card_imp_inj_on gr0I inj_onI le_0_eq)
 
 lemma finite_ordering_bij:
   assumes orderingX: "ordering f ord X"
@@ -171,16 +183,12 @@ proof -
   thus ?thesis by (metis inj_on_imp_bij_betw orderingX finiteX finite_ordering_inj_on)  
 qed
 
-(* I think there might be a way of proving this without ord_distinct (?) *)
 lemma inf_ordering_inj':
   assumes infX: "infinite X"
       and f_ord: "ordering f ord X"
       and ord_distinct: "\<forall>a b c. (ord a b c \<longrightarrow> a \<noteq> b \<and> a \<noteq> c \<and> b \<noteq> c)"
       and f_eq: "f m = f n"
   shows "m = n"
-(* If m \<noteq> n and f m = f n then it wouldn't be an ordering, and this part:
-   \<forall>n n' n''. n < n' \<and> n' < n'' \<longrightarrow> [[f n f n' f n'']]
-   would fail because two of f n f n' f n'' would be equal, and that violates ord_distinct. *)
 proof (rule ccontr)
   assume m_not_n: "m \<noteq> n"
   have betw_3n: "\<forall>n n' n''. n < n' \<and> n' < n'' \<longrightarrow> ord (f n) (f n') (f n'')"
@@ -202,13 +210,12 @@ proof (rule ccontr)
   qed
 qed
 
-(* f is actually injective when X is infinite. *)
 lemma inf_ordering_inj:
   assumes "infinite X"
       and "ordering f ord X"
       and "\<forall>a b c. (ord a b c \<longrightarrow> a \<noteq> b \<and> a \<noteq> c \<and> b \<noteq> c)"
   shows "inj f"
-using inf_ordering_inj' assms by (metis injI) 
+  using inf_ordering_inj' assms by (metis injI) 
 
 text \<open>
   The finite case is a little more difficult as I can't just choose some other natural number
@@ -260,7 +267,7 @@ proof (rule ccontr)
       have k3: "n < k \<and> k < card X \<longrightarrow> ord (f m) (f n) (f k)" using m_less_n betw_3n by simp
       have "f m \<noteq> f n" using k1 k2 k3 k_pos ord_distinct by auto
       thus False using f_eq by simp
-    next (* Should work on making these two cases into one; this is quite boilerplatery. *)
+    next
       assume "\<not> m < n"
       then have n_less_m: "n < m" using m_not_n by simp
       then obtain k where k_pos: "k < n \<or> (n < k \<and> k < m) \<or> (m < k \<and> k < card X)"
@@ -316,27 +323,138 @@ lemma  zero_into_ordering:
   assumes "ordering f betw X"
   and "X \<noteq> {}"
   shows "(f 0) \<in> X"
-    using ordering_def
-    by (metis assms card_eq_0_iff gr_implies_not0 linorder_neqE_nat)
+  using ordering_def
+  by (metis assms card_eq_0_iff gr_implies_not0 linorder_neqE_nat)
 
 
 section "Locally ordered chains"
 text \<open>Definitions for Schutz-like chains, with local order only.\<close>
 
-definition ordering2 :: "(nat \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "ordering2 f ord X \<equiv> (\<forall>n. (finite X \<longrightarrow> n < card X) \<longrightarrow> f n \<in> X)
-                     \<and> (\<forall>x\<in>X. (\<exists>n. (finite X \<longrightarrow> n < card X) \<and> f n = x))
-                     \<and> (\<forall>n n' n''. (finite X \<longrightarrow> n'' < card X) \<and> Suc n = n' \<and> Suc n' = n''
-                                   \<longrightarrow> ord (f n) (f n') (f n''))"
+definition local_ordering :: "(nat \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool"
+  where "local_ordering f ord X
+    \<equiv> (\<forall>n. (finite X \<longrightarrow> n < card X) \<longrightarrow> f n \<in> X) \<and>
+      (\<forall>x\<in>X. \<exists>n. (finite X \<longrightarrow> n < card X) \<and> f n = x) \<and>
+      (\<forall>n. (finite X \<longrightarrow> Suc (Suc n) < card X) \<longrightarrow> ord (f n) (f (Suc n)) (f (Suc (Suc n))))"
 
+lemma finite_local_ordering_intro:
+  assumes "finite X"
+    and "\<forall>n < card X. f n \<in> X"
+    and "\<forall>x \<in> X. \<exists>n < card X. f n = x"
+    and "\<forall>n n' n''. Suc n = n' \<and> Suc n' = n'' \<and> n'' < card X \<longrightarrow> ord (f n) (f n') (f n'')"
+  shows "local_ordering f ord X"
+  unfolding local_ordering_def by (simp add: assms)
 
-text \<open>Analogue to \<open>ordering_ord_ijk\<close>, which is quicker to use in sledgehammer than the definition.\<close>
+lemma infinite_local_ordering_intro:
+  assumes "infinite X"
+    and "\<forall>n::nat. f n \<in> X"
+    and "\<forall>x \<in> X. \<exists>n::nat. f n = x"
+    and "\<forall>n n' n''. Suc n = n' \<and> Suc n' = n'' \<longrightarrow> ord (f n) (f n') (f n'')"
+  shows "local_ordering f ord X"
+  using assms unfolding local_ordering_def by metis
 
-lemma ordering2_ord_ijk:
-  assumes "ordering2 f ord X"
-      and "Suc i = j \<and> Suc j = k \<and> (finite X \<longrightarrow> k < card X)"
-  shows "ord (f i) (f j) (f k)"
-  by (metis ordering2_def assms)
+lemma total_implies_local:
+  "ordering f ord X \<Longrightarrow> local_ordering f ord X"
+  unfolding ordering_def local_ordering_def
+  using lessI by presburger
 
+lemma ordering_ord_ijk_loc:
+  assumes "local_ordering f ord X"
+      and "finite X \<longrightarrow> Suc (Suc i) < card X"
+  shows "ord (f i) (f (Suc i)) (f (Suc (Suc i)))"
+  by (metis local_ordering_def assms)
+
+lemma empty_ordering_loc [simp]: 
+  "\<exists>f. local_ordering f ord {}"
+  by (simp add: local_ordering_def)
+
+lemma singleton_ordered_loc [simp]:
+  "local_ordering f ord {f 0}"
+  unfolding local_ordering_def by simp
+
+lemma singleton_ordering_loc [simp]: 
+  "\<exists>f. local_ordering f ord {a}"
+  using singleton_ordered_loc by fast
+
+lemma two_ordered_loc:
+  assumes "a = f 0" and "b = f 1"
+  shows "local_ordering f ord {a, b}"
+proof cases
+  assume "a = b"
+  thus ?thesis using assms singleton_ordered_loc by (metis insert_absorb2)
+next
+  assume a_neq_b: "a \<noteq> b"
+  hence "(\<forall>n. (finite {a,b} \<longrightarrow> n < card {a,b}) \<longrightarrow> f n \<in> {a,b})"
+    using assms by (metis One_nat_def card.infinite card_2_iff fact_0 fact_2 insert_iff less_2_cases_iff)
+  moreover have "(\<forall>x\<in>{a,b}. \<exists>n. (finite {a,b} \<longrightarrow> n < card {a,b}) \<and> f n = x)"
+    using assms a_neq_b all_not_in_conv card_Suc_eq card_0_eq card_gt_0_iff insert_iff lessI by auto
+  moreover have "(\<forall>n. (finite {a,b} \<longrightarrow> Suc (Suc n) < card {a,b}) 
+                      \<longrightarrow> ord (f n) (f (Suc n)) (f (Suc (Suc n))))" 
+    using a_neq_b by auto
+  ultimately have "local_ordering f ord {a, b}" 
+     using local_ordering_def by blast
+  thus ?thesis by auto
+qed
+
+lemma two_ordering_loc [simp]: 
+  "\<exists>f. local_ordering f ord {a, b}"
+  using total_implies_local two_ordering by fastforce
+
+lemma card_le2_ordering_loc:
+  assumes finiteX: "finite X"
+      and card_le2: "card X \<le> 2"
+  shows "\<exists>f. local_ordering f ord X"
+  using assms total_implies_local card_le2_ordering by metis
+
+lemma ord_ordered_loc:
+  assumes abc: "ord a b c"
+      and abc_neq: "a \<noteq> b \<and> a \<noteq> c \<and> b \<noteq> c"
+  shows "\<exists>f. local_ordering f ord {a,b,c}"
+  using assms total_implies_local ord_ordered by metis
+
+lemma overlap_ordering_loc:
+  assumes abc: "ord a b c"
+      and bcd: "ord b c d"
+      and abd: "ord a b d"
+      and acd: "ord a c d"
+      and abc_neq: "a \<noteq> b \<and> a \<noteq> c \<and> a \<noteq> d \<and> b \<noteq> c \<and> b \<noteq> d \<and> c \<noteq> d"
+  shows "\<exists>f. local_ordering f ord {a,b,c,d}"
+  using overlap_ordering[OF assms] total_implies_local by blast
+
+lemma ordering_sym_loc:
+  assumes ord_sym: "\<And>a b c. ord a b c \<Longrightarrow> ord c b a"
+      and "finite X"
+      and "local_ordering f ord X"
+  shows "local_ordering (\<lambda>n. f (card X - 1 - n)) ord X"
+  unfolding local_ordering_def using assms(2) apply auto
+  apply (metis local_ordering_def assms(3) card_0_eq card_gt_0_iff diff_Suc_less gr_implies_not0)
+proof -
+  fix x
+  assume "finite X"
+  assume "x \<in> X"
+  obtain n where "finite X \<longrightarrow> n < card X" and "f n = x"
+    by (metis local_ordering_def \<open>x \<in> X\<close> assms(3))
+  have "f (card X - ((card X - 1 - n) + 1)) = x"
+    by (simp add: Suc_leI \<open>f n = x\<close> \<open>finite X \<longrightarrow> n < card X\<close> assms(2))
+  thus "\<exists>n<card X. f (card X - Suc n) = x"
+    by (metis \<open>x \<in> X\<close> add.commute assms(2) card_Diff_singleton card_Suc_Diff1 diff_less_Suc plus_1_eq_Suc)
+next
+  fix n
+  let ?n1 = "Suc n"
+  let ?n2 = "Suc ?n1"
+  assume "finite X"
+  assume "Suc (Suc n) < card X"
+  have "ord (f (card X - Suc ?n2)) (f (card X - Suc ?n1)) (f (card X - Suc n))"
+    using assms(3) unfolding local_ordering_def
+    using \<open>Suc (Suc n) < card X\<close> by (metis
+      Suc_diff_Suc Suc_lessD card_eq_0_iff card_gt_0_iff diff_less gr_implies_not0 zero_less_Suc)
+  thus " ord (f (card X - Suc n)) (f (card X - Suc ?n1)) (f (card X - Suc ?n2))"
+    using ord_sym by blast
+qed
+
+lemma  zero_into_ordering_loc:
+  assumes "local_ordering f betw X"
+  and "X \<noteq> {}"
+  shows "(f 0) \<in> X"
+    using local_ordering_def by (metis assms card_eq_0_iff gr_implies_not0 linorder_neqE_nat)
 
 end

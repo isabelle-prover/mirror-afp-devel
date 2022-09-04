@@ -1,0 +1,621 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath, amsthm, amssymb,  stmaryrd}
+
+\newcommand{\N}{ \ensuremath{ \mathbb{N}}}
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+\newcommand{\ben}{\begin{equation*}}
+\newcommand{\een}{\end{equation*}}
+\newcommand{\beq}{\begin{eqnarray}}
+\newcommand{\eeq}{\end{eqnarray}}
+\newcommand{\beqn}{\begin{eqnarray*}}
+\newcommand{\eeqn}{\end{eqnarray*}}
+% Tabular environments
+\newcommand{\bt}[2]{\small \begin{center}\begin{tabular}{p{#1 cm}p{#2 cm}}}
+\def\et{\end{tabular}\end{center}\normalsize}
+% Theorem structure definitions%
+\theoremstyle{definition}
+\newtheorem{thm}{Theorem}
+\newtheorem{df}{Definition}
+\newtheorem{lem}{Lemma}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Boolos's Curious Inference in Isabelle/HOL}
+\author{Jeffrey Ketland\\ 
+        Faculty of Philosophy, University of Warsaw\\
+	    jeffreyketland@gmail.com
+}
+\maketitle
+
+\begin{abstract}
+In 1987, George Boolos gave an interesting and vivid concrete example of the considerable speed-up afforded by higher-order logic over first-order logic. (A phenomenon first noted by Kurt G\"{o}del in 1936.) Boolos's example concerned an inference $I$ with five premises, and a conclusion, such that the shortest derivation of the conclusion from the premises in a standard system for first-order logic is astronomically huge; while there exists a second-order derivation whose length is of the order of a page or two. Boolos gave a short sketch of that second-order derivation, which relies on the comprehension principle of second-order logic. Here, Boolos's inference is formalized into fourteen lemmas, each quickly verified by the automated-theorem-proving assistant Isabelle/HOL.
+\end{abstract}
+
+\tableofcontents
+
+
+
+\section{Introduction}\label{Sect: Intro}
+
+In 1987, George Boolos (\cite{boo87}) presented the following ``curious inference'', $I$:
+
+\bt{1}{6} 
+& \hspace{10mm}Inference $I$\\
+\hline
+(1) & $\forall n \ fn 1 \ = \ s 1$\\
+(2) & $\forall x \ f1 sx \ = \ s s f1x$\\
+(3) & $\forall n \forall x \ fsn sx \ = \ fnfsn, x$\\
+(4) & $D1$\\
+(5) & $\forall x \ (Dx \to Dsx)$\\
+$\therefore$\\
+(6) &  $D fssss1 ssss1$
+\et
+
+Why is $I$ ``curious''? There are three points about $I$ which Boolos notes:
+
+\bt{1}{10}
+(i) & $I$ is \emph{valid} in first-order logic.\\
+(ii) & In a standard deductive system for first-order logic (the system Boolos focuses on is from \cite{mat72} and the details are given in the appendix of his paper \cite{boo87}), the shortest derivation of $I$'s conclusion (6), from its premises (1)--(5), has symbol size at least \\
+& \ben
+\left.
+\begin{array}{l}
+ 2^{2^{2^{.^{.^{.^{.^{2}}}}}}} 
+ \end{array}
+ \right\} \text{height = 65,536 2's}
+\een \\
+& So, the shortest \emph{first-order} derivation for $I$ is gigantic.\\
+(iii) & However, there is a reasonably short derivation of $I$'s conclusion from its premises in a deductive system for \emph{second-order} logic.
+\et
+
+This is then a rather concrete example of “speed-up”, particularly the speed-up of higher-order logical systems over their first-order level---an idea first noticed by Kurt G\"{o}del in 1936 (\cite{god36}). Boolos comments:
+
+\bt{12}{0}
+But it is well beyond the bounds of physical possibility that any actual or conceivable creature or device should ever write down all the symbols of a complete derivation in a standard system of first-order logic of (6) from (1)--(5): there are far too many symbols in any such derivation for this to be possible. (\cite{boo87}: 1) 
+\et
+ 
+Though the inference $I$ is formalized, one may think of ``$s$'' as standing for the successor operation, and ``$f$'' as standing for an Ackermann-like function which grows very rapidly.\footnote{The original ideas in \cite{ack28} and \cite{pet35}. The so-called ``P\'{e}ter-Ackerman function'' is defined by:
+\beqn
+{\displaystyle {\begin{aligned}\operatorname {A} (0,n)&=n+1\\\operatorname {A} (m,0)&=\operatorname {A} (m-1,1)\\\operatorname {A} (m,n)&=\operatorname {A} (m-1,\operatorname {A} (m,n-1))\end{aligned}}}
+\eeqn
+Such functions are indeed recursive, though they don't fit the mould of primitive recursion. They grow extremely rapidly---outpacing any primitive recursive function.
+} As Boolos puts it, 
+
+\bt{12}{0}
+$f$ denotes an Ackermann-style function $n,x \mapsto f(n, x)$ defined on the positive integers: $f(1, x) = 2x$; $f(n, 1) = 2$; and $f(n + 1, x + 1) = f(n, f(n + 1, x))$.
+\et
+
+Then the premises (4) and (5) say that the set denoted by the unary predicate symbol ``$D$'' contains 1 and is closed under $s$: in a sense, this set is, thus, \emph{inductive}. We wish to prove that the number $f ssss1 ssss1$ is in the set D. Roughly speaking, a first-order derivation would need to prove this by proving a ``reduction formula'', of the form,
+
+\beq
+(R) & f ssss1 ssss1 = \overbrace{s s \dots s}^{k \text{ iterations}}1
+\eeq 
+
+Let $t$ be this term $\overbrace{s s \dots s}^{k \text{ iterations}}1$, which is clearly a ``canonical numeral''. Here, again roughly, $k$ is the value of the term ``$f ssss1 ssss1$''. Since we have $D 1$ and $\forall x(D x \to D sx)$, the result of applying Modus Ponens $k$ times will yield $D t$. Then, using the reduction formula $(R)$, we obtain $D f ssss1 fsss1$, the required conclusion. 
+
+How big is $k$? Well, $k$ is gigantic, and thus the size of the required derivation in then gigantic too. Boolos gives a careful proof-theoretic argument,
+\bt{12}{0}
+For definiteness, we shall concentrate our attention on the system
+M of Mates' book \emph{Elementary Logic}. \dots What we shall show is that the number of symbols in any derivation of (6) from (l)-(5) in M is at least the value of an exponential stack $2^{2^{2^{.^{.^{.^{.^{2}}}}}}}$ containing 64 K, or 65 536, “2”s in all. Do not confuse this number, which we shall call $f(4, 4)$, with the number $2^{64 K}$.'' (\cite{boo87}: 3).
+\et
+
+which provides the estimate for the lower bound:
+
+\be
+k \geq f(4,4) = 2^{2^{2^{.^{.^{.^{.^{2}}}}}}}
+\ee
+
+as noted above. 
+ 
+Despite the extra-ordinary length of any first-order derivation, Boolos pointed out that there is a \emph{reasonably short second-order logic derivation}, which would fit in a few pages if fully formalized. Boolos himself provides such a derivation in the Appendix of his paper:
+
+\begin{center}
+\fbox{
+\begin{minipage}{12cm}{
+\begin{center}
+\emph{Boolos's Second-Order Derivation (sketch)}
+\end{center}
+\bt{11}{0}
+By the comprehension principle of second-order logic, $\exists N \forall z(Nz \iff \forall X [ X1 \ \& \ \forall y(Xy \to Xsy) \to Xz])$, and then for some $N$, $\exists E \forall z(Ez \iff Nz \ \& \ Dz)$.\\
+LEMMA 1: $N1$, $\forall y(Ny \to Nsy)$; $Nssss1$; $E1$, $\forall y(Ey \to Esy)$; $Es1$.\\
+LEMMA 2: $\forall n(Nn \to \forall x(Nx \to Efnx))$.\\
+\emph{Proof}. By comprehension, $\exists M \forall n (Mn \iff \forall x(Nx \to Efnx))$. We want $\forall n(Nn \to Mn)$. Enough to show $M1$ and $\forall n(Mn \to Msn)$, for then if $Nn$, $Mn$.\\
+$M1$: Want $\forall x(Nx \to Ef1x)$. By comprehension $\exists Q \forall x(Qx \iff Ef1x)$. Want $\forall x(Nx \to Qx)$. Enough to show $Q1$ and $\forall x(Qx \to Qsx)$.\\
+$Q1$: Want $Ef11$. But $f11 = s1$ by (1) and $Es1$ by Lemma 1.\\
+$\forall x (Qx \to Qsx)$: Suppose $Qx$, i.e. $Ef1x$. By (2) $f1sx = ssf1x$; by Lemma 1 twice, $Ef1sx$. Thus $Qsx$ and $M1$.\\
+$\forall n(Mn \to Msn)$: Suppose $Mn$, i.e. $\forall x(Nx \to Efnx)$. Want $Msn$, i.e. $\forall x(Nx \to Efsnx)$. By comprehension, $\exists P \forall x(Px \iff Efsnx)$. Want $\forall x(Nx \to Px)$. Enough to show $P1$ and $\forall x(Px \to Psx)$.\\
+$P1$: Want $Efsn1$. But $fsn1 = s1$ by (1) and $Es1$ by Lemma 1.\\
+$\forall x(Px \to Psx)$: Suppose $Px$, i.e. $Efsnx$; thus $Nfsnx$. Want $Efsnsx$. Since $Nfsnx$ and $Mn$, $Efnfsnx$. But by (3) $fnfsnx = fsnsx$; thus $Efsnsx$. By Lemma 1, $Nssss1$. By Lemma 2, $Efssss1ssss1$. Thus $Dfssss1ssss1$, as desired.
+\et   
+ }
+\end{minipage}
+}
+\end{center}
+
+Obviously, this is highly condensed!\footnote{I believe that Boolos's phrase ``for some $N$'' in the second line is unintentional.} This is not quite fully formalized, but clearly the missing logical inference steps, in each small sublemma, will not add a large overhead.
+
+An idea worth examining is then to see if this second-order inference can be formalized and verified in an automated reasoning system. There are quite a few of these to work with, and an important one is Isabelle/HOL, originally designed by Lawrence Paulson at Cambridge.\footnote{The theorem prover Isabelle was designed by Lawrence Paulson in the late 1980s in Cambridge. See \cite{wen20} for the current Isabelle user's manual.}  
+
+Below, in \S \ref{Sect: Isabelle I}, we construct a formalization in Isabelle following Boolos's proof fairly closely.\footnote{The Boolos curious inference has also been put into MIZAR and OMEGA in 2007 in \cite{ben07}.} With some definitions (slightly different from Boolos's) and some coaxing, Isabelle finds the required derivations. We use a ``locale'' to define the primitive symbols and five premises, and along with a definition of ``\emph{inductive}'' and four definitions for Boolos's predicates ``$N$'', ``$E$'', ``$M$'' and ``$Q$''. Boolos's two main Lemmas then turn into some eighteen formalization lemmas. Isabelle quickly verifies each of these, using its own proof search algorithms.\footnote{The Isabelle formalization \S \ref{Sect: Isabelle I} does not use Boolos's predicate ``$P$'', which is defined using a \emph{parameter} (i.e. ``$n$''). In my initial attempt at formalization, I found this generated a difficulty in properly expressing the formalization. A similar difficulty is encountered in the semi-formal proof at Lemma \ref{lem11}. The subproof for Lemma \ref{lem11} defines a set $A$, which implicitly depends on a parameter.}
+
+Because the main ideas behind the second-order proof are, I believe, independently interesting, in \S \ref{Sect: Math Proof}, I give a rigorous, but semi-formal, and more ``mathematical-looking'' proof of the conclusion (6) from the premises (1)--(5). This is structured into fourteen lemmas. We then construct a separate Isabelle/HOL formalization of that in \S \ref{Sect: Isabelle II}. This now has fourteen formalized lemmas, but the definitions adopted match those using in the semi-formal proof (and are again slightly different from Boolos's). These fourteen lemmas are organized into five groups for clarity. 
+
+In each case, I do not provide the machine proofs in Isabelle's Isar language of these lemmas, since they aren't very instructive. The informal proofs in in \S \ref{Sect: Math Proof} are more instructive, and could, with coaxing, be parlayed into machine proofs.
+
+Boolos uses a notation for function terms and atomic predicates which avoids brackets. We shall prefer to write the inference $I$ slightly differently from Boolos's presentation. The premises (axioms) are:
+
+\beqn
+A1: & F(x, e) = s(e)\\
+A2: & F(e, s(y)) = s(s(F(e, y)))\\
+A3: & F(s(x), s(y)) = F(x, F(s(x), y))\\
+A4: & D(e)\\
+A5: & D(x) \to D(s(x))
+\eeqn
+The result we wish to prove is:
+\ben
+D(F(s(s(s(s(e)))), s(s(s(s(e))))))
+\een
+
+
+\section{Isabelle Formalization I (Based on Boolos's Proof Given in \S \ref{Sect: Intro})}\label{Sect: Isabelle I}
+
+
+\bt{14}{0}
+\texttt{theory Boo1 imports Main}\\
+\texttt{begin}\\
+\\
+\texttt{text "Boolos's inference''}\\
+\\
+\texttt{locale boolax\_1} = \\
+\hspace{3mm} \texttt{fixes F :: " 'a $\times$  'a $\Rightarrow$  'a "}\\
+\hspace{3mm} \texttt{fixes s :: " 'a $\Rightarrow$ \ 'a "} \\
+\hspace{3mm}  \texttt{fixes D :: " 'a $\Rightarrow$ bool "} \\
+\hspace{3mm}  \texttt{fixes e ::  " 'a "} \\
+\hspace{3mm}  \texttt{assumes A1: "F(x, e) = s(e)"} \\
+\hspace{3mm}  \texttt{and  A2:  "F(e, s(y)) = s(s(F(e, y)))"}  \\
+\hspace{3mm}  \texttt{and  A3: "F(s(x), s(y)) = F(x, F(s(x), y))"} \\
+\hspace{3mm}  \texttt{and  A4:  "D(e)"} \\
+\hspace{3mm}  \texttt{and A5: "D(x) $\longrightarrow$ D(s(x))"}
+\et
+
+\bt{14}{0}
+\texttt{context boolax\_1} \\
+\texttt{begin}\\
+\\
+\texttt{text "Definitions"}\\
+\\
+\texttt{definition (in boolax\_1) induct :: "'a set $\Rightarrow$ bool}" \\
+\hspace{3mm} \texttt{where} \\
+\hspace{3mm}\texttt{"induct $X \equiv$ e $\in$ X $\wedge$ ($\forall$ x. (x $\in$ X $\longrightarrow$ s(x) $\in$ X))"}\\
+\texttt{definition (in boolax\_1) N :: "'a $\Rightarrow$ bool"}\\
+\hspace{3mm} \texttt{where}\\
+ \hspace{3mm} \texttt{"N x $\equiv$ ($\forall$ X. (induct X $\rightarrow$ x $\in$ X))"}\\
+\texttt{definition (in boolax\_1) E :: "'a $\Rightarrow$ bool"}\\
+\hspace{3mm} \texttt{where}\\
+\hspace{3mm} \texttt{"E x $\equiv$ (N x $\wedge$ D x)"}\\
+\texttt{definition (in boolax\_1) M :: "'a $\Rightarrow$ bool"}\\
+\hspace{3mm} \texttt{where}\\
+ \hspace{3mm} \texttt{"M x $\equiv$ ($\forall$ y. (N y $\longrightarrow$ E(F(x, y))))"}\\
+\texttt{definition (in boolax\_1) Q :: "'a $\Rightarrow$ bool"}\\
+\hspace{3mm}  \texttt{where}\\
+ \hspace{3mm}  \texttt{"Q x $\equiv$ E(F(e, x))"}
+ \et
+ \bt{14}{0}
+\texttt{text "Lemmas"}\\
+\texttt{lemma lem1: "N e"}\\
+ \hspace{3mm} \texttt{by (simp add: N\_def induct\_def)}\\
+\texttt{lemma lem2: "N x $\longrightarrow$ N(s(x))"}\\
+ \hspace{3mm}  \texttt{by (simp add: N\_def induct\_def)}\\
+\texttt{lemma lem3: "N(s(s(s(s(e)))))"}\\
+ \hspace{3mm}  \texttt{ by (simp add: lem1 lem2)}\\
+\texttt{lemma lem4: "E e"}\\
+ \hspace{3mm}  \texttt{ using A4 E\_def lem1 by auto}\\
+\texttt{lemma lem5: "E x $\longrightarrow$ E(s(x))"}\\
+ \hspace{3mm}  \texttt{ by (simp add: A5 E\_def lem2)}\\
+\texttt{lemma lem6: "E(s(e))"}\\
+ \hspace{3mm}  \texttt{ by (simp add: lem4 lem5)}\\
+\texttt{lemma lem7: "Q e"}\\
+ \hspace{3mm}  \texttt{ by (simp add: A1 Q\_def lem6)}\\
+\texttt{lemma lem8: "Q x $\longrightarrow$ Q(s(x))"}\\
+ \hspace{3mm}  \texttt{ by (simp add: A2 Q\_def lem5)}\\
+\texttt{lemma lem9: "N x $\longrightarrow$ Q x"}\\
+ \hspace{3mm}  \texttt{ by (metis N\_def induct\_def lem7 lem8 mem\_Collect\_eq)}\\
+\texttt{lemma lem10: "M e"}\\
+ \hspace{3mm}  \texttt{ by (meson Q\_def bool\_ax.M\_def bool\_ax\_axioms lem9)}\\
+\texttt{lemma lem11: "E (F(s(n), e))"}\\
+ \hspace{3mm}  \texttt{ by (simp add: A1 lem6)}\\
+\texttt{lemma lem12: "M x $\wedge$ E (F(s(x), y)) $\longrightarrow$ E (F(s(x), s(y)))"}\\
+ \hspace{3mm}  \texttt{ by (simp add: A3 E\_def M\_def)}\\
+\texttt{lemma lem13: "M x $\longrightarrow$ induct $\{$y. E (F(s(x), y))$\}$"}\\
+ \hspace{3mm}  \texttt{ using A1 induct\_def lem12 lem6 by auto}\\
+\texttt{lemma lem14: "M x $\longrightarrow$ M(s(x))"}\\
+ \hspace{3mm}  \texttt{ by (metis CollectD M\_def N\_def lem13)}\\
+\texttt{lemma lem15: "N x $\longrightarrow$ M x"}\\
+ \hspace{3mm}  \texttt{ by (metis N\_def induct\_def lem10 lem14 mem\_Collect\_eq)} \\
+\texttt{lemma lem16: "N x $\wedge$ N y $\longrightarrow$ E(F(x,y))"}\\
+ \hspace{3mm}  \texttt{ using M\_def lem15 by blast}\\
+\texttt{lemma lem17: "E(F(s(s(s(s(e)))), s(s(s(s(e))))))" }\\
+ \hspace{3mm}  \texttt{by (simp add: lem16 lem3)}\\
+\texttt{lemma lem18: "D(F(s(s(s(s(e)))), s(s(s(s(e))))))"}\\
+ \hspace{3mm}  \texttt{using E\_def lem17 by auto}
+\\
+\texttt{end}\\
+\texttt{end}
+\et
+
+\newpage
+
+\section{Standard Mathematical Proof}\label{Sect: Math Proof}
+
+\subsection{Main Idea}
+
+The main idea behind the short, \emph{second-order} proof is to define the notion of an ``inductive set'' and define a specific ``closure'' or ``container set'' $\N$ to be ``the smallest inductive set''. These definitions, which are second-order, are:
+
+\beq
+\mathsf{Df(ind)}: & X \text{ is inductive} := (e \in X \wedge \forall x (x \in X \to s(x) \in X))\\
+\mathsf{Df(\N)}: & \N := \{x \mid \forall Y (Y \text{ is inductive} \to x \in Y))\} 
+\eeq
+
+So, a set is inductive just if it contains $e$ and is closed under applying $s$. And the set $\N$ is defined to be the smallest inductive set. Thus, 
+
+\beq
+\N = \{e, s(e), s(s(e)), s(s(s(e))), \dots\}
+\eeq
+
+Notice that we don't require the usual ``Peano properties'', of non-surjectivity and injectivity, for $e$ and $s$.\footnote{I.e., we don't require axioms stating non-surjectivity, $\forall x(s(x) \neq e)$, or injectivity, $\forall x \forall y(s(x) = s(y) \to x = y)$.}
+
+It is straightforward to prove (these are Lemma \ref{lem1} and Lemma \ref{lem2} below):
+
+\beq
+\N \text{ is inductive}\\
+X \text{ is inductive} \to \N \subseteq X
+\eeq
+
+One can easily prove (this is Lemma \ref{lem4} below),
+
+\beq
+s(s(s(s(e)))) \in \N
+\eeq
+
+Now A4 and A5 say that (this is Lemma \ref{lem3} below),
+
+\beq
+ \{x \mid D(x)\} \text{ is inductive},
+ \eeq
+
+So, we easily obtain: 
+
+\beq 
+\N \subseteq \{x \mid D(x)\}.
+\eeq
+
+Given these definitions, and the premises A1--A5, the key target is to prove the following claim (this is Lemma \ref{lem13} below):
+
+\beq
+\text{(Closure)} & (\forall x \in \N)(\forall y \in \N) \ F(x,y) \in \N
+\eeq
+
+This claim, (Closure), states that the ``container'' $\N$ is \emph{closed} under the binary operation $F$. 
+
+It will then follow from (Closure) that: 
+
+\beq
+F(s(s(s(s(e)))),s(s(s(s(e))))) \in \N.
+\eeq
+
+So, we obtain:
+
+\beq
+D(F(s(s(s(s(e)))),s(s(s(s(e)))))),
+\eeq
+
+This is the required conclusion (this is Lemma \ref{lem14} below).
+
+However, how are we to prove (Closure)? Intuitively, we shall prove this by a \emph{double induction}: an ``outer induction'' on $x$, and an ``inner induction'' on $y$ (where $x$ is a parameter). Note first that (Closure) is logically equivalent to,
+
+\beq
+\forall x  (x \in \N \to (\forall y (y \in \N \to F(x,y) \in \N)) \label{eq1}
+\eeq
+
+But (\ref{eq1}) is clearly logically equivalent to,
+
+\beq
+ \forall x  (x \in \N \to \N \subseteq \{ y \mid F(x,y) \in \N \}) \label{eq2}
+\eeq
+
+So, if we define
+
+\beq
+P_1(x,y) &:=& F(x,y) \in \N \\
+P_2(x)  &:=& \N \subseteq \{ y \mid P_1(x,y) \}
+\eeq
+
+Then (Closure) is logically equivalent (using definitions) to,
+
+\beq
+\forall x  (x \in \N \to P_2(x))  \label{eq3}
+\eeq
+
+In turn,  (\ref{eq3}), and therefore (Closure), is equivalent (using the definition of $\subseteq$) to,
+
+\beq
+\N \subseteq \{x \mid P_2(x)\} \label{eq4}
+\eeq
+
+And (\ref{eq4}), given the definitions of ``inductive'' and of $\N$, and therefore (Closure), will follow from a proof of:
+
+\beq
+\{x \mid P_2(x)\} \text{ is inductive} \label{eq5}
+\eeq
+
+And (\ref{eq5}), in turn, by the definition of ``inductive'', will follow from proofs of:
+
+\beq
+P_2(e) \\
+P_2(x) \to P_2(s(x))
+\eeq
+
+In summary, we need to establish $P_2(e)$ and $P_2(x) \to P_2(s(x))$. These are Lemmas \ref{lem9} and \ref{lem11} below. To prove these, we shall need Lemmas \ref{lem5}, \ref{lem6}, \ref{lem7} below, and these rely on the premises A1--A3, along with the four definitions, and Lemma \ref{lem2}.
+
+These imply that $\{x \mid P_2(x)\}$ is inductive (Lemma \ref{lem12} below). Given the meaning of ``inductive'', this tells us that $\N \subseteq \{x \mid P_2(x)\}$ (this uses Lemma \ref{lem1} below). From this, we conclude $\forall x  (x \in \N \to P_2(x))$, and, deabbreviating, $\forall x  (x \in \N \to \N \subseteq \{ y \mid F(x,y) \in \N \})$. This fairly quickly implies, $\forall x \forall y (x \in \N \wedge y \in \N \to F(x,y) \in \N)$, which is (Closure), and is Lemma \ref{lem13} below.
+
+The rest of the proof, which leads to Lemma \ref{lem14} below, follows from (Closure) and earlier lemmas,
+\beq
+\{x \mid D(x)\} \text{ is inductive}\\
+s(s(s(s(e)))) \in \N
+\eeq
+which are Lemmas \ref{lem3} and \ref{lem4}, as explained above.
+
+\subsection{Proof}
+
+Here, we give rigorous but semi-formal proofs of the fourteen lemmas referred to above. The four definitions we shall use are the following:
+
+\beqn
+\mathsf{Df(ind)} & X \text{ is inductive} &:= (e \in X \wedge \forall x (x \in X \to s(x) \in X))\\
+\mathsf{Df(\N)} & \N &:= \{x \mid \forall X (X \text{ is inductive} \to x \in X))\} \\
+\mathsf{Df(P_1)} & P_1(x, y) &:= F(x,y) \in \N \\
+\mathsf{Df(P_2)} & P_2(x) &:= \N \subseteq \{y \mid P_1(x, y)\}
+\eeqn
+
+
+\begin{lem}\label{lem1} If $X$ is inductive, then $\N \subseteq X$.\end{lem}
+\begin{proof} Using $\mathsf{Df(\N)}$.\\
+Suppose (a) $X$ is inductive and (b) $x \in \N$. From $\mathsf{Df(\N)}$, we conclude that $\forall Y (Y \text{ is inductive} \to x \in Y)$. And therefore, $X \text{ is inductive} \to x \in X$. But, by (a), $X$ is inductive. So, $x \in X$. So, discharging (b), $x \in \N \to x \in X$. Since $x$ is arbitrary, therefore $\N \subseteq X$, as claimed.
+\end{proof}
+
+\begin{lem}\label{lem2} $\N$ is inductive.\end{lem}
+\begin{proof} Using $\mathsf{Df(ind)}$ and $\mathsf{Df(\N)}$.\\
+For a contradiction, suppose $\N$ is not inductive. From $\mathsf{Df(ind)}$, we have: $X$ is inductive if and only if $e \in X$ and, for all $x$, if $x \in X$, then $s(x) \in X$. So, either (a) $e \notin \N$ or $\exists x (x \in \N \wedge s(x) \notin \N)$. 
+
+Now, assume (a) holds. from $\mathsf{Df(\N)}$, $e \in \N$ iff $\forall Y (Y \text{ is inductive} \to e \in Y)$. Since $e \notin \N$, there is an inductive set $Y$ such that $e \notin Y$. But since $Y$ is inductive, $e \in Y$. This is a contradiction. Therefore, (b) holds. The statement (b) is existential. Let a witness for (b) be $a$: so $a \in \N$ and $s(a) \notin \N$. Using $\mathsf{Df(\N)}$ and some simplification, it follows that $\forall Y (Y \text{ is inductive} \to a \in Y)$, and $\exists Y (Y \text{ is inductive} \wedge s(a) \notin Y)$. The second claim is an existential one, and let a witness for this inductive set be $A$. So, we have: $A \text{ is inductive}$, $a \in A$ and $s(a) \notin A$. From the fact that $A$ is inductive and $\mathsf{Df(ind)}$, it follows that $\forall x (x \in A \to s(x) \in A)$, and thus $a \in A \to s(a) \in A$. Hence, $s(a) \in A$, contradicting the above.
+
+Thus, $\N$ is inductive.
+\end{proof}
+
+\begin{lem}\label{lem3} $\{x \mid D(x)\}$ is inductive.\end{lem}
+\begin{proof} Using A4, A5 and $\mathsf{Df(ind)}$.\\
+From $\mathsf{Df(ind)}$, $\{x \mid D(x)\}$ is inductive if and only if $e \in \{x \mid D(x)\}$, and $\forall y(y \in \{x \mid D(x)\} \to s(y) \in \{x \mid D(x)\})$. So, to establish that $\{x \mid D(x)\}$ is inductive, we need to establish that $D(e)$ and $\forall y(D(y) \to D(s(y))$. Clearly these follow immediately from premises A4 and A5.
+\end{proof}
+
+\begin{lem}\label{lem4} $s(s(s(s(e)))) \in \N$.\end{lem}
+\begin{proof} Using $\mathsf{Df(ind)}$ and Lemma \ref{lem2}.\\
+By Lemma \ref{lem2}, $\N$ is inductive. Using $\mathsf{Df(ind)}$, it follows that $e \in \N$ and $\forall x (x \in \N \to s(x) \in \N)$. Thus, $e \in \N$. And likewise, $s(e) \in \N$; and $s(s(e)) \in \N$; and $s(s(s(e))) \in \N$; and $s(s(s(s(e)))) \in \N$.
+\end{proof}
+
+\begin{lem}\label{lem5} $P_1(e,e)$.\end{lem}
+\begin{proof} Using A1, $\mathsf{Df(P_1)}$, $\mathsf{Df(ind)}$ and Lemma \ref{lem2}.\\
+We wish to prove that $P_1(e,e)$. Using $\mathsf{Df(P_1)}$, we need to prove $F(e, e) \in \N$. 
+
+From A1, we have: $F(x, e) = s(e)$. Hence, $F(e, e) = s(e)$. But we already have shown that $s(e) \in \N$, in the proof of Lemma \ref{lem4}, which relied on $\mathsf{Df(ind)}$ and Lemma \ref{lem2}. So, $F(e, e) \in \N$.
+ \end{proof}
+
+\begin{lem}\label{lem6} $P_1(e, x) \to P_1(e, s(x))$.\end{lem}
+\begin{proof} Using A2, $\mathsf{Df(P_1)}$, $\mathsf{Df(ind)}$ and Lemma \ref{lem2}.\\
+Let us suppose $P_1(e, x)$ holds. By the definition $\mathsf{Df(P_1)}$, we have: $P_1(z, x) \iff F(z, x) \in \N$, and  therefore, $F(e, x) \in \N$. Since $\N$ is inductive (Lemma \ref{lem2}), using $\mathsf{Df(ind)}$, it follows that $s(s(F(e, x))) \in \N$. From A2, we have $F(e, s(y)) = s(s(F(e, y)))$. So, relabelling variables, $F(e, s(x)) = s(s(F(e, x)))$.
+But  $s(s(F(e, x))) \in \N$. And, therefore, $F(e, s(x)) \in \N$, as claimed.
+\end{proof}
+
+\begin{lem}\label{lem7} $\{x \mid P_1(e, x)\}$ is inductive.\end{lem}
+\begin{proof} Using $\mathsf{Df(ind)}$, Lemmas \ref{lem5}, and Lemma \ref{lem6}.\\
+By $\mathsf{Df(ind)}$, we need $P_1(e, e)$ and $P_1(e, x) \to P_1(e, s(x))$. But these are Lemmas \ref{lem5}, \ref{lem6}.
+\end{proof}
+
+\begin{lem}\label{lem8} $P_1(s(x), e)$.\end{lem}
+\begin{proof} Using A1, $\mathsf{Df(P_1)}$, $\mathsf{Df(ind)}$ and Lemma \ref{lem2}.\\
+Using $\mathsf{Df(P_1)}$, we claim $F(s(x), e) \in \N$.
+
+From the proof of Lemma \ref{lem4} (which depends on $\mathsf{Df(ind)}$ and Lemma \ref{lem2}) we have $s(e) \in \N$. From A1, we have $F(x, e) = s(e)$ and thus $F(s(x), e) = s(e)$. So, $F(s(x), e) \in \N$, as claimed.
+\end{proof}
+
+\begin{lem}\label{lem9} $P_2(e)$.\end{lem}
+\begin{proof} Using $\mathsf{Df(P_2)}$, Lemma \ref{lem1} and Lemma \ref{lem7}.\\
+ By $\mathsf{Df(P_2)}$, $P_2(x)$ holds iff $\N \subseteq \{ y \mid P_1(x,y) \}$. So, $P_2(e)$ holds iff $\N \subseteq \{ y \mid P_1(e,y) \}$. By Lemma \ref{lem7}, $\{x \mid P_1(e, x)\}$ is inductive. And by Lemma \ref{lem1}, it follows that $\N \subseteq \{ y \mid P_1(e,y) \}$, and thus $P_2(e)$ , as claimed.\end{proof}
+
+\begin{lem}\label{lem10} $P_2(x) \to \forall y (P_1(s(x), y) \to P_1(s(x), s(y)))$.\end{lem}
+\begin{proof} Using A3, $\mathsf{Df(P_1)}$ and $\mathsf{Df(P_2)}$.\\
+Let us suppose $P_2(x)$. From $\mathsf{Df(P_2)}$, this implies: $\N \subseteq \{y : P_1(x, y)\}$. We claim: $
+\forall y (P_1(s(x), y) \to P_1(s(x), s(y)))$. 
+
+Suppose $P_1(s(x), y)$. Thus, using $\mathsf{Df(P_1)}$ , $F(s(x), y) \in \N$. We claim: $P_1(s(x), s(y)))$.
+
+Since $\N \subseteq \{y : P_1(x, y)\}$, we have $\forall y (y \in \N \to P_1(x, y))$. And thus, $\forall z (z \in \N \to F(x, z) \in \N)$. It follows that $F(s(x), y) \in \N \to F(x, F(s(x), y)) \in \N)$. Since $F(s(x), y) \in \N$, we have: $
+F(x, F(s(x), y)) \in \N$. By A3, we have: $F(s(x), s(y)) = F(x, F(s(x), y))$. And therefore, $F(s(x), s(y)) \in \N$. Hence, $P_1(s(x), s(y)))$, as claimed.
+\end{proof}
+
+\begin{lem}\label{lem11} $P_2(x) \to P_2(s(x))$.\end{lem}
+\begin{proof} Using $\mathsf{Df(P_2)}$, $\mathsf{Df(ind)}$, Lemma \ref{lem1}, Lemma \ref{lem8}, and Lemma \ref{lem10}.\\
+Suppose $P_2(x)$. By $\mathsf{Df(P_2)}$, we have: $\N \subseteq \{y : P_1(x, y)\}$. We claim $P_2(s(x))$, i.e. 
+$\N \subseteq \{y : P_1(s(x), y)\}$.
+
+By Lemma \ref{lem8}, we have: $P_1(s(x), e)$. By Lemma \ref{lem10}, we have: $P_2(x) \to \forall y (P_1(s(x), y) \to P_1(s(x), s(y)))$. Thus, we have: $\forall y (P_1(s(x), y) \to P_1(s(x), s(y)))$.
+
+Let $A = \{y \mid P_1(s(x), y)\}$. Thus, by $\mathsf{Df(ind)}$, we conclude that $A$ is inductive. By Lemma \ref{lem1}, we conclude that $\N \subseteq A$, and therefore, $\N \subseteq \{y : P_1(s(x), y)\}$, as claimed.
+\end{proof}
+
+\begin{lem}\label{lem12} $\{x \mid P_2(x)\}$ is inductive.\end{lem}
+\begin{proof} Using $\mathsf{Df(ind)}$, Lemma \ref{lem9} and Lemma \ref{lem11}.\\
+Using $\mathsf{Df(ind)}$, we claim $P_2(e)$ and $\forall x (P_2(x) \to P_2(s(x)))$. These are Lemma \ref{lem9} and Lemma \ref{lem11}, respectively.
+ \end{proof}
+
+\begin{lem}\label{lem13} $x \in \N \wedge y \in \N \to F(x,y) \in \N$.\end{lem}
+\begin{proof} Using $\mathsf{Df(P_1)}$, $\mathsf{Df(P_2)}$, Lemma \ref{lem1}, and Lemma \ref{lem12}.\\
+ From Lemma \ref{lem12}, we have: $\{x \mid P_2(x)\}$ is inductive. And thus, by Lemma \ref{lem1}, $\N \subseteq \{x \mid P_2(x)\}$. Let us suppose $x \in \N$ and $y \in \N$. We claim: $F(x,y) \in \N$.
+
+Since $x \in \N$, we conclude, $P_2(x)$. And therefore, using $\mathsf{Df(P_2)}$, we conclude $ \N \subseteq \{z \mid P_1(x, z)\}$. But also $y \in \N$. So, $P_1(x, y)$. And therefore, $F(x, y) \in \N$, as claimed.
+\end{proof}
+
+\begin{lem}\label{lem14} $D(F(s(s(s(s(e)))), s(s(s(s(e))))))$.\end{lem}
+\begin{proof} Using Lemma \ref{lem1}, Lemma \ref{lem3}, Lemma \ref{lem4}, and Lemma \ref{lem13}.\\
+By Lemma \ref{lem4}, $s(s(s(s(e)))) \in \N$. 
+So, by Lemma \ref{lem13}, $F(s(s(s(s(e)))), s(s(s(s(e))))) \in \N$. By Lemma \ref{lem3}, $\{x \mid D(x)\}$. Hence, by Lemma \ref{lem1}, $\N \subseteq \{x \mid D(x)\}$.\\
+Thus, $F(s(s(s(s(e)))), s(s(s(s(e))))) \in \{x \mid D(x)\}$. So, 
+$D(F(s(s(s(s(e)))), s(s(s(s(e))))))$, as claimed.
+\end{proof}
+
+We now convert this semi-formal proof into an Isabelle formalization in the next section. We merely ask Isabelle to \emph{verify} these lemmas using its own automated proof algorithms, and we don't give the detailed subproofs of each lemma (in Isabelle's Isar language).
+
+
+\section{Isabelle Formalization II (Based on Proof Given in \S \ref{Sect: Math Proof})}\label{Sect: Isabelle II}
+
+\subsection{Formalization}\label{Subsect: Isabelle II}
+
+\bt{14}{0}
+\texttt{theory Boo2 imports Main}\\
+\texttt{begin}\\
+\\
+\texttt{text "Boolos's inference''}\\
+\\
+\texttt{locale boolax\_2} = \\
+\hspace{3mm} \texttt{fixes F :: " 'a $\times$  'a $\Rightarrow$  'a "}\\
+\hspace{3mm} \texttt{fixes s :: " 'a $\Rightarrow$ \ 'a "} \\
+\hspace{3mm}  \texttt{fixes D :: " 'a $\Rightarrow$ bool "} \\
+\hspace{3mm}  \texttt{fixes e ::  " 'a "} \\
+\hspace{3mm}  \texttt{assumes A1: "F(x, e) = s(e)"} \\
+\hspace{3mm}  \texttt{and  A2:  "F(e, s(y)) = s(s(F(e, y)))"}  \\
+\hspace{3mm}  \texttt{and  A3: "F(s(x), s(y)) = F(x, F(s(x), y))"} \\
+\hspace{3mm}  \texttt{and  A4:  "D(e)"} \\
+\hspace{3mm}  \texttt{and A5: "D(x) $\longrightarrow$ D(s(x))"}
+\et
+
+\bt{14}{0}
+\texttt{context boolax\_2} \\
+\texttt{begin}\\
+\\
+\texttt{text "Definitions"}\\
+\\
+\texttt{definition (in boolax\_2) induct :: "'a set $\Rightarrow$ bool}" \\
+\hspace{3mm} \texttt{where} \\
+\hspace{3mm}\texttt{"induct $X \equiv$ e $\in$ X $\wedge$ ($\forall$ x. (x $\in$ X $\longrightarrow$ s(x) $\in$ X))"}\\
+\\
+\texttt{definition (in boolax\_2) N :: "'a set"} \\
+\hspace{3mm} \texttt{where} \\
+\hspace{3mm}\texttt{"N = $\{$x. ($\forall$ Y. (induct Y $\longrightarrow$ x $\in$ Y))$\}$"}\\
+\\
+\texttt{definition (in boolax\_2) P1 :: "'a $\Rightarrow$ 'a $\Rightarrow$ bool"}\\
+\hspace{3mm}\texttt{where} \\
+\hspace{3mm}\texttt{"P1 x y $\equiv$ F(x,y) $\in$ N"}\\
+\\
+\texttt{definition (in boolax\_2) P2 :: "'a $\Rightarrow$ bool"} \\
+\hspace{3mm}\texttt{where} \\
+\hspace{3mm}\texttt{P2 x $\equiv$ N $\subseteq$ $\{$y. P1 x y$\}$"}
+\et
+
+\bt{14}{0}
+\texttt{text "Lemmas"}\\
+\\
+\texttt{text "I. Basic Lemmas"}\\
+\\
+\texttt{lemma Induction\_wrt\_N: "induct X $\longrightarrow$ N $\subseteq$ X"} \\
+\hspace{3mm}\texttt{using N\_def by auto}\\
+\texttt{lemma N\_is\_inductive: "induct N"}\\
+\hspace{3mm}\texttt{by (simp add: N\_def induct\_def)}\\
+\texttt{lemma D\_is\_inductive: "induct $\{$x. D(x)$\}$"} \\
+\hspace{3mm}\texttt{using A4 A5 induct\_def by auto}\\
+\texttt{lemma Four\_in\_N: "s(s(s(s(e)))) $\in$ N"} \\
+\hspace{3mm}\texttt{using induct\_def N\_is\_inductive by auto}\\
+\et
+\bt{14}{0}
+\texttt{text "II. Proof that $\{$x. P1 e x$\}$ is inductive"}\\
+\\
+\texttt{lemma P1ex\_basis: "P1 e e"} \\
+\hspace{3mm} \texttt{using A1 P1\_def induct\_def N\_is\_inductive by auto}\\
+\texttt{lemma P1ex\_closed: "P1 e x $\longrightarrow$ P1 e (s(x))"}\\
+ \hspace{3mm} \texttt{using A2 P1\_def induct\_def N\_is\_inductive by auto}\\
+\texttt{lemma P1ex\_inductive: "induct $\{x$. P1 e x$\}$"} \\
+ \hspace{3mm} \texttt{using induct\_def P1ex\_basis P1ex\_closed by auto}
+ \et
+
+\bt{14}{0}
+\texttt{text "III. Proof that $\{x$. P2 x$\}$ is inductive"}\\
+\\
+\texttt{lemma P1sx\_basis: P1 (s(x)) e"} \\
+ \hspace{3mm} \texttt{using A1 P1\_def induct\_def N\_is\_inductive by auto}\\
+\texttt{lemma P2\_basis: "P2 e"} \\
+ \hspace{3mm} \texttt{by (simp add: P2\_def Induction\_wrt\_N P1ex\_inductive)}\\
+\texttt{lemma P2\_closeda: "P2 x $\longrightarrow$ ($\forall$ y. (P1 (s(x)) y $\longrightarrow$ P1 (s(x)) (s(y))))"} \\
+\hspace{3mm} \texttt{using A3 P1\_def P2\_def by auto}\\
+\texttt{lemma P2\_closedb: "P2 x $\longrightarrow$ P2 (s(x))"} \\ 
+ \hspace{3mm} \texttt{using P2\_def induct\_def Induction\_wrt\_N P1sx\_basis P2\_closeda by auto}\\
+\texttt{lemma P2\_inductive: "induct $\{$x. P2 x$\}$"} \\ 
+\hspace{3mm} \texttt{using induct\_def P2\_basis P2\_closedb by auto}
+\et
+
+\bt{14}{0}
+
+\texttt{text "IV. Proof that N is closed under F"}\\
+\\
+\texttt{lemma N\_closed\_F: "x $\in$ N $\wedge$ y $\in$ N $\longrightarrow$ F(x,y) $\in$ N"} \\
+\hspace{3mm} \texttt{using Induction\_wrt\_N P1\_def P2\_def P2\_inductive by auto}
+\et
+
+\bt{14}{0}
+
+\texttt{text "V. Conclusion"}\\
+\\
+\texttt{lemma F\_Four\_in\_D: "D(F(s(s(s(s(e)))), s(s(s(s(e))))))"} \\
+\hspace{3mm}\texttt{using D\_is\_inductive Four\_in\_N N\_closed\_F Induction\_wrt\_N by auto}\\
+\\
+\texttt{end}\\
+\texttt{end}
+\et
+
+\subsection{Correspondence}
+
+The correspondence between the Lemmas of the semi-formal mathematical proof in \S \ref{Sect: Math Proof} and the Lemmas of the Isabelle formalization in \S \ref{Subsect: Isabelle II} is given in the table below.
+
+\bt{3}{13.5}
+Semi-formal lemma & Isabelle lemma\\
+\hline
+Lemma \ref{lem1} & \texttt{lemma Induction\_wrt\_N: "induct X $\longrightarrow$ N $\subseteq$ X"} \\
+Lemma \ref{lem2} & \texttt{lemma N\_is\_inductive: "induct N"}\\
+Lemma \ref{lem3} & \texttt{lemma D\_is\_inductive: "induct $\{$x. D(x)$\}$"} \\
+Lemma \ref{lem4} & \texttt{lemma Four\_in\_N: "s(s(s(s(e)))) $\in$ N"} \\
+Lemma \ref{lem5} & \texttt{lemma P1ex\_basis: "P1 e e"} \\
+Lemma \ref{lem6} & \texttt{lemma P1ex\_closed: "P1 e x $\longrightarrow$ P1 e (s(x))"}\\
+Lemma \ref{lem7} & \texttt{lemma P1ex\_inductive: "induct $\{x$. P1 e x$\}$"} \\
+Lemma \ref{lem8} & \texttt{lemma P1sx\_basis: P1 (s(x)) e"} \\
+Lemma \ref{lem9} & \texttt{lemma P2\_basis: "P2 e"} \\
+Lemma \ref{lem10} & \texttt{lemma P2\_closeda: "P2 x $\longrightarrow$ ($\forall$ y. (P1 (s(x)) y $\longrightarrow$ P1 (s(x)) (s(y))))"} \\
+Lemma \ref{lem11} & \texttt{lemma P2\_closedb: "P2 x $\longrightarrow$ P2 (s(x))"} \\ 
+Lemma \ref{lem12} & \texttt{lemma P2\_inductive: "induct $\{$x. P2 x$\}$"} \\ 
+Lemma \ref{lem13} & \texttt{lemma N\_closed\_F: "x $\in$ N $\wedge$ y $\in$ N $\longrightarrow$ F(x,y) $\in$ N"} \\
+Lemma \ref{lem14} & \texttt{lemma F\_Four\_in\_D: "D(F(s(s(s(s(e)))), s(s(s(s(e))))))"} 
+\et
+
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

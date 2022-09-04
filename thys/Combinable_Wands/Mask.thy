@@ -172,8 +172,8 @@ lemma greater_mask_properties:
   apply (metis add_masks_asso greater_mask_def)
 proof (rule ext)
   fix x assume "greater_mask \<pi>' \<pi> \<and> greater_mask \<pi> \<pi>'"
-  show "\<pi> x = \<pi>' x"
-    by (meson \<open>greater_mask \<pi>' \<pi> \<and> greater_mask \<pi> \<pi>'\<close> greater_mask_equiv_def pgte_antisym)
+  then show "\<pi> x = \<pi>' x"
+    by (meson greater_mask_equiv_def pgte_antisym)
 qed
 
 lemma greater_mask_decomp:
@@ -378,7 +378,7 @@ lemma equal_on_mask_sum:
 proof
   show "equal_on_mask (add_masks \<pi>1 \<pi>2) h h' \<Longrightarrow> equal_on_mask \<pi>1 h h' \<and> equal_on_mask \<pi>2 h h'"
     using add_masks_comm greater_equal_on_mask greater_mask_def by blast
-  assume "equal_on_mask \<pi>1 h h' \<and> equal_on_mask \<pi>2 h h'"
+  assume asm0: "equal_on_mask \<pi>1 h h' \<and> equal_on_mask \<pi>2 h h'"
   show "equal_on_mask (add_masks \<pi>1 \<pi>2) h h'"
   proof (rule equal_on_maskI)
     fix hl assume "ppos (add_masks \<pi>1 \<pi>2 hl)"
@@ -386,11 +386,11 @@ proof
     proof (cases "ppos (\<pi>1 hl)")
       case True
       then show ?thesis
-        by (meson \<open>equal_on_mask \<pi>1 h h' \<and> equal_on_mask \<pi>2 h h'\<close> equal_on_mask_def)
+        by (meson asm0 equal_on_mask_def)
     next
       case False
       then show ?thesis
-        by (metis \<open>equal_on_mask \<pi>1 h h' \<and> equal_on_mask \<pi>2 h h'\<close> \<open>ppos (add_masks \<pi>1 \<pi>2 hl)\<close> add_masks.simps equal_on_mask_def padd_zero ppos_eq_pnone)
+        by (metis asm0 \<open>ppos (add_masks \<pi>1 \<pi>2 hl)\<close> add_masks.simps equal_on_mask_def padd_zero ppos_eq_pnone)
     qed
   qed
 qed

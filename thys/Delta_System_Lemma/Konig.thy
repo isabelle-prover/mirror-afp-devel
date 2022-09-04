@@ -42,7 +42,7 @@ proof (rule ccontr)
   have "|\<Union>\<beta>\<in>cf(z\<^sup>+). G`\<beta>| \<le> z"
     using InfCard_csucc[of z]
       subset_imp_lepoll[THEN lepoll_imp_cardinal_le, of "\<Union>\<beta>\<in>cf(z\<^sup>+). G`\<beta>" "z"]
-    by (rule_tac leqpoll_imp_cardinal_UN_le) auto
+    by (rule_tac lepoll_imp_cardinal_UN_le) auto
   moreover
   note \<open>Ord(z)\<close>
   moreover from \<open>\<forall>\<beta>\<in>z\<^sup>+. \<exists>y\<in>cf(z\<^sup>+). \<beta> < G`y\<close> and this

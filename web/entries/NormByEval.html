@@ -32,7 +32,8 @@
       };
     </script>
     <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
-  <script src="../js/entries.js"></script><script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
   <script src="../js/scroll-spy.js"></script>
   <script src="../js/theory.js"></script>
   <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
@@ -96,7 +97,13 @@
 </header><div><main><h3>Abstract</h3>
 
   <div class="abstract mathjax_process">This article formalizes normalization by evaluation as implemented in Isabelle. Lambda calculus plus term rewriting is compiled into a functional program with pattern matching. It is proved that the result of a successful evaluation is a) correct, i.e. equivalent to the input, and b) in normal form.</div>BSD License<h3>Topics</h3>
-  <ul><li><a href="../topics/computer-science/programming-languages/compiling">Computer science/Programming languages/Compiling</a></li></ul>
+  <ul><li><a href="../topics/computer-science/programming-languages/compiling">Computer science/Programming languages/Compiling</a></li></ul><h3>Related Publications</h3>
+  <ul><li>
+      AEHLIG, K., HAFTMANN, F., & NIPKOW, T. (2012). A compiled implementation of normalisation by evaluation. Journal of Functional Programming, 22(1), 9–30. https://doi.org/10.1017/s0956796812000019
+
+    </li><li>
+      <a href="https://www.in.tum.de/~nipkow/pubs/jfp12.html">Open access</a>
+    </li></ul>
   <h3>Theories of NormByEval</h3>
   <ul>
     <li><a href="../theories/normbyeval/#NBE">NBE</a></li></ul><div class="flex-wrap">
@@ -106,7 +113,7 @@
 </main>
 
 <nav class='links'>
-  <a class='popup-button' href="#citePopUp">Cite</a>
+  <a class='popup-button' href="#cite-popup">Cite</a>
   <a class='popup-button' href="#download-popup">Download</a>
   <h4>PDFs</h4>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/NormByEval/outline.pdf">Proof
@@ -115,23 +122,23 @@
     document</a>
   <a href="https://www.isa-afp.org/browser_info/current/AFP/NormByEval/session_graph.pdf">Dependencies</a></nav>
 
-<div id="citePopUp" class="overlay">
+<div id="cite-popup" class="overlay">
   <a class="cancel" href="#"></a>
   <div class="popup">
     <h2>Cite</h2>
     <a class="close" href="#">&times;</a>
     <div>
-      <p style="display:none;" id="bibtexFileName">NormByEval-AFP</p><pre id="copyText">@article{NormByEval-AFP,
+      <p style="display:none;" id="bibtex-filename">NormByEval-AFP</p><pre id="copy-text">@article{NormByEval-AFP,
   author  = {Klaus Aehlig and Tobias Nipkow},
   title   = {Normalization by Evaluation},
   journal = {Archive of Formal Proofs},
-  month   = February,
-  year    = 2008,
+  month   = {February},
+  year    = {2008},
   note    = {\url{https://isa-afp.org/entries/NormByEval.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
-      <button id="copyBibtex">Copy</button> <a id="downloadBibtex">Download</a>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
     </div>
   </div>
 </div>
@@ -141,8 +148,53 @@
   <div class="popup">
     <h2>Download</h2>
     <a class="close" href="#">&times;</a>
-    <a href="https://isa-afp.org/release/afp-NormByEval-current.tar.gz" download>Download latest</a>
-    
+    <a href="https://www.isa-afp.org/release//afp-NormByEval-current.tar.gz" download>Download latest</a>
+    <p>Older releases:</p>
+    <ul><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2021-12-14.tar.gz">Dec 14, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2021-02-23.tar.gz">Feb 23, 2021</a>: Isabelle2021
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2020-04-20.tar.gz">Apr 20, 2020</a>: Isabelle2020
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2019-06-11.tar.gz">Jun 11, 2019</a>: Isabelle2019
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2018-08-16.tar.gz">Aug 16, 2018</a>: Isabelle2018
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2017-10-10.tar.gz">Oct 10, 2017</a>: Isabelle2017
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2016-12-17.tar.gz">Dec 17, 2016</a>: Isabelle2016-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2016-02-22.tar.gz">Feb 22, 2016</a>: Isabelle2016
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2015-05-27.tar.gz">May 27, 2015</a>: Isabelle2015
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2014-08-28.tar.gz">Aug 28, 2014</a>: Isabelle2014
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2013-12-11.tar.gz">Dec 11, 2013</a>: Isabelle2013-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2013-11-17.tar.gz">Nov 17, 2013</a>: Isabelle2013-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2013-02-16.tar.gz">Feb 16, 2013</a>: Isabelle2013
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2012-05-24.tar.gz">May 24, 2012</a>: Isabelle2012
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2011-10-11.tar.gz">Oct 11, 2011</a>: Isabelle2011-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2011-02-11.tar.gz">Feb 11, 2011</a>: Isabelle2011
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2010-07-01.tar.gz">Jul 1, 2010</a>: Isabelle2009-2
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2009-12-12.tar.gz">Dec 12, 2009</a>: Isabelle2009-1
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2009-04-29.tar.gz">Apr 29, 2009</a>: Isabelle2009
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2008-06-10.tar.gz">Jun 10, 2008</a>: Isabelle2008
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2008-02-22.tar.gz">Feb 22, 2008</a>: Isabelle2007
+      </li><li>
+        <a href="https://www.isa-afp.org/release/afp-NormByEval-2008-02-18.tar.gz">Feb 18, 2008</a>: Isabelle2007
+      </li></ul>
   </div>
 </div>
     </div>

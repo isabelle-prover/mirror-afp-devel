@@ -1,7 +1,7 @@
 title = "The Imperative Refinement Framework"
 date = 2016-08-08
 topics = [
-  "Computer science/Programming languages/Transformations",
+  "Computer science/Semantics and reasoning",
   "Computer science/Data structures",
 ]
 abstract = """
@@ -42,3 +42,5 @@ lammich = "lammich_email"
 [history]
 
 [extra]
+
+[related]

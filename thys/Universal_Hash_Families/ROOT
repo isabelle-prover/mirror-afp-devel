@@ -4,6 +4,7 @@ session Universal_Hash_Families (AFP) = "HOL-Probability" +
   options [timeout = 600]
   sessions
     "HOL-Algebra"
+    "Finite_Fields"
     "Interpolation_Polynomials_HOL_Algebra"
   theories
     Definitions

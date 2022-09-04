@@ -253,40 +253,16 @@ lemma complex_CBasis_i [iff]: "\<i> \<in> CBasis" *)
 
 subsubsection\<^marker>\<open>tag unimportant\<close> \<open>Type \<^typ>\<open>'a \<times> 'b\<close>\<close>
 
-instantiation prod :: (complex_inner, complex_inner) complex_inner
-begin
-
+(* Already done in Complex_Inner_Product *)
+(* instantiation prod :: (complex_inner, complex_inner) complex_inner begin
 definition cinner_prod_def:
   "cinner x y = cinner (fst x) (fst y) + cinner (snd x) (snd y)"
+instance \<dots>
+end
+*)
 
 lemma cinner_Pair [simp]: "cinner (a, b) (c, d) = cinner a c + cinner b d"
   unfolding cinner_prod_def by simp
-
-instance
-proof
-  fix r :: complex
-  fix x y z :: "'a::complex_inner \<times> 'b::complex_inner"
-  show "cinner x y = cnj (cinner y x)"
-    unfolding cinner_prod_def
-    by simp
-  show "cinner (x + y) z = cinner x z + cinner y z"
-    unfolding cinner_prod_def
-    by (simp add: cinner_add_left)
-  show "cinner (scaleC r x) y = cnj r * cinner x y"
-    unfolding cinner_prod_def
-    by (simp add: distrib_left)
-  show "0 \<le> cinner x x"
-    unfolding cinner_prod_def
-    by (intro add_nonneg_nonneg cinner_ge_zero)
-  show "cinner x x = 0 \<longleftrightarrow> x = 0"
-    unfolding cinner_prod_def prod_eq_iff
-    by (metis antisym cinner_eq_zero_iff cinner_ge_zero fst_zero le_add_same_cancel2 snd_zero verit_sum_simplify)
-  show "norm x = sqrt (cmod (cinner x x))"
-    unfolding norm_prod_def cinner_prod_def
-    by (metis (no_types, lifting) Re_complex_of_real add_nonneg_nonneg cinner_ge_zero complex_of_real_cmod plus_complex.simps(1) power2_norm_eq_cinner')
-qed
-
-end
 
 lemma cinner_Pair_0: "cinner x (0, b) = cinner (snd x) b" "cinner x (a, 0) = cinner (fst x) a"
   by (cases x, simp)+

@@ -39,6 +39,12 @@ homepage = "nipkow_homepage"
 [notify]
 eberl = "eberl_email"
 
+[related]
+dois = ["10.1007/s10817-020-09545-0"]
+pubs = ["<a href=\"https://en.wikipedia.org/wiki/Treap\">Wikipedia</a>"]
+
 [history]
 
 [extra]
+
+[related]

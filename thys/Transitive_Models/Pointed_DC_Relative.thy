@@ -198,14 +198,6 @@ lemma dcwit_body_abs:
   unfolding dcwit_body_def is_dcwit_body_def
   by (auto dest:transM simp:absolut dc_witness_rel_char del:bexI intro!:bexI)
 
-lemma separation_eq_dc_witness:
-  "M(A) \<Longrightarrow>
-    M(a) \<Longrightarrow>
-    M(g) \<Longrightarrow>
-    M(R) \<Longrightarrow>  separation(M,\<lambda>p. fst(p)\<in>\<omega> \<longrightarrow> snd(p) = dc_witness(fst(p), A, a, g, R))"
-  using separation_is_dcwit_body dcwit_body_abs unfolding is_dcwit_body_def
-  oops
-
 lemma Lambda_dc_witness_closed:
   assumes "g \<in> Pow\<^bsup>M\<^esup>(A)-{0} \<rightarrow> A" "a\<in>A" "\<forall>y\<in>A. {x \<in> A . \<langle>y, x\<rangle> \<in> R} \<noteq> 0"
     "M(g)" "M(A)" "M(a)" "M(R)"
@@ -281,17 +273,16 @@ end \<comment> \<open>\<^locale>\<open>M_DC\<close>\<close>
 locale M_library_DC = M_library + M_DC
 begin
 
-(* Should port the whole AC theory, including the absolute version
-  of the following theorem *)
 lemma AC_M_func:
   assumes "\<And>x. x \<in> A \<Longrightarrow> (\<exists>y. y \<in> x)" "M(A)"
   shows "\<exists>f \<in> A \<rightarrow>\<^bsup>M\<^esup> \<Union>(A). \<forall>x \<in> A. f`x \<in> x"
 proof -
   from \<open>M(A)\<close>
-  interpret mpiA:M_Pi_assumptions _ A "\<lambda>x. x"
-    using Pi_replacement Pi_separation lam_replacement_identity
-      lam_replacement_Sigfun[THEN lam_replacement_imp_strong_replacement]
-    by unfold_locales (simp_all add:transM[of _ A])
+  interpret mpiA:M_Pi_assumption_repl _ A "\<lambda>x . x"
+    by unfold_locales (simp_all add:lam_replacement_identity)
+  from \<open>M(A)\<close>
+  interpret mpi2:M_Pi_assumption_repl _ "\<Union>A" "\<lambda>x . x"
+    by unfold_locales (simp_all add:lam_replacement_identity)
   from \<open>M(A)\<close>
   interpret mpic_A:M_Pi_assumptions_choice _ A "\<lambda>x. x"
     apply unfold_locales
@@ -300,18 +291,11 @@ proof -
       lam_replacement_minimum[THEN [5] lam_replacement_hcomp2]
     unfolding lam_replacement_def[symmetric]
     by auto
-  from \<open>M(A)\<close>
-  interpret mpi2:M_Pi_assumptions2 _ A "\<lambda>_. \<Union>A" "\<lambda>x. x"
-    using Pi_replacement Pi_separation lam_replacement_constant
-      lam_replacement_Sigfun[THEN lam_replacement_imp_strong_replacement,
-        of  "\<lambda>_. \<Union>A"] Pi_replacement1[of _  "\<Union>A"] transM[of _  "A"]
-    by unfold_locales auto
   from assms
   show ?thesis
-    using mpi2.Pi_rel_type apply_type mpiA.mem_Pi_rel_abs mpi2.mem_Pi_rel_abs
-      function_space_rel_char
-    by (rule_tac mpic_A.AC_Pi_rel[THEN rexE], simp, rule_tac x=x in bexI)
-      (auto, rule_tac C="\<lambda>x. x" in Pi_type, auto)
+    using apply_type mpiA.mem_Pi_rel_abs mpi2.mem_Pi_rel_abs function_space_rel_char
+    by (rule_tac mpic_A.AC_Pi_rel[THEN rexE], simp,rename_tac f,rule_tac x=f in bexI)
+     (auto, rule_tac C="\<lambda>x. x" in Pi_type,auto)
 qed
 
 lemma non_empty_family: "[| 0 \<notin> A;  x \<in> A |] ==> \<exists>y. y \<in> x"
@@ -417,8 +401,7 @@ proof -
     using lam_replacement_fst lam_replacement_hcomp
       lam_replacement_constant lam_replacement_identity
       lam_replacement_apply
-    by (rule_tac lam_replacement_iff_lam_closed[THEN iffD1, rule_format])
-      auto
+    by (rule_tac lam_replacement_imp_lam_closed, auto)
   with F \<open>M(A)\<close>
   have "?f\<in>nat\<rightarrow>\<^bsup>M\<^esup> A" "?f ` 0 = a" using function_space_rel_char by auto
   have 1:"n\<in> nat \<Longrightarrow> f`n= \<langle>?f`n, n\<rangle>" for n
@@ -462,10 +445,9 @@ proof -
       lam_replacement_hcomp[of _ "\<lambda>x. S`snd(x)"] lam_replacement_apply by simp
   with assms
   have "M({x \<in> (A \<times> \<omega>) \<times> A \<times> \<omega> . (\<lambda>\<langle>\<langle>x,n\<rangle>,y,m\<rangle>. \<langle>x, y\<rangle> \<in> S ` m)(x)})"
-    using lam_replacement_fst lam_replacement_snd
-      lam_replacement_Pair[THEN [5] lam_replacement_hcomp2,
-        of "\<lambda>x. fst(fst(x))" "\<lambda>x. fst(snd(x))", THEN [2] separation_in,
-        of "\<lambda>x. S ` snd(snd(x))"] lam_replacement_apply[of S]
+    using lam_replacement_fst lam_replacement_snd lam_replacement_apply[of S]
+      lam_replacement_product[of "\<lambda>x. fst(fst(x))" "\<lambda>x. fst(snd(x))",
+        THEN [2] separation_in, of "\<lambda>x. S ` snd(snd(x))"]
       lam_replacement_hcomp unfolding split_def by simp
   with assms
   show ?thesis

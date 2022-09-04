@@ -1,7 +1,7 @@
 title = "The Hahn and Jordan Decomposition Theorems"
 date = 2021-11-19
 topics = [
-  "Mathematics/Measure theory",
+  "Mathematics/Measure and integration",
 ]
 abstract = """
 In this work we formalize the Hahn decomposition theorem for signed
@@ -35,3 +35,5 @@ echenim = "echenim_email"
 [history]
 
 [extra]
+
+[related]

@@ -375,7 +375,7 @@ qed
 lemma (in ring) int_embed_ring_hom: 
   "ring_hom_ring int_ring R (int_embed R)"
 proof (rule ring_hom_ringI) 
-  show "ring int_ring" using int.is_ring by simp
+  show "ring int_ring" using int.ring_axioms by simp
   show "ring R" using ring_axioms by simp
   show "int_embed R x \<in> carrier R" if "x \<in> carrier \<Z>" for x
     using int_embed_closed by simp
@@ -561,7 +561,7 @@ lemma (in ring) char_ring_is_subring:
   "subring (char_subring R) R"
 proof -
   have "subring (int_embed R ` carrier int_ring) R"
-    by (intro ring.carrier_is_subring int.is_ring
+    by (intro ring.carrier_is_subring int.ring_axioms
         ring_hom_ring.img_is_subring[OF int_embed_ring_hom]) 
   thus ?thesis by simp
 qed
@@ -782,7 +782,7 @@ proof -
     by simp
 
   have "ring_hom_ring R R (\<lambda>x. x [^] m)"
-    by  (intro ring_hom_ringI a b is_ring, simp_all) 
+    by  (intro ring_hom_ringI a b ring_axioms, simp_all) 
 
   thus "?thesis"
     using RingHom.ring_hom_cringI is_cring by blast
