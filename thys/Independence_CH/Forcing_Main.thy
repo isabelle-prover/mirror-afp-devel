@@ -1,4 +1,4 @@
-section\<open>The main theorem\<close>
+section\<open>The existence of generic extensions\<close>
 
 theory Forcing_Main
   imports
@@ -69,7 +69,8 @@ end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 theorem extensions_of_ctms:
   assumes
-    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms}"
+    "M \<approx> \<omega>" "Transset(M)"
+    "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
     "\<Phi> \<subseteq> formula" "M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}"
   shows
     "\<exists>N.
@@ -85,7 +86,7 @@ proof -
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
   then
-  interpret M_ctm2 M enum by unfold_locales
+  interpret M_ctm1 M enum by unfold_locales
   interpret forcing_data1 "2\<^bsup><\<omega>\<^esup>" seqle 0 M enum
     using nat_into_M seqspace_closed seqle_in_M
     by unfold_locales simp
@@ -95,7 +96,7 @@ proof -
   text\<open>Recall that \<^term>\<open>M[G]\<close> denotes the generic extension
   of \<^term>\<open>M\<close> using the poset of sequences \<^term>\<open>2\<^bsup><\<omega>\<^esup>\<close>.\<close>
   then
-  interpret G_generic2 "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales
+  interpret G_generic1 "2\<^bsup><\<omega>\<^esup>" seqle 0 _ enum G by unfold_locales
   interpret MG: M_Z_basic "M[G]"
     using generic pairing_in_MG
       Union_MG  extensionality_in_MG power_in_MG
@@ -128,9 +129,9 @@ proof -
     by (rule_tac x="M[G]" in exI, auto)
 qed
 
-lemma ZF_replacement_instances12_sub_ZF: "{\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms} \<subseteq> ZF"
-  using instances1_fms_type instances2_fms_type instances_ground_fms_type
-  unfolding ZF_def ZF_schemes_def by auto
+lemma ZF_replacement_overhead_sub_ZF: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<subseteq> ZF"
+  using instances1_fms_type instances_ground_fms_type
+  unfolding overhead_def ZF_def ZF_schemes_def by auto
 
 theorem extensions_of_ctms_ZF:
   assumes
@@ -148,7 +149,7 @@ proof -
       ((M, []\<Turnstile> \<cdot>AC\<cdot>) \<longrightarrow> N, [] \<Turnstile> \<cdot>AC\<cdot>) \<and> N \<Turnstile> \<cdot>Z\<cdot> \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> formula}"
     using extensions_of_ctms[of M formula] satT_ZF_imp_satT_Z[of M]
       satT_mono[OF _ ground_repl_fm_sub_ZF, of M]
-      satT_mono[OF _ ZF_replacement_instances12_sub_ZF, of M]
+      satT_mono[OF _ ZF_replacement_overhead_sub_ZF, of M]
     by (auto simp: satT_Un_iff)
   then
   obtain N where "N \<Turnstile> \<cdot>Z\<cdot> \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> formula}" "M \<subseteq> N" "N \<approx> \<omega>" "Transset(N)"

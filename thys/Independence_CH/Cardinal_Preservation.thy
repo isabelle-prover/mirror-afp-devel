@@ -10,19 +10,19 @@ context forcing_data1
 begin
 
 lemma antichain_abs' [absolut]:
-  "\<lbrakk> A\<in>M \<rbrakk> \<Longrightarrow> antichain\<^bsup>M\<^esup>(P,leq,A) \<longleftrightarrow> antichain(P,leq,A)"
+  "\<lbrakk> A\<in>M \<rbrakk> \<Longrightarrow> antichain\<^bsup>M\<^esup>(\<bbbP>,leq,A) \<longleftrightarrow> antichain(\<bbbP>,leq,A)"
   unfolding antichain_rel_def antichain_def compat_def
   using transitivity[of _ A]
   by (auto simp add:absolut)
 
 lemma inconsistent_imp_incompatible:
-  assumes "p \<tturnstile> \<phi> env" "q \<tturnstile> Neg(\<phi>) env" "p\<in>P" "q\<in>P"
+  assumes "p \<tturnstile> \<phi> env" "q \<tturnstile> Neg(\<phi>) env" "p\<in>\<bbbP>" "q\<in>\<bbbP>"
     "arity(\<phi>) \<le> length(env)" "\<phi> \<in> formula" "env \<in> list(M)"
   shows "p \<bottom> q"
 proof
   assume "compat(p,q)"
   then
-  obtain d where "d \<preceq> p" "d \<preceq> q" "d \<in> P" by blast
+  obtain d where "d \<preceq> p" "d \<preceq> q" "d \<in> \<bbbP>" by blast
   moreover
   note assms
   moreover from calculation
@@ -39,16 +39,16 @@ notation check (\<open>_\<^sup>v\<close> [101] 100)
 end \<comment> \<open>\<^locale>\<open>forcing_data1\<close>\<close>
 
 
+locale G_generic2 = G_generic1 + forcing_data2
+locale G_generic2_AC = G_generic1_AC + G_generic2
+
 locale G_generic3 = G_generic2 + forcing_data3
 locale G_generic3_AC = G_generic2_AC + G_generic3
 
-locale G_generic4 = G_generic3 + forcing_data4
-locale G_generic4_AC = G_generic3_AC + G_generic4
+locale G_generic3_AC_CH = G_generic3_AC + M_ZFC2_ground_CH_trans
 
-locale G_generic4_AC_CH = G_generic4_AC + M_ZFC3_ground_CH_trans
-
-sublocale G_generic4_AC \<subseteq> ext:M_ZFC3_trans "M[G]"
-  using ground_replacements4 replacement_assm_MG
+sublocale G_generic3_AC \<subseteq> ext:M_ZFC2_trans "M[G]"
+  using ground_replacements3 replacement_assm_MG
   by unfold_locales simp_all
 
 lemma (in forcing_data1) forces_neq_apply_imp_incompatible:
@@ -61,7 +61,7 @@ lemma (in forcing_data1) forces_neq_apply_imp_incompatible:
        \<^term>\<open>p \<tturnstile> \<cdot>\<not>\<cdot>0 = 1\<cdot>\<cdot> [b\<^sup>v, b'\<^sup>v]\<close> and
        \<^term>\<open>q \<tturnstile> \<cdot>\<not>\<cdot>0 = 1\<cdot>\<cdot> [b\<^sup>v, b'\<^sup>v]\<close>.\<close>
     and
-    types:"f\<in>M" "a\<in>M" "b\<in>M" "b'\<in>M" "p\<in>P" "q\<in>P"
+    types:"f\<in>M" "a\<in>M" "b\<in>M" "b'\<in>M" "p\<in>\<bbbP>" "q\<in>\<bbbP>"
   shows
     "p \<bottom> q"
 proof -
@@ -71,8 +71,6 @@ proof -
     then
     interpret G_generic1 _ _ _ _ _ G by unfold_locales
     include G_generic1_lemmas
-      (* NOTE: might be useful to have a locale containg two \<open>M_ZF1_trans\<close>
-         instances, one for \<^term>\<open>M\<close> and one for \<^term>\<open>M[G]\<close> *)
     assume "q\<in>G"
     with assms \<open>M_generic(G)\<close>
     have "M[G], map(val(G),[f,a,b'\<^sup>v]) \<Turnstile> \<cdot>0`1 is 2\<cdot>"
@@ -93,7 +91,7 @@ proof -
     by (simp add:ord_simp_union arity_fun_apply_fm fun_apply_type)
 qed
 
-context M_ctm3_AC
+context M_ctm2_AC
 begin
 
 \<comment> \<open>Simplifying simp rules (because of the occurrence of
@@ -111,17 +109,14 @@ lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   cons_abs cons_closed converse_abs converse_closed csquare_lam_closed
   csquare_rel_closed depth_closed domain_abs domain_closed eclose_abs
   eclose_closed empty_abs field_abs field_closed finite_funspace_closed
-  finite_ordinal_abs formula_N_abs formula_N_closed formula_abs
-  formula_case_abs formula_case_closed formula_closed
-  formula_functor_abs fst_closed function_abs function_space_rel_closed
+  finite_ordinal_abs fst_closed function_abs function_space_rel_closed
   hd_abs image_abs image_closed inj_rel_closed injection_abs inter_abs
-  irreflexive_abs is_depth_apply_abs is_eclose_n_abs is_funspace_abs
-  iterates_closed length_abs length_closed lepoll_rel_refl
-  limit_ordinal_abs linear_rel_abs list_N_abs list_N_closed list_abs
-  list_case'_closed list_case_abs list_closed list_functor_abs
-  mem_bij_abs mem_eclose_abs mem_inj_abs mem_list_abs membership_abs
+  irreflexive_abs is_eclose_n_abs is_funspace_abs
+  iterates_closed length_closed lepoll_rel_refl
+  limit_ordinal_abs linear_rel_abs
+  mem_bij_abs mem_eclose_abs mem_inj_abs membership_abs
   minimum_closed nat_case_abs nat_case_closed nonempty not_abs
-  not_closed nth_abs number1_abs number2_abs number3_abs omega_abs
+  not_closed number1_abs number2_abs number3_abs omega_abs
   or_abs or_closed order_isomorphism_abs ordermap_closed
   ordertype_closed ordinal_abs pair_abs pair_in_M_iff powerset_abs
   pred_closed pred_set_abs quasilist_abs quasinat_abs radd_closed
@@ -133,7 +128,7 @@ lemmas sharp_simps = Card_rel_Union Card_rel_cardinal_rel Collect_abs
   surj_rel_closed surjection_abs tl_abs trancl_abs trancl_closed
   transitive_rel_abs transitive_set_abs typed_function_abs union_abs
   upair_abs upair_in_M_iff vimage_abs vimage_closed well_ord_abs
-  mem_formula_abs nth_closed Aleph_rel_closed csucc_rel_closed
+  nth_closed Aleph_rel_closed csucc_rel_closed
   Card_rel_Aleph_rel
 
 declare sharp_simps[simp del, simplified setclass_iff, simp]
@@ -142,9 +137,9 @@ lemmas sharp_intros = nat_into_M Aleph_rel_closed Card_rel_Aleph_rel
 
 declare sharp_intros[rule del, simplified setclass_iff, intro]
 
-end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm2_AC\<close>\<close>
 
-context G_generic4_AC begin
+context G_generic3_AC begin
 
 context
   includes G_generic1_lemmas
@@ -169,21 +164,17 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.csquare_lam_closed ext.csquare_rel_closed ext.depth_closed
   ext.domain_abs ext.domain_closed ext.eclose_abs ext.eclose_closed
   ext.empty_abs ext.field_abs ext.field_closed
-  ext.finite_funspace_closed ext.finite_ordinal_abs ext.formula_N_abs
-  ext.formula_N_closed ext.formula_abs ext.formula_case_abs
-  ext.formula_case_closed ext.formula_closed ext.formula_functor_abs
+  ext.finite_funspace_closed ext.finite_ordinal_abs
   ext.fst_closed ext.function_abs ext.function_space_rel_closed
   ext.hd_abs ext.image_abs ext.image_closed ext.inj_rel_closed
   ext.injection_abs ext.inter_abs ext.irreflexive_abs
-  ext.is_depth_apply_abs ext.is_eclose_n_abs ext.is_funspace_abs
-  ext.iterates_closed ext.length_abs ext.length_closed
+  ext.is_eclose_n_abs ext.is_funspace_abs
+  ext.iterates_closed ext.length_closed
   ext.lepoll_rel_refl ext.limit_ordinal_abs ext.linear_rel_abs
-  ext.list_N_abs ext.list_N_closed ext.list_abs
-  ext.list_case'_closed ext.list_case_abs ext.list_closed
-  ext.list_functor_abs ext.mem_bij_abs ext.mem_eclose_abs
-  ext.mem_inj_abs ext.mem_list_abs ext.membership_abs
+  ext.mem_bij_abs ext.mem_eclose_abs
+  ext.mem_inj_abs ext.membership_abs
   ext.nat_case_abs ext.nat_case_closed
-  ext.nonempty ext.not_abs ext.not_closed ext.nth_abs
+  ext.nonempty ext.not_abs ext.not_closed
   ext.number1_abs ext.number2_abs ext.number3_abs ext.omega_abs
   ext.or_abs ext.or_closed ext.order_isomorphism_abs
   ext.ordermap_closed ext.ordertype_closed ext.ordinal_abs
@@ -200,11 +191,11 @@ lemmas mg_sharp_simps = ext.Card_rel_Union ext.Card_rel_cardinal_rel
   ext.trancl_abs ext.trancl_closed ext.transitive_rel_abs
   ext.transitive_set_abs ext.typed_function_abs ext.union_abs
   ext.upair_abs ext.upair_in_M_iff ext.vimage_abs ext.vimage_closed
-  ext.well_ord_abs ext.mem_formula_abs ext.nth_closed ext.Aleph_rel_closed
+  ext.well_ord_abs ext.nth_closed ext.Aleph_rel_closed
   ext.csucc_rel_closed ext.Card_rel_Aleph_rel
 
 \<comment> \<open>The following was motivated by the fact that
-    @{thm ext.apply_closed} did not simplify appropriately.\<close>
+    @{thm [source] ext.apply_closed} did not simplify appropriately.\<close>
 declare mg_sharp_simps[simp del, simplified setclass_iff, simp]
 
 lemmas mg_sharp_intros = ext.nat_into_M ext.Aleph_rel_closed
@@ -234,23 +225,23 @@ subsection\<open>Preservation by ccc forcing notions\<close>
 
 lemma ccc_fun_closed_lemma_aux:
   assumes "f_dot\<in>M" "p\<in>M" "a\<in>M" "b\<in>M"
-  shows "{q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))} \<in> M"
+  shows "{q \<in> \<bbbP> . q \<preceq> p \<and> (M, [q, \<bbbP>, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))} \<in> M"
   using separation_forces[where env="[f_dot, a\<^sup>v, b\<^sup>v]" and \<phi>="\<cdot>0`1 is 2\<cdot>",simplified]
     assms G_subset_M[THEN subsetD] generic
     separation_in lam_replacement_constant lam_replacement_identity
-    lam_replacement_Pair[THEN[5] lam_replacement_hcomp2]
+    lam_replacement_product
     separation_conj arity_fun_apply_fm union_abs1
   by simp_all
 
 lemma ccc_fun_closed_lemma_aux2:
   assumes "B\<in>M" "f_dot\<in>M" "p\<in>M" "a\<in>M"
-  shows "(##M)(\<lambda>b\<in>B. {q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))})"
+  shows "(##M)(\<lambda>b\<in>B. {q \<in> \<bbbP> . q \<preceq> p \<and> (M, [q, \<bbbP>, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))})"
 proof -
-  have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, \<tau>, fst(fst(z))\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  have "separation(##M, \<lambda>z. M, [snd(z), \<bbbP>, leq, \<one>, f_dot, \<tau>, fst(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
     if "\<tau>\<in>M" for \<tau>
   proof -
     let ?f_fm="snd_fm(1,0)"
-    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,fst_fm),2,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),fst_fm,2,0)"
     note assms
     moreover
     have "arity(forces(\<cdot>0`1 is 2\<cdot> )) \<le> 7"
@@ -268,26 +259,23 @@ proof -
       unfolding hcomp_fm_def
       by simp
   qed
-  then
+  with assms
   show ?thesis
-    using lam_replacement_imp_lam_closed lam_replacement_Collect
-      separation_conj separation_in separation_forces separation_ball separation_iff'
-      lam_replacement_Pair[THEN [5] lam_replacement_hcomp2] lam_replacement_identity
-      lam_replacement_constant lam_replacement_snd lam_replacement_fst lam_replacement_hcomp
-      ccc_fun_closed_lemma_aux arity_fun_apply_fm union_abs1
-      transitivity[of _ B] assms
+    using lam_replacement_imp_lam_closed separation_conj separation_in
+      lam_replacement_product lam_replacement_constant transitivity[of _ B]
+      lam_replacement_snd lam_replacement_Collect' ccc_fun_closed_lemma_aux
     by simp
 qed
 
 lemma ccc_fun_closed_lemma:
   assumes "A\<in>M" "B\<in>M" "f_dot\<in>M" "p\<in>M"
-  shows "(\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}) \<in> M"
+  shows "(\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>\<bbbP>. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}) \<in> M"
 proof -
-  have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, fst(fst(fst(z)))\<^sup>v, snd(fst(z))\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  have "separation(##M, \<lambda>z. M, [snd(z), \<bbbP>, leq, \<one>, f_dot, fst(fst(z))\<^sup>v, snd(fst(z))\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
   proof -
     let ?f_fm="snd_fm(1,0)"
     let ?g="\<lambda>z . fst(fst(fst(z)))\<^sup>v"
-    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,hcomp_fm(fst_fm,fst_fm)),2,0)"
+    let ?g_fm="hcomp_fm(check_fm(6),hcomp_fm(fst_fm,fst_fm),2,0)"
     let ?h_fm="hcomp_fm(check_fm(7),hcomp_fm(snd_fm,fst_fm),3,0)"
     note assms
     moreover
@@ -308,7 +296,7 @@ proof -
       by simp
   qed
   moreover
-  have "separation(##M, \<lambda>z. M, [snd(z), P, leq, \<one>, f_dot, \<tau>, fst(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
+  have 1:"separation(##M, \<lambda>z. M, [snd(z), \<bbbP>, leq, \<one>, f_dot, \<tau>, fst(z)\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))"
     if "\<tau>\<in>M" for \<tau>
   proof -
     let ?f_fm="snd_fm(1,0)"
@@ -332,18 +320,16 @@ proof -
   moreover note assms
   ultimately
   show ?thesis
-    using lam_replacement_imp_lam_closed lam_replacement_Collect
-      lam_replacement_constant lam_replacement_identity lam_replacement_snd lam_replacement_fst
-      lam_replacement_hcomp lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
-      separation_conj separation_in  separation_ball separation_bex separation_iff'
-      transitivity[of _ A]
+    using lam_replacement_imp_lam_closed lam_replacement_Collect' transitivity[of _ A]
+      lam_replacement_constant lam_replacement_identity lam_replacement_snd
+      lam_replacement_product separation_conj separation_in separation_bex separation_iff'
     by simp
 qed
 
 \<comment> \<open>Kunen IV.3.5\<close>
 lemma ccc_fun_approximation_lemma:
   notes le_trans[trans]
-  assumes "ccc\<^bsup>M\<^esup>(P,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
+  assumes "ccc\<^bsup>M\<^esup>(\<bbbP>,leq)" "A\<in>M" "B\<in>M" "f\<in>M[G]" "f : A \<rightarrow> B"
   shows
     "\<exists>F\<in>M. F : A \<rightarrow> Pow\<^bsup>M\<^esup>(B) \<and> (\<forall>a\<in>A. f`a \<in> F`a \<and> |F`a|\<^bsup>M\<^esup> \<le> \<omega>)"
 proof -
@@ -355,7 +341,7 @@ proof -
     by (auto simp add:ord_simp_union arity_typed_function_fm
         \<comment> \<open>NOTE: type-checking is not performed here by the Simplifier\<close>
         typed_function_type)
-  define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>P. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}"
+  define F where "F\<equiv>\<lambda>a\<in>A. {b\<in>B. \<exists>q\<in>\<bbbP>. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}"
   from assms \<open>f_dot\<in>_\<close> \<open>p\<in>M\<close>
   have "F \<in> M"
     unfolding F_def using ccc_fun_closed_lemma by simp
@@ -383,7 +369,7 @@ proof -
       by (auto simp add: ord_simp_union arity_fun_apply_fm
           fun_apply_type)
     with \<open>f`a \<in> B\<close>
-    have "f`a \<in> {b\<in>B . \<exists>q\<in>P. q \<preceq> p \<and> q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}"
+    have "f`a \<in> {b\<in>B . \<exists>q\<in>\<bbbP>. q \<preceq> p \<and> q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v]}"
       by blast
     with \<open>a\<in>A\<close>
     show ?thesis unfolding F_def by simp
@@ -391,7 +377,7 @@ proof -
   moreover
   have "|F`a|\<^bsup>M\<^esup> \<le> \<omega> \<and> F`a\<in>M" if "a \<in> A" for a
   proof -
-    let ?Q="\<lambda>b. {q\<in>P. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}"
+    let ?Q="\<lambda>b. {q\<in>\<bbbP>. q \<preceq> p \<and> (q \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, b\<^sup>v])}"
     from \<open>F \<in> M\<close> \<open>a\<in>A\<close> \<open>A\<in>M\<close>
     have "F`a \<in> M" "a\<in>M"
       using transitivity[OF _ \<open>A\<in>M\<close>] by simp_all
@@ -403,7 +389,7 @@ proof -
       using ccc_fun_closed_lemma_aux[OF \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close> 2] transitivity[of _ "F`a"]
       by simp
     moreover
-    have 4:"lam_replacement(##M,\<lambda>b. {q \<in> P . q \<preceq> p \<and> (M, [q, P, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))})"
+    have 4:"lam_replacement(##M,\<lambda>b. {q \<in> \<bbbP> . q \<preceq> p \<and> (M, [q, \<bbbP>, leq, \<one>, f_dot, a\<^sup>v, b\<^sup>v] \<Turnstile> forces(\<cdot>0`1 is 2\<cdot> ))})"
       using ccc_fun_closed_lemma_aux2[OF _ \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
         lam_replacement_iff_lam_closed[THEN iffD2]
         ccc_fun_closed_lemma_aux[OF  \<open>f_dot\<in>M\<close> \<open>p\<in>M\<close> \<open>a\<in>M\<close>]
@@ -417,7 +403,7 @@ proof -
           lam_replacement_minimum,unfolded lam_replacement_def]
       by unfold_locales simp_all
     from \<open>F`a \<in> M\<close>
-    interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . P"
+    interpret M_Pi_assumptions2 "##M" "F`a" ?Q "\<lambda>_ . \<bbbP>"
       using lam_replacement_imp_strong_replacement[OF
           lam_replacement_Sigfun[OF lam_replacement_constant]]
         Pi_replacement1 transitivity[of _ "F`a"]
@@ -430,10 +416,10 @@ proof -
     moreover
     note \<open>F`a \<in> M\<close>
     moreover from calculation
-    have "q : F`a \<rightarrow>\<^bsup>M\<^esup> P"
+    have "q : F`a \<rightarrow>\<^bsup>M\<^esup> \<bbbP>"
       using Pi_rel_weaken_type def_function_space_rel by auto
     moreover from calculation
-    have "q : F`a \<rightarrow> range(q)" "q : F`a \<rightarrow> P" "q : F`a \<rightarrow>\<^bsup>M\<^esup> range(q)"
+    have "q : F`a \<rightarrow> range(q)" "q : F`a \<rightarrow> \<bbbP>" "q : F`a \<rightarrow>\<^bsup>M\<^esup> range(q)"
       using mem_function_space_rel_abs range_of_fun by simp_all
     moreover
     have "q`b \<bottom> q`c" if "b \<in> F`a" "c \<in> F`a" "b \<noteq> c"
@@ -446,7 +432,7 @@ proof -
         "q`c \<tturnstile> \<cdot>0`1 is 2\<cdot> [f_dot, a\<^sup>v, c\<^sup>v]"
         using mem_Pi_rel_abs[of q] apply_type[of _ _  ?Q]
         by simp_all
-      with \<open>b \<noteq> c\<close> \<open>q : F`a \<rightarrow> P\<close> \<open>a\<in>A\<close> \<open>b\<in>_\<close> \<open>c\<in>_\<close>
+      with \<open>b \<noteq> c\<close> \<open>q : F`a \<rightarrow> \<bbbP>\<close> \<open>a\<in>A\<close> \<open>b\<in>_\<close> \<open>c\<in>_\<close>
         \<open>A\<in>M\<close> \<open>f_dot\<in>M\<close> \<open>F`a\<in>M\<close>
       show ?thesis
         using forces_neq_apply_imp_incompatible
@@ -454,11 +440,11 @@ proof -
         by auto
     qed
     moreover from calculation
-    have "antichain(P,leq,range(q))"
-      using Pi_range_eq[of _  _ "\<lambda>_ . P"]
+    have "antichain(\<bbbP>,leq,range(q))"
+      using Pi_range_eq[of _  _ "\<lambda>_ . \<bbbP>"]
       unfolding antichain_def compat_in_def by auto
     moreover from this and \<open>q\<in>M\<close>
-    have "antichain\<^bsup>M\<^esup>(P,leq,range(q))"
+    have "antichain\<^bsup>M\<^esup>(\<bbbP>,leq,range(q))"
       by (simp add:absolut del:P_in_M)
     moreover from calculation
     have "q`b \<noteq> q`c" if "b \<noteq> c" "b \<in> F`a" "c \<in> F`a" for b c
@@ -471,7 +457,7 @@ proof -
     have "|F`a|\<^bsup>M\<^esup> \<le> |range(q)|\<^bsup>M\<^esup>"
       using def_lepoll_rel
       by (rule_tac lepoll_rel_imp_cardinal_rel_le) auto
-    also from \<open>antichain\<^bsup>M\<^esup>(P,leq,range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>q\<in>M\<close>
+    also from \<open>antichain\<^bsup>M\<^esup>(\<bbbP>,leq,range(q))\<close> \<open>ccc\<^bsup>M\<^esup>(\<bbbP>,leq)\<close> \<open>q\<in>M\<close>
     have "|range(q)|\<^bsup>M\<^esup> \<le> \<omega>"
       using def_ccc_rel by simp
     finally
@@ -490,6 +476,6 @@ qed
 
 end \<comment> \<open>G\_generic1\_lemmas bundle\<close>
 
-end \<comment> \<open>\<^locale>\<open>G_generic4_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic3_AC\<close>\<close>
 
 end

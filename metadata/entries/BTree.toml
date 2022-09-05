@@ -7,8 +7,7 @@ abstract = """
 In this work, we use the interactive theorem prover Isabelle/HOL to
 verify an imperative implementation of the classical B-tree data
 structure invented by Bayer and McCreight [ACM 1970]. The
-implementation supports set membership, insertion and deletion queries with
-efficient binary search for intra-node navigation. This is
+implementation supports set membership, insertion, deletion, iteration and range queries with efficient binary search for intra-node navigation. This is
 accomplished by first specifying the structure abstractly in the
 functional modeling language HOL and proving functional correctness.
 Using manual refinement, we derive an imperative implementation in
@@ -16,12 +15,20 @@ Imperative/HOL. We show the validity of this refinement using the
 separation logic utilities from the <a
 href=\"https://www.isa-afp.org/entries/Refine_Imperative_HOL.html\">
 Isabelle Refinement Framework </a> . The code can be exported to
-the programming languages SML, OCaml and Scala. We examine the runtime of all
-operations indirectly by reproducing results of the logarithmic
-relationship between height and the number of nodes.  The results are
-discussed in greater detail in the corresponding <a
+the programming languages SML, OCaml and Scala.
+This entry contains two developments:
+ <dl>
+  <dt>B-Trees</dt>
+  <dd>This formalisation is discussed in greater detail in the corresponding <a
 href=\"https://mediatum.ub.tum.de/1596550\">Bachelor's
-Thesis</a>."""
+Thesis</a>.</dd>
+  <dt>B+-Trees:</dt>
+  <dd>This formalisation also supports range queries and is discussed in a paper published at ICTAC 2022.</dd>
+</dl>
+
+Change history:
+[2022-08-16]: Added formalisations of B+-Trees
+"""
 license = "bsd"
 note = ""
 

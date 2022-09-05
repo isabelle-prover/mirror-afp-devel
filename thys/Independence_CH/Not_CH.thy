@@ -40,15 +40,10 @@ subsection\<open>Non-absolute concepts between extensions\<close>
 sublocale M_master \<subseteq> M_Pi_replacement
   by unfold_locales
 
-\<comment> \<open>Note that in L. 132 we interpret \<^locale>\<open>M_master\<close> from \<^locale>\<open>M_ZFC3_trans\<close>, so
-the assumption \<^locale>\<open>M_aleph\<close> for \<^term>\<open>N\<close> is misleading.\<close>
 locale M_master_sub = M_master + N:M_aleph N for N +
   assumes
     M_imp_N: "M(x) \<Longrightarrow> N(x)" and
     Ord_iff: "Ord(x) \<Longrightarrow> M(x) \<longleftrightarrow> N(x)"
-    (* TODO: update ground replacement assms in M_ZF4: those stemming from
-  M_DC, M_cardinal_library, and M_seqspace should no longer be needed
-  (5 total). At least M_cardinal_library is needed for CH and M_library for Not_CH. *)
 
 sublocale M_master_sub \<subseteq> M_N_Perm
   using M_imp_N by unfold_locales
@@ -120,25 +115,25 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_master_sub\<close>\<close>
 
-lemmas (in M_ZF3_trans) sep_instances =
+lemmas (in M_ZF2_trans) sep_instances =
   separation_ifrangeF_body separation_ifrangeF_body2 separation_ifrangeF_body3
   separation_ifrangeF_body4 separation_ifrangeF_body5 separation_ifrangeF_body6
   separation_ifrangeF_body7 separation_cardinal_rel_lesspoll_rel
   separation_is_dcwit_body separation_cdltgamma separation_cdeqgamma
 
-lemmas (in M_ZF3_trans) repl_instances = lam_replacement_inj_rel
+lemmas (in M_ZF2_trans) repl_instances = lam_replacement_inj_rel
 
-sublocale M_ZFC3_ground_trans \<subseteq> M_master "##M"
+sublocale M_ZFC2_ground_notCH_trans \<subseteq> M_master "##M"
   using replacement_trans_apply_image
   by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
       add: transrec_replacement_def wfrec_replacement_def)
 
-sublocale M_ZFC3_trans \<subseteq> M_Pi_replacement "##M"
+sublocale M_ZFC2_trans \<subseteq> M_Pi_replacement "##M"
   by unfold_locales
 
 subsection\<open>Cohen forcing is ccc\<close>
 
-context M_ctm3_AC
+context M_ctm2_AC
 begin
 
 lemma ccc_Add_subs_Aleph_2: "ccc\<^bsup>M\<^esup>(Add_subs(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>),Add_le(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>))"
@@ -149,9 +144,9 @@ proof -
     using ccc_rel_Fn_nat by fast
 qed
 
-end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm2_AC\<close>\<close>
 
-sublocale G_generic4_AC \<subseteq> M_master_sub "##M" "##(M[G])"
+sublocale G_generic3_AC \<subseteq> M_master_sub "##M" "##(M[G])"
   using M_subset_MG[OF one_in_G] generic Ord_MG_iff
   by unfold_locales auto
 
@@ -169,7 +164,7 @@ lemma (in M_trans) mem_F_bound5:
   using apply_0 unfolding F_def
   by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
 
-sublocale M_ctm3_AC \<subseteq> M_replacement_lepoll "##M" "(`)"
+sublocale M_ctm2_AC \<subseteq> M_replacement_lepoll "##M" "(`)"
   using UN_lepoll_assumptions lam_replacement_apply lam_replacement_inj_rel
     mem_F_bound4 apply_0 lam_replacement_minimum
   unfolding lepoll_assumptions_defs
@@ -183,7 +178,7 @@ proof (unfold_locales,
     by force
 qed
 
-context G_generic4_AC begin
+context G_generic3_AC begin
 
 context
   includes G_generic1_lemmas
@@ -194,7 +189,7 @@ lemma G_in_MG: "G \<in> M[G]"
   by blast
 
 lemma ccc_preserves_Aleph_succ:
-  assumes "ccc\<^bsup>M\<^esup>(P,leq)" "Ord(z)" "z \<in> M"
+  assumes "ccc\<^bsup>M\<^esup>(\<bbbP>,leq)" "Ord(z)" "z \<in> M"
   shows "Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
 proof (rule ccontr)
   assume "\<not> Card\<^bsup>M[G]\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)"
@@ -212,7 +207,7 @@ proof (rule ccontr)
     using ext.trans_surj_rel_closed
     by (auto dest:transM ext.transM dest!:ltD)
   moreover
-  note \<open>ccc\<^bsup>M\<^esup>(P,leq)\<close> \<open>z\<in>M\<close>
+  note \<open>ccc\<^bsup>M\<^esup>(\<bbbP>,leq)\<close> \<open>z\<in>M\<close>
   ultimately
   obtain F where "F:\<alpha>\<rightarrow>Pow\<^bsup>M\<^esup>(\<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)" "\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>" "\<forall>\<beta>\<in>\<alpha>. |F`\<beta>|\<^bsup>M\<^esup> \<le> \<omega>"
     "F \<in> M"
@@ -263,7 +258,7 @@ proof (rule ccontr)
         of "\<Union>\<beta>\<in>\<alpha>. F`\<beta>" "\<aleph>\<^bsub>z\<^esub>\<^bsup>M\<^esup>"] Aleph_rel_succ
       Aleph_rel_increasing[THEN leI, THEN [2] le_trans, of _ 0 z]
       Ord_0_lt_iff[THEN iffD1, of z]
-    by (cases "0<z"; rule_tac leqpoll_rel_imp_cardinal_rel_UN_le) (auto, force)
+    by (cases "0<z"; rule_tac lepoll_rel_imp_cardinal_rel_UN_le) (auto, force)
   moreover
   note \<open>z\<in>M\<close> \<open>Ord(z)\<close>
   moreover from \<open>\<forall>\<beta>\<in>\<alpha>. f`\<beta> \<in> F`\<beta>\<close> \<open>f \<in> surj\<^bsup>M[G]\<^esup>(\<alpha>, \<aleph>\<^bsub>succ(z)\<^esub>\<^bsup>M\<^esup>)\<close>
@@ -272,7 +267,7 @@ proof (rule ccontr)
     using ext.mem_surj_abs by (force simp add:surj_def)
   moreover from \<open>F \<in> M\<close> \<open>\<alpha> \<in> M\<close>
   have "(\<Union>x\<in>\<alpha>. F ` x) \<in> M"
-    using j.B_replacement\<comment> \<open>NOTE: it didn't require @{thm j.UN_closed} before!\<close>
+    using j.B_replacement
     by (intro Union_closed[simplified] RepFun_closed[simplified])
       (auto dest:transM)
   ultimately
@@ -288,7 +283,7 @@ qed
 
 end \<comment> \<open>bundle G\_generic1\_lemmas\<close>
 
-end \<comment> \<open>\<^locale>\<open>G_generic4_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>G_generic3_AC\<close>\<close>
 
 context M_ctm1
 begin
@@ -299,11 +294,11 @@ abbreviation
 
 end \<comment> \<open>\<^locale>\<open>M_ctm1\<close>\<close>
 
-locale add_generic4 = G_generic4_AC "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
+locale add_generic3 = G_generic3_AC "Fn(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" "Fnle(\<omega>, \<aleph>\<^bsub>2\<^esub>\<^bsup>##M\<^esup> \<times> \<omega>, 2)" 0
 
-sublocale add_generic4 \<subseteq> cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
+sublocale add_generic3 \<subseteq> cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
 
-context add_generic4
+context add_generic3
 begin
 
 notation Leq (infixl "\<preceq>" 50)
@@ -348,11 +343,11 @@ abbreviation
   dom_dense :: "i \<Rightarrow> i" where
   "dom_dense(x) \<equiv> {p \<in> Add . x \<in> domain(p) }"
 
-declare (in M_ctm3_AC) Fn_nat_closed[simplified setclass_iff, simp, intro]
-declare (in M_ctm3_AC) Fnle_nat_closed[simp del, rule del,
+declare (in M_ctm2_AC) Fn_nat_closed[simplified setclass_iff, simp, intro]
+declare (in M_ctm2_AC) Fnle_nat_closed[simp del, rule del,
     simplified setclass_iff, simp, intro]
-declare (in M_ctm3_AC) cexp_rel_closed[simplified setclass_iff, simp, intro]
-declare (in G_generic4_AC) ext.cexp_rel_closed[simplified setclass_iff, simp, intro]
+declare (in M_ctm2_AC) cexp_rel_closed[simplified setclass_iff, simp, intro]
+declare (in G_generic3_AC) ext.cexp_rel_closed[simplified setclass_iff, simp, intro]
 
 lemma dom_dense_closed[intro,simp]: "x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<Longrightarrow> dom_dense(x) \<in> M"
   using separation_in_domain[of x] nat_into_M
@@ -384,13 +379,12 @@ lemma f_G_funtype:
   shows "f\<^bsub>G\<^esub> : \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega> \<rightarrow> 2"
   using generic domain_f_G Pi_iff Un_filter_is_function generic
     subset_trans[OF filter_subset_notion Fn_nat_subset_Pow]
-  unfolding M_generic_def
   by force
 
 lemma inj_dense_closed[intro,simp]:
   "w \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> x \<in> \<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> inj_dense(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>,2,w,x) \<in> M"
   using transM[OF _ Aleph_rel2_closed] separation_conj separation_bex
-    lam_replacement_Pair[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_product
     separation_in lam_replacement_fst lam_replacement_snd lam_replacement_constant
     lam_replacement_hcomp[OF lam_replacement_snd lam_replacement_restrict']
     separation_bex separation_conj
@@ -472,7 +466,7 @@ lemma Aleph_rel_lt_continuum_rel: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup>
 corollary not_CH: "\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> \<noteq> 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>"
   using Aleph_rel_lt_continuum_rel by auto
 
-end \<comment> \<open>\<^locale>\<open>add_generic4\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>add_generic3\<close>\<close>
 
 subsection\<open>Models of fragments of $\ZFC + \neg \CH$\<close>
 
@@ -501,29 +495,25 @@ notation is_ContHyp_fm (\<open>\<cdot>CH\<cdot>\<close>)
 
 theorem ctm_of_not_CH:
   assumes
-    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}"
+    "M \<approx> \<omega>" "Transset(M)" "M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}"
     "\<Phi> \<subseteq> formula" "M \<Turnstile> { \<cdot>Replacement(ground_repl_fm(\<phi>))\<cdot> . \<phi> \<in> \<Phi>}"
   shows
     "\<exists>N.
       M \<subseteq> N \<and> N \<approx> \<omega> \<and> Transset(N) \<and> N \<Turnstile> ZC \<union> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<union> { \<cdot>Replacement(\<phi>)\<cdot> . \<phi> \<in> \<Phi>} \<and>
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
 proof -
-  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
-  interpret M_ZFC4 M
-    using M_satT_overhead_imp_M_ZF4 by simp
-  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead}\<close>
-  have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union> instances_ground_fms }"
-    unfolding overhead_def ZC_def
-    by auto
-  with \<open>Transset(M)\<close>
-  interpret M_ZF_ground_trans M
-    using M_satT_imp_M_ZF_ground_trans
-    by simp
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}\<close>
+  interpret M_ZFC3 M
+    using M_satT_overhead_imp_M_ZF3 unfolding overhead_notCH_def by force
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH}\<close> \<open>Transset(M)\<close>
+  interpret M_ZF_ground_notCH_trans M
+    using M_satT_imp_M_ZF_ground_notCH_trans
+    unfolding ZC_def by auto
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
   then
-  interpret M_ctm4_AC M enum by unfold_locales
+  interpret M_ctm3_AC M enum by unfold_locales
   interpret cohen_data \<omega> "\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup> \<times> \<omega>" 2 by unfold_locales auto
   have "Add \<in> M" "Add_le(\<aleph>\<^bsub>2\<^esub>\<^bsup>M\<^esup>) \<in> M"
     using nat_into_M Aleph_rel_closed M_nat cartprod_closed Fn_nat_closed Fnle_nat_closed
@@ -535,7 +525,7 @@ proof -
     using generic_filter_existence[OF one_in_P]
     by auto
   moreover from this
-  interpret add_generic4 M enum G by unfold_locales
+  interpret add_generic3 M enum G by unfold_locales
   have "\<not> (\<aleph>\<^bsub>1\<^esub>\<^bsup>M[G]\<^esup> = 2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^bsup>M[G]\<^esup>,M[G]\<^esup>)"
     using not_CH .
   then
@@ -560,6 +550,9 @@ qed
 lemma ZF_replacement_overhead_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead} \<subseteq> ZFC"
   using overhead_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
 
+lemma ZF_replacement_overhead_notCH_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead_notCH} \<subseteq> ZFC"
+  using overhead_notCH_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
+
 lemma ZF_replacement_overhead_CH_sub_ZFC: "{\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH} \<subseteq> ZFC"
   using overhead_CH_type unfolding ZFC_def ZF_def ZF_schemes_def by auto
 
@@ -579,7 +572,7 @@ proof-
         N \<Turnstile> ZC \<and> N \<Turnstile> {\<cdot>\<not>\<cdot>CH\<cdot>\<cdot>} \<and> N \<Turnstile> {\<cdot>Replacement(x)\<cdot> . x \<in> formula} \<and> (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> \<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N)"
     using ctm_of_not_CH[of M formula] satT_ZFC_imp_satT_ZC[of M]
       satT_mono[OF _ ground_repl_fm_sub_ZFC, of M]
-      satT_mono[OF _ ZF_replacement_overhead_sub_ZFC, of M]
+      satT_mono[OF _ ZF_replacement_overhead_notCH_sub_ZFC, of M]
       satT_mono[OF _ ZF_replacement_fms_sub_ZFC, of M]
     by (simp add: satT_Un_iff)
   then

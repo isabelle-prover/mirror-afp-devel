@@ -21,7 +21,6 @@ abbreviation
   "inj_dense(I,J,w,x) \<equiv>
     { p\<in>Fn(\<omega>,I\<times>\<omega>,J) . (\<exists>n\<in>\<omega>. \<langle>\<langle>w,n\<rangle>,1\<rangle> \<in> p \<and> \<langle>\<langle>x,n\<rangle>,0\<rangle> \<in> p) }"
 
-(* TODO write general versions of this for \<^term>\<open>Fn(\<omega>,I,J)\<close> *)
 lemma dense_inj_dense:
   assumes "w \<in> I" "x \<in> I" "w \<noteq> x" "p\<in>Fn(\<omega>,I\<times>\<omega>,J)" "0\<in>J" "1\<in>J"
   shows "\<exists>d\<in>inj_dense(I,J,w,x). \<langle>d ,p\<rangle> \<in> Fnle(\<omega>,I\<times>\<omega>,J)"
@@ -102,10 +101,6 @@ proof (intro allI ballI impI)
   show "y = y'"
     unfolding function_def by fastforce
 qed
-
-(* MOVE THIS to an appropriate place *)
-lemma filter_subset_notion: "filter(G) \<Longrightarrow> G \<subseteq> Fn(\<kappa>, I, J)"
-  unfolding filter_def by simp
 
 lemma Un_filter_is_function: "filter(G) \<Longrightarrow> function(\<Union>G)"
   using compat_imp_Un_is_function filter_imp_compat[of G]

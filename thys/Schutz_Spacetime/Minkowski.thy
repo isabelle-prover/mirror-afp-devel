@@ -3,12 +3,12 @@
                 University of Edinburgh, 2021          
 *)
 theory Minkowski
-imports Main TernaryOrdering
+imports TernaryOrdering
 begin
 
 (* It is best to avoid `distinct` because it makes proof more difficult. *)
 (* If it has to be used, the lemma: distinct_length_2_or_more is essential. *)
-(* For proofs involving the cardinality of concrete, finite sets see `card_insert_if`. *)
+(* For proofs involving the cardinality of concrete, finite sets see \<open>card_insert_if\<close>. *)
 
 text \<open>
   Primitives and axioms as given in \cite[pp.~9-17]{schutz1997}.
@@ -86,7 +86,7 @@ lemma paths_sub_power:
 by (simp add: path_sub_events subsetI)
 
 text \<open>
-  For more terse statements.
+  Define \<open>path\<close> for more terse statements.
   $a \neq b$ because $a$ and $b$ are being used to identify the path, and $a = b$ would not do that.
 \<close>
 
@@ -111,6 +111,25 @@ lemma path_unique:
     shows "ab = ab'"
   using eq_paths assms by blast
 
+lemma paths_cross_once:
+  assumes path_Q: "Q \<in> \<P>"
+      and path_R: "R \<in> \<P>"
+      and Q_neq_R: "Q \<noteq> R"
+      and QR_nonempty: "Q\<inter>R \<noteq> {}"
+  shows "\<exists>!a\<in>\<E>. Q\<inter>R = {a}"
+proof -
+  have ab_inQR: "\<exists>a\<in>\<E>. a\<in>Q\<inter>R" using QR_nonempty in_path_event path_Q by auto
+  then obtain a where a_event: "a \<in> \<E>" and a_inQR: "a \<in> Q\<inter>R" by auto
+  have "Q\<inter>R = {a}"
+  proof (rule ccontr)
+    assume "Q\<inter>R \<noteq> {a}"
+    then have "\<exists>b\<in>Q\<inter>R. b \<noteq> a" using a_inQR by blast
+    then have "Q = R" using eq_paths a_inQR path_Q path_R by auto
+    thus False using Q_neq_R by simp
+  qed
+  thus ?thesis using a_event by blast
+qed
+
 
 section "Primitives: Unreachable Subset (from an Event)"
 
@@ -119,8 +138,8 @@ text \<open>
   their own. Schutz's notation is: $Q(b,\emptyset)$.
 \<close>
 
-definition unreachable_subset :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" ("\<emptyset> _ _" [100, 100] 100) where
-  "unreachable_subset Q b \<equiv> {x\<in>Q. Q \<in> \<P> \<and> b \<in> \<E> \<and> b \<notin> Q \<and> \<not>(path_ex b x)}"
+definition unreachable_subset :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" ("unreach-on _ from _" [100, 100]) where
+  "unreach-on Q from b \<equiv> {x\<in>Q. Q \<in> \<P> \<and> b \<in> \<E> \<and> b \<notin> Q \<and> \<not>(path_ex b x)}"
 
 
 section "Primitives: Kinematic Triangle"
@@ -230,15 +249,13 @@ text \<open>
 \<close>
 
 text \<open>The definition of \<open>SPRAY\<close> constrains $x, Q, R, S$ to be in $\E$ and $\P$.\<close>
-definition dep3_event :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> bool" where
-  "dep3_event Q R S x \<equiv> Q \<noteq> R \<and> Q \<noteq> S \<and> R \<noteq> S \<and> Q \<in> SPRAY x \<and> R \<in> SPRAY x \<and> S \<in> SPRAY x
-                         \<and> (\<exists>T\<in>\<P>. T \<notin> SPRAY x \<and> (\<exists>y\<in>Q. y \<in> T) \<and> (\<exists>y\<in>R. y \<in> T) \<and> (\<exists>y\<in>S. y \<in> T))"
+definition "dep3_event Q R S x
+  \<equiv> card {Q,R,S} = 3 \<and> {Q,R,S} \<subseteq> SPRAY x
+  \<and> (\<exists>T\<in>\<P>. T \<notin> SPRAY x \<and> Q\<inter>T\<noteq>{} \<and> R\<inter>T\<noteq>{} \<and> S\<inter>T\<noteq>{})"
 
-definition dep3_spray :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> ('a set) set \<Rightarrow> bool" where
-  "dep3_spray Q R S SPR \<equiv> \<exists>x. SPRAY x = SPR \<and> dep3_event Q R S x"
+definition "dep3_spray Q R S SPR \<equiv> \<exists>x. SPRAY x = SPR \<and> dep3_event Q R S x"
 
-definition dep3 :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "dep3 Q R S \<equiv> \<exists>x. dep3_event Q R S x"
+definition "dep3 Q R S \<equiv> \<exists>x. dep3_event Q R S x"
 
 text \<open>Some very simple lemmas related to \<open>dep3_event\<close>.\<close>
 
@@ -249,22 +266,35 @@ lemma dep3_nonspray:
   by (metis assms dep3_event_def)
 
 lemma dep3_path:
-  assumes dep3_QRSx: "dep3_event Q R S x"
+  assumes dep3_QRSx: "dep3 Q R S"
   shows "Q \<in> \<P>" "R \<in> \<P>" "S \<in> \<P>"
-proof -
-  have "{Q,R,S} \<subseteq> SPRAY x" using dep3_event_def using dep3_QRSx by simp
-  thus "Q \<in> \<P>" "R \<in> \<P>" "S \<in> \<P>" using SPRAY_path by auto
-qed
+  using assms dep3_event_def dep3_def SPRAY_path insert_subset by auto
+
+lemma dep3_distinct:
+  assumes dep3_QRSx: "dep3 Q R S"
+  shows "Q \<noteq> R" "Q \<noteq> S" "R \<noteq> S"
+  using assms dep3_def dep3_event_def by (simp_all add: card_3_dist)
 
 lemma dep3_is_event:
   "dep3_event Q R S x \<Longrightarrow> x \<in> \<E>"
 using SPRAY_event dep3_event_def by auto
 
+lemma dep3_event_old:
+  "dep3_event Q R S x \<longleftrightarrow> Q \<noteq> R \<and> Q \<noteq> S \<and> R \<noteq> S \<and> Q \<in> SPRAY x \<and> R \<in> SPRAY x \<and> S \<in> SPRAY x
+                       \<and> (\<exists>T\<in>\<P>. T \<notin> SPRAY x \<and> (\<exists>y\<in>Q. y \<in> T) \<and> (\<exists>y\<in>R. y \<in> T) \<and> (\<exists>y\<in>S. y \<in> T))"
+  by (rule iffI; unfold dep3_event_def, (simp add: card_3_dist), blast)
+
 lemma dep3_event_permute [no_atp]:
   assumes "dep3_event Q R S x"
     shows "dep3_event Q S R x" "dep3_event R Q S x" "dep3_event R S Q x"
      "dep3_event S Q R x" "dep3_event S R Q x"
-using dep3_event_def assms by auto
+using dep3_event_old assms by auto
+
+lemma dep3_permute [no_atp]:
+  assumes "dep3 Q R S"
+  shows "dep3 Q S R" "dep3 R Q S" "dep3 R S Q"
+    and "dep3 S Q R" "dep3 S R Q"
+  using dep3_event_permute dep3_def assms by meson+
 
 text \<open>
   "We next give recursive definitions of dependence and independence which will be used to
@@ -275,11 +305,40 @@ text \<open>
   if it is dependent on two paths $S_1$ and $S_2$, where each of these two paths is dependent
   on some subset of $n - 1$ paths from the set $S$." [Schutz97]\<close>
 
-inductive dep_path :: "'a set \<Rightarrow> ('a set) set \<Rightarrow> 'a \<Rightarrow> bool" where
-  dep_two: "dep3_event T A B x \<Longrightarrow> dep_path T {A, B} x"
-| dep_n:   "\<lbrakk>S \<subseteq> SPRAY x; card S \<ge> 3; dep_path T {S1, S2} x;
-             S' \<subseteq> S; S'' \<subseteq> S; card S' = card S - 1; card S'' = card S - 1;
-             dep_path S1 S' x; dep_path S2 S'' x\<rbrakk> \<Longrightarrow> dep_path T S x"
+inductive dep_path :: "'a set \<Rightarrow> ('a set) set \<Rightarrow> bool" where
+  dep_3: "dep3 T A B \<Longrightarrow> dep_path T {A, B}"
+| dep_n: "\<lbrakk>dep3 T S1 S2; dep_path S1 S'; dep_path S2 S''; S \<subseteq> SPRAY x;
+           S' \<subseteq> S; S'' \<subseteq> S; Suc (card S') = card S; Suc (card S'') = card S\<rbrakk> \<Longrightarrow> dep_path T S"
+
+lemma card_Suc_ex:
+  assumes "card A = Suc (card B)" "B \<subseteq> A"
+  shows "\<exists>b. A = insert b B \<and> b\<notin>B"
+proof -
+  have "finite A" using assms(1) card_ge_0_finite card.infinite by fastforce
+  obtain b where "b\<in>A-B"
+    by (metis Diff_eq_empty_iff all_not_in_conv assms n_not_Suc_n subset_antisym)
+  show "\<exists>b. A = insert b B \<and> b\<notin>B"
+  proof
+    show "A = insert b B \<and> b\<notin>B"
+      using  \<open>b\<in>A-B\<close> \<open>finite A\<close> assms
+      by (metis DiffD1 DiffD2 Diff_insert_absorb Diff_single_insert card_insert_disjoint
+        card_subset_eq insert_absorb rev_finite_subset)
+  qed
+qed
+
+lemma union_of_subsets_by_singleton:
+  assumes "Suc (card S') = card S" "Suc (card S'') = card S"
+    and "S' \<noteq> S''" "S' \<subseteq> S" "S'' \<subseteq> S"
+  shows "S' \<union> S'' = S"
+proof -
+  obtain x y where x: "insert x S' = S" "x\<notin>S'" and y: "insert y S'' = S" "y\<notin>S''"
+    using assms(1,2,4,5) by (metis card_Suc_ex)
+  have "x\<noteq>y" using x y assms(3) by (metis insert_eq_iff)
+  thus ?thesis using x(1) y(1) by blast
+qed
+
+lemma dep_path_card_2: "dep_path T S \<Longrightarrow> card S \<ge> 2"
+  by (induct rule: dep_path.induct, simp add: dep3_def dep3_event_old, linarith)
 
 text \<open>
   "We also say that the set of $n + 1$ paths $S\cup\{T\}$ is a dependent set." [Schutz97]
@@ -287,43 +346,70 @@ text \<open>
 \<close>
 
 definition dep_set :: "('a set) set \<Rightarrow> bool" where
-  "dep_set S \<equiv> \<exists>x. \<exists>S'\<subseteq>S. \<exists>P\<in>(S-S'). dep_path P S' x"
+  "dep_set S \<equiv> \<exists>S'\<subseteq>S. \<exists>P\<in>(S-S'). dep_path P S'"
+
+text \<open>
+  Notice that the relation between \<open>dep_set\<close> and \<open>dep_path\<close> becomes somewhat meaningless
+  in the case where we apply \<open>dep_path\<close> to an element of the set. This is because sets have no
+  duplicate members, and we do not mirror the idea that scalar multiples of vectors linearly depend
+  on those vectors: paths in a SPRAY are (in the $\mathbb{R}^4$ model) already equivalence classes
+  of vectors that are scalar multiples of each other.
+\<close>
+
+lemma dep_path_imp_dep_set:
+  assumes "dep_path P S" "P\<notin>S"
+  shows "dep_set (insert P S)"
+  using assms dep_set_def by auto
+
+lemma dep_path_for_set_members:
+  assumes "P\<in>S"
+  shows "dep_set S = dep_set (insert P S)"
+  by (simp add: assms(1) insert_absorb)
 
 lemma dependent_superset:
   assumes "dep_set A" and "A\<subseteq>B"
   shows "dep_set B"
-  using assms(1) assms(2) dep_set_def
+  using assms dep_set_def
   by (meson Diff_mono dual_order.trans in_mono order_refl)
 
 lemma path_in_dep_set:
-  assumes "dep3_event P Q R x"
+  assumes "dep3 P Q R"
   shows "dep_set {P,Q,R}"
-  using dep_two assms dep3_event_def dep_set_def
-  by (metis DiffI insertE insertI1 singletonD subset_insertI)
+  using dep_3 assms dep3_def dep_set_def dep3_event_old
+  by (metis DiffI insert_iff singletonD subset_insertI)
 
-lemma path_in_dep_set2:
-  assumes "dep3_event P Q R x"
-  shows "dep_path P {P,Q,R} x"
+lemma path_in_dep_set2a:
+  assumes "dep3 P Q R"
+  shows "dep_path P {P,Q,R}"
 proof
-  let ?S1 = "Q"
-  let ?S2 = "R"
   let ?S' = "{P,R}"
   let ?S'' = "{P,Q}"
-  show "{P, Q, R} \<subseteq> SPRAY x" using assms dep3_event_def by blast
-  show "3 \<le> card {P, Q, R}" using assms dep3_event_def by auto
-  show "dep_path P {?S1, ?S2} x" using assms dep3_event_def by (simp add: dep_two)
+  have all_neq: "P\<noteq>Q" "P\<noteq>R" "R\<noteq>Q" using assms dep3_def dep3_event_old by auto
+  show "dep3 P Q R" using assms dep3_event_def by (simp add: dep_3)
+  show "dep_path Q ?S'" using assms dep3_event_permute(2) dep_3 dep3_def by meson
+  show "dep_path R ?S''" using assms dep3_event_permute(4) dep_3 dep3_def by meson
   show "?S' \<subseteq> {P, Q, R}" by simp
   show "?S'' \<subseteq> {P, Q, R}" by simp
-  show "card ?S' = card {P, Q, R} - 1" using assms dep3_event_def by auto
-  show "card ?S'' = card {P, Q, R} - 1" using assms dep3_event_def by auto
-  show "dep_path ?S1 ?S' x" by (simp add: assms dep3_event_permute(2) dep_two)
-  show "dep_path ?S2 ?S'' x" using assms dep3_event_permute(2,4) dep_two by blast
+  show "Suc (card ?S') = card {P, Q, R}" "Suc (card ?S'') = card {P, Q, R}"
+    using all_neq card_insert_disjoint by auto
+  show "{P, Q, R} \<subseteq> SPRAY (SOME x. dep3_event P Q R x)"
+    using assms dep3_def dep3_event_def by (metis some_eq_ex)
 qed
 
-
 definition indep_set :: "('a set) set \<Rightarrow> bool" where
-  "indep_set S \<equiv> \<not>(\<exists>T \<subseteq> S. dep_set T)"
+  "indep_set S \<equiv> \<not> dep_set S"
 
+lemma no_dep_in_indep: "indep_set S \<Longrightarrow> \<not>(\<exists>T \<subseteq> S. dep_set T)"
+  using indep_set_def dependent_superset by blast
+
+lemma indep_set_alt_intro: "\<not>(\<exists>T \<subseteq> S. dep_set T) \<Longrightarrow> indep_set S"
+  using indep_set_def by blast
+
+lemma indep_set_alt: "indep_set S \<longleftrightarrow> \<not>(\<exists>S' \<subseteq> S. dep_set S')"
+  using no_dep_in_indep indep_set_alt_intro by blast
+
+lemma "dep_set S \<or> indep_set S"
+  by (simp add: indep_set_def)
 
 section "Primitives: 3-SPRAY"
 
@@ -334,12 +420,57 @@ text \<open>
    ii) all paths of the SPRAY are dependent on these four paths." [Schutz97]
 \<close>
 
-definition three_SPRAY :: "'a \<Rightarrow> bool" where
-  "three_SPRAY x \<equiv> \<exists>S1\<in>\<P>. \<exists>S2\<in>\<P>. \<exists>S3\<in>\<P>. \<exists>S4\<in>\<P>.
+definition n_SPRAY_basis :: "nat \<Rightarrow> 'a set set \<Rightarrow> 'a \<Rightarrow> bool"  where
+  "n_SPRAY_basis n S x \<equiv> S\<subseteq>SPRAY x \<and> card S = (Suc n) \<and> indep_set S \<and> (\<forall>P\<in>SPRAY x. dep_path P S)"
+
+definition n_SPRAY ("_-SPRAY _" [100,100]) where
+  "n-SPRAY x \<equiv> \<exists>S\<subseteq>SPRAY x. card S = (Suc n) \<and> indep_set S \<and> (\<forall>P\<in>SPRAY x. dep_path P S)"
+
+abbreviation "three_SPRAY x \<equiv> 3-SPRAY x"
+
+lemma n_SPRAY_intro:
+  assumes "S\<subseteq>SPRAY x" "card S = (Suc n)" "indep_set S" "\<forall>P\<in>SPRAY x. dep_path P S"
+  shows "n-SPRAY x"
+  using assms n_SPRAY_def by blast
+
+lemma three_SPRAY_alt:
+  "three_SPRAY x = (\<exists>S1 S2 S3 S4.
     S1 \<noteq> S2 \<and> S1 \<noteq> S3 \<and> S1 \<noteq> S4 \<and> S2 \<noteq> S3 \<and> S2 \<noteq> S4 \<and> S3 \<noteq> S4
     \<and> S1 \<in> SPRAY x \<and> S2 \<in> SPRAY x \<and> S3 \<in> SPRAY x \<and> S4 \<in> SPRAY x
     \<and> (indep_set {S1, S2, S3, S4})
-    \<and> (\<forall>S\<in>SPRAY x. dep_path S {S1,S2,S3,S4} x)"
+    \<and> (\<forall>S\<in>SPRAY x. dep_path S {S1,S2,S3,S4}))"
+  (is "three_SPRAY x \<longleftrightarrow> ?three_SPRAY' x")
+proof
+  assume "three_SPRAY x"
+  then obtain S where ns: "S\<subseteq>SPRAY x" "card S = 4" "indep_set S" "\<forall>P\<in>SPRAY x. dep_path P S"
+    using n_SPRAY_def by auto
+  then obtain S\<^sub>1 S\<^sub>2 S\<^sub>3 S\<^sub>4 where
+    "S = {S\<^sub>1, S\<^sub>2, S\<^sub>3, S\<^sub>4}" and
+    "S\<^sub>1 \<noteq> S\<^sub>2 \<and> S\<^sub>1 \<noteq> S\<^sub>3 \<and> S\<^sub>1 \<noteq> S\<^sub>4 \<and> S\<^sub>2 \<noteq> S\<^sub>3 \<and> S\<^sub>2 \<noteq> S\<^sub>4 \<and> S\<^sub>3 \<noteq> S\<^sub>4" and
+    "S\<^sub>1 \<in> SPRAY x \<and> S\<^sub>2 \<in> SPRAY x \<and> S\<^sub>3 \<in> SPRAY x \<and> S\<^sub>4 \<in> SPRAY x"
+    using card_4_eq by (smt (verit) insert_subset ns)
+  thus "?three_SPRAY' x"
+    by (metis ns(3,4))
+next
+  assume "?three_SPRAY' x"
+  then obtain S\<^sub>1 S\<^sub>2 S\<^sub>3 S\<^sub>4 where ns:
+    "S\<^sub>1 \<noteq> S\<^sub>2 \<and> S\<^sub>1 \<noteq> S\<^sub>3 \<and> S\<^sub>1 \<noteq> S\<^sub>4 \<and> S\<^sub>2 \<noteq> S\<^sub>3 \<and> S\<^sub>2 \<noteq> S\<^sub>4 \<and> S\<^sub>3 \<noteq> S\<^sub>4"
+    "S\<^sub>1 \<in> SPRAY x \<and> S\<^sub>2 \<in> SPRAY x \<and> S\<^sub>3 \<in> SPRAY x \<and> S\<^sub>4 \<in> SPRAY x"
+    "indep_set {S\<^sub>1, S\<^sub>2, S\<^sub>3, S\<^sub>4}"
+    "\<forall>S\<in>SPRAY x. dep_path S {S\<^sub>1,S\<^sub>2,S\<^sub>3,S\<^sub>4}"
+    by metis
+  show "three_SPRAY x"
+    apply (intro n_SPRAY_intro[of "{S\<^sub>1, S\<^sub>2, S\<^sub>3, S\<^sub>4}"])
+    by (simp add: ns)+
+qed
+
+lemma three_SPRAY_intro:
+  assumes "S1 \<noteq> S2 \<and> S1 \<noteq> S3 \<and> S1 \<noteq> S4 \<and> S2 \<noteq> S3 \<and> S2 \<noteq> S4 \<and> S3 \<noteq> S4"
+    and "S1 \<in> SPRAY x \<and> S2 \<in> SPRAY x \<and> S3 \<in> SPRAY x \<and> S4 \<in> SPRAY x"
+    and "indep_set {S1, S2, S3, S4}"
+    and "\<forall>S\<in>SPRAY x. dep_path S {S1,S2,S3,S4}"
+  shows "three_SPRAY x"
+  unfolding three_SPRAY_alt by (metis assms)
 
 text \<open>
   Lemma \<open>is_three_SPRAY\<close> says "this set of sets of elements is a set of paths which is a 3-$\spray$".
@@ -347,12 +478,12 @@ text \<open>
 \<close>
 
 definition is_three_SPRAY :: "('a set) set \<Rightarrow> bool" where
-  "is_three_SPRAY SPR \<equiv> \<exists> x. SPR = SPRAY x \<and> three_SPRAY x"
+  "is_three_SPRAY S \<equiv> \<exists> x. S = SPRAY x \<and> 3-SPRAY x"
 
 lemma three_SPRAY_ge4:
   assumes "three_SPRAY x"
   shows "\<exists>Q1\<in>\<P>. \<exists>Q2\<in>\<P>. \<exists>Q3\<in>\<P>. \<exists>Q4\<in>\<P>. Q1 \<noteq> Q2 \<and> Q1 \<noteq> Q3 \<and> Q1 \<noteq> Q4 \<and> Q2 \<noteq> Q3 \<and> Q2 \<noteq> Q4 \<and> Q3 \<noteq> Q4"
-using assms three_SPRAY_def by meson
+using assms three_SPRAY_alt SPRAY_path by meson
 
 end (* MinkowskiPrimitive *)
 
@@ -366,18 +497,18 @@ text \<open>
 \<close>
 
 locale MinkowskiBetweenness = MinkowskiPrimitive +
-  fixes betw :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[[_ _ _]]")
+  fixes betw :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[_;_;_]")
       (* O1 *) (*notice this is not only for events, but all things with same data type*)
-  assumes abc_ex_path: "[[a b c]] \<Longrightarrow> \<exists>Q\<in>\<P>. a \<in> Q \<and> b \<in> Q \<and> c \<in> Q"
+  assumes abc_ex_path: "[a;b;c] \<Longrightarrow> \<exists>Q\<in>\<P>. a \<in> Q \<and> b \<in> Q \<and> c \<in> Q"
       (* O2 *)
-      and abc_sym: "[[a b c]] \<Longrightarrow> [[c b a]]"
+      and abc_sym: "[a;b;c] \<Longrightarrow> [c;b;a]"
       (* O3, relaxed, as O3 can be proven from this. *)
-      and abc_ac_neq: "[[a b c]] \<Longrightarrow> a \<noteq> c"
+      and abc_ac_neq: "[a;b;c] \<Longrightarrow> a \<noteq> c"
       (* O4 *)
-      and abc_bcd_abd [intro]: "\<lbrakk>[[a b c]]; [[b c d]]\<rbrakk> \<Longrightarrow> [[a b d]]"
+      and abc_bcd_abd [intro]: "\<lbrakk>[a;b;c]; [b;c;d]\<rbrakk> \<Longrightarrow> [a;b;d]"
       (* O5, relaxed; exhausting all six options is not necessary thanks to abc_sym. *)
       and some_betw: "\<lbrakk>Q \<in> \<P>; a \<in> Q; b \<in> Q; c \<in> Q; a \<noteq> b; a \<noteq> c; b \<noteq> c\<rbrakk>
-               \<Longrightarrow> [[a b c]] \<or> [[b c a]] \<or> [[c a b]]"
+               \<Longrightarrow> [a;b;c] \<or> [b;c;a] \<or> [c;a;b]"
 begin
 
 text \<open>
@@ -388,7 +519,7 @@ text \<open>
 \<close>
 
 lemma betw_events:
-  assumes abc: "[[a b c]]"
+  assumes abc: "[a;b;c]"
   shows "a \<in> \<E> \<and> b \<in> \<E> \<and> c \<in> \<E>"
 proof -
   have "\<exists>Q\<in>\<P>. a \<in> Q \<and> b \<in> Q \<and> c \<in> Q" using abc_ex_path abc by simp
@@ -399,73 +530,182 @@ text \<open>This shows the shorter version of O5 is equivalent.\<close>
 
 lemma O5_still_O5 [no_atp]:
   "((Q \<in> \<P> \<and> {a,b,c} \<subseteq> Q \<and> a \<in> \<E> \<and> b \<in> \<E> \<and> c \<in> \<E> \<and> a \<noteq> b \<and> a \<noteq> c \<and> b \<noteq> c)
-     \<longrightarrow> [[a b c]] \<or> [[b c a]] \<or> [[c a b]])
+     \<longrightarrow> [a;b;c] \<or> [b;c;a] \<or> [c;a;b])
    =
    ((Q \<in> \<P> \<and> {a,b,c} \<subseteq> Q \<and> a \<in> \<E> \<and> b \<in> \<E> \<and> c \<in> \<E> \<and> a \<noteq> b \<and> a \<noteq> c \<and> b \<noteq> c)
-     \<longrightarrow> [[a b c]] \<or> [[b c a]] \<or> [[c a b]] \<or> [[c b a]] \<or> [[a c b]] \<or> [[b a c]])"
+     \<longrightarrow> [a;b;c] \<or> [b;c;a] \<or> [c;a;b] \<or> [c;b;a] \<or> [a;c;b] \<or> [b;a;c])"
 by (auto simp add: abc_sym)
 
 lemma some_betw_xor:
    "\<lbrakk>Q \<in> \<P>; a \<in> Q; b \<in> Q; c \<in> Q; a \<noteq> b; a \<noteq> c; b \<noteq> c\<rbrakk>
-               \<Longrightarrow> ([[a b c]] \<and> \<not> [[b c a]] \<and> \<not> [[c a b]])
-                 \<or> ([[b c a]] \<and> \<not> [[a b c]] \<and> \<not> [[c a b]])
-                 \<or> ([[c a b]] \<and> \<not> [[a b c]] \<and> \<not> [[b c a]])"
+               \<Longrightarrow> ([a;b;c] \<and> \<not> [b;c;a] \<and> \<not> [c;a;b])
+                 \<or> ([b;c;a] \<and> \<not> [a;b;c] \<and> \<not> [c;a;b])
+                 \<or> ([c;a;b] \<and> \<not> [a;b;c] \<and> \<not> [b;c;a])"
 by (meson abc_ac_neq abc_bcd_abd some_betw)
 
 text \<open>The lemma \<open>abc_abc_neq\<close> is the full O3 as stated by Schutz.\<close>
 lemma abc_abc_neq:
-  assumes abc: "[[a b c]]"
+  assumes abc: "[a;b;c]"
   shows "a \<noteq> b \<and> a \<noteq> c \<and> b \<noteq> c"
 using abc_sym abc_ac_neq assms abc_bcd_abd by blast
 
 
 lemma abc_bcd_acd:
-  assumes abc: "[[a b c]]"
-      and bcd: "[[b c d]]"
-  shows "[[a c d]]"
+  assumes abc: "[a;b;c]"
+      and bcd: "[b;c;d]"
+  shows "[a;c;d]"
 proof -
-  have cba: "[[c b a]]" using abc_sym abc by simp
-  have dcb: "[[d c b]]" using abc_sym bcd by simp
-  have "[[d c a]]" using abc_bcd_abd dcb cba by blast
+  have cba: "[c;b;a]" using abc_sym abc by simp
+  have dcb: "[d;c;b]" using abc_sym bcd by simp
+  have "[d;c;a]" using abc_bcd_abd dcb cba by blast
   thus ?thesis using abc_sym by simp
 qed
 
 lemma abc_only_cba:
-  assumes "[[a b c]]"
-    shows "\<not> [[b a c]]" "\<not> [[a c b]]" "\<not> [[b c a]]" "\<not> [[c a b]]"
+  assumes "[a;b;c]"
+    shows "\<not> [b;a;c]" "\<not> [a;c;b]" "\<not> [b;c;a]" "\<not> [c;a;b]"
 using abc_sym abc_abc_neq abc_bcd_abd assms by blast+
 
 
 section "Betweenness: Unreachable Subset Via a Path"
 
-definition unreachable_subset_via :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a set"
-                                     ("\<emptyset> _ from _ via _ at _" [100, 100, 100, 100] 100) where
-  "unreachable_subset_via Q Qa R x \<equiv> {Qy. [[x Qy Qa]] \<and> (\<exists>Rw\<in>R. Qa \<in> \<emptyset> Q Rw \<and> Qy \<in> \<emptyset> Q Rw)}"
+definition unreachable_subset_via :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a set" where
+  "unreachable_subset_via Q Qa R x \<equiv> {Qy. [x;Qy;Qa] \<and> (\<exists>Rw\<in>R. Qa \<in> unreach-on Q from Rw \<and> Qy \<in> unreach-on Q from Rw)}"
+
+definition unreachable_subset_via_notation ("unreach-via _ on _ from _ to _" [100, 100, 100, 100] 100)
+  where "unreach-via P on Q from a to x \<equiv> unreachable_subset_via Q a P x"
 
 
 
 section "Betweenness: Chains"
+named_theorems chain_defs
+named_theorems chain_alts
 
-subsection "Totally ordered chains with indexing"
+subsection "Locally ordered chains with indexing"
 
+text \<open>Definitions for Schutz's chains, with local order only.\<close>
+
+text\<open>A chain can be:
+  (i) a set of two distinct events connected by a path, or ...\<close>
 definition short_ch :: "'a set \<Rightarrow> bool" where
-  "short_ch X \<equiv>
-    \<comment>\<open>EITHER two distinct events connected by a path\<close>
-    \<exists>x\<in>X. \<exists>y\<in>X. path_ex x y \<and> \<not>(\<exists>z\<in>X. z\<noteq>x \<and> z\<noteq>y)"
+  "short_ch X \<equiv> card X = 2 \<and> (\<exists>P\<in>\<P>. X \<subseteq> P)"
 
-text \<open>Infinite sets have card 0, because card gives a natural number always.\<close>
+lemma short_ch_alt[chain_alts]:
+  "short_ch X = (\<exists>x\<in>X. \<exists>y\<in>X. path_ex x y \<and> \<not>(\<exists>z\<in>X. z\<noteq>x \<and> z\<noteq>y))"
+  "short_ch X = (\<exists>x y. X = {x,y} \<and> path_ex x y)"
+  unfolding short_ch_def
+  apply (simp add: card_2_iff', smt (verit, ccfv_SIG) in_mono subsetI)
+  by (metis card_2_iff empty_subsetI insert_subset)
 
-definition long_ch_by_ord :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "long_ch_by_ord f X \<equiv>
-    \<comment>\<open>OR at least three events such that any three events are ordered\<close>
-    \<exists>x\<in>X. \<exists>y\<in>X. \<exists>z\<in>X. x\<noteq>y \<and> y\<noteq>z \<and> x\<noteq>z \<and> ordering f betw X"
+lemma short_ch_intros:
+  "\<lbrakk>x\<in>X; y\<in>X; path_ex x y; \<not>(\<exists>z\<in>X. z\<noteq>x \<and> z\<noteq>y)\<rbrakk> \<Longrightarrow> short_ch X"
+  "\<lbrakk>X = {x,y}; path_ex x y\<rbrakk> \<Longrightarrow> short_ch X"
+  by (auto simp: short_ch_alt)
 
-text \<open>Does this restrict chains to lie on paths? Proven in Ch3's Interlude!\<close>
-definition ch_by_ord :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "ch_by_ord f X \<equiv> short_ch X \<or> long_ch_by_ord f X"
+lemma short_ch_path: "short_ch {x,y} \<longleftrightarrow> path_ex x y"
+  unfolding short_ch_def by force
 
-definition ch :: "'a set \<Rightarrow> bool" where
-  "ch X \<equiv> \<exists>f. ch_by_ord f X"
+text \<open>... a set of at least three events such that any three adjacent events are ordered.
+  Notice infinite sets have card 0, because card gives a natural number always.\<close>
+
+definition local_long_ch_by_ord :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "local_long_ch_by_ord f X \<equiv> (infinite X \<or> card X \<ge> 3) \<and> local_ordering f betw X"
+
+lemma local_long_ch_by_ord_alt [chain_alts]:
+  "local_long_ch_by_ord f X =
+    (\<exists>x\<in>X. \<exists>y\<in>X. \<exists>z\<in>X. x\<noteq>y \<and> y\<noteq>z \<and> x\<noteq>z \<and> local_ordering f betw X)"
+  (is "_ = ?ch f X")
+proof
+  assume asm: "local_long_ch_by_ord f X"
+  {
+    assume "card X \<ge> 3"
+    then have "\<exists>x y z. x\<noteq>y \<and> y\<noteq>z \<and> x\<noteq>z \<and> {x,y,z}\<subseteq>X"
+      apply (simp add: eval_nat_numeral)
+      by (auto simp add: card_le_Suc_iff)
+  } moreover {
+    assume "infinite X"
+    then have "\<exists>x y z. x\<noteq>y \<and> y\<noteq>z \<and> x\<noteq>z \<and> {x,y,z}\<subseteq>X"
+      using inf_3_elms bot.extremum by fastforce
+  }
+  ultimately show "?ch f X" using asm unfolding local_long_ch_by_ord_def by auto
+next
+  assume asm: "?ch f X"
+  then obtain x y z where xyz: "{x,y,z}\<subseteq>X \<and> x \<noteq> y \<and> y \<noteq> z \<and> x \<noteq> z"
+    apply (simp add: eval_nat_numeral) by auto
+  hence "card X \<ge> 3 \<or> infinite X"
+    apply (simp add: eval_nat_numeral)
+    by (smt (z3) xyz card.empty card_insert_if card_subset finite.emptyI finite_insert insertE
+      insert_absorb insert_not_empty)
+  thus "local_long_ch_by_ord f X" unfolding local_long_ch_by_ord_def using asm by auto
+qed
+
+lemma short_xor_long:
+  shows "short_ch Q \<Longrightarrow> \<nexists>f. local_long_ch_by_ord f Q"
+    and "local_long_ch_by_ord f Q \<Longrightarrow> \<not> short_ch Q"
+  unfolding chain_alts by (metis)+
+
+text \<open>Any short chain can have an ``ordering'' defined on it: this isn't the ternary ordering \<open>betw\<close>
+  that is used for triplets of elements, but merely an indexing function that fixes the
+  ``direction'' of the chain, i.e. maps \<open>0\<close> to one element and \<open>1\<close> to the other.
+  We define this in order to be able to unify chain definitions with those for long chains.
+  Thus the indexing function $f$ of \<open>short_ch_by_ord f Q\<close> has a similar status to the ordering
+  on a long chain in many regards: e.g. it implies that $f({0 \dots |Q|-1}) \subseteq Q$.
+\<close>
+
+definition short_ch_by_ord :: "(nat\<Rightarrow>'a) \<Rightarrow> 'a set \<Rightarrow> bool"
+  where "short_ch_by_ord f Q \<equiv> Q = {f 0, f 1} \<and> path_ex (f 0) (f 1)"
+
+lemma short_ch_equiv [chain_alts]: "\<exists>f. short_ch_by_ord f Q \<longleftrightarrow> short_ch Q"
+proof -
+  { assume asm: "short_ch Q"
+    obtain x y where xy: "{x,y}\<subseteq>Q" "path_ex x y"
+      using asm short_ch_alt(2) by (auto simp: short_ch_def)
+    let ?f = "\<lambda>n::nat. if n=0 then x else y"
+    have "\<exists>f. (\<exists>x y. Q = {x, y} \<and> f (0::nat) = x \<and> f 1 = y \<and> (\<exists>Q. path Q x y))"
+      apply (rule exI[of _ "?f"]) using asm xy short_ch_alt(2) by auto
+  } moreover {
+    fix f assume asm: "short_ch_by_ord f Q"
+    have "card Q = 2" "(\<exists>P\<in>\<P>. Q \<subseteq> P)"
+      using asm short_ch_by_ord_def by auto
+  } ultimately show ?thesis by (metis short_ch_by_ord_def short_ch_def)
+qed
+
+lemma short_ch_card:
+  "short_ch_by_ord f Q \<Longrightarrow> card Q = 2"
+  "short_ch Q \<Longrightarrow> card Q = 2"
+  using short_ch_by_ord_def short_ch_def short_ch_equiv by auto
+
+lemma short_ch_sym:
+  assumes "short_ch_by_ord f Q"
+  shows "short_ch_by_ord (\<lambda>n. if n=0 then f 1 else f 0) Q"
+  using assms unfolding short_ch_by_ord_def by auto
+
+lemma short_ch_ord_in:
+  assumes "short_ch_by_ord f Q"
+  shows "f 0 \<in> Q" "f 1 \<in> Q"
+  using assms unfolding short_ch_by_ord_def by auto
+
+
+text \<open>Does this restrict chains to lie on paths? Proven in \<open>TemporalOrderingOnPath\<close>'s Interlude!\<close>
+
+definition ch_by_ord ("[_\<leadsto>_]") where
+  "[f\<leadsto>X] \<equiv> short_ch_by_ord f X \<or> local_long_ch_by_ord f X"
+
+definition ch :: "'a set \<Rightarrow> bool" where "ch X \<equiv> \<exists>f. [f\<leadsto>X]"
+
+declare short_ch_def [chain_defs]
+  and local_long_ch_by_ord_def [chain_defs]
+  and ch_by_ord_def [chain_defs]
+  and short_ch_by_ord_def [chain_defs]
+
+text \<open>We include alternative definitions in the \<open>chain_defs\<close> set, because we do not want
+  arbitrary orderings to appear on short chains. Unless an ordering for a short chain
+  is explicitly written down by the user, we shouldn't introduce a \<open>short_ch_by_ord\<close>
+  when e.g. unfolding.\<close>
+
+lemma ch_alt[chain_defs]: "ch X \<equiv> short_ch X \<or> (\<exists>f. local_long_ch_by_ord f X)"
+  unfolding ch_def ch_by_ord_def using chain_defs short_ch_intros(2)
+  by (smt (verit) short_ch_equiv)
 
 text \<open>
   Since $f(0)$ is always in the chain, and plays a special role particularly for infinite chains
@@ -473,123 +713,142 @@ text \<open>
   Notice we require both \<open>infinite X\<close> and \<open>long_ch_by_ord\<close>, thus circumventing infinite
   Isabelle sets having cardinality $0$.
 \<close>
-definition semifin_chain:: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool" ("[_[_ ..]_]") where
-  "semifin_chain f x Q \<equiv>
-    infinite Q \<and> long_ch_by_ord f Q
-    \<and> f 0 = x"
+definition infinite_chain :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "infinite_chain f Q \<equiv> infinite Q \<and> [f\<leadsto>Q]"
 
-definition fin_long_chain:: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool"
-  ("[_[_ .. _ ..  _]_]") where
-  "fin_long_chain f x y z Q \<equiv>
-    x\<noteq>y \<and> x\<noteq>z \<and> y\<noteq>z
-    \<and> finite Q \<and> long_ch_by_ord f Q
-    \<and> f 0 = x \<and> y\<in>Q \<and> f (card Q - 1) = z"
+declare infinite_chain_def [chain_defs]
 
-lemma index_middle_element:
-  assumes "[f[a..b..c]X]"
-  shows "\<exists>n. 0<n \<and> n<(card X - 1) \<and> f n = b"
-proof -
-  obtain n where n_def: "n < card X" "f n = b"
-    by (metis TernaryOrdering.ordering_def assms fin_long_chain_def long_ch_by_ord_def)
-  have "0<n \<and> n<(card X - 1) \<and> f n = b"
-    using assms fin_long_chain_def n_def
-    by (metis Suc_pred' gr_implies_not0 less_SucE not_gr_zero)
-  thus ?thesis by blast
-qed
+lemma infinite_chain_alt[chain_alts]:
+  "infinite_chain f Q \<longleftrightarrow> infinite Q \<and> local_ordering f betw Q"
+  unfolding chain_defs by fastforce
 
-lemma fin_ch_betw:
-  assumes "[f[a..b..c]X]"
-  shows "[[a b c]]"
-proof -
-  obtain nb where n_def: "nb\<noteq>0" "nb<card X - 1" "f nb = b"
-    using assms index_middle_element by blast
-  have "[[(f 0) (f nb) (f (card X - 1))]]"
-    using fin_long_chain_def long_ch_by_ord_def assms n_def ordering_ord_ijk zero_less_iff_neq_zero
-    by fastforce
-  thus ?thesis using assms fin_long_chain_def n_def(3) by auto
-qed
+definition infinite_chain_with :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> bool" ("[_\<leadsto>_|_ ..]") where
+  "infinite_chain_with f Q x \<equiv> infinite_chain f Q \<and> f 0 = x"
 
-lemma chain_sym_obtain:
-  assumes "[f[a..b..c]X]"
-  obtains g where "[g[c..b..a]X]" and "g=(\<lambda>n. f (card X - 1 - n))"
-using ordering_sym assms(1) unfolding fin_long_chain_def long_ch_by_ord_def
-by (metis (mono_tags, lifting) abc_sym diff_self_eq_0 diff_zero)
+declare infinite_chain_with_def [chain_defs]
 
-lemma chain_sym:
-  assumes "[f[a..b..c]X]"
-    shows "[\<lambda>n. f (card X - 1 - n)[c..b..a]X]"
-  using chain_sym_obtain [where f=f and a=a and b=b and c=c and X=X]
-  using assms(1) by blast
+lemma "infinite_chain f Q \<longleftrightarrow> [f\<leadsto>Q|f 0..]"
+  by (simp add: infinite_chain_with_def)
 
-definition fin_long_chain_2:: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "fin_long_chain_2 x y z Q \<equiv> \<exists>f. [f[x..y..z]Q]"
+definition finite_chain :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> bool" where
+  "finite_chain f Q \<equiv> finite Q \<and> [f\<leadsto>Q]"
 
-definition fin_chain:: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool" ("[_[_ .. _]_]") where
-  "fin_chain f x y Q \<equiv>
-    (short_ch Q \<and> x\<in>Q \<and> y\<in>Q \<and> x\<noteq>y)
-    \<or> (\<exists>z\<in>Q. [f[x..z..y]Q])"
+declare finite_chain_def [chain_defs]
+
+lemma finite_chain_alt[chain_alts]: "finite_chain f Q \<longleftrightarrow> short_ch_by_ord f Q \<or> (finite Q \<and> local_long_ch_by_ord f Q)"
+  unfolding chain_defs by auto
+
+definition finite_chain_with :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[_\<leadsto>_|_ .. _]") where
+  "[f\<leadsto>Q|x..y] \<equiv> finite_chain f Q \<and> f 0 = x \<and> f (card Q - 1) = y"
+
+declare finite_chain_with_def [chain_defs]
+
+lemma "finite_chain f Q \<longleftrightarrow> [f\<leadsto>Q|f 0 .. f (card Q - 1)]"
+  by (simp add: finite_chain_with_def)
+
+lemma finite_chain_with_alt [chain_alts]:
+  "[f\<leadsto>Q|x..z] \<longleftrightarrow> (short_ch_by_ord f Q \<or> (card Q \<ge> 3 \<and> local_ordering f betw Q)) \<and>
+    x = f 0 \<and> z = f (card Q - 1)"
+  unfolding chain_defs
+  by (metis card.infinite finite.emptyI finite.insertI not_numeral_le_zero)
+
+lemma finite_chain_with_cases:
+  assumes "[f\<leadsto>Q|x..z]"
+  obtains
+    (short) "x = f 0" "z = f (card Q - 1)" "short_ch_by_ord f Q"
+  | (long) "x = f 0" "z = f (card Q - 1)" "card Q \<ge> 3" "local_long_ch_by_ord f Q"
+  using assms finite_chain_with_alt by (meson local_long_ch_by_ord_def)
+
+
+definition finite_long_chain_with:: "(nat\<Rightarrow>'a) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[_\<leadsto>_|_.._.._]")
+  where "[f\<leadsto>Q|x..y..z] \<equiv> [f\<leadsto>Q|x..z] \<and> x\<noteq>y \<and> y\<noteq>z \<and> y\<in>Q"
+
+declare finite_long_chain_with_def [chain_defs]
 
 lemma points_in_chain:
-  assumes "[f[x..y..z]Q]"
-  shows "x\<in>Q \<and> y\<in>Q \<and> z\<in>Q"
+  assumes "[f\<leadsto>Q|x..z]"
+  shows "x\<in>Q \<and> z\<in>Q"
+  apply (cases rule: finite_chain_with_cases[OF assms])
+  using short_ch_card(1) short_ch_ord_in by (simp add: chain_defs local_ordering_def[of f betw Q])+
+
+lemma points_in_long_chain:
+  assumes "[f\<leadsto>Q|x..y..z]"
+  shows "x\<in>Q" and "y\<in>Q" and "z\<in>Q"
+  using points_in_chain finite_long_chain_with_def assms by meson+
+
+lemma finite_chain_with_card_less3:
+  assumes "[f\<leadsto>Q|x..z]"
+    and "card Q < 3"
+  shows "short_ch_by_ord f Q" "z = f 1"
 proof -
-  have "x\<in>Q"
-    using ordering_def assms card_gt_0_iff emptyE fin_long_chain_def long_ch_by_ord_def
-    by metis
-  moreover have "y\<in>Q"
-    using assms fin_long_chain_def
-    by auto
-  moreover have "z\<in>Q"
-    using ordering_def assms card_gt_0_iff emptyE fin_long_chain_def long_ch_by_ord_def
-    by (metis (no_types, opaque_lifting) Suc_diff_1 lessI)
-  ultimately show ?thesis
-    by blast
+  show 1: "short_ch_by_ord f Q"
+    using finite_chain_with_alt assms by simp
+  thus "z = f 1"
+    using assms(1) by (auto simp: eval_nat_numeral chain_defs)
 qed
 
-lemma ch_long_if_card_ge3:
+lemma ch_long_if_card_geq3:
   assumes "ch X"
       and "card X \<ge> 3"
-    shows "\<exists>f. long_ch_by_ord f X"
-proof (rule ccontr)
-  assume "\<nexists>f. long_ch_by_ord f X"
-  hence "short_ch X"
-    using assms(1) ch_by_ord_def ch_def
-    by auto
-  obtain x y z where "x\<in>X \<and> y\<in>X \<and> z\<in>X" and "x\<noteq>y \<and> y\<noteq>z \<and> x\<noteq>z"
-    using assms(2)
-    by (auto simp add: card_le_Suc_iff numeral_3_eq_3)
-  thus False
-    using \<open>short_ch X\<close> short_ch_def
-    by metis
+    shows "\<exists>f. local_long_ch_by_ord f X"
+proof -
+  show "\<exists>f. local_long_ch_by_ord f X"
+  proof (rule ccontr)
+    assume "\<nexists>f. local_long_ch_by_ord f X"
+    hence "short_ch X"
+      using assms(1) unfolding chain_defs by auto
+    obtain x y z where "x\<in>X \<and> y\<in>X \<and> z\<in>X" and "x\<noteq>y \<and> y\<noteq>z \<and> x\<noteq>z"
+      using assms(2) by (auto simp add: card_le_Suc_iff numeral_3_eq_3)
+    thus False
+      using \<open>short_ch X\<close> by (metis short_ch_alt(1))
+  qed
 qed
 
-subsection "Locally ordered chains with indexing"
+lemma ch_short_if_card_less3:
+  assumes "ch Q"
+      and "card Q < 3"
+      and "finite Q"
+    shows "\<exists>f. short_ch_by_ord f Q"
+  using short_ch_equiv finite_chain_with_card_less3
+  by (metis assms ch_alt diff_is_0_eq' less_irrefl_nat local_long_ch_by_ord_def zero_less_diff)
 
-text \<open>Definition for Schutz-like chains, with local order only.\<close>
-definition long_ch_by_ord2 :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "long_ch_by_ord2 f X \<equiv>
-    \<exists>x\<in>X. \<exists>y\<in>X. \<exists>z\<in>X. x\<noteq>y \<and> y\<noteq>z \<and> x\<noteq>z \<and> ordering2 f betw X"
 
-subsection "Chains using betweenness"
+lemma three_in_long_chain:
+  assumes "local_long_ch_by_ord f X"
+  obtains x y z where "x\<in>X" and "y\<in>X" and "z\<in>X" and "x\<noteq>y" and "x\<noteq>z" and "y\<noteq>z"
+  using assms(1) local_long_ch_by_ord_alt by auto
 
-text \<open>Old definitions of chains. Shown equivalent to \<open>fin_long_chain_2\<close> in TemporalOrderOnPath.thy.\<close>
 
-definition chain_with :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool" ("[[.. _ .. _ .. _ ..]_]") where
-  "chain_with x y z X \<equiv> [[x y z]] \<and> x \<in> X \<and> y \<in> X \<and> z \<in> X \<and> (\<exists>f. ordering f betw X)"
-definition finite_chain_with3 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool" ("[[_ .. _ .. _]_]") where
-  "finite_chain_with3 x y z X \<equiv> [[..x..y..z..]X] \<and> \<not>(\<exists>w\<in>X. [[w x y]] \<or> [[y z w]])"
+lemma short_ch_card_2:
+  assumes "ch_by_ord f X"
+  shows "short_ch X \<longleftrightarrow> card X = 2"
+  using assms unfolding chain_defs using card_2_iff' card_gt_0_iff by fastforce
 
-lemma long_chain_betw: "[[..a..b..c..]X] \<Longrightarrow> [[a b c]]"
-by (simp add: chain_with_def)
 
-lemma finite_chain3_betw: "[[a..b..c]X] \<Longrightarrow> [[a b c]]"
-by (simp add: chain_with_def finite_chain_with3_def)
+lemma long_chain_card_geq:
+  assumes "local_long_ch_by_ord f X" and fin: "finite X"
+  shows "card X \<ge> 3"
+proof -
+  obtain x y z where xyz: "x\<in>X" "y\<in>X" "z\<in>X" and neq: "x\<noteq>y" "x\<noteq>z" "y\<noteq>z"
+    using three_in_long_chain assms by blast
+  let ?S = "{x,y,z}"
+  have "?S \<subseteq> X"
+    by (simp add: xyz)
+  moreover have "card ?S \<ge> 3"
+    using antisym \<open>x \<noteq> y\<close> \<open>x \<noteq> z\<close> \<open>y \<noteq> z\<close> by auto
+  ultimately show ?thesis
+    by (meson neq fin three_subset)
+qed
 
-definition finite_chain_with2 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> bool" ("[[_ .. _]_]") where
-  "finite_chain_with2 x z X \<equiv> \<exists>y\<in>X. [[x..y..z]X]"
 
-lemma finite_chain2_betw: "[[a..c]X] \<Longrightarrow> \<exists>b. [[a b c]]"
-  using finite_chain_with2_def finite_chain3_betw by meson
+lemma fin_chain_card_geq_2:
+  assumes "[f\<leadsto>X|a..b]"
+  shows "card X \<ge> 2"
+  using finite_chain_with_def apply (cases "short_ch X")
+  using short_ch_card_2
+  apply (metis dual_order.eq_iff short_ch_def)
+  using assms chain_defs not_less by fastforce
+
 
 
 section "Betweenness: Rays and Intervals"
@@ -602,7 +861,7 @@ text \<open>
   that segments are never empty.
 \<close>
 definition segment :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set"
-  where "segment a b \<equiv> {x::'a. \<exists>ab. [[a x b]] \<and> x\<in>ab \<and> path ab a b}"
+  where "segment a b \<equiv> {x::'a. \<exists>ab. [a;x;b] \<and> x\<in>ab \<and> path ab a b}"
 
 abbreviation is_segment :: "'a set \<Rightarrow> bool"
   where "is_segment ab \<equiv> (\<exists>a b. ab = segment a b)"
@@ -614,7 +873,7 @@ abbreviation is_interval :: "'a set \<Rightarrow> bool"
   where "is_interval ab \<equiv> (\<exists>a b. ab = interval a b)"
 
 definition prolongation :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set"
-  where "prolongation a b \<equiv> {x::'a. \<exists>ab. [[a b x]] \<and> x\<in>ab \<and> path ab a b}"
+  where "prolongation a b \<equiv> {x::'a. \<exists>ab. [a;b;x] \<and> x\<in>ab \<and> path ab a b}"
 
 abbreviation is_prolongation :: "'a set \<Rightarrow> bool"
   where "is_prolongation ab \<equiv> \<exists>a b. ab = prolongation a b"
@@ -643,10 +902,10 @@ lemma ends_notin_segment: "a \<notin> segment a b \<and> b \<notin> segment a b"
 lemma ends_in_int: "a \<in> interval a b \<and> b \<in> interval a b"
   using interval_def by auto
 
-lemma seg_betw: "x \<in> segment a b \<longleftrightarrow> [[a x b]]"
+lemma seg_betw: "x \<in> segment a b \<longleftrightarrow> [a;x;b]"
   using segment_def abc_abc_neq abc_ex_path by fastforce
 
-lemma pro_betw: "x \<in> prolongation a b \<longleftrightarrow> [[a b x]]"
+lemma pro_betw: "x \<in> prolongation a b \<longleftrightarrow> [a;b;x]"
   using prolongation_def abc_abc_neq abc_ex_path by fastforce
 
 lemma seg_sym: "segment a b = segment b a"
@@ -689,9 +948,9 @@ proof -
   obtain x y where "x\<in>segment a b" "y\<in>segment a b" "x\<noteq>y"
     using assms(1) numeral_2_eq_2
     by (metis card.infinite card_le_Suc0_iff_eq not_less_eq_eq not_numeral_le_zero)
-  have "[[a x b]]"
+  have "[a;x;b]"
     using \<open>x \<in> segment a b\<close> seg_betw by auto
-  have "[[a y b]]"
+  have "[a;y;b]"
     using \<open>y \<in> segment a b\<close> seg_betw by auto
   have "x\<in>P \<and> y\<in>P"
     using \<open>x \<in> segment a b\<close> \<open>y \<in> segment a b\<close> assms(2) by blast
@@ -719,11 +978,11 @@ qed
 
 lemma ray_cases:
   assumes "x \<in> ray a b"
-  shows "[[a x b]] \<or> [[a b x]] \<or> x = b"
+  shows "[a;x;b] \<or> [a;b;x] \<or> x = b"
 proof -
   have "x\<in>segment a b \<or> x\<in> prolongation a b \<or> x=b"
     using assms ray_def by auto
-  thus "[[a x b]] \<or> [[a b x]] \<or> x = b"
+  thus "[a;x;b] \<or> [a;b;x] \<or> x = b"
     using pro_betw seg_betw by auto
 qed
 
@@ -736,20 +995,20 @@ proof -
     using assms by blast
   have "\<exists>ab. path ab a b \<and> ray a b \<subseteq> ab"
   proof -
-    have betw_cases: "[[a x b]] \<or> [[a b x]]" using ray_cases assms
+    have betw_cases: "[a;x;b] \<or> [a;b;x]" using ray_cases assms
       by blast
     then obtain ab where "path ab a b"
       using abc_abc_neq abc_ex_path by blast
     have "?r \<subseteq> ab" using betw_cases
     proof (rule disjE)
-      assume "[[a x b]]"
+      assume "[a;x;b]"
       show "?r \<subseteq> ab"
       proof
         fix x assume "x\<in>?r"
         show "x\<in>ab"
           by (metis \<open>path ab a b\<close> \<open>x \<in> ray a b\<close> abc_ex_path eq_paths ray_cases)
       qed
-    next assume "[[a b x]]"
+    next assume "[a;b;x]"
       show "?r \<subseteq> ab"
       proof
         fix x assume "x\<in>?r"
@@ -771,20 +1030,24 @@ section "MinkowskiChain: O6"
 text \<open>O6 supposedly serves the same purpose as Pasch's axiom.\<close>
 
 locale MinkowskiChain = MinkowskiBetweenness +
-  assumes O6: "\<lbrakk>Q \<in> \<P>; R \<in> \<P>; S \<in> \<P>; T \<in> \<P>; Q \<noteq> R; Q \<noteq> S; R \<noteq> S; a \<in> Q\<inter>R \<and> b \<in> Q\<inter>S \<and> c \<in> R\<inter>S;
-                \<exists>d\<in>S. [[b c d]] \<and> (\<exists>e\<in>R. d \<in> T \<and> e \<in> T \<and> [[c e a]])\<rbrakk>
-               \<Longrightarrow> \<exists>f\<in>T\<inter>Q. \<exists>X. [[a..f..b]X]"
+  assumes O6: "\<lbrakk>{Q,R,S,T} \<subseteq> \<P>; card{Q,R,S} = 3; a \<in> Q\<inter>R; b \<in> Q\<inter>S; c \<in> R\<inter>S; d\<in>S\<inter>T; e\<in>R\<inter>T; [b;c;d]; [c;e;a]\<rbrakk>
+               \<Longrightarrow> \<exists>f\<in>T\<inter>Q. \<exists>g X. [g\<leadsto>X|a..f..b]"
 begin
+
+lemma O6_old: "\<lbrakk>Q \<in> \<P>; R \<in> \<P>; S \<in> \<P>; T \<in> \<P>; Q \<noteq> R; Q \<noteq> S; R \<noteq> S; a \<in> Q\<inter>R \<and> b \<in> Q\<inter>S \<and> c \<in> R\<inter>S;
+                \<exists>d\<in>S. [b;c;d] \<and> (\<exists>e\<in>R. d \<in> T \<and> e \<in> T \<and> [c;e;a])\<rbrakk>
+               \<Longrightarrow> \<exists>f\<in>T\<inter>Q. \<exists>g X. [g\<leadsto>X|a..f..b]"
+  using O6[of Q R S T a b c] by (metis IntI card_3_dist empty_subsetI insert_subset)
 
 
 section "Chains: (Closest) Bounds"
 
 definition is_bound_f :: "'a \<Rightarrow> 'a set \<Rightarrow> (nat\<Rightarrow>'a) \<Rightarrow> bool" where
   "is_bound_f Q\<^sub>b Q f \<equiv>
-    \<forall>i j ::nat. [f[(f 0)..]Q] \<and> (i<j \<longrightarrow> [[(f i) (f j) Q\<^sub>b]])"
+    \<forall>i j ::nat. [f\<leadsto>Q|(f 0)..] \<and> (i<j \<longrightarrow> [f i; f j; Q\<^sub>b])"
 
 
-definition is_bound :: "'a \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition is_bound where
   "is_bound Q\<^sub>b Q \<equiv>
     \<exists>f::(nat\<Rightarrow>'a). is_bound_f Q\<^sub>b Q f"
 
@@ -796,74 +1059,152 @@ text \<open>
 \<close>
 
 
-definition all_bounds :: "'a set \<Rightarrow> 'a set" where
+definition all_bounds where
   "all_bounds Q = {Q\<^sub>b. is_bound Q\<^sub>b Q}"
 
-definition bounded :: "'a set \<Rightarrow> bool" where
+definition bounded where
   "bounded Q \<equiv> \<exists> Q\<^sub>b. is_bound Q\<^sub>b Q"
 
-text \<open>Just to make sure Continuity is not too strong.\<close>
 lemma bounded_imp_inf:
   assumes "bounded Q"
   shows "infinite Q"
-  using assms bounded_def is_bound_def is_bound_f_def semifin_chain_def by blast
+  using assms bounded_def is_bound_def is_bound_f_def chain_defs by meson
 
 
-definition closest_bound_f :: "'a \<Rightarrow> 'a set \<Rightarrow> (nat\<Rightarrow>'a) \<Rightarrow> bool" where
+definition closest_bound_f where
   "closest_bound_f Q\<^sub>b Q f \<equiv>
 \<^cancel>\<open>Q is an infinite chain indexed by f bound by Q\<^sub>b\<close>
     is_bound_f Q\<^sub>b Q f \<and>
 \<^cancel>\<open>Any other bound must be further from the start of the chain than the closest bound\<close>
-    (\<forall> Q\<^sub>b'. (is_bound Q\<^sub>b' Q \<and> Q\<^sub>b' \<noteq> Q\<^sub>b) \<longrightarrow> [[(f 0) Q\<^sub>b Q\<^sub>b']])"
+    (\<forall> Q\<^sub>b'. (is_bound Q\<^sub>b' Q \<and> Q\<^sub>b' \<noteq> Q\<^sub>b) \<longrightarrow> [f 0; Q\<^sub>b; Q\<^sub>b'])"
 
 
-definition closest_bound :: "'a \<Rightarrow> 'a set \<Rightarrow> bool" where
+definition closest_bound where
   "closest_bound Q\<^sub>b Q \<equiv>
-\<^cancel>\<open>Q is an infinite chain indexed by f bound by Q\<^sub>b\<close>
-    \<exists>f. is_bound_f Q\<^sub>b Q f \<and>
-\<^cancel>\<open>Any other bound must be further from the start of the chain than the closest bound\<close>
-    (\<forall> Q\<^sub>b'. (is_bound Q\<^sub>b' Q \<and> Q\<^sub>b' \<noteq> Q\<^sub>b) \<longrightarrow> [[(f 0) Q\<^sub>b Q\<^sub>b']])"
+    \<exists>f. is_bound_f Q\<^sub>b Q f
+     \<and> (\<forall> Q\<^sub>b'. (is_bound Q\<^sub>b' Q \<and> Q\<^sub>b' \<noteq> Q\<^sub>b) \<longrightarrow> [f 0; Q\<^sub>b; Q\<^sub>b'])"
+
+lemma "closest_bound Q\<^sub>b Q = (\<exists>f. closest_bound_f Q\<^sub>b Q f)"
+  unfolding closest_bound_f_def closest_bound_def by simp
 
 end (*MinkowskiChain*)
 
 section "MinkowskiUnreachable: I5-I7"
 
 locale MinkowskiUnreachable = MinkowskiChain +
-  (* I5 *)
-  assumes two_in_unreach: "\<lbrakk>Q \<in> \<P>; b \<in> \<E>; b \<notin> Q\<rbrakk> \<Longrightarrow> \<exists>x\<in>\<emptyset> Q b. \<exists>y\<in>\<emptyset> Q b. x \<noteq> y"
-
-      and I6: "\<lbrakk>Q \<in> \<P>; b \<notin> Q; b \<in> \<E>; Qx \<in> (\<emptyset> Q b); Qz \<in> (\<emptyset> Q b); Qx\<noteq>Qz\<rbrakk>
-               \<Longrightarrow> \<exists>X. \<exists>f. ch_by_ord f X \<and> f 0 = Qx \<and> f (card X - 1) = Qz
-                         \<and> (\<forall>i\<in>{1 .. card X - 1}. (f i) \<in> \<emptyset> Q b
-                              \<and> (\<forall>Qy\<in>\<E>. [[(f(i-1)) Qy (f i)]] \<longrightarrow> Qy \<in> \<emptyset> Q b))
-                         \<and> (short_ch X \<longrightarrow> Qx\<in>X \<and> Qz\<in>X \<and> (\<forall>Qy\<in>\<E>. [[Qx Qy Qz]] \<longrightarrow> Qy \<in> \<emptyset> Q b))"
-      and I7: "\<lbrakk>Q \<in> \<P>; b \<notin> Q; b \<in> \<E>; Qx \<in> Q - \<emptyset> Q b; Qy \<in> \<emptyset> Q b\<rbrakk>
-               \<Longrightarrow> \<exists>g X Qn. [g[Qx..Qy..Qn]X] \<and> Qn \<in> Q - \<emptyset> Q b"
+  assumes I5: "\<lbrakk>Q \<in> \<P>; b \<in> \<E>-Q\<rbrakk> \<Longrightarrow> \<exists>x y. {x,y} \<subseteq> unreach-on Q from b \<and> x \<noteq> y"
+      and I6: "\<lbrakk>Q \<in> \<P>; b \<in> \<E>-Q; {Qx,Qz} \<subseteq> unreach-on Q from b; Qx\<noteq>Qz\<rbrakk>
+      \<Longrightarrow> \<exists>X f. [f\<leadsto>X|Qx..Qz]
+              \<and> (\<forall>i\<in>{1 .. card X - 1}. (f i) \<in> unreach-on Q from b
+                \<and> (\<forall>Qy\<in>\<E>. [f(i-1); Qy; f i] \<longrightarrow> Qy \<in> unreach-on Q from b))"
+      and I7: "\<lbrakk>Q \<in> \<P>; b \<in> \<E>-Q; Qx \<in> Q - unreach-on Q from b; Qy \<in> unreach-on Q from b\<rbrakk>
+               \<Longrightarrow> \<exists>g X Qn. [g\<leadsto>X|Qx..Qy..Qn] \<and> Qn \<in> Q - unreach-on Q from b"
 begin
+
+lemma two_in_unreach:
+  "\<lbrakk>Q \<in> \<P>; b \<in> \<E>; b \<notin> Q\<rbrakk> \<Longrightarrow> \<exists>x\<in>unreach-on Q from b. \<exists>y\<in>unreach-on Q from b. x \<noteq> y"
+  using I5 by fastforce
+
+lemma I6_old:
+  assumes "Q \<in> \<P>" "b \<notin> Q" "b \<in> \<E>" "Qx \<in> (unreach-on Q from b)" "Qz \<in> (unreach-on Q from b)" "Qx\<noteq>Qz"
+  shows "\<exists>X. \<exists>f. ch_by_ord f X \<and> f 0 = Qx \<and> f (card X - 1) = Qz \<and>
+                 (\<forall>i\<in>{1..card X - 1}. (f i) \<in> unreach-on Q from b \<and> (\<forall>Qy\<in>\<E>. [f(i-1); Qy; f i] \<longrightarrow> Qy \<in> unreach-on Q from b)) \<and>
+                 (short_ch X \<longrightarrow> Qx\<in>X \<and> Qz\<in>X \<and> (\<forall>Qy\<in>\<E>. [Qx;Qy;Qz] \<longrightarrow> Qy \<in> unreach-on Q from b))"
+proof -
+  from assms I6[of Q b Qx Qz] obtain f X
+    where fX: "[f\<leadsto>X|Qx..Qz]"
+              "(\<forall>i\<in>{1 .. card X - 1}.  (f i) \<in> unreach-on Q from b \<and> (\<forall>Qy\<in>\<E>. [f(i-1); Qy; f i] \<longrightarrow> Qy \<in> unreach-on Q from b))"
+    using DiffI Un_Diff_cancel by blast
+  show ?thesis
+  proof ((rule exI)+, intro conjI, rule_tac[4] ballI, rule_tac[5] impI; (intro conjI)?)
+    show 1: "[f\<leadsto>X]" "f 0 = Qx" "f (card X - 1) = Qz"
+      using fX(1) chain_defs by meson+
+    { 
+      fix i assume i_asm: "i\<in>{1..card X - 1}"
+      show 2: "f i \<in> unreach-on Q from b"
+        using fX(2) i_asm by fastforce
+      show 3: "\<forall>Qy\<in>\<E>. [f (i - 1);Qy;f i] \<longrightarrow> Qy \<in> unreach-on Q from b"
+        using fX(2) i_asm by blast
+    } {
+      assume X_asm: "short_ch X"
+      show 4: "Qx \<in> X" "Qz \<in> X"
+        using fX(1) points_in_chain by auto
+      have "{1..card X-1} = {1}"
+        using X_asm short_ch_alt(2) by force
+      thus 5: "\<forall>Qy\<in>\<E>. [Qx;Qy;Qz] \<longrightarrow> Qy \<in> unreach-on Q from b"
+        using fX(2) 1(2,3) by auto
+    }
+  qed
+qed
+
+lemma I7_old:
+  assumes "Q \<in> \<P>" "b \<notin> Q" "b \<in> \<E>" "Qx \<in> Q - unreach-on Q from b" "Qy \<in> unreach-on Q from b"
+  shows "\<exists>g X Qn. [g\<leadsto>X|Qx..Qy..Qn] \<and> Qn \<in> Q - unreach-on Q from b"
+  using I7 assms by auto
 
 lemma card_unreach_geq_2:
   assumes "Q\<in>\<P>" "b\<in>\<E>-Q"
-  shows "2 \<le> card (\<emptyset> Q b) \<or> (infinite (\<emptyset> Q b))"
+  shows "2 \<le> card (unreach-on Q from b) \<or> (infinite (unreach-on Q from b))"
   using DiffD1 assms(1) assms(2) card_le_Suc0_iff_eq two_in_unreach by fastforce
+
+
+text \<open>In order to more faithfully capture Schutz' definition of unreachable subsets via a path,
+  we show that intersections of distinct paths are unique, and then define a new notation that
+  doesn't carry the intersection of two paths around.\<close>
+
+lemma unreach_empty_on_same_path:
+  assumes "P\<in>\<P>" "Q\<in>\<P>" "P=Q"
+  shows "\<forall>x. unreach-via P on Q from a to x = {}"
+  unfolding unreachable_subset_via_notation_def unreachable_subset_via_def unreachable_subset_def
+  by (simp add: assms(3))
+
+definition unreachable_subset_via_notation_2 ("unreach-via _ on _ from _" [100, 100, 100] 100)
+  where "unreach-via P on Q from a \<equiv> unreachable_subset_via Q a P (THE x. x\<in>Q\<inter>P)"
+
+lemma unreach_via_for_crossing_paths:
+  assumes "P\<in>\<P>" "Q\<in>\<P>" "P\<inter>Q = {x}"
+  shows "unreach-via P on Q from a to x = unreach-via P on Q from a"
+  unfolding unreachable_subset_via_notation_2_def is_singleton_def unreachable_subset_via_notation_def
+  using the_equality assms by (metis Int_commute empty_iff insert_iff)
 
 end
 
 section "MinkowskiSymmetry: Symmetry"
 
 locale MinkowskiSymmetry = MinkowskiUnreachable +
-  assumes Symmetry: "\<lbrakk>Q \<in> \<P>; R \<in> \<P>; S \<in> \<P>; Q \<noteq> R; Q \<noteq> S; R \<noteq> S;
+  assumes Symmetry: "\<lbrakk>{Q,R,S} \<subseteq> \<P>; card {Q,R,S} = 3;
                x \<in> Q\<inter>R\<inter>S; Q\<^sub>a \<in> Q; Q\<^sub>a \<noteq> x;
-               \<emptyset> Q from Q\<^sub>a via R at x = \<emptyset> Q from Q\<^sub>a via S at x\<rbrakk>
+               unreach-via R on Q from Q\<^sub>a = unreach-via S on Q from Q\<^sub>a\<rbrakk>
                \<Longrightarrow> \<exists>\<theta>::'a\<Rightarrow>'a.                               \<^cancel>\<open>i) there is a map \<theta>:\<E>\<Rightarrow>\<E>\<close>
                      bij_betw (\<lambda>P. {\<theta> y | y. y\<in>P}) \<P> \<P>      \<^cancel>\<open>ii) which induces a bijection \<Theta>\<close>
                      \<and> (y\<in>Q \<longrightarrow> \<theta> y = y)                    \<^cancel>\<open>iii) \<theta> leaves Q invariant\<close>
-                     \<and> (\<lambda>P. {\<theta> y | y. y\<in>P}) R = S     \<^cancel>\<open>iv) \<Theta> maps R to S\<close>"
+                     \<and> (\<lambda>P. {\<theta> y | y. y\<in>P}) R = S           \<^cancel>\<open>iv) \<Theta> maps R to S\<close>"
+begin
 
+lemma Symmetry_old:
+  assumes "Q \<in> \<P>" "R \<in> \<P>" "S \<in> \<P>" "Q \<noteq> R" "Q \<noteq> S" "R \<noteq> S"
+    and "x \<in> Q\<inter>R\<inter>S" "Q\<^sub>a \<in> Q" "Q\<^sub>a \<noteq> x"
+    and "unreach-via R on Q from Q\<^sub>a to x = unreach-via S on Q from Q\<^sub>a to x"
+  shows "\<exists>\<theta>::'a\<Rightarrow>'a. bij_betw (\<lambda>P. {\<theta> y | y. y\<in>P}) \<P> \<P>
+                  \<and> (y\<in>Q \<longrightarrow> \<theta> y = y)
+                  \<and> (\<lambda>P. {\<theta> y | y. y\<in>P}) R = S"
+proof -
+  have QS: "Q\<inter>S = {x}" and QR: "Q\<inter>R = {x}"
+    using assms(1-7) paths_cross_once by (metis Int_iff empty_iff insertE)+
+  have "unreach-via R on Q from Q\<^sub>a = unreach-via R on Q from Q\<^sub>a to x"
+    using unreach_via_for_crossing_paths QR by (simp add: Int_commute assms(1,2))
+  moreover have "unreach-via S on Q from Q\<^sub>a = unreach-via S on Q from Q\<^sub>a to x"
+    using unreach_via_for_crossing_paths QS by (simp add: Int_commute assms(1,3))
+  ultimately show ?thesis
+    using Symmetry assms by simp
+qed
+
+end
 
 section "MinkowskiContinuity: Continuity"
 
 locale MinkowskiContinuity = MinkowskiSymmetry +
-  assumes Continuity: "bounded Q \<Longrightarrow> (\<exists>Q\<^sub>b. closest_bound Q\<^sub>b Q)"
+  assumes Continuity: "bounded Q \<Longrightarrow> \<exists>Q\<^sub>b. closest_bound Q\<^sub>b Q"
 
 
 
@@ -871,7 +1212,7 @@ section "MinkowskiSpacetime: Dimension (I4)"
 
 locale MinkowskiSpacetime = MinkowskiContinuity +
   (* I4 *)
-  assumes ex_3SPRAY [simp]: "\<lbrakk>\<E> \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists>x\<in>\<E>. three_SPRAY x"
+  assumes ex_3SPRAY [simp]: "\<lbrakk>\<E> \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists>x\<in>\<E>. 3-SPRAY x"
 begin
 
 (* substitute for I1, if I1 is omitted *)

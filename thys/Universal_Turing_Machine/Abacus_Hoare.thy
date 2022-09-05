@@ -1,7 +1,11 @@
 (* Title: thys/Abacus_Hoare.thy
    Author: Jian Xu, Xingyuan Zhang, and Christian Urban
    Modifications: Sebastiaan Joosten
-*)
+   Modifications: Franz Regensburger (FABR) 04/2022
+      added comments and lemmas for clarification
+ *)
+
+section \<open>Hoare Rules for Abacus Programs\<close>
 
 theory Abacus_Hoare
   imports Abacus
@@ -20,7 +24,7 @@ fun abc_holds_for :: "(nat list \<Rightarrow> bool) \<Rightarrow> (nat \<times> 
 
 (* Hoare Rules *)
 (* halting case *)
-(*consts abc_Hoare_halt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> abc_assert \<Rightarrow> bool" ("({(1_)}/ (_)/ {(1_)})" 50)*)
+(*consts abc_Hoare_halt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> abc_assert \<Rightarrow> bool" ("(\<lbrace>(1_)\<rbrace>/ (_)/ \<lbrace>(1_)\<rbrace>)" 50)*)
 
 fun abc_final :: "(nat \<times> nat list) \<Rightarrow> abc_prog \<Rightarrow> bool"
   where 
@@ -30,31 +34,224 @@ fun abc_notfinal :: "abc_conf \<Rightarrow> abc_prog \<Rightarrow> bool"
   where
     "abc_notfinal (s, lm) p = (s < length p)"
 
+(* SPIKE: added by FABR:
+
+  The definitions for abc_final and abc_notfinal are somewhat surprising.
+  It is easy to build an abacus program p that jumps to a state length p < s
+
+  Thus, there are programs, that may reach a configuration that is neither abc_final nor abc_notfinal.
+
+  We add a definition abc_out_of_prog and provide a witness for our conjecture.
+
+ *)
+
+fun abc_out_of_prog :: "abc_conf \<Rightarrow> abc_prog \<Rightarrow> bool"
+  where
+    "abc_out_of_prog (s, lm) p = (length p < s)"
+
+definition abcP_out_of_pgm_ex :: abc_prog
+  where
+   "abcP_out_of_pgm_ex = [Dec 0 41, Inc 1, Goto 0]"
+
+(* ABC program abcP_out_of_pgm_ex can reach state 41, which is out of program *)
+
+lemma "abc_steps_l (0,[5,3]) abcP_out_of_pgm_ex (10 +6) = (41, [0, 8])"
+  by (simp add: abc_steps_l.simps abc_step_l.simps abc_fetch.simps abc_lm_v.simps abc_lm_s.simps
+                numeral_eqs_upto_12
+                abcP_out_of_pgm_ex_def )
+
+lemma "abc_out_of_prog (abc_steps_l (0,[5,3]) abcP_out_of_pgm_ex (10 +6)) abcP_out_of_pgm_ex"
+  by (simp add: abc_steps_l.simps abc_step_l.simps abc_fetch.simps  abc_lm_v.simps abc_lm_s.simps
+                numeral_eqs_upto_12
+                abcP_out_of_pgm_ex_def )
+
+(* From the properties abc_notfinal cf p, abc_final cf p, abc_out_of_prog cf holds
+ *   always one of these exlusively holds (the other two are ruled out)
+ *)
+
+lemma "abc_notfinal cf p \<or> abc_final cf p \<or> abc_out_of_prog cf p"
+  by (metis (full_types) abc_final.elims(3) abc_notfinal.elims(3) abc_out_of_prog.elims(3)  not_less_iff_gr_or_eq prod.sel(1))
+
+lemma "\<lbrakk> length p \<noteq> 0; abc_notfinal cf p \<rbrakk> \<Longrightarrow> \<not> abc_final cf p \<and> \<not> abc_out_of_prog cf p"
+  by (metis abc_final.simps abc_notfinal.elims(2) abc_out_of_prog.simps less_Suc_eq nat_neq_iff not_less_eq)
+
+lemma "\<lbrakk> length p \<noteq> 0; abc_final cf p \<rbrakk> \<Longrightarrow> \<not> abc_notfinal cf p \<and> \<not> abc_out_of_prog cf p"
+  by (metis abc_final.elims(2) abc_final.simps abc_notfinal.elims(2) abc_out_of_prog.simps nat_neq_iff)
+
+lemma "\<lbrakk> length p \<noteq> 0; abc_out_of_prog cf p \<rbrakk> \<Longrightarrow> \<not> abc_notfinal cf p \<and> \<not> abc_final cf p"
+  by (metis abc_final.simps abc_notfinal.simps abc_out_of_prog.simps less_iff_Suc_add less_imp_add_positive less_not_refl not_less_eq old.prod.exhaust)
+
+(* END SPIKE: added by FABR *)
+
 definition 
-  abc_Hoare_halt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> abc_assert \<Rightarrow> bool" ("({(1_)}/ (_)/ {(1_)})" 50)
+  abc_Hoare_halt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> abc_assert \<Rightarrow> bool" ("(\<lbrace>(1_)\<rbrace>/ (_)/ \<lbrace>(1_)\<rbrace>)" 50)
   where
     "abc_Hoare_halt P p Q \<equiv> \<forall>lm. P lm \<longrightarrow> (\<exists>n. abc_final (abc_steps_l (0, lm) p n) p \<and> Q abc_holds_for (abc_steps_l (0, lm) p n))"
 
 lemma abc_Hoare_haltI:
   assumes "\<And>lm. P lm \<Longrightarrow> \<exists>n. abc_final (abc_steps_l (0, lm) p n) p \<and> Q abc_holds_for (abc_steps_l (0, lm) p n)"
-  shows "{P} (p::abc_prog) {Q}"
+  shows " \<lbrace>P\<rbrace> (p::abc_prog) \<lbrace>Q\<rbrace> "
   unfolding abc_Hoare_halt_def 
   using assms by auto
 
-text \<open>
-  {P} A {Q}   {Q} B {S} 
+(*
+  \<lbrace>P\<rbrace> A \<lbrace>Q\<rbrace>   \<lbrace>Q\<rbrace> B \<lbrace>S\<rbrace> 
   -----------------------------------------
-  {P} A [+] B {S}
-\<close>
+  \<lbrace>P\<rbrace> A [+] B \<lbrace>S\<rbrace>
+*)
+
+(* Added by FABR for clarification and presentation in classes *)
+
+fun app_mopup :: "tprog0 \<Rightarrow> nat \<Rightarrow> tprog0"
+  where
+    "app_mopup tp n = tp @ shift (mopup_n_tm n) (length tp div 2)"
+
+lemma compile_correct_halt_2:
+  assumes compile: "tp = tm_of ap"
+    and abc_halt: "abc_steps_l (0, ns) ap stp = (length ap, am)"
+    and rs_loc: "n < length am"
+  shows "\<exists>stp i j. steps0 (Suc 0, [Bk,Bk], <ns::nat list>) (app_mopup tp n) stp = (0, Bk\<up>i, <abc_lm_v am n> @ Bk\<up>j)"
+proof -
+  have crsp: "crsp (layout_of ap) (0, ns) (Suc 0, [Bk,Bk], <ns::nat list>) []"
+    by (auto simp add: start_of.simps crsp.simps)
+  with assms have "\<exists> stp i j. steps (Suc 0, [Bk,Bk], <ns::nat list>) (tp @ shift (mopup_n_tm n) (length tp div 2), 0) stp
+                     = (0, Bk\<up>i @ Bk # Bk # [], Oc\<up>Suc (abc_lm_v am n) @ Bk\<up>j)"
+    using compile_correct_halt by simp
+  then have "\<exists>stp i j. steps (Suc 0, [Bk,Bk], <ns::nat list>) (tp @ shift (mopup_n_tm n) (length tp div 2), 0) stp
+                     = (0, Bk\<up>i, Oc\<up>Suc (abc_lm_v am n) @ Bk\<up>j)"
+    by (metis replicate_app_Cons_same replicate_append_same take_suc)
+  then show ?thesis
+    by (simp add: tape_of_nat_def)
+qed
+
+lemma compile_correct_halt_3:
+  assumes compile: "tp = tm_of ap"
+    and abc_halt: "abc_steps_l (0, ns) ap stp = (length ap, am)"
+    and rs_loc: "n < length am"
+  shows "\<exists>stp i j. steps0 (Suc 0, [], <ns::nat list>) (app_mopup tp n) stp = (0, Bk\<up>i, <abc_lm_v am n> @ Bk\<up>j)"
+  using steps_left_tape_ShrinkBkCtx_to_NIL compile_correct_halt_2
+  by (metis abc_halt compile replicate_Suc replicate_once rs_loc take_suc)
+
+lemma compile_correct_halt_4:
+  assumes compile: "tp = tm_of ap"
+    and abc_halt: "abc_steps_l (0, ns) ap stp = (length ap, am)"
+    and rs_loc: "n < length am"
+  shows "TMC_yields_num_res (app_mopup tp n) ns (abc_lm_v am n)"
+  unfolding TMC_yields_num_res_def
+  using compile_correct_halt_3 
+  by (metis One_nat_def abc_halt compile rs_loc)
+
+(* Abacus program ap executed with initial memory ns yields result n in register r *)
+
+definition ABC_yields_res :: "abc_prog \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
+  where "ABC_yields_res ap ns n r \<equiv>
+           (\<exists>stp am.  abc_steps_l (0, ns) ap stp = (length ap, am) \<and>
+                       r < length am \<and> (abc_lm_v am r = n))"
+
+definition ABC_loops_on :: "abc_prog \<Rightarrow> nat list \<Rightarrow>  bool"
+  where "ABC_loops_on ap ns \<equiv>
+          \<forall>stp. abc_notfinal (abc_steps_l (0, ns) ap stp) ap"
+
+theorem ABC_yields_res_imp_TMC_yields_num_res:
+  assumes "tp = tm_of ap"
+    and   "ABC_yields_res ap ns n r"
+  shows   "TMC_yields_num_res (app_mopup tp r) ns n"
+proof -
+  from \<open>ABC_yields_res ap ns n r\<close>
+  have "\<exists>stp am. abc_steps_l (0, ns) ap stp = (length ap, am) \<and>
+                 r < length am \<and> (abc_lm_v am r = n)"
+    unfolding ABC_yields_res_def
+    by auto
+  then obtain stp am where
+    w_stp_am: "abc_steps_l (0, ns) ap stp = (length ap, am) \<and>
+               r < length am \<and> (abc_lm_v am r = n)" by blast
+  have "TMC_yields_num_res (app_mopup tp r) ns (abc_lm_v am r)"
+  proof (rule compile_correct_halt_4)
+    from assms show "tp = tm_of ap" by auto
+  next
+    from w_stp_am
+    show "r < length am"
+      by auto
+  next
+    from w_stp_am
+    show "abc_steps_l (0, ns) ap stp = (length ap, am)"
+      by auto
+  qed
+  with w_stp_am  show "TMC_yields_num_res (app_mopup tp r) ns n" by auto
+qed
+
+lemma abc_unhalt_2:
+  assumes compile: "tp = tm_of ap"
+  and notfinal: "\<forall>stp. abc_notfinal (abc_steps_l (0, ns) ap stp) ap"
+shows "\<forall>stp.\<not> is_final (steps0 (Suc 0, [Bk,Bk], <ns::nat list>) (app_mopup tp r) stp)"
+proof -
+  have "\<forall>stp.\<not> is_final (steps (1, [Bk,Bk], <ns::nat list>) (tp @ shift (mopup_n_tm r) (length tp div 2), 0) stp)"
+  proof (rule  compile_correct_unhalt)
+    show "layout_of ap = layout_of ap" by auto
+  next
+    from compile show "tp = tm_of ap" by auto
+  next
+    show "length tp div 2 = length tp div 2" by auto
+  next
+    show "crsp (layout_of ap) (0, ns) (1, [Bk, Bk], <ns::nat list>) []"
+      by (auto simp add: start_of.simps crsp.simps)
+  next
+    from notfinal show " \<forall>stp. case abc_steps_l (0, ns) ap stp of (as, am) \<Rightarrow> as < length ap"
+      by (metis abc_notfinal.elims(2) case_prodI2 prod.sel(1))
+  qed
+  then show ?thesis by auto
+qed
+
+theorem ABC_loops_imp_TMC_loops:
+  assumes "tp = tm_of ap"
+    and   "ABC_loops_on ap ns"
+  shows   "TMC_loops (app_mopup tp r) ns"
+proof -
+  have "\<forall>stp.\<not> is_final (steps0 (Suc 0, [Bk,Bk], <ns::nat list>) (app_mopup tp r) stp)"
+  proof (rule abc_unhalt_2)
+    from \<open>tp = tm_of ap\<close> 
+    show "tp = tm_of ap" by auto
+  next
+    from \<open>ABC_loops_on ap ns\<close>
+    show "\<forall>stp. abc_notfinal (abc_steps_l (0, ns) ap stp) ap"
+      unfolding ABC_loops_on_def by auto
+  qed
+  have "\<forall>stp. \<not> is_final (steps0 (Suc 0, [], <ns>) (app_mopup tp r) stp)"
+  proof
+    fix stp
+    show "\<not> is_final (steps0 (Suc 0, [], <ns>) (app_mopup tp r) stp)"
+    proof
+      assume "is_final (steps0 (Suc 0, [], <ns>) (app_mopup tp r) stp)"
+      then have "\<exists>ltap rtap. steps0 (Suc 0, Bk \<up>0, <ns>) (app_mopup tp r) stp = (0, ltap, rtap)"
+        using is_final.elims(2) replicate_empty by fastforce
+      then obtain ltap rtap where
+        "steps0 (Suc 0, Bk \<up>0, <ns>) (app_mopup tp r) stp = (0, ltap, rtap)" by blast
+      then have   "\<exists>z3. z3 \<le> 0 + 2 \<and>
+        steps0 (Suc 0, Bk\<up>(0 + 2), <ns>)  (app_mopup tp r) stp = (0,ltap @ Bk\<up>z3 ,rtap)"
+        using steps_left_tape_EnlargeBkCtx_arbitrary_CL
+        by (metis add.left_neutral add_2_eq_Suc' append_Nil)
+      then have "is_final (steps0 (Suc 0, [Bk,Bk], <ns>) (app_mopup tp r) stp)"        
+        using One_nat_def add_2_eq_Suc' add_Suc_shift is_finalI length_replicate list.size(3)
+          list.size(4) plus_1_eq_Suc replicate_Suc replicate_once by force
+      with \<open>\<forall>stp. \<not> is_final (steps0 (Suc 0, [Bk, Bk], <ns>) (app_mopup tp r) stp)\<close>
+      show False by auto
+    qed
+  qed
+  then show "TMC_loops (app_mopup tp r) ns"
+    unfolding TMC_loops_def
+    by simp
+qed
+
+(* END Added by FABR for clarification and presentation in classes *)
 
 definition
-  abc_Hoare_unhalt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> bool" ("({(1_)}/ (_)) \<up>" 50)
+  abc_Hoare_unhalt :: "abc_assert \<Rightarrow> abc_prog \<Rightarrow> bool" ("(\<lbrace>(1_)\<rbrace>/ (_)) \<up>" 50)
   where
-    "abc_Hoare_unhalt P p \<equiv> \<forall>args. P args \<longrightarrow> (\<forall> n .abc_notfinal (abc_steps_l (0, args) p n) p)"
+    "abc_Hoare_unhalt P p \<equiv> \<forall>args. P args \<longrightarrow> (\<forall>n. abc_notfinal (abc_steps_l (0, args) p n) p)"
 
 lemma abc_Hoare_unhaltI:
   assumes "\<And>args n. P args \<Longrightarrow> abc_notfinal (abc_steps_l (0, args) p n) p"
-  shows "{P} (p::abc_prog) \<up>"
+  shows "\<lbrace>P\<rbrace> (p::abc_prog) \<up>"
   unfolding abc_Hoare_unhalt_def 
   using assms by auto
 
@@ -123,7 +320,7 @@ lemma notfinal_Suc:
   apply(simp add: abc_step_red2 abc_fetch.simps abc_step_l.simps split: if_splits)
   done
 
-lemma abc_comp_frist_steps_eq_pre: 
+lemma abc_comp_first_steps_eq_pre: 
   assumes notfinal: "abc_notfinal (abc_steps_l (0, lm)  A n) A"
     and notnull: "A \<noteq> []"
   shows "abc_steps_l (0, lm) (A [+] B) n = abc_steps_l (0, lm) A n"
@@ -198,7 +395,7 @@ next
     by(simp add: abc_steps_add)
 qed 
 
-lemma abc_comp_frist_steps_halt_eq': 
+lemma abc_comp_first_steps_halt_eq': 
   assumes final: "abc_steps_l (0, lm) A n = (length A, lm')"
     and notnull: "A \<noteq> []"
   shows "\<exists> n'. abc_steps_l (0, lm) (A [+] B) n' = (length A, lm')"
@@ -213,7 +410,7 @@ proof -
   obtain sa lma where b: "abc_steps_l (0, lm) A na = (sa, lma)"
     by (metis prod.exhaust)
   then have c: "abc_steps_l (0, lm) (A [+] B) na = (sa, lma)"
-    using a abc_comp_frist_steps_eq_pre[of lm A na B] assms 
+    using a abc_comp_first_steps_eq_pre[of lm A na B] assms 
     by simp
   have d: "sa < length A" using b a by simp
   then have e: "abc_step_l (sa, lma) (abc_fetch sa (A [+] B)) = 
@@ -236,13 +433,13 @@ lemma abc_exec_null: "abc_steps_l sam [] n = sam"
    apply(auto simp: abc_step_l.simps abc_steps_l.simps abc_fetch.simps)
   done
 
-lemma abc_comp_frist_steps_halt_eq: 
+lemma abc_comp_first_steps_halt_eq: 
   assumes final: "abc_steps_l (0, lm) A n = (length A, lm')"
   shows "\<exists> n'. abc_steps_l (0, lm) (A [+] B) n' = (length A, lm')"
   using final
   apply(case_tac "A = []")
    apply(rule_tac x = 0 in exI, simp add: abc_steps_l.simps abc_exec_null)
-  apply(rule_tac abc_comp_frist_steps_halt_eq', simp_all)
+  apply(rule_tac abc_comp_first_steps_halt_eq', simp_all)
   done
 
 
@@ -284,9 +481,9 @@ lemma length_abc_comp[simp, intro]:
   by(auto simp: abc_comp.simps abc_shift.simps)   
 
 lemma abc_Hoare_plus_halt : 
-  assumes A_halt : "{P} (A::abc_prog) {Q}"
-    and B_halt : "{Q} (B::abc_prog) {S}"
-  shows "{P} (A [+] B) {S}"
+  assumes A_halt : "\<lbrace>P\<rbrace> (A::abc_prog) \<lbrace>Q\<rbrace>"
+    and B_halt : "\<lbrace>Q\<rbrace> (B::abc_prog) \<lbrace>S\<rbrace>"
+  shows "\<lbrace>P\<rbrace> (A [+] B) \<lbrace>S\<rbrace>"
 proof(rule_tac abc_Hoare_haltI)
   fix lm
   assume a: "P lm"
@@ -297,7 +494,7 @@ proof(rule_tac abc_Hoare_haltI)
     using A_halt unfolding abc_Hoare_halt_def
     by (metis (full_types) abc_final.simps abc_holds_for.simps prod.exhaust)
   have "\<exists> n. abc_steps_l (0, lm) (A [+] B) n = (length A, lma)"
-    using abc_comp_frist_steps_halt_eq b
+    using abc_comp_first_steps_halt_eq b
     by(simp)
   then obtain nx where h1: "abc_steps_l (0, lm) (A [+] B) nx = (length A, lma)" ..   
   from c have "Q lma"
@@ -319,7 +516,7 @@ proof(rule_tac abc_Hoare_haltI)
 qed
 
 lemma abc_unhalt_append_eq:
-  assumes unhalt: "{P} (A::abc_prog) \<up>"
+  assumes unhalt: "\<lbrace>P\<rbrace> (A::abc_prog) \<up>"
     and P: "P args"
   shows "abc_steps_l (0, args) (A [+] B) stp = abc_steps_l (0, args) A stp"
 proof(induct stp)
@@ -342,7 +539,7 @@ next
 qed
 
 lemma abc_Hoare_plus_unhalt1: 
-  "{P} (A::abc_prog) \<up> \<Longrightarrow> {P} (A [+] B) \<up>"
+  "\<lbrace>P\<rbrace> (A::abc_prog) \<up> \<Longrightarrow> \<lbrace>P\<rbrace> (A [+] B) \<up>"
   apply(rule abc_Hoare_unhaltI)
   apply(subst abc_unhalt_append_eq,force,force)
   by (metis (mono_tags, lifting) abc_notfinal.elims(3) abc_notfinal.simps add_diff_inverse_nat 
@@ -357,8 +554,8 @@ lemma notfinal_all_before:
   by arith
 
 lemma abc_Hoare_plus_unhalt2':
-  assumes unhalt: "{Q} (B::abc_prog) \<up>"
-    and halt: "{P} (A::abc_prog) {Q}"
+  assumes unhalt: "\<lbrace>Q\<rbrace> (B::abc_prog) \<up>"
+    and halt: "\<lbrace>P\<rbrace> (A::abc_prog) \<lbrace>Q\<rbrace>"
     and notnull: "A \<noteq> []"
     and P: "P args" 
   shows "abc_notfinal (abc_steps_l (0, args) (A [+] B) n) (A [+] B)"
@@ -380,7 +577,7 @@ proof -
       by(rule_tac notfinal_all_before, auto)
     moreover then have "abc_steps_l (0, args) (A [+] B) n = abc_steps_l (0, args) A n"
       using notnull
-      by(rule_tac abc_comp_frist_steps_eq_pre, simp_all)
+      by(rule_tac abc_comp_first_steps_eq_pre, simp_all)
     ultimately show "?thesis"
       by(case_tac "abc_steps_l (0, args) A n", simp)
   next
@@ -394,7 +591,7 @@ proof -
       by(case_tac "abc_steps_l (0, args) A (Suc stpa)", simp add: equal_when_halt)
     moreover have  "abc_steps_l (0, args) (A [+] B) stpa = abc_steps_l (0, args) A stpa"
       using notnull d
-      by(rule_tac abc_comp_frist_steps_eq_pre, simp_all)
+      by(rule_tac abc_comp_first_steps_eq_pre, simp_all)
     ultimately have i2: "abc_steps_l (0, args) (A [+] B) (Suc stpa) = (length A, nl)"
       using d
       apply(case_tac "abc_steps_l (0, args) A stpa", simp)
@@ -433,7 +630,7 @@ proof(induct A)
 qed (auto simp: abc_comp.simps abc_shift.simps)
 
 lemma abc_Hoare_plus_unhalt2:
-  "\<lbrakk>{Q} (B::abc_prog)\<up>; {P} (A::abc_prog) {Q}\<rbrakk>\<Longrightarrow> {P} (A [+] B) \<up>"
+  "\<lbrakk>\<lbrace>Q\<rbrace> (B::abc_prog)\<up>; \<lbrace>P\<rbrace> (A::abc_prog) \<lbrace>Q\<rbrace>\<rbrakk>\<Longrightarrow> \<lbrace>P\<rbrace> (A [+] B) \<up>"
   apply(case_tac "A = []")
    apply(simp add: abc_Hoare_halt_def abc_Hoare_unhalt_def abc_exec_null)
   apply(rule_tac abc_Hoare_unhaltI)

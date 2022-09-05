@@ -9,6 +9,7 @@ theory Xml
 imports
   Certification_Monads.Parser_Monad
   "HOL-Library.Char_ord"
+  "HOL-Library.Code_Abstract_Char"
 begin
 
 datatype xml =
@@ -600,20 +601,32 @@ definition "rc_close_3 xs = rc_aux True (CHR ''-'' # CHR ''-'' # xs)"
 lemma remove_comments_code[code]: "remove_comments xs = rc_open_1 xs" 
   unfolding remove_comments_def rc_open_1_def ..
 
+lemma char_eq_via_integer_eq: "c = d \<longleftrightarrow> integer_of_char c = integer_of_char d" 
+  unfolding integer_of_char_def by simp
+
+lemma integer_of_char_simps[simp]: 
+  "integer_of_char (CHR ''<'') = 60" 
+  "integer_of_char (CHR ''>'') = 62" 
+  "integer_of_char (CHR ''/'') = 47"  
+  "integer_of_char (CHR ''!'') = 33"  
+  "integer_of_char (CHR ''-'') = 45"  
+  by code_simp+
+
+
 lemma rc_open_close_simp[code]: 
-  "rc_open_1 (c # cs) = (if c = CHR ''<'' then rc_open_2 cs else c # rc_open_1 cs)"
+  "rc_open_1 (c # cs) = (if integer_of_char c = 60 then rc_open_2 cs else c # rc_open_1 cs)"
   "rc_open_1 [] = []" 
-  "rc_open_2 (c # cs) = (if c = CHR ''!'' then rc_open_3 cs else if c = CHR ''<'' then c # rc_open_2 cs else CHR ''<'' # c # rc_open_1 cs)" 
+  "rc_open_2 (c # cs) = (let ic = integer_of_char c in if ic = 33 then rc_open_3 cs else if ic = 60 then c # rc_open_2 cs else CHR ''<'' # c # rc_open_1 cs)" 
   "rc_open_2 [] = ''<''" 
-  "rc_open_3 (c # cs) = (if c = CHR ''-'' then rc_open_4 cs else if c = CHR ''<'' then c # CHR ''!'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # c # rc_open_1 cs)" 
+  "rc_open_3 (c # cs) = (let ic = integer_of_char c in if ic = 45 then rc_open_4 cs else if ic = 60 then c # CHR ''!'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # c # rc_open_1 cs)" 
   "rc_open_3 [] = ''<!''" 
-  "rc_open_4 (c # cs) = (if c = CHR ''-'' then rc_close_1 cs else if c = CHR ''<'' then c # CHR ''!'' # CHR ''-'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # CHR ''-'' # c # rc_open_1 cs)" 
+  "rc_open_4 (c # cs) = (let ic = integer_of_char c in if ic = 45 then rc_close_1 cs else if ic = 60 then c # CHR ''!'' # CHR ''-'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # CHR ''-'' # c # rc_open_1 cs)" 
   "rc_open_4 [] = ''<!-''" 
-  "rc_close_1 (c # cs) = (if c = CHR ''-'' then rc_close_2 cs else rc_close_1 cs)"
+  "rc_close_1 (c # cs) = (if integer_of_char c = 45 then rc_close_2 cs else rc_close_1 cs)"
   "rc_close_1 [] = comment_error" 
-  "rc_close_2 (c # cs) = (if c = CHR ''-'' then rc_close_3 cs else rc_close_1 cs)"
+  "rc_close_2 (c # cs) = (if integer_of_char c = 45 then rc_close_3 cs else rc_close_1 cs)"
   "rc_close_2 [] = comment_error" 
-  "rc_close_3 (c # cs) = (if c = CHR ''>'' then rc_open_1 cs else comment_error_hyphen)"
+  "rc_close_3 (c # cs) = (if integer_of_char c = 62 then rc_open_1 cs else comment_error_hyphen)"
   "rc_close_3 [] = comment_error" 
   unfolding 
     rc_open_1_def 
@@ -623,7 +636,7 @@ lemma rc_open_close_simp[code]:
     rc_close_1_def 
     rc_close_2_def
     rc_close_3_def 
-  by simp_all
+  by (simp_all add: char_eq_via_integer_eq Let_def)
 
 
 definition parse_doc :: "xmldoc parser"
@@ -646,19 +659,12 @@ where
 
 subsection \<open>More efficient code equations\<close>
 
-lemma char_le_via_integer_le: 
-  "c \<le> d \<longleftrightarrow> integer_of_char c \<le> integer_of_char d" 
-  unfolding integer_of_char_def by (metis less_eq_char_def of_nat_le_iff of_nat_of_char)
-
-lemma char_eq_via_integer_eq: "c = d \<longleftrightarrow> integer_of_char c = integer_of_char d" 
-  unfolding integer_of_char_def by simp
-
 lemma trim_code[code]: 
   "trim = dropWhile (\<lambda> c. let ci = integer_of_char c
     in if ci \<ge> 34 then False else ci = 32 \<or> ci = 10 \<or> ci = 9 \<or> ci = 13)"
   unfolding trim_def
   apply (rule arg_cong[of _ _ dropWhile], rule ext)
-  unfolding Let_def in_set_simps char_le_via_integer_le char_eq_via_integer_eq
+  unfolding Let_def in_set_simps less_eq_char_code char_eq_via_integer_eq
   by (auto simp: integer_of_char_def Let_def)
 
 fun parse_text_main :: "string \<Rightarrow> string \<Rightarrow> string \<times> string" where
@@ -711,11 +717,11 @@ qed
 
 declare [[code drop: parse_text_main]]
 
-lemma parse_text_main_code[code]: 
+lemma parse_text_main_code[code]:
   "parse_text_main [] res = ('''', rev (trim res))"
-  "parse_text_main (c # cs) res = (if c = CHR ''<'' then (c # cs, rev (trim res))
+  "parse_text_main (c # cs) res = (if integer_of_char c = 60 then (c # cs, rev (trim res))
     else parse_text_main cs (c # res))" 
-  unfolding parse_text_main.simps by auto
+  unfolding parse_text_main.simps by (auto simp: char_eq_via_integer_eq)
 
 lemma exactly_head: "exactly [c] (c # cs) = Inr ([c],trim cs)" 
   unfolding exactly_def by simp
@@ -728,16 +734,16 @@ definition "exactly_end = exactly ''</''"
 
 lemma exactly_close_code[code]:
   "exactly_close [] = err_expecting (''\">\"'') []" 
-  "exactly_close (c # cs) = (if c = CHR ''>'' then Inr (''>'', trim cs) else err_expecting (''\">\"'') (c # cs))" 
-  unfolding exactly_close_def exactly_def exactly_aux.simps by auto
+  "exactly_close (c # cs) = (if integer_of_char c = 62 then Inr (''>'', trim cs) else err_expecting (''\">\"'') (c # cs))" 
+  unfolding exactly_close_def exactly_def exactly_aux.simps by (auto simp: char_eq_via_integer_eq)
 
 
 lemma exactly_end_code[code]: 
   "exactly_end [] = err_expecting (''\"</\"'') []" 
   "exactly_end [c] = err_expecting (''\"</\"'') [c]" 
-  "exactly_end (c # d # cs) = (if c = CHR ''<'' \<and> d = CHR ''/'' then Inr (''</'', trim cs) 
+  "exactly_end (c # d # cs) = (if integer_of_char c = 60 \<and> integer_of_char d = 47 then Inr (''</'', trim cs) 
     else err_expecting (''\"</\"'') (c # d # cs))" 
-  unfolding exactly_end_def exactly_def exactly_aux.simps by auto
+  unfolding exactly_end_def exactly_def exactly_aux.simps by (auto simp: char_eq_via_integer_eq)
 
 fun oneof_closed_combined :: "'a parser \<Rightarrow> 'a parser \<Rightarrow> 'a parser" where
   "oneof_closed_combined p q (x # xs) =
@@ -759,14 +765,14 @@ declare [[code drop: oneof_closed_combined]]
 lemma oneof_closed_combined_code[code]: 
   "oneof_closed_combined p q [] = err_expecting (''one of [/>, >]'') ''''" 
   "oneof_closed_combined p q (x # xs) = (let xi = integer_of_char x in
-    (if x = CHR ''>'' then q (trim xs)
-    else (if x = CHR ''/'' then
+    (if xi = 62 then q (trim xs)
+    else (if xi = 47 then
       (case xs of [] \<Rightarrow> err_expecting (''one of [/>, >]'') (x # xs)
-          | y # ys \<Rightarrow> if y = CHR ''>'' then p (trim ys)
+          | y # ys \<Rightarrow> if integer_of_char y = 62 then p (trim ys)
         else err_expecting (''one of [/>, >]'') (x # xs))
      else err_expecting (''one of [/>, >]'') (x # xs))))"
   unfolding oneof_closed_combined.simps Let_def 
-  by (auto split: list.splits)
+  by (auto split: list.splits simp: char_eq_via_integer_eq)
 
 lemmas parse_nodes_current_code 
   = parse_nodes.simps[unfolded oneof_closed, unfolded If_removal [of "\<lambda> e. e = ''/>''"]]
@@ -794,7 +800,7 @@ declare [[code drop: parse_nodes]]
 lemma parse_nodes_code[code]:
   "parse_nodes [] = Parser_Monad.return [] ''''" 
   "parse_nodes (c # cs) =
-    (if c = CHR ''<''  then
+    (if integer_of_char c = 60 then
        if (case cs of [] \<Rightarrow> False | d # _ \<Rightarrow> d = CHR ''/'') then Parser_Monad.return [] (c # cs)
        else (parse_name \<bind>
                      (\<lambda>n. parse_attributes \<bind>
@@ -808,20 +814,20 @@ lemma parse_nodes_code[code]:
                 (trim cs)
     else (parse_text \<bind> (\<lambda>t. parse_nodes \<bind> (\<lambda>ns. Parser_Monad.return (XML_text (the t) # ns)))) (c # cs))" 
   unfolding parse_nodes_pre_code
-  unfolding Let_def by auto
+  unfolding Let_def by (auto simp: char_eq_via_integer_eq)
 
 declare [[code drop: parse_attributes]]
 
 lemma parse_attributes_code[code]: 
   "parse_attributes [] = Error_Monad.return ([], [])" 
-  "parse_attributes (c # s) = (
-     (if c = CHR ''/'' \<or> c = CHR ''>'' then Inr ([], c # s)
+  "parse_attributes (c # s) = (let ic = integer_of_char c in 
+     (if ic = 47 \<or> ic = 62 then Inr ([], c # s)
       else (parse_name \<bind>
        (\<lambda>k. exactly ''='' \<bind> (\<lambda>_. parse_attribute_value \<bind> (\<lambda>v. parse_attributes \<bind> (\<lambda>atts. Parser_Monad.return ((k, v) # atts))))))
        (c # s)))"
   unfolding parse_attributes.simps
   unfolding Let_def in_set_simps
-  by auto
+  by (auto simp: char_eq_via_integer_eq)
 
 declare [[code drop: is_letter]]
 
@@ -837,7 +843,7 @@ proof -
     by (metis int_of_integer_numeral integer_eqI integer_less_eq_iff verit_comp_simplify1(2))
   thus ?thesis 
     unfolding is_letter_pre_code in_set_simps Let_def d_def 
-      char_le_via_integer_le char_eq_via_integer_eq
+      less_eq_char_code char_eq_via_integer_eq
     unfolding integer_of_char_def
     by auto
 qed

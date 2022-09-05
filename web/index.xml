@@ -6,7 +6,52 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 11 Jul 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 15 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>From THE BOOK: Two Squares via Involutions</title>
+      <link>/entries/Involutions2Squares.html</link>
+      <pubDate>Mon, 15 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Involutions2Squares.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Verified Complete Test Strategies for Finite State Machines</title>
+      <link>/entries/FSM_Tests.html</link>
+      <pubDate>Tue, 09 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/FSM_Tests.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML</title>
+      <link>/entries/Nano_JSON.html</link>
+      <pubDate>Fri, 29 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Nano_JSON.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
+      <link>/entries/Solidity.html</link>
+      <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Solidity.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Simultaneous diagonalization of pairwise commuting Hermitian matrices</title>
+      <link>/entries/Commuting_Hermitian.html</link>
+      <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Commuting_Hermitian.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Pólya’s Proof of the Weighted Arithmetic–Geometric Mean Inequality</title>
       <link>/entries/Weighted_Arithmetic_Geometric_Mean.html</link>
@@ -7164,6 +7209,15 @@ The archive repository is hosted on Heptapod to provide easy free access to arch
     </item>
     
     <item>
+      <title>Commuting_Hermitian</title>
+      <link>/theories/commuting_hermitian/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/commuting_hermitian/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Comparison_Sort_Lower_Bound</title>
       <link>/theories/comparison_sort_lower_bound/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -8356,6 +8410,15 @@ How to refer to AFP entries: You can refer to AFP entries by using the AFP as an
     </item>
     
     <item>
+      <title>FSM_Tests</title>
+      <link>/theories/fsm_tests/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/fsm_tests/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Functional-Automata</title>
       <link>/theories/functional-automata/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -9091,6 +9154,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/intro_dest_elim/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Involutions2Squares</title>
+      <link>/theories/involutions2squares/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/involutions2squares/</guid>
       <description></description>
     </item>
     
@@ -10189,6 +10261,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/name_carrying_type_inference/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Nano_JSON</title>
+      <link>/theories/nano_json/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/nano_json/</guid>
       <description></description>
     </item>
     
@@ -11804,6 +11885,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Solidity</title>
+      <link>/theories/solidity/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/solidity/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Sophomores_Dream</title>
       <link>/theories/sophomores_dream/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11908,7 +11998,13 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
+<<<<<<< working copy
       <description>690 Entries   424 Authors   ~213,500 Lemmas   ~3,459,300 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+||||||| common ancestor
+      <description>690 Entries   424 Authors   ~212,500 Lemmas   ~3,436,100 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+=======
+      <description>695 Entries   424 Authors   ~214,300 Lemmas   ~3,512,300 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+>>>>>>> merge rev
     </item>
     
     <item>

@@ -7,20 +7,20 @@ subsection \<open>Hintikka Counter Model\<close>
 locale Hintikka =
   fixes A B :: \<open>fm set\<close>
   assumes
-    Basic: \<open>\<^bold>\<ddagger>n ts \<in> A \<Longrightarrow> \<^bold>\<ddagger>n ts \<in> B \<Longrightarrow> False\<close> and
+    Basic: \<open>\<^bold>\<ddagger>P ts \<in> A \<Longrightarrow> \<^bold>\<ddagger>P ts \<in> B \<Longrightarrow> False\<close> and
     FlsA: \<open>\<^bold>\<bottom> \<notin> A\<close> and
     ImpA: \<open>p \<^bold>\<longrightarrow> q \<in> A \<Longrightarrow> p \<in> B \<or> q \<in> A\<close> and
     ImpB: \<open>p \<^bold>\<longrightarrow> q \<in> B \<Longrightarrow> p \<in> A \<and> q \<in> B\<close> and
-    UniA: \<open>\<^bold>\<forall>p \<in> A \<Longrightarrow> \<forall>t. p\<langle>t/0\<rangle> \<in> A\<close> and
-    UniB: \<open>\<^bold>\<forall>p \<in> B \<Longrightarrow> \<exists>t. p\<langle>t/0\<rangle> \<in> B\<close>
+    UniA: \<open>\<^bold>\<forall>p \<in> A \<Longrightarrow> \<forall>t. \<langle>t\<rangle>p \<in> A\<close> and
+    UniB: \<open>\<^bold>\<forall>p \<in> B \<Longrightarrow> \<exists>t. \<langle>t\<rangle>p \<in> B\<close>
 
-abbreviation \<open>M A \<equiv> \<lbrakk>\<^bold>#, \<^bold>\<dagger>, \<lambda>n ts. \<^bold>\<ddagger>n ts \<in> A\<rbrakk>\<close>
+abbreviation \<open>M A \<equiv> \<lbrakk>\<^bold>#, \<^bold>\<dagger>, \<lambda>P ts. \<^bold>\<ddagger>P ts \<in> A\<rbrakk>\<close>
 
 lemma id_tm [simp]: \<open>\<lparr>\<^bold>#, \<^bold>\<dagger>\<rparr> t = t\<close>
   by (induct t) (auto cong: map_cong)
 
-lemma size_sub [simp]: \<open>size (p\<langle>t/i\<rangle>) = size p\<close>
-  by (induct p arbitrary: i t) auto
+lemma size_sub_fm [simp]: \<open>size (sub_fm s p) = size p\<close>
+  by (induct p arbitrary: s) auto
 
 theorem Hintikka_counter_model:
   assumes \<open>Hintikka A B\<close>
@@ -36,8 +36,8 @@ next
     show \<open>\<^bold>\<bottom> \<in> A \<Longrightarrow> M A \<^bold>\<bottom>\<close> \<open>\<^bold>\<bottom> \<in> B \<Longrightarrow> \<not> M A \<^bold>\<bottom>\<close>
       using Hintikka.FlsA assms by simp_all
   next
-    case (Pre n ts)
-    show \<open>\<^bold>\<ddagger>n ts \<in> A \<Longrightarrow> M A (\<^bold>\<ddagger>n ts)\<close> \<open>\<^bold>\<ddagger>n ts \<in> B \<Longrightarrow> \<not> M A (\<^bold>\<ddagger>n ts)\<close>
+    case (Pre P ts)
+    show \<open>\<^bold>\<ddagger>P ts \<in> A \<Longrightarrow> M A (\<^bold>\<ddagger>P ts)\<close> \<open>\<^bold>\<ddagger>P ts \<in> B \<Longrightarrow> \<not> M A (\<^bold>\<ddagger>P ts)\<close>
       using Hintikka.Basic assms by (auto cong: map_cong)
   next
     case (Imp p q)
@@ -45,8 +45,8 @@ next
       using assms Hintikka.ImpA[of A B p q] Hintikka.ImpB[of A B p q] Imp 2 by auto
   next
     case (Uni p)
-    have \<open>p\<langle>t/0\<rangle> \<in> A \<Longrightarrow> M A (p\<langle>t/0\<rangle>)\<close> \<open>p\<langle>t/0\<rangle> \<in> B \<Longrightarrow> \<not> M A (p\<langle>t/0\<rangle>)\<close> for t
-      using Uni 2 by (metis fm.size(8) in_measure lessI less_add_same_cancel1 size_sub)+
+    have \<open>\<langle>t\<rangle>p \<in> A \<Longrightarrow> M A (\<langle>t\<rangle>p)\<close> \<open>\<langle>t\<rangle>p \<in> B \<Longrightarrow> \<not> M A (\<langle>t\<rangle>p)\<close> for t
+      using Uni 2 by (metis fm.size(8) in_measure lessI less_add_same_cancel1 size_sub_fm)+
     then show \<open>\<^bold>\<forall>p \<in> A \<Longrightarrow> M A (\<^bold>\<forall>p)\<close> \<open>\<^bold>\<forall>p \<in> B \<Longrightarrow> \<not> M A (\<^bold>\<forall>p)\<close>
       using assms Hintikka.UniA[of A B p] Hintikka.UniB[of A B p] by auto
   qed
@@ -62,7 +62,7 @@ lemma epath_sdrop: \<open>epath steps \<Longrightarrow> epath (sdrop n steps)\<c
 
 lemma eff_preserves_Pre:
   assumes \<open>effStep ((A, B), r) ss\<close> \<open>(A', B') |\<in>| ss\<close>
-  shows \<open>(\<^bold>\<ddagger>n ts [\<in>] A \<Longrightarrow> \<^bold>\<ddagger>n ts [\<in>] A')\<close> \<open>\<^bold>\<ddagger>n ts [\<in>] B \<Longrightarrow> \<^bold>\<ddagger>n ts [\<in>] B'\<close>
+  shows \<open>(\<^bold>\<ddagger>P ts [\<in>] A \<Longrightarrow> \<^bold>\<ddagger>P ts [\<in>] A')\<close> \<open>\<^bold>\<ddagger>P ts [\<in>] B \<Longrightarrow> \<^bold>\<ddagger>P ts [\<in>] B'\<close>
   using assms by (induct r \<open>(A, B)\<close> rule: eff.induct) (auto split: if_splits)
 
 lemma epath_eff:
@@ -77,8 +77,8 @@ abbreviation \<open>rhsd s \<equiv> rhs (shd s)\<close>
 
 lemma epath_Pre_sdrop:
   assumes \<open>epath steps\<close> shows
-    \<open>\<^bold>\<ddagger>n ts [\<in>] lhs (shd steps) \<Longrightarrow> \<^bold>\<ddagger>n ts [\<in>] lhsd (sdrop m steps)\<close>
-    \<open>\<^bold>\<ddagger>n ts [\<in>] rhs (shd steps) \<Longrightarrow> \<^bold>\<ddagger>n ts [\<in>] rhsd (sdrop m steps)\<close>
+    \<open>\<^bold>\<ddagger>P ts [\<in>] lhs (shd steps) \<Longrightarrow> \<^bold>\<ddagger>P ts [\<in>] lhsd (sdrop m steps)\<close>
+    \<open>\<^bold>\<ddagger>P ts [\<in>] rhs (shd steps) \<Longrightarrow> \<^bold>\<ddagger>P ts [\<in>] rhsd (sdrop m steps)\<close>
   using assms eff_preserves_Pre
   by (induct m arbitrary: steps) (simp; metis (no_types, lifting) epath.cases surjective_pairing)+
 
@@ -114,25 +114,25 @@ lemma Hintikka_epath:
   assumes \<open>epath steps\<close> \<open>Saturated steps\<close>
   shows \<open>Hintikka (treeA steps) (treeB steps)\<close>
 proof
-  fix n ts
-  assume \<open>\<^bold>\<ddagger>n ts \<in> treeA steps\<close>
-  then obtain m where m: \<open>\<^bold>\<ddagger>n ts [\<in>] lhsd (sdrop m steps)\<close>
+  fix P ts
+  assume \<open>\<^bold>\<ddagger>P ts \<in> treeA steps\<close>
+  then obtain m where m: \<open>\<^bold>\<ddagger>P ts [\<in>] lhsd (sdrop m steps)\<close>
     using treeA_snth by auto
 
-  assume \<open>\<^bold>\<ddagger>n ts \<in> treeB steps\<close>
-  then obtain k where k: \<open>\<^bold>\<ddagger>n ts [\<in>] rhsd (sdrop k steps)\<close>
+  assume \<open>\<^bold>\<ddagger>P ts \<in> treeB steps\<close>
+  then obtain k where k: \<open>\<^bold>\<ddagger>P ts [\<in>] rhsd (sdrop k steps)\<close>
     using treeB_snth by auto
 
   let ?j = \<open>m + k\<close>
   let ?jstep = \<open>shd (sdrop ?j steps)\<close>
 
-  have \<open>\<^bold>\<ddagger>n ts [\<in>] lhs ?jstep\<close>
+  have \<open>\<^bold>\<ddagger>P ts [\<in>] lhs ?jstep\<close>
     using assms m epath_sdrop epath_Pre_sdrop by (metis (no_types, lifting) sdrop_add)
-  moreover have \<open>\<^bold>\<ddagger>n ts [\<in>] rhs ?jstep\<close>
+  moreover have \<open>\<^bold>\<ddagger>P ts [\<in>] rhs ?jstep\<close>
     using assms k epath_sdrop epath_Pre_sdrop by (metis (no_types, lifting) add.commute sdrop_add)
-  ultimately have \<open>enabled (Axiom n ts) (fst ?jstep)\<close>
+  ultimately have \<open>enabled (Axiom P ts) (fst ?jstep)\<close>
     unfolding enabled_def by (metis eff.simps(2) prod.exhaust_sel)
-  then obtain j' where \<open>takenAtStep (Axiom n ts) (shd (sdrop j' steps))\<close>
+  then obtain j' where \<open>takenAtStep (Axiom P ts) (shd (sdrop j' steps))\<close>
     using enabled_ex_taken[OF epath_sdrop[OF assms(1)] Saturated_sdrop[OF assms(2)]] by auto
   then have \<open>eff (snd (shd (sdrop j' steps))) (fst (shd (sdrop j' steps))) = None\<close>
     using assms(1) epath_sdrop epath_eff
@@ -189,21 +189,21 @@ next
 next
   fix p
   assume *: \<open>\<^bold>\<forall>p \<in> treeA steps\<close>
-  show \<open>\<forall>t. p\<langle>t/0\<rangle> \<in> treeA steps\<close>
+  show \<open>\<forall>t. \<langle>t\<rangle>p \<in> treeA steps\<close>
   proof
     fix t
     from * have \<open>\<exists>k. enabled (UniL t p) (fst (shd (sdrop k steps)))\<close>
       unfolding enabled_def using treeA_snth by (metis eff.simps(7) prod.exhaust_sel sdrop_simps(1))
     then obtain j where \<open>takenAtStep (UniL t p) (shd (sdrop j steps))\<close>(is \<open>takenAtStep _ (shd ?s)\<close>)
       using enabled_ex_taken[OF epath_sdrop[OF assms(1)] Saturated_sdrop[OF assms(2)]] by auto
-    then have \<open>fst (shd (stl ?s)) |\<in>| {| (p\<langle>t/0\<rangle> # lhsd ?s, rhsd ?s) |}\<close>
+    then have \<open>fst (shd (stl ?s)) |\<in>| {| (\<langle>t\<rangle>p # lhsd ?s, rhsd ?s) |}\<close>
       using assms(1) epath_sdrop epath_eff
       by (metis (no_types, lifting) eff.simps(7) epath.cases option.distinct(1) prod.collapse)
-    then have \<open>p\<langle>t/0\<rangle> [\<in>] lhs (shd (stl ?s))\<close>
+    then have \<open>\<langle>t\<rangle>p [\<in>] lhs (shd (stl ?s))\<close>
       by auto
-    then have \<open>p\<langle>t/0\<rangle> \<in> treeA (stl ?s)\<close>
+    then have \<open>\<langle>t\<rangle>p \<in> treeA (stl ?s)\<close>
       unfolding treeA_def by (meson UN_I shd_sset)
-    then show \<open>p\<langle>t/0\<rangle> \<in> treeA steps\<close>
+    then show \<open>\<langle>t\<rangle>p \<in> treeA steps\<close>
       using treeA_sdrop by (metis sdrop_simps(2) subsetD)
   qed
 next
@@ -214,14 +214,14 @@ next
   then obtain j where \<open>takenAtStep (UniR p) (shd (sdrop j steps))\<close>(is \<open>takenAtStep _ (shd ?s)\<close>)
     using enabled_ex_taken[OF epath_sdrop[OF assms(1)] Saturated_sdrop[OF assms(2)]] by auto
   then have \<open>fst (shd (stl ?s)) |\<in>|
-        {| (lhsd ?s, p\<langle>\<^bold>#(fresh (lhsd ?s @ rhsd ?s))/0\<rangle> # rhsd ?s [\<div>] \<^bold>\<forall>p) |}\<close>
+        {| (lhsd ?s, \<langle>\<^bold>#(fresh (lhsd ?s @ rhsd ?s))\<rangle>p # rhsd ?s [\<div>] \<^bold>\<forall>p) |}\<close>
     using assms(1) epath_sdrop epath_eff
     by (metis (no_types, lifting) eff.simps(8) epath.cases option.distinct(1) prod.collapse)
-  then have \<open>\<exists>t. p\<langle>t/0\<rangle> [\<in>] rhs (shd (stl ?s))\<close>
+  then have \<open>\<exists>t. \<langle>t\<rangle>p [\<in>] rhs (shd (stl ?s))\<close>
     by auto
-  then have \<open>\<exists>t. p\<langle>t/0\<rangle> \<in> treeB (stl ?s)\<close>
+  then have \<open>\<exists>t. \<langle>t\<rangle>p \<in> treeB (stl ?s)\<close>
     unfolding treeB_def by (meson UN_I shd_sset)
-  then show \<open>\<exists>t. p\<langle>t/0\<rangle> \<in> treeB steps\<close>
+  then show \<open>\<exists>t. \<langle>t\<rangle>p \<in> treeB steps\<close>
     using treeB_sdrop by (metis sdrop_simps(2) subsetD)
 qed
 

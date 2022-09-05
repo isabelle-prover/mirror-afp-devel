@@ -1,28 +1,59 @@
 (* Title: thys/Abacus_Mopup.thy
    Author: Jian Xu, Xingyuan Zhang, and Christian Urban
    Modifications: Sebastiaan Joosten
-*)
+   Modifications: Franz Regensburger (FABR) 08/2022
+     additional comments an re-structuring of section hierarchy
+ *)
 
-chapter \<open>Mopup Turing Machine that deletes all "registers", except one\<close>
+chapter \<open>Abacus Programs\<close>
+
+text \<open>Abacus Machines (aka Counter Machines) and their programs
+ are discussed in \cite{Boolos07}.
+They serve as an intermediate computation model in the course of
+the translation of Recursive Functions into Turing Machines.
+\<close>
+
+section \<open>A Mopup Turing Machine that deletes all "registers" on the tape, except one\<close>
+
+text \<open>In this section we define the higher order function mopup\_n\_tm that generates
+a mopup Turing Machine for every argument n. The generated mopup function deletes all
+numerals from the right tape except the n-th one. Such mopup machines will be used
+in order to tidy up the result computed by Turing Machines that were compiled from Abacus programs.
+Refer to  \cite{Boolos07} for more details.
+\<close>
 
 theory Abacus_Mopup
-  imports Uncomputable
+  imports
+    Turing_Hoare
 begin
+
+(* Cleanup the global simpset for proofs of several theorems about tm_dither *)
+
+declare adjust.simps[simp del]
+
+declare seq_tm.simps [simp del] 
+declare shift.simps[simp del]
+declare composable_tm.simps[simp del]
+declare step.simps[simp del]
+declare steps.simps[simp del]
+
+(* Temporary removal *)
+declare replicate_Suc[simp del]
 
 fun mopup_a :: "nat \<Rightarrow> instr list"
   where
     "mopup_a 0 = []" |
     "mopup_a (Suc n) = mopup_a n @ 
-       [(R, 2*n + 3), (W0, 2*n + 2), (R, 2*n + 1), (W1, 2*n + 2)]"
+       [(R, 2*n + 3), (WB, 2*n + 2), (R, 2*n + 1), (WO, 2*n + 2)]"
 
 definition mopup_b :: "instr list"
   where
-    "mopup_b \<equiv> [(R, 2), (R, 1), (L, 5), (W0, 3), (R, 4), (W0, 3),
-            (R, 2), (W0, 3), (L, 5), (L, 6), (R, 0), (L, 6)]"
+    "mopup_b \<equiv> [(R, 2), (R, 1), (L, 5), (WB, 3), (R, 4), (WB, 3),
+            (R, 2), (WB, 3), (L, 5), (L, 6), (R, 0), (L, 6)]"
 
-fun mopup :: "nat \<Rightarrow> instr list"
+fun mopup_n_tm :: "nat \<Rightarrow> instr list"
   where 
-    "mopup n = mopup_a n @ shift mopup_b (2*n)"
+    "mopup_n_tm n = mopup_a n @ shift mopup_b (2*n)"
 
 type_synonym mopup_type = "config \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> cell list \<Rightarrow> bool"
 
@@ -123,7 +154,7 @@ qed auto
 
 lemma fetch_bef_erase_a_o[simp]: 
   "\<lbrakk>0 < s; s \<le> 2 * n; s mod 2 = Suc 0\<rbrakk>
-  \<Longrightarrow> (fetch (mopup_a n @ shift mopup_b (2 * n)) s Oc) = (W0, s + 1)"
+  \<Longrightarrow> (fetch (mopup_a n @ shift mopup_b (2 * n)) s Oc) = (WB, s + 1)"
   apply(subgoal_tac "\<exists> q. s = 2*q + 1", auto)
    apply(subgoal_tac "length (mopup_a n) = 4*n")
     apply(auto simp: nth_append)
@@ -175,7 +206,7 @@ lemma fetch_jump_over1_b:
 
 lemma fetch_aft_erase_a_o: 
   "fetch (mopup_a n @ shift mopup_b (2 * n)) (Suc (Suc (2 * n))) Oc 
- = (W0, Suc (2 * n + 2))"
+ = (WB, Suc (2 * n + 2))"
   apply(subgoal_tac "length (mopup_a n) = 4 * n")
    apply(auto simp: mopup_b_def nth_append shift.simps)
   done
@@ -197,7 +228,7 @@ lemma fetch_aft_erase_b_b:
 
 lemma fetch_aft_erase_c_o: 
   "fetch (mopup_a n @ shift mopup_b (2 * n)) (2 * n + 4) Oc 
- = (W0, Suc (2 * n + 2))"
+ = (WB, Suc (2 * n + 2))"
   apply(subgoal_tac "length (mopup_a n) = 4 * n")
    apply(subgoal_tac "2*n + 4 = Suc (2*n + 3)", simp only: fetch.simps)
     apply(auto simp: mopup_b_def nth_append shift.simps)
@@ -446,9 +477,13 @@ proof(rule mopup_jump_over1_2_aft_erase_a)
     using a ln by(auto simp: mopup_jump_over1.simps tape_of_list_def )
 qed
 
-lemma tape_of_list_empty[simp]: "<[]> = []" by(simp add: tape_of_list_def)
+(*
+The lemma was moved to Numerals.thy by FABR
 
-lemma mopup_aft_erase_b_via_a[simp]: 
+lemma tape_of_list_empty[simp]: "<[]> = []" by (simp add: tape_of_list_def)
+*)
+
+lemma mopup_aft_erase_b_via_a[simp]:
   assumes "mopup_aft_erase_a (Suc (Suc (2 * n)), l, Oc # xs) lm n ires"
   shows "mopup_aft_erase_b (Suc (Suc (Suc (2 * n))), l, Bk # xs) lm n ires"
 proof -
@@ -825,7 +860,7 @@ proof -
     done
 qed
 
-lemma wf_mopup[intro]: "tm_wf (mopup n, 0)"
-  by(induct n, auto simp add: shift.simps mopup_b_def tm_wf.simps)
+lemma composable_mopup_n_tm[intro]: "composable_tm (mopup_n_tm n, 0)"
+  by(induct n, auto simp add: shift.simps mopup_b_def composable_tm.simps)
 
 end

@@ -426,7 +426,7 @@ proof (rule ring_iso_memI)
   interpret pds: domain "poly_ring S"
     using ds.univ_poly_is_domain[OF ds.carrier_is_subring] by simp
   interpret h: ring_hom_ring "R" "S" h
-    using dr.is_ring ds.is_ring assms(1)
+    using dr.ring_axioms ds.ring_axioms assms(1)
     by (intro ring_hom_ringI2, simp_all add:ring_iso_def)
   let ?R = "poly_ring R"
   let ?S = "poly_ring S"
@@ -620,7 +620,7 @@ proof -
   interpret pds: domain "poly_ring S"
     using ds.univ_poly_is_domain[OF ds.carrier_is_subring] by simp
   interpret h: ring_hom_ring "R" "S" h
-    using dr.is_ring ds.is_ring assms(1)
+    using dr.ring_axioms ds.ring_axioms assms(1)
     by (intro ring_hom_ringI2, simp_all add:ring_iso_def)
 
   have h_inj_on: "inj_on h (carrier R)" 
@@ -662,7 +662,7 @@ proof -
   interpret pds: domain "poly_ring S"
     using ds.univ_poly_is_domain[OF ds.carrier_is_subring] by simp
   interpret h: ring_hom_ring "R" "S" h
-    using dr.is_ring ds.is_ring assms(1)
+    using dr.ring_axioms ds.ring_axioms assms(1)
     by (intro ring_hom_ringI2, simp_all add:ring_iso_def)
 
   have h_img: "h ` (carrier R) = carrier S" 

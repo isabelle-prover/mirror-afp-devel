@@ -32,6 +32,11 @@ lemma vimage_fun_sing:
 lemma image_fun_subset: "S\<in>A\<rightarrow>B \<Longrightarrow> C\<subseteq>A\<Longrightarrow> {S ` x . x\<in> C} = S``C"
   using image_function[symmetric,of S C] domain_of_fun Pi_iff by auto
 
+lemma inj_range_Diff:
+  assumes "f \<in> inj(A,A')"
+  shows "f``A - f``T = f``(A - T)"
+    using inj_equality[OF _ _ assms] by auto
+
 lemma subset_Diff_Un: "X \<subseteq> A \<Longrightarrow> A = (A - X) \<union> X " by auto
 
 lemma Diff_bij:
@@ -55,7 +60,7 @@ lemma vimage_lam: "(\<lambda>x\<in>A. f(x)) -`` B = { x\<in>A . f(x) \<in> B }"
 lemma range_fun_subset_codomain:
   assumes "h:B \<rightarrow> C"
   shows "range(h) \<subseteq> C"
-  unfolding range_def domain_def converse_def using range_type[OF _ assms]  by auto
+  unfolding range_def domain_def converse_def using range_type[OF _ assms] by auto
 
 lemma Pi_rangeD:
   assumes "f\<in>Pi(A,B)" "b \<in> range(f)"

@@ -326,9 +326,10 @@ proof -
   also have "... = 
     3 * (\<Sum>i \<in> set as. (\<Sum>j \<in> set as. c i^2 * c j^2 * r 2 * r 2)) + ((\<Sum> i \<in> set as. c i^4 * r 4) - 3 *  (\<Sum> i \<in> set as. c i ^ 4 * r 2 * r 2))"
     apply (simp add: numeral_eq_Suc exp_h_prod_elim r_one) (* large intermediate terms *)
-    apply (simp add: kernel_of_eq All_less_Suc numeral_eq_Suc distrib_left sum.distrib sum_collapse neq_commute)
+    apply (simp add: kernel_of_eq All_less_Suc numeral_eq_Suc distrib_left sum.distrib sum_collapse neq_commute of_bool_not_iff)
     apply (simp add: algebra_simps sum_subtractf sum_collapse)
-    by (simp add: sum_distrib_left algebra_simps)
+    apply (simp add: sum_distrib_left algebra_simps)
+    done
   also have "... = 3 * (\<Sum>i \<in> set as. c i^2 * r 2)^2 + (\<Sum> i \<in> set as. c i ^ 4 * (r 4 - 3 * r 2 * r 2))"
     by (simp add:power2_eq_square sum_distrib_left algebra_simps sum_subtractf)
   also have "... = 3 * (\<Sum>i \<in> set as. c i^2)^2 * (r 2)^2 + (\<Sum>i \<in> set as. c i ^ 4 * (r 4 - 3 * r 2 * r 2))"

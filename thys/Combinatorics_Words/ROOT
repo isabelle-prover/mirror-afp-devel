@@ -1,14 +1,18 @@
 chapter AFP
 
-session Combinatorics_Words (AFP)  = "HOL-Library" +
-  options [timeout = 600,document_variants = "document=-unimportant:manual=/proof,/ML,+unimportant"]
+session Combinatorics_Words (AFP)  = "HOL-Eisbach" +
+  options [timeout = 600]
   theories
     Arithmetical_Hints
+    Border_Array
     Reverse_Symmetry
-    CoWBasic   
+    CoWBasic
     Submonoids
+    Morphisms
     Periodicity_Lemma
-    Lyndon_Schutzenberger    
+    Equations_Basic
+    Binary_Code_Morphisms
+    Lyndon_Schutzenberger
   theories [document = false]
     CoWAll
   document_files

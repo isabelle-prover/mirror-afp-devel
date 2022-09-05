@@ -1082,7 +1082,7 @@ ML \<open>
     )
 
     fun msg_allgoals msg ctxt _ st = 
-      msg ^ "\n" ^ Pretty.string_of (Pretty.chunks (Goal_Display.pretty_goals ctxt st))
+      msg ^ "\n" ^ Goal_Display.string_of_goal ctxt st
 
   end
 \<close>

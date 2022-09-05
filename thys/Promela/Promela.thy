@@ -9,14 +9,26 @@ begin
 text \<open>Auxiliary\<close>
 
 lemma mod_integer_le:
-  "a \<le> b \<Longrightarrow> 0 < a \<Longrightarrow> x mod (a + 1) \<le> b" for a b x :: integer
-  by (metis add_pos_nonneg discrete not_less order.strict_trans2
-    unique_euclidean_semiring_numeral_class.pos_mod_bound zero_le_one)
+  \<open>x mod (a + 1) \<le> b\<close> if \<open>a \<le> b\<close> \<open>0 < a\<close> for a b x :: integer
+using that including integer.lifting proof transfer
+  fix a b x :: int
+  assume \<open>0 < a\<close> \<open>a \<le> b\<close>
+  have \<open>x mod (a + 1) < a + 1\<close>
+    by (rule pos_mod_bound) (use \<open>0 < a\<close> in simp)
+  with \<open>a \<le> b\<close> show \<open>x mod (a + 1) \<le> b\<close>
+    by simp
+qed
 
 lemma mod_integer_ge:
-  "b \<le> 0 \<Longrightarrow> 0 < a \<Longrightarrow> b \<le> x mod (a+1)" for a b x :: integer
-  by (metis dual_order.trans less_add_one order.strict_trans
-    unique_euclidean_semiring_numeral_class.pos_mod_sign)
+  \<open>b \<le> x mod (a + 1)\<close> if \<open>b \<le> 0\<close> \<open>0 < a\<close> for a b x :: integer
+using that including integer.lifting proof transfer
+  fix a b x :: int
+  assume \<open>b \<le> 0\<close> \<open>0 < a\<close>
+  then have \<open>0 \<le> x mod (a + 1)\<close>
+    by simp
+  with \<open>b \<le> 0\<close> show \<open>b \<le> x mod (a + 1)\<close>
+    by simp
+qed
 
 text \<open>
   After having defined the datastructures, we present in this theory how to construct the transition system and how to generate the successors of a state, \ie the real semantics of a Promela program.

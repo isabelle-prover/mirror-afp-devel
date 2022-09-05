@@ -1,0 +1,124 @@
+# -------------------------------
+# Release current (as of 08/2022)
+# -------------------------------
+
+- Renaming of concepts
+
+  * Constructors W0 and W1 of type action were renamed to WB and WO.
+
+    Rational:
+    The book by Boolos, Burgess and Jeffrey uses tape symbols 0 and 1 and
+    uses actions 0 and 1 for writing these symbols as well.
+
+    However, the formal definition in the AFP entry (release afp-2022-07-04)
+    models the tape symbols as
+
+      datatype cell = Bk | Oc
+
+    and actions as
+
+      datatype action = W0 | W1 | L | R | Nop
+
+    This is quite confusing, since action W0 will result in a Bk
+    and action W1 will result in a Oc on the tape. Moreover, we use
+    the notation for <0> and <1> for the encoding of numerals.
+
+      <0> is translated into [Oc]
+      <1> is translated into [Oc, Oc]
+
+    In the current release, we therefore use
+
+      datatype action = WB | WO | L | R | Nop
+
+  * Renaming of tm_wf into composable_tm
+  
+    Rational:
+    The release afp-2022-07-04 defined the notion tm_wf of well-formed
+    instruction lists for Turing Machines. Sequential composition of
+    TMs is of no use, if the first machine is not 'well-formed'.
+
+    However, there is nothing wrong with TMs that are not 'well-formed'.
+    They are simply not composable with other machines.
+    Moreover, every non-well-formed TM can be recoded into some
+    well-formed TM with the same behaviour with respect to computations.
+    See function mk_composable0 in theory ComposableTMs.
+
+    Therefore, we considered tm_wf as beeing a miss-nomer and
+    therefore renamed tm_wf into composable_tm, which
+    seems to be more appropriate.
+ 
+  * Renaming of tm_comp into seq_tm
+
+    Rational:
+    In the future we plan to add more composition operators, e.g.
+    for branching and loops. This makes tm_comp a miss-nomer, too.
+
+  * Renaming of 'halts' into TMC_has_num_res
+
+    Rational:
+    In the new theory Turing_HaltingConditions we formalize several
+    notions of 'halting':
+
+      reaches_final
+      TMC_has_num_res
+      TMC_has_num_list_res
+      TMC_yields_num_res
+      TMC_yields_num_list_res
+
+    which are used for the definitions of Turing Decidability,
+    Turing Computability and Turing Reducibility.
+
+  * General consolidation of naming for TMs.
+
+    Wherever possible we use a leading tm_ for names of TMs.
+    E.g. tm_weak_copy, tm_strong_copy, tm_onestroke)
+
+- Restructuring of theories
+
+    "Turing"
+    "Uncomputable"
+
+  Rational:
+  Due to major additions by Franz Regensburger in the current release
+  it was necessary to split these theories into several smaller parts,
+  which simplified the introduction of additional theory files. The
+  dependency graph of theories is much more fine grained, now.
+  See the session graph in the browser.
+
+  Note about the new structure and where parts of the old theories
+  were moved:
+
+    Theory "Turing"
+      parts were moved to the new theories
+
+      "BlanksDoNotMatter"
+      "ComposableTMs"
+      "ComposedTMs"
+      "Numerals"
+
+    Theory "Uncomputable"
+      parts were moved to 
+
+      "Numerals"
+      "Turing_HaltingConditions"
+      "DitherTM"
+      "CopyTM"
+      "TuringUnComputable_H2_original"
+      "UTM"
+
+    and augmented by e.g.
+      "TuringDecidable"
+      "TuringReducible"
+      "HaltingProblems_K_H"
+      "TuringUnComputable_H2"
+      "TuringComputable"
+
+   The remainig theory files of the afp-2022-07-04 were kept as is,
+   apart from additional comments and changes due to the enhancement
+   of the LaTeX section structure.
+
+# -------------------------------
+# Release afp-2022-07-04
+# -------------------------------
+(base line for the change log)
+

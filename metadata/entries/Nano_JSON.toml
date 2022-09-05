@@ -1,0 +1,44 @@
+title = "Nano JSON: Working with JSON formatted data in Isabelle/HOL and Isabelle/ML"
+date = 2022-07-29
+topics = [
+  "Tools",
+  "Computer science/Data structures",
+]
+abstract = """
+JSON (JavaScript Object Notation) is a common format for exchanging
+data, based on a collection of key/value-pairs (the JSON objects) and
+lists. Its syntax is inspired by JavaScript with the aim of being easy
+to read and write for humans and easy to parse and generate for
+machines.  Despite its origin in the JavaScript world, JSON is
+language-independent and many programming languages support working
+with JSON-encoded data. This makes JSON an interesting format for
+exchanging data with Isabelle/HOL.  This AFP entry provides a
+JSON-like import-expert format for both Isabelle/ML and Isabelle/HOL.
+On the one hand, this AFP entry provides means for Isabelle/HOL users
+to work with JSON encoded data without the need using Isabelle/ML. On
+the other and, the provided Isabelle/ML interfaces allow additional
+extensions or integration into Isabelle extensions written in
+Isabelle/ML. While format is not fully JSON compliant (e.g., due to
+limitations in the range of supported Unicode characters), it works in
+most situations: the provided implementation in Isabelle/ML and its
+representation in Isabelle/HOL have been used successfully in several
+projects for exchanging data sets of several hundredths of megabyte
+between Isabelle and external tools."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brucker]
+homepage = "brucker_homepage"
+
+[contributors]
+
+[notify]
+brucker = "brucker_email2"
+
+[history]
+
+[extra]
+
+[related]

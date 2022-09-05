@@ -21,7 +21,7 @@ proof-
   have I: "(h \<in> ring_hom R S \<and> F \<in> I \<rightarrow> carrier R) \<longrightarrow> h (finsum R F I) = finsum S (h \<circ> F) I"
     apply(rule finite_induct, rule assms)
     using assms ring_hom_zero[of h R S] 
-    apply (metis abelian_group_def abelian_monoid.finsum_empty is_ring ring_def)
+    apply (metis abelian_group_def abelian_monoid.finsum_empty ring_axioms ring_def)
   proof(rule)
     fix A a 
     assume A: "finite A" "a \<notin> A" "h \<in> ring_hom R S \<and> F \<in> A \<rightarrow> carrier R \<longrightarrow>
@@ -3701,13 +3701,13 @@ next
         then have 0: "g = f \<ominus>\<^bsub>P\<^esub> ((ctrm s) \<oplus>\<^bsub>P\<^esub> (X \<otimes>\<^bsub>P\<^esub> s')) \<otimes>\<^bsub>P\<^esub>(X[^]\<^bsub>P\<^esub>n)"
           using g_def'  by auto
         then have "g = f \<ominus>\<^bsub>P\<^esub> ((ctrm s)\<otimes>\<^bsub>P\<^esub>(X[^]\<^bsub>P\<^esub>n)) \<ominus>\<^bsub>P\<^esub> ((X \<otimes>\<^bsub>P\<^esub> s') \<otimes>\<^bsub>P\<^esub>(X[^]\<^bsub>P\<^esub>n))"
-          using P cring X_closed  P.l_distr P.ring_simprules(19) UP_a_assoc a_minus_def assms
+          using P cring_axioms X_closed  P.l_distr P.ring_simprules(19) UP_a_assoc a_minus_def assms
           by (simp add: a_minus_def ctrm_is_poly)
         then have "g \<oplus>\<^bsub>P\<^esub> ((X \<otimes>\<^bsub>P\<^esub> s') \<otimes>\<^bsub>P\<^esub>(X[^]\<^bsub>P\<^esub>n)) =  f \<ominus>\<^bsub>P\<^esub> ((ctrm s)\<otimes>\<^bsub>P\<^esub>(X[^]\<^bsub>P\<^esub>n))"
-          using P cring X_closed  P.l_distr P.ring_simprules UP_a_assoc a_minus_def assms
+          using P cring_axioms X_closed  P.l_distr P.ring_simprules UP_a_assoc a_minus_def assms
           by (simp add: P.r_neg2 ctrm_is_poly)                                                   
         then have " ((ctrm s)\<otimes>\<^bsub>P\<^esub>(X[^]\<^bsub>P\<^esub>n)) =  f \<ominus>\<^bsub>P\<^esub> (g \<oplus>\<^bsub>P\<^esub> ((X \<otimes>\<^bsub>P\<^esub> s') \<otimes>\<^bsub>P\<^esub>(X[^]\<^bsub>P\<^esub>n)))"
-          using P cring X_closed P.ring_simprules UP_a_assoc a_minus_def assms
+          using P cring_axioms X_closed P.ring_simprules UP_a_assoc a_minus_def assms
           by (simp add: P.ring_simprules(17) ctrm_is_poly)           
         then have " ((ctrm s)\<otimes>\<^bsub>P\<^esub>(X[^]\<^bsub>P\<^esub>n)) =  f \<ominus>\<^bsub>P\<^esub> (((X \<otimes>\<^bsub>P\<^esub> s') \<otimes>\<^bsub>P\<^esub>(X[^]\<^bsub>P\<^esub>n)) \<oplus>\<^bsub>P\<^esub> g)"
           by (simp add: P(1) P(3) UP_a_comm X_closed)          

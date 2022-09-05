@@ -11,33 +11,6 @@ theory Kildall_1
 imports SemilatAlg
 begin
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 primrec merges :: "'s binop \<Rightarrow> (nat \<times> 's) list \<Rightarrow> 's list \<Rightarrow> 's list"
 where
   "merges f []      \<tau>s = \<tau>s"
@@ -48,7 +21,7 @@ lemmas [simp] = Let_def Semilat.le_iff_plus_unchanged [OF Semilat.intro, symmetr
 
 
 lemma (in Semilat) nth_merges:
- "\<And>ss. \<lbrakk>p < length ss; ss \<in> list n A; \<forall>(p,t)\<in>set ps. p<n \<and> t\<in>A \<rbrakk> \<Longrightarrow>
+ "\<And>ss. \<lbrakk>p < length ss; ss \<in> nlists n A; \<forall>(p,t)\<in>set ps. p<n \<and> t\<in>A \<rbrakk> \<Longrightarrow>
   (merges f ps ss)!p = map snd [(p',t') \<leftarrow> ps. p'=p] \<Squnion>\<^bsub>f\<^esub> ss!p"
   (is "\<And>ss. \<lbrakk>_; _; ?steptype ps\<rbrakk> \<Longrightarrow> ?P ss ps")
 (*<*)
@@ -56,17 +29,17 @@ proof (induct ps)
   show "\<And>ss. ?P ss []" by simp
 
   fix ss p' ps'
-  assume ss: "ss \<in> list n A"
+  assume ss: "ss \<in> nlists n A"
   assume l:  "p < length ss"
   assume "?steptype (p'#ps')"
   then obtain a b where
     p': "p'=(a,b)" and ab: "a<n" "b\<in>A" and ps': "?steptype ps'"
     by (cases p') auto
-  assume "\<And>ss. p< length ss \<Longrightarrow> ss \<in> list n A \<Longrightarrow> ?steptype ps' \<Longrightarrow> ?P ss ps'"
-  hence IH: "\<And>ss. ss \<in> list n A \<Longrightarrow> p < length ss \<Longrightarrow> ?P ss ps'" using ps' by iprover
+  assume "\<And>ss. p< length ss \<Longrightarrow> ss \<in> nlists n A \<Longrightarrow> ?steptype ps' \<Longrightarrow> ?P ss ps'"
+  hence IH: "\<And>ss. ss \<in> nlists n A \<Longrightarrow> p < length ss \<Longrightarrow> ?P ss ps'" using ps' by iprover
 
   from ss ab
-  have "ss[a := b \<squnion>\<^bsub>f\<^esub> ss!a] \<in> list n A" by (simp add: closedD)
+  have "ss[a := b \<squnion>\<^bsub>f\<^esub> ss!a] \<in> nlists n A" by (simp add: closedD)
   moreover
   with l have "p < length (ss[a := b \<squnion>\<^bsub>f\<^esub> ss!a])" by simp
   ultimately
@@ -84,8 +57,8 @@ lemma length_merges [simp]:
 (*<*) by (induct ps, auto) (*>*)
 
 lemma (in Semilat) merges_preserves_type_lemma:
-shows "\<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>(p,x) \<in> set ps. p<n \<and> x\<in>A)
-         \<longrightarrow> merges f ps xs \<in> list n A"
+shows "\<forall>xs. xs \<in> nlists n A \<longrightarrow> (\<forall>(p,x) \<in> set ps. p<n \<and> x\<in>A)
+         \<longrightarrow> merges f ps xs \<in> nlists n A"
 (*<*)
 apply (insert closedI)
 apply (unfold closed_def)
@@ -96,8 +69,8 @@ done
 (*>*)
 
 lemma (in Semilat) merges_preserves_type [simp]:
- "\<lbrakk> xs \<in> list n A; \<forall>(p,x) \<in> set ps. p<n \<and> x\<in>A \<rbrakk>
-  \<Longrightarrow> merges f ps xs \<in> list n A"
+ "\<lbrakk> xs \<in> nlists n A; \<forall>(p,x) \<in> set ps. p<n \<and> x\<in>A \<rbrakk>
+  \<Longrightarrow> merges f ps xs \<in> nlists n A"
 by (simp add: merges_preserves_type_lemma)
 
 lemma (in Semilat) list_update_le_listI [rule_format]:

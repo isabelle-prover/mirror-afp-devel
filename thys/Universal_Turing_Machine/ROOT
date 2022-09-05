@@ -2,20 +2,71 @@ chapter AFP
 
 session Universal_Turing_Machine (AFP) = HOL +
   options [timeout = 1200]
+
   sessions
     "HOL-Library"
-  theories
+  theories [document = false]
+     "HOL-Library.Code_Target_Int"
+     "HOL-Library.Code_Abstract_Nat"
+     "HOL-Library.Code_Binary_Nat"
+     "HOL-Library.Code_Target_Nat"
+     "HOL-Library.Code_Target_Numeral"
+
+  theories [document = pdf]
     "Turing"
+    "Turing_aux"
+    "BlanksDoNotMatter"
+    "ComposableTMs"
+    "ComposedTMs"
+
+    "Numerals"
+    "Numerals_Ex"
+
     "Turing_Hoare"
-    "Uncomputable"
+    "SemiIdTM"
+    "Turing_HaltingConditions"
+
+    "OneStrokeTM"
+    "WeakCopyTM"
+    "StrongCopyTM"
+    "TuringDecidable"
+    "TuringReducible"
+    "SimpleGoedelEncoding"
+    "HaltingProblems_K_H"
+    "HaltingProblems_K_aux"
+    "TuringComputable"
+
+    (* ------------------- *)
+
+    "DitherTM"
+    "CopyTM"
+    "TuringUnComputable_H2"
+    "TuringUnComputable_H2_original"
+
+    (* ------------------- *)
+
     "Abacus_Mopup"
     "Abacus"
-    "Abacus_Defs"
+    "Abacus_alt_Compile"
+    "Abacus_Hoare"
+
     "Rec_Def"
+    "Rec_Ex"
     "Recursive"
-    "Recs"
+
+    "Recs_alt_Def"
+    "Recs_alt_Ex"
+
     "UF"
     "UTM"
-  document_files
+
+    (* ------------------- *)
+
+    "GeneratedCode"
+
+    (* ------------------- *)
+
+document_files
     "root.bib"
     "root.tex"
+

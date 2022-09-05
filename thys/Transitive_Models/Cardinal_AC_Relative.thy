@@ -19,15 +19,10 @@ begin
 lemma lam_replacement_minimum_vimage:
   "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x. minimum(r, f -`` {x}))"
   using lam_replacement_minimum lam_replacement_vimage_sing_fun lam_replacement_constant
-  by (rule_tac lam_replacement_hcomp2[of _ _ minimum])
-    (force intro: lam_replacement_identity)+
+    lam_replacement_identity lam_replacement_hcomp2[of _ _ minimum]
+  by simp
 
 lemmas surj_imp_inj_replacement4 = lam_replacement_minimum_vimage[unfolded lam_replacement_def]
-
-lemma lam_replacement_min: "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x . minimum(r, f -`` {x}))"
-  using lam_replacement_hcomp2[OF lam_replacement_constant[of r] lam_replacement_vimage_sing_fun]
-    lam_replacement_minimum
-  by simp
 
 lemmas surj_imp_inj_replacement =
   surj_imp_inj_replacement1 surj_imp_inj_replacement2 surj_imp_inj_replacement4
@@ -353,7 +348,7 @@ qed
 
 locale M_cardinal_UN =  M_Pi_assumptions_choice _ K X for K X +
   assumes
-    \<comment> \<open>The next assumption is required by @{thm Least_closed}\<close>
+    \<comment> \<open>The next assumption is required by @{thm [source] Least_closed}\<close>
     X_witness_in_M: "w \<in> X(x) \<Longrightarrow> M(x)"
     and
     lam_m_replacement:"M(f) \<Longrightarrow> strong_replacement(M,

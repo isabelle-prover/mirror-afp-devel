@@ -477,10 +477,10 @@ qed
 
 end \<comment> \<open>\<^locale>\<open>M_Pi\<close>\<close>
 
-(* Fn_rel should be the relativization *)
 definition
   Fn_rel :: "[i\<Rightarrow>o,i,i,i] \<Rightarrow> i" (\<open>Fn\<^bsup>_\<^esup>'(_,_,_')\<close>) where
   "Fn_rel(M,\<kappa>,I,J) \<equiv> {f \<in> I\<rightharpoonup>\<^bsup>M\<^esup> J . f \<prec>\<^bsup>M\<^esup> \<kappa>}"
+\<comment> \<open>Eventually we can define \<^term>\<open>Fn_rel\<close> as the relativization of \<^term>\<open>Fn\<close>\<close>
 
 context  M_library
 begin

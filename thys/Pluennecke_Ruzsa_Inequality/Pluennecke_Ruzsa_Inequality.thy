@@ -292,6 +292,9 @@ lemma differenceset_commute [simp]:
   shows "minusset (differenceset B A) = differenceset A B "
   by (metis diff_minus_set minus_minusset sumset_Int_carrier_eq(1) sumset_commute)
 
+lemma card_differenceset_commute: "card (differenceset B A) = card (differenceset A B)"
+    by (metis card_minusset' differenceset_commute sumset_subset_carrier)
+
 lemma minusset_distrib_sum:
   shows "minusset (sumset A B) = sumset (minusset A) (minusset B)"
   by (simp add: diff_minus_set)
@@ -305,6 +308,9 @@ lemma card_sumset_iterated_minusset:
 
 lemma finite_minusset: "finite A \<Longrightarrow> finite (minusset A)"
   by (simp add: minusset_eq)
+
+lemma finite_differenceset: "finite A \<Longrightarrow> finite B \<Longrightarrow> finite (differenceset A B)"
+  by (simp add: finite_minusset finite_sumset)
 
 
 subsection\<open>The Ruzsa triangle inequality\<close>

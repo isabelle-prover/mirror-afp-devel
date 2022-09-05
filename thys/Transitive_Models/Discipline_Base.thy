@@ -23,10 +23,7 @@ lemma (in M_trivial) singleton_abs[simp] :
 synthesize "singleton" from_definition "is_singleton"
 notation singleton_fm (\<open>\<cdot>{_} is _\<cdot>\<close>)
 
-(* TODO: check if the following lemmas should be here or not? *)
-lemma (in M_trivial) singleton_closed [simp]:
-  "M(x) \<Longrightarrow> M({x})"
-  by simp
+lemmas (in M_trivial) singleton_closed = singleton_in_MI
 
 lemma (in M_trivial) Upair_closed[simp]: "M(a) \<Longrightarrow> M(b) \<Longrightarrow> M(Upair(a,b))"
   using Upair_eq_cons by simp
@@ -140,6 +137,8 @@ proof -
     using assms unfolding hcomp_r_def by auto
 qed
 
+\<comment> \<open>In the next lemma, the absoluteness hypotheses on \<^term>\<open>g1\<close> and \<^term>\<open>g2\<close> can be restricted
+to the actual parameters.\<close>
 lemma (in M_trivial) hcomp2_2_abs:
   assumes
     is_f_abs:"\<And>r1 r2 z. M(r1) \<Longrightarrow> M(r2) \<Longrightarrow>  M(z) \<Longrightarrow> is_f(M,r1,r2,z) \<longleftrightarrow> z = f(r1,r2)" and
@@ -148,9 +147,8 @@ lemma (in M_trivial) hcomp2_2_abs:
     types: "M(a)" "M(b)" "M(w)" "M(g1(a,b))" "M(g2(a,b))"
   shows
     "is_hcomp2_2(M,is_f,is_g1,is_g2,a,b,w) \<longleftrightarrow> w = f(g1(a,b),g2(a,b))"
-  unfolding is_hcomp2_2_def using assms
-    \<comment> \<open>We only need some particular cases of the abs assumptions\<close>
-    (* is_f_abs types is_g1_abs[of a b] is_g2_abs[of a b] *)
+  unfolding is_hcomp2_2_def
+  using assms
   by simp
 
 lemma hcomp2_2_uniqueness:
@@ -301,7 +299,7 @@ next
     by (auto del:the_equality intro:the_equality[symmetric])
 qed
 
-text\<open>The next "def\_" result really corresponds to @{thm Pow_iff}\<close>
+text\<open>The next "def\_" result really corresponds to @{thm [source] Pow_iff}\<close>
 lemma def_Pow_rel: "M(A) \<Longrightarrow> M(r) \<Longrightarrow> A\<in>Pow_rel(M,r) \<longleftrightarrow> A \<subseteq> r"
   using Pow_rel_iff[OF _ Pow_rel_closed, of r r]
   unfolding is_Pow_def by simp
@@ -322,10 +320,6 @@ lemma mem_Pow_rel_abs: "M(a) \<Longrightarrow> M(r) \<Longrightarrow> a \<in> Po
 
 end \<comment> \<open>\<^locale>\<open>M_basic_no_repl\<close>\<close>
 
-(******************  end Discipline  **********************)
-
-
-(**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>PiP\<close>\<close>
 
 definition
@@ -345,29 +339,20 @@ lemma def_PiP_rel:
 
 end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
-(******************  end Discipline  **********************)
-
-(*
-Sigma(A,B) == \<Union>x\<in>A. \<Union>y\<in>B(x). {\<langle>x,y\<rangle>}
-           == \<Union> {  (\<Union>y\<in>B(x). {\<langle>x,y\<rangle>})  . x\<in>A}
-           == \<Union> {  (\<Union>y\<in>B(x). {\<langle>x,y\<rangle>})  . x\<in>A}
-           == \<Union> {  ( \<Union> { {\<langle>x,y\<rangle>} . y\<in>B(x)} )  . x\<in>A}
-                     ----------------------
-                           Sigfun(x,B)
-*)
-
-definition \<comment> \<open>FIX THIS: not completely relational. Can it be?\<close>
+definition
   Sigfun :: "[i,i\<Rightarrow>i]\<Rightarrow>i"  where
   "Sigfun(x,B) \<equiv> \<Union>y\<in>B(x). {\<langle>x,y\<rangle>}"
+
+lemma SigFun_char : "Sigfun(x,B) = {x}\<times>B(x)"
+  unfolding Sigfun_def by auto
 
 lemma Sigma_Sigfun: "Sigma(A,B) = \<Union> {Sigfun(x,B) . x\<in>A}"
   unfolding Sigma_def Sigfun_def ..
 
-definition \<comment> \<open>FIX THIS: not completely relational. Can it be?\<close>
+definition \<comment> \<open>Note that $B$ below is a higher order argument\<close>
   is_Sigfun :: "[i\<Rightarrow>o,i,i\<Rightarrow>i,i]\<Rightarrow>o"  where
   "is_Sigfun(M,x,B,Sd) \<equiv> M(Sd) \<and> (\<exists>RB[M]. is_Replace(M,B(x),\<lambda>y z. z={\<langle>x,y\<rangle>},RB)
                          \<and> big_union(M,RB,Sd))"
-
 
 context M_trivial
 begin
@@ -435,7 +420,7 @@ proof -
   with assms
   show ?thesis
     using Replace_abs[of A _ "\<lambda>x z. z=Sigfun(x,B)"]
-      Sigfun_closed Sigma_Sigfun[of A B] transM[of _ A]
+      Sigfun_closed Sigma_Sigfun transM[of _ A]
       Pi_assumptions is_Sigfun_abs
     unfolding is_Sigma_def by simp
 qed
@@ -446,8 +431,7 @@ proof -
     by auto
   then
   show ?thesis
-    using Sigma_Sigfun[of A B] transM[of _ A]
-      Sigfun_closed Pi_assumptions
+    using Sigma_Sigfun[of A B] transM[of _ A] Sigfun_closed Pi_assumptions
     by simp
 qed
 
@@ -455,10 +439,9 @@ lemmas trans_Sigma_closed[trans_closed] = transM[OF _ Sigma_closed]
 
 end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions\<close>\<close>
 
-(**********************************************************)
 subsection\<open>Discipline for \<^term>\<open>Pi\<close>\<close>
 
-definition (* completely relational *)
+definition \<comment> \<open>completely relational\<close>
   is_Pi :: "[i\<Rightarrow>o,i,i\<Rightarrow>i,i]\<Rightarrow>o"  where
   "is_Pi(M,A,B,I) \<equiv> M(I) \<and> (\<exists>S[M]. \<exists>PS[M]. is_Sigma(M,A,B,S) \<and>
        is_Pow(M,S,PS) \<and>
@@ -471,7 +454,6 @@ definition
 abbreviation
   Pi_r_set ::  "[i,i,i\<Rightarrow>i] \<Rightarrow> i" (\<open>Pi\<^bsup>_\<^esup>'(_,_')\<close>) where
   "Pi_r_set(M,A,B) \<equiv> Pi_rel(##M,A,B)"
-
 
 context M_basic
 begin
@@ -518,7 +500,7 @@ proof -
     by simp
 qed
 
-\<comment> \<open>From this point on, the higher order variable \<^term>\<open>y\<close> must be
+\<comment> \<open>From this point on, the higher order variable \<^term>\<open>B\<close> must be
 explicitly instantiated, and proof methods are slower\<close>
 
 lemmas trans_Pi_rel_closed[trans_closed] = transM[OF _ Pi_rel_closed]
@@ -593,8 +575,6 @@ lemma Pi_rel_transfer: "Pi\<^bsup>M\<^esup>(A,B) \<subseteq> Pi\<^bsup>N\<^esup>
 end \<comment> \<open>\<^locale>\<open>M_N_Pi_assumptions\<close>\<close>
 
 
-(******************  end Discipline  **********************)
-
 locale M_Pi_assumptions_0 = M_Pi_assumptions _ 0
 begin
 
@@ -654,6 +634,5 @@ lemma Pi_rel_weaken_type:
     (blast intro: Pi_rel_type  dest: apply_type)
 
 end \<comment> \<open>\<^locale>\<open>M_Pi_assumptions2\<close>\<close>
-
 
 end

@@ -188,7 +188,7 @@ lemma (in M_ctm1) seqleR_fm_sats :
   using assms trans_M sats_subset_fm pair_iff_sats
   by auto
 
-context M_ctm2
+context M_ctm1
 begin
 
 lemma seqle_in_M: "seqle \<in> M"
@@ -225,6 +225,6 @@ lemma cohen_extension_is_proper: "\<exists>G. M_generic(G) \<and> M \<noteq> M[G
   using proper_extension generic_filter_existence zero_in_seqspace
   by force
 
-end \<comment> \<open>\<^locale>\<open>M_ctm2\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm1\<close>\<close>
 
 end

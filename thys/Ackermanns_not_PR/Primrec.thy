@@ -52,24 +52,13 @@ next
 qed
 
 
-text \<open>PROPERTY A 7-, the single-step lemma\<close>
+text \<open>PROPERTY A 4'? Extra lemma needed for \<^term>\<open>CONSTANT\<close> case, constant functions\<close>
 
 lemma ack_less_ack_Suc1 [iff]: "ack i j < ack (Suc i) j"
   by (blast intro: ack_less_mono2 less_le_trans)
 
-
-text \<open>PROPERTY A 4'? Extra lemma needed for \<^term>\<open>CONSTANT\<close> case, constant functions\<close>
-
 lemma less_ack1 [iff]: "i < ack i j"
-proof (induct i)
-  case 0
-  then show ?case
-    by simp
-next
-  case (Suc i)
-  then show ?case
-    using less_trans_Suc by blast
-qed
+  by (induct i) (auto intro: less_trans_Suc)
 
 
 text \<open>PROPERTY A 8\<close>
@@ -97,7 +86,7 @@ qed
 text \<open>PROPERTY A 7, monotonicity for \<open><\<close> [not clear why
   @{thm [source] ack_1} is now needed first!]\<close>
 
-lemma ack_less_mono1_aux: "ack i k < ack (Suc (i +i')) k"
+lemma ack_less_mono1_aux: "ack i k < ack (Suc (i+j)) k"
 proof (induct i k rule: ack.induct)
   case (1 n) show ?case
     using less_le_trans by auto
@@ -124,9 +113,9 @@ lemma ack_nest_bound: "ack i1 (ack i2 j) < ack (2 + (i1 + i2)) j"
 proof -
   have "ack i1 (ack i2 j) < ack (i1 + i2) (ack (Suc (i1 + i2)) j)"
     by (meson ack_le_mono1 ack_less_mono1 ack_less_mono2 le_add1 le_trans less_add_Suc2 not_less)
-  also have "... = ack (Suc (i1 + i2)) (Suc j)"
+  also have "\<dots> = ack (Suc (i1 + i2)) (Suc j)"
     by simp
-  also have "... \<le> ack (2 + (i1 + i2)) j"
+  also have "\<dots> \<le> ack (2 + (i1 + i2)) j"
     using ack2_le_ack1 add_2_eq_Suc by presburger
   finally show ?thesis .
 qed
@@ -141,21 +130,21 @@ proof -
     by (simp_all add: ack_le_mono1)
   then have "ack i1 j + ack i2 j < ack (Suc (Suc 0)) (ack (i1 + i2) j)"
     by simp
-  also have "... < ack (4 + (i1 + i2)) j"
+  also have "\<dots> < ack (4 + (i1 + i2)) j"
     by (metis ack_nest_bound add.assoc numeral_2_eq_2 numeral_Bit0)
   finally show ?thesis .
 qed
 
 
 text \<open>PROPERTY A 12.  Article uses existential quantifier but the ALF proof
-  used \<open>k + 4\<close>.  Quantified version must be nested \<open>\<exists>k'. \<forall>i j. ...\<close>\<close>
+  used \<open>k + 4\<close>.  Quantified version must be nested \<open>\<exists>k'. \<forall>i j. \<dots>\<close>\<close>
 
 lemma ack_add_bound2:
   assumes "i < ack k j" shows "i + j < ack (4 + k) j"
 proof -
   have "i + j < ack k j + ack 0 j"
     using assms by auto
-  also have "... < ack (4 + k) j"
+  also have "\<dots> < ack (4 + k) j"
     by (metis ack_add_bound add.right_neutral)
   finally show ?thesis .
 qed
@@ -174,7 +163,7 @@ definition SC :: "nat list \<Rightarrow> nat"
   where "SC l = Suc (hd0 l)"
 
 definition CONSTANT :: "nat \<Rightarrow> nat list \<Rightarrow> nat"
-  where "CONSTANT k l = k"
+  where "CONSTANT n l = n"
 
 definition PROJ :: "nat \<Rightarrow> nat list \<Rightarrow> nat"
   where "PROJ i l = hd0 (drop i l)"
@@ -232,7 +221,7 @@ proof (induct l arbitrary: i)
 next
   case (Cons a l)
   then show ?case
-    by (metis ack.simps(1) add.commute drop_Cons' hd0.simps(2) leD leI lessI not_less_eq sum_list.Cons trans_le_add2)
+    by (simp add: drop_Cons') (metis add_Suc_right trans_less_add2)
 qed
 
 
@@ -280,9 +269,9 @@ next
     have "\<not> g (?r # m # l) + sum_list (?r # m # l) < g (?r # m # l) + (m + sum_list l)"
       by force
     then have "g (?r # m # l) + (m + sum_list l) < ack kg (sum_list (?r # m # l))"
-      by (meson assms(2) leI less_le_trans)
+      by (meson g leI less_le_trans)
     moreover
-    have "... < ack (kf + kg) (ack (Suc (kf + kg)) (m + sum_list l))"
+    have "\<dots> < ack (kf + kg) (ack (Suc (kf + kg)) (m + sum_list l))"
       using Suc.hyps by simp (meson ack_le_mono1 ack_less_mono2 le_add2 le_less_trans)
     ultimately show ?case
       by auto

@@ -2,7 +2,7 @@ section\<open>Aids to internalize formulas\<close>
 
 theory Internalizations
   imports
-    "ZF-Constructible.DPow_absolute"
+    DPow_absolute
     Synthetic_Definition
     Nat_Miscellanea
 begin

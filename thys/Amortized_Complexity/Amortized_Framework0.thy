@@ -68,12 +68,12 @@ fun T_incr :: "bool list \<Rightarrow> real" where
 "T_incr (False#bs) = 1" |
 "T_incr (True#bs) = T_incr bs + 1"
 
-definition p_incr :: "bool list \<Rightarrow> real" ("\<Phi>") where
+definition \<Phi> :: "bool list \<Rightarrow> real" where
 "\<Phi> bs = length(filter id bs)"
 
 lemma A_incr: "T_incr bs + \<Phi>(incr bs) - \<Phi> bs = 2"
 apply(induction bs rule: incr.induct)
-apply (simp_all add: p_incr_def)
+apply (simp_all add: \<Phi>_def)
 done
 
 interpretation incr: Amortized
@@ -84,9 +84,9 @@ proof (standard, goal_cases)
 next
   case 2 show ?case by simp
 next
-  case 3 show ?case by(simp add: p_incr_def)
+  case 3 show ?case by(simp add: \<Phi>_def)
 next
-  case 4 show ?case by(simp add: p_incr_def)
+  case 4 show ?case by(simp add: \<Phi>_def)
 next
   case 5 show ?case by(simp add: A_incr)
 qed
@@ -97,14 +97,26 @@ end
 
 subsection "Dynamic tables: insert only"
 
-fun T_ins :: "nat \<times> nat \<Rightarrow> real" where
+locale DynTable1
+begin
+
+fun ins :: "nat*nat \<Rightarrow> nat*nat" where
+"ins (n,l) = (n+1, if n<l then l else if l=0 then 1 else 2*l)"
+
+fun T_ins :: "nat*nat \<Rightarrow> real" where
 "T_ins (n,l) = (if n<l then 1 else n+1)"
+
+fun invar :: "nat*nat \<Rightarrow> bool" where
+"invar (n,l) = (l/2 \<le> n \<and> n \<le> l)"
+
+fun \<Phi> :: "nat*nat \<Rightarrow> real" where
+"\<Phi> (n,l) = 2*(real n) - l"
 
 interpretation ins: Amortized
 where init = "(0::nat,0::nat)"
-and nxt = "\<lambda>_ (n,l). (n+1, if n<l then l else if l=0 then 1 else 2*l)"
-and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l < 2*n"
-and T = "\<lambda>_. T_ins" and \<Phi> = "\<lambda>(n,l). 2*n - l" and U = "\<lambda>_ _. 3"
+and nxt = "\<lambda>_. ins"
+and inv = invar
+and T = "\<lambda>_. T_ins" and \<Phi> = \<Phi> and U = "\<lambda>_ _. 3"
 proof (standard, goal_cases)
   case 1 show ?case by auto
 next
@@ -117,7 +129,9 @@ next
   case (5 s) thus ?case by(cases s) auto
 qed
 
-locale table_insert =
+end
+
+locale table_insert = DynTable1 +
 fixes a :: real
 fixes c :: real
 assumes c1[arith]: "c > 1" 
@@ -331,30 +345,47 @@ subsection "Dynamic tables: insert and delete"
 
 datatype op\<^sub>t\<^sub>b = Ins | Del
 
+locale DynTable2 = DynTable1
+begin
+
+fun del :: "nat*nat \<Rightarrow> nat*nat" where
+"del (n,l) = (n - 1, if n=1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
+
+fun T_del :: "nat*nat \<Rightarrow> real" where
+"T_del (n,l) = (if n=1 then 1 else if 4*(n - 1)<l then n else 1)"
+
 fun nxt_tb :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> nat*nat" where
-"nxt_tb Ins (n,l) = (n+1, if n<l then l else if l=0 then 1 else 2*l)" |
-"nxt_tb Del (n,l) = (n - 1, if n=1 then 0 else if 4*(n - 1)<l then l div 2 else l)"
+"nxt_tb Ins = ins" |
+"nxt_tb Del = del"
 
 fun T_tb :: "op\<^sub>t\<^sub>b \<Rightarrow> nat*nat \<Rightarrow> real" where
-"T_tb Ins (n,l) = (if n<l then 1 else n+1)" |
-"T_tb Del (n,l) = (if n=1 then 1 else if 4*(n - 1)<l then n else 1)"
+"T_tb Ins = T_ins" |
+"T_tb Del = T_del"
+
+fun invar :: "nat*nat \<Rightarrow> bool" where
+"invar (n,l) = (n \<le> l)"
+
+fun \<Phi> :: "nat*nat \<Rightarrow> real" where
+"\<Phi> (n,l) = (if n < l/2 then l/2 - n else 2*n - l)"
 
 interpretation tb: Amortized
 where init = "(0,0)" and nxt = nxt_tb
-and inv = "\<lambda>(n,l). if l=0 then n=0 else n \<le> l \<and> l \<le> 4*n"
-and T = T_tb and \<Phi> = "(\<lambda>(n,l). if 2*n < l then l/2 - n else 2*n - l)"
+and inv = invar
+and T = T_tb and \<Phi> = \<Phi>
 and U = "\<lambda>f _. case f of Ins \<Rightarrow> 3 | Del \<Rightarrow> 2"
 proof (standard, goal_cases)
   case 1 show ?case by auto
 next
-  case (2 s f) thus ?case by(cases s, cases f) (auto split: if_splits)
+  case (2 s f) thus ?case by(cases s, cases f) (auto)
 next
-  case (3 s) thus ?case by(cases s)(simp split: if_splits)
+  case (3 s) show ?case by(cases s)(simp)
 next
   case 4 show ?case by(simp)
 next
   case (5 s f) thus ?case apply(cases s) apply(cases f)
-    by (auto simp: field_simps)
+    by (auto)
 qed
+
+end
 
 end

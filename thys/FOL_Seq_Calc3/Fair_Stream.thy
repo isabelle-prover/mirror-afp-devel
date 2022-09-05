@@ -78,7 +78,7 @@ lemma fair_surj:
   using assms unfolding fair_def by (metis UNIV_I all_ex_fair_nats imageE snth_smap)
 
 definition fair_stream :: \<open>(nat \<Rightarrow> 'a) \<Rightarrow> 'a stream\<close> where
-  \<open>fair_stream f = smap f fair_nats\<close>
+  \<open>fair_stream f \<equiv> smap f fair_nats\<close>
 
 theorem fair_stream: \<open>surj f \<Longrightarrow> fair (fair_stream f)\<close>
   unfolding fair_stream_def using fair_surj .

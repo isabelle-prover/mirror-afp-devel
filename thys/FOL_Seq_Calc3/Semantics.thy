@@ -2,28 +2,6 @@ section \<open>Semantics\<close>
 
 theory Semantics imports Syntax begin
 
-subsection \<open>Shift\<close>
-
-definition shift :: \<open>(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a\<close>
-  (\<open>_\<langle>_:_\<rangle>\<close> [90, 0, 0] 91) where
-  \<open>E\<langle>n:x\<rangle> = (\<lambda>m. if m < n then E m else if m = n then x else E (m-1))\<close>
-
-lemma shift_eq [simp]: \<open>n = m \<Longrightarrow> (E\<langle>n:x\<rangle>) m = x\<close>
-  by (simp add: shift_def)
-
-lemma shift_gt [simp]: \<open>m < n \<Longrightarrow> (E\<langle>n:x\<rangle>) m = E m\<close>
-  by (simp add: shift_def)
-
-lemma shift_lt [simp]: \<open>n < m \<Longrightarrow> (E\<langle>n:x\<rangle>) m = E (m-1)\<close>
-  by (simp add: shift_def)
-
-lemma shift_commute [simp]: \<open>E\<langle>n:y\<rangle>\<langle>0:x\<rangle> = E\<langle>0:x\<rangle>\<langle>n+1:y\<rangle>\<close>
-proof
-  fix m
-  show \<open>(E\<langle>n:y\<rangle>\<langle>0:x\<rangle>) m = (E\<langle>0:x\<rangle>\<langle>n+1:y\<rangle>) m\<close>
-    unfolding shift_def by (cases m) simp_all
-qed
-
 subsection \<open>Definition\<close>
 
 type_synonym 'a var_denot = \<open>nat \<Rightarrow> 'a\<close>
@@ -39,29 +17,32 @@ primrec semantics_fm :: \<open>'a var_denot \<Rightarrow> 'a fun_denot \<Rightar
   \<open>\<lbrakk>_, _, _\<rbrakk> \<^bold>\<bottom> = False\<close>
 | \<open>\<lbrakk>E, F, G\<rbrakk> (\<^bold>\<ddagger>P ts) = G P (map \<lparr>E, F\<rparr> ts)\<close>
 | \<open>\<lbrakk>E, F, G\<rbrakk> (p \<^bold>\<longrightarrow> q) = (\<lbrakk>E, F, G\<rbrakk> p \<longrightarrow> \<lbrakk>E, F, G\<rbrakk> q)\<close>
-| \<open>\<lbrakk>E, F, G\<rbrakk> (\<^bold>\<forall>p) = (\<forall>x. \<lbrakk>E\<langle>0:x\<rangle>, F, G\<rbrakk> p)\<close>
+| \<open>\<lbrakk>E, F, G\<rbrakk> (\<^bold>\<forall>p) = (\<forall>x. \<lbrakk>x \<Zsemi> E, F, G\<rbrakk> p)\<close>
 
 fun sc :: \<open>('a var_denot \<times> 'a fun_denot \<times> 'a pre_denot) \<Rightarrow> sequent \<Rightarrow> bool\<close> where
   \<open>sc (E, F, G) (A, B) = ((\<forall>p [\<in>] A. \<lbrakk>E, F, G\<rbrakk> p) \<longrightarrow> (\<exists>q [\<in>] B. \<lbrakk>E, F, G\<rbrakk> q))\<close>
 
-subsection \<open>Instantiation\<close>
+subsection \<open>Substitution\<close>
 
-lemma lift_lemma [simp]: \<open>\<lparr>E\<langle>0:x\<rangle>, F\<rparr> (\<^bold>\<up>t) = \<lparr>E, F\<rparr> t\<close>
+lemma add_env_semantics [simp]: \<open>\<lparr>E, F\<rparr> ((t \<Zsemi> s) n) = (\<lparr>E, F\<rparr> t \<Zsemi> \<lambda>m. \<lparr>E, F\<rparr> (s m)) n\<close>
+  by (induct n) simp_all
+
+lemma lift_lemma [simp]: \<open>\<lparr>x \<Zsemi> E, F\<rparr> (lift_tm t) = \<lparr>E, F\<rparr> t\<close>
   by (induct t) (auto cong: map_cong)
 
-lemma inst_tm_semantics [simp]: \<open>\<lparr>E, F\<rparr> (t\<llangle>s/m\<rrangle>) = \<lparr>E\<langle>m:\<lparr>E, F\<rparr> s\<rangle>, F\<rparr> t\<close>
+lemma sub_tm_semantics [simp]: \<open>\<lparr>E, F\<rparr> (sub_tm s t) = \<lparr>\<lambda>n. \<lparr>E, F\<rparr> (s n), F\<rparr> t\<close>
   by (induct t) (auto cong: map_cong)
 
-lemma inst_fm_semantics [simp]: \<open>\<lbrakk>E, F, G\<rbrakk> (p\<langle>t/m\<rangle>) = \<lbrakk>E\<langle>m:\<lparr>E, F\<rparr> t\<rangle>, F, G\<rbrakk> p\<close>
-  by (induct p arbitrary: E m t) (auto cong: map_cong)
+lemma sub_fm_semantics [simp]: \<open>\<lbrakk>E, F, G\<rbrakk> (sub_fm s p) = \<lbrakk>\<lambda>n. \<lparr>E, F\<rparr> (s n), F, G\<rbrakk> p\<close>
+  by (induct p arbitrary: E s) (auto cong: map_cong)
 
 subsection \<open>Variables\<close>
 
 lemma upd_vars_tm [simp]: \<open>n [\<notin>] vars_tm t \<Longrightarrow> \<lparr>E(n := x), F\<rparr> t = \<lparr>E, F\<rparr> t\<close>
   by (induct t) (auto cong: map_cong)
 
-lemma shift_upd_commute: \<open>m \<le> n \<Longrightarrow> (E(n := x)\<langle>m:y\<rangle>) = ((E\<langle>m:y\<rangle>)(Suc n := x))\<close>
-  unfolding shift_def by fastforce
+lemma add_upd_commute [simp]: \<open>(y \<Zsemi> E(n := x)) m = ((y \<Zsemi> E)(Suc n := x)) m\<close>
+  by (induct m) simp_all
 
 lemma upd_vars_fm [simp]: \<open>max_list (vars_fm p) < n \<Longrightarrow> \<lbrakk>E(n := x), F, G\<rbrakk> p = \<lbrakk>E, F, G\<rbrakk> p\<close>
 proof (induct p arbitrary: E n)
@@ -76,12 +57,10 @@ proof (induct p arbitrary: E n)
     using upd_vars_tm by (metis list.map_cong semantics_fm.simps(2))
 next
   case (Uni p)
-  have \<open>?case = ((\<forall>y. \<lbrakk>E(n := x)\<langle>0:y\<rangle>, F, G\<rbrakk> p) = (\<forall>y. \<lbrakk>E\<langle>0:y\<rangle>, F, G\<rbrakk> p))\<close>
+  have \<open>?case = ((\<forall>y. \<lbrakk>\<lambda>m. (y \<Zsemi> E(n := x)) m, F, G\<rbrakk> p) = (\<forall>y. \<lbrakk>y \<Zsemi> E, F, G\<rbrakk> p))\<close>
     by (simp add: fun_upd_def)
-  also have \<open>\<dots> = ((\<forall>y. \<lbrakk>(E\<langle>0:y\<rangle>)(n + 1 := x), F, G\<rbrakk> p) = (\<forall>y. \<lbrakk>E\<langle>0:y\<rangle>, F, G\<rbrakk> p))\<close>
-    by (simp add: shift_upd_commute)
-  finally show ?case
-    using Uni by fastforce
+  then show ?case
+    using Uni by simp
 qed (auto simp: max_list_append cong: map_cong)
 
 end

@@ -6,9 +6,8 @@ theory Code_DP
     Policy_Iteration
     Modified_Policy_Iteration
     Splitting_Methods
-
-"HOL-Library.Code_Target_Numeral"
-"Gauss_Jordan.Code_Generation_IArrays"
+    "HOL-Library.Code_Target_Numeral"
+    "Gauss_Jordan.Code_Generation_IArrays"
 begin
 
 section \<open>Code Generation for MDP Algorithms\<close>

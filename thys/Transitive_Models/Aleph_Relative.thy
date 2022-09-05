@@ -47,7 +47,7 @@ relationalize "Aleph_rel" "is_Aleph"
 
 txt\<open>The extra assumptions \<^term>\<open>a < length(env)\<close> and \<^term>\<open>c < length(env)\<close>
     in this schematic goal (and the following results on synthesis that
-    depend on it) are imposed by @{thm is_transrec_iff_sats}.\<close>
+    depend on it) are imposed by @{thm [source] is_transrec_iff_sats}.\<close>
 schematic_goal sats_is_Aleph_fm_auto:
   "a \<in> nat \<Longrightarrow> c \<in> nat \<Longrightarrow> env \<in> list(A) \<Longrightarrow>
   a < length(env) \<Longrightarrow> c < length(env) \<Longrightarrow> 0 \<in> A \<Longrightarrow>

@@ -13,11 +13,10 @@ imports
   In this case, I have to import here the following three theories.
   They allow the computation of the Gauss-Jordan algorithm in Haskell*)
   
-  Code_Real_Approx_By_Float_Haskell
+  "HOL-Library.Code_Real_Approx_By_Float"
   Code_Generation_IArrays
     
   (*These theories are necessary for the serialisation:*)
-  HOL.Rat
   "HOL-Library.Code_Target_Int"
 begin
 

@@ -44,8 +44,6 @@ showTree n (Node ((l, r), rule) (Abs_fset (Set ts))) =
   replicate n ' ' ++ " + " ++ showRule rule ++ "\n" ++
   concat (map (showTree (n + inc)) ts)
 
--- deriving instance Read Arith.Nat
-
 instance Read Arith.Nat where
   readsPrec d s = map (\(n, s) -> (Arith.Nat n, s)) (readsPrec d s :: [(Integer, String)])
 

@@ -6,7 +6,7 @@ theory CH
     Cohen_Posets_Relative
 begin
 
-context M_ctm3_AC
+context M_ctm2_AC
 begin
 
 declare Fn_rel_closed[simp del, rule del, simplified setclass_iff, simp, intro]
@@ -162,13 +162,9 @@ proof -
     unfolding kappa_closed_rel_def by (auto elim!:leE dest:ltD)
 qed
 
-end \<comment> \<open>\<^locale>\<open>M_ctm3_AC\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_ctm2_AC\<close>\<close>
 
-sublocale M_ZFC3_trans \<subseteq> M_library "##M"
-  by unfold_locales (simp_all add:repl_instances sep_instances del:setclass_iff
-      add: transrec_replacement_def wfrec_replacement_def)
-
-locale collapse_CH = G_generic4_AC_CH "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
+locale collapse_CH = G_generic3_AC_CH "Fn\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" "Fnle\<^bsup>M\<^esup>(\<aleph>\<^bsub>1\<^esub>\<^bsup>##M\<^esup>, \<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>, \<omega> \<rightarrow>\<^bsup>M\<^esup> 2)" 0
 
 sublocale collapse_CH \<subseteq> forcing_notion "Coll" "Colleq" 0
   using zero_lt_Aleph_rel1 by unfold_locales
@@ -269,7 +265,7 @@ proof -
   moreover
   have "function(f\<^bsub>G\<^esub>)"
     using Un_filter_is_function generic
-    unfolding M_generic_def by fast
+    by fast
   ultimately
   show ?thesis
     using generic domain_f_G Pi_iff by auto
@@ -360,22 +356,17 @@ theorem ctm_of_CH:
       (\<forall>\<alpha>. Ord(\<alpha>) \<longrightarrow> (\<alpha> \<in> M \<longleftrightarrow> \<alpha> \<in> N))"
 proof -
   from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH}\<close>
-  interpret M_ZFC4 M
-    using M_satT_overhead_imp_M_ZF4 unfolding overhead_CH_def by auto
-  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH}\<close>
-  have "M \<Turnstile> \<cdot>Z\<cdot> \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> instances1_fms \<union> instances2_fms \<union>
-            instances_ground_fms \<union> {replacement_dcwit_repl_body_fm}}"
-    unfolding overhead_CH_def overhead_def ZC_def
-    by auto
-  with \<open>Transset(M)\<close>
+  interpret M_ZFC3 M
+    using M_satT_overhead_imp_M_ZF3 unfolding overhead_CH_def overhead_notCH_def by auto
+  from \<open>M \<Turnstile> ZC \<union> {\<cdot>Replacement(p)\<cdot> . p \<in> overhead_CH}\<close> \<open>Transset(M)\<close>
   interpret M_ZF_ground_CH_trans M
     using M_satT_imp_M_ZF_ground_CH_trans
-    by simp
+    unfolding ZC_def by auto
   from \<open>M \<approx> \<omega>\<close>
   obtain enum where "enum \<in> bij(\<omega>,M)"
     using eqpoll_sym unfolding eqpoll_def by blast
   then
-  interpret M_ctm3_AC_CH M enum by unfold_locales
+  interpret M_ctm2_AC_CH M enum by unfold_locales
   interpret forcing_data1 "Coll" "Colleq" 0 M enum
     using zero_in_Fn_rel[of "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
       zero_top_Fn_rel[of _ "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup>" "\<omega> \<rightarrow>\<^bsup>M\<^esup> 2"]
