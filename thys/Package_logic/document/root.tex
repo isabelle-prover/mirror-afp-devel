@@ -44,7 +44,7 @@
 \maketitle
 
 \begin{abstract}
-The magic wand $\wand$ (also called separating implication) is a separation logic~\cite{Reynolds02a} connective % I find it a bit tricky that we talk about the connective and a formula built from it as if these were the same thing
+The magic wand $\wand$ (also called separating implication) is a separation logic~\cite{Reynolds02a} connective
 commonly used to specify properties of partial data structures,
 for instance during iterative traversals.
 A \emph{footprint} of a magic wand formula $A \wand B$ is a state that, combined with any state in which $A$ holds, yields a state in which $B$ holds.
@@ -54,8 +54,6 @@ Existing package algorithms either have a high annotation overhead or are unsoun
 In this entry, we formally define a framework for the sound automation of magic wands, described in a paper at CAV~2022~\cite{Dardinier22},
 and prove that it is sound and complete.
 This framework, called the \emph{package logic}, precisely characterises a wide design space of possible package algorithms applicable to a large class of separation logics.
-%Moreover, we define a novel, restricted definition of wands, called \emph{combinable wands}, and prove that it is possible to soundly combine fractions of such wands, which is not the case for arbitrary wands.
-%Finally, we instantiate the package logic to show our framework can also be used with combinable wands.
 \end{abstract}
 
 \tableofcontents
