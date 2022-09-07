@@ -1448,6 +1448,19 @@ host = [
   "de",
 ]
 
+
+[eberl.emails.eberl_email2]
+user = [
+  "manuel",
+  "eberl",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
+
 [eberl.homepages]
 eberl_homepage = "https://pruvisto.org/"
 eberl_homepage2 = "https://www.in.tum.de/~eberlm"
@@ -3200,6 +3213,16 @@ user = [
 ]
 host = [
   "in",
+  "tum",
+  "de",
+]
+
+[kreuzer.emails.kreuzer_email1]
+user = [
+  "k",
+  "kreuzer",
+]
+host = [
   "tum",
   "de",
 ]
@@ -5871,6 +5894,25 @@ host = [
 name = "Ujkan Sulejmani"
 
 [sulejmani.emails]
+
+[sulejmani.emails.sulejmani_email]
+user = [
+  "ujkan",
+  "sulejmani",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[sulejmani.emails.sulejmani_email1]
+user = [
+  "ujkan99",
+]
+host = [
+  "gmail",
+  "com",
+]
 
 [sulejmani.homepages]
 

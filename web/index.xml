@@ -6,7 +6,16 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Mon, 15 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 02 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Hales-Jewett Theorem</title>
+      <link>/entries/Hales_Jewett.html</link>
+      <pubDate>Fri, 02 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Hales_Jewett.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>From THE BOOK: Two Squares via Involutions</title>
       <link>/entries/Involutions2Squares.html</link>
@@ -8743,6 +8752,15 @@ How to refer to AFP entries: You can refer to AFP entries by using the AFP as an
     </item>
     
     <item>
+      <title>Hales_Jewett</title>
+      <link>/theories/hales_jewett/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/hales_jewett/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Heard_Of</title>
       <link>/theories/heard_of/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11998,7 +12016,7 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>695 Entries   424 Authors   ~214,300 Lemmas   ~3,512,300 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>696 Entries   424 Authors   ~214,300 Lemmas   ~3,514,500 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>
