@@ -1,15 +1,23 @@
 (* Title: thys/Abacus.thy
    Author: Jian Xu, Xingyuan Zhang, and Christian Urban
    Modifications: Sebastiaan Joosten
-*)
+   Minor adjustments: Franz Regensburger (FABR) 02/2022
+ *)
 
-chapter \<open>Abacus Machines\<close>
+section \<open>Definition of Abacus Machines\<close>
 
 theory Abacus
-  imports Turing_Hoare Abacus_Mopup
+  imports Turing_Hoare Abacus_Mopup Turing_HaltingConditions
 begin
 
-declare replicate_Suc[simp add]
+(* Cleanup simpset: the following proofs depend on a cleaned up simpset *)
+declare adjust.simps[simp del]
+declare seq_tm.simps [simp del] 
+declare shift.simps[simp del]
+declare composable_tm.simps[simp del]
+declare step.simps[simp del]
+declare steps.simps[simp del]
+declare fetch.simps[simp del]
 
 (* Abacus instructions *)
 
@@ -51,7 +59,7 @@ fun abc_lm_s :: "abc_lm \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> abc_lm
 
 
 text \<open>
-  The configuration of Abaucs machines consists of its current state and its
+  The configuration of Abacus machines consists of its current state and its
   current memory:
 \<close>
 type_synonym abc_conf = "abc_state \<times> abc_lm"
@@ -65,7 +73,7 @@ fun abc_fetch :: "nat \<Rightarrow> abc_prog \<Rightarrow> abc_inst option"
     "abc_fetch s p = (if (s < length p) then Some (p ! s) else None)"
 
 text \<open>
-  Single step execution of Abacus machine. If no instruction is feteched, 
+  Single step execution of Abacus machine. If no instruction is fetched, 
   configuration does not change.
 \<close>
 fun abc_step_l :: "abc_conf \<Rightarrow> abc_inst option \<Rightarrow> abc_conf"
@@ -81,20 +89,19 @@ fun abc_step_l :: "abc_conf \<Rightarrow> abc_inst option \<Rightarrow> abc_conf
                )"
 
 text \<open>
-  Multi-step execution of Abacus machine.
+  Multi-step execution of Abacus Machines.
 \<close>
 fun abc_steps_l :: "abc_conf \<Rightarrow> abc_prog \<Rightarrow> nat \<Rightarrow> abc_conf"
   where
     "abc_steps_l (s, lm) p 0 = (s, lm)" |
-    "abc_steps_l (s, lm) p (Suc n) = 
-      abc_steps_l (abc_step_l (s, lm) (abc_fetch s p)) p n"
+    "abc_steps_l (s, lm) p (Suc n) = abc_steps_l (abc_step_l (s, lm) (abc_fetch s p)) p n"
 
 section \<open>
-  Compiling Abacus machines into Turing machines
+  Compiling Abacus Machines into Turing Machines
 \<close>
 
 subsection \<open>
-  Compiling functions
+  Functions used for compilation
 \<close>
 
 text \<open>
@@ -106,7 +113,7 @@ text \<open>
 fun findnth :: "nat \<Rightarrow> instr list"
   where
     "findnth 0 = []" |
-    "findnth (Suc n) = (findnth n @ [(W1, 2 * n + 1), 
+    "findnth (Suc n) = (findnth n @ [(WO, 2 * n + 1), 
            (R, 2 * n + 2), (R, 2 * n + 3), (R, 2 * n + 2)])"
 
 text \<open>
@@ -117,9 +124,9 @@ text \<open>
 
 definition tinc_b :: "instr list"
   where
-    "tinc_b \<equiv> [(W1, 1), (R, 2), (W1, 3), (R, 2), (W1, 3), (R, 4), 
-             (L, 7), (W0, 5), (R, 6), (W0, 5), (W1, 3), (R, 6),
-             (L, 8), (L, 7), (R, 9), (L, 7), (R, 10), (W0, 9)]" 
+    "tinc_b \<equiv> [(WO, 1), (R, 2), (WO, 3), (R, 2), (WO, 3), (R, 4), 
+             (L, 7), (WB, 5), (R, 6), (WB, 5), (WO, 3), (R, 6),
+             (L, 8), (L, 7), (R, 9), (L, 7), (R, 10), (WB, 9)]" 
 
 text \<open>
   \<open>tinc ss n\<close> returns the TM which simulates the execution of 
@@ -133,19 +140,19 @@ fun tinc :: "nat \<Rightarrow> nat \<Rightarrow> instr list"
     "tinc ss n = shift (findnth n @ shift tinc_b (2 * n)) (ss - 1)"
 
 text \<open>
-  \<open>tinc_b\<close> returns the TM which decrements the representation 
+  \<open>tdec_b\<close> returns the TM which decrements the representation 
   of the memory cell under rw-head by one and move the representation 
   of cells afterwards to the left accordingly.
 \<close>
 
 definition tdec_b :: "instr list"
   where
-    "tdec_b \<equiv>  [(W1, 1), (R, 2), (L, 14), (R, 3), (L, 4), (R, 3),
-              (R, 5), (W0, 4), (R, 6), (W0, 5), (L, 7), (L, 8),
-              (L, 11), (W0, 7), (W1, 8), (R, 9), (L, 10), (R, 9),
-              (R, 5), (W0, 10), (L, 12), (L, 11), (R, 13), (L, 11),
-              (R, 17), (W0, 13), (L, 15), (L, 14), (R, 16), (L, 14),
-              (R, 0), (W0, 16)]"
+    "tdec_b \<equiv>  [(WO, 1), (R, 2), (L, 14), (R, 3), (L, 4), (R, 3),
+              (R, 5), (WB, 4), (R, 6), (WB, 5), (L, 7), (L, 8),
+              (L, 11), (WB, 7), (WO, 8), (R, 9), (L, 10), (R, 9),
+              (R, 5), (WB, 10), (L, 12), (L, 11), (R, 13), (L, 11),
+              (R, 17), (WB, 13), (L, 15), (L, 14), (R, 16), (L, 14),
+              (R, 0), (WB, 16)]"
 
 
 text \<open>
@@ -206,7 +213,7 @@ fun start_of :: "nat list \<Rightarrow> nat \<Rightarrow> nat"
     "start_of ly x = (Suc (sum_list (take x ly))) "
 
 text \<open>
-  \<open>ci lo ss i\<close> complies Abacus instruction \<open>i\<close>
+  \<open>ci lo ss i\<close> compiles the Abacus instruction \<open>i\<close>
   assuming the TM of \<open>i\<close> starts from state \<open>ss\<close> 
   within the overal layout \<open>lo\<close>.
 \<close>
@@ -241,19 +248,20 @@ text \<open>
 fun tm_of :: "abc_prog \<Rightarrow> instr list"
   where "tm_of ap = concat (tms_of ap)"
 
+(* --- *)
 lemma length_findnth: 
   "length (findnth n) = 4 * n"
   by (induct n, auto)
 
 lemma ci_length : "length (ci ns n ai) div 2 = length_of ai"
-  apply(auto simp: ci.simps tinc_b_def tdec_b_def length_findnth
-      split: abc_inst.splits simp del: adjust.simps)
+  apply(auto simp: tinc_b_def tdec_b_def length_findnth
+      split: abc_inst.splits)
   done
 
-subsection \<open>Representation of Abacus memory by TM tapes\<close>
+subsection \<open>Representation of Abacus Memory by TM tapes\<close>
 
 text \<open>
-  \<open>crsp acf tcf\<close> meams the abacus configuration \<open>acf\<close>
+  \<open>crsp acf tcf\<close> means the abacus configuration \<open>acf\<close>
   is corretly represented by the TM configuration \<open>tcf\<close>.
 \<close>
 
@@ -266,14 +274,14 @@ fun crsp :: "layout \<Rightarrow> abc_conf \<Rightarrow> config \<Rightarrow> ce
 declare crsp.simps[simp del]
 
 text \<open>
-  The type of invarints expressing correspondence between 
+  The type of invariants expressing correspondence between 
   Abacus configuration and TM configuration.
 \<close>
 
 type_synonym inc_inv_t = "abc_conf \<Rightarrow> config \<Rightarrow> cell list \<Rightarrow> bool"
 
 declare tms_of.simps[simp del] tm_of.simps[simp del]
-  layout_of.simps[simp del] abc_fetch.simps [simp del]  
+  abc_fetch.simps [simp del]  
   tpairs_of.simps[simp del] start_of.simps[simp del]
   ci.simps [simp del] length_of.simps[simp del] 
   layout_of.simps[simp del]
@@ -331,8 +339,6 @@ lemma tm_shift_eq_step:
    apply(drule_tac [!] off = off in tm_shift_fetch, simp_all)
   done
 
-declare step.simps[simp del] steps.simps[simp del] shift.simps[simp del]
-
 lemma tm_shift_eq_steps: 
   assumes exec: "steps (s, l, r) (A, 0) stp = (s', l', r')"
     and notfinal: "s' \<noteq> 0"
@@ -347,7 +353,7 @@ proof(induct stp arbitrary: s' l' r', simp add: steps.simps)
     apply(cases "steps (s, l, r) (A, 0) stp") by blast
   moreover then have "s1 \<noteq> 0"
     using h
-    apply(simp add: step_red)
+    apply(simp)
     apply(cases "0 < s1", auto)
     done
   ultimately have "steps (s + off, l, r) (shift A off, off) stp =
@@ -356,7 +362,7 @@ proof(induct stp arbitrary: s' l' r', simp add: steps.simps)
     done
   thus "steps (s + off, l, r) (shift A off, off) (Suc stp) = (s' + off, l', r')"
     using h g assms
-    apply(simp add: step_red)
+    apply(simp)
     apply(intro tm_shift_eq_step, auto)
     done
 qed
@@ -623,7 +629,7 @@ proof -
       by arith
     then have "fetch (ci ly (start_of ly as) ins)
        (Suc s - start_of ly as) b = (Nop, 0)"
-      by(simp add: fetch.simps)
+      by simp
     with notfinal fetch show "?thesis"
       by(simp)
   qed
@@ -693,15 +699,15 @@ proof(induct stp arbitrary: s' l' r', simp add: steps.simps)
     apply(cases "steps (s, l, r) (ci ly (start_of ly as) ins, start_of ly as - 1) stp") by blast
   moreover hence "s1 \<noteq> 0"
     using h
-    apply(simp add: step_red)
-    apply(cases "0 < s1", simp_all)
+    apply simp
+    apply (cases "0 < s1", simp_all)
     done
   ultimately have "steps (s, l, r) (tp, 0) stp = (s1, l1, r1)"
     apply(rule_tac ind, auto)
     done
   thus "steps (s, l, r) (tp, 0) (Suc stp) = (s', l', r')"
     using h g assms
-    apply(simp add: step_red)
+    apply simp
     apply(rule_tac step_eq_in, auto)
     done
 qed
@@ -709,7 +715,7 @@ qed
 lemma tm_append_fetch_first: 
   "\<lbrakk>fetch A s b = (ac, ns); ns \<noteq> 0\<rbrakk> \<Longrightarrow> 
     fetch (A @ B) s b = (ac, ns)"
-  by(cases b;cases s;force simp: fetch.simps nth_append split: if_splits)
+  by(cases b;cases s;force simp: nth_append split: if_splits)
 
 lemma tm_append_first_step_eq: 
   assumes "step (s, l, r) (A, off) = (s', l', r')"
@@ -739,8 +745,8 @@ proof(induct stp arbitrary: s' l' r', simp add: steps.simps)
     done
   thus "steps (s, l, r) (A @ B, off) (Suc stp) = (s', l', r')"
     using h a
-    apply(simp add: step_red)
-    apply(intro tm_append_first_step_eq, simp_all)
+    apply simp
+    apply (intro tm_append_first_step_eq, simp_all)
     done
 qed
 
@@ -807,13 +813,13 @@ lemma tm_append_second_fetch0_eq:
   shows "fetch (A @ shift B off) (s + off) b = (ac, 0)"
   using assms
   apply(cases b;cases s)
-     apply(auto simp: fetch.simps nth_append shift.simps split: if_splits)
+     apply(auto simp: nth_append shift.simps split: if_splits)
   done
 
 lemma tm_append_second_halt_eq:
   assumes 
     exec: "steps (Suc 0, l, r) (B, 0) stp = (0, l', r')"
-    and wf_B: "tm_wf (B, 0)"
+    and "composable_tm (B, 0)"
     and off: "off = length A div 2"
     and even: "length A mod 2 = 0"
   shows "steps (Suc off, l, r) (A @ shift B off, 0) stp = (0, l', r')"
@@ -830,13 +836,13 @@ proof -
     by(rule_tac tm_append_second_steps_eq, simp_all)
   obtain ac where d: "fetch B s'' (read r'') = (ac, 0)"
     using  b a
-    by(cases "fetch B s'' (read r'')", auto simp: step_red step.simps)
+    by(cases "fetch B s'' (read r'')", auto simp: step.simps)
   then have "fetch (A @ shift B off) (s'' + off) (read r'') = (ac, 0)"
     using assms b
     by(rule_tac tm_append_second_fetch0_eq, simp_all)
   then have e: "steps (Suc 0 + off, l, r) (A @ shift B off, 0) (Suc n) = (0, l', r')"
     using a b assms c d
-    by(simp add: step_red step.simps)
+    by(simp add: step.simps)
   from a have "n < stp"
     using exec
   proof(cases "n < stp")
@@ -872,14 +878,14 @@ proof -
     done
   moreover have "steps (1 + off, la, ra) (A @ shift B off, 0) stpb = (sb + off, lb, rb)"
     apply(intro tm_append_second_steps_eq)
-       apply(auto simp: assms bexec)
+       apply(auto simp: assms)
     done
   ultimately show "steps (s, l, r) (A @ shift B off, 0) (stpa + stpb) = (sb + off, lb, rb)"
-    apply(simp add: steps_add off)
+    apply(simp add: off)
     done
 qed
 
-subsection \<open>Crsp of Inc\<close>
+subsection \<open>Compilation of instruction Inc\<close>
 
 fun at_begin_fst_bwtn :: "inc_inv_t"
   where
@@ -1091,13 +1097,13 @@ lemma fetch_findnth[simp]:
   "\<lbrakk>0 < a; a < Suc (2 * n); a mod 2 = Suc 0\<rbrakk> \<Longrightarrow> fetch (findnth n) a Oc = (R, Suc a)"
   "\<lbrakk>0 < a; a < Suc (2 * n); a mod 2 \<noteq> Suc 0\<rbrakk> \<Longrightarrow> fetch (findnth n) a Oc = (R, a)"
   "\<lbrakk>0 < a; a < Suc (2 * n); a mod 2 \<noteq> Suc 0\<rbrakk> \<Longrightarrow> fetch (findnth n) a Bk = (R, Suc a)"
-  "\<lbrakk>0 < a; a < Suc (2 * n); a mod 2 = Suc 0\<rbrakk> \<Longrightarrow> fetch (findnth n) a Bk = (W1, a)"
+  "\<lbrakk>0 < a; a < Suc (2 * n); a mod 2 = Suc 0\<rbrakk> \<Longrightarrow> fetch (findnth n) a Bk = (WO, a)"
   by(cases a;induct n;force simp: length_findnth nth_append dest!:between_sucs)+
 
 declare at_begin_norm.simps[simp del] at_begin_fst_bwtn.simps[simp del] 
   at_begin_fst_awtn.simps[simp del] in_middle.simps[simp del] 
   abc_lm_s.simps[simp del] abc_lm_v.simps[simp del]  
-  ci.simps[simp del] inv_after_move.simps[simp del] 
+  inv_after_move.simps[simp del] 
   inv_on_left_moving_norm.simps[simp del] 
   inv_on_left_moving_in_middle_B.simps[simp del]
   inv_after_clear.simps[simp del] 
@@ -1211,15 +1217,15 @@ lemma inv_locate[simp]: "\<lbrakk>inv_locate_b (as, am) (q, aaa, Bk # xs) ires; 
   apply(erule_tac exE)+
   apply(rename_tac lm1 n lm2 tn m ml mr rn)
   apply(rule_tac x = "lm1 @ [m]" in exI, rule_tac x = tn in exI, simp split: if_splits)
-   apply(case_tac mr, simp_all)
-   apply(cases "length am", simp_all)
-   apply(case_tac lm2, simp_all add: tape_of_nl_cons split: if_splits)
-     apply(cases am, simp_all)
-    apply(case_tac n, simp_all)
-   apply(case_tac n, simp_all)
+  apply(case_tac mr, simp_all)
+  apply(cases "length am", simp_all)
+  apply(case_tac lm2, simp_all add: tape_of_nl_cons split: if_splits)
+  apply(cases am, simp_all)
+  apply(case_tac n, simp_all)
+  apply(case_tac n, simp_all)
   apply(case_tac mr, simp_all)
   apply(case_tac lm2, simp_all add: tape_of_nl_cons split: if_splits, auto)
-   apply(case_tac [!] n, simp_all)
+  apply(case_tac [!] n, simp_all)
   done
 
 lemma repeat_Bk_no_Oc[simp]: "(Oc # r = Bk \<up> rn) = False"
@@ -1268,9 +1274,9 @@ lemma inv_locate_a_Bk_via_b[simp]: "\<lbrakk>inv_locate_b (as, am) (q, aaa, Bk #
   apply(rename_tac lm1 lm2 tn m ml mr rn)
   apply(rule_tac x = "lm1 @ [m]" in exI, rule_tac x = lm2 in exI, simp)
   apply(subgoal_tac "tn = 0", simp , auto split: if_splits)
-    apply(simp add: tape_of_nl_cons)
-   apply(drule_tac length_equal, simp)
-   apply(cases "length am", simp_all, erule_tac x = rn in allE, simp)
+  apply(simp add: tape_of_nl_cons)
+  apply(drule_tac length_equal, simp)
+  apply(cases "length am", simp_all, erule_tac x = rn in allE, simp)
   apply(drule_tac length_equal, simp)
   apply(case_tac "(Suc (length lm1) - length am)", simp_all)
   apply(case_tac lm2, simp, simp)
@@ -1688,9 +1694,9 @@ lemma
   apply(rename_tac lm1 lm2 r' rn)
   apply(rule_tac x = "rev (tl (rev lm1))" in exI, 
       rule_tac x = "[hd (rev lm1)] @ lm2" in exI, auto)
-       apply(case_tac [!] "rev lm1",case_tac [!] "tl (rev lm1)")
-                      apply(simp_all add: tape_of_nat_def tape_of_list_def tape_of_nat_list.simps)
-   apply(case_tac [1] lm2, auto simp:tape_of_nat_def)
+  apply(case_tac [!] "rev lm1",case_tac [!] "tl (rev lm1)")
+  apply(simp_all add: tape_of_nat_def tape_of_list_def)
+  apply(case_tac [1] lm2, auto simp:tape_of_nat_def)
   apply(case_tac lm2, auto simp:tape_of_nat_def)
   done
 
@@ -1788,24 +1794,26 @@ proof(rule_tac LE = inc_LE in halt_lemma2)
 next
   show "Q (f 0)"
     using inv_start
-    by(simp add: f P Q steps.simps inc_inv.simps)
+    apply(simp add: f P Q steps.simps inc_inv.simps)
+    done
 next
   show "\<not> P (f 0)"
-    by(simp add: f P steps.simps)
+    apply(simp add: f P steps.simps)
+    done
 next
   have "\<not> P (f n) \<and> Q (f n) \<Longrightarrow> Q (f (Suc n)) \<and> (f (Suc n), f n) 
         \<in> inc_LE" for n
   proof(simp add: f, 
       cases "steps (Suc 0, l, r) (tinc_b, 0) n", simp add: P)
     fix n a b c
-    assume 10: "a \<noteq> 10 \<and> Q (a, b, c)"
+    assume "a \<noteq> 10 \<and> Q (a, b, c)"
     thus  "Q (step (a, b, c) (tinc_b, 0)) \<and> (step (a, b, c) (tinc_b, 0), a, b, c) \<in> inc_LE"
       apply(simp add:Q)
       apply(simp add: inc_inv.simps)
       apply(cases c; cases "hd c")
          apply(auto simp: Let_def step.simps tinc_b_def split: if_splits) (* ~ 12 sec *)
                           apply(simp_all add: inc_inv.simps inc_LE_def lex_triple_def lex_pair_def
-          inc_measure_def numeral)
+          inc_measure_def numeral_eqs_upto_12)         
       done
   qed
   thus "\<forall>n. \<not> P (f n) \<and> Q (f n) \<longrightarrow> Q (f (Suc n)) \<and> (f (Suc n), f n) \<in> inc_LE" by blast
@@ -1891,7 +1899,7 @@ proof(cases "(abc_step_l (as, lm) (Some (Inc n)))")
     done
 qed
 
-subsection\<open>Crsp of Dec n e\<close>
+subsection\<open>Compilation of instruction Dec n e\<close>
 
 type_synonym dec_inv_t = "(nat * nat list) \<Rightarrow> config \<Rightarrow> cell list \<Rightarrow>  bool"
 
@@ -2012,7 +2020,7 @@ lemma x_plus_helpers:
   by auto
 
 lemma fetch_Dec[simp]: 
-  "fetch (ci ly (start_of ly as) (Dec n e)) (Suc (2 * n)) Bk = (W1,  start_of ly as + 2 *n)"
+  "fetch (ci ly (start_of ly as) (Dec n e)) (Suc (2 * n)) Bk = (WO,  start_of ly as + 2 *n)"
   "fetch (ci ly (start_of ly as) (Dec n e)) (Suc (2 * n)) Oc = (R,  Suc (start_of ly as) + 2 *n)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (Suc (Suc (2 * n))) Oc
      = (R, start_of ly as + 2*n + 2)"
@@ -2022,18 +2030,18 @@ lemma fetch_Dec[simp]:
      = (R, start_of ly as + 2*n + 2)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (Suc (Suc (Suc (2 * n)))) Bk
      = (L, start_of ly as + 2*n + 3)"
-  "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 4) Oc = (W0, start_of ly as + 2*n + 3)"
+  "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 4) Oc = (WB, start_of ly as + 2*n + 3)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 4) Bk = (R, start_of ly as + 2*n + 4)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 5) Bk = (R, start_of ly as + 2*n + 5)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 6) Bk = (L, start_of ly as + 2*n + 6)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 6) Oc = (L, start_of ly as + 2*n + 7)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 7) Bk = (L, start_of ly as + 2*n + 10)"
-  "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 8) Bk = (W1, start_of ly as + 2*n + 7)"
+  "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 8) Bk = (WO, start_of ly as + 2*n + 7)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 8) Oc = (R, start_of ly as + 2*n + 8)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 9) Bk = (L, start_of ly as + 2*n + 9)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 9) Oc = (R, start_of ly as + 2*n + 8)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 10) Bk = (R, start_of ly as + 2*n + 4)"
-  "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 10) Oc = (W0, start_of ly as + 2*n + 9)"
+  "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 10) Oc = (WB, start_of ly as + 2*n + 9)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 11) Oc = (L, start_of ly as + 2*n + 10)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 11) Bk = (L, start_of ly as + 2*n + 11)"
   "fetch (ci (ly) (start_of ly as) (Dec n e)) (2 * n + 12) Oc = (L, start_of ly as + 2*n + 10)"
@@ -2110,7 +2118,7 @@ definition abc_dec_1_LE ::
   where "abc_dec_1_LE \<equiv> (inv_image lex_triple abc_dec_1_measure)"
 
 lemma wf_dec_le: "wf abc_dec_1_LE"
-  by(auto intro:wf_inv_image simp:abc_dec_1_LE_def lex_triple_def lex_pair_def)
+  by(auto simp:abc_dec_1_LE_def lex_triple_def lex_pair_def)
 
 lemma startof_Suc2:
   "abc_fetch as ap = Some (Dec n e) \<Longrightarrow> 
@@ -2491,12 +2499,12 @@ lemma inv_on_left_moving_tl[simp]:
       rule_tac x =  M in exI, rule_tac x = M in exI, 
       rule_tac x = "Suc 0" in exI, simp add: abc_lm_s.simps)
    apply(case_tac Mr, simp_all, auto simp: abc_lm_v.simps)
-    apply(simp_all only: exp_ind Nat.Suc_diff_le del: replicate_Suc, simp_all)
+    apply(simp_all only: exp_ind Nat.Suc_diff_le)
   apply(auto simp: inv_on_left_moving_in_middle_B.simps split: if_splits)
    apply(case_tac [!] M, simp_all)
   done
 
-declare dec_inv_1.simps[simp del]
+(* declare dec_inv_1.simps[simp del] *)
 
 declare inv_locate_n_b.simps [simp del]
 
@@ -2595,9 +2603,9 @@ next
                    (a, b, c), start_of ly as, n) \<in> abc_dec_1_LE"
         apply(simp add: Q)
         apply(cases c;cases "hd c")
-           apply(simp_all add: dec_inv_1.simps Let_def split: if_splits)
+        apply(simp_all add: dec_inv_1.simps Let_def split: if_splits)
         using fetch layout dec_0
-                        apply(auto simp: step.simps P dec_inv_1.simps Let_def abc_dec_1_LE_def
+        apply(auto simp: step.simps P dec_inv_1.simps Let_def abc_dec_1_LE_def
             lex_triple_def lex_pair_def)
         using dec_0
         apply(drule_tac dec_false_1, simp_all)
@@ -2975,6 +2983,8 @@ lemma crsp_step_dec_b:
   apply(rule_tac crsp_step_dec_b_suc, simp_all)
   done
 
+declare adjust.simps[simp del] 
+
 lemma crsp_step_dec: 
   assumes layout: "ly = layout_of ap"
     and crsp: "crsp ly (as, lm) (s, l, r) ires"
@@ -3028,9 +3038,9 @@ proof(simp add: ci.simps)
     apply(rule_tac x = "stpa + stpb" in exI)
     apply(simp)
     done
-qed    
+qed
 
-subsection\<open>Crsp of Goto\<close>
+subsection\<open>Compilation of instruction Goto\<close>
 
 lemma crsp_step_goto:
   assumes layout: "ly = layout_of ap"
@@ -3199,14 +3209,14 @@ lemma compile_correct_halt:
     and rs_loc: "n < length am"
     and rs: "abc_lm_v am n = rs"
     and off: "off = length tp div 2"
-  shows "\<exists> stp i j. steps (Suc 0, l, r) (tp @ shift (mopup n) off, 0) stp = (0, Bk\<up>i @ Bk # Bk # ires, Oc\<up>Suc rs @ Bk\<up>j)"
+  shows "\<exists> stp i j. steps (Suc 0, l, r) (tp @ shift (mopup_n_tm n) off, 0) stp = (0, Bk\<up>i @ Bk # Bk # ires, Oc\<up>Suc rs @ Bk\<up>j)"
 proof -
   have "\<exists> stp k. steps (Suc 0, l, r) (tp, 0) stp = (Suc off, Bk # Bk # ires, <am> @ Bk\<up>k)"
     using assms tp_correct'[of ly ap tp lm l r ires stp am]
     by(simp add: length_tp)
   then obtain stp k where "steps (Suc 0, l, r) (tp, 0) stp = (Suc off, Bk # Bk # ires, <am> @ Bk\<up>k)"
     by blast
-  then have a: "steps (Suc 0, l, r) (tp@shift (mopup n) off , 0) stp = (Suc off, Bk # Bk # ires, <am> @ Bk\<up>k)"
+  then have a: "steps (Suc 0, l, r) (tp@shift (mopup_n_tm n) off , 0) stp = (Suc off, Bk # Bk # ires, <am> @ Bk\<up>k)"
     using assms
     by(auto intro: tm_append_first_steps_eq)
   have "\<exists> stp i j. (steps (Suc 0, Bk # Bk # ires, <am> @ Bk \<up> k) (mopup_a n @ shift mopup_b (2 * n), 0) stp)
@@ -3216,16 +3226,16 @@ proof -
   then obtain stpb i j where 
     "steps (Suc 0, Bk # Bk # ires, <am> @ Bk \<up> k) (mopup_a n @ shift mopup_b (2 * n), 0) stpb
     = (0, Bk\<up>i @ Bk # Bk # ires, Oc # Oc\<up> rs @ Bk\<up>j)" by blast
-  then have b: "steps (Suc 0 + off, Bk # Bk # ires, <am> @ Bk \<up> k) (tp @ shift (mopup n) off, 0) stpb
+  then have b: "steps (Suc 0 + off, Bk # Bk # ires, <am> @ Bk \<up> k) (tp @ shift (mopup_n_tm n) off, 0) stpb
     = (0, Bk\<up>i @ Bk # Bk # ires, Oc # Oc\<up> rs @ Bk\<up>j)"
-    using assms wf_mopup
+    using assms composable_mopup_n_tm
     apply(drule_tac tm_append_second_halt_eq, auto)
     done
   from a b show "?thesis"
-    by(rule_tac x = "stp + stpb" in exI, simp add: steps_add)
+    by(rule_tac x = "stp + stpb" in exI, simp)
 qed
 
-declare mopup.simps[simp del]
+declare mopup_n_tm.simps[simp del]
 lemma abc_step_red2:
   "abc_steps_l (s, lm) p (Suc n) = (let (as', am') = abc_steps_l (s, lm) p n in
                                     abc_step_l (as', am') (abc_fetch as' p))"
@@ -3276,7 +3286,7 @@ next
   then obtain stpb where "stpb > 0 \<and> crsp ly (abc_step_l (as', am') (Some ins)) 
     (steps (s', l', r') (tp, 0) stpb) ires" ..
   from this show "?case" using b e g f c
-    by(rule_tac x = "stpa + stpb" in exI, simp add: steps_add abc_step_red2)
+    by(rule_tac x = "stpa + stpb" in exI, simp add: abc_step_red2)
 qed
 
 lemma compile_correct_unhalt: 
@@ -3285,11 +3295,11 @@ lemma compile_correct_unhalt:
     and crsp: "crsp ly (0, lm) (1, l, r) ires"
     and off: "off = length tp div 2"
     and abc_unhalt: "\<forall> stp. (\<lambda> (as, am). as < length ap) (abc_steps_l (0, lm) ap stp)"
-  shows "\<forall> stp.\<not> is_final (steps (1, l, r) (tp @ shift (mopup n) off, 0) stp)"
+  shows "\<forall> stp.\<not> is_final (steps (1, l, r) (tp @ shift (mopup_n_tm n) off, 0) stp)"
   using assms
 proof(rule_tac allI, rule_tac notI)
   fix stp
-  assume h: "is_final (steps (1, l, r) (tp @ shift (mopup n) off, 0) stp)"
+  assume h: "is_final (steps (1, l, r) (tp @ shift (mopup_n_tm n) off, 0) stp)"
   obtain as am where a: "abc_steps_l (0, lm) ap stp = (as, am)"
     by(cases "abc_steps_l (0, lm) ap stp", auto)
   then have b: "as < length ap"
@@ -3297,7 +3307,7 @@ proof(rule_tac allI, rule_tac notI)
     by(erule_tac x = stp in allE, simp)
   have "\<exists> stpa\<ge>stp. crsp ly (as, am) (steps (1, l, r) (tp, 0) stpa) ires "
     using assms b a
-    apply(simp add: numeral)
+    apply(simp add: numeral_eqs_upto_12)
     apply(rule_tac crsp_steps2)
         apply(simp_all)
     done
@@ -3307,22 +3317,32 @@ proof(rule_tac allI, rule_tac notI)
        stpa\<ge>stp \<and> crsp ly (as, am) (s', l', r') ires"
     by(cases "steps (1, l, r) (tp, 0) stpa", auto)
   hence c:
-    "(steps (1, l, r) (tp @ shift (mopup n) off, 0) stpa) = (s', l', r')"
+    "(steps (1, l, r) (tp @ shift (mopup_n_tm n) off, 0) stpa) = (s', l', r')"
     by(rule_tac tm_append_first_steps_eq, simp_all add: crsp.simps)
   from b have d: "s' > 0 \<and> stpa \<ge> stp"
     by(simp add: crsp.simps)
   then obtain diff where e: "stpa = stp + diff" by (metis le_iff_add)
   obtain s'' l'' r'' where f:
-    "steps (1, l, r) (tp @ shift (mopup n) off, 0) stp = (s'', l'', r'') \<and> is_final (s'', l'', r'')"
+    "steps (1, l, r) (tp @ shift (mopup_n_tm n) off, 0) stp = (s'', l'', r'') \<and> is_final (s'', l'', r'')"
     using h
-    by(cases "steps (1, l, r) (tp @ shift (mopup n) off, 0) stp", auto)
+    by(cases "steps (1, l, r) (tp @ shift (mopup_n_tm n) off, 0) stp", auto)
 
-  then have "is_final (steps (s'', l'', r'') (tp @ shift (mopup n) off, 0) diff)"
+  then have "is_final (steps (s'', l'', r'') (tp @ shift (mopup_n_tm n) off, 0) diff)"
     by(auto intro: after_is_final)
-  then have "is_final (steps (1, l, r) (tp @ shift (mopup n) off, 0) stpa)"
+  then have "is_final (steps (1, l, r) (tp @ shift (mopup_n_tm n) off, 0) stpa)"
     using e f by simp
   from this and c d show "False" by simp
 qed
 
+(* Cleanup simpset: the following proofs depend on a cleaned up simpset *)
+(*
+declare adjust.simps[simp del]
+declare seq_tm.simps [simp del] 
+declare shift.simps[simp del]
+declare composable_tm.simps[simp del]
+declare step.simps[simp del]
+declare steps.simps[simp del]
+declare fetch.simps[simp del]
+*)
 end
 

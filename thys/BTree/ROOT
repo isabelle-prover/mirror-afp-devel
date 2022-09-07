@@ -1,7 +1,7 @@
 chapter AFP
 
 session "BTree" (AFP) = "Refine_Imperative_HOL" +
-  options [timeout = 1200]
+  options [timeout = 2400]
   sessions
     "HOL-Data_Structures"
     "HOL-Real_Asymp"
