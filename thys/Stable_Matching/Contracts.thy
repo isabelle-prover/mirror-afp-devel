@@ -2451,8 +2451,9 @@ next
   next
     case (step fp) note IH = \<open>fp \<subseteq> lfp (F2 ds \<circ> F1)\<close>
     then have "CD_on ds (- RH fp) \<subseteq> lfp (F2 ds \<circ> F1)"
-      by (subst lfp_unfold[OF F2_o_F1_mono])
-         (metis (no_types, lifting) Compl_Diff_eq F1_antimono F2_antimono F1_def F2_def Un_subset_iff antimonoD comp_apply)
+      apply (subst lfp_unfold[OF F2_o_F1_mono])
+      by (smt (verit, ccfv_SIG) Compl_iff Contracts.F1_def Contracts.F2_def Contracts_axioms DiffD2
+          F2_o_F1_mono comp_eq_dest_lhs in_mono monoD subsetI)
     with IH show ?case
       unfolding cop_F_def by blast
   qed

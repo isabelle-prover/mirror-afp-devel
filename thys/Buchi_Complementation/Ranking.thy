@@ -162,7 +162,7 @@ begin
 
   lemma graph_antimono: "antimono (graph A w)"
     using alternate_antimono clean_decreasing prune_decreasing
-    unfolding antimono_def le_fun_def graph_def
+    unfolding monotone_def le_fun_def graph_def
     by metis
   lemma graph_nodes: "graph A w k \<subseteq> gunodes A w" using graph_0 graph_antimono le0 antimonoD by metis
   lemma graph_successors:
@@ -384,7 +384,7 @@ begin
     assumes "v \<in> graph A w k"
     shows "k \<le> 2 * card (nodes A)"
     using graph_empty graph_antimono assms
-    by (metis (no_types, lifting) Suc_leI antimono_def basic_trans_rules(30) empty_iff not_le_imp_less)
+    by (metis Suc_leI empty_iff monotone_def not_le_imp_less rev_subsetD)
 
   subsection \<open>Node Ranks\<close>
 

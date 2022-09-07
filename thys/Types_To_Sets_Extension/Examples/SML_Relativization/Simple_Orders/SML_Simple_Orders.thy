@@ -736,19 +736,6 @@ locale order_pair_ow = ord\<^sub>1: order_ow U\<^sub>1 le\<^sub>1 ls\<^sub>1 + o
 
 sublocale order_pair_ow \<subseteq> preorder_order_ow ..
 
-definition mono where
-  "mono f \<longleftrightarrow> (\<forall>x y. x \<le> y \<longrightarrow> f x \<le> f y)"
-
-definition strict_mono where
-  "strict_mono f \<longleftrightarrow> (\<forall>x y. x < y \<longrightarrow> f x < f y)"
-
-lemma mono_iff_mono: "mono f \<longleftrightarrow> Fun.mono f"
-  by (simp add: mono_def Fun.mono_def)
-
-ud \<open>mono\<close> (\<open>(with _ _ : \<guillemotleft>mono\<guillemotright> _)\<close> [1000, 999, 1000] 10)
-ud \<open>strict_mono\<close> (\<open>(with _ _ : \<guillemotleft>strict'_mono\<guillemotright> _)\<close> [1000, 999, 1000] 10)
-ud \<open>order.antimono\<close> (\<open>(with _ _ : \<guillemotleft>strict'_mono\<guillemotright> _)\<close> [1000, 999, 1000] 10)
-ud antimono' \<open>antimono\<close> 
 ud \<open>monoseq\<close> (\<open>(with _ : \<guillemotleft>monoseq\<guillemotright> _)\<close> [1000, 1000] 10)
 
 ctr relativization
@@ -757,13 +744,7 @@ ctr relativization
     "Domainp (B::'c\<Rightarrow>'d\<Rightarrow>bool) = (\<lambda>x. x \<in> U\<^sub>2)"
     and [transfer_rule]: "right_total B" 
   trp (?'b \<open>A::'a\<Rightarrow>'b\<Rightarrow>bool\<close>) and (?'a B)
-  in mono_ow: mono.with_def 
-    (\<open>(on _ with _ _ : \<guillemotleft>mono\<guillemotright> _)\<close> [1000, 1000, 999, 1000] 10)
-    and strict_mono_ow: strict_mono.with_def 
-      (\<open>(on _ with _ _ : \<guillemotleft>strict'_mono\<guillemotright> _)\<close> [1000, 1000, 999, 1000] 10)
-    and antimono_ow: antimono.with_def
-      (\<open>(on _ with _ _ : \<guillemotleft>antimono\<guillemotright> _)\<close> [1000, 1000, 999, 1000] 10)
-    and monoseq_ow: monoseq.with_def
+  in  monoseq_ow: monoseq.with_def
 
 
 subsubsection\<open>Transfer rules\<close>
@@ -1024,21 +1005,6 @@ tts_lemma max_absorb1:
   assumes "y \<in> U" and "x \<in> U" and "y \<le>\<^sub>o\<^sub>w x"
   shows "local.max x y = x"
     is Orderings.max_absorb1.
-    
-tts_lemma decseq_imp_monoseq:
-  assumes "range X \<subseteq> U" and "on UNIV with (\<le>\<^sub>o\<^sub>w) (\<le>) : \<guillemotleft>antimono\<guillemotright> X"
-  shows "with (\<le>\<^sub>o\<^sub>w) : \<guillemotleft>monoseq\<guillemotright> X"
-    is Topological_Spaces.decseq_imp_monoseq.
-    
-tts_lemma decseq_Suc_iff:
-  assumes "range f \<subseteq> U"
-  shows "(on UNIV with (\<le>\<^sub>o\<^sub>w) (\<le>) : \<guillemotleft>antimono\<guillemotright> f) = (\<forall>x. f (Suc x) \<le>\<^sub>o\<^sub>w f x)"
-    is Topological_Spaces.decseq_Suc_iff.
-
-tts_lemma decseq_const:
-  assumes "k \<in> U"
-  shows "on (UNIV::nat set) with (\<le>\<^sub>o\<^sub>w) (\<le>) : \<guillemotleft>antimono\<guillemotright> (\<lambda>x. k)"
-    is Topological_Spaces.decseq_const.
 
 tts_lemma atMost_Int_atLeast:
   assumes "n \<in> U"
@@ -1052,16 +1018,6 @@ tts_lemma monoseq_Suc:
       ((\<forall>x. X x \<le>\<^sub>o\<^sub>w X (Suc x)) \<or> (\<forall>x. X (Suc x) \<le>\<^sub>o\<^sub>w X x))"
     is Topological_Spaces.monoseq_Suc.
 
-tts_lemma decseq_SucI:
-  assumes "range X \<subseteq> U" and "\<And>n. X (Suc n) \<le>\<^sub>o\<^sub>w X n"
-  shows "on UNIV with (\<le>\<^sub>o\<^sub>w) (\<le>) : \<guillemotleft>antimono\<guillemotright> X"
-    is Topological_Spaces.decseq_SucI.
-
-tts_lemma decseq_SucD:
-  assumes "range A \<subseteq> U" and "on UNIV with (\<le>\<^sub>o\<^sub>w) (\<le>) : \<guillemotleft>antimono\<guillemotright> A"
-  shows "A (Suc i) \<le>\<^sub>o\<^sub>w A i"
-    is Topological_Spaces.decseq_SucD.
-
 tts_lemma mono_SucI2:
   assumes "range X \<subseteq> U" and "\<forall>x. X (Suc x) \<le>\<^sub>o\<^sub>w X x"
   shows "with (\<le>\<^sub>o\<^sub>w) : \<guillemotleft>monoseq\<guillemotright> X"
@@ -1072,13 +1028,6 @@ tts_lemma mono_SucI1:
   shows "with (\<le>\<^sub>o\<^sub>w) : \<guillemotleft>monoseq\<guillemotright> X"
     is Topological_Spaces.mono_SucI1.
 
-tts_lemma decseqD:
-  assumes "range f \<subseteq> U"
-    and "on UNIV with (\<le>\<^sub>o\<^sub>w) (\<le>) : \<guillemotleft>antimono\<guillemotright> f"
-    and "(i::nat) \<le> j"
-  shows "f j \<le>\<^sub>o\<^sub>w f i"
-    is Topological_Spaces.decseqD.
-
 tts_lemma monoI2:
   assumes "range X \<subseteq> U" and "\<forall>x y. x \<le> y \<longrightarrow> X y \<le>\<^sub>o\<^sub>w X x"
   shows "with (\<le>\<^sub>o\<^sub>w) : \<guillemotleft>monoseq\<guillemotright> X"
@@ -1088,11 +1037,6 @@ tts_lemma monoI1:
   assumes "range X \<subseteq> U" and "\<forall>x y. x \<le> y \<longrightarrow> X x \<le>\<^sub>o\<^sub>w X y"
   shows "with (\<le>\<^sub>o\<^sub>w) : \<guillemotleft>monoseq\<guillemotright> X"
     is Topological_Spaces.monoI1.
-
-tts_lemma antimono_iff_le_Suc:
-  assumes "range f \<subseteq> U"
-  shows "(on UNIV with (\<le>\<^sub>o\<^sub>w) (\<le>) : \<guillemotleft>antimono\<guillemotright> f) = (\<forall>x. f (Suc x) \<le>\<^sub>o\<^sub>w f x)"
-    is Nat.antimono_iff_le_Suc.
 
 end
 
@@ -1210,63 +1154,6 @@ end
 
 context order_pair_ow 
 begin
-
-tts_context
-  tts: (?'a to U\<^sub>1) and (?'b to U\<^sub>2)
-  rewriting ctr_simps
-  substituting ord\<^sub>1.order_ow_axioms and ord\<^sub>2.order_ow_axioms
-  eliminating through
-    (
-      unfold
-        strict_mono_ow_def
-        mono_ow_def
-        antimono_ow_def
-        bdd_above_ow_def
-        bdd_below_ow_def
-        bdd_ow_def,
-      clarsimp
-    )
-begin
-
-tts_lemma antimonoD:
-  assumes "x \<in> U\<^sub>1"
-    and "y \<in> U\<^sub>1"
-    and "on U\<^sub>1 with (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>antimono\<guillemotright> f"
-    and "x \<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1 y"
-  shows "f y \<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 f x"
-    is Orderings.antimonoD.
-    
-tts_lemma antimonoI:
-  assumes "\<And>x y. \<lbrakk>x \<in> U\<^sub>1; y \<in> U\<^sub>1; x \<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1 y\<rbrakk> \<Longrightarrow> f y \<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 f x"
-  shows "on U\<^sub>1 with (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>antimono\<guillemotright> f"
-    is Orderings.antimonoI.
-    
-tts_lemma antimonoE:
-  assumes "x \<in> U\<^sub>1"
-    and "y \<in> U\<^sub>1"
-    and "on U\<^sub>1 with (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>antimono\<guillemotright> f"
-    and "x \<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1 y"
-    and "f y \<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 f x \<Longrightarrow> thesis"
-  shows thesis
-    is Orderings.antimonoE.
-
-tts_lemma bdd_below_image_antimono:
-  assumes "\<forall>x\<in>U\<^sub>1. f x \<in> U\<^sub>2"
-    and "A \<subseteq> U\<^sub>1"
-    and "on U\<^sub>1 with (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>antimono\<guillemotright> f"
-    and "ord\<^sub>1.bdd_above A"
-  shows "ord\<^sub>2.bdd_below (f ` A)"
-    is Conditionally_Complete_Lattices.bdd_below_image_antimono.
-
-tts_lemma bdd_above_image_antimono:
-  assumes "\<forall>x\<in>U\<^sub>1. f x \<in> U\<^sub>2"
-    and "A \<subseteq> U\<^sub>1"
-    and "on U\<^sub>1 with (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>antimono\<guillemotright> f"
-    and "ord\<^sub>1.bdd_below A"
-  shows "ord\<^sub>2.bdd_above (f ` A)"
-    is Conditionally_Complete_Lattices.bdd_above_image_antimono.
-
-end
 
 tts_context
   tts: (?'a to U\<^sub>1) and (?'b to U\<^sub>2)

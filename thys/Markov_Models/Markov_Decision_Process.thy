@@ -711,7 +711,9 @@ proof -
   have "P_inf s (\<lambda>x. \<Sqinter>i. P i x) = (\<Sqinter>cfg\<in>cfg_on s. emeasure (T cfg) (\<Inter>i. {x\<in>space St. P i x}))"
     by (auto simp: P_inf_def intro!: INF_cong arg_cong2[where f=emeasure])
   also have "\<dots> = (\<Sqinter>cfg\<in>cfg_on s. \<Sqinter>i. emeasure (T cfg) {x\<in>space St. P i x})"
-    using \<open>decseq P\<close> by (auto intro!: INF_cong INF_emeasure_decseq[symmetric] simp: decseq_def le_fun_def)
+    using \<open>decseq P\<close>
+    by (auto intro!: INF_cong INF_emeasure_decseq[symmetric]
+        simp: decseq_def monotone_def le_fun_def)
   also have "\<dots> = (\<Sqinter>i. P_inf s (P i))"
     by (subst INF_commute) (simp add: P_inf_def)
   finally show ?thesis
@@ -732,7 +734,7 @@ proof (rule P_inf_INF)
 next
   show "decseq (\<lambda>i x. (Q ^^ i) \<top> (f x))"
     using inf_continuous_mono[OF Q, THEN funpow_increasing[rotated]]
-    unfolding decseq_def le_fun_def by auto
+    unfolding decseq_def monotone_def le_fun_def by auto
 qed
 
 lemma P_inf_iterate:
