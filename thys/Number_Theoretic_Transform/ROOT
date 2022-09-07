@@ -1,0 +1,14 @@
+chapter AFP
+
+session "Number_Theoretic_Transform" (AFP) = "HOL-Number_Theory" +
+  (*descpription "Number Theoretic Tranform, NTT with finite fields"*)
+  options [timeout = 600]
+  sessions
+    Berlekamp_Zassenhaus
+  theories
+   Preliminary_Lemmas
+   NTT
+   Butterfly
+  document_files
+    "root.bib"
+    "root.tex"
