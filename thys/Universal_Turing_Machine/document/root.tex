@@ -72,26 +72,27 @@ We formalise results from computability theory: Turing decidability, Turing
   and Computability Theory in Isabelle/HOL, ITP 2013
 \end{abstract}
 
-The AFP entry and by extension this document is largely written by Jian Xu,
-Xingyuan Zhang, and Christian Urban.  The Universal Turing Machine is well
+The AFP entry and by extension this document is largely written by Xu,
+Zhang and Urban.  The Universal Turing Machine is 
 explained in this document, starting at Figure~\ref{prepare_input}.
-Regardless, you may want to read the original ITP article~\cite{Xu13} instead of
- this pdf document corresponding to the AFP entry.
-If you are just interested in results about Turing Machines and Computability theory:
-the main book used for this formalisation is by Boolos, Burgess, and Jeffrey~\cite{Boolos07}.
+You may want to also consult the original ITP article~\cite{Xu13}.
+If you are interested in results about Turing Machines and Computability
+theory: the main book used for this formalisation is by Boolos, Burgess
+and Jeffrey~\cite{Boolos07}.
 
-Sebastiaan J. C. Joosten contributed mainly by making the files ready for the
-AFP.  The need for a good formalisation of Turing Machines arose from realising
-that the current formalisation of saturation graphs~\cite{Graph_Saturation-AFP}
-is missing a key undecidability result present in the original
-paper~\cite{Joosten18}.
-Recently, an undecidability result has been added to the AFP by
- Bertram Felgenhauer~\cite{Minsky_Machines-AFP}, using a definition of computably enumerable
- sets formalised by Michael Nedzelsky~\cite{Recursion-Theory-I-AFP}.
-Showing the equivalence of these entirely separate notions of computability
- and decidability remains future work.
+Joosten contributed mainly by making the files ready for the AFP.  The
+need for a good formalisation of Turing Machines arose from realising
+that the current formalisation of saturation
+graphs~\cite{Graph_Saturation-AFP} is missing a key undecidability
+result present in the original paper~\cite{Joosten18}.  Recently, an
+undecidability result has been added to the AFP by
+Felgenhauer~\cite{Minsky_Machines-AFP}, using a definition of
+computably enumerable sets formalised by
+Nedzelsky~\cite{Recursion-Theory-I-AFP}.  This entry establishes the
+equivalence of these entirely separate notions of computability, but
+decidability remains future work.
 
-Recently in 2022, Franz Regensburger contributed by adding definitions for
+In 2022, Regensburger contributed by adding definitions for
 concepts like Turing Decidability, Turing Computability and Turing Reducibility
 for problem reduction. He also enhanced the result about the
 undecidability of the General Halting Problem given in the original AFP entry

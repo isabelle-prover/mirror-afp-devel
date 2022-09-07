@@ -4932,6 +4932,27 @@ name = "Rodrigo Raya"
 [raya.homepages]
 raya_homepage = "https://people.epfl.ch/rodrigo.raya"
 
+[regensburger]
+name = "Franz Regensburger"
+
+[regensburger.emails]
+
+[regensburger.emails.regensburger_email]
+user = [
+  "Franz",
+  "Regensburger",
+]
+host = [
+  "thi",
+  "de"
+]
+
+[regensburger.homepages]
+regensburger_homepage = "https://www.thi.de/suche/mitarbeiter/prof-dr-rer-nat-franz-regensburger"
+
+
+
+
 [reiche]
 name = "Sebastian Reiche"
 
