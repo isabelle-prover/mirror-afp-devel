@@ -82,6 +82,9 @@ host = [
 name = "Thomas Ammer"
 
 [ammer.emails]
+[ammer.emails.ammer_email]
+user = ["thomas","ammer"]
+host = ["tum","de"]
 
 [ammer.homepages]
 

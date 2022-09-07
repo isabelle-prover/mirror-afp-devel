@@ -6,7 +6,16 @@
     <description>Recent content in Berlekamp_Zassenhaus on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 21 Apr 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/berlekamp_zassenhaus/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 18 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/berlekamp_zassenhaus/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Number Theoretic Transform</title>
+      <link>/entries/Number_Theoretic_Transform.html</link>
+      <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Number_Theoretic_Transform.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Fisher&#39;s Inequality: Linear Algebraic Proof Techniques for Combinatorics</title>
       <link>/entries/Fishers_Inequality.html</link>

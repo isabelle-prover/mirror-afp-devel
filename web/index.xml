@@ -17,6 +17,15 @@
     </item>
     
     <item>
+      <title>Number Theoretic Transform</title>
+      <link>/entries/Number_Theoretic_Transform.html</link>
+      <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Number_Theoretic_Transform.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>From THE BOOK: Two Squares via Involutions</title>
       <link>/entries/Involutions2Squares.html</link>
       <pubDate>Mon, 15 Aug 2022 00:00:00 +0000</pubDate>
@@ -10436,6 +10445,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Number_Theoretic_Transform</title>
+      <link>/theories/number_theoretic_transform/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/number_theoretic_transform/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Octonions</title>
       <link>/theories/octonions/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12016,7 +12034,7 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>696 Entries   424 Authors   ~214,300 Lemmas   ~3,514,500 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>697 Entries   424 Authors   ~214,400 Lemmas   ~3,516,400 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>

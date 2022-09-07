@@ -23,6 +23,18 @@
     <loc>/entries/Hales_Jewett.html</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/ammer/</loc>
+    <lastmod>2022-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/berlekamp_zassenhaus/</loc>
+    <lastmod>2022-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2022-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Number_Theoretic_Transform.html</loc>
+    <lastmod>2022-08-18T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/bortin/</loc>
     <lastmod>2022-08-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -33,9 +45,6 @@
     <lastmod>2022-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/datatype_order_generator/</loc>
-    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2022-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/native_word/</loc>
@@ -189,9 +198,6 @@
     <lastmod>2022-05-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/benor_kozen_reif/</loc>
-    <lastmod>2022-04-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/berlekamp_zassenhaus/</loc>
     <lastmod>2022-04-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/design_theory/</loc>
@@ -469,9 +475,6 @@
   </url><url>
     <loc>/entries/Simplicial_complexes_and_boolean_functions.html</loc>
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/ammer/</loc>
-    <lastmod>2021-11-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/automatic_refinement/</loc>
     <lastmod>2021-11-23T00:00:00+00:00</lastmod>
@@ -5266,6 +5269,8 @@
     <loc>/theories/normbyeval/</loc>
   </url><url>
     <loc>/theories/nullstellensatz/</loc>
+  </url><url>
+    <loc>/theories/number_theoretic_transform/</loc>
   </url><url>
     <loc>/theories/octonions/</loc>
   </url><url>
