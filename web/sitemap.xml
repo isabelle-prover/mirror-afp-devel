@@ -5,7 +5,16 @@
     <loc>/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/argyraki/</loc>
+    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/</loc>
+    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/bernoulli/</loc>
+    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/eberl/</loc>
@@ -14,7 +23,19 @@
     <loc>/entries/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/jacobson_basic_algebra/</loc>
+    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Khovanskii_Theorem.html</loc>
+    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/kreuzer/</loc>
+    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/paulson/</loc>
+    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/pluennecke_ruzsa_inequality/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/sulejmani/</loc>
@@ -27,9 +48,6 @@
     <lastmod>2022-08-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/berlekamp_zassenhaus/</loc>
-    <lastmod>2022-08-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2022-08-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Number_Theoretic_Transform.html</loc>
@@ -169,15 +187,6 @@
   </url><url>
     <loc>/dependencies/package_logic/</loc>
     <lastmod>2022-05-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/argyraki/</loc>
-    <lastmod>2022-05-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/jacobson_basic_algebra/</loc>
-    <lastmod>2022-05-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/paulson/</loc>
-    <lastmod>2022-05-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Pluennecke_Ruzsa_Inequality.html</loc>
     <lastmod>2022-05-26T00:00:00+00:00</lastmod>
@@ -1309,9 +1318,6 @@
   </url><url>
     <loc>/authors/kammueller/</loc>
     <lastmod>2020-04-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/bernoulli/</loc>
-    <lastmod>2020-04-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Gaussian_Integers.html</loc>
     <lastmod>2020-04-24T00:00:00+00:00</lastmod>
@@ -4981,6 +4987,8 @@
     <loc>/theories/kd_tree/</loc>
   </url><url>
     <loc>/theories/key_agreement_strong_adversaries/</loc>
+  </url><url>
+    <loc>/theories/khovanskii_theorem/</loc>
   </url><url>
     <loc>/theories/kleene_algebra/</loc>
   </url><url>
