@@ -1,13 +1,13 @@
-title = "The Hales-Jewett Theorem"
+title = "The Hales–Jewett Theorem"
 date = 2022-09-02
 topics = [
   "Mathematics/Combinatorics",
 ]
 abstract = """
 <p>This article is a formalisation of a proof of the
-Hales--Jewett theorem presented in the textbook <em>Ramsey
+Hales–Jewett theorem presented in the textbook <em>Ramsey
 Theory</em> by Graham et al.</p>
-<p>The Hales--Jewett theorem is a result in Ramsey Theory which
+<p>The Hales–Jewett theorem is a result in Ramsey Theory which
 states that, for any non-negative integers $r$ and $t$, there exists a
 minimal dimension $N$, such that any $r$-coloured
 $N'$-dimensional cube over $t$ elements (with $N' \\geq N$)
