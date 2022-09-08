@@ -28,9 +28,7 @@ homepage = "lochbihler_homepage"
 lochbihler = "lochbihler_email1"
 
 [history]
-2016-03-03 = """
-added formalisation of lifting with combinators<br>
-"""
+2016-03-03 = "added formalisation of lifting with combinators<br>"
 2016-06-10 = """
 implemented automatic derivation of lifted combinator reductions;
 support arbitrary lifted relations using relators;

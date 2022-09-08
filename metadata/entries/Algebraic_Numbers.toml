@@ -33,9 +33,7 @@ yamada = "yamada_email1"
 joosten = "joosten_email"
 
 [history]
-2016-01-29 = """
-Split off Polynomial Interpolation and Polynomial Factorization<br>
-"""
+2016-01-29 = "Split off Polynomial Interpolation and Polynomial Factorization<br>"
 2017-04-16 = "Use certified Berlekamp-Zassenhaus factorization, use subresultant algorithm for computing resultants, improved bisection algorithm"
 
 [extra]

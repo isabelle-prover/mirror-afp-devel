@@ -30,9 +30,7 @@ homepage = "desharnais_homepage"
 desharnais = "desharnais_email"
 
 [history]
-2021-06-14 = """
-refactored function definitions to contain explicit basic blocks<br>
-"""
+2021-06-14 = "refactored function definitions to contain explicit basic blocks<br>"
 2021-06-25 = "proved conditional completeness of compilation<br>"
 
 [extra]

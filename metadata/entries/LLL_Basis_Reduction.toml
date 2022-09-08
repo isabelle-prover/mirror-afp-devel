@@ -50,9 +50,7 @@ thiemann = "thiemann_email"
 yamada = "yamada_email1"
 
 [history]
-2018-04-16 = """
-Integrated formal complexity bounds (Haslbeck, Thiemann)
-"""
+2018-04-16 = "Integrated formal complexity bounds (Haslbeck, Thiemann)"
 2018-05-25 = "Integrated much faster LLL implementation based on integer arithmetic (Bottesch, Haslbeck, Thiemann)"
 
 [extra]

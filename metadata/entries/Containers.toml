@@ -28,16 +28,12 @@ email = "thiemann_email"
 lochbihler = "lochbihler_email1"
 
 [history]
-2013-07-11 = """
-add pretty printing for sets (revision 7f3f52c5f5fa)<br>
-"""
+2013-07-11 = "add pretty printing for sets (revision 7f3f52c5f5fa)<br>"
 2013-09-20 = """
 provide generators for canonical type class instantiations
 (revision 159f4401f4a8 by René Thiemann)<br>
 """
-2014-07-08 = """
-add support for going from partial functions to mappings (revision 7a6fc957e8ed)<br>
-"""
+2014-07-08 = "add support for going from partial functions to mappings (revision 7a6fc957e8ed)<br>"
 2018-03-05 = "add two application examples: depth-first search and 2SAT (revision e5e1a1da2411)"
 
 [extra]

@@ -31,18 +31,14 @@ Invariant-free datastructures: Invariant implicitely hidden in typedef.
 Record-interfaces: All operations of an interface encapsulated as record.
 Examples moved to examples subdirectory.<br>
 """
-2010-12-01 = """
-New Interfaces: Priority Queues, Annotated Lists. Implemented by finger trees, (skew) binomial queues.<br>
-"""
+2010-12-01 = "New Interfaces: Priority Queues, Annotated Lists. Implemented by finger trees, (skew) binomial queues.<br>"
 2011-10-10 = """
 SetSpec: Added operations: sng, isSng, bexists, size_abort, diff, filter, iterate_rule_insertP
 MapSpec: Added operations: sng, isSng, iterate_rule_insertP, bexists, size, size_abort, restrict,
 map_image_filter, map_value_image_filter
 Some maintenance changes<br>
 """
-2012-04-25 = """
-New iterator foundation by Tuerk. Various maintenance changes.<br>
-"""
+2012-04-25 = "New iterator foundation by Tuerk. Various maintenance changes.<br>"
 
 [extra]
 

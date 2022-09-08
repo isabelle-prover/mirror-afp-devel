@@ -28,12 +28,8 @@ homepage = "nipkow_homepage"
 nipkow = "nipkow_email"
 
 [history]
-2015-03-17 = """
-Added pairing heaps by Hauke Brinkop.<br>
-"""
-2016-07-12 = """
-Moved splay heaps from here to Splay_Tree<br>
-"""
+2015-03-17 = "Added pairing heaps by Hauke Brinkop.<br>"
+2016-07-12 = "Moved splay heaps from here to Splay_Tree<br>"
 2016-07-14 = "Moved pairing heaps from here to the new Pairing_Heap"
 
 [extra]

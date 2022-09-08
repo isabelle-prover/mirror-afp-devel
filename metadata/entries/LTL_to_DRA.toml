@@ -18,9 +18,7 @@ email = "sickert_email"
 sickert = "sickert_email"
 
 [history]
-2015-09-23 = """
-Enable code export for the eager unfolding optimisation and reduce running time of the generated tool. Moreover, add support for the mlton SML compiler.<br>
-"""
+2015-09-23 = "Enable code export for the eager unfolding optimisation and reduce running time of the generated tool. Moreover, add support for the mlton SML compiler.<br>"
 2016-03-24 = "Make use of the LTL entry and include the simplifier."
 
 [extra]

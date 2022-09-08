@@ -26,9 +26,7 @@ krauss = "krauss_email"
 urban = "urban_email"
 
 [history]
-2011-08-26 = """
-Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>
-"""
+2011-08-26 = "Christian Urban added a theory about derivatives and partial derivatives of regular expressions<br>"
 2012-05-10 = "Tobias Nipkow added equivalence checking with partial derivatives"
 
 [extra]

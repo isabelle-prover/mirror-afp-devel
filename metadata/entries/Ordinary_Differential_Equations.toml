@@ -39,15 +39,9 @@ immler = "immler_email"
 hoelzl = "hoelzl_email"
 
 [history]
-2014-02-13 = """
-added an implementation of the Euler method based on affine arithmetic<br>
-"""
-2016-04-14 = """
-added flow and variational equation<br>
-"""
-2016-08-03 = """
-numerical algorithms for reachability analysis (using second-order Runge-Kutta methods, splitting, and reduction) implemented using Lammich's framework for automatic refinement<br>
-"""
+2014-02-13 = "added an implementation of the Euler method based on affine arithmetic<br>"
+2016-04-14 = "added flow and variational equation<br>"
+2016-08-03 = "numerical algorithms for reachability analysis (using second-order Runge-Kutta methods, splitting, and reduction) implemented using Lammich's framework for automatic refinement<br>"
 2017-09-20 = """
 added Poincare map and propagation of variational equation in
 reachability analysis, verified algorithms for C1-information and computations
