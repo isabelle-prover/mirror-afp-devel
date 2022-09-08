@@ -15,7 +15,6 @@ theory Khovanskii
     "Bernoulli.Bernoulli"               \<comment> \<open>sums of a fixed power are polynomials\<close>
     "HOL-Analysis.Weierstrass_Theorems" \<comment> \<open>needed for polynomial function\<close>
     "HOL-Library.List_Lenlexorder"      \<comment> \<open>lexicographic ordering for the type @{typ \<open>nat list\<close>}\<close>
-    For_2022
 begin
 
 lemma real_polynomial_function_sum_of_powers:
@@ -36,6 +35,15 @@ definition finsets :: "['a set, nat] \<Rightarrow> 'a set set"
 lemma card_finsets: "finite N \<Longrightarrow> card (finsets N k) = card N choose k"
   by (simp add: finsets_def n_subsets)
 
+lemma sorted_map_plus_iff [simp]:
+  fixes a::"'a::linordered_cancel_ab_semigroup_add"
+  shows "sorted (map ((+) a) xs) \<longleftrightarrow> sorted xs"
+  by (induction xs) auto
+
+lemma distinct_map_plus_iff [simp]:
+  fixes a::"'a::linordered_cancel_ab_semigroup_add"
+  shows "distinct (map ((+) a) xs) \<longleftrightarrow> distinct xs"
+  by (induction xs) auto
 
 subsection \<open>Arithmetic operations on lists, pointwise on the elements\<close>
 
