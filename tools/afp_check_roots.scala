@@ -97,9 +97,9 @@ object AFP_Check_Roots {
 
     val check_presence = new Check[String](
       run = { (tree, selected) =>
-        val fs_entries = File.read_dir(afp_dir).filterNot(excludes.contains)
+        val fs_entries = File.read_dir(afp_dir).filter(name => (afp_dir + Path.basic(name)).is_dir)
 
-        fs_entries.flatMap { name =>
+        fs_entries.filterNot(excludes.contains).flatMap { name =>
           if (!selected.contains(name) || tree(name).dir.base.implode != name)
             Some(name)
           else
