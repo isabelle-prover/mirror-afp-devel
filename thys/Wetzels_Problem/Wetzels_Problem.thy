@@ -227,9 +227,8 @@ proof -
         also have "\<dots> \<le> (q n * (1 + norm z) ^ n) * (1 + norm (w n)) * ((1 + norm z))"
           by (smt (verit) "\<section>" Suc mult.assoc mult_left_mono norm_ge_zero)
         also have "\<dots> \<le> q n * (1 + norm (w n)) * ((1 + norm z) * (1 + norm z) ^ n)"
-          by (simp add: mult_ac)
-        finally have "norm (p n z') * norm (z' - w n) \<le> q n * (1 + norm (w n)) * ((1 + norm z) * (1 + norm z) ^ n)" .
-        with that show ?case
+          by auto
+        finally show ?case
           by (auto simp: p_def q_def norm_mult simp del: fact_Suc)
       qed
 
