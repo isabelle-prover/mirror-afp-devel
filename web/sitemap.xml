@@ -3,33 +3,42 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/argyraki/</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
+    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/berlekamp_zassenhaus/</loc>
+    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/CRYSTALS-Kyber.html</loc>
+    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/kreuzer/</loc>
+    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/number_theoretic_transform/</loc>
+    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/argyraki/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/bernoulli/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/eberl/</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/jacobson_basic_algebra/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Khovanskii_Theorem.html</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/kreuzer/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/paulson/</loc>
@@ -45,9 +54,6 @@
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/ammer/</loc>
-    <lastmod>2022-08-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/berlekamp_zassenhaus/</loc>
     <lastmod>2022-08-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Number_Theoretic_Transform.html</loc>
@@ -4567,6 +4573,8 @@
     <loc>/theories/crypthol/</loc>
   </url><url>
     <loc>/theories/cryptobasedcompositionalproperties/</loc>
+  </url><url>
+    <loc>/theories/crystals-kyber/</loc>
   </url><url>
     <loc>/theories/csp_reftk/</loc>
   </url><url>
