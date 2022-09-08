@@ -63,6 +63,28 @@ email = "stark_email"
 stark = "stark_email"
 
 [history]
+2021-07-22 = """
+Minor changes to sublocale declarations related to functor/natural transformation to
+avoid issues with global interpretations reported 2/2/2021 by Filip Smola.
+(revision 49d3aa43c180)<br>"""
+2018-05-29 = """
+Revised axioms for the category locale.  Introduced notation for composition and \"in hom\".
+(revision 8318366d4575)<br>
+"""
+2020-02-15 = """
+Move ConcreteCategory.thy from Bicategory to Category3 and use it systematically.
+Make other minor improvements throughout.
+(revision a51840d36867)<br>
+"""
+2020-07-10 = """
+Added new material, mostly centered around cartesian categories.
+(revision 06640f317a79)<br>
+"""
+2020-11-04 = """
+Minor modifications and extensions made in conjunction with the addition
+of new material to Bicategory.
+(revision 472cb2268826)<br>
+"""
 
 [extra]
 

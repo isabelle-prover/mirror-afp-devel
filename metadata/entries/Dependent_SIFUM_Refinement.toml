@@ -31,6 +31,13 @@ homepage = "rizkallah_homepage"
 murray = "murray_email"
 
 [history]
+2016-08-19 = """
+Removed unused \"stop\" parameters from the sifum_refinement locale.
+(revision dbc482d36372)
+"""
+2016-09-02 = """
+TobyM extended \"simple\" refinement theory to be usable for all bisimulations.
+(revision 547f31c25f60)"""
 
 [extra]
 

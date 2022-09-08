@@ -1,0 +1,33 @@
+title = "CRYSTALS-Kyber"
+date = 2022-09-08
+topics = [
+  "Computer science/Security",
+]
+abstract = """
+This article formalizes the specification and the algorithm of the
+cryptographic scheme CRYSTALS-KYBER with multiplication using the
+Number Theoretic Transform and verifies its (1-δ)-correctness proof.
+CRYSTALS-KYBER is a key encapsulation mechanism in lattice-based
+post-quantum cryptography.  This entry formalizes the key generation,
+encryption and decryption algorithms and shows that the algorithm
+decodes correctly under a highly probable assumption
+((1-δ)-correctness). Moreover, the Number Theoretic Transform (NTT) in
+the case of Kyber and the convolution theorem thereon is formalized."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.kreuzer]
+email = "kreuzer_email1"
+
+[contributors]
+
+[notify]
+kreuzer = "kreuzer_email1"
+
+[history]
+
+[extra]
+
+[related]

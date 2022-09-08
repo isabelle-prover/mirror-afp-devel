@@ -25,6 +25,13 @@ homepage = "echenim_homepage"
 echenim = "echenim_email"
 
 [history]
+2019-05-12 = """
+Renamed discr_mkt predicate to stk_strict_subs and got rid of predicate A for a more natural definition of the type discrete_market;
+renamed basic quantity processes for coherent notation;
+renamed value_process into val_process and closing_value_process to cls_val_process;
+relaxed hypothesis of lemma CRR_market_fair_price.
+Added functions to price some basic options.
+(revision 0b813a1a833f)<br>"""
 
 [extra]
 

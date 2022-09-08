@@ -33,6 +33,8 @@ nipkow = "nipkow_email"
 #dois = ["10.46298/lmcs-18(1:36)2022"]
 
 [history]
+2021-02-08 = "added theory Approx_SC_Hoare (Set Cover) by Robin Eßmann<br>"
+2021-06-29 = "added theory Center_Selection by Ujkan Sulejmani"
 
 [extra]
 

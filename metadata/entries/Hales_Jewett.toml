@@ -1,0 +1,42 @@
+title = "The Hales–Jewett Theorem"
+date = 2022-09-02
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+<p>This article is a formalisation of a proof of the
+Hales–Jewett theorem presented in the textbook <em>Ramsey
+Theory</em> by Graham et al.</p>
+<p>The Hales–Jewett theorem is a result in Ramsey Theory which
+states that, for any non-negative integers $r$ and $t$, there exists a
+minimal dimension $N$, such that any $r$-coloured
+$N'$-dimensional cube over $t$ elements (with $N' \\geq N$)
+contains a monochromatic line. This theorem generalises Van der
+Waerden's Theorem, which has already been formalised in another
+<a
+href="https://www.isa-afp.org/entries/Van_der_Waerden.html">AFP
+entry</a>.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.sulejmani]
+email = "sulejmani_email"
+
+[authors.eberl]
+email = "eberl_email2"
+
+[authors.kreuzer]
+email = "kreuzer_email1"
+
+[contributors]
+
+[notify]
+sulejmani = "sulejmani_email1"
+
+[history]
+
+[extra]
+
+[related]

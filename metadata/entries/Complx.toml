@@ -44,6 +44,9 @@ amani = "amani_email"
 lewis = "lewis_email"
 
 [history]
+2017-01-13 = """
+Improve VCG for nested parallels and sequential sections
+(revision 30739dbc3dcb)"""
 
 [extra]
 

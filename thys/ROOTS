@@ -67,6 +67,7 @@ CAVA_Automata
 CAVA_LTL_Modelchecker
 CCS
 CISC-Kernel
+CRYSTALS-Kyber
 CRDT
 CSP_RefTK
 CYK
@@ -268,6 +269,7 @@ HOL-CSP
 HOLCF-Prelude
 HRB-Slicing
 Hahn_Jordan_Decomposition
+Hales_Jewett
 Heard_Of
 Hello_World
 HereditarilyFinite
@@ -330,6 +332,7 @@ KAT_and_DRA
 KBPs
 KD_Tree
 Key_Agreement_Strong_Adversaries
+Khovanskii_Theorem
 Kleene_Algebra
 Knights_Tour
 Knot_Theory
@@ -440,6 +443,7 @@ Noninterference_Ipurge_Unwinding
 Noninterference_Sequential_Composition
 NormByEval
 Nullstellensatz
+Number_Theoretic_Transform
 Octonions
 OpSets
 Open_Induction

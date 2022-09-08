@@ -1231,6 +1231,15 @@
     </item>
     
     <item>
+      <title>CRYSTALS-Kyber</title>
+      <link>/theories/crystals-kyber/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/crystals-kyber/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>CSP_RefTK</title>
       <link>/theories/csp_reftk/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -2455,6 +2464,15 @@
     </item>
     
     <item>
+      <title>Hales_Jewett</title>
+      <link>/theories/hales_jewett/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/hales_jewett/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Heard_Of</title>
       <link>/theories/heard_of/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -3081,6 +3099,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/key_agreement_strong_adversaries/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Khovanskii_Theorem</title>
+      <link>/theories/khovanskii_theorem/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/khovanskii_theorem/</guid>
       <description></description>
     </item>
     
@@ -4116,6 +4143,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/nullstellensatz/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Number_Theoretic_Transform</title>
+      <link>/theories/number_theoretic_transform/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/number_theoretic_transform/</guid>
       <description></description>
     </item>
     

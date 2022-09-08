@@ -22,9 +22,7 @@ email = "thiemann_email"
 thiemann = "thiemann_email"
 
 [history]
-2013-10-16 = """
-Added algorithms to compute floor and ceiling of sqrt of integers.
-"""
+2013-10-16 = "Added algorithms to compute floor and ceiling of sqrt of integers."
 2014-07-11 = "Moved NthRoot_Impl from Real-Impl to this entry."
 
 [extra]

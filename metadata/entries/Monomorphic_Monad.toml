@@ -27,6 +27,10 @@ homepage = "lochbihler_homepage"
 lochbihler = "lochbihler_email1"
 
 [history]
+2018-02-15 = """
+added further specifications and implementations of non-determinism;
+more examples
+(revision bc5399eea78e)<br>"""
 
 [extra]
 

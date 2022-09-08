@@ -1,0 +1,41 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Khovanskii's Theorem}
+\author{Angeliki Koutsoukou-Argyraki and Lawrence C. Paulson}
+\maketitle
+
+\begin{abstract}
+We formalise the proof of an important theorem in additive combinatorics due to Khovanskii~\cite{khovanskii-newton-polyhedron,khovanskii-sums-finite}, 
+attesting that the cardinality of the set of all sums of $n$ many elements of~$A$, where $A$ is a finite subset of an abelian group, is a polynomial in~$n$ for all sufficiently large~$n$. 
+We follow a proof of the theorem due to Nathanson and Ruzsa~\cite{nathanson-polynomial-growth,ruzsa-sumsets-structure} as presented in the notes ``Introduction to Additive Combinatorics''
+by Timothy Gowers~\cite{gowers-introduction-additive} for the University of Cambridge. 
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\paragraph*{Acknowledgements}
+The authors were supported by the ERC Advanced Grant ALEXANDRIA (Project 742178) funded by the European Research Council. 
+
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -1,0 +1,71 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+%\usepackage{hyperref}
+\usepackage{amsmath, amssymb, wasysym}
+\usepackage[autostyle]{csquotes}
+\usepackage{stmaryrd}
+\usepackage[T1]{fontenc}
+%\usepackage{hyperref}
+%\usepackage[T2A]{fontenc}
+%\usepackage[utf8]{inputenx}
+\usepackage[backend = bibtex,
+url=false,
+  citestyle=numeric,
+  bibstyle = numeric,
+  maxnames=4,
+  minnames=3,
+  maxbibnames=99,
+  giveninits,
+  sorting = none,
+  uniquename=init]{biblatex}
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\addtolength{\hoffset}{-1,5cm}
+\addtolength{\textwidth}{3cm}
+\bibliography{root}
+\begin{document}
+
+\title{Number Theoretic Transform}
+\author{Thomas Ammer and Katharina Kreuzer}
+\maketitle
+
+\begin{abstract}
+\indent  This entry contains an Isabelle formalization of the \textit{Number Theoretic Transform (NTT)} which is the analogue to a \textit{Discrete Fourier Transform (DFT)}, just over a finite field. Roots of unity in the complex numbers are replaced by those in a finite field.\\
+ \indent First, we define both \textit{NTT} and the inverse transform \textit{INTT} in Isabelle and prove them to be mutually inverse. \\
+\indent $DFT$ can be efficiently computed by the recursive \textit{Fast Fourier Transform (FFT)}. In our formalization, this algorithm is adapted to the setting of the $NTT$: We implement a \textit{Fast Number Theoretic Transform (FNTT)} based on the Butterfly scheme by Cooley and Tukey~\parencite{Good1997}. Additionally, we provide an inverse transform \textit{IFNTT} and prove it mutually inverse to \textit{FNTT}.\\
+\indent Afterwards, a recursive formalization of the \textit{FNTT} running time is examined and the famous $\mathcal{O}(n \log n)$ bounds are proven.
+\end{abstract}
+
+\pagebreak
+
+\tableofcontents
+\pagebreak
+%\parindent 0pt\parskip 0.5ex
+\isabellestyle{it}
+% include generated text of all theories
+\section{Introduction}
+\indent \indent The \textit{Discrete Fourier Transform~(DFT)} is used to analyze a periodic signal given by equidistant samples for its frequencies. 
+For an introduction to \textit{DFT} one may have a look at~\parencite{10.5555/1614191}.
+ However, one may generalize the setting and consider any algebraic structure with roots of unity.
+ For finite fields, we call the analogue to \textit{DFT} a \textit{Number Theoretic Transform~(NTT)}. It can be used for fast Integer multiplications and post-quantum lattice-based cryptography~\parencite{cryptoeprint:2016/504}.\\
+\indent Starting our formalization, we provide some initial setup, namely roots of unity by an argument on generating elements in $\mathbb{Z}_p$ (Sections~\ref{primroot1},~\ref{primroot2},~\ref{primroot3}) and lemmas on summation (Section~\ref{sums}), especially geometric sums (Section~\ref{geosum}).\\
+\indent We continue with a mathematical definition of \textit{NTT}~\parencite{ntt_intro} and formalize it in Isabelle (Section~\ref{NTTdef}). Let us consider a definition of \textit{DFT}:
+\begin{equation*}
+\mathsf{DFT}(\vec{x})_k = \sum \limits _{l=0}^{n-1} x_l \cdot e^{- \frac{i2\pi}{n}\cdot k \cdot l} \hspace{1cm} \text{ where } i = \sqrt{-1}
+\end{equation*}
+In this equation, $e^{- \frac{i2\pi}{n}}$ is a root of unity. Let $\omega$ be a $n$-th root of unity in $\mathbb{Z}_p$ and we can state analogously:
+\begin{equation*}
+\mathsf{NTT}(\vec{x})_k = \sum \limits _{l=0}^{n-1} x_l \cdot \omega^{ k l}
+\end{equation*}
+Throughout the paper, we stick to this definition. 
+An inverse tranform \textit{INTT} is obtained by replacing $\omega$ by its field inverse $\mu$ (i.e. $\mu \cdot \omega \equiv 1  \mod p$). We prove \textit{NTT} and \textit{INTT} to be mutually inverse in Section~\ref{NTTcorr}.\\
+\indent For computing \textit{DFT} more efficiently than $\mathcal{O}(n^2)$, a divide and conquer approach can be applied. By a smart rearranging, the sum can  be split into two subproblems of size $\frac{n}{2}$ which gives  an $\mathcal{O}(n \log n)$ algorithm. We call this the \textit{Fast Nuber Theoretic Transform (FNTT)}~\parencite{cryptoeprint:2016/504} and \textit{IFNTT} respectively. The corresponding procedure is treated in Section~\ref{Butterfly}. We prove equality between \textit{(I)NTT} and \textit{(I)FNTT} and can infer that both are mutually inverse by previos results.\\
+\indent \textit{DFT} and similar transforms like \textit{NTT} are especially famous for algorithms with $\mathcal{O}(n \log n)$ running times. Thus, it is appropriate to formalize some related arguments. We loosely follow a generic approach for verifying resource bounds of functional data structures and algorithms in Isabelle~\parencite{funalgs}.\\
+\indent During the formalization, we also present some informal arguments in order to give a better intution of what's going on in the formal proofs.\\
+\indent The present formalization was developed during a practical course on specification and verification at the \href{https://www21.in.tum.de/index.html}{TUM Chair of Logic and Verification}.\\
+
+\input{session}
+\pagebreak
+\printbibliography{}
+\end{document}

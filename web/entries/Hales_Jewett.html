@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>The Hales–Jewett Theorem - Archive of Formal Proofs</title><meta name="description" content="This article is a formalisation of a proof of the Hales–Jewett theorem presented in the textbook Ramsey Theory by Graham et al.
+The Hales–Jewett theorem is..."><meta property="og:title" content="The Hales–Jewett Theorem" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Hales_Jewett.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2022-09-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-09-02T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="The Hales–Jewett Theorem"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <a href="../"><li >Home</li></a>
+        <a href="../topics/"><li >Topics</li></a>
+        <a href="../download/"><li >Download</li></a>
+        <a href="../help/"><li >Help</li></a>
+        <a href="../submission/"><li >Submission</li></a>
+        <a href="../statistics/"><li >Statistics</li></a>
+        <a href="../about/"><li >About</li></a>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>T</span>he <span class='first'>H</span>ales–<span class='first'>J</span>ewett <span class='first'>T</span>heorem</h1>
+  <div>
+    
+    <p><a href="../authors/sulejmani">Ujkan Sulejmani</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsidWprYW4iLCJzdWxlam1hbmkiXX0=">📧</a>, <a href="../authors/eberl">Manuel Eberl</a> <a class="obfuscated" data="eyJob3N0IjpbInVpYmsiLCJhYyIsImF0Il0sInVzZXIiOlsibWFudWVsIiwiZWJlcmwiXX0=">📧</a> and <a href="../authors/kreuzer">Katharina Kreuzer</a> <a class="obfuscated" data="eyJob3N0IjpbInR1bSIsImRlIl0sInVzZXIiOlsiayIsImtyZXV6ZXIiXX0=">📧</a>
+    </p>
+    
+    
+    <p class="date">September 2, 2022</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process"><p>This article is a formalisation of a proof of the
+Hales–Jewett theorem presented in the textbook <em>Ramsey
+Theory</em> by Graham et al.</p>
+<p>The Hales–Jewett theorem is a result in Ramsey Theory which
+states that, for any non-negative integers $r$ and $t$, there exists a
+minimal dimension $N$, such that any $r$-coloured
+$N'$-dimensional cube over $t$ elements (with $N' \geq N$)
+contains a monochromatic line. This theorem generalises Van der
+Waerden's Theorem, which has already been formalised in another
+<a
+href="https://www.isa-afp.org/entries/Van_der_Waerden.html">AFP
+entry</a>.</p></div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/combinatorics">Mathematics/Combinatorics</a></li></ul>
+  <h3>Theories of Hales_Jewett</h3>
+  <ul>
+    <li><a href="../theories/hales_jewett/#Hales_Jewett">Hales_Jewett</a></li></ul><div class="flex-wrap">
+  
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#cite-popup">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Hales_Jewett/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Hales_Jewett/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Hales_Jewett/session_graph.pdf">Dependencies</a></nav>
+
+<div id="cite-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtex-filename">Hales_Jewett-AFP</p><pre id="copy-text">@article{Hales_Jewett-AFP,
+  author  = {Ujkan Sulejmani and Manuel Eberl and Katharina Kreuzer},
+  title   = {The Hales–Jewett Theorem},
+  journal = {Archive of Formal Proofs},
+  month   = {September},
+  year    = {2022},
+  note    = {\url{https://isa-afp.org/entries/Hales_Jewett.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://www.isa-afp.org/release//afp-Hales_Jewett-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -52,8 +52,8 @@ homepage = "schlichtkrull_homepage"
 schlichtkrull = "schlichtkrull_email"
 
 [history]
-2018-01-24 = "added several new versions of the soundness and completeness theorems as described in the paper "
-2018-03-20 = "added a concrete instance of the unification and completeness theorems using the First-Order Terms AFP-entry from IsaFoR as described in the papers "
+2018-01-24 = "added several new versions of the soundness and completeness theorems as described in the paper"
+2018-03-20 = "added a concrete instance of the unification and completeness theorems using the First-Order Terms AFP-entry from IsaFoR as described in the papers"
 
 [extra]
 

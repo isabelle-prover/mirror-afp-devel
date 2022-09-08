@@ -60,12 +60,8 @@ maletzky = "maletzky_email"
 immler = "immler_email"
 
 [history]
-2010-09-17 = """
-Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.<br>
-"""
-2016-10-28 = """
-Added abstract representation of polynomials and authors Maletzky/Immler.<br>
-"""
+2010-09-17 = "Moved theories on arbitrary (ordered) semirings to Abstract Rewriting.<br>"
+2016-10-28 = "Added abstract representation of polynomials and authors Maletzky/Immler.<br>"
 2018-01-23 = """
 Added authors Haftmann, Lochbihler after incorporating
 their formalization of multivariate polynomials based on Polynomial mappings.

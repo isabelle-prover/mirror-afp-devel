@@ -34,6 +34,14 @@ email = "zeyda_email"
 fosters = "fosters_email"
 
 [history]
+2020-03-02 = """
+Added partial bijective and symmetric lenses.
+Improved alphabet command generating additional lenses and results.
+Several additional lens relations, including observational equivalence.
+Additional theorems throughout.
+Adaptations for Isabelle 2020.
+(revision 44e2e5c)<br>
+"""
 
 [extra]
 

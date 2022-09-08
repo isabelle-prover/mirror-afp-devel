@@ -3,9 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Universal Turing Machine - Archive of Formal Proofs</title><meta name="description" content="We formalise results from computability theory: recursive functions,
-undecidability of the halting problem, and the existence of a
-universal Turing..."><meta property="og:title" content="Universal Turing Machine" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Universal Turing Machine - Archive of Formal Proofs</title><meta name="description" content="This entry formalises results from computability theory: recursive functions, undecidability of the halting problem, and the existence of a universal..."><meta property="og:title" content="Universal Turing Machine" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Universal_Turing_Machine.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
@@ -89,7 +87,7 @@ universal Turing..."><meta property="og:title" content="Universal Turing Machine
     <span class='first'>U</span>niversal <span class='first'>T</span>uring <span class='first'>M</span>achine</h1>
   <div>
     
-    <p><a href="../authors/xu">Jian Xu</a>, <a href="../authors/zhangx">Xingyuan Zhang</a>, <a href="../authors/urban">Christian Urban</a> <a href="https://nms.kcl.ac.uk/christian.urban/">🌐</a> and <a href="../authors/joosten">Sebastiaan J. C. Joosten</a> <a href="https://sjcjoosten.nl/">🌐</a>
+    <p><a href="../authors/xu">Jian Xu</a>, <a href="../authors/zhangx">Xingyuan Zhang</a>, <a href="../authors/urban">Christian Urban</a> <a href="https://nms.kcl.ac.uk/christian.urban/">🌐</a>, <a href="../authors/joosten">Sebastiaan J. C. Joosten</a> <a href="https://sjcjoosten.nl/">🌐</a> and <a href="../authors/regensburger">Franz Regensburger</a> <a href="https://www.thi.de/suche/mitarbeiter/prof-dr-rer-nat-franz-regensburger">🌐</a>
     </p>
     
     
@@ -98,26 +96,74 @@ universal Turing..."><meta property="og:title" content="Universal Turing Machine
   </div>
 </header><div><main><h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">We formalise results from computability theory: recursive functions,
+  <div class="abstract mathjax_process">This entry formalises results from computability theory: recursive functions,
 undecidability of the halting problem, and the existence of a
 universal Turing machine. This formalisation is the AFP entry
 corresponding to the paper Mechanising Turing Machines and Computability Theory
-in Isabelle/HOL, ITP 2013.</div>BSD License<h3>Topics</h3>
+in Isabelle/HOL, ITP 2013. The main book used for this formalisation is
+by Boolos, Burgess, and Jeffrey on <i>Computability and Logic</i>.
+
+Joosten contributed mainly by making the files ready for the
+AFP.  His need for a formalisation of Turing Machines arose from
+realising that the current formalisation of saturation graphs
+(also in the AFP) was missing a key undecidability result
+present in his paper on <i>Finding models through graph saturation</i>.
+
+Regensburger contributed by adding definitions for
+concepts like Turing Decidability, Turing Computability and Turing Reducibility
+for problem reduction. He also enhanced the result about the
+undecidability of the General Halting Problem given in the original AFP entry
+by first proving the undecidability of the Special Halting Problem and then
+proving its reducibility to the general problem. The original version of this
+AFP entry did only prove a weak form of the undecidability theorem.
+The main motivation behind this contribution is to make the AFP entry
+accessible for bachelor and master students.</div>BSD License<h3>Change history</h3><p>
+    <h4>September 7, 2022</h4>
+    Franz Regensburger added substantial material and made some modifications.<br>
+
+    </p><p>
+    <h4>January 16, 2019</h4>
+    Sebastiaan Joosten made the code ready for the AFP.<br>
+
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/logic/computability">Logic/Computability</a></li><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li></ul>
   <h3>Theories of Universal_Turing_Machine</h3>
   <ul>
     <li><a href="../theories/universal_turing_machine/#Turing">Turing</a></li>
+    <li><a href="../theories/universal_turing_machine/#Turing_aux">Turing_aux</a></li>
+    <li><a href="../theories/universal_turing_machine/#BlanksDoNotMatter">BlanksDoNotMatter</a></li>
+    <li><a href="../theories/universal_turing_machine/#ComposableTMs">ComposableTMs</a></li>
+    <li><a href="../theories/universal_turing_machine/#ComposedTMs">ComposedTMs</a></li>
+    <li><a href="../theories/universal_turing_machine/#Numerals">Numerals</a></li>
+    <li><a href="../theories/universal_turing_machine/#Numerals_Ex">Numerals_Ex</a></li>
     <li><a href="../theories/universal_turing_machine/#Turing_Hoare">Turing_Hoare</a></li>
-    <li><a href="../theories/universal_turing_machine/#Uncomputable">Uncomputable</a></li>
+    <li><a href="../theories/universal_turing_machine/#SemiIdTM">SemiIdTM</a></li>
+    <li><a href="../theories/universal_turing_machine/#Turing_HaltingConditions">Turing_HaltingConditions</a></li>
+    <li><a href="../theories/universal_turing_machine/#OneStrokeTM">OneStrokeTM</a></li>
+    <li><a href="../theories/universal_turing_machine/#WeakCopyTM">WeakCopyTM</a></li>
+    <li><a href="../theories/universal_turing_machine/#StrongCopyTM">StrongCopyTM</a></li>
+    <li><a href="../theories/universal_turing_machine/#TuringDecidable">TuringDecidable</a></li>
+    <li><a href="../theories/universal_turing_machine/#TuringReducible">TuringReducible</a></li>
+    <li><a href="../theories/universal_turing_machine/#SimpleGoedelEncoding">SimpleGoedelEncoding</a></li>
+    <li><a href="../theories/universal_turing_machine/#HaltingProblems_K_H">HaltingProblems_K_H</a></li>
+    <li><a href="../theories/universal_turing_machine/#HaltingProblems_K_aux">HaltingProblems_K_aux</a></li>
+    <li><a href="../theories/universal_turing_machine/#TuringComputable">TuringComputable</a></li>
+    <li><a href="../theories/universal_turing_machine/#DitherTM">DitherTM</a></li>
+    <li><a href="../theories/universal_turing_machine/#CopyTM">CopyTM</a></li>
+    <li><a href="../theories/universal_turing_machine/#TuringUnComputable_H2">TuringUnComputable_H2</a></li>
+    <li><a href="../theories/universal_turing_machine/#TuringUnComputable_H2_original">TuringUnComputable_H2_original</a></li>
     <li><a href="../theories/universal_turing_machine/#Abacus_Mopup">Abacus_Mopup</a></li>
     <li><a href="../theories/universal_turing_machine/#Abacus">Abacus</a></li>
-    <li><a href="../theories/universal_turing_machine/#Abacus_Defs">Abacus_Defs</a></li>
-    <li><a href="../theories/universal_turing_machine/#Rec_Def">Rec_Def</a></li>
+    <li><a href="../theories/universal_turing_machine/#Abacus_alt_Compile">Abacus_alt_Compile</a></li>
     <li><a href="../theories/universal_turing_machine/#Abacus_Hoare">Abacus_Hoare</a></li>
+    <li><a href="../theories/universal_turing_machine/#Rec_Def">Rec_Def</a></li>
+    <li><a href="../theories/universal_turing_machine/#Rec_Ex">Rec_Ex</a></li>
     <li><a href="../theories/universal_turing_machine/#Recursive">Recursive</a></li>
-    <li><a href="../theories/universal_turing_machine/#Recs">Recs</a></li>
+    <li><a href="../theories/universal_turing_machine/#Recs_alt_Def">Recs_alt_Def</a></li>
+    <li><a href="../theories/universal_turing_machine/#Recs_alt_Ex">Recs_alt_Ex</a></li>
     <li><a href="../theories/universal_turing_machine/#UF">UF</a></li>
-    <li><a href="../theories/universal_turing_machine/#UTM">UTM</a></li></ul><div class="flex-wrap">
+    <li><a href="../theories/universal_turing_machine/#UTM">UTM</a></li>
+    <li><a href="../theories/universal_turing_machine/#GeneratedCode">GeneratedCode</a></li></ul><div class="flex-wrap">
   
   
   </div>
@@ -140,7 +186,7 @@ in Isabelle/HOL, ITP 2013.</div>BSD License<h3>Topics</h3>
     <a class="close" href="#">&times;</a>
     <div>
       <p style="display:none;" id="bibtex-filename">Universal_Turing_Machine-AFP</p><pre id="copy-text">@article{Universal_Turing_Machine-AFP,
-  author  = {Jian Xu and Xingyuan Zhang and Christian Urban and Sebastiaan J. C. Joosten},
+  author  = {Jian Xu and Xingyuan Zhang and Christian Urban and Sebastiaan J. C. Joosten and Franz Regensburger},
   title   = {Universal Turing Machine},
   journal = {Archive of Formal Proofs},
   month   = {February},

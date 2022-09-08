@@ -41,6 +41,18 @@ email = "stark_email"
 stark = "stark_email"
 
 [history]
+2020-02-15 = """
+Move ConcreteCategory.thy from Bicategory to Category3 and use it systematically.
+Make other minor improvements throughout.
+(revision a51840d36867)<br>
+"""
+2020-11-04 = """
+Added new material on equivalence of bicategories, with associated changes.
+(revision 472cb2268826)<br>
+"""
+2021-07-22 = """
+Added new material: \"concrete bicategories\" and \"bicategory of categories\".
+(revision 49d3aa43c180)<br>"""
 
 [extra]
 

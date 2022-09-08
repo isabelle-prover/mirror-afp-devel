@@ -26,12 +26,8 @@ dois = ["10.1007/s10817-018-9459-3"]
 pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/jar18.html\">Open access</a>","<a href=\"https://en.wikipedia.org/wiki/Amortized_analysis\">Wikipedia</a>"]
 
 [history]
-2015-03-17 = """
-Added pairing heaps by Hauke Brinkop.<br>
-"""
-2016-07-12 = """
-Moved splay heaps from here to Splay_Tree<br>
-"""
+2015-03-17 = "Added pairing heaps by Hauke Brinkop.<br>"
+2016-07-12 = "Moved splay heaps from here to Splay_Tree<br>"
 2016-07-14 = "Moved pairing heaps from here to the new Pairing_Heap"
 
 [extra]

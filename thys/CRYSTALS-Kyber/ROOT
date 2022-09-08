@@ -1,0 +1,14 @@
+chapter AFP
+
+session "CRYSTALS-Kyber" (AFP) = "Berlekamp_Zassenhaus"  +
+  options [timeout = 600]
+  sessions
+    "Number_Theoretic_Transform"
+  theories
+    Crypto_Scheme
+    Kyber_Values
+    Crypto_Scheme_NTT
+    Kyber_NTT_Values
+  document_files
+    "root.bib"
+    "root.tex"

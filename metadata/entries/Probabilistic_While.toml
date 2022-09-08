@@ -26,6 +26,9 @@ homepage = "lochbihler_homepage"
 lochbihler = "lochbihler_email1"
 
 [history]
+2018-02-02 = """
+Added a proof that probabilistic conditioning can be implemented by repeated sampling.
+(revision 305867c4e911)<br>"""
 
 [extra]
 

@@ -1,0 +1,46 @@
+title = "Number Theoretic Transform"
+date = 2022-08-18
+topics = [
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = """
+<p>This entry contains an Isabelle formalization of the
+<em>Number Theoretic Transform (NTT)</em> which is the
+analogue to a <em>Discrete Fourier Transform (DFT)</em>
+over a finite field. Roots of unity in the complex numbers are
+replaced by those in a finite field. </p><p>First, we
+define both <em>NTT</em> and the inverse transform
+<em>INTT</em> in Isabelle and prove them to be mutually
+inverse. </p><p><em>DFT</em> can be
+efficiently computed by the recursive <em>Fast Fourier Transform
+(FFT)</em>. In our formalization, this algorithm is adapted to
+the setting of the <em>NTT</em>: We implement a
+<em>Fast Number Theoretic Transform (FNTT)</em> based on
+the Butterfly scheme by Cooley and Tukey. Additionally, we provide an
+inverse transform <em>IFNTT</em> and prove it mutually
+inverse to <em>FNTT</em>. </p><p> Afterwards,
+a recursive formalization of the <em>FNTT</em> running
+time is examined and the famous $O(n \\log n)$ bounds
+are proven.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ammer]
+
+
+[authors.kreuzer]
+
+
+[contributors]
+
+[notify]
+kreuzer = "kreuzer_email"
+ammer = "ammer_email"
+
+[history]
+
+[extra]
+
+[related]

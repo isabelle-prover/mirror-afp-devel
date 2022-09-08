@@ -25,6 +25,9 @@ homepage = "guttmann_homepage"
 guttmann = "guttmann_email"
 
 [history]
+2017-07-05 = """
+generalised extended reals to linear orders
+(revision b8e703159177)"""
 
 [extra]
 

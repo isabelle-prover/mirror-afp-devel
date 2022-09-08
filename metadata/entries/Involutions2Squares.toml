@@ -14,12 +14,12 @@ note = ""
 [authors]
 
 [authors.bortin]
-email = "bortin_email"
+email = "bortin_email1"
 
 [contributors]
 
 [notify]
-bortin = "bortin_email"
+bortin = "bortin_email1"
 
 [history]
 

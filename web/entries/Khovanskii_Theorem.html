@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Khovanskii&#x27;s Theorem - Archive of Formal Proofs</title><meta name="description" content="We formalise the proof of an important theorem in additive
+combinatorics due to Khovanskii, attesting that the cardinality of the
+set of all sums of $n$..."><meta property="og:title" content="Khovanskii&amp;#x27;s Theorem" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Khovanskii_Theorem.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2022-09-02T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-09-02T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Khovanskii&amp;#x27;s Theorem"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <a href="../"><li >Home</li></a>
+        <a href="../topics/"><li >Topics</li></a>
+        <a href="../download/"><li >Download</li></a>
+        <a href="../help/"><li >Help</li></a>
+        <a href="../submission/"><li >Submission</li></a>
+        <a href="../statistics/"><li >Statistics</li></a>
+        <a href="../about/"><li >About</li></a>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>K</span>hovanskii&#x27;s <span class='first'>T</span>heorem</h1>
+  <div>
+    
+    <p><a href="../authors/argyraki">Angeliki Koutsoukou-Argyraki</a> <a href="https://www.cl.cam.ac.uk/~ak2110/">🌐</a> and <a href="../authors/paulson">Lawrence C. Paulson</a>
+    </p>
+    
+    
+    <p class="date">September 2, 2022</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">We formalise the proof of an important theorem in additive
+combinatorics due to Khovanskii, attesting that the cardinality of the
+set of all sums of $n$ many elements of $A$, where $A$ is a finite
+subset of an abelian group, is a polynomial in $n$ for all
+sufficiently large $n$. We follow a proof due to Nathanson and Ruzsa
+as presented in the notes “Introduction to Additive Combinatorics” by
+Timothy Gowers for the University of Cambridge.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/mathematics/combinatorics">Mathematics/Combinatorics</a></li></ul>
+  <h3>Theories of Khovanskii_Theorem</h3>
+  <ul>
+    <li><a href="../theories/khovanskii_theorem/#FiniteProduct">FiniteProduct</a></li>
+    <li><a href="../theories/khovanskii_theorem/#For_2022">For_2022</a></li>
+    <li><a href="../theories/khovanskii_theorem/#Khovanskii">Khovanskii</a></li></ul><div class="flex-wrap">
+  <div>
+    <h3>Depends On</h3>
+    <ul class="horizontal-list"><li><a href="../entries/Bernoulli.html">Bernoulli Numbers</a></li><li><a href="../entries/Jacobson_Basic_Algebra.html">A Case Study in Basic Algebra</a></li><li><a href="../entries/Pluennecke_Ruzsa_Inequality.html">The Plünnecke-Ruzsa Inequality</a></li></ul>
+  </div>
+  
+  <div>
+    <h3>Related Entries</h3>
+    <ul class="horizontal-list">
+      
+      <li><a href="../entries/Padic_Ints.html">Hensel&rsquo;s Lemma for the p-adic Integers</a></li>
+      
+      <li><a href="../entries/Banach_Steinhaus.html">Banach-Steinhaus Theorem</a></li>
+      
+    </ul>
+  </div>
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#cite-popup">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Khovanskii_Theorem/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Khovanskii_Theorem/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Khovanskii_Theorem/session_graph.pdf">Dependencies</a></nav>
+
+<div id="cite-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtex-filename">Khovanskii_Theorem-AFP</p><pre id="copy-text">@article{Khovanskii_Theorem-AFP,
+  author  = {Angeliki Koutsoukou-Argyraki and Lawrence C. Paulson},
+  title   = {Khovanskii&#39;s Theorem},
+  journal = {Archive of Formal Proofs},
+  month   = {September},
+  year    = {2022},
+  note    = {\url{https://isa-afp.org/entries/Khovanskii_Theorem.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://www.isa-afp.org/release//afp-Khovanskii_Theorem-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>

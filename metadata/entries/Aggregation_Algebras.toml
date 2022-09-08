@@ -23,6 +23,9 @@ homepage = "guttmann_homepage"
 guttmann = "guttmann_email"
 
 [history]
+2020-12-09 = """
+moved Hoare logic to HOL-Hoare, moved spanning trees to Relational_Minimum_Spanning_Trees
+(revision dbb9bfaf4283)"""
 
 [extra]
 

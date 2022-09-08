@@ -27,9 +27,7 @@ sternagel = "sternagel_email1"
 thiemann = "thiemann_email"
 
 [history]
-2015-03-11 = """
-Adapted development to new-style (BNF-based) datatypes.<br>
-"""
+2015-03-11 = "Adapted development to new-style (BNF-based) datatypes.<br>"
 2015-04-10 = """
 Moved development for old-style datatypes into subdirectory
 \"Old_Datatype\".<br>"""

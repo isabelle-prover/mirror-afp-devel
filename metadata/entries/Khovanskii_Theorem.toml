@@ -1,0 +1,33 @@
+title = "Khovanskii&#x27;s Theorem"
+date = 2022-09-02
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+We formalise the proof of an important theorem in additive
+combinatorics due to Khovanskii, attesting that the cardinality of the
+set of all sums of $n$ many elements of $A$, where $A$ is a finite
+subset of an abelian group, is a polynomial in $n$ for all
+sufficiently large $n$. We follow a proof due to Nathanson and Ruzsa
+as presented in the notes “Introduction to Additive Combinatorics” by
+Timothy Gowers for the University of Cambridge."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.argyraki]
+homepage = "argyraki_homepage"
+
+[authors.paulson]
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]
+
+[related]

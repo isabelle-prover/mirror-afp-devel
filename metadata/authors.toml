@@ -82,6 +82,9 @@ host = [
 name = "Thomas Ammer"
 
 [ammer.emails]
+[ammer.emails.ammer_email]
+user = ["thomas","ammer"]
+host = ["tum","de"]
 
 [ammer.homepages]
 
@@ -624,6 +627,15 @@ host = [
   "nicta",
   "com",
   "au",
+]
+
+[bortin.emails.bortin_email1]
+user = [
+  "mbortin",
+]
+host = [
+  "gmail",
+  "com",
 ]
 
 [bortin.homepages]
@@ -1448,6 +1460,19 @@ host = [
   "tum",
   "de",
 ]
+
+
+[eberl.emails.eberl_email2]
+user = [
+  "manuel",
+  "eberl",
+]
+host = [
+  "uibk",
+  "ac",
+  "at",
+]
+
 
 [eberl.homepages]
 eberl_homepage = "https://pruvisto.org/"
@@ -3194,6 +3219,16 @@ user = [
 ]
 host = [
   "in",
+  "tum",
+  "de",
+]
+
+[kreuzer.emails.kreuzer_email1]
+user = [
+  "k",
+  "kreuzer",
+]
+host = [
   "tum",
   "de",
 ]
@@ -5878,6 +5913,25 @@ host = [
 name = "Ujkan Sulejmani"
 
 [sulejmani.emails]
+
+[sulejmani.emails.sulejmani_email]
+user = [
+  "ujkan",
+  "sulejmani",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[sulejmani.emails.sulejmani_email1]
+user = [
+  "ujkan99",
+]
+host = [
+  "gmail",
+  "com",
+]
 
 [sulejmani.homepages]
 

@@ -35,6 +35,13 @@ homepage = "rizkallah_homepage"
 murray = "murray_email"
 
 [history]
+2016-08-19 = """
+Removed unused \"stop\" parameter and \"stop_no_eval\" assumption from the sifum_security locale.
+(revision dbc482d36372)
+"""
+2016-09-27 = """
+Added security locale support for the imposition of requirements on the initial memory.
+(revision cce4ceb74ddb)"""
 
 [extra]
 
