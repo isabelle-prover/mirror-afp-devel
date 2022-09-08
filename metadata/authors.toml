@@ -629,6 +629,15 @@ host = [
   "au",
 ]
 
+[bortin.emails.bortin_email1]
+user = [
+  "mbortin",
+]
+host = [
+  "gmail",
+  "com",
+]
+
 [bortin.homepages]
 
 [bottesch]
