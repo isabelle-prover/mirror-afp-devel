@@ -101,7 +101,15 @@ products in discrete financial models. As an application, we derive a
 way to compute fair prices of derivative products in the
 Cox-Ross-Rubinstein model of a financial market, thus completing the
 work that was presented in this <a
-href="https://hal.archives-ouvertes.fr/hal-01562944">paper</a>.</div>BSD License<h3>Topics</h3>
+href="https://hal.archives-ouvertes.fr/hal-01562944">paper</a>.</div>BSD License<h3>Change history</h3><p>
+    <h4>May 12, 2019</h4>
+    Renamed discr_mkt predicate to stk_strict_subs and got rid of predicate A for a more natural definition of the type discrete_market;
+renamed basic quantity processes for coherent notation;
+renamed value_process into val_process and closing_value_process to cls_val_process;
+relaxed hypothesis of lemma CRR_market_fair_price.
+Added functions to price some basic options.
+(revision 0b813a1a833f)<br>
+    </p><h3>Topics</h3>
   <ul><li><a href="../topics/mathematics/probability-theory">Mathematics/Probability theory</a></li><li><a href="../topics/mathematics/games-and-economics">Mathematics/Games and economics</a></li></ul>
   <h3>Theories of DiscretePricing</h3>
   <ul>
