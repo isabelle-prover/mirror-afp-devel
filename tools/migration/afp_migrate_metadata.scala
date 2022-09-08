@@ -11,7 +11,7 @@ import scala.collection.BufferedIterator
 import java.io.BufferedReader
 import java.text.Normalizer
 import java.time.LocalDate
-import java.net.URI
+import java.net.URL
 
 import org.jline.utils.InputStreamReader
 
@@ -159,7 +159,7 @@ object AFP_Migrate_Metadata {
         Unaffiliated(author.id)
       }
       else {
-        author.homepages.find(_.url == url) getOrElse
+        author.homepages.find(_.url.toString == url) getOrElse
           error("Url not found for: " + (author, url))
       }
     }
@@ -195,8 +195,8 @@ object AFP_Migrate_Metadata {
           author = add_email(author, address, context)._1
         }
       }
-      else if (url.nonEmpty && !author.homepages.exists(_.url == url)) {
-        val homepage = Homepage(author = author.id, id = context.homepage(author.id), url = url)
+      else if (url.nonEmpty && !author.homepages.exists(_.url.toString == url)) {
+        val homepage = Homepage(author = author.id, id = context.homepage(author.id), url = new URL(url))
 
         author = author.copy(homepages = author.homepages :+ homepage)
       }
@@ -238,9 +238,9 @@ object AFP_Migrate_Metadata {
   }
 
   def parse_change_history(history: String, context: Context): Change_History = {
-    val matches = """\[(\d{4}-\d{2}-\d{2})]: ([^\[]+)""".r.findAllMatchIn(history.stripPrefix("Change history:"))
+    val matches = """\[(\d{4}-\d{2}-\d{2})]:([^\[]+)""".r.findAllMatchIn(history.stripPrefix("Change history:"))
     matches.toList.map(_.subgroups match {
-      case date :: content :: Nil => context.parse_date(date) -> content
+      case date :: content :: Nil => context.parse_date(date) -> content.trim
       case _ => error("Could not parse change history: " + quote(history))
     }).toMap
   }
