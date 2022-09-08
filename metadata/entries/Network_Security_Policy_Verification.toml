@@ -52,6 +52,9 @@ homepage = "diekmann_homepage"
 diekmann = "diekmann_email"
 
 [history]
+2015-04-14 = """
+Added Distributed WebApp example and improved graphviz visualization
+(revision 4dde08ca2ab8)<br>"""
 
 [extra]
 

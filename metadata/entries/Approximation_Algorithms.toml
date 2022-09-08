@@ -32,6 +32,10 @@ homepage = "robillard_homepage"
 nipkow = "nipkow_email"
 
 [history]
+2021-02-08 = """
+added theory Approx_SC_Hoare (Set Cover) by Robin Eßmann<br>
+"""
+2021-06-29 = "added theory Center_Selection by Ujkan Sulejmani"
 
 [extra]
 

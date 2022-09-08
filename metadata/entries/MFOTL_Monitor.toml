@@ -38,6 +38,9 @@ schneider = "schneider_email"
 traytel = "traytel_email1"
 
 [history]
+2020-08-13 = """
+added the formalization of the abstract slicing framework and joint data
+slicer (revision b1639ed541b7)<br>"""
 
 [extra]
 

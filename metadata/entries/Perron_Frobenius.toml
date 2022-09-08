@@ -45,6 +45,13 @@ email = "yamada_email"
 thiemann = "thiemann_email"
 
 [history]
+2017-10-18 = """
+added Perron-Frobenius theorem for irreducible matrices with generalization
+(revision bda1f1ce8a1c)<br/>
+"""
+2018-05-17 = """
+prove conjecture of CPP'18 paper: Jordan blocks of spectral radius have maximum size
+(revision ffdb3794e5d5)"""
 
 [extra]
 

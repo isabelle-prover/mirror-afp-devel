@@ -36,6 +36,10 @@ email = "muendler_email"
 muendler = "muendler_email"
 
 [history]
+2021-05-02 = """
+Add implementation and proof of correctness of imperative deletion operations.
+Further add the option to export code to OCaml.
+<br>"""
 
 [extra]
 

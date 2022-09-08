@@ -24,6 +24,9 @@ homepage = "guttmann_homepage"
 guttmann = "guttmann_email"
 
 [history]
+2021-06-19 = """
+added path halving, path splitting, relational Peano structures, union by rank
+(revision 98c7aa03457d)"""
 
 [extra]
 

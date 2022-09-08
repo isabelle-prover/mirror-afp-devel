@@ -21,6 +21,49 @@ email = "hoelzl_email"
 lochbihler = "lochbihler_email1"
 
 [history]
+2011-02-01 = """
+lazy implementation of coinductive (terminated) lists for the code generator
+(revision 6034973dce83)<br>
+"""
+2010-06-10 = """
+coinductive lists: setup for quotient package
+(revision 015574f3bf3c)<br>
+"""
+2012-06-27 = """
+new codatatype stream with operations (with contributions by Peter Gammie)
+(revision dd789a56473c)<br>
+"""
+2010-06-28 = """
+new codatatype terminated lazy lists
+(revision e12de475c558)<br>
+"""
+2014-04-03 = """
+ccpo structure on codatatypes used to define ldrop, ldropWhile, lfilter, lconcat as least fixpoint;
+ccpo topology on coinductive lists contributed by Johannes Hölzl;
+added examples
+(revision 23cd8156bd42)<br>"""
+2013-03-13 = """
+construct codatatypes with the BNF package and adjust the definitions and proofs,
+setup for lifting and transfer packages
+(revision f593eda5b2c0)<br>
+"""
+2011-07-20 = """
+new codatatype resumption
+(revision 811364c776c7)<br>
+"""
+2010-08-17 = """
+Koenig's lemma as an example application for coinductive lists
+(revision f81ce373fa96)<br>
+"""
+2010-08-04 = """
+terminated lazy lists: setup for quotient package;
+more lemmas
+(revision 6ead626f1d01)<br>
+"""
+2013-09-20 = """
+stream theory uses type and operations from HOL/BNF/Examples/Stream
+(revision 692809b2b262)<br>
+"""
 
 [extra]
 

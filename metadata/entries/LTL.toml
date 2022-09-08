@@ -28,6 +28,9 @@ email = "seidl_email"
 sickert = "sickert_email"
 
 [history]
+2019-03-12 = """
+Support for additional operators, implementation of common equivalence relations,
+definition of syntactic fragments of LTL and the minimal disjunctive normal form. <br>"""
 
 [extra]
 

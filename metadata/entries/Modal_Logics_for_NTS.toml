@@ -40,6 +40,9 @@ email = "gutkovas_email"
 weber = "weber_email"
 
 [history]
+2017-01-29 = """
+Formalization of weak bisimilarity added
+(revision c87cc2057d9c)"""
 
 [extra]
 

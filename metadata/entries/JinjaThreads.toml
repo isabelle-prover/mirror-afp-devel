@@ -18,6 +18,66 @@ homepage = "lochbihler_homepage"
 lochbihler = "lochbihler_email1"
 
 [history]
+2010-10-15 = """
+preliminary version of the Java memory model for source code
+(revision 02fee0ef3ca2)<br>
+"""
+2012-11-21 = """
+type safety proof for the Java memory model,
+allow spurious wake-ups
+(revision 76063d860ae0)<br>
+"""
+2011-07-21 = """
+new interruption model,
+generalized JMM proof of DRF guarantee,
+allow class Object to declare methods and fields,
+simplified subtyping relation,
+corrected division and modulo implementation
+(revision 46e4181ed142)<br>
+"""
+2010-06-28 = """
+new thread interruption model
+(revision c0440d0a1177)<br>
+"""
+2008-04-23 = """
+added bytecode formalisation with arrays and threads, added thread joins
+(revision f74a8be156a7)<br>
+"""
+2012-02-16 = """
+added example programs
+(revision bf0b06c8913d)<br>
+"""
+2011-02-02 = """
+simplified code generator setup
+new random scheduler
+(revision 3059dafd013f)<br>
+"""
+2009-04-27 = """
+added verified compiler from source code to bytecode;
+encapsulate native methods in separate semantics
+(revision e4f26541e58a)<br>
+"""
+2017-10-20 = """
+add an atomic compare-and-swap operation for volatile fields
+(revision a6189b1d6b30)<br>"""
+2010-06-08 = """
+added thread interruption;
+new abstract memory model with sequential consistency as implementation
+(revision 0cb9e8dbd78d)<br>
+"""
+2010-12-16 = """
+improved version of the Java memory model, also for bytecode
+executable scheduler for source code semantics
+(revision 1f41c1842f5a)<br>
+"""
+2013-05-16 = """
+support for non-deterministic memory allocators
+(revision cc3344a49ced)<br>
+"""
+2009-11-30 = """
+extended compiler correctness proof to infinite and deadlocking computations
+(revision e50282397435)<br>
+"""
 
 [extra]
 

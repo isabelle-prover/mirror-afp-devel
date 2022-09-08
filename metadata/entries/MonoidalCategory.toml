@@ -43,6 +43,21 @@ email = "stark_email"
 stark = "stark_email"
 
 [history]
+2017-05-18 = """
+Integrated material from MonoidalCategory/Category3Adapter into Category3/ and deleted adapter.
+(revision 015543cdd069)<br>
+"""
+2018-05-29 = """
+Modifications required due to 'Category3' changes.  Introduced notation for \"in hom\".
+(revision 8318366d4575)<br>
+"""
+2020-02-15 = """
+Cosmetic improvements.
+(revision a51840d36867)<br>
+"""
+2020-07-10 = """
+Added new material on cartesian monoidal categories.
+(revision 06640f317a79)<br>"""
 
 [extra]
 

@@ -39,6 +39,9 @@ email = "bhatt_email"
 lochbihler = "lochbihler_email1"
 
 [history]
+2018-09-28 = """
+added the CryptHOL tutorial for game-based cryptography
+(revision 489a395764ae)"""
 
 [extra]
 

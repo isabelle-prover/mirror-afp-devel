@@ -24,6 +24,7 @@ homepage = "stevens_homepage"
 zeller = "zeller_email"
 
 [history]
+2021-03-22 = "(by Lukas Stevens) generalise Szpilrajn's extension theorem and add material from the book \"Consistency, Choice, and Rationality\""
 
 [extra]
 

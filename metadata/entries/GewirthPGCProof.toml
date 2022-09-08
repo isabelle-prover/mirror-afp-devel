@@ -27,6 +27,9 @@ fuenmayor = "fuenmayor_email"
 benzmueller = "benzmueller_email"
 
 [history]
+2019-04-09 = """
+added proof for a stronger variant of the PGC and examplary inferences
+(revision 88182cb0a2f6)<br>"""
 
 [extra]
 
