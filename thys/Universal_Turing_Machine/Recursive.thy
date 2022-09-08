@@ -2834,7 +2834,7 @@ lemma mopup_div_2[simp]: "b \<le> Suc x
           \<Longrightarrow> b \<le> (2 * x + length (mopup_n_tm n)) div 2"
   by(auto simp: mopup_n_tm.simps)
 
-subsection \<open>A Turing Machine with mopup code appended is composable\<close>
+subsection \<open>A Turing Machine compiled from an Abacus program with mopup code appended is composable\<close>
 
 lemma composable_tm_from_abacus: assumes "tp = tm_of ap"
   shows "composable_tm0 (tp @ shift (mopup_n_tm n) (length tp div 2))"
@@ -2852,7 +2852,7 @@ proof -
     by(auto simp: List.list_all_iff shift.simps)
 qed
 
-subsection \<open>A Turing Machine with mopup code appended is composable\<close>
+subsection \<open>A Turing Machine compiled from a recursive function is composable\<close>
 
 lemma composable_tm_from_recf:
   assumes compile: "tp = tm_of_rec recf"
