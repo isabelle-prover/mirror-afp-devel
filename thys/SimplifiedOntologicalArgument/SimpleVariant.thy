@@ -4,7 +4,6 @@ theory SimpleVariant imports
   HOML 
   MFilter 
   BaseDefs
-  DisableKodkodScala
 begin
 text\<open>Axiom's of new, simplified variant.\<close>
 axiomatization where 
