@@ -181,6 +181,15 @@ where
   "forallM f [] = return ()" |
   "forallM f (x # xs) = f x <+? Pair x \<then> forallM f xs"
 
+lemma forallM_fundef_cong [fundef_cong]:
+  assumes "xs = ys" "\<And>x. x \<in> set ys \<Longrightarrow> f x = g x"
+  shows "forallM f xs = forallM g ys"
+  unfolding assms(1) using assms(2)
+proof (induct ys)
+  case (Cons x xs)
+  thus ?case by (cases "g x", auto)
+qed auto
+
 lemma isOK_forallM [simp]:
   "isOK (forallM f xs) \<longleftrightarrow> (\<forall>x \<in> set xs. isOK (f x))"
   by (induct xs) (simp_all)
