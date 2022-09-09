@@ -6201,6 +6201,23 @@ host = [
 [traytel.homepages]
 traytel_homepage = "https://traytel.bitbucket.io/"
 
+[trelat]
+name = "Vincent Trélat"
+
+[trelat.emails]
+
+[trelat.emails.trelat_email]
+user = [
+  "vincent",
+  "trelat",
+]
+host = [
+  "depinfonancy",
+  "net",
+]
+
+[trelat.homepages]
+
 [tuerk]
 name = "Thomas Tuerk"
 

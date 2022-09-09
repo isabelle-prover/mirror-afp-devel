@@ -59,6 +59,15 @@
     <loc>/entries/Number_Theoretic_Transform.html</loc>
     <lastmod>2022-08-18T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/SCC_Bloemen_Sequential.html</loc>
+    <lastmod>2022-08-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/merz/</loc>
+    <lastmod>2022-08-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/trelat/</loc>
+    <lastmod>2022-08-17T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/bortin/</loc>
     <lastmod>2022-08-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -3653,9 +3662,6 @@
     <loc>/authors/debrat/</loc>
     <lastmod>2012-07-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/merz/</loc>
-    <lastmod>2012-07-27T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Heard_Of.html</loc>
     <lastmod>2012-07-27T00:00:00+00:00</lastmod>
   </url><url>
@@ -5541,6 +5547,8 @@
     <loc>/theories/saturation_framework_extensions/</loc>
   </url><url>
     <loc>/theories/sc_dom_components/</loc>
+  </url><url>
+    <loc>/theories/scc_bloemen_sequential/</loc>
   </url><url>
     <loc>/theories/schutz_spacetime/</loc>
   </url><url>
