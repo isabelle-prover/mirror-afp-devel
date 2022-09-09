@@ -128,19 +128,26 @@ text \<open>
   immediately.
 \<close>
 lemma mersenne_mod_nonneg_strong:
-  assumes "a > -(2 ^ p) + 1"
-  shows   "mersenne_mod a p \<ge> 0"
-proof (cases "a < 0")
+  \<open>mersenne_mod a p \<ge> 0\<close> if \<open>- (2 ^ p) + 1 < a\<close>
+proof (cases \<open>a < 0\<close>)
+  case False
+  with that show ?thesis
+    by simp
+next
   case True
-  have "eucl_rel_int a (2 ^ p) (- 1, a + 2 ^ p)"
-    using assms True by (auto simp: eucl_rel_int_iff)
-  hence "a div 2 ^ p = -1" and "a mod 2 ^ p = a + 2 ^ p"
-    by (simp_all add: div_int_unique mod_int_unique) 
-  hence "mersenne_mod a p = a + 2 ^ p - 1"
+  have \<open>- a div - (2 ^ p) = - 1\<close>
+    by (rule div_pos_neg_trivial) (use \<open>a < 0\<close> that in simp_all)
+  then have \<open>a div 2 ^ p = -1\<close>
+    by simp
+  moreover have \<open>- a mod - (2 ^ p) = - a + - (2 ^ p)\<close>
+    by (rule mod_pos_neg_trivial) (use \<open>a < 0\<close> that in simp_all)
+  then have \<open>a mod 2 ^ p = a + 2 ^ p\<close>
+    by simp
+  ultimately have \<open>mersenne_mod a p = a + 2 ^ p - 1\<close>
     by (simp add: mersenne_mod_def)
-  also have "\<dots> > 0" using assms by simp
+  also have \<open>\<dots> > 0\<close> using that by simp
   finally show ?thesis by simp
-qed auto
+qed
 
 lemma mersenne_mod2_nonneg_strong:
   assumes "a > -(2 ^ p) + 1"
