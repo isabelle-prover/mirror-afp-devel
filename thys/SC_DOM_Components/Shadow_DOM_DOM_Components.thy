@@ -1027,7 +1027,7 @@ heap_is_wellformed hbb \<and> type_wf hbb \<and> known_ptrs hbb\<close>
         using Cons(1)[simplified, OF \<open>(slot, nodes) \<in> set xs\<close> remainder
             \<open>heap_is_wellformed hb\<close> \<open>type_wf hb\<close> \<open>known_ptrs hb\<close>]
         using Cons.prems(6) tag_names_same  Cons.prems(8) Cons.prems(9)
-        by (smt Cons.prems(10) distinct.simps(2) list.set_intros(2))
+        by (smt (verit) Cons.prems(10) distinct.simps(2) list.set_intros(2))
     qed
   qed
   then

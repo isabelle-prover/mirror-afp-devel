@@ -327,7 +327,7 @@ lemma get_scdom_component_owner_document_same:
      apply(simp)
     apply(simp)
    apply(simp)
-  by (smt assms(4) assms(5) comp_apply get_scdom_component_ptr_in_heap is_OK_returns_result_E
+  by (smt (verit) assms(4) assms(5) comp_apply get_scdom_component_ptr_in_heap is_OK_returns_result_E
       local.get_owner_document_disconnected_nodes local.get_root_node_ok local.get_root_node_same_owner_document
       local.to_tree_order_get_root_node local.to_tree_order_ptr_in_result)
 
@@ -338,7 +338,7 @@ lemma get_scdom_component_different_owner_documents:
   assumes "owner_document \<noteq> owner_document'"
   shows "set |h \<turnstile> get_scdom_component ptr|\<^sub>r \<inter> set |h \<turnstile> get_scdom_component ptr'|\<^sub>r = {}"
   using assms get_scdom_component_ptrs_same_owner_document
-  by (smt disjoint_iff_not_equal get_scdom_component_ok is_OK_returns_result_I
+  by (smt (verit) disjoint_iff_not_equal get_scdom_component_ok is_OK_returns_result_I
       local.get_owner_document_ptr_in_heap returns_result_eq returns_result_select_result)
 end
 
@@ -479,7 +479,7 @@ proof -
     using assms
     apply(auto simp add: is_weakly_scdom_component_safe_def Let_def)[1]
     using attach_shadow_root_is_weakly_component_safe_step
-    by (smt document_ptr_kinds_commutes local.get_scdom_component_impl select_result_I2
+    by (smt (verit) document_ptr_kinds_commutes local.get_scdom_component_impl select_result_I2
         shadow_root_ptr_kinds_commutes)
 qed
 end
@@ -930,7 +930,7 @@ proof -
   then obtain slot_c where slot_c: "h \<turnstile> get_scdom_component (cast slot) \<rightarrow>\<^sub>r slot_c"
     using a_heap_is_wellformed_def assms(1) assms(2) assms(3) get_scdom_component_ok
       is_OK_returns_result_E node_ptr_kinds_commutes[symmetric] element_ptr_kinds_commutes[symmetric]
-    by smt
+    by (smt (verit, best))
   then have "cast shadow_root_ptr \<in> set slot_c"
     using \<open>h \<turnstile> to_tree_order (cast shadow_root_ptr) \<rightarrow>\<^sub>r to\<close> \<open>cast slot \<in> set to\<close> assms(1) assms(2) assms(3)
     by (meson is_OK_returns_result_E local.get_dom_component_ok local.get_dom_component_ptr

@@ -415,9 +415,8 @@ lemma get_scdom_component_owner_document_same:
      apply(simp)
     apply(simp)
    apply(simp)
-  by (smt assms(4) assms(5) comp_apply get_scdom_component_ptr_in_heap is_OK_returns_result_E
-      local.get_owner_document_disconnected_nodes local.get_root_node_ok local.get_root_node_same_owner_document
-      local.to_tree_order_get_root_node local.to_tree_order_ptr_in_result)
+  using assms(4) assms(5) get_scdom_component_ptrs_same_owner_document local.to_tree_order_ptr_in_result
+  by blast
 
 lemma get_scdom_component_different_owner_documents:
   assumes "heap_is_wellformed h" and "type_wf h" and "known_ptrs h"
@@ -426,7 +425,7 @@ lemma get_scdom_component_different_owner_documents:
   assumes "owner_document \<noteq> owner_document'"
   shows "set |h \<turnstile> get_scdom_component ptr|\<^sub>r \<inter> set |h \<turnstile> get_scdom_component ptr'|\<^sub>r = {}"
   using assms get_scdom_component_ptrs_same_owner_document
-  by (smt disjoint_iff_not_equal get_scdom_component_ok is_OK_returns_result_I
+  by (smt (verit) disjoint_iff_not_equal get_scdom_component_ok is_OK_returns_result_I
       local.get_owner_document_ptr_in_heap returns_result_eq returns_result_select_result)
 
 
@@ -528,11 +527,11 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def)[1]
-    by (smt Int_absorb2 finite_set_in get_child_nodes_is_strongly_scdom_component_safe_step in_mono
-        is_OK_returns_result_I local.get_child_nodes_ptr_in_heap local.get_dom_component_ok
-        local.get_dom_component_ptr local.get_scdom_component_impl local.get_scdom_component_ok
-        local.get_scdom_component_ptr_in_heap local.get_scdom_component_subset_get_dom_component
-        returns_result_select_result subsetI)
+    by (smt (verit, del_insts) IntI finite_set_in
+        get_child_nodes_is_strongly_scdom_component_safe_step is_OK_returns_result_I
+        local.get_child_nodes_ptr_in_heap local.get_dom_component_ok local.get_dom_component_ptr
+        local.get_scdom_component_impl local.get_scdom_component_ok
+        local.get_scdom_component_subset_get_dom_component returns_result_select_result subsetD)
 qed
 end
 
@@ -576,11 +575,13 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def)[1]
-    by (smt IntI finite_set_in in_mono local.get_dom_component_ok local.get_dom_component_ptr
-        local.get_parent_is_strongly_dom_component_safe_step local.get_parent_parent_in_heap
-        local.get_scdom_component_impl local.get_scdom_component_ok local.get_scdom_component_subset_get_dom_component
-        local.to_tree_order_ok local.to_tree_order_parent local.to_tree_order_ptr_in_result
-        local.to_tree_order_ptrs_in_heap returns_result_select_result)
+    by (smt (verit) Int_iff get_parent_is_strongly_scdom_component_safe_step in_mono
+        l_get_dom_component\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M.get_dom_component_ptr local.get_dom_component_ok
+        local.get_parent_parent_in_heap local.get_scdom_component_impl local.get_scdom_component_ok
+        local.get_scdom_component_ptr_in_heap local.get_scdom_component_ptrs_same_scope_component
+        local.get_scdom_component_subset_get_dom_component
+        local.l_get_dom_component\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms notin_fset returns_result_eq
+        returns_result_select_result)
 qed
 end
 
@@ -624,7 +625,7 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def)[1]
-    by (smt Int_iff finite_set_in is_OK_returns_result_I local.get_dom_component_ok
+    by (smt (verit) Int_iff finite_set_in is_OK_returns_result_I local.get_dom_component_ok
         local.get_dom_component_ptr local.get_root_node_is_strongly_dom_component_safe_step
         local.get_root_node_ptr_in_heap local.get_scdom_component_impl local.get_scdom_component_ok
         local.get_scdom_component_subset_get_dom_component returns_result_select_result subset_eq)
@@ -691,7 +692,7 @@ proof -
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def
         get_element_by_id_def first_in_tree_order_def elim!: bind_returns_result_E2
         intro!: map_filter_M_pure bind_pure_I split: option.splits list.splits)[1]
-    by (smt IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4) finite_set_in
+    by (smt (verit) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> assms(4) finite_set_in
         get_element_by_id_is_strongly_scdom_component_safe_step local.get_dom_component_ok
         local.get_dom_component_ptr local.get_scdom_component_impl
         local.get_scdom_component_subset_get_dom_component returns_result_select_result select_result_I2
@@ -758,7 +759,7 @@ proof -
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def
         get_element_by_id_def first_in_tree_order_def elim!: bind_returns_result_E2 intro!: map_filter_M_pure
         bind_pure_I split: option.splits list.splits)[1]
-    by (smt IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> finite_set_in
+    by (smt (verit) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> finite_set_in
         get_elements_by_class_name_is_strongly_scdom_component_safe_step local.get_dom_component_ok
         local.get_dom_component_ptr local.get_scdom_component_impl
         local.get_scdom_component_subset_get_dom_component returns_result_select_result select_result_I2 subsetD)
@@ -823,7 +824,7 @@ proof -
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def
         get_element_by_id_def first_in_tree_order_def elim!: bind_returns_result_E2 intro!:
         map_filter_M_pure bind_pure_I split: option.splits list.splits)[1]
-    by (smt IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> finite_set_in
+    by (smt (verit) IntI \<open>ptr |\<in>| object_ptr_kinds h\<close> finite_set_in
         get_elements_by_tag_name_is_strongly_scdom_component_safe_step local.get_dom_component_ok
         local.get_dom_component_ptr local.get_scdom_component_impl
         local.get_scdom_component_subset_get_dom_component returns_result_select_result select_result_I2
@@ -929,7 +930,7 @@ proof -
         node_ptr_kinds_commutes)
   then have "h \<turnstile> get_scdom_component (cast owner_document) \<rightarrow>\<^sub>r child_sc"
     using child_sc
-    by (smt \<open>child |\<in>| node_ptr_kinds h\<close> assms(1) assms(2) assms(3) contra_subsetD
+    by (smt (verit) \<open>child |\<in>| node_ptr_kinds h\<close> assms(1) assms(2) assms(3) contra_subsetD
         get_scdom_component_subset_get_dom_component get_scdom_component_owner_document_same
         get_scdom_component_ptrs_same_scope_component local.get_dom_component_ok local.get_dom_component_ptr
         node_ptr_kinds_commutes returns_result_select_result select_result_I2)
@@ -1847,7 +1848,7 @@ proof -
       apply(simp add: a_owner_document_valid_def node_ptr_kinds_eq_h2 node_ptr_kinds_eq3_h3
           object_ptr_kinds_eq_h2 object_ptr_kinds_eq_h3 document_ptr_kinds_eq2_h2
           document_ptr_kinds_eq2_h3 children_eq2_h2 children_eq2_h3 )
-      by (smt disc_nodes_document_ptr_h' disc_nodes_document_ptr_h2
+      by (smt (verit) disc_nodes_document_ptr_h' disc_nodes_document_ptr_h2
           disc_nodes_old_document_h2 disc_nodes_old_document_h3
           disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_in_heap
           document_ptr_kinds_eq3_h2 document_ptr_kinds_eq3_h3 in_set_remove1
@@ -2595,18 +2596,19 @@ h' \<turnstile> to_tree_order (cast disc_ptr) \<rightarrow>\<^sub>r to' \<Longri
 (cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr # disc_nodes_h3) \<rightarrow>\<^sub>r [cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr] # foo"
     apply(auto intro!: bind_pure_returns_result_I map_M_pure_I)[1]
     using \<open>new_tree_order = [cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr]\<close> new_tree_order apply auto[1]
-    by (smt \<open>disc_nodes_h' = cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr # disc_nodes_h3\<close>
+    by (smt (verit) \<open>disc_nodes_h' = cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr # disc_nodes_h3\<close>
         bind_pure_returns_result_I bind_returns_result_E2 comp_apply disc_tree_orders'
         local.to_tree_order_pure map_M.simps(2) map_M_pure_I return_returns_result returns_result_eq)
   then have "set (concat foo) = set (concat disc_tree_orders)"
     apply(auto elim!: bind_returns_result_E2 intro!: map_M_pure_I)[1]
-     apply (smt \<open>\<And>to' toa disc_ptr. \<lbrakk>disc_ptr \<in> set disc_nodes_h3;
-h \<turnstile> to_tree_order (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r toa; h' \<turnstile> to_tree_order (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r to'\<rbrakk>
-\<Longrightarrow> set toa = set to'\<close> comp_apply disc_tree_orders local.to_tree_order_pure map_M_pure_E map_M_pure_E2)
-    using \<open>\<And>to' toa disc_ptr. \<lbrakk>disc_ptr \<in> set disc_nodes_h3; h \<turnstile> to_tree_order (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r toa;
-h' \<turnstile> to_tree_order (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r to'\<rbrakk> \<Longrightarrow> set toa = set to'\<close> comp_apply
-      disc_tree_orders local.to_tree_order_pure map_M_pure_E map_M_pure_E2
-    by smt
+     apply (smt (verit) \<open>\<And>to' toa disc_ptr. \<lbrakk>disc_ptr \<in> set disc_nodes_h3; h \<turnstile> to_tree_order
+             (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r toa; h' \<turnstile> to_tree_order
+             (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r to'\<rbrakk> \<Longrightarrow> set toa = set to'\<close>
+             comp_eq_dest_lhs disc_tree_orders local.to_tree_order_pure map_M_pure_E map_M_pure_E2)
+    by (smt (verit) \<open>\<And>to' toa disc_ptr. \<lbrakk>disc_ptr \<in> set disc_nodes_h3; h \<turnstile> to_tree_order
+        (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r toa; h' \<turnstile> to_tree_order
+        (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r to'\<rbrakk> \<Longrightarrow> set toa = set to'\<close>
+        comp_eq_dest_lhs disc_tree_orders local.to_tree_order_pure map_M_pure_E map_M_pure_E2)
 
   have "disc_tree_orders' = [cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr] # foo"
     using foo disc_tree_orders'
@@ -2699,8 +2701,10 @@ h3 \<turnstile> set_disconnected_nodes document_ptr (cast\<^sub>e\<^sub>l\<^sub>
       new_element_ptr new_element_ptr_not_in_heap
      apply auto[1]
     using create_element_is_strongly_scdom_component_safe_step
-    by (smt ObjectMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close>
-        \<open>result = new_element_ptr\<close> assms(1) assms(2) assms(3) assms(4) assms(5) local.get_scdom_component_impl select_result_I2)
+    by (smt (verit, best) ObjectMonad.ptr_kinds_ptr_kinds_M
+        \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile>
+        object_ptr_kinds_M|\<^sub>r\<close> \<open>h \<turnstile> create_element document_ptr tag \<rightarrow>\<^sub>r new_element_ptr\<close> assms(1)
+        assms(2) assms(3) assms(5) local.get_scdom_component_impl select_result_I2)
 qed
 end
 
@@ -3176,18 +3180,17 @@ h' \<turnstile> to_tree_order (cast disc_ptr) \<rightarrow>\<^sub>r to' \<Longri
       bind_returns_result_E2 comp_apply disc_tree_orders' local.to_tree_order_pure map_M.simps(2)
       map_M_pure_I return_returns_result returns_result_eq
     apply simp
-    by (smt \<open>disc_nodes_h' = cast new_character_data_ptr # disc_nodes_h3\<close> bind_pure_returns_result_I
+    by (smt (verit) \<open>disc_nodes_h' = cast new_character_data_ptr # disc_nodes_h3\<close> bind_pure_returns_result_I
         bind_returns_result_E2 comp_apply disc_tree_orders' local.to_tree_order_pure map_M.simps(2) map_M_pure_I
         return_returns_result returns_result_eq)
   then have "set (concat foo) = set (concat disc_tree_orders)"
     apply(auto elim!: bind_returns_result_E2 intro!: map_M_pure_I)[1]
-     apply (smt \<open>\<And>to' toa disc_ptr. \<lbrakk>disc_ptr \<in> set disc_nodes_h3;
+     apply (smt (verit) \<open>\<And>to' toa disc_ptr. \<lbrakk>disc_ptr \<in> set disc_nodes_h3;
 h \<turnstile> to_tree_order (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r toa; h' \<turnstile> to_tree_order (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r to'\<rbrakk> \<Longrightarrow>
 set toa = set to'\<close> comp_apply disc_tree_orders local.to_tree_order_pure map_M_pure_E map_M_pure_E2)
-    using \<open>\<And>to' toa disc_ptr. \<lbrakk>disc_ptr \<in> set disc_nodes_h3; h \<turnstile> to_tree_order (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r toa;
+    by (smt (verit) \<open>\<And>to' toa disc_ptr. \<lbrakk>disc_ptr \<in> set disc_nodes_h3; h \<turnstile> to_tree_order (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r toa;
 h' \<turnstile> to_tree_order (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r disc_ptr) \<rightarrow>\<^sub>r to'\<rbrakk> \<Longrightarrow> set toa = set to'\<close> comp_apply disc_tree_orders
-      local.to_tree_order_pure map_M_pure_E map_M_pure_E2
-    by smt
+      local.to_tree_order_pure map_M_pure_E map_M_pure_E2)
 
   have "disc_tree_orders' = [cast new_character_data_ptr] # foo"
     using foo disc_tree_orders'
@@ -3278,7 +3281,7 @@ h3 \<turnstile> set_disconnected_nodes document_ptr (cast\<^sub>c\<^sub>h\<^sub>
       new_character_data_ptr new_character_data_ptr_not_in_heap
      apply auto[1]
     using create_character_data_is_strongly_dom_component_safe_step
-    by (smt ObjectMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_character_data_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close>
+    by (smt (verit) ObjectMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_character_data_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close>
         \<open>result = new_character_data_ptr\<close> assms(1) assms(2) assms(3) assms(4) assms(5) local.get_scdom_component_impl select_result_I2)
 qed
 end
@@ -3722,7 +3725,7 @@ proof -
       is_OK_returns_result_E is_OK_returns_result_I local.get_dom_component_ok local.get_dom_component_ptr
       local.get_owner_document_ptr_in_heap local.get_owner_document_pure local.get_scdom_component_def
       pure_returns_heap_eq returns_result_eq
-    by (smt local.get_scdom_component_ptrs_same_owner_document subsetD)
+    by (smt (verit) local.get_scdom_component_ptrs_same_owner_document subsetD)
 qed
 
 
@@ -3737,7 +3740,7 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_scdom_component_safe_def Let_def preserved_def)[1]
-    by (smt get_owner_document_is_strongly_scdom_component_safe_step inf.orderE is_OK_returns_result_I
+    by (smt (verit) get_owner_document_is_strongly_scdom_component_safe_step inf.orderE is_OK_returns_result_I
         local.get_dom_component_ok local.get_dom_component_to_tree_order_subset local.get_owner_document_ptr_in_heap
         local.get_scdom_component_impl local.get_scdom_component_ok local.get_scdom_component_ptr_in_heap
         local.get_scdom_component_subset_get_dom_component local.to_tree_order_ok
