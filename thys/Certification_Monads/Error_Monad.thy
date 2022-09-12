@@ -203,6 +203,13 @@ where
   "existsM f [] = error []" |
   "existsM f (x # xs) = (try f x catch (\<lambda>e. existsM f xs <+? Cons e))"
 
+lemma existsM_cong [fundef_cong]:
+  assumes "xs = ys"
+  and "\<And>x. x \<in> set ys \<Longrightarrow> f x = g x"
+  shows "existsM f xs = existsM g ys"
+  using assms
+  by (induct ys arbitrary:xs) (auto split:catch_splits)
+
 lemma isOK_existsM [simp]:
   "isOK (existsM f xs) \<longleftrightarrow> (\<exists>x\<in>set xs. isOK (f x))"
 proof (induct xs)
