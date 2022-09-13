@@ -275,7 +275,7 @@ lemma neighbor_set_meets_e_reg_cond:
 shows "card (neighbors_ss x Y G) \<ge> \<epsilon> * card (Y)"
   by (smt (verit) assms mult_right_mono of_nat_0_le_iff)
 
-lemma all_edges_btwn_neighbour_sets_lower_bound: 
+lemma all_edges_btwn_neighbor_sets_lower_bound: 
   fixes \<epsilon>::real 
   assumes rp2: "regular_pair Y Z G \<epsilon>"
     and ed1: "edge_density X Y G  \<ge> 2*\<epsilon>" and ed2: "edge_density X Z G  \<ge> 2*\<epsilon>" 
@@ -296,9 +296,9 @@ proof -
   then have "edge_density Y Z G - \<epsilon> \<le> (card (all_edges_between ?Y' ?Z' G)/(card ?Y' * card ?Z'))" 
     using edge_density_def by simp
   then have "(card ?Y' * card ?Z') * (edge_density Y Z G - \<epsilon>) \<le> (card (all_edges_between ?Y' ?Z' G))"
-    by (metis abs_of_nat division_ring_divide_zero le_divide_eq mult_of_nat_commute of_nat_0_le_iff times_divide_eq_right zero_less_abs_iff)
+    by (fastforce simp: divide_simps mult.commute simp flip: of_nat_mult split: if_split_asm)
   then show ?thesis
-    by (metis (no_types, lifting) ab_semigroup_mult_class.mult_ac(1) mult_of_nat_commute of_nat_mult) 
+    by (metis (no_types, lifting) mult.assoc mult_of_nat_commute of_nat_mult) 
 qed
 
 
@@ -377,7 +377,7 @@ and @{term Z}.\<close>
         (is "sum ?F _ \<le> sum ?G _")
   proof (rule sum_mono)
     show  "\<And>x. x \<in> X2 \<Longrightarrow> ?F x \<le> ?G x"
-      using all_edges_btwn_neighbour_sets_lower_bound card_y_bound card_z_bound ed1 ed2 rp2 by blast
+      using all_edges_btwn_neighbor_sets_lower_bound card_y_bound card_z_bound ed1 ed2 rp2 by blast
   qed
   then have "card ?T_all \<ge> card X2 * ?ediff Y Z * ?ediff X Y * card Y * ?ediff X Z * card Z" 
     using card_z_bound' card_y_bound' l of_nat_le_iff [symmetric, where 'a=real] by force
@@ -421,8 +421,8 @@ proof -
     have "distinct[x,y,z]"
       using that by simp
     then show ?thesis
-      unfolding tofl_def image_iff
-      by (smt (verit, best) list.sel(1) list.sel(3) list.simps(15) permutations_of_setI set_empty)
+      unfolding tofl_def image_iff 
+      by (smt (verit, best) list.sel(1) list.sel(3) set_simps permutations_of_setI set_empty)
   qed
   have "?TT \<subseteq> {(x,y,z). (triangle_in_graph x y z G)}"
     by auto
@@ -437,7 +437,7 @@ proof -
   also have "\<dots> \<le> (\<Sum>t \<in> triangle_set G. card (permutations_of_set t))"
     by (meson card_image_le finite_permutations_of_set sum_mono)
   also have "\<dots> \<le> (\<Sum>t \<in> triangle_set G. fact 3)"
-    by (rule sum_mono) (metis  card.infinite card_permutations_of_set card_triangle_3 eq_refl local.wf nat.case numeral_3_eq_3)
+    by (rule sum_mono) (metis card.infinite card_permutations_of_set card_triangle_3 eq_refl local.wf nat.case numeral_3_eq_3)
   also have "\<dots> = 6 * card (triangle_set G)"
     by (simp add: eval_nat_numeral)
   finally have "card ?TT \<le> 6 * card (triangle_set G)" .
@@ -518,7 +518,6 @@ next
     assume ineq: "real (card (triangle_set G)) \<le> \<delta> * card (uverts G) ^ 3"
     
     text\<open>Step 1: Partition: Using Szemer\'{e}di's Regularity Lemma, we get an $\epsilon/4$ partition. \<close>
-    
     let ?n = "card (uverts G)"
     have vne: "uverts G \<noteq> {}"
       using \<open>0 < card (uverts G)\<close> by force 
