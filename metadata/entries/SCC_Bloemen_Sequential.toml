@@ -1,0 +1,30 @@
+title = "Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph"
+date = 2022-08-17
+topics = [
+  "Computer science/Algorithms/Graph",
+]
+abstract = """
+We prove the correctness of a sequential algorithm for computing
+maximal strongly connected components (SCCs) of a graph due to Vincent
+Bloemen."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.merz]
+email = "merz_email"
+
+[authors.trelat]
+email = "trelat_email"
+
+[contributors]
+
+[notify]
+trelat = "trelat_email"
+
+[history]
+
+[extra]
+
+[related]

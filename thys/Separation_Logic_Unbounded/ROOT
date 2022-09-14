@@ -1,0 +1,14 @@
+chapter AFP
+
+session Separation_Logic_Unbounded (AFP) = HOL + 
+  options [timeout=300]
+  theories
+    AutomaticVerifiers
+    Combinability
+    FixedPoint
+    Distributivity
+    UnboundedLogic
+    WandProperties
+  document_files
+    "root.bib"
+    "root.tex"

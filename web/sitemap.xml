@@ -26,6 +26,12 @@
     <loc>/dependencies/number_theoretic_transform/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/dardinier/</loc>
+    <lastmod>2022-09-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Separation_Logic_Unbounded.html</loc>
+    <lastmod>2022-09-05T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/argyraki/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
@@ -195,9 +201,6 @@
     <lastmod>2022-06-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Combinable_Wands.html</loc>
-    <lastmod>2022-05-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/dardinier/</loc>
     <lastmod>2022-05-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/package_logic/</loc>
@@ -5570,6 +5573,8 @@
     <loc>/theories/separation_algebra/</loc>
   </url><url>
     <loc>/theories/separation_logic_imperative_hol/</loc>
+  </url><url>
+    <loc>/theories/separation_logic_unbounded/</loc>
   </url><url>
     <loc>/theories/sepref_basic/</loc>
   </url><url>
