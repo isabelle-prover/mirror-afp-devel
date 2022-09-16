@@ -18,10 +18,10 @@ instance Show Tm where
   show (Fun f ts) = charFrom 'f' f : "(" ++ concat (intersperse ", " (map show ts)) ++ ")"
 
 instance Show Fm where
-  show Falsity = "Falsity"
+  show Falsity = "Fls"
   show (Pre p []) = charFrom 'P' p : ""
   show (Pre p ts) = charFrom 'P' p : "(" ++ concat (intersperse ", " (map show ts)) ++ ")"
-  show (Imp p q) = "(" ++ show p ++ ") --> (" ++ show q ++ ")"
+  show (Imp p q) = "(" ++ show p ++ ") -> (" ++ show q ++ ")"
   show (Uni p) = "forall " ++ show p
 
 showRule :: Rule -> String
