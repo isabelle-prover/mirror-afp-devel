@@ -438,7 +438,7 @@ proof -
     vars_B: \<open>\<Union> (vars ` set_mset B) \<subseteq> \<V>\<close>and
     vars_B: \<open>\<Union> (vars ` set_mset (ran_m A)) \<subseteq> \<V>\<close>
     using rtranclp_PAC_Format_subset_ideal[OF A\<^sub>0B  vars_A\<^sub>0] spec\<^sub>0 \<open>(A, B) \<in> polys_rel\<close>[unfolded polys_rel_def, simplified]
-    by (smt in_mono mem_Collect_eq restricted_ideal_to_def)+
+    by (smt (verit) in_mono mem_Collect_eq restricted_ideal_to_def)+
 
   have eq_successI: \<open>st' \<noteq> FAILED \<Longrightarrow>
        st' \<noteq> FOUND \<Longrightarrow> st' = SUCCESS\<close> for st'

@@ -290,7 +290,7 @@ proof -
       from ideal.span_scale[OF this, of \<open>?v + q' - 1\<close>] have \<open>(?v - q') * (?v + q' - 1) \<in> More_Modules.ideal ?C\<close>
         by (auto simp: field_simps)
       moreover have \<open>q'^2 - q' \<in> More_Modules.ideal ?C\<close>
-        using diff by (smt Un_insert_right ideal.span_mono insert_subset subsetD sup_ge2)
+        using diff by (smt (verit) Un_insert_right ideal.span_mono insert_subset subsetD sup_ge2)
       ultimately have \<open>(?v - q') * (?v + q' - 1) + (q'^2 - q') \<in> More_Modules.ideal ?C\<close>
         by (rule ideal.span_add)
       moreover have \<open>?v^2 - ?v = (?v - q') * (?v + q' - 1) + (q'^2 - q')\<close>

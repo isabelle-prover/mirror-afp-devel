@@ -280,7 +280,7 @@ proof
        \<open>(aa, aa') \<in> string_rel\<close>
        \<open>(aaa, aaa') \<in> string_rel\<close>
       using assms
-      by (smt list_rel_append1 list_rel_split_right_iff single_valued_def single_valued_monom_rel)
+      by (smt (verit) list_rel_append1 list_rel_split_right_iff single_valued_def single_valued_monom_rel)
     with \<open>aa < aaa\<close> have \<open>aa' < aaa'\<close>
       by (auto simp: string_rel_def less_literal.rep_eq less_list_def
         lexordp_conv_lexord lexordp_def char.lexordp_conv_lexord
