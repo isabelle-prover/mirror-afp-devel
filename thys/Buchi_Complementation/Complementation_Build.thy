@@ -19,7 +19,7 @@ compile_generated_files \<^marker>\<open>contributor Makarius\<close>
     let
       val exec = Generated_Files.execute (dir + Path.basic "code");
       val _ = exec \<open>Prepare\<close> "mv Complementation.ML Complementation.sml";
-      val _ = exec \<open>Compilation\<close> (File.bash_path \<^path>\<open>$ISABELLE_MLTON\<close> ^
+      val _ = exec \<open>Compilation\<close> (\<^verbatim>\<open>"$ISABELLE_MLTON" $ISABELLE_MLTON_OPTIONS \<close> ^
             " -profile time -default-type intinf Autool.mlb");
       val _ = exec \<open>Test\<close> "./Autool help";
     in () end\<close>
