@@ -10,20 +10,20 @@ begin
 locale M_ZF2 = M_ZF1 +
   assumes
     replacement_ax2:
-    "replacement_assm(M,env,replacement_is_order_body_fm)"
-    "replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
-    "replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
-    "replacement_assm(M,env,replacement_is_order_eq_map_fm)"
+    "replacement_assm(M,env,ordtype_replacement_fm)"
+    "replacement_assm(M,env,wfrec_ordertype_fm)"
+    "replacement_assm(M,env,wfrec_Aleph_fm)"
+    "replacement_assm(M,env,omap_replacement_fm)"
 
 definition instances2_fms where "instances2_fms \<equiv>
-  { replacement_is_order_body_fm,
-    wfrec_replacement_order_pred_fm,
-    replacement_HAleph_wfrec_repl_body_fm,
-    replacement_is_order_eq_map_fm }"
+  { ordtype_replacement_fm,
+    wfrec_ordertype_fm,
+    wfrec_Aleph_fm,
+    omap_replacement_fm }"
 
 lemmas replacement_instances2_defs =
-  replacement_is_order_body_fm_def wfrec_replacement_order_pred_fm_def
-  replacement_HAleph_wfrec_repl_body_fm_def replacement_is_order_eq_map_fm_def
+  ordtype_replacement_fm_def wfrec_ordertype_fm_def
+  wfrec_Aleph_fm_def omap_replacement_fm_def
 
 declare (in M_ZF2) replacement_instances2_defs [simp]
 
@@ -307,29 +307,29 @@ sublocale M_ZFC2_trans \<subseteq> M_library "##M"
 locale M_ZF3 = M_ZF2 +
   assumes
     ground_replacements3:
-    "ground_replacement_assm(M,env,replacement_is_order_body_fm)"
-    "ground_replacement_assm(M,env,wfrec_replacement_order_pred_fm)"
-    "ground_replacement_assm(M,env,eclose_repl2_intf_fm)"
+    "ground_replacement_assm(M,env,ordtype_replacement_fm)"
+    "ground_replacement_assm(M,env,wfrec_ordertype_fm)"
+    "ground_replacement_assm(M,env,eclose_abs_fm)"
     "ground_replacement_assm(M,env,wfrec_rank_fm)"
-    "ground_replacement_assm(M,env,trans_repl_HVFrom_fm)"
-    "ground_replacement_assm(M,env,eclose_repl1_intf_fm)"
-    "ground_replacement_assm(M,env,replacement_HAleph_wfrec_repl_body_fm)"
-    "ground_replacement_assm(M,env,replacement_is_order_eq_map_fm)"
+    "ground_replacement_assm(M,env,transrec_VFrom_fm)"
+    "ground_replacement_assm(M,env,eclose_closed_fm)"
+    "ground_replacement_assm(M,env,wfrec_Aleph_fm)"
+    "ground_replacement_assm(M,env,omap_replacement_fm)"
 
 definition instances3_fms where "instances3_fms \<equiv>
-  { ground_repl_fm(replacement_is_order_body_fm),
-    ground_repl_fm(wfrec_replacement_order_pred_fm),
-    ground_repl_fm(eclose_repl2_intf_fm),
+  { ground_repl_fm(ordtype_replacement_fm),
+    ground_repl_fm(wfrec_ordertype_fm),
+    ground_repl_fm(eclose_abs_fm),
     ground_repl_fm(wfrec_rank_fm),
-    ground_repl_fm(trans_repl_HVFrom_fm),
-    ground_repl_fm(eclose_repl1_intf_fm),
-    ground_repl_fm(replacement_HAleph_wfrec_repl_body_fm),
-    ground_repl_fm(replacement_is_order_eq_map_fm) }"
+    ground_repl_fm(transrec_VFrom_fm),
+    ground_repl_fm(eclose_closed_fm),
+    ground_repl_fm(wfrec_Aleph_fm),
+    ground_repl_fm(omap_replacement_fm) }"
 
 text\<open>This set has $8$ internalized formulas, corresponding to the total
 count of previous replacement instances (apart from those $5$ in
 \<^term>\<open>instances_ground_fms\<close> and \<^term>\<open>instances_ground_notCH_fms\<close>,
-and \<^term>\<open>replacement_dcwit_repl_body_fm\<close>).\<close>
+and \<^term>\<open>dc_abs_fm\<close>).\<close>
 
 definition overhead where
   "overhead \<equiv> instances1_fms \<union> instances_ground_fms"
@@ -339,7 +339,7 @@ definition overhead_notCH where
      instances3_fms \<union> instances_ground_notCH_fms"
 
 definition overhead_CH where
-  "overhead_CH \<equiv> overhead_notCH \<union> { replacement_dcwit_repl_body_fm }"
+  "overhead_CH \<equiv> overhead_notCH \<union> { dc_abs_fm }"
 
 text\<open>Hence, the “overhead” to create a proper extension of a ctm by forcing
 consists of $7$ replacement instances. To force $\neg\CH$,
@@ -357,14 +357,14 @@ lemma overhead_type: "overhead \<subseteq> formula"
 
 lemma overhead_notCH_type: "overhead_notCH \<subseteq> formula"
   using overhead_type
-  unfolding overhead_notCH_def replacement_transrec_apply_image_body_fm_def
-    replacement_is_trans_apply_image_fm_def instances_ground_notCH_fms_def
+  unfolding overhead_notCH_def recursive_construction_abs_fm_def
+    recursive_construction_fm_def instances_ground_notCH_fms_def
     instances2_fms_def instances3_fms_def
   by (auto simp: replacement_instances1_defs
       replacement_instances2_defs simp del: Lambda_in_M_fm_def)
 
 lemma overhead_CH_type: "overhead_CH \<subseteq> formula"
-  using overhead_notCH_type unfolding overhead_CH_def replacement_dcwit_repl_body_fm_def
+  using overhead_notCH_type unfolding overhead_CH_def dc_abs_fm_def
   by auto
 
 locale M_ZF3_trans = M_ZF2_trans + M_ZF3
@@ -524,14 +524,14 @@ proof -
     fix env
     assume "env \<in> list(M)"
     moreover from assms
-    have "M, [] \<Turnstile> \<cdot>Replacement(replacement_dcwit_repl_body_fm)\<cdot>"
+    have "M, [] \<Turnstile> \<cdot>Replacement(dc_abs_fm)\<cdot>"
       unfolding overhead_CH_def by auto
     ultimately
-    have "arity(replacement_dcwit_repl_body_fm) \<le> succ(succ(length(env)))
-      \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,replacement_dcwit_repl_body_fm,Cons(x,Cons(y, env))))"
-      using sats_ZF_replacement_fm_iff[of replacement_dcwit_repl_body_fm]
+    have "arity(dc_abs_fm) \<le> succ(succ(length(env)))
+      \<Longrightarrow> strong_replacement(##M,\<lambda>x y. sats(M,dc_abs_fm,Cons(x,Cons(y, env))))"
+      using sats_ZF_replacement_fm_iff[of dc_abs_fm]
       unfolding replacement_assm_def
-      by (auto simp:replacement_dcwit_repl_body_fm_def)
+      by (auto simp:dc_abs_fm_def)
   }
   then
   show ?thesis

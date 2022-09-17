@@ -1,17 +1,11 @@
 section\<open>The Powerset Axiom in $M[G]$\<close>
+
 theory Powerset_Axiom
-  imports Separation_Axiom Pairing_Axiom Union_Axiom
+  imports
+    Separation_Axiom Pairing_Axiom Union_Axiom
 begin
 
 simple_rename "perm_pow" src "[ss,p,l,o,fs,\<chi>]" tgt "[fs,ss,sp,p,l,o,\<chi>]"
-
-lemma Collect_inter_Transset:
-  assumes
-    "Transset(M)" "b \<in> M"
-  shows
-    "{x\<in>b . P(x)} = {x\<in>b . P(x)} \<inter> M"
-  using assms unfolding Transset_def
-  by (auto)
 
 context G_generic1
 begin
@@ -73,9 +67,10 @@ proof -
 qed
 
 declare nat_into_M[rule del, simplified setclass_iff, intro]
-lemmas ssimps = domain_closed cartprod_closed cons_closed
+lemmas ssimps = domain_closed cartprod_closed cons_closed Pow_rel_closed
 declare ssimps [simp del, simplified setclass_iff, simp, intro]
 
+\<comment> \<open>We keep \<^term>\<open>Pow(a) \<inter> M[G]\<close> to be consistent with Kunen.\<close>
 lemma Pow_inter_MG:
   assumes "a\<in>M[G]"
   shows "Pow(a) \<inter> M[G] \<in> M[G]"
@@ -83,38 +78,15 @@ proof -
   from assms
   obtain \<tau> where "\<tau> \<in> M" "val(G, \<tau>) = a"
     using GenExtD by auto
-  let ?Q="Pow(domain(\<tau>)\<times>\<bbbP>) \<inter> M"
+  let ?Q="Pow\<^bsup>M\<^esup>(domain(\<tau>)\<times>\<bbbP>)"
+  let ?\<pi>="?Q\<times>{\<one>}"
+  let ?b="val(G,?\<pi>)"
   from \<open>\<tau>\<in>M\<close>
   have "domain(\<tau>)\<times>\<bbbP> \<in> M" "domain(\<tau>) \<in> M"
     by simp_all
   then
-  have "?Q \<in> M"
-  proof -
-    from power_ax \<open>domain(\<tau>)\<times>\<bbbP> \<in> M\<close>
-    obtain Q where "powerset(##M,domain(\<tau>)\<times>\<bbbP>,Q)" "Q \<in> M"
-      unfolding power_ax_def by auto
-    moreover from calculation
-    have "z\<in>Q \<Longrightarrow> z\<in>M" for z
-      using transitivity by blast
-    ultimately
-    have "Q = {a\<in>Pow(domain(\<tau>)\<times>\<bbbP>) . a\<in>M}"
-      using \<open>domain(\<tau>)\<times>\<bbbP> \<in> M\<close> powerset_abs[of "domain(\<tau>)\<times>\<bbbP>" Q]
-      by (simp flip: setclass_iff)
-    also
-    have " ... = ?Q"
-      by auto
-    finally
-    show ?thesis
-      using \<open>Q\<in>M\<close> by simp
-  qed
-  let ?\<pi>="?Q\<times>{\<one>}"
-  let ?b="val(G,?\<pi>)"
-  from \<open>?Q\<in>M\<close>
-  have "?\<pi>\<in>M"
-    by auto
-  then
   have "?b \<in> M[G]"
-    using GenExtI by simp
+    by (auto intro!:GenExtI)
   have "Pow(a) \<inter> M[G] \<subseteq> ?b"
   proof
     fix c
@@ -123,18 +95,15 @@ proof -
     obtain \<chi> where "c\<in>M[G]" "\<chi> \<in> M" "val(G,\<chi>) = c"
       using GenExt_iff by auto
     let ?\<theta>="{\<langle>\<sigma>,p\<rangle> \<in>domain(\<tau>)\<times>\<bbbP> . p \<tturnstile> \<cdot>0 \<in> 1\<cdot> [\<sigma>,\<chi>] }"
-    have "arity(forces(Member(0,1))) = 6"
+    have "arity(forces( \<cdot>0 \<in> 1\<cdot> )) = 6"
       using arity_forces_at by auto
     with \<open>domain(\<tau>) \<in> M\<close> \<open>\<chi> \<in> M\<close>
     have "?\<theta> \<in> M"
       using sats_fst_snd_in_M
       by simp
-    then
-    have "?\<theta> \<in> ?Q" by auto
-    then
-    have "val(G,?\<theta>) \<in> ?b"
-      using one_in_G generic val_of_elem [of ?\<theta> \<one> ?\<pi> G]
-      by auto
+    with \<open>domain(\<tau>)\<times>\<bbbP> \<in> M\<close>
+    have "?\<theta> \<in> ?Q"
+      using Pow_rel_char by auto
     have "val(G,?\<theta>) = c"
     proof(intro equalityI subsetI)
       fix x
@@ -204,23 +173,20 @@ proof -
       show "x\<in>val(G,?\<theta>)"
         using val_of_elem [of _ _ "?\<theta>" G] by auto
     qed
-    with \<open>val(G,?\<theta>) \<in> ?b\<close>
+    with \<open>?\<theta> \<in> ?Q\<close>
     show "c\<in>?b"
-      by simp
+      using one_in_G generic val_of_elem [of ?\<theta> \<one> ?\<pi> G]
+      by auto
   qed
   then
   have "Pow(a) \<inter> M[G] = {x\<in>?b . x\<subseteq>a \<and> x\<in>M[G]}"
     by auto
   also from \<open>a\<in>M[G]\<close>
-  have " ... = {x\<in>?b . ( M[G], [x,a] \<Turnstile> \<cdot>0 \<subseteq> 1\<cdot> ) \<and> x\<in>M[G]}"
-    using Transset_MG by force
-  also
   have " ... = {x\<in>?b . ( M[G], [x,a] \<Turnstile> \<cdot>0 \<subseteq> 1\<cdot> )} \<inter> M[G]"
-    by auto
+    using Transset_MG by force
   also from \<open>?b\<in>M[G]\<close>
   have " ... = {x\<in>?b . ( M[G], [x,a] \<Turnstile> \<cdot>0 \<subseteq> 1\<cdot> )}"
-    using Collect_inter_Transset Transset_MG
-    by simp
+    by (intro equalityI) (auto dest:ext.transM)
   also from \<open>?b\<in>M[G]\<close> \<open>a\<in>M[G]\<close>
   have " ... \<in> M[G]"
     using Collect_sats_in_MG GenExtI ord_simp_union by (simp add:arity)
@@ -231,9 +197,8 @@ qed
 end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 sublocale G_generic1 \<subseteq> ext: M_trivial "##M[G]"
-  using generic Union_MG pairing_in_MG zero_in_MG transitivity_MG
-  unfolding M_trivial_def M_trans_def M_trivial_axioms_def
-  by (simp; blast)
+  using generic Union_MG pairing_in_MG
+  by unfold_locales (simp; blast)
 
 context G_generic1 begin
 

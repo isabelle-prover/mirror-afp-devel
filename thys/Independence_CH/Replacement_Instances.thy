@@ -290,15 +290,16 @@ synthesize "is_trans_apply_image_body" from_definition assuming "nonempty"
 arity_theorem for "is_trans_apply_image_body_fm"
 
 definition replacement_is_omega_funspace_fm where "replacement_is_omega_funspace_fm \<equiv>  omega_funspace_fm(2,0,1)"
-definition replacement_HAleph_wfrec_repl_body_fm where "replacement_HAleph_wfrec_repl_body_fm \<equiv>  HAleph_wfrec_repl_body_fm(2,0,1)"
+definition wfrec_Aleph_fm where "wfrec_Aleph_fm \<equiv>  HAleph_wfrec_repl_body_fm(2,0,1)"
 definition replacement_is_fst2_snd2_fm where "replacement_is_fst2_snd2_fm \<equiv>  is_fst2_snd2_fm(0,1)"
 definition replacement_is_sndfst_fst2_snd2_fm where "replacement_is_sndfst_fst2_snd2_fm \<equiv>  is_sndfst_fst2_snd2_fm(0,1)"
-definition replacement_is_order_eq_map_fm where "replacement_is_order_eq_map_fm \<equiv>  order_eq_map_fm(2,3,0,1)"
-definition replacement_transrec_apply_image_body_fm where "replacement_transrec_apply_image_body_fm \<equiv>  transrec_apply_image_body_fm(3,2,0,1)"
+definition omap_replacement_fm where "omap_replacement_fm \<equiv>  order_eq_map_fm(2,3,0,1)"
+definition recursive_construction_abs_fm where "recursive_construction_abs_fm \<equiv>  transrec_apply_image_body_fm(3,2,0,1)"
 definition banach_replacement_iterates_fm where "banach_replacement_iterates_fm \<equiv> banach_is_iterates_body_fm(6,5,4,3,2,0,1)"
-definition replacement_is_trans_apply_image_fm where "replacement_is_trans_apply_image_fm \<equiv> is_trans_apply_image_body_fm(3,2,0,1)"
+definition recursive_construction_fm where "recursive_construction_fm \<equiv> is_trans_apply_image_body_fm(3,2,0,1)"
 (* definition banach_iterates_fm where "banach_iterates_fm \<equiv> banach_body_iterates_fm(7,6,5,4,3,2,0,1)" *)
-definition replacement_dcwit_repl_body_fm where "replacement_dcwit_repl_body_fm \<equiv> dcwit_repl_body_fm(6,5,4,3,2,0,1)"
+definition dc_abs_fm where "dc_abs_fm \<equiv> dcwit_repl_body_fm(6,5,4,3,2,0,1)"
+definition lam_replacement_check_fm where "lam_replacement_check_fm \<equiv> Lambda_in_M_fm(check_fm(2,0,1),1)"
 
 text\<open>The following instances are needed only on the ground model. The
 first one corresponds to the recursive definition of forces for atomic
@@ -310,17 +311,17 @@ locale M_ZF_ground = M_ZF1 +
     ZF_ground_replacements:
     "replacement_assm(M,env,wfrec_Hfrc_at_fm)"
     "replacement_assm(M,env,wfrec_Hcheck_fm)"
-    "replacement_assm(M,env,Lambda_in_M_fm(check_fm(2,0,1),1))"
+    "replacement_assm(M,env,lam_replacement_check_fm)"
 
 locale M_ZF_ground_trans = M_ZF1_trans + M_ZF_ground
 
 definition instances_ground_fms where "instances_ground_fms \<equiv>
   { wfrec_Hfrc_at_fm,
     wfrec_Hcheck_fm,
-    Lambda_in_M_fm(check_fm(2,0,1),1) }"
+    lam_replacement_check_fm }"
 
 lemmas replacement_instances_ground_defs =
-  wfrec_Hfrc_at_fm_def wfrec_Hcheck_fm_def
+  wfrec_Hfrc_at_fm_def wfrec_Hcheck_fm_def lam_replacement_check_fm_def
 
 declare (in M_ZF_ground) replacement_instances_ground_defs [simp]
 
@@ -332,28 +333,28 @@ lemma instances_ground_fms_type[TC]: "instances_ground_fms \<subseteq> formula"
 locale M_ZF_ground_notCH = M_ZF_ground +
   assumes
     ZF_ground_notCH_replacements:
-    "replacement_assm(M,env,replacement_transrec_apply_image_body_fm)"
-    "replacement_assm(M,env,replacement_is_trans_apply_image_fm)"
+    "replacement_assm(M,env,recursive_construction_abs_fm)"
+    "replacement_assm(M,env,recursive_construction_fm)"
 
 definition instances_ground_notCH_fms where "instances_ground_notCH_fms \<equiv>
-  { replacement_transrec_apply_image_body_fm,
-    replacement_is_trans_apply_image_fm }"
+  { recursive_construction_abs_fm,
+    recursive_construction_fm }"
 
 lemma instances_ground_notCH_fms_type[TC]: "instances_ground_notCH_fms \<subseteq> formula"
-  unfolding instances_ground_notCH_fms_def replacement_transrec_apply_image_body_fm_def
-    replacement_is_trans_apply_image_fm_def
+  unfolding instances_ground_notCH_fms_def recursive_construction_abs_fm_def
+    recursive_construction_fm_def
   by simp
 
-declare (in M_ZF_ground_notCH) replacement_transrec_apply_image_body_fm_def[simp]
-  replacement_is_trans_apply_image_fm_def[simp]
+declare (in M_ZF_ground_notCH) recursive_construction_abs_fm_def[simp]
+  recursive_construction_fm_def[simp]
 
 locale M_ZF_ground_notCH_trans = M_ZF_ground_trans + M_ZF_ground_notCH
 
 locale M_ZF_ground_CH = M_ZF_ground_notCH +
   assumes
-    dcwit_replacement: "replacement_assm(M,env,replacement_dcwit_repl_body_fm)"
+    dcwit_replacement: "replacement_assm(M,env,dc_abs_fm)"
 
-declare (in M_ZF_ground_CH) replacement_dcwit_repl_body_fm_def [simp]
+declare (in M_ZF_ground_CH) dc_abs_fm_def [simp]
 
 locale M_ZF_ground_CH_trans = M_ZF_ground_notCH_trans + M_ZF_ground_CH
 
@@ -372,7 +373,7 @@ lemma replacement_dcwit_repl_body:
   using strong_replacement_rel_in_ctm[where \<phi>="dcwit_repl_body_fm(6,5,4,3,2,0,1)"
       and env="[R,s,a,A,mesa]" and f="dcwit_repl_body(##M,mesa,A,a,s,R)"]
     zero_in_M arity_dcwit_repl_body dcwit_replacement
-  unfolding replacement_dcwit_repl_body_fm_def
+  unfolding dc_abs_fm_def
   by simp
 
 lemma dcwit_repl:

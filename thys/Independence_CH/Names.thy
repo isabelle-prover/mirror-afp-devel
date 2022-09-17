@@ -634,4 +634,8 @@ bundle G_generic1_lemmas = generic_simps[simp] generic_dests[dest]
 
 end  \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
+sublocale G_generic1 \<subseteq> ext: M_trans "##M[G]"
+  using generic transitivity_MG zero_in_MG
+  by unfold_locales force+
+
 end

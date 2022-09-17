@@ -42,16 +42,16 @@ locale M_Z_trans = M_Z_basic + M_transset
 locale M_ZF1 = M_Z_basic +
   assumes
     replacement_ax1:
-    "replacement_assm(M,env,eclose_repl1_intf_fm)"
-    "replacement_assm(M,env,eclose_repl2_intf_fm)"
+    "replacement_assm(M,env,eclose_closed_fm)"
+    "replacement_assm(M,env,eclose_abs_fm)"
     "replacement_assm(M,env,wfrec_rank_fm)"
-    "replacement_assm(M,env,trans_repl_HVFrom_fm)"
+    "replacement_assm(M,env,transrec_VFrom_fm)"
 
 definition instances1_fms where "instances1_fms \<equiv>
-  { eclose_repl1_intf_fm,
-    eclose_repl2_intf_fm,
+  { eclose_closed_fm,
+    eclose_abs_fm,
     wfrec_rank_fm,
-    trans_repl_HVFrom_fm
+    transrec_VFrom_fm
  }"
 
 text\<open>This set has 4 internalized formulas.\<close>
@@ -59,8 +59,8 @@ text\<open>This set has 4 internalized formulas.\<close>
 lemmas replacement_instances1_defs =
   list_repl1_intf_fm_def list_repl2_intf_fm_def
   formula_repl1_intf_fm_def formula_repl2_intf_fm_def
-  eclose_repl1_intf_fm_def eclose_repl2_intf_fm_def
-  wfrec_rank_fm_def trans_repl_HVFrom_fm_def tl_repl_intf_fm_def
+  eclose_closed_fm_def eclose_abs_fm_def
+  wfrec_rank_fm_def transrec_VFrom_fm_def tl_repl_intf_fm_def
 
 lemma instances1_fms_type[TC]: "instances1_fms \<subseteq> formula"
   using Lambda_in_M_fm_type
