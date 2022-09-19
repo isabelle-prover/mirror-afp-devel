@@ -1648,7 +1648,7 @@ begin
   section "Simulations"
 
   text \<open>
-    \emph{Simulations} are morphism of residuated transition systems.
+    \emph{Simulations} are morphisms of residuated transition systems.
     They are assumed to preserve consistency and residuation.
   \<close>
 
