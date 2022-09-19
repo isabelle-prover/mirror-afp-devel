@@ -3004,7 +3004,7 @@ $$
       interpret T: tabulation V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C r \<rho> f
         using assms by auto
       interpret T': tabulation_data V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D \<open>F r\<close> ?\<rho>' \<open>F f\<close> \<open>F g\<close>
-        using cmp_in_hom \<Phi>.components_are_iso C.VV.ide_char C.VV.arr_char
+        using cmp_in_hom \<Phi>.components_are_iso C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
         apply unfold_locales
           apply auto
         by (intro D.comp_in_homI, auto)
@@ -3273,7 +3273,7 @@ $$
                     (\<Phi> (r, u) \<cdot>\<^sub>D (F r \<star>\<^sub>D F \<theta>) \<cdot>\<^sub>D (F r \<star>\<^sub>D \<Phi> (f, w)))"
               proof -
                 have "F (r \<star>\<^sub>C \<theta>) \<cdot>\<^sub>D \<Phi> (r, f \<star>\<^sub>C w) = \<Phi> (r, u) \<cdot>\<^sub>D (F r \<star>\<^sub>D F \<theta>)"
-                  using \<omega> \<Phi>.naturality [of "(r, \<theta>)"] FF_def w\<theta>\<nu> C.VV.arr_char
+                  using \<omega> \<Phi>.naturality [of "(r, \<theta>)"] FF_def w\<theta>\<nu> C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                         C.VV.dom_simp C.VV.cod_simp
                   apply simp
                   by (metis (no_types, lifting) C.hseqE C.in_homE C.seqE)
@@ -3308,10 +3308,10 @@ $$
                     by (metis C.arrI C.hseq_char C.seqE C.hcomp_simps(1) T.tab_simps(2)
                         T.leg0_simps(2) T.leg0_simps(3))
                   hence "D.seq (\<Phi> (r \<star>\<^sub>C f, w)) (F \<rho> \<star>\<^sub>D F w)"
-                    using \<omega> w\<theta>\<nu> cmp_in_hom(2) [of "r \<star>\<^sub>C f" w] C.VV.arr_char FF_def by auto
+                    using \<omega> w\<theta>\<nu> cmp_in_hom(2) [of "r \<star>\<^sub>C f" w] C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C FF_def by auto
                   moreover have "\<Phi> (r \<star>\<^sub>C f, w) \<cdot>\<^sub>D (F \<rho> \<star>\<^sub>D F w) = F (\<rho> \<star>\<^sub>C w) \<cdot>\<^sub>D \<Phi> (g, w)"
                     using \<omega> w\<theta>\<nu> \<Phi>.naturality [of "(\<rho>, w)"] cmp_components_are_iso FF_def
-                          C.VV.arr_char C.VV.dom_simp C.VV.cod_simp
+                          C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_simp
                     by simp
                   moreover have "D.iso (\<Phi> (r \<star>\<^sub>C f, w))"
                     using w\<theta>\<nu> cmp_components_are_iso
@@ -3321,7 +3321,7 @@ $$
                     using w\<theta>\<nu> cmp_components_are_iso
                     by (metis C.arrI C.hseqE C.seqE T.tab_simps(2) T.ide_leg1 T.leg1_simps(3) \<omega>)
                   ultimately show ?thesis
-                    using \<omega> w\<theta>\<nu> \<Phi>.naturality cmp_components_are_iso FF_def C.VV.arr_char
+                    using \<omega> w\<theta>\<nu> \<Phi>.naturality cmp_components_are_iso FF_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                           D.invert_opposite_sides_of_square
                     by presburger
                 qed

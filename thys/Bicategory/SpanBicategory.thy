@@ -1132,24 +1132,24 @@ $$\xymatrix{
     interpretation H: "functor" VV.comp vcomp \<open>\<lambda>\<nu>\<mu>. fst \<nu>\<mu> \<star> snd \<nu>\<mu>\<close>
     proof
       show "\<And>\<nu>\<mu>. \<not> VV.arr \<nu>\<mu> \<Longrightarrow> fst \<nu>\<mu> \<star> snd \<nu>\<mu> = null"
-        using hcomp_def VV.arr_char null_char by auto
+        using hcomp_def VV.arr_char\<^sub>S\<^sub>b\<^sub>C null_char by auto
       show "\<And>\<nu>\<mu>. VV.arr \<nu>\<mu> \<Longrightarrow> arr (fst \<nu>\<mu> \<star> snd \<nu>\<mu>)"
-        using arr_char arrow_of_spans_hcomp VV.arr_char by simp
+        using arr_char arrow_of_spans_hcomp VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
       show "\<And>\<nu>\<mu>. VV.arr \<nu>\<mu> \<Longrightarrow>
                     dom (fst \<nu>\<mu> \<star> snd \<nu>\<mu>) = fst (VV.dom \<nu>\<mu>) \<star> snd (VV.dom \<nu>\<mu>)"
-        using VV.arr_char VV.dom_char dom_hcomp by auto
+        using VV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.dom_char\<^sub>S\<^sub>b\<^sub>C dom_hcomp by auto
       show "\<And>\<nu>\<mu>. VV.arr \<nu>\<mu> \<Longrightarrow> cod (fst \<nu>\<mu> \<star> snd \<nu>\<mu>) = fst (VV.cod \<nu>\<mu>) \<star> snd (VV.cod \<nu>\<mu>)"
-        using VV.arr_char VV.cod_char cod_hcomp by auto
+        using VV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.cod_char\<^sub>S\<^sub>b\<^sub>C cod_hcomp by auto
       show "\<And>\<nu>\<mu>' \<nu>\<mu>. VV.seq \<nu>\<mu>' \<nu>\<mu> \<Longrightarrow> fst (VV.comp \<nu>\<mu>' \<nu>\<mu>) \<star> snd (VV.comp \<nu>\<mu>' \<nu>\<mu>) =
                                         (fst \<nu>\<mu>' \<star> snd \<nu>\<mu>') \<bullet> (fst \<nu>\<mu> \<star> snd \<nu>\<mu>)"
       proof -
         fix \<nu>\<mu>' \<nu>\<mu>
         assume 1: "VV.seq \<nu>\<mu>' \<nu>\<mu>"
         have "VV.comp \<nu>\<mu>' \<nu>\<mu> = (fst \<nu>\<mu>' \<bullet> fst \<nu>\<mu>, snd \<nu>\<mu>' \<bullet> snd \<nu>\<mu>)"
-          by (metis (no_types, lifting) "1" VV.comp_simp VV.seq_char VxV.comp_char VxV.seqE)
+          by (metis (no_types, lifting) "1" VV.comp_simp VV.seq_char\<^sub>S\<^sub>b\<^sub>C VxV.comp_char VxV.seqE)
         thus "fst (VV.comp \<nu>\<mu>' \<nu>\<mu>) \<star> snd (VV.comp \<nu>\<mu>' \<nu>\<mu>) =
               (fst \<nu>\<mu>' \<star> snd \<nu>\<mu>') \<bullet> (fst \<nu>\<mu> \<star> snd \<nu>\<mu>)"
-          using 1 hcomp_vcomp VV.seq_char VV.arr_char VV.comp_char
+          using 1 hcomp_vcomp VV.seq_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.comp_char
           by (metis (no_types, lifting) fst_conv snd_conv)
       qed
     qed
@@ -1161,10 +1161,10 @@ $$\xymatrix{
     lemma ide_hcomp:
     assumes "ide f" and "ide g" and "src f = trg g"
     shows "ide (f \<star> g)"
-      using assms VV.ide_char VV.arr_char H.preserves_ide [of "(f, g)"] by auto
+      using assms VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.preserves_ide [of "(f, g)"] by auto
 
     sublocale horizontal_composition vcomp hcomp src trg
-      using src_hcomp trg_hcomp VV.arr_char not_arr_null hcomp_def null_char
+      using src_hcomp trg_hcomp VV.arr_char\<^sub>S\<^sub>b\<^sub>C not_arr_null hcomp_def null_char
       by (unfold_locales, auto)
 
     lemma has_horizontal_composition:
@@ -2526,7 +2526,7 @@ $$\xymatrix{
     and "\<guillemotleft>assoc'\<^sub>S\<^sub>B f g h : f \<star> g \<star> h \<Rightarrow> (f \<star> g) \<star> h\<guillemotright>"
     proof -
       have fgh: "VVV.ide (f, g, h)"
-        using assms VVV.ide_char VV.ide_char VVV.arr_char VV.arr_char by simp
+        using assms VVV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.ide_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
       interpret f: arrow_of_spans C f
         using assms arr_char by fastforce
       interpret g: arrow_of_spans C g
@@ -2690,7 +2690,7 @@ $$\xymatrix{
         show "\<guillemotleft>assoc\<^sub>S\<^sub>B (fst fgh) (fst (snd fgh)) (snd (snd fgh)) : HoHV fgh \<Rightarrow> HoVH fgh\<guillemotright>"
           unfolding HoHV_def HoVH_def
           using fgh assoc_in_hom [of "fst fgh" "fst (snd fgh)" "snd (snd fgh)"]
-                VVV.arr_char VVV.ide_char VV.arr_char
+                VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
           by simp
       qed
       show "\<And>\<mu>\<nu>\<pi>. VVV.arr \<mu>\<nu>\<pi> \<Longrightarrow>
@@ -2703,14 +2703,14 @@ $$\xymatrix{
         fix \<mu>\<nu>\<pi>
         assume \<mu>\<nu>\<pi>: "VVV.arr \<mu>\<nu>\<pi>"
         interpret \<mu>: arrow_of_spans C \<open>fst \<mu>\<nu>\<pi>\<close>
-          using \<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char arr_char by auto
+          using \<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char by auto
         interpret \<nu>: arrow_of_spans C \<open>fst (snd \<mu>\<nu>\<pi>)\<close>
-          using \<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char VV.arr_char arr_char by auto
+          using \<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char by auto
         interpret \<pi>: arrow_of_spans C \<open>snd (snd \<mu>\<nu>\<pi>)\<close>
-          using \<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char VV.arr_char arr_char by auto
+          using \<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char by auto
         interpret \<mu>\<nu>\<pi>: three_composable_arrows_of_spans C prj0 prj1
                          \<open>fst \<mu>\<nu>\<pi>\<close> \<open>fst (snd \<mu>\<nu>\<pi>)\<close> \<open>snd (snd \<mu>\<nu>\<pi>)\<close>
-          using \<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char VV.arr_char arr_char
+          using \<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char
           by (unfold_locales, auto)
 
         interpret HoHV_\<mu>\<nu>\<pi>: arrow_of_spans C \<open>(fst \<mu>\<nu>\<pi> \<star> fst (snd \<mu>\<nu>\<pi>)) \<star> snd (snd \<mu>\<nu>\<pi>)\<close>
@@ -2731,15 +2731,15 @@ $$\xymatrix{
         have dom_\<mu>\<nu>\<pi>: "VVV.ide (VVV.dom \<mu>\<nu>\<pi>)"
           using \<mu>\<nu>\<pi> VVV.ide_dom by blast
         interpret dom_\<mu>: identity_arrow_of_spans C \<open>fst (VVV.dom \<mu>\<nu>\<pi>)\<close>
-          using dom_\<mu>\<nu>\<pi> VVV.ide_char VV.ide_char ide_char' by blast
+          using dom_\<mu>\<nu>\<pi> VVV.ide_char\<^sub>S\<^sub>b\<^sub>C ide_char' by blast
         interpret dom_\<nu>: identity_arrow_of_spans C \<open>fst (snd (VVV.dom \<mu>\<nu>\<pi>))\<close>
-          using dom_\<mu>\<nu>\<pi> VVV.ide_char VV.ide_char ide_char' by blast
+          using dom_\<mu>\<nu>\<pi> VVV.ide_char\<^sub>S\<^sub>b\<^sub>C ide_char' by blast
         interpret dom_\<pi>: identity_arrow_of_spans C \<open>snd (snd (VVV.dom \<mu>\<nu>\<pi>))\<close>
-          using dom_\<mu>\<nu>\<pi> VVV.ide_char VV.ide_char ide_char' by blast
+          using dom_\<mu>\<nu>\<pi> VVV.ide_char\<^sub>S\<^sub>b\<^sub>C ide_char' by blast
         interpret dom_\<mu>\<nu>\<pi>: three_composable_identity_arrows_of_spans C prj0 prj1
                              \<open>fst (VVV.dom \<mu>\<nu>\<pi>)\<close> \<open>fst (snd (VVV.dom \<mu>\<nu>\<pi>))\<close>
                              \<open>snd (snd (VVV.dom \<mu>\<nu>\<pi>))\<close>
-          using dom_\<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char VV.arr_char
+          using dom_\<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
           by (unfold_locales, auto)
         interpret assoc_dom_\<mu>\<nu>\<pi>: arrow_of_spans C
                                   \<open>assoc\<^sub>S\<^sub>B (fst (VVV.dom \<mu>\<nu>\<pi>)) (fst (snd (VVV.dom \<mu>\<nu>\<pi>)))
@@ -2749,15 +2749,15 @@ $$\xymatrix{
         have cod_\<mu>\<nu>\<pi>: "VVV.ide (VVV.cod \<mu>\<nu>\<pi>)"
           using \<mu>\<nu>\<pi> VVV.ide_cod by blast
         interpret cod_\<mu>: identity_arrow_of_spans C \<open>fst (VVV.cod \<mu>\<nu>\<pi>)\<close>
-          using cod_\<mu>\<nu>\<pi> VVV.ide_char VV.ide_char ide_char' by blast
+          using cod_\<mu>\<nu>\<pi> VVV.ide_char\<^sub>S\<^sub>b\<^sub>C ide_char' by blast
         interpret cod_\<nu>: identity_arrow_of_spans C \<open>fst (snd (VVV.cod \<mu>\<nu>\<pi>))\<close>
-          using cod_\<mu>\<nu>\<pi> VVV.ide_char VV.ide_char ide_char' by blast
+          using cod_\<mu>\<nu>\<pi> VVV.ide_char\<^sub>S\<^sub>b\<^sub>C ide_char' by blast
         interpret cod_\<pi>: identity_arrow_of_spans C \<open>snd (snd (VVV.cod \<mu>\<nu>\<pi>))\<close>
-          using cod_\<mu>\<nu>\<pi> VVV.ide_char VV.ide_char ide_char' by blast
+          using cod_\<mu>\<nu>\<pi> VVV.ide_char\<^sub>S\<^sub>b\<^sub>C ide_char' by blast
         interpret cod_\<mu>\<nu>\<pi>: three_composable_identity_arrows_of_spans C prj0 prj1
                              \<open>fst (VVV.cod \<mu>\<nu>\<pi>)\<close> \<open>fst (snd (VVV.cod \<mu>\<nu>\<pi>))\<close>
                              \<open>snd (snd (VVV.cod \<mu>\<nu>\<pi>))\<close>
-          using cod_\<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char VV.arr_char
+          using cod_\<mu>\<nu>\<pi> VVV.ide_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
           by (unfold_locales, auto)
         interpret assoc_cod_\<mu>\<nu>\<pi>: arrow_of_spans C
                                \<open>assoc\<^sub>S\<^sub>B (fst (VVV.cod \<mu>\<nu>\<pi>)) (fst (snd (VVV.cod \<mu>\<nu>\<pi>)))
@@ -2767,12 +2767,12 @@ $$\xymatrix{
         have dom_legs:
                "dom_\<mu>.leg0 = \<mu>.dom.leg0 \<and> dom_\<nu>.leg0 = \<nu>.dom.leg0 \<and> dom_\<pi>.leg0 = \<pi>.dom.leg0 \<and>
                 dom_\<mu>.leg1 = \<mu>.dom.leg1 \<and> dom_\<nu>.leg1 = \<nu>.dom.leg1 \<and> dom_\<pi>.leg1 = \<pi>.dom.leg1"
-          using VVV.arr_char VVV.dom_char dom_char \<mu>\<nu>\<pi>.\<mu>\<nu>.composable \<mu>\<nu>\<pi>.\<nu>\<pi>.composable
+          using VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.dom_char\<^sub>S\<^sub>b\<^sub>C dom_char \<mu>\<nu>\<pi>.\<mu>\<nu>.composable \<mu>\<nu>\<pi>.\<nu>\<pi>.composable
           by auto
         have cod_legs:
                 "cod_\<mu>.leg0 = \<mu>.cod.leg0 \<and> cod_\<nu>.leg0 = \<nu>.cod.leg0 \<and> cod_\<pi>.leg0 = \<pi>.cod.leg0 \<and>
                  cod_\<mu>.leg1 = \<mu>.cod.leg1 \<and> cod_\<nu>.leg1 = \<nu>.cod.leg1 \<and> cod_\<pi>.leg1 = \<pi>.cod.leg1"
-          using \<mu>\<nu>\<pi> VVV.cod_char cod_char by auto
+          using \<mu>\<nu>\<pi> VVV.cod_char\<^sub>S\<^sub>b\<^sub>C cod_char by auto
 
         have Prj\<^sub>1\<^sub>1_dom: "dom_\<mu>\<nu>\<pi>.Prj\<^sub>1\<^sub>1 =
                           \<p>\<^sub>1[\<mu>.dom.leg0, \<nu>.dom.leg1] \<cdot>
@@ -2948,7 +2948,7 @@ $$\xymatrix{
     assumes "ide f" and "ide g" and "ide h"
     and "src f = trg g" and "src g = trg h"
     shows "\<alpha>\<^sub>S\<^sub>B (f, g, h) = assoc\<^sub>S\<^sub>B f g h"
-      using assms assoc_def \<alpha>.map_simp_ide VVV.ide_char VVV.arr_char VV.ide_char VV.arr_char
+      using assms assoc_def \<alpha>.map_simp_ide VVV.ide_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
       by simp
 
     lemma natural_transformation_\<alpha>:
@@ -2965,24 +2965,24 @@ $$\xymatrix{
         fix fgh
         assume fgh: "VVV.ide fgh"
         interpret f: arrow_of_spans C \<open>fst fgh\<close>
-          using fgh VVV.ide_char VVV.arr_char arr_char by auto
+          using fgh VVV.ide_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char by auto
         interpret g: arrow_of_spans C \<open>fst (snd fgh)\<close>
-          using fgh VVV.ide_char VVV.arr_char VV.arr_char arr_char by auto
+          using fgh VVV.ide_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char by auto
         interpret h: arrow_of_spans C \<open>snd (snd fgh)\<close>
-          using fgh VVV.ide_char VVV.arr_char VV.arr_char arr_char by auto
+          using fgh VVV.ide_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char by auto
         interpret fgh: three_composable_arrows_of_spans C prj0 prj1
                          \<open>fst fgh\<close> \<open>fst (snd fgh)\<close> \<open>snd (snd fgh)\<close>
-          using fgh VVV.ide_char VVV.arr_char VV.arr_char arr_char
+          using fgh VVV.ide_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char
           by (unfold_locales, auto)
         interpret fgh: three_composable_identity_arrows_of_spans C prj0 prj1
                          \<open>fst fgh\<close> \<open>fst (snd fgh)\<close> \<open>snd (snd fgh)\<close>
-          using fgh VVV.ide_char VV.ide_char ide_char
+          using fgh VVV.ide_char\<^sub>S\<^sub>b\<^sub>C ide_char
           by unfold_locales blast+
         have 1: "arr (\<alpha>\<^sub>S\<^sub>B fgh)"
           using fgh \<alpha>.preserves_reflects_arr VVV.ideD(1) by blast
         have 2: "\<alpha>\<^sub>S\<^sub>B fgh = assoc\<^sub>S\<^sub>B (fst fgh) (fst (snd fgh)) (snd (snd fgh))"
           using fgh assoc_def \<alpha>_ide [of "fst fgh" "fst (snd fgh)" "snd (snd fgh)"]
-                VVV.ide_char VV.ide_char VVV.arr_char VV.arr_char
+                VVV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.ide_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
           by simp
         moreover have "iso ..."
           using 1 2 iso_char [of "assoc\<^sub>S\<^sub>B (fst fgh) (fst (snd fgh)) (snd (snd fgh))"]
@@ -3652,7 +3652,7 @@ $$\xymatrix{
     shows "\<alpha>' (f, g, h) = assoc'\<^sub>S\<^sub>B f g h"
     proof -
       have fgh: "VVV.ide (f, g, h)"
-        using assms VVV.ide_char VVV.arr_char VV.arr_char by simp
+        using assms VVV.ide_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
       interpret f: arrow_of_spans C f
         using assms arr_char [of f] by auto
       interpret g: arrow_of_spans C g

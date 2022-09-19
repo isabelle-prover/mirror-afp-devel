@@ -143,6 +143,9 @@ begin
 
     interpretation Cls: ZFC_class_cat .
 
+    abbreviation setp
+    where "setp A \<equiv> A \<subseteq> Cls.Univ \<and> small A"
+
     sublocale sub_set_category Cls.comp \<open>\<lambda>A. A \<subseteq> Cls.Univ\<close> \<open>\<lambda>A. A \<subseteq> Cls.Univ \<and> small A\<close>
       using small_Un smaller_than_small
       apply unfold_locales
@@ -150,20 +153,13 @@ begin
        apply force
       by auto
 
-    abbreviation setp
-    where "setp A \<equiv> A \<subseteq> Cls.Univ \<and> small A"
-
-    lemma is_set_category:
-    shows "set_category comp setp"
-      ..
-
-    lemma is_full_subcategory:
-    shows "full_subcategory Cls.comp (\<lambda>a. Cls.ide a \<and> setp (Cls.set a))"
-      using full_subcategory_axioms by blast
+    lemma is_sub_set_category:
+    shows "sub_set_category Cls.comp (\<lambda>A. A \<subseteq> Cls.Univ) (\<lambda>A. A \<subseteq> Cls.Univ \<and> small A)"
+      using sub_set_category_axioms by blast
 
     interpretation incl: full_inclusion_functor Cls.comp \<open>\<lambda>a. Cls.ide a \<and> setp (Cls.set a)\<close>
       ..
-
+ 
     text\<open>
       The following functions establish a bijection between the identities of the category
       and the elements of type \<open>V\<close>; which in turn are in bijective correspondence with
@@ -198,7 +194,7 @@ begin
         hence "ide (mkIde (Cls.UP ` elts A))"
           using ide_mkIde \<open>Univ = Cls.Univ\<close> by auto
         thus "ide_of_V A \<in> Collect ide"
-          using ide_of_V_def ide_char
+          using ide_of_V_def ide_char\<^sub>S\<^sub>S\<^sub>C
           by (metis (no_types, lifting) Cls.ide_mkIde Cls.set_mkIde arr_mkIde ide_char'
               mem_Collect_eq)
       qed
@@ -210,11 +206,11 @@ begin
               Cls.mkIde (Cls.UP ` elts (ZFC_in_HOL.set (Cls.DN ` Cls.set a)))"
           unfolding ide_of_V_def V_of_ide_def by simp
         also have "... = Cls.mkIde (Cls.UP ` Cls.DN ` Cls.set a)"
-          using setp_set_ide a ide_char by force
+          using setp_set_ide a ide_char\<^sub>S\<^sub>S\<^sub>C by force
         also have "... = Cls.mkIde (Cls.set a)"
         proof -
           have "Cls.set a \<subseteq> Cls.Univ"
-            using a ide_char by blast
+            using a ide_char\<^sub>S\<^sub>S\<^sub>C by blast
           hence "Cls.UP ` Cls.DN ` Cls.set a = Cls.set a"
           proof -
             have "\<And>x. x \<in> Cls.set a \<Longrightarrow> x \<in> Cls.UP ` Cls.DN ` Cls.set a"
@@ -228,7 +224,7 @@ begin
           thus ?thesis by argo
         qed
         also have "... = a"
-          using a Cls.mkIde_set ide_char by blast
+          using a Cls.mkIde_set ide_char\<^sub>S\<^sub>b\<^sub>C by blast
         finally show "ide_of_V (V_of_ide a) = a" by simp
       qed
       show 4: "\<And>A. V_of_ide (ide_of_V A) = A"
@@ -331,15 +327,13 @@ begin
             proof -
               have "Cls.UP x \<in> Cls.Dom f"
                 by (metis (no_types, lifting) Cls.arr_dom_iff_arr Cls.arr_mkIde Cls.set_mkIde
-                    bij_betw_ide_V(3) arr_char dom_simp f ide_char ide_of_V_def image_eqI
+                    bij_betw_ide_V(3) arr_char\<^sub>S\<^sub>b\<^sub>C dom_simp f ide_char\<^sub>S\<^sub>S\<^sub>C ide_of_V_def image_eqI
                     in_homE mem_Collect_eq x)
               hence "Cls.DN (Cls.Fun f (Cls.UP x)) \<in> Cls.DN ` Cls.Cod f"
-                using f in_hom_char arr_char Cls.Fun_mapsto [of f] by blast
+                using f in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C Cls.Fun_mapsto [of f] by blast
               thus "Cls.DN (Cls.Fun f (Cls.UP x)) \<in> elts (V_of_ide b)"
-                unfolding V_of_ide_def
-                using f ide_char in_hom_char
-                by (metis (no_types, lifting) arr_char cod_simp elts_of_set in_homE
-                    mem_Collect_eq replacement)
+                by (metis (no_types, lifting) V_of_ide_def arrE cod_char\<^sub>S\<^sub>b\<^sub>C elts_of_set f
+                    in_homE mem_Collect_eq replacement)
             qed
             ultimately show "(Cls.DN \<circ> Cls.Fun f \<circ> Cls.UP) x \<in> elts (V_of_ide b)" by argo
           qed
@@ -360,7 +354,7 @@ begin
           have 3: "app F \<in> elts (V_of_ide a) \<rightarrow> elts (V_of_ide b)"
             using F app_vfun_mapsto [of "V_of_ide a" "V_of_ide b" F] by blast
           have 4: "app F \<in> Cls.DN ` (Cls.set a) \<rightarrow> Cls.DN ` (Cls.set b)"
-            using 3 V_of_ide_def a b ide_char by auto
+            using 3 V_of_ide_def a b ide_char\<^sub>S\<^sub>S\<^sub>C by auto
           have "arr_of_V a b F = Cls.mkArr (Cls.set a) (Cls.set b) (Cls.UP \<circ> app F \<circ> Cls.DN)"
             unfolding arr_of_V_def by simp
           moreover have "... \<in> hom a b"
@@ -370,7 +364,7 @@ begin
               have 4: "Cls.arr (Cls.mkArr (Cls.set a) (Cls.set b) (Cls.UP \<circ> app F \<circ> Cls.DN))"
               proof -
                 have "Cls.set a \<subseteq> Cls.Univ \<and> Cls.set b \<subseteq> Cls.Univ"
-                  using a b ide_char by blast
+                  using a b ide_char\<^sub>S\<^sub>S\<^sub>C by blast
                 moreover have "Cls.UP \<circ> app F \<circ> Cls.DN \<in> Cls.set a \<rightarrow> Cls.set b"
                 proof
                   fix x
@@ -379,7 +373,7 @@ begin
                     by simp
                   moreover have "... \<in> Cls.set b"
                     by (metis (no_types, lifting) 4 Cls.arr_mkIde Cls.ide_char' Cls.set_mkIde
-                        PiE V_of_ide_def bij_betw_ide_V(3) b elts_of_set ide_char
+                        PiE V_of_ide_def bij_betw_ide_V(3) b elts_of_set ide_char\<^sub>S\<^sub>S\<^sub>C
                         ide_of_V_def replacement rev_image_eqI x)
                   ultimately show "(Cls.UP \<circ> app F \<circ> Cls.DN) x \<in> Cls.set b"
                     by auto
@@ -387,11 +381,11 @@ begin
                 ultimately show ?thesis by blast
               qed
               show 5: "arr (Cls.mkArr (Cls.set a) (Cls.set b) (Cls.UP \<circ> app F \<circ> Cls.DN))"
-                using a b 4 arr_char ide_char by auto
+                using a b 4 arr_char\<^sub>S\<^sub>b\<^sub>C ide_char\<^sub>S\<^sub>b\<^sub>C by auto
               show "dom (Cls.mkArr (Cls.set a) (Cls.set b) (Cls.UP \<circ> app F \<circ> Cls.DN)) = a"
-                using a 4 5 dom_char ide_char by auto
+                using a 4 5 dom_char\<^sub>S\<^sub>b\<^sub>C ide_char\<^sub>S\<^sub>b\<^sub>C by auto
               show "cod (Cls.mkArr (Cls.set a) (Cls.set b) (Cls.UP \<circ> app F \<circ> Cls.DN)) = b"
-                using b 4 5 cod_char ide_char by auto
+                using b 4 5 cod_char\<^sub>S\<^sub>b\<^sub>C ide_char\<^sub>S\<^sub>b\<^sub>C by auto
             qed
           qed
           ultimately show "arr_of_V a b F \<in> hom a b" by auto
@@ -416,11 +410,11 @@ begin
           also have "... = Cls.Fun f x"
           proof -
             have "x \<in> Cls.Dom f"
-              using x f dom_char by fastforce
+              using x f dom_char\<^sub>S\<^sub>b\<^sub>C by fastforce
             hence "Cls.Fun f x \<in> Cls.Cod f"
-              using x f Cls.Fun_mapsto in_hom_char by blast
+              using x f Cls.Fun_mapsto in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C by blast
             hence "Cls.Fun f x \<in> Cls.Univ"
-              using f cod_char in_hom_char
+              using f cod_char\<^sub>S\<^sub>b\<^sub>C in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C
               by (metis (no_types, lifting) Cls.elem_set_implies_incl_in Cls.incl_in_def
                   Cls.setp_set_ide subsetD)
             thus ?thesis
@@ -433,14 +427,14 @@ begin
                                     (Cls.UP \<circ> (Cls.DN \<circ> Cls.Fun f \<circ> Cls.UP) \<circ> Cls.DN))"
         proof -
           have "Cls.set a \<subseteq> Cls.Univ \<and> Cls.set b \<subseteq> Cls.Univ"
-            using f ide_char codomains_def domains_def in_hom_def by force
+            using f ide_char\<^sub>S\<^sub>b\<^sub>C codomains_def domains_def in_hom_def by force
           moreover have "Cls.UP \<circ> (Cls.DN \<circ> Cls.Fun f \<circ> Cls.UP) \<circ> Cls.DN
                            \<in> Cls.set a \<rightarrow> Cls.set b"
           proof
             fix x
             assume x: "x \<in> Cls.set a"
             hence 6: "x \<in> Cls.Dom f"
-              using f by (metis (no_types, lifting) dom_char in_homE mem_Collect_eq)
+              using f by (metis (no_types, lifting) dom_char\<^sub>S\<^sub>b\<^sub>C in_homE mem_Collect_eq)
             have "(Cls.UP \<circ> (Cls.DN \<circ> Cls.Fun f \<circ> Cls.UP) \<circ> Cls.DN) x = Cls.Fun f x"
               using 4 f x by blast
             moreover have "... \<in> Cls.Cod f"
@@ -448,7 +442,7 @@ begin
               by (metis (no_types, lifting) Cls.arr_dom_iff_arr Cls.elem_set_implies_incl_in
                   Cls.ideD(1) Cls.incl_in_def IntE PiE)
             moreover have "... = Cls.set b"
-              using f by (metis (no_types, lifting) cod_char in_homE mem_Collect_eq)
+              using f by (metis (no_types, lifting) cod_char\<^sub>S\<^sub>b\<^sub>C in_homE mem_Collect_eq)
             ultimately show "(Cls.UP \<circ> (Cls.DN \<circ> Cls.Fun f \<circ> Cls.UP) \<circ> Cls.DN) x \<in> Cls.set b"
               by auto
           qed
@@ -478,7 +472,7 @@ begin
             proof -
               have "Cls.DN x \<in> elts (V_of_ide (dom f))"
                 using f
-                by (metis (no_types, lifting) V_of_ide_def elts_of_set ide_char ide_dom image_eqI
+                by (metis (no_types, lifting) V_of_ide_def elts_of_set ide_char\<^sub>S\<^sub>S\<^sub>C ide_dom image_eqI
                     in_homE mem_Collect_eq replacement x)
               thus ?thesis
                 using beta by auto
@@ -499,7 +493,7 @@ begin
           using 4 5 by force
         also have "... = f"
           using f Cls.mkArr_Fun
-          by (metis (no_types, lifting) arr_char cod_simp dom_char in_homE mem_Collect_eq)
+          by (metis (no_types, lifting) arr_char\<^sub>S\<^sub>b\<^sub>C cod_simp dom_char\<^sub>S\<^sub>b\<^sub>C in_homE mem_Collect_eq)
         finally show "arr_of_V a b (V_of_arr f) = f" by blast
       qed
       show 4: "\<And>a b F. \<lbrakk>ide a; ide b; F \<in> Collect (vfun (V_of_ide a) (V_of_ide b))\<rbrakk>
@@ -518,7 +512,7 @@ begin
         have 6: "Cls.arr ?f"
         proof -
           have "Cls.set a \<subseteq> Cls.Univ \<and> Cls.set b \<subseteq> Cls.Univ"
-            using a b ide_char by blast
+            using a b ide_char\<^sub>S\<^sub>S\<^sub>C by blast
           moreover have "Cls.UP \<circ> app F \<circ> Cls.DN \<in> Cls.set a \<rightarrow> Cls.set b"
           proof
             fix x
@@ -528,7 +522,8 @@ begin
             moreover have "... \<in> Cls.set b"
             proof -
               have "app F (Cls.DN x) \<in> Cls.DN ` Cls.set b"
-                using a b ide_char x F app_vfun_mapsto [of "V_of_ide a" "V_of_ide b" F] V_of_ide_def
+                using a b ide_char\<^sub>S\<^sub>S\<^sub>C x F app_vfun_mapsto [of "V_of_ide a" "V_of_ide b" F]
+                      V_of_ide_def
                 by auto
               thus ?thesis
                 using \<open>Cls.set a \<subseteq> Cls.Univ \<and> Cls.set b \<subseteq> Cls.Univ\<close>
@@ -542,7 +537,7 @@ begin
           unfolding V_of_arr_def arr_of_V_def by simp
         also have "... = VLambda (V_of_ide a) (Cls.DN \<circ> Cls.Fun ?f \<circ> Cls.UP)"
           unfolding V_of_ide_def
-          using a b 6 ide_char V_of_ide_def dom_char Cls.dom_mkArr arrI by auto
+          using a b 6 ide_char\<^sub>S\<^sub>S\<^sub>C V_of_ide_def dom_char\<^sub>S\<^sub>b\<^sub>C Cls.dom_mkArr arrI\<^sub>S\<^sub>b\<^sub>C by auto
         also have "... = VLambda (V_of_ide a)
                                  (Cls.DN \<circ>
                                     restrict (Cls.UP \<circ> app F \<circ> Cls.DN) (Cls.set a) \<circ> Cls.UP)"
@@ -555,7 +550,7 @@ begin
             unfolding V_of_ide_def
             using a
             apply simp
-            by (metis (no_types, lifting) Cls.bij_arr_of a bij_betw_def empty_iff ide_char
+            by (metis (no_types, lifting) Cls.bij_arr_of a bij_betw_def empty_iff ide_char\<^sub>S\<^sub>S\<^sub>C
                 image_eqI image_inv_into_cancel)
           have 8: "\<And>x. x \<in> elts (V_of_ide a) \<Longrightarrow>
                          (Cls.DN \<circ> restrict (Cls.UP \<circ> app F \<circ> Cls.DN) (Cls.set a) \<circ> Cls.UP) x
@@ -692,8 +687,8 @@ begin
               assume j: "J.arr j"
               have "\<phi> x j \<in> hom Cls.unity (D j)"
                 by (metis (mono_tags, lifting) D.preserves_ide \<phi>x.component_in_hom cod_simp
-                    ideD(1,3) in_hom_char incloD.is_discrete incloD.preserves_cod j map_simp
-                    mem_Collect_eq o_apply terminal_char2 terminal_unity)
+                    ideD(1,3) in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C incloD.is_discrete incloD.preserves_cod j map_simp
+                    mem_Collect_eq o_apply terminal_char2 terminal_unity\<^sub>S\<^sub>S\<^sub>C)
               moreover have "V_of_arr ` hom Cls.unity (D j) =
                              elts (ZFC_in_HOL.set (V_of_arr ` hom Cls.unity (D j)))"
                 using small_hom replacement by simp
@@ -737,13 +732,13 @@ begin
                 have 4: "ide (D j)"
                   using 3 incloD.is_discrete D.preserves_ide by force
                 have 5:"ide Cls.unity"
-                  using Cls.terminal_unity terminal_char terminal_def by auto
+                  using Cls.terminal_unity\<^sub>S\<^sub>C terminal_char terminal_def by auto
                 have \<phi>xj: "\<phi> x j \<in> hom Cls.unity (D j)"
-                  using 3 4 5 incloD.is_discrete \<phi>x.preserves_hom \<phi>x.A.map_simp in_hom_char
+                  using 3 4 5 incloD.is_discrete \<phi>x.preserves_hom \<phi>x.A.map_simp in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C
                   by (metis (no_types, lifting) J.ide_char \<phi>x.component_in_hom ideD(1) map_simp
                       mem_Collect_eq o_apply)
                 have \<phi>yj: "\<phi> y j \<in> hom Cls.unity (D j)"
-                  using 3 4 5 incloD.is_discrete \<phi>y.preserves_hom \<phi>x.A.map_simp in_hom_char
+                  using 3 4 5 incloD.is_discrete \<phi>y.preserves_hom \<phi>x.A.map_simp in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C
                   by (metis (no_types, lifting) J.ide_char \<phi>y.component_in_hom ideD(1) map_simp
                       mem_Collect_eq o_apply)
                 show "\<phi> x j = \<phi> y j"
@@ -771,7 +766,7 @@ begin
         hence "small (Cls.set \<Pi>D)"
           by (simp add: Cls.set_def)
         hence 2: "ide \<Pi>D"
-          using ide_char Cls.setp_set_ide Cls.product_is_ide \<Pi>D by blast
+          using ide_char\<^sub>S\<^sub>S\<^sub>C Cls.setp_set_ide Cls.product_is_ide \<Pi>D by blast
         interpret \<Pi>D': constant_functor J comp \<Pi>D
           using 2 by unfold_locales
         interpret \<pi>': cone J comp D \<Pi>D \<pi>
@@ -782,12 +777,12 @@ begin
             assume j: "J.arr j"
             show 3: "arr (\<pi> j)"
               by (metis (mono_tags, lifting) 2 D.as_nat_trans.preserves_cod D.is_discrete
-                  D.preserves_ide \<pi>.component_in_hom ideD(1) ideD(3) in_homE in_hom_char
+                  D.preserves_ide \<pi>.component_in_hom ideD(1) ideD(3) in_homE in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C
                   j map_simp o_apply)
             show "dom (\<pi> j) = \<Pi>D"
-              using 3 arr_char dom_char \<pi>.preserves_dom by auto
+              using 3 arr_char\<^sub>S\<^sub>b\<^sub>C dom_char\<^sub>S\<^sub>b\<^sub>C \<pi>.preserves_dom by auto
             show "cod (\<pi> j) = D j"
-              using 3 arr_char cod_char \<pi>.preserves_cod
+              using 3 arr_char\<^sub>S\<^sub>b\<^sub>C cod_char\<^sub>S\<^sub>b\<^sub>C \<pi>.preserves_cod
               by (metis (no_types, lifting) Cls.ideD(3) D.preserves_arr functor.preserves_ide
                   incloD.is_discrete incloD.is_functor incloD.preserves_cod j map_simp o_apply)
           qed
@@ -803,7 +798,7 @@ begin
           interpret \<chi>': cone J comp D a \<chi>'
             using \<chi>' by blast
           have a: "Cls.ide a"
-            using ide_char \<chi>'.A.value_is_ide by blast
+            using ide_char\<^sub>S\<^sub>b\<^sub>C \<chi>'.A.value_is_ide by blast
           moreover have "\<And>j. J.arr j \<Longrightarrow> Cls.in_hom (\<chi>' j) a (incloD.map j)"
           proof -
             fix j
@@ -811,7 +806,7 @@ begin
             have "\<guillemotleft>\<chi>' j : a \<rightarrow> D j\<guillemotright>"
               using j D.is_discrete \<chi>'.component_in_hom by force
             thus "Cls.in_hom (\<chi>' j) a (incloD.map j)"
-              using a j D.is_discrete in_hom_char map_simp by auto
+              using a j D.is_discrete in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C map_simp by auto
           qed
           ultimately have 3: "incloD.cone a (incloD.mkCone \<chi>')"
             using incloD.cone_mkCone [of a \<chi>'] by blast
@@ -835,9 +830,9 @@ begin
             also have "... = (\<lambda>j. if J.arr j then comp (\<pi> j) f else null)"
             proof -
               have "\<And>j. J.arr j \<Longrightarrow> Cls.comp (\<pi> j) f = comp (\<pi> j) f"
-                using f 2 comp_char in_hom_char seq_char
+                using f 2 comp_char in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C seq_char\<^sub>S\<^sub>b\<^sub>C
                 by (metis (no_types, lifting) Cls.ext Cls.in_homE \<chi>'.ide_apex
-                    \<pi>'.preserves_reflects_arr arr_char ide_char)
+                    \<pi>'.preserves_reflects_arr arr_char\<^sub>S\<^sub>b\<^sub>C ide_char\<^sub>S\<^sub>S\<^sub>C)
               thus ?thesis
                 using null_char by auto
             qed
@@ -846,7 +841,7 @@ begin
               have "\<pi> \<in> D.cones (cod f)"
               proof -
                 have "\<guillemotleft>f : a \<rightarrow> \<Pi>D\<guillemotright>"
-                  using f 2 in_hom_char \<chi>'.ide_apex ideD(1) by presburger
+                  using f 2 in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C \<chi>'.ide_apex ideD(1) by presburger
                 thus ?thesis
                   using f \<pi>'.cone_axioms by blast
               qed
@@ -856,16 +851,16 @@ begin
             finally show "incloD.cones_map f \<pi> = D.cones_map f \<pi>" by blast
           qed
           moreover have "\<And>f. \<guillemotleft>f : a \<rightarrow> \<Pi>D\<guillemotright> \<Longrightarrow> Cls.in_hom f a \<Pi>D"
-            using in_hom_char by blast
+            using in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C by blast
           show "\<exists>!f. \<guillemotleft>f : a \<rightarrow> \<Pi>D\<guillemotright> \<and> D.cones_map f \<pi> = \<chi>'"
           proof -
             have "\<exists>f. \<guillemotleft>f : a \<rightarrow> \<Pi>D\<guillemotright> \<and> D.cones_map f \<pi> = \<chi>'"
-              using 2 4 5 6 univ \<chi>'.ide_apex ideD(1) in_hom_char
+              using 2 4 5 6 univ \<chi>'.ide_apex ideD(1) in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C
               by (metis (no_types, lifting))
             moreover have "\<And>f g. \<lbrakk>\<guillemotleft>f : a \<rightarrow> \<Pi>D\<guillemotright> \<and> D.cones_map f \<pi> = \<chi>';
                                    \<guillemotleft>g : a \<rightarrow> \<Pi>D\<guillemotright> \<and> D.cones_map g \<pi> = \<chi>'\<rbrakk>
                                      \<Longrightarrow> f = g"
-              using 2 4 5 6 univ \<chi>'.ide_apex ideD(1) in_hom_char by auto
+              using 2 4 5 6 univ \<chi>'.ide_apex ideD(1) in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C by auto
             ultimately show ?thesis by blast
           qed
         qed
@@ -1008,5 +1003,7 @@ begin
     qed
 
   end
+
+  interpretation ZFCSetCat: ZFC_set_cat .
 
 end

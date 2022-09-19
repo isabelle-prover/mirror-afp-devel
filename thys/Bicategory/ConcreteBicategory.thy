@@ -667,11 +667,11 @@ begin
                                    (Comp (Trg ?f1) (Trg ?f2) (Src ?f2) (Map ?f1) (Map ?f2)))"
       proof -
         have "Src (snd (H.VV.comp g f)) = Src ?f2"
-          using assms arr_char src_def H.VV.comp_char H.VV.seq_char
+          using assms arr_char src_def H.VV.comp_char H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C
           by (metis (no_types, lifting) H.vseq_implies_hpar(1) Src.simps(1) H.VV.arrE
               H.VV.inclusion H.VxV.comp_arr_dom H.VxV.dom_comp H.VxV.seqE)
         moreover have "Trg (fst (H.VV.comp g f)) = Trg ?f1"
-          by (metis (no_types, lifting) H.VV.comp_arr_dom H.VV.comp_simp H.VV.seq_char
+          by (metis (no_types, lifting) H.VV.comp_arr_dom H.VV.comp_simp H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C
               H.VxV.arr_char H.VxV.cod_comp H.VxV.comp_cod_arr H.VxV.seqE
               H.vseq_implies_hpar(2) Src_trg assms)
         moreover have
@@ -687,11 +687,11 @@ begin
                      (Map (fst (H.VV.comp g f))) (Map (snd (H.VV.comp g f))) =
                 Comp (Trg ?g1) (Trg ?g2) (Src ?g2)
                      (Map (vcomp ?g1 ?f1)) (Map (vcomp ?g2 ?f2))"
-            using assms H.VV.comp_char H.VV.arr_char H.VxV.comp_char by auto  (* 10 sec *)
+            using assms H.VV.comp_char H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VxV.comp_char by auto  (* 10 sec *)
           also have "... = Comp (Trg ?g1) (Trg ?g2) (Src ?g2)
                                 (Hom (Src ?g1) (Trg ?g1) (Map ?g1) (Map ?f1))
                                 (Hom (Src ?g2) (Trg ?g2) (Map ?g2) (Map ?f2))"
-            using assms H.VV.seq_char Map_vcomp H.VxV.seq_char by auto
+            using assms H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C Map_vcomp H.VxV.seq_char by auto
           also have "... = Hom (Src ?f2) (Trg ?f1)
                                (Comp (Trg ?f1) (Trg ?g2) (Src ?f2)
                                      (Map ?g1) (Map ?g2))
@@ -699,7 +699,7 @@ begin
                                      (Map ?f1) (Map ?f2))"
           proof -
             have 2: "Src ?g1 = Trg ?g2"
-              using assms H.VV.arr_char [of g] src_def [of "?g1"] trg_def [of "?g2"] by auto
+              using assms H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C [of g] src_def [of "?g1"] trg_def [of "?g2"] by auto
             have "Comp (Trg ?f1) (Trg ?f2) (Src ?f2)
                        (Hom (Trg ?g2) (Trg ?g1) (Map ?g1) (Map ?f1))
                        (Hom (Src ?g2) (Trg ?g2) (Map ?g2) (Map ?f2)) =
@@ -710,19 +710,19 @@ begin
                             (Map ?f1) (Map ?f2))"
             proof -
               have "Comp_f.A1xA2.seq (Map ?g1, Map ?g2) (Map ?f1, Map ?f2)"
-                using assms 2 H.VV.seq_char
+                using assms 2 H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C
                 by (metis (no_types, lifting) Comp_f.A1xA2.seq_char H.VxV.seqE
                     fst_conv seq_char snd_conv)
               moreover have
                 "Comp_f.A1xA2.comp (Map ?g1, Map ?g2) (Map ?f1, Map ?f2) =
                  (Hom (Src ?g1) (Trg ?g1) (Map ?g1) (Map ?f1),
                   Hom (Src ?g2) (Trg ?g2) (Map ?g2) (Map ?f2))"
-                using assms 2 H.VV.seq_char H.VxV.seqE seq_char
+                using assms 2 H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C H.VxV.seqE seq_char
                 by (metis (no_types, lifting) Comp_f.A1xA2.comp_char fst_conv snd_conv)
               ultimately show ?thesis
                 by (metis 2 Comp_f.as_nat_trans.preserves_comp_2 old.prod.case)
             qed
-            thus ?thesis using assms 2 H.VV.seq_char H.VxV.seqE seq_char
+            thus ?thesis using assms 2 H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C H.VxV.seqE seq_char
               by (metis (no_types, lifting))
           qed
           finally show ?thesis by blast
@@ -732,17 +732,17 @@ begin
       also have "... = vcomp (hcomp ?g1 ?g2) (hcomp ?f1 ?f2)"
       proof -
         have 2: "Trg ?g1 = Trg ?f1 \<and> Src ?g2 = Src ?f2 \<and> Src ?f1 = Trg ?f2"
-          using assms seq_char H.VV.seq_char H.VxV.seqE
-          by (metis (no_types, lifting) H.VV.arr_char Src_src Src_trg)
+          using assms seq_char H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C H.VxV.seqE
+          by (metis (no_types, lifting) H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C Src_src Src_trg)
         have "Hom_f.seq (Comp (Trg ?f1) (Trg ?g2) (Src ?f2)
                               (Map ?g1) (Map ?g2))
                         (Comp (Trg ?f1) (Trg ?f2) (Src ?f2)
                               (Map ?f1) (Map ?f2))"
-          by (metis (no_types, lifting) 2 Comp_f.A1xA2.seqI Comp_f.preserves_seq H.VV.seq_char
+          by (metis (no_types, lifting) 2 Comp_f.A1xA2.seqI Comp_f.preserves_seq H.VV.seq_char\<^sub>S\<^sub>b\<^sub>C
               H.VxV.seqE arr_char assms case_prod_conv vcomp_def)
         moreover have "?f1 \<noteq> Null \<and> ?f2 \<noteq> Null \<and> src ?f1 = trg ?f2 \<and>
                        ?g1 \<noteq> Null \<and> ?g2 \<noteq> Null \<and> src ?g1 = trg ?g2"
-          using assms H.VV.arr_char arr_char assms by blast
+          using assms H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C arr_char assms by blast
         moreover have "Hom_f1.arr (Map ?f1) \<and> Hom_f2.arr (Map ?f2)"
           using assms seq_char H.VV.arrE H.VV.seqE arr_char by fast
         moreover have "Hom_g1.arr (Map ?g1) \<and> Hom_g2.arr (Map ?g2)"
@@ -754,7 +754,7 @@ begin
     qed
 
     interpretation H: "functor" H.VV.comp vcomp \<open>\<lambda>\<mu>\<nu>. hcomp (fst \<mu>\<nu>) (snd \<mu>\<nu>)\<close>
-      using hcomp_def arr_hcomp hcomp_vcomp H.VV.arr_char H.VV.dom_char H.VV.cod_char
+      using hcomp_def arr_hcomp hcomp_vcomp H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VV.dom_char\<^sub>S\<^sub>b\<^sub>C H.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
       by unfold_locales auto
 
     interpretation H: horizontal_composition vcomp hcomp src trg
@@ -817,7 +817,7 @@ begin
           by (simp add: ide_char'')
         show 3: "arr (assoc f g h)"
           unfolding assoc_def
-          using assms arr_char ide_char'' H.VV.arr_char H.VVV.arr_char H.VVV.ide_char
+          using assms arr_char ide_char'' H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C
                 src_def trg_def \<alpha>.preserves_reflects_arr [of "(Map f, Map g, Map h)"]
                 Hom_f_gh.arr_char Hom_gh.arr_char
           by simp
@@ -830,8 +830,8 @@ begin
             using assms ide_char'' arr_char MkCell_Map null_char trg_MkCell by metis
           ultimately show ?thesis
             unfolding hcomp_def
-            using assms 1 2 3 arr_char ide_char'' assoc_def dom_MkCell H.VV.arr_char
-                  H.VVV.arr_char H.VVV.ide_char src_MkCell trg_MkCell \<alpha>.preserves_dom
+            using assms 1 2 3 arr_char ide_char'' assoc_def dom_MkCell H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                  H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C src_MkCell trg_MkCell \<alpha>.preserves_dom
             by force
         qed
         show "cod (assoc f g h) = hcomp f (hcomp g h)"
@@ -841,8 +841,8 @@ begin
           thus ?thesis
             unfolding hcomp_def
             using assms 2 3 \<alpha>.preserves_cod src_MkCell trg_MkCell H.hseqI' hcomp_def
-                  assms arr_char ide_char'' assoc_def cod_MkCell H.VV.arr_char
-                  H.VVV.arr_char H.VVV.ide_char
+                  assms arr_char ide_char'' assoc_def cod_MkCell H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                  H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C
             by force
         qed
       qed
@@ -902,7 +902,7 @@ begin
         by blast
       show ?thesis
         using assms \<alpha>.components_are_iso [of "(Map f, Map g, Map h)"]
-              iso_char H.VV.arr_char H.VVV.arr_char H.VVV.ide_char ide_char''
+              iso_char H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.ide_char ide_char''
         by (simp add: src_def trg_def)
     qed
 
@@ -957,7 +957,7 @@ begin
                   (MkCell (Src (dom h)) (Trg (dom f))
                           (Assoc (Trg (dom f)) (Trg (dom g)) (Trg (dom h)) (Src (dom h))
                                  (Map (dom f)) (Map (dom g)) (Map (dom h))))"
-        using assms 1 H.HoVH_def H.VV.arr_char H.VVV.arr_char H.VVV.ide_char
+        using assms 1 H.HoVH_def H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C
               assoc_def assoc_in_hom
          by simp
       also have "... = MkCell (Src (dom h)) (Trg (dom f))
@@ -981,7 +981,7 @@ begin
               by simp
             thus ?thesis
               using assms 1 arr_char Src_dom Trg_dom assoc_simps(1-2) assoc_def
-                    H.VV.ide_char H.VV.arr_char H.VV.arr_char ide_Map_dom
+                    H.VV.ide_char H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C ide_Map_dom
               by simp
           qed
           show "Hom.arr (Comp ?D ?C ?A (Map f) (Comp ?C ?B ?A (Map g) (Map h)))"
@@ -1017,7 +1017,7 @@ begin
                       \<alpha>.preserves_cod [of "(Map (dom f), Map (dom g), Map (dom h))"]
                 by simp
               ultimately show ?thesis
-                using assms 1 arr_char assoc_def H.VV.ide_char H.VV.arr_char H.VV.arr_char
+                using assms 1 arr_char assoc_def H.VV.ide_char H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                       Src_dom Trg_dom ide_Map_dom null_char assoc_simps'(5)
                 by simp
             qed
@@ -1101,7 +1101,7 @@ begin
                       \<alpha>.preserves_dom [of "(Map (cod f), Map (cod g), Map (cod h))"]
                 by simp
               ultimately show ?thesis
-                using assms 1 arr_char assoc_def H.VV.ide_char H.VV.arr_char H.VV.arr_char
+                using assms 1 arr_char assoc_def H.VV.ide_char H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                       Src_cod Trg_cod ide_Map_cod null_char assoc_simps'(5)
                 by simp
             qed
@@ -1117,11 +1117,11 @@ begin
         qed
         ultimately show ?thesis
           using assms arr_char vcomp_def hcomp_def Src_cod Trg_cod
-                H.VV.ide_char H.VV.arr_char H.VV.arr_char src_def trg_def
+                H.VV.ide_char H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C src_def trg_def
           by simp
       qed
       also have "... = vcomp (assoc (cod f) (cod g) (cod h)) (H.HoHV (f, g, h))"
-        using assms 1 H.HoHV_def H.VV.arr_char H.VVV.arr_char H.VVV.ide_char
+        using assms 1 H.HoHV_def H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C
               assoc_def assoc_in_hom
          by simp
       finally show "vcomp (H.HoVH (f, g, h)) (assoc (dom f) (dom g) (dom h)) =
@@ -1135,13 +1135,13 @@ begin
       fix fgh
       show "H.VVV.ide fgh \<Longrightarrow>
               \<guillemotleft>case fgh of (f, g, h) \<Rightarrow> assoc f g h : H.HoHV fgh \<Rightarrow> H.HoVH fgh\<guillemotright>"
-        using assoc_in_hom H.HoHV_def H.HoVH_def H.VV.arr_char H.VVV.arr_char H.VVV.ide_char
+        using assoc_in_hom H.HoHV_def H.HoVH_def H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C
         by (cases fgh) simp
       assume fgh: "H.VVV.arr fgh"
       show "vcomp (case H.VVV.cod fgh of (f, g, h) \<Rightarrow> assoc f g h) (H.HoHV fgh) =
             vcomp (H.HoVH fgh) (case H.VVV.dom fgh of (f, g, h) \<Rightarrow> assoc f g h)"
         using fgh assoc_simps H.HoHV_def assoc_naturality
-              H.VV.arr_char H.VVV.arr_char H.VVV.dom_char H.VVV.cod_char
+              H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.dom_char\<^sub>S\<^sub>b\<^sub>C H.VVV.cod_char\<^sub>S\<^sub>b\<^sub>C
         by (cases fgh) simp
     qed
 
@@ -1154,14 +1154,14 @@ begin
            MkCell (Src h) (Trg f)
                   (Assoc (Trg f) (Trg g) (Trg h) (Src h) (Map f) (Map g) (Map h))"
       using assms \<a>_def assoc_def assoc_simps' MkCell_Map not_arr_null
-            \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char H.VV.arr_char H.VVV.arr_char
+            \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
       by simp
 
     interpretation \<alpha>: natural_isomorphism H.VVV.comp vcomp H.HoHV H.HoVH
                         \<open>\<lambda>fgh. \<a> (fst fgh) (fst (snd fgh)) (snd (snd fgh))\<close>
     proof -
       interpret \<alpha>: natural_isomorphism H.VVV.comp vcomp H.HoHV H.HoVH \<alpha>\<^sub>0.map
-        using \<alpha>\<^sub>0.map_simp_ide iso_assoc H.VVV.ide_char H.VV.arr_char H.VVV.arr_char
+        using \<alpha>\<^sub>0.map_simp_ide iso_assoc H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
         by unfold_locales auto
       show "natural_isomorphism H.VVV.comp vcomp H.HoHV H.HoVH
               (\<lambda>fgh. \<a> (fst fgh) (fst (snd fgh)) (snd (snd fgh)))"
@@ -1461,20 +1461,20 @@ begin
         and fg: "src f = trg g" and gh: "src g = trg h" and hk: "src h = trg k"
         have 1: "\<guillemotleft>hcomp f (\<a> g h k) :
                     hcomp f (hcomp (hcomp g h) k) \<Rightarrow> hcomp f (hcomp g (hcomp h k))\<guillemotright>"
-          using f g h k fg gh hk H.VV.in_hom_char H.VV.arr_char
-                assoc_simps \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char H.VVV.arr_char
+          using f g h k fg gh hk H.VV.in_hom_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                assoc_simps \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 H.preserves_hom \<a>_def
             by auto
         have 2: "\<guillemotleft>hcomp (\<a> f g h) k :
                     hcomp (hcomp (hcomp f g) h) k \<Rightarrow> hcomp (hcomp f (hcomp g h)) k\<guillemotright>"
-          using f g h k fg gh hk H.VV.in_hom_char H.VV.arr_char
-                assoc_simps \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char H.VVV.arr_char
+          using f g h k fg gh hk H.VV.in_hom_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                assoc_simps \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 H.preserves_hom \<a>_def
           by auto
         have 3: "\<guillemotleft>\<a> f (hcomp g h) k :
                     hcomp (hcomp f (hcomp g h)) k \<Rightarrow> hcomp f (hcomp (hcomp g h) k)\<guillemotright>"
-          using f g h k fg gh hk H.VV.in_hom_char H.VV.arr_char
-                assoc_simps \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char H.VVV.arr_char
+          using f g h k fg gh hk H.VV.in_hom_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                assoc_simps \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 H.preserves_hom \<a>_def
           by auto
         have 4: "seq (hcomp f (\<a> g h k)) (vcomp (\<a> f (hcomp g h) k) (hcomp (\<a> f g h) k))"
@@ -1482,8 +1482,8 @@ begin
         have 5: "seq (\<a> f (hcomp g h) k) (hcomp (\<a> f g h) k)"
           using 2 3 by auto
         have 6: "seq (\<a> f g (hcomp h k)) (\<a> (hcomp f g) h k)"
-          using f g h k fg gh hk H.VV.in_hom_char H.VV.arr_char
-                assoc_simps \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char H.VVV.arr_char
+          using f g h k fg gh hk H.VV.in_hom_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                assoc_simps \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 H.preserves_hom \<a>_def
           by simp
 
@@ -1495,17 +1495,17 @@ begin
           using 6 by simp
         show "Src ?LHS = Src ?RHS"
           using 4 6 f g h k fg gh hk Src_vcomp Src_hcomp
-                \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char H.VV.arr_char H.VVV.arr_char
+                \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 assoc_simps assoc_simps' assoc_def \<a>_def
           by simp
         show "Trg ?LHS = Trg ?RHS"
           using 4 6 f g h k fg gh hk Trg_vcomp Trg_hcomp
-                \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char H.VV.arr_char H.VVV.arr_char
+                \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 assoc_simps assoc_simps' assoc_def \<a>_def
           by simp
         show "Map ?LHS = Map ?RHS"
-          using 4 5 6 f g h k fg gh hk \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char
-                H.VV.arr_char H.VVV.arr_char \<a>_def
+          using 4 5 6 f g h k fg gh hk \<alpha>\<^sub>0.map_simp_ide H.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C
+                H.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C \<a>_def
           apply simp
           using Trg_src Trg_trg pentagon ideD(1) ide_char''
           by (metis (no_types, lifting))
@@ -1606,7 +1606,7 @@ begin
       proof
         fix \<mu>
         show "\<not> hom.arr \<mu> \<Longrightarrow> ?Map \<mu> = Hom.null"
-          using hom.inclusion [of \<mu>] hom.arr_char by auto
+          using hom.inclusion [of \<mu>] hom.arr_char\<^sub>S\<^sub>b\<^sub>C by auto
         assume \<mu>: "hom.arr \<mu>"
         have 0: "src \<mu> = a \<and> trg \<mu> = b"
           using \<mu> hom.arrE src_def trg_def
@@ -1615,7 +1615,7 @@ begin
           using \<mu> hom.inclusion hom.arrE by blast
         have 2: "Src \<mu> = Src a \<and> Trg \<mu> = Trg b"
           using \<mu> 0
-          by (metis Src_src Trg_trg hom.arr_char hom.inclusion)
+          by (metis Src_src Trg_trg hom.arr_char\<^sub>S\<^sub>b\<^sub>C hom.inclusion)
         show "Hom.arr (?Map \<mu>)"
           using 0 1 arr_Map [of \<mu>] \<mu> by auto
         show "Hom.dom (?Map \<mu>) = ?Map (hom.dom \<mu>)"
@@ -1638,7 +1638,7 @@ begin
         show "?Map (hom.comp \<mu> \<nu>) = Hom (Src a) (Src b) (?Map \<mu>) (?Map \<nu>)"
         proof -
           have 1: "hom.arr \<nu> \<and> hom.arr \<mu> \<and> seq \<mu> \<nu>"
-            using \<mu>\<nu> hom.seq_char by blast
+            using \<mu>\<nu> hom.seq_char\<^sub>S\<^sub>b\<^sub>C by blast
           hence 2: "hom.comp \<mu> \<nu> = vcomp \<mu> \<nu>"
             using hom.comp_char by auto
           have 3: "\<mu> \<in> hhom a b"
@@ -1658,20 +1658,20 @@ begin
           by simp
         assume \<mu>: "Hom.arr \<mu>"
         show 1: "hom.arr (?MkCell \<mu>)"
-          using assms obj_def \<mu> hom.arr_char arr_MkCell src_def arr_char by auto
+          using assms obj_def \<mu> hom.arr_char\<^sub>S\<^sub>b\<^sub>C arr_MkCell src_def arr_char by auto
         show "hom.dom (?MkCell \<mu>) = ?MkCell (Hom.dom \<mu>)"
-              using assms 1 \<mu> hom.dom_char src_def arr_char obj_def Src_in_Obj by simp
+              using assms 1 \<mu> hom.dom_char\<^sub>S\<^sub>b\<^sub>C src_def arr_char obj_def Src_in_Obj by simp
         show "hom.cod (?MkCell \<mu>) = ?MkCell (Hom.cod \<mu>)"
-              using assms 1 \<mu> hom.cod_char src_def arr_char obj_def Src_in_Obj by simp
+              using assms 1 \<mu> hom.cod_char\<^sub>S\<^sub>b\<^sub>C src_def arr_char obj_def Src_in_Obj by simp
         next
         fix \<mu> \<nu>
         assume \<mu>\<nu>: "Hom.seq \<mu> \<nu>"
         have 1: "hom.arr (?MkCell \<mu>)"
-          using assms obj_def \<mu>\<nu> hom.arr_char src_def arr_char by auto
+          using assms obj_def \<mu>\<nu> hom.arr_char\<^sub>S\<^sub>b\<^sub>C src_def arr_char by auto
         have 2: "hom.arr (?MkCell \<nu>)"
-          using assms obj_def \<mu>\<nu> hom.arr_char src_def arr_char by auto
+          using assms obj_def \<mu>\<nu> hom.arr_char\<^sub>S\<^sub>b\<^sub>C src_def arr_char by auto
         have 3: "hom.dom (?MkCell \<mu>) = hom.cod (?MkCell \<nu>)"
-          using \<mu>\<nu> 1 2 hom.dom_char dom_char hom.cod_char cod_char arr_char by auto
+          using \<mu>\<nu> 1 2 hom.dom_char\<^sub>S\<^sub>b\<^sub>C dom_char hom.cod_char\<^sub>S\<^sub>b\<^sub>C cod_char arr_char by auto
         have 4: "seq (?MkCell \<mu>) (?MkCell \<nu>)"
           by (metis 1 2 3 hom.arrE hom.cod_simp hom.comp_closed hom.dom_simp hom.inclusion)
         have "hom.comp (?MkCell \<mu>) (?MkCell \<nu>) =
@@ -1691,7 +1691,7 @@ begin
         proof
           fix \<mu>
           have "\<mu> \<notin> hhom a b \<Longrightarrow> (?MkCell o ?Map) \<mu> = hom.map \<mu>"
-            using o_apply hom.is_extensional hom.arr_char by simp
+            using o_apply hom.is_extensional hom.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
           moreover have "\<mu> \<in> hhom a b \<Longrightarrow> (?MkCell o ?Map) \<mu> = hom.map \<mu>"
           proof -
             assume \<mu>: "\<mu> \<in> hhom a b"
@@ -1700,7 +1700,7 @@ begin
             also have "... = \<mu>"
               using \<mu> MkCell_Map arr_char null_char by auto
             also have "... = hom.map \<mu>"
-              using \<mu> hom.arrI hom.map_def by presburger
+              using \<mu> hom.arrI\<^sub>S\<^sub>b\<^sub>C hom.map_def by presburger
             finally show "(?MkCell o ?Map) \<mu> = hom.map \<mu>"
               by simp
           qed
@@ -1716,7 +1716,7 @@ begin
           proof -
             assume \<mu>: "Hom.arr \<mu>"
             have "in_hhom (MkCell (Src a) (Src b) \<mu>) a b"
-              using \<mu> MkCell.preserves_reflects_arr [of \<mu>] hom.arr_char by simp
+              using \<mu> MkCell.preserves_reflects_arr [of \<mu>] hom.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
             thus "(?Map o ?MkCell) \<mu> = Hom.map \<mu>"
               using \<mu> by simp
           qed
