@@ -585,7 +585,7 @@ translations "FOREACH x USING h INV { i } DO c OD" =>
   "h := CONST top;
    WHILE h \<noteq> CONST bot
      INV { CONST regular h \<and> CONST vector h \<and> i }
-     VAR { CONST card { x . CONST regular x \<and> x \<le> h } }
+     VAR { h\<down> }
       DO x := CONST choose_point h;
          c;
          h[x] := CONST bot
@@ -676,7 +676,7 @@ proof vcg_tc_simp
   assume 1: "regular h \<and> vector h \<and> p - h = 1 - h \<and> h \<noteq> bot"
   show "vector (-?x \<sqinter> h) \<and>
         ?m \<sqinter> (--?x \<squnion> -h) = 1 \<sqinter> (--?x \<squnion> -h) \<and>
-        card { x . regular x \<and> x \<le> -?x \<and> x \<le> h } < card { x . regular x \<and> x \<le> h }"
+        card { x . regular x \<and> x \<le> -?x \<and> x \<le> h } < h\<down>"
   proof (intro conjI)
     show "vector (-?x \<sqinter> h)"
       using 1 choose_point_point vector_complement_closed vector_inf_closed by blast
@@ -702,7 +702,7 @@ proof vcg_tc_simp
       using 1 2 by (metis comp_commute_below_diversity conv_order inf.cobounded2 inf_absorb2 pseudo_complement strict_order_var top.extremum)
     have 6: "?x \<le> h"
       using 1 by (metis choose_point_decreasing)
-    show "card { x . regular x \<and> x \<le> -?x \<and> x \<le> h } < card { x . regular x \<and> x \<le> h }"
+    show "card { x . regular x \<and> x \<le> -?x \<and> x \<le> h } < h\<down>"
       apply (rule psubset_card_mono)
       using finite_regular apply simp
       using 2 5 6 by auto
@@ -926,7 +926,7 @@ proof -
 qed
 
 lemma path_halving_2:
-  "path_halving_invariant p x y p0 \<and> y \<noteq> p[[y]] \<Longrightarrow> path_halving_invariant (p[y\<longmapsto>p[[p[[y]]]]]) x ((p[y\<longmapsto>p[[p[[y]]]]])[[y]]) p0 \<and> card { z . regular z \<and> z \<le> (p[y\<longmapsto>p[[p[[y]]]]])\<^sup>T\<^sup>\<star> * ((p[y\<longmapsto>p[[p[[y]]]]])[[y]]) } < card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y }"
+  "path_halving_invariant p x y p0 \<and> y \<noteq> p[[y]] \<Longrightarrow> path_halving_invariant (p[y\<longmapsto>p[[p[[y]]]]]) x ((p[y\<longmapsto>p[[p[[y]]]]])[[y]]) p0 \<and> ((p[y\<longmapsto>p[[p[[y]]]]])\<^sup>T\<^sup>\<star> * ((p[y\<longmapsto>p[[p[[y]]]]])[[y]]))\<down> < (p\<^sup>T\<^sup>\<star> * y)\<down>"
 proof -
   let ?py = "p[[y]]"
   let ?ppy = "p[[?py]]"
@@ -944,7 +944,7 @@ proof -
   assume 1: "path_halving_invariant p x y p0 \<and> y \<noteq> ?py"
   have 2: "point ?pty \<and> point ?pt2y"
     using 1 by (smt (verit) comp_associative read_injective read_surjective path_halving_invariant_def)
-  show "path_halving_invariant ?pyppy x (?pyppy[[y]]) p0 \<and> card { z . regular z \<and> z \<le> ?pyppy\<^sup>T\<^sup>\<star> * (?pyppy[[y]]) } < card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y }"
+  show "path_halving_invariant ?pyppy x (?pyppy[[y]]) p0 \<and> (?pyppy\<^sup>T\<^sup>\<star> * (?pyppy[[y]]))\<down> < (p\<^sup>T\<^sup>\<star> * y)\<down>"
   proof
     show "path_halving_invariant ?pyppy x (?pyppy[[y]]) p0"
     proof (unfold path_halving_invariant_def, intro conjI)
@@ -1224,7 +1224,7 @@ theorem find_path_halving:
   y := x;
   WHILE y \<noteq> p[[y]]
     INV { path_halving_invariant p x y p0 }
-    VAR { card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y } }
+    VAR { (p\<^sup>T\<^sup>\<star> * y)\<down> }
      DO p[y] := p[[p[[y]]]];
         y := p[[y]]
      OD
@@ -1639,7 +1639,7 @@ proof -
 qed
 
 lemma path_splitting_2:
-  "path_splitting_invariant p x y p0 \<and> y \<noteq> p[[y]] \<Longrightarrow> path_splitting_invariant (p[y\<longmapsto>p[[p[[y]]]]]) x (p[[y]]) p0 \<and> card { z . regular z \<and> z \<le> (p[y\<longmapsto>p[[p[[y]]]]])\<^sup>T\<^sup>\<star> * (p[[y]]) } < card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y }"
+  "path_splitting_invariant p x y p0 \<and> y \<noteq> p[[y]] \<Longrightarrow> path_splitting_invariant (p[y\<longmapsto>p[[p[[y]]]]]) x (p[[y]]) p0 \<and> ((p[y\<longmapsto>p[[p[[y]]]]])\<^sup>T\<^sup>\<star> * (p[[y]]))\<down> < (p\<^sup>T\<^sup>\<star> * y)\<down>"
 proof -
   let ?py = "p[[y]]"
   let ?ppy = "p[[?py]]"
@@ -1658,7 +1658,7 @@ proof -
   assume 1: "path_splitting_invariant p x y p0 \<and> y \<noteq> ?py"
   have 2: "point ?pty \<and> point ?pt2y"
     using 1 by (smt (verit) comp_associative read_injective read_surjective path_splitting_invariant_def)
-  show "path_splitting_invariant ?pyppy x (p[[y]]) p0 \<and> card { z . regular z \<and> z \<le> ?pyppy\<^sup>T\<^sup>\<star> * (p[[y]]) } < card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y }"
+  show "path_splitting_invariant ?pyppy x (p[[y]]) p0 \<and> (?pyppy\<^sup>T\<^sup>\<star> * (p[[y]]))\<down> < (p\<^sup>T\<^sup>\<star> * y)\<down>"
   proof
     show "path_splitting_invariant ?pyppy x (p[[y]]) p0"
     proof (unfold path_splitting_invariant_def, intro conjI)
@@ -1863,7 +1863,7 @@ theorem find_path_splitting:
   y := x;
   WHILE y \<noteq> p[[y]]
     INV { path_splitting_invariant p x y p0 }
-    VAR { card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y } }
+    VAR { (p\<^sup>T\<^sup>\<star> * y)\<down> }
      DO t := p[[y]];
         p[y] := p[[p[[y]]]];
         y := t
@@ -2263,7 +2263,7 @@ proof vcg_tc_simp
   show "vector (-?x \<sqinter> h) \<and>
         ?m \<sqinter> (--?x \<squnion> -h) = 1 \<sqinter> (--?x \<squnion> -h) \<and>
         ?rank \<sqinter> (--?x \<squnion> -h) = Z\<^sup>T \<sqinter> (--?x \<squnion> -h) \<and>
-        card { x . regular x \<and> x \<le> -?x \<and> x \<le> h } < card { x . regular x \<and> x \<le> h }"
+        card { x . regular x \<and> x \<le> -?x \<and> x \<le> h } < h\<down>"
   proof (intro conjI)
     show "vector (-?x \<sqinter> h)"
       using 1 choose_point_point vector_complement_closed vector_inf_closed by blast
@@ -2301,7 +2301,7 @@ proof vcg_tc_simp
       using 1 2 by (metis comp_commute_below_diversity conv_order inf.cobounded2 inf_absorb2 pseudo_complement strict_order_var top.extremum)
     have 6: "?x \<le> h"
       using 1 by (metis choose_point_decreasing)
-    show "card { x . regular x \<and> x \<le> -?x \<and> x \<le> h } < card { x . regular x \<and> x \<le> h }"
+    show "card { x . regular x \<and> x \<le> -?x \<and> x \<le> h } < h\<down>"
       apply (rule psubset_card_mono)
       using finite_regular apply simp
       using 2 5 6 by auto
