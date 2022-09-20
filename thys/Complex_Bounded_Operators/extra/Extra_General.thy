@@ -692,7 +692,7 @@ subsection \<open>Lattices\<close>
 unbundle lattice_syntax
 
 text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_Inf} 
-  except for the more general sort.}\<close>
+  except for the more general sort.\<close>
 lemma uminus_Inf: "- (\<Sqinter>A) = \<Squnion>(uminus ` A)" for A :: \<open>'a::complete_orthocomplemented_lattice set\<close>
 proof (rule order.antisym)
   show "- \<Sqinter>A \<le> \<Squnion>(uminus ` A)"
@@ -702,17 +702,17 @@ proof (rule order.antisym)
 qed
 
 text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_INF}
-  except for the more general sort.}\<close>
+  except for the more general sort.\<close>
 lemma uminus_INF: "- (INF x\<in>A. B x) = (SUP x\<in>A. - B x)" for B :: \<open>'a \<Rightarrow> 'b::complete_orthocomplemented_lattice\<close>
   by (simp add: uminus_Inf image_image)
 
 text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_Sup}
-  except for the more general sort.}\<close>
+  except for the more general sort.\<close>
 lemma uminus_Sup: "- (\<Squnion>A) = \<Sqinter>(uminus ` A)" for A :: \<open>'a::complete_orthocomplemented_lattice set\<close>
   by (metis (no_types, lifting) uminus_INF image_cong image_ident ortho_involution)
 
 text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_SUP}
-  except for the more general sort.}\<close>
+  except for the more general sort.\<close>
 lemma uminus_SUP: "- (SUP x\<in>A. B x) = (INF x\<in>A. - B x)" for B :: \<open>'a \<Rightarrow> 'b::complete_orthocomplemented_lattice\<close>
   by (simp add: uminus_Sup image_image)
 
