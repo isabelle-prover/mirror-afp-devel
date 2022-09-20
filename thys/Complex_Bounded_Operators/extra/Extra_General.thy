@@ -10,6 +10,7 @@ theory Extra_General
     "HOL-Library.Complex_Order"
     "HOL-Analysis.Infinite_Sum"
     "HOL-Cardinals.Cardinals"
+    "HOL-Library.Complemented_Lattices"
 begin
 
 subsection \<open>Misc\<close>
@@ -202,6 +203,8 @@ proof -
     by (subst everything_the_same[of _ b], simp)
 qed
 
+lemma card_not_singleton: \<open>CARD('a::not_singleton) \<noteq> 1\<close>
+  by (simp add: card_1_singleton_iff)
 
 
 subsection \<open>Topology\<close>
@@ -683,5 +686,35 @@ proof (unfold inj_map_def, rule allI, rule allI, rule impI, erule conjE)
   thus "x = y"
     by (meson inv_into_injective option.inject x_pi y_pi)
 qed
+
+subsection \<open>Lattices\<close>
+
+unbundle lattice_syntax
+
+text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_Inf} 
+  except for the more general sort.}\<close>
+lemma uminus_Inf: "- (\<Sqinter>A) = \<Squnion>(uminus ` A)" for A :: \<open>'a::complete_orthocomplemented_lattice set\<close>
+proof (rule order.antisym)
+  show "- \<Sqinter>A \<le> \<Squnion>(uminus ` A)"
+    by (rule compl_le_swap2, rule Inf_greatest, rule compl_le_swap2, rule Sup_upper) simp
+  show "\<Squnion>(uminus ` A) \<le> - \<Sqinter>A"
+    by (rule Sup_least, rule compl_le_swap1, rule Inf_lower) auto
+qed
+
+text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_INF}
+  except for the more general sort.}\<close>
+lemma uminus_INF: "- (INF x\<in>A. B x) = (SUP x\<in>A. - B x)" for B :: \<open>'a \<Rightarrow> 'b::complete_orthocomplemented_lattice\<close>
+  by (simp add: uminus_Inf image_image)
+
+text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_Sup}
+  except for the more general sort.}\<close>
+lemma uminus_Sup: "- (\<Squnion>A) = \<Sqinter>(uminus ` A)" for A :: \<open>'a::complete_orthocomplemented_lattice set\<close>
+  by (metis (no_types, lifting) uminus_INF image_cong image_ident ortho_involution)
+
+text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_SUP}
+  except for the more general sort.}\<close>
+lemma uminus_SUP: "- (SUP x\<in>A. B x) = (INF x\<in>A. - B x)" for B :: \<open>'a \<Rightarrow> 'b::complete_orthocomplemented_lattice\<close>
+  by (simp add: uminus_Sup image_image)
+
 
 end

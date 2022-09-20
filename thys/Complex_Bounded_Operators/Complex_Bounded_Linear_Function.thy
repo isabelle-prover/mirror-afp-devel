@@ -641,6 +641,16 @@ proof (rule bounded_clinear_intro)
     by (smt (verit, ccfv_threshold) left_inverse mult.commute mult_cancel_right1 mult_le_cancel_left_pos vector_space_over_itself.scale_scale)
 qed
 
+lemma cinner_sup_norm_cblinfun:
+  fixes A :: \<open>'a::{complex_normed_vector,not_singleton} \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_inner\<close>
+  shows \<open>norm A = (SUP (\<psi>,\<phi>). cmod (cinner \<psi> (A *\<^sub>V \<phi>)) / (norm \<psi> * norm \<phi>))\<close>
+  apply transfer
+  apply (rule cinner_sup_onorm)
+  by (simp add: bounded_clinear.bounded_linear)
+
+
+lemma norm_cblinfun_Sup: \<open>norm A = (SUP \<psi>. norm (A *\<^sub>V \<psi>) / norm \<psi>)\<close>
+  by (simp add: norm_cblinfun.rep_eq onorm_def)
 
 subsection \<open>Relationship to real bounded operators (\<^typ>\<open>_ \<Rightarrow>\<^sub>L _\<close>)\<close>
 
@@ -1153,13 +1163,6 @@ proof transfer
     by auto
 qed
 
-lemma cinner_sup_norm_cblinfun:
-  fixes A :: \<open>'a::{complex_normed_vector,not_singleton} \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_inner\<close>
-  shows \<open>norm A = (SUP (\<psi>,\<phi>). cmod (cinner \<psi> (A *\<^sub>V \<phi>)) / (norm \<psi> * norm \<phi>))\<close>
-  apply transfer
-  apply (rule cinner_sup_onorm)
-  by (simp add: bounded_clinear.bounded_linear)
-
 lemma cinner_adj_left:
   fixes G :: "'b::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'a::complex_inner"
   shows \<open>\<langle>G* *\<^sub>V x, y\<rangle> = \<langle>x, G *\<^sub>V y\<rangle>\<close>
@@ -1477,6 +1480,34 @@ qed
 
 lemma isometry_preserves_norm: \<open>isometry U \<Longrightarrow> norm (U *\<^sub>V \<psi>) = norm \<psi>\<close>
   by (metis (no_types, lifting) cblinfun_apply_cblinfun_compose cblinfun_id_cblinfun_apply cinner_adj_right cnorm_eq isometryD)
+
+lemma norm_isometry_compose: 
+  assumes \<open>isometry U\<close>
+  shows \<open>norm (U o\<^sub>C\<^sub>L A) = norm A\<close>
+proof -
+  have *: \<open>norm (U *\<^sub>V A *\<^sub>V \<psi>) = norm (A *\<^sub>V \<psi>)\<close> for \<psi>
+    by (smt (verit, ccfv_threshold) assms cblinfun_apply_cblinfun_compose cinner_adj_right cnorm_eq id_cblinfun_apply isometryD)
+
+  have \<open>norm (U o\<^sub>C\<^sub>L A) = (SUP \<psi>. norm (U *\<^sub>V A *\<^sub>V \<psi>) / norm \<psi>)\<close>
+    unfolding norm_cblinfun_Sup by auto
+  also have \<open>\<dots> = (SUP \<psi>. norm (A *\<^sub>V \<psi>) / norm \<psi>)\<close>
+    using * by auto
+  also have \<open>\<dots> = norm A\<close>
+    unfolding norm_cblinfun_Sup by auto
+  finally show ?thesis
+    by simp
+qed
+
+lemma norm_isometry:
+  fixes U :: \<open>'a::{chilbert_space,not_singleton} \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_inner\<close>
+  assumes \<open>isometry U\<close>
+  shows \<open>norm U = 1\<close>
+  apply (subst asm_rl[of \<open>U = U o\<^sub>C\<^sub>L id_cblinfun\<close>], simp)
+  apply (subst norm_isometry_compose, simp add: assms)
+  by simp
+
+lemma norm_preserving_isometry: \<open>isometry U\<close> if \<open>\<And>\<psi>. norm (U *\<^sub>V \<psi>) = norm \<psi>\<close>
+  by (smt (verit, ccfv_SIG) cblinfun_cinner_eqI cblinfun_id_cblinfun_apply cinner_adj_right cnorm_eq isometry_def simp_a_oCL_b' that)
 
 subsection \<open>Product spaces\<close>
 
@@ -2031,7 +2062,6 @@ lemma sandwich_0[simp]: \<open>sandwich 0 = 0\<close>
 lemma sandwich_apply: \<open>sandwich A *\<^sub>V B = A o\<^sub>C\<^sub>L B o\<^sub>C\<^sub>L A*\<close>
   apply (transfer fixing: A B) by auto
 
-
 lemma norm_sandwich: \<open>norm (sandwich A) = (norm A)\<^sup>2\<close> for A :: \<open>'a::{chilbert_space} \<Rightarrow>\<^sub>C\<^sub>L 'b::{complex_inner}\<close>
 proof -
   have main: \<open>norm (sandwich A) = (norm A)\<^sup>2\<close> for A :: \<open>'c::{chilbert_space,not_singleton} \<Rightarrow>\<^sub>C\<^sub>L 'd::{complex_inner}\<close>
@@ -2122,6 +2152,9 @@ qed
 (* Widen the type class *)
 lift_definition is_Proj :: \<open>'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L 'a \<Rightarrow> bool\<close> is
   \<open>\<lambda>P. \<exists>M. closed_csubspace M \<and> is_projection_on P M\<close> .
+
+lemma Proj_top[simp]: \<open>Proj \<top> = id_cblinfun\<close>
+  by (metis Proj_idempotent Proj_range cblinfun_eqI cblinfun_fixes_range id_cblinfun_apply iso_tuple_UNIV_I space_as_set_top)
 
 lemma Proj_on_own_range':
   fixes P :: \<open>'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L'a\<close>
@@ -2482,6 +2515,68 @@ lemma Proj_fixes_image: \<open>Proj S *\<^sub>V \<psi> = \<psi>\<close> if \<ope
 
 lemma norm_is_Proj: \<open>norm P \<le> 1\<close> if \<open>is_Proj P\<close>
   by (metis Proj_on_own_range norm_Proj_leq1 that)
+
+lemma Proj_sup: \<open>orthogonal_spaces S T \<Longrightarrow> Proj (sup S T) = Proj S + Proj T\<close>
+  unfolding orthogonal_spaces_def
+  apply transfer
+  by (simp add: projection_plus)
+
+lemma Proj_sum_spaces:
+  assumes \<open>finite X\<close>
+  assumes \<open>\<And>x y. x\<in>X \<Longrightarrow> y\<in>X \<Longrightarrow> x\<noteq>y \<Longrightarrow> orthogonal_spaces (J x) (J y)\<close>
+  shows \<open>Proj (\<Sum>x\<in>X. J x) = (\<Sum>x\<in>X. Proj (J x))\<close>
+  using assms
+proof induction
+  case empty
+  show ?case 
+    by auto
+next
+  case (insert x F)
+  have \<open>Proj (sum J (insert x F)) = Proj (J x \<squnion> sum J F)\<close>
+    by (simp add: insert)
+  also have \<open>\<dots> = Proj (J x) + Proj (sum J F)\<close>
+    apply (rule Proj_sup)
+    apply (rule orthogonal_sum)
+    using insert by auto
+  also have \<open>\<dots> = (\<Sum>x\<in>insert x F. Proj (J x))\<close>
+    by (simp add: insert.IH insert.hyps(1) insert.hyps(2) insert.prems)
+  finally show ?case
+    by -
+qed
+
+lemma is_Proj_reduces_norm:
+  assumes \<open>is_Proj P\<close>
+  shows \<open>norm (P *\<^sub>V \<psi>) \<le> norm \<psi>\<close>
+  using assms apply transfer
+  using is_projection_on_reduces_norm by blast
+
+lemma norm_Proj_apply: \<open>norm (Proj T *\<^sub>V \<psi>) = norm \<psi> \<longleftrightarrow> \<psi> \<in> space_as_set T\<close>
+proof (rule iffI)
+  show \<open>norm (Proj T *\<^sub>V \<psi>) = norm \<psi>\<close> if \<open>\<psi> \<in> space_as_set T\<close>
+    by (simp add: cancel_apply_Proj that)
+  assume assm: \<open>norm (Proj T *\<^sub>V \<psi>) = norm \<psi>\<close>
+  have \<psi>_decomp: \<open>\<psi> = Proj T \<psi> + Proj (-T) \<psi>\<close>
+    by (simp add: Proj_ortho_compl cblinfun.real.diff_left)
+  have \<open>(norm (Proj (-T) \<psi>))\<^sup>2 = (norm (Proj T \<psi>))\<^sup>2 + (norm (Proj (-T) \<psi>))\<^sup>2 - (norm (Proj T \<psi>))\<^sup>2\<close>
+    by auto
+  also have \<open>\<dots> = (norm (Proj T \<psi> + Proj (-T) \<psi>))\<^sup>2 - (norm (Proj T \<psi>))\<^sup>2\<close>
+    apply (subst pythagorean_theorem)
+     apply (metis (no_types, lifting) Proj_idempotent \<psi>_decomp add_cancel_right_left adj_Proj cblinfun.real.add_right cblinfun_apply_cblinfun_compose cinner_adj_left cinner_zero_left)
+    by simp
+  also with \<psi>_decomp have \<open>\<dots> = (norm \<psi>)\<^sup>2 - (norm (Proj T \<psi>))\<^sup>2\<close>
+    by metis
+  also with assm have \<open>\<dots> = 0\<close>
+    by simp
+  finally have \<open>norm (Proj (-T) \<psi>) = 0\<close>
+    by auto
+  with \<psi>_decomp have \<open>\<psi> = Proj T \<psi>\<close>
+    by auto
+  then show \<open>\<psi> \<in> space_as_set T\<close>
+    by (metis Proj_range cblinfun_apply_in_image)
+qed
+
+lemma norm_Proj_apply_1: \<open>norm \<psi> = 1 \<Longrightarrow> norm (Proj T *\<^sub>V \<psi>) = 1 \<longleftrightarrow> \<psi> \<in> space_as_set T\<close>
+  using norm_Proj_apply by metis
 
 subsection \<open>Kernel\<close>
 
@@ -3158,6 +3253,38 @@ lemma comparable_hermitean':
   assumes \<open>b* = b\<close>
   shows \<open>a* = a\<close>
   by (smt (verit, best) assms(1) assms(2) cinner_hermitian_real cinner_real_hermiteanI comparable complex_is_real_iff_compare0 less_eq_cblinfun_def)
+
+lemma Proj_mono: \<open>Proj S \<le> Proj T \<longleftrightarrow> S \<le> T\<close>
+proof (rule iffI)
+  assume \<open>S \<le> T\<close>
+  define D where \<open>D = Proj T - Proj S\<close>
+  from \<open>S \<le> T\<close> have TS_S[simp]: \<open>Proj T o\<^sub>C\<^sub>L Proj S = Proj S\<close>
+    by (smt (verit, ccfv_threshold) Proj_idempotent Proj_range cblinfun_apply_cblinfun_compose cblinfun_apply_in_image cblinfun_eqI cblinfun_fixes_range less_eq_ccsubspace.rep_eq subset_iff)
+  then have ST_S[simp]: \<open>Proj S o\<^sub>C\<^sub>L Proj T = Proj S\<close>
+    by (metis adj_Proj adj_cblinfun_compose)
+  have \<open>D* o\<^sub>C\<^sub>L D = D\<close>
+    by (simp add: D_def cblinfun_compose_minus_left cblinfun_compose_minus_right adj_minus adj_Proj)
+  then have \<open>D \<ge> 0\<close>
+    by (metis positive_cblinfun_squareI)
+  then show \<open>Proj S \<le> Proj T\<close>
+    by (simp add: D_def)
+next
+  assume PS_PT: \<open>Proj S \<le> Proj T\<close>
+  show \<open>S \<le> T\<close>
+  proof (rule ccsubspace_leI_unit)
+    fix \<psi> assume \<open>\<psi> \<in> space_as_set S\<close> and [simp]: \<open>norm \<psi> = 1\<close>
+    then have \<open>1 = norm (Proj S *\<^sub>V \<psi>)\<close>
+      by (simp add: cancel_apply_Proj)
+    also from PS_PT have \<open>\<dots> \<le> norm (Proj T *\<^sub>V \<psi>)\<close>
+      by (metis (no_types, lifting) Proj_idempotent adj_Proj cblinfun_apply_cblinfun_compose cinner_adj_left cnorm_le less_eq_cblinfun_def)
+    also have \<open>\<dots> \<le> 1\<close>
+      by (metis Proj_is_Proj \<open>norm \<psi> = 1\<close> is_Proj_reduces_norm)
+    ultimately have \<open>norm (Proj T *\<^sub>V \<psi>) = 1\<close>
+      by auto
+    then show \<open>\<psi> \<in> space_as_set T\<close>
+      by (simp add: norm_Proj_apply_1)
+  qed
+qed
 
 subsection \<open>Embedding vectors to operators\<close>
 
