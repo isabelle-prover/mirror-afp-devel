@@ -213,10 +213,8 @@ lemma coprime_linear_poly':
 proof -
   have "gcd [:1,c:] [:1,c':] = gcd ([:1,c:] mod [:1,c':]) [:1,c':]"
     by simp
-  also have "eucl_rel_poly [:1, c:] [:1, c':] ([:c/c':], [:1-c/c':])"
-    using assms by (auto simp add: eucl_rel_poly_iff one_pCons)
-  hence "[:1,c:] mod [:1,c':] = [:1 - c / c':]"
-    by (rule mod_poly_eq)
+  also have \<open>[:1,c:] mod [:1,c':] = [:1 - c / c':]\<close>
+    using \<open>c' \<noteq> 0\<close> by (simp add: mod_pCons)
   also from assms have "gcd \<dots> [:1,c':] = normalize ([:1 - c / c':])"
     by (intro gcd_proj1_if_dvd) (auto simp: const_poly_dvd_iff dvd_field_iff)
   also from assms have "\<dots> = 1" by (auto simp: normalize_poly_def)
