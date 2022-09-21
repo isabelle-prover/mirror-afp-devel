@@ -1283,28 +1283,28 @@ begin
   and one :: "'a"                                 ("\<one>")
   and trm :: "'a \<Rightarrow> 'a"                           ("\<t>[_]") +
   assumes ide_one: "ide \<one>"
-  and trm_in_hom: "ide a \<Longrightarrow> \<guillemotleft>\<t>[a] : a \<rightarrow> \<one>\<guillemotright>"
-  and trm_eqI: "\<lbrakk> ide a; \<guillemotleft>f : a \<rightarrow> \<one>\<guillemotright> \<rbrakk> \<Longrightarrow> f = \<t>[a]"
+  and trm_in_hom_ax: "ide a \<Longrightarrow> \<guillemotleft>\<t>[a] : a \<rightarrow> \<one>\<guillemotright>"
+  and trm_eqI_ax: "\<lbrakk> ide a; \<guillemotleft>f : a \<rightarrow> \<one>\<guillemotright> \<rbrakk> \<Longrightarrow> f = \<t>[a]"
   begin
 
-    lemma trm_simps:
+    lemma trm_simps_ide:
     assumes "ide a"
     shows "arr \<t>[a]" and "dom \<t>[a] = a" and "cod \<t>[a] = \<one>"
-      using assms trm_in_hom by auto
+      using assms trm_in_hom_ax by auto
 
     lemma trm_one:
     shows "\<t>[\<one>] = \<one>"
-    using ide_one trm_in_hom trm_eqI ide_in_hom by auto
+    using ide_one trm_in_hom_ax trm_eqI_ax ide_in_hom by auto
 
     lemma terminal_one:
     shows "terminal \<one>"
-      using ide_one trm_in_hom trm_eqI terminal_def by metis
+      using ide_one trm_in_hom_ax trm_eqI_ax terminal_def by metis
 
     lemma trm_naturality:
     assumes "arr f"
     shows "\<t>[cod f] \<cdot> f = \<t>[dom f]"
-      using assms trm_eqI
-      by (metis comp_in_homI' ide_cod ide_dom in_homE trm_in_hom)
+      using assms trm_eqI_ax
+      by (metis comp_in_homI' ide_cod ide_dom in_homE trm_in_hom_ax)
 
     proposition is_category_with_terminal_object:
     shows "category_with_terminal_object C"
@@ -1407,7 +1407,7 @@ begin
             moreover have "commutative_square \<t>[a0] \<t>[a1] f g"
               using f g
               by (metis a0 commutative_squareI in_homE
-                        elementary_category_with_terminal_object.trm_simps(2)
+                        elementary_category_with_terminal_object.trm_simps_ide(2)
                         extends_to_elementary_category_with_terminal_object
                         has_as_pullbackE p0p1 trm_naturality)
             moreover have "\<And>l. p0 \<cdot> l = f \<and> p1 \<cdot> l = g \<Longrightarrow> \<guillemotleft>l : x \<rightarrow> dom p1\<guillemotright>"
@@ -1480,7 +1480,7 @@ begin
       using ide_one
       by (metis (no_types, lifting) dup_is_natural_transformation \<iota>_is_terminal_arr cod_pr0
           comp_cod_arr pr_dup(1) ide_dom inverse_arrows_def map_simp
-          natural_transformation.is_natural_2 pr_simps(2) pr1_in_hom' trm_eqI trm_naturality
+          natural_transformation.is_natural_2 pr_simps(2) pr1_in_hom' trm_eqI_ax trm_naturality
           trm_one tuple_pr)
 
     lemma \<iota>_is_iso:
@@ -1494,9 +1494,9 @@ begin
       have "\<t>[a \<otimes> b] = \<t>[a] \<cdot> \<pp>\<^sub>1[a, b]"
         by (metis assms(1-2) cod_pr1 pr_simps(4-6) trm_naturality)
       moreover have "\<guillemotleft>\<t>[b] : b \<rightarrow> \<one>\<guillemotright>"
-        using assms(2) trm_in_hom by blast
+        using assms(2) trm_in_hom_ax by blast
       ultimately show ?thesis
-        using assms(1) pr_coincidence trm_in_hom by fastforce
+        using assms(1) pr_coincidence trm_in_hom_ax by fastforce
     qed
 
     abbreviation runit ("\<r>[_]")
@@ -1519,7 +1519,7 @@ begin
     lemma runit'_in_hom:
     assumes "ide a"
     shows "\<guillemotleft>\<r>\<^sup>-\<^sup>1[a] : a \<rightarrow> a \<otimes> \<one>\<guillemotright>"
-      using assms ide_in_hom trm_in_hom by blast
+      using assms ide_in_hom trm_in_hom_ax by blast
 
     lemma lunit_in_hom:
     assumes "ide a"
@@ -1529,7 +1529,7 @@ begin
     lemma lunit'_in_hom:
     assumes "ide a"
     shows "\<guillemotleft>\<l>\<^sup>-\<^sup>1[a] : a \<rightarrow> \<one> \<otimes> a\<guillemotright>"
-      using assms ide_in_hom trm_in_hom by blast
+      using assms ide_in_hom trm_in_hom_ax by blast
 
     lemma runit_naturality:
     assumes "ide a"
@@ -1544,7 +1544,7 @@ begin
       proof -
         have "\<r>[a] \<cdot> \<r>\<^sup>-\<^sup>1[a] = a"
           using assms
-          by (metis in_homE ide_char pr_tuple(1) trm_in_hom)
+          by (metis in_homE ide_char pr_tuple(1) trm_in_hom_ax)
         thus ?thesis
           using assms by presburger
       qed
@@ -1563,7 +1563,7 @@ begin
               using comp_assoc by simp
             also have "... = \<t>[a] \<cdot> \<r>[a]"
               using assms ide_one
-              by (metis in_homE pr_tuple(2) ide_char trm_in_hom)
+              by (metis in_homE pr_tuple(2) ide_char trm_in_hom_ax)
             also have "... = \<t>[a \<otimes> \<one>]"
               using assms ide_one trm_naturality [of "\<r>[a]"] by simp
             also have "... = \<pp>\<^sub>0[a, \<one>] \<cdot> (a \<otimes> \<one>)"
@@ -1592,7 +1592,7 @@ begin
       proof -
         have "C \<l>[a] \<l>\<^sup>-\<^sup>1[a] = a"
           using assms
-          by (metis ide_char in_homE pr_tuple(2) trm_in_hom)
+          by (metis ide_char in_homE pr_tuple(2) trm_in_hom_ax)
         thus ?thesis
           using assms by simp
       qed
@@ -1612,7 +1612,7 @@ begin
               using comp_assoc by simp
             also have "... = \<t>[a] \<cdot> \<l>[a]"
               using assms ide_one
-              by (metis pr_tuple(1) ide_char in_homE trm_in_hom)
+              by (metis pr_tuple(1) ide_char in_homE trm_in_hom_ax)
             also have "... = \<t>[\<one> \<otimes> a]"
               using assms ide_one trm_naturality [of "\<l>[a]"] by simp
             also have "... = \<pp>\<^sub>1[\<one>, a] \<cdot> (\<one> \<otimes> a)"
@@ -1631,7 +1631,7 @@ begin
     shows "\<l>[a] \<cdot> (\<t>[a] \<otimes> a) \<cdot> \<d>[a] = a"
     proof -
       have "\<guillemotleft>\<t>[a] : a \<rightarrow> \<one>\<guillemotright>"
-        using assms trm_in_hom by blast
+        using assms trm_in_hom_ax by blast
       hence "\<l>[a] \<cdot> (\<t>[a] \<otimes> a) = a \<cdot> \<pp>\<^sub>0[a, a]"
         by (metis assms pr_naturality(1) ide_char in_homE)
       thus ?thesis
@@ -1643,7 +1643,7 @@ begin
     shows "\<r>[a] \<cdot> (a \<otimes> \<t>[a]) \<cdot> \<d>[a] = a"
     proof -
       have "\<guillemotleft>\<t>[a] : a \<rightarrow> \<one>\<guillemotright>"
-        using assms trm_in_hom by blast
+        using assms trm_in_hom_ax by blast
       hence "\<r>[a] \<cdot> (a \<otimes> \<t>[a]) = a \<cdot> \<pp>\<^sub>1[a, a]"
         using assms by auto
       thus ?thesis
@@ -1794,7 +1794,7 @@ begin
         show "\<exists>!f. \<guillemotleft>f : a \<rightarrow> \<one> \<otimes> \<one>\<guillemotright>"
         proof
           show "\<guillemotleft>inv \<iota> \<cdot> \<t>[a] : a \<rightarrow> \<one> \<otimes> \<one>\<guillemotright>"
-            using a ide_one inverse_arrows_\<iota> inverse_unique trm_in_hom by fastforce
+            using a ide_one inverse_arrows_\<iota> inverse_unique trm_in_hom_ax by fastforce
           show "\<And>f. \<guillemotleft>f : a \<rightarrow> \<one> \<otimes> \<one>\<guillemotright> \<Longrightarrow> f = inv \<iota> \<cdot> \<t>[a]"
           proof -
             fix f
@@ -1928,7 +1928,7 @@ begin
     using has_binary_products_if has_finite_products
     by (unfold_locales, unfold has_binary_products_def) simp
 
-  proposition (in category_with_finite_products) is_category_with_binary_products:
+  proposition (in category_with_finite_products) is_category_with_binary_products\<^sub>C\<^sub>F\<^sub>P:
   shows "category_with_binary_products C"
     ..
 
@@ -1952,13 +1952,13 @@ begin
     thus "\<exists>a. terminal a" using D.has_as_limit_iff_terminal by blast
   qed
 
-  proposition (in category_with_finite_products) is_category_with_terminal_object:
+  proposition (in category_with_finite_products) is_category_with_terminal_object\<^sub>C\<^sub>F\<^sub>P:
   shows "category_with_terminal_object C"
     ..
 
   sublocale category_with_finite_products \<subseteq> cartesian_category ..
 
-  proposition (in category_with_finite_products) is_cartesian_category:
+  proposition (in category_with_finite_products) is_cartesian_category\<^sub>C\<^sub>F\<^sub>P:
   shows "cartesian_category C"
     ..
 
