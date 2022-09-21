@@ -333,9 +333,9 @@ begin
     shows "ide F \<longleftrightarrow> endo F \<and> B.ide (Map F)"
     proof
       show "ide F \<Longrightarrow> endo F \<and> B.ide (Map F)"
-        using ide_char by (simp add: E.ide_eval_Ide)
+        using ide_char\<^sub>C\<^sub>C by (simp add: E.ide_eval_Ide)
       show "endo F \<and> B.ide (Map F) \<Longrightarrow> ide F"
-        by (metis (no_types, lifting) B.ide_char B.in_homE arr_char ide_char
+        by (metis (no_types, lifting) B.ide_char B.in_homE arr_char ide_char\<^sub>C\<^sub>C
             mem_Collect_eq seq_char)
     qed
 

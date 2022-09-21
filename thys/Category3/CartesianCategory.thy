@@ -54,7 +54,7 @@ begin
 
     lemma ide_char:
     shows "ide f \<longleftrightarrow> f = FF \<or> f = TT"
-      using ide_char ide_MkIde by (cases f, auto)
+      using ide_char\<^sub>C\<^sub>C ide_MkIde by (cases f, auto)
 
     lemma is_discrete:
     shows "ide f \<longleftrightarrow> arr f"

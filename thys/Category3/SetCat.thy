@@ -96,7 +96,7 @@ begin
             show "\<guillemotleft>S.MkArr (S.Dom a) {x} (\<lambda>_\<in>S.Dom a. x) : a \<rightarrow> S.MkIde {x}\<guillemotright>"
             proof
               show 2: "S.arr (S.MkArr (S.Dom a) {x} (\<lambda>_ \<in> S.Dom a. x))"
-                using a 1 S.arr_MkArr [of "S.Dom a" "{x}"] S.ide_char by force
+                using a 1 S.arr_MkArr [of "S.Dom a" "{x}"] S.ide_char\<^sub>C\<^sub>C by force
               show "S.dom (S.MkArr (S.Dom a) {x} (\<lambda>_ \<in> S.Dom a. x)) = a"
                 using a 2 S.dom_MkArr by force
               show "S.cod (S.MkArr (S.Dom a) {x} (\<lambda>_\<in>S.Dom a. x)) = S.MkIde {x}"
@@ -165,7 +165,7 @@ begin
                   show "{undefined} \<in> {A. Setp A}"
                     by (simp add: finite_imp_Setp)
                   show "S.Dom a \<in> {A. Setp A}"
-                    using ide_a S.ide_char by blast
+                    using ide_a S.ide_char\<^sub>C\<^sub>C by blast
                   show "(\<lambda>_ \<in> {undefined}. x) \<in> extensional {undefined} \<inter> ({undefined} \<rightarrow> S.Dom a)"
                     using 1 by blast
                 qed
@@ -181,7 +181,7 @@ begin
                   show "{undefined} \<in> {A. Setp A}"
                     by (simp add: finite_imp_Setp)
                   show "S.Dom a \<in> {A. Setp A}"
-                    using ide_a S.ide_char by blast
+                    using ide_a S.ide_char\<^sub>C\<^sub>C by blast
                   show "(\<lambda>_ \<in> {undefined}. x') \<in> extensional {undefined} \<inter> ({undefined} \<rightarrow> S.Dom a)"
                     using 1 by blast
                 qed
@@ -508,7 +508,7 @@ begin
         ultimately show ?thesis by presburger
       qed
       thus ?thesis
-        using a S.ide_char by auto
+        using a S.ide_char\<^sub>C\<^sub>C by auto
     qed
 
     lemma set_MkIde_elem_of_img:
@@ -616,7 +616,7 @@ begin
                 qed
               qed
               hence "\<guillemotleft>?f : S.MkIde (S.Dom a) \<rightarrow> S.MkIde (S.Dom b)\<guillemotright>"
-                using a b S.MkArr_in_hom S.ide_char by blast
+                using a b S.MkArr_in_hom S.ide_char\<^sub>C\<^sub>C by blast
               thus ?thesis
                 using a b by simp
             qed

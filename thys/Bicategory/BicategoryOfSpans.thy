@@ -5967,14 +5967,14 @@ $$
      assumes "ide A"
      shows "REP A \<cong>\<^sub>B src (REP A)"
        using assms
-       by (metis (no_types, lifting) ideD(1) ide_char REP_in_Map ide_REP
+       by (metis (no_types, lifting) ideD(1) ide_char\<^sub>C\<^sub>C REP_in_Map ide_REP
            REP_simps(2) B.is_iso_classI B.ide_in_iso_class B.iso_class_elems_isomorphic
            B.src.preserves_ide)
 
      lemma isomorphic_REP_trg:
      assumes "ide A"
      shows "REP A \<cong>\<^sub>B trg (REP A)"
-       using assms ide_char isomorphic_REP_src by auto
+       using assms ide_char\<^sub>C\<^sub>C isomorphic_REP_src by auto
 
      lemma CLS_REP:
      assumes "arr F"
@@ -14043,7 +14043,7 @@ $$
         assume a': "Span.obj a'"
         let ?a = "Maps.Dom (Chn a')"
         have a: "obj ?a"
-          using a' Span.obj_char Span.ide_char Maps.ide_char by blast
+          using a' Span.obj_char Span.ide_char Maps.ide_char\<^sub>C\<^sub>C by blast
         moreover have "Span.equivalent_objects (SPN.map\<^sub>0 ?a) a'"
         proof -
           have "SPN.map\<^sub>0 ?a = a'"
@@ -14238,12 +14238,12 @@ $$
                 interpret Dom_W: span_in_category Maps.comp \<open>Dom ?W\<close>
                 proof (unfold_locales, intro conjI)
                   show "Maps.arr (Leg0 (Dom ?W))"
-                    apply (intro Maps.arrI)
+                    apply (intro Maps.arrI\<^sub>C\<^sub>C)
                        apply auto
                     by (metis f.base_simps(2) f.satisfies_T0 f.u_in_hom src_hcomp)
                   show "Maps.arr (Leg1 (Dom ?W))"
                     using 1
-                    apply (intro Maps.arrI)
+                    apply (intro Maps.arrI\<^sub>C\<^sub>C)
                        apply auto
                   proof -
                     let ?f = "tab\<^sub>1 (Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*)"
