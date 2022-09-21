@@ -681,6 +681,38 @@ proof (intro_classes; transfer)
 qed (auto simp add: divide_complex_def mult.commute ring_class.ring_distribs)
 end
 
+lemma sum_ell2_transfer[transfer_rule]:
+  includes lifting_syntax
+  shows \<open>(((=) ===> pcr_ell2 (=)) ===> rel_set (=) ===> pcr_ell2 (=)) 
+          (\<lambda>f X x. sum (\<lambda>y. f y x) X) sum\<close>
+proof (intro rel_funI, rename_tac f f' X X')
+  fix f and f' :: \<open>'a \<Rightarrow> 'b ell2\<close> 
+  assume [transfer_rule]: \<open>((=) ===> pcr_ell2 (=)) f f'\<close>
+  fix X X' :: \<open>'a set\<close>
+  assume \<open>rel_set (=) X X'\<close>
+  then have [simp]: \<open>X' = X\<close>
+    by (simp add: rel_set_eq)
+  show \<open>pcr_ell2 (=) (\<lambda>x. \<Sum>y\<in>X. f y x) (sum f' X')\<close>
+    unfolding \<open>X' = X\<close>
+  proof (induction X rule: infinite_finite_induct)
+    case (infinite X)
+    show ?case
+      apply (simp add: infinite)
+      by transfer_prover
+  next
+    case empty
+    show ?case
+      apply (simp add: empty)
+      by transfer_prover
+  next
+    case (insert x F)
+    note [transfer_rule] = insert.IH
+    show ?case
+      apply (simp add: insert)
+      by transfer_prover
+  qed
+qed
+
 subsection \<open>Orthogonality\<close>
 
 lemma ell2_pointwise_ortho:
@@ -1154,6 +1186,11 @@ lemma ket_CARD_1_is_1: \<open>ket x = 1\<close> for x :: \<open>'a::CARD_1\<clos
 lemma is_onb_ket[simp]: \<open>is_onb (range ket)\<close>
   by (auto simp: is_onb_def)
 
+lemma ell2_sum_ket: \<open>\<psi> = (\<Sum>i\<in>UNIV. Rep_ell2 \<psi> i *\<^sub>C ket i)\<close> for \<psi> :: \<open>_::finite ell2\<close>
+  apply transfer apply (rule ext)
+  apply (subst sum_single)
+  by auto
+
 subsection \<open>Butterflies\<close>
 
 lemma cspan_butterfly_ket: \<open>cspan {butterfly (ket i) (ket j)| (i::'b::finite) (j::'a::finite). True} = UNIV\<close>
@@ -1241,29 +1278,37 @@ lemma classical_operator_existsI:
   using assms 
   by (auto simp: inv_f_f[OF inj_ket])
 
-lemma classical_operator_exists_inj:
+lemma 
   assumes "inj_map \<pi>"
-  shows "classical_operator_exists \<pi>"
-proof (unfold classical_operator_exists_def, rule cblinfun_extension_exists_ortho)
-  show \<open>is_ortho_set (range ket)\<close>
-    by simp
-  show \<open>closure (cspan (range ket)) = UNIV\<close>
-    by simp
+  shows classical_operator_exists_inj: "classical_operator_exists \<pi>"
+    and classical_operator_norm_inj: \<open>norm (classical_operator \<pi>) \<le> 1\<close>
+proof -
   have \<open>is_orthogonal (case \<pi> x of None \<Rightarrow> 0 | Some x' \<Rightarrow> ket x')
                       (case \<pi> y of None \<Rightarrow> 0 | Some y' \<Rightarrow> ket y')\<close>
     if \<open>x \<noteq> y\<close> for x y
     apply (cases \<open>\<pi> x\<close>; cases \<open>\<pi> y\<close>)
     using that assms
     by (auto simp add: inj_map_def)
-  then show \<open>is_orthogonal (case \<pi> (inv ket x) of None \<Rightarrow> 0 | Some x' \<Rightarrow> ket x')
+  then have 1: \<open>is_orthogonal (case \<pi> (inv ket x) of None \<Rightarrow> 0 | Some x' \<Rightarrow> ket x')
                       (case \<pi> (inv ket y) of None \<Rightarrow> 0 | Some y' \<Rightarrow> ket y')\<close>
     if \<open>x \<in> range ket\<close> and \<open>y \<in> range ket\<close> and \<open>x \<noteq> y\<close> for x y
     using that by auto
+
   have \<open>norm (case \<pi> x of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x) \<le> 1 * norm (ket x)\<close> for x
     apply (cases \<open>\<pi> x\<close>) by auto
-  then show \<open>norm (case \<pi> (inv ket x) of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x) \<le> 1 * norm x\<close>
+  then have 2: \<open>norm (case \<pi> (inv ket x) of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x) \<le> 1 * norm x\<close>
     if \<open>x \<in> range ket\<close> for x
     using that by auto
+
+  show \<open>classical_operator_exists \<pi>\<close>
+    unfolding classical_operator_exists_def
+    using _ _ 1 2 apply (rule cblinfun_extension_exists_ortho)
+    by simp_all
+
+  show \<open>norm (classical_operator \<pi>) \<le> 1\<close>
+    unfolding classical_operator_def Let_def
+    using _ _ 1 2 apply (rule cblinfun_extension_exists_ortho_norm)
+    by simp_all
 qed
 
 lemma classical_operator_exists_finite[simp]: "classical_operator_exists (\<pi> :: _::finite \<Rightarrow> _)"

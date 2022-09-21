@@ -1963,6 +1963,9 @@ lemma csubspace_space_as_set[simp]: \<open>csubspace (space_as_set S)\<close>
 lemma closed_space_as_set[simp]: \<open>closed (space_as_set S)\<close>
   apply transfer by (simp add: closed_csubspace.closed)
 
+lemma zero_space_as_set[simp]: \<open>0 \<in> space_as_set A\<close>
+  by (simp add: complex_vector.subspace_0)
+
 instantiation ccsubspace :: (complex_normed_vector) scaleC begin
 lift_definition scaleC_ccsubspace :: "complex \<Rightarrow> 'a ccsubspace \<Rightarrow> 'a ccsubspace" is
   "\<lambda>c S. (*\<^sub>C) c ` S"
@@ -2479,6 +2482,33 @@ lemma ccsubspace_eqI:
   shows \<open>S = T\<close>
   by (metis Abs_clinear_space_cases Abs_clinear_space_inverse antisym assms subsetI)
 
+lemma ccspan_remove_0: \<open>ccspan (A - {0}) = ccspan A\<close>
+  apply transfer
+  by auto
+
+lemma sgn_in_spaceD: \<open>\<psi> \<in> space_as_set A\<close> if \<open>sgn \<psi> \<in> space_as_set A\<close> and \<open>\<psi> \<noteq> 0\<close>
+  for \<psi> :: \<open>_ :: complex_normed_vector\<close>
+  using that
+  apply (transfer fixing: \<psi>)
+  by (metis closed_csubspace.subspace complex_vector.subspace_scale divideC_field_simps(1) scaleR_eq_0_iff scaleR_scaleC sgn_div_norm sgn_zero_iff)
+
+lemma sgn_in_spaceI: \<open>sgn \<psi> \<in> space_as_set A\<close> if \<open>\<psi> \<in> space_as_set A\<close> 
+  for \<psi> :: \<open>_ :: complex_normed_vector\<close>
+  using that by (auto simp: sgn_div_norm scaleR_scaleC complex_vector.subspace_scale)
+
+lemma ccsubspace_leI_unit:
+  fixes A B :: \<open>_ :: complex_normed_vector ccsubspace\<close>
+  assumes "\<And>\<psi>. norm \<psi> = 1 \<Longrightarrow> \<psi> \<in> space_as_set A \<Longrightarrow> \<psi> \<in> space_as_set B"
+  shows "A \<le> B"
+proof (rule ccsubspace_leI, rule subsetI)
+  fix \<psi> assume \<psi>A: \<open>\<psi> \<in> space_as_set A\<close>
+  show \<open>\<psi> \<in> space_as_set B\<close>
+    apply (cases \<open>\<psi> = 0\<close>)
+    apply simp
+    using assms[of \<open>sgn \<psi>\<close>] \<psi>A sgn_in_spaceD sgn_in_spaceI 
+    by (auto simp: norm_sgn)
+qed
+
 subsection \<open>Closed sums\<close>
 
 definition closed_sum:: \<open>'a::{semigroup_add,topological_space} set \<Rightarrow> 'a set \<Rightarrow> 'a set\<close> where
@@ -2736,6 +2766,9 @@ lemma ccsubspace_add_right_incr[simp]: "a \<le> a + c" for a::"_ ccsubspace"
 
 lemma ccsubspace_add_left_incr[simp]: "a \<le> c + a" for a::"_ ccsubspace"
   by (simp add: add_increasing)
+
+lemma sum_bot_ccsubspace[simp]: \<open>(\<Sum>x\<in>X. \<bottom>) = (\<bottom> :: _ ccsubspace)\<close>
+  by (simp flip: zero_ccsubspace_def)
 
 subsection \<open>Conjugate space\<close>
 

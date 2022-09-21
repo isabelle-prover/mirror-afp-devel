@@ -334,29 +334,34 @@ qed
 context field_hom
 begin
 
-lemma map_poly_pdivmod[hom_distribs]:
-  "map_prod (map_poly hom) (map_poly hom) (p div q, p mod q) =
-    (map_poly hom p div map_poly hom q, map_poly hom p mod map_poly hom q)"
-  (is "?l = ?r")
+lemma dvd_map_poly_hom_imp_dvd: \<open>map_poly hom x dvd map_poly hom y \<Longrightarrow> x dvd y\<close>
+  by (smt (verit, del_insts) degree_map_poly_hom hom_0 hom_div hom_lead_coeff hom_one hom_power map_poly_hom_smult map_poly_zero mod_eq_0_iff_dvd mod_poly_def pseudo_mod_hom)
+
+lemma map_poly_pdivmod [hom_distribs]:
+  \<open>map_prod (map_poly hom) (map_poly hom) (p div q, p mod q) =
+    (map_poly hom p div map_poly hom q, map_poly hom p mod map_poly hom q)\<close>
 proof -
-  let ?mp = "map_poly hom"
-  interpret map_poly_hom: map_poly_idom_hom..
-  obtain r s where dm: "(p div q, p mod q) = (r, s)"
-    by force  
-  hence r: "r = p div q" and s: "s = p mod q"
-    by simp_all
-  from dm [folded pdivmod_pdivmodrel] have "eucl_rel_poly p q (r, s)"
-    by auto
-  from this[unfolded eucl_rel_poly_iff]
-  have eq: "p = r * q + s" and cond: "(if q = 0 then r = 0 else s = 0 \<or> degree s < degree q)" by auto
-  from arg_cong[OF eq, of ?mp, unfolded map_poly_add]
-  have eq: "?mp p = ?mp q * ?mp r + ?mp s" by (auto simp: hom_distribs)
-  from cond have cond: "(if ?mp q = 0 then ?mp r = 0 else ?mp s = 0 \<or> degree (?mp s) < degree (?mp q))"
+  let ?mp = \<open>map_poly hom\<close>
+  interpret map_poly_hom: map_poly_idom_hom ..
+  have \<open>(?mp p div ?mp q, ?mp p mod ?mp q) = (?mp (p div q), ?mp (p mod q))\<close>
+  proof (cases \<open>?mp q\<close> \<open>?mp (p div q)\<close> \<open>?mp (p mod q)\<close> \<open>?mp p\<close> rule: euclidean_relation_polyI)
+    case by0
+    then show ?case
+      by simp
+  next
+    case divides
+    then have \<open>q \<noteq> 0\<close> \<open>q dvd p\<close>
+      by (auto dest: dvd_map_poly_hom_imp_dvd)
+    from \<open>q dvd p\<close> obtain r where \<open>p = q * r\<close> ..
+    with \<open>q \<noteq> 0\<close> show ?case
+      by (simp add: map_poly_hom.hom_mult)
+  next
+    case euclidean_relation
+    with degree_mod_less_degree [of q p] show ?case
+      by (auto simp flip: map_poly_hom.hom_mult map_poly_hom_add)
+  qed
+  then show ?thesis
     by simp
-  from eq cond have "eucl_rel_poly (?mp p) (?mp q) (?mp r, ?mp s)"
-    unfolding eucl_rel_poly_iff by auto
-  from this[unfolded pdivmod_pdivmodrel]
-  show ?thesis unfolding dm prod.simps by simp
 qed
 
 lemma map_poly_div[hom_distribs]: "map_poly hom (p div q) = map_poly hom p div map_poly hom q"

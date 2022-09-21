@@ -1704,6 +1704,35 @@ proof -
     by -
 qed
 
+subsection \<open>Orthogonal spaces\<close>
+(* TODO: Add to report overview *)
+
+definition \<open>orthogonal_spaces S T \<longleftrightarrow> (\<forall>x\<in>space_as_set S. \<forall>y\<in>space_as_set T. is_orthogonal x y)\<close>
+
+lemma orthogonal_spaces_leq_compl: \<open>orthogonal_spaces S T \<longleftrightarrow> S \<le> -T\<close>
+  unfolding orthogonal_spaces_def apply transfer
+  by (auto simp: orthogonal_complement_def)
+
+lemma orthogonal_bot[simp]: \<open>orthogonal_spaces S bot\<close>
+  by (simp add: orthogonal_spaces_def)
+
+lemma orthogonal_spaces_sym: \<open>orthogonal_spaces S T \<Longrightarrow> orthogonal_spaces T S\<close>
+  unfolding orthogonal_spaces_def
+  using is_orthogonal_sym by blast
+
+lemma orthogonal_sup: \<open>orthogonal_spaces S T1 \<Longrightarrow> orthogonal_spaces S T2 \<Longrightarrow> orthogonal_spaces S (sup T1 T2)\<close>
+  apply (rule orthogonal_spaces_sym)
+  apply (simp add: orthogonal_spaces_leq_compl)
+  using orthogonal_spaces_leq_compl orthogonal_spaces_sym by blast
+
+lemma orthogonal_sum:
+  assumes \<open>finite F\<close> and \<open>\<And>x. x\<in>F \<Longrightarrow> orthogonal_spaces S (T x)\<close> 
+  shows \<open>orthogonal_spaces S (sum T F)\<close>
+  using assms
+  apply induction
+  by (auto intro!: orthogonal_sup)
+
+
 subsection \<open>Orthonormal bases\<close>
 
 lemma ortho_basis_exists: 
