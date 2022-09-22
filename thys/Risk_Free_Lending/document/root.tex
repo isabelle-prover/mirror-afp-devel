@@ -1,0 +1,80 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Risk-Free Lending}
+\author{Matthew Doty}
+\maketitle
+
+\begin{abstract}
+  We construct an abstract ledger supporting the \emph{risk-free
+    lending} protocol. The risk-free lending protocol is a system for
+  issuing and exchanging novel financial products we call
+  \emph{risk-free loans}. The system allows one party to lend money at
+  0\% APY to another party in exchange for a good or service. On every
+  update of the ledger, accounts have interest distributed to them.
+  Holders of lent assets keep interest accrued by those assets. After
+  distributing interest, the system returns a fixed fraction of each
+  loan. These fixed fractions determine \emph{loan periods}. Loans for
+  longer periods have a smaller fixed fraction returned. Loans may be
+  re-lent or used as collateral for other loans. We give a sufficient
+  criterion to enforce all accounts will forever be solvent. We give a
+  protocol for maintaining this invariant when transferring or lending
+  funds. We also show this invariant holds after update. Even though
+  the system does not track counter-party obligations, we show that
+  all credited and debited loans cancel and the monetary supply grows
+  at a specified interest rate.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
