@@ -3,15 +3,30 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/doty/</loc>
-    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
+    <loc>/authors/crighton/</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/localization_ring/</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Padic_Field.html</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/padic_ints/</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/doty/</loc>
     <lastmod>2022-09-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Risk_Free_Lending.html</loc>
@@ -30,9 +45,6 @@
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CRYSTALS-Kyber.html</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/kreuzer/</loc>
@@ -934,9 +946,6 @@
   </url><url>
     <loc>/entries/Grothendieck_Schemes.html</loc>
     <lastmod>2021-03-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/crighton/</loc>
-    <lastmod>2021-03-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Padic_Ints.html</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
@@ -5334,6 +5343,8 @@
     <loc>/theories/pac_checker/</loc>
   </url><url>
     <loc>/theories/package_logic/</loc>
+  </url><url>
+    <loc>/theories/padic_field/</loc>
   </url><url>
     <loc>/theories/padic_ints/</loc>
   </url><url>

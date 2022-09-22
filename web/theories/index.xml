@@ -4300,6 +4300,15 @@
     </item>
     
     <item>
+      <title>Padic_Field</title>
+      <link>/theories/padic_field/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/padic_field/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Padic_Ints</title>
       <link>/theories/padic_ints/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
