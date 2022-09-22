@@ -3,13 +3,19 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-09-13T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-09-13T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/doty/</loc>
+    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2022-09-13T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Risk_Free_Lending.html</loc>
+    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/from/</loc>
     <lastmod>2022-09-13T00:00:00+00:00</lastmod>
@@ -3899,9 +3905,6 @@
     <loc>/entries/Robbins-Conjecture.html</loc>
     <lastmod>2010-05-22T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/doty/</loc>
-    <lastmod>2010-05-22T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/krauss/</loc>
     <lastmod>2010-05-12T00:00:00+00:00</lastmod>
   </url><url>
@@ -5527,6 +5530,8 @@
     <loc>/theories/ribbon_proofs/</loc>
   </url><url>
     <loc>/theories/ripemd-160-spark/</loc>
+  </url><url>
+    <loc>/theories/risk_free_lending/</loc>
   </url><url>
     <loc>/theories/robbins-conjecture/</loc>
   </url><url>

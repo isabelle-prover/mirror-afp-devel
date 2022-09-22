@@ -6,7 +6,16 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Tue, 13 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 18 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Risk-Free Lending</title>
+      <link>/entries/Risk_Free_Lending.html</link>
+      <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Risk_Free_Lending.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Soundness and Completeness of Implicational Logic</title>
       <link>/entries/Implicational_Logic.html</link>
@@ -11543,6 +11552,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Risk_Free_Lending</title>
+      <link>/theories/risk_free_lending/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/risk_free_lending/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Robbins-Conjecture</title>
       <link>/theories/robbins-conjecture/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12124,7 +12142,7 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>702 Entries   425 Authors   ~215,000 Lemmas   ~3,527,200 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>703 Entries   425 Authors   ~215,100 Lemmas   ~3,529,100 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>

@@ -1388,9 +1388,18 @@ host = [
 [dongol.homepages]
 
 [doty]
-name = "Matthew Wampler-Doty"
+name = "Matthew Doty"
 
 [doty.emails]
+
+[doty.emails.doty_email]
+user = [
+  "matt",
+]
+host = [
+  "w-d",
+  "org",
+]
 
 [doty.homepages]
 
