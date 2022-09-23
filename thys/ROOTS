@@ -296,6 +296,7 @@ IMP_Compiler
 IMP_Compiler_Reuse
 IP_Addresses
 Imperative_Insertion_Sort
+Implicational_Logic
 Impossible_Geometry
 Incompleteness
 Incredible_Proof_Machine
@@ -464,6 +465,7 @@ PLM
 POPLmark-deBruijn
 PSemigroupsConvolution
 Padic_Ints
+Padic_Field
 Pairing_Heap
 Paraconsistency
 Parity_Game
@@ -557,6 +559,7 @@ Resolution_FOL
 Rewrite_Properties_Reduction
 Rewriting_Z
 Ribbon_Proofs
+Risk_Free_Lending
 Robbins-Conjecture
 Robinson_Arithmetic
 Root_Balanced_Tree
@@ -573,6 +576,7 @@ Safe_Distance
 Safe_OCL
 Saturation_Framework
 Saturation_Framework_Extensions
+SCC_Bloemen_Sequential
 Schutz_Spacetime
 Secondary_Sylow
 Security_Protocol_Refinement
@@ -581,6 +585,7 @@ SenSocialChoice
 Separata
 Separation_Algebra
 Separation_Logic_Imperative_HOL
+Separation_Logic_Unbounded
 SequentInvertibility
 Shadow_DOM
 Shadow_SC_DOM

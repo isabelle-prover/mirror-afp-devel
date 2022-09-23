@@ -3,10 +3,43 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/crighton/</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/localization_ring/</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Padic_Field.html</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/padic_ints/</loc>
+    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/doty/</loc>
+    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Risk_Free_Lending.html</loc>
+    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/from/</loc>
+    <lastmod>2022-09-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Implicational_Logic.html</loc>
+    <lastmod>2022-09-13T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/villadsen/</loc>
+    <lastmod>2022-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/berlekamp_zassenhaus/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
@@ -14,17 +47,17 @@
     <loc>/entries/CRYSTALS-Kyber.html</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
-    <lastmod>2022-09-08T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/kreuzer/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/number_theoretic_transform/</loc>
     <lastmod>2022-09-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/dardinier/</loc>
+    <lastmod>2022-09-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Separation_Logic_Unbounded.html</loc>
+    <lastmod>2022-09-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/argyraki/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
@@ -58,6 +91,15 @@
   </url><url>
     <loc>/entries/Number_Theoretic_Transform.html</loc>
     <lastmod>2022-08-18T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/SCC_Bloemen_Sequential.html</loc>
+    <lastmod>2022-08-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/merz/</loc>
+    <lastmod>2022-08-17T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/trelat/</loc>
+    <lastmod>2022-08-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/bortin/</loc>
     <lastmod>2022-08-15T00:00:00+00:00</lastmod>
@@ -188,9 +230,6 @@
     <loc>/entries/Combinable_Wands.html</loc>
     <lastmod>2022-05-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/dardinier/</loc>
-    <lastmod>2022-05-30T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/package_logic/</loc>
     <lastmod>2022-05-30T00:00:00+00:00</lastmod>
   </url><url>
@@ -291,9 +330,6 @@
     <lastmod>2022-03-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/abstract_soundness/</loc>
-    <lastmod>2022-03-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/from/</loc>
     <lastmod>2022-03-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Cotangent_PFD_Formula.html</loc>
@@ -913,9 +949,6 @@
   </url><url>
     <loc>/entries/Grothendieck_Schemes.html</loc>
     <lastmod>2021-03-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/crighton/</loc>
-    <lastmod>2021-03-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Padic_Ints.html</loc>
     <lastmod>2021-03-23T00:00:00+00:00</lastmod>
@@ -2567,9 +2600,6 @@
     <loc>/authors/jensen/</loc>
     <lastmod>2017-01-01T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/villadsen/</loc>
-    <lastmod>2017-01-01T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Concurrent_Ref_Alg.html</loc>
     <lastmod>2016-12-30T00:00:00+00:00</lastmod>
   </url><url>
@@ -3659,9 +3689,6 @@
     <loc>/authors/debrat/</loc>
     <lastmod>2012-07-27T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/merz/</loc>
-    <lastmod>2012-07-27T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Heard_Of.html</loc>
     <lastmod>2012-07-27T00:00:00+00:00</lastmod>
   </url><url>
@@ -3891,9 +3918,6 @@
     <lastmod>2010-05-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Robbins-Conjecture.html</loc>
-    <lastmod>2010-05-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/doty/</loc>
     <lastmod>2010-05-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/krauss/</loc>
@@ -4924,6 +4948,8 @@
   </url><url>
     <loc>/theories/imperative_insertion_sort/</loc>
   </url><url>
+    <loc>/theories/implicational_logic/</loc>
+  </url><url>
     <loc>/theories/impossible_geometry/</loc>
   </url><url>
     <loc>/theories/incompleteness/</loc>
@@ -5324,6 +5350,8 @@
   </url><url>
     <loc>/theories/package_logic/</loc>
   </url><url>
+    <loc>/theories/padic_field/</loc>
+  </url><url>
     <loc>/theories/padic_ints/</loc>
   </url><url>
     <loc>/theories/pairing_heap/</loc>
@@ -5520,6 +5548,8 @@
   </url><url>
     <loc>/theories/ripemd-160-spark/</loc>
   </url><url>
+    <loc>/theories/risk_free_lending/</loc>
+  </url><url>
     <loc>/theories/robbins-conjecture/</loc>
   </url><url>
     <loc>/theories/robdd/</loc>
@@ -5548,6 +5578,8 @@
   </url><url>
     <loc>/theories/sc_dom_components/</loc>
   </url><url>
+    <loc>/theories/scc_bloemen_sequential/</loc>
+  </url><url>
     <loc>/theories/schutz_spacetime/</loc>
   </url><url>
     <loc>/theories/sds_impossibility/</loc>
@@ -5568,6 +5600,8 @@
     <loc>/theories/separation_algebra/</loc>
   </url><url>
     <loc>/theories/separation_logic_imperative_hol/</loc>
+  </url><url>
+    <loc>/theories/separation_logic_unbounded/</loc>
   </url><url>
     <loc>/theories/sepref_basic/</loc>
   </url><url>

@@ -1388,9 +1388,18 @@ host = [
 [dongol.homepages]
 
 [doty]
-name = "Matthew Wampler-Doty"
+name = "Matthew Doty"
 
 [doty.emails]
+
+[doty.emails.doty_email]
+user = [
+  "matt",
+]
+host = [
+  "w-d",
+  "org",
+]
 
 [doty.homepages]
 
@@ -2621,16 +2630,6 @@ name = "Lars Hupel"
 
 [hupel.emails.hupel_email]
 user = [
-  "hupel",
-]
-host = [
-  "in",
-  "tum",
-  "de",
-]
-
-[hupel.emails.hupel_email1]
-user = [
   "lars",
 ]
 host = [
@@ -2639,8 +2638,7 @@ host = [
 ]
 
 [hupel.homepages]
-hupel_homepage = "https://www21.in.tum.de/~hupel/"
-hupel_homepage1 = "https://lars.hupel.info/"
+hupel_homepage = "https://lars.hupel.info/"
 
 [ijbema]
 name = "Mark Ijbema"
@@ -6207,6 +6205,23 @@ host = [
 
 [traytel.homepages]
 traytel_homepage = "https://traytel.bitbucket.io/"
+
+[trelat]
+name = "Vincent Trélat"
+
+[trelat.emails]
+
+[trelat.emails.trelat_email]
+user = [
+  "vincent",
+  "trelat",
+]
+host = [
+  "depinfonancy",
+  "net",
+]
+
+[trelat.homepages]
 
 [tuerk]
 name = "Thomas Tuerk"

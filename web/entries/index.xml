@@ -6,13 +6,49 @@
     <description>Recent content in Entries on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 08 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 22 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/entries/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>p-adic Fields and p-adic Semialgebraic Sets</title>
+      <link>/entries/Padic_Field.html</link>
+      <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Padic_Field.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Risk-Free Lending</title>
+      <link>/entries/Risk_Free_Lending.html</link>
+      <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Risk_Free_Lending.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Soundness and Completeness of Implicational Logic</title>
+      <link>/entries/Implicational_Logic.html</link>
+      <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Implicational_Logic.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>CRYSTALS-Kyber</title>
       <link>/entries/CRYSTALS-Kyber.html</link>
       <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>/entries/CRYSTALS-Kyber.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Unbounded Separation Logic</title>
+      <link>/entries/Separation_Logic_Unbounded.html</link>
+      <pubDate>Mon, 05 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Separation_Logic_Unbounded.html</guid>
       <description></description>
     </item>
     
@@ -40,6 +76,15 @@
       <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
       
       <guid>/entries/Number_Theoretic_Transform.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</title>
+      <link>/entries/SCC_Bloemen_Sequential.html</link>
+      <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SCC_Bloemen_Sequential.html</guid>
       <description></description>
     </item>
     

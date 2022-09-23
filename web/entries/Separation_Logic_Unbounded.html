@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Unbounded Separation Logic - Archive of Formal Proofs</title><meta name="description" content="Many separation logics support fractional permissions to distinguish between read and write access to a heap location, for instance, to allow concurrent..."><meta property="og:title" content="Unbounded Separation Logic" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="/entries/Separation_Logic_Unbounded.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
+<meta property="article:published_time" content="2022-09-05T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-09-05T00:00:00+00:00" /><meta property="og:site_name" content="Archive of Formal Proofs" />
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="/images/afp.png"/>
+
+<meta name="twitter:title" content="Unbounded Separation Logic"/>
+<meta name="twitter:description" content=""/>
+
+  
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: 'global'
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js"></script>
+  <script src="../js/entries.js"></script><script src="../js/obfuscate.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/scroll-spy.js"></script>
+  <script src="../js/theory.js"></script>
+  <script src="../js/util.js"></script><script src="../js/header-search.js"></script><script src="../js/search-autocomplete.js"></script>
+</head>
+
+
+<body class='mathjax_ignore '>
+  <aside>
+    <div id="menu-toggle">
+  <input id="toggle" type="checkbox" />
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu" />
+  </label>
+
+  <a href="../" class='logo-link'>
+    <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+  </a>
+
+  <a href="../search"><img src="../images/search.svg" alt="Search" /></a>
+  <nav id="menu">
+    <div>
+      <a href="../" class='logo-link'>
+        <img src="../images/afp.png" alt='Logo of the Archive of Formal Proofs' class="logo">
+      </a>
+      <ul>
+        <a href="../"><li >Home</li></a>
+        <a href="../topics/"><li >Topics</li></a>
+        <a href="../download/"><li >Download</li></a>
+        <a href="../help/"><li >Help</li></a>
+        <a href="../submission/"><li >Submission</li></a>
+        <a href="../statistics/"><li >Statistics</li></a>
+        <a href="../about/"><li >About</li></a>
+      </ul>
+    </div>
+  </nav>
+</div>
+  </aside>
+
+  <div
+    class='content  entries'><header>
+  <form autocomplete="off" action="../search">
+    <div class='form-container'>
+      <input id="search-input" type="search" size="31" maxlength="255" value="" aria-label="Search the AFP" list="autocomplete"><button
+      id="search-button" type="button"><img src="../images/search.svg" alt="Search" /></button>
+      <datalist id="autocomplete">
+      </datalist>
+    </div>
+  </form>
+  <h1 >
+    <span class='first'>U</span>nbounded <span class='first'>S</span>eparation <span class='first'>L</span>ogic</h1>
+  <div>
+    
+    <p><a href="../authors/dardinier">Thibault Dardinier</a> <a href="https://dardinier.me/">🌐</a>
+    </p>
+    
+    
+    <p class="date">September 5, 2022</p>
+    
+  </div>
+</header><div><main><h3>Abstract</h3>
+
+  <div class="abstract mathjax_process">Many separation logics support fractional permissions to distinguish
+between read and write access to a heap location, for instance, to
+allow concurrent reads while enforcing exclusive writes. Fractional
+permissions extend to composite assertions such as (co)inductive
+predicates and magic wands by allowing those to be multiplied by a
+fraction. Typical separation logic proofs require that this
+multiplication has three key properties: it needs to distribute over
+assertions, it should permit fractions to be factored out from
+assertions, and two fractions of the same assertion should be
+combinable into one larger fraction.  Existing formal semantics
+incorporating fractional assertions into a separation logic define
+multiplication semantically (via models), resulting in a semantics in
+which distributivity and combinability do not hold for key resource
+assertions such as magic wands, and fractions cannot be factored out
+from a separating conjunction. By contrast, existing automatic
+separation logic verifiers define multiplication syntactically,
+resulting in a different semantics for which it is unknown whether
+distributivity and combinability hold for all assertions.  In this
+entry (which accompanies an <a
+href="https://dardinier.me/papers/multiplication.pdf">OOPSLA'22
+paper</a>), we present and formalize an unbounded version of
+separation logic, a novel semantics for separation logic assertions
+that allows states to hold more than a full permission to a heap
+location during the evaluation of an assertion. By reimposing upper
+bounds on the permissions held per location at statement boundaries,
+we retain key properties of separation logic, in particular, we prove
+that the frame rule still holds. We also prove that our assertion
+semantics unifies semantic and syntactic multiplication and thereby
+reconciles the discrepancy between separation logic theory and tools
+and enjoys distributivity, factorisability, and combinability.</div>BSD License<h3>Topics</h3>
+  <ul><li><a href="../topics/computer-science/programming-languages/logics">Computer science/Programming languages/Logics</a></li></ul>
+  <h3>Theories of Separation_Logic_Unbounded</h3>
+  <ul>
+    <li><a href="../theories/separation_logic_unbounded/#UnboundedLogic">UnboundedLogic</a></li>
+    <li><a href="../theories/separation_logic_unbounded/#Distributivity">Distributivity</a></li>
+    <li><a href="../theories/separation_logic_unbounded/#Combinability">Combinability</a></li>
+    <li><a href="../theories/separation_logic_unbounded/#FixedPoint">FixedPoint</a></li>
+    <li><a href="../theories/separation_logic_unbounded/#WandProperties">WandProperties</a></li>
+    <li><a href="../theories/separation_logic_unbounded/#AutomaticVerifiers">AutomaticVerifiers</a></li></ul><div class="flex-wrap">
+  
+  
+  </div>
+</main>
+
+<nav class='links'>
+  <a class='popup-button' href="#cite-popup">Cite</a>
+  <a class='popup-button' href="#download-popup">Download</a>
+  <h4>PDFs</h4>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Separation_Logic_Unbounded/outline.pdf">Proof
+    outline</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Separation_Logic_Unbounded/document.pdf">Proof
+    document</a>
+  <a href="https://www.isa-afp.org/browser_info/current/AFP/Separation_Logic_Unbounded/session_graph.pdf">Dependencies</a></nav>
+
+<div id="cite-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Cite</h2>
+    <a class="close" href="#">&times;</a>
+    <div>
+      <p style="display:none;" id="bibtex-filename">Separation_Logic_Unbounded-AFP</p><pre id="copy-text">@article{Separation_Logic_Unbounded-AFP,
+  author  = {Thibault Dardinier},
+  title   = {Unbounded Separation Logic},
+  journal = {Archive of Formal Proofs},
+  month   = {September},
+  year    = {2022},
+  note    = {\url{https://isa-afp.org/entries/Separation_Logic_Unbounded.html},
+            Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+      <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+    </div>
+  </div>
+</div>
+
+<div id="download-popup" class="overlay">
+  <a class="cancel" href="#"></a>
+  <div class="popup">
+    <h2>Download</h2>
+    <a class="close" href="#">&times;</a>
+    <a href="https://www.isa-afp.org/release//afp-Separation_Logic_Unbounded-current.tar.gz" download>Download latest</a>
+    
+  </div>
+</div>
+    </div>
+  </div>
+</body>
+
+</html>
