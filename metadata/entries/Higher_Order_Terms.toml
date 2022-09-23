@@ -23,14 +23,14 @@ note = ""
 [authors]
 
 [authors.hupel]
-homepage = "hupel_homepage1"
+homepage = "hupel_homepage"
 
 [contributors]
 
 [contributors.zhang]
 
 [notify]
-hupel = "hupel_email1"
+hupel = "hupel_email"
 
 [history]
 
