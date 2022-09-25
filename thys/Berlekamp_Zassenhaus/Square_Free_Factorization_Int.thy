@@ -104,7 +104,7 @@ proof -
   from arg_cong[OF this, of "\<lambda> x. x div ?rp G"] G0 have id: "?rp H = ?rp F div ?rp G" by auto
   have "?rp (F div G) = ?rp F div ?rp G" unfolding H[symmetric] id by simp
   also have "\<dots> = smult c f div smult d g" using f g unfolding yun_wrel_def by auto
-  also have "\<dots> = smult (c / d) (f div g)" unfolding div_smult_right[OF d0] div_smult_left
+  also have "\<dots> = smult (c / d) (f div g)" unfolding div_smult_right div_smult_left
     by (simp add: field_simps)
   finally show ?thesis unfolding yun_wrel_def by simp
 qed

@@ -276,8 +276,7 @@ proof (auto simp add: rel_fun_def MP_Rel_Pair_def)
     qed
     hence Mp_Rel_F_div_H: "MP_Rel q (F div H)" and Mp_Rel_F_mod_H: "MP_Rel x (F mod H)" by auto  
     have "F div H = Polynomial.smult (lead_coeff G) (F div G)" 
-      unfolding H using div_smult_right[OF lc_G] inverse_inverse_eq
-      by (metis div_smult_right inverse_zero)
+      by (simp add: H div_smult_right)
     hence F_div_G: "(F div G) = Polynomial.smult (inverse (lead_coeff G)) (F div H)"
       using lc_G by auto
     have "MP_Rel a (F div G)" 
