@@ -294,9 +294,9 @@ definition wfrec_Aleph_fm where "wfrec_Aleph_fm \<equiv>  HAleph_wfrec_repl_body
 definition replacement_is_fst2_snd2_fm where "replacement_is_fst2_snd2_fm \<equiv>  is_fst2_snd2_fm(0,1)"
 definition replacement_is_sndfst_fst2_snd2_fm where "replacement_is_sndfst_fst2_snd2_fm \<equiv>  is_sndfst_fst2_snd2_fm(0,1)"
 definition omap_replacement_fm where "omap_replacement_fm \<equiv>  order_eq_map_fm(2,3,0,1)"
-definition recursive_construction_abs_fm where "recursive_construction_abs_fm \<equiv>  transrec_apply_image_body_fm(3,2,0,1)"
+definition rec_constr_abs_fm where "rec_constr_abs_fm \<equiv>  transrec_apply_image_body_fm(3,2,0,1)"
 definition banach_replacement_iterates_fm where "banach_replacement_iterates_fm \<equiv> banach_is_iterates_body_fm(6,5,4,3,2,0,1)"
-definition recursive_construction_fm where "recursive_construction_fm \<equiv> is_trans_apply_image_body_fm(3,2,0,1)"
+definition rec_constr_fm where "rec_constr_fm \<equiv> is_trans_apply_image_body_fm(3,2,0,1)"
 (* definition banach_iterates_fm where "banach_iterates_fm \<equiv> banach_body_iterates_fm(7,6,5,4,3,2,0,1)" *)
 definition dc_abs_fm where "dc_abs_fm \<equiv> dcwit_repl_body_fm(6,5,4,3,2,0,1)"
 definition lam_replacement_check_fm where "lam_replacement_check_fm \<equiv> Lambda_in_M_fm(check_fm(2,0,1),1)"
@@ -333,20 +333,20 @@ lemma instances_ground_fms_type[TC]: "instances_ground_fms \<subseteq> formula"
 locale M_ZF_ground_notCH = M_ZF_ground +
   assumes
     ZF_ground_notCH_replacements:
-    "replacement_assm(M,env,recursive_construction_abs_fm)"
-    "replacement_assm(M,env,recursive_construction_fm)"
+    "replacement_assm(M,env,rec_constr_abs_fm)"
+    "replacement_assm(M,env,rec_constr_fm)"
 
 definition instances_ground_notCH_fms where "instances_ground_notCH_fms \<equiv>
-  { recursive_construction_abs_fm,
-    recursive_construction_fm }"
+  { rec_constr_abs_fm,
+    rec_constr_fm }"
 
 lemma instances_ground_notCH_fms_type[TC]: "instances_ground_notCH_fms \<subseteq> formula"
-  unfolding instances_ground_notCH_fms_def recursive_construction_abs_fm_def
-    recursive_construction_fm_def
+  unfolding instances_ground_notCH_fms_def rec_constr_abs_fm_def
+    rec_constr_fm_def
   by simp
 
-declare (in M_ZF_ground_notCH) recursive_construction_abs_fm_def[simp]
-  recursive_construction_fm_def[simp]
+declare (in M_ZF_ground_notCH) rec_constr_abs_fm_def[simp]
+  rec_constr_fm_def[simp]
 
 locale M_ZF_ground_notCH_trans = M_ZF_ground_trans + M_ZF_ground_notCH
 

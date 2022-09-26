@@ -170,10 +170,25 @@ suffixes.
   \end{enumerate}
 \end{enumerate}
 
-Finally, we had to repeat some material from \theory{Relative} in
-\session{ZF-Constructible} (in our theory \theory{M\_Basic\_No\_Repl})
+Finally, there are some repetitions from \session{ZF-Constructible} in
+the present project. We had to duplicate some material from
+\theory{Relative} in our theory \theory{M\_Basic\_No\_Repl}
 in order to eliminate one replacement instance appearing in the locale
-\texttt{M\_Basic}.
+\texttt{M\_Basic}. The same goes for theories
+\theory{DPow\_absolute}, 
+\theory{Datatype\_absolute}, 
+\theory{Internalizations}, 
+\theory{Internalize}, 
+\theory{Rank\_Separation}, 
+\theory{Rec\_Separation}, 
+\theory{Recursion\_Thms}, 
+\theory{Relativization}, and
+\theory{Satisfies\_absolute}, that were modified to remodularize the
+locale structure (namely, by eliminating the dependence of locale
+\texttt{M\_eclose} on \texttt{M\_datatypes}, which defines lists and
+formulas). In order to get the rest of the top-level theories of
+\session{ZF-Constructible} to work, we added a new theory called
+\theory{Eclose\_Absolute}.
 
 % generated text of all theories
 

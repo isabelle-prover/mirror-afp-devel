@@ -357,8 +357,8 @@ lemma overhead_type: "overhead \<subseteq> formula"
 
 lemma overhead_notCH_type: "overhead_notCH \<subseteq> formula"
   using overhead_type
-  unfolding overhead_notCH_def recursive_construction_abs_fm_def
-    recursive_construction_fm_def instances_ground_notCH_fms_def
+  unfolding overhead_notCH_def rec_constr_abs_fm_def
+    rec_constr_fm_def instances_ground_notCH_fms_def
     instances2_fms_def instances3_fms_def
   by (auto simp: replacement_instances1_defs
       replacement_instances2_defs simp del: Lambda_in_M_fm_def)
