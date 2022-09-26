@@ -2187,6 +2187,23 @@ host = [
 [guttmann.homepages]
 guttmann_homepage = "https://www.cosc.canterbury.ac.nz/walter.guttmann/"
 
+[guzman]
+name = "Laura P. Gamboa Guzman"
+
+[guzman.emails]
+
+[guzman.emails.guzman_email]
+user = [
+  "lpgamboa"
+]
+host = [
+  "iastate",
+  "edu"
+]
+
+[guzman.homepages]
+guzman_homepage = "https://sites.google.com/view/lpgamboa/home"
+
 [haftmann]
 name = "Florian Haftmann"
 

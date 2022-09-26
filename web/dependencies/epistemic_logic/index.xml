@@ -6,7 +6,16 @@
     <description>Recent content in Epistemic_Logic on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 17 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/epistemic_logic/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 23 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/epistemic_logic/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Stalnaker&#39;s Epistemic Logic</title>
+      <link>/entries/Stalnaker_Logic.html</link>
+      <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stalnaker_Logic.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Public Announcement Logic</title>
       <link>/entries/Public_Announcement_Logic.html</link>
