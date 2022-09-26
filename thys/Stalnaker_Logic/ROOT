@@ -1,0 +1,9 @@
+chapter AFP
+
+session Stalnaker_Logic (AFP) = "Epistemic_Logic" +
+  options [timeout = 300]
+  theories
+    Stalnaker_Logic
+  document_files
+    "root.tex"
+    "root.bib"
