@@ -14,26 +14,30 @@
   <h3>Abstract</h3>
 
   <div class="abstract mathjax_process">{{- trim .Params.abstract "\n" | safeHTML -}}</div>
-  {{- if (eq .Params.licence "BSD") -}}
+
+  <h3>License</h3>
+  <div>
+  {{- if (eq .Params.license "BSD") -}}
   <a href="https://isa-afp.org/LICENSE">BSD License</a>
   {{- else if (eq .Params.license "LGPL") -}}
   <a href="https://isa-afp.org/LICENSE.LGPL">GNU Lesser General Public License (LGPL)</a>
   {{- else -}}
     {{- printf "%s License" .Params.license -}}
   {{- end -}}
+  </div>
 
   {{- with .Params.note -}}
   <p><em>{{ . }}</em></p>
   {{- end -}}
 
   {{- with.Params.history -}}
-  <h3>Change history</h3>
+  <h3>History</h3>
+  <dl>
   {{- range . -}}
-    <p>
-    <h4>{{ dateFormat "January 2, 2006" .date }}</h4>
-    {{ safeHTML .value }}
-    </p>
+    <dt>{{ dateFormat "January 2, 2006" .date }}</dt>
+    <dd>{{ safeHTML .value }}</dd>
   {{- end -}}
+  </dl>
   {{- end -}}
 
   {{- with .Params.extra -}}
@@ -56,7 +60,7 @@
   {{- end -}}
 
   {{- with .Params.related -}}
-  <h3>Related Publications</h3>
+  <h3>Related publications</h3>
   <ul>
   {{- range . -}}
     <li>
@@ -68,7 +72,7 @@
 
   {{- range .Params.sessions -}}
   {{ $session := .session }}
-  <h3>Theories of {{ $session }}</h3>
+  <h3>Session {{ $session }}</h3>
   <ul>
     {{- range .theories }}
     <li><a href="/theories/{{ urlize $session }}/#{{ . }}">{{ . }}</a></li>
@@ -80,7 +84,7 @@
   {{ $uses := .Params.dependencies }}
   {{- with $uses -}}
   <div>
-    <h3>Depends On</h3>
+    <h3>Depends on</h3>
     <ul class="horizontal-list">
       {{- range . -}}
       {{- $path := printf "/entries/%s.html" . -}}
@@ -110,7 +114,7 @@
     | first 5 }}
   {{ with $related }}
   <div>
-    <h3>Related Entries</h3>
+    <h3>Auto-related entries</h3>
     <ul class="horizontal-list">
       {{ range . }}
       <li>{{- printf "[%s](%s)" .Title .RelPermalink | $.Page.RenderString -}}</li>
@@ -136,7 +140,7 @@
   {{- range where .Site.Data.status.entries "entry" $entry_name -}}
   {{- $status = .status -}}
   {{- end -}}
-  <h4>Build Status</h4>
+  <h4>Build status</h4>
   <div class="status-{{ $status }}">
   <strong>{{- $status -}}</strong>
   <p>{{ .Site.Data.status.build_data.time }}</p>
