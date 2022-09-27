@@ -12,8 +12,7 @@
 {{- with $topic.classification -}}
 <h2>Subject Classification</h2>
 {{- range . -}}
-<h3>{{ .type }}</h3>
-<a href="{{ .url }}">{{ .desc }}</a>
+<p>{{ .type }}: <a href="{{ .url }}">{{ .desc }}</a></p>
 {{- end -}}
 {{- end -}}
 

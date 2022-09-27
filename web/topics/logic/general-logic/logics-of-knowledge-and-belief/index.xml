@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/logic/general-logic/logics-of-knowledge-and-belief/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Stalnaker&#39;s Epistemic Logic</title>
+      <link>/entries/Stalnaker_Logic.html</link>
+      <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stalnaker_Logic.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Automating Public Announcement Logic and the Wise Men Puzzle in Isabelle/HOL</title>
       <link>/entries/PAL.html</link>
       <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>

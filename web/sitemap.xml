@@ -3,18 +3,27 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/crighton/</loc>
-    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2022-09-22T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
+    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/epistemic_logic/</loc>
+    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/guzman/</loc>
+    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Stalnaker_Logic.html</loc>
+    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/crighton/</loc>
     <lastmod>2022-09-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/localization_ring/</loc>
@@ -850,9 +859,6 @@
   </url><url>
     <loc>/authors/wassell/</loc>
     <lastmod>2021-06-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/epistemic_logic/</loc>
-    <lastmod>2021-06-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Public_Announcement_Logic.html</loc>
     <lastmod>2021-06-17T00:00:00+00:00</lastmod>
@@ -5674,6 +5680,8 @@
     <loc>/theories/sqrt_babylonian/</loc>
   </url><url>
     <loc>/theories/stable_matching/</loc>
+  </url><url>
+    <loc>/theories/stalnaker_logic/</loc>
   </url><url>
     <loc>/theories/statecharts/</loc>
   </url><url>
