@@ -96,21 +96,24 @@
   </div>
 </header><div><main><h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://isa-afp.org/entries/Stream-Fusion.html">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]</div>BSD License<h3>Topics</h3>
+  <div class="abstract mathjax_process">Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://isa-afp.org/entries/Stream-Fusion.html">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]</div>
+
+  <h3>License</h3>
+  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/functional-programming">Computer science/Functional programming</a></li></ul>
-  <h3>Theories of Stream_Fusion_Code</h3>
+  <h3>Session Stream_Fusion_Code</h3>
   <ul>
     <li><a href="../theories/stream_fusion_code/#Stream_Fusion">Stream_Fusion</a></li>
     <li><a href="../theories/stream_fusion_code/#Stream_Fusion_List">Stream_Fusion_List</a></li>
     <li><a href="../theories/stream_fusion_code/#Stream_Fusion_LList">Stream_Fusion_LList</a></li>
     <li><a href="../theories/stream_fusion_code/#Stream_Fusion_Examples">Stream_Fusion_Examples</a></li></ul><div class="flex-wrap">
   <div>
-    <h3>Depends On</h3>
+    <h3>Depends on</h3>
     <ul class="horizontal-list"><li><a href="../entries/Coinductive.html">Coinductive</a></li></ul>
   </div>
   
   <div>
-    <h3>Related Entries</h3>
+    <h3>Auto-related entries</h3>
     <ul class="horizontal-list">
       
       <li><a href="../entries/Stream-Fusion.html">Stream Fusion</a></li>

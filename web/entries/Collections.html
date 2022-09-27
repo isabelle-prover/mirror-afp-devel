@@ -97,31 +97,27 @@
   </div>
 </header><div><main><h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.</div>BSD License<h3>Change history</h3><p>
-    <h4>April 25, 2012</h4>
-    New iterator foundation by Tuerk. Various maintenance changes.<br>
-    </p><p>
-    <h4>October 10, 2011</h4>
-    SetSpec: Added operations: sng, isSng, bexists, size_abort, diff, filter, iterate_rule_insertP
+  <div class="abstract mathjax_process">This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.</div>
+
+  <h3>License</h3>
+  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
+  <dl><dt>April 25, 2012</dt>
+    <dd>New iterator foundation by Tuerk. Various maintenance changes.<br></dd><dt>October 10, 2011</dt>
+    <dd>SetSpec: Added operations: sng, isSng, bexists, size_abort, diff, filter, iterate_rule_insertP
 MapSpec: Added operations: sng, isSng, iterate_rule_insertP, bexists, size, size_abort, restrict,
 map_image_filter, map_value_image_filter
 Some maintenance changes<br>
-
-    </p><p>
-    <h4>December 1, 2010</h4>
-    New Interfaces: Priority Queues, Annotated Lists. Implemented by finger trees, (skew) binomial queues.<br>
-    </p><p>
-    <h4>October 8, 2010</h4>
-    New Interfaces: OrderedSet, OrderedMap, List.
+</dd><dt>December 1, 2010</dt>
+    <dd>New Interfaces: Priority Queues, Annotated Lists. Implemented by finger trees, (skew) binomial queues.<br></dd><dt>October 8, 2010</dt>
+    <dd>New Interfaces: OrderedSet, OrderedMap, List.
 Fifo now implements list-interface: Function names changed: put/get --> enqueue/dequeue.
 New Implementations: ArrayList, ArrayHashMap, ArrayHashSet, TrieMap, TrieSet.
 Invariant-free datastructures: Invariant implicitely hidden in typedef.
 Record-interfaces: All operations of an interface encapsulated as record.
 Examples moved to examples subdirectory.<br>
-
-    </p><h3>Topics</h3>
+</dd></dl><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/data-structures">Computer science/Data structures</a></li></ul>
-  <h3>Theories of Collections</h3>
+  <h3>Session Collections</h3>
   <ul>
     <li><a href="../theories/collections/#Sorted_List_Operations">Sorted_List_Operations</a></li>
     <li><a href="../theories/collections/#HashCode">HashCode</a></li>
@@ -232,7 +228,7 @@ Examples moved to examples subdirectory.<br>
     <li><a href="../theories/collections/#Userguides_Chapter">Userguides_Chapter</a></li>
     <li><a href="../theories/collections/#Refine_Monadic_Userguide">Refine_Monadic_Userguide</a></li>
     <li><a href="../theories/collections/#ICF_Userguide">ICF_Userguide</a></li></ul>
-  <h3>Theories of Collections_Examples</h3>
+  <h3>Session Collections_Examples</h3>
   <ul>
     <li><a href="../theories/collections_examples/#Examples_Chapter">Examples_Chapter</a></li>
     <li><a href="../theories/collections_examples/#Collection_Autoref_Examples_Chapter">Collection_Autoref_Examples_Chapter</a></li>
@@ -257,7 +253,7 @@ Examples moved to examples subdirectory.<br>
     <li><a href="../theories/collections_examples/#ICF_Examples">ICF_Examples</a></li>
     <li><a href="../theories/collections_examples/#Collection_Examples">Collection_Examples</a></li></ul><div class="flex-wrap">
   <div>
-    <h3>Depends On</h3>
+    <h3>Depends on</h3>
     <ul class="horizontal-list"><li><a href="../entries/Binomial-Heaps.html">Binomial Heaps and Skew Binomial Heaps</a></li><li><a href="../entries/Finger-Trees.html">Finger Trees</a></li><li><a href="../entries/Native_Word.html">Native Word</a></li><li><a href="../entries/Refine_Monadic.html">Refinement for Monadic Programs</a></li><li><a href="../entries/Trie.html">Trie</a></li><li><a href="../entries/CAVA_Automata.html">The CAVA Automata Library</a></li><li><a href="../entries/Collections.html">Collections Framework</a></li><li><a href="../entries/Containers.html">Light-weight Containers</a></li></ul>
   </div><div>
     <h3>Used by</h3>
@@ -265,7 +261,7 @@ Examples moved to examples subdirectory.<br>
   </div>
   
   <div>
-    <h3>Related Entries</h3>
+    <h3>Auto-related entries</h3>
     <ul class="horizontal-list">
       
       <li><a href="../entries/Gabow_SCC.html">Verified Efficient Implementation of Gabow&rsquo;s Strongly Connected Components Algorithm</a></li>
