@@ -24,4 +24,4 @@ resources = \
   tools/migration/public_suffix_list.dat:public_suffix_list.dat
 services = \
   afp.Tools \
-  afp.Build_Tools
+  afp.CI_Builds
