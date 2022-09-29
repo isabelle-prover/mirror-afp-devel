@@ -166,28 +166,6 @@ ${result.err_lines.takeRight(50).mkString("\n")}
       entries_strings.mkString("Failed entries: <ul>", "\n", "</ul>")
   }
 
-  private def load_properties(): JProperties = {
-    val props = new JProperties()
-    val file_name = Isabelle_System.getenv("ISABELLE_CI_PROPERTIES")
-
-    if (file_name != "") {
-      val file = Path.explode(file_name).file
-      if (file.exists())
-        props.load(new java.io.FileReader(file))
-      props
-    }
-    else
-      props
-  }
-
-  private def compute_timing(results: Build.Results, group: Option[String]): Timing = {
-    val timings = results.sessions.collect {
-      case session if group.forall(results.info(session).groups.contains(_)) =>
-        results(session).timing
-    }
-    timings.foldLeft(Timing.zero)(_ + _)
-  }
-
 
   /* ci build jobs */
 
