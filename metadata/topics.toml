@@ -148,6 +148,18 @@ ams.hierarchy = [
   "Models and methods for concurrent and distributed computing (process algebras, bisimulation, transition nets, etc.)",
 ]
 
+["Computer science"."Data management systems"]
+
+["Computer science"."Data management systems".classification]
+acm.id = "10002951.10002952"
+acm.desc = "Information systems~Data management systems"
+ams.id = "68P15"
+ams.hierarchy = [
+  "Computer science",
+  "Theory of data",
+  "Database theory",
+]
+
 ["Computer science"."Data structures"]
 
 ["Computer science"."Data structures".classification]

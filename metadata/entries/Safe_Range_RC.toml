@@ -3,6 +3,7 @@
 title = "Making Arbitrary Relational Calculus Queries Safe-Range"
 date = 2022-09-28
 topics = [
+  "Computer science/Data management systems",
   "Logic/General logic/Classical first-order logic",
 ]
 abstract = """
