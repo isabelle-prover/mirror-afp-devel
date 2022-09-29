@@ -12,9 +12,11 @@
   "shortname": "Safe_Range_RC",
   "title": "Making Arbitrary Relational Calculus Queries Safe-Range",
   "topic_links": [
+   "computer-science/data-management-systems",
    "logic/general-logic/classical-first-order-logic"
   ],
   "topics": [
+   "Computer science/Data management systems",
    "Logic/General logic/Classical first-order logic"
   ],
   "used_by": 0
@@ -888,9 +890,11 @@
   "shortname": "Eval_FO",
   "title": "First-Order Query Evaluation",
   "topic_links": [
+   "computer-science/data-management-systems",
    "logic/general-logic/classical-first-order-logic"
   ],
   "topics": [
+   "Computer science/Data management systems",
    "Logic/General logic/Classical first-order logic"
   ],
   "used_by": 0
@@ -2494,9 +2498,11 @@
   "shortname": "BTree",
   "title": "A Verified Imperative Implementation of B-Trees",
   "topic_links": [
+   "computer-science/data-management-systems",
    "computer-science/data-structures"
   ],
   "topics": [
+   "Computer science/Data management systems",
    "Computer science/Data structures"
   ],
   "used_by": 0
@@ -4248,9 +4254,11 @@
   "shortname": "Generic_Join",
   "title": "Formalization of Multiway-Join Algorithms",
   "topic_links": [
+   "computer-science/data-management-systems",
    "computer-science/algorithms"
   ],
   "topics": [
+   "Computer science/Data management systems",
    "Computer science/Algorithms"
   ],
   "used_by": 1
