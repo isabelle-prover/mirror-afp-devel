@@ -1,0 +1,71 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{a4wide}
+\usepackage[english]{babel}
+\usepackage{eufrak}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{literal}
+
+
+\begin{document}
+
+\title{Making Arbitrary Relational Calculus Queries Safe-Range}
+\author{Martin Raszyk \and Dmitriy Traytel}
+
+\maketitle
+
+\begin{abstract}
+
+The relational calculus (RC), i.e., first-order logic with equality but without
+function symbols, is a concise, declarative database query language. In
+contrast to relational algebra or SQL, which are the traditional query
+languages of choice in the database community, RC queries can evaluate to an
+infinite relation. Moreover, even in cases where the evaluation result of an RC
+query would be finite it is not clear how to efficiently compute it. Safe-range
+RC is an interesting syntactic subclass of RC, because all safe-range queries
+evaluate to a finite result and it is
+well-known~\cite[\S5.4]{DBLP:books/aw/AbiteboulHV95} how to evaluate such
+queries by translating them to relational algebra. We formalize and prove
+correct our recent translation~\cite{DBLP:conf/icdt/RaszykBKT22} of an
+arbitrary RC query into a pair of safe-range queries. Assuming an infinite
+domain, the two queries have the following meaning: The first is closed and
+characterizes the original query's relative safety, i.e., whether given a fixed
+database (interpretation of atomic predicates with finite relations), the
+original query evaluates to a finite relation. The second safe-range query is
+equivalent to the original query, if the latter is relatively safe.
+
+The formalization uses the Refinement Framework to go from the
+non-deterministic algorithm described in the paper to a deterministic,
+executable query translation. Our executable query translation is a first step
+towards a verified tool that efficiently evaluates arbitrary RC queries. This
+very problem is also solved by the AFP entry
+\href{https://isa-afp.org/entries/Eval_FO.html}{Eval\_FO} with a theoretically
+incomparable but practically worse time complexity. (The latter is demonstrated
+by our empirical evaluation~\cite{DBLP:conf/icdt/RaszykBKT22}.)
+
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
