@@ -6,7 +6,16 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Wed, 28 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 29 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Meximum Segment Sum</title>
+      <link>/entries/Maximum_Segment_Sum.html</link>
+      <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Maximum_Segment_Sum.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
       <link>/entries/Safe_Range_RC.html</link>
@@ -10121,6 +10130,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Maximum_Segment_Sum</title>
+      <link>/theories/maximum_segment_sum/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/maximum_segment_sum/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>MDP-Algorithms</title>
       <link>/theories/mdp-algorithms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12196,7 +12214,7 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>706 Entries   426 Authors   ~217,700 Lemmas   ~3,572,500 Lines of Code   Most used AFP entries:   Name Used by ? entries   1. List-Index 22   2. Collections 19   3. Show 16   4. Deriving 13   5. Coinductive 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>707 Entries   427 Authors   ~217,700 Lemmas   ~3,572,600 Lines of Code   Most used AFP entries:   Name Used by ? entries   1. List-Index 22   2. Collections 19   3. Show 16   4. Deriving 13   5. Coinductive 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>

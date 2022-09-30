@@ -3,10 +3,19 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cremer/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Maximum_Segment_Sum.html</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/collections/</loc>
     <lastmod>2022-09-28T00:00:00+00:00</lastmod>
@@ -15,9 +24,6 @@
     <lastmod>2022-09-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/deriving/</loc>
-    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2022-09-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/list-index/</loc>
@@ -5226,6 +5232,8 @@
     <loc>/theories/matroids/</loc>
   </url><url>
     <loc>/theories/max-card-matching/</loc>
+  </url><url>
+    <loc>/theories/maximum_segment_sum/</loc>
   </url><url>
     <loc>/theories/mdp-algorithms/</loc>
   </url><url>

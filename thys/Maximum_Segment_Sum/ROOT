@@ -1,0 +1,9 @@
+chapter AFP
+
+session "Maximum_Segment_Sum" (AFP) = HOL +
+  options [timeout=300]
+  theories
+    Maximum_Segment_Sum
+  document_files
+    "root.tex"
+    "root.bib"
