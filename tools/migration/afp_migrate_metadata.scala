@@ -324,10 +324,7 @@ object AFP_Migrate_Metadata {
 
     val root_topics = parse_topics(split_lines(read(Path.basic("topics"))))
 
-    def sub_topics(topic: Topic): List[Topic] =
-      topic :: topic.sub_topics.flatMap(sub_topics)
-
-    val topic_map = root_topics.flatMap(sub_topics).map(topic => topic.id -> topic).toMap
+    val topic_map = root_topics.flatMap(_.all_topics).map(topic => topic.id -> topic).toMap
 
     write(Metadata.TOML.from_topics(root_topics), Path.basic("topics.toml"))
 

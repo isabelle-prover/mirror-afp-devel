@@ -98,7 +98,10 @@ object Metadata {
     id: Topic.ID,
     name: String,
     classification: List[Classification] = Nil,
-    sub_topics: List[Topic] = Nil)
+    sub_topics: List[Topic] = Nil
+  ) {
+    def all_topics: List[Topic] = this :: sub_topics.flatMap(_.all_topics)
+  }
 
   object Topic {
     type ID = String
