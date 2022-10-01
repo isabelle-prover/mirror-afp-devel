@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/mathematics/graph-theory/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Undirected Graph Theory</title>
+      <link>/entries/Undirected_Graph_Theory.html</link>
+      <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Undirected_Graph_Theory.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Knight&#39;s Tour Revisited Revisited</title>
       <link>/entries/Knights_Tour.html</link>
       <pubDate>Tue, 04 Jan 2022 00:00:00 +0000</pubDate>

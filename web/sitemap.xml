@@ -11,16 +11,28 @@
     <loc>/authors/cremer/</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/design_theory/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/edmonds/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/girth_chromatic/</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Maximum_Segment_Sum.html</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/collections/</loc>
-    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
+    <loc>/entries/Undirected_Graph_Theory.html</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
+    <loc>/dependencies/collections/</loc>
     <lastmod>2022-09-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/deriving/</loc>
@@ -287,12 +299,6 @@
     <loc>/dependencies/benor_kozen_reif/</loc>
     <lastmod>2022-04-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/design_theory/</loc>
-    <lastmod>2022-04-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/edmonds/</loc>
-    <lastmod>2022-04-21T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Fishers_Inequality.html</loc>
     <lastmod>2022-04-21T00:00:00+00:00</lastmod>
   </url><url>
@@ -486,9 +492,6 @@
     <lastmod>2021-12-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/ergodic_theory/</loc>
-    <lastmod>2021-12-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/girth_chromatic/</loc>
     <lastmod>2021-12-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/random_graph_subgraph_threshold/</loc>
@@ -5799,6 +5802,8 @@
     <loc>/theories/types_tableaus_and_goedels_god/</loc>
   </url><url>
     <loc>/theories/types_to_sets_extension/</loc>
+  </url><url>
+    <loc>/theories/undirected_graph_theory/</loc>
   </url><url>
     <loc>/theories/universal_hash_families/</loc>
   </url><url>
