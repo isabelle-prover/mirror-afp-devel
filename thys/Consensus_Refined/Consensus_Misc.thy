@@ -11,18 +11,6 @@ method_setup clarsimp_all =
     K (SIMPLE_METHOD o CHANGED_PROP o PARALLEL_ALLGOALS o clarsimp_tac)\<close>
   "clarify simplified, all goals"
 
-lemma div_Suc:
-  "Suc m div n = (if Suc m mod n = 0 then Suc (m div n) else m div n)" (is "_ = ?rhs")
-proof (cases "Suc m mod n = 0")
-  case True
-  then show ?thesis
-    by simp (metis Zero_not_Suc diff_Suc_Suc div_geq minus_mod_eq_mult_div mod_Suc mod_less neq0_conv nonzero_mult_div_cancel_left)
-next
-  case False
-  then show ?thesis
-    by simp (metis diff_Suc_Suc div_eq_0_iff minus_mod_eq_mult_div mod_Suc neq0_conv nonzero_mult_div_cancel_left)
-qed
-
 definition flip where
   flip_def: "flip f \<equiv> \<lambda>x y. f y x"
 

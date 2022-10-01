@@ -91,7 +91,7 @@ proof -
     using M_Rel_def to_int_mod_ring_of_int_M by auto
   from assms show "R f1 (of_int (M f3))" 
     unfolding M_rel_i_def
-    by (metis int_one_le_iff_zero_less leD linear m1 poly_mod.M_def pos_mod_conj to_int')
+    by (metis int_one_le_iff_zero_less leD linear m1 poly_mod.M_def pos_mod_sign pos_mod_bound to_int')
 qed
 
 lemma Mp_rel_iD: assumes "Mp_rel_i f1 f3"

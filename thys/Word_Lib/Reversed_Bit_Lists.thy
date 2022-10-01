@@ -1790,11 +1790,8 @@ lemma bl_word_roti_dt':
   apply safe
    apply (simp add: zmod_zminus1_eq_if)
    apply safe
-    apply (simp add: nat_mult_distrib)
-   apply (simp add: nat_diff_distrib [OF pos_mod_sign pos_mod_conj
-                                      [THEN conjunct2, THEN order_less_imp_le]]
-                    nat_mod_distrib)
-  apply (simp add: nat_mod_distrib)
+    apply (auto simp add: nat_mult_distrib nat_mod_distrib)
+  using nat_0_le nat_minus_as_int zmod_int apply presburger
   done
 
 lemmas bl_word_roti_dt = bl_word_roti_dt' [unfolded word_size]

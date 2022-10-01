@@ -1416,7 +1416,7 @@ lemma clearBit_no:
 
 lemma eq_mod_iff: "0 < n \<Longrightarrow> b = b mod n \<longleftrightarrow> 0 \<le> b \<and> b < n"
   for b n :: int
-  by auto (metis pos_mod_conj)+
+  using pos_mod_sign [of n b] pos_mod_bound [of n b] by (safe, auto)
 
 lemma split_uint_lem: "bin_split n (uint w) = (a, b) \<Longrightarrow>
     a = take_bit (LENGTH('a) - n) a \<and> b = take_bit (LENGTH('a)) b"

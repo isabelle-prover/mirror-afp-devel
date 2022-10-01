@@ -370,9 +370,10 @@ proof (induct ls arbitrary: i)
     by simp
 next
   case (Cons a ls)
-  then show ?case
-    apply (auto simp add: nth_append)
-    using div_if mod_geq by auto
+  moreover have \<open>n > 0\<close>
+    by (rule ccontr) (use assms in auto)
+  ultimately show ?case
+    by (auto simp add: nth_append not_less dest: le_Suc_ex)
 qed
 
 lemma z_append:

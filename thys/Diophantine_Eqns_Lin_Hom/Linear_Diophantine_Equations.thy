@@ -37,8 +37,7 @@ proof -
     by (metis assms calculation lcm_pos_nat)
   ultimately show ?thesis
     using assms
-    by (metis div_by_0 div_mult2_eq div_positive gcd_le2_nat nat_mult_div_cancel_disj neq0_conv
-              semiring_normalization_rules(7))
+    by simp (metis div_greater_zero_iff div_le_mono2 div_mult_self_is_m gcd_le2_nat not_gr0)
 qed
 
 (*TODO: move*)

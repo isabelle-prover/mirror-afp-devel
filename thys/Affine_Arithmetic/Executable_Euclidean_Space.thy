@@ -573,11 +573,8 @@ lemma concat_same_lengths_nth:
   assumes "\<And>xs. xs \<in> set XS \<Longrightarrow> length xs = N"
   assumes "i < length XS * N" "N > 0"
   shows "concat XS ! i = XS ! (i div N) ! (i mod N)"
-  using assms
-  apply (induction XS arbitrary: i)
-   apply (auto simp: nth_append nth_Cons split: nat.splits)
-   apply (simp add: div_eq_0_iff)
-  by (metis Suc_inject div_geq mod_geq)
+using assms by (induction XS arbitrary: i)
+  (auto simp: nth_append nth_Cons div_eq_0_iff le_div_geq le_mod_geq split: nat.splits)
 
 lemma concat_map_map_index:
   shows "concat (map (\<lambda>n. map (f n) xs) ys) =

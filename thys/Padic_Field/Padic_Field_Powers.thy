@@ -4294,8 +4294,10 @@ next
     have 9: "k < n"
       unfolding k_def
       using assms by auto
-    show " \<exists>y\<in>nonzero Q\<^sub>p. 0 \<le> ord y \<and> ord y < int n \<and> pow_res n x = pow_res n y"
-      by (metis "6" "8" a_nonzero assms k_def less_imp_of_nat_less of_nat_eq_0_iff pos_mod_conj rel_simps(45) zero_less_iff_neq_zero)
+    from 6 8 9 assms have \<open>0 \<le> ord a\<close> \<open>ord a < int n\<close> \<open>pow_res n x = pow_res n a\<close>
+      by (auto simp add: k_def)
+    with a_nonzero show "\<exists>y\<in>nonzero Q\<^sub>p. 0 \<le> ord y \<and> ord y < int n \<and> pow_res n x = pow_res n y"
+      by auto
   qed
   have 2: "\<And>x. x \<in> (pow_res_classes n) \<Longrightarrow> \<exists> \<eta> \<nu>. \<eta> \<in> Units (Zp_res_ring m) \<and> \<nu> \<in> {0..<int n} \<and> x = f \<eta> \<nu>"
   proof- fix a assume A: "a \<in> (pow_res_classes n)"

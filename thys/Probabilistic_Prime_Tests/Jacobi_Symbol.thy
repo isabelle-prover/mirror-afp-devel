@@ -294,7 +294,7 @@ lemma mod_int_wlog [consumes 1, case_names modulo]:
   assumes "b > 0"
   assumes "\<And>k. 0 \<le> k \<Longrightarrow> k < b \<Longrightarrow> n mod b = k \<Longrightarrow> P n"
   shows   "P n"
-  using assms and pos_mod_conj by blast 
+  using \<open>b > 0\<close> assms(2) [of \<open>n mod b\<close>] by simp
 
 lemma supplement2_Jacobi':
   assumes "odd p" and "p > 1"

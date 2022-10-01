@@ -194,11 +194,11 @@ proof -
   }
 
   ultimately show ?thesis
-    using bin_narry_def apply (auto simp add: nth_bit_def)
-    subgoal by (smt add_0_left add_less_cancel_left divmod_digit_0(2) le_less_trans mod_less_divisor
+    apply (auto simp add: nth_bit_def not_less bin_narry_def)
+    subgoal by (smt add_0_left add_less_cancel_left Divides.divmod_digit_0(2) le_less_trans mod_less_divisor
         mod_mult2_eq mult_zero_right nat_neq_iff not_less not_mod2_eq_Suc_0_eq_0 
         semiring_normalization_rules(7) zero_less_numeral zero_less_power)
-    subgoal by (smt One_nat_def add.left_neutral divmod_digit_0(1) le_less_trans less_imp_le
+    subgoal by (smt One_nat_def add.left_neutral Divides.divmod_digit_0(1) le_less_trans less_imp_le
           mod_less_divisor mod_mult2_eq mod_mult_self1_is_0 mult_zero_right not_less
           not_mod2_eq_Suc_0_eq_0 not_one_le_zero semiring_normalization_rules(7) zero_less_numeral 
           zero_less_power)
