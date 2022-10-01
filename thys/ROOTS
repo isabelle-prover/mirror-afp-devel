@@ -401,6 +401,7 @@ Matrices_for_ODEs
 Matrix
 Matrix_Tensor
 Matroids
+Maximum_Segment_Sum
 Max-Card-Matching
 Median_Method
 Median_Of_Medians_Selection
@@ -574,6 +575,7 @@ SIFUM_Type_Systems
 SPARCv8
 Safe_Distance
 Safe_OCL
+Safe_Range_RC
 Saturation_Framework
 Saturation_Framework_Extensions
 SCC_Bloemen_Sequential
@@ -670,6 +672,7 @@ Types_To_Sets_Extension
 UPF
 UPF_Firewall
 UTP
+Undirected_Graph_Theory
 Universal_Hash_Families
 Universal_Turing_Machine
 UpDown_Scheme

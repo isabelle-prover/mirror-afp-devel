@@ -1,0 +1,19 @@
+chapter AFP
+
+session Safe_Range_RC (AFP) = Collections +
+  options [timeout=600]
+  sessions
+    Deriving
+    "List-Index"
+  theories
+    Preliminaries
+    Relational_Calculus
+    Restrict_Bounds
+    Restrict_Bounds_Impl
+    Restrict_Frees
+    Restrict_Frees_Impl
+    Examples
+    Results
+  document_files
+    "root.tex"
+    "root.bib"

@@ -3724,6 +3724,15 @@
     </item>
     
     <item>
+      <title>Maximum_Segment_Sum</title>
+      <link>/theories/maximum_segment_sum/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/maximum_segment_sum/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>MDP-Algorithms</title>
       <link>/theories/mdp-algorithms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5290,6 +5299,15 @@
     </item>
     
     <item>
+      <title>Safe_Range_RC</title>
+      <link>/theories/safe_range_rc/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/safe_range_rc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>SATSolverVerification</title>
       <link>/theories/satsolververification/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -6222,6 +6240,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/types_to_sets_extension/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Undirected_Graph_Theory</title>
+      <link>/theories/undirected_graph_theory/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/undirected_graph_theory/</guid>
       <description></description>
     </item>
     

@@ -3,16 +3,52 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cremer/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
-    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/design_theory/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/edmonds/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2022-09-23T00:00:00+00:00</lastmod>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/girth_chromatic/</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Maximum_Segment_Sum.html</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Undirected_Graph_Theory.html</loc>
+    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/collections/</loc>
+    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/deriving/</loc>
+    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/list-index/</loc>
+    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Safe_Range_RC.html</loc>
+    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/raszyk/</loc>
+    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/traytel/</loc>
+    <lastmod>2022-09-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/epistemic_logic/</loc>
     <lastmod>2022-09-23T00:00:00+00:00</lastmod>
@@ -263,19 +299,10 @@
     <loc>/dependencies/benor_kozen_reif/</loc>
     <lastmod>2022-04-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/design_theory/</loc>
-    <lastmod>2022-04-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/edmonds/</loc>
-    <lastmod>2022-04-21T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Fishers_Inequality.html</loc>
     <lastmod>2022-04-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/groebner_bases/</loc>
-    <lastmod>2022-04-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/list-index/</loc>
     <lastmod>2022-04-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/polynomial_factorization/</loc>
@@ -389,9 +416,6 @@
     <loc>/entries/Eval_FO.html</loc>
     <lastmod>2022-02-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/raszyk/</loc>
-    <lastmod>2022-02-15T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/VYDRA_MDL.html</loc>
     <lastmod>2022-02-13T00:00:00+00:00</lastmod>
   </url><url>
@@ -429,9 +453,6 @@
     <lastmod>2022-02-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/FOL_Seq_Calc2.html</loc>
-    <lastmod>2022-01-31T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/collections/</loc>
     <lastmod>2022-01-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/fol_seq_calc1/</loc>
@@ -474,9 +495,6 @@
     <lastmod>2021-12-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/ergodic_theory/</loc>
-    <lastmod>2021-12-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/girth_chromatic/</loc>
     <lastmod>2021-12-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/random_graph_subgraph_threshold/</loc>
@@ -540,9 +558,6 @@
     <lastmod>2021-11-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/automatic_refinement/</loc>
-    <lastmod>2021-11-23T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/deriving/</loc>
     <lastmod>2021-11-23T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lammich/</loc>
@@ -939,9 +954,6 @@
     <lastmod>2021-04-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/lattuada/</loc>
-    <lastmod>2021-04-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/traytel/</loc>
     <lastmod>2021-04-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/IFC_Tracking.html</loc>
@@ -4530,6 +4542,8 @@
   </url><url>
     <loc>/topics/computer-science/concurrency/process-calculi/</loc>
   </url><url>
+    <loc>/topics/computer-science/data-management-systems/</loc>
+  </url><url>
     <loc>/topics/computer-science/data-structures/</loc>
   </url><url>
     <loc>/topics/computer-science/functional-programming/</loc>
@@ -5228,6 +5242,8 @@
   </url><url>
     <loc>/theories/max-card-matching/</loc>
   </url><url>
+    <loc>/theories/maximum_segment_sum/</loc>
+  </url><url>
     <loc>/theories/mdp-algorithms/</loc>
   </url><url>
     <loc>/theories/mdp-rewards/</loc>
@@ -5576,6 +5592,8 @@
   </url><url>
     <loc>/theories/safe_ocl/</loc>
   </url><url>
+    <loc>/theories/safe_range_rc/</loc>
+  </url><url>
     <loc>/theories/satsolververification/</loc>
   </url><url>
     <loc>/theories/saturation_framework/</loc>
@@ -5790,6 +5808,8 @@
     <loc>/theories/types_tableaus_and_goedels_god/</loc>
   </url><url>
     <loc>/theories/types_to_sets_extension/</loc>
+  </url><url>
+    <loc>/theories/undirected_graph_theory/</loc>
   </url><url>
     <loc>/theories/universal_hash_families/</loc>
   </url><url>

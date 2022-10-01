@@ -1,0 +1,38 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Maximum Segment Sum}
+\author{Nils Cremer}
+\maketitle
+
+\begin{abstract}
+In this work we consider the \emph{maximum segment sum} problem~\cite{wiki}, that is to compute, given a list of numbers,
+the largest of the sums of the contiguous segments of that list.
+We assume that the elements of the list are not necessarily numbers but just elements
+of some linearly ordered group.
+Both an implementation for a naive algorithm ($\mathcal{O}(n^2)$) as well as for Kadane's algorithm~\cite{wiki} ($\mathcal{O}(n)$) are given and their correctness proven.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
