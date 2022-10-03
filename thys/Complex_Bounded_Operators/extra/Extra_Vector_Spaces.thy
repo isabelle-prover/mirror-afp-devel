@@ -174,5 +174,36 @@ proof -
     by auto
 qed
 
+lemma ex_norm1:
+  assumes \<open>(UNIV::'a::real_normed_vector set) \<noteq> {0}\<close>
+  shows \<open>\<exists>x::'a. norm x = 1\<close>
+proof-
+  have \<open>\<exists>x::'a. x \<noteq> 0\<close>
+    using assms by fastforce
+  then obtain x::'a where \<open>x \<noteq> 0\<close>
+    by blast
+  hence \<open>norm x \<noteq> 0\<close>
+    by simp
+  hence \<open>(norm x) / (norm x) = 1\<close>
+    by simp
+  moreover have \<open>(norm x) / (norm x) = norm (x /\<^sub>R (norm x))\<close>
+    by simp
+  ultimately have \<open>norm (x /\<^sub>R (norm x)) = 1\<close>
+    by simp
+  thus ?thesis
+    by blast
+qed
+
+lemma bdd_above_norm_f:
+  assumes "bounded_linear f"
+  shows \<open>bdd_above {norm (f x) |x. norm x = 1}\<close>
+proof-
+  have \<open>\<exists>M. \<forall>x. norm x = 1 \<longrightarrow> norm (f x) \<le> M\<close>
+    using assms
+    by (metis bounded_linear.axioms(2) bounded_linear_axioms_def)
+  thus ?thesis by auto
+qed
+
+
 
 end

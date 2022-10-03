@@ -118,24 +118,8 @@ lemma mult_le_less_imp_less:
 end
 
 subclass (in linordered_semiring_strict) ordered_semiring_strict
-proof
-  show "c * a < c * b"
-    if "a < b"
-      and "0 < c"
-    for a :: 'a
-      and b
-      and c
-    using that
-    by (simp add: local.mult_strict_left_mono)
-  show "a * c < b * c"
-    if "a < b"
-      and "0 < c"
-    for a :: 'a
-      and b
-      and c
-    using that
-    by (simp add: local.mult_strict_right_mono)
-qed
+  apply standard
+  by (auto simp: mult_strict_left_mono mult_strict_right_mono)
 
 class ordered_semiring_1_strict = ordered_semiring_strict + semiring_1
   \<comment> \<open>missing class analogous to \<^class>\<open>linordered_semiring_1_strict\<close> without requiring
@@ -869,10 +853,6 @@ end (* class nice_ordered_field *)
 
 code_identifier
   code_module Ordered_Fields \<rightharpoonup> (SML) Arith and (OCaml) Arith and (Haskell) Arith
-
-subsection\<open>Ordered Complex\<close>
-
-subsection\<open>Ordered Complex\<close>
 
 subsection \<open>Ordering on complex numbers\<close>
 

@@ -157,9 +157,9 @@ lemma vec_of_basis_enum_minus:
 lemma cinner_basis_enum_of_vec:
   defines "n \<equiv> length (canonical_basis :: 'a::onb_enum list)"
   assumes [simp]: "dim_vec x = n" "dim_vec y = n"
-  shows  "\<langle>basis_enum_of_vec x :: 'a, basis_enum_of_vec y\<rangle> = y \<bullet>c x"
+  shows  "(basis_enum_of_vec x :: 'a) \<bullet>\<^sub>C basis_enum_of_vec y = y \<bullet>c x"
 proof -
-  have \<open>\<langle>basis_enum_of_vec x :: 'a, basis_enum_of_vec y\<rangle>
+  have \<open>(basis_enum_of_vec x :: 'a) \<bullet>\<^sub>C basis_enum_of_vec y
     = (\<Sum>i<n. x$i *\<^sub>C canonical_basis ! i :: 'a) \<bullet>\<^sub>C (\<Sum>i<n. y$i *\<^sub>C canonical_basis ! i)\<close>
     by (auto simp: basis_enum_of_vec_def sum_list_sum_nth atLeast0LessThan simp flip: n_def)
   also have \<open>\<dots> = (\<Sum>i<n. \<Sum>j<n. cnj (x$i) *\<^sub>C y$j *\<^sub>C ((canonical_basis ! i :: 'a) \<bullet>\<^sub>C (canonical_basis ! j)))\<close>
@@ -560,7 +560,7 @@ lemma vec_of_basis_enum_ell2_component:
   shows \<open>vec_of_basis_enum \<psi> $ i = Rep_ell2 \<psi> (Enum.enum ! i)\<close>
 proof -
   let ?i = \<open>Enum.enum ! i\<close>
-  have \<open>Rep_ell2 \<psi> (Enum.enum ! i) = \<langle>ket ?i, \<psi>\<rangle>\<close>
+  have \<open>Rep_ell2 \<psi> (Enum.enum ! i) = ket ?i \<bullet>\<^sub>C \<psi>\<close>
     by (simp add: cinner_ket_left)
   also have \<open>\<dots> = vec_of_basis_enum \<psi> \<bullet>c vec_of_basis_enum (ket ?i :: 'a ell2)\<close>
     by (rule cscalar_prod_vec_of_basis_enum[symmetric])
@@ -926,8 +926,7 @@ lemma cblinfun_of_mat_adjoint:
   assumes "M \<in> carrier_mat nB nA"
   shows "((cblinfun_of_mat (mat_adjoint M)) :: 'b \<Rightarrow>\<^sub>C\<^sub>L 'a) = (cblinfun_of_mat M)*"
 proof (rule adjoint_eqI)
-  show "\<langle>cblinfun_of_mat (mat_adjoint M) *\<^sub>V x, y\<rangle> =
-           \<langle>x, cblinfun_of_mat M *\<^sub>V y\<rangle>"
+  show "(cblinfun_of_mat (mat_adjoint M) *\<^sub>V x) \<bullet>\<^sub>C y = x \<bullet>\<^sub>C (cblinfun_of_mat M *\<^sub>V y)"
     for x::'b and y::'a
   proof-
     define u where "u = vec_of_basis_enum x"
@@ -949,8 +948,7 @@ proof (rule adjoint_eqI)
     hence "v \<bullet>c (vec_of_basis_enum ((cblinfun_of_mat (mat_adjoint M) *\<^sub>V x)::'a))
         = (vec_of_basis_enum ((cblinfun_of_mat M *\<^sub>V y)::'b)) \<bullet>c u"
       using c1 c2 by simp
-    thus "\<langle>cblinfun_of_mat (mat_adjoint M) *\<^sub>V x, y\<rangle> =
-          \<langle>x, cblinfun_of_mat M *\<^sub>V y\<rangle>"
+    thus "(cblinfun_of_mat (mat_adjoint M) *\<^sub>V x) \<bullet>\<^sub>C y = x \<bullet>\<^sub>C (cblinfun_of_mat M *\<^sub>V y)"
       unfolding u_def v_def
       by (simp add: cscalar_prod_vec_of_basis_enum)
   qed
@@ -1010,7 +1008,7 @@ proof -
       finally have "(classical_operator f) *\<^sub>V ket (Enum.enum!c) = 0" .
       hence *: "(classical_operator f) *\<^sub>V BasisA!c = 0"
         using x1 by simp
-      hence "\<langle>BasisB!r, (classical_operator f) *\<^sub>V BasisA!c\<rangle> = 0"
+      hence "is_orthogonal (BasisB!r) (classical_operator f *\<^sub>V BasisA!c)"
         by simp
       thus ?thesis
         unfolding mat_of_cblinfun_def BasisA_def BasisB_def
@@ -1043,11 +1041,11 @@ proof -
       finally have "(classical_operator f) *\<^sub>V ket (Enum.enum!c) = ket (Enum.enum!r')" .
       hence *: "(classical_operator f) *\<^sub>V BasisA!c = BasisB!r'"
         using x1 x3 by simp
-      moreover have "\<langle>BasisB!r, BasisB!r'\<rangle> = 0"
+      moreover have "is_orthogonal (BasisB!r) (BasisB!r')"
         using h1
         using BasisB_def \<open>r < length BasisB\<close> \<open>r' < length BasisB\<close> is_ortho_set_def is_orthonormal nth_mem
         by metis
-      ultimately have "\<langle>BasisB!r, (classical_operator f) *\<^sub>V BasisA!c\<rangle> = 0"
+      ultimately have "is_orthogonal (BasisB!r) (classical_operator f *\<^sub>V BasisA!c)"
         by simp
       thus ?thesis
         unfolding mat_of_cblinfun_def BasisA_def BasisB_def
@@ -1116,11 +1114,11 @@ proof -
       finally have w1: "(classical_operator f) *\<^sub>V (BasisA!c) = BasisB!r"
         by simp
       have "(mat_of_cblinfun (classical_operator f))$$(r,c)
-        = \<langle>BasisB!r, (classical_operator f) *\<^sub>V (BasisA!c)\<rangle>"
+        = (BasisB!r) \<bullet>\<^sub>C (classical_operator f *\<^sub>V (BasisA!c))"
         unfolding BasisB_def BasisA_def mat_of_cblinfun_def
         using \<open>nA = CARD('a)\<close> \<open>nB = CARD('b)\<close> a1 a2 nA_def nB_def apply auto
         by (metis BasisA_def BasisB_def canonical_basis_length_ell2 cinner_canonical_basis complex_vector.representation_basis is_cindependent_set nth_mem w1)
-      also have "\<dots> = \<langle>BasisB!r, BasisB!r\<rangle>"
+      also have "\<dots> = (BasisB!r) \<bullet>\<^sub>C (BasisB!r)"
         using w1 by simp
       also have "\<dots> = 1"
         unfolding BasisB_def
@@ -1382,11 +1380,11 @@ proof -
       with Cons.prems have "s \<noteq> s'" by auto
       have "s \<noteq> 0"
         by (metis Cons.prems(1) is_ortho_set_def list.set_intros(1))
-      then have "0 \<noteq> \<langle>s /\<^sub>R norm s, s /\<^sub>R norm s\<rangle>"
+      then have "0 \<noteq> (s /\<^sub>R norm s) \<bullet>\<^sub>C (s /\<^sub>R norm s)"
         by simp
-      also have \<open>\<langle>s /\<^sub>R norm s, s /\<^sub>R norm s\<rangle> = \<langle>s /\<^sub>R norm s, s' /\<^sub>R norm s'\<rangle>\<close>
+      also have \<open>(s /\<^sub>R norm s) \<bullet>\<^sub>C (s /\<^sub>R norm s) = (s /\<^sub>R norm s) \<bullet>\<^sub>C (s' /\<^sub>R norm s')\<close>
         by (simp add: same)
-      also have \<open>\<langle>s /\<^sub>R norm s, s' /\<^sub>R norm s'\<rangle> = \<langle>s, s'\<rangle> / (norm s * norm s')\<close>
+      also have \<open>(s /\<^sub>R norm s) \<bullet>\<^sub>C (s' /\<^sub>R norm s') = (s \<bullet>\<^sub>C s') / (norm s * norm s')\<close>
         by (simp add: scaleR_scaleC divide_inverse_commute)
       also from \<open>s' \<in> set S\<close> \<open>s \<noteq> s'\<close> have "\<dots> = 0"
         using Cons.prems unfolding is_ortho_set_def by simp
@@ -1431,11 +1429,11 @@ proof -
     have "0 \<noteq> cmod (cinner x x)"
       using \<open>x \<in> set Snorm\<close> norm_Snorm
       by force
-    also have "cmod (cinner x x) = cmod (c * \<langle>x, y\<rangle>)"
+    also have "cmod (cinner x x) = cmod (c * (x \<bullet>\<^sub>C y))"
       apply (subst (2) xcy) by simp
-    also have "\<dots> = cmod \<langle>x, y\<rangle>"
+    also have "\<dots> = cmod (x \<bullet>\<^sub>C y)"
       using \<open>cmod c = 1\<close> by (simp add: norm_mult)
-    finally have "\<langle>x, y\<rangle> \<noteq> 0"
+    finally have "(x \<bullet>\<^sub>C y) \<noteq> 0"
       by simp
     then show "x = y"
       using ortho_Snorm \<open>x \<in> set Snorm\<close> \<open>y \<in> set Snorm\<close>

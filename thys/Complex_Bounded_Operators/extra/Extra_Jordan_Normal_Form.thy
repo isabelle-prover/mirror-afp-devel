@@ -312,43 +312,26 @@ proof -
     have "T ! length (rev U) = a"
       unfolding T_def
       by (meson nth_append_length) 
-    moreover have "(T ! i \<bullet>c T ! j = 0) = (i \<noteq> j)"
-      if "i<length T"
-        and "j<length T"
-      for i j
-      using uar 
+    moreover have "(T ! i \<bullet>c T ! j = 0) = (i \<noteq> j)" if "i<length T" and "j<length T" for i j
+      using uar that 
       unfolding corthogonal_def T_def
-      apply auto
-      using T_def that(2) apply auto[1]
-      using T_def that(1) that(2) by auto     
+      by auto
     moreover have "length (rev U) < length T"
       by (simp add: T_def)
-    ultimately have "(T ! (length (rev U)) \<bullet>c T ! j = 0) = (length (rev U) \<noteq> j)"
-      if "j<length T"
-      for j
-      using that by blast    
+    ultimately have "(T ! (length (rev U)) \<bullet>c T ! j = 0) = (length (rev U) \<noteq> j)" if "j<length T" for j
+      using that by blast
     hence "T ! (length (rev U)) \<bullet>c T ! j = 0"
-      if  "j<length T"
-        and "j \<noteq> length (rev U)"
-      for j
-      using that(1) that(2) by blast
-    hence "a \<bullet>c T ! j = 0"
-      if   "j < length (rev U)"
-      for j
+      if  "j<length T" and "j \<noteq> length (rev U)" for j
+      using that by blast
+    hence "a \<bullet>c T ! j = 0" if "j < length (rev U)" for j
       using \<open>T ! length (rev U) = a\<close> that(1)
         \<open>length (rev U) < length T\<close> dual_order.strict_trans by blast
-    moreover have "T ! j = (rev U) ! j"
-      if   "j < length (rev U)"
-      for j
+    moreover have "T ! j = (rev U) ! j" if "j < length (rev U)" for j
       by (smt T_def \<open>length (rev U) < length T\<close> dual_order.strict_trans list_update_append1
           list_update_id nth_list_update_eq that)
-    ultimately have "a \<bullet>c u = 0"
-      if "u \<in> set (rev U)"
-      for u
+    ultimately have "a \<bullet>c u = 0" if "u \<in> set (rev U)" for u
       by (metis in_set_conv_nth that)
-    hence "a \<bullet>c u = 0"
-      if "u \<in> set U"
-      for u
+    hence "a \<bullet>c u = 0" if "u \<in> set U" for u
       by (simp add: that)
     moreover have "\<And>x. x \<in> set U \<Longrightarrow> dim_vec x = d"
       by (simp add: Cons.prems(2))      

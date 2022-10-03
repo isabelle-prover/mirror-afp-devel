@@ -10,37 +10,38 @@ text \<open>The class \<open>one_dim\<close> applies to one-dimensional vector s
      Those are additionally interpreted as \<^class>\<open>complex_algebra_1\<close>s 
      via the canonical isomorphism between a one-dimensional vector space and 
      \<^typ>\<open>complex\<close>.\<close>
-class one_dim = onb_enum + one + times + complex_inner + inverse +
+class one_dim = onb_enum + one + times + inverse +
   assumes one_dim_canonical_basis[simp]: "canonical_basis = [1]"
-  assumes one_dim_prod_scale1: "(a *\<^sub>C 1) * (b *\<^sub>C 1) = (a*b) *\<^sub>C 1"
+  assumes one_dim_prod_scale1: "(a *\<^sub>C 1) * (b *\<^sub>C 1) = (a * b) *\<^sub>C 1"
   assumes divide_inverse: "x / y = x * inverse y"
   assumes one_dim_inverse: "inverse (a *\<^sub>C 1) = inverse a *\<^sub>C 1"
 
-hide_fact (open) divide_inverse (* divide_inverse from field_class, instantiated below, subsumed this one *)
+hide_fact (open) divide_inverse
+  \<comment> \<open>@{thm [source] divide_inverse} from class \<^class>\<open>field\<close>, instantiated below, subsumes this fact.\<close>
 
 instance complex :: one_dim
   apply intro_classes
   unfolding canonical_basis_complex_def is_ortho_set_def
   by (auto simp: divide_complex_def)
 
-lemma one_cinner_one[simp]: \<open>\<langle>(1::('a::one_dim)), 1\<rangle> = 1\<close>
+lemma one_cinner_one[simp]: \<open>(1::('a::one_dim)) \<bullet>\<^sub>C 1 = 1\<close>
 proof-
   include notation_norm
   have \<open>(canonical_basis::'a list) = [1::('a::one_dim)]\<close>
-    by (simp add: one_dim_canonical_basis)    
+    by simp
   hence \<open>\<parallel>1::'a::one_dim\<parallel> = 1\<close>
     by (metis is_normal list.set_intros(1))
   hence \<open>\<parallel>1::'a::one_dim\<parallel>^2 = 1\<close>
     by simp
-  moreover have  \<open>\<parallel>(1::('a::one_dim))\<parallel>^2 = \<langle>(1::('a::one_dim)), 1\<rangle>\<close>
+  moreover have  \<open>\<parallel>(1::('a::one_dim))\<parallel>^2 = (1::('a::one_dim)) \<bullet>\<^sub>C 1\<close>
     by (metis cnorm_eq_square)
   ultimately show ?thesis by simp
 qed
 
-lemma one_cinner_a_scaleC_one[simp]: \<open>\<langle>1::('a::one_dim), a\<rangle> *\<^sub>C 1 = a\<close>
+lemma one_cinner_a_scaleC_one[simp]: \<open>((1::'a::one_dim) \<bullet>\<^sub>C a) *\<^sub>C 1 = a\<close>
 proof-
   have \<open>(canonical_basis::'a list) = [1]\<close>
-    by (simp add: one_dim_canonical_basis)
+    by simp
   hence r2: \<open>a \<in> complex_vector.span ({1::'a})\<close>        
     using  iso_tuple_UNIV_I empty_set is_generator_set list.simps(15)
     by metis
@@ -51,10 +52,10 @@ proof-
         complex_vector.span_empty eq_iff_diff_eq_0 singleton_iff)
   then obtain s where s_def: \<open>a = s *\<^sub>C 1\<close>
     by blast
-  have  \<open>\<langle>(1::'a), a\<rangle> = \<langle>(1::'a), s *\<^sub>C 1\<rangle>\<close>
+  have  \<open>(1::'a) \<bullet>\<^sub>C a = (1::'a) \<bullet>\<^sub>C (s *\<^sub>C 1)\<close>
     using \<open>a = s *\<^sub>C 1\<close>
     by simp 
-  also have \<open>\<dots> = s * \<langle>(1::'a), 1\<rangle>\<close>
+  also have \<open>\<dots> = s * ((1::'a) \<bullet>\<^sub>C 1)\<close>
     by simp
   also have \<open>\<dots> = s\<close>
     using one_cinner_one by auto
@@ -63,7 +64,7 @@ proof-
 qed
 
 lemma one_dim_apply_is_times_def:
-  "\<psi> * \<phi> = (\<langle>1, \<psi>\<rangle> * \<langle>1, \<phi>\<rangle>) *\<^sub>C 1" for \<psi> :: \<open>'a::one_dim\<close>
+  "\<psi> * \<phi> = ((1 \<bullet>\<^sub>C \<psi>) * (1 \<bullet>\<^sub>C \<phi>)) *\<^sub>C 1" for \<psi> :: \<open>'a::one_dim\<close>
   by (metis one_cinner_a_scaleC_one one_dim_prod_scale1)
 
 instance one_dim \<subseteq> complex_algebra_1
@@ -92,20 +93,20 @@ proof
   fix x y :: \<open>'a::one_dim\<close>
   show "norm (x * y) \<le> norm x * norm y"
   proof-
-    have r1:  "cmod (\<langle>1::'a, x\<rangle>) \<le> norm (1::'a) * norm x"
+    have r1:  "cmod ((1::'a) \<bullet>\<^sub>C x) \<le> norm (1::'a) * norm x"
       by (simp add: complex_inner_class.Cauchy_Schwarz_ineq2)
-    have r2: "cmod (\<langle>1::'a, y\<rangle>) \<le> norm (1::'a) * norm y"
+    have r2: "cmod ((1::'a) \<bullet>\<^sub>C y) \<le> norm (1::'a) * norm y"
       by (simp add: complex_inner_class.Cauchy_Schwarz_ineq2)
 
-    have q1: "\<langle>(1::'a), 1\<rangle> = 1"
+    have q1: "(1::'a) \<bullet>\<^sub>C 1 = 1"
       by simp
     hence "(norm (1::'a))^2 = 1"
       by (simp add: cnorm_eq_1 power2_eq_1_iff)
     hence "norm (1::'a) = 1"
       by (smt abs_norm_cancel power2_eq_1_iff)
-    hence "cmod (\<langle>1::'a, x\<rangle> * \<langle>1::'a, y\<rangle>) * norm (1::'a) = cmod (\<langle>1::'a, x\<rangle> * \<langle>1::'a, y\<rangle>)"
+    hence "cmod (((1::'a) \<bullet>\<^sub>C x) * ((1::'a) \<bullet>\<^sub>C y)) * norm (1::'a) = cmod (((1::'a) \<bullet>\<^sub>C x) * ((1::'a) \<bullet>\<^sub>C y))"
       by simp
-    also have "\<dots> = cmod (\<langle>1::'a, x\<rangle>) * cmod (\<langle>1::'a, y\<rangle>)"
+    also have "\<dots> = cmod (((1::'a) \<bullet>\<^sub>C x)) * cmod (((1::'a) \<bullet>\<^sub>C y))"
       by (simp add: norm_mult)
     also have "\<dots> \<le> norm (1::'a) * norm x * norm (1::'a) * norm y"
       by (smt \<open>norm 1 = 1\<close> mult.commute mult_cancel_right1 norm_scaleC one_cinner_a_scaleC_one)
@@ -127,7 +128,7 @@ text \<open>This is the canonical isomorphism between any two one dimensional sp
   if 1 denotes the element of the canonical basis (which is specified by type class \<^class>\<open>basis_enum\<close>),
   then \<^term>\<open>one_dim_iso\<close> is the unique isomorphism that maps 1 to 1.\<close>
 definition one_dim_iso :: "'a::one_dim \<Rightarrow> 'b::one_dim"
-  where "one_dim_iso a = of_complex (\<langle>1, a\<rangle>)"
+  where "one_dim_iso a = of_complex (1 \<bullet>\<^sub>C a)"
 
 lemma one_dim_iso_idem[simp]: "one_dim_iso (one_dim_iso x) = one_dim_iso x"
   by (simp add: one_dim_iso_def)
@@ -259,12 +260,12 @@ proof intro_classes
   show "1 * x = x"
     by simp
 
-  have "(inverse \<langle>1, x\<rangle> * \<langle>1, x\<rangle>) *\<^sub>C (1::'a) = 1" if "x \<noteq> 0"
+  have "(inverse ((1::'a) \<bullet>\<^sub>C x) * ((1::'a) \<bullet>\<^sub>C x)) *\<^sub>C (1::'a) = 1" if "x \<noteq> 0"
     by (metis left_inverse of_complex_def one_cinner_a_scaleC_one one_dim_iso_of_zero 
         one_dim_iso_is_of_complex one_dim_iso_of_one that)
-  hence "inverse (\<langle>1, x\<rangle> *\<^sub>C 1) * \<langle>1, x\<rangle> *\<^sub>C 1 = (1::'a)" if "x \<noteq> 0"
+  hence "inverse (((1::'a) \<bullet>\<^sub>C x) *\<^sub>C 1) * ((1::'a) \<bullet>\<^sub>C x) *\<^sub>C 1 = (1::'a)" if "x \<noteq> 0"
     by (metis one_dim_inverse one_dim_prod_scale1 that)    
-  hence "inverse (\<langle>1, x\<rangle> *\<^sub>C 1) * x = 1" if "x \<noteq> 0"
+  hence "inverse (((1::'a) \<bullet>\<^sub>C x) *\<^sub>C 1) * x = 1" if "x \<noteq> 0"
     using one_cinner_a_scaleC_one[of x, symmetric] that by auto
   thus "inverse x * x = 1" if "x \<noteq> 0"
     by (simp add: that)    
@@ -283,5 +284,35 @@ proof intro_classes
 qed
 
 instance one_dim \<subseteq> chilbert_space..
+
+lemma ccspan_one_dim[simp]: \<open>ccspan {x} = top\<close> if \<open>x \<noteq> 0\<close> for x :: \<open>_ :: one_dim\<close>
+proof -
+  have \<open>y \<in> cspan {x}\<close> for y
+    using that by (metis complex_vector.span_base complex_vector.span_zero cspan_singleton_scaleC insertI1 one_dim_scaleC_1 scaleC_zero_left)
+  then show ?thesis
+    by (auto intro!: order.antisym ccsubspace_leI
+      simp: top_ccsubspace.rep_eq ccspan.rep_eq)
+qed
+
+lemma one_dim_ccsubspace_all_or_nothing: \<open>A = bot \<or> A = top\<close> for A :: \<open>_::one_dim ccsubspace\<close>
+proof (rule Meson.disj_comm, rule disjCI)
+  assume \<open>A \<noteq> bot\<close>
+  then obtain \<psi> where \<open>\<psi> \<in> space_as_set A\<close> and \<open>\<psi> \<noteq> 0\<close>
+    by (metis ccsubspace_eqI singleton_iff space_as_set_bot zero_space_as_set)
+  then have \<open>A \<ge> ccspan {\<psi>}\<close> (is \<open>_ \<ge> \<dots>\<close>)
+    by (metis bot.extremum ccspan_leqI insert_absorb insert_mono)
+  also have \<open>\<dots> = ccspan {one_dim_iso \<psi> *\<^sub>C 1}\<close>
+    by auto
+  also have \<open>\<dots> = ccspan {1}\<close>
+    apply (rule ccspan_singleton_scaleC)
+    using \<open>\<psi> \<noteq> 0\<close> one_dim_iso_of_zero' by auto
+  also have \<open>\<dots> = top\<close>
+    by auto
+  finally show \<open>A = top\<close>
+    by (simp add: top.extremum_uniqueI)
+qed
+
+lemma scaleC_1_right[simp]: \<open>scaleC x (1::'a::one_dim) = of_complex x\<close>
+  unfolding of_complex_def by simp
 
 end

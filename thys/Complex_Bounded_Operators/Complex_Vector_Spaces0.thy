@@ -1498,7 +1498,7 @@ lemma cCauchy_iff2: "Cauchy X \<longleftrightarrow> (\<forall>j. (\<exists>M. \<
     "(u \<circ> r) \<longlonglongrightarrow> l"
   shows "u \<longlonglongrightarrow> l" *)
 
-subsection \<open>The set of real numbers is a complete metric space\<close>
+subsection \<open>The set of complex numbers is a complete metric space\<close>
 
 text \<open>
   Proof that Cauchy sequences converge based on the one from

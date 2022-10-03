@@ -40,17 +40,8 @@ lemma L2_set_mono2:
   shows "L2_set f K \<le> L2_set f L"
 proof-
   have "(\<Sum>i\<in>K. (f i)\<^sup>2) \<le> (\<Sum>i\<in>L. (f i)\<^sup>2)"
-  proof (rule sum_mono2)
-    show "finite L"
-      using a1.
-    show "K \<subseteq> L"
-      using a2.
-    show "0 \<le> (f b)\<^sup>2"
-      if "b \<in> L - K"
-      for b :: 'a
-      using that
-      by simp 
-  qed
+    apply (rule sum_mono2) 
+    using assms by auto
   hence "sqrt (\<Sum>i\<in>K. (f i)\<^sup>2) \<le> sqrt (\<Sum>i\<in>L. (f i)\<^sup>2)"
     by (rule real_sqrt_le_mono)
   thus ?thesis

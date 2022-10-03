@@ -751,7 +751,7 @@ proof-
   have \<open>Rep_ell2 (trunc_ell2 S x) i = 0 \<or> Rep_ell2 (x - trunc_ell2 S x) i = 0\<close> for i
     apply transfer
     by auto
-  hence \<open>\<langle> (trunc_ell2 S x), (x - trunc_ell2 S x) \<rangle> = 0\<close>
+  hence \<open>((trunc_ell2 S x) \<bullet>\<^sub>C (x - trunc_ell2 S x)) = 0\<close>
     using ell2_pointwise_ortho by blast
   hence \<open>(norm x)^2 = (norm (trunc_ell2 S x))^2 + (norm (x - trunc_ell2 S x))^2\<close>
     using pythagorean_theorem by fastforce    
@@ -912,12 +912,12 @@ proof standard
     by blast    
 qed
 
-lemma cinner_ket_left: \<open>\<langle>ket i, \<psi>\<rangle> = Rep_ell2 \<psi> i\<close>
+lemma cinner_ket_left: \<open>(ket i \<bullet>\<^sub>C \<psi>) = Rep_ell2 \<psi> i\<close>
   apply (transfer fixing: i)
   apply (subst infsum_cong_neutral[where T=\<open>{i}\<close>])
   by auto
 
-lemma cinner_ket_right: \<open>\<langle>\<psi>, ket i\<rangle> = cnj (Rep_ell2 \<psi> i)\<close>
+lemma cinner_ket_right: \<open>(\<psi> \<bullet>\<^sub>C ket i) = cnj (Rep_ell2 \<psi> i)\<close>
   apply (transfer fixing: i)
   apply (subst infsum_cong_neutral[where T=\<open>{i}\<close>])
   by auto
@@ -931,17 +931,17 @@ lemma norm_ket[simp]: "norm (ket i) = 1"
   apply transfer by (rule ell2_norm_ket)
 
 lemma cinner_ket_same[simp]:
-  \<open>\<langle>ket i, ket i\<rangle> = 1\<close>
+  \<open>(ket i \<bullet>\<^sub>C ket i) = 1\<close>
 proof-
   have \<open>norm (ket i) = 1\<close>
     by simp
-  hence \<open>sqrt (cmod \<langle>ket i, ket i\<rangle>) = 1\<close>
+  hence \<open>sqrt (cmod (ket i \<bullet>\<^sub>C ket i)) = 1\<close>
     by (metis norm_eq_sqrt_cinner)
-  hence \<open>cmod \<langle>ket i, ket i\<rangle> = 1\<close>
+  hence \<open>cmod (ket i \<bullet>\<^sub>C ket i) = 1\<close>
     using real_sqrt_eq_1_iff by blast
-  moreover have \<open>\<langle>ket i, ket i\<rangle> = cmod \<langle>ket i, ket i\<rangle>\<close>
+  moreover have \<open>(ket i \<bullet>\<^sub>C ket i) = cmod (ket i \<bullet>\<^sub>C ket i)\<close>
   proof-
-    have \<open>\<langle>ket i, ket i\<rangle> \<in> \<real>\<close>
+    have \<open>(ket i \<bullet>\<^sub>C ket i) \<in> \<real>\<close>
       by (simp add: cinner_real)      
     thus ?thesis 
       by (metis cinner_ge_zero complex_of_real_cmod) 
@@ -953,7 +953,7 @@ lemma orthogonal_ket[simp]:
   \<open>is_orthogonal (ket i) (ket j) \<longleftrightarrow> i \<noteq> j\<close>
   by (simp add: cinner_ket_left ket.rep_eq)
 
-lemma cinner_ket: \<open>\<langle>ket i, ket j\<rangle> = (if i=j then 1 else 0)\<close>
+lemma cinner_ket: \<open>(ket i \<bullet>\<^sub>C ket j) = (if i=j then 1 else 0)\<close>
   by (simp add: cinner_ket_left ket.rep_eq)
 
 lemma ket_injective[simp]: \<open>ket i = ket j \<longleftrightarrow> i = j\<close>
@@ -1118,7 +1118,7 @@ qed
 
 lemma cinner_ket_adjointI:
   fixes F::"'a ell2 \<Rightarrow>\<^sub>C\<^sub>L _" and G::"'b ell2 \<Rightarrow>\<^sub>C\<^sub>L_"
-  assumes "\<And> i j. \<langle>F *\<^sub>V ket i, ket j\<rangle> = \<langle>ket i, G *\<^sub>V ket j\<rangle>"
+  assumes "\<And> i j. (F *\<^sub>V ket i) \<bullet>\<^sub>C ket j = ket i \<bullet>\<^sub>C (G *\<^sub>V ket j)"
   shows "F = G*"
 proof -
   from assms
@@ -1335,7 +1335,7 @@ lemma classical_operator_adjoint[simp]:
 proof-
   define F where "F = classical_operator (inv_map \<pi>)"
   define G where "G = classical_operator \<pi>"
-  have "\<langle>F *\<^sub>V ket i, ket j\<rangle> = \<langle>ket i, G *\<^sub>V ket j\<rangle>" for i j
+  have "(F *\<^sub>V ket i) \<bullet>\<^sub>C ket j = ket i \<bullet>\<^sub>C (G *\<^sub>V ket j)" for i j
   proof-
     have w1: "(classical_operator (inv_map \<pi>)) *\<^sub>V (ket i)
      = (case inv_map \<pi> i of Some k \<Rightarrow> ket k | None \<Rightarrow> 0)"
@@ -1343,11 +1343,11 @@ proof-
     have w2: "(classical_operator \<pi>) *\<^sub>V (ket j)
      = (case \<pi> j of Some k \<Rightarrow> ket k | None \<Rightarrow> 0)"
       by (simp add: assms classical_operator_ket classical_operator_exists_inj)
-    have "\<langle>F *\<^sub>V ket i, ket j\<rangle> = \<langle>classical_operator (inv_map \<pi>) *\<^sub>V ket i, ket j\<rangle>"
+    have "(F *\<^sub>V ket i) \<bullet>\<^sub>C ket j = (classical_operator (inv_map \<pi>) *\<^sub>V ket i) \<bullet>\<^sub>C ket j"
       unfolding F_def by blast
-    also have "\<dots> = \<langle>(case inv_map \<pi> i of Some k \<Rightarrow> ket k | None \<Rightarrow> 0), ket j\<rangle>"
+    also have "\<dots> = ((case inv_map \<pi> i of Some k \<Rightarrow> ket k | None \<Rightarrow> 0) \<bullet>\<^sub>C ket j)"
       using w1 by simp
-    also have "\<dots> = \<langle>ket i, (case \<pi> j of Some k \<Rightarrow> ket k | None \<Rightarrow> 0)\<rangle>"
+    also have "\<dots> = (ket i \<bullet>\<^sub>C (case \<pi> j of Some k \<Rightarrow> ket k | None \<Rightarrow> 0))"
     proof(induction "inv_map \<pi> i")
       case None
       hence pi1: "None = inv_map \<pi> i".
@@ -1380,12 +1380,8 @@ proof-
     next
       case (Some d)
       hence s1: "Some d = inv_map \<pi> i".
-      show "\<langle>case inv_map \<pi> i of 
-            None \<Rightarrow> 0
-        | Some a \<Rightarrow> ket a, ket j\<rangle> =
-       \<langle>ket i, case \<pi> j of 
-            None \<Rightarrow> 0 
-        | Some a \<Rightarrow> ket a\<rangle>" 
+      show "(case inv_map \<pi> i of None \<Rightarrow> 0| Some a \<Rightarrow> ket a) \<bullet>\<^sub>C ket j
+           = ket i \<bullet>\<^sub>C (case \<pi> j of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a)" 
       proof(induction "\<pi> j")
         case None
         have "d \<noteq> j"
@@ -1410,7 +1406,7 @@ proof-
       next
         case (Some c)
         hence s2: "\<pi> j = Some c" by simp
-        have "\<langle>ket d, ket j\<rangle> = \<langle>ket i, ket c\<rangle>"
+        have "(ket d \<bullet>\<^sub>C ket j) = (ket i \<bullet>\<^sub>C ket c)"
         proof(cases "\<pi> j = Some i")
           case True
           hence ij: "Some j = inv_map \<pi> i"
@@ -1435,19 +1431,17 @@ proof-
           ultimately show ?thesis
             by (metis orthogonal_ket) 
         qed
-        hence "\<langle>case Some d of None \<Rightarrow> 0
-        | Some a \<Rightarrow> ket a, ket j\<rangle> =
-       \<langle>ket i, case Some c of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a\<rangle>"
+        hence "(case Some d of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a) \<bullet>\<^sub>C ket j
+             = ket i \<bullet>\<^sub>C (case Some c of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a)"
           by simp          
-        thus "\<langle>case inv_map \<pi> i of None \<Rightarrow> 0
-        | Some a \<Rightarrow> ket a, ket j\<rangle> =
-       \<langle>ket i, case \<pi> j of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a\<rangle>"
+        thus "(case inv_map \<pi> i of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a) \<bullet>\<^sub>C ket j
+             = ket i \<bullet>\<^sub>C (case \<pi> j of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a)"
           by (simp add: Some.hyps s1)          
       qed
     qed
-    also have "\<dots> = \<langle>ket i, classical_operator \<pi> *\<^sub>V ket j\<rangle>"
+    also have "\<dots> = ket i \<bullet>\<^sub>C (classical_operator \<pi> *\<^sub>V ket j)"
       by (simp add: w2)
-    also have "\<dots> = \<langle>ket i, G *\<^sub>V ket j\<rangle>"
+    also have "\<dots> = ket i \<bullet>\<^sub>C (G *\<^sub>V ket j)"
       unfolding G_def by blast
     finally show ?thesis .
   qed

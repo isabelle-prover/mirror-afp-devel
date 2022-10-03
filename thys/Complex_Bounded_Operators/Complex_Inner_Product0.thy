@@ -373,7 +373,7 @@ lemma
     and complex_inner_1_right[simp]: "cinner x 1 = cnj x"
   by simp_all
 
-(* No analogous to \<open>instantiation complex :: real_inner\<close> or to
+(* No analogue to \<open>instantiation complex :: real_inner\<close> or to
 lemma complex_inner_1 [simp]: "inner 1 x = Re x"
 lemma complex_inner_1_right [simp]: "inner x 1 = Re x"
 lemma complex_inner_i_left [simp]: "inner \<i> x = Im x"
