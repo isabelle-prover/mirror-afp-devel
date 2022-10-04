@@ -344,7 +344,7 @@ proof -
   let ?mp = \<open>map_poly hom\<close>
   interpret map_poly_hom: map_poly_idom_hom ..
   have \<open>(?mp p div ?mp q, ?mp p mod ?mp q) = (?mp (p div q), ?mp (p mod q))\<close>
-  proof (cases \<open>?mp q\<close> \<open>?mp (p div q)\<close> \<open>?mp (p mod q)\<close> \<open>?mp p\<close> rule: euclidean_relation_polyI)
+  proof (induction rule: euclidean_relation_polyI)
     case by0
     then show ?case
       by simp
