@@ -48,7 +48,7 @@ object TOML {
   def get_as[A: ClassTag](map: T, name: String): A = map.get(name) match {
     case Some(value: A) => value
     case Some(value) => error("Value " + quote(value.toString) + " not of type " + classTag[A].runtimeClass.getName)
-    case None => error("Field " + name + " not in " + map)
+    case None => error("Field " + name + " not in " + commas_quote(map.keys))
   }
 
 

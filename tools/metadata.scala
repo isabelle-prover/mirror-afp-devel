@@ -178,7 +178,7 @@ object Metadata {
 
   object TOML {
     private def by_id[A](elems: Map[String, A], id: String): A =
-      elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.map(_.toString))))
+      elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.keys)))
 
 
     /* email */
