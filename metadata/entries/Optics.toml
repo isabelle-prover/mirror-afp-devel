@@ -40,7 +40,7 @@ fosters = "fosters_email"
 2022-10-05 = """
 Added Scene Spaces, which are used to model variable sets algebraically.
 Improvements to the alphabet command, including additional theorems.
-Additional prisms and associated laws. <br>
+Additional prisms and associated laws. (revision 771b88d61c21)<br>
 """
 
 2021-11-15 = """
