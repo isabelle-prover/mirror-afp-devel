@@ -3398,6 +3398,22 @@ host = [
 
 [langenstein.homepages]
 
+[laursen]
+name = "Christian Pardillo-Laursen"
+
+[laursen.emails]
+
+[laursen.emails.laursen_email]
+user = [
+  "christian",
+  "laursen",
+]
+host = [
+  "york",
+  "ac",
+  "uk",
+]
+
 [lattuada]
 name = "Andrea Lattuada"
 

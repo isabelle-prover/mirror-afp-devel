@@ -101,7 +101,7 @@ lemma lens_equivI [intro]:
   "\<lbrakk> X \<subseteq>\<^sub>L Y; Y \<subseteq>\<^sub>L X \<rbrakk> \<Longrightarrow> X \<approx>\<^sub>L Y"
   by (simp add: lens_equiv_def)
 
-lemma lens_equiv_refl:
+lemma lens_equiv_refl [simp]:
   "X \<approx>\<^sub>L X"
   by (simp add: lens_equiv_def)
 
@@ -161,7 +161,7 @@ lemma plus_pred_sublens: "\<lbrakk> mwb_lens Z; X \<subseteq>\<^sub>L Z; Y \<sub
   apply (rename_tac Z\<^sub>1 Z\<^sub>2)
   apply (rule_tac x="Z\<^sub>1 +\<^sub>L Z\<^sub>2" in exI)
   apply (auto intro!: plus_wb_lens)
-   apply (simp add: lens_comp_indep_cong_left plus_vwb_lens)
+   apply (simp add: lens_comp_indep_cong_left)
   apply (simp add: plus_lens_distr)
 done
 
@@ -222,8 +222,6 @@ done
 
 lemma lens_plus_comm: "X \<bowtie> Y \<Longrightarrow> X +\<^sub>L Y \<approx>\<^sub>L Y +\<^sub>L X"
   by (simp add: lens_equivI lens_indep_sym lens_plus_sub_comm)
-
-
 
 text \<open>Any composite lens is larger than an element of the lens, as demonstrated by the following
   four laws.\<close>
@@ -379,6 +377,24 @@ proof -
   then show ?thesis
     using f4 f3 a1 by (metis mwb_lens.put_put mwb_lens_def vwb_lens_mwb weak_lens.put_get)
 qed
+
+text \<open> If two lenses are both independent and equivalent then they must be ineffectual. \<close>
+
+lemma indep_and_equiv_implies_ief:
+  assumes "wb_lens x" "x \<bowtie> y" "x \<approx>\<^sub>L y"
+  shows "ief_lens x"
+proof -
+  have "x \<bowtie> x"
+    using assms(2) assms(3) lens_equiv_pres_indep' by blast
+  thus ?thesis
+    using assms(1) lens_indep_quasi_irrefl vwb_lens_wb wb_lens_weak by blast
+qed
+
+lemma indep_eff_implies_not_equiv [simp]:
+  fixes x :: "'a::two \<Longrightarrow> 'b"
+  assumes "wb_lens x" "x \<bowtie> y"
+  shows "\<not> (x \<approx>\<^sub>L y)"
+  using assms indep_and_equiv_implies_ief no_ief_two_view by blast
 
 subsection \<open>Bijective Lens Equivalences\<close>
   
@@ -628,6 +644,20 @@ lemma sublens_iff_sublens':
   shows "X \<subseteq>\<^sub>L Y \<longleftrightarrow> X \<subseteq>\<^sub>L' Y"
   using assms sublens'_implies_sublens sublens_implies_sublens' by blast
 
+text \<open> We can also prove the closure law for lens quotient \<close>
+
+lemma lens_quotient_vwb: "\<lbrakk> vwb_lens x; vwb_lens y; x \<subseteq>\<^sub>L y \<rbrakk> \<Longrightarrow> vwb_lens (x /\<^sub>L y)"
+  by (unfold_locales)
+     (simp_all add: sublens'_def lens_quotient_def lens_quotient_mwb sublens_iff_sublens' lens_create_def sublens'_prop1 sublens'_prop2)
+
+lemma lens_quotient_indep: 
+  "\<lbrakk> vwb_lens x; vwb_lens y; vwb_lens a; x \<bowtie> y; x \<subseteq>\<^sub>L a; y \<subseteq>\<^sub>L a \<rbrakk> \<Longrightarrow> (x /\<^sub>L a) \<bowtie> (y /\<^sub>L a)"
+  by (unfold_locales)
+     (simp_all add: lens_quotient_def sublens_iff_sublens' lens_create_def lens_indep.lens_put_comm sublens'_prop1 sublens'_prop2 lens_indep.lens_put_irr2)
+
+lemma lens_quotient_bij: "\<lbrakk> vwb_lens x; vwb_lens y; y \<approx>\<^sub>L x \<rbrakk> \<Longrightarrow> bij_lens (x /\<^sub>L y)"
+  by (metis lens_comp_quotient lens_equiv_iff_bij lens_equiv_sym vwb_lens_wb wb_lens_weak)
+
 subsection \<open> Alternative Equivalence Characterisation \<close>
 
 definition lens_equiv' :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix "\<approx>\<^sub>L''" 51) where
@@ -640,5 +670,14 @@ lemma lens_equiv_iff_lens_equiv':
   apply (auto simp add: lens_defs assms)
   apply (metis assms(2) mwb_lens.put_put vwb_lens_mwb vwb_lens_wb wb_lens.get_put)
   done
+
+subsection \<open> Ineffectual Lenses as Zero Elements \<close>
+
+lemma ief_lens_then_zero: "ief_lens x \<Longrightarrow> x \<approx>\<^sub>L 0\<^sub>L"
+  by (simp add: lens_equiv_iff_lens_equiv' lens_equiv'_def)
+     (simp add: ief_lens.put_inef lens_override_def)
+
+lemma ief_lens_iff_zero: "vwb_lens x \<Longrightarrow> ief_lens x \<longleftrightarrow> x \<approx>\<^sub>L 0\<^sub>L"
+  by (metis ief_lens_axioms_def ief_lens_def ief_lens_then_zero lens_equiv_def lens_override_def lens_override_unit sublens'_prop3 sublens_implies_sublens' unit_vwb_lens vwb_lens_wb wb_lens_weak)
 
 end

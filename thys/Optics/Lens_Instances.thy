@@ -1,7 +1,7 @@
 section \<open>Lens Instances\<close>
 
 theory Lens_Instances
-  imports Lens_Order Lens_Symmetric "HOL-Eisbach.Eisbach"
+  imports Lens_Order Lens_Symmetric Scene_Spaces "HOL-Eisbach.Eisbach" "HOL-Library.Stream"
   keywords "alphabet" "statespace" :: "thy_defn"
 begin
 
@@ -62,6 +62,10 @@ lemma map_mwb_lens: "mwb_lens (map_lens x)"
 
 lemma source_map_lens: "\<S>\<^bsub>map_lens x\<^esub> = {f. x \<in> dom(f)}"
   by (force simp add: map_lens_def lens_source_def)
+
+lemma pget_map_lens: "pget\<^bsub>map_lens k\<^esub> f = f k"
+  by (auto simp add: lens_partial_get_def source_map_lens)
+     (auto simp add: map_lens_def, metis not_Some_eq)
 
 subsection \<open>List Lens\<close>
 
@@ -212,6 +216,41 @@ done
 lemma hd_tl_lens_pbij: "pbij_lens (hd\<^sub>L +\<^sub>L tl\<^sub>L)"
   by (unfold_locales, auto simp add: lens_defs)
 
+subsection \<open>Stream Lenses\<close>
+
+primrec stream_update :: "'a stream \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a stream" where
+"stream_update xs 0 a = a##(stl xs)" |
+"stream_update xs (Suc n) a = shd xs ## (stream_update (stl xs) n a)"
+
+lemma stream_update_snth: "(stream_update xs n a) !! n = a"
+proof (induction n arbitrary: xs a)
+  case 0
+  then show ?case by simp
+next
+  case (Suc n)
+  then show ?case by simp
+qed
+
+lemma stream_update_unchanged: "i \<noteq> j \<Longrightarrow> (stream_update xs i a) !! j = xs !! j"
+  using gr0_conv_Suc by (induct i j arbitrary: xs rule: diff_induct; fastforce)
+
+lemma stream_update_override: "stream_update (stream_update xs n a) n b = stream_update xs n b"
+  by (induction n arbitrary: xs a; simp)
+
+lemma stream_update_nth: "stream_update \<sigma> i (\<sigma> !! i) = \<sigma>"
+  by (metis stream.map_cong stream_smap_nats stream_update_snth stream_update_unchanged)
+
+definition stream_lens :: "nat \<Rightarrow> ('a::two \<Longrightarrow> 'a stream)" where
+[lens_defs]: "stream_lens i = \<lparr> lens_get = (\<lambda> xs. snth xs i)
+                            , lens_put = (\<lambda> xs x. stream_update xs i x)\<rparr>"
+
+lemma stream_vwb_lens: "vwb_lens (stream_lens i)"
+  apply (unfold_locales; simp add: stream_lens_def)
+    apply (rule stream_update_snth)
+    apply (rule stream_update_nth)
+    apply (rule stream_update_override)
+  done
+
 subsection \<open>Record Field Lenses\<close>
 
 text \<open>We also add support for record lenses. Every record created can yield a lens for each field.
@@ -253,6 +292,8 @@ text \<open>We also introduce the \textbf{alphabet} command that creates a recor
   For each field a lens is created together with a proof that it is very well-behaved, and for each 
   pair of lenses an independence theorem is generated. Alphabets can also be extended which yields 
   sublens proofs between the extension field lens and record extension lenses. \<close>
+
+named_theorems lens
 
 ML_file \<open>Lens_Lib.ML\<close>
 ML_file \<open>Lens_Record.ML\<close>
