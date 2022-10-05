@@ -1,0 +1,31 @@
+chapter AFP
+
+session "Query_Optimization" (AFP) = "Graph_Theory" +
+  options [timeout=1200]
+
+  sessions
+    "HOL-Data_Structures"
+    "Graph_Theory"
+
+  theories [document = false]
+    "Misc"
+    "Graph_Theory_Batteries"
+    "Graph_Definitions"
+    "Shortest_Path_Tree"
+
+  theories
+    "Selectivities"
+    "JoinTree"
+    "CostFunctions"
+    "Graph_Additions"
+    "QueryGraph"
+    "Directed_Tree_Additions"
+    "Dtree"
+    "List_Dtree"
+    "IKKBZ"
+    "IKKBZ_Optimality"
+    "IKKBZ_Examples"
+
+  document_files
+    "root.bib"
+    "root.tex"
