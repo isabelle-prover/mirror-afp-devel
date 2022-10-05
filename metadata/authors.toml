@@ -5812,6 +5812,15 @@ name = "Thomas Sternagel"
 name = "Lukas Stevens"
 
 [stevens.emails]
+[stevens.emails.stevens_email]
+user = [
+  "lukas.stevens",
+]
+host = [
+  "in",
+  "tum",
+  "de"
+]
 
 [stevens.homepages]
 stevens_homepage = "https://www21.in.tum.de/team/stevensl"
@@ -5831,6 +5840,23 @@ host = [
 ]
 
 [stock.homepages]
+
+[stoeckl]
+name = "Bernhard Stöckl"
+
+[stoeckl.emails]
+
+[stoeckl.emails.stoeckl_email]
+user = [
+  "stoeckl",
+]
+host = [
+  "in",
+  "tum",
+  "de"
+]
+
+[stoeckl.homepages]
 
 [stricker]
 name = "Christian Stricker"

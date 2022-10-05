@@ -3,24 +3,36 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+    <lastmod>2022-10-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/cremer/</loc>
-    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
+    <lastmod>2022-10-04T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
+    <lastmod>2022-10-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2022-10-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/graph_theory/</loc>
+    <lastmod>2022-10-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/stevens/</loc>
+    <lastmod>2022-10-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/stoeckl/</loc>
+    <lastmod>2022-10-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Query_Optimization.html</loc>
+    <lastmod>2022-10-04T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cremer/</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/design_theory/</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/edmonds/</loc>
-    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/girth_chromatic/</loc>
@@ -819,9 +831,6 @@
     <lastmod>2021-08-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Design_Theory.html</loc>
-    <lastmod>2021-08-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/graph_theory/</loc>
     <lastmod>2021-08-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/nested_multisets_ordinals/</loc>
@@ -1689,9 +1698,6 @@
     <lastmod>2019-07-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Szpilrajn.html</loc>
-    <lastmod>2019-07-27T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/stevens/</loc>
     <lastmod>2019-07-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/zeller/</loc>
@@ -5491,6 +5497,8 @@
     <loc>/theories/quasi_borel_spaces/</loc>
   </url><url>
     <loc>/theories/quaternions/</loc>
+  </url><url>
+    <loc>/theories/query_optimization/</loc>
   </url><url>
     <loc>/theories/quick_sort_cost/</loc>
   </url><url>
