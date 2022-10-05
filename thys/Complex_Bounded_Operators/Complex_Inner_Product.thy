@@ -17,16 +17,6 @@ subsection \<open>Complex inner product spaces\<close>
 
 unbundle cinner_syntax
 
-(* TODO: Remove this eventually. Do not use this syntax. *)
-bundle cinner_bracket_notation begin
-notation cinner ("\<langle>_, _\<rangle>")
-end
-
-(* TODO: Remove this eventually. Do not use this syntax. *)
-bundle no_cinner_bracket_notation begin
-no_notation cinner ("\<langle>_, _\<rangle>")
-end
-
 lemma cinner_real: "cinner x x \<in> \<real>"
   by (simp add: cdot_square_norm)
 

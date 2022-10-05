@@ -24,8 +24,9 @@ unbundle cblinfun_notation
 
 subsection \<open>Isomorphism between vectors\<close>
 
-text \<open>We define the canonical isomorphism between vectors in some complex vector space \<^typ>\<open>'a::basis_enum\<close> and the
-  complex \<^term>\<open>n\<close>-dimensional vectors (where \<^term>\<open>n\<close> is the dimension of \<^typ>\<open>'a\<close>).
+text \<open>We define the canonical isomorphism between vectors in some complex vector space
+  \<^typ>\<open>'a::basis_enum\<close> and the complex \<^term>\<open>n\<close>-dimensional vectors 
+  (where \<^term>\<open>n\<close> is the dimension of \<^typ>\<open>'a\<close>).
   This is possible if \<^typ>\<open>'a\<close>, \<^typ>\<open>'b\<close> are of class \<^class>\<open>basis_enum\<close>
   since that class fixes a finite canonical basis. Vector are represented using
   the \<^typ>\<open>complex vec\<close> type from \<^session>\<open>Jordan_Normal_Form\<close>.
@@ -39,7 +40,6 @@ lemma dim_vec_of_basis_enum'[simp]:
   \<open>dim_vec (vec_of_basis_enum (v::'a)) = length (canonical_basis::'a::basis_enum list)\<close>
   unfolding vec_of_basis_enum_def
   by simp
-
 
 definition basis_enum_of_vec :: \<open>complex vec \<Rightarrow> 'a::basis_enum\<close> where
   \<open>basis_enum_of_vec v =
@@ -102,7 +102,6 @@ lemma basis_enum_eq_vec_of_basis_enumI:
 
 subsection \<open>Operations on vectors\<close>
 
-
 lemma basis_enum_of_vec_add:
   assumes [simp]: \<open>dim_vec v1 = length (canonical_basis :: 'a::basis_enum list)\<close>
     \<open>dim_vec v2 = length (canonical_basis :: 'a list)\<close>
@@ -130,7 +129,6 @@ proof -
     by (metis case_prod_unfold comp_apply scaleC_scaleC)
 qed
 
-
 lemma vec_of_basis_enum_add:
   "vec_of_basis_enum (b1 + b2) = vec_of_basis_enum b1 + vec_of_basis_enum b2"
   by (auto simp: vec_of_basis_enum_def complex_vector.representation_add)
@@ -148,7 +146,6 @@ lemma vec_of_basis_enum_uminus:
   unfolding scaleC_minus1_left[symmetric, of b2]
   unfolding scaleC_minus1_left_vec[symmetric]
   by (rule vec_of_basis_enum_scaleC)
-
 
 lemma vec_of_basis_enum_minus:
   "vec_of_basis_enum (b1 - b2) = vec_of_basis_enum b1 - vec_of_basis_enum b2"
@@ -296,7 +293,6 @@ proof-
     unfolding basis_enum_of_vec_def
     by (simp add: assms)
 qed
-
 
 lemma vec_of_basis_enum_ket:
   "vec_of_basis_enum (ket i) = unit_vec (CARD('a)) (enum_idx i)"
@@ -745,7 +741,6 @@ lemma basis_enum_of_vec_cblinfun_apply:
   shows "basis_enum_of_vec (M *\<^sub>v x) = (cblinfun_of_mat M :: 'a \<Rightarrow>\<^sub>C\<^sub>L 'b) *\<^sub>V basis_enum_of_vec x"
   by (metis assms basis_enum_of_vec_inverse cblinfun_of_mat.rep_eq)
 
-
 lemma mat_of_cblinfun_inverse:
   "cblinfun_of_mat (mat_of_cblinfun B) = B"
   for B::"'a::{basis_enum,complex_normed_vector}  \<Rightarrow>\<^sub>C\<^sub>L 'b::{basis_enum,complex_normed_vector}"
@@ -781,14 +776,12 @@ lemma cblinfun_of_mat_inj: "inj_on (cblinfun_of_mat::complex mat \<Rightarrow> '
   using cblinfun_of_mat_inverse
   by (metis inj_onI)
 
-
 lemma cblinfun_eq_mat_of_cblinfunI:
   assumes "mat_of_cblinfun a = mat_of_cblinfun b"
   shows "a = b"
   by (metis assms mat_of_cblinfun_inverse)
 
-
-subsection \<open>Matrix operations\<close>
+subsection \<open>Operations on matrices\<close>
 
 lemma cblinfun_of_mat_plus:
   defines "nA \<equiv> length (canonical_basis :: 'a::{basis_enum,complex_normed_vector} list)"
@@ -1196,7 +1189,6 @@ next
         simp flip: d_def)
 qed
 
-
 lemma mat_of_cblinfun_ell2_component:
   fixes a :: \<open>'a::enum ell2 \<Rightarrow>\<^sub>C\<^sub>L 'b::enum ell2\<close>
   assumes [simp]: \<open>i < CARD('b)\<close> \<open>j < CARD('a)\<close>
@@ -1216,12 +1208,10 @@ proof -
     by auto
 qed
 
-
 lemma mat_of_cblinfun_sandwich:
   fixes a :: "(_::onb_enum, _::onb_enum) cblinfun"
   shows \<open>mat_of_cblinfun (sandwich a *\<^sub>V b) = (let a' = mat_of_cblinfun a in a' * mat_of_cblinfun b * mat_adjoint a')\<close>
   by (simp add: mat_of_cblinfun_compose sandwich_apply Let_def mat_of_cblinfun_adj)
-
 
 subsection \<open>Operations on subspaces\<close>
 

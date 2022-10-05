@@ -16,6 +16,7 @@ theory Complex_Vector_Spaces
     "HOL-Analysis.Starlike"
     "HOL-Types_To_Sets.Types_To_Sets"
     "HOL-Library.Complemented_Lattices"
+    "HOL-Library.Function_Algebras"
 
     Extra_Vector_Spaces
     Extra_Ordered_Fields
@@ -91,6 +92,9 @@ lemma bounded_clinearI:
 
 lemma bounded_clinear_id[simp]: \<open>bounded_clinear id\<close>
   by (simp add: id_def)
+
+lemma bounded_clinear_0[simp]: \<open>bounded_clinear 0\<close>
+  by (auto intro!: bounded_clinearI[where K=0])
 
 definition cbilinear :: \<open>('a::complex_vector \<Rightarrow> 'b::complex_vector \<Rightarrow> 'c::complex_vector) \<Rightarrow> bool\<close>
   where \<open>cbilinear = (\<lambda> f. (\<forall> y. clinear (\<lambda> x. f x y)) \<and> (\<forall> x. clinear (\<lambda> y. f x y)) )\<close>
@@ -665,6 +669,22 @@ lemma kernel_is_csubspace[simp]:
   shows "csubspace  (f -` {0})"
   by (simp add: assms complex_vector.linear_subspace_vimage)
 
+lemma bounded_cbilinear_0[simp]: \<open>bounded_cbilinear (\<lambda>_ _. 0)\<close>
+  by (auto intro!: bounded_cbilinear.intro exI[where x=0])
+lemma bounded_cbilinear_0'[simp]: \<open>bounded_cbilinear 0\<close>
+  by (auto intro!: bounded_cbilinear.intro exI[where x=0])
+
+lemma bounded_cbilinear_apply_bounded_clinear: \<open>bounded_clinear (f x)\<close> if \<open>bounded_cbilinear f\<close>
+proof -
+  interpret f: bounded_cbilinear f
+    by (fact that)
+  from f.bounded obtain K where \<open>norm (f a b) \<le> norm a * norm b * K\<close> for a b
+    by auto
+  then show ?thesis
+    by (auto intro!: bounded_clinearI[where K=\<open>norm x * K\<close>] 
+        simp add: f.add_right f.scaleC_right mult.commute mult.left_commute)
+qed
+
 
 subsection \<open>Antilinear maps and friends\<close>
 
@@ -754,7 +774,10 @@ lemma bounded_antilinear_intro:
   by standard (blast intro: assms)+
 
 lemma bounded_antilinear_0[simp]: \<open>bounded_antilinear (\<lambda>_. 0)\<close>
-  by (rule bounded_antilinear_intro[where K=0], auto)
+  by (auto intro!: bounded_antilinearI[where K=0])
+
+lemma bounded_antilinear_0'[simp]: \<open>bounded_antilinear 0\<close>
+  by (auto intro!: bounded_antilinearI[where K=0])
 
 lemma cnj_bounded_antilinear[simp]: "bounded_antilinear cnj"
   apply (rule bounded_antilinear_intro [where K = 1])
@@ -778,6 +801,12 @@ proof
     by (rule bounded_linear.bounded)
 qed
 
+lemma bounded_antilinear_o_bounded_antilinear':
+  assumes "bounded_antilinear f"
+    and "bounded_antilinear g"
+  shows "bounded_clinear (g o f)"
+  using assms by (simp add: o_def bounded_antilinear_o_bounded_antilinear)
+
 lemma bounded_antilinear_o_bounded_clinear:
   assumes "bounded_antilinear f"
     and "bounded_clinear g"
@@ -795,6 +824,12 @@ proof
     by (rule bounded_linear.bounded)
 qed
 
+lemma bounded_antilinear_o_bounded_clinear':
+  assumes "bounded_clinear f"
+    and "bounded_antilinear g"
+  shows "bounded_antilinear (g o f)"
+  using assms by (simp add: o_def bounded_antilinear_o_bounded_clinear)
+
 lemma bounded_clinear_o_bounded_antilinear:
   assumes "bounded_clinear f"
     and "bounded_antilinear g"
@@ -811,6 +846,12 @@ proof
   then show "\<exists>K. \<forall>x. norm (f (g x)) \<le> norm x * K"
     by (rule bounded_linear.bounded)
 qed
+
+lemma bounded_clinear_o_bounded_antilinear':
+  assumes "bounded_antilinear f"
+    and "bounded_clinear g"
+  shows "bounded_antilinear (g o f)"
+  using assms by (simp add: o_def bounded_clinear_o_bounded_antilinear)
 
 lemma bij_clinear_imp_inv_clinear: "clinear (inv f)"
   if a1: "clinear f" and a2: "bij f"
@@ -999,6 +1040,23 @@ qed
 
 lemmas isCont_scaleC [simp] =
   bounded_bilinear.isCont [OF bounded_cbilinear_scaleC[THEN bounded_cbilinear.bounded_bilinear]]
+
+lemma bounded_sesquilinear_0[simp]: \<open>bounded_sesquilinear (\<lambda>_ _.0)\<close>
+  by (auto intro!: bounded_sesquilinear.intro exI[where x=0])
+
+lemma bounded_sesquilinear_0'[simp]: \<open>bounded_sesquilinear 0\<close>
+  by (auto intro!: bounded_sesquilinear.intro exI[where x=0])
+
+lemma bounded_sesquilinear_apply_bounded_clinear: \<open>bounded_clinear (f x)\<close> if \<open>bounded_sesquilinear f\<close>
+proof -
+  interpret f: bounded_sesquilinear f
+    by (fact that)
+  from f.bounded obtain K where \<open>norm (f a b) \<le> norm a * norm b * K\<close> for a b
+    by auto
+  then show ?thesis
+    by (auto intro!: bounded_clinearI[where K=\<open>norm x * K\<close>] 
+        simp add: f.add_right f.scaleC_right mult.commute mult.left_commute)
+qed
 
 subsection \<open>Misc 2\<close>
 
