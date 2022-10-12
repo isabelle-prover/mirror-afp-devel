@@ -6,7 +6,16 @@
     <description>Recent content in villadsen on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 01 Jan 2017 00:00:00 +0000</lastBuildDate><atom:link href="/authors/villadsen/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 13 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/villadsen/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Soundness and Completeness of Implicational Logic</title>
+      <link>/entries/Implicational_Logic.html</link>
+      <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Implicational_Logic.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>First-Order Logic According to Harrison</title>
       <link>/entries/FOL_Harrison.html</link>

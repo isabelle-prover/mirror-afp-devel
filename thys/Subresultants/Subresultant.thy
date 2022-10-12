@@ -1305,10 +1305,10 @@ proof -
     unfolding pdivmod_via_pseudo_divmod pmod[OF assms] f n c_times_Q
               pseudo_mod_smult_right[OF f0_b, of "F (i - 2)",symmetric] f0 if_False Let_def
     unfolding pseudo_mod_def by (auto split:prod.split)
-  from this[folded pdivmod_pdivmodrel]
-  have pr:"F (i - 2) = smult ?c (Q i) * F (i - 1) + smult ?c ( smult (\<beta> i) (F i))"
-    by (auto simp: eucl_rel_poly_iff)
-  hence "F (i - 2) = smult (inverse (\<alpha> i)) (Q i) * F (i - 1)
+  from this [symmetric]
+  have pr: \<open>F (i - 2) = smult ?c (Q i) * F (i - 1) + smult ?c ( smult (\<beta> i) (F i))\<close>
+    by (simp only: prod_eq_iff fst_conv snd_conv div_mult_mod_eq)
+  then have "F (i - 2) = smult (inverse (\<alpha> i)) (Q i) * F (i - 1)
                    + smult (inverse (\<alpha> i)) ( smult (\<beta> i) (F i))" (is "?l = ?r" is "_ = ?t + _")
                    unfolding inv.
   hence eq:"smult (\<alpha> i) (?l - ?t) = smult (\<alpha> i) (?r - ?t)" by auto

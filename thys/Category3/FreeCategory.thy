@@ -187,12 +187,12 @@ begin
 
     lemma is_discrete:
     shows "arr f \<longleftrightarrow> ide f"
-      using ide_char arr_char by simp
+      using ide_char\<^sub>C\<^sub>C arr_char by simp
 
     lemma arr_char:
     shows "arr f \<longleftrightarrow> Dom f \<in> Obj \<and> f = MkIde (Dom f)"
       using is_discrete
-      by (metis (no_types, lifting) cod_char dom_char ide_MkIde ide_char ide_char')
+      by (metis (no_types, lifting) cod_char dom_char ide_MkIde ide_char\<^sub>C\<^sub>C ide_char')
 
     lemma arr_char':
     shows "arr f \<longleftrightarrow> f \<in> MkIde ` Obj"
@@ -277,7 +277,7 @@ begin
     shows "ide f \<longleftrightarrow> f = Zero \<or> f = One"
     proof -
       have "ide f \<longleftrightarrow> f = MkIde False \<or> f = MkIde True"
-        using ide_char concrete_category.MkIde_Dom' concrete_category_axioms by fastforce
+        using ide_char\<^sub>C\<^sub>C concrete_category.MkIde_Dom' concrete_category_axioms by fastforce
       thus ?thesis
         using comp_def Zero_def One_def by simp
     qed

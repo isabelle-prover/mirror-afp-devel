@@ -2752,6 +2752,15 @@
     </item>
     
     <item>
+      <title>Implicational_Logic</title>
+      <link>/theories/implicational_logic/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/implicational_logic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Impossible_Geometry</title>
       <link>/theories/impossible_geometry/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -3715,6 +3724,15 @@
     </item>
     
     <item>
+      <title>Maximum_Segment_Sum</title>
+      <link>/theories/maximum_segment_sum/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/maximum_segment_sum/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>MDP-Algorithms</title>
       <link>/theories/mdp-algorithms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4291,6 +4309,15 @@
     </item>
     
     <item>
+      <title>Padic_Field</title>
+      <link>/theories/padic_field/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/padic_field/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Padic_Ints</title>
       <link>/theories/padic_ints/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -4849,6 +4876,15 @@
     </item>
     
     <item>
+      <title>Query_Optimization</title>
+      <link>/theories/query_optimization/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/query_optimization/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Quick_Sort_Cost</title>
       <link>/theories/quick_sort_cost/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5173,6 +5209,15 @@
     </item>
     
     <item>
+      <title>Risk_Free_Lending</title>
+      <link>/theories/risk_free_lending/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/risk_free_lending/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Robbins-Conjecture</title>
       <link>/theories/robbins-conjecture/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5263,6 +5308,15 @@
     </item>
     
     <item>
+      <title>Safe_Range_RC</title>
+      <link>/theories/safe_range_rc/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/safe_range_rc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>SATSolverVerification</title>
       <link>/theories/satsolververification/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -5295,6 +5349,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/sc_dom_components/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>SCC_Bloemen_Sequential</title>
+      <link>/theories/scc_bloemen_sequential/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/scc_bloemen_sequential/</guid>
       <description></description>
     </item>
     
@@ -5376,6 +5439,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/separation_logic_imperative_hol/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Separation_Logic_Unbounded</title>
+      <link>/theories/separation_logic_unbounded/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/separation_logic_unbounded/</guid>
       <description></description>
     </item>
     
@@ -5700,6 +5772,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/stable_matching/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stalnaker_Logic</title>
+      <link>/theories/stalnaker_logic/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/stalnaker_logic/</guid>
       <description></description>
     </item>
     
@@ -6168,6 +6249,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/types_to_sets_extension/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Undirected_Graph_Theory</title>
+      <link>/theories/undirected_graph_theory/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/undirected_graph_theory/</guid>
       <description></description>
     </item>
     

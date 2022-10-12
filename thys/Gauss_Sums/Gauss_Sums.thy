@@ -1617,7 +1617,8 @@ proof -
          unity_root n (int (m * nat (int x mod int n))) =
          1 / of_nat n * cnj (\<chi> (nat (- int x mod int n))) *
          gauss_sum 1 *
-         unity_root n (- int (m * nat (- int x mod int n)))" by auto
+         unity_root n (- int (m * nat (- int x mod int n)))"
+          by clarsimp
       qed
       also have 2: "(\<Sum>x = 1..n. 1 / of_nat n * cnj (\<chi> (nat (- int x mod int n))) *
           gauss_sum 1 * unity_root n (- int (m * nat (- int x mod int n)))) =

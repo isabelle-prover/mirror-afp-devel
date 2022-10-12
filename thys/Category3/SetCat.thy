@@ -96,7 +96,7 @@ begin
             show "\<guillemotleft>S.MkArr (S.Dom a) {x} (\<lambda>_\<in>S.Dom a. x) : a \<rightarrow> S.MkIde {x}\<guillemotright>"
             proof
               show 2: "S.arr (S.MkArr (S.Dom a) {x} (\<lambda>_ \<in> S.Dom a. x))"
-                using a 1 S.arr_MkArr [of "S.Dom a" "{x}"] S.ide_char by force
+                using a 1 S.arr_MkArr [of "S.Dom a" "{x}"] S.ide_char\<^sub>C\<^sub>C by force
               show "S.dom (S.MkArr (S.Dom a) {x} (\<lambda>_ \<in> S.Dom a. x)) = a"
                 using a 2 S.dom_MkArr by force
               show "S.cod (S.MkArr (S.Dom a) {x} (\<lambda>_\<in>S.Dom a. x)) = S.MkIde {x}"
@@ -165,7 +165,7 @@ begin
                   show "{undefined} \<in> {A. Setp A}"
                     by (simp add: finite_imp_Setp)
                   show "S.Dom a \<in> {A. Setp A}"
-                    using ide_a S.ide_char by blast
+                    using ide_a S.ide_char\<^sub>C\<^sub>C by blast
                   show "(\<lambda>_ \<in> {undefined}. x) \<in> extensional {undefined} \<inter> ({undefined} \<rightarrow> S.Dom a)"
                     using 1 by blast
                 qed
@@ -181,7 +181,7 @@ begin
                   show "{undefined} \<in> {A. Setp A}"
                     by (simp add: finite_imp_Setp)
                   show "S.Dom a \<in> {A. Setp A}"
-                    using ide_a S.ide_char by blast
+                    using ide_a S.ide_char\<^sub>C\<^sub>C by blast
                   show "(\<lambda>_ \<in> {undefined}. x') \<in> extensional {undefined} \<inter> ({undefined} \<rightarrow> S.Dom a)"
                     using 1 by blast
                 qed
@@ -508,7 +508,7 @@ begin
         ultimately show ?thesis by presburger
       qed
       thus ?thesis
-        using a S.ide_char by auto
+        using a S.ide_char\<^sub>C\<^sub>C by auto
     qed
 
     lemma set_MkIde_elem_of_img:
@@ -616,7 +616,7 @@ begin
                 qed
               qed
               hence "\<guillemotleft>?f : S.MkIde (S.Dom a) \<rightarrow> S.MkIde (S.Dom b)\<guillemotright>"
-                using a b S.MkArr_in_hom S.ide_char by blast
+                using a b S.MkArr_in_hom S.ide_char\<^sub>C\<^sub>C by blast
               thus ?thesis
                 using a b by simp
             qed
@@ -784,12 +784,15 @@ begin
       using is_category by blast
     sublocale set_category comp \<open>\<lambda>A. A \<subseteq> Collect S.terminal \<and> Setp (elem_of ` A)\<close>
       using is_set_category set_img_Collect_ide_iff by simp
-    sublocale concrete_set_category comp \<open>\<lambda>A. A \<subseteq> Collect S.terminal \<and> Setp (elem_of ` A)\<close>
+    interpretation concrete_set_category comp \<open>\<lambda>A. A \<subseteq> Collect S.terminal \<and> Setp (elem_of ` A)\<close>
                        UNIV arr_of
       using is_concrete_set_category by simp
-
+ 
   end
-
+(*
+  interpretation SetCat: setcat undefined \<open>\<lambda>S. True\<close>
+    by unfold_locales auto
+ *)
   text\<open>
     Here we discard the temporary interpretations \<open>S\<close>, leaving only the exported
     definitions and facts.
@@ -802,6 +805,11 @@ begin
       We establish mappings to pass back and forth between objects and arrows of the category
       and sets and functions on the underlying elements.
 \<close>
+
+    interpretation set_category comp \<open>\<lambda>A. A \<subseteq> Collect terminal \<and> Setp (elem_of ` A)\<close>
+      using is_set_category by blast
+    interpretation concrete_set_category comp \<open>\<lambda>A. A \<subseteq> Univ \<and> Setp (elem_of ` A)\<close> UNIV arr_of
+      using is_concrete_set_category by blast
 
     definition set_of_ide :: "'e setcat.arr \<Rightarrow> 'e set"
     where "set_of_ide a \<equiv> elem_of ` set a"
@@ -1311,9 +1319,7 @@ begin
   begin
 
     interpretation SC: setcat dummy \<open>\<lambda>_. True\<close>
-    proof
-      show True by blast
-    qed
+      by unfold_locales blast
 
     definition comp
     where "comp \<equiv> SC.comp"
@@ -1326,12 +1332,23 @@ begin
 
     sublocale replete_set_category comp
       unfolding comp_def
-      using SC.set_img_Collect_ide_iff SC.set_category_given_img_axioms
-      by unfold_locales auto
+      using SC.is_set_category replete_set_category_def set_category_def by auto
+
+    lemma is_replete_set_category:
+    shows "replete_set_category comp"
+      ..
+
+    lemma is_set_category\<^sub>R\<^sub>S\<^sub>C:
+    shows "set_category comp (\<lambda>A. A \<subseteq> Univ)"
+      using is_set_category by blast
 
     sublocale concrete_set_category comp setp UNIV arr_of
       using SC.is_concrete_set_category comp_def SC.set_img_Collect_ide_iff arr_of_def
       by auto
+
+    lemma is_concrete_set_category:
+    shows "concrete_set_category comp setp UNIV arr_of"
+      ..
 
     lemma bij_arr_of:
     shows "bij_betw arr_of UNIV Univ"
@@ -1342,6 +1359,8 @@ begin
       using SC.bij_elem_of comp_def elem_of_def by auto
 
   end
-
+(*
+  interpretation RepleteSetCat: replete_setcat undefined .
+ *)
 end
 

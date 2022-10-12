@@ -255,6 +255,8 @@ begin
     interpretation setcat \<open>undefined :: hf\<close> finite
       using finite_subset
       by unfold_locales blast+
+    interpretation set_category comp \<open>\<lambda>A. A \<subseteq> Collect terminal \<and> finite (elem_of ` A)\<close>
+      using is_set_category by blast
 
     lemma set_ide_char:
     shows "A \<in> set ` Collect ide \<longleftrightarrow> A \<subseteq> Univ \<and> finite A"
@@ -1068,7 +1070,7 @@ begin
     lemma pr1_tuple:
     assumes "span f g"
     shows "comp (pr1 (cod f) (cod g)) (tuple f g) = f"
-    proof (intro arr_eqI)
+    proof (intro arr_eqI\<^sub>S\<^sub>C)
       have pr1: "\<guillemotleft>pr1 (cod f) (cod g) : prod (cod f) (cod g) \<rightarrow> cod f\<guillemotright>"
         using assms ide_cod by blast
       have tuple: "\<guillemotleft>tuple f g : dom f \<rightarrow> prod (cod f) (cod g)\<guillemotright>"
@@ -1147,7 +1149,7 @@ begin
     lemma pr0_tuple:
     assumes "span f g"
     shows "comp (pr0 (cod f) (cod g)) (tuple f g) = g"
-    proof (intro arr_eqI)
+    proof (intro arr_eqI\<^sub>S\<^sub>C)
       have pr0: "\<guillemotleft>pr0 (cod f) (cod g) : prod (cod f) (cod g) \<rightarrow> cod g\<guillemotright>"
         using assms ide_cod by blast
       have tuple: "\<guillemotleft>tuple f g : dom f \<rightarrow> prod (cod f) (cod g)\<guillemotright>"
@@ -1226,7 +1228,7 @@ begin
     lemma tuple_pr:
     assumes "ide a" and "ide b" and "\<guillemotleft>h : dom h \<rightarrow> prod a b\<guillemotright>"
     shows "tuple (comp (pr1 a b) h) (comp (pr0 a b) h) = h"
-    proof (intro arr_eqI)
+    proof (intro arr_eqI\<^sub>S\<^sub>C)
       have pr0: "\<guillemotleft>pr0 a b : prod a b \<rightarrow> b\<guillemotright>"
         using assms pr0_in_hom ide_cod by blast
       have pr1: "\<guillemotleft>pr1 a b : prod a b \<rightarrow> a\<guillemotright>"
@@ -1672,7 +1674,7 @@ begin
       also have 5: "... = comp (eval b c) (tuple \<Lambda>_pr1' b_pr0')"
         using lam_pr1_eq b_pr0_eq by simp
       also have "... = g"
-      proof (intro arr_eqI)
+      proof (intro arr_eqI\<^sub>S\<^sub>C)
         have 2: "arr (comp (eval b c) (tuple \<Lambda>_pr1 b_pr0))"
           using assms tuple arr_char
           by (metis (no_types, lifting) in_homE seqI eval_simps(1-2) ide_exp prod_ide_eq)
@@ -1835,7 +1837,7 @@ begin
     assumes "ide a" and "ide b" and "ide c"
     and "in_hom h a (exp b c)"
     shows "\<Lambda> a b c (comp (eval b c) (HF'.prod h b)) = h"
-    proof (intro arr_eqI)
+    proof (intro arr_eqI\<^sub>S\<^sub>C)
       have 0: "in_hom (comp (eval b c) (HF'.prod h b)) (prod a b) c"
       proof
         show "in_hom (HF'.prod h b) (prod a b) (HF'.prod (exp b c) b)"

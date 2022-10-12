@@ -1,6 +1,6 @@
 theory Matrix_Equation_Construction
 
-imports "BKR_Algorithm"
+imports BKR_Algorithm
 begin
 
 section "Results with Sturm's Theorem"
@@ -46,14 +46,16 @@ lemma restate_tarski:
   assumes "q \<noteq> 0"
   shows "changes_R_smods p ((pderiv p) * q) = card {x. poly p x = 0 \<and> poly q x > 0} -  int(card {x. poly p x = 0 \<and> poly q x < 0})"
 proof -
-  have 3: "taq {x. poly p x=0} q \<equiv> \<Sum>y\<in>{x. poly p x=0}. sign (poly q y)" by (simp add: taq_def)
+  have 3: "taq {x. poly p x=0} q \<equiv> \<Sum>y\<in>{x. poly p x=0}. Sturm_Tarski.sign (poly q y)" by (simp add: taq_def)
   have 4: "{x. poly p x=0} =  {x. poly p x = 0 \<and> poly q x > 0} \<union> {x. poly p x = 0 \<and> poly q x < 0} \<union> {x. poly p x = 0 \<and> poly q x = 0}" by force
   then have 5: "{x. poly p x=0} =  {x. poly p x = 0 \<and> poly q x > 0} \<union> {x. poly p x = 0 \<and> poly q x < 0}" using assms(1) coprime_poly_0 by auto
-  then have 6: "\<Sum>y\<in>{x. poly p x=0}. sign (poly q y) \<equiv> \<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0} \<union> {x. poly p x = 0 \<and> poly q x < 0}. sign (poly q y)" by presburger
-  then have 12: "taq {x. poly p x=0} q \<equiv> \<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0} \<union> {x. poly p x = 0 \<and> poly q x < 0}. sign (poly q y)" using 3 by linarith
+  then have 6: "\<Sum>y\<in>{x. poly p x=0}. Sturm_Tarski.sign (poly q y) \<equiv> \<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0} \<union> {x. poly p x = 0 \<and> poly q x < 0}. Sturm_Tarski.sign (poly q y)" by presburger
+  then have 12: "taq {x. poly p x=0} q \<equiv> \<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0} \<union> {x. poly p x = 0 \<and> poly q x < 0}. Sturm_Tarski.sign (poly q y)"
+    by (simp add: "3") 
   have 7: "{x. poly p x = 0 \<and> poly q x > 0} \<inter> {x. poly p x = 0 \<and> poly q x < 0} = {}" by auto
-  then have 8: "\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0} \<union> {x. poly p x = 0 \<and> poly q x < 0}. sign (poly q y) \<equiv> (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0}.sign (poly q y)) + (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x < 0}.sign(poly q y))" by (simp add: assms(2) poly_roots_finite sum.union_disjoint)
-  then have 13: "taq {x. poly p x=0} q \<equiv> (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0}.sign (poly q y)) + (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x < 0}.sign(poly q y))" using 12 by linarith
+  then have 8: "\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0} \<union> {x. poly p x = 0 \<and> poly q x < 0}. Sturm_Tarski.sign (poly q y) \<equiv> (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0}.Sturm_Tarski.sign (poly q y)) + (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x < 0}.Sturm_Tarski.sign(poly q y))" by (simp add: assms(2) poly_roots_finite sum.union_disjoint)
+  then have 13: "taq {x. poly p x=0} q \<equiv> (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0}.Sturm_Tarski.sign (poly q y)) + (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x < 0}.Sturm_Tarski.sign(poly q y))"
+    by (simp add: "12") 
   then have 9: "taq {x. poly p x = 0} q \<equiv> (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0}.1) + (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x < 0}.(-1))" by simp
   have 10: "(\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x > 0}.1) =  card {x. poly p x = 0 \<and> poly q x > 0}" using card_eq_sum by auto
   have 11: " (\<Sum>y\<in>{x. poly p x = 0 \<and> poly q x < 0}.(-1)) = -1*card {x. poly p x = 0 \<and> poly q x < 0}" using card_eq_const_sum by simp
@@ -78,7 +80,7 @@ proof -
   let ?eq = "{x. poly p x=0 \<and> poly q x = 0}"
   have eq: "?all = ?lt \<union> ?gt \<union> ?eq" by force
   from poly_roots_finite[OF assms] have fin: "finite ?all" .
-  show  "(\<Sum>x | poly p x = 0. sign (poly q x)) = int (card ?gt) - int (card ?lt)"
+  show  "(\<Sum>x | poly p x = 0. Sturm_Tarski.sign (poly q x)) = int (card ?gt) - int (card ?lt)"
     unfolding eq
     apply (subst sum_Un)
       apply (auto simp add:fin)
@@ -139,7 +141,7 @@ lemma construct_NofI_prop:
 definition construct_s_vector:: "real poly \<Rightarrow> real poly list list \<Rightarrow> rat vec"
   where "construct_s_vector p Is = vec_of_list (map (\<lambda> I.(construct_NofI p I)) Is)"
 
-(* Consistent sign assignments *)
+(* Consistent Sturm_Tarski.sign asSturm_Tarski.signments *)
 definition squash::"'a::linordered_field \<Rightarrow> rat"
   where "squash x = (if x > 0 then 1
                     else if x < 0 then -1
@@ -189,7 +191,7 @@ definition list_constr:: "nat list \<Rightarrow> nat \<Rightarrow> bool"
 definition all_list_constr:: "nat list list \<Rightarrow> nat \<Rightarrow> bool"
   where "all_list_constr L n \<equiv> (\<forall>x. List.member L x \<longrightarrow> list_constr x n)"
 
-(* The first input is the subset; the second input is the consistent sign assignment.
+(* The first input is the subset; the second input is the consistent Sturm_Tarski.sign asSturm_Tarski.signment.
   We want to map over the first list and pull out all of the elements in the second list with
   corresponding positions, and then multiply those together.
 *)
@@ -239,9 +241,10 @@ lemma subsets_are_rows: "\<forall>i < (length subsets). row (alt_matrix_A signs 
   unfolding row_def unfolding alt_matrix_A_def by auto
 
 lemma signs_are_cols: "\<forall>i < (length signs). col (alt_matrix_A signs subsets) i  = vec (length subsets) (\<lambda>j. z (subsets ! j) (signs ! i))"
-  unfolding col_def unfolding alt_matrix_A_def by auto
+  unfolding col_def unfolding alt_matrix_A_def 
+  by auto
 
-(* ith entry of LHS vector is the number of (distinct) real zeros of p where the sign vector of the qs  is the ith entry of signs.*)
+(* ith entry of LHS vector is the number of (distinct) real zeros of p where the Sturm_Tarski.sign vector of the qs  is the ith entry of Sturm_Tarski.signs.*)
 definition construct_lhs_vector:: "real poly \<Rightarrow> real poly list \<Rightarrow> rat list list  \<Rightarrow> rat vec"
   where "construct_lhs_vector p qs signs \<equiv>
   vec_of_list (map (\<lambda>w.  rat_of_int (int (length (filter (\<lambda>v. v = w) (map (consistent_sign_vec_copr qs) (characterize_root_list_p p)))))) signs)"
@@ -314,8 +317,8 @@ lemma construct_lhs_vector_cleaner:
   using assms construct_lhs_vector_clean construct_lhs_vector_def apply auto[1]
   by simp
 
-(* Show that because our consistent sign vectors consist of 1 and -1's, z returns 1 or -1 
-  when applied to a consistent sign vector *)
+(* Show that because our consistent Sturm_Tarski.sign vectors consist of 1 and -1's, z returns 1 or -1 
+  when applied to a consistent Sturm_Tarski.sign vector *)
 lemma z_signs:
   assumes "list_all (\<lambda>i. i < length signs) I"
   assumes "list_all (\<lambda>s. s = 1 \<or> s = -1) signs"

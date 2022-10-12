@@ -1161,6 +1161,25 @@ host = [
 
 [cousin.homepages]
 
+
+[cremer]
+name = "Nils Cremer"
+
+[cremer.emails]
+
+[cremer.emails.cremer_email]
+user = [
+  "nils",
+  "cremer",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[cremer.homepages]
+
+
 [crighton]
 name = "Aaron Crighton"
 
@@ -1388,9 +1407,18 @@ host = [
 [dongol.homepages]
 
 [doty]
-name = "Matthew Wampler-Doty"
+name = "Matthew Doty"
 
 [doty.emails]
+
+[doty.emails.doty_email]
+user = [
+  "matt",
+]
+host = [
+  "w-d",
+  "org",
+]
 
 [doty.homepages]
 
@@ -2180,6 +2208,23 @@ host = [
 [guttmann.homepages]
 guttmann_homepage = "https://www.cosc.canterbury.ac.nz/walter.guttmann/"
 
+[guzman]
+name = "Laura P. Gamboa Guzman"
+
+[guzman.emails]
+
+[guzman.emails.guzman_email]
+user = [
+  "lpgamboa"
+]
+host = [
+  "iastate",
+  "edu"
+]
+
+[guzman.homepages]
+guzman_homepage = "https://sites.google.com/view/lpgamboa/home"
+
 [haftmann]
 name = "Florian Haftmann"
 
@@ -2621,16 +2666,6 @@ name = "Lars Hupel"
 
 [hupel.emails.hupel_email]
 user = [
-  "hupel",
-]
-host = [
-  "in",
-  "tum",
-  "de",
-]
-
-[hupel.emails.hupel_email1]
-user = [
   "lars",
 ]
 host = [
@@ -2639,8 +2674,7 @@ host = [
 ]
 
 [hupel.homepages]
-hupel_homepage = "https://www21.in.tum.de/~hupel/"
-hupel_homepage1 = "https://lars.hupel.info/"
+hupel_homepage = "https://lars.hupel.info/"
 
 [ijbema]
 name = "Mark Ijbema"
@@ -3363,6 +3397,24 @@ host = [
 ]
 
 [langenstein.homepages]
+
+[laursen]
+name = "Christian Pardillo-Laursen"
+
+[laursen.emails]
+
+[laursen.emails.laursen_email]
+user = [
+  "christian",
+  "laursen",
+]
+host = [
+  "york",
+  "ac",
+  "uk",
+]
+
+[laursen.homepages]
 
 [lattuada]
 name = "Andrea Lattuada"
@@ -5785,6 +5837,15 @@ name = "Thomas Sternagel"
 name = "Lukas Stevens"
 
 [stevens.emails]
+[stevens.emails.stevens_email]
+user = [
+  "lukas.stevens",
+]
+host = [
+  "in",
+  "tum",
+  "de"
+]
 
 [stevens.homepages]
 stevens_homepage = "https://www21.in.tum.de/team/stevensl"
@@ -5804,6 +5865,23 @@ host = [
 ]
 
 [stock.homepages]
+
+[stoeckl]
+name = "Bernhard Stöckl"
+
+[stoeckl.emails]
+
+[stoeckl.emails.stoeckl_email]
+user = [
+  "stoeckl",
+]
+host = [
+  "in",
+  "tum",
+  "de"
+]
+
+[stoeckl.homepages]
 
 [stricker]
 name = "Christian Stricker"
@@ -6207,6 +6285,23 @@ host = [
 
 [traytel.homepages]
 traytel_homepage = "https://traytel.bitbucket.io/"
+
+[trelat]
+name = "Vincent Trélat"
+
+[trelat.emails]
+
+[trelat.emails.trelat_email]
+user = [
+  "vincent",
+  "trelat",
+]
+host = [
+  "depinfonancy",
+  "net",
+]
+
+[trelat.homepages]
 
 [tuerk]
 name = "Thomas Tuerk"

@@ -6,7 +6,16 @@
     <description>Recent content in Graph_Theory on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 13 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/graph_theory/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 04 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="/dependencies/graph_theory/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Verification of Query Optimization Algorithms</title>
+      <link>/entries/Query_Optimization.html</link>
+      <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Query_Optimization.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Combinatorial Design Theory</title>
       <link>/entries/Design_Theory.html</link>

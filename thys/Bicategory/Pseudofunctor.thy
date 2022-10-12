@@ -134,7 +134,7 @@ begin
     sublocale FF: "functor" C.VV.comp D.VV.comp FF
     proof -
       have 1: "\<And>\<mu>\<nu>. C.VV.arr \<mu>\<nu> \<Longrightarrow> D.VV.arr (FF \<mu>\<nu>)"
-        unfolding FF_def using C.VV.arr_char D.VV.arr_char preserves_hseq by simp
+        unfolding FF_def using C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C preserves_hseq by simp
       show "functor C.VV.comp D.VV.comp FF"
       proof
         fix \<mu>\<nu>
@@ -144,10 +144,10 @@ begin
           using 1 by simp
         assume \<mu>\<nu>: "C.VV.arr \<mu>\<nu>"
         show "D.VV.dom (FF \<mu>\<nu>) = FF (C.VV.dom \<mu>\<nu>)"
-          using \<mu>\<nu> 1 FF_def C.VV.arr_char D.VV.arr_char C.VV.dom_simp D.VV.dom_simp
+          using \<mu>\<nu> 1 FF_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp D.VV.dom_simp
           by simp
         show "D.VV.cod (FF \<mu>\<nu>) = FF (C.VV.cod \<mu>\<nu>)"
-          using \<mu>\<nu> 1 FF_def C.VV.arr_char D.VV.arr_char C.VV.cod_simp D.VV.cod_simp
+          using \<mu>\<nu> 1 FF_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_simp D.VV.cod_simp
           by simp
         next
         fix \<mu>\<nu> \<tau>\<pi>
@@ -155,12 +155,12 @@ begin
         show "FF (C.VV.comp \<mu>\<nu> \<tau>\<pi>) = D.VV.comp (FF \<mu>\<nu>) (FF \<tau>\<pi>)"
         proof -
           have "FF (C.VV.comp \<mu>\<nu> \<tau>\<pi>) = (F (fst \<mu>\<nu>) \<cdot>\<^sub>D F (fst \<tau>\<pi>), F (snd \<mu>\<nu>) \<cdot>\<^sub>D F (snd \<tau>\<pi>))"
-            using 1 2 FF_def C.VV.comp_char C.VxV.comp_char C.VV.arr_char
-            by (metis (no_types, lifting) C.VV.seq_char C.VxV.seqE fst_conv
+            using 1 2 FF_def C.VV.comp_char C.VxV.comp_char C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+            by (metis (no_types, lifting) C.VV.seq_char\<^sub>S\<^sub>b\<^sub>C C.VxV.seqE fst_conv
                 as_nat_trans.preserves_comp_2 snd_conv)
           also have "... = D.VV.comp (FF \<mu>\<nu>) (FF \<tau>\<pi>)"
-            using 1 2 FF_def D.VV.comp_char D.VxV.comp_char C.VV.arr_char D.VV.arr_char
-                  C.VV.seq_char C.VxV.seqE preserves_seq
+            using 1 2 FF_def D.VV.comp_char D.VxV.comp_char C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                  C.VV.seq_char\<^sub>S\<^sub>b\<^sub>C C.VxV.seqE preserves_seq
             by simp meson
           finally show ?thesis by simp
         qed
@@ -251,7 +251,7 @@ begin
     and "\<guillemotleft>\<Phi> (a, b) : F a \<star>\<^sub>D F b \<Rightarrow>\<^sub>D F (a \<star>\<^sub>C b)\<guillemotright>"
     proof -
       show "\<guillemotleft>\<Phi> (a, b) : F a \<star>\<^sub>D F b \<Rightarrow>\<^sub>D F (a \<star>\<^sub>C b)\<guillemotright>"
-        using assms C.VV.arr_char C.VV.dom_char C.VV.cod_char FF_def by auto
+        using assms C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C FF_def by auto
       thus "\<guillemotleft>\<Phi> (a, b) : map\<^sub>0 (src\<^sub>C b) \<rightarrow>\<^sub>D map\<^sub>0 (trg\<^sub>C a)\<guillemotright>"
         using assms D.vconn_implies_hpar by auto
     qed
@@ -269,7 +269,7 @@ begin
     and "\<guillemotleft>\<Phi> (\<mu>, \<nu>) : F (C.dom \<mu>) \<star>\<^sub>D F (C.dom \<nu>) \<Rightarrow>\<^sub>D F (C.cod \<mu> \<star>\<^sub>C C.cod \<nu>)\<guillemotright>"
     proof -
       show "\<guillemotleft>\<Phi> (\<mu>, \<nu>) : F (C.dom \<mu>) \<star>\<^sub>D F (C.dom \<nu>) \<Rightarrow>\<^sub>D F (C.cod \<mu> \<star>\<^sub>C C.cod \<nu>)\<guillemotright>"
-        using assms C.VV.arr_char C.VV.dom_char C.VV.cod_char FF_def by auto
+        using assms C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C FF_def by auto
       thus "\<guillemotleft>\<Phi> (\<mu>, \<nu>) : map\<^sub>0 (src\<^sub>C \<nu>) \<rightarrow>\<^sub>D map\<^sub>0 (trg\<^sub>C \<mu>)\<guillemotright>"
         using assms D.vconn_implies_hpar by auto
     qed
@@ -285,7 +285,7 @@ begin
     lemma cmp_components_are_iso [simp]:
     assumes "C.ide f" and "C.ide g" and "src\<^sub>C f = trg\<^sub>C g"
     shows "D.iso (\<Phi> (f, g))"
-      using assms C.VV.ide_char C.VV.arr_char by simp
+      using assms C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
 
     lemma weakly_preserves_hcomp:
     assumes "C.ide f" and "C.ide g" and "src\<^sub>C f = trg\<^sub>C g"
@@ -315,7 +315,7 @@ begin
         using assms preserves_hom cmp_in_hom
         by (intro D.comp_in_homI, auto)
       show "\<guillemotleft>F \<i>\<^sub>C[a] \<cdot>\<^sub>D \<Phi> (a, a) : src\<^sub>D (F a) \<rightarrow>\<^sub>D src\<^sub>D (F a)\<guillemotright>"
-        using assms C.VV.arr_char C.VV.dom_simp C.VV.cod_simp
+        using assms C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_simp
         by (intro D.vcomp_in_hhom D.seqI, auto)
     qed
 
@@ -432,7 +432,7 @@ begin
                   Df.left_def
             by fastforce
           thus ?thesis
-            using assms Df.lunit_char(3) S.ide_char S.arr_char by simp
+            using assms Df.lunit_char(3) S.ide_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
         qed
         moreover have "Df.L (F f) = F (trg\<^sub>C f) \<star>\<^sub>D F f"
           using assms by (simp add: Df.H\<^sub>L_def)
@@ -442,11 +442,11 @@ begin
                        (\<i>[trg\<^sub>C f] \<star>\<^sub>D F f) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F (trg\<^sub>C f), F (trg\<^sub>C f), F f]"
           by (metis (no_types, lifting) D.arrI D.ext D.hseqI' D.hseq_char' D.seqE
               D.seq_if_composable D.vconn_implies_hpar(1) D.vconn_implies_hpar(2-3)
-              D.vconn_implies_hpar(4) Df.\<iota>_in_hom Df.arr_\<omega> S.comp_char S.in_hom_char
+              D.vconn_implies_hpar(4) Df.\<iota>_in_hom Df.arr_\<omega> S.comp_char S.in_hom_char\<^sub>S\<^sub>b\<^sub>C
               calculation(1,3))
         moreover have "\<And>\<mu>. \<guillemotleft>\<mu> : F (trg\<^sub>C f) \<star>\<^sub>D F f \<Rightarrow>\<^sub>D F f\<guillemotright> \<longleftrightarrow>
                             \<guillemotleft>\<mu> : F (trg\<^sub>C f) \<star>\<^sub>D F f \<Rightarrow>\<^sub>S F f\<guillemotright>"
-          using assms S.in_hom_char S.arr_char
+          using assms S.in_hom_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C
           by (metis D.in_homE Df.hom_connected(2) Df.left_def calculation(1-2))
         ultimately show ?thesis by simp
       qed
@@ -659,8 +659,8 @@ begin
           also have "... = (F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]) \<cdot>\<^sub>D D.inv (\<Phi> (?b, ?b \<star>\<^sub>C f)) \<cdot>\<^sub>D
                            D.inv (F (?b \<star>\<^sub>C \<l>\<^sub>C[f])) \<cdot>\<^sub>D (\<Phi> (?b, f) \<cdot>\<^sub>D (F \<i>\<^sub>C[?b] \<star>\<^sub>D F f)) \<cdot>\<^sub>D
                            (\<Phi> (?b, ?b) \<star>\<^sub>D F f) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F ?b, F ?b, F f]"
-            using assms \<Phi>.naturality [of "(\<i>\<^sub>C[?b], f)"] FF_def C.VV.arr_char C.VV.cod_char
-                  C.VV.dom_char
+            using assms \<Phi>.naturality [of "(\<i>\<^sub>C[?b], f)"] FF_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
+                  C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C
             by simp
           also have "... = (F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]) \<cdot>\<^sub>D D.inv (\<Phi> (?b, ?b \<star>\<^sub>C f)) \<cdot>\<^sub>D
                            D.inv (F (?b \<star>\<^sub>C \<l>\<^sub>C[f])) \<cdot>\<^sub>D \<Phi> (?b, f) \<cdot>\<^sub>D
@@ -685,8 +685,8 @@ begin
             also have "... = D.inv (D.inv (\<Phi> (?b, f)) \<cdot>\<^sub>D F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f))"
             proof -
               have 1: "\<Phi> (?b, f) \<cdot>\<^sub>D (F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]) = F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f)"
-                using assms \<Phi>.naturality [of "(?b, \<l>\<^sub>C[f])"] FF_def C.VV.arr_char
-                      C.VV.cod_char D.VV.null_char C.VV.dom_simp
+                using assms \<Phi>.naturality [of "(?b, \<l>\<^sub>C[f])"] FF_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                      C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C D.VV.null_char C.VV.dom_simp
                 by simp
               have "(F ?b \<star>\<^sub>D F \<l>\<^sub>C[f]) \<cdot>\<^sub>D D.inv (\<Phi> (?b, ?b \<star>\<^sub>C f)) =
                     D.inv (\<Phi> (?b, f)) \<cdot>\<^sub>D F (?b \<star>\<^sub>C \<l>\<^sub>C[f])"
@@ -704,13 +704,13 @@ begin
             also have "... = D.inv (F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f)) \<cdot>\<^sub>D \<Phi> (?b, f)"
             proof -
               have "D.iso (F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f))"
-                using assms D.isos_compose C.VV.arr_char C.iso_lunit C.VV.dom_simp
+                using assms D.isos_compose C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.iso_lunit C.VV.dom_simp
                       C.VV.cod_simp
                 by simp
               moreover have "D.iso (D.inv (\<Phi> (?b, f)))"
                 using assms by simp
               moreover have "D.seq (D.inv (\<Phi> (?b, f))) (F (?b \<star>\<^sub>C \<l>\<^sub>C[f]) \<cdot>\<^sub>D \<Phi> (?b, ?b \<star>\<^sub>C f))"
-                using assms C.VV.arr_char C.VV.dom_simp C.VV.cod_simp by simp
+                using assms C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_simp by simp
               ultimately show ?thesis
                 using assms D.inv_comp by simp
             qed
@@ -791,11 +791,11 @@ begin
       by (unfold_locales, auto)
 
     interpretation H: "functor" VV.comp V \<open>\<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<star> snd \<mu>\<nu>\<close>
-      using VV.arr_char VV.dom_simp VV.cod_simp
+      using VV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.dom_simp VV.cod_simp
       apply unfold_locales
           apply (metis (no_types, lifting) B.hseqE B.hseq_char')
          apply auto[3]
-      using VV.comp_char VV.seq_char VV.arr_char B.VxV.comp_char B.interchange
+      using VV.comp_char VV.seq_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VxV.comp_char B.interchange
       by (metis (no_types, lifting) B.VxV.seqE fst_conv snd_conv)
 
     interpretation horizontal_composition V H src trg
@@ -813,18 +813,18 @@ begin
 
     lemma VVV_arr_char:
     shows "VVV.arr \<mu>\<nu>\<tau> \<longleftrightarrow> B.VVV.arr (DN \<mu>\<nu>\<tau>)"
-      using VVV.arr_char VV.arr_char B.VVV.arr_char B.VV.arr_char B.VVV.not_arr_null
+      using VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.not_arr_null
       by auto
 
     lemma VVV_ide_char:
     shows "VVV.ide \<mu>\<nu>\<tau> \<longleftrightarrow> B.VVV.ide (DN \<mu>\<nu>\<tau>)"
     proof -
       have "VVV.ide \<mu>\<nu>\<tau> \<longleftrightarrow> VVV.arr \<mu>\<nu>\<tau> \<and> B.VxVxV.ide \<mu>\<nu>\<tau>"
-        using VVV.ide_char by simp
+        using VVV.ide_char\<^sub>S\<^sub>b\<^sub>C by simp
       also have "... \<longleftrightarrow> B.VVV.arr (DN \<mu>\<nu>\<tau>) \<and> B.VxVxV.ide (DN \<mu>\<nu>\<tau>)"
         using VVV_arr_char B.VxVxV.ide_char by auto
       also have "... \<longleftrightarrow> B.VVV.ide (DN \<mu>\<nu>\<tau>)"
-        using B.VVV.ide_char [of "DN \<mu>\<nu>\<tau>"] by blast
+        using B.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C [of "DN \<mu>\<nu>\<tau>"] by blast
       finally show ?thesis by fast
     qed
 
@@ -839,13 +839,13 @@ begin
         assume \<mu>\<nu>\<tau>: "VVV.arr \<mu>\<nu>\<tau>"
         have "VVV.dom \<mu>\<nu>\<tau> =
               (B.dom (fst \<mu>\<nu>\<tau>), B.dom (fst (snd \<mu>\<nu>\<tau>)), B.dom (snd (snd \<mu>\<nu>\<tau>)))"
-          using \<mu>\<nu>\<tau> VVV.dom_char VVV.arr_char VV.arr_char B.VVV.arr_char B.VV.arr_char
+          using \<mu>\<nu>\<tau> VVV.dom_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
           by simp
         also have "... = UP (B.dom (snd (snd \<mu>\<nu>\<tau>)), B.dom (fst (snd \<mu>\<nu>\<tau>)), B.dom (fst \<mu>\<nu>\<tau>))"
-          by (metis (no_types, lifting) B.VV.arrI B.VVV.arr_char B.arr_dom VV.arrE VVV.arrE
+          by (metis (no_types, lifting) B.VV.arrI\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.arr_dom VV.arrE VVV.arrE
               \<mu>\<nu>\<tau> fst_conv snd_conv src_dom trg_dom)
         also have "... = UP (B.VVV.dom (DN \<mu>\<nu>\<tau>))"
-          using \<mu>\<nu>\<tau> B.VVV.dom_char B.VVV.arr_char B.VV.arr_char VVV.arr_char VV.arr_char
+          using \<mu>\<nu>\<tau> B.VVV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
           by simp
         finally show ?thesis by blast
       qed
@@ -861,13 +861,13 @@ begin
       proof -
         assume \<mu>\<nu>\<tau>: "VVV.arr \<mu>\<nu>\<tau>"
         have "VVV.cod \<mu>\<nu>\<tau> = (B.cod (fst \<mu>\<nu>\<tau>), B.cod (fst (snd \<mu>\<nu>\<tau>)), B.cod (snd (snd \<mu>\<nu>\<tau>)))"
-          using \<mu>\<nu>\<tau> VVV.cod_char VVV.arr_char VV.arr_char B.VVV.arr_char B.VV.arr_char
+          using \<mu>\<nu>\<tau> VVV.cod_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
           by simp
         also have "... = UP (B.cod (snd (snd \<mu>\<nu>\<tau>)), B.cod (fst (snd \<mu>\<nu>\<tau>)), B.cod (fst \<mu>\<nu>\<tau>))"
-          by (metis (no_types, lifting) B.VV.arrI B.VVV.arr_char B.arr_cod VV.arrE VVV.arrE
+          by (metis (no_types, lifting) B.VV.arrI\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.arr_cod VV.arrE VVV.arrE
               \<mu>\<nu>\<tau> fst_conv snd_conv src_cod trg_cod)
         also have "... = UP (B.VVV.cod (DN \<mu>\<nu>\<tau>))"
-          using \<mu>\<nu>\<tau> B.VVV.cod_char B.VVV.arr_char B.VV.arr_char VVV.arr_char VV.arr_char
+          using \<mu>\<nu>\<tau> B.VVV.cod_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
           by simp
         finally show ?thesis by blast
       qed
@@ -889,15 +889,15 @@ begin
     proof
       fix \<mu>\<nu>\<tau>
       show "\<not> VVV.arr \<mu>\<nu>\<tau> \<Longrightarrow> \<a>[fst \<mu>\<nu>\<tau>, fst (snd \<mu>\<nu>\<tau>), snd (snd \<mu>\<nu>\<tau>)] = B.null"
-        using VVV.arr_char B.VVV.arr_char \<a>_def B.\<alpha>'.is_extensional by auto
+        using VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C \<a>_def B.\<alpha>'.is_extensional by auto
       assume \<mu>\<nu>\<tau>: "VVV.arr \<mu>\<nu>\<tau>"
       show "B.dom \<a>[fst \<mu>\<nu>\<tau>, fst (snd \<mu>\<nu>\<tau>), snd (snd \<mu>\<nu>\<tau>)] = HoHV (VVV.dom \<mu>\<nu>\<tau>)"
-        using \<mu>\<nu>\<tau> \<a>_def HoHV_def B.\<alpha>'.preserves_dom VVV.arr_char VVV.dom_char VV.arr_char
-              B.HoVH_def B.VVV.arr_char B.VV.arr_char B.VVV.dom_char
+        using \<mu>\<nu>\<tau> \<a>_def HoHV_def B.\<alpha>'.preserves_dom VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.dom_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+              B.HoVH_def B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.dom_char\<^sub>S\<^sub>b\<^sub>C
         by auto
       show "B.cod \<a>[fst \<mu>\<nu>\<tau>, fst (snd \<mu>\<nu>\<tau>), snd (snd \<mu>\<nu>\<tau>)] = HoVH (VVV.cod \<mu>\<nu>\<tau>)"
-        using \<mu>\<nu>\<tau> \<a>_def HoVH_def B.\<alpha>'.preserves_cod VVV.arr_char VVV.cod_char VV.arr_char
-              B.HoHV_def B.VVV.arr_char B.VV.arr_char B.VVV.cod_char
+        using \<mu>\<nu>\<tau> \<a>_def HoVH_def B.\<alpha>'.preserves_cod VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+              B.HoHV_def B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.cod_char\<^sub>S\<^sub>b\<^sub>C
         by auto
       show "HoVH \<mu>\<nu>\<tau> \<cdot>
               \<a>[fst (VVV.dom \<mu>\<nu>\<tau>), fst (snd (VVV.dom \<mu>\<nu>\<tau>)), snd (snd (VVV.dom \<mu>\<nu>\<tau>))] =
@@ -907,7 +907,7 @@ begin
                 \<a>[fst (VVV.dom \<mu>\<nu>\<tau>), fst (snd (VVV.dom \<mu>\<nu>\<tau>)), snd (snd (VVV.dom \<mu>\<nu>\<tau>))] =
               HoVH \<mu>\<nu>\<tau> \<cdot> B.\<alpha>' (B.VVV.dom (snd (snd \<mu>\<nu>\<tau>), fst (snd \<mu>\<nu>\<tau>), fst \<mu>\<nu>\<tau>))"
           unfolding \<a>_def
-          using \<mu>\<nu>\<tau> VVV.arr_char VV.arr_char VVV.dom_char B.VVV.arr_char B.VVV.dom_char
+          using \<mu>\<nu>\<tau> VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.dom_char\<^sub>S\<^sub>b\<^sub>C
           by auto
         also have "... = B.\<alpha>' (snd (snd \<mu>\<nu>\<tau>), fst (snd \<mu>\<nu>\<tau>), fst \<mu>\<nu>\<tau>)"
           using B.\<alpha>'.is_natural_1 VVV_arr_char \<mu>\<nu>\<tau> HoVH_char by presburger
@@ -923,7 +923,7 @@ begin
                 HoHV \<mu>\<nu>\<tau> =
               B.\<alpha>' (B.VVV.cod (snd (snd \<mu>\<nu>\<tau>), fst (snd \<mu>\<nu>\<tau>), fst \<mu>\<nu>\<tau>)) \<cdot> HoHV \<mu>\<nu>\<tau>"
           unfolding \<a>_def
-          using \<mu>\<nu>\<tau> VVV.arr_char VV.arr_char VVV.cod_char B.VVV.arr_char B.VVV.cod_char
+          using \<mu>\<nu>\<tau> VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.cod_char\<^sub>S\<^sub>b\<^sub>C
           by auto
         also have "... = B.\<alpha>' (snd (snd \<mu>\<nu>\<tau>), fst (snd \<mu>\<nu>\<tau>), fst \<mu>\<nu>\<tau>)"
           using B.\<alpha>'.is_natural_2 VVV_arr_char \<mu>\<nu>\<tau> HoHV_char by presburger
@@ -953,7 +953,7 @@ begin
                         src f = trg g; src g = trg h; src h = trg k \<rbrakk> \<Longrightarrow>
               (f \<star> \<a>[g, h, k]) \<cdot> \<a>[f, g \<star> h, k] \<cdot> (\<a>[f, g, h] \<star> k) = \<a>[f, g, h \<star> k] \<cdot> \<a>[f \<star> g, h, k]"
         unfolding \<a>_def
-        using B.\<a>'_def B.comp_assoc B.pentagon' VVV.arr_char VV.arr_char by simp
+        using B.\<a>'_def B.comp_assoc B.pentagon' VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
     qed
 
     proposition is_bicategory:
@@ -980,14 +980,14 @@ begin
         moreover have "\<a>' (trg f) (trg f) f = \<a>\<^sub>B[f, trg f, trg f]"
         proof (unfold \<a>'_def)
           have 1: "VVV.ide (trg f, trg f, f)"
-            using assms VVV.ide_char VVV.arr_char VV.arr_char by simp
+            using assms VVV.ide_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
           have "\<alpha>' (trg f, trg f, f) = B.inv \<a>[trg f, trg f, f]"
             using 1 B.\<alpha>'.inverts_components by simp
           also have "... = B.inv (B.\<alpha>' (f, trg f, trg f))"
             unfolding \<a>_def using 1 by simp
           also have "... = \<a>\<^sub>B[f, trg f, trg f]"
-            using 1 B.VVV.ide_char B.VVV.arr_char B.VV.arr_char VVV.ide_char
-                  VVV.arr_char VV.arr_char B.\<alpha>'.inverts_components B.\<alpha>_def
+            using 1 B.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.ide_char\<^sub>S\<^sub>b\<^sub>C
+                  VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.\<alpha>'.inverts_components B.\<alpha>_def
             by force
           finally show "\<alpha>' (trg f, trg f, f) = \<a>\<^sub>B[f, trg f, trg f]"
             by blast
@@ -1023,7 +1023,7 @@ begin
       ..
     interpretation \<Phi>': natural_isomorphism C'.VV.comp V\<^sub>D H\<^sub>D'oFF.map FoH\<^sub>C'.map
                                            \<open>\<lambda>f. \<Phi> (snd f, fst f)\<close>
-      using C.VV.arr_char C'.VV.arr_char C'.VV.ide_char C.VV.ide_char FF_def F'.FF_def
+      using C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C'.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C'.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C FF_def F'.FF_def
             \<Phi>.is_extensional \<Phi>.is_natural_1 \<Phi>.is_natural_2
             C.VV.dom_simp C.VV.cod_simp C'.VV.dom_simp C'.VV.cod_simp
       by unfold_locales auto
@@ -1038,7 +1038,7 @@ begin
               (\<Phi> (snd (f, g), fst (f, g)) \<star>\<^sub>D\<^sup>o\<^sup>p F h) =
             \<Phi> (snd (f, g \<star>\<^sub>C\<^sup>o\<^sup>p h), fst (f, g \<star>\<^sub>C\<^sup>o\<^sup>p h)) \<cdot>\<^sub>D (F f \<star>\<^sub>D\<^sup>o\<^sup>p \<Phi> (snd (g, h), fst (g, h))) \<cdot>\<^sub>D
               D'.\<a> (F f) (F g) (F h)"
-        using f g h fg gh C.VV.in_hom_char FF_def C.VV.arr_char C.VV.dom_simp C.VV.cod_simp
+        using f g h fg gh C.VV.in_hom_char\<^sub>S\<^sub>b\<^sub>C FF_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_simp
               C'.assoc_ide_simp D'.assoc_ide_simp preserves_inv assoc_coherence
               D.invert_opposite_sides_of_square
                 [of "F (\<a>\<^sub>C h g f)" "\<Phi> (g \<star>\<^sub>C\<^sup>o\<^sup>p h, f) \<cdot>\<^sub>D (F f \<star>\<^sub>D\<^sup>o\<^sup>p \<Phi> (h, g))"
@@ -1108,7 +1108,7 @@ begin
         qed
         moreover have "D.inv (\<Phi> (trg\<^sub>C f, f) \<cdot>\<^sub>D (unit (trg\<^sub>C f) \<star>\<^sub>D F f)) =
                         (D.inv (unit (trg\<^sub>C f)) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (trg\<^sub>C f, f))"
-          using assms C.VV.arr_char unit_char FF_def D.inv_comp C.VV.dom_simp by simp
+          using assms C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C unit_char FF_def D.inv_comp C.VV.dom_simp by simp
         ultimately show ?thesis by simp
       qed
       show "F \<l>\<^sub>C\<^sup>-\<^sup>1[f] = \<Phi> (trg\<^sub>C f, f) \<cdot>\<^sub>D (unit (trg\<^sub>C f) \<star>\<^sub>D F f) \<cdot>\<^sub>D \<l>\<^sub>D\<^sup>-\<^sup>1[F f]"
@@ -1144,7 +1144,7 @@ begin
         qed
         moreover have "D.inv (\<Phi> (f, src\<^sub>C f) \<cdot>\<^sub>D (F f \<star>\<^sub>D unit (src\<^sub>C f))) =
                        (F f \<star>\<^sub>D D.inv (unit (src\<^sub>C f))) \<cdot>\<^sub>D D.inv (\<Phi> (f, src\<^sub>C f))"
-          using assms C.VV.arr_char unit_char D.iso_hcomp FF_def D.inv_comp C.VV.dom_simp
+          using assms C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C unit_char D.iso_hcomp FF_def D.inv_comp C.VV.dom_simp
           by simp
         ultimately show ?thesis by simp
       qed
@@ -1176,12 +1176,12 @@ begin
               \<Phi> (f, g \<star>\<^sub>C h) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<Phi> (g, h)) \<cdot>\<^sub>D \<a>\<^sub>D[F f, F g, F h]"
           using assms assoc_coherence [of f g h] by simp
         moreover have "D.seq (\<Phi> (f, g \<star>\<^sub>C h)) ((F f \<star>\<^sub>D \<Phi> (g, h)) \<cdot>\<^sub>D \<a>\<^sub>D[F f, F g, F h])"
-          using assms C.VV.arr_char FF_def C.VV.dom_simp C.VV.cod_simp by auto
+          using assms C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C FF_def C.VV.dom_simp C.VV.cod_simp by auto
         moreover have 2: "D.iso (\<Phi> (f \<star>\<^sub>C g, h) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F h))"
-          using assms C.VV.arr_char FF_def C.VV.dom_simp C.VV.cod_simp by auto
+          using assms C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C FF_def C.VV.dom_simp C.VV.cod_simp by auto
         moreover have "D.inv (\<Phi> (f \<star>\<^sub>C g, h) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F h)) =
                       (D.inv (\<Phi> (f, g)) \<star>\<^sub>D F h) \<cdot>\<^sub>D D.inv (\<Phi> (f \<star>\<^sub>C g, h))"
-          using assms 2 C.VV.arr_char FF_def D.inv_comp C.VV.dom_simp C.VV.cod_simp
+          using assms 2 C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C FF_def D.inv_comp C.VV.dom_simp C.VV.cod_simp
           by simp
         ultimately show ?thesis
           using D.invert_side_of_triangle(2)
@@ -1221,7 +1221,7 @@ begin
            \<Phi> (C.cod \<mu>, C.cod \<nu>) \<cdot>\<^sub>D (F \<mu> \<star>\<^sub>D F \<nu>) \<cdot>\<^sub>D D.inv (\<Phi> (C.dom \<mu>, C.dom \<nu>))"
     proof -
       have "F (\<mu> \<star>\<^sub>C \<nu>) \<cdot>\<^sub>D \<Phi> (C.dom \<mu>, C.dom \<nu>) = \<Phi> (C.cod \<mu>, C.cod \<nu>) \<cdot>\<^sub>D (F \<mu> \<star>\<^sub>D F \<nu>)"
-        using assms \<Phi>.naturality C.VV.arr_char C.VV.cod_char FF_def C.VV.dom_simp
+        using assms \<Phi>.naturality C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C FF_def C.VV.dom_simp
         by auto
       thus ?thesis
         by (metis (no_types) assms C.hcomp_simps(3) C.hseqE C.ide_dom C.src_dom C.trg_dom
@@ -1242,9 +1242,9 @@ begin
       show "D.ide (F g)"
         using preserves_ide by simp
       show "\<guillemotleft>D.inv (\<Phi> (g, f)) \<cdot>\<^sub>D F \<eta> \<cdot>\<^sub>D unit (src\<^sub>C f) : src\<^sub>D (F f) \<Rightarrow>\<^sub>D F g \<star>\<^sub>D F f\<guillemotright>"
-        using antipar C.VV.ide_char C.VV.arr_char cmp_in_hom(2) unit_in_hom FF_def by auto
+        using antipar C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C cmp_in_hom(2) unit_in_hom FF_def by auto
       show "\<guillemotleft>D.inv (unit (trg\<^sub>C f)) \<cdot>\<^sub>D F \<epsilon> \<cdot>\<^sub>D \<Phi> (f, g) : F f \<star>\<^sub>D F g \<Rightarrow>\<^sub>D src\<^sub>D (F g)\<guillemotright>"
-        using antipar C.VV.ide_char C.VV.arr_char FF_def cmp_in_hom(2) unit_in_hom(2)
+        using antipar C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C FF_def cmp_in_hom(2) unit_in_hom(2)
               unit_char(2)
         by auto
     qed
@@ -1260,7 +1260,7 @@ begin
       show "equivalence_in_bicategory V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
              (F f) (F g) (D.inv (\<Phi> (g, f)) \<cdot>\<^sub>D F \<eta> \<cdot>\<^sub>D unit (src\<^sub>C f))
              (D.inv (unit (trg\<^sub>C f)) \<cdot>\<^sub>D F \<epsilon> \<cdot>\<^sub>D \<Phi> (f, g))"
-        using antipar unit_is_iso preserves_iso unit_char(2) C.VV.ide_char C.VV.arr_char
+        using antipar unit_is_iso preserves_iso unit_char(2) C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               FF_def D.isos_compose
         by (unfold_locales) auto
     qed
@@ -1344,7 +1344,7 @@ begin
     where "cmp \<equiv> \<lambda>\<mu>\<nu>. fst \<mu>\<nu> \<star>\<^sub>B snd \<mu>\<nu>"
 
     interpretation cmp: natural_transformation B.VV.comp V\<^sub>B H\<^sub>BoII.map IoH\<^sub>B.map cmp
-      using B.VV.arr_char B.VV.dom_simp B.VV.cod_simp B.H.as_nat_trans.is_natural_1
+      using B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_simp B.VV.cod_simp B.H.as_nat_trans.is_natural_1
             B.H.as_nat_trans.is_natural_2 I.FF_def
       apply unfold_locales
           apply auto
@@ -1407,9 +1407,9 @@ begin
     and "\<guillemotleft>map \<mu> : map (S.dom \<mu>) \<Rightarrow>\<^sub>B map (S.cod \<mu>)\<guillemotright>"
     proof -
       show 1: "\<guillemotleft>map \<mu> : map (S.dom \<mu>) \<Rightarrow>\<^sub>B map (S.cod \<mu>)\<guillemotright>"
-        using assms map_def S.in_hom_char by fastforce
+        using assms map_def S.in_hom_char\<^sub>S\<^sub>b\<^sub>C by fastforce
       show "\<guillemotleft>map \<mu> : src\<^sub>B (map (S.src \<mu>)) \<rightarrow>\<^sub>B src\<^sub>B (map (S.trg \<mu>))\<guillemotright>"
-        using assms 1 map_def S.arr_char S.src_def S.trg_def S.obj_char S.obj_src S.obj_trg
+        using assms 1 map_def S.arr_char\<^sub>S\<^sub>b\<^sub>C S.src_def S.trg_def S.obj_char S.obj_src S.obj_trg
         by auto
     qed
 
@@ -1423,12 +1423,12 @@ begin
     interpretation "functor" S.comp V map
       apply unfold_locales
           apply auto
-      using map_def S.comp_char S.seq_char S.arr_char
+      using map_def S.comp_char S.seq_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C
        apply auto[1]
       using map_def S.comp_simp by auto
 
     interpretation weak_arrow_of_homs S.comp S.src S.trg V src\<^sub>B trg\<^sub>B map
-      using S.arr_char map_def S.src_def S.trg_def S.src_closed S.trg_closed B.isomorphic_reflexive
+      using S.arr_char\<^sub>S\<^sub>b\<^sub>C map_def S.src_def S.trg_def S.src_closed S.trg_closed B.isomorphic_reflexive
             preserves_ide S.ide_src S.ide_trg
       apply unfold_locales
       by presburger+
@@ -1455,10 +1455,10 @@ begin
       proof
         show 1: "B.arr (cmp \<mu>\<nu>)"
           unfolding cmp_def
-          using assms S.arr_char S.VV.arr_char S.inclusion S.src_def S.trg_def by auto
+          using assms S.arr_char\<^sub>S\<^sub>b\<^sub>C S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C S.inclusion S.src_def S.trg_def by auto
         show "B.dom (cmp \<mu>\<nu>) = map (S.dom (fst \<mu>\<nu>)) \<star>\<^sub>B map (S.dom (snd \<mu>\<nu>))"
           unfolding cmp_def map_def
-          using assms 1 cmp_def S.dom_simp S.cod_simp S.VV.arr_char S.arr_char S.hcomp_def
+          using assms 1 cmp_def S.dom_simp S.cod_simp S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C S.hcomp_def
                 S.inclusion S.dom_closed
           by auto
         show "B.cod (cmp \<mu>\<nu>) = map (S.cod (fst \<mu>\<nu>) \<star> S.cod (snd \<mu>\<nu>))"
@@ -1476,13 +1476,13 @@ begin
     and "src\<^sub>B (cmp \<mu>\<nu>) = S.src (snd \<mu>\<nu>)" and "trg\<^sub>B (cmp \<mu>\<nu>) = S.trg (fst \<mu>\<nu>)"
     and "B.dom (cmp \<mu>\<nu>) = map (S.dom (fst \<mu>\<nu>)) \<star>\<^sub>B map (S.dom (snd \<mu>\<nu>))"
     and "B.cod (cmp \<mu>\<nu>) = map (S.cod (fst \<mu>\<nu>) \<star> S.cod (snd \<mu>\<nu>))"
-      using assms cmp_in_hom S.src_def S.trg_def S.VV.arr_char
+      using assms cmp_in_hom S.src_def S.trg_def S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
       by simp_all blast+
 
     lemma iso_cmp:
     assumes "S.VV.ide \<mu>\<nu>"
     shows "B.iso (cmp \<mu>\<nu>)"
-      using assms S.VV.ide_char S.VV.arr_char S.arr_char cmp_def S.ide_char S.src_def S.trg_def
+      using assms S.VV.ide_char\<^sub>S\<^sub>b\<^sub>C S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C cmp_def S.ide_char\<^sub>S\<^sub>b\<^sub>C S.src_def S.trg_def
       by auto
 
     interpretation \<Phi>\<^sub>E: natural_isomorphism S.VV.comp V HoFF.map FoH.map cmp
@@ -1492,27 +1492,27 @@ begin
       fix \<mu>\<nu>
       assume \<mu>\<nu>: "S.VV.arr \<mu>\<nu>"
       have 1: "S.arr (fst \<mu>\<nu>) \<and> S.arr (snd \<mu>\<nu>) \<and> S.src (fst \<mu>\<nu>) = S.trg (snd \<mu>\<nu>)"
-        using \<mu>\<nu> S.VV.arr_char by simp
+        using \<mu>\<nu> S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
       show "B.dom (cmp \<mu>\<nu>) = HoFF.map (S.VV.dom \<mu>\<nu>)"
-        using \<mu>\<nu> FF_def S.VV.arr_char S.VV.dom_char S.arr_dom S.src_def S.trg_def
-              S.dom_char S.src.preserves_dom S.trg.preserves_dom
+        using \<mu>\<nu> FF_def S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C S.VV.dom_char\<^sub>S\<^sub>b\<^sub>C S.arr_dom S.src_def S.trg_def
+              S.dom_char\<^sub>S\<^sub>b\<^sub>C S.src.preserves_dom S.trg.preserves_dom
         apply simp
         by (metis (no_types, lifting))
       show "B.cod (cmp \<mu>\<nu>) = FoH.map (S.VV.cod \<mu>\<nu>)"
-        using \<mu>\<nu> 1 map_def S.hseq_char S.hcomp_def S.cod_char S.arr_cod S.VV.cod_simp
+        using \<mu>\<nu> 1 map_def S.hseq_char S.hcomp_def S.cod_char\<^sub>S\<^sub>b\<^sub>C S.arr_cod S.VV.cod_simp
         by simp
       show "cmp (S.VV.cod \<mu>\<nu>) \<cdot>\<^sub>B HoFF.map \<mu>\<nu> = cmp \<mu>\<nu>"
-        using \<mu>\<nu> 1 cmp_def S.VV.arr_char S.VV.cod_char FF_def S.arr_cod S.cod_simp
+        using \<mu>\<nu> 1 cmp_def S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C S.VV.cod_char\<^sub>S\<^sub>b\<^sub>C FF_def S.arr_cod S.cod_simp
               S.src_def S.trg_def map_def
         apply simp
         by (metis (no_types, lifting) B.comp_cod_arr B.hcomp_simps(4) cmp_simps(1) \<mu>\<nu>)
       show "FoH.map \<mu>\<nu> \<cdot>\<^sub>B cmp (S.VV.dom \<mu>\<nu>) = cmp \<mu>\<nu>"
         unfolding cmp_def map_def
-        using \<mu>\<nu> S.VV.arr_char B.VV.arr_char S.VV.dom_char S.VV.cod_char B.comp_arr_dom
+        using \<mu>\<nu> S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C S.VV.dom_char\<^sub>S\<^sub>b\<^sub>C S.VV.cod_char\<^sub>S\<^sub>b\<^sub>C B.comp_arr_dom
               S.hcomp_def
         apply simp
-        by (metis (no_types, lifting) B.hcomp_simps(3) cmp_def cmp_simps(1) S.arr_char
-            S.dom_char S.hcomp_closed S.src_def S.trg_def)
+        by (metis (no_types, lifting) B.hcomp_simps(3) cmp_def cmp_simps(1) S.arr_char\<^sub>S\<^sub>b\<^sub>C
+            S.dom_char\<^sub>S\<^sub>b\<^sub>C S.hcomp_closed S.src_def S.trg_def)
       next
       show "\<And>fg. S.VV.ide fg \<Longrightarrow> B.iso (cmp fg)"
         using iso_cmp by simp
@@ -1524,22 +1524,22 @@ begin
       assume f: "S.ide f" and g: "S.ide g" and h: "S.ide h"
       and fg: "S.src f = S.trg g" and gh: "S.src g = S.trg h"
       have 1: "B.ide f \<and> B.ide g \<and> B.ide h \<and> src\<^sub>B f = trg\<^sub>B g \<and> src\<^sub>B g = trg\<^sub>B h"
-        using f g h fg gh S.ide_char S.arr_char S.src_def S.trg_def by simp
+        using f g h fg gh S.ide_char\<^sub>S\<^sub>b\<^sub>C S.arr_char\<^sub>S\<^sub>b\<^sub>C S.src_def S.trg_def by simp
       show "map (S.\<a> f g h) \<cdot>\<^sub>B cmp (f \<star> g, h) \<cdot>\<^sub>B cmp (f, g) \<star>\<^sub>B map h =
             cmp (f, g \<star> h) \<cdot>\<^sub>B (map f \<star>\<^sub>B cmp (g, h)) \<cdot>\<^sub>B \<a>\<^sub>B[map f, map g, map h]"
       proof -
         have "map (S.\<a> f g h) \<cdot>\<^sub>B cmp (f \<star> g, h) \<cdot>\<^sub>B cmp (f, g) \<star>\<^sub>B map h =
               \<a>\<^sub>B[f, g, h] \<cdot>\<^sub>B ((f \<star>\<^sub>B g) \<star>\<^sub>B h) \<cdot>\<^sub>B ((f \<star>\<^sub>B g) \<star>\<^sub>B h)"
           unfolding map_def cmp_def
-          using 1 f g h fg gh S.VVV.arr_char S.VV.arr_char B.VVV.arr_char B.VV.arr_char
-                B.comp_arr_dom S.arr_char S.comp_char S.hcomp_closed S.hcomp_def
+          using 1 f g h fg gh S.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                B.comp_arr_dom S.arr_char\<^sub>S\<^sub>b\<^sub>C S.comp_char S.hcomp_closed S.hcomp_def
                 S.ideD(1) S.src_def
           by (simp add: S.assoc_closed)
         also have "... = cmp (f, g \<star> h) \<cdot>\<^sub>B (map f \<star>\<^sub>B cmp (g, h)) \<cdot>\<^sub>B \<a>\<^sub>B[map f, map g, map h]"
           unfolding cmp_def map_def
-          using 1 f g h fg gh S.VV.arr_char B.VVV.arr_char B.VV.arr_char
+          using 1 f g h fg gh S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 B.comp_arr_dom B.comp_cod_arr S.hcomp_def S.comp_char
-                S.arr_char S.assoc_closed S.hcomp_closed S.ideD(1) S.trg_def
+                S.arr_char\<^sub>S\<^sub>b\<^sub>C S.assoc_closed S.hcomp_closed S.ideD(1) S.trg_def
           by auto
         finally show ?thesis by blast
       qed
@@ -1568,7 +1568,7 @@ begin
       proof (intro unit_eqI)
         show "S.obj a" by fact
         show "\<guillemotleft>a : map\<^sub>0 a \<Rightarrow>\<^sub>B map a\<guillemotright>"
-          using assms a 2 map\<^sub>0_def map_def S.src_def S.dom_char S.cod_char S.obj_char
+          using assms a 2 map\<^sub>0_def map_def S.src_def S.dom_char\<^sub>S\<^sub>b\<^sub>C S.cod_char\<^sub>S\<^sub>b\<^sub>C S.obj_char
           by auto
         show "B.iso a"
           using assms 1 by simp
@@ -1587,7 +1587,7 @@ begin
             moreover have "\<i>[a] \<cdot>\<^sub>B (a \<star>\<^sub>B a) = \<i>[a]"
               using assms S.obj_char B.comp_arr_dom by simp
             ultimately show ?thesis
-              using assms cmp_def S.VV.arr_char by auto
+              using assms cmp_def S.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by auto
           qed
           thus ?thesis
             using assms a 2 map\<^sub>0_def map_def S.src_def B.comp_assoc by simp
@@ -1702,11 +1702,11 @@ begin
         show "\<guillemotleft>\<Phi>\<^sub>G (F (B.dom (fst \<mu>\<nu>)), F (B.dom (snd \<mu>\<nu>))) :
                  H\<^sub>DoGF_GF.map (B.VV.dom \<mu>\<nu>)
                    \<Rightarrow>\<^sub>D G (F (B.dom (fst \<mu>\<nu>)) \<star>\<^sub>C F (B.dom (snd \<mu>\<nu>)))\<guillemotright>"
-          using assms F.FF_def FF_def B.VV.arr_char B.VV.dom_simp by auto
+          using assms F.FF_def FF_def B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_simp by auto
         show "\<guillemotleft>G (\<Phi>\<^sub>F (B.VV.dom \<mu>\<nu>)) :
                  G (F (B.dom (fst \<mu>\<nu>)) \<star>\<^sub>C F (B.dom (snd \<mu>\<nu>)))
                    \<Rightarrow>\<^sub>D GFoH\<^sub>B.map (B.VV.dom \<mu>\<nu>)\<guillemotright>"
-          using assms B.VV.arr_char F.FF_def B.VV.dom_simp B.VV.cod_simp by auto
+          using assms B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.FF_def B.VV.dom_simp B.VV.cod_simp by auto
         show "\<guillemotleft>G (F (fst \<mu>\<nu> \<star>\<^sub>B snd \<mu>\<nu>)) :
                  GFoH\<^sub>B.map (B.VV.dom \<mu>\<nu>) \<Rightarrow>\<^sub>D GFoH\<^sub>B.map (B.VV.cod \<mu>\<nu>)\<guillemotright>"
         proof -
@@ -1738,7 +1738,7 @@ begin
         using \<mu>\<nu> cmp_in_hom by blast
       show "GFoH\<^sub>B.map \<mu>\<nu> \<cdot>\<^sub>D cmp (B.VV.dom \<mu>\<nu>) = cmp \<mu>\<nu>"
         unfolding cmp_def
-        using \<mu>\<nu> B.VV.ide_char B.VV.arr_char D.comp_ide_arr B.VV.dom_char D.comp_assoc
+        using \<mu>\<nu> B.VV.ide_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.comp_ide_arr B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C D.comp_assoc
               as_nat_trans.is_natural_1
         apply simp
         by (metis (no_types, lifting) B.H.preserves_arr B.hcomp_simps(3))
@@ -1750,17 +1750,17 @@ begin
                   \<Phi>\<^sub>G (F (B.cod (fst \<mu>\<nu>)), F (B.cod (snd \<mu>\<nu>)))) \<cdot>\<^sub>D
                     (fst (FF \<mu>\<nu>) \<star>\<^sub>D snd (FF \<mu>\<nu>))"
           unfolding cmp_def
-          using \<mu>\<nu> B.VV.arr_char B.VV.dom_simp B.VV.cod_simp by simp
+          using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_simp B.VV.cod_simp by simp
         also have "... = (G (\<Phi>\<^sub>F (B.cod (fst \<mu>\<nu>), B.cod (snd \<mu>\<nu>))) \<cdot>\<^sub>D
                             \<Phi>\<^sub>G (F (B.cod (fst \<mu>\<nu>)), F (B.cod (snd \<mu>\<nu>)))) \<cdot>\<^sub>D
                                (fst (FF \<mu>\<nu>) \<star>\<^sub>D snd (FF \<mu>\<nu>))"
         proof -
           have "D.ide (G (F (B.cod (fst \<mu>\<nu>) \<star>\<^sub>B B.cod (snd \<mu>\<nu>))))"
-            using \<mu>\<nu> B.VV.arr_char by simp
+            using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
           moreover have "D.seq (G (F (B.cod (fst \<mu>\<nu>) \<star>\<^sub>B B.cod (snd \<mu>\<nu>))))
                                (G (\<Phi>\<^sub>F (B.cod (fst \<mu>\<nu>), B.cod (snd \<mu>\<nu>))) \<cdot>\<^sub>D
                                   \<Phi>\<^sub>G (F (B.cod (fst \<mu>\<nu>)), F (B.cod (snd \<mu>\<nu>))))"
-            using \<mu>\<nu> B.VV.arr_char B.VV.dom_char B.VV.cod_char F.FF_def
+            using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
             apply (intro D.seqI)
                 apply auto
           proof -
@@ -1770,10 +1770,10 @@ begin
             proof -
               have "D.seq (G (\<Phi>\<^sub>F (B.cod (fst \<mu>\<nu>), B.cod (snd \<mu>\<nu>))))
                           (\<Phi>\<^sub>G (F (B.cod (fst \<mu>\<nu>)), F (B.cod (snd \<mu>\<nu>))))"
-                using \<mu>\<nu> B.VV.arr_char F.FF_def B.VV.arr_char B.VV.dom_char B.VV.cod_char
+                using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.FF_def B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                 by (intro D.seqI) auto
               thus ?thesis 
-                using \<mu>\<nu> B.VV.arr_char B.VV.cod_simp by simp
+                using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_simp by simp
             qed
           qed
           ultimately show ?thesis
@@ -1788,10 +1788,10 @@ begin
           using D.comp_assoc by simp
         also have "... = G (\<Phi>\<^sub>F (B.cod (fst \<mu>\<nu>), B.cod (snd \<mu>\<nu>))) \<cdot>\<^sub>D
                            \<Phi>\<^sub>G (C.VV.cod (F.FF \<mu>\<nu>)) \<cdot>\<^sub>D G.H\<^sub>DoFF.map (F.FF \<mu>\<nu>)"
-          using \<mu>\<nu> B.VV.arr_char F.FF_def G.FF_def FF_def C.VV.cod_simp by auto
+          using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.FF_def G.FF_def FF_def C.VV.cod_simp by auto
         also have "... = G (\<Phi>\<^sub>F (B.cod (fst \<mu>\<nu>), B.cod (snd \<mu>\<nu>))) \<cdot>\<^sub>D
                            G.FoH\<^sub>C.map (F.FF \<mu>\<nu>) \<cdot>\<^sub>D \<Phi>\<^sub>G (C.VV.dom (F.FF \<mu>\<nu>))"
-          using \<mu>\<nu> B.VV.arr_char G.\<Phi>.naturality C.VV.dom_simp C.VV.cod_simp by simp
+          using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C G.\<Phi>.naturality C.VV.dom_simp C.VV.cod_simp by simp
         also have "... = (G (\<Phi>\<^sub>F (B.cod (fst \<mu>\<nu>), B.cod (snd \<mu>\<nu>))) \<cdot>\<^sub>D
                            G.FoH\<^sub>C.map (F.FF \<mu>\<nu>)) \<cdot>\<^sub>D \<Phi>\<^sub>G (C.VV.dom (F.FF \<mu>\<nu>))"
           using D.comp_assoc by simp
@@ -1799,12 +1799,12 @@ begin
                          \<Phi>\<^sub>G (C.VV.dom (F.FF \<mu>\<nu>))"
         proof -
           have "(B.cod (fst \<mu>\<nu>), B.cod (snd \<mu>\<nu>)) = B.VV.cod \<mu>\<nu>"
-            using \<mu>\<nu> B.VV.arr_char B.VV.cod_simp by simp
+            using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_simp by simp
           moreover have "G.FoH\<^sub>C.map (F.FF \<mu>\<nu>) = G (F.H\<^sub>DoFF.map \<mu>\<nu>)"
             using \<mu>\<nu> F.FF_def by simp
           moreover have "G (\<Phi>\<^sub>F (B.cod (fst \<mu>\<nu>), B.cod (snd \<mu>\<nu>))) \<cdot>\<^sub>D G (F.H\<^sub>DoFF.map \<mu>\<nu>) =
                          G (\<Phi>\<^sub>F (B.VV.cod \<mu>\<nu>) \<cdot>\<^sub>C F.H\<^sub>DoFF.map \<mu>\<nu>)"
-            using \<mu>\<nu> B.VV.arr_char
+            using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
             by (metis (no_types, lifting) F.\<Phi>.is_natural_2 F.\<Phi>.preserves_reflects_arr
                 G.preserves_comp calculation(1))
           ultimately show ?thesis by argo
@@ -1824,7 +1824,7 @@ begin
             using \<mu>\<nu> D.comp_assoc by simp
         qed
         also have "... = cmp \<mu>\<nu>"
-          using \<mu>\<nu> B.VV.arr_char cmp_def F.FF_def F.FF.preserves_dom B.VV.dom_simp
+          using \<mu>\<nu> B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C cmp_def F.FF_def F.FF.preserves_dom B.VV.dom_simp
           by auto
         finally show ?thesis by simp
       qed
@@ -1841,21 +1841,21 @@ begin
         proof (intro D.isos_compose)
           show "D.iso (\<Phi>\<^sub>G (F (B.dom (fst hk)), F (B.dom (snd hk))))"
             using hk G.\<Phi>.components_are_iso [of "(F (B.dom (fst hk)), F (B.dom (snd hk)))"]
-                  C.VV.ide_char B.VV.arr_char B.VV.dom_char
+                  C.VV.ide_char B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C
             by (metis (no_types, lifting) B.VV.ideD(1) B.VV.ideD(2) B.VxV.dom_char
                 F.FF_def F.FF.as_nat_iso.components_are_iso G.\<Phi>.preserves_iso fst_conv snd_conv)
           show "D.iso (G (\<Phi>\<^sub>F (B.VV.dom hk)))"
-            using hk F.\<Phi>.components_are_iso B.VV.arr_char B.VV.dom_char B.VV.ideD(2)
+            using hk F.\<Phi>.components_are_iso B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.ideD(2)
             by auto
           show "D.seq (G (\<Phi>\<^sub>F (B.VV.dom hk))) (\<Phi>\<^sub>G (F (B.dom (fst hk)), F (B.dom (snd hk))))"
-            using hk B.VV.arr_char B.VV.ide_char B.VV.dom_char C.VV.arr_char F.FF_def
+            using hk B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.ide_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
                   C.VV.dom_simp C.VV.cod_simp
             by auto
           show "D.iso (G (F (fst hk \<star>\<^sub>B snd hk)))"
-            using hk F.\<Phi>.components_are_iso B.VV.arr_char by simp
+            using hk F.\<Phi>.components_are_iso B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
           show "D.seq (G (F (fst hk \<star>\<^sub>B snd hk)))
                       (G (\<Phi>\<^sub>F (B.VV.dom hk)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F (B.dom (fst hk)), F (B.dom (snd hk))))"
-            using hk B.VV.arr_char B.VV.dom_char
+            using hk B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C
             by (metis (no_types, lifting) B.VV.ideD(1) cmp_def cmp_simps(1))
         qed
         thus "D.iso (cmp hk)"
@@ -1876,7 +1876,7 @@ begin
                 (G (F ((f \<star>\<^sub>B g) \<star>\<^sub>B h)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (f \<star>\<^sub>B g, h)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F (f \<star>\<^sub>B g), F h)) \<cdot>\<^sub>D
                   (G (F (f \<star>\<^sub>B g)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (f, g)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
           unfolding cmp_def
-          using f g h fg gh B.VV.arr_char B.VV.dom_simp by simp
+          using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_simp by simp
         also have "... = G (F \<a>\<^sub>B[f, g, h]) \<cdot>\<^sub>D
                           (G (\<Phi>\<^sub>F (f \<star>\<^sub>B g, h)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F (f \<star>\<^sub>B g), F h)) \<cdot>\<^sub>D
                             (G (F (f \<star>\<^sub>B g)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (f, g)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
@@ -1894,11 +1894,11 @@ begin
           using D.comp_assoc by simp
         also have "... = G (F \<a>\<^sub>B[f, g, h] \<cdot>\<^sub>C \<Phi>\<^sub>F (f \<star>\<^sub>B g, h)) \<cdot>\<^sub>D
                             \<Phi>\<^sub>G (F (f \<star>\<^sub>B g), F h) \<cdot>\<^sub>D (G (\<Phi>\<^sub>F (f, g)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
-          using f g h fg gh B.VV.arr_char B.VV.cod_simp by simp
+          using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_simp by simp
         also have "... = G (F \<a>\<^sub>B[f, g, h] \<cdot>\<^sub>C \<Phi>\<^sub>F (f \<star>\<^sub>B g, h)) \<cdot>\<^sub>D
                             \<Phi>\<^sub>G (F (f \<star>\<^sub>B g), F h) \<cdot>\<^sub>D (G (\<Phi>\<^sub>F (f, g)) \<star>\<^sub>D G (F h)) \<cdot>\<^sub>D
                               (\<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
-          using f g h fg gh B.VV.arr_char C.VV.arr_char F.FF_def D.whisker_right
+          using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.FF_def D.whisker_right
                 B.VV.dom_simp C.VV.cod_simp
           by auto
         also have "... = G (F \<a>\<^sub>B[f, g, h] \<cdot>\<^sub>C \<Phi>\<^sub>F (f \<star>\<^sub>B g, h)) \<cdot>\<^sub>D
@@ -1910,16 +1910,16 @@ begin
                             (\<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
         proof -
           have "\<Phi>\<^sub>G (F (f \<star>\<^sub>B g), F h) = \<Phi>\<^sub>G (C.VV.cod (\<Phi>\<^sub>F (f, g), F h))"
-            using f g h fg gh B.VV.arr_char C.VV.arr_char B.VV.cod_simp C.VV.cod_simp
+            using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_simp C.VV.cod_simp
             by simp
           moreover have "G (\<Phi>\<^sub>F (f, g)) \<star>\<^sub>D G (F h) = G.H\<^sub>DoFF.map (\<Phi>\<^sub>F (f, g), F h)"
-            using f g h fg gh B.VV.arr_char C.VV.arr_char G.FF_def by simp
+            using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C G.FF_def by simp
           moreover have "G.FoH\<^sub>C.map (\<Phi>\<^sub>F (f, g), F h) = G (\<Phi>\<^sub>F (f, g) \<star>\<^sub>C F h)"
-            using f g h fg gh B.VV.arr_char by simp
+            using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
           moreover have "\<Phi>\<^sub>G (C.VV.dom (\<Phi>\<^sub>F (f, g), F h)) = \<Phi>\<^sub>G (F f \<star>\<^sub>C F g, F h)"
-            using f g h fg gh C.VV.arr_char F.cmp_in_hom [of f g] C.VV.dom_simp by auto
+            using f g h fg gh C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.cmp_in_hom [of f g] C.VV.dom_simp by auto
           ultimately show ?thesis
-            using f g h fg gh B.VV.arr_char G.\<Phi>.naturality
+            using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C G.\<Phi>.naturality
             by (metis (mono_tags, lifting) C.VV.arr_cod_iff_arr C.VV.arr_dom_iff_arr
                 G.FoH\<^sub>C.is_extensional G.H\<^sub>DoFF.is_extensional G.\<Phi>.is_extensional)
         qed
@@ -1928,7 +1928,7 @@ begin
           using D.comp_assoc by simp
         also have "... = G ((F \<a>\<^sub>B[f, g, h] \<cdot>\<^sub>C \<Phi>\<^sub>F (f \<star>\<^sub>B g, h)) \<cdot>\<^sub>C (\<Phi>\<^sub>F (f, g) \<star>\<^sub>C F h)) \<cdot>\<^sub>D
                            \<Phi>\<^sub>G (F f \<star>\<^sub>C F g, F h) \<cdot>\<^sub>D (\<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
-          using f g h fg gh B.VV.arr_char F.FF_def B.VV.dom_simp B.VV.cod_simp by auto
+          using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.FF_def B.VV.dom_simp B.VV.cod_simp by auto
         also have "... = G (F \<a>\<^sub>B[f, g, h] \<cdot>\<^sub>C \<Phi>\<^sub>F (f \<star>\<^sub>B g, h) \<cdot>\<^sub>C (\<Phi>\<^sub>F (f, g) \<star>\<^sub>C F h)) \<cdot>\<^sub>D
                            \<Phi>\<^sub>G (F f \<star>\<^sub>C F g, F h) \<cdot>\<^sub>D (\<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
           using C.comp_assoc by simp
@@ -1940,7 +1940,7 @@ begin
           using C.comp_assoc by simp
         also have "... = (G (\<Phi>\<^sub>F (f, g \<star>\<^sub>B h) \<cdot>\<^sub>C (F f \<star>\<^sub>C \<Phi>\<^sub>F (g, h))) \<cdot>\<^sub>D G \<a>\<^sub>C[F f, F g, F h]) \<cdot>\<^sub>D
                            \<Phi>\<^sub>G (F f \<star>\<^sub>C F g, F h) \<cdot>\<^sub>D (\<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
-          using f g h fg gh B.VV.arr_char F.FF_def B.VV.dom_simp B.VV.cod_simp by auto
+          using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.FF_def B.VV.dom_simp B.VV.cod_simp by auto
         also have "... = G (\<Phi>\<^sub>F (f, g \<star>\<^sub>B h) \<cdot>\<^sub>C (F f \<star>\<^sub>C \<Phi>\<^sub>F (g, h))) \<cdot>\<^sub>D
                            G \<a>\<^sub>C[F f, F g, F h] \<cdot>\<^sub>D \<Phi>\<^sub>G (F f \<star>\<^sub>C F g, F h) \<cdot>\<^sub>D
                            (\<Phi>\<^sub>G (F f, F g) \<star>\<^sub>D G (F h))"
@@ -1964,12 +1964,12 @@ begin
                   (G (F (f \<star>\<^sub>B g \<star>\<^sub>B h)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (f, g \<star>\<^sub>B h)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F (g \<star>\<^sub>B h))) \<cdot>\<^sub>D
                     (G (F f) \<star>\<^sub>D G (F (g \<star>\<^sub>B h)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (g, h)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F g, F h))"
               unfolding cmp_def
-              using f g h fg gh B.VV.arr_char B.VV.dom_simp B.VV.cod_simp by simp
+              using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_simp B.VV.cod_simp by simp
             also have "... = (G (\<Phi>\<^sub>F (f, g \<star>\<^sub>B h)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F f, F (g \<star>\<^sub>B h))) \<cdot>\<^sub>D
                                (G (F f) \<star>\<^sub>D G (F (g \<star>\<^sub>B h)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (g, h)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F g, F h))"
             proof -
               have "G (F (f \<star>\<^sub>B g \<star>\<^sub>B h)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (f, g \<star>\<^sub>B h)) = G (\<Phi>\<^sub>F (f, g \<star>\<^sub>B h))"
-                using f g h fg gh B.VV.arr_char D.comp_ide_arr B.VV.dom_simp B.VV.cod_simp
+                using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.comp_ide_arr B.VV.dom_simp B.VV.cod_simp
                 by simp
               thus ?thesis
                 using D.comp_assoc by metis
@@ -1981,7 +1981,7 @@ begin
                                (G (F f) \<star>\<^sub>D G (\<Phi>\<^sub>F (g, h)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F g, F h))"
             proof -
               have "G (F (g \<star>\<^sub>B h)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (g, h)) = G (\<Phi>\<^sub>F (g, h))"
-                using f g h fg gh B.VV.arr_char D.comp_ide_arr B.VV.dom_simp B.VV.cod_simp
+                using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.comp_ide_arr B.VV.dom_simp B.VV.cod_simp
                 by simp
               thus ?thesis
                 using D.comp_assoc by metis
@@ -2000,18 +2000,18 @@ begin
                                  (G (F f) \<star>\<^sub>D \<Phi>\<^sub>G (F g, F h))"
             proof -
               have "\<Phi>\<^sub>G (C.VV.cod (F f, \<Phi>\<^sub>F (g, h))) = \<Phi>\<^sub>G (F f, F (g \<star>\<^sub>B h))"
-                using f g h fg gh B.VV.arr_char C.VV.cod_char B.VV.dom_simp B.VV.cod_simp
+                using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_simp B.VV.cod_simp
                 by auto
               moreover have "G.H\<^sub>DoFF.map (F f, \<Phi>\<^sub>F (g, h)) = G (F f) \<star>\<^sub>D G (\<Phi>\<^sub>F (g, h))"
-                using f g h fg gh B.VV.arr_char G.FF_def by auto
+                using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C G.FF_def by auto
               moreover have "G.FoH\<^sub>C.map (F f, \<Phi>\<^sub>F (g, h)) = G (F f \<star>\<^sub>C \<Phi>\<^sub>F (g, h))"
-                using f g h fg gh B.VV.arr_char C.VV.arr_char by simp
+                using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
               moreover have "C.VV.dom (F f, \<Phi>\<^sub>F (g, h)) = (F f, F g \<star>\<^sub>C F h)"
-                using f g h fg gh B.VV.arr_char C.VV.arr_char C.VV.dom_char
+                using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C
                       F.cmp_in_hom [of g h]
                 by auto
               ultimately show ?thesis
-                using f g h fg gh B.VV.arr_char C.VV.arr_char
+                using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                       G.\<Phi>.naturality [of "(F f, \<Phi>\<^sub>F (g, h))"]
                 by simp
             qed
@@ -2020,7 +2020,7 @@ begin
               using D.comp_assoc by simp
             also have "... = G (\<Phi>\<^sub>F (f, g \<star>\<^sub>B h) \<cdot>\<^sub>C (F f \<star>\<^sub>C \<Phi>\<^sub>F (g, h))) \<cdot>\<^sub>D
                                \<Phi>\<^sub>G (F f, F g \<star>\<^sub>C F h) \<cdot>\<^sub>D (G (F f) \<star>\<^sub>D \<Phi>\<^sub>G (F g, F h))"
-              using f g h fg gh B.VV.arr_char
+              using f g h fg gh B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by (metis (no_types, lifting) B.assoc_simps(1) C.comp_assoc C.seqE
                   F.preserves_assoc(1) F.preserves_reflects_arr G.preserves_comp)
             finally show ?thesis by simp
@@ -2061,11 +2061,11 @@ begin
           have 1: "cmp (a, a) = G (\<Phi>\<^sub>F (a, a)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F a, F a)"
           proof -
             have "cmp (a, a) = (G (F (a \<star>\<^sub>B a)) \<cdot>\<^sub>D G (\<Phi>\<^sub>F (a, a))) \<cdot>\<^sub>D \<Phi>\<^sub>G (F a, F a)"
-              using assms cmp_def B.VV.ide_char B.VV.arr_char B.VV.dom_char B.VV.cod_char
+              using assms cmp_def B.VV.ide_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                     B.VxV.dom_char B.objE D.comp_assoc B.obj_simps
               by simp
             also have "... = G (\<Phi>\<^sub>F (a, a)) \<cdot>\<^sub>D \<Phi>\<^sub>G (F a, F a)"
-              using assms D.comp_cod_arr B.VV.arr_char B.VV.ide_char by auto
+              using assms D.comp_cod_arr B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.ide_char\<^sub>S\<^sub>b\<^sub>C by auto
             finally show ?thesis by blast
           qed
           have "(map \<i>\<^sub>B[a] \<cdot>\<^sub>D cmp (a, a)) \<cdot>\<^sub>D
@@ -2078,14 +2078,14 @@ begin
                              \<Phi>\<^sub>G (F.map\<^sub>0 a, F.map\<^sub>0 a) \<cdot>\<^sub>D
                              (G.unit (F.map\<^sub>0 a) \<star>\<^sub>D G.unit (F.map\<^sub>0 a))"
             using assms G.\<Phi>.naturality [of "(F.unit a, F.unit a)"]
-                  C.VV.arr_char C.VV.dom_char C.VV.cod_char G.FF_def D.comp_assoc
+                  C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C G.FF_def D.comp_assoc
             by simp
           also have "... = (G (F \<i>\<^sub>B[a] \<cdot>\<^sub>C \<Phi>\<^sub>F (a, a) \<cdot>\<^sub>C (F.unit a \<star>\<^sub>C F.unit a))) \<cdot>\<^sub>D
                              \<Phi>\<^sub>G (F.map\<^sub>0 a, F.map\<^sub>0 a) \<cdot>\<^sub>D
                              (G.unit (F.map\<^sub>0 a) \<star>\<^sub>D G.unit (F.map\<^sub>0 a))"
           proof -
             have "C.arr (F \<i>\<^sub>B[a] \<cdot>\<^sub>C \<Phi>\<^sub>F (a, a) \<cdot>\<^sub>C (F.unit a \<star>\<^sub>C F.unit a))"
-              using assms B.VV.ide_char B.VV.arr_char F.cmp_in_hom(2)
+              using assms B.VV.ide_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.cmp_in_hom(2)
               by (intro C.seqI' C.comp_in_homI) auto
             hence "map \<i>\<^sub>B[a] \<cdot>\<^sub>D G (\<Phi>\<^sub>F (a, a)) \<cdot>\<^sub>D G (F.unit a \<star>\<^sub>C F.unit a) =
                   G (F \<i>\<^sub>B[a] \<cdot>\<^sub>C \<Phi>\<^sub>F (a, a) \<cdot>\<^sub>C (F.unit a \<star>\<^sub>C F.unit a))"
@@ -2148,7 +2148,7 @@ begin
     where "cmp \<equiv> \<lambda>\<mu>\<nu>. if C'.VV.arr \<mu>\<nu> then \<Phi> \<mu>\<nu> else D.null"
 
     interpretation "functor" C'.comp V\<^sub>D map
-      using C'.inclusion C'.arr_char C'.dom_char C'.cod_char C'.seq_char C'.comp_char
+      using C'.inclusion C'.arr_char\<^sub>S\<^sub>b\<^sub>C C'.dom_char\<^sub>S\<^sub>b\<^sub>C C'.cod_char\<^sub>S\<^sub>b\<^sub>C C'.seq_char\<^sub>S\<^sub>b\<^sub>C C'.comp_char
             C'.arr_dom C'.arr_cod
       apply (unfold_locales)
           apply auto
@@ -2167,21 +2167,21 @@ begin
       ..
 
     interpretation \<Phi>: natural_transformation C'.VV.comp V\<^sub>D H\<^sub>D\<^sub>'oFF.map FoH\<^sub>C\<^sub>'.map cmp
-      using C'.arr_char C'.dom_char C'.cod_char C'.VV.arr_char C'.VV.dom_char C'.VV.cod_char
+      using C'.arr_char\<^sub>S\<^sub>b\<^sub>C C'.dom_char\<^sub>S\<^sub>b\<^sub>C C'.cod_char\<^sub>S\<^sub>b\<^sub>C C'.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C'.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C'.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
             FF_def C'.inclusion C'.dom_closed C'.cod_closed C'.src_def C'.trg_def
             C'.hcomp_def C'.hcomp_closed F.\<Phi>.is_natural_1 F.\<Phi>.is_natural_2
-            C.VV.arr_char C.VV.dom_char C.VV.cod_char F.FF_def
+            C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
       by unfold_locales auto
 
     interpretation \<Phi>: natural_isomorphism C'.VV.comp V\<^sub>D H\<^sub>D\<^sub>'oFF.map FoH\<^sub>C\<^sub>'.map cmp
-      using C.VV.ide_char C.VV.arr_char C'.VV.ide_char C'.VV.arr_char C'.arr_char
-            C'.src_def C'.trg_def C'.ide_char F.\<Phi>.components_are_iso
+      using C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C'.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C'.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C'.arr_char\<^sub>S\<^sub>b\<^sub>C
+            C'.src_def C'.trg_def C'.ide_char\<^sub>S\<^sub>b\<^sub>C F.\<Phi>.components_are_iso
       by unfold_locales auto
 
     sublocale pseudofunctor C'.comp C'.hcomp C'.\<a> \<i>\<^sub>C C'.src C'.trg V\<^sub>D H\<^sub>D \<a>\<^sub>D \<i>\<^sub>D src\<^sub>D trg\<^sub>D
                 map cmp
-      using F.assoc_coherence C'.VVV.arr_char C'.VV.arr_char C'.arr_char C'.hcomp_def
-            C'.src_def C'.trg_def C'.assoc_closed C'.hcomp_closed C'.ide_char
+      using F.assoc_coherence C'.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C C'.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C'.arr_char\<^sub>S\<^sub>b\<^sub>C C'.hcomp_def
+            C'.src_def C'.trg_def C'.assoc_closed C'.hcomp_closed C'.ide_char\<^sub>S\<^sub>b\<^sub>C
       by unfold_locales auto
 
     lemma is_pseudofunctor:
@@ -2240,7 +2240,7 @@ begin
     where "cmp \<equiv> \<Phi>"
 
     interpretation "functor" V\<^sub>C D'.comp F
-      using preserves_arr F.is_extensional D'.arr_char D'.dom_char D'.cod_char D'.comp_char
+      using preserves_arr F.is_extensional D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.dom_char\<^sub>S\<^sub>b\<^sub>C D'.cod_char\<^sub>S\<^sub>b\<^sub>C D'.comp_char
       by (unfold_locales) auto
 
     interpretation weak_arrow_of_homs V\<^sub>C src\<^sub>C trg\<^sub>C D'.comp D'.src D'.trg F
@@ -2250,23 +2250,23 @@ begin
       obtain \<phi> where \<phi>: "\<guillemotleft>\<phi> : F (src\<^sub>C \<mu>) \<Rightarrow>\<^sub>D src\<^sub>D (F \<mu>)\<guillemotright> \<and> D.iso \<phi>"
         using \<mu> F.weakly_preserves_src by auto
       have 2: "D'.in_hom \<phi> (F (src\<^sub>C \<mu>)) (D'.src (F \<mu>))"
-        using \<mu> \<phi> D'.arr_char D'.dom_char D'.cod_char D'.src_def D.vconn_implies_hpar(1-2)
+        using \<mu> \<phi> D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.dom_char\<^sub>S\<^sub>b\<^sub>C D'.cod_char\<^sub>S\<^sub>b\<^sub>C D'.src_def D.vconn_implies_hpar(1-2)
               preserves_arr
-        by (metis (no_types, lifting) C.src.preserves_arr D'.in_hom_char D'.src.preserves_arr
+        by (metis (no_types, lifting) C.src.preserves_arr D'.in_hom_char\<^sub>S\<^sub>b\<^sub>C D'.src.preserves_arr
             D.arrI)
       moreover have "D'.iso \<phi>"
-        using 2 \<phi> D'.iso_char D'.arr_char by fastforce
+        using 2 \<phi> D'.iso_char\<^sub>S\<^sub>b\<^sub>C D'.arr_char\<^sub>S\<^sub>b\<^sub>C by fastforce
       ultimately show "D'.isomorphic (F (src\<^sub>C \<mu>)) (D'.src (F \<mu>))"
         using D'.isomorphic_def by auto
       obtain \<psi> where \<psi>: "\<guillemotleft>\<psi> : F (trg\<^sub>C \<mu>) \<Rightarrow>\<^sub>D trg\<^sub>D (F \<mu>)\<guillemotright> \<and> D.iso \<psi>"
         using \<mu> F.weakly_preserves_trg by auto
       have 2: "D'.in_hom \<psi> (F (trg\<^sub>C \<mu>)) (D'.trg (F \<mu>))"
-        using \<mu> \<psi> D'.arr_char D'.dom_char D'.cod_char D'.trg_def D.vconn_implies_hpar(1-2)
+        using \<mu> \<psi> D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.dom_char\<^sub>S\<^sub>b\<^sub>C D'.cod_char\<^sub>S\<^sub>b\<^sub>C D'.trg_def D.vconn_implies_hpar(1-2)
               preserves_arr
-        by (metis (no_types, lifting) C.trg.preserves_arr D'.in_hom_char D'.trg.preserves_arr
+        by (metis (no_types, lifting) C.trg.preserves_arr D'.in_hom_char\<^sub>S\<^sub>b\<^sub>C D'.trg.preserves_arr
             D.arrI)
       moreover have "D'.iso \<psi>"
-        using 2 \<psi> D'.iso_char D'.arr_char by fastforce
+        using 2 \<psi> D'.iso_char\<^sub>S\<^sub>b\<^sub>C D'.arr_char\<^sub>S\<^sub>b\<^sub>C by fastforce
       ultimately show "D'.isomorphic (F (trg\<^sub>C \<mu>)) (D'.trg (F \<mu>))"
         using D'.isomorphic_def by auto
     qed
@@ -2285,30 +2285,30 @@ begin
       fix \<mu>\<nu>
       assume \<mu>\<nu>: "C.VV.arr \<mu>\<nu>"
       have 1: "D'.arr (\<Phi> \<mu>\<nu>)"
-        using \<mu>\<nu> D'.arr_char F.\<Phi>.is_natural_1 F.\<Phi>.components_are_iso
+        using \<mu>\<nu> D'.arr_char\<^sub>S\<^sub>b\<^sub>C F.\<Phi>.is_natural_1 F.\<Phi>.components_are_iso
         by (metis (no_types, lifting) D.src_vcomp D.trg_vcomp FoH\<^sub>C.preserves_arr
             F.\<Phi>.preserves_reflects_arr)
       show "D'.dom (\<Phi> \<mu>\<nu>) = H\<^sub>D\<^sub>'oFF.map (C.VV.dom \<mu>\<nu>)"
-        using 1 \<mu>\<nu> D'.dom_char C.VV.arr_char C.VV.dom_char F.FF_def FF_def D'.hcomp_def
+        using 1 \<mu>\<nu> D'.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C F.FF_def FF_def D'.hcomp_def
         by simp
       show "D'.cod (\<Phi> \<mu>\<nu>) = FoH\<^sub>C.map (C.VV.cod \<mu>\<nu>)"
-        using 1 \<mu>\<nu> D'.cod_char C.VV.arr_char F.FF_def FF_def D'.hcomp_def by simp
+        using 1 \<mu>\<nu> D'.cod_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.FF_def FF_def D'.hcomp_def by simp
       show "D'.comp (FoH\<^sub>C.map \<mu>\<nu>) (\<Phi> (C.VV.dom \<mu>\<nu>)) = \<Phi> \<mu>\<nu>"
-        using 1 \<mu>\<nu> D'.arr_char D'.comp_char C.VV.dom_char F.\<Phi>.is_natural_1
+        using 1 \<mu>\<nu> D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.comp_char C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C F.\<Phi>.is_natural_1
               C.VV.arr_dom D.src_vcomp D.trg_vcomp FoH\<^sub>C.preserves_arr F.\<Phi>.preserves_reflects_arr
         by (metis (mono_tags, lifting))
       show "D'.comp (\<Phi> (C.VV.cod \<mu>\<nu>)) (H\<^sub>D\<^sub>'oFF.map \<mu>\<nu>) = \<Phi> \<mu>\<nu>"
       proof -
         have "Obj (F.map\<^sub>0 (trg\<^sub>C (fst \<mu>\<nu>))) \<and> Obj (F.map\<^sub>0 (trg\<^sub>C (snd \<mu>\<nu>)))"
-          using \<mu>\<nu> C.VV.arr_char
-          by (metis (no_types, lifting) C.src_trg C.trg.preserves_reflects_arr D'.arr_char
+          using \<mu>\<nu> C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+          by (metis (no_types, lifting) C.src_trg C.trg.preserves_reflects_arr D'.arr_char\<^sub>S\<^sub>b\<^sub>C
               F.map\<^sub>0_def preserves_hseq)
         moreover have "Obj (F.map\<^sub>0 (src\<^sub>C (snd \<mu>\<nu>)))"
-          using \<mu>\<nu> C.VV.arr_char
-          by (metis (no_types, lifting) C.src.preserves_reflects_arr C.trg_src D'.arr_char
+          using \<mu>\<nu> C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+          by (metis (no_types, lifting) C.src.preserves_reflects_arr C.trg_src D'.arr_char\<^sub>S\<^sub>b\<^sub>C
               F.map\<^sub>0_def preserves_hseq)
         ultimately show ?thesis
-          using \<mu>\<nu> 1 D'.arr_char D'.comp_char D'.hseq_char C.VV.arr_char C.VV.cod_char
+          using \<mu>\<nu> 1 D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.comp_char D'.hseq_char C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                 C.VxV.cod_char FF_def F.FF_def D'.hcomp_char preserves_hseq
           apply simp
           using F.\<Phi>.is_natural_2 by force
@@ -2317,7 +2317,7 @@ begin
 
     interpretation natural_isomorphism C.VV.comp D'.comp H\<^sub>D\<^sub>'oFF.map FoH\<^sub>C.map \<Phi>
       apply unfold_locales
-      using D'.iso_char D'.arr_char by fastforce
+      using D'.iso_char\<^sub>S\<^sub>b\<^sub>C D'.arr_char\<^sub>S\<^sub>b\<^sub>C by fastforce
 
     sublocale pseudofunctor V\<^sub>C H\<^sub>C \<a>\<^sub>C \<i>\<^sub>C src\<^sub>C trg\<^sub>C D'.comp D'.hcomp D'.\<a> \<i>\<^sub>D D'.src D'.trg
                 F \<Phi>
@@ -2329,18 +2329,18 @@ begin
             F \<a>\<^sub>C[f, g, h] \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, h) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F h)"
       proof -
         have 1: "D'.arr (cmp (f, g) \<star>\<^sub>D map h)"
-          by (metis (mono_tags, lifting) C.ideD(1) D'.arr_char D'.hcomp_closed
+          by (metis (mono_tags, lifting) C.ideD(1) D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.hcomp_closed
               F.\<Phi>.preserves_reflects_arr F.cmp_simps(1-2) F.preserves_hseq 
               f fg g gh h preserves_reflects_arr)
         moreover have 2: "D.seq (cmp (f \<star>\<^sub>C g, h)) (cmp (f, g) \<star>\<^sub>D map h)"
-          using 1 f g h fg gh D'.arr_char C.VV.arr_char C.VV.dom_char C.VV.cod_char F.FF_def
+          using 1 f g h fg gh D'.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
           by (intro D.seqI) auto
         moreover have "D'.arr (cmp (f \<star>\<^sub>C g, h) \<cdot>\<^sub>D (cmp (f, g) \<star>\<^sub>D map h))"
-          using 1 2 D'.arr_char
-          by (metis (no_types, lifting) D'.comp_char D'.seq_char D.seqE F.\<Phi>.preserves_reflects_arr
+          using 1 2 D'.arr_char\<^sub>S\<^sub>b\<^sub>C
+          by (metis (no_types, lifting) D'.comp_char D'.seq_char\<^sub>S\<^sub>b\<^sub>C D.seqE F.\<Phi>.preserves_reflects_arr
               preserves_reflects_arr)
         ultimately show ?thesis
-          using f g h fg gh D'.dom_char D'.cod_char D'.comp_char D'.hcomp_def C.VV.arr_char
+          using f g h fg gh D'.dom_char\<^sub>S\<^sub>b\<^sub>C D'.cod_char\<^sub>S\<^sub>b\<^sub>C D'.comp_char D'.hcomp_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
           apply simp
           by force
       qed
@@ -2350,23 +2350,23 @@ begin
                                (D'.comp (D'.hcomp (F f) (\<Phi> (g, h))) (D'.\<a> (F f) (F g) (F h)))"
       proof -
         have "D.seq (map f \<star>\<^sub>D cmp (g, h)) \<a>\<^sub>D[map f, map g, map h]"
-          using f g h fg gh C.VV.arr_char C.VV.dom_char C.VV.cod_char F.FF_def
+          using f g h fg gh C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
           by (intro D.seqI) auto
         moreover have "D'.arr \<a>\<^sub>D[map f, map g, map h]"
-          using f g h fg gh D'.arr_char preserves_arr by auto
+          using f g h fg gh D'.arr_char\<^sub>S\<^sub>b\<^sub>C preserves_arr by auto
         moreover have "D'.arr (map f \<star>\<^sub>D cmp (g, h))"
           using f g h fg gh
-          by (metis (no_types, lifting) D'.arr_char D.seqE D.vseq_implies_hpar(1)
+          by (metis (no_types, lifting) D'.arr_char\<^sub>S\<^sub>b\<^sub>C D.seqE D.vseq_implies_hpar(1)
               D.vseq_implies_hpar(2) calculation(1-2))
         moreover have "D'.arr ((map f \<star>\<^sub>D cmp (g, h)) \<cdot>\<^sub>D \<a>\<^sub>D[map f, map g, map h])"
           using f g h fg gh
-          by (metis (no_types, lifting) D'.arr_char D'.comp_closed D.seqE
+          by (metis (no_types, lifting) D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.comp_closed D.seqE
               calculation(1-3))
         moreover have "D.seq (cmp (f, g \<star>\<^sub>C h))
                              ((map f \<star>\<^sub>D cmp (g, h)) \<cdot>\<^sub>D \<a>\<^sub>D[map f, map g, map h])"
           using f g h fg gh F.cmp_simps'(1) F.cmp_simps(4) F.cmp_simps(5) by auto
         ultimately show ?thesis
-          using f g h fg gh C.VV.arr_char D'.VVV.arr_char D'.VV.arr_char D'.comp_char
+          using f g h fg gh C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D'.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C D'.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D'.comp_char
                 D'.hcomp_def
         by simp
       qed
@@ -2392,9 +2392,9 @@ begin
     proof (intro unit_eqI)
       show "C.obj a" by fact
       show 1: "D'.in_hom (F.unit a) (map\<^sub>0 a) (map a)"
-        using D'.arr_char D'.in_hom_char assms unit_in_hom(2) by force
+        using D'.arr_char\<^sub>S\<^sub>b\<^sub>C D'.in_hom_char\<^sub>S\<^sub>b\<^sub>C assms unit_in_hom(2) by force
       show "D'.iso (F.unit a)"
-        using assms D'.iso_char D'.arr_char F.unit_char(2)
+        using assms D'.iso_char\<^sub>S\<^sub>b\<^sub>C D'.arr_char\<^sub>S\<^sub>b\<^sub>C F.unit_char(2)
               \<open>D'.in_hom (F.unit a) (map\<^sub>0 a) (map a)\<close>
         by auto
       show "D'.comp (F.unit a) \<i>\<^sub>D[map\<^sub>0 a] =
@@ -2402,7 +2402,7 @@ begin
                     (D'.hcomp (F.unit a) (F.unit a))"
       proof -
         have "D'.comp (F.unit a) \<i>\<^sub>D[map\<^sub>0 a] = F.unit a \<cdot>\<^sub>D \<i>\<^sub>D[src\<^sub>D (map a)]"
-          using assms D'.comp_char D'.arr_char
+          using assms D'.comp_char D'.arr_char\<^sub>S\<^sub>b\<^sub>C
           apply simp
           by (metis (no_types, lifting) C.obj_simps(1-2) F.preserves_src preserves_arr)
         also have "... = (map \<i>\<^sub>C[a] \<cdot>\<^sub>D cmp (a, a)) \<cdot>\<^sub>D (F.unit a \<star>\<^sub>D F.unit a)"
@@ -2413,11 +2413,11 @@ begin
           have "D'.arr (map \<i>\<^sub>C[a] \<cdot>\<^sub>D cmp (a, a))"
             using assms D'.comp_simp by auto
           moreover have "D.seq (map \<i>\<^sub>C[a] \<cdot>\<^sub>D cmp (a, a)) (F.unit a \<star>\<^sub>D F.unit a)"
-            using assms C.VV.arr_char F.cmp_simps(4-5)
+            using assms C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C F.cmp_simps(4-5)
             by (intro D.seqI) auto
           ultimately show ?thesis
             by (metis (no_types, lifting) "1" D'.comp_eqI' D'.hcomp_eqI' D'.hseqI'
-                D'.iso_is_arr D'.seq_char D'.vconn_implies_hpar(1-2)
+                D'.iso_is_arr D'.seq_char\<^sub>S\<^sub>b\<^sub>C D'.vconn_implies_hpar(1-2)
                 \<i>_simps(1) \<open>D'.iso (F.unit a)\<close> assms map\<^sub>0_simps(2-3))
         qed
         finally show ?thesis by blast
@@ -2617,7 +2617,7 @@ begin
                 using D.comp_assoc by simp
               also have "... = F (trg\<^sub>C f) \<cdot>\<^sub>D F \<epsilon> \<cdot>\<^sub>D F (f \<star>\<^sub>C g)"
                 using 0 3 D.comp_arr_inv' D.comp_inv_arr'
-                by (simp add: C.VV.arr_char C.VV.ide_char assms(1-2))
+                by (simp add: C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C assms(1-2))
               also have "... = F \<epsilon>"
                 using 0 \<open>\<guillemotleft>\<epsilon> : f \<star>\<^sub>C g \<Rightarrow>\<^sub>C src\<^sub>C g\<guillemotright>\<close> D.comp_arr_dom D.comp_cod_arr by auto
               finally show ?thesis by simp
@@ -2665,7 +2665,7 @@ begin
       have \<epsilon>': "\<guillemotleft>?\<epsilon>' : F (f \<star>\<^sub>C g) \<Rightarrow>\<^sub>D F (trg\<^sub>C f)\<guillemotright>"
       proof (intro D.comp_in_homI)
         show "\<guillemotleft>D.inv (\<Phi> (f, g)) : F (f \<star>\<^sub>C g) \<Rightarrow>\<^sub>D F f \<star>\<^sub>D F g\<guillemotright>"
-          using assms g cmp_in_hom C.VV.ide_char C.VV.arr_char by auto
+          using assms g cmp_in_hom C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by auto
         show "\<guillemotleft>F f \<star>\<^sub>D D.inv \<mu> : F f \<star>\<^sub>D F g \<Rightarrow>\<^sub>D F f \<star>\<^sub>D g'\<guillemotright>"
           using assms g \<mu> E''.antipar D.ide_in_hom(2) by auto
         show "\<guillemotleft>D.inv (F f) \<star>\<^sub>D g' : F f \<star>\<^sub>D g' \<Rightarrow>\<^sub>D F f \<star>\<^sub>D g'\<guillemotright>"
@@ -2678,7 +2678,7 @@ begin
       have iso_\<epsilon>': "D.iso ?\<epsilon>'"
       proof -
         have "D.iso (\<Phi> (f, g))"
-          using assms g C.VV.ide_char C.VV.arr_char by auto
+          using assms g C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by auto
         thus ?thesis
           by (metis C.in_hhomE D.arrI D.hseq_char' D.ide_is_iso D.inv_comp_left(2)
               D.inv_comp_right(2) D.iso_hcomp D.iso_inv_iso D.isos_compose D.seqE
@@ -2746,8 +2746,8 @@ begin
 
     interpretation F\<^sub>1: "functor" hhom\<^sub>C.comp hhom\<^sub>D.comp F\<^sub>1
       unfolding F\<^sub>1_def
-      using hhom\<^sub>C.arr_char hhom\<^sub>D.arr_char hhom\<^sub>C.dom_char hhom\<^sub>D.dom_char
-            hhom\<^sub>C.cod_char hhom\<^sub>D.cod_char hhom\<^sub>C.seq_char hhom\<^sub>C.comp_char hhom\<^sub>D.comp_char
+      using hhom\<^sub>C.arr_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>D.arr_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>C.dom_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>D.dom_char\<^sub>S\<^sub>b\<^sub>C
+            hhom\<^sub>C.cod_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>D.cod_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>C.seq_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>C.comp_char hhom\<^sub>D.comp_char
       by unfold_locales auto
 
     interpretation F\<^sub>1: fully_faithful_and_essentially_surjective_functor
@@ -2755,7 +2755,7 @@ begin
     proof
       show "\<And>\<mu> \<mu>'. \<lbrakk>hhom\<^sub>C.par \<mu> \<mu>'; F\<^sub>1 \<mu> = F\<^sub>1 \<mu>'\<rbrakk> \<Longrightarrow> \<mu> = \<mu>'"
         unfolding F\<^sub>1_def
-        using is_faithful hhom\<^sub>C.dom_char hhom\<^sub>D.dom_char hhom\<^sub>C.cod_char hhom\<^sub>D.cod_char
+        using is_faithful hhom\<^sub>C.dom_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>D.dom_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>C.cod_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>D.cod_char\<^sub>S\<^sub>b\<^sub>C
         by (metis C.in_hhom_def hhom\<^sub>C.arrE)
       show "\<And>f f' \<nu>. \<lbrakk>hhom\<^sub>C.ide f; hhom\<^sub>C.ide f'; hhom\<^sub>D.in_hom \<nu> (F\<^sub>1 f') (F\<^sub>1 f)\<rbrakk>
                \<Longrightarrow> \<exists>\<mu>. hhom\<^sub>C.in_hom \<mu> f' f \<and> F\<^sub>1 \<mu> = \<nu>"
@@ -2771,14 +2771,14 @@ begin
           have 1: "src\<^sub>C f' = src\<^sub>C f \<and> trg\<^sub>C f' = trg\<^sub>C f"
             using f f' hhom\<^sub>C.ide_char by (metis C.in_hhomE hhom\<^sub>C.arrE)
           hence ex: "\<exists>\<mu>. C.in_hom \<mu> f' f \<and> F \<mu> = \<nu>"
-            by (meson \<nu> f f' hhom\<^sub>D.in_hom_char horizontal_homs.hhom_is_subcategory
-                      locally_full subcategory.ide_char weak_arrow_of_homs_axioms
+            by (meson \<nu> f f' hhom\<^sub>D.in_hom_char\<^sub>S\<^sub>b\<^sub>C horizontal_homs.hhom_is_subcategory
+                      locally_full subcategory.ide_char\<^sub>S\<^sub>b\<^sub>C weak_arrow_of_homs_axioms
                       weak_arrow_of_homs_def)
           obtain \<mu> where \<mu>: "C.in_hom \<mu> f' f \<and> F \<mu> = \<nu>"
             using ex by blast
           have "hhom\<^sub>C.in_hom \<mu> f' f"
             by (metis C.arrI C.in_hhom_def C.vconn_implies_hpar(1-2) \<mu> f f'
-                hhom\<^sub>C.arr_char hhom\<^sub>C.ide_char hhom\<^sub>C.in_hom_char)
+                hhom\<^sub>C.arr_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>C.ide_char hhom\<^sub>C.in_hom_char\<^sub>S\<^sub>b\<^sub>C)
           thus ?thesis
             using \<mu> by auto
         qed
@@ -2794,20 +2794,20 @@ begin
           have "C.obj a \<and> C.obj a'"
             using obj_a obj_a' by simp
           moreover have 1: "D.ide g \<and> \<guillemotleft>g : map\<^sub>0 a \<rightarrow>\<^sub>D map\<^sub>0 a'\<guillemotright>"
-            using g obj_a obj_a' hhom\<^sub>D.ide_char by auto
+            using g obj_a obj_a' hhom\<^sub>D.ide_char\<^sub>S\<^sub>b\<^sub>C by auto
           ultimately have 2: "\<exists>f. C.in_hhom f a a' \<and> C.ide f \<and> D.isomorphic (F f) g"
             using locally_essentially_surjective [of a a' g] by simp
           obtain f \<phi> where f: "C.in_hhom f a a' \<and> C.ide f \<and> D.in_hom \<phi> (F f) g \<and> D.iso \<phi>"
             using 2 by auto
           have "hhom\<^sub>C.ide f"
-            using f hhom\<^sub>C.ide_char hhom\<^sub>C.arr_char by simp
+            using f hhom\<^sub>C.ide_char\<^sub>S\<^sub>b\<^sub>C hhom\<^sub>C.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
           moreover have "hhom\<^sub>D.isomorphic (F f) g"
           proof -
             have "hhom\<^sub>D.arr \<phi> \<and> hhom\<^sub>D.arr (D.inv \<phi>)"
               by (metis 1 D.arrI D.in_hhom_def D.vconn_implies_hpar(1-4) D.inv_in_homI
-                        f hhom\<^sub>D.arrI)
+                        f hhom\<^sub>D.arrI\<^sub>S\<^sub>b\<^sub>C)
             hence "hhom\<^sub>D.in_hom \<phi> (F f) g \<and> hhom\<^sub>D.iso \<phi>"
-              by (metis D.in_homE f hhom\<^sub>D.cod_simp hhom\<^sub>D.dom_simp hhom\<^sub>D.in_homI hhom\<^sub>D.iso_char)
+              by (metis D.in_homE f hhom\<^sub>D.cod_simp hhom\<^sub>D.dom_simp hhom\<^sub>D.in_homI hhom\<^sub>D.iso_char\<^sub>S\<^sub>b\<^sub>C)
             thus ?thesis
               unfolding hhom\<^sub>D.isomorphic_def by blast
           qed

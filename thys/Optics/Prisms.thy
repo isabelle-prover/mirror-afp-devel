@@ -6,7 +6,7 @@ begin
 
 subsection \<open> Signature and Axioms \<close>
 
-text \<open>Prisms are like lenses, but they act on sum types rather than product types~\cite{Gibbons17}. 
+text \<open>Prisms are like lenses, but they act on sum types rather than product types~\cite{Gibbons17}.
   See \url{https://hackage.haskell.org/package/lens-4.15.2/docs/Control-Lens-Prism.html}
   for more information.\<close>
 
@@ -28,6 +28,10 @@ begin
 
   lemma range_build: "range build = dom match"
     using build_match match_build by fastforce
+
+  lemma inj_build: "inj build"
+    by (metis injI match_build option.inject)
+
 end
 
 declare wb_prism.match_build [simp]
@@ -40,7 +44,7 @@ text \<open> The relation states that two prisms construct disjoint elements of 
   algebraic datatype. \<close>
 
 definition prism_diff :: "('a \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> ('b \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> bool" (infix "\<nabla>" 50) where
-"prism_diff X Y = (range build\<^bsub>X\<^esub> \<inter> range build\<^bsub>Y\<^esub> = {})"
+[lens_defs]: "prism_diff X Y = (range build\<^bsub>X\<^esub> \<inter> range build\<^bsub>Y\<^esub> = {})"
 
 lemma prism_diff_intro:
   "(\<And> s\<^sub>1 s\<^sub>2. build\<^bsub>X\<^esub> s\<^sub>1 = build\<^bsub>Y\<^esub> s\<^sub>2 \<Longrightarrow> False) \<Longrightarrow> X \<nabla> Y"
@@ -55,15 +59,56 @@ lemma prism_diff_sym: "X \<nabla> Y \<Longrightarrow> Y \<nabla> X"
 lemma prism_diff_build: "X \<nabla> Y \<Longrightarrow> build\<^bsub>X\<^esub> u \<noteq> build\<^bsub>Y\<^esub> v"
   by (simp add: disjoint_iff_not_equal prism_diff_def)
 
+lemma prism_diff_build_match: "\<lbrakk> wb_prism X; X \<nabla> Y \<rbrakk> \<Longrightarrow> match\<^bsub>X\<^esub> (build\<^bsub>Y\<^esub> v) = None" 
+  using UNIV_I wb_prism.range_build by (fastforce simp add: prism_diff_def)
+
+subsection \<open> Canonical prisms \<close>
+
+definition prism_id :: "('a \<Longrightarrow>\<^sub>\<triangle> 'a)" ("1\<^sub>\<triangle>") where
+[lens_defs]: "prism_id = \<lparr> prism_match = Some, prism_build = id \<rparr>"
+
+lemma wb_prism_id: "wb_prism 1\<^sub>\<triangle>"
+  unfolding prism_id_def wb_prism_def by simp
+
+lemma prism_id_never_diff: "\<not> 1\<^sub>\<triangle> \<nabla> X"
+  by (simp add: prism_diff_def prism_id_def)
+
 subsection \<open> Summation \<close>
 
 definition prism_plus :: "('a \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> ('b \<Longrightarrow>\<^sub>\<triangle> 's) \<Rightarrow> 'a + 'b \<Longrightarrow>\<^sub>\<triangle> 's" (infixl "+\<^sub>\<triangle>" 85) 
   where
-"X +\<^sub>\<triangle> Y = \<lparr> prism_match = (\<lambda> s. case (match\<^bsub>X\<^esub> s, match\<^bsub>Y\<^esub> s) of
+[lens_defs]: "X +\<^sub>\<triangle> Y = \<lparr> prism_match = (\<lambda> s. case (match\<^bsub>X\<^esub> s, match\<^bsub>Y\<^esub> s) of
                                  (Some u, _) \<Rightarrow> Some (Inl u) |
                                  (None, Some v) \<Rightarrow> Some (Inr v) |
                                  (None, None) \<Rightarrow> None),
            prism_build = (\<lambda> v. case v of Inl x \<Rightarrow> build\<^bsub>X\<^esub> x | Inr y \<Rightarrow> build\<^bsub>Y\<^esub> y) \<rparr>"
+
+lemma prism_plus_wb [simp]: "\<lbrakk> wb_prism X; wb_prism Y; X \<nabla> Y \<rbrakk> \<Longrightarrow> wb_prism (X +\<^sub>\<triangle> Y)"
+  apply (unfold_locales)
+   apply (auto simp add: prism_plus_def sum.case_eq_if option.case_eq_if prism_diff_build_match)
+  apply (metis map_option_case map_option_eq_Some option.exhaust option.sel sum.disc(2) sum.sel(1) wb_prism.build_match_iff)
+  apply (metis (no_types, lifting) isl_def not_None_eq option.case_eq_if option.sel sum.sel(2) wb_prism.build_match)
+  done
+
+lemma build_plus_Inl [simp]: "build\<^bsub>c +\<^sub>\<triangle> d\<^esub> (Inl x) = build\<^bsub>c\<^esub> x"
+  by (simp add: prism_plus_def)
+
+lemma build_plus_Inr [simp]: "build\<^bsub>c +\<^sub>\<triangle> d\<^esub> (Inr y) = build\<^bsub>d\<^esub> y"
+  by (simp add: prism_plus_def)
+
+lemma prism_diff_preserved_1 [simp]: "\<lbrakk> X \<nabla> Y; X \<nabla> Z \<rbrakk> \<Longrightarrow> X \<nabla> Y +\<^sub>\<triangle> Z"
+  by (auto simp add: lens_defs sum.case_eq_if)
+
+lemma prism_diff_preserved_2 [simp]: "\<lbrakk> X \<nabla> Z; Y \<nabla> Z \<rbrakk> \<Longrightarrow> X +\<^sub>\<triangle> Y \<nabla> Z"
+  by (meson prism_diff_preserved_1 prism_diff_sym)
+
+text \<open> The following two lemmas are useful for reasoning about prism sums \<close>
+
+lemma Bex_Sum_iff: "(\<exists>x\<in>A<+>B. P x) \<longleftrightarrow> (\<exists> x\<in>A. P (Inl x)) \<or> (\<exists> y\<in>B. P (Inr y))"
+  by (auto)
+
+lemma Ball_Sum_iff: "(\<forall>x\<in>A<+>B. P x) \<longleftrightarrow> (\<forall> x\<in>A. P (Inl x)) \<and> (\<forall> y\<in>B. P (Inr y))"
+  by (auto)
 
 subsection \<open> Instances \<close>
 
@@ -73,20 +118,23 @@ definition prism_suml :: "('a, 'a + 'b) prism" ("Inl\<^sub>\<triangle>") where
 definition prism_sumr :: "('b, 'a + 'b) prism" ("Inr\<^sub>\<triangle>") where
 [lens_defs]: "prism_sumr = \<lparr> prism_match = (\<lambda> v. case v of Inr x \<Rightarrow> Some x | _ \<Rightarrow> None), prism_build = Inr \<rparr>"
 
-lemma wb_prim_suml: "wb_prism Inl\<^sub>\<triangle>"
+lemma wb_prim_suml [simp]: "wb_prism Inl\<^sub>\<triangle>"
   apply (unfold_locales)
    apply (simp_all add: prism_suml_def sum.case_eq_if)
   apply (metis option.inject option.simps(3) sum.collapse(1))
   done
 
-lemma wb_prim_sumr: "wb_prism Inr\<^sub>\<triangle>"
+lemma wb_prim_sumr [simp]: "wb_prism Inr\<^sub>\<triangle>"
   apply (unfold_locales)
    apply (simp_all add: prism_sumr_def sum.case_eq_if)
   apply (metis option.distinct(1) option.inject sum.collapse(2))
   done
 
 lemma prism_suml_indep_sumr [simp]: "Inl\<^sub>\<triangle> \<nabla> Inr\<^sub>\<triangle>"
-  by (auto simp add: prism_diff_def lens_defs)
+  by (auto simp add: lens_defs)
+
+lemma prism_sum_plus: "Inl\<^sub>\<triangle> +\<^sub>\<triangle> Inr\<^sub>\<triangle> = 1\<^sub>\<triangle>"
+  unfolding lens_defs prism_plus_def by (auto simp add: Inr_Inl_False sum.case_eq_if)
 
 subsection \<open> Lens correspondence \<close>
 
@@ -99,6 +147,9 @@ definition prism_lens :: "('a, 's) prism \<Rightarrow> ('a \<Longrightarrow> 's)
 definition lens_prism :: "('a \<Longrightarrow> 's) \<Rightarrow> ('a, 's) prism" where
 "lens_prism X = \<lparr> prism_match = (\<lambda> s. if (s \<in> \<S>\<^bsub>X\<^esub>) then Some (get\<^bsub>X\<^esub> s) else None)
                 , prism_build = create\<^bsub>X\<^esub> \<rparr>"
+
+lemma mwb_prism_lens: "wb_prism a \<Longrightarrow> mwb_lens (prism_lens a)"
+  by (simp add: mwb_lens_axioms_def mwb_lens_def weak_lens_def prism_lens_def)
 
 lemma get_prism_lens: "get\<^bsub>prism_lens X\<^esub> = the \<circ> match\<^bsub>X\<^esub>"
   by (simp add: prism_lens_def fun_eq_iff)

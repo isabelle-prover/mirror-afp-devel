@@ -1,15 +1,13 @@
 theory Renegar_Decision
-  imports "Renegar_Proofs"
-    "BKR_Decision"
+  imports Renegar_Proofs
+    BKR_Decision
 begin
 
 (* Note that there is significant overlap between Renegar and BKR in general, so there is some
   similarity between this file and BKR_Decision.thy.  However, there are also notable differences
   as Renegar and BKR use different auxiliary polynomials in their decision procedures.
-
   In general, the _R's on definition and lemma names in this file are to emphasize that we are 
   working with Renegar style.
-
 *)
 
 section "Algorithm"
@@ -19,7 +17,7 @@ section "Algorithm"
 definition consistent_sign_vectors_R::"real poly list \<Rightarrow> real set \<Rightarrow> rat list set"
   where "consistent_sign_vectors_R qs S = (consistent_sign_vec qs) ` S"
 
-primrec prod_list_var:: "real poly list \<Rightarrow> real poly"
+primrec prod_list_var:: "('a::idom) list \<Rightarrow>('a::idom)"
   where "prod_list_var  [] = 1"
   | "prod_list_var (h#T) = (if h = 0 then (prod_list_var T) else (h* prod_list_var T))"
 

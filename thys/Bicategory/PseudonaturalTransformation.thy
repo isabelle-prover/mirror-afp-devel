@@ -235,11 +235,11 @@ begin
             using D.comp_assoc by simp
         qed
         also have "... = \<l>\<^sub>D\<^sup>-\<^sup>1[F (g \<star>\<^sub>C f)] \<cdot>\<^sub>D \<Phi>\<^sub>F (g, f) \<cdot>\<^sub>D \<r>\<^sub>D[F g \<star>\<^sub>D F f]"
-          using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char F.FF_def
+          using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
                 D.lunit'_naturality [of "\<Phi>\<^sub>F (g, f)"] D.comp_assoc
           by simp
         also have "... = (\<l>\<^sub>D\<^sup>-\<^sup>1[F (g \<star>\<^sub>C f)] \<cdot>\<^sub>D \<r>\<^sub>D[F (g \<star>\<^sub>C f)]) \<cdot>\<^sub>D (\<Phi>\<^sub>F (g, f) \<star>\<^sub>D F.map\<^sub>0 (src\<^sub>C f))"
-          using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char F.FF_def
+          using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
                 D.runit_naturality [of "\<Phi>\<^sub>F (g, f)"] D.comp_assoc
           by simp
         finally show "(F.map\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D
@@ -848,7 +848,7 @@ begin
                    = \<rho>\<^sub>1 (g \<star>\<^sub>C f) \<cdot>\<^sub>D (\<Phi>\<^sub>H (g, f) \<star>\<^sub>D \<rho>\<^sub>0 (src\<^sub>C f))"
              using f g fg \<rho>.respects_hcomp D.comp_assoc by simp
            moreover have "D.seq (\<rho>\<^sub>1 (g \<star>\<^sub>C f)) (\<Phi>\<^sub>H (g, f) \<star>\<^sub>D \<rho>\<^sub>0 (src\<^sub>C f))"
-             using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char by auto
+             using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C by auto
            ultimately
            have "(\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<Phi>\<^sub>G (g, f)) \<cdot>\<^sub>D \<a>\<^sub>D[\<rho>\<^sub>0 (trg\<^sub>C g), G g, G f] \<cdot>\<^sub>D
                  ((\<rho>\<^sub>1 g \<star>\<^sub>D G f) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[H g, \<rho>\<^sub>0 (src\<^sub>C g), G f] \<cdot>\<^sub>D (H g \<star>\<^sub>D \<rho>\<^sub>1 f))
@@ -856,7 +856,7 @@ begin
              using f g fg D.invert_side_of_triangle(2) by simp
            moreover have "D.seq (\<rho>\<^sub>1 (g \<star>\<^sub>C f) \<cdot>\<^sub>D (\<Phi>\<^sub>H (g, f) \<star>\<^sub>D \<rho>\<^sub>0 (src\<^sub>C f)))
                                 \<a>\<^sub>D\<^sup>-\<^sup>1[H g, H f, \<rho>\<^sub>0 (src\<^sub>C f)]"
-             using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def by auto
+             using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def by auto
            ultimately
            have "\<a>\<^sub>D[\<rho>\<^sub>0 (trg\<^sub>C g), G g, G f] \<cdot>\<^sub>D
                  ((\<rho>\<^sub>1 g \<star>\<^sub>D G f) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[H g, \<rho>\<^sub>0 (src\<^sub>C g), G f] \<cdot>\<^sub>D (H g \<star>\<^sub>D \<rho>\<^sub>1 f))
@@ -874,7 +874,7 @@ begin
                     = \<a>\<^sub>D\<^sup>-\<^sup>1[\<rho>\<^sub>0 (trg\<^sub>C g), G g, G f] \<cdot>\<^sub>D (\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D D.inv (\<Phi>\<^sub>G (g, f))) \<cdot>\<^sub>D
                       (\<rho>\<^sub>1 (g \<star>\<^sub>C f) \<cdot>\<^sub>D
                       (\<Phi>\<^sub>H (g, f) \<star>\<^sub>D \<rho>\<^sub>0 (src\<^sub>C f))) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[H g, H f, \<rho>\<^sub>0 (src\<^sub>C f)]"
-             using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def
+             using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
                    D.invert_side_of_triangle(1)
              by simp
            hence "(\<rho>\<^sub>1 g \<star>\<^sub>D G f) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[H g, \<rho>\<^sub>0 (src\<^sub>C g), G f] \<cdot>\<^sub>D (H g \<star>\<^sub>D \<rho>\<^sub>1 f)
@@ -890,7 +890,7 @@ begin
                           (\<rho>\<^sub>1 (g \<star>\<^sub>C f) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f)) \<cdot>\<^sub>D
                           ((\<Phi>\<^sub>H (g, f) \<star>\<^sub>D \<rho>\<^sub>0 (src\<^sub>C f)) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f)) \<cdot>\<^sub>D
                           (\<a>\<^sub>D\<^sup>-\<^sup>1[H g, H f, \<rho>\<^sub>0 (src\<^sub>C f)] \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f))"
-           using f g fg D.whisker_right C.VV.arr_char C.VV.dom_char C.VV.cod_char
+           using f g fg D.whisker_right C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                  H.FF_def G.FF_def
            by force
          finally have "((\<rho>\<^sub>1 g \<star>\<^sub>D G f) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f)) \<cdot>\<^sub>D
@@ -1055,13 +1055,13 @@ begin
                   \<a>\<^sub>D[\<sigma>\<^sub>0 (trg\<^sub>C g), F g, F f] \<cdot>\<^sub>D
                   (\<sigma>\<^sub>1 g \<star>\<^sub>D F f) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, \<sigma>\<^sub>0 (src\<^sub>C g), F f] \<cdot>\<^sub>D (G g \<star>\<^sub>D \<sigma>\<^sub>1 f)
                     = (\<sigma>\<^sub>1 (g \<star>\<^sub>C f) \<cdot>\<^sub>D (\<Phi>\<^sub>G (g, f) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f))) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, G f, \<sigma>\<^sub>0 (src\<^sub>C f)]"
-             using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char D.invert_side_of_triangle(2)
+             using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C D.invert_side_of_triangle(2)
              by simp
            hence "\<a>\<^sub>D[\<sigma>\<^sub>0 (trg\<^sub>C g), F g, F f] \<cdot>\<^sub>D
                   (\<sigma>\<^sub>1 g \<star>\<^sub>D F f) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, \<sigma>\<^sub>0 (src\<^sub>C g), F f] \<cdot>\<^sub>D (G g \<star>\<^sub>D \<sigma>\<^sub>1 f)
                     = (\<sigma>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D D.inv (\<Phi>\<^sub>F (g, f))) \<cdot>\<^sub>D
                       (\<sigma>\<^sub>1 (g \<star>\<^sub>C f) \<cdot>\<^sub>D (\<Phi>\<^sub>G (g, f) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f))) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, G f, \<sigma>\<^sub>0 (src\<^sub>C f)]"
-             using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char G.FF_def
+             using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C G.FF_def
                    D.invert_side_of_triangle(1)
                      [of "(\<sigma>\<^sub>1 (g \<star>\<^sub>C f) \<cdot>\<^sub>D (\<Phi>\<^sub>G (g, f) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f))) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, G f, \<sigma>\<^sub>0 (src\<^sub>C f)]"
                          "\<sigma>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<Phi>\<^sub>F (g, f)"
@@ -1071,7 +1071,7 @@ begin
            hence "(\<sigma>\<^sub>1 g \<star>\<^sub>D F f) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, \<sigma>\<^sub>0 (src\<^sub>C g), F f] \<cdot>\<^sub>D (G g \<star>\<^sub>D \<sigma>\<^sub>1 f)
                     = \<a>\<^sub>D\<^sup>-\<^sup>1[\<sigma>\<^sub>0 (trg\<^sub>C g), F g, F f] \<cdot>\<^sub>D (\<sigma>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D D.inv (\<Phi>\<^sub>F (g, f))) \<cdot>\<^sub>D
                       (\<sigma>\<^sub>1 (g \<star>\<^sub>C f) \<cdot>\<^sub>D (\<Phi>\<^sub>G (g, f) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f))) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, G f, \<sigma>\<^sub>0 (src\<^sub>C f)]"
-             using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char G.FF_def F.FF_def
+             using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C G.FF_def F.FF_def
                    D.invert_side_of_triangle(1)
              by simp
            thus ?thesis
@@ -1082,7 +1082,7 @@ begin
                           (\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<sigma>\<^sub>1 (g \<star>\<^sub>C f)) \<cdot>\<^sub>D
                           (\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<Phi>\<^sub>G (g, f) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f)) \<cdot>\<^sub>D
                           (\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, G f, \<sigma>\<^sub>0 (src\<^sub>C f)])"
-            using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char F.FF_def G.FF_def
+            using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def G.FF_def
                   D.whisker_left
            by force
          finally have "(\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<sigma>\<^sub>1 g \<star>\<^sub>D F f) \<cdot>\<^sub>D
@@ -1154,7 +1154,7 @@ begin
            have "((\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<sigma>\<^sub>0 (trg\<^sub>C g)) \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D
                  ((\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<sigma>\<^sub>0 (trg\<^sub>C g)) \<star>\<^sub>D D.inv (\<Phi>\<^sub>F (g, f)))
                    = (\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<sigma>\<^sub>0 (trg\<^sub>C g)) \<star>\<^sub>D \<Phi>\<^sub>F (g, f) \<cdot>\<^sub>D D.inv (\<Phi>\<^sub>F (g, f))"
-             using f g fg D.whisker_left C.VV.arr_char by simp
+             using f g fg D.whisker_left C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
            also have "... = (\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<sigma>\<^sub>0 (trg\<^sub>C g)) \<star>\<^sub>D F (g \<star>\<^sub>C f)"
              using f g fg D.comp_arr_inv' F.cmp_components_are_iso by simp
            finally have "((\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<sigma>\<^sub>0 (trg\<^sub>C g)) \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D
@@ -1227,9 +1227,9 @@ begin
                    = (\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<Phi>\<^sub>G (g, f)) \<cdot>\<^sub>D
                      (\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D D.inv (\<Phi>\<^sub>G (g, f)))
                         \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f)"
-             using f g fg C.VV.arr_char D.whisker_right by simp
+             using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.whisker_right by simp
            also have "... = (\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<Phi>\<^sub>G (g, f) \<cdot>\<^sub>D D.inv (\<Phi>\<^sub>G (g, f))) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f)"
-             using f g fg C.VV.arr_char D.whisker_left [of "\<rho>\<^sub>0 (trg\<^sub>C g)"] by simp
+             using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.whisker_left [of "\<rho>\<^sub>0 (trg\<^sub>C g)"] by simp
            also have "... = (\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D G (g \<star>\<^sub>C f)) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f)"
              using f g fg D.comp_arr_inv' G.cmp_components_are_iso G.cmp_simps(5) by auto
            finally have "((\<rho>\<^sub>0 (trg\<^sub>C g) \<star>\<^sub>D \<Phi>\<^sub>G (g, f)) \<star>\<^sub>D \<sigma>\<^sub>0 (src\<^sub>C f)) \<cdot>\<^sub>D
@@ -1385,13 +1385,13 @@ begin
                 = \<tau>\<^sub>1 (H (g \<star>\<^sub>B f)) \<cdot>\<^sub>D
                   (G (H (g \<star>\<^sub>B f)) \<cdot>\<^sub>D G (\<Phi>\<^sub>H (g, f)) \<cdot>\<^sub>D \<Phi>\<^sub>G (H g, H f) \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C (H f)))"
           unfolding map\<^sub>0_def map\<^sub>1_def
-          using f g fg GoH.cmp_def B.VV.arr_char B.VV.dom_char by simp
+          using f g fg GoH.cmp_def B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C by simp
         also have "... = (\<tau>\<^sub>1 (H (g \<star>\<^sub>B f)) \<cdot>\<^sub>D
                          (G (H (g \<star>\<^sub>B f)) \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C (H f)))) \<cdot>\<^sub>D
                          (G (\<Phi>\<^sub>H (g, f)) \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C (H f))) \<cdot>\<^sub>D
                          (\<Phi>\<^sub>G (H g, H f) \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C (H f)))"
-          using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char H.FF_def
-                C.VV.arr_char C.VV.dom_char C.VV.cod_char D.whisker_right
+          using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
+                C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C D.whisker_right
                 D.comp_assoc
           by simp
         also have "... = (\<tau>\<^sub>0 (trg\<^sub>C (H g)) \<star>\<^sub>D F (H (g \<star>\<^sub>B f))) \<cdot>\<^sub>D
@@ -1437,7 +1437,7 @@ begin
                                  D.inv \<a>\<^sub>D[G (H g), \<tau>\<^sub>0 (src\<^sub>C (H g)), F (H f)] \<cdot>\<^sub>D
                                  (G (H g) \<star>\<^sub>D \<tau>\<^sub>1 (H f)) \<cdot>\<^sub>D
                                  \<a>\<^sub>D[G (H g), G (H f), \<tau>\<^sub>0 (src\<^sub>C (H f))])"
-              using f g fg C.obj_simps C.VV.arr_char C.VV.dom_char C.VV.cod_char \<tau>.F.FF_def
+              using f g fg C.obj_simps C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C \<tau>.F.FF_def
               by simp
             moreover have "D.iso (\<Phi>\<^sub>G (H g, H f) \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C (H f)))"
               using f g fg \<tau>.G.cmp_components_are_iso [of "H g" "H f"] by simp
@@ -1475,7 +1475,7 @@ begin
                       (\<Phi>\<^sub>G (H g, H f) \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C (H f)))"
               using f g fg by simp
             also have "... = D.inv (\<Phi>\<^sub>G (H g, H f)) \<cdot>\<^sub>D \<Phi>\<^sub>G (H g, H f) \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C (H f))"
-              using f g fg D.whisker_right C.VV.arr_char by simp
+              using f g fg D.whisker_right C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
             also have "... = (G (H g) \<star>\<^sub>D G (H f)) \<star>\<^sub>D \<tau>\<^sub>0 (src\<^sub>C (H f))"
               using f g fg D.comp_inv_arr' \<tau>.G.cmp_components_are_iso by simp
             finally show ?thesis by blast
@@ -1493,9 +1493,9 @@ begin
                          D.inv \<a>\<^sub>D[G (H g), \<tau>\<^sub>0 (src\<^sub>C (H g)), F (H f)] \<cdot>\<^sub>D
                          (G (H g) \<star>\<^sub>D \<tau>\<^sub>1 (H f)) \<cdot>\<^sub>D
                          \<a>\<^sub>D[G (H g), G (H f), \<tau>\<^sub>0 (src\<^sub>C (H f))]"
-          using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char
-                B.VV.arr_char B.VV.dom_char B.VV.cod_char H.FF_def
-                D.whisker_left C.VV.arr_char B.VV.arr_char D.comp_assoc
+          using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
+                B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
+                D.whisker_left C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.comp_assoc
           by auto
         also have "... = (map\<^sub>0 (trg\<^sub>B g) \<star>\<^sub>D FoH.cmp (g, f)) \<cdot>\<^sub>D
                          \<a>\<^sub>D[map\<^sub>0 (trg\<^sub>B g), (F \<circ> H) g, (F \<circ> H) f] \<cdot>\<^sub>D
@@ -1504,7 +1504,7 @@ begin
                          ((G \<circ> H) g \<star>\<^sub>D map\<^sub>1 f) \<cdot>\<^sub>D
                          \<a>\<^sub>D[(G \<circ> H) g, (G \<circ> H) f, map\<^sub>0 (src\<^sub>B f)]"
           unfolding map\<^sub>0_def map\<^sub>1_def
-          using f g fg FoH.cmp_def B.VV.arr_char B.VV.dom_char by simp
+          using f g fg FoH.cmp_def B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C by simp
         finally show "(map\<^sub>0 (trg\<^sub>B g) \<star>\<^sub>D FoH.cmp (g, f)) \<cdot>\<^sub>D
                       \<a>\<^sub>D[map\<^sub>0 (trg\<^sub>B g), (F \<circ> H) g, (F \<circ> H) f] \<cdot>\<^sub>D
                       (map\<^sub>1 g \<star>\<^sub>D (F \<circ> H) f) \<cdot>\<^sub>D
@@ -1589,7 +1589,7 @@ begin
           using f \<tau>.map\<^sub>1_in_hom [of f] calculation by (intro D.seqI) auto
         ultimately show "D.iso (map\<^sub>1 f)"
           using f map\<^sub>1_def H.preserves_iso \<tau>.iso_map\<^sub>1_ide H.cmp_components_are_iso
-                C.VV.arr_char D.isos_compose
+                C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.isos_compose
           by auto
       qed
       show "\<And>a. B.obj a \<Longrightarrow> \<guillemotleft>map\<^sub>0 a : src\<^sub>D ((H \<circ> F) a) \<rightarrow>\<^sub>D src\<^sub>D ((H \<circ> G) a)\<guillemotright>"
@@ -1621,7 +1621,7 @@ begin
           have "\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B \<mu>), F (B.cod \<mu>)) \<cdot>\<^sub>D (H (\<tau>\<^sub>0 (trg\<^sub>B \<mu>)) \<star>\<^sub>D H (F \<mu>))
                   = H (\<tau>\<^sub>0 (trg\<^sub>B \<mu>) \<star>\<^sub>C F \<mu>) \<cdot>\<^sub>D \<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B \<mu>), F (B.dom \<mu>))"
             using \<mu> H.\<Phi>.naturality [of "(\<tau>\<^sub>0 (trg\<^sub>B \<mu>), F \<mu>)"]
-                  C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def
+                  C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
             by simp
           moreover have "D.seq (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B \<mu>), F (B.cod \<mu>))) (H (\<tau>\<^sub>0 (trg\<^sub>B \<mu>)) \<star>\<^sub>D H (F \<mu>))"
             using \<mu>
@@ -1633,7 +1633,7 @@ begin
           ultimately
           have "(H (\<tau>\<^sub>0 (trg\<^sub>B \<mu>)) \<star>\<^sub>D H (F \<mu>)) \<cdot>\<^sub>D D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B \<mu>), F (B.dom \<mu>)))
                 = D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B \<mu>), F (B.cod \<mu>))) \<cdot>\<^sub>D H (\<tau>\<^sub>0 (trg\<^sub>B \<mu>) \<star>\<^sub>C F \<mu>)"
-            using \<mu> H.cmp_components_are_iso C.VV.arr_char D.invert_opposite_sides_of_square
+            using \<mu> H.cmp_components_are_iso C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.invert_opposite_sides_of_square
             by blast
           thus ?thesis
             using \<mu> D.comp_assoc by simp
@@ -1656,7 +1656,7 @@ begin
                          \<Phi>\<^sub>H (G (B.cod \<mu>), \<tau>\<^sub>0 (src\<^sub>B (B.cod \<mu>))) \<cdot>\<^sub>D
                          (H (G \<mu>) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B \<mu>)))"
           using \<mu> H.\<Phi>.naturality [of "(G \<mu>, \<tau>\<^sub>0 (src\<^sub>B \<mu>))"]
-                C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def
+                C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
           by force
         also have "... = map\<^sub>1 (B.cod \<mu>) \<cdot>\<^sub>D ((H \<circ> G) \<mu> \<star>\<^sub>D map\<^sub>0 (src\<^sub>B \<mu>))"
           unfolding map\<^sub>0_def map\<^sub>1_def
@@ -1689,7 +1689,7 @@ begin
                          \<Phi>\<^sub>H (\<tau>.G.map\<^sub>0 a, \<tau>\<^sub>0 a) \<cdot>\<^sub>D
                          (H.unit (\<tau>.G.map\<^sub>0 a) \<star>\<^sub>D H (\<tau>\<^sub>0 a))"
           using a H.\<Phi>.naturality [of "(\<tau>.G.unit a, \<tau>\<^sub>0 a)"] D.comp_assoc
-                C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def
+                C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
           by auto
         also have "... = D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 a, F a)) \<cdot>\<^sub>D
                          H (\<tau>\<^sub>1 a \<cdot>\<^sub>C (\<tau>.G.unit a \<star>\<^sub>C \<tau>\<^sub>0 a)) \<cdot>\<^sub>D
@@ -1726,7 +1726,7 @@ begin
                   = (H (\<tau>\<^sub>0 a) \<star>\<^sub>D H (\<tau>.F.unit a)) \<cdot>\<^sub>D D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 a, \<tau>.F.map\<^sub>0 a))"
           proof -
             have "D.seq (H (\<tau>\<^sub>0 a \<star>\<^sub>C \<tau>.F.unit a)) (\<Phi>\<^sub>H (\<tau>\<^sub>0 a, \<tau>.F.map\<^sub>0 a))"
-              using a C.VV.arr_char C.VV.dom_char C.VV.cod_char C.obj_simps by auto
+              using a C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C C.obj_simps by auto
             moreover have "D.iso (\<Phi>\<^sub>H (\<tau>\<^sub>0 a, F a)) \<and> D.iso (\<Phi>\<^sub>H (\<tau>\<^sub>0 a, \<tau>.F.map\<^sub>0 a))"
             proof -
               have "C.ide (F a) \<and> src\<^sub>C (\<tau>\<^sub>0 a) = trg\<^sub>C (F a) \<and> src\<^sub>C (\<tau>\<^sub>0 a) = trg\<^sub>C (\<tau>.F.map\<^sub>0 a)"
@@ -1743,7 +1743,7 @@ begin
             qed
             ultimately show ?thesis
               using a H.\<Phi>.naturality [of "(\<tau>\<^sub>0 a, \<tau>.F.unit a)"]
-                    C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def
+                    C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
                     D.invert_opposite_sides_of_square
                       [of "\<Phi>\<^sub>H (\<tau>\<^sub>0 a, F a)" "H (\<tau>\<^sub>0 a) \<star>\<^sub>D H (\<tau>.F.unit a)"
                           "H (\<tau>\<^sub>0 a \<star>\<^sub>C \<tau>.F.unit a)" "\<Phi>\<^sub>H (\<tau>\<^sub>0 a, \<tau>.F.map\<^sub>0 a)"]
@@ -1847,15 +1847,15 @@ begin
                   H (\<Phi>\<^sub>G (g, f)) \<cdot>\<^sub>D
                   \<Phi>\<^sub>H (G g, G f) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f)))"
           unfolding map\<^sub>0_def map\<^sub>1_def HoG.cmp_def
-          using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char D.comp_assoc by simp
+          using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C D.comp_assoc by simp
         also have "... = D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F (g \<star>\<^sub>B f))) \<cdot>\<^sub>D
                          H (\<tau>\<^sub>1 (g \<star>\<^sub>B f)) \<cdot>\<^sub>D
                          \<Phi>\<^sub>H (G (g \<star>\<^sub>B f), \<tau>\<^sub>0 (src\<^sub>B f)) \<cdot>\<^sub>D
                          ((H (G (g \<star>\<^sub>B f)) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f))) \<cdot>\<^sub>D
                          (H (\<Phi>\<^sub>G (g, f)) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f)))) \<cdot>\<^sub>D
                          (\<Phi>\<^sub>H (G g, G f) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f)))"
-          using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char
-                C.VV.arr_char C.VV.dom_char C.VV.cod_char \<tau>.G.FF_def
+          using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
+                C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C \<tau>.G.FF_def
                 D.comp_assoc D.whisker_right
           by auto
         also have "... = D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F (g \<star>\<^sub>B f))) \<cdot>\<^sub>D
@@ -1866,11 +1866,11 @@ begin
         proof -
           have "(H (G (g \<star>\<^sub>B f)) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f))) \<cdot>\<^sub>D (H (\<Phi>\<^sub>G (g, f)) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f)))
                   = H (G (g \<star>\<^sub>B f)) \<cdot>\<^sub>D H (\<Phi>\<^sub>G (g, f)) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f))"
-            using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char D.whisker_right
+            using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C D.whisker_right
             by simp
           also have "... = H (\<Phi>\<^sub>G (g, f)) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f))"
             using f g fg D.comp_cod_arr [of "H (\<Phi>\<^sub>G (g, f))" "H (G (g \<star>\<^sub>B f))"]
-                  B.VV.arr_char B.VV.dom_char B.VV.cod_char
+                  B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
             by simp
           finally have "(H (G (g \<star>\<^sub>B f)) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f))) \<cdot>\<^sub>D
                         (H (\<Phi>\<^sub>G (g, f)) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f)))
@@ -1885,15 +1885,15 @@ begin
                          \<Phi>\<^sub>H (G g \<star>\<^sub>C G f, \<tau>\<^sub>0 (src\<^sub>B f)) \<cdot>\<^sub>D
                          (\<Phi>\<^sub>H (G g, G f) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f)))"
           using f g fg H.\<Phi>.naturality [of "(\<Phi>\<^sub>G (g, f), \<tau>\<^sub>0 (src\<^sub>B f))"]
-                B.VV.arr_char B.VV.dom_char B.VV.cod_char \<tau>.G.FF_def
-                C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def
+                B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C \<tau>.G.FF_def
+                C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
                 D.comp_assoc
           by simp
         also have "... = D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F (g \<star>\<^sub>B f))) \<cdot>\<^sub>D
                          H (\<tau>\<^sub>1 (g \<star>\<^sub>B f) \<cdot>\<^sub>C (\<Phi>\<^sub>G (g, f) \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B f))) \<cdot>\<^sub>D
                          \<Phi>\<^sub>H (G g \<star>\<^sub>C G f, \<tau>\<^sub>0 (src\<^sub>B f)) \<cdot>\<^sub>D
                          (\<Phi>\<^sub>H (G g, G f) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f)))"
-          using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char D.comp_assoc by simp
+          using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C D.comp_assoc by simp
         also have "... = D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F (g \<star>\<^sub>B f))) \<cdot>\<^sub>D
                          H ((\<tau>\<^sub>0 (trg\<^sub>B g) \<star>\<^sub>C \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>C
                             \<a>\<^sub>C[\<tau>\<^sub>0 (trg\<^sub>B g), F g, F f] \<cdot>\<^sub>C
@@ -1913,7 +1913,7 @@ begin
                          H \<a>\<^sub>C[G g, G f, \<tau>\<^sub>0 (src\<^sub>B f)] \<cdot>\<^sub>D
                          \<Phi>\<^sub>H (G g \<star>\<^sub>C G f, \<tau>\<^sub>0 (src\<^sub>B f)) \<cdot>\<^sub>D
                          (\<Phi>\<^sub>H (G g, G f) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f)))"
-          using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char \<tau>.F.FF_def D.comp_assoc
+          using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C \<tau>.F.FF_def D.comp_assoc
           by simp
         also have "... = (H (\<tau>\<^sub>0 (trg\<^sub>B g)) \<star>\<^sub>D H (\<Phi>\<^sub>F (g, f))) \<cdot>\<^sub>D
                          (D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F g \<star>\<^sub>C F f)) \<cdot>\<^sub>D
@@ -1930,13 +1930,13 @@ begin
           proof -
             have "\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F (g \<star>\<^sub>B f)) \<cdot>\<^sub>D (H (\<tau>\<^sub>0 (trg\<^sub>B g)) \<star>\<^sub>D H (\<Phi>\<^sub>F (g, f))) =
                   H (\<tau>\<^sub>0 (trg\<^sub>B g) \<star>\<^sub>C \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D \<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F g \<star>\<^sub>C F f)"
-              using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char
-                    C.VV.arr_char C.VV.dom_char C.VV.cod_char \<tau>.F.FF_def H.FF_def
+              using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
+                    C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C \<tau>.F.FF_def H.FF_def
                     H.\<Phi>.naturality [of "(\<tau>\<^sub>0 (trg\<^sub>B g), \<Phi>\<^sub>F (g, f))"]
               by auto
             moreover have "D.seq (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F (g \<star>\<^sub>B f))) (H (\<tau>\<^sub>0 (trg\<^sub>B g)) \<star>\<^sub>D H (\<Phi>\<^sub>F (g, f)))"
-              using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char
-                    C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def
+              using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
+                    C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
               by auto
             moreover have "D.iso (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F (g \<star>\<^sub>B f))) \<and>
                            D.iso (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F g \<star>\<^sub>C F f))"
@@ -1978,14 +1978,14 @@ begin
                              \<a>\<^sub>D[H (\<tau>\<^sub>0 (trg\<^sub>B g)), H (F g), H (F f)] \<cdot>\<^sub>D
                              (D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F g)) \<star>\<^sub>D H (F f)) \<cdot>\<^sub>D
                              D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g) \<star>\<^sub>C F g, F f))"
-              using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char
+              using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                     H.FF_def D.comp_assoc D.comp_inv_arr' H.cmp_components_are_iso
               by simp
             also have "... = (H (\<tau>\<^sub>0 (trg\<^sub>B g)) \<star>\<^sub>D \<Phi>\<^sub>H (F g, F f)) \<cdot>\<^sub>D
                              \<a>\<^sub>D[H (\<tau>\<^sub>0 (trg\<^sub>B g)), H (F g), H (F f)] \<cdot>\<^sub>D
                              (D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F g)) \<star>\<^sub>D H (F f)) \<cdot>\<^sub>D
                              D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g) \<star>\<^sub>C F g, F f))"
-              using f g fg C.VV.arr_char H.cmp_simps(5) D.comp_cod_arr D.comp_assoc by auto
+              using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C H.cmp_simps(5) D.comp_cod_arr D.comp_assoc by auto
             finally show ?thesis by simp
           qed
           thus ?thesis
@@ -2009,7 +2009,7 @@ begin
             have "\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g) \<star>\<^sub>C F g, F f) \<cdot>\<^sub>D (H (\<tau>\<^sub>1 g) \<star>\<^sub>D H (F f))
                     = H (\<tau>\<^sub>1 g \<star>\<^sub>C F f) \<cdot>\<^sub>D \<Phi>\<^sub>H (G g \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B g), F f)"
               using f g fg H.\<Phi>.naturality [of "(\<tau>\<^sub>1 g, F f)"]
-                    C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def
+                    C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
               by simp
             moreover have "D.seq (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g) \<star>\<^sub>C F g, F f))
                                  (H (\<tau>\<^sub>1 g) \<star>\<^sub>D H (F f))"
@@ -2059,11 +2059,11 @@ begin
               have "D.inv (\<Phi>\<^sub>H (G g \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B g), F f)) \<cdot>\<^sub>D \<Phi>\<^sub>H (G g \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B g), F f)
                       = H (G g \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B g)) \<star>\<^sub>D H (F f)"
                 using f g fg H.cmp_components_are_iso D.comp_inv_arr' H.FF_def
-                      C.VV.arr_char C.VV.dom_char C.VV.cod_char
+                      C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                 by simp
               moreover have "(H (G g \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B g)) \<star>\<^sub>D H (F f)) \<cdot>\<^sub>D (\<Phi>\<^sub>H (G g, \<tau>\<^sub>0 (src\<^sub>B g)) \<star>\<^sub>D H (F f))
                                = (\<Phi>\<^sub>H (G g, \<tau>\<^sub>0 (src\<^sub>B g)) \<star>\<^sub>D H (F f))"
-                using f g fg D.comp_cod_arr C.VV.arr_char C.VV.dom_char C.VV.cod_char
+                using f g fg D.comp_cod_arr C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                 by simp
               ultimately show ?thesis by simp
             qed
@@ -2092,11 +2092,11 @@ begin
             have "\<Phi>\<^sub>H (G g, \<tau>\<^sub>0 (trg\<^sub>B f) \<star>\<^sub>C F f) \<cdot>\<^sub>D (H (G g) \<star>\<^sub>D H (\<tau>\<^sub>1 f))
                     = H (G g \<star>\<^sub>C \<tau>\<^sub>1 f) \<cdot>\<^sub>D \<Phi>\<^sub>H (G g, G f \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B f))"
               using f g fg H.\<Phi>.naturality [of "(G g, \<tau>\<^sub>1 f)"]
-                    C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def
+                    C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
               by simp
             thus ?thesis
               using f g fg H.cmp_components_are_iso
-                    C.VV.arr_char C.VV.dom_char C.VV.cod_char
+                    C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                     D.invert_opposite_sides_of_square
                       [of "\<Phi>\<^sub>H (G g, \<tau>\<^sub>0 (trg\<^sub>B f) \<star>\<^sub>C F f)" "H (G g) \<star>\<^sub>D H (\<tau>\<^sub>1 f)"
                           "H (G g \<star>\<^sub>C \<tau>\<^sub>1 f)" "\<Phi>\<^sub>H (G g, G f \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B f))"]
@@ -2135,19 +2135,19 @@ begin
                       (D.inv (\<Phi>\<^sub>H (G g, G f)) \<star>\<^sub>D H (\<tau>\<^sub>0 (src\<^sub>B f))) \<cdot>\<^sub>D
                       D.inv (\<Phi>\<^sub>H (G g \<star>\<^sub>C G f, \<tau>\<^sub>0 (src\<^sub>B f)))"
               using f g fg H.preserves_assoc(1)
-                    H.cmp_components_are_iso C.VV.arr_char C.VV.dom_char C.VV.cod_char
+                    H.cmp_components_are_iso C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                     D.comp_assoc
               by simp
             moreover have "D.inv (\<Phi>\<^sub>H (G g, G f \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B f))) \<cdot>\<^sub>D
                            \<Phi>\<^sub>H (G g, G f \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B f))
                              = H (G g) \<star>\<^sub>D H (G f \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B f))"
-              using f g fg H.cmp_components_are_iso C.VV.arr_char C.VV.dom_char C.VV.cod_char
+              using f g fg H.cmp_components_are_iso C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                     D.comp_inv_arr' H.FF_def
               by simp
             moreover have "(H (G g) \<star>\<^sub>D H (G f \<star>\<^sub>C \<tau>\<^sub>0 (src\<^sub>B f))) \<cdot>\<^sub>D
                            (H (G g) \<star>\<^sub>D \<Phi>\<^sub>H (G f, \<tau>\<^sub>0 (src\<^sub>B f)))
                              = H (G g) \<star>\<^sub>D \<Phi>\<^sub>H (G f, \<tau>\<^sub>0 (src\<^sub>B f))"
-              using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char
+              using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                     D.whisker_left D.comp_cod_arr
               by simp
             ultimately show ?thesis by simp
@@ -2175,7 +2175,7 @@ begin
                   = \<a>\<^sub>D[H (G g), H (G f), H (\<tau>\<^sub>0 (src\<^sub>B f))]"
             using f g fg D.comp_arr_dom D.comp_cod_arr
                   D.whisker_right [of "H (\<tau>\<^sub>0 (src\<^sub>B f))" "D.inv (\<Phi>\<^sub>H (G g, G f))" "\<Phi>\<^sub>H (G g, G f)"]
-                  D.comp_inv_arr' C.VV.arr_char C.VV.dom_char C.VV.cod_char H.FF_def
+                  D.comp_inv_arr' C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C H.FF_def
                   H.cmp_components_are_iso
             by simp
           thus ?thesis
@@ -2199,7 +2199,7 @@ begin
                 (H (G g) \<star>\<^sub>D \<Phi>\<^sub>H (G f, \<tau>\<^sub>0 (src\<^sub>B f)))
                   = H (G g) \<star>\<^sub>D
                       D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (src\<^sub>B g), F f)) \<cdot>\<^sub>D H (\<tau>\<^sub>1 f) \<cdot>\<^sub>D \<Phi>\<^sub>H (G f, \<tau>\<^sub>0 (src\<^sub>B f))"
-            using f g fg C.VV.arr_char C.VV.dom_char C.VV.cod_char D.whisker_left
+            using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C D.whisker_left
                   H.cmp_components_are_iso
             by simp
           moreover have "(H (\<tau>\<^sub>0 (trg\<^sub>B g)) \<star>\<^sub>D H (\<Phi>\<^sub>F (g, f))) \<cdot>\<^sub>D
@@ -2211,17 +2211,17 @@ begin
                     = H (\<tau>\<^sub>0 (trg\<^sub>B g)) \<star>\<^sub>D H (\<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D \<Phi>\<^sub>H (F g, F f)"
             proof -
               have "D.arr (H (\<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D \<Phi>\<^sub>H (F g, F f))"
-                using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char \<tau>.F.FF_def
+                using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C \<tau>.F.FF_def
                 by (intro D.seqI) auto
               thus ?thesis
-                using f g fg D.whisker_left C.VV.arr_char by simp
+                using f g fg D.whisker_left C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
             qed
             also have "... = H (\<tau>\<^sub>0 (trg\<^sub>B g)) \<star>\<^sub>D
                                (H (F (g \<star>\<^sub>B f) \<cdot>\<^sub>C \<Phi>\<^sub>F (g, f))) \<cdot>\<^sub>D \<Phi>\<^sub>H (F g, F f)"
-              using f g fg C.comp_cod_arr B.VV.arr_char \<tau>.F.cmp_simps(5) by auto
+              using f g fg C.comp_cod_arr B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<tau>.F.cmp_simps(5) by auto
             also have "... = H (\<tau>\<^sub>0 (trg\<^sub>B g)) \<star>\<^sub>D
                                (H (F (g \<star>\<^sub>B f)) \<cdot>\<^sub>D H (\<Phi>\<^sub>F (g, f))) \<cdot>\<^sub>D \<Phi>\<^sub>H (F g, F f)"
-              using f g fg B.VV.arr_char \<tau>.F.cmp_simps(5) by auto
+              using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<tau>.F.cmp_simps(5) by auto
             also have "... = H (\<tau>\<^sub>0 (trg\<^sub>B g)) \<star>\<^sub>D
                                H (F (g \<star>\<^sub>B f)) \<cdot>\<^sub>D H (\<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D \<Phi>\<^sub>H (F g, F f)"
               using D.comp_assoc by simp
@@ -2232,7 +2232,7 @@ begin
                          (\<Phi>\<^sub>H (G g, \<tau>\<^sub>0 (src\<^sub>B g)) \<star>\<^sub>D H (F f))
                            = D.inv (\<Phi>\<^sub>H (\<tau>\<^sub>0 (trg\<^sub>B g), F g)) \<cdot>\<^sub>D
                              H (\<tau>\<^sub>1 g) \<cdot>\<^sub>D \<Phi>\<^sub>H (G g, \<tau>\<^sub>0 (src\<^sub>B g)) \<star>\<^sub>D H (F f)"
-            using f g fg D.whisker_right C.VV.arr_char C.VV.dom_char C.VV.cod_char
+            using f g fg D.whisker_right C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
             by simp
           ultimately show ?thesis
             by simp
@@ -2243,7 +2243,7 @@ begin
                          D.inv \<a>\<^sub>D[(H \<circ> G) g, map\<^sub>0 (src\<^sub>B g), (H \<circ> F) f] \<cdot>\<^sub>D
                          ((H \<circ> G) g \<star>\<^sub>D map\<^sub>1 f) \<cdot>\<^sub>D \<a>\<^sub>D[(H \<circ> G) g, (H \<circ> G) f, map\<^sub>0 (src\<^sub>B f)]"
           unfolding map\<^sub>0_def map\<^sub>1_def HoF.cmp_def
-          using f g fg B.VV.arr_char B.VV.dom_char B.VV.cod_char by simp
+          using f g fg B.VV.arr_char\<^sub>S\<^sub>b\<^sub>C B.VV.dom_char\<^sub>S\<^sub>b\<^sub>C B.VV.cod_char\<^sub>S\<^sub>b\<^sub>C by simp
         finally show "(map\<^sub>0 (trg\<^sub>B g) \<star>\<^sub>D HoF.cmp (g, f)) \<cdot>\<^sub>D
                       \<a>\<^sub>D[map\<^sub>0 (trg\<^sub>B g), (H \<circ> F) g, (H \<circ> F) f] \<cdot>\<^sub>D
                       (map\<^sub>1 g \<star>\<^sub>D (H \<circ> F) f) \<cdot>\<^sub>D
@@ -5760,15 +5760,15 @@ begin
                          ((\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?b\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>]) \<^bold>\<cdot>
                          ((\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>) \<^bold>\<star> (\<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?b\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>]) \<^bold>\<cdot>
                          \<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?b\<^bold>\<rangle>, (\<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>]\<rbrace>"
-                using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                      D.VV.ide_char D.VV.arr_char
+                using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                      D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 by simp
               also have "... =
                          \<lbrace>((\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?b\<^bold>\<rangle>) \<^bold>\<star> (\<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<rbrace>"
                 using f g fg by (intro EV.eval_eqI, auto)
               also have "... = ((\<tau>\<^sub>0' ?c \<star>\<^sub>D G g) \<star>\<^sub>D \<tau>\<^sub>0 ?b \<star>\<^sub>D \<tau>\<^sub>0' ?b) \<star>\<^sub>D (\<tau>\<^sub>0 ?b \<star>\<^sub>D F f) \<star>\<^sub>D \<tau>\<^sub>0' ?a"
-                using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                      D.VV.ide_char D.VV.arr_char
+                using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                      D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 by simp
               finally have "\<a>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0' ?c \<star>\<^sub>D G g, \<tau>\<^sub>0 ?b \<star>\<^sub>D \<tau>\<^sub>0' ?b, (\<tau>\<^sub>0 ?b \<star>\<^sub>D F f) \<star>\<^sub>D \<tau>\<^sub>0' ?a] \<cdot>\<^sub>D
                             ((\<tau>\<^sub>0' ?c \<star>\<^sub>D G g) \<star>\<^sub>D (\<tau>\<^sub>0 ?b \<star>\<^sub>D \<tau>\<^sub>0' ?b) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0 ?b, F f, \<tau>\<^sub>0' ?a]) \<cdot>\<^sub>D
@@ -5895,14 +5895,14 @@ begin
                          ((\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F\<^sub>0 ?b\<^bold>\<rangle>\<^sub>0, \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>]) \<^bold>\<cdot>
                          \<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F\<^sub>0 ?b\<^bold>\<rangle>\<^sub>0 \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>] \<^bold>\<cdot>
                          (\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle>, \<^bold>\<langle>G g\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<a>\<^bold>[\<^bold>\<langle>F\<^sub>0 ?b\<^bold>\<rangle>\<^sub>0, \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>])\<rbrace>"
-                using f g fg ** D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                      D.VV.ide_char D.VV.arr_char
+                using f g fg ** D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                      D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 by simp
               also have "... = \<lbrace>(\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>) \<^bold>\<star> (\<^bold>\<langle>F\<^sub>0 ?b\<^bold>\<rangle>\<^sub>0 \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<rbrace>"
                 using f g fg by (intro EV.eval_eqI, auto)
               also have "... = (\<tau>\<^sub>0' ?c \<star>\<^sub>D G g \<star>\<^sub>D \<tau>\<^sub>0 ?b) \<star>\<^sub>D (F\<^sub>0 ?b \<star>\<^sub>D F f) \<star>\<^sub>D \<tau>\<^sub>0' ?a"
-                using f g fg ** D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                      D.VV.ide_char D.VV.arr_char
+                using f g fg ** D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                      D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                 by simp
               finally have "(\<a>\<^sub>D[\<tau>\<^sub>0' ?c, G g, \<tau>\<^sub>0 ?b] \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F\<^sub>0 ?b, F f, \<tau>\<^sub>0' ?a]) \<cdot>\<^sub>D
                             \<a>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0' ?c \<star>\<^sub>D G g, \<tau>\<^sub>0 ?b, F\<^sub>0 ?b \<star>\<^sub>D F f \<star>\<^sub>D \<tau>\<^sub>0' ?a] \<cdot>\<^sub>D
@@ -6062,15 +6062,15 @@ begin
                        (\<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle>, \<^bold>\<langle>G g\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>]) \<^bold>\<cdot>
                         \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, (\<^bold>\<langle>\<tau>\<^sub>0' ?b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>] \<^bold>\<cdot>
                        ((\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' ?b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>])\<rbrace>"
-              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char
+              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by simp
             also have "... =
                        \<lbrace>(\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' ?b\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<rbrace>"
               using f g fg by (intro EV.eval_eqI, auto)
             also have "... = (\<tau>\<^sub>0' ?c \<star>\<^sub>D G g) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0 ?b, \<tau>\<^sub>0' ?b, \<tau>\<^sub>0 ?b] \<star>\<^sub>D F f \<star>\<^sub>D \<tau>\<^sub>0' ?a"
-              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char
+              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by simp
             finally show ?thesis
               using D.comp_assoc by simp
@@ -6173,8 +6173,8 @@ begin
                        ((\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F\<^sub>0 ?b\<^bold>\<rangle>\<^sub>0, \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>]) \<^bold>\<cdot>
                        \<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F\<^sub>0 ?b\<^bold>\<rangle>\<^sub>0 \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>] \<^bold>\<cdot>
                        (\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle>, \<^bold>\<langle>G g\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<a>\<^bold>[\<^bold>\<langle>F\<^sub>0 ?b\<^bold>\<rangle>\<^sub>0, \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>])\<rbrace>"
-              using f g fg * ** D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char D.\<ll>_ide_simp D.\<rr>_ide_simp
+              using f g fg * ** D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.\<ll>_ide_simp D.\<rr>_ide_simp
               by simp
             also have "... = \<lbrace>(\<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>]) \<^bold>\<cdot>
                               ((\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G g\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<l>\<^bold>[\<^bold>\<langle>F f\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>) \<^bold>\<cdot>
@@ -6185,8 +6185,8 @@ begin
                              ((\<tau>\<^sub>0' ?c \<star>\<^sub>D G g) \<star>\<^sub>D \<tau>\<^sub>0 ?b \<star>\<^sub>D \<l>\<^sub>D[F f] \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D
                              \<a>\<^sub>D[\<tau>\<^sub>0' ?c \<star>\<^sub>D G g, \<tau>\<^sub>0 ?b, (F\<^sub>0 ?b \<star>\<^sub>D F f) \<star>\<^sub>D \<tau>\<^sub>0' ?a] \<cdot>\<^sub>D
                              (\<a>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0' ?c, G g, \<tau>\<^sub>0 ?b] \<star>\<^sub>D (F\<^sub>0 ?b \<star>\<^sub>D F f) \<star>\<^sub>D \<tau>\<^sub>0' ?a)"
-              using f g fg * ** D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char D.\<ll>_ide_simp D.\<rr>_ide_simp
+              using f g fg * ** D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.\<ll>_ide_simp D.\<rr>_ide_simp
               by simp
             finally show ?thesis by simp
           qed
@@ -6613,14 +6613,14 @@ begin
                        (\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle>, \<^bold>\<langle>G g\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>) \<^bold>\<cdot>
                        \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle>, \<^bold>\<langle>G g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>] \<^bold>\<cdot>
                        (\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<a>\<^bold>[\<^bold>\<langle>G g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>])\<rbrace>"
-              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char
+              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by simp
             also have "... = \<lbrace>\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<a>\<^bold>[\<^bold>\<langle>G g\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<rbrace>"
               using f g fg by (intro EV.eval_eqI, auto)
             also have "... = \<tau>\<^sub>0' ?c \<star>\<^sub>D \<a>\<^sub>D[G g, \<tau>\<^sub>0 ?b, F f] \<star>\<^sub>D \<tau>\<^sub>0' ?a"
-              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char
+              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by simp
             finally show ?thesis by blast
           qed
@@ -6688,12 +6688,12 @@ begin
                             "\<a>\<^sub>D[G g, G f, \<tau>\<^sub>0 ?a]"]
                 by fastforce
               moreover have "D.iso ((\<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D \<a>\<^sub>D[\<tau>\<^sub>0 ?c, F g, F f])"
-                using f g fg C.VV.arr_char C.VV.dom_simp C.VV.cod_simp F.cmp_components_are_iso
+                using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_simp F.cmp_components_are_iso
                       F.FF_def
                 by (intro D.isos_compose D.seqI D.hseqI') auto
               moreover have "D.seq (\<tau>\<^sub>1 (g \<star>\<^sub>C f))
                                    ((\<Phi>\<^sub>G (g, f) \<star>\<^sub>D \<tau>\<^sub>0 ?a) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, G f, \<tau>\<^sub>0 ?a])"
-                using f g fg C.VV.arr_char C.VV.dom_simp C.VV.cod_simp G.FF_def
+                using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_simp G.FF_def
                 by (intro D.seqI) auto
               ultimately show ?thesis
                 using f g fg \<tau>.iso_map\<^sub>1_ide
@@ -6738,12 +6738,12 @@ begin
                              ((\<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D \<a>\<^sub>D[\<tau>\<^sub>0 ?c, F g, F f])"
             proof -
               have 2: "D.iso ((\<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D \<a>\<^sub>D[\<tau>\<^sub>0 ?c, F g, F f])"
-                 using f g fg \<tau>.iso_map\<^sub>1_ide C.VV.arr_char C.VV.dom_simp F.cmp_components_are_iso
+                 using f g fg \<tau>.iso_map\<^sub>1_ide C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp F.cmp_components_are_iso
                        F.FF_def
                  by (intro D.isos_compose) auto
               moreover have "D.iso (D.inv ((\<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D \<a>\<^sub>D[\<tau>\<^sub>0 ?c, F g, F f]) \<cdot>\<^sub>D
                                     \<tau>\<^sub>1 (g \<star>\<^sub>C f) \<cdot>\<^sub>D (\<Phi>\<^sub>G (g, f) \<star>\<^sub>D \<tau>\<^sub>0 ?a) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, G f, \<tau>\<^sub>0 ?a])"
-                 using 2 f g fg \<tau>.iso_map\<^sub>1_ide C.VV.arr_char C.VV.dom_simp
+                 using 2 f g fg \<tau>.iso_map\<^sub>1_ide C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp
                        C.VV.cod_simp F.FF_def G.FF_def D.inv_comp_left
                  by (intro D.isos_compose) auto (* 10 sec *)
               ultimately show ?thesis
@@ -6761,17 +6761,17 @@ begin
                         D.inv (\<tau>\<^sub>1 (g \<star>\<^sub>C f))"
               proof -
                 have 2: "D.iso (\<tau>\<^sub>1 (g \<star>\<^sub>C f) \<cdot>\<^sub>D (\<Phi>\<^sub>G (g, f) \<star>\<^sub>D \<tau>\<^sub>0 ?a) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, G f, \<tau>\<^sub>0 ?a])"
-                   using f g fg \<tau>.iso_map\<^sub>1_ide C.VV.arr_char C.VV.dom_simp
+                   using f g fg \<tau>.iso_map\<^sub>1_ide C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp
                          C.VV.cod_simp G.FF_def
                    by (intro D.isos_compose D.seqI D.hseqI') auto
                 have "D.inv (\<tau>\<^sub>1 (g \<star>\<^sub>C f) \<cdot>\<^sub>D (\<Phi>\<^sub>G (g, f) \<star>\<^sub>D \<tau>\<^sub>0 ?a) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, G f, \<tau>\<^sub>0 ?a])
                         = D.inv ((\<Phi>\<^sub>G (g, f) \<star>\<^sub>D \<tau>\<^sub>0 ?a) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[G g, G f, \<tau>\<^sub>0 ?a]) \<cdot>\<^sub>D D.inv (\<tau>\<^sub>1 (g \<star>\<^sub>C f))"
-                  using 2 f g fg * \<tau>.iso_map\<^sub>1_ide G.cmp_components_are_iso C.VV.arr_char
+                  using 2 f g fg * \<tau>.iso_map\<^sub>1_ide G.cmp_components_are_iso C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                         C.VV.dom_simp C.VV.cod_simp G.FF_def D.inv_comp_left
                   by simp
                 also have "... = (\<a>\<^sub>D[G g, G f, \<tau>\<^sub>0 ?a] \<cdot>\<^sub>D (D.inv (\<Phi>\<^sub>G (g, f)) \<star>\<^sub>D \<tau>\<^sub>0 ?a)) \<cdot>\<^sub>D
                                  D.inv (\<tau>\<^sub>1 (g \<star>\<^sub>C f))"
-                  using 2 f g fg * \<tau>.iso_map\<^sub>1_ide G.cmp_components_are_iso C.VV.arr_char
+                  using 2 f g fg * \<tau>.iso_map\<^sub>1_ide G.cmp_components_are_iso C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                         C.VV.dom_simp C.VV.cod_simp G.FF_def D.inv_comp_left
                   by simp
                 also have "... = \<a>\<^sub>D[G g, G f, \<tau>\<^sub>0 ?a] \<cdot>\<^sub>D (D.inv (\<Phi>\<^sub>G (g, f)) \<star>\<^sub>D \<tau>\<^sub>0 ?a) \<cdot>\<^sub>D
@@ -6796,7 +6796,7 @@ begin
                              (((\<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a)) \<cdot>\<^sub>D
                              (\<a>\<^sub>D[\<tau>\<^sub>0 ?c, F g, F f] \<star>\<^sub>D \<tau>\<^sub>0' ?a)"
             using f g fg \<tau>.iso_map\<^sub>1_ide D.whisker_right
-                  C.VV.arr_char C.VV.dom_simp C.VV.cod_simp G.cmp_components_are_iso
+                  C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_simp G.cmp_components_are_iso
                   F.FF_def G.FF_def
             by simp
           also have "... = (\<tau>\<^sub>0' ?c \<star>\<^sub>D \<a>\<^sub>D[G g, G f, \<tau>\<^sub>0 ?a] \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D
@@ -6805,7 +6805,7 @@ begin
                            (\<tau>\<^sub>0' ?c \<star>\<^sub>D ((\<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a)) \<cdot>\<^sub>D
                            (\<tau>\<^sub>0' ?c \<star>\<^sub>D \<a>\<^sub>D[\<tau>\<^sub>0 ?c, F g, F f] \<star>\<^sub>D \<tau>\<^sub>0' ?a)"
             using f g fg \<tau>.iso_map\<^sub>1_ide D.whisker_left
-                  C.VV.arr_char C.VV.dom_simp C.VV.cod_simp G.cmp_components_are_iso
+                  C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_simp G.cmp_components_are_iso
                   F.FF_def G.FF_def
             by simp
           finally have "(\<tau>\<^sub>0' ?c \<star>\<^sub>D (G g \<star>\<^sub>D D.inv (\<tau>\<^sub>1 f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D
@@ -7369,7 +7369,7 @@ begin
                 (\<tau>\<^sub>0' ?c \<star>\<^sub>D \<r>\<^sub>D[G (g \<star>\<^sub>C f)])
                   = \<tau>\<^sub>0' ?c \<star>\<^sub>D (\<Phi>\<^sub>G (g, f) \<cdot>\<^sub>D D.inv (\<Phi>\<^sub>G (g, f))) \<cdot>\<^sub>D \<r>\<^sub>D[G (g \<star>\<^sub>C f)]"
             using f g fg D.whisker_left G.cmp_components_are_iso
-                  C.VV.arr_char C.VV.dom_simp C.VV.cod_simp
+                  C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_simp
             by simp
           also have "... = \<tau>\<^sub>0' ?c \<star>\<^sub>D \<r>\<^sub>D[G (g \<star>\<^sub>C f)]"
             using f g fg G.cmp_components_are_iso D.comp_arr_inv' D.comp_cod_arr by simp
@@ -7527,16 +7527,16 @@ begin
                        \<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>F g\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>] \<^bold>\<cdot>
                        ((\<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?c\<^bold>\<rangle>, \<^bold>\<langle>F g\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>) \<^bold>\<cdot>
                        (\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 ?c\<^bold>\<rangle>, \<^bold>\<langle>F g\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>)\<rbrace>"
-              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char
+              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by simp
             also have "... = \<lbrace>\<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle>,  \<^bold>\<langle>\<tau>\<^sub>0 ?c\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>F g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>\<^bold>] \<^bold>\<cdot>
                               (\<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' ?c\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 ?c\<^bold>\<rangle>, \<^bold>\<langle>F g\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' ?a\<^bold>\<rangle>)\<rbrace>"
               using f g fg by (intro EV.eval_eqI, auto)
             also have "... = \<a>\<^sub>D[\<tau>\<^sub>0' ?c, \<tau>\<^sub>0 ?c \<star>\<^sub>D F g \<star>\<^sub>D F f, \<tau>\<^sub>0' ?a] \<cdot>\<^sub>D
                              (\<a>\<^sub>D[\<tau>\<^sub>0' ?c, \<tau>\<^sub>0 ?c, F g \<star>\<^sub>D F f] \<star>\<^sub>D \<tau>\<^sub>0' ?a)"
-              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char
+              using f g fg D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by simp
             finally show ?thesis by simp
           qed
@@ -7558,7 +7558,7 @@ begin
                 \<a>\<^sub>D[\<tau>\<^sub>0' ?c, \<tau>\<^sub>0 ?c \<star>\<^sub>D F g \<star>\<^sub>D F f, \<tau>\<^sub>0' ?a]
                   = \<a>\<^sub>D[\<tau>\<^sub>0' ?c, \<tau>\<^sub>0 ?c \<star>\<^sub>D F (g \<star>\<^sub>C f), \<tau>\<^sub>0' ?a] \<cdot>\<^sub>D
                     ((\<tau>\<^sub>0' ?c \<star>\<^sub>D \<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a)"
-            using f g fg C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def
+            using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
                   D.assoc_naturality [of "\<tau>\<^sub>0' ?c" "\<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)" "\<tau>\<^sub>0' ?a"]
             by simp
           thus ?thesis
@@ -7577,17 +7577,17 @@ begin
           have "((\<tau>\<^sub>0' ?c \<star>\<^sub>D (\<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f))) \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D
                 (\<a>\<^sub>D[\<tau>\<^sub>0' ?c, \<tau>\<^sub>0 ?c, F g \<star>\<^sub>D F f] \<star>\<^sub>D \<tau>\<^sub>0' ?a)
                   = (\<tau>\<^sub>0' ?c \<star>\<^sub>D \<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D \<a>\<^sub>D[\<tau>\<^sub>0' ?c, \<tau>\<^sub>0 ?c, F g \<star>\<^sub>D F f] \<star>\<^sub>D \<tau>\<^sub>0' ?a"
-            using f g fg C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def
+            using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
                   D.whisker_right
             by simp
           also have "... = \<a>\<^sub>D[\<tau>\<^sub>0' ?c, \<tau>\<^sub>0 ?c, F (g \<star>\<^sub>C f)] \<cdot>\<^sub>D
                            ((\<tau>\<^sub>0' ?c \<star>\<^sub>D \<tau>\<^sub>0 ?c) \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a"
-            using f g fg C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def
+            using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
                   D.assoc_naturality [of "\<tau>\<^sub>0' ?c" "\<tau>\<^sub>0 ?c" "\<Phi>\<^sub>F (g, f)"]
             by simp
           also have "... = (\<a>\<^sub>D[\<tau>\<^sub>0' ?c, \<tau>\<^sub>0 ?c, F (g \<star>\<^sub>C f)] \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D
                            (((\<tau>\<^sub>0' ?c \<star>\<^sub>D \<tau>\<^sub>0 ?c) \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a)"
-            using f g fg C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def
+            using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
                   D.whisker_right
             by simp
           finally have "((\<tau>\<^sub>0' ?c \<star>\<^sub>D (\<tau>\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f))) \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D
@@ -7611,20 +7611,20 @@ begin
           have "(((\<tau>\<^sub>0' ?c \<star>\<^sub>D \<tau>\<^sub>0 ?c) \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D
                 ((\<eta> ?c \<star>\<^sub>D F g \<star>\<^sub>D F f) \<star>\<^sub>D \<tau>\<^sub>0' ?a)
                   = ((\<tau>\<^sub>0' ?c \<star>\<^sub>D \<tau>\<^sub>0 ?c) \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D (\<eta> ?c \<star>\<^sub>D F g \<star>\<^sub>D F f) \<star>\<^sub>D \<tau>\<^sub>0' ?a"
-            using f g fg C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def D.whisker_right
+            using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def D.whisker_right
             by simp
           also have "... = (\<eta> ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a"
             using f g fg D.comp_arr_dom D.comp_cod_arr
-                  C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def
+                  C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
                   D.interchange [of "\<tau>\<^sub>0' ?c \<star>\<^sub>D \<tau>\<^sub>0 ?c" "\<eta> ?c" "\<Phi>\<^sub>F (g, f)" "F g \<star>\<^sub>D F f"]
             by simp
           also have "... = (\<eta> ?c \<star>\<^sub>D F (g \<star>\<^sub>C f)) \<cdot>\<^sub>D (F\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a"
             using f g fg D.comp_arr_dom D.comp_cod_arr
-                  C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def
+                  C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
                   D.interchange [of "\<eta> ?c" "F\<^sub>0 ?c" "F (g \<star>\<^sub>C f)" "\<Phi>\<^sub>F (g, f)"]
             by simp
           also have "... = ((\<eta> ?c \<star>\<^sub>D F (g \<star>\<^sub>C f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D ((F\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a)"
-            using f g fg ** C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def D.whisker_right
+            using f g fg ** C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def D.whisker_right
             by simp
           finally have "(((\<tau>\<^sub>0' ?c \<star>\<^sub>D \<tau>\<^sub>0 ?c) \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D
                         ((\<eta> ?c \<star>\<^sub>D F g \<star>\<^sub>D F f) \<star>\<^sub>D \<tau>\<^sub>0' ?a)
@@ -7645,14 +7645,14 @@ begin
         proof -
           have "((F\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D (\<l>\<^sub>D\<^sup>-\<^sup>1[F g \<star>\<^sub>D F f] \<star>\<^sub>D \<tau>\<^sub>0' ?a)
                   = (F\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<cdot>\<^sub>D \<l>\<^sub>D\<^sup>-\<^sup>1[F g \<star>\<^sub>D F f] \<star>\<^sub>D \<tau>\<^sub>0' ?a"
-            using f g fg ** C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def D.whisker_right
+            using f g fg ** C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def D.whisker_right
             by simp
           also have "... = \<l>\<^sub>D\<^sup>-\<^sup>1[F (g \<star>\<^sub>C f)] \<cdot>\<^sub>D \<Phi>\<^sub>F (g, f) \<star>\<^sub>D \<tau>\<^sub>0' ?a"
-            using f g fg C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def
+            using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def
                   D.lunit'_naturality [of "\<Phi>\<^sub>F (g, f)"]
             by simp
           also have "... = (\<l>\<^sub>D\<^sup>-\<^sup>1[F (g \<star>\<^sub>C f)] \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D (\<Phi>\<^sub>F (g, f) \<star>\<^sub>D \<tau>\<^sub>0' ?a)"
-            using f g fg C.VV.arr_char C.VV.dom_simp C.VV.cod_char F.FF_def D.whisker_right
+            using f g fg C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_simp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C F.FF_def D.whisker_right
             by simp
           finally have "((F\<^sub>0 ?c \<star>\<^sub>D \<Phi>\<^sub>F (g, f)) \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D (\<l>\<^sub>D\<^sup>-\<^sup>1[F g \<star>\<^sub>D F f] \<star>\<^sub>D \<tau>\<^sub>0' ?a)
                           = (\<l>\<^sub>D\<^sup>-\<^sup>1[F (g \<star>\<^sub>C f)] \<star>\<^sub>D \<tau>\<^sub>0' ?a) \<cdot>\<^sub>D (\<Phi>\<^sub>F (g, f) \<star>\<^sub>D \<tau>\<^sub>0' ?a)"

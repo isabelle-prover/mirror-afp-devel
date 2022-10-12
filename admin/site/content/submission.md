@@ -55,7 +55,7 @@ Updating an entry should be mostly monotone: you add new material, but you do no
 
 Major monotone changes, e.g. adding a new concept rather than more results on existing concepts, may also call for a new entry, but one that builds on the existing one. This depends on how you would like to organize your entries.
 
-## If you are an author
+## If you are an Author
 
 The above means that if you are an author and would like to provide a new, better version of your AFP entry, you can do so.
 

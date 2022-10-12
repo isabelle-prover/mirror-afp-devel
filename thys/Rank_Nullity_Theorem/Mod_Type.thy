@@ -53,7 +53,7 @@ lemma Abs_inverse: "m \<in> {0..<int CARD ('a)} \<Longrightarrow> Rep (Abs m) = 
   by (rule type_definition.Abs_inverse [OF type])
 
 lemma Rep_Abs_mod: "Rep (Abs (m mod int CARD ('a))) = m mod int CARD ('a)"
-  by (simp add: Abs_inverse pos_mod_conj [OF size0])
+  using size0 by (auto simp add: Abs_inverse)
 
 lemma Rep_Abs_0: "Rep (Abs 0) = 0"
   apply (rule Abs_inverse [of 0])
@@ -553,5 +553,3 @@ qed
 end
 
 end
-
-

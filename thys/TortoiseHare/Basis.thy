@@ -257,7 +257,7 @@ lemma properties_distinct:
 proof(cases "mu \<le> i")
   case True
   from assms have A: "(i + j) mod lambda \<noteq> i mod lambda" for i
-    using nat_mod_eq_lemma by fastforce
+    by (auto simp add: mod_eq_dvd_iff_nat)
   from \<open>mu \<le> i\<close>
   have "seq (i + j) = seq (mu + (i + j - mu) mod lambda)"
        "seq i = seq (mu + (i - mu) mod lambda)"

@@ -6,13 +6,94 @@
     <description>Recent content on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Thu, 08 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 04 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Verification of Query Optimization Algorithms</title>
+      <link>/entries/Query_Optimization.html</link>
+      <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Query_Optimization.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Maximum Segment Sum</title>
+      <link>/entries/Maximum_Segment_Sum.html</link>
+      <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Maximum_Segment_Sum.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Undirected Graph Theory</title>
+      <link>/entries/Undirected_Graph_Theory.html</link>
+      <pubDate>Thu, 29 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Undirected_Graph_Theory.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Making Arbitrary Relational Calculus Queries Safe-Range</title>
+      <link>/entries/Safe_Range_RC.html</link>
+      <pubDate>Wed, 28 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Safe_Range_RC.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Stalnaker&#39;s Epistemic Logic</title>
+      <link>/entries/Stalnaker_Logic.html</link>
+      <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Stalnaker_Logic.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>p-adic Fields and p-adic Semialgebraic Sets</title>
+      <link>/entries/Padic_Field.html</link>
+      <pubDate>Thu, 22 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Padic_Field.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Risk-Free Lending</title>
+      <link>/entries/Risk_Free_Lending.html</link>
+      <pubDate>Sun, 18 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Risk_Free_Lending.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Soundness and Completeness of Implicational Logic</title>
+      <link>/entries/Implicational_Logic.html</link>
+      <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Implicational_Logic.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>CRYSTALS-Kyber</title>
       <link>/entries/CRYSTALS-Kyber.html</link>
       <pubDate>Thu, 08 Sep 2022 00:00:00 +0000</pubDate>
       
       <guid>/entries/CRYSTALS-Kyber.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Unbounded Separation Logic</title>
+      <link>/entries/Separation_Logic_Unbounded.html</link>
+      <pubDate>Mon, 05 Sep 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Separation_Logic_Unbounded.html</guid>
       <description></description>
     </item>
     
@@ -40,6 +121,15 @@
       <pubDate>Thu, 18 Aug 2022 00:00:00 +0000</pubDate>
       
       <guid>/entries/Number_Theoretic_Transform.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Correctness of a Set-based Algorithm for Computing Strongly Connected Components of a Graph</title>
+      <link>/entries/SCC_Bloemen_Sequential.html</link>
+      <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/SCC_Bloemen_Sequential.html</guid>
       <description></description>
     </item>
     
@@ -9086,6 +9176,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Implicational_Logic</title>
+      <link>/theories/implicational_logic/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/implicational_logic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Impossible_Geometry</title>
       <link>/theories/impossible_geometry/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -10049,6 +10148,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Maximum_Segment_Sum</title>
+      <link>/theories/maximum_segment_sum/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/maximum_segment_sum/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>MDP-Algorithms</title>
       <link>/theories/mdp-algorithms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -10625,6 +10733,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Padic_Field</title>
+      <link>/theories/padic_field/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/padic_field/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Padic_Ints</title>
       <link>/theories/padic_ints/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11183,6 +11300,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Query_Optimization</title>
+      <link>/theories/query_optimization/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/query_optimization/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Quick_Sort_Cost</title>
       <link>/theories/quick_sort_cost/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11507,6 +11633,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Risk_Free_Lending</title>
+      <link>/theories/risk_free_lending/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/risk_free_lending/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Robbins-Conjecture</title>
       <link>/theories/robbins-conjecture/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11597,6 +11732,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Safe_Range_RC</title>
+      <link>/theories/safe_range_rc/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/safe_range_rc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>SATSolverVerification</title>
       <link>/theories/satsolververification/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -11629,6 +11773,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/sc_dom_components/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>SCC_Bloemen_Sequential</title>
+      <link>/theories/scc_bloemen_sequential/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/scc_bloemen_sequential/</guid>
       <description></description>
     </item>
     
@@ -11719,6 +11872,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/separation_logic_imperative_hol/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Separation_Logic_Unbounded</title>
+      <link>/theories/separation_logic_unbounded/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/separation_logic_unbounded/</guid>
       <description></description>
     </item>
     
@@ -12047,6 +12209,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Stalnaker_Logic</title>
+      <link>/theories/stalnaker_logic/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/stalnaker_logic/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Statecharts</title>
       <link>/theories/statecharts/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12070,7 +12241,7 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>699 Entries   425 Authors   ~220,200 Lemmas   ~3,582,600 Lines of Code   Most used AFP articles:   Name Used by ? articles   1. List-Index 21   2. Collections 18   3. Show 16   4. Coinductive 12   5. Deriving 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>709 Entries   430 Authors   ~225,800 Lemmas   ~3,656,500 Lines of Code   Most used AFP entries:   Name Used by ? entries   1. List-Index 22   2. Collections 19   3. Show 16   4. Deriving 13   5. Coinductive 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>
@@ -12520,6 +12691,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/types_to_sets_extension/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Undirected_Graph_Theory</title>
+      <link>/theories/undirected_graph_theory/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/undirected_graph_theory/</guid>
       <description></description>
     </item>
     

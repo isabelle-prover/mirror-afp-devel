@@ -1,0 +1,9 @@
+chapter AFP
+
+session SCC_Bloemen_Sequential (AFP) = HOL +
+  options [timeout = 300]
+  theories
+    SCC_Bloemen_Sequential
+  document_files
+    "root.tex"
+    "root.bib"

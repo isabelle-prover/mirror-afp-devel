@@ -1,0 +1,44 @@
+title = "Undirected Graph Theory"
+date = 2022-09-29
+topics = [
+  "Mathematics/Graph theory",
+]
+abstract = """
+This entry presents a general library for undirected graph theory -
+enabling reasoning on simple graphs and undirected graphs with loops.
+It primarily is inspired by Noschinski's basic ugraph definition
+in the <a href="/entries/Girth_Chromatic.html">Girth Chromatic Entry</a>,
+however generalises it in a number of
+ways and significantly expands on the range of basic graph theory
+definitions formalised. Notably, this library removes the constraint
+of vertices being a type synonym with the natural numbers which causes
+issues in more complex mathematical reasoning using graphs, such as
+the Balog Szemeredi Gowers theorem which this library is used for.
+Secondly this library also presents a locale-centric approach,
+enabling more concise, flexible, and reusable modelling of different
+types of graphs. Using this approach enables easy links to be made
+with more expansive formalisations of other combinatorial structures,
+such as incidence systems, as well as various types of formal
+representations of graphs. Further inspiration is also taken from
+Noschinski's Directed Graph library for some proofs and
+definitions on walks, paths and cycles, however these are much
+simplified using the set based representation of graphs, and also
+extended on in this formalisation."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.edmonds]
+homepage = "edmonds_homepage"
+
+[contributors]
+
+[notify]
+edmonds = "edmonds_email"
+
+[history]
+
+[extra]
+
+[related]

@@ -422,7 +422,7 @@ proof -
        (simp add: abs_div abs_minus_commute)
   also have "\<dots> = 2 * ((q-1) div 4)" 
   proof -
-    have "(q-1) div 2 > 0" by (simp add: div_positive_int q_gt_two)
+    from q_gt_two have "(q-1) div 2 > 0" by simp
     then have "\<bar>(q-1) div 2\<bar> = (q-1) div 2" by auto
     also have "\<dots> = 2 * ((q-1) div 4)" 
       by (subst div_mult_swap) (use q_mod_4 in 

@@ -2,7 +2,7 @@ theory BKR_Decision
   imports BKR_Algorithm
     "Berlekamp_Zassenhaus.Factorize_Rat_Poly"
     "Algebraic_Numbers.Real_Roots"
-    "BKR_Proofs"
+     BKR_Proofs
     "HOL.Deriv"
 begin
 

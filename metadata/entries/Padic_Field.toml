@@ -1,0 +1,35 @@
+title = "p-adic Fields and p-adic Semialgebraic Sets"
+date = 2022-09-22
+topics = [
+  "Mathematics/Number theory",
+  "Mathematics/Algebra",
+]
+abstract = """
+The field of p-adic numbers for a prime integer p is constructed.
+Basic facts about p-adic topology including Hensel's Lemma are
+proved, building on a prior submission by the author. The theory of
+semialgebraic sets and semialgebraic functions on cartesian powers of
+p-adic fields is also developed, following a formalization of these
+concepts due to Denef. This is done towards a formalization of
+Denef's proof of Macintyre's quantifier elimination theorem
+for p-adic fields. Theories developing general multivariable
+polynomial rings over a commutative ring are developed, as well as
+some general theory of cartesian powers of an arbitrary ring."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.crighton]
+
+
+[contributors]
+
+[notify]
+crighton = "crighton_email"
+
+[history]
+
+[extra]
+
+[related]

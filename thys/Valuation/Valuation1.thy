@@ -976,10 +976,11 @@ apply (thin_tac "AMin {x. x \<in> v ` carrier K \<and> 0 < x} = v k",
        subgoal_tac "0 < v (w \<cdot>\<^sub>r (k\<^bsub>K\<^esub>\<^bsup>(z div a)\<^esup>)\<^bsup>\<hyphen> K\<^esup> )",
        drule_tac a = "v (w \<cdot>\<^sub>r (k\<^bsub>K\<^esub>\<^bsup>(z div a)\<^esup>)\<^bsup>\<hyphen> K\<^esup>)" in forall_spec,
        simp add:image_def)
-apply (drule sym, simp)
-apply (frule_tac b = a and a = z in pos_mod_conj, erule conjE,
+   apply (drule sym, simp)
+
+apply (frule_tac b = a and a = z in Divides.pos_mod_conj, erule conjE,
        simp, simp,
-       frule_tac b = a and a = z in pos_mod_conj, erule conjE, simp)
+       frule_tac b = a and a = z in Divides.pos_mod_conj, erule conjE, simp)
 done
 
 lemma (in Corps) val_principalTr1:"\<lbrakk> valuation K v\<rbrakk>  \<Longrightarrow>

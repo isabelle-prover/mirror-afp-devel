@@ -14,6 +14,7 @@ thm equivs
 thm sublenses
 thm quotients
 thm compositions
+thm lens
 
 lemma mylens_composition: 
   "x +\<^sub>L y +\<^sub>L more\<^sub>L \<approx>\<^sub>L 1\<^sub>L" (is "?P \<approx>\<^sub>L ?Q")
@@ -25,7 +26,8 @@ proof -
   also have "... \<approx>\<^sub>L x +\<^sub>L y +\<^sub>L more\<^sub>L"
     by (simp add: lens_plus_assoc)
   finally show ?thesis
-    using lens_equiv_sym by auto
+    using lens_equiv_sym
+    by blast 
 qed
 
 lemma mylens_bij_lens:
@@ -36,9 +38,8 @@ alphabet mylens_2 = mylens +
   z :: int
   k :: "string list"
 
-thm lens_defs
-
 thm base_more_bij_lens
+thm bij_lenses
 thm indeps
 thm equivs
 thm sublenses

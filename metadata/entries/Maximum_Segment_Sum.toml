@@ -1,0 +1,39 @@
+title = "Maximum Segment Sum"
+date = 2022-09-29
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+In this work we consider the <a
+href="https://en.wikipedia.org/wiki/Maximum_subarray_problem">maximum
+segment sum</a> problem, that is to compute, given a list of
+numbers, the largest of the sums of the contiguous segments of that
+list. We assume that the elements of the list are not necessarily
+numbers but just elements of some linearly ordered group. Both
+a naive algorithm ($\\mathcal{O}(n^2)$) and
+<a
+href="https://en.wikipedia.org/wiki/Maximum_subarray_problem#Kadane's_algorithm">Kadane's
+algorithm</a> ($\\mathcal{O}(n)$) are given and their correctness
+is proved."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.cremer]
+email = "cremer_email"
+
+[contributors]
+
+[contributors.nipkow]
+homepage = "nipkow_homepage"
+
+[notify]
+cremer = "cremer_email"
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+
+[related]

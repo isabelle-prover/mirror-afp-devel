@@ -240,7 +240,8 @@ text \<open>Lens independence is irreflexive, but only for effectual lenses as o
   be observed.\<close>
     
 lemma lens_indep_quasi_irrefl: "\<lbrakk> wb_lens x; eff_lens x \<rbrakk> \<Longrightarrow> \<not> (x \<bowtie> x)"
-  by (auto simp add: lens_indep_def ief_lens_def ief_lens_axioms_def, metis (full_types) wb_lens.get_put)
+  unfolding lens_indep_def ief_lens_def ief_lens_axioms_def
+  by (simp, metis (full_types) wb_lens.get_put)
 
 text \<open>Lens independence is a congruence with respect to composition, as the following properties demonstrate.\<close>
     

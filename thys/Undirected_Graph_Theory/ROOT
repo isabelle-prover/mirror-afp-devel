@@ -1,0 +1,13 @@
+chapter AFP
+
+session Undirected_Graph_Theory (AFP) = "HOL-Library"  + 
+  options [timeout = 600]
+  sessions
+    Design_Theory
+    Girth_Chromatic
+  theories
+    Undirected_Graphs_Root
+  document_files
+    "root.bib"
+    "root.tex"
+

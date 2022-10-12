@@ -13,7 +13,8 @@ proof is in the Henkin style where a consistent set is extended to a
 maximal consistent set using Lindenbaum's construction and Henkin
 witnesses are added during the construction to ensure saturation as
 well. The resulting set is a Hintikka set which, by the model
-existence theorem, is satisfiable in the Herbrand universe."""
+existence theorem, is satisfiable in the Herbrand universe.
+Paper: <a href=\"https://doi.org/10.4230/LIPIcs.TYPES.2021.8\">doi.org/10.4230/LIPIcs.TYPES.2021.8</a>."""
 license = "bsd"
 note = ""
 

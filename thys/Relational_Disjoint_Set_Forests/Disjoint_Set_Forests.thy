@@ -918,6 +918,12 @@ The finiteness requirement in the following class is used for proving that the o
 
 class finite_regular_p_algebra = p_algebra +
   assumes finite_regular: "finite { x . regular x }"
+begin
+
+abbreviation card_down_regular :: "'a \<Rightarrow> nat" ("_\<down>" [100] 100)
+  where "x\<down> \<equiv> card { z . regular z \<and> z \<le> x }"
+
+end
 
 class stone_kleene_relation_algebra_tarski_finite_regular = stone_kleene_relation_algebra_tarski + finite_regular_p_algebra
 begin
@@ -1011,7 +1017,7 @@ lemma find_set_1:
   using mult_left_isotone star.circ_reflexive find_set_precondition_def by fastforce
 
 lemma find_set_2:
-  "find_set_invariant p x y \<and> y \<noteq> p[[y]] \<Longrightarrow> find_set_invariant p x (p[[y]]) \<and> card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * (p[[y]]) } < card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y }"
+  "find_set_invariant p x y \<and> y \<noteq> p[[y]] \<Longrightarrow> find_set_invariant p x (p[[y]]) \<and> (p\<^sup>T\<^sup>\<star> * (p[[y]]))\<down> < (p\<^sup>T\<^sup>\<star> * y)\<down>"
 proof -
   let ?s = "{ z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y }"
   let ?t = "{ z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * (p[[y]]) }"
@@ -1128,7 +1134,7 @@ theorem find_set:
   y := x;
   WHILE y \<noteq> p[[y]]
     INV { find_set_invariant p x y }
-    VAR { card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y } }
+    VAR { (p\<^sup>T\<^sup>\<star> * y)\<down> }
      DO y := p[[y]]
      OD
   [ find_set_postcondition p x y ]"
@@ -1346,7 +1352,7 @@ lemma path_compression_1:
   using path_compression_invariant_def path_compression_precondition_def loop_root path_compression_1a path_compression_1b by auto
 
 lemma path_compression_2:
-  "path_compression_invariant p x y p0 w \<and> y \<noteq> p[[w]] \<Longrightarrow> path_compression_invariant (p[w\<longmapsto>y]) x y p0 (p[[w]]) \<and> card { z . regular z \<and> z \<le> (p[w\<longmapsto>y])\<^sup>T\<^sup>\<star> * (p[[w]]) } < card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * w }"
+  "path_compression_invariant p x y p0 w \<and> y \<noteq> p[[w]] \<Longrightarrow> path_compression_invariant (p[w\<longmapsto>y]) x y p0 (p[[w]]) \<and> ((p[w\<longmapsto>y])\<^sup>T\<^sup>\<star> * (p[[w]]))\<down> < (p\<^sup>T\<^sup>\<star> * w)\<down>"
 proof -
   let ?p = "p[w\<longmapsto>y]"
   let ?s = "{ z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * w }"
@@ -1872,7 +1878,7 @@ theorem path_compression:
   w := x;
   WHILE y \<noteq> p[[w]]
     INV { path_compression_invariant p x y p0 w }
-    VAR { card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * w } }
+    VAR { (p\<^sup>T\<^sup>\<star> * w)\<down> }
      DO t := w;
         w := p[[w]];
         p[t] := y
@@ -1918,7 +1924,7 @@ theorem find_set_path_compression_1:
   w := x;
   WHILE y \<noteq> p[[w]]
     INV { path_compression_invariant p x y p0 w }
-    VAR { card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * w } }
+    VAR { (p\<^sup>T\<^sup>\<star> * w)\<down> }
      DO t := w;
         w := p[[w]];
         p[t] := y
@@ -1935,7 +1941,7 @@ theorem find_set_path_compression_2:
   y := x;
   WHILE y \<noteq> p[[y]]
     INV { find_set_invariant p x y \<and> p0 = p }
-    VAR { card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y } }
+    VAR { (p\<^sup>T\<^sup>\<star> * y)\<down> }
      DO y := p[[y]]
      OD;
   p := path_compression p x y
@@ -1951,13 +1957,13 @@ theorem find_set_path_compression_3:
   y := x;
   WHILE y \<noteq> p[[y]]
     INV { find_set_invariant p x y \<and> p0 = p }
-    VAR { card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * y } }
+    VAR { (p\<^sup>T\<^sup>\<star> * y)\<down> }
      DO y := p[[y]]
      OD;
   w := x;
   WHILE y \<noteq> p[[w]]
     INV { path_compression_invariant p x y p0 w }
-    VAR { card { z . regular z \<and> z \<le> p\<^sup>T\<^sup>\<star> * w } }
+    VAR { (p\<^sup>T\<^sup>\<star> * w)\<down> }
      DO t := w;
         w := p[[w]];
         p[t] := y

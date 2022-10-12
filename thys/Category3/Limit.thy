@@ -3870,13 +3870,13 @@ begin
                 using f j 0 \<chi> [of f "J.dom j"] by (elim S.in_homE, auto)
               thus ?thesis
                 using nat 0
-                apply (intro S.arr_eqI' [of "D j \<cdot> ?\<chi> f (J.dom j)" "?\<chi> f j"])
+                apply (intro S.arr_eqI'\<^sub>S\<^sub>C [of "D j \<cdot> ?\<chi> f (J.dom j)" "?\<chi> f j"])
                  apply force
                 by auto
             qed
             show "?\<chi> f (J.cod j) \<cdot> B.map j = ?\<chi> f j"
               using par2 nat 0 f j \<chi>
-              apply (intro S.arr_eqI' [of "?\<chi> f (J.cod j) \<cdot> B.map j" "?\<chi> f j"])
+              apply (intro S.arr_eqI'\<^sub>S\<^sub>C [of "?\<chi> f (J.cod j) \<cdot> B.map j" "?\<chi> f j"])
                apply force
               by (metis (no_types, lifting) S.in_homE)
           qed
@@ -3938,7 +3938,7 @@ begin
                 proof -
                   assume j: "J.arr j"
                   show "cones_map ?f (?\<chi> a) j = \<chi>' j"
-                  proof (intro S.arr_eqI' [of "cones_map ?f (?\<chi> a) j" "\<chi>' j"])
+                  proof (intro S.arr_eqI'\<^sub>S\<^sub>C [of "cones_map ?f (?\<chi> a) j" "\<chi>' j"])
                     show par: "S.par (cones_map ?f (?\<chi> a) j) (\<chi>' j)"
                       using j \<chi>'.preserves_cod \<chi>'.preserves_dom \<chi>'.preserves_reflects_arr
                             f\<chi>a.preserves_cod f\<chi>a.preserves_dom f\<chi>a.preserves_reflects_arr
@@ -3990,7 +3990,7 @@ begin
               have f'_in_hom: "\<guillemotleft>f' : a' \<rightarrow> a\<guillemotright>" using f' by simp
               have f'_map: "cones_map f' (?\<chi> a) = \<chi>'" using f' by simp
               show "f' = ?f"
-              proof (intro S.arr_eqI' [of f' ?f])
+              proof (intro S.arr_eqI'\<^sub>S\<^sub>C [of f' ?f])
                 show "S.par f' ?f"
                   using f_in_hom f'_in_hom by (elim S.in_homE, auto)
                 show "\<And>y'. \<guillemotleft>y' : S.unity \<rightarrow> S.dom f'\<guillemotright> \<Longrightarrow> f' \<cdot> y' = ?f \<cdot> y'"
@@ -4071,7 +4071,7 @@ begin
       A set category has an equalizer for any parallel pair of arrows.
 \<close>
 
-    lemma has_equalizers:
+    lemma has_equalizers\<^sub>S\<^sub>C:
     shows "has_equalizers"
     proof (unfold has_equalizers_def)
       have "\<And>f0 f1. par f0 f1 \<Longrightarrow> \<exists>e. has_as_equalizer f0 f1 e"
@@ -4203,7 +4203,7 @@ begin
   end
 
   sublocale set_category \<subseteq> category_with_equalizers S
-    apply unfold_locales using has_equalizers by auto
+    apply unfold_locales using has_equalizers\<^sub>S\<^sub>C by auto
 
   context set_category
   begin
@@ -4420,7 +4420,7 @@ begin
         fix f
         assume f: "f \<in> PiE' I' (\<lambda>_. Univ)"
         have "f \<in> PiE' I (\<lambda>_. Univ)"
-          using assms(2) f extensional'_def [of I'] terminal_unity extensional'_monotone by auto
+          using assms(2) f extensional'_def [of I'] terminal_unity\<^sub>S\<^sub>C extensional'_monotone by auto
         thus "\<pi> f \<in> Univ" using \<pi> by auto
       qed
       moreover have "inj_on \<pi> (PiE' I' (\<lambda>_. Univ))"
@@ -4428,7 +4428,7 @@ begin
         have 1: "\<And>F A A'. inj_on F A \<and> A' \<subseteq> A \<Longrightarrow> inj_on F A'"
           using subset_inj_on by blast
         moreover have "PiE' I' (\<lambda>_. Univ) \<subseteq> PiE' I (\<lambda>_. Univ)"
-          using assms(2) extensional'_def [of I'] terminal_unity by auto
+          using assms(2) extensional'_def [of I'] terminal_unity\<^sub>S\<^sub>C by auto
         ultimately show ?thesis using \<pi> assms(2) by blast
       qed
       ultimately show ?thesis using admits_tupling_def by metis
@@ -6117,7 +6117,7 @@ $$\xymatrix{
             have "YoD_a'.cones_map ?f (YoD.at a' (map o \<chi>)) j = YoD.at a' (map o \<chi>) j \<cdot>\<^sub>S ?f"
               using f j Fun_map_a_a' Yo\<chi>_a'.cone_axioms by fastforce
             also have "... = \<sigma> j"
-            proof (intro S.arr_eqI)
+            proof (intro S.arr_eqI\<^sub>S\<^sub>C)
               show "S.par (YoD.at a' (map o \<chi>) j \<cdot>\<^sub>S ?f) (\<sigma> j)"
                 using 1 f j x YoD_a'.preserves_hom by fastforce
               show "S.Fun (YoD.at a' (map o \<chi>) j \<cdot>\<^sub>S ?f) = S.Fun (\<sigma> j)"
@@ -6186,7 +6186,7 @@ $$\xymatrix{
             assume f': "\<guillemotleft>f' : x \<rightarrow>\<^sub>S Hom.map (a', a)\<guillemotright> \<and>
                         YoD_a'.cones_map f' (YoD.at a' (map o \<chi>)) = \<sigma>"
             show "f' = ?f"
-            proof (intro S.arr_eqI)
+            proof (intro S.arr_eqI\<^sub>S\<^sub>C)
               show par: "S.par f' ?f" using f f' by (elim S.in_homE, auto)
               show "S.Fun f' = S.Fun ?f"
               proof

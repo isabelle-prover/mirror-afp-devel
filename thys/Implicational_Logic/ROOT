@@ -1,0 +1,9 @@
+chapter AFP
+
+session Implicational_Logic (AFP) = HOL +
+  options [timeout = 3600]
+  theories
+    Implicational_Logic
+    Implicational_Logic_Appendix
+  document_files
+    "root.tex"

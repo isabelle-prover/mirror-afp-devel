@@ -1,0 +1,34 @@
+title = "Verification of Query Optimization Algorithms"
+date = 2022-10-04
+topics = [
+  "Computer science/Data management systems",
+]
+abstract = """
+This formalization includes a general framework for query optimization
+consisting of the definitions of selectivities, query graphs, join
+trees, and cost functions. Furthermore, it implements the join
+ordering algorithm IKKBZ using these definitions. It verifies the
+correctness of these definitions and proves that IKKBZ produces an
+optimal solution within a restricted solution space."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.stevens]
+homepage = "stevens_homepage"
+
+[authors.stoeckl]
+email = "stoeckl_email"
+
+[contributors]
+
+[notify]
+stevens = "stevens_email"
+stoeckl = "stoeckl_email"
+
+[history]
+
+[extra]
+
+[related]

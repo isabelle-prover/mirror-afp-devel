@@ -17,12 +17,12 @@
   </tr>
 </table>
 
-<h4>Most used AFP articles:</h4>
+<h4>Most used AFP entries:</h4>
 <table id="most_used">
   <tr>
     <th></th>
     <th>Name</th>
-    <th>Used by ? articles</th>
+    <th>Used by ? entries</th>
   </tr>
 
   {{ range $index, $element := first 12 .Site.Taxonomies.dependencies.ByCount }}
@@ -44,7 +44,7 @@
   const article_years_unique = [{{- delimit (apply .Site.Data.statistics.article_years_unique "printf" "'%s'" ".") "," | safeJS -}}]
   const loc_articles = [{{- delimit .Site.Data.statistics.loc_articles "," | safeJS -}}]
 </script>
-<h4>Growth in number of articles:</h4>
+<h4>Growth in number of entries:</h4>
 <script src="/js/Chart.js"></script>
 <div class="chart">
   <canvas id="num-articles-canvas"></canvas>
@@ -55,7 +55,7 @@
     data: {
       labels: years,
       datasets: [{
-        label: 'size of the AFP in # of articles',
+        label: 'Size of the AFP in # of entries',
         data: no_articles,
         backgroundColor: "rgba(46, 45, 78, 1)"
       }],
@@ -137,7 +137,7 @@
   })
 </script>
 
-<h4>Size of articles:</h4>
+<h4>Size of entries:</h4>
 <div class="chart">
   <canvas id="loc-articles-canvas"></canvas>
 </div>

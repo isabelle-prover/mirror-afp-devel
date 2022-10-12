@@ -92,7 +92,7 @@ begin
       thus ?thesis by simp
     qed
 
-    lemma ide_char:
+    lemma ide_char\<^sub>C\<^sub>C:
     shows "ide f \<longleftrightarrow> Ide f"
     proof
       assume f: "Ide f"
@@ -141,14 +141,14 @@ begin
     lemma ide_MkIde [simp]:
     assumes "A \<in> Obj"
     shows "ide (MkIde A)"
-      using assms ide_char Id_in_Hom by simp
+      using assms ide_char\<^sub>C\<^sub>C Id_in_Hom by simp
 
     lemma in_domains_char:
     shows "a \<in> domains f \<longleftrightarrow> Arr f \<and> a = MkIde (Dom f)"
     proof
       assume a: "a \<in> domains f"
       have "Ide a"
-        using a domains_def ide_char COMP_def null_char by auto
+        using a domains_def ide_char\<^sub>C\<^sub>C COMP_def null_char by auto
       moreover have "Arr f \<and> Dom f = Cod a"
       proof -
         have "COMP f a \<noteq> null"
@@ -169,7 +169,7 @@ begin
     proof
       assume b: "b \<in> codomains f"
       have "Ide b"
-        using b codomains_def ide_char COMP_def null_char by auto
+        using b codomains_def ide_char\<^sub>C\<^sub>C COMP_def null_char by auto
       moreover have "Arr f \<and> Dom b = Cod f"
       proof -
         have "COMP b f \<noteq> null"
@@ -189,7 +189,7 @@ begin
     shows "arr f \<longleftrightarrow> Arr f"
       using arr_def in_domains_char in_codomains_char by auto
 
-    lemma arrI:
+    lemma arrI\<^sub>C\<^sub>C:
     assumes "f \<noteq> Null" and "Dom f \<in> Obj" "Cod f \<in> Obj" "Map f \<in> Hom (Dom f) (Cod f)"
     shows "arr f"
       using assms arr_char by blast

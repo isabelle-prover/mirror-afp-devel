@@ -1,0 +1,34 @@
+title = "Soundness and Completeness of Implicational Logic"
+date = 2022-09-13
+topics = [
+  "Logic/General logic/Classical propositional logic",
+  "Logic/Proof theory",
+]
+abstract = """
+This work is a formalization of soundness and completeness of the Bernays-Tarski
+axiom system for classical implicational logic. The completeness proof is
+constructive following the approach by László Kalmár, Elliott Mendelson and
+others. The result can be extended to full classical propositional logic by
+uncommenting a few lines for falsehood.
+"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.from]
+homepage = "from_homepage"
+
+[authors.villadsen]
+homepage = "villadsen_homepage"
+
+[contributors]
+
+[notify]
+from = "from_email"
+
+[history]
+
+[extra]
+
+[related]

@@ -296,6 +296,7 @@ IMP_Compiler
 IMP_Compiler_Reuse
 IP_Addresses
 Imperative_Insertion_Sort
+Implicational_Logic
 Impossible_Geometry
 Incompleteness
 Incredible_Proof_Machine
@@ -400,6 +401,7 @@ Matrices_for_ODEs
 Matrix
 Matrix_Tensor
 Matroids
+Maximum_Segment_Sum
 Max-Card-Matching
 Median_Method
 Median_Of_Medians_Selection
@@ -464,6 +466,7 @@ PLM
 POPLmark-deBruijn
 PSemigroupsConvolution
 Padic_Ints
+Padic_Field
 Pairing_Heap
 Paraconsistency
 Parity_Game
@@ -519,6 +522,7 @@ QR_Decomposition
 Quantales
 Quasi_Borel_Spaces
 Quaternions
+Query_Optimization
 Quick_Sort_Cost
 RIPEMD-160-SPARK
 ROBDD
@@ -557,6 +561,7 @@ Resolution_FOL
 Rewrite_Properties_Reduction
 Rewriting_Z
 Ribbon_Proofs
+Risk_Free_Lending
 Robbins-Conjecture
 Robinson_Arithmetic
 Root_Balanced_Tree
@@ -571,8 +576,10 @@ SIFUM_Type_Systems
 SPARCv8
 Safe_Distance
 Safe_OCL
+Safe_Range_RC
 Saturation_Framework
 Saturation_Framework_Extensions
+SCC_Bloemen_Sequential
 Schutz_Spacetime
 Secondary_Sylow
 Security_Protocol_Refinement
@@ -581,6 +588,7 @@ SenSocialChoice
 Separata
 Separation_Algebra
 Separation_Logic_Imperative_HOL
+Separation_Logic_Unbounded
 SequentInvertibility
 Shadow_DOM
 Shadow_SC_DOM
@@ -609,6 +617,7 @@ Special_Function_Bounds
 Splay_Tree
 Sqrt_Babylonian
 Stable_Matching
+Stalnaker_Logic
 Statecharts
 Stateful_Protocol_Composition_and_Typing
 Stellar_Quorums
@@ -664,6 +673,7 @@ Types_To_Sets_Extension
 UPF
 UPF_Firewall
 UTP
+Undirected_Graph_Theory
 Universal_Hash_Families
 Universal_Turing_Machine
 UpDown_Scheme

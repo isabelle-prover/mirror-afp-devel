@@ -713,8 +713,8 @@ subsubsection \<open>Simulation\<close>
   lemma mod_mult_mod_eq[mod_simps]: "x mod (k * N) mod N = x mod N"  
     by (meson dvd_eq_mod_eq_0 mod_mod_cancel mod_mult_self2_is_0)
 
-lemma mod_eq_imp_eq_aux: "b mod N = (a::nat) mod N \<Longrightarrow> a\<le>b \<Longrightarrow> b<a+N \<Longrightarrow> b=a"
-  using nat_mod_eq_lemma by force
+  lemma mod_eq_imp_eq_aux: "b mod N = (a::nat) mod N \<Longrightarrow> a\<le>b \<Longrightarrow> b<a+N \<Longrightarrow> b=a"
+    by (auto simp add: mod_eq_dvd_iff_nat le_imp_diff_is_add)
     
   lemma mod_eq_imp_eq: 
     "\<lbrakk>b \<le> x; x < b + N; b \<le> y; y < b + N; x mod N = y mod N \<rbrakk> \<Longrightarrow> x=y"

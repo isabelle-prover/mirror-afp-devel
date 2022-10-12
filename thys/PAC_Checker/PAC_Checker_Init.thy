@@ -219,7 +219,7 @@ lemma string_list_trans:
   \<open>(xa ::char list list, ya) \<in> lexord (lexord {(x, y). x < y}) \<Longrightarrow>
   (ya, z) \<in> lexord (lexord {(x, y). x < y}) \<Longrightarrow>
     (xa, z) \<in> lexord (lexord {(x, y). x < y})\<close>
-  by (smt less_char_def char.less_trans less_than_char_def lexord_partial_trans p2rel_def)
+  by (smt (verit) less_char_def char.less_trans less_than_char_def lexord_partial_trans p2rel_def)
 
 lemma full_quicksort_sort_poly_spec:
   \<open>(full_quicksort_poly, sort_poly_spec) \<in> \<langle>Id\<rangle>list_rel \<rightarrow>\<^sub>f \<langle>\<langle>Id\<rangle>list_rel\<rangle>nres_rel\<close>
@@ -462,7 +462,7 @@ lemma msort_alt_def:
   subgoal by (subst RECT_unfold, refine_mono) auto
   subgoal
     by (subst RECT_unfold, refine_mono)
-     (smt let_to_bind_conv list.simps(5) msort.simps(3))
+     (smt (verit) let_to_bind_conv list.simps(5) msort.simps(3))
   done
 
 lemma monomial_rel_order_map:
@@ -656,7 +656,7 @@ lemma string_trans:
   \<open>(xa, ya) \<in> lexord {(x::char, y::char). x < y} \<Longrightarrow>
   (ya, z) \<in> lexord {(x::char, y::char). x < y} \<Longrightarrow>
   (xa, z) \<in> lexord {(x::char, y::char). x < y}\<close>
-  by (smt less_char_def char.less_trans less_than_char_def lexord_partial_trans p2rel_def)
+  by (smt (verit) less_char_def char.less_trans less_than_char_def lexord_partial_trans p2rel_def)
 
 lemma full_quicksort_sort_vars_spec:
   \<open>(full_quicksort_vars, sort_coeff) \<in> \<langle>Id\<rangle>list_rel \<rightarrow>\<^sub>f \<langle>\<langle>Id\<rangle>list_rel\<rangle>nres_rel\<close>

@@ -325,7 +325,12 @@ header {
     word-break: break-word;
   }
 
-  li::before {
+  dt {
+    font-weight: $light;
+    margin-top: 0.5em;
+  }
+
+  ul > li::before {
     content: "–";
     position: absolute;
     margin-left: -1.3em;

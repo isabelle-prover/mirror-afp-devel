@@ -233,7 +233,7 @@ qed
 
 theorem strong_static_completeness:
   assumes \<open>static p\<close> and \<open>\<forall>q \<in> G. static q\<close> and \<open>P; G \<TTurnstile>\<^sub>! p\<close>
-    and \<open>\<And>G p. valid P G p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
+    and \<open>\<And>G p. P; G \<TTurnstile> p \<Longrightarrow> A o lift; G \<turnstile> p\<close>
   shows \<open>A; B; G \<turnstile>\<^sub>! p\<close>
   using strong_static_completeness' assms .
 
@@ -364,7 +364,7 @@ theorem strong_soundness\<^sub>P:
   assumes
     \<open>\<And>M w p. A p \<Longrightarrow> P M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> M, w \<Turnstile>\<^sub>! p\<close>
     \<open>\<And>M r. P M \<Longrightarrow> B r \<Longrightarrow> P (M[r!])\<close>
-  shows \<open>A; B; G \<turnstile>\<^sub>! p \<Longrightarrow> P; G  \<TTurnstile>\<^sub>!\<star> p\<close>
+  shows \<open>A; B; G \<turnstile>\<^sub>! p \<Longrightarrow> P; G \<TTurnstile>\<^sub>!\<star> p\<close>
 proof safe
   fix qs w and M :: \<open>('a, 'b) kripke\<close>
   assume \<open>A; B \<turnstile>\<^sub>! qs \<^bold>\<leadsto>\<^sub>! p\<close>
@@ -692,14 +692,14 @@ corollary strong_completeness\<^sub>P\<^sub>B:
 corollary completeness\<^sub>P':
   assumes \<open>P; {} \<TTurnstile>\<^sub>! p\<close>
     and \<open>\<forall>r \<in> anns p. B r\<close>
-    and \<open>\<And>p. valid P {} (lower p) \<Longrightarrow> A o lift \<turnstile> lower p\<close>
+    and \<open>\<And>p. P; {} \<TTurnstile> lower p \<Longrightarrow> A o lift \<turnstile> lower p\<close>
   shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using assms strong_completeness\<^sub>P'[where P=P and G=\<open>{}\<close>] by simp
 
 corollary completeness\<^sub>P:
   assumes \<open>P; {} \<TTurnstile>\<^sub>! p\<close>
     and \<open>\<forall>r \<in> anns p. B r\<close>
-    and \<open>\<And>p. valid P {} p \<Longrightarrow> A o lift \<turnstile> p\<close>
+    and \<open>\<And>p. P; {} \<TTurnstile> p \<Longrightarrow> A o lift \<turnstile> p\<close>
   shows \<open>A; B \<turnstile>\<^sub>! p\<close>
   using completeness\<^sub>P' assms .
 

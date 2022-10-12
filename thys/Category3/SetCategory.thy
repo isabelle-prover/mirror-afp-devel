@@ -184,7 +184,7 @@ begin
     definition Fun :: "'s \<Rightarrow> 's \<Rightarrow> 's"
     where "Fun f = restrict (img o S f o inv_into (hom unity (dom f)) img) (set (dom f))"
 
-    lemma comp_arr_point:
+    lemma comp_arr_point\<^sub>S\<^sub>C:
     assumes "arr f" and "\<guillemotleft>x : unity \<rightarrow> dom f\<guillemotright>"
     shows "f \<cdot> x = inv_into (hom unity (cod f)) img (Fun f (img x))"
     proof -
@@ -198,18 +198,18 @@ begin
       Parallel arrows that determine the same function are equal.
 \<close>
 
-    lemma arr_eqI:
+    lemma arr_eqI\<^sub>S\<^sub>C:
     assumes "par f f'" and "Fun f = Fun f'"
     shows "f = f'"
-      using assms comp_arr_point extensional_arr by metis
+      using assms comp_arr_point\<^sub>S\<^sub>C extensional_arr by metis
 
-    lemma terminal_unity:
+    lemma terminal_unity\<^sub>S\<^sub>C:
     shows "terminal unity"
       using unity_def nonempty_Univ by (simp add: someI_ex)
 
     lemma ide_unity [simp]:
     shows "ide unity"
-      using terminal_unity terminal_def by blast
+      using terminal_unity\<^sub>S\<^sub>C terminal_def by blast
 
     lemma setp_set' [simp]:
     assumes "ide a"
@@ -323,7 +323,7 @@ begin
               using assms inj_img ide_cod inv_into_f_eq
               by (metis arrI in_homE mem_Collect_eq)
             thus ?thesis
-              using assms t Fun_def set_def comp_arr_point by auto
+              using assms t Fun_def set_def comp_arr_point\<^sub>S\<^sub>C by auto
           qed
           also have "... = Fun g (Fun f t)"
           proof -
@@ -405,7 +405,7 @@ begin
         qed
         thus F: "?P (SOME f. ?P f)" using someI_ex [of ?P] by fast
         show "\<And>f'. ?P f' \<Longrightarrow> f' = (SOME f. ?P f)"
-          using F arr_eqI
+          using F arr_eqI\<^sub>S\<^sub>C
           by (metis (no_types, lifting) in_homE)
       qed
     qed
@@ -510,7 +510,7 @@ begin
     and "A = A'" and "B = B'" and "\<And>x. x \<in> A \<Longrightarrow> F x = F' x"
     shows "mkArr A B F = mkArr A' B' F'"
       using assms Fun_mkArr
-      by (intro arr_eqI, auto simp add: Pi_iff)
+      by (intro arr_eqI\<^sub>S\<^sub>C, auto simp add: Pi_iff)
 
     text\<open>
       This version avoids trivial proof obligations when the domain and codomain
@@ -536,12 +536,12 @@ begin
     assumes "setp A"
     shows "mkArr A A (\<lambda>x. x) = mkIde A"
       using assms arr_mkIde dom_mkIde cod_mkIde Fun_mkIde
-      by (intro arr_eqI, auto)
+      by (intro arr_eqI\<^sub>S\<^sub>C, auto)
 
     lemma comp_mkArr:
     assumes "arr (mkArr A B F)" and "arr (mkArr B C G)"
     shows "mkArr B C G \<cdot> mkArr A B F = mkArr A C (G \<circ> F)"
-    proof (intro arr_eqI)
+    proof (intro arr_eqI\<^sub>S\<^sub>C)
       have 1: "seq (mkArr B C G) (mkArr A B F)" using assms by force
       have 2: "G o F \<in> A \<rightarrow> C" using assms by auto
       show "par (mkArr B C G \<cdot> mkArr A B F) (mkArr A C (G \<circ> F))"
@@ -570,7 +570,7 @@ begin
         moreover have "\<exists>!x. x \<in> set t"
         proof -
           have "\<exists>!x. x \<in> hom unity t"
-            using t terminal_unity terminal_def by auto
+            using t terminal_unity\<^sub>S\<^sub>C terminal_def by auto
           thus ?thesis using set_def by auto
         qed
         ultimately show "ide t \<and> (\<exists>!x. x \<in> set t)" by auto
@@ -598,7 +598,7 @@ begin
                 fix f
                 assume f: "\<guillemotleft>f : a \<rightarrow> t\<guillemotright>"
                 show "f = mkArr (set a) {t'} (\<lambda>x. t')"
-                proof (intro arr_eqI)
+                proof (intro arr_eqI\<^sub>S\<^sub>C)
                   show 1: "par f (mkArr (set a) {t'} (\<lambda>x. t'))" using 1 f in_homE by metis
                   show "Fun f = Fun (mkArr (set a) {t'} (\<lambda>x. t'))"
                   proof -
@@ -638,7 +638,7 @@ begin
         show "ide t" using t terminal_char1 by auto
         show "set t = {t}"
         proof -
-          have "\<exists>!x. x \<in> hom unity t" using t terminal_def terminal_unity by force
+          have "\<exists>!x. x \<in> hom unity t" using t terminal_def terminal_unity\<^sub>S\<^sub>C by force
           moreover have "t \<in> img ` hom unity t" using t stable_img set_def by simp
           ultimately show ?thesis using set_def by auto
         qed
@@ -689,6 +689,10 @@ begin
 
     abbreviation setp
     where "setp \<equiv> \<lambda>A. A \<subseteq> Univ"
+
+    lemma is_set_category:
+    shows "set_category S (\<lambda>A. A \<subseteq> Collect terminal)"
+      ..
 
   end
 
@@ -1118,7 +1122,7 @@ begin
     lemma \<Phi>\<Psi>:
     assumes "S.arr f"
     shows "\<Psi> (\<Phi> f) = f"
-    proof (intro S.arr_eqI)
+    proof (intro S.arr_eqI\<^sub>S\<^sub>C)
       show par: "S.par (\<Psi> (\<Phi> f)) f"
         using assms \<Phi>o_preserves_ide \<Psi>o_\<Phi>o by auto
       show "S.Fun (\<Psi> (\<Phi> f)) = S.Fun f"
@@ -1182,7 +1186,7 @@ begin
     lemma \<Psi>\<Phi>:
     assumes "S'.arr f'"
     shows "\<Phi> (\<Psi> f') = f'"
-    proof (intro S'.arr_eqI)
+    proof (intro S'.arr_eqI\<^sub>S\<^sub>C)
       show par: "S'.par (\<Phi> (\<Psi> f')) f'"
         using assms \<Phi>.preserves_ide \<Psi>.preserves_ide \<Phi>_ide INV.\<Phi>_ide \<Phi>o_\<Psi>o by auto
       show "S'.Fun (\<Phi> (\<Psi> f')) = S'.Fun f'"
@@ -1345,7 +1349,7 @@ begin
       Identity arrows correspond to restrictions of the identity function.
 \<close>
 
-    lemma ide_char:
+    lemma ide_char\<^sub>S\<^sub>C:
     assumes "arr f"
     shows "ide f \<longleftrightarrow> Dom f = Cod f \<and> Fun f = (\<lambda>x \<in> Dom f. x)"
       using assms mkIde_as_mkArr mkArr_Fun Fun_ide in_homE ide_cod mkArr_Fun mkIde_set
@@ -1357,7 +1361,7 @@ begin
     proof -
       have "Fun f = (\<lambda>x \<in> Dom f. x)"
         using assms Fun_def by auto
-      thus ?thesis using assms ide_char by blast
+      thus ?thesis using assms ide_char\<^sub>S\<^sub>C by blast
     qed
 
     subsection "Inclusions"
@@ -1428,7 +1432,7 @@ begin
       moreover have 2: "Dom (g \<cdot> f) \<subseteq> Cod (g \<cdot> f)"
         using assms 1 incl_def by auto
       moreover have "g \<cdot> f = mkArr (Dom f) (Cod g) (restrict (\<lambda>x. x) (Dom f))"
-      proof (intro arr_eqI)
+      proof (intro arr_eqI\<^sub>S\<^sub>C)
         have 3: "arr (mkArr (Dom f) (Cod g) (\<lambda>x\<in>Dom f. x))"
           by (metis 1 2 cod_comp dom_comp ide_cod ide_dom incl_def incl_in_def
               incl_incl_of(1) mkArr_restrict_eq)
@@ -1480,7 +1484,7 @@ begin
     shows "img x \<in> Univ"
     proof -
       have "set (img x) = {Fun x unity}"
-        using assms terminal_char2 terminal_unity by auto
+        using assms terminal_char2 terminal_unity\<^sub>S\<^sub>C by auto
       thus "img x \<in> Univ" using assms terminal_char1 by auto
     qed
 
@@ -1527,7 +1531,7 @@ begin
     lemma img_fact:
     assumes "arr f"
     shows "S (incl_of (img f) (cod f)) (corestr f) = f"
-    proof (intro arr_eqI)
+    proof (intro arr_eqI\<^sub>S\<^sub>C)
       have 1: "\<guillemotleft>corestr f : dom f \<rightarrow> img f\<guillemotright>"
         using assms corestr_in_hom by blast
       moreover have 2: "\<guillemotleft>incl_of (img f) (cod f) : img f \<rightarrow> cod f\<guillemotright>"
@@ -1559,12 +1563,12 @@ begin
     assumes "ide a" and "t \<in> set a"
     shows "\<guillemotleft>mkPoint a t : unity \<rightarrow> a\<guillemotright>"
       using assms mkArr_in_hom
-      by (metis Pi_I mkIde_set setp_set_ide terminal_char2 terminal_unity mkPoint_def)
+      by (metis Pi_I mkIde_set setp_set_ide terminal_char2 terminal_unity\<^sub>S\<^sub>C mkPoint_def)
 
     lemma Fun_mkPoint:
     assumes "ide a" and "t \<in> set a"
     shows "Fun (mkPoint a t) = (\<lambda>_ \<in> {unity}. t)"
-      using assms mkPoint_def terminal_unity mkPoint_in_hom by fastforce
+      using assms mkPoint_def terminal_unity\<^sub>S\<^sub>C mkPoint_in_hom by fastforce
 
     text\<open>
       For each object @{term a} the function @{term "mkPoint a"} has as its inverse
@@ -1582,7 +1586,7 @@ begin
         fix x
         assume x: "\<guillemotleft>x : unity \<rightarrow> a\<guillemotright>"
         show "mkPoint a (img x) = x"
-        proof (intro arr_eqI)
+        proof (intro arr_eqI\<^sub>S\<^sub>C)
           have 0: "img x \<in> set a"
             using x img_point_elem_set by metis
           hence 1: "mkPoint a (img x) \<in> hom unity a"
@@ -1619,7 +1623,7 @@ begin
             using 1 mkPoint_def by simp
           thus ?thesis
             by (metis in_homE img_def mkIde_set mkPoint_in_hom elem_set_implies_incl_in
-                elem_set_implies_set_eq_singleton incl_in_def t terminal_char2 terminal_unity)
+                elem_set_implies_set_eq_singleton incl_in_def t terminal_char2 terminal_unity\<^sub>S\<^sub>C)
         qed
       qed
     qed
@@ -1664,7 +1668,7 @@ begin
     lemma comp_arr_mkPoint:
     assumes "arr f" and "t \<in> Dom f"
     shows "f \<cdot> mkPoint (dom f) t = mkPoint (cod f) (Fun f t)"
-    proof (intro arr_eqI)
+    proof (intro arr_eqI\<^sub>S\<^sub>C)
       have 0: "seq f (mkPoint (dom f) t)"
         using assms mkPoint_in_hom [of "dom f" t] by auto
       have 1: "\<guillemotleft>f \<cdot> mkPoint (dom f) t : unity \<rightarrow> cod f\<guillemotright>"
@@ -1678,7 +1682,7 @@ begin
       show "Fun (f \<cdot> mkPoint (dom f) t) = Fun (mkPoint (cod f) (Fun f t))"
       proof -
         have "Fun (f \<cdot> mkPoint (dom f) t) = restrict (Fun f o Fun (mkPoint (dom f) t)) {unity}"
-          using assms 0 1 Fun_comp terminal_char2 terminal_unity by auto
+          using assms 0 1 Fun_comp terminal_char2 terminal_unity\<^sub>S\<^sub>C by auto
         also have "... = (\<lambda>_ \<in> {unity}. Fun f t)"
           using assms Fun_mkPoint by auto
         also have "... = Fun (mkPoint (cod f) (Fun f t))"
@@ -1687,7 +1691,7 @@ begin
       qed
     qed
 
-    lemma comp_arr_point:
+    lemma comp_arr_point\<^sub>S\<^sub>S\<^sub>C:
     assumes "arr f" and "\<guillemotleft>x : unity \<rightarrow> dom f\<guillemotright>"
     shows "f \<cdot> x = mkPoint (cod f) (Fun f (img x))"
       by (metis assms comp_arr_mkPoint img_point_elem_set mkPoint_img(2))
@@ -1728,10 +1732,10 @@ begin
      * TODO: Find out why attempts to use this as the main rule for a proof loop
      * unless the specific instance is given.
      *)
-    lemma arr_eqI':
+    lemma arr_eqI'\<^sub>S\<^sub>C:
     assumes "par f f'" and "\<And>x. \<guillemotleft>x : unity \<rightarrow> dom f\<guillemotright> \<Longrightarrow> f \<cdot> x = f' \<cdot> x"
     shows "f = f'"
-      using assms Fun_in_terms_of_comp mkPoint_in_hom by (intro arr_eqI, auto)
+      using assms Fun_in_terms_of_comp mkPoint_in_hom by (intro arr_eqI\<^sub>S\<^sub>C, auto)
 
     text\<open>
       An arrow can therefore be specified by giving its action by composition on points.
@@ -1762,7 +1766,7 @@ begin
         using assms x Fun_mkArr img_point_elem_set mkPoint_img mkPoint_in_hom
         by (simp add: Pi_iff)
       hence "mkArr' a b F \<cdot> x = mkPoint b (img (F x))"
-        using assms x mkArr'_in_hom [of a b F] comp_arr_point by auto
+        using assms x mkArr'_in_hom [of a b F] comp_arr_point\<^sub>S\<^sub>S\<^sub>C by auto
       thus "mkArr' a b F \<cdot> x = F x"
         using assms x mkPoint_img(2) by auto
     qed
@@ -1806,7 +1810,7 @@ begin
       fix f
       assume f: "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> (\<forall>x. \<guillemotleft>x : unity \<rightarrow> a\<guillemotright> \<longrightarrow> f \<cdot> x = F x)"
       show "f = mkArr' a b F"
-        using f 1 2 by (intro arr_eqI' [of f "mkArr' a b F"], fastforce, auto)
+        using f 1 2 by (intro arr_eqI'\<^sub>S\<^sub>C [of f "mkArr' a b F"], fastforce, auto)
     qed
 
     subsection "The `Determines Same Function' Relation on Arrows"
@@ -2038,7 +2042,7 @@ begin
 
     lemma section_retraction_char:
     shows "ide (g \<cdot> f) \<longleftrightarrow> antipar f g \<and> compose (Dom f) (Fun g) (Fun f) = (\<lambda>x \<in> Dom f. x)"
-      by (metis Fun_comp cod_comp compose_eq' dom_comp ide_char ide_compE seqE)
+      by (metis Fun_comp cod_comp compose_eq' dom_comp ide_char\<^sub>S\<^sub>C ide_compE seqE)
 
     text\<open>
       Antiparallel arrows @{term f} and @{term g} are inverses if the functions
@@ -2150,7 +2154,7 @@ begin
           fix g g'
           assume gg': "seq f g \<and> seq f g' \<and> f \<cdot> g = f \<cdot> g'"
           show "g = g'"
-          proof (intro arr_eqI)
+          proof (intro arr_eqI\<^sub>S\<^sub>C)
             show par: "par g g'"
               using gg' dom_comp by (metis seqE)
             show "Fun g = Fun g'"
@@ -2234,7 +2238,7 @@ begin
                         Fun ?g' = (\<lambda>y \<in> Cod f. if \<exists>x. x \<in> Dom f \<and> Fun f x = y then tt else ff)"
                 using f B in_homI [of ?g'] finite_imp_setp by simp
               have "?g \<cdot> f = ?g' \<cdot> f"
-              proof (intro arr_eqI)
+              proof (intro arr_eqI\<^sub>S\<^sub>C)
                 show "par (?g \<cdot> f) (?g' \<cdot> f)"
                   using f g g' by auto
                 show "Fun (?g \<cdot> f) = Fun (?g' \<cdot> f)"
@@ -2269,7 +2273,7 @@ begin
             fix f f'
             assume ff': "par f f'"
             show "f = f'"
-            proof (intro arr_eqI)
+            proof (intro arr_eqI\<^sub>S\<^sub>C)
               show "par f f'" using ff' by simp
               have "\<And>t t'. t \<in> Cod f \<and> t' \<in> Cod f \<Longrightarrow> t = t'"
                 using f ff' setp_imp_subset_Univ setp_set_ide ide_cod subsetD by blast
@@ -2320,7 +2324,7 @@ begin
       moreover have "img e = cod e \<and> img e' = cod e'"
         using assms(6-7) retraction_char img_def mkIde_set by simp
       ultimately have "par e e'" using 2 by simp
-      thus "e = e'" using 3 arr_eqI by blast
+      thus "e = e'" using 3 arr_eqI\<^sub>S\<^sub>C by blast
       hence "par m m'" using assms(1) assms(2) 1 by fastforce
       thus "m = m'" using assms(4) assms(5) incls_coherent by blast
     qed
@@ -2411,19 +2415,19 @@ begin
     shows "full_subcategory S (\<lambda>a. S.ide a \<and> ssetp (S.set a))"
       ..
 
-    lemma ide_char:
+    lemma ide_char\<^sub>S\<^sub>S\<^sub>C:
     shows "ide a \<longleftrightarrow> S.ide a \<and> ssetp (S.set a)"
-      using ide_char arr_char by fastforce
+      using ide_char\<^sub>S\<^sub>b\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C by fastforce
 
-    lemma terminal_unity:
+    lemma terminal_unity\<^sub>S\<^sub>S\<^sub>C:
     shows "terminal S.unity"
     proof
       show "ide S.unity"
-        using S.terminal_unity S.terminal_def [of S.unity] S.terminal_char2 ide_char
+        using S.terminal_unity\<^sub>S\<^sub>C S.terminal_def [of S.unity] S.terminal_char2 ide_char\<^sub>S\<^sub>S\<^sub>C
               ssetp_singleton
         by force
       thus "\<And>a. ide a \<Longrightarrow> \<exists>!f. in_hom f a S.unity"
-        using S.terminal_unity S.terminal_def ide_char ide_char' in_hom_char
+        using S.terminal_unity\<^sub>S\<^sub>C S.terminal_def ide_char\<^sub>S\<^sub>b\<^sub>C ide_char' in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C
         by (metis (no_types, lifting))
     qed
 
@@ -2433,24 +2437,24 @@ begin
       fix t
       assume t: "S.terminal t"
       have "ide t"
-        using t ssetp_singleton ide_char S.terminal_char2 by force
+        using t ssetp_singleton ide_char\<^sub>S\<^sub>S\<^sub>C S.terminal_char2 by force
       thus "terminal t"
-        using t in_hom_char ide_char arr_char S.terminal_def terminalI by auto
+        using t in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C ide_char\<^sub>S\<^sub>S\<^sub>C arr_char\<^sub>S\<^sub>b\<^sub>C S.terminal_def terminalI by auto
       next
       assume t: "terminal t"
       have 1: "S.ide t"
-        using t ide_char terminal_def by simp
+        using t ide_char\<^sub>S\<^sub>b\<^sub>C terminal_def by simp
       moreover have "card (S.set t) = 1"
       proof -
         have "card (S.set t) = card (S.hom S.unity t)"
           using S.set_def S.inj_img
           by (metis 1 S.bij_betw_points_and_set bij_betw_same_card)
         also have "... = card (hom S.unity t)"
-          using t in_hom_char terminal_def terminal_unity by auto
+          using t in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C terminal_def terminal_unity\<^sub>S\<^sub>S\<^sub>C by auto
         also have "... = 1"
         proof -
           have "\<exists>!f. f \<in> hom S.unity t"
-            using t terminal_def terminal_unity by force
+            using t terminal_def terminal_unity\<^sub>S\<^sub>S\<^sub>C by force
           moreover have "\<And>A. card A = 1 \<longleftrightarrow> (\<exists>!a. a \<in> A)"
             apply (intro iffI)
                apply (metis card_1_singletonE empty_iff insert_iff)
@@ -2472,19 +2476,19 @@ begin
         which is different from that of S.unity.
 \<close>
       have 1: "terminal (SOME t. terminal t)"
-        using terminal_unity someI_ex [of terminal] by blast
+        using terminal_unity\<^sub>S\<^sub>S\<^sub>C someI_ex [of terminal] by blast
       obtain i where i: "\<guillemotleft>i : S.unity \<rightarrow> SOME t. terminal t\<guillemotright>"
-        using terminal_unity someI_ex [of terminal] in_hom_char terminal_def
+        using terminal_unity\<^sub>S\<^sub>S\<^sub>C someI_ex [of terminal] in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C terminal_def
         by auto
       obtain i' where i': "\<guillemotleft>i' : (SOME t. terminal t) \<rightarrow> S.unity\<guillemotright>"
-        using terminal_unity someI_ex [of S.terminal] S.terminal_def
+        using terminal_unity\<^sub>S\<^sub>S\<^sub>C someI_ex [of S.terminal] S.terminal_def
         by (metis (no_types, lifting) 1 terminal_def)
       have ii': "inverse_arrows i i'"
       proof
         have "i' \<cdot> i = S.unity"
-          using i i' terminal_unity
+          using i i' terminal_unity\<^sub>S\<^sub>S\<^sub>C
           by (metis (no_types, lifting) S.comp_in_homI' S.ide_in_hom S.ide_unity S.in_homE
-              S.terminalE S.terminal_unity in_hom_char)
+              S.terminalE S.terminal_unity\<^sub>S\<^sub>C in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C)
         thus 2: "ide (comp i' i)"
           by (metis (no_types, lifting) cod_comp comp_simp i i' ide_char' in_homE seqI')
         have "i \<cdot> i' = (SOME t. terminal t)"
@@ -2493,7 +2497,7 @@ begin
               iso_iff_mono_and_retraction point_is_mono retractionI section_retraction_of_iso(2))
         thus "ide (comp i i')"
           using comp_char
-          by (metis (no_types, lifting) 2 ide_char' dom_comp i' ide_compE in_homE seq_char)
+          by (metis (no_types, lifting) 2 ide_char' dom_comp i' ide_compE in_homE seq_char\<^sub>S\<^sub>b\<^sub>C)
       qed
       interpret set_category_data comp \<open>\<lambda>x. S.some_img (x \<cdot> i)\<close> ..
       have i_in_hom: "\<guillemotleft>i : S.unity \<rightarrow> unity\<guillemotright>"
@@ -2509,7 +2513,7 @@ begin
         also have "... = S.some_img ` S.hom S.unity a"
         proof
           show "(\<lambda>x. S.some_img (x \<cdot> i)) ` hom unity a \<subseteq> S.some_img ` S.hom S.unity a"
-            using i in_hom_char i_in_hom by auto
+            using i in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C i_in_hom by auto
           show "S.some_img ` S.hom S.unity a \<subseteq> (\<lambda>x. S.some_img (x \<cdot> i)) ` hom unity a"
           proof
             fix b
@@ -2517,11 +2521,11 @@ begin
             obtain x where x: "x \<in> S.hom S.unity a \<and> S.some_img x = b"
               using b by blast
             have "x \<cdot> i' \<in> hom unity a"
-              using x in_hom_char S.comp_in_homI a i' ideD(1) unity_def by force
+              using x in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C S.comp_in_homI a i' ideD(1) unity_def by force
             moreover have "S.some_img ((x \<cdot> i') \<cdot> i) = b"
               by (metis (no_types, lifting) i ii' x S.comp_assoc calculation comp_simp
                   ide_compE in_homE inverse_arrowsE mem_Collect_eq S.comp_arr_ide seqI'
-                  seq_char S.ide_unity unity_def)
+                  seq_char\<^sub>S\<^sub>b\<^sub>C S.ide_unity unity_def)
             ultimately show "b \<in> (\<lambda>x. S.some_img (x \<cdot> i)) ` hom unity a" by blast
           qed
         qed
@@ -2532,7 +2536,7 @@ begin
       interpret T: set_category_given_img comp \<open>\<lambda>x. S.some_img (x \<cdot> i)\<close> ssetp
       proof
         show "Collect terminal \<noteq> {}"
-          using terminal_unity by blast
+          using terminal_unity\<^sub>S\<^sub>S\<^sub>C by blast
         show "\<And>A' A. \<lbrakk>A' \<subseteq> A; ssetp A\<rbrakk> \<Longrightarrow> ssetp A'"
           using subset_closed by blast
         show "\<And>A B. \<lbrakk>ssetp A; ssetp B\<rbrakk> \<Longrightarrow> ssetp (A \<union> B)"
@@ -2540,11 +2544,11 @@ begin
         show "\<And>A. ssetp A \<Longrightarrow> A \<subseteq> Univ"
           using S.setp_imp_subset_Univ containment terminal_char by presburger
         show "\<And>a b. \<lbrakk>ide a; ide b; set a = set b\<rbrakk> \<Longrightarrow> a = b"
-          using ide_char \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> S.extensional_set by auto
+          using ide_char\<^sub>S\<^sub>b\<^sub>C \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> S.extensional_set by auto
         show "\<And>a. ide a \<Longrightarrow> ssetp (set a)"
-          using \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> ide_char by force
+          using \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> ide_char\<^sub>S\<^sub>S\<^sub>C by force
         show "\<And>A. ssetp A \<Longrightarrow> \<exists>a. ide a \<and> set a = A"
-          using S.set_complete \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> containment ide_char by blast
+          using S.set_complete \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> containment ide_char\<^sub>S\<^sub>S\<^sub>C by blast
         show "\<And>t. terminal t \<Longrightarrow> t \<in> (\<lambda>x. S.some_img (x \<cdot> i)) ` hom unity t"
           using S.set_def S.stable_img \<open>\<And>a. ide a \<Longrightarrow> set a = S.set a\<close> set_def
                 terminal_char terminal_def
@@ -2561,20 +2565,20 @@ begin
             have "x \<cdot> i = y \<cdot> i"
             proof -
               have "x \<cdot> i \<in> S.hom S.unity a \<and> y \<cdot> i \<in> S.hom S.unity a"
-                using in_hom_char \<open>\<guillemotleft>i : S.unity \<rightarrow> unity\<guillemotright>\<close> x y by blast
+                using in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C \<open>\<guillemotleft>i : S.unity \<rightarrow> unity\<guillemotright>\<close> x y by blast
               thus ?thesis
-                using a eq ide_char S.inj_img [of a] inj_on_def [of S.some_img] by simp
+                using a eq ide_char\<^sub>S\<^sub>b\<^sub>C S.inj_img [of a] inj_on_def [of S.some_img] by simp
             qed
             have "x = (x \<cdot> i) \<cdot> i'"
               by (metis (no_types, lifting) S.comp_arr_ide S.comp_assoc S.inverse_arrowsE
                   S.match_4 i i' ii' inclusion_preserves_inverse mem_Collect_eq seqI'
-                  seq_char unity_def x)
+                  seq_char\<^sub>S\<^sub>b\<^sub>C unity_def x)
             also have "... = (y \<cdot> i) \<cdot> i'"
               using \<open>x \<cdot> i = y \<cdot> i\<close> by simp
             also have "... = y"
               by (metis (no_types, lifting) S.comp_arr_ide S.comp_assoc S.inverse_arrowsE
                   S.match_4 i i' ii' inclusion_preserves_inverse mem_Collect_eq seqI'
-                  seq_char unity_def y)
+                  seq_char\<^sub>S\<^sub>b\<^sub>C unity_def y)
             finally show "x = y" by simp
           qed
         qed
@@ -2585,15 +2589,15 @@ begin
           assume par: "par f f'"
           assume eq: "\<And>x. in_hom x unity (dom f) \<Longrightarrow> comp f x = comp f' x"
           have "S.par f f'"
-            using par arr_char dom_char cod_char by auto
+            using par arr_char\<^sub>S\<^sub>b\<^sub>C dom_char\<^sub>S\<^sub>b\<^sub>C cod_char\<^sub>S\<^sub>b\<^sub>C by auto
           moreover have "\<And>x. S.in_hom x S.unity (S.dom f) \<Longrightarrow> f \<cdot> x = f' \<cdot> x"
           proof -
             fix x
             assume x: "S.in_hom x S.unity (S.dom f)"
             have "S.in_hom (x \<cdot> i') unity (S.dom f)"
-              using i'_in_hom in_hom_char x by blast
+              using i'_in_hom in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C x by blast
             hence 1: "in_hom (x \<cdot> i') unity (dom f)"
-              using arr_dom dom_simp i in_hom_char par unity_def by force
+              using arr_dom dom_simp i in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C par unity_def by force
             hence "comp f (x \<cdot> i') = comp f' (x \<cdot> i')"
               using eq by blast
             hence "(f \<cdot> (x \<cdot> i')) \<cdot> i = (f' \<cdot> (x \<cdot> i')) \<cdot> i"
@@ -2601,7 +2605,7 @@ begin
               by (metis (no_types, lifting) 1 comp_simp in_homE seqI par)
             thus "f \<cdot> x = f' \<cdot> x"
               by (metis (no_types, lifting) S.comp_arr_dom S.comp_assoc S.comp_inv_arr
-                  S.in_homE i_in_hom ii' in_hom_char inclusion_preserves_inverse x)
+                  S.in_homE i_in_hom ii' in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C inclusion_preserves_inverse x)
           qed
           ultimately show "f = f'"
             using S.extensional_arr by blast
@@ -2613,24 +2617,24 @@ begin
           fix a b F
           assume a: "ide a" and b: "ide b" and F: "F \<in> hom unity a \<rightarrow> hom unity b"
           have "S.ide a"
-            using a ide_char by blast
+            using a ide_char\<^sub>S\<^sub>b\<^sub>C by blast
           have "S.ide b"
-            using b ide_char by blast
+            using b ide_char\<^sub>S\<^sub>b\<^sub>C by blast
           have 1: "(\<lambda>x. F (x \<cdot> i') \<cdot> i) \<in> S.hom S.unity a \<rightarrow> S.hom S.unity b"
           proof
             fix x
             assume x: "x \<in> S.hom S.unity a"
             have "x \<cdot> i' \<in> S.hom unity a"
-              using i'_in_hom in_hom_char x by blast
+              using i'_in_hom in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C x by blast
             hence "x \<cdot> i' \<in> hom unity a"
-              using a in_hom_char
-              by (metis (no_types, lifting) ideD(1) i'_in_hom in_hom_char mem_Collect_eq)
+              using a in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C
+              by (metis (no_types, lifting) ideD(1) i'_in_hom in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C mem_Collect_eq)
             hence "F (x \<cdot> i') \<in> hom unity b"
               using a b F by blast
             hence "F (x \<cdot> i') \<in> S.hom unity b"
-              using b in_hom_char by blast
+              using b in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C by blast
             thus "F (x \<cdot> i') \<cdot> i \<in> S.hom S.unity b"
-              using i in_hom_char unity_def by auto
+              using i in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C unity_def by auto
           qed
           obtain f where f: "S.in_hom f a b \<and> (\<forall>x. S.in_hom x S.unity (S.dom f)
                                \<longrightarrow> f \<cdot> x = (\<lambda>x. F (x \<cdot> i') \<cdot> i) x)"
@@ -2638,22 +2642,22 @@ begin
           show "\<exists>f. in_hom f a b \<and> (\<forall>x. in_hom x unity (dom f) \<longrightarrow> comp f x = F x)"
           proof -
             have "in_hom f a b"
-              using f in_hom_char ideD(1) a b by presburger
+              using f in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C ideD(1) a b by presburger
             moreover have "\<forall>x. in_hom x unity (dom f) \<longrightarrow> comp f x = F x"
             proof (intro allI impI)
               fix x
               assume x: "in_hom x unity (dom f)"
               have xi: "S.in_hom (x \<cdot> i) S.unity (S.dom f)"
-                using f x i in_hom_char dom_char
+                using f x i in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C dom_char\<^sub>S\<^sub>b\<^sub>C
                 by (metis (no_types, lifting) in_homE unity_def calculation S.comp_in_homI)
               hence 1: "f \<cdot> (x \<cdot> i) = F ((x \<cdot> i) \<cdot> i') \<cdot> i"
                 using f by blast
               hence "((f \<cdot> x) \<cdot> i) \<cdot> i' = (F x \<cdot> i) \<cdot> i'"
                 by (metis (no_types, lifting) xi S.comp_assoc S.inverse_arrowsE
-                    S.seqI' i' ii' in_hom_char inclusion_preserves_inverse S.comp_arr_ide)
+                    S.seqI' i' ii' in_hom_char\<^sub>F\<^sub>S\<^sub>b\<^sub>C inclusion_preserves_inverse S.comp_arr_ide)
               hence "f \<cdot> x = F x"
                 by (metis (no_types, lifting) xi 1 S.invert_side_of_triangle(2) S.match_2 S.match_3
-                    S.seqI arr_char calculation S.in_homE S.inverse_unique S.isoI
+                    S.seqI arr_char\<^sub>S\<^sub>b\<^sub>C calculation S.in_homE S.inverse_unique S.isoI
                     ii' in_homE inclusion_preserves_inverse)
               thus "comp f x = F x"
                 using comp_char

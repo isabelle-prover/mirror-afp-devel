@@ -147,7 +147,7 @@ qed
 
 lemma ell2_norm_0:
   assumes "has_ell2_norm x"
-  shows "(ell2_norm x = 0) = (x = (\<lambda>_. 0))"
+  shows "ell2_norm x = 0 \<longleftrightarrow> x = (\<lambda>_. 0)"
 proof
   assume u1: "x = (\<lambda>_. 0)"
   have u2: "(SUP x::'a set\<in>Collect finite. (0::real)) = 0"
@@ -528,7 +528,7 @@ qed
 end
 
 instance ell2 :: (type) chilbert_space
-proof
+proof intro_classes
   fix X :: \<open>nat \<Rightarrow> 'a ell2\<close>
   define x where \<open>x n a = Rep_ell2 (X n) a\<close> for n a
   have [simp]: \<open>has_ell2_norm (x n)\<close> for n
@@ -627,59 +627,37 @@ proof
     by (rule convergentI)
 qed
 
-instantiation ell2 :: (CARD_1) complex_algebra_1 
-begin
-lift_definition one_ell2 :: "'a ell2" is "\<lambda>_. 1" by simp
-lift_definition times_ell2 :: "'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>a b x. a x * b x"
-  by simp   
-instance 
-proof
-  fix a b c :: "'a ell2" and r :: complex
-  show "a * b * c = a * (b * c)"
-    by (transfer, auto)
-  show "(a + b) * c = a * c + b * c"
-    apply (transfer, rule ext)
-    by (simp add: distrib_left mult.commute)
-  show "a * (b + c) = a * b + a * c"
-    apply transfer
-    by (simp add: ring_class.ring_distribs(1))
-  show "r *\<^sub>C a * b = r *\<^sub>C (a * b)"
-    by (transfer, auto)
-  show "(a::'a ell2) * r *\<^sub>C b = r *\<^sub>C (a * b)"
-    by (transfer, auto)
-  show "1 * a = a"
-    by (transfer, rule ext, auto)
-  show "a * 1 = a"
-    by (transfer, rule ext, auto)
-  show "(0::'a ell2) \<noteq> 1"
-    apply transfer
-    by (meson zero_neq_one)
-qed
-end
-
-instantiation ell2 :: (CARD_1) field begin
-lift_definition divide_ell2 :: "'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>a b x. a x / b x"
-  by simp   
-lift_definition inverse_ell2 :: "'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>a x. inverse (a x)"
-  by simp
-instance
-proof (intro_classes; transfer)
-  fix a :: "'a \<Rightarrow> complex"
-  assume "a \<noteq> (\<lambda>_. 0)"
-  then obtain y where ay: "a y \<noteq> 0"
-    by auto
-  show "(\<lambda>x. inverse (a x) * a x) = (\<lambda>_. 1)"
-  proof (rule ext)
-    fix x
-    have "x = y"
-      by auto
-    with ay have "a x \<noteq> 0"
-      by metis
-    then show "inverse (a x) * a x = 1"
-      by auto
+lemma sum_ell2_transfer[transfer_rule]:
+  includes lifting_syntax
+  shows \<open>(((=) ===> pcr_ell2 (=)) ===> rel_set (=) ===> pcr_ell2 (=)) 
+          (\<lambda>f X x. sum (\<lambda>y. f y x) X) sum\<close>
+proof (intro rel_funI, rename_tac f f' X X')
+  fix f and f' :: \<open>'a \<Rightarrow> 'b ell2\<close> 
+  assume [transfer_rule]: \<open>((=) ===> pcr_ell2 (=)) f f'\<close>
+  fix X X' :: \<open>'a set\<close>
+  assume \<open>rel_set (=) X X'\<close>
+  then have [simp]: \<open>X' = X\<close>
+    by (simp add: rel_set_eq)
+  show \<open>pcr_ell2 (=) (\<lambda>x. \<Sum>y\<in>X. f y x) (sum f' X')\<close>
+    unfolding \<open>X' = X\<close>
+  proof (induction X rule: infinite_finite_induct)
+    case (infinite X)
+    show ?case
+      apply (simp add: infinite)
+      by transfer_prover
+  next
+    case empty
+    show ?case
+      apply (simp add: empty)
+      by transfer_prover
+  next
+    case (insert x F)
+    note [transfer_rule] = insert.IH
+    show ?case
+      apply (simp add: insert)
+      by transfer_prover
   qed
-qed (auto simp add: divide_complex_def mult.commute ring_class.ring_distribs)
-end
+qed
 
 subsection \<open>Orthogonality\<close>
 
@@ -719,7 +697,7 @@ proof-
   have \<open>Rep_ell2 (trunc_ell2 S x) i = 0 \<or> Rep_ell2 (x - trunc_ell2 S x) i = 0\<close> for i
     apply transfer
     by auto
-  hence \<open>\<langle> (trunc_ell2 S x), (x - trunc_ell2 S x) \<rangle> = 0\<close>
+  hence \<open>((trunc_ell2 S x) \<bullet>\<^sub>C (x - trunc_ell2 S x)) = 0\<close>
     using ell2_pointwise_ortho by blast
   hence \<open>(norm x)^2 = (norm (trunc_ell2 S x))^2 + (norm (x - trunc_ell2 S x))^2\<close>
     using pythagorean_theorem by fastforce    
@@ -803,6 +781,9 @@ proof (rule power2_le_imp_le[rotated], force, transfer)
     by -
 qed
 
+lemma trunc_ell2_reduces_norm: \<open>norm (trunc_ell2 M \<psi>) \<le> norm \<psi>\<close>
+  by (metis subset_UNIV trunc_ell2_UNIV trunc_ell2_norm_mono)
+
 lemma trunc_ell2_twice[simp]: \<open>trunc_ell2 M (trunc_ell2 N \<psi>) = trunc_ell2 (M\<inter>N) \<psi>\<close>
   apply transfer by auto
 
@@ -815,6 +796,16 @@ lemma trunc_ell2_union_disjoint: \<open>M\<inter>N = {} \<Longrightarrow> trunc_
 lemma trunc_ell2_union_Diff: \<open>M \<subseteq> N \<Longrightarrow> trunc_ell2 (N-M) \<psi> = trunc_ell2 N \<psi> - trunc_ell2 M \<psi>\<close>
   using trunc_ell2_union_disjoint[where M=\<open>N-M\<close> and N=M and \<psi>=\<psi>]
   by (simp add: Un_commute inf.commute le_iff_sup)
+
+lemma trunc_ell2_add: \<open>trunc_ell2 M (\<psi> + \<phi>) = trunc_ell2 M \<psi> + trunc_ell2 M \<phi>\<close>
+  apply transfer by auto
+
+lemma trunc_ell2_scaleC: \<open>trunc_ell2 M (c *\<^sub>C \<psi>) = c *\<^sub>C trunc_ell2 M \<psi>\<close>
+  apply transfer by auto
+
+lemma bounded_clinear_trunc_ell2[bounded_clinear]: \<open>bounded_clinear (trunc_ell2 M)\<close>
+  by (auto intro!: bounded_clinearI[where K=1] trunc_ell2_reduces_norm
+      simp: trunc_ell2_add trunc_ell2_scaleC)
 
 lemma trunc_ell2_lim: \<open>((\<lambda>S. trunc_ell2 S \<psi>) \<longlongrightarrow> trunc_ell2 M \<psi>) (finite_subsets_at_top M)\<close>
 proof -
@@ -880,12 +871,12 @@ proof standard
     by blast    
 qed
 
-lemma cinner_ket_left: \<open>\<langle>ket i, \<psi>\<rangle> = Rep_ell2 \<psi> i\<close>
+lemma cinner_ket_left: \<open>(ket i \<bullet>\<^sub>C \<psi>) = Rep_ell2 \<psi> i\<close>
   apply (transfer fixing: i)
   apply (subst infsum_cong_neutral[where T=\<open>{i}\<close>])
   by auto
 
-lemma cinner_ket_right: \<open>\<langle>\<psi>, ket i\<rangle> = cnj (Rep_ell2 \<psi> i)\<close>
+lemma cinner_ket_right: \<open>(\<psi> \<bullet>\<^sub>C ket i) = cnj (Rep_ell2 \<psi> i)\<close>
   apply (transfer fixing: i)
   apply (subst infsum_cong_neutral[where T=\<open>{i}\<close>])
   by auto
@@ -899,17 +890,17 @@ lemma norm_ket[simp]: "norm (ket i) = 1"
   apply transfer by (rule ell2_norm_ket)
 
 lemma cinner_ket_same[simp]:
-  \<open>\<langle>ket i, ket i\<rangle> = 1\<close>
+  \<open>(ket i \<bullet>\<^sub>C ket i) = 1\<close>
 proof-
   have \<open>norm (ket i) = 1\<close>
     by simp
-  hence \<open>sqrt (cmod \<langle>ket i, ket i\<rangle>) = 1\<close>
+  hence \<open>sqrt (cmod (ket i \<bullet>\<^sub>C ket i)) = 1\<close>
     by (metis norm_eq_sqrt_cinner)
-  hence \<open>cmod \<langle>ket i, ket i\<rangle> = 1\<close>
+  hence \<open>cmod (ket i \<bullet>\<^sub>C ket i) = 1\<close>
     using real_sqrt_eq_1_iff by blast
-  moreover have \<open>\<langle>ket i, ket i\<rangle> = cmod \<langle>ket i, ket i\<rangle>\<close>
+  moreover have \<open>(ket i \<bullet>\<^sub>C ket i) = cmod (ket i \<bullet>\<^sub>C ket i)\<close>
   proof-
-    have \<open>\<langle>ket i, ket i\<rangle> \<in> \<real>\<close>
+    have \<open>(ket i \<bullet>\<^sub>C ket i) \<in> \<real>\<close>
       by (simp add: cinner_real)      
     thus ?thesis 
       by (metis cinner_ge_zero complex_of_real_cmod) 
@@ -921,7 +912,7 @@ lemma orthogonal_ket[simp]:
   \<open>is_orthogonal (ket i) (ket j) \<longleftrightarrow> i \<noteq> j\<close>
   by (simp add: cinner_ket_left ket.rep_eq)
 
-lemma cinner_ket: \<open>\<langle>ket i, ket j\<rangle> = (if i=j then 1 else 0)\<close>
+lemma cinner_ket: \<open>(ket i \<bullet>\<^sub>C ket j) = (if i=j then 1 else 0)\<close>
   by (simp add: cinner_ket_left ket.rep_eq)
 
 lemma ket_injective[simp]: \<open>ket i = ket j \<longleftrightarrow> i = j\<close>
@@ -929,7 +920,6 @@ lemma ket_injective[simp]: \<open>ket i = ket j \<longleftrightarrow> i = j\<clo
 
 lemma inj_ket[simp]: \<open>inj ket\<close>
   by (simp add: inj_on_def)
-
 
 lemma trunc_ell2_ket_cspan:
   \<open>trunc_ell2 S x \<in> (cspan (range ket))\<close> if \<open>finite S\<close>
@@ -1020,7 +1010,6 @@ proof
     using that unfolding canonical_basis_ell2_def 
     by auto
 qed
-
 end
 
 lemma canonical_basis_length_ell2[code_unfold, simp]:
@@ -1055,7 +1044,7 @@ lemma clinear_equal_ket:
 
 lemma equal_ket:
   fixes A B :: \<open>('a ell2, 'b::complex_normed_vector) cblinfun\<close>
-  assumes \<open>\<And> x. cblinfun_apply A (ket x) = cblinfun_apply B (ket x)\<close>
+  assumes \<open>\<And> x. A *\<^sub>V ket x = B *\<^sub>V ket x\<close>
   shows \<open>A = B\<close>
   apply (rule cblinfun_eq_gen_eqI[where G=\<open>range ket\<close>])
   using assms by auto
@@ -1086,7 +1075,7 @@ qed
 
 lemma cinner_ket_adjointI:
   fixes F::"'a ell2 \<Rightarrow>\<^sub>C\<^sub>L _" and G::"'b ell2 \<Rightarrow>\<^sub>C\<^sub>L_"
-  assumes "\<And> i j. \<langle>F *\<^sub>V ket i, ket j\<rangle> = \<langle>ket i, G *\<^sub>V ket j\<rangle>"
+  assumes "\<And> i j. (F *\<^sub>V ket i) \<bullet>\<^sub>C ket j = ket i \<bullet>\<^sub>C (G *\<^sub>V ket j)"
   shows "F = G*"
 proof -
   from assms
@@ -1104,7 +1093,6 @@ qed
 
 lemma ket_nonzero[simp]: "ket i \<noteq> 0"
   using norm_ket[of i] by force
-
 
 lemma cindependent_ket:
   "cindependent (range (ket::'a\<Rightarrow>_))"
@@ -1148,11 +1136,13 @@ lemma bounded_antilinear_equal_ket:
   apply (rule bounded_antilinear_eq_on[of f g \<open>range ket\<close>])
   using assms by auto
 
-lemma ket_CARD_1_is_1: \<open>ket x = 1\<close> for x :: \<open>'a::CARD_1\<close>
-  apply transfer by simp
-
 lemma is_onb_ket[simp]: \<open>is_onb (range ket)\<close>
   by (auto simp: is_onb_def)
+
+lemma ell2_sum_ket: \<open>\<psi> = (\<Sum>i\<in>UNIV. Rep_ell2 \<psi> i *\<^sub>C ket i)\<close> for \<psi> :: \<open>_::finite ell2\<close>
+  apply transfer apply (rule ext)
+  apply (subst sum_single)
+  by auto
 
 subsection \<open>Butterflies\<close>
 
@@ -1194,11 +1184,37 @@ lemma sum_butterfly_ket[simp]: \<open>(\<Sum>(i::'a::finite)\<in>UNIV. butterfly
 
 subsection \<open>One-dimensional spaces\<close>
 
+instantiation ell2 :: (CARD_1) one begin
+lift_definition one_ell2 :: "'a ell2" is "\<lambda>_. 1" by simp
+instance..
+end
+
+lemma ket_CARD_1_is_1: \<open>ket x = 1\<close> for x :: \<open>'a::CARD_1\<close>
+  apply transfer by simp
+
+instantiation ell2 :: (CARD_1) times begin
+lift_definition times_ell2 :: "'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>a b x. a x * b x"
+  by simp   
+instance..
+end
+
+instantiation ell2 :: (CARD_1) divide begin
+lift_definition divide_ell2 :: "'a ell2 \<Rightarrow> 'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>a b x. a x / b x"
+  by simp   
+instance..
+end
+
+instantiation ell2 :: (CARD_1) inverse begin
+lift_definition inverse_ell2 :: "'a ell2 \<Rightarrow> 'a ell2" is "\<lambda>a x. inverse (a x)"
+  by simp
+instance..
+end
+
 instantiation ell2 :: ("{enum,CARD_1}") one_dim begin
 text \<open>Note: enum is not needed logically, but without it this instantiation
             clashes with \<open>instantiation ell2 :: (enum) onb_enum\<close>\<close>
 instance
-proof
+proof intro_classes
   show "canonical_basis = [1::'a ell2]"
     unfolding canonical_basis_ell2_def
     apply transfer
@@ -1206,12 +1222,12 @@ proof
   show "a *\<^sub>C 1 * b *\<^sub>C 1 = (a * b) *\<^sub>C (1::'a ell2)" for a b
     apply (transfer fixing: a b) by simp
   show "x / y = x * inverse y" for x y :: "'a ell2"
+    apply transfer
     by (simp add: divide_inverse)
   show "inverse (c *\<^sub>C 1) = inverse c *\<^sub>C (1::'a ell2)" for c :: complex
     apply transfer by auto
 qed
 end
-
 
 subsection \<open>Classical operators\<close>
 
@@ -1228,7 +1244,6 @@ definition classical_operator :: "('a\<Rightarrow>'b option) \<Rightarrow> 'a el
      in
       cblinfun_extension (range (ket::'a\<Rightarrow>_)) f)"
 
-
 definition "classical_operator_exists \<pi> \<longleftrightarrow>
   cblinfun_extension_exists (range ket)
     (\<lambda>t. case \<pi> (inv ket t) of None \<Rightarrow> 0 | Some i \<Rightarrow> ket i)"
@@ -1241,29 +1256,37 @@ lemma classical_operator_existsI:
   using assms 
   by (auto simp: inv_f_f[OF inj_ket])
 
-lemma classical_operator_exists_inj:
+lemma 
   assumes "inj_map \<pi>"
-  shows "classical_operator_exists \<pi>"
-proof (unfold classical_operator_exists_def, rule cblinfun_extension_exists_ortho)
-  show \<open>is_ortho_set (range ket)\<close>
-    by simp
-  show \<open>closure (cspan (range ket)) = UNIV\<close>
-    by simp
+  shows classical_operator_exists_inj: "classical_operator_exists \<pi>"
+    and classical_operator_norm_inj: \<open>norm (classical_operator \<pi>) \<le> 1\<close>
+proof -
   have \<open>is_orthogonal (case \<pi> x of None \<Rightarrow> 0 | Some x' \<Rightarrow> ket x')
                       (case \<pi> y of None \<Rightarrow> 0 | Some y' \<Rightarrow> ket y')\<close>
     if \<open>x \<noteq> y\<close> for x y
     apply (cases \<open>\<pi> x\<close>; cases \<open>\<pi> y\<close>)
     using that assms
     by (auto simp add: inj_map_def)
-  then show \<open>is_orthogonal (case \<pi> (inv ket x) of None \<Rightarrow> 0 | Some x' \<Rightarrow> ket x')
+  then have 1: \<open>is_orthogonal (case \<pi> (inv ket x) of None \<Rightarrow> 0 | Some x' \<Rightarrow> ket x')
                       (case \<pi> (inv ket y) of None \<Rightarrow> 0 | Some y' \<Rightarrow> ket y')\<close>
     if \<open>x \<in> range ket\<close> and \<open>y \<in> range ket\<close> and \<open>x \<noteq> y\<close> for x y
     using that by auto
+
   have \<open>norm (case \<pi> x of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x) \<le> 1 * norm (ket x)\<close> for x
     apply (cases \<open>\<pi> x\<close>) by auto
-  then show \<open>norm (case \<pi> (inv ket x) of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x) \<le> 1 * norm x\<close>
+  then have 2: \<open>norm (case \<pi> (inv ket x) of None \<Rightarrow> 0 | Some x \<Rightarrow> ket x) \<le> 1 * norm x\<close>
     if \<open>x \<in> range ket\<close> for x
     using that by auto
+
+  show \<open>classical_operator_exists \<pi>\<close>
+    unfolding classical_operator_exists_def
+    using _ _ 1 2 apply (rule cblinfun_extension_exists_ortho)
+    by simp_all
+
+  show \<open>norm (classical_operator \<pi>) \<le> 1\<close>
+    unfolding classical_operator_def Let_def
+    using _ _ 1 2 apply (rule cblinfun_extension_exists_ortho_norm)
+    by simp_all
 qed
 
 lemma classical_operator_exists_finite[simp]: "classical_operator_exists (\<pi> :: _::finite \<Rightarrow> _)"
@@ -1290,7 +1313,7 @@ lemma classical_operator_adjoint[simp]:
 proof-
   define F where "F = classical_operator (inv_map \<pi>)"
   define G where "G = classical_operator \<pi>"
-  have "\<langle>F *\<^sub>V ket i, ket j\<rangle> = \<langle>ket i, G *\<^sub>V ket j\<rangle>" for i j
+  have "(F *\<^sub>V ket i) \<bullet>\<^sub>C ket j = ket i \<bullet>\<^sub>C (G *\<^sub>V ket j)" for i j
   proof-
     have w1: "(classical_operator (inv_map \<pi>)) *\<^sub>V (ket i)
      = (case inv_map \<pi> i of Some k \<Rightarrow> ket k | None \<Rightarrow> 0)"
@@ -1298,11 +1321,11 @@ proof-
     have w2: "(classical_operator \<pi>) *\<^sub>V (ket j)
      = (case \<pi> j of Some k \<Rightarrow> ket k | None \<Rightarrow> 0)"
       by (simp add: assms classical_operator_ket classical_operator_exists_inj)
-    have "\<langle>F *\<^sub>V ket i, ket j\<rangle> = \<langle>classical_operator (inv_map \<pi>) *\<^sub>V ket i, ket j\<rangle>"
+    have "(F *\<^sub>V ket i) \<bullet>\<^sub>C ket j = (classical_operator (inv_map \<pi>) *\<^sub>V ket i) \<bullet>\<^sub>C ket j"
       unfolding F_def by blast
-    also have "\<dots> = \<langle>(case inv_map \<pi> i of Some k \<Rightarrow> ket k | None \<Rightarrow> 0), ket j\<rangle>"
+    also have "\<dots> = ((case inv_map \<pi> i of Some k \<Rightarrow> ket k | None \<Rightarrow> 0) \<bullet>\<^sub>C ket j)"
       using w1 by simp
-    also have "\<dots> = \<langle>ket i, (case \<pi> j of Some k \<Rightarrow> ket k | None \<Rightarrow> 0)\<rangle>"
+    also have "\<dots> = (ket i \<bullet>\<^sub>C (case \<pi> j of Some k \<Rightarrow> ket k | None \<Rightarrow> 0))"
     proof(induction "inv_map \<pi> i")
       case None
       hence pi1: "None = inv_map \<pi> i".
@@ -1335,12 +1358,8 @@ proof-
     next
       case (Some d)
       hence s1: "Some d = inv_map \<pi> i".
-      show "\<langle>case inv_map \<pi> i of 
-            None \<Rightarrow> 0
-        | Some a \<Rightarrow> ket a, ket j\<rangle> =
-       \<langle>ket i, case \<pi> j of 
-            None \<Rightarrow> 0 
-        | Some a \<Rightarrow> ket a\<rangle>" 
+      show "(case inv_map \<pi> i of None \<Rightarrow> 0| Some a \<Rightarrow> ket a) \<bullet>\<^sub>C ket j
+           = ket i \<bullet>\<^sub>C (case \<pi> j of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a)" 
       proof(induction "\<pi> j")
         case None
         have "d \<noteq> j"
@@ -1365,7 +1384,7 @@ proof-
       next
         case (Some c)
         hence s2: "\<pi> j = Some c" by simp
-        have "\<langle>ket d, ket j\<rangle> = \<langle>ket i, ket c\<rangle>"
+        have "(ket d \<bullet>\<^sub>C ket j) = (ket i \<bullet>\<^sub>C ket c)"
         proof(cases "\<pi> j = Some i")
           case True
           hence ij: "Some j = inv_map \<pi> i"
@@ -1390,19 +1409,17 @@ proof-
           ultimately show ?thesis
             by (metis orthogonal_ket) 
         qed
-        hence "\<langle>case Some d of None \<Rightarrow> 0
-        | Some a \<Rightarrow> ket a, ket j\<rangle> =
-       \<langle>ket i, case Some c of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a\<rangle>"
+        hence "(case Some d of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a) \<bullet>\<^sub>C ket j
+             = ket i \<bullet>\<^sub>C (case Some c of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a)"
           by simp          
-        thus "\<langle>case inv_map \<pi> i of None \<Rightarrow> 0
-        | Some a \<Rightarrow> ket a, ket j\<rangle> =
-       \<langle>ket i, case \<pi> j of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a\<rangle>"
+        thus "(case inv_map \<pi> i of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a) \<bullet>\<^sub>C ket j
+             = ket i \<bullet>\<^sub>C (case \<pi> j of None \<Rightarrow> 0 | Some a \<Rightarrow> ket a)"
           by (simp add: Some.hyps s1)          
       qed
     qed
-    also have "\<dots> = \<langle>ket i, classical_operator \<pi> *\<^sub>V ket j\<rangle>"
+    also have "\<dots> = ket i \<bullet>\<^sub>C (classical_operator \<pi> *\<^sub>V ket j)"
       by (simp add: w2)
-    also have "\<dots> = \<langle>ket i, G *\<^sub>V ket j\<rangle>"
+    also have "\<dots> = ket i \<bullet>\<^sub>C (G *\<^sub>V ket j)"
       unfolding G_def by blast
     finally show ?thesis .
   qed

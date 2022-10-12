@@ -96,82 +96,60 @@
   </div>
 </header><div><main><h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. On top of this, we formalise the JMM and show the DRF guarantee and consistency. For description of the different parts, see Lochbihler's papers at FOOL 2008, ESOP 2010, ITP 2011, and ESOP 2012.</div>BSD License<h3>Change history</h3><p>
-    <h4>October 20, 2017</h4>
-    add an atomic compare-and-swap operation for volatile fields
-(revision a6189b1d6b30)<br>
-    </p><p>
-    <h4>May 16, 2013</h4>
-    support for non-deterministic memory allocators
-(revision cc3344a49ced)<br>
+  <div class="abstract mathjax_process">We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. On top of this, we formalise the JMM and show the DRF guarantee and consistency. For description of the different parts, see Lochbihler's papers at FOOL 2008, ESOP 2010, ITP 2011, and ESOP 2012.</div>
 
-    </p><p>
-    <h4>November 21, 2012</h4>
-    type safety proof for the Java memory model,
+  <h3>License</h3>
+  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
+  <dl><dt>October 20, 2017</dt>
+    <dd>add an atomic compare-and-swap operation for volatile fields
+(revision a6189b1d6b30)<br></dd><dt>May 16, 2013</dt>
+    <dd>support for non-deterministic memory allocators
+(revision cc3344a49ced)<br>
+</dd><dt>November 21, 2012</dt>
+    <dd>type safety proof for the Java memory model,
 allow spurious wake-ups
 (revision 76063d860ae0)<br>
-
-    </p><p>
-    <h4>February 16, 2012</h4>
-    added example programs
+</dd><dt>February 16, 2012</dt>
+    <dd>added example programs
 (revision bf0b06c8913d)<br>
-
-    </p><p>
-    <h4>July 21, 2011</h4>
-    new interruption model,
+</dd><dt>July 21, 2011</dt>
+    <dd>new interruption model,
 generalized JMM proof of DRF guarantee,
 allow class Object to declare methods and fields,
 simplified subtyping relation,
 corrected division and modulo implementation
 (revision 46e4181ed142)<br>
-
-    </p><p>
-    <h4>February 2, 2011</h4>
-    simplified code generator setup
+</dd><dt>February 2, 2011</dt>
+    <dd>simplified code generator setup
 new random scheduler
 (revision 3059dafd013f)<br>
-
-    </p><p>
-    <h4>December 16, 2010</h4>
-    improved version of the Java memory model, also for bytecode
+</dd><dt>December 16, 2010</dt>
+    <dd>improved version of the Java memory model, also for bytecode
 executable scheduler for source code semantics
 (revision 1f41c1842f5a)<br>
-
-    </p><p>
-    <h4>October 15, 2010</h4>
-    preliminary version of the Java memory model for source code
+</dd><dt>October 15, 2010</dt>
+    <dd>preliminary version of the Java memory model for source code
 (revision 02fee0ef3ca2)<br>
-
-    </p><p>
-    <h4>June 28, 2010</h4>
-    new thread interruption model
+</dd><dt>June 28, 2010</dt>
+    <dd>new thread interruption model
 (revision c0440d0a1177)<br>
-
-    </p><p>
-    <h4>June 8, 2010</h4>
-    added thread interruption;
+</dd><dt>June 8, 2010</dt>
+    <dd>added thread interruption;
 new abstract memory model with sequential consistency as implementation
 (revision 0cb9e8dbd78d)<br>
-
-    </p><p>
-    <h4>November 30, 2009</h4>
-    extended compiler correctness proof to infinite and deadlocking computations
+</dd><dt>November 30, 2009</dt>
+    <dd>extended compiler correctness proof to infinite and deadlocking computations
 (revision e50282397435)<br>
-
-    </p><p>
-    <h4>April 27, 2009</h4>
-    added verified compiler from source code to bytecode;
+</dd><dt>April 27, 2009</dt>
+    <dd>added verified compiler from source code to bytecode;
 encapsulate native methods in separate semantics
 (revision e4f26541e58a)<br>
-
-    </p><p>
-    <h4>April 23, 2008</h4>
-    added bytecode formalisation with arrays and threads, added thread joins
+</dd><dt>April 23, 2008</dt>
+    <dd>added bytecode formalisation with arrays and threads, added thread joins
 (revision f74a8be156a7)<br>
-
-    </p><h3>Topics</h3>
+</dd></dl><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/programming-languages/language-definitions">Computer science/Programming languages/Language definitions</a></li></ul>
-  <h3>Theories of JinjaThreads</h3>
+  <h3>Session JinjaThreads</h3>
   <ul>
     <li><a href="../theories/jinjathreads/#Set_without_equal">Set_without_equal</a></li>
     <li><a href="../theories/jinjathreads/#Set_Monad">Set_Monad</a></li>
@@ -351,7 +329,7 @@ encapsulate native methods in separate semantics
     <li><a href="../theories/jinjathreads/#Examples_Main">Examples_Main</a></li>
     <li><a href="../theories/jinjathreads/#JinjaThreads">JinjaThreads</a></li></ul><div class="flex-wrap">
   <div>
-    <h3>Depends On</h3>
+    <h3>Depends on</h3>
     <ul class="horizontal-list"><li><a href="../entries/Automatic_Refinement.html">Automatic Data Refinement</a></li><li><a href="../entries/Binomial-Heaps.html">Binomial Heaps and Skew Binomial Heaps</a></li><li><a href="../entries/Coinductive.html">Coinductive</a></li><li><a href="../entries/Collections.html">Collections Framework</a></li><li><a href="../entries/FinFun.html">Code Generation for Functions as Data</a></li><li><a href="../entries/Finger-Trees.html">Finger Trees</a></li><li><a href="../entries/Native_Word.html">Native Word</a></li><li><a href="../entries/Refine_Monadic.html">Refinement for Monadic Programs</a></li><li><a href="../entries/Trie.html">Trie</a></li></ul>
   </div>
   

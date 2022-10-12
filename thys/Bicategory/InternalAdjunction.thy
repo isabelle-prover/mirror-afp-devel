@@ -1037,7 +1037,7 @@ begin
               D.lunit' (F f) \<cdot>\<^sub>D \<r>\<^sub>D[F f]"
         proof -
           have 1: "D.iso (\<Phi> (f, g \<star>\<^sub>C f) \<cdot>\<^sub>D (F f \<star>\<^sub>D \<Phi> (g, f)))"
-            using antipar C.VV.ide_char C.VV.arr_char D.iso_is_arr FF_def
+            using antipar C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.iso_is_arr FF_def
             by (intro D.isos_compose D.seqI, simp_all)
           have "(D.inv (unit (trg\<^sub>C f)) \<cdot>\<^sub>D F \<epsilon> \<cdot>\<^sub>D \<Phi> (f, g) \<star>\<^sub>D F f) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F f, F g, F f] \<cdot>\<^sub>D
                     (F f \<star>\<^sub>D D.inv (\<Phi> (g, f)) \<cdot>\<^sub>D F \<eta> \<cdot>\<^sub>D unit (src\<^sub>C f)) =
@@ -1071,7 +1071,7 @@ begin
                 ultimately show ?thesis by simp
               qed
               moreover have 2: "D.iso (F \<a>\<^sub>C[f, g, f] \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F f))"
-                using antipar D.isos_compose C.VV.ide_char C.VV.arr_char cmp_simps(4)
+                using antipar D.isos_compose C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C cmp_simps(4)
                 by simp
               ultimately have "\<a>\<^sub>D\<^sup>-\<^sup>1[F f, F g, F f] =
                                D.inv (F \<a>\<^sub>C[f, g, f] \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F f)) \<cdot>\<^sub>D
@@ -1083,16 +1083,16 @@ begin
               proof -
                 have "D.inv (F \<a>\<^sub>C[f, g, f] \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F f)) =
                        D.inv (\<Phi> (f \<star>\<^sub>C g, f) \<cdot>\<^sub>D (\<Phi> (f, g) \<star>\<^sub>D F f)) \<cdot>\<^sub>D F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f]"
-                  using antipar D.isos_compose C.VV.arr_char cmp_simps(4)
-                        preserves_inv D.inv_comp C.VV.cod_char
+                  using antipar D.isos_compose C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C cmp_simps(4)
+                        preserves_inv D.inv_comp C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                   by simp
                 also have "... = (D.inv (\<Phi> (f, g) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (f \<star>\<^sub>C g, f))) \<cdot>\<^sub>D
                                  F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f]"
-                  using antipar D.inv_comp C.VV.ide_char C.VV.arr_char cmp_simps(4)
+                  using antipar D.inv_comp C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C cmp_simps(4)
                   by simp
                 also have "... = ((D.inv (\<Phi> (f, g)) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (f \<star>\<^sub>C g, f))) \<cdot>\<^sub>D
                                  F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f]"
-                  using antipar C.VV.ide_char C.VV.arr_char by simp
+                  using antipar C.VV.ide_char\<^sub>S\<^sub>b\<^sub>C C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
                 also have "... = (D.inv (\<Phi> (f, g)) \<star>\<^sub>D F f) \<cdot>\<^sub>D D.inv (\<Phi> (f \<star>\<^sub>C g, f)) \<cdot>\<^sub>D
                                  F \<a>\<^sub>C\<^sup>-\<^sup>1[f, g, f]"
                   using D.comp_assoc by simp
@@ -1180,12 +1180,12 @@ begin
                 using antipar D.comp_assoc D.whisker_left D.whisker_right unit_char(2)
                 by simp
             moreover have "F \<epsilon> \<star>\<^sub>D F f = D.inv (\<Phi> (trg\<^sub>C f, f)) \<cdot>\<^sub>D F (\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f)"
-              using antipar \<Phi>.naturality [of "(\<epsilon>, f)"] C.VV.arr_char FF_def
-                    D.invert_side_of_triangle(1) C.VV.dom_char C.VV.cod_char
+              using antipar \<Phi>.naturality [of "(\<epsilon>, f)"] C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C FF_def
+                    D.invert_side_of_triangle(1) C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
               by simp
             moreover have "F f \<star>\<^sub>D F \<eta> = D.inv (\<Phi> (f, g \<star>\<^sub>C f)) \<cdot>\<^sub>D F (f \<star>\<^sub>C \<eta>) \<cdot>\<^sub>D \<Phi> (f, src\<^sub>C f)"
-              using antipar \<Phi>.naturality [of "(f, \<eta>)"] C.VV.arr_char FF_def
-                    D.invert_side_of_triangle(1) C.VV.dom_char C.VV.cod_char
+              using antipar \<Phi>.naturality [of "(f, \<eta>)"] C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C FF_def
+                    D.invert_side_of_triangle(1) C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
               by simp
             ultimately show ?thesis
               using D.comp_assoc by simp
@@ -1283,7 +1283,7 @@ begin
                            \<Phi> (g, f \<star>\<^sub>C g) \<cdot>\<^sub>D (F g \<star>\<^sub>D \<Phi> (f, g)) \<cdot>\<^sub>D \<a>\<^sub>D[F g, F f, F g]"
               using antipar assoc_coherence by simp
             moreover have "D.seq (F \<a>\<^sub>C[g, f, g]) (\<Phi> (g \<star>\<^sub>C f, g) \<cdot>\<^sub>D (\<Phi> (g, f) \<star>\<^sub>D F g))"
-              using antipar C.VV.arr_char C.VV.dom_char C.VV.cod_char FF_def
+              using antipar C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C FF_def
               by (intro D.seqI D.hseqI') auto
             ultimately show ?thesis
               using D.invert_side_of_triangle(1) D.comp_assoc by auto
@@ -1373,12 +1373,12 @@ begin
                              \<Phi> (trg\<^sub>C g, g) \<cdot>\<^sub>D (unit (src\<^sub>C f) \<star>\<^sub>D F g)"
           proof -
             have "(F g \<star>\<^sub>D F \<epsilon>) \<cdot>\<^sub>D D.inv (\<Phi> (g, f \<star>\<^sub>C g)) = D.inv (\<Phi> (g, src\<^sub>C g)) \<cdot>\<^sub>D F (g \<star>\<^sub>C \<epsilon>)"
-              using antipar C.VV.arr_char \<Phi>.naturality [of "(g, \<epsilon>)"] FF_def
-                    D.invert_opposite_sides_of_square C.VV.dom_char C.VV.cod_char
+              using antipar C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<Phi>.naturality [of "(g, \<epsilon>)"] FF_def
+                    D.invert_opposite_sides_of_square C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
               by simp
             moreover have "\<Phi> (g \<star>\<^sub>C f, g) \<cdot>\<^sub>D (F \<eta> \<star>\<^sub>D F g) = F (\<eta> \<star>\<^sub>C g) \<cdot>\<^sub>D \<Phi> (trg\<^sub>C g, g)"
-              using antipar C.VV.arr_char \<Phi>.naturality [of "(\<eta>, g)"] FF_def
-                    C.VV.dom_char C.VV.cod_char
+              using antipar C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<Phi>.naturality [of "(\<eta>, g)"] FF_def
+                    C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
               by simp
             ultimately show ?thesis
               using D.comp_assoc by simp
@@ -1499,18 +1499,18 @@ begin
                                D.inv (\<Phi> (f, src\<^sub>C f))"
             proof -
               have "F (\<epsilon> \<star>\<^sub>C f) \<cdot>\<^sub>D \<Phi> (f \<star>\<^sub>C g, f) = \<Phi> (trg\<^sub>C f, f) \<cdot>\<^sub>D (F \<epsilon> \<star>\<^sub>D F f)"
-                using assms \<Phi>.naturality [of "(\<epsilon>, f)"] FF_def C.VV.arr_char
-                      C.VV.dom_char C.VV.cod_char
+                using assms \<Phi>.naturality [of "(\<epsilon>, f)"] FF_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                      C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                 by simp
               moreover have "D.inv (\<Phi> (f, g \<star>\<^sub>C f)) \<cdot>\<^sub>D F (f \<star>\<^sub>C \<eta>) =
                              (F f \<star>\<^sub>D F \<eta>) \<cdot>\<^sub>D D.inv (\<Phi> (f, src\<^sub>C f))"
               proof -
                 have "F (f \<star>\<^sub>C \<eta>) \<cdot>\<^sub>D \<Phi> (f, src\<^sub>C f) = \<Phi> (f, g \<star>\<^sub>C f) \<cdot>\<^sub>D (F f \<star>\<^sub>D F \<eta>)"
-                  using assms \<Phi>.naturality [of "(f, \<eta>)"] FF_def C.VV.arr_char A.antipar
-                        C.VV.dom_char C.VV.cod_char
+                  using assms \<Phi>.naturality [of "(f, \<eta>)"] FF_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C A.antipar
+                        C.VV.dom_char\<^sub>S\<^sub>b\<^sub>C C.VV.cod_char\<^sub>S\<^sub>b\<^sub>C
                   by simp
                 thus ?thesis
-                  using assms A.antipar cmp_components_are_iso C.VV.arr_char cmp_in_hom
+                  using assms A.antipar cmp_components_are_iso C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C cmp_in_hom
                         FF_def C.VV.dom_simp C.VV.cod_simp
                         D.invert_opposite_sides_of_square
                           [of "\<Phi> (f, g \<star>\<^sub>C f)" "F f \<star>\<^sub>D F \<eta>" "F (f \<star>\<^sub>C \<eta>)" "\<Phi> (f, src\<^sub>C f)"]
@@ -1584,18 +1584,18 @@ begin
                              ((D.inv (\<Phi> (g, f)) \<star>\<^sub>D F g) \<cdot>\<^sub>D (F \<eta> \<star>\<^sub>D F g)) \<cdot>\<^sub>D D.inv (\<Phi> (trg\<^sub>C g, g))"
             proof -
               have "F (g \<star>\<^sub>C \<epsilon>) \<cdot>\<^sub>D \<Phi> (g, f \<star>\<^sub>C g) = \<Phi> (g, src\<^sub>C g) \<cdot>\<^sub>D (F g \<star>\<^sub>D F \<epsilon>)"
-                using assms \<Phi>.naturality [of "(g, \<epsilon>)"] FF_def C.VV.arr_char
+                using assms \<Phi>.naturality [of "(g, \<epsilon>)"] FF_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                       C.VV.dom_simp C.VV.cod_simp
                 by auto
               moreover have "D.inv (\<Phi> (g \<star>\<^sub>C f, g)) \<cdot>\<^sub>D F (\<eta> \<star>\<^sub>C g) =
                              (F \<eta> \<star>\<^sub>D F g) \<cdot>\<^sub>D D.inv (\<Phi> (trg\<^sub>C g, g))"
               proof -
                 have "F (\<eta> \<star>\<^sub>C g) \<cdot>\<^sub>D \<Phi> (trg\<^sub>C g, g) = \<Phi> (g \<star>\<^sub>C f, g) \<cdot>\<^sub>D (F \<eta> \<star>\<^sub>D F g)"
-                  using assms \<Phi>.naturality [of "(\<eta>, g)"] FF_def C.VV.arr_char A.antipar
+                  using assms \<Phi>.naturality [of "(\<eta>, g)"] FF_def C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C A.antipar
                         C.VV.dom_simp C.VV.cod_simp
                   by auto
                 thus ?thesis
-                  using assms A.antipar cmp_components_are_iso C.VV.arr_char FF_def
+                  using assms A.antipar cmp_components_are_iso C.VV.arr_char\<^sub>S\<^sub>b\<^sub>C FF_def
                         C.VV.dom_simp C.VV.cod_simp
                         D.invert_opposite_sides_of_square
                           [of "\<Phi> (g \<star>\<^sub>C f, g)" "F \<eta> \<star>\<^sub>D F g" "F (\<eta> \<star>\<^sub>C g)" "\<Phi> (trg\<^sub>C g, g)"]
@@ -2796,7 +2796,7 @@ begin
                have "S.UP \<r>[f] \<cdot>\<^sub>S S.cmp\<^sub>U\<^sub>P (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.unit (src f)) = S.UP f"
                  using UP.runit_coherence [of f] S.strict_runit by simp
                moreover have "S.iso (S.cmp\<^sub>U\<^sub>P (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.unit (src f)))"
-                 using UP.unit_char UP.cmp_components_are_iso VV.arr_char S.UP_map\<^sub>0_obj
+                 using UP.unit_char UP.cmp_components_are_iso VV.arr_char\<^sub>S\<^sub>b\<^sub>C S.UP_map\<^sub>0_obj
                  by (intro S.isos_compose) auto
                ultimately have
                  "S.UP \<r>[f] = S.UP f \<cdot>\<^sub>S S.inv (S.cmp\<^sub>U\<^sub>P (f, src f) \<cdot>\<^sub>S (S.UP f \<star>\<^sub>S UP.unit (src f)))"

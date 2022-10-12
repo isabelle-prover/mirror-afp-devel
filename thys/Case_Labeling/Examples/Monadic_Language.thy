@@ -125,7 +125,7 @@ valid
   (\<lambda>r. odd r \<and> r dvd a \<and> (\<forall>m. odd m \<and> m dvd a \<longrightarrow> m \<le> r))
 "
   apply vcg
-    apply (auto simp add: zdvd_imp_le dvd_div div_positive_int elim!:
+    apply (auto simp add: zdvd_imp_le dvd_div elim!:
       evenE intro: dvd_mult_right)
   done
 

@@ -5967,14 +5967,14 @@ $$
      assumes "ide A"
      shows "REP A \<cong>\<^sub>B src (REP A)"
        using assms
-       by (metis (no_types, lifting) ideD(1) ide_char REP_in_Map ide_REP
+       by (metis (no_types, lifting) ideD(1) ide_char\<^sub>C\<^sub>C REP_in_Map ide_REP
            REP_simps(2) B.is_iso_classI B.ide_in_iso_class B.iso_class_elems_isomorphic
            B.src.preserves_ide)
 
      lemma isomorphic_REP_trg:
      assumes "ide A"
      shows "REP A \<cong>\<^sub>B trg (REP A)"
-       using assms ide_char isomorphic_REP_src by auto
+       using assms ide_char\<^sub>C\<^sub>C isomorphic_REP_src by auto
 
      lemma CLS_REP:
      assumes "arr F"
@@ -9469,7 +9469,7 @@ $$
             using r\<^sub>0's\<^sub>1.isomorphic_implies_same_tab isomorphic_symmetric by metis
         qed
         also have "... = src \<rho>\<sigma>.tab"
-          using VV.ide_char VV.arr_char composable Span.hcomp_def \<rho>\<sigma>.tab_simps(2) by auto
+          using VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C composable Span.hcomp_def \<rho>\<sigma>.tab_simps(2) by auto
         finally show ?thesis by simp
       qed
       ultimately show ?thesis
@@ -9615,9 +9615,9 @@ $$
     and "Span.in_hom (CMP r s) (HoSPN_SPN.map (r, s)) (SPNoH.map (r, s))"
     proof -
       have rs: "VV.ide (r, s)"
-        using assms VV.ide_char VV.arr_char by simp
+        using assms VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
       interpret rs: two_composable_identities_in_bicategory_of_spans V H \<a> \<i> src trg r s
-        using rs VV.ide_char VV.arr_char by unfold_locales auto
+        using rs VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by unfold_locales auto
       interpret cmp: arrow_of_tabulations_in_maps V H \<a> \<i> src trg
                      \<open>r \<star> s\<close> rs.\<rho>\<sigma>.tab \<open>tab\<^sub>0 s \<star> rs.\<rho>\<sigma>.p\<^sub>0\<close> \<open>tab\<^sub>1 r \<star> rs.\<rho>\<sigma>.p\<^sub>1\<close>
                      \<open>r \<star> s\<close> rs.tab \<open>tab\<^sub>0 (r \<star> s)\<close> \<open>tab\<^sub>1 (r \<star> s)\<close>
@@ -9804,10 +9804,10 @@ $$
       qed
       show "Span.in_hom (CMP r s) (HoSPN_SPN.map (r, s)) (SPNoH.map (r, s))"
           using Span.arr_char arrow_of_spans_axioms Span.dom_char Span.cod_char
-                CMP_def SPN.FF_def VV.arr_char rs.composable
+                CMP_def SPN.FF_def VV.arr_char\<^sub>S\<^sub>b\<^sub>C rs.composable
           by auto
       thus "Span.in_hhom (CMP r s) (SPN.map\<^sub>0 (src s)) (SPN.map\<^sub>0 (trg r))"
-        using assms VV.ide_char VV.arr_char VV.in_hom_char SPN.FF_def
+        using assms VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.in_hom_char\<^sub>S\<^sub>b\<^sub>C SPN.FF_def
         apply (intro Span.in_hhomI)
           apply auto
         using Span.src_dom [of "CMP r s"] Span.trg_dom [of "CMP r s"]
@@ -9851,7 +9851,7 @@ $$
       let ?r = "fst rs"
       let ?s = "snd rs"
       show "Span.in_hom (CMP ?r ?s) (HoSPN_SPN.map rs) (SPNoH.map rs)"
-        using rs compositor_in_hom [of ?r ?s] VV.ide_char VV.arr_char by simp
+        using rs compositor_in_hom [of ?r ?s] VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
       next
       fix \<mu>\<nu>
       assume \<mu>\<nu>: "VV.arr \<mu>\<nu>"
@@ -9870,11 +9870,11 @@ $$
             using \<mu>\<nu> by blast
           show "Span.in_hom (CMP (fst (VV.cod \<mu>\<nu>)) (snd (VV.cod \<mu>\<nu>)))
                             (HoSPN_SPN.map (VV.cod \<mu>\<nu>)) (SPNoH.map (VV.cod \<mu>\<nu>))"
-            using \<mu>\<nu> VV.cod_simp by (auto simp add: VV.arr_char)
+            using \<mu>\<nu> VV.cod_simp by (auto simp add: VV.arr_char\<^sub>S\<^sub>b\<^sub>C)
         qed
         have RHS:
           "Span.in_hom ?RHS (HoSPN_SPN.map (VV.dom \<mu>\<nu>)) (SPNoH.map (VV.cod \<mu>\<nu>))"
-          using \<mu>\<nu> VV.dom_simp VV.cod_simp by (auto simp add: VV.arr_char)
+          using \<mu>\<nu> VV.dom_simp VV.cod_simp by (auto simp add: VV.arr_char\<^sub>S\<^sub>b\<^sub>C)
         show "?LHS = ?RHS"
         proof (intro Span.arr_eqI)
           show "Span.par ?LHS ?RHS"
@@ -9902,10 +9902,10 @@ $$
           proof -
             interpret dom_\<mu>_\<nu>: two_composable_identities_in_bicategory_of_spans V H \<a> \<i> src trg
                                  \<open>dom ?\<mu>\<close> \<open>dom ?\<nu>\<close>
-              using \<mu>\<nu> VV.ide_char VV.arr_char by unfold_locales auto
+              using \<mu>\<nu> VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by unfold_locales auto
             interpret cod_\<mu>_\<nu>: two_composable_identities_in_bicategory_of_spans V H \<a> \<i> src trg
                                  \<open>cod ?\<mu>\<close> \<open>cod ?\<nu>\<close>
-              using \<mu>\<nu> VV.ide_char VV.arr_char by unfold_locales auto
+              using \<mu>\<nu> VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by unfold_locales auto
             interpret \<mu>_\<nu>: horizontal_composite_of_arrows_of_tabulations_in_maps
                              V H \<a> \<i> src trg
                              \<open>dom ?\<mu>\<close> \<open>tab_of_ide (dom ?\<mu>)\<close> \<open>tab\<^sub>0 (dom ?\<mu>)\<close> \<open>tab\<^sub>1 (dom ?\<mu>)\<close>
@@ -9913,7 +9913,7 @@ $$
                              \<open>cod ?\<mu>\<close> \<open>tab_of_ide (cod ?\<mu>)\<close> \<open>tab\<^sub>0 (cod ?\<mu>)\<close> \<open>tab\<^sub>1 (cod ?\<mu>)\<close>
                              \<open>cod ?\<nu>\<close> \<open>tab_of_ide (cod ?\<nu>)\<close> \<open>tab\<^sub>0 (cod ?\<nu>)\<close> \<open>tab\<^sub>1 (cod ?\<nu>)\<close>
                              ?\<mu> ?\<nu>
-              using \<mu>\<nu> VV.arr_char by unfold_locales auto
+              using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C by unfold_locales auto
 
             let ?\<mu>\<nu> = "?\<mu> \<star> ?\<nu>"
             interpret dom_\<mu>\<nu>: identity_in_bicategory_of_spans V H \<a> \<i> src trg \<open>dom ?\<mu>\<nu>\<close>
@@ -9933,10 +9933,10 @@ $$
                                  Chn (HoSPN_SPN.map \<mu>\<nu>)"
                 using \<mu>\<nu> LHS Span.Chn_vcomp by blast
               also have "... = \<lbrakk>\<lbrakk>cod_\<mu>_\<nu>.cmp\<rbrakk>\<rbrakk> \<odot> Chn (HoSPN_SPN.map \<mu>\<nu>)"
-                using \<mu>\<nu> VV.arr_char VV.cod_char CMP_def by simp
+                using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.cod_char\<^sub>S\<^sub>b\<^sub>C CMP_def by simp
               also have "... = \<lbrakk>\<lbrakk>cod_\<mu>_\<nu>.cmp\<rbrakk>\<rbrakk> \<odot>
                                  Span.chine_hcomp (SPN (fst \<mu>\<nu>)) (SPN (snd \<mu>\<nu>))"
-                using \<mu>\<nu> VV.arr_char SPN.FF_def Span.hcomp_def by simp
+                using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C SPN.FF_def Span.hcomp_def by simp
               finally show ?thesis by blast
             qed
             have Chn_RHS_eq:
@@ -9949,7 +9949,7 @@ $$
               have "Chn ?RHS = Chn (SPN (?\<mu> \<star> ?\<nu>)) \<odot>
                                Maps.MkArr (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))
                                           \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
-                using \<mu>\<nu> RHS Span.vcomp_def VV.arr_char CMP_def Span.arr_char Span.not_arr_Null
+                using \<mu>\<nu> RHS Span.vcomp_def VV.arr_char\<^sub>S\<^sub>b\<^sub>C CMP_def Span.arr_char Span.not_arr_Null
                       VV.dom_simp
                 by auto
               moreover have "Chn (SPN (?\<mu> \<star> ?\<nu>)) =
@@ -10011,27 +10011,27 @@ $$
                     using 1 Maps.seq_char Maps.Dom_comp by auto
                   also have "... = Maps.Dom (Maps.pbdom (Leg0 (Dom (SPN ?\<mu>)))
                                                         (Leg1 (Dom (SPN ?\<nu>))))"
-                    using \<mu>\<nu> VV.arr_char Span.chine_hcomp_in_hom [of "SPN ?\<nu>" "SPN ?\<mu>"]
+                    using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C Span.chine_hcomp_in_hom [of "SPN ?\<nu>" "SPN ?\<mu>"]
                     by auto
                   also have "... = Maps.Dom (Maps.dom (Maps.pbdom (Leg0 (Dom (SPN ?\<mu>)))
                                                                   (Leg1 (Dom (SPN ?\<nu>)))))"
                   proof -
                     have "Maps.cospan (Leg0 (Dom (SPN (fst \<mu>\<nu>)))) (Leg1 (Dom (SPN (snd \<mu>\<nu>))))"
-                      using \<mu>\<nu> VV.arr_char SPN_in_hom Span.arr_char Span.dom_char SPN_def
+                      using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C SPN_in_hom Span.arr_char Span.dom_char SPN_def
                             Maps.CLS_in_hom Maps.arr_char Maps.cod_char dom_\<mu>_\<nu>.composable
                             dom_\<mu>_\<nu>.RS_simps(16) dom_\<mu>_\<nu>.S\<^sub>1_def dom_\<mu>_\<nu>.RS_simps(1)
                             dom_\<mu>_\<nu>.R\<^sub>0_def Maps.pbdom_in_hom
                       by simp
                     thus ?thesis
-                      using \<mu>\<nu> VV.arr_char Maps.pbdom_in_hom by simp
+                      using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C Maps.pbdom_in_hom by simp
                   qed
                   also have "... = Maps.Dom
                                      (Maps.dom (Maps.pbdom (Leg0 (Dom (SPN (dom ?\<mu>))))
                                                            (Leg1 (Dom (SPN (dom ?\<nu>))))))"
-                    using \<mu>\<nu> SPN_def VV.arr_char by simp
+                    using \<mu>\<nu> SPN_def VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
                   also have "... = Maps.Dom
                                      (Maps.dom (Span.chine_hcomp (SPN (dom ?\<mu>)) (SPN (dom ?\<nu>))))"
-                    using \<mu>\<nu> VV.arr_char ide_dom
+                    using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C ide_dom
                     by (simp add: Span.chine_hcomp_ide_ide)
                   also have "... = Maps.Dom (Span.chine_hcomp (SPN (dom ?\<mu>)) (SPN (dom ?\<nu>)))"
                     using Maps.Dom_dom Maps.in_homE SPN.preserves_reflects_arr SPN.preserves_src
@@ -10049,9 +10049,9 @@ $$
               show "Maps.Cod ?Chn_LHS = Maps.Cod ?Chn_RHS"
               proof -
                 have "Maps.Cod ?Chn_LHS = src (tab_of_ide (cod ?\<mu> \<star> cod ?\<nu>))"
-                  using \<mu>\<nu> 1 VV.arr_char Maps.seq_char by auto
+                  using \<mu>\<nu> 1 VV.arr_char\<^sub>S\<^sub>b\<^sub>C Maps.seq_char by auto
                 also have "... = src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>))"
-                  using \<mu>\<nu> VV.arr_char cod_\<mu>\<nu>.tab_simps(2) by auto
+                  using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C cod_\<mu>\<nu>.tab_simps(2) by auto
                 also have "... = Maps.Cod ?Chn_RHS"
                   by (metis (no_types, lifting) "2" Maps.Cod.simps(1) Maps.Cod_comp Maps.seq_char)
                 finally show ?thesis by simp
@@ -10061,7 +10061,7 @@ $$
                 have RHS: "Maps.Map ?Chn_RHS = iso_class (\<mu>\<nu>.chine \<star> dom_\<mu>_\<nu>.cmp)"
                 proof -
                   have "Maps.Map ?Chn_RHS = Maps.Comp \<lbrakk>\<mu>\<nu>.chine\<rbrakk> \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
-                    using \<mu>\<nu> 2 VV.arr_char Maps.Map_comp
+                    using \<mu>\<nu> 2 VV.arr_char\<^sub>S\<^sub>b\<^sub>C Maps.Map_comp
                           Maps.comp_char
                             [of "Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
                                             (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))
@@ -10077,15 +10077,15 @@ $$
                     proof -
                       have "\<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk> \<in>
                             Maps.Hom (src dom_\<mu>_\<nu>.\<rho>\<sigma>.tab) (src (tab_of_ide (dom ?\<mu> \<star> dom ?\<nu>)))"
-                        using \<mu>\<nu> VV.arr_char dom_\<mu>_\<nu>.cmp_props(1-3)
+                        using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C dom_\<mu>_\<nu>.cmp_props(1-3)
                         by (metis (mono_tags, lifting) equivalence_is_left_adjoint mem_Collect_eq)
                       thus ?thesis
-                        using \<mu>\<nu> VV.arr_char dom_\<mu>\<nu>.tab_simps(2) by simp
+                        using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C dom_\<mu>\<nu>.tab_simps(2) by simp
                     qed
                     moreover have "\<lbrakk>\<mu>\<nu>.chine\<rbrakk> \<in>
                                    Maps.Hom (src (tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)))
                                             (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))"
-                      using \<mu>\<nu> VV.arr_char \<mu>\<nu>.chine_in_hom \<mu>\<nu>.is_map by auto
+                      using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<mu>\<nu>.chine_in_hom \<mu>\<nu>.is_map by auto
                     moreover have
                       "\<mu>\<nu>.chine \<star> dom_\<mu>_\<nu>.cmp \<in> Maps.Comp \<lbrakk>\<mu>\<nu>.chine\<rbrakk> \<lbrakk>dom_\<mu>_\<nu>.cmp\<rbrakk>"
                     proof
@@ -10098,7 +10098,7 @@ $$
                       show "\<mu>\<nu>.chine \<in> \<lbrakk>\<mu>\<nu>.chine\<rbrakk>" 
                         using ide_in_iso_class by simp
                       show "\<mu>\<nu>.chine \<star> dom_\<mu>_\<nu>.cmp \<cong> \<mu>\<nu>.chine \<star> dom_\<mu>_\<nu>.cmp"
-                        using \<mu>\<nu> VV.arr_char \<mu>\<nu>.chine_simps dom_\<mu>_\<nu>.cmp_simps dom_\<mu>\<nu>.tab_simps(2)
+                        using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<mu>\<nu>.chine_simps dom_\<mu>_\<nu>.cmp_simps dom_\<mu>\<nu>.tab_simps(2)
                               isomorphic_reflexive
                         by auto
                     qed
@@ -10123,7 +10123,7 @@ $$
                     have "Maps.Map ?Chn_LHS =
                           Maps.Comp \<lbrakk>cod_\<mu>_\<nu>.cmp\<rbrakk>
                                     (Maps.Map (Span.chine_hcomp (SPN ?\<mu>) (SPN ?\<nu>)))"
-                      using \<mu>\<nu> 1 VV.arr_char Maps.Map_comp cod_\<mu>\<nu>.tab_simps(2)
+                      using \<mu>\<nu> 1 VV.arr_char\<^sub>S\<^sub>b\<^sub>C Maps.Map_comp cod_\<mu>\<nu>.tab_simps(2)
                             Maps.comp_char
                               [of "Maps.MkArr (src cod_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0)
                                               (src (tab_of_ide (cod ?\<mu> \<star> cod ?\<nu>)))
@@ -10148,7 +10148,7 @@ $$
                       proof -
                         interpret X: identity_in_bicategory_of_spans V H \<a> \<i> src trg
                                        \<open>(tab\<^sub>0 (dom ?\<mu>))\<^sup>* \<star> tab\<^sub>1 (dom ?\<nu>)\<close>
-                          using \<mu>\<nu> VV.arr_char
+                          using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C
                           by (unfold_locales, simp)
                         have "Maps.PRJ\<^sub>0
                                 (Maps.MkArr (src (tab\<^sub>0 (dom ?\<mu>))) (trg ?\<nu>) \<lbrakk>tab\<^sub>0 (dom ?\<mu>)\<rbrakk>)
@@ -10158,7 +10158,7 @@ $$
                                       Maps.REP (Maps.MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>)
                                                            \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>))\<rbrakk>\<rbrakk>"
                           unfolding Maps.PRJ\<^sub>0_def
-                          using \<mu>\<nu> VV.arr_char dom_\<mu>_\<nu>.RS_simps(1) dom_\<mu>_\<nu>.RS_simps(16)
+                          using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C dom_\<mu>_\<nu>.RS_simps(1) dom_\<mu>_\<nu>.RS_simps(16)
                                 dom_\<mu>_\<nu>.RS_simps(18) dom_\<mu>_\<nu>.RS_simps(3) dom_\<mu>_\<nu>.R\<^sub>0_def
                                 dom_\<mu>_\<nu>.S\<^sub>1_def
                           by auto
@@ -10171,7 +10171,7 @@ $$
                                      Maps.REP (Maps.MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>)
                                                           \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>))\<rbrakk>\<rbrakk>"
                           unfolding Maps.PRJ\<^sub>1_def
-                          using \<mu>\<nu> VV.arr_char dom_\<mu>_\<nu>.RS_simps(1) dom_\<mu>_\<nu>.RS_simps(16)
+                          using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C dom_\<mu>_\<nu>.RS_simps(1) dom_\<mu>_\<nu>.RS_simps(16)
                                 dom_\<mu>_\<nu>.RS_simps(18) dom_\<mu>_\<nu>.RS_simps(3) dom_\<mu>_\<nu>.R\<^sub>0_def
                                 dom_\<mu>_\<nu>.S\<^sub>1_def
                           by auto
@@ -10181,7 +10181,7 @@ $$
                               Maps.REP (Maps.MkArr (src (tab\<^sub>0 (dom ?\<nu>))) (trg ?\<nu>)
                                                    \<lbrakk>tab\<^sub>1 (dom ?\<nu>)\<rbrakk>) \<cong>
                               (tab\<^sub>0 (dom ?\<mu>))\<^sup>* \<star> tab\<^sub>1 (dom ?\<nu>)"
-                          using VV.arr_char \<mu>\<nu> dom_\<mu>_\<nu>.S\<^sub>1_def dom_\<mu>_\<nu>.s.leg1_simps(3)
+                          using VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<mu>\<nu> dom_\<mu>_\<nu>.S\<^sub>1_def dom_\<mu>_\<nu>.s.leg1_simps(3)
                                 dom_\<mu>_\<nu>.s.leg1_simps(4) trg_dom dom_\<mu>_\<nu>.R\<^sub>0_def
                                 dom_\<mu>_\<nu>.prj_tab_agreement(1) isomorphic_symmetric
                           by simp
@@ -10190,7 +10190,7 @@ $$
                       qed
                       thus ?thesis
                         unfolding Span.chine_hcomp_def
-                        using \<mu>\<nu> VV.arr_char SPN_def isomorphic_reflexive
+                        using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C SPN_def isomorphic_reflexive
                               Maps.comp_CLS [of "spn ?\<mu>" dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>1 "spn ?\<mu> \<star> dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>1"]
                               Maps.comp_CLS [of "spn ?\<nu>" dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0 "spn ?\<nu> \<star> dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0"]
                         by simp
@@ -10216,7 +10216,7 @@ $$
                     have "\<lbrakk>\<mu>_\<nu>.chine\<rbrakk> \<in> Maps.Hom (src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src cod_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0)"
                     proof -
                       have "\<guillemotleft>\<mu>_\<nu>.chine : src dom_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0 \<rightarrow> src cod_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0\<guillemotright>"
-                        using \<mu>\<nu> VV.arr_char by simp
+                        using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
                       thus ?thesis
                         using \<mu>_\<nu>.is_map ide_in_iso_class left_adjoint_is_ide by blast
                     qed
@@ -10224,7 +10224,7 @@ $$
                                    Maps.Hom (src cod_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0) (src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)))"
                     proof -
                       have "\<guillemotleft>cod_\<mu>_\<nu>.cmp : src cod_\<mu>_\<nu>.\<rho>\<sigma>.p\<^sub>0 \<rightarrow> src (tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>))\<guillemotright>"
-                        using \<mu>\<nu> VV.arr_char cod_\<mu>_\<nu>.cmp_in_hom cod_\<mu>\<nu>.tab_simps(2)
+                        using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C cod_\<mu>_\<nu>.cmp_in_hom cod_\<mu>\<nu>.tab_simps(2)
                         by simp
                       thus ?thesis
                         using cod_\<mu>_\<nu>.cmp_props equivalence_is_left_adjoint left_adjoint_is_ide
@@ -10267,7 +10267,7 @@ $$
                                          \<open>tab\<^sub>0 (dom ?\<mu> \<star> dom ?\<nu>)\<close>
                                          \<open>tab\<^sub>1 (dom ?\<mu> \<star> dom ?\<nu>)\<close>
                                          \<open>dom ?\<mu>\<nu>\<close>
-                      using \<mu>\<nu> VV.arr_char dom_\<mu>_\<nu>.cmp_interpretation by simp
+                      using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C dom_\<mu>_\<nu>.cmp_interpretation by simp
                     interpret cod_cmp: identity_arrow_of_tabulations_in_maps V H \<a> \<i> src trg
                                         \<open>cod ?\<mu>\<nu>\<close>
                                         cod_\<mu>_\<nu>.\<rho>\<sigma>.tab
@@ -10278,7 +10278,7 @@ $$
                                         \<open>tab\<^sub>0 (cod ?\<mu> \<star> cod ?\<nu>)\<close>
                                         \<open>tab\<^sub>1 (cod ?\<mu> \<star> cod ?\<nu>)\<close>
                                         \<open>cod ?\<mu>\<nu>\<close>
-                      using \<mu>\<nu> VV.arr_char cod_\<mu>_\<nu>.cmp_interpretation by simp
+                      using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C cod_\<mu>_\<nu>.cmp_interpretation by simp
                     interpret L: vertical_composite_of_arrows_of_tabulations_in_maps
                                    V H \<a> \<i> src trg
                                    \<open>dom ?\<mu>\<nu>\<close>
@@ -10295,7 +10295,7 @@ $$
                                    \<open>tab\<^sub>1 (cod ?\<mu>\<nu>)\<close>
                                    \<open>dom ?\<mu>\<nu>\<close>
                                    \<open>?\<mu> \<star> ?\<nu>\<close>
-                      using \<mu>\<nu> VV.arr_char dom_\<mu>_\<nu>.cmp_in_hom
+                      using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C dom_\<mu>_\<nu>.cmp_in_hom
                       by unfold_locales auto
                     interpret R: vertical_composite_of_arrows_of_tabulations_in_maps
                                    V H \<a> \<i> src trg
@@ -10313,15 +10313,15 @@ $$
                                    \<open>tab\<^sub>1 (cod ?\<mu>\<nu>)\<close>
                                    \<open>?\<mu> \<star> ?\<nu>\<close>
                                    \<open>cod ?\<mu>\<nu>\<close>
-                       using \<mu>\<nu> VV.arr_char cod_\<mu>_\<nu>.cmp_in_hom
+                       using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C cod_\<mu>_\<nu>.cmp_in_hom
                        by unfold_locales auto
                     have "\<mu>\<nu>.chine \<star> dom_\<mu>_\<nu>.cmp \<cong> L.chine"
-                      using \<mu>\<nu> VV.arr_char L.chine_char dom_\<mu>_\<nu>.cmp_def isomorphic_symmetric
+                      using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C L.chine_char dom_\<mu>_\<nu>.cmp_def isomorphic_symmetric
                       by simp
                     also have "... = R.chine"
                       using L.is_ide \<mu>\<nu> comp_arr_dom comp_cod_arr isomorphic_reflexive by force
                     also have "... \<cong> cod_\<mu>_\<nu>.cmp \<star> \<mu>_\<nu>.chine"
-                      using \<mu>\<nu> VV.arr_char R.chine_char cod_\<mu>_\<nu>.cmp_def by simp
+                      using \<mu>\<nu> VV.arr_char\<^sub>S\<^sub>b\<^sub>C R.chine_char cod_\<mu>_\<nu>.cmp_def by simp
                     finally show ?thesis by simp
                   qed
                 qed
@@ -10338,7 +10338,7 @@ $$
 
     interpretation \<Xi>: natural_isomorphism VV.comp Span.vcomp
                         HoSPN_SPN.map SPNoH.map \<Xi>.map
-      using VV.ide_char VV.arr_char \<Xi>.map_simp_ide compositor_is_iso
+      using VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<Xi>.map_simp_ide compositor_is_iso
       by (unfold_locales, simp)
 
     lemma compositor_is_natural_transformation:
@@ -10616,7 +10616,7 @@ $$
                            \<open>\<lambda>\<tau>\<mu>\<nu>. arr (fst \<tau>\<mu>\<nu>) \<and> arr (fst (snd \<tau>\<mu>\<nu>)) \<and> arr (snd (snd \<tau>\<mu>\<nu>)) \<and>
                                   src (fst (snd \<tau>\<mu>\<nu>)) = trg (snd (snd \<tau>\<mu>\<nu>)) \<and>
                                   src (fst \<tau>\<mu>\<nu>) = trg (fst (snd \<tau>\<mu>\<nu>))\<close>
-      using fg gh VVV.arr_char VV.arr_char VVV.subcategory_axioms by simp
+      using fg gh VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.subcategory_axioms by simp
 
     text \<open>
       We define abbreviations for the left and right-hand sides of the equation for
@@ -10636,7 +10636,7 @@ $$
 
     lemma arr_LHS:
     shows "Span.arr LHS"
-      using fg gh VVV.arr_char VVV.ide_char VV.arr_char VV.ide_char Span.hseqI'
+      using fg gh VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.ide_char\<^sub>S\<^sub>b\<^sub>C Span.hseqI'
             HoHV_def compositor_in_hom \<alpha>_def
       apply (intro Span.seqI)
           apply simp_all
@@ -10667,7 +10667,7 @@ $$
 
     lemma arr_RHS:
     shows "Span.arr RHS"
-      using fg gh VV.ide_char VV.arr_char \<Phi>.map_simp_ide SPN.FF_def Span.hseqI'
+      using fg gh VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C \<Phi>.map_simp_ide SPN.FF_def Span.hseqI'
       by (intro Span.seqI, simp_all)
 
     lemma par_LHS_RHS:
@@ -10684,9 +10684,9 @@ $$
         also have "... = Span.dom (\<Phi>.map (f, g)) \<circ> Span.dom (SPN h)"
           using arr_LHS Span.dom_hcomp [of "SPN h" "\<Phi>.map (f, g)"] by blast
         also have "... = (SPN f \<circ> SPN g) \<circ> SPN h"
-          using fg \<Phi>.map_simp_ide VV.ide_char VV.arr_char SPN.FF_def by simp
+          using fg \<Phi>.map_simp_ide VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C SPN.FF_def by simp
         also have "... = Span.dom (Span.assoc (SPN f) (SPN g) (SPN h))"
-          using fg gh VVV.arr_char VVV.ide_char VV.arr_char VV.ide_char by simp
+          using fg gh VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.ide_char\<^sub>S\<^sub>b\<^sub>C by simp
         also have "... = Span.dom RHS"
           using \<open>Span.arr RHS\<close> by auto
         finally show ?thesis by blast
@@ -10697,10 +10697,10 @@ $$
           using arr_LHS by simp
         also have "... = SPN (f \<star> g \<star> h)"
           unfolding \<alpha>_def
-          using fg gh VVV.ide_char VVV.arr_char VV.ide_char VV.arr_char HoVH_def
+          using fg gh VVV.ide_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C HoVH_def
           by simp
         also have "... = Span.cod RHS"
-          using arr_RHS fg gh \<Phi>.map_simp_ide VV.ide_char VV.arr_char SPN.FF_def
+          using arr_RHS fg gh \<Phi>.map_simp_ide VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C SPN.FF_def
                 compositor_in_hom
           by simp
         finally show ?thesis by blast
@@ -10716,10 +10716,10 @@ $$
       proof -
         have "Chn LHS = Chn (SPN \<a>[f, g, h]) \<odot> Chn (CMP (f \<star> g) h) \<odot>
                           Chn (CMP f g \<circ> SPN h)"
-          using fg gh arr_LHS \<Phi>.map_simp_ide VV.ide_char VV.arr_char Span.Chn_vcomp
+          using fg gh arr_LHS \<Phi>.map_simp_ide VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C Span.Chn_vcomp
           by auto
         moreover have "Chn (SPN \<a>[f, g, h]) = Maps.CLS HHfgh_HfHgh.chine"
-          using fg gh SPN_def VVV.arr_char VV.arr_char spn_def \<alpha>_def by simp
+          using fg gh SPN_def VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C spn_def \<alpha>_def by simp
         moreover have "Chn (CMP (f \<star> g) h) = Maps.CLS THfgh_HHfgh.chine"
           using fg gh CMP_def THfgh.cmp_def by simp
         moreover have "Chn (CMP f g \<circ> SPN h) = Span.chine_hcomp (CMP f g) (SPN h)"
@@ -10986,13 +10986,13 @@ $$
         finally show ?thesis by blast
       qed
       moreover have "Chn (\<Phi>.map (f, g \<star> h)) = \<lbrakk>\<lbrakk>TfHgh_HfHgh.chine\<rbrakk>\<rbrakk>"
-        using arr_RHS fg gh \<Phi>.map_simp_ide VV.ide_char VV.arr_char CMP_def TfHgh.cmp_def
+        using arr_RHS fg gh \<Phi>.map_simp_ide VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C CMP_def TfHgh.cmp_def
         by simp
       moreover have "Chn (SPN f \<circ> \<Phi>.map (g, h)) = Span.chine_hcomp (SPN f) (CMP g h)"
-        using fg gh Span.hcomp_def \<Phi>.map_simp_ide VV.ide_char VV.arr_char SPN.FF_def
+        using fg gh Span.hcomp_def \<Phi>.map_simp_ide VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C SPN.FF_def
         by simp
       moreover have "Chn (Span.assoc (SPN f) (SPN g) (SPN h)) = tuple_ABC"
-        using fg gh Span.\<alpha>_ide VVV.ide_char VVV.arr_char VV.ide_char VV.arr_char
+        using fg gh Span.\<alpha>_ide VVV.ide_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.ide_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               SPN_fgh.chine_assoc_def Span.\<alpha>_def
         by simp
       moreover have "Span.chine_hcomp (SPN f) (CMP g h) = \<lbrakk>\<lbrakk>TfTgh_TfHgh.chine\<rbrakk>\<rbrakk>"
@@ -14043,7 +14043,7 @@ $$
         assume a': "Span.obj a'"
         let ?a = "Maps.Dom (Chn a')"
         have a: "obj ?a"
-          using a' Span.obj_char Span.ide_char Maps.ide_char by blast
+          using a' Span.obj_char Span.ide_char Maps.ide_char\<^sub>C\<^sub>C by blast
         moreover have "Span.equivalent_objects (SPN.map\<^sub>0 ?a) a'"
         proof -
           have "SPN.map\<^sub>0 ?a = a'"
@@ -14238,12 +14238,12 @@ $$
                 interpret Dom_W: span_in_category Maps.comp \<open>Dom ?W\<close>
                 proof (unfold_locales, intro conjI)
                   show "Maps.arr (Leg0 (Dom ?W))"
-                    apply (intro Maps.arrI)
+                    apply (intro Maps.arrI\<^sub>C\<^sub>C)
                        apply auto
                     by (metis f.base_simps(2) f.satisfies_T0 f.u_in_hom src_hcomp)
                   show "Maps.arr (Leg1 (Dom ?W))"
                     using 1
-                    apply (intro Maps.arrI)
+                    apply (intro Maps.arrI\<^sub>C\<^sub>C)
                        apply auto
                   proof -
                     let ?f = "tab\<^sub>1 (Maps.REP g.leg1 \<star> (Maps.REP g.leg0)\<^sup>*)"

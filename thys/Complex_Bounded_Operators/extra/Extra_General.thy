@@ -10,6 +10,7 @@ theory Extra_General
     "HOL-Library.Complex_Order"
     "HOL-Analysis.Infinite_Sum"
     "HOL-Cardinals.Cardinals"
+    "HOL-Library.Complemented_Lattices"
 begin
 
 subsection \<open>Misc\<close>
@@ -39,17 +40,8 @@ lemma L2_set_mono2:
   shows "L2_set f K \<le> L2_set f L"
 proof-
   have "(\<Sum>i\<in>K. (f i)\<^sup>2) \<le> (\<Sum>i\<in>L. (f i)\<^sup>2)"
-  proof (rule sum_mono2)
-    show "finite L"
-      using a1.
-    show "K \<subseteq> L"
-      using a2.
-    show "0 \<le> (f b)\<^sup>2"
-      if "b \<in> L - K"
-      for b :: 'a
-      using that
-      by simp 
-  qed
+    apply (rule sum_mono2) 
+    using assms by auto
   hence "sqrt (\<Sum>i\<in>K. (f i)\<^sup>2) \<le> sqrt (\<Sum>i\<in>L. (f i)\<^sup>2)"
     by (rule real_sqrt_le_mono)
   thus ?thesis
@@ -202,6 +194,8 @@ proof -
     by (subst everything_the_same[of _ b], simp)
 qed
 
+lemma card_not_singleton: \<open>CARD('a::not_singleton) \<noteq> 1\<close>
+  by (simp add: card_1_singleton_iff)
 
 
 subsection \<open>Topology\<close>
@@ -683,5 +677,35 @@ proof (unfold inj_map_def, rule allI, rule allI, rule impI, erule conjE)
   thus "x = y"
     by (meson inv_into_injective option.inject x_pi y_pi)
 qed
+
+subsection \<open>Lattices\<close>
+
+unbundle lattice_syntax
+
+text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_Inf} 
+  except for the more general sort.\<close>
+lemma uminus_Inf: "- (\<Sqinter>A) = \<Squnion>(uminus ` A)" for A :: \<open>'a::complete_orthocomplemented_lattice set\<close>
+proof (rule order.antisym)
+  show "- \<Sqinter>A \<le> \<Squnion>(uminus ` A)"
+    by (rule compl_le_swap2, rule Inf_greatest, rule compl_le_swap2, rule Sup_upper) simp
+  show "\<Squnion>(uminus ` A) \<le> - \<Sqinter>A"
+    by (rule Sup_least, rule compl_le_swap1, rule Inf_lower) auto
+qed
+
+text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_INF}
+  except for the more general sort.\<close>
+lemma uminus_INF: "- (INF x\<in>A. B x) = (SUP x\<in>A. - B x)" for B :: \<open>'a \<Rightarrow> 'b::complete_orthocomplemented_lattice\<close>
+  by (simp add: uminus_Inf image_image)
+
+text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_Sup}
+  except for the more general sort.\<close>
+lemma uminus_Sup: "- (\<Squnion>A) = \<Sqinter>(uminus ` A)" for A :: \<open>'a::complete_orthocomplemented_lattice set\<close>
+  by (metis (no_types, lifting) uminus_INF image_cong image_ident ortho_involution)
+
+text \<open>The following lemma is identical to @{thm [source] Complete_Lattices.uminus_SUP}
+  except for the more general sort.\<close>
+lemma uminus_SUP: "- (SUP x\<in>A. B x) = (INF x\<in>A. - B x)" for B :: \<open>'a \<Rightarrow> 'b::complete_orthocomplemented_lattice\<close>
+  by (simp add: uminus_Sup image_image)
+
 
 end

@@ -31,13 +31,13 @@ primrec sub_tm :: \<open>(nat \<Rightarrow> tm) \<Rightarrow> tm \<Rightarrow> t
 | \<open>sub_tm s (\<^bold>\<dagger>f ts) = \<^bold>\<dagger>f (map (sub_tm s) ts)\<close>
 
 primrec sub_fm :: \<open>(nat \<Rightarrow> tm) \<Rightarrow> fm \<Rightarrow> fm\<close> where
-  \<open>sub_fm s \<^bold>\<bottom> = \<^bold>\<bottom>\<close>
+  \<open>sub_fm _ \<^bold>\<bottom> = \<^bold>\<bottom>\<close>
 | \<open>sub_fm s (\<^bold>\<ddagger>P ts) = \<^bold>\<ddagger>P (map (sub_tm s) ts)\<close>
 | \<open>sub_fm s (p \<^bold>\<longrightarrow> q) = sub_fm s p \<^bold>\<longrightarrow> sub_fm s q\<close>
 | \<open>sub_fm s (\<^bold>\<forall>p) = \<^bold>\<forall>(sub_fm (\<^bold>#0 \<Zsemi> \<lambda>n. lift_tm (s n)) p)\<close>
 
 abbreviation inst_single :: \<open>tm \<Rightarrow> fm \<Rightarrow> fm\<close> (\<open>\<langle>_\<rangle>\<close>) where
-  \<open>\<langle>t\<rangle>p \<equiv> sub_fm (t \<Zsemi> \<^bold>#) p\<close>
+  \<open>\<langle>t\<rangle> \<equiv> sub_fm (t \<Zsemi> \<^bold>#)\<close>
 
 subsubsection \<open>Variables\<close>
 
@@ -84,14 +84,7 @@ definition fresh :: \<open>fm list \<Rightarrow> nat\<close> where
 
 subsection \<open>Rules\<close>
 
-datatype rule
-  = Idle
-  | Axiom nat \<open>tm list\<close>
-  | FlsL
-  | FlsR
-  | ImpL fm fm
-  | ImpR fm fm
-  | UniL tm fm
-  | UniR fm
+datatype rule =
+  Idle | Axiom nat \<open>tm list\<close> | FlsL | FlsR | ImpL fm fm | ImpR fm fm | UniL tm fm | UniR fm
 
 end

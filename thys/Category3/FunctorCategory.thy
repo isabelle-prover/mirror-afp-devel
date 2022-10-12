@@ -95,7 +95,7 @@ begin
 
     lemma ide_char [iff]:
     shows "ide t \<longleftrightarrow> t \<noteq> null \<and> functor A B (Map t) \<and> Dom t = Map t \<and> Cod t = Map t"
-      using ide_char null_char by fastforce
+      using ide_char\<^sub>C\<^sub>C null_char by fastforce
 
   end
 

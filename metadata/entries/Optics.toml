@@ -25,6 +25,9 @@ note = ""
 [authors.fosters]
 email = "fosters_email"
 
+[authors.laursen]
+email = "laursen_email"
+
 [authors.zeyda]
 email = "zeyda_email"
 
@@ -34,6 +37,27 @@ email = "zeyda_email"
 fosters = "fosters_email"
 
 [history]
+2022-10-05 = """
+Added Scene Spaces, which are used to model variable sets algebraically.
+Improvements to the alphabet command, including additional theorems.
+Additional prisms and associated laws. (revision 771b88d61c21)<br>
+"""
+
+2021-11-15 = """
+Improvement of alphabet and chantype commands to support code generation. 
+Addition of a tactic rename_alpha_vars that removes the subscript vs in proof goals. 
+Bug fixes and improvements to alphabet command ML implementation. 
+Additional laws for scenes. (revisions 9f8bcd71c121 and c061bf9f46f3)<br>
+"""
+
+2021-01-27 = """
+Addition of new theorems throughout, particularly for prisms.
+New chantype command allows the definition of an algebraic datatype with generated prisms.
+New dataspace command allows the definition of a local-based state space, including lenses and prisms. 
+Addition of various examples for the above.
+(revision 89cf045a)<br>
+"""
+
 2020-03-02 = """
 Added partial bijective and symmetric lenses.
 Improved alphabet command generating additional lenses and results.
@@ -42,6 +66,7 @@ Additional theorems throughout.
 Adaptations for Isabelle 2020.
 (revision 44e2e5c)<br>
 """
+
 
 [extra]
 

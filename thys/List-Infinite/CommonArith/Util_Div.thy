@@ -389,8 +389,8 @@ proof -
     assume as1': "r1 \<noteq> r2"
     have diff_le_s: "\<And>a b (m::int). \<lbrakk> 0 \<le> a; b < m \<rbrakk> \<Longrightarrow> b - a < m"
       by simp
-    have s_r1:"0 \<le> r1 \<and> r1 < m" and s_r2:"0 \<le> r2 \<and> r2 < m"
-      by (simp add: as2 a_r1 b_r2 pos_mod_conj)+
+    from as2 a_r1 b_r2 have s_r1:"0 \<le> r1 \<and> r1 < m" and s_r2:"0 \<le> r2 \<and> r2 < m"
+      by simp_all
     have mr2r1:"-m < r2 - r1" and r2r1m:"r2 - r1 < m"
       by (simp add: minus_less_iff[of m] s_r1 s_r2 diff_le_s)+
     have "0 \<le> r2 - r1 \<Longrightarrow> (r2 - r1) mod m = (r2 - r1)"

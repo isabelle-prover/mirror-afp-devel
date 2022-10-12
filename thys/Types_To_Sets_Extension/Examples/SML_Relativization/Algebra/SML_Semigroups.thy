@@ -237,11 +237,6 @@ tts_lemma inj_on_add:
   shows "inj_on ((+\<^sub>o\<^sub>w) a) A"
     is cancel_semigroup_add_class.inj_on_add.
 
-tts_lemma inj_add_left:
-  assumes "a \<in> U"
-  shows "inj_on ((+\<^sub>o\<^sub>w) a) U"
-    is cancel_semigroup_add_class.inj_add_left.
-
 tts_lemma inj_on_add':
   assumes "a \<in> U" and "A \<subseteq> U"
   shows "inj_on (\<lambda>b. b +\<^sub>o\<^sub>w a) A"

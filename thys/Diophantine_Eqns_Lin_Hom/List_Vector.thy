@@ -34,8 +34,7 @@ lemma mods_with_nats:
   assumes "(v::nat) > w"
     and "(v * b) mod a = (w * b) mod a"
   shows "((v - w) * b) mod a = 0"
-  by (metis add_diff_cancel_left' assms left_diff_distrib'
-      less_imp_le mod_mult_self1_is_0 mult_le_mono1 nat_mod_eq_lemma)
+  using assms by (simp add: mod_eq_dvd_iff_nat algebra_simps)
 
 \<comment> \<open>The 0-vector of length \<open>n\<close>.\<close>
 abbreviation zeroes :: "nat \<Rightarrow> nat list"

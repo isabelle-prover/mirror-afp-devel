@@ -20,7 +20,8 @@ The GoTo rule is restricted using a notion of potential such that each
 application consumes potential and potential is earned through applications of
 the remaining rules. I show that if a branch can be closed then it can
 be closed starting from a single unit. Finally, Nom is restricted by
-a fixed set of allowed nominals. The resulting system should be terminating."""
+a fixed set of allowed nominals. The resulting system should be terminating.
+Paper: <a href=\"https://doi.org/10.4230/LIPIcs.TYPES.2020.5\">doi.org/10.4230/LIPIcs.TYPES.2020.5</a>."""
 license = "bsd"
 note = ""
 

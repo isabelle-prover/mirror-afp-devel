@@ -616,7 +616,7 @@ proof (subst Bernstein_changes_01_eq_changes[OF hP])
             apply (rule proots_count_of_root[of _ "of_real (1/x - 1)"])
               apply simp
              apply (auto simp: bij_image_Collect_eq bij_def inj_def image_iff
-                    inverse_eq_divide inj_imp_inv_eq[of _ "\<lambda> x. x+1"] hx)[1]
+                    inverse_eq_divide inj_imp_inv_eq[of _ "\<lambda> x. x+1"] hx simp del: surj_plus_right)[1]
             by force
 
           ultimately have "proots_count
