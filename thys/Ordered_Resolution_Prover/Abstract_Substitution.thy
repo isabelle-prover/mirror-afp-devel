@@ -1015,8 +1015,15 @@ lemma strict_subset_subst_strictly_subsumes: "C \<cdot> \<eta> \<subset># D \<Lo
   by (metis leD mset_subset_size size_mset_mono size_subst strictly_subsumes_def
       subset_mset.dual_order.strict_implies_order substitution_ops.subsumes_def)
 
-lemma generalizes_refl: "generalizes C C"
-  unfolding generalizes_def by (rule exI[of _ id_subst]) auto
+lemma generalizes_lit_refl[simp]: "generalizes_lit L L"
+  unfolding generalizes_lit_def by (rule exI[of _ id_subst]) simp
+
+lemma generalizes_lit_trans:
+  "generalizes_lit L1 L2 \<Longrightarrow> generalizes_lit L2 L3 \<Longrightarrow> generalizes_lit L1 L3"
+  unfolding generalizes_lit_def using subst_lit_comp_subst by blast
+
+lemma generalizes_refl[simp]: "generalizes C C"
+  unfolding generalizes_def by (rule exI[of _ id_subst]) simp
 
 lemma generalizes_trans: "generalizes C D \<Longrightarrow> generalizes D E \<Longrightarrow> generalizes C E"
   unfolding generalizes_def using subst_cls_comp_subst by blast
