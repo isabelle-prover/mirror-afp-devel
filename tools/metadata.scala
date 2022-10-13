@@ -132,7 +132,7 @@ object Metadata {
   sealed trait Reference
 
   case class DOI(identifier: String) extends Reference {
-    require("^10.([1-9][0-9]{3})/(.+)".r.matches(identifier),
+    require("^10.([1-9][0-9]{3,})/(.+)".r.matches(identifier),
       "invalid format for DOI: " + quote(identifier))
 
     def uri: URI = new URI("doi:" + identifier)
