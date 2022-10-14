@@ -69,7 +69,7 @@ class AFP_Structure private(val base_dir: Path) {
   /* save */
 
   private def save(file: Path, content: afp.TOML.T): Unit = {
-    file.file.mkdirs()
+    file.dir.file.mkdirs()
     File.write(file, TOML.Format(content))
   }
 
