@@ -29,7 +29,10 @@ sig
   val instantiate_property_update: Proof.context -> term -> thm -> thm option
 end;
 
-structure Property : PROPERTY =
+functor Property(
+  structure Basic_UtilBase: BASIC_UTIL_BASE;
+  structure UtilLogic : UTIL_LOGIC
+  ) : PROPERTY =
 struct
 
 (* Rules deriving new properties of t from other properties of t. They
@@ -64,7 +67,7 @@ structure FieldData = Theory_Data (
 (* Whether the term is a property predicate applied to a term. *)
 fun is_property t =
     let
-      val _ = assert (fastype_of t = boolT) "is_property: wrong type"
+      val _ = assert (fastype_of t = Basic_UtilBase.boolT) "is_property: wrong type"
       val (f, ts) = Term.strip_comb t
     in
       if length ts <> 1 orelse not (Term.is_Const f) then false else
@@ -72,7 +75,7 @@ fun is_property t =
         val T = fastype_of (the_single ts)
         val (dT, _) = Term.strip_type T
       in
-        length dT = 0 andalso T <> boolT
+        length dT = 0 andalso T <> Basic_UtilBase.boolT
       end
     end
 
@@ -131,7 +134,7 @@ fun get_property_arg t =
 
 (* Return the argument of the property theorem as a cterm. *)
 fun get_property_arg_th th =
-    Thm.dest_arg (cprop_of' th)
+    Thm.dest_arg (UtilLogic.cprop_of' th)
     handle CTERM _ => raise Fail "get_property_carg"
          | Fail "dest_Trueprop" => raise Fail "get_property_carg"
 
@@ -252,4 +255,3 @@ fun instantiate_property_update ctxt t th =
 
 end  (* structure Property. *)
 
-val add_property_field_const = Property.add_property_field_const

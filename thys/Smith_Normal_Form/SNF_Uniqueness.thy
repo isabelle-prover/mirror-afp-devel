@@ -51,7 +51,7 @@ proof -
   from this obtain g where inj_on_g: "inj_on g {0..<k}" and gk_S: "g`{0..<k} = S"
     unfolding bij_betw_def by blast
   let ?f = "strict_from_inj k g"
-  have "strict_mono_on ?f {0..<k}" by (rule strict_strict_from_inj[OF inj_on_g])
+  have "strict_mono_on {0..<k} ?f" by (rule strict_strict_from_inj[OF inj_on_g])
   hence 1: "inj_on ?f {0..<k}" using strict_mono_on_imp_inj_on by blast
   have 2: "?f`{0..<k} = S" by (simp add: strict_from_inj_image' inj_on_g gk_S)
   have 3: "\<forall>i\<in>{0..<k}. i \<le> ?f i"

@@ -326,22 +326,22 @@ next
 
     then obtain au where au_def: "Some au = a \<oplus> u"
       "au ## (T f' \<ominus> T f) \<Longrightarrow> (\<exists>a' u'. (a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc A a' u' u)"
-      using \<open>\<And>u a T. (a, u, T) \<in> S \<Longrightarrow> \<exists>au. Some au = a \<oplus> u \<and> (au ## T f' \<ominus> T f \<longrightarrow> (\<exists>a' u'. (a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc A a' u' u))\<close> asm0 by blast
+      using ** asm0 by blast
     then show "\<exists>au. Some au = a \<oplus> u \<and> (au ## (T f'' \<ominus> T f) \<longrightarrow> (\<exists>a' u'. (a', u', T) \<in> S'' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f'' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc (AStar A B) a' u' u))"
     proof (cases "au ## (T f'' \<ominus> T f)")
       case True
       moreover have "mono_transformer T" using \<open>valid_package_set S f\<close> valid_package_set_def asm0 by fastforce
       ultimately have "au ## (T f'' \<ominus> T f') \<and> au ## (T f' \<ominus> T f)" using asso3 commutative defined_def f_def
         by metis
-      then obtain a' u' where "(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc A a' u' u"
+      then obtain a' u' where r3: "(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc A a' u' u"
         using au_def(2) by blast
 
       then obtain au' where au'_def: "Some au' = a' \<oplus> u'"
         "au' ## (T f'' \<ominus> T f') \<Longrightarrow> (\<exists>a'' u''. (a'', u'', T) \<in> S'' \<and> |a''| \<succeq> |a'| \<and> au' \<oplus> (T f'' \<ominus> T f') = a'' \<oplus> u'' \<and> u'' \<succeq> u' \<and> package_sat pc B a'' u'' u')"
-        using \<open>\<And>u a T. (a, u, T) \<in> S' \<Longrightarrow> \<exists>au. Some au = a \<oplus> u \<and> (au ## T f'' \<ominus> T f' \<longrightarrow> (\<exists>a' u'. (a', u', T) \<in> S'' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f'' \<ominus> T f') = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc B a' u' u))\<close> by blast
+        by (meson package_logic.package_rhs_connection_instantiate package_logic_axioms r2)      
       moreover have "au' ## T f'' \<ominus> T f'"
-        using True \<open>(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc A a' u' u\<close> calculation(1) commutative defined_sum_move f_def by fastforce
-      ultimately obtain a'' u'' where "(a'', u'', T) \<in> S'' \<and> |a''| \<succeq> |a'| \<and> au' \<oplus> (T f'' \<ominus> T f') = a'' \<oplus> u'' \<and> u'' \<succeq> u' \<and> package_sat pc B a'' u'' u'"
+        using True r3 calculation(1) commutative defined_sum_move f_def by fastforce
+      ultimately obtain a'' u'' where r4: "(a'', u'', T) \<in> S'' \<and> |a''| \<succeq> |a'| \<and> au' \<oplus> (T f'' \<ominus> T f') = a'' \<oplus> u'' \<and> u'' \<succeq> u' \<and> package_sat pc B a'' u'' u'"
         by blast
 
       then have "au \<oplus> (T f'' \<ominus> T f) = a'' \<oplus> u''"
@@ -351,17 +351,18 @@ next
         also have "... = splus (Some au) (splus (Some (T f'' \<ominus> T f')) (Some (T f' \<ominus> T f)))"
           using f_def by auto
         finally show ?thesis 
-          by (metis (full_types) \<open>(a'', u'', T) \<in> S'' \<and> |a''| \<succeq> |a'| \<and> au' \<oplus> (T f'' \<ominus> T f') = a'' \<oplus> u'' \<and> u'' \<succeq> u' \<and> package_sat pc B a'' u'' u'\<close> \<open>(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc A a' u' u\<close> au'_def(1) splus.simps(3) splus_asso splus_comm)
+          by (metis (full_types) r3 r4 au'_def(1) splus.simps(3) splus_asso splus_comm)
       qed
       moreover have "package_sat pc (AStar A B) a'' u'' u"
       proof (rule package_satI)
         assume "pc |a''|"
         then have "pc |a'|"
-          by (metis AStar.prems(3) \<open>(a'', u'', T) \<in> S'' \<and> |a''| \<succeq> |a'| \<and> au' \<oplus> (T f'' \<ominus> T f') = a'' \<oplus> u'' \<and> u'' \<succeq> u' \<and> package_sat pc B a'' u'' u'\<close> greater_equiv minus_core minus_core_weaker minus_equiv_def mono_pure_cond_def pure_def)
+          by (metis AStar.prems(3) r4 greater_equiv minus_core minus_core_weaker minus_equiv_def mono_pure_cond_def pure_def)
         then obtain x where "Some x = |a'| \<oplus> (u' \<ominus> u) \<and> sat A x"
-          using \<open>(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc A a' u' u\<close> package_sat_def by fastforce
+          using r3 package_sat_def by fastforce
         then obtain x' where "Some x' = |a''| \<oplus> (u'' \<ominus> u') \<and> sat B x'"
-          using \<open>(a'', u'', T) \<in> S'' \<and> |a''| \<succeq> |a'| \<and> au' \<oplus> (T f'' \<ominus> T f') = a'' \<oplus> u'' \<and> u'' \<succeq> u' \<and> package_sat pc B a'' u'' u'\<close> \<open>pc |a''|\<close> package_sat_def by auto
+          using \<open>pc |a''|\<close> package_sat_def r4 by presburger
+
         have "u'' \<succeq> u'' \<ominus> u"
           by (metis minus_default minus_smaller succ_refl)
         moreover have "a'' ## u''"
@@ -369,9 +370,9 @@ next
         ultimately obtain x'' where "Some x'' = |a''| \<oplus> (u'' \<ominus> u)"
           by (metis commutative defined_def max_projection_prop_pure_core mpp_smaller not_None_eq smaller_compatible)
         moreover have "Some (u'' \<ominus> u) = (u'' \<ominus> u') \<oplus> (u' \<ominus> u)"
-          using \<open>(a'', u'', T) \<in> S'' \<and> |a''| \<succeq> |a'| \<and> au' \<oplus> (T f'' \<ominus> T f') = a'' \<oplus> u'' \<and> u'' \<succeq> u' \<and> package_sat pc B a'' u'' u'\<close> \<open>(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc A a' u' u\<close> commutative minus_and_plus minus_equiv_def by presburger
+          using r4 \<open>(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc A a' u' u\<close> commutative minus_and_plus minus_equiv_def by presburger
         moreover have "|a''| \<succeq> |a'|"
-          using \<open>(a'', u'', T) \<in> S'' \<and> |a''| \<succeq> |a'| \<and> au' \<oplus> (T f'' \<ominus> T f') = a'' \<oplus> u'' \<and> u'' \<succeq> u' \<and> package_sat pc B a'' u'' u'\<close> by blast
+          using r4 by blast
         moreover have "Some |a''| = |a'| \<oplus> |a''|"
           by (metis (no_types, lifting) calculation(3) core_is_pure sep_algebra.asso1 sep_algebra.minus_exists sep_algebra_axioms)
         ultimately have "Some x'' = x' \<oplus> x"
@@ -381,7 +382,7 @@ next
           using \<open>Some x = |a'| \<oplus> (u' \<ominus> u) \<and> sat A x\<close> \<open>Some x' = |a''| \<oplus> (u'' \<ominus> u') \<and> sat B x'\<close> \<open>Some x'' = |a''| \<oplus> (u'' \<ominus> u)\<close> commutative by fastforce
       qed
       ultimately show ?thesis
-        using \<open>(a'', u'', T) \<in> S'' \<and> |a''| \<succeq> |a'| \<and> au' \<oplus> (T f'' \<ominus> T f') = a'' \<oplus> u'' \<and> u'' \<succeq> u' \<and> package_sat pc B a'' u'' u'\<close> \<open>(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> (T f' \<ominus> T f) = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc A a' u' u\<close> au_def(1) succ_trans by blast
+        using r3 r4 au_def(1) succ_trans by blast
     next
       case False
       then show ?thesis
@@ -448,7 +449,7 @@ next
     fix a u T assume asm0: "(a, u, T) \<in> S"
 
     then obtain au where "Some au = a \<oplus> u" using \<open>valid_package_set S f\<close> valid_package_set_def defined_def by auto
-    then have "(\<exists>a' u'. (a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> Some au = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc (ASem B) a' u' u)"
+    then have r0: "(\<exists>a' u'. (a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> Some au = a' \<oplus> u' \<and> u' \<succeq> u \<and> package_sat pc (ASem B) a' u' u)"
     proof -
       let ?b = "witness (a, u, T)"
       let ?a = "a \<ominus> ?b"
@@ -458,7 +459,7 @@ next
         case True
         then have "(?a, ?u, T) \<in> S'" using ASem.hyps(2) asm0 by blast
         then have "a \<succeq> ?b \<and> B ?b" using ASem.hyps(1) True asm0 by blast
-        moreover have "(?a, ?u, T) \<in> S' \<and> |?a| \<succeq> |a| \<and> Some au = ?a \<oplus> ?u \<and> ?u \<succeq> u"
+        moreover have r1: "(?a, ?u, T) \<in> S' \<and> |?a| \<succeq> |a| \<and> Some au = ?a \<oplus> ?u \<and> ?u \<succeq> u"
         proof
           show "(a \<ominus> witness (a, u, T), the (u \<oplus> witness (a, u, T)), T) \<in> S'"
             by (simp add: \<open>(a \<ominus> witness (a, u, T), the (u \<oplus> witness (a, u, T)), T) \<in> S'\<close>)
@@ -482,9 +483,9 @@ next
           have "Some ?u = u \<oplus> ?b"
             by (metis (no_types, lifting) \<open>Some au = a \<oplus> u\<close> calculation(1) commutative minus_equiv_def option.distinct(1) option.exhaust_sel sep_algebra.asso3 sep_algebra_axioms)
           moreover have "?a ## ?u"
-            by (metis \<open>(a \<ominus> witness (a, u, T), the (u \<oplus> witness (a, u, T)), T) \<in> S' \<and> |a \<ominus> witness (a, u, T)| \<succeq> |a| \<and> Some au = a \<ominus> witness (a, u, T) \<oplus> the (u \<oplus> witness (a, u, T)) \<and> the (u \<oplus> witness (a, u, T)) \<succeq> u\<close> defined_def option.distinct(1))
+            by (metis r1 defined_def option.distinct(1))
           moreover have "?u \<succeq> ?u \<ominus> u"
-            using \<open>(a \<ominus> witness (a, u, T), the (u \<oplus> witness (a, u, T)), T) \<in> S' \<and> |a \<ominus> witness (a, u, T)| \<succeq> |a| \<and> Some au = a \<ominus> witness (a, u, T) \<oplus> the (u \<oplus> witness (a, u, T)) \<and> the (u \<oplus> witness (a, u, T)) \<succeq> u\<close> minus_smaller by blast
+            using r1 minus_smaller by blast
           ultimately obtain x where "Some x = |a \<ominus> ?b| \<oplus> (?u \<ominus> u)"
             by (metis (no_types, opaque_lifting) \<open>a \<succeq> witness (a, u, T) \<and> B (witness (a, u, T))\<close> commutative defined_def minus_core minus_equiv_def option.exhaust smaller_compatible)
           moreover have "x \<succeq> ?b"
@@ -634,18 +635,18 @@ lemma sat_star_exists_bigger:
       and "wf_assertion B"
   shows "\<exists>a b. |a| \<succeq> |\<phi>| \<and> |b| \<succeq> |\<phi>| \<and> Some \<phi> = a \<oplus> b \<and> sat A a \<and> sat B b"
 proof -
-  obtain a b where "Some \<phi> = a \<oplus> b \<and> sat A a \<and> sat B b"
+  obtain a b where "Some \<phi> = a \<oplus> b" "sat A a" "sat B b"
     using assms sat.simps(1) by blast
   then obtain a' b' where "Some a' = a \<oplus> |\<phi>|" "Some b' = b \<oplus> |\<phi>|"
     by (meson defined_def greater_def greater_equiv option.collapse smaller_compatible_core)
   then have "a' \<succeq> a \<and> b' \<succeq> b"
     using greater_def by blast
   then have "sat A a' \<and> sat B b'"
-    using \<open>Some \<phi> = a \<oplus> b \<and> sat A a \<and> sat B b\<close> \<open>Some a' = a \<oplus> |\<phi>|\<close> \<open>Some b' = b \<oplus> |\<phi>|\<close> assms(2) assms(3) core_is_pure pure_def wf_assertion_sat_larger_pure by blast
+    by (metis \<open>Some a' = a \<oplus> |\<phi>|\<close> \<open>Some b' = b \<oplus> |\<phi>|\<close> \<open>sat A a\<close> \<open>sat B b\<close> assms(2) assms(3) max_projection_prop_pure_core mpp_prop package_logic.wf_assertion_sat_larger_pure package_logic_axioms)
   moreover have "Some \<phi> = a' \<oplus> b'"
-    by (metis (no_types, lifting) \<open>Some \<phi> = a \<oplus> b \<and> sat A a \<and> sat B b\<close> \<open>Some a' = a \<oplus> |\<phi>|\<close> \<open>Some b' = b \<oplus> |\<phi>|\<close> asso1 commutative core_is_smaller)
+    by (metis (no_types, lifting) \<open>Some \<phi> = a \<oplus> b\<close> \<open>Some a' = a \<oplus> |\<phi>|\<close> \<open>Some b' = b \<oplus> |\<phi>|\<close> asso1 commutative core_is_smaller)
   ultimately show ?thesis
-    by (metis \<open>Some \<phi> = a \<oplus> b \<and> sat A a \<and> sat B b\<close> \<open>Some a' = a \<oplus> |\<phi>|\<close> \<open>Some b' = b \<oplus> |\<phi>|\<close> commutative greater_def smaller_than_core succ_refl)
+    by (metis \<open>Some a' = a \<oplus> |\<phi>|\<close> \<open>Some b' = b \<oplus> |\<phi>|\<close> commutative extract_core greater_equiv max_projection_prop_pure_core mpp_mono)
 qed
 
 lemma let_pair_instantiate:
@@ -719,7 +720,7 @@ proof (induct A arbitrary: S pc f1 f2)
   case (AImp b A)
   let ?pc = "bool_conj pc b"
 
-  have "\<exists>S'. package_rhs \<phi> f S (bool_conj pc b) A \<phi> f S' \<and> (\<forall>a\<in>S'. case a of (a', u', T) \<Rightarrow> \<exists>a u. (a, u, T) \<in> S \<and> a' \<succeq> f2 a u T \<and> |a'| = |a| )"
+  have r0: "\<exists>S'. package_rhs \<phi> f S (bool_conj pc b) A \<phi> f S' \<and> (\<forall>a\<in>S'. case a of (a', u', T) \<Rightarrow> \<exists>a u. (a, u, T) \<in> S \<and> a' \<succeq> f2 a u T \<and> |a'| = |a| )"
   proof (rule AImp(1))
     show "valid_package_set S f"
       by (simp add: AImp.prems(2))
@@ -729,7 +730,7 @@ proof (induct A arbitrary: S pc f1 f2)
     show "stable f \<and> \<phi> ## f" using \<open>stable f \<and> \<phi> ## f\<close> by simp
 
     fix a u T
-    assume asm0: "(a, u, T) \<in> S" 
+    assume asm0: "(a, u, T) \<in> S"
     then have "Some a = f1 a u T \<oplus> f2 a u T"
       using AImp.prems(1) by blast
     moreover have "bool_conj pc b |a| \<Longrightarrow> sat A (the ( |a| \<oplus> f1 a u T))"
@@ -760,7 +761,7 @@ proof (induct A arbitrary: S pc f1 f2)
   moreover have "package_rhs \<phi> f S pc (AImp b A) \<phi> f S'"
     by (simp add: package_rhs.AImp r(1))
   ultimately show ?case
-    using \<open>\<exists>S'. package_rhs \<phi> f S (bool_conj pc b) A \<phi> f S' \<and> (\<forall>a\<in>S'. case a of (a', u', T) \<Rightarrow> \<exists>a u. (a, u, T) \<in> S \<and> a' \<succeq> f2 a u T \<and> |a'| = |a| )\<close> package_rhs.AImp by blast
+    using r0 package_rhs.AImp by blast
 next
   case (ASem A)
   let ?witness = "\<lambda>(a, u, T). the ( |a| \<oplus> f1 a u T)"
@@ -778,22 +779,21 @@ next
     then have "b = the ( |a| \<oplus> f1 a u T)" by fastforce
     moreover have "pc |a|"
       by (meson ASem.prems(4) asm0(2) mono_pure_cond_def)
-    then have "|f1 a u T| \<succeq> |a| \<and> Some a = f1 a u T \<oplus> f2 a u T \<and> sat (ASem A) (the ( |a| \<oplus> f1 a u T))"
+    then obtain "|f1 a u T| \<succeq> |a|" "Some a = f1 a u T \<oplus> f2 a u T" "sat (ASem A) (the ( |a| \<oplus> f1 a u T))"
       using ASem.prems(1) asm0(1) by blast
     then have "Some b = |a| \<oplus> f1 a u T" by (metis calculation commutative defined_def minus_bigger minus_core option.exhaust_sel smaller_compatible_core)
     moreover have "a \<succeq> b"
     proof -
       have "a \<succeq> f1 a u T"
-        using \<open>|f1 a u T| \<succeq> |a| \<and> Some a = f1 a u T \<oplus> f2 a u T \<and> sat (ASem A) (the ( |a| \<oplus> f1 a u T))\<close> asso1 calculation(2) commutative core_is_smaller greater_def by metis
+        using \<open>Some a = f1 a u T \<oplus> f2 a u T\<close> greater_def by blast
       then show ?thesis
         by (metis calculation(2) commutative max_projection_prop_pure_core mpp_smaller sep_algebra.mpp_prop sep_algebra_axioms smaller_pure_sum_smaller)
     qed
     ultimately show "a \<succeq> b \<and> A b"
-      using \<open>|f1 a u T| \<succeq> |a| \<and> Some a = f1 a u T \<oplus> f2 a u T \<and> sat (ASem A) (the ( |a| \<oplus> f1 a u T))\<close> commutative greater_def max_projection_prop_def max_projection_prop_pure_core sat.simps(3) smaller_pure_sum_smaller
-      by metis
+      using \<open>sat (ASem A) (the ( |a| \<oplus> f1 a u T))\<close> sat.simps(3) by blast
   qed
 
-  moreover have "\<And>a' u' T. (a', u', T) \<in> S' \<Longrightarrow> (\<exists>a u. (a, u, T) \<in> S \<and> a' \<succeq> f2 a u T \<and> |a'| = |a| )"
+  moreover have r0: "\<And>a' u' T. (a', u', T) \<in> S' \<Longrightarrow> (\<exists>a u. (a, u, T) \<in> S \<and> a' \<succeq> f2 a u T \<and> |a'| = |a| )"
   proof -
     fix a' u' T assume asm0: "(a', u', T) \<in> S'"
     then show "\<exists>a u. (a, u, T) \<in> S \<and> a' \<succeq> f2 a u T \<and> |a'| = |a| "
@@ -842,14 +842,14 @@ next
   \<and> Some (?f2 a u T) = ?fB a u T \<oplus> f2 a u T"
   proof -
     fix a u T assume asm0: "(a, u, T) \<in> S"
-    then have "Some a = f1 a u T \<oplus> f2 a u T \<and> (pc |a| \<longrightarrow> sat (AStar A B) (the ( |a| \<oplus> f1 a u T)))"
+    then have r0: "Some a = f1 a u T \<oplus> f2 a u T \<and> (pc |a| \<longrightarrow> sat (AStar A B) (the ( |a| \<oplus> f1 a u T)))"
       using AStar.prems(1) by blast
     then have "\<exists>x y. Some (the ( |a| \<oplus> f1 a u T )) = x \<oplus> y \<and> (pc |a| \<longrightarrow> sat A x) \<and> (pc |a| \<longrightarrow> sat B y) \<and>
       x \<succeq> |(the ( |a| \<oplus> f1 a u T))| \<and> y \<succeq> |(the ( |a| \<oplus> f1 a u T))|"
     proof (cases "pc |a|")
       case True
       then show ?thesis
-        using AStar.prems(3) \<open>Some a = f1 a u T \<oplus> f2 a u T \<and> (pc |a| \<longrightarrow> sat (AStar A B) (the ( |a| \<oplus> f1 a u T)))\<close>
+        using AStar.prems(3) r0
           max_projection_prop_def[of pure core] max_projection_prop_pure_core
           sat_star_exists_bigger[of A B "(the ( |a|  \<oplus> f1 a u T))"]
           succ_trans[of ] wf_assertion.simps(1)[of A B]
@@ -863,41 +863,38 @@ next
     then obtain x y where "Some (the ( |a| \<oplus> f1 a u T)) = x \<oplus> y" "pc |a| \<longrightarrow> sat A x" "pc |a| \<longrightarrow> sat B y"
       "x \<succeq> |(the ( |a| \<oplus> f1 a u T))|" "y \<succeq> |(the ( |a| \<oplus> f1 a u T))|" by blast
     moreover obtain af where "Some af = |a| \<oplus> f1 a u T"
-      by (metis \<open>Some a = f1 a u T \<oplus> f2 a u T \<and> (pc |a| \<longrightarrow> sat (AStar A B) (the ( |a| \<oplus> f1 a u T)))\<close> commutative defined_def minus_bigger minus_core option.exhaust_sel smaller_compatible_core)
+      by (metis r0 commutative defined_def minus_bigger minus_core option.exhaust_sel smaller_compatible_core)
     ultimately have "Some (f1 a u T) = x \<oplus> y"
-      by (metis AStar.prems(1) \<open>Some a = f1 a u T \<oplus> f2 a u T \<and> (pc |a| \<longrightarrow> sat (AStar A B) (the ( |a| \<oplus> f1 a u T)))\<close> asm0 commutative core_is_smaller greater_def max_projection_prop_pure_core mpp_mono option.sel succ_antisym)
+      by (metis AStar.prems(1) r0 asm0 commutative core_is_smaller greater_def max_projection_prop_pure_core mpp_mono option.sel succ_antisym)
     moreover have "|a| ## x \<and> |a| ## y"
       by (metis \<open>Some af = |a| \<oplus> f1 a u T\<close> calculation commutative defined_def option.discI sep_algebra.asso3 sep_algebra_axioms)
     then have "the ( |a| \<oplus> x) \<succeq> x \<and> the ( |a| \<oplus> y) \<succeq> y"
       using commutative defined_def greater_def by auto
 
-    ultimately have "pc |a| \<Longrightarrow> sat A (the ( |a| \<oplus> x)) \<and> sat B (the ( |a| \<oplus> y))"
+    ultimately have pc_implies_sat: "pc |a| \<Longrightarrow> sat A (the ( |a| \<oplus> x)) \<and> sat B (the ( |a| \<oplus> y))"
       by (metis AStar.prems(3) \<open>pc |a| \<longrightarrow> sat A x\<close> \<open>pc |a| \<longrightarrow> sat B y\<close> \<open>|a| ## x \<and> |a| ## y\<close> commutative defined_def max_projection_prop_pure_core option.exhaust_sel package_logic.wf_assertion.simps(1) package_logic_axioms sep_algebra.mpp_prop sep_algebra_axioms wf_assertion_sat_larger_pure)
 
-    have "\<exists>y. Some (f1 a u T) = ?fA a u T \<oplus> y \<and> |?fA a u T| \<succeq> |f1 a u T| \<and> |y| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat A (the ( |a| \<oplus> ?fA a u T)) \<and> sat B (the ( |a| \<oplus> y)))"
+    have r1: "\<exists>y. Some (f1 a u T) = ?fA a u T \<oplus> y \<and> |?fA a u T| \<succeq> |f1 a u T| \<and> |y| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat A (the ( |a| \<oplus> ?fA a u T)) \<and> sat B (the ( |a| \<oplus> y)))"
     proof (rule someI_ex)
       show "\<exists>x y. Some (f1 a u T) = x \<oplus> y \<and> |x| \<succeq> |f1 a u T| \<and> |y| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat A (the ( |a| \<oplus> x)) \<and> sat B (the ( |a| \<oplus> y)))"
-        using \<open>Some (f1 a u T) = x \<oplus> y\<close> \<open>Some (the ( |a| \<oplus> f1 a u T)) = x \<oplus> y\<close> \<open>pc |a| \<Longrightarrow> sat A (the ( |a| \<oplus> x)) \<and> sat B (the ( |a| \<oplus> y))\<close> \<open>x \<succeq> |the ( |a| \<oplus> f1 a u T)|\<close> \<open>y \<succeq> |the ( |a| \<oplus> f1 a u T)|\<close> core_is_pure max_projection_propE(3) max_projection_prop_pure_core option.sel pure_def
+        using \<open>Some (f1 a u T) = x \<oplus> y\<close> \<open>Some (the ( |a| \<oplus> f1 a u T)) = x \<oplus> y\<close> pc_implies_sat \<open>x \<succeq> |the ( |a| \<oplus> f1 a u T)|\<close> \<open>y \<succeq> |the ( |a| \<oplus> f1 a u T)|\<close> core_is_pure max_projection_propE(3) max_projection_prop_pure_core option.sel pure_def
         by (metis AStar.prems(1) asm0 minusI minus_core)
     qed
-    then obtain yy where "Some (f1 a u T) = ?fA a u T \<oplus> yy \<and> |?fA a u T| \<succeq> |f1 a u T| \<and> |yy| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat A (the ( |a| \<oplus> ?fA a u T)) \<and> sat B (the ( |a| \<oplus> yy)))"
+    then obtain yy where yy_prop: "Some (f1 a u T) = ?fA a u T \<oplus> yy \<and> |?fA a u T| \<succeq> |f1 a u T| \<and> |yy| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat A (the ( |a| \<oplus> ?fA a u T)) \<and> sat B (the ( |a| \<oplus> yy)))"
       by blast
-    moreover have "Some (f1 a u T) = ?fA a u T \<oplus> ?fB a u T \<and> |?fB a u T| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat B (the ( |a| \<oplus> ?fB a u T)))"
+    moreover have r2: "Some (f1 a u T) = ?fA a u T \<oplus> ?fB a u T \<and> |?fB a u T| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat B (the ( |a| \<oplus> ?fB a u T)))"
     proof (rule someI_ex)
       show "\<exists>y. Some (f1 a u T) = ?fA a u T \<oplus> y \<and> |y| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat B (the ( |a| \<oplus> y)))"
-        using \<open>\<exists>y. Some (f1 a u T) = ?fA a u T \<oplus> y \<and> |?fA a u T| \<succeq> |f1 a u T| \<and> |y| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat A (the ( |a| \<oplus> ?fA a u T)) \<and> sat B (the ( |a| \<oplus> y)))\<close>
-        by blast
+        using r1 by blast
     qed
     ultimately have "?fB a u T \<oplus> f2 a u T \<noteq> None"
-      using \<open>Some a = f1 a u T \<oplus> f2 a u T \<and> (pc |a| \<longrightarrow> sat (AStar A B) (the ( |a| \<oplus> f1 a u T)))\<close>
+      using r0
         option.distinct(1) [of ] option.exhaust_sel[of "?fB a u T \<oplus> f2 a u T"] asso2[of "?fA a u T" "?fB a u T" "f1 a u T" "f2 a u T"]
       by metis
-    then show "Some (f1 a u T) = ?fA a u T \<oplus> ?fB a u T \<and> |?fA a u T| \<succeq> |f1 a u T| \<and> |?fB a u T| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat A (the ( |a| \<oplus> ?fA a u T)) \<and> sat B (the ( |a| \<oplus> ?fB a u T)))
-\<and> Some (?f2 a u T) = ?fB a u T \<oplus> f2 a u T"
-      using \<open>Some a = f1 a u T \<oplus> f2 a u T \<and> (pc |a| \<longrightarrow> sat (AStar A B) (the ( |a| \<oplus> f1 a u T)))\<close>
- option.distinct(1) option.exhaust_sel[of "?fB a u T \<oplus> f2 a u T"] asso2[of "?fA a u T" "?fB a u T" "f1 a u T" "f2 a u T"]
-\<open>Some (f1 a u T) = ?fA a u T \<oplus> ?fB a u T \<and> |?fB a u T| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat B (the ( |a| \<oplus> ?fB a u T)))\<close>
-\<open>Some (f1 a u T) = ?fA a u T \<oplus> yy \<and> |?fA a u T| \<succeq> |f1 a u T| \<and> |yy| \<succeq> |a| \<and> (pc |a| \<longrightarrow> sat A (the ( |a| \<oplus> ?fA a u T)) \<and> sat B (the ( |a| \<oplus> yy)))\<close>
+    then show "Some (f1 a u T) = ?fA a u T \<oplus> ?fB a u T \<and> |?fA a u T| \<succeq> |f1 a u T| \<and> |?fB a u T| \<succeq> |a|
+      \<and> (pc |a| \<longrightarrow> sat A (the ( |a| \<oplus> ?fA a u T)) \<and> sat B (the ( |a| \<oplus> ?fB a u T))) \<and> Some (?f2 a u T) = ?fB a u T \<oplus> f2 a u T"
+      using r0 r2 yy_prop
+         option.distinct(1) option.exhaust_sel[of "?fB a u T \<oplus> f2 a u T"] asso2[of "?fA a u T" "?fB a u T" "f1 a u T" "f2 a u T"] 
       by simp
   qed
   have ih1: "\<exists>S'. package_rhs \<phi> f S pc A \<phi> f S' \<and> (\<forall>a\<in>S'. case a of (a', u', T) \<Rightarrow> \<exists>a u. (a, u, T) \<in> S \<and> a' \<succeq> ?f2 a u T \<and> |a'| = |a| )"
@@ -941,10 +938,10 @@ next
   proof -
     fix a' u' T assume "(a', u', T) \<in> S'"
     then obtain a u where "(a, u, T) \<in> S \<and> a' \<succeq> ?f2 a u T  \<and> |a'| = |a| "
-      using \<open>\<And>a' u' p. (a', u', T) \<in> S' \<Longrightarrow> \<exists>a u. (a, u, T) \<in> S \<and> a' \<succeq> ?f2 a u T \<and> |a'| = |a| \<close> by blast
-    show "\<exists>a u. ?project a' T = (a, u) \<and> (a, u, T) \<in> S \<and> a' \<succeq> ?f2 a u T \<and> |a'| = |a| "
+      using r' by blast
+    moreover show "\<exists>a u. ?project a' T = (a, u) \<and> (a, u, T) \<in> S \<and> a' \<succeq> ?f2 a u T \<and> |a'| = |a| "
     proof (rule someI_ex)
-      show "\<exists>r a u. r = (a, u) \<and> (a, u, T) \<in> S \<and> a' \<succeq> ?f2 a u T \<and> |a'| = |a| " using \<open>(a, u, T) \<in> S \<and> a' \<succeq> ?f2 a u T \<and> |a'| = |a| \<close> by blast
+      show "\<exists>r a u. r = (a, u) \<and> (a, u, T) \<in> S \<and> a' \<succeq> ?f2 a u T \<and> |a'| = |a| " using calculation by blast
     qed
   qed
 
@@ -1057,7 +1054,7 @@ next
       by blast
   qed
 
-  then obtain S'' where "package_rhs \<phi> f S' pc B \<phi> f S''" "\<And>a' u' T. (a', u', T) \<in> S'' \<Longrightarrow> \<exists>a u. (a, u, T) \<in> S' \<and> a' \<succeq> ?nf2 a u T  \<and> |a'| = |a| "
+  then obtain S'' where S''_prop: "package_rhs \<phi> f S' pc B \<phi> f S''" "\<And>a' u' T. (a', u', T) \<in> S'' \<Longrightarrow> \<exists>a u. (a, u, T) \<in> S' \<and> a' \<succeq> ?nf2 a u T  \<and> |a'| = |a| "
     by fast
 
   then have "package_rhs \<phi> f S pc (AStar A B) \<phi> f S''"
@@ -1068,7 +1065,7 @@ next
 
     
     then obtain a' u' where "(a', u', T) \<in> S' \<and> a'' \<succeq> ?nf2 a' u' T  \<and> |a''| = |a'| "
-      using \<open>\<And>a' u' p. (a', u', T) \<in> S'' \<Longrightarrow> \<exists>a u. (a, u, T) \<in> S' \<and> a' \<succeq> ?nf2 a u T \<and> |a'| = |a| \<close> by blast
+      using S''_prop by blast
 
     then obtain a u where a_u_def: "(a, u) = ?project a' T" "(a, u, T) \<in> S" "a' \<succeq> ?f2 a u T" "|a'| = |a|"
       using project_prop by force
@@ -1221,34 +1218,32 @@ proof -
     fix a T x assume asm0: "(a, T) \<in> S \<and> Some x = a \<oplus> T f"
     then have "T f \<ominus> T unit = T f"
       by (metis assms(2) commutative minus_equiv_def mono_transformer_def option.sel unit_neutral unit_smaller)
-    then obtain au where "Some au = a \<oplus> unit \<and> (au ## T f \<longrightarrow>
+    then obtain au where au_def: "Some au = a \<oplus> unit \<and> (au ## T f \<longrightarrow>
       (\<exists>a' u'. (a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> T f = a' \<oplus> u' \<and> u' \<succeq> unit \<and> package_sat ?pc A a' u' unit))"
       using r asm0 by fastforce
     then have "au = a" by (metis option.inject unit_neutral)
     then have "(\<exists>a' u'. (a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> a \<oplus> T f = a' \<oplus> u' \<and> package_sat ?pc A a' u' unit)"
-      using \<open>Some au = a \<oplus> unit \<and> (au ## T f \<longrightarrow> (\<exists>a' u'. (a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> au \<oplus> T f = a' \<oplus> u' \<and> u' \<succeq> unit \<and> package_sat (\<lambda>_. True) A a' u' unit))\<close> asm0 defined_def       
+      using au_def asm0 defined_def       
       by auto
-    then obtain a' u' where "(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> a \<oplus> T f = a' \<oplus> u' \<and> package_sat ?pc A a' u' unit"
+    then obtain a' u' where r0: "(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> a \<oplus> T f = a' \<oplus> u' \<and> package_sat ?pc A a' u' unit"
       by presburger
-    then obtain y where "Some y = |a'| \<oplus> (u' \<ominus> unit) \<and> sat A y"
+    then obtain y where "Some y = |a'| \<oplus> (u' \<ominus> unit)" "sat A y"
       using package_sat_def by auto
     then have "Some y =  |a'| \<oplus> u'"
       by (metis commutative minus_equiv_def splus.simps(3) unit_neutral unit_smaller)
     then have "x \<succeq> y"
-      by (metis \<open>(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> a \<oplus> T f = a' \<oplus> u' \<and> package_sat (\<lambda>_. True) A a' u' unit\<close> addition_bigger asm0 max_projection_prop_pure_core mpp_smaller)
+      by (metis r0 addition_bigger asm0 max_projection_prop_pure_core mpp_smaller)
     then show "sat A x"
     proof (cases "intuitionistic (sat A)")
       case True
-      then show ?thesis by (meson \<open>Some y = |a'| \<oplus> (u' \<ominus> unit) \<and> sat A y\<close> \<open>x \<succeq> y\<close> intuitionistic_def)
+      then show ?thesis by (meson \<open>Some y = |a'| \<oplus> (u' \<ominus> unit)\<close> \<open>sat A y\<close> \<open>x \<succeq> y\<close> intuitionistic_def)
     next
       case False
       then have "pure_remains S'" using assms(4) by auto
-      then have "pure a'" using pure_remains_def \<open>(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> a \<oplus> T f = a' \<oplus> u' \<and> package_sat (\<lambda>_. True) A a' u' unit\<close>
+      then have "pure a'" using pure_remains_def r0
         by fast
-      then show ?thesis using \<open>(a', u', T) \<in> S' \<and> |a'| \<succeq> |a| \<and> a \<oplus> T f = a' \<oplus> u' \<and> package_sat (\<lambda>_. True) A a' u' unit\<close>
-          \<open>Some y = |a'| \<oplus> (u' \<ominus> unit) \<and> sat A y\<close> \<open>Some y = |a'| \<oplus> u'\<close> asm0 core_is_smaller
-          core_max option.sel pure_def asso1[of a']
-        by metis
+      then show ?thesis using r0 \<open>Some y = |a'| \<oplus> (u' \<ominus> unit)\<close> \<open>sat A y\<close> \<open>Some y = |a'| \<oplus> u'\<close> asm0 core_is_smaller
+          core_max option.sel pure_def asso1[of a'] by metis
     qed
   qed
   then have "(\<forall>(a, T) \<in> S. a ## T f \<longrightarrow> sat A (the (a \<oplus> T f)))"

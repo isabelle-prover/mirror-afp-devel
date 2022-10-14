@@ -178,7 +178,7 @@ proof -
     apply (subst arccos_arctan)
     subgoal
       apply (rule gt_minus_one_absI)
-      apply (simp add: )
+      apply simp
       apply (subst pos_divide_less_eq)
       subgoal
         apply (rule mult_pos_pos)
@@ -192,7 +192,7 @@ proof -
       done
     subgoal
       apply (rule gt_one_absI)
-      apply (simp add: )
+      apply simp
       apply (subst pos_divide_less_eq)
       subgoal
         apply (rule mult_pos_pos)
@@ -491,7 +491,7 @@ proof -
   from assms interpret bounded_linear F .
   show ?thesis
     apply (auto simp: conefield_def cone_hull_expl closed_segment_def add scaleR)
-     apply (auto simp: )
+     apply auto
     apply (auto simp: add[symmetric] scaleR[symmetric])
     done
 qed

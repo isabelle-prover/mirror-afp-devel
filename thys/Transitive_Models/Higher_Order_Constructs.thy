@@ -1,4 +1,4 @@
-section\<open>Fully relational versions of higher order construct \<close>
+section\<open>Fully relational versions of higher order constructs\<close>
 theory Higher_Order_Constructs
   imports
     Recursion_Thms

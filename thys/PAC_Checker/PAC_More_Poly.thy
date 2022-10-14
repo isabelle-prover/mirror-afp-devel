@@ -244,7 +244,7 @@ proof -
       have \<open>?p = (\<Sum>xa\<in>F. MPoly_Type.monom xa (MPoly_Type.coeff ?p xa))\<close>
         apply (rule IH)
         using incl apply -
-        by standard (smt Diff_iff Diff_insert_absorb add_diff_cancel_right'
+        by standard (smt (verit) Diff_iff Diff_insert_absorb add_diff_cancel_right'
           remove_term_keys remove_term_sum subsetD xF)
       also have \<open>... = (\<Sum>xa\<in>F. MPoly_Type.monom xa (MPoly_Type.coeff p xa))\<close>
         by (use xF in \<open>auto intro!: sum.cong simp: H\<close>)
@@ -417,7 +417,7 @@ definition decrease_key::"'a \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::{monoid
 
 lemma remove_key_lookup:
   "lookup (decrease_key k0 f) k = (if k = k0 \<and> lookup f k \<noteq> 0 then lookup f k - 1 else lookup f k)"
-  unfolding decrease_key_def using finite_subset apply (simp add: )
+  unfolding decrease_key_def using finite_subset apply simp
   apply (subst lookup_Abs_poly_mapping)
   apply (auto intro: finite_subset[of _ \<open>{x. lookup f x \<noteq> 0}\<close>])
   apply (subst lookup_Abs_poly_mapping)
@@ -444,7 +444,7 @@ proof -
            else lookup x k)) = lookup x\<close> for x x'
     by auto
   have [simp]: \<open>finite {x. 0 < (Suc 0 when x' = x)}\<close> for x' :: nat and x
-    by (smt bounded_nat_set_is_finite lessI mem_Collect_eq neq0_conv when_cong when_neq_zero)
+    by (smt (verit) bounded_nat_set_is_finite lessI mem_Collect_eq neq0_conv when_cong when_neq_zero)
   have H: \<open>x' \<in> keys x \<Longrightarrow> monomial (Suc 0) x' + Abs_poly_mapping (\<lambda>k. if k = x' \<and> 0 < lookup x k then lookup x k - 1 else lookup x k) = x\<close>
     for x and x' :: nat
     apply (simp only: keys_def single.abs_eq)
@@ -755,7 +755,7 @@ proof -
     unfolding q A by (auto simp: field_simps)
   moreover have \<open>x' \<notin> vars q\<close> \<open>x' \<notin> vars (p * A' + b)\<close>
     using x \<open>x' \<notin> vars A'\<close>
-    by (smt UnE add.assoc add.commute calculation subset_iff vars_in_right_only vars_mult)+
+    by (smt (verit) UnE add.assoc add.commute calculation subset_iff vars_in_right_only vars_mult)+
   ultimately have \<open>A + Ax * p = 0\<close> \<open>q = p * A' + b\<close>
     by (rule polynomial_decomp_alien_var)+
 
@@ -846,7 +846,7 @@ proof -
                (\<Sum>q. lookup (mapping_of a) q when k + xa = aa + q)) =
         (\<Sum>aa. (if k = aa then n * (\<Sum>q. lookup (mapping_of a) q when k + xa = aa + q) else 0))\<close>
       for xa
-    by (smt Sum_any.cong mult_not_zero)
+    by (smt (verit) Sum_any.cong mult_not_zero)
   show ?thesis
     apply (auto simp: vars_def times_mpoly.rep_eq Const.rep_eq times_poly_mapping.rep_eq
       Const\<^sub>0_def elim!: in_keys_timesE split: if_splits)

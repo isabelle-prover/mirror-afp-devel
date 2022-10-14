@@ -88,8 +88,7 @@ proof cases
     note ni = this(1) and nSi = this(2) and m'_pas = this(4)
 
     have "Inf_from (active_subset (N \<union> M')) \<subseteq> Inf_from (active_subset (N \<union> M))"
-      using m'_pas by (metis active_subset_union boolean_algebra_cancel.sup0 Inf_from_mono
-          subset_Un_eq sup_left_idem)
+      using m'_pas by (simp add: Inf_from_mono)
     also have "\<dots> \<subseteq> Sup_upto_llist (lmap Red_I_\<G> Ns) (enat i)"
       using invar unfolding gc_invar_def lim_i ni by auto
     also have "\<dots> \<subseteq> Sup_upto_llist (lmap Red_I_\<G> Ns) (enat (Suc i))"
@@ -108,7 +107,7 @@ proof cases
       have \<iota>_inf: "\<iota> \<in> Inf_FL"
         using \<iota>_inff unfolding Inf_from_def by auto
       then have F\<iota>_inf: "to_F \<iota> \<in> Inf_F"
-        using Inf_FL_to_Inf_F[folded to_F_def] by fastforce
+        using in_Inf_FL_imp_to_F_in_Inf_F by blast
 
       have "\<iota> \<in> Inf_from (active_subset N \<union> {(C, active)})"
         using \<iota>_inff m_pas by simp
@@ -324,8 +323,7 @@ proof cases
       by (simp add: Si_lt tnSi)
 
     have "Inf_from (active_subset (N \<union> M')) \<subseteq> Inf_from (active_subset (N \<union> M))"
-      using m'_pas by (metis active_subset_union boolean_algebra_cancel.sup0 Inf_from_mono
-          subset_Un_eq sup_left_idem)
+      using m'_pas by (simp add: Inf_from_mono)
     also have "\<dots> \<subseteq> \<Union> (from_F ` T) \<union> ?Sup_Red_i"
       using invar unfolding lgc_invar_def lim_i ni ti .
     also have "\<dots> \<subseteq> \<Union> (from_F ` T) \<union> ?Sup_Red_Si"
@@ -353,7 +351,7 @@ proof cases
       have \<iota>_inf: "\<iota> \<in> Inf_FL"
         using \<iota>_inff unfolding Inf_from_def by auto
       then have F\<iota>_inf: "to_F \<iota> \<in> Inf_F"
-        using Inf_FL_to_Inf_F[folded to_F_def] by fastforce
+        using in_Inf_FL_imp_to_F_in_Inf_F by blast
 
       have "\<iota> \<in> \<Union> (from_F ` (T1 \<union> T')) \<union> ?Sup_Red_Si"
       proof (cases "to_F \<iota> \<in> no_labels.Inf_between (fst ` active_subset N) {C}")
@@ -419,7 +417,7 @@ proof cases
     then show ?thesis
       unfolding lgc_invar_def lim_Si tSi nSi by blast
   next
-    case (delete_orphans T1 T2 T' N)
+    case (delete_orphan_infers T1 T2 T' N)
     note tni = this(1) and tnSi = this(2) and t1 = this(3) and t'_orph = this(4)
 
     have ni: "lnth (lmap snd TNs) i = N"

@@ -1384,7 +1384,6 @@ by(induct "(e', xs)" "(stk, loc, pc, \<lfloor>a :: 'addr\<rfloor>)" and "(es', x
   arbitrary: e' xs stk loc pc and es' xs stk loc pc rule: bisim1_bisims1.inducts)
   auto
 
-declare nth_Cons_subtract[simp]
 declare nth_append [simp]
 
 lemma bisim1_Val_\<tau>Exec_move:
@@ -1403,17 +1402,17 @@ proof(induct "(Val v :: 'addr expr1, xs)" "(stk, loc, pc, xcp)"
 next
   case (bisim1LAss2 V e xs)
   have "\<tau>Exec_mover_a P t (V:=e) h ([], xs, Suc (length (compE2 e)), None) ([Unit], xs, Suc (Suc (length (compE2 e))), None)"
-    by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2LAssRed2 simp add: nth_append exec_move_def)
+    by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2LAssRed2 simp add: exec_move_def)
   with bisim1LAss2 show ?case by simp
 next
   case (bisim1AAss4 a i e xs)
   have "\<tau>Exec_mover_a P t (a\<lfloor>i\<rceil> := e) h ([], xs, Suc (length (compE2 a) + length (compE2 i) + length (compE2 e)), None) ([Unit], xs, Suc (Suc (length (compE2 a) + length (compE2 i) + length (compE2 e))), None)"
-    by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2AAssRed simp add: nth_append exec_move_def)
+    by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2AAssRed simp add: exec_move_def)
   with bisim1AAss4 show ?case by(simp add: ac_simps)
 next
   case (bisim1FAss3 e F D e2 xs)
   have "\<tau>Exec_mover_a P t (e\<bullet>F{D} := e2) h ([], xs, Suc (length (compE2 e) + length (compE2 e2)), None) ([Unit], xs, Suc (Suc (length (compE2 e) + length (compE2 e2))), None)"
-    by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2FAssRed simp add: nth_append exec_move_def)
+    by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2FAssRed simp add: exec_move_def)
   with bisim1FAss3 show ?case by simp
 next
   case (bisim1Sync6 V e1 e2 v xs)
@@ -1439,7 +1438,7 @@ next
   have e: "\<tau>Exec_mover_a P t (if (e) e1 else e2) h
                      ([v], xs, Suc (length (compE2 e) + (length (compE2 e1))), None)
                      ([v], xs, length (compE2 (if (e) e1 else e2)), None)" 
-    by(rule \<tau>Execr1step)(auto simp add: nth_append exec_move_def intro!: exec_instr \<tau>move2CondThenExit)
+    by(rule \<tau>Execr1step)(auto simp add: exec_move_def intro!: exec_instr \<tau>move2CondThenExit)
   show ?case
   proof(cases "pc < length (compE2 e1)")
     case True
@@ -1486,7 +1485,7 @@ next
   have "\<tau>Exec_mover_a P t (while (c) e) h
                    ([], xs, Suc (Suc (Suc (length (compE2 c) + length (compE2 e)))), None)
                    ([Unit], xs, length (compE2 (while (c) e)), None)"
-    by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2While4 simp add: nth_append exec_move_def)
+    by(auto intro!: \<tau>Execr1step exec_instr \<tau>move2While4 simp add: exec_move_def)
   thus ?case by(simp)
 next
   case (bisims1List1 e e' xs stk loc pc xcp es)
@@ -1713,7 +1712,7 @@ proof(induct e "n :: nat" e' xs stk loc pc "None :: 'addr option"
     with bisim1 call have "pc < length (compE2 e1)"
       by(auto intro: bisim1_call_pcD)
     with call ins IH1 False show ?thesis
-      by(auto simp add: nth_append intro: bisim1_bisims1.bisim1BinOp1)
+      by(auto intro: bisim1_bisims1.bisim1BinOp1)
   next
     case True
     then obtain v where [simp]: "e' = Val v" by auto
@@ -1721,7 +1720,7 @@ proof(induct e "n :: nat" e' xs stk loc pc "None :: 'addr option"
     moreover {
       assume pc: "pc < length (compE2 e1)"
       with bisim1 ins have False
-        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 e1)" by(cases "pc < length (compE2 e1)") auto
     from call ins show ?thesis by simp
   qed
@@ -1741,7 +1740,7 @@ next
     with bisim1 call have "pc < length (compE2 A)"
       by(auto intro: bisim1_call_pcD)
     with call ins IH1 False show ?thesis
-      by(auto simp add: nth_append intro: bisim1_bisims1.bisim1AAcc1)
+      by(auto intro: bisim1_bisims1.bisim1AAcc1)
   next
     case True
     then obtain v where [simp]: "a' = Val v" by auto
@@ -1749,7 +1748,7 @@ next
     moreover {
       assume pc: "pc < length (compE2 A)"
       with bisim1 ins have False
-        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 A)" by(cases "pc < length (compE2 A)") auto
     from call ins show ?thesis by simp
   qed
@@ -1769,7 +1768,7 @@ next
     with bisim1 call have "pc < length (compE2 A)"
       by(auto intro: bisim1_call_pcD)
     with call ins IH1 False show ?thesis
-      by(auto simp add: nth_append intro: bisim1_bisims1.bisim1AAss1)
+      by(auto intro: bisim1_bisims1.bisim1AAss1)
   next
     case True
     then obtain v where [simp]: "a' = Val v" by auto
@@ -1777,7 +1776,7 @@ next
     moreover {
       assume pc: "pc < length (compE2 A)"
       with bisim1 ins have False
-        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 A)" by(cases "pc < length (compE2 A)") auto
     from call ins show ?thesis by simp
   qed
@@ -1794,7 +1793,7 @@ next
     with bisim1 call have "pc < length (compE2 i)"
       by(auto intro: bisim1_call_pcD)
     with call ins IH1 False show ?thesis
-      by(auto simp add: nth_append intro: bisim1_bisims1.bisim1AAss2)
+      by(auto intro: bisim1_bisims1.bisim1AAss2)
   next
     case True
     then obtain v where [simp]: "i' = Val v" by auto
@@ -1802,7 +1801,7 @@ next
     moreover {
       assume pc: "pc < length (compE2 i)"
       with bisim1 ins have False
-        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 i)" by(cases "pc < length (compE2 i)") auto
     from call ins show ?thesis by simp
   qed
@@ -1822,7 +1821,7 @@ next
     with bisim1 call have "pc < length (compE2 e)"
       by(auto intro: bisim1_call_pcD)
     with call ins IH1 False show ?thesis
-      by(auto simp add: nth_append intro: bisim1_bisims1.bisim1FAss1)
+      by(auto intro: bisim1_bisims1.bisim1FAss1)
   next
     case True
     then obtain v where [simp]: "e' = Val v" by auto
@@ -1830,7 +1829,7 @@ next
     moreover {
       assume pc: "pc < length (compE2 e)"
       with bisim1 ins have False
-        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 e)" by(cases "pc < length (compE2 e)") auto
     from call ins show ?thesis by simp
   qed
@@ -1850,7 +1849,7 @@ next
     with bisim1 call have "pc < length (compE2 E)"
       by(auto intro: bisim1_call_pcD)
     with call ins IH1 False show ?thesis
-      by(auto simp add: nth_append intro: bisim1_bisims1.bisim1CAS1)
+      by(auto intro: bisim1_bisims1.bisim1CAS1)
   next
     case True
     then obtain v where [simp]: "e' = Val v" by auto
@@ -1858,7 +1857,7 @@ next
     moreover {
       assume pc: "pc < length (compE2 E)"
       with bisim1 ins have False
-        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 E)" by(cases "pc < length (compE2 E)") auto
     from call ins show ?thesis by simp
   qed
@@ -1875,7 +1874,7 @@ next
     with bisim1 call have "pc < length (compE2 e2)"
       by(auto intro: bisim1_call_pcD)
     with call ins IH1 False show ?thesis
-      by(auto simp add: nth_append intro: bisim1_bisims1.bisim1CAS2)
+      by(auto intro: bisim1_bisims1.bisim1CAS2)
   next
     case True
     then obtain v where [simp]: "e2' = Val v" by auto
@@ -1883,7 +1882,7 @@ next
     moreover {
       assume pc: "pc < length (compE2 e2)"
       with bisim1 ins have False
-        by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+        by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 e2)" by(cases "pc < length (compE2 e2)") auto
     from call ins show ?thesis by simp
   qed
@@ -1922,9 +1921,9 @@ next
     from bisim1 have "pc \<le> length (compE2 obj)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 obj)"
-      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 obj)" by(cases "pc < length (compE2 obj)") auto
-    with ins have [simp]: "vs = []" by(auto simp add: nth_append compEs2_map_Val split: if_split_asm)
+    with ins have [simp]: "vs = []" by(auto simp add: compEs2_map_Val split: if_split_asm)
     from bisim1 have [simp]: "stk = [Addr a]" "xs = loc" by(auto dest: bisim1_Val_length_compE2D)
     from ins show ?thesis by(auto intro: bisim1CallThrow[of "[]" "[]", simplified])
   qed
@@ -1950,7 +1949,7 @@ next
     from bisim2 have "pc \<le> length (compEs2 ps)" by(auto dest: bisims1_pc_length_compEs2)
     moreover {
       assume pc: "pc < length (compEs2 ps)"
-      with bisim2 ins have False by(auto dest: bisims_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim2 ins have False by(auto dest: bisims_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compEs2 ps)" by(cases "pc < length (compEs2 ps)") auto
     from bisim2 have [simp]: "stk = rev vs" "xs = loc" by(auto dest: bisims1_Val_length_compEs2D)
     from bisim2 have "length ps = length vs" by(auto dest: bisims1_lengthD)
@@ -1970,14 +1969,14 @@ next
     case False
     with bisim1 call have "pc < length (compE2 e)" by(auto intro: bisim1_call_pcD)
     with call ins False IH1 show ?thesis
-      by(auto simp add: nth_append split_beta intro: bisim1_bisims1.bisims1List1)
+      by(auto intro: bisim1_bisims1.bisims1List1)
   next
     case True
     then obtain v where [simp]: "e' = Val v" by auto
     from bisim1 have "pc \<le> length (compE2 e)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 e)"
-      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 e)" by(cases "pc < length (compE2 e)") auto
     with bisim1 have [simp]: "stk = [v]" "loc = xs" by(auto dest: bisim1_Val_length_compE2D)
     from call have "es \<noteq> []" by(cases es) simp_all
@@ -2708,7 +2707,7 @@ next
     from bisim1 have "pc \<le> length (compE2 e1)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 e1)"
-      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 e1)" by(cases "pc < length (compE2 e1)") auto
     with ins have False by(simp)
     thus ?thesis ..
@@ -2745,7 +2744,7 @@ next
     from bisim1 have "pc \<le> length (compE2 A)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 A)"
-      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 A)" by(cases "pc < length (compE2 A)") auto
     with ins have False by(simp)
     thus ?thesis ..
@@ -2777,7 +2776,7 @@ next
     from bisim1 have "pc \<le> length (compE2 A)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 A)"
-      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 A)" by(cases "pc < length (compE2 A)") auto
     with ins have False by(simp)
     thus ?thesis ..
@@ -2800,7 +2799,7 @@ next
     from bisim2 have "pc \<le> length (compE2 i)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 i)"
-      with bisim2 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim2 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 i)" by(cases "pc < length (compE2 i)") auto
     with ins have False by(simp)
     thus ?thesis ..
@@ -2840,7 +2839,7 @@ next
     from bisim1 have "pc \<le> length (compE2 e1)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 e1)"
-      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 e1)" by(cases "pc < length (compE2 e1)") auto
     with ins have False by(simp)
     thus ?thesis ..
@@ -2873,7 +2872,7 @@ next
     from bisim1 have "pc \<le> length (compE2 e1)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 e1)"
-      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 e1)" by(cases "pc < length (compE2 e1)") auto
     with ins have False by(simp)
     thus ?thesis ..
@@ -2896,7 +2895,7 @@ next
     from bisim2 have "pc \<le> length (compE2 e2)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 e2)"
-      with bisim2 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim2 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 e2)" by(cases "pc < length (compE2 e2)") auto
     with ins have False by(simp)
     thus ?thesis ..
@@ -2928,10 +2927,10 @@ next
     from bisim1 have "pc \<le> length (compE2 obj)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 obj)"
-      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 obj)" by(cases "pc < length (compE2 obj)") auto
     with ins have [simp]: "ps = []" "M' = M"
-      by(auto simp add: nth_append split: if_split_asm)(auto simp add: neq_Nil_conv nth_append)
+      by(auto split: if_split_asm)(auto simp add: neq_Nil_conv)
     from ins call have [simp]: "vs = []" by(auto split: if_split_asm)
     with bisim1 have [simp]: "stk = [v']" "xs = loc" by(auto dest: bisim1_pc_length_compE2D)
     from bisim1Val2[of "length (compE2 (obj\<bullet>M([])))" "obj\<bullet>M([])" P h v loc] call ins
@@ -2950,7 +2949,7 @@ next
     case (CallParams v'')
     hence [simp]: "v'' = v'" and call': "calls1 ps' = \<lfloor>(a, M, vs)\<rfloor>" by simp_all
     from bisim call' have pc: "pc < length (compEs2 ps)" by(rule bisims1_calls_pcD)
-    with ins have ins': "compEs2 ps ! pc = Invoke M n0" by(simp add: nth_append)
+    with ins have ins': "compEs2 ps ! pc = Invoke M n0" by(simp)
     with IH2 call' ins pc
     have "P,ps,h \<turnstile> (inline_calls (Val v) ps', xs)
                 [\<leftrightarrow>] (v # drop (Suc (length vs)) stk, loc, Suc pc, None)"
@@ -2965,7 +2964,7 @@ next
     from bisim have "pc \<le> length (compEs2 ps)" by(auto dest: bisims1_pc_length_compEs2)
     moreover {
       assume pc: "pc < length (compEs2 ps)"
-      with bisim ins have False by(auto dest: bisims_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim ins have False by(auto dest: bisims_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compEs2 ps)" by(cases "pc < length (compEs2 ps)") auto
     from bisim have [simp]: "stk = rev vs" "xs = loc" by(auto dest: bisims1_Val_length_compEs2D)
     hence "P,obj\<bullet>M(ps),h \<turnstile> (Val v, loc) \<leftrightarrow> ([v], loc, length (compE2 (obj\<bullet>M(ps))), None)" by-(rule bisim1Val2, simp)
@@ -3064,7 +3063,7 @@ next
     from bisim1 have "pc \<le> length (compE2 e)" by(auto dest: bisim1_pc_length_compE2)
     moreover {
       assume pc: "pc < length (compE2 e)"
-      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke simp add: nth_append) }
+      with bisim1 ins have False by(auto dest: bisim_Val_pc_not_Invoke) }
     ultimately have [simp]: "pc = length (compE2 e)" by(cases "pc < length (compE2 e)") auto
     with ins call have False by(cases es)(auto)
     thus ?thesis ..
@@ -3077,7 +3076,7 @@ next
   note ins = \<open>compEs2 (e # es) ! (length (compE2 e) + pc) = Invoke M n0\<close>
   from call have call': "calls1 es' = \<lfloor>(a, M, vs)\<rfloor>" by simp
   with bisim have pc: "pc < length (compEs2 es)" by(rule bisims1_calls_pcD)
-  with ins have ins': "compEs2 es ! pc = Invoke M n0" by(simp add: nth_append)
+  with ins have ins': "compEs2 es ! pc = Invoke M n0" by(simp)
   from IH call ins pc show ?case
     by(auto split: if_split_asm dest: bisim1_bisims1.bisims1List2)
 qed

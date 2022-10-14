@@ -855,7 +855,7 @@ apply (simp add: synth_increasing[THEN Un_absorb2])
 apply (drule synth_mono)
 apply (simp add: synth_idem)
 apply (rule equalityI)
-apply (simp add: )
+apply simp
 apply (rule synth_analz_mono, blast)
 done
 

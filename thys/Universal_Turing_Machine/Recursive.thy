@@ -1,7 +1,11 @@
 (* Title: thys/Recursive.thy
    Author: Jian Xu, Xingyuan Zhang, and Christian Urban
    Modifications: Sebastiaan Joosten
-*)
+   Modifications: Franz Regensburger (FABR) 08/2022
+     Added LaTeX sections and comments
+ *)
+
+section \<open>Compilation of Recursive Functions into Abacus Programs\<close>
 
 theory Recursive
   imports Abacus Rec_Def Abacus_Hoare
@@ -49,6 +53,7 @@ fun cn_merge_gs ::
       (let (gprog, gpara, gn) = g in 
          gprog [+] mv_box gpara p [+] cn_merge_gs gs (Suc p))"
 
+subsection \<open>Definition of the compiler rec\_ci\<close>
 
 text \<open>
   The compiler of recursive functions, where \<open>rec_ci recf\<close> return 
@@ -87,6 +92,8 @@ fun rec_ci :: "recf \<Rightarrow> abc_inst list \<times> nat \<times> nat"
           let len = length (fprog) in 
             (fprog @ [Dec (Suc n) (len + 5), Dec (Suc n) (len + 3),
              Goto (len + 1), Inc n, Goto 0], n, max (Suc n) fn))"
+
+subsection \<open>Correctness of the compiler rec\_ci\<close>
 
 declare rec_ci.simps [simp del] rec_ci_s_def[simp del] 
   rec_ci_z_def[simp del] rec_ci_id.simps[simp del]
@@ -282,19 +289,20 @@ lemma addition_halt_lemma:
   \<and> ((abc_steps_l (0, lm) (addition m n p) (Suc na), m, p), 
      abc_steps_l (0, lm) (addition m n p) na, m, p) \<in> addition_LE"
 proof -
-  assume assms:"m\<noteq>n" "max m n < p" "length lm > p"
+  assume assms_1: "m\<noteq>n" and assms_2: "max m n < p" and assms_3: "length lm > p"
+
   { fix na
     obtain a b where ab:"abc_steps_l (0, lm) (addition m n p) na = (a, b)" by force
     assume assms2: "\<not> (\<lambda>(as, lm') (m, p). as = 7) 
         (abc_steps_l (0, lm) (addition m n p) na) (m, p)"
-      "addition_inv (abc_steps_l (0, lm) (addition m n p) na) m n p lm"
-    have r1:"addition_inv (abc_steps_l (0, lm) (addition m n p) 
-                                 (Suc na)) m n p lm" using assms(1-3) assms2
-      unfolding abc_step_red2 ab abc_step_l.simps abc_lm_v.simps abc_lm_s.simps 
+      "addition_inv (abc_steps_l (0, lm) (addition m n p) na) m n p lm" 
+    have r1:"addition_inv (abc_steps_l (0, lm) (addition m n p)
+                                 (Suc na)) m n p lm" using assms_1 assms_2 assms_3 assms2
+      unfolding abc_step_red2 ab abc_step_l.simps abc_lm_v.simps abc_lm_s.simps
         addition_inv.simps
       by (auto split:if_splits simp add: addition_inv.simps Suc_diff_Suc)
     have r2:"((abc_steps_l (0, lm) (addition m n p) (Suc na), m, p), 
-              abc_steps_l (0, lm) (addition m n p) na, m, p) \<in> addition_LE" using assms(1-3) assms2
+              abc_steps_l (0, lm) (addition m n p) na, m, p) \<in> addition_LE" using assms_1 assms_2 assms_3 assms2
       unfolding abc_step_red2 ab 
       apply(auto split:if_splits simp add: addition_inv.simps abc_steps_zero)
       by(auto simp add: addition_LE_def lex_triple_def lex_pair_def 
@@ -325,7 +333,7 @@ lemma length_addition[simp]: "length (addition a b c) = 7"
 
 lemma addition_correct:
   assumes "m \<noteq> n" "max m n < p" "length lm > p" "lm ! p = 0"
-  shows "{\<lambda> a. a = lm} (addition m n p) {\<lambda> nl. addition_inv (7, nl) m n p lm}"
+  shows "\<lbrace>\<lambda> a. a = lm\<rbrace> (addition m n p) \<lbrace>\<lambda> nl. addition_inv (7, nl) m n p lm\<rbrace>"
   using assms
 proof(rule_tac abc_Hoare_haltI, simp)
   fix lma
@@ -341,13 +349,15 @@ proof(rule_tac abc_Hoare_haltI, simp)
     by(auto intro:exI[of _ stp])
 qed
 
+subsubsection \<open>Correctness of compilation for constructor s\<close>
+
 lemma compile_s_correct':
-  "{\<lambda>nl. nl = n # 0 \<up> 2 @ anything} addition 0 (Suc 0) 2 [+] [Inc (Suc 0)] {\<lambda>nl. nl = n # Suc n # 0 # anything}"
+  "\<lbrace>\<lambda>nl. nl = n # 0 \<up> 2 @ anything\<rbrace> addition 0 (Suc 0) 2 [+] [Inc (Suc 0)] \<lbrace>\<lambda>nl. nl = n # Suc n # 0 # anything\<rbrace>"
 proof(rule_tac abc_Hoare_plus_halt)
-  show "{\<lambda>nl. nl = n # 0 \<up> 2 @ anything} addition 0 (Suc 0) 2 {\<lambda> nl. addition_inv (7, nl) 0 (Suc 0) 2 (n # 0 \<up> 2 @ anything)}"
+  show "\<lbrace>\<lambda>nl. nl = n # 0 \<up> 2 @ anything\<rbrace> addition 0 (Suc 0) 2 \<lbrace>\<lambda> nl. addition_inv (7, nl) 0 (Suc 0) 2 (n # 0 \<up> 2 @ anything)\<rbrace>"
     by(rule_tac addition_correct, auto simp: numeral_2_eq_2)
 next
-  show "{\<lambda>nl. addition_inv (7, nl) 0 (Suc 0) 2 (n # 0 \<up> 2 @ anything)} [Inc (Suc 0)] {\<lambda>nl. nl = n # Suc n # 0 # anything}"
+  show "\<lbrace>\<lambda>nl. addition_inv (7, nl) 0 (Suc 0) 2 (n # 0 \<up> 2 @ anything)\<rbrace> [Inc (Suc 0)] \<lbrace>\<lambda>nl. nl = n # Suc n # 0 # anything\<rbrace>"
     by(rule_tac abc_Hoare_haltI, rule_tac x = 1 in exI, auto simp: addition_inv.simps 
         abc_steps_l.simps abc_step_l.simps abc_fetch.simps numeral_2_eq_2 abc_lm_s.simps abc_lm_v.simps)
 qed
@@ -360,30 +370,32 @@ lemma abc_comp_commute: "(A [+] B) [+] C = A [+] (B [+] C)"
   apply(case_tac x, auto)
   done
 
+lemma compile_s_correct: 
+  "\<lbrakk>rec_ci s = (ap, arity, fp); rec_exec s [n] = r\<rbrakk> \<Longrightarrow> 
+  \<lbrace>\<lambda>nl. nl = n # 0 \<up> (fp - arity) @ anything\<rbrace> ap \<lbrace>\<lambda>nl. nl = n # r # 0 \<up> (fp - Suc arity) @ anything\<rbrace>"
+  apply(auto simp: rec_ci.simps rec_ci_s_def compile_s_correct' rec_exec.simps)
+  done
 
+subsubsection \<open>Correctness of compilation for constructor z\<close>
 
 lemma compile_z_correct: 
   "\<lbrakk>rec_ci z = (ap, arity, fp); rec_exec z [n] = r\<rbrakk> \<Longrightarrow> 
-  {\<lambda>nl. nl = n # 0 \<up> (fp - arity) @ anything} ap {\<lambda>nl. nl = n # r # 0 \<up> (fp - Suc arity) @ anything}"
+  \<lbrace>\<lambda>nl. nl = n # 0 \<up> (fp - arity) @ anything\<rbrace> ap \<lbrace>\<lambda>nl. nl = n # r # 0 \<up> (fp - Suc arity) @ anything\<rbrace>"
   apply(rule_tac abc_Hoare_haltI)
   apply(rule_tac x = 1 in exI)
   apply(auto simp: abc_steps_l.simps rec_ci.simps rec_ci_z_def 
       numeral_2_eq_2 abc_fetch.simps abc_step_l.simps rec_exec.simps)
   done
 
-lemma compile_s_correct: 
-  "\<lbrakk>rec_ci s = (ap, arity, fp); rec_exec s [n] = r\<rbrakk> \<Longrightarrow> 
-  {\<lambda>nl. nl = n # 0 \<up> (fp - arity) @ anything} ap {\<lambda>nl. nl = n # r # 0 \<up> (fp - Suc arity) @ anything}"
-  apply(auto simp: rec_ci.simps rec_ci_s_def compile_s_correct' rec_exec.simps)
-  done
+subsubsection \<open>Correctness of compilation for constructor id\<close>
 
 lemma compile_id_correct':
   assumes "n < length args" 
-  shows "{\<lambda>nl. nl = args @ 0 \<up> 2 @ anything} addition n (length args) (Suc (length args))
-  {\<lambda>nl. nl = args @ rec_exec (recf.id (length args) n) args # 0 # anything}"
+  shows "\<lbrace>\<lambda>nl. nl = args @ 0 \<up> 2 @ anything\<rbrace> addition n (length args) (Suc (length args))
+  \<lbrace>\<lambda>nl. nl = args @ rec_exec (recf.id (length args) n) args # 0 # anything\<rbrace>"
 proof -
-  have "{\<lambda>nl. nl = args @ 0 \<up> 2 @ anything} addition n (length args) (Suc (length args))
-  {\<lambda>nl. addition_inv (7, nl) n (length args) (Suc (length args)) (args @ 0 \<up> 2 @ anything)}"
+  have "\<lbrace>\<lambda>nl. nl = args @ 0 \<up> 2 @ anything\<rbrace> addition n (length args) (Suc (length args))
+  \<lbrace>\<lambda>nl. addition_inv (7, nl) n (length args) (Suc (length args)) (args @ 0 \<up> 2 @ anything)\<rbrace>"
     using assms
     by(rule_tac addition_correct, auto simp: numeral_2_eq_2 nth_append)
   thus "?thesis"
@@ -394,9 +406,12 @@ qed
 
 lemma compile_id_correct: 
   "\<lbrakk>n < m; length xs = m; rec_ci (recf.id m n) = (ap, arity, fp); rec_exec (recf.id m n) xs = r\<rbrakk>
-       \<Longrightarrow> {\<lambda>nl. nl = xs @ 0 \<up> (fp - arity) @ anything} ap {\<lambda>nl. nl = xs @ r # 0 \<up> (fp - Suc arity) @ anything}"
+       \<Longrightarrow> \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (fp - arity) @ anything\<rbrace> ap \<lbrace>\<lambda>nl. nl = xs @ r # 0 \<up> (fp - Suc arity) @ anything\<rbrace>"
   apply(auto simp: rec_ci.simps rec_ci_id.simps compile_id_correct')
   done
+
+
+subsubsection \<open>Correctness of compilation for constructor Cn\<close>
 
 lemma cn_merge_gs_tl_app: 
   "cn_merge_gs (gs @ [g]) pstr = 
@@ -591,7 +606,7 @@ lemma length_mvbox[simp]: "length (mv_box m n) = 3"
 
 lemma mv_box_correct: 
   "\<lbrakk>length lm > max m n; m\<noteq>n\<rbrakk> 
-  \<Longrightarrow> {\<lambda> nl. nl = lm} mv_box m n {\<lambda> nl. nl = lm[n := (lm ! m + lm ! n), m:=0]}"
+  \<Longrightarrow> \<lbrace>\<lambda> nl. nl = lm\<rbrace> mv_box m n \<lbrace>\<lambda> nl. nl = lm[n := (lm ! m + lm ! n), m:=0]\<rbrace>"
   apply(drule_tac mv_box_correct', simp)
   apply(auto simp: abc_Hoare_halt_def)
   by (metis abc_final.simps abc_holds_for.simps length_mvbox)
@@ -613,13 +628,13 @@ lemma zero_case_rec_exec[simp]:
 lemma compile_cn_gs_correct':
   assumes
     g_cond: "\<forall>g\<in>set (take n gs). terminate g xs \<and>
-  (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow> (\<forall>xc. {\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc} x {\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc}))"
+  (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow> (\<forall>xc. \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc\<rbrace> x \<lbrace>\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc\<rbrace>))"
     and ft: "ft = max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))"
   shows 
-    "{\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything}
+    "\<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything\<rbrace>
     cn_merge_gs (map rec_ci (take n gs)) ft
-  {\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @
-                    map (\<lambda>i. rec_exec i xs) (take n gs) @ 0\<up>(length gs - n) @ 0 \<up> Suc (length xs) @ anything}"
+  \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @
+                    map (\<lambda>i. rec_exec i xs) (take n gs) @ 0\<up>(length gs - n) @ 0 \<up> Suc (length xs) @ anything\<rbrace>"
   using g_cond
 proof(induct n)
   case 0
@@ -635,16 +650,16 @@ next
   case (Suc n)
   have ind': "\<forall>g\<in>set (take n gs).
      terminate g xs \<and> (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow> 
-    (\<forall>xc. {\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc} x {\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc})) \<Longrightarrow>
-    {\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything} cn_merge_gs (map rec_ci (take n gs)) ft 
-    {\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything}"
+    (\<forall>xc. \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc\<rbrace> x \<lbrace>\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc\<rbrace>)) \<Longrightarrow>
+    \<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything\<rbrace> cn_merge_gs (map rec_ci (take n gs)) ft 
+    \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything\<rbrace>"
     by fact
   have g_newcond: "\<forall>g\<in>set (take (Suc n) gs).
-     terminate g xs \<and> (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow> (\<forall>xc. {\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc} x {\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc}))"
+     terminate g xs \<and> (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow> (\<forall>xc. \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc\<rbrace> x \<lbrace>\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc\<rbrace>))"
     by fact
   from g_newcond have ind:
-    "{\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything} cn_merge_gs (map rec_ci (take n gs)) ft 
-    {\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything}"
+    "\<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything\<rbrace> cn_merge_gs (map rec_ci (take n gs)) ft 
+    \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything\<rbrace>"
     apply(rule_tac ind', rule_tac ballI, erule_tac x = g in ballE, simp_all add: take_Suc)
     by(cases "n < length gs", simp add:take_Suc_conv_app_nth, simp)    
   show "?case"
@@ -652,19 +667,19 @@ next
     case True
     have h: "n < length gs" by fact
     thus "?thesis"
-    proof (simp add: take_Suc_conv_app_nth cn_merge_gs_tl_app)
+    proof(simp add: take_Suc_conv_app_nth cn_merge_gs_tl_app)
       obtain gp ga gf where a: "rec_ci (gs!n) = (gp, ga, gf)"
         by (metis prod_cases3)
       moreover have "min (length gs) n = n"
         using h by simp
       moreover have 
-        "{\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything}
+        "\<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything\<rbrace>
         cn_merge_gs (map rec_ci (take n gs)) ft [+] (gp [+] mv_box ga (ft + n))
-        {\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 
-        rec_exec (gs ! n) xs # 0 \<up> (length gs - Suc n) @ 0 # 0 \<up> length xs @ anything}"
+        \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 
+        rec_exec (gs ! n) xs # 0 \<up> (length gs - Suc n) @ 0 # 0 \<up> length xs @ anything\<rbrace>"
       proof(rule_tac abc_Hoare_plus_halt)
-        show "{\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything} cn_merge_gs (map rec_ci (take n gs)) ft
-          {\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything}"
+        show "\<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything\<rbrace> cn_merge_gs (map rec_ci (take n gs)) ft
+          \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything\<rbrace>"
           using ind by simp
       next
         have x: "gs!n \<in> set (take (Suc n) gs)"
@@ -682,19 +697,19 @@ next
               rule_tac insertI2,  
               rule_tac f = "(\<lambda>(aprog, p, n). n)" and x = "rec_ci (gs!n)" in image_eqI, simp, 
               rule_tac x = "gs!n" in image_eqI, simp, simp)
-        show "{\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ 
-          map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything} gp [+] mv_box ga (ft + n)
-          {\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) 
-          (take n gs) @ rec_exec (gs ! n) xs # 0 \<up> (length gs - Suc n) @ 0 # 0 \<up> length xs @ anything}"
+        show "\<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ 
+          map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything\<rbrace> gp [+] mv_box ga (ft + n)
+          \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) 
+          (take n gs) @ rec_exec (gs ! n) xs # 0 \<up> (length gs - Suc n) @ 0 # 0 \<up> length xs @ anything\<rbrace>"
         proof(rule_tac abc_Hoare_plus_halt)
-          show "{\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything} gp 
-                {\<lambda>nl. nl = xs @ (rec_exec (gs!n) xs) # 0 \<up> (ft - Suc (length xs)) @ map (\<lambda>i. rec_exec i xs) 
-                              (take n gs) @  0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything}"
+          show "\<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything\<rbrace> gp 
+                \<lbrace>\<lambda>nl. nl = xs @ (rec_exec (gs!n) xs) # 0 \<up> (ft - Suc (length xs)) @ map (\<lambda>i. rec_exec i xs) 
+                              (take n gs) @  0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything\<rbrace>"
           proof -
             have 
-              "({\<lambda>nl. nl = xs @ 0 \<up> (gf - ga) @ 0\<up>(ft - gf)@map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything} 
-            gp {\<lambda>nl. nl = xs @ (rec_exec (gs!n) xs) # 0 \<up> (gf - Suc ga) @ 
-              0\<up>(ft - gf)@map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything})"
+              "(\<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (gf - ga) @ 0\<up>(ft - gf)@map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything\<rbrace> 
+            gp \<lbrace>\<lambda>nl. nl = xs @ (rec_exec (gs!n) xs) # 0 \<up> (gf - Suc ga) @ 
+              0\<up>(ft - gf)@map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 \<up> Suc (length xs) @ anything\<rbrace>)"
               using a g_newcond h x
               apply(erule_tac x = "gs!n" in ballE)
                apply(simp, simp)
@@ -705,24 +720,24 @@ next
           qed
         next
           show 
-            "{\<lambda>nl. nl = xs @ rec_exec (gs ! n) xs #
-            0 \<up> (ft - Suc (length xs)) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything}
+            "\<lbrace>\<lambda>nl. nl = xs @ rec_exec (gs ! n) xs #
+            0 \<up> (ft - Suc (length xs)) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything\<rbrace>
             mv_box ga (ft + n)
-            {\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @
-            rec_exec (gs ! n) xs # 0 \<up> (length gs - Suc n) @ 0 # 0 \<up> length xs @ anything}"
+            \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @
+            rec_exec (gs ! n) xs # 0 \<up> (length gs - Suc n) @ 0 # 0 \<up> length xs @ anything\<rbrace>"
           proof -
-            have "{\<lambda>nl. nl = xs @ rec_exec (gs ! n) xs # 0 \<up> (ft - Suc (length xs)) @
-              map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything}
-              mv_box ga (ft + n) {\<lambda>nl. nl = (xs @ rec_exec (gs ! n) xs # 0 \<up> (ft - Suc (length xs)) @
+            have "\<lbrace>\<lambda>nl. nl = xs @ rec_exec (gs ! n) xs # 0 \<up> (ft - Suc (length xs)) @
+              map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything\<rbrace>
+              mv_box ga (ft + n) \<lbrace>\<lambda>nl. nl = (xs @ rec_exec (gs ! n) xs # 0 \<up> (ft - Suc (length xs)) @
               map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything)
               [ft + n := (xs @ rec_exec (gs ! n) xs # 0 \<up> (ft - Suc (length xs)) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ 
               0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything) ! ga +
               (xs @ rec_exec (gs ! n) xs # 0 \<up> (ft - Suc (length xs)) @ 
               map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything) !
-                      (ft + n),  ga := 0]}"
+                      (ft + n),  ga := 0]\<rbrace>"
               using a c d e h
               apply(rule_tac mv_box_correct)
-              apply simp_all
+               apply(simp_all)
               done
             moreover have "(xs @ rec_exec (gs ! n) xs # 0 \<up> (ft - Suc (length xs)) @
               map (\<lambda>i. rec_exec i xs) (take n gs) @ 0 \<up> (length gs - n) @ 0 # 0 \<up> length xs @ anything)
@@ -733,35 +748,30 @@ next
                       (ft + n),  ga := 0]= 
               xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) (take n gs) @ rec_exec (gs ! n) xs # 0 \<up> (length gs - Suc n) @ 0 # 0 \<up> length xs @ anything"
               using a c d e h
-              by(simp add: list_update_append nth_append length_replicate split: if_splits del: list_update.simps(2), auto)
+              by(simp add: list_update_append nth_append 
+                  split: if_splits, auto)
             ultimately show "?thesis"
               by(simp)
           qed
         qed  
       qed
       ultimately show 
-        "{\<lambda>nl. nl =
-          xs @
-          0 # 0 \<up> (ft + length gs) @ anything}
+        "\<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything\<rbrace>
     cn_merge_gs (map rec_ci (take n gs)) ft [+]
-    (case rec_ci (gs ! n) of
-     (gprog, gpara, gn) \<Rightarrow>
-       gprog [+] mv_box gpara (ft + n))
-    {\<lambda>nl. nl =
-          xs @
-          0 \<up> (ft - length xs) @
-          map (\<lambda>i. rec_exec i xs) (take n gs) @
-          rec_exec (gs ! n) xs #
-          0 \<up> (length gs - Suc n) @
-          0 # 0 \<up> length xs @ anything}"
+    (case rec_ci (gs ! n) of (gprog, gpara, gn) \<Rightarrow> gprog [+] mv_box gpara (ft + n))
+    \<lbrace>\<lambda>nl. nl =
+           xs @
+           0 \<up> (ft - length xs) @
+           map (\<lambda>i. rec_exec i xs) (take n gs) @
+           rec_exec (gs ! n) xs # 0 \<up> (length gs - Suc n) @ 0 # 0 \<up> length xs @ anything\<rbrace>"
         by simp
     qed
   next
     case False
     have h: "\<not> n < length gs" by fact
     hence ind': 
-      "{\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything} cn_merge_gs (map rec_ci gs) ft
-        {\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) gs @ 0 \<up> Suc (length xs) @ anything}"
+      "\<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything\<rbrace> cn_merge_gs (map rec_ci gs) ft
+        \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @ map (\<lambda>i. rec_exec i xs) gs @ 0 \<up> Suc (length xs) @ anything\<rbrace>"
       using ind
       by simp
     thus "?thesis"
@@ -773,13 +783,13 @@ qed
 lemma compile_cn_gs_correct:
   assumes
     g_cond: "\<forall>g\<in>set gs. terminate g xs \<and>
-  (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow> (\<forall>xc. {\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc} x {\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc}))"
+  (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow> (\<forall>xc. \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc\<rbrace> x \<lbrace>\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc\<rbrace>))"
     and ft: "ft = max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))"
   shows 
-    "{\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything}
+    "\<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft + length gs) @ anything\<rbrace>
     cn_merge_gs (map rec_ci gs) ft
-  {\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @
-                    map (\<lambda>i. rec_exec i xs) gs @ 0 \<up> Suc (length xs) @ anything}"
+  \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (ft - length xs) @
+                    map (\<lambda>i. rec_exec i xs) gs @ 0 \<up> Suc (length xs) @ anything\<rbrace>"
   using assms
   using compile_cn_gs_correct'[of "length gs" gs xs ft ffp anything ]
   apply(auto)
@@ -851,8 +861,8 @@ lemma update_butlast_eq1[simp]:
 
 lemma mv_boxes_correct: 
   "\<lbrakk>aa + n \<le> ba; ba > aa; length lm1 = aa; length lm2 = n; length lm3 = ba - aa - n\<rbrakk>
- \<Longrightarrow> {\<lambda> nl. nl = lm1 @ lm2 @ lm3 @ 0\<up>n @ lm4} (mv_boxes aa ba n) 
-     {\<lambda> nl. nl = lm1 @ 0\<up>n @ lm3 @ lm2 @ lm4}"
+ \<Longrightarrow> \<lbrace>\<lambda> nl. nl = lm1 @ lm2 @ lm3 @ 0\<up>n @ lm4\<rbrace> (mv_boxes aa ba n) 
+     \<lbrace>\<lambda> nl. nl = lm1 @ 0\<up>n @ lm3 @ lm2 @ lm4\<rbrace>"
 proof(induct n arbitrary: lm2 lm3 lm4)
   case 0
   thus "?case"
@@ -862,18 +872,18 @@ next
   have ind: 
     "\<And>lm2 lm3 lm4.
     \<lbrakk>aa + n \<le> ba; aa < ba; length lm1 = aa; length lm2 = n; length lm3 = ba - aa - n\<rbrakk>
-    \<Longrightarrow> {\<lambda>nl. nl = lm1 @ lm2 @ lm3 @ 0 \<up> n @ lm4} mv_boxes aa ba n {\<lambda>nl. nl = lm1 @ 0 \<up> n @ lm3 @ lm2 @ lm4}"
+    \<Longrightarrow> \<lbrace>\<lambda>nl. nl = lm1 @ lm2 @ lm3 @ 0 \<up> n @ lm4\<rbrace> mv_boxes aa ba n \<lbrace>\<lambda>nl. nl = lm1 @ 0 \<up> n @ lm3 @ lm2 @ lm4\<rbrace>"
     by fact
   have h1: "aa + Suc n \<le> ba"  by fact
   have h2: "aa < ba" by fact
   have h3: "length lm1 = aa" by fact
   have h4: "length lm2 = Suc n" by fact 
   have h5: "length lm3 = ba - aa - Suc n" by fact
-  have "{\<lambda>nl. nl = lm1 @ lm2 @ lm3 @ 0 \<up> Suc n @ lm4} mv_boxes aa ba n [+] mv_box (aa + n) (ba + n)
-    {\<lambda>nl. nl = lm1 @ 0 \<up> Suc n @ lm3 @ lm2 @ lm4}"
+  have "\<lbrace>\<lambda>nl. nl = lm1 @ lm2 @ lm3 @ 0 \<up> Suc n @ lm4\<rbrace> mv_boxes aa ba n [+] mv_box (aa + n) (ba + n)
+    \<lbrace>\<lambda>nl. nl = lm1 @ 0 \<up> Suc n @ lm3 @ lm2 @ lm4\<rbrace>"
   proof(rule_tac abc_Hoare_plus_halt)
-    have "{\<lambda>nl. nl = lm1 @ butlast lm2 @ (last lm2 # lm3) @ 0 \<up> n @ (0 # lm4)} mv_boxes aa ba n
-          {\<lambda> nl. nl = lm1 @ 0\<up>n @ (last lm2 # lm3) @ butlast lm2 @ (0 # lm4)}"
+    have "\<lbrace>\<lambda>nl. nl = lm1 @ butlast lm2 @ (last lm2 # lm3) @ 0 \<up> n @ (0 # lm4)\<rbrace> mv_boxes aa ba n
+          \<lbrace>\<lambda> nl. nl = lm1 @ 0\<up>n @ (last lm2 # lm3) @ butlast lm2 @ (0 # lm4)\<rbrace>"
       using h1 h2 h3 h4 h5
       by(rule_tac ind, simp_all)
     moreover have " lm1 @ butlast lm2 @ (last lm2 # lm3) @ 0 \<up> n @ (0 # lm4)
@@ -881,21 +891,21 @@ next
       using h4
       by(simp add: replicate_Suc[THEN sym] exp_suc del: replicate_Suc, 
           cases lm2, simp_all)
-    ultimately show "{\<lambda>nl. nl = lm1 @ lm2 @ lm3 @ 0 \<up> Suc n @ lm4} mv_boxes aa ba n
-          {\<lambda> nl. nl = lm1 @ 0\<up>n @ last lm2 # lm3 @ butlast lm2 @ 0 # lm4}"
+    ultimately show "\<lbrace>\<lambda>nl. nl = lm1 @ lm2 @ lm3 @ 0 \<up> Suc n @ lm4\<rbrace> mv_boxes aa ba n
+          \<lbrace>\<lambda> nl. nl = lm1 @ 0\<up>n @ last lm2 # lm3 @ butlast lm2 @ 0 # lm4\<rbrace>"
       by (metis append_Cons)
   next
     let ?lm = "lm1 @ 0 \<up> n @ last lm2 # lm3 @ butlast lm2 @ 0 # lm4"
-    have "{\<lambda>nl. nl = ?lm} mv_box (aa + n) (ba + n)
-          {\<lambda> nl. nl = ?lm[(ba + n) := ?lm!(aa+n) + ?lm!(ba+n), (aa+n):=0]}"
+    have "\<lbrace>\<lambda>nl. nl = ?lm\<rbrace> mv_box (aa + n) (ba + n)
+          \<lbrace>\<lambda> nl. nl = ?lm[(ba + n) := ?lm!(aa+n) + ?lm!(ba+n), (aa+n):=0]\<rbrace>"
       using h1 h2 h3 h4  h5
       by(rule_tac mv_box_correct, simp_all)
     moreover have "?lm[(ba + n) := ?lm!(aa+n) + ?lm!(ba+n), (aa+n):=0]
                  =  lm1 @ 0 \<up> Suc n @ lm3 @ lm2 @ lm4"
       using h1 h2 h3 h4 h5
       by(auto simp: nth_append list_update_append split: if_splits)
-    ultimately show "{\<lambda>nl. nl = lm1 @ 0 \<up> n @ last lm2 # lm3 @ butlast lm2 @ 0 # lm4} mv_box (aa + n) (ba + n)
-          {\<lambda>nl. nl = lm1 @ 0 \<up> Suc n @ lm3 @ lm2 @ lm4}"
+    ultimately show "\<lbrace>\<lambda>nl. nl = lm1 @ 0 \<up> n @ last lm2 # lm3 @ butlast lm2 @ 0 # lm4\<rbrace> mv_box (aa + n) (ba + n)
+          \<lbrace>\<lambda>nl. nl = lm1 @ 0 \<up> Suc n @ lm3 @ lm2 @ lm4\<rbrace>"
       by simp
   qed
   thus "?case"
@@ -922,9 +932,9 @@ lemma mv_boxes_correct2:
     length (lm1::nat list) = ba;
     length (lm2::nat list) = aa - ba - n; 
     length (lm3::nat list) = n\<rbrakk>
-  \<Longrightarrow>{\<lambda> nl. nl = lm1 @ 0\<up>n @ lm2 @ lm3 @ lm4}
+  \<Longrightarrow>\<lbrace>\<lambda> nl. nl = lm1 @ 0\<up>n @ lm2 @ lm3 @ lm4\<rbrace>
                 (mv_boxes aa ba n) 
-     {\<lambda> nl. nl = lm1 @ lm3 @ lm2 @ 0\<up>n @ lm4}"
+     \<lbrace>\<lambda> nl. nl = lm1 @ lm3 @ lm2 @ 0\<up>n @ lm4\<rbrace>"
 proof(induct n arbitrary: lm2 lm3 lm4)
   case 0
   thus "?case"
@@ -934,18 +944,18 @@ next
   have ind:
     "\<And>lm2 lm3 lm4.
     \<lbrakk>n \<le> aa - ba; ba < aa; length lm1 = ba; length lm2 = aa - ba - n; length lm3 = n\<rbrakk>
-    \<Longrightarrow> {\<lambda>nl. nl = lm1 @ 0 \<up> n @ lm2 @ lm3 @ lm4} mv_boxes aa ba n {\<lambda>nl. nl = lm1 @ lm3 @ lm2 @ 0 \<up> n @ lm4}"
+    \<Longrightarrow> \<lbrace>\<lambda>nl. nl = lm1 @ 0 \<up> n @ lm2 @ lm3 @ lm4\<rbrace> mv_boxes aa ba n \<lbrace>\<lambda>nl. nl = lm1 @ lm3 @ lm2 @ 0 \<up> n @ lm4\<rbrace>"
     by fact
   have h1: "Suc n \<le> aa - ba" by fact
   have h2: "ba < aa" by fact
   have h3: "length lm1 = ba" by fact 
   have h4: "length lm2 = aa - ba - Suc n" by fact
   have h5: "length lm3 = Suc n" by fact
-  have "{\<lambda>nl. nl = lm1 @ 0 \<up> Suc n @ lm2 @ lm3 @ lm4}  mv_boxes aa ba n [+] mv_box (aa + n) (ba + n) 
-    {\<lambda>nl. nl = lm1 @ lm3 @ lm2 @ 0 \<up> Suc n @ lm4}"
+  have "\<lbrace>\<lambda>nl. nl = lm1 @ 0 \<up> Suc n @ lm2 @ lm3 @ lm4\<rbrace>  mv_boxes aa ba n [+] mv_box (aa + n) (ba + n) 
+    \<lbrace>\<lambda>nl. nl = lm1 @ lm3 @ lm2 @ 0 \<up> Suc n @ lm4\<rbrace>"
   proof(rule_tac abc_Hoare_plus_halt)
-    have "{\<lambda> nl. nl = lm1 @ 0 \<up> n @ (0 # lm2) @ (butlast lm3) @ (last lm3 # lm4)} mv_boxes aa ba n
-           {\<lambda> nl. nl = lm1 @ butlast lm3 @ (0 # lm2) @ 0\<up>n @ (last lm3 # lm4)}"
+    have "\<lbrace>\<lambda> nl. nl = lm1 @ 0 \<up> n @ (0 # lm2) @ (butlast lm3) @ (last lm3 # lm4)\<rbrace> mv_boxes aa ba n
+           \<lbrace>\<lambda> nl. nl = lm1 @ butlast lm3 @ (0 # lm2) @ 0\<up>n @ (last lm3 # lm4)\<rbrace>"
       using h1 h2 h3 h4 h5
       by(rule_tac ind, simp_all)
     moreover have "lm1 @ 0 \<up> n @ (0 # lm2) @ (butlast lm3) @ (last lm3 # lm4) 
@@ -953,22 +963,22 @@ next
       using h5
       by(simp add: replicate_Suc_iff_anywhere exp_suc 
           del: replicate_Suc, cases lm3, simp_all)
-    ultimately show "{\<lambda>nl. nl = lm1 @ 0 \<up> Suc n @ lm2 @ lm3 @ lm4} mv_boxes aa ba n
-     {\<lambda> nl. nl = lm1 @ butlast lm3 @ (0 # lm2) @ 0\<up>n @ (last lm3 # lm4)}"
+    ultimately show "\<lbrace>\<lambda>nl. nl = lm1 @ 0 \<up> Suc n @ lm2 @ lm3 @ lm4\<rbrace> mv_boxes aa ba n
+     \<lbrace>\<lambda> nl. nl = lm1 @ butlast lm3 @ (0 # lm2) @ 0\<up>n @ (last lm3 # lm4)\<rbrace>"
       by metis
   next
     thm mv_box_correct
     let ?lm = "lm1 @ butlast lm3 @ (0 # lm2) @ 0 \<up> n @ last lm3 # lm4"
-    have "{\<lambda>nl. nl = ?lm} mv_box (aa + n) (ba + n)
-         {\<lambda>nl. nl = ?lm[ba+n := ?lm!(aa+n)+?lm!(ba+n), (aa+n):=0]}"
+    have "\<lbrace>\<lambda>nl. nl = ?lm\<rbrace> mv_box (aa + n) (ba + n)
+         \<lbrace>\<lambda>nl. nl = ?lm[ba+n := ?lm!(aa+n)+?lm!(ba+n), (aa+n):=0]\<rbrace>"
       using h1 h2 h3 h4 h5
       by(rule_tac mv_box_correct, simp_all)
     moreover have "?lm[ba+n := ?lm!(aa+n)+?lm!(ba+n), (aa+n):=0]
                = lm1 @ lm3 @ lm2 @ 0 \<up> Suc n @ lm4"
       using h1 h2 h3 h4 h5
       by(auto simp: nth_append list_update_append split: if_splits)
-    ultimately show "{\<lambda>nl. nl = lm1 @ butlast lm3 @ (0 # lm2) @ 0 \<up> n @ last lm3 # lm4} mv_box (aa + n) (ba + n)
-     {\<lambda>nl. nl = lm1 @ lm3 @ lm2 @ 0 \<up> Suc n @ lm4}"
+    ultimately show "\<lbrace>\<lambda>nl. nl = lm1 @ butlast lm3 @ (0 # lm2) @ 0 \<up> n @ last lm3 # lm4\<rbrace> mv_box (aa + n) (ba + n)
+     \<lbrace>\<lambda>nl. nl = lm1 @ lm3 @ lm2 @ 0 \<up> Suc n @ lm4\<rbrace>"
       by simp
   qed
   thus "?case"
@@ -976,15 +986,15 @@ next
 qed    
 
 lemma save_paras: 
-  "{\<lambda>nl. nl = xs @ 0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) - length xs) @
-  map (\<lambda>i. rec_exec i xs) gs @ 0 \<up> Suc (length xs) @ anything}
+  "\<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) - length xs) @
+  map (\<lambda>i. rec_exec i xs) gs @ 0 \<up> Suc (length xs) @ anything\<rbrace>
   mv_boxes 0 (Suc (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) + length gs)) (length xs)
-  {\<lambda>nl. nl = 0 \<up> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ map (\<lambda>i. rec_exec i xs) gs @ 0 # xs @ anything}"
+  \<lbrace>\<lambda>nl. nl = 0 \<up> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ map (\<lambda>i. rec_exec i xs) gs @ 0 # xs @ anything\<rbrace>"
 proof -
   let ?ft = "max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))"
-  have "{\<lambda>nl. nl = [] @ xs @ (0\<up>(?ft - length xs) @  map (\<lambda>i. rec_exec i xs) gs @ [0]) @ 
-          0 \<up> (length xs) @ anything} mv_boxes 0 (Suc ?ft + length gs) (length xs) 
-        {\<lambda>nl. nl = [] @ 0 \<up> (length xs) @ (0\<up>(?ft - length xs) @  map (\<lambda>i. rec_exec i xs) gs @ [0]) @ xs @ anything}"
+  have "\<lbrace>\<lambda>nl. nl = [] @ xs @ (0\<up>(?ft - length xs) @  map (\<lambda>i. rec_exec i xs) gs @ [0]) @ 
+          0 \<up> (length xs) @ anything\<rbrace> mv_boxes 0 (Suc ?ft + length gs) (length xs) 
+        \<lbrace>\<lambda>nl. nl = [] @ 0 \<up> (length xs) @ (0\<up>(?ft - length xs) @  map (\<lambda>i. rec_exec i xs) gs @ [0]) @ xs @ anything\<rbrace>"
     by(rule_tac mv_boxes_correct, auto)
   thus "?thesis"
     by(simp add: replicate_merge_anywhere)
@@ -998,15 +1008,15 @@ lemma length_le_max_insert_rec_ci[intro]:
 
 lemma restore_new_paras:
   "ffp \<ge> length gs 
- \<Longrightarrow> {\<lambda>nl. nl = 0 \<up> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ map (\<lambda>i. rec_exec i xs) gs @ 0 # xs @ anything}
+ \<Longrightarrow> \<lbrace>\<lambda>nl. nl = 0 \<up> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ map (\<lambda>i. rec_exec i xs) gs @ 0 # xs @ anything\<rbrace>
     mv_boxes (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))) 0 (length gs)
-  {\<lambda>nl. nl = map (\<lambda>i. rec_exec i xs) gs @ 0 \<up> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ 0 # xs @ anything}"
+  \<lbrace>\<lambda>nl. nl = map (\<lambda>i. rec_exec i xs) gs @ 0 \<up> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ 0 # xs @ anything\<rbrace>"
 proof -
   let ?ft = "max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))"
   assume j: "ffp \<ge> length gs"
-  hence "{\<lambda> nl. nl = [] @ 0\<up>length gs @ 0\<up>(?ft - length gs) @  map (\<lambda>i. rec_exec i xs) gs @ ((0 # xs) @ anything)}
+  hence "\<lbrace>\<lambda> nl. nl = [] @ 0\<up>length gs @ 0\<up>(?ft - length gs) @  map (\<lambda>i. rec_exec i xs) gs @ ((0 # xs) @ anything)\<rbrace>
        mv_boxes ?ft 0 (length gs)
-        {\<lambda> nl. nl = [] @ map (\<lambda>i. rec_exec i xs) gs @ 0\<up>(?ft - length gs) @ 0\<up>length gs @ ((0 # xs) @ anything)}"
+        \<lbrace>\<lambda> nl. nl = [] @ map (\<lambda>i. rec_exec i xs) gs @ 0\<up>(?ft - length gs) @ 0\<up>length gs @ ((0 # xs) @ anything)\<rbrace>"
     by(rule_tac mv_boxes_correct2, auto)
   moreover have "?ft \<ge> length gs"
     using j
@@ -1025,19 +1035,19 @@ lemma save_rs:
   "\<lbrakk>far = length gs;
   ffp \<le> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)));
   far < ffp\<rbrakk>
-\<Longrightarrow>  {\<lambda>nl. nl = map (\<lambda>i. rec_exec i xs) gs @
+\<Longrightarrow>  \<lbrace>\<lambda>nl. nl = map (\<lambda>i. rec_exec i xs) gs @
   rec_exec (Cn (length xs) f gs) xs # 0 \<up> max (Suc (length xs))
-  (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ xs @ anything}
+  (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ xs @ anything\<rbrace>
     mv_box far (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))))
-    {\<lambda>nl. nl = map (\<lambda>i. rec_exec i xs) gs @
+    \<lbrace>\<lambda>nl. nl = map (\<lambda>i. rec_exec i xs) gs @
                0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) - length gs) @
-               rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything}"
+               rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything\<rbrace>"
 proof -
   let ?ft = "max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))"
   thm mv_box_correct
   let ?lm= " map (\<lambda>i. rec_exec i xs) gs @ rec_exec (Cn (length xs) f gs) xs # 0 \<up> ?ft @ xs @ anything"
   assume h: "far = length gs" "ffp \<le> ?ft" "far < ffp"
-  hence "{\<lambda> nl. nl = ?lm} mv_box far ?ft {\<lambda> nl. nl = ?lm[?ft := ?lm!far + ?lm!?ft, far := 0]}"
+  hence "\<lbrace>\<lambda> nl. nl = ?lm\<rbrace> mv_box far ?ft \<lbrace>\<lambda> nl. nl = ?lm[?ft := ?lm!far + ?lm!?ft, far := 0]\<rbrace>"
     apply(rule_tac mv_box_correct)
     by( auto)  
   moreover have "?lm[?ft := ?lm!far + ?lm!?ft, far := 0]
@@ -1059,7 +1069,7 @@ lemma length_empty_boxes[simp]: "length (empty_boxes n) = 2*n"
   done
 
 lemma empty_one_box_correct:
-  "{\<lambda>nl. nl = 0 \<up> n @ x # lm} [Dec n 2, Goto 0] {\<lambda>nl. nl = 0 # 0 \<up> n @ lm}"
+  "\<lbrace>\<lambda>nl. nl = 0 \<up> n @ x # lm\<rbrace> [Dec n 2, Goto 0] \<lbrace>\<lambda>nl. nl = 0 # 0 \<up> n @ lm\<rbrace>"
 proof(induct x)
   case 0
   thus "?case"
@@ -1069,7 +1079,7 @@ proof(induct x)
         replicate_Suc[THEN sym] exp_suc del: replicate_Suc)
 next
   case (Suc x)
-  have "{\<lambda>nl. nl = 0 \<up> n @ x # lm} [Dec n 2, Goto 0] {\<lambda>nl. nl = 0 # 0 \<up> n @ lm}"
+  have "\<lbrace>\<lambda>nl. nl = 0 \<up> n @ x # lm\<rbrace> [Dec n 2, Goto 0] \<lbrace>\<lambda>nl. nl = 0 # 0 \<up> n @ lm\<rbrace>"
     by fact
   then obtain stp where "abc_steps_l (0, 0 \<up> n @ x # lm) [Dec n 2, Goto 0] stp
                       = (Suc (Suc 0), 0 # 0 \<up> n @ lm)"
@@ -1090,7 +1100,7 @@ qed
 
 lemma empty_boxes_correct: 
   "length lm \<ge> n \<Longrightarrow>
-  {\<lambda> nl. nl = lm} empty_boxes n {\<lambda> nl. nl = 0\<up>n @ drop n lm}"
+  \<lbrace>\<lambda> nl. nl = lm\<rbrace> empty_boxes n \<lbrace>\<lambda> nl. nl = 0\<up>n @ drop n lm\<rbrace>"
 proof(induct n)
   case 0
   thus "?case"
@@ -1098,15 +1108,15 @@ proof(induct n)
         rule_tac x = 0 in exI, simp add: abc_steps_l.simps)
 next
   case (Suc n)
-  have ind: "n \<le> length lm \<Longrightarrow> {\<lambda>nl. nl = lm} empty_boxes n {\<lambda>nl. nl = 0 \<up> n @ drop n lm}" by fact
+  have ind: "n \<le> length lm \<Longrightarrow> \<lbrace>\<lambda>nl. nl = lm\<rbrace> empty_boxes n \<lbrace>\<lambda>nl. nl = 0 \<up> n @ drop n lm\<rbrace>" by fact
   have h: "Suc n \<le> length lm" by fact
-  have "{\<lambda>nl. nl = lm} empty_boxes n [+] [Dec n 2, Goto 0] {\<lambda>nl. nl = 0 # 0 \<up> n @ drop (Suc n) lm}"
+  have "\<lbrace>\<lambda>nl. nl = lm\<rbrace> empty_boxes n [+] [Dec n 2, Goto 0] \<lbrace>\<lambda>nl. nl = 0 # 0 \<up> n @ drop (Suc n) lm\<rbrace>"
   proof(rule_tac abc_Hoare_plus_halt)
-    show "{\<lambda>nl. nl = lm} empty_boxes n {\<lambda>nl. nl = 0 \<up> n @ drop n lm}"
+    show "\<lbrace>\<lambda>nl. nl = lm\<rbrace> empty_boxes n \<lbrace>\<lambda>nl. nl = 0 \<up> n @ drop n lm\<rbrace>"
       using h
       by(rule_tac ind, simp)
   next
-    show "{\<lambda>nl. nl = 0 \<up> n @ drop n lm} [Dec n 2, Goto 0] {\<lambda>nl. nl = 0 # 0 \<up> n @ drop (Suc n) lm}"
+    show "\<lbrace>\<lambda>nl. nl = 0 \<up> n @ drop n lm\<rbrace> [Dec n 2, Goto 0] \<lbrace>\<lambda>nl. nl = 0 # 0 \<up> n @ drop (Suc n) lm\<rbrace>"
       using empty_one_box_correct[of n "lm ! n" "drop (Suc n) lm"]
       using h
       by(simp add: Cons_nth_drop_Suc)
@@ -1126,18 +1136,18 @@ lemma insert_dominated[simp]: "length gs \<le> ffp \<Longrightarrow>
 
 lemma clean_paras: 
   "ffp \<ge> length gs \<Longrightarrow>
-  {\<lambda>nl. nl = map (\<lambda>i. rec_exec i xs) gs @
+  \<lbrace>\<lambda>nl. nl = map (\<lambda>i. rec_exec i xs) gs @
   0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) - length gs) @
-  rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything}
+  rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything\<rbrace>
   empty_boxes (length gs)
-  {\<lambda>nl. nl = 0 \<up> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ 
-  rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything}"
+  \<lbrace>\<lambda>nl. nl = 0 \<up> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ 
+  rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything\<rbrace>"
 proof-
   let ?ft = "max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))"
   assume h: "length gs \<le> ffp"
   let ?lm = "map (\<lambda>i. rec_exec i xs) gs @ 0 \<up> (?ft - length gs) @
     rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything"
-  have "{\<lambda> nl. nl = ?lm} empty_boxes (length gs) {\<lambda> nl. nl = 0\<up>length gs @ drop (length gs) ?lm}"
+  have "\<lbrace>\<lambda> nl. nl = ?lm\<rbrace> empty_boxes (length gs) \<lbrace>\<lambda> nl. nl = 0\<up>length gs @ drop (length gs) ?lm\<rbrace>"
     by(rule_tac empty_boxes_correct, simp)
   moreover have "0\<up>length gs @ drop (length gs) ?lm 
            =  0 \<up> ?ft @  rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything"
@@ -1149,18 +1159,18 @@ qed
 
 
 lemma restore_rs:
-  "{\<lambda>nl. nl = 0 \<up> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ 
-  rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything}
+  "\<lbrace>\<lambda>nl. nl = 0 \<up> max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) @ 
+  rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything\<rbrace>
   mv_box (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))) (length xs)
-  {\<lambda>nl. nl = 0 \<up> length xs @
+  \<lbrace>\<lambda>nl. nl = 0 \<up> length xs @
   rec_exec (Cn (length xs) f gs) xs #
   0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) - (length xs)) @
-  0 \<up> length gs @ xs @ anything}"
+  0 \<up> length gs @ xs @ anything\<rbrace>"
 proof -
   let ?ft = "max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))"
   let ?lm = "0\<up>(length xs) @  0\<up>(?ft - (length xs)) @ rec_exec (Cn (length xs) f gs) xs # 0 \<up> length gs @ xs @ anything"
   thm mv_box_correct
-  have "{\<lambda> nl. nl = ?lm} mv_box ?ft (length xs) {\<lambda> nl. nl = ?lm[length xs := ?lm!?ft + ?lm!(length xs), ?ft := 0]}"
+  have "\<lbrace>\<lambda> nl. nl = ?lm\<rbrace> mv_box ?ft (length xs) \<lbrace>\<lambda> nl. nl = ?lm[length xs := ?lm!?ft + ?lm!(length xs), ?ft := 0]\<rbrace>"
     by(rule_tac mv_box_correct, simp, simp)
   moreover have "?lm[length xs := ?lm!?ft + ?lm!(length xs), ?ft := 0]
                =  0 \<up> length xs @ rec_exec (Cn (length xs) f gs) xs # 0 \<up> (?ft - (length xs)) @ 0 \<up> length gs @ xs @ anything"
@@ -1173,18 +1183,18 @@ proof -
 qed
 
 lemma restore_orgin_paras:
-  "{\<lambda>nl. nl = 0 \<up> length xs @
+  "\<lbrace>\<lambda>nl. nl = 0 \<up> length xs @
   rec_exec (Cn (length xs) f gs) xs #
-  0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) - length xs) @ 0 \<up> length gs @ xs @ anything}
+  0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) - length xs) @ 0 \<up> length gs @ xs @ anything\<rbrace>
   mv_boxes (Suc (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) + length gs)) 0 (length xs)
-  {\<lambda>nl. nl = xs @ rec_exec (Cn (length xs) f gs) xs # 0 \<up> 
-  (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) + length gs) @ anything}"
+  \<lbrace>\<lambda>nl. nl = xs @ rec_exec (Cn (length xs) f gs) xs # 0 \<up> 
+  (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) + length gs) @ anything\<rbrace>"
 proof -
   let ?ft = "max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))"
   thm mv_boxes_correct2
-  have "{\<lambda> nl. nl = [] @ 0\<up>(length xs) @ (rec_exec (Cn (length xs) f gs) xs # 0 \<up> (?ft - length xs) @ 0 \<up> length gs) @ xs @ anything}
+  have "\<lbrace>\<lambda> nl. nl = [] @ 0\<up>(length xs) @ (rec_exec (Cn (length xs) f gs) xs # 0 \<up> (?ft - length xs) @ 0 \<up> length gs) @ xs @ anything\<rbrace>
         mv_boxes (Suc ?ft + length gs) 0 (length xs)
-        {\<lambda> nl. nl = [] @ xs @ (rec_exec (Cn (length xs) f gs) xs # 0 \<up> (?ft - length xs) @ 0 \<up> length gs) @ 0\<up>length xs @ anything}"
+        \<lbrace>\<lambda> nl. nl = [] @ xs @ (rec_exec (Cn (length xs) f gs) xs # 0 \<up> (?ft - length xs) @ 0 \<up> length gs) @ 0\<up>length xs @ anything\<rbrace>"
     by(rule_tac mv_boxes_correct2, auto)
   thus "?thesis"
     by(simp add: replicate_merge_anywhere)
@@ -1193,15 +1203,15 @@ qed
 lemma compile_cn_correct':
   assumes f_ind: 
     "\<And> anything r. rec_exec f (map (\<lambda>g. rec_exec g xs) gs) = rec_exec (Cn (length xs) f gs) xs \<Longrightarrow>
-  {\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ 0 \<up> (ffp - far) @ anything} fap
-                {\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ rec_exec (Cn (length xs) f gs) xs # 0 \<up> (ffp - Suc far) @ anything}"
+  \<lbrace>\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ 0 \<up> (ffp - far) @ anything\<rbrace> fap
+                \<lbrace>\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ rec_exec (Cn (length xs) f gs) xs # 0 \<up> (ffp - Suc far) @ anything\<rbrace>"
     and compile: "rec_ci f = (fap, far, ffp)"
     and term_f: "terminate f (map (\<lambda>g. rec_exec g xs) gs)"
     and g_cond: "\<forall>g\<in>set gs. terminate g xs \<and>
   (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow> 
-  (\<forall>xc. {\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc} x {\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc}))"
+  (\<forall>xc. \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc\<rbrace> x \<lbrace>\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc\<rbrace>))"
   shows 
-    "{\<lambda>nl. nl = xs @ 0 # 0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) + length gs) @ anything}
+    "\<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) + length gs) @ anything\<rbrace>
   cn_merge_gs (map rec_ci gs) (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))) [+]
   (mv_boxes 0 (Suc (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) + length gs)) (length xs) [+]
   (mv_boxes (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))) 0 (length gs) [+]
@@ -1209,8 +1219,8 @@ lemma compile_cn_correct':
   (empty_boxes (length gs) [+]
   (mv_box (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))) (length xs) [+]
   mv_boxes (Suc (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) + length gs)) 0 (length xs)))))))
-  {\<lambda>nl. nl = xs @ rec_exec (Cn (length xs) f gs) xs # 
-0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) + length gs) @ anything}"
+  \<lbrace>\<lambda>nl. nl = xs @ rec_exec (Cn (length xs) f gs) xs # 
+0 \<up> (max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs))) + length gs) @ anything\<rbrace>"
 proof -
   let ?ft = "max (Suc (length xs)) (Max (insert ffp ((\<lambda>(aprog, p, n). n) ` rec_ci ` set gs)))"
   let ?A = "cn_merge_gs (map rec_ci gs) ?ft"
@@ -1224,28 +1234,28 @@ proof -
   let ?P1 = "\<lambda>nl. nl = xs @ 0 # 0 \<up> (?ft + length gs) @ anything"
   let ?S = "\<lambda>nl. nl = xs @ rec_exec (Cn (length xs) f gs) xs # 0 \<up> (?ft + length gs) @ anything"
   let ?Q1 = "\<lambda> nl. nl = xs @ 0\<up>(?ft - length xs) @ map (\<lambda> i. rec_exec i xs) gs @ 0\<up>(Suc (length xs)) @ anything"
-  show "{?P1} (?A [+] (?B [+] (?C [+] (?D [+] (?E [+] (?F [+] (?G [+] ?H))))))) {?S}"
+  show "\<lbrace>?P1\<rbrace> (?A [+] (?B [+] (?C [+] (?D [+] (?E [+] (?F [+] (?G [+] ?H))))))) \<lbrace>?S\<rbrace>"
   proof(rule_tac abc_Hoare_plus_halt)
-    show "{?P1} ?A {?Q1}"
+    show "\<lbrace>?P1\<rbrace> ?A \<lbrace>?Q1\<rbrace>"
       using g_cond
       by(rule_tac compile_cn_gs_correct, auto)
   next
     let ?Q2 = "\<lambda>nl. nl = 0 \<up> ?ft @
                     map (\<lambda>i. rec_exec i xs) gs @ 0 # xs @ anything"
-    show "{?Q1} (?B [+] (?C [+] (?D [+] (?E [+] (?F [+] (?G [+] ?H)))))) {?S}"
+    show "\<lbrace>?Q1\<rbrace> (?B [+] (?C [+] (?D [+] (?E [+] (?F [+] (?G [+] ?H)))))) \<lbrace>?S\<rbrace>"
     proof(rule_tac abc_Hoare_plus_halt)
-      show "{?Q1} ?B {?Q2}"
+      show "\<lbrace>?Q1\<rbrace> ?B \<lbrace>?Q2\<rbrace>"
         by(rule_tac save_paras)
     next
       let ?Q3 = "\<lambda> nl. nl = map (\<lambda>i. rec_exec i xs) gs @ 0\<up>?ft @ 0 # xs @ anything" 
-      show "{?Q2} (?C [+] (?D [+] (?E [+] (?F [+] (?G [+] ?H))))) {?S}"
+      show "\<lbrace>?Q2\<rbrace> (?C [+] (?D [+] (?E [+] (?F [+] (?G [+] ?H))))) \<lbrace>?S\<rbrace>"
       proof(rule_tac abc_Hoare_plus_halt)
         have "ffp \<ge> length gs"
           using compile term_f
           apply(subgoal_tac "length gs = far")
            apply(drule_tac footprint_ge, simp)
           by(drule_tac param_pattern, auto)          
-        thus "{?Q2} ?C {?Q3}"
+        thus "\<lbrace>?Q2\<rbrace> ?C \<lbrace>?Q3\<rbrace>"
           by(erule_tac restore_new_paras)
       next
         let ?Q4 = "\<lambda> nl. nl = map (\<lambda>i. rec_exec i xs) gs @ rec_exec (Cn (length xs) f gs) xs # 0\<up>?ft @ xs @ anything"
@@ -1257,39 +1267,39 @@ proof -
         have c: "ffp > far"
           using compile
           by(erule_tac footprint_ge)
-        show "{?Q3} (?D [+] (?E [+] (?F [+] (?G [+] ?H)))) {?S}"
+        show "\<lbrace>?Q3\<rbrace> (?D [+] (?E [+] (?F [+] (?G [+] ?H)))) \<lbrace>?S\<rbrace>"
         proof(rule_tac abc_Hoare_plus_halt)
-          have "{\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ 0 \<up> (ffp - far) @ 0\<up>(?ft - ffp + far) @ 0 # xs @ anything} fap
-            {\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ rec_exec (Cn (length xs) f gs) xs # 
-            0 \<up> (ffp - Suc far) @ 0\<up>(?ft - ffp + far) @ 0 # xs @ anything}"
+          have "\<lbrace>\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ 0 \<up> (ffp - far) @ 0\<up>(?ft - ffp + far) @ 0 # xs @ anything\<rbrace> fap
+            \<lbrace>\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ rec_exec (Cn (length xs) f gs) xs # 
+            0 \<up> (ffp - Suc far) @ 0\<up>(?ft - ffp + far) @ 0 # xs @ anything\<rbrace>"
             by(rule_tac f_ind, simp add: rec_exec.simps)
-          thus "{?Q3} fap {?Q4}"
+          thus "\<lbrace>?Q3\<rbrace> fap \<lbrace>?Q4\<rbrace>"
             using a b c
             by(simp add: replicate_merge_anywhere,
                 cases "?ft", simp_all add: exp_suc del: replicate_Suc)
         next
           let ?Q5 = "\<lambda>nl. nl = map (\<lambda>i. rec_exec i xs) gs @
                0\<up>(?ft - length gs) @ rec_exec (Cn (length xs) f gs) xs # 0\<up>(length gs)@ xs @ anything"
-          show "{?Q4} (?E [+] (?F [+] (?G [+] ?H))) {?S}"
+          show "\<lbrace>?Q4\<rbrace> (?E [+] (?F [+] (?G [+] ?H))) \<lbrace>?S\<rbrace>"
           proof(rule_tac abc_Hoare_plus_halt)
-            from a b c show "{?Q4} ?E {?Q5}"
+            from a b c show "\<lbrace>?Q4\<rbrace> ?E \<lbrace>?Q5\<rbrace>"
               by(erule_tac save_rs, simp_all)
           next
             let ?Q6 = "\<lambda>nl. nl = 0\<up>?ft @ rec_exec (Cn (length xs) f gs) xs # 0\<up>(length gs)@ xs @ anything"
-            show "{?Q5} (?F [+] (?G [+] ?H)) {?S}"
+            show "\<lbrace>?Q5\<rbrace> (?F [+] (?G [+] ?H)) \<lbrace>?S\<rbrace>"
             proof(rule_tac abc_Hoare_plus_halt)
               have "length gs \<le> ffp" using a b c
                 by simp
-              thus "{?Q5} ?F {?Q6}"
+              thus "\<lbrace>?Q5\<rbrace> ?F \<lbrace>?Q6\<rbrace>"
                 by(erule_tac clean_paras)
             next
               let ?Q7 = "\<lambda>nl. nl = 0\<up>length xs @ rec_exec (Cn (length xs) f gs) xs # 0\<up>(?ft - (length xs)) @ 0\<up>(length gs)@ xs @ anything"
-              show "{?Q6} (?G [+] ?H) {?S}"
+              show "\<lbrace>?Q6\<rbrace> (?G [+] ?H) \<lbrace>?S\<rbrace>"
               proof(rule_tac abc_Hoare_plus_halt)
-                show "{?Q6} ?G {?Q7}"
+                show "\<lbrace>?Q6\<rbrace> ?G \<lbrace>?Q7\<rbrace>"
                   by(rule_tac restore_rs)
               next
-                show "{?Q7} ?H {?S}"
+                show "\<lbrace>?Q7\<rbrace> ?H \<lbrace>?S\<rbrace>"
                   by(rule_tac restore_orgin_paras)
               qed
             qed
@@ -1304,31 +1314,33 @@ lemma compile_cn_correct:
   assumes termi_f: "terminate f (map (\<lambda>g. rec_exec g xs) gs)"
     and f_ind: "\<And>ap arity fp anything.
   rec_ci f = (ap, arity, fp)
-  \<Longrightarrow> {\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ 0 \<up> (fp - arity) @ anything} ap
-  {\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ rec_exec f (map (\<lambda>g. rec_exec g xs) gs) # 0 \<up> (fp - Suc arity) @ anything}"
+  \<Longrightarrow> \<lbrace>\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ 0 \<up> (fp - arity) @ anything\<rbrace> ap
+  \<lbrace>\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ rec_exec f (map (\<lambda>g. rec_exec g xs) gs) # 0 \<up> (fp - Suc arity) @ anything\<rbrace>"
     and g_cond: 
     "\<forall>g\<in>set gs. terminate g xs \<and>
-  (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow>   (\<forall>xc. {\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc} x {\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc}))"
+  (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow>   (\<forall>xc. \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (xb - xa) @ xc\<rbrace> x \<lbrace>\<lambda>nl. nl = xs @ rec_exec g xs # 0 \<up> (xb - Suc xa) @ xc\<rbrace>))"
     and compile: "rec_ci (Cn n f gs) = (ap, arity, fp)"
     and len: "length xs = n"
-  shows "{\<lambda>nl. nl = xs @ 0 \<up> (fp - arity) @ anything} ap {\<lambda>nl. nl = xs @ rec_exec (Cn n f gs) xs # 0 \<up> (fp - Suc arity) @ anything}"
+  shows "\<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (fp - arity) @ anything\<rbrace> ap \<lbrace>\<lambda>nl. nl = xs @ rec_exec (Cn n f gs) xs # 0 \<up> (fp - Suc arity) @ anything\<rbrace>"
 proof(cases "rec_ci f")
   fix fap far ffp
   assume h: "rec_ci f = (fap, far, ffp)"
-  then have f_newind: "\<And> anything .{\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ 0 \<up> (ffp - far) @ anything} fap
-    {\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ rec_exec f (map (\<lambda>g. rec_exec g xs) gs) # 0 \<up> (ffp - Suc far) @ anything}"
+  then have f_newind: "\<And> anything .\<lbrace>\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ 0 \<up> (ffp - far) @ anything\<rbrace> fap
+    \<lbrace>\<lambda>nl. nl = map (\<lambda>g. rec_exec g xs) gs @ rec_exec f (map (\<lambda>g. rec_exec g xs) gs) # 0 \<up> (ffp - Suc far) @ anything\<rbrace>"
     by(rule_tac f_ind, simp_all)
-  thus "{\<lambda>nl. nl = xs @ 0 \<up> (fp - arity) @ anything} ap {\<lambda>nl. nl = xs @ rec_exec (Cn n f gs) xs # 0 \<up> (fp - Suc arity) @ anything}"
+  thus "\<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (fp - arity) @ anything\<rbrace> ap \<lbrace>\<lambda>nl. nl = xs @ rec_exec (Cn n f gs) xs # 0 \<up> (fp - Suc arity) @ anything\<rbrace>"
     using compile len h termi_f g_cond
     apply(auto simp: rec_ci.simps abc_comp_commute)
     apply(rule_tac compile_cn_correct', simp_all)
     done
 qed
 
+subsubsection \<open>Correctness of compilation for constructor Pr\<close>
+
 lemma mv_box_correct_simp[simp]: 
   "\<lbrakk>length xs = n; ft = max (n+3) (max fft gft)\<rbrakk> 
- \<Longrightarrow> {\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft - n) @ anything} mv_box n ft 
-       {\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft - n) @ anything}"
+ \<Longrightarrow> \<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft - n) @ anything\<rbrace> mv_box n ft 
+       \<lbrace>\<lambda>nl. nl = xs @ 0 # 0 \<up> (ft - n) @ anything\<rbrace>"
   using mv_box_correct[of n ft "xs @ 0 # 0 \<up> (ft - n) @ anything"]
   by(auto)
 
@@ -1337,8 +1349,8 @@ lemma length_under_max[simp]: "length xs < max (length xs + 3) fft"
 
 lemma save_init_rs: 
   "\<lbrakk>length xs = n; ft = max (n+3) (max fft gft)\<rbrakk> 
-     \<Longrightarrow>  {\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (ft - n) @ anything} mv_box n (Suc n) 
-       {\<lambda>nl. nl = xs @ 0 # rec_exec f xs # 0 \<up> (ft - Suc n) @ anything}"
+     \<Longrightarrow>  \<lbrace>\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (ft - n) @ anything\<rbrace> mv_box n (Suc n) 
+       \<lbrace>\<lambda>nl. nl = xs @ 0 # rec_exec f xs # 0 \<up> (ft - Suc n) @ anything\<rbrace>"
   using mv_box_correct[of n "Suc n" "xs @ rec_exec f xs # 0 \<up> (ft - n) @ anything"]
   apply(auto simp: list_update_append list_update.simps nth_append split: if_splits)
   apply(cases "(max (length xs + 3) (max fft gft))", simp_all add: list_update.simps Suc_diff_le)
@@ -1352,8 +1364,8 @@ lemma less_then_max_plus3[simp]: "n < max (n + (3::nat)) x"
 
 lemma mv_box_max_plus_3_correct[simp]:
   "length xs = n \<Longrightarrow> 
-  {\<lambda>nl. nl = xs @ x # 0 \<up> (max (n + (3::nat)) (max fft gft) - n) @ anything} mv_box n (max (n + 3) (max fft gft))
-  {\<lambda>nl. nl = xs @ 0 \<up> (max (n + 3) (max fft gft) - n) @ x # anything}"
+  \<lbrace>\<lambda>nl. nl = xs @ x # 0 \<up> (max (n + (3::nat)) (max fft gft) - n) @ anything\<rbrace> mv_box n (max (n + 3) (max fft gft))
+  \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (max (n + 3) (max fft gft) - n) @ x # anything\<rbrace>"
 proof -
   assume h: "length xs = n"
   let ?ft = "max (n+3) (max fft gft)"
@@ -1361,7 +1373,7 @@ proof -
   have g: "?ft > n + 2"
     by simp
   thm mv_box_correct
-  have a: "{\<lambda> nl. nl = ?lm} mv_box n ?ft {\<lambda> nl. nl = ?lm[?ft := ?lm!n + ?lm!?ft, n := 0]}"
+  have a: "\<lbrace>\<lambda> nl. nl = ?lm\<rbrace> mv_box n ?ft \<lbrace>\<lambda> nl. nl = ?lm[?ft := ?lm!n + ?lm!?ft, n := 0]\<rbrace>"
     using h
     by(rule_tac mv_box_correct, auto)
   have b:"?lm = xs @ x # 0 \<up> (max (n + 3) (max fft gft) - n) @ anything"
@@ -1389,15 +1401,15 @@ lemma suc_less_plus_3[simp]: "Suc n < max (n + 3) x"
 
 lemma mv_box_ok_suc_simp[simp]:
   "length xs = n
- \<Longrightarrow> {\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (max (n + 3) (max fft gft) - Suc n) @ x # anything} mv_box n (Suc n)
-    {\<lambda>nl. nl = xs @ 0 # rec_exec f xs # 0 \<up> (max (n + 3) (max fft gft) - Suc (Suc n)) @ x # anything}"
+ \<Longrightarrow> \<lbrace>\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (max (n + 3) (max fft gft) - Suc n) @ x # anything\<rbrace> mv_box n (Suc n)
+    \<lbrace>\<lambda>nl. nl = xs @ 0 # rec_exec f xs # 0 \<up> (max (n + 3) (max fft gft) - Suc (Suc n)) @ x # anything\<rbrace>"
   using mv_box_correct[of n "Suc n" "xs @ rec_exec f xs # 0 \<up> (max (n + 3) (max fft gft) - Suc n) @ x # anything"]
   apply(simp add: nth_append list_update_append list_update.simps)
   apply(cases "max (n + 3) (max fft gft)", simp_all)
   apply(cases "max (n + 3) (max fft gft) - 1", simp_all add: Suc_diff_le list_update.simps(2))
   done
 
-lemma abc_append_frist_steps_eq_pre: 
+lemma abc_append_first_steps_eq_pre: 
   assumes notfinal: "abc_notfinal (abc_steps_l (0, lm)  A n) A"
     and notnull: "A \<noteq> []"
   shows "abc_steps_l (0, lm) (A @ B) n = abc_steps_l (0, lm) A n"
@@ -1430,7 +1442,7 @@ lemma abc_append_first_step_eq_pre:
     abc_step_l (st, lm) (abc_fetch st A)"
   by(simp add: abc_step_l.simps abc_fetch.simps nth_append)
 
-lemma abc_append_frist_steps_halt_eq': 
+lemma abc_append_first_steps_halt_eq': 
   assumes final: "abc_steps_l (0, lm) A n = (length A, lm')"
     and notnull: "A \<noteq> []"
   shows "\<exists> n'. abc_steps_l (0, lm) (A @ B) n' = (length A, lm')"
@@ -1445,7 +1457,7 @@ proof -
   obtain sa lma where b: "abc_steps_l (0, lm) A na = (sa, lma)"
     by (metis prod.exhaust)
   then have c: "abc_steps_l (0, lm) (A @ B) na = (sa, lma)"
-    using a abc_append_frist_steps_eq_pre[of lm A na B] assms 
+    using a abc_append_first_steps_eq_pre[of lm A na B] assms 
     by simp
   have d: "sa < length A" using b a by simp
   then have e: "abc_step_l (sa, lma) (abc_fetch sa (A @ B)) = 
@@ -1461,13 +1473,13 @@ proof -
     by blast
 qed
 
-lemma abc_append_frist_steps_halt_eq: 
+lemma abc_append_first_steps_halt_eq: 
   assumes final: "abc_steps_l (0, lm) A n = (length A, lm')"
   shows "\<exists> n'. abc_steps_l (0, lm) (A @ B) n' = (length A, lm')"
   using final
   apply(cases "A = []")
    apply(rule_tac x = 0 in exI, simp add: abc_steps_l.simps abc_exec_null)
-  apply(rule_tac abc_append_frist_steps_halt_eq', simp_all)
+  apply(rule_tac abc_append_first_steps_halt_eq', simp_all)
   done
 
 lemma suc_suc_max_simp[simp]: "Suc (Suc (max (xs + 3) fft - Suc (Suc ( xs))))
@@ -1475,9 +1487,9 @@ lemma suc_suc_max_simp[simp]: "Suc (Suc (max (xs + 3) fft - Suc (Suc ( xs))))
   by arith
 
 lemma contract_dec_ft_length_plus_7[simp]: "\<lbrakk>ft = max (n + 3) (max fft gft); length xs = n\<rbrakk> \<Longrightarrow>
-     {\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ Suc y # anything}
+     \<lbrace>\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ Suc y # anything\<rbrace>
      [Dec ft (length gap + 7)] 
-     {\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ y # anything}"
+     \<lbrace>\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ y # anything\<rbrace>"
   apply (simp add: abc_Hoare_halt_def)
   apply (rule_tac x = 1 in exI)
   apply (auto simp add: max_def)
@@ -1492,11 +1504,11 @@ lemma contract_dec_ft_length_plus_7[simp]: "\<lbrakk>ft = max (n + 3) (max fft g
   done
 
 lemma adjust_paras': 
-  "length xs = n \<Longrightarrow> {\<lambda>nl. nl = xs @ x # y # anything}  [Inc n] [+] [Dec (Suc n) 2, Goto 0]
-       {\<lambda>nl. nl = xs @ Suc x # 0 # anything}"
+  "length xs = n \<Longrightarrow> \<lbrace>\<lambda>nl. nl = xs @ x # y # anything\<rbrace>  [Inc n] [+] [Dec (Suc n) 2, Goto 0]
+       \<lbrace>\<lambda>nl. nl = xs @ Suc x # 0 # anything\<rbrace>"
 proof(rule_tac abc_Hoare_plus_halt)
   assume "length xs = n"
-  thus "{\<lambda>nl. nl = xs @ x # y # anything} [Inc n] {\<lambda> nl. nl = xs @ Suc x # y # anything}"
+  thus "\<lbrace>\<lambda>nl. nl = xs @ x # y # anything\<rbrace> [Inc n] \<lbrace>\<lambda> nl. nl = xs @ Suc x # y # anything\<rbrace>"
     apply(simp add: abc_Hoare_halt_def)
     apply(rule_tac x = 1 in exI, force simp add: abc_steps_l.simps abc_step_l.simps
         abc_fetch.simps abc_comp.simps
@@ -1504,7 +1516,7 @@ proof(rule_tac abc_Hoare_plus_halt)
     done
 next
   assume h: "length xs = n"
-  thus "{\<lambda>nl. nl = xs @ Suc x # y # anything} [Dec (Suc n) 2, Goto 0] {\<lambda>nl. nl = xs @ Suc x # 0 # anything}"
+  thus "\<lbrace>\<lambda>nl. nl = xs @ Suc x # y # anything\<rbrace> [Dec (Suc n) 2, Goto 0] \<lbrace>\<lambda>nl. nl = xs @ Suc x # 0 # anything\<rbrace>"
   proof(induct y)
     case 0
     thus "?case"
@@ -1516,7 +1528,7 @@ next
   next
     case (Suc y)
     have "length xs = n \<Longrightarrow> 
-      {\<lambda>nl. nl = xs @ Suc x # y # anything} [Dec (Suc n) 2, Goto 0] {\<lambda>nl. nl = xs @ Suc x # 0 # anything}" by fact
+      \<lbrace>\<lambda>nl. nl = xs @ Suc x # y # anything\<rbrace> [Dec (Suc n) 2, Goto 0] \<lbrace>\<lambda>nl. nl = xs @ Suc x # 0 # anything\<rbrace>" by fact
     then obtain stp where 
       "abc_steps_l (0, xs @ Suc x # y # anything) [Dec (Suc n) 2, Goto 0] stp = (2, xs @ Suc x # 0 # anything)"
       using h
@@ -1534,8 +1546,8 @@ next
 qed
 
 lemma adjust_paras: 
-  "length xs = n \<Longrightarrow> {\<lambda>nl. nl = xs @ x # y # anything}  [Inc n, Dec (Suc n) 3, Goto (Suc 0)]
-       {\<lambda>nl. nl = xs @ Suc x # 0 # anything}"
+  "length xs = n \<Longrightarrow> \<lbrace>\<lambda>nl. nl = xs @ x # y # anything\<rbrace>  [Inc n, Dec (Suc n) 3, Goto (Suc 0)]
+       \<lbrace>\<lambda>nl. nl = xs @ Suc x # 0 # anything\<rbrace>"
   using adjust_paras'[of xs n x y anything]
   by(simp add: abc_comp.simps abc_shift.simps numeral_2_eq_2 numeral_3_eq_3)
 
@@ -1601,8 +1613,8 @@ lemma pr_loop:
   assumes code: "code = ([Dec (max (n + 3) (max fft gft)) (length gap + 7)] [+] (gap [+] [Inc n, Dec (Suc n) 3, Goto (Suc 0)])) @
     [Dec (Suc (Suc n)) 0, Inc (Suc n), Goto (length gap + 4)]"
     and len: "length xs = n"
-    and g_ind: "\<forall> y<x. (\<forall>anything. {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (gft - gar) @ anything} gap
-  {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (gft - Suc gar) @ anything})"
+    and g_ind: "\<forall> y<x. (\<forall>anything. \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (gft - gar) @ anything\<rbrace> gap
+  \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (gft - Suc gar) @ anything\<rbrace>)"
     and compile_g: "rec_ci g = (gap, gar, gft)"
     and termi_g: "\<forall> y<x. terminate g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])])"
     and ft: "ft = max (n + 3) (max fft gft)"
@@ -1624,21 +1636,21 @@ proof -
       ((?A [+] (?B [+] ?C))) stp = (length (?A [+] (?B [+] ?C)),  xs @ (x - y) # 0 # 
       rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything)"
     proof -
-      have "{\<lambda> nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ Suc y # anything}
+      have "\<lbrace>\<lambda> nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ Suc y # anything\<rbrace>
         (?A [+] (?B [+] ?C)) 
-        {\<lambda> nl. nl = xs @ (x - y) # 0 # 
-        rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything}"
+        \<lbrace>\<lambda> nl. nl = xs @ (x - y) # 0 # 
+        rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything\<rbrace>"
       proof(rule_tac abc_Hoare_plus_halt)
-        show "{\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ Suc y # anything}
+        show "\<lbrace>\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ Suc y # anything\<rbrace>
           [Dec ft (length gap + 7)] 
-          {\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ y # anything}"
+          \<lbrace>\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ y # anything\<rbrace>"
           using ft len
           by(simp)
       next
         show 
-          "{\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ y # anything} 
+          "\<lbrace>\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ y # anything\<rbrace> 
           ?B [+] ?C
-          {\<lambda>nl. nl = xs @ (x - y) # 0 # rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything}"
+          \<lbrace>\<lambda>nl. nl = xs @ (x - y) # 0 # rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything\<rbrace>"
         proof(rule_tac abc_Hoare_plus_halt)
           have a: "gar = Suc (Suc n)" 
             using compile_g termi_g len less
@@ -1646,26 +1658,26 @@ proof -
           have b: "gft > gar"
             using compile_g
             by(erule_tac footprint_ge)
-          show "{\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ y # anything} gap 
-                {\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 
-                      rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything}"
+          show "\<lbrace>\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (ft - Suc (Suc n)) @ y # anything\<rbrace> gap 
+                \<lbrace>\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 
+                      rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything\<rbrace>"
           proof -
             have 
-              "{\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (gft - gar) @ 0\<up>(ft - gft) @ y # anything} gap
-              {\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 
-              rec_exec g (xs @ [(x - Suc y), rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (gft - Suc gar) @ 0\<up>(ft - gft) @ y # anything}"
+              "\<lbrace>\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (gft - gar) @ 0\<up>(ft - gft) @ y # anything\<rbrace> gap
+              \<lbrace>\<lambda>nl. nl = xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 
+              rec_exec g (xs @ [(x - Suc y), rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (gft - Suc gar) @ 0\<up>(ft - gft) @ y # anything\<rbrace>"
               using g_ind less by simp
             thus "?thesis"
               using a b ft
               by(simp add: replicate_merge_anywhere numeral_3_eq_3)
           qed
         next
-          show "{\<lambda>nl. nl = xs @ (x - Suc y) #
+          show "\<lbrace>\<lambda>nl. nl = xs @ (x - Suc y) #
                     rec_exec (Pr n f g) (xs @ [x - Suc y]) #
-            rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything}
+            rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything\<rbrace>
             [Inc n, Dec (Suc n) 3, Goto (Suc 0)]
-            {\<lambda>nl. nl = xs @ (x - y) # 0 # rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) 
-                    (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything}"
+            \<lbrace>\<lambda>nl. nl = xs @ (x - y) # 0 # rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) 
+                    (xs @ [x - Suc y])]) # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything\<rbrace>"
             using len less
             using adjust_paras[of xs n "x - Suc y" " rec_exec (Pr n f g) (xs @ [x - Suc y])"
                 " rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])]) # 
@@ -1686,7 +1698,7 @@ proof -
           xs @ (x - y) # 0 # rec_exec g (xs @ [x - Suc y, rec_exec (Pr n f g) (xs @ [x - Suc y])])
                   # 0 \<up> (ft - Suc (Suc (Suc n))) @ y # anything)" ..
     thus "?thesis"
-      by(erule_tac abc_append_frist_steps_halt_eq)
+      by(erule_tac abc_append_first_steps_halt_eq)
   qed
   moreover have 
     "\<exists> stp. abc_steps_l (length (?A [+] (?B [+] ?C)),
@@ -1732,11 +1744,11 @@ lemma pr_loop_correct:
     and len: "length xs = n"
     and compile_g: "rec_ci g = (gap, gar, gft)"
     and termi_g: "\<forall> y<x. terminate g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])])"
-    and g_ind: "\<forall> y<x. (\<forall>anything. {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (gft - gar) @ anything} gap
-  {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (gft - Suc gar) @ anything})"
-  shows "{\<lambda>nl. nl = xs @ (x - y) # rec_exec (Pr n f g) (xs @ [x - y]) # 0 \<up> (max (n + 3) (max fft gft) - Suc (Suc n)) @ y # anything}
+    and g_ind: "\<forall> y<x. (\<forall>anything. \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (gft - gar) @ anything\<rbrace> gap
+  \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (gft - Suc gar) @ anything\<rbrace>)"
+  shows "\<lbrace>\<lambda>nl. nl = xs @ (x - y) # rec_exec (Pr n f g) (xs @ [x - y]) # 0 \<up> (max (n + 3) (max fft gft) - Suc (Suc n)) @ y # anything\<rbrace>
    ([Dec (max (n + 3) (max fft gft)) (length gap + 7)] [+] (gap [+] [Inc n, Dec (Suc n) 3, Goto (Suc 0)])) @ [Dec (Suc (Suc n)) 0, Inc (Suc n), Goto (length gap + 4)]
-   {\<lambda>nl. nl = xs @ x # rec_exec (Pr n f g) (xs @ [x]) # 0 \<up> (max (n + 3) (max fft gft) - Suc n) @ anything}" 
+   \<lbrace>\<lambda>nl. nl = xs @ x # rec_exec (Pr n f g) (xs @ [x]) # 0 \<up> (max (n + 3) (max fft gft) - Suc n) @ anything\<rbrace>" 
   using less
 proof(induct y)
   case 0
@@ -1752,8 +1764,8 @@ next
   let ?C = "[Dec (max (n + 3) (max fft gft)) (length gap + 7)] [+] (gap [+] 
     [Inc n, Dec (Suc n) 3, Goto (Suc 0)]) @ [Dec (Suc (Suc n)) 0, Inc (Suc n), Goto (length gap + 4)]"
   have ind: "y \<le> x \<Longrightarrow>
-         {\<lambda>nl. nl = xs @ (x - y) # rec_exec (Pr n f g) (xs @ [x - y]) # 0 \<up> (?ft - Suc (Suc n)) @ y # anything}
-         ?C {\<lambda>nl. nl = xs @ x # rec_exec (Pr n f g) (xs @ [x]) # 0 \<up> (?ft - Suc n) @ anything}" by fact 
+         \<lbrace>\<lambda>nl. nl = xs @ (x - y) # rec_exec (Pr n f g) (xs @ [x - y]) # 0 \<up> (?ft - Suc (Suc n)) @ y # anything\<rbrace>
+         ?C \<lbrace>\<lambda>nl. nl = xs @ x # rec_exec (Pr n f g) (xs @ [x]) # 0 \<up> (?ft - Suc n) @ anything\<rbrace>" by fact 
   have less: "Suc y \<le> x" by fact
   have stp1: 
     "\<exists> stp. abc_steps_l (0, xs @ (x - Suc y) # rec_exec (Pr n f g) (xs @ [x - Suc y]) # 0 \<up> (?ft - Suc (Suc n)) @ Suc y # anything)
@@ -1782,20 +1794,20 @@ qed
 lemma compile_pr_correct':
   assumes termi_g: "\<forall> y<x. terminate g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])])"
     and g_ind: 
-    "\<forall> y<x. (\<forall>anything. {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (gft - gar) @ anything} gap
-  {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (gft - Suc gar) @ anything})"
+    "\<forall> y<x. (\<forall>anything. \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (gft - gar) @ anything\<rbrace> gap
+  \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (gft - Suc gar) @ anything\<rbrace>)"
     and termi_f: "terminate f xs"
-    and f_ind: "\<And> anything. {\<lambda>nl. nl = xs @ 0 \<up> (fft - far) @ anything} fap {\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (fft - Suc far) @ anything}"
+    and f_ind: "\<And> anything. \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (fft - far) @ anything\<rbrace> fap \<lbrace>\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (fft - Suc far) @ anything\<rbrace>"
     and len: "length xs = n"
     and compile1: "rec_ci f = (fap, far, fft)"
     and compile2: "rec_ci g = (gap, gar, gft)"
   shows 
-    "{\<lambda>nl. nl = xs @ x # 0 \<up> (max (n + 3) (max fft gft) - n) @ anything}
+    "\<lbrace>\<lambda>nl. nl = xs @ x # 0 \<up> (max (n + 3) (max fft gft) - n) @ anything\<rbrace>
   mv_box n (max (n + 3) (max fft gft)) [+]
   (fap [+] (mv_box n (Suc n) [+]
   ([Dec (max (n + 3) (max fft gft)) (length gap + 7)] [+] (gap [+] [Inc n, Dec (Suc n) 3, Goto (Suc 0)]) @
   [Dec (Suc (Suc n)) 0, Inc (Suc n), Goto (length gap + 4)])))
-  {\<lambda>nl. nl = xs @ x # rec_exec (Pr n f g) (xs @ [x]) # 0 \<up> (max (n + 3) (max fft gft) - Suc n) @ anything}"
+  \<lbrace>\<lambda>nl. nl = xs @ x # rec_exec (Pr n f g) (xs @ [x]) # 0 \<up> (max (n + 3) (max fft gft) - Suc n) @ anything\<rbrace>"
 proof -
   let ?ft = "max (n+3) (max fft gft)"
   let ?A = "mv_box n ?ft"
@@ -1807,9 +1819,9 @@ proof -
   let ?P = "\<lambda>nl. nl = xs @ x # 0 \<up> (?ft - n) @ anything"
   let ?S = "\<lambda>nl. nl = xs @ x # rec_exec (Pr n f g) (xs @ [x]) # 0 \<up> (?ft - Suc n) @ anything"
   let ?Q1 = "\<lambda>nl. nl = xs @ 0 \<up> (?ft - n) @  x # anything"
-  show "{?P} (?A [+] (?B [+] (?C [+] (?D [+] ?E @ ?F)))) {?S}"
+  show "\<lbrace>?P\<rbrace> (?A [+] (?B [+] (?C [+] (?D [+] ?E @ ?F)))) \<lbrace>?S\<rbrace>"
   proof(rule_tac abc_Hoare_plus_halt)
-    show "{?P} ?A {?Q1}"
+    show "\<lbrace>?P\<rbrace> ?A \<lbrace>?Q1\<rbrace>"
       using len by simp
   next
     let ?Q2 = "\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (?ft - Suc n) @  x # anything"
@@ -1821,28 +1833,28 @@ proof -
     have c: "fft > far"
       using compile1
       by(simp add: footprint_ge)
-    show "{?Q1} (?B [+] (?C [+] (?D [+] ?E @ ?F))) {?S}"
+    show "\<lbrace>?Q1\<rbrace> (?B [+] (?C [+] (?D [+] ?E @ ?F))) \<lbrace>?S\<rbrace>"
     proof(rule_tac abc_Hoare_plus_halt)
-      have "{\<lambda>nl. nl = xs @ 0 \<up> (fft - far) @ 0\<up>(?ft - fft) @ x # anything} fap 
-            {\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (fft - Suc far) @ 0\<up>(?ft - fft) @ x # anything}"
+      have "\<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (fft - far) @ 0\<up>(?ft - fft) @ x # anything\<rbrace> fap 
+            \<lbrace>\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (fft - Suc far) @ 0\<up>(?ft - fft) @ x # anything\<rbrace>"
         by(rule_tac f_ind)
       moreover have "fft - far + ?ft - fft = ?ft - far"
         using a b c by arith
       moreover have "fft - Suc n + ?ft - fft = ?ft - Suc n"
         using a b c by arith
-      ultimately show "{?Q1} ?B {?Q2}"
+      ultimately show "\<lbrace>?Q1\<rbrace> ?B \<lbrace>?Q2\<rbrace>"
         using b
         by(simp add: replicate_merge_anywhere)
     next
       let ?Q3 = "\<lambda> nl. nl = xs @ 0 # rec_exec f xs # 0\<up>(?ft - Suc (Suc n)) @ x # anything"
-      show "{?Q2} (?C [+] (?D [+] ?E @ ?F)) {?S}"
+      show "\<lbrace>?Q2\<rbrace> (?C [+] (?D [+] ?E @ ?F)) \<lbrace>?S\<rbrace>"
       proof(rule_tac abc_Hoare_plus_halt)
-        show "{?Q2} (?C) {?Q3}"
+        show "\<lbrace>?Q2\<rbrace> (?C) \<lbrace>?Q3\<rbrace>"
           using mv_box_correct[of n "Suc n" "xs @ rec_exec f xs # 0 \<up> (max (n + 3) (max fft gft) - Suc n) @ x # anything"]
           using len
           by(auto)
       next
-        show "{?Q3} (?D [+] ?E @ ?F) {?S}"
+        show "\<lbrace>?Q3\<rbrace> (?D [+] ?E @ ?F) \<lbrace>?S\<rbrace>"
           using pr_loop_correct[of x x xs n g  gap gar gft f fft anything] assms
           by(simp add: rec_exec_pr_0_simps)
       qed
@@ -1853,31 +1865,31 @@ qed
 lemma compile_pr_correct:
   assumes g_ind: "\<forall>y<x. terminate g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) \<and>
   (\<forall>x xa xb. rec_ci g = (x, xa, xb) \<longrightarrow>
-  (\<forall>xc. {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (xb - xa) @ xc} x
-  {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (xb - Suc xa) @ xc}))"
+  (\<forall>xc. \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (xb - xa) @ xc\<rbrace> x
+  \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (xb - Suc xa) @ xc\<rbrace>))"
     and termi_f: "terminate f xs"
     and f_ind:
     "\<And>ap arity fp anything.
-  rec_ci f = (ap, arity, fp) \<Longrightarrow> {\<lambda>nl. nl = xs @ 0 \<up> (fp - arity) @ anything} ap {\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (fp - Suc arity) @ anything}"
+  rec_ci f = (ap, arity, fp) \<Longrightarrow> \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (fp - arity) @ anything\<rbrace> ap \<lbrace>\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (fp - Suc arity) @ anything\<rbrace>"
     and len: "length xs = n"
     and compile: "rec_ci (Pr n f g) = (ap, arity, fp)"
-  shows "{\<lambda>nl. nl = xs @ x # 0 \<up> (fp - arity) @ anything} ap {\<lambda>nl. nl = xs @ x # rec_exec (Pr n f g) (xs @ [x]) # 0 \<up> (fp - Suc arity) @ anything}"
+  shows "\<lbrace>\<lambda>nl. nl = xs @ x # 0 \<up> (fp - arity) @ anything\<rbrace> ap \<lbrace>\<lambda>nl. nl = xs @ x # rec_exec (Pr n f g) (xs @ [x]) # 0 \<up> (fp - Suc arity) @ anything\<rbrace>"
 proof(cases "rec_ci f", cases "rec_ci g")
   fix fap far fft gap gar gft
   assume h: "rec_ci f = (fap, far, fft)" "rec_ci g = (gap, gar, gft)"
   have g: 
     "\<forall>y<x. (terminate g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) \<and>
-     (\<forall>anything. {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (gft - gar) @ anything} gap
-    {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (gft - Suc gar) @ anything}))"
+     (\<forall>anything. \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (gft - gar) @ anything\<rbrace> gap
+    \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (gft - Suc gar) @ anything\<rbrace>))"
     using g_ind h
     by(auto)
   hence termi_g: "\<forall> y<x. terminate g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])])"
     by simp
   from g have g_newind: 
-    "\<forall> y<x. (\<forall>anything. {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (gft - gar) @ anything} gap
-    {\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (gft - Suc gar) @ anything})"
+    "\<forall> y<x. (\<forall>anything. \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # 0 \<up> (gft - gar) @ anything\<rbrace> gap
+    \<lbrace>\<lambda>nl. nl = xs @ y # rec_exec (Pr n f g) (xs @ [y]) # rec_exec g (xs @ [y, rec_exec (Pr n f g) (xs @ [y])]) # 0 \<up> (gft - Suc gar) @ anything\<rbrace>)"
     by auto
-  have f_newind: "\<And> anything. {\<lambda>nl. nl = xs @ 0 \<up> (fft - far) @ anything} fap {\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (fft - Suc far) @ anything}"
+  have f_newind: "\<And> anything. \<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (fft - far) @ anything\<rbrace> fap \<lbrace>\<lambda>nl. nl = xs @ rec_exec f xs # 0 \<up> (fft - Suc far) @ anything\<rbrace>"
     using h
     by(rule_tac f_ind, simp)
   show "?thesis"
@@ -1886,6 +1898,8 @@ proof(cases "rec_ci f", cases "rec_ci g")
     using g_newind f_newind len
     by(rule_tac compile_pr_correct', simp_all)
 qed
+
+subsubsection \<open>Correctness of compilation for constructor Mn\<close>
 
 fun mn_ind_inv ::
   "nat \<times> nat list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> nat list \<Rightarrow> bool"
@@ -2011,7 +2025,7 @@ next
 qed
 
 lemma abc_Hoare_haltE:
-  "{\<lambda> nl. nl = lm1} p {\<lambda> nl. nl = lm2}
+  "\<lbrace>\<lambda> nl. nl = lm1\<rbrace> p \<lbrace>\<lambda> nl. nl = lm2\<rbrace>
     \<Longrightarrow> \<exists> stp. abc_steps_l (0, lm1) p stp = (length p, lm2)"
   by(auto simp:abc_Hoare_halt_def elim!: abc_holds_for.elims)
 
@@ -2020,8 +2034,8 @@ lemma mn_loop:
     and ft: "ft = max (Suc arity) fft"
     and len: "length xs = arity"
     and far: "far = Suc arity"
-    and ind: " (\<forall>xc. ({\<lambda>nl. nl = xs @ x # 0 \<up> (fft - far) @ xc} fap
-    {\<lambda>nl. nl = xs @ x # rec_exec f (xs @ [x]) # 0 \<up> (fft - Suc far) @ xc}))"
+    and ind: " (\<forall>xc. (\<lbrace>\<lambda>nl. nl = xs @ x # 0 \<up> (fft - far) @ xc\<rbrace> fap
+    \<lbrace>\<lambda>nl. nl = xs @ x # rec_exec f (xs @ [x]) # 0 \<up> (fft - Suc far) @ xc\<rbrace>))"
     and exec_less: "rec_exec f (xs @ [x]) > 0"
     and compile: "rec_ci f = (fap, far, fft)"
   shows "\<exists> stp > 0. abc_steps_l (0, xs @ x # 0 \<up> (ft - Suc arity) @ anything) (fap @ B) stp =
@@ -2033,8 +2047,8 @@ proof -
     have "\<exists> stp. abc_steps_l (0, xs @ x # 0 \<up> (ft - Suc arity) @ anything) fap stp =
       (length fap, xs @ x # rec_exec f (xs @ [x]) # 0 \<up> (ft - Suc (Suc arity)) @ anything)"
     proof -
-      have "{\<lambda>nl. nl = xs @ x # 0 \<up> (fft - far) @ 0\<up>(ft - fft) @ anything} fap 
-            {\<lambda>nl. nl = xs @ x # rec_exec f (xs @ [x]) # 0 \<up> (fft - Suc far) @ 0\<up>(ft - fft) @ anything}"
+      have "\<lbrace>\<lambda>nl. nl = xs @ x # 0 \<up> (fft - far) @ 0\<up>(ft - fft) @ anything\<rbrace> fap 
+            \<lbrace>\<lambda>nl. nl = xs @ x # rec_exec f (xs @ [x]) # 0 \<up> (fft - Suc far) @ 0\<up>(ft - fft) @ anything\<rbrace>"
         using ind by simp
       moreover have "fft > far"
         using compile
@@ -2047,7 +2061,7 @@ proof -
     then obtain stp where "abc_steps_l (0, xs @ x # 0 \<up> (ft - Suc arity) @ anything) fap stp =
       (length fap, xs @ x # rec_exec f (xs @ [x]) # 0 \<up> (ft - Suc (Suc arity)) @ anything)" ..
     thus "?thesis"
-      by(erule_tac abc_append_frist_steps_halt_eq)
+      by(erule_tac abc_append_first_steps_halt_eq)
   qed
   moreover have 
     "\<exists> stp > 0. abc_steps_l (length fap, xs @ x # rec_exec f (xs @ [x]) # 0 \<up> (ft - Suc (Suc arity)) @ anything) (fap @ B) stp =
@@ -2075,8 +2089,8 @@ lemma mn_loop_correct':
   assumes B:  "B = [Dec (Suc arity) (length fap + 5), Dec (Suc arity) (length fap + 3), Goto (Suc (length fap)), Inc arity, Goto 0]"
     and ft: "ft = max (Suc arity) fft"
     and len: "length xs = arity"
-    and ind_all: "\<forall>i\<le>x. (\<forall>xc. ({\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc} fap
-    {\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc}))"
+    and ind_all: "\<forall>i\<le>x. (\<forall>xc. (\<lbrace>\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc\<rbrace> fap
+    \<lbrace>\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc\<rbrace>))"
     and exec_ge: "\<forall> i\<le>x. rec_exec f (xs @ [i]) > 0"
     and compile: "rec_ci f = (fap, far, fft)"
     and far: "far = Suc arity"
@@ -2090,12 +2104,12 @@ proof(induct x)
     by(rule_tac mn_loop, simp_all)
 next
   case (Suc x)
-  have ind': "\<lbrakk>\<forall>i\<le>x. \<forall>xc. {\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc} fap {\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc};
+  have ind': "\<lbrakk>\<forall>i\<le>x. \<forall>xc. \<lbrace>\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc\<rbrace> fap \<lbrace>\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc\<rbrace>;
                \<forall>i\<le>x. 0 < rec_exec f (xs @ [i])\<rbrakk> \<Longrightarrow> 
             \<exists>stp > x. abc_steps_l (0, xs @ 0 # 0 \<up> (ft - Suc arity) @ anything) (fap @ B) stp = (0, xs @ Suc x # 0 \<up> (ft - Suc arity) @ anything)" by fact
   have exec_ge: "\<forall>i\<le>Suc x. 0 < rec_exec f (xs @ [i])" by fact
-  have ind_all: "\<forall>i\<le>Suc x. \<forall>xc. {\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc} fap 
-    {\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc}" by fact
+  have ind_all: "\<forall>i\<le>Suc x. \<forall>xc. \<lbrace>\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc\<rbrace> fap 
+    \<lbrace>\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc\<rbrace>" by fact
   have ind: "\<exists>stp > x. abc_steps_l (0, xs @ 0 # 0 \<up> (ft - Suc arity) @ anything) (fap @ B) stp =
     (0, xs @ Suc x # 0 \<up> (ft - Suc arity) @ anything)" using ind' exec_ge ind_all by simp
   have stp: "\<exists> stp > 0. abc_steps_l (0, xs @ Suc x # 0 \<up> (ft - Suc arity) @ anything) (fap @ B) stp =
@@ -2112,8 +2126,8 @@ lemma mn_loop_correct:
   assumes B:  "B = [Dec (Suc arity) (length fap + 5), Dec (Suc arity) (length fap + 3), Goto (Suc (length fap)), Inc arity, Goto 0]"
     and ft: "ft = max (Suc arity) fft"
     and len: "length xs = arity"
-    and ind_all: "\<forall>i\<le>x. (\<forall>xc. ({\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc} fap
-    {\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc}))"
+    and ind_all: "\<forall>i\<le>x. (\<forall>xc. (\<lbrace>\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc\<rbrace> fap
+    \<lbrace>\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc\<rbrace>))"
     and exec_ge: "\<forall> i\<le>x. rec_exec f (xs @ [i]) > 0"
     and compile: "rec_ci f = (fap, far, fft)"
     and far: "far = Suc arity"
@@ -2132,16 +2146,16 @@ lemma compile_mn_correct':
     and ft: "ft = max (Suc arity) fft"
     and len: "length xs = arity"
     and termi_f: "terminate f (xs @ [r])"
-    and f_ind: "\<And>anything. {\<lambda>nl. nl = xs @ r # 0 \<up> (fft - far) @ anything} fap 
-        {\<lambda>nl. nl = xs @ r # 0 # 0 \<up> (fft - Suc far) @ anything}"
-    and ind_all: "\<forall>i < r. (\<forall>xc. ({\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc} fap
-    {\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc}))"
+    and f_ind: "\<And>anything. \<lbrace>\<lambda>nl. nl = xs @ r # 0 \<up> (fft - far) @ anything\<rbrace> fap 
+        \<lbrace>\<lambda>nl. nl = xs @ r # 0 # 0 \<up> (fft - Suc far) @ anything\<rbrace>"
+    and ind_all: "\<forall>i < r. (\<forall>xc. (\<lbrace>\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc\<rbrace> fap
+    \<lbrace>\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc\<rbrace>))"
     and exec_less: "\<forall> i<r. rec_exec f (xs @ [i]) > 0"
     and exec: "rec_exec f (xs @ [r]) = 0"
     and compile: "rec_ci f = (fap, far, fft)"
-  shows "{\<lambda>nl. nl = xs @ 0 \<up> (max (Suc arity) fft - arity) @ anything}
+  shows "\<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (max (Suc arity) fft - arity) @ anything\<rbrace>
     fap @ B
-    {\<lambda>nl. nl = xs @ rec_exec (Mn arity f) xs # 0 \<up> (max (Suc arity) fft - Suc arity) @ anything}"
+    \<lbrace>\<lambda>nl. nl = xs @ rec_exec (Mn arity f) xs # 0 \<up> (max (Suc arity) fft - Suc arity) @ anything\<rbrace>"
 proof -
   have a: "far = Suc arity"
     using len compile termi_f
@@ -2161,8 +2175,8 @@ proof -
     have "\<exists> stp. abc_steps_l (0, xs @ r # 0 \<up> (ft - Suc arity) @ anything) fap stp =
       (length fap, xs @ r # rec_exec f (xs @ [r]) # 0 \<up> (ft - Suc (Suc arity)) @ anything)"
     proof -
-      have "{\<lambda>nl. nl = xs @ r # 0 \<up> (fft - far) @ 0\<up>(ft - fft) @ anything} fap 
-            {\<lambda>nl. nl = xs @ r # rec_exec f (xs @ [r]) # 0 \<up> (fft - Suc far) @ 0\<up>(ft - fft) @ anything}"
+      have "\<lbrace>\<lambda>nl. nl = xs @ r # 0 \<up> (fft - far) @ 0\<up>(ft - fft) @ anything\<rbrace> fap 
+            \<lbrace>\<lambda>nl. nl = xs @ r # rec_exec f (xs @ [r]) # 0 \<up> (fft - Suc far) @ 0\<up>(ft - fft) @ anything\<rbrace>"
         using f_ind exec by simp
       thus "?thesis"
         using ft a b
@@ -2172,7 +2186,7 @@ proof -
     then obtain stp where "abc_steps_l (0, xs @ r # 0 \<up> (ft - Suc arity) @ anything) fap stp =
       (length fap, xs @ r # rec_exec f (xs @ [r]) # 0 \<up> (ft - Suc (Suc arity)) @ anything)" ..
     thus "?thesis"
-      by(erule_tac abc_append_frist_steps_halt_eq)
+      by(erule_tac abc_append_first_steps_halt_eq)
   qed
   moreover have 
     "\<exists> stp. abc_steps_l (length fap, xs @ r # rec_exec f (xs @ [r]) # 0 \<up> (ft - Suc (Suc arity)) @ anything) (fap @ B) stp = 
@@ -2200,26 +2214,26 @@ lemma compile_mn_correct:
   assumes len: "length xs = n"
     and termi_f: "terminate f (xs @ [r])"
     and f_ind: "\<And>ap arity fp anything. rec_ci f = (ap, arity, fp) \<Longrightarrow> 
-  {\<lambda>nl. nl = xs @ r # 0 \<up> (fp - arity) @ anything} ap {\<lambda>nl. nl = xs @ r # 0 # 0 \<up> (fp - Suc arity) @ anything}"
+  \<lbrace>\<lambda>nl. nl = xs @ r # 0 \<up> (fp - arity) @ anything\<rbrace> ap \<lbrace>\<lambda>nl. nl = xs @ r # 0 # 0 \<up> (fp - Suc arity) @ anything\<rbrace>"
     and exec: "rec_exec f (xs @ [r]) = 0"
     and ind_all: 
     "\<forall>i<r. terminate f (xs @ [i]) \<and>
   (\<forall>x xa xb. rec_ci f = (x, xa, xb) \<longrightarrow> 
-  (\<forall>xc. {\<lambda>nl. nl = xs @ i # 0 \<up> (xb - xa) @ xc} x {\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (xb - Suc xa) @ xc})) \<and>
+  (\<forall>xc. \<lbrace>\<lambda>nl. nl = xs @ i # 0 \<up> (xb - xa) @ xc\<rbrace> x \<lbrace>\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (xb - Suc xa) @ xc\<rbrace>)) \<and>
   0 < rec_exec f (xs @ [i])"
     and compile: "rec_ci (Mn n f) = (ap, arity, fp)"
-  shows "{\<lambda>nl. nl = xs @ 0 \<up> (fp - arity) @ anything} ap 
-  {\<lambda>nl. nl = xs @ rec_exec (Mn n f) xs # 0 \<up> (fp - Suc arity) @ anything}"
+  shows "\<lbrace>\<lambda>nl. nl = xs @ 0 \<up> (fp - arity) @ anything\<rbrace> ap 
+  \<lbrace>\<lambda>nl. nl = xs @ rec_exec (Mn n f) xs # 0 \<up> (fp - Suc arity) @ anything\<rbrace>"
 proof(cases "rec_ci f")
   fix fap far fft
   assume h: "rec_ci f = (fap, far, fft)"
   hence f_newind: 
-    "\<And>anything. {\<lambda>nl. nl = xs @ r # 0 \<up> (fft - far) @ anything} fap 
-        {\<lambda>nl. nl = xs @ r # 0 # 0 \<up> (fft - Suc far) @ anything}"
+    "\<And>anything. \<lbrace>\<lambda>nl. nl = xs @ r # 0 \<up> (fft - far) @ anything\<rbrace> fap 
+        \<lbrace>\<lambda>nl. nl = xs @ r # 0 # 0 \<up> (fft - Suc far) @ anything\<rbrace>"
     by(rule_tac f_ind, simp)
   have newind_all: 
-    "\<forall>i < r. (\<forall>xc. ({\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc} fap
-    {\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc}))"
+    "\<forall>i < r. (\<forall>xc. (\<lbrace>\<lambda>nl. nl = xs @ i # 0 \<up> (fft - far) @ xc\<rbrace> fap
+    \<lbrace>\<lambda>nl. nl = xs @ i # rec_exec f (xs @ [i]) # 0 \<up> (fft - Suc far) @ xc\<rbrace>))"
     using ind_all h
     by(auto)
   have all_less: "\<forall> i<r. rec_exec f (xs @ [i]) > 0"
@@ -2230,10 +2244,12 @@ proof(cases "rec_ci f")
     by(rule_tac compile_mn_correct', auto)
 qed
 
+subsubsection \<open>Correctness of entire compilation process rec\_ci\<close>
+
 lemma recursive_compile_correct:
   "\<lbrakk>terminate recf args; rec_ci recf = (ap, arity, fp)\<rbrakk>
-  \<Longrightarrow> {\<lambda> nl. nl = args @ 0\<up>(fp - arity) @ anything} ap 
-         {\<lambda> nl. nl = args@ rec_exec recf args # 0\<up>(fp - Suc arity) @ anything}"
+  \<Longrightarrow> \<lbrace>\<lambda> nl. nl = args @ 0\<up>(fp - arity) @ anything\<rbrace> ap 
+         \<lbrace>\<lambda> nl. nl = args@ rec_exec recf args # 0\<up>(fp - Suc arity) @ anything\<rbrace>"
   apply(induct arbitrary: ap arity fp anything rule: terminate.induct)
        apply(simp_all add: compile_s_correct compile_z_correct compile_id_correct 
       compile_cn_correct compile_pr_correct compile_mn_correct)
@@ -2310,7 +2326,7 @@ lemma abc_list_crsp_steps:
                                           abc_list_crsp lm' lma"
 proof(induct stp arbitrary: a lm')
   case (Suc stp)
-  then show ?case using [[simproc del: defined_all]] apply(cases "abc_steps_l (0, lm @ 0\<up>m) aprog stp", simp add: abc_step_red)
+  then show ?case using [[simproc del: defined_all]]  apply(cases "abc_steps_l (0, lm @ 0\<up>m) aprog stp", simp add: abc_step_red)
   proof -
     fix stp a lm' aa b
     assume ind:
@@ -2331,6 +2347,7 @@ proof(induct stp arbitrary: a lm')
           = abc_step_l (aa, lma) (abc_fetch aa aprog)"
       apply(rule_tac abc_step_red, simp)
       done
+
     show "\<exists>lma. abc_steps_l (0, lm) aprog (Suc stp) = (a, lma) \<and> abc_list_crsp lm' lma"
       using g2 g3 h
       apply(auto)
@@ -2351,7 +2368,7 @@ next
   have ind: "abc_list_crsp (lm1 @ 0 \<up> n) lm2 \<Longrightarrow> abc_list_crsp lm1 lm2" by fact
   have h: "abc_list_crsp (lm1 @ 0 \<up> Suc n) lm2" by fact
   then have "abc_list_crsp (lm1 @ 0 \<up> n) lm2"
-    apply(auto simp only: exp_suc abc_list_crsp_def del: replicate_Suc)
+    apply(auto simp only: exp_suc abc_list_crsp_def )
      apply (metis Suc_pred append_eq_append_conv
         append_eq_append_conv2 butlast_append butlast_snoc length_replicate list.distinct(1)
         neq0_conv replicate_Suc replicate_Suc_iff_anywhere replicate_app_Cons_same 
@@ -2399,15 +2416,15 @@ lemma find_exponent_complex[simp]:
 lemma compile_append_dummy_correct: 
   assumes compile: "rec_ci f = (ap, ary, fp)"
     and termi: "terminate f args"
-  shows "{\<lambda> nl. nl = args} (ap [+] dummy_abc (length args)) {\<lambda> nl. (\<exists> m. nl = args @ rec_exec f args # 0\<up>m)}"
+  shows "\<lbrace>\<lambda> nl. nl = args\<rbrace> (ap [+] dummy_abc (length args)) \<lbrace>\<lambda> nl. (\<exists> m. nl = args @ rec_exec f args # 0\<up>m)\<rbrace>"
 proof(rule_tac abc_Hoare_plus_halt)
-  show "{\<lambda>nl. nl = args} ap {\<lambda> nl. abc_list_crsp (args @ [rec_exec f args]) nl}"
+  show "\<lbrace>\<lambda>nl. nl = args\<rbrace> ap \<lbrace>\<lambda> nl. abc_list_crsp (args @ [rec_exec f args]) nl\<rbrace>"
     using compile termi recursive_compile_correct_norm'[of f ap ary fp args]
     apply(auto simp: abc_Hoare_halt_def)
     by (metis abc_final.simps abc_holds_for.simps)
 next
-  show "{abc_list_crsp (args @ [rec_exec f args])} dummy_abc (length args) 
-    {\<lambda>nl. \<exists>m. nl = args @ rec_exec f args # 0 \<up> m}"
+  show "\<lbrace>abc_list_crsp (args @ [rec_exec f args])\<rbrace> dummy_abc (length args) 
+    \<lbrace>\<lambda>nl. \<exists>m. nl = args @ rec_exec f args # 0 \<up> m\<rbrace>"
     apply(auto simp: dummy_abc_def abc_Hoare_halt_def)
     apply(rule_tac x = 3 in exI)
     by(force simp: abc_steps_l.simps abc_list_crsp_def abc_step_l.simps numeral_3_eq_3 abc_fetch.simps
@@ -2432,11 +2449,11 @@ lemma cn_unhalt_case:
   assumes compile1: "rec_ci (Cn n f gs) = (ap, ar, ft) \<and> length args = ar"
     and g: "i < length gs"
     and compile2: "rec_ci (gs!i) = (gap, gar, gft) \<and> gar = length args"
-    and g_unhalt: "\<And> anything. {\<lambda> nl. nl = args @ 0\<up>(gft - gar) @ anything} gap \<up>"
+    and g_unhalt: "\<And> anything. \<lbrace>\<lambda> nl. nl = args @ 0\<up>(gft - gar) @ anything\<rbrace> gap \<up>"
     and g_ind: "\<And> apj arj ftj j anything. \<lbrakk>j < i; rec_ci (gs!j) = (apj, arj, ftj)\<rbrakk> 
-  \<Longrightarrow> {\<lambda> nl. nl = args @ 0\<up>(ftj - arj) @ anything} apj {\<lambda> nl. nl = args @ rec_exec (gs!j) args # 0\<up>(ftj - Suc arj) @ anything}"
+  \<Longrightarrow> \<lbrace>\<lambda> nl. nl = args @ 0\<up>(ftj - arj) @ anything\<rbrace> apj \<lbrace>\<lambda> nl. nl = args @ rec_exec (gs!j) args # 0\<up>(ftj - Suc arj) @ anything\<rbrace>"
     and all_termi: "\<forall> j<i. terminate (gs!j) args"
-  shows "{\<lambda> nl. nl = args @ 0\<up>(ft - ar) @ anything} ap \<up>"
+  shows "\<lbrace>\<lambda> nl. nl = args @ 0\<up>(ft - ar) @ anything\<rbrace> ap \<up>"
   using compile1
   apply(cases "rec_ci f", auto simp: rec_ci.simps abc_comp_commute)
 proof(rule_tac abc_Hoare_plus_unhalt1)
@@ -2448,12 +2465,12 @@ proof(rule_tac abc_Hoare_plus_unhalt1)
     cn_merge_gs (map rec_ci (take i gs)) ?ft [+] (gap [+] 
     mv_box gar (?ft + i)) [+]  cn_merge_gs (map rec_ci (drop (Suc i) gs)) (?ft + Suc i)"
     using g compile2 cn_merge_gs_split by simp
-  thus "{\<lambda>nl. nl = args @ 0 # 0 \<up> (?ft + length gs) @ anything} (cn_merge_gs (map rec_ci gs) ?ft) \<up>"
+  thus "\<lbrace>\<lambda>nl. nl = args @ 0 # 0 \<up> (?ft + length gs) @ anything\<rbrace> (cn_merge_gs (map rec_ci gs) ?ft) \<up>"
   proof(simp, rule_tac abc_Hoare_plus_unhalt1, rule_tac abc_Hoare_plus_unhalt2, 
       rule_tac abc_Hoare_plus_unhalt1)
     let ?Q_tmp = "\<lambda>nl. nl = args @ 0\<up> (gft - gar) @ 0\<up>(?ft - (length args) - (gft -gar)) @ map (\<lambda>i. rec_exec i args) (take i gs) @ 
       0\<up>(length gs - i) @ 0\<up> Suc (length args) @ anything"
-    have a: "{?Q_tmp} gap \<up>"
+    have a: "\<lbrace>?Q_tmp\<rbrace> gap \<up>"
       using g_unhalt[of "0 \<up> (?ft - (length args) - (gft - gar)) @
         map (\<lambda>i. rec_exec i args) (take i gs) @ 0 \<up> (length gs - i) @ 0 \<up> Suc (length args) @ anything"]
       by simp
@@ -2466,13 +2483,13 @@ proof(rule_tac abc_Hoare_plus_unhalt1)
       using compile2
       apply(rule_tac arg_cong)
       by(simp add: replicate_merge_anywhere)
-    thus "{?Q} gap \<up>"
+    thus "\<lbrace>?Q\<rbrace> gap \<up>"
       using a by simp
   next
-    show "{\<lambda>nl. nl = args @ 0 # 0 \<up> (?ft + length gs) @ anything} 
+    show "\<lbrace>\<lambda>nl. nl = args @ 0 # 0 \<up> (?ft + length gs) @ anything\<rbrace> 
       cn_merge_gs (map rec_ci (take i gs)) ?ft
-       {\<lambda>nl. nl = args @ 0 \<up> (?ft - length args) @
-      map (\<lambda>i. rec_exec i args) (take i gs) @ 0 \<up> (length gs - i) @ 0 \<up> Suc (length args) @ anything}"
+       \<lbrace>\<lambda>nl. nl = args @ 0 \<up> (?ft - length args) @
+      map (\<lambda>i. rec_exec i args) (take i gs) @ 0 \<up> (length gs - i) @ 0 \<up> Suc (length args) @ anything\<rbrace>"
       using all_termi
       by(rule_tac compile_cn_gs_correct', auto simp: set_conv_nth intro:g_ind)
   qed
@@ -2485,7 +2502,7 @@ lemma mn_unhalt_case':
     and all_termi: "\<forall>i. terminate f (args @ [i]) \<and> 0 < rec_exec f (args @ [i])"
     and B: "B = [Dec (Suc (length args)) (length a + 5), Dec (Suc (length args)) (length a + 3), 
   Goto (Suc (length a)), Inc (length args), Goto 0]"
-  shows "{\<lambda>nl. nl = args @ 0 \<up> (max (Suc (length args)) c - length args) @ anything}
+  shows "\<lbrace>\<lambda>nl. nl = args @ 0 \<up> (max (Suc (length args)) c - length args) @ anything\<rbrace>
   a @ B \<up>"
 proof(rule_tac abc_Hoare_unhaltI, auto)
   fix n
@@ -2501,8 +2518,8 @@ proof(rule_tac abc_Hoare_unhaltI, auto)
     using assms a b c
   proof(rule_tac mn_loop_correct', auto)
     fix i xc
-    show "{\<lambda>nl. nl = args @ i # 0 \<up> (c - Suc (length args)) @ xc} a 
-      {\<lambda>nl. nl = args @ i # rec_exec f (args @ [i]) # 0 \<up> (c - Suc (Suc (length args))) @ xc}"
+    show "\<lbrace>\<lambda>nl. nl = args @ i # 0 \<up> (c - Suc (length args)) @ xc\<rbrace> a 
+      \<lbrace>\<lambda>nl. nl = args @ i # rec_exec f (args @ [i]) # 0 \<up> (c - Suc (Suc (length args))) @ xc\<rbrace>"
       using all_termi recursive_compile_correct[of f "args @ [i]" a b c xc] compile a
       by(simp)
   qed
@@ -2525,24 +2542,26 @@ qed
 lemma mn_unhalt_case: 
   assumes compile: "rec_ci (Mn n f) = (ap, ar, ft) \<and> length args = ar"
     and all_term: "\<forall> i. terminate f (args @ [i]) \<and> rec_exec f (args @ [i]) > 0"
-  shows "{\<lambda> nl. nl = args @ 0\<up>(ft - ar) @ anything} ap \<up> "
+  shows "\<lbrace> (\<lambda> nl. nl = args @ 0\<up>(ft - ar) @ anything) \<rbrace> ap \<up> "
   using assms
   apply(cases "rec_ci f", auto simp: rec_ci.simps abc_comp_commute)
   by(rule_tac mn_unhalt_case', simp_all)
 
+section \<open>Compilers composed: Compiling Recursive Functions into Turing Machines\<close>
+
 fun tm_of_rec :: "recf \<Rightarrow> instr list"
   where "tm_of_rec recf = (let (ap, k, fp) = rec_ci recf in
                          let tp = tm_of (ap [+] dummy_abc k) in 
-                           tp @ (shift (mopup k) (length tp div 2)))"
+                           tp @ (shift (mopup_n_tm k) (length tp div 2)))"
 
 lemma recursive_compile_to_tm_correct1: 
   assumes  compile: "rec_ci recf = (ap, ary, fp)"
     and termi: " terminate recf args"
     and tp: "tp = tm_of (ap [+] dummy_abc (length args))"
   shows "\<exists> stp m l. steps0 (Suc 0, Bk # Bk # ires, <args> @ Bk\<up>rn)
-  (tp @ shift (mopup (length args)) (length tp div 2)) stp = (0, Bk\<up>m @ Bk # Bk # ires, Oc\<up>Suc (rec_exec recf args) @ Bk\<up>l)"
+  (tp @ shift (mopup_n_tm (length args)) (length tp div 2)) stp = (0, Bk\<up>m @ Bk # Bk # ires, Oc\<up>Suc (rec_exec recf args) @ Bk\<up>l)"
 proof -
-  have "{\<lambda>nl. nl = args} ap [+] dummy_abc (length args) {\<lambda>nl. \<exists>m. nl = args @ rec_exec recf args # 0 \<up> m}"
+  have "\<lbrace>\<lambda>nl. nl = args\<rbrace> ap [+] dummy_abc (length args) \<lbrace>\<lambda>nl. \<exists>m. nl = args @ rec_exec recf args # 0 \<up> m\<rbrace>"
     using compile termi compile
     by(rule_tac compile_append_dummy_correct, auto)
   then obtain stp m where h: "abc_steps_l (0, args) (ap [+] dummy_abc (length args)) stp = 
@@ -2559,11 +2578,11 @@ lemma recursive_compile_to_tm_correct2:
   assumes termi: " terminate recf args"
   shows "\<exists> stp m l. steps0 (Suc 0, [Bk, Bk], <args>) (tm_of_rec recf) stp = 
                      (0, Bk\<up>Suc (Suc m), Oc\<up>Suc (rec_exec recf args) @ Bk\<up>l)"
-proof(cases "rec_ci recf", simp add: tm_of_rec.simps)
+proof(cases "rec_ci recf", simp )
   fix ap ar fp
   assume "rec_ci recf = (ap, ar, fp)"
   thus "\<exists>stp m l. steps0 (Suc 0, [Bk, Bk], <args>) 
-    (tm_of (ap [+] dummy_abc ar) @ shift (mopup ar) (sum_list (layout_of (ap [+] dummy_abc ar)))) stp =
+    (tm_of (ap [+] dummy_abc ar) @ shift (mopup_n_tm ar) (sum_list (layout_of (ap [+] dummy_abc ar)))) stp =
     (0, Bk # Bk # Bk \<up> m, Oc # Oc \<up> rec_exec recf args @ Bk \<up> l)"
     using recursive_compile_to_tm_correct1[of recf ap ar fp args "tm_of (ap [+] dummy_abc (length args))" "[]" 0]
       assms param_pattern[of recf args ap ar fp]
@@ -2573,8 +2592,8 @@ qed
 
 lemma recursive_compile_to_tm_correct3: 
   assumes termi: "terminate recf args"
-  shows "{\<lambda> tp. tp =([Bk, Bk], <args>)} (tm_of_rec recf) 
-         {\<lambda> tp. \<exists> k l. tp = (Bk\<up> k, <rec_exec recf args> @ Bk \<up> l)}"
+  shows "\<lbrace>\<lambda> tp. tp =([Bk, Bk], <args>)\<rbrace> (tm_of_rec recf) 
+         \<lbrace>\<lambda> tp. \<exists> k l. tp = (Bk\<up> k, <rec_exec recf args> @ Bk \<up> l)\<rbrace>"
   using recursive_compile_to_tm_correct2[OF assms]
   apply(auto simp add: Hoare_halt_def ) apply(rename_tac stp M l)
   apply(rule_tac x = stp in exI)
@@ -2582,6 +2601,8 @@ lemma recursive_compile_to_tm_correct3:
   apply(rule_tac x = "Suc (Suc M)" in exI)
   apply(simp)
   done 
+
+subsection \<open>Appending the mopup TM\<close>
 
 lemma list_all_suc_many[simp]:
   "list_all (\<lambda>(acn, s). s \<le> Suc (Suc (Suc (Suc (Suc (Suc (2 * n))))))) xs \<Longrightarrow>
@@ -2596,8 +2617,8 @@ lemma shift_append: "shift (xs @ ys) n = shift xs n @ shift ys n"
   apply(simp add: shift.simps)
   done
 
-lemma length_shift_mopup[simp]: "length (shift (mopup n) ss) = 4 * n + 12"
-  apply(auto simp: mopup.simps shift_append mopup_b_def)
+lemma length_shift_mopup[simp]: "length (shift (mopup_n_tm n) ss) = 4 * n + 12"
+  apply(auto simp: mopup_n_tm.simps shift_append mopup_b_def)
   done
 
 lemma length_tm_even[intro]: "length (tm_of ap) mod 2 = 0"
@@ -2787,56 +2808,61 @@ lemma mopup_b_12[simp]: "length mopup_b = 12"
 
 lemma mp_up_all_le: "list_all  (\<lambda>(acn, s). s \<le> q + (2 * n + 6)) 
   [(R, Suc (Suc (2 * n + q))), (R, Suc (2 * n + q)), 
-  (L, 5 + 2 * n + q), (W0, Suc (Suc (Suc (2 * n + q)))), (R, 4 + 2 * n + q),
-  (W0, Suc (Suc (Suc (2 * n + q)))), (R, Suc (Suc (2 * n + q))),
-  (W0, Suc (Suc (Suc (2 * n + q)))), (L, 5 + 2 * n + q),
+  (L, 5 + 2 * n + q), (WB, Suc (Suc (Suc (2 * n + q)))), (R, 4 + 2 * n + q),
+  (WB, Suc (Suc (Suc (2 * n + q)))), (R, Suc (Suc (2 * n + q))),
+  (WB, Suc (Suc (Suc (2 * n + q)))), (L, 5 + 2 * n + q),
   (L, 6 + 2 * n + q), (R, 0),  (L, 6 + 2 * n + q)]"
   by(auto)
 
 lemma mopup_le6[simp]: "(a, b) \<in> set (mopup_a n) \<Longrightarrow> b \<le> 2 * n + 6"
-  by(induct n, auto simp: mopup_a.simps)
+  by(induct n, auto )
 
-lemma shift_le2[simp]: "(a, b) \<in> set (shift (mopup n) x)
-  \<Longrightarrow> b \<le> (2 * x + length (mopup n)) div 2"
-  apply(auto simp: mopup.simps shift_append shift.simps)
+lemma shift_le2[simp]: "(a, b) \<in> set (shift (mopup_n_tm n) x)
+  \<Longrightarrow> b \<le> (2 * x + length (mopup_n_tm n)) div 2"
+  apply(auto simp: mopup_n_tm.simps shift_append shift.simps)
   apply(auto simp: mopup_b_def)
   done
 
-lemma mopup_ge2[intro]: " 2 \<le> x + length (mopup n)"
-  apply(simp add: mopup.simps)
+lemma mopup_ge2[intro]: " 2 \<le> x + length (mopup_n_tm n)"
+  apply(simp add: mopup_n_tm.simps)
   done
 
-lemma mopup_even[intro]: " (2 * x + length (mopup n)) mod 2 = 0"
-  by(auto simp: mopup.simps)
+lemma mopup_even[intro]: " (2 * x + length (mopup_n_tm n)) mod 2 = 0"
+  by(auto simp: mopup_n_tm.simps)
 
 lemma mopup_div_2[simp]: "b \<le> Suc x
-          \<Longrightarrow> b \<le> (2 * x + length (mopup n)) div 2"
-  by(auto simp: mopup.simps)
+          \<Longrightarrow> b \<le> (2 * x + length (mopup_n_tm n)) div 2"
+  by(auto simp: mopup_n_tm.simps)
 
-lemma wf_tm_from_abacus: assumes "tp = tm_of ap"
-  shows "tm_wf0 (tp @ shift (mopup n) (length tp div 2))"
+subsection \<open>A Turing Machine compiled from an Abacus program with mopup code appended is composable\<close>
+
+lemma composable_tm_from_abacus: assumes "tp = tm_of ap"
+  shows "composable_tm0 (tp @ shift (mopup_n_tm n) (length tp div 2))"
 proof -
-  have "is_even (length (mopup n))" for n using tm_wf.simps by blast
-  moreover have "(aa, ba) \<in> set (mopup n) \<Longrightarrow> ba \<le> length (mopup n) div 2" for aa ba
-    by (metis (no_types, lifting) add_cancel_left_right case_prodD tm_wf.simps wf_mopup)
-  moreover have "(\<forall>x\<in>set (tm_of ap). case x of (acn, s) \<Rightarrow> s \<le> Suc (sum_list (layout_of ap))) \<Longrightarrow>
-           (a, b) \<in> set (tm_of ap) \<Longrightarrow> b \<le> sum_list (layout_of ap) + length (mopup n) div 2"
-    for a b s
-    by (metis (no_types, lifting) add_Suc add_cancel_left_right case_prodD div_mult_mod_eq le_SucE mult_2_right not_numeral_le_zero tm_wf.simps trans_le_add1 wf_mopup)
+  have "is_even (length (mopup_n_tm n))" for n using composable_tm.simps by blast
+  moreover have "(aa, ba) \<in> set (mopup_n_tm n) \<Longrightarrow> ba \<le> length (mopup_n_tm n) div 2" for aa ba
+    by (metis (no_types, lifting) add_cancel_left_right case_prodD composable_tm.simps composable_mopup_n_tm)
+  moreover have "(\<forall>x\<in>set (tm_of ap). case x of (acn, s::nat) \<Rightarrow> s \<le> Suc (sum_list (layout_of ap))) \<Longrightarrow>
+           (a, b) \<in> set (tm_of ap) \<Longrightarrow> b \<le> sum_list (layout_of ap) + length (mopup_n_tm n) div 2"
+    for a b and s::nat
+    by (metis (no_types, lifting) add_Suc add_cancel_left_right case_prodD div_mult_mod_eq le_SucE mult_2_right
+               not_numeral_le_zero composable_tm.simps trans_le_add1 composable_mopup_n_tm)
   ultimately show ?thesis unfolding assms
-    using length_start_of_tm[of ap] all_le_start_of[of ap] tm_wf.simps 
+    using length_start_of_tm[of ap] all_le_start_of[of ap] composable_tm.simps 
     by(auto simp: List.list_all_iff shift.simps)
 qed
 
-lemma wf_tm_from_recf:
+subsection \<open>A Turing Machine compiled from a recursive function is composable\<close>
+
+lemma composable_tm_from_recf:
   assumes compile: "tp = tm_of_rec recf"
-  shows "tm_wf0 tp"
+  shows "composable_tm0 tp"
 proof -
   obtain a b c where "rec_ci recf = (a, b, c)"
     by (metis prod_cases3)
   thus "?thesis"
     using compile
-    using wf_tm_from_abacus[of "tm_of (a [+] dummy_abc b)" "(a [+] dummy_abc b)" b]
+    using composable_tm_from_abacus[of "tm_of (a [+] dummy_abc b)" "(a [+] dummy_abc b)" b]
     by simp
 qed
 

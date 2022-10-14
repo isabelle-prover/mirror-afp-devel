@@ -57,7 +57,7 @@ proof (rule usolves_odeI)
   from s0 s_def
   have "exp ((t0 - t0) *\<^sub>R A) c = x0"
     by (simp add: linode_solution_solves_ode(2))
-  hence "c = x0" by (simp add: )
+  hence "c = x0" by simp
   then show "s t1 = linode_solution t0 x0 t1"
     using s_def[of t1] by (simp add: linode_solution_def)
 qed auto

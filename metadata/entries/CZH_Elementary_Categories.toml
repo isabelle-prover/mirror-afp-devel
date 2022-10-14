@@ -21,9 +21,10 @@ email = "milehins_email"
 [contributors]
 
 [notify]
-milehins = "milehins_email1"
+milehins = "milehins_email"
 
 [history]
+2021-11-07 = "added a definition of a dagger monoidal category (revision c9ed46c09de9)<br>"
 
 [extra]
 

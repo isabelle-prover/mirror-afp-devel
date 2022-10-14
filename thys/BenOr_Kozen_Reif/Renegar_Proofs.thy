@@ -1,13 +1,12 @@
 theory Renegar_Proofs
-  imports "Renegar_Algorithm"
-    "BKR_Proofs"
+  imports Renegar_Algorithm
+    BKR_Proofs
 begin
 
 (* Note that there is significant overlap between Renegar and BKR in general, so there is some
   similarity between this file and BKR_Proofs.thy
   The main difference is that the RHS vector in Renegar is different from the RHS vector in BKR 
   In BKR, all of the qs are assumed to be relatively prime to p. Renegar removes this assumption. 
-
   In general, the _R's on definition and lemma names in this file are to emphasize that we are 
   working with Renegar style.
 *)
@@ -1310,6 +1309,7 @@ proof -
       welldefined_subsets1 welldefined_subsets2 unfolding all_list_constr_R_def list_constr_def
     using Ball_set in_set_member well_def_signs_def welldefined_signs1 in_set_conv_nth list_all_length
     apply (auto)
+    
     by (smt (z3) Ball_set kronecker_invertible member_def)
   have h2a: "distinct (signs_smash signs1 signs2)" 
     using distinct_signs1 distinct_signs2 welldefined_signs1 welldefined_signs2 nontriv1 nontriv2 
@@ -2352,14 +2352,16 @@ proof -
     by (simp add: nontriv2 get_subsets_R_def satisfies_properties_R_def smash_systems_R_def) 
   have h2: "well_def_signs (length (qs1 @ qs2)) ?signs"
     using well_def_signs_step[of qs1 qs2 signs1 signs2]
-    using get_signs_R_def nontriv1 nontriv2 satisfies_properties_R_def satisfies_properties_sys1 satisfies_properties_sys2 smash_systems_R_def by auto 
+    using get_signs_R_def nontriv1 nontriv2 satisfies_properties_R_def satisfies_properties_sys1 satisfies_properties_sys2 smash_systems_R_def
+    by (metis combining_to_smash_R snd_conv)
   have h3: "distinct ?signs" 
     using distinct_step[of _ signs1 _ signs2] assms
-    using combine_systems.simps get_signs_R_def satisfies_properties_R_def smash_systems_R_def snd_conv by auto
+    using combine_systems.simps get_signs_R_def satisfies_properties_R_def smash_systems_R_def snd_conv
+    by (metis combining_to_smash_R) 
   have h4: "satisfy_equation_R p (qs1 @ qs2) ?subsets ?signs" 
     using assms inductive_step_R[of p qs1 qs2 signs1 signs2 subsets1 subsets2]
     using get_signs_R_def get_subsets_R_def satisfies_properties_R_def smash_systems_R_def
-    by auto  
+    by (metis (no_types, opaque_lifting) combining_to_smash_R h1 h3 matrix_equation_R snd_conv subset_step_R) 
   have h5: " invertible_mat ?matrix"
     using assms inductive_step_R[of p qs1 qs2 signs1 signs2 subsets1 subsets2]
     by (metis combining_to_smash_R fst_conv get_matrix_R_def kronecker_invertible satisfies_properties_R_def smash_systems_R_def snd_conv)
@@ -2367,7 +2369,8 @@ proof -
     unfolding get_matrix_R_def combine_systems_R.simps smash_systems_R_def get_signs_R_def get_subsets_R_def
     apply simp
     apply (subst matrix_construction_is_kronecker_product_R[of subsets1 _ signs1 signs2 subsets2])
-    apply (metis Ball_set all_list_constr_R_def in_set_member list_constr_def satisfies_properties_R_def satisfies_properties_sys1)
+   
+      apply (metis Ball_set all_list_constr_R_def in_set_member list_constr_def satisfies_properties_R_def satisfies_properties_sys1)
     using satisfies_properties_R_def satisfies_properties_sys1 well_def_signs_def apply blast
     using satisfies_properties_R_def satisfies_properties_sys1 satisfies_properties_sys2 by auto
   have h7: "set (characterize_consistent_signs_at_roots p (qs1 @ qs2))

@@ -133,7 +133,7 @@ proof -
       apply -
       apply (drule DERIV_cdivide[where c = "ln a"], simp add: assms)
       apply (rule has_vector_derivative_within_subset[where S=UNIV and T="{0..c}"], auto)
-      by (rule iffD1[OF has_field_derivative_iff_has_vector_derivative])
+      by (rule iffD1[OF has_real_derivative_iff_has_vector_derivative])
   qed
   thus ?thesis
     using assms powr_zero_eq_one by (simp add: field_simps)

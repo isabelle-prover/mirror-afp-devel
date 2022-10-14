@@ -25,18 +25,17 @@ abbreviation Const (\<open>\<^bold>\<star>\<close>) where \<open>\<^bold>\<star>
 datatype (params_fm: 'f, 'p) fm
   = Falsity (\<open>\<^bold>\<bottom>\<close>)
   | Pre 'p \<open>'f tm list\<close> (\<open>\<^bold>\<ddagger>\<close>)
-  | Imp \<open>('f, 'p) fm\<close> \<open>('f, 'p) fm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<close> 25)
+  | Imp \<open>('f, 'p) fm\<close> \<open>('f, 'p) fm\<close> (infixr \<open>\<^bold>\<longrightarrow>\<close> 55)
   | Uni \<open>('f, 'p) fm\<close> (\<open>\<^bold>\<forall>\<close>)
 
-abbreviation Neg (\<open>\<^bold>\<not> _\<close> [40] 40) where \<open>\<^bold>\<not> p \<equiv> p \<^bold>\<longrightarrow> \<^bold>\<bottom>\<close>
+abbreviation Neg (\<open>\<^bold>\<not> _\<close> [70] 70) where \<open>\<^bold>\<not> p \<equiv> p \<^bold>\<longrightarrow> \<^bold>\<bottom>\<close>
 
 term \<open>\<^bold>\<forall>(\<^bold>\<bottom> \<^bold>\<longrightarrow> \<^bold>\<ddagger>''P'' [\<^bold>\<dagger>''f'' [\<^bold>#0]])\<close>
 
 section \<open>Semantics\<close>
 
-definition shift :: \<open>(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a\<close>
-  (\<open>_\<langle>_:_\<rangle>\<close> [90, 0, 0] 91) where
-  \<open>E\<langle>n:x\<rangle> = (\<lambda>m. if m < n then E m else if m = n then x else E (m-1))\<close>
+definition shift (\<open>_\<langle>_:_\<rangle>\<close>) where
+  \<open>E\<langle>n:x\<rangle> m \<equiv> if m < n then E m else if m = n then x else E (m-1)\<close>
 
 primrec semantics_tm (\<open>\<lparr>_, _\<rparr>\<close>) where
   \<open>\<lparr>E, F\<rparr> (\<^bold>#n) = E n\<close>
@@ -55,21 +54,25 @@ section \<open>Operations\<close>
 
 subsection \<open>Shift\<close>
 
-lemma shift_eq [simp]: \<open>n = m \<Longrightarrow> (E\<langle>n:x\<rangle>) m = x\<close>
+context fixes n m :: nat begin
+
+lemma shift_eq [simp]: \<open>n = m \<Longrightarrow> E\<langle>n:x\<rangle> m = x\<close>
   by (simp add: shift_def)
 
-lemma shift_gt [simp]: \<open>m < n \<Longrightarrow> (E\<langle>n:x\<rangle>) m = E m\<close>
+lemma shift_gt [simp]: \<open>m < n \<Longrightarrow> E\<langle>n:x\<rangle> m = E m\<close>
   by (simp add: shift_def)
 
-lemma shift_lt [simp]: \<open>n < m \<Longrightarrow> (E\<langle>n:x\<rangle>) m = E (m-1)\<close>
+lemma shift_lt [simp]: \<open>n < m \<Longrightarrow> E\<langle>n:x\<rangle> m = E (m-1)\<close>
   by (simp add: shift_def)
 
-lemma shift_commute [simp]: \<open>E\<langle>n:y\<rangle>\<langle>0:x\<rangle> = E\<langle>0:x\<rangle>\<langle>n+1:y\<rangle>\<close>
+lemma shift_commute [simp]: \<open>(E\<langle>n:y\<rangle>\<langle>0:x\<rangle>) = (E\<langle>0:x\<rangle>\<langle>n+1:y\<rangle>)\<close>
 proof
   fix m
   show \<open>(E\<langle>n:y\<rangle>\<langle>0:x\<rangle>) m = (E\<langle>0:x\<rangle>\<langle>n+1:y\<rangle>) m\<close>
     unfolding shift_def by (cases m) simp_all
 qed
+
+end
 
 subsection \<open>Parameters\<close>
 
@@ -93,23 +96,23 @@ primrec lift_tm (\<open>\<^bold>\<up>\<close>) where
   \<open>\<^bold>\<up>(\<^bold>#n) = \<^bold>#(n+1)\<close>
 | \<open>\<^bold>\<up>(\<^bold>\<dagger>f ts) = \<^bold>\<dagger>f (map \<^bold>\<up> ts)\<close>
 
-primrec inst_tm (\<open>_'\<llangle>_'/_'\<rrangle>\<close> [90, 0, 0] 91) where
-  \<open>(\<^bold>#n)\<llangle>s/m\<rrangle> = (if n < m then \<^bold>#n else if n = m then s else \<^bold>#(n-1))\<close>
-| \<open>(\<^bold>\<dagger>f ts)\<llangle>s/m\<rrangle> = \<^bold>\<dagger>f (map (\<lambda>t. t\<llangle>s/m\<rrangle>) ts)\<close>
+primrec inst_tm (\<open>\<llangle>_'/_\<rrangle>\<close>) where
+  \<open>\<llangle>s/m\<rrangle>(\<^bold>#n) = (if n < m then \<^bold>#n else if n = m then s else \<^bold>#(n-1))\<close>
+| \<open>\<llangle>s/m\<rrangle>(\<^bold>\<dagger>f ts) = \<^bold>\<dagger>f (map \<llangle>s/m\<rrangle> ts)\<close>
 
-primrec inst_fm (\<open>_'\<langle>_'/_'\<rangle>\<close> [90, 0, 0] 91) where
-  \<open>\<^bold>\<bottom>\<langle>_/_\<rangle> = \<^bold>\<bottom>\<close>
-| \<open>(\<^bold>\<ddagger>P ts)\<langle>s/m\<rangle> = \<^bold>\<ddagger>P (map (\<lambda>t. t\<llangle>s/m\<rrangle>) ts)\<close>
-| \<open>(p \<^bold>\<longrightarrow> q)\<langle>s/m\<rangle> = (p\<langle>s/m\<rangle> \<^bold>\<longrightarrow> q\<langle>s/m\<rangle>)\<close>
-| \<open>(\<^bold>\<forall>p)\<langle>s/m\<rangle> = \<^bold>\<forall>(p\<langle>\<^bold>\<up>s/m+1\<rangle>)\<close>
+primrec inst_fm (\<open>\<langle>_'/_\<rangle>\<close>) where
+  \<open>\<langle>_/_\<rangle>\<^bold>\<bottom> = \<^bold>\<bottom>\<close>
+| \<open>\<langle>s/m\<rangle>(\<^bold>\<ddagger>P ts) = \<^bold>\<ddagger>P (map \<llangle>s/m\<rrangle> ts)\<close>
+| \<open>\<langle>s/m\<rangle>(p \<^bold>\<longrightarrow> q) = \<langle>s/m\<rangle>p \<^bold>\<longrightarrow> \<langle>s/m\<rangle>q\<close>
+| \<open>\<langle>s/m\<rangle>(\<^bold>\<forall>p) = \<^bold>\<forall>(\<langle>\<^bold>\<up>s/m+1\<rangle>p)\<close>
 
 lemma lift_lemma [simp]: \<open>\<lparr>E\<langle>0:x\<rangle>, F\<rparr> (\<^bold>\<up>t) = \<lparr>E, F\<rparr> t\<close>
   by (induct t) (auto cong: map_cong)
 
-lemma inst_tm_semantics [simp]: \<open>\<lparr>E, F\<rparr> (t\<llangle>s/m\<rrangle>) = \<lparr>E\<langle>m:\<lparr>E, F\<rparr> s\<rangle>, F\<rparr> t\<close>
+lemma inst_tm_semantics [simp]: \<open>\<lparr>E, F\<rparr> (\<llangle>s/m\<rrangle>t) = \<lparr>E\<langle>m:\<lparr>E, F\<rparr> s\<rangle>, F\<rparr> t\<close>
   by (induct t) (auto cong: map_cong)
 
-lemma inst_fm_semantics [simp]: \<open>\<lbrakk>E, F, G\<rbrakk> (p\<langle>t/m\<rangle>) = \<lbrakk>E\<langle>m:\<lparr>E, F\<rparr> t\<rangle>, F, G\<rbrakk> p\<close>
+lemma inst_fm_semantics [simp]: \<open>\<lbrakk>E, F, G\<rbrakk> (\<langle>t/m\<rangle>p) = \<lbrakk>E\<langle>m:\<lparr>E, F\<rparr> t\<rangle>, F, G\<rbrakk> p\<close>
   by (induct p arbitrary: E m t) (auto cong: map_cong)
 
 subsection \<open>Size\<close>
@@ -122,9 +125,8 @@ primrec size_fm where
 | \<open>size_fm (p \<^bold>\<longrightarrow> q) = 1 + size_fm p + size_fm q\<close>
 | \<open>size_fm (\<^bold>\<forall>p) = 1 + size_fm p\<close>
 
-lemma size_inst_fm [simp]:
-  \<open>size_fm (p\<langle>t/m\<rangle>) = size_fm p\<close>
-  by (induct p arbitrary: m t) auto
+lemma size_inst_fm [simp]: \<open>size_fm (\<langle>t/m\<rangle>p) = size_fm p\<close>
+  by (induct p arbitrary: m t) simp_all
 
 section \<open>Propositional Semantics\<close>
 
@@ -146,7 +148,7 @@ proof
     by (induct p) simp_all
 qed
 
-lemma tautology: \<open>tautology p \<Longrightarrow> \<lbrakk>E, F, G\<rbrakk> p\<close>
+lemma tautology[simp]: \<open>tautology p \<Longrightarrow> \<lbrakk>E, F, G\<rbrakk> p\<close>
   using boolean_semantics by metis
 
 proposition \<open>\<exists>p. (\<forall>E F G. \<lbrakk>E, F, G\<rbrakk> p) \<and> \<not> tautology p\<close>
@@ -154,107 +156,104 @@ proposition \<open>\<exists>p. (\<forall>E F G. \<lbrakk>E, F, G\<rbrakk> p) \<a
 
 section \<open>Calculus\<close>
 
-text \<open>Adapted from System Q1 by Smullyan in First-Order Logic (1968)\<close>
+text \<open>Adapted from System Q1 by Smullyan in First-Order Logic (1968).\<close>
 
-inductive Axiomatic (\<open>\<turnstile> _\<close> [20] 20) where
+inductive Axiomatic (\<open>\<turnstile> _\<close> [50] 50) where
   TA: \<open>tautology p \<Longrightarrow> \<turnstile> p\<close>
-| IA: \<open>\<turnstile> \<^bold>\<forall>p \<^bold>\<longrightarrow> p\<langle>t/0\<rangle>\<close>
+| IA: \<open>\<turnstile> \<^bold>\<forall>p \<^bold>\<longrightarrow> \<langle>t/0\<rangle>p\<close>
 | MP: \<open>\<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> \<turnstile> p \<Longrightarrow> \<turnstile> q\<close>
-| GR: \<open>\<turnstile> q \<^bold>\<longrightarrow> p\<langle>\<^bold>\<star>a/0\<rangle> \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> q \<^bold>\<longrightarrow> \<^bold>\<forall>p\<close>
-
-lemmas
-  TA[simp]
-  MP[trans, dest]
-  GR[intro]
+| GR: \<open>\<turnstile> q \<^bold>\<longrightarrow> \<langle>\<^bold>\<star>a/0\<rangle>p \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> q \<^bold>\<longrightarrow> \<^bold>\<forall>p\<close>
 
 text \<open>We simulate assumptions on the lhs of \<open>\<turnstile>\<close> with a chain of implications on the rhs.\<close>
 
-primrec imply (infixr \<open>\<^bold>\<leadsto>\<close> 26) where
+primrec imply (infixr \<open>\<^bold>\<leadsto>\<close> 56) where
   \<open>([] \<^bold>\<leadsto> q) = q\<close>
 | \<open>(p # ps \<^bold>\<leadsto> q) = (p \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q)\<close>
 
-abbreviation Axiomatic_assms (\<open>_ \<turnstile> _\<close> [20, 20] 20) where
+abbreviation Axiomatic_assms (\<open>_ \<turnstile> _\<close> [50, 50] 50) where
   \<open>ps \<turnstile> q \<equiv> \<turnstile> ps \<^bold>\<leadsto> q\<close>
 
 section \<open>Soundness\<close>
 
 theorem soundness: \<open>\<turnstile> p \<Longrightarrow> \<lbrakk>E, F, G\<rbrakk> p\<close>
 proof (induct p arbitrary: F rule: Axiomatic.induct)
-  case (GR q p a)
-  moreover from this
-  have \<open>\<lbrakk>E, F(a := x), G\<rbrakk> (q \<^bold>\<longrightarrow> p\<langle>\<^bold>\<star>a/0\<rangle>)\<close> for x
+  case (GR q a p)
+  moreover from this have \<open>\<lbrakk>E, F(a := x), G\<rbrakk> (q \<^bold>\<longrightarrow> \<langle>\<^bold>\<star>a/0\<rangle>p)\<close> for x
     by blast
   ultimately show ?case
     by fastforce
-qed (auto simp: tautology)
+qed auto
 
 corollary \<open>\<not> (\<turnstile> \<^bold>\<bottom>)\<close>
   using soundness by fastforce
 
 section \<open>Derived Rules\<close>
 
-lemma AS: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
-  by auto
-
-lemma AK: \<open>\<turnstile> q \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> q\<close>
-  by auto
-
-lemma Neg: \<open>\<turnstile> \<^bold>\<not> \<^bold>\<not> p \<^bold>\<longrightarrow> p\<close>
-  by auto
-
-lemma contraposition:
-  \<open>\<turnstile> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> p\<close>
-  \<open>\<turnstile> (\<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> p) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> q\<close>
+lemma Imp1: \<open>\<turnstile> q \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> q\<close>
+  and Imp2: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
+  and Neg: \<open>\<turnstile> \<^bold>\<not> \<^bold>\<not> p \<^bold>\<longrightarrow> p\<close>
   by (auto intro: TA)
 
-lemma GR': \<open>\<turnstile> \<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle> \<^bold>\<longrightarrow> q \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> \<^bold>\<not> \<^bold>\<forall>p \<^bold>\<longrightarrow> q\<close>
+text \<open>The tautology axiom TA is not used directly beyond this point.\<close>
+
+lemma Tran': \<open>\<turnstile> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
+  by (meson Imp1 Imp2 MP)
+
+lemma Swap: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> q \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
+  by (meson Imp1 Imp2 Tran' MP)
+
+lemma Tran: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> (q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> r\<close>
+  by (meson Swap Tran' MP)
+
+text \<open>Note that contraposition in the other direction is an instance of the lemma Tran.\<close>
+
+lemma contraposition: \<open>\<turnstile> (\<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> p) \<^bold>\<longrightarrow> p \<^bold>\<longrightarrow> q\<close>
+  by (meson Neg Swap Tran MP)
+
+lemma GR': \<open>\<turnstile> \<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p \<^bold>\<longrightarrow> q \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> \<^bold>\<not> (\<^bold>\<forall>p) \<^bold>\<longrightarrow> q\<close>
 proof -
-  assume *: \<open>\<turnstile> \<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle> \<^bold>\<longrightarrow> q\<close> and a: \<open>a \<notin> params {p, q}\<close>
-  have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>\<close>
-    using * contraposition(1) by fast
-  then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> p\<langle>\<^bold>\<star>a/0\<rangle>\<close>
-    by (meson AK AS MP Neg)
+  assume *: \<open>\<turnstile> \<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p \<^bold>\<longrightarrow> q\<close> and a: \<open>a \<notin> params {p, q}\<close>
+  have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p\<close>
+    using * Tran MP by metis
+  then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<langle>\<^bold>\<star>a/0\<rangle>p\<close>
+    using Neg Tran MP by metis
   then have \<open>\<turnstile> \<^bold>\<not> q \<^bold>\<longrightarrow> \<^bold>\<forall>p\<close>
-    using a by auto
-  then have \<open>\<turnstile> \<^bold>\<not> \<^bold>\<forall>p \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> q\<close>
-    using contraposition(1) by fast
+    using a by (auto intro: GR)
+  then have \<open>\<turnstile> \<^bold>\<not> (\<^bold>\<forall>p) \<^bold>\<longrightarrow> \<^bold>\<not> \<^bold>\<not> q\<close>
+    using Tran MP by metis
   then show ?thesis
-    by (meson AK AS MP Neg)
+    using Neg Tran MP by metis
 qed
 
-lemma Imp3: \<open>\<turnstile> (p \<^bold>\<longrightarrow> q \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow> ((s \<^bold>\<longrightarrow> p) \<^bold>\<longrightarrow> (s \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> s \<^bold>\<longrightarrow> r)\<close>
-  by auto
-
 lemma imply_ImpE: \<open>\<turnstile> ps \<^bold>\<leadsto> p \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q\<close>
-  by (induct ps) (auto intro: Imp3 MP)
+proof (induct ps)
+  case Nil
+  then show ?case
+    by (metis Imp1 Swap MP imply.simps(1))
+next
+  case (Cons r ps)
+  have \<open>\<turnstile> (r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> p) \<^bold>\<longrightarrow> r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q) \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q\<close>
+    by (meson Cons.hyps Imp1 Imp2 MP)
+  then have \<open>\<turnstile> (r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> p) \<^bold>\<longrightarrow> (r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> (p \<^bold>\<longrightarrow> q)) \<^bold>\<longrightarrow> r \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q\<close>
+    by (meson Imp1 Imp2 MP)
+  then show ?case
+    by simp
+qed
 
-lemma MP' [trans, dest]: \<open>ps \<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> ps \<turnstile> p \<Longrightarrow> ps \<turnstile> q\<close>
-  using imply_ImpE by fast
+lemma MP': \<open>ps \<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> ps \<turnstile> p \<Longrightarrow> ps \<turnstile> q\<close>
+  using imply_ImpE MP by metis
 
 lemma imply_Cons [intro]: \<open>ps \<turnstile> q \<Longrightarrow> p # ps \<turnstile> q\<close>
-  by (auto intro: MP AK)
+  by (auto intro: MP Imp1)
 
 lemma imply_head [intro]: \<open>p # ps \<turnstile> p\<close>
-proof (induct ps)
-  case (Cons q ps)
-  then show ?case
-    by (metis AK MP' imply.simps(1-2))
-qed auto
-
-lemma imply_lift_Imp [simp]:
-  assumes \<open>\<turnstile> p \<^bold>\<longrightarrow> q\<close>
-  shows \<open>\<turnstile> p \<^bold>\<longrightarrow> ps \<^bold>\<leadsto> q\<close>
-  using assms MP MP' imply_head by (metis imply.simps(2))
+  by (induct ps) (metis Imp1 Imp2 MP imply.simps, metis Imp1 Imp2 MP imply.simps(2))
 
 lemma add_imply [simp]: \<open>\<turnstile> q \<Longrightarrow> ps \<turnstile> q\<close>
-  using MP imply_head by (auto simp del: TA)
+  using imply_head by (metis MP imply.simps(2))
 
 lemma imply_mem [simp]: \<open>p \<in> set ps \<Longrightarrow> ps \<turnstile> p\<close>
-proof (induct ps)
-  case (Cons q ps)
-  then show ?case
-    by (metis imply_Cons imply_head set_ConsD)
-qed simp
+  using imply_head imply_Cons by (induct ps) fastforce+
 
 lemma deduct1: \<open>ps \<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> p # ps \<turnstile> q\<close>
   by (meson MP' imply_Cons imply_head)
@@ -264,32 +263,28 @@ lemma imply_append [iff]: \<open>(ps @ qs \<^bold>\<leadsto> r) = (ps \<^bold>\<
 
 lemma imply_swap_append: \<open>ps @ qs \<turnstile> r \<Longrightarrow> qs @ ps \<turnstile> r\<close>
 proof (induct qs arbitrary: ps)
-  case (Cons q qs)
+  case Cons
   then show ?case
     by (metis deduct1 imply.simps(2) imply_append)
 qed simp
 
 lemma deduct2: \<open>p # ps \<turnstile> q \<Longrightarrow> ps \<turnstile> p \<^bold>\<longrightarrow> q\<close>
-  by (metis imply.simps(1-2) imply_append imply_swap_append)
+  by (metis imply.simps imply_append imply_swap_append)
 
 lemmas deduct [iff] = deduct1 deduct2
 
-lemma cut [trans, dest]: \<open>p # ps \<turnstile> r \<Longrightarrow> q # ps \<turnstile> p \<Longrightarrow> q # ps \<turnstile> r\<close>
+lemma cut: \<open>p # ps \<turnstile> r \<Longrightarrow> q # ps \<turnstile> p \<Longrightarrow> q # ps \<turnstile> r\<close>
   by (meson MP' deduct(2) imply_Cons)
 
 lemma Boole: \<open>(\<^bold>\<not> p) # ps \<turnstile> \<^bold>\<bottom> \<Longrightarrow> ps \<turnstile> p\<close>
   by (meson MP' Neg add_imply deduct(2))
 
 lemma imply_weaken: \<open>ps \<turnstile> q \<Longrightarrow> set ps \<subseteq> set ps' \<Longrightarrow> ps' \<turnstile> q\<close>
-proof (induct ps arbitrary: q)
-  case (Cons p ps)
-  then show ?case
-    by (metis MP' deduct(2) imply_mem insert_subset list.simps(15))
-qed simp
+  by (induct ps arbitrary: q) (simp, metis MP' deduct(2) imply_mem insert_subset list.simps(15))
 
 section \<open>Consistent\<close>
 
-definition \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
+definition \<open>consistent S \<equiv> \<nexists>S'. set S' \<subseteq> S \<and> S' \<turnstile> \<^bold>\<bottom>\<close>
 
 lemma UN_finite_bound:
   assumes \<open>finite A\<close> and \<open>A \<subseteq> (\<Union>n. f n)\<close>
@@ -328,19 +323,18 @@ proof -
   then have \<open>p # S'' \<turnstile> \<^bold>\<bottom>\<close>
     using \<open>S' \<turnstile> \<^bold>\<bottom>\<close> imply_weaken by blast
   then show ?thesis
-    using that S'' S'(1)
-    by (metis Diff_insert_absorb Diff_subset_conv list.simps(15))
+    using that S'' S'(1) Diff_insert_absorb Diff_subset_conv list.simps(15) by metis
 qed
 
 lemma consistent_add_witness:
-  assumes \<open>consistent S\<close> and \<open>(\<^bold>\<not> \<^bold>\<forall>p) \<in> S\<close> and \<open>a \<notin> params S\<close>
-  shows \<open>consistent ({\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>} \<union> S)\<close>
+  assumes \<open>consistent S\<close> and \<open>\<^bold>\<not> (\<^bold>\<forall>p) \<in> S\<close> and \<open>a \<notin> params S\<close>
+  shows \<open>consistent ({\<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p} \<union> S)\<close>
   unfolding consistent_def
 proof
-  assume \<open>\<exists>S'. set S' \<subseteq> {\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>} \<union> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
-  then obtain S' where \<open>set S' \<subseteq> S\<close> and \<open>(\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>) # S' \<turnstile> \<^bold>\<bottom>\<close>
+  assume \<open>\<exists>S'. set S' \<subseteq> {\<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p} \<union> S \<and> S' \<turnstile> \<^bold>\<bottom>\<close>
+  then obtain S' where \<open>set S' \<subseteq> S\<close> and \<open>(\<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p) # S' \<turnstile> \<^bold>\<bottom>\<close>
     using assms inconsistent_fm unfolding consistent_def by metis
-  then have \<open>\<turnstile> \<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle> \<^bold>\<longrightarrow> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
+  then have \<open>\<turnstile> \<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p \<^bold>\<longrightarrow> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     by simp
   moreover have \<open>a \<notin> params_fm p\<close>
     using assms(2-3) by auto
@@ -348,11 +342,11 @@ proof
     using \<open>set S' \<subseteq> S\<close> assms(3) by auto
   then have \<open>a \<notin> params_fm (S' \<^bold>\<leadsto> \<^bold>\<bottom>)\<close>
     by (simp add: imply_params_fm)
-  ultimately have \<open>\<turnstile> \<^bold>\<not> \<^bold>\<forall>p \<^bold>\<longrightarrow> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
+  ultimately have \<open>\<turnstile> \<^bold>\<not> (\<^bold>\<forall>p) \<^bold>\<longrightarrow> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close>
     using GR' by fast
-  then have \<open>(\<^bold>\<not> \<^bold>\<forall>p) # S' \<turnstile> \<^bold>\<bottom>\<close>
+  then have \<open>\<^bold>\<not> (\<^bold>\<forall>p) # S' \<turnstile> \<^bold>\<bottom>\<close>
     by simp
-  moreover have \<open>set ((\<^bold>\<not> \<^bold>\<forall>p) # S') \<subseteq> S\<close>
+  moreover have \<open>set ((\<^bold>\<not> (\<^bold>\<forall>p)) # S') \<subseteq> S\<close>
     using \<open>set S' \<subseteq> S\<close> assms(2) by simp
   ultimately show False
     using assms(1) unfolding consistent_def by blast
@@ -360,13 +354,13 @@ qed
 
 lemma consistent_add_instance:
   assumes \<open>consistent S\<close> and \<open>\<^bold>\<forall>p \<in> S\<close>
-  shows \<open>consistent ({p\<langle>t/0\<rangle>} \<union> S)\<close>
+  shows \<open>consistent ({\<langle>t/0\<rangle>p} \<union> S)\<close>
   unfolding consistent_def
 proof
-  assume \<open>\<exists>S'. set S' \<subseteq> {p\<langle>t/0\<rangle>} \<union> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
-  then obtain S' where \<open>set S' \<subseteq> S\<close> and \<open>p\<langle>t/0\<rangle> # S' \<turnstile> \<^bold>\<bottom>\<close>
+  assume \<open>\<exists>S'. set S' \<subseteq> {\<langle>t/0\<rangle>p} \<union> S \<and> S' \<turnstile> \<^bold>\<bottom>\<close>
+  then obtain S' where \<open>set S' \<subseteq> S\<close> and \<open>\<langle>t/0\<rangle>p # S' \<turnstile> \<^bold>\<bottom>\<close>
     using assms inconsistent_fm unfolding consistent_def by blast
-  moreover have \<open>\<turnstile> \<^bold>\<forall>p \<^bold>\<longrightarrow> p\<langle>t/0\<rangle>\<close>
+  moreover have \<open>\<turnstile> \<^bold>\<forall>p \<^bold>\<longrightarrow> \<langle>t/0\<rangle>p\<close>
     using IA by blast
   ultimately have \<open>\<^bold>\<forall>p # S' \<turnstile> \<^bold>\<bottom>\<close>
     by (meson add_imply cut deduct(1))
@@ -379,7 +373,7 @@ qed
 section \<open>Extension\<close>
 
 fun witness where
-  \<open>witness used (\<^bold>\<not> \<^bold>\<forall>p) = {\<^bold>\<not> p\<langle>\<^bold>\<star>(SOME a. a \<notin> used)/0\<rangle>}\<close>
+  \<open>witness used (\<^bold>\<not> (\<^bold>\<forall>p)) = {\<^bold>\<not> \<langle>\<^bold>\<star>(SOME a. a \<notin> used)/0\<rangle>p}\<close>
 | \<open>witness _ _ = {}\<close>
 
 primrec extend where
@@ -392,6 +386,9 @@ primrec extend where
 
 definition \<open>Extend S f \<equiv> \<Union>n. extend S f n\<close>
 
+lemma extend_subset: \<open>S \<subseteq> extend S f n\<close>
+  by (induct n) (fastforce simp: Let_def)+
+
 lemma Extend_subset: \<open>S \<subseteq> Extend S f\<close>
   unfolding Extend_def by (metis Union_upper extend.simps(1) range_eqI)
 
@@ -401,20 +398,40 @@ lemma extend_bound: \<open>(\<Union>n \<le> m. extend S f n) = extend S f m\<clo
 lemma finite_params_witness [simp]: \<open>finite (params (witness used p))\<close>
   by (induct used p rule: witness.induct) simp_all
 
-lemma finite_params_extend [simp]: \<open>finite (params S) \<Longrightarrow> finite (params (extend S f n))\<close>
-  by (induct n) (simp_all add: Let_def)
+lemma finite_params_extend [simp]: \<open>finite (params (extend S f n) - params S)\<close>
+  by (induct n) (simp_all add: Let_def Un_Diff)
+
+lemma Set_Diff_Un: \<open>X - (Y \<union> Z) = X - Y - Z\<close>
+  by blast
+
+lemma infinite_params_extend:
+  assumes \<open>infinite (UNIV - params S)\<close>
+  shows \<open>infinite (UNIV - params (extend S f n))\<close>
+proof -
+  have \<open>finite (params (extend S f n) - params S)\<close>
+    by simp
+  then obtain extra where \<open>finite extra\<close> \<open>params (extend S f n) = extra \<union> params S\<close>
+    using extend_subset by fast
+  then have \<open>?thesis = infinite (UNIV - (extra \<union> params S))\<close>
+    by simp
+  also have \<open>\<dots> = infinite (UNIV - extra - params S)\<close>
+    by (simp add: Set_Diff_Un)
+  also have \<open>\<dots> = infinite (UNIV - params S)\<close>
+    using \<open>finite extra\<close> by (metis Set_Diff_Un Un_commute finite_Diff2)
+  finally show ?thesis
+    using assms ..
+qed
 
 lemma consistent_witness:
-  fixes p :: \<open>('f, 'p) fm\<close>
   assumes \<open>consistent S\<close> and \<open>p \<in> S\<close> and \<open>params S \<subseteq> used\<close>
-    and \<open>finite used\<close> and \<open>infinite (UNIV :: 'f set)\<close>
+    and \<open>infinite (UNIV - used)\<close>
   shows \<open>consistent (witness used p \<union> S)\<close>
   using assms
 proof (induct used p rule: witness.induct)
   case (1 used p)
   moreover have \<open>\<exists>a. a \<notin> used\<close>
-    using 1(4-) ex_new_if_finite by blast
-  ultimately obtain a where a: \<open>witness used (\<^bold>\<not> \<^bold>\<forall>p) = {\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>}\<close> and \<open>a \<notin> used\<close>
+    using 1(4) by (meson Diff_iff finite_params_fm finite_subset subset_iff)
+  ultimately obtain a where a: \<open>witness used (\<^bold>\<not> (\<^bold>\<forall>p)) = {\<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p}\<close> and \<open>a \<notin> used\<close>
     by (metis someI_ex witness.simps(1))
   then have \<open>a \<notin> params S\<close>
     using 1(3) by fast
@@ -423,28 +440,28 @@ proof (induct used p rule: witness.induct)
 qed (auto simp: assms)
 
 lemma consistent_extend:
-  fixes f :: \<open>nat \<Rightarrow> ('f, 'p) fm\<close>
-  assumes \<open>consistent S\<close> and \<open>finite (params S)\<close>
-    and \<open>infinite (UNIV :: 'f set)\<close>
+  assumes \<open>consistent S\<close> and \<open>infinite (UNIV - params S)\<close>
   shows \<open>consistent (extend S f n)\<close>
-  using assms
 proof (induct n)
   case (Suc n)
-  then show ?case
-    using consistent_witness[where S=\<open>{f n} \<union> _\<close>] by (auto simp: Let_def)
-qed simp
+  have \<open>infinite (UNIV - params (extend S f n))\<close>
+    using assms(2) infinite_params_extend by fast
+  with finite_params_fm have \<open>infinite (UNIV - (params_fm (f n) \<union> params (extend S f n)))\<close>
+    by (metis Set_Diff_Un Un_commute finite_Diff2)
+  with Suc consistent_witness[where S=\<open>{f n} \<union> extend S f n\<close>] show ?case
+    by (simp add: Let_def)
+qed (use assms(1) in simp)
 
 lemma consistent_Extend:
-  fixes f :: \<open>nat \<Rightarrow> ('f, 'p) fm\<close>
-  assumes \<open>consistent S\<close> and \<open>finite (params S)\<close>
-    and \<open>infinite (UNIV :: 'f set)\<close>
+  assumes \<open>consistent S\<close> and \<open>infinite (UNIV - params S)\<close>
   shows \<open>consistent (Extend S f)\<close>
-proof (rule ccontr)
-  assume \<open>\<not> consistent (Extend S f)\<close>
+  unfolding consistent_def
+proof
+  assume \<open>\<exists>S'. set S' \<subseteq> Extend S f \<and> S' \<turnstile> \<^bold>\<bottom>\<close>
   then obtain S' where \<open>S' \<turnstile> \<^bold>\<bottom>\<close> and \<open>set S' \<subseteq> Extend S f\<close>
     unfolding consistent_def by blast
   then obtain m where \<open>set S' \<subseteq> (\<Union>n \<le> m. extend S f n)\<close>
-    unfolding Extend_def using UN_finite_bound by (metis List.finite_set)
+    unfolding Extend_def using UN_finite_bound by (metis finite_set)
   then have \<open>set S' \<subseteq> extend S f m\<close>
     using extend_bound by blast
   moreover have \<open>consistent (extend S f m)\<close>
@@ -483,7 +500,7 @@ next
   have \<open>consistent ({p} \<union> S)\<close>
     unfolding consistent_def
   proof
-    assume \<open>\<exists>S'. set S' \<subseteq> {p} \<union> S \<and> (S' \<turnstile> \<^bold>\<bottom>)\<close>
+    assume \<open>\<exists>S'. set S' \<subseteq> {p} \<union> S \<and> S' \<turnstile> \<^bold>\<bottom>\<close>
     then obtain S'' where \<open>set S'' \<subseteq> S\<close> and \<open>p # S'' \<turnstile> \<^bold>\<bottom>\<close>
       using assms inconsistent_fm unfolding consistent_def by blast
     then have \<open>S' @ S'' \<turnstile> \<^bold>\<bottom>\<close>
@@ -500,11 +517,10 @@ qed
 lemma maximal_Extend:
   assumes \<open>surj f\<close>
   shows \<open>maximal (Extend S f)\<close>
-proof (rule ccontr)
-  assume \<open>\<not> maximal (Extend S f)\<close>
-  then obtain p where
-    \<open>p \<notin> Extend S f\<close> and \<open>consistent ({p} \<union> Extend S f)\<close>
-    unfolding maximal_def using assms consistent_Extend by blast
+  unfolding maximal_def
+proof safe
+  fix p
+  assume \<open>p \<notin> Extend S f\<close> and \<open>consistent ({p} \<union> Extend S f)\<close>
   obtain k where k: \<open>f k = p\<close>
     using \<open>surj f\<close> unfolding surj_def by metis
   then have \<open>p \<notin> extend S f (Suc k)\<close>
@@ -521,28 +537,27 @@ qed
 
 section \<open>Saturation\<close>
 
-definition \<open>saturated S \<equiv> \<forall>p. (\<^bold>\<not> \<^bold>\<forall>p) \<in> S \<longrightarrow> (\<exists>a. (\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>) \<in> S)\<close>
+definition \<open>saturated S \<equiv> \<forall>p. \<^bold>\<not> (\<^bold>\<forall>p) \<in> S \<longrightarrow> (\<exists>a. (\<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p) \<in> S)\<close>
 
 lemma saturated_Extend:
   assumes \<open>consistent (Extend S f)\<close> and \<open>surj f\<close>
   shows \<open>saturated (Extend S f)\<close>
-proof (rule ccontr)
-  assume \<open>\<not> saturated (Extend S f)\<close>
-  then obtain p where p: \<open>(\<^bold>\<not> \<^bold>\<forall>p) \<in> Extend S f\<close> \<open>\<nexists>a. (\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>) \<in> Extend S f\<close>
-    unfolding saturated_def by blast
-  obtain k where k: \<open>f k = (\<^bold>\<not> \<^bold>\<forall>p)\<close>
+  unfolding saturated_def
+proof safe
+  fix p
+  assume *: \<open>\<^bold>\<not> (\<^bold>\<forall>p) \<in> Extend S f\<close>
+  obtain k where k: \<open>f k = \<^bold>\<not> (\<^bold>\<forall>p)\<close>
     using \<open>surj f\<close> unfolding surj_def by metis
-
   have \<open>extend S f k \<subseteq> Extend S f\<close>
     unfolding Extend_def by auto
-  then have \<open>consistent ({\<^bold>\<not> \<^bold>\<forall>p} \<union> extend S f k)\<close>
-    using assms(1) p(1) unfolding consistent_def by blast
-  then have \<open>\<exists>a. extend S f (Suc k) = {\<^bold>\<not> p\<langle>\<^bold>\<star>a/0\<rangle>} \<union> {\<^bold>\<not> \<^bold>\<forall>p} \<union> extend S f k\<close>
+  then have \<open>consistent ({\<^bold>\<not> (\<^bold>\<forall>p)} \<union> extend S f k)\<close>
+    using assms(1) * unfolding consistent_def by blast
+  then have \<open>\<exists>a. extend S f (Suc k) = {\<^bold>\<not> \<langle>\<^bold>\<star>a/0\<rangle>p} \<union> {\<^bold>\<not> (\<^bold>\<forall>p)} \<union> extend S f k\<close>
     using k by (auto simp: Let_def)
   moreover have \<open>extend S f (Suc k) \<subseteq> Extend S f\<close>
     unfolding Extend_def by blast
-  ultimately show False
-    using p(2) by blast
+  ultimately show \<open>\<exists>a. \<^bold>\<not> \<langle>\<^bold>\<star> a/0\<rangle>p \<in> Extend S f\<close>
+    by blast
 qed
 
 section \<open>Hintikka\<close>
@@ -550,18 +565,15 @@ section \<open>Hintikka\<close>
 locale Hintikka =
   fixes H :: \<open>('f, 'p) fm set\<close>
   assumes
-    NoFalsity: \<open>\<^bold>\<bottom> \<notin> H\<close> and
-    ImpP: \<open>(p \<^bold>\<longrightarrow> q) \<in> H \<Longrightarrow> p \<notin> H \<or> q \<in> H\<close> and
-    ImpN: \<open>(p \<^bold>\<longrightarrow> q) \<notin> H \<Longrightarrow> p \<in> H \<and> q \<notin> H\<close> and
-    UniP: \<open>\<^bold>\<forall>p \<in> H \<Longrightarrow> \<forall>t. p\<langle>t/0\<rangle> \<in> H\<close> and
-    UniN: \<open>\<^bold>\<forall>p \<notin> H \<Longrightarrow> \<exists>a. p\<langle>\<^bold>\<star>a/0\<rangle> \<notin> H\<close>
+    FlsH: \<open>\<^bold>\<bottom> \<notin> H\<close> and
+    ImpH: \<open>(p \<^bold>\<longrightarrow> q) \<in> H \<longleftrightarrow> (p \<in> H \<longrightarrow> q \<in> H)\<close> and
+    UniH: \<open>(\<^bold>\<forall>p \<in> H) \<longleftrightarrow> (\<forall>t. \<langle>t/0\<rangle>p \<in> H)\<close>
 
 subsection \<open>Model Existence\<close>
 
-abbreviation hmodel (\<open>\<lbrakk>_\<rbrakk>\<close>) where \<open>\<lbrakk>H\<rbrakk> \<equiv> \<lbrakk>\<^bold>#, \<^bold>\<dagger>, \<lambda>P ts. Pre P ts \<in> H\<rbrakk>\<close>
+abbreviation hmodel (\<open>\<lbrakk>_\<rbrakk>\<close>) where \<open>\<lbrakk>H\<rbrakk> \<equiv> \<lbrakk>\<^bold>#, \<^bold>\<dagger>, \<lambda>P ts. \<^bold>\<ddagger>P ts \<in> H\<rbrakk>\<close>
 
-lemma semantics_tm_id [simp]:
-  \<open>\<lparr>\<^bold>#, \<^bold>\<dagger>\<rparr> t = t\<close>
+lemma semantics_tm_id [simp]: \<open>\<lparr>\<^bold>#, \<^bold>\<dagger>\<rparr> t = t\<close>
   by (induct t) (auto cong: map_cong)
 
 lemma semantics_tm_id_map [simp]: \<open>map \<lparr>\<^bold>#, \<^bold>\<dagger>\<rparr> ts = ts\<close>
@@ -575,166 +587,40 @@ proof (induct p rule: wf_induct[where r=\<open>measure size_fm\<close>])
   then show ?case ..
 next
   case (2 x)
-  show \<open>x \<in> H \<longleftrightarrow> \<lbrakk>H\<rbrakk> x\<close>
-  proof (cases x; safe)
-    case Falsity
-    assume \<open>\<^bold>\<bottom> \<in> H\<close>
-    then have False
-      using assms Hintikka.NoFalsity by fast
-    then show \<open>\<lbrakk>H\<rbrakk> \<^bold>\<bottom>\<close> ..
-  next
-    case Falsity
-    assume \<open>\<lbrakk>H\<rbrakk> \<^bold>\<bottom>\<close>
-    then have False
-      by simp
-    then show \<open>\<^bold>\<bottom> \<in> H\<close> ..
-  next
-    case (Pre P ts)
-    assume \<open>\<^bold>\<ddagger>P ts \<in> H\<close>
-    then show \<open>\<lbrakk>H\<rbrakk> (\<^bold>\<ddagger>P ts)\<close>
-      by simp
-  next
-    case (Pre P ts)
-    assume \<open>\<lbrakk>H\<rbrakk> (\<^bold>\<ddagger>P ts)\<close>
-    then show \<open>\<^bold>\<ddagger>P ts \<in> H\<close>
-      by simp
-  next
-    case (Imp p q)
-    assume \<open>(p \<^bold>\<longrightarrow> q) \<in> H\<close>
-    then have \<open>p \<notin> H \<or> q \<in> H\<close>
-      using assms Hintikka.ImpP by blast
-    then have \<open>\<not> \<lbrakk>H\<rbrakk> p \<or> \<lbrakk>H\<rbrakk> q\<close>
-      using 2 Imp by simp
-    then show \<open>\<lbrakk>H\<rbrakk> (p \<^bold>\<longrightarrow> q)\<close>
-      by simp
-  next
-    case (Imp p q)
-    assume \<open>\<lbrakk>H\<rbrakk> (p \<^bold>\<longrightarrow> q)\<close>
-    then have \<open>\<not> \<lbrakk>H\<rbrakk> p \<or> \<lbrakk>H\<rbrakk> q\<close>
-      by simp
-    then have \<open>p \<notin> H \<or> q \<in> H\<close>
-      using 2 Imp by simp
-    then show \<open>(p \<^bold>\<longrightarrow> q) \<in> H\<close>
-      using assms Hintikka.ImpN by blast
-  next
-    case (Uni p)
-    assume \<open>\<^bold>\<forall>p \<in> H\<close>
-    then have \<open>\<forall>t. p\<langle>t/0\<rangle> \<in> H\<close>
-      using assms Hintikka.UniP by metis
-    then have \<open>\<forall>t. \<lbrakk>H\<rbrakk> (p\<langle>t/0\<rangle>)\<close>
-      using 2 Uni by simp
-    then show \<open>\<lbrakk>H\<rbrakk> (\<^bold>\<forall>p)\<close>
-      by simp
-  next
-    case (Uni p)
-    assume \<open>\<lbrakk>H\<rbrakk> (\<^bold>\<forall>p)\<close>
-    then have \<open>\<forall>t. \<lbrakk>H\<rbrakk> (p\<langle>t/0\<rangle>)\<close>
-      by simp
-    then have \<open>\<forall>t. p\<langle>t/0\<rangle> \<in> H\<close>
-      using 2 Uni by simp
-    then show \<open>\<^bold>\<forall>p \<in> H\<close>
-      using assms Hintikka.UniN by blast
-  qed
+  then show ?case
+    using assms unfolding Hintikka_def by (cases x) auto
 qed
 
 subsection \<open>Maximal Consistent Sets are Hintikka Sets\<close>
 
-lemma inconsistent_head:
-  assumes \<open>consistent S\<close> and \<open>maximal S\<close> and \<open>p \<notin> S\<close>
-  obtains S' where \<open>set S' \<subseteq> S\<close> and \<open>p # S' \<turnstile> \<^bold>\<bottom>\<close>
-  using assms inconsistent_fm unfolding consistent_def maximal_def by metis
-
-lemma inconsistent_parts [simp]:
-  assumes \<open>ps \<turnstile> \<^bold>\<bottom>\<close> and \<open>set ps \<subseteq> S\<close>
-  shows \<open>\<not> consistent S\<close>
-  using assms unfolding consistent_def by blast
+lemma deriv_iff_MCS:
+  assumes \<open>consistent S\<close> and \<open>maximal S\<close>
+  shows \<open>(\<exists>ps. set ps \<subseteq> S \<and> ps \<turnstile> p) \<longleftrightarrow> p \<in> S\<close>
+proof
+  from assms maximal_exactly_one[OF assms(1)] show \<open>\<exists>ps. set ps \<subseteq> S \<and> ps \<turnstile> p \<Longrightarrow> p \<in> S\<close>
+    unfolding consistent_def using MP add_imply deduct1 imply.simps(1) imply_ImpE
+    by (metis insert_absorb insert_mono list.simps(15))
+next
+  show \<open>p \<in> S \<Longrightarrow> \<exists>ps. set ps \<subseteq> S \<and> ps \<turnstile> p\<close>
+    using imply_head by (metis empty_subsetI insert_absorb insert_mono list.set(1) list.simps(15))
+qed
 
 lemma Hintikka_Extend:
-  fixes H :: \<open>('f, 'p) fm set\<close>
   assumes \<open>consistent H\<close> and \<open>maximal H\<close> and \<open>saturated H\<close>
-    and \<open>infinite (UNIV :: 'f set)\<close>
   shows \<open>Hintikka H\<close>
 proof
   show \<open>\<^bold>\<bottom> \<notin> H\<close>
-  proof
-    assume \<open>\<^bold>\<bottom> \<in> H\<close>
-    moreover have \<open>[\<^bold>\<bottom>] \<turnstile> \<^bold>\<bottom>\<close>
-      by blast
-    ultimately have \<open>\<not> consistent H\<close>
-      using inconsistent_parts[where ps=\<open>[\<^bold>\<bottom>]\<close>] by simp
-    then show False
-      using \<open>consistent H\<close> ..
-  qed
+    using assms deriv_iff_MCS unfolding consistent_def by fast
 next
   fix p q
-  assume *: \<open>(p \<^bold>\<longrightarrow> q) \<in> H\<close>
-  show \<open>p \<notin> H \<or> q \<in> H\<close>
-  proof safe
-    assume \<open>q \<notin> H\<close>
-    then obtain Hq' where Hq': \<open>q # Hq' \<turnstile> \<^bold>\<bottom>\<close> \<open>set Hq' \<subseteq> H\<close>
-      using assms inconsistent_head by metis
-
-    assume \<open>p \<in> H\<close>
-    then have \<open>(\<^bold>\<not> p) \<notin> H\<close>
-      using assms maximal_exactly_one by blast
-    then obtain Hp' where Hp': \<open>(\<^bold>\<not> p) # Hp' \<turnstile> \<^bold>\<bottom>\<close> \<open>set Hp' \<subseteq> H\<close>
-      using assms inconsistent_head by metis
-
-    let ?H' = \<open>Hp' @ Hq'\<close>
-    have H': \<open>set ?H' = set Hp' \<union> set Hq'\<close>
-      by simp
-    then have \<open>set Hp' \<subseteq> set ?H'\<close> and \<open>set Hq' \<subseteq> set ?H'\<close>
-      by blast+
-    then have \<open>(\<^bold>\<not> p) # ?H' \<turnstile> \<^bold>\<bottom>\<close> and \<open>q # ?H' \<turnstile> \<^bold>\<bottom>\<close>
-      using Hp'(1) Hq'(1) deduct imply_weaken by metis+
-    then have \<open>(p \<^bold>\<longrightarrow> q) # ?H' \<turnstile> \<^bold>\<bottom>\<close>
-      using Boole imply_Cons imply_head MP' cut by metis
-    moreover have \<open>set ((p \<^bold>\<longrightarrow> q) # ?H') \<subseteq> H\<close>
-      using \<open>q \<notin> H\<close> *(1) H' Hp'(2) Hq'(2) by auto
-    ultimately show False
-      using assms unfolding consistent_def by blast
-  qed
-next
-  fix p q
-  assume *: \<open>(p \<^bold>\<longrightarrow> q) \<notin> H\<close>
-  show \<open>p \<in> H \<and> q \<notin> H\<close>
-  proof (safe, rule ccontr)
-    assume \<open>p \<notin> H\<close>
-    then obtain H' where S': \<open>p # H' \<turnstile> \<^bold>\<bottom>\<close> \<open>set H' \<subseteq> H\<close>
-      using assms inconsistent_head by metis
-    moreover have \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) # H' \<turnstile> p\<close>
-      by auto
-    ultimately have \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) # H' \<turnstile> \<^bold>\<bottom>\<close>
-      by blast
-    moreover have \<open>set ((\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) # H') \<subseteq> H\<close>
-      using *(1) S'(2) assms maximal_exactly_one by auto
-    ultimately show False
-      using assms unfolding consistent_def by blast
-  next
-    assume \<open>q \<in> H\<close>
-    then have \<open>(\<^bold>\<not> q) \<notin> H\<close>
-      using assms maximal_exactly_one by blast
-    then obtain H' where H': \<open>(\<^bold>\<not> q) # H' \<turnstile> \<^bold>\<bottom>\<close> \<open>set H' \<subseteq> H\<close>
-      using assms inconsistent_head by metis
-    moreover have \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) # H' \<turnstile> \<^bold>\<not> q\<close>
-      by auto
-    ultimately have \<open>(\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) # H' \<turnstile> \<^bold>\<bottom>\<close>
-      by blast
-    moreover have \<open>set ((\<^bold>\<not> (p \<^bold>\<longrightarrow> q)) # H') \<subseteq> H\<close>
-      using *(1) H'(2) assms maximal_exactly_one by auto
-    ultimately show False
-      using assms unfolding consistent_def by blast
-  qed
+  show \<open>(p \<^bold>\<longrightarrow> q) \<in> H \<longleftrightarrow> (p \<in> H \<longrightarrow> q \<in> H)\<close>
+    using deriv_iff_MCS[OF assms(1-2)] maximal_exactly_one[OF assms(1-2)]
+    by (metis Imp1 contraposition add_imply deduct1 insert_subset list.simps(15))
 next
   fix p
-  assume \<open>\<^bold>\<forall>p \<in> H\<close>
-  then show \<open>\<forall>t. p\<langle>t/0\<rangle> \<in> H\<close>
-    using assms consistent_add_instance unfolding maximal_def by blast
-next
-  fix p
-  assume \<open>\<^bold>\<forall>p \<notin> H\<close>
-  then show \<open>\<exists>a. p\<langle>\<^bold>\<star>a/0\<rangle> \<notin> H\<close>
-    using assms maximal_exactly_one unfolding saturated_def by fast
+  show \<open>(\<^bold>\<forall>p \<in> H) \<longleftrightarrow> (\<forall>t. \<langle>t/0\<rangle>p \<in> H)\<close>
+    using assms consistent_add_instance maximal_exactly_one
+    unfolding maximal_def saturated_def by metis
 qed
 
 section \<open>Countable Formulas\<close>
@@ -747,29 +633,32 @@ instance fm :: (countable, countable) countable
 
 section \<open>Completeness\<close>
 
-lemma imply_completeness:
+lemma infinite_Diff_fin_Un: \<open>infinite (X - Y) \<Longrightarrow> finite Z \<Longrightarrow> infinite (X - (Z \<union> Y))\<close>
+  by (simp add: Set_Diff_Un Un_commute)
+
+theorem strong_completeness:
   fixes p :: \<open>('f :: countable, 'p :: countable) fm\<close>
-  assumes \<open>\<forall>(E :: _ \<Rightarrow> 'f tm) F G. Ball X \<lbrakk>E, F, G\<rbrakk> \<longrightarrow> \<lbrakk>E, F, G\<rbrakk> p\<close>
-    and \<open>finite (params X)\<close> and \<open>infinite (UNIV :: 'f set)\<close>
-  shows \<open>\<exists>ps. set ps \<subseteq> X \<and> (ps \<turnstile> p)\<close>
+  assumes \<open>\<forall>(E :: _ \<Rightarrow> 'f tm) F G. (\<forall>q \<in> X. \<lbrakk>E, F, G\<rbrakk> q) \<longrightarrow> \<lbrakk>E, F, G\<rbrakk> p\<close>
+    and \<open>infinite (UNIV - params X)\<close>
+  shows \<open>\<exists>ps. set ps \<subseteq> X \<and> ps \<turnstile> p\<close>
 proof (rule ccontr)
-  assume \<open>\<nexists>ps. set ps \<subseteq> X \<and> (ps \<turnstile> p)\<close>
+  assume \<open>\<nexists>ps. set ps \<subseteq> X \<and> ps \<turnstile> p\<close>
   then have *: \<open>\<nexists>ps. set ps \<subseteq> X \<and> ((\<^bold>\<not> p) # ps \<turnstile> \<^bold>\<bottom>)\<close>
     using Boole by blast
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> X\<close>
   let ?H = \<open>Extend ?S from_nat\<close>
 
-  have \<open>consistent ?S\<close>
-    using * by (metis consistent_def imply_Cons inconsistent_fm)
-  moreover have \<open>finite (params ?S)\<close>
-    using assms by simp
+  from inconsistent_fm have \<open>consistent ?S\<close>
+    unfolding consistent_def using * imply_Cons by metis
+  moreover have \<open>infinite (UNIV - params ?S)\<close>
+    using assms(2) finite_params_fm by (simp add: infinite_Diff_fin_Un)
   ultimately have \<open>consistent ?H\<close> and \<open>maximal ?H\<close>
-    using assms(3) consistent_Extend maximal_Extend surj_from_nat by blast+
+    using consistent_Extend maximal_Extend surj_from_nat by blast+
   moreover from this have \<open>saturated ?H\<close>
     using saturated_Extend by fastforce
   ultimately have \<open>Hintikka ?H\<close>
-    using assms(3) Hintikka_Extend by blast
+    using assms(2) Hintikka_Extend by blast
 
   have \<open>\<lbrakk>?H\<rbrakk> p\<close> if \<open>p \<in> ?S\<close> for p
     using that Extend_subset Hintikka_model \<open>Hintikka ?H\<close> by blast
@@ -785,7 +674,7 @@ theorem completeness:
   fixes p :: \<open>(nat, nat) fm\<close>
   assumes \<open>\<forall>(E :: nat \<Rightarrow> nat tm) F G. \<lbrakk>E, F, G\<rbrakk> p\<close>
   shows \<open>\<turnstile> p\<close>
-  using assms imply_completeness[where X=\<open>{}\<close>] by auto
+  using assms strong_completeness[where X=\<open>{}\<close>] by auto
 
 section \<open>Main Result\<close>
 

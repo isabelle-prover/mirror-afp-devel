@@ -112,12 +112,14 @@ next
 next
   case 6 then show ?case by (simp add: cinfinite_csum natLeq_cinfinite)
 next
-  case 7 then show ?case
+  case 7 then show ?case by (simp add: regularCard_natLeq)
+next
+  case 8 then show ?case
     apply transfer
-    apply (erule ordLeq_transitive[OF _ ordLess_imp_ordLeq[OF ctwo_ordLess_natLeq]])
+    apply (erule ordLeq_ordLess_trans[OF _ ctwo_ordLess_natLeq])
     done
 next
-  case (8 R S)
+  case (9 R S)
   then show ?case
   proof (safe elim!: rel_bset.cases, unfold rel_bset.simps)
     fix z1 z2
@@ -129,7 +131,7 @@ next
         dest: spec[of _ "bdoubleton (a, b) (c, d)" for a b c d])+
   qed
 next
-  case (9 R)
+  case (10 R)
   then show ?case
     by (auto simp: fun_eq_iff intro: rel_bset.intros elim: rel_bset.cases)
 qed

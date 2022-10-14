@@ -928,7 +928,7 @@ qed
 private lemma median_bounds:
   "\<P>(\<omega> in measure_pmf \<Omega>\<^sub>0. \<bar>median s (\<lambda>i. estimate (sketch_rv (\<omega> i))) - F 0 as\<bar> \<le> \<delta> * F 0 as) \<ge> 1 - real_of_rat \<epsilon>"
 proof -
-  have "strict_mono_on real_of_float A" for A by (meson less_float.rep_eq strict_mono_onI)
+  have "strict_mono_on A real_of_float" for A by (meson less_float.rep_eq strict_mono_onI)
   hence real_g_2: "\<And>\<omega>.  sketch_rv' \<omega> = real_of_float ` sketch_rv \<omega>" 
     by (simp add: sketch_rv'_def sketch_rv_def tr_hash_def least_mono_commute image_comp)
 
@@ -1140,7 +1140,7 @@ theorem f0_exact_space_usage:
   shows "AE \<omega> in \<Omega>. bit_count (encode_f0_state \<omega>) \<le> f0_space_usage (n, \<epsilon>, \<delta>)"
   using f0_exact_space_usage'[OF assms(1-3)] unfolding \<Omega>_def by blast
 
-theorem f0_asympotic_space_complexity:
+theorem f0_asymptotic_space_complexity:
   "f0_space_usage \<in> O[at_top \<times>\<^sub>F at_right 0 \<times>\<^sub>F at_right 0](\<lambda>(n, \<epsilon>, \<delta>). ln (1 / of_rat \<epsilon>) * 
   (ln (real n) + 1 / (of_rat \<delta>)\<^sup>2 * (ln (ln (real n)) + ln (1 / of_rat \<delta>))))"
   (is "_ \<in> O[?F](?rhs)")

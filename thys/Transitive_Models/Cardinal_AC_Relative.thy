@@ -11,8 +11,22 @@ locale M_AC =
   assumes
     choice_ax: "choice_ax(M)"
 
-locale M_cardinal_AC = M_cardinal_arith + M_AC
+locale M_cardinal_AC = M_cardinal_arith + M_AC +
+  assumes
+    lam_replacement_minimum:"lam_replacement(M, \<lambda>p. minimum(fst(p),snd(p)))"
 begin
+
+lemma lam_replacement_minimum_vimage:
+  "M(f) \<Longrightarrow> M(r) \<Longrightarrow> lam_replacement(M, \<lambda>x. minimum(r, f -`` {x}))"
+  using lam_replacement_minimum lam_replacement_vimage_sing_fun lam_replacement_constant
+    lam_replacement_identity lam_replacement_hcomp2[of _ _ minimum]
+  by simp
+
+lemmas surj_imp_inj_replacement4 = lam_replacement_minimum_vimage[unfolded lam_replacement_def]
+
+lemmas surj_imp_inj_replacement =
+  surj_imp_inj_replacement1 surj_imp_inj_replacement2 surj_imp_inj_replacement4
+  lam_replacement_vimage_sing_fun[THEN lam_replacement_imp_strong_replacement]
 
 lemma well_ord_surj_imp_lepoll_rel:
   assumes "well_ord(A,r)" "h \<in> surj(A,B)" and
@@ -334,7 +348,7 @@ qed
 
 locale M_cardinal_UN =  M_Pi_assumptions_choice _ K X for K X +
   assumes
-    \<comment> \<open>The next assumption is required by @{thm Least_closed}\<close>
+    \<comment> \<open>The next assumption is required by @{thm [source] Least_closed}\<close>
     X_witness_in_M: "w \<in> X(x) \<Longrightarrow> M(x)"
     and
     lam_m_replacement:"M(f) \<Longrightarrow> strong_replacement(M,

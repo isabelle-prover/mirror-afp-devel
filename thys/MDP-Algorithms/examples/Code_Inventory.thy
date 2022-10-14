@@ -4,7 +4,7 @@ theory Code_Inventory
   imports 
     Code_Mod
   (* Remove for precise results, approximates real numbers by floats, UNSOUND! *)
-    Code_Real_Approx_By_Float_Fix
+    "HOL-Library.Code_Real_Approx_By_Float"
 begin
 
 section \<open>Inventory Management Example\<close>

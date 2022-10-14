@@ -25,6 +25,7 @@ hide_const (open) Coset.kernel
 hide_const (open) Matrix_Kernel.kernel
 hide_const (open) Order.bottom Order.top
 
+unbundle lattice_syntax
 unbundle jnf_notation
 unbundle cblinfun_notation
 
@@ -343,7 +344,7 @@ lemma top_ccsubspace_code[code]:
       map_filter_map o_def unit_vecs_def)
   apply (simp add: basis_enum_of_vec_unit_vec)
   apply (subst nth_image)
-  by (auto simp: )
+  by auto
 
 lemma bot_as_span[code]: 
   \<comment> \<open>Code equation for \<^term>\<open>bot\<close>, the subspace containing everything.
@@ -653,6 +654,7 @@ derive (no) ccompare ell2
 derive (monad) set_impl ell2
 
 
+unbundle no_lattice_syntax
 unbundle no_jnf_notation
 unbundle no_cblinfun_notation
 

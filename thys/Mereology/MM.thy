@@ -40,15 +40,15 @@ proof
       proof
         assume "z = x"
         hence "PP y z"
-          using `PP y x` by (rule ssubst)
+          using \<open>PP y x\<close> by (rule ssubst)
         hence "O y z" by (rule proper_implies_overlap)
         hence "O z y" by (rule overlap_symmetry)
-        with `\<not> O z y` show "False"..
+        with \<open>\<not> O z y\<close> show "False"..
       qed
     qed
     with nip_eq have "PP z x"..
     hence "PP z x \<and> \<not> O z y"
-      using `\<not> O z y`..
+      using \<open>\<not> O z y\<close>..
     thus "\<exists> z. PP z x \<and> \<not> O z y"..
   qed
 qed
@@ -83,7 +83,7 @@ proof -
   hence "PP z x"..
   from z have "\<not> O z y"..
   hence "z \<noteq> y" by (rule disjoint_implies_distinct)
-  with `PP z x` have "PP z x \<and> z \<noteq> y"..
+  with \<open>PP z x\<close> have "PP z x \<and> z \<noteq> y"..
   thus "\<exists> z. PP z x \<and> z \<noteq> y"..
 qed
 
@@ -95,7 +95,7 @@ proof -
   hence "PP z x"..
   from z have "\<not> O z y"..
   hence "\<not> P z y" by (rule disjoint_implies_not_part)
-  with `PP z x` have  "PP z x \<and> \<not> P z y"..
+  with \<open>PP z x\<close> have  "PP z x \<and> \<not> P z y"..
   thus "\<exists> z. PP z x \<and> \<not> P z y"..
 qed
 
@@ -121,15 +121,15 @@ proof
     show "x = y"
     proof (rule ccontr)
       assume "x \<noteq> y"
-      with `P x y` have "P x y \<and> x \<noteq> y"..
+      with \<open>P x y\<close> have "P x y \<and> x \<noteq> y"..
       with nip_eq have "PP x y"..
       hence "\<exists> z. P z y \<and> \<not> O z x" by (rule weak_supplementation)
       then obtain z where z: "P z y \<and> \<not> O z x"..
       hence "\<not> O z x"..
       hence "\<not> P z x" by (rule disjoint_implies_not_part)
       from z have "P z y"..
-      hence "P z x" using `P y x` by (rule part_transitivity)
-      with `\<not> P z x` show "False"..
+      hence "P z x" using \<open>P y x\<close> by (rule part_transitivity)
+      with \<open>\<not> P z x\<close> show "False"..
     qed
   qed
   show "PP y x \<Longrightarrow> \<exists>z. P z x \<and> \<not> O z y" using weak_supplementation.
@@ -170,7 +170,7 @@ proof
   with part_reflexivity have "P z z \<and> P z x"..
   hence "\<exists> v. P v z \<and> P v x"..
   with overlap_eq have "O z x"..
-  with `\<not> O z x` show "False"..
+  with \<open>\<not> O z x\<close> show "False"..
 qed
 
 end
@@ -186,7 +186,7 @@ proof
     show "\<not> PP y x"
     proof
       assume "PP y x"
-      hence "PP y y" using `PP x y` by (rule proper_part_transitivity)
+      hence "PP y y" using \<open>PP x y\<close> by (rule proper_part_transitivity)
       with proper_part_irreflexivity show "False"..
     qed
   qed

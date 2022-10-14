@@ -520,7 +520,7 @@ next
       fix F'
       assume "ideal (map_indets abs ` F) \<subset> ideal F'"
       with inj_on_subset have "map_indets rep ` ideal (map_indets abs ` F) \<subset> map_indets rep ` ideal F'"
-        by (rule inj_on_strict_subset) (fact 3, fact subset_UNIV)
+        by (rule image_strict_mono) (fact 3, fact subset_UNIV)
       hence sub: "ideal F \<inter> P[X] \<subset> ideal (map_indets rep ` F') \<inter> P[X]" using 2 assms(2)
         by (simp add: image_map_indets_ideal image_image map_indets_map_indets 1 y.Rep_range)
       have "ideal F \<subset> ideal (map_indets rep ` F')"

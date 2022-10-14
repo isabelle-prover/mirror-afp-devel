@@ -448,15 +448,17 @@ structure Nano_Json_Serialize_Isar = struct
     let
         val term = Thm.concl_of (Global_Theory.get_thm thy (json_const^"_def"))
          fun export binding content thy =
-  let
-    val thy' = thy |> Generated_Files.add_files (binding, content);
-    val _ = Export.export thy' binding [XML.Text content];
-  in thy' end;
+             let
+               val thy' = thy |> Generated_Files.add_files (binding, content);
+               val _ = Export.export thy' binding (Bytes.contents_blob content)
+             in thy' end;
         val json_term = case term of
                         Const (@{const_name "Pure.eq"}, _) $ _ $ json_term => json_term
                       | _ $ (_ $ json_term) => json_term
                       | _ => error ("Term structure not supported.")
         val json_string  = Nano_Json_Serializer.serialize_term_pretty json_term 
+        val json_bytes = (XML.add_content (YXML.parse json_string) Buffer.empty)
+                           |> Bytes.buffer
     in
         case filename of 
              SOME filename => let 
@@ -464,7 +466,7 @@ structure Nano_Json_Serialize_Isar = struct
                                 val thy' = export (Path.binding 
                                                     (Path.append (Path.explode "json") 
                                                        filename,Position.none)) 
-                                                    json_string thy
+                                                    json_bytes thy
                                 val _ =  writeln (Export.message thy (Path.basic "json"))
                               in
                                  thy'                                 

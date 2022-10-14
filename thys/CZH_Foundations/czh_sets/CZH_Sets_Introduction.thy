@@ -103,6 +103,8 @@ lemma bij_betwD[dest]:
   shows "inj_on f A" and "f ` A = B"
   using assms by auto
 
+lemma ex1D: "\<exists>!x. P x \<Longrightarrow> P x \<Longrightarrow> P y \<Longrightarrow> x = y" by clarsimp
+
 text\<open>\newpage\<close>
 
 end

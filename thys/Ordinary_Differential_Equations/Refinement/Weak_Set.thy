@@ -798,7 +798,7 @@ lemma WEAK_EX[THEN order_trans, refine_vcg]:
   assumes [THEN order_trans, refine_vcg]: "\<And>x. F x \<le> SPEC (\<lambda>r. r \<longrightarrow> I x)"
   shows "WEAK_EX I X F \<le> SPEC (\<lambda>r. r \<longrightarrow> (\<exists>x\<in>X. I x))"
   unfolding WEAK_EX_def
-  by (refine_vcg ) (auto simp: )
+  by (refine_vcg ) auto
 
 lemma WEAK_ALL[THEN order_trans, refine_vcg]:
   assumes [THEN order_trans, refine_vcg]: "\<And>x. F x \<le> SPEC (\<lambda>r. r \<longrightarrow> I x)"

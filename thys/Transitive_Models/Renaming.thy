@@ -2,8 +2,8 @@ section\<open>Renaming of variables in internalized formulas\<close>
 
 theory Renaming
   imports
-    ZF_Miscellanea
     "ZF-Constructible.Formula"
+    ZF_Miscellanea
 begin
 
 subsection\<open>Renaming of free variables\<close>

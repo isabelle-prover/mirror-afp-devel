@@ -332,12 +332,12 @@ type_synonym SucFbd_type = "((bd_type_F1' + bd_type_F2') set)"
 type_synonym 'a1 ASucFbd_type = "(SucFbd_type \<Rightarrow> ('a1 + bool))"
 
 abbreviation "F1bd' \<equiv> bd_F1 +c |UNIV :: (bd_type_F1, bd_type_F1, bd_type_F1) F1 set|"
-lemma F1set1_bd_incr: "\<And>x. |F1set1 x| \<le>o F1bd'"
-  by (rule ordLeq_transitive[OF F1.set_bd(1) ordLeq_csum1[OF F1.bd_Card_order]])
-lemma F1set2_bd_incr: "\<And>x. |F1set2 x| \<le>o F1bd'"
-  by (rule ordLeq_transitive[OF F1.set_bd(2) ordLeq_csum1[OF F1.bd_Card_order]])
-lemma F1set3_bd_incr: "\<And>x. |F1set3 x| \<le>o F1bd'"
-  by (rule ordLeq_transitive[OF F1.set_bd(3) ordLeq_csum1[OF F1.bd_Card_order]])
+lemma F1set1_bd_incr: "\<And>x. |F1set1 x| <o F1bd'"
+  by (rule ordLess_ordLeq_trans[OF F1.set_bd(1) ordLeq_csum1[OF F1.bd_Card_order]])
+lemma F1set2_bd_incr: "\<And>x. |F1set2 x| <o F1bd'"
+  by (rule ordLess_ordLeq_trans[OF F1.set_bd(2) ordLeq_csum1[OF F1.bd_Card_order]])
+lemma F1set3_bd_incr: "\<And>x. |F1set3 x| <o F1bd'"
+  by (rule ordLess_ordLeq_trans[OF F1.set_bd(3) ordLeq_csum1[OF F1.bd_Card_order]])
 
 lemmas F1bd'_Card_order = Card_order_csum
 lemmas F1bd'_Cinfinite = Cinfinite_csum1[OF F1.bd_Cinfinite]
@@ -345,12 +345,12 @@ lemmas F1bd'_Cnotzero = Cinfinite_Cnotzero[OF F1bd'_Cinfinite]
 lemmas F1bd'_card_order = card_order_csum[OF F1.bd_card_order card_of_card_order_on]
 
 abbreviation "F2bd' \<equiv> bd_F2 +c |UNIV :: (bd_type_F2, bd_type_F2, bd_type_F2) F2 set|"
-lemma F2set1_bd_incr: "\<And>x. |F2set1 x| \<le>o F2bd'"
-  by (rule ordLeq_transitive[OF F2.set_bd(1) ordLeq_csum1[OF F2.bd_Card_order]])
-lemma F2set2_bd_incr: "\<And>x. |F2set2 x| \<le>o F2bd'"
-  by (rule ordLeq_transitive[OF F2.set_bd(2) ordLeq_csum1[OF F2.bd_Card_order]])
-lemma F2set3_bd_incr: "\<And>x. |F2set3 x| \<le>o F2bd'"
-  by (rule ordLeq_transitive[OF F2.set_bd(3) ordLeq_csum1[OF F2.bd_Card_order]])
+lemma F2set1_bd_incr: "\<And>x. |F2set1 x| <o F2bd'"
+  by (rule ordLess_ordLeq_trans[OF F2.set_bd(1) ordLeq_csum1[OF F2.bd_Card_order]])
+lemma F2set2_bd_incr: "\<And>x. |F2set2 x| <o F2bd'"
+  by (rule ordLess_ordLeq_trans[OF F2.set_bd(2) ordLeq_csum1[OF F2.bd_Card_order]])
+lemma F2set3_bd_incr: "\<And>x. |F2set3 x| <o F2bd'"
+  by (rule ordLess_ordLeq_trans[OF F2.set_bd(3) ordLeq_csum1[OF F2.bd_Card_order]])
 
 lemmas F2bd'_Card_order = Card_order_csum
 lemmas F2bd'_Cinfinite = Cinfinite_csum1[OF F2.bd_Cinfinite]
@@ -360,43 +360,43 @@ lemmas F2bd'_card_order = card_order_csum[OF F2.bd_card_order card_of_card_order
 abbreviation SucFbd where "SucFbd \<equiv> cardSuc (F1bd' +c F2bd')"
 abbreviation ASucFbd where "ASucFbd \<equiv> ( |UNIV| +c ctwo ) ^c SucFbd"
 
-lemma F1set1_bd: "|F1set1 x| \<le>o bd_F1 +c bd_F2"
-  apply (rule ordLeq_transitive)
+lemma F1set1_bd: "|F1set1 x| <o bd_F1 +c bd_F2"
+  apply (rule ordLess_ordLeq_trans)
    apply (rule F1.set_bd(1))
   apply (rule ordLeq_csum1)
   apply (rule F1.bd_Card_order)
   done
 
-lemma F1set2_bd: "|F1set2 x| \<le>o bd_F1 +c bd_F2"
-  apply (rule ordLeq_transitive)
+lemma F1set2_bd: "|F1set2 x| <o bd_F1 +c bd_F2"
+  apply (rule ordLess_ordLeq_trans)
    apply (rule F1.set_bd(2))
   apply (rule ordLeq_csum1)
   apply (rule F1.bd_Card_order)
   done
 
-lemma F1set3_bd: "|F1set3 x| \<le>o bd_F1 +c bd_F2"
-  apply (rule ordLeq_transitive)
+lemma F1set3_bd: "|F1set3 x| <o bd_F1 +c bd_F2"
+  apply (rule ordLess_ordLeq_trans)
    apply (rule F1.set_bd(3))
   apply (rule ordLeq_csum1)
   apply (rule F1.bd_Card_order)
   done
 
-lemma F2set1_bd: "|F2set1 x| \<le>o bd_F1 +c bd_F2"
-  apply (rule ordLeq_transitive)
+lemma F2set1_bd: "|F2set1 x| <o bd_F1 +c bd_F2"
+  apply (rule ordLess_ordLeq_trans)
    apply (rule F2.set_bd(1))
   apply (rule ordLeq_csum2)
   apply (rule F2.bd_Card_order)
   done
 
-lemma F2set2_bd: "|F2set2 x| \<le>o bd_F1 +c bd_F2"
-  apply (rule ordLeq_transitive)
+lemma F2set2_bd: "|F2set2 x| <o bd_F1 +c bd_F2"
+  apply (rule ordLess_ordLeq_trans)
    apply (rule F2.set_bd(2))
   apply (rule ordLeq_csum2)
   apply (rule F2.bd_Card_order)
   done
 
-lemma F2set3_bd: "|F2set3 x| \<le>o bd_F1 +c bd_F2"
-  apply (rule ordLeq_transitive)
+lemma F2set3_bd: "|F2set3 x| <o bd_F1 +c bd_F2"
+  apply (rule ordLess_ordLeq_trans)
    apply (rule F2.set_bd(3))
   apply (rule ordLeq_csum2)
   apply (rule F2.bd_Card_order)
@@ -582,7 +582,7 @@ lemma alg_min_alg: "alg (min_alg1 s1 s2) (min_alg2 s1 s2) s1 s2"
       apply (rule min_algs_mono1)
      apply (erule subset_trans[OF _ equalityD1[OF min_alg1_def]])
     apply (rule ordLeq_transitive)
-     apply (rule F1set2_bd_incr)
+     apply (rule ordLess_imp_ordLeq[OF F1set2_bd_incr])
     apply (rule ordLeq_csum1) (*or refl *)
     apply (rule F1bd'_Card_order)
 
@@ -593,7 +593,7 @@ lemma alg_min_alg: "alg (min_alg1 s1 s2) (min_alg2 s1 s2) s1 s2"
       apply (rule min_algs_mono2)
      apply (erule subset_trans[OF _ equalityD1[OF min_alg2_def]])
     apply (rule ordLeq_transitive)
-     apply (rule F1set3_bd_incr)
+     apply (rule ordLess_imp_ordLeq[OF F1set3_bd_incr])
     apply (rule ordLeq_csum1) (*or refl *)
     apply (rule F1bd'_Card_order)
 
@@ -652,7 +652,7 @@ lemma alg_min_alg: "alg (min_alg1 s1 s2) (min_alg2 s1 s2) s1 s2"
 
     apply (erule subset_trans[OF _ equalityD1[OF min_alg1_def]])
    apply (rule ordLeq_transitive)
-    apply (rule F2set2_bd_incr)
+    apply (rule ordLess_imp_ordLeq[OF F2set2_bd_incr])
    apply (rule ordLeq_csum2)
    apply (rule F2bd'_Card_order)
 
@@ -664,7 +664,7 @@ lemma alg_min_alg: "alg (min_alg1 s1 s2) (min_alg2 s1 s2) s1 s2"
 
     apply (erule subset_trans[OF _ equalityD1[OF min_alg2_def]])
    apply (rule ordLeq_transitive)
-    apply (rule F2set3_bd_incr)
+    apply (rule ordLess_imp_ordLeq[OF F2set3_bd_incr])
    apply (rule ordLeq_csum2)
    apply (rule F2bd'_Card_order)
 
@@ -2321,6 +2321,14 @@ lemma IFbd_Cinfinite: "Cinfinite IFbd"
   apply (rule F1.bd_Cinfinite)
   done
 
+lemma IFbd_regularCard: "regularCard IFbd"
+  apply (rule regularCard_csum)
+     apply (rule F1.bd_Cinfinite)
+    apply (rule F2.bd_Cinfinite)
+   apply (rule F1.bd_regularCard)
+  apply (rule F2.bd_regularCard)
+  done
+
 lemmas IFbd_cinfinite = conjunct1[OF IFbd_Cinfinite]
 
 
@@ -2567,44 +2575,44 @@ theorem IF2map_cong:
   done
 
 lemma IFset_bd:
-  "|IF1set (x :: 'a IF1)| \<le>o IFbd \<and> |IF2set (y :: 'a IF2)| \<le>o IFbd"
+  "|IF1set (x :: 'a IF1)| <o IFbd \<and> |IF2set (y :: 'a IF2)| <o IFbd"
   apply (rule ctor_induct[of _ _ x y])
 
-   apply (rule ordIso_ordLeq_trans)
+   apply (rule ordIso_ordLess_trans)
     apply (rule card_of_ordIso_subst)
     apply (rule IF1set_simps)
-   apply (rule Un_Cinfinite_bound)
+   apply (rule Un_Cinfinite_bound_strict)
      apply (rule F1set1_bd)
-    apply (rule Un_Cinfinite_bound)
-      apply (rule UNION_Cinfinite_bound)
-        apply (rule F1set2_bd)
-       apply (rule ballI)
-       apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
-      apply (rule IFbd_Cinfinite)
-     apply (rule UNION_Cinfinite_bound)
-       apply (rule F1set3_bd)
-      apply (rule ballI)
+    apply (rule Un_Cinfinite_bound_strict)
+      apply (rule regularCard_UNION_bound)
+         apply (rule IFbd_Cinfinite)
+        apply (rule IFbd_regularCard)
+       apply (rule F1set2_bd)
       apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
-     apply (rule IFbd_Cinfinite)
+     apply (rule regularCard_UNION_bound)
+        apply (rule IFbd_Cinfinite)
+       apply (rule IFbd_regularCard)
+      apply (rule F1set3_bd)
+     apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
     apply (rule IFbd_Cinfinite)
    apply (rule IFbd_Cinfinite)
 
-  apply (rule ordIso_ordLeq_trans)
+  apply (rule ordIso_ordLess_trans)
    apply (rule card_of_ordIso_subst)
    apply (rule IF2set_simps)
-  apply (rule Un_Cinfinite_bound)
+  apply (rule Un_Cinfinite_bound_strict)
     apply (rule F2set1_bd)
-   apply (rule Un_Cinfinite_bound)
-     apply (rule UNION_Cinfinite_bound)
-       apply (rule F2set2_bd)
-      apply (rule ballI)
-      apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
-     apply (rule IFbd_Cinfinite)
-    apply (rule UNION_Cinfinite_bound)
-      apply (rule F2set3_bd)
-     apply (rule ballI)
+   apply (rule Un_Cinfinite_bound_strict)
+     apply (rule regularCard_UNION_bound)
+        apply (rule IFbd_Cinfinite)
+       apply (rule IFbd_regularCard)
+      apply (rule F2set2_bd)
      apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
-    apply (rule IFbd_Cinfinite)
+    apply (rule regularCard_UNION_bound)
+       apply (rule IFbd_Cinfinite)
+      apply (rule IFbd_regularCard)
+     apply (rule F2set3_bd)
+    apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
    apply (rule IFbd_Cinfinite)
   apply (rule IFbd_Cinfinite)
   done
@@ -3178,13 +3186,14 @@ bnf "'a IF1"
   bd: IFbd
   wits: IF1wit
   rel: IF1rel
-           apply -
-           apply (rule IF1map_id)
-          apply (rule IF1map_comp)
-         apply (erule IF1map_cong)
-        apply (rule IF1set_natural)
-       apply (rule IFbd_card_order)
-      apply (rule IFbd_cinfinite)
+            apply -
+            apply (rule IF1map_id)
+           apply (rule IF1map_comp)
+          apply (erule IF1map_cong)
+         apply (rule IF1set_natural)
+        apply (rule IFbd_card_order)
+       apply (rule IFbd_cinfinite)
+      apply (rule IFbd_regularCard)
      apply (rule IF1set_bd)
     apply (rule le_IF1rel_Comp)
    apply (rule IF1rel_def[unfolded OO_Grp_alt mem_Collect_eq])
@@ -3197,13 +3206,14 @@ bnf "'a IF2"
   bd: IFbd
   wits: IF2wit
   rel: IF2rel
-           apply -
-           apply (rule IF2map_id)
-          apply (rule IF2map_comp)
-         apply (erule IF2map_cong)
-        apply (rule IF2set_natural)
-       apply (rule IFbd_card_order)
-      apply (rule IFbd_cinfinite)
+            apply -
+            apply (rule IF2map_id)
+           apply (rule IF2map_comp)
+          apply (erule IF2map_cong)
+         apply (rule IF2set_natural)
+        apply (rule IFbd_card_order)
+       apply (rule IFbd_cinfinite)
+      apply (rule IFbd_regularCard)
      apply (rule IF2set_bd)
     apply (rule le_IF2rel_Comp)
    apply (rule IF2rel_def[unfolded OO_Grp_alt mem_Collect_eq])

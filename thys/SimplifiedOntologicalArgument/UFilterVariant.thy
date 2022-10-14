@@ -4,7 +4,6 @@ theory UFilterVariant imports
   HOML 
   MFilter 
   BaseDefs
-  DisableKodkodScala
 begin
 text\<open>Axiom's of ultrafilter variant.\<close> 
 axiomatization where 

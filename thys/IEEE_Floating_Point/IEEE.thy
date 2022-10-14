@@ -1,5 +1,9 @@
 (* Formalization of IEEE-754 Standard for binary floating-point arithmetic *)
-(* Author: Lei Yu, University of Cambridge *)
+(* Author: Lei Yu, University of Cambridge
+
+  Contrib: Peter Lammich: fixed wrong sign handling in fmadd
+
+*)
 
 section \<open>Specification of the IEEE standard\<close>
 
@@ -295,27 +299,32 @@ definition fsqrt :: "roundmode \<Rightarrow> ('e ,'f) float \<Rightarrow> ('e ,'
      else zerosign (sign a) (round m (sqrt (valof a))))"
 
 definition fmul_add :: "roundmode \<Rightarrow> ('t ,'w) float \<Rightarrow> ('t ,'w) float \<Rightarrow> ('t ,'w) float \<Rightarrow> ('t ,'w) float"
-  where "fmul_add mode x y z =
-      (let signP = if sign x = sign y then 0 else 1 in
-      let infP = is_infinity x  \<or> is_infinity y
-      in
-         if is_nan x \<or> is_nan y \<or> is_nan z then some_nan
-         else if is_infinity x \<and> is_zero y \<or>
-                 is_zero x \<and> is_infinity y \<or>
-                 is_infinity z \<and> infP \<and> signP \<noteq> sign z then
-            some_nan
-         else if is_infinity z \<and> (sign z = 0) \<or> infP \<and> (signP = 0)
-            then plus_infinity
-         else if is_infinity z \<and> (sign z = 1) \<or> infP \<and> (signP = 1)
-            then minus_infinity
-         else
-            let r1 = valof x * valof y;
-                r2 = valof z
-            in
-              float_round mode
-                (if (r1 = 0) \<and> (r2 = 0) \<and> (signP = sign z) then
-                   signP = 1
-                 else mode = To_ninfinity) (r1 + r2))"
+  where "fmul_add mode x y z = (let 
+    signP = if sign x = sign y then 0 else 1;
+    infP = is_infinity x  \<or> is_infinity y
+  in
+    if is_nan x \<or> is_nan y \<or> is_nan z then some_nan
+    else if is_infinity x \<and> is_zero y \<or>
+           is_zero x \<and> is_infinity y \<or>
+           is_infinity z \<and> infP \<and> signP \<noteq> sign z 
+      then some_nan
+    else if is_infinity z \<and> (sign z = 0) \<or> infP \<and> (signP = 0)
+      then plus_infinity
+    else if is_infinity z \<and> (sign z = 1) \<or> infP \<and> (signP = 1)
+      then minus_infinity
+    else let 
+      r1 = valof x * valof y;
+      r2 = valof z;
+      r = r1+r2
+    in 
+      if r=0 then ( \<comment> \<open>Exact Zero Case. Same sign rules as for add apply. \<close>
+        if r1=0 \<and> r2=0 \<and> signP=sign z then zerosign signP 0
+        else if mode = To_ninfinity then -0
+        else 0
+      ) else ( \<comment> \<open>Not exactly zero: Rounding has sign of exact value, even if rounded val is zero\<close>
+        zerosign (if r<0 then 1 else 0) (round mode r)
+      )
+  )"
 
 
 subsection \<open>Comparison operations\<close>

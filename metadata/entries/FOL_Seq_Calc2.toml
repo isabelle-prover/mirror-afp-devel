@@ -17,7 +17,8 @@ proof. We formally connect our prover with the proof system and
 semantics of the existing SeCaV system. In particular, the
 prover's output can be post-processed in Haskell to generate
 human-readable SeCaV proofs which are also machine-verifiable proof
-certificates."""
+certificates.
+Paper: <a href=\"https://doi.org/10.4230/LIPIcs.ITP.2022.13\">doi.org/10.4230/LIPIcs.ITP.2022.13</a>."""
 license = "bsd"
 note = ""
 

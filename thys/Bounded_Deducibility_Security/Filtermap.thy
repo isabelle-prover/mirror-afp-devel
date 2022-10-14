@@ -172,11 +172,11 @@ next
       assume "\<not>Q y"
       show thesis
       proof (rule snoc.IH)
-        show "xs ## x = filter Q ys" using `\<not>Q y` snoc(3) by auto
+        show "xs ## x = filter Q ys" using \<open>\<not>Q y\<close> snoc(3) by auto
       next
         fix us vs
         assume "ys = us @ x # vs" and "never Q vs" and "Q x" and "xs = filter Q us"
-        then show thesis using `\<not>Q y` snoc(2) by auto
+        then show thesis using \<open>\<not>Q y\<close> snoc(2) by auto
       qed
     qed
 qed

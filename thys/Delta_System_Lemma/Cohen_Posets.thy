@@ -143,7 +143,7 @@ proof -
     proof -
       have "f \<in> Fn(I, 2) \<Longrightarrow> restrict(f,r) \<in> Pow(r \<times> 2)" for f
         using restrict_subset_Sigma[of f _ "\<lambda>_. 2" r]
-        by (auto dest!:FnD simp: Pi_def) auto
+        by (force simp: Pi_def)
       with \<open>A \<subseteq> Fn(I, 2)\<close>
       have "{restrict(f,r) . f \<in> A } \<subseteq> Pow(r \<times> 2)"
         by fast
@@ -177,7 +177,7 @@ proof -
           by auto
         moreover from \<open>A \<subseteq> Fn(I, 2)\<close> and this
         have "p : z \<rightarrow> 2"
-          using domain_of_fun by (auto dest!:FnD)
+          using domain_of_fun by force
         moreover from this
         have "restrict(p,r) \<subseteq> r \<times> 2"
           using function_restrictI[of p r] fun_is_function[of p z "\<lambda>_. 2"]

@@ -3,9 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Multi-Head Monitoring of Metric Dynamic Logic - Archive of Formal Proofs</title><meta name="description" content="Runtime monitoring (or runtime verification) is an approach to
-checking compliance of a system&#39;s execution with a specification
-(e.g., a temporal query)...."><meta property="og:title" content="Multi-Head Monitoring of Metric Dynamic Logic" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>Multi-Head Monitoring of Metric Dynamic Logic - Archive of Formal Proofs</title><meta name="description" content="Runtime monitoring (or runtime verification) is an approach to checking compliance of a system&#39;s execution with a specification (e.g., a temporal formula)...."><meta property="og:title" content="Multi-Head Monitoring of Metric Dynamic Logic" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/VYDRA_MDL.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
@@ -98,34 +96,43 @@ checking compliance of a system&#39;s execution with a specification
   </div>
 </header><div><main><h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">Runtime monitoring (or runtime verification) is an approach to
+  <div class="abstract mathjax_process"><p>Runtime monitoring (or runtime verification) is an approach to
 checking compliance of a system's execution with a specification
-(e.g., a temporal query). The system's execution is logged into a
-trace---a sequence of time-points, each consisting of a time-stamp and
-observed events. A monitor is an algorithm that produces verdicts on
-the satisfaction of a temporal query on a trace.  We formalize a
-monitoring algorithm for metric dynamic logic, an extension of metric
-temporal logic with regular expressions. The monitor computes whether
-a given query is satisfied at every position in an input trace of
-time-stamped events. We formalize the time-stamps as an abstract
-algebraic structure satisfying certain assumptions. Instances of this
-structure include natural numbers, real numbers, and lexicographic
-combinations of them. Our monitor follows the multi-head paradigm: it
-reads the input simultaneously at multiple positions and moves its
-reading heads asynchronously. This mode of operation results in
-unprecedented time and space complexity guarantees for metric dynamic
-logic: The monitor's amortized time complexity to process a
-time-point and the monitor's space complexity neither depends on
-the event-rate, i.e., the number of events within a fixed time-unit,
-nor on the numeric constants occurring in the quantitative temporal
-constraints in the given query.  The multi-head monitoring algorithm
-for metric dynamic logic is reported in our paper "Multi-Head
-Monitoring of Metric Dynamic Logic" published at ATVA 2020. We
-have also formalized unpublished specialized algorithms for the
-temporal operators of metric temporal logic.</div>
+(e.g., a temporal formula). The system's execution is logged into a
+<i>trace</i>&mdash;a sequence of time-points, each consisting of a
+time-stamp and observed events. A <i>monitor</i> is an algorithm that
+produces <i>verdicts</i> on the satisfaction of a temporal formula on
+a trace.</p>
+<p>We formalize the time-stamps as an abstract algebraic structure
+satisfying certain assumptions. Instances of this structure include
+natural numbers, real numbers, and lexicographic combinations of
+them. We also include the formalization of a conversion from the
+abstract time domain introduced by Koymans (1990) to our
+time-stamps.</p>
+<p>We formalize a monitoring algorithm for metric dynamic logic, an
+extension of metric temporal logic with regular expressions. The
+monitor computes whether a given formula is satisfied at every
+position in an input trace of time-stamped events. Our monitor
+follows the multi-head paradigm: it reads the input simultaneously at
+multiple positions and moves its reading heads asynchronously. This
+mode of operation results in unprecedented time and space complexity
+guarantees for metric dynamic logic: The monitor's amortized time
+complexity to process a time-point and the monitor's space complexity
+neither depends on the event-rate, i.e., the number of events within
+a fixed time-unit, nor on the numeric constants occurring in the
+quantitative temporal constraints in the given formula.</p>
+<p>The multi-head monitoring algorithm for metric dynamic logic is
+reported in our paper ``Multi-Head Monitoring of Metric Dynamic
+Logic'' published at ATVA 2020. We have also formalized unpublished
+specialized algorithms for the temporal operators of metric temporal
+logic.</p></div>
 
   <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
+  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
+  <dl><dt>February 23, 2022</dt>
+    <dd>added conversion from the abstract time
+domain by Koymans (1990) to our time domain; refactored assumptions
+on time domain (revision c9f94b0ae10e)<br></dd></dl><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/algorithms">Computer science/Algorithms</a></li></ul>
   <h3>Session VYDRA_MDL</h3>
   <ul>
@@ -133,6 +140,7 @@ temporal operators of metric temporal logic.</div>
     <li><a href="../theories/vydra_mdl/#Interval">Interval</a></li>
     <li><a href="../theories/vydra_mdl/#Trace">Trace</a></li>
     <li><a href="../theories/vydra_mdl/#MDL">MDL</a></li>
+    <li><a href="../theories/vydra_mdl/#Metric_Point_Structure">Metric_Point_Structure</a></li>
     <li><a href="../theories/vydra_mdl/#NFA">NFA</a></li>
     <li><a href="../theories/vydra_mdl/#Window">Window</a></li>
     <li><a href="../theories/vydra_mdl/#Temporal">Temporal</a></li>
@@ -140,7 +148,6 @@ temporal operators of metric temporal logic.</div>
     <li><a href="../theories/vydra_mdl/#Preliminaries">Preliminaries</a></li>
     <li><a href="../theories/vydra_mdl/#Monitor_Code">Monitor_Code</a></li>
     <li><a href="../theories/vydra_mdl/#Timestamp_Lex">Timestamp_Lex</a></li>
-    <li><a href="../theories/vydra_mdl/#Timestamp_Lex_Total">Timestamp_Lex_Total</a></li>
     <li><a href="../theories/vydra_mdl/#Timestamp_Prod">Timestamp_Prod</a></li></ul><div class="flex-wrap">
   <div>
     <h3>Depends on</h3>

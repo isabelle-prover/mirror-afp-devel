@@ -1176,7 +1176,9 @@ next
   define le where "le = liminf (\<lambda>n. eNorm (\<LL> p M) (f n))"
   then have "le < \<infinity>" using False by (simp add: top.not_eq_extremum)
   obtain r0 where r0: "strict_mono r0" "(\<lambda>n. eNorm (\<LL> p M) (f (r0 n))) \<longlonglongrightarrow> le"
-    using liminf_subseq_lim unfolding comp_def le_def by force
+    using liminf_subseq_lim[of "\<lambda>n. eNorm (\<LL> p M) (f n)"]
+    unfolding comp_def le_def
+    by blast
   then have "eventually (\<lambda>n. eNorm (\<LL> p M) (f (r0 n)) < \<infinity>) sequentially"
     using False unfolding order_tendsto_iff le_def by (simp add: top.not_eq_extremum)
   then obtain N where N: "\<And>n. n \<ge> N \<Longrightarrow> eNorm (\<LL> p M) (f (r0 n)) < \<infinity>"

@@ -21,7 +21,7 @@ soundness and Lemma 4.12 (the lifting lemma).
 The following corresponds to pages 41--42 of Section 4.3, until Figure 5 and its explanation.
 \<close>
 
-locale FO_resolution = mgu subst_atm id_subst comp_subst atm_of_atms renamings_apart mgu
+locale FO_resolution = mgu subst_atm id_subst comp_subst renamings_apart atm_of_atms mgu
   for
     subst_atm :: "'a :: wellorder \<Rightarrow> 's \<Rightarrow> 'a" and
     id_subst :: "'s" and
@@ -1013,8 +1013,7 @@ proof (cases rule: ord_resolve.cases)
   have vd: "var_disjoint (DA0' # CAs0')"
     unfolding DA0'_def CAs0'_def using renamings_apart_var_disjoint
     unfolding \<rho>_def \<rho>s_def
-    by (metis length_greater_0_conv list.exhaust_sel n(6) substitution.subst_cls_lists_Cons
-        substitution_axioms zero_less_Suc)
+    by (metis length_greater_0_conv list.exhaust_sel n(6) subst_cls_lists_Cons zero_less_Suc)
 
   \<comment> \<open>Introduce ground substitution\<close>
   from vd DA0'_DA CAs0'_CAs have "\<exists>\<eta>. \<forall>i < Suc n. \<forall>S. S \<subseteq># (DA0' # CAs0') ! i \<longrightarrow> S \<cdot> (\<eta>0'#\<eta>s0') ! i = S \<cdot> \<eta>"

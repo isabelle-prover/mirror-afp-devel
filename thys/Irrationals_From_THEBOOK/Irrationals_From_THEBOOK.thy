@@ -5,22 +5,6 @@ theory Irrationals_From_THEBOOK imports "Stirling_Formula.Stirling_Formula"
    
 begin
 
-subsection \<open>Library additions\<close>
-
-context comm_monoid_set
-begin
-
-lemma atLeast_atMost_pred_shift:
-  "F (g \<circ> (\<lambda>n. n - Suc 0)) {Suc m..Suc n} = F g {m..n}"
-  unfolding atLeast_Suc_atMost_Suc_shift by simp
-
-end
-
-lemma field_differentiable_diff_const [simp,derivative_intros]:
-  "(-)c field_differentiable F"
-  unfolding field_differentiable_def
-  by (rule derivative_eq_intros exI | force)+
-
 subsection \<open>Basic definitions and their consequences\<close>
 
 definition hf where "hf \<equiv> \<lambda>n. \<lambda>x::real. (x^n * (1-x)^n) / fact n"
@@ -246,7 +230,7 @@ proof
     by (rule refl Fder derivative_eq_intros | force simp: algebra_simps)+
   let ?N = "b * integral {0..1} sF'"
   have sF'_integral: "(sF' has_integral sF 1 - sF 0) {0..1}"
-    by (smt (verit) fundamental_theorem_of_calculus has_field_derivative_iff_has_vector_derivative 
+    by (smt (verit) fundamental_theorem_of_calculus has_real_derivative_iff_has_vector_derivative 
                     has_vector_derivative_at_within sF_der)
   then have "?N = a * F 1 - b * F 0"
     using \<open>b > 0\<close> by (simp add: integral_unique exp_s sF_def algebra_simps)

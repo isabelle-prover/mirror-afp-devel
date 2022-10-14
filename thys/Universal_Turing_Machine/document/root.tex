@@ -1,5 +1,4 @@
-\documentclass{article}
-\usepackage[T1]{fontenc}
+\documentclass{report}
 %\documentclass[runningheads]{llncs}
 \usepackage{isabelle}
 \usepackage{isabellesym}
@@ -8,7 +7,6 @@
 \usepackage{amsmath}
 \usepackage{stmaryrd}
 \usepackage{mathpartir}
-%\usepackage{pdfsetup}
 \usepackage{tikz}
 \usepackage{pgf}
 \usepackage{color}
@@ -46,32 +44,70 @@
 \renewcommand{\isasymiota}{}
 \newcommand{\isasymulcorner}{$\ulcorner$}
 \newcommand{\isasymurcorner}{$\urcorner$}
-\newcommand{\chapter}{\section}
+%\newcommand{\chapter}{\section}
+
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
 
 \begin{document}
 
 
 \title{Universal Turing Machine and Computability Theory in Isabelle/HOL}
-\author{Jian Xu\inst{2} \and Xingyuan Zhang\inst{2} \and Christian Urban\inst{1} \and Sebastiaan J. C. Joosten\inst{3} \vspace{3pt} \\
-\inst{1}King's College London, UK \\ \inst{2}PLA University of Science and Technology, China \\ \inst{3}University of Twente, the Netherlands}
+\author{Jian Xu\inst{2} \and Xingyuan Zhang\inst{2} \and Christian Urban\inst{1}
+ \and Sebastiaan J. C. Joosten\inst{3}
+ \and Franz A. B. Regensburger\inst{4} \vspace{3pt} \\
+\inst{1}King's College London, UK \\
+\inst{2}PLA University of Science and Technology, China \\
+\inst{3}University of Twente, the Netherlands \\
+\inst{4}Technische Hochschule Ingolstadt, Germany}
 
 \maketitle
 
-
 \begin{abstract}
-We formalise results from computability theory: recursive functions, undecidability of the halting problem, and the existence of a universal Turing machine. 
-This formalisation is the AFP entry corresponding to: Mechanising Turing Machines and Computability Theory in Isabelle/HOL, ITP 2013
+We formalise results from computability theory: Turing decidability, Turing
+  computability, reduction of decision problems, recursive functions,
+  undecidability of the special and the general halting problem, and the
+  existence of a universal Turing machine.  This formalisation extends the
+  original AFP entry of 2014 that corresponded to: Mechanising Turing Machines
+  and Computability Theory in Isabelle/HOL, ITP 2013
 \end{abstract}
 
-The AFP entry and by extension this document is largely written by Jian Xu, Xingyuan Zhang, and Christian Urban.
-The Universal Turing Machine is well explained in this document, starting at Figure~\ref{prepare_input}.
-Regardless, you may want to read the original ITP article~\cite{Xu13} instead of this pdf document corresponding to the AFP entry.
-If you are just interested in results about Turing Machines and Computability theory: the main book used for this formalisation is by Boolos~\cite{Boolos87}.
+The AFP entry and by extension this document is largely written by Xu,
+Zhang and Urban.  The Universal Turing Machine is 
+explained in this document, starting at Figure~\ref{prepare_input}.
+You may want to also consult the original ITP article~\cite{Xu13}.
+If you are interested in results about Turing Machines and Computability
+theory: the main book used for this formalisation is by Boolos, Burgess
+and Jeffrey~\cite{Boolos07}.
 
-Sebastiaan J. C. Joosten contributed mainly by making the files ready for the AFP.
-The need for a good formalisation of Turing Machines arose from realising that the current formalisation of saturation graphs~\cite{Graph_Saturation-AFP} is missing a key undecidability result present in the original paper~\cite{Joosten18}.
-Recently, an undecidability result has been added to the AFP by Bertram Felgenhauer~\cite{Minsky_Machines-AFP}, using a definition of computably enumerable sets formalised by Michael Nedzelsky~\cite{Recursion-Theory-I-AFP}.
-Showing the equivalence of these entirely separate notions of computability and decidability remains future work.
+Joosten contributed mainly by making the files ready for the AFP.  The
+need for a good formalisation of Turing Machines arose from realising
+that the current formalisation of saturation
+graphs~\cite{Graph_Saturation-AFP} is missing a key undecidability
+result present in the original paper~\cite{Joosten18}.  Recently, an
+undecidability result has been added to the AFP by
+Felgenhauer~\cite{Minsky_Machines-AFP}, using a definition of
+computably enumerable sets formalised by
+Nedzelsky~\cite{Recursion-Theory-I-AFP}.  This entry establishes the
+equivalence of these entirely separate notions of computability, but
+decidability remains future work.
+
+In 2022, Regensburger contributed by adding definitions for
+concepts like Turing Decidability, Turing Computability and Turing Reducibility
+for problem reduction. He also enhanced the result about the
+undecidability of the General Halting Problem given in the original AFP entry
+by first proving the undecidability of the Special Halting Problem and then
+proving its reducibility to the general problem. The original version of this
+AFP entry did only prove a weak form of the undecidability theorem.
+The main motivation behind this contribution is to make the AFP entry
+accessible for bachelor and master students.
+
+As a result, the presentation of the first chapter about Turing
+Machines has been considerably restructured and, in this context some minor
+changes in the naming of concepts were performed as well. In the rest of the theories
+the sectioning of the \LaTeX{} document was improved.
+The overall contribution approximately doubled the size of the code base.
+Please refer to the CHANGELOG in the AFP entry for more details.
 
 % generated text of all theories
 \input{session}

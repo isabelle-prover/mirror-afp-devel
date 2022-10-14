@@ -75,7 +75,7 @@ lemma sublist_not_empty: \<open>\<lbrakk>i \<le> j; j < length xs; xs \<noteq> [
 
 lemma sublist_app: \<open>\<lbrakk>i1 \<le> i2; i2 \<le> i3\<rbrakk> \<Longrightarrow> sublist xs i1 i2 @ sublist xs (Suc i2) i3 = sublist xs i1 i3\<close>
   unfolding sublist_def
-  by (smt Suc_eq_plus1_left Suc_le_mono append.assoc le_SucI le_add_diff_inverse le_trans same_append_eq take_add)
+  by (smt (verit) Suc_eq_plus1_left Suc_le_mono append.assoc le_SucI le_add_diff_inverse le_trans same_append_eq take_add)
 
 definition sorted_sublist_wrt :: \<open>('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'b list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool\<close> where
   \<open>sorted_sublist_wrt R xs lo hi = sorted_wrt R (sublist xs lo hi)\<close>
@@ -106,14 +106,14 @@ lemma take_set: \<open>j \<le> length xs \<Longrightarrow> x \<in> set (take j x
   by (rule eq_reflection) (auto simp add: take_set)
 
 lemma drop_set: \<open>j \<le> length xs \<Longrightarrow> x \<in> set (drop j xs) \<equiv> (\<exists>k. j\<le>k\<and>k<length xs \<and> xs!k=x)\<close>
-  by (smt Misc.in_set_drop_conv_nth) (* lemma found by sledgehammer *)
+  by (smt (verit) Misc.in_set_drop_conv_nth) (* lemma found by sledgehammer *)
 
 lemma sublist_el: \<open>i \<le> j \<Longrightarrow> j < length xs \<Longrightarrow> x \<in> set (sublist xs i j) \<equiv> (\<exists> k. k < Suc j-i \<and> xs!(i+k)=x)\<close>
   by (auto simp add: take_set sublist_def)
 
 lemma sublist_el': \<open>i \<le> j \<Longrightarrow> j < length xs \<Longrightarrow> x \<in> set (sublist xs i j) \<equiv> (\<exists> k. i\<le>k\<and>k\<le>j \<and> xs!k=x)\<close>
   apply (subst sublist_el, assumption, assumption)
-  by (smt Groups.add_ac(2) le_add1 le_add_diff_inverse less_Suc_eq less_diff_conv nat_less_le order_refl)
+  by (smt (verit) Groups.add_ac(2) le_add1 le_add_diff_inverse less_Suc_eq less_diff_conv nat_less_le order_refl)
 
 
 lemma sublist_lt: \<open>hi < lo \<Longrightarrow> sublist xs lo hi = []\<close>
@@ -958,7 +958,7 @@ proof -
       fix j assume \<open>p < j\<close> \<open>j \<le> hi\<close>
       then show \<open>R (h (xs'' ! p)) (h (xs'' ! j))\<close>
       text \<open>This holds because this part hasn't changed\<close>
-      by (smt IH1(4) add_diff_cancel_left' add_diff_inverse_nat diff_Suc_eq_diff_pred diff_le_self ifs(1) isPartition_wrt_def le_less_Suc_eq less_le_trans mset_eq_length nat_less_le part(1) part(3) part(4) plus_1_eq_Suc pre(2))
+      by (smt (verit) IH1(4) add_diff_cancel_left' add_diff_inverse_nat diff_Suc_eq_diff_pred diff_le_self ifs(1) isPartition_wrt_def le_less_Suc_eq less_le_trans mset_eq_length nat_less_le part(1) part(3) part(4) plus_1_eq_Suc pre(2))
   qed
 
 
@@ -1090,7 +1090,7 @@ proof -
       fix j assume \<open>p < j\<close> \<open>j \<le> hi\<close>
       then show \<open>R (h (xs'' ! p)) (h (xs'' ! j))\<close>
       text \<open>This holds because this part hasn't changed\<close>
-      by (smt IH1(4) add_diff_cancel_left' add_diff_inverse_nat diff_Suc_eq_diff_pred diff_le_self ifs(1) isPartition_wrt_def le_less_Suc_eq less_le_trans mset_eq_length nat_less_le part(1) part(3) part(4) plus_1_eq_Suc pre(2))
+      by (smt (verit) IH1(4) add_diff_cancel_left' add_diff_inverse_nat diff_Suc_eq_diff_pred diff_le_self ifs(1) isPartition_wrt_def le_less_Suc_eq less_le_trans mset_eq_length nat_less_le part(1) part(3) part(4) plus_1_eq_Suc pre(2))
   qed
 
 

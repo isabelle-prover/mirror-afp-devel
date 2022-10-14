@@ -58,7 +58,7 @@ lemma check_certD [intro?]:
 
 lemma (in start_context) wt_lbv_wt_step:
   assumes lbv: "wt_lbv P C b Ts T\<^sub>r mxs mxl\<^sub>0 xt cert is"
-  shows "\<exists>\<tau>s \<in> list (size is) A. wt_step r Err step \<tau>s \<and> OK first \<sqsubseteq>\<^sub>r \<tau>s!0"
+  shows "\<exists>\<tau>s \<in> nlists (size is) A. wt_step r Err step \<tau>s \<and> OK first \<sqsubseteq>\<^sub>r \<tau>s!0"
 (*<*)
 proof -
   from wf have "semilat (JVM_SemiType.sl P mxs mxl)" ..
@@ -92,7 +92,7 @@ proof -
              stab: "b = Static \<or> b = NonStatic" by (auto simp add: wt_lbv_def)
   moreover
   from wf lbv C Ts obtain \<tau>s where 
-    list:  "\<tau>s \<in> list (size is) A" and
+    list:  "\<tau>s \<in> nlists (size is) A" and
     step:  "wt_step r Err step \<tau>s" and    
     start: "OK first \<sqsubseteq>\<^sub>r \<tau>s!0" 
     by (blast dest: wt_lbv_wt_step)

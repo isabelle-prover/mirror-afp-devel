@@ -127,12 +127,13 @@ axiomatization where
   set3_F_map: "\<And>l1 l2 l3. set3_F \<circ> mapl_F l1 l2 l3 = image l3 \<circ> set3_F" and
   bd_F_card_order: "card_order bd_F" and
   bd_F_cinfinite: "cinfinite bd_F" and
+  bd_F_regularCard: "regularCard bd_F" and
   set1_F_bound: "\<And>x :: (_, _, _, 'co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) F.
-    card_of (set1_F x) \<le>o (bd_F :: ('co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) Fbd rel)" and
+    card_of (set1_F x) <o (bd_F :: ('co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) Fbd rel)" and
   set2_F_bound: "\<And>x :: (_, _, _, 'co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) F.
-    card_of (set2_F x) \<le>o (bd_F :: ('co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) Fbd rel)" and
+    card_of (set2_F x) <o (bd_F :: ('co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) Fbd rel)" and
   set3_F_bound: "\<And>x :: (_, _, _, 'co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) F.
-    card_of (set3_F x) \<le>o (bd_F :: ('co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) Fbd rel)" and
+    card_of (set3_F x) <o (bd_F :: ('co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) Fbd rel)" and
   mapl_F_cong: "\<And>l1 l1' l2 l2' l3 l3' x.
     \<lbrakk> \<And>z. z \<in> set1_F x \<Longrightarrow> l1 z = l1' z; \<And>z. z \<in> set2_F x \<Longrightarrow> l2 z = l2' z;
       \<And>z. z \<in> set3_F x \<Longrightarrow> l3 z = l3' z \<rbrakk> \<Longrightarrow>
@@ -180,6 +181,9 @@ lemma map_F_mapl_F: "map_F l1 l2 l3 co1 co2 co3 contra1 contra2 contra3 x =
 lemma mapl_F_map_F: "mapl_F l1 l2 l3 (map_F id id id co1 co2 co3 contra1 contra2 contra3 x) =
   map_F l1 l2 l3 co1 co2 co3 contra1 contra2 contra3 x"
   unfolding mapl_F_def map_F_comp[THEN fun_cong, simplified] by simp
+
+lemma bd_F_Cinfinite: "Cinfinite bd_F"
+  using bd_F_card_order bd_F_cinfinite card_order_on_Card_order by blast
 
 text \<open>Parametric mappers are unique:\<close>
 
@@ -321,7 +325,7 @@ bnf "('l1, 'l2, 'l3, 'co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) F"
   bd: "bd_F :: ('co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) Fbd rel"
   rel: rell_F
   by (fact mapl_F_id0 mapl_F_comp[symmetric] mapl_F_cong set1_F_map set2_F_map set3_F_map
-    bd_F_card_order bd_F_cinfinite set1_F_bound set2_F_bound set3_F_bound
+    bd_F_card_order bd_F_cinfinite bd_F_regularCard set1_F_bound set2_F_bound set3_F_bound
     rell_F_compp[symmetric, THEN eq_refl] F_in_rell)+
 
 
@@ -488,10 +492,11 @@ axiomatization where
   set2_G_map: "\<And>l1 l2. set2_G \<circ> mapl_G l1 l2 = image l2 \<circ> set2_G" and
   bd_G_card_order: "card_order bd_G" and
   bd_G_cinfinite: "cinfinite bd_G" and
+  bd_G_regularCard: "regularCard bd_G" and
   set1_G_bound: "\<And>x :: (_, _, 'co1, 'co2, 'contra1, 'contra2, 'f) G.
-    card_of (set1_G x) \<le>o (bd_G :: ('co1, 'co2, 'contra1, 'contra2, 'f) Gbd rel)" and
+    card_of (set1_G x) <o (bd_G :: ('co1, 'co2, 'contra1, 'contra2, 'f) Gbd rel)" and
   set2_G_bound: "\<And>x :: (_, _, 'co1, 'co2, 'contra1, 'contra2, 'f) G.
-    card_of (set2_G x) \<le>o (bd_G :: ('co1, 'co2, 'contra1, 'contra2, 'f) Gbd rel)" and
+    card_of (set2_G x) <o (bd_G :: ('co1, 'co2, 'contra1, 'contra2, 'f) Gbd rel)" and
   mapl_G_cong: "\<And>l1 l1' l2 l2' l3 l3' x.
     \<lbrakk> \<And>z. z \<in> set1_G x \<Longrightarrow> l1 z = l1' z; \<And>z. z \<in> set2_G x \<Longrightarrow> l2 z = l2' z \<rbrakk> \<Longrightarrow>
     mapl_G l1 l2 x = mapl_G l1' l2' x" and
@@ -503,6 +508,8 @@ axiomatization where
   wit_G_set1: "\<And>l2 x. x \<in> set1_G (wit_G l2) \<Longrightarrow> False" and
   wit_G_set2: "\<And>l2 x. x \<in> set2_G (wit_G l2) \<Longrightarrow> x = l2"
 
+lemma bd_G_Cinfinite: "Cinfinite bd_G"
+  using bd_G_card_order bd_G_cinfinite card_order_on_Card_order by blast
 
 subsubsection \<open>Derived rules\<close>
 
@@ -666,8 +673,8 @@ bnf "('l1, 'l2, 'co1, 'co2, 'contra1, 'contra2, 'f) G"
   wits: wit_G
   rel: rell_G
   by (fact mapl_G_id0 mapl_G_comp[symmetric] mapl_G_cong set1_G_map set2_G_map
-    bd_G_card_order bd_G_cinfinite set1_G_bound set2_G_bound rell_G_compp[symmetric, THEN eq_refl]
-    G_in_rell wit_G_set1 wit_G_set2)+
+    bd_G_card_order bd_G_cinfinite bd_G_regularCard set1_G_bound set2_G_bound
+    rell_G_compp[symmetric, THEN eq_refl] G_in_rell wit_G_set1 wit_G_set2)+
 
 
 subsubsection \<open>Composition witness\<close>

@@ -96,7 +96,7 @@ proof -
   then obtain v where v: "P v z \<and> P v x"..
   hence "P v z"..
   moreover from v have "P v x"..
-  hence "P v y" using `P x y` by (rule part_transitivity)
+  hence "P v y" using \<open>P x y\<close> by (rule part_transitivity)
   ultimately have "P v z \<and> P v y"..
   hence "\<exists> v. P v z \<and> P v y"..
   with overlap_eq show "O z y"..
@@ -132,7 +132,7 @@ proof -
   show "x \<noteq> y"
   proof
     assume "x = y"
-    hence "\<not> O y y" using `\<not> O x y` by (rule subst)
+    hence "\<not> O y y" using \<open>\<not> O x y\<close> by (rule subst)
     thus "False" using overlap_reflexivity..
   qed
 qed
@@ -144,7 +144,7 @@ proof -
   proof
     assume "P x y"
     hence "O x y" by (rule part_implies_overlap)
-    with `\<not> O x y` show "False"..
+    with \<open>\<not> O x y\<close> show "False"..
   qed
 qed
 
@@ -155,7 +155,7 @@ proof -
   proof
     assume "O y x"
     hence "O x y" by (rule overlap_symmetry)
-    with `\<not> O x y` show "False"..
+    with \<open>\<not> O x y\<close> show "False"..
   qed
 qed
 
@@ -166,9 +166,9 @@ proof -
   show "\<not> O z x"
   proof
     assume "O z x"
-    with `P x y` have "O z y"
+    with \<open>P x y\<close> have "O z y"
       by (rule overlap_monotonicity)
-    with `\<not> O z y` show "False"..
+    with \<open>\<not> O z y\<close> show "False"..
   qed
 qed
 

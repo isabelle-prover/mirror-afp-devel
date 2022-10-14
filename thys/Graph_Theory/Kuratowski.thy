@@ -285,7 +285,7 @@ proof -
         done
       moreover
       have "x \<notin> {u,v} \<Longrightarrow> in_arcs ?sG x = in_arcs G x"
-        using \<open>x \<in> pverts G\<close> \<open>w \<notin> pverts G\<close> by (auto simp: )
+        using \<open>x \<in> pverts G\<close> \<open>w \<notin> pverts G\<close> by auto
       then have "x \<notin> {u,v} \<Longrightarrow> card_eq x" by (simp add: in_degree_def card_eq_def)
       ultimately have "card_eq x" by fast
       then have "in_degree G x = in_degree ?sG x"
@@ -1315,7 +1315,7 @@ next
   have in_arcs: "in_arcs G w = {(u,w), (v,w)}"
   proof -
     have "{(u,w), (v,w)} \<subseteq> in_arcs G w"
-      using uvw_arcs1 uvw_arcs2 by (auto simp: )
+      using uvw_arcs1 uvw_arcs2 by auto
     moreover note \<open>in_degree G w \<le> 2\<close>
     moreover have "card {(u,w), (v,w)} = 2" using \<open>u \<noteq> v\<close> by auto
     ultimately

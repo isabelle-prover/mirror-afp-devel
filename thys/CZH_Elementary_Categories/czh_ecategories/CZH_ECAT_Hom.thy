@@ -215,11 +215,15 @@ proof-
   from assms(2,4) g f Set.category_axioms category_axioms have gg'_ff': 
     "cf_hom \<CC> [g, g']\<^sub>\<circ> \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> cf_hom \<CC> [f, f']\<^sub>\<circ> :
       Hom \<CC> a a' \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> Hom \<CC> c c'"
-    by (cs_concl cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
+      )
   then have dom_lhs: 
     "\<D>\<^sub>\<circ> ((cf_hom \<CC> [g, g']\<^sub>\<circ> \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> cf_hom \<CC> [f, f']\<^sub>\<circ>)\<lparr>ArrVal\<rparr>) = 
       Hom \<CC> a a'"
-    by (cs_concl cs_simp: cat_cs_simps)+
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps)+
   from assms(2,4) g f Set.category_axioms category_axioms have gf_g'f':
     "cf_hom \<CC> [g \<circ>\<^sub>A\<^bsub>op_cat \<CC>\<^esub> f, g' \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f']\<^sub>\<circ> : 
       Hom \<CC> a a' \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> Hom \<CC> c c'"
@@ -279,7 +283,7 @@ proof-
     "cf_hom \<CC> [\<CC>\<lparr>CId\<rparr>\<lparr>c\<rparr>, \<CC>\<lparr>CId\<rparr>\<lparr>c'\<rparr>]\<^sub>\<circ> : Hom \<CC> c c' \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> Hom \<CC> c c'"
     by 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: cat_cs_simps cat_op_simps 
           cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
       )
@@ -289,12 +293,12 @@ proof-
     "cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>Hom \<CC> c c'\<rparr> : Hom \<CC> c c' \<mapsto>\<^bsub>cat_Set \<alpha>\<^esub> Hom \<CC> c c'"
     by 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: cat_Set_cs_simps cat_Set_components(1) 
           cs_intro: cat_cs_intros cat_prod_cs_intros
       )
   then have dom_rhs: "\<D>\<^sub>\<circ> (cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>Hom \<CC> c c'\<rparr>\<lparr>ArrVal\<rparr>) = Hom \<CC> c c'"    
-    by (cs_concl cs_simp: cat_cs_simps )
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps )
 
   show ?thesis
   proof(rule arr_Set_eqI[of \<alpha>])
@@ -313,7 +317,7 @@ proof-
           cat_Set \<alpha>\<lparr>CId\<rparr>\<lparr>Hom \<CC> c c'\<rparr>\<lparr>ArrVal\<rparr>\<lparr>q\<rparr>"
         by (*slow*)
           (
-            cs_concl
+            cs_concl 
               cs_simp: cat_cs_simps cat_op_simps cat_Set_cs_simps
               cs_intro: cat_cs_intros
          )
@@ -335,34 +339,46 @@ proof(rule arr_Set_eqI[of \<alpha>])
   from assms show "arr_Set \<alpha> (cf_hom (op_cat \<CC>) [g, g']\<^sub>\<circ>)"
     by 
       ( 
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_prod_cs_intros
       )
   from assms show "arr_Set \<alpha> (cf_hom \<CC> [g', g]\<^sub>\<circ>)"
     by 
       ( 
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: cat_op_simps 
           cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
       )
   from assms have dom_lhs:
     "\<D>\<^sub>\<circ> (cf_hom (op_cat \<CC>) [g, g']\<^sub>\<circ>\<lparr>ArrVal\<rparr>) = Hom \<CC> a' a"
-    by (cs_concl cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros
+      )
   from assms have dom_rhs: "\<D>\<^sub>\<circ> (cf_hom \<CC> [g', g]\<^sub>\<circ>\<lparr>ArrVal\<rparr>) = Hom \<CC> a' a"
-    by (cs_concl cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros)
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros
+      )
   show "cf_hom (op_cat \<CC>) [g, g']\<^sub>\<circ>\<lparr>ArrVal\<rparr> = cf_hom \<CC> [g', g]\<^sub>\<circ>\<lparr>ArrVal\<rparr>"
   proof(rule vsv_eqI, unfold dom_lhs dom_rhs in_Hom_iff)
     fix f assume "f : a' \<mapsto>\<^bsub>\<CC>\<^esub> a"
     with assms show 
       "cf_hom (op_cat \<CC>) [g, g']\<^sub>\<circ>\<lparr>ArrVal\<rparr>\<lparr>f\<rparr> = cf_hom \<CC> [g', g]\<^sub>\<circ>\<lparr>ArrVal\<rparr>\<lparr>f\<rparr>"
       unfolding cat_op_simps
-      by (cs_concl cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_cs_intros
+        )
   qed (simp_all add: cf_hom_components)
   from category_axioms assms show 
     "cf_hom (op_cat \<CC>) [g, g']\<^sub>\<circ>\<lparr>ArrDom\<rparr> = cf_hom \<CC> [g', g]\<^sub>\<circ>\<lparr>ArrDom\<rparr>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: category.cf_hom_ArrDom cat_op_simps 
           cs_intro: cat_op_intros cat_prod_cs_intros
       )
@@ -370,7 +386,7 @@ proof(rule arr_Set_eqI[of \<alpha>])
     "cf_hom (op_cat \<CC>) [g, g']\<^sub>\<circ>\<lparr>ArrCod\<rparr> = cf_hom \<CC> [g', g]\<^sub>\<circ>\<lparr>ArrCod\<rparr>"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: category.cf_hom_ArrCod cat_op_simps 
           cs_intro: cat_op_intros cat_prod_cs_intros
       )
@@ -523,9 +539,9 @@ proof-
         unfolding 
           slicing_simps cat_smc_cat_Set[symmetric] 
           gg'_def bb'_def cc'_def ff'_def aa'_def
-        by (*slow*)
+        by
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_op_simps cat_prod_cs_simps
               cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
           )
@@ -545,7 +561,7 @@ proof-
         unfolding cc'_def
         by
           (
-            cs_concl 
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_op_simps cat_prod_cs_simps
               cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
           )
@@ -600,7 +616,7 @@ lemma (in category) cf_bcomp_Hom_ObjMap_vrange:
   using category_axioms
   unfolding cf_bcomp_Hom_def
   by (intro cf_cn_cov_bcomp_ObjMap_vrange[OF assms])
-    (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
 
 subsubsection\<open>Arrow map\<close>
@@ -633,7 +649,10 @@ lemma (in category) cf_bcomp_Hom_ArrMap_vrange:
   using category_axioms
   unfolding cf_bcomp_Hom_def
   by (intro cf_cn_cov_bcomp_ArrMap_vrange[OF assms])
-    (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros)
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros
+    )
 
 
 subsubsection\<open>Composition of a \<open>Hom\<close>-functor and two functors is a functor\<close>
@@ -643,7 +662,7 @@ lemma (in category) cat_cf_bcomp_Hom_is_functor:
   shows "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(\<FF>-,\<GG>-) : op_cat \<AA> \<times>\<^sub>C \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
   using assms category_axioms
   unfolding cf_bcomp_Hom_def
-  by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
 lemma (in category) cat_cf_bcomp_Hom_is_functor':
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
@@ -685,13 +704,21 @@ lemma cf_lcomp_Hom_ObjMap_vdomain[cat_cs_simps]:
   assumes "category \<alpha> \<CC>" and "\<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows "\<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(\<FF>-,-)\<lparr>ObjMap\<rparr>) = (op_cat \<BB> \<times>\<^sub>C \<CC>)\<lparr>Obj\<rparr>"
   using assms
-  by (cs_concl cs_simp: cat_cs_simps cf_lcomp_Hom_def cs_intro: cat_cs_intros)
+  by 
+    ( 
+      cs_concl cs_shallow 
+        cs_simp: cat_cs_simps cf_lcomp_Hom_def cs_intro: cat_cs_intros
+    )
 
 lemma cf_rcomp_Hom_ObjMap_vdomain[cat_cs_simps]:
   assumes "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows "\<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,\<GG>-)\<lparr>ObjMap\<rparr>) = (op_cat \<CC> \<times>\<^sub>C \<BB>)\<lparr>Obj\<rparr>"
   using assms
-  by (cs_concl cs_simp: cat_cs_simps cf_rcomp_Hom_def cs_intro: cat_cs_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_cs_simps cf_rcomp_Hom_def cs_intro: cat_cs_intros
+    )
 
 lemma cf_lcomp_Hom_ObjMap_app[cat_cs_simps]:
   assumes "category \<alpha> \<CC>"
@@ -713,7 +740,7 @@ lemma cf_rcomp_Hom_ObjMap_app[cat_cs_simps]:
   using assms
   by 
     (
-      cs_concl
+      cs_concl cs_shallow
         cs_simp: cat_cs_simps cf_rcomp_Hom_def
         cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
     )
@@ -724,7 +751,7 @@ lemma (in category) cat_cf_lcomp_Hom_ObjMap_vrange:
   using category_axioms assms
   unfolding cf_lcomp_Hom_def
   by (intro cf_cn_cov_lcomp_ObjMap_vrange) 
-    (cs_concl cs_intro: cat_cs_intros)
+    (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
 lemma (in category) cat_cf_rcomp_Hom_ObjMap_vrange: 
   assumes "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
@@ -732,7 +759,7 @@ lemma (in category) cat_cf_rcomp_Hom_ObjMap_vrange:
   using category_axioms assms
   unfolding cf_rcomp_Hom_def  
   by (intro cf_cn_cov_rcomp_ObjMap_vrange) 
-    (cs_concl cs_intro: cat_cs_intros)
+    (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
 
 subsubsection\<open>Arrow map\<close>
@@ -748,12 +775,14 @@ lemma cf_lcomp_Hom_ArrMap_vdomain[cat_cs_simps]:
   shows "\<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(\<FF>-,-)\<lparr>ArrMap\<rparr>) = (op_cat \<BB> \<times>\<^sub>C \<CC>)\<lparr>Arr\<rparr>"
   using assms
   unfolding cf_lcomp_Hom_def
-  by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+  by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
 lemma cf_rcomp_Hom_ArrMap_vdomain[cat_cs_simps]:  
   assumes "category \<alpha> \<CC>" and "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
   shows "\<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,\<GG>-)\<lparr>ArrMap\<rparr>) = (op_cat \<CC> \<times>\<^sub>C \<BB>)\<lparr>Arr\<rparr>"
-  using assms unfolding cf_rcomp_Hom_def by (cs_concl cs_simp: cat_cs_simps)
+  using assms
+  unfolding cf_rcomp_Hom_def 
+  by (cs_concl cs_shallow cs_simp: cat_cs_simps)
 
 lemma cf_lcomp_Hom_ArrMap_app[cat_cs_simps]:
   assumes "category \<alpha> \<CC>" 
@@ -766,7 +795,7 @@ lemma cf_lcomp_Hom_ArrMap_app[cat_cs_simps]:
   unfolding cf_lcomp_Hom_def cat_op_simps 
   by 
     (
-      cs_concl 
+      cs_concl cs_shallow 
         cs_simp: cat_cs_simps cat_op_simps 
         cs_intro: cat_cs_intros cat_prod_cs_intros
     )
@@ -780,7 +809,7 @@ lemma cf_rcomp_Hom_ArrMap_app[cat_cs_simps]:
   using assms 
   by
     (
-      cs_concl
+      cs_concl 
         cs_simp: cat_cs_simps cf_rcomp_Hom_def
         cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
     )
@@ -791,7 +820,7 @@ lemma (in category) cf_lcomp_Hom_ArrMap_vrange:
   using category_axioms assms
   unfolding cf_lcomp_Hom_def
   by (intro cf_cn_cov_lcomp_ArrMap_vrange)
-    (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
 lemma (in category) cf_rcomp_Hom_ArrMap_vrange: 
   assumes "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>"
@@ -799,7 +828,7 @@ lemma (in category) cf_rcomp_Hom_ArrMap_vrange:
   using category_axioms assms
   unfolding cf_rcomp_Hom_def
   by (intro cf_cn_cov_rcomp_ArrMap_vrange)
-    (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
 
 
 subsubsection\<open>Further properties\<close>
@@ -821,7 +850,7 @@ lemma (in category) cat_cf_lcomp_Hom_is_functor:
   using category_axioms assms
   unfolding cf_lcomp_Hom_def
   by (intro cf_cn_cov_lcomp_is_functor) 
-    (cs_concl cs_intro: cat_cs_intros)
+    (cs_concl cs_shallow cs_intro: cat_cs_intros)
 
 lemma (in category) cat_cf_lcomp_Hom_is_functor':
   assumes "\<FF> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" 
@@ -841,7 +870,7 @@ lemma (in category) cat_cf_rcomp_Hom_is_functor:
   using category_axioms assms
   unfolding cf_rcomp_Hom_def
   by (intro cf_cn_cov_rcomp_is_functor) 
-    (cs_concl cs_intro: cat_cs_intros cat_op_intros)
+    (cs_concl cs_shallow cs_intro: cat_cs_intros cat_op_intros)
 
 lemma (in category) cat_cf_rcomp_Hom_is_functor':
   assumes "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<beta> = \<alpha>" 
@@ -869,11 +898,14 @@ proof(rule cf_eqI)
   from category_axioms assms show bf_Hom:
     "bifunctor_flip (op_cat \<CC>) \<BB> Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,\<GG>-) :
       \<BB> \<times>\<^sub>C op_cat \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
-    by (cs_concl cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros)
   from category_axioms assms show op_Hom:
     "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>op_cat \<CC>(op_cf \<GG>-,-) : \<BB> \<times>\<^sub>C op_cat \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
-    by (cs_concl cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros)
-
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_op_simps cs_intro: cat_cs_intros cat_op_intros
+      )
   from bf_Hom have ObjMap_dom_lhs:
     "\<D>\<^sub>\<circ> (bifunctor_flip (op_cat \<CC>) \<BB> Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,\<GG>-)\<lparr>ObjMap\<rparr>) = 
       (\<BB> \<times>\<^sub>C op_cat \<CC>)\<lparr>Obj\<rparr>"
@@ -908,7 +940,7 @@ proof(rule cf_eqI)
       unfolding bc_def
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_op_simps 
             cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
         )
@@ -935,7 +967,7 @@ proof(rule cf_eqI)
       unfolding gf_def
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_op_simps
             cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
         )
@@ -962,7 +994,7 @@ proof-
   from category_axioms assms show ?thesis
     by (subst Hom_\<FF>)
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cat_op_simps 
           cs_intro: cat_cs_intros cat_op_intros
       )+
@@ -1036,7 +1068,11 @@ lemma (in category) cat_cf_Hom_snd_ObjMap_vsv[cat_cs_intros]:
   shows "vsv (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(a,-)\<lparr>ObjMap\<rparr>)"
   unfolding cf_Hom_snd_def
   using category_axioms assms
-  by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros
+    )
 
 lemmas [cat_cs_intros] = category.cat_cf_Hom_snd_ObjMap_vsv
 
@@ -1047,7 +1083,7 @@ lemma (in category) cat_cf_Hom_fst_ObjMap_vsv[cat_cs_intros]:
   using category_axioms assms
   by
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: cat_prod_cs_simps cat_cs_simps
         cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
     )
@@ -1059,7 +1095,11 @@ lemma (in category) cat_cf_Hom_snd_ObjMap_vdomain[cat_cs_simps]:
   shows "\<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(a,-)\<lparr>ObjMap\<rparr>) = \<CC>\<lparr>Obj\<rparr>"
   using category_axioms assms
   unfolding cf_Hom_snd_def
-  by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros
+    )
 
 lemmas [cat_cs_simps] = category.cat_cf_Hom_snd_ObjMap_vdomain
 
@@ -1068,7 +1108,11 @@ lemma (in category) cat_cf_Hom_fst_ObjMap_vdomain[cat_cs_simps]:
   shows "\<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,b)\<lparr>ObjMap\<rparr>) = op_cat \<CC>\<lparr>Obj\<rparr>"
   using category_axioms assms
   unfolding cf_Hom_fst_def
-  by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros
+    )
 
 lemmas [cat_cs_simps] = category.cat_cf_Hom_fst_ObjMap_vdomain
 
@@ -1114,7 +1158,7 @@ lemma (in category) cat_cf_Hom_snd_ArrMap_vsv[cat_cs_intros]:
   using category_axioms assms
   by
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: cat_cs_simps 
         cs_intro: bifunctor_proj_snd_ArrMap_vsv cat_cs_intros cat_op_intros
     )
@@ -1128,7 +1172,7 @@ lemma (in category) cat_cf_Hom_fst_ArrMap_vsv[cat_cs_intros]:
   using category_axioms assms
   by
     (
-      cs_concl 
+      cs_concl cs_shallow
         cs_simp: cat_cs_simps
         cs_intro: bifunctor_proj_fst_ArrMap_vsv cat_cs_intros cat_op_intros
     )
@@ -1140,7 +1184,11 @@ lemma (in category) cat_cf_Hom_snd_ArrMap_vdomain[cat_cs_simps]:
   shows "\<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(a,-)\<lparr>ArrMap\<rparr>) = \<CC>\<lparr>Arr\<rparr>"
   using category_axioms assms
   unfolding cf_Hom_snd_def
-  by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros
+    )
 
 lemmas [cat_cs_simps] = category.cat_cf_Hom_snd_ArrMap_vdomain
 
@@ -1149,7 +1197,11 @@ lemma (in category) cat_cf_Hom_fst_ArrMap_vdomain[cat_cs_simps]:
   shows "\<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,b)\<lparr>ArrMap\<rparr>) = op_cat \<CC>\<lparr>Arr\<rparr>"
   using category_axioms assms
   unfolding cf_Hom_fst_def
-  by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros
+    )
 
 lemmas [cat_cs_simps] = category.cat_cf_Hom_fst_ArrMap_vdomain
 
@@ -1165,7 +1217,7 @@ proof-
       cat_op_simps
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps 
           cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
       )
@@ -1184,7 +1236,7 @@ proof-
       bifunctor_proj_fst_ArrMap_app[OF category_op category_axioms assms(1) f]
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps 
           cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
       )
@@ -1204,7 +1256,7 @@ proof(rule cf_eqI[of \<alpha>])
     "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>op_cat \<CC>(a,-) : op_cat \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"  
     by
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_cs_simps cat_op_simps   
           cs_intro: cat_cs_intros cat_op_intros
       )
@@ -1212,7 +1264,7 @@ proof(rule cf_eqI[of \<alpha>])
     "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,a) : op_cat \<CC> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Set \<alpha>"
     by
       (
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: cat_cs_simps cat_op_simps   
           cs_intro: cat_cs_intros cat_op_intros
       )
@@ -1222,18 +1274,18 @@ proof(rule cf_eqI[of \<alpha>])
     from assms category_axioms show "vsv (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>op_cat \<CC>(a,-)\<lparr>ObjMap\<rparr>)"
       by (intro is_functor.cf_ObjMap_vsv)
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_cs_simps cat_op_simps 
             cs_intro: cat_cs_intros cat_op_intros
         )
     from assms category_axioms show "vsv (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,a)\<lparr>ObjMap\<rparr>)"
       by (intro is_functor.cf_ObjMap_vsv)
-        (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from assms category_axioms show 
       "\<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>op_cat \<CC>(a,-)\<lparr>ObjMap\<rparr>) = \<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,a)\<lparr>ObjMap\<rparr>)"
       by
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_cs_simps cat_op_simps   
             cs_intro: cat_cs_intros cat_op_intros
         )
@@ -1249,7 +1301,11 @@ proof(rule cf_eqI[of \<alpha>])
                 ]
           )
       from category_axioms assms this show ?thesis
-        by (cs_concl cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_op_intros)
+        by 
+          (
+            cs_concl cs_shallow 
+              cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_op_intros
+          )
     qed
   qed
   
@@ -1257,13 +1313,17 @@ proof(rule cf_eqI[of \<alpha>])
   proof(rule vsv_eqI)
     from assms category_axioms show "vsv (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>op_cat \<CC>(a,-)\<lparr>ArrMap\<rparr>)"
       by (intro is_functor.cf_ArrMap_vsv)
-        (cs_concl cs_intro: cat_cs_intros cat_op_intros)
+        (cs_concl cs_shallow cs_intro: cat_cs_intros cat_op_intros)
     from assms category_axioms show "vsv (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,a)\<lparr>ArrMap\<rparr>)"
       by (intro is_functor.cf_ArrMap_vsv)
-        (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+        (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
     from assms category_axioms show 
       "\<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>op_cat \<CC>(a,-)\<lparr>ArrMap\<rparr>) = \<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,a)\<lparr>ArrMap\<rparr>)"
-      by (cs_concl cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_op_intros)
+      by 
+        (
+          cs_concl cs_shallow 
+            cs_simp: cat_cs_simps cat_op_simps cs_intro: cat_op_intros
+        )
     show "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>op_cat \<CC>(a,-)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> = Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,a)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
       if "f \<in>\<^sub>\<circ> \<D>\<^sub>\<circ> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>op_cat \<CC>(a,-)\<lparr>ArrMap\<rparr>)" for f
     proof-
@@ -1279,7 +1339,7 @@ proof(rule cf_eqI[of \<alpha>])
       from category_axioms assms this show ?thesis
         by 
           (
-            cs_concl
+            cs_concl cs_shallow
               cs_simp: cat_cs_simps cat_op_simps 
               cs_intro: cat_cs_intros cat_op_intros
           )
@@ -1363,7 +1423,7 @@ proof(rule cf_eqI[of \<alpha>])
   have c6: "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(b,-)\<lparr>ObjMap\<rparr>\<lparr>c\<rparr> = Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,c)\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>"
     if "b \<in>\<^sub>\<circ> op_cat \<CC>\<lparr>Obj\<rparr>" and "c \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>" for b c
     using that category_axioms
-    by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_simp: cat_cs_simps cs_intro: cat_cs_intros)
   have c7: 
     "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(b',-)\<lparr>ArrMap\<rparr>\<lparr>g\<rparr> \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,c)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> =
       Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,c' )\<lparr>ArrMap\<rparr>\<lparr>f\<rparr> \<circ>\<^sub>A\<^bsub>cat_Set \<alpha>\<^esub> Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(b,- )\<lparr>ArrMap\<rparr>\<lparr>g\<rparr>"
@@ -1372,7 +1432,7 @@ proof(rule cf_eqI[of \<alpha>])
     unfolding cat_op_simps
     by 
       (
-        cs_concl 
+        cs_concl  
           cs_simp: cat_cs_simps cat_op_simps 
           cs_intro: cat_cs_intros cat_op_intros
       )
@@ -1399,7 +1459,7 @@ proof(rule cf_eqI[of \<alpha>])
       unfolding aa'_def cf_array_specification(2)[OF a a'] cat_op_simps
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_cs_simps cs_intro: cat_op_intros cat_prod_cs_intros
         )
   qed (auto simp: cf_array_ObjMap_vsv cf_Hom_ObjMap_vsv cat_cs_simps)
@@ -1419,7 +1479,7 @@ proof(rule cf_eqI[of \<alpha>])
       unfolding ff'_def cat_op_simps
       by 
         (
-          cs_concl 
+          cs_concl  
             cs_simp: cat_cs_simps cat_op_simps 
             cs_intro: cat_cs_intros cat_op_intros
         )
@@ -1438,8 +1498,12 @@ lemma (in category) cat_cf_rcomp_Hom_cf_Hom_snd:
   shows "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,\<GG>-)\<^bsub>op_cat \<CC>,\<BB>\<^esub>(a,-)\<^sub>C\<^sub>F = Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(a,-) \<circ>\<^sub>C\<^sub>F \<GG>"
   using category_axioms assms 
   unfolding cf_rcomp_Hom_def cf_Hom_snd_def
-  by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros)
-
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros
+    )
+  
 lemmas [cat_cs_simps] = category.cat_cf_rcomp_Hom_cf_Hom_snd
 
 lemma (in category) cat_cf_lcomp_Hom_cf_Hom_snd:
@@ -1447,7 +1511,11 @@ lemma (in category) cat_cf_lcomp_Hom_cf_Hom_snd:
   shows "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(\<FF>-,-)\<^bsub>op_cat \<BB>,\<CC>\<^esub>(b,-)\<^sub>C\<^sub>F = Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(\<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>,-)"
   using category_axioms assms 
   unfolding cf_lcomp_Hom_def cf_Hom_snd_def
-  by (cs_concl cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros)
+  by 
+    (
+      cs_concl cs_shallow 
+        cs_simp: cat_cs_simps cs_intro: cat_cs_intros cat_op_intros
+    )
 
 lemmas [cat_cs_simps] = category.cat_cf_lcomp_Hom_cf_Hom_snd
 
@@ -1497,7 +1565,7 @@ proof-
           Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,\<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)\<lparr>ObjMap\<rparr>\<lparr>a\<rparr>"
         by 
           (
-            cs_concl 
+            cs_concl  
               cs_simp: cat_cs_simps 
               cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
           )
@@ -1521,7 +1589,7 @@ proof-
           Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,\<FF>\<lparr>ObjMap\<rparr>\<lparr>b\<rparr>)\<lparr>ArrMap\<rparr>\<lparr>f\<rparr>"
         by 
           (
-            cs_concl 
+            cs_concl  
               cs_simp: cat_cs_simps cat_op_simps 
               cs_intro: cat_cs_intros cat_op_intros cat_prod_cs_intros
           )

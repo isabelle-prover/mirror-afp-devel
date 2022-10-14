@@ -809,7 +809,7 @@ proof -
   proof (rule sum.cong)
     fix p
     assume "p \<in> set ss"
-    hence "count_list ss p \<noteq> 0" by (simp only: count_list_eq_0_iff not_not)
+    hence "count_list ss p \<noteq> 0" by (simp only: count_list_0_iff not_not)
     hence "count_list ss p = 1 \<or> 1 < count_list ss p" by auto
     thus "Hilbert_fun p z = count_list ss p * Hilbert_fun p z"
     proof

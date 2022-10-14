@@ -236,33 +236,45 @@ lemma bd_FGl_cinfinite: "cinfinite bd_FGl"
 
 lemma
   fixes x :: "(_, _, _, 'co1, 'co2, 'co3, 'co4, 'contra1, 'contra2, 'contra3, 'contra4, 'f1, 'f2) FGl"
-  shows set1_FGl_bound: "card_of (set1_FGl x) \<le>o
+  shows set1_FGl_bound: "card_of (set1_FGl x) <o
       (bd_FGl :: ('co1, 'co2, 'co3, 'co4, 'contra1, 'contra2, 'contra3, 'contra4, 'f1, 'f2) FGlbd rel)"
-    and set2_FGl_bound: "card_of (set2_FGl x) \<le>o
+    and set2_FGl_bound: "card_of (set2_FGl x) <o
       (bd_FGl :: ('co1, 'co2, 'co3, 'co4, 'contra1, 'contra2, 'contra3, 'contra4, 'f1, 'f2) FGlbd rel)"
-    and set3_FGl_bound: "card_of (set3_FGl x) \<le>o
+    and set3_FGl_bound: "card_of (set3_FGl x) <o
       (bd_FGl :: ('co1, 'co2, 'co3, 'co4, 'contra1, 'contra2, 'contra3, 'contra4, 'f1, 'f2) FGlbd rel)"
   unfolding set1_FGl_def set2_FGl_def set3_FGl_def bd_FGl_def
     apply (simp)
-    apply (rule ordLeq_transitive)
+    apply (rule ordLeq_ordLess_trans)
      apply (rule Un_csum)
-    apply (rule csum_mono)
-     apply (rule comp_single_set_bd[where fset=set1_G and gset=set1_F, rotated])
+    apply (rule csum_mono_strict)
+         apply (rule card_of_Card_order)+
+       apply (rule Cinfinite_cprod2)
+        apply (rule Cinfinite_Cnotzero)
+        apply (rule bd_F_Cinfinite)
+       apply (rule bd_G_Cinfinite)
+      apply (rule bd_F_Cinfinite)
+     apply (rule comp_single_set_bd_strict[where fset=set1_G and gset=set1_F, rotated])
+          apply (rule bd_G_regularCard)
+         apply (rule bd_F_Cinfinite)
+        apply (rule bd_F_regularCard)
        apply (rule set1_G_bound)
       apply (rule set1_F_bound)
-     apply (rule card_order_on_Card_order[THEN conjunct2, OF bd_G_card_order])
+     apply (rule bd_G_Cinfinite)
     apply (rule set2_F_bound)
-   apply (rule ordLeq_transitive)
-    apply (rule comp_single_set_bd[where fset=set2_G and gset=set1_F, rotated])
+   apply (rule ordLess_ordLeq_trans)
+    apply (rule comp_single_set_bd_strict[where fset=set2_G and gset=set1_F, rotated])
+         apply (rule bd_G_regularCard)
+        apply (rule bd_F_Cinfinite)
+       apply (rule bd_F_regularCard)
       apply (rule set2_G_bound)
      apply (rule set1_F_bound)
-    apply (rule card_order_on_Card_order[THEN conjunct2, OF bd_G_card_order])
+    apply (rule bd_G_Cinfinite)
    apply (rule ordLeq_csum1)
    apply (rule Card_order_cprod)
-  apply (rule ordLeq_transitive)
+  apply (rule ordLess_ordLeq_trans)
    apply (rule set3_F_bound)
   apply (rule ordLeq_csum2)
-  apply (rule card_order_on_Card_order[THEN conjunct2, OF bd_F_card_order])
+  apply (rule conjunct2[OF bd_F_Cinfinite])
   done
 
 lemma mapl_FGl_cong:
@@ -487,7 +499,7 @@ lemma bd_FGco_cinfinite: "cinfinite bd_FGco"
 lemma set1_FGco_bound:
   fixes x :: "(_, 'co1, 'co2, 'co3, 'co4, 'co5, 'co6,
     'contra1, 'contra2, 'contra3, 'contra4, 'f1, 'f2) FGco"
-  shows "card_of (set1_FGco x) \<le>o (bd_FGco :: ('co1, 'co2, 'co3, 'co4, 'co5, 'co6,
+  shows "card_of (set1_FGco x) <o (bd_FGco :: ('co1, 'co2, 'co3, 'co4, 'co5, 'co6,
     'contra1, 'contra2, 'contra3, 'contra4, 'f1, 'f2) FGcobd rel)"
   unfolding set1_FGco_def bd_FGco_def using set1_F_bound .
 
@@ -719,7 +731,7 @@ lemma bd_FGcontra_cinfinite: "cinfinite bd_FGcontra"
 lemma set1_FGcontra_bound:
   fixes x :: "(_, 'co1, 'co2, 'co3, 'co4, 'co5,
     'contra1, 'contra2, 'contra3, 'contra4, 'contra5, 'f1, 'f2) FGcontra"
-  shows "card_of (set1_FGcontra x) \<le>o (bd_FGcontra :: ('co1, 'co2, 'co3, 'co4, 'co5,
+  shows "card_of (set1_FGcontra x) <o (bd_FGcontra :: ('co1, 'co2, 'co3, 'co4, 'co5,
     'contra1, 'contra2, 'contra3, 'contra4, 'contra5, 'f1, 'f2) FGcontrabd rel)"
   unfolding set1_FGcontra_def bd_FGcontra_def using set1_F_bound .
 
@@ -890,9 +902,9 @@ lemma bd_FGf_cinfinite: "cinfinite bd_FGf"
 
 lemma
   fixes x :: "(_, _, 'co1, 'co2, 'contra1, 'contra2, 'f1, 'f2, 'f3, 'f4, 'f5, 'f6, 'f7) FGf"
-  shows set1_FGf_bound: "card_of (set1_FGf x) \<le>o (bd_FGf :: ('co1, 'co2, 'contra1, 'contra2,
+  shows set1_FGf_bound: "card_of (set1_FGf x) <o (bd_FGf :: ('co1, 'co2, 'contra1, 'contra2,
       'f1, 'f2, 'f3, 'f4, 'f5, 'f6, 'f7) FGfbd rel)"
-    and set2_FGf_bound: "card_of (set2_FGf x) \<le>o (bd_FGf :: ('co1, 'co2, 'contra1, 'contra2,
+    and set2_FGf_bound: "card_of (set2_FGf x) <o (bd_FGf :: ('co1, 'co2, 'contra1, 'contra2,
       'f1, 'f2, 'f3, 'f4, 'f5, 'f6, 'f7) FGfbd rel)"
   unfolding set1_FGf_def set2_FGf_def bd_FGf_def by (rule set1_F_bound set2_F_bound)+
 

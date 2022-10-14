@@ -37,7 +37,7 @@
 chapter \<open>Appendix IV : Examples for Annotation Navigation and Context Serialization\<close>
 
 theory C2
-  imports "../C_Main"
+  imports "../main/C_Main"
           "HOL-ex.Cartouche_Examples"
 begin
 
@@ -83,13 +83,13 @@ setup \<open>ML_Antiquotation.inline @{binding print_top'}
                                (Args.context
                                 >> K ("print_top' " ^ ML_Pretty.make_string_fn ^ " I"))\<close>
 setup \<open>ML_Antiquotation.inline @{binding print_stack}
-                               (Scan.peek (fn _ => Scan.option Args.text)
+                               (Scan.peek (fn _ => Scan.option Parse.embedded)
                                 >> (fn name => ("print_stack "
                                                 ^ (case name of NONE => "NONE"
                                                               | SOME s => "(SOME \"" ^ s ^ "\")")
                                                 ^ " " ^ ML_Pretty.make_string_fn)))\<close>
 setup \<open>ML_Antiquotation.inline @{binding print_stack'}
-                               (Scan.peek (fn _ => Scan.option Args.text)
+                               (Scan.peek (fn _ => Scan.option Parse.embedded)
                                 >> (fn name => ("print_stack' "
                                                 ^ (case name of NONE => "NONE"
                                                               | SOME s => "(SOME \"" ^ s ^ "\")")
@@ -239,8 +239,13 @@ int a = 0;
 subsection \<open>Bottom-Up vs. Top-Down Evaluation\<close>
 
 ML\<open>
-structure Example_Data = Generic_Data (type T = string list
-                                       val empty = [] val extend = I val merge = K empty)
+structure Example_Data = Generic_Data
+(
+  type T = string list
+  val empty = []
+  val merge = K empty
+)
+
 fun add_ex s1 s2 =
   Example_Data.map (cons s2)
   #> (fn context => let val () = Output.information (s1 ^ s2)
@@ -266,6 +271,32 @@ int b,c,d/*@@ \<approx>setup\<Down> \<open>fn s => fn x => fn env => @{print_top
           */,e = 0; /*@@
               \<approx>setup\<Down> \<open>fn s => fn x => fn env => @{print_top} s x env
                                                 #> add_ex "evaluation of " "5_print_top"\<close> */
+\<close>
+
+subsection \<open>Out of Bound Evaluation for Annotations\<close>
+
+C \<comment> \<open>Bottom-up and top-down + internal initial value\<close> \<open>
+int a = 0 ;
+int     /*@ @    ML \<open>writeln "2"\<close>
+            @@@  ML \<open>writeln "4"\<close>
+            +@   ML \<open>writeln "3"\<close>
+(*            +++@ ML \<open>writeln "6"\<close>*)
+                 ML\<Down>\<open>writeln "1"\<close>  */
+//    a d /*@ @    ML \<open>writeln "5"\<close>  */;
+int a;
+\<close>
+
+C \<comment> \<open>Ordering of consecutive commands\<close> \<open>
+int a = 0  /*@ ML\<open>writeln "1"\<close> */;
+int        /*@ @@@@@ML\<open>writeln "5" \<close> @@@ML\<open>writeln "4" \<close> @@ML\<open>writeln "2" \<close> */
+           /*@ @@@@@ML\<open>writeln "5'"\<close> @@@ML\<open>writeln "4'"\<close> @@ML\<open>writeln "2'"\<close> */
+    a = 0;
+int d = 0; /*@ ML\<open>writeln "3"\<close> */
+\<close>
+
+C \<comment> \<open>Maximum depth reached\<close> \<open>
+int a = 0 /*@ ++@@@@ML\<open>writeln "2"\<close>
+              ++@@@ ML\<open>writeln "1"\<close> */;
 \<close>
 
 section \<open>Reporting of Positions and Contextual Update of Environment\<close>
@@ -344,8 +375,8 @@ subsection \<open>Continuation Calculus with the C Environment: Presentation in 
 declare [[C_parser_trace = false]]
 
 ML\<open>
-val C  = C_Module.C
-val C' = C_Module.C'
+val C = C_Module.C' NONE
+val C' = C_Module.C' o SOME
 \<close>
 
 C \<comment> \<open>Nesting C code without propagating the C environment\<close> \<open>
@@ -431,10 +462,11 @@ subsection \<open>Continuation Calculus with the C Environment: Deep-First Nesti
 
 ML\<open>
 structure Data_Out = Generic_Data
-  (type T = int
-   val empty = 0
-   val extend = I
-   val merge = K empty)
+(
+  type T = int
+  val empty = 0
+  val merge = K empty
+)
 
 fun show_env0 make_string f msg context =
   Output.information ("(" ^ msg ^ ") " ^ make_string (f (Data_Out.get context)))
@@ -608,14 +640,11 @@ subsection \<open>Validity of Context for Annotations\<close>
 
 ML \<open>fun fac x = if x = 0 then 1 else x * fac (x - 1)\<close>
 
-ML \<comment> \<open>Execution of annotations in term possible in (the outermost) \<^theory_text>\<open>ML\<close>\<close> 
-\<open>
+ML \<comment> \<open>Execution of annotations in term possible in (the outermost) \<^theory_text>\<open>ML\<close>\<close> \<open>
 \<^term>\<open> \<^C> \<open>int c = 0; /*@ ML \<open>fac 100\<close> */\<close> \<close>
 \<close>
 
-definition \<comment> \<open>Execution of annotations in term possible in \<^ML_type>\<open>local_theory\<close>
-               commands (such as \<^theory_text>\<open>definition\<close>)\<close> 
-\<open>
+definition \<comment> \<open>Execution of annotations in term possible in \<^ML_type>\<open>local_theory\<close> commands (such as \<^theory_text>\<open>definition\<close>)\<close> \<open>
 term = \<^C> \<open>int c = 0; /*@ ML \<open>fac 100\<close> */\<close>
 \<close>
 
@@ -650,7 +679,6 @@ val _ =
           ("term\<^sub>o\<^sub>u\<^sub>t\<^sub>e\<^sub>r", \<^here>, \<^here>, \<^here>))
 end
 \<close>
-
 
 C \<open>
 int z = z;
@@ -760,10 +788,11 @@ subsection \<open>Generalizing ML Antiquotations with C Directives\<close>
 
 ML \<open>
 structure Directive_setup_define = Generic_Data
-  (type T = int
-   val empty = 0
-   val extend = I
-   val merge = K empty)
+(
+  type T = int
+  val empty = 0
+  val merge = K empty
+)
 
 fun setup_define1 pos f =
   C_Directive.setup_define
@@ -859,8 +888,10 @@ a a /*#include <>*/ // must not be considered as a directive
 C \<comment> \<open>Universal character names in identifiers and Isabelle symbols\<close> \<open>
 #include <stdio.h>
 int main () {
+  char * _ = "\x00001";
+  char *  _  = " ";
   char * ó\<^url>ò = "ó\<^url>ò";
-  printf ("%s", ó\<^url>ò);
+  printf ("%s %s", ó\<^url>ò, _ );
 }
 \<close>
 
@@ -894,5 +925,7 @@ ML\<open>val _ = @{term \<open>3::nat\<close>}\<close>
 ML\<open> ML_Antiquotation.inline_embedded;
 \<close>
 (* and from where do I get the result ? *)
+
+declare [[C\<^sub>r\<^sub>u\<^sub>l\<^sub>e\<^sub>0 = "translation_unit"]]
 
 end

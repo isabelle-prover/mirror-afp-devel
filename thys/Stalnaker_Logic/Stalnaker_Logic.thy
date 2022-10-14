@@ -118,17 +118,16 @@ proof -
     then have \<open>consistent A {\<^bold>\<not>((K i (p \<^bold>\<and> q)) \<^bold>\<longrightarrow> ((K i p) \<^bold>\<and> (K i q)))}\<close>
       by (metis imply.simps(1) inconsistent_imply insert_is_Un list.set(1))
     let ?V = \<open>Extend A {\<^bold>\<not>((K i (p \<^bold>\<and> q)) \<^bold>\<longrightarrow> ((K i p) \<^bold>\<and> (K i q)))} from_nat\<close> 
-    let ?M = \<open>Kripke (mcss A) pi (reach A)\<close> 
+    let ?M = \<open>\<lparr>\<W> = mcss A, \<K> = reach A, \<pi> = pi\<rparr>\<close> 
     have \<open>?V \<in> \<W> ?M \<and> ?M, ?V \<Turnstile> \<^bold>\<not>((K i (p \<^bold>\<and> q)) \<^bold>\<longrightarrow> ((K i p) \<^bold>\<and> (K i q)))\<close>
       using canonical_model \<open>consistent A {\<^bold>\<not> (K i (p \<^bold>\<and> q) \<^bold>\<longrightarrow> K i p \<^bold>\<and> K i q)}\<close> 
-            insert_iff kripke.sel(1) mem_Collect_eq by fastforce
+            insert_iff mem_Collect_eq by fastforce
     then have o: \<open>?M, ?V \<Turnstile> ((K i (p \<^bold>\<and> q)) \<^bold>\<and> \<^bold>\<not>((K i p) \<^bold>\<and> (K i q)))\<close>
       by auto
     then have \<open>?M, ?V \<Turnstile> (K i (p \<^bold>\<and> q))\<close> \<open>(?M, ?V \<Turnstile> \<^bold>\<not>(K i p)) \<or> (?M, ?V \<Turnstile> \<^bold>\<not>(K i q))\<close>
       by auto
     then have \<open>\<forall> U \<in> \<W> ?M \<inter> \<K> ?M i ?V. ?M, U \<Turnstile>(p \<^bold>\<and> q)\<close>
               \<open>\<exists> U \<in> \<W> ?M \<inter> \<K> ?M i ?V. ?M, U \<Turnstile> ((\<^bold>\<not>p) \<^bold>\<or> (\<^bold>\<not>q))\<close>
-      apply (meson semantics.simps(6))
       using o by auto
     then show False 
       by simp
@@ -401,7 +400,7 @@ qed
 lemma mcs\<^sub>_\<^sub>2_weakly_directed:
   fixes A :: \<open>(('i :: countable) fm \<Rightarrow> bool)\<close>
   assumes \<open>\<forall>p. Ax_2 p \<longrightarrow> A p\<close>
-  shows \<open>weakly_directed (Kripke (mcss A) pi (reach A))\<close>
+  shows \<open>weakly_directed \<lparr>\<W> = mcss A, \<K> = reach A, \<pi> = pi\<rparr>\<close>
   unfolding weakly_directed_def
 proof (intro allI ballI, auto)
   fix i V U W
@@ -427,7 +426,7 @@ assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> Ax_2 \<turnstile> imply 
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
   let ?V = \<open>Extend Ax_2 ?S from_nat\<close>
-  let ?M = \<open>Kripke (mcss Ax_2) pi (reach Ax_2)\<close>
+  let ?M = \<open>\<lparr>\<W> = mcss Ax_2, \<K> = reach Ax_2, \<pi> = pi\<rparr>\<close>
 
   have \<open>consistent Ax_2 ?S\<close>
     using * by (metis K_imply_Cons consistent_def inconsistent_subset)
@@ -474,7 +473,7 @@ proof (rule ccontr)
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
   let ?V = \<open>Extend AxS4_2 ?S from_nat\<close>
-  let ?M = \<open>Kripke (mcss AxS4_2) pi (reach AxS4_2)\<close>
+  let ?M = \<open>\<lparr>\<W> = mcss AxS4_2, \<K> = reach AxS4_2, \<pi> = pi\<rparr>\<close>
 
   have \<open>consistent AxS4_2 ?S\<close>
     using * by (metis (no_types, lifting) K_imply_Cons consistent_def inconsistent_subset)
@@ -483,7 +482,7 @@ proof (rule ccontr)
     \<open>consistent AxS4_2 ?V\<close> \<open>maximal AxS4_2 ?V\<close>
     using canonical_model unfolding list_all_def by fastforce+
   moreover have \<open>w_directed_preorder ?M\<close>
-    by (simp add: mcs\<^sub>T_reflexive mcs\<^sub>_\<^sub>2_weakly_directed mcs\<^sub>K\<^sub>4_transitive)
+    using reflexive\<^sub>T[of AxS4_2] mcs\<^sub>_\<^sub>2_weakly_directed[of AxS4_2] transitive\<^sub>K\<^sub>4[of AxS4_2] by auto
   ultimately have \<open>?M, ?V \<Turnstile> p\<close>
     using valid by auto
   then show False
@@ -550,7 +549,11 @@ proof -
     by (meson AN System_topoS4.R1')
 qed
 
-lemma S4_topoS4: \<open>\<turnstile>\<^sub>S\<^sub>4 p \<Longrightarrow> \<turnstile>\<^sub>T\<^sub>o\<^sub>p p\<close>
+lemma empty_S4: "{} \<turnstile>\<^sub>S\<^sub>4 p \<longleftrightarrow> AxT \<oplus> Ax4 \<turnstile> p"
+  by simp
+
+lemma S4_topoS4: \<open>{} \<turnstile>\<^sub>S\<^sub>4 p \<Longrightarrow> \<turnstile>\<^sub>T\<^sub>o\<^sub>p p\<close>
+  unfolding empty_S4
 proof (induct p rule: AK.induct)
   case (A2 i p q)
   then show ?case using topoS4_AxK .
@@ -566,7 +569,8 @@ qed (meson System_topoS4.intros)+
 
 lemma topoS4_S4:
   fixes p :: \<open>('i :: countable) fm\<close>
-  shows \<open>\<turnstile>\<^sub>T\<^sub>o\<^sub>p p \<Longrightarrow> \<turnstile>\<^sub>S\<^sub>4 p\<close>
+  shows \<open>\<turnstile>\<^sub>T\<^sub>o\<^sub>p p \<Longrightarrow> {} \<turnstile>\<^sub>S\<^sub>4 p\<close>
+  unfolding empty_S4
 proof (induct p rule: System_topoS4.induct)
   case (AT' i p)
   then show ?case
@@ -581,19 +585,19 @@ next
       by (meson K_conj_imply_factor K_conjunction_in K_conjunction_out K_imp_trans' K_imply_multi R1)
 next
   case (AN i) 
-  then have *: \<open>\<turnstile>\<^sub>S\<^sub>4 \<^bold>\<top>\<close>
+  then have *: \<open>AxT \<oplus> Ax4 \<turnstile> \<^bold>\<top>\<close>
     by (simp add: A1)
   then show ?case 
     by (simp add: * R2)
 next
   case (RM p q i)
-  then have \<open>\<turnstile>\<^sub>S\<^sub>4 K i (p \<^bold>\<longrightarrow> q)\<close>
+  then have \<open>AxT \<oplus> Ax4 \<turnstile> K i (p \<^bold>\<longrightarrow> q)\<close>
     by (simp add: R2)
   then show ?case
     by (simp add: K_map RM.hyps(2))
 qed (meson AK.intros)+
 
-theorem main\<^sub>S\<^sub>4': \<open>valid\<^sub>S\<^sub>4 p \<longleftrightarrow> (\<turnstile>\<^sub>T\<^sub>o\<^sub>p p)\<close>
-  using main\<^sub>S\<^sub>4 S4_topoS4 topoS4_S4 by blast
+theorem main\<^sub>S\<^sub>4': \<open>{} \<TTurnstile>\<^sub>S\<^sub>4 p \<longleftrightarrow> (\<turnstile>\<^sub>T\<^sub>o\<^sub>p p)\<close>
+  using main\<^sub>S\<^sub>4[of "{}"] S4_topoS4 topoS4_S4 by blast
 
 end

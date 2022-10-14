@@ -50,7 +50,11 @@ fun um_inst ctxt thm env =
   let
     val tenv = Vartab.dest (Envir.term_env env)
     val tyenv = Vartab.dest (Envir.type_env env)
-    val inst = (TVars.make (map (prep_ty ctxt) tyenv), Vars.make (map (prep_trm ctxt) tenv))
+    val inst =
+      (
+        TVars.make (map (prep_ty ctxt) tyenv),
+        Vars.make (map (prep_trm ctxt) tenv)
+      )
   in 
     thm
     |> Drule.instantiate_normalize inst
@@ -92,8 +96,8 @@ val match_inst_rec = um_inst_rec match_cond;
 val match_inst_list = um_inst_list match_cond;
 fun match_inst match_inst_impl pat_fun is_trivial ctxt thm trm =
   let
-    val univ = Unify.matchers (Context.Proof ctxt) [(pat_fun thm, trm)]
-    val envs = Seq.list_of univ
+    val envs = Unify.matchers (Context.Proof ctxt) [(pat_fun thm, trm)]
+      |> Seq.list_of (*FIXME*)
   in match_inst_impl pat_fun is_trivial ctxt thm trm envs end;
 
 end;

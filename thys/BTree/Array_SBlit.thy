@@ -5,19 +5,19 @@ begin
 (* Resolves TODO by Peter Lammich *)
 (* OCaml handles the case of len=0 correctly (i.e.
 as specified by the Hoare Triple in Array_Blit
-not generating an exception if si+len \<le> array length and such) *)
+not generating an exception if si+len \<le> array length and such) *) 
 code_printing code_module "array_blit" \<rightharpoonup> (OCaml)
   \<open>
-   let array_blit src si dst di len = (
-      if src=dst then
-         raise (Invalid_argument "array_blit: Same arrays")
-      else
-        Array.blit src (Z.to_int si) dst (Z.to_int di) (Z.to_int len)
-    )
+let array_blit src si dst di len = (
+  if src=dst then
+     raise (Invalid_argument "array_blit: Same arrays")
+  else
+    Array.blit src (Z.to_int si) dst (Z.to_int di) (Z.to_int len)
+);;
 \<close>
 
 code_printing constant blit' \<rightharpoonup>
-  (OCaml) "(fun () -> /array'_blit _ _ _ _ _)"
+ (OCaml) "(fun () -> /array'_blit _ _ _ _ _)"
 
 
 export_code blit checking OCaml
@@ -50,14 +50,14 @@ lemma sblit_rule[sep_heap_rules]:
 proof (induction len arbitrary: lsrc si di)
   case 0 thus ?case by sep_auto
 next
-  case (Suc len)
-  note [sep_heap_rules] = Suc.IH
+  case (Suc len) 
+  note [sep_heap_rules] = Suc.IH      
 
   have [simp]: "\<And>x. lsrc ! si # take len (drop (Suc si) lsrc) @ x
       = take (Suc len) (drop si lsrc) @ x"
     apply simp
     by (metis Suc.prems(1) add_Suc_right Cons_nth_drop_Suc
-        less_Suc_eq_le add.commute not_less_eq take_Suc_Cons
+        less_Suc_eq_le add.commute not_less_eq take_Suc_Cons 
         Nat.trans_le_add2)
 
   from Suc.prems show ?case
@@ -83,17 +83,17 @@ text "For separated arrays it is equivalent to normal blit.
 lemma rblit_rule[sep_heap_rules]:
   assumes LEN: "si+len \<le> length lsrc" "di+len \<le> length ldst"
   shows
-    "< src \<mapsto>\<^sub>a lsrc
+    "< src \<mapsto>\<^sub>a lsrc 
       * dst \<mapsto>\<^sub>a ldst >
     rblit src si dst di len
-    <\<lambda>_. src \<mapsto>\<^sub>a lsrc
+    <\<lambda>_. src \<mapsto>\<^sub>a lsrc 
       * dst \<mapsto>\<^sub>a (take di ldst @ take len (drop si lsrc) @ drop (di+len) ldst)
     >"
   using LEN
 proof (induction len arbitrary: ldst)
   case 0 thus ?case by sep_auto
 next
-  case (Suc len)
+  case (Suc len) 
   note [sep_heap_rules] = Suc.IH
 
   have [simp]: "drop (di + len) (ldst[di + len := lsrc ! (si + len)])
@@ -132,7 +132,7 @@ lemma srblit_rule[sep_heap_rules]:
 proof (induction len arbitrary: lsrc si di)
   case 0 thus ?case by sep_auto
 next
-  case (Suc len)
+  case (Suc len) 
   note [sep_heap_rules] = Suc.IH
 
   have[simp]: "take len (drop si (lsrc[di + len := lsrc ! (si + len)]))
@@ -160,7 +160,7 @@ subsection "Modeling target language blit"
 
 text "For convenience, a function that is oblivious to the direction of the shift
       is defined."
-definition "safe_sblit a s d l \<equiv>
+definition "safe_sblit a s d l \<equiv> 
     if s > d then
       sblit a s d l
     else
@@ -211,21 +211,21 @@ code_printing code_module "array_sblit" \<rightharpoonup> (SML)
 
 code_printing code_module "array_sblit" \<rightharpoonup> (OCaml)
   \<open>
-   let array_sblit src si di len = (
-      if len > Z.zero then
-        (Array.blit src (Z.to_int si) src (Z.to_int di) (Z.to_int len))
-      else ()
-    )
+let array_sblit src si di len = (
+  if len > Z.zero then
+    (Array.blit src (Z.to_int si) src (Z.to_int di) (Z.to_int len))
+  else ()
+);;
 \<close>
 
 definition safe_sblit' where
-  [code del]: "safe_sblit' src si di len
-      = safe_sblit src (nat_of_integer si) (nat_of_integer di)
+  [code del]: "safe_sblit' src si di len 
+      = safe_sblit src (nat_of_integer si) (nat_of_integer di) 
           (nat_of_integer len)"
 
 lemma [code]:
-  "safe_sblit src si di len
-      = safe_sblit' src (integer_of_nat si) (integer_of_nat di)
+  "safe_sblit src si di len 
+      = safe_sblit' src (integer_of_nat si) (integer_of_nat di) 
           (integer_of_nat len)" by (simp add: safe_sblit'_def)
 
 (* TODO: Export to other languages: Haskell *)
@@ -242,7 +242,7 @@ code_printing constant safe_sblit' \<rightharpoonup>
     }"
 
 code_printing constant safe_sblit' \<rightharpoonup>
-  (OCaml) "(fun () -> /array'_sblit _ _ _ _)"
+ (OCaml) "(fun () -> /array'_sblit _ _ _ _)"
 
 
 export_code safe_sblit checking SML Scala OCaml

@@ -67,6 +67,9 @@ lemma all_edges_subset_Pow: "all_edges A \<subseteq> Pow A"
 lemma in_mk_uedge_img: "(a,b) \<in> A \<or> (b,a) \<in> A \<Longrightarrow> {a,b} \<in> mk_uedge ` A"
   by (auto intro: rev_image_eqI)
 
+lemma in_mk_uedge_img_iff: "{a,b} \<in> mk_uedge ` A \<longleftrightarrow> (a,b) \<in> A \<or> (b,a) \<in> A"
+  by (auto simp: doubleton_eq_iff intro: rev_image_eqI)
+
 lemma distinct_edgesI:
   assumes "distinct p" shows "distinct (uwalk_edges p)"
 proof -

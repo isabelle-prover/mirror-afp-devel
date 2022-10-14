@@ -1,5 +1,5 @@
 theory BKR_Proofs
-  imports "Matrix_Equation_Construction"
+  imports Matrix_Equation_Construction
 
 begin
 
@@ -2220,5 +2220,13 @@ lemma find_consistent_signs_at_roots:
   shows "set(find_consistent_signs_at_roots p qs) = set(characterize_consistent_signs_at_roots p qs)"
   using assms find_consistent_signs_at_roots_copr csa_list_copr_rel
   by (simp add: in_set_member)
+
+(* Prettifying theorem *)
+theorem find_consistent_signs_at_roots_alt:
+assumes "p \<noteq> 0"
+assumes "\<And>q. q \<in> set qs \<Longrightarrow> coprime p q"
+shows "set (find_consistent_signs_at_roots p qs) = consistent_signs_at_roots p qs"
+using consistent_signs_at_roots_eq assms(1) assms(2) find_consistent_signs_at_roots by auto
+
 
 end

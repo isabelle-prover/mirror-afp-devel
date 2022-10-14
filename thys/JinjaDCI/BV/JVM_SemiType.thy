@@ -72,8 +72,8 @@ notation (ASCII)
 subsection "Unfolding"
 
 lemma JVM_states_unfold: 
-  "states P mxs mxl \<equiv> err(opt((Union {list n (types P) |n. n <= mxs}) \<times>
-                                 list mxl (err(types P))))"
+  "states P mxs mxl \<equiv> err(opt((Union {nlists n (types P) |n. n <= mxs}) \<times>
+                                 nlists mxl (err(types P))))"
 (*<*)
   apply (unfold states_def sl_def Opt.esl_def Err.sl_def
          stk_esl_def loc_sl_def Product.esl_def
@@ -117,7 +117,7 @@ lemma err_le_unfold [iff]:
 subsection \<open> Semilattice \<close>
 lemma order_sup_state_opt' [intro, simp]:
   "wf_prog wf_mb P \<Longrightarrow> 
-      order (sup_state_opt P) (opt ((\<Union> {list n (types P) |n. n \<le> mxs} ) \<times> list (Suc (length Ts + mxl\<^sub>0)) (err (types P))))"   
+      order (sup_state_opt P) (opt ((\<Union> {nlists n (types P) |n. n \<le> mxs} ) \<times> nlists (Suc (length Ts + mxl\<^sub>0)) (err (types P))))"   
 (*<*) 
   apply (unfold sup_state_opt_def sup_state_def sup_ty_opt_def  ) 
   apply (blast intro:order_le_prodI) \<comment>\<open> use Listn.thy.order_listI2  \<close>
@@ -125,7 +125,7 @@ lemma order_sup_state_opt' [intro, simp]:
 (*<*) 
 lemma order_sup_state_opt'' [intro, simp]:
   "wf_prog wf_mb P \<Longrightarrow> 
-      order (sup_state_opt P) (opt ((\<Union> {list n (types P) |n. n \<le> mxs} ) \<times> list ((length Ts + mxl\<^sub>0)) (err (types P))))"   
+      order (sup_state_opt P) (opt ((\<Union> {nlists n (types P) |n. n \<le> mxs} ) \<times> nlists ((length Ts + mxl\<^sub>0)) (err (types P))))"   
 (*<*) 
   apply (unfold sup_state_opt_def sup_state_def sup_ty_opt_def  ) 
   apply (blast intro:order_le_prodI) \<comment>\<open> use Listn.thy.order_listI2  \<close>

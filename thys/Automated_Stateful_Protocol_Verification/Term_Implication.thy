@@ -1,45 +1,9 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2020
-(C) Copyright Sebastian A. Mödersheim, DTU, 2020
-(C) Copyright Achim D. Brucker, University of Exeter, 2020
-(C) Copyright Anders Schlichtkrull, DTU, 2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Term_Implication.thy
     Author:     Andreas Viktor Hess, DTU
     Author:     Sebastian A. Mödersheim, DTU
     Author:     Achim D. Brucker, University of Exeter
     Author:     Anders Schlichtkrull, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section\<open>Term Implication\<close>
@@ -137,7 +101,7 @@ definition comp_timpl_closure where
 
 definition comp_timpl_closure_list where
   "comp_timpl_closure_list FP TI \<equiv>
-    let f = \<lambda>X. remdups (concat (map (\<lambda>x. concat (map (\<lambda>(a,b). \<langle>a --\<guillemotright> b\<rangle>\<langle>x\<rangle>) TI)) X))
+    let f = \<lambda>X. remdups (concat (map (\<lambda>x. concat (map (\<lambda>(a,b). \<langle>a --\<guillemotright> b\<rangle>\<langle>x\<rangle>) TI)) X)@X)
     in while (\<lambda>X. set (f X) \<noteq> set X) f FP"
 
 lemma timpl_closure_setI:
@@ -158,15 +122,16 @@ lemma term_variants_pred_eq_case_Abs:
   defines "P \<equiv> (\<lambda>_. [])(Abs a := [Abs b])"
   assumes "term_variants_pred P t s" "\<forall>f \<in> funs_term s. \<not>is_Abs f"
   shows "t = s"
-using assms(2,3) P_def
-proof (induction P t s rule: term_variants_pred.induct)
+using assms(2,3)
+proof (induction t s rule: term_variants_pred.induct)
   case (term_variants_Fun T S f)
   have "\<not>is_Abs h" when i: "i < length S" and h: "h \<in> funs_term (S ! i)" for i h
-    using i h term_variants_Fun.hyps(4) by auto
-  hence "T ! i = S ! i" when i: "i < length T" for i using i term_variants_Fun.hyps(1,3) by auto
+    using i h term_variants_Fun.prems by auto
+  hence "T ! i = S ! i" when i: "i < length T" for i
+    using i term_variants_Fun.hyps(1) term_variants_Fun.IH by auto
   hence "T = S" using term_variants_Fun.hyps(1) nth_equalityI[of T S] by fast
   thus ?case using term_variants_Fun.hyps(1) by blast
-qed (simp_all add: term_variants_pred_refl)
+qed (simp_all add: term_variants_pred_refl P_def)
 
 lemma timpl_closure'_step_inv:
   assumes "(t,s) \<in> timpl_closure'_step TI"
@@ -244,7 +209,7 @@ lemma timpl_closure'_timpls_trancl_subset:
   "timpl_closure' (c\<^sup>+) \<subseteq> timpl_closure' c"
 unfolding timpl_closure'_def
 proof
-  fix s t::"(('a,'b,'c) prot_fun,'d) term"
+  fix s t::"(('a,'b,'c,'d) prot_fun,'e) term"
   show "(s,t) \<in> (timpl_closure'_step (c\<^sup>+))\<^sup>* \<Longrightarrow> (s,t) \<in> (timpl_closure'_step c)\<^sup>*"
   proof (induction rule: rtrancl_induct)
     case (step u t)
@@ -299,7 +264,7 @@ unfolding timpl_closure'_def
 proof
   let ?cl = "{(a,b) \<in> c\<^sup>+. a \<noteq> b}"
 
-  fix s t::"(('e,'f,'c) prot_fun,'g) term"
+  fix s t::"(('a,'b,'c,'d) prot_fun,'e) term"
   show "(s,t) \<in> (timpl_closure'_step c)\<^sup>* \<Longrightarrow> (s,t) \<in> (timpl_closure'_step ?cl)\<^sup>*"
   proof (induction rule: rtrancl_induct)
     case (step u t)
@@ -365,7 +330,7 @@ lemma timpl_closure'_timpls_rtrancl_subset:
   "timpl_closure' (c\<^sup>*) \<subseteq> timpl_closure' c"
 unfolding timpl_closure'_def
 proof
-  fix s t::"(('a,'b,'c) prot_fun,'d) term"
+  fix s t::"(('a,'b,'c,'d) prot_fun,'e) term"
   show "(s,t) \<in> (timpl_closure'_step (c\<^sup>*))\<^sup>* \<Longrightarrow> (s,t) \<in> (timpl_closure'_step c)\<^sup>*"
   proof (induction rule: rtrancl_induct)
     case (step u t)
@@ -398,7 +363,7 @@ lemma timpl_closure'_timpls_rtrancl_supset:
   "timpl_closure' c \<subseteq> timpl_closure' (c\<^sup>*)"
 unfolding timpl_closure'_def
 proof
-  fix s t::"(('e,'f,'c) prot_fun,'g) term"
+  fix s t::"(('a,'b,'c,'d) prot_fun,'e) term"
   show "(s,t) \<in> (timpl_closure'_step c)\<^sup>* \<Longrightarrow> (s,t) \<in> (timpl_closure'_step (c\<^sup>*))\<^sup>*"
   proof (induction rule: rtrancl_induct)
     case (step u t)
@@ -638,7 +603,7 @@ lemma timpl_closure_FunI':
 using timpl_closure_FunI[OF IH len] by simp
 
 lemma timpl_closure_FunI2:
-  fixes f g::"('a, 'b, 'c) prot_fun"
+  fixes f g::"('a, 'b, 'c, 'd) prot_fun"
   assumes IH: "\<And>i. i < length T \<Longrightarrow> \<exists>u. (T!i, u) \<in> timpl_closure' c \<and> (S!i, u) \<in> timpl_closure' c"
     and len: "length T = length S"
     and fg: "f = g \<or> (\<exists>a b d. (a, d) \<in> c\<^sup>+ \<and> (b, d) \<in> c\<^sup>+ \<and> f = Abs a \<and> g = Abs b)"
@@ -662,7 +627,7 @@ proof -
     then obtain a b d where abd: "(a, d) \<in> c\<^sup>+" "(b, d) \<in> c\<^sup>+" "f = Abs a" "g = Abs b"
       using fg by moura
 
-    define h::"('a, 'b, 'c) prot_fun" where "h = Abs d"
+    define h::"('a, 'b, 'c, 'd) prot_fun" where "h = Abs d"
 
     have "f = h \<or> (\<exists>a b. (a, b) \<in> c\<^sup>+ \<and> f = Abs a \<and> h = Abs b)"
          "g = h \<or> (\<exists>a b. (a, b) \<in> c\<^sup>+ \<and> g = Abs a \<and> h = Abs b)"
@@ -672,7 +637,7 @@ proof -
 qed
 
 lemma timpl_closure_FunI3:
-  fixes f g::"('a, 'b, 'c) prot_fun"
+  fixes f g::"('a, 'b, 'c, 'd) prot_fun"
   assumes IH: "\<And>i. i < length T \<Longrightarrow> \<exists>u. (T!i, u) \<in> timpl_closure' c \<and> (S!i, u) \<in> timpl_closure' c"
     and len: "length T = length S"
     and fg: "f = g \<or> (\<exists>a b d. (a, d) \<in> c \<and> (b, d) \<in> c \<and> f = Abs a \<and> g = Abs b)"
@@ -1017,7 +982,7 @@ proof -
 qed
 
 lemma (in stateful_protocol_model) intruder_synth_timpl_closure_set:
-  fixes M::"('fun,'atom,'sets) prot_terms" and t::"('fun,'atom,'sets) prot_term"
+  fixes M::"('fun,'atom,'sets,'lbl) prot_terms" and t::"('fun,'atom,'sets,'lbl) prot_term"
   assumes "M \<turnstile>\<^sub>c t"
     and "s \<in> timpl_closure t TI"
   shows "timpl_closure_set M TI \<turnstile>\<^sub>c s"
@@ -1046,7 +1011,7 @@ next
 qed
 
 lemma (in stateful_protocol_model) intruder_synth_timpl_closure':
-  fixes M::"('fun,'atom,'sets) prot_terms" and t::"('fun,'atom,'sets) prot_term"
+  fixes M::"('fun,'atom,'sets,'lbl) prot_terms" and t::"('fun,'atom,'sets,'lbl) prot_term"
   assumes "timpl_closure_set M TI \<turnstile>\<^sub>c t"
     and "s \<in> timpl_closure t TI"
   shows "timpl_closure_set M TI \<turnstile>\<^sub>c s"
@@ -1065,6 +1030,156 @@ proof -
     using timpl_closure.TI[OF timpl_closure.FP[of "absc a"] a(2), of "absc b"]
           term_variants_P[of "[]" "[]" "(\<lambda>_. [])(Abs a := [Abs b])" "Abs b" "Abs a"]
     unfolding absc_def by auto
+qed
+
+lemma timpl_closure_Abs_ex:
+  assumes t: "s \<in> timpl_closure t TI"
+    and a: "Abs a \<in> funs_term t"
+  shows "\<exists>b ts. (a,b) \<in> TI\<^sup>* \<and> Fun (Abs b) ts \<sqsubseteq> s"
+using t
+proof (induction rule: timpl_closure.induct)
+  case (TI u b c s)
+  obtain d ts where d: "(a,d) \<in> TI\<^sup>*" "Fun (Abs d) ts \<sqsubseteq> u" using TI.IH by blast
+  note 0 = TI.hyps(2) d(1) term_variants_pred_inv'(5)[OF term_variants_pred_const]
+  show ?case using TI.hyps(3) d(2)
+  proof (induction rule: term_variants_pred.induct)
+    case (term_variants_P T S g f)
+    note hyps = term_variants_P.hyps
+    note prems = term_variants_P.prems
+    note IH = term_variants_P.IH
+    show ?case
+    proof (cases "Fun (Abs d) ts = Fun f T")
+      case False
+      hence "\<exists>t \<in> set T. Fun (Abs d) ts \<sqsubseteq> t" using prems(1) by force
+      then obtain i where i: "i < length T" "Fun (Abs d) ts \<sqsubseteq> T ! i" by (metis in_set_conv_nth)
+      show ?thesis by (metis IH[OF i] i(1) hyps(1) nth_mem subtermeqI'' term.order.trans)
+    qed (metis hyps(3) 0 prot_fun.sel(4) r_into_rtrancl rtrancl_trans term.eq_refl term.sel(2))
+  next
+    case (term_variants_Fun T S f)
+    note hyps = term_variants_Fun.hyps
+    note prems = term_variants_Fun.prems
+    note IH = term_variants_Fun.IH
+    show ?case
+    proof (cases "Fun (Abs d) ts = Fun f T")
+      case False
+      hence "\<exists>t \<in> set T. Fun (Abs d) ts \<sqsubseteq> t" using prems(1) by force
+      then obtain i where i: "i < length T" "Fun (Abs d) ts \<sqsubseteq> T ! i" by (metis in_set_conv_nth)
+      show ?thesis by (metis IH[OF i] i(1) hyps(1) nth_mem subtermeqI'' term.order.trans)
+    qed (metis 0(2) term.eq_refl term.sel(2))
+  qed simp
+qed (meson a funs_term_Fun_subterm rtrancl_eq_or_trancl)
+
+lemma timpl_closure_trans:
+  assumes "s \<in> timpl_closure t TI"
+    and "u \<in> timpl_closure s TI"
+  shows "u \<in> timpl_closure t TI"
+using assms unfolding timpl_closure_is_timpl_closure' timpl_closure'_def by simp
+
+lemma (in stateful_protocol_model) term_variants_pred_Ana\<^sub>f_keys:
+  assumes
+    "length ss = length ts"
+    "\<forall>x \<in> fv k. x < length ss"
+    "\<And>i. i < length ss \<Longrightarrow> term_variants_pred P (ss ! i) (ts ! i)"
+  shows "term_variants_pred P (k \<cdot> (!) ss) (k \<cdot> (!) ts)"
+using assms by (meson term_variants_pred_subst'')
+
+lemma (in stateful_protocol_model) term_variants_pred_Ana_keys:
+  fixes a b and s t::"('fun,'atom,'sets,'lbl) prot_term"
+  defines "P \<equiv> ((\<lambda>_. [])(Abs a := [Abs b]))"
+  assumes ab: "term_variants_pred P s t"
+    and s: "Ana s = (Ks, Rs)"
+    and t: "Ana t = (Kt, Rt)"
+  shows "length Kt = length Ks" (is ?A)
+    and "\<forall>i < length Ks. term_variants_pred P (Ks ! i) (Kt ! i)" (is ?B)
+proof -
+  have ?A ?B when "s = Var x" for x
+    using that ab s t iffD1[OF term_variants_pred_inv_Var(1) ab[unfolded that]] by auto
+  moreover have ?A ?B when s': "s = Fun f ss" for f ss
+  proof -
+    obtain g ts where t':
+        "t = Fun g ts" "length ss = length ts"
+        "\<And>i. i < length ss \<Longrightarrow> term_variants_pred P (ss ! i) (ts ! i)"
+        "f \<noteq> g \<Longrightarrow> f = Abs a \<and> g = Abs b"
+      using term_variants_pred_inv'[OF ab[unfolded s']]
+      unfolding P_def by fastforce
+    have ?A ?B when "f \<noteq> g" using that s s' t t'(1,2,4) by auto
+    moreover have A: ?A when fg: "f = g"
+      using s t Ana_Fu_keys_length_eq[OF t'(2)] Ana_nonempty_inv[of s] Ana_nonempty_inv[of t]
+      unfolding fg s' t'(1) by (metis (no_types) fst_conv term.inject(2))
+    moreover have ?B when fg: "f = g"
+    proof (cases "Ana s = ([],[])")
+      case True thus ?thesis using s t t'(2,3) A[OF fg] unfolding fg s' t'(1) by auto
+    next
+      case False
+      then obtain h Kh Rh where h:
+          "f = Fu h" "g = Fu h" "arity\<^sub>f h = length ss" "arity\<^sub>f h > 0" "Ana\<^sub>f h = (Kh, Rh)"
+          "Ana s = (Kh \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) ss, map ((!) ss) Rh)" "Ana t = (Kh \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) ts, map ((!) ts) Rh)"
+        using A[OF fg] s t t'(2,3) Ana_nonempty_inv[of s] Ana_nonempty_inv[of t]
+        unfolding fg s' t'(1) by fastforce
+      show ?thesis
+      proof (intro allI impI)
+        fix i assume i: "i < length Ks"
+        have Ks: "Ks = Kh \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) ss" and Kt: "Kt = Kh \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) ts"
+          using h(6,7) s t by auto
+
+        have 0: "Kh ! i \<in> set Kh" using Ks i by simp
+
+        have 1: "\<forall>x \<in> fv (Kh ! i). x < length ss"
+          using 0 Ana\<^sub>f_assm2_alt[OF h(5)]
+          unfolding h(1-3) by fastforce
+
+        have "term_variants_pred P (Kh ! i \<cdot> (!) ss) (Kh ! i \<cdot> (!) ts)"
+          using term_variants_pred_Ana\<^sub>f_keys[OF t'(2) 1 t'(3)]
+          unfolding P_def by fast
+        thus "term_variants_pred P (Ks ! i) (Kt ! i)"
+          using i unfolding Ks Kt by simp
+      qed
+    qed
+    ultimately show ?A ?B by fast+
+  qed
+  ultimately show ?A ?B by (cases s; simp_all)+
+qed
+
+lemma (in stateful_protocol_model) timpl_closure_Ana_keys:
+  fixes s t::"('fun,'atom,'sets,'lbl) prot_term"
+  assumes "t \<in> timpl_closure s TI"
+    and "Ana s = (Ks, Rs)"
+    and "Ana t = (Kt, Rt)"
+  shows "length Kt = length Ks" (is ?A)
+    and "\<forall>i < length Ks. Kt ! i \<in> timpl_closure (Ks ! i) TI" (is ?B)
+using assms
+proof (induction arbitrary: Ks Rs Kt Rt rule: timpl_closure.induct)
+  case FP
+  { case 1 thus ?case by simp }
+  { case 2 thus ?case using FP timpl_closure.FP by force }
+next
+  case (TI u a b t)
+  obtain Ku Ru where u: "Ana u = (Ku, Ru)" by (metis surj_pair)
+  note 0 = term_variants_pred_Ana_keys[OF TI.hyps(3) u]
+  { case 1 thus ?case using 0(1) TI.IH(1) u by fastforce }
+  { case 2 thus ?case by (metis 0(2)[OF 2(2)] TI.IH[OF 2(1) u] timpl_closure.TI[OF _ TI.hyps(2)]) }
+qed
+
+lemma (in stateful_protocol_model) timpl_closure_Ana_keys_length_eq:
+  fixes s t::"('fun,'atom,'sets,'lbl) prot_term"
+  assumes "t \<in> timpl_closure s TI"
+    and "Ana s = (Ks, Rs)"
+    and "Ana t = (Kt, Rt)"
+  shows "length Kt = length Ks"
+by (rule timpl_closure_Ana_keys(1,2)[OF assms])
+
+lemma (in stateful_protocol_model) timpl_closure_Ana_keys_subset:
+  fixes s t::"('fun,'atom,'sets,'lbl) prot_term"
+  assumes "t \<in> timpl_closure s TI"
+    and "Ana s = (Ks, Rs)"
+    and "Ana t = (Kt, Rt)"
+  shows "set Kt \<subseteq> timpl_closure_set (set Ks) TI"
+proof -
+  note 0 = timpl_closure_Ana_keys[OF assms]
+  have "\<forall>i < length Ks. Kt ! i \<in> timpl_closure_set (set Ks) TI"
+    using in_set_conv_nth 0(2) unfolding timpl_closure_set_def by auto
+  thus "set Kt \<subseteq> timpl_closure_set (set Ks) TI"
+    using 0(1) by (metis subsetI in_set_conv_nth)
 qed
 
 
@@ -1126,26 +1241,103 @@ fun intruder_synth_mod_eq_timpls where
 
 definition analyzed_closed_mod_timpls where
   "analyzed_closed_mod_timpls M TI \<equiv>
-    let f = list_all (intruder_synth_mod_timpls M TI);
+    let ti = intruder_synth_mod_timpls M TI;
+        cl = \<lambda>ts. comp_timpl_closure ts (set TI);
+        f = list_all ti;
         g = \<lambda>t. if f (fst (Ana t)) then f (snd (Ana t))
-                else \<forall>s \<in> comp_timpl_closure {t} (set TI). case Ana s of (K,R) \<Rightarrow> f K \<longrightarrow> f R
+                else if list_all (\<lambda>t. \<forall>f \<in> funs_term t. \<not>is_Abs f) (fst (Ana t)) then True
+                else if \<forall>s \<in> cl (set (fst (Ana t))). \<not>ti s then True
+                else \<forall>s \<in> cl {t}. case Ana s of (K,R) \<Rightarrow> f K \<longrightarrow> f R
     in list_all g M"
 
 definition analyzed_closed_mod_timpls' where
   "analyzed_closed_mod_timpls' M TI \<equiv>
     let f = list_all (intruder_synth_mod_timpls' M TI);
         g = \<lambda>t. if f (fst (Ana t)) then f (snd (Ana t))
+                else if list_all (\<lambda>t. \<forall>f \<in> funs_term t. \<not>is_Abs f) (fst (Ana t)) then True
                 else \<forall>s \<in> comp_timpl_closure {t} (set TI). case Ana s of (K,R) \<Rightarrow> f K \<longrightarrow> f R
     in list_all g M"
-(* Alternative definition (allows for computing the closures beforehand which may be useful) *)
-definition analyzed_closed_mod_timpls_alt where
-  "analyzed_closed_mod_timpls_alt M TI timpl_cl_witness \<equiv>
-    let f = \<lambda>R. \<forall>r \<in> set R. intruder_synth_mod_timpls M TI r;
-        N = {t \<in> set M. f (fst (Ana t))};
-        N' = set M - N
-    in (\<forall>t \<in> N. f (snd (Ana t))) \<and>
-       (N' \<noteq> {} \<longrightarrow> (N' \<union> (\<Union>x\<in>timpl_cl_witness. \<Union>(a,b)\<in>set TI. set \<langle>a --\<guillemotright> b\<rangle>\<langle>x\<rangle>) \<subseteq> timpl_cl_witness)) \<and>
-       (\<forall>s \<in> timpl_cl_witness. case Ana s of (K,R) \<Rightarrow> f K \<longrightarrow> f R)"
+
+lemma term_variants_pred_Abs_Ana_keys:
+  fixes a b
+  defines "P \<equiv> ((\<lambda>_. [])(Abs a := [Abs b]))"
+  assumes st: "term_variants_pred P s t"
+  shows "length (fst (Ana s)) = length (fst (Ana t))" (is "?P s t")
+    and "\<forall>i < length (fst (Ana s)). term_variants_pred P (fst (Ana s) ! i) (fst (Ana t) ! i)"
+          (is "?Q s t")
+proof -
+  show "?P s t" using st
+  proof (induction s t rule: term_variants_pred.induct)
+    case (term_variants_Fun T S f) show ?case
+    proof (cases f)
+      case (Fu g) thus ?thesis using term_variants_Fun Ana_Fu_keys_length_eq by blast
+    qed simp_all
+  qed (simp_all add: P_def)
+
+  show "?Q s t" using st
+  proof (induction s t rule: term_variants_pred.induct)
+    case (term_variants_Fun T S f)
+    note hyps = term_variants_Fun.hyps
+    let ?K = "\<lambda>U. fst (Ana (Fun f U))"
+
+    show ?case
+    proof (cases f)
+      case (Fu g) show ?thesis
+      proof (cases "arity\<^sub>f g = length T \<and> arity\<^sub>f g > 0")
+        case True
+        hence *: "?K T = fst (Ana\<^sub>f g) \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) T"
+                 "?K S = fst (Ana\<^sub>f g) \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t (!) S"
+          using Fu Ana_Fu_intro fst_conv prod.collapse
+          by (metis (mono_tags, lifting), metis (mono_tags, lifting) hyps(1))
+
+        have K: "j < length T" when j: "j \<in> fv\<^sub>s\<^sub>e\<^sub>t (set (fst (Ana\<^sub>f g)))" for j
+          using True Ana\<^sub>f_assm2_alt[of g "fst (Ana\<^sub>f g)" _ j ]
+          by (metis UnI1 prod.collapse that) 
+
+        show ?thesis
+        proof (intro allI impI)
+          fix i assume i: "i < length (?K T)"
+          let ?u = "fst (Ana\<^sub>f g) ! i"
+
+          have **: "?K T ! i = ?u \<cdot> (!) T" "?K S ! i = ?u \<cdot> (!) S"
+            using * i by simp_all
+
+          have ***: "x < length T" when "x \<in> fv (fst (Ana\<^sub>f g) ! i)" for x
+            using that K Ana\<^sub>f_assm2_alt[of g "fst (Ana\<^sub>f g)" _ x] i hyps(1)
+            unfolding * by force
+
+          show "term_variants_pred P (?K T ! i) (?K S ! i)"
+            using i hyps K *** term_variants_pred_subst''[of ?u P "(!) T" "(!) S"]
+            unfolding * by auto
+        qed
+      qed (auto simp add: Fu)
+    qed simp_all
+  qed (simp_all add: P_def)
+qed
+
+lemma term_variants_pred_Abs_eq_case:
+  assumes t: "term_variants_pred ((\<lambda>_. [])(Abs a := [Abs b])) s t" (is "?R s t")
+    and s: "\<forall>f \<in> funs_term s. \<not>is_Abs f" (is "?P s")
+  shows "s = t"
+using s term_variants_pred_eq_case[OF t] by fastforce
+
+lemma term_variants_Ana_keys_no_Abs_eq_case:
+  fixes s t::"(('fun,'atom,'sets,'lbl) prot_fun,'v) term"
+  assumes t: "term_variants_pred ((\<lambda>_. [])(Abs a := [Abs b])) s t" (is "?R s t")
+    and s: "\<forall>t \<in> set (fst (Ana s)). \<forall>f \<in> funs_term t. \<not>is_Abs f" (is "?P s")
+  shows "fst (Ana t) = fst (Ana s)" (is "?Q t s")
+using s term_variants_pred_Abs_Ana_keys[OF t] term_variants_pred_Abs_eq_case[of a b]
+by (metis nth_equalityI nth_mem)
+
+lemma timpl_closure_Ana_keys_no_Abs_eq_case:
+  assumes t: "t \<in> timpl_closure s TI"
+    and s: "\<forall>t \<in> set (fst (Ana s)). \<forall>f \<in> funs_term t. \<not>is_Abs f" (is "?P s")
+  shows "fst (Ana t) = fst (Ana s)"
+using t
+proof (induction t rule: timpl_closure.induct)
+  case (TI u a b t)
+  thus ?case using s term_variants_Ana_keys_no_Abs_eq_case by fastforce
+qed simp
 
 lemma in_trancl_closure_iff_in_trancl_fun:
   "(a,b) \<in> (set TI)\<^sup>+ \<longleftrightarrow> in_trancl TI a b" (is "?A TI a b \<longleftrightarrow> ?B TI a b")
@@ -1231,7 +1423,7 @@ using assms list_all2_conv_all_nth[of "equal_mod_timpls TI" T]
 by (cases t; auto)+
 
 lemma equal_mod_timpls_if_term_variants:
-  fixes s t::"(('a, 'b, 'c) prot_fun, 'd) term" and a b::"'c set"
+  fixes s t::"(('a, 'b, 'c, 'd) prot_fun, 'e) term" and a b::"'c set"
   defines "P \<equiv> (\<lambda>_. [])(Abs a := [Abs b])"
   assumes st: "term_variants_pred P s t"
     and ab: "(a,b) \<in> set TI"
@@ -1345,13 +1537,13 @@ using assms list_all2_conv_all_nth[of "timpls_transformable_to' TI" T]
 by (cases t; auto)+
 
 lemma timpls_transformable_to_size_eq:
-  fixes s t::"(('b, 'c, 'a) prot_fun, 'd) term"
+  fixes s t::"(('a, 'b, 'c, 'd) prot_fun, 'e) term"
   shows "timpls_transformable_to TI s t \<Longrightarrow> size s = size t" (is "?A \<Longrightarrow> ?C")
     and "timpls_transformable_to' TI s t \<Longrightarrow> size s = size t" (is "?B \<Longrightarrow> ?C")
 proof -
   have *: "size_list size T = size_list size S"
     when "length T = length S" "\<And>i. i < length T \<Longrightarrow> size (T ! i) = size (S ! i)"
-    for S T::"(('b, 'c, 'a) prot_fun, 'd) term list"
+    for S T::"(('a, 'b, 'c, 'd) prot_fun, 'e) term list"
     using that
   proof (induction T arbitrary: S)
     case (Cons x T')
@@ -1379,7 +1571,7 @@ proof -
 qed
 
 lemma timpls_transformable_to_if_term_variants:
-  fixes s t::"(('a, 'b, 'c) prot_fun, 'd) term" and a b::"'c set"
+  fixes s t::"(('a, 'b, 'c, 'd) prot_fun, 'e) term" and a b::"'c set"
   defines "P \<equiv> (\<lambda>_. [])(Abs a := [Abs b])"
   assumes st: "term_variants_pred P s t"
     and ab: "(a,b) \<in> set TI"
@@ -1396,7 +1588,7 @@ next
 qed simp
 
 lemma timpls_transformable_to'_if_term_variants:
-  fixes s t::"(('a, 'b, 'c) prot_fun, 'd) term" and a b::"'c set"
+  fixes s t::"(('a, 'b, 'c, 'd) prot_fun, 'e) term" and a b::"'c set"
   defines "P \<equiv> (\<lambda>_. [])(Abs a := [Abs b])"
   assumes st: "term_variants_pred P s t"
     and ab: "(a,b) \<in> (set TI)\<^sup>+"
@@ -1802,14 +1994,14 @@ proof
 qed
 
 private lemma timpls_transformable_to_pred_finite:
-  fixes t::"(('fun,'atom,'sets) prot_fun, 'a) term"
+  fixes t::"(('fun,'atom,'sets,'lbl) prot_fun, 'a) term"
   assumes A: "finite A"
     and t: "wf\<^sub>t\<^sub>r\<^sub>m t"
   shows "finite {s. timpls_transformable_to_pred A t s}"
 using t
 proof (induction t)
   case (Var x)
-  have "{s::(('fun,'atom,'sets) prot_fun, 'a) term. timpls_transformable_to_pred A (Var x) s} = {Var x}"
+  have "{s::(('fun,'atom,'sets,'lbl) prot_fun, 'a) term. timpls_transformable_to_pred A (Var x) s} = {Var x}"
     by (auto intro: timpls_transformable_to_pred.Var elim: timpls_transformable_to_pred_inv_Var)
   thus ?case by simp
 next
@@ -2008,14 +2200,14 @@ qed
 end
 
 lemma intruder_synth_mod_timpls_is_synth_timpl_closure_set:
-  fixes t::"(('fun, 'atom, 'sets) prot_fun, 'a) term" and TI TI'
+  fixes t::"(('fun,'atom,'sets,'lbl) prot_fun, 'a) term" and TI TI'
   assumes "set TI' = {(a,b) \<in> (set TI)\<^sup>+. a \<noteq> b}"
   shows "intruder_synth_mod_timpls M TI' t \<longleftrightarrow> timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c t"
       (is "?C t \<longleftrightarrow> ?D t")
 proof -
   have *: "(\<exists>m \<in> M. timpls_transformable_to TI' m t) \<longleftrightarrow> t \<in> timpl_closure_set M (set TI)"
     when "set TI' = {(a,b) \<in> (set TI)\<^sup>+. a \<noteq> b}"
-    for M TI TI' and t::"(('fun, 'atom, 'sets) prot_fun, 'a) term"
+    for M TI TI' and t::"(('fun,'atom,'sets,'lbl) prot_fun, 'a) term"
     using timpls_transformable_to_iff_in_timpl_closure[OF that]
           timpl_closure_set_is_timpl_closure_union[of M "set TI"]
           timpl_closure_set_timpls_trancl_eq[of M "set TI"]
@@ -2063,12 +2255,12 @@ proof -
 qed
 
 lemma intruder_synth_mod_timpls'_is_synth_timpl_closure_set:
-  fixes t::"(('fun, 'atom, 'sets) prot_fun, 'a) term" and TI
+  fixes t::"(('fun,'atom,'sets,'lbl) prot_fun, 'a) term" and TI
   shows "intruder_synth_mod_timpls' M TI t \<longleftrightarrow> timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c t"
       (is "?A t \<longleftrightarrow> ?B t")
 proof -
   have *: "(\<exists>m \<in> M. timpls_transformable_to' TI m t) \<longleftrightarrow> t \<in> timpl_closure_set M (set TI)"
-    for M TI and t::"(('fun, 'atom, 'sets) prot_fun, 'a) term"
+    for M TI and t::"(('fun,'atom,'sets,'lbl) prot_fun, 'a) term"
     using timpls_transformable_to'_iff_in_timpl_closure[of TI _ t]
           timpl_closure_set_is_timpl_closure_union[of M "set TI"]
     by blast+
@@ -2115,7 +2307,7 @@ proof -
 qed
 
 lemma intruder_synth_mod_eq_timpls_is_synth_timpl_closure_set:
-  fixes t::"(('fun, 'atom, 'sets) prot_fun, 'a) term" and TI
+  fixes t::"(('fun,'atom,'sets,'lbl) prot_fun, 'a) term" and TI
   defines "cl \<equiv> \<lambda>TI. {(a,b) \<in> TI\<^sup>+. a \<noteq> b}"
   shows (* "set TI' = (set TI)\<^sup>+ \<Longrightarrow>
          intruder_synth_mod_eq_timpls M TI' t \<longleftrightarrow>
@@ -2129,7 +2321,7 @@ proof -
   (* have *: "(\<exists>m \<in> M. equal_mod_timpls TI' m t) \<longleftrightarrow>
            (\<exists>s \<in> timpl_closure t (set TI). s \<in> timpl_closure_set M (set TI))"
     when P: "?P TI TI'"
-    for M TI TI' and t::"(('fun, 'atom, 'sets) prot_fun, 'a) term"
+    for M TI TI' and t::"(('fun,'atom,'sets,'lbl) prot_fun, 'a) term"
     using equal_mod_timpls_iff_ex_in_timpl_closure'[OF P]
           timpl_closure_set_is_timpl_closure_union[of M "set TI"]
           timpl_closure_set_timpls_trancl_eq[of M "set TI"]
@@ -2138,7 +2330,7 @@ proof -
   have **: "(\<exists>m \<in> M. equal_mod_timpls TI' m t) \<longleftrightarrow>
             (\<exists>s \<in> timpl_closure t (set TI). s \<in> timpl_closure_set M (set TI))"
     when Q: "?Q TI TI'"
-    for M TI TI' and t::"(('fun, 'atom, 'sets) prot_fun, 'a) term"
+    for M TI TI' and t::"(('fun,'atom,'sets,'lbl) prot_fun, 'a) term"
     using equal_mod_timpls_iff_ex_in_timpl_closure[OF Q]
           timpl_closure_set_is_timpl_closure_union[of M "set TI"]
           timpl_closure_set_timpls_trancl_eq'[of M "set TI"]
@@ -2342,7 +2534,7 @@ context
 begin
 
 private lemma analyzed_closed_mod_timpls_is_analyzed_closed_timpl_closure_set_aux1:
-  fixes M::"('fun,'atom,'sets) prot_terms"
+  fixes M::"('fun,'atom,'sets,'lbl) prot_terms"
   assumes f: "arity\<^sub>f f = length T" "arity\<^sub>f f > 0" "Ana\<^sub>f f = (K, R)"
     and i: "i < length R"
     and M: "timpl_closure_set M TI \<turnstile>\<^sub>c T ! (R ! i)"
@@ -2357,7 +2549,7 @@ proof -
 qed
 
 private lemma analyzed_closed_mod_timpls_is_analyzed_closed_timpl_closure_set_aux2:
-  fixes M::"('fun,'atom,'sets) prot_terms"
+  fixes M::"('fun,'atom,'sets,'lbl) prot_terms"
   assumes M: "\<forall>s \<in> set (snd (Ana m)). timpl_closure_set M TI \<turnstile>\<^sub>c s"
     and m: "m \<in> M"
     and t: "t \<in> timpl_closure m TI"
@@ -2390,7 +2582,7 @@ proof -
 qed
 
 lemma analyzed_closed_mod_timpls_is_analyzed_timpl_closure_set:
-  fixes M::"('fun,'atom,'sets) prot_term list"
+  fixes M::"('fun,'atom,'sets,'lbl) prot_term list"
   assumes TI': "set TI' = {(a,b) \<in> (set TI)\<^sup>+. a \<noteq> b}"
     and M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
   shows "analyzed_closed_mod_timpls M TI' \<longleftrightarrow> analyzed (timpl_closure_set (set M) (set TI))"
@@ -2401,21 +2593,22 @@ proof
 
   let ?P = "\<lambda>T. \<forall>t \<in> set T. timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c t"
   let ?Q = "\<lambda>t. \<forall>s \<in> comp_timpl_closure {t} (set TI'). case Ana s of (K, R) \<Rightarrow> ?P K \<longrightarrow> ?P R"
+  let ?W = "\<lambda>t. \<forall>t \<in> set (fst (Ana t)). \<forall>f \<in> funs_term t. \<not>is_Abs f"
+  let ?V = "\<lambda>t. \<forall>s \<in> comp_timpl_closure (set (fst (Ana t))) (set TI').
+                  \<not>timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c s"
   
   note defs = analyzed_closed_mod_timpls_def analyzed_in_code
   note 0 = intruder_synth_mod_timpls_is_synth_timpl_closure_set[OF TI', of M]
   note 1 = timpl_closure_set_is_timpl_closure_union[of _ "set TI"]
 
-  have 2: "comp_timpl_closure {t} (set TI') = timpl_closure_set {t} (set TI)"
-    when t: "t \<in> set M" "wf\<^sub>t\<^sub>r\<^sub>m t" for t
-    using t timpl_closure_set_timpls_trancl_eq'[of "{t}" "set TI"]
-          comp_timpl_closure_is_timpl_closure_set[of "{t}" TI']
-    unfolding TI'[symmetric]
-    by blast
+  have 2: "comp_timpl_closure N (set TI') = timpl_closure_set N (set TI)"
+    when "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s N" "finite N" for N::"('fun,'atom,'sets,'lbl) prot_terms"
+    using that timpl_closure_set_timpls_trancl_eq'[of N "set TI"]
+          comp_timpl_closure_is_timpl_closure_set[of N TI']
+    unfolding TI'[symmetric] by presburger
   hence 3: "comp_timpl_closure {t} (set TI') \<subseteq> timpl_closure_set (set M) (set TI)"
     when t: "t \<in> set M" "wf\<^sub>t\<^sub>r\<^sub>m t" for t
-    using t timpl_closure_set_mono[of "{t}" "set M"]
-    by fast
+    using t timpl_closure_set_mono[of "{t}" "set M"] by simp
 
   have ?A when C: ?C
     unfolding analyzed_closed_mod_timpls_def
@@ -2423,7 +2616,10 @@ proof
               list_all_iff Let_def
   proof (intro ballI)
     fix t assume t: "t \<in> set M"
-    show "if ?P (fst (Ana t)) then ?P (snd (Ana t)) else ?Q t" (is ?R)
+    show "if ?P (fst (Ana t)) then ?P (snd (Ana t))
+          else if ?W t then True
+          else if ?V t then True
+          else ?Q t" (is ?R)
     proof (cases "?P (fst (Ana t))")
       case True
       hence "?P (snd (Ana t))"
@@ -2456,7 +2652,7 @@ proof
         using m(1) A
         unfolding analyzed_closed_mod_timpls_def
                   intruder_synth_mod_timpls_is_synth_timpl_closure_set[OF TI']
-                  list_all_iff
+                  list_all_iff Let_def
         by simp
 
       show ?thesis
@@ -2465,25 +2661,60 @@ proof
         by simp
     next
       case False
-      hence "?Q m"
-        using m(1) A
-        unfolding analyzed_closed_mod_timpls_def
-                  intruder_synth_mod_timpls_is_synth_timpl_closure_set[OF TI']
-                  list_all_iff Let_def
-        by auto 
-      moreover have "comp_timpl_closure {m} (set TI') = timpl_closure m (set TI)"
-        using 2[OF m(1)] timpl_closureton_is_timpl_closure M_wf m(1)
+      note F = this
+
+      have *: "comp_timpl_closure {m} (set TI') = timpl_closure m (set TI)"
+        using 2[of "{m}"] timpl_closureton_is_timpl_closure M_wf m(1)
         by blast
-      ultimately show ?thesis
-        using m(2) K s Ana_t
-        unfolding Let_def by auto
+
+      have "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set (fst (Ana m)))"
+        using Ana_keys_wf'[of m "fst (Ana m)"] M_wf m(1) surj_pair[of "Ana m"] by fastforce
+      hence **: "comp_timpl_closure (set (fst (Ana m))) (set TI') =
+                   timpl_closure_set (set (fst (Ana m))) (set TI)"
+        using 2[of "set (fst (Ana m))"] by blast
+
+      have ***: "set K \<subseteq> timpl_closure_set (set (fst (Ana m))) (set TI)"
+                "length K = length (fst (Ana m))"
+        using timpl_closure_Ana_keys_subset[OF m(2) _ Ana_t]
+              timpl_closure_Ana_keys_length_eq[OF m(2) _ Ana_t]
+              surj_pair[of "Ana m"]
+        by fastforce+
+
+      show ?thesis
+      proof (cases "?W m")
+        case True
+        hence "fst (Ana t) = fst (Ana m)" using m timpl_closure_Ana_keys_no_Abs_eq_case by fast
+        thus ?thesis using F K Ana_t by simp
+      next
+        case False
+        note F' = this
+
+        show ?thesis
+        proof (cases "?V m")
+          case True
+          hence "\<forall>k \<in> set K. \<not>timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c k"
+            using F K Ana_t m s *** unfolding ** by blast
+          thus ?thesis using K F' *** by simp
+        next
+          case False
+          hence "?Q m"
+            using m(1) A F F'
+            unfolding analyzed_closed_mod_timpls_def
+                      intruder_synth_mod_timpls_is_synth_timpl_closure_set[OF TI']
+                      list_all_iff Let_def
+            by auto
+          thus ?thesis
+            using * m(2) K s Ana_t
+            unfolding Let_def by auto
+        qed
+      qed
     qed
   qed
   thus ?B when A: ?A using A analyzed_is_all_analyzed_in by metis
 qed
 
 lemma analyzed_closed_mod_timpls'_is_analyzed_timpl_closure_set:
-  fixes M::"('fun,'atom,'sets) prot_term list"
+  fixes M::"('fun,'atom,'sets,'lbl) prot_term list"
   assumes M_wf: "wf\<^sub>t\<^sub>r\<^sub>m\<^sub>s (set M)"
   shows "analyzed_closed_mod_timpls' M TI \<longleftrightarrow> analyzed (timpl_closure_set (set M) (set TI))"
     (is "?A \<longleftrightarrow> ?B")
@@ -2492,6 +2723,7 @@ proof
 
   let ?P = "\<lambda>T. \<forall>t \<in> set T. timpl_closure_set (set M) (set TI) \<turnstile>\<^sub>c t"
   let ?Q = "\<lambda>t. \<forall>s \<in> comp_timpl_closure {t} (set TI). case Ana s of (K, R) \<Rightarrow> ?P K \<longrightarrow> ?P R"
+  let ?W = "\<lambda>t. \<forall>t \<in> set (fst (Ana t)). \<forall>f \<in> funs_term t. \<not>is_Abs f"
   
   note defs = analyzed_closed_mod_timpls'_def analyzed_in_code
   note 0 = intruder_synth_mod_timpls'_is_synth_timpl_closure_set[of M TI]
@@ -2513,7 +2745,7 @@ proof
               list_all_iff Let_def
   proof (intro ballI)
     fix t assume t: "t \<in> set M"
-    show "if ?P (fst (Ana t)) then ?P (snd (Ana t)) else ?Q t" (is ?R)
+    show "if ?P (fst (Ana t)) then ?P (snd (Ana t)) else if ?W t then True else ?Q t" (is ?R)
     proof (cases "?P (fst (Ana t))")
       case True
       hence "?P (snd (Ana t))"
@@ -2555,18 +2787,29 @@ proof
         by simp
     next
       case False
-      hence "?Q m"
-        using m(1) A
-        unfolding analyzed_closed_mod_timpls'_def
-                  intruder_synth_mod_timpls'_is_synth_timpl_closure_set
-                  list_all_iff Let_def
-        by auto 
-      moreover have "comp_timpl_closure {m} (set TI) = timpl_closure m (set TI)"
+      note F = this
+
+      have *: "comp_timpl_closure {m} (set TI) = timpl_closure m (set TI)"
         using 2[OF m(1)] timpl_closureton_is_timpl_closure M_wf m(1)
         by blast
-      ultimately show ?thesis
-        using m(2) K s Ana_t
-        unfolding Let_def by auto
+
+      show ?thesis
+      proof (cases "?W m")
+        case True
+        hence "fst (Ana t) = fst (Ana m)" using m timpl_closure_Ana_keys_no_Abs_eq_case by fast
+        thus ?thesis using F K Ana_t by simp
+      next
+        case False
+        hence "?Q m"
+          using m(1) A F
+          unfolding analyzed_closed_mod_timpls'_def
+                    intruder_synth_mod_timpls'_is_synth_timpl_closure_set
+                    list_all_iff Let_def
+          by auto 
+        thus ?thesis
+          using * m(2) K s Ana_t
+          unfolding Let_def by auto
+      qed
     qed
   qed
   thus ?B when A: ?A using A analyzed_is_all_analyzed_in by metis

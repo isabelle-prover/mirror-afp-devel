@@ -150,7 +150,7 @@ lemma fiter_qiter1: "Abs_iso (fiter_fun (Rep_iso f) (Rep_iso g) (Rep_iso h)) = q
   unfolding fiter_fun_def qiter_fun_def by (metis Rep_iso_inverse comp_def sup_iso.rep_eq times_iso.rep_eq)
 
 lemma fiter_qiter4: "mono f \<Longrightarrow> mono g \<Longrightarrow> mono h \<Longrightarrow> Rep_iso (qiter_fun (Abs_iso f) (Abs_iso g) (Abs_iso h)) = fiter_fun f g h"
-  by (metis Abs_iso_inverse fiter_fun_exp fiter_qiter1 iso_fcomp iso_finf mem_Collect_eq)
+  by (simp add: Abs_iso_inverse fiter_fun_exp qiter_fun_exp sup_iso.rep_eq times_iso.rep_eq)
 
 text \<open>The type coercions are needed to deal with isotone (monotone) functions, which had to be redefined to one single type above,
 in order to cooperate with the type classes for quantales. Having to deal with these coercions would be another drawback of using the 
@@ -200,7 +200,7 @@ lemma fpower_distr: "fstar f \<circ> g = (\<Sqinter>i. fpower f i \<circ> g)"
   by (auto simp: fstar_def image_comp)
 
 lemma fpower_Sup_subcomm: "mono f \<Longrightarrow> f \<circ> fstar f \<le> fstar f \<circ> f"
-  by (metis (mono_tags, lifting) fun_mon.power_commutes le_INF_iff fpower_distr fpower_supdistl)
+  unfolding fpower_distr fun_mon.power_commutes by (rule fpower_supdistl)
 
 lemma fpower_inductl: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'a"

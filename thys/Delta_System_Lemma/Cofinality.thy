@@ -448,7 +448,7 @@ definition
   factor_rec :: "[i,i] \<Rightarrow> i" where
   "factor_rec(\<beta>,h) \<equiv>  \<mu> x. factor_body(\<beta>,h,x)"
 
-txt\<open>\<^term>\<open>factor_rec\<close> is the inductive step for the definition by transfinite
+text\<open>\<^term>\<open>factor_rec\<close> is the inductive step for the definition by transfinite
 recursion of the \<^emph>\<open>factor\<close> function (called \<^term>\<open>g\<close> above), which in
 turn is obtained by minimizing the predicate \<^term>\<open>factor_body\<close>. Next we show
 that this predicate is monotonous.\<close>
@@ -590,7 +590,7 @@ lemma fun_factor_is_mono_map:
   shows "fun_factor \<in> mono_map(\<xi>, Memrel(\<xi>), \<delta>, Memrel(\<delta>))"
   unfolding mono_map_def
 proof (intro CollectI ballI impI)
-  (* Proof that \<^term>\<open>fun_factor\<close> respects membership *)
+  text\<open>Proof that \<^term>\<open>fun_factor\<close> respects membership:\<close>
   fix \<alpha> \<beta>
   assume "\<alpha>\<in>\<xi>" "\<beta>\<in>\<xi>"
   moreover
@@ -606,7 +606,7 @@ proof (intro CollectI ballI impI)
     using ltI factor_increasing[THEN ltD] factor_in_delta
     by simp
 next
-  (* Proof of type *)
+  text\<open>Proof that it has the appropriate type:\<close>
   from assms
   show "fun_factor : \<xi> \<rightarrow> \<delta>"
     unfolding fun_factor_def
@@ -622,7 +622,7 @@ proof (intro CollectI ballI impI comp_fun[of _ _ \<delta>])
   from assms
   show "fun_factor : \<xi> \<rightarrow> \<delta>"
     using fun_factor_is_mono_map mono_map_is_fun by simp
-      (* Proof that f O ?g respects membership *)
+  text\<open>Proof that \<^term>\<open>f O fun_factor\<close> respects membership\<close>
   fix \<alpha> \<beta>
   assume "\<langle>\<alpha>, \<beta>\<rangle> \<in> Memrel(\<xi>)"
   then
@@ -638,11 +638,11 @@ proof (intro CollectI ballI impI comp_fun[of _ _ \<delta>])
   ultimately
   show "\<langle>(f O fun_factor) ` \<alpha>, (f O fun_factor) ` \<beta>\<rangle> \<in> Memrel(\<gamma>)"
     using ltD[of "f ` factor(\<alpha>)" "f ` factor(\<beta>)"]
-      f_factor_increasing apply_in_range f_type
+      f_factor_increasing apply_in_codomain_Ord f_type
     unfolding fun_factor_def by auto
 qed
 
-end (* cofinal_factor *)
+end \<comment> \<open>\<^locale>\<open>cofinal_factor\<close>\<close>
 
 text\<open>We state next the factorization lemma.\<close>
 
@@ -732,7 +732,7 @@ proof -
       unfolding linear_def by blast
     from \<open>\<alpha>_0 \<in> \<gamma>\<close> \<open>j \<in> mono_map(_,_,\<gamma>,_)\<close> \<open>Ord(\<gamma>)\<close>
     have "j`\<beta> \<in> \<gamma>"
-      using mono_map_is_fun apply_in_range by force
+      using mono_map_is_fun apply_in_codomain_Ord by force
     with \<open>\<alpha>_0 \<in> \<gamma>\<close> \<open>Ord(\<gamma>)\<close>
     have "\<alpha>_0 \<union> j`\<beta> \<in> \<gamma>"
       using Un_least_mem_iff Ord_in_Ord by auto
@@ -745,7 +745,7 @@ proof -
     note \<open>Ord(\<gamma>)\<close>
     moreover from this and \<open>f:\<delta>\<rightarrow>\<gamma>\<close>  \<open>\<alpha>_0 \<in> \<gamma>\<close>
     have "Ord(f`\<theta>)"
-      using apply_in_range Ord_in_Ord by blast
+      using apply_in_codomain_Ord Ord_in_Ord by blast
     moreover from calculation and \<open>\<alpha>_0 \<in> \<gamma>\<close> and \<open>Ord(\<delta>)\<close> and \<open>j`\<beta> \<in> \<gamma>\<close>
     have "Ord(\<alpha>_0)" "Ord(j`\<beta>)" "Ord(\<theta>)"
       using Ord_in_Ord by auto
@@ -813,7 +813,7 @@ proof -
     note \<open>a \<in> \<gamma>\<close>
     moreover from calculation and \<open>Ord(\<gamma>)\<close> and factor_not_delta
     have "(f O fun_factor) `x \<in> \<gamma>"
-      using Limit_nonzero apply_in_range mono_map_is_fun[of "f O fun_factor"]
+      using Limit_nonzero apply_in_codomain_Ord mono_map_is_fun[of "f O fun_factor"]
         f_fun_factor_is_mono_map by blast
     ultimately
     show "\<exists>x \<in> domain(f O fun_factor). \<langle>a, (f O fun_factor) ` x\<rangle> \<in> Memrel(\<gamma>)
@@ -903,6 +903,7 @@ lemma cf_ordertype_cofinal:
   shows
     "cf(\<gamma>) = cf(ordertype(A,Memrel(\<gamma>)))"
 proof (intro le_anti_sym)
+  text\<open>We show the result by proving the two inequalities.\<close>
   from \<open>Limit(\<gamma>)\<close>
   have "Ord(\<gamma>)"
     using Limit_is_Ord by simp
@@ -946,7 +947,7 @@ proof (intro le_anti_sym)
   show "cf(\<gamma>) \<le> cf(ordertype(A,Memrel(\<gamma>)))"
     using cf_le_domain_cofinal_fun[of _ _ "f O h"]
     by (auto simp add:cf_fun_def)
-      (********************************************************)
+  text\<open>That finishes the first inequality. Now we go the other side.\<close>
   from \<open>f:\<langle>\<alpha>, _\<rangle> \<cong> \<langle>A,_\<rangle>\<close> \<open>A\<subseteq>\<gamma>\<close>
   have "f :\<alpha> \<rightarrow>\<^sub>< \<gamma>"
     using mono_map_mono[OF ord_iso_is_mono_map] by simp
@@ -1022,7 +1023,7 @@ qed
 
 lemma Limit_cf: assumes "Limit(\<kappa>)" shows "Limit(cf(\<kappa>))"
   using Ord_cf[of \<kappa>, THEN Ord_cases]
-    \<comment> \<open>\<^term>\<open>cf(\<kappa>)\<close> being 0 or successor leads to contradiction\<close>
+    \<comment> \<open>\<^term>\<open>cf(\<kappa>)\<close> being $0$ or successor leads to contradiction\<close>
 proof (cases)
   case 1
   with \<open>Limit(\<kappa>)\<close>
@@ -1200,6 +1201,6 @@ proof -
       Limit_is_Ord by simp 
 qed
 
-end (* includes *)
+end \<comment> \<open>includes\<close>
 
 end

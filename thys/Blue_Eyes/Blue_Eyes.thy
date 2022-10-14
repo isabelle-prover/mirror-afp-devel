@@ -147,7 +147,7 @@ proof (induction n arbitrary: p w rule: less_induct)
     assume "possible n p w w'"
     then have "possible n p (try_swap p' c\<^sub>1 c\<^sub>2 w) (try_swap p' c\<^sub>1 c\<^sub>2 w')"
       by (fastforce simp: possible.simps less.IH)
-    with `leaves n p (try_swap p' c\<^sub>1 c\<^sub>2 w)` have "try_swap p' c\<^sub>1 c\<^sub>2 w' p = try_swap p' c\<^sub>1 c\<^sub>2 w p"
+    with \<open>leaves n p (try_swap p' c\<^sub>1 c\<^sub>2 w)\<close> have "try_swap p' c\<^sub>1 c\<^sub>2 w' p = try_swap p' c\<^sub>1 c\<^sub>2 w p"
       unfolding leaves.simps
       by simp
     thus "w' p = w p" by simp
@@ -169,10 +169,10 @@ proof (rule ccontr)
 
   let ?w' = "try_swap p (w p) c w"
   have "possible n p w ?w'"
-    using `valid w` apply (simp add: possible.simps)
+    using \<open>valid w\<close> apply (simp add: possible.simps)
     by (auto simp: try_swap_def)
   moreover have "?w' p \<noteq> w p"
-    using c `w p \<noteq> blue` by (auto simp: try_swap_def)
+    using c \<open>w p \<noteq> blue\<close> by (auto simp: try_swap_def)
   ultimately have "\<not> leaves n p w"
     by (auto simp: leaves.simps)
   with assms show False by simp
@@ -212,7 +212,7 @@ proof -
   moreover have "p \<notin> blues_seen w p"
     unfolding blues_seen_def by auto
   moreover have "p' \<in> blues_seen w p \<union> {p}"
-    unfolding blues_seen_def using `p \<noteq> p'` `w p' = blue` by auto
+    unfolding blues_seen_def using \<open>p \<noteq> p'\<close> \<open>w p' = blue\<close> by auto
   ultimately show "card (blues_seen w p) = card (blues_seen w p')"
     by simp
 next
@@ -220,7 +220,7 @@ next
   then have "blues_seen w p' = blues_seen w p - {p'}"
     by (auto simp add: blues_seen_def)
   moreover have "p' \<in> blues_seen w p"
-    unfolding blues_seen_def using `p \<noteq> p'` `w p' = blue` by auto
+    unfolding blues_seen_def using \<open>p \<noteq> p'\<close> \<open>w p' = blue\<close> by auto
   ultimately show "card (blues_seen w p) = Suc (card (blues_seen w p'))"
     by (simp only: card_Suc_Diff1 people_finite)
 qed
@@ -236,7 +236,7 @@ lemma possible_blues_seen:
   assumes "w p' = blue" and "p \<noteq> p'"
   shows "w' p = blue \<Longrightarrow> card (blues_seen w p) = card (blues_seen w' p')"
     and "w' p \<noteq> blue \<Longrightarrow> card (blues_seen w p) = Suc (card (blues_seen w' p'))"
-  using possibleD_colors[OF `possible n p w w'`] and blues_seen_others assms
+  using possibleD_colors[OF \<open>possible n p w w'\<close>] and blues_seen_others assms
   by (auto simp flip: blues_seen_same)
 
 text \<open>Finally, the crux of the solution. We proceed by strong induction.\<close>
@@ -255,7 +255,7 @@ proof (induction n arbitrary: p w rule: less_induct)
     have "w' p = blue" if "possible n p w w'" for w'
     proof (cases "card (blues_seen w' p)")
       case 0
-      moreover from `possible n p w w'` have "valid w'"
+      moreover from \<open>possible n p w w'\<close> have "valid w'"
         by (simp add: possible.simps)
       ultimately show "w' p = blue"
         unfolding valid_def blues_seen_def by auto
@@ -267,52 +267,52 @@ proof (induction n arbitrary: p w rule: less_induct)
       then obtain p' where "w' p' = blue" and "p \<noteq> p'"
         unfolding blues_seen_def by auto
       then have "w p' = blue"
-        using possibleD_colors[OF `possible n p w w'`] by simp
+        using possibleD_colors[OF \<open>possible n p w w'\<close>] by simp
 
       have "p \<noteq> guru"
-        using `w p = blue` and `w guru \<noteq> blue` by auto
+        using \<open>w p = blue\<close> and \<open>w guru \<noteq> blue\<close> by auto
       hence "w' guru \<noteq> blue"
-        using `w guru \<noteq> blue` and possibleD_colors[OF `possible n p w w'`] by simp
+        using \<open>w guru \<noteq> blue\<close> and possibleD_colors[OF \<open>possible n p w w'\<close>] by simp
 
       have "valid w'"
-        using `possible n p w w'` unfolding possible.simps by simp
+        using \<open>possible n p w w'\<close> unfolding possible.simps by simp
 
       show "w' p = blue"
       proof (rule ccontr)
         assume "w' p \<noteq> blue"
         \<comment> \<open>If our eyes weren't blue, then \<open>p'\<close> would see one blue-eyed person less than us.\<close>
-        with possible_blues_seen[OF `possible n p w w'` `w p' = blue` `p \<noteq> p'`]
+        with possible_blues_seen[OF \<open>possible n p w w'\<close> \<open>w p' = blue\<close> \<open>p \<noteq> p'\<close>]
         have *: "card (blues_seen w p) = Suc (card (blues_seen w' p'))"
           by simp
         \<comment> \<open>By induction, they would've left on day \<open>k = blues_seen w' p'\<close>.\<close>
         let ?k = "card (blues_seen w' p')"
         have "?k < n"
-          using `n \<ge> card (blues_seen w p)` and * by simp
+          using \<open>n \<ge> card (blues_seen w p)\<close> and * by simp
         hence "leaves ?k p' w'"
-          using `valid w'` `w' p' = blue` `w' guru \<noteq> blue`
+          using \<open>valid w'\<close> \<open>w' p' = blue\<close> \<open>w' guru \<noteq> blue\<close>
           by (intro less.IH[THEN iffD2]; auto)
         \<comment> \<open>However, we know that actually, \<open>p'\<close> didn't leave that day yet.\<close>
         moreover have "\<not> leaves ?k p' w"
         proof
           assume "leaves ?k p' w"
           then have "?k \<ge> card (blues_seen w p')"
-            using `?k < n` `w p' = blue` `valid w` `w guru \<noteq> blue`
+            using \<open>?k < n\<close> \<open>w p' = blue\<close> \<open>valid w\<close> \<open>w guru \<noteq> blue\<close>
             by (intro less.IH[THEN iffD1]; auto)
 
           have "card (blues_seen w p) = card (blues_seen w p')"
             by (intro blues_seen_others; fact)
           with * have "?k < card (blues_seen w p')"
             by simp
-          with `?k \<ge> card (blues_seen w p')` show False by simp
+          with \<open>?k \<ge> card (blues_seen w p')\<close> show False by simp
         qed
         moreover have "leaves ?k p' w' = leaves ?k p' w"
-          using `possible n p w w'` `?k < n`
+          using \<open>possible n p w w'\<close> \<open>?k < n\<close>
           unfolding possible.simps by simp
         ultimately show False by simp
       qed
     qed
     thus "leaves n p w"
-      unfolding leaves.simps using `w p = blue` by simp
+      unfolding leaves.simps using \<open>w p = blue\<close> by simp
   next
     \<comment> \<open>Then, we show that it's not possible to deduce the eye color any earlier.\<close>
     {
@@ -321,11 +321,11 @@ proof (induction n arbitrary: p w rule: less_induct)
         world is \<open>possible\<close>.\<close>
       let ?w' = "w(p := brown)"
       have "?w' guru \<noteq> blue"
-        using `w guru \<noteq> blue` `w p = blue`
+        using \<open>w guru \<noteq> blue\<close> \<open>w p = blue\<close>
         by auto
       have "valid ?w'"
       proof -
-        from `n < card (blues_seen w p)` have "card (blues_seen w p) \<noteq> 0" by auto
+        from \<open>n < card (blues_seen w p)\<close> have "card (blues_seen w p) \<noteq> 0" by auto
         hence "blues_seen w p \<noteq> {}"
           by auto
         then obtain p' where "p' \<in> blues_seen w p"
@@ -333,7 +333,7 @@ proof (induction n arbitrary: p w rule: less_induct)
         hence "p \<noteq> p'" and "w p' = blue"
           by (auto simp: blues_seen_def)
         hence "?w' p' = blue" by auto
-        with `?w' guru \<noteq> blue` show "valid ?w'"
+        with \<open>?w' guru \<noteq> blue\<close> show "valid ?w'"
           unfolding valid_def by auto
       qed
       moreover have "leaves n' p' w = leaves n' p' ?w'" if "n' < n" for n' p'
@@ -343,22 +343,22 @@ proof (induction n arbitrary: p w rule: less_induct)
         proof (cases "w' p' = blue")
           case True
           then have "leaves n' p' w' \<longleftrightarrow> n' \<ge> card (blues_seen w' p')"
-            using less.IH `n' < n` `valid w'` `w' guru \<noteq> blue`
+            using less.IH \<open>n' < n\<close> \<open>valid w'\<close> \<open>w' guru \<noteq> blue\<close>
             by simp
-          with P[OF `w' p' = blue`] show "\<not>leaves n' p' w'" by simp
+          with P[OF \<open>w' p' = blue\<close>] show "\<not>leaves n' p' w'" by simp
         next
           case False
           then show "\<not> leaves n' p' w'"
-            using only_blue_eyes_leave `valid w'` by auto
+            using only_blue_eyes_leave \<open>valid w'\<close> by auto
         qed
 
         have "\<not>leaves n' p' w"
         proof (intro not_leavesI)
           assume "w p' = blue"
-          with `w p = blue` have "card (blues_seen w p) = card (blues_seen w p')"
+          with \<open>w p = blue\<close> have "card (blues_seen w p) = card (blues_seen w p')"
             apply (cases "p = p'", simp)
             by (intro blues_seen_others; auto)
-          with `n' < n` and `n < card (blues_seen w p)` show "n' < card (blues_seen w p')"
+          with \<open>n' < n\<close> and \<open>n < card (blues_seen w p)\<close> show "n' < card (blues_seen w p')"
             by simp
         qed fact+
 
@@ -367,25 +367,25 @@ proof (induction n arbitrary: p w rule: less_induct)
           assume "?w' p' = blue"
           with colors_distinct have "p \<noteq> p'" and "?w' p \<noteq> blue" by auto
           hence "card (blues_seen ?w' p) = Suc (card (blues_seen ?w' p'))"
-            using `?w' p' = blue` 
+            using \<open>?w' p' = blue\<close> 
             by (intro blues_seen_others; auto)
           moreover have "blues_seen w p = blues_seen ?w' p"
             unfolding blues_seen_def by auto
           ultimately show "n' < card (blues_seen ?w' p')"
-            using `n' < n` and `n < card (blues_seen w p)`
+            using \<open>n' < n\<close> and \<open>n < card (blues_seen w p)\<close>
             by auto
         qed fact+
 
         ultimately show "leaves n' p' w = leaves n' p' ?w'" by simp
       qed
       ultimately have "possible n p w ?w'"
-        using `valid w`
+        using \<open>valid w\<close>
         by (auto simp: possible.simps)
       moreover have "?w' p \<noteq> blue"
         using colors_distinct by auto
       ultimately have "\<not> leaves n p w"
         unfolding leaves.simps
-        using `w p = blue` by blast
+        using \<open>w p = blue\<close> by blast
     }
     then show "leaves n p w \<Longrightarrow> n \<ge> card (blues_seen w p)"
       by fastforce
@@ -404,12 +404,12 @@ proof (cases "w p = blue")
   with assms have "card (blues_seen w p) = n"
     unfolding blues_seen_def by simp
   then show ?thesis
-    using `w p = blue` `valid w` `w guru \<noteq> blue` blue_leaves
+    using \<open>w p = blue\<close> \<open>valid w\<close> \<open>w guru \<noteq> blue\<close> blue_leaves
     by simp
 next
   case False
   then show ?thesis
-    using only_blue_eyes_leave `valid w` by auto
+    using only_blue_eyes_leave \<open>valid w\<close> by auto
 qed
 
 end

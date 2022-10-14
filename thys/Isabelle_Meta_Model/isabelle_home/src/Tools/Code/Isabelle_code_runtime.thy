@@ -84,7 +84,7 @@ fun evaluation_code ctxt module_name program tycos consts all_public =
     val (ml_modules, target_names) =
       Code_Target.produce_code_for ctxt
         Code_Runtime.target module_name NONE [] program all_public (map Constant consts @ map Type_Constructor tycos);
-    val ml_code = space_implode "\n\n" (map snd ml_modules);
+    val ml_code = space_implode "\n\n" (map (Bytes.content o snd) ml_modules);
     val (consts', tycos') = chop (length consts) target_names;
     val consts_map = map2 (fn const =>
       fn NONE =>

@@ -99,8 +99,7 @@
   <div class="abstract mathjax_process">In this work, we use the interactive theorem prover Isabelle/HOL to
 verify an imperative implementation of the classical B-tree data
 structure invented by Bayer and McCreight [ACM 1970]. The
-implementation supports set membership, insertion and deletion queries with
-efficient binary search for intra-node navigation. This is
+implementation supports set membership, insertion, deletion, iteration and range queries with efficient binary search for intra-node navigation. This is
 accomplished by first specifying the structure abstractly in the
 functional modeling language HOL and proving functional correctness.
 Using manual refinement, we derive an imperative implementation in
@@ -108,12 +107,19 @@ Imperative/HOL. We show the validity of this refinement using the
 separation logic utilities from the <a
 href="https://www.isa-afp.org/entries/Refine_Imperative_HOL.html">
 Isabelle Refinement Framework </a> . The code can be exported to
-the programming languages SML, OCaml and Scala. We examine the runtime of all
-operations indirectly by reproducing results of the logarithmic
-relationship between height and the number of nodes.  The results are
-discussed in greater detail in the corresponding <a
+the programming languages SML, OCaml and Scala.
+This entry contains two developments:
+ <dl>
+  <dt>B-Trees</dt>
+  <dd>This formalisation is discussed in greater detail in the corresponding <a
 href="https://mediatum.ub.tum.de/1596550">Bachelor's
-Thesis</a>.</div>
+Thesis</a>.</dd>
+  <dt>B+-Trees:</dt>
+  <dd>This formalisation also supports range queries and is discussed in a paper published at ICTAC 2022.</dd>
+</dl>
+
+Change history:
+[2022-08-16]: Added formalisations of B+-Trees</div>
 
   <h3>License</h3>
   <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
@@ -128,13 +134,30 @@ Further add the option to export code to OCaml.
     <li><a href="../theories/btree/#BTree_Height">BTree_Height</a></li>
     <li><a href="../theories/btree/#BTree_Set">BTree_Set</a></li>
     <li><a href="../theories/btree/#BTree_Split">BTree_Split</a></li>
+    <li><a href="../theories/btree/#BPlusTree">BPlusTree</a></li>
+    <li><a href="../theories/btree/#BPlusTree_Split">BPlusTree_Split</a></li>
+    <li><a href="../theories/btree/#BPlusTree_Set">BPlusTree_Set</a></li>
+    <li><a href="../theories/btree/#BPlusTree_Range">BPlusTree_Range</a></li>
+    <li><a href="../theories/btree/#BPlusTree_SplitCE">BPlusTree_SplitCE</a></li>
     <li><a href="../theories/btree/#Array_SBlit">Array_SBlit</a></li>
     <li><a href="../theories/btree/#Partially_Filled_Array">Partially_Filled_Array</a></li>
     <li><a href="../theories/btree/#Basic_Assn">Basic_Assn</a></li>
     <li><a href="../theories/btree/#BTree_Imp">BTree_Imp</a></li>
     <li><a href="../theories/btree/#BTree_ImpSet">BTree_ImpSet</a></li>
     <li><a href="../theories/btree/#Imperative_Loops">Imperative_Loops</a></li>
-    <li><a href="../theories/btree/#BTree_ImpSplit">BTree_ImpSplit</a></li></ul><div class="flex-wrap">
+    <li><a href="../theories/btree/#BTree_ImpSplit">BTree_ImpSplit</a></li>
+    <li><a href="../theories/btree/#Flatten_Iter_Spec">Flatten_Iter_Spec</a></li>
+    <li><a href="../theories/btree/#Flatten_Iter">Flatten_Iter</a></li>
+    <li><a href="../theories/btree/#Inst_Ex_Assn">Inst_Ex_Assn</a></li>
+    <li><a href="../theories/btree/#BPlusTree_Imp">BPlusTree_Imp</a></li>
+    <li><a href="../theories/btree/#BPlusTree_ImpSplit">BPlusTree_ImpSplit</a></li>
+    <li><a href="../theories/btree/#BPlusTree_ImpSet">BPlusTree_ImpSet</a></li>
+    <li><a href="../theories/btree/#Partially_Filled_Array_Iter">Partially_Filled_Array_Iter</a></li>
+    <li><a href="../theories/btree/#BPlusTree_Iter_OneWay">BPlusTree_Iter_OneWay</a></li>
+    <li><a href="../theories/btree/#Subst_Mod_Mult_AC">Subst_Mod_Mult_AC</a></li>
+    <li><a href="../theories/btree/#BPlusTree_Iter">BPlusTree_Iter</a></li>
+    <li><a href="../theories/btree/#BPlusTree_ImpRange">BPlusTree_ImpRange</a></li>
+    <li><a href="../theories/btree/#BPlusTree_ImpSplitCE">BPlusTree_ImpSplitCE</a></li></ul><div class="flex-wrap">
   <div>
     <h3>Depends on</h3>
     <ul class="horizontal-list"><li><a href="../entries/Refine_Imperative_HOL.html">The Imperative Refinement Framework</a></li></ul>

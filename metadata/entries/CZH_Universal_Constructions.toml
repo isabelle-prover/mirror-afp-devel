@@ -21,9 +21,10 @@ email = "milehins_email"
 [contributors]
 
 [notify]
-milehins = "milehins_email1"
+milehins = "milehins_email"
 
 [history]
+2022-05-16 = "creation and preservation of limits (revision 68412a363595)<br>"
 
 [extra]
 

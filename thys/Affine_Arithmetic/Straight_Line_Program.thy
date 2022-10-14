@@ -180,14 +180,14 @@ proof -
       subgoal by fact
       subgoal
         unfolding M'
-        apply (simp add: )
+        apply simp
         apply (rule disjI2)
         apply (rule IH2(2))
         apply (rule IH1) apply simp
         done
       subgoal
         unfolding M'
-        apply (simp add: )
+        apply simp
         apply (rule disjI2)
         apply (rule IH2)
         by simp
@@ -317,13 +317,13 @@ proof -
       subgoal by fact
       subgoal
         unfolding M'
-        apply (simp add: )
+        apply simp
         apply (rule disjI2)
         apply (rule IH1) apply simp
         done
       subgoal
         unfolding M'
-        apply (simp add: )
+        apply simp
         apply (rule disjI2)
         by (rule IH1) simp
       subgoal
@@ -410,11 +410,11 @@ proof -
       subgoal by fact
       subgoal
         unfolding M'
-        apply (simp add: )
+        apply simp
         done
       subgoal
         unfolding M'
-        apply (simp add: )
+        apply simp
         using assms by auto
       subgoal
         unfolding M' slp'

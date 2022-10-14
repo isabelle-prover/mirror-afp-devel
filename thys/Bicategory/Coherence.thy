@@ -766,7 +766,7 @@ begin
         show "False"
         proof -
           have v: "v = \<^bold>\<langle>un_Prim v\<^bold>\<rangle>"
-            using vw Nml_HcompD by force
+            using vw Nml_HcompD by metis
           have w: "Nml w \<and> \<not> is_Prim\<^sub>0 w \<and> \<^bold>\<langle>src (un_Prim v)\<^bold>\<rangle>\<^sub>0 = Trg w"
             using vw Nml_HcompD [of v w] by blast
           have "(v \<^bold>\<star> w) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> u = v \<^bold>\<star> (w \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> u)"
@@ -853,7 +853,7 @@ begin
               show "((w \<^bold>\<star> x) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> u) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> v = (w \<^bold>\<star> x) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> (u \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> v)"
               proof -
                 have w: "w = \<^bold>\<langle>un_Prim w\<^bold>\<rangle>"
-                  using t 1 2 Nml_HcompD by auto
+                  using t 1 2 Nml_HcompD by metis
                 have x: "Nml x"
                   using t w 1 2 by (metis Nml.simps(3))
                 have "((w \<^bold>\<star> x) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> u) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> v = (w \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> (x \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> u)) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> v"
@@ -1075,9 +1075,9 @@ begin
                           Nml (w \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> u) \<and> Dom (w \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> u) = Dom u \<and> Cod (w \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> u) = Cod w"
         assume vw: "Nml (v \<^bold>\<star> w)"
         have v: "Nml v"
-          using vw Nml_HcompD by force
+          using vw Nml_HcompD by blast
         have w: "Nml w"
-          using vw Nml_HcompD by force
+          using vw Nml_HcompD by blast
         assume u: "Nml u"
         assume 1: "(Dom v \<^bold>\<star> Dom w) = Cod u"
         show "Nml ((v \<^bold>\<star> w) \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> u) \<and> Dom ((v \<^bold>\<star> w) \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> u) = Dom u \<and>
@@ -2322,7 +2322,7 @@ begin
           have 4: "VVV.arr (\<lbrace>Dom t\<rbrace>, \<lbrace>Dom u\<rbrace>, \<lbrace>Dom v\<rbrace>)"
             using 1 VVV.ide_dom VVV.dom_simp by (elim VVV.in_homE) force
           have 5: "VVV.arr (\<lbrace>Cod t\<rbrace>, \<lbrace>Cod u\<rbrace>, \<lbrace>Cod v\<rbrace>)"
-            using 1 VVV.ide_cod VVV.cod_simp by (elim VVV.in_homE) force
+            using 1 VVV.ide_cod VVV.cod_simp VVV.in_hom_char\<^sub>S\<^sub>b\<^sub>C by blast
           have 2: "\<guillemotleft>\<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>) :
                       (\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace>) \<star> \<lbrace>Dom v\<rbrace> \<Rightarrow> \<lbrace>Cod t\<rbrace> \<star> \<lbrace>Cod u\<rbrace> \<star> \<lbrace>Cod v\<rbrace>\<guillemotright>"
             using 1 4 5 HoHV_def HoVH_def \<alpha>_def
@@ -2338,7 +2338,7 @@ begin
               have "src (\<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = src ((\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace>) \<star> \<lbrace>Dom v\<rbrace>)"
                 using 2 src_dom [of "\<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by fastforce
               also have "... = src \<lbrace>Dom v\<rbrace>"
-                using 4 VVV.arr_char VV.arr_char by simp
+                using 4 VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
               also have "... = src (dom \<lbrace>v\<rbrace>)"
                 using v by fastforce
               also have "... = \<lbrace>Src v\<rbrace>"
@@ -2350,7 +2350,7 @@ begin
               have "trg (\<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = trg ((\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace>) \<star> \<lbrace>Dom v\<rbrace>)"
                 using 2 trg_dom [of "\<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by fastforce
               also have "... = trg \<lbrace>Dom t\<rbrace>"
-                using 4 VVV.arr_char VV.arr_char by simp
+                using 4 VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
               also have "... = trg (dom \<lbrace>t\<rbrace>)"
                 using t by fastforce
               also have "... = \<lbrace>Trg t\<rbrace>"
@@ -2380,14 +2380,14 @@ begin
         proof -
           have 1: "VVV.in_hom (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)
                                 (\<lbrace>Dom t\<rbrace>, \<lbrace>Dom u\<rbrace>, \<lbrace>Dom v\<rbrace>) (\<lbrace>Cod t\<rbrace>, \<lbrace>Cod u\<rbrace>, \<lbrace>Cod v\<rbrace>)"
-            using t u v tuv VVV.hom_char VVV.arr_char VV.arr_char VVV.dom_char VVV.cod_char
+            using t u v tuv VVV.hom_char VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.dom_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C
             apply (elim conjE in_hhomE in_homE)
             apply (intro VVV.in_homI)
             by simp_all
           have 4: "VVV.arr (\<lbrace>Dom t\<rbrace>, \<lbrace>Dom u\<rbrace>, \<lbrace>Dom v\<rbrace>)"
-            using "1" VVV.in_hom_char by blast
+            using "1" VVV.in_hom_char\<^sub>S\<^sub>b\<^sub>C by blast
           have 5: "VVV.arr (\<lbrace>Cod t\<rbrace>, \<lbrace>Cod u\<rbrace>, \<lbrace>Cod v\<rbrace>)"
-            using "1" VVV.in_hom_char by blast
+            using "1" VVV.in_hom_char\<^sub>S\<^sub>b\<^sub>C by blast
           have 2: "\<guillemotleft>\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>) :
                       \<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace> \<star> \<lbrace>Dom v\<rbrace> \<Rightarrow> (\<lbrace>Cod t\<rbrace> \<star> \<lbrace>Cod u\<rbrace>) \<star> \<lbrace>Cod v\<rbrace>\<guillemotright>"
             using 1 4 5 HoHV_def HoVH_def \<alpha>'.map_def
@@ -2403,7 +2403,7 @@ begin
               have "src (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = src (\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace> \<star> \<lbrace>Dom v\<rbrace>)"
                 using 2 src_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by fastforce
               also have "... = src \<lbrace>Dom v\<rbrace>"
-                using 4 VVV.arr_char VV.arr_char by simp
+                using 4 VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C by simp
               also have "... = src (dom \<lbrace>v\<rbrace>)"
                 using v by fastforce
               also have "... = \<lbrace>Src v\<rbrace>"
@@ -2415,7 +2415,7 @@ begin
               have "trg (\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) = trg (\<lbrace>Dom t\<rbrace> \<star> \<lbrace>Dom u\<rbrace> \<star> \<lbrace>Dom v\<rbrace>)"
                 using 2 trg_dom [of "\<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] by fastforce
               also have "... = trg \<lbrace>Dom t\<rbrace>"
-                using 4 VVV.arr_char VV.arr_char hseqI' by simp
+                using 4 VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C hseqI' by simp
               also have "... = trg (dom \<lbrace>t\<rbrace>)"
                 using t by fastforce
               also have "... = \<lbrace>Trg t\<rbrace>"
@@ -2495,12 +2495,12 @@ begin
     proof -
       have "\<lbrace>\<^bold>\<a>\<^bold>[t, u, v\<^bold>]\<rbrace> = \<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)" by simp
       also have "... = \<alpha> (VVV.cod (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) \<cdot> HoHV (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"
-        using assms \<alpha>.is_natural_2 [of "(\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] VVV.arr_char VVV.cod_char
+        using assms \<alpha>.is_natural_2 [of "(\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C
               \<alpha>.is_extensional \<alpha>_def
         by auto
       also have "... = \<alpha> (cod \<lbrace>t\<rbrace>, cod \<lbrace>u\<rbrace>, cod \<lbrace>v\<rbrace>) \<cdot> ((\<lbrace>t\<rbrace> \<star> \<lbrace>u\<rbrace>) \<star> \<lbrace>v\<rbrace>)"
         unfolding HoHV_def \<alpha>_def
-        using assms VVV.arr_char VV.arr_char VVV.cod_char \<alpha>.is_extensional
+        using assms VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C \<alpha>.is_extensional
         by auto
       finally show ?thesis by simp
     qed
@@ -2511,12 +2511,12 @@ begin
     proof -
       have "\<lbrace>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>]\<rbrace> = \<alpha>'.map (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)" by simp
       also have "... = \<alpha>'.map (VVV.cod (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)) \<cdot> HoVH (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"
-        using assms \<alpha>'.is_natural_2 [of "(\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] VVV.arr_char VVV.cod_char
+        using assms \<alpha>'.is_natural_2 [of "(\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"] VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C
               \<alpha>'.is_extensional
         by simp
       also have "... = \<alpha>'.map (cod \<lbrace>t\<rbrace>, cod \<lbrace>u\<rbrace>, cod \<lbrace>v\<rbrace>) \<cdot> (\<lbrace>t\<rbrace> \<star> \<lbrace>u\<rbrace> \<star> \<lbrace>v\<rbrace>)"
         unfolding HoVH_def
-        using assms VVV.arr_char VV.arr_char VVV.cod_char \<alpha>'.is_extensional
+        using assms VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C VVV.cod_char\<^sub>S\<^sub>b\<^sub>C \<alpha>'.is_extensional
         apply simp
         using eval_simps'(2) eval_simps'(3) by presburger
       finally show ?thesis
@@ -2583,11 +2583,11 @@ begin
           have "VxVxV.inv (\<lbrace>t1\<rbrace>, \<lbrace>t2\<rbrace>, \<lbrace>t3\<rbrace>) = (inv \<lbrace>t1\<rbrace>, inv \<lbrace>t2\<rbrace>, inv \<lbrace>t3\<rbrace>)"
             using t1 t2 t3 3 by simp
           thus ?thesis
-            using t1 t2 t3 1 Can_implies_Arr VVV.arr_char VV.arr_char
+            using t1 t2 t3 1 Can_implies_Arr VVV.arr_char\<^sub>S\<^sub>b\<^sub>C VV.arr_char\<^sub>S\<^sub>b\<^sub>C
             by (simp add: eval_simps')
         qed
         ultimately show ?thesis
-          using t1 t2 t3 1 Can_implies_Arr VVV.iso_char VVV.arr_char
+          using t1 t2 t3 1 Can_implies_Arr VVV.iso_char\<^sub>S\<^sub>b\<^sub>C VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
           by (auto simp add: eval_simps')
       qed
       show "iso (\<alpha> (\<lbrace>t1\<rbrace>, \<lbrace>t2\<rbrace>, \<lbrace>t3\<rbrace>))"
@@ -2791,9 +2791,9 @@ begin
           fix x y
           assume 3: "u = x \<^bold>\<star> y"
           have x: "Nml x"
-            using u 1 3 Nml_HcompD by simp
+            using u 1 3 Nml_HcompD by blast
           have y: "Nml y"
-            using u x 1 3 Nml_HcompD by simp
+            using u x 1 3 Nml_HcompD by blast
           assume 4: "Arr v \<and> Arr w \<and> Src v = Trg w \<and> Dom v = Cod x \<and> Dom w = Cod y"
           have "\<lbrace>v \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> x\<rbrace> \<star> \<lbrace>w \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> y\<rbrace> = \<lbrace>v \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> x \<^bold>\<star> w \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> y\<rbrace>"
             using v w x y 4 HcompNml_in_Hom by simp
@@ -2823,7 +2823,8 @@ begin
         hence 2: "Nml a \<and> Nml b \<and> Src a = Trg b"
           using Nml_HcompD(3-4,7) by simp
         have "\<lbrace>(a \<^bold>\<star> b)\<^bold>\<down>\<rbrace> = \<lbrace>a\<rbrace> \<star> \<lbrace>b\<rbrace>"
-          using 1 Nml_HcompD by simp
+          using 1 Nml_HcompD
+          by (metis eval.simps(3) red_Nml)
         also have "... = \<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>b\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>a\<^bold>\<down>\<rbrace> \<star> \<lbrace>b\<^bold>\<down>\<rbrace>)"
           using assms 1 2 ide_eval_Ide Nmlize_in_Hom red2_Nml Nmlize_Nml
           by (simp add: eval_simps')
@@ -3497,7 +3498,8 @@ begin
     shows "\<lbrace>Cod t \<^bold>\<Down> Cod u\<rbrace> \<cdot> (\<lbrace>t\<rbrace> \<star> \<lbrace>u\<rbrace>) = \<lbrace>t \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> u\<rbrace> \<cdot> \<lbrace>Dom t \<^bold>\<Down> Dom u\<rbrace>"
     proof -
       have *: "\<And>t u. Nml (t \<^bold>\<star> u) \<Longrightarrow> arr \<lbrace>t\<rbrace> \<and> arr \<lbrace>u\<rbrace>"
-        using Nml_implies_Arr Nml_HcompD by simp
+        using Nml_implies_Arr Nml_HcompD
+        by (metis eval_simps'(1))
       have "is_Prim\<^sub>0 t \<Longrightarrow> ?thesis"
         using assms Nml_implies_Arr is_Prim0_Trg \<ll>.naturality [of "\<lbrace>u\<rbrace>"]
         by (cases t) (simp_all add: eval_simps', cases "Trg t", simp_all)
@@ -3884,7 +3886,7 @@ begin
             using t u v tu uv Nmlize_Vcomp_Arr_Dom VcompNml_HcompNml Nml_Nmlize
                   HcompNml_assoc Nml_HcompNml HcompNml_in_Hom
                   VcompNml_Nml_Dom [of "(\<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>u\<^bold>\<rfloor>) \<^bold>\<lfloor>\<^bold>\<star>\<^bold>\<rfloor> \<^bold>\<lfloor>v\<^bold>\<rfloor>"]
-            by simp
+            using Nmlize.simps(3-4,10) by presburger
           moreover have "\<lbrace>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>]\<rbrace> = \<lbrace>((t \<^bold>\<star> u) \<^bold>\<star> v) \<^bold>\<cdot> \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[Dom t, Dom u, Dom v\<^bold>]\<rbrace>"
           proof -
             have 1: "VVV.arr (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"

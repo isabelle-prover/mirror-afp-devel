@@ -251,12 +251,12 @@ proof -
     using assms
     by (subst Gamma_conv_nn_integral_real)
        (auto intro!: nn_integral_cong_AE[OF AE_I[of _ _ "{0}"]] 
-             simp: indicator_def split: if_splits)
+             simp: indicator_def split: if_splits split_of_bool_asm)
   finally have "ennreal (Gamma a * Gamma b) = I * ennreal (Gamma (a + b))" .
   hence "ennreal (Gamma a * Gamma b) / ennreal (Gamma (a + b)) =
            I * ennreal (Gamma (a + b)) / ennreal (Gamma (a + b))" by simp
   also have "\<dots> = I"
-    using \<open>Gamma (a + b) > 0\<close> by (intro ennreal_mult_divide_eq) (auto simp: )
+    using \<open>Gamma (a + b) > 0\<close> by (intro ennreal_mult_divide_eq) auto
   also have "ennreal (Gamma a * Gamma b) / ennreal (Gamma (a + b)) =
                ennreal (Gamma a * Gamma b / Gamma (a + b))"
     using assms by (intro divide_ennreal) auto
@@ -392,7 +392,7 @@ proof -
       using s has_integral_const_real[of 1 "of_nat n" "of_nat (n + 1)"]
       by (intro has_integral_diff has_integral_mult_right fundamental_theorem_of_calculus)
          (auto intro!: derivative_eq_intros has_vector_derivative_real_field
-               simp: has_field_derivative_iff_has_vector_derivative [symmetric] field_simps
+               simp: has_real_derivative_iff_has_vector_derivative [symmetric] field_simps
                      complex_nonpos_Reals_iff)
     thus "((\<lambda>x. (of_nat n + 1/2 + s) * (1 / (of_real x + s)) - 1) has_integral 
               (of_nat n + 1/2 + s) * (ln (of_nat (n + 1) + s) - ln (of_nat n + s)) - 1) 
@@ -878,7 +878,7 @@ proof -
       from n s have "((\<lambda>x. c / (x + Re s) ^ n) has_integral (?F (real N) - ?F 0)) {0..real N}"
         by (intro fundamental_theorem_of_calculus)
            (auto intro!: derivative_eq_intros simp: divide_simps power_diff add_eq_0_iff2
-                   has_field_derivative_iff_has_vector_derivative [symmetric])      
+                   has_real_derivative_iff_has_vector_derivative [symmetric])      
       also have "?F (real N) - ?F 0 = ?bound N" by simp
       finally have *: "((\<lambda>x. c / (x + Re s) ^ n) has_integral ?bound N) {0..real N}" .
       have "norm (integral {0..real N} (\<lambda>x. of_real (pbernpoly n x) / (of_real x + s) ^ n)) \<le>
@@ -916,7 +916,7 @@ proof -
     if "x \<noteq> a" for x :: real and A
     unfolding F1_def F3_def using assms that
     by (auto intro!: derivative_eq_intros simp: divide_simps power_diff add_eq_0_iff2
-             simp flip: has_field_derivative_iff_has_vector_derivative)
+             simp flip: has_real_derivative_iff_has_vector_derivative)
 
   from assms have "((\<lambda>x. c / (a - x) ^ n) has_integral (F1 x1 - F1 l)) {l..x1}"
     by (intro fundamental_theorem_of_calculus deriv) (auto simp: x1_def max_def split: if_splits)

@@ -139,9 +139,10 @@ object AFP_Site_Gen {
         opt("related", entry.related.map(from_related(_, cache))))
 
     def from_keywords(keywords: List[String]): T =
-      keywords.zipWithIndex.map { case (keyword, i) => Object(
-        "id" -> i,
-        "keyword" -> keyword)
+      keywords.zipWithIndex.map {
+        case (keyword, i) => Object(
+          "id" -> i,
+          "keyword" -> keyword)
       }
   }
 
@@ -152,7 +153,10 @@ object AFP_Site_Gen {
     def round(int: Int): Int = Math.round(int.toFloat / 100) * 100
 
     def nodes(entry: Entry): List[Document.Node.Name] =
-      structure.entry_sessions(entry.name).flatMap(session => deps(session.name).session_theories)
+      structure.entry_sessions(entry.name)
+        .flatMap(session => deps(session.name).proper_session_theories)
+
+    val theorem_commands = List("theorem", "lemma", "corollary", "proposition", "schematic_goal")
 
     var entry_lines = Map.empty[Entry, Int]
     var entry_lemmas = Map.empty[Entry, Int]
@@ -163,7 +167,7 @@ object AFP_Site_Gen {
     } {
       entry_lines += entry -> (entry_lines.getOrElse(entry, 0) + lines.count(_.nonEmpty))
       entry_lemmas += entry -> (entry_lemmas.getOrElse(entry, 0) +
-        lines.count(line => List("lemma", "theorem", "corollary").exists(line.startsWith)))
+        lines.count(line => theorem_commands.exists(line.startsWith)))
     }
 
     val first_year = entries.flatMap(_.releases).map(_.date.getYear).min
@@ -325,7 +329,7 @@ object AFP_Site_Gen {
 
       val theories = afp_structure.entry_sessions(entry.name).map { session =>
         val base = sessions_deps(session.name)
-        val theories = base.session_theories.map(_.theory_base_name)
+        val theories = base.proper_session_theories.map(_.theory_base_name)
         val session_json = isabelle.JSON.Object(
             "title" -> session.name,
             "entry" -> entry.name,

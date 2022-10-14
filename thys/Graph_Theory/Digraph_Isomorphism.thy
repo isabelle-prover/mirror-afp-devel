@@ -475,7 +475,7 @@ proof -
     using hom pre_digraph.subgraph_app_isoI'[OF hom_inv subg aG.subgraph_refl] by simp
   define H0 where "H0 = app_iso (inv_iso hom) H"
   then have H0: "H = app_iso hom H0" "subgraph H0 G" 
-    using hom subg \<open>subgraph _ G\<close> by (auto simp: )
+    using hom subg \<open>subgraph _ G\<close> by auto
     
   show ?thesis (is "?L \<longleftrightarrow> ?R")
   proof

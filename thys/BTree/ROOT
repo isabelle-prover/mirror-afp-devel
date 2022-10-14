@@ -1,20 +1,35 @@
 chapter AFP
 
 session "BTree" (AFP) = "Refine_Imperative_HOL" +
-  options [timeout = 1200]
+  options [timeout = 2400]
   sessions
     "HOL-Data_Structures"
+    "HOL-Real_Asymp"
   theories
     BTree
     BTree_Height
     BTree_Set
     BTree_Split
+    BPlusTree
+    BPlusTree_Split
+    BPlusTree_Set
+    BPlusTree_Range
+    BPlusTree_SplitCE
   theories [condition = ISABELLE_OCAMLFIND]
     Array_SBlit
     Partially_Filled_Array
     BTree_Imp
     BTree_ImpSet
     BTree_ImpSplit
+    Flatten_Iter_Spec
+    Flatten_Iter
+    BPlusTree_Imp
+    BPlusTree_ImpSplit
+    BPlusTree_ImpSet
+    BPlusTree_Iter_OneWay
+    BPlusTree_Iter
+    BPlusTree_ImpRange
+    BPlusTree_ImpSplitCE
   document_files
     "root.tex"
     "root.bib"

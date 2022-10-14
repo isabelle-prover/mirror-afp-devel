@@ -191,7 +191,7 @@ proof(intro tiny_semicategoryI)
     from g(1) f(1) show "\<MM> \<circ>\<^sub>A\<^bsub>smc_FUNCT \<alpha> \<AA> \<BB>\<^esub> \<NN> : \<FF> \<mapsto>\<^bsub>smc_FUNCT \<alpha> \<AA> \<BB>\<^esub> \<HH>"
       by (subst g(2), subst g(4), subst f(2), subst f(3), remdups)
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: smc_FUNCT_cs_simps
             cs_intro: smc_FUNCT_cs_intros cat_cs_intros
         )
@@ -355,7 +355,7 @@ proof(rule vsubsetI)
     unfolding \<LL>_def'
     by (subst \<MM>(2), use nothing in \<open>subst \<NN>(2)\<close>)
       (
-        cs_concl 
+        cs_concl  
           cs_simp: smc_FUNCT_cs_simps 
           cs_intro: smc_FUNCT_cs_intros cat_small_cs_intros
       )
@@ -388,7 +388,7 @@ proof-
         "\<MM> \<circ>\<^sub>A\<^bsub>?Funct\<^esub> \<NN> : \<FF> \<mapsto>\<^bsub>?Funct\<^esub> \<HH>"
         by (subst \<MM>(2), use nothing in \<open>subst \<MM>(4), subst \<NN>(2), subst \<NN>(3)\<close>)
           (
-            cs_concl 
+            cs_concl  
               cs_simp: smc_FUNCT_cs_simps 
               cs_intro: smc_FUNCT_cs_intros cat_small_cs_intros
           )
@@ -408,7 +408,7 @@ proof-
             use nothing in \<open>subst (1 2) \<MM>(2), subst (1 2) \<NN>(2)\<close>
           )
           (
-            cs_concl
+            cs_concl 
               cs_simp: smc_FUNCT_cs_simps cat_cs_simps cat_small_cs_simps 
               cs_intro: smc_FUNCT_cs_intros cat_cs_intros cat_small_cs_intros
           )
@@ -432,7 +432,7 @@ proof(intro subsemicategoryI, unfold smc_dg_FUNCT smc_dg_Funct)
   from assms show "semicategory \<beta> (smc_FUNCT \<alpha> \<AA> \<BB>)"
     by 
       (
-        cs_concl
+        cs_concl 
           cs_intro: smc_small_cs_intros tiny_semicategory_smc_FUNCT
       )
   show "dg_Funct \<alpha> \<AA> \<BB> \<subseteq>\<^sub>D\<^sub>G\<^bsub>\<beta>\<^esub> dg_FUNCT \<alpha> \<AA> \<BB>"
@@ -446,7 +446,7 @@ proof(intro subsemicategoryI, unfold smc_dg_FUNCT smc_dg_Funct)
     from \<MM>(1) \<NN>(1) show ?thesis
       by (subst (1 2) \<MM>(2), use nothing in \<open>subst (1 2) \<NN>(2)\<close>)
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: smc_FUNCT_cs_simps cat_small_cs_simps 
             cs_intro: smc_FUNCT_cs_intros cat_small_cs_intros
         )

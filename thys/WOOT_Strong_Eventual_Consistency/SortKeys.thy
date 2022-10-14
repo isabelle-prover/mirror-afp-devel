@@ -12,11 +12,11 @@ derive linorder sort_dir
 lemma sort_dir_less_def [simp]: "(x < y) = (x = Left \<and> y = Right)" 
   by (cases x, case_tac [!] y, simp_all add:less_sort_dir_def)
 
-datatype 'a sort_key = 
-  NonFinal "('a \<times> sort_dir)" "'a sort_key" | 
-  Final 'a
+datatype '\<I> sort_key = 
+  NonFinal "('\<I> \<times> sort_dir)" "'\<I> sort_key" | 
+  Final '\<I>
 
-type_synonym 'id position = "'id sort_key extended"
+type_synonym '\<I> position = "'\<I> sort_key extended"
 
 fun embed_dir where "embed_dir (x,Left) = (x, 0)" | "embed_dir (x,Right) = (x, Suc (Suc 0))"
 
@@ -26,7 +26,7 @@ lemma embed_dir_inj [simp]: "(embed_dir x = embed_dir y) = (x = y)"
 lemma embed_dir_mono [simp]: "(embed_dir x < embed_dir y) = (x < y)"
   by (cases x, cases y, case_tac [!] "snd x", case_tac [!] "snd y", (simp add:less_sort_dir_def)+)
 
-fun sort_key_embedding :: "'a sort_key \<Rightarrow> ('a \<times> nat) list"
+fun sort_key_embedding :: "'\<I> sort_key \<Rightarrow> ('\<I> \<times> nat) list"
   where 
    "sort_key_embedding (NonFinal x y) = embed_dir x#(sort_key_embedding y)" |
    "sort_key_embedding (Final i) = [(i, Suc 0)]" 

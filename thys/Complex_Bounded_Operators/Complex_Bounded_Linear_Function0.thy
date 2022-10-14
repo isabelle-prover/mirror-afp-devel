@@ -673,7 +673,7 @@ proof
     fix i
     show "f (x + y) i = (f x + f y) i" "f (r *\<^sub>C x) i = (cnj r *\<^sub>C f x) i" for r x y
       by (auto intro!: cblinfun_eqI simp: cblinfun.scaleC_left scaleC_left add_left cblinfun.add_left)
-    from _ nonneg_bounded show "\<exists>K. \<forall>x. norm (f x) \<le> norm x * K"
+    from _ real.nonneg_bounded show "\<exists>K. \<forall>x. norm (f x) \<le> norm x * K"
       by (rule ex_reg) (auto intro!: onorm_bound simp: norm_cblinfun.rep_eq ac_simps)
   qed
 next
@@ -723,7 +723,7 @@ lift_definition id_cblinfun::"'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^
 
 lemmas cblinfun_id_cblinfun_apply[simp] = id_cblinfun.rep_eq
 
-(* Strong than norm_blinfun_id because we replaced the perfect_space typeclass by not_singleton *)
+(* Stronger than norm_blinfun_id because we replaced the perfect_space typeclass by not_singleton *)
 lemma norm_cblinfun_id[simp]:
   "norm (id_cblinfun::'a::{complex_normed_vector, not_singleton} \<Rightarrow>\<^sub>C\<^sub>L 'a) = 1"
   apply transfer
@@ -731,7 +731,7 @@ lemma norm_cblinfun_id[simp]:
    apply standard[1]
   by simp
 
-lemma norm_blinfun_id_le:
+lemma norm_cblinfun_id_le:
   "norm (id_cblinfun::'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'a) \<le> 1"
   by transfer (auto simp: onorm_id_le)
 
@@ -747,7 +747,9 @@ lemma norm_blinfun_id_le:
 lift_definition cblinfun_compose::
   "'a::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'b::complex_normed_vector \<Rightarrow>
     'c::complex_normed_vector \<Rightarrow>\<^sub>C\<^sub>L 'a \<Rightarrow>
-    'c \<Rightarrow>\<^sub>C\<^sub>L 'b" (infixl "o\<^sub>C\<^sub>L" 55) is "(o)"
+    'c \<Rightarrow>\<^sub>C\<^sub>L 'b" (infixl "o\<^sub>C\<^sub>L" 67) is "(o)"
+  (* Difference from Real_Vector_Spaces: Priority of o\<^sub>C\<^sub>L is 55 there.
+     But we want "a - b o\<^sub>C\<^sub>L c" to parse as "a - (b o\<^sub>C\<^sub>L c)". *)
   parametric comp_transfer
   unfolding o_def
   by (rule bounded_clinear_compose)

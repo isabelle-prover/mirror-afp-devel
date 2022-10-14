@@ -1,7 +1,7 @@
 chapter AFP
 
 session CZH_Elementary_Categories (AFP) = CZH_Foundations +
-  options [timeout = 7200]
+  options [timeout = 3600]
   directories
     czh_ecategories
   theories

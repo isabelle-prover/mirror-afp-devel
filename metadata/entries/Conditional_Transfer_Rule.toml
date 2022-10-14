@@ -19,7 +19,7 @@ email = "milehins_email"
 [contributors]
 
 [notify]
-milehins = "milehins_email1"
+milehins = "milehins_email"
 
 [history]
 

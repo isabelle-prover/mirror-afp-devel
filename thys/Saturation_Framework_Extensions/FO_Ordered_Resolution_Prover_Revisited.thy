@@ -315,12 +315,6 @@ subsection \<open>Labeled First-Order or Given Clause Layer\<close>
 
 datatype label = New | Processed | Old
 
-definition FL_Infer_of :: "'a clause inference \<Rightarrow> ('a clause \<times> label) inference set" where
-  "FL_Infer_of \<iota> = {Infer Cls (D, New) |Cls D. \<iota> = Infer (map fst Cls) D}"
-
-definition FL_Inf :: "('a clause \<times> label) inference set" where
-  "FL_Inf = (\<Union>\<iota> \<in> F_Inf. FL_Infer_of \<iota>)"
-
 abbreviation F_Equiv :: "'a clause \<Rightarrow> 'a clause \<Rightarrow> bool" (infix "\<doteq>" 50) where
   "C \<doteq> D \<equiv> generalizes C D \<and> generalizes D C"
 
@@ -342,7 +336,7 @@ lemma wf_L_Prec: "wfP (\<sqsubset>l)"
   by (metis L_Prec.elims(2) L_Prec.simps(3) not_accp_down wfP_accp_iff)
 
 interpretation FL: given_clause "{{#}}" F_Inf "{{#}}" UNIV "\<lambda>N. (\<TTurnstile>e)" G_Inf G.Red_I
-  "\<lambda>N. G.Red_F" "\<lambda>N. \<G>_F" \<G>_I_opt FL_Inf "(\<doteq>)" "(\<prec>\<cdot>)" "(\<sqsubset>l)" Old
+  "\<lambda>N. G.Red_F" "\<lambda>N. \<G>_F" \<G>_I_opt "(\<doteq>)" "(\<prec>\<cdot>)" "(\<sqsubset>l)" Old
 proof (unfold_locales; (intro ballI)?)
   show "equivp (\<doteq>)"
     unfolding equivp_def by (meson generalizes_refl generalizes_trans)
@@ -382,7 +376,7 @@ next
 next
   show "\<exists>l. L_Prec Old l"
     using L_Prec.simps(1) by blast
-qed (auto simp: FL_Inf_def FL_Infer_of_def F_Inf_have_prems)
+qed (auto simp: F_Inf_have_prems)
 
 notation FL.Prec_FL (infix "\<sqsubset>" 50)
 notation FL.entails_\<G>_L (infix "\<TTurnstile>\<G>Le" 50)
@@ -931,8 +925,8 @@ proof -
 
     obtain \<iota>'' and l0 where
       \<iota>'': "\<iota>'' = Infer (zip (prems_of \<iota>') ?olds) (concl_of \<iota>', l0)" and
-      \<iota>''_inf: "\<iota>'' \<in> FL_Inf"
-      using FL.Inf_F_to_Inf_FL[OF \<iota>'_inf, of ?olds, simplified] by blast
+      \<iota>''_inf: "\<iota>'' \<in> FL.Inf_FL"
+      using FL.Inf_F_to_Inf_FL[OF \<iota>'_inf, of ?olds, simplified] by simp
 
     have "set (prems_of \<iota>'') \<subseteq> Ql"
       using \<iota>'_inff[unfolded F.Inf_from_def, simplified] unfolding \<iota>'' Ql_def by auto

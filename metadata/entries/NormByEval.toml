@@ -17,6 +17,10 @@ homepage = "nipkow_homepage"
 
 [contributors]
 
+[related]
+dois = ["10.1017/S0956796812000019"]
+pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/jfp12.html\">Open access</a>"]
+
 [notify]
 nipkow = "nipkow_email"
 

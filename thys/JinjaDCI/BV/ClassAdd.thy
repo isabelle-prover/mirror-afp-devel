@@ -16,15 +16,6 @@ lemma err_mono: "A \<subseteq> B \<Longrightarrow> err A \<subseteq> err B"
 lemma opt_mono: "A \<subseteq> B \<Longrightarrow> opt A \<subseteq> opt B"
  by(unfold opt_def) auto
 
-lemma list_mono:
-assumes "A \<subseteq> B" shows "list n A \<subseteq> list n B"
-proof(rule)
-  fix xs assume "xs \<in> list n A"
-  then obtain size: "size xs = n" and inA: "set xs \<subseteq> A" by simp
-  with assms have "set xs \<subseteq> B" by simp
-  with size show "xs \<in> list n B" by(clarsimp intro!: listI)
-qed
-
 (****************************************************************)
 
 \<comment> \<open> adding a class in the simplest way \<close>
@@ -202,8 +193,8 @@ lemma class_add_states:
 proof -
   let ?A = "types P" and ?B = "types (class_add P (C, cdec))"
   have ab: "?A \<subseteq> ?B" by(rule class_add_types)
-  moreover have "\<And>n. list n ?A \<subseteq> list n ?B" using ab by(rule list_mono)
-  moreover have "list mxl (err ?A) \<subseteq> list mxl (err ?B)" using err_mono[OF ab] by(rule list_mono)
+  moreover have "\<And>n. nlists n ?A \<subseteq> nlists n ?B" using ab by(rule nlists_mono)
+  moreover have "nlists mxl (err ?A) \<subseteq> nlists mxl (err ?B)" using err_mono[OF ab] by(rule nlists_mono)
   ultimately show ?thesis by(auto simp: JVM_states_unfold intro!: err_mono opt_mono)
 qed
 

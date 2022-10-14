@@ -27,6 +27,10 @@ homepage = "nipkow_homepage"
 [notify]
 nipkow = "nipkow_email"
 
+[related]
+dois = ["10.1017/S0956796811000104"]
+pubs = ["<a href=\"https://en.wikipedia.org/wiki/Weight-balanced_tree\">Wikipedia</a>"]
+
 [history]
 
 [extra]

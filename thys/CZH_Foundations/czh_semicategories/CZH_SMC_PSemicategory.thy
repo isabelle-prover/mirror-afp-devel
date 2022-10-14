@@ -147,8 +147,12 @@ begin
 lemma psmc_pdigraph_base: "pdigraph_base \<alpha> I (\<lambda>i. smc_dg (\<AA> i))"
 proof(intro pdigraph_baseI)
   show "digraph \<alpha> (smc_dg (\<AA> i))" if "i \<in>\<^sub>\<circ> I" for i 
-    using that by (cs_concl cs_intro: slicing_intros smc_prod_cs_intros)
-  show "I \<in>\<^sub>\<circ> Vset \<alpha>" by (cs_concl cs_intro: smc_cs_intros)
+    by 
+      (
+        use that in 
+          \<open>cs_concl cs_shallow cs_intro: slicing_intros smc_prod_cs_intros\<close>
+      )
+  show "I \<in>\<^sub>\<circ> Vset \<alpha>" by (cs_concl cs_shallow cs_intro: smc_cs_intros)
 qed auto
 
 interpretation pdg: pdigraph_base \<alpha> I \<open>\<lambda>i. smc_dg (\<AA> i)\<close> 
@@ -1351,7 +1355,7 @@ proof(rule smc_dg_eqI[of \<alpha>])
   from \<AA> \<BB> show smc_lhs: "semicategory \<alpha> (op_smc (\<AA> \<times>\<^sub>S\<^sub>M\<^sub>C \<BB>))"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: smc_cs_simps smc_op_simps 
           cs_intro: smc_cs_intros smc_op_intros
       )
@@ -1360,7 +1364,7 @@ proof(rule smc_dg_eqI[of \<alpha>])
   from \<AA> \<BB> show smc_rhs: "semicategory \<alpha> (op_smc \<AA> \<times>\<^sub>S\<^sub>M\<^sub>C op_smc \<BB>)"
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow 
           cs_simp: smc_cs_simps smc_op_simps 
           cs_intro: smc_cs_intros smc_op_intros
       )
@@ -1404,7 +1408,7 @@ proof(rule smc_dg_eqI[of \<alpha>])
             unfold gg'_def ff'_def
           )
           (
-            cs_concl 
+            cs_concl cs_shallow 
               cs_simp: smc_cs_simps smc_op_simps 
               cs_intro: smc_op_intros smc_prod_cs_intros
           )
@@ -1440,7 +1444,7 @@ proof(rule smc_dg_eqI[of \<alpha>])
             unfold gg'_def ff'_def smc_op_simps
           )
           (
-            cs_concl 
+            cs_concl cs_shallow 
               cs_simp: smc_cs_simps smc_op_simps 
               cs_intro: smc_op_intros smc_prod_cs_intros
           )
@@ -1473,7 +1477,7 @@ proof(rule smc_dg_eqI[of \<alpha>])
       unfolding gg'ff'_def 
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: smc_cs_simps smc_op_simps smc_prod_cs_simps
             cs_intro: smc_cs_intros smc_op_intros smc_prod_cs_intros
         )
@@ -1482,7 +1486,7 @@ proof(rule smc_dg_eqI[of \<alpha>])
   from \<AA> \<BB> show 
     "smc_dg (op_smc (\<AA> \<times>\<^sub>S\<^sub>M\<^sub>C \<BB>)) = smc_dg (op_smc \<AA> \<times>\<^sub>S\<^sub>M\<^sub>C op_smc \<BB>)"
     unfolding slicing_commute[symmetric]
-    by (cs_concl cs_simp: dg_op_simps cs_intro: slicing_intros)
+    by (cs_concl cs_shallow cs_simp: dg_op_simps cs_intro: slicing_intros)
 
 qed
   

@@ -10,6 +10,14 @@ theory Choice_Axiom
 begin
 
 definition
+  upair_name :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
+  "upair_name(\<tau>,\<rho>,on) \<equiv> Upair(\<langle>\<tau>,on\<rangle>,\<langle>\<rho>,on\<rangle>)"
+
+definition
+  opair_name :: "i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i" where
+  "opair_name(\<tau>,\<rho>,on) \<equiv> upair_name(upair_name(\<tau>,\<tau>,on),upair_name(\<tau>,\<rho>,on),on)"
+
+definition
   induced_surj :: "i\<Rightarrow>i\<Rightarrow>i\<Rightarrow>i" where
   "induced_surj(f,a,e) \<equiv> f-``(range(f)-a)\<times>{e} \<union> restrict(f,f-``a)"
 
@@ -123,76 +131,47 @@ proof (intro CollectI ballI)
     "\<exists>x\<in>\<alpha>. induced_surj(f, a, e) ` x = y" by auto
 qed
 
-context G_generic1
-begin
-
-lemma upair_name_abs :
-  assumes "x\<in>M" "y\<in>M" "z\<in>M" "o\<in>M"
-  shows "is_upair_name(##M,x,y,o,z) \<longleftrightarrow> z = upair_name(x,y,o)"
-  unfolding is_upair_name_def upair_name_def
-  using assms zero_in_M pair_in_M_iff Upair_eq_cons
-  by simp
-
-lemma upair_name_closed :
+lemma (in M_ZF1_trans) upair_name_closed :
   "\<lbrakk> x\<in>M; y\<in>M ; o\<in>M\<rbrakk> \<Longrightarrow> upair_name(x,y,o)\<in>M"
   unfolding upair_name_def
   using upair_in_M_iff pair_in_M_iff Upair_eq_cons
   by simp
 
-lemma opair_name_abs :
-  assumes "x\<in>M" "y\<in>M" "z\<in>M" "o\<in>M"
-  shows "is_opair_name(##M,x,y,o,z) \<longleftrightarrow> z = opair_name(x,y,o)"
-  unfolding is_opair_name_def opair_name_def
-  using assms upair_name_abs upair_name_closed
-  by simp
+context G_generic1
+begin
 
-lemma opair_name_closed :
-  "\<lbrakk> x\<in>M; y\<in>M ; o\<in>M \<rbrakk> \<Longrightarrow> opair_name(x,y,o)\<in>M"
-  unfolding opair_name_def
-  using upair_name_closed by simp
-
-lemma val_upair_name : "val(P,G,upair_name(\<tau>,\<rho>,\<one>)) = {val(P,G,\<tau>),val(P,G,\<rho>)}"
+lemma val_upair_name : "val(G,upair_name(\<tau>,\<rho>,\<one>)) = {val(G,\<tau>),val(G,\<rho>)}"
   unfolding upair_name_def
-  using val_Upair Upair_eq_cons generic one_in_G one_in_P
+  using val_Upair Upair_eq_cons generic one_in_G
   by simp
 
-lemma val_opair_name : "val(P,G,opair_name(\<tau>,\<rho>,\<one>)) = \<langle>val(P,G,\<tau>),val(P,G,\<rho>)\<rangle>"
+lemma val_opair_name : "val(G,opair_name(\<tau>,\<rho>,\<one>)) = \<langle>val(G,\<tau>),val(G,\<rho>)\<rangle>"
   unfolding opair_name_def Pair_def
   using val_upair_name by simp
 
-lemma val_RepFun_one: "val(P,G,{\<langle>f(x),\<one>\<rangle> . x\<in>a}) = {val(P,G,f(x)) . x\<in>a}"
+lemma val_RepFun_one: "val(G,{\<langle>f(x),\<one>\<rangle> . x\<in>a}) = {val(G,f(x)) . x\<in>a}"
 proof -
   let ?A = "{f(x) . x \<in> a}"
   let ?Q = "\<lambda>\<langle>x,p\<rangle> . p = \<one>"
-  have "\<one> \<in> P\<inter>G" using generic one_in_G one_in_P by simp
-  have "{\<langle>f(x),\<one>\<rangle> . x \<in> a} = {t \<in> ?A \<times> P . ?Q(t)}"
+  have "\<one> \<in> \<bbbP>\<inter>G" using generic one_in_G one_in_P by simp
+  have "{\<langle>f(x),\<one>\<rangle> . x \<in> a} = {t \<in> ?A \<times> \<bbbP> . ?Q(t)}"
     using one_in_P by force
   then
-  have "val(P,G,{\<langle>f(x),\<one>\<rangle>  . x \<in> a}) = val(P,G,{t \<in> ?A \<times> P . ?Q(t)})"
+  have "val(G,{\<langle>f(x),\<one>\<rangle>  . x \<in> a}) = val(G,{t \<in> ?A \<times> \<bbbP> . ?Q(t)})"
     by simp
   also
-  have "... = {z . t \<in> ?A , (\<exists>p\<in>P\<inter>G . ?Q(\<langle>t,p\<rangle>)) \<and> z= val(P,G,t)}"
+  have "... = {z . t \<in> ?A , (\<exists>p\<in>\<bbbP>\<inter>G . ?Q(\<langle>t,p\<rangle>)) \<and> z= val(G,t)}"
     using val_of_name_alt by simp
+  also from \<open>\<one>\<in>\<bbbP>\<inter>G\<close>
+  have "... = {val(G,t) . t \<in> ?A }"
+    by force
   also
-  have "... = {val(P,G,t) . t \<in> ?A }"
-    using \<open>\<one>\<in>P\<inter>G\<close> by force
-  also
-  have "... = {val(P,G,f(x)) . x \<in> a}"
+  have "... = {val(G,f(x)) . x \<in> a}"
     by auto
   finally
   show ?thesis
     by simp
 qed
-
-\<comment> \<open>NOTE: The following bundled additions to the simpset might be of
-    use later on, perhaps add them globally to some appropriate
-    locale.\<close>
-lemmas generic_simps = generic[THEN one_in_G, THEN valcheck, OF one_in_P]
-  generic[THEN one_in_G, THEN M_subset_MG, THEN subsetD]
-  check_in_M GenExtI P_in_M
-lemmas generic_dests = M_genericD[OF generic] M_generic_compatD[OF generic]
-
-bundle G_generic1_lemmas = generic_simps[simp] generic_dests[dest]
 
 end\<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
@@ -202,39 +181,29 @@ sublocale G_generic1 \<subseteq> ext:M_Z_trans "M[G]"
   using Transset_MG generic pairing_in_MG Union_MG
     extensionality_in_MG power_in_MG foundation_in_MG
     replacement_assm_MG separation_in_MG infinity_in_MG
-    replacement_ax1 by unfold_locales
+    replacement_ax1
+  by unfold_locales
 
-context G_generic1
-begin
-
-lemma opname_check_abs :
-  assumes "s\<in>M" "x\<in>M" "y\<in>M"
-  shows "is_opname_check(##M,\<one>,s,x,y) \<longleftrightarrow> y = opair_name(check(x),s`x,\<one>)"
-  unfolding is_opname_check_def
-  using assms check_abs check_in_M opair_name_abs apply_abs apply_closed one_in_M
+lemma (in M_replacement) upair_name_lam_replacement :
+  "M(z) \<Longrightarrow> lam_replacement(M,\<lambda>x . upair_name(fst(x),snd(x),z))"
+  using lam_replacement_Upair[THEN [5] lam_replacement_hcomp2]
+    lam_replacement_product
+    lam_replacement_fst lam_replacement_snd lam_replacement_constant
+  unfolding upair_name_def
   by simp
 
-lemma repl_opname_check :
+lemma (in forcing_data1) repl_opname_check :
   assumes "A\<in>M" "f\<in>M"
   shows "{opair_name(check(x),f`x,\<one>). x\<in>A}\<in>M"
-proof -
-  have "arity(is_opname_check_fm(3,2,0,1))= 4"
-    using arity_is_opname_check_fm
-    by (simp add:ord_simp_union arity)
-  moreover
-  have "opair_name(check(x), f ` x,\<one>)\<in>M" if "x\<in>A" for x
-    using assms opair_name_closed apply_closed transitivity check_in_M one_in_M that
+    using assms lam_replacement_constant check_lam_replacement lam_replacement_identity
+      upair_name_lam_replacement[THEN [5] lam_replacement_hcomp2]
+      lam_replacement_apply2[THEN [5] lam_replacement_hcomp2]
+      lam_replacement_imp_strong_replacement_aux
+      transitivity RepFun_closed upair_name_closed apply_closed
+    unfolding opair_name_def
     by simp
-  ultimately
-  show ?thesis
-    using assms opname_check_abs[of f] is_opname_check_iff_sats
-      one_in_M zero_in_M transitivity
-      Replace_relativized_in_M[of "is_opname_check_fm(3,2,0,1)"
-        "[f,\<one>]" _ "is_opname_check(##M,\<one>,f)"] replacement_ax1(14)
-    by simp
-qed
 
-theorem choice_in_MG:
+theorem (in G_generic1) choice_in_MG:
   assumes "choice_ax(##M)"
   shows "choice_ax(##M[G])"
 proof -
@@ -242,7 +211,7 @@ proof -
     fix a
     assume "a\<in>M[G]"
     then
-    obtain \<tau> where "\<tau>\<in>M" "val(P,G,\<tau>) = a"
+    obtain \<tau> where "\<tau>\<in>M" "val(G,\<tau>) = a"
       using GenExt_def by auto
     with \<open>\<tau>\<in>M\<close>
     have "domain(\<tau>)\<in>M"
@@ -255,7 +224,7 @@ proof -
     have "\<alpha>\<in>M[G]"
       using M_subset_MG generic one_in_G subsetD
       by blast
-    let ?A="domain(\<tau>)\<times>P"
+    let ?A="domain(\<tau>)\<times>\<bbbP>"
     let ?g = "{opair_name(check(\<beta>),s`\<beta>,\<one>). \<beta>\<in>\<alpha>}"
     have "?g \<in> M"
       using \<open>s\<in>M\<close> \<open>\<alpha>\<in>M\<close> repl_opname_check
@@ -263,25 +232,25 @@ proof -
     let ?f_dot="{\<langle>opair_name(check(\<beta>),s`\<beta>,\<one>),\<one>\<rangle>. \<beta>\<in>\<alpha>}"
     have "?f_dot = ?g \<times> {\<one>}" by blast
     define f where
-      "f \<equiv> val(P,G,?f_dot)"
+      "f \<equiv> val(G,?f_dot)"
     from \<open>?g\<in>M\<close> \<open>?f_dot = ?g\<times>{\<one>}\<close>
     have "?f_dot\<in>M"
-      using cartprod_closed singleton_closed one_in_M
+      using cartprod_closed singleton_closed
       by simp
     then
     have "f \<in> M[G]"
       unfolding f_def
       by (blast intro:GenExtI)
-    have "f = {val(P,G,opair_name(check(\<beta>),s`\<beta>,\<one>)) . \<beta>\<in>\<alpha>}"
+    have "f = {val(G,opair_name(check(\<beta>),s`\<beta>,\<one>)) . \<beta>\<in>\<alpha>}"
       unfolding f_def
       using val_RepFun_one
       by simp
     also
-    have "... = {\<langle>\<beta>,val(P,G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}"
-      using val_opair_name valcheck generic one_in_G one_in_P
+    have "... = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}"
+      using val_opair_name val_check generic one_in_G one_in_P
       by simp
     finally
-    have "f = {\<langle>\<beta>,val(P,G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}" .
+    have "f = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}" .
     then
     have 1: "domain(f) = \<alpha>" "function(f)"
       unfolding function_def by auto
@@ -290,18 +259,18 @@ proof -
       fix y
       assume
         "y \<in> a"
-      with \<open>val(P,G,\<tau>) = a\<close>
-      obtain \<sigma> where  "\<sigma>\<in>domain(\<tau>)" "val(P,G,\<sigma>) = y"
+      with \<open>val(G,\<tau>) = a\<close>
+      obtain \<sigma> where  "\<sigma>\<in>domain(\<tau>)" "val(G,\<sigma>) = y"
         using elem_of_val[of y _ \<tau>]
         by blast
       with \<open>s\<in>surj(\<alpha>,domain(\<tau>))\<close>
       obtain \<beta> where "\<beta>\<in>\<alpha>" "s`\<beta> = \<sigma>"
         unfolding surj_def
         by auto
-      with \<open>val(P,G,\<sigma>) = y\<close>
-      have "val(P,G,s`\<beta>) = y"
+      with \<open>val(G,\<sigma>) = y\<close>
+      have "val(G,s`\<beta>) = y"
         by simp
-      with \<open>f = {\<langle>\<beta>,val(P,G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}\<close> \<open>\<beta>\<in>\<alpha>\<close>
+      with \<open>f = {\<langle>\<beta>,val(G,s`\<beta>)\<rangle> . \<beta>\<in>\<alpha>}\<close> \<open>\<beta>\<in>\<alpha>\<close>
       have "\<langle>\<beta>,y\<rangle>\<in>f"
         by auto
       with \<open>function(f)\<close>
@@ -345,8 +314,6 @@ proof -
     using ext.choice_ax_abs
     by simp
 qed
-
-end \<comment> \<open>\<^locale>\<open>G_generic1\<close>\<close>
 
 sublocale G_generic1_AC \<subseteq> ext:M_ZC_basic "M[G]"
   using choice_ax choice_in_MG

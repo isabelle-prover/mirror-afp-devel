@@ -70,12 +70,10 @@ proof -
 qed
 
 text\<open>term\<open>ed\<close> is the well-founded relation on which \<^term>\<open>val\<close> is defined.\<close>
-definition
-  ed :: "[i,i] \<Rightarrow> o" where
+definition ed :: "[i,i] \<Rightarrow> o" where
   "ed(x,y) \<equiv> x \<in> domain(y)"
 
-definition
-  edrel :: "i \<Rightarrow> i" where
+definition edrel :: "i \<Rightarrow> i" where
   "edrel(A) \<equiv> Rrel(ed,A)"
 
 lemma edI[intro!]: "t\<in>domain(x) \<Longrightarrow> ed(t,x)"
@@ -100,7 +98,7 @@ proof
     using lt_trans by blast
 qed
 
-lemma edrel_dest [dest]: "x \<in> edrel(A) \<Longrightarrow> \<exists> a\<in> A. \<exists> b \<in> A. x =\<langle>a,b\<rangle>"
+lemma edrel_dest [dest]: "x \<in> edrel(A) \<Longrightarrow> \<exists> a \<in> A. \<exists> b \<in> A. x =\<langle>a,b\<rangle>"
   by(auto simp add:ed_def edrel_def Rrel_def)
 
 lemma edrelD : "x \<in> edrel(A) \<Longrightarrow> \<exists> a\<in> A. \<exists> b \<in> A. x =\<langle>a,b\<rangle> \<and> a \<in> domain(b)"
@@ -158,7 +156,7 @@ proof
 qed
 
 lemma wf_edrel : "wf(edrel(A))"
-  using wf_subset [of "trancl(Memrel(eclose(A)))"] edrel_sub_memrel
+  using wf_subset[of "trancl(Memrel(eclose(A)))"] edrel_sub_memrel
     wf_trancl wf_Memrel
   by auto
 

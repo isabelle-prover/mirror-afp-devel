@@ -273,7 +273,7 @@ proof(rule drf_lemma)
         with r'' have "?\<phi> (Suc n) r' \<in> ?\<phi> (Suc n) ` ?C (Suc n)" 
           unfolding r'_r'' by auto
         hence "r' \<in> ?C (Suc n)"
-          unfolding inj_on_image_mem_iff[OF injSn C_sub_A \<open>r' \<in> actions (?E (Suc n))\<close>] .
+          unfolding inj_on_image_mem_iff[OF injSn \<open>r' \<in> actions (?E (Suc n))\<close> C_sub_A] .
         with wfaSn have "action_tid (?E (Suc n)) r' = action_tid E (?\<phi> (Suc n) r')"
           and "action_obs (?E (Suc n)) r' \<approx> action_obs E (?\<phi> (Suc n) r')"
           by(blast dest: wf_action_translation_on_actionD)+
@@ -293,7 +293,7 @@ proof(rule drf_lemma)
           by(simp add: inv_into_f_f[OF injSn])
         with \<open>r'' \<in> ?C n\<close> r' J \<open>r'' \<in> read_actions (?E n)\<close>
         have ws_eq[symmetric]: "?\<phi> (Suc n) (?ws (Suc n) r') = ws (?\<phi> n r'')"
-          by(simp add: write_seen_committed_def Let_def)
+          by(simp add: write_seen_committed_def)
         with r'_r''[symmetric] hb'' have "P,E \<turnstile> ?\<phi> (Suc n) (?ws (Suc n) r') \<le>hb ?\<phi> (Suc n) r'" by simp
         
         moreover

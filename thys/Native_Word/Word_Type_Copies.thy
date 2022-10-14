@@ -10,21 +10,9 @@ theory Word_Type_Copies
     "Word_Lib.Most_significant_bit"
     "Word_Lib.Least_significant_bit"
     "Word_Lib.Generic_set_bit"
-    Code_Target_Word_Base
+    "Word_Lib.Bit_Comprehension"
+    "Code_Target_Word_Base"
 begin
-
-lemma int_of_integer_unsigned_eq [simp]:
-  \<open>int_of_integer (unsigned w) = uint w\<close>
-  by transfer simp
-
-lemma int_of_integer_signed_eq [simp]:
-  \<open>int_of_integer (signed w) = sint w\<close>
-  by transfer simp
-
-lemma word_of_int_of_integer_eq [simp]:
-  \<open>word_of_int (int_of_integer k) = word_of_integer k\<close>
-  by (simp add: word_of_integer.rep_eq)
-
 
 text \<open>The lifting machinery is not localized, hence the abstract proofs are carried out using morphisms.\<close>
 
@@ -154,21 +142,21 @@ qed
 
 lemma word_of_power:
   \<open>word_of (p ^ n) = word_of p ^ n\<close>
-  by (induction n) (simp_all add: word_of_1 word_of_mult word_of_numeral)
+  by (induction n) (simp_all add: word_of_1 word_of_mult)
 
 lemma even_iff_word_of:
   \<open>2 dvd p \<longleftrightarrow> 2 dvd word_of p\<close> (is \<open>?P \<longleftrightarrow> ?Q\<close>)
 proof
   assume ?P
   then obtain q where \<open>p = 2 * q\<close> ..
-  then show ?Q by (simp add: word_of_mult word_of_numeral)
+  then show ?Q by (simp add: word_of_mult)
 next
   assume ?Q
   then obtain w where \<open>word_of p = 2 * w\<close> ..
   then have \<open>of_word (word_of p) = of_word (2 * w)\<close>
     by simp
   then have \<open>p = 2 * of_word w\<close>
-    by (simp add: eq_iff_word_of word_of_word word_of_mult word_of_numeral)
+    by (simp add: eq_iff_word_of word_of_word word_of_mult)
   then show ?P
     by simp
 qed
@@ -181,9 +169,9 @@ proof -
     for p :: 'a and P
   proof -
     from stable have stable': \<open>(\<And>p. word_of p div 2 = word_of p \<Longrightarrow> P p)\<close>
-      by (simp add: eq_iff_word_of word_of_div word_of_numeral)
+      by (simp add: eq_iff_word_of word_of_div)
     from rec have rec': \<open>(\<And>p b. P p \<Longrightarrow> (of_bool b + 2 * word_of p) div 2 = word_of p \<Longrightarrow> P (of_bool b + 2 * p))\<close>
-      by (simp add: eq_iff_word_of word_of_add word_of_bool word_of_mult word_of_div word_of_numeral)
+      by (simp add: eq_iff_word_of word_of_add word_of_bool word_of_mult word_of_div)
     define w where \<open>w = word_of p\<close>
     then have \<open>p = of_word w\<close>
       by (simp add: of_word_of)
@@ -197,13 +185,13 @@ proof -
       have \<open>P (of_bool b + 2 * of_word w)\<close>
         by (rule rec') (simp_all add: word_of_word rec)
       also have \<open>of_bool b + 2 * of_word w = of_word (of_bool b + 2 * w)\<close>
-        by (simp add: eq_iff_word_of word_of_word word_of_add word_of_1 word_of_mult word_of_numeral word_of_0)
+        by (simp add: eq_iff_word_of word_of_word word_of_add word_of_1 word_of_mult word_of_0)
       finally show ?case .
     qed
     finally show \<open>P p\<close> .
   qed
   have \<open>class.semiring_parity_axioms (+) (0::'a) (*) 1 (mod)\<close>
-    by standard (simp_all add: eq_iff_word_of word_of_0 word_of_1 word_of_numeral even_iff_word_of word_of_mod even_iff_mod_2_eq_zero)
+    by standard (simp_all add: eq_iff_word_of word_of_0 word_of_1 even_iff_word_of word_of_mod even_iff_mod_2_eq_zero)
   with of_class_semiring_modulo have \<open>OFCLASS('a, semiring_parity_class)\<close>
     by (rule semiring_parity_class.intro) 
   moreover have \<open>class.semiring_bits_axioms (+) (-) (0::'a) (*) 1 (div) (mod) bit\<close>
@@ -213,7 +201,7 @@ proof -
       bit_eq_word_of push_bit_take_bit drop_bit_take_bit
       even_drop_bit_iff_not_bit
       flip: push_bit_eq_mult drop_bit_eq_div take_bit_eq_mod mask_eq_exp_minus_1)
-               apply (auto simp add: ac_simps bit_simps drop_bit_exp_eq push_bit_of_1)
+               apply (auto simp add: ac_simps bit_simps drop_bit_exp_eq)
     done
   ultimately have \<open>OFCLASS('a, semiring_bits_class)\<close>
     by (rule semiring_bits_class.intro)
@@ -230,7 +218,7 @@ proof -
   moreover have \<open>OFCLASS('a, ring_parity_class)\<close>
     using \<open>OFCLASS('a, semiring_parity_class)\<close> by (rule ring_parity_class.intro) standard
   moreover have \<open>class.ring_bit_operations_axioms (+) (-) (0::'a) (*) 1 bit uminus NOT\<close>
-    by standard (simp_all add: eq_iff_word_of word_of_power word_of_numeral
+    by standard (simp_all add: eq_iff_word_of word_of_power
       bit_eq_word_of word_of_diff word_of_1 bit_simps linorder_not_le
       word_of_not word_of_0
       word_of_minus minus_eq_not_minus_1)
@@ -245,7 +233,7 @@ lemma [code]:
 lemma [code]:
   \<open>mask (Suc n) = push_bit n (1 :: 'a) OR mask n\<close>
   \<open>mask 0 = (0 :: 'a)\<close>
-  by (simp_all add: eq_iff_word_of word_of_mask word_of_or word_of_push_bit word_of_0 word_of_1 mask_Suc_exp push_bit_of_1)
+  by (simp_all add: eq_iff_word_of word_of_mask word_of_or word_of_push_bit word_of_0 word_of_1 mask_Suc_exp)
 
 lemma [code]:
   \<open>Bit_Operations.set_bit n w = w OR push_bit n 1\<close> for w :: 'a
@@ -276,7 +264,7 @@ begin
 
 lemma of_word_numeral [code_post]:
   \<open>of_word (numeral n) = numeral n\<close>
-  by (simp add: eq_iff_word_of word_of_word word_of_numeral)
+  by (simp add: eq_iff_word_of word_of_word)
 
 lemma of_word_0 [code_post]:
   \<open>of_word 0 = 0\<close>
@@ -290,11 +278,11 @@ text \<open>Use pretty numerals from integer for pretty printing\<close>
 
 lemma numeral_eq_integer [code_unfold]:
   \<open>numeral n = of_integer (numeral n)\<close>
-  by (simp add: eq_iff_word_of word_of_integer_eq word_of_numeral word_of_integer.rep_eq)
+  by (simp add: eq_iff_word_of word_of_integer_eq)
 
 lemma neg_numeral_eq_integer [code_unfold]:
   \<open>- numeral n = of_integer (- numeral n)\<close>
-  by (simp add: eq_iff_word_of word_of_integer_eq word_of_minus word_of_numeral word_of_integer.rep_eq)
+  by (simp add: eq_iff_word_of word_of_integer_eq word_of_minus)
 
 end
 
@@ -308,7 +296,7 @@ locale word_type_copy_misc = word_type_copy_more
     and size_eq_word_of: \<open>Nat.size (p :: 'a) = Nat.size (word_of p)\<close>
     and word_of_generic_set_bit [code]: \<open>word_of (Generic_set_bit.set_bit p n b) = Generic_set_bit.set_bit (word_of p) n b\<close>
     and word_of_set_bits: \<open>word_of (set_bits P) = set_bits P\<close>
-    and word_of_set_bits_aux: \<open>word_of (set_bits_aux P n p) = Code_Target_Word_Base.set_bits_aux P n (word_of p)\<close>
+    and word_of_set_bits_aux: \<open>word_of (set_bits_aux P n p) = Bit_Comprehension.set_bits_aux P n (word_of p)\<close>
 begin
 
 lemma size_eq [code]:

@@ -251,37 +251,29 @@ and the problems that one may encounter while using it.
 
 subsubsection\<open>Type classes\<close>
 
+definition mono where
+  "mono f \<longleftrightarrow> (\<forall>x y. x \<le> y \<longrightarrow> f x \<le> f y)"
+
 text\<open>
 We begin the exploration of the capabilities of the framework by considering
 the constant @{const mono}.
-The constant @{const mono} is an overloaded constant that is defined 
-in the standard library of Isabelle/HOL \cite{noauthor_isabellehol_2020} as  
+It is defined as
 \begin{center}
 @{thm [names_short = true] mono_def[no_vars]} 
 \end{center}
 for any @{term [show_sorts] "f::'a::order\<Rightarrow>'b::order"}.
-Technically, there exist two distinct constants that are associated with
-the definition of the constant @{const mono} 
-(see, e.g., \cite{berardi_local_2009} 
-for further details): @{const order.mono} that is provided by the 
-Isabelle system automatically and the constant @{const mono} itself.
-The constants are unoverloaded successively using the command @{command ud}:
+The constants is unoverloaded using the command @{command ud}:
 \<close>
-ud \<open>order.mono\<close>
-ud mono' \<open>mono\<close>
+ud \<open>mono\<close>
 text\<open>
-The invocation of the commands above declares the constant @{const mono.with} 
+The invocation of the command above declares the constant @{const mono.with} 
 that is defined as
 \begin{center}
 @{thm mono.with_def[no_vars]}
 \end{center}
 and provides the theorem @{thm [source] mono.with} given by
 \begin{center}
-@{thm mono.with[no_vars]}
-\end{center}
-and the theorem @{thm [source] mono'.with} given by
-\begin{center}
-@{thm mono'.with[no_vars]}.
+@{thm mono.with[no_vars]}.
 \end{center}
 The theorems establish the relationship between the unoverloaded constant
 @{const mono.with} and the overloaded constant @{const mono}:

@@ -70,16 +70,19 @@ theorem F'bd_card_order: "card_order bd_F"
 theorem F'bd_cinfinite: "cinfinite bd_F"
   by (rule F.bd_cinfinite)
 
-theorem F'set1_bd: "|F'set1 x| \<le>o F'bd"
-  by (tactic \<open>BNF_Comp_Tactics.mk_lift_set_bd_tac @{context} @{thm F.bd_Card_order}\<close>)
+theorem F'bd_regularCard: "regularCard bd_F"
+  by (rule F.bd_regularCard)
 
-theorem F'set2_bd: "|F'set2 x| \<le>o F'bd"
-  by (tactic \<open>BNF_Comp_Tactics.mk_lift_set_bd_tac @{context} @{thm F.bd_Card_order}\<close>)
+theorem F'set1_bd: "|F'set1 x| <o F'bd"
+  by (tactic \<open>BNF_Comp_Tactics.mk_lift_set_bd_tac @{context} @{thm F.bd_Cinfinite}\<close>)
 
-theorem F'set3_bd: "|F'set3 (x :: ('c, 'a, 'd) F)| \<le>o (F'bd :: 'c bd_type_F rel)"
+theorem F'set2_bd: "|F'set2 x| <o F'bd"
+  by (tactic \<open>BNF_Comp_Tactics.mk_lift_set_bd_tac @{context} @{thm F.bd_Cinfinite}\<close>)
+
+theorem F'set3_bd: "|F'set3 (x :: ('c, 'a, 'd) F)| <o (F'bd :: 'c bd_type_F rel)"
   by (rule F.set_bd(1))
 
-theorem F'set4_bd: "|F'set4 (x :: ('c, 'a, 'd) F)| \<le>o (F'bd :: 'c bd_type_F rel)"
+theorem F'set4_bd: "|F'set4 (x :: ('c, 'a, 'd) F)| <o (F'bd :: 'c bd_type_F rel)"
   by (rule F.set_bd(2))
 
 abbreviation F'in :: "'a1 set \<Rightarrow> 'a2 set \<Rightarrow> 'a3 set \<Rightarrow> 'a4 set \<Rightarrow> (('p, 'a1, 'a2, 'a3, 'a4) F') set" where
@@ -109,6 +112,7 @@ bnf F': "('p, 'a1, 'a2, 'a3, 'a4) F'"
   apply (rule F'set4_natural)
   apply (rule F'bd_card_order)
   apply (rule F'bd_cinfinite)
+  apply (rule F'bd_regularCard)
   apply (rule F'set1_bd)
   apply (rule F'set2_bd)
   apply (rule F'set3_bd)

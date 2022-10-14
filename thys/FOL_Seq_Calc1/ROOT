@@ -6,6 +6,7 @@ session FOL_Seq_Calc1 (AFP) = "FOL-Fitting" +
     Common
     Tableau
     Sequent
+    Sequent2
   document_files
     "root.tex"
     "root.bib"

@@ -46,7 +46,15 @@ sig
       Proof.context -> term list -> box_id * cterm -> (box_id * (wfterm * thm)) list
 end;
 
-structure WellformData : WELLFORM_DATA =
+functor WellformData(
+  structure Basic_UtilBase : BASIC_UTIL_BASE;
+  structure Basic_UtilLogic : BASIC_UTIL_LOGIC;
+  structure ItemIO: ITEM_IO;
+  structure Property: PROPERTY;
+  structure PropertyData: PROPERTY_DATA;
+  structure RewriteTable: REWRITE_TABLE;
+  structure WfTerm: WFTERM
+  ) : WELLFORM_DATA =
 struct
 
 structure Data = Proof_Data
@@ -114,7 +122,7 @@ fun convert_wellform ctxt (id', eq_th) (id, th) =
       val thy = Proof_Context.theory_of ctxt
     in
       if lhs aconv rhs then (id, th) else
-      case WellForm.lookup_wellform_pattern thy (Util.lhs_of eq_th, prop_of' th) of
+      case WellForm.lookup_wellform_pattern thy (Util.lhs_of eq_th, Basic_UtilLogic.prop_of' th) of
           NONE => raise Fail "convert_wellform: invalid input."
         | SOME (pat, data_pat) =>
           let
@@ -130,13 +138,13 @@ fun convert_wellform ctxt (id', eq_th) (id, th) =
                             |> map snd |> the_single)
                     (cargs1 ~~ cargs2)
             val pat_args = Util.dest_args pat
-            val th' = apply_to_thm' (
+            val th' = Basic_UtilLogic.apply_to_thm' (
                   Util.pattern_rewr_conv data_pat (pat_args ~~ eq_ths)) th
 
             (* Check the result is in the right form. *)
             val subst' = pat_args ~~ map Thm.term_of cargs2
             val prop' = Term.subst_atomic subst' data_pat
-            val _ = assert (prop_of' th' aconv prop')
+            val _ = assert (Basic_UtilLogic.prop_of' th' aconv prop')
                            "convert_wellform: invalid output."
           in
             (BoxID.merge_boxes ctxt (id, id'), th')
@@ -188,7 +196,7 @@ fun get_complete_wellform ctxt (id, ct) =
         | _ =>
           let
             val data = (get_wellform ctxt (id, ct))
-                           |> map (fn (id', th) => (prop_of' th, (id', th)))
+                           |> map (fn (id', th) => (Basic_UtilLogic.prop_of' th, (id', th)))
                            |> AList.group (op aconv)
                            |> map snd
             val _ = assert (length data <= length targets)
@@ -237,7 +245,7 @@ fun term_to_wfterm ctxt fheads (id, t) =
 (* Add the given wellform data (id, th) for the term t to the table. *)
 fun add_wellform_data_raw (t, (id, th)) ctxt =
     let
-      val cprop = cprop_of' th
+      val cprop = Basic_UtilLogic.cprop_of' th
       val wellform_data = get_wellform_for_term ctxt t
       val infos = the (AList.lookup (op aconvc) wellform_data cprop)
                   handle Option.Option => raise Fail "add_wellform_data_raw"
@@ -265,9 +273,9 @@ fun find_fact ctxt items (id, ct) =
           (ItemIO.match_arg ctxt (PropMatch t) item (id, fo_init))
               |> map (fn ((id', _), th) => (id', th))
     in
-      if is_eq_term t then  (* Equality case *)
-        map (apsnd to_obj_eq)
-            (RewriteTable.equiv_info ctxt id (cdest_eq ct))
+      if Basic_UtilBase.is_eq_term t then  (* Equality case *)
+        map (apsnd Basic_UtilLogic.to_obj_eq)
+            (RewriteTable.equiv_info ctxt id (Basic_UtilBase.cdest_eq ct))
       else if Property.is_property t then  (* Property case *)
         PropertyData.get_property ctxt (id, ct)
       else  (* General case *)

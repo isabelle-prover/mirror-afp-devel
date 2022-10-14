@@ -266,10 +266,12 @@ lemma decomposition_theorem_polyhedra_1:
   shows "\<exists> Q X. X \<subseteq> carrier_vec n \<and> finite X \<and>
     Q \<subseteq> carrier_vec n \<and> finite Q \<and>
     P = convex_hull Q + cone X \<and>
-    (A \<in> \<int>\<^sub>m \<inter> Bounded_mat Bnd \<longrightarrow> b \<in> \<int>\<^sub>v \<inter> Bounded_vec Bnd \<longrightarrow>
-      X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (det_bound n (max 1 Bnd))
-    \<and> Q \<subseteq> Bounded_vec (det_bound n (max 1 Bnd)))"
+    (is_det_bound db \<longrightarrow> A \<in> \<int>\<^sub>m \<inter> Bounded_mat (of_int Bnd) \<longrightarrow> b \<in> \<int>\<^sub>v \<inter> Bounded_vec (of_int Bnd) \<longrightarrow>
+      X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (of_int (db n (max 1 Bnd)))
+    \<and> Q \<subseteq> Bounded_vec (of_int (db n (max 1 Bnd))))"
 proof -
+  let ?oi = "of_int :: int \<Rightarrow> 'a" 
+
   interpret next_dim: gram_schmidt "n + 1" "TYPE ('a)".
   interpret gram_schmidt_m "n + 1" n "TYPE('a)".
 
@@ -317,11 +319,11 @@ proof -
                     (A *\<^sub>v x - t \<cdot>\<^sub>v b \<le> 0\<^sub>v nr \<and> t \<ge> 0)" by auto
     qed
   } note M_cone_car = this
-  from next_dim.farkas_minkowsky_weyl_theorem_2[OF M_dim, of "max 1 Bnd"]
+  from next_dim.farkas_minkowsky_weyl_theorem_2[OF M_dim, of db "max 1 Bnd"]
   obtain X where X: "next_dim.polyhedral_cone M = next_dim.cone X" and
     fin_X: "finite X" and X_carrier: "X \<subseteq> carrier_vec (n+1)"
-    and Bnd: "M \<in> \<int>\<^sub>m \<inter> Bounded_mat (max 1 Bnd) \<Longrightarrow>
-          X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (det_bound n (max 1 Bnd))"
+    and Bnd: "is_det_bound db \<Longrightarrow> M \<in> \<int>\<^sub>m \<inter> Bounded_mat (?oi (max 1 Bnd)) \<Longrightarrow>
+          X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi (db n (max 1 Bnd)))"
     by auto
   let ?f = "\<lambda> x. if x $ n = 0 then 1 else 1 / (x $ n)"
   define Y where "Y = {?f x \<cdot>\<^sub>v x | x. x \<in> X}"
@@ -492,34 +494,35 @@ proof -
       ultimately show "P = convex_hull ?Z1 + cone ?Z0" by blast
     qed
 
-    let ?Bnd = "det_bound n (max 1 Bnd)"
-    assume "A \<in> \<int>\<^sub>m \<inter> Bounded_mat Bnd"
-      "b \<in> \<int>\<^sub>v \<inter> Bounded_vec Bnd"
-    hence *: "A \<in> \<int>\<^sub>m" "A \<in> Bounded_mat Bnd" "b \<in> \<int>\<^sub>v" "b \<in> Bounded_vec Bnd" by auto
+    let ?Bnd = "db n (max 1 Bnd)"
+    assume "A \<in> \<int>\<^sub>m \<inter> Bounded_mat (?oi Bnd)"
+      "b \<in> \<int>\<^sub>v \<inter> Bounded_vec (?oi Bnd)"
+      and db: "is_det_bound db" 
+    hence *: "A \<in> \<int>\<^sub>m" "A \<in> Bounded_mat (?oi Bnd)" "b \<in> \<int>\<^sub>v" "b \<in> Bounded_vec (?oi Bnd)" by auto
     have "elements_mat M \<subseteq> elements_mat A \<union> vec_set (-b) \<union> {0,-1}"
       unfolding M_def
       unfolding elements_mat_append_rows[OF M_top M_bottom]
       unfolding elements_mat_append_cols[OF A mcb]
       by (subst elements_mat_append_cols, auto)
-    also have "\<dots> \<subseteq> \<int> \<inter> ({x. abs x \<le> Bnd} \<union> {0,-1})"
+    also have "\<dots> \<subseteq> \<int> \<inter> ({x. abs x \<le> ?oi Bnd} \<union> {0,-1})"
       using *[unfolded Bounded_mat_elements_mat Ints_mat_elements_mat
           Bounded_vec_vec_set Ints_vec_vec_set] by auto
-    also have "\<dots> \<subseteq> \<int> \<inter> ({x. abs x \<le> max 1 Bnd})" by auto
-    finally have "M \<in> \<int>\<^sub>m" "M \<in> Bounded_mat (max 1 Bnd)"
+    also have "\<dots> \<subseteq> \<int> \<inter> ({x. abs x \<le> ?oi (max 1 Bnd)})" by (auto simp: of_int_max)
+    finally have "M \<in> \<int>\<^sub>m" "M \<in> Bounded_mat (?oi (max 1 Bnd))"
       unfolding Bounded_mat_elements_mat Ints_mat_elements_mat by auto
-    hence "M \<in> \<int>\<^sub>m \<inter> Bounded_mat (max 1 Bnd)" by blast
-    from Bnd[OF this]
-    have XBnd: "X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec ?Bnd" .
+    hence "M \<in> \<int>\<^sub>m \<inter> Bounded_mat (?oi (max 1 Bnd))" by blast
+    from Bnd[OF db this]
+    have XBnd: "X \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi ?Bnd)" .
     {
       fix y
       assume y: "y \<in> Y"
       then obtain x where y: "y = ?f x \<cdot>\<^sub>v x" and xX: "x \<in> X" unfolding Y_def by auto
       with \<open>X \<subseteq> carrier_vec (n+1)\<close> have x: "x \<in> carrier_vec (n+1)" by auto
-      from XBnd xX have xI: "x \<in> \<int>\<^sub>v" and xB: "x \<in> Bounded_vec ?Bnd" by auto
+      from XBnd xX have xI: "x \<in> \<int>\<^sub>v" and xB: "x \<in> Bounded_vec (?oi ?Bnd)" by auto
       {
         assume "y $ n = 0"
         hence "y = x" unfolding y using x by auto
-        hence "y \<in> \<int>\<^sub>v \<inter> Bounded_vec ?Bnd" using xI xB by auto
+        hence "y \<in> \<int>\<^sub>v \<inter> Bounded_vec (?oi ?Bnd)" using xI xB by auto
       } note y0 = this
       {
         assume "y $ n \<noteq> 0"
@@ -538,7 +541,7 @@ proof -
         from x0 have y: "y = (1 / (x $ n)) \<cdot>\<^sub>v x" unfolding y by auto
         have vy: "vec_set y = (\<lambda> a. (1 / (x $ n)) * a) ` vec_set x"
           unfolding y by (auto simp: vec_set_def)
-        have "y \<in> Bounded_vec ?Bnd" using xB abs
+        have "y \<in> Bounded_vec (?oi ?Bnd)" using xB abs
           unfolding Bounded_vec_vec_set vy
           by (smt imageE max.absorb2 max.bounded_iff)
       } note yn0 = this
@@ -548,10 +551,10 @@ proof -
     have setvY: "y \<in> Y \<Longrightarrow> set\<^sub>v (vec_first y n) \<subseteq> set\<^sub>v y" for y
       unfolding vec_first_def vec_set_def by auto
     from BndY(1) setvY
-    show "?Z0 \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (det_bound n (max 1 Bnd))"
+    show "?Z0 \<subseteq> \<int>\<^sub>v \<inter> Bounded_vec (?oi (db n (max 1 Bnd)))"
       by (force simp: Bounded_vec_vec_set Ints_vec_vec_set Y0_def)
     from BndY(2) setvY
-    show "?Z1 \<subseteq> Bounded_vec (det_bound n (max 1 Bnd))"
+    show "?Z1 \<subseteq> Bounded_vec (?oi (db n (max 1 Bnd)))"
       by (force simp: Bounded_vec_vec_set Ints_vec_vec_set Y0_def Y1_def)
   qed
 qed

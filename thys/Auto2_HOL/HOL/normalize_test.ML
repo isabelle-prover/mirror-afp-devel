@@ -19,9 +19,9 @@ val test_normalize =
             val t = Syntax.read_term ctxt str
             val ts = map (Syntax.read_term ctxt) strs
             val ritem =
-                Update.thm_to_ritem (Util.assume_thm ctxt (mk_Trueprop t))
-            val ritems' = Normalizer.normalize ctxt ritem
-            val ts' = map (dest_Trueprop o Thm.prop_of o BoxItem.get_thm_raw)
+                Auto2_Setup.Update.thm_to_ritem (Util.assume_thm ctxt (mk_Trueprop t))
+            val ritems' = Auto2_Setup.Normalizer.normalize ctxt ritem
+            val ts' = map (dest_Trueprop o Thm.prop_of o Auto2_Setup.BoxItem.get_thm_raw)
                           ritems'
           in
             if length ts = length ts' andalso
@@ -52,9 +52,9 @@ val test_use_vardefs =
             val t2 = if fastype_of t2 = propT then t2 else mk_Trueprop t2
 
             val th1 = t1 |> mk_Trueprop |> Thm.cterm_of ctxt |> Thm.assume
-                         |> apply_to_thm (UtilLogic.to_meta_conv ctxt)
+                         |> apply_to_thm (Auto2_Setup.UtilLogic.to_meta_conv ctxt)
                          |> Util.forall_elim_sch
-            val (_, th2) = Normalizer.meta_use_vardefs th1
+            val (_, th2) = Auto2_Setup.Normalizer.meta_use_vardefs th1
           in
             if Thm.prop_of th2 aconv t2 then ()
             else let

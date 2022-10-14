@@ -295,7 +295,7 @@ lemma eucl_of_list_eqI:
   shows "eucl_of_list xs = (eucl_of_list ys::'a::executable_euclidean_space)"
 proof -
   have "(eucl_of_list xs::'a) = eucl_of_list (take DIM('a) (xs @ replicate (DIM('a) - length xs) 0))"
-    by (simp add: )
+    by simp
   also note assms
   also have "eucl_of_list (take DIM('a) (ys @ replicate (DIM('a) - length ys) 0)) = (eucl_of_list ys::'a)"
     by simp
@@ -394,7 +394,7 @@ next
   finally have "eucl_of_list xs = (eucl_of_list (xs @ replicate (DIM('b) + DIM('c) - length xs) 0)::'b \<times> 'c)"
     by simp
   also have "\<dots> = eucl_of_list (take (DIM ('b \<times> 'c)) (xs @ replicate (DIM('b) + DIM('c) - length xs) 0))"
-    by (simp add: )
+    by simp
   finally have *: "(eucl_of_list xs::'b\<times>'c) = eucl_of_list (take DIM('b \<times> 'c) (xs @ replicate (DIM('b) + DIM('c) - length xs) 0))"
     by simp
   show ?thesis
@@ -573,18 +573,15 @@ lemma concat_same_lengths_nth:
   assumes "\<And>xs. xs \<in> set XS \<Longrightarrow> length xs = N"
   assumes "i < length XS * N" "N > 0"
   shows "concat XS ! i = XS ! (i div N) ! (i mod N)"
-  using assms
-  apply (induction XS arbitrary: i)
-   apply (auto simp: nth_append nth_Cons split: nat.splits)
-   apply (simp add: div_eq_0_iff)
-  by (metis Suc_inject div_geq mod_geq)
+using assms by (induction XS arbitrary: i)
+  (auto simp: nth_append nth_Cons div_eq_0_iff le_div_geq le_mod_geq split: nat.splits)
 
 lemma concat_map_map_index:
   shows "concat (map (\<lambda>n. map (f n) xs) ys) =
     map (\<lambda>i. f (ys ! (i div length xs)) (xs ! (i mod length xs))) [0..<length xs * length ys]"
   apply (auto intro!: nth_equalityI simp: length_concat o_def sum_list_sum_nth)
   apply (subst concat_same_lengths_nth)
-     apply (auto simp: )
+     apply auto
   apply (subst nth_map_upt)
   apply (auto simp: ac_simps)
   apply (subst nth_map)
@@ -979,7 +976,7 @@ lemma index_Basis_list_axis2:
             by (metis mod_mult_div_eq)
           done
         done
-      subgoal using less by (auto simp: )
+      subgoal using less by auto
       subgoal by (auto simp: card_UNIV_length_enum ac_simps)
       subgoal apply (subst index_upt)
         subgoal using less by auto
@@ -1045,7 +1042,7 @@ theorem
     (\<Sum>i<CARD('m).
       (\<Sum>j<CARD('n). M ! (i * CARD('n) + j) * v ! j) *\<^sub>R Basis_list ! i)"
   apply (vector matrix_vector_mult_def)
-  apply (auto simp: )
+  apply auto
   apply (subst vec_nth_eucl_of_list_eq2)
    apply (auto simp: assms)
   apply (subst vec_nth_eucl_of_list_eq)

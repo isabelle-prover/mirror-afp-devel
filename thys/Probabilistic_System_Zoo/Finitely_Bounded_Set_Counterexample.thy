@@ -36,7 +36,7 @@ axiomatization where
 bnf "('a, 'k) bset"
   map: map_bset
   sets: set_bset
-  bd: "|UNIV :: 'k set| +c natLeq"
+  bd: "natLeq +c card_suc ( |UNIV :: 'k set| )"
   rel: rel_bset
 proof (standard, goal_cases)
   case 1 then show ?case
@@ -59,19 +59,20 @@ next
     apply simp
     done
 next
-  case 5 then show ?case by (simp add: card_order_csum natLeq_card_order)
+  case 5 then show ?case by (rule card_order_bd_fun)
 next
-  case 6 then show ?case by (simp add: cinfinite_csum natLeq_cinfinite)
+  case 6 then show ?case by (rule Cinfinite_bd_fun[THEN conjunct1])
 next
-  case 7 then show ?case
-    apply transfer
-    apply (erule ordLeq_transitive[OF ordLess_imp_ordLeq ordLeq_csum1])
-    apply simp
-    done
+  case 7 then show ?case by (rule regularCard_bd_fun)
 next
-  case 8 then show ?case by (rule inconsistent) \<comment> \<open>BAAAAAMMMM\<close>
+  case 8 then show ?case
+    by transfer
+      (erule ordLess_ordLeq_trans[OF _ ordLeq_transitive[OF _ ordLeq_csum2]];
+        simp add: card_suc_greater ordLess_imp_ordLeq Card_order_card_suc)
 next
-  case 9 then show ?case
+  case 9 then show ?case by (rule inconsistent) \<comment> \<open>BAAAAAMMMM\<close>
+next
+  case 10 then show ?case
     by (auto simp: fun_eq_iff intro: rel_bset.intros elim: rel_bset.cases)
 qed
 

@@ -5,10 +5,21 @@ theory Demonstrations
     Definitions_Main
 begin
 
-txt\<open>The following theory is only intended to explore some details of the
+text\<open>The following theory is only intended to explore some details of the
 formalization and to show the appearance of relevant internalized formulas.
 It is \<^bold>\<open>not\<close> intended as the entry point of the session. For that purpose,
 consult \<^theory>\<open>Independence_CH.Definitions_Main\<close>\<close>
+
+
+text\<open>The snippet (by M. Pagano) commented out below outputs a directed
+graph picturing the locale structure.\<close>
+\<comment> \<open>
+ML\<open>Locale.pretty_locale_deps @{theory} |>
+map (fn n => let val nom = #name n
+    in  map (writeln o (fn p => "\"" ^ p ^ "\" -> \"" ^ nom ^ "\";")) (#parents n)
+end)
+\<close>
+\<close>
 
 locale Demo = M_trivial + M_AC +
   fixes t\<^sub>1 t\<^sub>2
@@ -18,9 +29,9 @@ locale Demo = M_trivial + M_AC +
     power_infty: "power_ax(M)" "M(\<omega>)"
 begin
 
-txt\<open>The next fake lemma is intended to explore the instances of the axiom
+text\<open>The next fake lemma is intended to explore the instances of the axiom
 schemes that are needed to build our forcing models. They are categorized as
-plain replacements (using \<^term>\<open>strong_replacement\<close>), “lambda-replacements” with
+plain replacements (using \<^term>\<open>strong_replacement\<close>), “lambda-replacements”
 using a higher order function, replacements  to perform
 transfinite and general well-founded recursion (using \<^term>\<open>transrec_replacement\<close> and
 \<^term>\<open>wfrec_replacement\<close> respectively) and for the construction of fixpoints
@@ -35,8 +46,9 @@ lemma
     "\<And>Q S. wfrec_replacement(M,Q,S)"
     "\<And>Q S. transrec_replacement(M,Q,S)"
     and
-    sorried_separations:
-    "\<And>Q. separation(M,Q)"shows "M_master(M)"
+    sorried_separations: "\<And>Q. separation(M,Q)"
+  shows
+    "M_master(M)"
   apply unfold_locales
                       apply
     (simp_all add:
@@ -107,7 +119,7 @@ thm forces_0_mem_1_def[
     is_eclose_fm_def mem_eclose_fm_def eclose_n_fm_def
     is_If_fm_def least_fm_def Replace_fm_def Collect_fm_def
     fm_definitions,simplified]
-  (* NOTE: in view of the above, @{thm fm_definitions} might be incomplete *)
+  (* NOTE: in view of the above, @{thm [source] fm_definitions} might be incomplete *)
 
 named_theorems incr_bv_new_simps
 
@@ -137,7 +149,8 @@ the recursive function \<^term>\<open>incr_bv\<close>. Here we have an apparentl
 exponential bottleneck, since all the propositional connectives (even \<^term>\<open>Neg\<close>)
 duplicate the appearances of \<^term>\<open>incr_bv\<close>.
 
-Not even the double negation of an atomic formula can be managed by the system.\<close>
+Not even the double negation of an atomic formula can be managed by the
+system (in version 2021-1).\<close>
 (* 
 
 schematic_goal "forces(\<not>\<not>0\<in>1) = ?x"

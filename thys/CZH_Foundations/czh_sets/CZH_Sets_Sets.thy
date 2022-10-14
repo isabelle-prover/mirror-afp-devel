@@ -384,7 +384,7 @@ lemma vintersection_intersection: "A \<inter>\<^sub>\<circ> B = set (elts A \<in
 
 lemma vintersection_assoc: "A \<inter>\<^sub>\<circ> (B \<inter>\<^sub>\<circ> C) = (A \<inter>\<^sub>\<circ> B) \<inter>\<^sub>\<circ> C" by auto
 
-lemma vintersection_commutativity: "A \<inter>\<^sub>\<circ> B = B \<inter>\<^sub>\<circ> A" by auto
+lemma vintersection_commute: "A \<inter>\<^sub>\<circ> B = B \<inter>\<^sub>\<circ> A" by auto
 
 
 text\<open>Previous set operations.\<close>
@@ -465,7 +465,7 @@ lemma vunion_union: "A \<union>\<^sub>\<circ> B = set (elts A \<union> elts B)" 
 
 lemma vunion_assoc: "A \<union>\<^sub>\<circ> (B \<union>\<^sub>\<circ> C) = (A \<union>\<^sub>\<circ> B) \<union>\<^sub>\<circ> C" by auto
 
-lemma vunion_comm: "A \<union>\<^sub>\<circ> B = B \<union>\<^sub>\<circ> A" by auto
+lemma vunion_commute: "A \<union>\<^sub>\<circ> B = B \<union>\<^sub>\<circ> A" by auto
 
 
 text\<open>Previous set operations.\<close>
@@ -499,11 +499,11 @@ lemma vunion_vsingleton[simp]: "set {a} \<union>\<^sub>\<circ> A = vinsert a A" 
 lemma vunion_vdoubleton[simp]: "set {a, b} \<union>\<^sub>\<circ> A = vinsert a (vinsert b A)" 
   by auto
 
-lemma vunion_vinsert_commutativity_left: 
+lemma vunion_vinsert_comm_left: 
   "(vinsert a A) \<union>\<^sub>\<circ> B = A \<union>\<^sub>\<circ> (vinsert a B)" 
   by auto
 
-lemma vunion_vinsert_commutativity_right: 
+lemma vunion_vinsert_comm_right: 
   "A \<union>\<^sub>\<circ> (vinsert a B) = (vinsert a A) \<union>\<^sub>\<circ> B" 
   by auto
 
@@ -669,7 +669,7 @@ text\<open>Elementary properties.\<close>
 
 lemma vinsert_insert: "vinsert a A = set (insert a (elts A))" by auto
 
-lemma vinsert_commutativity: "vinsert a (vinsert b C) = vinsert b (vinsert a C)" 
+lemma vinsert_commute: "vinsert a (vinsert b C) = vinsert b (vinsert a C)" 
   by auto
 
 lemma vinsert_ident:

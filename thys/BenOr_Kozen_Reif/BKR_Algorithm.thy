@@ -1,12 +1,13 @@
 theory BKR_Algorithm
   imports
-    "More_Matrix"
-    "Sturm_Tarski.Sturm_Tarski"
+    Sturm_Tarski.Sturm_Tarski
+    More_Matrix
+    
 begin
 
 section "Setup"
 
-definition retrieve_polys:: "real poly list \<Rightarrow> nat list \<Rightarrow> real poly list"
+definition retrieve_polys:: "'a list \<Rightarrow> nat list \<Rightarrow> 'a list"
   where "retrieve_polys qss index_list = (map (nth qss) index_list)"
 
 definition construct_NofI:: "real poly \<Rightarrow> real poly list \<Rightarrow> rat"
@@ -114,7 +115,6 @@ section "Overall algorithm "
     Find the matrix, subsets, signs for an input p and qs.
     The "rat mat" in the output is the matrix. The "nat list list" is the list of subsets. 
     The "rat list list" is the list of signs.
-
     We will want to call this when p is nonzero and when every q in qs is pairwise coprime to p.
     Properties of this algorithm are proved in BKR_Proofs.thy. 
   *)

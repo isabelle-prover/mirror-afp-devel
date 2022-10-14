@@ -493,7 +493,7 @@ next
     using "1" assms(1) assms(2) assms(3) assms(4) assms(5) assms(6) local.child_parent_dual
       local.get_dom_component_parent_inside local.get_dom_component_subset by blast
   then show "cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child \<in> set c"
-    by (smt \<open>h \<turnstile> get_root_node (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child) \<rightarrow>\<^sub>r root_ptr\<close> assms(1) assms(2) assms(3)
+    by (smt (verit) \<open>h \<turnstile> get_root_node (cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child) \<rightarrow>\<^sub>r root_ptr\<close> assms(1) assms(2) assms(3)
         assms(5) assms(6) disjoint_iff_not_equal is_OK_returns_result_E is_OK_returns_result_I
         l_get_dom_component\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M.get_dom_component_no_overlap local.child_parent_dual local.get_dom_component_ok
         local.get_dom_component_parent_inside local.get_dom_component_ptr local.get_root_node_ptr_in_heap
@@ -522,9 +522,10 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def)[1]
-    by (smt IntI finite_set_in get_child_nodes_is_strongly_dom_component_safe is_OK_returns_result_E
+    by (smt (verit) IntI fmember.rep_eq get_child_nodes_is_strongly_dom_component_safe
         is_OK_returns_result_I local.get_child_nodes_ptr_in_heap local.get_dom_component_impl
-        local.get_dom_component_ok local.get_dom_component_ptr select_result_I2)
+        local.get_dom_component_ok local.get_dom_component_ptr returns_result_select_result)
+
 qed
 end
 
@@ -614,8 +615,7 @@ proof
         local.to_tree_order_ptr_in_result local.to_tree_order_same_root select_result_I2)
   ultimately have "h \<turnstile> get_dom_component ptr' \<rightarrow>\<^sub>r c"
     apply(auto simp add: get_dom_component_def)[1]
-    by (smt "1" assms(1) assms(2) assms(3) assms(4) bind_pure_returns_result_I bind_returns_result_E3
-        local.get_dom_component_def local.get_dom_component_subset local.get_root_node_pure)
+    using assms(4) bind_returns_result_E3 local.get_dom_component_def root_ptr by fastforce
   then show "ptr' \<in> set c"
     using assms(1) assms(2) assms(3) get_dom_component_ptr by blast
 next
@@ -1407,13 +1407,8 @@ proof -
     by (simp add: children_eq2_h2 disconnected_nodes_eq2_h2 document_ptr_kinds_eq_h2
         local.a_all_ptrs_in_heap_def node_ptr_kinds_eq_h2 object_ptr_kinds_eq_h2)
   then have "a_all_ptrs_in_heap h'"
-    by (smt \<open>h2 \<turnstile> get_child_nodes (cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr) \<rightarrow>\<^sub>r []\<close> children_eq2_h3
-        disc_nodes_document_ptr_h2 disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h3
-        finite_set_in h' is_OK_returns_result_I
-        l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes
-        local.a_all_ptrs_in_heap_def local.get_child_nodes_ptr_in_heap
-        local.l_set_disconnected_nodes_get_disconnected_nodes_axioms node_ptr_kinds_commutes
-        object_ptr_kinds_eq_h2 object_ptr_kinds_eq_h3 select_result_I2 set_ConsD subset_code(1))
+    using assms(1) assms(2) assms(3) assms(5) local.create_element_preserves_wellformedness(1) local.heap_is_wellformed_def
+    by blast
 
   have "\<And>p. p |\<in>| object_ptr_kinds h \<Longrightarrow> cast new_element_ptr \<notin> set |h \<turnstile> get_child_nodes p|\<^sub>r"
     using \<open>heap_is_wellformed h\<close> \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close>
@@ -1482,21 +1477,17 @@ proof -
     ultimately show "False"
       apply(-)
       apply(cases "x = document_ptr")
-       apply (smt NodeMonad.ptr_kinds_ptr_kinds_M
-          \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> \<open>local.a_all_ptrs_in_heap h\<close>
-          disc_nodes_h3 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3
-          disjoint_iff_not_equal document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 finite_set_in h'
-          l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes
-          local.a_all_ptrs_in_heap_def local.l_set_disconnected_nodes_get_disconnected_nodes_axioms
-          select_result_I2 set_ConsD subsetD)
-      by (smt NodeMonad.ptr_kinds_ptr_kinds_M
-          \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close> \<open>local.a_all_ptrs_in_heap h\<close>
-          disc_nodes_document_ptr_h2 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2
-          disconnected_nodes_eq2_h3
-          disjoint_iff_not_equal document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 finite_set_in h'
-          l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes
-          local.a_all_ptrs_in_heap_def local.l_set_disconnected_nodes_get_disconnected_nodes_axioms
-          select_result_I2 set_ConsD subsetD)
+       apply (metis (mono_tags, lifting) Int_Collect Int_iff \<open>type_wf h'\<close> assms(1) assms(2) assms(3)
+               assms(5) bot_set_def document_ptr_kinds_eq_h3 empty_Collect_eq
+               l_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M.get_disconnected_nodes_ok
+               l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M.heap_is_wellformed_one_disc_parent
+               local.create_element_preserves_wellformedness(1)
+               local.l_get_disconnected_nodes\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms
+               local.l_heap_is_wellformed\<^sub>C\<^sub>o\<^sub>r\<^sub>e\<^sub>_\<^sub>D\<^sub>O\<^sub>M_axioms returns_result_select_result)
+      by (metis (no_types, opaque_lifting) \<open>type_wf h'\<close> assms(1) assms(2) assms(3) assms(5)
+          disjoint_iff document_ptr_kinds_eq_h3 local.create_element_preserves_wellformedness(1)
+          local.get_disconnected_nodes_ok local.heap_is_wellformed_one_disc_parent
+          returns_result_select_result)
   next
     fix x xa xb
     assume 2: "(\<Union>x\<in>fset (object_ptr_kinds h3). set |h' \<turnstile> get_child_nodes x|\<^sub>r)
@@ -2097,10 +2088,12 @@ set |h' \<turnstile> local.a_get_dom_component (cast document_ptr)|\<^sub>r"
      apply fastforce
     using  assms(2) assms(3) children_eq_h local.get_child_nodes_ok local.get_child_nodes_ptr_in_heap
       local.known_ptrs_known_ptr object_ptr_kinds_eq_h2 object_ptr_kinds_eq_h3 returns_result_select_result
-    apply (smt ObjectMonad.ptr_kinds_ptr_kinds_M
-        \<open>cast\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_character_data_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close>
-        \<open>h \<turnstile> create_character_data document_ptr text \<rightarrow>\<^sub>r new_character_data_ptr\<close> assms(1) assms(5)
-        create_character_data_is_weakly_dom_component_safe_step local.get_dom_component_impl select_result_I2)
+    apply (smt (verit, best) ObjectMonad.ptr_kinds_ptr_kinds_M
+            \<open>cast\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_character_data_ptr \<notin> set |h
+              \<turnstile> object_ptr_kinds_M|\<^sub>r\<close> \<open>h \<turnstile> create_character_data document_ptr text \<rightarrow>\<^sub>r
+              new_character_data_ptr\<close> assms(1) assms(5)
+            create_character_data_is_weakly_dom_component_safe_step local.a_get_dom_component_def
+            local.get_dom_component_def select_result_I2)
     done
 qed
 

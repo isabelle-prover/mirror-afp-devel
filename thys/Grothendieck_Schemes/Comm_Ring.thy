@@ -3627,7 +3627,7 @@ proof
                                   and b: "b = ib + rb \<cdot> x" "ib \<in> I" "rb \<in> R"
           by (auto simp: J_def)
         then have "ia + ra \<cdot> x + (ib + rb \<cdot> x) = ia + ib + (ra + rb) \<cdot> x"
-          by (smt (z3) \<open>x \<in> R\<close> additive.commutative additive.composition_closed additive.monoid_axioms additive.submonoid_axioms distributive(2) monoid.associative multiplicative.composition_closed submonoid.sub)
+          by (smt (verit, del_insts) \<open>x \<in> R\<close> additive.associative additive.commutative additive.composition_closed additive.submonoid_axioms distributive(2) multiplicative.composition_closed submonoid.sub)
         with a b show "a + b \<in> J"
           by (auto simp add: J_def)
       next
@@ -5462,9 +5462,9 @@ proof -
     proof -
       have "ring_homomorphism (identity (\<FF> U)) (\<FF> U) +\<^bsub>U\<^esub> \<cdot>\<^bsub>U\<^esub> \<zero>\<^bsub>U\<^esub> \<one>\<^bsub>U\<^esub> (local.im_sheaf U) (add_im_sheaf U)
           (mult_im_sheaf U) (zero_im_sheaf U) (one_im_sheaf U)" if "is_open U" for U
-        by (smt (z3) id_is_mor_pr_rngs im_sheaf.add_im_sheaf_def im_sheaf.im_sheaf_def
-            im_sheaf.mult_im_sheaf_def im_sheaf_axioms local.topological_space_axioms
-            morphism_presheaves_of_rings.is_ring_morphism one_im_sheaf_def that
+        by (smt (verit, best) id_is_mor_pr_rngs im_sheaf.add_im_sheaf_def im_sheaf.im_sheaf_def 
+            im_sheaf.mult_im_sheaf_def im_sheaf_axioms local.topological_space_axioms 
+            morphism_presheaves_of_rings.is_ring_morphism one_im_sheaf_def that 
             topological_space.open_preimage_identity zero_im_sheaf_def)
       moreover have "\<forall>U V. is_open U \<longrightarrow>
            is_open V \<longrightarrow>
@@ -5648,9 +5648,7 @@ proof -
       next
         fix U assume "is_open U"
         then have "ring_homomorphism (identity (\<FF> U)) (\<FF> U) +\<^bsub>U\<^esub> \<cdot>\<^bsub>U\<^esub> \<zero>\<^bsub>U\<^esub> \<one>\<^bsub>U\<^esub> (\<FF> U) +\<^bsub>U\<^esub> \<cdot>\<^bsub>U\<^esub> \<zero>\<^bsub>U\<^esub> \<one>\<^bsub>U\<^esub>"
-          by (smt (z3) im_sheaf.add_im_sheaf_def im_sheaf.mult_im_sheaf_def im_sheaf_axioms
-              local.im_sheaf_def mor morphism_presheaves_of_rings.is_ring_morphism one_im_sheaf_def
-              open_preimage_identity zero_im_sheaf_def)
+          by (smt (verit, best) im_sheaf.add_im_sheaf_def im_sheaf.mult_im_sheaf_def im_sheaf_axioms local.im_sheaf_def mor morphism_presheaves_of_rings.is_ring_morphism one_im_sheaf_def open_preimage_identity zero_im_sheaf_def)
         then show "ring_homomorphism (identity (\<FF> U)) (local.im_sheaf U) (add_im_sheaf U) (mult_im_sheaf U) (zero_im_sheaf U) (one_im_sheaf U) (\<FF> U) +\<^bsub>U\<^esub> \<cdot>\<^bsub>U\<^esub> \<zero>\<^bsub>U\<^esub> \<one>\<^bsub>U\<^esub>"
           using \<open>is_open U \<close> im_sheaf.add_im_sheaf_def im_sheaf_axioms local.im_sheaf_def mult_im_sheaf_def one_im_sheaf_def zero_im_sheaf_def
           by fastforce

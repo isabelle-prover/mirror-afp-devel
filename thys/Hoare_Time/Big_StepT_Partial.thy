@@ -132,7 +132,7 @@ next
      apply (auto simp: plus_fun_def)  
     apply(rule ext)
     apply(case_tac "xa=x") 
-    subgoal apply (auto simp: ) subgoal using paval_extend[unfolded plus_fun_def] by auto
+    subgoal apply auto subgoal using paval_extend[unfolded plus_fun_def] by auto
        unfolding sep_disj_fun_def
        by (metis disjoint_iff_not_equal domI domain_conv) 
    subgoal by auto   

@@ -6,40 +6,6 @@ theory Preliminaries
     "HOL-Library.FuncSet"
 begin
 
-lemma exists_subset_between: 
-  assumes 
-    "card A \<le> n" 
-    "n \<le> card C"
-    "A \<subseteq> C"
-    "finite C"
-  shows "\<exists>B. A \<subseteq> B \<and> B \<subseteq> C \<and> card B = n" 
-  using assms 
-proof (induct n arbitrary: A C)
-  case 0
-  thus ?case using finite_subset[of A C] by (intro exI[of _ "{}"], auto)
-next
-  case (Suc n A C)
-  show ?case
-  proof (cases "A = {}")
-    case True
-    from obtain_subset_with_card_n[OF Suc(3)]
-    obtain B where "B \<subseteq> C" "card B = Suc n" by metis
-    thus ?thesis unfolding True by blast
-  next
-    case False
-    then obtain a where a: "a \<in> A" by auto
-    let ?A = "A - {a}" 
-    let ?C = "C - {a}" 
-    have 1: "card ?A \<le> n" using Suc(2-) a 
-      using finite_subset by fastforce 
-    have 2: "card ?C \<ge> n" using Suc(2-) a by auto
-    from Suc(1)[OF 1 2 _ finite_subset[OF _ Suc(5)]] Suc(2-)
-    obtain B where "?A \<subseteq> B" "B \<subseteq> ?C" "card B = n" by blast
-    thus ?thesis using a Suc(2-) 
-      by (intro exI[of _ "insert a B"], auto intro!: card_insert_disjoint finite_subset[of B C])
-  qed
-qed
-
 lemma fact_approx_add: "fact (l + n) \<le> fact l * (real l + real n) ^ n" 
 proof (induct n arbitrary: l)
   case (Suc n l)
@@ -132,81 +98,6 @@ proof (rule ccontr)
   also have "insert ?new ?M = ?M" 
     by (insert mM lM l0, auto)
   finally show False by simp
-qed
-
-lemma card_funcsetE: "finite A \<Longrightarrow> card (A \<rightarrow>\<^sub>E B) = card B ^ card A" 
-  by (subst card_PiE, auto)
-
-lemma card_inj_on_subset_funcset: assumes finB: "finite B"
-  and finC: "finite C" 
-  and AB: "A \<subseteq> B" 
-shows "card { f. f \<in> B \<rightarrow>\<^sub>E C \<and> inj_on f A} = 
-  card C^(card B - card A) * prod ((-) (card C)) {0 ..< card A}"
-proof -
-  define D where "D = B - A" 
-  from AB have B: "B = A \<union> D" and disj: "A \<inter> D = {}" unfolding D_def by auto
-  have sub: "card B - card A = card D" unfolding D_def using finB AB
-    by (metis card_Diff_subset finite_subset)
-  have "finite A" "finite D" using finB unfolding B by auto
-  thus ?thesis unfolding sub unfolding B using disj
-  proof (induct A rule: finite_induct)
-    case empty
-    from card_funcsetE[OF this(1), of C] show ?case by auto
-  next
-    case (insert a A)
-    have "{f. f \<in> insert a A \<union> D \<rightarrow>\<^sub>E C \<and> inj_on f (insert a A)}
-      = {f(a := c) | f c. f \<in> A \<union> D \<rightarrow>\<^sub>E C \<and> inj_on f A \<and> c \<in> C - f ` A}" 
-      (is "?l = ?r")
-    proof
-      show "?r \<subseteq> ?l" 
-        by (auto intro: inj_on_fun_updI split: if_splits) 
-      {
-        fix f
-        assume f: "f \<in> ?l" 
-        let ?g = "f(a := undefined)" 
-        let ?h = "?g(a := f a)" 
-        have mem: "f a \<in> C - ?g ` A" using insert(1,2,4,5) f by auto
-        from f have f: "f \<in> insert a A \<union> D \<rightarrow>\<^sub>E C" "inj_on f (insert a A)" by auto
-        hence "?g \<in> A \<union> D \<rightarrow>\<^sub>E C" "inj_on ?g A" using \<open>a \<notin> A\<close> \<open>insert a A \<inter> D = {}\<close>
-          by (auto split: if_splits simp: inj_on_def)
-        with mem have "?h \<in> ?r" by blast
-        also have "?h = f" by auto
-        finally have "f \<in> ?r" .
-      }
-      thus "?l \<subseteq> ?r" by auto
-    qed
-    also have "\<dots> = (\<lambda> (f, c). f (a := c)) ` 
-         (Sigma {f . f \<in> A \<union> D \<rightarrow>\<^sub>E C \<and> inj_on f A} (\<lambda> f. C - f ` A))"
-      by auto
-    also have "card (...) = card (Sigma {f . f \<in> A \<union> D \<rightarrow>\<^sub>E C \<and> inj_on f A} (\<lambda> f. C - f ` A))" 
-    proof (rule card_image, intro inj_onI, clarsimp, goal_cases) 
-      case (1 f c g d)
-      let ?f = "f(a := c, a := undefined)" 
-      let ?g = "g(a := d, a := undefined)" 
-      from 1 have id: "f(a := c) = g(a := d)" by auto
-      from fun_upd_eqD[OF id] 
-      have cd: "c = d" by auto
-      from id have "?f = ?g" by auto
-      also have "?f = f" using `f \<in> A \<union> D \<rightarrow>\<^sub>E C` insert(1,2,4,5) 
-        by (intro ext, auto)
-      also have "?g = g" using `g \<in> A \<union> D \<rightarrow>\<^sub>E C` insert(1,2,4,5) 
-        by (intro ext, auto)
-      finally show "f = g \<and> c = d" using cd by auto
-    qed
-    also have "\<dots> = (\<Sum>f\<in>{f \<in> A \<union> D \<rightarrow>\<^sub>E C. inj_on f A}. card (C - f ` A))" 
-      by (rule card_SigmaI, rule finite_subset[of _ "A \<union> D \<rightarrow>\<^sub>E C"],
-          insert \<open>finite C\<close> \<open>finite D\<close> \<open>finite A\<close>, auto intro!: finite_PiE)
-    also have "\<dots> = (\<Sum>f\<in>{f \<in> A \<union> D \<rightarrow>\<^sub>E C. inj_on f A}. card C - card A)"
-      by (rule sum.cong[OF refl], subst card_Diff_subset, insert \<open>finite A\<close>, auto simp: card_image)
-    also have "\<dots> = (card C - card A) * card {f \<in> A \<union> D \<rightarrow>\<^sub>E C. inj_on f A}" 
-      by simp
-    also have "\<dots> = card C ^ card D * ((card C - card A) * prod ((-) (card C)) {0..<card A})" 
-      using insert by (auto simp: ac_simps)
-    also have "(card C - card A) * prod ((-) (card C)) {0..<card A} =
-      prod ((-) (card C)) {0..<Suc (card A)}" by simp
-    also have "Suc (card A) = card (insert a A)" using insert by auto
-    finally show ?case .
-  qed
 qed
 
 

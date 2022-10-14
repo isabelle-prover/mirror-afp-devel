@@ -88,15 +88,17 @@ next
   case 7 then show ?case
     by (simp add: var0.bd_cinfinite)
 next
-  case (8 x) then show ?case
-    unfolding subset_eq set1_var_def by (simp add: var0.set_bd(1)) 
+  case 8 then show ?case by (rule var0.bd_regularCard)
 next
   case (9 x) then show ?case
+    unfolding subset_eq set1_var_def by (simp add: var0.set_bd(1)) 
+next
+  case (10 x) then show ?case
     unfolding subset_eq set2_var_def by (simp add: var0.set_bd(2)) 
 next
-  case 10 then show ?case by (rule inconsistent) \<comment> \<open>BAAAAAMMMM\<close>
+  case 11 then show ?case by (rule inconsistent) \<comment> \<open>BAAAAAMMMM\<close>
 next
-  case 11 then show ?case
+  case 12 then show ?case
       unfolding rel_var.simps[abs_def] by (auto simp: fun_eq_iff)
 qed
 

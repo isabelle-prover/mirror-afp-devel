@@ -41,11 +41,11 @@ lemma relH_dist_union [forward]:
 
 lemma relH_ref [rewrite]:
   "relH as h h' \<Longrightarrow> addr_of_ref r \<in> as \<Longrightarrow> Ref.get h r = Ref.get h' r"
-  by (simp add: Ref.get_def relH_def)
+  by (auto intro: relH_D2 arg_cong simp: Ref.get_def)
 
 lemma relH_array [rewrite]:
   "relH as h h' \<Longrightarrow> addr_of_array r \<in> as \<Longrightarrow> Array.get h r = Array.get h' r"
-  by (simp add: Array.get_def relH_def)
+  by (auto intro: relH_D2 arg_cong simp: Array.get_def)
 
 lemma relH_set_ref [resolve]:
   "relH {a. a < lim h \<and> a \<notin> {addr_of_ref r}} h (Ref.set r x h)"
@@ -424,7 +424,7 @@ lemma update_rule:
 text \<open>Finally, the allocation rules.\<close>
 lemma lim_set_gen [rewrite]: "lim (h\<lparr>lim := l\<rparr>) = l" by simp
 
-lemma Array_alloc_def' [rewrite]: 
+lemma Array_alloc_def' [rewrite]:
   "Array.alloc xs h = (let l = lim h; r = Array l in (r, (Array.set r xs (h\<lparr>lim := l + 1\<rparr>))))"
   by (simp add: Array.alloc_def)
 

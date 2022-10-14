@@ -152,7 +152,8 @@ proof-
     tiny_smc_Dom_in_Vset
     tiny_smc_Cod_in_Vset
     tiny_smc_Comp_in_Vset
-  show ?thesis by (subst smc_def) (cs_concl cs_intro: smc_cs_intros V_cs_intros)
+  show ?thesis 
+    by (subst smc_def) (cs_concl cs_shallow cs_intro: smc_cs_intros V_cs_intros)
 qed
 
 lemma small_tiny_semicategories[simp]: "small {\<CC>. tiny_semicategory \<alpha> \<CC>}"

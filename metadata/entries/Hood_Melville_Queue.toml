@@ -22,6 +22,10 @@ email = "londono_email"
 [notify]
 nipkow = "nipkow_email"
 
+[related]
+dois = ["10.1016/0020-0190(81)90030-2"]
+pubs = ["<a href=\"https://en.wikipedia.org/wiki/Queue_(abstract_data_type)\">Wikipedia</a>"]
+
 [history]
 
 [extra]

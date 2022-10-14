@@ -17,17 +17,18 @@ sig
   val sublensesN: string
   val quotientsN: string
   val compositionsN: string
+  val lens_suffix: string
 
   (* Lens terms *)
 
-  val lensT: typ -> typ -> typ            (* Lens type *)
+  val lensT: typ -> typ -> typ              (* Lens type *)
   val isLensT: typ -> bool                
-  val astateT: typ                        (* Abstract state type *)
+  val astateT: typ                          (* Abstract state type *)
   val pairsWith: 'a list -> 'a list -> ('a * 'a) list
-  val pairings: 'a list -> ('a * 'a) list (* Calculate all pairings *)
-  val mk_vwb_lens: term -> term           (* Make a very well-behaved lens term *)
-  val mk_indep: term -> term -> term      (* Make an independence term *)
-
+  val pairings: 'a list -> ('a * 'a) list   (* Calculate all pairings *)
+  val mk_vwb_lens: term -> term             (* Make a very well-behaved lens term *)
+  val mk_indep: term -> term -> term        (* Make an independence term *)
+  val remove_lens_suffix: string -> string  (* Remove the suffix subscript v from a name *)
 end
 
 structure Lens_Lib : LENS_LIB =
@@ -53,12 +54,14 @@ val sublensesN = "sublenses"
 val quotientsN = "quotients"
 val compositionsN = "compositions"
 
+val lens_suffix = "\<^sub>v"
+
 fun lensT a b = Type (@{type_name lens_ext}, [a, b, unitT])
 
 fun isLensT (Type (n, _)) = (n = @{type_name lens_ext}) |
     isLensT _ = false
 
-val astateT = (TFree ("'st", ["HOL.type"]))
+val astateT = (TFree ("'st", [@{class type}, @{class scene_space}]))
 
 fun pairWith _ [] = []
   | pairWith x (y :: ys) = [(x, y), (y, x)] @ pairWith x ys;
@@ -72,5 +75,9 @@ fun pairings [] = []
 fun mk_vwb_lens t = mk_Trueprop (const vwb_lensN $ t)
 
 fun mk_indep x y = mk_Trueprop (const lens_indepN $ x $ y)
+
+fun remove_lens_suffix x = (if (String.isSuffix lens_suffix x) 
+                   then String.substring (x, 0, (String.size x - String.size lens_suffix)) 
+                   else x);
 
 end

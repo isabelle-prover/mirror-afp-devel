@@ -467,7 +467,7 @@ proof -
         also have "((\<lambda>x. N powr x) has_integral (N powr 0 / ln N - N powr (-\<delta>) / ln N)) {-\<delta>..0}"
           using \<delta> N
           by (intro fundamental_theorem_of_calculus)
-             (auto simp: has_field_derivative_iff_has_vector_derivative [symmetric] powr_def
+             (auto simp: has_real_derivative_iff_has_vector_derivative [symmetric] powr_def
                    intro!: derivative_eq_intros)
         hence "integral {-\<delta>..0} (\<lambda>x. N powr x) = 1 / ln (real N) - real N powr - \<delta> / ln (real N)"
           using N by (simp add: has_integral_iff)

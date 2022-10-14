@@ -376,14 +376,6 @@ lemma (in complete_lattice) is_dual_ccpo: "class.ccpo Inf (\<ge>) (>)"
   apply (erule Inf_lower)
   apply (erule Inf_greatest)
   done
-  
-  
-lemma ccpo_mono_simp: "monotone (\<le>) (\<le>) f \<longleftrightarrow> mono f"
-  unfolding monotone_def mono_def by simp
-lemma ccpo_monoI: "mono f \<Longrightarrow> monotone (\<le>) (\<le>) f" 
-  by (simp add: ccpo_mono_simp) 
-lemma ccpo_monoD: "monotone (\<le>) (\<le>) f \<Longrightarrow> mono f" 
-  by (simp add: ccpo_mono_simp) 
 
 lemma dual_ccpo_mono_simp: "monotone (\<ge>) (\<ge>) f \<longleftrightarrow> mono f"
   unfolding monotone_def mono_def by auto
@@ -396,10 +388,10 @@ lemma ccpo_lfp_simp: "\<And>f. mono f \<Longrightarrow> ccpo.fixp Sup (\<le>) f 
   apply (rule antisym)
   defer
   apply (rule lfp_lowerbound)
-  apply (drule ccpo.fixp_unfold[OF is_ccpo ccpo_monoI, symmetric])
+  apply (drule ccpo.fixp_unfold[OF is_ccpo , symmetric])
   apply simp
 
-  apply (rule ccpo.fixp_lowerbound[OF is_ccpo ccpo_monoI], assumption)
+  apply (rule ccpo.fixp_lowerbound[OF is_ccpo], assumption)
   apply (simp add: lfp_unfold[symmetric])
   done
 
@@ -444,7 +436,7 @@ text \<open>We transfer the admissible induction lemmas to complete
   lattices.\<close>
 lemma lfp_cadm_induct:
   "\<lbrakk>chain_admissible P; P (Sup {}); mono f; \<And>x. P x \<Longrightarrow> P (f x)\<rbrakk> \<Longrightarrow> P (lfp f)"
-  by (simp only: ccpo_mono_simp[symmetric] ccpo_lfp_simp[symmetric])
+  by (simp only:  ccpo_lfp_simp[symmetric])
      (rule ccpo.fixp_induct[OF is_ccpo])
 
 lemma gfp_cadm_induct:

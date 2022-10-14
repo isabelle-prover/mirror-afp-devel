@@ -1136,100 +1136,12 @@ end
 context complete_lattice_pair_ow
 begin
 
-tts_context
-  tts: (?'a to U\<^sub>1) and (?'b to U\<^sub>2) 
-  rewriting ctr_simps
-  substituting cl\<^sub>1.complete_lattice_ow_axioms
-    and cl\<^sub>2.complete_lattice_ow_axioms
-    and cl\<^sub>1.inf_top.sl_neut.not_empty
-    and cl\<^sub>2.inf_top.sl_neut.not_empty
-  applying 
-    [
-      OF 
-        cl\<^sub>1.Inf_closed' 
-        cl\<^sub>1.Sup_closed' 
-        cl\<^sub>1.inf_closed'   
-        cl\<^sub>1.sup_closed'
-        cl\<^sub>1.bot_closed
-        cl\<^sub>1.top_closed
-        cl\<^sub>2.Inf_closed' 
-        cl\<^sub>2.Sup_closed' 
-        cl\<^sub>2.inf_closed'   
-        cl\<^sub>2.sup_closed'
-        cl\<^sub>2.bot_closed
-        cl\<^sub>2.top_closed
-    ]
-begin
-
-tts_lemma mono_Inf:
-  assumes "\<forall>x\<in>U\<^sub>1. f x \<in> U\<^sub>2"
-    and "A \<subseteq> U\<^sub>1"
-    and "on U\<^sub>1 with (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>mono\<guillemotright> f"
-  shows "f (\<Sqinter>\<^sub>o\<^sub>w\<^sub>.\<^sub>1 A) \<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 \<Sqinter>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 (f ` A)"
-    is complete_lattice_class.mono_Inf.
-    
-tts_lemma mono_Sup:
-  assumes "\<forall>x\<in>U\<^sub>1. f x \<in> U\<^sub>2"
-    and "A \<subseteq> U\<^sub>1"
-    and "on U\<^sub>1 with (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>mono\<guillemotright> f"
-  shows "\<Squnion>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 (f ` A) \<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 f (\<Squnion>\<^sub>o\<^sub>w\<^sub>.\<^sub>1 A)"
-    is complete_lattice_class.mono_Sup.
-
-end
-
 context 
   fixes U\<^sub>3 :: "'c set"
 begin
 
 lemmas [transfer_rule] =
   image_transfer[where ?'a='c]
-
-tts_context
-  tts: (?'a to U\<^sub>1) and (?'b to U\<^sub>2) and (?'c to \<open>U\<^sub>3::'c set\<close>) 
-  rewriting ctr_simps
-  substituting cl\<^sub>1.complete_lattice_ow_axioms
-    and cl\<^sub>2.complete_lattice_ow_axioms
-    and cl\<^sub>1.inf_top.sl_neut.not_empty
-    and cl\<^sub>2.inf_top.sl_neut.not_empty
-  eliminating through (simp add: image_subset_iff image_subset_iff')
-  applying 
-    [
-      OF 
-        _
-        cl\<^sub>1.Inf_closed' 
-        cl\<^sub>1.Sup_closed' 
-        cl\<^sub>1.inf_closed'   
-        cl\<^sub>1.sup_closed'
-        cl\<^sub>1.bot_closed
-        cl\<^sub>1.top_closed
-        cl\<^sub>2.Inf_closed' 
-        cl\<^sub>2.Sup_closed' 
-        cl\<^sub>2.inf_closed'   
-        cl\<^sub>2.sup_closed'
-        cl\<^sub>2.bot_closed
-        cl\<^sub>2.top_closed
-    ]
-begin
-
-tts_lemma mono_SUP:
-  assumes "U\<^sub>3 \<noteq> {}"
-    and "\<forall>x\<in>U\<^sub>1. f x \<in> U\<^sub>2"
-    and "\<forall>x\<in>U\<^sub>3. A x \<in> U\<^sub>1"
-    and "I \<subseteq> U\<^sub>3"
-    and "on U\<^sub>1 with (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>mono\<guillemotright> f"
-  shows "\<Squnion>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 ((\<lambda>x. f (A x)) ` I) \<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 f (\<Squnion>\<^sub>o\<^sub>w\<^sub>.\<^sub>1 (A ` I))"
-    is complete_lattice_class.mono_SUP.
-    
-tts_lemma mono_INF:
-  assumes "U\<^sub>3 \<noteq> {}"
-    and "\<forall>x\<in>U\<^sub>1. f x \<in> U\<^sub>2"
-    and "\<forall>x\<in>U\<^sub>3. A x \<in> U\<^sub>1"
-    and "I \<subseteq> U\<^sub>3"
-    and "on U\<^sub>1 with (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2) (\<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>1) : \<guillemotleft>mono\<guillemotright> f"
-  shows "f (\<Sqinter>\<^sub>o\<^sub>w\<^sub>.\<^sub>1 (A ` I)) \<le>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 \<Sqinter>\<^sub>o\<^sub>w\<^sub>.\<^sub>2 ((\<lambda>x. f (A x)) ` I)"
-    is complete_lattice_class.mono_INF.
-    
-end
 
 end
 

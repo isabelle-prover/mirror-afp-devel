@@ -49,9 +49,6 @@ qed
 lemma fun_ord_le: "fun_ord (\<le>) = (\<le>)"
 by(auto simp add: fun_ord_def fun_eq_iff le_fun_def)
 
-lemma monotone_le_le: "monotone (\<le>) (\<le>) = mono"
-by(simp add: monotone_def[abs_def] mono_def[abs_def])
-
 lemma fixp_induct_set:
   fixes F :: "'c \<Rightarrow> 'c"
   and U :: "'c \<Rightarrow> 'b \<Rightarrow> 'a set"
@@ -69,7 +66,7 @@ lemma fixp_induct_set:
 proof -
   from mono
   have mono': "mono (\<lambda>f. U (F (C f)))"
-    by(simp add: fun_ord_le monotone_le_le mono_def le_fun_def)
+    by(simp add: fun_ord_le mono_def le_fun_def)
   hence eq': "f \<equiv> C (lfp (\<lambda>f. U (F (C f))))"
     using eq unfolding fun_ord_le fun_lub_Sup fixp_Sup_le by(simp add: lfp_eq_fixp)
 

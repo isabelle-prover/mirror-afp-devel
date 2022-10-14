@@ -17,7 +17,7 @@ import org.jline.utils.InputStreamReader
 
 
 object AFP_Migrate_Metadata {
-  private class Context(
+  class Context(
     names_mapping: Map[String, String],
     email_names: Map[String, String],
     dates_mapping: Map[String, String]
@@ -562,13 +562,13 @@ Usage: isabelle afp_migrate_metadata [OPTIONS]
     -B DIR            afp base dir (default "$AFP_BASE")
     -n FROM,TO        names to convert (default:
                       """ + names.mkString("\n                      ") +
-            """)
+          """)
     -e EMAIL,AUTHOR   emails to associate (default:
                       """ + emails.mkString("\n                      ") +
-            """)
+          """)
     -d FROM,TO        date strings to convert (default:
                       """ + dates.mkString("\n                       ") +
-            """)
+          """)
     -f                overwrite existing
 
   Migrates old sitegen metadata to new format.

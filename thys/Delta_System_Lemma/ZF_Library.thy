@@ -114,7 +114,7 @@ lemma cardinal_succ_not_0: "|A| = succ(n) \<Longrightarrow> A \<noteq> 0"
   by auto
 
 lemma Ord_eq_Collect_lt: "i<\<alpha> \<Longrightarrow> {j\<in>\<alpha>. j<i} = i"
-  \<comment> \<open>almost the same proof as @{thm nat_eq_Collect_lt}\<close>
+  \<comment> \<open>almost the same proof as @{thm [source] nat_eq_Collect_lt}\<close>
   apply (rule equalityI)
   apply (blast dest: ltD)
   apply (auto simp add: Ord_mem_iff_lt)
@@ -173,7 +173,7 @@ lemma Pi_range_eq: "f \<in> Pi(A,B) \<Longrightarrow> range(f) = {f ` x . x \<in
 lemma Pi_vimage_subset : "f \<in> Pi(A,B) \<Longrightarrow> f-``C \<subseteq> A"
   unfolding Pi_def by auto
 
-lemma apply_in_range:
+lemma apply_in_codomain_Ord:
   assumes
     "Ord(\<gamma>)" "\<gamma>\<noteq>0" "f: A \<rightarrow> \<gamma>"
   shows
@@ -770,7 +770,7 @@ lemmas Memrel_mono_map_reflects = linear_mono_map_reflects
   [OF well_ord_is_linear[OF well_ord_Memrel] well_ord_is_trans_on[OF well_ord_Memrel]
     irrefl_Memrel]
 
-\<comment> \<open>Same proof as Paulson's @{thm mono_map_is_inj}\<close>
+\<comment> \<open>Same proof as Paulson's @{thm [source] mono_map_is_inj}\<close>
 lemma mono_map_is_inj':
   "\<lbrakk> linear(A,r);  irrefl(B,s);  f \<in> mono_map(A,r,B,s) \<rbrakk> \<Longrightarrow> f \<in> inj(A,B)"
   unfolding irrefl_def mono_map_def inj_def using linearE
@@ -982,6 +982,67 @@ proof -
     using Inf_Card_is_InfCard by simp
 qed
 
+text\<open>Most properties of cardinals depend on $\AC$, even for the countable.
+Here we just state the definition of this concept, and most proofs will
+appear after assuming Choice.\<close>
+\<comment> \<open>Kunen's Definition I.10.5\<close>
+definition
+  countable :: "i\<Rightarrow>o" where
+  "countable(X) \<equiv> X \<lesssim> \<omega>"
+
+lemma countableI[intro]: "X \<lesssim> \<omega> \<Longrightarrow> countable(X)"
+  unfolding countable_def by simp
+
+lemma countableD[dest]: "countable(X) \<Longrightarrow> X \<lesssim> \<omega>"
+  unfolding countable_def by simp
+
+
+text\<open>A \<^emph>\<open>delta system\<close> is family of sets with a common pairwise
+intersection. We will work with this notion in Section~\ref{sec:dsl},
+but we state the definition here in order to have it available in a
+choiceless context.\<close>
+
+definition
+  delta_system :: "i \<Rightarrow> o" where
+  "delta_system(D) \<equiv> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
+
+lemma delta_systemI[intro]:
+  assumes "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
+  shows "delta_system(D)"
+  using assms unfolding delta_system_def by simp
+
+lemma delta_systemD[dest]:
+  "delta_system(D) \<Longrightarrow> \<exists>r. \<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
+  unfolding delta_system_def by simp
+
+text\<open>Hence, pairwise intersections equal the intersection of the whole
+family.\<close>
+
+lemma delta_system_root_eq_Inter:
+  assumes "delta_system(D)"
+  shows "\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = \<Inter>D"
+proof (clarify, intro equalityI, auto)
+  fix A' B' x C
+  assume hyp:"A'\<in>D" "B'\<in> D" "A'\<noteq>B'" "x\<in>A'" "x\<in>B'" "C\<in>D"
+  with assms
+  obtain r where delta:"\<forall>A\<in>D. \<forall>B\<in>D. A \<noteq> B \<longrightarrow> A \<inter> B = r"
+    by auto
+  show "x \<in> C"
+  proof (cases "C=A'")
+    case True
+    with hyp and assms
+    show ?thesis by simp
+  next
+    case False
+    moreover
+    note hyp
+    moreover from calculation and delta
+    have "r = C \<inter> A'" "A' \<inter> B' = r" "x\<in>r" by auto
+    ultimately
+    show ?thesis by simp
+  qed
+qed
+
 lemmas Limit_Aleph = InfCard_Aleph[THEN InfCard_is_Limit]
 
 lemmas Aleph_cont = Normal_imp_cont[OF Normal_Aleph]
@@ -991,6 +1052,28 @@ bundle Ord_dests = Limit_is_Ord[dest] Card_is_Ord[dest]
 bundle Aleph_dests = Aleph_cont[dest] Aleph_sup[dest]
 bundle Aleph_intros = Aleph_increasing[intro!]
 bundle Aleph_mem_dests = Aleph_increasing[OF ltI, THEN ltD, dest]
+
+subsection\<open>Transfinite recursive constructions\<close>
+
+definition
+  rec_constr :: "[i,i] \<Rightarrow> i" where
+  "rec_constr(f,\<alpha>) \<equiv> transrec(\<alpha>,\<lambda>a g. f`(g``a))"
+
+text\<open>The function \<^term>\<open>rec_constr\<close> allows to perform \<^emph>\<open>recursive
+     constructions\<close>: given a choice function on the powerset of some
+     set, a transfinite sequence is created by successively choosing
+     some new element.
+
+     The next result explains its use.\<close>
+
+lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<beta>\<in>\<alpha>})"
+  using def_transrec[OF rec_constr_def, of f \<alpha>] image_lam by simp
+
+lemma rec_constr_type: assumes "f:Pow(G)\<rightarrow> G" "Ord(\<alpha>)"
+  shows "rec_constr(f,\<alpha>) \<in> G"
+  using assms(2,1)
+  by (induct rule:trans_induct)
+    (subst rec_constr_unfold, rule apply_type[of f "Pow(G)" "\<lambda>_. G"], auto)
 
 
 end

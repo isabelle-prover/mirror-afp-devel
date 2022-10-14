@@ -5,11 +5,30 @@ topics = [
   "Computer science/Automata and formal languages",
 ]
 abstract = """
-We formalise results from computability theory: recursive functions,
-undecidability of the halting problem, and the existence of a
-universal Turing machine. This formalisation is the AFP entry
+<p>This entry formalises results from computability theory,
+for example recursive functions,
+undecidability of the halting problem, the existence of a
+universal Turing machine and so on. This formalisation is the AFP entry
 corresponding to the paper Mechanising Turing Machines and Computability Theory
-in Isabelle/HOL, ITP 2013."""
+in Isabelle/HOL from ITP 2013. The main book used for this formalisation is
+by Boolos, Burgess, and Jeffrey on <i>Computability and Logic</i>.</p>
+
+<p>Joosten contributed by making the files ready for the
+AFP in 2019.  His need for a formalisation of Turing Machines arose from
+realising that the current formalisation of saturation graphs
+(also in the AFP) was missing a key undecidability result
+present in his paper on <i>Finding models through graph saturation</i>.</p>
+
+<p>Regensburger contributed in 2022 by adding definitions for
+concepts like Turing Decidability, Turing Computability and Turing Reducibility
+for problem reduction. He also enhanced the result about the
+undecidability of the General Halting Problem given in the original AFP entry
+by first proving the undecidability of the Special Halting Problem and then
+proving its reducibility to the general problem. The original version of this
+AFP entry did only prove a weak form of the undecidability theorem.
+The main motivation behind this contribution is to make the AFP entry
+accessible for bachelor and master students.</p>
+"""
 license = "bsd"
 note = ""
 
@@ -25,13 +44,23 @@ homepage = "urban_homepage"
 [authors.joosten]
 homepage = "joosten_homepage"
 
+[authors.regensburger]
+homepage = "regensburger_homepage"
+
 [contributors]
 
 [notify]
 joosten = "joosten_email1"
 urban = "urban_email"
+regensburger = "regensburger_email"
 
 [history]
+2019-01-16 = """
+Sebastiaan Joosten made the code ready for the AFP.<br>
+"""
+2022-09-07 = """
+Franz Regensburger added substantial material and made some modifications.<br>
+"""
 
 [extra]
 

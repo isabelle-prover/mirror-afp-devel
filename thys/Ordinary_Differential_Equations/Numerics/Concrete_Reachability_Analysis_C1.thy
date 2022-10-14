@@ -146,7 +146,7 @@ lemma DIM_precond_vec1I[autoref_rules_raw]:
   assumes "DIM_precond TYPE('n::enum rvec) E"
   shows "DIM_precond TYPE('n::enum vec1) (E + E*E)"
   using assms
-  by (auto simp: )
+  by auto
 
 lemma vec1rep_impl[autoref_rules]:
   "(\<lambda>(a, bs). RETURN (map_option ((@) a) bs), vec1rep) \<in> appr1_rel \<rightarrow> \<langle>\<langle>appr_rel\<rangle>option_rel\<rangle>nres_rel"

@@ -540,7 +540,7 @@ proof-
   then have "\<forall>(term,d)\<in>set(chop (to_list v p)). d\<ge>i"
     unfolding assms[symmetric]  by fastforce
   then have simp : "\<forall>(term,d)\<in>set(chop(to_list v p)). f v ^ (d - i) * f v ^ i = f v ^ d"
-    unfolding HOL.no_atp(118) by(auto simp del: to_list.simps)
+    unfolding semiring_normalization_rules(26) by(auto simp del: to_list.simps)
   have "insertion f p = sum_list [insertion f term * (f v) ^ i. (term,i)\<leftarrow>(chop (to_list v p))]" using insertion_chop[of f p v] .
   also have "...= (\<Sum>(term, d)\<leftarrow>chop (to_list v p). insertion f term * f v ^ (d-i) * f v ^ i)" 
     using simp
@@ -629,9 +629,11 @@ next
         then show ?thesis
           by (metis \<open>\<And>thesis. (\<And>x. Suc x = i \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> insert_Var_Zero linorder_neqE_linordered_idom mult_less_0_iff power_0_Suc power_eq_0_iff)
       qed
-      show ?thesis unfolding Less unpower.simps h x_def[symmetric] apply simp
-        unfolding x_def p apply(cases "i mod 2 = 0") using h1 apply simp_all
-        by (smt insert_Var_Zero insertion_neg mod_Suc mod_eq_0D mult_less_0_iff nat.inject odd_power_less_zero power_0 power_Suc0_right power_eq_0_iff x_def zero_less_Suc zero_less_power)
+      show ?thesis
+        unfolding Less unpower.simps h x_def [symmetric] apply simp
+        unfolding x_def p apply (cases \<open>even i\<close>)
+        using h1 apply (auto simp add: insertion_neg insert_Var_Zero mult_less_0_iff not_less zero_less_mult_iff elim: oddE)
+        done
     qed 
   next
     case (Eq p)

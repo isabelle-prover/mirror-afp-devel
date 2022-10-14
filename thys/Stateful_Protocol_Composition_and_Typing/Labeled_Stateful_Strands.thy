@@ -1,39 +1,6 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2018-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Labeled_Stateful_Strands.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 section \<open>Labeled Stateful Strands\<close>
@@ -51,7 +18,7 @@ abbreviation LabelN_step ("\<langle>_, _\<rangle>") where
 
 
 text\<open>Database projection\<close>
-abbreviation dbproj where "dbproj l D \<equiv> filter (\<lambda>d. fst d = l) D"
+definition dbproj where "dbproj l D \<equiv> filter (\<lambda>d. fst d = l) D"
 
 text\<open>The type of labeled stateful strands\<close>
 type_synonym ('a,'b,'c) labeled_stateful_strand_step = "'c strand_label \<times> ('a,'b) stateful_strand_step"
@@ -110,6 +77,20 @@ definition setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t where
 
 
 subsection \<open>Minor Lemmata\<close>
+lemma in_ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t_iff: "t \<in> ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<longleftrightarrow> (\<exists>l ts. (l,receive\<langle>ts\<rangle>) \<in> set A \<and> t \<in> set ts)"
+unfolding unlabel_def ik\<^sub>s\<^sub>s\<^sub>t_def by force
+
+lemma ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t_concat: "ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t (concat xs) = \<Union>(ik\<^sub>l\<^sub>s\<^sub>s\<^sub>t ` set xs)"
+by (induct xs) auto
+
+lemma subst_lsstp_fst_eq:
+  "fst (a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = fst a"
+by (cases a) auto
+
+lemma subst_lsst_map_fst_eq:
+  "map fst (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) = map fst S"
+using subst_lsstp_fst_eq unfolding subst_apply_labeled_stateful_strand_def by auto
+
 lemma subst_lsst_nil[simp]: "[] \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta> = []"
 by (simp add: subst_apply_labeled_stateful_strand_def)
 
@@ -144,8 +125,89 @@ proof (induction A arbitrary: B1 B2)
   qed
 qed (metis append_is_Nil_conv subst_lsst_nil)
 
-lemma subst_lsst_member[intro]: "x \<in> set A \<Longrightarrow> x \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta> \<in> set (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)"
+lemma subst_lsst_memI[intro]: "x \<in> set A \<Longrightarrow> x \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta> \<in> set (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)"
 by (metis image_eqI set_map subst_apply_labeled_stateful_strand_def)
+
+lemma subst_lsstpD:
+  "a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma> = (n,send\<langle>ts\<rangle>) \<Longrightarrow> \<exists>ts'. ts = ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<sigma> \<and> a = (n,send\<langle>ts'\<rangle>)"
+    (is "?A \<Longrightarrow> ?A'")
+  "a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma> = (n,receive\<langle>ts\<rangle>) \<Longrightarrow> \<exists>ts'. ts = ts' \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<sigma> \<and> a = (n,receive\<langle>ts'\<rangle>)"
+    (is "?B \<Longrightarrow> ?B'")
+  "a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma> = (n,\<langle>c: t \<doteq> s\<rangle>) \<Longrightarrow> \<exists>t' s'. t = t' \<cdot> \<sigma> \<and> s = s' \<cdot> \<sigma> \<and> a = (n,\<langle>c: t' \<doteq> s'\<rangle>)"
+    (is "?C \<Longrightarrow> ?C'")
+  "a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma> = (n,insert\<langle>t,s\<rangle>) \<Longrightarrow> \<exists>t' s'. t = t' \<cdot> \<sigma> \<and> s = s' \<cdot> \<sigma> \<and> a = (n,insert\<langle>t',s'\<rangle>)"
+    (is "?D \<Longrightarrow> ?D'")
+  "a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma> = (n,delete\<langle>t,s\<rangle>) \<Longrightarrow> \<exists>t' s'. t = t' \<cdot> \<sigma> \<and> s = s' \<cdot> \<sigma> \<and> a = (n,delete\<langle>t',s'\<rangle>)"
+    (is "?E \<Longrightarrow> ?E'")
+  "a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma> = (n,\<langle>c: t \<in> s\<rangle>) \<Longrightarrow> \<exists>t' s'. t = t' \<cdot> \<sigma> \<and> s = s' \<cdot> \<sigma> \<and> a = (n,\<langle>c: t' \<in> s'\<rangle>)"
+    (is "?F \<Longrightarrow> ?F'")
+  "a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma> = (n,\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: G\<rangle>) \<Longrightarrow>
+    \<exists>F' G'. F = F' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<sigma> \<and> G = G' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<sigma> \<and>
+            a = (n,\<forall>X\<langle>\<or>\<noteq>: F' \<or>\<notin>: G'\<rangle>)"
+    (is "?G \<Longrightarrow> ?G'")
+  "a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma> = (n,\<langle>t != s\<rangle>) \<Longrightarrow> \<exists>t' s'. t = t' \<cdot> \<sigma> \<and> s = s' \<cdot> \<sigma> \<and> a = (n,\<langle>t' != s'\<rangle>)"
+    (is "?H \<Longrightarrow> ?H'")
+  "a \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma> = (n,\<langle>t not in s\<rangle>) \<Longrightarrow> \<exists>t' s'. t = t' \<cdot> \<sigma> \<and> s = s' \<cdot> \<sigma> \<and> a = (n,\<langle>t' not in s'\<rangle>)"
+    (is "?I \<Longrightarrow> ?I'")
+proof -
+  obtain m b where a: "a = (m,b)" by (metis surj_pair)
+  show "?A \<Longrightarrow> ?A'" "?B \<Longrightarrow> ?B'" "?C \<Longrightarrow> ?C'" "?D \<Longrightarrow> ?D'" "?E \<Longrightarrow> ?E'" "?F \<Longrightarrow> ?F'" "?G \<Longrightarrow> ?G'"
+       "?H \<Longrightarrow> ?H'" "?I \<Longrightarrow> ?I'"
+    by (cases b; auto simp add: a subst_apply_pairs_def; fail)+
+qed
+
+lemma subst_lsst_memD:
+  "(n,receive\<langle>ts\<rangle>) \<in> set (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>) \<Longrightarrow>
+    \<exists>us. (n,receive\<langle>us\<rangle>) \<in> set S \<and> ts = us \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<sigma>"
+  "(n,send\<langle>ts\<rangle>) \<in> set (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>) \<Longrightarrow>
+    \<exists>us. (n,send\<langle>us\<rangle>) \<in> set S \<and> ts = us \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<sigma>"
+  "(n,\<langle>ac: t \<doteq> s\<rangle>) \<in> set (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>) \<Longrightarrow>
+    \<exists>u v. (n,\<langle>ac: u \<doteq> v\<rangle>) \<in> set S \<and> t = u \<cdot> \<sigma> \<and> s = v \<cdot> \<sigma>"
+  "(n,insert\<langle>t, s\<rangle>) \<in> set (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>) \<Longrightarrow>
+    \<exists>u v. (n,insert\<langle>u, v\<rangle>) \<in> set S \<and> t = u \<cdot> \<sigma> \<and> s = v \<cdot> \<sigma>"
+  "(n,delete\<langle>t, s\<rangle>) \<in> set (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>) \<Longrightarrow>
+    \<exists>u v. (n,delete\<langle>u, v\<rangle>) \<in> set S \<and> t = u \<cdot> \<sigma> \<and> s = v \<cdot> \<sigma>"
+  "(n,\<langle>ac: t \<in> s\<rangle>) \<in> set (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>) \<Longrightarrow>
+    \<exists>u v. (n,\<langle>ac: u \<in> v\<rangle>) \<in> set S \<and> t = u \<cdot> \<sigma> \<and> s = v \<cdot> \<sigma>"
+  "(n,\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: G\<rangle>) \<in> set (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>) \<Longrightarrow>
+    \<exists>F' G'. (n,\<forall>X\<langle>\<or>\<noteq>: F' \<or>\<notin>: G'\<rangle>) \<in> set S \<and>
+            F = F' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<sigma> \<and>
+            G = G' \<cdot>\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s rm_vars (set X) \<sigma>"
+  "(n,\<langle>t != s\<rangle>) \<in> set (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>) \<Longrightarrow>
+    \<exists>u v. (n,\<langle>u != v\<rangle>) \<in> set S \<and> t = u \<cdot> \<sigma> \<and> s = v \<cdot> \<sigma>"
+  "(n,\<langle>t not in s\<rangle>) \<in> set (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>) \<Longrightarrow>
+    \<exists>u v. (n,\<langle>u not in v\<rangle>) \<in> set S \<and> t = u \<cdot> \<sigma> \<and> s = v \<cdot> \<sigma>"
+proof (induction S)
+  case (Cons b S)
+  obtain m a where a: "b = (m,a)" by (metis surj_pair)
+  have *: "x \<in> set (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>)"
+    when "x \<in> set (b#S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<sigma>)" "x \<noteq> b \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma>" for x
+    using that by (simp add: subst_apply_labeled_stateful_strand_def)
+
+  { case 1 thus ?case using Cons.IH(1)[OF *] a by (cases a) auto }
+  { case 2 thus ?case using Cons.IH(2)[OF *] a by (cases a) auto }
+  { case 3 thus ?case using Cons.IH(3)[OF *] a by (cases a) auto }
+  { case 4 thus ?case using Cons.IH(4)[OF *] a by (cases a) auto }
+  { case 5 thus ?case using Cons.IH(5)[OF *] a by (cases a) auto }
+  { case 6 thus ?case using Cons.IH(6)[OF *] a by (cases a) auto }
+  { case 7 thus ?case using Cons.IH(7)[OF *] a by (cases a) auto }
+  { case 8 show ?case
+    proof (cases a)
+      case (NegChecks Y F' G') thus ?thesis
+      proof (cases "(n,\<langle>t != s\<rangle>) = b \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma>")
+        case True thus ?thesis using subst_lsstpD(8)[of b \<sigma> n t s] by auto
+      qed (use 8 Cons.IH(8)[OF *] a in auto)
+    qed (use 8 Cons.IH(8)[OF *] a in simp_all)
+  }
+  { case 9 show ?case
+    proof (cases a)
+      case (NegChecks Y F' G') thus ?thesis
+      proof (cases "(n,\<langle>t not in s\<rangle>) = b \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<sigma>")
+        case True thus ?thesis using subst_lsstpD(9)[of b \<sigma> n t s] by auto
+      qed (use 9 Cons.IH(9)[OF *] a in auto)
+    qed (use 9 Cons.IH(9)[OF *] a in simp_all)
+  }
+qed simp_all
 
 lemma subst_lsst_unlabel_cons: "unlabel ((l,b)#A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>) = (b \<cdot>\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<theta>)#(unlabel (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<theta>))"
 by (simp add: subst_apply_labeled_stateful_strand_def)
@@ -165,7 +227,7 @@ lemma subst_lsst_unlabel_member[intro]:
 proof -
   obtain l where x: "(l,x) \<in> set A" using assms unfolding unlabel_def by moura
   thus ?thesis
-    using subst_lsst_member
+    using subst_lsst_memI
     by (metis unlabel_def in_set_zipE subst_apply_labeled_stateful_strand_step.simps zip_map_fst_snd)
 qed
 
@@ -181,12 +243,31 @@ proof (induction A rule: List.rev_induct)
   qed auto
 qed simp
 
+lemma subst_lsst_tl:
+  "tl (S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) = tl S \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>"
+by (metis map_tl subst_apply_labeled_stateful_strand_def)
+
+lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_tl:
+  "tl (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S) = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t (tl S)"
+by (metis map_tl dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
+
+lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_fst_eq:
+  "fst (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p a) = fst a"
+proof -
+  obtain l b where "a = (l,b)" by (metis surj_pair)
+  thus ?thesis by (cases b) auto
+qed
+
+lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_map_fst_eq:
+  "map fst (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S) = map fst S"
+using dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_fst_eq unfolding dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def by auto
+
 lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_nil[simp]: "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t [] = []"
 by (simp add: dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
 
 lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_Cons[simp]:
-  "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,send\<langle>t\<rangle>)#A) = (l,receive\<langle>t\<rangle>)#(dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
-  "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,receive\<langle>t\<rangle>)#A) = (l,send\<langle>t\<rangle>)#(dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
+  "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,send\<langle>ts\<rangle>)#A) = (l,receive\<langle>ts\<rangle>)#(dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
+  "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,receive\<langle>ts\<rangle>)#A) = (l,send\<langle>ts\<rangle>)#(dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
   "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,\<langle>a: t \<doteq> s\<rangle>)#A) = (l,\<langle>a: t \<doteq> s\<rangle>)#(dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
   "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,insert\<langle>t,s\<rangle>)#A) = (l,insert\<langle>t,s\<rangle>)#(dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
   "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t ((l,delete\<langle>t,s\<rangle>)#A) = (l,delete\<langle>t,s\<rangle>)#(dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
@@ -240,6 +321,20 @@ proof (induction A)
   qed
 qed simp
 
+lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_memberD':
+  assumes a: "a \<in> set (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>)"
+  obtains b where "b \<in> set A" "a = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p b \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>" "fst a = fst b"
+proof -
+  obtain l a' where a': "a = (l,a')" by (metis surj_pair)
+  then obtain b' where b': "(l,b') \<in> set A" "(l,a') = dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p ((l,b') \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>)"
+    using a dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_subst[of A \<delta>] dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_memberD[of l a' "A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>"]
+    unfolding subst_apply_labeled_stateful_strand_def by auto
+
+  show thesis
+    using that[OF b'(1) b'(2)[unfolded dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst[of "(l,b')" \<delta>] a'[symmetric]], unfolded a']
+    by auto
+qed
+
 lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_inv:
   assumes "dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p (l, a) = (k, b)"
   shows "l = k"
@@ -259,6 +354,22 @@ proof (induction A)
   obtain l b where "a = (l,b)" by (metis surj_pair)
   thus ?case using Cons by (cases b) auto
 qed simp
+
+lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_unlabel_cong:
+  assumes "unlabel S = unlabel S'"
+  shows "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S) = unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S')"
+using assms
+proof (induction S arbitrary: S')
+  case (Cons x S S')
+  obtain y S'' where y: "S' = y#S''" using Cons.prems unfolding unlabel_def by force
+  hence IH: "unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S) = unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t S'')" using Cons by (simp add: unlabel_def)
+
+  have "snd x = snd y" using Cons y by simp
+  then obtain lx ly a where a: "x = (lx,a)" "y = (ly,a)" by (metis prod.exhaust_sel)
+
+  have "snd (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p x) = snd (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p y)" unfolding a by (cases a) simp_all
+  thus ?case using IH unfolding unlabel_def dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def y by force
+qed (simp add: unlabel_def dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
 
 lemma vars\<^sub>s\<^sub>s\<^sub>t_unlabel_dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_eq: "vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A) = vars\<^sub>l\<^sub>s\<^sub>s\<^sub>t A"
 proof (induction A)
@@ -310,8 +421,8 @@ using assms dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_member[of _ _ A]
   by (meson unlabel_in unlabel_mem_has_label)
 
 lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_steps_iff:
-  "(l,send\<langle>t\<rangle>) \<in> set A \<longleftrightarrow> (l,receive\<langle>t\<rangle>) \<in> set (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
-  "(l,receive\<langle>t\<rangle>) \<in> set A \<longleftrightarrow> (l,send\<langle>t\<rangle>) \<in> set (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
+  "(l,send\<langle>ts\<rangle>) \<in> set A \<longleftrightarrow> (l,receive\<langle>ts\<rangle>) \<in> set (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
+  "(l,receive\<langle>ts\<rangle>) \<in> set A \<longleftrightarrow> (l,send\<langle>ts\<rangle>) \<in> set (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
   "(l,\<langle>c: t \<doteq> s\<rangle>) \<in> set A \<longleftrightarrow> (l,\<langle>c: t \<doteq> s\<rangle>) \<in> set (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
   "(l,insert\<langle>t,s\<rangle>) \<in> set A \<longleftrightarrow> (l,insert\<langle>t,s\<rangle>) \<in> set (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
   "(l,delete\<langle>t,s\<rangle>) \<in> set A \<longleftrightarrow> (l,delete\<langle>t,s\<rangle>) \<in> set (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A)"
@@ -330,30 +441,32 @@ proof (induction A)
 qed (simp_all add: dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
 
 lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_unlabel_steps_iff:
-  "send\<langle>t\<rangle> \<in> set (unlabel A) \<longleftrightarrow> receive\<langle>t\<rangle> \<in> set (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-  "receive\<langle>t\<rangle> \<in> set (unlabel A) \<longleftrightarrow> send\<langle>t\<rangle> \<in> set (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "send\<langle>ts\<rangle> \<in> set (unlabel A) \<longleftrightarrow> receive\<langle>ts\<rangle> \<in> set (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "receive\<langle>ts\<rangle> \<in> set (unlabel A) \<longleftrightarrow> send\<langle>ts\<rangle> \<in> set (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
   "\<langle>c: t \<doteq> s\<rangle> \<in> set (unlabel A) \<longleftrightarrow> \<langle>c: t \<doteq> s\<rangle> \<in> set (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
   "insert\<langle>t,s\<rangle> \<in> set (unlabel A) \<longleftrightarrow> insert\<langle>t,s\<rangle> \<in> set (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
   "delete\<langle>t,s\<rangle> \<in> set (unlabel A) \<longleftrightarrow> delete\<langle>t,s\<rangle> \<in> set (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
   "\<langle>c: t \<in> s\<rangle> \<in> set (unlabel A) \<longleftrightarrow> \<langle>c: t \<in> s\<rangle> \<in> set (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
   "\<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: G\<rangle> \<in> set (unlabel A) \<longleftrightarrow> \<forall>X\<langle>\<or>\<noteq>: F \<or>\<notin>: G\<rangle> \<in> set (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-using dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_steps_iff(1,2)[of _ t A]
+using dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_steps_iff(1,2)[of _ ts A]
       dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_steps_iff(3,6)[of _ c t s A]
       dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_steps_iff(4,5)[of _ t s A]
       dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_steps_iff(7)[of _ X F G A]
 by (meson unlabel_in unlabel_mem_has_label)+
 
 lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_list_all:
-  "list_all is_Receive (unlabel A) \<Longrightarrow> list_all is_Send (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-  "list_all is_Send (unlabel A) \<Longrightarrow> list_all is_Receive (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-  "list_all is_Equality (unlabel A) \<Longrightarrow> list_all is_Equality (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-  "list_all is_Insert (unlabel A) \<Longrightarrow> list_all is_Insert (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-  "list_all is_Delete (unlabel A) \<Longrightarrow> list_all is_Delete (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-  "list_all is_InSet (unlabel A) \<Longrightarrow> list_all is_InSet (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-  "list_all is_NegChecks (unlabel A) \<Longrightarrow> list_all is_NegChecks (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-  "list_all is_Assignment (unlabel A) \<Longrightarrow> list_all is_Assignment (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-  "list_all is_Check (unlabel A) \<Longrightarrow> list_all is_Check (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
-  "list_all is_Update (unlabel A) \<Longrightarrow> list_all is_Update (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_Receive (unlabel A) \<longleftrightarrow> list_all is_Send (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_Send (unlabel A) \<longleftrightarrow> list_all is_Receive (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_Equality (unlabel A) \<longleftrightarrow> list_all is_Equality (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_Insert (unlabel A) \<longleftrightarrow> list_all is_Insert (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_Delete (unlabel A) \<longleftrightarrow> list_all is_Delete (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_InSet (unlabel A) \<longleftrightarrow> list_all is_InSet (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_NegChecks (unlabel A) \<longleftrightarrow> list_all is_NegChecks (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_Assignment (unlabel A) \<longleftrightarrow> list_all is_Assignment (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_Check (unlabel A) \<longleftrightarrow> list_all is_Check (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_Update (unlabel A) \<longleftrightarrow> list_all is_Update (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
+  "list_all is_Check_or_Assignment (unlabel A) \<longleftrightarrow>
+    list_all is_Check_or_Assignment (unlabel (dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A))"
 proof (induct A)
   case (Cons a A)
   obtain l b where a: "a = (l,b)" by (metis surj_pair)
@@ -367,6 +480,31 @@ proof (induct A)
   { case 8 thus ?case using Cons.hyps(8) a by (cases b) auto }
   { case 9 thus ?case using Cons.hyps(9) a by (cases b) auto }
   { case 10 thus ?case using Cons.hyps(10) a by (cases b) auto }
+  { case 11 thus ?case using Cons.hyps(11) a by (cases b) auto }
+qed simp_all
+
+lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_list_all_same:
+  "list_all is_Equality (unlabel A) \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = A"
+  "list_all is_Insert (unlabel A) \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = A"
+  "list_all is_Delete (unlabel A) \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = A"
+  "list_all is_InSet (unlabel A) \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = A"
+  "list_all is_NegChecks (unlabel A) \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = A"
+  "list_all is_Assignment (unlabel A) \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = A"
+  "list_all is_Check (unlabel A) \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = A"
+  "list_all is_Update (unlabel A) \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = A"
+  "list_all is_Check_or_Assignment (unlabel A) \<Longrightarrow> dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t A = A"
+proof (induct A)
+  case (Cons a A)
+  obtain l b where a: "a = (l,b)" by (metis surj_pair)
+  { case 1 thus ?case using Cons.hyps(1) a by (cases b) auto }
+  { case 2 thus ?case using Cons.hyps(2) a by (cases b) auto }
+  { case 3 thus ?case using Cons.hyps(3) a by (cases b) auto }
+  { case 4 thus ?case using Cons.hyps(4) a by (cases b) auto }
+  { case 5 thus ?case using Cons.hyps(5) a by (cases b) auto }
+  { case 6 thus ?case using Cons.hyps(6) a by (cases b) auto }
+  { case 7 thus ?case using Cons.hyps(7) a by (cases b) auto }
+  { case 8 thus ?case using Cons.hyps(8) a by (cases b) auto }
+  { case 9 thus ?case using Cons.hyps(9) a by (cases b) auto }
 qed simp_all
 
 lemma dual\<^sub>l\<^sub>s\<^sub>s\<^sub>t_in_set_prefix_obtain:
@@ -494,6 +632,11 @@ lemma labeled_list_insert_eq_ex_cases:
 using labeled_list_insert_eq_cases unfolding unlabel_def
 by (metis in_set_impl_in_set_zip2 length_map zip_map_fst_snd)
 
+lemma in_proj_set:
+  assumes "\<langle>l,r\<rangle> \<in> set A"
+  shows "\<langle>l,r\<rangle> \<in> set (proj l A)"
+using assms unfolding proj_def by force
+
 lemma proj_subst: "proj l (A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>) = proj l A \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t \<delta>"
 proof (induction A)
   case (Cons a A)
@@ -512,9 +655,9 @@ lemma proj_proj_set_subset[simp]:
   "set (proj_unl n (proj m A)) \<subseteq> set (proj_unl m A)"
 unfolding unlabel_def proj_def by auto
 
-lemma proj_in_set_iff:
-  "(ln i, d) \<in> set (proj i D) \<longleftrightarrow> (ln i, d) \<in> set D"
-  "(\<star>, d) \<in> set (proj i D) \<longleftrightarrow> (\<star>, d) \<in> set D"
+lemma proj_mem_iff:
+  "(ln i, d) \<in> set D \<longleftrightarrow> (ln i, d) \<in> set (proj i D)"
+  "(\<star>, d) \<in> set D \<longleftrightarrow> (\<star>, d) \<in> set (proj i D)"
 unfolding proj_def by auto
 
 lemma proj_list_insert:
@@ -555,16 +698,16 @@ lemma proj_dbproj:
   "dbproj (ln i) (proj i D) = dbproj (ln i) D"
   "dbproj \<star> (proj i D) = dbproj \<star> D"
   "i \<noteq> j \<Longrightarrow> dbproj (ln j) (proj i D) = []"
-unfolding proj_def by (induct D) auto
+unfolding proj_def dbproj_def by (induct D) auto
 
 lemma dbproj_Cons:
   "dbproj i ((i,d)#D) = (i,d)#dbproj i D"
   "i \<noteq> j \<Longrightarrow> dbproj j ((i,d)#D) = dbproj j D"
-by auto
+unfolding dbproj_def by auto
 
 lemma dbproj_subset[simp]:
   "set (unlabel (dbproj i D)) \<subseteq> set (unlabel D)"
-unfolding unlabel_def by auto
+unfolding unlabel_def dbproj_def by auto
 
 lemma dbproj_subseq: 
   assumes "Di \<in> set (subseqs (dbproj k D))"
@@ -572,30 +715,32 @@ lemma dbproj_subseq:
   and "i \<noteq> k \<Longrightarrow> dbproj i Di = []" (is "i \<noteq> k \<Longrightarrow> ?B")
 proof -
   have *: "set Di \<subseteq> set (dbproj k D)" using subseqs_powset[of "dbproj k D"] assms by auto
-  thus ?A by (metis filter_True filter_set member_filter subsetCE)
+  thus ?A by (metis dbproj_def filter_True filter_set member_filter subsetCE)
 
-  have "\<And>j d. (j,d) \<in> set Di \<Longrightarrow> j = k" using * by auto
-  moreover have "\<And>j d. (j,d) \<in> set (dbproj i Di) \<Longrightarrow> j = i" by auto
-  moreover have "\<And>j d. (j,d) \<in> set (dbproj i Di) \<Longrightarrow> (j,d) \<in> set Di" by auto
+  have "\<And>j d. (j,d) \<in> set Di \<Longrightarrow> j = k" using * unfolding dbproj_def by auto
+  moreover have "\<And>j d. (j,d) \<in> set (dbproj i Di) \<Longrightarrow> j = i" unfolding dbproj_def by auto
+  moreover have "\<And>j d. (j,d) \<in> set (dbproj i Di) \<Longrightarrow> (j,d) \<in> set Di" unfolding dbproj_def by auto
   ultimately show "i \<noteq> k \<Longrightarrow> ?B" by (metis set_empty subrelI subset_empty)
 qed
 
 lemma dbproj_subseq_subset:
   assumes "Di \<in> set (subseqs (dbproj i D))"
   shows "set Di \<subseteq> set D"
-by (metis Pow_iff assms filter_set image_eqI member_filter subseqs_powset subsetCE subsetI)
+using assms unfolding dbproj_def 
+by (metis Pow_iff filter_set image_eqI member_filter subseqs_powset subsetCE subsetI)
 
 lemma dbproj_subseq_in_subseqs:
   assumes "Di \<in> set (subseqs (dbproj i D))"
   shows "Di \<in> set (subseqs D)"
-using assms in_set_subseqs subseq_filter_left subseq_order.dual_order.trans by blast
+using assms in_set_subseqs subseq_filter_left subseq_order.dual_order.trans
+unfolding dbproj_def by blast
 
 lemma proj_subseq:
   assumes "Di \<in> set (subseqs (dbproj (ln j) D))" "j \<noteq> i"
   shows "[d\<leftarrow>proj i D. d \<notin> set Di] = proj i D"
 proof -
   have "set Di \<subseteq> set (dbproj (ln j) D)" using subseqs_powset[of "dbproj (ln j) D"] assms by auto
-  hence "\<And>k d. (k,d) \<in> set Di \<Longrightarrow> k = ln j" by auto
+  hence "\<And>k d. (k,d) \<in> set Di \<Longrightarrow> k = ln j" unfolding dbproj_def by auto
   moreover have "\<And>k d. (k,d) \<in> set (proj i D) \<Longrightarrow> k \<noteq> ln j"
     using assms(2) unfolding proj_def by auto
   ultimately have "\<And>d. d \<in> set (proj i D) \<Longrightarrow> d \<notin> set Di" by auto
@@ -637,7 +782,7 @@ proof (induction D arbitrary: Di)
   proof (cases "Di \<in> set (subseqs D)")
     case True
     hence "Di \<in> set (subseqs (dbproj i D))" using Cons.IH Cons.prems by auto
-    thus ?thesis using subseqs_Cons by auto
+    thus ?thesis using subseqs_Cons unfolding dbproj_def by auto
   next
     case False
     then obtain Di' where Di': "Di = di#Di'" using Cons.prems(1)
@@ -646,7 +791,7 @@ proof (induction D arbitrary: Di)
       by (metis (no_types, lifting) UnE imageE list.inject set_append set_map subseqs.simps(2)) 
     hence "Di' \<in> set (subseqs (dbproj i D))" using Cons.IH Cons.prems Di' by auto
     moreover have "i = j" using Di' di Cons.prems(2) by auto
-    hence "dbproj i (di#D) = di#dbproj i D" by (simp add: di)
+    hence "dbproj i (di#D) = di#dbproj i D" unfolding dbproj_def by (simp add: di)
     ultimately show ?thesis using Di'
       by (metis (no_types, lifting) UnCI image_eqI set_append set_map subseqs.simps(2)) 
   qed
@@ -739,9 +884,9 @@ unfolding unlabel_def proj_def
 proof (induction A)
   case (Cons a A)
   obtain l b where lb: "a = (l,b)" by moura
-  { case 1 thus ?case using Cons.IH lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
-  { case 2 thus ?case using Cons.IH lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
-  { case 3 thus ?case using Cons.IH lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
+  { case 1 thus ?case using Cons.IH(1) unfolding lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
+  { case 2 thus ?case using Cons.IH(2) unfolding lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
+  { case 3 thus ?case using Cons.IH(3) unfolding lb by (cases b) (auto simp add: setops\<^sub>s\<^sub>s\<^sub>t_def) }
 qed simp_all
 
 lemma setops\<^sub>s\<^sub>s\<^sub>t_unlabel_prefix_subset:
@@ -786,20 +931,20 @@ lemma setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_mono:
 by (auto simp add: setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_def)
 
 lemma trms\<^sub>s\<^sub>s\<^sub>t_unlabel_subset_if_no_label:
-  "\<not>list_ex (is_LabelN l) A \<Longrightarrow> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l A) \<subseteq> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l' A)"
+  "\<not>list_ex (has_LabelN l) A \<Longrightarrow> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l A) \<subseteq> trms\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l' A)"
 by (rule trms\<^sub>s\<^sub>s\<^sub>t_mono[OF proj_subset_if_no_label(2)[of l A l']])
 
 lemma setops\<^sub>s\<^sub>s\<^sub>t_unlabel_subset_if_no_label:
-  "\<not>list_ex (is_LabelN l) A \<Longrightarrow> setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l A) \<subseteq> setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l' A)"
+  "\<not>list_ex (has_LabelN l) A \<Longrightarrow> setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l A) \<subseteq> setops\<^sub>s\<^sub>s\<^sub>t (proj_unl l' A)"
 by (rule setops\<^sub>s\<^sub>s\<^sub>t_mono[OF proj_subset_if_no_label(2)[of l A l']])
 
 lemma setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_proj_subset_if_no_label:
-  "\<not>list_ex (is_LabelN l) A \<Longrightarrow> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l A) \<subseteq> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l' A)"
+  "\<not>list_ex (has_LabelN l) A \<Longrightarrow> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l A) \<subseteq> setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t (proj l' A)"
 by (rule setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t_mono[OF proj_subset_if_no_label(1)[of l A l']])
 
 lemma setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p_subst_cases[simp]:
-  "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p ((l,send\<langle>t\<rangle>) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = {}"
-  "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p ((l,receive\<langle>t\<rangle>) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = {}"
+  "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p ((l,send\<langle>ts\<rangle>) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = {}"
+  "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p ((l,receive\<langle>ts\<rangle>) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = {}"
   "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p ((l,\<langle>ac: s \<doteq> t\<rangle>) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = {}"
   "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p ((l,insert\<langle>t,s\<rangle>) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = {(l,t \<cdot> \<delta>,s \<cdot> \<delta>)}"
   "setops\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p ((l,delete\<langle>t,s\<rangle>) \<cdot>\<^sub>l\<^sub>s\<^sub>s\<^sub>t\<^sub>p \<delta>) = {(l,t \<cdot> \<delta>,s \<cdot> \<delta>)}"

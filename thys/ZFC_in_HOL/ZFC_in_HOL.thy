@@ -9,11 +9,7 @@ subsection\<open>Syntax and axioms\<close>
 
 hide_const (open) list.set Sum subset
 
-notation
-  inf (infixl "\<sqinter>" 70) and
-  sup (infixl "\<squnion>" 65) and
-  Inf ("\<Sqinter>") and
-  Sup ("\<Squnion>")
+unbundle lattice_syntax
 
 typedecl V
 
@@ -44,8 +40,12 @@ lemma small_iff_range: "small X \<longleftrightarrow> X \<in> range elts"
   apply (simp add: small_def)
   by (metis inj_on_id2 replacement_raw the_inv_into_onto)
 
+lemma small_eqpoll: "small A \<longleftrightarrow> (\<exists>x. elts x \<approx> A)"
+  unfolding small_def by (metis UNIV_I bij_betw_def eqpoll_def eqpoll_sym imageE image_eqI)
+
 text\<open>Small classes can be mapped to sets.\<close>
-definition   "set X \<equiv> (if small X then inv elts X else inv elts {})"
+definition set :: "V set \<Rightarrow> V"
+  where "set X \<equiv> (if small X then inv elts X else inv elts {})"
 
 lemma set_of_elts [simp]: "set (elts x) = x"
   by (force simp add: ext set_def f_inv_into_f small_def)
@@ -209,6 +209,9 @@ lemma small_Un_elts: "small (elts x \<union> elts y)"
 
 lemma small_eqcong: "\<lbrakk>small X; X \<approx> Y\<rbrakk> \<Longrightarrow> small Y"
   by (metis bij_betw_imp_surj_on eqpoll_def replacement)
+
+lemma lepoll_small: "\<lbrakk>small Y; X \<lesssim> Y\<rbrakk> \<Longrightarrow> small X"
+    by (meson lepoll_iff replacement smaller_than_small)
 
 lemma big_UNIV [simp]: "\<not> small (UNIV::V set)" (is  "\<not> small ?U")
   proof
@@ -478,10 +481,10 @@ lemma Sup_Un_distrib: "\<lbrakk>small A; small B\<rbrakk> \<Longrightarrow> \<Sq
 
 lemma SUP_sup_distrib:
   fixes f :: "V \<Rightarrow> V"
-  shows "small A \<Longrightarrow> (SUP x\<in>A. f x \<squnion> g x) = \<Squnion> (f ` A) \<squnion> \<Squnion> (g ` A)"
+  shows "small A \<Longrightarrow> (\<Squnion>x\<in>A. f x \<squnion> g x) = \<Squnion> (f ` A) \<squnion> \<Squnion> (g ` A)"
   by (force simp:)
 
-lemma SUP_const [simp]: "(SUP y \<in> A. a) = (if A = {} then (0::V) else a)"
+lemma SUP_const [simp]: "(\<Squnion>y \<in> A. a) = (if A = {} then (0::V) else a)"
   by simp
 
 lemma cSUP_subset_mono:
@@ -525,7 +528,7 @@ lemma Sup_eq_0_iff [simp]: "\<Squnion>A = 0 \<longleftrightarrow> A \<subseteq> 
 lemma Sup_Union_commute:
   fixes f :: "V \<Rightarrow> V set"
   assumes "small A" "\<And>x. x\<in>A \<Longrightarrow> small (f x)"
-  shows "\<Squnion> (\<Union>x\<in>A. f x) = (SUP x\<in>A. \<Squnion> (f x))"
+  shows "\<Squnion> (\<Union>x\<in>A. f x) = (\<Squnion>x\<in>A. \<Squnion> (f x))"
   using assms 
   by (force simp: subset_iff_less_eq_V intro!: antisym)
 
@@ -795,6 +798,9 @@ lemma in_succ_iff: "Ord i \<Longrightarrow> j \<in> elts (ZFC_in_HOL.succ i) \<l
 lemma zero_in_succ [simp,intro]: "Ord i \<Longrightarrow> 0 \<in> elts (succ i)"
   using mem_0_Ord by auto
 
+lemma less_succ_self: "x < succ x"
+  by (simp add: less_eq_V_def order_neq_le_trans subset_insertI)
+
 lemma Ord_finite_Sup: "\<lbrakk>finite A; A \<subseteq> ON; A \<noteq> {}\<rbrakk> \<Longrightarrow> \<Squnion>A \<in> A"
 proof (induction A rule: finite_induct)
   case (insert x A)
@@ -985,7 +991,7 @@ lemma non_succ_LimitI:
 lemma Ord_induct3 [consumes 1, case_names 0 succ Limit, induct type: V]:
   assumes \<alpha>: "Ord \<alpha>"
     and P: "P 0" "\<And>\<alpha>. \<lbrakk>Ord \<alpha>; P \<alpha>\<rbrakk> \<Longrightarrow> P (succ \<alpha>)"
-           "\<And>\<alpha>. \<lbrakk>Limit \<alpha>; \<And>\<xi>. \<xi> \<in> elts \<alpha> \<Longrightarrow> P \<xi>\<rbrakk> \<Longrightarrow> P (SUP \<xi> \<in> elts \<alpha>. \<xi>)"
+           "\<And>\<alpha>. \<lbrakk>Limit \<alpha>; \<And>\<xi>. \<xi> \<in> elts \<alpha> \<Longrightarrow> P \<xi>\<rbrakk> \<Longrightarrow> P (\<Squnion>\<xi> \<in> elts \<alpha>. \<xi>)"
   shows "P \<alpha>"
   using \<alpha>
 proof (induction \<alpha> rule: Ord_induct)
@@ -1089,7 +1095,7 @@ qed
 
 lemma Ord_mono_imp_increasing:
   assumes fun_hD: "h \<in> D \<rightarrow> D"
-    and mono_h: "strict_mono_on h D" 
+    and mono_h: "strict_mono_on D h" 
     and "D \<subseteq> ON" and \<nu>: "\<nu> \<in> D"
   shows "\<nu> \<le> h \<nu>"
 proof (rule ccontr)
@@ -1142,7 +1148,7 @@ lemma le_SUP_iff: "\<lbrakk>f ` A \<subseteq> ON; Ord x; small A\<rbrakk> \<Long
 
 subsection\<open>Transfinite Recursion and the V-levels\<close>
 
-definition transrec :: "[[V\<Rightarrow>V,V]\<Rightarrow>V, V] \<Rightarrow> V"
+definition transrec :: "((V \<Rightarrow> 'a) \<Rightarrow> V \<Rightarrow> 'a) \<Rightarrow> V \<Rightarrow> 'a"
   where "transrec H a \<equiv> wfrec {(x,y). x \<in> elts y} H a"
 
 lemma transrec: "transrec H a = H (\<lambda>x \<in> elts a. transrec H x) a"
@@ -1186,7 +1192,7 @@ lemma Vfrom_mono1:
   assumes "a \<le> b" shows "Vfrom a i \<le> Vfrom b i"
 proof (induction i rule: eps_induct)
   case (step i)
-  then have "a \<squnion> (SUP j\<in>elts i. VPow (Vfrom a j)) \<le> b \<squnion> (SUP j\<in>elts i. VPow (Vfrom b j))"
+  then have "a \<squnion> (\<Squnion>j\<in>elts i. VPow (Vfrom a j)) \<le> b \<squnion> (\<Squnion>j\<in>elts i. VPow (Vfrom b j))"
     by (intro sup_mono cSUP_subset_mono \<open>a \<le> b\<close>) auto
   then show ?case
     by (metis Vfrom)
@@ -1195,8 +1201,8 @@ qed
 lemma Vfrom_mono2: "Vfrom a i \<le> Vfrom a (i \<squnion> j)"
 proof (induction arbitrary: j rule: eps_induct)
   case (step i)
-  then have "a \<squnion> (SUP j\<in>elts i. VPow (Vfrom a j))
-           \<le> a \<squnion> (SUP j\<in>elts (i \<squnion> j). VPow (Vfrom a j))"
+  then have "a \<squnion> (\<Squnion>j\<in>elts i. VPow (Vfrom a j))
+           \<le> a \<squnion> (\<Squnion>j\<in>elts (i \<squnion> j). VPow (Vfrom a j))"
     by (intro sup_mono cSUP_subset_mono order_refl) auto
   then show ?case
     by (metis Vfrom)
@@ -1231,7 +1237,7 @@ proof (cases "i = 0")
     by (simp add: Vfrom [of _ "succ 0"])
 next
   case False
-  have *: "(SUP x\<in>elts i. VPow (Vfrom a x)) \<le> VPow (Vfrom a i)"
+  have *: "(\<Squnion>x\<in>elts i. VPow (Vfrom a x)) \<le> VPow (Vfrom a i)"
   proof (rule cSup_least)
     show "(\<lambda>x. VPow (Vfrom a x)) ` elts i \<noteq> {}"
       using False by auto
@@ -1241,7 +1247,7 @@ next
   qed
   show ?thesis
   proof (rule Vfrom [THEN trans])
-    show "a \<squnion> (SUP j\<in>elts (succ i). VPow (Vfrom a j)) = a \<squnion> VPow (Vfrom a i)"
+    show "a \<squnion> (\<Squnion>j\<in>elts (succ i). VPow (Vfrom a j)) = a \<squnion> VPow (Vfrom a i)"
       using assms
       by (intro sup_mono order_antisym) (auto simp: Sup_V_insert *)
   qed
@@ -1252,15 +1258,15 @@ lemma Vset_succ: "Ord i \<Longrightarrow> Vset(succ(i)) = VPow(Vset(i))"
 
 lemma Vfrom_Sup:
   assumes "X \<noteq> {}" "small X"
-  shows "Vfrom a (Sup X) = (SUP y\<in>X. Vfrom a y)"
+  shows "Vfrom a (Sup X) = (\<Squnion>y\<in>X. Vfrom a y)"
 proof (rule order_antisym)
-  have "Vfrom a (\<Squnion> X) = a \<squnion> (SUP j\<in>elts (\<Squnion> X). VPow (Vfrom a j))"
+  have "Vfrom a (\<Squnion> X) = a \<squnion> (\<Squnion>j\<in>elts (\<Squnion> X). VPow (Vfrom a j))"
     by (metis Vfrom)
   also have "\<dots> \<le> \<Squnion> (Vfrom a ` X)"
   proof -
     have "a \<le> \<Squnion> (Vfrom a ` X)"
       by (metis Vfrom all_not_in_conv assms bdd_above_iff_small cSUP_upper2 replacement sup_ge1)
-    moreover have "(SUP j\<in>elts (\<Squnion> X). VPow (Vfrom a j)) \<le> \<Squnion> (Vfrom a ` X)"
+    moreover have "(\<Squnion>j\<in>elts (\<Squnion> X). VPow (Vfrom a j)) \<le> \<Squnion> (Vfrom a ` X)"
     proof -
       have "VPow (Vfrom a x) \<le> \<Squnion> (Vfrom a ` X)"
         if "y \<in> X" "x \<in> elts y" for x y
@@ -1279,15 +1285,15 @@ proof (rule order_antisym)
   qed
   finally show "Vfrom a (\<Squnion> X) \<le> \<Squnion> (Vfrom a ` X)" .
   have "\<And>x. x \<in> X \<Longrightarrow>
-         a \<squnion> (SUP j\<in>elts x. VPow (Vfrom a j))
-         \<le> a \<squnion> (SUP j\<in>elts (\<Squnion> X). VPow (Vfrom a j))"
+         a \<squnion> (\<Squnion>j\<in>elts x. VPow (Vfrom a j))
+         \<le> a \<squnion> (\<Squnion>j\<in>elts (\<Squnion> X). VPow (Vfrom a j))"
     using cSUP_subset_mono \<open>small X\<close> by auto
   then show "\<Squnion> (Vfrom a ` X) \<le> Vfrom a (\<Squnion> X)"
     by (metis Vfrom assms(1) cSUP_least)
 qed
 
 lemma Limit_Vfrom_eq:
-    "Limit(i) \<Longrightarrow> Vfrom a i = (SUP y \<in> elts i. Vfrom a y)"
+    "Limit(i) \<Longrightarrow> Vfrom a i = (\<Squnion>y \<in> elts i. Vfrom a y)"
   by (metis Limit_def Limit_eq_Sup_self Vfrom_Sup ex_in_conv small_elts)
 
 end

@@ -1183,15 +1183,15 @@ definition "urat i j = real_of_float (lapprox_rat 30 (int_of_integer i) (int_of_
 
 definition [simp]: "TAG_optns (optns::string \<times> ((String.literal \<Rightarrow> unit) \<Rightarrow> (real aform) numeric_options)) = True"
 lemma TAG_optns: "P \<Longrightarrow> (TAG_optns optns \<Longrightarrow> P)"
-  by (auto simp: )
+  by auto
 
 definition [simp]: "TAG_reach_optns (roi::real aform reach_options) = True"
 lemma TAG_reach_optns: "P \<Longrightarrow> (TAG_reach_optns optns \<Longrightarrow> P)"
-  by (auto simp: )
+  by auto
 
 definition [simp]: "TAG_sctn (b::bool) = True"
 lemma TAG_sctn: "P \<Longrightarrow> (TAG_sctn optns \<Longrightarrow> P)"
-  by (auto simp: )
+  by auto
 
 subsection \<open>Integrals and Computation\<close>
 
@@ -1217,7 +1217,7 @@ proof (rule solves_odeI)
   have
     "((\<lambda>t. (t, phi t)) has_vderiv_on (\<lambda>t. (1, f (fst (t, phi t)) (snd (t, phi t))))) S"
     "\<And>t. t \<in> S \<Longrightarrow> (phi t) \<in> X"
-    by (auto simp: )
+    by auto
   from has_vderiv_on_PairD(2)[OF this(1)] this(2)
   show "(phi has_vderiv_on (\<lambda>t. f t (phi t))) S" "\<And>t. t \<in> S \<Longrightarrow> phi t \<in> X"
     by auto
@@ -1463,7 +1463,7 @@ proof -
   have "fst (flow0 (a, 0) t) = a + t" if "t \<in> existence_ivl0 (a, 0)" for t
   proof -
     have "fst (flow0 (a, 0) 0) = a" using safe
-      by (auto simp: )
+      by auto
     have "((\<lambda>t. fst (flow0 (a, 0) t)) has_vderiv_on (\<lambda>x. 1)) (existence_ivl0 (a, 0))"
       using has_vderiv_on_PairD[OF vdp] by auto
     then have "((\<lambda>t. fst (flow0 (a, 0) t)) has_vderiv_on (\<lambda>x. 1)) {0--t}"
@@ -2024,7 +2024,7 @@ lemmas [simp] = length_approxs
 
 context includes ode_ops.lifting begin
 lift_definition empty_ode_ops::"ode_ops" is "([], true_form)"
-  by (auto simp: )
+  by auto
 end
 
 ML \<open>val ode_numerics_conv = @{computation_check
@@ -2249,7 +2249,7 @@ lemma pi4_bnds: "pi / 4 \<in> {real_divl 80 (lb_pi 80) 4 .. real_divr 80 (ub_pi 
 
 lemma abs_minus_leI: "\<bar>x - x'\<bar> \<le> e" if "x \<in> {x' - e .. x' + e}" for x e::real
   using that
-  by (auto simp: )
+  by auto
 
 lemmas [DIM_simps] = Suc_numeral One_nat_def[symmetric] TrueI Suc_1 length_approxs arith_simps
 lemma (in ode_interpretation) length_ode_e[DIM_simps]: "length (ode_expression odo) = DIM('a)"
@@ -2702,7 +2702,7 @@ lemma isFDERIV_product: "isFDERIV n xs fas vs \<longleftrightarrow>
   list_all (\<lambda>(x, f). isDERIV x f vs) (List.product xs fas)"
   apply (auto simp: isFDERIV_def list_all2_iff in_set_zip list_all_length product_nth)
    apply auto
-  apply (metis gr_implies_not_zero gr_zeroI less_mult_imp_div_less pos_mod_bound)
+  apply (metis add_lessD1 less_mult_imp_div_less mod_less_divisor add_0)
   done
 
 end

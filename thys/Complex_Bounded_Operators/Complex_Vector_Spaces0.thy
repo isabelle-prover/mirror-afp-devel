@@ -5,7 +5,9 @@ section \<open>\<open>Complex_Vector_Spaces0\<close> -- Vector Spaces and Algebr
 
 theory Complex_Vector_Spaces0
   imports HOL.Real_Vector_Spaces HOL.Topological_Spaces HOL.Vector_Spaces
-    Complex_Main "HOL-Library.Complex_Order"
+    Complex_Main 
+    "HOL-Library.Complex_Order"
+    "HOL-Analysis.Product_Vector"
 begin                              
 
 subsection \<open>Complex vector spaces\<close>
@@ -81,6 +83,12 @@ end
 
 locale clinear = Vector_Spaces.linear "scaleC::_\<Rightarrow>_\<Rightarrow>'a::complex_vector" "scaleC::_\<Rightarrow>_\<Rightarrow>'b::complex_vector"
 begin
+
+(* Not present in Real_Vector_Spaces. *)
+sublocale real: linear
+  \<comment> \<open>Gives access to all lemmas from \<^locale>\<open>linear\<close> using prefix \<open>real.\<close>\<close>
+  apply standard
+  by (auto simp add: add scale scaleR_scaleC)
 
 lemmas scaleC = scale
 
@@ -1115,31 +1123,16 @@ locale bounded_clinear = clinear f for f :: "'a::complex_normed_vector \<Rightar
   assumes bounded: "\<exists>K. \<forall>x. norm (f x) \<le> norm x * K"
 begin
 
-(* Not present in Real_Vector_Spaces *)
-lemma bounded_linear: "bounded_linear f"
+(* Not present in Real_Vector_Spaces. *)
+sublocale real: bounded_linear
+  \<comment> \<open>Gives access to all lemmas from \<^locale>\<open>bounded_linear\<close> using prefix \<open>real.\<close>\<close>
   apply standard
-  by (simp_all add: add scaleC scaleR_scaleC bounded)
+  by (auto simp add: add scaleR_scaleC scale bounded)
 
-lemma pos_bounded: "\<exists>K>0. \<forall>x. norm (f x) \<le> norm x * K"
-proof -
-  obtain K where K: "\<And>x. norm (f x) \<le> norm x * K"
-    using bounded by blast
-  show ?thesis
-  proof (intro exI impI conjI allI)
-    show "0 < max 1 K"
-      by (rule order_less_le_trans [OF zero_less_one max.cobounded1])
-  next
-    fix x
-    have "norm (f x) \<le> norm x * K" using K .
-    also have "\<dots> \<le> norm x * max 1 K"
-      by (rule mult_left_mono [OF max.cobounded2 norm_ge_zero])
-    finally show "norm (f x) \<le> norm x * max 1 K" .
-  qed
-qed
+lemmas pos_bounded = real.pos_bounded (* "\<exists>K>0. \<forall>x. norm (f x) \<le> norm x * K" *)
 
 (* Inherited from bounded_linear *)
-lemma nonneg_bounded: "\<exists>K\<ge>0. \<forall>x. norm (f x) \<le> norm x * K"
-  by (meson less_imp_le pos_bounded)
+lemmas nonneg_bounded = real.nonneg_bounded (* "\<exists>K\<ge>0. \<forall>x. norm (f x) \<le> norm x * K" *)
 
 lemma clinear: "clinear f"
   by (fact local.clinear_axioms)
@@ -1163,28 +1156,25 @@ locale bounded_cbilinear =
     and bounded: "\<exists>K. \<forall>a b. norm (prod a b) \<le> norm a * norm b * K"
 begin
 
-(* Not present in Real_Vector_Spaces *)
-lemma bounded_bilinear[simp]: "bounded_bilinear prod"
+(* Not present in Real_Vector_Spaces. *)
+sublocale real: bounded_bilinear
+  \<comment> \<open>Gives access to all lemmas from \<^locale>\<open>bounded_bilinear\<close> using prefix \<open>real.\<close>\<close>
   apply standard
   by (auto simp add: add_left add_right scaleR_scaleC scaleC_left scaleC_right bounded)
 
-(* Not present in Real_Vector_Spaces. Has only temporary effect (until "end") *)
-interpretation bounded_bilinear prod
-  by simp
-
-lemmas pos_bounded = pos_bounded (* "\<exists>K>0. \<forall>a b. norm (a ** b) \<le> norm a * norm b * K" *)
-lemmas nonneg_bounded = nonneg_bounded (* "\<exists>K\<ge>0. \<forall>a b. norm (a ** b) \<le> norm a * norm b * K" *)
-lemmas additive_right = additive_right (* "additive (\<lambda>b. prod a b)" *)
-lemmas additive_left = additive_left (* "additive (\<lambda>a. prod a b)" *)
-lemmas zero_left = zero_left (* "prod 0 b = 0" *)
-lemmas zero_right = zero_right (* "prod a 0 = 0" *)
-lemmas minus_left = minus_left (* "prod (- a) b = - prod a b" *)
-lemmas minus_right = minus_right (* "prod a (- b) = - prod a b" *)
-lemmas diff_left = diff_left (* "prod (a - a') b = prod a b - prod a' b" *)
-lemmas diff_right = diff_right (* "prod a (b - b') = prod a b - prod a b'" *)
-lemmas sum_left = sum_left (* "prod (sum g S) x = sum ((\<lambda>i. prod (g i) x)) S" *)
-lemmas sum_right = sum_right (* "prod x (sum g S) = sum ((\<lambda>i. (prod x (g i)))) S" *)
-lemmas prod_diff_prod = prod_diff_prod (* "(x ** y - a ** b) = (x - a) ** (y - b) + (x - a) ** b + a ** (y - b)" *)
+lemmas pos_bounded = real.pos_bounded (* "\<exists>K>0. \<forall>a b. norm (a ** b) \<le> norm a * norm b * K" *)
+lemmas nonneg_bounded = real.nonneg_bounded (* "\<exists>K\<ge>0. \<forall>a b. norm (a ** b) \<le> norm a * norm b * K" *)
+lemmas additive_right = real.additive_right (* "additive (\<lambda>b. prod a b)" *)
+lemmas additive_left = real.additive_left (* "additive (\<lambda>a. prod a b)" *)
+lemmas zero_left = real.zero_left (* "prod 0 b = 0" *)
+lemmas zero_right = real.zero_right (* "prod a 0 = 0" *)
+lemmas minus_left = real.minus_left (* "prod (- a) b = - prod a b" *)
+lemmas minus_right = real.minus_right (* "prod a (- b) = - prod a b" *)
+lemmas diff_left = real.diff_left (* "prod (a - a') b = prod a b - prod a' b" *)
+lemmas diff_right = real.diff_right (* "prod a (b - b') = prod a b - prod a b'" *)
+lemmas sum_left = real.sum_left (* "prod (sum g S) x = sum ((\<lambda>i. prod (g i) x)) S" *)
+lemmas sum_right = real.sum_right (* "prod x (sum g S) = sum ((\<lambda>i. (prod x (g i)))) S" *)
+lemmas prod_diff_prod = real.prod_diff_prod (* "(x ** y - a ** b) = (x - a) ** (y - b) + (x - a) ** b + a ** (y - b)" *)
 
 lemma bounded_clinear_left: "bounded_clinear (\<lambda>a. a ** b)"
 proof -
@@ -1219,7 +1209,7 @@ proof
     "\<And>a r b. g a ** (r *\<^sub>C b) = r *\<^sub>C (g a ** b)"
     by (auto simp: g.add add_left add_right g.scaleC scaleC_left scaleC_right)
   have "bounded_bilinear (\<lambda>a b. g a ** b)"
-    using g.bounded_linear by (rule comp1)
+    using g.real.bounded_linear by (rule real.comp1)
   then show "\<exists>K. \<forall>a b. norm (g a ** b) \<le> norm a * norm b * K"
     by (rule bounded_bilinear.bounded)
 qed
@@ -1508,7 +1498,7 @@ lemma cCauchy_iff2: "Cauchy X \<longleftrightarrow> (\<forall>j. (\<exists>M. \<
     "(u \<circ> r) \<longlonglongrightarrow> l"
   shows "u \<longlonglongrightarrow> l" *)
 
-subsection \<open>The set of real numbers is a complete metric space\<close>
+subsection \<open>The set of complex numbers is a complete metric space\<close>
 
 text \<open>
   Proof that Cauchy sequences converge based on the one from

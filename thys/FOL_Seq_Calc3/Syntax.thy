@@ -16,21 +16,28 @@ datatype fm
 
 type_synonym sequent = \<open>fm list \<times> fm list\<close>
 
-subsubsection \<open>Instantiation\<close>
+subsubsection \<open>Substitution\<close>
 
-primrec lift_tm :: \<open>tm \<Rightarrow> tm\<close> (\<open>\<^bold>\<up>\<close>) where
-  \<open>\<^bold>\<up>(\<^bold>#n) = \<^bold>#(n+1)\<close>
-| \<open>\<^bold>\<up>(\<^bold>\<dagger>f ts) = \<^bold>\<dagger>f (map \<^bold>\<up> ts)\<close>
+primrec add_env :: \<open>'a \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> 'a\<close> (infix \<open>\<Zsemi>\<close> 0) where
+  \<open>(t \<Zsemi> s) 0 = t\<close>
+| \<open>(t \<Zsemi> s) (Suc n) = s n\<close>
 
-primrec inst_tm :: \<open>tm \<Rightarrow> tm \<Rightarrow> nat \<Rightarrow> tm\<close> (\<open>_'\<llangle>_'/_'\<rrangle>\<close> [90, 0, 0] 91) where
-  \<open>(\<^bold>#n)\<llangle>s/m\<rrangle> = (if n < m then \<^bold>#n else if n = m then s else \<^bold>#(n-1))\<close>
-| \<open>(\<^bold>\<dagger>f ts)\<llangle>s/m\<rrangle> = \<^bold>\<dagger>f (map (\<lambda>t. t\<llangle>s/m\<rrangle>) ts)\<close>
+primrec lift_tm :: \<open>tm \<Rightarrow> tm\<close> where
+  \<open>lift_tm (\<^bold>#n) = \<^bold>#(n+1)\<close>
+| \<open>lift_tm (\<^bold>\<dagger>f ts) = \<^bold>\<dagger>f (map lift_tm ts)\<close>
 
-primrec inst_fm :: \<open>fm \<Rightarrow> tm \<Rightarrow> nat \<Rightarrow> fm\<close> (\<open>_'\<langle>_'/_'\<rangle>\<close> [90, 0, 0] 91) where
-  \<open>\<^bold>\<bottom>\<langle>_/_\<rangle> = \<^bold>\<bottom>\<close>
-| \<open>(\<^bold>\<ddagger>P ts)\<langle>s/m\<rangle> = \<^bold>\<ddagger>P (map (\<lambda>t. t\<llangle>s/m\<rrangle>) ts)\<close>
-| \<open>(p \<^bold>\<longrightarrow> q)\<langle>s/m\<rangle> = (p\<langle>s/m\<rangle> \<^bold>\<longrightarrow> q\<langle>s/m\<rangle>)\<close>
-| \<open>(\<^bold>\<forall>p)\<langle>s/m\<rangle> = \<^bold>\<forall>(p\<langle>\<^bold>\<up>s/m+1\<rangle>)\<close>
+primrec sub_tm :: \<open>(nat \<Rightarrow> tm) \<Rightarrow> tm \<Rightarrow> tm\<close> where
+  \<open>sub_tm s (\<^bold>#n) = s n\<close>
+| \<open>sub_tm s (\<^bold>\<dagger>f ts) = \<^bold>\<dagger>f (map (sub_tm s) ts)\<close>
+
+primrec sub_fm :: \<open>(nat \<Rightarrow> tm) \<Rightarrow> fm \<Rightarrow> fm\<close> where
+  \<open>sub_fm _ \<^bold>\<bottom> = \<^bold>\<bottom>\<close>
+| \<open>sub_fm s (\<^bold>\<ddagger>P ts) = \<^bold>\<ddagger>P (map (sub_tm s) ts)\<close>
+| \<open>sub_fm s (p \<^bold>\<longrightarrow> q) = sub_fm s p \<^bold>\<longrightarrow> sub_fm s q\<close>
+| \<open>sub_fm s (\<^bold>\<forall>p) = \<^bold>\<forall>(sub_fm (\<^bold>#0 \<Zsemi> \<lambda>n. lift_tm (s n)) p)\<close>
+
+abbreviation inst_single :: \<open>tm \<Rightarrow> fm \<Rightarrow> fm\<close> (\<open>\<langle>_\<rangle>\<close>) where
+  \<open>\<langle>t\<rangle> \<equiv> sub_fm (t \<Zsemi> \<^bold>#)\<close>
 
 subsubsection \<open>Variables\<close>
 
@@ -47,9 +54,6 @@ primrec vars_fm :: \<open>fm \<Rightarrow> nat list\<close> where
 primrec max_list :: \<open>nat list \<Rightarrow> nat\<close> where
   \<open>max_list [] = 0\<close>
 | \<open>max_list (x # xs) = max x (max_list xs)\<close>
-
-definition max_var_fm :: \<open>fm \<Rightarrow> nat\<close> where
-  \<open>max_var_fm p = max_list (vars_fm p)\<close>
 
 lemma max_list_append: \<open>max_list (xs @ ys) = max (max_list xs) (max_list ys)\<close>
   by (induct xs) auto
@@ -80,14 +84,7 @@ definition fresh :: \<open>fm list \<Rightarrow> nat\<close> where
 
 subsection \<open>Rules\<close>
 
-datatype rule
-  = Idle
-  | Axiom nat \<open>tm list\<close>
-  | FlsL
-  | FlsR
-  | ImpL fm fm
-  | ImpR fm fm
-  | UniL tm fm
-  | UniR fm
+datatype rule =
+  Idle | Axiom nat \<open>tm list\<close> | FlsL | FlsR | ImpL fm fm | ImpR fm fm | UniL tm fm | UniR fm
 
 end

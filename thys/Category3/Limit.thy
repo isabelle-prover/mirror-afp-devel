@@ -36,7 +36,7 @@ begin
 
   text\<open>
     A representation of a contravariant functor \<open>F: Cop \<rightarrow> S\<close>, where @{term S}
-    is a replete set category that is the target of a hom-functor for @{term C}, consists of
+    is a set category that is the target of a hom-functor for @{term C}, consists of
     an object @{term a} of @{term C} and a natural isomorphism @{term "\<Phi>: Y a \<rightarrow> F"},
     where \<open>Y: C \<rightarrow> [Cop, S]\<close> is the Yoneda functor.
 \<close>
@@ -44,13 +44,14 @@ begin
   locale representation_of_functor =
     C: category C +
     Cop: dual_category C +
-    S: replete_set_category S +
+    S: set_category S setp +
     F: "functor" Cop.comp S F +
-    Hom: hom_functor C S \<phi> +
-    Ya: yoneda_functor_fixed_object C S \<phi> a +
+    Hom: hom_functor C S setp \<phi> +
+    Ya: yoneda_functor_fixed_object C S setp \<phi> a +
     natural_isomorphism Cop.comp S \<open>Ya.Y a\<close> F \<Phi>
   for C :: "'c comp"      (infixr "\<cdot>" 55)
   and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  and setp :: "'s set \<Rightarrow> bool"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   and F :: "'c \<Rightarrow> 's"
   and a :: 'c
@@ -69,15 +70,16 @@ begin
   locale two_representations_one_functor =
     C: category C +
     Cop: dual_category C +
-    S: replete_set_category S +
-    F: set_valued_functor Cop.comp S F +
-    yoneda_functor C S \<phi> +
-    Ya: yoneda_functor_fixed_object C S \<phi> a +
-    Ya': yoneda_functor_fixed_object C S \<phi> a' +
-    \<Phi>: representation_of_functor C S \<phi> F a \<Phi> +
-    \<Phi>': representation_of_functor C S \<phi> F a' \<Phi>'
+    S: set_category S setp +
+    F: set_valued_functor Cop.comp S setp F +
+    yoneda_functor C S setp \<phi> +
+    Ya: yoneda_functor_fixed_object C S setp \<phi> a +
+    Ya': yoneda_functor_fixed_object C S setp \<phi> a' +
+    \<Phi>: representation_of_functor C S setp \<phi> F a \<Phi> +
+    \<Phi>': representation_of_functor C S setp \<phi> F a' \<Phi>'
   for C :: "'c comp"      (infixr "\<cdot>" 55)
   and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
+  and setp :: "'s set \<Rightarrow> bool"
   and F :: "'c \<Rightarrow> 's"
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   and a :: 'c
@@ -434,7 +436,7 @@ begin
 
     notation S.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>")
 
-    abbreviation \<o> where "\<o> \<equiv> S.\<o>"
+    abbreviation \<o> where "\<o> \<equiv> S.DN"
 
     definition map :: "'c \<Rightarrow> 's"
     where "map = (\<lambda>f. if C.arr f then
@@ -454,7 +456,7 @@ begin
     proof -
       have "\<iota> o D.cones_map f o \<o> \<in> \<iota> ` D.cones (C.cod f) \<rightarrow> \<iota> ` D.cones (C.dom f)"
         using assms D.cones_map_mapsto by force
-      thus ?thesis using assms S.\<iota>_mapsto S.arr_mkArr by auto
+      thus ?thesis using assms S.UP_mapsto by auto
     qed
 
     lemma map_ide:
@@ -464,9 +466,9 @@ begin
       have "map a = S.mkArr (\<iota> ` D.cones a) (\<iota> ` D.cones a) (\<iota> o D.cones_map a o \<o>)"
         using assms map_simp by force
       also have "... = S.mkArr (\<iota> ` D.cones a) (\<iota> ` D.cones a) (\<lambda>x. x)"
-        using S.\<iota>_mapsto D.cones_map_ide S.arr_mkArr by force
+        using S.UP_mapsto D.cones_map_ide by force
       also have "... = S.mkIde (\<iota> ` D.cones a)"
-        using assms S.mkIde_as_mkArr S.\<iota>_mapsto by blast
+        using assms S.mkIde_as_mkArr S.UP_mapsto by blast
       finally show ?thesis by auto
     qed
 
@@ -511,7 +513,7 @@ begin
   end
 
   sublocale cones_functor \<subseteq> "functor" Cop.comp S map using is_functor by auto
-  sublocale cones_functor \<subseteq> set_valued_functor Cop.comp S map ..
+  sublocale cones_functor \<subseteq> set_valued_functor Cop.comp S \<open>\<lambda>A. A \<subseteq> S.Univ\<close> map ..
 
   section Limits
 
@@ -675,8 +677,8 @@ begin
     D: diagram J C D +
     S: replete_concrete_set_category S UNIV \<iota> +
     Cones: cones_functor J C D S \<iota> +
-    Hom: hom_functor C S \<phi> +
-    representation_of_functor C S \<phi> Cones.map a \<Phi>
+    Hom: hom_functor C S \<open>\<lambda>A. A \<subseteq> S.Univ\<close> \<phi> +
+    representation_of_functor C S S.setp \<phi> Cones.map a \<Phi>
   for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
   and C :: "'c comp"      (infixr "\<cdot>" 55)
   and D :: "'j \<Rightarrow> 'c"
@@ -699,8 +701,8 @@ begin
     D: diagram J C D +
     S: replete_concrete_set_category S UNIV \<iota> +
     Cones: cones_functor J C D S \<iota> +
-    Hom: hom_functor C S \<phi> +
-    \<Phi>: representation_of_functor C S \<phi> Cones.map a \<Phi> +
+    Hom: hom_functor C S S.setp \<phi> +
+    \<Phi>: representation_of_functor C S S.setp \<phi> Cones.map a \<Phi> +
     \<chi>: limit_cone J C D a \<chi>
   for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
   and C :: "'c comp"      (infixr "\<cdot>" 55)
@@ -711,7 +713,7 @@ begin
   and a :: 'c
   and \<Phi> :: "'c \<Rightarrow> 's"
   and \<chi> :: "'j \<Rightarrow> 'c" +
-  assumes \<chi>_in_terms_of_\<Phi>: "\<chi> = S.\<o> (S.Fun (\<Phi> a) (\<phi> (a, a) a))"
+  assumes \<chi>_in_terms_of_\<Phi>: "\<chi> = S.DN (S.Fun (\<Phi> a) (\<phi> (a, a) a))"
   and \<Phi>_in_terms_of_\<chi>:
      "Cop.ide a' \<Longrightarrow> \<Phi> a' = S.mkArr (Hom.set (a', a)) (\<iota> ` D.cones a')
                                     (\<lambda>x. \<iota> (D.cones_map (Hom.\<psi> (a', a) x) \<chi>))"
@@ -755,15 +757,17 @@ begin
 
     interpretation Cones: cones_functor J C D S.comp \<open>S.UP o Inr\<close> ..
 
-    interpretation Hom: hom_functor C S.comp \<open>\<lambda>_. S.UP o Inl\<close>
+    interpretation Hom: hom_functor C S.comp S.setp \<open>\<lambda>_. S.UP o Inl\<close>
       apply (unfold_locales)
       using S.UP_mapsto
-       apply auto[1]
+        apply auto[1]
       using S.inj_UP injD inj_onI inj_Inl inj_compose
-      by (metis (no_types, lifting))
+       apply (metis (no_types, lifting))
+      using S.UP_mapsto
+      by auto
 
-    interpretation Y: yoneda_functor C S.comp \<open>\<lambda>_. S.UP o Inl\<close> ..
-    interpretation Ya: yoneda_functor_fixed_object C S.comp \<open>\<lambda>_. S.UP o Inl\<close> a
+    interpretation Y: yoneda_functor C S.comp S.setp \<open>\<lambda>_. S.UP o Inl\<close> ..
+    interpretation Ya: yoneda_functor_fixed_object C S.comp S.setp \<open>\<lambda>_. S.UP o Inl\<close> a
       apply (unfold_locales) using ide_apex by auto
 
     abbreviation inl :: "'c \<Rightarrow> 'c + ('j \<Rightarrow> 'c)" where "inl \<equiv> Inl"
@@ -899,7 +903,7 @@ begin
             also have "... = \<iota> (D.cones_map g (D.cones_map (\<psi> (C.cod g, a) x) \<chi>))"
               using g x 1 cone_\<chi> D.cones_map_comp [of "\<psi> (C.cod g, a) x" g] by fastforce
             also have "... = \<iota> (D.cones_map g (\<o> (\<iota> (D.cones_map (\<psi> (C.cod g, a) x) \<chi>))))"
-              using 1 cone_\<chi> D.cones_map_mapsto Sr.\<o>_\<iota> by auto
+              using 1 cone_\<chi> D.cones_map_mapsto Sr.DN_UP by auto
             also have "... = (?F' o ?G') x" by simp
             finally show "(?G o ?F) x = (?F' o ?G') x" by auto
           qed
@@ -910,7 +914,8 @@ begin
       qed
     qed
 
-    interpretation \<Phi>: set_valued_transformation Cop.comp S.comp \<open>Y a\<close> Cones.map \<Phi>.map ..
+    interpretation \<Phi>: set_valued_transformation Cop.comp S.comp S.setp
+                        \<open>Y a\<close> Cones.map \<Phi>.map ..
                                             
     interpretation \<Phi>: natural_isomorphism Cop.comp S.comp \<open>Y a\<close> Cones.map \<Phi>.map
     proof
@@ -947,7 +952,7 @@ begin
                     by simp
                   thus "(\<iota> (D.cones_map f \<chi>) = \<iota> (D.cones_map (\<psi> (a', a) x) \<chi>))
                             = (D.cones_map f \<chi> = D.cones_map (\<psi> (a', a) x) \<chi>)"
-                    by (meson Sr.inj_\<iota> injD)
+                    by (meson Sr.inj_UP injD)
                 qed
                 thus ?thesis using 2 by auto
               qed
@@ -1015,14 +1020,14 @@ begin
               fix X'
               assume X': "X' \<in> \<iota> ` D.cones a'"
               hence "\<o> X' \<in> \<o> ` \<iota> ` D.cones a'" by simp
-              with Sr.\<o>_\<iota> have "\<o> X' \<in> D.cones a'"
+              with Sr.DN_UP have "\<o> X' \<in> D.cones a'"
                 by auto
               hence "\<exists>!f. \<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map f \<chi> = \<o> X'"
                 using a' is_universal by simp
               from this obtain f where "\<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map f \<chi> = \<o> X'"
                 by auto
               hence f: "\<guillemotleft>f : a' \<rightarrow> a\<guillemotright> \<and> \<iota> (D.cones_map f \<chi>) = X'"
-                using X' Sr.\<iota>_\<o> by auto
+                using X' Sr.UP_DN by auto
               have "X' = ?F (\<phi> (a', a) f)"
                 using f Hom.\<psi>_\<phi> by presburger
               thus "X' \<in> ?F ` Hom.set (a', a)"
@@ -1038,8 +1043,8 @@ begin
           have "?F \<in> Hom.set (a', a) \<rightarrow> \<iota> ` D.cones a'"
             using bij bij_betw_imp_funcset by fast
           hence 1: "S.arr ?f"
-            using ide_apex a' Hom.set_subset_Univ S.\<iota>_mapsto S.arr_mkArr by auto
-          thus ?thesis using bij S.iso_char S.arr_mkArr S.set_mkIde by fastforce
+            using ide_apex a' Hom.set_subset_Univ S.UP_mapsto by auto
+          thus ?thesis using bij S.iso_char S.set_mkIde by fastforce
         qed
         moreover have "?f = \<Phi>.map a'"
           using a' \<Phi>o_def by force
@@ -1047,7 +1052,7 @@ begin
       qed
     qed
 
-    interpretation R: representation_of_functor C S.comp \<phi> Cones.map a \<Phi>.map ..
+    interpretation R: representation_of_functor C S.comp S.setp \<phi> Cones.map a \<Phi>.map ..
 
     lemma \<chi>_in_terms_of_\<Phi>:
     shows "\<chi> = \<o> (\<Phi>.FUN a (\<phi> (a, a) a))"
@@ -1079,7 +1084,7 @@ begin
         using ide_apex D.cones_map_ide [of \<chi> a] cone_\<chi> by simp
       finally have "\<Phi>.FUN a (\<phi> (a, a) a) = \<iota> \<chi>" by blast
       hence "\<o> (\<Phi>.FUN a (\<phi> (a, a) a)) = \<o> (\<iota> \<chi>)" by simp
-      thus ?thesis using cone_\<chi> Sr.\<o>_\<iota> by simp
+      thus ?thesis using cone_\<chi> Sr.DN_UP by simp
     qed
 
     abbreviation Hom
@@ -1104,9 +1109,10 @@ begin
   context representation_of_cones_functor
   begin
 
-    interpretation \<Phi>: set_valued_transformation Cop.comp S \<open>Y a\<close> Cones.map \<Phi> ..
+    interpretation \<Phi>: set_valued_transformation Cop.comp S S.setp \<open>Y a\<close> Cones.map \<Phi> ..
     interpretation \<Psi>: inverse_transformation Cop.comp S \<open>Y a\<close> Cones.map \<Phi> ..
-    interpretation \<Psi>: set_valued_transformation Cop.comp S Cones.map \<open>Y a\<close> \<Psi>.map ..
+    interpretation \<Psi>: set_valued_transformation Cop.comp S S.setp
+                        Cones.map \<open>Y a\<close> \<Psi>.map ..
 
     abbreviation \<o>
     where "\<o> \<equiv> Cones.\<o>"
@@ -1118,7 +1124,7 @@ begin
     assumes "C.ide a'"
     shows "Cones.SET a' = \<iota> ` D.cones a'"
     proof -
-      have "\<iota> ` D.cones a' \<subseteq> S.Univ" using S.\<iota>_mapsto by auto
+      have "\<iota> ` D.cones a' \<subseteq> S.Univ" using S.UP_mapsto by auto
       thus ?thesis using assms Cones.map_ide S.set_mkIde by auto
     qed
 
@@ -1137,7 +1143,7 @@ begin
         using Ya.ide_a \<iota>\<chi> S.Fun_mapsto [of "\<Phi> a"] Hom.\<phi>_mapsto Hom.set_map
               Cones_SET_eq_\<iota>_img_cones by fastforce
       thus "D.cone a \<chi>"
-        by (metis (no_types, lifting) S.\<o>_\<iota> UNIV_I f_inv_into_f inv_into_into mem_Collect_eq)
+        by (metis (no_types, lifting) S.DN_UP UNIV_I f_inv_into_f inv_into_into mem_Collect_eq)
     qed
 
     lemma cone_\<chi>:
@@ -1156,8 +1162,7 @@ begin
           using Ya.ide_a a' x \<psi>x Hom.\<phi>_\<psi> C.comp_cod_arr by fastforce
         moreover have "S.arr (S.mkArr (Hom.set (a, a)) (Hom.set (a', a))
                              (\<phi> (a', a) \<circ> Cop.comp (\<psi> (a', a) x) \<circ> \<psi> (a, a)))"
-          by (metis (no_types) Cop.hom_char Ya.Y_ide_arr(2) Ya.preserves_reflects_arr
-              \<chi>.ide_apex \<psi>x Cop.in_homE)
+          by (metis C.arrI Cop.arr_char Ya.Y_ide_arr(2) Ya.preserves_arr \<chi>.ide_apex \<psi>x)
         ultimately show ?thesis
           using Ya.ide_a a' x Ya.Y_ide_arr \<psi>x \<phi>a C.ide_in_hom by auto
       qed
@@ -1869,7 +1874,8 @@ begin
   assumes adjoint: "adjoint_functors J_C.comp C \<Delta>.map G"
   begin
 
-    interpretation Adj: adjunction J_C.comp C replete_setcat.comp Adj.\<phi>C Adj.\<phi>D \<Delta>.map G
+    interpretation S: replete_setcat .
+    interpretation Adj: adjunction J_C.comp C S.comp S.setp Adj.\<phi>C Adj.\<phi>D \<Delta>.map G
                           \<phi> \<psi> Adj.\<eta> Adj.\<epsilon> Adj.\<Phi> Adj.\<Psi>
       using Adj.induces_adjunction by simp
 
@@ -2113,7 +2119,8 @@ begin
           by (meson F_is_functor \<kappa>.ide_apex functor.preserves_ide)
         interpret Adj: meta_adjunction C D F G \<phi> \<psi>
           using induces_meta_adjunction by auto
-        interpret Adj: adjunction C D replete_setcat.comp
+        interpret S: replete_setcat .
+        interpret Adj: adjunction C D S.comp S.setp
                          Adj.\<phi>C Adj.\<phi>D F G \<phi> \<psi> Adj.\<eta> Adj.\<epsilon> Adj.\<Phi> Adj.\<Psi>
           using Adj.induces_adjunction by simp
         text\<open>
@@ -3212,6 +3219,87 @@ begin
     definition has_equalizers
     where "has_equalizers = (\<forall>f0 f1. par f0 f1 \<longrightarrow> (\<exists>e. has_as_equalizer f0 f1 e))"
 
+    lemma has_as_equalizerI [intro]:
+    assumes "par f g" and "seq f e" and "f \<cdot> e = g \<cdot> e"
+    and "\<And>e'. \<lbrakk>seq f e'; f \<cdot> e' = g \<cdot> e'\<rbrakk> \<Longrightarrow> \<exists>!h. e \<cdot> h = e'"
+    shows "has_as_equalizer f g e"
+    proof (unfold has_as_equalizer_def, intro conjI)
+      show "arr f" and "arr g" and "dom f = dom g" and "cod f = cod g"
+        using assms(1) by auto
+      interpret J: parallel_pair .
+      interpret D: parallel_pair_diagram C f g
+        using assms(1) by unfold_locales
+      show "D.has_as_equalizer e"
+      proof -
+        let ?\<chi> = "D.mkCone e"
+        let ?a = "dom e"
+        interpret \<chi>: cone J.comp C D.map ?a ?\<chi>
+           using assms(2-3) D.cone_mkCone [of e] by simp
+        interpret \<chi>: limit_cone J.comp C D.map ?a ?\<chi>
+        proof
+          fix a' \<chi>'
+          assume \<chi>': "D.cone a' \<chi>'"
+          interpret \<chi>': cone J.comp C D.map a' \<chi>'
+            using \<chi>' by blast
+          have "seq f (\<chi>' J.Zero)"
+            using J.ide_char J.arr_char \<chi>'.preserves_hom
+            by (metis (no_types, lifting) D.map_simp(3) \<chi>'.is_natural_1
+              \<chi>'.natural_transformation_axioms natural_transformation.preserves_reflects_arr
+              parallel_pair.dom_simp(3))
+          moreover have "f \<cdot> (\<chi>' J.Zero) = g \<cdot> (\<chi>' J.Zero)"
+            using \<chi>' D.is_equalized_by_cone by blast
+          ultimately have 1: "\<exists>!h. e \<cdot> h = \<chi>' J.Zero"
+            using assms by blast
+          obtain h where h: "e \<cdot> h = \<chi>' J.Zero"
+            using 1 by blast
+          have 2: "D.is_equalized_by e"
+          using assms(2-3) by blast
+          have "\<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h (D.mkCone e) = \<chi>'"
+          proof
+            show 3: "\<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright>"
+              using h \<chi>'.preserves_dom
+              by (metis (no_types, lifting) \<chi>'.component_in_hom \<open>seq f (\<chi>' J.Zero)\<close>
+                category.has_codomain_iff_arr category.seqE category_axioms cod_in_codomains
+                domains_comp in_hom_def parallel_pair.arr_char)
+            show "D.cones_map h (D.mkCone e) = \<chi>'"
+            proof
+              fix j
+              have "D.cone (cod h) (D.mkCone e)"
+                using 2 3 D.cone_mkCone by auto
+              thus "D.cones_map h (D.mkCone e) j = \<chi>' j"
+                using h 2 3 D.cone_mkCone [of e] J.arr_char D.mkCone_def comp_assoc
+                apply (cases "J.arr j")
+                 apply simp_all
+                 apply (metis (no_types, lifting) D.mkCone_cone \<chi>')
+                using \<chi>'.is_extensional
+                by presburger
+            qed
+          qed
+          hence "\<exists>h. \<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h (D.mkCone e) = \<chi>'"
+            by blast
+          moreover have "\<And>h'. \<guillemotleft>h' : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h' (D.mkCone e) = \<chi>' \<Longrightarrow> h' = h"
+          proof (elim conjE)
+            fix h'
+            assume h': "\<guillemotleft>h' : a' \<rightarrow> dom e\<guillemotright>"
+            assume eq: "D.cones_map h' (D.mkCone e) = \<chi>'"
+            have "e \<cdot> h' = \<chi>' J.Zero"
+              using eq D.cone_mkCone D.mkCone_def \<chi>'.preserves_reflects_arr \<chi>.cone_axioms
+                    \<open>seq f (\<chi>' J.Zero)\<close> eq h' in_homE mem_Collect_eq restrict_apply seqE
+              apply simp
+              by fastforce
+            moreover have "\<exists>!h. e \<cdot> h = \<chi>' J.Zero"
+              using assms(2,4) 1 category.seqI by blast
+            ultimately show "h' = h"
+              using h by auto
+          qed
+          ultimately show "\<exists>!h. \<guillemotleft>h : a' \<rightarrow> dom e\<guillemotright> \<and> D.cones_map h (D.mkCone e) = \<chi>'"
+            by blast
+        qed
+        show "D.has_as_equalizer e"
+          using assms \<chi>.limit_cone_axioms by blast
+      qed
+    qed
+
   end
 
   section "Limits by Products and Equalizers"
@@ -3637,11 +3725,11 @@ begin
 
   locale diagram_in_set_category =
     J: category J +
-    S: set_category S \<AA> +
+    S: set_category S is_set +
     diagram J S D
   for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
   and S :: "'s comp"      (infixr "\<cdot>" 55)
-  and \<AA> :: "'a rel"
+  and is_set :: "'s set \<Rightarrow> bool"
   and D :: "'j \<Rightarrow> 's"
   begin
 
@@ -3782,13 +3870,13 @@ begin
                 using f j 0 \<chi> [of f "J.dom j"] by (elim S.in_homE, auto)
               thus ?thesis
                 using nat 0
-                apply (intro S.arr_eqI' [of "D j \<cdot> ?\<chi> f (J.dom j)" "?\<chi> f j"])
+                apply (intro S.arr_eqI'\<^sub>S\<^sub>C [of "D j \<cdot> ?\<chi> f (J.dom j)" "?\<chi> f j"])
                  apply force
                 by auto
             qed
             show "?\<chi> f (J.cod j) \<cdot> B.map j = ?\<chi> f j"
               using par2 nat 0 f j \<chi>
-              apply (intro S.arr_eqI' [of "?\<chi> f (J.cod j) \<cdot> B.map j" "?\<chi> f j"])
+              apply (intro S.arr_eqI'\<^sub>S\<^sub>C [of "?\<chi> f (J.cod j) \<cdot> B.map j" "?\<chi> f j"])
                apply force
               by (metis (no_types, lifting) S.in_homE)
           qed
@@ -3850,7 +3938,7 @@ begin
                 proof -
                   assume j: "J.arr j"
                   show "cones_map ?f (?\<chi> a) j = \<chi>' j"
-                  proof (intro S.arr_eqI' [of "cones_map ?f (?\<chi> a) j" "\<chi>' j"])
+                  proof (intro S.arr_eqI'\<^sub>S\<^sub>C [of "cones_map ?f (?\<chi> a) j" "\<chi>' j"])
                     show par: "S.par (cones_map ?f (?\<chi> a) j) (\<chi>' j)"
                       using j \<chi>'.preserves_cod \<chi>'.preserves_dom \<chi>'.preserves_reflects_arr
                             f\<chi>a.preserves_cod f\<chi>a.preserves_dom f\<chi>a.preserves_reflects_arr
@@ -3902,7 +3990,7 @@ begin
               have f'_in_hom: "\<guillemotleft>f' : a' \<rightarrow> a\<guillemotright>" using f' by simp
               have f'_map: "cones_map f' (?\<chi> a) = \<chi>'" using f' by simp
               show "f' = ?f"
-              proof (intro S.arr_eqI' [of f' ?f])
+              proof (intro S.arr_eqI'\<^sub>S\<^sub>C [of f' ?f])
                 show "S.par f' ?f"
                   using f_in_hom f'_in_hom by (elim S.in_homE, auto)
                 show "\<And>y'. \<guillemotleft>y' : S.unity \<rightarrow> S.dom f'\<guillemotright> \<Longrightarrow> f' \<cdot> y' = ?f \<cdot> y'"
@@ -3971,7 +4059,7 @@ begin
   and D :: "'j \<Rightarrow> 's"
   begin
 
-    sublocale diagram_in_set_category J S \<open>cardSuc (cmax (card_of (UNIV :: 's set)) natLeq)\<close> D
+    sublocale diagram_in_set_category J S S.setp D
       ..
 
   end
@@ -3983,7 +4071,7 @@ begin
       A set category has an equalizer for any parallel pair of arrows.
 \<close>
 
-    lemma has_equalizers:
+    lemma has_equalizers\<^sub>S\<^sub>C:
     shows "has_equalizers"
     proof (unfold has_equalizers_def)
       have "\<And>f0 f1. par f0 f1 \<Longrightarrow> \<exists>e. has_as_equalizer f0 f1 e"
@@ -3993,7 +4081,7 @@ begin
         interpret J: parallel_pair .
         interpret PP: parallel_pair_diagram S f0 f1
           using par by unfold_locales auto
-        interpret PP: diagram_in_set_category J.comp S \<AA> PP.map ..
+        interpret PP: diagram_in_set_category J.comp S setp PP.map ..
         text\<open>
           Let @{term a} be the object corresponding to the set of all images of equalizing points
           of @{term "dom f0"}, and let @{term e} be the inclusion of @{term a} in @{term "dom f0"}.
@@ -4003,22 +4091,15 @@ begin
           by auto
         hence 1: "img ` {e. e \<in> hom unity (dom f0) \<and> f0 \<cdot> e = f1 \<cdot> e} \<subseteq> Univ"
           using img_point_in_Univ by auto
-        have 2: "|img ` {e. e \<in> hom unity (dom f0) \<and> f0 \<cdot> e = f1 \<cdot> e}| <o \<AA>"
+        have 2: "setp (img ` {e. e \<in> hom unity (dom f0) \<and> f0 \<cdot> e = f1 \<cdot> e})"
         proof -
-          have "|hom unity (dom f0)| =o |Dom f0|"
-            using par bij_betw_points_and_set [of "dom f0"]
-            by (simp add: card_of_ordIsoI)
-          moreover have "|Dom f0| <o \<AA>"
-            using par set_card by simp
-          ultimately have "|hom unity (dom f0)| <o \<AA>"
-            using ordIso_ordLess_trans by blast
-          moreover have
-              "|{e. e \<in> hom unity (dom f0) \<and> f0 \<cdot> e = f1 \<cdot> e}| \<le>o |hom unity (dom f0)|"
-            using 0 by simp
-          ultimately have "|{e. e \<in> hom unity (dom f0) \<and> f0 \<cdot> e = f1 \<cdot> e}| <o \<AA>"
-            using ordLeq_ordLess_trans by blast
-          thus ?thesis
-            using card_of_image ordLeq_ordLess_trans by blast
+          have "setp (img ` hom unity (dom f0))"
+            using ide_dom par setp_img_points by blast
+          moreover have "img ` {e. e \<in> hom unity (dom f0) \<and> f0 \<cdot> e = f1 \<cdot> e} \<subseteq>
+                         img ` hom unity (dom f0)"
+            by blast
+          ultimately show ?thesis
+            by (meson setp_respects_subset)
         qed
         have ide_a: "ide ?a" using 1 2 ide_mkIde by auto
         have set_a: "set ?a = img ` {e. e \<in> hom unity (dom f0) \<and> f0 \<cdot> e = f1 \<cdot> e}"
@@ -4122,7 +4203,7 @@ begin
   end
 
   sublocale set_category \<subseteq> category_with_equalizers S
-    apply unfold_locales using has_equalizers by auto
+    apply unfold_locales using has_equalizers\<^sub>S\<^sub>C by auto
 
   context set_category
   begin
@@ -4194,12 +4275,13 @@ begin
 
   end
 
-  locale discrete_diagram_in_replete_set_category =
-    S: replete_set_category S +
+  locale discrete_diagram_in_set_category =
+    S: set_category S \<SS> +
     discrete_diagram J S D +
-    diagram_in_replete_set_category J S D
+    diagram_in_set_category J S \<SS> D
   for J :: "'j comp"      (infixr "\<cdot>\<^sub>J" 55)
   and S :: "'s comp"      (infixr "\<cdot>" 55)
+  and \<SS> :: "'s set \<Rightarrow> bool"
   and D :: "'j \<Rightarrow> 's"
   begin
 
@@ -4226,8 +4308,6 @@ begin
       assume F: "F \<in> S.PiE' I (S.set o D)"
       interpret U: constant_functor J S S.unity
         apply unfold_locales using S.ide_unity by auto
-      have 1: "S.ide (S.mkIde S.Univ)"
-        using S.ide_mkIde by simp
       have "cone S.unity (funToCone F)"
       proof
         show "\<And>j. \<not>J.arr j \<Longrightarrow> funToCone F j = S.null"
@@ -4317,7 +4397,7 @@ begin
  
   end
 
-  context replete_set_category
+  context set_category
   begin
 
     text\<open>
@@ -4340,7 +4420,7 @@ begin
         fix f
         assume f: "f \<in> PiE' I' (\<lambda>_. Univ)"
         have "f \<in> PiE' I (\<lambda>_. Univ)"
-          using assms(2) f extensional'_def [of I'] terminal_unity extensional'_monotone by auto
+          using assms(2) f extensional'_def [of I'] terminal_unity\<^sub>S\<^sub>C extensional'_monotone by auto
         thus "\<pi> f \<in> Univ" using \<pi> by auto
       qed
       moreover have "inj_on \<pi> (PiE' I' (\<lambda>_. Univ))"
@@ -4348,11 +4428,65 @@ begin
         have 1: "\<And>F A A'. inj_on F A \<and> A' \<subseteq> A \<Longrightarrow> inj_on F A'"
           using subset_inj_on by blast
         moreover have "PiE' I' (\<lambda>_. Univ) \<subseteq> PiE' I (\<lambda>_. Univ)"
-          using assms(2) extensional'_def [of I'] terminal_unity by auto
+          using assms(2) extensional'_def [of I'] terminal_unity\<^sub>S\<^sub>C by auto
         ultimately show ?thesis using \<pi> assms(2) by blast
       qed
       ultimately show ?thesis using admits_tupling_def by metis
     qed
+
+    lemma admits_tupling_respects_bij:
+    assumes "admits_tupling I" and "bij_betw \<phi> I I'"
+    shows "admits_tupling I'"
+    proof -
+      obtain \<pi> where \<pi>: "\<pi> \<in> (I \<rightarrow> Univ) \<inter> extensional' I \<rightarrow> Univ \<and>
+                         inj_on \<pi> ((I \<rightarrow> Univ) \<inter> extensional' I)"
+        using assms(1) admits_tupling_def by metis
+      have inv: "bij_betw (inv_into I \<phi>) I' I"
+        using assms(2) bij_betw_inv_into by blast
+      let ?C = "\<lambda>f x. if x \<in> I then f (\<phi> x) else unity"
+      let ?\<pi>' = "\<lambda>f. \<pi> (?C f)"
+      have 1: "\<And>f. f \<in> (I' \<rightarrow> Univ) \<inter> extensional' I' \<Longrightarrow> ?C f \<in> (I \<rightarrow> Univ) \<inter> extensional' I"
+        using assms bij_betw_apply by fastforce
+      have "?\<pi>' \<in> (I' \<rightarrow> Univ) \<inter> extensional' I' \<rightarrow> Univ \<and>
+            inj_on ?\<pi>' ((I' \<rightarrow> Univ) \<inter> extensional' I')"
+      proof
+        show "(\<lambda>f. \<pi> (?C f)) \<in> (I' \<rightarrow> Univ) \<inter> extensional' I' \<rightarrow> Univ"
+          using 1 \<pi> by blast
+        show "inj_on ?\<pi>' ((I' \<rightarrow> Univ) \<inter> extensional' I')"
+        proof
+          fix f g
+          assume f: "f \<in> (I' \<rightarrow> Univ) \<inter> extensional' I'"
+          assume g: "g \<in> (I' \<rightarrow> Univ) \<inter> extensional' I'"
+          assume eq: "?\<pi>' f = ?\<pi>' g"
+          have f': "?C f \<in> (I \<rightarrow> Univ) \<inter> extensional' I"
+            using f 1 by simp
+          have g': "?C g \<in> (I \<rightarrow> Univ) \<inter> extensional' I"
+            using g 1 by simp
+          have 2: "?C f = ?C g"
+            using f' g' \<pi> eq by (simp add: inj_on_def)
+          show "f = g"
+          proof
+            fix x
+            show "f x = g x"
+            proof (cases "x \<in> I'")
+              show "x \<in> I' \<Longrightarrow> ?thesis"
+                using f g
+                by (metis (no_types, opaque_lifting) "2" assms(2) bij_betw_apply
+                    bij_betw_inv_into_right inv)
+              show "x \<notin> I' \<Longrightarrow> ?thesis"
+                using f g by (metis IntD2 extensional'_arb)
+            qed
+          qed
+        qed
+      qed
+      thus ?thesis
+        using admits_tupling_def by blast
+    qed
+
+  end
+
+  context replete_set_category
+  begin
 
     lemma has_products_iff_admits_tupling:
     fixes I :: "'i set"
@@ -4374,7 +4508,7 @@ begin
       interpret D: discrete_diagram_from_map I S ?D \<open>SOME j. j \<notin> I\<close>
         using J.not_arr_null J.arr_char ide_mkIde
         by (unfold_locales, auto)
-      interpret D: discrete_diagram_in_replete_set_category J.comp S D.map ..
+      interpret D: discrete_diagram_in_set_category J.comp S \<open>\<lambda>A. A \<subseteq> Univ\<close> D.map ..
       have "discrete_diagram J.comp S D.map" ..
       from this obtain \<Pi>D \<chi> where \<chi>: "product_cone J.comp S D.map \<Pi>D \<chi>"
         using has_products has_products_def [of I] ex_productE [of "J.comp" D.map]
@@ -4426,7 +4560,7 @@ begin
       moreover have "PiE' I (set o D.map) = PiE' I (\<lambda>x. Univ)"
       proof -
         have "\<And>i. i \<in> I \<Longrightarrow> (set o D.map) i = Univ"
-          using J.arr_char D.map_def set_mkIde by simp
+          using J.arr_char D.map_def by simp
         thus ?thesis by blast
       qed
       ultimately have "?\<pi> \<in> (PiE' I (\<lambda>x. Univ)) \<rightarrow> Univ \<and> inj_on ?\<pi> (PiE' I (\<lambda>x. Univ))"
@@ -4457,14 +4591,14 @@ begin
             using D discrete_diagram.axioms(1) by blast
           interpret D: discrete_diagram J S D
             using D by simp
-          interpret D: discrete_diagram_in_replete_set_category J S D ..
+          interpret D: discrete_diagram_in_set_category J S \<open>\<lambda>A. A \<subseteq> Univ\<close> D ..
           let ?\<Pi>D = "mkIde (\<pi> ` PiE' I (set o D))"
           have 0: "ide ?\<Pi>D"
           proof -
             have "set o D \<in> I \<rightarrow> Pow Univ"
-              using Pow_iff incl_in_def o_apply elem_set_implies_incl_in
-                    set_subset_Univ subsetI
-              by (metis (mono_tags, lifting) Pi_I')
+              using Pow_iff incl_in_def o_apply elem_set_implies_incl_in subsetI Pi_I'
+                    setp_set_ide
+              by (metis (mono_tags, lifting))
             hence "\<pi> ` PiE' I (set o D) \<subseteq> Univ"
               using \<pi> by blast
             thus ?thesis using \<pi> ide_mkIde by simp
@@ -4482,8 +4616,9 @@ begin
           have 1: "\<pi> \<in> PiE' I (set o D) \<rightarrow> set ?\<Pi>D \<and> inj_on \<pi> (PiE' I (set o D))"
           proof -
             have "PiE' I (set o D) \<subseteq> PiE' I (\<lambda>x. Univ)"
-              by (metis PiE'_mono comp_apply elem_set_implies_incl_in incl_in_def
-                  set_subset_Univ subsetI)
+              using setp_set_ide elem_set_implies_incl_in elem_set_implies_set_eq_singleton
+                    incl_in_def PiE'_mono comp_apply subsetI
+              by (metis (no_types, lifting))
             thus ?thesis using \<pi> subset_inj_on set_\<Pi>D Pi_I' imageI by fastforce
           qed
           have 2: "inv_into (PiE' I (set o D)) \<pi> \<in> set ?\<Pi>D \<rightarrow> PiE' I (set o D)"
@@ -4546,7 +4681,8 @@ begin
                   using \<chi> 0 1 5 D.coneToFun_mapsto img_mkPoint(2) by blast
                 hence "inv_into (PiE' I (set o D)) \<pi> (img (mkPoint ?\<Pi>D (\<pi> (D.coneToFun \<chi>))))
                          = D.coneToFun \<chi>"
-                  using \<chi> D.coneToFun_mapsto 4 5 by (metis PiE)
+                  using \<chi> D.coneToFun_mapsto 4 5
+                  by (metis (no_types, lifting) PiE)
                 hence "D.funToCone (inv_into (PiE' I (set o D)) \<pi>
                                              (img (mkPoint ?\<Pi>D (\<pi> (D.coneToFun \<chi>)))))
                          = \<chi>"
@@ -4574,6 +4710,11 @@ begin
           using ex_\<pi> by blast
       qed
     qed
+
+  end
+
+  context replete_set_category
+  begin
 
     text\<open>
       Characterization of the completeness properties enjoyed by a set category:
@@ -5944,7 +6085,10 @@ $$\xymatrix{
               thus "\<phi> (a', a) (\<chi>.induced_arrow a' (?\<kappa> e)) \<in> Hom.set (a', a)"
                 using a a' Hom.\<phi>_mapsto by auto
             qed
-            thus ?thesis
+            moreover have "setp (Hom.set (a', a))"
+              using a a' Hom.small_homs
+              by (metis Fun_map_a_a' Hom.map_ide S.arr_mkIde S.ideD(1) Yo\<chi>_a'.ide_apex)
+            ultimately show ?thesis
               using a a' x \<sigma>.ide_apex S.mkArr_in_hom [of "S.set x" "Hom.set (a', a)"]
                     Hom.set_subset_Univ S.mkIde_set
               by simp
@@ -5973,7 +6117,7 @@ $$\xymatrix{
             have "YoD_a'.cones_map ?f (YoD.at a' (map o \<chi>)) j = YoD.at a' (map o \<chi>) j \<cdot>\<^sub>S ?f"
               using f j Fun_map_a_a' Yo\<chi>_a'.cone_axioms by fastforce
             also have "... = \<sigma> j"
-            proof (intro S.arr_eqI)
+            proof (intro S.arr_eqI\<^sub>S\<^sub>C)
               show "S.par (YoD.at a' (map o \<chi>) j \<cdot>\<^sub>S ?f) (\<sigma> j)"
                 using 1 f j x YoD_a'.preserves_hom by fastforce
               show "S.Fun (YoD.at a' (map o \<chi>) j \<cdot>\<^sub>S ?f) = S.Fun (\<sigma> j)"
@@ -5998,7 +6142,7 @@ $$\xymatrix{
                     using 1 e f j S.Fun_comp YoD_a'.preserves_hom by force
                   also have "... = (\<phi> (a', D j) o C (\<chi> j) o \<psi> (a', a)) (S.Fun ?f e)"
                     using j a' f e Hom.map_simp_2 S.Fun_mkArr Hom.preserves_arr [of "(a', \<chi> j)"]
-                          eval_at_arr S.arr_mkArr
+                          eval_at_arr
                     by (elim S.in_homE, auto)
                   also have "... = (\<phi> (a', D j) o C (\<chi> j) o \<psi> (a', a))
                                      (\<phi> (a', a) (\<chi>.induced_arrow a' (?\<kappa> e)))"
@@ -6042,7 +6186,7 @@ $$\xymatrix{
             assume f': "\<guillemotleft>f' : x \<rightarrow>\<^sub>S Hom.map (a', a)\<guillemotright> \<and>
                         YoD_a'.cones_map f' (YoD.at a' (map o \<chi>)) = \<sigma>"
             show "f' = ?f"
-            proof (intro S.arr_eqI)
+            proof (intro S.arr_eqI\<^sub>S\<^sub>C)
               show par: "S.par f' ?f" using f f' by (elim S.in_homE, auto)
               show "S.Fun f' = S.Fun ?f"
               proof
@@ -6053,7 +6197,7 @@ $$\xymatrix{
                 proof -
                   assume e: "e \<in> S.set x"
                   have fe: "S.Fun ?f e \<in> Hom.set (a', a)"
-                    using e f S.arr_mkArr par by auto
+                    using e f par by auto
                   have f'e: "S.Fun f' e \<in> Hom.set (a', a)"
                     using a a' e f' S.Fun_mapsto Hom.set_map by fastforce
                   have 1: "\<guillemotleft>\<psi> (a', a) (S.Fun f' e) : a' \<rightarrow> a\<guillemotright>"

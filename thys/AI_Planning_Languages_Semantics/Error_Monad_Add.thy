@@ -37,7 +37,8 @@ begin
 
   
   abbreviation ERR :: "shows \<Rightarrow> (unit \<Rightarrow> shows)" where "ERR s \<equiv> \<lambda>_. s"
-  abbreviation ERRS :: "String.literal \<Rightarrow> (unit \<Rightarrow> shows)" where "ERRS s \<equiv> ERR (shows s)"
+  abbreviation ERRS :: "string \<Rightarrow> (unit \<Rightarrow> shows)" where "ERRS s \<equiv> ERR (shows s)"
+  abbreviation ERRS_literal :: "String.literal \<Rightarrow> (unit \<Rightarrow> shows)" where "ERRS_literal s \<equiv> ERR (shows s)"
   
   
   lemma error_monad_bind_split: "P (bind m f) \<longleftrightarrow> (\<forall>v. m = Inl v \<longrightarrow> P (Inl v)) \<and> (\<forall>v. m = Inr v \<longrightarrow> P (f v))"

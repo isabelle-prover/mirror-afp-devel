@@ -160,9 +160,7 @@ proof -
   have "2 ^ 1 \<le> (2 ^ deg_qr TYPE('a) :: nat)"
     using deg_qr_pos[where ?'a = 'a] 
     by (intro power_increasing) auto
-  thus ?thesis
-    by (intro mod_eqI[where q = 0]) 
-       (auto simp: euclidean_size_poly_def degree_qr_poly)
+  thus ?thesis by (metis degree_qr_poly deg_qr_pos degree_1 mod_poly_less)
 qed
 
 text \<open>We define a modulo relation for polynomials modulo a polynomial $p=$\<open>qr_poly\<close>.\<close>

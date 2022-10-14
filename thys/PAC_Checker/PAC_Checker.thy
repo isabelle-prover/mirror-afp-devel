@@ -787,7 +787,7 @@ lemma remove1_list_rel2:
   (remove1 a xs, remove1 b ys) \<in> \<langle>R\<rangle>list_rel\<close>
   apply (induction xs ys rule: list_rel_induct)
    apply (solves \<open>simp (no_asm)\<close>)
-  by (smt list_rel_simp(4) remove1.simps(2))
+  by (smt (verit) list_rel_simp(4) remove1.simps(2))
 
 lemma remove1_sorted_poly_rel_mset_poly_rel:
   assumes

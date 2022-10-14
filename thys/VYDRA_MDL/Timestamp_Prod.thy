@@ -27,7 +27,7 @@ instance
     using \<iota>_mono \<iota>_mono less_le
     by (fastforce simp: \<iota>_prod_def less_prod_def)
   subgoal for i
-    by (auto simp: \<iota>_prod_def tfin_prod_def intro: \<iota>_fin)
+    by (auto simp: \<iota>_prod_def tfin_prod_def intro: \<iota>_tfin)
   subgoal for x i
     apply (cases x)
     using \<iota>_progressing
@@ -36,7 +36,7 @@ instance
   subgoal for c d
     by (cases c; cases d) (auto simp: tfin_prod_def intro: tfin_closed)
   subgoal for c d a
-    by (cases c; cases d; cases a) (auto simp add: add_mono_strict add_mono)
+    by (cases c; cases d; cases a) (auto simp add: add_mono)
   subgoal for a c
     apply (cases a; cases c)
     apply (auto simp: tfin_prod_def zero_prod_def)

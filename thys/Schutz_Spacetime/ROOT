@@ -1,6 +1,6 @@
 chapter AFP
 
-session "Schutz_Spacetime" (AFP) = HOL +
+session "Schutz_Spacetime" (AFP) = "HOL-Library" +
   options [timeout = 600]
   theories [document = false]
     Util

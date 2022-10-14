@@ -32,7 +32,7 @@ lemma eventually_uniformly_on:
         apply (subst Min_gr_iff)
           apply force apply force apply force done
       have *: "(\<Inter>e\<in>E. {f. \<forall>t\<in>T. dist (f t) (l t) < e}) = {f. \<forall>t\<in>T. dist (f t) (l t) < Min E}"
-        using 1 apply (auto simp: )
+        using 1 apply auto
          apply (subst Min_gr_iff)
            apply force apply force apply force
         apply (drule bspec, assumption)
@@ -740,10 +740,10 @@ lemma returns_to_cong[cong]:
   by (auto simp:)
 lemma return_time_cong[cong]:
   "auto_ll_on_open.return_time ode X = auto_ll_on_open.return_time ode X"
-  by (auto simp: )
+  by auto
 lemma poincare_map_cong[cong]:
   "auto_ll_on_open.poincare_map ode X = auto_ll_on_open.poincare_map ode X"
-  by (auto simp: )
+  by auto
 
 lemma eq_nth_iff_index:
   "distinct xs \<Longrightarrow> n < length xs \<Longrightarrow> i = xs ! n  \<longleftrightarrow> index xs i = n"
@@ -1034,7 +1034,7 @@ lemma lorenz_interrupt[le, refine_vcg]:
         from prems have \<open>vec1_of_flow1 (u, v) \<in> cube_enter\<close>
           by auto
         from _ this have "(cast u, cast_bl v) \<in> (\<lambda>x. (cast (fst (x::3 vec1)), cast_bl (snd (flow1_of_vec1 x)))) ` cube_enter"
-          by (rule image_eqI) (auto simp: )
+          by (rule image_eqI) auto
         then show ?thesis
           using prems by blast
       qed
@@ -1500,7 +1500,7 @@ proof goal_cases
   then show ?case
     apply transfer
     apply (subst lorenz.vpoincare_mapsto_eq[symmetric])
-     apply (auto simp: )
+     apply auto
     apply (rule aform.poincare_mapsto_subset, assumption)
     by (force simp: scaleR2_def )+
 next
@@ -1514,7 +1514,7 @@ next
     subgoal
       using 1(3) apply transfer
       apply (subst lorenz.avpoincare_mapsto_eq[symmetric])
-      by (auto simp: )
+      by auto
     done
 qed
 
@@ -1530,7 +1530,7 @@ lemma of_mat1_image_impl[autoref_rules]:
       split: option.splits)
   unfolding aforms_rel_def
    apply (rule brI)
-    apply (auto simp: )
+    apply auto
   unfolding lv_rel_def set_rel_br
   apply (rule brI)
    prefer 2 apply (force simp: Joints_imp_length_eq)
@@ -1551,7 +1551,7 @@ lemma of_mat1_image_impl[autoref_rules]:
       prefer 2
       apply (rule image_eqI[where x=g])
       apply (rule refl)
-      apply (auto simp: )
+      apply auto
       apply (auto simp: blinfun_of_list_def blinfun_of_matrix_apply flow1_of_list_def
           Basis_prod_def Basis_list_R3 Basis_list_vec3 eval_nat_numeral zero_prod_def)
       done
@@ -2497,7 +2497,7 @@ lemma bl_lorenz_S: "bounded_linear (lorenz_S)"
 
 lemma filtermap_lorenz_S_eq_bot[simp]:
   "filtermap (lorenz_S::R3\<Rightarrow>_) F = bot \<longleftrightarrow> F = bot"
-  apply (auto simp: )
+  apply auto
   apply (subst (asm) filtermap_bot[symmetric])
   apply (subst (asm) filtermap_eq_strong)
   by (auto simp: inj_lorenz_S)
@@ -2538,7 +2538,7 @@ proof (cases "x \<in> \<Sigma>\<^sub>l\<^sub>e")
     apply (rule closed_sequentially[where f="\<lambda>n. x - (0, 0, inverse (Suc n))"])
       apply (rule closed_closure)
     subgoal
-      apply (auto simp: ) apply (rule subsetD) apply (rule closure_subset)
+      apply auto apply (rule subsetD) apply (rule closure_subset)
       using that
       apply (auto simp: \<Sigma>\<^sub>l\<^sub>e_def prod_eq_iff)
       apply (rule order_trans)
@@ -2692,7 +2692,7 @@ lemma lorenz_minus_planeI: "lorenz_S (- x) = x" if "snd (snd (x::R3)) = 0"
   by (auto simp: lorenz_S_def split_beta' prod_eq_iff)
 
 lemma preexpansion_mirror_result[simp]: "preexpansion (mirror_result res2) = preexpansion res2"
-  by (cases res2) (auto simp: )
+  by (cases res2) auto
 
 lemma lorenz_S_tendsto_0I: "(lorenz.flow0 (lorenz_S x) \<longlongrightarrow> 0) at_top"
   if "{0..} \<subseteq> lorenz.existence_ivl0 x" "(lorenz.flow0 x \<longlongrightarrow> 0) at_top"
@@ -2783,7 +2783,7 @@ proof (clarsimp simp add: c1i_of_res_mirror, goal_cases)
     moreover
     from plane have [simp]: "dz = 0" by (auto simp: plane_of_def)
     have "expansion (mirror_result res) * norm (dx, dy, dz) \<le> norm (?D (dx, dy, dz))"
-      using D(4) apply (auto simp: )
+      using D(4) apply auto
       unfolding lorenz_S_on_plane neg
       by simp
     moreover have \<open>mirror_result res2 \<in> return_of_res results (mirror_result res)\<close>
@@ -2798,7 +2798,7 @@ proof (clarsimp simp add: c1i_of_res_mirror, goal_cases)
           in_segment tangent_of_deg_def)
       done
     moreover have "preexpansion (mirror_result res2) * norm (dx, dy, dz) \<le> norm (?D (dx, dy, dz))"
-      using D(7) apply (auto simp: )
+      using D(7) apply auto
       unfolding lorenz_S_on_plane neg
       by simp
     ultimately show ?case

@@ -18,7 +18,7 @@ locale in_Mx =
     and \<alpha> :: "real \<Rightarrow> 'a"
   assumes in_Mx[simp]:"\<alpha> \<in> qbs_Mx X"
 
-locale qbs_prob = in_Mx X \<alpha> + real_distribution \<mu> 
+locale qbs_prob = in_Mx X \<alpha> + real_distribution \<mu>
   for X :: "'a quasi_borel" and \<alpha> and \<mu>
 begin
 declare prob_space_axioms[simp]
@@ -101,11 +101,11 @@ definition qbs_prob_eq2 :: "['a qbs_prob_t, 'a qbs_prob_t] \<Rightarrow> bool" w
    (let (qbs1, a1, m1) = p1;
         (qbs2, a2, m2) = p2 in
     qbs_prob qbs1 a1 m1 \<and> qbs_prob qbs2 a2 m2 \<and> qbs1 = qbs2 \<and>
-      (\<forall>f \<in> qbs1 \<rightarrow>\<^sub>Q real_quasi_borel. 
+      (\<forall>f \<in> qbs1 \<rightarrow>\<^sub>Q real_quasi_borel.
            (\<integral>x. f (a1 x) \<partial> m1) = (\<integral>x. f (a2 x) \<partial> m2)))"
 
-definition qbs_prob_eq3 :: "['a qbs_prob_t, 'a qbs_prob_t] \<Rightarrow> bool" where 
-  "qbs_prob_eq3 p1 p2 \<equiv> 
+definition qbs_prob_eq3 :: "['a qbs_prob_t, 'a qbs_prob_t] \<Rightarrow> bool" where
+  "qbs_prob_eq3 p1 p2 \<equiv>
      (let (qbs1, a1, m1) = p1;
           (qbs2, a2, m2) = p2 in
      (qbs_prob qbs1 a1 m1 \<and> qbs_prob qbs2 a2 m2 \<and> qbs1 = qbs2 \<and>
@@ -118,7 +118,7 @@ definition qbs_prob_eq4 :: "['a qbs_prob_t, 'a qbs_prob_t] \<Rightarrow> bool" w
      (let (qbs1, a1, m1) = p1;
           (qbs2, a2, m2) = p2 in
      (qbs_prob qbs1 a1 m1 \<and> qbs_prob qbs2 a2 m2 \<and> qbs1 = qbs2 \<and>
-      (\<forall>f \<in> qbs1 \<rightarrow>\<^sub>Q \<real>\<^sub>Q\<^sub>\<ge>\<^sub>0. 
+      (\<forall>f \<in> qbs1 \<rightarrow>\<^sub>Q \<real>\<^sub>Q\<^sub>\<ge>\<^sub>0.
            (\<integral>\<^sup>+x. f (a1 x) \<partial> m1) = (\<integral>\<^sup>+x. f (a2 x) \<partial> m2))))"
 
 lemma(in qbs_prob) qbs_prob_eq_refl[simp]:
@@ -141,7 +141,7 @@ lemma(in pair_qbs_prob) qbs_prob_eq_intro:
   assumes "X = Y"
       and "distr \<mu> (qbs_to_measure X) \<alpha> = distr \<nu> (qbs_to_measure X) \<beta>"
     shows "qbs_prob_eq (X,\<alpha>,\<mu>) (Y,\<beta>,\<nu>)"
-  using assms qp1.qbs_prob_axioms qp2.qbs_prob_axioms 
+  using assms qp1.qbs_prob_axioms qp2.qbs_prob_axioms
   by(auto simp add: qbs_prob_eq_def)
 
 lemma(in pair_qbs_prob) qbs_prob_eq2_intro:
@@ -149,7 +149,7 @@ lemma(in pair_qbs_prob) qbs_prob_eq2_intro:
       and "\<And>f. f \<in> qbs_to_measure X \<rightarrow>\<^sub>M real_borel
                  \<Longrightarrow> (\<integral>x. f (\<alpha> x) \<partial> \<mu>) = (\<integral>x. f (\<beta> x) \<partial> \<nu>)"
     shows "qbs_prob_eq2 (X,\<alpha>,\<mu>) (Y,\<beta>,\<nu>)"
-  using assms qp1.qbs_prob_axioms qp2.qbs_prob_axioms 
+  using assms qp1.qbs_prob_axioms qp2.qbs_prob_axioms
   by(auto simp add: qbs_prob_eq2_def)
 
 lemma(in pair_qbs_prob) qbs_prob_eq3_intro:
@@ -157,7 +157,7 @@ lemma(in pair_qbs_prob) qbs_prob_eq3_intro:
       and "\<And>f. f \<in> qbs_to_measure X \<rightarrow>\<^sub>M real_borel \<Longrightarrow> (\<forall> k \<in> qbs_space X. 0 \<le> f k)
                 \<Longrightarrow> (\<integral>x. f (\<alpha> x) \<partial> \<mu>) = (\<integral>x. f (\<beta> x) \<partial> \<nu>)"
     shows "qbs_prob_eq3 (X,\<alpha>,\<mu>) (Y,\<beta>,\<nu>)"
-  using assms qp1.qbs_prob_axioms qp2.qbs_prob_axioms 
+  using assms qp1.qbs_prob_axioms qp2.qbs_prob_axioms
   by(auto simp add: qbs_prob_eq3_def)
 
 lemma(in pair_qbs_prob) qbs_prob_eq4_intro:
@@ -165,7 +165,7 @@ lemma(in pair_qbs_prob) qbs_prob_eq4_intro:
       and "\<And>f. f \<in> qbs_to_measure X \<rightarrow>\<^sub>M ennreal_borel
                  \<Longrightarrow> (\<integral>\<^sup>+x. f (\<alpha> x) \<partial> \<mu>) = (\<integral>\<^sup>+x. f (\<beta> x) \<partial> \<nu>)"
     shows "qbs_prob_eq4 (X,\<alpha>,\<mu>) (Y,\<beta>,\<nu>)"
-  using assms qp1.qbs_prob_axioms qp2.qbs_prob_axioms 
+  using assms qp1.qbs_prob_axioms qp2.qbs_prob_axioms
   by(auto simp add: qbs_prob_eq4_def)
 
 
@@ -174,7 +174,7 @@ lemma qbs_prob_eq_dest:
   shows "qbs_prob X \<alpha> \<mu>"
         "qbs_prob Y \<beta> \<nu>"
         "Y = X"
-    and "distr \<mu> (qbs_to_measure X) \<alpha> = distr \<nu> (qbs_to_measure X) \<beta>" 
+    and "distr \<mu> (qbs_to_measure X) \<alpha> = distr \<nu> (qbs_to_measure X) \<beta>"
   using assms by(auto simp: qbs_prob_eq_def)
 
 lemma qbs_prob_eq2_dest:
@@ -206,11 +206,11 @@ lemma qbs_prob_eq4_dest:
 
 definition qbs_prob_t_ennintegral :: "['a qbs_prob_t, 'a \<Rightarrow> ennreal] \<Rightarrow> ennreal" where
 "qbs_prob_t_ennintegral p f \<equiv>
-  (if f \<in> (fst p) \<rightarrow>\<^sub>Q ennreal_quasi_borel 
+  (if f \<in> (fst p) \<rightarrow>\<^sub>Q ennreal_quasi_borel
    then (\<integral>\<^sup>+x. f (fst (snd p) x) \<partial> (snd (snd p))) else 0)"
 
 definition qbs_prob_t_integral :: "['a qbs_prob_t, 'a \<Rightarrow> real] \<Rightarrow> real" where
-"qbs_prob_t_integral p f \<equiv> 
+"qbs_prob_t_integral p f \<equiv>
   (if f \<in> (fst p) \<rightarrow>\<^sub>Q \<real>\<^sub>Q
    then (\<integral>x. f (fst (snd p) x) \<partial> (snd (snd p)))
    else 0)"
@@ -382,7 +382,7 @@ proof(rule prod_cases3[where y=p1],rule prod_cases3[where y=p2],simp)
     qed
   qed simp
 qed
- 
+
 lemma qbs_prob_eq_1_implies_4 :
   assumes "qbs_prob_eq p1 p2"
   shows "qbs_prob_eq4 p1 p2"
@@ -410,7 +410,7 @@ proof(rule prod_cases3[where y=p1],rule prod_cases3[where y=p2],simp)
       also have "... = ?rhs"
         by(simp add: nn_integral_distr)
       finally show ?thesis .
-    qed 
+    qed
   qed simp
 qed
 
@@ -519,7 +519,7 @@ lemma(in pair_qbs_prob) qbs_prob_space_eq4:
                  \<Longrightarrow> (\<integral>\<^sup>+x. f (\<alpha> x) \<partial> \<mu>) = (\<integral>\<^sup>+x. f (\<beta> x) \<partial> \<nu>)"
     shows "qbs_prob_space (X,\<alpha>,\<mu>) = qbs_prob_space (Y,\<beta>,\<nu>)"
   using assms qbs_prob_eq_4_implies_3[of "(X,\<alpha>,\<mu>)" "(Y,\<beta>,\<nu>)"] qbs_prob_space_eq3[OF assms(1)] qbs_prob_eq3_dest(4) qbs_prob_eq4_intro
-  by blast 
+  by blast
 
 lemma(in pair_qbs_prob) qbs_prob_space_eq_inverse:
   assumes "qbs_prob_space (X,\<alpha>,\<mu>) = qbs_prob_space (Y,\<beta>,\<nu>)"
@@ -708,7 +708,7 @@ proof auto
                 and h: "integrable \<mu> (f \<circ> \<alpha>)"
       using H0 by(auto simp: qbs_prob_t_integrable_def)
     note [simp] = qbs_prob_eq_dest(3)[OF H0(1)]
-   
+
     show "qbs_prob_t_integrable (Y, \<beta>, \<nu>) f"
       unfolding qbs_prob_t_integrable_def
     proof auto
@@ -812,10 +812,7 @@ lemma qbs_integrable_cong:
           "\<And>x. x \<in> qbs_space X \<Longrightarrow> f x = g x"
       and "qbs_integrable s f"
     shows "qbs_integrable s g"
-  apply(rule qbs_integrable_if_integrable)
-  using integrable_cong[OF refl, of "qbs_prob_measure s" f g,simplified qbs_prob_measure_space[symmetric] assms(1),OF assms(2)]
-        qbs_integrable_iff_integrable[of s f] assms(3)
-  by simp
+  by (metis Bochner_Integration.integrable_cong assms integrable_if_qbs_integrable qbs_integrable_if_integrable qbs_prob_measure_space)
 
 lemma qbs_integrable_const[simp]:
  "qbs_integrable s (\<lambda>x. c)"
@@ -825,17 +822,17 @@ lemma qbs_integrable_add[simp]:
   assumes "qbs_integrable s f"
       and "qbs_integrable s g"
     shows "qbs_integrable s (\<lambda>x. f x + g x)"
-  by(rule qbs_integrable_if_integrable[OF Bochner_Integration.integrable_add[OF integrable_if_qbs_integrable[OF assms(1)] integrable_if_qbs_integrable[OF assms(2)]]])
+  using assms qbs_integrable_iff_integrable by blast
 
 lemma qbs_integrable_diff[simp]:
   assumes "qbs_integrable s f"
       and "qbs_integrable s g"
     shows "qbs_integrable s (\<lambda>x. f x - g x)"
   by(rule qbs_integrable_if_integrable[OF Bochner_Integration.integrable_diff[OF integrable_if_qbs_integrable[OF assms(1)] integrable_if_qbs_integrable[OF assms(2)]]])
-  
+
 lemma qbs_integrable_mult_iff[simp]:
  "(qbs_integrable s (\<lambda>x. c * f x)) = (c = 0 \<or> qbs_integrable s f)"
-  using qbs_integrable_iff_integrable[of s "\<lambda>x. c * f x"] integrable_mult_left_iff[of "qbs_prob_measure s" c f] qbs_integrable_iff_integrable[of s f] 
+  using qbs_integrable_iff_integrable[of s "\<lambda>x. c * f x"] integrable_mult_left_iff[of "qbs_prob_measure s" c f] qbs_integrable_iff_integrable[of s f]
   by simp
 
 lemma qbs_integrable_mult[simp]:

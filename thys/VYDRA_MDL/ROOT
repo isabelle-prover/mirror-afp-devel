@@ -5,13 +5,13 @@ session VYDRA_MDL (AFP) = Containers +
   theories
     Interval
     MDL
+    Metric_Point_Structure
     Monitor_Code
     Monitor
     NFA
     Preliminaries
     Temporal
     Timestamp_Lex
-    Timestamp_Lex_Total
     Timestamp_Prod
     Timestamp
     Trace

@@ -43,14 +43,14 @@ section "Smashing"
 definition subsets_smash_R::"nat \<Rightarrow> (nat list*nat list) list \<Rightarrow> (nat list*nat list) list \<Rightarrow> (nat list*nat list) list"
   where "subsets_smash_R n s1 s2 = concat (map (\<lambda>l1. map (\<lambda> l2. (((fst l1) @ (map ((+) n) (fst l2))), (snd l1) @ (map ((+) n) (snd l2)))) s2) s1)"
 
-definition smash_systems_R:: "real poly \<Rightarrow> real poly list \<Rightarrow> real poly list \<Rightarrow> (nat list * nat list) list \<Rightarrow> (nat list * nat list) list \<Rightarrow>
+definition smash_systems_R:: "('a::zero) poly \<Rightarrow> ('a::zero) poly list \<Rightarrow> ('a::zero) poly list \<Rightarrow> (nat list * nat list) list \<Rightarrow> (nat list * nat list) list \<Rightarrow>
   rat list list \<Rightarrow> rat list list \<Rightarrow> rat mat \<Rightarrow> rat mat \<Rightarrow> 
-  real poly list \<times> (rat mat \<times> ((nat list * nat list) list \<times> rat list list))"
+  ('a::zero) poly list \<times> (rat mat \<times> ((nat list * nat list) list \<times> rat list list))"
   where "smash_systems_R p qs1 qs2 subsets1 subsets2 signs1 signs2 mat1 mat2 =
     (qs1@qs2, (kronecker_product mat1 mat2, (subsets_smash_R (length qs1) subsets1 subsets2, signs_smash signs1 signs2)))"
 
-fun combine_systems_R:: "real poly \<Rightarrow> (real poly list \<times> (rat mat \<times> ((nat list * nat list) list \<times> rat list list))) \<Rightarrow> (real poly list \<times> (rat mat \<times> ((nat list * nat list) list \<times> rat list list)))
-  \<Rightarrow> (real poly list \<times> (rat mat \<times> ((nat list * nat list) list \<times> rat list list)))"
+fun combine_systems_R:: "('a::zero) poly \<Rightarrow> (('a::zero) poly list \<times> (rat mat \<times> ((nat list * nat list) list \<times> rat list list))) \<Rightarrow> (('a::zero) poly list \<times> (rat mat \<times> ((nat list * nat list) list \<times> rat list list)))
+  \<Rightarrow> (('a::zero) poly list \<times> (rat mat \<times> ((nat list * nat list) list \<times> rat list list)))"
   where "combine_systems_R p (qs1, m1, sub1, sgn1) (qs2, m2, sub2, sgn2) = 
     (smash_systems_R p qs1 qs2 sub1 sub2 sgn1 sgn2 m1 m2)"
 
@@ -104,5 +104,6 @@ definition find_consistent_signs_at_roots_R:: "real poly \<Rightarrow> real poly
 lemma find_consistent_signs_at_roots_thm_R:
   shows "find_consistent_signs_at_roots_R p qs = snd (snd (calculate_data_R p qs))"
   by (simp add: case_prod_beta find_consistent_signs_at_roots_R_def)
+
 
 end

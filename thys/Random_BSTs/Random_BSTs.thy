@@ -126,13 +126,13 @@ lemma size_bst_of_list_distinct [simp]:
   using assms by (induction xs rule: rev_induct) (auto simp: size_bst_insert)
 
 lemma strict_mono_on_imp_less_iff:
-  assumes "strict_mono_on f A" "x \<in> A" "y \<in> A"
+  assumes "strict_mono_on A f" "x \<in> A" "y \<in> A"
   shows   "f x < (f y :: 'b :: linorder) \<longleftrightarrow> x < (y :: 'a :: linorder)"
   using assms by (cases x y rule: linorder_cases; force simp: strict_mono_on_def)+
 
 lemma bst_of_list_map: 
   fixes f :: "'a :: linorder \<Rightarrow> 'b :: linorder"
-  assumes "strict_mono_on f A" "set xs \<subseteq> A"
+  assumes "strict_mono_on A f" "set xs \<subseteq> A"
   shows   "bst_of_list (map f xs) = map_tree f (bst_of_list xs)"
   using assms
 proof (induction xs rule: bst_of_list.induct)
@@ -269,7 +269,7 @@ proof -
 qed
 
 lemma random_bst_image:
-  assumes "finite A" "strict_mono_on f A"
+  assumes "finite A" "strict_mono_on A f"
   shows   "random_bst (f ` A) = map_pmf (map_tree f) (random_bst A)"
 proof -
   from assms(2) have inj: "inj_on f A" by (rule strict_mono_on_imp_inj_on)
@@ -281,7 +281,7 @@ proof -
                   pmf.map_comp o_def)
   also have "\<dots> = map_pmf (map_tree f) (random_bst A)"
     unfolding random_bst_altdef[OF \<open>finite A\<close>] pmf.map_comp o_def using assms
-    by (intro map_pmf_cong refl bst_of_list_map[of f A]) (auto dest: permutations_of_setD)
+    by (intro map_pmf_cong refl bst_of_list_map[of A f]) (auto dest: permutations_of_setD)
   finally show ?thesis .
 qed
 
@@ -568,7 +568,7 @@ proof -
                   \<le> real ((card A + 3) choose 3) / 4" .
   hence "log 2 (2 powr measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)) \<le>
            log 2 (real ((card A + 3) choose 3) / 4)" (is "?lhs \<le> ?rhs")
-    by (subst log_le_cancel_iff) (auto simp: )
+    by (subst log_le_cancel_iff) auto
   also have "?lhs = measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t) - 1)"
     by simp
   also have "\<dots> = measure_pmf.expectation (random_bst A) (\<lambda>t. real (height t)) - 1"

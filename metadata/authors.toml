@@ -1466,6 +1466,7 @@ dyckhoff_homepage = "https://rd.host.cs.st-andrews.ac.uk"
 
 [eberl]
 name = "Manuel Eberl"
+orcid = "0000-0002-4263-6571"
 
 [eberl.emails]
 
@@ -1998,6 +1999,7 @@ gomes_homepage = "http://www.dcs.shef.ac.uk/~victor"
 
 [gonzalez]
 name = "Edgar Gonzàlez"
+orcid = "0000-0002-9169-0769"
 
 [gonzalez.emails]
 
@@ -2985,6 +2987,7 @@ kappelmann_homepage = "https://www21.in.tum.de/team/kappelmk/"
 
 [karayel]
 name = "Emin Karayel"
+orcid = "0000-0003-3290-5034"
 
 [karayel.emails]
 
@@ -2995,15 +2998,6 @@ user = [
 host = [
   "eminkarayel",
   "de",
-]
-
-[karayel.emails.karayel_email1]
-user = [
-  "eminkarayel",
-]
-host = [
-  "google",
-  "com",
 ]
 
 [karayel.homepages]
@@ -3403,6 +3397,24 @@ host = [
 ]
 
 [langenstein.homepages]
+
+[laursen]
+name = "Christian Pardillo-Laursen"
+
+[laursen.emails]
+
+[laursen.emails.laursen_email]
+user = [
+  "christian",
+  "laursen",
+]
+host = [
+  "york",
+  "ac",
+  "uk",
+]
+
+[laursen.homepages]
 
 [lattuada]
 name = "Andrea Lattuada"
@@ -4031,15 +4043,6 @@ name = "Mihails Milehins"
 
 [milehins.emails.milehins_email]
 user = [
-  "user9716869",
-]
-host = [
-  "gmail",
-  "com",
-]
-
-[milehins.emails.milehins_email1]
-user = [
   "mihailsmilehins",
 ]
 host = [
@@ -4370,6 +4373,7 @@ host = [
 
 [nipkow]
 name = "Tobias Nipkow"
+orcid = "0000-0003-0730-515X"
 
 [nipkow.emails]
 
@@ -4384,7 +4388,7 @@ host = [
 ]
 
 [nipkow.homepages]
-nipkow_homepage = "https://www21.in.tum.de/~nipkow/"
+nipkow_homepage = "https://www.in.tum.de/~nipkow/"
 
 [nishihara]
 name = "Toshiaki Nishihara"
@@ -5014,6 +5018,27 @@ name = "Rodrigo Raya"
 
 [raya.homepages]
 raya_homepage = "https://people.epfl.ch/rodrigo.raya"
+
+[regensburger]
+name = "Franz Regensburger"
+
+[regensburger.emails]
+
+[regensburger.emails.regensburger_email]
+user = [
+  "Franz",
+  "Regensburger",
+]
+host = [
+  "thi",
+  "de"
+]
+
+[regensburger.homepages]
+regensburger_homepage = "https://www.thi.de/suche/mitarbeiter/prof-dr-rer-nat-franz-regensburger"
+
+
+
 
 [reiche]
 name = "Sebastian Reiche"
@@ -6621,15 +6646,15 @@ name = "Makarius Wenzel"
 
 [wenzel.emails.wenzel_email]
 user = [
-  "Makarius",
-  "wenzel",
+  "makarius",
 ]
 host = [
-  "lri",
-  "fr",
+  "sketis",
+  "net",
 ]
 
 [wenzel.homepages]
+wenzel_homepage = "https://sketis.net"
 
 [wickerson]
 name = "John Wickerson"

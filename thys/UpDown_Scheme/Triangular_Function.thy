@@ -93,7 +93,7 @@ proof (induct p)
   have "integrable lborel (\<lambda>x. indicator {real_of_int (i - 1) / 2^(l + 1) .. real_of_int (i + 1) / 2^(l + 1)} x *\<^sub>R \<phi> (l, i) x)"
     unfolding \<phi>_def by (intro borel_integrable_compact) (auto intro!: continuous_intros)
   then show ?case
-    by (rule integrable_cong[THEN iffD1, rotated -1]) (auto simp: \<phi>_zero_iff)
+    by (rule Bochner_Integration.integrable_cong[THEN iffD1, rotated -1]) (auto simp: \<phi>_zero_iff)
 qed
 
 lemma integrable_\<phi>2: "integrable lborel (\<lambda>x. \<phi> p x * \<phi> q x)"
@@ -103,7 +103,7 @@ proof (cases p q rule: prod.exhaust[case_product prod.exhaust])
       (\<lambda>x. indicator {real_of_int (i - 1) / 2^(l + 1) .. real_of_int (i + 1) / 2^(l + 1)} x *\<^sub>R (\<phi> (l, i) x * \<phi> (l', i') x))"
     unfolding \<phi>_def by (intro borel_integrable_compact) (auto intro!: continuous_intros)
   then show ?thesis unfolding Pair_Pair
-    by (rule integrable_cong[THEN iffD1, rotated -1]) (auto simp: \<phi>_zero_iff)
+    by (rule Bochner_Integration.integrable_cong[THEN iffD1, rotated -1]) (auto simp: \<phi>_zero_iff)
 qed
 
 lemma l2_\<phi>I_DERIV:

@@ -26,6 +26,9 @@ homepage = "nipkow_homepage"
 [notify]
 nipkow = "nipkow_email"
 
+[related]
+dois = ["10.1007/11814771_4", "10.1007/978-3-642-22863-6_21", "10.1007/s00454-009-9148-4", "10.1017/fmp.2017.1"]
+
 [history]
 2010-11-02 = "modified theories to reflect the modified definition of tameness in Hales' revised proof.<br>"
 2014-07-03 = "modified constants in def of tameness and Archive according to the final state of the Flyspeck proof."

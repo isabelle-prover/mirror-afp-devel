@@ -120,13 +120,13 @@ proof -
     and n: "n < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>"
     and m: "enat m < llength E'"
     and a: "enat a = (\<Sum>i<m. llength (lnth (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E') i)) + enat n"
-    by(simp_all add: lnth_llist_of)
+    by(simp_all)
   note a
   also have "(\<Sum>i<m. llength (lnth (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E') i)) = 
             sum (enat \<circ> (\<lambda>i. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)) {..<m}"
     using m by(simp add: less_trans[where y="enat m"] split_beta)
   also have "\<dots> = enat (\<Sum>i<m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-    by(subst sum_hom)(simp_all add: zero_enat_def)
+    by(subst sum_comp_morphism)(simp_all add: zero_enat_def)
   finally have a: "a = (\<Sum>i<m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) + n" by simp
   with E_a n m show thesis using \<open>lnth E' m = (t, ta)\<close> by(rule that)
 qed
@@ -655,7 +655,7 @@ proof(rule thread_start_actions_okI)
             (\<Sum>i<k. (enat \<circ> (\<lambda>i. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)) i)"
         by(rule sum.cong)(simp_all add: less_trans[where y="enat k"] split_beta k)
       also have "\<dots> = enat (\<Sum>i<k. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-        by(rule sum_hom)(simp_all add: zero_enat_def)
+        by(rule sum_comp_morphism)(simp_all add: zero_enat_def)
       finally have i_conv: "?i' = (\<Sum>i<k. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) + l" using i_conv by simp
 
       have [simp]: "i = k"
@@ -1924,7 +1924,7 @@ proof -
     unfolding E E' by(simp add: ltake_lappend2 lmap_lappend_distrib non_speculative_lappend)
   also note ra_conv also note plus_enat_simps(1)[symmetric]
   also have "enat (\<Sum>i<ra_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) = (\<Sum>i<ra_m. enat (length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>))"
-    by(subst sum_hom[symmetric])(simp_all add: zero_enat_def)
+    by(subst sum_comp_morphism[symmetric])(simp_all add: zero_enat_def)
   also have "\<dots> = (\<Sum>i<ra_m. llength (lnth (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E') i))"
     using ra_m by-(rule sum.cong[OF refl], simp add: le_less_trans[where y="enat ra_m"] split_beta)
   also note ltake_plus_conv_lappend also note lconcat_ltake[symmetric]
@@ -1993,7 +1993,7 @@ proof -
       unfolding \<open>list_of (ltake (enat ra_m) E') = ttas' @ (t', ta') # ttas''\<close>[symmetric]
       by(simp add: ltake_lmap[symmetric] lconcat_ltake del: ltake_lmap)
     also have "\<dots> = enat (\<Sum>i<ra_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)" using ra_m
-      by(subst sum_hom[symmetric, where f="enat"])(auto intro: sum.cong simp add: zero_enat_def less_trans[where y="enat ra_m"] split_beta)
+      by(subst sum_comp_morphism[symmetric, where h="enat"])(auto intro: sum.cong simp add: zero_enat_def less_trans[where y="enat ra_m"] split_beta)
     also have "\<dots> \<le> enat (ra - ?n)" unfolding ra_conv by simp
     finally have enat_length: "enat (length (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) ttas')) + length obs) < enat (ra - length (lift_start_obs start_tid start_heap_obs))" .
     then have wa_ra: "?wa < ra" by simp
@@ -2240,7 +2240,7 @@ proof -
 
       note this(2) also from r_m
       have r_m_sum_len_eq: "(\<Sum>i<r_m. llength (lnth (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E') i)) = enat (\<Sum>i<r_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)"
-        by(subst sum_hom[symmetric, where f=enat])(auto simp add: zero_enat_def split_def less_trans[where y="enat r_m"] intro: sum.cong)
+        by(subst sum_comp_morphism[symmetric, where h=enat])(auto simp add: zero_enat_def split_def less_trans[where y="enat r_m"] intro: sum.cong)
       hence "ltake (enat (?r - ?n)) E'' = 
             lappend (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?r_m_E')) 
                     (ltake (enat r_n) (ldrop (enat (\<Sum>i<r_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>)) E''))"
@@ -2281,7 +2281,7 @@ proof -
         and "P \<turnstile> (?E_sc, ws_sc) \<surd>" unfolding start_heap_obs_def[symmetric] by iprover
       moreover {
         have enat_sum_r_m_eq: "enat (\<Sum>i<r_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) = llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?r_m_E'))"
-          by(auto intro: sum.cong simp add: less_trans[OF _ r_m] lnth_ltake llength_lconcat_lfinite_conv_sum sum_hom[symmetric, where f=enat] zero_enat_def[symmetric] split_beta)
+          by(auto intro: sum.cong simp add: less_trans[OF _ r_m] lnth_ltake llength_lconcat_lfinite_conv_sum sum_comp_morphism[symmetric, where h=enat] zero_enat_def[symmetric] split_beta)
         also have "\<dots> \<le> llength E''" unfolding E'
           by(blast intro: lprefix_llength_le lprefix_lconcatI lmap_lprefix)
         finally have r_m_E: "ltake (enat (?n + (\<Sum>i<r_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>))) E = ltake (enat (?n + (\<Sum>i<r_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>))) ?E_sc"
@@ -2596,7 +2596,7 @@ proof -
         from r_conv r_m
         have r_conv3: "llength (lconcat (lmap (\<lambda>x. llist_of (map (Pair (fst x)) \<lbrace>snd x\<rbrace>\<^bsub>o\<^esub>)) (ltake (enat r_m) E'))) = enat (r - Suc (length start_heap_obs) - r_n)" 
           apply(simp add: llength_lconcat_lfinite_conv_sum lnth_ltake cong: sum.cong_simp conj_cong)
-          apply(auto simp add: sum_hom[where f=enat, symmetric] zero_enat_def less_trans[where y="enat r_m"] intro: sum.cong)
+          apply(auto simp add: sum_comp_morphism[where h=enat, symmetric] zero_enat_def less_trans[where y="enat r_m"] intro: sum.cong)
           done            
 
         have is_ws: "is_write_seen P EE ws"

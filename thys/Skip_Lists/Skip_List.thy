@@ -659,7 +659,7 @@ lemma lsteps_comp_map: "lsteps zs (f \<circ> g) l u v = lsteps (map g zs) f l u 
   by (induction zs "f \<circ> g" l u v rule: lsteps.induct) (auto simp add: lsteps.simps)
 
 lemma steps_image:
-  assumes "finite A" "mono_on g A" "inj_on g A"
+  assumes "finite A" "mono_on A g" "inj_on g A"
   shows "steps A (f \<circ> g) l u v = steps (g ` A) f l u v"
 proof -
   have "(sorted_list_of_set (g ` A)) = map g (sorted_list_of_set A)"

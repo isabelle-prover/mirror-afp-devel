@@ -10896,8 +10896,8 @@ proof (intro rel_funI, goal_cases)
         unfolding echelon_form_of_column_k_JNF_def using True xa not_c1 by auto
       moreover have "echelon_form_of_column_k bezout ya k = (A',i'+1)"
         unfolding echelon_form_of_column_k_def Let_def using ya ii' * True c1_eq c2_eq not_c1 by auto
-      ultimately show ?thesis unfolding xa ya rel_prod.simps using AA' ii' bb' i_le_m
-        by (metis Mod_Type_Connect.dim_row_transfer_rule le_neq_implies_less le_simps(3) not_c1 semiring_norm(175))      
+      ultimately show ?thesis unfolding xa ya rel_prod.simps using AA' ii' bb' i_le_m im'
+        by auto
     next
       case False
       hence *: "\<not> (\<forall>m>?from_nat_rows i. A' $ m $ ?from_nat_cols k = 0)" using * by auto

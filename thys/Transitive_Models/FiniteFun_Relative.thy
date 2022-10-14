@@ -38,33 +38,77 @@ definition
   seqspace :: "[i,i] \<Rightarrow> i" (\<open>_\<^bsup><_\<^esup>\<close> [100,1]100) where
   "B\<^bsup><\<alpha>\<^esup> \<equiv> \<Union>n\<in>\<alpha>. (n\<rightarrow>B)"
 
-schematic_goal seqspace_fm_auto:
-  assumes
-    "i \<in> nat" "j \<in> nat" "h\<in>nat" "env \<in> list(A)"
-  shows
-    "(\<exists>om\<in>A. omega(##A,om) \<and> nth(i,env) \<in> om \<and> is_funspace(##A, nth(i,env), nth(h,env), nth(j,env))) \<longleftrightarrow> (A, env \<Turnstile> (?sqsprp(i,j,h)))"
-  unfolding is_funspace_def
-  by (insert assms ; (rule iff_sats | simp)+)
-
-synthesize "seqspace_rel" from_schematic "seqspace_fm_auto"
-arity_theorem for "seqspace_rel_fm"
-
 lemma seqspaceI[intro]: "n\<in>\<alpha> \<Longrightarrow> f:n\<rightarrow>B \<Longrightarrow> f\<in>B\<^bsup><\<alpha>\<^esup>"
   unfolding seqspace_def by blast
 
 lemma seqspaceD[dest]: "f\<in>B\<^bsup><\<alpha>\<^esup> \<Longrightarrow> \<exists>n\<in>\<alpha>. f:n\<rightarrow>B"
   unfolding seqspace_def by blast
 
-locale M_seqspace =  M_trancl + M_replacement +
+locale M_pre_seqspace =  M_trancl + M_replacement + M_Pi
+begin
+
+lemma function_space_subset_Pow_rel:
+  assumes "n\<in>\<omega>" "M(B)"
+  shows "n\<rightarrow>B \<subseteq> Pow\<^bsup>M\<^esup>(\<Union>(\<omega>\<rightarrow>\<^bsup>M\<^esup>B))"
+proof -
+  {
+    fix f p
+    assume "f \<subseteq> n \<times> B" "p \<in> f"
+    with assms
+    obtain x y where "p =\<langle>x,y\<rangle>" "x\<in>n" "y\<in>B" by auto
+    with assms
+    have "p \<in> (\<lambda>_\<in>\<omega>. y)"
+      using Ord_trans[of _ _ \<omega>] lam_constant_eq_cartprod by simp
+    moreover
+    note assms and \<open>y\<in>B\<close>
+    moreover from this
+    have "M(\<lambda>_\<in>\<omega>. y)" using lam_constant_eq_cartprod by (auto dest:transM)
+    moreover from calculation
+    have "(\<lambda>_\<in>\<omega>. y) : \<omega> \<rightarrow>\<^bsup>M\<^esup> B"
+      using mem_function_space_rel_abs[of \<omega> B, THEN iffD2]
+      by simp
+    ultimately
+    have "\<exists>B\<in>\<omega> \<rightarrow>\<^bsup>M\<^esup> B. p \<in> B"
+      by (rule_tac x="\<lambda>_\<in>\<omega>. y" in bexI)
+  }
+  with assms
+  show ?thesis
+    by (auto dest:transM intro!:mem_Pow_rel_abs[THEN iffD2])
+      (unfold Pi_def, auto)
+qed
+
+lemma seqspace_subset_Pow_rel:
+  assumes "M(B)"
+  shows "B\<^bsup><\<omega>\<^esup> \<subseteq> Pow\<^bsup>M\<^esup>(\<Union>(\<omega>\<rightarrow>\<^bsup>M\<^esup>B))"
+  using assms function_space_subset_Pow_rel unfolding seqspace_def
+  by auto
+
+lemma seqspace_imp_M:
+  assumes "x \<in> B\<^bsup><\<omega>\<^esup>" "M(B)"
+  shows "M(x)"
+  using assms seqspace_subset_Pow_rel
+  by (auto dest:transM)
+
+lemma seqspace_eq_Collect:
+  assumes "M(B)"
+  shows "B\<^bsup><\<omega>\<^esup> = {z \<in> Pow\<^bsup>M\<^esup>(\<Union>(\<omega>\<rightarrow>\<^bsup>M\<^esup>B)). \<exists>x[M]. \<exists>n[M]. n \<in> \<omega> \<and> z \<in> x \<and> x = n \<rightarrow>\<^bsup>M\<^esup> B}"
+  using assms seqspace_subset_Pow_rel nat_into_M seqspace_imp_M
+    transM[OF _ finite_funspace_closed, of _ _ B] function_space_rel_char
+  by (intro equalityI) (auto dest:transM dest!:seqspaceD)
+
+end \<comment> \<open>\<^locale>\<open>M_pre_seqspace\<close>\<close>
+
+locale M_seqspace =  M_pre_seqspace +
   assumes
-    seqspace_replacement: "M(B) \<Longrightarrow> strong_replacement(M,\<lambda>n z. n\<in>nat \<and> is_funspace(M,n,B,z))"
+    seqspace_separation: "M(B) \<Longrightarrow> separation(M,\<lambda>z. \<exists>x[M]. \<exists>n[M]. n \<in> \<omega> \<and> z \<in> x \<and> x = n \<rightarrow>\<^bsup>M\<^esup> B)"
 begin
 
 lemma seqspace_closed:
   "M(B) \<Longrightarrow> M(B\<^bsup><\<omega>\<^esup>)"
-  unfolding seqspace_def using seqspace_replacement[of B] RepFun_closed2
+  using seqspace_eq_Collect using seqspace_separation
   by simp
-end
+
+end \<comment> \<open>\<^locale>\<open>M_seqspace\<close>\<close>
 
 subsection\<open>Representation of finite functions\<close>
 
@@ -77,14 +121,6 @@ closed under $\_\to_{\mathit{fin}}\_$.\<close>
 text\<open>A function $g\in n\to A\times B$ that is functional in the first components.\<close>
 definition cons_like :: "i \<Rightarrow> o" where
   "cons_like(f) \<equiv> \<forall> i\<in>domain(f) . \<forall>j\<in>i . fst(f`i) \<noteq> fst(f`j)"
-
-relativize "cons_like" "cons_like_rel"
-
-lemma (in M_seqspace) cons_like_abs:
-  "M(f) \<Longrightarrow> cons_like(f) \<longleftrightarrow> cons_like_rel(M,f)"
-  unfolding cons_like_def cons_like_rel_def
-  using fst_abs
-  by simp
 
 definition FiniteFun_iso :: "[i,i,i,i,i] \<Rightarrow> o" where
   "FiniteFun_iso(A,B,n,g,f) \<equiv>  (\<forall> i\<in>n . g`i \<in> f) \<and> (\<forall> ab\<in>f. (\<exists> i\<in>n. g`i=ab))"
@@ -99,13 +135,19 @@ definition FiniteFun_Repr :: "[i,i] \<Rightarrow> i" where
 
 locale M_FiniteFun =  M_seqspace +
   assumes
-    cons_like_separation : "separation(M,\<lambda>f. cons_like_rel(M,f))"
-    and
     separation_is_function : "separation(M, is_function(M))"
 begin
 
+lemma cons_like_separation : "separation(M,\<lambda>f. cons_like(f))"
+  unfolding cons_like_def
+  using lam_replacement_identity lam_replacement_domain lam_replacement_snd
+    lam_replacement_hcomp[OF _ lam_replacement_snd ]
+    lam_replacement_hcomp[OF _ lam_replacement_fst]
+    separation_eq lam_replacement_apply2[THEN [5] lam_replacement_hcomp2] separation_neg
+  by(rule_tac separation_all,auto,rule_tac separation_all,auto)
+
 lemma supset_separation: "separation(M, \<lambda> x. \<exists>a. \<exists>b. x = \<langle>a,b\<rangle> \<and> b \<subseteq> a)"
-  using separation_pair separation_subset lam_replacement_fst lam_replacement_snd
+  using separation_Pair separation_subset lam_replacement_fst lam_replacement_snd
   by simp
 
 lemma to_finiteFun_replacement: "strong_replacement(M, \<lambda>x y. y = range(x))"
@@ -393,7 +435,7 @@ lemma FiniteFun_Repr_closed :
   shows "M(FiniteFun_Repr(A,B))"
   unfolding FiniteFun_Repr_def
   using assms cartprod_closed
-    seqspace_closed separation_closed cons_like_abs cons_like_separation
+    seqspace_closed separation_closed cons_like_separation
   by simp
 
 lemma to_FiniteFun_closed:

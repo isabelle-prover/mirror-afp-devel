@@ -36,7 +36,7 @@ lemma del_has_vector_derivative[derivative_intros]: "(\<tau> has_vector_derivati
                                                              
 lemma del_has_real_derivative[derivative_intros]: "(\<tau> has_real_derivative \<tau>' t) (at t within u)"
   using del_has_vector_derivative
-  by (simp add:has_field_derivative_iff_has_vector_derivative)
+  by (simp add:has_real_derivative_iff_has_vector_derivative)
 
 lemma delay_image: "\<tau> ` {\<delta>..} = {0..}"
 proof (rule subset_antisym, unfold image_def, unfold \<tau>_def)
@@ -85,7 +85,7 @@ lemma s_delayed_has_vector_derivative' [derivative_intros]:
   assumes "\<delta> \<le> t"
   shows "((ego2.s \<circ> \<tau>) has_vector_derivative (ego2.s' \<circ> \<tau>) t) (at t within {\<delta>..})"
   using s_delayed_has_real_derivative'[OF assms]
-  by (simp add:has_field_derivative_iff_has_vector_derivative)
+  by (simp add:has_real_derivative_iff_has_vector_derivative)
   
 definition u :: "real \<Rightarrow> real" where
   "u t = (     if t \<le> 0 then s\<^sub>e
@@ -126,7 +126,7 @@ proof -
   have temp: "((\<lambda>t. if t \<in> {0 .. \<delta>} then ego.q t else (ego2.s \<circ> \<tau>) t) has_real_derivative
     (if t \<in> {0..\<delta>} then ego.q' t else (ego2.s' \<circ> \<tau>) t)) (at t within {0..})" (is "(?f1 has_real_derivative ?f2) (?net)")
     unfolding u_def[abs_def] u'_def 
-      has_field_derivative_iff_has_vector_derivative
+      has_real_derivative_iff_has_vector_derivative
     apply (rule has_vector_derivative_If_within_closures[where T = "{\<delta>..}"])
     using \<open>0 \<le> \<delta>\<close> q_delta q'_delta ego.s_has_vector_derivative[OF assms] ego.decel ego.t_stop_nonneg 
     s_delayed_has_vector_derivative'[of "t"] \<tau>_def
@@ -134,7 +134,7 @@ proof -
     by (auto simp: assms  max_def insert_absorb   
       intro!: ego.q_has_vector_derivative)
   show ?thesis
-    unfolding has_vector_derivative_def has_field_derivative_iff_has_vector_derivative
+    unfolding has_vector_derivative_def has_real_derivative_iff_has_vector_derivative
       u'_def u_def[abs_def] 
     proof (rule has_derivative_transform[where f="(\<lambda>t. if t \<in> {0..\<delta>} then ego.q t else (ego2.s \<circ> \<tau>) t)"])
       from nonneg_t show " t \<in> {0..}" by auto
@@ -146,7 +146,7 @@ proof -
          (if x \<in> {0..\<delta>} then ego.q x else (ego2.s \<circ> \<tau>) x)" using pos_react unfolding ego.q_def by auto
     next
       from temp have "(?f1 has_vector_derivative ?f2) ?net"
-      using has_field_derivative_iff_has_vector_derivative by auto      
+      using has_real_derivative_iff_has_vector_derivative by auto      
       moreover with assms have "t \<in> {0 .. \<delta>} \<longleftrightarrow> t \<le> \<delta>" by auto
       ultimately show " ((\<lambda>t. if t \<in> {0..\<delta>} then ego.q t else (ego2.s \<circ> \<tau>) t) has_derivative
               (\<lambda>x. x *\<^sub>R (if t \<le> \<delta> then ego2.q' t else ego2.s' (t - \<delta>)))) (at t within {0..})" 

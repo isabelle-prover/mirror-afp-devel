@@ -47,17 +47,28 @@ sig
   (* Normalizers *)
   val split_not_imp_th: thm -> thm list
   val split_conj_gen_th: Proof.context -> thm -> thm list
-  val eq_normalizer: Normalizer.normalizer
-  val property_normalizer: Normalizer.normalizer
-  val disj_normalizer: Normalizer.normalizer
+  val eq_normalizer: Normalizer_Type.normalizer
+  val property_normalizer: Normalizer_Type.normalizer
+  val disj_normalizer: Normalizer_Type.normalizer
   val logic_thm_update: Proof.context -> box_id * thm -> raw_update
   val add_disj_normalizers: theory -> theory
 end;
 
-structure Logic_ProofSteps : LOGIC_PROOFSTEPS =
+functor Logic_ProofSteps(
+  structure BoxItem: BOXITEM;
+  structure ItemIO: ITEM_IO;
+  structure Matcher: MATCHER;
+  structure Normalizer: NORMALIZER;
+  structure Property: PROPERTY;
+  structure ProofStepData: PROOFSTEP_DATA;
+  structure RewriteTable: REWRITE_TABLE;
+  structure UtilBase: UTIL_BASE;
+  structure UtilLogic: UTIL_LOGIC;
+  structure Update: UPDATE;
+  ): LOGIC_PROOFSTEPS =
 struct
 
-fun boolVar s = Var ((s, 0), boolT)
+fun boolVar s = Var ((s, 0), UtilBase.boolT)
 
 (* Shadowing based on equivalence. For both PROP and TERM items,
    shadowing is based on subterm equivalence, skipping any Not (~) at
@@ -76,8 +87,8 @@ fun shadow_item_fn ctxt item1 item2 =
       val (t1, t2) = (Thm.term_of tname1, Thm.term_of tname2)
 
       val (lhs, rhs) =
-          if fastype_of t1 = boolT andalso is_neg t1 andalso
-             fastype_of t2 = boolT andalso is_neg t2 then
+          if fastype_of t1 = UtilBase.boolT andalso UtilLogic.is_neg t1 andalso
+             fastype_of t2 = UtilBase.boolT andalso UtilLogic.is_neg t2 then
             (UtilLogic.get_cneg tname1, UtilLogic.get_cneg tname2)
           else
             (tname1, tname2)
@@ -149,14 +160,14 @@ val eq_abs_prfstep =
 fun exists_elim_fn ctxt {id, prop, ...} =
     if not (BoxID.has_incr_id id) then [] else
     let
-      val t = prop_of' prop
+      val t = UtilLogic.prop_of' prop
     in
-      if is_ex t orelse is_bex t orelse
-         (is_neg t andalso is_obj_all (dest_not t)) orelse
-         (is_neg t andalso is_ball (dest_not t)) then
+      if UtilLogic.is_ex t orelse UtilLogic.is_bex t orelse
+         (UtilLogic.is_neg t andalso UtilLogic.is_obj_all (UtilLogic.dest_not t)) orelse
+         (UtilLogic.is_neg t andalso UtilLogic.is_ball (UtilLogic.dest_not t)) then
         let
           val (ritems, th') =
-              prop |> apply_to_thm' (UtilLogic.normalize_exists ctxt)
+              prop |> UtilLogic.apply_to_thm' (UtilLogic.normalize_exists ctxt)
                    |> Update.apply_exists_ritems ctxt
         in
           [AddItems {id = id, sc = NONE,
@@ -171,7 +182,7 @@ val exists_elim_prfstep =
      func = OneStep exists_elim_fn}
 
 val add_logic_proofsteps =
-    fold add_prfstep [
+    fold ProofStepData.add_prfstep [
       shadow_prop_item, shadow_term_item, exists_elim_prfstep, eq_abs_prfstep
     ]
 
@@ -180,29 +191,29 @@ val add_logic_proofsteps =
  *)
 fun mk_all_disj (vars, terms) =
     case vars of
-        [] => list_disj terms
-      | var :: vars' => mk_obj_all var (mk_all_disj (vars', terms))
+        [] => UtilLogic.list_disj terms
+      | var :: vars' => UtilLogic.mk_obj_all var (mk_all_disj (vars', terms))
 
 (* Normalize t into a disjunction of terms. *)
 fun strip_disj t =
-    if is_disj t then
+    if UtilLogic.is_disj t then
       maps strip_disj [dest_arg1 t, dest_arg t]
-    else if is_imp t then
-      maps strip_disj [get_neg (dest_arg1 t), dest_arg t]
-    else if is_neg t then
+    else if UtilLogic.is_imp t then
+      maps strip_disj [UtilLogic.get_neg (dest_arg1 t), dest_arg t]
+    else if UtilLogic.is_neg t then
       let
-        val t' = dest_not t
+        val t' = UtilLogic.dest_not t
       in
-        if is_neg t' then strip_disj (dest_not t')
-        else if is_conj t' then
-          maps strip_disj [get_neg (dest_arg1 t'), get_neg (dest_arg t')]
+        if UtilLogic.is_neg t' then strip_disj (UtilLogic.dest_not t')
+        else if UtilLogic.is_conj t' then
+          maps strip_disj [UtilLogic.get_neg (dest_arg1 t'), UtilLogic.get_neg (dest_arg t')]
         else [t]
       end
     else [t]
 
 (* Normalize a term into the form !x_1 ... x_n. A_1 | ... | A_n *)
 fun strip_all_disj t =
-    if is_obj_all t then
+    if UtilLogic.is_obj_all t then
       case t of
           _ $ (u as Abs _) =>
           let
@@ -215,68 +226,68 @@ fun strip_all_disj t =
           end
         | f $ arg => strip_all_disj (f $ UtilLogic.force_abs_form arg)
         | _ => raise Fail "strip_all_disj"
-    else if is_ball t then
+    else if UtilLogic.is_ball t then
       case t of
           _ $ S $ (u as Abs _) =>
           let
             val (v, body) = Term.dest_abs_global u
             val var = Free v
-            val mem = mk_mem (var, S)
+            val mem = UtilLogic.mk_mem (var, S)
             val (vars, disjs) = strip_all_disj body
           in
-            (var :: vars, get_neg mem :: disjs)
+            (var :: vars, UtilLogic.get_neg mem :: disjs)
           end
         | f $ S $ arg => strip_all_disj (f $ S $ UtilLogic.force_abs_form arg)
         | _ => raise Fail "strip_all_disj"
-    else if is_neg t andalso is_ex (dest_not t) then
-      case dest_not t of
+    else if UtilLogic.is_neg t andalso UtilLogic.is_ex (UtilLogic.dest_not t) then
+      case UtilLogic.dest_not t of
           _ $ (u as Abs _) =>
           let
             val (v, body) = Term.dest_abs_global u
             val var = Free v
-            val (vars, disjs) = strip_all_disj (get_neg body)
+            val (vars, disjs) = strip_all_disj (UtilLogic.get_neg body)
           in
             if exists (Util.occurs_free var) disjs then (var :: vars, disjs)
             else (vars, disjs)
           end
-        | f $ arg => strip_all_disj (get_neg (f $ UtilLogic.force_abs_form arg))
+        | f $ arg => strip_all_disj (UtilLogic.get_neg (f $ UtilLogic.force_abs_form arg))
         | _ => raise Fail "strip_all_disj"
-    else if is_neg t andalso is_bex (dest_not t) then
-      case dest_not t of
+    else if UtilLogic.is_neg t andalso UtilLogic.is_bex (UtilLogic.dest_not t) then
+      case UtilLogic.dest_not t of
           _ $ S $ (u as Abs _) =>
           let
             val (v, body) = Term.dest_abs_global u
             val var = Free v
-            val mem = mk_mem (var, S)
-            val (vars, disjs) = strip_all_disj (get_neg body)
+            val mem = UtilLogic.mk_mem (var, S)
+            val (vars, disjs) = strip_all_disj (UtilLogic.get_neg body)
           in
-            (var :: vars, get_neg mem :: disjs)
+            (var :: vars, UtilLogic.get_neg mem :: disjs)
           end
-        | f $ S $ arg => strip_all_disj (get_neg (f $ S $ UtilLogic.force_abs_form arg))
+        | f $ S $ arg => strip_all_disj (UtilLogic.get_neg (f $ S $ UtilLogic.force_abs_form arg))
         | _ => raise Fail "strip_all_disj"
-    else if is_disj t then
+    else if UtilLogic.is_disj t then
       let
         val (v1, ts1) = strip_all_disj (dest_arg1 t)
         val (v2, ts2) = strip_all_disj (dest_arg t)
       in
         (v1 @ v2, ts1 @ ts2)
       end
-    else if is_imp t then
+    else if UtilLogic.is_imp t then
       let
-        val (v1, ts1) = strip_all_disj (get_neg (dest_arg1 t))
+        val (v1, ts1) = strip_all_disj (UtilLogic.get_neg (dest_arg1 t))
         val (v2, ts2) = strip_all_disj (dest_arg t)
       in
         (v1 @ v2, ts1 @ ts2)
       end
-    else if is_neg t then
+    else if UtilLogic.is_neg t then
       let
-        val t' = dest_not t
+        val t' = UtilLogic.dest_not t
       in
-        if is_neg t' then strip_all_disj (dest_not t')
-        else if is_conj t' then
+        if UtilLogic.is_neg t' then strip_all_disj (UtilLogic.dest_not t')
+        else if UtilLogic.is_conj t' then
           let
-            val (v1, ts1) = strip_all_disj (get_neg (dest_arg1 t'))
-            val (v2, ts2) = strip_all_disj (get_neg (dest_arg t'))
+            val (v1, ts1) = strip_all_disj (UtilLogic.get_neg (dest_arg1 t'))
+            val (v2, ts2) = strip_all_disj (UtilLogic.get_neg (dest_arg t'))
           in
             (v1 @ v2, ts1 @ ts2)
           end
@@ -289,8 +300,8 @@ fun norm_disj_clauses ct =
     let
       val (arg1, _) = Util.dest_binop_args (Thm.term_of ct)
     in
-      if is_disj arg1 then
-        Conv.every_conv [rewr_obj_eq UtilBase.disj_assoc_th,
+      if UtilLogic.is_disj arg1 then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.disj_assoc_th,
                          Conv.arg_conv norm_disj_clauses] ct
       else
         Conv.all_conv ct
@@ -300,16 +311,16 @@ fun norm_disj_clauses ct =
 fun norm_disj ct =
     let
       val t = Thm.term_of ct
-      val _ = assert (fastype_of t = boolT) "norm_disj: wrong type"
+      val _ = assert (fastype_of t = UtilBase.boolT) "norm_disj: wrong type"
     in
-      if is_disj t then
+      if UtilLogic.is_disj t then
         Conv.every_conv [Conv.binop_conv norm_disj, norm_disj_clauses] ct
-      else if is_imp t then
-        Conv.every_conv [rewr_obj_eq UtilBase.imp_conv_disj_th, norm_disj] ct
-      else if is_neg t andalso is_neg (dest_not t) then
-        Conv.every_conv [rewr_obj_eq UtilBase.nn_cancel_th, norm_disj] ct
-      else if is_neg t andalso is_conj (dest_not t) then
-        Conv.every_conv [rewr_obj_eq UtilBase.de_Morgan_conj_th, norm_disj] ct
+      else if UtilLogic.is_imp t then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.imp_conv_disj_th, norm_disj] ct
+      else if UtilLogic.is_neg t andalso UtilLogic.is_neg (UtilLogic.dest_not t) then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.nn_cancel_th, norm_disj] ct
+      else if UtilLogic.is_neg t andalso UtilLogic.is_conj (UtilLogic.dest_not t) then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.de_Morgan_conj_th, norm_disj] ct
       else
         Conv.all_conv ct
     end
@@ -319,42 +330,42 @@ fun norm_all_disj ctxt ct =
     let
       val t = Thm.term_of ct
     in
-      if is_obj_all t then
+      if UtilLogic.is_obj_all t then
         if not (Util.is_subterm (Bound 0) (dest_arg t)) then
-          Conv.every_conv [rewr_obj_eq UtilBase.all_trivial_th,
+          Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.all_trivial_th,
                            norm_all_disj ctxt] ct
         else
           Conv.every_conv [Conv.binder_conv (norm_all_disj o snd) ctxt] ct
-      else if is_ball t then
-        Conv.every_conv [rewr_obj_eq UtilBase.Ball_def_th, norm_all_disj ctxt] ct
-      else if is_neg t andalso is_ex (dest_not t) then
-        Conv.every_conv [rewr_obj_eq UtilBase.not_ex_th, norm_all_disj ctxt] ct
-      else if is_neg t andalso is_bex (dest_not t) then
+      else if UtilLogic.is_ball t then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.Ball_def_th, norm_all_disj ctxt] ct
+      else if UtilLogic.is_neg t andalso UtilLogic.is_ex (UtilLogic.dest_not t) then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.not_ex_th, norm_all_disj ctxt] ct
+      else if UtilLogic.is_neg t andalso UtilLogic.is_bex (UtilLogic.dest_not t) then
         Conv.every_conv [
-          Conv.arg_conv (rewr_obj_eq UtilBase.Bex_def_th), norm_all_disj ctxt] ct
-      else if is_disj t then
+          Conv.arg_conv (UtilLogic.rewr_obj_eq UtilBase.Bex_def_th), norm_all_disj ctxt] ct
+      else if UtilLogic.is_disj t then
         let
           val eq1 = Conv.binop_conv (norm_all_disj ctxt) ct
           val rhs = Util.rhs_of eq1
         in
-          if is_obj_all (dest_arg1 rhs) then
+          if UtilLogic.is_obj_all (dest_arg1 rhs) then
             Conv.every_conv [Conv.rewr_conv eq1,
-                             rewr_obj_eq UtilBase.disj_commute_th,
-                             rewr_obj_eq UtilBase.swap_all_disj_th,
+                             UtilLogic.rewr_obj_eq UtilBase.disj_commute_th,
+                             UtilLogic.rewr_obj_eq UtilBase.swap_all_disj_th,
                              norm_all_disj ctxt] ct
-          else if is_obj_all (dest_arg rhs) then
+          else if UtilLogic.is_obj_all (dest_arg rhs) then
             Conv.every_conv [Conv.rewr_conv eq1,
-                             rewr_obj_eq UtilBase.swap_all_disj_th,
+                             UtilLogic.rewr_obj_eq UtilBase.swap_all_disj_th,
                              norm_all_disj ctxt] ct
           else
             Conv.every_conv [Conv.rewr_conv eq1, norm_disj_clauses] ct
         end
-      else if is_imp t then
-        Conv.every_conv [rewr_obj_eq UtilBase.imp_conv_disj_th, norm_all_disj ctxt] ct
-      else if is_neg t andalso is_neg (dest_not t) then
-        Conv.every_conv [rewr_obj_eq UtilBase.nn_cancel_th, norm_all_disj ctxt] ct
-      else if is_neg t andalso is_conj (dest_not t) then
-        Conv.every_conv [rewr_obj_eq UtilBase.de_Morgan_conj_th, norm_all_disj ctxt] ct
+      else if UtilLogic.is_imp t then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.imp_conv_disj_th, norm_all_disj ctxt] ct
+      else if UtilLogic.is_neg t andalso UtilLogic.is_neg (UtilLogic.dest_not t) then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.nn_cancel_th, norm_all_disj ctxt] ct
+      else if UtilLogic.is_neg t andalso UtilLogic.is_conj (UtilLogic.dest_not t) then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.de_Morgan_conj_th, norm_all_disj ctxt] ct
       else
         Conv.all_conv ct
     end
@@ -367,34 +378,34 @@ fun mk_disj_eq eq_ths =
 
 (* Sort A | (B_1 | B_2 | ... | B_n), assuming the right side is sorted. *)
 fun sort_disj_clause_aux ct =
-    if not (is_disj (Thm.term_of ct)) then Conv.all_conv ct else
+    if not (UtilLogic.is_disj (Thm.term_of ct)) then Conv.all_conv ct else
     let
       val (arg1, arg2) = Util.dest_binop_args (Thm.term_of ct)
     in
-      if is_disj arg2 then
+      if UtilLogic.is_disj arg2 then
         if Term_Ord.term_ord (dest_arg1 arg2, arg1) = LESS then
-          Conv.every_conv [rewr_obj_eq (obj_sym UtilBase.disj_assoc_th),
-                           Conv.arg1_conv (rewr_obj_eq UtilBase.disj_commute_th),
-                           rewr_obj_eq UtilBase.disj_assoc_th,
+          Conv.every_conv [UtilLogic.rewr_obj_eq (UtilLogic.obj_sym UtilBase.disj_assoc_th),
+                           Conv.arg1_conv (UtilLogic.rewr_obj_eq UtilBase.disj_commute_th),
+                           UtilLogic.rewr_obj_eq UtilBase.disj_assoc_th,
                            Conv.arg_conv sort_disj_clause_aux] ct
         else
           Conv.all_conv ct
       else
         if Term_Ord.term_ord (arg2, arg1) = LESS then
-          rewr_obj_eq (obj_sym UtilBase.disj_commute_th) ct
+          UtilLogic.rewr_obj_eq (UtilLogic.obj_sym UtilBase.disj_commute_th) ct
         else
           Conv.all_conv ct
     end
 
 (* Sort A_1 | ... | A_n. *)
 fun sort_disj_clause ct =
-    if not (is_disj (Thm.term_of ct)) then Conv.all_conv ct
+    if not (UtilLogic.is_disj (Thm.term_of ct)) then Conv.all_conv ct
     else Conv.every_conv [Conv.arg_conv sort_disj_clause,
                           sort_disj_clause_aux] ct
 
 (* Apply cv on the body of !x y z. ... .*)
 fun forall_body_conv cv ctxt ct =
-    if is_obj_all (Thm.term_of ct) then
+    if UtilLogic.is_obj_all (Thm.term_of ct) then
       Conv.binder_conv (fn (_, ctxt) => forall_body_conv cv ctxt) ctxt ct
     else
       cv ct
@@ -406,7 +417,7 @@ fun norm_all_disj_sorted ctxt ct =
 fun abstract_eq ctxt var eq =
     let
       val (x, T) = Term.dest_Free var
-      val all_const = Const (UtilBase.All_name, (T --> boolT) --> boolT)
+      val all_const = Const (UtilBase.All_name, (T --> UtilBase.boolT) --> UtilBase.boolT)
     in
       Drule.arg_cong_rule (Thm.cterm_of ctxt all_const)
                           (Thm.abstract_rule x (Thm.cterm_of ctxt var) eq)
@@ -470,8 +481,8 @@ fun norm_conj_de_Morgan ct =
     let
       val t = Thm.term_of ct
     in
-      if is_neg t andalso is_disj (dest_not t) then
-        Conv.every_conv [rewr_obj_eq UtilBase.de_Morgan_disj_th,
+      if UtilLogic.is_neg t andalso UtilLogic.is_disj (UtilLogic.dest_not t) then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.de_Morgan_disj_th,
                          Conv.arg_conv norm_conj_de_Morgan] ct
       else
         Conv.all_conv ct
@@ -481,8 +492,8 @@ fun norm_conj_not_imp ct =
     let
       val t = Thm.term_of ct
     in
-      if is_neg t andalso is_imp (dest_not t) then
-        Conv.every_conv [rewr_obj_eq UtilBase.not_imp_th,
+      if UtilLogic.is_neg t andalso UtilLogic.is_imp (UtilLogic.dest_not t) then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.not_imp_th,
                          Conv.arg_conv norm_conj_not_imp] ct
       else
         Conv.all_conv ct
@@ -492,8 +503,8 @@ fun norm_nn_cancel ct =
     let
       val t = Thm.term_of ct
     in
-      if is_neg t andalso is_neg (dest_not t) then
-        Conv.every_conv [rewr_obj_eq UtilBase.nn_cancel_th,
+      if UtilLogic.is_neg t andalso UtilLogic.is_neg (UtilLogic.dest_not t) then
+        Conv.every_conv [UtilLogic.rewr_obj_eq UtilBase.nn_cancel_th,
                          norm_nn_cancel] ct
       else
         Conv.all_conv ct
@@ -502,13 +513,13 @@ fun norm_nn_cancel ct =
 fun norm_conj ct =
     let
       val t = Thm.term_of ct
-      val _ = assert (fastype_of t = boolT) "norm_conj: wrong type"
+      val _ = assert (fastype_of t = UtilBase.boolT) "norm_conj: wrong type"
     in
-      if is_neg t andalso is_neg (dest_not t) then
+      if UtilLogic.is_neg t andalso UtilLogic.is_neg (UtilLogic.dest_not t) then
         norm_nn_cancel ct
-      else if is_neg t andalso is_imp (dest_not t) then
+      else if UtilLogic.is_neg t andalso UtilLogic.is_imp (UtilLogic.dest_not t) then
         norm_conj_not_imp ct
-      else if is_neg t andalso is_disj (dest_not t) then
+      else if UtilLogic.is_neg t andalso UtilLogic.is_disj (UtilLogic.dest_not t) then
         norm_conj_de_Morgan ct
       else
         Conv.all_conv ct
@@ -523,21 +534,21 @@ val TY_DISJ = "DISJ"
  *)
 fun disj_to_ritems prem_only disj_head th =
     let
-      val subs = strip_disj (prop_of' th)
+      val subs = strip_disj (UtilLogic.prop_of' th)
     in
       if length subs = 1 then
         if Util.has_vars (Thm.prop_of th) then
           let
             fun th_to_ritem th =
                 Fact (TY_DISJ,
-                      UtilLogic.term_of_bool prem_only :: disj :: strip_disj (prop_of' th),
+                      UtilLogic.term_of_bool prem_only :: UtilLogic.disj :: strip_disj (UtilLogic.prop_of' th),
                       th)
           in
-            map th_to_ritem (th |> apply_to_thm' norm_conj
+            map th_to_ritem (th |> UtilLogic.apply_to_thm' norm_conj
                                 |> UtilLogic.split_conj_th)
           end
         else
-          [Fact (TY_PROP, [prop_of' th], th)]
+          [Fact (TY_PROP, [UtilLogic.prop_of' th], th)]
       else let
         val tname = UtilLogic.term_of_bool prem_only :: disj_head :: subs
       in
@@ -546,25 +557,25 @@ fun disj_to_ritems prem_only disj_head th =
     end
 
 fun disj_to_update prem_only disj_head (id, sc, th) =
-    if Thm.prop_of th aconv pFalse then
+    if Thm.prop_of th aconv UtilLogic.pFalse then
       ResolveBox {id = id, th = th}
     else
       AddItems {id = id, sc = sc,
                 raw_items = disj_to_ritems prem_only disj_head th}
 
 fun get_disj_head t =
-    if is_disj t then disj
-    else if is_imp t then get_disj_head (dest_arg t)
-    else if is_neg t andalso is_neg (dest_not t) then
-      get_disj_head (dest_not (dest_not t))
-    else if is_neg t andalso is_conj (dest_not t) then conj
-    else if is_obj_all t orelse is_ball t then
+    if UtilLogic.is_disj t then UtilLogic.disj
+    else if UtilLogic.is_imp t then get_disj_head (dest_arg t)
+    else if UtilLogic.is_neg t andalso UtilLogic.is_neg (UtilLogic.dest_not t) then
+      get_disj_head (UtilLogic.dest_not (UtilLogic.dest_not t))
+    else if UtilLogic.is_neg t andalso UtilLogic.is_conj (UtilLogic.dest_not t) then UtilLogic.conj
+    else if UtilLogic.is_obj_all t orelse UtilLogic.is_ball t then
       case dest_arg t of
           u as Abs _ => get_disj_head (snd (Term.dest_abs_global u))
-        | _ => imp
-    else if is_neg t andalso is_ex (dest_not t) then conj
-    else if is_neg t andalso is_bex (dest_not t) then conj
-    else imp
+        | _ => UtilLogic.imp
+    else if UtilLogic.is_neg t andalso UtilLogic.is_ex (UtilLogic.dest_not t) then UtilLogic.conj
+    else if UtilLogic.is_neg t andalso UtilLogic.is_bex (UtilLogic.dest_not t) then UtilLogic.conj
+    else UtilLogic.imp
 
 (* Given a theorem th, return equivalent theorem in disjunctive form,
    with possible schematic variables. Also return whether th is
@@ -573,9 +584,9 @@ fun get_disj_head t =
  *)
 fun analyze_disj_th ctxt th =
     let
-      val head = get_disj_head (prop_of' th)
-      val th' = th |> apply_to_thm' (norm_all_disj ctxt)
-                   |> apply_to_thm (UtilLogic.to_meta_conv ctxt)
+      val head = get_disj_head (UtilLogic.prop_of' th)
+      val th' = th |> UtilLogic.apply_to_thm' (norm_all_disj ctxt)
+                   |> Util.apply_to_thm (UtilLogic.to_meta_conv ctxt)
                    |> Util.forall_elim_sch
     in
       (head, th')
@@ -593,7 +604,7 @@ fun dest_tname_of_disj tname =
 fun is_match_prem_only {tname, ...} =
     UtilLogic.bool_of_term (Thm.term_of (hd tname))
 
-fun is_active_head disj_head = (not (disj_head aconv imp))
+fun is_active_head disj_head = (not (disj_head aconv UtilLogic.imp))
 
 fun disj_rewr_terms ts =
     if UtilLogic.bool_of_term (hd ts) then [] else drop 2 ts
@@ -603,13 +614,13 @@ fun output_disj_fn ctxt (ts, _) =
       val (match_prem, disj_head, subs) = (hd ts, hd (tl ts), tl (tl ts))
       val prefix = if UtilLogic.bool_of_term match_prem then "(match_prem) " else ""
     in
-      if disj_head aconv disj then
-        prefix ^ ((foldr1 mk_disj subs) |> Syntax.string_of_term ctxt)
-      else if disj_head aconv conj then
-        prefix ^ ((foldr1 mk_conj (map get_neg subs))
-                      |> get_neg |> Syntax.string_of_term ctxt)
-      else if disj_head aconv imp then
-        prefix ^ ((foldr1 mk_imp (subs |> split_last |> apfst (map get_neg)
+      if disj_head aconv UtilLogic.disj then
+        prefix ^ ((foldr1 UtilLogic.mk_disj subs) |> Syntax.string_of_term ctxt)
+      else if disj_head aconv UtilLogic.conj then
+        prefix ^ ((foldr1 UtilLogic.mk_conj (map UtilLogic.get_neg subs))
+                      |> UtilLogic.get_neg |> Syntax.string_of_term ctxt)
+      else if disj_head aconv UtilLogic.imp then
+        prefix ^ ((foldr1 UtilLogic.mk_imp (subs |> split_last |> apfst (map UtilLogic.get_neg)
                                        |> apsnd single |> (op @)))
                       |> Syntax.string_of_term ctxt)
       else
@@ -643,10 +654,10 @@ val disj_prop_matcher =
 
             fun process_inst (var_u, ((id', instsp'), eq_th)) =
                 let
-                  val eq_th' = make_trueprop_eq (meta_sym eq_th)
+                  val eq_th' = UtilLogic.make_trueprop_eq (meta_sym eq_th)
                   val forall_th =
                       th |> fold Thm.forall_intr (rev (map (Thm.cterm_of ctxt) var_u))
-                         |> apply_to_thm (UtilLogic.to_obj_conv ctxt)
+                         |> Util.apply_to_thm (UtilLogic.to_obj_conv ctxt)
                 in
                   ((id', instsp'), Thm.equal_elim eq_th' forall_th)
                 end
@@ -661,17 +672,17 @@ val disj_prop_matcher =
 
 (* Given ct in the form p_1 | ... | p_n, apply cv to each of p_i. *)
 fun ac_disj_conv cv ct =
-    if is_disj (Thm.term_of ct) then
+    if UtilLogic.is_disj (Thm.term_of ct) then
       Conv.every_conv [Conv.arg1_conv cv,
                        Conv.arg_conv (ac_disj_conv cv)] ct
     else cv ct
 
 (* Assume ct is a disjunction, associating to the right. *)
 fun reduce_disj_True ct =
-    if is_disj (Thm.term_of ct) then
-      ((rewr_obj_eq UtilBase.disj_True1_th)
+    if UtilLogic.is_disj (Thm.term_of ct) then
+      ((UtilLogic.rewr_obj_eq UtilBase.disj_True1_th)
            else_conv ((Conv.arg_conv reduce_disj_True)
-                          then_conv (rewr_obj_eq UtilBase.disj_True2_th))) ct
+                          then_conv (UtilLogic.rewr_obj_eq UtilBase.disj_True2_th))) ct
     else
       Conv.all_conv ct
 
@@ -686,7 +697,7 @@ fun match_prop ctxt (id, item2) pat =
       fun process_inst ((id, inst), th) =
           let
             (* Construct the theorem pat'(inst) == True. *)
-            val to_eqT_cv = (th RS UtilBase.eq_True_th) |> rewr_obj_eq |> Conv.try_conv
+            val to_eqT_cv = (th RS UtilBase.eq_True_th) |> UtilLogic.rewr_obj_eq |> Conv.try_conv
 
             (* Rewrite pat(inst) using the above, then rewrite to True. *)
             val pat_eqT =
@@ -694,7 +705,7 @@ fun match_prop ctxt (id, item2) pat =
                     |> Util.subst_thm ctxt inst
                     |> apply_to_rhs (ac_disj_conv to_eqT_cv)
                     |> apply_to_rhs reduce_disj_True
-                    |> to_obj_eq
+                    |> UtilLogic.to_obj_eq
             val patT = pat_eqT RS UtilBase.eq_True_inv_th
           in
             ((id, inst), patT)
@@ -716,10 +727,10 @@ fun match_prop ctxt (id, item2) pat =
    possible to leave one disjunct P un-cancelled.
  *)
 fun disj_cancel_cv ctxt th ct =
-    if is_disj (Thm.term_of ct) then
+    if UtilLogic.is_disj (Thm.term_of ct) then
       Conv.every_conv [Conv.arg_conv (disj_cancel_cv ctxt th),
-                       Conv.try_conv (rewr_obj_eq (th RS UtilBase.or_cancel1_th)),
-                       Conv.try_conv (rewr_obj_eq (th RS UtilBase.or_cancel2_th))] ct
+                       Conv.try_conv (UtilLogic.rewr_obj_eq (th RS UtilBase.or_cancel1_th)),
+                       Conv.try_conv (UtilLogic.rewr_obj_eq (th RS UtilBase.or_cancel2_th))] ct
     else
       Conv.all_conv ct
 
@@ -729,12 +740,12 @@ fun disj_cancel_cv ctxt th ct =
  *)
 fun disj_cancel_prop ctxt th prop =
     let
-      val th' = if is_neg (prop_of' th) then th
+      val th' = if UtilLogic.is_neg (UtilLogic.prop_of' th) then th
                 else th RS UtilBase.nn_create_th
-      val prop' = prop |> apply_to_thm' (disj_cancel_cv ctxt th')
-      val P = th' |> prop_of' |> dest_not
+      val prop' = prop |> UtilLogic.apply_to_thm' (disj_cancel_cv ctxt th')
+      val P = th' |> UtilLogic.prop_of' |> UtilLogic.dest_not
     in
-      if prop_of' prop' aconv P then
+      if UtilLogic.prop_of' prop' aconv P then
         [th', prop'] MRS UtilBase.contra_triv_th
       else prop'
     end
@@ -755,26 +766,26 @@ fun match_update_fn ctxt item1 item2 =
       val max_nvar = fold (curry Int.max) (map count_var subs) 0
 
       fun is_priority_term t =
-          if is_neg t then
-            exists (is_ex orf is_bex) (strip_conj (dest_not t))
+          if UtilLogic.is_neg t then
+            exists (UtilLogic.is_ex orf UtilLogic.is_bex) (UtilLogic.strip_conj (UtilLogic.dest_not t))
           else
-            exists (is_obj_all orf is_ball) (strip_disj t)
+            exists (UtilLogic.is_obj_all orf UtilLogic.is_ball) (strip_disj t)
 
-      val has_priority_term = exists is_priority_term (map get_neg subs)
+      val has_priority_term = exists is_priority_term (map UtilLogic.get_neg subs)
 
       val (NO_MATCH, SLOW_MATCH, YES_MATCH) = (0, 1, 2)
       (* Test whether to perform matching on pattern. *)
       fun test_do_match t =
           let
             val nvar = count_var t
-            val neg_t = get_neg t
+            val neg_t = UtilLogic.get_neg t
           in
             if not (Util.is_pattern t) then NO_MATCH
             else if length subs > 1 andalso
                     Property.is_property_prem thy neg_t then NO_MATCH
             else if has_priority_term andalso
                     not (is_priority_term neg_t) then SLOW_MATCH
-            else if is_mem neg_t andalso Term.is_Var (dest_arg1 neg_t) andalso
+            else if UtilLogic.is_mem neg_t andalso Term.is_Var (dest_arg1 neg_t) andalso
                     null (Term.add_frees (dest_arg neg_t) []) then SLOW_MATCH
             else if nvar = 0 orelse nvar = max_nvar then YES_MATCH
             else NO_MATCH
@@ -801,7 +812,7 @@ fun match_update_fn ctxt item1 item2 =
                 end
           in
             if do_match = NO_MATCH then []
-            else t |> get_neg |> match_prop ctxt (id, item2)
+            else t |> UtilLogic.get_neg |> match_prop ctxt (id, item2)
                    |> maps process_inst
           end
 
@@ -834,7 +845,7 @@ fun match_update_fn ctxt item1 item2 =
             val _ = assert (length subs >= 2)
             val ts = [hd subs, List.last subs]
           in
-            ts |> map get_neg |> map (match_prop ctxt (id, item2))
+            ts |> map UtilLogic.get_neg |> map (match_prop ctxt (id, item2))
                |> merge_matches
                |> maps process_inst
           end
@@ -877,10 +888,10 @@ fun match_one_sch_fn ctxt item1 item2 =
               fun inst_to_updt ((id', inst), _) =
                   let
                     val th1' = Util.subst_thm_thy thy inst th1
-                    val prop' = prop_of' th1'
+                    val prop' = UtilLogic.prop_of' th1'
                   in
-                    if is_eq_term prop' andalso
-                       RewriteTable.is_equiv_t id' ctxt (dest_eq prop')
+                    if UtilBase.is_eq_term prop' andalso
+                       RewriteTable.is_equiv_t id' ctxt (UtilBase.dest_eq prop')
                     then [] else [Update.thm_update (id', th1')]
                   end
             in
@@ -903,15 +914,15 @@ fun disj_match_iff_fn ctxt {id, tname, prop, ...} =
       val subs = map Thm.term_of csubs
     in
       if length subs > 1 then []
-      else if not (is_eq_term (the_single subs) andalso
-              fastype_of (dest_arg (the_single subs)) = boolT) then []
+      else if not (UtilBase.is_eq_term (the_single subs) andalso
+              fastype_of (dest_arg (the_single subs)) = UtilBase.boolT) then []
       else let
-        val cv = (UtilLogic.to_obj_conv ctxt) then_conv (Trueprop_conv norm_disj)
-        val forward = prop |> UtilLogic.equiv_forward_th |> apply_to_thm cv
-        val backward = prop |> UtilLogic.equiv_backward_th |> apply_to_thm cv
+        val cv = (UtilLogic.to_obj_conv ctxt) then_conv (UtilLogic.Trueprop_conv norm_disj)
+        val forward = prop |> UtilLogic.equiv_forward_th |> Util.apply_to_thm cv
+        val backward = prop |> UtilLogic.equiv_backward_th |> Util.apply_to_thm cv
       in
-        [disj_to_update false imp (id, NONE, forward),
-         disj_to_update false imp (id, NONE, backward)]
+        [disj_to_update false UtilLogic.imp (id, NONE, forward),
+         disj_to_update false UtilLogic.imp (id, NONE, backward)]
       end
     end
 
@@ -933,7 +944,7 @@ fun disj_create_case_fn _ {id, tname, ...} =
         val subs = map Thm.term_of csubs
       in
         [AddBoxes {id = id,
-                   sc = NONE, init_assum = mk_Trueprop (hd subs)}]
+                   sc = NONE, init_assum = UtilLogic.mk_Trueprop (hd subs)}]
       end
     end
 
@@ -974,7 +985,7 @@ val add_disj_proofsteps =
     ] #> fold ItemIO.add_prop_matcher [
       (TY_DISJ, disj_prop_matcher)
 
-    ] #> fold add_prfstep [
+    ] #> fold ProofStepData.add_prfstep [
       match_update_prfstep, match_one_sch_prfstep, disj_match_iff_prfstep,
       disj_create_case_prfstep, disj_shadow_prfstep
     ]
@@ -982,14 +993,14 @@ val add_disj_proofsteps =
 (* Normalizers *)
 
 fun split_not_imp_th th =
-    th |> apply_to_thm' norm_conj_not_imp
+    th |> UtilLogic.apply_to_thm' norm_conj_not_imp
        |> UtilLogic.split_conj_th
 
 (* Generalized form of splitting A & B. Also deal with cases ~(A | B)
    and ~(A --> B).
  *)
 fun split_conj_gen_th _ th =
-    th |> apply_to_thm' norm_conj
+    th |> UtilLogic.apply_to_thm' norm_conj
        |> UtilLogic.split_conj_th
 
 fun eq_normalizer _ ritem =
@@ -997,11 +1008,11 @@ fun eq_normalizer _ ritem =
         Handler _ => [ritem]
       | Fact (ty_str, _, th) =>
         if ty_str <> TY_PROP then [ritem]
-        else if is_eq_term (prop_of' th) then
+        else if UtilBase.is_eq_term (UtilLogic.prop_of' th) then
           let
-            val (lhs, rhs) = dest_eq (prop_of' th)
+            val (lhs, rhs) = UtilBase.dest_eq (UtilLogic.prop_of' th)
           in
-            if fastype_of lhs = boolT then
+            if fastype_of lhs = UtilBase.boolT then
               map Update.thm_to_ritem
                   (UtilLogic.split_conj_th (th RS UtilBase.iffD_th))
             else
@@ -1014,8 +1025,8 @@ fun property_normalizer _ ritem =
         Handler _ => [ritem]
       | Fact (ty_str, _, th) =>
         if ty_str <> TY_PROP then [ritem]
-        else if Property.is_property (prop_of' th) then
-          [Fact (TY_PROPERTY, [prop_of' th], th)]
+        else if Property.is_property (UtilLogic.prop_of' th) then
+          [Fact (TY_PROPERTY, [UtilLogic.prop_of' th], th)]
         else [ritem]
 
 fun disj_normalizer ctxt ritem =
@@ -1024,13 +1035,13 @@ fun disj_normalizer ctxt ritem =
       | Fact (ty_str, _, th) =>
         if ty_str <> TY_PROP then [ritem]
         else let
-          val t = prop_of' th
+          val t = UtilLogic.prop_of' th
         in
-          if is_neg t andalso is_conj (dest_not t) orelse
-             is_disj t orelse is_imp t orelse
-             is_obj_all t orelse is_ball t orelse
-             is_neg t andalso is_ex (dest_not t) orelse
-             is_neg t andalso is_bex (dest_not t)
+          if UtilLogic.is_neg t andalso UtilLogic.is_conj (UtilLogic.dest_not t) orelse
+             UtilLogic.is_disj t orelse UtilLogic.is_imp t orelse
+             UtilLogic.is_obj_all t orelse UtilLogic.is_ball t orelse
+             UtilLogic.is_neg t andalso UtilLogic.is_ex (UtilLogic.dest_not t) orelse
+             UtilLogic.is_neg t andalso UtilLogic.is_bex (UtilLogic.dest_not t)
           then
             let
               val (disj_head, disj_th) = analyze_disj_th ctxt th
@@ -1045,13 +1056,13 @@ fun disj_normalizer ctxt ritem =
 
 fun logic_thm_update ctxt (id, th) =
     let
-      val t = prop_of' th
+      val t = UtilLogic.prop_of' th
     in
-      if is_obj_all t orelse is_ball t orelse
-         is_neg t andalso is_ex (dest_not t) orelse
-         is_neg t andalso is_bex (dest_not t) orelse
-         is_disj t orelse is_imp t orelse
-         is_neg t andalso is_conj (dest_not t)
+      if UtilLogic.is_obj_all t orelse UtilLogic.is_ball t orelse
+         UtilLogic.is_neg t andalso UtilLogic.is_ex (UtilLogic.dest_not t) orelse
+         UtilLogic.is_neg t andalso UtilLogic.is_bex (UtilLogic.dest_not t) orelse
+         UtilLogic.is_disj t orelse UtilLogic.is_imp t orelse
+         UtilLogic.is_neg t andalso UtilLogic.is_conj (UtilLogic.dest_not t)
       then
         let
           val (disj_head, disj_th) = analyze_disj_th ctxt th
@@ -1074,8 +1085,3 @@ val add_disj_normalizers =
     ]
 
 end  (* structure Logic_ProofSteps. *)
-
-val _ = Theory.setup Logic_ProofSteps.add_logic_proofsteps
-val _ = Theory.setup Logic_ProofSteps.add_disj_proofsteps
-val _ = Theory.setup Logic_ProofSteps.add_disj_normalizers
-val TY_DISJ = Logic_ProofSteps.TY_DISJ

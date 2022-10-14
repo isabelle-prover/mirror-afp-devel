@@ -3,22 +3,17 @@ section \<open>Prover\<close>
 theory Prover imports "Abstract_Completeness.Abstract_Completeness" Encoding Fair_Stream begin
 
 function eff :: \<open>rule \<Rightarrow> sequent \<Rightarrow> (sequent fset) option\<close> where
-  \<open>eff Idle (A, B) =
-    Some {| (A, B) |}\<close>
-| \<open>eff (Axiom n ts) (A, B) = (if \<^bold>\<ddagger>n ts [\<in>] A \<and> \<^bold>\<ddagger>n ts [\<in>] B then
-    Some {||} else None)\<close>
-| \<open>eff FlsL (A, B) = (if \<^bold>\<bottom> [\<in>] A then
-    Some {||} else None)\<close>
-| \<open>eff FlsR (A, B) = (if \<^bold>\<bottom> [\<in>] B then
-    Some {| (A, B [\<div>] \<^bold>\<bottom>) |} else None)\<close>
+  \<open>eff Idle (A, B) = Some {| (A, B) |}\<close>
+| \<open>eff (Axiom P ts) (A, B) = (if \<^bold>\<ddagger>P ts [\<in>] A \<and> \<^bold>\<ddagger>P ts [\<in>] B then Some {||} else None)\<close>
+| \<open>eff FlsL (A, B) = (if \<^bold>\<bottom> [\<in>] A then Some {||} else None)\<close>
+| \<open>eff FlsR (A, B) = (if \<^bold>\<bottom> [\<in>] B then Some {| (A, B [\<div>] \<^bold>\<bottom>) |} else None)\<close>
 | \<open>eff (ImpL p q) (A, B) = (if (p \<^bold>\<longrightarrow> q) [\<in>] A then
     Some {| (A [\<div>] (p \<^bold>\<longrightarrow> q), p # B), (q # A [\<div>] (p \<^bold>\<longrightarrow> q), B) |} else None)\<close>
 | \<open>eff (ImpR p q) (A, B) = (if (p \<^bold>\<longrightarrow> q) [\<in>] B then
     Some {| (p # A, q # B [\<div>] (p \<^bold>\<longrightarrow> q)) |} else None)\<close>
-| \<open>eff (UniL t p) (A, B) = (if \<^bold>\<forall>p [\<in>] A then
-    Some {| (p\<langle>t/0\<rangle> # A, B) |} else None)\<close>
+| \<open>eff (UniL t p) (A, B) = (if \<^bold>\<forall>p [\<in>] A then Some {| (\<langle>t\<rangle>p # A, B) |} else None)\<close>
 | \<open>eff (UniR p) (A, B) = (if \<^bold>\<forall>p [\<in>] B then
-    Some {| (A, p\<langle>\<^bold>#(fresh (A @ B))/0\<rangle> # B [\<div>] \<^bold>\<forall>p) |} else None)\<close>
+    Some {| (A, \<langle>\<^bold>#(fresh (A @ B))\<rangle>p # B [\<div>] \<^bold>\<forall>p) |} else None)\<close>
   by pat_completeness auto
 termination by (relation \<open>measure size\<close>) standard
 

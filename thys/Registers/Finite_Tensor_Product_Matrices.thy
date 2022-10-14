@@ -128,7 +128,7 @@ definition "tensor_op_jnf A B =
    let c1 = dim_col A in
    let r2 = dim_row B in
    let c2 = dim_col B in
-   mat (r1*r2) (c1*c2)
+   mat (r1 * r2) (c1 * c2)
    (\<lambda>(i,j). let (i1,i2) = tensor_unpack r1 r2 i in
             let (j1,j2) = tensor_unpack c1 c2 j in
               (A $$ (i1,j1)) * (B $$ (i2,j2))))"

@@ -118,7 +118,7 @@ sig
   val get_new_terms: Proof.context * Proof.context -> (box_id * cterm) list
 end;
 
-structure RewriteTable : REWRITE_TABLE =
+functor RewriteTable(UtilLogic : UTIL_LOGIC) : REWRITE_TABLE =
 struct
 
 (*** Initialization and modification of rewrite table ***)
@@ -890,7 +890,7 @@ fun add_rewrite (id, eq_th) ctxt =
     let
       (* eq_th is meta-equality when between lambda terms. *)
       val meta_eq = if Util.is_meta_eq (Thm.prop_of eq_th) then eq_th
-                    else to_meta_eq eq_th
+                    else UtilLogic.to_meta_eq eq_th
       val (ct1, ct2) = meta_eq |> Thm.cprop_of |> Thm.dest_equals
     in
       if is_equiv id ctxt (ct1, ct2) then ([], ctxt)

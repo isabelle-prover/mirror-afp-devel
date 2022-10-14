@@ -41,7 +41,7 @@ where
 
 (** propa **)
 lemma (in Semilat) merges_incr_lemma:
- "\<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A) \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
+ "\<forall>xs. xs \<in> nlists n A \<longrightarrow> (\<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A) \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
   apply (induct ps)
    apply simp
    apply(insert orderI)
@@ -57,13 +57,13 @@ lemma (in Semilat) merges_incr_lemma:
 (*>*)
 
 lemma (in Semilat) merges_incr:
- "\<lbrakk> xs \<in> list n A; \<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A \<rbrakk> 
+ "\<lbrakk> xs \<in> nlists n A; \<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A \<rbrakk> 
   \<Longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
   by (simp add: merges_incr_lemma)
 
 
 lemma (in Semilat) merges_same_conv [rule_format]:
- "(\<forall>xs. xs \<in> list n A \<longrightarrow> (\<forall>(p,x)\<in>set ps. p<size xs \<and> x\<in>A) \<longrightarrow> 
+ "(\<forall>xs. xs \<in> nlists n A \<longrightarrow> (\<forall>(p,x)\<in>set ps. p<size xs \<and> x\<in>A) \<longrightarrow> 
      (merges f ps xs = xs) = (\<forall>(p,x)\<in>set ps. x \<sqsubseteq>\<^bsub>r\<^esub> xs!p))"
 (*<*)
   apply (induct_tac ps)
@@ -75,7 +75,7 @@ lemma (in Semilat) merges_same_conv [rule_format]:
     apply (subgoal_tac "xs[p := x \<squnion>\<^bsub>f\<^esub> xs!p] [\<sqsubseteq>\<^bsub>r\<^esub>] xs")
      apply (fastforce dest!: le_listD)  \<comment>\<open>apply (force dest!: le_listD simp add: nth_list_update) \<close>
     apply (erule subst, rule merges_incr)
-       apply (blast intro!: listE_set intro: closedD listE_length [THEN nth_in])
+       apply (blast intro!: nlistsE_set intro: closedD nlistsE_length [THEN nth_in])
       apply clarify
       apply (rule conjI)
        apply simp
@@ -113,7 +113,7 @@ lemma decomp_propa:
 
 lemma (in Semilat) stable_pres_lemma:
 shows "\<lbrakk>pres_type step n A; bounded step n; 
-     ss \<in> list n A; p \<in> w; \<forall>q\<in>w. q < n; 
+     ss \<in> nlists n A; p \<in> w; \<forall>q\<in>w. q < n; 
      \<forall>q. q < n \<longrightarrow> q \<notin> w \<longrightarrow> stable r step ss q; q < n; 
      \<forall>s'. (q,s') \<in> set (step p (ss!p)) \<longrightarrow> s' \<squnion>\<^bsub>f\<^esub> ss!q = ss!q; 
      q \<notin> w \<or> q = p \<rbrakk> 
@@ -125,7 +125,7 @@ shows "\<lbrakk>pres_type step n A; bounded step n;
    apply clarify
    apply (erule pres_typeD)
     prefer 3 apply assumption
-    apply (rule listE_nth_in)
+    apply (rule nlistsE_nth_in)
      apply assumption
     apply simp
    apply simp
@@ -166,9 +166,9 @@ apply assumption
     apply (rule pres_typeD)
        apply assumption
       prefer 3 apply assumption
-     apply (blast intro: listE_nth_in dest: boundedD)
+     apply (blast intro: nlistsE_nth_in dest: boundedD)
     apply (blast intro: pres_typeD dest: boundedD)
-   apply (blast intro: listE_nth_in dest: boundedD)
+   apply (blast intro: nlistsE_nth_in dest: boundedD)
   apply assumption
 
  apply simp
@@ -184,26 +184,26 @@ apply assumption
            apply assumption
           prefer 3 
           apply assumption
-         apply (blast intro: listE_nth_in)
+         apply (blast intro: nlistsE_nth_in)
         apply (blast)
-       apply (blast intro: listE_nth_in dest: boundedD)
+       apply (blast intro: nlistsE_nth_in dest: boundedD)
      prefer 4
   apply fastforce     
-    apply (blast intro: listE_nth_in dest: pres_typeD)
-   apply (blast intro: listE_nth_in dest: boundedD)
+    apply (blast intro: nlistsE_nth_in dest: pres_typeD)
+   apply (blast intro: nlistsE_nth_in dest: boundedD)
   apply(subgoal_tac "\<forall>(q,t) \<in> set (step p (ss!p)). q < n \<and> t \<in> A")
 
-   apply (subgoal_tac "merges f (step p (ss!p)) ss \<in> list n A")
+   apply (subgoal_tac "merges f (step p (ss!p)) ss \<in> nlists n A")
   defer
     apply (blast dest:merges_preserves_type)
    defer
    apply (subgoal_tac "a < n")
   defer
-    apply (blast intro: listE_nth_in  boundedD )
+    apply (blast intro: nlistsE_nth_in  boundedD )
    defer
   apply (subgoal_tac "merges f (step p (ss ! p)) ss ! a = 
       map snd (filter (\<lambda>(p', t'). p' = a) (step p (ss ! p))) \<Squnion>\<^bsub>f\<^esub> ss ! a")
-    apply (fastforce  dest: listE_nth_in ) (* slow *)
+    apply (fastforce  dest: nlistsE_nth_in ) (* slow *)
   apply (subgoal_tac "a < length ss")
     apply (fastforce dest:nth_merges)
    apply simp
@@ -211,14 +211,14 @@ apply assumption
   apply auto
   defer
    apply (auto intro:boundedD)
-  apply (fastforce intro: listE_nth_in dest:pres_typeD)
+  apply (fastforce intro: nlistsE_nth_in dest:pres_typeD)
   done
 (*>*)
 
 
 lemma (in Semilat) merges_bounded_lemma:
  "\<lbrakk> mono r step n A; bounded step n; pres_type step n A; 
-    \<forall>(p',s') \<in> set (step p (ss!p)). s' \<in> A; ss \<in> list n A; ts \<in> list n A; p < n; 
+    \<forall>(p',s') \<in> set (step p (ss!p)). s' \<in> A; ss \<in> nlists n A; ts \<in> nlists n A; p < n; 
     ss [\<sqsubseteq>\<^sub>r] ts; \<forall>p. p < n \<longrightarrow> stable r step ts p \<rbrakk> 
   \<Longrightarrow> merges f (step p (ss!p)) ss [\<sqsubseteq>\<^sub>r] ts" 
 (*<*)
@@ -251,7 +251,7 @@ lemma (in Semilat) merges_bounded_lemma:
     apply simp
    apply (auto intro:boundedD)
 
-  apply (blast intro: listE_nth_in dest:pres_typeD)
+  apply (blast intro: nlistsE_nth_in dest:pres_typeD)
   done
 (*>*)
 
@@ -259,7 +259,7 @@ lemma (in Semilat) merges_bounded_lemma:
 
 (** iter **)
 lemma termination_lemma: assumes "Semilat A r f"
-shows "\<lbrakk> ss \<in> list n A; \<forall>(q,t)\<in>set qs. q<n \<and> t\<in>A; p\<in>w \<rbrakk> \<Longrightarrow> 
+shows "\<lbrakk> ss \<in> nlists n A; \<forall>(q,t)\<in>set qs. q<n \<and> t\<in>A; p\<in>w \<rbrakk> \<Longrightarrow> 
       ss [\<sqsubset>\<^sub>r] merges f qs ss \<or> 
   merges f qs ss = ss \<and> {q. \<exists>t. (q,t)\<in>set qs \<and> t \<squnion>\<^bsub>f\<^esub> ss!q \<noteq> ss!q} \<union> (w-{p}) \<subset> w"
 (*<*) (is "PROP ?P")

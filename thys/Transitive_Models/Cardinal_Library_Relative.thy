@@ -24,8 +24,7 @@ proof -
     using image_eq_UN RepFun_def UN_iff by force
   moreover from calculation
   have "M(\<lambda>x\<in>A. S ` x)" "M({S ` a . a \<in> A})"
-    using lam_closed[of "\<lambda> x. S`x"] apply_type[OF \<open>S\<in>_\<close>]
-      transM[OF _ \<open>M(B)\<close>] image_closed
+    using lam_closed[of "\<lambda> x. S`x"] apply_type[OF \<open>S\<in>_\<close>] transM[OF _ \<open>M(B)\<close>]
     by auto
   moreover from assms this
   have "(\<lambda>x\<in>A. S`x) \<in> surj_rel(M,A, {S`a . a\<in>A})"
@@ -129,8 +128,7 @@ locale M_cardinal_UN_lepoll = M_library + M_replacement_lepoll _ "\<lambda>_. X"
   j:M_cardinal_UN _ J for J
 begin
 
-(* FIXME: this "LEQpoll" should be "LEPOLL"; same correction in Delta System *)
-lemma leqpoll_rel_imp_cardinal_rel_UN_le:
+lemma lepoll_rel_imp_cardinal_rel_UN_le:
   notes [dest] = InfCard_is_Card Card_is_Ord
   assumes "InfCard\<^bsup>M\<^esup>(K)" "J \<lesssim>\<^bsup>M\<^esup> K" "\<And>i. i\<in>J \<Longrightarrow> |X(i)|\<^bsup>M\<^esup> \<le> K"
     "M(K)"
@@ -278,10 +276,6 @@ end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 
 subsection\<open>Countable and uncountable sets\<close>
 
-definition (* FIXME: From Cardinal_Library, on the context of AC *)
-  countable :: "i\<Rightarrow>o" where
-  "countable(X) \<equiv> X \<lesssim> \<omega>"
-
 relativize functional "countable" "countable_rel" external
 relationalize "countable_rel" "is_countable"
 
@@ -323,7 +317,7 @@ end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 lemma (in M_cardinal_UN_lepoll) countable_rel_imp_countable_rel_UN:
   assumes "countable_rel(M,J)" "\<And>i. i\<in>J \<Longrightarrow> countable_rel(M,X(i))"
   shows "countable_rel(M,\<Union>i\<in>J. X(i))"
-  using assms leqpoll_rel_imp_cardinal_rel_UN_le[of \<omega>] InfCard_rel_nat
+  using assms lepoll_rel_imp_cardinal_rel_UN_le[of \<omega>] InfCard_rel_nat
     InfCard_rel_is_Card_rel j.UN_closed
     countable_rel_iff_cardinal_rel_le_nat j.Pi_assumptions
     Card_rel_le_imp_lepoll_rel[of J \<omega>] Card_rel_cardinal_rel_eq[of \<omega>]
@@ -332,8 +326,6 @@ lemma (in M_cardinal_UN_lepoll) countable_rel_imp_countable_rel_UN:
 locale M_cardinal_library = M_library + M_replacement +
   assumes
     lam_replacement_inj_rel:"lam_replacement(M, \<lambda>x. inj\<^bsup>M\<^esup>(fst(x),snd(x)))"
-    and
-    cdlt_assms: "M(G) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>p. \<forall>x\<in>G. x \<in> snd(p) \<longleftrightarrow> (\<forall>s\<in>fst(p). \<langle>s, x\<rangle> \<in> Q))"
     and
     cardinal_lib_assms1:
     "M(A) \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow>
@@ -347,30 +339,17 @@ locale M_cardinal_library = M_library + M_replacement +
     "M(A') \<Longrightarrow> M(b) \<Longrightarrow> M(f) \<Longrightarrow> M(F) \<Longrightarrow>
         separation(M, \<lambda>y. \<exists>x\<in>A'. y = \<langle>x, \<mu> i. x \<in> if_range_F_else_F(\<lambda>a. if M(a) then F-``{a} else 0,b,f,i)\<rangle>)"
     and
-    lam_replacement_cardinal_rel : "lam_replacement(M, cardinal_rel(M))"
+    cardinal_rel_separation :
+    "separation(M, \<lambda>\<langle>x,y\<rangle>. cardinal_rel(M,x) = y)"
     and
-    cardinal_lib_assms6:
-    "M(f) \<Longrightarrow> M(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow>
-      strong_replacement(M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
+    separation_cardinal_rel_lt :
+    "M(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
 
 begin
 
-lemma cardinal_lib_assms5 :
-  "M(\<gamma>) \<Longrightarrow> Ord(\<gamma>) \<Longrightarrow> separation(M, \<lambda>Z . cardinal_rel(M,Z) < \<gamma>)"
-  unfolding lt_def
-  using separation_in lam_replacement_constant[of \<gamma>] separation_univ lam_replacement_cardinal_rel
-  unfolding lt_def
-  by simp_all
-
-lemma separation_dist: "separation(M, \<lambda> x . \<exists>a. \<exists>b . x=\<langle>a,b\<rangle> \<and> a\<noteq>b)"
-  using separation_pair separation_neg separation_eq lam_replacement_fst lam_replacement_snd
-  by simp
-
-lemma cdlt_assms': "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
-  using separation_in[OF _
-      lam_replacement_hcomp2[OF _ _ _ _ lam_replacement_Pair] _
-      lam_replacement_constant]
-    separation_ball lam_replacement_hcomp lam_replacement_fst lam_replacement_snd
+lemma cdlt_assms: "M(x) \<Longrightarrow> M(Q) \<Longrightarrow> separation(M, \<lambda>a .  \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q)"
+  using separation_in[OF _ lam_replacement_product] separation_ball
+    lam_replacement_fst lam_replacement_snd lam_replacement_constant
   by simp_all
 
 lemma countable_rel_union_countable_rel:
@@ -383,6 +362,7 @@ proof -
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then x else 0"
     using  lam_replacement_if[OF lam_replacement_identity
         lam_replacement_constant[OF nonempty], where b=M] lam_replacement_inj_rel
+      lam_replacement_minimum
   proof(unfold_locales,auto simp add: separation_def)
     fix b f
     assume "M(b)" "M(f)"
@@ -397,7 +377,7 @@ proof -
       case False
       with \<open>M(f)\<close> \<open>M(b)\<close>
       show ?thesis
-        using cardinal_lib_assms1 separation_Ord
+        using cardinal_lib_assms1 separation_Ord lam_replacement_minimum
         by (rule_tac lam_Least_assumption_ifM_bnot0) auto
     qed
   qed
@@ -407,8 +387,8 @@ proof -
     by (cases "M(x)") auto
   ultimately
   interpret M_cardinal_UN_lepoll _ "\<lambda>c. if M(c) then c else 0" C
-    using lepoll_assumptions
-    by unfold_locales simp_all
+    using lepoll_assumptions lam_replacement_minimum
+    by unfold_locales auto
   have "(if M(i) then i else 0) = i" if "i\<in>C" for i
     using transM[OF _ \<open>M(C)\<close>] that by simp
   then
@@ -422,7 +402,7 @@ abbreviation
   uncountable_rel :: "[i\<Rightarrow>o,i]\<Rightarrow>o" where
   "uncountable_rel(M,X) \<equiv> \<not> countable_rel(M,X)"
 
-context M_cardinal_library
+context M_library
 begin
 
 lemma uncountable_rel_iff_nat_lt_cardinal_rel:
@@ -520,6 +500,11 @@ lemma mem_F_bound1:
   using apply_0 unfolding F_def
   by (cases "M(c)", auto simp:F_def drSR_Y_def dC_F_def)
 
+end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
+
+context M_cardinal_library
+begin
+
 lemma lt_Aleph_rel_imp_cardinal_rel_UN_le_nat: "function(G) \<Longrightarrow> domain(G) \<lesssim>\<^bsup>M\<^esup> \<omega> \<Longrightarrow>
    \<forall>n\<in>domain(G). |G`n|\<^bsup>M\<^esup><\<aleph>\<^bsub>1\<^esub>\<^bsup>M\<^esup> \<Longrightarrow> M(G) \<Longrightarrow> |\<Union>n\<in>domain(G). G`n|\<^bsup>M\<^esup>\<le>\<omega>"
 proof -
@@ -532,7 +517,7 @@ proof -
   ultimately
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then G`x else 0"
     using lam_replacement_inj_rel cardinal_lib_assms2 mem_F_bound1[of _ _ G]
-      lam_if_then_replacement_apply
+      lam_if_then_replacement_apply lam_replacement_minimum
     by (unfold_locales, simp_all)
       (rule lam_Least_assumption_general[where U="\<lambda>_. domain(G)"], auto)
   note \<open>M(G)\<close>
@@ -553,7 +538,7 @@ proof -
     assume "n\<in>?N"
     with Eq1 \<open>M(G)\<close>
     have "|G`n|\<^bsup>M\<^esup> \<le> \<omega>"
-      using le_Aleph_rel1_nat[of "|G ` n|\<^bsup>M\<^esup>"] leqpoll_rel_imp_cardinal_rel_UN_le
+      using le_Aleph_rel1_nat[of "|G ` n|\<^bsup>M\<^esup>"] lepoll_rel_imp_cardinal_rel_UN_le
         UN_if_zero[of "domain(G)" G]
       by (auto dest:transM)
   }
@@ -581,7 +566,7 @@ proof -
   qed
   ultimately
   show ?thesis
-    using InfCard_rel_nat leqpoll_rel_imp_cardinal_rel_UN_le[of \<omega>]
+    using InfCard_rel_nat lepoll_rel_imp_cardinal_rel_UN_le[of \<omega>]
       UN_if_zero[of "domain(G)" G]
       le_trans[of "|if M(_) then G ` _ else 0|\<^bsup>M\<^esup>" "|G ` _|\<^bsup>M\<^esup>" \<omega>]
     by auto blast
@@ -704,24 +689,18 @@ proof -
   show ?thesis using \<open>n\<in>_\<close> by auto
 qed
 
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
 
 subsection\<open>Applications of transfinite recursive constructions\<close>
 
-definition
-  rec_constr :: "[i,i] \<Rightarrow> i" where
-  "rec_constr(f,\<alpha>) \<equiv> transrec(\<alpha>,\<lambda>a g. f`(g``a))"
+locale M_cardinal_library_extra = M_cardinal_library +
+  assumes
+    replacement_trans_apply_image:
+    "M(f) \<Longrightarrow> M(\<beta>) \<Longrightarrow> Ord(\<beta>) \<Longrightarrow>
+      strong_replacement(M, \<lambda>x y. x\<in>\<beta> \<and> y = \<langle>x, transrec(x, \<lambda>a g. f ` (g `` a))\<rangle>)"
+begin
 
-text\<open>The function \<^term>\<open>rec_constr\<close> allows to perform \<^emph>\<open>recursive
-     constructions\<close>: given a choice function on the powerset of some
-     set, a transfinite sequence is created by successively choosing
-     some new element.
-
-     The next result explains its use.\<close>
-
-lemma rec_constr_unfold: "rec_constr(f,\<alpha>) = f`({rec_constr(f,\<beta>). \<beta>\<in>\<alpha>})"
-  using def_transrec[OF rec_constr_def, of f \<alpha>] image_lam by simp
-
-lemma rec_constr_type:
+lemma rec_constr_type_rel:
   assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)"
   shows "M(\<alpha>) \<Longrightarrow> rec_constr(f,\<alpha>) \<in> G"
   using assms(2)
@@ -734,7 +713,7 @@ proof(induct rule:trans_induct)
     by auto
   moreover from assms this step \<open>M(\<beta>)\<close> \<open>Ord(\<beta>)\<close>
   have "M({y . x \<in> \<beta>, y=<x,rec_constr(f, x)>})" (is "M(?Z)")
-    using strong_replacement_closed[OF cardinal_lib_assms6(1),of f \<beta> \<beta>,OF _ _ _ _
+    using strong_replacement_closed[OF replacement_trans_apply_image,of f \<beta> \<beta>,OF _ _ _ _
         univalent_conjI2[where P="\<lambda>x _ . x\<in>\<beta>",OF univalent_triv]]
       transM[OF _ \<open>M(\<beta>)\<close>] transM[OF step(2) \<open>M(G)\<close>] Ord_in_Ord
     unfolding rec_constr_def
@@ -779,13 +758,13 @@ qed
 lemma rec_constr_closed :
   assumes "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "Ord(\<alpha>)" "M(G)" "M(\<alpha>)"
   shows "M(rec_constr(f,\<alpha>))"
-  using transM[OF rec_constr_type \<open>M(G)\<close>] assms by auto
+  using transM[OF rec_constr_type_rel \<open>M(G)\<close>] assms by auto
 
 lemma lambda_rec_constr_closed :
   assumes "Ord(\<gamma>)" "M(\<gamma>)" "M(f)" "f:Pow_rel(M,G)\<rightarrow>\<^bsup>M\<^esup> G" "M(G)"
   shows "M(\<lambda>\<alpha>\<in>\<gamma> . rec_constr(f,\<alpha>))"
-  using lam_closed2[OF cardinal_lib_assms6(1),unfolded rec_constr_def[symmetric],of f \<gamma>]
-    rec_constr_type[OF \<open>f\<in>_\<close> Ord_in_Ord[of \<gamma>]] transM[OF _ \<open>M(G)\<close>] assms
+  using lam_closed2[OF replacement_trans_apply_image,unfolded rec_constr_def[symmetric],of f \<gamma>]
+    rec_constr_type_rel[OF \<open>f\<in>_\<close> Ord_in_Ord[of \<gamma>]] transM[OF _ \<open>M(G)\<close>] assms
   by simp
 
 text\<open>The next lemma is an application of recursive constructions.
@@ -802,12 +781,12 @@ lemma bounded_cardinal_rel_selection:
 proof -
   from assms
   have "M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})" for x
-    using cdlt_assms' by simp
+    using separation_orthogonal by simp
   let ?cdlt\<gamma>="{Z\<in>Pow_rel(M,G) . |Z|\<^bsup>M\<^esup><\<gamma>}" \<comment> \<open>“cardinal\_rel less than \<^term>\<open>\<gamma>\<close>”\<close>
     and ?inQ="\<lambda>Y.{a\<in>G. \<forall>s\<in>Y. <s,a>\<in>Q}"
   from \<open>M(G)\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close>
   have "M(?cdlt\<gamma>)" "Ord(\<gamma>)"
-    using cardinal_lib_assms5[OF \<open>M(\<gamma>)\<close>] Card_rel_is_Ord
+    using separation_cardinal_rel_lt[OF \<open>M(\<gamma>)\<close>] Card_rel_is_Ord
     by simp_all
   from assms
   have H:"\<exists>a. a \<in> ?inQ(Y)" if "Y\<in>?cdlt\<gamma>" for Y
@@ -835,14 +814,12 @@ proof -
       by (auto dest:transM)
     with\<open>M(G)\<close> \<open>\<And>x. M(x) \<Longrightarrow> M({a \<in> G . \<forall>s\<in>x. \<langle>s, a\<rangle> \<in> Q})\<close> \<open>M(Q)\<close> \<open>M(?cdlt\<gamma>)\<close>
     interpret M_Pi_assumptions_choice M ?cdlt\<gamma> ?inQ
-      using cdlt_assms[where Q=Q] lam_replacement_Collect_ball_Pair[THEN
-          lam_replacement_imp_strong_replacement] surj_imp_inj_replacement3
-        lam_replacement_hcomp2[OF lam_replacement_constant
-          lam_replacement_Collect_ball_Pair _ _ lam_replacement_minimum,
-          unfolded lam_replacement_def]
-        lam_replacement_hcomp lam_replacement_Sigfun[OF
-          lam_replacement_Collect_ball_Pair, of G Q, THEN
-          lam_replacement_imp_strong_replacement] cdlt_assms'
+      using cdlt_assms[where Q=Q] surj_imp_inj_replacement3
+        lam_replacement_Collect_ball_Pair[THEN lam_replacement_imp_strong_replacement]
+        lam_replacement_minimum[THEN [5] lam_replacement_hcomp2,OF
+          lam_replacement_constant lam_replacement_Collect_ball_Pair,unfolded lam_replacement_def]
+        lam_replacement_Sigfun[OF lam_replacement_Collect_ball_Pair,THEN
+          lam_replacement_imp_strong_replacement]
       by unfold_locales (blast dest: transM, auto dest:transM)
     show ?thesis using AC_Pi_rel Pi_rel_char H by auto
   qed
@@ -853,8 +830,7 @@ proof -
   define Cb where "Cb \<equiv> \<lambda>_\<in>Pow_rel(M,G)-?cdlt\<gamma>. b"
   moreover from \<open>b\<in>G\<close> \<open>M(?cdlt\<gamma>)\<close> \<open>M(G)\<close>
   have "Cb \<in> Pow_rel(M,G)-?cdlt\<gamma> \<rightarrow> G" "M(Cb)"
-    using lam_closed[of "\<lambda>_.b" "Pow_rel(M,G)-?cdlt\<gamma>"]
-      tag_replacement transM[OF \<open>b\<in>G\<close>]
+    using lam_closed[of "\<lambda>_.b" "Pow_rel(M,G)-?cdlt\<gamma>"] tag_replacement transM[OF \<open>b\<in>G\<close>]
     unfolding Cb_def by auto
   moreover
   note \<open>Card_rel(M,\<gamma>)\<close>
@@ -876,7 +852,7 @@ proof -
   from \<open>f \<union> Cb: Pow_rel(M,G) \<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(G)\<close>
   have "S : \<gamma> \<rightarrow> G" "M(f \<union> Cb)"
     unfolding S_def
-    using Ord_in_Ord[OF Card_rel_is_Ord] rec_constr_type lam_type transM[OF _ \<open>M(\<gamma>)\<close>]
+    using Ord_in_Ord[OF Card_rel_is_Ord] rec_constr_type_rel lam_type transM[OF _ \<open>M(\<gamma>)\<close>]
       function_space_rel_char
     by auto
   moreover from \<open>f\<union>Cb \<in> _\<rightarrow>\<^bsup>M\<^esup> G\<close> \<open>Card_rel(M,\<gamma>)\<close> \<open>M(\<gamma>)\<close> \<open>M(G)\<close> \<open>M(f \<union> Cb)\<close> \<open>Ord(\<gamma>)\<close>
@@ -885,7 +861,7 @@ proof -
     using lambda_rec_constr_closed
     by simp
   moreover
-  have "\<forall>\<alpha>\<in>\<gamma>. \<forall>\<beta>\<in>\<gamma>. \<alpha> < \<beta> \<longrightarrow> <S ` \<alpha>, S ` \<beta>>\<in>Q"
+  have "\<forall>\<alpha>\<in>\<gamma>. \<forall>\<beta>\<in>\<gamma>. \<alpha> < \<beta> \<longrightarrow> \<langle>S`\<alpha>, S`\<beta>\<rangle> \<in> Q"
   proof (intro ballI impI)
     fix \<alpha> \<beta>
     assume "\<beta>\<in>\<gamma>"
@@ -932,7 +908,7 @@ proof -
     moreover
     note \<open>\<beta>\<in>\<gamma>\<close> \<open>Cb \<in> Pow_rel(M,G)-?cdlt\<gamma> \<rightarrow> G\<close>
     ultimately
-    show "<S ` \<alpha>, S ` \<beta>>\<in>Q"
+    show "\<langle>S`\<alpha>, S`\<beta>\<rangle>\<in>Q"
       using fun_disjoint_apply1[of "{S`x . x \<in> \<beta>}" Cb f]
         domain_of_fun[of Cb] ltD[of \<alpha> \<beta>]
       by (subst (2) S_def, auto) (subst rec_constr_unfold, auto)
@@ -954,7 +930,7 @@ proof
   assume "Infinite(Z)" "M(Z)"
   moreover from calculation
   have "M(Distinct)"
-    using cardinal_lib_assms6 separation_dist by simp
+    using separation_dist by simp
   from \<open>Infinite(Z)\<close> \<open>M(Z)\<close>
   obtain b where "b\<in>Z"
     using Infinite_not_empty by auto
@@ -1035,7 +1011,7 @@ proof -
   moreover from calculation
   interpret M_replacement_lepoll M "\<lambda>_ x. if M(x) then F-``{x} else 0"
     using lam_replacement_inj_rel mem_F_bound2 cardinal_lib_assms3
-      lam_replacement_vimage_sing_fun
+      lam_replacement_vimage_sing_fun lam_replacement_minimum
       lam_replacement_if[OF _
         lam_replacement_constant[OF nonempty],where b=M] sep_true
     by (unfold_locales, simp_all)
@@ -1085,7 +1061,7 @@ proof -
       by auto
     ultimately
     have "|\<Union>y\<in>Y. {x\<in>Z . F`x = y}|\<^bsup>M\<^esup> \<le> |Y|\<^bsup>M\<^esup>"
-      using leqpoll_rel_imp_cardinal_rel_UN_le
+      using lepoll_rel_imp_cardinal_rel_UN_le
         Infinite_InfCard_rel_cardinal_rel[of Y] vimage_fun_sing[OF \<open>F\<in>Z\<rightarrow>Y\<close>]
       by(auto simp add:transM[OF _ \<open>M(Y)\<close>])
     moreover from \<open>F \<in> Finite_to_one_rel(M,Z,Y) \<inter> surj_rel(M,Z,Y)\<close> \<open>M(Z)\<close> \<open>M(F)\<close> \<open>M(Y)\<close>
@@ -1158,6 +1134,11 @@ proof -
   show ?thesis
     using Finite_to_one_rel_surj_rel_imp_cardinal_rel_eq by simp
 qed
+
+end \<comment> \<open>\<^locale>\<open>M_cardinal_library_extra\<close>\<close>
+
+context M_library
+begin
 
 subsection\<open>Results on relative cardinal exponentiation\<close>
 
@@ -1243,7 +1224,7 @@ proof -
   show ?thesis .
 qed
 
-end \<comment> \<open>\<^locale>\<open>M_cardinal_library\<close>\<close>
+end \<comment> \<open>\<^locale>\<open>M_library\<close>\<close>
 
 (* TODO: This can be generalized. *)
 lemma (in M_cardinal_library) countable_fun_imp_countable_image:

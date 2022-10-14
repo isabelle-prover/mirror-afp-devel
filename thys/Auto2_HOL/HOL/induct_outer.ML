@@ -32,7 +32,25 @@ sig
       string * string list * string option -> Proof.state -> Proof.state
 end;
 
-structure Induct_ProofSteps : INDUCT_PROOFSTEPS =
+signature INDUCT_PROOFSTEPS_KEYWORDS =
+sig
+  val apply_induct_hyp: string * Position.T
+  val case_induct: string * Position.T
+  val cases: string * Position.T
+  val fun_induct: string * Position.T
+  val induct: string * Position.T
+  val prop_induct: string * Position.T
+  val strong_induct: string * Position.T
+  val arbitrary: string parser
+  val with': string parser
+end;
+
+functor Induct_ProofSteps(
+  structure Auto2_Outer: AUTO2_OUTER;
+  structure Induct_ProofSteps_Keywords: INDUCT_PROOFSTEPS_KEYWORDS;
+  structure UtilBase: UTIL_BASE;
+  structure UtilLogic: UTIL_LOGIC;
+  ) : INDUCT_PROOFSTEPS =
 struct
 
 structure Data = Theory_Data (
@@ -84,7 +102,7 @@ fun check_strong_ind_prop ind_prop =
     let
       fun err str = "Strong induction: " ^ str
       val (cond_ind, concl) =
-          ind_prop |> Logic.dest_implies |> apply2 dest_Trueprop
+          ind_prop |> Logic.dest_implies |> apply2 UtilLogic.dest_Trueprop
 
       (* concl must be of form ?P [?vars]. *)
       val err_concl = err "concl of ind_th must be ?P [?vars]."
@@ -104,7 +122,7 @@ fun check_strong_ind_prop ind_prop =
               else error err_ind_hyp
             | _ => error err_ind_hyp
       val (pat_subst, P_vars) =
-          cond_ind |> fold dest_one_all pat_vars |> dest_imp
+          cond_ind |> fold dest_one_all pat_vars |> UtilLogic.dest_imp
       val _ = assert (P_vars aconv concl) err_ind_hyp
     in
       (pat_vars, pat_subst)
@@ -127,21 +145,21 @@ fun add_strong_induct_rule ind_th thy =
 
 fun add_case_induct_rule ind_th thy =
     let
-      val init_assum = ind_th |> Thm.prems_of |> hd |> dest_Trueprop
+      val init_assum = ind_th |> Thm.prems_of |> hd |> UtilLogic.dest_Trueprop
     in
       thy |> add_induct_data "case_induct" (init_assum, ind_th)
     end
 
 fun add_prop_induct_rule ind_th thy =
     let
-      val init_assum = ind_th |> Thm.prems_of |> hd |> dest_Trueprop
+      val init_assum = ind_th |> Thm.prems_of |> hd |> UtilLogic.dest_Trueprop
     in
       thy |> add_induct_data "prop_induct" (init_assum, ind_th)
     end
 
 fun add_var_induct_rule ind_th thy =
     let
-      val (P, n) = ind_th |> concl_of' |> Term.dest_comb
+      val (P, n) = ind_th |> UtilLogic.concl_of' |> Term.dest_comb
       val _ = assert (Term.is_Var P andalso Term.is_Var n)
                      "add_var_induct_rule: concl of ind_th must be ?P ?var"
     in
@@ -150,7 +168,7 @@ fun add_var_induct_rule ind_th thy =
 
 fun add_cases_rule ind_th thy =
     let
-      val (P, n) = ind_th |> concl_of' |> Term.dest_comb
+      val (P, n) = ind_th |> UtilLogic.concl_of' |> Term.dest_comb
       val _ = assert (Term.is_Var P andalso Term.is_Var n)
                      "add_cases_rule: concl of ind_th must be ?P ?var"
     in
@@ -167,8 +185,8 @@ fun get_induct_stmt ctxt (filt_A, ind_vars, stmt, arbitrary) =
         let
           val (_, (As, C)) = ctxt |> Auto2_State.get_subgoal
                                   |> Util.strip_meta_horn
-          val obj_As = As |> map dest_Trueprop |> filter filt_A
-          val obj_C = dest_Trueprop C
+          val obj_As = As |> map UtilLogic.dest_Trueprop |> filter filt_A
+          val obj_C = UtilLogic.dest_Trueprop C
         in
           (UtilLogic.list_obj_horn (arbitrary, (obj_As, obj_C)))
               |> fold Util.lambda_abstract (rev ind_vars)
@@ -207,7 +225,7 @@ fun apply_simple_induct_th ind_th vars arbitraries prem_only state =
         let
           val (_, (As, _)) = prop |> Thm.prems_of |> the_single
                                   |> Util.strip_meta_horn
-          val stmt = dest_Trueprop (hd As)
+          val stmt = UtilLogic.dest_Trueprop (hd As)
         in
           state |> Proof.map_contexts (Auto2_State.map_head_th (K prop))
                 |> Proof.map_contexts (Auto2_State.set_induct_stmt stmt)
@@ -228,7 +246,7 @@ fun strong_induct_cmd (s, t) state =
       val P = get_induct_stmt ctxt (K true, [var], NONE, arbitraries)
       val ind_th = get_typed_ind_th thy "strong_induct" (type_of var)
 
-      val (var_P, var_n) = ind_th |> concl_of' |> Term.dest_comb
+      val (var_P, var_n) = ind_th |> UtilLogic.concl_of' |> Term.dest_comb
       val inst = fold (Pattern.match thy) [(var_P, P), (var_n, var)] fo_init
       val ind_th = Util.subst_thm ctxt inst ind_th
     in
@@ -236,10 +254,10 @@ fun strong_induct_cmd (s, t) state =
     end
 
 val arbitrary =
-    Scan.option (@{keyword "arbitrary"} |-- Scan.repeat Parse.term)
+    Scan.option (Induct_ProofSteps_Keywords.arbitrary |-- Scan.repeat Parse.term)
 
 val _ =
-  Outer_Syntax.command @{command_keyword "@strong_induct"}
+  Outer_Syntax.command Induct_ProofSteps_Keywords.strong_induct
     "apply strong induction"
     ((Parse.term -- arbitrary) >> (fn (s, t) =>
          Toplevel.proof (fn state => strong_induct_cmd (s, these t) state)))
@@ -251,7 +269,7 @@ fun apply_induct_hyp_cmd s state =
       val ts = Syntax.read_terms ctxt s
 
       val induct_stmt = Auto2_State.get_last_induct_stmt ctxt
-      val stmt = induct_stmt |> the |> mk_Trueprop |> Thm.cterm_of ctxt
+      val stmt = induct_stmt |> the |> UtilLogic.mk_Trueprop |> Thm.cterm_of ctxt
                  handle Option.Option =>
                         raise Fail "apply_induct_hyp: no induct_stmt"
 
@@ -283,7 +301,7 @@ fun apply_induct_hyp_cmd s state =
     end
 
 val _ =
-  Outer_Syntax.command @{command_keyword "@apply_induct_hyp"}
+  Outer_Syntax.command Induct_ProofSteps_Keywords.apply_induct_hyp
     "apply induction hypothesis"
     ((Scan.repeat Parse.term) >> (fn s =>
          Toplevel.proof (fn state => apply_induct_hyp_cmd s state)))
@@ -356,15 +374,15 @@ fun case_induct_cmd s state =
                              |> Util.strip_meta_horn
 
       (* Instantiate the induction theorem *)
-      val var_P = concl_of' ind_th
-      val inst = Pattern.match thy (var_P, dest_Trueprop C) fo_init
+      val var_P = UtilLogic.concl_of' ind_th
+      val inst = Pattern.match thy (var_P, UtilLogic.dest_Trueprop C) fo_init
       val ind_th = Util.subst_thm_thy thy inst ind_th
     in
       state |> solve_goals ind_th NONE (K true)
     end
 
 val _ =
-  Outer_Syntax.command @{command_keyword "@case_induct"} "apply induction"
+  Outer_Syntax.command Induct_ProofSteps_Keywords.case_induct "apply induction"
     (Parse.term >>
         (fn s =>
             Toplevel.proof (fn state => case_induct_cmd s state)))
@@ -381,9 +399,9 @@ fun prop_induct_cmd (s, t) state =
 
       val ind_th = get_term_ind_th thy "prop_induct" start
 
-      val (var_P, args) = ind_th |> concl_of' |> Term.strip_comb
+      val (var_P, args) = ind_th |> UtilLogic.concl_of' |> Term.strip_comb
 
-      val start_As = strip_conj start
+      val start_As = UtilLogic.strip_conj start
       val filt_A = (fn t => not (member (op aconv) start_As t))
       val P = get_induct_stmt ctxt (filt_A, args, t, [])
       val _ = writeln ("Induct statement: " ^ Syntax.string_of_term ctxt P)
@@ -397,7 +415,7 @@ fun prop_induct_cmd (s, t) state =
     end
 
 val _ =
-  Outer_Syntax.command @{command_keyword "@prop_induct"} "apply induction"
+  Outer_Syntax.command Induct_ProofSteps_Keywords.prop_induct "apply induction"
     ((Parse.term -- for_stmt) >>
         (fn (s, t) =>
             Toplevel.proof (fn state => prop_induct_cmd (s, t) state)))
@@ -411,10 +429,10 @@ fun retrieve_pat ind_vars t =
       fun free_to_var t =
           let val (x, T) = Term.dest_Free t in Var ((x,0), T) end
       val pat_vars = map free_to_var vars
-      val args = C |> dest_Trueprop |> Util.dest_args
+      val args = C |> UtilLogic.dest_Trueprop |> Util.dest_args
                    |> map (Term.subst_atomic (vars ~~ pat_vars))
     in
-      HOLogic.mk_tuple (map mk_eq (ind_vars ~~ args))
+      HOLogic.mk_tuple (map UtilBase.mk_eq (ind_vars ~~ args))
     end
 
 fun induct_cmd ind_ty_str (s, t, u, v) state =
@@ -429,7 +447,7 @@ fun induct_cmd ind_ty_str (s, t, u, v) state =
       val ind_th = get_typed_ind_th thy ind_ty_str (type_of var)
 
       (* Instantiate the induction theorem *)
-      val concl = concl_of' ind_th
+      val concl = UtilLogic.concl_of' ind_th
       val (var_P, var_n) = Term.dest_comb concl
 
       val inst = fold (Pattern.match thy) [(var_P, P), (var_n, var)] fo_init
@@ -444,15 +462,15 @@ fun induct_cmd ind_ty_str (s, t, u, v) state =
     end
 
 val _ =
-  Outer_Syntax.command @{command_keyword "@induct"} "apply induction"
-    (Parse.term -- for_stmt -- arbitrary -- Scan.option @{keyword "@with"} >>
+  Outer_Syntax.command Induct_ProofSteps_Keywords.induct "apply induction"
+    (Parse.term -- for_stmt -- arbitrary -- Scan.option Induct_ProofSteps_Keywords.with' >>
         (fn (((s, t), u), v) =>
             Toplevel.proof (
               fn state => induct_cmd "var_induct" (s, t, these u, v) state)))
 
 val _ =
-  Outer_Syntax.command @{command_keyword "@cases"} "apply induction"
-    (Parse.term -- Scan.option @{keyword "@with"} >>
+  Outer_Syntax.command Induct_ProofSteps_Keywords.cases "apply induction"
+    (Parse.term -- Scan.option Induct_ProofSteps_Keywords.with' >>
         (fn (s, v) =>
             Toplevel.proof (
               fn state => induct_cmd "cases" (s, NONE, [], v) state)))
@@ -466,7 +484,7 @@ fun get_fun_induct_th thy t =
                  handle ERROR _ => raise Fail "fun_induct: cannot find theorem."
 
       val (_, args) = Term.strip_comb t
-      val (_, pat_args) = ind_th |> concl_of' |> Term.strip_comb
+      val (_, pat_args) = ind_th |> UtilLogic.concl_of' |> Term.strip_comb
       val inst = Util.first_order_match_list thy (pat_args ~~ args) fo_init
     in
       Util.subst_thm_thy thy inst ind_th
@@ -479,7 +497,7 @@ fun is_simple_fun_induct ind_th =
       if length prems > 1 then false
       else let
         val (var, (_, C)) = Util.strip_meta_horn (the_single prems)
-        val (_, args) = Term.strip_comb (dest_Trueprop C)
+        val (_, args) = Term.strip_comb (UtilLogic.dest_Trueprop C)
       in
         eq_list (op aconv) (var, args)
       end
@@ -493,7 +511,7 @@ fun fun_induct_cmd (s, t, u) state =
       val arbitraries = map (Syntax.read_term ctxt) t
 
       val ind_th = get_fun_induct_th thy expr
-      val (var_P, vars) = ind_th |> concl_of' |> Term.strip_comb
+      val (var_P, vars) = ind_th |> UtilLogic.concl_of' |> Term.strip_comb
     in
       if is_simple_fun_induct ind_th then
         let
@@ -523,16 +541,9 @@ fun fun_induct_cmd (s, t, u) state =
     end
 
 val _ =
-  Outer_Syntax.command @{command_keyword "@fun_induct"} "apply induction"
-    (Parse.term -- arbitrary -- Scan.option @{keyword "@with"} >>
+  Outer_Syntax.command Induct_ProofSteps_Keywords.fun_induct "apply induction"
+    (Parse.term -- arbitrary -- Scan.option Induct_ProofSteps_Keywords.with' >>
         (fn ((s, t), u) =>
             Toplevel.proof (fn state => fun_induct_cmd (s, these t, u) state)))
 
 end  (* structure Induct_ProofSteps. *)
-
-val add_strong_induct_rule = Induct_ProofSteps.add_strong_induct_rule
-val add_case_induct_rule = Induct_ProofSteps.add_case_induct_rule
-val add_prop_induct_rule = Induct_ProofSteps.add_prop_induct_rule
-val add_var_induct_rule = Induct_ProofSteps.add_var_induct_rule
-val add_fun_induct_rule = Induct_ProofSteps.add_fun_induct_rule
-val add_cases_rule = Induct_ProofSteps.add_cases_rule

@@ -10,7 +10,7 @@ text \<open>Source: Schlöder, Julian.  Ordinal Arithmetic; available online at
 
 definition oexp :: "[V,V] \<Rightarrow> V" (infixr "\<up>" 80)
   where "oexp a b \<equiv> transrec (\<lambda>f x. if x=0 then 1
-                                    else if Limit x then if a=0 then 0 else SUP \<xi> \<in> elts x. f \<xi>
+                                    else if Limit x then if a=0 then 0 else \<Squnion>\<xi> \<in> elts x. f \<xi>
                                     else f (\<Squnion>(elts x)) * a)  b"
 
 text \<open>@{term "0\<up>\<omega> = 1"} if we don't make a special case for Limit ordinals and zero\<close>
@@ -22,7 +22,7 @@ lemma oexp_0_right [simp]: "\<alpha>\<up>0 = 1"
 lemma oexp_succ [simp]: "Ord \<beta> \<Longrightarrow> \<alpha>\<up>(succ \<beta>) = \<alpha>\<up>\<beta> * \<alpha>"
   by (simp add: def_transrec [OF oexp_def])
 
-lemma oexp_Limit: "Limit \<beta> \<Longrightarrow> \<alpha>\<up>\<beta> = (if \<alpha>=0 then 0 else SUP \<xi> \<in> elts \<beta>. \<alpha>\<up>\<xi>)"
+lemma oexp_Limit: "Limit \<beta> \<Longrightarrow> \<alpha>\<up>\<beta> = (if \<alpha>=0 then 0 else \<Squnion>\<xi> \<in> elts \<beta>. \<alpha>\<up>\<xi>)"
   by (auto simp: def_transrec [OF oexp_def, of _ \<beta>])
 
 lemma oexp_1_right [simp]: "\<alpha>\<up>1 = \<alpha>"
@@ -173,7 +173,7 @@ proof -
       using Ord_oexp \<open>Ord \<beta>\<close> assms gt0 mult_cancel_less_iff by blast
     also have "\<dots> = \<alpha>\<up>succ \<beta>"
       by (simp add: \<open>Ord \<beta>\<close>)
-    also have "\<dots> \<le> (SUP \<xi> \<in> elts \<gamma>. \<alpha>\<up>\<xi>)"
+    also have "\<dots> \<le> (\<Squnion>\<xi> \<in> elts \<gamma>. \<alpha>\<up>\<xi>)"
     proof -
       have "succ \<beta> \<in> elts \<gamma>"
         using Limit.hyps Limit.prems Limit_def by auto
@@ -181,7 +181,7 @@ proof -
         by (simp add: ZFC_in_HOL.Sup_upper)
     qed
     finally
-    have "\<alpha>\<up>\<beta> < (SUP \<xi> \<in> elts \<gamma>. \<alpha>\<up>\<xi>)" .
+    have "\<alpha>\<up>\<beta> < (\<Squnion>\<xi> \<in> elts \<gamma>. \<alpha>\<up>\<xi>)" .
     then show ?case
       using Limit.hyps oexp_Limit \<open>\<alpha> > 1\<close> by auto
   qed
@@ -401,9 +401,9 @@ next
       using \<open>Ord \<beta>\<close> by (auto simp: plus_V_succ_right mult.assoc)
   next
     case (Limit \<mu>)
-    have "\<alpha>\<up>(\<beta> + (SUP \<xi>\<in>elts \<mu>. \<xi>)) = (SUP \<xi>\<in>elts (\<beta> + \<mu>). \<alpha>\<up>\<xi>)"
+    have "\<alpha>\<up>(\<beta> + (\<Squnion>\<xi>\<in>elts \<mu>. \<xi>)) = (\<Squnion>\<xi>\<in>elts (\<beta> + \<mu>). \<alpha>\<up>\<xi>)"
       by (simp add: Limit.hyps oexp_Limit assms False)
-    also have "\<dots> = (SUP \<xi> \<in> {\<xi>. Ord \<xi> \<and> \<beta> + \<xi> < \<beta> + \<mu>}. \<alpha>\<up>(\<beta> + \<xi>))"
+    also have "\<dots> = (\<Squnion>\<xi> \<in> {\<xi>. Ord \<xi> \<and> \<beta> + \<xi> < \<beta> + \<mu>}. \<alpha>\<up>(\<beta> + \<xi>))"
     proof (rule Sup_eq_Sup)
       show "(\<lambda>\<xi>. \<alpha>\<up>(\<beta> + \<xi>)) ` {\<xi>. Ord \<xi> \<and> \<beta> + \<xi> < \<beta> + \<mu>} \<subseteq> (\<up>) \<alpha> ` elts (\<beta> + \<mu>)"
         using Limit.hyps Limit_def Ord_mem_iff_lt imageI by blast
@@ -432,12 +432,12 @@ next
       then show "\<exists>y\<in>(\<lambda>\<xi>. \<alpha>\<up>(\<beta> + \<xi>)) ` {\<xi>. Ord \<xi> \<and> \<beta> + \<xi> < \<beta> + \<mu>}. x \<le> y"
         using x by auto
     qed auto
-    also have "\<dots> = (SUP \<xi>\<in>elts \<mu>. \<alpha>\<up>(\<beta> + \<xi>))"
+    also have "\<dots> = (\<Squnion>\<xi>\<in>elts \<mu>. \<alpha>\<up>(\<beta> + \<xi>))"
       using \<open>Limit \<mu>\<close>
       by (simp add: Ord_Collect_lt Limit_def)
-    also have "\<dots> = (SUP \<xi>\<in>elts \<mu>. \<alpha>\<up>\<beta> * \<alpha>\<up>\<xi>)"
+    also have "\<dots> = (\<Squnion>\<xi>\<in>elts \<mu>. \<alpha>\<up>\<beta> * \<alpha>\<up>\<xi>)"
       using Limit.IH by auto
-    also have "\<dots> = \<alpha>\<up>\<beta> * \<alpha>\<up>(SUP \<xi>\<in>elts \<mu>. \<xi>)"
+    also have "\<dots> = \<alpha>\<up>\<beta> * \<alpha>\<up>(\<Squnion>\<xi>\<in>elts \<mu>. \<xi>)"
       using \<open>\<alpha> \<noteq> 0\<close> Limit.hyps
       by (simp add: image_image oexp_Limit mult_Sup_distrib)
     finally show ?case .
@@ -479,11 +479,11 @@ next
         apply (clarsimp simp: Limit_def)
         by (metis Ord_in_Ord Ord_linear Ord_mem_iff_lt Ord_mult Ord_succ assms(2) less_V_def mult_cancellation mult_succ not_add_mem_right succ_le_iff succ_ne_self)
     qed
-    have "\<alpha>\<up>(\<beta> * (SUP \<xi>\<in>elts \<mu>. \<xi>)) = \<alpha>\<up>\<Squnion> ((*) \<beta> ` elts \<mu>)"
+    have "\<alpha>\<up>(\<beta> * (\<Squnion>\<xi>\<in>elts \<mu>. \<xi>)) = \<alpha>\<up>\<Squnion> ((*) \<beta> ` elts \<mu>)"
       by (simp add: mult_Sup_distrib)
     also have "\<dots> = \<Squnion> (\<Union>x\<in>elts \<mu>. (\<up>) \<alpha> ` elts (\<beta> * x))"
       using False Lim oexp_Limit by fastforce
-    also have "\<dots> = (SUP x\<in>elts \<mu>. \<alpha>\<up>(\<beta> * x))"
+    also have "\<dots> = (\<Squnion>x\<in>elts \<mu>. \<alpha>\<up>(\<beta> * x))"
     proof (rule Sup_eq_Sup)
       show "(\<lambda>x. \<alpha>\<up>(\<beta> * x)) ` elts \<mu> \<subseteq> (\<Union>x\<in>elts \<mu>. (\<up>) \<alpha> ` elts (\<beta> * x))"
         using \<open>Ord \<alpha>\<close> \<open>Ord \<beta>\<close> False Limit
@@ -494,9 +494,9 @@ next
         using that \<open>Ord \<alpha>\<close> \<open>Ord \<beta>\<close> False Limit
         by clarsimp (metis Limit_def Ord_in_Ord Ord_mult VWO_TC_le mem_imp_VWO oexp_mono)
     qed auto
-    also have "\<dots> = \<Squnion> ((\<up>) (\<alpha>\<up>\<beta>) ` elts (SUP \<xi>\<in>elts \<mu>. \<xi>))"
+    also have "\<dots> = \<Squnion> ((\<up>) (\<alpha>\<up>\<beta>) ` elts (\<Squnion>\<xi>\<in>elts \<mu>. \<xi>))"
       using Limit.IH Limit.hyps by auto
-    also have "\<dots> = (\<alpha>\<up>\<beta>)\<up>(SUP \<xi>\<in>elts \<mu>. \<xi>)"
+    also have "\<dots> = (\<alpha>\<up>\<beta>)\<up>(\<Squnion>\<xi>\<in>elts \<mu>. \<xi>)"
       using False Limit.hyps oexp_Limit \<open>Ord \<beta>\<close> by auto
     finally show ?case .
   qed
@@ -551,7 +551,7 @@ proof -
   finally show ?thesis .
 qed
 
-lemma oexp_\<omega>_Limit: "Limit \<beta> \<Longrightarrow> \<omega>\<up>\<beta> = (SUP \<xi> \<in> elts \<beta>. \<omega>\<up>\<xi>)"
+lemma oexp_\<omega>_Limit: "Limit \<beta> \<Longrightarrow> \<omega>\<up>\<beta> = (\<Squnion>\<xi> \<in> elts \<beta>. \<omega>\<up>\<xi>)"
   by (simp add: oexp_Limit)
 
 lemma \<omega>_power_succ_gtr: "Ord \<alpha> \<Longrightarrow> \<omega> \<up> \<alpha> * ord_of_nat n < \<omega> \<up> succ \<alpha>"

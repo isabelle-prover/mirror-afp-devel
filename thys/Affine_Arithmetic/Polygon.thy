@@ -104,7 +104,7 @@ lemma fst_polychain_of_nth_0[simp]: "xs \<noteq> [] \<Longrightarrow> fst ((poly
   by (cases xs) (auto simp: Let_def)
 
 lemma fst_hd_polychain_of: "xs \<noteq> [] \<Longrightarrow> fst (hd (polychain_of x xs)) = x"
-  by (cases xs) (auto simp: )
+  by (cases xs) auto
 
 lemma length_polychain_of_eq[simp]:
   shows "length (polychain_of p qs) = length qs"

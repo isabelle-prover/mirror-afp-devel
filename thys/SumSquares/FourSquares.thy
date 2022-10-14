@@ -100,7 +100,7 @@ proof -
   have finC: "finite ?C" by simp
   have finD: "finite ?D" by simp
   from p0 have AsubC: "?A \<subseteq> ?C" and BsubC: "?B \<subseteq> ?C"
-    by (auto simp add: pos_mod_conj)
+    by auto
   with finC have finA: "finite ?A" and finB: "finite ?B"
     by (auto simp add: finite_subset)
   from AsubC BsubC have AunBsubC: "?A \<union> ?B \<subseteq> ?C" by (rule Un_least)

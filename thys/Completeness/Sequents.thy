@@ -242,7 +242,7 @@ lemma weaken_append[rule_format]: "Contrs <= R ==> Perms <= R ==> !A. A @ Gamma 
   apply(frule_tac ContrI) apply assumption
   apply(thin_tac "a # a # A @ list \<in> deductions R")
   apply(rule PermI) apply assumption 
-  apply(simp add: perm_count_conv count_append) 
+  apply(simp add: perm_count_conv) 
   by assumption
   \<comment> \<open>FIXME horrible\<close>
 

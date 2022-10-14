@@ -2,7 +2,6 @@ section \<open>Selected Simplified Ontological Argument \label{sec:selected}\<cl
 
 theory SimplifiedOntologicalArgument imports 
   HOML
-  DisableKodkodScala
 begin
 text \<open>Positive properties:\<close>
 consts posProp::"\<gamma>\<Rightarrow>\<sigma>" ("\<P>")

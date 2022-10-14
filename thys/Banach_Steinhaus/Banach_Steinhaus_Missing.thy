@@ -14,7 +14,7 @@ begin
 subsection \<open>Results missing for the proof of Banach-Steinhaus theorem\<close>
 text \<open>
   The results proved here are preliminaries for the proof of Banach-Steinhaus theorem using Sokal's 
-  approach, but they do not explicitly appear in Sokal's paper ~\cite{sokal2011reall}.
+  approach, but they do not explicitly appear in Sokal's paper @{cite sokal2011really}.
 \<close>
 
 text\<open>Notation for the norm\<close>

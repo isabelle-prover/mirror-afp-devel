@@ -1677,7 +1677,7 @@ next
   also from \<open>call1 e'' = \<lfloor>aMvs\<rfloor>\<close> have "call1 {length Vs:T=None; e''} = \<lfloor>aMvs\<rfloor>" by simp
   moreover from \<open>take (length (Vs @ [V])) (xs[length Vs := v]) = take (length (Vs @ [V])) xs'\<close>
   have "take (length Vs) xs = take (length Vs) xs'"
-    by(auto dest: take_eq_take_le_eq[where m="length Vs"] simp add: take_list_update_beyond)
+    by(auto dest: take_eq_take_le_eq[where m="length Vs"] simp add: take_update_cancel)
   moreover {
     have "xs' ! length Vs = take (length (Vs @ [V])) xs' ! length Vs" by simp
     also note \<open>take (length (Vs @ [V])) (xs[length Vs := v]) = take (length (Vs @ [V])) xs'\<close>[symmetric]

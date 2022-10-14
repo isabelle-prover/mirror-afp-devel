@@ -326,9 +326,10 @@ proof -
   also have "... = 
     3 * (\<Sum>i \<in> set as. (\<Sum>j \<in> set as. c i^2 * c j^2 * r 2 * r 2)) + ((\<Sum> i \<in> set as. c i^4 * r 4) - 3 *  (\<Sum> i \<in> set as. c i ^ 4 * r 2 * r 2))"
     apply (simp add: numeral_eq_Suc exp_h_prod_elim r_one) (* large intermediate terms *)
-    apply (simp add: kernel_of_eq All_less_Suc numeral_eq_Suc distrib_left sum.distrib sum_collapse neq_commute)
+    apply (simp add: kernel_of_eq All_less_Suc numeral_eq_Suc distrib_left sum.distrib sum_collapse neq_commute of_bool_not_iff)
     apply (simp add: algebra_simps sum_subtractf sum_collapse)
-    by (simp add: sum_distrib_left algebra_simps)
+    apply (simp add: sum_distrib_left algebra_simps)
+    done
   also have "... = 3 * (\<Sum>i \<in> set as. c i^2 * r 2)^2 + (\<Sum> i \<in> set as. c i ^ 4 * (r 4 - 3 * r 2 * r 2))"
     by (simp add:power2_eq_square sum_distrib_left algebra_simps sum_subtractf)
   also have "... = 3 * (\<Sum>i \<in> set as. c i^2)^2 * (r 2)^2 + (\<Sum>i \<in> set as. c i ^ 4 * (r 4 - 3 * r 2 * r 2))"
@@ -601,7 +602,7 @@ theorem f2_exact_space_usage:
   using f2_exact_space_usage'[OF assms(1,2,3)]
   by (subst (asm) sketch_def[OF assms(1,2,3)], subst M_def, simp)
 
-theorem f2_asympotic_space_complexity:
+theorem f2_asymptotic_space_complexity:
   "f2_space_usage \<in> O[at_top \<times>\<^sub>F at_top \<times>\<^sub>F at_right 0 \<times>\<^sub>F at_right 0](\<lambda> (n, m, \<epsilon>, \<delta>). 
   (ln (1 / of_rat \<epsilon>)) / (of_rat \<delta>)\<^sup>2 * (ln (real n) + ln (real m)))"
   (is "_ \<in> O[?F](?rhs)")

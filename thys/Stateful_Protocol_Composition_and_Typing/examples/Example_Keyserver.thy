@@ -1,44 +1,10 @@
-(*
-(C) Copyright Andreas Viktor Hess, DTU, 2015-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
 (*  Title:      Example_Keyserver.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 *)
 
 
 section \<open>The Keyserver Example\<close>
-text \<open>\label{sec:Example-Keyserver}\<close>
 theory Example_Keyserver
 imports "../Stateful_Compositionality"
 begin
@@ -206,15 +172,16 @@ by (cases c) simp_all
 lemma Ana_subst': "Ana (Fun f T) = (K,M) \<Longrightarrow> Ana (Fun f T \<cdot> \<delta>) = (K \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>,M \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>)"
 by (cases f) (auto elim!: Ana\<^sub>c\<^sub>r\<^sub>y\<^sub>p\<^sub>t.elims Ana\<^sub>s\<^sub>i\<^sub>g\<^sub>n.elims)
 
-global_interpretation tm: typed_model' arity public Ana \<Gamma>
-by (unfold_locales, unfold wf\<^sub>t\<^sub>r\<^sub>m_def[symmetric])
-   (metis assm7, metis assm8, metis assm9, metis assm10, metis assm11, metis assm6,
-    metis assm12, metis Ana_const, metis Ana_subst')
+global_interpretation tm: typing_result arity public Ana \<Gamma>
+  apply (unfold_locales, unfold wf\<^sub>t\<^sub>r\<^sub>m_def[symmetric])
+  by
+   (metis assm7, metis assm8, metis assm10, metis assm11, metis assm9, metis assm6)
 
 
 subsubsection \<open>Locale interpretation: labeled stateful typed model\<close>
-global_interpretation stm: labeled_stateful_typed_model' arity public Ana \<Gamma> tuple \<one> \<two>
-by standard (rule arity.simps, metis Ana_subst', metis assm12, metis Ana_const, simp)
+global_interpretation stm: labeled_stateful_typing' arity public Ana \<Gamma> tuple \<one> \<two>
+by unfold_locales
+   (metis assm12, metis Ana_const, metis Ana_subst', fast, rule arity.simps, metis Ana_subst')
 
 type_synonym ex_stateful_strand_step = "(ex_fun,ex_var) stateful_strand_step"
 type_synonym ex_stateful_strand = "(ex_fun,ex_var) stateful_strand"
@@ -249,16 +216,16 @@ abbreviation S\<^sub>k\<^sub>s::"(ex_fun,ex_var) stateful_strand_step list" wher
     insert\<langle>PK 0, revokedset (A 0) (A 0)\<rangle>,
     select\<langle>PK 0, validset (A 0) (A 0)\<rangle>,
     select\<langle>PK 0, ringset (A 0)\<rangle>,
-    receive\<langle>Fun invkey [Fun encodingsecret [], PK 0]\<rangle>,
-    receive\<langle>Fun sign [Fun invkey [Fun encodingsecret [], PK 0], Fun tuple' [A 0, PK 0]]\<rangle>,
-    send\<langle>Fun invkey [Fun encodingsecret [], PK 0]\<rangle>,
-    send\<langle>Fun sign [Fun invkey [Fun encodingsecret [], PK 0], Fun tuple' [A 0, PK 0]]\<rangle>
+    receive\<langle>[Fun invkey [Fun encodingsecret [], PK 0]]\<rangle>,
+    receive\<langle>[Fun sign [Fun invkey [Fun encodingsecret [], PK 0], Fun tuple' [A 0, PK 0]]]\<rangle>,
+    send\<langle>[Fun invkey [Fun encodingsecret [], PK 0]]\<rangle>,
+    send\<langle>[Fun sign [Fun invkey [Fun encodingsecret [], PK 0], Fun tuple' [A 0, PK 0]]]\<rangle>
 ]"
 
 theorem "stm.tfr\<^sub>s\<^sub>s\<^sub>t S\<^sub>k\<^sub>s"
 proof -
   let ?M = "concat (map subterms_list (trms_list\<^sub>s\<^sub>s\<^sub>t S\<^sub>k\<^sub>s@map (pair' tuple) (setops_list\<^sub>s\<^sub>s\<^sub>t S\<^sub>k\<^sub>s)))"
-  have "comp_tfr\<^sub>s\<^sub>s\<^sub>t arity Ana \<Gamma> tuple ?M S\<^sub>k\<^sub>s" by eval
+  have "comp_tfr\<^sub>s\<^sub>s\<^sub>t arity Ana \<Gamma> tuple (set ?M) S\<^sub>k\<^sub>s" by eval
   thus ?thesis by (rule stm.tfr\<^sub>s\<^sub>s\<^sub>t_if_comp_tfr\<^sub>s\<^sub>s\<^sub>t)
 qed
 
@@ -285,12 +252,12 @@ definition S'\<^sub>k\<^sub>s::"ex_labeled_stateful_strand_step list" where
 \<^cancel>\<open>constraint steps from the first protocol (duplicate steps are ignored)\<close>
 
     \<^cancel>\<open>rule R^1_1\<close>
-    \<langle>\<one>, send\<langle>invkeymsg (PK 0)\<rangle>\<rangle>,
+    \<langle>\<one>, send\<langle>[invkeymsg (PK 0)]\<rangle>\<rangle>,
     \<langle>\<star>, \<langle>PK 0 in validset (A 0) (A 1)\<rangle>\<rangle>,
-    \<langle>\<one>, receive\<langle>Fun (attack 0) []\<rangle>\<rangle>,
+    \<langle>\<one>, receive\<langle>[Fun (attack 0) []]\<rangle>\<rangle>,
 
     \<^cancel>\<open>rule R^2_1\<close>
-    \<langle>\<one>, send\<langle>signmsg (invkeymsg (PK 0)) (Fun tuple' [A 0, PK 0])\<rangle>\<rangle>,
+    \<langle>\<one>, send\<langle>[signmsg (invkeymsg (PK 0)) (Fun tuple' [A 0, PK 0])]\<rangle>\<rangle>,
     \<langle>\<star>, \<langle>PK 0 in validset (A 0) (A 1)\<rangle>\<rangle>,
     \<langle>\<star>, \<forall>X 0, X 1\<langle>PK 0 not in validset (Var (X 0)) (Var (X 1))\<rangle>\<rangle>,
     \<langle>\<one>, \<forall>X 0, X 1\<langle>PK 0 not in revokedset (Var (X 0)) (Var (X 1))\<rangle>\<rangle>,
@@ -301,8 +268,8 @@ definition S'\<^sub>k\<^sub>s::"ex_labeled_stateful_strand_step list" where
     \<langle>\<star>, \<langle>PK 0 in endauthset 0 (A 0) (A 1)\<rangle>\<rangle>,
 
     \<^cancel>\<open>rule R^4_1\<close>
-    \<langle>\<star>, receive\<langle>PK 0\<rangle>\<rangle>,
-    \<langle>\<star>, receive\<langle>invkeymsg (PK 0)\<rangle>\<rangle>,
+    \<langle>\<star>, receive\<langle>[PK 0]\<rangle>\<rangle>,
+    \<langle>\<star>, receive\<langle>[invkeymsg (PK 0)]\<rangle>\<rangle>,
 
     \<^cancel>\<open>rule R^5_1\<close>
     \<langle>\<one>, insert\<langle>PK 0, ringset (A 0)\<rangle>\<rangle>,
@@ -323,19 +290,19 @@ definition S'\<^sub>k\<^sub>s::"ex_labeled_stateful_strand_step list" where
     \<^cancel>\<open>nothing new\<close>
 
     \<^cancel>\<open>rule R^9_1\<close>
-    \<langle>\<one>, send\<langle>PK 0\<rangle>\<rangle>,
+    \<langle>\<one>, send\<langle>[PK 0]\<rangle>\<rangle>,
     
     \<^cancel>\<open>rule R^10_1\<close>
-    \<langle>\<one>, send\<langle>Fun (attack 0) []\<rangle>\<rangle>,
+    \<langle>\<one>, send\<langle>[Fun (attack 0) []]\<rangle>\<rangle>,
 
 \<^cancel>\<open>constraint steps from the second protocol (duplicate steps are ignored)\<close>
     \<^cancel>\<open>rule R^2_1\<close>
-    \<langle>\<two>, send\<langle>invkeymsg (PK 0)\<rangle>\<rangle>,
+    \<langle>\<two>, send\<langle>[invkeymsg (PK 0)]\<rangle>\<rangle>,
     \<langle>\<star>, \<langle>PK 0 in validset (A 0) (A 1)\<rangle>\<rangle>,
-    \<langle>\<two>, receive\<langle>Fun (attack 1) []\<rangle>\<rangle>,
+    \<langle>\<two>, receive\<langle>[Fun (attack 1) []]\<rangle>\<rangle>,
 
     \<^cancel>\<open>rule R^2_2\<close>
-    \<langle>\<two>, send\<langle>cryptmsg (PK 0) (updatemsg (A 0) (A 1) (PK 1) (pwmsg (A 0) (A 1)))\<rangle>\<rangle>,
+    \<langle>\<two>, send\<langle>[cryptmsg (PK 0) (updatemsg (A 0) (A 1) (PK 1) (pwmsg (A 0) (A 1)))]\<rangle>\<rangle>,
     \<langle>\<two>, select\<langle>PK 0, pubkeysset (A 0)\<rangle>\<rangle>,
     \<langle>\<two>, \<forall>X 0\<langle>PK 0 not in pubkeysset (Var (X 0))\<rangle>\<rangle>,
     \<langle>\<two>, \<forall>X 0\<langle>PK 0 not in seenset (Var (X 0))\<rangle>\<rangle>,
@@ -345,13 +312,13 @@ definition S'\<^sub>k\<^sub>s::"ex_labeled_stateful_strand_step list" where
     \<langle>\<star>, \<langle>PK 0 in endauthset 1 (A 0) (A 1)\<rangle>\<rangle>,
 
     \<^cancel>\<open>rule R^4_2\<close>
-    \<langle>\<star>, receive\<langle>PK 0\<rangle>\<rangle>,
-    \<langle>\<star>, receive\<langle>invkeymsg (PK 0)\<rangle>\<rangle>,
+    \<langle>\<star>, receive\<langle>[PK 0]\<rangle>\<rangle>,
+    \<langle>\<star>, receive\<langle>[invkeymsg (PK 0)]\<rangle>\<rangle>,
 
     \<^cancel>\<open>rule R^5_2\<close>
     \<langle>\<two>, select\<langle>PK 0, pubkeysset (A 0)\<rangle>\<rangle>,
     \<langle>\<star>, insert\<langle>PK 0, beginauthset 1 (A 0) (A 1)\<rangle>\<rangle>,
-    \<langle>\<two>, receive\<langle>cryptmsg (PK 0) (updatemsg (A 0) (A 1) (PK 1) (pwmsg (A 0) (A 1)))\<rangle>\<rangle>,
+    \<langle>\<two>, receive\<langle>[cryptmsg (PK 0) (updatemsg (A 0) (A 1) (PK 1) (pwmsg (A 0) (A 1)))]\<rangle>\<rangle>,
 
     \<^cancel>\<open>rule R^6_2\<close>
     \<langle>\<star>, \<langle>PK 0 not in endauthset 1 (A 0) (A 1)\<rangle>\<rangle>,
@@ -360,7 +327,7 @@ definition S'\<^sub>k\<^sub>s::"ex_labeled_stateful_strand_step list" where
     \<langle>\<two>, insert\<langle>PK 0, seenset (A 0)\<rangle>\<rangle>,
 
     \<^cancel>\<open>rule R^7_2\<close>
-    \<langle>\<two>, receive\<langle>pwmsg (A 0) (A 1)\<rangle>\<rangle>,
+    \<langle>\<two>, receive\<langle>[pwmsg (A 0) (A 1)]\<rangle>\<rangle>,
 
     \<^cancel>\<open>rule R^8_2\<close>
     \<^cancel>\<open>nothing new\<close>
@@ -369,14 +336,14 @@ definition S'\<^sub>k\<^sub>s::"ex_labeled_stateful_strand_step list" where
     \<langle>\<two>, insert\<langle>PK 0, pubkeysset (A 0)\<rangle>\<rangle>,
 
     \<^cancel>\<open>rule R^10_2\<close>
-    \<langle>\<two>, send\<langle>Fun (attack 1) []\<rangle>\<rangle>
+    \<langle>\<two>, send\<langle>[Fun (attack 1) []]\<rangle>\<rangle>
 ]"
 
 theorem "stm.tfr\<^sub>s\<^sub>s\<^sub>t (unlabel S'\<^sub>k\<^sub>s)"
 proof -
   let ?S = "unlabel S'\<^sub>k\<^sub>s"
   let ?M = "concat (map subterms_list (trms_list\<^sub>s\<^sub>s\<^sub>t ?S@map (pair' tuple) (setops_list\<^sub>s\<^sub>s\<^sub>t ?S)))"
-  have "comp_tfr\<^sub>s\<^sub>s\<^sub>t arity Ana \<Gamma> tuple ?M ?S" by eval
+  have "comp_tfr\<^sub>s\<^sub>s\<^sub>t arity Ana \<Gamma> tuple (set ?M) ?S" by eval
   thus ?thesis by (rule stm.tfr\<^sub>s\<^sub>s\<^sub>t_if_comp_tfr\<^sub>s\<^sub>s\<^sub>t)
 qed
 
@@ -393,12 +360,12 @@ theorem
     and "Sec \<equiv> (f (set S)) - {m. im.intruder_synth {} m}"
   shows "stm.par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t S'\<^sub>k\<^sub>s Sec"
 proof -
-  let ?N = "\<lambda>P. concat (map subterms_list (trms_list\<^sub>s\<^sub>s\<^sub>t P@map (pair' tuple) (setops_list\<^sub>s\<^sub>s\<^sub>t P)))"
+  let ?N = "\<lambda>P. set (concat (map subterms_list (trms_list\<^sub>s\<^sub>s\<^sub>t P@map (pair' tuple) (setops_list\<^sub>s\<^sub>s\<^sub>t P))))"
   let ?M = "\<lambda>l. ?N (proj_unl l S'\<^sub>k\<^sub>s)"
-  have "comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t public arity Ana \<Gamma> tuple S'\<^sub>k\<^sub>s ?M S"
+  have "comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t public arity Ana \<Gamma> tuple S'\<^sub>k\<^sub>s ?M (set S)"
     unfolding S_def by eval
   thus ?thesis
-    using stm.par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_if_comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t[of S'\<^sub>k\<^sub>s ?M S]
+    using stm.par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t_if_comp_par_comp\<^sub>l\<^sub>s\<^sub>s\<^sub>t[of S'\<^sub>k\<^sub>s ?M "set S"]
     unfolding Sec_def f_def wf\<^sub>t\<^sub>r\<^sub>m_def[symmetric] by blast
 qed
 

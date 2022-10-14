@@ -530,13 +530,13 @@ proof -
     by (simp add: minus_equiv_def_any_elem)
   then obtain yy where "Some yy = (x \<ominus> a) \<oplus> r" 
     by (metis (full_types) \<open>Some y = x \<oplus> r\<close> assms(2) asso3 commutative minus_equiv_def not_Some_eq)
-  then have "Some x = a \<oplus> (x \<ominus> a) \<and> x \<ominus> a \<succeq>  |x|"
-    by (simp add: assms(2) sep_algebra.minus_equiv_def sep_algebra_axioms)
+  then obtain "Some x = a \<oplus> (x \<ominus> a)" "x \<ominus> a \<succeq>  |x|"
+    by (simp_all add: assms(2) sep_algebra.minus_equiv_def sep_algebra_axioms)
   then obtain y' where "Some y' = a \<oplus> yy"
     using \<open>Some y = x \<oplus> r\<close> \<open>Some yy = x \<ominus> a \<oplus> r\<close> asso1
     by metis
   moreover have "y \<succeq> y'"
-    by (metis \<open>Some x = a \<oplus> (x \<ominus> a) \<and> x \<ominus> a \<succeq> |x|\<close> \<open>Some y = x \<oplus> r\<close> \<open>Some yy = x \<ominus> a \<oplus> r\<close> asso1 calculation option.inject succ_refl)
+    by (metis \<open>Some x = a \<oplus> (x \<ominus> a)\<close> \<open>Some y = x \<oplus> r\<close> \<open>Some yy = x \<ominus> a \<oplus> r\<close> asso1 calculation option.inject succ_refl)
   moreover obtain x' where "Some x' = (x \<ominus> a) \<oplus> a" 
     using assms(2) commutative minus_equiv_def by fastforce
   then have "y \<succeq> x'" 
@@ -831,15 +831,15 @@ lemma multi_take_drop:
       and "length l \<ge> 2"
     shows "\<exists>n a b. n > 0 \<and> n < length l \<and> multi_plus (take n l) a \<and> multi_plus (drop n l) b \<and> Some \<omega> = a \<oplus> b"
 proof -
-  obtain a b la lb where "l = la @ lb \<and> length la > 0 \<and> length lb > 0 \<and> multi_plus la a \<and> multi_plus lb b \<and> Some \<omega> = a \<oplus> b"
+  obtain a b la lb where asm0: "l = la @ lb \<and> length la > 0 \<and> length lb > 0 \<and> multi_plus la a \<and> multi_plus lb b \<and> Some \<omega> = a \<oplus> b"
     using assms(1) assms(2) multi_decompose by blast
   let ?n = "length la"
-  have "la = take ?n l" 
-    by (simp add: \<open>l = la @ lb \<and> 0 < length la \<and> 0 < length lb \<and> multi_plus la a \<and> multi_plus lb b \<and> Some \<omega> = a \<oplus> b\<close>)
+  have "la = take ?n l"
+    by (simp add: asm0)
   moreover have "lb = drop ?n l" 
-    by (simp add: \<open>l = la @ lb \<and> 0 < length la \<and> 0 < length lb \<and> multi_plus la a \<and> multi_plus lb b \<and> Some \<omega> = a \<oplus> b\<close>)
+    by (simp add: asm0)
   ultimately show ?thesis 
-    by (metis \<open>l = la @ lb \<and> 0 < length la \<and> 0 < length lb \<and> multi_plus la a \<and> multi_plus lb b \<and> Some \<omega> = a \<oplus> b\<close> length_drop zero_less_diff)
+    by (metis asm0 length_drop zero_less_diff)
 qed
 
 lemma multi_plus_single:
@@ -871,7 +871,8 @@ next
     then show ?thesis by linarith
   next
     case False
-    then have "length (l :: 'a list) \<ge> 2 \<and> length l \<le> n + 1 \<Longrightarrow> multi_plus l \<omega> \<longleftrightarrow> (\<exists>r. Some \<omega> = hd l \<oplus> r \<and> multi_plus (tl l) r)" (is "length l \<ge> 2  \<and> length l \<le> n + 1 \<Longrightarrow> ?A \<longleftrightarrow> ?B")
+    then have "length (l :: 'a list) \<ge> 2 \<and> length l \<le> n + 1 \<Longrightarrow> multi_plus l \<omega> \<longleftrightarrow> (\<exists>r. Some \<omega> = hd l \<oplus> r \<and> multi_plus (tl l) r)"
+      (is "length l \<ge> 2  \<and> length l \<le> n + 1 \<Longrightarrow> ?A \<longleftrightarrow> ?B")
     proof -
       assume asm: "length (l :: 'a list) \<ge> 2 \<and> length l \<le> n + 1"
       have "?B \<Longrightarrow> ?A"
@@ -890,13 +891,13 @@ next
         assume ?A
         then obtain la lb a b where "l = la @ lb" "length la > 0" "length lb > 0" "multi_plus la a" "multi_plus lb b" "Some \<omega> = a \<oplus> b"
           using asm multi_decompose by blast
-        then have "length la \<le> n \<and> length la \<ge> 2 \<longrightarrow> multi_plus la a = (\<exists>r. Some a = hd la \<oplus> r \<and> multi_plus (tl la) r)"
+        then have r0: "length la \<le> n \<and> length la \<ge> 2 \<longrightarrow> multi_plus la a = (\<exists>r. Some a = hd la \<oplus> r \<and> multi_plus (tl la) r)"
           using IH by blast
         then show ?B
         proof (cases "length la \<ge> 2")
           case True
           then obtain ra where "Some a = (hd la) \<oplus> ra" "multi_plus (tl la) ra"
-            by (metis Suc_eq_plus1 \<open>0 < length lb\<close> \<open>l = la @ lb\<close> \<open>length la \<le> n \<and> 2 \<le> length la \<longrightarrow> multi_plus la a = (\<exists>r. Some a = hd la \<oplus> r \<and> multi_plus (tl la) r)\<close> \<open>multi_plus la a\<close> append_eq_conv_conj asm drop_eq_Nil le_add1 le_less_trans length_append length_greater_0_conv less_Suc_eq_le order.not_eq_order_implies_strict)
+            by (metis Suc_eq_plus1 \<open>0 < length lb\<close> \<open>l = la @ lb\<close> r0 \<open>multi_plus la a\<close> append_eq_conv_conj asm drop_eq_Nil le_add1 le_less_trans length_append length_greater_0_conv less_Suc_eq_le order.not_eq_order_implies_strict)
           moreover obtain rab where "Some rab = ra \<oplus> b"
             by (metis \<open>Some \<omega> = a \<oplus> b\<close> calculation(1) asso2 option.exhaust_sel)
           then have "multi_plus ((tl la) @ lb) rab" 

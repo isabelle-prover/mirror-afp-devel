@@ -1,9 +1,9 @@
+section\<open>Basic relativization of cardinality\<close>
+
 theory Discipline_Cardinal
   imports
     Discipline_Function
 begin
-
-declare [[syntax_ambiguity_warning = false]]
 
 relativize functional "cardinal" "cardinal_rel" external
 relationalize "cardinal_rel" "is_cardinal"
@@ -19,12 +19,13 @@ abbreviation
   cardinal_r_set :: "[i,i]\<Rightarrow>i"  (\<open>|_|\<^bsup>_\<^esup>\<close>) where
   "|x|\<^bsup>M\<^esup> \<equiv> cardinal_rel(##M,x)"
 
-context M_trivial begin
+context M_trivial
+begin
 rel_closed for "cardinal"
   using Least_closed'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A"]
   unfolding cardinal_rel_def
   by simp
-end
+end \<comment> \<open>\<^locale>\<open>M_trivial\<close>\<close>
 
 manual_arity intermediate for "is_Int_fm"
   unfolding is_Int_fm_def
@@ -61,14 +62,14 @@ arity_theorem for "is_eqpoll_fm"
 
 arity_theorem for "is_cardinal_fm"
 
-context M_Perm begin
-
+context M_Perm
+begin
 is_iff_rel for "cardinal"
   using least_abs'[of "\<lambda>i. M(i) \<and> i \<approx>\<^bsup>M\<^esup> A"]
     is_eqpoll_iff
   unfolding is_cardinal_def cardinal_rel_def
   by simp
-end
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 
 reldb_add functional "Ord" "Ord"
 reldb_add relational "Ord" "ordinal"
@@ -110,20 +111,20 @@ abbreviation
   InfCard_r_set  :: "[i,i]\<Rightarrow>o"  (\<open>InfCard\<^bsup>_\<^esup>'(_')\<close>) where
   "InfCard\<^bsup>M\<^esup>(i) \<equiv> InfCard_rel(##M,i)"
 
+subsection\<open>Disicpline for \<^term>\<open>cadd\<close>\<close>
 relativize functional "cadd" "cadd_rel" external
 
 abbreviation
   cadd_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<oplus>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
   "A \<oplus>\<^bsup>M\<^esup> B \<equiv> cadd_rel(M,A,B)"
 
-context M_basic begin
+context M_basic
+begin
 rel_closed for "cadd"
   using cardinal_rel_closed
   unfolding cadd_rel_def
   by simp
-end
-
-(* relativization *)
+end \<comment> \<open>\<^locale>\<open>M_basic\<close>\<close>
 
 relationalize "cadd_rel" "is_cadd"
 
@@ -136,12 +137,16 @@ arity_theorem for "sum_fm"
 
 arity_theorem for "is_cadd_fm"
 
-context M_Perm begin
+context M_Perm
+begin
 is_iff_rel for "cadd"
   using is_cardinal_iff
   unfolding is_cadd_def cadd_rel_def
   by simp
-end
+
+end  \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
+
+subsection\<open>Disicpline for \<^term>\<open>cmult\<close>\<close>
 
 relativize functional "cmult" "cmult_rel" external
 
@@ -149,7 +154,6 @@ abbreviation
   cmult_r :: "[i,i\<Rightarrow>o,i] \<Rightarrow> i" (\<open>_ \<otimes>\<^bsup>_\<^esup> _\<close> [66,1,66] 65) where
   "A \<otimes>\<^bsup>M\<^esup> B \<equiv> cmult_rel(M,A,B)"
 
-(* relativization *)
 relationalize "cmult_rel" "is_cmult"
 
 declare cartprod_iff_sats [iff_sats]
@@ -158,8 +162,8 @@ synthesize "is_cmult" from_definition assuming "nonempty"
 
 arity_theorem for "is_cmult_fm"
 
-context M_Perm begin
-
+context M_Perm
+begin
 rel_closed for "cmult"
   using cardinal_rel_closed
   unfolding cmult_rel_def
@@ -170,6 +174,6 @@ is_iff_rel for "cmult"
   unfolding is_cmult_def cmult_rel_def
   by simp
 
-end
+end \<comment> \<open>\<^locale>\<open>M_Perm\<close>\<close>
 
 end

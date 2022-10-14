@@ -187,7 +187,7 @@ lemma (in NPreflow) E_ss_cfinvE: "E \<subseteq> Graph.E cf \<union> (Graph.E cf)
   apply (clarsimp)
   using no_parallel_edge (* Speed optimization: Adding this directly takes very long *)
   unfolding E_def
-  apply (simp add: )
+  apply simp
   done
   
   

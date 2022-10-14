@@ -1,11 +1,17 @@
 (* Title: thys/Rec_Def.thy
    Author: Jian Xu, Xingyuan Zhang, and Christian Urban
    Modifications: Sebastiaan Joosten
-*)
+   Modifications: Franz Regensburger (FABR) 08/2022
+     added LaTeX sections and some comments
+ *)
+
+chapter \<open>Recursive Function and their compilation into Turing Machines\<close>
 
 theory Rec_Def
   imports Main
 begin
+
+section \<open>Definition of a recursive datatype for Recursive Functions\<close>
 
 datatype recf =  z
   |  s
@@ -13,6 +19,8 @@ datatype recf =  z
   |  Cn nat recf "recf list"
   |  Pr nat recf recf
   |  Mn nat recf 
+
+section \<open>Definition of an interpreter for Recursive Functions\<close>
 
 definition pred_of_nl :: "nat list \<Rightarrow> nat list"
   where

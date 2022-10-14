@@ -1194,7 +1194,7 @@ next
   then have "list_all nValidV (Net.V tr)" by (auto intro: validFrom_nValidV reach.Istate)
   then have "compSec (decompV (Net.V tr)) (map translateSec (Net.V tr))" by (intro nValidV_compSec)
   then obtain sls1 where "compSec sls1 sl1'" and "\<forall>nid \<in> nodes. B nid (decompV (Net.V tr) nid) (sls1 nid)"
-    using `nB sl' sl1'` `these (map (Some \<circ> translateSec) (Net.V tr)) = sl'` unfolding nB_def by auto
+    using \<open>nB sl' sl1'\<close> \<open>these (map (Some \<circ> translateSec) (Net.V tr)) = sl'\<close> unfolding nB_def by auto
   moreover then obtain sl1 where "decompV sl1 = sls1" and "list_all nValidV sl1"
                              and "map translateSec sl1 = sl1'" by (elim compSecE)
   ultimately show ?case unfolding Net.nB_def by auto

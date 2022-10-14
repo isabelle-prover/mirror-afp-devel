@@ -309,7 +309,7 @@ text \<open>
       unfolding valid_def val_of_def by (auto simp: nth_append)
 
     lemma \<alpha>_append[simp]: "\<alpha> (l@[v]) = \<alpha> l + {#v#}"
-      by (auto simp: )
+      by auto
 
     subsection \<open>Auxiliary operations\<close>  
     text \<open>The auxiliary operations do not have a corresponding abstract operation, but

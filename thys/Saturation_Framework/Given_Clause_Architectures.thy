@@ -17,7 +17,8 @@ begin
 subsection \<open>Basis of the Given Clause Prover Architectures\<close>
 
 locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G Q
-  entails_q Inf_G_q Red_I_q Red_F_q \<G>_F_q \<G>_I_q Inf_FL
+  entails_q Inf_G_q Red_I_q Red_F_q \<G>_F_q \<G>_I_q
+  "{\<iota>\<^sub>F\<^sub>L :: ('f \<times> 'l) inference. Infer (map fst (prems_of \<iota>\<^sub>F\<^sub>L)) (fst (concl_of \<iota>\<^sub>F\<^sub>L)) \<in> Inf_F}"
   for
     Bot_F :: "'f set"
     and Inf_F :: "'f inference set"
@@ -29,7 +30,6 @@ locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G
     and Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set"
     and \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"
     and \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option"
-    and Inf_FL :: \<open>('f \<times> 'l) inference set\<close>
   + fixes
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
@@ -44,10 +44,12 @@ locale given_clause_basis = std?: labeled_lifting_intersection Bot_F Inf_F Bot_G
     prec_F_grounding: "q \<in> Q \<Longrightarrow> C2 \<prec>\<cdot> C1 \<Longrightarrow> \<G>_F_q q C1 \<subseteq> \<G>_F_q q C2" and
     active_minimal: "l2 \<noteq> active \<Longrightarrow> active \<sqsubset>L l2" and
     at_least_two_labels: "\<exists>l2. active \<sqsubset>L l2" and
-    inf_never_active: "\<iota> \<in> Inf_FL \<Longrightarrow> snd (concl_of \<iota>) \<noteq> active" and
     static_ref_comp: "statically_complete_calculus Bot_F Inf_F (\<Turnstile>\<inter>\<G>)
       no_labels.Red_I_\<G> no_labels.Red_F_\<G>_empty"
 begin
+
+abbreviation Inf_FL :: "('f \<times> 'l) inference set" where
+  "Inf_FL \<equiv> {\<iota>\<^sub>F\<^sub>L. Infer (map fst (prems_of \<iota>\<^sub>F\<^sub>L)) (fst (concl_of \<iota>\<^sub>F\<^sub>L)) \<in> Inf_F}"
 
 abbreviation Prec_eq_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<preceq>\<cdot>" 50) where
   "C \<preceq>\<cdot> D \<equiv> C \<doteq> D \<or> C \<prec>\<cdot> D"
@@ -251,7 +253,8 @@ proof
         unfolding no_labels.Red_I_\<G>_q_def by blast
       obtain \<iota>0_FL where i0_FL_in: "\<iota>0_FL \<in> Inf_FL" and i0_to_i0_FL: "\<iota>0 = to_F \<iota>0_FL"
         using Inf_F_to_Inf_FL[OF i0_in2] unfolding to_F_def
-        by (metis Ex_list_of_length fst_conv inference.exhaust_sel inference.inject map_fst_zip)
+        by (smt (verit) Ex_list_of_length fst_conv inference.exhaust_sel inference.sel(1)
+            inference.sel(2) map_fst_zip)
       have concl_swap: "fst (concl_of \<iota>0_FL) = concl_of \<iota>0"
         unfolding concl_of_def i0_to_i0_FL to_F_def by simp
       have subs1: "((\<G>_I_L_q q0 \<iota>0_FL) \<noteq> None \<and>
@@ -285,7 +288,7 @@ next
       have i1_in2: "\<iota>1 \<in> Inf_FL"
         using i1_in unfolding Red_I_\<G>_q_def by blast
       then have to_F_i1_in: "to_F \<iota>1 \<in> Inf_F"
-        using Inf_FL_to_Inf_F unfolding to_F_def by simp
+        using Inf_FL_to_Inf_F unfolding to_F_def by blast
       have concl_swap: "fst (concl_of \<iota>1) = concl_of (to_F \<iota>1)"
         unfolding concl_of_def to_F_def by simp
       then have i1_to_F_in: "to_F \<iota>1 \<in> no_labels.Red_I_\<G>_q q0 (fst ` N)"
@@ -301,7 +304,7 @@ next
         i1_in: "\<iota>1 \<in> {\<iota>0_FL \<in> Inf_FL. to_F \<iota>0_FL \<in> no_labels.Red_I_\<G>_q q0 (fst ` N)}"
       then have i1_in2: "\<iota>1 \<in> Inf_FL" by blast
       then have to_F_i1_in: "to_F \<iota>1 \<in> Inf_F"
-        using Inf_FL_to_Inf_F unfolding to_F_def by simp
+        using Inf_FL_to_Inf_F unfolding to_F_def by blast
       have concl_swap: "fst (concl_of \<iota>1) = concl_of (to_F \<iota>1)"
         unfolding concl_of_def to_F_def by simp
       then have "((\<G>_I_L_q q0 \<iota>1) \<noteq> None \<and> the (\<G>_I_L_q q0 \<iota>1) \<subseteq> Red_I_q q0 (\<G>_Fset_q q0 N))
@@ -388,7 +391,7 @@ end
 subsection \<open>Given Clause Procedure\<close>
 
 locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q
-  Red_F_q \<G>_F_q \<G>_I_q Inf_FL Equiv_F Prec_F Prec_L active
+  Red_F_q \<G>_F_q \<G>_I_q Equiv_F Prec_F Prec_L active
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -400,7 +403,6 @@ locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q R
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"  and
     \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option" and
-    Inf_FL :: \<open>('f \<times> 'l) inference set\<close> and
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
     Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>L" 50) and
@@ -408,16 +410,16 @@ locale given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q R
   assumes
     inf_have_prems: "\<iota>F \<in> Inf_F \<Longrightarrow> prems_of \<iota>F \<noteq> []"
 begin
-  
+
 lemma labeled_inf_have_prems: "\<iota> \<in> Inf_FL \<Longrightarrow> prems_of \<iota> \<noteq> []"
-  using inf_have_prems Inf_FL_to_Inf_F by fastforce
+  using inf_have_prems by fastforce
 
 inductive step :: "('f \<times> 'l) set \<Rightarrow> ('f \<times> 'l) set \<Rightarrow> bool" (infix "\<leadsto>GC" 50) where
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> M \<subseteq> Red_F (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> N1 \<leadsto>GC N2"
 | infer: "N1 = N \<union> {(C, L)} \<Longrightarrow> N2 = N \<union> {(C, active)} \<union> M \<Longrightarrow> L \<noteq> active \<Longrightarrow>
     active_subset M = {} \<Longrightarrow>
-    no_labels.Inf_between (fst ` (active_subset N)) {C}
+    no_labels.Inf_between (fst ` active_subset N) {C}
     \<subseteq> no_labels.Red_I (fst ` (N \<union> {(C, active)} \<union> M)) \<Longrightarrow>
     N1 \<leadsto>GC N2"
   
@@ -532,7 +534,7 @@ proof
     then have njm_prec_njm: "njm_prec < nj_min" by blast
     then have njm_prec_njm_enat: "enat njm_prec < enat nj_min" by simp
     have njm_prec_smaller_d: "njm_prec < llength Ns"
-      using HOL.no_atp(15)[OF njm_smaller_D njm_prec_njm_enat] .
+      by (rule less_trans[OF njm_prec_njm_enat njm_smaller_D])
     have njm_prec_all_suc: "\<forall>k>njm_prec. enat k < llength Ns \<longrightarrow> (C, active) \<in> lnth Ns k"
       using nj_prec_is in_allk by simp
     have notin_njm_prec: "(C, active) \<notin> lnth Ns njm_prec"
@@ -604,14 +606,14 @@ proof
     using deriv chain_lnth_rel n_in unfolding nj_set_def by blast
   have "\<exists>N C L M. (lnth Ns n = N \<union> {(C, L)} \<and>
       lnth Ns (Suc n) = N \<union> {(C, active)} \<union> M \<and> L \<noteq> active \<and> active_subset M = {} \<and>
-      no_labels.Inf_between (fst ` (active_subset N)) {C}
+      no_labels.Inf_between (fst ` active_subset N) {C}
       \<subseteq> no_labels.Red_I (fst ` (N \<union> {(C, active)} \<union> M)))"
   proof -
     have proc_or_infer: "(\<exists>N1 N M N2 M'. lnth Ns n = N1 \<and> lnth Ns (Suc n) = N2 \<and> N1 = N \<union> M \<and>
          N2 = N \<union> M' \<and> M \<subseteq> Red_F (N \<union> M') \<and> active_subset M' = {}) \<or>
        (\<exists>N1 N C L N2 M. lnth Ns n = N1 \<and> lnth Ns (Suc n) = N2 \<and> N1 = N \<union> {(C, L)} \<and>
          N2 = N \<union> {(C, active)} \<union> M \<and> L \<noteq> active \<and> active_subset M = {} \<and>
-         no_labels.Inf_between (fst ` (active_subset N)) {C} \<subseteq>
+         no_labels.Inf_between (fst ` active_subset N) {C} \<subseteq>
            no_labels.Red_I (fst ` (N \<union> {(C, active)} \<union> M)))"
       using step.simps[of "lnth Ns n" "lnth Ns (Suc n)"] step_n by blast
     show ?thesis
@@ -619,7 +621,7 @@ proof
       by (smt Un_iff active_subset_def mem_Collect_eq snd_conv sup_bot.right_neutral)
   qed
   then obtain N M L where inf_from_subs:
-    "no_labels.Inf_between (fst ` (active_subset N)) {C0}
+    "no_labels.Inf_between (fst ` active_subset N) {C0}
      \<subseteq> no_labels.Red_I (fst ` (N \<union> {(C0, active)} \<union> M))" and
     nth_d_is: "lnth Ns n = N \<union> {(C0, L)}" and
     suc_nth_d_is: "lnth Ns (Suc n) = N \<union> {(C0, active)} \<union> M" and
@@ -656,7 +658,7 @@ proof
   moreover have "\<not> (set (prems_of \<iota>) \<subseteq> active_subset N - {(C0, active)})" using C0_prems_i by blast
   ultimately have "\<iota> \<in> Inf_between (active_subset N) {(C0, active)}"
     using i_in_inf_fl unfolding Inf_between_def Inf_from_def by blast
-  then have "to_F \<iota> \<in> no_labels.Inf_between (fst ` (active_subset N)) {C0}"
+  then have "to_F \<iota> \<in> no_labels.Inf_between (fst ` active_subset N) {C0}"
     unfolding to_F_def Inf_between_def Inf_from_def
       no_labels.Inf_between_def no_labels.Inf_from_def using Inf_FL_to_Inf_F
     by force
@@ -717,7 +719,7 @@ end
 subsection \<open>Lazy Given Clause Procedure\<close>
 
 locale lazy_given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_G_q Red_I_q
-  Red_F_q \<G>_F_q \<G>_I_q Inf_FL Equiv_F Prec_F Prec_L active
+  Red_F_q \<G>_F_q \<G>_I_q Equiv_F Prec_F Prec_L active
   for
     Bot_F :: "'f set" and
     Inf_F :: "'f inference set" and
@@ -729,7 +731,6 @@ locale lazy_given_clause = given_clause_basis Bot_F Inf_F Bot_G Q entails_q Inf_
     Red_F_q :: "'q \<Rightarrow> 'g set \<Rightarrow> 'g set" and
     \<G>_F_q :: "'q \<Rightarrow> 'f \<Rightarrow> 'g set"  and
     \<G>_I_q :: "'q \<Rightarrow> 'f inference \<Rightarrow> 'g inference set option" and
-    Inf_FL :: \<open>('f \<times> 'l) inference set\<close> and
     Equiv_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<doteq>" 50) and
     Prec_F :: "'f \<Rightarrow> 'f \<Rightarrow> bool" (infix "\<prec>\<cdot>" 50) and
     Prec_L :: "'l \<Rightarrow> 'l \<Rightarrow> bool" (infix "\<sqsubset>L" 50) and
@@ -741,12 +742,12 @@ inductive step :: "'f inference set \<times> ('f \<times> 'l) set \<Rightarrow>
   process: "N1 = N \<union> M \<Longrightarrow> N2 = N \<union> M' \<Longrightarrow> M \<subseteq> Red_F (N \<union> M') \<Longrightarrow>
     active_subset M' = {} \<Longrightarrow> (T, N1) \<leadsto>LGC (T, N2)" |
   schedule_infer: "T2 = T1 \<union> T' \<Longrightarrow> N1 = N \<union> {(C, L)} \<Longrightarrow> N2 = N \<union> {(C, active)} \<Longrightarrow>
-    L \<noteq> active \<Longrightarrow> T' = no_labels.Inf_between (fst ` (active_subset N)) {C} \<Longrightarrow>
+    L \<noteq> active \<Longrightarrow> T' = no_labels.Inf_between (fst ` active_subset N) {C} \<Longrightarrow>
     (T1, N1) \<leadsto>LGC (T2, N2)" |
   compute_infer: "T1 = T2 \<union> {\<iota>} \<Longrightarrow> N2 = N1 \<union> M \<Longrightarrow> active_subset M = {} \<Longrightarrow>
     \<iota> \<in> no_labels.Red_I (fst ` (N1 \<union> M)) \<Longrightarrow> (T1, N1) \<leadsto>LGC (T2, N2)" |
-  delete_orphans: "T1 = T2 \<union> T' \<Longrightarrow>
-    T' \<inter> no_labels.Inf_from (fst ` (active_subset N)) = {} \<Longrightarrow> (T1, N) \<leadsto>LGC (T2, N)"
+  delete_orphan_infers: "T1 = T2 \<union> T' \<Longrightarrow>
+    T' \<inter> no_labels.Inf_from (fst ` active_subset N) = {} \<Longrightarrow> (T1, N) \<leadsto>LGC (T2, N)"
 
 lemma premise_free_inf_always_from: "\<iota> \<in> Inf_F \<Longrightarrow> prems_of \<iota> = [] \<Longrightarrow> \<iota> \<in> no_labels.Inf_from N"
   unfolding no_labels.Inf_from_def by simp
@@ -805,7 +806,7 @@ lemma lgc_fair:
     deriv: "chain (\<leadsto>LGC) Ns" and
     init_state: "active_subset (snd (lhd Ns)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd Ns)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
+    no_prems_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
     final_schedule: "Liminf_llist (lmap fst Ns) = {}"
   shows "fair (lmap snd Ns)"
   unfolding fair_def
@@ -842,7 +843,9 @@ proof
         (C, active) \<in> \<Inter> (snd ` (lnth Ns ` {k. nj \<le> k \<and> enat k < llength Ns})))" by blast
     then have in_allk: "\<forall>k. k \<ge> nj_min \<longrightarrow> enat k < llength Ns \<longrightarrow> (C, active) \<in> snd (lnth Ns k)"
       using c_in3 nj_is c_in2 INT_E LeastI_ex
-      by (smt INT_iff INT_simps(10) c_is image_eqI mem_Collect_eq)
+        [of "\<lambda>n. enat n < llength Ns
+            \<and> (C, active) \<in> \<Inter> (snd ` lnth Ns ` {na. n \<le> na \<and> enat na < llength Ns})"]
+      by blast
     have njm_smaller_D: "enat nj_min < llength Ns"
       using nj_min_is
       by (smt LeastI_ex \<open>\<And>thesis. (\<And>nj. \<lbrakk>enat nj < llength Ns;
@@ -855,7 +858,7 @@ proof
     then have njm_prec_njm: "njm_prec < nj_min" by blast
     then have njm_prec_njm_enat: "enat njm_prec < enat nj_min" by simp
     have njm_prec_smaller_d: "njm_prec < llength Ns"
-      using HOL.no_atp(15)[OF njm_smaller_D njm_prec_njm_enat] .
+      by (rule less_trans[OF njm_prec_njm_enat njm_smaller_D])
     have njm_prec_all_suc: "\<forall>k>njm_prec. enat k < llength Ns \<longrightarrow> (C, active) \<in> snd (lnth Ns k)"
       using nj_prec_is in_allk by simp
     have notin_njm_prec: "(C, active) \<notin> snd (lnth Ns njm_prec)"
@@ -898,7 +901,7 @@ proof
   {
     assume m_null: "m = 0"
     then have "enat 0 < llength Ns \<and> to_F \<iota> \<in> fst (lhd Ns)"
-      using no_prems_init_active i_in_F m_def_F zero_enat_def chain_length_pos[OF deriv] by auto
+      using no_prems_init i_in_F m_def_F zero_enat_def chain_length_pos[OF deriv] by auto
     then have "\<exists>n. enat n < llength Ns \<and> to_F \<iota> \<in> fst (lnth Ns n)"
       unfolding lhd_is by blast
   }
@@ -979,7 +982,7 @@ proof
     moreover have "\<not> (set (prems_of \<iota>) \<subseteq> active_subset N - {(C0, active)})" using C0_prems_i by blast
     ultimately have "\<iota> \<in> Inf_between (active_subset N) {(C0, active)}"
       using i_in_inf_fl prems_i_active unfolding Inf_between_def Inf_from_def by blast
-    then have "to_F \<iota> \<in> no_labels.Inf_between (fst ` (active_subset N)) {C0}"
+    then have "to_F \<iota> \<in> no_labels.Inf_between (fst ` active_subset N) {C0}"
       unfolding to_F_def Inf_between_def Inf_from_def
         no_labels.Inf_between_def no_labels.Inf_from_def
       using Inf_FL_to_Inf_F by force
@@ -1132,7 +1135,7 @@ theorem lgc_complete_Liminf:
     deriv: "chain (\<leadsto>LGC) Ns" and
     init_state: "active_subset (snd (lhd Ns)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd Ns)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
+    no_prems_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
     final_schedule: "Liminf_llist (lmap fst Ns) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G> (fst ` snd (lhd Ns)) {B}"
@@ -1144,7 +1147,7 @@ proof -
   have labeled_bot_entailed: "entails_\<G>_L (snd (lhd Ns)) {(B, active)}"
     using labeled_entailment_lifting bot_entailed by fastforce
   have "fair (lmap snd Ns)"
-    using lgc_fair[OF deriv init_state final_state no_prems_init_active final_schedule] .
+    using lgc_fair[OF deriv init_state final_state no_prems_init final_schedule] .
   then show ?thesis
     using dynamically_complete_Liminf labeled_b_in lgc_to_red[OF deriv]
       labeled_bot_entailed simp_snd_lmap std_Red_I_eq
@@ -1157,7 +1160,7 @@ theorem lgc_complete:
     deriv: "chain (\<leadsto>LGC) Ns" and
     init_state: "active_subset (snd (lhd Ns)) = {}" and
     final_state: "passive_subset (Liminf_llist (lmap snd Ns)) = {}" and
-    no_prems_init_active: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
+    no_prems_init: "\<forall>\<iota> \<in> Inf_F. prems_of \<iota> = [] \<longrightarrow> \<iota> \<in> fst (lhd Ns)" and
     final_schedule: "Liminf_llist (lmap fst Ns) = {}" and
     b_in: "B \<in> Bot_F" and
     bot_entailed: "no_labels.entails_\<G> (fst ` snd (lhd Ns)) {B}"

@@ -112,14 +112,14 @@ next
   moreover
   from \<open>typeof_addr h a = \<lfloor>Class_type C\<rfloor>\<close> FDTs
   have "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) ?als ?Ts"
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    unfolding list_all2_map1 list_all2_map2 list_all2_same
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
     by(rule list_all2_mono)(rule addr_loc_type_hext_mono[OF _ \<open>h \<unlhd> h''\<close>])
   moreover from \<open>(h'', a') \<in> allocate h (Class_type C)\<close> \<open>is_class P C\<close>
   have "typeof_addr h'' a' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
   with FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts"
-    unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+    unfolding list_all2_map1 list_all2_map2 list_all2_same
     by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
   ultimately have "hconf h'" by(rule hconf_heap_copies_mono)
   thus ?thesis using ObjClone by simp
@@ -137,11 +137,11 @@ next
   have type'a: "typeof_addr h'' a = \<lfloor>Array_type T n\<rfloor>" by(auto intro: hext_arrD)
   note FDTs = \<open>P \<turnstile> Object has_fields FDTs\<close>
   from type'a FDTs have "list_all2 (\<lambda>al T. P,h'' \<turnstile> a@al : T) ?als ?Ts"
-    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
   moreover from \<open>(h'', a') \<in> allocate h (Array_type T n)\<close> \<open>is_type P (T\<lfloor>\<rceil>)\<close>
   have "typeof_addr h'' a' = \<lfloor>Array_type T n\<rfloor>" by(auto dest: allocate_SomeD)
   hence "list_all2 (\<lambda>al T. P,h'' \<turnstile> a'@al : T) ?als ?Ts" using FDTs
-    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+    by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def distinct_fst_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
   ultimately have "hconf h'" by(rule hconf_heap_copies_mono)
   thus ?thesis using ArrClone by simp
 qed
@@ -265,14 +265,14 @@ proof -
       let ?als = "map (\<lambda>((F, D), Tfm). CField D F) FDTs"
       let ?Ts = "map (\<lambda>(FD, T). fst (the (map_of FDTs FD))) FDTs"
       from typea FDTs have "list_all2 (\<lambda>al T. P,h \<turnstile> a@al : T) ?als ?Ts"
-        unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+        unfolding list_all2_map1 list_all2_map2 list_all2_same
         by(fastforce intro: addr_loc_type.intros simp add: has_field_def dest: weak_map_of_SomeI)
       hence "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) ?als ?Ts"
         by(rule list_all2_mono)(simp add: addr_loc_type_hext_mono[OF _ \<open>h \<unlhd> h'\<close>] split_def)
       moreover from new \<open>is_class P C\<close>
       have "typeof_addr h' a' = \<lfloor>Class_type C\<rfloor>" by(auto dest: allocate_SomeD)
       with FDTs have "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) ?als ?Ts"
-        unfolding list_all2_map1 list_all2_map2 list_all2_refl_conv
+        unfolding list_all2_map1 list_all2_map2 list_all2_same
         by(fastforce intro: addr_loc_type.intros map_of_SomeI simp add: has_field_def dest: weak_map_of_SomeI)
       ultimately obtain obs h'' where "heap_copies a a' ?als h' obs h''" "hconf h''"
         by(blast dest: heap_copies_progress[OF \<open>hconf h'\<close>])
@@ -287,12 +287,12 @@ proof -
       from \<open>h \<unlhd> h'\<close> typea have type'a: "typeof_addr h' a = \<lfloor>Array_type T n\<rfloor>"
         by(auto intro: hext_arrD)
       from type'a FDTs have "list_all2 (\<lambda>al T. P,h' \<turnstile> a@al : T) ?als ?Ts"
-        by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+        by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
       moreover from new \<open>is_htype P hT\<close>
       have "typeof_addr h' a' = \<lfloor>Array_type T n\<rfloor>"
         by(auto dest: allocate_SomeD)
       hence "list_all2 (\<lambda>al T. P,h' \<turnstile> a'@al : T) ?als ?Ts" using FDTs
-        by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_refl_conv dest: weak_map_of_SomeI)
+        by(fastforce intro: list_all2_all_nthI addr_loc_type.intros simp add: has_field_def list_all2_append list_all2_map1 list_all2_map2 list_all2_same dest: weak_map_of_SomeI)
       ultimately obtain obs h'' where "heap_copies a a' ?als h' obs h''" "hconf h''"
         by(blast dest: heap_copies_progress[OF \<open>hconf h'\<close>])
       with typea new FDTs ArrClone[of h a T n h' a' P FDTs obs h'']

@@ -5,8 +5,7 @@ theory Nat_Miscellanea
     Delta_System_Lemma.ZF_Library
 begin
 
-(* no_notation add (infixl \<open>#+\<close> 65)
-no_notation diff (infixl \<open>#-\<close> 65) *)
+hide_const (open) Order.pred
 notation add (infixl \<open>+\<^sub>\<omega>\<close> 65)
 notation diff (infixl \<open>-\<^sub>\<omega>\<close> 65)
 

@@ -1,7 +1,10 @@
 (* Title: thys/UTM.thy
    Author: Jian Xu, Xingyuan Zhang, and Christian Urban
    Modifications: Sebastiaan Joosten
-*)
+   Modifications: Franz Regensburger (FABR) 08/2022
+     - added some auxiliary lemmas
+     - added subsections
+ *)
 
 chapter \<open>Construction of a Universal Turing Machine\<close>
 
@@ -9,28 +12,41 @@ theory UTM
   imports Recursive Abacus UF HOL.GCD Turing_Hoare
 begin
 
+(* Initialize simpset: the following proofs depend on a cleaned up simpset *)
+(*
+declare adjust.simps[simp del]
+declare seq_tm.simps [simp del] 
+declare shift.simps[simp del]
+declare composable_tm.simps[simp del]
+declare step.simps[simp del]
+declare steps.simps[simp del]
+declare fetch.simps[simp del]
+*)
+
 section \<open>Wang coding of input arguments\<close>
 
 text \<open>
   The direct compilation of the universal function \<open>rec_F\<close> can
-  not give us UTM, because \<open>rec_F\<close> is of arity 2, where the
-  first argument represents the Godel coding of the TM being simulated
+  not give us the \<open>utm\<close>, because \<open>rec_F\<close> is of arity 2, where the
+  first argument represents the Gödel coding of the TM being simulated
   and the second argument represents the right number (in Wang's
-  coding) of the TM tape.  (Notice, left number is always \<open>0\<close>
-  at the very beginning). However, UTM needs to simulate the execution
-  of any TM which may very well take many input arguments. Therefore,
-  a initialization TM needs to run before the TM compiled from \<open>rec_F\<close>, and the sequential composition of these two TMs will give
-  rise to the UTM we are seeking. The purpose of this initialization
+  coding) of the TM tape.  (Notice, the left number is always \<open>0\<close>
+  at the very beginning). However, the \<open>utm\<close> needs to simulate the execution
+  of any TM which may take many input arguments.
+
+  Therefore, an initialization TM needs to run before the TM compiled from \<open>rec_F\<close>,
+  and the sequential composition of these two TMs will give
+  rise to the \<open>utm\<close> we are seeking. The purpose of this initialization
   TM is to transform the multiple input arguments of the TM being
   simulated into Wang's coding, so that it can be consumed by the TM
   compiled from \<open>rec_F\<close> as the second argument.
 
-  However, this initialization TM (named \<open>t_wcode\<close>) can not be
+  However, this initialization TM (named \<open>wcode_tm\<close>) can not be
   constructed by compiling from any recursive function, because every
   recursive function takes a fixed number of input arguments, while
-  \<open>t_wcode\<close> needs to take varying number of arguments and
-  tranform them into Wang's coding. Therefore, this section give a
-  direct construction of \<open>t_wcode\<close> with just some parts being
+  \<open>wcode_tm\<close> needs to take varying number of arguments and
+  tranform them into Wang's coding. Therefore, this section gives a
+  direct construction of \<open>wcode_tm\<close> with just some parts being
   obtained from recursive functions.
 
 \newlength{\basewidth}
@@ -41,9 +57,8 @@ text \<open>
 
 The TM used to generate the Wang's code of input arguments is divided into three TMs
  executed sequentially, namely $prepare$, $mainwork$ and $adjust$.
- According to the
- convention, the start state of ever TM is fixed to state $1$ while the final state is
- fixed to $0$.
+ According to the convention, the start state of ever TM is fixed to state $1$ while
+ the final state is fixed to $0$.
 
 The input and output of $prepare$ are illustrated respectively by Figure
 \ref{prepare_input} and \ref{prepare_output}.
@@ -89,12 +104,12 @@ The input and output of $prepare$ are illustrated respectively by Figure
 \end{figure}
 
 As shown in Figure \ref{prepare_input}, the input of $prepare$ is the
-same as the the input of UTM, where $m$ is the Godel coding of the TM
+same as the the input of \<open>utm\<close>, where $m$ is the Gödel coding of the TM
 being interpreted and $a_1$ through $a_n$ are the $n$ input arguments
 of the TM under interpretation. The purpose of $purpose$ is to
 transform this initial tape layout to the one shown in Figure
 \ref{prepare_output}, which is convenient for the generation of Wang's
-codding of $a_1, \ldots, a_n$. The coding procedure starts from $a_n$
+coding of $a_1, \ldots, a_n$. The coding procedure starts from $a_n$
 and ends after $a_1$ is encoded. The coding result is stored in an
 accumulator at the end of the tape (initially represented by the $1$
 two blanks right to $a_n$ in Figure \ref{prepare_output}). In Figure
@@ -152,12 +167,15 @@ a large chunk of data. The diagram of $prepare$ is given in Figure
 \caption{The diagram of TM $prepare$} \label{prepare_diag}
 \end{figure}
 
-The purpose of TM $mainwork$ is to compute the Wang's encoding of $a_1, \ldots, a_n$. Every bit of $a_1, \ldots, a_n$, including the separating bits, is processed from left to right.
+The purpose of TM $mainwork$ is to compute Wang's encoding of $a_1,
+\ldots, a_n$. Every bit of $a_1, \ldots, a_n$, including the separating bits,
+is processed from left to right.
 In order to detect the termination condition when the left most bit of $a_1$ is reached,
 TM $mainwork$ needs to look ahead and consider three different situations at the start of
 every iteration:
 \begin{enumerate}
-    \item The TM configuration for the first situation is shown in Figure \ref{mainwork_case_one_input},
+    \item The TM configuration for the first situation is shown in Figure
+          \ref{mainwork_case_one_input},
         where the accumulator is stored in $r$, both of the next two bits
         to be encoded are $1$. The configuration at the end of the iteration
         is shown in Figure \ref{mainwork_case_one_output}, where the first 1-bit has been
@@ -538,40 +556,40 @@ definition fourtimes_ly :: "nat list"
   where
     "fourtimes_ly = layout_of abc_fourtimes"
 
-definition t_twice_compile :: "instr list"
+definition twice_compile_tm :: "instr list"
   where
-    "t_twice_compile= (tm_of abc_twice @ (shift (mopup 1) (length (tm_of abc_twice) div 2)))"
+    "twice_compile_tm= (tm_of abc_twice @ (shift (mopup_n_tm 1) (length (tm_of abc_twice) div 2)))"
 
-definition t_twice :: "instr list"
+definition twice_tm :: "instr list"
   where
-    "t_twice = adjust0 t_twice_compile"
+    "twice_tm = adjust0 twice_compile_tm"
 
-definition t_fourtimes_compile :: "instr list"
+definition fourtimes_compile_tm :: "instr list"
   where
-    "t_fourtimes_compile= (tm_of abc_fourtimes @ (shift (mopup 1) (length (tm_of abc_fourtimes) div 2)))"
+    "fourtimes_compile_tm= (tm_of abc_fourtimes @ (shift (mopup_n_tm 1) (length (tm_of abc_fourtimes) div 2)))"
 
-definition t_fourtimes :: "instr list"
+definition fourtimes_tm :: "instr list"
   where
-    "t_fourtimes = adjust0 t_fourtimes_compile"
+    "fourtimes_tm = adjust0 fourtimes_compile_tm"
 
-definition t_twice_len :: "nat"
+definition twice_tm_len :: "nat"
   where
-    "t_twice_len = length t_twice div 2"
+    "twice_tm_len = length twice_tm div 2"
 
-definition t_wcode_main_first_part:: "instr list"
+definition wcode_main_first_part_tm:: "instr list"
   where
-    "t_wcode_main_first_part \<equiv> 
+    "wcode_main_first_part_tm \<equiv> 
                    [(L, 1), (L, 2), (L, 7), (R, 3),
-                    (R, 4), (W0, 3), (R, 4), (R, 5),
-                    (W1, 6), (R, 5), (R, 13), (L, 6),
+                    (R, 4), (WB, 3), (R, 4), (R, 5),
+                    (WO, 6), (R, 5), (R, 13), (L, 6),
                     (R, 0), (R, 8), (R, 9), (Nop, 8),
-                    (R, 10), (W0, 9), (R, 10), (R, 11), 
-                    (W1, 12), (R, 11), (R, t_twice_len + 14), (L, 12)]"
+                    (R, 10), (WB, 9), (R, 10), (R, 11), 
+                    (WO, 12), (R, 11), (R, twice_tm_len + 14), (L, 12)]"
 
-definition t_wcode_main :: "instr list"
+definition wcode_main_tm :: "instr list"
   where
-    "t_wcode_main = (t_wcode_main_first_part @ shift t_twice 12 @ [(L, 1), (L, 1)]
-                    @ shift t_fourtimes (t_twice_len + 13) @ [(L, 1), (L, 1)])"
+    "wcode_main_tm = (wcode_main_first_part_tm @ shift twice_tm 12 @ [(L, 1), (L, 1)]
+                    @ shift fourtimes_tm (twice_tm_len + 13) @ [(L, 1), (L, 1)])"
 
 fun bl_bin :: "cell list \<Rightarrow> nat"
   where
@@ -647,9 +665,9 @@ fun wcode_on_right_moving_1 :: "bin_inv_t"
              ml + mr > Suc 0)"
 
 declare wcode_on_right_moving_1.simps [simp del] 
-
+(*
 declare wcode_on_right_moving_1.simps[simp del]
-
+*)
 fun wcode_goon_right_moving_1 :: "bin_inv_t"
   where
     "wcode_goon_right_moving_1 ires rs (l, r) = 
@@ -713,7 +731,7 @@ lemma exp_1[simp]: "a\<up>(Suc 0) = [a]"
   by(simp)
 
 lemma tape_of_nl_cons_app1: "(<a # xs @ [b]>) = (Oc\<up>(Suc a) @ Bk # (<xs@ [b]>))"
-  apply(case_tac xs; simp add: tape_of_list_def tape_of_nat_list.simps tape_of_nat_def)
+  apply(case_tac xs; simp add: tape_of_list_def  tape_of_nat_def)
   done
 
 lemma bl_bin_bk_oc[simp]:
@@ -834,36 +852,36 @@ definition wcode_double_case_le :: "(config \<times> config) set"
   where "wcode_double_case_le \<equiv> (inv_image lex_pair wcode_double_case_measure)"
 
 lemma wf_lex_pair[intro]: "wf lex_pair"
-  by(auto intro:wf_lex_prod simp:lex_pair_def)
+  by(auto  simp:lex_pair_def)
 
 lemma wf_wcode_double_case_le[intro]: "wf wcode_double_case_le"
-  by(auto intro:wf_inv_image simp: wcode_double_case_le_def )
+  by(auto  simp: wcode_double_case_le_def )
 
-lemma fetch_t_wcode_main[simp]:
-  "fetch t_wcode_main (Suc 0) Bk = (L, Suc 0)"
-  "fetch t_wcode_main (Suc 0) Oc = (L, Suc (Suc 0))"
-  "fetch t_wcode_main (Suc (Suc 0)) Oc = (R, 3)"
-  "fetch t_wcode_main (Suc (Suc 0)) Bk = (L, 7)"
-  "fetch t_wcode_main (Suc (Suc (Suc 0))) Bk = (R, 4)"
-  "fetch t_wcode_main (Suc (Suc (Suc 0))) Oc = (W0, 3)"
-  "fetch t_wcode_main 4 Bk = (R, 4)"
-  "fetch t_wcode_main 4 Oc = (R, 5)"
-  "fetch t_wcode_main 5 Oc = (R, 5)"
-  "fetch t_wcode_main 5 Bk = (W1, 6)"
-  "fetch t_wcode_main 6 Bk = (R, 13)"
-  "fetch t_wcode_main 6 Oc = (L, 6)"
-  "fetch t_wcode_main 7 Oc = (R, 8)"
-  "fetch t_wcode_main 7 Bk = (R, 0)"
-  "fetch t_wcode_main 8 Bk = (R, 9)"
-  "fetch t_wcode_main 9 Bk = (R, 10)"
-  "fetch t_wcode_main 9 Oc = (W0, 9)"
-  "fetch t_wcode_main 10 Bk = (R, 10)"
-  "fetch t_wcode_main 10 Oc = (R, 11)"
-  "fetch t_wcode_main 11 Bk = (W1, 12)"
-  "fetch t_wcode_main 11 Oc = (R, 11)"
-  "fetch t_wcode_main 12 Oc = (L, 12)"
-  "fetch t_wcode_main 12 Bk = (R, t_twice_len + 14)"
-  by(auto simp: t_wcode_main_def t_wcode_main_first_part_def fetch.simps numeral)
+lemma fetch_wcode_main_tm[simp]:
+  "fetch wcode_main_tm (Suc 0) Bk = (L, Suc 0)"
+  "fetch wcode_main_tm (Suc 0) Oc = (L, Suc (Suc 0))"
+  "fetch wcode_main_tm (Suc (Suc 0)) Oc = (R, 3)"
+  "fetch wcode_main_tm (Suc (Suc 0)) Bk = (L, 7)"
+  "fetch wcode_main_tm (Suc (Suc (Suc 0))) Bk = (R, 4)"
+  "fetch wcode_main_tm (Suc (Suc (Suc 0))) Oc = (WB, 3)"
+  "fetch wcode_main_tm 4 Bk = (R, 4)"
+  "fetch wcode_main_tm 4 Oc = (R, 5)"
+  "fetch wcode_main_tm 5 Oc = (R, 5)"
+  "fetch wcode_main_tm 5 Bk = (WO, 6)"
+  "fetch wcode_main_tm 6 Bk = (R, 13)"
+  "fetch wcode_main_tm 6 Oc = (L, 6)"
+  "fetch wcode_main_tm 7 Oc = (R, 8)"
+  "fetch wcode_main_tm 7 Bk = (R, 0)"
+  "fetch wcode_main_tm 8 Bk = (R, 9)"
+  "fetch wcode_main_tm 9 Bk = (R, 10)"
+  "fetch wcode_main_tm 9 Oc = (WB, 9)"
+  "fetch wcode_main_tm 10 Bk = (R, 10)"
+  "fetch wcode_main_tm 10 Oc = (R, 11)"
+  "fetch wcode_main_tm 11 Bk = (WO, 12)"
+  "fetch wcode_main_tm 11 Oc = (R, 11)"
+  "fetch wcode_main_tm 12 Oc = (L, 12)"
+  "fetch wcode_main_tm 12 Bk = (R, twice_tm_len + 14)"
+  by(auto simp: wcode_main_tm_def wcode_main_first_part_tm_def fetch.simps numeral_eqs_upto_12)
 
 declare wcode_on_checking_1.simps[simp del]
 
@@ -890,7 +908,8 @@ lemma wcode_on_left_moving_1E[elim]: "\<lbrakk>wcode_on_left_moving_1 ires rs (b
    apply(rename_tac ml mr rn)
    apply(case_tac ml, simp)
     apply(rule_tac x = "mr - Suc (Suc 0)" in exI, rule_tac x = rn in exI)
-    apply (smt One_nat_def Suc_diff_Suc append_Cons empty_replicate list.sel(3) neq0_conv replicate_Suc replicate_app_Cons_same tl_append2 tl_replicate)
+    apply (smt One_nat_def Suc_diff_Suc append_Cons empty_replicate list.sel(3) neq0_conv replicate_Suc
+           replicate_app_Cons_same tl_append2 tl_replicate)
    apply(rule_tac disjI1)
    apply (metis add_Suc_shift less_SucI list.exhaust_sel list.inject list.simps(3) replicate_Suc_iff_anywhere)
   by simp
@@ -1045,16 +1064,17 @@ lemma wcode_backto_standard_pos_OcE[elim]: "\<lbrakk>wcode_backto_standard_pos i
    apply(rule_tac disjI1, rule_tac conjI)
     apply(rule_tac x = ln  in exI, force, rule_tac x = rn in exI, force, force).
 
-declare nth_of.simps[simp del] fetch.simps[simp del]
+declare nth_of.simps[simp del]
+
 lemma wcode_double_case_first_correctness:
   "let P = (\<lambda> (st, l, r). st = 13) in 
        let Q = (\<lambda> (st, l, r). wcode_double_case_inv st ires rs (l, r)) in 
-       let f = (\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp) in
+       let f = (\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp) in
        \<exists> n .P (f n) \<and> Q (f (n::nat))"
 proof -
   let ?P = "(\<lambda> (st, l, r). st = 13)"
   let ?Q = "(\<lambda> (st, l, r). wcode_double_case_inv st ires rs (l, r))"
-  let ?f = "(\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp)"
+  let ?f = "(\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp)"
   have "\<exists> n. ?P (?f n) \<and> ?Q (?f (n::nat))"
   proof(rule_tac halt_lemma2)
     show "wf wcode_double_case_le"
@@ -1065,9 +1085,9 @@ proof -
     proof(rule_tac allI, case_tac "?f na", simp)
       fix na a b c
       show "a \<noteq> 13 \<and> wcode_double_case_inv a ires rs (b, c) \<longrightarrow>
-               (case step0 (a, b, c) t_wcode_main of (st, x) \<Rightarrow> 
+               (case step0 (a, b, c) wcode_main_tm of (st, x) \<Rightarrow> 
                    wcode_double_case_inv st ires rs x) \<and> 
-                (step0 (a, b, c) t_wcode_main, a, b, c) \<in> wcode_double_case_le"
+                (step0 (a, b, c) wcode_main_tm, a, b, c) \<in> wcode_double_case_le"
         apply(rule_tac impI, simp add: wcode_double_case_inv.simps)
         apply(auto split: if_splits simp: step.simps, 
             case_tac [!] c, simp_all, case_tac [!] "(c::cell list)!0")
@@ -1092,7 +1112,7 @@ proof -
   qed
   thus "let P = \<lambda>(st, l, r). st = 13;
     Q = \<lambda>(st, l, r). wcode_double_case_inv st ires rs (l, r);
-    f = steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main
+    f = steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm
     in \<exists>n. P (f n) \<and> Q (f n)"
     apply(simp)
     done
@@ -1123,19 +1143,17 @@ proof -
     by simp
 qed 
 
-declare start_of.simps[simp del]
-
 lemma twice_lemma: "rec_exec rec_twice [rs] = 2*rs"
   by(auto simp: rec_twice_def rec_exec.simps)
 
-lemma t_twice_correct: 
+lemma twice_tm_correct: 
   "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) 
-  (tm_of abc_twice @ shift (mopup (Suc 0)) ((length (tm_of abc_twice) div 2))) stp =
+  (tm_of abc_twice @ shift (mopup_n_tm (Suc 0)) ((length (tm_of abc_twice) div 2))) stp =
   (0, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))"
 proof(case_tac "rec_ci rec_twice")
   fix a b c
   assume h: "rec_ci rec_twice = (a, b, c)"
-  have "\<exists>stp m l. steps0 (Suc 0, Bk # Bk # ires, <[rs]> @ Bk\<up>(n)) (tm_of abc_twice @ shift (mopup (length [rs])) 
+  have "\<exists>stp m l. steps0 (Suc 0, Bk # Bk # ires, <[rs]> @ Bk\<up>(n)) (tm_of abc_twice @ shift (mopup_n_tm (length [rs])) 
     (length (tm_of abc_twice) div 2)) stp = (0, Bk\<up>(m) @ Bk # Bk # ires, Oc\<up>(Suc (rec_exec rec_twice [rs])) @ Bk\<up>(l))"
     thm  recursive_compile_to_tm_correct1
   proof(rule_tac recursive_compile_to_tm_correct1)
@@ -1160,7 +1178,7 @@ declare adjust.simps[simp]
 lemma adjust_fetch0: 
   "\<lbrakk>0 < a; a \<le> length ap div 2;  fetch ap a b = (aa, 0)\<rbrakk>
   \<Longrightarrow> fetch (adjust0 ap) a b = (aa, Suc (length ap div 2))"
-  apply(case_tac b, auto simp: fetch.simps nth_of.simps nth_map
+  apply(case_tac b, auto 
       split: if_splits)
    apply(case_tac [!] a, auto simp: fetch.simps nth_of.simps)
   done
@@ -1168,7 +1186,7 @@ lemma adjust_fetch0:
 lemma adjust_fetch_norm: 
   "\<lbrakk>st > 0;  st \<le> length tp div 2; fetch ap st b = (aa, ns); ns \<noteq> 0\<rbrakk>
  \<Longrightarrow>  fetch (adjust0 ap) st b = (aa, ns)"
-  apply(case_tac b, auto simp: fetch.simps nth_of.simps nth_map
+  apply(case_tac b, auto simp: fetch.simps 
       split: if_splits)
    apply(case_tac [!] st, auto simp: fetch.simps nth_of.simps)
   done
@@ -1177,7 +1195,7 @@ declare adjust.simps[simp del]
 
 lemma adjust_step_eq: 
   assumes exec: "step0 (st,l,r) ap = (st', l', r')"
-    and wf_tm: "tm_wf (ap, 0)"
+    and "composable_tm (ap, 0)"
     and notfinal: "st' > 0"
   shows "step0 (st, l, r) (adjust0 ap) = (st', l', r')"
   using assms
@@ -1190,7 +1208,7 @@ proof -
     apply(case_tac "st \<le> (length ap) div 2", simp)
     apply(case_tac st, auto simp: step.simps fetch.simps)
     apply(case_tac "read r", simp_all add: fetch.simps 
-        nth_of.simps adjust.simps tm_wf.simps split: if_splits)
+        nth_of.simps adjust.simps composable_tm.simps split: if_splits)
      apply(auto simp: mod_ex2)
     done    
   ultimately have "fetch (adjust0 ap) st (read r) = fetch ap st (read r)"
@@ -1204,11 +1222,10 @@ proof -
     by(simp add: step.simps)
 qed
 
-declare adjust.simps[simp del]
 
 lemma adjust_steps_eq: 
   assumes exec: "steps0 (st,l,r) ap stp = (st', l', r')"
-    and wf_tm: "tm_wf (ap, 0)"
+    and "composable_tm (ap, 0)"
     and notfinal: "st' > 0"
   shows "steps0 (st, l, r) (adjust0 ap) stp = (st', l', r')"
   using exec notfinal
@@ -1226,7 +1243,7 @@ next
     by (metis prod_cases3)
   hence c:"0 < st''"
     using h g
-    apply(simp add: step_red)
+    apply(simp)
     apply(case_tac st'', auto)
     done
   hence b: "steps0 (st, l, r) (adjust0 ap) stp = (st'', l'', r'')"
@@ -1234,14 +1251,14 @@ next
     by(rule_tac ind, simp_all)
   thus "?case"
     using assms a b h g
-    apply(simp add: step_red) 
+    apply(simp ) 
     apply(rule_tac adjust_step_eq, simp_all)
     done
 qed 
 
 lemma adjust_halt_eq:
   assumes exec: "steps0 (1, l, r) ap stp = (0, l', r')"
-    and tm_wf: "tm_wf (ap, 0)" 
+    and composable_tm: "composable_tm (ap, 0)" 
   shows "\<exists> stp. steps0 (Suc 0, l, r) (adjust0 ap) stp = 
         (Suc (length ap div 2), l', r')"
 proof -
@@ -1256,13 +1273,13 @@ proof -
     apply(rule_tac adjust_steps_eq, simp_all)
     done
   have d: "sa \<le> length ap div 2"
-    using steps_in_range[of  "(l, r)" ap stpa] a tm_wf b
+    using steps_in_range[of  "(l, r)" ap stpa] a composable_tm b
     by(simp)
   obtain ac ns where e: "fetch ap sa (read ra) = (ac, ns)"
     by (metis prod.exhaust)
   hence f: "ns = 0"
     using b a
-    apply(simp add: step_red step.simps)
+    apply(simp add:  step.simps)
     done
   have k: "fetch (adjust0 ap) sa (read ra) = (ac, Suc (length ap div 2))"
     using a b c d e f
@@ -1270,90 +1287,88 @@ proof -
     done
   from a b e f k and c show "?thesis"
     apply(rule_tac x = "Suc stpa" in exI)
-    apply(simp add: step_red, auto)
+    apply(simp  , auto)
     apply(simp add: step.simps)
     done
-qed    
+qed
 
-declare tm_wf.simps[simp del]
-
-lemma tm_wf_t_twice_compile [simp]: "tm_wf (t_twice_compile, 0)"
-  apply(simp only: t_twice_compile_def)
-  apply(rule_tac wf_tm_from_abacus, simp)
+lemma composable_tm_twice_compile_tm [simp]: "composable_tm (twice_compile_tm, 0)"
+  apply(simp only: twice_compile_tm_def)
+  apply(rule_tac composable_tm_from_abacus, simp)
   done
 
-lemma t_twice_change_term_state:
-  "\<exists> stp ln rn. steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) t_twice stp
-     = (Suc t_twice_len, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))"
+lemma twice_tm_change_term_state:
+  "\<exists> stp ln rn. steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) twice_tm stp
+     = (Suc twice_tm_len, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))"
 proof -
   have "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) 
-    (tm_of abc_twice @ shift (mopup (Suc 0)) ((length (tm_of abc_twice) div 2))) stp =
+    (tm_of abc_twice @ shift (mopup_n_tm (Suc 0)) ((length (tm_of abc_twice) div 2))) stp =
     (0, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))"
-    by(rule_tac t_twice_correct)
+    by(rule_tac twice_tm_correct)
   then obtain stp ln rn where " steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) 
-    (tm_of abc_twice @ shift (mopup (Suc 0)) ((length (tm_of abc_twice) div 2))) stp =
+    (tm_of abc_twice @ shift (mopup_n_tm (Suc 0)) ((length (tm_of abc_twice) div 2))) stp =
     (0, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))" by blast
   hence "\<exists> stp. steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n))
-    (adjust0 t_twice_compile) stp
-     = (Suc (length t_twice_compile div 2), Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))"
+    (adjust0 twice_compile_tm) stp
+     = (Suc (length twice_compile_tm div 2), Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))"
     apply(rule_tac stp = stp in adjust_halt_eq)
-     apply(simp add: t_twice_compile_def, auto)
+     apply(simp add: twice_compile_tm_def, auto)
     done
   then obtain stpb where 
     "steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n))
-    (adjust0 t_twice_compile) stpb
-     = (Suc (length t_twice_compile div 2), Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))" ..
+    (adjust0 twice_compile_tm) stpb
+     = (Suc (length twice_compile_tm div 2), Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))" ..
   thus "?thesis"
-    apply(simp add: t_twice_def t_twice_len_def)
+    apply(simp add: twice_tm_def twice_tm_len_def)
     by metis
 qed
 
-lemma length_t_wcode_main_first_part_even[intro]: "length t_wcode_main_first_part mod 2 = 0"
-  apply(auto simp: t_wcode_main_first_part_def)
+lemma length_wcode_main_first_part_tm_even[intro]: "length wcode_main_first_part_tm mod 2 = 0"
+  apply(auto simp: wcode_main_first_part_tm_def)
   done
 
-lemma t_twice_append_pre:
-  "steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) t_twice stp
-  = (Suc t_twice_len, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))
-   \<Longrightarrow> steps0 (Suc 0 + length t_wcode_main_first_part div 2, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n))
-     (t_wcode_main_first_part @ shift t_twice (length t_wcode_main_first_part div 2) @
-      ([(L, 1), (L, 1)] @ shift t_fourtimes (t_twice_len + 13) @ [(L, 1), (L, 1)])) stp 
-    = (Suc (t_twice_len) + length t_wcode_main_first_part div 2, 
+lemma twice_tm_append_pre:
+  "steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) twice_tm stp
+  = (Suc twice_tm_len, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))
+   \<Longrightarrow> steps0 (Suc 0 + length wcode_main_first_part_tm div 2, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n))
+     (wcode_main_first_part_tm @ shift twice_tm (length wcode_main_first_part_tm div 2) @
+      ([(L, 1), (L, 1)] @ shift fourtimes_tm (twice_tm_len + 13) @ [(L, 1), (L, 1)])) stp 
+    = (Suc (twice_tm_len) + length wcode_main_first_part_tm div 2, 
              Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))"
   by(rule_tac tm_append_shift_append_steps, auto)
 
-lemma t_twice_append:
-  "\<exists> stp ln rn. steps0 (Suc 0 + length t_wcode_main_first_part div 2, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n))
-     (t_wcode_main_first_part @ shift t_twice (length t_wcode_main_first_part div 2) @
-      ([(L, 1), (L, 1)] @ shift t_fourtimes (t_twice_len + 13) @ [(L, 1), (L, 1)])) stp 
-    = (Suc (t_twice_len) + length t_wcode_main_first_part div 2, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))"
-  using t_twice_change_term_state[of ires rs n]
+lemma twice_tm_append:
+  "\<exists> stp ln rn. steps0 (Suc 0 + length wcode_main_first_part_tm div 2, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n))
+     (wcode_main_first_part_tm @ shift twice_tm (length wcode_main_first_part_tm div 2) @
+      ([(L, 1), (L, 1)] @ shift fourtimes_tm (twice_tm_len + 13) @ [(L, 1), (L, 1)])) stp 
+    = (Suc (twice_tm_len) + length wcode_main_first_part_tm div 2, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))"
+  using twice_tm_change_term_state[of ires rs n]
   apply(erule_tac exE)
   apply(erule_tac exE)
   apply(erule_tac exE)
-  apply(drule_tac t_twice_append_pre)
+  apply(drule_tac twice_tm_append_pre)
   apply(rename_tac stp ln rn)
   apply(rule_tac x = stp in exI, rule_tac x = ln in exI, rule_tac x = rn in exI)
   apply(simp)
   done
 
-lemma mopup_mod2: "length (mopup k) mod 2  = 0"
-  by(auto simp: mopup.simps)
+lemma mopup_mod2: "length (mopup_n_tm k) mod 2  = 0"
+  by(auto simp: mopup_n_tm.simps)
 
-lemma fetch_t_wcode_main_Oc[simp]: "fetch t_wcode_main (Suc (t_twice_len + length t_wcode_main_first_part div 2)) Oc
+lemma fetch_wcode_main_tm_Oc[simp]: "fetch wcode_main_tm (Suc (twice_tm_len + length wcode_main_first_part_tm div 2)) Oc
      = (L, Suc 0)"
-  apply(subgoal_tac "length (t_twice) mod 2 = 0")
-   apply(simp add: t_wcode_main_def nth_append fetch.simps t_wcode_main_first_part_def 
-      nth_of.simps t_twice_len_def, auto)
-  apply(simp add: t_twice_def t_twice_compile_def)
+  apply(subgoal_tac "length (twice_tm) mod 2 = 0")
+   apply(simp add: wcode_main_tm_def nth_append fetch.simps wcode_main_first_part_tm_def 
+      nth_of.simps twice_tm_len_def, auto)
+  apply(simp add: twice_tm_def twice_compile_tm_def)
   using mopup_mod2[of 1]
   apply(simp)
   done
 
 lemma wcode_jump1: 
-  "\<exists> stp ln rn. steps0 (Suc (t_twice_len) + length t_wcode_main_first_part div 2,
+  "\<exists> stp ln rn. steps0 (Suc (twice_tm_len) + length wcode_main_first_part_tm div 2,
                        Bk\<up>(m) @ Bk # Bk # ires, Oc\<up>(Suc (2 * rs)) @ Bk\<up>(n))
-     t_wcode_main stp 
+     wcode_main_tm stp 
     = (Suc 0, Bk\<up>(ln) @ Bk # ires, Bk # Oc\<up>(Suc (2 * rs)) @ Bk\<up>(rn))"
   apply(rule_tac x = "Suc 0" in exI, rule_tac x = "m" in exI, rule_tac x = n in exI)
   apply(simp add: steps.simps step.simps exp_ind)
@@ -1362,65 +1377,65 @@ lemma wcode_jump1:
   done
 
 lemma wcode_main_first_part_len[simp]:
-  "length t_wcode_main_first_part = 24"
-  apply(simp add: t_wcode_main_first_part_def)
+  "length wcode_main_first_part_tm = 24"
+  apply(simp add: wcode_main_first_part_tm_def)
   done
 
 lemma wcode_double_case: 
-  shows "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+  shows "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
           (Suc 0, Bk # Bk\<up>(ln) @ Oc # ires, Bk # Oc\<up>(Suc (2 * rs + 2)) @ Bk\<up>(rn))"
     (is "\<exists>stp ln rn. ?tm stp ln rn")
 proof -
   from wcode_double_case_first_correctness[of ires rs m n] obtain na ln rn where
-    "steps0 (Suc 0, Bk # Bk \<up> m @ Oc # Oc # ires, Bk # Oc # Oc \<up> rs @ Bk \<up> n) t_wcode_main na
+    "steps0 (Suc 0, Bk # Bk \<up> m @ Oc # Oc # ires, Bk # Oc # Oc \<up> rs @ Bk \<up> n) wcode_main_tm na
       = (13, Bk # Bk # Bk \<up> ln @ Oc # ires, Oc # Oc # Oc \<up> rs @ Bk \<up> rn)"
     by(auto simp: wcode_double_case_inv.simps wcode_before_double.simps)
-  hence "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+  hence "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
           (13,  Bk # Bk # Bk\<up>(ln) @ Oc # ires, Oc\<up>(Suc (Suc rs)) @ Bk\<up>(rn))"
     by(case_tac "steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, 
-           Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main na", auto)  
+           Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm na", auto)  
   from this obtain stpa lna rna where stp1: 
-    "steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stpa = 
+    "steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stpa = 
     (13, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (Suc rs)) @ Bk\<up>(rna))" by blast
-  from t_twice_append[of "Bk\<up>(lna) @ Oc # ires" "Suc rs" rna] obtain stp ln rn
-    where "steps0 (Suc 0 + length t_wcode_main_first_part div 2,
+  from twice_tm_append[of "Bk\<up>(lna) @ Oc # ires" "Suc rs" rna] obtain stp ln rn
+    where "steps0 (Suc 0 + length wcode_main_first_part_tm div 2,
                    Bk # Bk # Bk \<up> lna @ Oc # ires, Oc \<up> Suc (Suc rs) @ Bk \<up> rna)
-                  (t_wcode_main_first_part @ shift t_twice (length t_wcode_main_first_part div 2) @
-                   [(L, 1), (L, 1)] @ shift t_fourtimes (t_twice_len + 13) @ [(L, 1), (L, 1)]) stp =
-           (Suc t_twice_len + length t_wcode_main_first_part div 2, 
+                  (wcode_main_first_part_tm @ shift twice_tm (length wcode_main_first_part_tm div 2) @
+                   [(L, 1), (L, 1)] @ shift fourtimes_tm (twice_tm_len + 13) @ [(L, 1), (L, 1)]) stp =
+           (Suc twice_tm_len + length wcode_main_first_part_tm div 2, 
             Bk \<up> ln @ Bk # Bk # Bk \<up> lna @ Oc # ires, Oc \<up> Suc (2 * Suc rs) @ Bk \<up> rn)" by blast
-  hence "\<exists> stp ln rn. steps0 (13, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (Suc rs)) @ Bk\<up>(rna)) t_wcode_main stp =
-    (13 + t_twice_len, Bk # Bk # Bk\<up>(ln) @ Oc # ires, Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rn))"
-    using t_twice_append[of "Bk\<up>(lna) @ Oc # ires" "Suc rs" rna]
+  hence "\<exists> stp ln rn. steps0 (13, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (Suc rs)) @ Bk\<up>(rna)) wcode_main_tm stp =
+    (13 + twice_tm_len, Bk # Bk # Bk\<up>(ln) @ Oc # ires, Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rn))"
+    using twice_tm_append[of "Bk\<up>(lna) @ Oc # ires" "Suc rs" rna]
     apply(simp)
     apply(rule_tac x = stp in exI, rule_tac x = "ln + lna" in exI, 
         rule_tac x = rn in exI)
-    apply(simp add: t_wcode_main_def)
+    apply(simp add: wcode_main_tm_def)
     apply(simp add: replicate_Suc[THEN sym] replicate_add [THEN sym] del: replicate_Suc)
     done
   from this obtain stpb lnb rnb where stp2: 
-    "steps0 (13, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (Suc rs)) @ Bk\<up>(rna)) t_wcode_main stpb =
-    (13 + t_twice_len, Bk # Bk # Bk\<up>(lnb) @ Oc # ires, Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rnb))" by blast
+    "steps0 (13, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (Suc rs)) @ Bk\<up>(rna)) wcode_main_tm stpb =
+    (13 + twice_tm_len, Bk # Bk # Bk\<up>(lnb) @ Oc # ires, Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rnb))" by blast
   from wcode_jump1[of lnb "Oc # ires" "Suc rs" rnb] obtain stp ln rn where
-    "steps0 (Suc t_twice_len + length t_wcode_main_first_part div 2, 
-             Bk \<up> lnb @ Bk # Bk # Oc # ires, Oc \<up> Suc (2 * Suc rs) @ Bk \<up> rnb) t_wcode_main stp =
+    "steps0 (Suc twice_tm_len + length wcode_main_first_part_tm div 2, 
+             Bk \<up> lnb @ Bk # Bk # Oc # ires, Oc \<up> Suc (2 * Suc rs) @ Bk \<up> rnb) wcode_main_tm stp =
      (Suc 0, Bk \<up> ln @ Bk # Oc # ires, Bk # Oc \<up> Suc (2 * Suc rs) @ Bk \<up> rn)" by metis
-  hence "steps0 (13 + t_twice_len, Bk # Bk # Bk\<up>(lnb) @ Oc # ires,
-    Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rnb)) t_wcode_main stp = 
+  hence "steps0 (13 + twice_tm_len, Bk # Bk # Bk\<up>(lnb) @ Oc # ires,
+    Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rnb)) wcode_main_tm stp = 
        (Suc 0,  Bk # Bk\<up>(ln) @ Oc # ires, Bk # Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rn))"
-    apply(auto simp add: t_wcode_main_def)
+    apply(auto simp add: wcode_main_tm_def)
     apply(subgoal_tac "Bk\<up>(lnb) @ Bk # Bk # Oc # ires = Bk # Bk # Bk\<up>(lnb) @ Oc # ires", simp)
      apply(simp add: replicate_Suc[THEN sym] exp_ind[THEN sym] del: replicate_Suc)
     apply(simp)
     apply(simp add: replicate_Suc[THEN sym] exp_ind del: replicate_Suc)
     done 
-  hence "\<exists>stp ln rn. steps0 (13 + t_twice_len, Bk # Bk # Bk\<up>(lnb) @ Oc # ires,
-    Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rnb)) t_wcode_main stp = 
+  hence "\<exists>stp ln rn. steps0 (13 + twice_tm_len, Bk # Bk # Bk\<up>(lnb) @ Oc # ires,
+    Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rnb)) wcode_main_tm stp = 
        (Suc 0,  Bk # Bk\<up>(ln) @ Oc # ires, Bk # Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rn))"
     by blast
   from this obtain stpc lnc rnc where stp3: 
-    "steps0 (13 + t_twice_len, Bk # Bk # Bk\<up>(lnb) @ Oc # ires,
-    Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rnb)) t_wcode_main stpc = 
+    "steps0 (13 + twice_tm_len, Bk # Bk # Bk\<up>(lnb) @ Oc # ires,
+    Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rnb)) wcode_main_tm stpc = 
        (Suc 0,  Bk # Bk\<up>(lnc) @ Oc # ires, Bk # Oc\<up>(Suc (Suc (Suc (2 *rs)))) @ Bk\<up>(rnc))"
     by blast
   from stp1 stp2 stp3 have "?tm (stpa + stpb + stpc) lnc rnc" by simp
@@ -1537,7 +1552,7 @@ fun wcode_fourtimes_case_inv :: "nat \<Rightarrow> bin_inv_t"
             else if st = 10 then wcode_on_right_moving_2 ires rs (l, r)
             else if st = 11 then wcode_goon_right_moving_2 ires rs (l, r)
             else if st = 12 then wcode_backto_standard_pos_2 ires rs (l, r)
-            else if st = t_twice_len + 14 then wcode_before_fourtimes ires rs (l, r)
+            else if st = twice_tm_len + 14 then wcode_before_fourtimes ires rs (l, r)
             else False)"
 
 declare wcode_fourtimes_case_inv.simps[simp del]
@@ -1581,13 +1596,15 @@ lemma nonempty_snd [simp]:
   "wcode_on_checking_2 ires rs (b, Oc # list) = False"
   by(auto simp: wcode_fourtimes_invs) 
 
+lemma gr1_conv_Suc:"Suc 0 < mr \<longleftrightarrow> (\<exists> nat. mr = Suc (Suc nat))" by presburger
+
 lemma wcode_on_left_moving_2[simp]:
   "wcode_on_left_moving_2 ires rs (b, Bk # list) \<Longrightarrow>  wcode_on_left_moving_2 ires rs (tl b, hd b # Bk # list)"
   apply(simp only: wcode_fourtimes_invs)
   apply(erule_tac disjE)
    apply(erule_tac exE)+
-   apply(simp add: gr1_conv_Suc exp_ind replicate_app_Cons_same split:hd_repeat_cases)
-   apply (auto simp add: gr0_conv_Suc[symmetric] replicate_app_Cons_same split:hd_repeat_cases)
+   apply(simp add: gr1_conv_Suc exp_ind replicate_app_Cons_same hd_repeat_cases')
+   apply (auto simp add: gr0_conv_Suc[symmetric] replicate_app_Cons_same hd_repeat_cases')
   by force+
 
 
@@ -1693,14 +1710,14 @@ lemma nonempty_fst[simp]:
 
 
 lemma wcode_fourtimes_case_first_correctness:
-  shows "let P = (\<lambda> (st, l, r). st = t_twice_len + 14) in 
+  shows "let P = (\<lambda> (st, l, r). st = twice_tm_len + 14) in 
   let Q = (\<lambda> (st, l, r). wcode_fourtimes_case_inv st ires rs (l, r)) in 
-  let f = (\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp) in
+  let f = (\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp) in
   \<exists> n .P (f n) \<and> Q (f (n::nat))"
 proof -
-  let ?P = "(\<lambda> (st, l, r). st = t_twice_len + 14)"
+  let ?P = "(\<lambda> (st, l, r). st = twice_tm_len + 14)"
   let ?Q = "(\<lambda> (st, l, r). wcode_fourtimes_case_inv st ires rs (l, r))"
-  let ?f = "(\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp)"
+  let ?f = "(\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp)"
   have "\<exists> n . ?P (?f n) \<and> ?Q (?f (n::nat))"
   proof(rule_tac halt_lemma2)
     show "wf wcode_fourtimes_case_le"
@@ -1709,7 +1726,7 @@ proof -
     have "\<not> ?P (?f na) \<and> ?Q (?f na) \<longrightarrow>
                   ?Q (?f (Suc na)) \<and> (?f (Suc na), ?f na) \<in> wcode_fourtimes_case_le" for na
       apply(cases "?f na", rule_tac impI)
-      apply(simp add: step_red step.simps)
+      apply(simp add: step.simps)
       apply(case_tac "snd (snd (?f na))", simp, case_tac [2] "hd (snd (snd (?f na)))", simp_all)
         apply(simp_all add: wcode_fourtimes_case_inv.simps
           wcode_fourtimes_case_le_def lex_pair_def split: if_splits)
@@ -1735,9 +1752,9 @@ proof -
     done
 qed
 
-definition t_fourtimes_len :: "nat"
+definition fourtimes_tm_len :: "nat"
   where
-    "t_fourtimes_len = (length t_fourtimes div 2)"
+    "fourtimes_tm_len = (length fourtimes_tm div 2)"
 
 lemma primerec_rec_fourtimes_1[intro]: "primerec rec_fourtimes (Suc 0)"
   apply(auto simp: rec_fourtimes_def numeral_4_eq_4 constn.simps)
@@ -1746,14 +1763,14 @@ lemma primerec_rec_fourtimes_1[intro]: "primerec rec_fourtimes (Suc 0)"
 lemma fourtimes_lemma: "rec_exec rec_fourtimes [rs] = 4 * rs"
   by(simp add: rec_exec.simps rec_fourtimes_def)
 
-lemma t_fourtimes_correct: 
+lemma fourtimes_tm_correct: 
   "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) 
-    (tm_of abc_fourtimes @ shift (mopup 1) (length (tm_of abc_fourtimes) div 2)) stp =
+    (tm_of abc_fourtimes @ shift (mopup_n_tm 1) (length (tm_of abc_fourtimes) div 2)) stp =
        (0, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))"
 proof(case_tac "rec_ci rec_fourtimes")
   fix a b c
   assume h: "rec_ci rec_fourtimes = (a, b, c)"
-  have "\<exists>stp m l. steps0 (Suc 0, Bk # Bk # ires, <[rs]> @ Bk\<up>(n)) (tm_of abc_fourtimes @ shift (mopup (length [rs])) 
+  have "\<exists>stp m l. steps0 (Suc 0, Bk # Bk # ires, <[rs]> @ Bk\<up>(n)) (tm_of abc_fourtimes @ shift (mopup_n_tm (length [rs])) 
     (length (tm_of abc_fourtimes) div 2)) stp = (0, Bk\<up>(m) @ Bk # Bk # ires, Oc\<up>(Suc (rec_exec rec_fourtimes [rs])) @ Bk\<up>(l))"
     thm recursive_compile_to_tm_correct1
   proof(rule_tac recursive_compile_to_tm_correct1)
@@ -1772,115 +1789,115 @@ proof(case_tac "rec_ci rec_fourtimes")
     done
 qed
 
-lemma wf_fourtimes[intro]: "tm_wf (t_fourtimes_compile, 0)"
-  apply(simp only: t_fourtimes_compile_def)
-  apply(rule_tac wf_tm_from_abacus, simp)
+lemma composable_fourtimes_tm[intro]: "composable_tm (fourtimes_compile_tm, 0)"
+  apply(simp only: fourtimes_compile_tm_def)
+  apply(rule_tac composable_tm_from_abacus, simp)
   done
 
-lemma t_fourtimes_change_term_state:
-  "\<exists> stp ln rn. steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) t_fourtimes stp
-     = (Suc t_fourtimes_len, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))"
+lemma fourtimes_tm_change_term_state:
+  "\<exists> stp ln rn. steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) fourtimes_tm stp
+     = (Suc fourtimes_tm_len, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))"
 proof -
   have "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) 
-    (tm_of abc_fourtimes @ shift (mopup 1) ((length (tm_of abc_fourtimes) div 2))) stp =
+    (tm_of abc_fourtimes @ shift (mopup_n_tm 1) ((length (tm_of abc_fourtimes) div 2))) stp =
     (0, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))"
-    by(rule_tac t_fourtimes_correct)
+    by(rule_tac fourtimes_tm_correct)
   then obtain stp ln rn where 
     "steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) 
-    (tm_of abc_fourtimes @ shift (mopup 1) ((length (tm_of abc_fourtimes) div 2))) stp =
+    (tm_of abc_fourtimes @ shift (mopup_n_tm 1) ((length (tm_of abc_fourtimes) div 2))) stp =
     (0, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))" by blast
   hence "\<exists> stp. steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n))
-    (adjust0 t_fourtimes_compile) stp
-     = (Suc (length t_fourtimes_compile div 2), Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))"
+    (adjust0 fourtimes_compile_tm) stp
+     = (Suc (length fourtimes_compile_tm div 2), Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))"
     apply(rule_tac stp = stp in adjust_halt_eq)
-     apply(simp add: t_fourtimes_compile_def, auto)
+     apply(simp add: fourtimes_compile_tm_def, auto)
     done
   then obtain stpb where 
     "steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n))
-    (adjust0 t_fourtimes_compile) stpb
-     = (Suc (length t_fourtimes_compile div 2), Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))" ..
+    (adjust0 fourtimes_compile_tm) stpb
+     = (Suc (length fourtimes_compile_tm div 2), Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))" ..
   thus "?thesis"
-    apply(simp add: t_fourtimes_def t_fourtimes_len_def)
+    apply(simp add: fourtimes_tm_def fourtimes_tm_len_def)
     by metis
 qed
 
-lemma length_t_twice_even[intro]: "is_even (length t_twice)"
-  by(auto simp: t_twice_def t_twice_compile_def intro!:mopup_mod2)
+lemma length_twice_tm_even[intro]: "is_even (length twice_tm)"
+  by(auto simp: twice_tm_def twice_compile_tm_def intro!:mopup_mod2)
 
-lemma t_fourtimes_append_pre:
-  "steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) t_fourtimes stp
-  = (Suc t_fourtimes_len, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))
-   \<Longrightarrow> steps0 (Suc 0 + length (t_wcode_main_first_part @ 
-              shift t_twice (length t_wcode_main_first_part div 2) @ [(L, 1), (L, 1)]) div 2,
+lemma fourtimes_tm_append_pre:
+  "steps0 (Suc 0, Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n)) fourtimes_tm stp
+  = (Suc fourtimes_tm_len, Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))
+   \<Longrightarrow> steps0 (Suc 0 + length (wcode_main_first_part_tm @ 
+              shift twice_tm (length wcode_main_first_part_tm div 2) @ [(L, 1), (L, 1)]) div 2,
        Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n))
-     ((t_wcode_main_first_part @ 
-  shift t_twice (length t_wcode_main_first_part div 2) @ [(L, 1), (L, 1)]) @ 
-  shift t_fourtimes (length (t_wcode_main_first_part @ 
-  shift t_twice (length t_wcode_main_first_part div 2) @ [(L, 1), (L, 1)]) div 2) @ ([(L, 1), (L, 1)])) stp 
-  = ((Suc t_fourtimes_len) + length (t_wcode_main_first_part @ 
-  shift t_twice (length t_wcode_main_first_part div 2) @ [(L, 1), (L, 1)]) div 2,
+     ((wcode_main_first_part_tm @ 
+  shift twice_tm (length wcode_main_first_part_tm div 2) @ [(L, 1), (L, 1)]) @ 
+  shift fourtimes_tm (length (wcode_main_first_part_tm @ 
+  shift twice_tm (length wcode_main_first_part_tm div 2) @ [(L, 1), (L, 1)]) div 2) @ ([(L, 1), (L, 1)])) stp 
+  = ((Suc fourtimes_tm_len) + length (wcode_main_first_part_tm @ 
+  shift twice_tm (length wcode_main_first_part_tm div 2) @ [(L, 1), (L, 1)]) div 2,
   Bk\<up>(ln) @ Bk # Bk # ires, Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))"
-  using length_t_twice_even
+  using length_twice_tm_even
   by(intro tm_append_shift_append_steps, auto)
 
 lemma split_26_even[simp]: "(26 + l::nat) div 2 = l div 2 + 13" by(simp)
 
-lemma t_twice_len_plust_14[simp]: "t_twice_len + 14 =  14 + length (shift t_twice 12) div 2"
-  apply(simp add: t_twice_def t_twice_len_def)
+lemma twice_tm_len_plus_14[simp]: "twice_tm_len + 14 =  14 + length (shift twice_tm 12) div 2"
+  apply(simp add: twice_tm_def twice_tm_len_def)
   done
 
-lemma t_fourtimes_append:
+lemma fourtimes_tm_append:
   "\<exists> stp ln rn. 
-  steps0 (Suc 0 + length (t_wcode_main_first_part @ shift t_twice
-  (length t_wcode_main_first_part div 2) @ [(L, 1), (L, 1)]) div 2, 
+  steps0 (Suc 0 + length (wcode_main_first_part_tm @ shift twice_tm
+  (length wcode_main_first_part_tm div 2) @ [(L, 1), (L, 1)]) div 2, 
   Bk # Bk # ires, Oc\<up>(Suc rs) @ Bk\<up>(n))
-  ((t_wcode_main_first_part @ shift t_twice (length t_wcode_main_first_part div 2) @
-  [(L, 1), (L, 1)]) @ shift t_fourtimes (t_twice_len + 13) @ [(L, 1), (L, 1)]) stp 
-  = (Suc t_fourtimes_len + length (t_wcode_main_first_part @ shift t_twice
-  (length t_wcode_main_first_part div 2) @ [(L, 1), (L, 1)]) div 2, Bk\<up>(ln) @ Bk # Bk # ires,
+  ((wcode_main_first_part_tm @ shift twice_tm (length wcode_main_first_part_tm div 2) @
+  [(L, 1), (L, 1)]) @ shift fourtimes_tm (twice_tm_len + 13) @ [(L, 1), (L, 1)]) stp 
+  = (Suc fourtimes_tm_len + length (wcode_main_first_part_tm @ shift twice_tm
+  (length wcode_main_first_part_tm div 2) @ [(L, 1), (L, 1)]) div 2, Bk\<up>(ln) @ Bk # Bk # ires,
                                                                  Oc\<up>(Suc (4 * rs)) @ Bk\<up>(rn))"
-  using t_fourtimes_change_term_state[of ires rs n]
+  using fourtimes_tm_change_term_state[of ires rs n]
   apply(erule_tac exE)
   apply(erule_tac exE)
   apply(erule_tac exE)
-  apply(drule_tac t_fourtimes_append_pre)
+  apply(drule_tac fourtimes_tm_append_pre)
   apply(rule_tac x = stp in exI, rule_tac x = ln in exI, rule_tac x = rn in exI)
-  apply(simp add: t_twice_len_def)
+  apply(simp add: twice_tm_len_def)
   done
 
-lemma even_fourtimes_len: "length t_fourtimes mod 2 = 0"
-  apply(auto simp: t_fourtimes_def t_fourtimes_compile_def)
+lemma even_fourtimes_len: "length fourtimes_tm mod 2 = 0"
+  apply(auto simp: fourtimes_tm_def fourtimes_compile_tm_def)
   by (metis mopup_mod2)
 
-lemma t_twice_even[simp]: "2 * (length t_twice div 2) = length t_twice"
-  using length_t_twice_even by arith
+lemma twice_tm_even[simp]: "2 * (length twice_tm div 2) = length twice_tm"
+  using length_twice_tm_even by arith
 
-lemma t_fourtimes_even[simp]: "2 * (length t_fourtimes div 2) = length t_fourtimes"
+lemma fourtimes_tm_even[simp]: "2 * (length fourtimes_tm div 2) = length fourtimes_tm"
   using even_fourtimes_len
   by arith
 
-lemma fetch_t_wcode_14_Oc: "fetch t_wcode_main (14 + length t_twice div 2 + t_fourtimes_len) Oc
+lemma fetch_wcode_tm_14_Oc: "fetch wcode_main_tm (14 + length twice_tm div 2 + fourtimes_tm_len) Oc
              = (L, Suc 0)" 
   apply(subgoal_tac "14 = Suc 13")
-   apply(simp only: fetch.simps add_Suc nth_of.simps t_wcode_main_def)
-   apply(simp add:length_t_twice_even t_fourtimes_len_def nth_append)
+   apply(simp only: fetch.simps add_Suc nth_of.simps wcode_main_tm_def)
+   apply(simp add:length_twice_tm_even fourtimes_tm_len_def nth_append)
   by arith
 
-lemma fetch_t_wcode_14_Bk: "fetch t_wcode_main (14 + length t_twice div 2 + t_fourtimes_len) Bk
+lemma fetch_wcode_tm_14_Bk: "fetch wcode_main_tm (14 + length twice_tm div 2 + fourtimes_tm_len) Bk
              = (L, Suc 0)"
   apply(subgoal_tac "14 = Suc 13")
-   apply(simp only: fetch.simps add_Suc nth_of.simps t_wcode_main_def)
-   apply(simp add:length_t_twice_even t_fourtimes_len_def nth_append)
+   apply(simp only: fetch.simps add_Suc nth_of.simps wcode_main_tm_def)
+   apply(simp add:length_twice_tm_even fourtimes_tm_len_def nth_append)
   by arith
 
-lemma fetch_t_wcode_14 [simp]: "fetch t_wcode_main (14 + length t_twice div 2 + t_fourtimes_len) b
+lemma fetch_wcode_tm_14 [simp]: "fetch wcode_main_tm (14 + length twice_tm div 2 + fourtimes_tm_len) b
              = (L, Suc 0)"
-  apply(case_tac b, simp_all add:fetch_t_wcode_14_Bk fetch_t_wcode_14_Oc)
+  apply(case_tac b, simp_all add:fetch_wcode_tm_14_Bk fetch_wcode_tm_14_Oc)
   done
 
 lemma wcode_jump2: 
-  "\<exists> stp ln rn. steps0 (t_twice_len + 14 + t_fourtimes_len
-  , Bk # Bk # Bk\<up>(lnb) @ Oc # ires, Oc\<up>(Suc (4 * rs + 4)) @ Bk\<up>(rnb)) t_wcode_main stp =
+  "\<exists> stp ln rn. steps0 (twice_tm_len + 14 + fourtimes_tm_len
+  , Bk # Bk # Bk\<up>(lnb) @ Oc # ires, Oc\<up>(Suc (4 * rs + 4)) @ Bk\<up>(rnb)) wcode_main_tm stp =
   (Suc 0, Bk # Bk\<up>(ln) @ Oc # ires, Bk # Oc\<up>(Suc (4 * rs + 4)) @ Bk\<up>(rn))"
   apply(rule_tac x = "Suc 0" in exI)
   apply(simp add: steps.simps)
@@ -1890,45 +1907,45 @@ lemma wcode_jump2:
 
 lemma wcode_fourtimes_case:
   shows "\<exists>stp ln rn.
-  steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+  steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
   (Suc 0, Bk # Bk\<up>(ln) @ Oc # ires, Bk # Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rn))"
 proof -
   have "\<exists>stp ln rn.
-  steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
-  (t_twice_len + 14, Bk # Bk # Bk\<up>(ln) @ Oc # ires, Oc\<up>(Suc (rs + 1)) @ Bk\<up>(rn))"
+  steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
+  (twice_tm_len + 14, Bk # Bk # Bk\<up>(ln) @ Oc # ires, Oc\<up>(Suc (rs + 1)) @ Bk\<up>(rn))"
     using wcode_fourtimes_case_first_correctness[of ires rs m n]
     by (auto simp add: wcode_fourtimes_case_inv.simps) auto
   from this obtain stpa lna rna where stp1:
-    "steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stpa =
-  (t_twice_len + 14, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (rs + 1)) @ Bk\<up>(rna))" by blast
-  have "\<exists>stp ln rn. steps0 (t_twice_len + 14, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (rs + 1)) @ Bk\<up>(rna))
-                     t_wcode_main stp =
-          (t_twice_len + 14 + t_fourtimes_len, Bk # Bk # Bk\<up>(ln) @ Oc # ires,  Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rn))"
-    using t_fourtimes_append[of " Bk\<up>(lna) @ Oc # ires" "rs + 1" rna]
+    "steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Oc # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stpa =
+  (twice_tm_len + 14, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (rs + 1)) @ Bk\<up>(rna))" by blast
+  have "\<exists>stp ln rn. steps0 (twice_tm_len + 14, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (rs + 1)) @ Bk\<up>(rna))
+                     wcode_main_tm stp =
+          (twice_tm_len + 14 + fourtimes_tm_len, Bk # Bk # Bk\<up>(ln) @ Oc # ires,  Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rn))"
+    using fourtimes_tm_append[of " Bk\<up>(lna) @ Oc # ires" "rs + 1" rna]
     apply(erule_tac exE)
     apply(erule_tac exE)
     apply(erule_tac exE)
-    apply(simp add: t_wcode_main_def) apply(rename_tac stp ln rn)
+    apply(simp add: wcode_main_tm_def) apply(rename_tac stp ln rn)
     apply(rule_tac x = stp in exI, 
         rule_tac x = "ln + lna" in exI,
         rule_tac x = rn in exI, simp)
     apply(simp add: replicate_Suc[THEN sym] replicate_add[THEN sym] del: replicate_Suc)
     done
   from this obtain stpb lnb rnb where stp2:
-    "steps0 (t_twice_len + 14, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (rs + 1)) @ Bk\<up>(rna))
-                     t_wcode_main stpb =
-       (t_twice_len + 14 + t_fourtimes_len, Bk # Bk # Bk\<up>(lnb) @ Oc # ires,  Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rnb))"
+    "steps0 (twice_tm_len + 14, Bk # Bk # Bk\<up>(lna) @ Oc # ires, Oc\<up>(Suc (rs + 1)) @ Bk\<up>(rna))
+                     wcode_main_tm stpb =
+       (twice_tm_len + 14 + fourtimes_tm_len, Bk # Bk # Bk\<up>(lnb) @ Oc # ires,  Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rnb))"
     by blast
-  have "\<exists>stp ln rn. steps0 (t_twice_len + 14 + t_fourtimes_len,
+  have "\<exists>stp ln rn. steps0 (twice_tm_len + 14 + fourtimes_tm_len,
     Bk # Bk # Bk\<up>(lnb) @ Oc # ires,  Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rnb))
-    t_wcode_main stp =
+    wcode_main_tm stp =
     (Suc 0, Bk # Bk\<up>(ln) @ Oc # ires, Bk # Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rn))"
     apply(rule wcode_jump2)
     done
   from this obtain stpc lnc rnc where stp3: 
-    "steps0 (t_twice_len + 14 + t_fourtimes_len,
+    "steps0 (twice_tm_len + 14 + fourtimes_tm_len,
     Bk # Bk # Bk\<up>(lnb) @ Oc # ires,  Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rnb))
-    t_wcode_main stpc =
+    wcode_main_tm stpc =
     (Suc 0, Bk # Bk\<up>(lnc) @ Oc # ires, Bk # Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rnc))"
     by blast
   from stp1 stp2 stp3 show "?thesis"
@@ -2062,12 +2079,12 @@ lemma wcode_goon_checking_3_mv_Bk[simp]: "wcode_on_checking_3 ires rs (b, Bk # l
 lemma t_halt_case_correctness: 
   shows "let P = (\<lambda> (st, l, r). st = 0) in 
        let Q = (\<lambda> (st, l, r). wcode_halt_case_inv st ires rs (l, r)) in 
-       let f = (\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp) in
+       let f = (\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp) in
        \<exists> n .P (f n) \<and> Q (f (n::nat))"
 proof -
   let ?P = "(\<lambda> (st, l, r). st = 0)"
   let ?Q = "(\<lambda> (st, l, r). wcode_halt_case_inv st ires rs (l, r))"
-  let ?f = "(\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp)"
+  let ?f = "(\<lambda> stp. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp)"
   have "\<exists> n. ?P (?f n) \<and> ?Q (?f (n::nat))"
   proof(rule_tac halt_lemma2)
     show "wf wcode_halt_case_le" by auto
@@ -2107,16 +2124,16 @@ lemma leading_Oc[intro]: "\<exists> xs. (<rev list @ [aa::nat]> :: cell list) = 
 
 lemma wcode_halt_case:
   "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n))
-  t_wcode_main stp  = (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(Suc rs) @ Bk\<up>(rn))"
+  wcode_main_tm stp  = (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(Suc rs) @ Bk\<up>(rn))"
 proof -
   let ?P = "\<lambda>(st, l, r). st = 0"
   let ?Q = "\<lambda>(st, l, r). wcode_halt_case_inv st ires rs (l, r)"
-  let ?f = "steps0 (Suc 0, Bk # Bk \<up> m @ Oc # Bk # Bk # ires, Bk # Oc \<up> Suc rs @ Bk \<up> n) t_wcode_main"
+  let ?f = "steps0 (Suc 0, Bk # Bk \<up> m @ Oc # Bk # Bk # ires, Bk # Oc \<up> Suc rs @ Bk \<up> n) wcode_main_tm"
   from t_halt_case_correctness[of ires rs m n] obtain n where "?P (?f n) \<and> ?Q (?f n)" by metis
   thus ?thesis
     apply(simp add: wcode_halt_case_inv.simps wcode_stop.simps)
     apply(case_tac "steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # Bk # ires,
-                Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main n")
+                Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm n")
     apply(auto simp: wcode_halt_case_inv.simps wcode_stop.simps)
     by auto
 qed
@@ -2130,9 +2147,9 @@ lemma twice_power[intro]: "2 * 2 ^ a = Suc (Suc (2 * bl_bin (Oc \<up> a)))"
   done
 declare replicate_Suc[simp del]
 
-lemma t_wcode_main_lemma_pre:
+lemma wcode_main_tm_lemma_pre:
   "\<lbrakk>args \<noteq> []; lm = <args::nat list>\<rbrakk> \<Longrightarrow> 
-       \<exists> stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(m) @ rev lm @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main
+       \<exists> stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(m) @ rev lm @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm
                     stp
       = (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(bl_bin lm + rs * 2^(length lm - 1) ) @ Bk\<up>(rn))"
 proof(induct "length args" arbitrary: args lm rs m n, simp)
@@ -2141,7 +2158,7 @@ proof(induct "length args" arbitrary: args lm rs m n, simp)
     "\<And>args lm rs m n.
     \<lbrakk>x = length args; (args::nat list) \<noteq> []; lm = <args>\<rbrakk>
     \<Longrightarrow> \<exists>stp ln rn.
-    steps0 (Suc 0, Bk # Bk\<up>(m) @ rev lm @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+    steps0 (Suc 0, Bk # Bk\<up>(m) @ rev lm @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
     (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(bl_bin lm + rs * 2 ^ (length lm - 1)) @ Bk\<up>(rn))"
     and h: "Suc x = length args" "(args::nat list) \<noteq> []" "lm = <args>"
   from h have "\<exists> (a::nat) xs. args = xs @ [a]"
@@ -2151,16 +2168,16 @@ proof(induct "length args" arbitrary: args lm rs m n, simp)
   from this obtain a xs where "args = xs @ [a]" by blast
   from h and this show
     "\<exists>stp ln rn.
-    steps0 (Suc 0, Bk # Bk\<up>(m) @ rev lm @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+    steps0 (Suc 0, Bk # Bk\<up>(m) @ rev lm @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
     (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(bl_bin lm + rs * 2 ^ (length lm - 1)) @ Bk\<up>(rn))"
   proof(case_tac "xs::nat list", simp)
     show "\<exists>stp ln rn.
-          steps0 (Suc 0, Bk # Bk \<up> m @ Oc \<up> Suc a @ Bk # Bk # ires, Bk # Oc \<up> Suc rs @ Bk \<up> n) t_wcode_main stp =
+          steps0 (Suc 0, Bk # Bk \<up> m @ Oc \<up> Suc a @ Bk # Bk # ires, Bk # Oc \<up> Suc rs @ Bk \<up> n) wcode_main_tm stp =
           (0, Bk # ires, Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> (bl_bin (Oc \<up> Suc a) + rs * 2 ^ a) @ Bk \<up> rn)"
     proof(induct "a" arbitrary: m n rs ires, simp)
       fix m n rs ires
       show "\<exists>stp ln rn.
-          steps0 (Suc 0, Bk # Bk \<up> m @ Oc # Bk # Bk # ires, Bk # Oc \<up> Suc rs @ Bk \<up> n) t_wcode_main stp =
+          steps0 (Suc 0, Bk # Bk \<up> m @ Oc # Bk # Bk # ires, Bk # Oc \<up> Suc rs @ Bk \<up> n) wcode_main_tm stp =
           (0, Bk # ires, Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> Suc rs @ Bk \<up> rn)"
         apply(rule_tac wcode_halt_case)
         done
@@ -2169,29 +2186,29 @@ proof(induct "length args" arbitrary: args lm rs m n, simp)
       assume ind2:
         "\<And>m n rs ires.
            \<exists>stp ln rn.
-              steps0 (Suc 0, Bk # Bk \<up> m @ Oc \<up> Suc a @ Bk # Bk # ires, Bk # Oc \<up> Suc rs @ Bk \<up> n) t_wcode_main stp =
+              steps0 (Suc 0, Bk # Bk \<up> m @ Oc \<up> Suc a @ Bk # Bk # ires, Bk # Oc \<up> Suc rs @ Bk \<up> n) wcode_main_tm stp =
               (0, Bk # ires, Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> (bl_bin (Oc \<up> Suc a) + rs * 2 ^ a) @ Bk \<up> rn)"
       show " \<exists>stp ln rn.
-          steps0 (Suc 0, Bk # Bk \<up> m @ Oc \<up> Suc (Suc a) @ Bk # Bk # ires, Bk # Oc \<up> Suc rs @ Bk \<up> n) t_wcode_main stp =
+          steps0 (Suc 0, Bk # Bk \<up> m @ Oc \<up> Suc (Suc a) @ Bk # Bk # ires, Bk # Oc \<up> Suc rs @ Bk \<up> n) wcode_main_tm stp =
           (0, Bk # ires, Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> (bl_bin (Oc \<up> Suc (Suc a)) + rs * 2 ^ Suc a) @ Bk \<up> rn)"
       proof -
         have "\<exists>stp ln rn.
-          steps0 (Suc 0, Bk # Bk\<up>(m) @ rev (<Suc a>) @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+          steps0 (Suc 0, Bk # Bk\<up>(m) @ rev (<Suc a>) @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
           (Suc 0, Bk # Bk\<up>(ln) @ rev (<a>) @ Bk # Bk # ires, Bk # Oc\<up>(Suc (2 * rs + 2)) @ Bk\<up>(rn))"
           apply(simp add: tape_of_nat)
           using wcode_double_case[of m "Oc\<up>(a) @ Bk # Bk # ires" rs n]
           apply(simp add: replicate_Suc)
           done
         from this obtain stpa lna rna where stp1:  
-          "steps0 (Suc 0, Bk # Bk\<up>(m) @ rev (<Suc a>) @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stpa =
+          "steps0 (Suc 0, Bk # Bk\<up>(m) @ rev (<Suc a>) @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stpa =
           (Suc 0, Bk # Bk\<up>(lna) @ rev (<a>) @ Bk # Bk # ires, Bk # Oc\<up>(Suc (2 * rs + 2)) @ Bk\<up>(rna))" by blast
         moreover have 
           "\<exists>stp ln rn.
-          steps0 (Suc 0,  Bk # Bk\<up>(lna) @ rev (<a::nat>) @ Bk # Bk # ires, Bk # Oc\<up>(Suc (2 * rs + 2)) @ Bk\<up>(rna)) t_wcode_main stp =
+          steps0 (Suc 0,  Bk # Bk\<up>(lna) @ rev (<a::nat>) @ Bk # Bk # ires, Bk # Oc\<up>(Suc (2 * rs + 2)) @ Bk\<up>(rna)) wcode_main_tm stp =
           (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(bl_bin (<a>) + (2*rs + 2)  * 2 ^ a) @ Bk\<up>(rn))"
           using ind2[of lna ires "2*rs + 2" rna] by(simp add: tape_of_list_def tape_of_nat_def)   
         from this obtain stpb lnb rnb where stp2:  
-          "steps0 (Suc 0,  Bk # Bk\<up>(lna) @ rev (<a>) @ Bk # Bk # ires, Bk # Oc\<up>(Suc (2 * rs + 2)) @ Bk\<up>(rna)) t_wcode_main stpb =
+          "steps0 (Suc 0,  Bk # Bk\<up>(lna) @ rev (<a>) @ Bk # Bk # ires, Bk # Oc\<up>(Suc (2 * rs + 2)) @ Bk\<up>(rna)) wcode_main_tm stpb =
           (0, Bk # ires, Bk # Oc # Bk\<up>(lnb) @ Bk # Bk # Oc\<up>(bl_bin (<a>) + (2*rs + 2)  * 2 ^ a) @ Bk\<up>(rnb))"
           by blast
         from stp1 and stp2 show "?thesis"
@@ -2205,14 +2222,14 @@ proof(induct "length args" arbitrary: args lm rs m n, simp)
   next
     fix aa list
     assume g: "Suc x = length args" "args \<noteq> []" "lm = <args>" "args = xs @ [a::nat]" "xs = (aa::nat) # list"
-    thus "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(m) @ rev lm @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+    thus "\<exists>stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(m) @ rev lm @ Bk # Bk # ires, Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
       (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(bl_bin lm + rs * 2 ^ (length lm - 1)) @ Bk\<up>(rn))"
-    proof(induct a arbitrary: m n rs args lm, simp_all add: tape_of_nl_rev del: subst_all, 
+   proof(induct a arbitrary: m n rs args lm, simp_all add: tape_of_nl_rev del: subst_all, 
         simp only: tape_of_nl_cons_app1, simp del: subst_all)
       fix m n rs args lm
       have "\<exists>stp ln rn.
         steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # rev (<(aa::nat) # list>) @ Bk # Bk # ires,
-        Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+        Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
         (Suc 0, Bk # Bk\<up>(ln) @ rev (<aa # list>) @ Bk # Bk # ires, 
         Bk # Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rn))"
       proof(simp add: tape_of_nl_rev)
@@ -2220,7 +2237,7 @@ proof(induct "length args" arbitrary: args lm rs m n, simp)
         from this obtain xs where "(<rev list @ [aa]>) = Oc # xs" ..
         thus "\<exists>stp ln rn.
             steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # <rev list @ [aa]> @ Bk # Bk # ires,
-            Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+            Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
             (Suc 0, Bk # Bk\<up>(ln) @ <rev list @ [aa]> @ Bk # Bk # ires, Bk # Oc\<up>(5 + 4 * rs) @ Bk\<up>(rn))"
           apply(simp)
           using wcode_fourtimes_case[of m "xs @ Bk # Bk # ires" rs n]
@@ -2229,28 +2246,28 @@ proof(induct "length args" arbitrary: args lm rs m n, simp)
       qed
       from this obtain stpa lna rna where stp1:
         "steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # rev (<aa # list>) @ Bk # Bk # ires,
-        Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stpa =
+        Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stpa =
         (Suc 0, Bk # Bk\<up>(lna) @ rev (<aa # list>) @ Bk # Bk # ires, 
         Bk # Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rna))" by blast
       from g have 
         "\<exists> stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(lna) @ rev (<(aa::nat) # list>) @ Bk # Bk # ires, 
-        Bk # Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rna)) t_wcode_main stp = (0, Bk # ires, 
+        Bk # Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rna)) wcode_main_tm stp = (0, Bk # ires, 
         Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(bl_bin (<aa#list>)+ (4*rs + 4) * 2^(length (<aa#list>) - 1) ) @ Bk\<up>(rn))"
         apply(rule_tac args = "(aa::nat)#list" in ind, simp_all)
         done
       from this obtain stpb lnb rnb where stp2:
         "steps0 (Suc 0, Bk # Bk\<up>(lna) @ rev (<(aa::nat) # list>) @ Bk # Bk # ires, 
-         Bk # Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rna)) t_wcode_main stpb = (0, Bk # ires, 
+         Bk # Oc\<up>(Suc (4*rs + 4)) @ Bk\<up>(rna)) wcode_main_tm stpb = (0, Bk # ires, 
          Bk # Oc # Bk\<up>(lnb) @ Bk # Bk # Oc\<up>(bl_bin (<aa#list>)+ (4*rs + 4) * 2^(length (<aa#list>) - 1) ) @ Bk\<up>(rnb))"
         by blast
       from stp1 and stp2 and h
       show "\<exists>stp ln rn.
          steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc # Bk # <rev list @ [aa]> @ Bk # Bk # ires,
-         Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+         Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
          (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk #
          Bk # Oc\<up>(bl_bin (Oc\<up>(Suc aa) @ Bk # <list @ [0]>) + rs * (2 * 2 ^ (aa + length (<list @ [0]>)))) @ Bk\<up>(rn))"
         apply(rule_tac x = "stpa + stpb" in exI, rule_tac x = lnb in exI,
-            rule_tac x = rnb in exI, simp add: steps_add tape_of_nl_rev)
+            rule_tac x = rnb in exI, simp add: tape_of_nl_rev)
         done
     next
       fix ab m n rs args lm
@@ -2259,19 +2276,19 @@ proof(induct "length args" arbitrary: args lm rs m n, simp)
          \<lbrakk>lm = <aa # list @ [ab]>; args = aa # list @ [ab]\<rbrakk>
          \<Longrightarrow> \<exists>stp ln rn.
          steps0 (Suc 0, Bk # Bk\<up>(m) @ <ab # rev list @ [aa]> @ Bk # Bk # ires,
-         Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+         Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
          (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk #
          Bk # Oc\<up>(bl_bin (<aa # list @ [ab]>) + rs * 2 ^ (length (<aa # list @ [ab]>) - Suc 0)) @ Bk\<up>(rn))"
         and k: "args = aa # list @ [Suc ab]" "lm = <aa # list @ [Suc ab]>"
       show "\<exists>stp ln rn.
          steps0 (Suc 0, Bk # Bk\<up>(m) @ <Suc ab # rev list @ [aa]> @ Bk # Bk # ires,
-         Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+         Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
          (0, Bk # ires,Bk # Oc # Bk\<up>(ln) @ Bk # 
          Bk # Oc\<up>(bl_bin (<aa # list @ [Suc ab]>) + rs * 2 ^ (length (<aa # list @ [Suc ab]>) - Suc 0)) @ Bk\<up>(rn))"
       proof(simp add: tape_of_nl_cons_app1)
         have "\<exists>stp ln rn.
            steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc\<up>(Suc (Suc ab)) @ Bk # <rev list @ [aa]> @ Bk # Bk # ires, 
-           Bk # Oc # Oc\<up>(rs) @ Bk\<up>(n)) t_wcode_main stp
+           Bk # Oc # Oc\<up>(rs) @ Bk\<up>(n)) wcode_main_tm stp
            = (Suc 0, Bk # Bk\<up>(ln) @ Oc\<up>(Suc ab) @ Bk # <rev list @ [aa]> @ Bk # Bk # ires,
            Bk # Oc\<up>(Suc (2*rs + 2)) @ Bk\<up>(rn))"
           using wcode_double_case[of m "Oc\<up>(ab) @ Bk # <rev list @ [aa]> @ Bk # Bk # ires"
@@ -2280,44 +2297,43 @@ proof(induct "length args" arbitrary: args lm rs m n, simp)
           done
         from this obtain stpa lna rna where stp1:
           "steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc\<up>(Suc (Suc ab)) @ Bk # <rev list @ [aa]> @ Bk # Bk # ires, 
-           Bk # Oc # Oc\<up>(rs) @ Bk\<up>(n)) t_wcode_main stpa
+           Bk # Oc # Oc\<up>(rs) @ Bk\<up>(n)) wcode_main_tm stpa
            = (Suc 0, Bk # Bk\<up>(lna) @ Oc\<up>(Suc ab) @ Bk # <rev list @ [aa]> @ Bk # Bk # ires,
            Bk # Oc\<up>(Suc (2*rs + 2)) @ Bk\<up>(rna))" by blast
         from k have 
           "\<exists> stp ln rn. steps0 (Suc 0, Bk # Bk\<up>(lna) @ <ab # rev list @ [aa]> @ Bk # Bk # ires,
-           Bk # Oc\<up>(Suc (2*rs + 2)) @ Bk\<up>(rna)) t_wcode_main stp
+           Bk # Oc\<up>(Suc (2*rs + 2)) @ Bk\<up>(rna)) wcode_main_tm stp
            = (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk #
            Bk # Oc\<up>(bl_bin (<aa # list @ [ab]> ) +  (2*rs + 2)* 2^(length (<aa # list @ [ab]>) - Suc 0)) @ Bk\<up>(rn))"
           apply(rule_tac ind2, simp_all)
           done
         from this obtain stpb lnb rnb where stp2: 
           "steps0 (Suc 0, Bk # Bk\<up>(lna) @  <ab # rev list @ [aa]> @ Bk # Bk # ires,
-           Bk # Oc\<up>(Suc (2*rs + 2)) @ Bk\<up>(rna)) t_wcode_main stpb
+           Bk # Oc\<up>(Suc (2*rs + 2)) @ Bk\<up>(rna)) wcode_main_tm stpb
            = (0, Bk # ires, Bk # Oc # Bk\<up>(lnb) @ Bk #
            Bk # Oc\<up>(bl_bin (<aa # list @ [ab]> ) +  (2*rs + 2)* 2^(length (<aa # list @ [ab]>) - Suc 0)) @ Bk\<up>(rnb))" 
           by blast
         from stp1 and stp2 show 
           "\<exists>stp ln rn.
            steps0 (Suc 0, Bk # Bk\<up>(m) @ Oc\<up>(Suc (Suc ab)) @ Bk # <rev list @ [aa]> @ Bk # Bk # ires,
-           Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) t_wcode_main stp =
+           Bk # Oc\<up>(Suc rs) @ Bk\<up>(n)) wcode_main_tm stp =
            (0, Bk # ires, Bk # Oc # Bk\<up>(ln) @ Bk # Bk # 
            Oc\<up>(bl_bin (Oc\<up>(Suc aa) @ Bk # <list @ [Suc ab]>) + rs * (2 * 2 ^ (aa + length (<list @ [Suc ab]>)))) 
            @ Bk\<up>(rn))"
           apply(rule_tac x = "stpa + stpb" in exI, rule_tac x = lnb in exI,
-              rule_tac x = rnb in exI, simp add: steps_add tape_of_nl_cons_app1 replicate_Suc)
+              rule_tac x = rnb in exI, simp add: tape_of_nl_cons_app1 replicate_Suc)
           done
       qed
     qed
   qed
 qed
 
-
-definition t_wcode_prepare :: "instr list"
+definition wcode_prepare_tm :: "instr list"
   where
-    "t_wcode_prepare \<equiv> 
-         [(W1, 2), (L, 1), (L, 3), (R, 2), (R, 4), (W0, 3),
+    "wcode_prepare_tm \<equiv> 
+         [(WO, 2), (L, 1), (L, 3), (R, 2), (R, 4), (WB, 3),
           (R, 4), (R, 5), (R, 6), (R, 5), (R, 7), (R, 5),
-          (W1, 7), (L, 0)]"
+          (WO, 7), (L, 0)]"
 
 fun wprepare_add_one :: "nat \<Rightarrow> nat list \<Rightarrow> tape \<Rightarrow> bool"
   where
@@ -2463,7 +2479,7 @@ definition wcode_prepare_le :: "(config \<times> config) set"
   where "wcode_prepare_le \<equiv> (inv_image lex_triple wcode_prepare_measure)"
 
 lemma wf_wcode_prepare_le[intro]: "wf wcode_prepare_le"
-  by(auto intro:wf_inv_image simp: wcode_prepare_le_def 
+  by(auto simp: wcode_prepare_le_def 
       lex_triple_def)
 
 declare wprepare_add_one.simps[simp del] wprepare_goto_first_end.simps[simp del]
@@ -2478,23 +2494,23 @@ lemmas wprepare_invs = wprepare_add_one.simps wprepare_goto_first_end.simps
 
 declare wprepare_inv.simps[simp del]
 
-lemma fetch_t_wcode_prepare[simp]:
-  "fetch t_wcode_prepare (Suc 0) Bk = (W1, 2)"
-  "fetch t_wcode_prepare (Suc 0) Oc = (L, 1)"
-  "fetch t_wcode_prepare (Suc (Suc 0)) Bk = (L, 3)"
-  "fetch t_wcode_prepare (Suc (Suc 0)) Oc = (R, 2)"
-  "fetch t_wcode_prepare (Suc (Suc (Suc 0))) Bk = (R, 4)"
-  "fetch t_wcode_prepare (Suc (Suc (Suc 0))) Oc = (W0, 3)"
-  "fetch t_wcode_prepare 4 Bk = (R, 4)"
-  "fetch t_wcode_prepare 4 Oc = (R, 5)"
-  "fetch t_wcode_prepare 5 Oc = (R, 5)"
-  "fetch t_wcode_prepare 5 Bk = (R, 6)"
-  "fetch t_wcode_prepare 6 Oc = (R, 5)"
-  "fetch t_wcode_prepare 6 Bk = (R, 7)"
-  "fetch t_wcode_prepare 7 Oc = (L, 0)"
-  "fetch t_wcode_prepare 7 Bk = (W1, 7)"
-  unfolding fetch.simps t_wcode_prepare_def nth_of.simps
-    numeral by auto
+lemma fetch_wcode_prepare_tm[simp]:
+  "fetch wcode_prepare_tm (Suc 0) Bk = (WO, 2)"
+  "fetch wcode_prepare_tm (Suc 0) Oc = (L, 1)"
+  "fetch wcode_prepare_tm (Suc (Suc 0)) Bk = (L, 3)"
+  "fetch wcode_prepare_tm (Suc (Suc 0)) Oc = (R, 2)"
+  "fetch wcode_prepare_tm (Suc (Suc (Suc 0))) Bk = (R, 4)"
+  "fetch wcode_prepare_tm (Suc (Suc (Suc 0))) Oc = (WB, 3)"
+  "fetch wcode_prepare_tm 4 Bk = (R, 4)"
+  "fetch wcode_prepare_tm 4 Oc = (R, 5)"
+  "fetch wcode_prepare_tm 5 Oc = (R, 5)"
+  "fetch wcode_prepare_tm 5 Bk = (R, 6)"
+  "fetch wcode_prepare_tm 6 Oc = (R, 5)"
+  "fetch wcode_prepare_tm 6 Bk = (R, 7)"
+  "fetch wcode_prepare_tm 7 Oc = (L, 0)"
+  "fetch wcode_prepare_tm 7 Bk = (WO, 7)"
+  unfolding fetch.simps wcode_prepare_tm_def nth_of.simps
+    numeral_eqs_upto_12 by auto
 
 lemma wprepare_add_one_nonempty_snd[simp]: "lm \<noteq> [] \<Longrightarrow> wprepare_add_one m lm (b, []) = False"
   apply(simp add: wprepare_invs)
@@ -2523,8 +2539,7 @@ lemma wprepare_loop_goon_Bk_empty_snd[simp]: "\<lbrakk>lm \<noteq> []; wprepare_
   apply(simp only: wprepare_invs)
   apply(erule_tac disjE)
    apply(rule_tac disjI2)
-   apply(simp add: wprepare_loop_start_on_rightmost.simps
-      wprepare_loop_goon_on_rightmost.simps, auto)
+   apply(simp, auto)
   apply(rule_tac rev_eq, simp add: tape_of_nl_rev)
   done
 
@@ -2856,12 +2871,12 @@ lemma wprepare_correctness:
   assumes h: "lm \<noteq> []"
   shows "let P = (\<lambda> (st, l, r). st = 0) in 
   let Q = (\<lambda> (st, l, r). wprepare_inv st m lm (l, r)) in 
-  let f = (\<lambda> stp. steps0 (Suc 0, [], (<m # lm>)) t_wcode_prepare stp) in
+  let f = (\<lambda> stp. steps0 (Suc 0, [], (<m # lm>)) wcode_prepare_tm stp) in
     \<exists> n .P (f n) \<and> Q (f n)"
 proof -
   let ?P = "(\<lambda> (st, l, r). st = 0)"
   let ?Q = "(\<lambda> (st, l, r). wprepare_inv st m lm (l, r))"
-  let ?f = "(\<lambda> stp. steps0 (Suc 0, [], (<m # lm>)) t_wcode_prepare stp)"
+  let ?f = "(\<lambda> stp. steps0 (Suc 0, [], (<m # lm>)) wcode_prepare_tm stp)"
   have "\<exists> n. ?P (?f n) \<and> ?Q (?f n)"
   proof(rule_tac halt_lemma2)
     show "\<forall> n. \<not> ?P (?f n) \<and> ?Q (?f n) \<longrightarrow> 
@@ -2882,122 +2897,122 @@ proof -
     done
 qed
 
-lemma tm_wf_t_wcode_prepare[intro]: "tm_wf (t_wcode_prepare, 0)"
-  apply(simp add:tm_wf.simps t_wcode_prepare_def)
+lemma composable_tm_wcode_prepare_tm[intro]: "composable_tm (wcode_prepare_tm, 0)"
+  apply(simp add:composable_tm.simps wcode_prepare_tm_def)
   done
 
-lemma is_28_even[intro]: "(28 + (length t_twice_compile + length t_fourtimes_compile)) mod 2 = 0"
-  by(auto simp: t_twice_compile_def t_fourtimes_compile_def)
+lemma is_28_even[intro]: "(28 + (length twice_compile_tm + length fourtimes_compile_tm)) mod 2 = 0"
+  by(auto simp: twice_compile_tm_def fourtimes_compile_tm_def)
 
-lemma b_le_28[elim]: "(a, b) \<in> set t_wcode_main_first_part \<Longrightarrow>
-  b \<le> (28 + (length t_twice_compile + length t_fourtimes_compile)) div 2"
-  apply(auto simp: t_wcode_main_first_part_def t_twice_def)
+lemma b_le_28[elim]: "(a, b) \<in> set wcode_main_first_part_tm \<Longrightarrow>
+  b \<le> (28 + (length twice_compile_tm + length fourtimes_compile_tm)) div 2"
+  apply(auto simp: wcode_main_first_part_tm_def twice_tm_def)
   done
 
 
 
-lemma tm_wf_change_termi:
-  assumes "tm_wf (tp, 0)"
+lemma composable_tm_change_termi:
+  assumes "composable_tm (tp, 0)"
   shows "list_all (\<lambda>(acn, st). (st \<le> Suc (length tp div 2))) (adjust0 tp)"
 proof -
   { fix acn st n
     assume "tp ! n = (acn, st)" "n < length tp" "0 < st"
     hence "(acn, st)\<in>set tp" by (metis nth_mem)
-    with assms tm_wf.simps have "st \<le> length tp div 2 + 0" by auto
+    with assms composable_tm.simps have "st \<le> length tp div 2 + 0" by auto
     hence "st \<le> Suc (length tp div 2)" by auto
   }
   thus ?thesis
-    by(auto simp: tm_wf.simps List.list_all_length adjust.simps split: if_splits prod.split)
+    by(auto simp: composable_tm.simps List.list_all_length adjust.simps split: if_splits prod.split)
 qed
 
-lemma tm_wf_shift:
+lemma composable_tm_shift:
   assumes "list_all (\<lambda>(acn, st). (st \<le> y)) tp"
   shows "list_all (\<lambda>(acn, st). (st \<le> y + off)) (shift tp off)"
 proof -
   have [dest!]:"\<And> P Q n. \<forall>n. Q n \<longrightarrow> P n \<Longrightarrow> Q n \<Longrightarrow> P n" by metis
-  from assms show ?thesis by(auto simp: tm_wf.simps List.list_all_length shift.simps)
+  from assms show ?thesis by(auto simp: composable_tm.simps List.list_all_length shift.simps)
 qed
 
 declare length_tp'[simp del]
 
-lemma length_mopup_1[simp]: "length (mopup (Suc 0)) = 16"
-  apply(auto simp: mopup.simps)
+lemma length_mopup_1[simp]: "length (mopup_n_tm (Suc 0)) = 16"
+  apply(auto simp: mopup_n_tm.simps)
   done
 
-lemma twice_plus_28_elim[elim]: "(a, b) \<in> set (shift (adjust0 t_twice_compile) 12) \<Longrightarrow> 
-  b \<le> (28 + (length t_twice_compile + length t_fourtimes_compile)) div 2"
-  apply(simp add: t_twice_compile_def t_fourtimes_compile_def)
+lemma twice_plus_28_elim[elim]: "(a, b) \<in> set (shift (adjust0 twice_compile_tm) 12) \<Longrightarrow> 
+  b \<le> (28 + (length twice_compile_tm + length fourtimes_compile_tm)) div 2"
+  apply(simp add: twice_compile_tm_def fourtimes_compile_tm_def)
 proof -
   assume g: "(a, b)
     \<in> set (shift
             (adjust
               (tm_of abc_twice @
-               shift (mopup (Suc 0)) (length (tm_of abc_twice) div 2))
+               shift (mopup_n_tm (Suc 0)) (length (tm_of abc_twice) div 2))
               (Suc ((length (tm_of abc_twice) + 16) div 2)))
             12)"
   moreover have "length (tm_of abc_twice) mod 2 = 0" by auto
   moreover have "length (tm_of abc_fourtimes) mod 2 = 0" by auto
   ultimately have "list_all (\<lambda>(acn, st). (st \<le> (60 + (length (tm_of abc_twice) + length (tm_of abc_fourtimes))) div 2)) 
-    (shift (adjust0 t_twice_compile) 12)"
-  proof(auto simp add: mod_ex1 del: adjust.simps)
+    (shift (adjust0 twice_compile_tm) 12)"
+  proof(auto simp add: mod_ex1)
     assume "even (length (tm_of abc_twice))"
     then obtain q where q:"length (tm_of abc_twice) = 2 * q" by auto
     assume "even (length (tm_of abc_fourtimes))"
     then obtain qa where qa:"length (tm_of abc_fourtimes) = 2 * qa" by auto
     note h = q qa
-    hence "list_all (\<lambda>(acn, st). st \<le> (18 + (q + qa)) + 12) (shift (adjust0 t_twice_compile) 12)"
-    proof(rule_tac tm_wf_shift t_twice_compile_def)
-      have "list_all (\<lambda>(acn, st). st \<le> Suc (length t_twice_compile div 2)) (adjust0 t_twice_compile)"
-        by(rule_tac tm_wf_change_termi, auto)
-      thus "list_all (\<lambda>(acn, st). st \<le> 18 + (q + qa)) (adjust0 t_twice_compile)"
+    hence "list_all (\<lambda>(acn, st). st \<le> (18 + (q + qa)) + 12) (shift (adjust0 twice_compile_tm) 12)"
+    proof(rule_tac composable_tm_shift twice_compile_tm_def)
+      have "list_all (\<lambda>(acn, st). st \<le> Suc (length twice_compile_tm div 2)) (adjust0 twice_compile_tm)"
+        by(rule_tac composable_tm_change_termi, auto)
+      thus "list_all (\<lambda>(acn, st). st \<le> 18 + (q + qa)) (adjust0 twice_compile_tm)"
         using h
-        apply(simp add: t_twice_compile_def, auto simp: List.list_all_length)
+        apply(simp add: twice_compile_tm_def, auto simp: List.list_all_length)
         done
     qed
     thus "list_all (\<lambda>(acn, st). st \<le> 30 + (length (tm_of abc_twice) div 2 + length (tm_of abc_fourtimes) div 2))
-     (shift (adjust0 t_twice_compile) 12)" using h
+     (shift (adjust0 twice_compile_tm) 12)" using h
       by simp
   qed
   thus "b \<le> (60 + (length (tm_of abc_twice) + length (tm_of abc_fourtimes))) div 2"
     using g
-    apply(auto simp:t_twice_compile_def)
+    apply(auto simp:twice_compile_tm_def)
     apply(simp add: Ball_set[THEN sym])
     apply(erule_tac x = "(a, b)" in ballE, simp, simp)
     done
 qed 
 
-lemma length_plus_28_elim2[elim]: "(a, b) \<in> set (shift (adjust0 t_fourtimes_compile) (t_twice_len + 13)) 
-  \<Longrightarrow> b \<le> (28 + (length t_twice_compile + length t_fourtimes_compile)) div 2"
-  apply(simp add: t_twice_compile_def t_fourtimes_compile_def t_twice_len_def)
+lemma length_plus_28_elim2[elim]: "(a, b) \<in> set (shift (adjust0 fourtimes_compile_tm) (twice_tm_len + 13)) 
+  \<Longrightarrow> b \<le> (28 + (length twice_compile_tm + length fourtimes_compile_tm)) div 2"
+  apply(simp add: twice_compile_tm_def fourtimes_compile_tm_def twice_tm_len_def)
 proof -
   assume g: "(a, b)
     \<in> set (shift
-             (adjust (tm_of abc_fourtimes @ shift (mopup (Suc 0)) (length (tm_of abc_fourtimes) div 2))
+             (adjust (tm_of abc_fourtimes @ shift (mopup_n_tm (Suc 0)) (length (tm_of abc_fourtimes) div 2))
                (Suc ((length (tm_of abc_fourtimes) + 16) div 2)))
-             (length t_twice div 2 + 13))"
+             (length twice_tm div 2 + 13))"
   moreover have "length (tm_of abc_twice) mod 2 = 0" by auto
   moreover have "length (tm_of abc_fourtimes) mod 2 = 0" by auto
   ultimately have "list_all (\<lambda>(acn, st). (st \<le> (60 + (length (tm_of abc_twice) + length (tm_of abc_fourtimes))) div 2)) 
-    (shift (adjust0 (tm_of abc_fourtimes @ shift (mopup (Suc 0))
-    (length (tm_of abc_fourtimes) div 2))) (length t_twice div 2 + 13))"
-  proof(auto simp: mod_ex1 t_twice_def t_twice_compile_def)
+    (shift (adjust0 (tm_of abc_fourtimes @ shift (mopup_n_tm (Suc 0))
+    (length (tm_of abc_fourtimes) div 2))) (length twice_tm div 2 + 13))"
+  proof(auto simp: mod_ex1 twice_tm_def twice_compile_tm_def)
     assume "even (length (tm_of abc_twice))"
     then obtain q where q:"length (tm_of abc_twice) = 2 * q" by auto
     assume "even (length (tm_of abc_fourtimes))"
     then obtain qa where qa:"length (tm_of abc_fourtimes) = 2 * qa" by auto
     note h = q qa
     hence "list_all (\<lambda>(acn, st). st \<le> (9 + qa + (21 + q)))
-      (shift (adjust0 (tm_of abc_fourtimes @ shift (mopup (Suc 0)) qa)) (21 + q))"
-    proof(rule_tac tm_wf_shift t_twice_compile_def)
+      (shift (adjust0 (tm_of abc_fourtimes @ shift (mopup_n_tm (Suc 0)) qa)) (21 + q))"
+    proof(rule_tac composable_tm_shift twice_compile_tm_def)
       have "list_all (\<lambda>(acn, st). st \<le> Suc (length (tm_of abc_fourtimes @ shift 
-        (mopup (Suc 0)) qa) div 2)) (adjust0 (tm_of abc_fourtimes @ shift (mopup (Suc 0)) qa))"
-        apply(rule_tac tm_wf_change_termi)
-        using wf_fourtimes h
-        apply(simp add: t_fourtimes_compile_def)
+        (mopup_n_tm (Suc 0)) qa) div 2)) (adjust0 (tm_of abc_fourtimes @ shift (mopup_n_tm (Suc 0)) qa))"
+        apply(rule_tac composable_tm_change_termi)
+        using composable_fourtimes_tm h
+        apply(simp add: fourtimes_compile_tm_def)
         done
       thus "list_all (\<lambda>(acn, st). st \<le> 9 + qa)
-        (adjust (tm_of abc_fourtimes @ shift (mopup (Suc 0)) qa)
-          (Suc (length (tm_of abc_fourtimes @ shift (mopup (Suc 0)) qa) div
+        (adjust (tm_of abc_fourtimes @ shift (mopup_n_tm (Suc 0)) qa)
+          (Suc (length (tm_of abc_fourtimes @ shift (mopup_n_tm (Suc 0)) qa) div
                 2)))"
         using h
         apply(simp)
@@ -3006,7 +3021,7 @@ proof -
     thus "list_all
      (\<lambda>(acn, st). st \<le> 30 + (length (tm_of abc_twice) div 2 + length (tm_of abc_fourtimes) div 2))
      (shift
-       (adjust (tm_of abc_fourtimes @ shift (mopup (Suc 0)) (length (tm_of abc_fourtimes) div 2))
+       (adjust (tm_of abc_fourtimes @ shift (mopup_n_tm (Suc 0)) (length (tm_of abc_fourtimes) div 2))
          (9 + length (tm_of abc_fourtimes) div 2))
        (21 + length (tm_of abc_twice) div 2))"
       apply(subgoal_tac "qa + q = q + qa")
@@ -3021,15 +3036,13 @@ proof -
     done
 qed
 
-lemma tm_wf_t_wcode_main[intro]: "tm_wf (t_wcode_main, 0)"
-  by(auto simp: t_wcode_main_def tm_wf.simps
-      t_twice_def t_fourtimes_def del: List.list_all_iff)
-
-declare tm_comp.simps[simp del]
+lemma composable_tm_wcode_main_tm[intro]: "composable_tm (wcode_main_tm, 0)"
+  by(auto simp: wcode_main_tm_def composable_tm.simps
+      twice_tm_def fourtimes_tm_def )
 
 lemma prepare_mainpart_lemma:
   "args \<noteq> [] \<Longrightarrow> 
-  \<exists> stp ln rn. steps0 (Suc 0, [], <m # args>) (t_wcode_prepare |+| t_wcode_main) stp
+  \<exists> stp ln rn. steps0 (Suc 0, [], <m # args>) (wcode_prepare_tm |+| wcode_main_tm) stp
               = (0,  Bk # Oc\<up>(Suc m), Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(bl_bin (<args>)) @ Bk\<up>(rn))"
 proof -
   let ?P1 = "(\<lambda> (l, r). (l::cell list) = [] \<and> r = <m # args>)"
@@ -3039,32 +3052,32 @@ proof -
                            r =  Bk # Oc # Bk\<up>(ln) @ Bk # Bk # Oc\<up>(bl_bin (<args>)) @ Bk\<up>(rn)))"
   let ?P3 = "\<lambda> tp. False"
   assume h: "args \<noteq> []"
-  have "{?P1} t_wcode_prepare |+| t_wcode_main {?Q2}"
+  have " \<lbrace>?P1\<rbrace> wcode_prepare_tm |+| wcode_main_tm \<lbrace>?Q2\<rbrace>"
   proof(rule_tac Hoare_plus_halt)
-    show "{?P1} t_wcode_prepare {?Q1}"
+    show " \<lbrace>?P1\<rbrace>  wcode_prepare_tm \<lbrace>?Q1\<rbrace> "
     proof(rule_tac Hoare_haltI, auto)
-      show "\<exists>n. is_final (steps0 (Suc 0, [], <m # args>) t_wcode_prepare n) \<and>
-        wprepare_stop m args holds_for steps0 (Suc 0, [], <m # args>) t_wcode_prepare n"
+      show "\<exists>n. is_final (steps0 (Suc 0, [], <m # args>) wcode_prepare_tm n) \<and>
+        wprepare_stop m args holds_for steps0 (Suc 0, [], <m # args>) wcode_prepare_tm n"
         using wprepare_correctness[of args m,OF h]
         apply(auto simp add: wprepare_inv.simps)
         by (metis holds_for.simps is_finalI)
     qed
   next
-    show "{?P2} t_wcode_main {?Q2}"
+    show " \<lbrace>?P2\<rbrace>  wcode_main_tm \<lbrace>?Q2\<rbrace>"
     proof(rule_tac Hoare_haltI, auto)
       fix l r
       assume "wprepare_stop m args (l, r)"
-      thus "\<exists>n. is_final (steps0 (Suc 0, l, r) t_wcode_main n) \<and>
+      thus "\<exists>n. is_final (steps0 (Suc 0, l, r) wcode_main_tm n) \<and>
               (\<lambda>(l, r). l = Bk # Oc # Oc \<up> m \<and> (\<exists>ln rn. r = Bk # Oc # Bk \<up> ln @ 
-        Bk # Bk # Oc \<up> bl_bin (<args>) @ Bk \<up> rn)) holds_for steps0 (Suc 0, l, r) t_wcode_main n"
+        Bk # Bk # Oc \<up> bl_bin (<args>) @ Bk \<up> rn)) holds_for steps0 (Suc 0, l, r) wcode_main_tm n"
       proof(auto simp: wprepare_stop.simps)
         fix rn
-        show " \<exists>n. is_final (steps0 (Suc 0, Bk # <rev args> @ Bk # Bk # Oc # Oc \<up> m, Bk # Oc # Bk \<up> rn) t_wcode_main n) \<and>
+        show " \<exists>n. is_final (steps0 (Suc 0, Bk # <rev args> @ Bk # Bk # Oc # Oc \<up> m, Bk # Oc # Bk \<up> rn) wcode_main_tm n) \<and>
           (\<lambda>(l, r). l = Bk # Oc # Oc \<up> m \<and>
           (\<exists>ln rn. r = Bk # Oc # Bk \<up> ln @
           Bk # Bk # Oc \<up> bl_bin (<args>) @
-          Bk \<up> rn)) holds_for steps0 (Suc 0, Bk # <rev args> @ Bk # Bk # Oc # Oc \<up> m, Bk # Oc # Bk \<up> rn) t_wcode_main n"
-          using t_wcode_main_lemma_pre[of "args" "<args>" 0 "Oc\<up>(Suc m)" 0 rn,OF h refl]
+          Bk \<up> rn)) holds_for steps0 (Suc 0, Bk # <rev args> @ Bk # Bk # Oc # Oc \<up> m, Bk # Oc # Bk \<up> rn) wcode_main_tm n"
+          using wcode_main_tm_lemma_pre[of "args" "<args>" 0 "Oc\<up>(Suc m)" 0 rn,OF h refl]
           apply(auto simp: tape_of_nl_rev)
           apply(rename_tac stp ln rna)
           apply(rule_tac x = stp in exI, auto)
@@ -3072,22 +3085,22 @@ proof -
       qed
     qed
   next
-    show "tm_wf0 t_wcode_prepare"
+    show "composable_tm0 wcode_prepare_tm"
       by auto
   qed
   then obtain n 
     where "\<And> tp. (case tp of (l, r) \<Rightarrow> l = [] \<and> r = <m # args>) \<longrightarrow>
-       (is_final (steps0 (1, tp) (t_wcode_prepare |+| t_wcode_main) n) \<and>
+       (is_final (steps0 (1, tp) (wcode_prepare_tm |+| wcode_main_tm) n) \<and>
             (\<lambda>(l, r).
                 \<exists>ln rn.
                    l = Bk # Oc \<up> Suc m \<and>
-                   r = Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> bl_bin (<args>) @ Bk \<up> rn) holds_for steps0 (1, tp) (t_wcode_prepare |+| t_wcode_main) n)"
+                   r = Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> bl_bin (<args>) @ Bk \<up> rn) holds_for steps0 (1, tp) (wcode_prepare_tm |+| wcode_main_tm) n)"
     unfolding Hoare_halt_def by auto
   thus "?thesis"
     apply(rule_tac x = n in exI)
     apply(case_tac "(steps0 (Suc 0, [], <m # args>)
-      (adjust0 t_wcode_prepare @ shift t_wcode_main (length t_wcode_prepare div 2)) n)")
-    apply(auto simp: tm_comp.simps)
+      (adjust0 wcode_prepare_tm @ shift wcode_main_tm (length wcode_prepare_tm div 2)) n)")
+    apply(auto simp: seq_tm.simps)
     done
 qed
 
@@ -3168,35 +3181,35 @@ proof(induct stp arbitrary: sa la ra sb lb rb)
 qed (simp add: steps.simps)
 
 
-definition t_wcode_adjust :: "instr list"
+definition wcode_adjust_tm :: "instr list"
   where
-    "t_wcode_adjust = [(W1, 1), (R, 2), (Nop, 2), (R, 3), (R, 3), (R, 4), 
-                   (L, 8), (L, 5), (L, 6), (W0, 5), (L, 6), (R, 7), 
-                   (W1, 2), (Nop, 7), (L, 9), (W0, 8), (L, 9), (L, 10), 
+    "wcode_adjust_tm = [(WO, 1), (R, 2), (Nop, 2), (R, 3), (R, 3), (R, 4), 
+                   (L, 8), (L, 5), (L, 6), (WB, 5), (L, 6), (R, 7), 
+                   (WO, 2), (Nop, 7), (L, 9), (WB, 8), (L, 9), (L, 10), 
                     (L, 11), (L, 10), (R, 0), (L, 11)]"
 
-lemma fetch_t_wcode_adjust[simp]:
-  "fetch t_wcode_adjust (Suc 0) Bk = (W1, 1)"
-  "fetch t_wcode_adjust (Suc 0) Oc = (R, 2)"
-  "fetch t_wcode_adjust (Suc (Suc 0)) Oc = (R, 3)"
-  "fetch t_wcode_adjust (Suc (Suc (Suc 0))) Oc = (R, 4)"
-  "fetch t_wcode_adjust  (Suc (Suc (Suc 0))) Bk = (R, 3)"
-  "fetch t_wcode_adjust 4 Bk = (L, 8)"
-  "fetch t_wcode_adjust 4 Oc = (L, 5)"
-  "fetch t_wcode_adjust 5 Oc = (W0, 5)"
-  "fetch t_wcode_adjust 5 Bk = (L, 6)"
-  "fetch t_wcode_adjust 6 Oc = (R, 7)"
-  "fetch t_wcode_adjust 6 Bk = (L, 6)"
-  "fetch t_wcode_adjust 7 Bk = (W1, 2)"
-  "fetch t_wcode_adjust 8 Bk = (L, 9)"
-  "fetch t_wcode_adjust 8 Oc = (W0, 8)"
-  "fetch t_wcode_adjust 9 Oc = (L, 10)"
-  "fetch t_wcode_adjust 9 Bk = (L, 9)"
-  "fetch t_wcode_adjust 10 Bk = (L, 11)"
-  "fetch t_wcode_adjust 10 Oc = (L, 10)"
-  "fetch t_wcode_adjust 11 Oc = (L, 11)"
-  "fetch t_wcode_adjust 11 Bk = (R, 0)"
-  by(auto simp: fetch.simps t_wcode_adjust_def nth_of.simps numeral)
+lemma fetch_wcode_adjust_tm[simp]:
+  "fetch wcode_adjust_tm (Suc 0) Bk = (WO, 1)"
+  "fetch wcode_adjust_tm (Suc 0) Oc = (R, 2)"
+  "fetch wcode_adjust_tm (Suc (Suc 0)) Oc = (R, 3)"
+  "fetch wcode_adjust_tm (Suc (Suc (Suc 0))) Oc = (R, 4)"
+  "fetch wcode_adjust_tm  (Suc (Suc (Suc 0))) Bk = (R, 3)"
+  "fetch wcode_adjust_tm 4 Bk = (L, 8)"
+  "fetch wcode_adjust_tm 4 Oc = (L, 5)"
+  "fetch wcode_adjust_tm 5 Oc = (WB, 5)"
+  "fetch wcode_adjust_tm 5 Bk = (L, 6)"
+  "fetch wcode_adjust_tm 6 Oc = (R, 7)"
+  "fetch wcode_adjust_tm 6 Bk = (L, 6)"
+  "fetch wcode_adjust_tm 7 Bk = (WO, 2)"
+  "fetch wcode_adjust_tm 8 Bk = (L, 9)"
+  "fetch wcode_adjust_tm 8 Oc = (WB, 8)"
+  "fetch wcode_adjust_tm 9 Oc = (L, 10)"
+  "fetch wcode_adjust_tm 9 Bk = (L, 9)"
+  "fetch wcode_adjust_tm 10 Bk = (L, 11)"
+  "fetch wcode_adjust_tm 10 Oc = (L, 10)"
+  "fetch wcode_adjust_tm 11 Oc = (L, 11)"
+  "fetch wcode_adjust_tm 11 Bk = (R, 0)"
+  by(auto simp: fetch.simps wcode_adjust_tm_def nth_of.simps numeral_eqs_upto_12)
 
 
 fun wadjust_start :: "nat \<Rightarrow> nat \<Rightarrow> tape \<Rightarrow> bool"
@@ -3409,11 +3422,11 @@ definition wadjust_le :: "((nat \<times> config) \<times> nat \<times> config) s
   where "wadjust_le \<equiv> (inv_image lex_square wadjust_measure)"
 
 lemma wf_lex_square[intro]: "wf lex_square"
-  by(auto intro:wf_lex_prod simp: Abacus.lex_pair_def lex_square_def 
+  by(auto simp: Abacus.lex_pair_def lex_square_def 
       Abacus.lex_triple_def)
 
 lemma wf_wadjust_le[intro]: "wf wadjust_le"
-  by(auto intro:wf_inv_image simp: wadjust_le_def
+  by(auto  simp: wadjust_le_def
       Abacus.lex_triple_def Abacus.lex_pair_def)
 
 lemma wadjust_start_snd_nonempty[simp]: "wadjust_start m rs (c, []) = False"
@@ -3870,13 +3883,13 @@ lemma wadjust_correctness:
   shows "let P = (\<lambda> (len, st, l, r). st = 0) in 
   let Q = (\<lambda> (len, st, l, r). wadjust_inv st m rs (l, r)) in 
   let f = (\<lambda> stp. (Suc (Suc rs),  steps0 (Suc 0, Bk # Oc\<up>(Suc m), 
-                Bk # Oc # Bk\<up>(ln) @ Bk #  Oc\<up>(Suc rs) @ Bk\<up>(rn)) t_wcode_adjust stp)) in
+                Bk # Oc # Bk\<up>(ln) @ Bk #  Oc\<up>(Suc rs) @ Bk\<up>(rn)) wcode_adjust_tm stp)) in
     \<exists> n .P (f n) \<and> Q (f n)"
 proof -
   let ?P = "(\<lambda> (len, st, l, r). st = 0)"
   let ?Q = "\<lambda> (len, st, l, r). wadjust_inv st m rs (l, r)"
   let ?f = "\<lambda> stp. (Suc (Suc rs),  steps0 (Suc 0, Bk # Oc\<up>(Suc m), 
-                Bk # Oc # Bk\<up>(ln) @ Bk # Oc\<up>(Suc rs) @ Bk\<up>(rn)) t_wcode_adjust stp)"
+                Bk # Oc # Bk\<up>(ln) @ Bk # Oc\<up>(Suc rs) @ Bk\<up>(rn)) wcode_adjust_tm stp)"
   have "\<exists> n. ?P (?f n) \<and> ?Q (?f n)"
   proof(rule_tac halt_lemma2)
     show "wf wadjust_le" by auto
@@ -3914,8 +3927,8 @@ proof -
   thus"?thesis" by simp
 qed
 
-lemma tm_wf_t_wcode_adjust[intro]: "tm_wf (t_wcode_adjust, 0)"
-  by(auto simp: t_wcode_adjust_def tm_wf.simps)
+lemma composable_tm_wcode_adjust_tm[intro]: "composable_tm (wcode_adjust_tm, 0)"
+  by(auto simp: wcode_adjust_tm_def composable_tm.simps)
 
 lemma bl_bin_nonzero[simp]: "args \<noteq> [] \<Longrightarrow> bl_bin (<args::nat list>) > 0"
   by(cases args)
@@ -3924,7 +3937,7 @@ lemma bl_bin_nonzero[simp]: "args \<noteq> [] \<Longrightarrow> bl_bin (<args::n
 lemma wcode_lemma_pre':
   "args \<noteq> [] \<Longrightarrow> 
   \<exists> stp rn. steps0 (Suc 0, [], <m # args>) 
-              ((t_wcode_prepare |+| t_wcode_main) |+| t_wcode_adjust) stp
+              ((wcode_prepare_tm |+| wcode_main_tm) |+| wcode_adjust_tm) stp
   = (0,  [Bk],  Oc\<up>(Suc m) @ Bk # Oc\<up>(Suc (bl_bin (<args>))) @ Bk\<up>(rn))" 
 proof -
   let ?P1 = "\<lambda> (l, r). l = [] \<and> r = <m # args>"
@@ -3936,19 +3949,19 @@ proof -
   assume h: "args \<noteq> []"
   hence a: "bl_bin (<args>) > 0"
     using h by simp
-  hence "{?P1} (t_wcode_prepare |+| t_wcode_main) |+| t_wcode_adjust {?Q2}"
+  hence "\<lbrace>?P1\<rbrace> (wcode_prepare_tm |+| wcode_main_tm) |+| wcode_adjust_tm \<lbrace>?Q2\<rbrace>"
   proof(rule_tac Hoare_plus_halt)
   next
-    show "tm_wf (t_wcode_prepare |+| t_wcode_main, 0)"
-      by(rule_tac tm_comp_wf, auto)
+    show "composable_tm (wcode_prepare_tm |+| wcode_main_tm, 0)"
+      by(rule_tac seq_tm_composable, auto)
   next
-    show "{?P1} t_wcode_prepare |+| t_wcode_main {?Q1}"
+    show "\<lbrace>?P1\<rbrace> wcode_prepare_tm |+| wcode_main_tm \<lbrace>?Q1\<rbrace>"
     proof(rule_tac Hoare_haltI, auto)
       show 
-        "\<exists>n. is_final (steps0 (Suc 0, [], <m # args>) (t_wcode_prepare |+| t_wcode_main) n) \<and>
+        "\<exists>n. is_final (steps0 (Suc 0, [], <m # args>) (wcode_prepare_tm |+| wcode_main_tm) n) \<and>
         (\<lambda>(l, r). l = Bk # Oc # Oc \<up> m \<and>
         (\<exists>ln rn. r = Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> bl_bin (<args>) @ Bk \<up> rn))
-        holds_for steps0 (Suc 0, [], <m # args>) (t_wcode_prepare |+| t_wcode_main) n"
+        holds_for steps0 (Suc 0, [], <m # args>) (wcode_prepare_tm |+| wcode_main_tm) n"
         using h prepare_mainpart_lemma[of args m]
         apply(auto) apply(rename_tac stp ln rn)
         apply(rule_tac x = stp in exI, simp)
@@ -3956,20 +3969,20 @@ proof -
         done
     qed
   next
-    show "{?P2} t_wcode_adjust {?Q2}"
+    show "\<lbrace>?P2\<rbrace> wcode_adjust_tm \<lbrace>?Q2\<rbrace>"
     proof(rule_tac Hoare_haltI, auto del: replicate_Suc)
       fix ln rn
       obtain n a b where "steps0
         (Suc 0, Bk # Oc \<up> m @ [Oc],
          Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> (bl_bin (<args>) - Suc 0) @ Oc # Bk \<up> rn)
-        t_wcode_adjust n = (0, a, b)"
+        wcode_adjust_tm n = (0, a, b)"
         "wadjust_inv 0 m (bl_bin (<args>) - Suc 0) (a, b)"
         using wadjust_correctness[of m "bl_bin (<args>) - 1" "Suc ln" rn,unfolded Let_def]
         by(simp del: replicate_Suc add: replicate_Suc[THEN sym] exp_ind, auto)
       thus "\<exists>n. is_final (steps0 (Suc 0, Bk # Oc # Oc \<up> m, 
-        Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> bl_bin (<args>) @ Bk \<up> rn) t_wcode_adjust n) \<and>
+        Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> bl_bin (<args>) @ Bk \<up> rn) wcode_adjust_tm n) \<and>
         wadjust_stop m (bl_bin (<args>) - Suc 0) holds_for steps0
-        (Suc 0, Bk # Oc # Oc \<up> m, Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> bl_bin (<args>) @ Bk \<up> rn) t_wcode_adjust n"
+        (Suc 0, Bk # Oc # Oc \<up> m, Bk # Oc # Bk \<up> ln @ Bk # Bk # Oc \<up> bl_bin (<args>) @ Bk \<up> rn) wcode_adjust_tm n"
         apply(rule_tac x = n in exI)
         using a
         apply(case_tac "bl_bin (<args>)", simp, simp del: replicate_Suc add: exp_ind wadjust_inv.simps)
@@ -3980,7 +3993,7 @@ proof -
     apply(simp add: Hoare_halt_def, auto)
     apply(rename_tac n)
     apply(case_tac "(steps0 (Suc 0, [], <(m::nat) # args>) 
-      ((t_wcode_prepare |+| t_wcode_main) |+| t_wcode_adjust) n)")
+      ((wcode_prepare_tm |+| wcode_main_tm) |+| wcode_adjust_tm) n)")
     apply(rule_tac x = n in exI, auto simp: wadjust_stop.simps)
     using a
     apply(case_tac "bl_bin (<args>)", simp_all)
@@ -3988,62 +4001,94 @@ proof -
 qed
 
 text \<open>
-  The initialization TM \<open>t_wcode\<close>.
+  The initialization TM \<open>wcode_tm\<close>.
 \<close>
-definition t_wcode :: "instr list"
+definition wcode_tm :: "instr list"
   where
-    "t_wcode = (t_wcode_prepare |+| t_wcode_main) |+| t_wcode_adjust        "
+    "wcode_tm = (wcode_prepare_tm |+| wcode_main_tm) |+| wcode_adjust_tm"
 
 text \<open>
-  The correctness of \<open>t_wcode\<close>.
+  The correctness of \<open>wcode_tm\<close>.
 \<close>
 
 lemma wcode_lemma_1:
   "args \<noteq> [] \<Longrightarrow> 
-  \<exists> stp ln rn. steps0 (Suc 0, [], <m # args>)  (t_wcode) stp = 
+  \<exists> stp ln rn. steps0 (Suc 0, [], <m # args>)  (wcode_tm) stp = 
               (0,  [Bk],  Oc\<up>(Suc m) @ Bk # Oc\<up>(Suc (bl_bin (<args>))) @ Bk\<up>(rn))"
-  apply(simp add: wcode_lemma_pre' t_wcode_def del: replicate_Suc)
+  apply(simp add: wcode_lemma_pre' wcode_tm_def del: replicate_Suc)
   done
 
 lemma wcode_lemma: 
   "args \<noteq> [] \<Longrightarrow> 
-  \<exists> stp ln rn. steps0 (Suc 0, [], <m # args>)  (t_wcode) stp = 
+  \<exists> stp ln rn. steps0 (Suc 0, [], <m # args>)  (wcode_tm) stp = 
               (0,  [Bk],  <[m ,bl_bin (<args>)]> @ Bk\<up>(rn))"
   using wcode_lemma_1[of args m]
-  apply(simp add: t_wcode_def tape_of_list_def tape_of_nat_def)
+  apply(simp add: wcode_tm_def tape_of_list_def tape_of_nat_def)
   done
 
-section \<open>The universal TM\<close>
+section \<open>The Universal TM\<close>
 
 text \<open>
-  This section gives the explicit construction of {\em Universal Turing Machine}, defined as \<open>UTM\<close> and proves its 
+  This section gives the explicit construction of {\em Universal Turing Machine}, defined as \<open>utm\<close> and proves its 
   correctness. It is pretty easy by composing the partial results we have got so far.
 \<close>
 
+subsection \<open>Definition of the machine utm\<close>
 
-definition UTM :: "instr list"
+definition utm :: "instr list"
   where
-    "UTM = (let (aprog, rs_pos, a_md) = rec_ci rec_F in 
+    "utm = (let (aprog, rs_pos, a_md) = rec_ci rec_F in 
           let abc_F = aprog [+] dummy_abc (Suc (Suc 0)) in 
-          (t_wcode |+| (tm_of abc_F @ shift (mopup (Suc (Suc 0))) (length (tm_of abc_F) div 2))))"
+          (wcode_tm |+| (tm_of abc_F @ shift (mopup_n_tm (Suc (Suc 0))) (length (tm_of abc_F) div 2))))"
 
-definition F_aprog :: "abc_prog"
+definition f_aprog :: "abc_prog"
   where
-    "F_aprog \<equiv> (let (aprog, rs_pos, a_md) = rec_ci rec_F in 
+    "f_aprog \<equiv> (let (aprog, rs_pos, a_md) = rec_ci rec_F in 
                        aprog [+] dummy_abc (Suc (Suc 0)))"
 
-definition F_tprog :: "instr list"
+definition f_tprog_tm :: "instr list"
   where
-    "F_tprog = tm_of (F_aprog)"
+    "f_tprog_tm = tm_of (f_aprog)"
 
-definition t_utm :: "instr list"
+definition utm_with_two_args :: "instr list"
   where
-    "t_utm \<equiv>
-     F_tprog @ shift (mopup (Suc (Suc 0))) (length F_tprog div 2)"
+    "utm_with_two_args \<equiv>
+     f_tprog_tm @ shift (mopup_n_tm (Suc (Suc 0))) (length f_tprog_tm div 2)"
 
-definition UTM_pre :: "instr list"
+definition utm_pre_tm :: "instr list"
   where
-    "UTM_pre = t_wcode |+| t_utm"
+    "utm_pre_tm = wcode_tm |+| utm_with_two_args"
+
+(* SPIKE FABR: some lemmas for clarification *)
+
+lemma fabr_spike_1:
+  "utm_with_two_args = tm_of (fst (rec_ci rec_F) [+] dummy_abc (Suc (Suc 0))) @ shift (mopup_n_tm (Suc (Suc 0)))
+                  (length (tm_of (fst (rec_ci rec_F) [+] dummy_abc (Suc (Suc 0)))) div 2)"
+proof (cases "rec_ci rec_F")
+  case (fields a b c)
+  then show ?thesis
+    by (simp add: fields f_aprog_def f_tprog_tm_def utm_with_two_args_def)
+qed
+
+lemma fabr_spike_2:
+  "utm = wcode_tm |+| 
+              tm_of (fst (rec_ci rec_F) [+] dummy_abc (Suc (Suc 0))) @ shift (mopup_n_tm (Suc (Suc 0)))
+                    (length (tm_of (fst (rec_ci rec_F) [+] dummy_abc (Suc (Suc 0)))) div 2)"   
+proof (cases "rec_ci rec_F")
+  case (fields a b c)
+  then show ?thesis
+    by (simp add: fields f_aprog_def f_tprog_tm_def utm_def)
+qed
+
+theorem fabr_spike_3: "utm = wcode_tm |+| utm_with_two_args"
+  using fabr_spike_1 fabr_spike_2
+  by auto
+
+corollary fabr_spike_4: "utm = utm_pre_tm"
+  using fabr_spike_3 utm_pre_tm_def
+  by auto
+
+(* END SPIKE *)
 
 lemma tinres_step1: 
   assumes "tinres l l'" "step (ss, l, r) (t, 0) = (sa, la, ra)" 
@@ -4105,11 +4150,11 @@ proof -
   qed
 qed
 
-lemma t_utm_halt_eq: 
-  assumes tm_wf: "tm_wf (tp, 0)"
+lemma utm_with_two_args_halt_eq: 
+  assumes composable_tm: "composable_tm (tp, 0)"
     and exec: "steps0 (Suc 0, Bk\<up>(l), <lm::nat list>) tp stp = (0, Bk\<up>(m), Oc\<up>(rs)@Bk\<up>(n))"
     and resutl: "0 < rs"
-  shows "\<exists>stp m n. steps0 (Suc 0, [Bk], <[code tp, bl2wc (<lm>)]> @ Bk\<up>(i)) t_utm stp = 
+  shows "\<exists>stp m n. steps0 (Suc 0, [Bk], <[code tp, bl2wc (<lm>)]> @ Bk\<up>(i)) utm_with_two_args stp = 
                                                 (0, Bk\<up>(m), Oc\<up>(rs) @ Bk\<up>(n))"
 proof -
   obtain ap arity fp where a: "rec_ci rec_F = (ap, arity, fp)"
@@ -4119,7 +4164,7 @@ proof -
     apply(rule_tac F_correct, simp_all)
     done 
   have "\<exists> stp m l. steps0 (Suc 0, Bk # Bk # [], <[code tp, bl2wc (<lm>)]> @ Bk\<up>i)
-    (F_tprog @ shift (mopup (length [code tp, bl2wc (<lm>)])) (length F_tprog div 2)) stp
+    (f_tprog_tm @ shift (mopup_n_tm (length [code tp, bl2wc (<lm>)])) (length f_tprog_tm div 2)) stp
     = (0, Bk\<up>m @ Bk # Bk # [], Oc\<up>Suc (rec_exec rec_F [code tp, (bl2wc (<lm>))]) @ Bk\<up>l)"  
   proof(rule_tac recursive_compile_to_tm_correct1)
     show "rec_ci rec_F = (ap, arity, fp)" using a by simp
@@ -4128,29 +4173,29 @@ proof -
       using assms
       by(rule_tac terminate_F, simp_all)
   next
-    show "F_tprog = tm_of (ap [+] dummy_abc (length [code tp, bl2wc (<lm>)]))"
+    show "f_tprog_tm = tm_of (ap [+] dummy_abc (length [code tp, bl2wc (<lm>)]))"
       using a
-      apply(simp add: F_tprog_def F_aprog_def numeral_2_eq_2)
+      apply(simp add: f_tprog_tm_def f_aprog_def numeral_2_eq_2)
       done
   qed
   then obtain stp m l where 
     "steps0 (Suc 0, Bk # Bk # [], <[code tp, bl2wc (<lm>)]> @ Bk\<up>i)
-    (F_tprog @ shift (mopup (length [code tp, (bl2wc (<lm>))])) (length F_tprog div 2)) stp
+    (f_tprog_tm @ shift (mopup_n_tm (length [code tp, (bl2wc (<lm>))])) (length f_tprog_tm div 2)) stp
     = (0, Bk\<up>m @ Bk # Bk # [], Oc\<up>Suc (rec_exec rec_F [code tp, (bl2wc (<lm>))]) @ Bk\<up>l)" by blast
   hence "\<exists> m. steps0 (Suc 0, [Bk], <[code tp, bl2wc (<lm>)]> @ Bk\<up>i)
-    (F_tprog @ shift (mopup 2) (length F_tprog div 2)) stp
+    (f_tprog_tm @ shift (mopup_n_tm 2) (length f_tprog_tm div 2)) stp
     = (0, Bk\<up>m, Oc\<up>Suc (rs - 1) @ Bk\<up>l)"
   proof -
     assume g: "steps0 (Suc 0, [Bk, Bk], <[code tp, bl2wc (<lm>)]> @ Bk \<up> i)
-      (F_tprog @ shift (mopup (length [code tp, bl2wc (<lm>)])) (length F_tprog div 2)) stp =
+      (f_tprog_tm @ shift (mopup_n_tm (length [code tp, bl2wc (<lm>)])) (length f_tprog_tm div 2)) stp =
       (0, Bk \<up> m @ [Bk, Bk], Oc \<up> Suc ((rec_exec rec_F [code tp, bl2wc (<lm>)])) @ Bk \<up> l)"
     moreover have "tinres [Bk, Bk] [Bk]"
       apply(auto simp: tinres_def)
       done
     moreover obtain sa la ra where "steps0 (Suc 0, [Bk], <[code tp, bl2wc (<lm>)]> @ Bk\<up>i)
-    (F_tprog @ shift (mopup 2) (length F_tprog div 2)) stp = (sa, la, ra)"
+    (f_tprog_tm @ shift (mopup_n_tm 2) (length f_tprog_tm div 2)) stp = (sa, la, ra)"
       apply(case_tac "steps0 (Suc 0, [Bk], <[code tp, bl2wc (<lm>)]> @ Bk\<up>i)
-    (F_tprog @ shift (mopup 2) (length F_tprog div 2)) stp", auto)
+    (f_tprog_tm @ shift (mopup_n_tm 2) (length f_tprog_tm div 2)) stp", auto)
       done
     ultimately show "?thesis"
       using b
@@ -4159,24 +4204,24 @@ proof -
   qed
   thus "?thesis"
     apply(auto)
-    apply(rule_tac x = stp in exI, simp add: t_utm_def)
+    apply(rule_tac x = stp in exI, simp add: utm_with_two_args_def)
     using assms
     apply(case_tac rs, simp_all add: numeral_2_eq_2)
     done
 qed
 
-lemma tm_wf_t_wcode[intro]: "tm_wf (t_wcode, 0)"
-  apply(simp add: t_wcode_def)
-  apply(rule_tac tm_comp_wf)
-   apply(rule_tac tm_comp_wf, auto)
+lemma composable_tm_wcode_tm[intro]: "composable_tm (wcode_tm, 0)"
+  apply(simp add: wcode_tm_def)
+  apply(rule_tac seq_tm_composable)
+   apply(rule_tac seq_tm_composable, auto)
   done
 
-lemma UTM_halt_lemma_pre: 
-  assumes wf_tm: "tm_wf (tp, 0)"
+lemma utm_halt_lemma_pre: 
+  assumes "composable_tm (tp, 0)"
     and result: "0 < rs"
     and args: "args \<noteq> []"
     and exec: "steps0 (Suc 0, Bk\<up>(i), <args::nat list>) tp stp = (0, Bk\<up>(m), Oc\<up>(rs)@Bk\<up>(k))"
-  shows "\<exists>stp m n. steps0 (Suc 0, [], <code tp # args>) UTM_pre stp = 
+  shows "\<exists>stp m n. steps0 (Suc 0, [], <code tp # args>) utm_pre_tm stp = 
                                                 (0, Bk\<up>(m), Oc\<up>(rs) @ Bk\<up>(n))"
 proof -
   let ?Q2 = "\<lambda> (l, r). (\<exists> ln rn. l = Bk\<up>(ln) \<and> r = Oc\<up>(rs) @ Bk\<up>(rn))"
@@ -4185,47 +4230,46 @@ proof -
     (\<exists> rn. r = Oc\<up>(Suc (code tp)) @ Bk # Oc\<up>(Suc (bl_bin (<args>))) @ Bk\<up>(rn)))"
   let ?P2 = ?Q1
   let ?P3 = "\<lambda> (l, r). False"
-  have "{?P1} (t_wcode |+| t_utm) {?Q2}"
+  have "\<lbrace>?P1\<rbrace> (wcode_tm |+| utm_with_two_args) \<lbrace>?Q2\<rbrace>"
   proof(rule_tac Hoare_plus_halt)
-    show "tm_wf (t_wcode, 0)" by auto
+    show "composable_tm (wcode_tm, 0)" by auto
   next
-    show "{?P1} t_wcode {?Q1}"
+    show "\<lbrace>?P1\<rbrace> wcode_tm \<lbrace>?Q1\<rbrace>"
       apply(rule_tac Hoare_haltI, auto)
       using wcode_lemma_1[of args "code tp"] args
       apply(auto)
       by (metis (mono_tags, lifting) holds_for.simps is_finalI old.prod.case)
   next
-    show "{?P2} t_utm {?Q2}"
+    show "\<lbrace>?P2\<rbrace> utm_with_two_args \<lbrace>?Q2\<rbrace>"
     proof(rule_tac Hoare_haltI, auto)
       fix rn
-      show "\<exists>n. is_final (steps0 (Suc 0, [Bk], Oc # Oc \<up> code tp @ Bk # Oc # Oc \<up> bl_bin (<args>) @ Bk \<up> rn) t_utm n) \<and>
+      show "\<exists>n. is_final (steps0 (Suc 0, [Bk], Oc # Oc \<up> code tp @ Bk # Oc # Oc \<up> bl_bin (<args>) @ Bk \<up> rn) utm_with_two_args n) \<and>
         (\<lambda>(l, r). (\<exists>ln. l = Bk \<up> ln) \<and>
         (\<exists>rn. r = Oc \<up> rs @ Bk \<up> rn)) holds_for steps0 (Suc 0, [Bk],
-        Oc # Oc \<up> code tp @ Bk # Oc # Oc \<up> bl_bin (<args>) @ Bk \<up> rn) t_utm n"
-        using t_utm_halt_eq[of tp i "args" stp m rs k rn] assms
+        Oc # Oc \<up> code tp @ Bk # Oc # Oc \<up> bl_bin (<args>) @ Bk \<up> rn) utm_with_two_args n"
+        using utm_with_two_args_halt_eq[of tp i "args" stp m rs k rn] assms
         apply(auto simp: bin_wc_eq tape_of_list_def tape_of_nat_def)
         apply(rename_tac stpa) apply(rule_tac x = stpa in exI, simp)
         done
     qed
   qed
   thus "?thesis"
-    apply(auto simp: Hoare_halt_def UTM_pre_def)
-    apply(case_tac "steps0 (Suc 0, [], <code tp # args>) (t_wcode |+| t_utm) n",simp)
+    apply(auto simp: Hoare_halt_def utm_pre_tm_def)
+    apply(case_tac "steps0 (Suc 0, [], <code tp # args>) (wcode_tm |+| utm_with_two_args) n",simp)
     by auto
 qed
 
-text \<open>
-  The correctness of \<open>UTM\<close>, the halt case.
-\<close>
-lemma UTM_halt_lemma': 
-  assumes tm_wf: "tm_wf (tp, 0)"
+subsection \<open>The correctness of utm, the halt case\<close>
+
+lemma utm_halt_lemma': 
+  assumes composable_tm: "composable_tm (tp, 0)"
     and result: "0 < rs"
     and args: "args \<noteq> []"
     and exec: "steps0 (Suc 0, Bk\<up>(i), <args::nat list>) tp stp = (0, Bk\<up>(m), Oc\<up>(rs)@Bk\<up>(k))"
-  shows "\<exists>stp m n. steps0 (Suc 0, [], <code tp # args>) UTM stp = 
+  shows "\<exists>stp m n. steps0 (Suc 0, [], <code tp # args>) utm stp = 
                                                 (0, Bk\<up>(m), Oc\<up>(rs) @ Bk\<up>(n))"
-  using UTM_halt_lemma_pre[of tp rs args i stp m k] assms
-  apply(simp add: UTM_pre_def t_utm_def UTM_def F_aprog_def F_tprog_def)
+  using utm_halt_lemma_pre[of tp rs args i stp m k] assms
+  apply(simp add: utm_pre_tm_def utm_with_two_args_def utm_def f_aprog_def f_tprog_tm_def)
   apply(case_tac "rec_ci rec_F", simp)
   done
 
@@ -4321,7 +4365,7 @@ lemma NSTD_1: "\<not> TSTD (a, b, c)
   done
 
 lemma nonstop_t_uhalt_eq:
-  "\<lbrakk>tm_wf (tp, 0);
+  "\<lbrakk>composable_tm (tp, 0);
   steps0 (Suc 0, Bk\<up>(l), <lm>) tp stp = (a, b, c);
   \<not> TSTD (a, b, c)\<rbrakk>
   \<Longrightarrow> rec_exec rec_nonstop [code tp, bl2wc (<lm>), stp] = Suc 0"
@@ -4335,11 +4379,11 @@ lemma nonstop_t_uhalt_eq:
   done
 
 lemma nonstop_true:
-  "\<lbrakk>tm_wf (tp, 0);
+  "\<lbrakk>composable_tm (tp, 0);
   \<forall> stp. (\<not> TSTD (steps0 (Suc 0, Bk\<up>(l), <lm>) tp stp))\<rbrakk>
   \<Longrightarrow> \<forall>y. rec_exec rec_nonstop ([code tp, bl2wc (<lm>), y]) = (Suc 0)"
 proof fix y
-  assume a:"tm_wf0 tp" "\<forall>stp. \<not> TSTD (steps0 (Suc 0, Bk \<up> l, <lm>) tp stp)"
+  assume a:"composable_tm0 tp" "\<forall>stp. \<not> TSTD (steps0 (Suc 0, Bk \<up> l, <lm>) tp stp)"
   hence "\<not> TSTD (steps0 (Suc 0, Bk \<up> l, <lm>) tp y)" by auto
   thus "rec_exec rec_nonstop [code tp, bl2wc (<lm>), y] = Suc 0"
     by (cases "steps0 (Suc 0, Bk\<up>(l), <lm>) tp y")
@@ -4352,11 +4396,11 @@ lemma cn_arity:  "rec_ci (Cn n f gs) = (a, b, c) \<Longrightarrow> b = n"
 lemma mn_arity: "rec_ci (Mn n f) = (a, b, c) \<Longrightarrow> b = n"
   by(case_tac "rec_ci f", simp add: rec_ci.simps)
 
-lemma F_aprog_uhalt: 
-  assumes wf_tm: "tm_wf (tp,0)"
+lemma f_aprog_uhalt: 
+  assumes "composable_tm (tp,0)"
     and unhalt:  "\<forall> stp. (\<not> TSTD (steps0 (Suc 0, Bk\<up>(l), <lm>) tp stp))"
     and compile: "rec_ci rec_F = (F_ap, rs_pos, a_md)"
-  shows "{\<lambda> nl. nl = [code tp, bl2wc (<lm>)] @ 0\<up>(a_md - rs_pos ) @ suflm} (F_ap) \<up>"
+  shows "\<lbrace>\<lambda> nl. nl = [code tp, bl2wc (<lm>)] @ 0\<up>(a_md - rs_pos ) @ suflm\<rbrace> (F_ap) \<up>"
   using compile
 proof(simp only: rec_F_def)
   assume h: "rec_ci (Cn (Suc (Suc 0)) rec_valu [Cn (Suc (Suc 0)) rec_right [Cn (Suc (Suc 0)) 
@@ -4382,7 +4426,7 @@ proof(simp only: rec_F_def)
         [recf.id (Suc (Suc 0)) 0, recf.id (Suc (Suc 0)) (Suc 0), rec_halt])", auto)
     moreover hence d:"ar2 = Suc (Suc 0)"
       using cn_arity by simp
-    ultimately have "{\<lambda>nl. nl = [code tp, bl2wc (<lm>)] @ 0 \<up> (ft1 - Suc (Suc 0)) @ anything} ap1 \<up>"
+    ultimately have "\<lbrace>\<lambda>nl. nl = [code tp, bl2wc (<lm>)] @ 0 \<up> (ft1 - Suc (Suc 0)) @ anything\<rbrace> ap1 \<up>"
       using a b c d
     proof(rule_tac i = 0 in cn_unhalt_case, auto)
       fix anything
@@ -4391,11 +4435,11 @@ proof(simp only: rec_F_def)
       hence f: "ar3 = Suc (Suc 0)"
         using mn_arity
         by(simp add: rec_halt_def)
-      have "{\<lambda>nl. nl = [code tp, bl2wc (<lm>)] @ 0 \<up> (ft2 - Suc (Suc 0)) @ anything} ap2 \<up>"
+      have "\<lbrace>\<lambda>nl. nl = [code tp, bl2wc (<lm>)] @ 0 \<up> (ft2 - Suc (Suc 0)) @ anything\<rbrace> ap2 \<up>"
         using c d e f
       proof(rule_tac i = 2 in cn_unhalt_case, auto simp: rec_halt_def)
         fix anything
-        have "{\<lambda>nl. nl = [code tp, bl2wc (<lm>)] @ 0 \<up> (ft3 - Suc (Suc 0)) @ anything} ap3 \<up>"
+        have "\<lbrace>\<lambda>nl. nl = [code tp, bl2wc (<lm>)] @ 0 \<up> (ft3 - Suc (Suc 0)) @ anything\<rbrace> ap3 \<up>"
           using e f
         proof(rule_tac mn_unhalt_case, auto simp: rec_halt_def)
           fix i
@@ -4407,21 +4451,21 @@ proof(simp only: rec_F_def)
             using assms
             by(drule_tac nonstop_true, auto)
         qed
-        thus "{\<lambda>nl. nl = code tp # bl2wc (<lm>) # 0 \<up> (ft3 - Suc (Suc 0)) @ anything} ap3 \<up>" by simp
+        thus "\<lbrace>\<lambda>nl. nl = code tp # bl2wc (<lm>) # 0 \<up> (ft3 - Suc (Suc 0)) @ anything\<rbrace> ap3 \<up>" by simp
       next
         fix apj arj ftj j  anything
         assume "j<2" "rec_ci ([recf.id (Suc (Suc 0)) 0, recf.id (Suc (Suc 0)) (Suc 0), Mn (Suc (Suc 0)) rec_nonstop] ! j) = (apj, arj, ftj)"
-        hence "{\<lambda>nl. nl = [code tp, bl2wc (<lm>)] @ 0 \<up> (ftj - arj) @ anything} apj
-          {\<lambda>nl. nl = [code tp, bl2wc (<lm>)] @
+        hence "\<lbrace>\<lambda>nl. nl = [code tp, bl2wc (<lm>)] @ 0 \<up> (ftj - arj) @ anything\<rbrace> apj
+          \<lbrace>\<lambda>nl. nl = [code tp, bl2wc (<lm>)] @
             rec_exec ([recf.id (Suc (Suc 0)) 0, recf.id (Suc (Suc 0)) (Suc 0), Mn (Suc (Suc 0)) rec_nonstop] ! j) [code tp, bl2wc (<lm>)] # 
-               0 \<up> (ftj - Suc arj) @ anything}"
+               0 \<up> (ftj - Suc arj) @ anything\<rbrace>"
           apply(rule_tac recursive_compile_correct)
            apply(case_tac j, auto)
            apply(rule_tac [!] primerec_terminate)
           by(auto)
-        thus "{\<lambda>nl. nl = code tp # bl2wc (<lm>) # 0 \<up> (ftj - arj) @ anything} apj
-          {\<lambda>nl. nl = code tp # bl2wc (<lm>) # rec_exec ([recf.id (Suc (Suc 0)) 0, recf.id (Suc (Suc 0))
-          (Suc 0), Mn (Suc (Suc 0)) rec_nonstop] ! j) [code tp, bl2wc (<lm>)] # 0 \<up> (ftj - Suc arj) @ anything}"
+        thus "\<lbrace>\<lambda>nl. nl = code tp # bl2wc (<lm>) # 0 \<up> (ftj - arj) @ anything\<rbrace> apj
+          \<lbrace>\<lambda>nl. nl = code tp # bl2wc (<lm>) # rec_exec ([recf.id (Suc (Suc 0)) 0, recf.id (Suc (Suc 0))
+          (Suc 0), Mn (Suc (Suc 0)) rec_nonstop] ! j) [code tp, bl2wc (<lm>)] # 0 \<up> (ftj - Suc arj) @ anything\<rbrace>"
           by simp
       next
         fix j
@@ -4430,26 +4474,27 @@ proof(simp only: rec_F_def)
           [code tp, bl2wc (<lm>)]"
           by(case_tac j, auto intro!: primerec_terminate)
       qed
-      thus "{\<lambda>nl. nl = code tp # bl2wc (<lm>) # 0 \<up> (ft2 - Suc (Suc 0)) @ anything} ap2 \<up>"
+      thus "\<lbrace>\<lambda>nl. nl = code tp # bl2wc (<lm>) # 0 \<up> (ft2 - Suc (Suc 0)) @ anything\<rbrace> ap2 \<up>"
         by simp
     qed
-    thus "{\<lambda>nl. nl = code tp # bl2wc (<lm>) # 0 \<up> (ft1 - Suc (Suc 0)) @ anything} ap1 \<up>" by simp
+    thus "\<lbrace>\<lambda>nl. nl = code tp # bl2wc (<lm>) # 0 \<up> (ft1 - Suc (Suc 0)) @ anything\<rbrace> ap1 \<up>" by simp
   qed
 qed
 
+
 lemma uabc_uhalt': 
-  "\<lbrakk>tm_wf (tp, 0);
+  "\<lbrakk>composable_tm (tp, 0);
   \<forall> stp. (\<not> TSTD (steps0 (Suc 0, Bk\<up>(l), <lm>) tp stp));
   rec_ci rec_F = (ap, pos, md)\<rbrakk>
-  \<Longrightarrow> {\<lambda> nl. nl = [code tp, bl2wc (<lm>)]} ap \<up>"
+  \<Longrightarrow> \<lbrace>\<lambda> nl. nl = [code tp, bl2wc (<lm>)]\<rbrace> ap \<up>"
 proof(frule_tac F_ap = ap and rs_pos = pos and a_md = md
-    and suflm = "[]" in F_aprog_uhalt, auto simp: abc_Hoare_unhalt_def, 
+    and suflm = "[]" in f_aprog_uhalt, auto simp: abc_Hoare_unhalt_def, 
     case_tac "abc_steps_l (0, [code tp, bl2wc (<lm>)]) ap n", simp)
   fix n a b
   assume h: 
     "\<forall>n. abc_notfinal (abc_steps_l (0, code tp # bl2wc (<lm>) # 0 \<up> (md - pos)) ap n) ap"
     "abc_steps_l (0, [code tp, bl2wc (<lm>)]) ap n = (a, b)" 
-    "tm_wf (tp, 0)" 
+    "composable_tm (tp, 0)" 
     "rec_ci rec_F = (ap, pos, md)"
   moreover have a: "ap \<noteq> []"
     using h rec_ci_not_null[of "rec_F" pos md] by auto
@@ -4469,31 +4514,31 @@ proof(frule_tac F_ap = ap and rs_pos = pos and a_md = md
 qed
 
 lemma uabc_uhalt: 
-  "\<lbrakk>tm_wf (tp, 0); 
+  "\<lbrakk>composable_tm (tp, 0); 
   \<forall> stp. (\<not> TSTD (steps0 (Suc 0, Bk\<up>(l), <lm>) tp stp))\<rbrakk>
-  \<Longrightarrow> {\<lambda> nl. nl = [code tp, bl2wc (<lm>)]} F_aprog \<up> "
+  \<Longrightarrow> \<lbrace>\<lambda> nl. nl = [code tp, bl2wc (<lm>)]\<rbrace> f_aprog \<up> "
 proof -
   obtain a b c where abc:"rec_ci rec_F = (a,b,c)" by (cases "rec_ci rec_F") force
-  assume a:"tm_wf (tp, 0)" "\<forall> stp. (\<not> TSTD (steps0 (Suc 0, Bk\<up>(l), <lm>) tp stp))"
+  assume a:"composable_tm (tp, 0)" "\<forall> stp. (\<not> TSTD (steps0 (Suc 0, Bk\<up>(l), <lm>) tp stp))"
   from uabc_uhalt'[OF a abc] abc_Hoare_plus_unhalt1
-  show "{\<lambda> nl. nl = [code tp, bl2wc (<lm>)]} F_aprog \<up>"
-    by(simp add: F_aprog_def abc)
+  show "\<lbrace>\<lambda> nl. nl = [code tp, bl2wc (<lm>)]\<rbrace> f_aprog \<up>"
+    by(simp add: f_aprog_def abc)
 qed
 
 lemma tutm_uhalt': 
-  assumes tm_wf:  "tm_wf (tp,0)"
+  assumes composable_tm:  "composable_tm (tp,0)"
     and unhalt: "\<forall> stp. (\<not> TSTD (steps0 (1, Bk\<up>(l), <lm>) tp stp))"
-  shows "\<forall> stp. \<not> is_final (steps0 (1, [Bk, Bk], <[code tp, bl2wc (<lm>)]>) t_utm stp)"
-  unfolding t_utm_def
+  shows "\<forall> stp. \<not> is_final (steps0 (1, [Bk, Bk], <[code tp, bl2wc (<lm>)]>) utm_with_two_args stp)"
+  unfolding utm_with_two_args_def
 proof(rule_tac compile_correct_unhalt, auto)
-  show "F_tprog = tm_of F_aprog"
-    by(simp add:  F_tprog_def)
+  show "f_tprog_tm = tm_of f_aprog"
+    by(simp add:  f_tprog_tm_def)
 next
-  show "crsp (layout_of F_aprog) (0, [code tp, bl2wc (<lm>)]) (Suc 0, [Bk, Bk], <[code tp, bl2wc (<lm>)]>)  []"
+  show "crsp (layout_of f_aprog) (0, [code tp, bl2wc (<lm>)]) (Suc 0, [Bk, Bk], <[code tp, bl2wc (<lm>)]>)  []"
     by(auto simp: crsp.simps start_of.simps)
 next
   fix stp a b
-  show "abc_steps_l (0, [code tp, bl2wc (<lm>)]) F_aprog stp = (a, b) \<Longrightarrow> a < length F_aprog"
+  show "abc_steps_l (0, [code tp, bl2wc (<lm>)]) f_aprog stp = (a, b) \<Longrightarrow> a < length f_aprog"
     using assms
     apply(drule_tac uabc_uhalt, auto simp: abc_Hoare_unhalt_def)
     by(erule_tac x = stp in allE, erule_tac x = stp in allE, simp) 
@@ -4527,14 +4572,14 @@ proof(case_tac "steps0 (st, l', r) tp stp")
 qed
 
 lemma tape_normalize:
-  assumes "\<forall> stp. \<not> is_final(steps0 (Suc 0, [Bk,Bk], <[code tp, bl2wc (<lm>)]>) t_utm stp)"
-  shows   "\<forall> stp. \<not> is_final (steps0 (Suc 0, Bk\<up>(m), <[code tp, bl2wc (<lm>)]> @ Bk\<up>(n)) t_utm stp)"
+  assumes "\<forall> stp. \<not> is_final(steps0 (Suc 0, [Bk,Bk], <[code tp, bl2wc (<lm>)]>) utm_with_two_args stp)"
+  shows   "\<forall> stp. \<not> is_final (steps0 (Suc 0, Bk\<up>(m), <[code tp, bl2wc (<lm>)]> @ Bk\<up>(n)) utm_with_two_args stp)"
     (is "\<forall> stp. ?P stp")
 proof
   fix stp
   from assms[rule_format,of stp] show "?P stp"
-    apply(case_tac "steps0 (Suc 0, Bk\<up>(m), <[code tp, bl2wc (<lm>)]> @ Bk\<up>(n)) t_utm stp", simp)
-    apply(case_tac "steps0 (Suc 0, [Bk, Bk], <[code tp, bl2wc (<lm>)]>) t_utm stp", simp)
+    apply(case_tac "steps0 (Suc 0, Bk\<up>(m), <[code tp, bl2wc (<lm>)]> @ Bk\<up>(n)) utm_with_two_args stp", simp)
+    apply(case_tac "steps0 (Suc 0, [Bk, Bk], <[code tp, bl2wc (<lm>)]>) utm_with_two_args stp", simp)
     apply(drule_tac inres_tape, auto)
      apply(auto simp: tinres_def)
     apply(case_tac "m > Suc (Suc 0)")
@@ -4547,38 +4592,38 @@ proof
 qed
 
 lemma tutm_uhalt: 
-  "\<lbrakk>tm_wf (tp,0);
+  "\<lbrakk>composable_tm (tp,0);
     \<forall> stp. (\<not> TSTD (steps0 (Suc 0, Bk\<up>(l), <args>) tp stp))\<rbrakk>
-  \<Longrightarrow> \<forall> stp. \<not> is_final (steps0 (Suc 0, Bk\<up>(m), <[code tp, bl2wc (<args>)]> @ Bk\<up>(n)) t_utm stp)"
+  \<Longrightarrow> \<forall> stp. \<not> is_final (steps0 (Suc 0, Bk\<up>(m), <[code tp, bl2wc (<args>)]> @ Bk\<up>(n)) utm_with_two_args stp)"
   apply(rule_tac tape_normalize)
   apply(rule_tac tutm_uhalt'[simplified], simp_all)
   done
 
-lemma UTM_uhalt_lemma_pre:
-  assumes tm_wf: "tm_wf (tp, 0)"
+lemma utm_uhalt_lemma_pre:
+  assumes composable_tm: "composable_tm (tp, 0)"
     and exec: "\<forall> stp. (\<not> TSTD (steps0 (Suc 0, Bk\<up>(l), <args>) tp stp))"
     and args: "args \<noteq> []"
-  shows "\<forall> stp. \<not> is_final (steps0 (Suc 0, [], <code tp # args>)  UTM_pre stp)"
+  shows "\<forall> stp. \<not> is_final (steps0 (Suc 0, [], <code tp # args>)  utm_pre_tm stp)"
 proof -
   let ?P1 = "\<lambda> (l, r). l = [] \<and> r = <code tp # args>"
   let ?Q1 = "\<lambda> (l, r). (l = [Bk] \<and>
              (\<exists> rn. r = Oc\<up>(Suc (code tp)) @ Bk # Oc\<up>(Suc (bl_bin (<args>))) @ Bk\<up>(rn)))"
   let ?P2 = ?Q1
-  have "{?P1} (t_wcode |+| t_utm) \<up>"
+  have "\<lbrace>?P1\<rbrace> (wcode_tm |+| utm_with_two_args) \<up>"
   proof(rule_tac Hoare_plus_unhalt)
-    show "tm_wf (t_wcode, 0)" by auto
+    show "composable_tm (wcode_tm, 0)" by auto
   next
-    show "{?P1} t_wcode {?Q1}"
+    show "\<lbrace>?P1\<rbrace> wcode_tm \<lbrace>?Q1\<rbrace>"
       apply(rule_tac Hoare_haltI, auto)
       using wcode_lemma_1[of args "code tp"] args
       apply(auto)
       by (metis (mono_tags, lifting) holds_for.simps is_finalI old.prod.case)
   next
-    show "{?P2} t_utm \<up>"
+    show "\<lbrace>?P2\<rbrace> utm_with_two_args \<up>"
     proof(rule_tac Hoare_unhaltI, auto)
       fix n rn
-      assume h: "is_final (steps0 (Suc 0, [Bk], Oc \<up> Suc (code tp) @ Bk # Oc \<up> Suc (bl_bin (<args>)) @ Bk \<up> rn) t_utm n)"
-      have "\<forall> stp. \<not> is_final (steps0 (Suc 0, Bk\<up>(Suc 0), <[code tp, bl2wc (<args>)]> @ Bk\<up>(rn)) t_utm stp)"
+      assume h: "is_final (steps0 (Suc 0, [Bk], Oc \<up> Suc (code tp) @ Bk # Oc \<up> Suc (bl_bin (<args>)) @ Bk \<up> rn) utm_with_two_args n)"
+      have "\<forall> stp. \<not> is_final (steps0 (Suc 0, Bk\<up>(Suc 0), <[code tp, bl2wc (<args>)]> @ Bk\<up>(rn)) utm_with_two_args stp)"
         using assms
         apply(rule_tac tutm_uhalt, simp_all)
         done
@@ -4590,116 +4635,114 @@ proof -
     qed
   qed
   thus "?thesis"
-    apply(simp add: Hoare_unhalt_def UTM_pre_def)
+    apply(simp add: Hoare_unhalt_def utm_pre_tm_def)
     done
 qed
 
-text \<open>
-  The correctness of \<open>UTM\<close>, the unhalt case.
-\<close>
+subsection \<open>The correctness of utm, the unhalt case.\<close>
 
-lemma UTM_uhalt_lemma':
-  assumes tm_wf: "tm_wf (tp, 0)"
+lemma utm_uhalt_lemma':
+  assumes composable_tm: "composable_tm (tp, 0)"
     and unhalt: "\<forall> stp. (\<not> TSTD (steps0 (Suc 0, Bk\<up>(l), <args>) tp stp))"
     and args: "args \<noteq> []"
-  shows " \<forall> stp. \<not> is_final (steps0 (Suc 0, [], <code tp # args>)  UTM stp)"
-  using UTM_uhalt_lemma_pre[of tp l args] assms
-  apply(simp add: UTM_pre_def t_utm_def UTM_def F_aprog_def F_tprog_def)
+  shows " \<forall> stp. \<not> is_final (steps0 (Suc 0, [], <code tp # args>)  utm stp)"
+  using utm_uhalt_lemma_pre[of tp l args] assms
+  apply(simp add: utm_pre_tm_def utm_with_two_args_def utm_def f_aprog_def f_tprog_tm_def)
   apply(case_tac "rec_ci rec_F", simp)
   done
 
-lemma UTM_halt_lemma:
-  assumes tm_wf: "tm_wf (p, 0)"
-    and resut: "rs > 0"
+lemma utm_halt_lemma:
+  assumes composable_tm: "composable_tm (p, 0)"
+    and result: "rs > 0"
     and args: "(args::nat list) \<noteq> []"
-    and exec: "{(\<lambda>tp. tp = (Bk\<up>i, <args>))} p {(\<lambda>tp. tp = (Bk\<up>m, Oc\<up>rs @ Bk\<up>k))}" 
-  shows "{(\<lambda>tp. tp = ([], <code p # args>))} UTM {(\<lambda>tp. (\<exists> m n. tp = (Bk\<up>m, Oc\<up>rs @ Bk\<up>n)))}"
+    and exec: "\<lbrace>(\<lambda>tp. tp = (Bk\<up>i, <args>))\<rbrace> p \<lbrace>(\<lambda>tp. tp = (Bk\<up>m, Oc\<up>rs @ Bk\<up>k))\<rbrace>" 
+  shows "\<lbrace>(\<lambda>tp. tp = ([], <code p # args>))\<rbrace> utm \<lbrace>(\<lambda>tp. (\<exists> m n. tp = (Bk\<up>m, Oc\<up>rs @ Bk\<up>n)))\<rbrace>"
 proof -
   let ?steps0 = "steps0 (Suc 0, [], <code p # args>)"
   let ?stepsBk = "steps0 (Suc 0, Bk\<up>i, <args>) p"
   from wcode_lemma_1[OF args,of "code p"] obtain stp ln rn where
-    wcl1:"?steps0 t_wcode stp =
+    wcl1:"?steps0 wcode_tm stp =
      (0, [Bk], Oc \<up> Suc (code p) @ Bk # Oc \<up> Suc (bl_bin (<args>)) @ Bk \<up> rn)" by fast
   from exec Hoare_halt_def obtain n where
-    n:"{\<lambda>tp. tp = (Bk \<up> i, <args>)} p {\<lambda>tp. tp = (Bk \<up> m, Oc \<up> rs @ Bk \<up> k)}"
+    n:"\<lbrace>\<lambda>tp. tp = (Bk \<up> i, <args>)\<rbrace> p \<lbrace>\<lambda>tp. tp = (Bk \<up> m, Oc \<up> rs @ Bk \<up> k)\<rbrace>"
     "is_final (?stepsBk n)"
     "(\<lambda>tp. tp = (Bk \<up> m, Oc \<up> rs @ Bk \<up> k)) holds_for steps0 (Suc 0, Bk \<up> i, <args>) p n"
     by auto
   obtain a where a:"a = fst (rec_ci rec_F)" by blast
-  have "{(\<lambda> (l, r). l = [] \<and> r = <code p # args>)} (t_wcode |+| t_utm)
-          {(\<lambda> (l, r). (\<exists> m. l = Bk\<up>m) \<and> (\<exists> n. r = Oc\<up>rs @ Bk\<up>n))}"
+  have "\<lbrace>(\<lambda> (l, r). l = [] \<and> r = <code p # args>) \<rbrace> (wcode_tm |+| utm_with_two_args)
+          \<lbrace>(\<lambda> (l, r). (\<exists> m. l = Bk\<up>m) \<and> (\<exists> n. r = Oc\<up>rs @ Bk\<up>n))\<rbrace>"
   proof(rule_tac Hoare_plus_halt)
-    show "{\<lambda>(l, r). l = [] \<and> r = <code p # args>} t_wcode {\<lambda> (l, r). (l = [Bk] \<and>
-    (\<exists> rn. r = Oc\<up>(Suc (code p)) @ Bk # Oc\<up>(Suc (bl_bin (<args>))) @ Bk\<up>(rn)))}"
+    show "\<lbrace>\<lambda>(l, r). l = [] \<and> r = <code p # args>\<rbrace> wcode_tm \<lbrace>\<lambda> (l, r). (l = [Bk] \<and>
+    (\<exists> rn. r = Oc\<up>(Suc (code p)) @ Bk # Oc\<up>(Suc (bl_bin (<args>))) @ Bk\<up>(rn)))\<rbrace>"
       using wcl1 by (auto intro!:Hoare_haltI exI[of _ stp])
   next
     have "\<exists> stp. (?stepsBk stp = (0, Bk\<up>m, Oc\<up>rs @ Bk\<up>k))"
       using n by (case_tac "?stepsBk n", auto)
     then obtain stp where k: "steps0 (Suc 0, Bk\<up>i, <args>) p stp = (0, Bk\<up>m, Oc\<up>rs @ Bk\<up>k)"
       ..
-    thus "{\<lambda>(l, r). l = [Bk] \<and> (\<exists>rn. r = Oc \<up> Suc (code p) @ Bk # Oc \<up> Suc (bl_bin (<args>)) @ Bk \<up> rn)}
-      t_utm {\<lambda>(l, r). (\<exists>m. l = Bk \<up> m) \<and> (\<exists>n. r = Oc \<up> rs @ Bk \<up> n)}"
+    thus "\<lbrace>\<lambda>(l, r). l = [Bk] \<and> (\<exists>rn. r = Oc \<up> Suc (code p) @ Bk # Oc \<up> Suc (bl_bin (<args>)) @ Bk \<up> rn)\<rbrace>
+      utm_with_two_args \<lbrace>\<lambda>(l, r). (\<exists>m. l = Bk \<up> m) \<and> (\<exists>n. r = Oc \<up> rs @ Bk \<up> n)\<rbrace>"
     proof(rule_tac Hoare_haltI, auto)
       fix rn
-      from t_utm_halt_eq[OF assms(1) k assms(2),of rn] assms k
-      have "\<exists> ma n stp. steps0 (Suc 0, [Bk], <[code p, bl2wc (<args>)]> @ Bk \<up> rn) t_utm stp =
+      from utm_with_two_args_halt_eq[OF assms(1) k assms(2),of rn] assms k
+      have "\<exists> ma n stp. steps0 (Suc 0, [Bk], <[code p, bl2wc (<args>)]> @ Bk \<up> rn) utm_with_two_args stp =
        (0, Bk \<up> ma, Oc \<up> rs @ Bk \<up> n)" by (auto simp add: bin_wc_eq)
       then obtain stpx m' n' where
-        t:"steps0 (Suc 0, [Bk], <[code p, bl2wc (<args>)]> @ Bk \<up> rn) t_utm stpx =
+        t:"steps0 (Suc 0, [Bk], <[code p, bl2wc (<args>)]> @ Bk \<up> rn) utm_with_two_args stpx =
        (0, Bk \<up> m', Oc \<up> rs @ Bk \<up> n')" by auto
-      show "\<exists>n. is_final (steps0 (Suc 0, [Bk], Oc \<up> Suc (code p) @ Bk # Oc \<up> Suc (bl_bin (<args>)) @ Bk \<up> rn) t_utm n) \<and>
+      show "\<exists>n. is_final (steps0 (Suc 0, [Bk], Oc \<up> Suc (code p) @ Bk # Oc \<up> Suc (bl_bin (<args>)) @ Bk \<up> rn) utm_with_two_args n) \<and>
              (\<lambda>(l, r). (\<exists>m. l = Bk \<up> m) \<and> (\<exists>n. r = Oc \<up> rs @ Bk \<up> n)) holds_for steps0 
-         (Suc 0, [Bk], Oc \<up> Suc (code p) @ Bk # Oc \<up> Suc (bl_bin (<args>)) @ Bk \<up> rn) t_utm n"      
+         (Suc 0, [Bk], Oc \<up> Suc (code p) @ Bk # Oc \<up> Suc (bl_bin (<args>)) @ Bk \<up> rn) utm_with_two_args n"      
         using t
         by(auto simp: bin_wc_eq tape_of_list_def tape_of_nat_def intro:exI[of _ stpx])
     qed
   next
-    show "tm_wf0 t_wcode" by auto
+    show "composable_tm0 wcode_tm" by auto
   qed
   then obtain n where
-    "is_final (?steps0 (t_wcode |+| t_utm) n)" 
+    "is_final (?steps0 (wcode_tm |+| utm_with_two_args) n)" 
     "(\<lambda>(l, r). (\<exists>m. l = Bk \<up> m) \<and>
-           (\<exists>n. r = Oc \<up> rs @ Bk \<up> n)) holds_for ?steps0 (t_wcode |+| t_utm) n"
+           (\<exists>n. r = Oc \<up> rs @ Bk \<up> n)) holds_for ?steps0 (wcode_tm |+| utm_with_two_args) n"
     by(auto simp add: Hoare_halt_def a)
   thus "?thesis"
     apply(case_tac "rec_ci rec_F")
-    apply(auto simp add: UTM_def Hoare_halt_def)
-    apply(case_tac "(?steps0 (t_wcode |+| t_utm) n)")
+    apply(auto simp add: utm_def Hoare_halt_def)
+    apply(case_tac "(?steps0 (wcode_tm |+| utm_with_two_args) n)")
     apply(rule_tac x="n" in exI)
-    apply(auto simp add:a t_utm_def F_aprog_def F_tprog_def)
+    apply(auto simp add:a utm_with_two_args_def f_aprog_def f_tprog_tm_def)
     done
 qed
 
-lemma UTM_halt_lemma2:
-  assumes tm_wf: "tm_wf (p, 0)"
+lemma utm_halt_lemma2:
+  assumes composable_tm: "composable_tm (p, 0)"
     and args: "(args::nat list) \<noteq> []"
-    and exec: "{(\<lambda>tp. tp = ([], <args>))} p {(\<lambda>tp. tp = (Bk\<up>m, <(n::nat)> @ Bk\<up>k))}" 
-  shows "{(\<lambda>tp. tp = ([], <code p # args>))} UTM {(\<lambda>tp. (\<exists> m k. tp = (Bk\<up>m, <n> @ Bk\<up>k)))}"
-  using UTM_halt_lemma[OF assms(1) _ assms(2), where i="0"]
+    and exec: "\<lbrace>(\<lambda>tp. tp = ([], <args>))\<rbrace> p \<lbrace>(\<lambda>tp. tp = (Bk\<up>m, <(n::nat)> @ Bk\<up>k))\<rbrace>" 
+  shows "\<lbrace>(\<lambda>tp. tp = ([], <code p # args>))\<rbrace> utm \<lbrace>(\<lambda>tp. (\<exists> m k. tp = (Bk\<up>m, <n> @ Bk\<up>k)))\<rbrace>"
+  using utm_halt_lemma[OF assms(1) _ assms(2), where i="0"]
   using assms(3)
   by(simp add: tape_of_nat_def)
 
-lemma UTM_unhalt_lemma: 
-  assumes tm_wf: "tm_wf (p, 0)"
-    and unhalt: "{(\<lambda>tp. tp = (Bk\<up>i, <args>))} p \<up>"
+lemma utm_unhalt_lemma: 
+  assumes composable_tm: "composable_tm (p, 0)"
+    and unhalt: "\<lbrace>(\<lambda>tp. tp = (Bk\<up>i, <args>))\<rbrace> p \<up>"
     and args: "args \<noteq> []"
-  shows "{(\<lambda>tp. tp = ([], <code p # args>))} UTM \<up>"
+  shows "\<lbrace>(\<lambda>tp. tp = ([], <code p # args>))\<rbrace> utm \<up>"
 proof -
   have "(\<not> TSTD (steps0 (Suc 0, Bk\<up>(i), <args>) p stp))" for stp
     (* in unhalt, we substitute inner 'forall' n\<rightarrow>stp *)
     using unhalt[unfolded Hoare_unhalt_def,rule_format,OF refl,of stp]
     by(cases "steps0 (Suc 0, Bk \<up> i, <args>) p stp",auto simp: Hoare_unhalt_def TSTD_def)
-  then have "\<forall> stp. \<not> is_final (steps0 (Suc 0, [], <code p # args>)  UTM stp)"
-    using assms by(intro UTM_uhalt_lemma', auto)
+  then have "\<forall> stp. \<not> is_final (steps0 (Suc 0, [], <code p # args>)  utm stp)"
+    using assms by(intro utm_uhalt_lemma', auto)
   thus "?thesis" by(simp add: Hoare_unhalt_def)
 qed
 
-lemma UTM_unhalt_lemma2: 
-  assumes tm_wf: "tm_wf (p, 0)"
-    and unhalt: "{(\<lambda>tp. tp = ([], <args>))} p \<up>"
-    and args: "args \<noteq> []"
-  shows "{(\<lambda>tp. tp = ([], <code p # args>))} UTM \<up>"
-  using UTM_unhalt_lemma[OF assms(1), where i="0"]
+lemma utm_unhalt_lemma2: 
+  assumes "composable_tm (p, 0)"
+    and "\<lbrace>(\<lambda>tp. tp = ([], <args>))\<rbrace> p \<up>"
+    and "args \<noteq> []"
+  shows "\<lbrace>(\<lambda>tp. tp = ([], <code p # args>))\<rbrace> utm \<up>"
+  using utm_unhalt_lemma[OF assms(1), where i="0"]
   using assms(2-3)
   by(simp add: tape_of_nat_def)
 

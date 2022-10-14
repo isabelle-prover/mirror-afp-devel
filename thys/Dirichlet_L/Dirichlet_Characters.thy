@@ -371,7 +371,7 @@ proof (induction m rule: less_induct)
     also have "\<dots> = (\<Sum>x<(m - n) mod n. \<chi> x)"
       using False and n by (intro less.IH) auto
     also from False and n have "(m - n) mod n = m mod n" 
-      by (simp add: mod_geq [symmetric])
+      by (simp add: le_mod_geq)
     finally show ?thesis by simp
   qed
 qed

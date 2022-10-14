@@ -139,26 +139,11 @@ syntax (latex output)
 "_rec_sel" :: "'r \<Rightarrow> id \<Rightarrow> 'a" ("_._" [1000,1000]1000)
 
 
-ML \<open>
-structure Latex =   (* FIXME eliminate clone of Latex.latex_markup (export it in Pure) *)
-struct
-  open Latex;
-
-  fun latex_markup (s, props: Properties.T) =
-    if s = Markup.commandN orelse s = Markup.keyword1N orelse s = Markup.keyword3N
-    then ("\\isacommand{", "}")
-    else if s = Markup.keyword2N
-    then ("\\isakeyword{", "}")
-    else Markup.no_output;
-end;
-
-fun latex_markup (s, props) =
-  if s = Markup.boundN orelse s = Markup.freeN orelse s = Markup.varN orelse s = Markup.tfreeN orelse s = Markup.tvarN
-  then ("\\" ^ s ^ "ify{", "}")
-  else Latex.latex_markup (s, props);
-
-
-val _ = Markup.add_mode Latex.latexN latex_markup;
+ML_command \<open>
+  Markup.add_mode Latex.latexN (fn (s, props) =>
+    if member (op =) [Markup.boundN, Markup.freeN, Markup.varN, Markup.tfreeN, Markup.tvarN] s
+    then YXML.output_markup (Markup.latex_macro (s ^ "ify"))
+    else Latex.latex_markup (s, props));
 \<close>
 
 

@@ -342,7 +342,7 @@ lemma restrict_to_halfspace[THEN order_trans, refine_vcg]:
   subgoal premises prems for x a b
   proof -
     from prems obtain i where i: "i \<in> Basis" and disj: "normal sctn = i \<or> normal sctn = - i"
-      by (auto simp: )
+      by auto
     note nn = Basis_nonneg[OF i]
     note nz = nonzero_Basis[OF i]
     have ne: "- i \<noteq> i" using nn nz
@@ -797,7 +797,7 @@ lemma is_empty_lvivl_rel[autoref_rules]:
 definition [simp]: "op_times_ivl a b = a \<times> b"
 
 lemma [autoref_op_pat]: "a \<times> b \<equiv> OP op_times_ivl $ a $ b"
-  by (auto simp: )
+  by auto
 
 lemma op_times_ivl[autoref_rules]:
   "(\<lambda>(l, u) (l', u'). (l @ l', u @ u'), op_times_ivl) \<in> lvivl_rel \<rightarrow> lvivl_rel \<rightarrow> lvivl_rel"

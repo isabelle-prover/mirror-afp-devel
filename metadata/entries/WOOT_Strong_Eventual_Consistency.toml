@@ -25,11 +25,12 @@ email = "gonzalez_email"
 [contributors]
 
 [notify]
-karayel = "karayel_email"
 gonzalez = "gonzalez_email"
+karayel = "karayel_email"
 
 [history]
 
 [extra]
 
 [related]
+dois = ["10.1007/s00446-021-00414-6"]

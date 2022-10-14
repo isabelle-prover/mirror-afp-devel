@@ -242,7 +242,7 @@ text \<open>
 
 lemma nth_prime_le_prime_sequence:
   fixes p :: "nat \<Rightarrow> nat"
-  assumes "strict_mono_on p {..<n}" and "\<And>k. k < n \<Longrightarrow> prime (p k)" and "k < n"
+  assumes "strict_mono_on {..<n} p" and "\<And>k. k < n \<Longrightarrow> prime (p k)" and "k < n"
   shows   "nth_prime k \<le> p k"
   using assms(3)
 proof (induction k)
@@ -285,7 +285,7 @@ next
   have set_ps: "set ps = prime_factors n" by (simp add: ps_def)
   have [simp]: "length ps = m" by (simp add: ps_def m_def primes_omega_def)
   have "sorted ps" "distinct ps" by (simp_all add: ps_def)
-  hence mono: "strict_mono_on (\<lambda>k. ps ! k) {..<m}"
+  hence mono: "strict_mono_on {..<m} (\<lambda>k. ps ! k)"
     by (intro strict_mono_onI le_neq_trans) (auto simp: sorted_nth_mono distinct_conv_nth)
   from \<open>n > 1\<close> have "m > 0"
     by (auto simp: m_def prime_factorization_empty_iff intro!: Nat.gr0I)

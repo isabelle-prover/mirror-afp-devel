@@ -181,6 +181,15 @@ where
   "forallM f [] = return ()" |
   "forallM f (x # xs) = f x <+? Pair x \<then> forallM f xs"
 
+lemma forallM_fundef_cong [fundef_cong]:
+  assumes "xs = ys" "\<And>x. x \<in> set ys \<Longrightarrow> f x = g x"
+  shows "forallM f xs = forallM g ys"
+  unfolding assms(1) using assms(2)
+proof (induct ys)
+  case (Cons x xs)
+  thus ?case by (cases "g x", auto)
+qed auto
+
 lemma isOK_forallM [simp]:
   "isOK (forallM f xs) \<longleftrightarrow> (\<forall>x \<in> set xs. isOK (f x))"
   by (induct xs) (simp_all)
@@ -193,6 +202,13 @@ fun existsM :: "('a \<Rightarrow> 'e + unit) \<Rightarrow> 'a list \<Rightarrow>
 where
   "existsM f [] = error []" |
   "existsM f (x # xs) = (try f x catch (\<lambda>e. existsM f xs <+? Cons e))"
+
+lemma existsM_cong [fundef_cong]:
+  assumes "xs = ys"
+  and "\<And>x. x \<in> set ys \<Longrightarrow> f x = g x"
+  shows "existsM f xs = existsM g ys"
+  using assms
+  by (induct ys arbitrary:xs) (auto split:catch_splits)
 
 lemma isOK_existsM [simp]:
   "isOK (existsM f xs) \<longleftrightarrow> (\<exists>x\<in>set xs. isOK (f x))"

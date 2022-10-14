@@ -84,8 +84,10 @@ val _ =
 
 \<close>
 
-ud \<open>order.mono\<close>
-ud mono' \<open>mono\<close> 
+definition mono where
+  "mono f \<longleftrightarrow> (\<forall>x y. x \<le> y \<longrightarrow> f x \<le> f y)"
+
+ud \<open>mono\<close>
 
 definition mono_ow :: 
   "'a set \<Rightarrow> ('b \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> bool"

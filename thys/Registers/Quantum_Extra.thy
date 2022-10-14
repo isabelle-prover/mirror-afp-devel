@@ -9,6 +9,7 @@ begin
 no_notation meet (infixl "\<sqinter>\<index>" 70)
 no_notation Group.mult (infixl "\<otimes>\<index>" 70)
 no_notation Order.top ("\<top>\<index>")
+unbundle lattice_syntax
 unbundle register_notation
 unbundle cblinfun_notation
 

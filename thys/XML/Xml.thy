@@ -9,6 +9,7 @@ theory Xml
 imports
   Certification_Monads.Parser_Monad
   "HOL-Library.Char_ord"
+  "HOL-Library.Code_Abstract_Char"
 begin
 
 datatype xml =
@@ -159,13 +160,13 @@ definition is_letter :: "char \<Rightarrow> bool"
 where
   "is_letter c \<longleftrightarrow> c \<in> set letters"
 
-lemma is_letter_code [code]:
+lemma is_letter_pre_code:
   "is_letter c \<longleftrightarrow>
     CHR ''a'' \<le> c \<and> c \<le> CHR ''z'' \<or>
     CHR ''A'' \<le> c \<and> c \<le> CHR ''Z'' \<or>
     CHR ''0'' \<le> c \<and> c \<le> CHR ''9'' \<or>
     c \<in> set ''_&;:-''"
-  by (cases c) (simp add: is_letter_def letters_def)
+  by (cases c) (simp add: less_eq_char_def is_letter_def letters_def)
 
 definition many_letters :: "string parser"
 where
@@ -572,44 +573,71 @@ proof
   then show "(tsa, ts) \<in> measure length" by simp
 qed simp
 
-consts scala :: bool
 
-code_printing
-  constant scala \<rightharpoonup>
-    (Haskell) "False" and
-    (Scala) "true" and
-    (SML) "false" and
-    (OCaml) "false" and
-    (Eval) "false"
+definition "comment_error = Code.abort (STR ''comment not terminated'') (\<lambda> _. '''')" 
+definition "comment_error_hyphen = Code.abort (STR ''double hyphen within comment'') (\<lambda> _. '''')" 
 
-fun remove_comments_aux :: "bool \<Rightarrow> string \<Rightarrow> string"
-where
-  "remove_comments_aux False (c # cs) =
-    (if c = CHR ''<'' \<and> take 3 cs = ''!--'' then remove_comments_aux True (tl cs)
-    else c # remove_comments_aux False cs)" |
-  "remove_comments_aux True (c # cs) =
-    (if c = CHR ''-'' \<and> take 2 cs = ''->'' then remove_comments_aux False (drop 2 cs)
-    else remove_comments_aux True cs)" |
-  "remove_comments_aux _ [] = []"
+fun rc_aux where "rc_aux False (c # cs) =
+    (if c = CHR ''<'' \<and> take 3 cs = ''!--'' then rc_aux True (drop 3 cs)
+    else c # rc_aux False cs)" |
+  "rc_aux True (c # cs) =
+    (if c = CHR ''-'' \<and> take 1 cs = ''-'' then 
+       if take 2 cs = ''-'' then comment_error else if take 2 cs = ''->'' then rc_aux False (drop 2 cs)
+       else comment_error_hyphen
+    else rc_aux True cs)" |
+  "rc_aux False [] = []" |
+  "rc_aux True [] = comment_error"
 
-fun remove_comments_aux_acc :: "string \<Rightarrow> bool \<Rightarrow> string \<Rightarrow> string"
-where
-  "remove_comments_aux_acc a False (c # cs) =
-    (if c = CHR ''<'' \<and> take 3 cs = ''!--'' then remove_comments_aux_acc a True (tl cs)
-    else remove_comments_aux_acc (c # a) False cs)" |
-  "remove_comments_aux_acc a True (c # cs) =
-    (if c = CHR ''-'' \<and> take 2 cs = ''->'' then remove_comments_aux_acc a False (drop 2 cs)
-    else remove_comments_aux_acc a True cs)" |
-  "remove_comments_aux_acc a _ [] = a"
+definition "remove_comments xs = rc_aux False xs" 
 
-text \<open>A tail recursive variant for Scala to reduce stack size at the cost of double traversal.\<close>
-definition remove_comments :: "string \<Rightarrow> string"
-where
-  "remove_comments =
-    (if scala then rev o (remove_comments_aux_acc [] False)
-    else remove_comments_aux False)"
+definition "rc_open_1 xs = rc_aux False xs" 
+definition "rc_open_2 xs = rc_aux False (CHR ''<'' # xs)" 
+definition "rc_open_3 xs = rc_aux False (CHR ''<'' # CHR ''!'' # xs)" 
+definition "rc_open_4 xs = rc_aux False (CHR ''<'' # CHR ''!'' # CHR ''-'' # xs)" 
+definition "rc_close_1 xs = rc_aux True xs" 
+definition "rc_close_2 xs = rc_aux True (CHR ''-'' # xs)" 
+definition "rc_close_3 xs = rc_aux True (CHR ''-'' # CHR ''-'' # xs)" 
 
-hide_const remove_comments_aux remove_comments_aux_acc
+lemma remove_comments_code[code]: "remove_comments xs = rc_open_1 xs" 
+  unfolding remove_comments_def rc_open_1_def ..
+
+lemma char_eq_via_integer_eq: "c = d \<longleftrightarrow> integer_of_char c = integer_of_char d" 
+  unfolding integer_of_char_def by simp
+
+lemma integer_of_char_simps[simp]: 
+  "integer_of_char (CHR ''<'') = 60" 
+  "integer_of_char (CHR ''>'') = 62" 
+  "integer_of_char (CHR ''/'') = 47"  
+  "integer_of_char (CHR ''!'') = 33"  
+  "integer_of_char (CHR ''-'') = 45"  
+  by code_simp+
+
+
+lemma rc_open_close_simp[code]: 
+  "rc_open_1 (c # cs) = (if integer_of_char c = 60 then rc_open_2 cs else c # rc_open_1 cs)"
+  "rc_open_1 [] = []" 
+  "rc_open_2 (c # cs) = (let ic = integer_of_char c in if ic = 33 then rc_open_3 cs else if ic = 60 then c # rc_open_2 cs else CHR ''<'' # c # rc_open_1 cs)" 
+  "rc_open_2 [] = ''<''" 
+  "rc_open_3 (c # cs) = (let ic = integer_of_char c in if ic = 45 then rc_open_4 cs else if ic = 60 then c # CHR ''!'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # c # rc_open_1 cs)" 
+  "rc_open_3 [] = ''<!''" 
+  "rc_open_4 (c # cs) = (let ic = integer_of_char c in if ic = 45 then rc_close_1 cs else if ic = 60 then c # CHR ''!'' # CHR ''-'' # rc_open_2 cs else CHR ''<'' # CHR ''!'' # CHR ''-'' # c # rc_open_1 cs)" 
+  "rc_open_4 [] = ''<!-''" 
+  "rc_close_1 (c # cs) = (if integer_of_char c = 45 then rc_close_2 cs else rc_close_1 cs)"
+  "rc_close_1 [] = comment_error" 
+  "rc_close_2 (c # cs) = (if integer_of_char c = 45 then rc_close_3 cs else rc_close_1 cs)"
+  "rc_close_2 [] = comment_error" 
+  "rc_close_3 (c # cs) = (if integer_of_char c = 62 then rc_open_1 cs else comment_error_hyphen)"
+  "rc_close_3 [] = comment_error" 
+  unfolding 
+    rc_open_1_def 
+    rc_open_2_def
+    rc_open_3_def 
+    rc_open_4_def
+    rc_close_1_def 
+    rc_close_2_def
+    rc_close_3_def 
+  by (simp_all add: char_eq_via_integer_eq Let_def)
+
 
 definition parse_doc :: "xmldoc parser"
 where
@@ -627,6 +655,226 @@ where
     (doc, _) \<leftarrow> parse_doc s;
     Error_Monad.return doc
   }"
+
+
+subsection \<open>More efficient code equations\<close>
+
+lemma trim_code[code]: 
+  "trim = dropWhile (\<lambda> c. let ci = integer_of_char c
+    in if ci \<ge> 34 then False else ci = 32 \<or> ci = 10 \<or> ci = 9 \<or> ci = 13)"
+  unfolding trim_def
+  apply (rule arg_cong[of _ _ dropWhile], rule ext)
+  unfolding Let_def in_set_simps less_eq_char_code char_eq_via_integer_eq
+  by (auto simp: integer_of_char_def Let_def)
+
+fun parse_text_main :: "string \<Rightarrow> string \<Rightarrow> string \<times> string" where
+  "parse_text_main [] res = ('''', rev (trim res))"
+| "parse_text_main (c # cs) res = (if c = CHR ''<'' then (c # cs, rev (trim res))
+    else parse_text_main cs (c # res))" 
+
+definition "parse_text_impl cs = (case parse_text_main (trim cs) '''' of
+   (rem, txt) \<Rightarrow> if txt = [] then Inr (None, rem) else Inr (Some txt, rem))" 
+
+lemma parse_text_main: "parse_text_main xs ys = 
+  (dropWhile ((\<noteq>) CHR ''<'') xs, rev (trim (rev (takeWhile ((\<noteq>) CHR ''<'') xs) @ ys)))" 
+  by (induct xs arbitrary: ys, auto)
+
+
+lemma many_take_drop: "many f xs = Inr (takeWhile f xs, dropWhile f xs)"
+  by (induct f xs rule: many.induct, auto)
+
+lemma trim_takeWhile_inside: "trim (takeWhile ((\<noteq>) CHR ''<'') cs) = takeWhile ((\<noteq>) CHR ''<'') (trim cs)" 
+  unfolding trim_def by (induct cs, auto)
+
+lemma trim_dropWhile_inside: "dropWhile ((\<noteq>) CHR ''<'') cs = dropWhile ((\<noteq>) CHR ''<'') (trim cs)" 
+  unfolding trim_def by (induct cs, auto)
+
+declare [[code drop: parse_text]]
+
+lemma parse_text_code[code]: "parse_text cs = parse_text_impl cs" 
+proof -
+  define xs where "xs = trim cs" 
+  show ?thesis 
+    unfolding parse_text_def
+    unfolding Parser_Monad.bind_def Error_Monad.bind_def
+    unfolding Let_def
+    unfolding many_take_drop sum.simps split
+    unfolding trim_takeWhile_inside trim_dropWhile_inside[of cs] Parser_Monad.return_def
+    unfolding parse_text_impl_def
+    unfolding xs_def[symmetric]
+    unfolding parse_text_main split
+    apply (simp, intro conjI impI, force simp: trim_def)
+  proof
+    define ys where "ys = takeWhile ((\<noteq>) CHR ''<'') xs" 
+    assume "trim (rev (takeWhile ((\<noteq>) CHR ''<'') xs)) = []" 
+      and "takeWhile ((\<noteq>) CHR ''<'') xs \<noteq> []" 
+    hence "trim (rev ys) = []" and "ys \<noteq> []" unfolding ys_def by auto
+    from this(1) have ys: "\<And> y. y \<in> set ys \<Longrightarrow> y \<in> set wspace" unfolding trim_def by simp
+    with \<open>ys \<noteq> []\<close> show False unfolding ys_def xs_def trim_def
+      by (metis (no_types, lifting) dropWhile_eq_Nil_conv dropWhile_idem trim_def trim_takeWhile_inside xs_def)
+  qed
+qed
+
+declare [[code drop: parse_text_main]]
+
+lemma parse_text_main_code[code]:
+  "parse_text_main [] res = ('''', rev (trim res))"
+  "parse_text_main (c # cs) res = (if integer_of_char c = 60 then (c # cs, rev (trim res))
+    else parse_text_main cs (c # res))" 
+  unfolding parse_text_main.simps by (auto simp: char_eq_via_integer_eq)
+
+lemma exactly_head: "exactly [c] (c # cs) = Inr ([c],trim cs)" 
+  unfolding exactly_def by simp
+
+lemma take_1_test: "(case cs of [] \<Rightarrow> False | c # x \<Rightarrow> c = CHR ''/'') = (take 1 cs = ''/'')" 
+  by (cases cs, auto)
+
+definition "exactly_close = exactly ''>''"
+definition "exactly_end = exactly ''</''"
+
+lemma exactly_close_code[code]:
+  "exactly_close [] = err_expecting (''\">\"'') []" 
+  "exactly_close (c # cs) = (if integer_of_char c = 62 then Inr (''>'', trim cs) else err_expecting (''\">\"'') (c # cs))" 
+  unfolding exactly_close_def exactly_def exactly_aux.simps by (auto simp: char_eq_via_integer_eq)
+
+
+lemma exactly_end_code[code]: 
+  "exactly_end [] = err_expecting (''\"</\"'') []" 
+  "exactly_end [c] = err_expecting (''\"</\"'') [c]" 
+  "exactly_end (c # d # cs) = (if integer_of_char c = 60 \<and> integer_of_char d = 47 then Inr (''</'', trim cs) 
+    else err_expecting (''\"</\"'') (c # d # cs))" 
+  unfolding exactly_end_def exactly_def exactly_aux.simps by (auto simp: char_eq_via_integer_eq)
+
+fun oneof_closed_combined :: "'a parser \<Rightarrow> 'a parser \<Rightarrow> 'a parser" where
+  "oneof_closed_combined p q (x # xs) =
+    (if x = CHR ''>'' then q (trim xs)
+    else if x = CHR ''/'' \<and> (case xs of [] \<Rightarrow> False | y # ys \<Rightarrow> y = CHR ''>'') then
+      p (trim (tl xs))
+    else err_expecting (''one of [/>, >]'') (x # xs))" |
+  "oneof_closed_combined p q xs = err_expecting (''one of [/>, >]'') xs"
+
+lemma oneof_closed_combined: "oneof_closed_combined p q = (oneof_closed \<bind> (\<lambda>e. if e = ''/>'' then p else q))" (is "?l = ?r")
+proof (intro ext)
+  fix xs
+  show "?l xs = ?r xs" unfolding Parser_Monad.bind_def Error_Monad.bind_def
+    by (cases xs, auto split: sum.splits simp: err_expecting_def)
+qed
+
+declare [[code drop: oneof_closed_combined]]
+
+lemma oneof_closed_combined_code[code]: 
+  "oneof_closed_combined p q [] = err_expecting (''one of [/>, >]'') ''''" 
+  "oneof_closed_combined p q (x # xs) = (let xi = integer_of_char x in
+    (if xi = 62 then q (trim xs)
+    else (if xi = 47 then
+      (case xs of [] \<Rightarrow> err_expecting (''one of [/>, >]'') (x # xs)
+          | y # ys \<Rightarrow> if integer_of_char y = 62 then p (trim ys)
+        else err_expecting (''one of [/>, >]'') (x # xs))
+     else err_expecting (''one of [/>, >]'') (x # xs))))"
+  unfolding oneof_closed_combined.simps Let_def 
+  by (auto split: list.splits simp: char_eq_via_integer_eq)
+
+lemmas parse_nodes_current_code 
+  = parse_nodes.simps[unfolded oneof_closed, unfolded If_removal [of "\<lambda> e. e = ''/>''"]]
+
+lemma parse_nodes_pre_code: 
+  "parse_nodes (c # cs) =
+    (if c = CHR ''<'' then
+       if (case cs of [] \<Rightarrow> False | c # _ \<Rightarrow> c = CHR ''/'') then Parser_Monad.return [] (c # cs)
+       else (parse_name \<bind>
+                     (\<lambda>n. parse_attributes \<bind>
+                          (\<lambda>atts.
+                              oneof_closed_combined (parse_nodes \<bind> (\<lambda>cs. Parser_Monad.return (XML n atts [] # cs)))
+                                  (parse_nodes \<bind>
+                                        (\<lambda>cs. exactly_end \<bind>
+                                              (\<lambda>_. exactly n \<bind>
+                                                   (\<lambda>_. exactly_close \<bind>
+                                                        (\<lambda>_. parse_nodes \<bind> (\<lambda>ns. Parser_Monad.return (XML n atts cs # ns))))))))))
+                (trim cs)
+    else (parse_text \<bind> (\<lambda>t. parse_nodes \<bind> (\<lambda>ns. Parser_Monad.return (XML_text (the t) # ns)))) (c # cs))" 
+  unfolding parse_nodes_current_code[of "c # cs"] exactly_close_def exactly_end_def oneof_closed_combined
+  by (simp_all add: Parser_Monad.bind_def exactly_head take_1_test)
+
+declare [[code drop: parse_nodes]]
+
+lemma parse_nodes_code[code]:
+  "parse_nodes [] = Parser_Monad.return [] ''''" 
+  "parse_nodes (c # cs) =
+    (if integer_of_char c = 60 then
+       if (case cs of [] \<Rightarrow> False | d # _ \<Rightarrow> d = CHR ''/'') then Parser_Monad.return [] (c # cs)
+       else (parse_name \<bind>
+                     (\<lambda>n. parse_attributes \<bind>
+                          (\<lambda>atts.
+                              oneof_closed_combined (parse_nodes \<bind> (\<lambda>cs. Parser_Monad.return (XML n atts [] # cs)))
+                                  (parse_nodes \<bind>
+                                        (\<lambda>cs. exactly_end \<bind>
+                                              (\<lambda>_. exactly n \<bind>
+                                                   (\<lambda>_. exactly_close \<bind>
+                                                        (\<lambda>_. parse_nodes \<bind> (\<lambda>ns. Parser_Monad.return (XML n atts cs # ns))))))))))
+                (trim cs)
+    else (parse_text \<bind> (\<lambda>t. parse_nodes \<bind> (\<lambda>ns. Parser_Monad.return (XML_text (the t) # ns)))) (c # cs))" 
+  unfolding parse_nodes_pre_code
+  unfolding Let_def by (auto simp: char_eq_via_integer_eq)
+
+declare [[code drop: parse_attributes]]
+
+lemma parse_attributes_code[code]: 
+  "parse_attributes [] = Error_Monad.return ([], [])" 
+  "parse_attributes (c # s) = (let ic = integer_of_char c in 
+     (if ic = 47 \<or> ic = 62 then Inr ([], c # s)
+      else (parse_name \<bind>
+       (\<lambda>k. exactly ''='' \<bind> (\<lambda>_. parse_attribute_value \<bind> (\<lambda>v. parse_attributes \<bind> (\<lambda>atts. Parser_Monad.return ((k, v) # atts))))))
+       (c # s)))"
+  unfolding parse_attributes.simps
+  unfolding Let_def in_set_simps
+  by (auto simp: char_eq_via_integer_eq)
+
+declare [[code drop: is_letter]]
+
+lemma is_letter_code[code]: "is_letter c = (let ci = integer_of_char c in
+  (97 \<le> ci \<and> ci \<le> 122 \<or>
+   65 \<le> ci \<and> ci \<le> 90 \<or>
+   48 \<le> ci \<and> ci \<le> 59 \<or>
+   ci = 95 \<or> ci = 38 \<or> ci = 45))" 
+proof -
+  define d where "d = integer_of_char c" 
+  have "d \<le> 59 \<longleftrightarrow> (d \<le> 57 \<or> d = 58 \<or> d = 59)" for d :: int by auto 
+  hence "d \<le> 59 \<longleftrightarrow> (d \<le> 57 \<or> d = 58 \<or> d = 59)"
+    by (metis int_of_integer_numeral integer_eqI integer_less_eq_iff verit_comp_simplify1(2))
+  thus ?thesis 
+    unfolding is_letter_pre_code in_set_simps Let_def d_def 
+      less_eq_char_code char_eq_via_integer_eq
+    unfolding integer_of_char_def
+    by auto
+qed
+
+
+declare spaces_def[code_unfold del]
+
+lemma spaces_code[code]: 
+  "spaces cs = Inr ((), trim cs)" 
+  unfolding spaces_def trim_def manyof_def many_take_drop Parser_Monad.bind_def Parser_Monad.return_def by auto
+
+declare many_letters[code del, code_unfold del]
+
+fun many_letters_main where
+  "many_letters_main [] = ([], [])" 
+| "many_letters_main (c # cs) = (if is_letter c then 
+     case many_letters_main cs of (ds,es) \<Rightarrow> (c # ds, es)
+     else ([], c # cs))" 
+
+lemma many_letters_code[code]: "many_letters cs = Inr (many_letters_main cs)" 
+  unfolding many_letters_def manyof_def many_take_drop
+  by (rule arg_cong[of _ _ Inr], rule sym, induct cs, auto simp: is_letter_def)
+
+lemma parse_name_code[code]: 
+  "parse_name s = (case many_letters_main s of
+    (n, ts) \<Rightarrow> if n = [] then Inl
+          (''expected letter '' @ letters @ '' but first symbol is \"'' @ take 1 s @ ''\"'')
+      else Inr (n, trim ts))" 
+  unfolding parse_name_def many_letters_code spaces_code
+    Parser_Monad.bind_def Error_Monad.bind_def sum.simps split
+    Parser_Monad.error_def Parser_Monad.return_def if_distribR by auto
 
 end
 

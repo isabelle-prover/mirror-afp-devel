@@ -629,7 +629,6 @@ proof-
     case True
     with assms(4,5) n altnts_def have flip: "S_reduced_for w (altnts @ cs)"
       using length_alternating_list[of n s t]
-            same_length_eq_append[of altnts "xs@[x]" cs ys]
             alternating_list_Suc_Cons[of m t s]
       by    auto
     from altnst_def have "sum_list altnst = sum_list altnts"

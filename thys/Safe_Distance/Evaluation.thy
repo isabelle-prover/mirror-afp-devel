@@ -126,7 +126,15 @@ fun check_line chk n l (y, i) =
 in
 
 fun check_file chk path n =
-  File.fold_lines (check_line chk n) path (0, 0)
+  let
+    val data =
+      path
+      |> Bytes.read
+      |> XZ.uncompress
+      |> Bytes.trim_split_lines
+  in
+    fold (check_line chk n) data (0, 0)
+  end
     handle Result res => res;
 
 end
@@ -143,9 +151,9 @@ text \<open>Number of data points:
 \<close>
 
 ML \<open>
-  val data01 = \<^master_dir> + \<^path>\<open>data/data01.csv\<close>
-  val data02 = \<^master_dir> + \<^path>\<open>data/data02.csv\<close>
-  val data03 = \<^master_dir> + \<^path>\<open>data/data03.csv\<close>
+  val data01 = \<^master_dir> + \<^path>\<open>data/data01.csv.xz\<close>
+  val data02 = \<^master_dir> + \<^path>\<open>data/data02.csv.xz\<close>
+  val data03 = \<^master_dir> + \<^path>\<open>data/data03.csv.xz\<close>
 \<close>
 
 ML \<open>

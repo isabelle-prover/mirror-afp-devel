@@ -139,7 +139,7 @@ proof -
         show "P w y \<longrightarrow> (\<exists>v. F v \<and> O w v)"
         proof
           assume "P w y"
-          hence "P w (\<sigma> v. F v)" using `P y (\<sigma> v. F v)`
+          hence "P w (\<sigma> v. F v)" using \<open>P y (\<sigma> v. F v)\<close>
             by (rule part_transitivity)
           hence "O w (\<sigma> v. F v)" by (rule part_implies_overlap)
           with w show "\<exists>x. F x \<and> O w x"..
@@ -158,8 +158,8 @@ proof -
         moreover from v have "P v y"..
         ultimately have "\<exists>w. F w \<and> O v w"..
         from F have "O v (\<sigma> v. F v) \<longleftrightarrow> (\<exists>x. F x \<and> O v x)"..
-        hence "O v (\<sigma> v. F v)" using `\<exists>w. F w \<and> O v w`..
-        with `\<not> O v (\<sigma> v. F v)` show "False"..
+        hence "O v (\<sigma> v. F v)" using \<open>\<exists>w. F w \<and> O v w\<close>..
+        with \<open>\<not> O v (\<sigma> v. F v)\<close> show "False"..
       qed
     qed
   qed
@@ -179,7 +179,7 @@ proof -
     proof
       assume "P w x"
       hence "O w x" by (rule part_implies_overlap)
-      with `F x` have "F x \<and> O w x"..
+      with \<open>F x\<close> have "F x \<and> O w x"..
       thus "\<exists>v. F v \<and> O w v"..
     qed
   qed
@@ -222,7 +222,7 @@ proof -
           moreover from v have "O z v"..
           ultimately have "O z x"
             by (rule overlap_monotonicity)
-          with `\<not> O z x` show "False"..
+          with \<open>\<not> O z x\<close> show "False"..
         qed
         show "P w y"
         proof (rule ccontr)
@@ -240,7 +240,7 @@ proof -
           moreover from v have "O z v"..
           ultimately have "O z y"
             by (rule overlap_monotonicity)
-          with `\<not> O z y` show "False"..
+          with \<open>\<not> O z y\<close> show "False"..
         qed
       qed
     next
@@ -307,7 +307,7 @@ proof -
         hence "\<not> O v x"..
         from v have "O x v"..
         hence "O v x" by (rule overlap_symmetry)
-        with `\<not> O v x` show "False"..
+        with \<open>\<not> O v x\<close> show "False"..
       qed
       ultimately have "\<not> O x y"
         by (rule disjoint_demonotonicity)
@@ -377,7 +377,7 @@ proof -
   next
     have "(\<forall>y. P y (\<sigma> v. F v) \<longleftrightarrow> 
       (\<forall>w. P w y \<longrightarrow> (\<exists>v. F v \<and> O w v)))"
-      using `\<exists>x. F x` by (rule fusion_part_character)
+      using \<open>\<exists>x. F x\<close> by (rule fusion_part_character)
     hence "P (\<sigma> v. F v) (\<sigma> v. F v) \<longleftrightarrow> (\<forall>w. P w (\<sigma> v. F v) \<longrightarrow> 
       (\<exists>v. F v \<and> O w v))"..
     thus "\<forall>w. P w (\<sigma> v. F v) \<longrightarrow> (\<exists>v. F v \<and> O w v)" using part_reflexivity..
@@ -410,7 +410,7 @@ proof -
         show "P y (\<sigma> x. F x) \<longrightarrow> (\<exists>z. F z \<and> O y z)"
         proof
           have  "\<forall>y. P y (\<sigma> v. F v) \<longleftrightarrow> (\<forall>w. P w y \<longrightarrow> (\<exists>v. F v \<and> O w v))"
-            using `\<exists>x. F x` by (rule fusion_part_character)
+            using \<open>\<exists>x. F x\<close> by (rule fusion_part_character)
           hence "P y (\<sigma> v. F v) \<longleftrightarrow> (\<forall>w. P w y \<longrightarrow> (\<exists>v. F v \<and> O w v))"..
           moreover assume "P y (\<sigma> x. F x)"
           ultimately have "\<forall>w. P w y \<longrightarrow> (\<exists>v. F v \<and> O w v)"..
@@ -441,7 +441,7 @@ proof -
         hence "O z v" by (rule overlap_symmetry)
         ultimately have "O z y" by (rule overlap_monotonicity)
         hence "O y z" by (rule overlap_symmetry)
-        with `F z` have "F z \<and> O y z"..
+        with \<open>F z\<close> have "F z \<and> O y z"..
         thus "\<exists>z. F z \<and> O y z"..
       next
         assume "\<exists>z. F z \<and> O y z"
@@ -504,13 +504,13 @@ proof -
         proof
           assume "O v x"
           hence "O x v" by (rule overlap_symmetry)
-          with `P v w` have "O x w" by (rule overlap_monotonicity)
+          with \<open>P v w\<close> have "O x w" by (rule overlap_monotonicity)
           hence "O w x" by (rule overlap_symmetry)
           thus "O w x \<or> O w y"..
         next
           assume "O v y"
           hence "O y v" by (rule overlap_symmetry)
-          with `P v w` have "O y w" by (rule overlap_monotonicity)
+          with \<open>P v w\<close> have "O y w" by (rule overlap_monotonicity)
           hence "O w y" by (rule overlap_symmetry)
           thus "O w x \<or> O w y"..
         qed
@@ -518,12 +518,12 @@ proof -
         assume "O w x \<or> O w y"
         thus "O w z"
         proof
-          from `P x z \<and> P y z` have "P x z"..
+          from \<open>P x z \<and> P y z\<close> have "P x z"..
           moreover assume "O w x"
           ultimately show "O w z"
             by (rule overlap_monotonicity)
         next
-          from `P x z \<and> P y z` have "P y z"..
+          from \<open>P x z \<and> P y z\<close> have "P y z"..
           moreover assume "O w y"
           ultimately show "O w z"
             by (rule overlap_monotonicity)
@@ -592,7 +592,7 @@ proof -
         using overlap_reflexivity..
       hence "\<exists> v. (\<forall> y. F y \<longrightarrow> P v y) \<and> O z v"..
       ultimately have "O z (\<pi> x. F x)"..
-      with `\<not> O z (\<pi> x. F x)` show "False"..
+      with \<open>\<not> O z (\<pi> x. F x)\<close> show "False"..
     qed
   qed
   thus "u = (\<pi> x. F x)"
@@ -639,7 +639,7 @@ proof -
       hence "P z x"..
       from x have "\<forall>y. P y x \<longrightarrow> (\<exists>v. \<phi> v \<and> O y v)"..
       hence "P z x \<longrightarrow> (\<exists>v. \<phi> v \<and> O z v)"..
-      hence "\<exists>v. \<phi> v \<and> O z v" using `P z x`..
+      hence "\<exists>v. \<phi> v \<and> O z v" using \<open>P z x\<close>..
       then obtain v where v: "\<phi> v \<and> O z v"..
       hence "O z v"..
       with overlap_eq have "\<exists>w. P w z \<and> P w v"..
@@ -653,7 +653,7 @@ proof -
       hence "\<exists>w. P w y \<and> P w v"..
       with overlap_eq have "O y v"..
       from v have "\<phi> v"..
-      hence "\<phi> v \<and> O y v" using `O y v`..
+      hence "\<phi> v \<and> O y v" using \<open>O y v\<close>..
       thus "\<exists>v. \<phi> v \<and> O y v"..
     next
       assume "\<exists>v. \<phi> v \<and> O y v"
@@ -666,10 +666,10 @@ proof -
       hence "\<phi> v \<longrightarrow> P v x"..
       moreover from v have "\<phi> v"..
       ultimately have "P v x"..
-      with `P z v` have "P z x"
+      with \<open>P z v\<close> have "P z x"
         by (rule part_transitivity)
       from z have "P z y"..
-      thus "O y x" using `P z x`
+      thus "O y x" using \<open>P z x\<close>
         by (rule overlap_intro)
     qed
   qed
@@ -693,11 +693,11 @@ proof -
   thus "O w x \<or> O w y"
   proof
     assume "v = x"
-    hence "O w x" using `O w v` by (rule subst)
+    hence "O w x" using \<open>O w v\<close> by (rule subst)
     thus "O w x \<or> O w y"..
   next
     assume "v = y"
-    hence "O w y" using `O w v` by (rule subst)
+    hence "O w y" using \<open>O w v\<close> by (rule subst)
     thus "O w x \<or> O w y"..
   qed
 qed
@@ -715,7 +715,7 @@ proof -
     from allw have "y = x \<or> y = y \<longrightarrow> P y z"..
     moreover have "y = x \<or> y = y" using refl..
     ultimately have "P y z"..
-    with `P x z` show "P x z \<and> P y z"..
+    with \<open>P x z\<close> show "P x z \<and> P y z"..
   next
     show "\<forall>w. P w z \<longrightarrow> O w x \<or> O w y"
     proof
@@ -725,7 +725,7 @@ proof -
         assume "P w z"
         from z have "\<forall>w. P w z \<longrightarrow> (\<exists>v. (v = x \<or> v = y) \<and> O w v)"..
         hence "P w z \<longrightarrow> (\<exists>v. (v = x \<or> v = y) \<and> O w v)"..
-        hence "\<exists>v. (v = x \<or> v = y) \<and> O w v" using `P w z`..
+        hence "\<exists>v. (v = x \<or> v = y) \<and> O w v" using \<open>P w z\<close>..
         then obtain v where v: "(v = x \<or> v = y) \<and> O w v"..
         thus "O w x \<or> O w y" by (rule or_id)
       qed
@@ -770,7 +770,7 @@ next
     from left have "z = x \<or> z = z \<longrightarrow> P z v"..
     moreover have "z = x \<or> z = z" using refl..
     ultimately have "P z v"..
-    hence "P z v \<and> z \<noteq> v" using `z \<noteq> v`..
+    hence "P z v \<and> z \<noteq> v" using \<open>z \<noteq> v\<close>..
     with nip_eq have "PP z v"..
     hence "\<exists>w. P w v \<and> \<not> O w z" by (rule weak_supplementation)
     then obtain w where w: "P w v \<and> \<not> O w z"..
@@ -778,7 +778,7 @@ next
     from v have right: 
       "\<forall>w. P w v \<longrightarrow> (\<exists>y. (y = x \<or> y = z) \<and> O w y)"..
     hence "P w v \<longrightarrow> (\<exists>y. (y = x \<or> y = z) \<and> O w y)"..
-    hence "\<exists>y. (y = x \<or> y = z) \<and> O w y" using `P w v`..
+    hence "\<exists>y. (y = x \<or> y = z) \<and> O w y" using \<open>P w v\<close>..
     then obtain s where s: "(s = x \<or> s = z) \<and> O w s"..
     hence "s = x \<or> s = z"..
     thus "False"
@@ -791,12 +791,12 @@ next
      hence "P t x"..
      from sf have "(\<forall>y. P y x \<longrightarrow> (\<exists>z. F z \<and> O y z))"..
      hence "P t x \<longrightarrow> (\<exists>z. F z \<and> O t z)"..
-     hence "\<exists>z. F z \<and> O t z" using `P t x`..
+     hence "\<exists>z. F z \<and> O t z" using \<open>P t x\<close>..
      then obtain a where a: "F a \<and> O t a"..
      hence "F a"..
      from sf have ub: "\<forall>y. F y \<longrightarrow> P y x"..
      hence "F a \<longrightarrow> P a x"..
-     hence "P a x" using `F a`..
+     hence "P a x" using \<open>F a\<close>..
      moreover from a have "O t a"..
      ultimately have "O t x"
       by (rule overlap_monotonicity)
@@ -815,16 +815,16 @@ next
       by (rule overlap_monotonicity)
      hence "O w z" by (rule overlap_symmetry)
      from w have "\<not> O w z"..
-     thus "False" using `O w z`..
+     thus "False" using \<open>O w z\<close>..
     next
      assume "s = z"
      moreover from s have "O w s"..
      ultimately have "O w z" by (rule subst)
      from w have "\<not> O w z"..
-     thus "False" using `O w z`..
+     thus "False" using \<open>O w z\<close>..
     qed
    qed
-   thus "P x z" using `P x v` by (rule ssubst)
+   thus "P x z" using \<open>P x v\<close> by (rule ssubst)
   qed
  qed
 qed
@@ -859,7 +859,7 @@ proof -
     hence "(\<forall>y. F y \<longrightarrow> P y w) \<longrightarrow> P x w"..
     moreover from lubw have "(\<forall>y. F y \<longrightarrow> P y w)"..
     ultimately have "P x w"..
-    with `P w x` show "w = x"
+    with \<open>P w x\<close> show "w = x"
       by (rule part_antisymmetry)
   qed
   ultimately show "(\<sigma> x. F x) = x" by (rule ssubst)
@@ -940,11 +940,11 @@ proof
     thus "P w z"
     proof
      assume "w = x"
-     moreover from `P x z \<and> P y z` have "P x z"..
+     moreover from \<open>P x z \<and> P y z\<close> have "P x z"..
      ultimately show "P w z" by (rule ssubst)
     next
      assume "w = y"
-     moreover from `P x z \<and> P y z` have "P y z"..
+     moreover from \<open>P x z \<and> P y z\<close> have "P y z"..
      ultimately show "P w z" by (rule ssubst)
     qed
    qed
@@ -957,17 +957,17 @@ proof
     assume "P v z"
     from z have "\<forall>w. P w z \<longrightarrow> O w x \<or> O w y"..
     hence "P v z \<longrightarrow> O v x \<or> O v y"..
-    hence "O v x \<or> O v y" using `P v z`..
+    hence "O v x \<or> O v y" using \<open>P v z\<close>..
     thus "\<exists>z. (z = x \<or> z = y) \<and> O v z"
     proof
      assume "O v x"
      have "x = x \<or> x = y" using refl.. 
-     hence "(x = x \<or> x = y) \<and> O v x" using `O v x`..
+     hence "(x = x \<or> x = y) \<and> O v x" using \<open>O v x\<close>..
      thus "\<exists>z. (z = x \<or> z = y) \<and> O v z"..
     next
      assume "O v y"
      have "y = x \<or> y = y" using refl..
-     hence "(y = x \<or> y = y) \<and> O v y" using `O v y`..
+     hence "(y = x \<or> y = y) \<and> O v y" using \<open>O v y\<close>..
      thus "\<exists>z. (z = x \<or> z = y) \<and> O v z"..
     qed
    qed
@@ -993,7 +993,7 @@ proof -
       proof
         from allw have "x = x \<or> x = y \<longrightarrow> P x (\<sigma> z. z = x \<or> z = y)"..
         thus "P x (\<sigma> z. z = x \<or> z = y)" 
-          using `x = x \<or> x = y`..
+          using \<open>x = x \<or> x = y\<close>..
       next
         from allw have "y = x \<or> y = y \<longrightarrow> P y (\<sigma> z. z = x \<or> z = y)"..
         moreover have "y = x \<or> y = y" 
@@ -1114,7 +1114,7 @@ proof -
   hence  "(\<sigma> z. y = z) = (x \<oplus> y)" by (rule strong_fusion_intro)
   with strong_fusion_idempotence have "y = x \<oplus> y" by (rule subst)
   hence "P x y" by (rule strong_sum_absorption)
-  with `\<not> P x y` show "False"..
+  with \<open>\<not> P x y\<close> show "False"..
  qed
  thus "\<exists>z. P z x \<and> \<not> O z y" by simp
 qed
@@ -1136,7 +1136,7 @@ proof
       assume "O w x"
       hence "O x w"
         by (rule overlap_symmetry)
-      with `P w v` have "O x v"
+      with \<open>P w v\<close> have "O x v"
         by (rule overlap_monotonicity)
       hence "O v x"
         by (rule overlap_symmetry)
@@ -1145,7 +1145,7 @@ proof
       assume "O w y"
       hence "O y w"
         by (rule overlap_symmetry)
-      with `P w v` have "O y v"
+      with \<open>P w v\<close> have "O y v"
         by (rule overlap_monotonicity)
       hence "O v y" by (rule overlap_symmetry)
       thus "O v x \<or> O v y"..
@@ -1201,7 +1201,7 @@ proof -
           hence "O v x" by (rule part_implies_overlap)
           hence "O v x \<or> O v y"..
           ultimately have "O v z"..
-          with `\<not> O v z` show "False"..
+          with \<open>\<not> O v z\<close> show "False"..
         qed
       next
         show "P y z"
@@ -1216,7 +1216,7 @@ proof -
           hence "O v y" by (rule part_implies_overlap)
           hence "O v x \<or> O v y"..
           ultimately have "O v z"..
-          with `\<not> O v z` show "False"..
+          with \<open>\<not> O v z\<close> show "False"..
         qed
       qed
       show "\<forall>w. P w z \<longrightarrow> (O w x \<or> O w y)"
@@ -1261,14 +1261,14 @@ proof -
         hence "F z"..
         moreover from z have "O v z"..
         hence "O z v" by (rule overlap_symmetry)
-        with `P v y` have "O z y" by (rule overlap_monotonicity)
+        with \<open>P v y\<close> have "O z y" by (rule overlap_monotonicity)
         hence "O y z" by (rule overlap_symmetry)
         ultimately have "F z \<and> O y z"..
         thus "(\<exists>z. F z \<and> O y z)"..
       next
         assume "\<exists>z. F z \<and> O y z"
         then obtain z where z: "F z \<and> O y z"..
-        from`\<exists>x. F x` have "(\<forall>y. F y \<longrightarrow> P y (\<sigma> x. F x))"
+        from\<open>\<exists>x. F x\<close> have "(\<forall>y. F y \<longrightarrow> P y (\<sigma> x. F x))"
           by (rule F_in)
         hence "F z \<longrightarrow>  P z (\<sigma> x. F x)"..
         moreover from z have "F z"..
@@ -1299,10 +1299,10 @@ proof -
             from x have "O z x \<longleftrightarrow> (\<exists>v. F v \<and> O z v)"..
             moreover from z have "P z y"..
             hence "O z y" by (rule part_implies_overlap)
-            with `F y` have "F y \<and> O z y"..
+            with \<open>F y\<close> have "F y \<and> O z y"..
             hence "\<exists>y. F y \<and> O z y"..
             ultimately have "O z x"..
-            with `\<not> O z x` show "False"..
+            with \<open>\<not> O z x\<close> show "False"..
           qed
         qed
       qed

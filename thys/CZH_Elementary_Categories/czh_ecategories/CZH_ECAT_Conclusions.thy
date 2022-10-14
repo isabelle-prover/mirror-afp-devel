@@ -28,6 +28,8 @@ theory CZH_ECAT_Conclusions
     CZH_SMC_FUNCT
     CZH_ECAT_FUNCT
     CZH_ECAT_Hom
+    CZH_ECAT_Cone
+    CZH_ECAT_Small_Cone
     CZH_ECAT_Yoneda
     CZH_ECAT_Order
     CZH_ECAT_Small_Order

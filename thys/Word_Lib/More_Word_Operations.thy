@@ -722,7 +722,7 @@ definition
 
 lemma to_bool_and_1:
   "to_bool (x AND 1) \<longleftrightarrow> bit x 0"
-  by (simp add: to_bool_def and_one_eq mod_2_eq_odd)
+  by (simp add: to_bool_def word_and_1)
 
 lemma to_bool_from_bool [simp]:
   "to_bool (from_bool r) = r"

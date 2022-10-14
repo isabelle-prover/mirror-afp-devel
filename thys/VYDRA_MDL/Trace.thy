@@ -82,7 +82,7 @@ lemma ssorted_iff_mono: "ssorted s \<longleftrightarrow> (\<forall>i j. i \<le> 
 
 typedef (overloaded) ('a, 'b :: timestamp) trace = "{s :: ('a set \<times> 'b) stream.
   ssorted (smap snd s) \<and> (\<forall>x. x \<in> snd ` sset s \<longrightarrow> x \<in> tfin) \<and> (\<forall>i x. x \<in> tfin \<longrightarrow> (\<exists>j. \<not>snd (s !! j) \<le> snd (s !! i) + x))}"
-  by (auto simp: \<iota>_mono \<iota>_fin \<iota>_progressing stream.set_map
+  by (auto simp: \<iota>_mono \<iota>_tfin \<iota>_progressing stream.set_map
       intro!: exI[of _ "smap (\<lambda>n. ({}, \<iota> n)) nats"] ssorted_monoI)
 
 setup_lifting type_definition_trace

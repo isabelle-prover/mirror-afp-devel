@@ -1,13 +1,13 @@
 section \<open>Preliminary Results\<close>
 
 theory Preliminary_Results
-  imports 
+  imports
     "Definitions"
     "HOL-Probability.Stream_Space"
     "HOL-Probability.Probability_Mass_Function"
 begin
 
-lemma set_comp_image_cong: 
+lemma set_comp_image_cong:
   assumes "\<And>x. P x \<Longrightarrow> f x = h (g x)"
   shows "{f x| x. P x} = h ` {g x| x. P x}"
   using assms by (auto simp: setcompr_eq_image)
@@ -16,11 +16,11 @@ lemma (in prob_space) k_wise_indep_vars_compose:
   assumes "k_wise_indep_vars k M' X I"
   assumes "\<And>i. i \<in> I \<Longrightarrow> Y i \<in> measurable (M' i) (N i)"
   shows "k_wise_indep_vars k N (\<lambda>i x. Y i (X i x)) I"
-  using indep_vars_compose2[where N="N" and X="X" and Y="Y" and M'="M'"] assms 
+  using indep_vars_compose2[where N="N" and X="X" and Y="Y" and M'="M'"] assms
   by (simp add: k_wise_indep_vars_def subsetD)
 
 text \<open>The following two lemmas are of independent interest, they help infer independence of events
-and random variables on distributions. (Candidates for 
+and random variables on distributions. (Candidates for
 @{theory "HOL-Probability.Independent_Family"}).\<close>
 
 lemma (in prob_space) indep_sets_distr:
@@ -31,7 +31,7 @@ lemma (in prob_space) indep_sets_distr:
   assumes sets_A: "\<And>i. i \<in> I \<Longrightarrow> A i \<subseteq> sets N"
   shows "prob_space.indep_sets (distr M N f) A I"
 proof (rule prob_space.indep_setsI)
-  show "\<And>A' J. J \<noteq> {} \<Longrightarrow> J \<subseteq> I \<Longrightarrow> finite J \<Longrightarrow> \<forall>j\<in>J. A' j \<in> A j \<Longrightarrow> 
+  show "\<And>A' J. J \<noteq> {} \<Longrightarrow> J \<subseteq> I \<Longrightarrow> finite J \<Longrightarrow> \<forall>j\<in>J. A' j \<in> A j \<Longrightarrow>
       measure (distr M N f) (\<Inter> (A' ` J)) = (\<Prod>j\<in>J. measure (distr M N f) (A' j))"
   proof -
     fix A' J
@@ -39,12 +39,12 @@ proof (rule prob_space.indep_setsI)
 
     define F' where "F' = (\<lambda>i. f -` A' i \<inter> space M)"
 
-    have "\<Inter> (F' ` J) = f -` (\<Inter> (A' ` J)) \<inter> space M" 
+    have "\<Inter> (F' ` J) = f -` (\<Inter> (A' ` J)) \<inter> space M"
       unfolding  set_eq_iff F'_def using a(3) by simp
-    moreover have "\<Inter> (A' ` J) \<in> sets N" 
+    moreover have "\<Inter> (A' ` J) \<in> sets N"
       by (metis a sets_A sets.finite_INT subset_iff)
-    ultimately have b: 
-      "measure (distr M N f) (\<Inter> (A' ` J)) = measure M (\<Inter> (F' ` J))" 
+    ultimately have b:
+      "measure (distr M N f) (\<Inter> (A' ` J)) = measure M (\<Inter> (F' ` J))"
       by (metis assms(1) measure_distr)
 
     have "\<And>j. j \<in> J \<Longrightarrow> F' j \<in> F j"
@@ -52,9 +52,9 @@ proof (rule prob_space.indep_setsI)
     hence c:"measure M (\<Inter> (F' ` J)) = (\<Prod>j\<in> J. measure M (F' j))"
       by (metis indep_F indep_setsD a(1,2,3))
 
-    have "\<And>j. j \<in> J \<Longrightarrow> F' j =  f -` A' j  \<inter> space M" 
+    have "\<And>j. j \<in> J \<Longrightarrow> F' j =  f -` A' j  \<inter> space M"
       by (simp add:F'_def)
-    moreover have "\<And>j. j \<in> J \<Longrightarrow> A' j \<in> sets N" 
+    moreover have "\<And>j. j \<in> J \<Longrightarrow> A' j \<in> sets N"
       using a(1,4) sets_A by blast
     ultimately have d:
       "\<And>j. j \<in> J \<Longrightarrow> measure M (F' j) = measure (distr M N f) (A' j)"
@@ -81,10 +81,10 @@ proof -
 
   have "D.indep_sets (\<lambda>i. {X' i -` A \<inter> space N |A. A \<in> sets (M' i)}) I"
   proof (rule indep_sets_distr[OF assms(1)])
-    have "\<And>i. i \<in> I \<Longrightarrow> {(X' i \<circ> f) -` A \<inter> space M |A. A \<in> sets (M' i)} = 
+    have "\<And>i. i \<in> I \<Longrightarrow> {(X' i \<circ> f) -` A \<inter> space M |A. A \<in> sets (M' i)} =
       (\<lambda>a. f -` a \<inter> space M) ` {X' i -` A \<inter> space N |A. A \<in> sets (M' i)}"
       by (rule set_comp_image_cong, simp add:set_eq_iff, use a in blast)
-    thus "indep_sets (\<lambda>i. (\<lambda>a. f -` a \<inter> space M) ` 
+    thus "indep_sets (\<lambda>i. (\<lambda>a. f -` a \<inter> space M) `
         {X' i -` A \<inter> space N |A. A \<in> sets (M' i)}) I"
       using assms(3) by (simp add:indep_vars_def2 cong:indep_sets_cong)
   next
@@ -93,7 +93,7 @@ proof -
     thus "{X' i -` A \<inter> space N |A. A \<in> sets (M' i)} \<subseteq> sets N"
       using assms(2) measurable_sets by blast
   qed
-  thus ?thesis 
+  thus ?thesis
     using assms by (simp add:D.indep_vars_def2)
 qed
 
@@ -118,8 +118,8 @@ proof -
 qed
 
 text \<open>In some of the following theorems, the premise @{term "M = measure_pmf p"} is used. This allows stating
-theorems that hold for pmfs more concisely, for example, instead of  
-@{term "measure_pmf.prob p A \<le> measure_pmf.prob p B"} we can 
+theorems that hold for pmfs more concisely, for example, instead of
+@{term "measure_pmf.prob p A \<le> measure_pmf.prob p B"} we can
 just write @{term "M = measure_pmf p \<Longrightarrow> prob A \<le> prob B"} in the locale @{locale "prob_space"}.\<close>
 
 lemma prob_space_restrict_space:
@@ -146,11 +146,11 @@ proof -
   have "prob_space.indep_vars (distr (restrict_space M (set_pmf p)) M id) (\<lambda>_. discrete) X I"
     using assms a prob_space_restrict_space by (auto intro!:prob_space.indep_vars_distr)
   moreover have
-    "\<And>A. emeasure (distr (restrict_space M (set_pmf p)) M id) A = emeasure M A" 
+    "\<And>A. emeasure (distr (restrict_space M (set_pmf p)) M id) A = emeasure M A"
     using emeasure_distr[OF a]
     by (auto simp add: emeasure_restrict_space emeasure_Int_set_pmf)
   hence "distr (restrict_space M p) M id = M"
-    by (auto intro: measure_eqI) 
+    by (auto intro: measure_eqI)
   ultimately show ?thesis by simp
 qed
 
@@ -169,7 +169,7 @@ such a set can be generated by singletons.\<close>
 
 lemma (in prob_space) indep_vars_pmf:
   assumes [simp]:"M = measure_pmf p"
-  assumes "\<And>a J. J \<subseteq> I \<Longrightarrow> finite J \<Longrightarrow> 
+  assumes "\<And>a J. J \<subseteq> I \<Longrightarrow> finite J \<Longrightarrow>
     prob {\<omega>. \<forall>i \<in> J. X i \<omega> = a i} = (\<Prod>i \<in> J. prob {\<omega>. X i \<omega> = a i})"
   shows "indep_vars (\<lambda>_. discrete) X I"
 proof -
@@ -182,7 +182,7 @@ proof -
   define G where "G = (\<lambda>i. {{}} \<union> (\<lambda>x. {x}) ` (X i ` set_pmf p))"
   define F where "F = (\<lambda>i. {X i -` a \<inter> set_pmf p|a. a \<in> G i})"
 
-  have sigma_sets_pow: 
+  have sigma_sets_pow:
     "\<And>i. i \<in> I \<Longrightarrow> sigma_sets (X i ` set_pmf p) (G i) = Pow (X i ` set_pmf p)"
     by (simp add:G_def, metis countable_image countable_set_pmf sigma_sets_singletons_and_empty)
 
@@ -196,18 +196,18 @@ proof -
     assume a:"i \<in> I"
     have "\<And>A. X i -` A \<inter> set_pmf p = X i -` (A \<inter> X i ` set_pmf p) \<inter> set_pmf p"
       by auto
-    hence "{u. \<exists>A. u = X i -` A \<inter> set_pmf p} = 
-          {X i -` A \<inter> set_pmf p |A. A \<subseteq> X i ` set_pmf p}" 
+    hence "{u. \<exists>A. u = X i -` A \<inter> set_pmf p} =
+          {X i -` A \<inter> set_pmf p |A. A \<subseteq> X i ` set_pmf p}"
       by (metis (no_types, opaque_lifting) inf_le2)
     also have
-      "... = {X i -` A \<inter> set_pmf p |A. A \<in> sigma_sets (X i ` set_pmf p) (G i)}" 
+      "... = {X i -` A \<inter> set_pmf p |A. A \<in> sigma_sets (X i ` set_pmf p) (G i)}"
       using a by (simp add:sigma_sets_pow)
-    also have "... = sigma_sets (set_pmf p) {X i -` a \<inter> set_pmf p |a. a \<in> G i}" 
+    also have "... = sigma_sets (set_pmf p) {X i -` a \<inter> set_pmf p |a. a \<in> G i}"
       by (subst sigma_sets_vimage_commute[symmetric], auto)
     also have "... = sigma_sets (set_pmf p) (F i)"
       by (simp add:F_def)
-    finally show 
-      "{u. \<exists>A. u = X i -` A \<inter> set_pmf p} = sigma_sets (set_pmf p) (F i)" 
+    finally show
+      "{u. \<exists>A. u = X i -` A \<inter> set_pmf p} = sigma_sets (set_pmf p) (F i)"
       by simp
   qed
 
@@ -244,9 +244,9 @@ proof -
       case False
       then have "\<And>j. j \<in> J \<Longrightarrow> x j \<noteq> {}" using x_def by auto
       hence "\<And>j. j \<in> J \<Longrightarrow> x j \<in> (\<lambda>x. {x}) ` X j ` set_pmf p"
-        using x_def by (simp add:G_def) 
+        using x_def by (simp add:G_def)
       then obtain y where y_def: "\<And>j. j \<in> J \<Longrightarrow> x j = {y j}"
-        by (simp add:image_def, metis) 
+        by (simp add:image_def, metis)
 
       have "\<Inter> (A ` J) \<subseteq> set_pmf p" using b a(2) by blast
       hence "R.prob (\<Inter> (A ` J)) = prob (\<Inter> j \<in> J. A j)"
@@ -305,7 +305,7 @@ lemma pmf_of_set_eq_uniform:
   assumes "finite A" "A \<noteq> {}"
   shows "measure_pmf (pmf_of_set A) = uniform_measure discrete A"
 proof -
-  have a:"real (card A) > 0" using assms 
+  have a:"real (card A) > 0" using assms
     by (simp add: card_gt_0_iff)
 
   have b:
@@ -337,7 +337,7 @@ proof -
     by (rule pmf_of_set_eq_uniform[OF assms(2,3)])
   finally have "distr M discrete X = uniform_measure discrete A"
     by simp
-  moreover have "random_variable discrete X" 
+  moreover have "random_variable discrete X"
     by (simp add: assms(1))
   ultimately show  ?thesis using assms(2,3)
     by (simp add: uniform_on_def)

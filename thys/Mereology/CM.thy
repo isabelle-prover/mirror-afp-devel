@@ -51,7 +51,7 @@ proof -
     show "P w x \<longleftrightarrow> P w x \<and> P w x"
     proof
       assume "P w x"
-      thus "P w x \<and> P w x" using `P w x`..
+      thus "P w x \<and> P w x" using \<open>P w x\<close>..
     next
       assume "P w x \<and> P w x"
       thus "P w x"..
@@ -114,9 +114,9 @@ proof -
   proof
     assume "(x \<otimes> y) = x"
     hence "\<not> P (x \<otimes> y) y"
-      using `\<not> P x y` by (rule ssubst)
+      using \<open>\<not> P x y\<close> by (rule ssubst)
     moreover have "P (x \<otimes> y) y"
-      using `O x y` by (rule product_in_second_factor)
+      using \<open>O x y\<close> by (rule product_in_second_factor)
     ultimately show "False"..
   qed
   ultimately have "P (x \<otimes> y) x \<and> x \<otimes> y \<noteq> x"..
@@ -132,7 +132,7 @@ proof -
     by (rule product_character)
   hence "P z (x \<otimes> y) \<longleftrightarrow> (P z x \<and> P z y)"..
   thus "P z (x \<otimes> y)" 
-    using `P z x \<and> P z y`..
+    using \<open>P z x \<and> P z y\<close>..
 qed
 
 lemma product_part_in_factors: 
@@ -171,9 +171,9 @@ proof -
   assume "P x y"
   with part_reflexivity have "P x x \<and> P x y"..
   hence "P x (x \<otimes> y)" by (rule common_part_in_product)
-  have "O x y" using `P x y` by (rule part_implies_overlap)
+  have "O x y" using \<open>P x y\<close> by (rule part_implies_overlap)
   hence  "P (x \<otimes> y) x" by (rule product_in_first_factor)
-  thus "x \<otimes> y = x" using `P x (x \<otimes> y)` by (rule part_antisymmetry)
+  thus "x \<otimes> y = x" using \<open>P x (x \<otimes> y)\<close> by (rule part_antisymmetry)
 qed
 
 lemma product_overlap: "P z x \<Longrightarrow> O z y \<Longrightarrow> O z (x \<otimes> y)"
@@ -184,10 +184,10 @@ proof -
   then obtain v where v: "P v z \<and> P v y"..
   hence "P v y"..
   from v have "P v z"..
-  hence "P v x" using `P z x` by (rule part_transitivity)
-  hence "P v x \<and> P v y" using `P v y`..
+  hence "P v x" using \<open>P z x\<close> by (rule part_transitivity)
+  hence "P v x \<and> P v y" using \<open>P v y\<close>..
   hence "P v (x \<otimes> y)" by (rule common_part_in_product)
-  with `P v z` have "P v z \<and> P v (x \<otimes> y)"..
+  with \<open>P v z\<close> have "P v z \<and> P v (x \<otimes> y)"..
   hence "\<exists>v. P v z \<and> P v (x \<otimes> y)"..
   with overlap_eq show "O z (x \<otimes> y)"..
 qed
@@ -203,7 +203,7 @@ proof -
     moreover assume "O x z"
     ultimately have "O x (y \<otimes> z)"
       by (rule product_overlap)
-    with `\<not> O x (y \<otimes> z)` show "False"..
+    with \<open>\<not> O x (y \<otimes> z)\<close> show "False"..
   qed
 qed
 
@@ -228,16 +228,16 @@ proof -
     show "P w (x \<otimes> y) \<longrightarrow> P w (v \<otimes> z)"
     proof
       assume "P w (x \<otimes> y)"
-      with `O x y` have "P w x \<and> P w y"
+      with \<open>O x y\<close> have "P w x \<and> P w y"
         by (rule product_part_in_factors)
       have "P w v \<and> P w z"
       proof
-        from `P w x \<and> P w y` have "P w x"..
-        moreover from `P x v \<and> P y z` have "P x v"..
+        from \<open>P w x \<and> P w y\<close> have "P w x"..
+        moreover from \<open>P x v \<and> P y z\<close> have "P x v"..
         ultimately show "P w v" by (rule part_transitivity)
       next
-        from `P w x \<and> P w y` have "P w y"..
-        moreover from `P x v \<and> P y z` have "P y z"..
+        from \<open>P w x \<and> P w y\<close> have "P w y"..
+        moreover from \<open>P x v \<and> P y z\<close> have "P y z"..
         ultimately show "P w z" by (rule part_transitivity)
       qed     
       thus "P w (v \<otimes> z)" by (rule common_part_in_product)
@@ -261,8 +261,8 @@ proof -
     by (rule product_character)
   hence "P w (y \<otimes> z) \<longleftrightarrow> (P w y \<and> P w z)"..
   hence "P w (y \<otimes> z)"
-    using `P w y \<and> P w z`..
-  with `P w x` have "P w x \<and> P w (y \<otimes> z)"..
+    using \<open>P w y \<and> P w z\<close>..
+  with \<open>P w x\<close> have "P w x \<and> P w (y \<otimes> z)"..
   hence "\<exists>w. P w x \<and> P w (y \<otimes> z)"..
   with overlap_eq have "O x (y \<otimes> z)"..
   hence xyz: "\<forall>w. P w (x \<otimes> (y \<otimes> z)) \<longleftrightarrow> P w x \<and> P w (y \<otimes> z)"
@@ -287,19 +287,19 @@ proof -
   hence "P w y \<and> P w z"..
   hence "P w y"..
   have "P w z"
-    using `P w y \<and> P w z`..
+    using \<open>P w y \<and> P w z\<close>..
   from w have "P w x"..
   hence "P w x \<and> P w y"
-    using `P w y`..
+    using \<open>P w y\<close>..
   hence "\<exists>z. P z x \<and> P z y"..
   with overlap_eq have "O x y"..
   hence xy: "\<forall>w. P w (x \<otimes> y) \<longleftrightarrow> (P w x \<and> P w y)"
     by (rule product_character)
   hence "P w (x \<otimes> y) \<longleftrightarrow> (P w x \<and> P w y)"..
   hence "P w (x \<otimes> y)"
-    using `P w x \<and> P w y`..
+    using \<open>P w x \<and> P w y\<close>..
   hence "P w (x \<otimes> y) \<and> P w z"
-    using `P w z`..
+    using \<open>P w z\<close>..
   hence "\<exists>w. P w (x \<otimes> y) \<and> P w z"..
   with overlap_eq have "O (x \<otimes> y) z"..
   hence xyz: "\<forall>w. P w ((x \<otimes> y) \<otimes> z) \<longleftrightarrow> P w (x \<otimes> y) \<and> P w z"
@@ -373,10 +373,10 @@ proof -
     show "P w x \<longleftrightarrow> P w x \<and> \<not> O w y"
     proof
       assume "P w x"
-      hence "\<not> O y w" using `\<not> O y x`
+      hence "\<not> O y w" using \<open>\<not> O y x\<close>
         by (rule disjoint_demonotonicity)
       hence "\<not> O w y" by (rule disjoint_symmetry)
-      with `P w x` show "P w x \<and> \<not> O w y"..
+      with \<open>P w x\<close> show "P w x \<and> \<not> O w y"..
     next
       assume "P w x \<and> \<not> O w y"
       thus "P w x"..
@@ -535,7 +535,7 @@ proof -
   show "\<not> P x (\<midarrow>x)"
   proof
     assume "P x (\<midarrow>x)"
-    with `P x (\<midarrow>x) \<longleftrightarrow> \<not> O x x` have "\<not> O x x"..
+    with \<open>P x (\<midarrow>x) \<longleftrightarrow> \<not> O x x\<close> have "\<not> O x x"..
     thus "False" using overlap_reflexivity..
   qed
 qed
@@ -547,7 +547,7 @@ proof -
   hence "\<forall>w. P w (\<midarrow>y) \<longleftrightarrow> \<not> O w y"
     by (rule complement_character)
   hence "P x (\<midarrow>y) \<longleftrightarrow> \<not> O x y"..
-  thus "P x (\<midarrow>y)" using `\<not> O x y`..
+  thus "P x (\<midarrow>y)" using \<open>\<not> O x y\<close>..
 qed
 
 lemma complement_overlap: "\<not> O x y \<Longrightarrow> O x (\<midarrow>y)"
@@ -603,12 +603,12 @@ proof
   with overlap_eq have "\<exists>v. P v y \<and> P v (\<midarrow>x)"..
   then obtain v where v: "P v y \<and> P v (\<midarrow>x)"..
   hence "P v y"..
-  hence "P v x" using `P y x` by (rule part_transitivity)
+  hence "P v x" using \<open>P y x\<close> by (rule part_transitivity)
   moreover from v have "P v (\<midarrow>x)"..
   ultimately have "P v x \<and> P v (\<midarrow>x)"..
   hence "\<exists>v. P v x \<and> P v (\<midarrow>x)"..
   with overlap_eq have "O x (\<midarrow>x)"..
-  with `\<not> O x (\<midarrow>x)` show "False"..
+  with \<open>\<not> O x (\<midarrow>x)\<close> show "False"..
 qed
 
 lemma product_complement_character: "(\<exists>w. P w x \<and> \<not> O w y) \<Longrightarrow> 
@@ -682,7 +682,7 @@ proof -
   assume "\<exists>w. \<not> O w x"
   then obtain w where w: "\<not> O w x"..
   from universe_character have "P w u".
-  hence "P w u \<and> \<not> O w x" using `\<not> O w x`..
+  hence "P w u \<and> \<not> O w x" using \<open>\<not> O w x\<close>..
   hence "\<exists>z. P z u \<and> \<not> O z x"..
   hence ux: "\<forall>w. P w (u \<ominus> x) \<longleftrightarrow> (P w u \<and> \<not> O w x)"
     by (rule difference_character)
@@ -698,7 +698,7 @@ proof -
     next
       assume "\<not> O w x"
       from universe_character have "P w u".
-      hence "P w u \<and> \<not> O w x" using `\<not> O w x`..
+      hence "P w u \<and> \<not> O w x" using \<open>\<not> O w x\<close>..
       with wux show "P w (u \<ominus> x)"..
     qed
   qed

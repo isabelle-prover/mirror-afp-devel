@@ -605,7 +605,7 @@ proof (intro allI impI)
     proof -
       have "\<forall> w\<in> space M. 0 \<le> X w * ?indY w" using assms by simp
       have "integrable M (\<lambda>y. (X y) * ?indY y)" using assms
-        by (metis (mono_tags, lifting) IntI UNIV_I \<open>Y w \<in> space N\<close> image_eqI integrable_cong integrable_real_mult_indicator point_measurable_def)
+        by (metis (mono_tags, lifting) IntI UNIV_I \<open>Y w \<in> space N\<close> image_eqI Bochner_Integration.integrable_cong integrable_real_mult_indicator point_measurable_def)
       hence "(\<lambda>y. (X y) * ?indY y) \<in> borel_measurable M" by blast
       thus ?thesis using zer integral_cong_AE[of "(\<lambda>y. (X y) * ?indY y)" M "\<lambda>y. 0"] by simp
     qed
@@ -932,7 +932,7 @@ proof
      show "integrable M X" using assms by simp
    qed
    hence intsum: "integrable M (\<lambda>w. (\<Sum>i. ((X w) * indpre i w)))" using sum
-       integrable_cong[of M M "\<lambda> w.(X w) * (indicator ((Y -`A)\<inter> (space M)) w)" "\<lambda>w. (\<Sum> i.((X w) * indpre i w))"]
+       Bochner_Integration.integrable_cong[of M M "\<lambda> w.(X w) * (indicator ((Y -`A)\<inter> (space M)) w)" "\<lambda>w. (\<Sum> i.((X w) * indpre i w))"]
      using \<open>Y -` A = Y -` (A \<inter> range Y)\<close> by presburger
    have "integral\<^sup>L M (\<lambda>w. (X w) * ?indA w) = integral\<^sup>L M (\<lambda>w. (\<Sum> i.((X w) * indpre i w)))"
      using \<open>Y -` A = Y -` (A \<inter> range Y)\<close> sum by auto
@@ -1143,7 +1143,7 @@ proof -
   hence "\<forall>w\<in> space M. ((expl_cond_expect M Y X) w) * (?indA w) = (expl_cond_expect M Y X) w" by simp
   moreover have "integrable M (\<lambda>w. ((expl_cond_expect M Y X) w) * (?indA w))" using assms
       nn_cond_expl_is_cond_exp_tmp[of X Y N] by blast
-  ultimately show ?thesis by (metis (no_types, lifting) integrable_cong)
+  ultimately show ?thesis by (metis (no_types, lifting) Bochner_Integration.integrable_cong)
 qed
 
 lemma (in finite_measure) nn_cond_expl_is_cond_exp:
@@ -1181,7 +1181,7 @@ proof -
     finally show "(expl_cond_expect M Y ?Xp) w - (expl_cond_expect M Y ?Xn) w = expl_cond_expect M Y X w" .
   qed
   thus ?thesis using integr
-    by (metis (mono_tags, lifting) integrable_cong)
+    by (metis (mono_tags, lifting) Bochner_Integration.integrable_cong)
 qed
 
 

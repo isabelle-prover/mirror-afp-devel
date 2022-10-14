@@ -122,7 +122,7 @@ proof (cases "u \<bullet> abs u = 1")
   case True
   have "abs u = (\<Sum>i\<in>Basis. (if i = abs u then (abs u \<bullet> i) *\<^sub>R i else 0))"
     using assms
-    by (auto simp: )
+    by auto
   also have "\<dots> = (\<Sum>i\<in>Basis. (if i = abs u then (u \<bullet> i) *\<^sub>R i else 0))"
     by (rule sum.cong) (auto simp: True)
   also have "\<dots> = (\<Sum>i\<in>Basis. (u \<bullet> i) *\<^sub>R i)"
@@ -139,7 +139,7 @@ next
     by (metis (full_types) abs_0_eq euclidean_all_zero_iff inner_Basis_eq_zero_absI nonzero_Basis)
   have "abs u = (\<Sum>i\<in>Basis. (if i = abs u then (abs u \<bullet> i) *\<^sub>R i else 0))"
     using assms
-    by (auto simp: )
+    by auto
   also have "\<dots> = (\<Sum>i\<in>Basis. (if i = abs u then (- u \<bullet> i) *\<^sub>R i else 0))"
     by (rule sum.cong) (auto simp: F)
   also have "\<dots> = (\<Sum>i\<in>Basis. (- u \<bullet> i) *\<^sub>R i)"
@@ -300,14 +300,14 @@ lemma sum_pdevs_infinite[simp]: "infinite X \<Longrightarrow> sum_pdevs f X = ze
 
 lemma compute_sum_pdevs[code]:
   "sum_pdevs f (set XS) = foldr (\<lambda>a b. add_pdevs (f a) b) (remdups XS) zero_pdevs"
-  by (induction XS) (auto simp: )
+  by (induction XS) auto
 
 lemma degree_sum_pdevs_le:
   "degree (sum_pdevs f X) \<le> Max (degree ` f ` X)"
   apply (rule degree_le)
   apply auto
   apply (cases "X = {}")
-  subgoal by (simp add: )
+  subgoal by simp
   subgoal by (cases "finite X") simp_all
   done
 
@@ -507,7 +507,7 @@ lemma project_coord_lv[autoref_rules]:
     apply (subst project_coord_inner_Basis)
      apply (auto simp: eucl_of_list_inner )
      apply (subst nth_list_update)
-      apply (auto simp: )
+      apply auto
     using in_Basis_index_Basis_list apply force
     using inner_not_same_Basis nth_Basis_list_in_Basis apply fastforce
     apply (auto simp: nth_list_update)
@@ -518,7 +518,7 @@ lemma project_coord_lv[autoref_rules]:
     apply (subst project_coord_inner_Basis)
      apply (auto simp: eucl_of_list_inner )
      apply (subst nth_list_update)
-      apply (auto simp: )
+      apply auto
     using inner_not_same_Basis nth_Basis_list_in_Basis apply fastforce
     apply (auto simp: nth_list_update)
     done
@@ -587,7 +587,7 @@ lemma
 
 lemma pdevs_domain_project_coord_pdevs_subset:
   "pdevs_domain (project_coord_pdevs sctn X) \<subseteq> pdevs_domain X"
-  apply (auto simp: )
+  apply auto
   apply (auto simp: euclidean_eq_iff[where 'a='a] )
   by (metis add.inverse_neutral project_coord_inner_Basis project_coord_pdevs.rep_eq)
 
@@ -596,7 +596,7 @@ lemma pdevs_val_project_coord_pdevs_inner_Basis:
   shows "pdevs_val e (project_coord_pdevs sctn X) \<bullet> b =
     (if b = abs (normal sctn) then 0 else pdevs_val e X \<bullet> b)"
   using assms
-  apply (auto simp: )
+  apply auto
    apply (simp add: pdevs_val_pdevs_domain inner_sum_left )
    apply (subst sum.cong[OF refl])
     apply (subst pdevs_apply_project_coord_pdevs)
@@ -626,7 +626,7 @@ lemma aform_val_project_coord_aform:
   apply (rule euclidean_eqI)
   unfolding inner_add_left inner_sum_left
   apply (subst pdevs_val_project_coord_pdevs_inner_Basis)
-   apply (auto simp: )
+   apply auto
    apply (rule sum.cong)
   apply auto
    apply (metis abs_in_Basis_iff abs_inner abs_inner_Basis abs_zero inner_commute)
@@ -1415,7 +1415,7 @@ lemma sv_lv_rel_inverse[relator_props]: "single_valued (lv_rel\<inverse>)"
 lemma list_of_eucl_image_lv_rel_inverse:
   "(x, list_of_eucl ` x) \<in> \<langle>lv_rel\<inverse>\<rangle>set_rel"
   unfolding set_rel_sv[OF sv_lv_rel_inverse]
-  apply (auto simp: )
+  apply auto
     apply (rule ImageI)
      apply (rule converseI)
      apply (rule lv_relI)

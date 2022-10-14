@@ -22,8 +22,11 @@ for the exposition of \<open>Par\<close> as a semicategory.
 named_theorems cat_Par_cs_simps
 named_theorems cat_Par_cs_intros
 
-lemmas (in arr_Rel) [cat_Par_cs_simps] = 
+lemmas (in arr_Par) [cat_Par_cs_simps] = 
   dg_Rel_shared_cs_simps
+
+lemmas (in arr_Par) [cat_cs_intros, cat_Par_cs_intros] = 
+  arr_Par_axioms'
 
 lemmas [cat_Par_cs_simps] = 
   dg_Rel_shared_cs_simps
@@ -106,6 +109,12 @@ lemmas_with [folded cat_smc_cat_Par, unfolded slicing_simps]:
   and cat_Par_Comp = smc_Par_Comp
   and cat_Par_Comp_app[cat_Par_cs_simps] = smc_Par_Comp_app
   and cat_Par_Comp_vdomain[cat_Par_cs_simps] = smc_Par_Comp_vdomain
+  and cat_Par_is_monic_arrI = smc_Par_is_monic_arrI
+  and cat_Par_is_monic_arrD = smc_Par_is_monic_arrD
+  and cat_Par_is_monic_arr = smc_Par_is_monic_arr
+  and cat_Par_is_epic_arrI = smc_Par_is_epic_arrI
+  and cat_Par_is_epic_arrD = smc_Par_is_epic_arrD
+  and cat_Par_is_epic_arr = smc_Par_is_epic_arr
 
 lemmas [cat_cs_simps] = cat_Par_is_arrD(2,3)
 
@@ -116,11 +125,6 @@ lemmas_with (in \<Z>) [folded cat_smc_cat_Par, unfolded slicing_simps]:
   and cat_Par_incl_Par_is_arr = smc_Par_incl_Par_is_arr
   and cat_Par_incl_Par_is_arr'[cat_Par_cs_intros] = smc_Par_incl_Par_is_arr'
   and cat_Par_Comp_vrange = smc_Par_Comp_vrange
-  and cat_Par_is_monic_arrI = smc_Par_is_monic_arrI
-  and cat_Par_is_monic_arr = smc_Par_is_monic_arr
-  and cat_Par_is_epic_arrI = smc_Par_is_epic_arrI
-  and cat_Par_is_epic_arrD = smc_Par_is_epic_arrD
-  and cat_Par_is_epic_arr = smc_Par_is_epic_arr
   and cat_Par_obj_terminal = smc_Par_obj_terminal
   and cat_Par_obj_initial = smc_Par_obj_initial
   and cat_Par_obj_terminal_obj_initial = smc_Par_obj_terminal_obj_initial
@@ -159,7 +163,7 @@ proof(intro categoryI, unfold cat_smc_cat_Rel cat_smc_cat_Par cat_op_simps)
     unfolding cat_Par_Obj_iff
     by 
       (
-        cs_concl 
+        cs_concl cs_shallow
           cs_simp: cat_Par_cs_simps cs_intro: cat_Par_cs_intros arr_Par_id_ParI
       )
 
@@ -171,7 +175,7 @@ proof(intro categoryI, unfold cat_smc_cat_Rel cat_smc_cat_Par cat_op_simps)
     with that \<Z>_axioms show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_Par_cs_simps
             cs_intro: cat_Par_cs_intros arr_Par_id_ParI
         )
@@ -185,7 +189,7 @@ proof(intro categoryI, unfold cat_smc_cat_Rel cat_smc_cat_Par cat_op_simps)
     with that show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_cs_simps cat_Par_cs_simps
             cs_intro: cat_Par_cs_intros arr_Par_id_ParI
         )
@@ -223,7 +227,7 @@ proof(intro wide_replete_subcategoryI)
       by (rule wide_subcategory_cat_Par_cat_Rel)
     show "cat_Par \<alpha> \<subseteq>\<^sub>C\<^bsub>\<alpha>\<^esub> cat_Rel \<alpha>" by (rule subcategory_axioms)    
     fix A B F assume prems: "A \<in>\<^sub>\<circ> cat_Par \<alpha>\<lparr>Obj\<rparr>" "F : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> B"
-    note arr_Rel = cat_Rel_is_arr_isomorphismD[OF prems(2)]
+    note arr_Rel = cat_Rel_is_iso_arrD[OF prems(2)]
     from arr_Rel(2) show "F : A \<mapsto>\<^bsub>cat_Par \<alpha>\<^esub> B"
       by (intro cat_Par_is_arrI arr_Par_arr_RelI cat_Rel_is_arrD[OF arr_Rel(1)])
         auto
@@ -234,37 +238,40 @@ qed
 
 subsection\<open>Isomorphism\<close>
 
-lemma (in \<Z>) cat_Par_is_arr_isomorphismI[intro]:
+lemma cat_Par_is_iso_arrI[intro]:
   assumes "T : A \<mapsto>\<^bsub>cat_Par \<alpha>\<^esub> B" 
     and "v11 (T\<lparr>ArrVal\<rparr>)"
     and "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A"
     and "\<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B"
   shows "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Par \<alpha>\<^esub> B"
 proof-
-  note [cat_cs_intros] = cat_Rel_is_arr_isomorphismI
-  from wide_replete_subcategory_cat_Par_cat_Rel assms have 
+  interpret T: arr_Par \<alpha> T by (intro cat_Par_is_arrD(1)[OF assms(1)])
+  note [cat_cs_intros] = cat_Rel_is_iso_arrI
+  from T.wide_replete_subcategory_cat_Par_cat_Rel assms have 
     "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> B"
     by (cs_concl cs_intro: cat_cs_intros cat_sub_cs_intros cat_sub_fw_cs_intros)
-  with wide_replete_subcategory_cat_Par_cat_Rel assms show 
+  with T.wide_replete_subcategory_cat_Par_cat_Rel assms show 
     "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Par \<alpha>\<^esub> B"
-    by (cs_concl cs_simp: cat_sub_bw_cs_simps)
+    by (cs_concl cs_shallow cs_simp: cat_sub_bw_cs_simps)
 qed
 
-lemma (in \<Z>) cat_Par_is_arr_isomorphismD[dest]:
+lemma cat_Par_is_iso_arrD[dest]:
   assumes "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Par \<alpha>\<^esub> B"
   shows "T : A \<mapsto>\<^bsub>cat_Par \<alpha>\<^esub> B"
     and "v11 (T\<lparr>ArrVal\<rparr>)"
     and "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A"
     and "\<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B"
 proof-
-  from wide_replete_subcategory_cat_Par_cat_Rel assms have T: 
+  interpret T: arr_Par \<alpha> T 
+    by (intro cat_Par_is_arrD(1)[OF is_iso_arrD(1)[OF assms(1)]])
+  from T.wide_replete_subcategory_cat_Par_cat_Rel assms have T: 
     "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> B"
-    by (cs_concl cs_intro: cat_sub_cs_intros cat_sub_fw_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_sub_cs_intros cat_sub_fw_cs_intros)
   show "v11 (T\<lparr>ArrVal\<rparr>)" "\<D>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = A" "\<R>\<^sub>\<circ> (T\<lparr>ArrVal\<rparr>) = B"
-    by (intro cat_Rel_is_arr_isomorphismD[OF T])+
-qed (rule is_arr_isomorphismD(1)[OF assms])
+    by (intro cat_Rel_is_iso_arrD[OF T])+
+qed (rule is_iso_arrD(1)[OF assms])
 
-lemma (in \<Z>) cat_Par_is_arr_isomorphism:
+lemma cat_Par_is_iso_arr:
   "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Par \<alpha>\<^esub> B \<longleftrightarrow>
     T : A \<mapsto>\<^bsub>cat_Par \<alpha>\<^esub> B \<and>
     v11 (T\<lparr>ArrVal\<rparr>) \<and>
@@ -279,21 +286,29 @@ subsection\<open>The inverse arrow\<close>
 abbreviation (input) converse_Par :: "V \<Rightarrow> V" ("(_\<inverse>\<^sub>P\<^sub>a\<^sub>r)" [1000] 999)
   where "a\<inverse>\<^sub>P\<^sub>a\<^sub>r \<equiv> a\<inverse>\<^sub>R\<^sub>e\<^sub>l"
 
-lemma (in \<Z>) cat_Par_the_inverse:
+lemma cat_Par_the_inverse[cat_Par_cs_simps]:
   assumes "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Par \<alpha>\<^esub> B"
   shows "T\<inverse>\<^sub>C\<^bsub>cat_Par \<alpha>\<^esub> = T\<inverse>\<^sub>P\<^sub>a\<^sub>r"
 proof-
-  from wide_replete_subcategory_cat_Par_cat_Rel assms have T:
+  interpret T: arr_Par \<alpha> T 
+    by (intro cat_Par_is_arrD(1)[OF is_iso_arrD(1)[OF assms(1)]])
+  from T.wide_replete_subcategory_cat_Par_cat_Rel assms have T:
     "T : A \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>cat_Rel \<alpha>\<^esub> B"
-    by (cs_concl cs_intro: cat_sub_cs_intros cat_sub_fw_cs_intros)
-  from wide_replete_subcategory_cat_Par_cat_Rel assms have [cat_cs_simps]:
-    "T\<inverse>\<^sub>C\<^bsub>cat_Par \<alpha>\<^esub> = T\<inverse>\<^sub>C\<^bsub>cat_Rel \<alpha>\<^esub>"
-    by (cs_concl cs_full cs_simp: cat_sub_bw_cs_simps cs_intro: cat_sub_cs_intros)
-  from T show "T\<inverse>\<^sub>C\<^bsub>cat_Par \<alpha>\<^esub> = T\<inverse>\<^sub>R\<^sub>e\<^sub>l"
-    by (cs_concl cs_simp: cat_Rel_cs_simps cat_cs_simps cs_intro: cat_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_sub_cs_intros cat_sub_fw_cs_intros)
+  from T.wide_replete_subcategory_cat_Par_cat_Rel assms 
+  have [symmetric, cat_cs_simps]: "T\<inverse>\<^sub>C\<^bsub>cat_Rel \<alpha>\<^esub> = T\<inverse>\<^sub>C\<^bsub>cat_Par \<alpha>\<^esub>"
+    by 
+      (
+        cs_concl cs_shallow 
+          cs_simp: cat_sub_bw_cs_simps cs_intro: cat_sub_cs_intros
+      )
+  from T show "T\<inverse>\<^sub>C\<^bsub>cat_Par \<alpha>\<^esub> = T\<inverse>\<^sub>P\<^sub>a\<^sub>r"
+    by 
+      (
+        cs_concl cs_shallow
+          cs_simp: cat_Rel_cs_simps cat_cs_simps cs_intro: cat_cs_intros
+      )
 qed
-
-lemmas [cat_Par_cs_simps] = \<Z>.cat_Par_the_inverse
 
 text\<open>\newpage\<close>
 

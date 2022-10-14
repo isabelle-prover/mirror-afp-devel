@@ -70,7 +70,7 @@ proof -
   have mod: "\<^bold>g [^] m = \<^bold>g [^] (m mod Suc n)" for m
   proof -
     obtain k where "m mod Suc n + Suc n * k = m"
-      by (metis mod_less_eq_dividend mod_mod_trivial nat_mod_eq_lemma)
+      using mod_mult_div_eq by blast
     then have "\<^bold>g [^] m = \<^bold>g [^] (m mod Suc n + Suc n * k)" by simp
     also have "\<dots> = \<^bold>g [^] (m mod Suc n)"
       unfolding nat_pow_mult[symmetric, OF generator_closed] nat_pow_pow[symmetric, OF generator_closed] g1

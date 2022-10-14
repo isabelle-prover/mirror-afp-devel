@@ -5,7 +5,8 @@
 chapter \<open>Unsigned words of 64 bits\<close>
 
 theory Uint64 imports
-  Code_Target_Word_Base Word_Type_Copies
+  Word_Type_Copies
+  Code_Target_Integer_Bit
 begin
 
 text \<open>
@@ -492,7 +493,7 @@ lemma Uint64_code [code]:
 lemma Uint64_signed_code [code]:
   "Rep_uint64 (Uint64_signed i) = 
   (if i < -(0x8000000000000000) \<or> i \<ge> 0x8000000000000000 then Rep_uint64 (undefined Uint64 i) else word_of_int (int_of_integer_symbolic i))"
-unfolding Uint64_signed_def Uint64_def int_of_integer_symbolic_def word_of_integer_def
+unfolding Uint64_signed_def Uint64_def int_of_integer_symbolic_def
 by(simp add: Abs_uint64_inverse)
 
 end

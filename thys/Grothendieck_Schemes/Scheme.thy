@@ -90,11 +90,12 @@ for X is_open \<O>\<^sub>X \<rho> b add_str mult_str zero_str one_str f \<phi>\<
 section \<open>Schemes\<close>
 
 (* def. 0.47 *)
-locale scheme = comm_ring + 
-locally_ringed_space X is_open \<O>\<^sub>X \<rho> b add_str mult_str zero_str one_str 
-for X is_open \<O>\<^sub>X \<rho> b add_str mult_str zero_str one_str +
+locale scheme = locally_ringed_space X is_open \<O>\<^sub>X \<rho> b add_str mult_str zero_str one_str 
+  for X is_open \<O>\<^sub>X \<rho> b add_str mult_str zero_str one_str univ +
   assumes are_affine_schemes: "\<And>x. x \<in> X \<Longrightarrow> (\<exists>U. x\<in>U \<and> is_open U \<and> 
-(\<exists>f \<phi>\<^sub>f. affine_scheme  R (+) (\<cdot>) \<zero> \<one> U (ind_topology.ind_is_open X is_open U) (ind_sheaf.ind_sheaf \<O>\<^sub>X U) 
+(\<exists>R add mult zero one f \<phi>\<^sub>f. R \<subseteq> univ \<and> comm_ring R add mult zero one \<and> 
+  affine_scheme R add mult zero one U (ind_topology.ind_is_open X is_open U) 
+  (ind_sheaf.ind_sheaf \<O>\<^sub>X U) 
 (ind_sheaf.ind_ring_morphisms \<rho> U) b (ind_sheaf.ind_add_str add_str U)
 (ind_sheaf.ind_mult_str mult_str U) (ind_sheaf.ind_zero_str zero_str U)
 (ind_sheaf.ind_one_str one_str U) f \<phi>\<^sub>f))"
@@ -243,7 +244,7 @@ qed
 end
 
 lemma (in affine_scheme) affine_scheme_is_scheme:
-  shows "scheme R (+) (\<cdot>) \<zero> \<one> X is_open \<O>\<^sub>X \<rho> b add_str mult_str zero_str one_str"
+  shows "scheme X is_open \<O>\<^sub>X \<rho> b add_str mult_str zero_str one_str (UNIV::'a set)"
 proof -
   interpret ind_sheaf X is_open \<O>\<^sub>X \<rho> b add_str mult_str zero_str one_str X
     by (metis ind_sheaf_axioms_def ind_sheaf_def open_space ringed_space_axioms ringed_space_def)
@@ -468,8 +469,8 @@ proof -
                   using iso.class_of_eq[OF fU] by auto
                 finally show ?thesis .
               qed
-              then show ?thesis unfolding ind_btw.induced_morphism_def
-                by (smt (z3) compose_def restrict_apply' restrict_ext)
+              then show ?thesis unfolding ind_btw.induced_morphism_def compose_def
+                by (smt (verit, best) restrict_apply' restrict_ext)
             qed
             ultimately show ?thesis unfolding is_local_def ind_btw.is_local_def
               by auto
@@ -597,7 +598,7 @@ proof -
   qed
   moreover have "is_open X" by simp
   ultimately show ?thesis
-    by unfold_locales fastforce
+    by unfold_locales (fastforce intro: affine_scheme.axioms(1))
 qed
 
 lemma (in comm_ring) spec_is_affine_scheme:
@@ -677,8 +678,9 @@ next
 qed
 
 lemma (in comm_ring) spec_is_scheme:
-  shows "scheme R (+) (\<cdot>) \<zero> \<one> Spec is_zariski_open sheaf_spec sheaf_spec_morphisms \<O>b
-(\<lambda>U. add_sheaf_spec U) (\<lambda>U. mult_sheaf_spec U) (\<lambda>U. zero_sheaf_spec U) (\<lambda>U. one_sheaf_spec U)"
+  shows "scheme Spec is_zariski_open sheaf_spec sheaf_spec_morphisms \<O>b
+(\<lambda>U. add_sheaf_spec U) (\<lambda>U. mult_sheaf_spec U) (\<lambda>U. zero_sheaf_spec U) (\<lambda>U. one_sheaf_spec U)
+  (UNIV::'a set)"
   by (metis spec_is_affine_scheme affine_scheme.affine_scheme_is_scheme)
  
 lemma empty_scheme_is_affine_scheme:
@@ -746,7 +748,7 @@ proof -
         using cring0.sheaf_spec_is_presheaf by force
       show "presheaf_of_rings cring0.spectrum cring0.is_zariski_open im0.im_sheaf im0.im_sheaf_morphisms
  0 im0.add_im_sheaf im0.mult_im_sheaf im0.zero_im_sheaf im0.one_im_sheaf"
-        by (smt (z3) comm_ring.cring0_is_zariski_open cring0.comm_ring_axioms cring0.cring0_spectrum_eq im0.presheaf_of_rings_axioms)
+        by (simp add: im0.presheaf_of_rings_axioms)
       show "morphism_presheaves_of_rings_axioms cring0.is_zariski_open cring0.sheaf_spec cring0.sheaf_spec_morphisms 
                cring0.add_sheaf_spec cring0.mult_sheaf_spec cring0.zero_sheaf_spec cring0.one_sheaf_spec 
                im0.im_sheaf im0.im_sheaf_morphisms im0.add_im_sheaf im0.mult_im_sheaf im0.zero_im_sheaf im0.one_im_sheaf (\<lambda>U. \<lambda>s\<in>cring0.sheaf_spec U. 0)"
@@ -844,7 +846,8 @@ proof -
 qed
 
 lemma empty_scheme_is_scheme:
-  shows "scheme {0::nat} (\<lambda>x y. 0) (\<lambda>x y. 0) 0 0 {} (\<lambda>U. U={}) (\<lambda>U. {0}) (\<lambda>U V. identity{0::nat}) 0 (\<lambda>U x y. 0) (\<lambda>U x y. 0) (\<lambda>U. 0) (\<lambda>U. 0)"
+  shows "scheme {} (\<lambda>U. U={}) (\<lambda>U. {0}) (\<lambda>U V. identity{0::nat}) 0 (\<lambda>U x y. 0) (\<lambda>U x y. 0) 
+          (\<lambda>U. 0) (\<lambda>U. 0) (UNIV::nat set)"
   by (metis affine_scheme.affine_scheme_is_scheme empty_scheme_is_affine_scheme)
 
 end

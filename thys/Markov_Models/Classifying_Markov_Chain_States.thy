@@ -552,12 +552,13 @@ proof -
 
   { fix x y
     have "?H' x y \<longlonglongrightarrow> measure (T x) (\<Inter>i. H' y i)"
-      apply (rule T.finite_Lim_measure_decseq)
-      apply safe
-      apply simp
-      apply (auto simp add: decseq_Suc_iff subset_eq H'_def eSuc_enat[symmetric]
-                  intro: ile_eSuc order_trans)
-      done
+    proof (rule T.finite_Lim_measure_decseq)
+      show "range (H' y) \<subseteq> T.events x"
+        by auto
+    next
+      show "decseq (H' y)"
+        by (rule antimonoI) (simp add: subset_eq H'_def order_subst2)
+    qed
     also have "(\<Inter>i. H' y i) = {\<omega>\<in>space (T x). alw (ev (HLD {y})) \<omega>}"
       by (auto simp: H'_def scount_infinite_iff[symmetric]) (metis Suc_ile_eq enat.exhaust neq_iff)
     finally have "?H' x y \<longlonglongrightarrow> H x y"

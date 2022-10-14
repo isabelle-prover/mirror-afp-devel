@@ -1,7 +1,6 @@
 \documentclass[10pt,DIV16,a4paper,abstract=true,twoside=semi,openright]
 {scrreprt}
-\usepackage[T1]{fontenc}
-\usepackage[english]{babel}
+\usepackage[USenglish]{babel}
 \usepackage[numbers, sort&compress]{natbib}
 \usepackage{isabelle,isabellesym}
 \usepackage{booktabs}
@@ -12,19 +11,53 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 
+\definecolor{lhWhite}        {RGB}{248,248,248}
+\definecolor{lhBlack}        {RGB}{  8,  8,  8}
+%
+\definecolor{lhOrange}       {RGB}{243,107, 33}
+\definecolor{lhGreen}        {RGB}{ 65,242, 34}
+\definecolor{lhCyan}         {RGB}{ 34,169,242}
+\definecolor{lhMagenta}      {RGB}{211, 34,242}
+\definecolor{lhGold}         {RGB}{242,211, 34}
+%
+\definecolor{lhOrangeMedium} {RGB}{156, 69, 22}
+\definecolor{lhGreenMedium}  {RGB}{ 42,156, 22}
+\definecolor{lhCyanMedium}   {RGB}{ 22,109,156}
+\definecolor{lhMagentaMedium}{RGB}{135, 22,156}
+\definecolor{lhGoldMedium}   {RGB}{156,135, 22}
+%
+\definecolor{lhOrangeDark}   {RGB}{ 71, 31, 10}
+\definecolor{lhGreenDark}    {RGB}{ 19, 71, 10}
+\definecolor{lhCyanDark}     {RGB}{ 10, 50, 71}
+\definecolor{lhMagentaDark}  {RGB}{ 62, 10, 71}
+\definecolor{lhGoldDark}     {RGB}{ 51, 86, 28}
+%
+\definecolor{lhLightGray}    {RGB}{204,204,204}
+\definecolor{lhDarkGray}     {RGB}{ 68, 68, 68}
+
+\usepackage{dirtree}
+\renewcommand*\DTstylecomment{\ttfamily\itshape}
+
+\usepackage{ifthen}
+\usepackage{lh-listings}
+\usepackage{railsetup}
+
+\sloppy
 
 \pagestyle{headings}
 \isabellestyle{default}
 \setcounter{tocdepth}{1}
 \newcommand{\ie}{i.\,e.\xspace}
 \newcommand{\eg}{e.\,g.\xspace}
-\newcommand{\thy}{\isabellecontext}
-\renewcommand{\isamarkupsection}[1]{%
-  \begingroup% 
-  \def\isacharunderscore{\textunderscore}%
-  \section{#1 (\thy)}%
-  \endgroup% 
-}
+%\newcommand{\thy}{\isabellecontext}
+%\renewcommand{\isamarkupsection}[1]{%
+%  \begingroup% 
+%  \def\isacharunderscore{\textunderscore}%
+%  \section{#1 (\thy)}%
+%  \def\isacharunderscore{-}%
+%  \expandafter\label{sec:\isabellecontext}%
+%  \endgroup% 
+%}
 
 \title{Automated Stateful Protocol Verification}
 \author{%
@@ -36,17 +69,21 @@
       \\
       \href{http://www.brucker.ch/}{Achim~D.~Brucker}\footnotemark[2]
       \qquad\qquad
-      \href{https://people.compute.dtu.dk/andschl}{Anders~Schlichtkrull}
+      \href{https://people.cs.aau.dk/~andsch/}{Anders~Schlichtkrull}\footnotemark[3]
      \end{minipage}
 }
 
 \publishers{%
   \footnotemark[1]~DTU Compute, Technical University of Denmark, Lyngby, Denmark\texorpdfstring{\\}{, }
-   \texttt{\{avhe, samo, andschl\}@dtu.dk}\\[2em]
+   \texttt{\{avhe, samo\}@dtu.dk}\\[2em]
   %
   \footnotemark[2]~
   Department of Computer Science, University of Exeter, Exeter, UK\texorpdfstring{\\}{, }
-  \texttt{a.brucker@exeter.ac.uk}
+  \texttt{a.brucker@exeter.ac.uk}\\[2em]
+  %
+  \footnotemark[3]~
+  Department of Computer Science, Aalborg University, Copenhagen, Denmark\texorpdfstring{\\}{, }
+  \texttt{andsch@cs.aau.dk}
   %
 }
 
@@ -108,10 +145,11 @@
   \end{figure}
   The rest of this document is automatically generated from the
   formalization in Isabelle/HOL, i.e., all content is checked by
-  Isabelle.  Overall, the structure of this document follows the
-  theory dependencies (see \autoref{fig:session-graph}): We start with
-  the formal framework for verifying stateful security protocols
-  (\autoref{cha:verification}). We continue with the setup for
+  Isabelle. \autoref{cha:manual} provides a manual of our automated protocol verification tool, called PSPSP, that is provided as part of this AFP entry. 
+Thereafter, the structure of this document follows the
+  theory dependencies (see \autoref{fig:session-graph}): After
+  introducing the formal framework for verifying stateful security protocols
+  (\autoref{cha:verification}), we continue with the setup for
   supporting the high-level protocol specifications language for
   security protocols (the Trac format) and the implementation of the
   fully automated proof tactics (\autoref{cha:trac}). Finally, we
@@ -121,6 +159,12 @@
 This work was supported by the Sapere-Aude project ``Composec: Secure Composition of Distributed Systems'', grant 4184-00334B of the Danish Council for Independent Research, by the EU H2020 project no. 700321 ``LIGHTest: Lightweight Infrastructure for Global Heterogeneous Trust management in support of an open Ecosystem of Trust schemes'' (lightest.eu) and by the ``CyberSec4Europe'' European Union's Horizon 2020 research and innovation programme under grant agreement No 830929.
 
 \clearpage
+
+\chapter{The PSPSP Manual}
+\label{cha:manual}
+\input{introduction}
+\input{KeyserverEx}
+\input{manual}
 
 \chapter{Stateful Protocol Verification}
 \label{cha:verification}

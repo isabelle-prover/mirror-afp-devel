@@ -209,7 +209,7 @@ next
         proof cases
           assume "n+1 \<le> f1'*\<lceil>e*l\<rceil>"
           hence "?A \<le> n+1 + ad*(f1'*\<lceil>e*l\<rceil>-(n+1)) - ai*(n - f2'*l)"
-            using Phi f2' by (simp add: )
+            using Phi f2' by simp
           also have "f1'*\<lceil>e*l\<rceil> - (n+1) \<le> f1'"
           proof -
             have "f1'*\<lceil>e*l\<rceil> \<le> f1'*(e*l + 1)" by(simp)

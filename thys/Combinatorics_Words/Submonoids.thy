@@ -1,6 +1,8 @@
 (*  Title:      CoW/Submonoids.thy
     Author:     Štěpán Holub, Charles University
     Author:     Štěpán Starosta, CTU in Prague
+
+Part of Combinatorics on Words Formalized. See https://gitlab.com/formalcow/combinatorics-on-words-formalized/
 *)
 
 theory Submonoids
@@ -19,24 +21,27 @@ text\<open>First, we define the hull of a set of words, that is, the monoid gene
 
 inductive_set hull :: "'a list set \<Rightarrow> 'a list set" ("\<langle>_\<rangle>")
   for G where
-   emp_in:  "\<epsilon> \<in> \<langle>G\<rangle>" |
+   emp_in[simp]:  "\<epsilon> \<in> \<langle>G\<rangle>" |
    prod_cl:  "w1 \<in> G \<Longrightarrow> w2 \<in> \<langle>G\<rangle> \<Longrightarrow> w1 \<cdot> w2 \<in> \<langle>G\<rangle>"
 
 lemmas [intro] = hull.intros
 
-lemma hull_closed: "w1 \<in> \<langle>G\<rangle> \<Longrightarrow> w2 \<in> \<langle>G\<rangle> \<Longrightarrow> w1 \<cdot> w2 \<in> \<langle>G\<rangle>"
-  by (rule hull.induct[of w1 G "\<lambda> x. (x\<cdot>w2)\<in>\<langle>G\<rangle>"]) auto+
+lemma hull_closed[intro]: "w1 \<in> \<langle>G\<rangle> \<Longrightarrow> w2 \<in> \<langle>G\<rangle> \<Longrightarrow> w1 \<cdot> w2 \<in> \<langle>G\<rangle>"
+  by (rule hull.induct[of w1 G "\<lambda> x. (x\<cdot>w2)\<in>\<langle>G\<rangle>"]) auto+ 
 
 lemma gen_in [intro]: "w \<in> G \<Longrightarrow> w \<in> \<langle>G\<rangle>"
-  using hull.prod_cl by fastforce
+  using hull.prod_cl by fastforce 
 
-lemma hull_induct: assumes "x \<in> \<langle>G\<rangle>" "P \<epsilon>" "\<And>w. w \<in> G \<Longrightarrow> P w"
+lemma hull_induct: assumes "x \<in> \<langle>G\<rangle>" "P \<epsilon>" "\<And>w. w \<in> G \<Longrightarrow> P w" 
 "\<And>w1 w2. w1 \<in> \<langle>G\<rangle> \<Longrightarrow> P w1 \<Longrightarrow> w2 \<in> \<langle>G\<rangle> \<Longrightarrow> P w2 \<Longrightarrow> P (w1 \<cdot> w2)" shows  "P x"
-  using hull.induct[of _ _ P, OF \<open>x \<in> \<langle>G\<rangle>\<close>  \<open>P \<epsilon>\<close>]
+  using hull.induct[of _ _ P, OF \<open>x \<in> \<langle>G\<rangle>\<close>  \<open>P \<epsilon>\<close>]  
         assms by (simp add: gen_in)
-
-lemma genset_sub: "G \<subseteq> \<langle>G\<rangle>"
+  
+lemma genset_sub[simp]: "G \<subseteq> \<langle>G\<rangle>"
    using gen_in ..
+
+lemma genset_sub_lists: "ws \<in> lists G \<Longrightarrow> ws \<in> lists \<langle>G\<rangle>"
+  using sub_lists_mono[OF genset_sub].
 
 lemma in_lists_conv_set_subset: "set ws \<subseteq> G \<longleftrightarrow> ws \<in> lists G"
   by blast
@@ -51,16 +56,20 @@ lemma concat_in_hull' [intro]:
   shows   "concat ws \<in> \<langle>G\<rangle>"
   using assms by (induction ws) auto
 
-lemma hull_concat_lists0: "w \<in> \<langle>G\<rangle> \<Longrightarrow> (\<exists> ws \<in> lists G. concat ws = w)"
+lemma hull_concat_lists0: "w \<in> \<langle>G\<rangle> \<Longrightarrow> (\<exists> ws \<in> lists G. concat ws = w)" 
 proof(rule hull.induct[of _ G], simp)
   show "\<exists>ws\<in>lists G. concat ws = \<epsilon>"
     using concat.simps(1) lists.Nil[of G] exI[of "\<lambda> x. concat x = \<epsilon>", OF concat.simps(1)] by blast
   show " \<And>w1 w2. w1 \<in> G \<Longrightarrow> w2 \<in> \<langle>G\<rangle> \<Longrightarrow> \<exists>ws\<in>lists G. concat ws = w2 \<Longrightarrow> \<exists>ws\<in>lists G. concat ws = w1 \<cdot> w2"
-    by (metis Cons_in_lists_iff concat.simps(2))
+    using Cons_in_lists_iff concat.simps(2) by metis 
 qed
 
+lemma hull_concat_listsE: assumes "w \<in> \<langle>G\<rangle>" 
+  obtains ws where "ws \<in> lists G" and "concat ws = w"
+  using assms hull_concat_lists0 by auto 
+
 lemma hull_concat_lists: "\<langle>G\<rangle> = concat ` lists G"
-   unfolding image_iff  using hull_concat_lists0 by blast
+   using hull_concat_lists0 by blast
 
 lemma concat_tl: "x # xs \<in> lists G \<Longrightarrow> concat xs \<in> \<langle>G\<rangle>"
   by (simp add: hull_concat_lists)
@@ -69,43 +78,47 @@ lemma nemp_concat_hull: assumes "us \<noteq> \<epsilon>" and "us \<in> lists G\<
   shows "concat us \<in> \<langle>G\<rangle>" and "concat us \<noteq> \<epsilon>"
   using assms by fastforce+
 
-
-lemma hull_mon: "A \<subseteq> B \<Longrightarrow> \<langle>A\<rangle> \<subseteq> \<langle>B\<rangle>"
-proof
+lemma hull_mono: "A \<subseteq> B \<Longrightarrow> \<langle>A\<rangle> \<subseteq> \<langle>B\<rangle>" 
+proof 
   fix x assume "A \<subseteq> B" "x \<in> \<langle>A\<rangle>"
-  thus "x \<in> \<langle>B\<rangle>"
+  thus "x \<in> \<langle>B\<rangle>" 
     unfolding image_def hull_concat_lists using sub_lists_mono[OF \<open>A \<subseteq> B\<close>]
     by blast
 qed
 
 lemma emp_gen_set: "\<langle>{}\<rangle> = {\<epsilon>}"
-  unfolding hull_concat_lists by auto
+  unfolding hull_concat_lists by auto 
 
 lemma hull_drop_one: "\<langle>G\<rangle> = \<langle>G\<^sub>+\<rangle>"
 proof (intro equalityI subsetI)
-  fix x assume "x \<in> \<langle>G\<rangle>" thus "x \<in> \<langle>G\<^sub>+\<rangle>"
+  fix x assume "x \<in> \<langle>G\<rangle>" thus "x \<in> \<langle>G\<^sub>+\<rangle>" 
     unfolding  hull_concat_lists using del_emp_concat lists_drop_emp' by blast
 next
   fix x assume "x \<in> \<langle>G\<^sub>+\<rangle>" thus "x \<in> \<langle>G\<rangle>"
     unfolding  hull_concat_lists image_iff by auto
-qed
+qed 
 
-lemma sing_gen_power: "u \<in> \<langle>{x}\<rangle> \<Longrightarrow> \<exists>k. u = x\<^sup>@k"
-  unfolding hull_concat_lists  using one_generated_list_power by auto
+lemma sing_gen_power: "u \<in> \<langle>{x}\<rangle> \<Longrightarrow> \<exists>k. u = x\<^sup>@k" 
+  unfolding hull_concat_lists  using one_generated_list_power by auto 
 
 lemma sing_gen: "w \<in> \<langle>{z}\<rangle> \<Longrightarrow> w \<in> z*"
   using rootI sing_gen_power by blast
 
+lemma sing_genE:
+  assumes "u \<in> \<langle>{x}\<rangle>"
+  obtains k where "x\<^sup>@k = u"
+using assms using sing_gen_power by blast
+
 lemma lists_gen_to_hull: "us \<in> lists G\<^sub>+ \<Longrightarrow> us \<in> lists \<langle>G\<rangle>\<^sub>+"
   using lists_mono genset_sub by force
 
-lemma rev_hull0: "x \<in> rev ` \<langle>G\<rangle> \<Longrightarrow> x \<in> \<langle>rev ` G\<rangle>"
+lemma rev_hull0: "x \<in> rev ` \<langle>G\<rangle> \<Longrightarrow> x \<in> \<langle>rev ` G\<rangle>" 
 proof-
   assume "x \<in> rev ` \<langle>G\<rangle>"
   then obtain xs where "x = rev (concat xs)" and "xs \<in> lists G"
     unfolding hull_concat_lists by auto
   thus "x \<in> \<langle>rev ` G\<rangle>" unfolding image_iff hull_concat_lists using rev_concat[of xs]
-    by fastforce
+    by fastforce  
 qed
 
 lemma rev_hull1: "x \<in>  \<langle>rev ` G\<rangle> \<Longrightarrow> x \<in> rev ` \<langle>G\<rangle>"
@@ -116,80 +129,108 @@ proof-
   hence "rev x \<in> \<langle>G\<rangle>"
     unfolding hull_concat_lists using rev_concat by fastforce
   thus "x \<in> rev ` \<langle>G\<rangle>"
-    by (simp add: rev_in_conv)
+    by (simp add: rev_image_eqI)
 qed
 
 lemma rev_hull: "rev`\<langle>G\<rangle> = \<langle>rev`G\<rangle>"
   by (simp add: rev_hull0 rev_hull1 set_eq_subset subsetI)
 
-lemma power_in: "x \<in> \<langle>G\<rangle>  \<Longrightarrow> x\<^sup>@k \<in> \<langle>G\<rangle>"
-  by (induction k, auto, simp add: hull_closed)
+lemma power_in[intro]: "x \<in> \<langle>G\<rangle> \<Longrightarrow> x\<^sup>@k \<in> \<langle>G\<rangle>"
+  by (induction k, auto)
 
 lemma hull_closed_lists:  "us \<in> lists \<langle>G\<rangle> \<Longrightarrow> concat us \<in> \<langle>G\<rangle>"
-proof (induct us, auto)
-  show  "\<And>a us. concat us \<in> \<langle>G\<rangle> \<Longrightarrow> a \<in> \<langle>G\<rangle> \<Longrightarrow> \<forall>x\<in>set us. x \<in> \<langle>G\<rangle> \<Longrightarrow> a \<cdot> concat us \<in> \<langle>G\<rangle> "
-    by (simp add: hull_closed)
-qed
+  by (induct us, auto)
+
+lemma hull_I [intro]:
+  "\<epsilon> \<in> H \<Longrightarrow> (\<And> x y. x \<in> H \<Longrightarrow> y \<in> H \<Longrightarrow> x \<cdot> y \<in> H) \<Longrightarrow> \<langle>H\<rangle> = H"  
+  by (standard, use hull.induct[of _ H "\<lambda> x. x \<in> H"] in blast) (simp only: genset_sub)
 
 lemma self_gen: "\<langle>\<langle>G\<rangle>\<rangle> = \<langle>G\<rangle>"
   using image_subsetI[of "lists \<langle>G\<rangle>" concat "\<langle>G\<rangle>", unfolded hull_concat_lists[of "\<langle>G\<rangle>", symmetric],
-        THEN subset_antisym[OF _ genset_sub[of "\<langle>G\<rangle>"]]] hull_closed_lists[of _ G] by blast
+        THEN subset_antisym[OF _ genset_sub[of "\<langle>G\<rangle>"]]] hull_closed_lists[of _ G] by blast 
+
+lemma hull_mono'[intro]: "A \<subseteq> \<langle>B\<rangle> \<Longrightarrow> \<langle>A\<rangle> \<subseteq> \<langle>B\<rangle>" 
+  using hull_mono self_gen by blast
+
+lemma hull_conjug [elim]: "w \<in> \<langle>{r\<cdot>s,s\<cdot>r}\<rangle> \<Longrightarrow> w \<in> \<langle>{r,s}\<rangle>"
+  using hull_mono[of "{r\<cdot>s,s\<cdot>r}" "\<langle>{r,s}\<rangle>", unfolded self_gen] by blast
 
 text\<open>Intersection of hulls is a hull.\<close>
 
 lemma hulls_inter: "\<langle>\<Inter> {\<langle>G\<rangle> | G. G \<in> S}\<rangle> = \<Inter> {\<langle>G\<rangle> | G. G \<in> S}"
 proof
   {fix G assume "G \<in> S"
-    hence "\<langle>\<Inter> {\<langle>G\<rangle> |G. G \<in> S}\<rangle> \<subseteq> \<langle>G\<rangle>"
-      using Inter_lower[of "\<langle>G\<rangle>" "{\<langle>G\<rangle> |G. G \<in> S}"] mem_Collect_eq[of "\<langle>G\<rangle>" "\<lambda> A. \<exists> G. G \<in> S \<and> A = \<langle>G\<rangle>"]
-        hull_mon[of "\<Inter> {\<langle>G\<rangle> |G. G \<in> S}" "\<langle>G\<rangle>"] unfolding self_gen by auto}
-  thus "\<langle>\<Inter> {\<langle>G\<rangle> |G. G \<in> S}\<rangle> \<subseteq> \<Inter> {\<langle>G\<rangle> |G. G \<in> S}"  by blast
-next
+    hence "\<langle>\<Inter> {\<langle>G\<rangle> |G. G \<in> S}\<rangle> \<subseteq> \<langle>G\<rangle>" 
+      using Inter_lower[of "\<langle>G\<rangle>" "{\<langle>G\<rangle> |G. G \<in> S}"] mem_Collect_eq[of "\<langle>G\<rangle>" "\<lambda> A. \<exists> G. G \<in> S \<and> A = \<langle>G\<rangle>"] 
+        hull_mono[of "\<Inter> {\<langle>G\<rangle> |G. G \<in> S}" "\<langle>G\<rangle>"] unfolding self_gen by auto}
+  thus "\<langle>\<Inter> {\<langle>G\<rangle> |G. G \<in> S}\<rangle> \<subseteq> \<Inter> {\<langle>G\<rangle> |G. G \<in> S}"  by blast 
+next  
   show "\<Inter> {\<langle>G\<rangle> |G. G \<in> S} \<subseteq> \<langle>\<Inter> {\<langle>G\<rangle> |G. G \<in> S}\<rangle>"
-    by (simp add: genset_sub)
+    by simp
 qed
+
+lemma hull_keeps_root: "\<forall> u \<in> A. u \<in> r* \<Longrightarrow>  w \<in> \<langle>A\<rangle> \<Longrightarrow> w \<in> r*"
+  by (rule hull.induct[of _ _ "\<lambda> x. x \<in> r*"], auto)
+
+lemma bin_hull_keeps_root [intro]: "u \<in> r* \<Longrightarrow> v \<in> r* \<Longrightarrow> w \<in> \<langle>{u,v}\<rangle> \<Longrightarrow> w \<in> r*" 
+  by (rule hull.induct[of _ _ "\<lambda> x. x \<in> r*"], auto)
+
+lemma bin_comm_hull_comm: "x \<cdot> y = y \<cdot> x \<Longrightarrow> u \<in> \<langle>{x,y}\<rangle> \<Longrightarrow> v \<in> \<langle>{x,y}\<rangle> \<Longrightarrow>  u \<cdot> v = v \<cdot> u"
+  unfolding comm_root using bin_hull_keeps_root by blast 
+
+lemma[reversal_rule]: "rev ` \<langle>{rev u, rev v}\<rangle> = \<langle>{u,v}\<rangle>"
+  by (simp add: rev_hull) 
+
+lemma[reversal_rule]: "rev w \<in>  \<langle>rev ` G\<rangle> \<equiv> w \<in> \<langle>G\<rangle>"
+  unfolding rev_in_conv rev_hull rev_rev_image_eq.
 
 
 section "Factorization into generators"
 
-text\<open>We define a decomposition (or a factorization) of a into elements of a given generating set. Such a decomposition is well defined only
+text\<open>We define a decomposition (or a factorization) of a into elements of a given generating set. Such a decomposition is well defined only 
 if the decomposed word is an element of the hull. Even int that case, however, the decomposition need not be unique.\<close>
 
-fun decompose :: "'a list set  \<Rightarrow> 'a list \<Rightarrow> 'a list list" ("Dec _ _" [51,51] 64) where
+definition decompose :: "'a list set  \<Rightarrow> 'a list \<Rightarrow> 'a list list" ("Dec _ _" [55,55] 56) where
   "decompose G u = (SOME us. us \<in> lists G\<^sub>+ \<and> concat us = u)"
 
-lemma dec_ex:  assumes "u \<in> \<langle>G\<rangle>" shows "\<exists> us. (us \<in> lists G\<^sub>+ \<and> concat us = u)"
-  using assms unfolding image_def  hull_concat_lists[of G] mem_Collect_eq
-  using del_emp_concat lists_drop_emp' by metis
+lemma dec_ex:  assumes "u \<in> \<langle>G\<rangle>" shows "\<exists> us. (us \<in> lists G\<^sub>+ \<and> concat us = u)" 
+  using assms unfolding image_def  hull_concat_lists[of G] mem_Collect_eq 
+  using del_emp_concat lists_drop_emp' by metis 
 
 lemma decI': "u \<in> \<langle>G\<rangle> \<Longrightarrow> (Dec G u) \<in> lists G\<^sub>+"
-  unfolding decompose.simps using someI_ex[OF dec_ex] by blast
+  unfolding decompose_def using someI_ex[OF dec_ex] by blast
 
-lemma decI: "u \<in> \<langle>G\<rangle> \<Longrightarrow> concat (Dec G u) = u"
-  unfolding decompose.simps using someI_ex[OF dec_ex] by blast
+lemma concat_dec[simp, intro] : "u \<in> \<langle>G\<rangle> \<Longrightarrow> concat (Dec G u) = u"
+  unfolding decompose_def using someI_ex[OF dec_ex] by blast
 
-lemma dec_emp: "Dec G \<epsilon> = \<epsilon>"
+lemma dec_emp [simp]: "Dec G \<epsilon> = \<epsilon>"                             
 proof-
   have ex:  "\<epsilon> \<in> lists G\<^sub>+ \<and> concat \<epsilon> = \<epsilon>"
     by simp
   have all: "(us \<in> lists G\<^sub>+ \<and> concat us = \<epsilon>) \<Longrightarrow> us = \<epsilon>" for us
     using emp_concat_emp by auto
-  show  ?thesis
-    unfolding decompose.simps
+  show  ?thesis 
+    unfolding decompose_def
     using all[OF someI[of "\<lambda> x. x \<in> lists G\<^sub>+ \<and> concat x = \<epsilon>", OF ex]].
 qed
 
 lemma dec_nemp: "u \<in> \<langle>G\<rangle>\<^sub>+ \<Longrightarrow>  Dec G u \<noteq> \<epsilon>"
-  using decI[of u G] by force
+  using concat_dec[of u G] by force  
 
-lemma dec_nemp': "u \<noteq> \<epsilon> \<Longrightarrow> u \<in> \<langle>G\<rangle> \<Longrightarrow> Dec G u \<noteq> \<epsilon>"
+lemma dec_nemp'[simp, intro]: "u \<noteq> \<epsilon> \<Longrightarrow> u \<in> \<langle>G\<rangle> \<Longrightarrow> Dec G u \<noteq> \<epsilon>"
   using dec_nemp by blast
 
-lemma dec_dom': "u \<in> \<langle>G\<rangle> \<Longrightarrow> Dec G u \<in> lists G"
-  using decI' by auto
+lemma dec_eq_emp_iff [simp]: assumes "u \<in> \<langle>G\<rangle>" shows "Dec G u = \<epsilon> \<longleftrightarrow> u = \<epsilon>"
+  using dec_nemp'[OF _ \<open>u \<in> \<langle>G\<rangle>\<close>] by auto
 
-lemma dec_hd: assumes "u \<noteq> \<epsilon>" "u \<in> \<langle>G\<rangle>" shows "hd (Dec G u) \<in> G"
-  using dec_nemp'[OF assms] dec_dom'[OF \<open>u \<in> \<langle>G\<rangle>\<close>] lists_hd[of "Dec G u" G] by blast
+lemma dec_in_lists[simp]: "u \<in> \<langle>G\<rangle> \<Longrightarrow> Dec G u \<in> lists G"
+  using decI' by auto 
+
+lemma set_dec_sub: "x \<in> \<langle>G\<rangle> \<Longrightarrow> set (Dec G x) \<subseteq> G"
+  using dec_in_lists by blast
+
+lemma dec_hd: "u \<noteq> \<epsilon> \<Longrightarrow> u \<in> \<langle>G\<rangle> \<Longrightarrow> hd (Dec G u) \<in> G"
+  by simp  
 
 lemma non_gen_dec: "u \<in> \<langle>G\<rangle> \<Longrightarrow> u \<notin> G \<Longrightarrow> Dec G u  \<noteq> [u]"
   using decI'  Cons_in_lists_iff by fastforce
@@ -198,56 +239,75 @@ subsection \<open>Refinement into a specific decomposition\<close>
 
 text\<open>We extend the decomposition to lists of words. This can be seen as a refinement of a previous decomposition of some word.\<close>
 
-fun refine :: "'a list set \<Rightarrow> 'a list list \<Rightarrow> 'a list list" ("Ref _ _" [51,51] 65) where
+definition refine :: "'a list set \<Rightarrow> 'a list list \<Rightarrow> 'a list list" ("Ref _ _" [51,51] 65) where
   "refine G us = concat(map (decompose G) us)"
 
 lemma ref_morph: "us \<in> lists \<langle>G\<rangle> \<Longrightarrow> vs \<in> lists \<langle>G\<rangle> \<Longrightarrow> refine G (us \<cdot> vs) = refine G us \<cdot> refine G vs"
-  using refine.simps by simp
+  unfolding refine_def by simp
+
+lemma ref_conjug:
+  "u \<sim> v \<Longrightarrow> (Ref G u) \<sim> Ref G v"
+  unfolding refine_def by (intro conjug_concat_conjug map_conjug)
 
 lemma ref_morph_plus: "us \<in> lists \<langle>G\<rangle>\<^sub>+ \<Longrightarrow> vs \<in> lists \<langle>G\<rangle>\<^sub>+ \<Longrightarrow> refine G (us \<cdot> vs) = refine G us \<cdot> refine G vs"
-  using refine.simps by simp
+  unfolding refine_def by simp     
+
+lemma ref_pref_mono: "ws \<in> lists \<langle>G\<rangle> \<Longrightarrow> us \<le>p ws \<Longrightarrow> Ref G us \<le>p Ref G ws"
+  unfolding prefix_def using ref_morph append_in_lists_dest' append_in_lists_dest by metis
+
+lemma ref_suf_mono: "ws \<in> lists \<langle>G\<rangle> \<Longrightarrow> us \<le>s ws \<Longrightarrow> (Ref G us) \<le>s Ref G ws"
+  unfolding suffix_def using ref_morph append_in_lists_dest' append_in_lists_dest by metis
+
+lemma ref_fac_mono: "ws \<in> lists \<langle>G\<rangle> \<Longrightarrow> us \<le>f ws \<Longrightarrow> (Ref G us) \<le>f Ref G ws"
+  unfolding sublist_altdef' using ref_pref_mono ref_suf_mono  suf_in_lists by metis
 
 lemma ref_pop_hd: "us \<noteq> \<epsilon> \<Longrightarrow> us \<in> lists \<langle>G\<rangle> \<Longrightarrow> refine G us = decompose G (hd us) \<cdot> refine G (tl us)"
-  unfolding  refine.simps  using list.simps(9)[of "decompose G" "hd us" "tl us"] by simp
+  unfolding  refine_def  using list.simps(9)[of "decompose G" "hd us" "tl us"] by simp  
 
 lemma ref_in: "us \<in> lists \<langle>G\<rangle> \<Longrightarrow> (Ref G us) \<in> lists G\<^sub>+"
- proof (induction us, simp)
+ proof (induction us, simp add: refine_def)
    case (Cons a us)
    then show ?case
-      using Cons.IH Cons.prems decI' by auto
-qed
+      using Cons.IH Cons.prems decI' by (auto simp add: refine_def)
+qed 
 
-lemma ref: "us \<in> lists \<langle>G\<rangle> \<Longrightarrow> concat (Ref G us) = concat us"
-proof (induction us, simp)
+lemma ref_in'[intro]: "us \<in> lists \<langle>G\<rangle> \<Longrightarrow> (Ref G us) \<in> lists G"
+  using ref_in by fast
+
+lemma concat_ref: "us \<in> lists \<langle>G\<rangle> \<Longrightarrow> concat (Ref G us) = concat us"
+proof (induction us, simp add: refine_def)
   case (Cons a us)
   then show ?case
-      using Cons.IH Cons.prems decI by auto
+      using Cons.IH Cons.prems concat_dec refine_def by (auto simp add: refine_def)
   qed
 
-lemma ref_gen: "us \<in> lists B \<Longrightarrow> B \<subseteq> \<langle>G\<rangle> \<Longrightarrow> Ref G us \<in> \<langle>decompose G ` B\<rangle>"
-  by (induct us, auto)
+lemma ref_gen: "us \<in> lists B \<Longrightarrow> B \<subseteq> \<langle>G\<rangle> \<Longrightarrow> Ref G us \<in> \<langle>decompose G ` B\<rangle>" 
+  by (induct us, auto simp add: refine_def)
+
+lemma ref_set: "ws \<in> lists \<langle>G\<rangle> \<Longrightarrow> set (Ref G ws) = \<Union> (set`(decompose G)`set ws)"
+  by (simp add: refine_def)
 
 lemma emp_ref: assumes "us \<in> lists \<langle>G\<rangle>\<^sub>+" and  "Ref G us = \<epsilon>" shows "us = \<epsilon>"
   using emp_concat_emp[OF \<open>us \<in> lists \<langle>G\<rangle>\<^sub>+\<close>]
-     ref[OF lists_drop_emp[OF assms(1)], unfolded \<open>Ref G us = \<epsilon>\<close> concat.simps(1),symmetric] by blast
+    concat_ref [OF lists_drop_emp[OF assms(1)], unfolded \<open>Ref G us = \<epsilon>\<close> concat.simps(1),symmetric] by blast 
 
-lemma sing_ref_sing:
-  assumes "us \<in> lists \<langle>G\<rangle>\<^sub>+" and "refine G us = [b]"
+lemma sing_ref_sing: 
+  assumes "us \<in> lists \<langle>G\<rangle>\<^sub>+" and "refine G us = [b]" 
   shows "us = [b]"
 proof-
   have "us \<noteq> \<epsilon>"
-    using \<open>refine G us = [b]\<close> by auto
+    using \<open>refine G us = [b]\<close> by (auto simp add: refine_def)
   have "tl us \<in> lists \<langle>G\<rangle>\<^sub>+" and "hd us \<in> \<langle>G\<rangle>\<^sub>+"
     using list.collapse[OF \<open>us \<noteq> \<epsilon>\<close>]  \<open>us \<in> lists \<langle>G\<rangle>\<^sub>+\<close> Cons_in_lists_iff[of "hd us" "tl us" "\<langle>G\<rangle>\<^sub>+"]
     by auto
-  have "Dec G (hd us) \<noteq> \<epsilon>"
+  have "Dec G (hd us) \<noteq> \<epsilon>" 
     using dec_nemp[OF \<open>hd us \<in> \<langle>G\<rangle>\<^sub>+\<close>].
   have "us \<in> lists \<langle>G\<rangle>"
     using \<open>us \<in> lists \<langle>G\<rangle>\<^sub>+\<close> lists_drop_emp by auto
   have "concat us = b"
-    using \<open>us \<in> lists \<langle>G\<rangle>\<close> assms(2) ref by force
+    using \<open>us \<in> lists \<langle>G\<rangle>\<close> assms(2) concat_ref by force       
   have "refine G (tl us) = \<epsilon>"
-    using ref_pop_hd[OF \<open>us \<noteq> \<epsilon>\<close> \<open>us \<in> lists \<langle>G\<rangle>\<close>]  unfolding  \<open>refine G us = [b]\<close>
+    using ref_pop_hd[OF \<open>us \<noteq> \<epsilon>\<close> \<open>us \<in> lists \<langle>G\<rangle>\<close>]  unfolding  \<open>refine G us = [b]\<close> 
     using \<open>Dec G (hd us) \<noteq> \<epsilon>\<close> Cons_eq_append_conv[of b \<epsilon> "(Dec G (hd us))" "(Ref G (tl us))"]
       Cons_eq_append_conv[of b \<epsilon> "(Dec G (hd us))" "(Ref G (tl us))"]  append_is_Nil_conv[of _ "(Ref G (tl us))"]
     by blast
@@ -255,12 +315,12 @@ proof-
   have "\<epsilon> = tl us".
   from this[unfolded Nil_tl]
   show ?thesis
-    using \<open>us \<noteq> \<epsilon>\<close> \<open>concat us = b\<close> by auto
+    using \<open>us \<noteq> \<epsilon>\<close> \<open>concat us = b\<close> by auto  
 qed
 
-lemma ref_ex: assumes "Q \<subseteq> \<langle>G\<rangle>" and "us \<in> lists Q"
+lemma ref_ex: assumes "Q \<subseteq> \<langle>G\<rangle>" and "us \<in> lists Q" 
   shows "Ref G us \<in> lists G\<^sub>+" and "concat (Ref G us) = concat us"
-  using  ref_in[OF sub_lists_mono[OF assms]] ref[OF sub_lists_mono[OF assms]].
+  using ref_in[OF sub_lists_mono[OF assms]] concat_ref[OF sub_lists_mono[OF assms]].
 
 section "Basis"
 
@@ -268,63 +328,60 @@ text\<open>An important property of monoids of words is that they have a unique 
 
 text\<open>The simple element is defined as a word which has only trivial decomposition into generators: a singleton.\<close>
 
-function simple_element :: "'a list \<Rightarrow> 'a list set  \<Rightarrow> bool" (" _ \<in>B _ " [51,51] 50) where
+definition simple_element :: "'a list \<Rightarrow> 'a list set  \<Rightarrow> bool" (" _ \<in>B _ " [51,51] 50) where
   "simple_element b G = (b \<in> G \<and> (\<forall> us. us \<in> lists G\<^sub>+ \<and> concat us = b \<longrightarrow> \<^bold>|us\<^bold>| = 1))"
-  using prod.exhaust by auto
-termination
-  using "termination" by blast
 
 lemma simp_el_el: "b \<in>B G \<Longrightarrow> b \<in> G"
-    unfolding simple_element.simps by blast
+    unfolding simple_element_def by blast
 
 lemma simp_elD: "b \<in>B G \<Longrightarrow> us \<in> lists G\<^sub>+ \<Longrightarrow> concat us = b \<Longrightarrow> \<^bold>|us\<^bold>| = 1"
-    unfolding simple_element.simps by blast
+    unfolding simple_element_def by blast
 
 lemma simp_el_sing: assumes "b \<in>B G" "us \<in> lists G\<^sub>+" "concat us = b" shows "us = [b]"
-  using simp_elD[OF assms] \<open>concat us = b\<close> concat_len_one sing_word by fastforce
+  using simp_elD[OF assms] \<open>concat us = b\<close> concat_len_one sing_word by fastforce  
 
 lemma nonsimp: "us \<in> lists G\<^sub>+ \<Longrightarrow> concat us \<in>B G \<Longrightarrow>  us = [concat us]"
-  using simp_el_sing[of "concat us" G us]   unfolding simple_element.simps
+  using simp_el_sing[of "concat us" G us]   unfolding simple_element_def 
   by blast
 
-lemma emp_nonsimp: "\<not> \<epsilon> \<in>B G"
-  unfolding simple_element.simps using list.size(3) concat.simps(1) lists.Nil[of "G\<^sub>+"]
+lemma emp_nonsimp: "\<not> \<epsilon> \<in>B G" 
+  unfolding simple_element_def using list.size(3) concat.simps(1) lists.Nil[of "G\<^sub>+"]
   by fastforce
 
 lemma basis_no_fact: assumes "u \<in> \<langle>G\<rangle>" and "v \<in> \<langle>G\<rangle>" and "u \<cdot> v \<in>B G" shows "u = \<epsilon> \<or> v = \<epsilon>"
 proof-
   have eq1: "concat ((Dec G u) \<cdot> (Dec G v)) = u \<cdot> v"
-    using concat_morph[of "Dec G u" "Dec G v",symmetric]
-    unfolding decI[OF \<open>u \<in> \<langle>G\<rangle>\<close>] decI[OF \<open>v \<in> \<langle>G\<rangle>\<close>].
+    using concat_morph[of "Dec G u" "Dec G v"] 
+    unfolding concat_dec[OF \<open>u \<in> \<langle>G\<rangle>\<close>] concat_dec[OF \<open>v \<in> \<langle>G\<rangle>\<close>].
   have eq2: "(Dec G u) \<cdot> (Dec G v) = [u \<cdot> v]"
-    using  \<open>u \<cdot> v \<in>B G\<close> nonsimp[of "(Dec G u) \<cdot> (Dec G v)"]
+    using  \<open>u \<cdot> v \<in>B G\<close> nonsimp[of "(Dec G u) \<cdot> (Dec G v)"] 
     unfolding eq1 append_in_lists_conv[of "(Dec G u)" "(Dec G v)" "G\<^sub>+"]
     using decI'[OF \<open>u \<in> \<langle>G\<rangle>\<close>] decI'[OF \<open>v \<in> \<langle>G\<rangle>\<close>]
-    by (meson append_in_lists_conv)
+    by (meson append_in_lists_conv) 
   have "Dec G u = \<epsilon> \<or> Dec G v = \<epsilon>"
-    using butlast_append[of "Dec G u" "Dec G v"]  unfolding eq2 butlast.simps(2)[of "u\<cdot>v" \<epsilon>]
-    using   Nil_is_append_conv[of "Dec G u" "butlast (Dec G v)"] by auto
+    using butlast_append[of "Dec G u" "Dec G v"]  unfolding eq2 butlast.simps(2)[of "u\<cdot>v" \<epsilon>] 
+    using   Nil_is_append_conv[of "Dec G u" "butlast (Dec G v)"] by auto 
   thus ?thesis
-    using decI[OF \<open>u \<in> \<langle>G\<rangle>\<close>] decI[OF \<open>v \<in> \<langle>G\<rangle>\<close>]
+    using concat_dec[OF \<open>u \<in> \<langle>G\<rangle>\<close>] concat_dec[OF \<open>v \<in> \<langle>G\<rangle>\<close>]
       concat.simps(1)
-    by auto
+    by auto 
 qed
 
 lemma simp_elI:
   assumes "b \<in> G" and "b \<noteq> \<epsilon>"  and all: "\<forall> u v. u \<noteq> \<epsilon> \<and> u \<in> \<langle>G\<rangle> \<and> v \<noteq> \<epsilon> \<and> v \<in> \<langle>G\<rangle> \<longrightarrow> u \<cdot> v \<noteq> b"
   shows "b \<in>B G"
-  unfolding simple_element.simps
+  unfolding simple_element_def
 proof(simp add: \<open>b \<in> G\<close>, standard, standard, elim conjE)
   fix us assume "us \<in> lists G\<^sub>+" "concat us = b"
   hence "us \<noteq> \<epsilon>" using \<open>b \<noteq> \<epsilon>\<close> concat.simps(1) by blast
   hence "hd us \<in> \<langle>G\<rangle>" and "hd us \<noteq> \<epsilon>"
-    using \<open>us \<in> lists G\<^sub>+\<close> lists_hd  gen_in by auto
+    using \<open>us \<in> lists G\<^sub>+\<close> lists_hd_in_set  gen_in by auto 
   have "tl us = \<epsilon>"
   proof(rule ccontr)
     assume "tl us \<noteq> \<epsilon>"
-    from nemp_concat_hull[of "tl us", OF this tl_lists[OF \<open>us \<in> lists G\<^sub>+\<close>]]
+    from nemp_concat_hull[of "tl us", OF this tl_in_lists[OF \<open>us \<in> lists G\<^sub>+\<close>]]
     show False
-      using all \<open>hd us \<noteq> \<epsilon>\<close> \<open>hd us \<in> \<langle>G\<rangle>\<close>  concat.simps(2)[of "hd us" "tl us", symmetric]
+      using all \<open>hd us \<noteq> \<epsilon>\<close> \<open>hd us \<in> \<langle>G\<rangle>\<close>  concat.simps(2)[of "hd us" "tl us", symmetric] 
       unfolding list.collapse[OF \<open>us \<noteq> \<epsilon>\<close>] \<open>concat us = b\<close>
       by blast
   qed
@@ -334,103 +391,105 @@ proof(simp add: \<open>b \<in> G\<close>, standard, standard, elim conjE)
      by (simp add: \<open>b \<in> G\<close>)
 qed
 
-lemma simp_el_indecomp:
-  assumes "b \<in>B G"
+lemma simp_el_indecomp: 
+  assumes "b \<in>B G" 
   shows "b \<in> G" and  "b \<noteq> \<epsilon>" and "\<forall> u v. u \<noteq> \<epsilon> \<and> u \<in> \<langle>G\<rangle> \<and> v \<noteq> \<epsilon> \<and> v \<in> \<langle>G\<rangle> \<longrightarrow> u \<cdot> v \<noteq> b"
-  using assms basis_no_fact emp_nonsimp simple_element.simps by blast+
+  using assms basis_no_fact emp_nonsimp simple_element_def by blast+
 
 text\<open>We are ready to define the \emph{basis} as the set of all simple elements.\<close>
 
-fun basis :: "'a list set  \<Rightarrow> 'a list set" ("\<BB> _" [51] ) where
-  basisdef:  "basis G = {x. x \<in>B G}"
+definition basis :: "'a list set  \<Rightarrow> 'a list set" ("\<BB> _" [51] ) where
+    "basis G = {x. x \<in>B G}"
 
-lemma basisI: "x \<in>B G \<Longrightarrow> x \<in> \<BB> G"
-  by simp
+lemma basis_inI: "x \<in>B G \<Longrightarrow> x \<in> \<BB> G"
+  unfolding basis_def by simp
 
 lemma basisD: "x \<in> \<BB> G \<Longrightarrow> x \<in>B G"
-  by simp
+   unfolding basis_def by simp
 
 lemma emp_not_basis: "x \<in> \<BB> G \<Longrightarrow> x \<noteq> \<epsilon>"
-  using basisD emp_nonsimp by blast
+  using basisD emp_nonsimp by blast 
 
 lemma basis_sub: "\<BB> G \<subseteq> G"
-  using  basisdef by simp
+  unfolding  basis_def simple_element_def by simp   
 
 lemma basis_drop_emp: "(\<BB> G)\<^sub>+ = \<BB> G"
   using emp_not_basis by blast
 
-lemma simp_el_hull':  assumes "b \<in>B \<langle>G\<rangle>"  shows "b \<in>B G"
+lemma simp_el_hull':  assumes "b \<in>B \<langle>G\<rangle>"  shows "b \<in>B G" 
 proof-
   have all: "\<forall>us. us \<in> lists G\<^sub>+ \<and> concat us = b \<longrightarrow> \<^bold>|us\<^bold>| = 1"
-    using assms lists_gen_to_hull unfolding simple_element.simps by metis
+    using assms lists_gen_to_hull unfolding simple_element_def by metis
   have "b \<in> \<langle>G\<rangle>"
-    using assms simp_elD by auto
+    using assms simp_elD unfolding simple_element_def by blast
   obtain bs where "bs \<in> lists G\<^sub>+" and "concat bs = b"
     using  dec_ex[OF \<open>b \<in> \<langle>G\<rangle>\<close>] by blast
   have "b \<in> G"
-    using lists_drop_emp[OF \<open>bs \<in> lists G\<^sub>+\<close>]
-          lists_gen_to_hull[OF \<open>bs \<in> lists G\<^sub>+\<close>, THEN nonsimp[of bs "\<langle>G\<rangle>"],
+    using lists_drop_emp[OF \<open>bs \<in> lists G\<^sub>+\<close>] 
+          lists_gen_to_hull[OF \<open>bs \<in> lists G\<^sub>+\<close>, THEN nonsimp[of bs "\<langle>G\<rangle>"], 
           unfolded \<open>concat bs = b\<close>, OF \<open>b \<in>B \<langle>G\<rangle>\<close>] by simp
   thus "b \<in>B G"
-    by (simp add: all)
+    by (simp add: all simple_element_def)
 qed
 
 lemma simp_el_hull:  assumes "b \<in>B G" shows "b \<in>B \<langle>G\<rangle>"
-  using simp_elI[of b "\<langle>G\<rangle>"] unfolding self_gen
+  using simp_elI[of b "\<langle>G\<rangle>"] unfolding self_gen 
   using assms gen_in simp_el_indecomp[OF \<open>b \<in>B G\<close>] by auto
 
 lemma concat_tl_basis: "x # xs \<in> lists \<BB> G \<Longrightarrow> concat xs \<in> \<langle>G\<rangle>"
-  unfolding hull_concat_lists by auto
+  unfolding hull_concat_lists basis_def simple_element_def by auto
 
-text\<open>The basis generates the hull\<close>
+text\<open>The basis generates the hull\<close> 
 
 lemma set_concat_len: assumes "us \<in> lists G\<^sub>+" "1 < \<^bold>|us\<^bold>|" "u \<in> set us" shows "\<^bold>|u\<^bold>| < \<^bold>|concat us\<^bold>|"
 proof-
   obtain x y where "us = x \<cdot> [u] \<cdot> y" and "x \<cdot> y \<noteq> \<epsilon>"
-    using split_list_long[OF \<open>1 < \<^bold>|us\<^bold>|\<close> \<open>u \<in> set us\<close>].
+    using split_list_long[OF \<open>1 < \<^bold>|us\<^bold>|\<close> \<open>u \<in> set us\<close>]. 
   hence "x \<cdot> y \<in> lists G\<^sub>+"
-    using \<open>us \<in> lists G\<^sub>+\<close> by auto
-  hence "\<^bold>|concat (x \<cdot> y)\<^bold>| \<noteq> 0"
-    using \<open>x \<cdot> y \<noteq> \<epsilon>\<close> in_lists_conv_set  by force
+    using \<open>us \<in> lists G\<^sub>+\<close> by auto 
+  hence "\<^bold>|concat (x \<cdot> y)\<^bold>| \<noteq> 0" 
+    using \<open>x \<cdot> y \<noteq> \<epsilon>\<close> in_lists_conv_set  by force 
   hence "\<^bold>|concat us\<^bold>| = \<^bold>|u\<^bold>| + \<^bold>|concat x\<^bold>| + \<^bold>|concat y\<^bold>|"
-    using length_append \<open>us = x \<cdot> [u] \<cdot> y\<close> by simp
+    using lenmorph \<open>us = x \<cdot> [u] \<cdot> y\<close> by simp
   thus ?thesis
     using \<open>\<^bold>|concat (x \<cdot> y)\<^bold>| \<noteq> 0\<close> by auto
-qed
+qed    
 
 lemma non_simp_dec: assumes "w \<notin> \<BB> G" "w \<noteq> \<epsilon>" "w \<in> G"
   obtains us where "us \<in> lists G\<^sub>+" "1 < \<^bold>|us\<^bold>|" "concat us = w"
-  using \<open>w \<noteq> \<epsilon>\<close> \<open>w \<in> G\<close> \<open>w \<notin> \<BB> G\<close> nonsing_concat_len  basisI[of w G, unfolded simple_element.simps]
+  using \<open>w \<noteq> \<epsilon>\<close> \<open>w \<in> G\<close> \<open>w \<notin> \<BB> G\<close> nonsing_concat_len  basis_inI[of w G, unfolded simple_element_def] 
   by blast
 
-lemma basis_gen: "w \<in> G \<longrightarrow> w \<in> \<langle>\<BB> G\<rangle>"
+lemma basis_gen: "w \<in> G \<Longrightarrow>  w \<in> \<langle>\<BB> G\<rangle>"
 proof (induct "length w" arbitrary: w rule: less_induct)
   case less
-  {assume "w \<notin> \<BB> G" "w \<noteq> \<epsilon>" "w \<in> G"
+  show ?case
+  proof (cases "w \<in> \<BB> G \<or> w = \<epsilon>", blast)
+    assume "\<not> (w \<in> \<BB> G \<or> w = \<epsilon>)"
+    with \<open>w \<in> G\<close> 
     obtain us where "us \<in> lists G\<^sub>+" "1 < \<^bold>|us\<^bold>|" "concat us = w"
-      using non_simp_dec[OF \<open>w \<notin> \<BB> G\<close> \<open>w \<noteq> \<epsilon>\<close> \<open>w \<in> G\<close>] by blast
+      using non_simp_dec by blast 
     have "u \<in> set us \<Longrightarrow> u \<in> \<langle>\<BB> G\<rangle>" for u
-      using  lists_drop_emp[OF \<open>us \<in> lists G\<^sub>+\<close>]
-       set_concat_len[OF \<open>us \<in> lists G\<^sub>+\<close> \<open>1 < \<^bold>|us\<^bold>|\<close>, THEN less[unfolded \<open>concat us = w\<close>[symmetric], of u]]
-       unfolding in_lists_conv_set[of us G] by blast
-     from subsetI[of "set us", OF this]
-     have ?case
-      using  concat_in_hull[of us "\<langle>\<BB> G\<rangle>", unfolded self_gen \<open>concat us = w\<close>] by blast
-    }
-  thus ?case
-    by auto
+      using  lists_drop_emp[OF \<open>us \<in> lists G\<^sub>+\<close>] less(1)[OF set_concat_len[OF \<open>us \<in> lists G\<^sub>+\<close> \<open>1 < \<^bold>|us\<^bold>|\<close>, unfolded \<open>concat us = w\<close>], of u]
+      by blast
+    thus "w \<in> \<langle>\<BB> G\<rangle> "
+      unfolding \<open>concat us = w\<close>[symmetric]
+      using hull_closed_lists[OF in_listsI] by blast  
+  qed
 qed
+
+lemmas basis_concat_listsE = hull_concat_listsE[OF basis_gen]
 
 theorem basis_gen_hull: "\<langle>\<BB> G\<rangle> = \<langle>G\<rangle>"
 proof
   show "\<langle>\<BB> G\<rangle> \<subseteq> \<langle>G\<rangle>"
-    unfolding hull_concat_lists by auto
-  show  "\<langle>G\<rangle> \<subseteq> \<langle>\<BB> G\<rangle>"
-  proof
+    unfolding hull_concat_lists basis_def simple_element_def by auto
+  show  "\<langle>G\<rangle> \<subseteq> \<langle>\<BB> G\<rangle>" 
+  proof 
     fix x  show  "x \<in> \<langle>G\<rangle> \<Longrightarrow> x \<in> \<langle>\<BB> G\<rangle>"
     proof (induct rule: hull.induct)
       show "\<And>w1 w2. w1 \<in> G \<Longrightarrow> w2 \<in> \<langle>\<BB> G\<rangle> \<Longrightarrow> w1 \<cdot> w2 \<in> \<langle>\<BB> G\<rangle>"
-        using hull_closed[of _ "\<BB> G"] basis_gen[of _ G]  by blast
+        using hull_closed[of _ "\<BB> G"] basis_gen[of _ G]  by blast 
     qed auto
   qed
 qed
@@ -438,23 +497,34 @@ qed
 lemma basis_gen_hull': "\<langle>\<BB> \<langle>G\<rangle>\<rangle> = \<langle>G\<rangle>"
   using basis_gen_hull self_gen by blast
 
-theorem basis_of_hull: "\<BB> G = \<BB> \<langle>G\<rangle>"
+theorem basis_of_hull: "\<BB> \<langle>G\<rangle> = \<BB> G"
 proof
   show "\<BB> G  \<subseteq>  \<BB> \<langle>G\<rangle>"
-    using basisD basisI simp_el_hull by blast
+    using basisD basis_inI simp_el_hull by blast
   show "\<BB> \<langle>G\<rangle>  \<subseteq>  \<BB> G"
-    using basisD basisI simp_el_hull' by blast
+    using basisD basis_inI simp_el_hull' by blast
 qed
 
+lemma basis_hull_sub: "\<BB> \<langle>G\<rangle> \<subseteq> G"
+  using basis_of_hull basis_sub by fast
+
 text\<open>The basis is the smallest generating set.\<close>
-theorem "\<langle>S\<rangle> = \<langle>G\<rangle> \<Longrightarrow> \<BB> G \<subseteq> S"
-  by (metis basis_of_hull basis_sub)
+theorem basis_sub_gen:  "\<langle>S\<rangle> = \<langle>G\<rangle> \<Longrightarrow> \<BB> G \<subseteq> S"
+  using basis_of_hull basis_sub by metis 
+
+lemma basis_min_gen: "S \<subseteq> \<BB> G \<Longrightarrow> \<langle>S\<rangle> = G \<Longrightarrow> S = \<BB> G"
+  using basis_of_hull basis_sub by blast
+
+lemma basisI: "(\<And> B. \<langle>B\<rangle> = \<langle>C\<rangle> \<Longrightarrow> C \<subseteq> B) \<Longrightarrow> \<BB> \<langle>C\<rangle> = C"
+  using basis_gen_hull basis_min_gen basis_of_hull by metis  
+
+thm basis_inI
 
 text\<open>An arbitrary set between basis and the hull is generating...\<close>
 lemma gen_sets: assumes "\<BB> G \<subseteq> S" and "S \<subseteq> \<langle>G\<rangle>" shows "\<langle>S\<rangle> = \<langle>G\<rangle>"
   using  image_mono[OF lists_mono[of S "\<langle>G\<rangle>"], of concat, OF \<open>S \<subseteq> \<langle>G\<rangle>\<close>] image_mono[OF lists_mono[of "\<BB> G" S], of concat, OF \<open>\<BB> G \<subseteq> S\<close>]
-  unfolding sym[OF hull_concat_lists]  basis_gen_hull
-  using  subset_antisym[of "\<langle>S\<rangle>" "\<langle>G\<rangle>"] self_gen by auto
+  unfolding sym[OF hull_concat_lists]  basis_gen_hull     
+  using  subset_antisym[of "\<langle>S\<rangle>" "\<langle>G\<rangle>"] self_gen by auto  
 
 text\<open>... and has the same basis\<close>
 lemma basis_sets: "\<BB> G \<subseteq> S \<Longrightarrow> S \<subseteq> \<langle>G\<rangle> \<Longrightarrow> \<BB> G = \<BB> S"
@@ -463,38 +533,38 @@ lemma basis_sets: "\<BB> G \<subseteq> S \<Longrightarrow> S \<subseteq> \<langl
 text\<open>Any nonempty composed element has a decomposition into basis elements with many useful properties\<close>
 
 lemma non_simp_fac: assumes "w \<noteq> \<epsilon>" and "w \<in> \<langle>G\<rangle>" and "w \<notin> \<BB> G"
-  obtains us where "1 < \<^bold>|us\<^bold>|" and "us \<noteq> \<epsilon>" and  "us \<in> lists \<BB> G" and
-    "hd us \<noteq> \<epsilon>" and "hd us \<in> \<langle>G\<rangle>" and
-    "concat(tl us) \<noteq> \<epsilon>" and "concat(tl us) \<in> \<langle>G\<rangle>" and
+  obtains us where "1 < \<^bold>|us\<^bold>|" and "us \<noteq> \<epsilon>" and  "us \<in> lists \<BB> G" and 
+    "hd us \<noteq> \<epsilon>" and "hd us \<in> \<langle>G\<rangle>" and 
+    "concat(tl us) \<noteq> \<epsilon>" and "concat(tl us) \<in> \<langle>G\<rangle>" and 
     "w = hd us \<cdot> concat(tl us)"
 proof-
   obtain us where "us \<in> lists \<BB> G" and "concat us = w"
-    using \<open>w \<in> \<langle>G\<rangle>\<close> dec_dom'[of w "\<BB> G"] decI[of w "\<BB> G"]
+    using \<open>w \<in> \<langle>G\<rangle>\<close> dec_in_lists[of w "\<BB> G"] concat_dec[of w "\<BB> G"]
     unfolding basis_gen_hull
     by blast
   hence "us \<noteq> \<epsilon>"
     using  \<open>w \<noteq> \<epsilon>\<close> concat.simps(1)
     by blast
-  from lists_hd[OF this \<open>us \<in> lists \<BB> G\<close>, THEN emp_not_basis]
-    lists_hd[OF this \<open>us \<in> lists \<BB> G\<close>, THEN gen_in[of "hd us" "\<BB> G", unfolded basis_gen_hull]]
+  from lists_hd_in_set[OF this \<open>us \<in> lists \<BB> G\<close>, THEN emp_not_basis]
+    lists_hd_in_set[OF this \<open>us \<in> lists \<BB> G\<close>, THEN gen_in[of "hd us" "\<BB> G", unfolded basis_gen_hull]]
   have "hd us \<noteq> \<epsilon>" and "hd us \<in> \<langle>G\<rangle>".
   have  "1 < \<^bold>|us\<^bold>|"
-    using \<open>w \<notin> \<BB> G\<close> lists_hd[OF \<open>us \<noteq> \<epsilon>\<close> \<open>us \<in> lists \<BB> G\<close>] \<open>w \<noteq> \<epsilon>\<close> \<open>w \<in> \<langle>G\<rangle>\<close>
+    using \<open>w \<notin> \<BB> G\<close> lists_hd_in_set[OF \<open>us \<noteq> \<epsilon>\<close> \<open>us \<in> lists \<BB> G\<close>] \<open>w \<noteq> \<epsilon>\<close> \<open>w \<in> \<langle>G\<rangle>\<close> 
       concat_len_one[of us, unfolded \<open>concat us = w\<close>]  nonsing_concat_len[of us, unfolded \<open>concat us = w\<close>] by blast
-  from nemp_concat_hull[OF long_list_tl[OF this], of "\<BB> G", unfolded basis_drop_emp basis_gen_hull, OF tl_lists[OF \<open>us \<in> lists \<BB> G\<close>]]
+  from nemp_concat_hull[OF long_list_tl[OF this], of "\<BB> G", unfolded basis_drop_emp basis_gen_hull, OF tl_in_lists[OF \<open>us \<in> lists \<BB> G\<close>]]
   have "concat (tl us) \<in> \<langle>G\<rangle>" and "concat(tl us) \<noteq> \<epsilon>".
   have "w = hd us \<cdot> concat(tl us)"
     using \<open>us \<noteq> \<epsilon>\<close> \<open>us \<in> lists \<BB> G\<close> \<open>concat us = w\<close> concat.simps(2)[of "hd us" "tl us"] list.collapse[of us]
     by argo
-  from that[OF \<open>1 < \<^bold>|us\<^bold>|\<close> \<open>us \<noteq> \<epsilon>\<close> \<open>us \<in> lists \<BB> G\<close> \<open>hd us \<noteq> \<epsilon>\<close> \<open>hd us \<in> \<langle>G\<rangle>\<close> \<open>concat (tl us) \<noteq> \<epsilon>\<close> \<open>concat (tl us) \<in> \<langle>G\<rangle>\<close> this]
+  from that[OF \<open>1 < \<^bold>|us\<^bold>|\<close> \<open>us \<noteq> \<epsilon>\<close> \<open>us \<in> lists \<BB> G\<close> \<open>hd us \<noteq> \<epsilon>\<close> \<open>hd us \<in> \<langle>G\<rangle>\<close> \<open>concat (tl us) \<noteq> \<epsilon>\<close> \<open>concat (tl us) \<in> \<langle>G\<rangle>\<close> this] 
   show thesis.
 qed
 
-lemma basis_dec: "p \<in> \<langle>G\<rangle> \<Longrightarrow> s \<in> \<langle>G\<rangle> \<Longrightarrow> p \<cdot> s \<in> \<BB> G \<Longrightarrow> p = \<epsilon> \<or> s = \<epsilon>"
-  using basis_no_fact[of p G s] by simp
+lemma basis_dec: "p \<in> \<langle>G\<rangle> \<Longrightarrow> s \<in> \<langle>G\<rangle> \<Longrightarrow> p \<cdot> s \<in> \<BB> G \<Longrightarrow> p = \<epsilon> \<or> s = \<epsilon>" 
+  using basis_no_fact[of p G s] unfolding basis_def by simp 
 
 lemma non_simp_fac': "w \<notin> \<BB> G \<Longrightarrow> w \<noteq> \<epsilon> \<Longrightarrow> w \<in> \<langle>G\<rangle> \<Longrightarrow> \<exists>us. us \<in> lists G\<^sub>+ \<and> w = concat us \<and> \<^bold>|us\<^bold>| \<noteq> 1"
-  by (metis basisI concat_len_one decI' dec_dom' decI dec_nemp lists_hd nemp_elem_setI simple_element.elims(3))
+  by (metis basis_inI concat_len_one decI' dec_in_lists concat_dec dec_nemp lists_hd_in_set nemp_elem_setI simple_element_def)
 
 lemma emp_gen_iff: "G\<^sub>+ = {} \<longleftrightarrow> \<langle>G\<rangle> = {\<epsilon>}"
 proof
@@ -505,31 +575,87 @@ next
 qed
 
 lemma emp_basis_iff:  "\<BB> G = {} \<longleftrightarrow> G\<^sub>+ = {}"
-  using emp_gen_iff[of "\<BB> G", unfolded basis_gen_hull basis_drop_emp, folded emp_gen_iff].
+  using emp_gen_iff[of "\<BB> G", unfolded basis_gen_hull basis_drop_emp, folded emp_gen_iff].  
 
 section "Code"
 
-text\<open>A basis freely generating its hull is called a \emph{code}. By definition,
+locale nemp_words = 
+  fixes G
+  assumes emp_not_in: "\<epsilon> \<notin> G"
+
+begin
+lemma drop_empD: "G\<^sub>+ = G" 
+  using emp_not_in by simp
+
+lemmas emp_concat_emp' = emp_concat_emp[of _ G, unfolded drop_empD]
+
+lemma concat_take_mono: assumes "ws \<in> lists G" and "concat (take i ws) \<le>p concat (take j ws)" 
+  shows "take i ws \<le>p take j ws"
+proof (rule disjE[OF ruler[OF take_is_prefix[of i ws] take_is_prefix[of j ws]]], simp)
+  assume "take j ws \<le>p take i ws"
+  from prefixE[OF this]
+  obtain us where "take i ws = take j ws \<cdot> us".
+  hence "us \<in> lists G" using \<open>ws \<in> lists G\<close>
+    using append_in_lists_conv take_in_lists by metis
+  have "concat (take j ws) = concat (take i ws)"
+    using pref_concat_pref[OF \<open>take j ws \<le>p take i ws\<close>] assms(2) by simp
+  from arg_cong[OF \<open>take i ws = take j ws \<cdot> us\<close>, of concat, unfolded concat_morph, unfolded this]
+  have "us = \<epsilon>"
+    using \<open>us \<in> lists G\<close> emp_concat_emp' by blast
+  thus  "take i ws \<le>p take j ws"   
+    using \<open>take i ws = take j ws \<cdot> us\<close> by force
+qed
+
+lemma in_gen_nemp: "x \<in> G \<Longrightarrow> x \<noteq> \<epsilon>" 
+  using emp_not_in by blast
+
+lemma code_concat_eq_emp_iff [simp]: "us \<in> lists G \<Longrightarrow> concat us = \<epsilon> \<longleftrightarrow> us = \<epsilon>"
+  unfolding in_lists_conv_set concat_eq_Nil_conv
+  by (simp add: in_gen_nemp)
+
+lemma root_dec_inj_on: "inj_on (\<lambda> x. [\<rho> x]\<^sup>@(e\<^sub>\<rho> x)) G"
+  unfolding inj_on_def using in_gen_nemp[THEN primroot_exp_eq] 
+  unfolding concat_sing_pow[of "\<rho> _", symmetric] by metis
+
+
+lemma concat_root_dec_eq_concat: 
+  assumes "ws \<in> lists G" 
+  shows "concat (concat (map (\<lambda> x. [\<rho> x]\<^sup>@(e\<^sub>\<rho> x)) ws)) = concat ws"
+  (is "concat(concat (map ?R ws)) = concat ws")
+  using assms
+  by (induction ws, simp_all add: primroot_exp_eq in_gen_nemp)
+
+end
+
+text\<open>A basis freely generating its hull is called a \emph{code}. By definition, 
 this means that generated elements have unique factorizations into the elements of the code.\<close>
 
 locale code =
   fixes \<C>
-  assumes \<C>_is_code: "xs \<in> lists \<C> \<Longrightarrow> ys \<in> lists \<C> \<Longrightarrow> concat xs = concat ys \<Longrightarrow> xs = ys"
+  assumes is_code: "xs \<in> lists \<C> \<Longrightarrow> ys \<in> lists \<C> \<Longrightarrow> concat xs = concat ys \<Longrightarrow> xs = ys"
 begin
 
-lemma emp_not_in_code: "\<epsilon> \<notin> \<C>"
+lemma code_not_comm: "x \<in> \<C> \<Longrightarrow> y \<in> \<C> \<Longrightarrow> x \<noteq> y \<Longrightarrow> x \<cdot> y \<noteq> y \<cdot> x"
+  using is_code[of "[x,y]" "[y,x]"]  by auto
+
+lemma emp_not_in_code: "\<epsilon> \<notin> \<C>" 
 proof
   assume "\<epsilon> \<in> \<C>"
   hence "[] \<in> lists \<C>" and "[\<epsilon>] \<in> lists \<C>" and "concat [] = concat [\<epsilon>]" and "[] \<noteq> [\<epsilon>]"
     by simp+
-  thus False
-    using \<C>_is_code by blast
+  thus False  
+    using is_code by blast
 qed
 
-lemma code_simple: "c \<in> \<C> \<Longrightarrow> c \<in>B \<C>"
-  unfolding   simple_element.simps
-proof
-  fix c assume "c \<in> \<C>"
+sublocale nemp_words \<C>
+  using emp_not_in_code by unfold_locales
+
+lemmas in_code_nemp = in_gen_nemp
+
+lemma code_simple: "c \<in> \<C> \<Longrightarrow> c \<in>B \<C>" 
+  unfolding   simple_element_def 
+proof 
+  fix c assume "c \<in> \<C>" 
   hence "[c] \<in> lists \<C>"
     by simp
   show "\<forall>us. us \<in> lists \<C>\<^sub>+ \<and> concat us = c \<longrightarrow> \<^bold>|us\<^bold>| = 1"
@@ -537,197 +663,897 @@ proof
     fix us
     {assume "us \<in> lists \<C>\<^sub>+" "concat us = c"
       hence "us \<in> lists \<C>" by blast
-      hence  "us = [c]"
-        using \<open>concat us = c\<close> \<open>c \<in> \<C>\<close> \<C>_is_code[of "[c]", OF \<open>[c] \<in> lists \<C>\<close> \<open>us \<in> lists \<C>\<close>] emp_not_in_code by auto}
+      hence  "us = [c]" 
+        using \<open>concat us = c\<close> \<open>c \<in> \<C>\<close> is_code[of "[c]", OF \<open>[c] \<in> lists \<C>\<close> \<open>us \<in> lists \<C>\<close>] emp_not_in_code by auto}
     thus "us \<in> lists \<C>\<^sub>+ \<and> concat us = c \<longrightarrow> \<^bold>|us\<^bold>| = 1"
-      using sing_len[of c] by fastforce
+      using sing_len[of c] by fastforce 
   qed
 qed
 
 lemma code_is_basis: "\<BB> \<C> = \<C>"
-  using code_simple basisdef[of \<C>] basis_sub by blast
+  using code_simple basis_def[of \<C>] basis_sub by blast
 
-lemma code_unique_dec: "us \<in> lists \<C> \<Longrightarrow> Dec \<C> (concat us) = us"
-  using dec_dom'[of "concat us" \<C>, THEN \<C>_is_code, of us]
-    decI[of "concat us" \<C>] hull_concat_lists[of \<C>] image_eqI[of "concat us" concat us "lists \<C>"]
+lemma code_unique_dec': "us \<in> lists \<C> \<Longrightarrow> Dec \<C> (concat us) = us"
+  using dec_in_lists[of "concat us" \<C>, THEN is_code, of us] 
+    concat_dec[of "concat us" \<C>] hull_concat_lists[of \<C>] image_eqI[of "concat us" concat us "lists \<C>"]
   by argo
+
+lemma code_unique_dec [intro!]: "us \<in> lists \<C> \<Longrightarrow> concat us = u \<Longrightarrow>  Dec \<C> u = us"
+  using code_unique_dec' by blast
+
+lemma triv_refine[intro!] : "us \<in> lists \<C> \<Longrightarrow> concat us = u \<Longrightarrow>  Ref \<C> [u] = us"
+  using code_unique_dec' by (auto simp add: refine_def) 
 
 lemma code_unique_ref: "us \<in> lists \<langle>\<C>\<rangle> \<Longrightarrow> refine \<C> us = decompose \<C> (concat us)"
 proof-
   assume "us \<in> lists \<langle>\<C>\<rangle>"
   hence "concat (refine \<C> us) = concat us"
-    using ref by fastforce
+    using concat_ref  by fastforce
   hence eq: "concat (refine \<C> us) = concat (decompose \<C> (concat us))"
-    using  decI[OF hull_closed_lists[OF \<open>us \<in> lists \<langle>\<C>\<rangle>\<close>]] by auto
+    using  concat_dec[OF hull_closed_lists[OF \<open>us \<in> lists \<langle>\<C>\<rangle>\<close>]] by auto 
   have dec: "Dec \<C> (concat us) \<in> lists \<C>"
-    using \<open>us \<in> lists \<langle>\<C>\<rangle>\<close> dec_dom' hull_closed_lists by blast
-  have ref: "Ref \<C> us \<in> lists \<C>"
+    using \<open>us \<in> lists \<langle>\<C>\<rangle>\<close> dec_in_lists hull_closed_lists
+    by metis 
+  have "Ref \<C> us \<in> lists \<C>"
     using lists_drop_emp[OF ref_in[OF \<open>us \<in> lists \<langle>\<C>\<rangle>\<close>]].
-  show ?thesis
-    using \<C>_is_code[OF ref dec eq].
+  from  is_code[OF this dec eq]
+  show ?thesis.
 qed
 
-lemma code_dec_morph: assumes "x \<in> \<langle>\<C>\<rangle>" "y \<in> \<langle>\<C>\<rangle>"
+lemma refI [intro]: "us \<in> lists \<langle>\<C>\<rangle> \<Longrightarrow> vs \<in> lists \<C> \<Longrightarrow> concat vs = concat us \<Longrightarrow> Ref \<C> us = vs"
+  unfolding code_unique_ref code_unique_dec..
+
+lemma code_dec_morph: assumes "x \<in> \<langle>\<C>\<rangle>" "y \<in> \<langle>\<C>\<rangle>" 
   shows "(Dec \<C> x) \<cdot> (Dec \<C> y) = Dec \<C> (x\<cdot>y)"
 proof-
   have eq: "(Dec \<C> x) \<cdot> (Dec \<C> y) = Dec \<C> (concat ((Dec \<C> x) \<cdot> (Dec \<C> y)))"
-    using dec_dom'[OF \<open>x \<in> \<langle>\<C>\<rangle>\<close>] dec_dom'[OF \<open>y \<in> \<langle>\<C>\<rangle>\<close>]
+    using dec_in_lists[OF \<open>x \<in> \<langle>\<C>\<rangle>\<close>] dec_in_lists[OF \<open>y \<in> \<langle>\<C>\<rangle>\<close>]
       code.code_unique_dec[OF code_axioms, of "(Dec \<C> x) \<cdot> (Dec \<C> y)", unfolded append_in_lists_conv, symmetric]
-    by blast
+    by presburger     
   moreover have "concat ((Dec \<C> x) \<cdot> (Dec \<C> y)) = (x \<cdot> y)"
-    using concat_morph[of "Dec \<C> x" "Dec \<C> y", symmetric]
-    unfolding decI[OF \<open>x \<in> \<langle>\<C>\<rangle>\<close>] decI[OF \<open>y \<in> \<langle>\<C>\<rangle>\<close>].
+    using concat_morph[of "Dec \<C> x" "Dec \<C> y"]
+    unfolding concat_dec[OF \<open>x \<in> \<langle>\<C>\<rangle>\<close>] concat_dec[OF \<open>y \<in> \<langle>\<C>\<rangle>\<close>].
   ultimately show "(Dec \<C> x) \<cdot> (Dec \<C> y) = Dec \<C> (x\<cdot>y)"
     by argo
 qed
 
-lemma code_el_dec: "c \<in> \<C> \<Longrightarrow> decompose \<C> c = [c]"
-  using code_unique_dec[of "[c]"] by auto
+lemma dec_pow: "rs \<in> \<langle>\<C>\<rangle> \<Longrightarrow> Dec \<C> (rs\<^sup>@k) = (Dec \<C> rs)\<^sup>@k"
+proof(induction k arbitrary: rs, fastforce)
+  case (Suc k)
+  then show ?case
+    using code_dec_morph pow_Suc power_in by metis 
+qed
+    
+lemma code_el_dec: "c \<in> \<C> \<Longrightarrow> decompose \<C> c = [c]" 
+  by fastforce
 
 lemma code_ref_list: "us \<in> lists \<C> \<Longrightarrow> refine \<C> us = us"
 proof (induct us)
   case (Cons a us)
   then show ?case using code_el_dec
-    by simp
-qed simp
+    unfolding refine_def by simp
+qed (simp add: refine_def)
 
-lemma code_ref_gen: assumes "G \<subseteq> \<langle>\<C>\<rangle>" "u \<in> \<langle>G\<rangle>"
+lemma code_ref_gen: assumes "G \<subseteq> \<langle>\<C>\<rangle>" "u \<in> \<langle>G\<rangle>" 
   shows "Dec \<C> u \<in> \<langle>decompose \<C> ` G\<rangle>"
 proof-
   have "refine \<C> (Dec G u) = Dec \<C> u"
-    using  dec_dom'[OF \<open>u \<in> \<langle>G\<rangle>\<close>]  \<open>G \<subseteq> \<langle>\<C>\<rangle>\<close> code_unique_ref[of "Dec G u", unfolded decI[OF \<open>u \<in> \<langle>G\<rangle>\<close>]] by blast
-  from ref_gen[of "Dec G u" G, OF dec_dom'[OF \<open>u \<in> \<langle>G\<rangle>\<close>], of \<C>, unfolded this, OF \<open>G \<subseteq> \<langle>\<C>\<rangle>\<close>]
+    using  dec_in_lists[OF \<open>u \<in> \<langle>G\<rangle>\<close>]  \<open>G \<subseteq> \<langle>\<C>\<rangle>\<close> code_unique_ref[of "Dec G u", unfolded concat_dec[OF \<open>u \<in> \<langle>G\<rangle>\<close>]] by blast
+  from ref_gen[of "Dec G u" G, OF dec_in_lists[OF \<open>u \<in> \<langle>G\<rangle>\<close>], of \<C>, unfolded this, OF \<open>G \<subseteq> \<langle>\<C>\<rangle>\<close>]
   show ?thesis.
 qed
 
+lemma code_rev_code: "code (rev ` \<C>)"
+proof
+  fix xs ys assume "xs \<in> lists (rev ` \<C>)" "ys \<in> lists (rev ` \<C>)" "concat xs = concat ys"
+  hence "map rev (rev xs) \<in> lists \<C>" and "map rev (rev ys) \<in> lists \<C>"
+    using rev_in_lists[OF \<open>xs \<in> lists (rev ` \<C>)\<close>] rev_in_lists[OF \<open>ys \<in> lists (rev ` \<C>)\<close>] map_rev_lists_rev by blast+
+  moreover have "concat (map rev (rev xs)) = concat (map rev (rev ys))"
+    unfolding rev_concat[symmetric] using \<open>concat xs = concat ys\<close> by blast
+  ultimately have "map rev (rev xs) = map rev (rev ys)"
+    using is_code by blast
+  thus "xs = ys" by simp
+qed
+
+lemma dec_rev [simp]: 
+  "u \<in> \<langle>\<C>\<rangle> \<Longrightarrow> Dec rev ` \<C> (rev u) = rev (map rev (Dec \<C> u))" 
+  by (auto simp only: rev_map lists_image rev_in_lists rev_concat[symmetric] dec_in_lists
+      intro!: code_rev_code code.code_unique_dec imageI del: in_listsI) 
+
+
+lemma elem_comm_sing_set: assumes "ws \<in> lists \<C>" and "ws \<noteq> \<epsilon>" and "u \<in> \<C>" and "concat ws \<cdot> u = u \<cdot> concat ws" 
+  shows  "set ws = {u}" 
+  using assms
+proof (cases "ws = \<epsilon>", simp)
+  assume "ws \<noteq> \<epsilon>"
+  have "concat (ws \<cdot> [u]) = concat ([u] \<cdot> ws)"
+    using assms by simp
+  have "ws \<cdot> [u] = [u] \<cdot> ws" 
+    using  \<open>u \<in> \<C>\<close> \<open>ws \<in> lists \<C>\<close> is_code[OF _ _  \<open>concat (ws \<cdot> [u]) = concat ([u] \<cdot> ws)\<close>]
+    by simp
+  from this[unfolded comm]
+  obtain k where "ws = [u]\<^sup>@k" by force
+  from nemp_pow_SucE[OF \<open>ws \<noteq> \<epsilon>\<close> this, of \<open>set ws = {u}\<close>]
+  show "set ws = {u}"
+     using sing_pow_set_Suc by metis
+qed
+
+lemma  pure_code_pres_prim:  assumes pure: "\<forall>u \<in> \<langle>\<C>\<rangle>. \<rho> u \<in> \<langle>\<C>\<rangle>" and 
+  "w \<in> \<langle>\<C>\<rangle>" and "primitive (Dec \<C> w)"
+  shows "primitive w"
+proof-
+  obtain k where "(\<rho> w)\<^sup>@k = w"
+    using primroot_expE' by blast
+
+  have "\<rho> w \<in> \<langle>\<C>\<rangle>"
+    using assms(2) pure by auto
+
+  have "(Dec \<C> (\<rho> w))\<^sup>@k \<in> lists \<C>"
+    by (metis \<open>\<rho> w \<in> \<langle>\<C>\<rangle>\<close> concat_sing_pow dec_in_lists flatten_lists order_refl sing_pow_lists)
+
+  have "(Dec \<C> (\<rho> w))\<^sup>@k = Dec \<C> w"
+    using \<open>(Dec \<C> (\<rho> w)) \<^sup>@ k \<in> lists \<C>\<close>  code.code_unique_dec code_axioms concat_morph_power \<open>(\<rho> w) \<^sup>@ k = w\<close> concat_dec[OF \<open>\<rho> w \<in> \<langle>\<C>\<rangle>\<close>] by metis
+  hence "k = 1"
+    using \<open>primitive (Dec \<C> w)\<close> unfolding primitive_def by blast
+  thus "primitive w"
+    by (metis CoWBasic.power_one_right \<open>\<rho> w \<^sup>@ k = w\<close> assms(3) dec_emp prim_nemp primroot_prim)
+qed
+
+lemma inj_on_dec: "inj_on (decompose \<C>) \<langle>\<C>\<rangle>"
+  by (rule inj_onI) (use concat_dec in force)
+
 end \<comment> \<open>end context code\<close>
 
-section \<open>Binary code\<close>
+lemma emp_is_code: "code {}"
+  using code.intro empty_iff insert_iff lists_empty by metis
 
-text\<open>We pay a special attention to two element codes.
-In particular, we show that two words form a code if and only if they do not commute. This means that two
-words either commute, or do not satisfy any nontrivial relation.
-\<close>
+lemma code_induct_hd: assumes "\<epsilon> \<notin> C" and
+              "\<And> xs ys. xs \<in> lists C \<Longrightarrow> ys \<in> lists C \<Longrightarrow> concat xs = concat ys \<Longrightarrow> hd xs = hd ys"
+      shows "code C"
+proof
+  show "xs \<in> lists C \<Longrightarrow> ys \<in> lists C \<Longrightarrow> concat xs = concat ys \<Longrightarrow> xs = ys" for xs ys
+  proof (induct xs ys rule: list_induct2', simp, use \<open>\<epsilon> \<notin> C\<close> in force, use \<open>\<epsilon> \<notin> C\<close> in force)
+    case (4 x xs y ys)
+    from assms(2)[OF "4.prems"]
+    have "x = y" by force  
+    from "4.prems"[unfolded this]
+    have "xs \<in> lists C" and "ys \<in> lists C" and "concat xs = concat ys" 
+      by simp_all
+    from "4.hyps"[OF this] \<open>x = y\<close> 
+    show ?case
+      by simp
+  qed
+qed  
 
-locale binary_code =
-  fixes u\<^sub>0 u\<^sub>1
-  assumes non_comm: "u\<^sub>0 \<cdot> u\<^sub>1 \<noteq> u\<^sub>1 \<cdot> u\<^sub>0"
+lemma ref_set_primroot: assumes "ws \<in> lists G\<^sub>+" and "code (\<rho>`G)"
+  shows "set (Ref \<rho>`G ws) = \<rho>`(set ws)"
+proof-
+  have "G \<subseteq> \<langle>\<rho>`G\<rangle>"
+  proof
+    fix x
+    assume "x \<in> G"
+    show "x \<in> \<langle>\<rho> ` G\<rangle>"
+      by (metis \<open>x \<in> G\<close> genset_sub image_subset_iff power_in primroot_expE')
+  qed
+  hence "ws \<in> lists \<langle>\<rho>`G\<rangle>"
+    using assms by blast
+
+  have "set (decompose (\<rho>`G) a) = {\<rho> a}" if "a \<in> set ws" for a
+  proof-
+    have "\<rho> a \<in> \<rho>`G"
+      using \<open>a \<in> set ws\<close> \<open>ws \<in> lists G\<^sub>+\<close> by blast 
+    have "(Dec (\<rho>`G) a) \<in> [\<rho> a]*"
+      using code.code_unique_dec[OF \<open>code (\<rho> ` G)\<close> sing_pow_lists concat_sing_pow, OF \<open>\<rho> a \<in> \<rho> ` G\<close>]
+            primroot_expE' rootI by metis
+    from sing_pow_set'[OF this dec_nemp']
+    show "set (decompose (\<rho>`G) a) = {\<rho> a}"
+      using \<open>a \<in> set ws\<close> \<open>ws \<in> lists \<langle>\<rho> ` G\<rangle>\<close> \<open>ws \<in> lists G\<^sub>+\<close> by blast
+  qed
+
+  have "(set`(decompose (\<rho>`G))`set ws) = {{\<rho> a} |a. a \<in> set ws}" (is "?L = ?R")
+  proof
+    show "?L \<subseteq> ?R"
+      using \<open>\<And>a. a \<in> set ws \<Longrightarrow> set (Dec \<rho> ` G a) = {\<rho> a}\<close> by blast
+    show "?R \<subseteq> ?L"
+      using \<open>\<And>a. a \<in> set ws \<Longrightarrow> set (Dec \<rho> ` G a) = {\<rho> a}\<close> by blast
+  qed
+
+  show ?thesis
+    using ref_set[OF \<open>ws \<in> lists \<langle>\<rho>`G\<rangle>\<close>]
+      Setcompr_eq_image \<open>set ` decompose (\<rho> ` G) ` set ws = {{\<rho> a} |a. a \<in> set ws}\<close> by (auto simp add: refine_def)
+qed
+
+
+section \<open>Prefix code\<close>
+
+locale pref_code = 
+  fixes \<C>
+  assumes 
+    nemp: "u \<in> \<C> \<Longrightarrow> u \<noteq> \<epsilon>" and
+    pref_free: "u \<in> \<C> \<Longrightarrow> v \<in> \<C> \<Longrightarrow> u \<le>p v \<Longrightarrow> u = v"
 
 begin
 
-lemma bin_fst_nemp: "u\<^sub>0 \<noteq> \<epsilon>"
-  using non_comm by auto
+sublocale code
+proof 
+  fix xs ys
+  show "xs \<in> lists \<C> \<Longrightarrow> ys \<in> lists \<C> \<Longrightarrow> concat xs = concat ys \<Longrightarrow> xs = ys"
+  proof (induction xs ys rule: list_induct2')
+    case (4 x xs y ys)
+    hence "x \<in> \<C>" and "y \<in> \<C>" and "xs \<in> lists \<C>" and "ys \<in> lists \<C>"
+    by simp_all
+    have "x \<bowtie> y"    
+      using \<open>concat (x # xs) = concat (y # ys)\<close>
+      by (simp add: ruler_eq) 
+    hence "x = y"
+      using pref_free \<open>x \<in> \<C>\<close> \<open>y \<in> \<C>\<close> by auto
+    show ?case 
+      using "4.IH"[OF \<open>xs \<in> lists \<C>\<close> \<open>ys \<in> lists \<C>\<close>] \<open>concat (x # xs) = concat (y # ys)\<close>
+      unfolding \<open>x = y\<close> by force    
+  qed (simp_all add: nemp)
+qed
+
+lemmas is_code = is_code and
+       code = code_axioms
+
+lemma dec_pref_unique:
+  assumes "w \<in> \<langle>\<C>\<rangle>" and "p \<in> \<langle>\<C>\<rangle>" and  "p \<le>p w"
+  shows "Dec \<C> p \<le>p Dec \<C> w"
+  using assms
+proof (induction "Dec \<C> p" "Dec \<C> w" arbitrary: p w rule: list_induct2', simp)
+  case (2 x xs)
+  then show ?case
+    by (metis dec_nemp' prefix_Nil) 
+next
+  case (4 x xs y ys)
+  then show ?case     
+  proof-
+    have "x \<in> \<C>"  
+      using \<open>x # xs = Dec \<C> p\<close> \<open>p \<in> \<langle>\<C>\<rangle>\<close> Cons_in_lists_iff dec_in_lists by metis   
+    moreover have "y \<in> \<C>"
+      using \<open>y # ys = Dec \<C> w\<close> \<open>w \<in> \<langle>\<C>\<rangle>\<close> Cons_in_lists_iff dec_in_lists by metis
+    moreover have "x \<bowtie> y"    
+      using \<open>p \<le>p w\<close> concat_dec[OF \<open>p \<in> \<langle>\<C>\<rangle>\<close>, folded \<open>x # xs = Dec \<C> p\<close>] concat_dec[OF \<open>w \<in> \<langle>\<C>\<rangle>\<close>, folded \<open>y # ys = Dec \<C> w\<close>]
+        concat.simps(2) pref_compI1 pref_compI2 ruler_prefE by metis
+    ultimately have "x = y"
+      using pref_free by blast
+   have xs: "xs = Dec \<C> (concat xs)"
+        by (metis "4.hyps"(2) "4.prems"(2) Cons_in_lists_iff code_unique_dec' dec_in_lists)
+   have ys: "ys = Dec \<C> (concat ys)"
+        by (metis "4.hyps"(3) "4.prems"(1) Cons_in_lists_iff code_unique_dec' dec_in_lists)
+   have "Dec \<C> (concat xs) \<le>p Dec \<C> (concat ys)"
+    proof (rule "4.hyps"(1)[OF xs ys])     
+      show "concat ys \<in> \<langle>\<C>\<rangle>"
+        by (metis "4.hyps"(3) "4.prems"(1) concat_in_hull' dec_in_lists listsE)
+      show "concat xs \<in> \<langle>\<C>\<rangle>"
+        by (metis "4.hyps"(2) "4.prems"(2) concat_in_hull' dec_in_lists listsE)
+      note concat_dec[OF \<open>w \<in> \<langle>\<C>\<rangle>\<close>, folded \<open>y # ys = Dec \<C> w\<close>, unfolded hd_word[of y ys]]
+           concat_dec[OF \<open>p \<in> \<langle>\<C>\<rangle>\<close>, folded \<open>x # xs = Dec \<C> p\<close>, unfolded hd_word[of x xs], unfolded \<open>x = y\<close>]
+      show "concat xs \<le>p concat ys"
+       using \<open>p \<le>p w\<close>[folded \<open>concat ([y] \<cdot> ys) = w\<close> \<open>concat ([y] \<cdot> xs) = p\<close>, unfolded concat_morph pref_cancel_conv]. 
+    qed
+    from this xs ys
+    show "Dec \<C> p \<le>p Dec \<C> w"
+      unfolding \<open>x # xs = Dec \<C> p\<close>[symmetric] \<open>y # ys = Dec \<C> w\<close>[symmetric] \<open>x = y\<close> by force  
+  qed
+qed force
+
+end
+
+section \<open>Marked code\<close>
+
+locale marked_code = 
+  fixes \<C>
+  assumes
+     nemp: "u \<in> \<C> \<Longrightarrow> u \<noteq> \<epsilon>" and
+     marked: "u \<in> \<C> \<Longrightarrow> v \<in> \<C> \<Longrightarrow> hd u = hd v \<Longrightarrow> u = v"
+
+begin 
+
+sublocale pref_code
+proof (unfold_locales, simp add: nemp)
+  show "\<And>u v. u \<in> \<C> \<Longrightarrow> v \<in> \<C> \<Longrightarrow> u \<le>p v \<Longrightarrow> u = v"
+    by (simp add: marked nemp pref_hd_eq)
+qed
+
+lemma marked_concat_lcp: "us \<in> lists \<C> \<Longrightarrow> vs \<in> lists \<C> \<Longrightarrow> concat (us \<and>\<^sub>p vs) = (concat us) \<and>\<^sub>p (concat vs)"
+proof (induct us vs rule: list_induct2')
+  case (4 x xs y ys)
+  hence "x \<in> \<C>" and "y \<in> \<C>" and "xs \<in> lists \<C>" and "ys \<in> lists \<C>"
+    by simp_all
+  show ?case
+  proof (cases) 
+    assume "x = y" 
+    thus "concat (x # xs \<and>\<^sub>p y # ys) = concat (x # xs) \<and>\<^sub>p concat (y # ys)"
+      using "4.hyps"[OF \<open>xs \<in> lists \<C>\<close> \<open>ys \<in> lists \<C>\<close>] by (simp add: lcp_ext_left)   
+  next
+    assume "x \<noteq> y"
+    with marked[OF \<open>x \<in> \<C>\<close> \<open>y \<in> \<C>\<close>] have "hd x \<noteq> hd y" by blast
+    hence "concat (x # xs) \<and>\<^sub>p concat (y # ys) = \<epsilon>"
+      by (simp add: \<open>x \<in> \<C>\<close> \<open>y \<in> \<C>\<close> nemp lcp_distinct_hd) 
+    moreover have "concat (x # xs \<and>\<^sub>p y # ys) = \<epsilon>"
+      using \<open>x \<noteq> y\<close> by simp
+    ultimately show ?thesis by presburger
+  qed
+qed simp_all
+
+lemma hd_concat_hd: assumes "xs \<in> lists \<C>" and "ys \<in> lists \<C>" and "xs \<noteq> \<epsilon>" and "ys \<noteq> \<epsilon>" and 
+              "hd (concat xs) = hd (concat ys)"
+      shows "hd xs = hd ys"
+proof-
+  have "hd (hd xs) = hd (hd ys)"
+    using assms  hd_concat[OF \<open>xs \<noteq> \<epsilon>\<close> lists_hd_in_set[THEN nemp]] hd_concat[OF \<open>ys \<noteq> \<epsilon>\<close> lists_hd_in_set[THEN nemp]]
+    by presburger
+    
+  from marked[OF lists_hd_in_set lists_hd_in_set this] assms(1-4) 
+  show "hd xs = hd ys" 
+    by simp
+qed
+
+end
+
+subsection "Sings code"
+
+locale sings_code =
+  fixes \<C>
+  assumes
+    card_set: "c \<in> \<C> \<Longrightarrow> card (set c) = 1" and
+    set_neq: "c \<in> \<C> \<Longrightarrow> d \<in> \<C> \<Longrightarrow> c \<noteq> d \<Longrightarrow> set c \<noteq> set d"
+begin
+
+lemma nemp: assumes "u \<in> \<C> " shows "u \<noteq> \<epsilon>"
+  using card_set[OF \<open>u \<in> \<C>\<close>] by (intro notI) simp
+
+lemma set_is_sing_hd: assumes "u \<in> \<C>" shows "set u = {hd u}"
+  using hd_in_set[OF nemp[OF \<open>u \<in> \<C>\<close>]] card_set[OF \<open>u \<in> \<C>\<close>]
+  by (elim card_1_singletonE) simp
+
+sublocale marked_code
+proof
+  show "\<And>u. u \<in> \<C> \<Longrightarrow> u \<noteq> \<epsilon>"
+    using card_set by fastforce 
+  show "\<And>u v. u \<in> \<C> \<Longrightarrow> v \<in> \<C> \<Longrightarrow> hd u = hd v \<Longrightarrow> u = v"
+    using set_is_sing_hd set_neq by auto
+qed
+
+lemma sing_pow:
+  assumes "u \<in> \<C>"
+  shows "[hd u]\<^sup>@\<^bold>|u\<^bold>| = u"
+  using unique_letter_word[of u "hd u", symmetric] unfolding set_is_sing_hd[OF \<open>u \<in> \<C>\<close>] by blast
+
+lemma palindrome: assumes "u \<in> \<C>" shows "rev u = u"
+  using sing_pow_palindrom[OF sing_pow[OF \<open>u \<in> \<C>\<close>, symmetric]].
+
+lemma rev_in_conv [reversal_rule]: "rev u \<in> \<C> \<longleftrightarrow> u \<in> \<C>"
+  using palindrome by fastforce
+
+lemma map_rev_in_lists_conv [reversal_rule]: "map rev us \<in> lists \<C> \<longleftrightarrow> us \<in> lists \<C>"
+  using palindrome by fastforce
+
+thm marked
+lemmas marked_last = marked[reversed]
+
+lemma common_letter_imp_same:
+  assumes "u \<in> \<C>" "v \<in> \<C>"
+      and "i < \<^bold>|u\<^bold>|" "j < \<^bold>|v\<^bold>|"
+  shows "u ! i = v ! j \<Longrightarrow> u = v"
+  using nth_mem[OF \<open>i < \<^bold>|u\<^bold>|\<close>] nth_mem[OF \<open>j < \<^bold>|v\<^bold>|\<close>]
+  unfolding set_is_sing_hd[OF \<open>u \<in> \<C>\<close>] set_is_sing_hd[OF \<open>v \<in> \<C>\<close>]
+  by (intro marked[OF \<open>u \<in> \<C>\<close> \<open>v \<in> \<C>\<close>]) simp
+
+lemma pref_overlap_imp_same:
+  assumes "u \<in> \<C>" "v \<in> \<C>"
+      and "p \<cdot> u \<le>p q \<cdot> v"
+      and "\<^bold>|q\<^bold>| < \<^bold>|p\<^bold>| + \<^bold>|u\<^bold>|"
+  shows "u = v"
+using assms(1-2) proof (rule common_letter_imp_same)
+  have *: "\<^bold>|p\<^bold>| \<le> \<^bold>|p\<^bold>| + \<^bold>|u\<^bold>| - 1"
+    unfolding diff_add_assoc[OF nemp_le_len[OF nemp[OF \<open>u \<in> \<C>\<close>]]] using le_add1.
+  have **: "\<^bold>|q\<^bold>| \<le> \<^bold>|p\<^bold>| + \<^bold>|u\<^bold>| - 1"
+    using \<open>\<^bold>|q\<^bold>| < \<^bold>|p\<^bold>| + \<^bold>|u\<^bold>|\<close> unfolding discrete by (intro add_le_imp_le_diff)
+  have "\<^bold>|p\<^bold>| + \<^bold>|u\<^bold>| - 1 < \<^bold>|p \<cdot> u\<^bold>|"
+    unfolding One_nat_def lenmorph using nemp[OF \<open>u \<in> \<C>\<close>] by (intro diff_Suc_less) blast
+  from pref_index[OF \<open>p \<cdot> u \<le>p q \<cdot> v\<close> this] less_le_trans[OF this pref_len[OF \<open>p \<cdot> u \<le>p q \<cdot> v\<close>]]
+  show "u ! (\<^bold>|u\<^bold>| - 1) = v ! (\<^bold>|p\<^bold>| + \<^bold>|u\<^bold>| - 1 - \<^bold>|q\<^bold>|)" and "\<^bold>|p\<^bold>| + \<^bold>|u\<^bold>| - 1 - \<^bold>|q\<^bold>| < \<^bold>|v\<^bold>|"
+    unfolding nth_append if_not_P[OF leD[OF **]] if_not_P[OF leD[OF *]]
+    unfolding diff_add_inverse[of ] diff_commute[of _ _ "_ p"]
+    unfolding lenmorph add.commute[of "_ q"] Nat.less_diff_conv2[OF **].
+qed (simp add: nemp[OF \<open>u \<in> \<C>\<close>])
+
+lemma overlap_imp_same:
+  assumes "u \<in> \<C>" "v \<in> \<C>"
+      and "p \<cdot> u \<bowtie> q \<cdot> v"
+      and "\<^bold>|p\<^bold>| < \<^bold>|q\<^bold>| + \<^bold>|v\<^bold>|" "\<^bold>|q\<^bold>| < \<^bold>|p\<^bold>| + \<^bold>|u\<^bold>|"
+  shows "u = v"
+  using assms
+  by (blast intro: pref_overlap_imp_same pref_overlap_imp_same[symmetric])
+  
+lemma concat_pref_concat_conv:
+  assumes "us \<in> lists \<C>" "vs \<in> lists \<C>"
+  shows "concat us \<le>p concat vs \<longleftrightarrow> us \<le>p vs"
+  using assms(1) assms(2) code_unique_dec' concat_in_hull' dec_pref_unique pref_concat_pref by metis 
+
+lemmas concat_suf_concat_conv = concat_pref_concat_conv[reversed]
+     
+lemma two_interpretations:
+  assumes "us \<in> lists \<C>" "vs \<in> lists \<C>"
+      and "z <p hd vs" "z \<noteq> \<epsilon>"
+      and "z \<cdot> concat us \<le>p concat vs"
+  shows "set us \<subseteq> {hd vs}"
+using assms(1-3, 5) proof (induction us vs rule: list_induct2')
+  case (4 u us v vs)
+    note pref = \<open>z \<cdot> concat (u # us) \<le>p concat (v # vs)\<close>
+    \<comment> \<open>stating simple consequences of the hypotheses\<close>
+    have "u \<in> \<C>" "v \<in> \<C>" "us \<in> lists \<C>" "vs \<in> lists \<C>"
+      using \<open>u # us \<in> lists \<C>\<close> \<open>v # vs \<in> lists \<C>\<close> by simp_all
+     \<comment> \<open>first step is to show the equality of u and v\<close>
+    have "z \<cdot> u \<bowtie> \<epsilon> \<cdot> v"
+      using pref by (intro ruler'[OF append_prefixD triv_pref]) simp
+    moreover have "\<^bold>|z\<^bold>| < \<^bold>|\<epsilon>\<^bold>| + \<^bold>|v\<^bold>|" and "\<^bold>|\<epsilon>\<^bold>| < \<^bold>|z\<^bold>| + \<^bold>|u\<^bold>|"
+      using \<open>z <p hd (v # vs)\<close> \<open>z \<noteq> \<epsilon>\<close> by (simp_all add: prefix_length_less)
+    ultimately have "u = v"
+      by (rule overlap_imp_same[OF \<open>u \<in> \<C>\<close> \<open>v \<in> \<C>\<close>])
+    \<comment> \<open>empty vs leads to contradiction, so we can express vs as @{term "v' # vs'"}\<close> 
+    have False if "vs = \<epsilon>"
+      using \<open>z \<noteq> \<epsilon>\<close> pref unfolding \<open>vs = \<epsilon>\<close> \<open>u = v\<close>
+        by simp (rule notE[OF _ same_sufix_nil[OF pref_ext]])
+    from hd_Cons_tl[OF notI[OF this]]
+    obtain v' vs' where "vs = v' # vs'" unfolding eq_commute[of "_#_"]..
+    have "v' \<in> \<C>" "vs' \<in> lists \<C>"
+      using \<open>vs \<in> lists \<C>\<close> unfolding \<open>vs = v' # vs'\<close> by simp_all
+    \<comment> \<open>now we show the equality of v' and v similarly as above\<close> 
+    have "z \<cdot> v \<bowtie> v \<cdot> v'"
+      using pref unfolding \<open>u = v\<close> \<open>vs = v' # vs'\<close>
+      by (intro ruler'[OF append_prefixD triv_pref]) simp
+    moreover have "\<^bold>|z\<^bold>| < \<^bold>|v\<^bold>| + \<^bold>|v'\<^bold>|" and "\<^bold>|v\<^bold>| < \<^bold>|z\<^bold>| + \<^bold>|v\<^bold>|"
+      using \<open>z <p hd (v # vs)\<close> \<open>z \<noteq> \<epsilon>\<close> by (simp_all add: prefix_length_less trans_less_add1)
+    ultimately have "v' = v"
+      by (elim overlap_imp_same[OF \<open>v \<in> \<C>\<close> \<open>v' \<in> \<C>\<close>, symmetric])
+    \<comment> \<open> since @{term "z \<cdot> v"} is prefix of @{term "v \<cdot> v"}, the words z and v commute\<close>
+    have "z \<cdot> v \<le>p v \<cdot> v"
+      using comp_shorter[OF \<open>z \<cdot> v \<bowtie> v \<cdot> v'\<close>] \<open>\<^bold>|z\<^bold>| < \<^bold>|\<epsilon>\<^bold>| + \<^bold>|v\<^bold>|\<close>  unfolding \<open>v' = v\<close> lenmorph 
+      by fastforce
+    with this[folded same_prefix_prefix[of v "z \<cdot> v" "v \<cdot> v"]]
+    have "z \<cdot> v = v \<cdot> z"
+      using pref_prod_pref pref_prolong pref_comm_eq' triv_pref by metis 
+    \<comment> \<open>finally we check premises of the induction hypothesis and conclude the proof\<close>
+    note \<open>us \<in> lists \<C>\<close> \<open>vs \<in> lists \<C>\<close>
+    moreover have "z <p hd vs"
+      using \<open>z <p hd (v # vs)\<close> unfolding \<open>vs = v' # vs'\<close> \<open>v' = v\<close> list.sel(1).
+    moreover have "z \<cdot> concat us \<le>p concat vs"
+      using pref \<open>z \<cdot> v = v \<cdot> z\<close> unfolding \<open>u = v\<close>
+      by (intro pref_cancel[of _ "z \<cdot> _"]) (simp flip: rassoc)
+    ultimately have "set us \<subseteq> {hd vs}" by (fact "4.IH")
+    then show "set (u # us) \<subseteq> {hd (v # vs)}"
+      unfolding \<open>vs = v' # vs'\<close> \<open>v' = v\<close> \<open>u = v\<close> by simp
+qed (simp_all add: \<open>z \<noteq> \<epsilon>\<close>)
+
+lemma unique_interpretation:
+  assumes "us \<in> lists \<C>" "vs \<in> lists \<C>"
+      and "1 < card (set us)"
+      and "z \<cdot> concat us \<le>p concat vs"
+  obtains ws where "ws \<le>p vs" and "concat ws = z" and "ws \<cdot> us \<le>p vs"
+using assms proof (induction "\<^bold>|z\<^bold>|" arbitrary: z us vs thesis rule: less_induct)
+  case less
+    \<comment> \<open> stating simple facts \<close>
+    have "us \<noteq> \<epsilon>" using \<open>1 < card (set us)\<close> by fastforce
+    then have "hd us \<noteq> \<epsilon>" using \<open>us \<in> lists \<C>\<close> by (intro nemp lists_hd_in_set)
+    then have "vs \<noteq> \<epsilon>" using \<open>z \<cdot> concat us \<le>p concat vs\<close>
+     unfolding hd_concat_tl[OF \<open>us \<noteq> \<epsilon>\<close>, symmetric] by (intro notI) simp
+    then have "hd vs \<noteq> \<epsilon>" using \<open>vs \<in> lists \<C>\<close> by (intro nemp lists_hd_in_set)
+    have "z \<bowtie> hd vs"
+      using \<open>z \<cdot> concat us \<le>p concat vs\<close> concat_hd_pref[OF \<open>vs \<noteq> \<epsilon>\<close>]
+      by (intro ruler'[OF pref_trans[OF triv_pref]])
+    \<comment> \<open> splitting into three cases\<close>
+    then consider "z = \<epsilon>" | "z <p hd vs" and "z \<noteq> \<epsilon>" | "hd vs \<le>p z"
+      by (blast dest: pref_comp_not_spref)
+    then show thesis
+    proof (cases)
+      assume "z = \<epsilon>"
+      \<comment> \<open> first case follows from the fact @{thm "concat_pref_concat_conv"}\<close>
+      have "\<epsilon> \<le>p vs" "concat \<epsilon> = z" "\<epsilon> \<cdot> us \<le>p vs" 
+        using emp_pref concat.simps(1) \<open>z \<cdot> concat us \<le>p concat vs\<close>
+        unfolding \<open>z = \<epsilon>\<close> append_Nil concat_pref_concat_conv[OF \<open>us \<in> lists \<C>\<close> \<open>vs \<in> lists \<C>\<close>].
+      then show thesis by fact
+    next
+      assume "z <p hd vs" and "z \<noteq> \<epsilon>"
+      \<comment> \<open>second case leads to contradiction\<close>
+      with \<open>us \<in> lists \<C>\<close> \<open>vs \<in> lists \<C>\<close> have "set us \<subseteq> {hd vs}"
+         using \<open>z \<cdot> concat us \<le>p concat vs\<close> by (rule two_interpretations)
+      then show R for R using \<open>1 < card (set us)\<close>
+        by (simp add: \<open>us \<noteq> \<epsilon>\<close> subset_singleton_iff)
+    next
+      assume "hd vs \<le>p z"
+      \<comment> \<open>the last case follows using induction hypotheses for z'\<close>
+      then obtain z' where "z = hd vs \<cdot> z'"..
+      note \<open>us \<in> lists \<C>\<close> tl_in_lists[OF \<open>vs \<in> lists \<C>\<close>] \<open>1 < card (set us)\<close>
+      moreover have "z' \<cdot> concat us \<le>p concat (tl vs)"
+        using \<open>z \<cdot> concat us \<le>p concat vs\<close>
+        unfolding \<open>z = hd vs \<cdot> z'\<close> hd_concat_tl[OF \<open>vs \<noteq> \<epsilon>\<close>, symmetric] by simp
+      moreover have "\<^bold>|z'\<^bold>| < \<^bold>|z\<^bold>|" using \<open>z = hd vs \<cdot> z'\<close> \<open>hd vs \<noteq> \<epsilon>\<close> by simp
+      ultimately obtain ws'
+        where "hd vs # ws' \<le>p hd vs # tl vs"
+          and "concat (hd vs # ws') = hd vs \<cdot> z'"
+          and "hd vs # (ws' \<cdot> us) \<le>p hd vs # tl vs"
+        unfolding pref_cancel_hd_conv concat.simps(2) cancel
+        by (rule less.hyps[rotated 2])
+      then show thesis
+        unfolding \<open>z = hd vs \<cdot> z'\<close>[symmetric] hd_Cons_tl[OF \<open>vs \<noteq> \<epsilon>\<close>] append_Cons[symmetric]
+        by fact
+    qed
+qed
+
+theorem sings_prim_morph:
+  assumes "ws \<in> lists \<C>"
+      and "\<^bold>|ws\<^bold>| \<noteq> 1"
+      and "primitive ws"
+  shows "primitive (concat ws)"
+proof (rule ccontr)
+  have "ws \<in> lists \<C>" and "ws \<cdot> ws \<in> lists \<C>"
+    using \<open>ws \<in> lists \<C>\<close> by simp_all
+  moreover have "1 < card (set ws)" using \<open>primitive ws\<close> \<open>\<^bold>|ws\<^bold>| \<noteq> 1\<close> by (rule prim_card_set)
+  moreover assume "\<not> primitive (concat ws)"
+  then obtain k z where "2 \<le> k" and "z \<^sup>@ k = concat ws" by (elim not_prim_pow)
+  have "z \<cdot> concat ws \<le>p concat (ws \<cdot> ws)"
+    using \<open>2 \<le> k\<close> unfolding \<open>z \<^sup>@ k = concat ws\<close>[symmetric] concat_append
+    by (simp add: le_exps_pref flip: power_Suc power_add)
+  ultimately obtain vs where "vs \<le>p ws \<cdot> ws" and "concat vs = z" and "vs \<cdot> ws \<le>p ws \<cdot> ws"
+    by (rule unique_interpretation)
+  have "vs \<^sup>@ k \<in> lists \<C>"
+    using \<open>vs \<le>p ws \<cdot> ws\<close> \<open>ws \<cdot> ws \<in> lists \<C>\<close> by (intro pow_in_lists) (rule pref_in_lists)
+  moreover have "concat (vs \<^sup>@ k) = concat ws"
+    unfolding concat_pow \<open>concat vs = z\<close> \<open>z \<^sup>@ k = concat ws\<close>..
+  ultimately have "vs \<^sup>@ k = ws" using \<open>ws \<in> lists \<C>\<close> by (intro is_code)
+  show False
+    using prim_exp_one[OF \<open>primitive ws\<close> \<open>vs \<^sup>@ k = ws\<close>] \<open>2 \<le> k\<close> by presburger
+qed
+
+lemma sings_prim_concat_conv:
+  assumes "ws \<in> lists \<C>"
+      and "\<^bold>|ws\<^bold>| \<noteq> 1"
+  shows "primitive (concat ws) \<longleftrightarrow> primitive ws"
+  using prim_concat_prim sings_prim_morph[OF assms]..
+
+end
+
+\<comment> \<open>Exporting out of context\<close>
+lemmas sings_prim_morph = sings_code.sings_prim_morph[OF sings_code.intro]
+
+lemma (in code) code_roots_sings_code: "sings_code ((\<lambda> x. [\<rho> x]\<^sup>@(e\<^sub>\<rho> x)) ` \<C>)"
+proof
+  fix c assume "c \<in> (\<lambda>x. [\<rho> x] \<^sup>@ e\<^sub>\<rho> x) ` \<C>"
+  then obtain u where "u \<in> \<C>" and "c = [\<rho> u] \<^sup>@ e\<^sub>\<rho> u" by blast
+  have "u \<noteq> \<epsilon>" using \<open>u \<in> \<C>\<close> emp_not_in by auto  
+  from sing_pow_set[OF primroot_exp_nemp[OF \<open>u \<noteq> \<epsilon>\<close>], of "\<rho> u", folded \<open>c = [\<rho> u] \<^sup>@ e\<^sub>\<rho> u\<close>]  
+  show "card (set c) = 1" 
+    by simp
+
+  fix d assume "d \<in> (\<lambda>x. [\<rho> x] \<^sup>@ e\<^sub>\<rho> x) ` \<C>" and "c \<noteq> d"
+  then obtain v where "v \<in> \<C>" and "d = [\<rho> v] \<^sup>@ e\<^sub>\<rho> v" by blast
+  have "v \<noteq> \<epsilon>" using \<open>v \<in> \<C>\<close> emp_not_in by auto  
+  have "u \<noteq> v"
+    using \<open>c = [\<rho> u] \<^sup>@ e\<^sub>\<rho> u\<close> \<open>c \<noteq> d\<close> \<open>d = [\<rho> v] \<^sup>@ e\<^sub>\<rho> v\<close> by blast
+  hence "\<rho> u \<noteq> \<rho> v"
+    using code_not_comm[OF \<open>u \<in> \<C>\<close> \<open>v \<in> \<C>\<close>]
+    unfolding comm_primroots[OF \<open>u \<noteq> \<epsilon>\<close> \<open>v \<noteq> \<epsilon>\<close>] by blast 
+  with \<open>set c = {\<rho> u}\<close>
+        sing_pow_set[OF primroot_exp_nemp[OF \<open>v \<noteq> \<epsilon>\<close>], of "\<rho> v", folded \<open>d = [\<rho> v] \<^sup>@ e\<^sub>\<rho> v\<close>]
+  show "set c \<noteq> set d" 
+    by simp
+qed
+
+theorem (in code) roots_prim_morph: 
+  assumes "ws \<in> lists \<C>"
+      and "\<^bold>|ws\<^bold>| \<noteq> 1"
+      and "primitive ws"
+    shows "primitive (concat (map (\<lambda> x. [\<rho> x]\<^sup>@(e\<^sub>\<rho> x)) ws))"
+ (is "primitive (concat (map ?R ws))")
+proof-
+  interpret rc: sings_code "?R ` \<C>"
+    using code_roots_sings_code. 
+ 
+  show ?thesis 
+  proof (rule rc.sings_prim_morph)
+    show "primitive (map ?R ws)"
+    using  inj_map_prim[OF root_dec_inj_on
+           \<open>ws \<in> lists \<C>\<close> \<open>primitive ws\<close>].
+    show "map ?R ws \<in> lists (?R ` \<C>)"
+      using \<open>ws \<in> lists \<C>\<close> lists_image[of ?R \<C>] by force
+    show "\<^bold>|map (\<lambda>x. [\<rho> x] \<^sup>@ e\<^sub>\<rho> x) ws\<^bold>| \<noteq> 1"  
+      using \<open>\<^bold>|ws\<^bold>| \<noteq> 1\<close> by simp 
+  qed
+qed
+
+section \<open>Binary code\<close>
+
+text\<open>We pay a special attention to two element codes. 
+In particular, we show that two words form a code if and only if they do not commute. This means that two 
+words either commute, or do not satisfy any nontrivial relation.
+\<close>
+
+definition  bin_lcp  where "bin_lcp x y  =  x\<cdot>y \<and>\<^sub>p y\<cdot>x" 
+definition  bin_lcs  where "bin_lcs x y  =  x\<cdot>y \<and>\<^sub>s y\<cdot>x" 
+
+definition  bin_mismatch where "bin_mismatch x y =  (x\<cdot>y)!\<^bold>|bin_lcp x y\<^bold>|"
+definition  bin_mismatch_suf where " bin_mismatch_suf x y = bin_mismatch (rev y) (rev x)"
+(* definition  bin_mismatch_suf where "bin_mismatch_suf x y =  (x\<cdot>y)!(\<^bold>|x \<cdot> y\<^bold>| - Suc(\<^bold>|bin_lcs x y\<^bold>|))" *)
+
+value[nbe] "[0::nat,1,0]!3"
+
+lemma bin_lcs_rev: "bin_lcs x y = rev (bin_lcp (rev x) (rev y))"
+  unfolding bin_lcp_def bin_lcs_def  longest_common_suffix_def rev_append using lcp_sym by fastforce
+
+lemma bin_lcp_sym: "bin_lcp x y = bin_lcp y x"
+  unfolding bin_lcp_def using lcp_sym.
+
+lemma bin_mismatch_comm: "(bin_mismatch x y = bin_mismatch y x) \<longleftrightarrow> (x \<cdot> y = y \<cdot> x)"
+  unfolding bin_mismatch_def bin_lcp_def lcp_sym[of "y \<cdot> x"]
+  using  lcp_mismatch'[of "x \<cdot> y" "y \<cdot> x", unfolded comm_comp_eq_conv[of x y]]   by fastforce
+
+lemma bin_lcp_pref_fst_snd: "bin_lcp x y \<le>p x \<cdot> y"
+  unfolding bin_lcp_def using lcp_pref.
+
+lemma bin_lcp_pref_snd_fst: "bin_lcp x y \<le>p y \<cdot> x"
+  using bin_lcp_pref_fst_snd[of y x, unfolded bin_lcp_sym[of y x]].
+
+lemma bin_lcp_bin_lcs [reversal_rule]:  "bin_lcp (rev x) (rev y) = rev (bin_lcs x y)"
+  unfolding bin_lcp_def bin_lcs_def rev_append[symmetric] lcs_lcp
+           lcs_sym[of "x \<cdot> y"]..  
+
+lemmas bin_lcs_sym = bin_lcp_sym[reversed]
+
+lemma bin_lcp_len: "x \<cdot> y \<noteq> y \<cdot> x \<Longrightarrow> \<^bold>|bin_lcp x y\<^bold>| < \<^bold>|x \<cdot> y\<^bold>|" 
+  unfolding bin_lcp_def
+  using lcp_len' pref_comm_eq by blast 
+
+lemmas bin_lcs_len = bin_lcp_len[reversed]
+
+lemma bin_mismatch_pref_suf'[reversal_rule]:  
+ "bin_mismatch (rev y) (rev x) =  bin_mismatch_suf x y"
+  unfolding bin_mismatch_suf_def..
+
+locale binary_code = 
+  fixes u\<^sub>0 u\<^sub>1
+  assumes non_comm: "u\<^sub>0 \<cdot> u\<^sub>1 \<noteq> u\<^sub>1 \<cdot> u\<^sub>0" 
+
+begin
 
 text\<open>A crucial property of two element codes is the constant decoding delay given by the word $\alpha$,
-which is a prefix of any generating word (sufficiently long), while the letter
+which is a prefix of any generating word (sufficiently long), while the letter 
 immediately after this common prefix indicates the first element of the decomposition.
 \<close>
 
-definition  \<alpha> where bin_lcp_def [simp]: "\<alpha> =  u\<^sub>0\<cdot>u\<^sub>1 \<and>\<^sub>p u\<^sub>1\<cdot>u\<^sub>0"
-definition  c\<^sub>0 where fst_mismatch_def: "c\<^sub>0 =  (u\<^sub>0\<cdot>u\<^sub>1)!\<^bold>|\<alpha>\<^bold>|"
-definition  c\<^sub>1 where snd_mismatch_def: "c\<^sub>1 =  (u\<^sub>1\<cdot>u\<^sub>0)!\<^bold>|\<alpha>\<^bold>|"
+lemma bin_code_swap: "binary_code u\<^sub>1 u\<^sub>0"
+  using binary_code.intro[OF non_comm[symmetric]].
 
-lemma bin_mismatch_neq: "c\<^sub>0 \<noteq> c\<^sub>1"
-  unfolding fst_mismatch_def snd_mismatch_def bin_lcp_def
-  using non_comm lcp_mismatch' pref_comp_eq[of "u\<^sub>0 \<cdot> u\<^sub>1" "u\<^sub>1 \<cdot> u\<^sub>0", OF _ swap_len]
-  unfolding prefix_comparable_def
-  by blast
+lemma bin_code_neq: "u\<^sub>0 \<noteq> u\<^sub>1"
+  using non_comm by auto
 
-lemma bin_lcp_pref_fst_snd: "\<alpha> \<le>p u\<^sub>0 \<cdot> u\<^sub>1" and bin_lcp_pref_snd_fst: "\<alpha> \<le>p u\<^sub>1 \<cdot> u\<^sub>0"
-  unfolding bin_lcp_def using longest_common_prefix_prefix1 longest_common_prefix_prefix2.
+lemma bin_fst_nemp: "u\<^sub>0 \<noteq> \<epsilon>" and bin_snd_nemp: "u\<^sub>1 \<noteq> \<epsilon>"
+  using non_comm by auto 
+
+lemma bin_not_comp: "\<not> u\<^sub>0 \<cdot> u\<^sub>1 \<bowtie> u\<^sub>1 \<cdot> u\<^sub>0"
+  using comm_comp_eq_conv non_comm by blast 
+
+lemma bin_not_comp_suf: "\<not> u\<^sub>0 \<cdot> u\<^sub>1 \<bowtie>\<^sub>s u\<^sub>1 \<cdot> u\<^sub>0" 
+  using comm_comp_eq_conv_suf non_comm[reversed] by blast 
+
+lemma bin_mismatch_neq: "bin_mismatch u\<^sub>0 u\<^sub>1 \<noteq> bin_mismatch u\<^sub>1 u\<^sub>0"
+  using non_comm[folded bin_mismatch_comm].
+
+abbreviation bin_code_lcp ("\<alpha>") where  "bin_code_lcp \<equiv> bin_lcp u\<^sub>0 u\<^sub>1"
+abbreviation bin_code_lcs where "bin_code_lcs \<equiv> bin_lcs u\<^sub>0 u\<^sub>1"
+abbreviation bin_code_mismatch_fst ("c\<^sub>0") where "bin_code_mismatch_fst \<equiv> bin_mismatch u\<^sub>0 u\<^sub>1"
+abbreviation bin_code_mismatch_snd ("c\<^sub>1") where "bin_code_mismatch_snd \<equiv> bin_mismatch u\<^sub>1 u\<^sub>0"
+(* abbreviation "bin_code_lcp' \<equiv> bin_lcp u\<^sub>1 u\<^sub>0" *)
+(* abbreviation "bin_code_lcs' \<equiv> bin_lcs u\<^sub>1 u\<^sub>0" *)
+(* abbreviation "bin_code_mismatch_suf_fst \<equiv> bin_mismatch_suf u\<^sub>0 u\<^sub>1" *)
+(* abbreviation "bin_code_mismatch_suf_snd \<equiv> bin_mismatch_suf u\<^sub>1 u\<^sub>0" *)
+
+lemmas bin_lcp_swap = bin_lcp_sym[of u\<^sub>0 u\<^sub>1, symmetric]
 
 lemma bin_lcp_short: "\<^bold>|\<alpha>\<^bold>| < \<^bold>|u\<^sub>0\<^bold>| + \<^bold>|u\<^sub>1\<^bold>|"
 proof-
   have "\<not> u\<^sub>0\<cdot>u\<^sub>1 \<le>p u\<^sub>1\<cdot>u\<^sub>0"
     using comm_ruler non_comm by blast
-  from lcp_len'[OF this, folded bin_lcp_def, unfolded length_append]
+  from lcp_len'[OF this, folded bin_lcp_def, unfolded lenmorph]
   show  "\<^bold>|\<alpha>\<^bold>| < \<^bold>|u\<^sub>0\<^bold>| + \<^bold>|u\<^sub>1\<^bold>|".
 qed
 
-lemma bin_lcp_fst_mismatch_pref:  "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> \<alpha>"
+lemma bin_fst_mismatch': "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> u\<^sub>1"
+  by (simp add: append_one_prefix bin_lcp_pref_fst_snd bin_lcp_short bin_mismatch_def) 
+
+lemma bin_fst_mismatch: "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> \<alpha>"
 proof-
-  have "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> u\<^sub>1"
-    using  append_one_prefix[of \<alpha> "u\<^sub>0 \<cdot> u\<^sub>1", folded fst_mismatch_def, OF bin_lcp_pref_fst_snd, unfolded length_append, OF bin_lcp_short].
-  hence "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> (u\<^sub>1 \<cdot> u\<^sub>0)"
+  from bin_fst_mismatch'
+  have "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> (u\<^sub>1 \<cdot> u\<^sub>0)"
     using pref_prolong by blast
-  from pref_prod_pref_short[OF this bin_lcp_pref_snd_fst, unfolded length_append sing_len]
+  from pref_prod_pref_short[OF this bin_lcp_pref_snd_fst, unfolded lenmorph sing_len]
   show "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> \<alpha>"
     using  nemp_len[OF bin_fst_nemp] by linarith
 qed
 
-lemma not_fst_snd_pref:  "\<not> u\<^sub>0 \<cdot> u\<^sub>1 \<le>p \<alpha>"
-  using bin_lcp_short[folded length_append[of u\<^sub>0 u\<^sub>1]]  prefix_order.antisym[OF bin_lcp_pref_fst_snd] by fastforce
+lemmas bin_snd_mismatch' = binary_code.bin_fst_mismatch'[OF bin_code_swap, unfolded bin_lcp_swap] and
+       bin_snd_mismatch  = binary_code.bin_fst_mismatch[OF bin_code_swap, unfolded bin_lcp_swap]
 
-lemma bin_lcp_fst_mismatch_pref':  "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> u\<^sub>1"
-  using strict_prefixI[OF bin_lcp_pref_fst_snd, THEN add_nth_pref, folded fst_mismatch_def] not_fst_snd_pref
-  self_pref[of \<alpha>] by fastforce
-
-interpretation symcode: binary_code u\<^sub>1 u\<^sub>0
-  rewrites  "symcode.c\<^sub>0 = c\<^sub>1" and  "symcode.c\<^sub>1 = c\<^sub>0" and "symcode.\<alpha> = \<alpha>"
-proof-
-  show "binary_code u\<^sub>1 u\<^sub>0"
-    unfolding  binary_code_def using non_comm by simp
-  show "binary_code.\<alpha> u\<^sub>1 u\<^sub>0 = \<alpha>"
-    by (simp add: \<open>binary_code u\<^sub>1 u\<^sub>0\<close> binary_code.bin_lcp_def lcp_sym)
-  show "binary_code.c\<^sub>0 u\<^sub>1 u\<^sub>0 = c\<^sub>1"
-    by (simp add: \<open>binary_code u\<^sub>1 u\<^sub>0\<close> \<open>binary_code.\<alpha> u\<^sub>1 u\<^sub>0 = \<alpha>\<close> binary_code.fst_mismatch_def snd_mismatch_def)
-  show "binary_code.c\<^sub>1 u\<^sub>1 u\<^sub>0 = c\<^sub>0"
-    by (simp add: \<open>binary_code u\<^sub>1 u\<^sub>0\<close> \<open>binary_code.\<alpha> u\<^sub>1 u\<^sub>0 = \<alpha>\<close> binary_code.snd_mismatch_def fst_mismatch_def)
+lemma bin_lcp_pref_all: "xs \<in> lists {u\<^sub>0,u\<^sub>1} \<Longrightarrow> \<alpha> \<le>p concat xs \<cdot> \<alpha>"
+proof (induct xs, simp)
+  case (Cons a xs)
+  have "a \<in> {u\<^sub>0,u\<^sub>1}" and "xs \<in> lists {u\<^sub>0, u\<^sub>1}"
+      using \<open>a # xs \<in> lists {u\<^sub>0, u\<^sub>1}\<close> by simp_all
+  show ?case
+  proof (rule two_elemP[OF \<open>a \<in> {u\<^sub>0,u\<^sub>1}\<close>], simp_all)
+    show "\<alpha> \<le>p u\<^sub>0 \<cdot> concat xs \<cdot> \<alpha>"
+      using pref_extD[OF bin_fst_mismatch] Cons.hyps[OF \<open>xs \<in> lists {u\<^sub>0, u\<^sub>1}\<close>] pref_prolong by blast 
+  next 
+    show "\<alpha> \<le>p u\<^sub>1 \<cdot> concat xs \<cdot> \<alpha>"
+      using pref_extD[OF bin_snd_mismatch] Cons.hyps[OF \<open>xs \<in> lists {u\<^sub>0, u\<^sub>1}\<close>] pref_prolong by blast 
+  qed
 qed
 
-lemmas bin_snd_nemp = symcode.bin_fst_nemp and
-       bin_snd_mismatch = symcode.bin_lcp_fst_mismatch_pref
+lemma bin_lcp_pref_all_hull: "w \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle> \<Longrightarrow> \<alpha> \<le>p w \<cdot> \<alpha>" 
+  using bin_lcp_pref_all using hull_concat_listsE by metis
+
+lemma bin_fst_mismatch_all: "xs \<in> lists {u\<^sub>0,u\<^sub>1} \<Longrightarrow> \<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> concat xs \<cdot> \<alpha>"
+using pref_prolong[OF bin_fst_mismatch bin_lcp_pref_all].
+
+lemma bin_fst_mismatch_all_hull: assumes "w \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>" shows "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> w \<cdot> \<alpha>"
+  using bin_fst_mismatch_all hull_concat_listsE[OF assms] by metis 
+
+lemma bin_snd_mismatch_all: assumes "xs \<in> lists {u\<^sub>0,u\<^sub>1}" 
+  shows "\<alpha> \<cdot> [c\<^sub>1] \<le>p u\<^sub>1 \<cdot> concat xs \<cdot> \<alpha>"
+  using pref_prolong[OF bin_snd_mismatch bin_lcp_pref_all[OF assms]]. 
+
+lemma bin_snd_mismatch_all_hull: assumes "w \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>" 
+  shows "\<alpha> \<cdot> [c\<^sub>1] \<le>p u\<^sub>1 \<cdot> w \<cdot> \<alpha>"
+  using bin_snd_mismatch_all hull_concat_listsE[OF assms] by metis 
+
+lemma hd_lq_mismatch_fst: "hd (\<alpha>\<inverse>\<^sup>>(u\<^sub>0 \<cdot> \<alpha>)) = c\<^sub>0"
+  using hd_lq_conv_nth[OF prefix_snocD[OF bin_fst_mismatch]] bin_fst_mismatch
+   by (auto simp add: prefix_def)
+
+lemma hd_lq_mismatch_snd: "hd (\<alpha>\<inverse>\<^sup>>(u\<^sub>1 \<cdot> \<alpha>)) = c\<^sub>1"
+  using hd_lq_conv_nth[OF prefix_snocD[OF bin_snd_mismatch]] bin_snd_mismatch
+   by (auto simp add: prefix_def)
+
+lemma hds_bin_mismatch_neq: "hd (\<alpha>\<inverse>\<^sup>>(u\<^sub>0 \<cdot> \<alpha>)) \<noteq> hd (\<alpha>\<inverse>\<^sup>>(u\<^sub>1 \<cdot> \<alpha>))"
+  unfolding hd_lq_mismatch_fst hd_lq_mismatch_snd
+  using bin_mismatch_neq. 
+
+lemma bin_lcp_fst_pow_pref: "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0\<^sup>@Suc k \<cdot> u\<^sub>1 \<cdot> z" 
+proof (induct k)
+case 0
+then show ?case
+  using pref_ext[OF bin_fst_mismatch'] by auto 
+next
+case (Suc k)
+  from pref_prolong[OF bin_fst_mismatch, OF pref_extD[OF this]]
+  show ?case
+    unfolding pow_Suc rassoc.
+qed
+
+lemmas bin_lcp_snd_pow_pref = binary_code.bin_lcp_fst_pow_pref[OF bin_code_swap, unfolded bin_lcp_swap]
 
 lemma bin_lcp_fst_lcp: "\<alpha> \<le>p u\<^sub>0 \<cdot> \<alpha>" and bin_lcp_snd_lcp: "\<alpha> \<le>p u\<^sub>1 \<cdot> \<alpha>"
-  using bin_lcp_fst_mismatch_pref  bin_snd_mismatch by auto
+  using pref_extD[OF bin_fst_mismatch]  pref_extD[OF bin_snd_mismatch].
 
-lemma bin_all_nemp: "ws \<in> lists {u\<^sub>0,u\<^sub>1} \<Longrightarrow> concat ws = \<epsilon> \<Longrightarrow> ws = \<epsilon>"
-using bin_fst_nemp bin_snd_nemp by(induct ws, simp, auto)
-
-lemma bin_lcp_all_lcp: "ws \<in> lists {u\<^sub>0,u\<^sub>1} \<Longrightarrow> \<alpha> \<le>p concat ws \<cdot> \<alpha>"
-  proof(induct ws rule: rev_induct, simp)
-    case (snoc x xs)
-  have x_or: "x = u\<^sub>0 \<or> x = u\<^sub>1"
-    using \<open>xs \<cdot> [x] \<in> lists {u\<^sub>0, u\<^sub>1}\<close> by simp
-  have "xs \<in> lists {u\<^sub>0, u\<^sub>1}"
-      using \<open>xs \<cdot> [x] \<in> lists {u\<^sub>0, u\<^sub>1}\<close> by auto
-  from pref_prolong[OF snoc.hyps, OF this, of "x\<cdot>\<alpha>", unfolded lassoc]
-  show ?case
-    using bin_lcp_fst_lcp bin_lcp_snd_lcp disjE[OF x_or] by auto
+lemma bin_lcp_pref_all_set: assumes "set ws = {u\<^sub>0,u\<^sub>1}"
+  shows "\<alpha> \<le>p concat ws" 
+proof-
+  have "ws \<in> lists {u\<^sub>0, u\<^sub>1}" 
+    using assms by blast
+  have "\<^bold>|u\<^sub>0\<^bold>| + \<^bold>|u\<^sub>1\<^bold>| \<le> \<^bold>|concat ws\<^bold>|"
+    using assms two_in_set_concat_len[OF bin_code_neq] by simp
+  with pref_prod_le[OF bin_lcp_pref_all[OF \<open>ws \<in> lists {u\<^sub>0, u\<^sub>1}\<close>]] bin_lcp_short 
+  show ?thesis 
+    by simp
 qed
 
-lemma bin_code_alpha: assumes "us \<in> lists {u\<^sub>0,u\<^sub>1}" and "vs \<in> lists {u\<^sub>0,u\<^sub>1}" and "hd us  \<noteq> hd vs"
+lemma bin_lcp_conjug_morph: 
+  assumes "u \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>" and "v \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>"
+  shows "\<alpha>\<inverse>\<^sup>>(u \<cdot> \<alpha>) \<cdot> \<alpha>\<inverse>\<^sup>>(v \<cdot> \<alpha>) = \<alpha>\<inverse>\<^sup>>((u \<cdot> v) \<cdot> \<alpha>)"
+  unfolding lq_reassoc[OF bin_lcp_pref_all_hull[OF \<open>u \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>\<close>]] rassoc
+   lq_pref[OF bin_lcp_pref_all_hull[OF \<open>v \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>\<close>]].. 
+
+lemma lcp_bin_conjug_prim_iff:
+  "set ws = {u\<^sub>0,u\<^sub>1} \<Longrightarrow> primitive (\<alpha>\<inverse>\<^sup>>(concat ws) \<cdot> \<alpha>) \<longleftrightarrow> primitive (concat ws)"
+  using conjug_prim_iff[OF root_conjug[OF pref_ext[OF bin_lcp_pref_all_set]], symmetric]
+  unfolding lq_reassoc[OF bin_lcp_pref_all_set] by simp
+
+lemma bin_lcp_conjug_inj_on: "inj_on (\<lambda>u. \<alpha>\<inverse>\<^sup>>(u \<cdot> \<alpha>)) \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>"
+  unfolding inj_on_def using bin_lcp_pref_all_hull cancel_right lq_pref
+  by metis
+
+lemma bin_code_lcp_marked: assumes "us \<in> lists {u\<^sub>0,u\<^sub>1}" and "vs \<in> lists {u\<^sub>0,u\<^sub>1}" and "hd us \<noteq> hd vs" 
+  shows "concat us \<cdot> \<alpha> \<and>\<^sub>p concat vs \<cdot> \<alpha> = \<alpha>"
+proof (cases "us = \<epsilon> \<or> vs = \<epsilon>")
+  assume "us = \<epsilon> \<or> vs = \<epsilon>"
+  thus ?thesis
+    using append_self_conv2 assms(1) assms(2) bin_lcp_pref_all concat.simps(1) lcp_pref_conv lcp_sym by metis 
+next
+  assume "\<not> (us = \<epsilon> \<or> vs = \<epsilon>)" hence "us \<noteq> \<epsilon>" and "vs \<noteq> \<epsilon>" by blast+
+  have spec_case: "concat us \<cdot> \<alpha> \<and>\<^sub>p concat vs \<cdot> \<alpha> = \<alpha>" if "us \<in> lists {u\<^sub>0,u\<^sub>1}" and "vs \<in> lists {u\<^sub>0,u\<^sub>1}" and "hd us = u\<^sub>0" and "hd vs = u\<^sub>1" and "us \<noteq> \<epsilon>" and "vs \<noteq> \<epsilon>" for us vs
+  proof-
+    have "concat us = u\<^sub>0 \<cdot> concat (tl us)"
+      unfolding hd_concat_tl[OF \<open>us \<noteq> \<epsilon>\<close>, symmetric] \<open>hd us = u\<^sub>0\<close>..
+    from bin_fst_mismatch_all[OF tl_in_lists[OF \<open>us \<in> lists {u\<^sub>0,u\<^sub>1}\<close>], folded rassoc this]
+    have pref1: "\<alpha> \<cdot> [c\<^sub>0] \<le>p concat us \<cdot> \<alpha>".
+    have "concat vs = u\<^sub>1 \<cdot> concat (tl vs)"
+      unfolding hd_concat_tl[OF \<open>vs \<noteq> \<epsilon>\<close>, symmetric] \<open>hd vs = u\<^sub>1\<close>..
+    from bin_snd_mismatch_all[OF tl_in_lists[OF \<open>vs \<in> lists {u\<^sub>0,u\<^sub>1}\<close>], folded rassoc this]
+    have pref2: "\<alpha> \<cdot> [c\<^sub>1] \<le>p concat vs \<cdot> \<alpha>".
+    show ?thesis
+      using  lcp_first_mismatch_pref[OF pref1 pref2 bin_mismatch_neq].
+  qed
+  have "hd us \<in>  {u\<^sub>0,u\<^sub>1}" and "hd vs \<in>  {u\<^sub>0,u\<^sub>1}" using
+    lists_hd_in_set[OF \<open>us \<noteq> \<epsilon>\<close> \<open>us \<in> lists {u\<^sub>0, u\<^sub>1}\<close>] lists_hd_in_set[OF \<open>vs \<noteq> \<epsilon>\<close> \<open>vs \<in> lists {u\<^sub>0, u\<^sub>1}\<close>].
+  then consider "hd us = u\<^sub>0 \<and> hd vs = u\<^sub>1" | "hd us = u\<^sub>1 \<and> hd vs = u\<^sub>0"
+    using \<open>hd us \<noteq> hd vs\<close> by fastforce 
+  then show ?thesis
+    using spec_case[rule_format] \<open>us \<noteq> \<epsilon>\<close> \<open>vs \<noteq> \<epsilon>\<close> assms lcp_sym by metis
+qed
+
+\<comment> \<open>ALT PROOF\<close> 
+lemma  assumes "us \<in> lists {u\<^sub>0,u\<^sub>1}" and "vs \<in> lists {u\<^sub>0,u\<^sub>1}" and "hd us \<noteq> hd vs" 
   shows "concat us \<cdot> \<alpha> \<and>\<^sub>p concat vs \<cdot> \<alpha> = \<alpha>"
   using assms
 proof (induct us vs rule: list_induct2', simp)
   case (2 x xs)
   show ?case
-    using bin_lcp_all_lcp[OF \<open>x # xs \<in> lists {u\<^sub>0, u\<^sub>1}\<close>, folded lcp_pref_conv, unfolded lcp_sym[of \<alpha>]] by simp
+    using bin_lcp_pref_all[OF \<open>x # xs \<in> lists {u\<^sub>0, u\<^sub>1}\<close>, folded lcp_pref_conv, unfolded lcp_sym[of \<alpha>]] by simp
 next
   case (3 y ys)
   show ?case
-    using bin_lcp_all_lcp[OF \<open>y # ys \<in> lists {u\<^sub>0, u\<^sub>1}\<close>, folded lcp_pref_conv] by simp
+    using bin_lcp_pref_all[OF \<open>y # ys \<in> lists {u\<^sub>0, u\<^sub>1}\<close>, folded lcp_pref_conv] by simp
 next
   case (4 x xs y ys)
   interpret i: binary_code x y
-    using "4.prems"(1) "4.prems"(2) "4.prems"(3) non_comm binary_code.intro by auto
+    using "4.prems"(1) "4.prems"(2) "4.prems"(3) non_comm binary_code.intro by auto 
   have alph: "{u\<^sub>0,u\<^sub>1} = {x,y}"
     using "4.prems"(1) "4.prems"(2) "4.prems"(3) by auto
   from disjE[OF this[unfolded doubleton_eq_iff]]
-  have \<alpha>id: "i.\<alpha> = \<alpha>"
-    unfolding bin_lcp_def i.bin_lcp_def using lcp_sym by auto
-  have c0: "i.\<alpha> \<cdot> [i.c\<^sub>0] \<le>p x \<cdot> concat xs \<cdot> i.\<alpha>"
-    using  i.bin_lcp_all_lcp[of xs] \<open>x # xs \<in> lists {u\<^sub>0, u\<^sub>1}\<close>[unfolded Cons_in_lists_iff alph]
-      pref_prolong[OF i.bin_lcp_fst_mismatch_pref] by blast
-  have c1: "i.\<alpha> \<cdot> [i.c\<^sub>1] \<le>p y \<cdot> concat ys \<cdot> i.\<alpha>"
-    using  i.bin_lcp_all_lcp[of ys] \<open>y # ys \<in> lists {u\<^sub>0, u\<^sub>1}\<close>[unfolded Cons_in_lists_iff alph]
-      pref_prolong[OF i.bin_snd_mismatch] by blast
-  have "i.\<alpha>\<cdot>[i.c\<^sub>0] \<and>\<^sub>p i.\<alpha>\<cdot>[i.c\<^sub>1] = i.\<alpha>"
+  have "i.bin_code_lcp = \<alpha>"  
+    using i.bin_lcp_swap[symmetric] by blast
+  have c0: "i.bin_code_lcp \<cdot> [i.bin_code_mismatch_fst] \<le>p x \<cdot> concat xs \<cdot> i.bin_code_lcp"
+    using  i.bin_lcp_pref_all[of xs] \<open>x # xs \<in> lists {u\<^sub>0, u\<^sub>1}\<close>[unfolded Cons_in_lists_iff alph] 
+      pref_prolong[OF i.bin_fst_mismatch] by blast
+  have c1: "i.bin_code_lcp \<cdot> [i.bin_code_mismatch_snd] \<le>p y \<cdot> concat ys \<cdot> i.bin_code_lcp"
+    using pref_prolong[OF conjunct2[OF \<open>y # ys \<in> lists {u\<^sub>0, u\<^sub>1}\<close>[unfolded      Cons_in_lists_iff alph],
+          THEN i.bin_snd_mismatch_all[of ys]], OF self_pref]. 
+  have "i.bin_code_lcp\<cdot>[i.bin_code_mismatch_fst] \<and>\<^sub>p i.bin_code_lcp\<cdot>[i.bin_code_mismatch_snd] = i.bin_code_lcp"
     by (simp add: i.bin_mismatch_neq lcp_first_mismatch')
-  from lcp_rulers[OF c0 c1, unfolded this, unfolded \<alpha>id]
-  show ?case
-    unfolding concat.simps(2) rassoc pref_cancel_conv  using i.bin_mismatch_neq by simp
+  from lcp_rulers[OF c0 c1, unfolded this, unfolded bin_lcp_swap]
+  show ?case                               
+    unfolding concat.simps(2) rassoc using i.bin_mismatch_neq
+     \<open>i.bin_code_lcp = \<alpha>\<close> by force 
+         
 qed
+
+lemma bin_code_lcp_concat: assumes "us \<in> lists {u\<^sub>0,u\<^sub>1}" and "vs \<in> lists {u\<^sub>0,u\<^sub>1}" and "\<not> us \<bowtie> vs" 
+  shows "concat us \<cdot> \<alpha> \<and>\<^sub>p concat vs \<cdot> \<alpha> = concat (us \<and>\<^sub>p vs) \<cdot> \<alpha>"
+proof-
+  obtain us' vs' where us: "(us \<and>\<^sub>p vs) \<cdot> us' = us" and vs: "(us \<and>\<^sub>p vs) \<cdot> vs' = vs" and "us' \<noteq> \<epsilon>" and "vs' \<noteq> \<epsilon>" and "hd us' \<noteq> hd vs'"
+    using lcp_mismatchE[OF \<open>\<not> us \<bowtie> vs\<close>].
+  have cu: "concat us \<cdot> \<alpha> = concat (us \<and>\<^sub>p vs) \<cdot> concat us' \<cdot> \<alpha>"
+    unfolding lassoc concat_morph[symmetric] us..
+  have cv: "concat vs \<cdot> \<alpha> = concat (us \<and>\<^sub>p vs) \<cdot> concat vs' \<cdot> \<alpha>"
+    unfolding lassoc concat_morph[symmetric] vs..
+  have "us' \<in> lists {u\<^sub>0,u\<^sub>1}"
+    using \<open>us \<in> lists {u\<^sub>0,u\<^sub>1}\<close> us by inlists
+  have "vs' \<in> lists {u\<^sub>0,u\<^sub>1}"
+    using \<open>vs \<in> lists {u\<^sub>0,u\<^sub>1}\<close> vs by inlists
+  show "concat us \<cdot> \<alpha> \<and>\<^sub>p concat vs \<cdot> \<alpha> = concat (us \<and>\<^sub>p vs) \<cdot> \<alpha>"
+    unfolding cu cv 
+    using bin_code_lcp_marked[OF \<open>us' \<in> lists {u\<^sub>0,u\<^sub>1}\<close> \<open>vs' \<in> lists {u\<^sub>0,u\<^sub>1}\<close> \<open>hd us' \<noteq> hd vs'\<close>]
+    unfolding lcp_ext_left by fast
+qed
+
+lemma bin_code_lcp_concat': assumes "us \<in> lists {u\<^sub>0,u\<^sub>1}" and "vs \<in> lists {u\<^sub>0,u\<^sub>1}" and "\<not> concat us \<bowtie> concat vs" 
+  shows "concat us \<and>\<^sub>p concat vs = concat (us \<and>\<^sub>p vs) \<cdot> \<alpha>"
+  using bin_code_lcp_concat[OF assms(1-2)] assms(3) lcp_ext_right_conv pref_concat_pref prefix_comparable_def by metis
+
+lemma bin_lcp_pows:  "u\<^sub>0\<^sup>@Suc k \<cdot> u\<^sub>1 \<cdot> z \<and>\<^sub>p u\<^sub>1\<^sup>@Suc l \<cdot> u\<^sub>0 \<cdot> z' = \<alpha>"
+  using lcp_first_mismatch_pref[OF bin_lcp_fst_pow_pref bin_lcp_snd_pow_pref bin_mismatch_neq].
 
 theorem bin_code: assumes "us \<in> lists {u\<^sub>0,u\<^sub>1}" and "vs \<in> lists {u\<^sub>0,u\<^sub>1}" and "concat us = concat vs"
   shows "us = vs"
@@ -735,37 +1561,423 @@ theorem bin_code: assumes "us \<in> lists {u\<^sub>0,u\<^sub>1}" and "vs \<in> l
 proof (induct us vs rule: list_induct2', simp)
 case (2 x xs)
   then show ?case
-    using bin_fst_nemp bin_snd_nemp by auto
+    using bin_fst_nemp bin_snd_nemp by auto 
 next
   case (3 y ys)
-  then show ?case
-    using bin_fst_nemp bin_snd_nemp by auto
+  then show ?case 
+    using bin_fst_nemp bin_snd_nemp by auto 
 next
   case (4 x xs y ys)
-  then show ?case
+  then show ?case 
   proof(cases "x = y")
-    assume "x = y"  thus "x # xs = y # ys"
-      using "4.hyps" \<open>concat (x # xs) = concat (y # ys)\<close>[unfolded  concat.simps(2) \<open>x = y\<close>, unfolded cancel]
+    assume "x = y"  thus "x # xs = y # ys" 
+      using "4.hyps" \<open>concat (x # xs) = concat (y # ys)\<close>[unfolded  concat.simps(2) \<open>x = y\<close>, unfolded cancel]  
       \<open>y # ys \<in> lists {u\<^sub>0, u\<^sub>1}\<close>[unfolded Cons_in_lists_iff] \<open>x # xs \<in> lists {u\<^sub>0, u\<^sub>1}\<close>[unfolded Cons_in_lists_iff]
-      by simp
+      by simp   
   next
     assume "x \<noteq> y"
     have "concat(y # ys) = \<epsilon>"
-      using bin_code_alpha[OF \<open>x # xs \<in> lists {u\<^sub>0, u\<^sub>1}\<close> \<open>y # ys \<in> lists {u\<^sub>0, u\<^sub>1}\<close>, unfolded list.sel(1) \<open>concat (x # xs) = concat (y # ys)\<close>, OF \<open>x \<noteq> y\<close>]
+      using bin_code_lcp_marked[OF \<open>x # xs \<in> lists {u\<^sub>0, u\<^sub>1}\<close> \<open>y # ys \<in> lists {u\<^sub>0, u\<^sub>1}\<close>, unfolded list.sel(1) \<open>concat (x # xs) = concat (y # ys)\<close>, OF \<open>x \<noteq> y\<close>]
       by simp
-    from bin_all_nemp[OF \<open>y # ys \<in> lists {u\<^sub>0, u\<^sub>1}\<close> this]
-    have False by simp
-    thus "x # xs = y # ys" by blast
+    hence "x = \<epsilon>" and "y = \<epsilon>"
+      using \<open> concat (x # xs) = concat (y # ys)\<close> unfolding concat.simps(2) pref_nemp by force+
+    with  \<open>x \<noteq> y\<close>  
+    show "x # xs = y # ys" by blast  
   qed
 qed
 
-end
+lemma code_bin_roots: "binary_code (\<rho> u\<^sub>0) (\<rho> u\<^sub>1)" 
+  using non_comm comp_primroot_conv' by unfold_locales blast 
+
+sublocale code "{u\<^sub>0,u\<^sub>1}"
+  using bin_code by unfold_locales
+
+lemma bin_code_prefs: assumes "w0 \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>" and "p \<le>p w0" "w1 \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>" and "\<^bold>|u\<^sub>1\<^bold>| \<le> \<^bold>|p\<^bold>|"
+      shows " \<not> u\<^sub>0 \<cdot>  p \<le>p u\<^sub>1 \<cdot> w1"
+proof
+  assume contr: "u\<^sub>0 \<cdot> p  \<le>p u\<^sub>1 \<cdot> w1" 
+  have "\<^bold>|\<alpha>\<^bold>| < \<^bold>|u\<^sub>0 \<cdot> p\<^bold>|"
+    using \<open>\<^bold>|u\<^sub>1\<^bold>| \<le> \<^bold>|p\<^bold>|\<close> bin_lcp_short by auto
+  obtain ws0 where "ws0 \<in> lists {u\<^sub>0,u\<^sub>1}" and "concat ws0 = w0"
+    using \<open>w0 \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>\<close> hull_concat_lists0 by blast
+  obtain ws1 where "ws1 \<in> lists {u\<^sub>0,u\<^sub>1}" and "concat ws1 = w1"
+    using \<open>w1 \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>\<close> hull_concat_lists0 by blast
+  from bin_code_lcp_marked[of "[u\<^sub>0] \<cdot> ws0" "[u\<^sub>1] \<cdot> ws1"]
+  have "u\<^sub>0 \<cdot> w0 \<cdot> \<alpha> \<and>\<^sub>p u\<^sub>1 \<cdot> w1 \<cdot> \<alpha> = \<alpha>"
+    using \<open>ws0 \<in> lists {u\<^sub>0,u\<^sub>1}\<close> \<open>ws1 \<in> lists {u\<^sub>0,u\<^sub>1}\<close> \<open>concat ws0 = w0\<close> \<open>concat ws1 = w1\<close> 
+    bin_code_neq by auto
+  with lcp_pref_ext[OF contr]
+  have "u\<^sub>0 \<cdot> p \<le>p \<alpha>"
+    using append_assoc  lq_pref[OF \<open>p \<le>p w0\<close>]  by metis
+  thus False
+    using \<open>\<^bold>|\<alpha>\<^bold>| < \<^bold>|u\<^sub>0 \<cdot> p\<^bold>|\<close> unfolding prefix_def  by fastforce
+qed
+
+lemma bin_code_rev: "binary_code (rev u\<^sub>0) (rev u\<^sub>1)"  
+  by (unfold_locales, unfold comm_rev_iff, simp add: non_comm)
+
+lemma bin_mismatch_pows: "\<not> u\<^sub>0\<^sup>@Suc k \<cdot> u\<^sub>1 \<cdot> z = u\<^sub>1\<^sup>@Suc l \<cdot> u\<^sub>0 \<cdot> z'"
+proof (rule notI)
+  assume eq: "u\<^sub>0 \<^sup>@ Suc k \<cdot> u\<^sub>1 \<cdot> z = u\<^sub>1 \<^sup>@ Suc l \<cdot> u\<^sub>0 \<cdot> z'"
+  have pref1: "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0\<^sup>@Suc k \<cdot> u\<^sub>1" and pref2: "\<alpha> \<cdot> [c\<^sub>1] \<le>p u\<^sub>1\<^sup>@Suc l \<cdot> u\<^sub>0"
+    using bin_lcp_fst_pow_pref[of k \<epsilon>, unfolded clean_emp] bin_lcp_snd_pow_pref[of l \<epsilon>, unfolded clean_emp].
+  from ruler[OF pref_ext[OF pref1, unfolded rassoc, of z, unfolded eq] pref_ext[OF pref2, unfolded rassoc, of z', unfolded eq]] bin_mismatch_neq  
+  show False by simp
+qed
+
+lemma bin_lcp_pows_lcp: "u\<^sub>0\<^sup>@Suc k \<cdot> u\<^sub>1\<^sup>@Suc l \<and>\<^sub>p u\<^sub>1\<^sup>@Suc l \<cdot> u\<^sub>0\<^sup>@Suc k = u\<^sub>0 \<cdot> u\<^sub>1 \<and>\<^sub>p u\<^sub>1 \<cdot> u\<^sub>0"
+  using bin_lcp_def bin_lcp_pows by auto
+
+lemma bin_mismatch: "u\<^sub>0 \<cdot> \<alpha> \<and>\<^sub>p u\<^sub>1 \<cdot> \<alpha> = \<alpha>" 
+  using lcp_first_mismatch_pref[OF bin_fst_mismatch bin_snd_mismatch bin_mismatch_neq].  
+
+lemma not_comp_bin_fst_snd: "\<not> u\<^sub>0 \<cdot> \<alpha> \<bowtie> u\<^sub>1 \<cdot>  \<alpha>"
+  using prefs_comp_comp[OF bin_fst_mismatch bin_snd_mismatch] bin_mismatch_neq
+  unfolding prefix_comparable_def pref_cancel_conv by force
+
+
+theorem bin_bounded_delay: assumes "z \<le>p u\<^sub>0 \<cdot> w\<^sub>0" and "z \<le>p u\<^sub>1 \<cdot> w\<^sub>1" 
+            and "w\<^sub>0 \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>" and "w\<^sub>1 \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>"
+          shows "\<^bold>|z\<^bold>| \<le> \<^bold>|\<alpha>\<^bold>|"  
+proof (rule leI, rule notI)
+  assume "\<^bold>|\<alpha>\<^bold>| < \<^bold>|z\<^bold>|"
+  hence "\<^bold>|\<alpha> \<cdot> [a]\<^bold>| \<le> \<^bold>|z\<^bold>|" for a 
+    unfolding lenmorph sing_len by simp
+  have "z \<le>p u\<^sub>0 \<cdot> w\<^sub>0 \<cdot> \<alpha>" and "z \<le>p u\<^sub>1 \<cdot> w\<^sub>1 \<cdot> \<alpha>"
+    using  pref_prolong[OF \<open>z \<le>p u\<^sub>0 \<cdot> w\<^sub>0\<close> triv_pref] pref_prolong[OF \<open>z \<le>p u\<^sub>1 \<cdot> w\<^sub>1\<close> triv_pref].
+  have "\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> w\<^sub>0 \<cdot> \<alpha>" and "\<alpha> \<cdot> [c\<^sub>1] \<le>p u\<^sub>1 \<cdot> w\<^sub>1 \<cdot> \<alpha>"
+     using bin_fst_mismatch_all_hull[OF \<open>w\<^sub>0 \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>\<close>] bin_snd_mismatch_all_hull[OF \<open>w\<^sub>1 \<in> \<langle>{u\<^sub>0,u\<^sub>1}\<rangle>\<close>].
+   from \<open>z \<le>p u\<^sub>0 \<cdot> w\<^sub>0 \<cdot> \<alpha>\<close> \<open>\<alpha> \<cdot> [c\<^sub>0] \<le>p u\<^sub>0 \<cdot> w\<^sub>0 \<cdot> \<alpha>\<close> \<open>\<^bold>|\<alpha> \<cdot> [c\<^sub>0]\<^bold>| \<le> \<^bold>|z\<^bold>|\<close>  
+   have "\<alpha> \<cdot> [c\<^sub>0] \<le>p z"
+     using prefix_length_prefix by blast 
+   from \<open>z \<le>p u\<^sub>1 \<cdot> w\<^sub>1 \<cdot> \<alpha>\<close> \<open>\<alpha> \<cdot> [c\<^sub>1] \<le>p u\<^sub>1 \<cdot> w\<^sub>1 \<cdot> \<alpha>\<close> \<open>\<^bold>|\<alpha> \<cdot> [c\<^sub>1]\<^bold>| \<le> \<^bold>|z\<^bold>|\<close>  
+   have "\<alpha> \<cdot> [c\<^sub>1] \<le>p z"
+     using prefix_length_prefix by blast 
+   from \<open>\<alpha> \<cdot> [c\<^sub>1] \<le>p z\<close> \<open>\<alpha> \<cdot> [c\<^sub>0] \<le>p z\<close> bin_mismatch_neq
+   show False 
+     unfolding prefix_def by force
+qed  
+
+no_notation bin_code_lcp ("\<alpha>") and
+         (* bin_code_lcs ("\<beta>") and *)
+         (* bin_code_lcp' ("\<alpha>\<^sub>s") and *)
+         (* bin_code_lcs' ("\<beta>") and *)
+            bin_code_mismatch_fst ("c\<^sub>0") and
+            bin_code_mismatch_snd ("c\<^sub>1") 
+         (* bin_code_mismatch_suf_fst ("d\<^sub>0") and *)
+         (* bin_code_mismatch_suf_snd ("d\<^sub>1") *)
+
+end (*binary_code*)
 
 lemmas no_comm_bin_code = binary_code.bin_code[unfolded binary_code_def]
 
 theorem bin_code_code: assumes "u \<cdot> v \<noteq> v \<cdot> u" shows "code {u, v}"
-  unfolding code_def using no_comm_bin_code[OF assms] by blast
+  unfolding code_def using no_comm_bin_code[OF assms] by blast 
 
+lemma code_bin_code: "u \<noteq> v \<Longrightarrow> code {u,v} \<Longrightarrow> u \<cdot> v \<noteq> v \<cdot> u" 
+  by (elim code.code_not_comm) simp_all
+
+lemma lcp_roots_lcp: assumes "x \<cdot> y \<noteq> y \<cdot> x" shows "x \<cdot> y \<and>\<^sub>p y \<cdot> x = \<rho> x \<cdot> \<rho> y \<and>\<^sub>p \<rho> y \<cdot> \<rho> x"
+proof-
+  obtain k where "\<rho> x\<^sup>@Suc k = x"
+    using assms primroot_expE by auto
+  obtain m where "\<rho> y\<^sup>@Suc m = y"
+    using assms primroot_expE by auto
+  have "\<rho> x \<cdot> \<rho> y \<noteq> \<rho> y \<cdot> \<rho> x"
+    using assms comp_primroot_conv' by blast 
+  then interpret binary_code "\<rho> x" "\<rho> y" by unfold_locales
+  from bin_lcp_pows_lcp[of k m, unfolded \<open>\<rho> y\<^sup>@Suc m = y\<close> \<open>\<rho> x\<^sup>@Suc k = x\<close>]
+  show ?thesis.
+qed
+
+subsection \<open>Binary Mismatch tools\<close>
+
+thm binary_code.bin_mismatch_pows[unfolded binary_code_def]
+
+lemma bin_mismatch: "u\<^sup>@Suc k \<cdot> v \<cdot> z = v\<^sup>@Suc l \<cdot> u \<cdot> z' \<Longrightarrow> u \<cdot> v = v \<cdot> u"
+  using binary_code.bin_mismatch_pows[unfolded binary_code_def] by blast
+
+definition bin_mismatch_pref :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list  \<Rightarrow> bool" where
+  "bin_mismatch_pref x y w \<equiv> \<exists> k. x\<^sup>@k \<cdot> y \<le>p w"
+
+\<comment> \<open>Binary mismatch elims\<close>
+
+lemma bm_pref_letter: assumes "x \<cdot> y \<noteq> y \<cdot> x" and "bin_mismatch_pref x y (w1 \<cdot> y)" 
+  shows "bin_lcp x y \<cdot> [bin_mismatch x y] \<le>p x \<cdot> w1 \<cdot> bin_lcp x y"
+proof-
+  interpret binary_code x y
+    using assms(1) by unfold_locales
+  from assms[unfolded bin_mismatch_pref_def prefix_def rassoc]
+  obtain k1 z1 where eq1: "w1 \<cdot> y = x\<^sup>@k1 \<cdot> y \<cdot> z1"
+    by blast
+  have "bin_lcp x y \<cdot> [bin_mismatch x y] \<le>p x \<cdot> w1 \<cdot> y \<cdot> bin_lcp x y"
+    unfolding lassoc \<open>w1 \<cdot> y = x\<^sup>@k1 \<cdot> y \<cdot> z1\<close> pow_Suc[symmetric] unfolding rassoc using bin_lcp_fst_pow_pref. 
+  have "\<^bold>|bin_lcp x y \<cdot> [bin_mismatch x y]\<^bold>| \<le> \<^bold>|(x \<cdot> w1) \<cdot> bin_lcp x y\<^bold>|"
+    unfolding lenmorph sing_len using nemp_len[OF bin_fst_nemp] by linarith
+  from ruler_le[OF \<open>bin_lcp x y \<cdot> [bin_mismatch x y] \<le>p x \<cdot> w1 \<cdot> y \<cdot> bin_lcp x y\<close> _ this]
+  show "bin_code_lcp \<cdot> [bin_mismatch x y] \<le>p x \<cdot> w1 \<cdot> bin_code_lcp"
+    unfolding shifts using bin_lcp_snd_lcp.
+qed
+
+lemma bm_eq_hard: assumes "x \<cdot> w1 = y \<cdot> w2" and  "bin_mismatch_pref x y (w1 \<cdot> y)" and "bin_mismatch_pref y x (w2 \<cdot> x)"
+  shows "x \<cdot> y = y \<cdot> x"
+proof(rule classical)
+  assume "x \<cdot> y \<noteq> y \<cdot> x"
+  note bm_pref_letter[OF this assms(2)] bm_pref_letter[OF this[symmetric] assms(3)]
+  from ruler_eq_len[OF this[unfolded lassoc \<open>x\<cdot>w1 = y\<cdot>w2\<close> bin_lcp_sym[of y]]]
+  have "bin_mismatch x y = bin_mismatch y x"
+    unfolding lenmorph sing_len cancel by blast
+  thus "x \<cdot> y = y \<cdot> x"
+    unfolding  bin_mismatch_comm. 
+qed    
+
+lemma bm_pref_hard: assumes "x \<cdot> w1 \<le>p y \<cdot> w2" and  "bin_mismatch_pref x y w1"
+  and "bin_mismatch_pref y x (w2 \<cdot> x)"
+shows "x \<cdot> y = y \<cdot> x"
+proof(rule classical)
+  assume "x \<cdot> y \<noteq> y \<cdot> x"
+  then interpret binary_code x y
+    by unfold_locales
+  from assms[unfolded bin_mismatch_pref_def prefix_def rassoc]
+  obtain k1 z1 where eq1: "w1 = x\<^sup>@k1 \<cdot> y \<cdot> z1"
+    by blast
+  have "bin_lcp x y \<cdot> [bin_mismatch x y] \<le>p x \<cdot> w1"
+    unfolding lassoc \<open>w1 = x\<^sup>@k1 \<cdot> y \<cdot> z1\<close> pow_Suc[symmetric] unfolding rassoc using bin_lcp_fst_pow_pref. 
+  note pref_ext[OF pref_trans[OF this assms(1)], unfolded rassoc] bm_pref_letter[OF \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>[symmetric] assms(3), unfolded bin_lcp_sym[of y]] 
+  from ruler_eq_len[OF this]
+  have "bin_mismatch x y = bin_mismatch y x"  
+    unfolding lenmorph sing_len cancel by blast
+  thus "x \<cdot> y = y \<cdot> x"
+   unfolding  bin_mismatch_comm. 
+qed    
+
+lemmas bm_elims = bm_eq_hard  bm_eq_hard[symmetric] bm_pref_hard bm_pref_hard[symmetric]
+
+lemmas bm_elims_rev = bm_elims[reversed]
+
+\<comment> \<open>Binary mismatch predicate evaluation\<close>
+named_theorems bm_simps
+lemma [bm_simps]: " bin_mismatch_pref x y (y \<cdot> v)"
+  unfolding bin_mismatch_pref_def using  append_Nil pow_zero[of x] by fast
+lemma [bm_simps]: " bin_mismatch_pref x y y"
+  unfolding bin_mismatch_pref_def using  append_Nil pow_zero[of x] self_pref by metis
+lemma [bm_simps]:
+ "w1 \<in> \<langle>{x,y}\<rangle> \<Longrightarrow> bin_mismatch_pref x y w \<Longrightarrow> bin_mismatch_pref x y (w1 \<cdot> w)"
+  unfolding bin_mismatch_pref_def
+proof (induct w1 arbitrary: w rule: hull.induct[of _ "{x,y}"], simp)
+  case (prod_cl w1 w2)
+  from prod_cl.hyps(3)[OF prod_cl.prems] 
+  obtain k s where "w2 \<cdot> w = x \<^sup>@ k \<cdot> y \<cdot> s" by (auto simp add: prefix_def)
+  consider "w1 = x" | "w1 = y" using \<open>w1 \<in> {x,y}\<close> by blast
+  then show ?case 
+  proof (cases)
+    assume "w1 = x"
+    show ?thesis
+      unfolding rassoc \<open>w2 \<cdot> w = x \<^sup>@ k \<cdot> y \<cdot> s\<close> \<open>w1 = x\<close>
+      unfolding lassoc pow_Suc[symmetric] unfolding rassoc
+      using same_prefix_prefix by blast
+  next
+    assume "w1 = y"
+    have "x\<^sup>@0 \<cdot> y \<le>p y \<cdot> w2 \<cdot> w" by auto
+    thus ?thesis
+      unfolding rassoc \<open>w1 = y\<close> by blast 
+  qed
+qed
+
+lemmas bm_simps_rev = bm_simps[reversed]
+
+\<comment> \<open>Binary hull membership evaluation\<close>
+
+named_theorems bin_hull_in 
+lemma[bin_hull_in]: "x \<in> \<langle>{x,y}\<rangle>"
+  by blast
+lemma[bin_hull_in]: "y \<in> \<langle>{x,y}\<rangle>"
+  by blast
+lemma[bin_hull_in]: "w \<in> \<langle>{x,y}\<rangle> \<longleftrightarrow> w \<in> \<langle>{y,x}\<rangle>"
+  by (simp add: insert_commute) 
+lemmas[bin_hull_in] = hull_closed power_in rassoc
+
+lemmas bin_hull_in_rev =  bin_hull_in[reversed]
+
+method mismatch0 =
+    ((simp only: shifts)?, 
+     (elim bm_elims)?; 
+     (simp_all only: bm_simps bin_hull_in))
+
+
+method mismatch_rev =
+     ((simp only: shifts_rev)?, 
+     (elim bm_elims_rev)?; 
+     (simp_all only: bm_simps_rev bin_hull_in_rev))
+
+method mismatch = 
+    (insert method_facts, use nothing in
+    \<open>(mismatch0; fail)| mismatch_rev\<close>)
+
+subsubsection "Mismatch method demonstrations"
+
+lemma "y \<cdot> x \<le>p x\<^sup>@k \<cdot> x \<cdot> y \<cdot> w \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  by mismatch
+
+(* test hull *)
+lemma "w1 \<in> \<langle>{x,y}\<rangle> \<Longrightarrow> w2 \<in> \<langle>{x,y}\<rangle> \<Longrightarrow> x \<cdot> w2 \<cdot> y \<cdot> z = y \<cdot> w1 \<cdot> x \<cdot> v \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  by mismatch 
+
+thm bm_elims[elim_format]
+
+(* test simple eq *)
+lemma "w1 \<in> \<langle>{x,y}\<rangle> \<Longrightarrow> y \<cdot> x \<cdot> w2 \<cdot> z = x \<cdot> w1 \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  (* apply (elim bm_elims) *)   
+  by mismatch
+
+(* test hull' *)
+lemma "w1 \<in> \<langle>{x,y}\<rangle> \<Longrightarrow> w2 \<in> \<langle>{x,y}\<rangle> \<Longrightarrow> x \<cdot> y \<cdot> w2 \<cdot> x \<le>s x \<cdot> w1 \<cdot> y \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  by mismatch
+
+(* test eq *)
+lemma assumes "x \<cdot> y \<cdot> z = y \<cdot> y \<cdot> x \<cdot> v" shows "x \<cdot> y = y \<cdot> x"
+  using assms by mismatch
+
+(* test eq_cancel *)
+lemma assumes "y \<cdot> x \<cdot> x \<cdot> y \<cdot> z = y \<cdot> x \<cdot> y \<cdot> y \<cdot> x \<cdot> v" shows "x \<cdot> y = y \<cdot> x"
+  using assms by mismatch
+
+(* test eq_swap *)
+lemma "y \<cdot> y \<cdot> x \<cdot> v = x \<cdot> x \<cdot> y \<cdot> z \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  by mismatch
+
+(* test eq' *)
+lemma "x \<cdot> x \<cdot> y \<cdot> z = y \<cdot> y \<cdot> x \<cdot> z' \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  by mismatch
+
+(* test eq_suf *)
+lemma "z \<cdot> x \<cdot> y \<cdot> x \<cdot> x  = v \<cdot> x \<cdot> y \<cdot> y \<Longrightarrow> y \<cdot> x = x \<cdot> y"
+  by mismatch
+
+(* test pref *)
+lemma "x \<cdot> y \<le>p y \<cdot> y \<cdot> x \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  by mismatch
+
+(* test pref_cancel *)
+lemma "y \<cdot> x \<cdot> x \<cdot> x \<cdot> y \<le>p y \<cdot> x \<cdot> x \<cdot> y \<cdot> y \<cdot> x \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  by mismatch
+
+(* test pref_swap *)
+lemma "x \<cdot> y \<le>p y \<cdot> y \<cdot> x \<cdot> z \<Longrightarrow> y \<cdot> x = x \<cdot> y"
+  by mismatch
+
+(* test suf *)
+lemma "x \<cdot> x \<cdot> y \<cdot> y \<cdot> y \<le>s z\<cdot> y \<cdot> y \<cdot> x \<cdot> x \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  by mismatch
+
+lemma assumes "x \<cdot> x \<cdot> y \<cdot> y \<cdot> y \<cdot> y \<le>s z\<cdot> y \<cdot> y \<cdot> x \<cdot> x" shows "x \<cdot> y = y \<cdot> x"
+  using assms by mismatch  
+
+(* test power *)
+lemma "k \<noteq> 0 \<Longrightarrow> j \<noteq> 0 \<Longrightarrow> (x \<^sup>@ j \<cdot> y \<^sup>@ ka) \<cdot> y = y\<^sup>@k \<cdot> x \<^sup>@ j \<cdot> y \<^sup>@ (k - 1) \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  by mismatch
+
+lemma "dif \<noteq> 0 \<Longrightarrow> j \<noteq> 0 \<Longrightarrow> (x \<^sup>@ j \<cdot> y \<^sup>@ ka) \<cdot> y \<^sup>@ dif = y \<^sup>@ dif \<cdot> x \<^sup>@ j \<cdot> y \<^sup>@ ka \<Longrightarrow> x \<cdot> y = y \<cdot> x"
+  by mismatch
+
+subsection \<open>Applied mismatch\<close>
+
+lemma pows_eq_comm: "u\<^sup>@Suc k \<cdot> v\<^sup>@Suc m = u\<^sup>@Suc l \<cdot> v\<^sup>@Suc n \<Longrightarrow> k \<noteq> l \<Longrightarrow> u \<cdot> v = v \<cdot> u"
+  by (induct k l rule: diff_induct, mismatch+)
+
+section \<open>Two words hull (not necessarily a code)\<close>
+
+lemma bin_lists_len_count: assumes "x \<noteq> y" and "ws \<in> lists {x,y}" shows
+  "count_list ws x + count_list ws y = \<^bold>|ws\<^bold>|"
+proof-
+  have "finite {x,y}" by simp
+  have "set ws \<subseteq> {x,y}" using \<open>ws \<in> lists{x,y}\<close> by blast
+  show ?thesis
+    using sum_count_set[OF \<open>set ws \<subseteq> {x,y}\<close> \<open>finite {x,y}\<close>] \<open>x \<noteq> y\<close> by simp
+qed
+
+lemma two_elem_first_block: assumes "w \<in> \<langle>{u,v}\<rangle>"
+  obtains m where "u\<^sup>@m \<cdot> v \<bowtie> w" 
+  using assms
+proof-
+  obtain ws where "concat ws = w" and "ws \<in> lists {u,v}"
+    using concat_dec[OF \<open>w \<in> \<langle>{u,v}\<rangle>\<close>] dec_in_lists[OF \<open>w \<in> \<langle>{u,v}\<rangle>\<close>] by simp
+  consider (only_u) "takeWhile (\<lambda> x. x = u) ws = ws" | (some_v) "takeWhile (\<lambda> x. x = u) ws \<noteq> ws \<and> hd (dropWhile (\<lambda> x. x = u) ws) \<noteq> u"
+    using hd_dropWhile[of "(\<lambda> x. x = u)" ws] by auto
+  then show thesis
+  proof (cases)
+    case only_u
+    hence "ws = [u]\<^sup>@\<^bold>|ws\<^bold>|"
+      unfolding takeWhile_sing_pow by metis
+    hence "w = u\<^sup>@\<^bold>|ws\<^bold>|"
+      using \<open>concat ws = w\<close> concat_sing_pow by metis
+    then show thesis
+      using that by blast
+  next
+    case some_v
+    note some_v = conjunct1[OF this] conjunct2[OF this] 
+    hence "dropWhile (\<lambda> x. x = u) ws \<noteq> \<epsilon>" by force
+    from lists_hd_in_set[OF this]
+    have "hd (dropWhile (\<lambda>x. x = u) ws) \<in> {u,v}"
+      using \<open>ws \<in> lists {u,v}\<close> append_in_lists_conv  takeWhile_dropWhile_id by metis 
+    hence "hd (dropWhile (\<lambda>x. x = u) ws) = v"
+      using some_v(2) by simp
+    from dropWhile_distinct[of ws u, unfolded this] some_v(1)
+    have "(takeWhile (\<lambda>x. x = u) ws)\<cdot>[v] \<le>p ws"
+      unfolding takeWhile_letter_pref_exp by simp
+    from pref_concat_pref[OF this, unfolded concat_morph, unfolded \<open>concat ws = w\<close> concat_takeWhile_sing[unfolded this]] 
+    have "u\<^sup>@\<^bold>|takeWhile (\<lambda>x. x = u) ws\<^bold>|\<cdot> v \<le>p w" 
+      by simp
+    with that
+    show thesis 
+      by blast
+  qed
+qed
+
+lemmas two_elem_last_block = two_elem_first_block[reversed]
+
+lemma two_elem_pref: assumes  "v \<le>p u \<cdot> p" and "p \<in> \<langle>{u,v}\<rangle>"
+  shows "v \<le>p u \<cdot> v"
+proof-
+  obtain m where "u\<^sup>@m \<cdot> v \<bowtie> p"
+    using two_elem_first_block[OF \<open>p \<in> \<langle>{u,v}\<rangle>\<close>]. 
+  have "v \<le>p u\<^sup>@(Suc m) \<cdot> v"
+    using pref_prolong_comp[OF \<open>v \<le>p u \<cdot> p\<close> \<open>u\<^sup>@m \<cdot> v \<bowtie> p\<close>, unfolded lassoc, folded pow_Suc].
+  thus "v \<le>p u \<cdot> v"
+    using per_drop_exp' by blast
+qed
+
+lemmas two_elem_suf = two_elem_pref[reversed]
+
+lemma gen_drop_exp: assumes "p \<in> \<langle>{u,v\<^sup>@(Suc k)}\<rangle>" shows "p \<in> \<langle>{u,v}\<rangle>" 
+  by (rule hull.induct[OF assms], simp, blast)
+
+lemma gen_prim: "v \<noteq> \<epsilon> \<Longrightarrow> p \<in> \<langle>{u,v}\<rangle> \<Longrightarrow> p \<in> \<langle>{u,\<rho> v}\<rangle>"
+  using gen_drop_exp primroot_expE by metis
+
+lemma roots_hull: assumes "w \<in> \<langle>{u\<^sup>@k,v\<^sup>@m}\<rangle>" shows "w \<in> \<langle>{u,v}\<rangle>" 
+proof-
+  have "u\<^sup>@k \<in> \<langle>{u,v}\<rangle>" and "v\<^sup>@m \<in> \<langle>{u,v}\<rangle>"
+    by (simp_all add: gen_in power_in) 
+  hence "{u\<^sup>@k,v\<^sup>@m} \<subseteq> \<langle>{u,v}\<rangle>"
+    by blast
+  from hull_mono'[OF this] 
+  show "w \<in> \<langle>{u,v}\<rangle>"
+    using \<open>w \<in> \<langle>{u\<^sup>@k,v\<^sup>@m}\<rangle>\<close> by blast 
+qed
+
+lemma roots_hull_sub: "\<langle>{u\<^sup>@k,v\<^sup>@m}\<rangle> \<subseteq> \<langle>{u,v}\<rangle>"
+  using roots_hull by blast 
+
+lemma primroot_gen[intro]: "v \<in> \<langle>{u, \<rho> v}\<rangle>" 
+  using power_in[of "\<rho> v" "{u,\<rho> v}"]
+  by (cases "v = \<epsilon>", simp) (metis primroot_expE gen_in insert_iff) 
+
+lemma primroot_gen'[intro]: "u \<in> \<langle>{\<rho> u, v}\<rangle>" 
+  using primroot_gen insert_commute by metis
+
+lemma set_lists_primroot: "set ws \<subseteq> {x,y} \<Longrightarrow> ws \<in> lists \<langle>{\<rho> x, \<rho> y}\<rangle>"
+  by blast
 
 section \<open>Free hull\<close>
 
@@ -784,30 +1996,16 @@ lemmas [intro] = free_hull.intros
 
 text\<open>The defined set indeed is a hull.\<close>
 
-lemma free_hull_hull: "\<langle>\<langle>G\<rangle>\<^sub>F\<rangle> = \<langle>G\<rangle>\<^sub>F"
-proof
-  show "\<langle>G\<rangle>\<^sub>F \<subseteq> \<langle>\<langle>G\<rangle>\<^sub>F\<rangle>"
-    by (simp add: genset_sub)
-  show "\<langle>\<langle>G\<rangle>\<^sub>F\<rangle> \<subseteq> \<langle>G\<rangle>\<^sub>F"
-  proof
-    fix x assume "x \<in> \<langle>\<langle>G\<rangle>\<^sub>F\<rangle>"
-    thus "x \<in> \<langle>G\<rangle>\<^sub>F"
-    proof (rule hull.induct)
-      show " \<epsilon> \<in> \<langle>G\<rangle>\<^sub>F"
-        by (simp add: free_hull.intros(1))
-      show "\<And>w1 w2. w1 \<in> \<langle>G\<rangle>\<^sub>F \<Longrightarrow> w2 \<in> \<langle>\<langle>G\<rangle>\<^sub>F\<rangle> \<Longrightarrow> w2 \<in> \<langle>G\<rangle>\<^sub>F \<Longrightarrow> w1 \<cdot> w2 \<in> \<langle>G\<rangle>\<^sub>F"
-        by (simp add: free_hull.intros(3))
-    qed
-  qed
-qed
+lemma free_hull_hull[simp]: "\<langle>\<langle>G\<rangle>\<^sub>F\<rangle> = \<langle>G\<rangle>\<^sub>F"
+  by (intro antisym subsetI) (rule hull.induct, blast+)
 
 text\<open>The free hull is always (non-strictly) larger than the hull.\<close>
 
-lemma hull_in_free_hull: "\<langle>G\<rangle> \<subseteq> \<langle>G\<rangle>\<^sub>F"
+lemma hull_sub_free_hull: "\<langle>G\<rangle> \<subseteq> \<langle>G\<rangle>\<^sub>F"
 proof
   fix x assume "x \<in> \<langle>G\<rangle>"
-  then show "x \<in> \<langle>G\<rangle>\<^sub>F"
-    using free_hull.intros(3)
+  then show "x \<in> \<langle>G\<rangle>\<^sub>F" 
+    using free_hull.intros(3) 
       hull_induct[of x G "\<lambda> x. x \<in> \<langle>G\<rangle>\<^sub>F", OF \<open>x \<in> \<langle>G\<rangle>\<close> free_hull.intros(1)[of G] free_hull.intros(2)]
     by auto
 qed
@@ -824,36 +2022,36 @@ lemma genset_sub_free: "G \<subseteq> \<langle>G\<rangle>\<^sub>F"
   by (simp add: free_hull.free_gen_in subsetI)
 
 text
-\<open>We have developed two points of view on freeness:
+\<open>We have developed two points of view on freeness: 
 \<^item> being a free hull, that is, to satisfy the stability condition;
 \<^item> being generated by a code.\<close>
-
+ 
 text\<open>We now show their equivalence\<close>
 
 text\<open>First, basis of a free hull is a code.\<close>
 
-lemma free_basis_code: "code (\<BB>\<^sub>F G)"
+lemma free_basis_code[simp]: "code (\<BB>\<^sub>F G)"
 proof
-  fix xs ys
+  fix xs ys  
   show "xs \<in> lists (\<BB>\<^sub>F G) \<Longrightarrow> ys \<in> lists (\<BB>\<^sub>F G) \<Longrightarrow> concat xs = concat ys \<Longrightarrow> xs = ys"
   proof(induction xs ys rule: list_induct2', simp)
     case (2 x xs)
-    show ?case
-      using listsE[OF \<open>x # xs \<in> lists (\<BB>\<^sub>F G)\<close>, of "x \<in> \<BB>\<^sub>F G", unfolded free_basis_def, THEN emp_not_basis]
-      concat.simps(2)[of x xs, unfolded \<open>concat (x # xs) = concat \<epsilon>\<close>[unfolded concat.simps(1)], symmetric, unfolded append_is_Nil_conv[of x "concat xs"]]
+    show ?case 
+      using listsE[OF \<open>x # xs \<in> lists (\<BB>\<^sub>F G)\<close>, of "x \<in> \<BB>\<^sub>F G", unfolded free_basis_def, THEN emp_not_basis]    
+      concat.simps(2)[of x xs, unfolded \<open>concat (x # xs) = concat \<epsilon>\<close>[unfolded concat.simps(1)], symmetric, unfolded append_is_Nil_conv[of x "concat xs"]] 
       by blast
   next
     case (3 y ys)
-    show ?case
-      using  listsE[OF \<open>y # ys \<in> lists (\<BB>\<^sub>F G)\<close>, of "y \<in> \<BB>\<^sub>F G", unfolded free_basis_def, THEN emp_not_basis]
+    show ?case 
+      using  listsE[OF \<open>y # ys \<in> lists (\<BB>\<^sub>F G)\<close>, of "y \<in> \<BB>\<^sub>F G", unfolded free_basis_def, THEN emp_not_basis]    
       concat.simps(2)[of y ys, unfolded \<open>concat \<epsilon> = concat (y # ys)\<close>[unfolded concat.simps(1),symmetric],symmetric, unfolded append_is_Nil_conv[of y "concat ys"]]
-      by blast
+      by blast 
   next
     case (4 x xs y ys)
     have "\<^bold>|x\<^bold>| = \<^bold>|y\<^bold>|"
     proof(rule ccontr)
       assume "\<^bold>|x\<^bold>| \<noteq> \<^bold>|y\<^bold>|"
-      have "x \<cdot> concat xs = y \<cdot> concat ys"
+      have "x \<cdot> concat xs = y \<cdot> concat ys" 
         using \<open>concat (x # xs) = concat (y # ys)\<close> by simp
       then obtain t where or: "x = y \<cdot> t \<and> t \<cdot> concat xs = concat ys \<or> x \<cdot> t = y \<and> concat xs = t \<cdot> concat ys"
         using append_eq_append_conv2[of x "concat xs" y "concat ys"]  by blast
@@ -864,16 +2062,16 @@ proof
       hence "x \<noteq> \<epsilon>" and "y \<noteq> \<epsilon>"
         unfolding free_basis_def using emp_not_basis by blast+
       have  "x \<in> \<langle>G\<rangle>\<^sub>F" and "y \<in> \<langle>G\<rangle>\<^sub>F"
-        using basis_sub[of "\<langle>G\<rangle>\<^sub>F", unfolded free_basis_def[symmetric] ] \<open>x # xs \<in> lists (\<BB>\<^sub>F G)\<close>
+        using basis_sub[of "\<langle>G\<rangle>\<^sub>F", unfolded free_basis_def[symmetric] ] \<open>x # xs \<in> lists (\<BB>\<^sub>F G)\<close> 
           \<open>y # ys \<in> lists (\<BB>\<^sub>F G)\<close> by auto
       have "concat xs \<in> \<langle>G\<rangle>\<^sub>F" and "concat ys \<in> \<langle>G\<rangle>\<^sub>F"
-        using concat_tl_basis[OF \<open>x # xs \<in> lists (\<BB>\<^sub>F G)\<close>[unfolded free_basis_def]]
-              concat_tl_basis[OF \<open>y # ys \<in> lists (\<BB>\<^sub>F G)\<close>[unfolded free_basis_def]] unfolding free_hull_hull.
-      have "t \<in> \<langle>G\<rangle>\<^sub>F"
+        using concat_tl_basis[OF \<open>x # xs \<in> lists (\<BB>\<^sub>F G)\<close>[unfolded free_basis_def]] 
+              concat_tl_basis[OF \<open>y # ys \<in> lists (\<BB>\<^sub>F G)\<close>[unfolded free_basis_def]] unfolding free_hull_hull. 
+      have "t \<in> \<langle>G\<rangle>\<^sub>F" 
         using or free_hull.intros(4) \<open>x \<in> \<langle>G\<rangle>\<^sub>F\<close> \<open>y \<in> \<langle>G\<rangle>\<^sub>F\<close> \<open>concat xs \<in> \<langle>G\<rangle>\<^sub>F\<close> \<open>concat ys \<in> \<langle>G\<rangle>\<^sub>F\<close> by metis
       thus False
-        using or basis_dec[of x "\<langle>G\<rangle>\<^sub>F" t, unfolded free_hull_hull, OF \<open>x \<in> \<langle>G\<rangle>\<^sub>F\<close> \<open>t \<in> \<langle>G\<rangle>\<^sub>F\<close>]
-          basis_dec[of y "\<langle>G\<rangle>\<^sub>F" t, unfolded free_hull_hull, OF \<open>y \<in> \<langle>G\<rangle>\<^sub>F\<close> \<open>t \<in> \<langle>G\<rangle>\<^sub>F\<close>]
+        using or basis_dec[of x "\<langle>G\<rangle>\<^sub>F" t, unfolded free_hull_hull, OF \<open>x \<in> \<langle>G\<rangle>\<^sub>F\<close> \<open>t \<in> \<langle>G\<rangle>\<^sub>F\<close>] 
+          basis_dec[of y "\<langle>G\<rangle>\<^sub>F" t, unfolded free_hull_hull, OF \<open>y \<in> \<langle>G\<rangle>\<^sub>F\<close> \<open>t \<in> \<langle>G\<rangle>\<^sub>F\<close>] 
         using  \<open>t \<noteq> \<epsilon>\<close> \<open>x \<noteq> \<epsilon>\<close> \<open>y \<noteq> \<epsilon>\<close> \<open>x \<in> \<BB>\<^sub>F G\<close> \<open>y \<in> \<BB>\<^sub>F G\<close> unfolding free_basis_def
         by auto
     qed
@@ -884,56 +2082,64 @@ proof
   qed
 qed
 
+lemma gen_in_free_hull: "x \<in> G \<Longrightarrow> x \<in> \<langle>\<BB>\<^sub>F G\<rangle>"
+  using free_hull.free_gen_in[folded basis_gen_hull_free].
+
 text\<open>Second, a code generates its free hull.\<close>
 
-lemma code_gen_free_hull: "code C \<Longrightarrow> \<langle>C\<rangle>\<^sub>F = \<langle>C\<rangle>"
+lemma (in code) code_gen_free_hull: "\<langle>\<C>\<rangle>\<^sub>F = \<langle>\<C>\<rangle>"
 proof
-  assume "code C"
-  show "\<langle>C\<rangle> \<subseteq> \<langle>C\<rangle>\<^sub>F"
-    using hull_mon[of C "\<langle>C\<rangle>\<^sub>F"]
-          free_hull.free_gen_in[of _ C]  subsetI[of C "\<langle>C\<rangle>\<^sub>F"]
-    unfolding free_hull_hull[of C] by auto
-  show "\<langle>C\<rangle>\<^sub>F \<subseteq> \<langle>C\<rangle>"
+  show "\<langle>\<C>\<rangle> \<subseteq> \<langle>\<C>\<rangle>\<^sub>F"
+    using hull_mono[of \<C> "\<langle>\<C>\<rangle>\<^sub>F"] 
+          free_gen_in[of _ \<C>]  subsetI[of \<C> "\<langle>\<C>\<rangle>\<^sub>F"] 
+    unfolding free_hull_hull by auto
+  show "\<langle>\<C>\<rangle>\<^sub>F \<subseteq> \<langle>\<C>\<rangle>"
   proof
-    fix x assume "x \<in> \<langle>C\<rangle>\<^sub>F"
-    have "\<epsilon> \<in> \<langle>C\<rangle>"
-      by (simp add: hull.intros(1))
-    show "x \<in> \<langle>C\<rangle>"
-    proof(rule free_hull.induct[of x C],simp add: \<open>x \<in> \<langle>C\<rangle>\<^sub>F\<close>, (simp add: hull.intros hull_closed)+,
+    fix x assume "x \<in> \<langle>\<C>\<rangle>\<^sub>F" 
+    have "\<epsilon> \<in> \<langle>\<C>\<rangle>"
+      by simp
+    show "x \<in> \<langle>\<C>\<rangle>"
+    proof(rule free_hull.induct[of x \<C>],simp add: \<open>x \<in> \<langle>\<C>\<rangle>\<^sub>F\<close>, (simp add: hull_closed)+, 
         simp add: gen_in, simp add: hull_closed)
-      fix p q w assume "p \<in> \<langle>C\<rangle>" "q \<in> \<langle>C\<rangle>" "p \<cdot> w \<in> \<langle>C\<rangle>" "w \<cdot> q \<in> \<langle>C\<rangle>"
-      have eq: "(Dec C p) \<cdot> (Dec C w \<cdot> q) = (Dec C p \<cdot> w) \<cdot> (Dec C q)"
-        using code.code_dec_morph[OF \<open>code C\<close> \<open>p \<in> \<langle>C\<rangle>\<close> \<open>w \<cdot> q \<in> \<langle>C\<rangle>\<close>, unfolded lassoc]
-        unfolding code.code_dec_morph[OF \<open>code C\<close> \<open>p \<cdot> w \<in> \<langle>C\<rangle>\<close> \<open>q \<in> \<langle>C\<rangle>\<close>, symmetric].
-      have "Dec C p \<bowtie>  Dec C p \<cdot> w"
-        using eqd_comp[OF eq].
-      hence "Dec C p \<le>p  Dec C p \<cdot> w"
-        using \<open>p \<cdot> w \<in> \<langle>C\<rangle>\<close> \<open>p \<in> \<langle>C\<rangle>\<close> concat_morph decI prefD pref_antisym triv_pref
+      fix p q w assume "p \<in> \<langle>\<C>\<rangle>" "q \<in> \<langle>\<C>\<rangle>" "p \<cdot> w \<in> \<langle>\<C>\<rangle>" "w \<cdot> q \<in> \<langle>\<C>\<rangle>"
+      have eq: "(Dec \<C> p) \<cdot> (Dec \<C> w \<cdot> q) = (Dec \<C> p \<cdot> w) \<cdot> (Dec \<C> q)" 
+        using code_dec_morph[OF \<open>p \<in> \<langle>\<C>\<rangle>\<close> \<open>w \<cdot> q \<in> \<langle>\<C>\<rangle>\<close>, unfolded lassoc]  
+        unfolding code_dec_morph[OF \<open>p \<cdot> w \<in> \<langle>\<C>\<rangle>\<close> \<open>q \<in> \<langle>\<C>\<rangle>\<close>, symmetric]. 
+      have "Dec \<C> p \<bowtie>  Dec \<C> p \<cdot> w"
+        using eqd_comp[OF eq]. 
+      hence "Dec \<C> p \<le>p  Dec \<C> p \<cdot> w" 
+        using \<open>p \<cdot> w \<in> \<langle>\<C>\<rangle>\<close> \<open>p \<in> \<langle>\<C>\<rangle>\<close> concat_morph concat_dec prefD pref_antisym triv_pref
         unfolding prefix_comparable_def
         by metis
-      then obtain ts where "(Dec C p) \<cdot> ts =  Dec C p \<cdot> w"
+      then obtain ts where "(Dec \<C> p) \<cdot> ts =  Dec \<C> p \<cdot> w"
         using lq_pref by blast
-      hence  "ts \<in> lists C"
-        using  append_in_lists_conv[of "Dec C p" ts C] dec_dom'[OF \<open>p \<cdot> w \<in> \<langle>C\<rangle>\<close>]
-        unfolding \<open>(Dec C p) \<cdot> ts =  Dec C p \<cdot> w\<close> by blast
+      hence  "ts \<in> lists \<C>"
+        using \<open>p \<cdot> w \<in> \<langle>\<C>\<rangle>\<close> by inlists
       hence "concat ts = w"
-        using  concat_morph[of "Dec C p" ts]
-        unfolding \<open>(Dec C p) \<cdot> ts =  Dec C p \<cdot> w\<close> decI[OF \<open>p \<cdot> w \<in> \<langle>C\<rangle>\<close>]  decI[OF \<open>p \<in> \<langle>C\<rangle>\<close>] by auto
-      thus "w \<in> \<langle>C\<rangle>"
-        using \<open>ts \<in> lists C\<close> by auto
+        using  concat_morph[of "Dec \<C> p" ts]                   
+        unfolding \<open>(Dec \<C> p) \<cdot> ts =  Dec \<C> p \<cdot> w\<close> concat_dec[OF \<open>p \<cdot> w \<in> \<langle>\<C>\<rangle>\<close>]  concat_dec[OF \<open>p \<in> \<langle>\<C>\<rangle>\<close>] by auto
+      thus "w \<in> \<langle>\<C>\<rangle>"
+        using \<open>ts \<in> lists \<C>\<close> by auto
     qed
   qed
 qed
 
 text\<open>That is, a code is its own free basis\<close>
 
-lemma code_free_basis: assumes "code C" shows "C = \<BB>\<^sub>F C"
-  using basis_of_hull[of C, unfolded code_gen_free_hull[OF assms, symmetric]
-      code.code_is_basis[OF assms]]
-  unfolding free_basis_def.
+lemma (in code) code_free_basis: "\<C> = \<BB>\<^sub>F \<C>"
+  using basis_of_hull[of \<C>, unfolded code_gen_free_hull[symmetric] 
+      code_is_basis, symmetric] unfolding free_basis_def.
 
-text\<open>Moreover, the free hull of G is the smallest code-generated hull containing G.
+text\<open>This allows to use the introduction rules of the free hull to prove one of the basic characterizations
+ of the code, called the stability condition\<close>
+
+lemma (in code) stability: "p \<in> \<langle>\<C>\<rangle> \<Longrightarrow> q \<in> \<langle>\<C>\<rangle> \<Longrightarrow> p \<cdot> w \<in> \<langle>\<C>\<rangle> \<Longrightarrow> w \<cdot> q \<in> \<langle>\<C>\<rangle> \<Longrightarrow> w \<in> \<langle>\<C>\<rangle>"
+  unfolding code_gen_free_hull[symmetric] using free_hull.intros(4) by auto  
+
+text\<open>Moreover, the free hull of G is the smallest code-generated hull containing G. 
 In other words, the term free hull is appropriate.\<close>
+
+
 
 text\<open>First, several intuitive monotonicity and closure results.\<close>
 
@@ -944,88 +2150,151 @@ proof
   have el: "\<And> w. w \<in> G \<Longrightarrow> w \<in> \<langle>H\<rangle>\<^sub>F"
     using \<open>G \<subseteq> H\<close> free_hull.free_gen_in by auto
   show "x \<in> \<langle>H\<rangle>\<^sub>F"
-  proof (rule free_hull.induct[of x G], simp add: \<open>x \<in> \<langle>G\<rangle>\<^sub>F\<close>, simp add: free_hull.intros(1),
+  proof (rule free_hull.induct[of x G], simp add: \<open>x \<in> \<langle>G\<rangle>\<^sub>F\<close>, simp add: free_hull.intros(1), 
       simp add: el, simp add: free_hull.intros(3))
     show "\<And>p q w. p \<in> \<langle>H\<rangle>\<^sub>F \<Longrightarrow>  q \<in> \<langle>H\<rangle>\<^sub>F \<Longrightarrow>  p \<cdot> w \<in> \<langle>H\<rangle>\<^sub>F \<Longrightarrow>  w \<cdot> q \<in> \<langle>H\<rangle>\<^sub>F \<Longrightarrow> w \<in> \<langle>H\<rangle>\<^sub>F"
-      using free_hull.intros(4) by auto
+      using free_hull.intros(4) by auto  
   qed
 qed
 
 lemma free_hull_idem: "\<langle>\<langle>G\<rangle>\<^sub>F\<rangle>\<^sub>F = \<langle>G\<rangle>\<^sub>F"
 proof
-  show "\<langle>\<langle>G\<rangle>\<^sub>F\<rangle>\<^sub>F \<subseteq> \<langle>G\<rangle>\<^sub>F"
-  proof
+  show "\<langle>\<langle>G\<rangle>\<^sub>F\<rangle>\<^sub>F \<subseteq> \<langle>G\<rangle>\<^sub>F" 
+  proof 
     fix x assume "x \<in> \<langle>\<langle>G\<rangle>\<^sub>F\<rangle>\<^sub>F"
     show "x \<in> \<langle>G\<rangle>\<^sub>F"
-    proof (rule free_hull.induct[of x "\<langle>G\<rangle>\<^sub>F"], simp add: \<open>x \<in> \<langle>\<langle>G\<rangle>\<^sub>F\<rangle>\<^sub>F\<close>,
+    proof (rule free_hull.induct[of x "\<langle>G\<rangle>\<^sub>F"], simp add: \<open>x \<in> \<langle>\<langle>G\<rangle>\<^sub>F\<rangle>\<^sub>F\<close>, 
         simp add: free_hull.intros(1), simp add: free_hull.intros(2), simp add: free_hull.intros(3))
       show "\<And>p q w. p \<in> \<langle>G\<rangle>\<^sub>F \<Longrightarrow>  q \<in> \<langle>G\<rangle>\<^sub>F \<Longrightarrow>  p \<cdot> w \<in> \<langle>G\<rangle>\<^sub>F \<Longrightarrow>  w \<cdot> q \<in> \<langle>G\<rangle>\<^sub>F \<Longrightarrow> w \<in> \<langle>G\<rangle>\<^sub>F"
-        using free_hull.intros(4) by auto
+        using free_hull.intros(4) by auto  
     qed
   qed
 next
   show "\<langle>G\<rangle>\<^sub>F \<subseteq> \<langle>\<langle>G\<rangle>\<^sub>F\<rangle>\<^sub>F"
-    using free_hull_hull hull_in_free_hull by auto
+    using free_hull_hull hull_sub_free_hull by auto 
 qed
 
 lemma hull_gen_free_hull: "\<langle>\<langle>G\<rangle>\<rangle>\<^sub>F = \<langle>G\<rangle>\<^sub>F"
 proof
   show " \<langle>\<langle>G\<rangle>\<rangle>\<^sub>F \<subseteq> \<langle>G\<rangle>\<^sub>F"
-    using free_hull_idem free_hull_mono hull_in_free_hull by metis
+    using free_hull_idem free_hull_mono hull_sub_free_hull by metis
 next
   show "\<langle>G\<rangle>\<^sub>F \<subseteq> \<langle>\<langle>G\<rangle>\<rangle>\<^sub>F"
-    by (simp add: free_hull_mono genset_sub)
+    by (simp add: free_hull_mono) 
 qed
 
 text \<open>Code is also the free basis of its hull.\<close>
 
-lemma code_free_basis_hull: "code C \<Longrightarrow> C = \<BB>\<^sub>F \<langle>C\<rangle>"
+lemma (in code) code_free_basis_hull: "\<C> = \<BB>\<^sub>F \<langle>\<C>\<rangle>"
   unfolding free_basis_def using code_free_basis[unfolded free_basis_def]
-  unfolding  hull_gen_free_hull.
+  unfolding  hull_gen_free_hull. 
 
 text\<open>The minimality of the free hull easily follows.\<close>
 
-theorem free_hull_min: assumes "code C" and "G \<subseteq> \<langle>C\<rangle>" shows "\<langle>G\<rangle>\<^sub>F \<subseteq> \<langle>C\<rangle>"
-  using free_hull_mono[OF \<open>G \<subseteq> \<langle>C\<rangle>\<close>] unfolding hull_gen_free_hull
-  unfolding code_gen_free_hull[OF \<open>code C\<close>].
+theorem (in code) free_hull_min: assumes "G \<subseteq> \<langle>\<C>\<rangle>" shows "\<langle>G\<rangle>\<^sub>F \<subseteq> \<langle>\<C>\<rangle>"
+  using free_hull_mono[OF \<open>G \<subseteq> \<langle>\<C>\<rangle>\<close>] unfolding hull_gen_free_hull 
+  unfolding code_gen_free_hull.  
 
 theorem free_hull_inter: "\<langle>G\<rangle>\<^sub>F = \<Inter> {M. G \<subseteq> M \<and> M = \<langle>M\<rangle>\<^sub>F}"
 proof
   have "X \<in> {M. G \<subseteq> M \<and> M = \<langle>M\<rangle>\<^sub>F} \<Longrightarrow> \<langle>G\<rangle>\<^sub>F \<subseteq> X" for X
     unfolding mem_Collect_eq[of _ "\<lambda> M. G \<subseteq> M \<and> M = \<langle>M\<rangle>\<^sub>F"]
-    using free_hull_mono[of G X] by simp
-  from Inter_greatest[of "{M. G \<subseteq> M \<and> M = \<langle>M\<rangle>\<^sub>F}", OF this]
-  show "\<langle>G\<rangle>\<^sub>F \<subseteq> \<Inter> {M. G \<subseteq> M \<and> M = \<langle>M\<rangle>\<^sub>F}"
+    using free_hull_mono[of G X] by simp 
+  from Inter_greatest[of "{M. G \<subseteq> M \<and> M = \<langle>M\<rangle>\<^sub>F}", OF this]  
+  show "\<langle>G\<rangle>\<^sub>F \<subseteq> \<Inter> {M. G \<subseteq> M \<and> M = \<langle>M\<rangle>\<^sub>F}" 
     by blast
 next
   show " \<Inter> {M. G \<subseteq> M \<and> M = \<langle>M\<rangle>\<^sub>F} \<subseteq> \<langle>G\<rangle>\<^sub>F"
-    by (simp add: Inter_lower free_hull_idem genset_sub_free)
+    by (simp add: Inter_lower free_hull_idem genset_sub_free) 
 qed
 
 text\<open>Decomposition into the free basis is a morphism.\<close>
 
-lemma free_basis_dec_morph: "u \<in> \<langle>G\<rangle>\<^sub>F \<Longrightarrow> v \<in> \<langle>G\<rangle>\<^sub>F \<Longrightarrow>
+lemma free_basis_dec_morph: "u \<in> \<langle>G\<rangle>\<^sub>F \<Longrightarrow> v \<in> \<langle>G\<rangle>\<^sub>F \<Longrightarrow>  
     Dec (\<BB>\<^sub>F G) (u \<cdot> v) = (Dec (\<BB>\<^sub>F G) u) \<cdot> (Dec (\<BB>\<^sub>F G) v)"
-  using code.code_dec_morph[OF free_basis_code, of u G v, symmetric,
+  using code.code_dec_morph[OF free_basis_code, of u G v, symmetric, 
         unfolded  basis_gen_hull_free[of G]].
+
+section \<open>Reversing hulls and decompositions\<close>
+
+lemma basis_rev_commute[reversal_rule]: "\<BB> (rev ` G) = rev ` (\<BB> G)"
+proof
+  have "\<langle>rev ` \<BB> G\<rangle> = \<langle>rev ` G\<rangle>" and *: "\<langle>rev ` \<BB> (rev ` G)\<rangle> = \<langle>rev ` rev `G\<rangle>"
+    unfolding rev_hull[symmetric] basis_gen_hull by blast+
+  from basis_sub_gen[OF this(1)] 
+  show "\<BB> (rev ` G) \<subseteq> rev ` \<BB> G".
+  from image_mono[OF basis_sub_gen[OF *], of rev]
+  show "rev ` (\<BB> G) \<subseteq> \<BB> (rev ` G)"
+    unfolding rev_rev_image_eq.    
+qed
+
+lemma rev_free_hull_comm: "\<langle>rev ` X\<rangle>\<^sub>F = rev ` \<langle>X\<rangle>\<^sub>F"
+proof-
+  have "rev ` \<langle>X\<rangle>\<^sub>F \<subseteq> \<langle>rev ` X\<rangle>\<^sub>F" for X :: "'a list set"
+  proof
+    fix x assume "x \<in> rev ` \<langle>X\<rangle>\<^sub>F"
+    hence  "rev x \<in> \<langle>X\<rangle>\<^sub>F"
+      by (simp add: rev_in_conv) 
+    have "rev x \<in> rev ` \<langle>rev ` X\<rangle>\<^sub>F" 
+      by (induct rule: free_hull.induct[OF \<open>rev x \<in> \<langle>X\<rangle>\<^sub>F\<close>], blast, unfold rev_in_conv[symmetric] rev_append, auto+)
+    then show "x \<in> \<langle>rev ` X\<rangle>\<^sub>F"
+      by blast 
+  qed
+  from this
+    image_mono[OF this[of "rev ` X", unfolded rev_rev_image_eq], of rev, unfolded rev_rev_image_eq]
+  show  "\<langle>rev ` X\<rangle>\<^sub>F = rev ` \<langle>X\<rangle>\<^sub>F" 
+    by blast
+qed
+
+lemma free_basis_rev_commute [reversal_rule]: "\<BB>\<^sub>F rev ` X =  rev ` (\<BB>\<^sub>F X)"
+  unfolding free_basis_def basis_rev_commute free_basis_def rev_free_hull_comm..
+
+lemma rev_dec[reversal_rule]: assumes "x \<in> \<langle>X\<rangle>\<^sub>F" shows "Dec rev ` (\<BB>\<^sub>F X) (rev x) = map rev (rev (Dec (\<BB>\<^sub>F X) x))"
+proof-
+  have "x \<in> \<langle>\<BB>\<^sub>F X\<rangle>"
+    using \<open>x \<in> \<langle>X\<rangle>\<^sub>F\<close> by (simp add: basis_gen_hull_free)
+  from concat_dec[OF this]
+  have "concat (map rev (rev (Dec \<BB>\<^sub>F X x))) = rev x"
+    unfolding rev_concat[symmetric] by blast
+  from  rev_image_eqI[OF rev_in_lists[OF dec_in_lists[OF \<open>x \<in> \<langle>\<BB>\<^sub>F X\<rangle>\<close>]], of _ "map rev"]
+  have "map rev (rev (Dec \<BB>\<^sub>F X x)) \<in> lists (rev ` (\<BB>\<^sub>F X))"
+    unfolding lists_image by blast
+  from code.code_unique_dec'[OF code.code_rev_code[OF free_basis_code] this]
+  show ?thesis
+    unfolding \<open>concat (map rev (rev (Dec \<BB>\<^sub>F X x))) = rev x\<close>.
+qed
+
+lemma rev_hd_dec_last_eq[reversal_rule]: assumes "x \<in> X" and  "x \<noteq> \<epsilon>" shows
+  "rev (hd (Dec (rev ` (\<BB>\<^sub>F X)) (rev x))) = last (Dec \<BB>\<^sub>F X x)" 
+proof-
+  have "rev (Dec \<BB>\<^sub>F X x) \<noteq> \<epsilon>"
+    using \<open>x \<in> X\<close> basis_gen_hull_free dec_nemp'[OF \<open>x \<noteq> \<epsilon>\<close>] by blast
+  show ?thesis
+    unfolding hd_rev rev_dec[OF free_gen_in[OF \<open>x \<in> X\<close>]] hd_map[OF \<open>rev (Dec \<BB>\<^sub>F X x) \<noteq> \<epsilon>\<close>]
+    by simp 
+qed
+
+lemma rev_hd_dec_last_eq'[reversal_rule]: assumes "x \<in> X" and  "x \<noteq> \<epsilon>" shows 
+  "(hd (Dec (rev ` (\<BB>\<^sub>F X)) (rev x))) = rev (last (Dec \<BB>\<^sub>F X x))"
+  using assms(1) assms(2) rev_hd_dec_last_eq rev_swap by blast 
 
 section \<open>Lists as the free hull of singletons\<close>
 
-text\<open>A crucial property of free monoids of words is that they can be seen as lists over the free basis,
+text\<open>A crucial property of free monoids of words is that they can be seen as lists over the free basis, 
 instead as lists over the original alphabet.\<close>
 
 abbreviation sings where "sings B \<equiv> {[b] | b. b \<in> B}"
 
-lemma sings_image: "sings B =  (\<lambda> x. [x]) ` B"
+lemma sings_image: "sings B =  (\<lambda> x. [x]) ` B" 
   using Setcompr_eq_image.
 
-lemma lists_sing_map_concat_ident: "xs \<in> lists (sings B) \<Longrightarrow> xs = map (\<lambda> x. [x]) (concat xs)"
+lemma lists_sing_map_concat_ident: "xs \<in> lists (sings B) \<Longrightarrow> xs = map (\<lambda> x. [x]) (concat xs)" 
   by (induct xs, simp, auto)
 
 lemma code_sings: "code (sings B)"
 proof
-  fix xs ys assume xs: "xs \<in> lists (sings B)" and ys: "ys \<in> lists (sings B)"
-     and eq: "concat xs = concat ys"
+  fix xs ys assume xs: "xs \<in> lists (sings B)" and ys: "ys \<in> lists (sings B)" 
+     and eq: "concat xs = concat ys" 
   from lists_sing_map_concat_ident[OF xs, unfolded eq]
   show "xs = ys" unfolding  lists_sing_map_concat_ident[OF ys, symmetric].
 qed
@@ -1035,24 +2304,200 @@ lemma sings_gen_lists: "\<langle>sings B\<rangle> = lists B"
 proof(intro equalityI subsetI, standard)
   fix xs
   show "xs \<in> concat ` lists (sings B) \<Longrightarrow> \<forall>x\<in>set xs. x \<in> B"
-    by force
+    by force 
   assume "xs \<in> lists B"
   hence "map (\<lambda>x. x # \<epsilon>) xs \<in> lists (sings B)"
     by force
-  from imageI[OF this, of concat]
+  from imageI[OF this, of concat] 
   show "xs \<in> concat ` lists (sings B)"
-    unfolding concat_map_sing_ident[of xs].
-qed
+    unfolding concat_map_sing_ident[of xs]. 
+qed    
+
+lemma sing_gen_lists: "lists {x} = \<langle>{[x]}\<rangle>"  
+  using sings_gen_lists[of "{x}"] by simp
+
+lemma bin_gen_lists: "lists {x, y} = \<langle>{[x],[y]}\<rangle>" 
+  using sings_gen_lists[of "{x,y}"] unfolding Setcompr_eq_image by simp
 
 lemma "sings B = \<BB>\<^sub>F (lists B)"
-  using code_free_basis_hull[OF code_sings, of B, unfolded sings_gen_lists].
+  using code.code_free_basis_hull[OF code_sings, of B, unfolded sings_gen_lists].
 
 lemma map_sings: "xs \<in> lists B \<Longrightarrow> map (\<lambda>x. x # \<epsilon>) xs \<in> lists (sings B)"
   by (induct xs) auto
 
 lemma dec_sings: "xs \<in> lists B \<Longrightarrow> Dec (sings B) xs = map (\<lambda> x. [x]) xs"
-  using code.code_unique_dec[OF code_sings, of "map (\<lambda> x. [x]) xs" B, OF map_sings]
+  using code.code_unique_dec'[OF code_sings, of "map (\<lambda> x. [x]) xs" B, OF map_sings]
   unfolding concat_map_sing_ident.
 
+lemma sing_lists_exp: assumes "ws \<in> lists {x}"
+  obtains k where "ws = [x]\<^sup>@k"
+  using  unique_letter_wordE''[OF assms[folded in_lists_conv_set_subset]]. 
+
+lemma sing_lists_exp_len: "ws \<in> lists {x} \<Longrightarrow> [x]\<^sup>@\<^bold>|ws\<^bold>| = ws"
+  by  (induct ws, auto)
+
+lemma sing_lists_exp_count: "ws \<in> lists {x} \<Longrightarrow> [x]\<^sup>@(count_list ws x) = ws"
+  by  (induct ws, auto)
+
+lemma sing_set_pow_count_list: "set ws \<subseteq> {a} \<Longrightarrow> [a]\<^sup>@(count_list ws a) = ws"
+  unfolding in_lists_conv_set_subset using  sing_lists_exp_count.
+
+lemma sing_set_pow: "set ws \<subseteq> {a} \<Longrightarrow> [a]\<^sup>@\<^bold>|ws\<^bold>| = ws"
+  by auto 
+
+lemma count_sing_exp: "count_list ([a]\<^sup>@k) a = k" 
+  by (induct k, simp, simp add: count_list_append)
+
+lemma count_sing_distinct: "a \<noteq> b \<Longrightarrow> count_list ([a]\<^sup>@k) b = 0" 
+  by (induct k, simp, auto simp add: count_list_append)
+
+lemma sing_code: "x \<noteq> \<epsilon> \<Longrightarrow> code {x}"
+proof (rule code.intro)
+  fix xs ys
+  assume "x \<noteq> \<epsilon>" "xs \<in> lists {x}" "ys \<in> lists {x}" "concat xs = concat ys"
+  show "xs = ys"
+    using \<open>concat xs = concat ys\<close>
+      [unfolded concat_sing_list_pow'[OF \<open>xs \<in> lists {x}\<close>]
+        concat_sing_list_pow'[OF \<open>ys \<in> lists {x}\<close>]
+        eq_pow_exp[OF \<open>x \<noteq> \<epsilon>\<close>]]   
+      sing_lists_exp_len[OF \<open>xs \<in> lists {x}\<close>]
+      sing_lists_exp_len[OF \<open>ys \<in> lists {x}\<close>] by argo
+qed
+
+section \<open>Various additional lemmas\<close>
+
+subsection \<open>Roots of binary set\<close>
+
+(* TODO Generalized?*)
+lemma two_roots_code: assumes "x \<noteq> \<epsilon>" and  "y \<noteq> \<epsilon>" shows "code {\<rho> x, \<rho> y}"
+  using assms
+proof (cases "\<rho> x = \<rho> y")
+  assume "\<rho> x = \<rho> y"
+  thus "code {\<rho> x, \<rho> y}" using sing_code[OF primroot_nemp[OF \<open>x \<noteq> \<epsilon>\<close>]] by simp
+next
+  assume "\<rho> x \<noteq> \<rho> y"
+  hence "\<rho> x \<cdot> \<rho> y \<noteq> \<rho> y \<cdot> \<rho> x" 
+    using comm_prim[OF primroot_prim[OF \<open>x \<noteq> \<epsilon>\<close>] primroot_prim[OF \<open>y \<noteq> \<epsilon>\<close>]] by blast
+  thus "code {\<rho> x, \<rho> y}"
+    by (simp add: bin_code_code)
+qed
+
+lemma primroot_in_set_dec: assumes "x \<noteq> \<epsilon>" and  "y \<noteq> \<epsilon>" shows "\<rho> x \<in> set (Dec {\<rho> x, \<rho> y} x)"
+proof-
+  obtain k where "concat ([\<rho> x]\<^sup>@Suc k) = x"
+    using primroot_expE[OF \<open>x \<noteq> \<epsilon>\<close>] 
+      concat_sing_pow[symmetric, of "\<rho> x"] by metis
+  from code.code_unique_dec'[OF two_roots_code[OF assms], of "[\<rho> x]\<^sup>@Suc k", unfolded \<open>concat ([\<rho> x]\<^sup>@Suc k) = x\<close>]
+  have "Dec {\<rho> x, \<rho> y} x = [\<rho> x]\<^sup>@Suc k" 
+    using insertI1 sing_pow_lists by metis
+  show ?thesis
+    unfolding \<open>Dec {\<rho> x, \<rho> y} x = [\<rho> x]\<^sup>@Suc k\<close> by simp
+qed
+
+lemma primroot_dec: assumes "x \<cdot> y \<noteq> y \<cdot> x" 
+ obtains k where "(Dec {\<rho> x, \<rho> y} x) = [\<rho> x]\<^sup>@Suc k"
+proof-
+  have "x \<noteq> \<epsilon>" and "y \<noteq> \<epsilon>" using \<open>x \<cdot> y \<noteq> y \<cdot> x\<close> by blast+
+  note rcode = \<open>x \<cdot> y \<noteq> y \<cdot> x\<close>[unfolded comp_primroot_conv'[OF this]] 
+  interpret binary_code "\<rho> x" "\<rho> y" 
+    using rcode by unfold_locales
+  have "x \<in> \<langle>{\<rho> x, \<rho> y}\<rangle>"
+    by blast 
+  obtain k where "concat ([\<rho> x]\<^sup>@Suc k) = x"
+    using primroot_expE[OF \<open>x \<noteq> \<epsilon>\<close>] 
+      concat_sing_pow[symmetric, of "\<rho> x"] by metis
+  from code_unique_dec[OF _ this] 
+  show thesis  
+    by (simp add: sing_pow_lists that) 
+qed
+
+lemma primroot_dec': assumes "x \<cdot> y \<noteq> y \<cdot> x" 
+ obtains k where "(Dec {\<rho> x, \<rho> y} y) = [\<rho> y]\<^sup>@Suc k"
+  using primroot_dec[OF assms[symmetric], unfolded insert_commute].
+
+lemma (in binary_code) bin_roots_sings_code: "sings_code {Dec {\<rho> u\<^sub>0, \<rho> u\<^sub>1} u\<^sub>0, Dec {\<rho> u\<^sub>0, \<rho> u\<^sub>1} u\<^sub>1}"
+proof
+  interpret rcode: binary_code "\<rho> u\<^sub>0" "\<rho> u\<^sub>1"
+    using binary_code.intro non_comm[unfolded comp_primroot_conv'[OF bin_fst_nemp bin_snd_nemp]].
+    
+  obtain k\<^sub>0 where dec0: "(Dec {\<rho> u\<^sub>0,\<rho> u\<^sub>1} u\<^sub>0) = [\<rho> u\<^sub>0]\<^sup>@Suc k\<^sub>0"
+    using primroot_dec[OF non_comm].
+  obtain k\<^sub>1 where dec1: "(Dec {\<rho> u\<^sub>0,\<rho> u\<^sub>1} u\<^sub>1) = [\<rho> u\<^sub>1]\<^sup>@Suc k\<^sub>1"
+    using primroot_dec'[OF non_comm].
+  show "c \<in> {Dec {\<rho> u\<^sub>0, \<rho> u\<^sub>1} u\<^sub>0, Dec {\<rho> u\<^sub>0, \<rho> u\<^sub>1} u\<^sub>1} \<Longrightarrow> card (set c) = 1" for c     
+    unfolding dec0 dec1 using sing_pow_card_set  by (elim two_elem_cases) fast+
+  show  "set c \<noteq> set d" if "c \<in> {Dec {\<rho> u\<^sub>0, \<rho> u\<^sub>1} u\<^sub>0, Dec {\<rho> u\<^sub>0, \<rho> u\<^sub>1} u\<^sub>1}" and 
+           "d \<in> {Dec {\<rho> u\<^sub>0, \<rho> u\<^sub>1} u\<^sub>0, Dec {\<rho> u\<^sub>0, \<rho> u\<^sub>1} u\<^sub>1}" and "c \<noteq> d"  for c d
+    using that unfolding dec0 dec1 
+  proof (elim two_elem_cases) 
+    assume c: "c = [\<rho> u\<^sub>0] \<^sup>@ Suc k\<^sub>0" and d: "d = [\<rho> u\<^sub>1] \<^sup>@ Suc k\<^sub>1"
+    show "set c \<noteq> set d" 
+      unfolding c d sing_pow_set_Suc using rcode.bin_code_neq by blast 
+  next
+    assume c: "c = [\<rho> u\<^sub>1] \<^sup>@ Suc k\<^sub>1" and d: "d = [\<rho> u\<^sub>0] \<^sup>@ Suc k\<^sub>0"
+    show "set c \<noteq> set d" 
+      unfolding c d sing_pow_set_Suc using rcode.bin_code_neq[symmetric] by blast 
+  qed simp_all
+qed
+
+subsection Other
+
+lemma bin_count_one_decompose: assumes "ws \<in> lists {x,y}" and "x \<noteq> y" and  "count_list ws y = 1"
+  obtains k m where "[x]\<^sup>@k \<cdot> [y] \<cdot> [x]\<^sup>@m = ws"
+proof-
+  have "ws \<notin> [x]*"               
+    using count_sing_distinct[OF \<open>x \<noteq> y\<close>] \<open>count_list ws y = 1\<close> unfolding root_def by force
+  from distinct_letter_in[OF this]
+  obtain ws' k  b where "[x]\<^sup>@k \<cdot> [b] \<cdot> ws' = ws" and "b \<noteq> x" by blast
+  hence "b = y" 
+    using \<open>ws \<in> lists {x,y}\<close>  by force
+  have "ws' \<in> lists {x,y}"
+    using \<open>ws \<in> lists {x,y}\<close>[folded \<open>[x]\<^sup>@k \<cdot> [b] \<cdot> ws' = ws\<close>] by simp 
+  have "count_list ws' y = 0"
+    using arg_cong[OF \<open>[x]\<^sup>@k \<cdot> [b] \<cdot> ws' = ws\<close>, of "\<lambda> x. count_list x y"]
+    unfolding count_list_append \<open>count_list ws y = 1\<close> \<open>b = y\<close>  by force 
+  from sing_lists_exp[OF bin_lists_count_zero'[OF \<open>ws' \<in> lists {x,y}\<close> this]] 
+  obtain m where "ws' = [x]\<^sup>@m".
+  from that[OF \<open>[x]\<^sup>@k \<cdot> [b] \<cdot> ws' = ws\<close>[unfolded this \<open>b = y\<close>]]  
+  show thesis.
+qed
+
+lemma bin_count_one_conjug: assumes "ws \<in> lists {x,y}" and "x \<noteq> y" and "count_list ws y = 1"
+  shows "ws \<sim> [x]\<^sup>@(count_list ws x) \<cdot> [y]" 
+proof-
+  obtain e1 e2 where "[x]\<^sup>@e1 \<cdot> [y] \<cdot> [x]\<^sup>@e2 = ws" 
+    using bin_count_one_decompose[OF assms].
+  from conjugI'[of "[x] \<^sup>@ e1 \<cdot> [y]" "[x]\<^sup>@e2", unfolded rassoc this]
+  have "ws \<sim> [x]\<^sup>@(e2 + e1) \<cdot> [y]"
+    unfolding add_exps rassoc.
+  moreover have "count_list ([x]\<^sup>@(e2 + e1) \<cdot> [y]) x = e2 + e1"
+    using \<open>x \<noteq> y\<close> by (simp add: count_list_append count_sing_exp) 
+  ultimately show ?thesis
+    by (simp add: count_list_conjug)  
+qed
+
+lemma bin_prim_long_set: assumes "ws \<in> lists {x,y}" and "primitive ws" and  "2 \<le> \<^bold>|ws\<^bold>|"
+    shows "set ws = {x,y}" 
+proof-
+  have "\<not> set ws \<subseteq> {c}" for c
+    using \<open>primitive ws\<close> pow_nemp_imprim \<open>2 \<le> \<^bold>|ws\<^bold>|\<close>
+          sing_lists_exp_len[folded in_lists_conv_set_subset] by metis 
+  then show "set ws = {x,y}"
+    unfolding subset_singleton_iff using \<open>ws \<in> lists {x,y}\<close>[folded in_lists_conv_set_subset] doubleton_subset_cases by metis 
+qed
+
+lemma bin_prim_long_pref: assumes "ws \<in> lists {x,y}" and "primitive ws" and  "2 \<le> \<^bold>|ws\<^bold>|"
+  obtains ws' where "ws \<sim> ws'" and "[x,y] \<le>p ws'" 
+proof-
+  from pow_nemp_imprim[OF \<open>2 \<le> \<^bold>|ws\<^bold>|\<close>, of "[x]"] sing_lists_exp_len[of ws x]
+  have "\<not> ws \<in> lists {x}" 
+   using \<open>primitive ws\<close> \<open>2 \<le> \<^bold>|ws\<^bold>|\<close> by fastforce
+  hence "x \<noteq> y"
+   using \<open>ws \<in> lists {x,y}\<close> by fastforce
+  from switch_fac[OF \<open>x \<noteq> y\<close> bin_prim_long_set[OF assms]]
+  show thesis
+    using \<open>2 \<le> \<^bold>|ws\<^bold>|\<close> rotate_into_pos_sq[of \<epsilon> "[x,y]" ws thesis, unfolded clean_emp, OF \<open>[x, y] \<le>f ws \<cdot> ws\<close> _ _ that, of id]
+    by force
+qed
 
 end

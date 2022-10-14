@@ -566,14 +566,14 @@ begin
                         \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle> \<^bold>\<star> (\<^bold>\<langle>G f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>), \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>\<^bold>] \<^bold>\<cdot>
                         (\<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle>, \<^bold>\<langle>G f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>) \<^bold>\<cdot>
                         \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>\<^bold>]\<rbrace>"
-              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char
+              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by auto
             also have "... = \<lbrace>(\<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G f\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>\<^bold>]\<rbrace>"
               using a b f ide_f by (intro EV.eval_eqI, auto)
             also have "... = (\<tau>\<^sub>0' b \<star>\<^sub>D G f) \<star>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0 a, \<tau>\<^sub>0' a, \<tau>\<^sub>0 a]"
-              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char
+              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by auto
             finally show ?thesis by blast
           qed
@@ -643,14 +643,14 @@ begin
                       ((\<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G f\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>\<^bold>] \<^bold>\<cdot> \<^bold>\<r>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>\<^bold>]) \<^bold>\<cdot>
                       \<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>, \<^bold>\<langle>F\<^sub>0 a\<^bold>\<rangle>\<^sub>0\<^bold>]) \<^bold>\<cdot>
                       (\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle>, \<^bold>\<langle>G f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>F\<^sub>0 a\<^bold>\<rangle>\<^sub>0)\<rbrace>"
-              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char D.\<ll>_ide_simp D.\<rr>_ide_simp
+              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.\<ll>_ide_simp D.\<rr>_ide_simp
               by auto
             also have "... = \<lbrace>\<^bold>\<r>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>G f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 a\<^bold>\<rangle>\<^bold>]\<rbrace>"
               using a b f ide_f by (intro EV.eval_eqI, auto)
             also have "... = \<r>\<^sub>D[\<tau>\<^sub>0' b \<star>\<^sub>D G f \<star>\<^sub>D \<tau>\<^sub>0 a]"
-              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char D.\<ll>_ide_simp D.\<rr>_ide_simp
+              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.\<ll>_ide_simp D.\<rr>_ide_simp
               by auto
             finally show ?thesis by blast
           qed
@@ -1137,14 +1137,14 @@ begin
                      (\<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle>) \<^bold>\<cdot>
                      (\<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle>\<^bold>]) \<^bold>\<cdot>
                      \<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle>\<^bold>]\<rbrace>"
-              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char
+              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by auto
             also have "... = \<lbrace>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' b\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle>\<rbrace>"
               using a b f ide_f by (intro EV.eval_eqI, auto)
             also have "... = \<a>\<^sub>D\<^sup>-\<^sup>1[\<tau>\<^sub>0 b, \<tau>\<^sub>0' b, \<tau>\<^sub>0 b] \<star>\<^sub>D F f \<star>\<^sub>D \<tau>\<^sub>0' a"
-              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char
+              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C
               by auto
             finally show ?thesis by blast
           qed
@@ -1214,14 +1214,14 @@ begin
                       (\<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<a>\<^bold>[\<^bold>\<langle>F\<^sub>0 b\<^bold>\<rangle>\<^sub>0, \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle>\<^bold>]) \<^bold>\<cdot>
                       (\<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<langle>F f\<^bold>\<rangle>\<^bold>] \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle>) \<^bold>\<cdot>
                       \<^bold>\<a>\<^bold>[\<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle>, \<^bold>\<langle>F f\<^bold>\<rangle>, \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle>\<^bold>]\<rbrace>"
-              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char D.\<ll>_ide_simp D.\<rr>_ide_simp
+              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.\<ll>_ide_simp D.\<rr>_ide_simp
               by auto
             also have "... = \<lbrace>\<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[(\<^bold>\<langle>\<tau>\<^sub>0 b\<^bold>\<rangle> \<^bold>\<star> \<^bold>\<langle>F f\<^bold>\<rangle>) \<^bold>\<star> \<^bold>\<langle>\<tau>\<^sub>0' a\<^bold>\<rangle>\<^bold>]\<rbrace>"
               using a b f ide_f by (intro EV.eval_eqI, auto)
             also have "... = \<l>\<^sub>D\<^sup>-\<^sup>1[(\<tau>\<^sub>0 b \<star>\<^sub>D F f) \<star>\<^sub>D \<tau>\<^sub>0' a]"
-              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char D.VVV.arr_char
-                    D.VV.ide_char D.VV.arr_char D.\<ll>_ide_simp
+              using a b f ide_f D.\<alpha>_def D.\<alpha>'.map_ide_simp D.VVV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VVV.arr_char\<^sub>S\<^sub>b\<^sub>C
+                    D.VV.ide_char\<^sub>S\<^sub>b\<^sub>C D.VV.arr_char\<^sub>S\<^sub>b\<^sub>C D.\<ll>_ide_simp
               by auto
             finally show ?thesis by blast
           qed

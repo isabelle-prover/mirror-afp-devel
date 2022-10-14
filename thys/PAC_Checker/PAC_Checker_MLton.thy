@@ -26,7 +26,7 @@ compile_generated_files _
       val exec = Generated_Files.execute (dir + Path.basic "code");
       val _ =
         exec \<open>Compilation\<close>
-          (File.bash_path \<^path>\<open>$ISABELLE_MLTON\<close> ^ " " ^
+          (\<^verbatim>\<open>"$ISABELLE_MLTON" $ISABELLE_MLTON_OPTIONS \<close> ^
             "-const 'MLton.safe false' -verbose 1 -default-type int64 -output pasteque " ^
             "-codegen native -inline 700 -cc-opt -O3 pasteque.mlb");
     in () end\<close>

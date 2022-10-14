@@ -185,7 +185,7 @@ Opposite natural transformation of semifunctors with tiny maps
 lemma (in is_tm_ntsmcf) is_tm_ntsmcf_op: "op_ntsmcf \<NN> : 
   op_smcf \<GG> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m op_smcf \<FF> : op_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>t\<^sub>m\<^bsub>\<alpha>\<^esub> op_smc \<BB>"
   by (intro is_tm_ntsmcfI') 
-    (cs_concl cs_intro: smc_cs_intros smc_op_intros)+
+    (cs_concl cs_shallow cs_intro: smc_cs_intros smc_op_intros)+
 
 lemma (in is_tm_ntsmcf) is_tm_ntsmcf_op'[smc_op_intros]: 
   assumes "\<GG>' = op_smcf \<GG>"
@@ -398,7 +398,10 @@ proof-
     NTDom.HomCod.tiny_smc_in_Vset
   show ?thesis
     by (subst ntsmcf_def) 
-      (cs_concl cs_simp: smc_cs_simps cs_intro: smc_cs_intros V_cs_intros)
+      (
+        cs_concl cs_shallow 
+          cs_simp: smc_cs_simps cs_intro: smc_cs_intros V_cs_intros
+      )
 qed
 
 lemma small_all_tiny_ntsmcfs[simp]: 
@@ -472,7 +475,7 @@ proof(intro is_tiny_ntsmcfI)
   interpret \<beta>: \<Z> \<beta> by (rule assms(1))
   show "\<NN> : \<FF> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F \<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<beta>\<^esub> \<BB>"
     by (intro ntsmcf_is_ntsmcf_if_ge_Limit)
-      (use assms(2) in \<open>cs_concl cs_intro: dg_cs_intros\<close>)+
+      (use assms(2) in \<open>cs_concl cs_shallow cs_intro: dg_cs_intros\<close>)+
   show "ntsmcf_tdghm \<NN> :
     smcf_dghm \<FF> \<mapsto>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y smcf_dghm \<GG> : smc_dg \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<beta>\<^esub> smc_dg \<BB>"
     by 
@@ -497,7 +500,7 @@ subsubsection\<open>Opposite natural transformation of tiny semifunctors\<close>
 lemma (in is_tiny_ntsmcf) is_tm_ntsmcf_op: "op_ntsmcf \<NN> :
   op_smcf \<GG> \<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y op_smcf \<FF> : op_smc \<AA> \<mapsto>\<mapsto>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>t\<^sub>i\<^sub>n\<^sub>y\<^bsub>\<alpha>\<^esub> op_smc \<BB>"
   by (intro is_tiny_ntsmcfI')
-    (cs_concl cs_intro: smc_cs_intros smc_op_intros)+
+    (cs_concl cs_shallow cs_intro: smc_cs_intros smc_op_intros)+
 
 lemma (in is_tiny_ntsmcf) is_tiny_ntsmcf_op'[smc_op_intros]: 
   assumes "\<GG>' = op_smcf \<GG>"

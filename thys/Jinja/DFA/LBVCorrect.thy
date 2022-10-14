@@ -135,7 +135,7 @@ qed
 
 lemma (in lbvs) phi_in_A:
   assumes wtl: "wtl ins c 0 s\<^sub>0 \<noteq> \<top>" and s\<^sub>0: "s\<^sub>0 \<in> A"
-  shows "\<tau>s \<in> list (size ins) A"
+  shows "\<tau>s \<in> nlists (size ins) A"
 (*<*)
 proof -
   { fix x assume "x \<in> set \<tau>s"
@@ -154,7 +154,7 @@ proof -
     hence "x \<in> A" using x by simp
   } 
   hence "set \<tau>s \<subseteq> A" ..
-  thus ?thesis by (unfold list_def) simp
+  thus ?thesis by (unfold nlists_def) simp
 qed
 (*>*)
 
@@ -201,10 +201,10 @@ qed
 theorem (in lbvs) wtl_sound_strong:
   assumes wtl: "wtl ins c 0 s\<^sub>0 \<noteq> \<top>" 
   assumes s\<^sub>0: "s\<^sub>0 \<in> A" and ins: "0 < size ins"
-  shows "\<exists>\<tau>s \<in> list (size ins) A. wt_step r \<top> step \<tau>s \<and> s\<^sub>0 \<sqsubseteq>\<^sub>r \<tau>s!0"
+  shows "\<exists>\<tau>s \<in> nlists (size ins) A. wt_step r \<top> step \<tau>s \<and> s\<^sub>0 \<sqsubseteq>\<^sub>r \<tau>s!0"
 (*<*)
 proof -
-  have "\<tau>s \<in> list (size ins) A" using wtl s\<^sub>0 by (rule phi_in_A)
+  have "\<tau>s \<in> nlists (size ins) A" using wtl s\<^sub>0 by (rule phi_in_A)
   moreover
   have "wt_step r \<top> step \<tau>s"
   proof (unfold wt_step_def, intro strip conjI)

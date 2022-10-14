@@ -95,10 +95,10 @@ section\<open>Syntax\<close>
 
 
 text\<open>
-This section presents the syntactic categories that are associated with the 
-methods @{method cs_concl_step}, @{method cs_intro_step}, 
-@{method cs_intro_search}, @{method cs_concl},  
-@{method cs_prems_atom_step} and @{method cs_prems}. 
+This section presents the syntactic categories that are associated with the
+methods @{method cs_concl_step}, @{method cs_intro_step},
+@{method cs_intro_search}, @{method cs_concl},
+@{method cs_prems_atom_step} and @{method cs_prems}.
 It is important to note that the presentation is only approximate.
 \<close>
 
@@ -117,64 +117,97 @@ text\<open>
   \<^medskip>
 
   \<^rail>\<open>
-    @@{method cs_concl_step} thms
+    @@{method cs_concl_step} (@'cs_shallow')? thms
     ;
-    @@{method cs_intro_step} thms
+    @@{method cs_intro_step} (@'cs_shallow')? thms
     ;
-    @@{method cs_intro_search} thms
+    @@{method cs_intro_search} (@'cs_shallow')? thms
     ;
     @@{method cs_concl}
-      ((@'cs_full')?) ((@'cs_ist_simple')?) ((cs_simp cs_intro)*)
+      (n?)
+      (@'!'?)
+      cs_match
+      ((@'cs_ist_simple')?)
+      (cs_is)
     ;
-    @@{method cs_prems_atom_step} thms
+    @@{method cs_prems_atom_step} (@'cs_shallow')? thms
     ;
-    @@{method cs_prems} 
-      ((@'cs_full')?) ((@'cs_ist_simple')?) ((cs_simp cs_intro)*)
+    @@{method cs_prems}
+      (n?)
+      (@'!'?)
+      cs_match
+      ((@'cs_ist_simple')?)
+      (cs_is)
     ;
-    cs_simp: (@'cs_simp' @':' thms)? 
+    cs_match: (@'cs_full' | @'cs_shallow')?
+    ;
+    cs_is: (cs_simp cs_intro)*
+    ;
+    cs_simp: (@'cs_simp' @':' thms)?
     ;
     cs_intro: (@'cs_intro' @':' thms)?
   \<close>
 
-  \<^descr> @{method cs_concl_step} \<open>thms\<close> performs a single rewrite step of 
-the conclusion of some goal using the collection of the rewrite rules \<open>thms\<close>.
-The rewriting is performed via the intro-resolution with the 
-rewrite rule stated in an altered form: the application of 
-@{method cs_concl_step} may produce new subgoals that are associated with 
+  \<^descr> @{method cs_concl_step} (@{element "cs_shallow"}) \<open>thms\<close> performs a single
+rewrite step of the conclusion of some goal using the collection of the rewrite
+rules \<open>thms\<close>. The rewriting is performed via the intro-resolution with the
+rewrite rule stated in an altered form: the application of
+@{method cs_concl_step} may produce new subgoals that are associated with
 the premises of the applied rewrite rule.
-  \<^descr> @{method cs_intro_step} \<open>thms\<close> performs a single refinement step 
-via intro-resolution. 
-  \<^descr> @{method cs_intro_search} \<open>thms\<close> attempts to solve a single goal 
-using a search procedure based on the algorithm outlined
+If the optional argument @{element "cs_shallow"} is provided during
+the invocation of the proof method, then backtracking and all of the
+related infrastructure is disabled during the invocation of the method 
+(disabling the infrastructure associated with backtracking can result in 
+improved performance).
+  \<^descr> @{method cs_intro_step} (@{element "cs_shallow"}) \<open>thms\<close> performs a single 
+refinement step via intro-resolution. The optional argument
+@{element "cs_shallow"} serves a purpose that is similar to its purpose in 
+@{method cs_concl_step}. 
+  \<^descr> @{method cs_intro_search} (@{element "cs_shallow"}) \<open>thms\<close> attempts to solve 
+a single goal using a search procedure based on the algorithm outlined
 in the description of the method @{method cs_intro_step}.
+The optional argument @{element "cs_shallow"} serves a purpose that is similar 
+to its purpose in @{method cs_concl_step}.
   \<^descr> @{method cs_concl} 
-(@{element "cs_full"}) (@{element "cs_ist_simple"}) 
-@{element "cs_simp"} \<open>:\<close> \<open>simp_thms\<close> @{element "cs_intro"} \<open>:\<close> \<open>intro_thms\<close> 
-attempts to solve a single goal using a search procedure that employs 
+(\<open>n\<close>) (\<open>!\<close>) (@{element "cs_full"} or @{element "cs_shallow"})
+(@{element "cs_ist_simple"}) @{element "cs_simp"} \<open>:\<close>
+\<open>simp_thms\<close> @{element "cs_intro"} \<open>:\<close> \<open>intro_thms\<close>
+attempts to solve a single goal using a search procedure that employs
 the method applications @{method cs_concl_step} \<open>simp_thms\<close> 
 and @{method cs_intro_step} \<open>intro_thms\<close> as individual steps.
 If the optional argument @{element "cs_full"} is provided during the
 invocation of the proof method, all possible rule-term
 matches are considered. Otherwise, only a single sensible default match
-is used for every applicable rule-term pair. If the optional
-argument @{element "cs_ist_simple"} is provided, then the search space
+is used for every applicable rule-term pair.
+As before, if the optional argument @{element "cs_shallow"} is provided during
+the invocation of the proof method, then backtracking and all of the
+related infrastructure is disabled. If the optional argument
+@{element "cs_ist_simple"} is provided, then the search space
 of the method is expanded by allowing backtracking after every atomic
 step (the default behavior uses a tailor-made empirically established
 routine that can be inferred from the implementation of the method).
-  \<^descr> @{method cs_prems_atom_step} \<open>thms\<close> performs a single rewrite step of 
-the first premise of some goal using the collection of the rewrite rules \<open>thms\<close>.
-  \<^descr> @{method cs_prems} 
-(@{element "cs_full"}) (@{element "cs_ist_simple"}) 
-@{element "cs_simp"} \<open>:\<close> \<open>simp_thms\<close>
-@{element "cs_intro"} \<open>:\<close> \<open>intro_thms\<close> 
-repeatedly performs a single rewrite step of 
-the first premise of some goal using the collection of the rewrite rules 
+The optional positive integer argument \<open>n\<close> can be used for the
+invocation of a built-in profiling tool: \<open>n\<close> represents the number of
+trial runs of the method during profiling. The optional argument \<open>!\<close>
+switches on the verbose mode. In this mode, the individual steps
+that are invoked during the search procedure associated with the method 
+are printed.
+  \<^descr> @{method cs_prems_atom_step} (@{element "cs_shallow"}) \<open>thms\<close> performs a
+single rewrite step of the first premise of some goal using the collection of
+the rewrite rules \<open>thms\<close>. The optional argument @{element "cs_shallow"} 
+serves a purpose that is similar to its purpose in @{method cs_concl_step}. 
+  \<^descr> @{method cs_prems} (\<open>n\<close>) (\<open>!\<close>) 
+(@{element "cs_full"} or @{element "cs_shallow"})
+(@{element "cs_ist_simple"}) @{element "cs_simp"} \<open>:\<close> \<open>simp_thms\<close>
+@{element "cs_intro"} \<open>:\<close> \<open>intro_thms\<close> repeatedly performs a single rewrite
+step of the first premise of some goal using the collection of the rewrite rules
 \<open>simp_thms\<close>, followed by an attempt to solve all but the final subgoal using
-the method application 
-\<open>(\<close>@{method cs_concl} @{element "cs_simp"} \<open>:\<close> \<open>simp_thms\<close> 
+the method application
+\<open>(\<close>@{method cs_concl} @{element "cs_simp"} \<open>:\<close> \<open>simp_thms\<close>
 @{element "cs_intro"} \<open>:\<close> \<open>intro_thms\<close>\<open>)\<close>.
-@{element "cs_full"} and @{element "cs_ist_simple"} serve a purpose that 
-is similar to their purpose in @{method cs_concl}. 
+The optional arguments \<open>n\<close>, \<open>!\<close>, @{element "cs_full"},
+@{element "cs_shallow"} and @{element "cs_ist_simple"}
+serve a purpose that is similar to their purpose in @{method cs_concl}.
 \<close>
 
 text\<open>\newpage\<close>

@@ -73,7 +73,7 @@ node_ptr \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
   have "\<not>(\<exists>document_ptr. document_ptr |\<in>| document_ptr_kinds h \<and>
 x \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)"
     using 1 2 3
-    by (smt UN_I fset_of_list_elem image_eqI notin_fset set_concat set_map sorted_list_of_fset_simps(1))
+    by (smt (verit) UN_I fset_of_list_elem image_eqI notin_fset set_concat set_map sorted_list_of_fset_simps(1))
   then
   have "(\<exists>parent_ptr. parent_ptr |\<in>| object_ptr_kinds h \<and> x \<in> set |h \<turnstile> get_child_nodes parent_ptr|\<^sub>r)"
     using 1 2
@@ -3045,7 +3045,7 @@ h \<turnstile> a_get_owner_document\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^su
      apply(auto intro!: bind_pure_returns_result_I split: option.splits)[1]
     using \<open>cast child |\<in>| object_ptr_kinds h\<close> \<open>ptr |\<in>| object_ptr_kinds h\<close>
     apply(auto intro!: bind_pure_returns_result_I split: option.splits)[1]
-    by (smt \<open>cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child |\<in>| object_ptr_kinds h\<close> cast_document_ptr_not_node_ptr(1)
+    by (smt (verit) \<open>cast\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r child |\<in>| object_ptr_kinds h\<close> cast_document_ptr_not_node_ptr(1)
         comp_apply invoke_empty invoke_not invoke_returns_result is_OK_returns_result_I
         node_ptr_casts_commute2 option.sel)
 qed
@@ -3211,7 +3211,7 @@ proof -
               ElementClass.known_ptr_defs NodeClass.known_ptr_defs split: option.splits)
         have "root = cast owner_document"
           using True
-          by (smt \<open>h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document\<close> assms(1) assms(2) assms(3) assms(4)
+          by (metis \<open>h \<turnstile> get_owner_document ptr \<rightarrow>\<^sub>r owner_document\<close> assms(1) assms(2) assms(3) assms(4)
               document_ptr_casts_commute3 get_root_node_document returns_result_eq)
         then show ?thesis
           apply(auto simp add: get_owner_document_def a_get_owner_document_tups_def)[1]
@@ -4025,9 +4025,9 @@ node_ptr \<notin> set |h' \<turnstile> get_child_nodes parent_ptr|\<^sub>r"
       then have 5: "\<And>x. x \<in> set children \<Longrightarrow> x \<in> set disc_nodes \<Longrightarrow> False"
         using children disc_nodes  by fastforce
       have 6: "|h' \<turnstile> get_child_nodes xa|\<^sub>r = children'"
-        using children' by (simp add: )
+        using children' by simp
       have 7: "|h' \<turnstile> get_disconnected_nodes xb|\<^sub>r = disc_nodes'"
-        using disc_nodes' by (simp add: )
+        using disc_nodes' by simp
       have "False"
       proof (cases "xa = ptr")
         case True
@@ -4035,7 +4035,7 @@ node_ptr \<notin> set |h' \<turnstile> get_child_nodes parent_ptr|\<^sub>r"
           using children_h distinct_lists_children h0 \<open>known_ptr ptr\<close> by blast
         have "|h' \<turnstile> get_child_nodes ptr|\<^sub>r = remove1 child children_h"
           using children_h'
-          by(simp add: )
+          by simp
         have "children = children_h"
           using True children children_h by auto
         show ?thesis
@@ -4725,7 +4725,7 @@ proof -
       apply(simp add: a_owner_document_valid_def node_ptr_kinds_eq_h2 node_ptr_kinds_eq3_h3
           object_ptr_kinds_eq_h2 object_ptr_kinds_eq_h3 document_ptr_kinds_eq2_h2
           document_ptr_kinds_eq2_h3 children_eq2_h2 children_eq2_h3 )
-      by (smt  disc_nodes_document_ptr_h' disc_nodes_document_ptr_h2
+      by (smt (verit) disc_nodes_document_ptr_h' disc_nodes_document_ptr_h2
           disc_nodes_old_document_h2 disc_nodes_old_document_h3
           disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_in_heap
           document_ptr_kinds_eq3_h2 document_ptr_kinds_eq3_h3 in_set_remove1
@@ -5907,7 +5907,7 @@ proof -
         object_ptr_kinds_M_eq2_h2[simplified] object_ptr_kinds_M_eq2_h3[simplified]
         node_ptr_kinds_eq2_h2[simplified] node_ptr_kinds_eq2_h3[simplified])[1]
     apply(auto simp add: disconnected_nodes_eq2_h3[symmetric])[1]
-    by (smt children_eq2_h3 children_h' children_h3 disconnected_nodes_eq2_h2 disconnected_nodes_h2
+    by (smt (verit) children_eq2_h3 children_h' children_h3 disconnected_nodes_eq2_h2 disconnected_nodes_h2
         disconnected_nodes_h3 finite_set_in in_set_remove1 insert_before_list_in_set object_ptr_kinds_M_eq3_h'
         ptr_in_heap select_result_I2)
 
@@ -6199,9 +6199,8 @@ proof -
       (if children \<noteq> [] \<and> is_document_ptr parent
         then error HierarchyRequestError else return ())
   } \<rightarrow>\<^sub>r ()"
-    using assms(8)
-    by (smt assms(5) assms(7) bind_pure_returns_result_I2 calculation(1) is_OK_returns_result_I
-        local.get_child_nodes_pure local.get_parent_child_dual returns_result_eq)
+    by (smt (verit, best) assms(5) assms(7) assms(8) bind_pure_returns_result_I2 calculation(1)
+        is_OK_returns_result_I local.get_child_nodes_pure local.get_parent_child_dual returns_result_eq)
 
   moreover have "h \<turnstile> do {
       (if is_character_data_ptr node \<and> is_document_ptr parent
@@ -6223,14 +6222,14 @@ proof -
            apply auto[1]
     using assms(1) assms(2) assms(3) assms(7) local.get_ancestors_ok local.get_parent_parent_in_heap
           apply auto[1]
-          apply (smt bind_returns_heap_E is_OK_returns_heap_E local.get_parent_pure pure_def
+          apply (smt (verit) bind_returns_heap_E is_OK_returns_heap_E local.get_parent_pure pure_def
         pure_returns_heap_eq return_returns_heap returns_result_eq)
          apply(blast)
     using local.get_child_nodes_pure
         apply blast
        apply (meson assms(7) is_OK_returns_result_I local.get_parent_child_dual)
       apply (simp)
-     apply (smt assms(5) assms(8) is_OK_returns_result_I returns_result_eq)
+     apply (smt (verit) assms(5) assms(8) is_OK_returns_result_I returns_result_eq)
     by(auto)
 qed
 end
@@ -7182,12 +7181,12 @@ proof -
     by (simp add: children_eq2_h2 disconnected_nodes_eq2_h2 document_ptr_kinds_eq_h2
         local.a_all_ptrs_in_heap_def node_ptr_kinds_eq_h2 object_ptr_kinds_eq_h2)
   then have "a_all_ptrs_in_heap h'"
-    by (smt \<open>h2 \<turnstile> get_child_nodes (cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr) \<rightarrow>\<^sub>r []\<close> children_eq2_h3
-        disc_nodes_document_ptr_h2 disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h3
-        finite_set_in h' is_OK_returns_result_I set_disconnected_nodes_get_disconnected_nodes
-        local.a_all_ptrs_in_heap_def local.get_child_nodes_ptr_in_heap node_ptr_kinds_commutes
-        object_ptr_kinds_eq_h2 object_ptr_kinds_eq_h3 select_result_I2 set_ConsD subset_code(1))
-
+    by (smt (verit) children_eq2_h3 disc_nodes_document_ptr_h2 disconnected_nodes_eq2_h2
+        disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h3 element_ptr_kinds_commutes finite_set_in
+        h' h2 l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes
+        local.a_all_ptrs_in_heap_def local.l_set_disconnected_nodes_get_disconnected_nodes_axioms
+        new_element_ptr new_element_ptr_in_heap node_ptr_kinds_eq_h2 node_ptr_kinds_eq_h3
+        object_ptr_kinds_eq_h3 select_result_I2 set_ConsD subsetD subsetI)
   have "\<And>p. p |\<in>| object_ptr_kinds h \<Longrightarrow> cast new_element_ptr \<notin> set |h \<turnstile> get_child_nodes p|\<^sub>r"
     using \<open>heap_is_wellformed h\<close> \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close>
       heap_is_wellformed_children_in_heap
@@ -7255,14 +7254,14 @@ proof -
     ultimately show "False"
       apply(-)
       apply(cases "x = document_ptr")
-       apply (smt NodeMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close>
+       apply (smt (verit) NodeMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close>
           \<open>local.a_all_ptrs_in_heap h\<close>
           disc_nodes_h3 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3
           disjoint_iff_not_equal document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 finite_set_in h'
           l_set_disconnected_nodes_get_disconnected_nodes.set_disconnected_nodes_get_disconnected_nodes
           local.a_all_ptrs_in_heap_def local.l_set_disconnected_nodes_get_disconnected_nodes_axioms
           select_result_I2 set_ConsD subsetD)
-      by (smt NodeMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close>
+      by (smt (verit) NodeMonad.ptr_kinds_ptr_kinds_M \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close>
           \<open>local.a_all_ptrs_in_heap h\<close>
           disc_nodes_document_ptr_h2 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3
           disjoint_iff_not_equal document_ptr_kinds_eq_h document_ptr_kinds_eq_h2 finite_set_in h'
@@ -7307,7 +7306,7 @@ proof -
      apply (metis (no_types, lifting) document_ptr_kinds_eq_h h' list.set_intros(1)
         local.set_disconnected_nodes_get_disconnected_nodes select_result_I2)
     apply(simp add: object_ptr_kinds_eq_h)
-    by (smt ObjectMonad.ptr_kinds_ptr_kinds_M
+    by (smt (verit) ObjectMonad.ptr_kinds_ptr_kinds_M
         \<open>cast\<^sub>e\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_element_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close> children_eq2_h
         children_eq2_h2 children_eq2_h3 disconnected_nodes_eq2_h disconnected_nodes_eq2_h2
         disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h finite_set_in h' list.set_intros(2)
@@ -7650,7 +7649,7 @@ proof -
     by (simp add: children_eq2_h2 disconnected_nodes_eq2_h2 document_ptr_kinds_eq_h2
         local.a_all_ptrs_in_heap_def node_ptr_kinds_eq_h2 object_ptr_kinds_eq_h2)
   then have "a_all_ptrs_in_heap h'"
-    by (smt   character_data_ptr_kinds_commutes children_eq2_h3 disc_nodes_document_ptr_h2
+    by (smt (verit) character_data_ptr_kinds_commutes children_eq2_h3 disc_nodes_document_ptr_h2
         disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h3
         finite_set_in h' h2 local.a_all_ptrs_in_heap_def
         local.set_disconnected_nodes_get_disconnected_nodes new_character_data_ptr
@@ -7718,7 +7717,7 @@ proof -
     moreover have "set |h3 \<turnstile> get_disconnected_nodes x|\<^sub>r \<inter> set |h3 \<turnstile> get_disconnected_nodes y|\<^sub>r = {}"
       using calculation by(auto dest: distinct_concat_map_E(1))
     ultimately show "False"
-      by (smt NodeMonad.ptr_kinds_ptr_kinds_M
+      by (smt (verit) NodeMonad.ptr_kinds_ptr_kinds_M
           \<open>cast\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>n\<^sub>o\<^sub>d\<^sub>e\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_character_data_ptr \<notin> set |h \<turnstile> node_ptr_kinds_M|\<^sub>r\<close>
           \<open>local.a_all_ptrs_in_heap h\<close> disc_nodes_document_ptr_h2 disconnected_nodes_eq2_h
           disconnected_nodes_eq2_h2 disconnected_nodes_eq2_h3 disjoint_iff_not_equal
@@ -7761,7 +7760,7 @@ proof -
      apply (metis (no_types, lifting) document_ptr_kinds_eq_h h' list.set_intros(1)
         local.set_disconnected_nodes_get_disconnected_nodes select_result_I2)
     apply(simp add: object_ptr_kinds_eq_h)
-    by (smt ObjectMonad.ptr_kinds_ptr_kinds_M
+    by (smt (verit) ObjectMonad.ptr_kinds_ptr_kinds_M
         \<open>cast\<^sub>c\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>_\<^sub>d\<^sub>a\<^sub>t\<^sub>a\<^sub>_\<^sub>p\<^sub>t\<^sub>r\<^sub>2\<^sub>o\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t\<^sub>_\<^sub>p\<^sub>t\<^sub>r new_character_data_ptr \<notin> set |h \<turnstile> object_ptr_kinds_M|\<^sub>r\<close> children_eq2_h
         disconnected_nodes_eq2_h3 document_ptr_kinds_eq_h finite_set_in h' list.set_intros(2)
         local.set_disconnected_nodes_get_disconnected_nodes select_result_I2)

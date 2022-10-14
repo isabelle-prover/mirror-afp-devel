@@ -42,21 +42,20 @@ session Isabelle_C (AFP) = HOL +
     "HOL-ex"
     "Isar_Ref"
   directories
-    "C11-FrontEnd"
-    "C11-FrontEnd/src"
+    "C11-FrontEnd/appendices"
     "C11-FrontEnd/examples"
+    "C11-FrontEnd/main"
+    "C11-FrontEnd/src"
   theories [document = false]
     "HOL-ex.Cartouche_Examples" (* LaTeX error in Isabelle2019 *)
   theories [document = true]
     "C11-FrontEnd/examples/C0"
     "C11-FrontEnd/examples/C1"
     "C11-FrontEnd/examples/C2"
-    "C11-FrontEnd/examples/C3"
-    "C11-FrontEnd/examples/C4"
     "C11-FrontEnd/examples/C_paper"
   theories (* document *)
-    "C11-FrontEnd/C_Appendices"
-    "./README"
+    "C11-FrontEnd/appendices/C_Appendices"
+    README
   document_files (in "C11-FrontEnd/document/generated")
     "DOF-COL.sty"
     "DOF-core.sty"

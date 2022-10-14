@@ -3,7 +3,10 @@
 *)
 
 theory Functional_Spaces
-imports "HOL-Analysis.Analysis" Ergodic_Theory.SG_Library_Complement
+  imports
+    "HOL-Analysis.Analysis"
+    "HOL-Library.Function_Algebras"
+    Ergodic_Theory.SG_Library_Complement
 begin
 
 
@@ -14,18 +17,8 @@ text \<open>Many functional spaces are spaces of functions. To be able to use th
 framework, spaces of functions thus need to be endowed with a vector space
 structure, coming from pointwise addition and multiplication.
 
-Some instantiations for \verb+fun+ are already given in \verb+Lattices.thy+, we add several.\<close>
-
-instantiation "fun" :: (type, plus) plus
-begin
-
-definition plus_fun_def: "f + g = (\<lambda>x. f x + g x)"
-
-lemma plus_apply [simp, code]: "(f + g) x = f x + g x"
-  by (simp add: plus_fun_def)
-
-instance ..
-end
+Some instantiations for \verb+fun+ are already given in \verb+Function_Algebras.thy+ and
+\verb+Lattices.thy+, we add several.\<close>
 
 text \<open>\verb+minus_fun+ is already defined, in \verb+Lattices.thy+, but under the strange name
 \verb+fun_Compl_def+. We restate the definition so that \verb+unfolding minus_fun_def+ works.
@@ -35,57 +28,10 @@ in \verb+Lattices.thy+.\<close>
 lemmas uminus_fun_def = fun_Compl_def
 lemmas minus_fun_def = fun_diff_def
 
-instantiation "fun" :: (type, zero) zero
-begin
-
-definition zero_fun_def: "0 = (\<lambda>x. 0)"
-
-lemma zero_fun [simp, code]:
-  "0 x = 0"
-by (simp add: zero_fun_def)
-
-instance..
-end
-
-instance "fun"::(type, semigroup_add) semigroup_add
-by (standard, rule ext, auto simp add: add.assoc)
-
-instance "fun"::(type, ab_semigroup_add) ab_semigroup_add
-by (standard, rule ext, auto simp add: add_ac)
-
-instance "fun"::(type, monoid_add) monoid_add
-by (standard, rule ext, auto)
-
-instance "fun"::(type, comm_monoid_add) comm_monoid_add
-by (standard, rule ext, auto)
-
 lemma fun_sum_apply:
   fixes u::"'i \<Rightarrow> 'a \<Rightarrow> ('b::comm_monoid_add)"
   shows "(sum u I) x = sum (\<lambda>i. u i x) I"
 by (induction I rule: infinite_finite_induct, auto)
-
-instance "fun"::(type, cancel_semigroup_add) cancel_semigroup_add
-proof
-  fix a b c::"'a \<Rightarrow> 'b" assume "a + b = a + c"
-  then have "a x + b x = a x + c x" for x by (metis plus_fun_def)
-  then show "b = c" by (intro ext, auto)
-next
-  fix b a c::"'a \<Rightarrow> 'b" assume "b + a = c + a"
-  then have "b x + a x = c x + a x" for x by (metis plus_fun_def)
-  then show "b = c" by (intro ext, auto)
-qed
-
-instance "fun"::(type, cancel_ab_semigroup_add) cancel_ab_semigroup_add
-by (standard, rule ext, auto, rule ext, auto simp add: diff_diff_add)
-
-instance "fun"::(type, cancel_comm_monoid_add) cancel_comm_monoid_add
-by standard
-
-instance "fun"::(type, group_add) group_add
-by (standard, auto)
-
-instance "fun"::(type, ab_group_add) ab_group_add
-by (standard, auto)
 
 instantiation "fun" :: (type, real_vector) real_vector
 begin

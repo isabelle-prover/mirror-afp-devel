@@ -263,42 +263,6 @@ qed
     
 subsection \<open>More about @{term degree}\<close>
    
-lemma degree_div_less:
-  fixes x y::"'a::field poly"
-  assumes "degree x\<noteq>0" "degree y\<noteq>0"
-  shows "degree (x div y) < degree x"
-proof -
-  have "x\<noteq>0" "y\<noteq>0" using assms by auto
-  define q r where "q=x div y" and "r=x mod y"
-  have *:"eucl_rel_poly x y (q, r)" unfolding q_def r_def 
-    by (simp add: eucl_rel_poly)
-  then have "r = 0 \<or> degree r < degree y" using \<open>y\<noteq>0\<close> unfolding eucl_rel_poly_iff by auto
-  moreover have ?thesis when "r=0"
-  proof -
-    have "x = q * y" using * that unfolding eucl_rel_poly_iff by auto
-    then have "q\<noteq>0" using \<open>x\<noteq>0\<close> \<open>y\<noteq>0\<close> by auto
-    from degree_mult_eq[OF this \<open>y\<noteq>0\<close>] \<open>x = q * y\<close> 
-    have "degree x = degree q +degree y" by auto
-    then show ?thesis unfolding q_def using assms by auto
-  qed
-  moreover have ?thesis when "degree r<degree y"
-  proof (cases "degree y>degree x")
-    case True
-    then have "q=0" unfolding q_def using div_poly_less by auto
-    then show ?thesis unfolding q_def using assms(1) by auto
-  next
-    case False
-    then have "degree x>degree r" using that by auto
-    then have "degree x = degree (x-r)" using degree_add_eq_right[of "-r" x] by auto
-    have "x-r = q*y" using * unfolding eucl_rel_poly_iff by auto
-    then have "q\<noteq>0" using \<open>degree r < degree x\<close> by auto
-    have "degree x = degree q +degree y" 
-      using  degree_mult_eq[OF \<open>q\<noteq>0\<close> \<open>y\<noteq>0\<close>] \<open>x-r = q*y\<close> \<open>degree x = degree (x-r)\<close> by auto
-    then show ?thesis unfolding q_def using assms by auto
-  qed
-  ultimately show ?thesis by auto
-qed  
-  
 lemma map_poly_degree_eq:
   assumes "f (lead_coeff p) \<noteq>0"
   shows "degree (map_poly f p) = degree p"  

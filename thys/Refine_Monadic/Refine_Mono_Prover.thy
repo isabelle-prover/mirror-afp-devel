@@ -33,7 +33,7 @@ begin
   interpretation order_mono_setup: mono_setup_loc "(\<le>) :: 'a::preorder \<Rightarrow> _"
     by standard auto
 
-  declaration \<open>Refine_Mono_Prover.declare_mono_triggers @{thms Orderings.monoI}\<close>
+  declaration \<open>Refine_Mono_Prover.declare_mono_triggers @{thms monoI}\<close>
 
   lemmas [refine_mono] = 
     lfp_mono[OF le_funI, THEN le_funD] 

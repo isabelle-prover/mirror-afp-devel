@@ -1,38 +1,4 @@
 (*
-(C) Copyright Andreas Viktor Hess, DTU, 2015-2020
-
-All Rights Reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are
-met:
-
-- Redistributions of source code must retain the above copyright
-  notice, this list of conditions and the following disclaimer.
-
-- Redistributions in binary form must reproduce the above copyright
-  notice, this list of conditions and the following disclaimer in the
-  documentation and/or other materials provided with the distribution.
-
-- Neither the name of the copyright holder nor the names of its
-  contributors may be used to endorse or promote products
-  derived from this software without specific prior written
-  permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*)
-
-(*
 Based on src/HOL/ex/Unification.thy packaged with Isabelle/HOL 2015 having the following license:
 
 ISABELLE COPYRIGHT NOTICE, LICENCE AND DISCLAIMER.
@@ -76,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (*  Title:      More_Unification.thy
     Author:     Andreas Viktor Hess, DTU
+    SPDX-License-Identifier: BSD-3-Clause
 
     Originally based on src/HOL/ex/Unification.thy (Isabelle/HOL 2015) by:
     Author:     Martin Coen, Cambridge University Computer Laboratory
@@ -250,7 +217,7 @@ next
   obtain Y where "Fun f X \<cdot> s = Fun f Y" by auto
   hence "x \<cdot> s \<in> set Y" using \<open>x \<in> set X\<close> by auto
   hence "x \<cdot> s \<sqsubset> Fun f X \<cdot> s" using \<open>Fun f X \<cdot> s = Fun f Y\<close> Fun_param_is_subterm by simp
-  hence "t \<cdot> s \<sqsubset> Fun f X \<cdot> s" using \<open>t \<cdot> s \<sqsubseteq> x \<cdot> s\<close> by (metis term.dual_order.trans term.eq_iff)
+  hence "t \<cdot> s \<sqsubset> Fun f X \<cdot> s" using \<open>t \<cdot> s \<sqsubseteq> x \<cdot> s\<close> by (metis term.dual_order.trans term.order.eq_iff)
   thus ?thesis using \<open>u = Fun f X\<close> \<open>t \<sqsubset> u\<close> by metis
 qed
 
@@ -352,6 +319,9 @@ by fast
 lemma subst_apply_fv_unfold: "fv (t \<cdot> \<delta>) = fv\<^sub>s\<^sub>e\<^sub>t (\<delta> ` fv t)"
 by (induct t) auto
 
+lemma subst_apply_fv_unfold_set: "fv\<^sub>s\<^sub>e\<^sub>t (\<delta> ` fv\<^sub>s\<^sub>e\<^sub>t (set ts)) = fv\<^sub>s\<^sub>e\<^sub>t (set ts \<cdot>\<^sub>s\<^sub>e\<^sub>t \<delta>)"
+by (simp add: subst_apply_fv_unfold)
+
 lemma subst_apply_fv_unfold': "fv (t \<cdot> \<delta>) = (\<Union>v \<in> fv t. fv (\<delta> v))"
 using subst_apply_fv_unfold by simp
 
@@ -427,6 +397,14 @@ proof
     by (induction s, metis t_\<theta>_id fun_upd_def subst_apply_term.simps(1), simp) 
 qed
 
+lemma zip_map_subst:
+  "zip xs (xs \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>) = map (\<lambda>t. (t, t \<cdot> \<delta>)) xs"
+by (induction xs) auto
+
+lemma map2_map_subst:
+  "map2 f xs (xs \<cdot>\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<delta>) = map (\<lambda>t. f t (t \<cdot> \<delta>)) xs"
+by (induction xs) auto
+
 
 subsection \<open>Lemmata: Domain and Range of Substitutions\<close>
 lemma range_vars_alt_def: "range_vars s \<equiv> fv\<^sub>s\<^sub>e\<^sub>t (subst_range s)"
@@ -458,6 +436,11 @@ by (simp add: subst_domain_def)
 
 lemma subst_fv_imgI[intro]: "\<sigma> v \<noteq> Var v \<Longrightarrow> fv (\<sigma> v) \<subseteq> range_vars \<sigma>"
 unfolding range_vars_alt_def by auto
+
+lemma subst_eqI':
+  assumes "t \<cdot> \<delta> = t \<cdot> \<theta>" "subst_domain \<delta> = subst_domain \<theta>" "subst_domain \<delta> \<subseteq> fv t"
+  shows "\<delta> = \<theta>"
+by (metis assms(2,3) term_subst_eq_rev[OF assms(1)] in_mono ext subst_domI)
 
 lemma subst_domain_subst_Fun_single[simp]:
   "subst_domain (Var(x := Fun f T)) = {x}" (is "?A = ?B")
@@ -756,6 +739,11 @@ by (auto simp add: subst_domain_def)
 lemma rm_vars_dom_eq':
   "subst_domain (rm_vars (UNIV - V) s) = subst_domain s \<inter> V"
 using rm_vars_dom[of "UNIV - V" s] by blast
+
+lemma rm_vars_dom_eqI:
+  assumes "t \<cdot> \<delta> = t \<cdot> \<theta>"
+  shows "subst_domain (rm_vars (UNIV - fv t) \<delta>) = subst_domain (rm_vars (UNIV - fv t) \<theta>)"
+by (meson assms Diff_iff UNIV_I term_subst_eq_rev)
 
 lemma rm_vars_img: "subst_range (rm_vars V s) = s ` subst_domain (rm_vars V s)"
 by (auto simp add: subst_domain_def)
@@ -1063,7 +1051,7 @@ proof
 
   { assume "x \<notin> ?img \<theta>1" hence "x \<in> ?img \<theta>2"
       by (metis (no_types, opaque_lifting) fv_in_subst_img Un_iff subst_compose_def 
-                vt subsetCE subst_apply_term.simps(1) subst_sends_fv_to_img) 
+                vt subsetCE subst_apply_term.simps(1) subst_sends_fv_to_img)
   }
   thus "x \<in> ?img \<theta>1 \<union> ?img \<theta>2" by auto
 qed
@@ -1601,6 +1589,16 @@ proof (cases "Fun c [] \<sqsubseteq> t")
     using const_subterm_subst_var_obtain[OF assms] by moura
   thus ?thesis by (cases "x \<in> subst_domain \<sigma>") auto
 qed simp
+
+lemma const_subterms_subst_cases:
+  assumes "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<sigma>"
+  shows "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<or> (\<exists>x \<in> fv\<^sub>s\<^sub>e\<^sub>t M. x \<in> subst_domain \<sigma> \<and> Fun c [] \<sqsubseteq> \<sigma> x)"
+using assms const_subterm_subst_cases[of c _ \<sigma>] by auto
+
+lemma const_subterms_subst_cases':
+  assumes "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<cdot>\<^sub>s\<^sub>e\<^sub>t \<sigma>"
+  shows "Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t M \<or> Fun c [] \<sqsubseteq>\<^sub>s\<^sub>e\<^sub>t subst_range \<sigma>"
+using const_subterms_subst_cases[OF assms] by auto
 
 lemma fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s_subst_fv_subset:
   assumes "x \<in> fv\<^sub>p\<^sub>a\<^sub>i\<^sub>r\<^sub>s F"
@@ -2387,10 +2385,6 @@ using mgu_subst_domain[OF assms] mgu_sound[OF assms] mgu_subst_range_vars [OF as
       mgu_gives_wellformed_subst[OF assms]
 unfolding wf\<^sub>M\<^sub>G\<^sub>U_def by blast
 
-lemma mgu_vars_bounded[dest?]:
-  "mgu M N = Some \<sigma> \<Longrightarrow> subst_domain \<sigma> \<union> range_vars \<sigma> \<subseteq> fv M \<union> fv N"
-using mgu_gives_wellformed_MGU unfolding wf\<^sub>M\<^sub>G\<^sub>U_def by blast
-
 lemma mgu_gives_subst_idem: "mgu s t = Some \<theta> \<Longrightarrow> subst_idem \<theta>"
 using mgu_sound[of s t \<theta>] unfolding is_imgu_def subst_idem_def by auto
 
@@ -2399,6 +2393,36 @@ using mgu_complete Unifier_in_unifiers_singleton by blast
 
 lemma mgu_gives_MGU: "mgu s t = Some \<theta> \<Longrightarrow> MGU \<theta> s t"
 using mgu_sound[of s t \<theta>, THEN is_imgu_imp_is_mgu] MGU_is_mgu_singleton by metis
+
+lemma mgu_vars_bounded[dest?]:
+  "mgu M N = Some \<sigma> \<Longrightarrow> subst_domain \<sigma> \<union> range_vars \<sigma> \<subseteq> fv M \<union> fv N"
+using mgu_gives_wellformed_MGU unfolding wf\<^sub>M\<^sub>G\<^sub>U_def by blast
+
+lemma mgu_vars_bounded':
+  assumes \<sigma>: "mgu M N = Some \<sigma>"
+    and MN: "fv M = {} \<or> fv N = {}"
+  shows "subst_domain \<sigma> = fv M \<union> fv N" (is ?A)
+    and "range_vars \<sigma> = {}" (is ?B)
+proof -
+  let ?C = "\<lambda>t. subst_domain \<sigma> = fv t"
+
+  have 0: "fv N = {} \<Longrightarrow> subst_domain \<sigma> \<subseteq> fv M" "fv N = {} \<Longrightarrow> range_vars \<sigma> \<subseteq> fv M"
+          "fv M = {} \<Longrightarrow> subst_domain \<sigma> \<subseteq> fv N" "fv M = {} \<Longrightarrow> range_vars \<sigma> \<subseteq> fv N"
+    using mgu_vars_bounded[OF \<sigma>] by simp_all
+
+  note 1 = mgu_gives_MGU[OF \<sigma>] mgu_subst_domain_range_vars_disjoint[OF \<sigma>]
+  note 2 = subst_fv_imgI[of \<sigma>] subst_dom_vars_in_subst[of _ \<sigma>]
+  note 3 = ground_term_subst_domain_fv_subset[of _ \<sigma>]
+  note 4 = subst_apply_fv_empty[of _ \<sigma>]
+
+  have "fv (\<sigma> x) = {}" when x: "x \<in> fv M" and N: "fv N = {}" for x
+    using x N 0(1,2) 1 2[of x] 3[of M] 4[of N] by auto
+  hence "?C M" ?B when N: "fv N = {}" using 0(1,2)[OF N] N by (fastforce, fastforce)
+  moreover have "fv (\<sigma> x) = {}" when x: "x \<in> fv N" and M: "fv M = {}" for x
+    using x M 0(3,4) 1 2[of x] 3[of N] 4[of M] by auto
+  hence "?C N" ?B when M: "fv M = {}" using 0(3,4)[OF M] M by (fastforce, fastforce)
+  ultimately show ?A ?B using MN by auto
+qed
 
 lemma mgu_eliminates[dest?]:
   assumes "mgu M N = Some \<sigma>"
@@ -2700,6 +2724,64 @@ proof -
   then obtain Z' where Z': "map Var Z' = T" by (metis ex_map_conv) 
   hence "map \<delta> Z' = map Var Z" using T(2) by (induct Z' arbitrary: T Z) auto
   thus ?thesis using u(1) T(1) Z' by auto
+qed
+
+lemma mgu_ground_instance_case:
+  assumes t: "fv (t \<cdot> \<delta>) = {}"
+  shows "mgu t (t \<cdot> \<delta>) = Some (rm_vars (UNIV - fv t) \<delta>)" (is ?A)
+    and mgu_ground_commutes: "mgu t (t \<cdot> \<delta>) = mgu (t \<cdot> \<delta>) t" (is ?B)
+proof -
+  define \<theta> where "\<theta> \<equiv> rm_vars (UNIV - fv t) \<delta>"
+
+  have \<delta>: "t \<cdot> \<delta> = t \<cdot> \<theta>"
+    using rm_vars_subst_eq'[of t \<delta>] unfolding \<theta>_def by metis
+
+  have 0: "Unifier \<theta> t (t \<cdot> \<delta>)"
+    using subst_ground_ident[OF t, of \<theta>] term_subst_eq[of t \<delta> \<theta>]
+    unfolding \<theta>_def by (metis Diff_iff)
+
+  obtain \<sigma> where \<sigma>: "mgu t (t \<cdot> \<theta>) = Some \<sigma>" "MGU \<sigma> t (t \<cdot> \<theta>)"
+    using mgu_always_unifies[OF 0] mgu_gives_MGU[of t "t \<cdot> \<theta>"]
+    unfolding \<delta> by blast
+
+  have 1: "subst_domain \<sigma> = fv t"
+    using t MGU_is_Unifier[OF \<sigma>(2)]
+          subset_antisym[OF mgu_subst_domain[OF \<sigma>(1)]]
+          ground_term_subst_domain_fv_subset[of t \<sigma>]
+          subst_apply_fv_empty[OF t, of \<sigma>]
+    unfolding \<delta> by auto
+
+  have 2: "subst_domain \<theta> = fv t"
+    using 0 rm_vars_dom[of "UNIV - fv t" \<delta>]
+          ground_term_subst_domain_fv_subset[of t \<theta>]
+          subst_apply_fv_empty[OF t, of \<theta>]
+    unfolding \<theta>_def by auto
+
+  have "\<sigma> x = \<theta> x" for x
+    using 1 2 MGU_is_Unifier[OF \<sigma>(2)] term_subst_eq_conv[of t \<sigma> \<theta>]
+          subst_ground_ident[OF t[unfolded \<delta>], of \<sigma>] subst_domI[of _ x]
+    by metis
+  hence "\<sigma> = \<theta>" by presburger
+  thus A: ?A using \<sigma>(1) unfolding \<delta> \<theta>_def by blast
+
+  have "Unifier \<theta> (t \<cdot> \<delta>) t" using 0 by simp
+  then obtain \<sigma>' where \<sigma>': "mgu (t \<cdot> \<theta>) t = Some \<sigma>'" "MGU \<sigma>' (t \<cdot> \<theta>) t"
+    using mgu_always_unifies mgu_gives_MGU[of "t \<cdot> \<theta>" t]
+    unfolding \<delta> by fastforce
+
+  have 3: "subst_domain \<sigma>' = fv t"
+    using t MGU_is_Unifier[OF \<sigma>'(2)]
+          subset_antisym[OF mgu_subst_domain[OF \<sigma>'(1)]]
+          ground_term_subst_domain_fv_subset[of t \<sigma>']
+          subst_apply_fv_empty[OF t, of \<sigma>']
+    unfolding \<delta> by auto
+
+  have "\<sigma>' x = \<theta> x" for x
+    using 2 3 MGU_is_Unifier[OF \<sigma>'(2)] term_subst_eq_conv[of t \<sigma>' \<theta>]
+          subst_ground_ident[OF t[unfolded \<delta>], of \<sigma>'] subst_domI[of _ x]
+    by metis
+  hence "\<sigma>' = \<theta>" by presburger
+  thus ?B using A \<sigma>'(1) unfolding \<delta> \<theta>_def by argo
 qed
 
 
@@ -3201,23 +3283,48 @@ qed
 
 
 subsection \<open>Lemmata: Sufficient Conditions for Term Matching\<close>
-text \<open>Injective substitutions from variables to variables are invertible\<close>
-definition subst_var_inv where
+definition subst_var_inv::"('a,'b) subst \<Rightarrow> 'b set \<Rightarrow> ('a,'b) subst" where
   "subst_var_inv \<delta> X \<equiv> (\<lambda>x. if Var x \<in> \<delta> ` X then Var ((inv_into X \<delta>) (Var x)) else Var x)"
 
+lemma subst_var_inv_subst_domain:
+  assumes "x \<in> subst_domain (subst_var_inv \<delta> X)"
+  shows "Var x \<in> \<delta> ` X"
+by (meson assms subst_dom_vars_in_subst subst_var_inv_def)
+
+lemma subst_var_inv_subst_domain':
+  assumes "X \<subseteq> subst_domain \<delta>"
+  shows "x \<in> subst_domain (subst_var_inv \<delta> X) \<longleftrightarrow> Var x \<in> \<delta> ` X"
+proof
+  show "Var x \<in> \<delta> ` X \<Longrightarrow> x \<in> subst_domain (subst_var_inv \<delta> X)"
+    by (metis (no_types, lifting) assms f_inv_into_f in_mono inv_into_into
+          subst_domI subst_dom_vars_in_subst subst_var_inv_def term.inject(1))
+qed (rule subst_var_inv_subst_domain)
+
+lemma subst_var_inv_Var_range:
+  "subst_range (subst_var_inv \<delta> X) \<subseteq> range Var"
+unfolding subst_var_inv_def by auto
+
+text \<open>Injective substitutions from variables to variables are invertible\<close>
 lemma inj_var_ran_subst_is_invertible:
+  assumes \<delta>_inj_on_X: "inj_on \<delta> X"
+    and \<delta>_var_on_X: "\<delta> ` X \<subseteq> range Var"
+    and fv_t: "fv t \<subseteq> X"
+  shows "t = t \<cdot> \<delta> \<circ>\<^sub>s subst_var_inv \<delta> X"
+proof -
+  have "\<delta> x \<cdot> subst_var_inv \<delta> X = Var x" when x: "x \<in> X" for x
+  proof -
+    obtain y where y: "\<delta> x = Var y" using x \<delta>_var_on_X fv_t by auto
+    hence "Var y \<in> \<delta> ` X" using x by simp
+    thus ?thesis using y inv_into_f_eq[OF \<delta>_inj_on_X x y] unfolding subst_var_inv_def by simp
+  qed
+  thus ?thesis using fv_t by (simp add: subst_compose_def trm_subst_ident'' subset_eq)
+qed
+
+lemma inj_var_ran_subst_is_invertible':
   assumes \<delta>_inj_on_t: "inj_on \<delta> (fv t)"
     and \<delta>_var_on_t: "\<delta> ` fv t \<subseteq> range Var"
   shows "t = t \<cdot> \<delta> \<circ>\<^sub>s subst_var_inv \<delta> (fv t)"
-proof -
-  have "\<delta> x \<cdot> subst_var_inv \<delta> (fv t) = Var x" when x: "x \<in> fv t" for x
-  proof -
-    obtain y where y: "\<delta> x = Var y" using x \<delta>_var_on_t by auto
-    hence "Var y \<in> \<delta> ` (fv t)" using x by simp
-    thus ?thesis using y inv_into_f_eq[OF \<delta>_inj_on_t x y] unfolding subst_var_inv_def by simp
-  qed
-  thus ?thesis by (simp add: subst_compose_def trm_subst_ident'')
-qed
+using assms inj_var_ran_subst_is_invertible by fast
 
 text \<open>Sufficient conditions for matching unifiable terms\<close>
 lemma inj_var_ran_unifiable_has_subst_match:

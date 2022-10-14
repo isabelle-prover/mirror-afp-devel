@@ -20,8 +20,7 @@ correctness and completeness of an equivalence checker for regular
 expressions extended in that way. We also define a language-preserving
 translation of formulas into regular expressions with respect to two
 different semantics of MSO.
-<p>
-The formalization is described in this <a href=\"http://www21.in.tum.de/~nipkow/pubs/icfp13.html\">ICFP 2013 functional pearl</a>."""
+"""
 license = "bsd"
 note = ""
 
@@ -38,6 +37,10 @@ homepage = "nipkow_homepage"
 [notify]
 traytel = "traytel_email"
 nipkow = "nipkow_email"
+
+[related]
+dois = ["10.1017/S0956796815000246"]
+pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/jfp15.html\">Open access</a>"]
 
 [history]
 

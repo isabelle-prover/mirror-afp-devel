@@ -4,7 +4,6 @@ theory SimpleVariantPG imports
   HOML 
   MFilter 
   BaseDefs
-  DisableKodkodScala
 begin
 text\<open>Axiom's of simplified variant with A3 replaced.\<close> 
 axiomatization where 

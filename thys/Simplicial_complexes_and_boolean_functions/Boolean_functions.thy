@@ -22,7 +22,7 @@ definition bool_fun_dim_n :: "(bool vec => bool) set"
   where "bool_fun_dim_n = {f. f \<in> carrier_vec n \<rightarrow> (UNIV::bool set)}"
 
 definition monotone_bool_fun :: "(bool vec => bool) => bool"
-  where "monotone_bool_fun f \<equiv> (mono_on f (carrier_vec n))"
+  where "monotone_bool_fun \<equiv> (mono_on (carrier_vec n))"
 
 definition monotone_bool_fun_set :: "(bool vec => bool) set"
   where "monotone_bool_fun_set = (Collect monotone_bool_fun)"
@@ -67,13 +67,13 @@ definition bool_fun_threshold :: "nat => (bool vec => bool)"
 context boolean_functions
 begin
 
-lemma "mono_on bool_fun_top UNIV"
+lemma "mono_on UNIV bool_fun_top"
   by (simp add: bool_fun_top_def mono_onI monotone_bool_fun_def)
 
 lemma "monotone_bool_fun bool_fun_top"
   by (simp add: bool_fun_top_def mono_onI monotone_bool_fun_def)
 
-lemma "mono_on bool_fun_bot UNIV"
+lemma "mono_on UNIV bool_fun_bot"
   by (simp add: bool_fun_bot_def mono_onI monotone_bool_fun_def)
 
 lemma "monotone_bool_fun bool_fun_bot"
@@ -107,7 +107,7 @@ lemma
   shows "bool_fun_threshold n u \<le> bool_fun_threshold n v"
   using monotone_threshold [OF assms(1)] .
 
-lemma "mono_on (bool_fun_threshold n) UNIV"
+lemma "mono_on UNIV (bool_fun_threshold n)"
   by (meson mono_onI monotone_bool_fun_def monotone_threshold)
 
 lemma "monotone_bool_fun (bool_fun_threshold n)"

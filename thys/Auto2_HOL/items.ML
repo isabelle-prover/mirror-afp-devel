@@ -48,11 +48,11 @@ sig
   val mk_box_item: Proof.context -> int * box_id * int * raw_item -> box_item
 end;
 
-structure BoxItem : BOXITEM =
+functor BoxItem(UtilBase: BASIC_UTIL_BASE) : BOXITEM =
 struct
 
-fun var_to_fact t = Fact (TY_VAR, [t], true_th)
-fun term_to_fact t = Fact (TY_TERM, [t], true_th)
+fun var_to_fact t = Fact (TY_VAR, [t], UtilBase.true_th)
+fun term_to_fact t = Fact (TY_TERM, [t], UtilBase.true_th)
 
 fun is_fact_raw ritem =
     case ritem of Fact _ => true | _ => false
@@ -124,7 +124,7 @@ fun instantiate subst ritem =
     end
 
 val null_item = {uid = 0, id = [], sc = 0, ty_str = TY_NULL,
-                 tname = [], prop = true_th}
+                 tname = [], prop = UtilBase.true_th}
 fun item_with_id id {uid, sc, ty_str, tname, prop, ...} =
     {uid = uid, id = id, sc = sc, ty_str = ty_str, tname = tname, prop = prop}
 fun item_with_incr item =
@@ -242,7 +242,14 @@ sig
   val trace_items: Proof.context -> string -> box_item list -> unit
 end;
 
-structure ItemIO : ITEM_IO =
+functor ItemIO(
+  structure Matcher: MATCHER;
+  structure Property: PROPERTY;
+  structure PropertyData: PROPERTY_DATA
+  structure RewriteTable: REWRITE_TABLE;
+  structure UtilBase: UTIL_BASE;
+  structure UtilLogic: UTIL_LOGIC
+  ) : ITEM_IO =
 struct
 
 fun add_prop_matcher_to_info
@@ -296,15 +303,15 @@ fun subst_arg inst arg =
 fun assert_valid_arg arg =
     case arg of
         PropMatch pat =>
-        assert (fastype_of pat = boolT)
+        assert (fastype_of pat = UtilBase.boolT)
                "assert_valid_arg: arg for PropMatch should be bool."
       | TypedMatch _ => ()
       | TypedUniv _ => ()
       | PropertyMatch pat =>
-        assert (fastype_of pat = boolT)
+        assert (fastype_of pat = UtilBase.boolT)
                "assert_valid_arg: arg for PropertyMatch should be bool."
       | WellFormMatch (_, req) =>
-        assert (fastype_of req = boolT)
+        assert (fastype_of req = UtilBase.boolT)
                "assert_valid_arg: arg for WellFormMatch should be bool."
 
 fun check_ty_str ty_str arg =
@@ -358,12 +365,12 @@ val prop_matcher =
             val ct = the_single tname
             val t = Thm.term_of ct
           in
-            if is_neg pat then
-              is_neg t andalso
-              Matcher.pre_match_head ctxt (get_neg pat, UtilLogic.get_cneg ct)
+            if UtilLogic.is_neg pat then
+              UtilLogic.is_neg t andalso
+              Matcher.pre_match_head ctxt (UtilLogic.get_neg pat, UtilLogic.get_cneg ct)
             else
               Term.is_Var pat orelse
-              (not (is_neg t) andalso Matcher.pre_match_head ctxt (pat, ct))
+              (not (UtilLogic.is_neg t) andalso Matcher.pre_match_head ctxt (pat, ct))
           end
 
       fun match pat {tname, prop, ...} ctxt (id, inst) =
@@ -371,10 +378,10 @@ val prop_matcher =
             val ct = the_single tname
             val t = Thm.term_of ct
           in
-            if is_neg pat andalso is_neg t then
+            if UtilLogic.is_neg pat andalso UtilLogic.is_neg t then
               let
                 val insts' = Matcher.rewrite_match_head
-                                 ctxt (get_neg pat, UtilLogic.get_cneg ct) (id, inst)
+                  ctxt (UtilLogic.get_neg pat, UtilLogic.get_cneg ct) (id, inst)
                 fun process_inst (inst, eq_th) =
                     let
                       (* This version certainly will not cancel ~~ on
@@ -383,18 +390,18 @@ val prop_matcher =
                       val make_neg_eq' = Thm.combination (Thm.reflexive UtilBase.cNot)
                     in
                       (inst, Thm.equal_elim (
-                         make_trueprop_eq (make_neg_eq' (meta_sym eq_th))) prop)
+                         UtilLogic.make_trueprop_eq (make_neg_eq' (meta_sym eq_th))) prop)
                     end
               in
                 map process_inst insts'
               end
-            else if not (is_neg pat) andalso
-                    (Term.is_Var pat orelse not (is_neg t)) then
+            else if not (UtilLogic.is_neg pat) andalso
+                    (Term.is_Var pat orelse not (UtilLogic.is_neg t)) then
               let
                 val insts' = Matcher.rewrite_match_head ctxt (pat, ct) (id, inst)
                 fun process_inst (inst, eq_th) =
                     (inst, Thm.equal_elim (
-                       make_trueprop_eq (meta_sym eq_th)) prop)
+                       UtilLogic.make_trueprop_eq (meta_sym eq_th)) prop)
               in
                 map process_inst insts'
               end
@@ -409,15 +416,15 @@ val term_prop_matcher =
     let
       fun pre_match pat {tname, ...} ctxt =
           if not (Util.has_vars pat) then false
-          else if is_eq_term pat then
-            Matcher.pre_match ctxt (fst (dest_eq pat), the_single tname)
+          else if UtilBase.is_eq_term pat then
+            Matcher.pre_match ctxt (fst (UtilBase.dest_eq pat), the_single tname)
           else false
 
       fun match pat {tname, ...} ctxt (id, inst) =
-          if not (is_eq_term pat) then [] else
+          if not (UtilBase.is_eq_term pat) then [] else
           if not (Util.has_vars pat) then [] else
           let
-            val (lhs, rhs) = dest_eq pat
+            val (lhs, rhs) = UtilBase.dest_eq pat
             val cu = the_single tname
             val pairs = if Term.is_Var lhs then
                           [(false, (lhs, cu)), (true, (rhs, cu))]
@@ -428,7 +435,7 @@ val term_prop_matcher =
                   (* th1: lhs(env) == u, th2: rhs(env) == u. *)
                   val (th1, th2) = the_pair ths
                 in
-                  (inst, to_obj_eq (Util.transitive_list [th1, meta_sym th2]))
+                  (inst, UtilLogic.to_obj_eq (Util.transitive_list [th1, meta_sym th2]))
                 end
           in
             map process_inst insts'
@@ -439,16 +446,16 @@ val term_prop_matcher =
 
 val null_eq_matcher =
     let
-      fun pre_match pat _ _ = is_eq_term pat
+      fun pre_match pat _ _ = UtilBase.is_eq_term pat
 
       fun match pat _ ctxt (id, inst) =
-          if not (is_eq_term pat) then [] else
+          if not (UtilBase.is_eq_term pat) then [] else
           if Util.has_vars pat then [] else
           let
-            val (lhs, rhs) = dest_eq pat
+            val (lhs, rhs) = UtilBase.dest_eq pat
             val infos = RewriteTable.equiv_info_t ctxt id (lhs, rhs)
             fun process_info (id', th) =
-                ((id', inst), to_obj_eq th)
+                ((id', inst), UtilLogic.to_obj_eq th)
           in
             map process_info infos
           end
@@ -479,7 +486,7 @@ val eq_tname_typed_matcher =
           let
             val thy = Proof_Context.theory_of ctxt
             val (lhs, rhs) = the_pair (map Thm.term_of tname)
-            val _ = Pattern.first_order_match thy (pat, mk_eq (lhs, rhs)) fo_init
+            val _ = Pattern.first_order_match thy (pat, UtilBase.mk_eq (lhs, rhs)) fo_init
           in
             true
           end
@@ -490,9 +497,9 @@ val eq_tname_typed_matcher =
             val thy = Proof_Context.theory_of ctxt
             val (lhs, rhs) = the_pair (map Thm.term_of tname)
             val inst' =
-                Pattern.first_order_match thy (pat, mk_eq (lhs, rhs)) inst
+                Pattern.first_order_match thy (pat, UtilBase.mk_eq (lhs, rhs)) inst
           in
-            [((id, inst'), true_th)]
+            [((id, inst'), UtilBase.true_th)]
           end
           handle Pattern.MATCH => []
     in
@@ -562,7 +569,7 @@ fun pre_match_arg ctxt arg (item as {ty_str, ...}) =
       case arg of
           PropMatch pat =>
           Term.is_Var pat orelse
-          (is_neg pat andalso Term.is_Var (get_neg pat)) orelse
+          (UtilLogic.is_neg pat andalso Term.is_Var (UtilLogic.get_neg pat)) orelse
           not (Util.is_pattern pat) orelse
           exists (fn f => f pat item ctxt) (map (#pre_match o fst) prop_matchers)
         | TypedMatch (_, pat) =>
@@ -591,7 +598,7 @@ fun match_arg ctxt arg (item as {id, ty_str, ...}) (id', inst) =
       case arg of
           PropMatch _ => maps (fn f => f pat item ctxt (id'', inst))
                               (map (#match o fst) prop_matchers)
-        | TypedUniv _ => [((id'', inst), true_th)]
+        | TypedUniv _ => [((id'', inst), UtilBase.true_th)]
         | TypedMatch _ => maps (fn f => f pat item ctxt (id'', inst))
                                (map (#match o fst) typed_matchers)
         | PropertyMatch _ =>
@@ -608,7 +615,7 @@ fun prop_rewr_terms ts =
     let
       val t = the_single ts
     in
-      if is_neg t then t |> dest_arg |> Util.dest_args
+      if UtilLogic.is_neg t then t |> dest_arg |> Util.dest_args
       else t |> Util.dest_args
     end
 
@@ -660,8 +667,8 @@ fun trace_items ctxt s items =
 fun shadow_prop_fn ctxt id (ts1, cts2) =
     let
       val (t1, ct2) = (the_single ts1, the_single cts2)
-      val (lhs, crhs) = if is_neg t1 andalso is_neg (Thm.term_of ct2) then
-                          (get_neg t1, UtilLogic.get_cneg ct2)
+      val (lhs, crhs) = if UtilLogic.is_neg t1 andalso UtilLogic.is_neg (Thm.term_of ct2) then
+                          (UtilLogic.get_neg t1, UtilLogic.get_cneg ct2)
                         else
                           (t1, ct2)
     in

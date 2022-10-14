@@ -27,7 +27,11 @@ sig
   val source_info: update -> string
 end;
 
-structure Update : UPDATE =
+functor Update(
+  structure BoxItem: BOXITEM;
+  structure ItemIO: ITEM_IO;
+  structure UtilLogic: UTIL_LOGIC;
+  ): UPDATE =
 struct
 
 fun target_of_update raw_updt =
@@ -72,22 +76,22 @@ fun string_of_raw_update ctxt raw_updt =
 fun thm_to_ritem th =
     let
       val prop = Thm.prop_of th
-      val _ = assert (is_Trueprop prop) "thm_update: prop is not Trueprop."
+      val _ = assert (UtilLogic.is_Trueprop prop) "thm_update: prop is not Trueprop."
       val _ = assert (not (Util.has_vars prop))
                      "thm_to_ritem: prop contains schematic variables."
     in
-      Fact (TY_PROP, [dest_Trueprop prop], th)
+      Fact (TY_PROP, [UtilLogic.dest_Trueprop prop], th)
     end
 
 (* Create raw_update from id and theorem. *)
 fun thm_update (id, th) =
-    if Thm.prop_of th aconv pFalse then
+    if Thm.prop_of th aconv UtilLogic.pFalse then
       ResolveBox {id = id, th = th}
     else
       AddItems {id = id, sc = NONE, raw_items = [thm_to_ritem th]}
 
 fun thm_update_sc sc (id, th) =
-    if Thm.prop_of th aconv pFalse then
+    if Thm.prop_of th aconv UtilLogic.pFalse then
       ResolveBox {id = id, th = th}
     else
       AddItems {id = id, sc = SOME sc, raw_items = [thm_to_ritem th]}
@@ -99,9 +103,9 @@ fun thm_update_sc sc (id, th) =
  *)
 fun apply_exists_ritems ctxt ex_th =
     let
-      val (vars, body) = (UtilLogic.strip_exists (prop_of' ex_th))
+      val (vars, body) = (UtilLogic.strip_exists (UtilLogic.prop_of' ex_th))
                              |> Util.to_internal_vars ctxt
-                             |> apsnd mk_Trueprop
+                             |> apsnd UtilLogic.mk_Trueprop
     in
       if null vars then ([], ex_th)
       else (map (BoxItem.var_to_fact) vars @ [Handler (vars, body, ex_th)],
@@ -172,7 +176,14 @@ sig
   val delmin_from_queue: status -> status
 end;
 
-structure Status : STATUS =
+functor Status(
+  structure BoxItem: BOXITEM;
+  structure ItemIO: ITEM_IO;
+  structure UtilLogic: UTIL_LOGIC
+  structure PropertyData: PROPERTY_DATA;
+  structure RewriteTable: REWRITE_TABLE;
+  structure WellformData: WELLFORM_DATA;
+  ): STATUS =
 struct
 
 fun empty_status ctxt =
@@ -398,5 +409,3 @@ fun add_to_queue updt = map_queue (Updates_Heap.insert updt)
 val delmin_from_queue = map_queue Updates_Heap.delete_min
 
 end  (* structure Status *)
-
-val _ = Theory.setup (ItemIO.add_basic_item_io)

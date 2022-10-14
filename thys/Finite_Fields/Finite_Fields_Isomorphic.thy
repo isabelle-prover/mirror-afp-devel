@@ -57,7 +57,7 @@ proof -
   hence a:"(\<lambda>p. eval (map (char_iso R) p) x) \<in> ring_hom ?P R"
     by (simp add:comp_def)
   interpret h:ring_hom_ring "?P" "R" "(\<lambda>p. eval (map (char_iso R) p) x)"
-    by (intro ring_hom_ringI2 pzf.is_ring a ring_axioms)
+    by (intro ring_hom_ringI2 pzf.ring_axioms a ring_axioms)
 
   let ?h = "(\<lambda>p. eval (map (char_iso R) p) x)"
   let ?J = "a_kernel (poly_ring (ZFact (int p))) R ?h"

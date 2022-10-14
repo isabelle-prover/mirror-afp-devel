@@ -31,7 +31,7 @@ lemma m2: "m > 2" using k2 km by auto
 
 lemma mp: "m > p" using km k kp by simp
 
-definition "L = fact l * (p - 1) ^ l + 1"
+definition "L = fact l * (p - 1) ^ l"
 
 lemma kml: "k \<le> m - l" 
 proof -
@@ -385,16 +385,11 @@ lemma appendix_A_4: "12 * L^2 \<le> m powr (m powr (1 / 8) * 0.51)"
 proof -
   let ?r = real
   define Lappr where "Lappr = m * m * fact l * p ^ l / 2" 
-  have "L = (fact l * (p - 1) ^ l) + 1" unfolding L_def by simp
-  also have "\<dots> \<le> (fact l * (p - 1) ^ l) + (fact l * (p - 1) ^ l)" 
-    by (rule add_left_mono, insert l2 p, auto)
-  also have "\<dots> = 2 * (fact l * (p - 1) ^ l)" by simp
-  finally have "real L \<le> real 2 * real (fact l * (p - 1) ^ l)" by linarith
-  also have "\<dots> \<le> real (m * m div 2) * real (fact l * (p - 1) ^ l)" 
-    by (rule mult_right_mono, insert m2, cases m, auto)
-  also have "\<dots> \<le> (m * m / 2) * (fact l * (p - 1) ^ l)"
-    by (rule mult_right_mono, linarith+)
-  also have "\<dots> = (m * m / 2 * fact l) * (?r (p - 1) ^ l)" by simp 
+  have "L = (fact l * (p - 1) ^ l)" unfolding L_def by simp
+  hence "?r L \<le> (fact l * (p - 1) ^ l)" by linarith
+  also have "\<dots> = (1 * ?r (fact l)) * (?r (p - 1) ^ l)" by simp 
+  also have "\<dots> \<le> ((m * m / 2) * ?r (fact l)) * (?r (p - 1) ^ l)" 
+    by (intro mult_right_mono, insert m2, cases m; cases "m - 1", auto)
   also have "\<dots> = (6 * real (m * m) * fact l) * (?r (p - 1) ^ l) / 12" by simp
   also have "real (m * m) = real l^16" unfolding m_def unfolding kl2 by simp
   also have "(6 * real l^16 * fact l) * (?r (p - 1) ^ l) / 12

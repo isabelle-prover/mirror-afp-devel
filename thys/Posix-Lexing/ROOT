@@ -4,9 +4,20 @@ session "Posix-Lexing" (AFP) = "Regular-Sets" +
 
   options [timeout = 600]
 
+  directories
+    "Extensions"
+    
   theories
-    Lexer 
+    Lexer
+    LexicalVals
     Simplifying
+    Positions
+    "Extensions/Regular_Exps3"
+    "Extensions/Derivatives3"
+    "Extensions/Lexer3"
+    "Extensions/LexicalVals3"
+    "Extensions/Simplifying3"
+    "Extensions/Positions3"
     
   document_files
     "root.bib"

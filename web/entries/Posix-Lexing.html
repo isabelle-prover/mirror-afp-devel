@@ -3,9 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1"><title>POSIX Lexing with Derivatives of Regular Expressions - Archive of Formal Proofs</title><meta name="description" content="Brzozowski introduced the notion of derivatives for regular
-expressions. They can be used for a very simple regular expression
-matching algorithm. Sulzmann..."><meta property="og:title" content="POSIX Lexing with Derivatives of Regular Expressions" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"><title>POSIX Lexing with Derivatives of Regular Expressions - Archive of Formal Proofs</title><meta name="description" content="Brzozowski introduced the notion of derivatives for regular expressions. They can be used for a very simple regular expression matching algorithm. Sulzmann..."><meta property="og:title" content="POSIX Lexing with Derivatives of Regular Expressions" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="/entries/Posix-Lexing.html" /><meta property="og:image" content="/images/afp.png"/><meta property="article:section" content="entries" />
@@ -98,25 +96,43 @@ matching algorithm. Sulzmann..."><meta property="og:title" content="POSIX Lexing
   </div>
 </header><div><main><h3>Abstract</h3>
 
-  <div class="abstract mathjax_process">Brzozowski introduced the notion of derivatives for regular
-expressions. They can be used for a very simple regular expression
-matching algorithm. Sulzmann and Lu cleverly extended this algorithm
-in order to deal with POSIX matching, which is the underlying
-disambiguation strategy for regular expressions needed in lexers. In
-this entry we give our inductive definition of what a POSIX value is
-and show (i) that such a value is unique (for given regular expression
-and string being matched) and (ii) that Sulzmann and Lu's algorithm
-always generates such a value (provided that the regular expression
-matches the string). We also prove the correctness of an optimised
-version of the POSIX matching algorithm.</div>
+  <div class="abstract mathjax_process"><p>Brzozowski introduced the notion of derivatives for regular
+expressions. They can be used for a very simple regular
+expression matching algorithm. Sulzmann and Lu cleverly
+extended this algorithm in order to deal with POSIX matching,
+which is the underlying disambiguation strategy for regular
+expressions needed in lexers. Their algorithm generates POSIX
+values which encode the information of how a regular
+expression matches a string--—that is, which part of the string
+is matched by which part of the regular expression. In this
+paper we give our inductive definition of what a POSIX value
+is and show (i) that such a value is unique (for given regular
+expression and string being matched) and (ii) that Sulzmann
+and Lu’s algorithm always generates such a value (provided
+that the regular expression matches the string). This holds
+also when optimisations are included. Finally we show that
+(iii) our inductive definition of a POSIX value is equivalent
+to an alternative definition by Okui and Suzuki which
+identifies POSIX values as least elements according to an
+ordering of values.</p></div>
 
   <h3>License</h3>
-  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>Topics</h3>
+  <div><a href="https://isa-afp.org/LICENSE">BSD License</a></div><h3>History</h3>
+  <dl><dt>June 17, 2022</dt>
+    <dd>Christian Urban added a theory about the Posix definition by Okui and Suzuki.<br></dd></dl><h3>Topics</h3>
   <ul><li><a href="../topics/computer-science/automata-and-formal-languages">Computer science/Automata and formal languages</a></li></ul>
   <h3>Session Posix-Lexing</h3>
   <ul>
     <li><a href="../theories/posix-lexing/#Lexer">Lexer</a></li>
-    <li><a href="../theories/posix-lexing/#Simplifying">Simplifying</a></li></ul><div class="flex-wrap">
+    <li><a href="../theories/posix-lexing/#LexicalVals">LexicalVals</a></li>
+    <li><a href="../theories/posix-lexing/#Simplifying">Simplifying</a></li>
+    <li><a href="../theories/posix-lexing/#Positions">Positions</a></li>
+    <li><a href="../theories/posix-lexing/#Regular_Exps3">Regular_Exps3</a></li>
+    <li><a href="../theories/posix-lexing/#Derivatives3">Derivatives3</a></li>
+    <li><a href="../theories/posix-lexing/#Lexer3">Lexer3</a></li>
+    <li><a href="../theories/posix-lexing/#LexicalVals3">LexicalVals3</a></li>
+    <li><a href="../theories/posix-lexing/#Simplifying3">Simplifying3</a></li>
+    <li><a href="../theories/posix-lexing/#Positions3">Positions3</a></li></ul><div class="flex-wrap">
   <div>
     <h3>Depends on</h3>
     <ul class="horizontal-list"><li><a href="../entries/Regular-Sets.html">Regular Sets and Expressions</a></li></ul>

@@ -88,7 +88,7 @@ proof -
             \<longlonglongrightarrow> z" by (simp add: f_def F_def z_def)
   qed (use \<open>s \<noteq> 1\<close> in
          \<open>auto intro!: derivative_eq_intros continuous_intros 
-               simp flip: has_field_derivative_iff_has_vector_derivative
+               simp flip: has_real_derivative_iff_has_vector_derivative
                simp: F_def f_def f'_def nth_Cons split: nat.splits\<close>)
 
   {
@@ -191,7 +191,7 @@ proof -
       by (rule euler_maclaurin_strong_raw_nat[where Y = "{}"])
          (use \<open>s > 0\<close> \<open>n \<ge> 1\<close> in
            \<open>auto intro!: derivative_eq_intros continuous_intros 
-                 simp flip: has_field_derivative_iff_has_vector_derivative
+                 simp flip: has_real_derivative_iff_has_vector_derivative
                  simp: F_def f_def f'_def nth_Cons split: nat.splits\<close>)
     also have "(\<Sum>i\<in>{1<..n}. f (real i)) = (\<Sum>i\<in>insert 1 {1<..n}. f (real i)) - f 1"
       using n by (subst sum.insert) auto
@@ -203,7 +203,7 @@ proof -
       using s by (simp add: f_def diff_divide_distrib)
     also have "(f has_integral (F (real n) - F 1)) {1..real n}" using assms n
       by (intro fundamental_theorem_of_calculus)
-         (auto simp flip: has_field_derivative_iff_has_vector_derivative simp: F_def f_def
+         (auto simp flip: has_real_derivative_iff_has_vector_derivative simp: F_def f_def
                intro!: derivative_eq_intros continuous_intros)
     hence "integral {1..real n} f - F n = - F 1"
       by (simp add: has_integral_iff)
@@ -256,11 +256,11 @@ proof (rule sum_upto_asymptotics_lift_nat_real)
     by standard (use \<open>s > 0\<close> in \<open>real_asymp+\<close>)
   show "(\<lambda>n. real n powr - s) \<in> O(\<lambda>n. real (Suc n) powr - s)"
     by real_asymp
-  show "mono_on (\<lambda>a. a powr - s) {1..} \<or> mono_on (\<lambda>x. - (x powr - s)) {1..}"
+  show "mono_on {1..} (\<lambda>a. a powr - s) \<or> mono_on {1..} (\<lambda>x. - (x powr - s))"
     using assms by (intro disjI2) (auto intro!: mono_onI powr_mono2')
 
   from assms have "s < 1 \<or> s > 1" by linarith
-  hence "mono_on (\<lambda>a. a powr (1 - s) / (1 - s) + z) {1..}"
+  hence "mono_on {1..} (\<lambda>a. a powr (1 - s) / (1 - s) + z)"
   proof
     assume "s < 1"
     thus ?thesis using \<open>s > 0\<close>
@@ -270,8 +270,8 @@ proof (rule sum_upto_asymptotics_lift_nat_real)
     thus ?thesis
       by (intro mono_onI le_imp_neg_le add_right_mono divide_right_mono_neg powr_mono2') auto
   qed
-  thus "mono_on (\<lambda>a. a powr (1 - s) / (1 - s) + z) {1..} \<or>
-        mono_on (\<lambda>x. - (x powr (1 - s) / (1 - s) + z)) {1..}" by blast
+  thus "mono_on {1..} (\<lambda>a. a powr (1 - s) / (1 - s) + z) \<or>
+        mono_on {1..} (\<lambda>x. - (x powr (1 - s) / (1 - s) + z))" by blast
 qed auto
 
 lemma zeta_partial_sum_le_pos':
@@ -297,11 +297,11 @@ proof -
     from assms have "s < 1 \<or> s > 1" by linarith
     thus "(\<lambda>n. real n powr (1 - s) / (1 - s) - (real (Suc n) powr (1 - s) / (1 - s))) \<in> O(\<lambda>n. 1)"
       by standard (use \<open>s > 0\<close> in \<open>real_asymp+\<close>)
-    show "mono_on (\<lambda>a. 1) {1..} \<or> mono_on (\<lambda>x::real. -1 :: real) {1..}"
+    show "mono_on {1..} (\<lambda>a. 1) \<or> mono_on {1..} (\<lambda>x::real. -1 :: real)"
       using assms by (intro disjI2) (auto intro!: mono_onI powr_mono2')
   
     from assms have "s < 1 \<or> s > 1" by linarith
-    hence "mono_on (\<lambda>a. a powr (1 - s) / (1 - s)) {1..}"
+    hence "mono_on {1..} (\<lambda>a. a powr (1 - s) / (1 - s))"
     proof
       assume "s < 1"
       thus ?thesis using \<open>s > 0\<close>
@@ -311,8 +311,8 @@ proof -
       thus ?thesis
         by (intro mono_onI le_imp_neg_le add_right_mono divide_right_mono_neg powr_mono2') auto
     qed
-    thus "mono_on (\<lambda>a. a powr (1 - s) / (1 - s)) {1..} \<or>
-          mono_on (\<lambda>x. - (x powr (1 - s) / (1 - s))) {1..}" by blast
+    thus "mono_on {1..} (\<lambda>a. a powr (1 - s) / (1 - s)) \<or>
+          mono_on {1..} (\<lambda>x. - (x powr (1 - s) / (1 - s)))" by blast
   qed auto
   thus ?thesis by simp
 qed
@@ -422,10 +422,10 @@ proof (rule sum_upto_asymptotics_lift_nat_real)
     using assms by real_asymp
   show "(\<lambda>n. real n powr s) \<in> O(\<lambda>n. real (Suc n) powr s)"
     by real_asymp
-  show "mono_on (\<lambda>a. a powr s) {1..} \<or> mono_on (\<lambda>x. - (x powr s)) {1..}"
+  show "mono_on {1..} (\<lambda>a. a powr s) \<or> mono_on {1..} (\<lambda>x. - (x powr s))"
     using assms by (intro disjI1) (auto intro!: mono_onI powr_mono2)
-  show "mono_on (\<lambda>a. a powr (1 + s) / (1 + s)) {1..} \<or>
-        mono_on (\<lambda>x. - (x powr (1 + s) / (1 + s))) {1..}"
+  show "mono_on {1..} (\<lambda>a. a powr (1 + s) / (1 + s)) \<or>
+        mono_on {1..} (\<lambda>x. - (x powr (1 + s) / (1 + s)))"
     using assms by (intro disjI1 divide_right_mono powr_mono2 mono_onI) auto
 qed auto
 

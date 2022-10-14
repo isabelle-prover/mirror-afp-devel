@@ -863,7 +863,7 @@ next
       using svalid_subset_S by (auto simp add: Prob1_iff)
     from nn_integral_reward_finite[OF \<open>s \<in> S\<close>] this
     have "(\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) \<noteq> \<infinity>"
-      by (simp add: )
+      by simp
     with l_eq \<open>s \<in> S\<close> have "(\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) = ennreal (l s)"
       by (auto simp: less_top) }
   moreover

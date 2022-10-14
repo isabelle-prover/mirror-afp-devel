@@ -3,7 +3,7 @@ date = 2008-09-01
 topics = [
   "Mathematics/Games and economics",
 ]
-abstract = "This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders.<br><br>An article about these proofs is found <a href=\"http://www21.in.tum.de/~nipkow/pubs/arrow.html\">here</a>."
+abstract = "This article formalizes two proofs of Arrow's impossibility theorem due to Geanakoplos and derives the Gibbard-Satterthwaite theorem as a corollary. One formalization is based on utility functions, the other one on strict partial orders."
 license = "bsd"
 note = ""
 
@@ -16,6 +16,10 @@ homepage = "nipkow_homepage"
 
 [notify]
 nipkow = "nipkow_email"
+
+[related]
+dois = ["10.1007/s10817-009-9147-4"]
+pubs = ["<a href=\"https://www.in.tum.de/~nipkow/pubs/arrow.html\">Open access</a>", "<a href=\"https://en.wikipedia.org/wiki/Arrow's_impossibility_theorem\">Wikipedia</a>"]
 
 [history]
 

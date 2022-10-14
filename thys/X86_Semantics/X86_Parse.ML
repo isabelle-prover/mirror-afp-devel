@@ -345,12 +345,12 @@ fun main localename assembly lthy = let
 
 (*
   Add the command "x86_64_parser" to the Isabelle syntax.
-  Its argument is parsed by Parse.text, which simply returns
-  the text. The parsed text is given to the "main" function.
+  Its argument is parsed by Parse.embedded, which simply returns
+  the embedded source. The parsed text is given to the "main" function.
 *)
 
 val _ =
     Outer_Syntax.local_theory
       \<^command_keyword>\<open>x86_64_parser\<close>
       "Generate a locale from a list of assembly instructions."
-      (Parse.text -- Parse.text >> (fn (localename, assembly) => main localename assembly))
+      (Parse.embedded -- Parse.embedded >> (fn (localename, assembly) => main localename assembly))

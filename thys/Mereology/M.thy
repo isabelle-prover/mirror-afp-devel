@@ -40,9 +40,9 @@ proof -
   hence "P x y" by (rule proper_implies_part)
   show "\<not> P y x"
   proof
-    from `PP x y` have "x \<noteq> y" by (rule proper_implies_distinct)
+    from \<open>PP x y\<close> have "x \<noteq> y" by (rule proper_implies_distinct)
     moreover assume "P y x"
-    with `P x y` have "x = y" by (rule part_antisymmetry)
+    with \<open>P x y\<close> have "x = y" by (rule part_antisymmetry)
     ultimately show "False"..
   qed
 qed
@@ -51,13 +51,13 @@ lemma proper_part_asymmetry: "PP x y \<Longrightarrow> \<not> PP y x"
 proof -
   assume "PP x y"
   hence "P x y" by (rule proper_implies_part)
-  from `PP x y` have "x \<noteq> y" by (rule proper_implies_distinct)
+  from \<open>PP x y\<close> have "x \<noteq> y" by (rule proper_implies_distinct)
   show "\<not> PP y x"
   proof
     assume "PP y x"
     hence "P y x" by (rule proper_implies_part)
-    with `P x y` have "x = y" by (rule part_antisymmetry)
-    with `x \<noteq> y` show "False"..
+    with \<open>P x y\<close> have "x = y" by (rule part_antisymmetry)
+    with \<open>x \<noteq> y\<close> show "False"..
   qed
 qed
 
@@ -97,8 +97,8 @@ proof
     moreover have "\<not> P y x"
     proof
       assume "P y x"
-      with `P x y` have "x = y" by (rule part_antisymmetry)
-      with `x \<noteq> y` show "False"..
+      with \<open>P x y\<close> have "x = y" by (rule part_antisymmetry)
+      with \<open>x \<noteq> y\<close> show "False"..
     qed
     ultimately show "P x y \<and> \<not> P y x"..
   next
@@ -108,7 +108,7 @@ proof
     moreover have "x \<noteq> y"
     proof
       assume "x = y"
-      hence "\<not> P y y" using `\<not> P y x` by (rule subst)
+      hence "\<not> P y y" using \<open>\<not> P y x\<close> by (rule subst)
       thus "False" using part_reflexivity..
     qed
     ultimately have "P x y \<and> x \<noteq> y"..
@@ -129,7 +129,7 @@ proof
     moreover have "x \<noteq> y"
     proof
       assume "x = y"
-      hence "\<not> P y y" using `\<not> P y x` by (rule subst)
+      hence "\<not> P y y" using \<open>\<not> P y x\<close> by (rule subst)
       thus "False" using part_reflexivity..
     qed
     ultimately show "P x y \<and> x \<noteq> y"..
@@ -140,8 +140,8 @@ proof
     moreover have "\<not> P y x"
     proof
       assume "P y x"
-      with `P x y` have "x = y" by (rule part_antisymmetry)
-      with `x \<noteq> y` show "False"..
+      with \<open>P x y\<close> have "x = y" by (rule part_antisymmetry)
+      with \<open>x \<noteq> y\<close> show "False"..
     qed
     ultimately have "P x y \<and> \<not> P y x"..
     with nmp_eq show "PP x y"..
@@ -175,11 +175,11 @@ proof
     show "x = y"
     proof (rule ccontr)
       assume "x \<noteq> y"
-      with `P x y` have "P x y \<and> x \<noteq> y"..
+      with \<open>P x y\<close> have "P x y \<and> x \<noteq> y"..
       with nip_eq have "PP x y"..
       with nmp_eq have "P x y \<and> \<not> P y x"..
       hence "\<not> P y x"..
-      thus "False" using `P y x`..
+      thus "False" using \<open>P y x\<close>..
     qed
   qed
 qed
@@ -230,10 +230,10 @@ proof
       show "P z x \<longleftrightarrow> P z y"
       proof
         assume "P z x"
-        thus "P z y" using `P x y` by (rule part_transitivity)
+        thus "P z y" using \<open>P x y\<close> by (rule part_transitivity)
       next
         assume "P z y"
-        thus "P z x" using `P y x` by (rule part_transitivity)
+        thus "P z x" using \<open>P y x\<close> by (rule part_transitivity)
       qed
     qed
     with part_extensionality show "x = y"..
@@ -255,7 +255,7 @@ lemma proper_part_irreflexivity: "\<not> PP x x"
 proof
   assume "PP x x"
   hence "\<not> PP x x" by (rule proper_part_asymmetry)
-  thus "False" using `PP x x`..
+  thus "False" using \<open>PP x x\<close>..
 qed
 
 end
@@ -272,7 +272,7 @@ proof
       thus "PP x y \<or> x = y"..
     next
       assume "x \<noteq> y"
-      with `P x y` have "P x y \<and> x \<noteq> y"..
+      with \<open>P x y\<close> have "P x y \<and> x \<noteq> y"..
       with nip_eq have "PP x y"..
       thus "PP x y \<or> x = y"..
     qed
@@ -295,16 +295,16 @@ proof
     assume "PP y z"
     have "P x z \<and> x \<noteq> z"
     proof
-      from `PP x y` have "P x y" by (rule proper_implies_part)
-      moreover from `PP y z` have "P y z" by (rule proper_implies_part)
+      from \<open>PP x y\<close> have "P x y" by (rule proper_implies_part)
+      moreover from \<open>PP y z\<close> have "P y z" by (rule proper_implies_part)
       ultimately show "P x z" by (rule part_transitivity)
     next
       show "x \<noteq> z"
       proof
         assume "x = z"
-        hence "PP y x" using `PP y z` by (rule ssubst)
+        hence "PP y x" using \<open>PP y z\<close> by (rule ssubst)
         hence "\<not> PP x y" by (rule proper_part_asymmetry)
-        thus "False" using `PP x y`..
+        thus "False" using \<open>PP x y\<close>..
       qed
     qed
     with nip_eq show "PP x z"..
@@ -322,7 +322,7 @@ proof
     moreover have "x \<noteq> y"
     proof
       assume "x = y"
-      hence "PP y y" using `PP x y` by (rule subst)
+      hence "PP y y" using \<open>PP x y\<close> by (rule subst)
       with proper_part_irreflexivity show "False"..
     qed
     ultimately show "P x y \<and> x \<noteq> y"..
@@ -337,7 +337,7 @@ proof
       thus "PP x y".
     next
       assume "x = y"
-      with `x \<noteq> y` show "PP x y"..
+      with \<open>x \<noteq> y\<close> show "PP x y"..
     qed
   qed
   show "P x x"
@@ -351,16 +351,16 @@ proof
   proof -
     assume "P x y"
     assume "P y x"
-    from part_eq have "PP x y \<or> x = y" using `P x y`..
+    from part_eq have "PP x y \<or> x = y" using \<open>P x y\<close>..
     thus "x = y"
     proof
       assume "PP x y"
       hence "\<not> PP y x" by (rule proper_part_asymmetry)
-      from part_eq have "PP y x \<or> y = x" using `P y x`..
+      from part_eq have "PP y x \<or> y = x" using \<open>P y x\<close>..
       thus "x = y"
       proof
         assume "PP y x"
-        with `\<not> PP y x` show "x = y"..
+        with \<open>\<not> PP y x\<close> show "x = y"..
       next
         assume "y = x"
         thus "x = y"..
@@ -375,19 +375,19 @@ proof
     hence "PP x z \<or> x = z"
     proof
       assume "PP y z"
-      from part_eq have "PP x y \<or> x = y" using `P x y`..
+      from part_eq have "PP x y \<or> x = y" using \<open>P x y\<close>..
       hence "PP x z"
       proof
         assume "PP x y"
-        thus "PP x z" using `PP y z` by (rule proper_part_transitivity)
+        thus "PP x z" using \<open>PP y z\<close> by (rule proper_part_transitivity)
       next
         assume "x = y"
-        thus "PP x z" using `PP y z` by (rule ssubst)
+        thus "PP x z" using \<open>PP y z\<close> by (rule ssubst)
       qed
       thus "PP x z \<or> x = z"..
     next
       assume "y = z"
-      moreover from part_eq have "PP x y \<or> x = y" using `P x y`..
+      moreover from part_eq have "PP x y \<or> x = y" using \<open>P x y\<close>..
       ultimately show "PP x z \<or> x = z" by (rule subst)
     qed
     with part_eq show "P x z"..

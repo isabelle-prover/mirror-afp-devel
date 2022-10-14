@@ -199,13 +199,13 @@ proof-
   from f(2) a' b' a'b' have a'_def: "a' = a" 
     by 
       (
-        cs_prems 
+        cs_prems cs_shallow
           cs_simp: cat_ordinal_cs_simps f_def cs_intro: cat_ordinal_cs_intros
       )
   from f(3) a' b' a'b' have b'_def: "b' = b"
     by 
       (
-        cs_prems 
+        cs_prems cs_shallow 
           cs_simp: cat_ordinal_cs_simps f_def cs_intro: cat_ordinal_cs_intros
       )
   from a' b' a'b' f_def show "a \<in>\<^sub>\<circ> A" and "b \<in>\<^sub>\<circ> A" and "a \<le> b" and "f = [a, b]\<^sub>\<circ>"
@@ -273,7 +273,7 @@ proof-
   from assms(1) have c: "c \<in>\<^sub>\<circ> A" and bc: "b \<le> c" and g_def: "g = [b, c]\<^sub>\<circ>" 
     by auto
   from a b c ab bc have "[g, f]\<^sub>\<circ> \<in>\<^sub>\<circ> ordinal_composable A"
-    by (cs_concl cs_simp: g_def f_def cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_simp: g_def f_def cs_intro: cat_ordinal_cs_intros)
   then show "g \<circ>\<^sub>A\<^bsub>cat_ordinal A\<^esub> f = [a, c]\<^sub>\<circ>"
     unfolding cat_ordinal_components by (simp add: g_def f_def nat_omega_simps)
 qed
@@ -344,7 +344,7 @@ proof(intro cat_linear_orderI cat_partial_orderI cat_preorderI categoryI')
       unfolding gf_def
       by (intro exI conjI)
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_ordinal_cs_simps cs_intro: cat_ordinal_cs_intros
         )+
   next
@@ -364,7 +364,7 @@ proof(intro cat_linear_orderI cat_partial_orderI cat_preorderI categoryI')
       unfolding gf_def g(4) f(4)
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_ordinal_cs_simps cs_intro: cat_ordinal_cs_intros
         )
   qed
@@ -379,7 +379,7 @@ proof(intro cat_linear_orderI cat_partial_orderI cat_preorderI categoryI')
       from g(1,2,3) f(1,2,3) show " [b, c]\<^sub>\<circ> \<circ>\<^sub>A\<^bsub>cat_ordinal A\<^esub> [a, b]\<^sub>\<circ> = [a, c]\<^sub>\<circ>"
         by 
           (
-            cs_concl 
+            cs_concl cs_shallow 
               cs_simp: cat_ordinal_cs_simps cs_intro: cat_ordinal_cs_intros
           )
     qed
@@ -406,7 +406,7 @@ proof(intro cat_linear_orderI cat_partial_orderI cat_preorderI categoryI')
     then show "cat_ordinal A\<lparr>CId\<rparr>\<lparr>a\<rparr> : a \<mapsto>\<^bsub>cat_ordinal A\<^esub> a"
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_ordinal_cs_simps
             cs_intro: cat_ordinal_cs_intros V_cs_intros
         )
@@ -418,7 +418,7 @@ proof(intro cat_linear_orderI cat_partial_orderI cat_preorderI categoryI')
     from f(1-3) show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow
             cs_simp: cat_ordinal_cs_simps f(4)
             cs_intro: cat_ordinal_cs_intros V_cs_intros
         )
@@ -430,7 +430,7 @@ proof(intro cat_linear_orderI cat_partial_orderI cat_preorderI categoryI')
     from f(1-3) show ?thesis
       by 
         (
-          cs_concl 
+          cs_concl cs_shallow 
             cs_simp: cat_ordinal_cs_simps f(4)
             cs_intro: cat_ordinal_cs_intros V_cs_intros
         )
@@ -514,7 +514,7 @@ proof(intro cat_tiny_linear_orderI' cat_linear_order_cat_ordinal assms(1))
   moreover have "cat_ordinal A\<lparr>Obj\<rparr> \<in>\<^sub>\<circ> Vset \<alpha>"
     unfolding cat_ordinal_components by (intro A_in_Vset)
   ultimately show "tiny_category \<alpha> (cat_ordinal A)"
-    by (cs_concl cs_intro: cat_cs_intros tiny_categoryI')
+    by (cs_concl cs_shallow cs_intro: cat_cs_intros tiny_categoryI')
 qed
 
 lemmas [cat_ordinal_cs_intros] = \<Z>.cat_linear_order_cat_ordinal
@@ -525,11 +525,11 @@ lemma (in \<Z>) finite_category_cat_ordinal[cat_ordinal_cs_intros]:
 proof-
   from assms have "Ord a" "a \<in>\<^sub>\<circ> \<alpha>" by (auto simp: Ord_\<alpha> Ord_trans)
   then interpret cat_ordinal: cat_tiny_linear_order \<alpha> \<open>cat_ordinal a\<close>
-    by (cs_concl cs_intro: cat_ordinal_cs_intros)
+    by (cs_concl cs_shallow cs_intro: cat_ordinal_cs_intros)
   show ?thesis
   proof(intro finite_categoryI')
     from assms show "category \<alpha> (cat_ordinal a)"
-      by (cs_concl cs_intro: cat_cs_intros)
+      by (cs_concl cs_shallow cs_intro: cat_cs_intros)
     from assms show "vfinite (cat_ordinal a\<lparr>Obj\<rparr>)"
       unfolding cat_ordinal_components by auto
     from assms show "vfinite (cat_ordinal a\<lparr>Arr\<rparr>)"

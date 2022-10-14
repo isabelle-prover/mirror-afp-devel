@@ -4,7 +4,6 @@ theory SimpleVariantHF imports
   HOML 
   MFilter 
   BaseDefs
-  DisableKodkodScala
 begin
 text\<open>Definition: Set of supersets of \<open>X\<close>, we call this \<open>\<H>\<F> X\<close>.\<close>
 abbreviation HF::"\<gamma>\<Rightarrow>(\<gamma>\<Rightarrow>\<sigma>)"  where "HF X \<equiv> \<lambda>Y.(X\<^bold>\<sqsubseteq>Y)"

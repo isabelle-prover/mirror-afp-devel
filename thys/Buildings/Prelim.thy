@@ -505,18 +505,6 @@ lemma snoc_conv_cons: "\<exists>x xs. ys@[y] = x#xs"
 lemma cons_conv_snoc: "\<exists>ys y. x#xs = ys@[y]"
   by (cases xs rule: rev_cases) auto
 
-lemma same_length_eq_append:
-  "length as = length bs \<Longrightarrow> as@cs = bs@ds \<Longrightarrow> as = bs"
-  by (induct as bs rule: list_induct2) auto
-
-lemma count_list_append:
-  "count_list (xs@ys) a = count_list xs a + count_list ys a"
-  by (induct xs) auto
-
-lemma count_list_snoc:
-  "count_list (xs@[x]) y = (if y=x then Suc (count_list xs y) else count_list xs y)"
-  by (induct xs) auto
-
 lemma distinct_count_list:
   "distinct xs \<Longrightarrow> count_list xs a = (if a \<in> set xs then 1 else 0)"
   by (induct xs) auto

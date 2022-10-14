@@ -4,17 +4,25 @@ topics = [
   "Computer science/Automata and formal languages",
 ]
 abstract = """
-Brzozowski introduced the notion of derivatives for regular
-expressions. They can be used for a very simple regular expression
-matching algorithm. Sulzmann and Lu cleverly extended this algorithm
-in order to deal with POSIX matching, which is the underlying
-disambiguation strategy for regular expressions needed in lexers. In
-this entry we give our inductive definition of what a POSIX value is
-and show (i) that such a value is unique (for given regular expression
-and string being matched) and (ii) that Sulzmann and Lu's algorithm
-always generates such a value (provided that the regular expression
-matches the string). We also prove the correctness of an optimised
-version of the POSIX matching algorithm."""
+<p>Brzozowski introduced the notion of derivatives for regular
+expressions. They can be used for a very simple regular
+expression matching algorithm. Sulzmann and Lu cleverly
+extended this algorithm in order to deal with POSIX matching,
+which is the underlying disambiguation strategy for regular
+expressions needed in lexers. Their algorithm generates POSIX
+values which encode the information of how a regular
+expression matches a string--—that is, which part of the string
+is matched by which part of the regular expression. In this
+paper we give our inductive definition of what a POSIX value
+is and show (i) that such a value is unique (for given regular
+expression and string being matched) and (ii) that Sulzmann
+and Lu’s algorithm always generates such a value (provided
+that the regular expression matches the string). This holds
+also when optimisations are included. Finally we show that
+(iii) our inductive definition of a POSIX value is equivalent
+to an alternative definition by Okui and Suzuki which
+identifies POSIX values as least elements according to an
+ordering of values.</p>"""
 license = "bsd"
 note = ""
 
@@ -35,6 +43,7 @@ homepage = "urban_homepage"
 urban = "urban_email"
 
 [history]
+2022-06-17 = "Christian Urban added a theory about the Posix definition by Okui and Suzuki.<br>"
 
 [extra]
 
