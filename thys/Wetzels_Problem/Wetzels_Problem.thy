@@ -99,7 +99,7 @@ proof -
     by (metis Complex_gcard TC_small assms eqpoll_def gcard_eqpoll)
   define inD where "inD \<equiv> \<lambda>\<beta> f. (\<forall>\<alpha> \<in> elts \<beta>. f (\<zeta> \<alpha>) \<in> D)"
   define \<Phi> where "\<Phi> \<equiv> \<lambda>\<beta> f. f \<beta> analytic_on UNIV \<and> inD \<beta> (f \<beta>) \<and> inj_on f (elts (succ \<beta>))"
-  have *: "\<exists>h. \<Phi> \<gamma> ((restrict f (elts \<gamma>))(\<gamma>:=h))"
+  have ind_step: "\<exists>h. \<Phi> \<gamma> ((restrict f (elts \<gamma>))(\<gamma>:=h))"
     if \<gamma>: "\<gamma> \<in> elts \<omega>1" and "\<forall>\<beta> \<in> elts \<gamma>. \<Phi> \<beta> f" for \<gamma> f
   proof -
     have f: "\<forall>\<beta> \<in> elts \<gamma>. f \<beta> analytic_on UNIV \<and> inD \<beta> (f \<beta>)" 
@@ -297,24 +297,19 @@ proof -
       using inj by (rule_tac x="h" in exI) (auto simp: \<Phi>_def inj_on_def)
   qed
   define G where "G \<equiv> \<lambda>f \<gamma>. @h. \<Phi> \<gamma> ((restrict f (elts \<gamma>))(\<gamma>:=h))"
-  have nxt: "\<Phi> \<gamma> ((restrict f (elts \<gamma>))(\<gamma>:= G f \<gamma>))" 
-    if "\<gamma> \<in> elts \<omega>1" "\<forall>\<beta> \<in> elts \<gamma>. \<Phi> \<beta> f" for f \<gamma>
-    unfolding G_def using * [OF that] by (metis someI) 
-  have G_restr: "G (restrict f (elts \<gamma>)) \<gamma> = G f \<gamma>" if "\<gamma> \<in> elts \<omega>1" for f \<gamma>
-    by (auto simp: G_def)
   define f where "f \<equiv> transrec G"
   have \<Phi>f: "\<Phi> \<beta> f" if "\<beta> \<in> elts \<omega>1" for \<beta>
     using that
   proof (induction \<beta> rule: eps_induct)
     case (step \<gamma>)
-    then have *: "\<forall>\<beta>\<in>elts \<gamma>. \<Phi> \<beta> f"
+    then have IH: "\<forall>\<beta>\<in>elts \<gamma>. \<Phi> \<beta> f"
       using Ord_\<omega>1 Ord_trans by blast
-    have [simp]: "inj_on (\<lambda>\<beta>. G (restrict f (elts \<beta>)) \<beta>) (elts \<gamma>) \<longleftrightarrow> inj_on f (elts \<gamma>)"
-      by (metis (no_types, lifting) f_def transrec inj_on_cong)
     have "f \<gamma> = G f \<gamma>"
-      by (metis G_restr transrec f_def step.prems)
-    with nxt [OF step.prems] * show ?case
-      by (metis \<Phi>_def elts_succ fun_upd_same fun_upd_triv inj_on_restrict_eq restrict_upd)
+      by (metis G_def f_def restrict_apply' restrict_ext transrec)
+    moreover have "\<Phi> \<gamma> ((restrict f (elts \<gamma>))(\<gamma> := G f \<gamma>))"
+      by (metis ind_step[OF step.prems] G_def IH someI)
+    ultimately show ?case 
+      by (metis IH \<Phi>_def elts_succ fun_upd_same fun_upd_triv inj_on_restrict_eq restrict_upd)
   qed
   then have anf: "\<And>\<beta>. \<beta> \<in> elts \<omega>1 \<Longrightarrow> f \<beta> analytic_on UNIV"
     and inD: "\<And>\<alpha> \<beta>. \<lbrakk>\<beta> \<in> elts \<omega>1; \<alpha> \<in> elts \<beta>\<rbrakk> \<Longrightarrow> f \<beta> (\<zeta> \<alpha>) \<in> D"
