@@ -165,7 +165,7 @@ proof -
       unfolding assms Let_def by blast
   qed
   then show "\<And> t . t |\<in>| qtrans \<longleftrightarrow> t_source t |\<in>| nexts \<and> t_target t \<noteq> {||} \<and> fset (t_target t) = t_target ` {t' . t' |\<in>| A \<and> t_source t' |\<in>| t_source t \<and> t_input t' = t_input t \<and> t_output t' = t_output t}"
-    unfolding fmember.rep_eq by force
+    unfolding fmember_iff_member_fset by force
 qed
 
 
@@ -490,7 +490,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
                    t_source t' |\<in>| t_source t \<and> t_input t' = t_input t \<and> t_output t' = t_output t})"
       using "1.prems"(1) qtrans_prop
       using ftransitions_set[of M]
-      by (metis (mono_tags, lifting) Collect_cong fmember.rep_eq funion_iff) 
+      by (metis (mono_tags, lifting) Collect_cong fmember_iff_member_fset funion_iff) 
 
     have i2: "(\<And>q t'.
                 q |\<in>| dones |\<union>| ?nexts \<Longrightarrow>
@@ -630,7 +630,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
               using i1[OF \<open>tP |\<in>| ts |\<union>| qtrans\<close>]
               using \<open>p = tM # pM\<close> \<open>path M q' p\<close> \<open>q' |\<in>| q\<close> 
               unfolding \<open>t_input tP = t_input tM\<close> \<open>t_output tP = t_output tM\<close> \<open>t_source tP = q\<close>
-              using fmember.rep_eq by fastforce 
+              using fmember_iff_member_fset by fastforce 
             ultimately have "\<exists>q' p. q' |\<in>| t_target tP \<and> path M q' p \<and> p_io p = ioP"
               using \<open>p_io pM = ioP\<close> \<open>path M (t_target tM) pM\<close> by blast
 
@@ -749,7 +749,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
           moreover have "t_target tM |\<in>| t_target tP"
             using "1.prems"(1)[OF \<open>tP |\<in>| ts\<close>] \<open>p = tM # pM\<close> \<open>path M q' p\<close> \<open>q' |\<in>| q\<close>  
             unfolding \<open>t_input tP = t_input tM\<close> \<open>t_output tP = t_output tM\<close> \<open>t_source tP = q\<close>
-            using fmember.rep_eq by fastforce 
+            using fmember_iff_member_fset by fastforce 
           ultimately have "\<exists>q' p. q' |\<in>| t_target tP \<and> path M q' p \<and> p_io p = ioP"
             using \<open>p_io pM = ioP\<close> \<open>path M (t_target tM) pM\<close> by blast
   
@@ -798,7 +798,7 @@ using assms proof (induction "ftransitions M" "(fimage t_target ts) |-| dones" d
           obtain tM where "t_source tM |\<in>| q" and "tM \<in> transitions M" and "t_input tM = t_input tP" and "t_output tM = t_output tP" and "t_target tM = q''"
             using "1.prems"(1)[OF \<open>tP |\<in>| ts\<close>] \<open>q'' |\<in>| t_target tP\<close> 
             unfolding \<open>t_source tP = q\<close> 
-            unfolding fmember.rep_eq by force
+            unfolding fmember_iff_member_fset by force
 
           have "path M (t_source tM) (tM#pM)"
             using \<open>tM \<in> transitions M\<close> \<open>t_target tM = q''\<close> \<open>path M q'' pM\<close> by auto
@@ -1103,13 +1103,13 @@ proof -
 
     have "?P1 t"
       using make_observable_transitions_transition_props(1)[OF i1 i2] unfolding pstates_def ptransitions_def \<open>states M' = fset pstates\<close>
-      by (metis finsert_is_funion fmember.rep_eq)
+      by (metis finsert_is_funion fmember_iff_member_fset)
     moreover have "?P2 t" 
     proof-
       have "t_input t |\<in>| t_input |`| ftransitions M"
         using make_observable_transitions_transition_props(3)[OF i1 i2] by blast
       then have "t_input t \<in> t_input ` transitions M"
-        using ftransitions_set by (metis (mono_tags, lifting) fmember.rep_eq fset.set_map)
+        using ftransitions_set by (metis (mono_tags, lifting) fmember_iff_member_fset fset.set_map)
       then show ?thesis
         using finputs_set fsm_transition_input \<open>inputs M' = inputs M\<close> by fastforce 
     qed
@@ -1118,13 +1118,13 @@ proof -
       have "t_output t |\<in>| t_output |`| ftransitions M"
         using make_observable_transitions_transition_props(4)[OF i1 i2] by blast
       then have "t_output t \<in> t_output ` transitions M"
-        using ftransitions_set by (metis (mono_tags, lifting) fmember.rep_eq fset.set_map)
+        using ftransitions_set by (metis (mono_tags, lifting) fmember_iff_member_fset fset.set_map)
       then show ?thesis
         using foutputs_set fsm_transition_output \<open>outputs M' = outputs M\<close> by fastforce 
     qed
     moreover have "?P4 t"
       using make_observable_transitions_transition_props(2)[OF i1 i2] unfolding pstates_def ptransitions_def \<open>states M' = fset pstates\<close>
-      by (metis finsert_is_funion fmember.rep_eq)
+      by (metis finsert_is_funion fmember_iff_member_fset)
       
     ultimately show "?P1 t \<and> ?P2 t \<and> ?P3 t \<and> ?P4 t"
       by blast

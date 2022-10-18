@@ -108,11 +108,11 @@ lemma ta_det'_vars_term_id:
 proof (induct s arbitrary: t)
   case (Fun f ss)
   from Fun(2-) obtain ts where [simp]: "t = Fun f ts" and len: "length ts = length ss"
-    by (cases t) (auto simp flip: fmember.rep_eq dest: rule_statesD eps_dest_all)
+    by (cases t) (auto simp flip: fmember_iff_member_fset dest: rule_statesD eps_dest_all)
   from Fun(1)[OF nth_mem, of i "ts ! i" for i] show ?case using Fun(2-) len
-    by (auto simp add: ta_der'.simps Union_disjoint simp flip: fmember.rep_eq
+    by (auto simp add: ta_der'.simps Union_disjoint simp flip: fmember_iff_member_fset
         dest: rule_statesD eps_dest_all intro!: nth_equalityI)
-qed (auto simp add: ta_der'.simps simp flip: fmember.rep_eq dest: rule_statesD eps_dest_all)
+qed (auto simp add: ta_der'.simps simp flip: fmember_iff_member_fset dest: rule_statesD eps_dest_all)
 
 lemma fresh_states_ta_der'_pres:
   assumes st: "q \<in> vars_term s" "q |\<notin>| \<Q> \<A>"
@@ -135,10 +135,10 @@ lemma ta_der'_states:
   "t |\<in>| ta_der' \<A> s \<Longrightarrow> vars_term t \<subseteq> vars_term s \<union> fset (\<Q> \<A>)"
 proof (induct s arbitrary: t)
   case (Var x) then show ?case
-    by (auto simp: ta_der'.simps simp flip: fmember.rep_eq dest: eps_dest_all)
+    by (auto simp: ta_der'.simps simp flip: fmember_iff_member_fset dest: eps_dest_all)
 next
   case (Fun f ts) then show ?case
-    by (auto simp: ta_der'.simps rule_statesD simp flip: fmember.rep_eq dest: eps_dest_all)
+    by (auto simp: ta_der'.simps rule_statesD simp flip: fmember_iff_member_fset dest: eps_dest_all)
        (metis (no_types, opaque_lifting) Un_iff in_set_conv_nth notin_fset subsetD)
 qed
 
@@ -172,7 +172,7 @@ lemma refl_ta_eps [simp]: "eps (refl_ta \<F> q) = {||}"
 lemma refl_ta_sound:
   "s \<in> \<T>\<^sub>G (fset \<F>) \<Longrightarrow> q |\<in>| ta_der (refl_ta \<F> q) (term_of_gterm s)"
   by (induct rule: \<T>\<^sub>G.induct) (auto simp: refl_ta_def reflcl_rules_def
-      fimage_iff fBex_def simp flip: fmember.rep_eq)
+      fimage_iff fBex_def simp flip: fmember_iff_member_fset)
 
 lemma reflcl_rules_args:
   "length ps = n \<Longrightarrow> f ps \<rightarrow> p |\<in>| reflcl_rules \<F> q \<Longrightarrow> ps = replicate n q"
@@ -191,7 +191,7 @@ lemma refl_ta_complete2:
   unfolding ta_der_to_ta_der'[symmetric]
   using ta_der_term_sig[of q "refl_ta \<F> q" s] ta_der_states'[of q "refl_ta \<F> q" s]
   using fsubsetD[OF \<Q>_refl_ta[of \<F> q]]
-  by (auto simp: fmember.rep_eq ffunas_term.rep_eq)
+  by (auto simp: fmember_iff_member_fset ffunas_term.rep_eq)
      (metis Term.term.simps(17) fresh_states_ta_der'_pres notin_fset singletonD ta_der_to_ta_der')
 
 lemma gen_reflcl_lang:
@@ -210,7 +210,7 @@ proof -
         fin: "p |\<in>| finsert q Q"
         by (auto simp: ta_der_to_ta_der' elim!: gta_langE dest!: sq.ta_der'_split)
       have "vars_term u \<subseteq> {q} \<Longrightarrow> u = term_of_gterm s" using assms
-        by (intro ta_det'_vars_term_id[OF seq(1)]) (auto simp flip: fmember.rep_eq)
+        by (intro ta_det'_vars_term_id[OF seq(1)]) (auto simp flip: fmember_iff_member_fset)
       then have "s \<in> ?Rs" using assms fin seq funas_term_of_gterm_conv
         using refl_ta_complete1[OF seq(2)]
         by (cases "p = q") (auto simp: ta_der_to_ta_der' \<T>\<^sub>G_funas_gterm_conv dest!: refl_ta_complete2)}
@@ -269,12 +269,12 @@ proof (induct u)
   then have "i < length ts \<Longrightarrow> x \<in> vars_term (ts ! i) \<Longrightarrow> x = q \<or> x |\<in>| Q" for i x
     using Fun(1)[OF nth_mem, of i]
     by (meson insert_iff notin_fset subsetD)
-  then show ?case by (fastforce simp: in_set_conv_nth fmember.rep_eq)
-qed (auto simp flip: fmember.rep_eq dest: refl_over_states_ta_epsD)
+  then show ?case by (fastforce simp: in_set_conv_nth fmember_iff_member_fset)
+qed (auto simp flip: fmember_iff_member_fset dest: refl_over_states_ta_epsD)
 
 lemmas refl_over_states_ta_vars_term' =
   refl_over_states_ta_vars_term[unfolded ta_der_to_ta_der' ta_der'_target_args_vars_term_conv,
-    THEN set_list_subset_nth_conv, unfolded fmember.rep_eq[symmetric] finsert.rep_eq[symmetric]]
+    THEN set_list_subset_nth_conv, unfolded fmember_iff_member_fset[symmetric] finsert.rep_eq[symmetric]]
 
 lemma refl_over_states_ta_sound:
   "funas_term u \<subseteq> fset \<F> \<Longrightarrow> vars_term u \<subseteq> insert q (fset (Q |\<inter>| \<Q> \<A>)) \<Longrightarrow> q |\<in>| ta_der (refl_over_states_ta Q \<F> \<A> q) u"
@@ -283,10 +283,10 @@ proof (induct u)
   have reach: "i < length ts \<Longrightarrow> q |\<in>| ta_der (refl_over_states_ta Q \<F> \<A> q) (ts ! i)" for i
     using Fun(2-) by (intro Fun(1)[OF nth_mem]) (auto simp: SUP_le_iff)
   from Fun(2) have "TA_rule f (replicate (length ts) q) q |\<in>| rules (refl_over_states_ta Q \<F> \<A> q)"
-    by (auto simp: refl_over_states_ta_def reflcl_rules_def fimage_iff fBex_def simp flip: fmember.rep_eq)
+    by (auto simp: refl_over_states_ta_def reflcl_rules_def fimage_iff fBex_def simp flip: fmember_iff_member_fset)
   then show ?case using reach
     by force
-qed (auto simp: refl_over_states_ta_def simp flip: fmember.rep_eq)
+qed (auto simp: refl_over_states_ta_def simp flip: fmember_iff_member_fset)
 
 lemma gen_parallelcl_lang:
   fixes \<A> :: "('q, 'f) ta"
@@ -326,7 +326,7 @@ proof -
     then have "q |\<in>| ta_der ?A (fill_holes (mctxt_of_gmctxt C) (map term_of_gterm ss))"
       using reachA len gr_fun
       by (intro sq.mctxt_const_to_ta_der[of "mctxt_of_gmctxt C" "map term_of_gterm ss" qs q])
-        (auto simp: funas_mctxt_of_gmctxt_conv simp flip: fmember.rep_eq
+        (auto simp: funas_mctxt_of_gmctxt_conv simp flip: fmember_iff_member_fset
           dest!: in_set_idx intro!: refl_over_states_ta_sound)
     then have "t \<in> ?Ls" unfolding const
       by (simp add: fill_holes_mctxt_of_gmctxt_to_fill_gholes gta_langI len)}
@@ -404,7 +404,7 @@ proof (induct u)
     by (metis (no_types, lifting) length_map nth_concat_split nth_map nth_replicate)
   then show ?case using Fun(1)[OF nth_mem Fun(2)]
     by (auto intro: nth_equalityI)
-qed (auto simp flip: fmember.rep_eq dest: reflcl_over_single_ta_epsD)
+qed (auto simp flip: fmember_iff_member_fset dest: reflcl_over_single_ta_epsD)
 
 lemma reflcl_over_single_ta_vars_term:
   "q\<^sub>c |\<notin>| Q \<Longrightarrow> q\<^sub>c \<noteq> q\<^sub>f \<Longrightarrow> q\<^sub>f |\<in>| ta_der (reflcl_over_single_ta Q \<F> q\<^sub>c q\<^sub>f) u \<Longrightarrow>
@@ -449,7 +449,7 @@ proof (induct C)
 next
   case (GMore f ss C ts)
   let ?i = "length ss" let ?n = "Suc (length ss + length ts)"
-  from GMore have "(f, ?n) |\<in>| \<F>" by (auto simp flip: fmember.rep_eq)
+  from GMore have "(f, ?n) |\<in>| \<F>" by (auto simp flip: fmember_iff_member_fset)
   then have "f ((replicate ?n q\<^sub>c)[?i := q\<^sub>f]) \<rightarrow> q\<^sub>f |\<in>| rules (reflcl_over_single_ta Q \<F> q\<^sub>c q\<^sub>f)"
     using semantic_path_rules_fmember[of f "(replicate ?n q\<^sub>c)[?i := q\<^sub>f]" q\<^sub>f \<F> q\<^sub>c q\<^sub>f q\<^sub>f]
     using less_add_Suc1
@@ -483,7 +483,7 @@ proof -
       by (force simp: ta_der_to_ta_der' elim!: gta_langE)
     have "q\<^sub>c \<notin> vars_term u" "q\<^sub>f \<notin> vars_term u"
       using subsetD[OF ta_der'_gterm_states[OF seq(1)]] assms(1, 2)
-      by (auto simp flip: set_vars_term_list fmember.rep_eq)
+      by (auto simp flip: set_vars_term_list fmember_iff_member_fset)
     then obtain q where vars: "vars_term_list u = [q]" and fin: "q |\<in>| Q" unfolding set_vars_term_list[symmetric]
       using reflcl_over_single_ta_vars_term[unfolded ta_der_to_ta_der', OF assms(3, 4) seq(2), of "length (vars_term_list u)"]
       by (metis (no_types, lifting) finsertE in_set_conv_nth length_0_conv length_Suc_conv
@@ -556,7 +556,7 @@ proof (induct u)
     by (metis (no_types, lifting) length_map map_nth_eq_conv nth_concat_split' nth_replicate)
   then show ?case using Fun(1)[OF nth_mem Fun(2)]
     by (auto intro: nth_equalityI)
-qed (auto simp flip: fmember.rep_eq simp: reflcl_over_nhole_ctxt_ta_def dest: ftranclD2)
+qed (auto simp flip: fmember_iff_member_fset simp: reflcl_over_nhole_ctxt_ta_def dest: ftranclD2)
 
 lemma reflcl_over_nhole_ctxt_ta_vars_term_Var:
   assumes disj: "q\<^sub>c |\<notin>| Q" "q\<^sub>f |\<notin>| Q" "q\<^sub>c \<noteq> q\<^sub>f" "q\<^sub>i \<noteq> q\<^sub>f" "q\<^sub>c \<noteq> q\<^sub>i"
@@ -612,7 +612,7 @@ proof (induct C)
 next
   case (GMore f ss C ts) note IH = this
   let ?i = "length ss" let ?n = "Suc (length ss + length ts)"
-  from GMore have funas: "(f, ?n) |\<in>| \<F>" by (auto simp flip: fmember.rep_eq)
+  from GMore have funas: "(f, ?n) |\<in>| \<F>" by (auto simp flip: fmember_iff_member_fset)
   from GMore(2) have args_ss: "i < length ss \<Longrightarrow> q\<^sub>c |\<in>| ta_der (reflcl_over_nhole_ctxt_ta Q \<F> q\<^sub>c q\<^sub>i q\<^sub>f) (term_of_gterm (ss ! i))" for i
     by (intro reflcl_over_nhole_ctxt_ta_mono refl_ta_sound) (auto simp: SUP_le_iff \<T>\<^sub>G_funas_gterm_conv)
   from GMore(2) have args_ts: "i < length ts \<Longrightarrow> q\<^sub>c |\<in>| ta_der (reflcl_over_nhole_ctxt_ta Q \<F> q\<^sub>c q\<^sub>i q\<^sub>f) (term_of_gterm (ts ! i))" for i
@@ -664,7 +664,7 @@ proof -
       by (force simp: ta_der_to_ta_der' elim!: gta_langE)
     have "q\<^sub>c \<notin> vars_term u" "q\<^sub>i \<notin> vars_term u" "q\<^sub>f \<notin> vars_term u"
       using subsetD[OF ta_der'_gterm_states[OF seq(1)]] assms(1 - 3)
-      by (auto simp flip: set_vars_term_list fmember.rep_eq)
+      by (auto simp flip: set_vars_term_list fmember_iff_member_fset)
     then obtain q where vars: "vars_term_list u = [q]" and fin: "q |\<in>| Q"
       unfolding set_vars_term_list[symmetric]
       using reflcl_over_nhole_ctxt_ta_vars_term[unfolded ta_der_to_ta_der', OF assms(4, 5, 7 - 8, 6) seq(2)]
@@ -782,13 +782,13 @@ lemma reflcl_over_nhole_mctxt_ta_aux_sound:
 proof (induct t)
   case (Var x)
   then show ?case
-    by (auto simp: reflcl_over_nhole_mctxt_ta_simp fimage_iff simp flip: fmember.rep_eq)
+    by (auto simp: reflcl_over_nhole_mctxt_ta_simp fimage_iff simp flip: fmember_iff_member_fset)
      (meson finsertI1 finsertI2 fr_into_trancl ftrancl_into_trancl rev_fimage_eqI)
 next
   case (Fun f ts)
   from Fun(2) have "TA_rule f (replicate (length ts) q\<^sub>c) q\<^sub>c |\<in>| rules (reflcl_over_nhole_mctxt_ta Q \<F> q\<^sub>c q\<^sub>i q\<^sub>f)"
     by (auto simp: reflcl_over_nhole_mctxt_ta_simp reflcl_rules_def fimage_iff fBall_def
-             simp flip: fmember.rep_eq split: prod.splits)
+             simp flip: fmember_iff_member_fset split: prod.splits)
   then show ?case using Fun(1)[OF nth_mem] Fun(2-)
     by (auto simp: SUP_le_iff) (metis length_replicate nth_replicate)
 qed
@@ -810,7 +810,7 @@ proof (induct t)
       using vars Fun(2-) by (auto simp: SUP_le_iff)
     moreover have "f (replicate (length ts) q\<^sub>c)[i := q\<^sub>i] \<rightarrow> q\<^sub>f |\<in>| rules ?A"
       using Fun(2) vars(1)
-      by (auto simp: reflcl_over_nhole_mctxt_ta_simp semantic_path_rules_fmember simp flip: fmember.rep_eq)
+      by (auto simp: reflcl_over_nhole_mctxt_ta_simp semantic_path_rules_fmember simp flip: fmember_iff_member_fset)
     moreover have "j < length ts \<Longrightarrow> q\<^sub>c |\<in>| ta_der ?A (ts ! j)" for j using Fun(2-)
       by (intro reflcl_over_nhole_mctxt_ta_aux_sound) (auto simp: SUP_le_iff)
     ultimately show ?thesis using vars
@@ -821,13 +821,13 @@ proof (induct t)
       using vars Fun(2-) by (auto simp: SUP_le_iff)
     moreover have "f (replicate (length ts) q\<^sub>c)[i := q\<^sub>f] \<rightarrow> q\<^sub>f |\<in>| rules ?A"
       using Fun(2) vars(1)
-      by (auto simp: reflcl_over_nhole_mctxt_ta_simp semantic_path_rules_fmember simp flip: fmember.rep_eq)
+      by (auto simp: reflcl_over_nhole_mctxt_ta_simp semantic_path_rules_fmember simp flip: fmember_iff_member_fset)
     moreover have "j < length ts \<Longrightarrow> q\<^sub>c |\<in>| ta_der ?A (ts ! j)" for j using Fun(2-)
       by (intro reflcl_over_nhole_mctxt_ta_aux_sound) (auto simp: SUP_le_iff)
     ultimately show ?thesis using vars
       by auto (metis length_list_update length_replicate nth_list_update nth_replicate) 
   qed
-qed (auto simp: reflcl_over_nhole_mctxt_ta_simp simp flip: fmember.rep_eq dest!: ftranclD2)
+qed (auto simp: reflcl_over_nhole_mctxt_ta_simp simp flip: fmember_iff_member_fset dest!: ftranclD2)
 
 
 lemma gen_nhole_gmctxt_closure_lang:
@@ -855,7 +855,7 @@ proof -
       by (metis Un_insert_left insert_is_Un notin_fset subset_iff subset_insert)+
     then have vars: "\<not> ground u" "i < length (ta_der'_target_args u) \<Longrightarrow> ta_der'_target_args u ! i |\<in>| Q" for i
       by (auto simp: ta_der'_target_args_def split_vars_vars_term_list
-          fmember.rep_eq set_list_subset_nth_conv simp flip: set_vars_term_list)
+          fmember_iff_member_fset set_list_subset_nth_conv simp flip: set_vars_term_list)
     have hole: "ta_der'_target_mctxt u \<noteq> MHole" using vars assms(3-)
       using reflcl_over_nhole_mctxt_ta_Fun[OF der]
       using ta_der'_mctxt_structure(1, 3)[OF seq(1)]
@@ -886,8 +886,8 @@ proof -
       using reachA len gr_fun states
       using reflcl_over_nhole_mctxt_ta_sound[of "fill_holes (mctxt_of_gmctxt C) (map Var qs)"]
       by (intro sq.mctxt_const_to_ta_der[of "mctxt_of_gmctxt C" "map term_of_gterm ss" qs q\<^sub>f])
-        (auto simp: funas_mctxt_of_gmctxt_conv  fmember.rep_eq set_list_subset_eq_nth_conv
-          simp flip: fmember.rep_eq dest!: in_set_idx)
+        (auto simp: funas_mctxt_of_gmctxt_conv  fmember_iff_member_fset set_list_subset_eq_nth_conv
+          simp flip: fmember_iff_member_fset dest!: in_set_idx)
     then have "t \<in> ?Ls" unfolding const
       by (simp add: fill_holes_mctxt_of_gmctxt_to_fill_gholes gta_langI len)}
   then show ?thesis using ls by blast
@@ -936,7 +936,7 @@ proof -
       by (metis Un_insert_left notin_fset subsetD subset_insert sup_bot_left)+
     then have vars: "\<not> ground u" "i < length (ta_der'_target_args u) \<Longrightarrow> ta_der'_target_args u ! i |\<in>| Q" for i
       by (auto simp: ta_der'_target_args_def split_vars_vars_term_list
-          fmember.rep_eq set_list_subset_nth_conv simp flip: set_vars_term_list)
+          fmember_iff_member_fset set_list_subset_nth_conv simp flip: set_vars_term_list)
     let ?w = "\<lambda> i. ta_der'_source_args u (term_of_gterm s) ! i"
     have "s \<in> ?Rs" using seq(1) ta_der'_Var_funas[OF seq(2)]
       using ground_ta_der_statesD[of "?w i" "ta_der'_target_args u ! i" \<A> for i] assms vars
@@ -965,16 +965,16 @@ proof -
       using reachA len gr_fun states len
       using reflcl_over_nhole_mctxt_ta_sound[of "fill_holes (mctxt_of_gmctxt C) (map Var qs)"]
       by (intro sq.mctxt_const_to_ta_der[of "mctxt_of_gmctxt C" "map term_of_gterm ss" qs q\<^sub>i])
-         (auto simp: funas_mctxt_of_gmctxt_conv  fmember.rep_eq set_list_subset_eq_nth_conv
-          simp flip: fmember.rep_eq dest!: in_set_idx)
+         (auto simp: funas_mctxt_of_gmctxt_conv  fmember_iff_member_fset set_list_subset_eq_nth_conv
+          simp flip: fmember_iff_member_fset dest!: in_set_idx)
     have "C \<noteq> GMHole \<Longrightarrow> is_Fun (fill_holes (mctxt_of_gmctxt C) (map Var qs)) = True"
       by (cases C) auto
     then have "C \<noteq> GMHole \<Longrightarrow> q\<^sub>f |\<in>| ta_der ?A (fill_holes (mctxt_of_gmctxt C) (map term_of_gterm ss))"
       using reachA len gr_fun states
       using reflcl_over_nhole_mctxt_ta_sound[of "fill_holes (mctxt_of_gmctxt C) (map Var qs)"]
       by (intro sq.mctxt_const_to_ta_der[of "mctxt_of_gmctxt C" "map term_of_gterm ss" qs q\<^sub>f])
-         (auto simp: funas_mctxt_of_gmctxt_conv  fmember.rep_eq set_list_subset_eq_nth_conv
-          simp flip: fmember.rep_eq dest!: in_set_idx)
+         (auto simp: funas_mctxt_of_gmctxt_conv  fmember_iff_member_fset set_list_subset_eq_nth_conv
+          simp flip: fmember_iff_member_fset dest!: in_set_idx)
     then have "t \<in> ?Ls" using hole const' unfolding gta_lang_def gta_der_def
       by (metis (mono_tags, lifting) fempty_iff finsert_iff finterI mem_Collect_eq)}
   ultimately show ?thesis

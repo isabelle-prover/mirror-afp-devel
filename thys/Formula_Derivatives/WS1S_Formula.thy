@@ -511,7 +511,7 @@ next
         split: bool.splits order.splits nat.splits)
 next
   fix \<AA> :: interp and a :: ws1s
-  note fmember.rep_eq[symmetric, simp]
+  note fmember_iff_member_fset[symmetric, simp]
   assume "Length \<AA> = 0"
   then show "nullable0 a = satisfies0 \<AA> a"
     by (induct a, unfold wf0.simps nullable0.simps satisfies0.simps Let_def)
@@ -607,7 +607,7 @@ next
        by (auto 0 1 simp add: fset_eq_iff split: prod.splits) (metis assigns_less_Length less_not_refl)+
    next
      let ?f = "sum ((^) (2 :: nat))"
-     note fmember.rep_eq[symmetric, simp]
+     note fmember_iff_member_fset[symmetric, simp]
      case (Eq_Presb l M n)
      moreover
      let ?M = "fset (M\<^bsup>\<AA>\<^esup>SO)" and ?L = "Length \<AA>"

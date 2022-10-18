@@ -13,7 +13,7 @@ inductive_set \<Delta>\<^sub>\<epsilon>_set :: "('q, 'f) ta \<Rightarrow> ('q, '
 lemma \<Delta>\<^sub>\<epsilon>_states: "\<Delta>\<^sub>\<epsilon>_set \<A> \<B> \<subseteq> fset (\<Q> \<A> |\<times>| \<Q> \<B>)"
 proof -
   {fix p q assume "(p, q) \<in> \<Delta>\<^sub>\<epsilon>_set \<A> \<B>" then have "(p, q) \<in> fset (\<Q> \<A> |\<times>| \<Q> \<B>)"
-      by (induct) (auto dest: rule_statesD eps_statesD simp flip: fmember.rep_eq)}
+      by (induct) (auto dest: rule_statesD eps_statesD simp flip: fmember_iff_member_fset)}
   then show ?thesis by auto
 qed
 
@@ -36,7 +36,7 @@ end
 
 lemma finite_alt_def [simp]:
   "finite {(\<alpha>, \<beta>). (\<exists>t. ground t \<and> \<alpha> |\<in>| ta_der \<A> t \<and> \<beta> |\<in>| ta_der \<B> t)}" (is "finite ?S")
-  by (auto dest: ground_ta_der_states[THEN fsubsetD] simp flip: fmember.rep_eq
+  by (auto dest: ground_ta_der_states[THEN fsubsetD] simp flip: fmember_iff_member_fset
            intro!: finite_subset[of ?S "fset (\<Q> \<A> |\<times>| \<Q> \<B>)"])
 
 lemma \<Delta>\<^sub>\<epsilon>_def':
@@ -92,7 +92,7 @@ lemma \<Delta>\<^sub>\<epsilon>_statesD:
   "(p, q) |\<in>| \<Delta>\<^sub>\<epsilon> \<A> \<B> \<Longrightarrow> p |\<in>| \<Q> \<A>"
   "(p, q) |\<in>| \<Delta>\<^sub>\<epsilon> \<A> \<B> \<Longrightarrow> q |\<in>| \<Q> \<B>"
   using subsetD[OF \<Delta>\<^sub>\<epsilon>_states, of "(p, q)" \<A> \<B>]
-  by (auto simp flip: \<Delta>\<^sub>\<epsilon>.rep_eq fmember.rep_eq)
+  by (auto simp flip: \<Delta>\<^sub>\<epsilon>.rep_eq fmember_iff_member_fset)
 
 lemma \<Delta>\<^sub>\<epsilon>_statesD':
   "q |\<in>| eps_states (\<Delta>\<^sub>\<epsilon> \<A> \<B>) \<Longrightarrow> q |\<in>| \<Q> \<A> |\<union>| \<Q> \<B>"

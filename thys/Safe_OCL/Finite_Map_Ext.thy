@@ -90,7 +90,7 @@ proof -
       unfolding fmmerge_def fmlookup_of_list apply auto
       unfolding option_rel_Some2 apply (rule_tac ?x="g a b" in exI)
       unfolding map_of_map_restrict restrict_map_def
-      by (auto simp: fmember.rep_eq)
+      by (auto simp: fmember_iff_member_fset)
   }
   with assms(2) assms(3) show ?thesis
     by (meson fmdomE fmrel_on_fsetI fmrel_on_fset_fmdom)
@@ -108,7 +108,7 @@ proof -
     hence "rel_option f (fmlookup xm x) (fmlookup (fmmerge g xm ym) x)"
       unfolding fmmerge_def fmlookup_of_list apply auto
       unfolding option_rel_Some1 apply (rule_tac ?x="g a b" in exI)
-      by (auto simp add: map_of_map_restrict fmember.rep_eq assms fmran'I)
+      by (auto simp add: map_of_map_restrict fmember_iff_member_fset assms fmran'I)
   }
   with assms show ?thesis
     apply auto

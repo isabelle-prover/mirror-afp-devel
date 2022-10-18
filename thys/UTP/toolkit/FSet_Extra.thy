@@ -64,19 +64,19 @@ lemma fset_elim:
 
 lemma fmember_intro:
   "\<lbrakk> x \<in> fset(xs) \<rbrakk> \<Longrightarrow> x |\<in>| xs"
-  by (metis fmember.rep_eq)
+  by (metis fmember_iff_member_fset)
 
 lemma fmember_elim:
   "\<lbrakk> x |\<in>| xs; x \<in> fset(xs) \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  by (metis fmember.rep_eq)
+  by (metis fmember_iff_member_fset)
 
 lemma fnmember_intro [intro]:
   "\<lbrakk> x \<notin> fset(xs) \<rbrakk> \<Longrightarrow> x |\<notin>| xs"
-  by (metis fmember.rep_eq)
+  by (metis fmember_iff_member_fset)
 
 lemma fnmember_elim [elim]:
   "\<lbrakk> x |\<notin>| xs; x \<notin> fset(xs) \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-  by (metis fmember.rep_eq)
+  by (metis fmember_iff_member_fset)
 
 lemma fsubset_intro [intro]:
   "\<langle>xs\<rangle>\<^sub>f \<subseteq> \<langle>ys\<rangle>\<^sub>f \<Longrightarrow> xs |\<subseteq>| ys"
@@ -88,11 +88,11 @@ lemma fsubset_elim [elim]:
 
 lemma fBall_intro [intro]:
   "Ball \<langle>A\<rangle>\<^sub>f P \<Longrightarrow> fBall A P"
-  by (metis (poly_guards_query) fBallI fmember.rep_eq)
+  by (metis (poly_guards_query) fBallI fmember_iff_member_fset)
 
 lemma fBall_elim [elim]:
   "\<lbrakk> fBall A P; Ball \<langle>A\<rangle>\<^sub>f P \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q"
-  by (metis fBallE fmember.rep_eq)
+  by (metis fBallE fmember_iff_member_fset)
 
 lift_definition finset :: "'a list \<Rightarrow> 'a fset" is set ..
 

@@ -50,12 +50,12 @@ lemma infer1:
   apply (intro arg_cong2[of _ _ _ _ "(\<union>)"])
   subgoal
     apply (auto simp: fset_of_list_elem less_eq_fset.rep_eq fset_of_list.rep_eq image_iff
-      map_val_of_list_simp fmember.rep_eq split!: ta_rule.splits)
+      map_val_of_list_simp fmember_iff_member_fset split!: ta_rule.splits)
     apply (metis list.set_intros(1) ta_rule.sel(2, 3))
     apply (metis in_set_simps(2) ta_rule.exhaust_sel)
     done
   subgoal
-    apply (simp add: image_def Bex_def fmember.rep_eq map_val_of_list_simp)
+    apply (simp add: image_def Bex_def fmember_iff_member_fset map_val_of_list_simp)
     done
   done
 
@@ -63,7 +63,7 @@ sublocale l: horn_fset "reach_rules (TA \<Delta> \<Delta>\<^sub>\<epsilon>)" "re
   apply (unfold_locales)
   unfolding reach_infer0 reach_infer0_cont_def
   subgoal
-    apply (auto simp: image_iff ta_rule.case_eq_if Bex_def fset_of_list_elem fmember.rep_eq)
+    apply (auto simp: image_iff ta_rule.case_eq_if Bex_def fset_of_list_elem fmember_iff_member_fset)
     apply force
     apply (metis ta_rule.collapse)+
     done
@@ -126,10 +126,10 @@ lemma infer1:
   unfolding union_fset sorted_list_of_fset_simps Let_def set_append
   apply (intro arg_cong2[of _ _ _ _ "(\<union>)"])
   subgoal
-    apply (simp add: image_def Bex_def fmember.rep_eq map_val_of_list_simp)
+    apply (simp add: image_def Bex_def fmember_iff_member_fset map_val_of_list_simp)
     done
   subgoal
-    apply (auto simp flip: fmember.rep_eq simp: map_val_of_list_simp image_iff)
+    apply (auto simp flip: fmember_iff_member_fset simp: map_val_of_list_simp image_iff)
     apply (metis ta_rule.sel(2, 3))
     apply (metis ta_rule.collapse)
     apply (metis notin_fset ta_rule.sel(3))
@@ -168,7 +168,7 @@ qed
 lemma productive_impl [code]:
   "ta_productive P (TA \<Delta> \<Delta>\<^sub>\<epsilon>) = the (productive_cont_impl P \<Delta> \<Delta>\<^sub>\<epsilon>)"
   using productive_cont_impl_complete[of P \<Delta>] productive_cont_impl_sound[of P \<Delta>]
-  by (auto simp add: ta_productive_ind fset_of_list_elem fmember.rep_eq)
+  by (auto simp add: ta_productive_ind fset_of_list_elem fmember_iff_member_fset)
 
 subsection \<open>Setup for the implementation of power set construction states\<close>
 
@@ -196,7 +196,7 @@ proof -
     then obtain qs p where "TA_rule f qs p |\<in>| \<Delta>" "length ps = length qs"
        "list_all2 (|\<in>|) qs (map ex ps)" "p = q \<or> (p, q) |\<in>| \<Delta>\<^sub>\<epsilon>|\<^sup>+|"
       unfolding ps_reachable_states_list_def Let_def comp_def assms(1, 2, 3) *
-      by (force simp add: fset_of_list_elem image_iff fBex_def simp flip: fmember.rep_eq) 
+      by (force simp add: fset_of_list_elem image_iff fBex_def simp flip: fmember_iff_member_fset) 
     then have "q |\<in>| ?Rs"
       by (force simp add: ps_reachable_states_fmember image_iff)}
   moreover
@@ -206,7 +206,7 @@ proof -
          by (auto simp add: ps_reachable_states_fmember list_all2_iff)
        then have "q |\<in>| ?Ls"
          unfolding ps_reachable_states_list_def Let_def * comp_def assms(2, 3)
-         by (force simp add: fset_of_list_elem image_iff simp flip: fmember.rep_eq)}
+         by (force simp add: fset_of_list_elem image_iff simp flip: fmember_iff_member_fset)}
   ultimately show ?thesis by blast
 qed
 
@@ -250,7 +250,7 @@ lemma infer0: "infer0 = set (ps_states_infer0_cont \<Delta> \<Delta>\<^sub>\<eps
   unfolding ps_states_infer0_cont_def Let_def
   using ps_reachable_states_fmember
   by (auto simp add: image_def Ball_def Bex_def)
-     (metis fmember.rep_eq list_all2_Nil2 ps_reachable_states_fmember ta.sel(1) ta_rule.sel(1, 2))
+     (metis fmember_iff_member_fset list_all2_Nil2 ps_reachable_states_fmember ta.sel(1) ta_rule.sel(1, 2))
 
 lemma r_lhs_states_nConst:
   "r_lhs_states r \<noteq> [] \<Longrightarrow> r_statesl r \<noteq> 0" for r by auto
@@ -285,7 +285,7 @@ proof -
          (meson in_set_idx insertE set_list_subset_eq_nth_conv)
     then have "q \<in> ?Rs" using sp r
       unfolding ps_construction_infer1 ps_states_infer1_cont_def Let_def
-      apply (simp add: lookup_tabulate ps_reachable_states_fmember image_iff flip: fmember.rep_eq)
+      apply (simp add: lookup_tabulate ps_reachable_states_fmember image_iff flip: fmember_iff_member_fset)
       apply (rule_tac x = "f ps \<rightarrow> p'" in exI)
       apply (auto simp: Bex_def ps_reachable_states_list_sound[OF _ mapr epsr] intro: exI[of _ qss])
       done}
@@ -295,7 +295,7 @@ proof -
       "q = Wrapp (ps_reachable_states (TA \<Delta> \<Delta>\<^sub>\<epsilon>) (r_root r) (map ex qss))"
       unfolding ps_states_infer1_cont_def Let_def
       by (auto simp add: lookup_tabulate ps_reachable_states_fmember image_iff
-         ps_reachable_states_list_sound[OF _ mapr epsr] split: if_splits simp flip: fmember.rep_eq)
+         ps_reachable_states_list_sound[OF _ mapr epsr] split: if_splits simp flip: fmember_iff_member_fset)
     moreover have "q \<noteq> Wrapp {||}" using ass
       by (auto simp: ps_states_infer1_cont_def Let_def)
     ultimately have "q \<in> ?Ls" unfolding ps_construction_infer1
@@ -326,7 +326,7 @@ lemma ps_states_fset_impl_sound:
   shows "xs = ps_states (TA \<Delta> \<Delta>\<^sub>\<epsilon>)"
   using ps_states_fset.saturate_impl_sound[OF assms[unfolded ps_states_fset_impl_def]]
   using ps_states_horn.ps_states_sound[of "TA \<Delta> \<Delta>\<^sub>\<epsilon>"]
-  by (auto simp: fset_of_list_elem fmember.rep_eq ps_states.rep_eq fset_of_list.rep_eq)
+  by (auto simp: fset_of_list_elem fmember_iff_member_fset ps_states.rep_eq fset_of_list.rep_eq)
 
 lemma ps_states_fset_impl_complete:
   "ps_states_fset_impl \<Delta> \<Delta>\<^sub>\<epsilon> \<noteq> None"
@@ -381,11 +381,11 @@ proof -
     then obtain f qs q where [simp]: "r = f qs \<rightarrow> q" by auto
     then have "(f, length qs) |\<in>| ta_sig \<A> |\<inter>| ta_sig \<B>" using ass by auto
     then have "r |\<in>| ?Rs" using ass unfolding map_val_of_list_tabulate_conv *
-      by (auto simp: Let_def fset_of_list_elem image_iff case_prod_beta lookup_tabulate simp flip: fmember.rep_eq intro!: bexI[of _ "(f, length qs)"])
+      by (auto simp: Let_def fset_of_list_elem image_iff case_prod_beta lookup_tabulate simp flip: fmember_iff_member_fset intro!: bexI[of _ "(f, length qs)"])
          (metis (no_types, lifting) length_map ta_rule.sel(1 - 3) zip_map_fst_snd)}
     moreover
     {fix r assume ass: "r |\<in>| ?Rs" then have "r |\<in>| ?Ls" unfolding map_val_of_list_tabulate_conv *
-        by (auto simp: fset_of_list_elem finite_Collect_prod_ta_rules lookup_tabulate simp flip: fmember.rep_eq)
+        by (auto simp: fset_of_list_elem finite_Collect_prod_ta_rules lookup_tabulate simp flip: fmember_iff_member_fset)
            (metis ta_rule.collapse)}
   ultimately show ?thesis by blast
 qed

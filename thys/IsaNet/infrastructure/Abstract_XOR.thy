@@ -16,7 +16,7 @@ theory "Abstract_XOR"
   imports
     "HOL.Finite_Set" "HOL-Library.FSet" "Message"
 (*the latter half of this theory uses msgterm. If split it off, we have to add
-  declare fmember.rep_eq[simp]
+  declare fmember_iff_member_fset[simp]
 in order to show the first half*)
 begin
 

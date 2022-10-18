@@ -267,7 +267,7 @@ proof -
     then
     have "h \<turnstile> get_parent root_ptr' \<rightarrow>\<^sub>r None"
       using disc_nodes
-      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember.rep_eq local.get_parent_child_dual
+      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember_iff_member_fset local.get_parent_child_dual
           local.get_parent_ok local.get_parent_parent_in_heap local.heap_is_wellformed_disc_nodes_in_heap
           returns_result_select_result root_ptr' select_result_I2 split_option_ex)
     then have "h \<turnstile> get_root_node ptr' \<rightarrow>\<^sub>r cast root_ptr'"
@@ -337,7 +337,7 @@ proof -
     then
     have "h \<turnstile> get_parent root_ptr' \<rightarrow>\<^sub>r None"
       using disc_nodes
-      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember.rep_eq
+      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember_iff_member_fset
           local.get_parent_child_dual local.get_parent_ok local.get_parent_parent_in_heap
           local.heap_is_wellformed_disc_nodes_in_heap returns_result_select_result root_ptr'
           select_result_I2 split_option_ex)
@@ -2012,7 +2012,7 @@ proof -
                   using 2 a1 old_document_in_heap document_ptr_kinds_eq2_h2 document_ptr_kinds_eq2_h3
                     \<open>old_document \<noteq> x\<close>
                   by (metis (no_types, lifting) a0 distinct_concat_map_E(1) document_ptr_kinds_eq3_h2
-                      document_ptr_kinds_eq3_h3 finite_fset fmember.rep_eq set_sorted_list_of_set)
+                      document_ptr_kinds_eq3_h3 finite_fset fmember_iff_member_fset set_sorted_list_of_set)
                 ultimately show ?thesis
                   using 5 select_result_I2[OF disc_nodes_document_ptr_h']
                     select_result_I2[OF disc_nodes_old_document_h2] \<open>old_document \<noteq> x\<close>
@@ -2098,7 +2098,7 @@ proof -
           using a6 a3 by simp
         have "x \<notin> set |h2 \<turnstile> get_disconnected_nodes xb|\<^sub>r"
           using a12 a8 a4 \<open>xb |\<in>| document_ptr_kinds h'\<close>
-          by (meson UN_I disjoint_iff_not_equal fmember.rep_eq)
+          by (meson UN_I disjoint_iff_not_equal fmember_iff_member_fset)
         then have "x = child"
           using f13 a11 a10 a7 a5 a2 a1
           by (metis (no_types, lifting) select_result_I2 set_ConsD)

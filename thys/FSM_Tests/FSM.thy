@@ -5120,12 +5120,12 @@ lemma ftransitions_set: "fset (ftransitions M) = transitions M"
 lemma ftransitions_source:
   "q |\<in>| (t_source |`| ftransitions M) \<Longrightarrow> q \<in> states M" 
   using ftransitions_set[of M] fsm_transition_source[of _ M]
-  by (metis (no_types, lifting) fimageE fmember.rep_eq)
+  by (metis (no_types, lifting) fimageE fmember_iff_member_fset)
 
 lemma ftransitions_target:
   "q |\<in>| (t_target |`| ftransitions M) \<Longrightarrow> q \<in> states M" 
   using ftransitions_set[of M] fsm_transition_target[of _ M]
-  by (metis (no_types, lifting) fimageE fmember.rep_eq)
+  by (metis (no_types, lifting) fimageE fmember_iff_member_fset)
 
 
 subsection \<open>Responses to Input Sequences\<close>

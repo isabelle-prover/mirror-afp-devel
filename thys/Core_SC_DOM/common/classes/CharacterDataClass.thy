@@ -164,7 +164,7 @@ lemma get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>
           \<longleftrightarrow> get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a character_data_ptr h \<noteq> None"
   using l_type_wf\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_axioms assms
   apply(simp add: type_wf_defs get\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def l_type_wf\<^sub>C\<^sub>h\<^sub>a\<^sub>r\<^sub>a\<^sub>c\<^sub>t\<^sub>e\<^sub>r\<^sub>D\<^sub>a\<^sub>t\<^sub>a_def)
-  by (metis assms bind.bind_lzero character_data_ptr_kinds_commutes fmember.rep_eq
+  by (metis assms bind.bind_lzero character_data_ptr_kinds_commutes fmember_iff_member_fset
       local.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf option.exhaust option.simps(3))
 end
 

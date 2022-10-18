@@ -371,10 +371,10 @@ subsection \<open>Code Setup\<close>
 
 lemma fmember_code_predI [code_pred_intro]:
   "x |\<in>| xs" if "Predicate_Compile.contains (fset xs) x"
-  using that by (simp add: Predicate_Compile.contains_def fmember.rep_eq)
+  using that by (simp add: Predicate_Compile.contains_def fmember_iff_member_fset)
 
 code_pred fmember
-  by (simp add: Predicate_Compile.contains_def fmember.rep_eq)
+  by (simp add: Predicate_Compile.contains_def fmember_iff_member_fset)
 
 code_pred unique_closest_attribute .
 

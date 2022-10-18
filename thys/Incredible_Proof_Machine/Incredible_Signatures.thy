@@ -42,7 +42,7 @@ begin
   end
   lemma hyps_for_subset: "hyps_for n p |\<subseteq>| outPorts n"
     using hyps_for'_subset
-    by (fastforce simp add: fmember.rep_eq hyps_for.rep_eq simp del: hyps_for_simp hyps_for_simp')
+    by (fastforce simp add: fmember_iff_member_fset hyps_for.rep_eq simp del: hyps_for_simp hyps_for_simp')
 end
 
 locale Labeled_Signature = 

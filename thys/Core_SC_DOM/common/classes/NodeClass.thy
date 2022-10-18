@@ -110,7 +110,7 @@ lemma get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf:
   shows "node_ptr |\<in>| node_ptr_kinds h \<longleftrightarrow> get\<^sub>N\<^sub>o\<^sub>d\<^sub>e node_ptr h \<noteq> None"
   using l_type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e_axioms assms
   apply(simp add: type_wf_defs get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def l_type_wf\<^sub>N\<^sub>o\<^sub>d\<^sub>e_def)
-  by (metis bind_eq_None_conv ffmember_filter fimage_eqI fmember.rep_eq is_node_ptr_kind_cast 
+  by (metis bind_eq_None_conv ffmember_filter fimage_eqI fmember_iff_member_fset is_node_ptr_kind_cast 
             get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf node_ptr_casts_commute2 node_ptr_kinds_def option.sel option.simps(3))
 end
 

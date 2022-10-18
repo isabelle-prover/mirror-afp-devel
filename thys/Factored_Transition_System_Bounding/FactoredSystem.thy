@@ -3287,7 +3287,7 @@ proof (induction as arbitrary: s1 s2)
                 have "fmlookup (state_succ s1 a) v = fmlookup s1 v"
                   unfolding fmap_add_ltr_def
                   using fmlookup_add
-                  by (simp add: fmdom'_alt_def fmember.rep_eq)
+                  by (simp add: fmdom'_alt_def fmember_iff_member_fset)
                 ultimately have "fmlookup ?g v = fmlookup (action_needed_asses a' s1) v"
                   unfolding action_needed_asses_def action_needed_vars_def
                   using FDOM_state_succ_subset

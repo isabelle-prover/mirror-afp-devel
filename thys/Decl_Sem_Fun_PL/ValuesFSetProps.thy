@@ -18,9 +18,9 @@ proposition val_le_trans[trans]: fixes v2::val shows "\<lbrakk> v1 \<sqsubseteq>
 lemma fsubset[intro!]: "fset A \<subseteq> fset B \<Longrightarrow> A |\<subseteq>| B"
 proof (rule fsubsetI)
   fix x assume ab: "fset A \<subseteq> fset B" and xa: "x |\<in>| A"
-  from xa have "x \<in> fset A" using fmember.rep_eq[of x A] by simp
+  from xa have "x \<in> fset A" using fmember_iff_member_fset[of x A] by simp
   from this ab have "x \<in> fset B" by blast
-  from this show "x |\<in>| B" using fmember.rep_eq[of x B] by simp
+  from this show "x |\<in>| B" using fmember_iff_member_fset[of x B] by simp
 qed
     
 proposition val_le_antisymm: fixes v1::val shows "\<lbrakk> v1 \<sqsubseteq> v2; v2 \<sqsubseteq> v1 \<rbrakk> \<Longrightarrow> v1 = v2"

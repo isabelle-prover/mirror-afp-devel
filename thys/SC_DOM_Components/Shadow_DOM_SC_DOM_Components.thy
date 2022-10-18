@@ -180,7 +180,7 @@ proof -
     then
     have "h \<turnstile> get_parent root_ptr' \<rightarrow>\<^sub>r None"
       using disc_nodes
-      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember.rep_eq local.get_parent_child_dual
+      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember_iff_member_fset local.get_parent_child_dual
           local.get_parent_ok local.get_parent_parent_in_heap local.heap_is_wellformed_disc_nodes_in_heap
           returns_result_select_result root_ptr' select_result_I2 split_option_ex)
     then have "h \<turnstile> get_root_node ptr' \<rightarrow>\<^sub>r cast root_ptr'"
@@ -249,7 +249,7 @@ proof -
     then
     have "h \<turnstile> get_parent root_ptr' \<rightarrow>\<^sub>r None"
       using disc_nodes
-      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember.rep_eq local.get_parent_child_dual
+      by (metis (no_types, lifting) assms(1) assms(2) assms(3) fmember_iff_member_fset local.get_parent_child_dual
           local.get_parent_ok local.get_parent_parent_in_heap local.heap_is_wellformed_disc_nodes_in_heap
           returns_result_select_result root_ptr' select_result_I2 split_option_ex)
     then have "h \<turnstile> get_root_node ptr' \<rightarrow>\<^sub>r cast root_ptr'"

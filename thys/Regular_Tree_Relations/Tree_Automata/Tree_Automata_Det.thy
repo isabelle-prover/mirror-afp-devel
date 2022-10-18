@@ -25,12 +25,12 @@ lemma ps_reachable_statespE:
 
 lemma ps_reachable_statesp_\<Q>:
   "ps_reachable_statesp \<A> f ps q \<Longrightarrow> q |\<in>| \<Q> \<A>"
-  by (auto simp: ps_reachable_statesp_def simp flip: fmember.rep_eq dest: rule_statesD eps_trancl_statesD)
+  by (auto simp: ps_reachable_statesp_def simp flip: fmember_iff_member_fset dest: rule_statesD eps_trancl_statesD)
 
 lemma finite_Collect_ps_statep [simp]:
   "finite (Collect (ps_reachable_statesp \<A> f ps))" (is "finite ?S")
   by (intro finite_subset[of ?S "fset (\<Q> \<A>)"])
-     (auto simp: ps_reachable_statesp_\<Q> simp flip: fmember.rep_eq)
+     (auto simp: ps_reachable_statesp_\<Q> simp flip: fmember_iff_member_fset)
 lemmas finite_Collect_ps_statep_unfolded [simp] = finite_Collect_ps_statep[unfolded ps_reachable_statesp_def, simplified]
 
 definition "ps_reachable_states \<A> f ps \<equiv> fCollect (ps_reachable_statesp \<A> f ps)"
@@ -77,7 +77,7 @@ lemma ps_states_Pow:
   "ps_states_set \<A> \<subseteq> fset (Wrapp |`| fPow (\<Q> \<A>))"
 proof -
   {fix q assume "q \<in> ps_states_set \<A>" then have "q \<in> fset (Wrapp |`| fPow (\<Q> \<A>))"
-      by induct (auto simp: ps_reachable_statesp_\<Q> ps_reachable_states_def image_iff simp flip: fmember.rep_eq)}
+      by induct (auto simp: ps_reachable_statesp_\<Q> ps_reachable_states_def image_iff simp flip: fmember_iff_member_fset)}
   then show ?thesis by blast
 qed
 
@@ -135,13 +135,13 @@ proof -
       unfolding ps_rulesp_def ps_reachable_states_simp
       using list_all2_lengthD by fastforce 
     from this have sym: "(f, length qs) \<in> ?sig"
-      by (auto simp flip: fmember.rep_eq)
+      by (auto simp flip: fmember_iff_member_fset)
     moreover from * have "set ps \<subseteq> ?Q" unfolding ps_rulesp_def
-      by (auto simp flip: fset_of_list_elem fmember.rep_eq simp: ps_reachable_statesp_def)
+      by (auto simp flip: fset_of_list_elem fmember_iff_member_fset simp: ps_reachable_statesp_def)
     ultimately have ps: "ps \<in> args"
       by (auto simp only: args_def UN_iff intro!: bexI[of _ "(f, length qs)"] len)  
     from * have "p \<in> ?Q" unfolding ps_rulesp_def ps_reachable_states_def
-      using fmember.rep_eq ps_reachable_statesp_\<Q>
+      using fmember_iff_member_fset ps_reachable_statesp_\<Q>
       by (fastforce simp add: image_iff)
     with ps sym show "r \<in> bound"
       by (auto simp only: r bound_def UN_iff intro!: bexI[of _ "(f, length qs)"] bexI[of _ "p"] bexI[of _ "ps"])

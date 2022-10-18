@@ -311,7 +311,7 @@ lemma size_ffilter: "size (ffilter P f) \<le> size f"
    apply simp
   apply (simp only: ffilter_finsert)
   apply (case_tac "P x")
-   apply (simp add: fmember.rep_eq)
+   apply (simp add: fmember_iff_member_fset)
   by (simp add: card_insert_if)
 
 lemma fimage_size_le: "\<And>f s. size s \<le> n \<Longrightarrow> size (fimage f s) \<le> n"

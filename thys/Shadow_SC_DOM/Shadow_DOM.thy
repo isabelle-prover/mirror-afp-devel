@@ -4968,14 +4968,14 @@ h' \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt"
        apply(case_tac "x = cast shadow_root_ptr")
     using \<open>cast shadow_root_ptr |\<notin>| object_ptr_kinds h'\<close> apply simp
     using children_eq_h2 concat_map_all_distinct[of "(\<lambda>ptr. |h2 \<turnstile> get_child_nodes ptr|\<^sub>r)"]
-       apply (metis (no_types, lifting) children_eq2_h2 finite_fset fmember.rep_eq fset_mp
+       apply (metis (no_types, lifting) children_eq2_h2 finite_fset fmember_iff_member_fset fset_mp
         object_ptr_kinds_eq_h2 set_sorted_list_of_set)
       apply(case_tac "x = cast shadow_root_ptr")
     using \<open>cast shadow_root_ptr |\<notin>| object_ptr_kinds h'\<close> apply simp
       apply(case_tac "y = cast shadow_root_ptr")
     using \<open>cast shadow_root_ptr |\<notin>| object_ptr_kinds h'\<close> apply simp
     using children_eq_h2 distinct_concat_map_E(1)[of "(\<lambda>ptr. |h2 \<turnstile> get_child_nodes ptr|\<^sub>r)"]
-      apply (smt IntI children_eq2_h2 empty_iff finite_fset fmember.rep_eq fset_mp
+      apply (smt IntI children_eq2_h2 empty_iff finite_fset fmember_iff_member_fset fset_mp
         object_ptr_kinds_eq_h2 set_sorted_list_of_set)
 
      apply(auto simp add:  intro!: distinct_concat_map_I)[1]
@@ -5004,7 +5004,7 @@ h' \<turnstile> get_shadow_root ptr' \<rightarrow>\<^sub>r shadow_root_opt"
     then show False
       using a7 a6 a5 a4 a3 a2 a1 by (metis (no_types) IntI
           distinct_concat_map_E(1)[of "(\<lambda>ptr. |h2 \<turnstile> get_disconnected_nodes ptr|\<^sub>r)"] disconnected_nodes_eq2_h2
-          empty_iff finite_fset finsert.rep_eq fmember.rep_eq insert_iff set_sorted_list_of_set
+          empty_iff finite_fset finsert.rep_eq fmember_iff_member_fset insert_iff set_sorted_list_of_set
           sorted_list_of_set_insert_remove)
   next
     fix x xa xb
@@ -8552,7 +8552,7 @@ h3 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes 
                   using 2 a1 old_document_in_heap document_ptr_kinds_eq2_h2 document_ptr_kinds_eq2_h3
                     \<open>old_document \<noteq> x\<close>
                   by (metis (no_types, lifting) a0 distinct_concat_map_E(1) document_ptr_kinds_eq3_h2
-                      document_ptr_kinds_eq3_h3 finite_fset fmember.rep_eq set_sorted_list_of_set)
+                      document_ptr_kinds_eq3_h3 finite_fset fmember_iff_member_fset set_sorted_list_of_set)
                 ultimately show ?thesis
                   using 5 select_result_I2[OF disc_nodes_document_ptr_h']
                     select_result_I2[OF disc_nodes_old_document_h2] \<open>old_document \<noteq> x\<close>
@@ -8638,7 +8638,7 @@ h3 \<turnstile> get_disconnected_nodes doc_ptr \<rightarrow>\<^sub>r disc_nodes 
           using a6 a3 by simp
         have "x \<notin> set |h2 \<turnstile> get_disconnected_nodes xb|\<^sub>r"
           using a12 a8 a4 \<open>xb |\<in>| document_ptr_kinds h'\<close>
-          by (meson UN_I disjoint_iff_not_equal fmember.rep_eq)
+          by (meson UN_I disjoint_iff_not_equal fmember_iff_member_fset)
         then have "x = child"
           using f13 a11 a10 a7 a5 a2 a1
           by (metis (no_types, lifting) select_result_I2 set_ConsD)
@@ -9830,7 +9830,7 @@ local.a_ptr_disconnected_node_rel h3)\<^sup>*\<close> in_rtrancl_UnI mem_Collect
     show "distinct |h3 \<turnstile> get_disconnected_nodes x|\<^sub>r"
       using distinct_concat_map_E(2)[OF 2] select_result_I2[OF disconnected_nodes_h3]
         disconnected_nodes_eq2_h2 select_result_I2[OF disconnected_nodes_h2] 1
-      by (metis (full_types) distinct_remove1 finite_fset fmember.rep_eq set_sorted_list_of_set)
+      by (metis (full_types) distinct_remove1 finite_fset fmember_iff_member_fset set_sorted_list_of_set)
   next
     fix x y xa
     assume 1: "distinct (concat (map (\<lambda>document_ptr. |h2 \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)
@@ -9865,7 +9865,7 @@ local.a_ptr_disconnected_node_rel h3)\<^sup>*\<close> in_rtrancl_UnI mem_Collect
         then show ?thesis
           using distinct_concat_map_E(1)[OF 1, simplified, OF 2 3 4] 5 6
           using disconnected_nodes_eq2_h2 disconnected_nodes_h2 disconnected_nodes_h3
-            disjoint_iff_not_equal finite_fset fmember.rep_eq notin_set_remove1 select_result_I2
+            disjoint_iff_not_equal finite_fset fmember_iff_member_fset notin_set_remove1 select_result_I2
             set_sorted_list_of_set
           by (metis (no_types, lifting))
       qed

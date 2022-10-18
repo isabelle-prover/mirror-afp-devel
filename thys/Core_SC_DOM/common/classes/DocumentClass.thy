@@ -136,7 +136,7 @@ lemma get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_type_w
   shows "document_ptr |\<in>| document_ptr_kinds h \<longleftrightarrow> get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t document_ptr h \<noteq> None"
   using l_type_wf\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_axioms assms
   apply(simp add: type_wf_defs get\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf\<^sub>D\<^sub>o\<^sub>c\<^sub>u\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def)
-  by (metis document_ptr_kinds_commutes fmember.rep_eq is_none_bind is_none_simps(1)
+  by (metis document_ptr_kinds_commutes fmember_iff_member_fset is_none_bind is_none_simps(1)
       is_none_simps(2) local.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf)
 end
 

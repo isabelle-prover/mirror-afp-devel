@@ -522,7 +522,7 @@ proof -
   then show ?thesis
     using assms
     apply(auto simp add: is_strongly_dom_component_safe_def Let_def preserved_def)[1]
-    by (smt (verit) IntI fmember.rep_eq get_child_nodes_is_strongly_dom_component_safe
+    by (smt (verit) IntI fmember_iff_member_fset get_child_nodes_is_strongly_dom_component_safe
         is_OK_returns_result_I local.get_child_nodes_ptr_in_heap local.get_dom_component_impl
         local.get_dom_component_ok local.get_dom_component_ptr returns_result_select_result)
 

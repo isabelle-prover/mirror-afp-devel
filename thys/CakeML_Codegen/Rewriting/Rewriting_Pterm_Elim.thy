@@ -1036,7 +1036,7 @@ lemma prelated_refl[intro!]: "t \<approx>\<^sub>p t"
 proof (induction t)
   case Pabs
   thus ?case
-    by (auto simp: snds.simps fmember.rep_eq intro!: prelated.pat rel_fset_refl_strong rel_prod.intros)
+    by (auto simp: snds.simps fmember_iff_member_fset intro!: prelated.pat rel_fset_refl_strong rel_prod.intros)
 qed (auto intro: prelated.intros)
 
 sublocale prelated: term_struct_rel prelated

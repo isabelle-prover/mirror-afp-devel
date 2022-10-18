@@ -228,7 +228,7 @@ qed
 
 lemma (in irules) transform_finished_id: "finished rs \<Longrightarrow> transform_irule_set rs = rs"
 unfolding transform_irule_set_def finished_def transform_irules_def map_prod_def id_apply
-by (rule fset_map_snd_id) (auto simp: fmember.rep_eq elim!: fBallE)
+by (rule fset_map_snd_id) (auto simp: fmember_iff_member_fset elim!: fBallE)
 
 lemma (in irules) max_arity_decr: "max_arity (transform_irule_set rs) = max_arity rs - 1"
 proof (cases "finished rs")
@@ -243,7 +243,7 @@ next
       fix name irs
       assume "(name, irs) \<in> fset rs"
       hence "(name, irs) |\<in>| rs"
-        by (simp add: fmember.rep_eq)
+        by (simp add: fmember_iff_member_fset)
       hence "arity_compatibles irs" "irs \<noteq> {||}"
         using nonempty inner by (blast dest: fpairwiseD)+
       thus "arity (transform_irules irs) = arity irs - 1"

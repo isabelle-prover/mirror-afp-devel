@@ -637,11 +637,11 @@ lemma check_sig_nempty:
 proof -
   {assume ?Ls then obtain a where "(a, 0) |\<in>| \<F>" by (auto simp: check_sig_nempty_def)
     then have "GFun a [] \<in> \<T>\<^sub>G (fset \<F>)"
-      by (intro const) (simp add: fmember.rep_eq)
+      by (intro const) (simp add: fmember_iff_member_fset)
     then have ?Rs by blast}
   moreover
   {assume ?Rs then obtain s where "s \<in> \<T>\<^sub>G (fset \<F>)" by blast
-    then obtain a where "(a, 0) |\<in>| \<F>" unfolding fmember.rep_eq
+    then obtain a where "(a, 0) |\<in>| \<F>" unfolding fmember_iff_member_fset
       by (induct s) (auto, force)
     then have ?Ls unfolding check_sig_nempty_def
       by (auto simp: fimage_iff fBex_def)}
@@ -651,7 +651,7 @@ qed
 lemma check_trss:
   "check_trss \<R> \<F> \<longleftrightarrow> (\<forall> R \<in> set \<R>. lv_trs (fset R) \<and> ffunas_trs R |\<subseteq>| \<F>)"
   unfolding check_trss_def list_all_iff
-  by (auto simp: fmember.rep_eq ffunas_trs.rep_eq less_eq_fset.rep_eq)
+  by (auto simp: fmember_iff_member_fset ffunas_trs.rep_eq less_eq_fset.rep_eq)
 
 fun check_inference_list :: "('f \<times> nat) fset \<Rightarrow> ('f ::  {compare,linorder}, 'v) fin_trs list
   \<Rightarrow> (nat \<times> ftrs inference \<times> ftrs formula \<times> info list) list

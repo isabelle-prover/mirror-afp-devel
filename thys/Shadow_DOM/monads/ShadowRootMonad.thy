@@ -698,7 +698,7 @@ lemma type_wf_drop: "type_wf h \<Longrightarrow> type_wf (Heap (fmdrop ptr (the_
   using type_wf_drop
    apply blast
   by (metis (no_types, lifting) DocumentClass.type_wf\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t ElementClass.get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_type_wf
-      ElementMonad.type_wf_drop fmember.rep_eq fmlookup_drop get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def
+      ElementMonad.type_wf_drop fmember_iff_member_fset fmlookup_drop get\<^sub>O\<^sub>b\<^sub>j\<^sub>e\<^sub>c\<^sub>t_def get\<^sub>S\<^sub>h\<^sub>a\<^sub>d\<^sub>o\<^sub>w\<^sub>R\<^sub>o\<^sub>o\<^sub>t_def
       object_ptr_kinds_code5 shadow_root_ptr_kinds_commutes)
 
 lemma delete_shadow_root_type_wf_preserved [simp]:

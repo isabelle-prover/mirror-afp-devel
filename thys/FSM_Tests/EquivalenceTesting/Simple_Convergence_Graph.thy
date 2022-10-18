@@ -1434,7 +1434,7 @@ next
       next
         case 2
         then have "\<beta> \<notin> list.set (sorted_list_of_fset x)"
-          using fmember.rep_eq by fastforce          
+          using fmember_iff_member_fset by fastforce          
         then have "(\<beta> \<in> list.set (simple_cg_lookup (G@[x]) \<alpha>)) = (\<beta> \<in> Set.insert \<alpha> (list.set (simple_cg_lookup G \<alpha>)))"
           unfolding simple_cg_lookup.simps
           unfolding sorted_list_of_set_set 

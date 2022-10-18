@@ -73,7 +73,7 @@ qed (auto split: if_splits intro: in_cfl.intros)
 
 lemma in_cfls_in_cfl: "in_cfls P w \<Longrightarrow> fBex P (\<lambda>\<alpha>. in_cfl \<alpha> w)"
   by (induct P w rule: in_cfls.induct)
-    (auto simp: \<oo>\<^sub>P_in_cfl \<dd>\<^sub>P_in_cfl ffUnion.rep_eq fmember.rep_eq fBex.rep_eq fBall.rep_eq
+    (auto simp: \<oo>\<^sub>P_in_cfl \<dd>\<^sub>P_in_cfl ffUnion.rep_eq fmember_iff_member_fset fBex.rep_eq fBall.rep_eq
       intro: in_cfl.intros elim: rev_bexI)
 
 lemma in_cfls_mono: "in_cfls P w \<Longrightarrow> P |\<subseteq>| Q \<Longrightarrow> in_cfls Q w"

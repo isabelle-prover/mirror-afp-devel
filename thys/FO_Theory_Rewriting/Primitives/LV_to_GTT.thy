@@ -256,7 +256,7 @@ proof
   let ?t_o_g = "term_of_gterm :: 'f gterm \<Rightarrow> ('f, 'v) Term.term"
   have [simp]: "\<F> |\<union>| |\<Union>| ((ffunas_term \<circ> fst) |`| R) = \<F>"
     "\<F> |\<union>| |\<Union>| ((ffunas_term \<circ> snd) |`| R) = \<F>" using assms(2)
-    by (force simp: less_eq_fset.rep_eq ffunas_trs.rep_eq funas_trs_def ffunas_term.rep_eq fmember.rep_eq ffUnion.rep_eq)+
+    by (force simp: less_eq_fset.rep_eq ffunas_trs.rep_eq funas_trs_def ffunas_term.rep_eq fmember_iff_member_fset ffUnion.rep_eq)+
   {fix s t assume "(s, t) \<in> ?Ls"
     from pair_at_langE[OF this] obtain p q where st: "(q, p) |\<in>| Rel\<^sub>f R"
       "q |\<in>| gta_der (fst (root_pair_automaton \<F> R)) s" "p |\<in>| gta_der (snd (root_pair_automaton \<F> R)) t"
@@ -269,24 +269,24 @@ proof
       using st(2, 3) tm(3) unfolding tm
       by (auto simp: gta_der_def root_pair_automaton_def) (smt bot_term_of_gterm_conv)+
     have "linear_term l" "linear_term r" using tm(3) assms(1)
-      by (auto simp: lv_trs_def fmember.rep_eq)
+      by (auto simp: lv_trs_def fmember_iff_member_fset)
     then obtain \<sigma> \<tau> where "l \<cdot> \<sigma> = ?t_o_g s" "r \<cdot> \<tau> = ?t_o_g t" using sm
       by (auto dest!: bless_eq_to_instance)
     then obtain \<mu> where subst: "l \<cdot> \<mu> = ?t_o_g s" "r \<cdot> \<mu> = ?t_o_g t"
-      using lv_trs_subst_unification[OF assms(1) tm(3)[unfolded fmember.rep_eq], of "?t_o_g s" \<sigma> "?t_o_g t" \<tau>]
+      using lv_trs_subst_unification[OF assms(1) tm(3)[unfolded fmember_iff_member_fset], of "?t_o_g s" \<sigma> "?t_o_g t" \<tau>]
       by metis
     moreover have "s \<in> \<T>\<^sub>G (fset \<F>)" "t \<in> \<T>\<^sub>G (fset \<F>)" using st(2-) assms
       using ta_der_gterm_sig[of q "pattern_automaton \<F> (fst |`| R)" s]
       using ta_der_gterm_sig[of p "pattern_automaton \<F> (snd |`| R)" t]
       by (auto simp: gta_der_def root_pair_automaton_def \<T>\<^sub>G_equivalent_def less_eq_fset.rep_eq ffunas_gterm.rep_eq)
     ultimately have "(s, t) \<in> ?Rs" using tm(3)
-      by (auto simp: grrstep_def rrstep_def' fmember.rep_eq) metis}
+      by (auto simp: grrstep_def rrstep_def' fmember_iff_member_fset) metis}
   then show "?Ls \<subseteq> ?Rs" by auto
 next
   let ?t_o_g = "term_of_gterm :: 'f gterm \<Rightarrow> ('f, 'v) Term.term"
   {fix s t assume "(s, t) \<in> ?Rs"
     then obtain \<sigma> l r where st: "(l, r) |\<in>| R" "l \<cdot> \<sigma> = ?t_o_g s" "r \<cdot> \<sigma> = ?t_o_g t" "s \<in> \<T>\<^sub>G (fset \<F>)" "t \<in> \<T>\<^sub>G (fset \<F>)"
-      by (auto simp: grrstep_def rrstep_def' fmember.rep_eq)
+      by (auto simp: grrstep_def rrstep_def' fmember_iff_member_fset)
     have funas: "ffunas_gterm s |\<subseteq>| \<F>" "ffunas_gterm t |\<subseteq>| \<F>" using st(4, 5)
       by (auto simp: \<T>\<^sub>G_equivalent_def)
          (metis ffunas_gterm.rep_eq notin_fset subsetD)+
@@ -314,7 +314,7 @@ lemma root_pair_automaton_grrstep_set:
   shows "pair_at_lang (root_pair_automaton (Abs_fset \<F>) (Abs_fset R)) (Rel\<^sub>f (Abs_fset R)) = Restr (grrstep R) (\<T>\<^sub>G \<F>)"
 proof -
   from assms(1, 2, 4) have "ffunas_trs (Abs_fset R) |\<subseteq>| Abs_fset \<F>"
-    by (auto simp add: Abs_fset_inverse ffunas_trs.rep_eq fmember.rep_eq subset_eq)
+    by (auto simp add: Abs_fset_inverse ffunas_trs.rep_eq fmember_iff_member_fset subset_eq)
   from root_pair_automaton_grrstep[OF _ this] assms
   show ?thesis
     by (auto simp: Abs_fset_inverse)

@@ -302,7 +302,7 @@ lemma fsubset_if: "\<forall>x. x |\<in>| f1 \<longrightarrow> x |\<in>| f2 \<Lon
 
 lemma in_possible_steps: "(((s, s'), t)|\<in>|e \<and> Label t = l \<and> can_take_transition t i r) = ((s', t) |\<in>| possible_steps e s r l i)"
   apply (simp add: fmember_possible_steps)
-  by (simp add: can_take_def can_take_transition_def fmember.rep_eq)
+  by (simp add: can_take_def can_take_transition_def fmember_iff_member_fset)
 
 lemma possible_steps_can_take_transition:
   "(s2, t1) |\<in>| possible_steps e1 s1 r l i \<Longrightarrow> can_take_transition t1 i r"

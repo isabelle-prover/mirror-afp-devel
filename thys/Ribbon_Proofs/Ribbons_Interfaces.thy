@@ -109,7 +109,7 @@ lemma iter_hcomp_cong:
   assumes "\<forall>v \<in> fset vs. \<phi> v = \<phi>' v"
   shows "(\<Otimes>v|\<in>|vs. \<phi> v) = (\<Otimes>v|\<in>|vs. \<phi>' v)"
 using assms unfolding iter_hcomp_def  
-by (auto simp add: fmember.rep_eq comp_fun_commute.comp_comp_fun_commute comp_fun_commute_hcomp 
+by (auto simp add: fmember_iff_member_fset comp_fun_commute.comp_comp_fun_commute comp_fun_commute_hcomp 
   intro: ffold_cong)
 
 lemma iter_hcomp_empty:

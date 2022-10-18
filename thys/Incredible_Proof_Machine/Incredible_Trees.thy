@@ -436,7 +436,7 @@ lemma all_local_consts_listed':
   assumes "p |\<in>| inPorts n"
   shows "lconsts (a_conc p) \<union> (\<Union>(lconsts ` fset (a_hyps p))) \<subseteq> a_fresh p "
   using assms
-  by (auto simp add: nodes_def stream.set_map lconsts_anyP closed_no_lconsts conclusions_closed fmember.rep_eq f_antecedent_def dest!: all_local_consts_listed)
+  by (auto simp add: nodes_def stream.set_map lconsts_anyP closed_no_lconsts conclusions_closed fmember_iff_member_fset f_antecedent_def dest!: all_local_consts_listed)
 
 lemma no_local_consts_in_consequences':
   "n \<in> sset nodes \<Longrightarrow> Reg p |\<in>| outPorts n \<Longrightarrow>  lconsts p = {}"
@@ -481,7 +481,7 @@ proof (induction t "\<Gamma> \<turnstile> c" arbitrary: "is" f \<Gamma> c rule: 
     from all_local_consts_listed'[OF \<open> n \<in> sset nodes\<close> \<open>(inPorts' n ! i') |\<in>| inPorts n\<close>]
     have subset_conc: "lconsts (a_conc (inPorts' n ! i')) \<subseteq> ?V"
       and subset_hyp': "\<And> hyp . hyp |\<in>| a_hyps (inPorts' n ! i') \<Longrightarrow> lconsts hyp \<subseteq> ?V"
-      by (auto simp add: fmember.rep_eq)
+      by (auto simp add: fmember_iff_member_fset)
       
     from List.list_all2_nthD[OF \<open>list_all2 _ _ _\<close> \<open>i' < length (inPorts' n)\<close>,simplified]
     have "plain_iwf ?t
@@ -634,7 +634,7 @@ proof(induction ent rule: prod.induct)
   also
   from Pair(2)
   have "renameLCs (freshenLC v_away) |`| \<Gamma> = \<Gamma>"
-    by (auto simp add: closed_no_lconsts rename_closed fmember.rep_eq image_iff)
+    by (auto simp add: closed_no_lconsts rename_closed fmember_iff_member_fset image_iff)
   finally show ?case.
 qed
 end   

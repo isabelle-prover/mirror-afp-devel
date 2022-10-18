@@ -364,7 +364,7 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_tag_name_typ
    apply (metis NodeClass.a_type_wf_def NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf ObjectClass.a_type_wf_def
       bind.bind_lzero finite_set_in get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf_def\<^sub>N\<^sub>o\<^sub>d\<^sub>e.a_type_wf_def option.collapse
       option.distinct(1) option.simps(3))
-  by (metis fmember.rep_eq)
+  by (metis fmember_iff_member_fset)
 
 lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_child_nodes_type_wf_preserved [simp]: 
   "h \<turnstile> put_M element_ptr child_nodes_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
@@ -382,7 +382,7 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_child_nodes_
    apply (metis NodeClass.a_type_wf_def NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf ObjectClass.a_type_wf_def
       bind.bind_lzero finite_set_in get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf_def\<^sub>N\<^sub>o\<^sub>d\<^sub>e.a_type_wf_def option.collapse
       option.distinct(1) option.simps(3))
-  by (metis fmember.rep_eq)
+  by (metis fmember_iff_member_fset)
 
 lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_attrs_type_wf_preserved [simp]: 
   "h \<turnstile> put_M element_ptr attrs_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
@@ -400,7 +400,7 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_attrs_type_w
    apply (metis NodeClass.a_type_wf_def NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf ObjectClass.a_type_wf_def
       bind.bind_lzero finite_set_in get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf_def\<^sub>N\<^sub>o\<^sub>d\<^sub>e.a_type_wf_def option.collapse
       option.distinct(1) option.simps(3))
-  by (metis fmember.rep_eq)
+  by (metis fmember_iff_member_fset)
 
 lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_shadow_root_opt_type_wf_preserved [simp]:
   "h \<turnstile> put_M element_ptr shadow_root_opt_update v \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"
@@ -418,7 +418,7 @@ lemma put_M\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_shadow_root_
    apply (metis NodeClass.a_type_wf_def NodeClass.get\<^sub>N\<^sub>o\<^sub>d\<^sub>e_type_wf ObjectClass.a_type_wf_def
       bind.bind_lzero finite_set_in get\<^sub>E\<^sub>l\<^sub>e\<^sub>m\<^sub>e\<^sub>n\<^sub>t_def l_type_wf_def\<^sub>N\<^sub>o\<^sub>d\<^sub>e.a_type_wf_def option.collapse
       option.distinct(1) option.simps(3))
-  by (metis fmember.rep_eq)
+  by (metis fmember_iff_member_fset)
 
 lemma new_character_data_type_wf_preserved [simp]: 
   "h \<turnstile> new_character_data \<rightarrow>\<^sub>h h' \<Longrightarrow> type_wf h = type_wf h'"

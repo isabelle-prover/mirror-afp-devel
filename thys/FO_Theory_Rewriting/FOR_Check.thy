@@ -289,10 +289,10 @@ next
       by (auto simp: is_to_trs'_def)
     from is_to_trs'_props[OF assms this(1)] have inv: "ffunas_trs R |\<subseteq>| \<F>" "lv_trs (fset R)" .
     from inv have fl: "\<forall> l |\<in>| lhss R. linear_term l"
-      by (auto simp: lv_trs_def fmember.rep_eq split!: prod.splits)
+      by (auto simp: lv_trs_def fmember_iff_member_fset split!: prod.splits)
     {fix s t assume ass: "(s, t) \<in> grstep (fset R)"
       then obtain C l r \<sigma> where step: "(l, r) |\<in>| R" "term_of_gterm s = (C :: ('f, 'v) ctxt) \<langle>l \<cdot> \<sigma>\<rangle>" "term_of_gterm t = C\<langle>r \<cdot> \<sigma>\<rangle>"
-        unfolding grstep_def by (auto simp: fmember.rep_eq dest!: rstep_imp_C_s_r)
+        unfolding grstep_def by (auto simp: fmember_iff_member_fset dest!: rstep_imp_C_s_r)
       from step ta_nf_lang_sound[of l "lhss R" C \<sigma> \<F>]
       have "s \<notin> \<L> (nf_reg (lhss R) \<F>)" unfolding \<L>_def
         by (metis fimage_eqI fst_conv nf_reg_def reg.sel(1, 2) term_of_gterm_in_ta_lang_conv)}
@@ -305,7 +305,7 @@ next
     moreover
     {fix s assume ass: "s \<in> NF (Restr (grstep (fset R)) (\<T>\<^sub>G (fset \<F>))) \<inter> \<T>\<^sub>G (fset \<F>)"
       then have *: "(term_of_gterm s, term_of_gterm t) \<notin> rstep (fset R)" for t using funas
-        by (auto simp: funas_trs_def grstep_def NF_iff_no_step \<T>\<^sub>G_funas_gterm_conv fmember.rep_eq)
+        by (auto simp: funas_trs_def grstep_def NF_iff_no_step \<T>\<^sub>G_funas_gterm_conv fmember_iff_member_fset)
            (meson R1NF_reps funas rstep.cases)
       then have "s \<in> \<L> (nf_reg (lhss R) \<F>)" using fl ass
         using ta_nf_\<L>_complete[OF fl, of _ \<F>] gta_lang_nf_ta_funas[of _ "lhss R" \<F>]

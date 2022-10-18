@@ -92,7 +92,7 @@ inductive_set \<Delta>_Atrans_set :: "('q \<times> 'q) fset \<Rightarrow> ('q, '
 
 lemma \<Delta>_Atrans_set_states:
   "(p, q) \<in> \<Delta>_Atrans_set Q \<A> \<B> \<Longrightarrow> (p, q) \<in> fset ((fst |`| Q |\<union>| \<Q> \<A>) |\<times>| (snd |`| Q |\<union>| \<Q> \<B>))"
-  by (induct rule: \<Delta>_Atrans_set.induct) (auto simp: fimage_iff fBex_def simp flip: fmember.rep_eq)
+  by (induct rule: \<Delta>_Atrans_set.induct) (auto simp: fimage_iff fBex_def simp flip: fmember_iff_member_fset)
 
 lemma finite_\<Delta>_Atrans_set: "finite (\<Delta>_Atrans_set Q \<A> \<B>)"
 proof -
@@ -332,7 +332,7 @@ lemma Q_pow_fmember:
   "(X, Y) |\<in>| Q_pow Q \<S>\<^sub>1 \<S>\<^sub>2 \<longleftrightarrow> (\<exists> p q. ex X |\<in>| fPow \<S>\<^sub>1 \<and> ex Y |\<in>| fPow \<S>\<^sub>2 \<and> p |\<in>| ex X \<and> q |\<in>| ex Y \<and> (p, q) |\<in>| Q)"
 proof -
   let ?S = "{(Wrapp X, Wrapp Y) | X Y p q. X |\<in>| fPow \<S>\<^sub>1 \<and> Y |\<in>| fPow \<S>\<^sub>2 \<and> p |\<in>| X \<and> q |\<in>| Y \<and> (p, q) |\<in>| Q}" 
-  have "?S \<subseteq> map_prod Wrapp Wrapp ` fset (fPow \<S>\<^sub>1 |\<times>| fPow \<S>\<^sub>2)" by (auto simp flip: fmember.rep_eq)
+  have "?S \<subseteq> map_prod Wrapp Wrapp ` fset (fPow \<S>\<^sub>1 |\<times>| fPow \<S>\<^sub>2)" by (auto simp flip: fmember_iff_member_fset)
   from finite_subset[OF this] show ?thesis unfolding Q_pow_def
     apply auto apply blast
     by (meson FSet_Lex_Wrapper.exhaust_sel)

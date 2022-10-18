@@ -14,7 +14,7 @@ inductive_set \<Delta>_trancl_set :: "('q, 'f) ta \<Rightarrow> ('q, 'f) ta \<Ri
 lemma \<Delta>_trancl_set_states: "\<Delta>_trancl_set \<A> \<B> \<subseteq> fset (\<Q> \<A> |\<times>| \<Q> \<B>)"
 proof -
   {fix p q assume "(p, q) \<in> \<Delta>_trancl_set \<A> \<B>" then have "(p, q) \<in> fset (\<Q> \<A> |\<times>| \<Q> \<B>)"
-      by (induct) (auto dest: rule_statesD eps_statesD simp flip: fmember.rep_eq)}
+      by (induct) (auto dest: rule_statesD eps_statesD simp flip: fmember_iff_member_fset)}
   then show ?thesis by auto
 qed
 
@@ -65,7 +65,7 @@ qed
 lemma gtt_states_GTT_trancl:
   "gtt_states (GTT_trancl G) |\<subseteq>| gtt_states G"
   unfolding GTT_trancl_def
-  by (auto simp: gtt_states_def \<Q>_def \<Delta>_trancl_inv dest!: fsubsetD[OF \<Delta>_trancl_states] simp flip: fmember.rep_eq)
+  by (auto simp: gtt_states_def \<Q>_def \<Delta>_trancl_inv dest!: fsubsetD[OF \<Delta>_trancl_states] simp flip: fmember_iff_member_fset)
 
 lemma gtt_syms_GTT_trancl:
   "gtt_syms (GTT_trancl G) = gtt_syms G"

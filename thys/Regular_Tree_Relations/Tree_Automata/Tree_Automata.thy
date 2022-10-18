@@ -326,7 +326,7 @@ lemma finite_Collect_ta_rule:
   "finite {TA_rule f qs q | f qs q. TA_rule f qs q |\<in>| rules \<A>}" (is "finite ?S")
 proof -
   have "{f qs \<rightarrow> q |f qs q. f qs \<rightarrow> q |\<in>| rules \<A>} \<subseteq> fset (rules \<A>)"
-    by (auto simp flip: fmember.rep_eq)
+    by (auto simp flip: fmember_iff_member_fset)
   from finite_subset[OF this] show ?thesis by simp
 qed
 
@@ -342,9 +342,9 @@ proof (induct rule: finite.induct)
   from finite_UnI[OF this insertI(2)] show ?case unfolding union .
 qed auto
 
-lemmas map_ta_rule_fset_finite [simp] = map_ta_rule_finite[of "fset \<Delta>" for \<Delta>, simplified, unfolded fmember.rep_eq[symmetric]]
-lemmas map_ta_rule_states_finite [simp] = map_ta_rule_finite[of "fset \<Delta>" id for \<Delta>, simplified, unfolded fmember.rep_eq[symmetric]]
-lemmas map_ta_rule_funsym_finite [simp] = map_ta_rule_finite[of "fset \<Delta>" _ id for \<Delta>, simplified, unfolded fmember.rep_eq[symmetric]]
+lemmas map_ta_rule_fset_finite [simp] = map_ta_rule_finite[of "fset \<Delta>" for \<Delta>, simplified, unfolded fmember_iff_member_fset[symmetric]]
+lemmas map_ta_rule_states_finite [simp] = map_ta_rule_finite[of "fset \<Delta>" id for \<Delta>, simplified, unfolded fmember_iff_member_fset[symmetric]]
+lemmas map_ta_rule_funsym_finite [simp] = map_ta_rule_finite[of "fset \<Delta>" _ id for \<Delta>, simplified, unfolded fmember_iff_member_fset[symmetric]]
 
 lemma map_ta_rule_comp:
   "map_ta_rule f g \<circ> map_ta_rule f' g' = map_ta_rule (f \<circ> f') (g \<circ> g')"
@@ -428,7 +428,7 @@ lemma finite_eps:
 
 lemma collect_snd_trancl_fset:
   "{p. (q, p) |\<in>| (eps \<A>)|\<^sup>+|} = fset (snd |`| (ffilter (\<lambda> x. fst x = q) ((eps \<A>)|\<^sup>+|)))"
-  by (auto simp: image_iff fmember.rep_eq) force
+  by (auto simp: image_iff fmember_iff_member_fset) force
 
 lemma ta_der_Var:
   "q |\<in>| ta_der \<A> (Var x) \<longleftrightarrow> x = q \<or> (x, q) |\<in>| (eps \<A>)|\<^sup>+|"
@@ -462,7 +462,7 @@ proof -
     by (intro finite_lists_length_eq) auto
   have "finite {ss. length ss = length ts \<and> (\<forall>i<length ts. ss ! i |\<in>| ta_der' \<A> (ts ! i))}"
     by (intro finite_subset[OF _ f])
-       (force simp: in_fset_conv_nth simp flip: fset_of_list_elem fmember.rep_eq)
+       (force simp: in_fset_conv_nth simp flip: fset_of_list_elem fmember_iff_member_fset)
   then show ?thesis unfolding ta_der'.simps
     by (intro iffI funionI2 fCollect_memberI)
        (auto simp del: ta_der_Fun ta_der_Var)
@@ -800,7 +800,7 @@ lemma gta_lang_term_of_gterm [simp]:
 lemma gta_lang_subset_rules_funas:
   "gta_lang Q \<A> \<subseteq> \<T>\<^sub>G (fset (ta_sig \<A>))"
   using ta_der_gterm_sig[THEN fsubsetD]
-  by (force simp: \<T>\<^sub>G_equivalent_def simp flip: fmember.rep_eq ffunas_gterm.rep_eq)
+  by (force simp: \<T>\<^sub>G_equivalent_def simp flip: fmember_iff_member_fset ffunas_gterm.rep_eq)
 
 lemma reg_funas:
   "\<L> \<A> \<subseteq> \<T>\<^sub>G (fset (ta_sig (ta \<A>)))" using gta_lang_subset_rules_funas
@@ -1309,7 +1309,7 @@ proof -
     moreover have "(f, length ps) \<in> funas_gterm (gterm_of_term C\<langle>Fun f ts\<rangle>)"
       using ts(1) by (auto simp: funas_gterm_gterm_of_term[OF gr])
     ultimately have "(r_root r, length (r_lhs_states r)) |\<in>| \<F>"
-      by (auto simp: fmember.rep_eq)}
+      by (auto simp: fmember_iff_member_fset)}
   then show ?thesis
     by (auto simp: ta_sig_def)
 qed
@@ -1425,13 +1425,13 @@ definition funs_ta :: "('q, 'f) ta \<Rightarrow> 'f fset" where
 
 lemma funs_ta[code]:
   "funs_ta \<A> = (\<lambda> r. case r of TA_rule f ps p \<Rightarrow> f) |`| (rules \<A>)" (is "?Ls = ?Rs")
-  by (force simp: funs_ta_def rev_fimage_eqI simp flip: fset.set_map fmember.rep_eq
+  by (force simp: funs_ta_def rev_fimage_eqI simp flip: fset.set_map fmember_iff_member_fset
      split!: ta_rule.splits intro!: finite_subset[of "{f. \<exists>qs q. TA_rule f qs q |\<in>| rules \<A>}" "fset ?Rs"])
 
 lemma finite_funs_ta [simp]:
   "finite {f. \<exists>qs q. TA_rule f qs q |\<in>| rules \<A>}"
   by (intro finite_subset[of "{f. \<exists>qs q. TA_rule f qs q |\<in>| rules \<A>}" "fset (funs_ta \<A>)"])
-     (auto simp: funs_ta rev_fimage_eqI simp flip: fset.set_map fmember.rep_eq split!: ta_rule.splits)
+     (auto simp: funs_ta rev_fimage_eqI simp flip: fset.set_map fmember_iff_member_fset split!: ta_rule.splits)
 
 lemma funs_taE [elim]:
   assumes "f |\<in>| funs_ta \<A>"
@@ -1585,7 +1585,7 @@ lemma finite_Collect_prod_ta_rules:
   "finite {f qs \<rightarrow> (a, b) |f qs a b. f map fst qs \<rightarrow> a |\<in>| rules \<A> \<and> f map snd qs \<rightarrow> b |\<in>| rules \<BB>}" (is "finite ?set")
 proof -
   have "?set \<subseteq> (\<lambda> (ra, rb). case ra of f ps \<rightarrow> p \<Rightarrow> case rb of g qs \<rightarrow> q \<Rightarrow> f (zip ps qs) \<rightarrow> (p, q)) ` (srules \<A> \<times> srules \<BB>)"
-    by (auto simp: srules_def image_iff fmember.rep_eq split!: ta_rule.splits)
+    by (auto simp: srules_def image_iff fmember_iff_member_fset split!: ta_rule.splits)
        (metis ta_rule.inject zip_map_fst_snd)
   from finite_imageI[of "srules \<A> \<times> srules \<BB>", THEN finite_subset[OF this]]
   show ?thesis by (auto simp: srules_def)
@@ -1599,12 +1599,12 @@ lemmas prod_eps_def = prod_epsLp_def prod_epsRp_def
 lemma finite_prod_epsLp:
   "finite (Collect (prod_epsLp \<A> \<B>))"
   by (intro finite_subset[of "Collect (prod_epsLp \<A> \<B>)" "fset ((\<Q> \<A> |\<times>| \<Q> \<B>) |\<times>| \<Q> \<A> |\<times>| \<Q> \<B>)"])
-     (auto simp: prod_epsLp_def simp flip: fmember.rep_eq dest: eps_statesD)
+     (auto simp: prod_epsLp_def simp flip: fmember_iff_member_fset dest: eps_statesD)
 
 lemma finite_prod_epsRp:
   "finite (Collect (prod_epsRp \<A> \<B>))"
   by (intro finite_subset[of "Collect (prod_epsRp \<A> \<B>)" "fset ((\<Q> \<A> |\<times>| \<Q> \<B>) |\<times>| \<Q> \<A> |\<times>| \<Q> \<B>)"])
-     (auto simp: prod_epsRp_def simp flip: fmember.rep_eq dest: eps_statesD)
+     (auto simp: prod_epsRp_def simp flip: fmember_iff_member_fset dest: eps_statesD)
 lemmas finite_prod_eps [simp] = finite_prod_epsLp[unfolded prod_epsLp_def] finite_prod_epsRp[unfolded prod_epsRp_def]
 
 lemma [simp]: "f qs \<rightarrow> q |\<in>| rules (prod_ta \<A> \<B>) \<longleftrightarrow> f qs \<rightarrow> q |\<in>| prod_ta_rules \<A> \<B>"
@@ -1863,7 +1863,7 @@ proof -
   show ?thesis using rule_statesD eps_trancl_statesD
     by (intro finite_subset[of "Collect (eps_free_rulep \<A>)" "fset ?st"])
        (auto simp: eps_free_rulep_def fimage_iff
-             simp flip: fset.set_map fmember.rep_eq
+             simp flip: fset.set_map fmember_iff_member_fset
              split!: ta_rule.splits, fastforce+)
 qed
 

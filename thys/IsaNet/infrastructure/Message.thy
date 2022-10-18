@@ -169,10 +169,10 @@ lemma FS_parts:
     FS l \<in> parts H;
     \<lbrakk> fset l \<subseteq> parts H \<rbrakk> \<Longrightarrow> P
    \<rbrakk> \<Longrightarrow> P"
-  by (simp add: fmember.rep_eq parts.FSt subsetI)
-thm fmember.rep_eq parts.FSt subsetI
+  by (simp add: fmember_iff_member_fset parts.FSt subsetI)
+thm fmember_iff_member_fset parts.FSt subsetI
 
-declare fmember.rep_eq[simp]
+declare fmember_iff_member_fset[simp]
 declare MPair_parts [elim!] L_parts [elim!] FS_parts [elim] parts.Body [dest!]
 
 text \<open>NB These two rules are UNSAFE in the formal sense, as they discard the
@@ -457,9 +457,9 @@ lemma FS_analz [elim!]:
     FS l \<in> analz H;
     \<lbrakk> fset l \<subseteq> analz H \<rbrakk> \<Longrightarrow> P
    \<rbrakk> \<Longrightarrow> P"
-  by (simp add: fmember.rep_eq analz.FSt subsetI)
+  by (simp add: fmember_iff_member_fset analz.FSt subsetI)
 
-thm fmember.rep_eq parts.FSt subsetI
+thm fmember_iff_member_fset parts.FSt subsetI
 lemma analz_increasing: "H \<subseteq> analz(H)"
 by blast
 

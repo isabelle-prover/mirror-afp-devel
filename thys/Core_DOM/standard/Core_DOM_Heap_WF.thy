@@ -239,7 +239,7 @@ proof -
   have f6: "parent_ptr \<in> fset (object_ptr_kinds h)"
     using a1 by auto
   have f7: "document_ptr \<in> fset (document_ptr_kinds h)"
-    using a3 by (meson fmember.rep_eq get_disconnected_nodes_ptr_in_heap is_OK_returns_result_I)
+    using a3 by (meson fmember_iff_member_fset get_disconnected_nodes_ptr_in_heap is_OK_returns_result_I)
   have "|h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r = disc_nodes"
     using a3 by simp
   then show False
@@ -312,7 +312,7 @@ proof (auto simp add: heap_is_wellformed_def a_distinct_lists_def)[1]
           \<or> set children \<inter> set children' = {}"
     using f5 a4 a1 by (meson distinct_concat_map_E(1))
   then show False
-    using a3 a2 by (metis (no_types) assms(4) finite_fset fmember.rep_eq is_OK_returns_result_I
+    using a3 a2 by (metis (no_types) assms(4) finite_fset fmember_iff_member_fset is_OK_returns_result_I
         local.get_child_nodes_ptr_in_heap set_sorted_list_of_set)
 qed
 
@@ -384,7 +384,7 @@ lemma heap_is_wellformed_children_disc_nodes:
    \<Longrightarrow>  \<not>(\<exists>parent \<in> fset (object_ptr_kinds h). node_ptr \<in> set |h \<turnstile> get_child_nodes parent|\<^sub>r)
    \<Longrightarrow> (\<exists>document_ptr \<in> fset (document_ptr_kinds h). node_ptr \<in> set |h \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)"
   apply(auto simp add: heap_is_wellformed_def a_distinct_lists_def a_owner_document_valid_def)[1]
-  by (meson fmember.rep_eq)
+  by (meson fmember_iff_member_fset)
 lemma heap_is_wellformed_children_distinct:
   "heap_is_wellformed h \<Longrightarrow> h \<turnstile> get_child_nodes ptr \<rightarrow>\<^sub>r children \<Longrightarrow> distinct children"
   by (metis (no_types, lifting) ObjectMonad.ptr_kinds_ptr_kinds_M concat_append distinct_append
@@ -4889,7 +4889,7 @@ proof -
                   using 2 a1 old_document_in_heap document_ptr_kinds_eq2_h2 document_ptr_kinds_eq2_h3
                     \<open>old_document \<noteq> x\<close>
                   by (metis (no_types, lifting) a0 distinct_concat_map_E(1) document_ptr_kinds_eq3_h2
-                      document_ptr_kinds_eq3_h3 finite_fset fmember.rep_eq set_sorted_list_of_set)
+                      document_ptr_kinds_eq3_h3 finite_fset fmember_iff_member_fset set_sorted_list_of_set)
                 ultimately show ?thesis
                   using 5 select_result_I2[OF disc_nodes_document_ptr_h']
                     select_result_I2[OF disc_nodes_old_document_h2] \<open>old_document \<noteq> x\<close>
@@ -4975,7 +4975,7 @@ proof -
           using a6 a3 by simp
         have "x \<notin> set |h2 \<turnstile> get_disconnected_nodes xb|\<^sub>r"
           using a12 a8 a4 \<open>xb |\<in>| document_ptr_kinds h'\<close>
-          by (meson UN_I disjoint_iff_not_equal fmember.rep_eq)
+          by (meson UN_I disjoint_iff_not_equal fmember_iff_member_fset)
         then have "x = child"
           using f13 a11 a10 a7 a5 a2 a1
           by (metis (no_types, lifting) select_result_I2 set_ConsD)
@@ -5728,7 +5728,7 @@ proof -
     show "distinct |h3 \<turnstile> get_disconnected_nodes x|\<^sub>r"
       using distinct_concat_map_E(2)[OF 2] select_result_I2[OF disconnected_nodes_h3]
         disconnected_nodes_eq2_h2 select_result_I2[OF disconnected_nodes_h2] 1
-      by (metis (full_types) distinct_remove1 finite_fset fmember.rep_eq set_sorted_list_of_set)
+      by (metis (full_types) distinct_remove1 finite_fset fmember_iff_member_fset set_sorted_list_of_set)
   next
     fix x y xa
     assume 1: "distinct (concat (map (\<lambda>document_ptr. |h2 \<turnstile> get_disconnected_nodes document_ptr|\<^sub>r)
@@ -5763,7 +5763,7 @@ proof -
         then show ?thesis
           using distinct_concat_map_E(1)[OF 1, simplified, OF 2 3 4] 5 6
           using disconnected_nodes_eq2_h2 disconnected_nodes_h2 disconnected_nodes_h3
-            disjoint_iff_not_equal finite_fset fmember.rep_eq notin_set_remove1 select_result_I2
+            disjoint_iff_not_equal finite_fset fmember_iff_member_fset notin_set_remove1 select_result_I2
             set_sorted_list_of_set
           by (metis (no_types, lifting))
       qed

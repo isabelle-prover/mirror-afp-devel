@@ -50,7 +50,7 @@ next
       by (cases "rec a ys") auto
   qed (auto intro: refl)
   show ?case using propagate[of x "{}" "fset bs", unfolded infer1 Un_empty_left] 3(2)
-    by (auto simp: delete fmember.rep_eq split: if_splits intro: trans delete)
+    by (auto simp: delete fmember_iff_member_fset split: if_splits intro: trans delete)
 qed auto
 
 lemma saturate_impl_sound:
