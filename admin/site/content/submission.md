@@ -27,7 +27,7 @@ It is possible and encouraged to build on other archive entries in your submissi
 
 ## Submission Form
 
-Please send your submission [via this web page](https://ci.isabelle.systems/afp-submission/).
+{{< submission >}}
 
 Your submission will be refereed and you will receive notification as soon as possible. If accepted, you must agree to maintain your archive entry or nominate someone else to maintain it. The Isabelle development team will assist with maintenance, but it does not have the resources to fully maintain the complete archive.
 

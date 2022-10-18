@@ -43,4 +43,17 @@ object Utils {
     } catch {
       case _: IOException => error("Could not read from " + quote(url.toString))
     }
+
+  def remove_at[A](i: Int, l: List[A]): List[A] = l.take(i) ++ l.drop(i + 1)
+
+  def make_unique(prefix: String, elems: Set[String]): String = {
+    if (!elems.contains(prefix)) prefix
+    else {
+      var num = 1
+      while (elems.contains(prefix + num)) { num += 1 }
+      prefix + num
+    }
+  }
+
+  def is_distinct[A](it: List[A]): Boolean = it.size == it.distinct.size
 }

@@ -13,6 +13,7 @@ sources = \
   tools/afp_dependencies.scala \
   tools/afp_release.scala \
   tools/afp_site_gen.scala \
+  tools/afp_submit.scala \
   tools/afp_structure.scala \
   tools/afp_tool.scala \
   tools/hugo.scala \
