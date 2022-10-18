@@ -167,7 +167,7 @@ lemma pointwise_le_Nil2 [simp]: "x \<unlhd> Nil \<longleftrightarrow> x = Nil"
   by (simp add: pointwise_le_def)
 
 lemma pointwise_le_iff_less_equal: "x \<unlhd> y \<longleftrightarrow> x \<lhd> y \<or> x = y"
-  using pointwise_le_refl pointwise_less_def by blast
+  using pointwise_less_def by blast
 
 lemma pointwise_less_iff:
   "x \<lhd> y \<longleftrightarrow> x \<unlhd> y \<and> (\<exists>(i,j) \<in> set (zip x y). i<j)"
