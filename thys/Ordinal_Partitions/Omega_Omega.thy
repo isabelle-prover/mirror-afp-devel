@@ -84,26 +84,11 @@ lemma omega_sum_length_leD:
   shows "length ms \<le> length ns"
   by (meson assms leD leI omega_sum_length_less)
 
-
 lemma omega_sum_less_eqlen_iff_cases [simp]:
   assumes "length ms = length ns"
-   shows "omega_sum (m#ms) < omega_sum (n#ns)
-          \<longleftrightarrow> m<n \<or> m=n \<and> omega_sum ms < omega_sum ns"
-  (is "?lhs = ?rhs")
-proof
-  assume L: ?lhs
-  have "\<not> Suc n < Suc m"
-    using omega_sum_less [of ms] omega_sum_less [of ns] L assms mult_nat_less_add_less by fastforce
-  with L assms show ?rhs
-    by auto
-qed (auto simp: mult_nat_less_add_less omega_sum_aux_less assms)
-
-lemma omega_sum_lex_less_iff_cases:
-   "((length ms, omega_sum (m#ms)), (length ns, omega_sum (n#ns))) \<in> less_than <*lex*> VWF
-   \<longleftrightarrow> length ms < length ns
-            \<or> length ms = length ns \<and> m<n
-            \<or> m=n \<and> ((length ms, omega_sum ms), (length ns, omega_sum ns)) \<in> less_than <*lex*> VWF"
-  using omega_sum_less_eqlen_iff_cases by force
+   shows "omega_sum (m#ms) < omega_sum (n#ns) \<longleftrightarrow> m<n \<or> m=n \<and> omega_sum ms < omega_sum ns"
+  using omega_sum_less [of ms] omega_sum_less [of ns]
+  by (metis Kirby.add_less_cancel_left Omega_Omega.Cons Ord_\<omega> Ord_oexp Ord_omega_sum Ord_ord_of_nat assms length_Cons linorder_neqE_nat mult_nat_less_add_less order_less_asym)
 
 lemma omega_sum_less_iff_cases:
   assumes "m > 0" "n > 0"
@@ -111,14 +96,8 @@ lemma omega_sum_less_iff_cases:
           \<longleftrightarrow> length ms < length ns
             \<or> length ms = length ns \<and> m<n
             \<or> length ms = length ns \<and> m=n \<and> omega_sum ms < omega_sum ns"
-    (is "?lhs = ?rhs")
-proof
-  assume ?lhs then show ?rhs
-    by (metis Suc_less_eq \<open>m>0\<close> length_Cons less_asym nat_neq_iff normal_Cons omega_sum_length_less omega_sum_less_eqlen_iff_cases)
-next
-  assume ?rhs then show ?lhs
-    by (metis (full_types) Suc_less_eq \<open>n>0\<close> length_Cons normal_Cons omega_sum_length_less omega_sum_less_eqlen_iff_cases)
-qed
+  by (smt (verit) assms length_Cons less_eq_Suc_le less_le_not_le nat_less_le normal_Cons not_le 
+      omega_sum_length_less omega_sum_less_eqlen_iff_cases)
 
 lemma omega_sum_less_iff:
   "((length ms, omega_sum ms), (length ns, omega_sum ns)) \<in> less_than <*lex*> VWF
@@ -604,7 +583,6 @@ lemma acc_lengths_append:
   "acc_lengths acc (xs @ ys)
    = acc_lengths acc xs @ acc_lengths (acc + sum_list (map length xs)) ys"
 by (induction acc xs rule: acc_lengths.induct) (auto simp: add.assoc)
-
 
 
 lemma length_concat_ge:

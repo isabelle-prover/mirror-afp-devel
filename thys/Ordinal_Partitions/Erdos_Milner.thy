@@ -670,13 +670,8 @@ next
               then have fun_hD: "\<And>k. k \<le> p \<Longrightarrow> h k \<in> D k \<rightarrow> D k"
                 by (auto simp: M_def)
               have h_increasing: "\<nu> \<le> h k \<nu>"
-                if "k \<le> p" and \<nu>: "\<nu> \<in> D k" for k \<nu>
-              proof (rule Ord_mono_imp_increasing)
-                show "h k \<in> D k \<rightarrow> D k"
-                  by (simp add: fun_hD that(1))
-                show "D k \<subseteq> ON"
-                  using D\<beta> elts_subset_ON ord(2) by blast
-              qed (auto simp: that mono_h)
+                if "k \<le> p" "\<nu> \<in> D k" for k \<nu> 
+                by (meson D\<beta> Ord_mono_imp_increasing ord dual_order.trans elts_subset_ON fun_hD mono_h that)
               define g where "g \<equiv> \<lambda>\<nu>. if \<nu> \<in> F then \<nu> else h (\<beta>idx \<nu>) \<nu>"
               have [simp]: "g \<nu> = \<nu>" if "\<nu> \<in> F" for \<nu>
                 using that by (auto simp: g_def)
@@ -686,15 +681,13 @@ next
                 then have "x \<in> D (\<beta>idx x)" "\<beta>idx x \<le> p" if "x \<notin> F"
                   using that by (auto simp: \<beta>idx)
                 then show "g x \<in> elts \<beta>"
-                  using fun_h  D\<beta> M_sub_D \<open>x \<in> elts \<beta>\<close>
-                  by (simp add: g_def) blast
+                  by (metis fun_h D\<beta> M_sub_D \<open>x \<in> elts \<beta>\<close> PiE g_def subsetD)
               qed
               have h_in_D: "h (\<beta>idx \<nu>) \<nu> \<in> D (\<beta>idx \<nu>)" if "\<nu> \<notin> F" "\<nu> \<in> elts \<beta>" for \<nu>
                 using \<beta>idx fun_hD that by fastforce
               have 1: "\<iota> k < h (\<beta>idx \<nu>) \<nu>"
                 if "k < p" and \<nu>: "\<nu> \<notin> F" "\<nu> \<in> elts \<beta>" and "\<iota> k < \<nu>" for k \<nu>
-                using that h_in_D [OF \<nu>] \<beta>idx
-                by (fastforce simp: D_def dest: h_increasing split: if_split_asm)
+                by (meson that h_in_D [OF \<nu>] \<beta>idx DiffI h_increasing order_less_le_trans)
               moreover have 2: "h (\<beta>idx \<mu>) \<mu> < \<iota> k"
                 if \<mu>: "\<mu> \<notin> F" "\<mu> \<in> elts \<beta>" and "k < p" "\<mu> < \<iota> k" for \<mu> k
               proof -
@@ -704,8 +697,7 @@ next
                   then have "k < \<beta>idx \<mu>"
                     by linarith
                   then show False
-                    using \<iota>_le_if_D \<beta>idx
-                    by (metis Diff_iff Suc_pred le0 leD le_\<iota> le_less_trans \<mu> \<open>\<mu> < \<iota> k\<close>)
+                    using \<iota>_le_if_D \<beta>idx that by (metis Diff_iff Suc_pred le0 leD le_\<iota> le_less_trans)
                 qed
                 then show ?thesis
                   using that h_in_D [OF \<mu>]
@@ -715,7 +707,7 @@ next
                 if \<mu>: "\<mu> \<notin> F" "\<mu> \<in> elts \<beta>" and \<nu>: "\<nu> \<notin> F" "\<nu> \<in> elts \<beta>" and "\<mu> < \<nu>" for \<mu> \<nu>
               proof -
                 have le: "\<beta>idx \<mu> \<le> \<beta>idx \<nu>" if "\<iota> (\<beta>idx \<mu> - Suc 0) < h (\<beta>idx \<mu>) \<mu>" "h (\<beta>idx \<nu>) \<nu> < \<iota> (\<beta>idx \<nu>)"
-                  by (metis 2 that Diff_iff \<beta>idx \<mu> \<nu> \<open>\<mu> < \<nu>\<close> dual_order.strict_implies_order dual_order.strict_trans1 h_increasing leI le_\<iota> less_asym)
+                  by (metis 2 DiffI \<beta>idx \<mu> \<nu> \<open>\<mu> < \<nu>\<close> order.strict_trans h_increasing leI le_\<iota> order_less_asym order_less_le_trans that)
                 have "h 0 \<mu> < h 0 \<nu>" if "\<beta>idx \<mu> = 0" "\<beta>idx \<nu> = 0"
                   using that mono_h unfolding strict_mono_on_def
                   by (metis Diff_iff \<beta>idx \<mu> \<nu> \<open>\<mu> < \<nu>\<close>)
@@ -852,13 +844,7 @@ next
           and g_\<alpha>: "\<forall>\<nu> \<in> elts \<beta>. \<alpha> \<le> tp (K 1 xn \<inter> \<AA> (g \<nu>))"
           using 10 [OF _ \<mu>\<beta> \<AA>sub _ \<AA>fun] by (auto simp: \<AA>)
         have tp1: "tp (K 1 xn \<inter> \<AA> (g \<nu>)) = \<alpha>" if "\<nu> \<in> elts \<beta>" for \<nu>
-        proof (rule antisym)
-          have "tp (K 1 xn \<inter> \<AA> (g \<nu>)) \<le> tp (\<AA> (g \<nu>))"
-            by (metis Int_lower2 PiE \<AA> down g ordertype_VWF_mono that)
-          also have "\<dots> = \<alpha>"
-            using \<AA> g that by force
-          finally show "tp (K 1 xn \<inter> \<AA> (g \<nu>)) \<le> \<alpha>" .
-        qed (use that g_\<alpha> in auto)
+          by (metis antisym Int_lower2 PiE \<AA> down g g_\<alpha> ordertype_VWF_mono that)
         have tp2: "tp (\<AA> (\<mu> n)) = \<alpha>"
           by (auto simp: \<AA>)
         obtain "small (\<AA> (\<mu> n))" "\<AA> (\<mu> n) \<subseteq> ON"
@@ -909,8 +895,6 @@ next
       have \<AA>_\<alpha>\<beta>: "\<AA> n \<nu> \<subseteq> elts (\<alpha>*\<beta>)" if "\<nu> \<in> elts \<beta>" for \<nu> n
         using H_imp_\<Phi> [of n] that by (auto simp: \<Phi>_def \<AA>_def split: prod.split)
       have 12: "strict_mono_sets (elts \<beta>) (\<AA> n)" for n
-        using H_imp_\<Phi> [of n] that by (auto simp: \<Phi>_def \<AA>_def split: prod.split)
-      have tp_\<AA>: "tp (\<AA> n \<nu>) = \<alpha>" if "\<nu> \<in> elts \<beta>" for \<nu> n
         using H_imp_\<Phi> [of n] that by (auto simp: \<Phi>_def \<AA>_def split: prod.split)
       let ?Z = "range x"
       have S_dec: "\<Union> (\<AA> (m+k) ` elts \<beta>) \<subseteq> \<Union> (\<AA> m ` elts \<beta>)" for k m
