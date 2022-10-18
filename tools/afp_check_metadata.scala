@@ -46,11 +46,9 @@ Usage: isabelle afp_check_metadata [OPTIONS]
 
     progress.echo("Checking author file...")
     val authors = afp_structure.load_authors.map(author => author.id -> author).toMap
-    def sub_topics(topic: Topic): List[Topic] =
-      topic :: topic.sub_topics.flatMap(sub_topics)
     progress.echo("Checking topic file...")
     val root_topics = afp_structure.load_topics
-    val topics = Utils.grouped_sorted(root_topics.flatMap(sub_topics), (t: Topic) => t.id)
+    val topics = Utils.grouped_sorted(root_topics.flatMap(_.all_topics), (t: Topic) => t.id)
     progress.echo("Checking license file....")
     val licenses = afp_structure.load_licenses.map(license => license.id -> license).toMap
     progress.echo("Checking release file....")

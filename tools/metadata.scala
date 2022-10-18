@@ -98,7 +98,10 @@ object Metadata {
     id: Topic.ID,
     name: String,
     classification: List[Classification] = Nil,
-    sub_topics: List[Topic] = Nil)
+    sub_topics: List[Topic] = Nil
+  ) {
+    def all_topics: List[Topic] = this :: sub_topics.flatMap(_.all_topics)
+  }
 
   object Topic {
     type ID = String
@@ -129,7 +132,7 @@ object Metadata {
   sealed trait Reference
 
   case class DOI(identifier: String) extends Reference {
-    require("^10.([1-9][0-9]{3})/(.+)".r.matches(identifier),
+    require("^10.([1-9][0-9]{3,})/(.+)".r.matches(identifier),
       "invalid format for DOI: " + quote(identifier))
 
     def uri: URI = new URI("doi:" + identifier)
@@ -175,7 +178,7 @@ object Metadata {
 
   object TOML {
     private def by_id[A](elems: Map[String, A], id: String): A =
-      elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.map(_.toString))))
+      elems.getOrElse(id, error("Elem " + quote(id) + " not found in " + commas_quote(elems.keys)))
 
 
     /* email */
