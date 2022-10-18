@@ -483,8 +483,11 @@ lemma less_irrefl_TC [simp]: "\<not> x \<sqsubset> x"
 lemma less_asym_TC: "\<lbrakk>x \<sqsubset> y; y \<sqsubset> x\<rbrakk> \<Longrightarrow> False"
   by (metis TC_least Transset_TC Transset_def antisym_conv less_TC_def less_TC_imp_not_le order_refl)
 
-lemma le_antisym_TC: "\<lbrakk>x \<sqsubset> y; y \<sqsubset> x\<rbrakk> \<Longrightarrow> x = y"
-  using less_asym_TC by blast
+lemma le_antisym_TC: "\<lbrakk>x \<sqsubseteq> y; y \<sqsubseteq> x\<rbrakk> \<Longrightarrow> x = y"
+  using le_TC_def less_asym_TC by auto
+
+lemma less_le_TC: "x \<sqsubset> y \<longleftrightarrow> x \<sqsubseteq> y \<and> x \<noteq> y"
+  using le_TC_def less_asym_TC by blast
 
 lemma less_imp_le_TC [iff]: "x \<sqsubset> y \<Longrightarrow> x \<sqsubseteq> y"
   by (simp add: le_TC_def)
@@ -492,17 +495,35 @@ lemma less_imp_le_TC [iff]: "x \<sqsubset> y \<Longrightarrow> x \<sqsubseteq> y
 lemma le_TC_refl [iff]: "x \<sqsubseteq> x"
   by (simp add: le_TC_def)
 
-lemma less_TC_trans [trans]: "\<lbrakk>x \<sqsubset> y; y \<sqsubset> z\<rbrakk> \<Longrightarrow> x \<sqsubset> z"
-  by (meson TC_least Transset_TC Transset_def less_TC_def less_eq_V_def subsetD)
-
-lemma less_le_TC_trans [trans]: "\<lbrakk>x \<sqsubset> y; y \<sqsubseteq> z\<rbrakk> \<Longrightarrow> x \<sqsubset> z"
-  using le_TC_def less_TC_trans by blast
-
-lemma le_less_TC_trans [trans]: "\<lbrakk>x \<sqsubseteq> y; y \<sqsubset> z\<rbrakk> \<Longrightarrow> x \<sqsubset> z"
-  using le_TC_def less_TC_trans by blast
-
 lemma le_TC_trans [trans]: "\<lbrakk>x \<sqsubseteq> y; y \<sqsubseteq> z\<rbrakk> \<Longrightarrow> x \<sqsubseteq> z"
-  using le_TC_def le_less_TC_trans by blast
+  by (smt (verit, best) TC_least Transset_TC Transset_def le_TC_def less_TC_def vsubsetD)
+
+context order
+begin
+
+lemma nless_le_TC: "(\<not> a \<sqsubset> b) \<longleftrightarrow> (\<not> a \<sqsubseteq> b) \<or> a = b"
+  using le_TC_def less_asym_TC by blast
+
+lemma eq_refl_TC: "x = y \<Longrightarrow> x \<sqsubseteq> y"
+  by simp
+
+local_setup \<open>
+  HOL_Order_Tac.declare_order {
+    ops = {eq = @{term \<open>(=) :: V \<Rightarrow> V \<Rightarrow> bool\<close>}, le = @{term \<open>(\<sqsubseteq>)\<close>}, lt = @{term \<open>(\<sqsubset>)\<close>}},
+    thms = {trans = @{thm le_TC_trans}, refl = @{thm le_TC_refl}, eqD1 = @{thm eq_refl_TC},
+            eqD2 = @{thm eq_refl_TC[OF sym]}, antisym = @{thm le_antisym_TC}, contr = @{thm notE}},
+    conv_thms = {less_le = @{thm eq_reflection[OF less_le_TC]},
+                 nless_le = @{thm eq_reflection[OF nless_le_TC]}}
+  }
+\<close>
+
+end
+
+
+lemma less_TC_trans [trans]: "\<lbrakk>x \<sqsubset> y; y \<sqsubset> z\<rbrakk> \<Longrightarrow> x \<sqsubset> z" 
+  and less_le_TC_trans: "\<lbrakk>x \<sqsubset> y; y \<sqsubseteq> z\<rbrakk> \<Longrightarrow> x \<sqsubset> z" 
+  and le_less_TC_trans [trans]: "\<lbrakk>x \<sqsubseteq> y; y \<sqsubset> z\<rbrakk> \<Longrightarrow> x \<sqsubset> z"
+  by simp_all
 
 lemma TC_sup_distrib: "TC (x \<squnion> y) = TC x \<squnion> TC y"
   by (simp add: Sup_Un_distrib TC [of "x \<squnion> y"] TC [of x] TC [of y] image_Un sup.assoc sup_left_commute)
