@@ -6,7 +6,7 @@
   ID:      $Id: Message_derivation.thy 132885 2016-12-23 18:41:32Z csprenge $
   Author:  Joseph Lallemand, INRIA Nancy <joseph.lallemand@loria.fr>
            Christoph Sprenger, ETH Zurich <sprenger@inf.ethz.ch>
-  
+
   A theory of message derivations (analz, synth, parts).
   Based on Larry Paulson's theory HOL/Auth/Message.thy, but extended with
   - composed keys
@@ -18,7 +18,7 @@
 
 *******************************************************************************)
 
-section \<open>Message theory\<close> 
+section \<open>Message theory\<close>
 
 theory Message_derivation
 imports Messages
@@ -34,7 +34,7 @@ subsection \<open>Message composition\<close>
 text \<open>Dolev-Yao message synthesis.\<close>
 
 inductive_set
-  synth :: "msg set \<Rightarrow> msg set"   
+  synth :: "msg set \<Rightarrow> msg set"
   for H :: "msg set"
   where
     Ax [intro]: "X \<in> H \<Longrightarrow> X \<in> synth H"
@@ -54,7 +54,7 @@ inductive_set
 text \<open>Lemmas about Dolev-Yao message synthesis.\<close>
 
 lemma synth_mono [mono_set]: "G \<subseteq> H \<Longrightarrow> synth G \<subseteq> synth H"
-  by (auto, erule synth.induct, auto) 
+  by (auto, erule synth.induct, auto)
 
 lemmas synth_monotone = synth_mono [THEN [2] rev_subsetD]
 
@@ -78,8 +78,8 @@ lemma EpubK_synth [elim]: "epubK K \<in> synth H \<Longrightarrow>
        epubK K \<in> H \<or> (\<exists> N. epubK K = epubKA N)"
 by (cases K, auto elim: EpubKF_synth)
 
-lemmas synth_inversion [elim] = 
-  NonceF_synth LtK_synth EpubKF_synth EpriKF_synth Hash_synth Pair_synth 
+lemmas synth_inversion [elim] =
+  NonceF_synth LtK_synth EpubKF_synth EpriKF_synth Hash_synth Pair_synth
   Enc_synth Aenc_synth Sign_synth Tag_synth
 
 
@@ -166,13 +166,13 @@ inductive_set
     Ax [intro]: "X \<in> H \<Longrightarrow> X \<in> analz H"
   | Fst: "Pair X Y \<in> analz H \<Longrightarrow> X \<in> analz H"
   | Snd: "Pair X Y \<in> analz H \<Longrightarrow> Y \<in> analz H"
-  | Dec [dest]: 
+  | Dec [dest]:
       "\<lbrakk> Enc X Y \<in> analz H; Y \<in> synth (analz H) \<rbrakk> \<Longrightarrow> X \<in> analz H"
-  | Adec_lt [dest]: 
+  | Adec_lt [dest]:
       "\<lbrakk> Aenc X (LtK (publK Y)) \<in> analz H; priK Y \<in> analz H \<rbrakk> \<Longrightarrow> X \<in> analz H"
-  | Adec_eph [dest]: 
+  | Adec_eph [dest]:
       "\<lbrakk> Aenc X (EphK (epublK Y)) \<in> analz H; epriK Y \<in> synth (analz H) \<rbrakk> \<Longrightarrow> X \<in> analz H"
-  | Sign_getmsg [dest]: 
+  | Sign_getmsg [dest]:
       "Sign X (priK Y) \<in> analz H \<Longrightarrow> pubK Y \<in> analz H \<Longrightarrow> X \<in> analz H"
 
 
@@ -229,17 +229,17 @@ by (blast intro: analz_cut analz_insertI)
 
 lemma analz_subset_cong:
   "analz G \<subseteq> analz G' \<Longrightarrow>
-   analz H \<subseteq> analz H' \<Longrightarrow> 
+   analz H \<subseteq> analz H' \<Longrightarrow>
    analz (G \<union> H) \<subseteq> analz (G' \<union> H')"
 apply simp
-apply (iprover intro: conjI subset_trans analz_mono Un_upper1 Un_upper2) 
+apply (iprover intro: conjI subset_trans analz_mono Un_upper1 Un_upper2)
 done
 
 lemma analz_cong:
   "analz G = analz G' \<Longrightarrow>
    analz H = analz H' \<Longrightarrow>
    analz (G \<union> H) = analz (G' \<union> H')"
-by (intro equalityI analz_subset_cong, simp_all) 
+by (intro equalityI analz_subset_cong, simp_all)
 
 lemma analz_insert_cong:
   "analz H = analz H' \<Longrightarrow>
@@ -266,11 +266,11 @@ lemma analz_Un_analz [simp]: "analz (G \<union> analz H) = analz (G \<union> H)"
 by (subst Un_commute, auto)+
 
 
-text \<open>Lemmas about analz and insert.\<close> 
+text \<open>Lemmas about analz and insert.\<close>
 
 lemma analz_insert_Agent [simp]:
   "analz (insert (Agent A) H) = insert (Agent A) (analz H)"
-apply (rule analz_insert_eq_I) 
+apply (rule analz_insert_eq_I)
 apply (erule analz.induct)
 thm analz.induct
 apply fastforce
@@ -302,15 +302,15 @@ subsection \<open>Lemmas about combined composition/decomposition\<close>
 lemma synth_analz_incr: "H \<subseteq> synth (analz H)"
 by auto
 
-lemmas synth_analz_increasing = synth_analz_incr [THEN [2] rev_subsetD] 
+lemmas synth_analz_increasing = synth_analz_incr [THEN [2] rev_subsetD]
 
 lemma synth_analz_mono: "G \<subseteq> H \<Longrightarrow> synth (analz G) \<subseteq> synth (analz H)"
 by (blast intro!: analz_mono synth_mono)
 
 lemmas synth_analz_monotone = synth_analz_mono [THEN [2] rev_subsetD]
 
-lemma lem1: 
-  "Y \<in> synth (analz (synth G \<union> H) \<inter> (analz (G \<union> H) \<union> synth G)) 
+lemma lem1:
+  "Y \<in> synth (analz (synth G \<union> H) \<inter> (analz (G \<union> H) \<union> synth G))
 \<Longrightarrow> Y \<in> synth (analz (G \<union> H))"
 apply (rule subsetD, auto simp add: synth_subset_iff intro: analz_increasing synth_monotone)
 done
@@ -320,16 +320,16 @@ lemma lem2: "{a. a \<in> analz (G \<union> H) \<or> a \<in> synth G} = analz (G 
 lemma analz_synth_Un: "analz (synth G \<union> H) = analz (G \<union> H) \<union> synth G"
 proof (intro equalityI subsetI)
   fix x
-  assume "x \<in> analz (synth G \<union> H)" 
+  assume "x \<in> analz (synth G \<union> H)"
   thus "x \<in> analz (G \<union> H) \<union> synth G"
   by (induction x rule: analz.induct)
-     (auto simp add: lem2 intro: analz_monotone Fst Snd Dec Adec_eph Adec_lt Sign_getmsg 
+     (auto simp add: lem2 intro: analz_monotone Fst Snd Dec Adec_eph Adec_lt Sign_getmsg
            dest: lem1)
-next 
+next
   fix x
-  assume "x \<in> analz (G \<union> H) \<union> synth G" 
-  thus "x \<in> analz (synth G \<union> H)" 
-    by (blast intro: analz_monotone) 
+  assume "x \<in> analz (G \<union> H) \<union> synth G"
+  thus "x \<in> analz (synth G \<union> H)"
+    by (blast intro: analz_monotone)
 qed
 
 
@@ -351,19 +351,19 @@ lemma synth_analz_idem [simp]: "synth (analz (synth (analz H))) = synth (analz H
 by (simp only: analz_synth_analz) simp
 
 
-lemma insert_subset_synth_analz [simp]: 
+lemma insert_subset_synth_analz [simp]:
   "X \<in> synth (analz H) \<Longrightarrow> insert X H \<subseteq> synth (analz H)"
 by auto
 
 
-lemma synth_analz_insert [simp]: 
+lemma synth_analz_insert [simp]:
   assumes "X \<in> synth (analz H)"
   shows "synth (analz (insert X H)) = synth (analz H)"
 using assms
 proof (intro equalityI subsetI)
   fix Z
   assume "Z \<in> synth (analz (insert X H))"
-  hence "Z \<in> synth (analz (synth (analz H)))" using assms 
+  hence "Z \<in> synth (analz (synth (analz H)))" using assms
     by - (erule synth_analz_monotone, rule insert_subset_synth_analz)
   thus "Z \<in> synth (analz H)" using assms by simp
 qed (auto intro: synth_analz_monotone)
@@ -399,7 +399,7 @@ lemmas parts_monotone = parts_mono [THEN [2] rev_subsetD]
 
 lemma Pair_parts [elim]:
   "\<lbrakk> Pair X Y \<in> parts H; \<lbrakk> X \<in> parts H; Y \<in> parts H \<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
-by blast 
+by blast
 
 
 lemma parts_increasing: "H \<subseteq> parts H"
@@ -412,8 +412,8 @@ by (safe, erule parts.induct, auto)
 
 lemma parts_atomic [simp]: "atomic x \<Longrightarrow> parts {x} = {x}"
 by (auto, erule parts.induct, auto)
- 
-lemma parts_InsecTag [simp]: "parts {Tag t} = {Tag t}" 
+
+lemma parts_InsecTag [simp]: "parts {Tag t} = {Tag t}"
 by (safe, erule parts.induct) (auto)
 
 lemma parts_emptyE [elim!]: "X \<in> parts {} \<Longrightarrow> P"
@@ -421,7 +421,7 @@ by simp
 
 lemma parts_Tags [simp]:
   "parts Tags = Tags"
-by (rule, rule, erule parts.induct, auto) 
+by (rule, rule, erule parts.induct, auto)
 
 lemma parts_singleton: "X \<in> parts H \<Longrightarrow> \<exists> Y\<in>H. X \<in> parts {Y}"
 by (erule parts.induct, blast+)
@@ -431,21 +431,21 @@ lemma parts_Agents [simp]:
 by (auto elim: parts.induct)
 
 lemma parts_Un [simp]: "parts (G \<union> H) = parts G \<union> parts H"
-proof 
+proof
   show "parts (G \<union> H) \<subseteq> parts G \<union> parts H"
     by (rule, erule parts.induct) (auto)
-next 
-  show "parts G \<union> parts H \<subseteq> parts (G \<union> H)" 
+next
+  show "parts G \<union> parts H \<subseteq> parts (G \<union> H)"
     by (intro Un_least parts_mono Un_upper1 Un_upper2)
-qed 
+qed
 
-lemma parts_insert_subset_Un: 
-  assumes "X \<in> G" 
+lemma parts_insert_subset_Un:
+  assumes "X \<in> G"
   shows "parts (insert X H) \<subseteq> parts G \<union> parts H"
 proof -
-  from assms have "parts (insert X H) \<subseteq> parts (G \<union> H)" by (blast intro!: parts_mono) 
+  from assms have "parts (insert X H) \<subseteq> parts (G \<union> H)" by (blast intro!: parts_mono)
   thus ?thesis by simp
-qed 
+qed
 
 lemma parts_insert: "parts (insert X H) = parts {X} \<union> parts H"
 by (blast intro!: parts_insert_subset_Un intro: parts_monotone)
@@ -457,15 +457,7 @@ apply (simp add: parts_insert [symmetric])
 done
 
 
-lemma parts_UN [simp]: "parts (\<Union>x\<in>A. H x) = (\<Union>x\<in>A. parts(H x))" (is "?X = ?Y")
-proof 
-  show "?X \<subseteq> ?Y" by (rule subsetI, erule parts.induct) (blast+)
-next 
-  show "?Y \<subseteq> ?X" by (intro UN_least parts_mono UN_upper)
-qed
-
-
-lemmas in_parts_UnE [elim!] = parts_Un [THEN equalityD1, THEN subsetD, THEN UnE] 
+lemmas in_parts_UnE [elim!] = parts_Un [THEN equalityD1, THEN subsetD, THEN UnE]
 
 
 lemma parts_insert_subset: "insert X (parts H) \<subseteq> parts (insert X H)"
@@ -486,7 +478,7 @@ by (drule parts_mono, blast)
 
 
 lemma parts_cut:
-  "Y \<in> parts (insert X G) \<Longrightarrow>  X \<in> parts H \<Longrightarrow> Y \<in> parts (G \<union> H)" 
+  "Y \<in> parts (insert X G) \<Longrightarrow>  X \<in> parts H \<Longrightarrow> Y \<in> parts (G \<union> H)"
 by (blast intro: parts_trans)
 
 
@@ -641,11 +633,11 @@ done
 lemmas Fake_parts_sing_imp_Un = Fake_parts_sing [THEN [2] rev_subsetD]
 
 
-lemma analz_hash_nonce [simp]: 
+lemma analz_hash_nonce [simp]:
   "analz {M. \<exists>N. M = Hash (Nonce N)} = {M. \<exists>N. M = Hash (Nonce N)}"
 by (auto, rule analz.induct, auto)
 
-lemma synth_analz_hash_nonce [simp]: 
+lemma synth_analz_hash_nonce [simp]:
   "NonceF N \<notin> synth (analz {M. \<exists>N. M = Hash (Nonce N)})"
 by auto
 
@@ -667,7 +659,7 @@ proof -
   then have HX:"analz X \<subseteq> analz (synth (analz X'))" by blast
   assume "analz Y \<subseteq> synth (analz Y')"
   then have HY:"analz Y \<subseteq> analz (synth (analz Y'))" by blast
-  from analz_subset_cong [OF HX HY] 
+  from analz_subset_cong [OF HX HY]
   have "analz (X \<union> Y) \<subseteq> analz (synth (analz X') \<union> synth (analz Y'))"
     by blast
   also have "... \<subseteq> analz (synth (analz X' \<union> analz Y'))"
@@ -694,13 +686,13 @@ lemma analz_synth_insert:
 by (metis analz_synth_subset_Un2 insert_def)
 
 lemma Fake_analz_insert_Un:
-  assumes "Y \<in> analz (insert X H)" and "X \<in> synth (analz G)" 
+  assumes "Y \<in> analz (insert X H)" and "X \<in> synth (analz G)"
   shows "Y \<in> synth (analz G) \<union> analz (G \<union> H)"
 proof -
   from assms have "Y \<in> analz (synth (analz G) \<union> H)"
-    by (blast intro: analz_mono [THEN [2] rev_subsetD] 
+    by (blast intro: analz_mono [THEN [2] rev_subsetD]
                      analz_mono [THEN synth_mono, THEN [2] rev_subsetD])
-  thus ?thesis by (simp add: sup.commute) 
+  thus ?thesis by (simp add: sup.commute)
 qed
 
 

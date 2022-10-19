@@ -238,20 +238,8 @@ done
 lemma parts_two: "\<lbrakk>x \<in> parts {e1, e2}; x \<notin> parts {e1}\<rbrakk>\<Longrightarrow> x \<in> parts {e2}"
   by (simp add: parts_insert2)
 
-lemma parts_UN_subset1: "(\<Union>x\<in>A. parts(H x)) \<subseteq> parts(\<Union>x\<in>A. H x)"
-by (intro UN_least parts_mono UN_upper)
 
-lemma parts_UN_subset2: "parts(\<Union>x\<in>A. H x) \<subseteq> (\<Union>x\<in>A. parts(H x))"
-apply (rule subsetI)
-  apply (erule parts.induct)
-  using parts.FSt by auto
-
-lemma parts_UN [simp]: "parts(\<Union>x\<in>A. H x) = (\<Union>x\<in>A. parts(H x))"
-by (intro equalityI parts_UN_subset1 parts_UN_subset2)
-
-
-text \<open>Added to simplify arguments to parts, analz and synth.
-        NOTE: the UN versions are no longer used!\<close>
+text \<open>Added to simplify arguments to parts, analz and synth.\<close>
 
 
 text \<open>This allows @{text blast} to simplify occurrences of
@@ -756,8 +744,8 @@ inductive_set
   | AS  [simp,intro!]:   "AS agt \<in> synth H"
   | Num [simp,intro!]:   "Num n  \<in> synth H"
   | Lst [intro]:      "\<lbrakk> \<And>x . x \<in> set xs \<Longrightarrow> x \<in> synth H \<rbrakk> \<Longrightarrow> L xs \<in> synth H"
-  | FSt [intro]:      "\<lbrakk> \<And>x . x \<in> fset xs \<Longrightarrow> x \<in> synth H; 
-                         \<And>x ys . x \<in> fset xs \<Longrightarrow> x \<noteq> FS ys \<rbrakk> 
+  | FSt [intro]:      "\<lbrakk> \<And>x . x \<in> fset xs \<Longrightarrow> x \<in> synth H;
+                         \<And>x ys . x \<in> fset xs \<Longrightarrow> x \<noteq> FS ys \<rbrakk>
                       \<Longrightarrow> FS xs \<in> synth H"
   | Hash   [intro]:   "X \<in> synth H \<Longrightarrow> Hash X \<in> synth H"
   | MPair  [intro]:   "\<lbrakk> X \<in> synth H;  Y \<in> synth H \<rbrakk> \<Longrightarrow> \<langle>X,Y\<rangle> \<in> synth H"
@@ -953,13 +941,13 @@ lemma L_cons_synth_parts [iff]:
 by blast
 
 lemma FS_cons_synth_analz [iff]:
-  "\<lbrakk>\<And>x ys . x \<in> fset xs \<Longrightarrow> x \<noteq> FS ys; fcard xs \<noteq> Suc 0 \<rbrakk> \<Longrightarrow> 
+  "\<lbrakk>\<And>x ys . x \<in> fset xs \<Longrightarrow> x \<noteq> FS ys; fcard xs \<noteq> Suc 0 \<rbrakk> \<Longrightarrow>
     (FS xs \<in> synth (analz H)) =
     (fset xs \<subseteq> synth (analz H))"
 by blast
 
 lemma FS_cons_synth_parts [iff]:
-  "\<lbrakk>\<And>x ys . x \<in> fset xs \<Longrightarrow> x \<noteq> FS ys; fcard xs \<noteq> Suc 0 \<rbrakk> \<Longrightarrow> 
+  "\<lbrakk>\<And>x ys . x \<in> fset xs \<Longrightarrow> x \<noteq> FS ys; fcard xs \<noteq> Suc 0 \<rbrakk> \<Longrightarrow>
     (FS xs \<in> synth (parts H)) =
     (fset xs \<subseteq> synth (parts H))"
 by blast
@@ -1062,7 +1050,7 @@ proof
   then have "x \<in> analz (insert X (synth (analz H')))"
     using assms by (meson analz_increasing analz_monotonic insert_mono)
   then show "x \<in> synth (analz (insert X H'))"
-    by (metis (no_types) Un_iff analz_idem analz_insert analz_monotonic analz_synth synth.Inj 
+    by (metis (no_types) Un_iff analz_idem analz_insert analz_monotonic analz_synth synth.Inj
         synth_insert synth_mono)
 qed
 
@@ -1125,7 +1113,7 @@ qed
 
 
 subsubsection \<open>Normalization of Messages\<close>
-text\<open>Prevent FS from being contained directly in other FS. 
+text\<open>Prevent FS from being contained directly in other FS.
 For instance, a term @{term "FS {| FS {| Num 0 |}, Num 0 |}"} is
 not normalized, whereas @{term "FS {| Hash (FS {| Num 0 |}), Num 0 |}"} is normalized.\<close>
 
@@ -1137,8 +1125,8 @@ inductive normalized :: "msgterm \<Rightarrow> bool" where
   | Key [simp,intro!]:   "normalized (Key n)"
   | Nonce [simp,intro!]:  "normalized (Nonce n)"
   | Lst [intro]:      "\<lbrakk> \<And>x . x \<in> set xs \<Longrightarrow> normalized x \<rbrakk> \<Longrightarrow> normalized (L xs)"
-  | FSt [intro]:      "\<lbrakk> \<And>x . x \<in> fset xs \<Longrightarrow> normalized x;  
-                         \<And>x ys . x \<in> fset xs \<Longrightarrow> x \<noteq> FS ys \<rbrakk> 
+  | FSt [intro]:      "\<lbrakk> \<And>x . x \<in> fset xs \<Longrightarrow> normalized x;
+                         \<And>x ys . x \<in> fset xs \<Longrightarrow> x \<noteq> FS ys \<rbrakk>
                       \<Longrightarrow> normalized (FS xs)"
   | Hash   [intro]:   "normalized X \<Longrightarrow> normalized (Hash X)"
   | MPair  [intro]:   "\<lbrakk> normalized X; normalized Y \<rbrakk> \<Longrightarrow> normalized \<langle>X,Y\<rangle>"
@@ -1178,22 +1166,22 @@ lemma normalized_subset: "\<lbrakk>normalized (FS xs); ys |\<subseteq>| xs\<rbra
   by (auto intro!: normalized.FSt)
 
 lemma normalized_insert[elim!]: "normalized (FS (finsert x xs)) \<Longrightarrow> normalized (FS xs)"
-  by(auto elim!: normalized_subset) 
+  by(auto elim!: normalized_subset)
 
-lemma normalized_union: 
+lemma normalized_union:
   assumes "normalized (FS xs)" "normalized (FS ys)" "zs |\<subseteq>| xs |\<union>| ys"
   shows "normalized (FS zs)"
   using assms by(auto intro!: normalized.FSt)
 
-lemma normalized_minus[elim]: 
-  assumes "normalized (FS (ys |-| xs))" "normalized (FS xs)" 
+lemma normalized_minus[elim]:
+  assumes "normalized (FS (ys |-| xs))" "normalized (FS xs)"
   shows "normalized (FS ys)"
   using normalized_union assms by blast
 
 
 subsubsection\<open>Lemmas that do not use @{text "normalized"}, but are helpful in proving its properties\<close>
 lemma FS_mono: "\<lbrakk>zs_s = finsert (f (FS zs_s)) zs_b; \<And> x. size (f x) > size x\<rbrakk> \<Longrightarrow> False"
-  by (metis (no_types) add.right_neutral add_Suc_right finite_fset finsert.rep_eq less_add_Suc1 
+  by (metis (no_types) add.right_neutral add_Suc_right finite_fset finsert.rep_eq less_add_Suc1
       msgterm.size(17) not_less_eq size_fset_simps sum.insert_remove)
 
 lemma FS_contr: "\<lbrakk>zs = f (FS {|zs|}); \<And> x. size (f x) > size x\<rbrakk> \<Longrightarrow> False"

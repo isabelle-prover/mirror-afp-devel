@@ -203,12 +203,10 @@ lemma used_parts_subset_parts [rule_format]:
      "\<forall>X \<in> used evs. parts {X} \<subseteq> used evs"
 apply (induct evs) 
  prefer 2
- apply (simp add: used_Cons)
- apply (rule ballI)  
- apply (case_tac a, auto)  
-apply (auto dest!: parts_cut) 
+ apply (simp add: used_Cons split: event.split)
+ apply (metis Un_iff empty_subsetI insert_subset le_supI1 le_supI2 parts_subset_iff)
 txt\<open>Base case\<close>
-apply (simp add: used_Nil) 
+apply (auto dest!: parts_cut simp add: used_Nil) 
 done
 
 lemma MPair_used_D: "\<lbrace>X,Y\<rbrace> \<in> used H \<Longrightarrow> X \<in> used H \<and> Y \<in> used H"
