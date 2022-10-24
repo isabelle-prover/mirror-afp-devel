@@ -104,6 +104,8 @@ object Web_App {
         List("method" -> "post", "target" -> "iframe", "enctype" -> "multipart/form-data")
       XML.Elem(Markup("form", attrs), default_button :: body)
     }
+
+    def unescape(html: String): XML.Body = List(XML.Elem(Markup("unescape", Nil), text(html)))
   }
 
 
@@ -304,26 +306,52 @@ object Web_App {
     def render(model: A): XML.Body
     val error: A
     val endpoints: List[Endpoint]
+    val head: XML.Body
 
     def output(body: XML.Body): String = {
-      "<!DOCTYPE html><body onLoad='parent.postMessage(document.body.scrollHeight, \"*\")'>" +
-        isabelle.HTML.output(body, hidden = true, structural = true) +
-        "</body>"
+      def out(body: XML.Body): String = isabelle.HTML.output(body, hidden = true, structural = true)
+      def collect(t: XML.Tree): List[String] = t match {
+        case XML.Elem(Markup("unescape", _), List(XML.Text(html))) => List(out(HTML.unescape(html)))
+        case XML.Elem(_, body) => body.flatMap(collect)
+        case XML.Text(_) => Nil
+      }
+      val unescaped = body.flatMap(collect).foldLeft(out(body)) {
+        case (escaped, html) => escaped.replace(html, isabelle.HTML.input(html))
+      }
+
+      isabelle.HTML.header +
+        out(List(XML.elem("head", isabelle.HTML.head_meta :: head))) +
+        "<body onLoad='parent.postMessage(document.body.scrollHeight, \"*\")'>" +
+        unescaped +
+        "</body>" +
+        isabelle.HTML.footer
     }
 
     abstract class Endpoint(path: String, method: String = "GET")
       extends HTTP.Service(path.stripPrefix("/"), method)
 
-    class Get(path: String, description: String, model: A)
+    class Get(path: String, description: String, get: Properties.T => Option[A])
       extends Endpoint(path) {
 
       def apply(request: HTTP.Request): Option[HTTP.Response] = {
         progress.echo_if(verbose, "GET " + description)
+
+        def decode(s: String): Option[Properties.Entry] =
+          s match {
+            case Properties.Eq (k, v) => Some(Url.decode(k) -> Url.decode(v))
+            case _ => None
+          }
+
+        val props = Library.try_unprefix(request.query, request.uri_name).toList.flatMap(params =>
+          space_explode('&', params).flatMap(decode))
+        progress.echo_if(verbose, "params: " + props.toString())
+
+        val model = get(props).getOrElse(error)
         Some(HTTP.Response.html(output(render(model))))
       }
     }
 
-    class Post(path: String, description: String, update: Params.Data => Option[A])
+    class Post(path: String, description: String, post: Params.Data => Option[A])
       extends Endpoint(path, method = "POST") {
 
       def apply(request: HTTP.Request): Option[HTTP.Response] = {
@@ -331,9 +359,9 @@ object Web_App {
 
         val parts = Multi_Part.parse(request.input)
         val params = Params.Data.from_multipart(parts)
-        progress.echo_if(verbose, params.toString)
+        progress.echo_if(verbose, "params: " + params.toString)
 
-        val model = update(params).getOrElse(error)
+        val model = post(params).getOrElse(error)
         Some(HTTP.Response.html(output(render(model))))
       }
     }

@@ -88,16 +88,19 @@ class AFP_Structure private(val base_dir: Path) {
 
   /* sessions */
 
-  def entries: List[Metadata.Entry.Name] = {
+  def entries_unchecked: List[Metadata.Entry.Name] = {
     val Entry = """([a-zA-Z0-9+_-]+)\.toml""".r
-    val file_entries = File.read_dir(entries_dir).map {
+    File.read_dir(entries_dir).map {
       case Entry(name) => name
       case f => error("Unrecognized file in metadata: " + f)
     }
+  }
+  
+  def entries: List[Metadata.Entry.Name] = {
     val session_entries = Sessions.parse_roots(thys_dir + Path.basic("ROOTS"))
 
     val session_set = session_entries.toSet
-    val metadata_set = file_entries.toSet
+    val metadata_set = entries_unchecked.toSet
 
     if (session_set != metadata_set) {
       val inter = session_set.intersect(metadata_set)
