@@ -19,7 +19,8 @@ sources = \
   tools/metadata.scala \
   tools/rake.scala \
   tools/toml.scala \
-  tools/utils.scala
+  tools/utils.scala \
+  tools/web_app.scala
 resources = \
   tools/SmartStoplist.txt:SmartStoplist.txt \
   tools/migration/public_suffix_list.dat:public_suffix_list.dat
