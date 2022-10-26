@@ -240,10 +240,8 @@ object AFP_Site_Gen {
     progress.echo("Preparing topics...")
 
     val topics = afp_structure.load_topics
-    def sub_topics(topic: Metadata.Topic): List[Metadata.Topic] =
-      topic :: topic.sub_topics.flatMap(sub_topics)
-
-    val topics_by_id = Utils.grouped_sorted(topics.flatMap(sub_topics), (t: Metadata.Topic) => t.id)
+    val topics_by_id =
+      Utils.grouped_sorted(topics.flatMap(_.all_topics), (t: Metadata.Topic) => t.id)
 
     layout.write_data(Path.basic("topics.json"), JSON.from_topics(topics))
 
