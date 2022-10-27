@@ -21,7 +21,7 @@ object AFP_Release {
     base_dir: Path,
     options: Options
   ): Unit = {
-    val Release_Tar = """afp-([a-zA-Z0-9-_]+)-(\d{4}-\d{2}-\d{2})\.tar\.gz""".r
+    val Release_Tar = """afp-(.+)-(\d{4}-\d{2}-\d{2})\.tar\.gz""".r
 
     val afp_structure = AFP_Structure(base_dir)
 
