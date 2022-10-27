@@ -42,6 +42,7 @@ function usage()
   echo "  Checks out web site and archive entries and publishes them on the isa-afp.org web site"
   echo
   echo "Options:"
+  echo "  -j <num>            <num> parallel build jobs"
   echo "  -r                  use specified Isabelle version"
   echo "  -f                  do not ask before publishing"
   echo "  -t <isabelle> <tag> use specified path to isabelle tool script"
@@ -59,10 +60,14 @@ function usage()
 [ "$#" -lt "1" -o "$1" = "-?" ] && usage
 
 INTERACTIVE="yes"
+unset JOBS
 
-while getopts "ft:r:" OPT
+while getopts "ft:r:j:" OPT
 do
     case "$OPT" in
+      j)
+        JOBS="-j $OPTARG"
+        ;;
       r)
         VERSION="$OPTARG"
         ;;
@@ -121,7 +126,7 @@ if [ "$1" != "-" ]; then
     mv $EXPORT.tar.gz $TARS/
 
     echo "Generating HTML for [$@]"
-    $ISABELLE_TOOL afp_build -- -v -c $@  || fail "isabelle afp_build failed on [$@]"
+    $ISABELLE_TOOL afp_build -- $JOBS -v -c $@  || fail "isabelle afp_build failed on [$@]"
 
     cd $EXPORT/thys
     for ENTRY in $@; do

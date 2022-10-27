@@ -219,10 +219,10 @@ Details:
 
 `releases.toml`
 ---------------
-Contains all releases. The youngest release is always ignored, so don't forget to add new releases
+Contains all releases. The youngest release is always ignored, so don't forget to add old releases
 when a new Isabelle version is released. Format:
 
 ```toml
 [name]
-<isabelle-release> = <yyyy>-<mm>-<dd>
+<yyyy>-<mm>-<dd> = <isabelle-release>
 ```
