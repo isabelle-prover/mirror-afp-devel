@@ -327,18 +327,30 @@ object Web_App {
         isabelle.HTML.footer
     }
 
-    abstract class Endpoint(path: String, method: String = "GET")
-      extends HTTP.Service(path.stripPrefix("/"), method)
+    sealed abstract class Endpoint(path: String, method: String = "GET")
+      extends HTTP.Service(path.stripPrefix("/"), method) {
+
+      def reply(request: HTTP.Request): HTTP.Response
+
+      final def apply(request: HTTP.Request): Option[HTTP.Response] =
+        Exn.capture(reply(request)) match {
+          case Exn.Res(res) => Some(res)
+          case Exn.Exn(exn) =>
+            val id = UUID.random()
+            progress.echo_error_message("Internal error <" + id + ">: " + exn)
+            isabelle.error("Internal server error. ID: " + id)
+        }
+    }
 
     class Get(path: String, description: String, get: Properties.T => Option[A])
       extends Endpoint(path) {
 
-      def apply(request: HTTP.Request): Option[HTTP.Response] = {
+      def reply(request: HTTP.Request): HTTP.Response = {
         progress.echo_if(verbose, "GET " + description)
 
         def decode(s: String): Option[Properties.Entry] =
           s match {
-            case Properties.Eq (k, v) => Some(Url.decode(k) -> Url.decode(v))
+            case Properties.Eq(k, v) => Some(Url.decode(k) -> Url.decode(v))
             case _ => None
           }
 
@@ -347,14 +359,14 @@ object Web_App {
         progress.echo_if(verbose, "params: " + props.toString())
 
         val model = get(props).getOrElse(error)
-        Some(HTTP.Response.html(output(render(model))))
+        HTTP.Response.html(output(render(model)))
       }
     }
 
     class Post(path: String, description: String, post: Params.Data => Option[A])
       extends Endpoint(path, method = "POST") {
 
-      def apply(request: HTTP.Request): Option[HTTP.Response] = {
+      def reply(request: HTTP.Request): HTTP.Response = {
         progress.echo_if(verbose, "POST " + description)
 
         val parts = Multi_Part.parse(request.input)
@@ -362,7 +374,7 @@ object Web_App {
         progress.echo_if(verbose, "params: " + params.toString)
 
         val model = post(params).getOrElse(error)
-        Some(HTTP.Response.html(output(render(model))))
+        HTTP.Response.html(output(render(model)))
       }
     }
 
