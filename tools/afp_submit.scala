@@ -92,39 +92,106 @@ object AFP_Submit {
         new_affils.v.map(_.author).toSet ++ entries.v.flatMap(_.used_authors)
 
       def create(authors: Map[Author.ID, Author]): (Map[Author.ID, Author], List[Entry]) =
-        (updated_authors(authors),
-          entries.v.map(entry =>
-            Metadata.Entry(
-              name = entry.name.v,
-              title = entry.title.v,
-              authors = entry.affils.v,
-              date = LocalDate.now(),
-              topics = entry.topics.v,
-              `abstract` = entry.`abstract`.v.trim,
-              notifies = entry.notifies.v,
-              license = entry.license,
-              note = "",
-              related = entry.related)))
+        (updated_authors(authors), entries.v.map(entry =>
+          Entry(
+            name = entry.name.v,
+            title = entry.title.v,
+            authors = entry.affils.v,
+            date = LocalDate.now(),
+            topics = entry.topics.v,
+            `abstract` = entry.`abstract`.v.trim,
+            notifies = entry.notifies.v,
+            license = entry.license,
+            note = "",
+            related = entry.related)))
     }
 
-    case class Submission_Entry(date: Date, id: String, name: String)
-
-    sealed trait T
-
-    case object Invalid extends T
-
-    case class Upload(
+    case class Overview(id: String, date: Date, name: String)
+    case class Metadata(
       authors: Map[Author.ID, Author],
       entries: List[Entry],
-      message: String,
-      error: String
-    ) extends T
+      message: String)
 
-    case class Submitted(id: String) extends T
+    sealed trait T
+    case object Invalid extends T
+    case class Upload(meta: Metadata, error: String) extends T
+    case class Created(id: String) extends T
+    case class Submission(id: Handler.ID, meta: Metadata) extends T
+    case class Submission_List(submissions: List[Overview]) extends T
+  }
 
-    case class Submission(authors: Map[Author.ID, Author], entries: List[Entry]) extends T
 
-    case class Submissions(model: List[Submission_Entry]) extends T
+  /* Physical submission handling */
+
+  trait Handler {
+    def create(date: Date, meta: Model.Metadata, archive: Bytes, ext: String): Handler.ID
+    def list(): Model.Submission_List
+    def get(id: Handler.ID): Option[Model.Submission]
+    // TODO: submission to editors, set status
+  }
+  object Handler {
+    import Model._
+
+    type ID = String
+
+    object ID {
+      private val format = Date.Format.make(
+        List(
+          Date.Formatter.pattern("dd-MM-uuuu_HH-mm-ss_SSS"),
+          Date.Formatter.pattern("dd-MM-uuuu_HH-mm-ss_SSS_VV")),
+        _ + "_" + Date.timezone().getId)
+
+      def apply(submission_time: Date): ID = format(submission_time)
+      def unapply(id: ID): Option[Date] = format.unapply(id)
+      def check(id: ID): Option[ID] = unapply(id).map(apply)
+    }
+
+    /* Adapter to existing submission system */
+
+    class Adapter(
+      submission_dir: Path,
+      topics: Map[Topic.ID, Topic],
+      licenses: Map[License.ID, License]
+    ) extends Handler {
+      private val up: Path = submission_dir + Path.basic("up")
+      private def up(id: ID): Path = up + Path.basic(id)
+
+      def create(date: Date, meta: Metadata, archive: Bytes, ext: String): ID = {
+        val id = ID(date)
+        val dir = up(id)
+        dir.file.mkdirs()
+
+        val structure = AFP_Structure(dir)
+        structure.save_authors(meta.authors.values.toList.sortBy(_.id))
+        meta.entries.foreach(structure.save_entry)
+
+        // TODO: write submission system things to server
+
+        Bytes.write(dir + Path.basic("archive" + ext), archive)
+        id
+      }
+
+      def list(): Submission_List =
+        Submission_List(
+          File.read_dir(up).flatMap(ID.unapply).map { date =>
+            val id = ID(date)
+            val name = AFP_Structure(up(id)).entries_unchecked.head
+
+            Overview(id, date, name)
+          })
+
+      def get(id: ID): Option[Submission] =
+        ID.check(id).filter(up(_).file.exists).map { id =>
+          val structure = AFP_Structure(up(id))
+          val authors = structure.load_authors.map(author => author.id -> author).toMap
+          val entries = structure.entries_unchecked.map(
+            structure.load_entry(_, authors, topics, licenses, Map.empty))
+
+          // TODO: load submission system things from server
+
+          Submission(id, Metadata(authors, entries, ""))
+        }
+    }
   }
 
 
@@ -132,20 +199,15 @@ object AFP_Submit {
 
   class Server(
     authors: Map[Author.ID, Metadata.Author],
-    topics: Map[Topic.ID, Topic],
+    topics: List[Topic],
     licenses: Map[License.ID, License],
     releases: Map[Entry.Name, List[Release]],
     entries: Set[Entry.Name],
     verbose: Boolean,
     progress: Progress,
     port: Int = 0,
-    submission_dir: Path
+    handler: Handler
   ) extends Web_App.Server[Model.T](port, verbose, progress) {
-    val format = Date.Format.make(
-      List(
-        Date.Formatter.pattern("dd-MM-uuuu_HH-mm-ss_SSS"),
-        Date.Formatter.pattern("dd-MM-uuuu_HH-mm-ss_SSS_VV")),
-      _ + "_" + Date.timezone().getId)
 
     /* endpoints */
 
@@ -310,7 +372,7 @@ object AFP_Submit {
             indexed(entry.topics.v, key, TOPIC, render_topic) :::
             selection(Nest_Key(key, TOPIC),
               entry.topic_input.v.map(_.id),
-              topics.keys.toList.map(topic => option(topic, topic))) ::
+              topics.map(topic => option(topic.id, topic.id))) ::
             action_button(API_SUBMISSION_ENTRY_TOPICS_ADD, "add", key) ::
             render_error(Nest_Key(key, TOPIC), entry.topics)),
           par(List(
@@ -387,7 +449,8 @@ object AFP_Submit {
           render_if(!model.used_affils.contains(affil),
             action_button(API_SUBMISSION_AFFILIATIONS_REMOVE, "x", key)))
 
-      indexed(model.entries.v, Params.empty, ENTRY, render_entry) :::
+      List(submit_form(API_SUBMISSION,
+        indexed(model.entries.v, Params.empty, ENTRY, render_entry) :::
         render_error("", model.entries) :::
         par(List(
           explanation("",
@@ -424,17 +487,17 @@ object AFP_Submit {
           render_error(Nest_Key(AFFILIATION, ADDRESS), model.new_affils_input) :::
           render_error("", model.new_affils)) ::
         fieldset(List(legend("Upload"),
-          api_button(API_SUBMISSION_UPLOAD, "preview and upload >"))) :: Nil
+          api_button(API_SUBMISSION_UPLOAD, "preview and upload >"))) :: Nil))
     }
 
-    def render_entries(updated_authors: Map[Author.ID, Author], entries: List[Entry]): XML.Body = {
+    def render_metadata(meta: Model.Metadata): XML.Body = {
       val new_authors =
-        entries.flatMap(_.authors).map(_.author).filterNot(authors.contains).map(updated_authors)
+        meta.entries.flatMap(_.authors).map(_.author).filterNot(authors.contains).map(meta.authors)
       val new_affils =
-        entries.flatMap(_.authors).filterNot {
+        meta.entries.flatMap(_.authors).filterNot {
           case _: Unaffiliated => true
-          case e: Email => updated_authors(e.author).emails.contains(e)
-          case h: Homepage => updated_authors(h.author).homepages.contains(h)
+          case e: Email => meta.authors(e.author).emails.contains(e)
+          case h: Homepage => meta.authors(h.author).homepages.contains(h)
         }
 
       def render_topic(topic: Topic, key: Params.Key): XML.Elem =
@@ -444,7 +507,7 @@ object AFP_Submit {
         item(
           hidden(Nest_Key(key, ID), affil.author) ::
           hidden(Nest_Key(key, AFFILIATION), affil_id(affil)) ::
-          text(author_string(updated_authors(affil.author)) + ", " + affil_string(affil)))
+          text(author_string(meta.authors(affil.author)) + ", " + affil_string(affil)))
 
       def render_related(related: Reference, key: Params.Key): XML.Elem =
         item(
@@ -496,19 +559,22 @@ object AFP_Submit {
           hidden(Nest_Key(key, ID), affil_id(affil)),
           hidden(Nest_Key(key, AFFILIATION), affil_address(affil))))
 
-      indexed(entries, Params.empty, ENTRY, render_entry) :::
+      indexed(meta.entries, Params.empty, ENTRY, render_entry) :::
         indexed(new_authors, Params.empty, AUTHOR, render_new_author) :::
         indexed(new_affils, Params.empty, AFFILIATION, render_new_affil)
     }
 
+    def render_submission(submission: Model.Submission): XML.Body =
+      render_metadata(submission.meta)
+
     def render_upload(upload: Model.Upload): XML.Body =
-      List(
-        fieldset(legend("Overview") :: render_entries(upload.authors, upload.entries)),
+      List(submit_form(API_SUBMISSION, List(
+        fieldset(legend("Overview") :: render_metadata(upload.meta)),
         fieldset(legend("Submit") ::
           api_button(API_SUBMISSION, "< edit metadata") ::
           par(List(
             fieldlabel(MESSAGE, "Message for the editors (optional)"),
-            textfield(MESSAGE, "", upload.message),
+            textfield(MESSAGE, "", upload.meta.message),
             explanation(
               MESSAGE,
               "Note: Anything special or noteworthy about your submission can be covered here. " +
@@ -522,27 +588,31 @@ object AFP_Submit {
               "Note: Your zip or tar file should contain one folder with your theories, ROOT, etc. " +
               "The folder name should be the short/folder name used in the submission form."))) ::
           api_button(API_SUBMISSION_SUBMIT, "submit") ::
-          render_error(ARCHIVE, Validated.error((), upload.error))))
+          render_error(ARCHIVE, Validated.error((), upload.error))))))
 
-    def render_submission_entry(submission: Model.Submission_Entry): XML.Elem =
-      item(
-        text(submission.date.format(Date.Format.date)) :::
-        link(SUBMISSION + "?id=" + submission.id, text(submission.name)) :: Nil)
+    def render_submission_list(submissions: Model.Submission_List): XML.Body = {
+      def render_overview(overview: Model.Overview): XML.Elem =
+        item(
+          text(overview.date.format(Date.Format.date)) :::
+            link(SUBMISSION + "?id=" + overview.id, text(overview.name)) :: Nil)
+
+      List(list(submissions.submissions.map(render_overview)))
+    }
+
+    def render_created(created: Model.Created): XML.Body =
+      text("Success!") ::: link(SUBMISSION + "?id=" + created.id, text("view entry")) :: Nil
+
+    def render_invalid: XML.Body =
+      text("Invalid request")
 
     def render(model: Model.T): XML.Body =
       model match {
-        case metadata: Model.Create =>
-          List(submit_form(API_SUBMISSION, render_create(metadata)))
-        case upload: Model.Upload =>
-          List(submit_form(API_SUBMISSION, render_upload(upload)))
-        case submission: Model.Submission =>
-          render_entries(submission.authors, submission.entries)
-        case submissions: Model.Submissions =>
-          List(list(submissions.model.map(render_submission_entry)))
-        case Model.Submitted(id) =>
-          text("Success!") ::: link(SUBMISSION + "?id=" + id, text("view entry")) :: Nil
-        case Model.Invalid =>
-          text("Invalid request")
+        case create: Model.Create => render_create(create)
+        case upload: Model.Upload => render_upload(upload)
+        case submission: Model.Submission => render_submission(submission)
+        case submissions: Model.Submission_List => render_submission_list(submissions)
+        case created: Model.Created => render_created(created)
+        case Model.Invalid => render_invalid
       }
 
 
@@ -552,7 +622,7 @@ object AFP_Submit {
       id: Topic.ID,
       selected: List[Topic]
     ): (Option[Topic], Validated[Option[Topic]]) = {
-      topics.get(id) match {
+      topics.find(_.id == id) match {
         case Some(topic) =>
           if (selected.contains(topic))
             (None, Validated.error(Some(topic), "Topic already selected"))
@@ -1002,68 +1072,44 @@ object AFP_Submit {
 
       if (ok) {
         val (updated_authors, entries) = model.create(authors)
-        Model.Upload(updated_authors, entries, params.get(MESSAGE).value, "")
+        Model.Upload(Model.Metadata(updated_authors, entries, params.get(MESSAGE).value), "")
       } else validated
     }
 
     def submit(params: Params.Data): Option[Model.T] = {
       upload(params) match {
-        case Some(Model.Upload(authors, entries, message, _)) =>
+        case Some(Model.Upload(meta, _)) =>
           val archive = Bytes.decode_base64(params.get(ARCHIVE).get(FILE).value)
           val file_name = params.get(ARCHIVE).value
+
           if (archive.is_empty || file_name.isEmpty) {
-            Some(Model.Upload(authors, entries, message, "Select a file"))
+            Some(Model.Upload(meta, "Select a file"))
           } else if (!file_name.endsWith(".zip") && !file_name.endsWith(".tar.gz")) {
-            Some(Model.Upload(authors, entries, message, "Only .zip and .tar.gz archives allowed"))
+            Some(Model.Upload(meta, "Only .zip and .tar.gz archives allowed"))
           } else {
-            val id = Date.now().format(format)
-            val dir = submission_dir + Path.basic(id)
-            dir.file.mkdirs()
-
-            val archive_name = if (file_name.endsWith(".zip")) "archive.zip" else "archive.tar.gz"
-            Bytes.write(dir + Path.basic(archive_name), archive)
-            // DODO signal done
-
-            val submission = AFP_Structure(dir)
-            entries.foreach(submission.save_entry)
-            submission.save_authors(authors.toList.sortBy(_._1).map(_._2))
-
-            Some(Model.Submitted(id))
+            val ext = if (file_name.endsWith(".zip")) ".zip" else ".tar.gz"
+            val id = handler.create(Date.now(), meta, archive, ext)
+            Some(Model.Created(id))
           }
         case _ => None
       }
     }
 
-    val submit_init =
-      Model.Create(entries = Validated.ok(List(Model.Create_Entry(license = licenses.head._2))))
+    def get_submit: Option[Model.T] =
+      Some(Model.Create(entries =
+        Validated.ok(List(Model.Create_Entry(license = licenses.head._2)))))
 
     def get_submission(props: Properties.T): Option[Model.T] =
-      Properties.get(props, "id").flatMap(format.unapply).map { date =>
-        val dir = submission_dir + Path.basic(format(date))
-        val structure = AFP_Structure(dir)
-        val authors = structure.load_authors.map(author => author.id -> author).toMap
-        val entries = structure.entries_unchecked.map(
-          structure.load_entry(_, authors, topics, licenses, releases))
-        Model.Submission(authors, entries)
-      }
+      Properties.get(props, "id").flatMap(handler.get)
 
-    def list_submissions =
-      Model.Submissions(File.read_dir(submission_dir).flatMap(format.unapply).map { date =>
-        val id = format(date)
-        val dir = submission_dir + Path.basic(id)
-        val name = AFP_Structure(dir).entries_unchecked.head
-
-        Model.Submission_Entry(date, id, name)
-      })
+    def list_submissions: Option[Model.T] = Some(handler.list())
 
     val error = Model.Invalid
 
-    def init(m: Model.T): Properties.T => Option[Model.T] = (_ => Some(m))
-
     val endpoints = List(
-      Get(SUBMIT, "get submit", init(submit_init)),
+      Get(SUBMIT, "get submit", _ => get_submit),
       Get(SUBMISSION, "get submission", get_submission),
-      Get(SUBMISSIONS, "list submissions", init(list_submissions)),
+      Get(SUBMISSIONS, "list submissions", _ => list_submissions),
       Post(API_SUBMISSION, "get", parse_metadata),
       Post(API_SUBMISSION_AUTHORS_ADD, "add author",  add_new_author),
       Post(API_SUBMISSION_AUTHORS_REMOVE, "remove author", remove_new_author),
@@ -1128,15 +1174,14 @@ Usage: isabelle afp_submit [OPTIONS] DIR
       val progress = new Console_Progress(verbose = verbose)
 
       val authors = afp_structure.load_authors.map(author => author.id -> author).toMap
-      val topics =
-        afp_structure.load_topics.flatMap(_.all_topics).map(topic => topic.id -> topic).toMap
+      val topics = afp_structure.load_topics.flatMap(_.all_topics)
       val licenses = afp_structure.load_licenses.map(license => license.id -> license).toMap
       val releases = afp_structure.load_releases.groupBy(_.entry)
       val entries = afp_structure.entries.toSet
 
       val server = new Server(authors = authors, topics = topics, licenses = licenses,
         releases = releases, entries = entries, verbose = verbose, progress = progress, port = port,
-        submission_dir = dir)
+        handler = new Handler.Adapter(dir, topics.map(topic => topic.id -> topic).toMap, licenses))
 
       server.run()
     })
