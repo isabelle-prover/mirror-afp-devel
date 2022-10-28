@@ -1481,7 +1481,7 @@ lemma Dickson_fun:
 proof (induct V)
   case empty
   have "finite {0}" by simp
-  moreover have "reflp_on (adds) {0::'a \<Rightarrow> 'b}" by (simp add: reflp_on_def)
+  moreover have "reflp_on {0::'a \<Rightarrow> 'b} (adds)" by (simp add: reflp_on_def)
   ultimately have "almost_full_on (adds) {0::'a \<Rightarrow> 'b}" by (rule finite_almost_full_on)
   thus ?case by (simp add: supp_fun_eq_zero_iff)
 next

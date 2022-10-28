@@ -179,7 +179,7 @@ by (auto simp: almost_full_on_def good_def)
 
 lemma almost_full_on_imp_reflp_on:
   assumes "almost_full_on P A"
-  shows "reflp_on P A"
+  shows "reflp_on A P"
 using assms by (auto simp: almost_full_on_def reflp_on_def)
 
 lemma almost_full_on_subset:
@@ -389,7 +389,7 @@ text \<open>
 \<close>
 lemma finite_almost_full_on:
   assumes finite: "finite A"
-    and refl: "reflp_on P A"
+    and refl: "reflp_on A P"
   shows "almost_full_on P A"
 proof
   fix f :: "nat \<Rightarrow> 'a"
@@ -491,7 +491,7 @@ lemma every_qo_extension_wf_imp_af:
   shows "almost_full_on P A"
 proof
   from \<open>qo_on P A\<close>
-    have refl: "reflp_on P A"
+    have refl: "reflp_on A P"
     and trans: "transp_on P A"
     by (auto intro: qo_on_imp_reflp_on qo_on_imp_transp_on)
 

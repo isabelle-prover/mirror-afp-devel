@@ -24,7 +24,7 @@ lemma wqo_onI [Pure.intro]:
   unfolding wqo_on_def almost_full_on_def by blast
 
 lemma wqo_on_imp_reflp_on:
-  "wqo_on P A \<Longrightarrow> reflp_on P A"
+  "wqo_on P A \<Longrightarrow> reflp_on A P"
   using almost_full_on_imp_reflp_on by (auto simp: wqo_on_def)
 
 lemma wqo_on_imp_transp_on:
@@ -253,7 +253,7 @@ text \<open>
   Every reflexive and transitive relation on a finite set is a wqo.
 \<close>
 lemma finite_wqo_on:
-  assumes "finite A" and refl: "reflp_on P A" and "transp_on P A"
+  assumes "finite A" and refl: "reflp_on A P" and "transp_on P A"
   shows "wqo_on P A"
   using assms and finite_almost_full_on by (auto simp: wqo_on_def)
 
