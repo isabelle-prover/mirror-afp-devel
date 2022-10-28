@@ -40,9 +40,6 @@ definition reflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> '
 definition transp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "transp_on P A \<longleftrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. P x y \<and> P y z \<longrightarrow> P x z)"
 
-definition total_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "total_on P A \<longleftrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. x = y \<or> P x y \<or> P y x)"
-
 abbreviation "strict P \<equiv> \<lambda>x y. P x y \<and> \<not> (P y x)"
 
 abbreviation "incomparable P \<equiv> \<lambda>x y. \<not> P x y \<and> \<not> P y x"
@@ -59,10 +56,6 @@ lemma reflp_onI [Pure.intro]:
 lemma transp_onI [Pure.intro]:
   "(\<And>x y z. \<lbrakk>x \<in> A; y \<in> A; z \<in> A; P x y; P y z\<rbrakk> \<Longrightarrow> P x z) \<Longrightarrow> transp_on P A"
   unfolding transp_on_def by blast
-
-lemma total_onI [Pure.intro]:
-  "(\<And>x y. \<lbrakk>x \<in> A; y \<in> A\<rbrakk> \<Longrightarrow> x = y \<or> P x y \<or> P y x) \<Longrightarrow> total_on P A"
-  unfolding total_on_def by blast
 
 lemma reflp_on_reflclp_simp [simp]:
   assumes "reflp_on P A" and "a \<in> A" and "b \<in> A"
