@@ -1008,7 +1008,7 @@ fun C_diag source state =
 fun diag_state ctxt =
   (case Diag_State.get ctxt of
     SOME st => st
-  | NONE => Toplevel.init_toplevel ());
+  | NONE => Toplevel.make_state NONE);
 
 val diag_goal = Proof.goal o Toplevel.proof_of o diag_state;
 
