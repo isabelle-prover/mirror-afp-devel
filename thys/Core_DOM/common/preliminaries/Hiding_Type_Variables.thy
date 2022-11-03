@@ -115,7 +115,7 @@ structure Hide_Tvar : HIDE_TVAR = struct
 
   fun update_mode typ_str print_mode parse_mode thy   =
     let       
-      val ctxt = Toplevel.context_of(Toplevel.theory_toplevel thy)
+      val ctxt = Proof_Context.init_global thy
       val typ = Syntax.parse_typ ctxt typ_str (* no type checking *)
       val name = case typ of 
                    Type(name,_) => name
@@ -305,7 +305,7 @@ structure Hide_Tvar : HIDE_TVAR = struct
 
   fun register typ_str print_mode parse_mode thy   =
     let   
-      val ctxt = Toplevel.context_of(Toplevel.theory_toplevel thy)
+      val ctxt = Proof_Context.init_global thy
       val typ = Syntax.parse_typ ctxt typ_str
       val (name,tvars) = case typ  of Type(name,tvars) => (name,tvars)
                              | _             => error("Unsupported type structure.")
