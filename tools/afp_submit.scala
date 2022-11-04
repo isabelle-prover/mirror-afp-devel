@@ -141,7 +141,10 @@ object AFP_Submit {
   trait Handler {
     def create(date: Date, meta: Model.Metadata, archive: Bytes, ext: String): Handler.ID
     def list(): Model.Submission_List
-    def get(id: Handler.ID): Option[Model.Submission]
+    def get(id: Handler.ID,
+      topics: Map[Topic.ID, Topic],
+      licenses: Map[License.ID, License]
+    ): Option[Model.Submission]
     def submit(id: Handler.ID): Unit
     def set_status(id: Handler.ID, status: Model.Status.Value): Unit
     def abort_build(id: Handler.ID): Unit
@@ -167,11 +170,7 @@ object AFP_Submit {
 
     /* Adapter to existing submission system */
 
-    class Adapter(
-      submission_dir: Path,
-      topics: Map[Topic.ID, Topic],
-      licenses: Map[License.ID, License]
-    ) extends Handler {
+    class Adapter(submission_dir: Path, afp_structure: AFP_Structure) extends Handler {
 
       private val up: Path = submission_dir + Path.basic("up")
       private def up(id: ID): Path = up + Path.basic(id)
@@ -227,7 +226,6 @@ object AFP_Submit {
         val archive_file = dir + Path.basic(archive_name + ext)
         Bytes.write(archive_file, archive)
 
-        val afp_structure = AFP_Structure()
         val metadata_rel =
           File.relative_path(afp_structure.base_dir, afp_structure.metadata_dir).getOrElse(
             afp_structure.metadata_dir)
@@ -254,7 +252,11 @@ object AFP_Submit {
             read_status(id).map(Overview(id, day, AFP_Structure(up(id)).entries_unchecked.head, _))
           })
 
-      def get(id: ID): Option[Submission] =
+      def get(
+        id: ID,
+        topics: Map[Topic.ID, Topic],
+        licenses: Map[License.ID, License]
+      ): Option[Submission] =
         ID.check(id).filter(up(_).file.exists).map { id =>
           val structure = AFP_Structure(up(id))
           val authors = structure.load_authors.map(author => author.id -> author).toMap
@@ -302,17 +304,34 @@ object AFP_Submit {
   /* server */
 
   class Server(
-    authors: Map[Author.ID, Metadata.Author],
-    topics: List[Topic],
-    licenses: Map[License.ID, License],
-    releases: Map[Entry.Name, List[Release]],
-    entries: Set[Entry.Name],
+    base_url: String,
+    afp_structure: AFP_Structure,
+    handler: Handler,
+    devel: Boolean,
     verbose: Boolean,
     progress: Progress,
-    base_url: String,
-    port: Int = 0,
-    handler: Handler
+    port: Int = 0
   ) extends Web_App.Server[Model.T](port, verbose, progress) {
+    val repo = Mercurial.the_repository(afp_structure.base_dir)
+
+    var authors: Map[Author.ID, Metadata.Author] = Map.empty
+    var topics: List[Topic] = Nil
+    var all_topics: Map[Topic.ID, Topic] = Map.empty
+    var licenses: Map[License.ID, License] = Map.empty
+    var releases: Map[Entry.Name, List[Release]] = Map.empty
+    var entries: Set[Entry.Name] = Set.empty
+
+    private def load(): Unit = synchronized {
+      authors = afp_structure.load_authors.map(author => author.id -> author).toMap
+      topics = afp_structure.load_topics.flatMap(_.all_topics)
+      all_topics = topics.map(topic => topic.id -> topic).toMap
+      licenses = afp_structure.load_licenses.map(license => license.id -> license).toMap
+      releases = afp_structure.load_releases.groupBy(_.entry)
+      entries = afp_structure.entries.toSet
+    }
+
+    load()
+
 
     /* endpoints */
 
@@ -1276,14 +1295,14 @@ object AFP_Submit {
         Validated.ok(List(Model.Create_Entry(license = licenses.head._2)))))
 
     def get_submission(props: Properties.T): Option[Model.Submission] =
-      Properties.get(props, "id").flatMap(handler.get)
+      Properties.get(props, "id").flatMap(handler.get(_, all_topics, licenses))
 
     def resubmit(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value).map(submission =>
+      handler.get(params.get(ACTION).value, all_topics, licenses).map(submission =>
         Model.Upload(submission.meta, ""))
 
     def submit(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value).flatMap { submission =>
+      handler.get(params.get(ACTION).value, all_topics, licenses).flatMap { submission =>
         if (submission.status.nonEmpty) None
         else {
           handler.submit(submission.id)
@@ -1292,7 +1311,7 @@ object AFP_Submit {
       }
 
     def abort_build(params: Params.Data): Option[Model.T] =
-      handler.get(params.get(ACTION).value).flatMap { submission =>
+      handler.get(params.get(ACTION).value, all_topics, licenses).flatMap { submission =>
         if (submission.build != Model.Build.Running) None
         else {
           handler.abort_build(submission.id)
@@ -1300,13 +1319,23 @@ object AFP_Submit {
         }
       }
 
-    def set_status(params: Params.Data): Option[Model.T] =
+    def set_status(params: Params.Data): Option[Model.T] = {
       for {
         list <- parse_submission_list(params)
         num_entry <- List_Key.num(ENTRY, params.get(ACTION).value)
         changed <- list.submissions.unapply(num_entry)
-        _ = handler.set_status(changed.id, changed.status)
-      } yield list
+      } yield {
+        if (changed.status == Model.Status.Submitted && !devel) {
+          progress.echo_if(verbose, "Updating server data...")
+          repo.pull()
+          repo.update()
+          load()
+          progress.echo_if(verbose, "Finished update")
+        }
+        handler.set_status(changed.id, changed.status)
+        list
+      }
+    }
 
     def submission_list: Option[Model.T] = Some(handler.list())
 
@@ -1366,6 +1395,7 @@ object AFP_Submit {
     { args =>
 
       var base_url = "https://isa-afp.org/webapp"
+      var devel = false
       var verbose = false
       var port = 0
 
@@ -1374,12 +1404,14 @@ Usage: isabelle afp_submit [OPTIONS] DIR
 
   Options are:
       -b URL       application base url. Default: """ + base_url + """"
+      -d           devel mode (e.g., skips automatic AFP repository updates)
       -p PORT      server port. Default: """ + port + """
       -v           verbose
 
   Start afp submission server, which stores submissions in DIR.
 """,
         "b:" -> (arg => base_url = arg),
+        "d" -> (_ => devel = true),
         "p:" -> (arg => port = Value.Int.parse(arg)),
         "v" -> (_ => verbose = true))
 
@@ -1395,16 +1427,9 @@ Usage: isabelle afp_submit [OPTIONS] DIR
 
       val progress = new Console_Progress(verbose = verbose)
 
-      val authors = afp_structure.load_authors.map(author => author.id -> author).toMap
-      val topics = afp_structure.load_topics.flatMap(_.all_topics)
-      val licenses = afp_structure.load_licenses.map(license => license.id -> license).toMap
-      val releases = afp_structure.load_releases.groupBy(_.entry)
-      val entries = afp_structure.entries.toSet
-
-      val handler = new Handler.Adapter(dir, topics.map(topic => topic.id -> topic).toMap, licenses)
-      val server = new Server(authors = authors, topics = topics, licenses = licenses,
-        releases = releases, entries = entries, verbose = verbose, progress = progress,
-        base_url = base_url, port = port, handler = handler)
+      val handler = new Handler.Adapter(dir, afp_structure)
+      val server = new Server(base_url = base_url, afp_structure = afp_structure, handler = handler,
+        devel = devel, verbose = verbose, progress = progress, port = port)
 
       server.run()
     })
