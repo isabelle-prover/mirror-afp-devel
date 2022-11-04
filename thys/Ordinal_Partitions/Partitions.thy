@@ -875,7 +875,7 @@ proof clarsimp
     then have f_eq_0: "M \<in> [UU]\<^bsup>m\<^esup> \<Longrightarrow> \<exists>x\<in>[M]\<^bsup>2\<^esup>. f x = 0" for M
       using not1 [of M] finite_ordertype_eq_card [of M pair_less m] f
       apply (clarsimp simp: nsets_def eval_nat_numeral Pi_def)
-      by (meson less_Suc0 not_less_less_Suc_eq subset_trans)
+      by (metis less_Suc0 less_antisym order.trans finite_subset)
     obtain N js where "infinite N" and N: "\<And>k u. \<lbrakk>k < 4; u \<in> [UU]\<^bsup>2\<^esup>; form u k; scheme u \<subseteq> N\<rbrakk> \<Longrightarrow> f u = js!k"
       using f lemma_2_3 by blast
     obtain M0 where M0: "M0 \<in> [UU]\<^bsup>m\<^esup>" "\<And>u. u \<in> [M0]\<^bsup>2\<^esup> \<Longrightarrow> form u 0" "\<And>u. u \<in> [M0]\<^bsup>2\<^esup> \<Longrightarrow> scheme u \<subseteq> N"

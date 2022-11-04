@@ -49,8 +49,11 @@ lemma finite_edges: "e \<in> E \<Longrightarrow> finite e"
 lemma finite_V: "finite V"
   using finite_edges and finite_E by auto
 
+lemma neighbors_subset_V: "neighbors u \<subseteq> V"
+by auto
+
 lemma finite_neighbors: "finite (neighbors u)"
-  using finite_V and rev_finite_subset [of V "neighbors u"] by auto
+  using finite_V neighbors_subset_V[of u] by (simp)
 
 lemma independent_vertices_finite: "independent_vertices E S \<Longrightarrow> finite S"
   by (metis rev_finite_subset independent_vertices_def vertices.simps finite_V)

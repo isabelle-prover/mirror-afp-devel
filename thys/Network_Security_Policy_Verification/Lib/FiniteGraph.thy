@@ -294,7 +294,7 @@ lemmas graph_ops=add_node_def delete_node_def add_edge_def delete_edge_def delet
 
   lemma wf_graph_add_subset_edges: "\<lbrakk> wf_graph \<lparr> nodes = V, edges = E \<rparr>; E' \<subseteq> E \<rbrakk> \<Longrightarrow>
      wf_graph \<lparr> nodes = V, edges= E \<union> E'\<rparr>"
-    by(auto simp add: wf_graph_def) (metis rev_finite_subset)
+    by(auto simp add: wf_graph_def)
 
 
 (*Inspired by 

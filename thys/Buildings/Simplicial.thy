@@ -53,8 +53,7 @@ lemma finite_facetrel_card: "finite x \<Longrightarrow> y\<lhd>x \<Longrightarro
   using facetrel_def[of y x] card_insert_disjoint[of x] by auto
 
 lemma facetrelI_cardSuc: "z\<subseteq>x \<Longrightarrow> card x = Suc (card z) \<Longrightarrow> z\<lhd>x"
-  using card_ge_0_finite finite_subset[of z] card_Diff_subset[of z x]
-  by    (force intro: facetrelI_card)
+  using card_ge_0_finite[of x] card_Diff_subset[of z x] by (auto intro: facetrelI_card)
 
 lemma facet2_subset: "\<lbrakk> z\<lhd>x; z\<lhd>y; x\<inter>y - z \<noteq> {} \<rbrakk> \<Longrightarrow> x \<subseteq> y"
   unfolding facetrel_def by force

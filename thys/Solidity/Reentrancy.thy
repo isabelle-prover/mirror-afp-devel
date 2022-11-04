@@ -515,7 +515,8 @@ proof -
 
       have "inj_on (\<lambda>(ad, x). (ad + (STR ''.'' + STR ''balance''), x)) {(ad, x). (fmlookup s \<circ> (\<lambda>ad. ad + (STR ''.'' + STR ''balance''))) ad = Some x}" using balance_inj by simp
       then have "finite {(ad, x). (fmlookup s \<circ> (\<lambda>ad. ad + (STR ''.'' + STR ''balance''))) ad = Some x}" using fmlookup_finite[of "\<lambda>ad. (ad + (STR ''.'' + STR ''balance''))" s] by simp
-      then have sum1: "finite ({(ad,x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env})" using finite_subset[of "{(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" "{(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x}"] by auto
+      then have sum1: "finite ({(ad,x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env})" using finite_subset[of "{(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" "{(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x}"]
+        by fastforce
       moreover have sum2: "(sender env,val) \<notin> {(ad,x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" by simp
       moreover from sum1 x1 val_def have "insert (sender env,val) {(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env} = {(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x}" by auto
       ultimately show ?thesis using sum.insert[OF sum1 sum2, of "\<lambda>(ad,x). ReadL\<^sub>i\<^sub>n\<^sub>t x"] val_def by simp
@@ -524,7 +525,8 @@ proof -
     proof -
       have "inj_on (\<lambda>(ad, x). (ad + (STR ''.'' + STR ''balance''), x)) {(ad, x). (fmlookup s' \<circ> (\<lambda>ad. ad + (STR ''.'' + STR ''balance''))) ad = Some x}" using balance_inj by simp
       then have "finite {(ad, x). (fmlookup s' \<circ> (\<lambda>ad. ad + (STR ''.'' + STR ''balance''))) ad = Some x}" using fmlookup_finite[of "\<lambda>ad. (ad + (STR ''.'' + STR ''balance''))" s'] by simp
-      then have sum1: "finite ({(ad,x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env})" using finite_subset[of "{(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" "{(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x}"] by auto
+      then have sum1: "finite ({(ad,x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env})" using finite_subset[of "{(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" "{(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x}"]
+        by fastforce
       moreover have sum2: "(sender env,ShowL\<^sub>i\<^sub>n\<^sub>t 0) \<notin> {(ad,x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" by simp
       moreover from ***** have "insert (sender env,ShowL\<^sub>i\<^sub>n\<^sub>t 0) {(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env} = {(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x}" by auto
       ultimately show ?thesis using sum.insert[OF sum1 sum2, of "\<lambda>(ad,x). ReadL\<^sub>i\<^sub>n\<^sub>t x"] Read_ShowL_id by simp
@@ -819,7 +821,7 @@ proof -
 
       have "inj_on (\<lambda>(ad, x). (ad + (STR ''.'' + STR ''balance''), x)) {(ad, x). (fmlookup s \<circ> (\<lambda>ad. ad + (STR ''.'' + STR ''balance''))) ad = Some x}" using balance_inj by simp
       then have "finite {(ad, x). (fmlookup s \<circ> (\<lambda>ad. ad + (STR ''.'' + STR ''balance''))) ad = Some x}" using fmlookup_finite[of "\<lambda>ad. (ad + (STR ''.'' + STR ''balance''))" s] by simp
-      then have sum1: "finite ({(ad,x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env})" using finite_subset[of "{(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" "{(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x}"] by auto
+      then have sum1: "finite ({(ad,x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env})" using finite_subset[of "{(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" "{(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x}"] by fastforce
       moreover have sum2: "(sender env,val) \<notin> {(ad,x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" by simp
       moreover from sum1 x1 val_def have "insert (sender env,val) {(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env} = {(ad, x). fmlookup s (ad + (STR ''.'' + STR ''balance'')) = Some x}" by auto
       ultimately show ?thesis using sum.insert[OF sum1 sum2, of "\<lambda>(ad,x). ReadL\<^sub>i\<^sub>n\<^sub>t x"] val_def by simp
@@ -828,7 +830,7 @@ proof -
     proof -
       have "inj_on (\<lambda>(ad, x). (ad + (STR ''.'' + STR ''balance''), x)) {(ad, x). (fmlookup s' \<circ> (\<lambda>ad. ad + (STR ''.'' + STR ''balance''))) ad = Some x}" using balance_inj by simp
       then have "finite {(ad, x). (fmlookup s' \<circ> (\<lambda>ad. ad + (STR ''.'' + STR ''balance''))) ad = Some x}" using fmlookup_finite[of "\<lambda>ad. (ad + (STR ''.'' + STR ''balance''))" s'] by simp
-      then have sum1: "finite ({(ad,x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env})" using finite_subset[of "{(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" "{(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x}"] by auto
+      then have sum1: "finite ({(ad,x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env})" using finite_subset[of "{(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" "{(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x}"] by fastforce
       moreover have sum2: "(sender env,ShowL\<^sub>i\<^sub>n\<^sub>t v) \<notin> {(ad,x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env}" by simp
       moreover from ***** have "insert (sender env,ShowL\<^sub>i\<^sub>n\<^sub>t v) {(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x \<and> ad \<noteq> sender env} = {(ad, x). fmlookup s' (ad + (STR ''.'' + STR ''balance'')) = Some x}" by auto
       ultimately show ?thesis using sum.insert[OF sum1 sum2, of "\<lambda>(ad,x). ReadL\<^sub>i\<^sub>n\<^sub>t x"] Read_ShowL_id by simp

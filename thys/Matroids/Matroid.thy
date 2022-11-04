@@ -7,27 +7,6 @@ theory Matroid
   imports Indep_System
 begin
 
-lemma card_subset_ex:
-  assumes "finite A" "n \<le> card A"
-  shows "\<exists>B \<subseteq> A. card B = n"
-using assms
-proof (induction A arbitrary: n rule: finite_induct)
-  case (insert x A)
-  show ?case
-  proof (cases n)
-    case 0
-    then show ?thesis using card.empty by blast
-  next
-    case (Suc k)
-    then have "\<exists>B \<subseteq> A. card B = k" using insert by auto
-    then obtain B where "B \<subseteq> A" "card B = k" by auto
-    moreover from this have "finite B" using insert.hyps finite_subset by auto
-    ultimately have "card (insert x B) = n"
-      using Suc insert.hyps card_insert_disjoint by fastforce
-    then show ?thesis using \<open>B \<subseteq> A\<close> by blast
-  qed
-qed auto
-
 locale matroid = indep_system +
   assumes augment_aux:
     "indep X \<Longrightarrow> indep Y \<Longrightarrow> card X = Suc (card Y) \<Longrightarrow> \<exists>x \<in> X - Y. indep (insert x Y)"
@@ -38,7 +17,7 @@ lemma augment:
   shows "\<exists>x \<in> X - Y. indep (insert x Y)"
 proof -
   obtain X' where "X' \<subseteq> X" "card X' = Suc (card Y)"
-    using assms card_subset_ex[of X "Suc (card Y)"] indep_finite by auto
+    using assms obtain_subset_with_card_n[of "Suc (card Y)" X] indep_finite by (metis Suc_leI)
   then obtain x where "x \<in> X' - Y"  "indep (insert x Y)"
     using assms augment_aux[of X' Y] indep_subset by auto
   then show ?thesis using \<open>X' \<subseteq> X\<close> by auto
