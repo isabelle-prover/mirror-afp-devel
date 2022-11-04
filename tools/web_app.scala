@@ -9,6 +9,8 @@ import isabelle._
 
 import scala.annotation.tailrec
 
+import java.nio.file.Files
+
 
 object Web_App {
   val FILE = "file"
@@ -158,9 +160,10 @@ object Web_App {
       def is_empty: Boolean = v.isEmpty && elem.isEmpty && elems.isEmpty
 
       override def toString: String = {
-        val parts = v.map(quote).toList ++
+        val parts =
+          v.map(v => if (v.length <= 100) quote(v) else quote(v.take(100) + "...")).toList ++
           elem.toList.map { case (k, v) => k + " -> " + v.toString } ++
-          elems.toList.map { case (k, v) => k + " -> (" + v.mkString + ")" }
+          elems.toList.map { case (k, v) => k + " -> (" + v.mkString(",") + ")" }
         "{" + parts.mkString(", ") + "}"
       }
 
@@ -236,22 +239,25 @@ object Web_App {
             val (before_text, at_text) = text.splitAt(text_i)
             val after_text = at_text.substring(sep.length)
 
+            // text might be shorter than bytes because of misinterpreted characters
+            var found = false
             var bytes_i = 0
-            var res = ""
-            var it: Iterator[Byte] = bytes.iterator
-            while (res != sep && it.hasNext) {
-              val (trash, rest) = it.span(_.toChar != sep.head)
-              it = rest
-              bytes_i += trash.length
-              val it2 = sep.iterator
-              val (res2, rest2) = it.span(t => it2.hasNext && it2.next() == t.toChar)
-              it = rest2
-              res = res2.map(_.toChar).mkString
-              bytes_i += res.length
+            while (!found && bytes_i < bytes.length) {
+              var sep_ok = true
+              var sep_i = 0
+              while (sep_ok && sep_i < sep.length) {
+                if (bytes.charAt(bytes_i + sep_i) == sep.charAt(sep_i)) {
+                  sep_i += 1
+                } else {
+                  bytes_i += 1
+                  sep_ok = false
+                }
+              }
+              if (sep_ok) found = true
             }
 
-            val before_bytes = bytes.subSequence(0, bytes_i - sep.length)
-            val after_bytes = bytes.subSequence(bytes_i, bytes.length)
+            val before_bytes = bytes.subSequence(0, bytes_i)
+            val after_bytes = bytes.subSequence(bytes_i + sep.length, bytes.length)
 
             Some(Seq(before_text, before_bytes), Seq(after_text, after_bytes))
           } else None
@@ -342,24 +348,44 @@ object Web_App {
         }
     }
 
+    private def query_params(request: HTTP.Request): Properties.T = {
+      def decode(s: String): Option[Properties.Entry] =
+        s match {
+          case Properties.Eq(k, v) => Some(Url.decode(k) -> Url.decode(v))
+          case _ => None
+        }
+
+      Library.try_unprefix(request.query, request.uri_name).toList.flatMap(params =>
+        space_explode('&', params).flatMap(decode))
+    }
+
     class Get(path: String, description: String, get: Properties.T => Option[A])
       extends Endpoint(path) {
 
       def reply(request: HTTP.Request): HTTP.Response = {
         progress.echo_if(verbose, "GET " + description)
 
-        def decode(s: String): Option[Properties.Entry] =
-          s match {
-            case Properties.Eq(k, v) => Some(Url.decode(k) -> Url.decode(v))
-            case _ => None
-          }
+        val params = query_params(request)
+        progress.echo_if(verbose, "params: " + params.toString())
 
-        val props = Library.try_unprefix(request.query, request.uri_name).toList.flatMap(params =>
-          space_explode('&', params).flatMap(decode))
-        progress.echo_if(verbose, "params: " + props.toString())
-
-        val model = get(props).getOrElse(error)
+        val model = get(params).getOrElse(error)
         HTTP.Response.html(output(render(model)))
+      }
+    }
+
+    class Get_File(path: String, description: String, download: Properties.T => Option[Path])
+      extends Endpoint(path) {
+
+      def reply(request: HTTP.Request): HTTP.Response = {
+        progress.echo_if(verbose, "DOWNLOAD " + description)
+
+        val params = query_params(request)
+        progress.echo_if(verbose, "params: " + params.toString())
+
+        download(params) match {
+          case Some(path) => HTTP.Response.content(HTTP.Content.read(path))
+          case None => HTTP.Response.html(output(render(error)))
+        }
       }
     }
 

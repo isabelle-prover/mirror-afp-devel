@@ -145,6 +145,8 @@ object AFP_Submit {
     def submit(id: Handler.ID): Unit
     def set_status(id: Handler.ID, status: Model.Status.Value): Unit
     def abort_build(id: Handler.ID): Unit
+    def get_patch(id: Handler.ID): Option[Path]
+    def get_archive(id: Handler.ID): Option[Path]
   }
   object Handler {
     import Model._
@@ -204,6 +206,14 @@ object AFP_Submit {
       }
 
       private def info_file(id: ID): Path = up(id) + Path.basic("info.json")
+      private def patch_file(id: ID): Path = up(id) + Path.basic("patch")
+
+      private val archive_name: String = "archive"
+
+      def make_partial_patch(base_dir: Path, src: Path, dst: Path): String = {
+        val patch = Isabelle_System.make_patch(base_dir, src, dst, "--unidirectional-new-file")
+        split_lines(patch).filterNot(_.startsWith("Only in")).mkString("\n")
+      }
 
       def create(date: Date, meta: Metadata, archive: Bytes, ext: String): ID = {
         val id = ID(date)
@@ -214,14 +224,23 @@ object AFP_Submit {
         structure.save_authors(meta.authors.values.toList.sortBy(_.id))
         meta.entries.foreach(structure.save_entry)
 
+        val archive_file = dir + Path.basic(archive_name + ext)
+        Bytes.write(archive_file, archive)
+
+        val afp_structure = AFP_Structure()
+        val metadata_rel =
+          File.relative_path(afp_structure.base_dir, afp_structure.metadata_dir).getOrElse(
+            afp_structure.metadata_dir)
+        val metadata_patch =
+          make_partial_patch(afp_structure.base_dir, metadata_rel, structure.metadata_dir)
+        File.write(patch_file(id), metadata_patch)
+
         val info =
           JSON.Format(JSON.Object(
             "comment" -> meta.message,
             "entries" -> meta.entries.map(_.name),
             "notify" -> meta.entries.flatMap(_.notifies).map(_.address).distinct))
         File.write(info_file(id), info)
-
-        Bytes.write(dir + Path.basic("archive" + ext), archive)
 
         signal(id, "done")
         id
@@ -253,8 +272,7 @@ object AFP_Submit {
           }
         }
 
-      private def check(id: ID): Option[ID] =
-        ID.check(id).filter(up(_).file.exists).filter(down(_).file.exists)
+      private def check(id: ID): Option[ID] = ID.check(id).filter(up(_).file.exists)
 
       def submit(id: ID): Unit = check(id).foreach(signal(_, "mail"))
 
@@ -271,6 +289,12 @@ object AFP_Submit {
         }
 
       def abort_build(id: ID): Unit = check(id).foreach(signal(_, "kill"))
+
+      def get_patch(id: ID): Option[Path] = check(id).map(patch_file)
+      def get_archive(id: ID): Option[Path] = check(id).flatMap { id =>
+        val dir = up(id)
+        File.read_dir(dir).find(_.startsWith(archive_name + ".")).map(dir + Path.basic(_))
+      }
     }
   }
 
@@ -285,6 +309,7 @@ object AFP_Submit {
     entries: Set[Entry.Name],
     verbose: Boolean,
     progress: Progress,
+    base_url: String,
     port: Int = 0,
     handler: Handler
   ) extends Web_App.Server[Model.T](port, verbose, progress) {
@@ -315,6 +340,9 @@ object AFP_Submit {
     val API_SUBMISSION_ENTRY_NOTIFIES_REMOVE = "/api/submission/entry/notifies/remove"
     val API_SUBMISSION_ENTRY_RELATED_ADD = "/api/submission/entry/related/add"
     val API_SUBMISSION_ENTRY_RELATED_REMOVE = "/api/submission/entry/related/remove"
+    val API_SUBMISSION_DOWNLOAD = "/api/download/patch"
+    val API_SUBMISSION_DOWNLOAD_ZIP = "/api/download/archive.zip"
+    val API_SUBMISSION_DOWNLOAD_TGZ = "/api/download/archive.tar.gz"
 
 
     /* fields */
@@ -378,7 +406,7 @@ object AFP_Submit {
       case Metadata.Formatted(rep) => rep
     }
 
-    def submission_url(id: Handler.ID): String = SUBMISSION + "?id=" + id
+    def submission_url(api: String, id: Handler.ID): String = api + "?id=" + id
 
     def indexed[A, B](l: List[A], key: Params.Key, field: String, f: (A, Params.Key) => B) =
       l.zipWithIndex map {
@@ -582,10 +610,10 @@ object AFP_Submit {
       val new_authors =
         meta.entries.flatMap(_.authors).map(_.author).filterNot(authors.contains).map(meta.authors)
       val new_affils =
-        meta.entries.flatMap(_.authors).filterNot {
-          case _: Unaffiliated => true
-          case e: Email => meta.authors(e.author).emails.contains(e)
-          case h: Homepage => meta.authors(h.author).homepages.contains(h)
+        meta.entries.flatMap(_.authors).filter {
+          case _: Unaffiliated => false
+          case e: Email => !authors.get(e.author).exists(_.emails.contains(e))
+          case h: Homepage => !authors.get(h.author).exists(_.homepages.contains(h))
         }
 
       def render_topic(topic: Topic, key: Params.Key): XML.Elem =
@@ -665,7 +693,15 @@ object AFP_Submit {
           case Model.Status.Rejected => "Submission rejected."
         } getOrElse "Submission saved"
 
-      List(submit_form(submission_url(submission.id),
+      val archive_url =
+        if (handler.get_archive(submission.id).exists(_.get_ext == "zip"))
+          API_SUBMISSION_DOWNLOAD_ZIP
+        else API_SUBMISSION_DOWNLOAD_TGZ
+
+      List(submit_form(submission_url(SUBMISSION, submission.id),
+        link(submission_url(API_SUBMISSION_DOWNLOAD, submission.id), text("metadata patch")) ::
+        text(",") :::
+        link(submission_url(archive_url, submission.id), text("archive")) ::
         section("Metadata") ::
         render_metadata(submission.meta) :::
         section("Status") ::
@@ -677,8 +713,8 @@ object AFP_Submit {
         render_if(submission.build == Model.Build.Success && submission.status.isEmpty,
           action_button(API_SUBMIT, "Send submission to AFP editors", submission.id)) :::
         fieldset(legend("Build") ::
-          text("Status: " + submission.build.toString) :::
-          par(text("Isabelle log") ::: source(submission.log) :: Nil) ::
+          text(submission.build.toString) :::
+          par(text("Isabelle log:") ::: source(submission.log) :: Nil) ::
           Nil) :: Nil))
     }
 
@@ -712,7 +748,7 @@ object AFP_Submit {
           hidden(Nest_Key(key, DATE), overview.date.toString) ::
           hidden(Nest_Key(key, NAME), overview.name) ::
           text(overview.date.toString) :::
-          link(submission_url(overview.id), text(overview.name)) ::
+          link(submission_url(SUBMISSION, overview.id), text(overview.name)) ::
           radio(Nest_Key(key, STATUS), overview.status.toString,
             Model.Status.values.toList.map(v => v.toString -> v.toString)) ::
           action_button(API_SUBMISSION_STATUS, "update", key) :: Nil)
@@ -722,7 +758,8 @@ object AFP_Submit {
     }
 
     def render_created(created: Model.Created): XML.Body =
-      text("Success!") ::: link(submission_url(created.id), text("view entry")) :: Nil
+      text("Entry successfully saved. View your submission status at: " +
+        base_url + submission_url(SUBMISSION, created.id) + " (keep that url!).")
 
     def render_invalid: XML.Body =
       text("Invalid request")
@@ -949,7 +986,7 @@ object AFP_Submit {
         fold(params.list(ENTRY), List.empty[Model.Overview]) {
           case (entry, overviews) => parse_overview(entry).map(overviews :+ _)
         }
-      submissions.map(Model.Submission_List(_))
+      submissions.map(Model.Submission_List.apply)
     }
 
     /* control */
@@ -1273,12 +1310,21 @@ object AFP_Submit {
 
     def submission_list: Option[Model.T] = Some(handler.list())
 
+    def download(props: Properties.T): Option[Path] =
+      Properties.get(props, "id").flatMap(handler.get_patch)
+
+    def download_archive(props: Properties.T): Option[Path] =
+      Properties.get(props, "id").flatMap(handler.get_archive)
+
     val error = Model.Invalid
 
     val endpoints = List(
       Get(SUBMIT, "empty submission form", _ => empty_submission),
       Get(SUBMISSION, "get submission", get_submission),
       Get(SUBMISSIONS, "list submissions", _ => submission_list),
+      Get_File(API_SUBMISSION_DOWNLOAD, "download patch", download),
+      Get_File(API_SUBMISSION_DOWNLOAD_ZIP, "download archive", download_archive),
+      Get_File(API_SUBMISSION_DOWNLOAD_TGZ, "download archive", download_archive),
       Post(API_RESUBMIT, "get form for resubmit", resubmit),
       Post(API_SUBMIT, "submit to editors", submit),
       Post(API_BUILD_ABORT, "abort the build", abort_build),
@@ -1319,6 +1365,7 @@ object AFP_Submit {
     Scala_Project.here,
     { args =>
 
+      var base_url = "https://isa-afp.org/webapp"
       var verbose = false
       var port = 0
 
@@ -1326,11 +1373,13 @@ object AFP_Submit {
 Usage: isabelle afp_submit [OPTIONS] DIR
 
   Options are:
+      -b URL       application base url. Default: """ + base_url + """"
       -p PORT      server port. Default: """ + port + """
       -v           verbose
 
   Start afp submission server, which stores submissions in DIR.
 """,
+        "b:" -> (arg => base_url = arg),
         "p:" -> (arg => port = Value.Int.parse(arg)),
         "v" -> (_ => verbose = true))
 
@@ -1352,9 +1401,10 @@ Usage: isabelle afp_submit [OPTIONS] DIR
       val releases = afp_structure.load_releases.groupBy(_.entry)
       val entries = afp_structure.entries.toSet
 
+      val handler = new Handler.Adapter(dir, topics.map(topic => topic.id -> topic).toMap, licenses)
       val server = new Server(authors = authors, topics = topics, licenses = licenses,
-        releases = releases, entries = entries, verbose = verbose, progress = progress, port = port,
-        handler = new Handler.Adapter(dir, topics.map(topic => topic.id -> topic).toMap, licenses))
+        releases = releases, entries = entries, verbose = verbose, progress = progress,
+        base_url = base_url, port = port, handler = handler)
 
       server.run()
     })
