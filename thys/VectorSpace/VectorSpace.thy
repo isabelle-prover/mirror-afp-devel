@@ -648,7 +648,9 @@ case (less A)
         from 3 obtain B where 4: "P B \<and> B \<subset> A \<and> B\<noteq>A" by auto
         from 4 have 5: "card B < card A" by (metis less.prems(1) psubset_card_mono)
         from less.hyps less.prems 3 4 5 have 6: "\<exists>C\<subseteq>B. minimal C P" 
-          by (intro less.hyps, auto) 
+          apply (intro less.hyps) 
+            apply auto
+          by (metis rev_finite_subset)
         from 6 obtain C where 7: "C\<subseteq>B \<and> minimal C P" by auto
         from 4 7 show ?thesis 
           apply (rule_tac x="C" in exI) 
@@ -804,8 +806,9 @@ proof -
     by (intro gen_ge_dim, auto)
 (*li_le_dim*)
   from 0 assms have h1:  "minimal A (\<lambda>S. finite S \<and> S\<subseteq>carrier V \<and> gen_set S)"
-    unfolding minimal_def
-    by (metis card_seteq le_antisym) 
+    apply (unfold minimal_def) 
+    apply auto
+    by (metis card_seteq eq_iff)
   (*slightly annoying: we have to get rid of "finite S" inside.*)
   from h1 have h: "\<And>B. B \<subseteq> A \<and> B \<subseteq> carrier V \<and> LinearCombinations.module.gen_set K V B \<Longrightarrow> B = A"
   proof - 

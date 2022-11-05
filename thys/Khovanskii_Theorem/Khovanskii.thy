@@ -245,7 +245,7 @@ lemma max_pointwise_le_iff:
 lemma max_pointwise_mono:
   assumes "X' \<subseteq> X" "finite X" "X' \<noteq> {}"
   shows  "max_pointwise r X' \<unlhd> max_pointwise r X"
-  using assms by (auto simp add: max_pointwise_def pointwise_le_iff_nth Max_mono image_mono)
+  using assms by (simp add: max_pointwise_def pointwise_le_iff_nth Max_mono image_mono)
 
 lemma pointwise_le_plus: "\<lbrakk>xs \<unlhd> ys; length ys \<le> length zs\<rbrakk> \<Longrightarrow> xs \<unlhd> ys+zs"
 proof (induction xs arbitrary: ys zs)

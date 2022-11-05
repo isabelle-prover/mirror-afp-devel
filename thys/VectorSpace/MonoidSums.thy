@@ -87,7 +87,9 @@ lemma foldD_not_depend:
   shows "foldD D f e A = foldD E f e A"
 proof - 
   from assms have 1: "\<exists>y. (A,y)\<in>foldSetD D f e"
-    by (intro finite_imp_foldSetD, auto simp: LCD_def)
+    apply (intro finite_imp_foldSetD, auto)
+     apply (metis finite_subset)
+    by (unfold LCD_def, auto)
   from 1 obtain y where 2: "(A,y)\<in>foldSetD D f e" by auto
   from assms 2 have 3: "foldD D f e A = y" by (intro LCD.foldD_equality[of B], auto)
   from h3 have 4: "foldSetD D f e \<subseteq> foldSetD E f e" by (rule foldSet_not_depend)

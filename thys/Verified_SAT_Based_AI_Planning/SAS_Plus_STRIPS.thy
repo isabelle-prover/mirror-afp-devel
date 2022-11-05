@@ -4288,7 +4288,8 @@ proof -
   then have "?Sol\<^sub>k \<subseteq> ?P\<^sub>k" 
     by force
   thus ?thesis
-    using bounded_plan_set_finite rev_finite_subset[of ?P\<^sub>k ?Sol\<^sub>k] by blast
+    using bounded_plan_set_finite rev_finite_subset[of ?P\<^sub>k ?Sol\<^sub>k]
+    by auto
 qed
 
 \<comment> \<open> The set of fixed length STRIPS solutions are subsets of the set of plans with fixed length and 

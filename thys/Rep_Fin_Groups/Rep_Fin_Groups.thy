@@ -494,7 +494,7 @@ proof (rule aezfun_setI)
       by (cases "a \<in> A") auto
   qed
   with assms show "finite (supp (f\<down>A))"
-    using aezfun_setD finite_subset[of "supp (f\<down>A)"] by blast
+    using aezfun_setD finite_subset[of "supp (f\<down>A)"] by auto
 qed
 
 subsubsection \<open>Delta (impulse) functions\<close>
