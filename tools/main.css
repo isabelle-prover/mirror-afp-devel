@@ -1,0 +1,277 @@
+@charset "UTF-8";
+
+@font-face {
+    font-family: "Open Sans";
+    font-display: swap;
+    font-style: normal;
+    font-weight: 300;
+    src: local(""), url("https://isa-afp.org/font/open-sans-v18-latin-300.woff2") format("woff2"), url("https://isa-afp.org/font/open-sans-v18-latin-300.woff") format("woff");
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-display: swap;
+    font-style: normal;
+    font-weight: 400;
+    src: local(""), url("https://isa-afp.org/font/open-sans-v18-latin-regular.woff2") format("woff2"), url("https://isa-afp.org/font/open-sans-v18-latin-regular.woff") format("woff");
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-display: swap;
+    font-style: italic;
+    font-weight: 400;
+    src: local(""), url("https://isa-afp.org/font/open-sans-v18-latin-italic.woff2") format("woff2"), url("https://isa-afp.org/font/open-sans-v18-latin-italic.woff") format("woff");
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-display: swap;
+    font-style: normal;
+    font-weight: 700;
+    src: local(""), url("https://isa-afp.org/font/open-sans-v18-latin-700.woff2") format("woff2"), url("https://isa-afp.org/font/open-sans-v18-latin-700.woff") format("woff");
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-display: swap;
+    font-style: italic;
+    font-weight: 700;
+    src: local(""), url("https://isa-afp.org/font/open-sans-v18-latin-700italic.woff2") format("woff2"), url("https://isa-afp.org/font/open-sans-v18-latin-700italic.woff") format("woff");
+}
+
+iframe {
+    width: 100%;
+    height: 90vh;
+}
+
+form {
+    width: 100%;
+}
+
+div {
+    width: 100%;
+}
+
+pre, code {
+    font-family: "Consolas", monospace;
+    background-color: #f2f2f2;
+    color: #303030;
+}
+
+*::selection {
+    background-color: #2e2d4e;
+    color: #fff;
+}
+
+body {
+    color: #000;
+    background: #fff;
+    font-family: "Open Sans", sans-serif;
+    display: grid;
+    justify-items: center;
+    margin: 0;
+    width: 100%;
+}
+
+li {
+    margin: 0.25em 0;
+}
+
+
+h1 {
+    margin: 1.5em 0 0 0;
+    font-size: 2em;
+    padding-bottom: 20px;
+}
+
+h1 span.first {
+    font-size: 2.3rem;
+}
+
+h2 {
+    margin: 1.5em 0 0 0;
+    padding: 0;
+    line-height: normal;
+}
+
+h3 {
+    margin: 1.5em 0 0 0;
+    font-stretch: normal;
+    font-size: larger;
+    padding: 0;
+    font-weight: 300;
+}
+
+h3:first-child {
+    margin: 0.5rem 0 0 0;
+}
+
+h4 {
+    margin: 1.5em 0 0 0;
+    margin-bottom: 0.5ex;
+    font-weight: 700;
+}
+
+img {
+    max-width: 90%;
+}
+
+pre {
+    padding: 1rem;
+    overflow: auto;
+}
+
+pre.code {
+    white-space: pre;
+    padding: 10px 2px;
+}
+
+code {
+    padding: 1px 2px 2px;
+}
+
+blockquote {
+    border: 2px solid #ddd;
+    padding: 1rem 2rem;
+    margin: auto 0;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+fieldset {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+a:link {
+    color: #0645ad;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+a:visited {
+    color: #42047c;
+}
+
+a:hover {
+    color: #0000ee;
+}
+
+a[download], a.download {
+    display: inline-block;
+    color: #000;
+    height: 22px;
+    padding: 4px 7px;
+}
+
+a[download]:focus, a.download:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #c5c4ddbb;
+}
+
+a[download]:hover, a[download]:active, a.download:hover, a.download:active {
+    background-color: #bbb;
+    color: #000;
+}
+
+a[download]:after, a.download:after {
+    content: url("https://isa-afp.org/images/download.svg");
+    position: relative;
+    top: 0.12em;
+    left: 5px;
+    padding-right: 5px;
+}
+
+a[download], a.download, button, input[type=text], select {
+    border: 1px solid #777;
+    font-size: 1rem;
+    vertical-align: middle;
+    background-color: #fff;
+    color: #000;
+    line-height: 0;
+    font-family: "Open Sans", sans-serif;
+}
+
+select {
+    height: 2rem;
+    padding: 7px;
+    width: 30ch;
+}
+
+input[type=text] {
+    height: 1rem;
+    padding: 7px;
+    width: 30ch;
+}
+
+button {
+    height: 2rem;
+    padding: 7px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ddd;
+}
+
+button:active {
+    background-color: #bbb;
+}
+
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #c5c4ddbb;
+}
+
+textarea {
+    width: calc(100% - 8px);
+    resize: vertical;
+}
+
+label {
+    vertical-align: middle;
+}
+
+span {
+    padding-right: 7px;
+}
+
+.loader {
+    margin: 24px 24px 0 0;
+    height: 6px;
+    position: relative;
+    display: block;
+    background-color: #2e2d4e;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.loader .animation {
+    background-color: #bbb;
+}
+
+.loader .animation:before {
+    content: '';
+    position: absolute;
+    background-color: inherit;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    will-change: left, right;
+    animation: loader 2s linear infinite;
+}
+
+@keyframes loader {
+    0% {
+        left: -20%;
+        right: 100%;
+    }
+    100% {
+        left: 100%;
+        right: -20%;
+    }
+}

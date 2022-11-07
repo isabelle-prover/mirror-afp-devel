@@ -37,12 +37,12 @@ object AFP_Submit {
 
   object Model {
     object Related extends Enumeration {
-      val DOI, Formatted = Value
+      val DOI, Plaintext = Value
 
       def from_string(s: String): Option[Value] = values.find(_.toString == s)
       def get(r: Reference): Value = r match {
         case afp.Metadata.DOI(_) => DOI
-        case afp.Metadata.Formatted(_) => Formatted
+        case afp.Metadata.Formatted(_) => Plaintext
       }
     }
 
@@ -362,6 +362,7 @@ object AFP_Submit {
     val API_SUBMISSION_DOWNLOAD = "/api/download/patch"
     val API_SUBMISSION_DOWNLOAD_ZIP = "/api/download/archive.zip"
     val API_SUBMISSION_DOWNLOAD_TGZ = "/api/download/archive.tar.gz"
+    val API_CSS = "/api/main.css"
 
 
     /* fields */
@@ -393,7 +394,7 @@ object AFP_Submit {
 
     def author_string(author: Author): String = {
       val orcid =
-        author.orcid.map(orcid => "(ORCID id: " + orcid.identifier + ")").getOrElse("")
+        author.orcid.map(orcid => " (ORCID id: " + orcid.identifier + ")").getOrElse("")
       keyed(author.id, author.name) + orcid
     }
 
@@ -415,7 +416,7 @@ object AFP_Submit {
 
     def affil_string(affil: Affiliation): String =
       affil match {
-        case Unaffiliated(_) => "No affiliation"
+        case Unaffiliated(_) => "No email or homepage"
         case Email(_, id, address) => keyed(id, address)
         case Homepage(_, id, url) => keyed(id, url.toString)
       }
@@ -437,6 +438,11 @@ object AFP_Submit {
         case (None, _) => None
         case (Some(a), param) => f(param, a)
       }
+
+    def download_link(href: String, body: XML.Body): XML.Elem =
+      class_("download")(link(href, body)) + ("target" -> "_blank")
+    def app_link(href: String, body: XML.Body): XML.Elem =
+      link(base_url + href, body) + ("target" -> "_parent")
 
     def render_if(cond: Boolean, elem: XML.Elem): XML.Body = if (cond) List(elem) else Nil
     def render_error(for_elem: String, validated: Validated[_]): XML.Body =
@@ -521,7 +527,7 @@ object AFP_Submit {
             fieldlabel(Nest_Key(key, ABSTRACT), "Abstract") ::
             placeholder("HTML and MathJax, no LaTeX")(
               textarea(Nest_Key(key, ABSTRACT), entry.`abstract`.v) +
-                ("rows" -> "5") +
+                ("rows" -> "8") +
                 ("cols" -> "70")) ::
             explanation(Nest_Key(key, ABSTRACT),
               "Note: You can use HTML or MathJax (not LaTeX!) to format your abstract.") ::
@@ -533,8 +539,7 @@ object AFP_Submit {
               authors_list.map(author => option(author.id, author_string(author)))) ::
             action_button(API_SUBMISSION_ENTRY_AUTHORS_ADD, "add", key) ::
             explanation(Nest_Key(key, AUTHOR),
-              "Add an author from the list. You can also:") ::
-            link("#" + Nest_Key(AUTHOR, NAME), text("register new")) ::
+              "Add an author from the list. Register new authors first below.") ::
             render_error(Nest_Key(key, AUTHOR), entry.author_input) :::
             render_error("", entry.affils)),
           fieldset(legend("Contact") ::
@@ -559,10 +564,12 @@ object AFP_Submit {
               entry.related_kind.map(_.toString),
               Model.Related.values.toList.map(v => option(v.toString, v.toString))) ::
             textfield(Nest_Key(Nest_Key(key, RELATED), INPUT),
-              "10.1109/5.771073 or HTML", entry.related_input.v) ::
+              "10.1109/5.771073", entry.related_input.v) ::
             action_button(API_SUBMISSION_ENTRY_RELATED_ADD, "add", key) ::
             explanation(Nest_Key(Nest_Key(key, RELATED), INPUT),
-              "Publications related to the entry, as DOIs (10.1109/5.771073) or free text (HTML).") ::
+              "Publications related to the entry, as DOIs (10.1109/5.771073) or plaintext (HTML)." +
+              "Typically a publication by the authors describing the entry," +
+              " background literature (articles, books) or web resources. ") ::
             render_error(Nest_Key(Nest_Key(key, RELATED), INPUT), entry.related_input)),
           action_button(API_SUBMISSION_ENTRIES_REMOVE, "remove entry", key)))
 
@@ -593,6 +600,7 @@ object AFP_Submit {
             "Put the corresponding folders in the archive " +
             "and use the button below to add more input fields for metadata. "),
           api_button(API_SUBMISSION_ENTRIES_ADD, "additional entry"))) ::
+        break :::
         fieldset(legend("New Authors") ::
           explanation("", "If you are new to the AFP, add yourself here.") ::
           indexed(model.new_authors.v, Params.empty, AUTHOR, render_new_author) :::
@@ -604,10 +612,10 @@ object AFP_Submit {
           render_error(Nest_Key(AUTHOR, NAME), model.new_author_input) :::
           render_error(Nest_Key(AUTHOR, ORCID), model.new_author_orcid) :::
           render_error("", model.new_authors)) ::
-        fieldset(legend("New affiliations") ::
+        fieldset(legend("New email or homepage") ::
           explanation("",
-            "Add new affiliations here. " +
-            "If you would like to update an existing affiliation, " +
+            "Add new email or homepages here. " +
+            "If you would like to update an existing, " +
             "submit with the old one and write to the editors.") ::
           indexed(model.new_affils.v, Params.empty, AFFILIATION, render_new_affil) :::
           fieldlabel(AFFILIATION, "Author") ::
@@ -621,6 +629,7 @@ object AFP_Submit {
           api_button(API_SUBMISSION_AFFILIATIONS_ADD, "add") ::
           render_error(Nest_Key(AFFILIATION, ADDRESS), model.new_affils_input) :::
           render_error("", model.new_affils)) ::
+        break :::
         fieldset(List(legend("Upload"),
           api_button(API_SUBMISSION_UPLOAD, "preview and upload >"))) :: Nil))
     }
@@ -718,13 +727,14 @@ object AFP_Submit {
         else API_SUBMISSION_DOWNLOAD_TGZ
 
       List(submit_form(submission_url(SUBMISSION, submission.id),
-        link(submission_url(API_SUBMISSION_DOWNLOAD, submission.id), text("metadata patch")) ::
-        text(",") :::
-        link(submission_url(archive_url, submission.id), text("archive")) ::
+        download_link(submission_url(archive_url, submission.id), text("archive")) ::
+        download_link(submission_url(API_SUBMISSION_DOWNLOAD, submission.id),
+          text("metadata patch")) ::
+        text(" (apply with: 'patch -p0 < FILE')") :::
         section("Metadata") ::
         render_metadata(submission.meta) :::
         section("Status") ::
-        text(status_text(submission.status)) :::
+        span(text(status_text(submission.status))) ::
         render_if(submission.build != Model.Build.Running,
           action_button(API_RESUBMIT, "Resubmit", submission.id)) :::
         render_if(submission.build == Model.Build.Running,
@@ -732,7 +742,7 @@ object AFP_Submit {
         render_if(submission.build == Model.Build.Success && submission.status.isEmpty,
           action_button(API_SUBMIT, "Send submission to AFP editors", submission.id)) :::
         fieldset(legend("Build") ::
-          text(submission.build.toString) :::
+          bold(text(submission.build.toString)) ::
           par(text("Isabelle log:") ::: source(submission.log) :: Nil) ::
           Nil) :: Nil))
     }
@@ -766,10 +776,10 @@ object AFP_Submit {
           hidden(Nest_Key(key, ID), overview.id) ::
           hidden(Nest_Key(key, DATE), overview.date.toString) ::
           hidden(Nest_Key(key, NAME), overview.name) ::
-          text(overview.date.toString) :::
-          link(submission_url(SUBMISSION, overview.id), text(overview.name)) ::
-          radio(Nest_Key(key, STATUS), overview.status.toString,
-            Model.Status.values.toList.map(v => v.toString -> v.toString)) ::
+          span(text(overview.date.toString)) ::
+          span(List(app_link(submission_url(SUBMISSION, overview.id), text(overview.name)))) ::
+          selection(Nest_Key(key, STATUS), Some(overview.status.toString),
+            Model.Status.values.toList.map(v => option(v.toString, v.toString))) ::
           action_button(API_SUBMISSION_STATUS, "update", key) :: Nil)
 
       List(submit_form(API_SUBMISSION_STATUS,
@@ -777,8 +787,13 @@ object AFP_Submit {
     }
 
     def render_created(created: Model.Created): XML.Body =
-      text("Entry successfully saved. View your submission status at: " +
-        base_url + submission_url(SUBMISSION, created.id) + " (keep that url!).")
+      List(div(
+        span(text("Entry successfully saved. View your submission status: ")) ::
+        break :::
+        app_link(submission_url(SUBMISSION, created.id),
+          text(base_url + submission_url(SUBMISSION, created.id))) ::
+        break :::
+        span(text("(keep that url!).")) :: Nil))
 
     def render_invalid: XML.Body =
       text("Invalid request")
@@ -881,7 +896,7 @@ object AFP_Submit {
                 else (Some(doi), Validated.ok(""))
               case _ => (None, Validated.error(related, "Invalid DOI format"))
             }
-          case Model.Related.Formatted =>
+          case Model.Related.Plaintext =>
             val formatted = Formatted(related)
             if (references.contains(formatted)) (None, Validated.error(related, "Already present"))
             else (Some(formatted), Validated.ok(""))
@@ -1345,6 +1360,9 @@ object AFP_Submit {
     def download_archive(props: Properties.T): Option[Path] =
       Properties.get(props, "id").flatMap(handler.get_archive)
 
+    def style_sheet: Option[Path] =
+      Some(afp_structure.base_dir + Path.make(List("tools", "main.css")))
+
     val error = Model.Invalid
 
     val endpoints = List(
@@ -1354,6 +1372,7 @@ object AFP_Submit {
       Get_File(API_SUBMISSION_DOWNLOAD, "download patch", download),
       Get_File(API_SUBMISSION_DOWNLOAD_ZIP, "download archive", download_archive),
       Get_File(API_SUBMISSION_DOWNLOAD_TGZ, "download archive", download_archive),
+      Get_File(API_CSS, "download css", _ => style_sheet),
       Post(API_RESUBMIT, "get form for resubmit", resubmit),
       Post(API_SUBMIT, "submit to editors", submit),
       Post(API_BUILD_ABORT, "abort the build", abort_build),
@@ -1384,7 +1403,8 @@ object AFP_Submit {
           "async" -> "async",
           "src" -> "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js")), text("\n")),
         script(
-          "MathJax={tex:{inlineMath:[['$','$'],['\\\\(','\\\\)']]},processEscapes:true,svg:{fontCache:'global'}}"))
+          "MathJax={tex:{inlineMath:[['$','$'],['\\\\(','\\\\)']]},processEscapes:true,svg:{fontCache:'global'}}"),
+        style_file(API_CSS))
   }
 
 

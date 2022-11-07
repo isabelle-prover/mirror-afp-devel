@@ -66,7 +66,7 @@ object Web_App {
         if (v == k) elem + ("checked" -> "checked") else elem
       }
 
-      div(values.flatMap { case (k, v) => List(label(i + k, v), to_option(k)) })
+      span(values.map { case (k, v) => span(List(label(i + k, v), to_option(k))) })
     }
 
     def selection(i: String, selected: Option[String], opts: XML.Body): XML.Elem = {
