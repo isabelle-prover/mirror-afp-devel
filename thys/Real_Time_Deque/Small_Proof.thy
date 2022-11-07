@@ -1,15 +1,11 @@
 section "Small Proofs"
 
 theory Small_Proof 
-imports Common_Proof Small
+imports Common_Proof Small_Aux
 begin
 
 lemma step_size [simp]: "invar (small :: 'a state) \<Longrightarrow> size (step small) = size small"
   by(induction small rule: step_state.induct)(auto split: current.splits)
-
-lemma size_empty: "invar (small :: 'a state) \<Longrightarrow> size small = 0 \<Longrightarrow> is_empty small"
-  by(induction small)
-    (auto simp: Common_Proof.size_empty Stack_Proof.list_empty split: current.splits)
 
 lemma size_push [simp]: "invar small \<Longrightarrow> size (push x small) = Suc (size small)"
   by(induction x small rule: push.induct) (auto split: current.splits)
@@ -73,7 +69,7 @@ proof -
     by (simp add: Stack_Proof.size_not_empty)
 
   have "\<not> is_empty big
-     \<Longrightarrow> rev (Stack.list (Stack.pop big)) @ [Stack.first big] = rev (Stack.list big)"
+     \<Longrightarrow> rev (Stack_Aux.list (Stack.pop big)) @ [Stack.first big] = rev (Stack_Aux.list big)"
     by(induction big rule: Stack.pop.induct) auto
 
   with assms show ?thesis 
@@ -96,8 +92,8 @@ next
     next
       case False
 
-      with 2 have "rev (Stack.list small) @ aux = 
-                   rev (Stack.list (Stack.pop small)) @ Stack.first small # aux" 
+      with 2 have "rev (Stack_Aux.list small) @ aux = 
+                   rev (Stack_Aux.list (Stack.pop small)) @ Stack.first small # aux" 
         by(auto simp: rev_app_single Stack_Proof.list_not_empty)
 
       with 2 show ?thesis 
@@ -169,28 +165,6 @@ qed
 lemma push_list_common [simp]: "small = Common common \<Longrightarrow> list (push x small) = x # list small"
   by auto
 
-lemma push_list_reverse2 [simp]: "small = (Reverse2 current auxS big newS count)
-  \<Longrightarrow> list (push x small) = x # list small"
-  by(induction x current rule: Current.push.induct) auto
-
-lemma pop_list_Reverse2 [simp]: "\<lbrakk>
-  small = (Reverse2 current auxS big newS count);
-  \<not>is_empty small; 
-  invar small; 
-  pop small = (x, small')
-\<rbrakk> \<Longrightarrow> x # list small' = list small"
-proof(induction current arbitrary: x rule: Current.pop.induct)
-  case (1 added old remained)
-  then have "0 < size old" 
-    by(auto simp: Stack_Proof.size_not_empty)
-    
-  with 1 show ?case
-    by(auto simp: rev_take Cons_nth_drop_Suc Suc_diff_le hd_drop_conv_nth)
-next
-  case (2 x xs added old remained)
-  then show ?case by auto
-qed
-
 lemma push_list_current [simp]: "list_current (push x small) = x # list_current small"
   by(induction x small rule: push.induct) auto
 
@@ -247,8 +221,8 @@ lemma list_Reverse2 [simp]: "\<lbrakk>
   0 < size (Reverse2 current auxS big newS count); 
   invar (Reverse2 current auxS big newS count)
 \<rbrakk> \<Longrightarrow>
-   fst (Current.pop current) # Small.list (Reverse2 (drop_first current) auxS big newS count) =
-   Small.list (Reverse2 current auxS big newS count)"
+   fst (Current.pop current) # list (Reverse2 (drop_first current) auxS big newS count) =
+   list (Reverse2 current auxS big newS count)"
   by(induction current rule: Current.pop.induct)
     (auto simp: first_hd rev_take Suc_diff_le)
 

@@ -1,62 +1,30 @@
 section "Current Proofs"
 
 theory Current_Proof
-imports Current Stack_Proof
+imports Current_Aux Stack_Proof
 begin
 
 lemma push_list [simp]: "list (push x current) = x # list current"
   by(induction x current rule: push.induct) auto
 
-lemma pop_list: "\<lbrakk>\<not> is_empty current; pop current = (x, current')\<rbrakk>
-  \<Longrightarrow> x # list current' = list current"
-  by(induction current arbitrary: x rule: pop.induct)(auto simp: list_not_empty)
-
-lemma pop_list_size: "\<lbrakk>invar current; 0 < size current; pop current = (x, current')\<rbrakk>
-  \<Longrightarrow> x # list current' = list current"
-  by(induction current arbitrary: x rule: pop.induct)(auto simp: size_not_empty list_not_empty)
-
-lemma drop_first_list [simp]: 
-    "\<not> is_empty current \<Longrightarrow> list (drop_first current) = tl (list current)"
-  by(induction current rule: pop.induct)(auto simp: drop_Suc)
-
-lemma pop_list_2 [simp]: 
+lemma pop_list [simp]: 
     "\<lbrakk>0 < size current; invar current\<rbrakk> \<Longrightarrow> fst (pop current) # tl (list current) = list current"
   by(induction current rule: pop.induct)(auto simp: size_not_empty list_not_empty)
 
-lemma drop_first_list_size [simp]: "\<lbrakk>invar current; 0 < size current\<rbrakk>
+lemma drop_first_list [simp]: "\<lbrakk>invar current; 0 < size current\<rbrakk>
   \<Longrightarrow> list (drop_first current) = tl (list current)"
   by(induction current rule: pop.induct)(auto simp: drop_Suc)
 
 lemma invar_push: "invar current \<Longrightarrow> invar (push x current)"
   by(induction x current rule: push.induct) auto
 
-lemma invar_pop: "\<lbrakk>\<not> is_empty current; invar current; pop current = (x, current')\<rbrakk>
+lemma invar_pop: "\<lbrakk>0 < size current; invar current; pop current = (x, current')\<rbrakk>
    \<Longrightarrow> invar current'"
   by(induction current arbitrary: x rule: pop.induct) auto
 
-lemma invar_size_pop: "\<lbrakk>0 < size current; invar current; pop current = (x, current')\<rbrakk>
-   \<Longrightarrow> invar current'"
-  by(induction current arbitrary: x rule: pop.induct) auto
-
-lemma invar_size_drop_first: "\<lbrakk>0 < size current; invar current\<rbrakk> \<Longrightarrow> invar (drop_first current)"
-  using invar_size_pop
+lemma invar_drop_first: "\<lbrakk>0 < size current; invar current\<rbrakk> \<Longrightarrow> invar (drop_first current)"
+  using invar_pop
   by (metis eq_snd_iff)
-
-lemma invar_drop_first: "\<lbrakk>\<not> is_empty current; invar current\<rbrakk> \<Longrightarrow> invar (drop_first current)"
-  by(induction current rule: pop.induct) auto
-
-lemma push_not_empty [simp]: "\<lbrakk>\<not> is_empty current; is_empty (push x current)\<rbrakk> \<Longrightarrow> False"
-  by(induction x current rule: push.induct) auto
-
-(* TODO: not optimal with only one direction (Is it really needed?) *)
-lemma size_empty: "invar (current :: 'a current) \<Longrightarrow> size current = 0 \<Longrightarrow> is_empty current"
-  by(induction current)(auto simp: size_empty)
-
-lemma size_new_empty: "invar (current :: 'a current) \<Longrightarrow> size_new current = 0 \<Longrightarrow> is_empty current"
-  by(induction current)(auto simp: size_empty)
-
-lemma list_not_empty [simp]: "\<lbrakk>list current = []; \<not>is_empty current\<rbrakk> \<Longrightarrow> False"
-  by(induction current)(auto simp: list_empty)
 
 lemma list_size [simp]: "\<lbrakk>invar current; list current = []; 0 < size current\<rbrakk> \<Longrightarrow> False"
   by(induction current)(auto simp: size_not_empty list_empty)

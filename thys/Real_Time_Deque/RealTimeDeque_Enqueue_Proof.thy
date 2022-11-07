@@ -1,7 +1,7 @@
 section "Enqueue Proofs"
 
-theory RealTimeDeque_Enqueue
-imports Deque RealTimeDeque States_Proof
+theory RealTimeDeque_Enqueue_Proof
+imports Deque RealTimeDeque_Aux States_Proof
 begin
 
 lemma list_enqL: "invar deque \<Longrightarrow> listL (enqL x deque) = x # listL deque"
@@ -33,11 +33,11 @@ proof(induction x deque rule: enqL.induct)
     from False 5 invar_left' have invar: "invar ?states"
       by(auto simp: rev_drop rev_take)
 
-    then have "States.listL ?states = x # Idle.list left @ rev (Stack.list right)"
+    then have "States_Aux.listL ?states = x # Idle_Aux.list left @ rev (Stack_Aux.list right)"
       using Idle_Proof.push_list[of x left]
       by(auto)
 
-    then have "States.listL ?states_stepped = x # Idle.list left @ rev (Stack.list right)"
+    then have "States_Aux.listL ?states_stepped = x # Idle_Aux.list left @ rev (Stack_Aux.list right)"
       by (metis invar step_n_listL)
 
     with False show ?thesis 
@@ -58,7 +58,8 @@ next
     by auto
                         
   then have 
-      "States.listL ?states_stepped = x # Small.list_current small @ rev (Big.list_current big)"
+      "States_Aux.listL ?states_stepped = 
+       x # Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     using step_n_listL by fastforce
 
   with 6 show ?case
@@ -84,16 +85,17 @@ next
     by auto
                         
   then have
-      "States.listL ?states = x # Big.list_current big @ rev (Small.list_current small)"
-    using app_rev[of _ _ _ "x # Big.list_current big"]
+      "States_Aux.listL ?states = x # Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
+    using app_rev[of _ _ _ "x # Big_Aux.list_current big"]
     by(auto split: prod.split)
 
-  then have "
-      States.listL ?states_stepped = x # Big.list_current big @ rev (Small.list_current small)"
+  then have 
+      "States_Aux.listL ?states_stepped = 
+       x # Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
     by (metis invar step_n_listL)
 
   with list_invar show ?case
-    using app_rev[of "Small.list_current small" "Big.list_current big"]
+    using app_rev[of "Small_Aux.list_current small" "Big_Aux.list_current big"]
     by(cases big_stepped; cases small_stepped)   
       (auto simp: Let_def stepped split!: prod.split Common.state.split)
 qed auto

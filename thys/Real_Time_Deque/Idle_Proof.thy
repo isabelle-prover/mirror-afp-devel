@@ -1,7 +1,7 @@
 section "Idle Proofs"
 
 theory Idle_Proof
-  imports Idle Stack_Proof
+  imports Idle_Aux Stack_Proof
 begin
 
 lemma push_list [simp]: "list (push x idle) = x # list idle"

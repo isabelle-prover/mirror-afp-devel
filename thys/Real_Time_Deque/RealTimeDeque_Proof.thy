@@ -1,15 +1,15 @@
 section \<open>Top-Level Proof\<close>
 
 theory RealTimeDeque_Proof
-  imports Deque RealTimeDeque States_Proof RealTimeDeque_Dequeue RealTimeDeque_Enqueue
+imports RealTimeDeque_Dequeue_Proof RealTimeDeque_Enqueue_Proof
 begin
 
 lemma swap_lists_left: "invar (States Left big small) \<Longrightarrow> 
-    States.listL (States Left big small) = rev (States.listL (States Right big small))"
+    States_Aux.listL (States Left big small) = rev (States_Aux.listL (States Right big small))"
   by(auto split: prod.splits Big.state.splits Small.state.splits)
 
 lemma swap_lists_right: "invar (States Right big small) \<Longrightarrow> 
-    States.listL (States Right big small) = rev (States.listL (States Left big small))"
+    States_Aux.listL (States Right big small) = rev (States_Aux.listL (States Left big small))"
   by(auto split: prod.splits Big.state.splits Small.state.splits)
 
 lemma swap_list [simp]: "invar q \<Longrightarrow> listR (swap q) = listL q"
@@ -18,7 +18,7 @@ proof(induction q)
   then show ?case
     apply(cases states)
     using swap_lists_left swap_lists_right
-    by (metis (full_types) RealTimeDeque.listL.simps(6) direction.exhaust invar_deque.simps(6) swap.simps(6) swap.simps(7))
+    by (metis (full_types) RealTimeDeque_Aux.listL.simps(6) direction.exhaust invar_deque.simps(6) swap.simps(6) swap.simps(7))
 qed auto
 
 lemma swap_list': "invar q \<Longrightarrow> listL (swap q) = listR q"

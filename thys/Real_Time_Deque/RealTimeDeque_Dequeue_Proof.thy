@@ -1,7 +1,7 @@
 section "Dequeue Proofs"
 
-theory RealTimeDeque_Dequeue
-imports Deque RealTimeDeque States_Proof
+theory RealTimeDeque_Dequeue_Proof
+imports Deque RealTimeDeque_Aux States_Proof
 begin
  
 lemma list_deqL' [simp]: "\<lbrakk>invar deque; listL deque \<noteq> []; deqL' deque = (x, deque')\<rbrakk>
@@ -49,12 +49,13 @@ proof(induction deque arbitrary: x rule: deqL'.induct)
         by(auto simp: Let_def rev_take rev_drop)
 
       with 4 Start_Transformation True invar_left'
-      have "States.listL ?states = tl (Idle.list left) @ rev (Stack.list right)"
+      have "States_Aux.listL ?states = tl (Idle_Aux.list left) @ rev (Stack_Aux.list right)"
         using pop_list_tl'[of left x left'] 
         by (auto simp del: reverseN_def)
     
       with invar 
-      have "States.listL ((step^^6) ?states) = tl (Idle.list left) @ rev (Stack.list right)"
+      have "States_Aux.listL ((step^^6) ?states) = 
+            tl (Idle_Aux.list left) @ rev (Stack_Aux.list right)"
         using step_n_listL[of ?states 6]
         by presburger
       
@@ -65,11 +66,11 @@ proof(induction deque arbitrary: x rule: deqL'.induct)
       from False Start_Transformation 4 have [simp]:"size left = 1"
         using size_left' size_left'_size_left by auto
         
-      with False Start_Transformation 4 have [simp]: "Idle.list left = [x]"
+      with False Start_Transformation 4 have [simp]: "Idle_Aux.list left = [x]"
         by(induction left)(auto simp: length_one_hd split: stack.splits)
 
       obtain right1 right2 where "right = Stack right1 right2"
-        using Stack.list.cases by blast
+        using Stack_Aux.list.cases by blast
 
       with False Start_Transformation 4 show ?thesis 
         by(induction right1 right2 rule: small_deque.induct) auto
@@ -98,31 +99,32 @@ next
     using pop start_invar small_size invar_pop_small[of Left big small x small']
     by auto
 
-  have "x # Small.list_current small' = Small.list_current small"
+  have "x # Small_Aux.list_current small' = Small_Aux.list_current small"
     using small_invar small_size pop Small_Proof.pop_list_current[of small x small'] by auto
     
   then have listL: 
-      "x # States.listL ?states_new = Small.list_current small @ rev (Big.list_current big)"
+      "x # States_Aux.listL ?states_new = 
+       Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     using invar small_size Small_Proof.pop_list_current[of small x small'] 5(1)
     by auto      
 
   from invar have "invar ?states_stepped"
     using invar_step_n by blast
 
-  then have states_listL_list_current [simp]: "x # States.listL ?states_stepped = 
-                Small.list_current small @ rev (Big.list_current big)"
+  then have states_listL_list_current [simp]: "x # States_Aux.listL ?states_stepped = 
+                Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     using States_Proof.step_n_listL invar listL by metis
 
-  then have "listL (deqL (Transforming (States Left big small))) = States.listL ?states_stepped"
+  then have "listL (deqL (Transforming (States Left big small))) = States_Aux.listL ?states_stepped"
     by(auto simp: Let_def pop split: prod.splits direction.splits states.splits state_splits)
 
   then have states_listL_list_current: 
       "x # listL (deqL (Transforming (States Left big small))) =
-       Small.list_current small @ rev (Big.list_current big)"
+       Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     by auto
 
   with 5(1) have "listL (Transforming (States Left big small)) = 
-                  Small.list_current small @ rev (Big.list_current big)"
+                  Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     by auto
 
   with states_listL_list_current 
@@ -153,12 +155,13 @@ next
     using pop start_invar big_size invar_pop_big[of Right big small]
     by auto
 
-  have big_list_current: "x # Big.list_current big' = Big.list_current big"
+  have big_list_current: "x # Big_Aux.list_current big' = Big_Aux.list_current big"
     using big_invar big_size pop by auto
     
   then have listL: 
-    "x # States.listL ?states_new = Big.list_current big @ rev (Small.list_current small)"
-    proof(cases "States.lists ?states_new")
+    "x # States_Aux.listL ?states_new = 
+     Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
+    proof(cases "States_Aux.lists ?states_new")
       case (Pair bigs smalls)
       with invar big_list_current show ?thesis
         using app_rev[of smalls bigs]
@@ -169,20 +172,22 @@ next
     using invar_step_n by blast
 
   then have [simp]: 
-      "x # States.listL ?states_stepped = Big.list_current big @ rev (Small.list_current small)"
+      "x # States_Aux.listL ?states_stepped = 
+       Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
     using States_Proof.step_n_listL[of ?states_new 4] invar listL
     by auto
 
-  then have "listL (deqL (Transforming (States Right big small))) = States.listL ?states_stepped"
+  then have "listL (deqL (Transforming (States Right big small))) = 
+              States_Aux.listL ?states_stepped"
     by(auto simp: Let_def pop split: prod.splits direction.splits states.splits state_splits)
 
   then have listL_list_current: 
       "x # listL (deqL (Transforming (States Right big small))) = 
-       Big.list_current big @ rev (Small.list_current small)"
+       Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
     by auto
 
   with 6(1) have "listL (Transforming (States Right big small)) = 
-                  Big.list_current big @ rev (Small.list_current small)"
+                  Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
     using invar_list_big_first[of "States Right big small"] by fastforce
 
   with listL_list_current have 
@@ -223,7 +228,7 @@ proof(induction deque rule: deqL'.induct)
   have [simp]: "length_left' = size left - 1" 
     using invar_left' by auto
 
-  from 4 have list: "x # Idle.list left' = Idle.list left"
+  from 4 have list: "x # Idle_Aux.list left' = Idle_Aux.list left"
     using Idle_Proof.pop_list[of left x left']
     by auto
 
@@ -274,12 +279,12 @@ proof(induction deque rule: deqL'.induct)
       from False Start_Transformation 4 have [simp]: "size left = 1"
         by auto
         
-      with False Start_Transformation 4 have [simp]: "Idle.list left = [x]"  
+      with False Start_Transformation 4 have [simp]: "Idle_Aux.list left = [x]"  
         using list[symmetric]
         by(auto simp: list Stack_Proof.list_empty_size)
      
       obtain right1 right2 where "right = Stack right1 right2"
-        using Stack.list.cases by blast
+        using Stack_Aux.list.cases by blast
 
       with False Start_Transformation 4 show ?thesis 
         by(induction right1 right2 rule: small_deque.induct) auto

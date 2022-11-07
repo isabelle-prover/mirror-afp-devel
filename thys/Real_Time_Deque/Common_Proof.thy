@@ -1,7 +1,7 @@
 section "Common Proofs"
 
 theory Common_Proof
-imports Common Idle_Proof Current_Proof
+imports Common_Aux Idle_Proof Current_Proof
 begin
 
 lemma reverseN_drop: "reverseN n xs acc = drop (length xs - n) (rev xs) @ acc"
@@ -86,7 +86,7 @@ next
       proof(cases "remained \<le> Suc (length new)")
         case True
         with 2 Current False 
-          have "take (Suc (length new)) (Stack.list old) = take (size old) (hd aux # new)"
+          have "take (Suc (length new)) (Stack_Aux.list old) = take (size old) (hd aux # new)"
             by(auto simp: le_Suc_eq take_Cons')
          
         with 2 Current True show ?thesis 
@@ -138,7 +138,7 @@ proof(induction common arbitrary: x rule: pop.induct)
     using Idle_Proof.size_pop[of idle x idle', symmetric] 
         size_new_pop[of current] 
         size_pop_sub[of current _ current']
-    by(auto simp: Idle_Proof.invar_pop invar_size_pop eq_snd_iff take_tl size_not_empty)
+    by(auto simp: Idle_Proof.invar_pop invar_pop eq_snd_iff take_tl size_not_empty)
 next
   case (2 current aux new moved)
   then show ?case 
@@ -150,7 +150,7 @@ next
 
       with 1 have [simp]: 
           "0 < size old" 
-          "Stack.list old \<noteq> []" 
+          "Stack_Aux.list old \<noteq> []" 
           "aux \<noteq> []"
           "length new = remained - Suc 0"
         by(auto simp: Stack_Proof.size_not_empty Stack_Proof.list_not_empty)
@@ -161,9 +161,9 @@ next
       from 1 have "0 < remained"
         by auto
 
-      then have "take remained (Stack.list old)
-          = hd (Stack.list old) # take (remained - Suc 0) (tl (Stack.list old))"
-        by (metis Suc_pred \<open>Stack.list old \<noteq> []\<close> list.collapse take_Suc_Cons)
+      then have "take remained (Stack_Aux.list old)
+          = hd (Stack_Aux.list old) # take (remained - Suc 0) (tl (Stack_Aux.list old))"
+        by (metis Suc_pred \<open>Stack_Aux.list old \<noteq> []\<close> list.collapse take_Suc_Cons)
 
       with 1 True show ?thesis 
         using Stack_Proof.pop_list[of old] 
@@ -203,10 +203,10 @@ next
 
       from 1 True have [simp]: 
           "aux \<noteq> []" "0 < remained" 
-          "Stack.list old \<noteq> []" "remained - length new = 1"
+          "Stack_Aux.list old \<noteq> []" "remained - length new = 1"
         by(auto simp: Stack_Proof.size_not_empty Stack_Proof.list_not_empty)
 
-      then have "take remained (Stack.list old) = hd aux # take (size old - Suc 0) new
+      then have "take remained (Stack_Aux.list old) = hd aux # take (size old - Suc 0) new
              \<Longrightarrow> Stack.first old = hd aux"
         by (metis first_hd hd_take list.sel(1))
      
@@ -224,11 +224,11 @@ next
         from 1 have not_empty: "0 < remained" "0 < size old"  "aux \<noteq> []" "\<not> is_empty old"
           by(auto simp: Stack_Proof.size_not_empty)
 
-        from 1 True not_empty have "take 1 (Stack.list old) = take 1 (rev aux)"
+        from 1 True not_empty have "take 1 (Stack_Aux.list old) = take 1 (rev aux)"
           using take_1[of 
                 remained 
                 "size old" 
-                "Stack.list old"  
+                "Stack_Aux.list old"  
                 "(rev aux) @ take (size old + length new - remained) new"
                 ] 
           by(simp)
@@ -258,18 +258,21 @@ next
         from 1 have not_empty: "0 < remained" "0 < size old" "0 < remained - length new" "0 < length aux" 
           by auto
 
-        with False have "
-              take remained (Stack.list old) = take (size old) (reverseN (remained - length new) aux new)
-          \<Longrightarrow> take (Suc 0) (Stack.list old) = take (Suc 0) (rev (take (remained - length new) aux))"
+        with False have 
+           "take remained (Stack_Aux.list old) =
+            take (size old) (reverseN (remained - length new) aux new)
+            \<Longrightarrow> take (Suc 0) (Stack_Aux.list old) =
+                take (Suc 0) (rev (take (remained - length new) aux))"
           using take_1[of
                 remained 
                 "size old" 
-                "Stack.list old" 
+                "Stack_Aux.list old" 
                 " (reverseN (remained - length new) aux new)"
               ]
           by(auto simp: not_empty Suc_le_eq)
 
-        with 1 False have "take 1 (Stack.list old) = take 1 (rev (take (remained - length new) aux))"
+        with 1 False have 
+            "take 1 (Stack_Aux.list old) = take 1 (rev (take (remained - length new) aux))"
           by auto
           
         then have d: "[Stack.first old] = [last (take (remained - length new) aux)]"
@@ -313,11 +316,11 @@ proof(induction common arbitrary: x rule: pop.induct)
         by auto
 
       with Stack_Proof.size_not_empty Stack_Proof.list_not_empty
-      have not_empty: "\<not> is_empty stack" "Stack.list stack \<noteq> []"
+      have not_empty: "\<not> is_empty stack" "Stack_Aux.list stack \<noteq> []"
         by auto
 
-      with 2 have "hd (Stack.list stack) = x"
-        using take_hd'[of "Stack.list stack" x "xs @ Stack.list old"]
+      with 2 have "hd (Stack_Aux.list stack) = x"
+        using take_hd'[of "Stack_Aux.list stack" x "xs @ Stack_Aux.list old"]
         by auto
        
       with 2 show ?case 
@@ -351,7 +354,7 @@ proof(induction common rule: invar_state.induct)
 next
   case (2 current)
   then have "invar current" 
-            "Current.list current = []"  
+            "Current_Aux.list current = []"  
             "0 < size current" 
     by(auto split: current.splits)
  
@@ -367,25 +370,11 @@ proof(induction common rule: invar_state.induct)
 next
   case (2 current aux new moved)
   then have "invar current" 
-            "Current.list current = []"  
+            "Current_Aux.list current = []"  
             "0 < size current" 
     by(auto split: current.splits)
  
   then show ?case using list_size by auto
-qed
-
-lemma size_empty: "invar (common :: 'a state) \<Longrightarrow> size common = 0 \<Longrightarrow> is_empty common"
-proof(induction common rule: is_empty_state.induct)
-  case 1
-  then show ?case 
-    by(auto simp: min_def size_empty size_new_empty split: if_splits)
-next
-  case (2 current)
-  then have "invar current" 
-    by(auto split: current.splits)
-
-  with 2 show ?case 
-    by(auto simp: min_def size_empty size_new_empty split: if_splits)
 qed
   
 lemma step_size [simp]: "invar (common :: 'a state) \<Longrightarrow> size (step common) = size common"

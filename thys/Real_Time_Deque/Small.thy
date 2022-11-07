@@ -22,22 +22,7 @@ datatype (plugins del: size) 'a state =
 text \<open>\<^noindent> Functions:
 
  \<^descr> \<open>push\<close>, \<open>pop\<close>: Add and remove elements using the \<open>current\<close> state.
- \<^descr> \<open>step\<close>: Executes one step of the transformation, while keeping the invariant.
- \<^descr> \<open>size_new\<close>: Returns the size, that the deque end will have after the transformation is finished.
- \<^descr> \<open>size\<close>: Minimum of \<open>size_new\<close> and the number of elements contained in the `current` state.
- \<^descr> \<open>list\<close>: List abstraction of the elements which this end will contain after the transformation is finished. The first phase is not covered, since the elements, which will be transferred from the bigger deque end are not known yet.
- \<^descr> \<open>list_current\<close>: List abstraction of the elements currently in this deque end.
-\<close>
-
-fun list :: "'a state \<Rightarrow> 'a list" where
-  "list (Common common) = Common.list common"
-| "list (Reverse2 (Current extra _ _ remained) aux big new count) =
-  extra @ reverseN (remained - (count + size big)) aux (rev (Stack.list big) @ new)"
-
-fun list_current :: "'a state \<Rightarrow> 'a list" where
-  "list_current (Common common) = Common.list_current common"
-| "list_current (Reverse2 current _ _ _ _) = Current.list current"
-| "list_current (Reverse1 current _ _) = Current.list current"
+ \<^descr> \<open>step\<close>: Executes one step of the transformation, while keeping the invariant.\<close>
 
 instantiation state::(type) step
 begin
@@ -73,63 +58,5 @@ fun pop :: "'a state \<Rightarrow> 'a * 'a state" where
     (first current, Reverse1 (drop_first current) small auxS)"
 | "pop (Reverse2 current auxS big newS count) = 
     (first current, Reverse2 (drop_first current) auxS big newS count)"
-
-instantiation state::(type) is_empty
-begin
-
-fun is_empty_state :: "'a state \<Rightarrow> bool" where
-  "is_empty (Common state) = is_empty state"
-| "is_empty (Reverse1 current _ _) = is_empty current"
-| "is_empty (Reverse2 current _ _ _ _) = is_empty current"
-
-instance..
-end
-
-instantiation state::(type) invar
-begin
-
-fun invar_state :: "'a state \<Rightarrow> bool" where
-  "invar (Common state) = invar state"
-| "invar (Reverse2 current auxS big newS count) = (
-   case current of Current _ _ old remained \<Rightarrow>
-      remained = count + size big + size old
-    \<and> remained \<ge> size old
-    \<and> count = List.length newS
-    \<and> invar current
-    \<and> List.length auxS \<ge> size old
-    \<and> Stack.list old = rev (take (size old) auxS)
-  )"
-| "invar (Reverse1 current small auxS) = (
-   case current of Current _ _ old remained \<Rightarrow>
-      invar current
-    \<and> remained \<ge> size old
-    \<and> size small + List.length auxS \<ge> size old
-    \<and> Stack.list old = rev (take (size old) (rev (Stack.list small) @ auxS))
-  )"
-
-instance..
-end
-
-instantiation state::(type) size
-begin
-
-fun size_state :: "'a state \<Rightarrow> nat" where
-  "size (Common state) = size state"
-| "size (Reverse2 current _ _ _ _) = min (size current) (size_new current)"
-| "size (Reverse1 current _ _) = min (size current) (size_new current)"
-
-instance..
-end
-
-instantiation state::(type) size_new
-begin
-
-fun size_new_state :: "'a state \<Rightarrow> nat" where
-  "size_new (Common state) = size_new state"
-| "size_new (Reverse2 current _ _ _ _) = size_new current"
-| "size_new (Reverse1 current _ _) = size_new current"
-
-instance..
-end
 
 end

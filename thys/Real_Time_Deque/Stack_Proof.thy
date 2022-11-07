@@ -1,7 +1,7 @@
 section "Stack Proofs"
 
 theory Stack_Proof
-imports Stack RTD_Util
+imports Stack_Aux RTD_Util
 begin
 
 lemma push_list [simp]: "list (push x stack) = x # list stack"
@@ -68,7 +68,7 @@ lemma pop_list_length [simp]: "\<not> is_empty stack
    \<Longrightarrow> Suc (length (list (pop stack))) = length (list stack)"
   by(induction stack rule: pop.induct) auto
 
-lemma first_take: "\<not>is_empty stack \<Longrightarrow> [first stack] = take 1 (Stack.list stack)"
+lemma first_take: "\<not>is_empty stack \<Longrightarrow> [first stack] = take 1 (list stack)"
   by (simp add: list_empty)
 
 lemma first_take_tl [simp]: "0 < size big
@@ -82,7 +82,7 @@ lemma first_take_pop [simp]: "\<lbrakk>\<not>is_empty stack; 0 < x\<rbrakk>
 lemma [simp]: "first (Stack [] []) = undefined"
   by (meson first.elims list.distinct(1) stack.inject)
 
-lemma first_hd: "Stack.first stack = hd (Stack.list stack)"
+lemma first_hd: "first stack = hd (list stack)"
   by(induction stack rule: first.induct)(auto simp: hd_def)
 
 lemma pop_tl [simp]: "list (pop stack) = tl (list stack)" 

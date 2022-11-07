@@ -1,7 +1,7 @@
 section "Big + Small Proofs"
 
 theory States_Proof
-imports States Big_Proof Small_Proof
+imports States_Aux Big_Proof Small_Proof
 begin
 
 lemmas state_splits = idle.splits Common.state.splits Small.state.splits Big.state.splits
@@ -27,12 +27,12 @@ proof(induction states rule: lists.induct)
     then have "0 < size big"
       by(cases currentB) auto
 
-    then have big_not_empty: "Stack.list big \<noteq> []"
+    then have big_not_empty: "Stack_Aux.list big \<noteq> []"
       by (simp add: Stack_Proof.size_not_empty Stack_Proof.list_empty)
 
     with "2_1" show ?case 
       using 
-          reverseN_step[of "Stack.list big" count' auxB] 
+          reverseN_step[of "Stack_Aux.list big" count' auxB] 
           Stack_Proof.list_empty[symmetric, of small]       
        by (cases currentB)(auto simp: first_hd funpow_swap1 reverseN_step reverseN_finish simp del: reverseN_def)
     qed
@@ -1109,15 +1109,15 @@ lemma step_listL: "invar states \<Longrightarrow> listL (step states) = listL st
 proof(induction states rule: listL.induct)
   case (1 big small)
   then have "list_small_first (States Left big small) = 
-             Small.list_current small @ rev (Big.list_current big)"
+             Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     by auto
 
   then have "list_small_first (step (States Left big small)) = 
-             Small.list_current small @ rev (Big.list_current big)"
+             Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     using 1 step_lists by fastforce
 
   then have "listL (step (States Left big small)) =
-             Small.list_current small @ rev (Big.list_current big)"
+             Small_Aux.list_current small @ rev (Big_Aux.list_current big)"
     by (smt (verit, ccfv_SIG) "1" invar_states.elims(2) States_Proof.invar_step listL.simps(1) step_same)
 
   with 1 show ?case 
@@ -1125,16 +1125,16 @@ proof(induction states rule: listL.induct)
 next
   case (2 big small)
   then have a: "list_big_first (States Right big small) = 
-             Big.list_current big @ rev (Small.list_current small)"
+             Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
      using invar_list_big_first[of "States Right big small"]
      by auto
 
    then have "list_big_first (step (States Right big small)) = 
-              Big.list_current big @ rev (Small.list_current small)"
+              Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
     using 2 step_lists by fastforce
 
   then have "listL (step (States Right big small)) =
-             Big.list_current big @ rev (Small.list_current small)"
+             Big_Aux.list_current big @ rev (Small_Aux.list_current small)"
     by (metis(full_types) listL.cases listL.simps(2) step_same)
 
   with 2 show ?case 
