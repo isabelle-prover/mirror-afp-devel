@@ -18,6 +18,9 @@ homepage = "li_homepage"
 li = "li_email"
 
 [history]
+2022-11-09 = """
+Added theory file Tarski_Query_Impl to the entry proof session.
+<br>"""
 
 [extra]
 

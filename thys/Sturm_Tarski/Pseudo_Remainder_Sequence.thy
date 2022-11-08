@@ -59,8 +59,7 @@ next
     using Cons.hyps(1)[of q r b a] Cons by auto
   moreover have "smult a p\<noteq>0" using `a\<noteq>0` `p\<noteq>0` by auto
   moreover have "-((smult a p) mod (smult b q)) = (smult a r)" 
-    using Polynomial.mod_smult_left Polynomial.mod_smult_right[OF `b\<noteq>0`]
-    unfolding r_def by simp
+    by (simp add: Cons.prems(2) mod_smult_left mod_smult_right r_def)
   ultimately show ?case
     unfolding r_def by auto
 qed
@@ -79,9 +78,8 @@ next
   define r where "r\<equiv>- (p mod q)"
   have xs:"xs=smods q r" "p#xs=smods p q" using Cons.hyps(2) `p\<noteq>0` unfolding r_def by auto
   define ys where "ys\<equiv>smods (smult b q) (smult a r)"
-  have "- ((smult a p) mod (smult b q)) = smult a r" 
-    using mod_smult_right[OF `b\<noteq>0`, of "smult a p" q,unfolded mod_smult_left[where y=q]]
-    unfolding r_def by auto
+  have "- ((smult a p) mod (smult b q)) = smult a r"
+    by (simp add: Cons.hyps(4) mod_smult_left mod_smult_right r_def)
   hence ys:"smult a p # ys = smods (smult a p) (smult b q)" using `p\<noteq>0` `a\<noteq>0` 
     unfolding ys_def r_def by auto
   have hyps:"\<And>n. n<length xs \<Longrightarrow> ys ! n = (if even n then smult b (xs ! n) else smult a (xs ! n))"

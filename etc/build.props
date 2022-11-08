@@ -13,13 +13,15 @@ sources = \
   tools/afp_dependencies.scala \
   tools/afp_release.scala \
   tools/afp_site_gen.scala \
+  tools/afp_submit.scala \
   tools/afp_structure.scala \
   tools/afp_tool.scala \
   tools/hugo.scala \
   tools/metadata.scala \
   tools/rake.scala \
   tools/toml.scala \
-  tools/utils.scala
+  tools/utils.scala \
+  tools/web_app.scala
 resources = \
   tools/SmartStoplist.txt:SmartStoplist.txt \
   tools/migration/public_suffix_list.dat:public_suffix_list.dat

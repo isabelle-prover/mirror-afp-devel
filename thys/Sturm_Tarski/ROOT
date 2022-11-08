@@ -2,8 +2,11 @@ chapter AFP
 
 session Sturm_Tarski (AFP) = "HOL-Computational_Algebra" +
   options [timeout = 600]
+  sessions
+    Polynomial_Interpolation
   theories
     Sturm_Tarski
+    Tarski_Query_Impl
   document_files
     "root.tex"
     "root.bib"
