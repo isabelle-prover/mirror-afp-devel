@@ -18,8 +18,10 @@ fun push :: "'a \<Rightarrow> 'a current \<Rightarrow> 'a current" where
   "push x (Current extra added old remained) = Current (x#extra) (added + 1) old remained"
 
 fun pop :: "'a current \<Rightarrow> 'a * 'a current" where
-  "pop (Current [] added old remained)     = (first old, Current [] added (Stack.pop old) (remained - 1))"
-| "pop (Current (x#xs) added old remained) = (x, Current xs (added - 1) old remained)"
+  "pop (Current [] added old remained)     = 
+    (first old, Current [] added (Stack.pop old) (remained - 1))"
+| "pop (Current (x#xs) added old remained) = 
+    (x, Current xs (added - 1) old remained)"
 
 fun first :: "'a current \<Rightarrow> 'a" where
   "first current = fst (pop current)"

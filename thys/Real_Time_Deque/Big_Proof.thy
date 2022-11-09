@@ -40,7 +40,7 @@ lemma list_Reverse: "\<lbrakk>
       list (Reverse current big aux count)" 
 proof(induction current rule: Current.pop.induct)
   case (1 added old remained)
-  then have [simp]: "remained - Suc 0 < length (reverseN count (Stack_Aux.list big) aux)"
+  then have [simp]: "remained - Suc 0 < length (take_rev count (Stack_Aux.list big) @ aux)"
     by(auto simp: le_diff_conv)
 
   (* TODO: *)
@@ -54,14 +54,14 @@ proof(induction current rule: Current.pop.induct)
      rev (take (remained - count) aux) @ rev (take remained (rev (take count (Stack_Aux.list big))))\<rbrakk>
     \<Longrightarrow> hd (rev (take (size old - size big) aux) @ rev (take (size old) (rev (Stack_Aux.list big)))) =
         (rev (take count (Stack_Aux.list big)) @ aux) ! (remained - Suc 0)"
-    by (smt (verit) Suc_pred hd_drop_conv_nth hd_rev hd_take last_snoc length_rev length_take min.absorb2 rev_append reverseN_def size_list_length take_append take_hd_drop)
+    by (smt (verit) Suc_pred hd_drop_conv_nth hd_rev hd_take last_snoc length_rev length_take min.absorb2 rev_append take_rev_def size_list_length take_append take_hd_drop)
 
-  with 1 have [simp]: "Stack.first old = reverseN count (Stack_Aux.list big) aux ! (remained - Suc 0)"
+  with 1 have [simp]: "Stack.first old = (take_rev count (Stack_Aux.list big) @ aux) ! (remained - Suc 0)"
     by(auto simp: take_hd_drop first_hd)
  
   from 1 show ?case
-    using reverseN_nth[of 
-          "remained - Suc 0" "reverseN count (Stack_Aux.list big) aux" "Stack.first old" "[]"
+    using take_rev_nth[of 
+          "remained - Suc 0" "take_rev count (Stack_Aux.list big) @ aux" "Stack.first old" "[]"
         ]
     by auto
 next
@@ -124,7 +124,7 @@ next
     by auto 
 
   with current 2 show ?case
-    by(auto simp: reverseN_drop drop_rev)
+    by(auto simp: take_rev_drop drop_rev)
 next
   case (3 current big aux count)
   then have "0 < size big"
@@ -142,9 +142,9 @@ next
     by(auto split: current.splits)
   
   from 3 big_not_empty have "
-      reverseN (Suc count) (Stack_Aux.list big) aux = 
-      reverseN count (Stack_Aux.list (Stack.pop big)) (Stack.first big # aux)"
-    using reverseN_tl_hd[of "Suc count" "Stack_Aux.list big" aux]
+      take_rev (Suc count) (Stack_Aux.list big) @  aux = 
+      take_rev count (Stack_Aux.list (Stack.pop big)) @ (Stack.first big # aux)"
+    using take_rev_tl_hd[of "Suc count" "Stack_Aux.list big" aux]
     by(auto simp: Stack_Proof.list_not_empty split: current.splits)
  
   with 3 a show ?case
@@ -182,7 +182,7 @@ next
         \<Longrightarrow> tl (rev aux @ Stack_Aux.list big) = rev aux @ Stack_Aux.list big"
       by (metis le_refl length_append length_rev size_list_length)
 
-    have b: "\<lbrakk>remained \<le> length (reverseN count (Stack_Aux.list big) aux); 0 < size old; 
+    have b: "\<lbrakk>remained \<le> length (take_rev count (Stack_Aux.list big) @ aux); 0 < size old; 
           0 < remained; added = 0;
          x = Stack.first old;
          big' = Reverse (Current [] 0 (Stack.pop old) (remained - Suc 0)) big aux count;
@@ -193,8 +193,8 @@ next
          take remained (drop (length aux - (size old - size big)) (rev aux)) @
          take (remained + (length aux - (size old - size big)) - length aux)
           (drop (size big - size old) (Stack_Aux.list big)) =
-         drop (length (reverseN count (Stack_Aux.list big) aux) - remained)
-          (rev (reverseN count (Stack_Aux.list big) aux))\<rbrakk>
+         drop (length (take_rev count (Stack_Aux.list big) @ aux) - remained)
+          (rev (take_rev count (Stack_Aux.list big) @ aux))\<rbrakk>
         \<Longrightarrow> tl (drop (length aux - (size old - size big)) (rev aux) @
                 drop (size big - size old) (Stack_Aux.list big)) =
             drop (length aux - (size old - Suc (size big))) (rev aux) @
@@ -202,12 +202,14 @@ next
       apply(cases "size old - size big \<le> length aux"; cases "size old \<le> size big")
       by(auto simp: tl_drop_2 Suc_diff_le le_diff_conv le_refl a)
 
-    from 1 have "remained \<le> length (reverseN count (Stack_Aux.list big) aux)"
+    from 1 have "remained \<le> length (take_rev count (Stack_Aux.list big) @ aux)"
       by(auto)
 
     with 1 show ?case 
-      apply(auto simp: rev_take take_tl drop_Suc Suc_diff_le tl_drop linarith simp del: reverseN_def)
-      using b by simp
+      apply(auto simp: rev_take take_tl drop_Suc Suc_diff_le tl_drop linarith simp del: take_rev_def)
+      using b
+      apply (metis \<open>remained \<le> length (take_rev count (Stack_Aux.list big) @ aux)\<close> rev_append rev_take take_append)
+      by (smt (verit, del_insts) Nat.diff_cancel tl_append_if Suc_diff_le append_self_conv2 diff_add_inverse diff_diff_cancel diff_is_0_eq diff_le_mono drop_eq_Nil2 length_rev nle_le not_less_eq_eq plus_1_eq_Suc tl_drop_2)
   next
     case (2 x xs added old remained)
     then show ?case by auto

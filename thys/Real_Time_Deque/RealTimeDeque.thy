@@ -41,7 +41,7 @@ datatype 'a deque =
   | Transforming "'a states"
 
 definition empty where
-  "empty \<equiv> Empty"
+  "empty = Empty"
 
 instantiation deque::(type) is_empty
 begin

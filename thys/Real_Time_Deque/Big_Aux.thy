@@ -13,8 +13,8 @@ text \<open>\<^noindent> Functions:
 fun list :: "'a state \<Rightarrow> 'a list" where
   "list (Common common) = Common_Aux.list common"
 | "list (Reverse (Current extra _ _ remained) big aux count) = (
-   let reversed = reverseN count (Stack_Aux.list big) aux in
-    extra @ (reverseN remained reversed [])
+   let reversed = take_rev count (Stack_Aux.list big) @ aux in
+    extra @ (take_rev remained reversed)
   )"
 
 fun list_current :: "'a state \<Rightarrow> 'a list" where
@@ -34,7 +34,7 @@ fun invar_state :: "'a state \<Rightarrow> bool" where
     \<and> count \<le> size big
     \<and> Stack_Aux.list old = rev (take (size old) ((rev (Stack_Aux.list big)) @ aux))
     \<and> take remained (Stack_Aux.list old) = 
-      rev (take remained (reverseN count (Stack_Aux.list big) aux))
+      rev (take remained (take_rev count (Stack_Aux.list big) @ aux))
 )"
 
 instance..

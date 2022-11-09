@@ -10,7 +10,8 @@ fun remaining_steps_states :: "'a states \<Rightarrow> nat" where
     (remaining_steps big) 
     (case small of 
        Small.Common common \<Rightarrow> remaining_steps common
-     | Reverse2 (Current _ _ _ remaining) _ big _ count \<Rightarrow> (remaining - (count + size big)) + size big + 1
+     | Reverse2 (Current _ _ _ remaining) _ big _ count \<Rightarrow> 
+          (remaining - (count + size big)) + size big + 1
      | Reverse1 (Current _ _ _ remaining) _ _ \<Rightarrow>
          case big of
            Reverse currentB big auxB count \<Rightarrow> size big + (remaining + count - size big) + 2
@@ -22,7 +23,7 @@ end
 fun lists :: "'a states \<Rightarrow> 'a list * 'a list" where
   "lists (States _ (Reverse currentB big auxB count) (Reverse1 currentS small auxS)) = (
     Big_Aux.list (Reverse currentB big auxB count),
-    Small_Aux.list (Reverse2 currentS (reverseN count (Stack_Aux.list small) auxS) ((Stack.pop ^^ count) big) [] 0)
+    Small_Aux.list (Reverse2 currentS (take_rev count (Stack_Aux.list small) @ auxS) ((Stack.pop ^^ count) big) [] 0)
   )"
 | "lists (States _ big small) = (Big_Aux.list big, Small_Aux.list small)"
 

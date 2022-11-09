@@ -4,19 +4,21 @@ theory Common_Proof
 imports Common_Aux Idle_Proof Current_Proof
 begin
 
-lemma reverseN_drop: "reverseN n xs acc = drop (length xs - n) (rev xs) @ acc"
-  unfolding reverseN_def using rev_take by blast
+lemma take_rev_drop: "take_rev n xs @ acc = drop (length xs - n) (rev xs) @ acc"
+  unfolding take_rev_def using rev_take by blast
 
-lemma reverseN_step: "xs \<noteq> [] \<Longrightarrow> reverseN n (tl xs) (hd xs # acc) = reverseN (Suc n) xs acc"
+lemma take_rev_step: "xs \<noteq> [] \<Longrightarrow> take_rev n (tl xs) @ (hd xs # acc) = take_rev (Suc n) xs @ acc"
   by (simp add: take_Suc)
 
-lemma reverseN_finish: "reverseN n [] acc = acc"
-  by (simp)
+lemma take_rev_empty [simp]: "take_rev n [] = []"
+  by simp
 
-lemma reverseN_tl_hd: "0 < n \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> reverseN n xs ys = reverseN (n - (Suc 0)) (tl xs) (hd xs #ys)"
-  by (simp add: reverseN_step del: reverseN_def)
+lemma take_rev_tl_hd: 
+    "0 < n \<Longrightarrow> xs \<noteq> [] \<Longrightarrow> take_rev  n xs @ ys = take_rev (n - (Suc 0)) (tl xs) @ (hd xs #ys)"
+  by (simp add: take_rev_step del: take_rev_def)
 
-lemma reverseN_nth: "n < length xs \<Longrightarrow> x = xs ! n \<Longrightarrow> x # reverseN n xs ys = reverseN (Suc n) xs ys"
+lemma take_rev_nth: 
+    "n < length xs \<Longrightarrow> x = xs ! n \<Longrightarrow> x # take_rev n xs @ ys = take_rev (Suc n) xs @ ys"
   by (simp add: take_Suc_conv_app_nth)
 
 lemma step_list [simp]: "invar common \<Longrightarrow> list (step common) = list common"
@@ -45,7 +47,7 @@ next
     next
       case False
       with Current show ?thesis 
-        by(auto simp: aux_not_empty reverseN_step Suc_diff_Suc simp del: reverseN_def)
+        by(auto simp: aux_not_empty take_rev_step Suc_diff_Suc simp del: take_rev_def)
     qed
   qed
 qed
@@ -94,7 +96,7 @@ next
       next
         case False
         with 2 Current AUX_NOT_EMPTY show ?thesis 
-          by(auto simp: reverseN_step Suc_diff_Suc simp del: reverseN_def)
+          by(auto simp: take_rev_step Suc_diff_Suc simp del: take_rev_def)
       qed
     qed
   qed
@@ -242,7 +244,7 @@ next
 
         with 1 True False show ?thesis 
           using not_empty last_drop_rev[of aux]
-          by(auto simp: reverseN_drop length_minus_1 simp del: reverseN_def)
+          by(auto simp: take_rev_drop length_minus_1 simp del: take_rev_def)
        next
         case False
 
@@ -260,14 +262,14 @@ next
 
         with False have 
            "take remained (Stack_Aux.list old) =
-            take (size old) (reverseN (remained - length new) aux new)
+            take (size old) (take_rev (remained - length new) aux @ new)
             \<Longrightarrow> take (Suc 0) (Stack_Aux.list old) =
                 take (Suc 0) (rev (take (remained - length new) aux))"
           using take_1[of
                 remained 
                 "size old" 
                 "Stack_Aux.list old" 
-                " (reverseN (remained - length new) aux new)"
+                " (take_rev (remained - length new) aux @ new)"
               ]
           by(auto simp: not_empty Suc_le_eq)
 

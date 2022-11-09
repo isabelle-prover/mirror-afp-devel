@@ -11,13 +11,13 @@ text\<open>
 \<^descr> \<open>size_new\<close>: Returns the size, that the deque end will have after the transformation is finished.
 \<^descr> \<open>size\<close>: Minimum of \<open>size_new\<close> and the number of elements contained in the \<open>current\<close> state.\<close>
 
-definition reverseN where
-[simp]:  "reverseN n xs acc \<equiv> rev (take n xs) @ acc"
+definition take_rev where 
+[simp]:  "take_rev n xs = rev (take n xs)"
 
 fun list :: "'a state \<Rightarrow> 'a list" where
   "list (Idle _ idle) = Idle_Aux.list idle"
 | "list (Copy (Current extra _ _ remained) old new moved) 
-   = extra @ reverseN (remained - moved) old new"
+   = extra @ take_rev (remained - moved) old @ new"
 
 fun list_current :: "'a state \<Rightarrow> 'a list" where
   "list_current (Idle current _) = Current_Aux.list current"
@@ -39,7 +39,7 @@ fun invar_state :: "'a state \<Rightarrow> bool" where
     \<and> moved = length new
     \<and> remained \<le> length aux + moved
     \<and> invar current
-    \<and> take remained (Stack_Aux.list old) = take (size old) (reverseN (remained - moved) aux new)
+    \<and> take remained (Stack_Aux.list old) = take (size old) (take_rev (remained - moved) aux @ new)
  )"
 
 instance..

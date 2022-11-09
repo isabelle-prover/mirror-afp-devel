@@ -51,7 +51,7 @@ proof(induction deque arbitrary: x rule: deqL'.induct)
       with 4 Start_Transformation True invar_left'
       have "States_Aux.listL ?states = tl (Idle_Aux.list left) @ rev (Stack_Aux.list right)"
         using pop_list_tl'[of left x left'] 
-        by (auto simp del: reverseN_def)
+        by (auto simp del: take_rev_def)
     
       with invar 
       have "States_Aux.listL ((step^^6) ?states) = 

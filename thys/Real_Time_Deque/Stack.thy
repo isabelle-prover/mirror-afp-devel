@@ -5,8 +5,7 @@ imports Type_Classes
 begin
 
 text \<open>A datatype encapsulating two lists. Is used as a base data-structure in different places.
-It has the operations \<open>push\<close>, \<open>pop\<close> and \<open>first\<close>.
-The function \<open>list\<close> appends the two lists and is needed for the list abstraction of the deque.\<close>
+It has the operations \<open>push\<close>, \<open>pop\<close> and \<open>first\<close>.\<close>
 
 datatype (plugins del: size) 'a stack = Stack "'a list" "'a list"
 

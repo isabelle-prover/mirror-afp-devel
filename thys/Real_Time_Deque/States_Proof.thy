@@ -32,9 +32,10 @@ proof(induction states rule: lists.induct)
 
     with "2_1" show ?case 
       using 
-          reverseN_step[of "Stack_Aux.list big" count' auxB] 
+          take_rev_step[of "Stack_Aux.list big" count' auxB] 
           Stack_Proof.list_empty[symmetric, of small]       
-       by (cases currentB)(auto simp: first_hd funpow_swap1 reverseN_step reverseN_finish simp del: reverseN_def)
+      apply (cases currentB)
+      by(auto simp: first_hd funpow_swap1 take_rev_step simp del: take_rev_def)
     qed
 next
   case ("2_1" dir common small)
@@ -760,7 +761,7 @@ next
   next
     case 2
     then show ?case 
-      by(auto split: Small.state.splits current.splits simp del: reverseN_def)
+      by(auto split: Small.state.splits current.splits)
   qed
 qed
 

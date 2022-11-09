@@ -4,10 +4,6 @@ theory RTD_Util
 imports Main
 begin
 
-(* remove - is in Isabelle after 2021-1 *)
-lemma tl_append_if: "tl (xs @ ys) = (if xs = [] then tl ys else tl xs @ ys)"
-  by (simp)
-
 lemma take_last_length: "\<lbrakk>take (Suc 0) (rev xs) = [last xs]\<rbrakk> \<Longrightarrow> Suc 0 \<le> length xs"
   by(induction xs) auto
 

@@ -11,7 +11,7 @@ text \<open>\<^noindent> Functions:
 fun list :: "'a state \<Rightarrow> 'a list" where
   "list (Common common) = Common_Aux.list common"
 | "list (Reverse2 (Current extra _ _ remained) aux big new count) =
-  extra @ reverseN (remained - (count + size big)) aux (rev (Stack_Aux.list big) @ new)"
+  extra @ (take_rev (remained - (count + size big)) aux) @ (rev (Stack_Aux.list big) @ new)"
 
 fun list_current :: "'a state \<Rightarrow> 'a list" where
   "list_current (Common common) = Common_Aux.list_current common"

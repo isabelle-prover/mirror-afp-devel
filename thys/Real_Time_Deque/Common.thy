@@ -26,12 +26,11 @@ text\<open>
 (* TODO: Maybe inline function? *)
 fun normalize :: "'a state \<Rightarrow> 'a state" where
   "normalize (Copy current old new moved) = (
-      case current of Current extra added _ remained \<Rightarrow> 
+    case current of Current extra added _ remained \<Rightarrow> 
       if moved \<ge> remained
       then Idle current (idle.Idle (Stack extra new) (added + moved))
       else Copy current old new moved
   )"
-| "normalize state = state"
 
 
 instantiation state ::(type) step
