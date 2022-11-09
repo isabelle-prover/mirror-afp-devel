@@ -271,8 +271,8 @@ lemma transp_leq_lit[simp]: "transp leq_lit"
 lemma reflp_leq_lit[simp]: "reflp_on leq_lit A"
   unfolding reflp_on_def leq_lit_def leq_head_def by (auto split: option.splits literal.splits)
 
-lemma total_leq_lit[simp]: "total_on leq_lit A"
-  unfolding total_on_def leq_lit_def leq_head_def by (auto split: option.splits literal.splits)
+lemma total_leq_lit[simp]: "totalp_on A leq_lit"
+  unfolding totalp_on_def leq_lit_def leq_head_def by (auto split: option.splits literal.splits)
 
 lemma leq_head_subst[simp]: "leq_head t (t \<cdot> \<sigma>)"
   by (induct t) (auto simp: leq_head_def)
@@ -336,17 +336,17 @@ corollary set_quicksort [simp]: "set (quicksort R xs) = set xs"
   by (induction R xs rule: quicksort.induct) auto
 
 theorem sorted_wrt_quicksort:
-  assumes "transp R" and "total_on R (set xs)" and "reflp_on R (set xs)"
+  assumes "transp R" and "totalp_on (set xs) R" and "reflp_on R (set xs)"
   shows   "sorted_wrt R (quicksort R xs)"
 using assms
 proof (induction R xs rule: quicksort.induct)
   case (2 R x xs)
   have total: "R a b" if "\<not> R b a" "a \<in> set (x#xs)" "b \<in> set (x#xs)" for a b
-    using "2.prems" that unfolding total_on_def reflp_on_def by (cases "a = b") auto
+    using "2.prems" that unfolding totalp_on_def reflp_on_def by (cases "a = b") auto
 
   have "sorted_wrt R (quicksort R (filter (\<lambda>y. R y x) xs))"
           "sorted_wrt R (quicksort R (filter (\<lambda>y. \<not> R y x) xs))"
-    using "2.prems" by (intro "2.IH"; auto simp: total_on_def reflp_on_def)+
+    using "2.prems" by (intro "2.IH"; auto simp: totalp_on_def reflp_on_def)+
   then show ?case
     by (auto simp: sorted_wrt_append \<open>transp R\<close>
      intro: transpD[OF \<open>transp R\<close>] dest!: total)
