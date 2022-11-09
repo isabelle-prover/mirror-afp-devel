@@ -12380,6 +12380,24 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>Submission</title>
+      <link>/webapp/submission/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/webapp/submission/</guid>
+      <description>{if (Number.isInteger(event.data)) {this.style.height=event.data + 32 + &#34;px&#34;}})}).call(this)&#39;const base = &#39;https:\/\/ci.isabelle.systems\/afp-submission&#39;document.getElementById(&#34;iframe&#34;).src = base + &#39;/submission&#39; + window.location.search</description>
+    </item>
+    
+    <item>
+      <title>Submission</title>
+      <link>/webapp/submit/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/webapp/submit/</guid>
+      <description>{if (Number.isInteger(event.data)) {this.style.height=event.data + 32 + &#34;px&#34;}})}).call(this)&#39;const base = &#39;https:\/\/ci.isabelle.systems\/afp-submission&#39;document.getElementById(&#34;iframe&#34;).src = base + &#39;/submit&#39; + window.location.search</description>
+    </item>
+    
+    <item>
       <title>Subresultants</title>
       <link>/theories/subresultants/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

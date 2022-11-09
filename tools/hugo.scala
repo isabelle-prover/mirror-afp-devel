@@ -57,6 +57,7 @@ object Hugo {
     /* Static project files */
 
     private val project_files = List(
+    List("content", "webapp"),
     List("content", "_index.md"),
     List("content", "about.md"),
     List("content", "submission.md"),

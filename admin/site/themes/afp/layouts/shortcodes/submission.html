@@ -8,5 +8,6 @@
           })
         }).call(this)'></iframe>
 <script>
-document.getElementById("iframe").src = '{{ .Site.Params.submissionUrl }}/{{ .Get "endpoint" }}' + window.location.search
+const base = '{{ .Site.Params.submissionUrl }}'
+document.getElementById("iframe").src = base + '/{{ .Get "endpoint" }}' + window.location.search
 </script>

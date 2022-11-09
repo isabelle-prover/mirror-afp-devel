@@ -21,7 +21,7 @@
           "html": "https://www.isa-afp.org/browser_info/current/AFP",
           "htmlDevel": "https://devel.isa-afp.org/browser_info/current/AFP"
         },
-        "submissionUrl": "http://localhost:8080"
+        "submissionUrl": "https://ci.isabelle.systems/afp-submission"
     },
     "markup": {
         "goldmark": {
