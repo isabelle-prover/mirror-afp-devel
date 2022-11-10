@@ -330,7 +330,7 @@ lemma mgu_finite_subst_domain:
   by (cases "unify [(s, t)] []")
     (auto simp: finite_subst_domain_subst_of)
 
-lemma mgu_subst_range_vars: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+lemma mgu_range_vars: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   assumes "Unification.mgu s t = Some \<mu>"
   shows "range_vars \<mu> \<subseteq> vars_term s \<union> vars_term t"
 proof -
