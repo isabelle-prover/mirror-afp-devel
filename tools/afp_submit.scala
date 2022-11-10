@@ -117,18 +117,16 @@ object AFP_Submit {
     }
 
     case class Overview(id: String, date: LocalDate, name: String, status: Status.Value)
-    case class Metadata(
-      authors: Map[Author.ID, Author],
-      entries: List[Entry],
-      message: String)
+    case class Metadata(authors: Map[Author.ID, Author], entries: List[Entry])
 
     sealed trait T
     case object Invalid extends T
-    case class Upload(meta: Metadata, error: String) extends T
+    case class Upload(meta: Metadata, message: String, error: String) extends T
     case class Created(id: String) extends T
     case class Submission(
       id: Handler.ID,
       meta: Metadata,
+      message: String,
       build: Build.Value,
       status: Option[Status.Value],
       log: String) extends T
@@ -139,7 +137,13 @@ object AFP_Submit {
   /* Physical submission handling */
 
   trait Handler {
-    def create(date: Date, meta: Model.Metadata, archive: Bytes, ext: String): Handler.ID
+    def create(
+      date: Date,
+      meta: Model.Metadata,
+      message: String,
+      archive: Bytes,
+      ext: String
+    ): Handler.ID
     def list(): Model.Submission_List
     def get(id: Handler.ID,
       topics: Map[Topic.ID, Topic],
@@ -214,7 +218,7 @@ object AFP_Submit {
         split_lines(patch).filterNot(_.startsWith("Only in")).mkString("\n")
       }
 
-      def create(date: Date, meta: Metadata, archive: Bytes, ext: String): ID = {
+      def create(date: Date, meta: Metadata, message: String, archive: Bytes, ext: String): ID = {
         val id = ID(date)
         val dir = up(id)
         dir.file.mkdirs()
@@ -235,7 +239,7 @@ object AFP_Submit {
 
         val info =
           JSON.Format(JSON.Object(
-            "comment" -> meta.message,
+            "comment" -> message,
             "entries" -> meta.entries.map(_.name),
             "notify" -> meta.entries.flatMap(_.notifies).map(_.address).distinct))
         File.write(info_file(id), info)
@@ -268,8 +272,8 @@ object AFP_Submit {
 
           JSON.parse(File.read(info_file(id))) match {
             case JSON.Object(m) if m.contains("comment") =>
-              val meta = Metadata(authors, entries, m("comment").toString)
-              Submission(id, meta, read_build(id), read_status(id), log)
+              val meta = Metadata(authors, entries)
+              Submission(id, meta, m("comment").toString, read_build(id), read_status(id), log)
             case _ => isabelle.error("Could not read info")
           }
         }
@@ -702,11 +706,7 @@ object AFP_Submit {
           hidden(Nest_Key(key, ID), affil_id(affil)),
           hidden(Nest_Key(key, AFFILIATION), affil_address(affil))))
 
-      par(
-        fieldlabel(MESSAGE, "Comment") ::
-        hidden(MESSAGE, meta.message) ::
-        text(meta.message)) ::
-        indexed(meta.entries, Params.empty, ENTRY, render_entry) :::
+      indexed(meta.entries, Params.empty, ENTRY, render_entry) :::
         indexed(new_authors, Params.empty, AUTHOR, render_new_author) :::
         indexed(new_affils, Params.empty, AFFILIATION, render_new_affil)
     }
@@ -730,6 +730,9 @@ object AFP_Submit {
         download_link(api.abs_url(API_SUBMISSION_DOWNLOAD, List(ID -> submission.id)),
           text("metadata patch")) ::
         text(" (apply with: 'patch -p0 < FILE')") :::
+        par(
+          hidden(MESSAGE, submission.message) ::
+          text("Comment: " + submission.message)) ::
         section("Metadata") ::
         render_metadata(submission.meta) :::
         section("Status") ::
@@ -753,7 +756,7 @@ object AFP_Submit {
           api_button(api.abs_url(API_SUBMISSION), "< edit metadata") ::
           par(List(
             fieldlabel(MESSAGE, "Message for the editors (optional)"),
-            textfield(MESSAGE, "", upload.meta.message),
+            textfield(MESSAGE, "", upload.message),
             explanation(
               MESSAGE,
               "Note: Anything special or noteworthy about your submission can be covered here. " +
@@ -814,7 +817,7 @@ object AFP_Submit {
     def validate_topic(
       id: Topic.ID,
       selected: List[Topic]
-    ): (Option[Topic], Validated[Option[Topic]]) = {
+    ): (Option[Topic], Validated[Option[Topic]]) =
       topics.find(_.id == id) match {
         case Some(topic) =>
           if (selected.contains(topic))
@@ -822,7 +825,6 @@ object AFP_Submit {
           else (Some(topic), Validated.ok(None))
         case _ => (None, Validated.ok(None))
       }
-    }
 
     def validate_new_author(
       id: Author.ID,
@@ -906,7 +908,7 @@ object AFP_Submit {
 
     /* param parsing */
 
-    def parse_metadata(params: Params.Data): Option[Model.Create] = {
+    def parse_create(params: Params.Data): Option[Model.Create] = {
       def parse_topic(topic: Params.Data, topics: List[Topic]): Option[Topic] =
         validate_topic(topic.get(ID).value, topics)._1
 
@@ -1025,19 +1027,19 @@ object AFP_Submit {
 
     /* control */
 
-    def add_entry(params: Params.Data): Option[Model.T] = parse_metadata(params).map { model =>
+    def add_entry(params: Params.Data): Option[Model.T] = parse_create(params).map { model =>
       model.copy(entries = Validated.ok(model.entries.v :+ Model.Create_Entry(license = licenses.head._2)))
     }
 
     def remove_entry(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         num_entry <- List_Key.num(ENTRY, params.get(Web_App.ACTION).value)
       } yield model.copy(entries = Validated.ok(Utils.remove_at(num_entry, model.entries.v)))
 
     def add_author(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         num_entry <- List_Key.num(ENTRY, params.get(Web_App.ACTION).value)
         entry <- model.entries.v.unapply(num_entry)
         author <- entry.author_input.v
@@ -1052,7 +1054,7 @@ object AFP_Submit {
 
     def remove_author(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         (action, num_affil) <- List_Key.split(AUTHOR, params.get(Web_App.ACTION).value)
         num_entry <- List_Key.num(ENTRY, action)
         entry <- model.entries.v.unapply(num_entry)
@@ -1062,7 +1064,7 @@ object AFP_Submit {
 
     def add_notify(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         num_entry <- List_Key.num(ENTRY, params.get(Web_App.ACTION).value)
         entry <- model.entries.v.unapply(num_entry)
         author <- entry.notify_input.v
@@ -1073,7 +1075,7 @@ object AFP_Submit {
 
     def remove_notify(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         (action, num_notify) <- List_Key.split(NOTIFY, params.get(Web_App.ACTION).value)
         num_entry <- List_Key.num(ENTRY, action)
         entry <- model.entries.v.unapply(num_entry)
@@ -1083,7 +1085,7 @@ object AFP_Submit {
 
     def add_topic(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         num_entry <- List_Key.num(ENTRY, params.get(Web_App.ACTION).value)
         entry <- model.entries.v.unapply(num_entry)
         entry_params <- params.list(ENTRY).unapply(num_entry)
@@ -1095,7 +1097,7 @@ object AFP_Submit {
 
     def remove_topic(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         (action, num_topic) <- List_Key.split(TOPIC, params.get(Web_App.ACTION).value)
         num_entry <- List_Key.num(ENTRY, action)
         entry <- model.entries.v.unapply(num_entry)
@@ -1106,7 +1108,7 @@ object AFP_Submit {
 
     def add_related(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         num_entry <- List_Key.num(ENTRY, params.get(Web_App.ACTION).value)
         entry <- model.entries.v.unapply(num_entry)
         kind <- entry.related_kind
@@ -1119,7 +1121,7 @@ object AFP_Submit {
 
     def remove_related(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         (action, num_related) <- List_Key.split(RELATED, params.get(Web_App.ACTION).value)
         num_entry <- List_Key.num(ENTRY, action)
         entry <- model.entries.v.unapply(num_entry)
@@ -1128,7 +1130,7 @@ object AFP_Submit {
         model.copy(entries = Validated.ok(model.entries.v.updated(num_entry, entry1)))
       }
 
-    def add_new_author(params: Params.Data): Option[Model.T] = parse_metadata(params).map { model =>
+    def add_new_author(params: Params.Data): Option[Model.T] = parse_create(params).map { model =>
       val name = model.new_author_input.v.trim
       if (name.isEmpty)
         model.copy(new_author_input = model.new_author_input.with_error("Name must not be empty"))
@@ -1174,7 +1176,7 @@ object AFP_Submit {
 
     def remove_new_author(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         num_author <- List_Key.num(AUTHOR, params.get(Web_App.ACTION).value)
         author <- model.new_authors.v.unapply(num_author)
         if !model.used_authors.contains(author.id)
@@ -1183,7 +1185,7 @@ object AFP_Submit {
 
     def add_new_affil(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         author <- model.new_affils_author
       } yield {
         val address = model.new_affils_input.v.trim
@@ -1204,13 +1206,13 @@ object AFP_Submit {
 
     def remove_new_affil(params: Params.Data): Option[Model.T] =
       for {
-        model <- parse_metadata(params)
+        model <- parse_create(params)
         num_affil <- List_Key.num(AFFILIATION, params.get(Web_App.ACTION).value)
         affil <- model.new_affils.v.unapply(num_affil)
         if !model.used_affils.contains(affil)
       } yield model.copy(new_affils = Validated.ok(Utils.remove_at(num_affil, model.new_affils.v)))
 
-    def upload(params: Params.Data): Option[Model.T] = parse_metadata(params).map { model =>
+    def upload(params: Params.Data): Option[Model.T] = parse_create(params).map { create =>
       var ok = true
 
       def validate[A](validator: A => Validated[A], value: A): Validated[A] = {
@@ -1238,12 +1240,12 @@ object AFP_Submit {
         else Validated.ok(entries)
 
       def new_authors(authors: List[Author]): Validated[List[Author]] =
-        if (!authors.forall(author => model.used_authors.contains(author.id)))
+        if (!authors.forall(author => create.used_authors.contains(author.id)))
           Validated.error(authors, "Unused authors")
         else Validated.ok(authors)
 
       def new_affils(affils: List[Affiliation]): Validated[List[Affiliation]] =
-        if (!affils.forall(affil => model.used_affils.contains(affil)))
+        if (!affils.forall(affil => create.used_affils.contains(affil)))
           Validated.error(affils, "Unused affils")
         else Validated.ok(affils)
 
@@ -1267,9 +1269,9 @@ object AFP_Submit {
           Validated.error(txt, "LaTeX not allowed, use MathJax for math symbols")
         else Validated.ok(txt)
 
-      val validated = model.copy(
+      val validated = create.copy(
         entries = validate(
-          entries, model.entries.v.map(entry => entry.copy(
+          entries, create.entries.v.map(entry => entry.copy(
             name = validate(name, entry.name.v),
             title = validate(title, entry.title.v),
             affils = validate(entry_authors, entry.affils.v),
@@ -1277,28 +1279,28 @@ object AFP_Submit {
             topics = validate(topics, entry.topics.v),
             `abstract` = validate(`abstract`, entry.`abstract`.v)
           ))),
-        new_authors = validate(new_authors, model.new_authors.v),
-        new_affils = validate(new_affils, model.new_affils.v))
+        new_authors = validate(new_authors, create.new_authors.v),
+        new_affils = validate(new_affils, create.new_affils.v))
 
       if (ok) {
-        val (updated_authors, entries) = model.create(authors)
-        Model.Upload(Model.Metadata(updated_authors, entries, params.get(MESSAGE).value), "")
+        val (updated_authors, entries) = create.create(authors)
+        Model.Upload(Model.Metadata(updated_authors, entries), params.get(MESSAGE).value, "")
       } else validated
     }
 
     def create(params: Params.Data): Option[Model.T] = {
       upload(params) match {
-        case Some(Model.Upload(meta, _)) =>
+        case Some(upload: Model.Upload) =>
           val archive = Bytes.decode_base64(params.get(ARCHIVE).get(FILE).value)
           val file_name = params.get(ARCHIVE).value
 
           if (archive.is_empty || file_name.isEmpty) {
-            Some(Model.Upload(meta, "Select a file"))
+            Some(upload.copy(error = "Select a file"))
           } else if (!file_name.endsWith(".zip") && !file_name.endsWith(".tar.gz")) {
-            Some(Model.Upload(meta, "Only .zip and .tar.gz archives allowed"))
+            Some(upload.copy(error = "Only .zip and .tar.gz archives allowed"))
           } else {
             val ext = if (file_name.endsWith(".zip")) ".zip" else ".tar.gz"
-            val id = handler.create(Date.now(), meta, archive, ext)
+            val id = handler.create(Date.now(), upload.meta, upload.message, archive, ext)
             Some(Model.Created(id))
           }
         case _ => None
@@ -1314,7 +1316,7 @@ object AFP_Submit {
 
     def resubmit(params: Params.Data): Option[Model.T] =
       handler.get(params.get(ACTION).value, all_topics, licenses).map(submission =>
-        Model.Upload(submission.meta, ""))
+        Model.Upload(submission.meta, submission.message, ""))
 
     def submit(params: Params.Data): Option[Model.T] =
       handler.get(params.get(ACTION).value, all_topics, licenses).flatMap { submission =>
@@ -1376,7 +1378,7 @@ object AFP_Submit {
       Post(API_RESUBMIT, "get form for resubmit", resubmit),
       Post(API_SUBMIT, "submit to editors", submit),
       Post(API_BUILD_ABORT, "abort the build", abort_build),
-      Post(API_SUBMISSION, "get submission form", parse_metadata),
+      Post(API_SUBMISSION, "get submission form", parse_create),
       Post(API_SUBMISSION_AUTHORS_ADD, "add author",  add_new_author),
       Post(API_SUBMISSION_AUTHORS_REMOVE, "remove author", remove_new_author),
       Post(API_SUBMISSION_AFFILIATIONS_ADD, "add affil", add_new_affil),
