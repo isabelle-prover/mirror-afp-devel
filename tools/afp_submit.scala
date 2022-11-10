@@ -198,7 +198,7 @@ object AFP_Submit {
         val build = down(id) + Path.basic("result")
         if (!build.file.exists) Build.Pending
         else File.read(build).trim match {
-          case "" => Build.Pending
+          case "" => Build.Running
           case "NOT_FINISHED" => Build.Running
           case "FAILED" => if (is_signal(id, "kill")) Build.Aborted else Build.Failed
           case "SUCCESS" => Build.Success
