@@ -82,9 +82,16 @@ host = [
 name = "Thomas Ammer"
 
 [ammer.emails]
+
 [ammer.emails.ammer_email]
-user = ["thomas","ammer"]
-host = ["tum","de"]
+user = [
+  "thomas",
+  "ammer",
+]
+host = [
+  "tum",
+  "de",
+]
 
 [ammer.homepages]
 
@@ -1161,7 +1168,6 @@ host = [
 
 [cousin.homepages]
 
-
 [cremer]
 name = "Nils Cremer"
 
@@ -1178,7 +1184,6 @@ host = [
 ]
 
 [cremer.homepages]
-
 
 [crighton]
 name = "Aaron Crighton"
@@ -1489,7 +1494,6 @@ host = [
   "de",
 ]
 
-
 [eberl.emails.eberl_email2]
 user = [
   "manuel",
@@ -1500,7 +1504,6 @@ host = [
   "ac",
   "at",
 ]
-
 
 [eberl.homepages]
 eberl_homepage = "https://pruvisto.org/"
@@ -2215,11 +2218,11 @@ name = "Laura P. Gamboa Guzman"
 
 [guzman.emails.guzman_email]
 user = [
-  "lpgamboa"
+  "lpgamboa",
 ]
 host = [
   "iastate",
-  "edu"
+  "edu",
 ]
 
 [guzman.homepages]
@@ -3086,11 +3089,11 @@ name = "Jeffrey Ketland"
 
 [ketland.emails.ketland_email]
 user = [
-"jeffreyketland",
+  "jeffreyketland",
 ]
 host = [
-"gmail",
-"com",
+  "gmail",
+  "com",
 ]
 
 [ketland.homepages]
@@ -3398,6 +3401,14 @@ host = [
 
 [langenstein.homepages]
 
+[lattuada]
+name = "Andrea Lattuada"
+
+[lattuada.emails]
+
+[lattuada.homepages]
+lattuada_homepage = "https://andrea.lattuada.me"
+
 [laursen]
 name = "Christian Pardillo-Laursen"
 
@@ -3415,14 +3426,6 @@ host = [
 ]
 
 [laursen.homepages]
-
-[lattuada]
-name = "Andrea Lattuada"
-
-[lattuada.emails]
-
-[lattuada.homepages]
-lattuada_homepage = "https://andrea.lattuada.me"
 
 [lee]
 name = "Holden Lee"
@@ -3875,7 +3878,6 @@ host = [
   "ac",
   "uk",
 ]
-
 
 [marmsoler.homepages]
 marmsoler_homepage = "http://marmsoler.com"
@@ -5031,14 +5033,11 @@ user = [
 ]
 host = [
   "thi",
-  "de"
+  "de",
 ]
 
 [regensburger.homepages]
 regensburger_homepage = "https://www.thi.de/suche/mitarbeiter/prof-dr-rer-nat-franz-regensburger"
-
-
-
 
 [reiche]
 name = "Sebastian Reiche"
@@ -5837,14 +5836,16 @@ name = "Thomas Sternagel"
 name = "Lukas Stevens"
 
 [stevens.emails]
+
 [stevens.emails.stevens_email]
 user = [
-  "lukas.stevens",
+  "lukas",
+  "stevens",
 ]
 host = [
   "in",
   "tum",
-  "de"
+  "de",
 ]
 
 [stevens.homepages]
@@ -5878,7 +5879,7 @@ user = [
 host = [
   "in",
   "tum",
-  "de"
+  "de",
 ]
 
 [stoeckl.homepages]
