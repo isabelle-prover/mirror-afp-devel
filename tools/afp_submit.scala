@@ -94,7 +94,7 @@ object AFP_Submit {
               author.emails ++ new_affils.v.collect { case e: Email if e.author == id => e }
             val homepages =
               author.homepages ++ new_affils.v.collect { case h: Homepage if h.author == id => h }
-            id -> author.copy(emails = emails, homepages = homepages)
+            id -> author.copy(emails = emails.distinct, homepages = homepages.distinct)
         }
 
       val used_affils: Set[Affiliation] = entries.v.toSet.flatMap(_.used_affils)
@@ -647,7 +647,7 @@ object AFP_Submit {
       val new_authors =
         meta.entries.flatMap(_.authors).map(_.author).filterNot(authors.contains).map(meta.authors)
       val new_affils =
-        meta.entries.flatMap(_.authors).filter {
+        meta.entries.flatMap(entry => entry.authors ++ entry.notifies).filter {
           case _: Unaffiliated => false
           case e: Email => !authors.get(e.author).exists(_.emails.contains(e))
           case h: Homepage => !authors.get(h.author).exists(_.homepages.contains(h))
