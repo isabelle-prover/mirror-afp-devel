@@ -255,6 +255,56 @@ next
     by (simp add: subst_compose_def term_subst_eq_conv [symmetric])
 qed
 
+lemma subst_compose_apply_eq_apply_lhs_if: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes
+    "range_vars \<sigma> \<inter> subst_domain \<delta> = {}"
+    "x \<notin> subst_domain \<delta>"
+  shows "(\<sigma> \<circ>\<^sub>s \<delta>) x = \<sigma> x"
+proof (cases "\<sigma> x")
+  case (Var y)
+  show ?thesis
+  proof (cases "x = y")
+    case True
+    with Var have \<open>\<sigma> x = Var x\<close>
+      by simp
+    moreover from \<open>x \<notin> subst_domain \<delta>\<close> have "\<delta> x = Var x"
+      by (simp add: disjoint_iff subst_domain_def)
+    ultimately show ?thesis
+      by (simp add: subst_compose_def)
+  next
+    case False
+    have "y \<in> range_vars \<sigma>"
+      unfolding range_vars_def UN_iff
+    proof (rule bexI)
+      show "y \<in> vars_term (Var y)"
+        by simp
+    next
+      from Var False show "Var y \<in> subst_range \<sigma>"
+        by (simp_all add: subst_domain_def)
+    qed
+    hence "y \<notin> subst_domain \<delta>"
+      using \<open>range_vars \<sigma> \<inter> subst_domain \<delta> = {}\<close>
+      by (simp add: disjoint_iff)
+    with Var show ?thesis
+      unfolding subst_compose_def
+      by (simp add: subst_domain_def)
+  qed
+next
+  case (Fun f ys)
+  hence "Fun f ys \<in> subst_range \<sigma> \<or> (\<forall>y\<in>set ys. y \<in> subst_range \<sigma>)"
+    using subst_domain_def by fastforce
+  hence "\<forall>x \<in> vars_term (Fun f ys). x \<in> range_vars \<sigma>"
+    by (metis UN_I range_vars_def term.distinct(1) term.sel(4) term.set_cases(2))
+  hence "Fun f ys \<cdot> \<delta> = Fun f ys \<cdot> Var"
+    unfolding term_subst_eq_conv
+    using \<open>range_vars \<sigma> \<inter> subst_domain \<delta> = {}\<close>
+    by (simp add: disjoint_iff subst_domain_def)
+  hence "Fun f ys \<cdot> \<delta> = Fun f ys"
+    by simp
+  with Fun show ?thesis
+    by (simp add: subst_compose_def)
+qed
+
 fun num_funs :: "('f, 'v) term \<Rightarrow> nat"
   where
     "num_funs (Var x) = 0" |
