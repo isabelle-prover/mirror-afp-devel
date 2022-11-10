@@ -341,4 +341,79 @@ proof -
   then show ?thesis by simp
 qed
 
+lemma is_Var_mgu_if_not_in_equations: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations" and x :: 'v
+  assumes
+    mgu_\<mu>: "is_mgu \<mu> E" and
+    x_not_in: "x \<notin> (\<Union>e\<in>E. vars_term (fst e) \<union> vars_term (snd e))"
+  shows "is_Var (\<mu> x)"
+proof -
+  from mgu_\<mu> have unif_\<mu>: "\<mu> \<in> unifiers E" and minimal_\<mu>: "\<forall>\<tau> \<in> unifiers E. \<exists>\<gamma>. \<tau> = \<mu> \<circ>\<^sub>s \<gamma>"
+    by (simp_all add: is_mgu_def)
+
+  define \<tau> :: "('f, 'v) subst" where
+    "\<tau> = (\<lambda>x. if x \<in> (\<Union>e \<in> E. vars_term (fst e) \<union> vars_term (snd e)) then \<mu> x else Var x)"
+
+  have \<open>\<tau> \<in> unifiers E\<close>
+    unfolding unifiers_def mem_Collect_eq
+  proof (rule ballI)
+    fix e assume "e \<in> E"
+    with unif_\<mu> have "fst e \<cdot> \<mu> = snd e \<cdot> \<mu>"
+      by blast
+    moreover from \<open>e \<in> E\<close> have "fst e \<cdot> \<tau> = fst e \<cdot> \<mu>" and "snd e \<cdot> \<tau> = snd e \<cdot> \<mu>"
+      unfolding term_subst_eq_conv
+      by (auto simp: \<tau>_def)
+    ultimately show "fst e \<cdot> \<tau> = snd e \<cdot> \<tau>"
+      by simp
+  qed
+  with minimal_\<mu> obtain \<gamma> where "\<mu> \<circ>\<^sub>s \<gamma> = \<tau>"
+    by auto
+  with x_not_in have "(\<mu> \<circ>\<^sub>s \<gamma>) x = Var x"
+    by (simp add: \<tau>_def)
+  thus "is_Var (\<mu> x)"
+    by (metis subst_apply_eq_Var subst_compose term.disc(1))
+qed
+
+corollary ball_is_Var_mgu: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "is_mgu \<mu> E \<Longrightarrow> \<forall>x \<in> - (\<Union>e\<in>E. vars_term (fst e) \<union> vars_term (snd e)). is_Var (\<mu> x)"
+  by (rule ballI) (rule is_Var_mgu_if_not_in_equations[folded Compl_iff])
+
+lemma inj_on_mgu: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations"
+  assumes mgu_\<mu>: "is_mgu \<mu> E"
+  shows "inj_on \<mu> (- (\<Union>e \<in> E. vars_term (fst e) \<union> vars_term (snd e)))"
+proof (rule inj_onI)
+  fix x y
+  assume
+    x_in: "x \<in> - (\<Union>e\<in>E. vars_term (fst e) \<union> vars_term (snd e))" and
+    y_in: "y \<in> - (\<Union>e\<in>E. vars_term (fst e) \<union> vars_term (snd e))" and
+    "\<mu> x = \<mu> y"
+
+  from mgu_\<mu> have unif_\<mu>: "\<mu> \<in> unifiers E" and minimal_\<mu>: "\<forall>\<tau> \<in> unifiers E. \<exists>\<gamma>. \<tau> = \<mu> \<circ>\<^sub>s \<gamma>"
+    by (simp_all add: is_mgu_def)
+
+  define \<tau> :: "('f, 'v) subst" where
+    "\<tau> = (\<lambda>x. if x \<in> (\<Union>e \<in> E. vars_term (fst e) \<union> vars_term (snd e)) then \<mu> x else Var x)"
+
+  have \<open>\<tau> \<in> unifiers E\<close>
+    unfolding unifiers_def mem_Collect_eq
+  proof (rule ballI)
+    fix e assume "e \<in> E"
+    with unif_\<mu> have "fst e \<cdot> \<mu> = snd e \<cdot> \<mu>"
+      by blast
+    moreover from \<open>e \<in> E\<close> have "fst e \<cdot> \<tau> = fst e \<cdot> \<mu>" and "snd e \<cdot> \<tau> = snd e \<cdot> \<mu>"
+      unfolding term_subst_eq_conv
+      by (auto simp: \<tau>_def)
+    ultimately show "fst e \<cdot> \<tau> = snd e \<cdot> \<tau>"
+      by simp
+  qed
+  with minimal_\<mu> obtain \<gamma> where "\<mu> \<circ>\<^sub>s \<gamma> = \<tau>"
+    by auto
+  hence "(\<mu> \<circ>\<^sub>s \<gamma>) x = Var x" and "(\<mu> \<circ>\<^sub>s \<gamma>) y = Var y"
+    using ComplD[OF x_in] ComplD[OF y_in]
+    by (simp_all add: \<tau>_def)
+  with \<open>\<mu> x = \<mu> y\<close> show "x = y"
+    by (simp add: subst_compose_def)
+qed
+
 end
