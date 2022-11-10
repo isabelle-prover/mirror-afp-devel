@@ -287,6 +287,9 @@ fun mset_cl
 fun mset_ecl 
    where "mset_ecl (C,\<sigma>) = {# (mset_lit (subst_lit x \<sigma>)). x \<in># (mset_set (cl_ecl C)) #}" 
 
+lemma mset_ecl_conv: "mset_ecl (C, \<sigma>) = mset_cl (cl_ecl C, \<sigma>)"
+  by simp
+
 lemma mset_ecl_and_mset_lit:
   assumes "L \<in> (cl_ecl C)"
   assumes "finite (cl_ecl C)"
@@ -367,6 +370,10 @@ definition cl_ord_eq :: "(('a clause \<times> 'a subst) \<times> ('a clause \<ti
   where 
   "cl_ord_eq =  cl_ord \<union> 
     { (x,y). (mset_cl x) = (mset_cl  y) }"
+
+lemma member_ecl_ord_iff:
+  "((C, \<sigma>\<^sub>C), (D, \<sigma>\<^sub>D)) \<in> ecl_ord \<longleftrightarrow> ((cl_ecl C, \<sigma>\<^sub>C), (cl_ecl D, \<sigma>\<^sub>D)) \<in> cl_ord"
+  by (simp add: ecl_ord_def cl_ord_def)
 
 lemma mult_mult_trm_ord_trans:
   shows "trans (mult (mult trm_ord))"
@@ -2763,13 +2770,12 @@ by (meson all_trms_irreducible_def assms(1) assms(2) occur_in_subterm subterms_i
 text \<open>We define two notions of redundancy, the first one is for inferences: any derivable clause 
 must be entailed by a set of clauses that are strictly smaller than one of the premises.\<close>
 
-definition redundant_inference :: 
+definition redundant_inference ::
   "'a eclause \<Rightarrow> 'a eclause set \<Rightarrow> 'a eclause set \<Rightarrow> 'a subst \<Rightarrow> bool"
-  where "(redundant_inference C S P \<sigma>) = 
-    (\<exists>S'. (S' \<subseteq> (instances S) \<and> (set_entails_clause (clset_instances S') (cl_ecl C)) \<and> 
-            (\<forall>x \<in> S'. ( subterms_inclusion (subst_set (trms_ecl (fst x)) (snd x)) 
-              (trms_ecl C))) \<and>
-            (\<forall>x \<in> S'. \<exists>D' \<in> P. (((fst x),(snd x)),(D',\<sigma>)) \<in> ecl_ord)))"
+  where "redundant_inference C S P \<sigma> \<longleftrightarrow> (\<exists>S' \<subseteq> instances S.
+    set_entails_clause (clset_instances S') (cl_ecl C) \<and>
+    (\<forall>x \<in> S'. subterms_inclusion (subst_set (trms_ecl (fst x)) (snd x)) (trms_ecl C)) \<and>
+    (\<forall>x \<in> S'. \<exists>D' \<in> cl_ecl ` P. ((cl_ecl (fst x), snd x),(D',\<sigma>)) \<in> cl_ord))"
 
 text \<open>The second one is the usual notion for clauses: a clause is redundant if it is entailed by
 smaller (or equal) clauses.\<close>
@@ -3348,40 +3354,30 @@ proof -
   from assms(1) obtain S' where "S' \<subseteq> (instances S)" 
     "(set_entails_clause (clset_instances S') (cl_ecl E))"
     "(\<forall>x \<in> S'. ( subterms_inclusion (subst_set (trms_ecl (fst x)) (snd x)) 
-              (trms_ecl E)))"
-    "(\<forall>x \<in> S'. ( ((mset_ecl ((fst x),(snd x))),(mset_cl (C',\<sigma>))) \<in> (mult (mult trm_ord))
-              \<or> (mset_ecl ((fst x),(snd x))) = mset_cl (C',\<sigma>)))" 
+              (trms_ecl E)))" and
+    ball_S'_C'_le: "\<forall>x \<in> S'. (mset_ecl (fst x, snd x), mset_cl (C', \<sigma>)) \<in> mult (mult trm_ord) \<or>
+      mset_ecl (fst x, snd x) = mset_cl (C', \<sigma>)"
     unfolding redundant_clause_def by auto
   from assms(3) assms(4) \<open>derivable C P S \<sigma> Ground C'\<close> 
     obtain D where "D \<in> P" 
       "(( (mset_cl (C',\<sigma>)), (mset_ecl (D,\<sigma>))) \<in> (mult (mult trm_ord)))" 
       using conclusion_is_smaller_than_premisses by blast
 
-  have "(\<forall>x \<in> S'. \<exists>D' \<in> P. (((fst x),(snd x)),(D',\<sigma>)) \<in> ecl_ord)"
-  proof 
+  have "\<forall>x \<in> S'. \<exists>D' \<in> cl_ecl ` P. ((cl_ecl (fst x), snd x), (D', \<sigma>)) \<in> cl_ord"
+  proof (intro ballI)
     fix x assume "x \<in> S'"
-    from this and \<open>(\<forall>x \<in> S'. ( ((mset_ecl ((fst x),(snd x))),(mset_cl (C',\<sigma>))) \<in> (mult (mult trm_ord))
-              \<or> (mset_ecl ((fst x),(snd x))) = mset_cl (C',\<sigma>)))\<close> 
-       have "((mset_ecl ((fst x),(snd x))),(mset_cl (C',\<sigma>))) \<in> (mult (mult trm_ord)) \<or>
-            (mset_ecl ((fst x),(snd x))) = mset_cl (C',\<sigma>)" by auto 
-    then have "(((fst x),(snd x)),(D,\<sigma>)) \<in> ecl_ord"
-    proof
-      assume "((mset_ecl ((fst x),(snd x))),(mset_cl (C',\<sigma>))) \<in> (mult (mult trm_ord))"
-      from this and \<open>(( (mset_cl (C',\<sigma>)), (mset_ecl (D,\<sigma>))) \<in> (mult (mult trm_ord)))\<close>
-        have "((mset_ecl ((fst x),(snd x))),(mset_ecl (D,\<sigma>))) \<in> (mult (mult trm_ord))"
-        using mult_mult_trm_ord_trans unfolding trans_def by metis
-      from this show ?thesis unfolding ecl_ord_def by auto
-    next assume "(mset_ecl ((fst x),(snd x))) = mset_cl (C',\<sigma>)"
-      from this and \<open>(( (mset_cl (C',\<sigma>)), (mset_ecl (D,\<sigma>))) \<in> (mult (mult trm_ord)))\<close> 
-      have "((mset_ecl ((fst x),(snd x))),(mset_ecl (D,\<sigma>))) \<in> (mult (mult trm_ord))" by auto
-      from this show ?thesis unfolding ecl_ord_def by auto
-    qed      
-    from this and \<open>D \<in> P\<close> show "\<exists>D' \<in> P. (((fst x),(snd x)),(D',\<sigma>)) \<in> ecl_ord" by auto
+    have "((cl_ecl (fst x), snd x), (cl_ecl D, \<sigma>)) \<in> cl_ord"
+      using ball_S'_C'_le[rule_format, OF \<open>x \<in> S'\<close>]
+      using \<open>(mset_cl (C', \<sigma>), mset_ecl (D, \<sigma>)) \<in> mult (mult trm_ord)\<close>
+      unfolding cl_ord_def mem_Collect_eq prod.case mset_ecl_conv
+      by (metis mult_mult_trm_ord_trans[THEN transD])
+    with \<open>D \<in> P\<close> show "\<exists>D' \<in> cl_ecl ` P. ((cl_ecl (fst x), snd x), (D', \<sigma>)) \<in> cl_ord" by auto
   qed
   from this and \<open>S' \<subseteq> (instances S)\<close> and \<open>(set_entails_clause (clset_instances S') (cl_ecl E))\<close>
     and \<open>(\<forall>x \<in> S'. ( subterms_inclusion (subst_set (trms_ecl (fst x)) (snd x)) 
               (trms_ecl E)))\<close>
-    show ?thesis unfolding redundant_inference_def by auto
+  show ?thesis unfolding redundant_inference_def
+    by auto
 qed
   
 lemma clause_saturated_and_inference_saturated:
@@ -6151,8 +6147,8 @@ proof -
   from assms(2) obtain S' where "S' \<subseteq> (instances S)" 
     "(set_entails_clause (clset_instances S') (cl_ecl (subst_ecl D \<eta>)))"
     "(\<forall>x \<in> S'. ( subterms_inclusion (subst_set (trms_ecl (fst x)) (snd x)) 
-              (trms_ecl (subst_ecl D \<eta>))))"
-    "(\<forall>x \<in> S'. \<exists>D' \<in> P. (((fst x),(snd x)),(D',\<sigma>)) \<in> ecl_ord)"
+              (trms_ecl (subst_ecl D \<eta>))))" and
+    ball_S'_le: "\<forall>x \<in> S'. \<exists>D' \<in> cl_ecl ` P. ((cl_ecl (fst x), snd x), (D', \<sigma>)) \<in> cl_ord"
      unfolding redundant_inference_def by auto
   from assms(1) have "(subst_cl (cl_ecl D) \<eta>) = (cl_ecl C)" 
     unfolding trms_subsumes_def by auto
@@ -6204,7 +6200,7 @@ proof -
               (trms_ecl C))\<close> show False by auto
    qed
    from this and \<open>(set_entails_clause (clset_instances S') (cl_ecl C))\<close> 
-      and \<open>(\<forall>x \<in> S'. \<exists>D' \<in> P. (((fst x),(snd x)),(D',\<sigma>)) \<in> ecl_ord)\<close>
+      and ball_S'_le
       and \<open>S' \<subseteq> (instances S)\<close> 
     show "redundant_inference C S P \<sigma>" unfolding redundant_inference_def by auto
 qed
@@ -6608,8 +6604,8 @@ text \<open>First, we prove that no reduction is possible (otherwise the superpo
           by blast
         from this obtain S' where "S' \<subseteq> (instances S)" and 
           "(set_entails_clause (clset_instances S') (cl_ecl R))"
-          and order: "(\<forall>x \<in> S'. (((fst x),(snd x)),(C,\<sigma>')) \<in> ecl_ord 
-          \<or> (((fst x),(snd x)),(D,\<sigma>')) \<in> ecl_ord)"
+          and order: "\<forall>x\<in>S'. ((cl_ecl (fst x), snd x), cl_ecl C, \<sigma>') \<in> cl_ord \<or>
+            ((cl_ecl (fst x), snd x), cl_ecl D, \<sigma>') \<in> cl_ord"
           and all_normalized_term_included: "(\<forall>x \<in> S'. 
           (subterms_inclusion (subst_set (trms_ecl (fst x)) (snd x))  
               (trms_ecl R)))"
@@ -6620,27 +6616,25 @@ text \<open>First, we prove that no reduction is possible (otherwise the superpo
           assume "\<not>(\<forall>x \<in> S'. (((fst x),(snd x)),(C,\<sigma>)) \<in> ecl_ord)"
           then obtain x where "x \<in> S'" and "(((fst x),(snd x)),(C,\<sigma>)) \<notin> ecl_ord"
             by auto
-          from \<open>x \<in> S'\<close> and order have "(((fst x),(snd x)),(C,\<sigma>')) \<in> ecl_ord 
-          \<or> (((fst x),(snd x)),(D,\<sigma>')) \<in> ecl_ord" by auto
-          then have "(((fst x),(snd x)),(C,\<sigma>')) \<in> ecl_ord" 
-          proof
-            assume "(((fst x),(snd x)),(C,\<sigma>')) \<in> ecl_ord"
-            from this show ?thesis by auto
+
+          from order[rule_format, OF \<open>x \<in> S'\<close>]
+          have "((cl_ecl (fst x), snd x), cl_ecl C, \<sigma>') \<in> cl_ord" 
+          proof (elim disjE)
+            assume "((cl_ecl (fst x), snd x), cl_ecl C, \<sigma>') \<in> cl_ord"
+            thus ?thesis by assumption
           next
-            assume "(((fst x),(snd x)),(D,\<sigma>')) \<in> ecl_ord"
-            from this and \<open>( (D,\<sigma>'),(C,\<sigma>')) \<in> ecl_ord\<close> show 
-              "(((fst x),(snd x)),(C,\<sigma>')) \<in> ecl_ord" using ecl_ord_trans 
-                unfolding trans_def by metis
+            assume "((cl_ecl (fst x), snd x), cl_ecl D, \<sigma>') \<in> cl_ord"
+            thus "((cl_ecl (fst x), snd x), cl_ecl C, \<sigma>') \<in> cl_ord"
+              using \<open>((D, \<sigma>'), (C, \<sigma>')) \<in> ecl_ord\<close>[unfolded member_ecl_ord_iff]
+              by (rule cl_ord_trans[THEN transD])
           qed
-          from this have 
-            "((mset_ecl x), (mset_ecl (C,\<sigma>'))) \<in> (mult (mult trm_ord))"
-              unfolding ecl_ord_def by auto
             from \<open>(coincide_on \<sigma> \<sigma>' (vars_of_cl (cl_ecl C)))\<close> 
               have "(mset_ecl (C,\<sigma>')) = (mset_ecl (C,\<sigma>))" 
               using ecl_ord_coincide [of \<sigma> \<sigma>' C] by auto
-            from this and \<open>((mset_ecl x), (mset_ecl (C,\<sigma>'))) \<in> (mult (mult trm_ord))\<close>
-              have "((mset_ecl x), (mset_ecl (C,\<sigma>))) \<in> (mult (mult trm_ord))"
-              by simp
+            with \<open>((cl_ecl (fst x), snd x), cl_ecl C, \<sigma>') \<in> cl_ord\<close>
+            have "((mset_ecl x), (mset_ecl (C,\<sigma>))) \<in> (mult (mult trm_ord))"
+              by (metis (no_types, lifting) CollectD case_prodD cl_ord_def mset_ecl_conv
+                  prod.collapse)
             from this and \<open>\<not>(((fst x),(snd x)),(C,\<sigma>)) \<in> ecl_ord\<close> show False 
               unfolding ecl_ord_def by auto
         qed
@@ -6857,7 +6851,7 @@ rule applies).\<close>
           by blast
         from this obtain S' where "S' \<subseteq> (instances S)" and 
           "(set_entails_clause (clset_instances S') (cl_ecl R))"
-          and all_smaller: "(\<forall>x \<in> S'. (((fst x),(snd x)),(C,\<sigma>)) \<in> ecl_ord)"
+          and all_smaller: "\<forall>x \<in> S'. ((cl_ecl (fst x), snd x), cl_ecl C, \<sigma>) \<in> cl_ord"
           and all_normalized_term_included: "(\<forall>x \<in> S'. 
           (subterms_inclusion (subst_set (trms_ecl (fst x)) (snd x))  
               (trms_ecl R)))"
@@ -6871,8 +6865,8 @@ rule applies).\<close>
           and "x = (subst_cl (cl_ecl (fst pair')) (snd pair'))" 
           unfolding clset_instances_def 
           by auto
-         from all_smaller and \<open>pair' \<in> S'\<close> have "(pair',(C,\<sigma>)) \<in> ecl_ord"
-          by auto
+        from all_smaller and \<open>pair' \<in> S'\<close> have "(pair',(C,\<sigma>)) \<in> ecl_ord"
+          by (metis member_ecl_ord_iff prod.collapse)
          from this and  \<open>C = fst pair\<close> and \<open>\<sigma> = snd pair\<close> have "(pair',pair) \<in> ecl_ord"
           by auto
          from this and hyp_ind  have "?P pair'" by blast
@@ -7039,7 +7033,7 @@ is derived).\<close>
           by blast
         from this obtain S' where "S' \<subseteq> (instances S)" and 
           "(set_entails_clause (clset_instances S') (cl_ecl R))"
-          and all_smaller: "(\<forall>x \<in> S'. (((fst x),(snd x)),(C,\<sigma>)) \<in> ecl_ord)"
+          and all_smaller: "\<forall>x \<in> S'. ((cl_ecl (fst x), snd x), cl_ecl C, \<sigma>) \<in> cl_ord"
           and all_normalized_term_included: "(\<forall>x \<in> S'. 
           (subterms_inclusion (subst_set (trms_ecl (fst x)) (snd x))
             (trms_ecl R)))"
@@ -7054,7 +7048,7 @@ is derived).\<close>
           unfolding clset_instances_def 
           by auto
          from all_smaller and \<open>pair' \<in> S'\<close> have "(pair',(C,\<sigma>)) \<in> ecl_ord"
-          by auto
+           by (metis member_ecl_ord_iff prod.collapse)
          from this and  \<open>C = fst pair\<close> and \<open>\<sigma> = snd pair\<close> have "(pair',pair) \<in> ecl_ord"
           by auto
          from this and hyp_ind  have "?P pair'" by blast
