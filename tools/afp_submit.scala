@@ -23,13 +23,23 @@ import java.time.LocalDate
 
 object AFP_Submit {
 
-  case class Validated[A] private(v: A, error: Option[String]) {
-    def with_error(error: String): Validated[A] = Validated.error(v, error)
+  case class Val_Opt[A] private(opt: Option[A], err: Option[String]) {
+    def is_empty: Boolean = opt.isEmpty
+  }
+  object Val_Opt {
+    def ok[A](value: A): Val_Opt[A] = Val_Opt(Some(value), None)
+    def user_err[A](msg: String): Val_Opt[A] = Val_Opt(None, Some(msg))
+    def error[A]: Val_Opt[A] = Val_Opt(None, None)
   }
 
-  object Validated {
-    def ok[A](value: A): Validated[A] = Validated(value, None)
-    def error[A](value: A, msg: String): Validated[A] = Validated(value, Some(msg))
+  case class Val[A] private(v: A, err: Option[String]) {
+    def with_err(err: String): Val[A] = Val.err(v, err)
+    def perhaps_err(opt: Val_Opt[_]): Val[A] = opt.err.map(with_err).getOrElse(this)
+  }
+
+  object Val {
+    def ok[A](value: A): Val[A] = Val(value, None)
+    def err[A](value: A, msg: String): Val[A] = Val(value, Some(msg))
   }
 
 
@@ -47,35 +57,35 @@ object AFP_Submit {
     }
 
     case class Create_Entry(
-      name: Validated[String] = Validated.ok(""),
-      title: Validated[String] = Validated.ok(""),
-      affils: Validated[List[Affiliation]] = Validated.ok(Nil),
-      notifies: Validated[List[Email]] = Validated.ok(Nil),
-      author_input: Validated[Option[Author]] = Validated.ok(None),
-      notify_input: Validated[Option[Author]] = Validated.ok(None),
-      topics: Validated[List[Topic]] = Validated.ok(Nil),
-      topic_input: Validated[Option[Topic]] = Validated.ok(None),
+      name: Val[String] = Val.ok(""),
+      title: Val[String] = Val.ok(""),
+      affils: Val[List[Affiliation]] = Val.ok(Nil),
+      notifies: Val[List[Email]] = Val.ok(Nil),
+      author_input: Option[Author] = None,
+      notify_input: Option[Author] = None,
+      topics: Val[List[Topic]] = Val.ok(Nil),
+      topic_input: Option[Topic] = None,
       license: License,
-      `abstract`: Validated[String] = Validated.ok(""),
+      `abstract`: Val[String] = Val.ok(""),
       related: List[Reference] = Nil,
       related_kind: Option[Related.Value] = None,
-      related_input: Validated[String] = Validated.ok("")
+      related_input: Val[String] = Val.ok("")
     ) {
       val used_affils: Set[Affiliation] = (affils.v ++ notifies.v).toSet
       val used_authors: Set[Author.ID] = used_affils.map(_.author)
     }
 
     case class Create(
-      entries: Validated[List[Create_Entry]] = Validated.ok(Nil),
-      new_authors: Validated[List[Author]] = Validated.ok(Nil),
-      new_author_input: Validated[String] = Validated.ok(""),
-      new_author_orcid: Validated[String] = Validated.ok(""),
-      new_affils: Validated[List[Affiliation]] = Validated.ok(Nil),
+      entries: Val[List[Create_Entry]] = Val.ok(Nil),
+      new_authors: Val[List[Author]] = Val.ok(Nil),
+      new_author_input: String = "",
+      new_author_orcid: String = "",
+      new_affils: Val[List[Affiliation]] = Val.ok(Nil),
       new_affils_author: Option[Author] = None,
-      new_affils_input: Validated[String] = Validated.ok(""),
+      new_affils_input: String = "",
     ) extends T {
       def update_entry(num: Int, entry: Create_Entry): Create =
-        this.copy(entries = Validated.ok(entries.v.updated(num, entry)))
+        this.copy(entries = Val.ok(entries.v.updated(num, entry)))
 
       def updated_authors(old_authors: Map[Author.ID, Author]): Map[Author.ID, Author] =
         (old_authors ++ new_authors.v.map(author => author.id -> author)).map {
@@ -188,6 +198,7 @@ object AFP_Submit {
         val build = down(id) + Path.basic("result")
         if (!build.file.exists) Build.Pending
         else File.read(build).trim match {
+          case "" => Build.Pending
           case "NOT_FINISHED" => Build.Running
           case "FAILED" => if (is_signal(id, "kill")) Build.Aborted else Build.Failed
           case "SUCCESS" => Build.Success
@@ -448,8 +459,8 @@ object AFP_Submit {
       link(base_url + "/" + rel_href, body) + ("target" -> "_parent")
 
     def render_if(cond: Boolean, elem: XML.Elem): XML.Body = if (cond) List(elem) else Nil
-    def render_error(for_elem: String, validated: Validated[_]): XML.Body =
-      validated.error.map(error =>
+    def render_error(for_elem: String, validated: Val[_]): XML.Body =
+      validated.err.map(error =>
         break ::: List(css("color: red")(label(for_elem, error)))).getOrElse(Nil)
 
 
@@ -515,10 +526,10 @@ object AFP_Submit {
           fieldset(legend("Topics") ::
             indexed(entry.topics.v, key, TOPIC, render_topic) :::
             selection(Nest_Key(key, TOPIC),
-              entry.topic_input.v.map(_.id),
+              entry.topic_input.map(_.id),
               topics.map(topic => option(topic.id, topic.id))) ::
             action_button(api.abs_url(API_SUBMISSION_ENTRY_TOPICS_ADD), "add", key) ::
-            render_error(Nest_Key(key, TOPIC), entry.topics)),
+            render_error("", entry.topics)),
           par(List(
             fieldlabel(Nest_Key(key, LICENSE), "License"),
             radio(Nest_Key(key, LICENSE),
@@ -538,17 +549,16 @@ object AFP_Submit {
           fieldset(legend("Authors") ::
             indexed(entry.affils.v, key, AUTHOR, render_affil) :::
             selection(Nest_Key(key, AUTHOR),
-              entry.author_input.v.map(_.id),
+              entry.author_input.map(_.id),
               authors_list.map(author => option(author.id, author_string(author)))) ::
             action_button(api.abs_url(API_SUBMISSION_ENTRY_AUTHORS_ADD), "add", key) ::
             explanation(Nest_Key(key, AUTHOR),
               "Add an author from the list. Register new authors first below.") ::
-            render_error(Nest_Key(key, AUTHOR), entry.author_input) :::
-            render_error("", entry.affils)),
+            render_error(Nest_Key(key, AUTHOR), entry.affils)),
           fieldset(legend("Contact") ::
             indexed(entry.notifies.v, key, NOTIFY, render_notify) :::
             selection(Nest_Key(key, NOTIFY),
-              entry.notify_input.v.map(_.id),
+              entry.notify_input.map(_.id),
               optgroup("Suggested", email_authors.filter(author =>
                 entry.used_authors.contains(author.id)).map(author_option)) ::
                 email_authors.filter(author =>
@@ -559,7 +569,6 @@ object AFP_Submit {
               "1. They are used to send you updates about the state of your submission. " +
               "2. They are the maintainers of the entry once it is accepted. " +
               "Typically this will be one or more of the authors.") ::
-            render_error(Nest_Key(key, NOTIFY), entry.notify_input) :::
             render_error("", entry.notifies)),
           fieldset(legend("Related Publications") ::
             indexed(entry.related, key, RELATED, render_related) :::
@@ -608,12 +617,10 @@ object AFP_Submit {
           explanation("", "If you are new to the AFP, add yourself here.") ::
           indexed(model.new_authors.v, Params.empty, AUTHOR, render_new_author) :::
           fieldlabel(Nest_Key(AUTHOR, NAME), "Name") ::
-          textfield(Nest_Key(AUTHOR, NAME), "Gerwin Klein", model.new_author_input.v) ::
+          textfield(Nest_Key(AUTHOR, NAME), "Gerwin Klein", model.new_author_input) ::
           fieldlabel(Nest_Key(AUTHOR, ORCID), "ORCID id (optional)") ::
-          textfield(Nest_Key(AUTHOR, ORCID), "0000-0002-1825-0097", model.new_author_orcid.v) ::
+          textfield(Nest_Key(AUTHOR, ORCID), "0000-0002-1825-0097", model.new_author_orcid) ::
           api_button(api.abs_url(API_SUBMISSION_AUTHORS_ADD), "add") ::
-          render_error(Nest_Key(AUTHOR, NAME), model.new_author_input) :::
-          render_error(Nest_Key(AUTHOR, ORCID), model.new_author_orcid) :::
           render_error("", model.new_authors)) ::
         fieldset(legend("New email or homepage") ::
           explanation("",
@@ -628,9 +635,8 @@ object AFP_Submit {
               other_authors.map(author_option)) ::
           fieldlabel(Nest_Key(AFFILIATION, ADDRESS), "Email or Homepage") ::
           textfield(Nest_Key(AFFILIATION, ADDRESS), "https://proofcraft.org",
-            model.new_affils_input.v) ::
+            model.new_affils_input) ::
           api_button(api.abs_url(API_SUBMISSION_AFFILIATIONS_ADD), "add") ::
-          render_error(Nest_Key(AFFILIATION, ADDRESS), model.new_affils_input) :::
           render_error("", model.new_affils)) ::
         break :::
         fieldset(List(legend("Upload"),
@@ -770,7 +776,7 @@ object AFP_Submit {
               "Note: Your zip or tar file should contain one folder with your theories, ROOT, etc. " +
               "The folder name should be the short/folder name used in the submission form."))) ::
           api_button(api.abs_url(API_SUBMISSION_CREATE), "submit") ::
-          render_error(ARCHIVE, Validated.error((), upload.error))))))
+          render_error(ARCHIVE, Val.err((), upload.error))))))
 
     def render_submission_list(submission_list: Model.Submission_List): XML.Body = {
       def render_overview(overview: Model.Overview, key: Params.Key): XML.Elem =
@@ -814,60 +820,53 @@ object AFP_Submit {
 
     /* validation */
 
-    def validate_topic(
-      id: Topic.ID,
-      selected: List[Topic]
-    ): (Option[Topic], Validated[Option[Topic]]) =
-      topics.find(_.id == id) match {
-        case Some(topic) =>
-          if (selected.contains(topic))
-            (None, Validated.error(Some(topic), "Topic already selected"))
-          else (Some(topic), Validated.ok(None))
-        case _ => (None, Validated.ok(None))
+    def validate_topic(id: String, selected: List[Topic]): Val_Opt[Topic] =
+      if (id.isEmpty) Val_Opt.user_err("Select topic first")
+      else {
+        topics.find(_.id == id) match {
+          case Some(topic) =>
+            if (selected.contains(topic)) Val_Opt.user_err("Topic already selected")
+            else Val_Opt.ok(topic)
+          case _ => Val_Opt.error
+        }
       }
 
     def validate_new_author(
-      id: Author.ID,
+      id: String,
       name: String,
       orcid_str: String,
       authors: Map[Author.ID, Author]
-    ): (Option[Author], Validated[String], Validated[String]) = {
+    ): Val_Opt[Author] = {
       val Id = """[a-zA-Z][a-zA-Z0-9]*""".r
       id match {
         case Id() if !authors.contains(id) =>
           if (name.isEmpty || name.trim != name)
-            (None, Validated.error(name, "Name must not be empty"), Validated.ok(orcid_str))
+            Val_Opt.user_err("Name must not be empty")
           else if (orcid_str.isEmpty)
-            (Some(Author(id, name)), Validated.ok(""), Validated.ok(""))
+            Val_Opt.ok(Author(id, name))
           else Exn.capture(Orcid(orcid_str)) match {
             case Exn.Res(orcid) =>
               if (authors.values.exists(_.orcid.exists(_ == orcid)))
-                (None, Validated.ok(name), Validated.error(orcid_str,
-                  "Author with that orcid already exists"))
-              else
-                (Some(Author(id, name, orcid = Some(orcid))), Validated.ok(""), Validated.ok(""))
-            case _ => (None, Validated.ok(name), Validated.error(orcid_str, "Invalid orcid"))
+                Val_Opt.user_err("Author with that orcid already exists")
+              else Val_Opt.ok(Author(id, name, orcid = Some(orcid)))
+            case _ => Val_Opt.user_err("Invalid orcid")
           }
-        case _ => (None, Validated.ok(name), Validated.ok(orcid_str))
+        case _ => Val_Opt.error
       }
     }
 
-    def validate_new_affil(
-      id: String,
-      address: String,
-      author: Author
-    ): (Option[Affiliation], Validated[String]) = {
-      if (address.isBlank) (None, Validated.error(address, "Address must not be empty"))
+    def validate_new_affil(id: String, address: String, author: Author): Val_Opt[Affiliation] = {
+      if (address.isBlank) Val_Opt.user_err("Address must not be empty")
       else if (address.contains("@")) {
         val Id = (author.id + """_email\d*""").r
         id match {
           case Id() if !author.emails.map(_.id).contains(id) =>
             val Address = """([^@\s]+)@([^@\s]+)""".r
             address match {
-              case Address(user, host) => (Some(Email(author.id, id, user, host)), Validated.ok(""))
-              case _ => (None, Validated.error(address, "Invalid email address"))
+              case Address(user, host) => Val_Opt.ok(Email(author.id, id, user, host))
+              case _ => Val_Opt.user_err("Invalid email address")
             }
-          case _ => (None, Validated.ok(""))
+          case _ => Val_Opt.error
         }
       }
       else {
@@ -875,10 +874,10 @@ object AFP_Submit {
         id match {
           case Id() if !author.homepages.map(_.id).contains(id) =>
             Exn.capture(new URL(address)) match {
-              case Exn.Res(url) => (Some(Homepage(author.id, id, url)), Validated.ok(""))
-              case _ => (None, Validated.error(address, "Invalid url"))
+              case Exn.Res(url) => Val_Opt.ok(Homepage(author.id, id, url))
+              case _ => Val_Opt.user_err("Invalid url")
             }
-          case _ => (None, Validated.ok(""))
+          case _ => Val_Opt.error
         }
       }
     }
@@ -887,21 +886,21 @@ object AFP_Submit {
       kind: Model.Related.Value,
       related: String,
       references: List[Reference]
-    ): (Option[Reference], Validated[String]) =
-      if (related.isBlank) (None, Validated.error(related, "Reference must not be empty"))
+    ): Val_Opt[Reference] =
+      if (related.isBlank) Val_Opt.user_err("Reference must not be empty")
       else {
         kind match {
           case Model.Related.DOI =>
             Exn.capture(DOI(related)) match {
               case Exn.Res(doi) =>
-                if (references.contains(doi)) (None, Validated.error(related, "Already present"))
-                else (Some(doi), Validated.ok(""))
-              case _ => (None, Validated.error(related, "Invalid DOI format"))
+                if (references.contains(doi)) Val_Opt.user_err("Already present")
+                else Val_Opt.ok(doi)
+              case _ => Val_Opt.user_err("Invalid DOI format")
             }
           case Model.Related.Plaintext =>
             val formatted = Formatted(related)
-            if (references.contains(formatted)) (None, Validated.error(related, "Already present"))
-            else (Some(formatted), Validated.ok(""))
+            if (references.contains(formatted)) Val_Opt.user_err("Already present")
+            else Val_Opt.ok(formatted)
         }
       }
 
@@ -910,7 +909,7 @@ object AFP_Submit {
 
     def parse_create(params: Params.Data): Option[Model.Create] = {
       def parse_topic(topic: Params.Data, topics: List[Topic]): Option[Topic] =
-        validate_topic(topic.get(ID).value, topics)._1
+        validate_topic(topic.get(ID).value, topics).opt
 
       def parse_email(email: Params.Data, authors: Map[Author.ID, Author]): Option[Email] =
         authors.get(email.get(ID).value).flatMap(
@@ -928,15 +927,15 @@ object AFP_Submit {
 
       def parse_related(related: Params.Data, references: List[Reference]): Option[Reference] =
         Model.Related.from_string(related.get(KIND).value).flatMap(
-          validate_related(_, related.get(INPUT).value, references)._1)
+          validate_related(_, related.get(INPUT).value, references).opt)
 
       def parse_new_author(author: Params.Data, authors: Map[Author.ID, Author]): Option[Author] =
         validate_new_author(
-          author.get(ID).value, author.get(NAME).value, author.get(ORCID).value, authors)._1
+          author.get(ID).value, author.get(NAME).value, author.get(ORCID).value, authors).opt
 
       def parse_new_affil(affil: Params.Data, authors: Map[Author.ID, Author]): Option[Affiliation] =
         authors.get(affil.get(AUTHOR).value).flatMap(author =>
-          validate_new_affil(affil.get(ID).value, affil.get(AFFILIATION).value, author)._1)
+          validate_new_affil(affil.get(ID).value, affil.get(AFFILIATION).value, author).opt)
 
       def parse_entry(entry: Params.Data, authors: Map[Author.ID, Author]): Option[Model.Create_Entry] =
         for {
@@ -958,19 +957,19 @@ object AFP_Submit {
             }
           license <- licenses.get(entry.get(LICENSE).value)
         } yield Model.Create_Entry(
-          name = Validated.ok(entry.get(NAME).value),
-          title = Validated.ok(entry.get(TITLE).value),
-          topics = Validated.ok(topics),
-          topic_input = Validated.ok(parse_topic(entry.get(TOPIC), Nil)),
+          name = Val.ok(entry.get(NAME).value),
+          title = Val.ok(entry.get(TITLE).value),
+          topics = Val.ok(topics),
+          topic_input = parse_topic(entry.get(TOPIC), Nil),
           license = license,
-          `abstract` = Validated.ok(entry.get(ABSTRACT).value),
-          author_input = Validated.ok(authors.get(entry.get(AUTHOR).value)),
-          notify_input = Validated.ok(authors.get(entry.get(NOTIFY).value)),
-          affils = Validated.ok(affils),
-          notifies = Validated.ok(notifies),
+          `abstract` = Val.ok(entry.get(ABSTRACT).value),
+          author_input = authors.get(entry.get(AUTHOR).value),
+          notify_input = authors.get(entry.get(NOTIFY).value),
+          affils = Val.ok(affils),
+          notifies = Val.ok(notifies),
           related = related,
           related_kind = Model.Related.from_string(entry.get(RELATED).get(KIND).value),
-          related_input = Validated.ok(entry.get(RELATED).get(INPUT).value))
+          related_input = Val.ok(entry.get(RELATED).get(INPUT).value))
 
       for {
         (new_author_ids, all_authors) <-
@@ -998,13 +997,13 @@ object AFP_Submit {
           case (entry, entries) => parse_entry(entry, all_authors).map(entries :+ _)
         }
       } yield Model.Create(
-        entries = Validated.ok(entries),
-        new_authors = Validated.ok(new_authors),
-        new_author_input = Validated.ok(params.get(AUTHOR).get(NAME).value),
-        new_author_orcid = Validated.ok(params.get(AUTHOR).get(ORCID).value),
-        new_affils = Validated.ok(new_affils),
+        entries = Val.ok(entries),
+        new_authors = Val.ok(new_authors),
+        new_author_input = params.get(AUTHOR).get(NAME).value,
+        new_author_orcid = params.get(AUTHOR).get(ORCID).value,
+        new_affils = Val.ok(new_affils),
         new_affils_author = all_authors.get(params.get(AFFILIATION).value),
-        new_affils_input = Validated.ok(params.get(AFFILIATION).get(ADDRESS).value))
+        new_affils_input = params.get(AFFILIATION).get(ADDRESS).value)
     }
 
     def parse_submission_list(params: Params.Data): Option[Model.Submission_List] = {
@@ -1028,29 +1027,32 @@ object AFP_Submit {
     /* control */
 
     def add_entry(params: Params.Data): Option[Model.T] = parse_create(params).map { model =>
-      model.copy(entries = Validated.ok(model.entries.v :+ Model.Create_Entry(license = licenses.head._2)))
+      model.copy(entries = Val.ok(model.entries.v :+ Model.Create_Entry(license = licenses.head._2)))
     }
 
     def remove_entry(params: Params.Data): Option[Model.T] =
       for {
         model <- parse_create(params)
         num_entry <- List_Key.num(ENTRY, params.get(Web_App.ACTION).value)
-      } yield model.copy(entries = Validated.ok(Utils.remove_at(num_entry, model.entries.v)))
+      } yield model.copy(entries = Val.ok(Utils.remove_at(num_entry, model.entries.v)))
 
     def add_author(params: Params.Data): Option[Model.T] =
       for {
         model <- parse_create(params)
         num_entry <- List_Key.num(ENTRY, params.get(Web_App.ACTION).value)
         entry <- model.entries.v.unapply(num_entry)
-        author <- entry.author_input.v
-      } yield {
-        val default_affil = author.emails.headOption.orElse(
-          author.homepages.headOption).getOrElse(Unaffiliated(author.id))
+      } yield
+        entry.author_input match {
+          case None =>
+            model.update_entry(num_entry, entry.copy(
+              affils = entry.affils.with_err("Select author first")))
+          case Some(author) =>
+            val default_affil = author.emails.headOption.orElse(
+              author.homepages.headOption).getOrElse(Unaffiliated(author.id))
 
-        model.update_entry(num_entry, entry.copy(
-          author_input = Validated.ok(None),
-          affils = Validated.ok(entry.affils.v :+ default_affil)))
-      }
+            model.update_entry(num_entry, entry.copy(
+              author_input = None, affils = Val.ok(entry.affils.v :+ default_affil)))
+        }
 
     def remove_author(params: Params.Data): Option[Model.T] =
       for {
@@ -1060,18 +1062,22 @@ object AFP_Submit {
         entry <- model.entries.v.unapply(num_entry)
       } yield
         model.update_entry(num_entry, entry.copy(affils =
-          Validated.ok(Utils.remove_at(num_affil, entry.affils.v))))
+          Val.ok(Utils.remove_at(num_affil, entry.affils.v))))
 
     def add_notify(params: Params.Data): Option[Model.T] =
       for {
         model <- parse_create(params)
         num_entry <- List_Key.num(ENTRY, params.get(Web_App.ACTION).value)
         entry <- model.entries.v.unapply(num_entry)
-        author <- entry.notify_input.v
-        email <- author.emails.headOption
-      } yield
-        model.update_entry(num_entry, entry.copy(notify_input =
-          Validated.ok(None), notifies = Validated.ok(entry.notifies.v :+ email)))
+        entry1 <-
+          entry.notify_input match {
+            case Some(author) =>
+              author.emails.headOption.map(email => entry.copy(
+                notify_input = None, notifies = Val.ok(entry.notifies.v :+ email)))
+            case None =>
+              Some(entry.copy(notifies = entry.notifies.with_err("Select author first")))
+          }
+      } yield model.update_entry(num_entry, entry1)
 
     def remove_notify(params: Params.Data): Option[Model.T] =
       for {
@@ -1081,7 +1087,7 @@ object AFP_Submit {
         entry <- model.entries.v.unapply(num_entry)
       } yield
         model.update_entry(num_entry, entry.copy(notifies =
-          Validated.ok(Utils.remove_at(num_notify, entry.notifies.v))))
+          Val.ok(Utils.remove_at(num_notify, entry.notifies.v))))
 
     def add_topic(params: Params.Data): Option[Model.T] =
       for {
@@ -1090,9 +1096,11 @@ object AFP_Submit {
         entry <- model.entries.v.unapply(num_entry)
         entry_params <- params.list(ENTRY).unapply(num_entry)
       } yield {
-        val (topic, topic_input) = validate_topic(entry_params.get(TOPIC).value, entry.topics.v)
-        model.update_entry(num_entry, entry.copy(topic_input = topic_input,
-          topics = Validated.ok(entry.topics.v ++ topic)))
+        val topic = validate_topic(entry_params.get(TOPIC).value, entry.topics.v)
+        val topic_input = if (topic.is_empty) entry.topic_input else None
+        model.update_entry(num_entry, entry.copy(
+          topic_input = topic_input,
+          topics = Val.ok(entry.topics.v ++ topic.opt).perhaps_err(topic)))
       }
 
     def remove_topic(params: Params.Data): Option[Model.T] =
@@ -1102,8 +1110,8 @@ object AFP_Submit {
         num_entry <- List_Key.num(ENTRY, action)
         entry <- model.entries.v.unapply(num_entry)
       } yield {
-        val entry1 = entry.copy(topics = Validated.ok(Utils.remove_at(num_topic, entry.topics.v)))
-        model.copy(entries = Validated.ok(model.entries.v.updated(num_entry, entry1)))
+        val entry1 = entry.copy(topics = Val.ok(Utils.remove_at(num_topic, entry.topics.v)))
+        model.copy(entries = Val.ok(model.entries.v.updated(num_entry, entry1)))
       }
 
     def add_related(params: Params.Data): Option[Model.T] =
@@ -1111,12 +1119,20 @@ object AFP_Submit {
         model <- parse_create(params)
         num_entry <- List_Key.num(ENTRY, params.get(Web_App.ACTION).value)
         entry <- model.entries.v.unapply(num_entry)
-        kind <- entry.related_kind
       } yield {
-        val (reference, related_input) =
-          validate_related(kind, entry.related_input.v, entry.related)
-        model.update_entry(num_entry, entry.copy(related = entry.related ++ reference,
-          related_input = related_input))
+        val entry1 =
+          entry.related_kind match {
+            case None =>
+              entry.copy(related_input =
+                entry.related_input.with_err("Select reference kind first"))
+            case Some(kind) =>
+              val reference = validate_related(kind, entry.related_input.v, entry.related)
+              val related_input = if (reference.is_empty) entry.related_input.v else ""
+              entry.copy(
+                related = entry.related ++ reference.opt,
+                related_input = Val.ok(related_input).perhaps_err(reference))
+          }
+        model.update_entry(num_entry, entry1)
       }
 
     def remove_related(params: Params.Data): Option[Model.T] =
@@ -1127,13 +1143,13 @@ object AFP_Submit {
         entry <- model.entries.v.unapply(num_entry)
       } yield {
         val entry1 = entry.copy(related = Utils.remove_at(num_related, entry.related))
-        model.copy(entries = Validated.ok(model.entries.v.updated(num_entry, entry1)))
+        model.copy(entries = Val.ok(model.entries.v.updated(num_entry, entry1)))
       }
 
     def add_new_author(params: Params.Data): Option[Model.T] = parse_create(params).map { model =>
-      val name = model.new_author_input.v.trim
+      val name = model.new_author_input.trim
       if (name.isEmpty)
-        model.copy(new_author_input = model.new_author_input.with_error("Name must not be empty"))
+        model.copy(new_authors = model.new_authors.with_err("Name must not be empty"))
       else {
         def as_ascii(str: String) = {
           var res: String = str
@@ -1165,12 +1181,15 @@ object AFP_Submit {
 
         val id = make_author_id(name)
 
-        val (author, new_author_input, new_author_orcid) = validate_new_author(id,
-          model.new_author_input.v, model.new_author_orcid.v, model.updated_authors(authors))
+        val author = validate_new_author(id, model.new_author_input, model.new_author_orcid,
+          model.updated_authors(authors))
+        val new_author_input = if (author.is_empty) model.new_author_input else ""
+        val new_author_orcid = if (author.is_empty) model.new_author_orcid else ""
 
         model.copy(
-          new_author_input = new_author_input, new_author_orcid = new_author_orcid,
-          new_authors = Validated.ok(model.new_authors.v ++ author))
+          new_author_input = new_author_input,
+          new_author_orcid = new_author_orcid,
+          new_authors = Val.ok(model.new_authors.v ++ author.opt).perhaps_err(author))
       }
     }
 
@@ -1181,26 +1200,29 @@ object AFP_Submit {
         author <- model.new_authors.v.unapply(num_author)
         if !model.used_authors.contains(author.id)
       } yield model.copy(new_authors =
-        Validated.ok(Utils.remove_at(num_author, model.new_authors.v)))
+        Val.ok(Utils.remove_at(num_author, model.new_authors.v)))
 
     def add_new_affil(params: Params.Data): Option[Model.T] =
-      for {
-        model <- parse_create(params)
-        author <- model.new_affils_author
-      } yield {
-        val address = model.new_affils_input.v.trim
-        if (address.isEmpty)
-          model.copy(new_affils_input = model.new_affils_input.with_error("Must not be empty"))
-        else {
-          val id =
-            if (address.contains("@"))
-              Utils.make_unique(author.id + "_email", author.emails.map(_.id).toSet)
-            else
-              Utils.make_unique(author.id + "_homepage", author.homepages.map(_.id).toSet)
+      parse_create(params).map { model =>
+        model.new_affils_author match {
+          case Some(author) =>
+            val address = model.new_affils_input.trim
+            if (address.isEmpty)
+              model.copy(new_affils = model.new_affils.with_err("Must not be empty"))
+            else {
+              val id =
+                if (address.contains("@"))
+                  Utils.make_unique(author.id + "_email", author.emails.map(_.id).toSet)
+                else
+                  Utils.make_unique(author.id + "_homepage", author.homepages.map(_.id).toSet)
 
-          val (affil, new_affils_input) = validate_new_affil(id, address, author)
-          model.copy(new_affils = Validated.ok(model.new_affils.v ++ affil), new_affils_input =
-            new_affils_input)
+              val affil = validate_new_affil(id, address, author)
+              val new_affils_input = if (affil.is_empty) model.new_affils_input else ""
+              model.copy(
+                new_affils_input = new_affils_input,
+                new_affils = Val.ok(model.new_affils.v ++ affil.opt).perhaps_err(affil))
+            }
+          case None => model.copy(new_affils = model.new_affils.with_err("Select author first"))
         }
       }
 
@@ -1210,64 +1232,63 @@ object AFP_Submit {
         num_affil <- List_Key.num(AFFILIATION, params.get(Web_App.ACTION).value)
         affil <- model.new_affils.v.unapply(num_affil)
         if !model.used_affils.contains(affil)
-      } yield model.copy(new_affils = Validated.ok(Utils.remove_at(num_affil, model.new_affils.v)))
+      } yield model.copy(new_affils = Val.ok(Utils.remove_at(num_affil, model.new_affils.v)))
 
     def upload(params: Params.Data): Option[Model.T] = parse_create(params).map { create =>
       var ok = true
 
-      def validate[A](validator: A => Validated[A], value: A): Validated[A] = {
+      def validate[A](validator: A => Val[A], value: A): Val[A] = {
         val res = validator(value)
-        if (res.error.nonEmpty) ok = false
+        if (res.err.nonEmpty) ok = false
         res
       }
 
-      def title(title: String): Validated[String] =
-        if (title.isBlank) Validated.error(title, "Title must not be blank")
-        else if (title.trim != title) Validated.error(title, "Title must not contain extra spaces")
-        else Validated.ok(title)
+      def title(title: String): Val[String] =
+        if (title.isBlank) Val.err(title, "Title must not be blank")
+        else if (title.trim != title) Val.err(title, "Title must not contain extra spaces")
+        else Val.ok(title)
 
-      def name(name: String): Validated[String] =
-        if (name.isBlank) Validated.error(name, "Name must not be blank")
-        else if (!"[a-zA-Z0-9_-]+".r.matches(name)) Validated.error(name,
+      def name(name: String): Val[String] =
+        if (name.isBlank) Val.err(name, "Name must not be blank")
+        else if (!"[a-zA-Z0-9_-]+".r.matches(name)) Val.err(name,
           "Invalid character in name")
-        else if (Server.this.entries.contains(name)) Validated.error(name, "Entry already exists")
-        else Validated.ok(name)
+        else if (Server.this.entries.contains(name)) Val.err(name, "Entry already exists")
+        else Val.ok(name)
 
-      def entries(entries: List[Model.Create_Entry]): Validated[List[Model.Create_Entry]] =
-        if (entries.isEmpty) Validated.error(entries, "Must contain at least one entry")
+      def entries(entries: List[Model.Create_Entry]): Val[List[Model.Create_Entry]] =
+        if (entries.isEmpty) Val.err(entries, "Must contain at least one entry")
         else if (Library.duplicates(entries.map(_.name)).nonEmpty)
-          Validated.error(entries, "Entries must have different names")
-        else Validated.ok(entries)
+          Val.err(entries, "Entries must have different names")
+        else Val.ok(entries)
 
-      def new_authors(authors: List[Author]): Validated[List[Author]] =
+      def new_authors(authors: List[Author]): Val[List[Author]] =
         if (!authors.forall(author => create.used_authors.contains(author.id)))
-          Validated.error(authors, "Unused authors")
-        else Validated.ok(authors)
+          Val.err(authors, "Unused authors")
+        else Val.ok(authors)
 
-      def new_affils(affils: List[Affiliation]): Validated[List[Affiliation]] =
+      def new_affils(affils: List[Affiliation]): Val[List[Affiliation]] =
         if (!affils.forall(affil => create.used_affils.contains(affil)))
-          Validated.error(affils, "Unused affils")
-        else Validated.ok(affils)
+          Val.err(affils, "Unused affils")
+        else Val.ok(affils)
 
-      def entry_authors(authors: List[Affiliation]): Validated[List[Affiliation]] =
-        if (authors.isEmpty) Validated.error(authors, "Must contain at least one author")
-        else if (!Utils.is_distinct(authors)) Validated.error(authors, "Duplicate affiliations")
-        else Validated.ok(authors)
+      def entry_authors(authors: List[Affiliation]): Val[List[Affiliation]] =
+        if (authors.isEmpty) Val.err(authors, "Must contain at least one author")
+        else if (!Utils.is_distinct(authors)) Val.err(authors, "Duplicate affiliations")
+        else Val.ok(authors)
 
-      def notifies(notifies: List[Email]): Validated[List[Email]] =
-        if (notifies.isEmpty) Validated.error(notifies, "Must contain at least one maintainer")
-        else if (!Utils.is_distinct(notifies)) Validated.error(notifies, "Duplicate emails")
-        else Validated.ok(notifies)
+      def notifies(notifies: List[Email]): Val[List[Email]] =
+        if (notifies.isEmpty) Val.err(notifies, "Must contain at least one maintainer")
+        else if (!Utils.is_distinct(notifies)) Val.err(notifies, "Duplicate emails")
+        else Val.ok(notifies)
 
-      def topics(topics: List[Topic]): Validated[List[Topic]] =
-        if (topics.isEmpty) Validated.error(topics, "Must contain at least one topic")
-        else Validated.ok(topics)
+      def topics(topics: List[Topic]): Val[List[Topic]] =
+        if (topics.isEmpty) Val.err(topics, "Must contain at least one topic") else Val.ok(topics)
 
-      def `abstract`(txt: String): Validated[String] =
-        if (txt.isBlank) Validated.error(txt, "Entry must contain an abstract")
+      def `abstract`(txt: String): Val[String] =
+        if (txt.isBlank) Val.err(txt, "Entry must contain an abstract")
         else if (List("\\cite", "\\emph", "\\texttt").exists(txt.contains(_)))
-          Validated.error(txt, "LaTeX not allowed, use MathJax for math symbols")
-        else Validated.ok(txt)
+          Val.err(txt, "LaTeX not allowed, use MathJax for math symbols")
+        else Val.ok(txt)
 
       val validated = create.copy(
         entries = validate(
@@ -1309,7 +1330,7 @@ object AFP_Submit {
 
     def empty_submission: Option[Model.T] =
       Some(Model.Create(entries =
-        Validated.ok(List(Model.Create_Entry(license = licenses.head._2)))))
+        Val.ok(List(Model.Create_Entry(license = licenses.head._2)))))
 
     def get_submission(props: Properties.T): Option[Model.Submission] =
       Properties.get(props, ID).flatMap(handler.get(_, all_topics, licenses))
