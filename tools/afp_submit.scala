@@ -1363,7 +1363,7 @@ object AFP_Submit {
         num_entry <- List_Key.num(ENTRY, params.get(ACTION).value)
         changed <- list.submissions.unapply(num_entry)
       } yield {
-        if (changed.status == Model.Status.Submitted && !devel) {
+        if (changed.status == Model.Status.Added && !devel) {
           progress.echo_if(verbose, "Updating server data...")
           repo.pull()
           repo.update()
