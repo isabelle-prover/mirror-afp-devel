@@ -197,7 +197,6 @@ a[download], a.download, button, input[type=text], select {
 
 select {
     height: 2rem;
-    padding: 7px;
     width: 30ch;
 }
 
