@@ -1438,7 +1438,7 @@ object AFP_Submit {
     { args =>
 
       var base_path = Path.current
-      var base_url = "https://isa-afp.org/webapp"
+      var base_url = "https://www.isa-afp.org/webapp"
       var devel = false
       var verbose = false
       var port = 0

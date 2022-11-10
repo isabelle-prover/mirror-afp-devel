@@ -178,7 +178,7 @@ a[download]:hover, a[download]:active, a.download:hover, a.download:active {
 }
 
 a[download]:after, a.download:after {
-    content: url("https://isa-afp.org/images/download.svg");
+    content: url("https://www.isa-afp.org/images/download.svg");
     position: relative;
     top: 0.12em;
     left: 5px;
