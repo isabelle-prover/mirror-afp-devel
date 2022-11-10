@@ -330,6 +330,18 @@ lemma mgu_finite_subst_domain:
   by (cases "unify [(s, t)] []")
     (auto simp: finite_subst_domain_subst_of)
 
+lemma mgu_subst_range_vars: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes "Unification.mgu s t = Some \<mu>"
+  shows "range_vars \<mu> \<subseteq> vars_term s \<union> vars_term t"
+proof -
+  obtain xs where *: "unify [(s, t)] [] = Some xs" and [simp]: "subst_of xs = \<mu>"
+    using assms by (simp split: option.splits)
+  from unify_Some_UNIF[OF *] obtain ss
+    where "compose ss = \<mu>" and "UNIF ss {#(s, t)#} {#}" by auto
+  with UNIF_range_vars_subset[of ss "{#(s, t)#}" "{#}"]
+  show ?thesis using vars_mset_singleton by force
+qed
+
 lemma mgu_sound:
   assumes "mgu s t = Some \<sigma>"
   shows "is_imgu \<sigma> {(s, t)}"
