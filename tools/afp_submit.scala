@@ -173,8 +173,8 @@ object AFP_Submit {
     object ID {
       private val format = Date.Format.make(
         List(
-          Date.Formatter.pattern("dd-MM-uuuu_HH-mm-ss_SSS"),
-          Date.Formatter.pattern("dd-MM-uuuu_HH-mm-ss_SSS_VV")),
+          Date.Formatter.pattern("uuuu-MM-dd_HH-mm-ss_SSS"),
+          Date.Formatter.pattern("uuuu-MM-dd_HH-mm-ss_SSS_VV")),
         _ + "_" + Date.timezone().getId)
 
       def apply(submission_time: Date): ID = format(submission_time)
@@ -1368,7 +1368,7 @@ object AFP_Submit {
           repo.pull()
           repo.update()
           load()
-          progress.echo_if(verbose, "Finished update")
+          progress.echo("Updated repo to " + repo.id())
         }
         handler.set_status(changed.id, changed.status)
         list
