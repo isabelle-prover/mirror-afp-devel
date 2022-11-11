@@ -394,16 +394,26 @@ proof (induct xs)
     by (simp del: subst_subst_domain) (metis finite_subset infinite_Un)
 qed simp
 
+lemma unify_subst_domain: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes "unify E [] = Some xs"
+  shows "subst_domain (subst_of xs) \<subseteq> (\<Union>e \<in> set E. vars_term (fst e) \<union> vars_term (snd e))"
+proof -
+  from unify_Some_UNIF[OF \<open>unify E [] = Some xs\<close>] obtain xs' where
+    "subst_of xs = compose xs'" and "UNIF xs' (mset E) {#}"
+    by auto
+  thus ?thesis
+    using UNIF_subst_domain_subset
+    by (metis (mono_tags, lifting) multiset.set_map set_mset_mset vars_mset_def)
+qed
+
 lemma mgu_subst_domain:
   assumes "mgu s t = Some \<sigma>"
   shows "subst_domain \<sigma> \<subseteq> vars_term s \<union> vars_term t"
 proof -
-  obtain xs where *: "unify [(s, t)] [] = Some xs" and [simp]: "subst_of xs = \<sigma>"
+  obtain xs where unif_s_t: "unify [(s, t)] [] = Some xs" and "\<sigma> = subst_of xs"
     using assms by (simp split: option.splits)
-  from unify_Some_UNIF [OF *] obtain ss
-    where "compose ss = \<sigma>" and "UNIF ss {#(s, t)#} {#}" by auto
-  with UNIF_subst_domain_subset [of ss "{#(s, t)#}" "{#}"]
-  show ?thesis using vars_mset_singleton by fastforce
+  thus ?thesis
+    using unify_subst_domain by fastforce
 qed
 
 lemma mgu_finite_subst_domain:
