@@ -647,7 +647,7 @@ object AFP_Submit {
       val new_authors =
         meta.entries.flatMap(_.authors).map(_.author).filterNot(authors.contains).map(meta.authors)
       val new_affils =
-        meta.entries.flatMap(entry => entry.authors ++ entry.notifies).filter {
+        meta.entries.flatMap(entry => entry.authors ++ entry.notifies).distinct.filter {
           case _: Unaffiliated => false
           case e: Email => !authors.get(e.author).exists(_.emails.contains(e))
           case h: Homepage => !authors.get(h.author).exists(_.homepages.contains(h))
