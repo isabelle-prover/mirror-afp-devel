@@ -255,7 +255,7 @@ next
     by (simp add: subst_compose_def term_subst_eq_conv [symmetric])
 qed
 
-lemma subst_compose_apply_eq_apply_lhs_if: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+lemma subst_compose_apply_eq_apply_lhs: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   assumes
     "range_vars \<sigma> \<inter> subst_domain \<delta> = {}"
     "x \<notin> subst_domain \<delta>"
@@ -303,6 +303,18 @@ next
     by simp
   with Fun show ?thesis
     by (simp add: subst_compose_def)
+qed
+
+lemma subst_apply_term_subst_apply_term_eq_subst_apply_term_lhs: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes "range_vars \<sigma> \<inter> subst_domain \<delta> = {}" and "vars_term t \<inter> subst_domain \<delta> = {}"
+  shows "t \<cdot> \<sigma> \<cdot> \<delta> = t \<cdot> \<sigma>"
+proof -
+  from assms have "\<And>x. x \<in> vars_term t \<Longrightarrow> (\<sigma> \<circ>\<^sub>s \<delta>) x = \<sigma> x"
+    using subst_compose_apply_eq_apply_lhs by fastforce
+  hence "t \<cdot> \<sigma> \<circ>\<^sub>s \<delta> = t \<cdot> \<sigma>"
+    using term_subst_eq_conv[of t "\<sigma> \<circ>\<^sub>s \<delta>" \<sigma>] by metis
+  thus ?thesis
+    by simp
 qed
 
 fun num_funs :: "('f, 'v) term \<Rightarrow> nat"
