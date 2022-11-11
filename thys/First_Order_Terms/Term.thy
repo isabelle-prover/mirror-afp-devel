@@ -153,7 +153,7 @@ definition is_renaming :: "('f, 'v) subst \<Rightarrow> bool"
     "is_renaming \<sigma> \<longleftrightarrow> (\<forall>x. is_Var (\<sigma> x)) \<and> inj_on \<sigma> (subst_domain \<sigma>)"
 
 lemma inv_renaming_sound: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  assumes is_var_\<sigma>: "\<And>x. is_Var (\<sigma> x)" and "inj \<sigma>"
+  assumes is_var_\<sigma>: "\<forall>x. is_Var (\<sigma> x)" and "inj \<sigma>"
   shows "\<sigma> \<circ>\<^sub>s (Var \<circ> (inv (the_Var \<circ> \<sigma>))) = Var"
 proof -
   define \<sigma>' where "\<sigma>' = the_Var \<circ> \<sigma>"
@@ -175,7 +175,7 @@ proof -
 qed
 
 lemma ex_inverse_of_renaming: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  assumes "\<And>x. is_Var (\<sigma> x)" and "inj \<sigma>"
+  assumes "\<forall>x. is_Var (\<sigma> x)" and "inj \<sigma>"
   shows "\<exists>\<tau>. \<sigma> \<circ>\<^sub>s \<tau> = Var"
   using inv_renaming_sound[OF assms] by blast
 
