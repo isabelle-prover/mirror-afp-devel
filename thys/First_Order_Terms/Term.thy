@@ -438,4 +438,46 @@ lemma vars_term_subset_subst_eq:
   shows "t \<cdot> \<sigma> = t \<cdot> \<tau>"
   using assms by (induct t) (induct s, auto)
 
+
+subsection \<open>Rename the Domain of a Substitution\<close>
+
+definition rename_subst_domain where \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "rename_subst_domain \<rho> \<sigma> x =
+    (if Var x \<in> \<rho> ` subst_domain \<sigma> then
+      \<sigma> (the_inv \<rho> (Var x))
+    else
+      Var x)"
+
+lemma rename_subst_domain_Var_rhs: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "rename_subst_domain \<rho> Var = Var"
+  by (rule ext) (simp add: rename_subst_domain_def)
+
+lemma renaming_cancels_rename_subst_domain: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes is_var_\<rho>: "\<forall>x. is_Var (\<rho> x)" and "inj \<rho>" and vars_t: "vars_term t \<subseteq> subst_domain \<sigma>"
+  shows "t \<cdot> \<rho> \<cdot> rename_subst_domain \<rho> \<sigma> = t \<cdot> \<sigma>"
+  unfolding subst_subst
+proof (intro term_subst_eq ballI)
+  fix x assume "x \<in> vars_term t"
+  with vars_t have x_in: "x \<in> subst_domain \<sigma>"
+    by blast
+
+  obtain x' where \<rho>_x: "\<rho> x = Var x'"
+    using is_var_\<rho> by (meson is_Var_def)
+  with x_in have x'_in: "Var x' \<in> \<rho> ` subst_domain \<sigma>"
+    by (metis image_eqI)
+
+  have "(\<rho> \<circ>\<^sub>s rename_subst_domain \<rho> \<sigma>) x = \<rho> x \<cdot> rename_subst_domain \<rho> \<sigma>"
+    by (simp add: subst_compose_def)
+  also have "\<dots> = rename_subst_domain \<rho> \<sigma> x'"
+    using \<rho>_x by simp
+  also have "\<dots> = \<sigma> (the_inv \<rho> (Var x'))"
+    by (simp add: rename_subst_domain_def if_P[OF x'_in])
+  also have "\<dots> = \<sigma> (the_inv \<rho> (\<rho> x))"
+    by (simp add: \<rho>_x)
+  also have "\<dots> = \<sigma> x"
+    using \<open>inj \<rho>\<close> by (simp add: the_inv_f_f)
+  finally show "(\<rho> \<circ>\<^sub>s rename_subst_domain \<rho> \<sigma>) x = \<sigma> x"
+    by simp
+qed
+
 end
