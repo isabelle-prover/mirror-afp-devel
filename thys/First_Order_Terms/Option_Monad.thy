@@ -54,6 +54,10 @@ lemma zip_induct [case_names Cons_Cons Nil1 Nil2]:
   shows "P xs ys"
   using assms by (induction_schema) (pat_completeness, lexicographic_order)
 
+lemma zip_option_same[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "zip_option xs xs = Some (zip xs xs)"
+  by (induction xs) simp_all
+
 lemma zip_option_zip_conv:
   "zip_option xs ys = Some zs \<longleftrightarrow> length ys = length xs \<and> length zs = length xs \<and> zs = zip xs ys"
 proof -
