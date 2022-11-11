@@ -148,6 +148,22 @@ next
     by (auto intro: list.map_ident_strong)
 qed
 
+lemma vars_term_subst_apply_term: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "vars_term (t \<cdot> \<sigma>) = (\<Union>x \<in> vars_term t. vars_term (\<sigma> x))"
+  by (induction t) (auto simp add: insert_Diff_if subst_domain_def)
+
+corollary vars_term_subst_apply_term_subset: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "vars_term (t \<cdot> \<sigma>) \<subseteq> vars_term t - subst_domain \<sigma> \<union> range_vars \<sigma>"
+  unfolding vars_term_subst_apply_term
+proof (induction t)
+  case (Var x)
+  show ?case
+    by (cases "\<sigma> x = Var x") (auto simp add: range_vars_def subst_domain_def)
+next
+  case (Fun f xs)
+  thus ?case by auto
+qed
+
 definition is_renaming :: "('f, 'v) subst \<Rightarrow> bool"
   where
     "is_renaming \<sigma> \<longleftrightarrow> (\<forall>x. is_Var (\<sigma> x)) \<and> inj_on \<sigma> (subst_domain \<sigma>)"
