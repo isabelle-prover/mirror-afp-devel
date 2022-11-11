@@ -136,6 +136,18 @@ lemma range_vars_Var[simp]: \<^marker>\<open>contributor \<open>Martin Desharnai
   "range_vars Var = {}"
   by (simp add: range_vars_def)
 
+lemma subst_apply_term_ident: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "vars_term t \<inter> subst_domain \<sigma> = {} \<Longrightarrow> t \<cdot> \<sigma> = t"
+proof (induction t)
+  case (Var x)
+  thus ?case
+    by (simp add: subst_domain_def)
+next
+  case (Fun f ts)
+  thus ?case
+    by (auto intro: list.map_ident_strong)
+qed
+
 definition is_renaming :: "('f, 'v) subst \<Rightarrow> bool"
   where
     "is_renaming \<sigma> \<longleftrightarrow> (\<forall>x. is_Var (\<sigma> x)) \<and> inj_on \<sigma> (subst_domain \<sigma>)"
