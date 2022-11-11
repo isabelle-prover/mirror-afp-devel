@@ -153,30 +153,30 @@ definition is_renaming :: "('f, 'v) subst \<Rightarrow> bool"
     "is_renaming \<sigma> \<longleftrightarrow> (\<forall>x. is_Var (\<sigma> x)) \<and> inj_on \<sigma> (subst_domain \<sigma>)"
 
 lemma inv_renaming_sound: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  assumes is_var_\<sigma>: "\<forall>x. is_Var (\<sigma> x)" and "inj \<sigma>"
-  shows "\<sigma> \<circ>\<^sub>s (Var \<circ> (inv (the_Var \<circ> \<sigma>))) = Var"
+  assumes is_var_\<rho>: "\<forall>x. is_Var (\<rho> x)" and "inj \<rho>"
+  shows "\<rho> \<circ>\<^sub>s (Var \<circ> (inv (the_Var \<circ> \<rho>))) = Var"
 proof -
-  define \<sigma>' where "\<sigma>' = the_Var \<circ> \<sigma>"
-  have \<sigma>_def: "\<sigma> = Var \<circ> \<sigma>'"
-    unfolding \<sigma>'_def using is_var_\<sigma> by auto
+  define \<rho>' where "\<rho>' = the_Var \<circ> \<rho>"
+  have \<rho>_def: "\<rho> = Var \<circ> \<rho>'"
+    unfolding \<rho>'_def using is_var_\<rho> by auto
 
-  from is_var_\<sigma> \<open>inj \<sigma>\<close> have "inj \<sigma>'"
-    unfolding inj_def \<sigma>_def comp_def by fast
-  hence "inv \<sigma>' \<circ> \<sigma>' = id"
-    using inv_o_cancel[of \<sigma>'] by simp
-  hence "Var \<circ> (inv \<sigma>' \<circ> \<sigma>') = Var"
+  from is_var_\<rho> \<open>inj \<rho>\<close> have "inj \<rho>'"
+    unfolding inj_def \<rho>_def comp_def by fast
+  hence "inv \<rho>' \<circ> \<rho>' = id"
+    using inv_o_cancel[of \<rho>'] by simp
+  hence "Var \<circ> (inv \<rho>' \<circ> \<rho>') = Var"
     by simp
-  hence "\<forall>x. (Var \<circ> (inv \<sigma>' \<circ> \<sigma>')) x = Var x"
+  hence "\<forall>x. (Var \<circ> (inv \<rho>' \<circ> \<rho>')) x = Var x"
     by metis
-  hence "\<forall>x. ((Var \<circ> \<sigma>') \<circ>\<^sub>s (Var \<circ> (inv \<sigma>'))) x = Var x"
+  hence "\<forall>x. ((Var \<circ> \<rho>') \<circ>\<^sub>s (Var \<circ> (inv \<rho>'))) x = Var x"
     unfolding subst_compose_def by auto
-  thus "\<sigma> \<circ>\<^sub>s (Var \<circ> (inv \<sigma>')) = Var"
-    using \<sigma>_def by auto
+  thus "\<rho> \<circ>\<^sub>s (Var \<circ> (inv \<rho>')) = Var"
+    using \<rho>_def by auto
 qed
 
 lemma ex_inverse_of_renaming: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  assumes "\<forall>x. is_Var (\<sigma> x)" and "inj \<sigma>"
-  shows "\<exists>\<tau>. \<sigma> \<circ>\<^sub>s \<tau> = Var"
+  assumes "\<forall>x. is_Var (\<rho> x)" and "inj \<rho>"
+  shows "\<exists>\<tau>. \<rho> \<circ>\<^sub>s \<tau> = Var"
   using inv_renaming_sound[OF assms] by blast
 
 lemma vars_term_subst:
