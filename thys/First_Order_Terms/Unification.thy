@@ -443,6 +443,24 @@ corollary subst_apply_term_eq_subst_apply_term_if_mgu: \<^marker>\<open>contribu
 lemma mgu_same: "mgu t t = Some Var" \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   by (simp add: unify_same)
 
+lemma ex_mgu_if_subst_apply_term_eq_subst_apply_term: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  fixes t u :: "('f, 'v) Term.term" and \<sigma> :: "('f, 'v) subst"
+  assumes t_eq_u: "t \<cdot> \<sigma> = u \<cdot> \<sigma>"
+  shows "\<exists>\<mu> :: ('f, 'v) subst. Unification.mgu t u = Some \<mu>"
+proof -
+  from t_eq_u have "unifiers {(t, u)} \<noteq> {}"
+    unfolding unifiers_def by auto
+  then obtain xs where unify: "unify [(t, u)] [] = Some xs"
+    using unify_complete
+    by (metis list.set(1) list.set(2) not_Some_eq)
+
+  show ?thesis
+  proof (rule exI)
+    show "Unification.mgu t u = Some (subst_of xs)"
+      using unify by simp
+  qed
+qed
+
 lemma is_Var_mgu_if_not_in_equations: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations" and x :: 'v
   assumes
