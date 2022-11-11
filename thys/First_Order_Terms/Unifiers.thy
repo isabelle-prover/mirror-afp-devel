@@ -214,4 +214,64 @@ lemma is_imgu_imp_is_mgu:
   shows "is_mgu \<sigma> E"
   using assms by (auto simp: is_imgu_def is_mgu_def)
 
+
+subsection \<open>Properties of \<^term>\<open>is_imgu\<close>\<close>
+
+lemma rename_subst_domain_range_preserves_is_imgu: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  fixes E :: "('f, 'v) equations" and \<mu> \<rho> :: "('f, 'v) subst"
+  assumes imgu_\<mu>: "is_imgu \<mu> E" and is_var_\<rho>: "\<forall>x. is_Var (\<rho> x)" and "inj \<rho>"
+  shows "is_imgu (rename_subst_domain_range \<rho> \<mu>) (subst_set \<rho> E)"
+proof (unfold is_imgu_def, intro conjI ballI)
+  from imgu_\<mu> have unif_\<mu>: "\<mu> \<in> unifiers E"
+    by (simp add: is_imgu_def)
+
+  show "rename_subst_domain_range \<rho> \<mu> \<in> unifiers (subst_set \<rho> E)"
+    unfolding unifiers_subst_set unifiers_def mem_Collect_eq
+  proof (rule ballI)
+    fix e\<^sub>\<rho> assume "e\<^sub>\<rho> \<in> subst_set \<rho> E"
+    then obtain e where "e \<in> E" and "e\<^sub>\<rho> = (fst e \<cdot> \<rho>, snd e \<cdot> \<rho>)"
+      by (auto simp: subst_set_def)
+    then show "fst e\<^sub>\<rho> \<cdot> rename_subst_domain_range \<rho> \<mu> = snd e\<^sub>\<rho> \<cdot> rename_subst_domain_range \<rho> \<mu>"
+      using unif_\<mu> subst_apply_term_renaming_rename_subst_domain_range[OF is_var_\<rho> \<open>inj \<rho>\<close>, of _ \<mu>]
+      by (simp add: unifiers_def)
+  qed
+next
+  fix \<upsilon> :: "('f, 'v) subst"
+  assume "\<upsilon> \<in> unifiers (subst_set \<rho> E)"
+  hence "(\<rho> \<circ>\<^sub>s \<upsilon>) \<in> unifiers E"
+    by (simp add: subst_set_def unifiers_def)
+  with imgu_\<mu> have \<mu>_\<rho>_\<upsilon>: "\<mu> \<circ>\<^sub>s \<rho> \<circ>\<^sub>s \<upsilon> = \<rho> \<circ>\<^sub>s \<upsilon>"
+    by (simp add: is_imgu_def subst_compose_assoc)
+
+  show "\<upsilon> = rename_subst_domain_range \<rho> \<mu> \<circ>\<^sub>s \<upsilon>"
+  proof (rule ext)
+    fix x
+    show "\<upsilon> x = (rename_subst_domain_range \<rho> \<mu> \<circ>\<^sub>s \<upsilon>) x"
+    proof (cases "Var x \<in> \<rho> ` subst_domain \<mu>")
+      case True
+      hence "(rename_subst_domain_range \<rho> \<mu> \<circ>\<^sub>s \<upsilon>) x = (\<mu> \<circ>\<^sub>s \<rho> \<circ>\<^sub>s \<upsilon>) (the_inv \<rho> (Var x))"
+        by (simp add: rename_subst_domain_range_def subst_compose_def)
+      also have "\<dots> = (\<rho> \<circ>\<^sub>s \<upsilon>) (the_inv \<rho> (Var x))"
+        by (simp add: \<mu>_\<rho>_\<upsilon>)
+      also have "\<dots> = (\<rho> (the_inv \<rho> (Var x))) \<cdot> \<upsilon>"
+        by (simp add: subst_compose)
+      also have "\<dots> = Var x \<cdot> \<upsilon>"
+        using True f_the_inv_into_f[OF \<open>inj \<rho>\<close>, of "Var x"] by force
+      finally show ?thesis
+        by simp
+    next
+      case False
+      thus ?thesis
+        by (simp add: rename_subst_domain_range_def subst_compose)
+    qed
+  qed
+qed
+
+corollary rename_subst_domain_range_preserves_is_imgu_singleton: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  fixes t u :: "('f, 'v) term" and \<mu> \<rho> :: "('f, 'v) subst"
+  assumes imgu_\<mu>: "is_imgu \<mu> {(t, u)}" and is_var_\<rho>: "\<forall>x. is_Var (\<rho> x)" and "inj \<rho>"
+  shows "is_imgu (rename_subst_domain_range \<rho> \<mu>) {(t \<cdot> \<rho>, u \<cdot> \<rho>)}"
+  by (rule rename_subst_domain_range_preserves_is_imgu[OF imgu_\<mu> is_var_\<rho> \<open>inj \<rho>\<close>,
+        unfolded subst_set_def, simplified])
+
 end

@@ -496,4 +496,56 @@ proof (intro term_subst_eq ballI)
     by simp
 qed
 
+
+subsection \<open>Rename the Domain and Range of a Substitution\<close>
+
+definition rename_subst_domain_range where \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "rename_subst_domain_range \<rho> \<sigma> x =
+    (if Var x \<in> \<rho> ` subst_domain \<sigma> then
+      ((Var o the_inv \<rho>) \<circ>\<^sub>s \<sigma> \<circ>\<^sub>s \<rho>) (Var x)
+    else
+      Var x)"
+
+lemma subst_compose_renaming_rename_subst_domain_range: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  fixes \<sigma> \<rho> :: "('f, 'v) subst"
+  assumes is_var_\<rho>: "\<forall>x. is_Var (\<rho> x)" and "inj \<rho>"
+  shows "\<rho> \<circ>\<^sub>s rename_subst_domain_range \<rho> \<sigma> = \<sigma> \<circ>\<^sub>s \<rho>"
+proof (rule ext)
+  fix x
+  from is_var_\<rho> obtain x' where "\<rho> x = Var x'"
+    by (meson is_Var_def is_renaming_def)
+  with \<open>inj \<rho>\<close> have inv_\<rho>_x': "the_inv \<rho> (Var x') = x"
+    by (metis the_inv_f_f)
+
+  show "(\<rho> \<circ>\<^sub>s rename_subst_domain_range \<rho> \<sigma>) x = (\<sigma> \<circ>\<^sub>s \<rho>) x"
+  proof (cases "x \<in> subst_domain \<sigma>")
+    case True
+    hence "Var x' \<in> \<rho> ` subst_domain \<sigma>"
+      using \<open>\<rho> x = Var x'\<close> by (metis imageI)
+    thus ?thesis
+      by (simp add: \<open>\<rho> x = Var x'\<close> rename_subst_domain_range_def subst_compose_def inv_\<rho>_x')
+  next
+    case False
+    hence "Var x' \<notin> \<rho> ` subst_domain \<sigma>"
+    proof (rule contrapos_nn)
+      assume "Var x' \<in> \<rho> ` subst_domain \<sigma>"
+      hence "\<rho> x \<in> \<rho> ` subst_domain \<sigma>"
+        unfolding \<open>\<rho> x = Var x'\<close> .
+      thus "x \<in> subst_domain \<sigma>"
+        unfolding inj_image_mem_iff[OF \<open>inj \<rho>\<close>] .
+    qed
+    with False \<open>\<rho> x = Var x'\<close> show ?thesis
+      by (simp add: subst_compose_def subst_domain_def rename_subst_domain_range_def)
+  qed
+qed
+
+corollary subst_apply_term_renaming_rename_subst_domain_range: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  \<comment> \<open>This might be easier to find with @{command find_theorems}.\<close>
+  fixes t :: "('f, 'v) term" and \<sigma> \<rho> :: "('f, 'v) subst"
+  assumes is_var_\<rho>: "\<forall>x. is_Var (\<rho> x)" and "inj \<rho>"
+  shows "t \<cdot> \<rho> \<cdot> rename_subst_domain_range \<rho> \<sigma> = t \<cdot> \<sigma> \<cdot> \<rho>"
+  unfolding subst_subst
+  unfolding subst_compose_renaming_rename_subst_domain_range[OF assms]
+  by (rule refl)
+
 end
