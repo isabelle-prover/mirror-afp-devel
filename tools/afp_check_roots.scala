@@ -80,7 +80,6 @@ object AFP_Check_Roots {
       Check[(String, List[Path])]("check_unused_thys",
         "The following sessions contain unused theories:",
         (structure, sessions, afp_structure) => {
-          val thys_dir = afp_structure.thys_dir
           val selection = Sessions.Selection(sessions = sessions)
           val deps = structure.selection_deps(selection = selection)
 
@@ -89,16 +88,17 @@ object AFP_Check_Roots {
 
           def is_thy_file(file: JFile): Boolean = file.isFile && file.getName.endsWith(".thy")
 
-          sessions.flatMap { session_name =>
-            val theory_nodes = deps.base_info(session_name).base.proper_session_theories
-            val session_thy_files = theory_nodes.map(node => rel_path(node.path))
+          afp_structure.entries.flatMap { entry =>
+            val sessions = afp_structure.entry_sessions(entry).map(_.name)
+            val theory_nodes = sessions.flatMap(deps.base_info(_).base.proper_session_theories)
+            val thy_files = theory_nodes.map(node => rel_path(node.path))
 
-            val dir = structure(session_name).dir
-            val physical_files = File.find_files(dir.file, is_thy_file, include_dirs = true).map(
-              file => rel_path(Path.explode(file.getAbsolutePath)))
+            val entry_dir = afp_structure.entry_thy_dir(entry)
+            val physical_files = File.find_files(entry_dir.file, is_thy_file, include_dirs = true)
+            val rel_files = physical_files.map(file => rel_path(Path.explode(file.getAbsolutePath)))
 
-            val unused = physical_files.toSet -- session_thy_files.toSet
-            if (unused.nonEmpty) Some(session_name -> unused.toList)
+            val unused = rel_files.toSet -- thy_files.toSet
+            if (unused.nonEmpty) Some(entry -> unused.toList)
             else None
           }
         },
