@@ -1365,10 +1365,14 @@ object AFP_Submit {
       } yield {
         if (changed.status == Model.Status.Added && !devel) {
           progress.echo_if(verbose, "Updating server data...")
+          val id_before = repo.id()
           repo.pull()
           repo.update()
-          load()
-          progress.echo("Updated repo to " + repo.id())
+          val id_after = repo.id()
+          if (id_before != id_after) {
+            load()
+            progress.echo("Updated repo from " + id_before + " to " + id_after)
+          }
         }
         handler.set_status(changed.id, changed.status)
         list
