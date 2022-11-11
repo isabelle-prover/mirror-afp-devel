@@ -353,6 +353,12 @@ proof -
   then show ?thesis by simp
 qed
 
+corollary subst_apply_term_eq_subst_apply_term_if_mgu[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes mgu_t_u: "Unification.mgu t u = Some \<mu>"
+  shows "t \<cdot> \<mu> = u \<cdot> \<mu>"
+  using mgu_sound[OF mgu_t_u]
+  by (simp add: Unifiers.is_imgu_def unifiers_def)
+
 lemma is_Var_mgu_if_not_in_equations: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations" and x :: 'v
   assumes
