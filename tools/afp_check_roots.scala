@@ -76,7 +76,33 @@ object AFP_Check_Roots {
               Some(entry_name)
             else None
           }
-        })
+        }),
+      Check[(String, List[Path])]("check_unused_thys",
+        "The following sessions contain unused theories:",
+        (structure, sessions, afp_structure) => {
+          val thys_dir = afp_structure.thys_dir
+          val selection = Sessions.Selection(sessions = sessions)
+          val deps = structure.selection_deps(selection = selection)
+
+          def rel_path(path: Path): Path =
+            File.relative_path(afp_structure.thys_dir.absolute, path.absolute).get
+
+          def is_thy_file(file: JFile): Boolean = file.isFile && file.getName.endsWith(".thy")
+
+          sessions.flatMap { session_name =>
+            val theory_nodes = deps.base_info(session_name).base.proper_session_theories
+            val session_thy_files = theory_nodes.map(node => rel_path(node.path))
+
+            val dir = structure(session_name).dir
+            val physical_files = File.find_files(dir.file, is_thy_file, include_dirs = true).map(
+              file => rel_path(Path.explode(file.getAbsolutePath)))
+
+            val unused = physical_files.toSet -- session_thy_files.toSet
+            if (unused.nonEmpty) Some(session_name -> unused.toList)
+            else None
+          }
+        },
+        t => t._1 + ": {" + t._2.mkString((", ")) + "}")
     ).sortBy(_.name)
 
   def the_check(name: String): Check[_] =
