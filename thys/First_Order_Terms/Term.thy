@@ -152,6 +152,33 @@ definition is_renaming :: "('f, 'v) subst \<Rightarrow> bool"
   where
     "is_renaming \<sigma> \<longleftrightarrow> (\<forall>x. is_Var (\<sigma> x)) \<and> inj_on \<sigma> (subst_domain \<sigma>)"
 
+lemma inv_renaming_sound: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes is_var_\<sigma>: "\<And>x. is_Var (\<sigma> x)" and "inj \<sigma>"
+  shows "\<sigma> \<circ>\<^sub>s (Var \<circ> (inv (the_Var \<circ> \<sigma>))) = Var"
+proof -
+  define \<sigma>' where "\<sigma>' = the_Var \<circ> \<sigma>"
+  have \<sigma>_def: "\<sigma> = Var \<circ> \<sigma>'"
+    unfolding \<sigma>'_def using is_var_\<sigma> by auto
+
+  from is_var_\<sigma> \<open>inj \<sigma>\<close> have "inj \<sigma>'"
+    unfolding inj_def \<sigma>_def comp_def by fast
+  hence "inv \<sigma>' \<circ> \<sigma>' = id"
+    using inv_o_cancel[of \<sigma>'] by simp
+  hence "Var \<circ> (inv \<sigma>' \<circ> \<sigma>') = Var"
+    by simp
+  hence "\<forall>x. (Var \<circ> (inv \<sigma>' \<circ> \<sigma>')) x = Var x"
+    by metis
+  hence "\<forall>x. ((Var \<circ> \<sigma>') \<circ>\<^sub>s (Var \<circ> (inv \<sigma>'))) x = Var x"
+    unfolding subst_compose_def by auto
+  thus "\<sigma> \<circ>\<^sub>s (Var \<circ> (inv \<sigma>')) = Var"
+    using \<sigma>_def by auto
+qed
+
+lemma ex_inverse_of_renaming: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes "\<And>x. is_Var (\<sigma> x)" and "inj \<sigma>"
+  shows "\<exists>\<tau>. \<sigma> \<circ>\<^sub>s \<tau> = Var"
+  using inv_renaming_sound[OF assms] by blast
+
 lemma vars_term_subst:
   "vars_term (t \<cdot> \<sigma>) = \<Union>(vars_term ` \<sigma> ` vars_term t)"
   by (induct t) simp_all
