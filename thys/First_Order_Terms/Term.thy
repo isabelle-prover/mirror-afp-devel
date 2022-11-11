@@ -124,6 +124,18 @@ definition range_vars :: "('f, 'v) subst \<Rightarrow> 'v set"
 where
   "range_vars \<sigma> = \<Union>(vars_term ` subst_range \<sigma>)"
 
+lemma subst_domain_Var [simp]:
+  "subst_domain Var = {}"
+  by (simp add: subst_domain_def)
+
+lemma subst_range_Var[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "subst_range Var = {}"
+  by simp
+
+lemma range_vars_Var[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "range_vars Var = {}"
+  by (simp add: range_vars_def)
+
 definition is_renaming :: "('f, 'v) subst \<Rightarrow> bool"
   where
     "is_renaming \<sigma> \<longleftrightarrow> (\<forall>x. is_Var (\<sigma> x)) \<and> inj_on \<sigma> (subst_domain \<sigma>)"
@@ -210,10 +222,6 @@ text \<open>Composition of substitutions\<close>
 lemma subst_compose: "(\<sigma> \<circ>\<^sub>s \<tau>) x = \<sigma> x \<cdot> \<tau>" by (auto simp: subst_compose_def)
 
 lemmas subst_subst = subst_subst_compose [symmetric]
-
-lemma subst_domain_Var [simp]:
-  "subst_domain Var = {}"
-  by (simp add: subst_domain_def)
 
 lemma subst_apply_eq_Var:
   assumes "s \<cdot> \<sigma> = Var x"
