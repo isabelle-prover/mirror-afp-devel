@@ -65,6 +65,83 @@ termination
   by (standard, rule wf_inv_image [of "unif\<inverse>" "mset \<circ> fst", OF wf_converse_unif])
      (force intro: UNIF1.intros simp: unif_def union_commute)+
 
+lemma unify_append_prefix_same: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "(\<forall>e \<in> set es1. fst e = snd e) \<Longrightarrow> unify (es1 @ es2) bs = unify es2 bs"
+proof (induction "es1 @ es2" bs arbitrary: es1 es2 bs rule: unify.induct)
+  case (1 bs)
+  thus ?case by simp
+next
+  case (2 f ss g ts E bs)
+  show ?case
+  proof (cases es1)
+    case Nil
+    thus ?thesis by simp
+  next
+    case (Cons e es1')
+    hence e_def: "e = (Fun f ss, Fun g ts)" and E_def: "E = es1' @ es2"
+      using "2" by simp_all
+    hence "f = g" and "ss = ts"
+      using "2.prems" local.Cons by auto
+    hence "unify (es1 @ es2) bs = unify ((zip ts ts @ es1') @ es2) bs"
+      by (simp add: Cons e_def)
+    also have "\<dots> = unify es2 bs"
+    proof (rule "2.hyps"(1))
+      show "decompose (Fun f ss) (Fun g ts) = Some (zip ts ts)"
+        by (simp add: \<open>f = g\<close> \<open>ss = ts\<close>)
+    next
+      show "zip ts ts @ E = (zip ts ts @ es1') @ es2"
+        by (simp add: E_def)
+    next
+      show "\<forall>e\<in>set (zip ts ts @ es1'). fst e = snd e"
+        using "2.prems" by (auto simp: Cons zip_same)
+    qed
+    finally show ?thesis .
+  qed
+next
+  case (3 x t E bs)
+  show ?case
+  proof (cases es1)
+    case Nil
+    thus ?thesis by simp
+  next
+    case (Cons e es1')
+    hence e_def: "e = (Var x, t)" and E_def: "E = es1' @ es2"
+      using 3 by simp_all
+    show ?thesis
+    proof (cases "t = Var x")
+      case True
+      show ?thesis
+        using 3(1)[OF True E_def]
+        using "3.hyps"(3) "3.prems" local.Cons by fastforce
+    next
+      case False
+      thus ?thesis
+        using "3.prems" e_def local.Cons by force
+    qed
+  qed
+next
+  case (4 v va x E bs)
+  then show ?case
+  proof (cases es1)
+    case Nil
+    thus ?thesis by simp
+  next
+    case (Cons e es1')
+    hence e_def: "e = (Fun v va, Var x)" and E_def: "E = es1' @ es2"
+      using 4 by simp_all
+    thus ?thesis
+      using "4.prems" local.Cons by fastforce
+  qed
+qed
+
+corollary unify_Cons_same: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "fst e = snd e \<Longrightarrow> unify (e # es) bs = unify es bs"
+  by (rule unify_append_prefix_same[of "[_]", simplified])
+
+corollary unify_same: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "(\<forall>e \<in> set es. fst e = snd e) \<Longrightarrow> unify es bs = Some bs"
+  by (rule unify_append_prefix_same[of _ "[]", simplified])
+
 definition subst_of :: "('v \<times> ('f, 'v) term) list \<Rightarrow> ('f, 'v) subst"
   where
     "subst_of ss = List.foldr (\<lambda>(x, t) \<sigma>. \<sigma> \<circ>\<^sub>s subst x t) ss Var"
@@ -362,6 +439,9 @@ corollary subst_apply_term_eq_subst_apply_term_if_mgu: \<^marker>\<open>contribu
   shows "t \<cdot> \<mu> = u \<cdot> \<mu>"
   using mgu_sound[OF mgu_t_u]
   by (simp add: is_imgu_def unifiers_def)
+
+lemma mgu_same: "mgu t t = Some Var" \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  by (simp add: unify_same)
 
 lemma is_Var_mgu_if_not_in_equations: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations" and x :: 'v
