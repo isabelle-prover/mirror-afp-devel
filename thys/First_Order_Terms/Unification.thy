@@ -17,6 +17,10 @@ definition
       (Fun f ss, Fun g ts) \<Rightarrow> if f = g then zip_option ss ts else None
     | _ \<Rightarrow> None)"
 
+lemma decompose_same_Fun[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "decompose (Fun f ss) (Fun f ss) = Some (zip ss ss)"
+  by (simp add: decompose_def)
+
 lemma decompose_Some [dest]:
   "decompose (Fun f ss) (Fun g ts) = Some E \<Longrightarrow>
     f = g \<and> length ss = length ts \<and> E = zip ss ts"
