@@ -25,6 +25,12 @@ lemma is_FunE [elim]:
   "is_Fun t \<Longrightarrow> (\<And>f ts. t = Fun f ts \<Longrightarrow> P) \<Longrightarrow> P"
   by (cases t) auto
 
+lemma member_image_the_Var_image_subst: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes is_var_\<sigma>: "\<forall>x. is_Var (\<sigma> x)"
+  shows "x \<in> the_Var ` \<sigma> ` V \<longleftrightarrow> Var x \<in> \<sigma> ` V"
+  using is_var_\<sigma> image_iff
+  by (metis (no_types, opaque_lifting) term.collapse(1) term.sel(1))
+
 text \<open>Reorient equations of the form @{term "Var x = t"} and @{term "Fun f ss = t"} to facilitate
   simplification.\<close>
 setup \<open>
