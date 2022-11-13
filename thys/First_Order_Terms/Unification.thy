@@ -442,6 +442,27 @@ proof -
     using unify_range_vars by fastforce
 qed
 
+lemma unify_subst_domain_range_vars_disjoint: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes unif: "unify E [] = Some xs"
+  shows "subst_domain (subst_of xs) \<inter> range_vars (subst_of xs) = {}"
+proof -
+  from unify_Some_UNIF[OF unif] obtain xs' where
+    "subst_of xs = compose xs'" and "UNIF xs' (mset E) {#}"
+    by auto
+  thus ?thesis
+    using UNIF_subst_domain_range_vars_Int by metis
+qed
+
+lemma mgu_subst_domain_range_vars_disjoint: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes "mgu s t = Some \<mu>"
+  shows "subst_domain \<mu> \<inter> range_vars \<mu> = {}"
+proof -
+  obtain xs where "unify [(s, t)] [] = Some xs" and "\<mu> = subst_of xs"
+    using assms by (simp add: mgu_def split: option.splits)
+  thus ?thesis
+    using unify_subst_domain_range_vars_disjoint by metis
+qed
+
 lemma mgu_sound:
   assumes "mgu s t = Some \<sigma>"
   shows "is_imgu \<sigma> {(s, t)}"
