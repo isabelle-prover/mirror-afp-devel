@@ -215,7 +215,7 @@ lemma is_imgu_imp_is_mgu:
   using assms by (auto simp: is_imgu_def is_mgu_def)
 
 
-subsection \<open>Properties of \<^term>\<open>is_imgu\<close>\<close>
+subsubsection \<open>Properties of \<^term>\<open>is_imgu\<close>\<close>
 
 lemma rename_subst_domain_range_preserves_is_imgu: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   fixes E :: "('f, 'v) equations" and \<mu> \<rho> :: "('f, 'v) subst"
