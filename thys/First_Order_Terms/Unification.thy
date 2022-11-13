@@ -395,10 +395,10 @@ proof (induct xs)
 qed simp
 
 lemma unify_subst_domain: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  assumes "unify E [] = Some xs"
+  assumes unif: "unify E [] = Some xs"
   shows "subst_domain (subst_of xs) \<subseteq> (\<Union>e \<in> set E. vars_term (fst e) \<union> vars_term (snd e))"
 proof -
-  from unify_Some_UNIF[OF \<open>unify E [] = Some xs\<close>] obtain xs' where
+  from unify_Some_UNIF[OF unif] obtain xs' where
     "subst_of xs = compose xs'" and "UNIF xs' (mset E) {#}"
     by auto
   thus ?thesis
@@ -410,7 +410,7 @@ lemma mgu_subst_domain:
   assumes "mgu s t = Some \<sigma>"
   shows "subst_domain \<sigma> \<subseteq> vars_term s \<union> vars_term t"
 proof -
-  obtain xs where unif_s_t: "unify [(s, t)] [] = Some xs" and "\<sigma> = subst_of xs"
+  obtain xs where "unify [(s, t)] [] = Some xs" and "\<sigma> = subst_of xs"
     using assms by (simp split: option.splits)
   thus ?thesis
     using unify_subst_domain by fastforce
@@ -418,19 +418,28 @@ qed
 
 lemma mgu_finite_subst_domain:
   "mgu s t = Some \<sigma> \<Longrightarrow> finite (subst_domain \<sigma>)"
-  by (cases "unify [(s, t)] []")
-    (auto simp: finite_subst_domain_subst_of)
+  by (drule mgu_subst_domain) (simp add: finite_subset)
+
+lemma unify_range_vars: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes unif: "unify E [] = Some xs"
+  shows "range_vars (subst_of xs) \<subseteq> (\<Union>e \<in> set E. vars_term (fst e) \<union> vars_term (snd e))"
+proof -
+  from unify_Some_UNIF[OF unif] obtain xs' where
+    "subst_of xs = compose xs'" and "UNIF xs' (mset E) {#}"
+    by auto
+  thus ?thesis
+    using UNIF_range_vars_subset
+    by (metis (mono_tags, lifting) multiset.set_map set_mset_mset vars_mset_def)
+qed
 
 lemma mgu_range_vars: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  assumes "Unification.mgu s t = Some \<mu>"
+  assumes "mgu s t = Some \<mu>"
   shows "range_vars \<mu> \<subseteq> vars_term s \<union> vars_term t"
 proof -
-  obtain xs where *: "unify [(s, t)] [] = Some xs" and [simp]: "subst_of xs = \<mu>"
+  obtain xs where "unify [(s, t)] [] = Some xs" and "\<mu> = subst_of xs"
     using assms by (simp split: option.splits)
-  from unify_Some_UNIF[OF *] obtain ss
-    where "compose ss = \<mu>" and "UNIF ss {#(s, t)#} {#}" by auto
-  with UNIF_range_vars_subset[of ss "{#(s, t)#}" "{#}"]
-  show ?thesis using vars_mset_singleton by force
+  thus ?thesis
+    using unify_range_vars by fastforce
 qed
 
 lemma mgu_sound:
