@@ -458,7 +458,7 @@ lemma mgu_subst_domain_range_vars_disjoint: \<^marker>\<open>contributor \<open>
   shows "subst_domain \<mu> \<inter> range_vars \<mu> = {}"
 proof -
   obtain xs where "unify [(s, t)] [] = Some xs" and "\<mu> = subst_of xs"
-    using assms by (simp add: mgu_def split: option.splits)
+    using assms by (simp split: option.splits)
   thus ?thesis
     using unify_subst_domain_range_vars_disjoint by metis
 qed
