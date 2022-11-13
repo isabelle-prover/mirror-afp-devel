@@ -461,6 +461,28 @@ lemma vars_term_subset_subst_eq:
   using assms by (induct t) (induct s, auto)
 
 
+subsection \<open>Restrict the Domain of a Substitution\<close>
+
+definition restrict_subst_domain where \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "restrict_subst_domain V \<sigma> x \<equiv> (if x \<in> V then \<sigma> x else Var x)"
+
+lemma restrict_subst_domain_empty[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "restrict_subst_domain {} \<sigma> = Var"
+  unfolding restrict_subst_domain_def by auto
+
+lemma restrict_subst_domain_Var[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "restrict_subst_domain V Var = Var"
+  unfolding restrict_subst_domain_def by auto
+
+lemma subst_domain_restrict_subst_domain[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "subst_domain (restrict_subst_domain V \<sigma>) = subst_domain \<sigma> \<inter> V"
+  unfolding restrict_subst_domain_def subst_domain_def by auto
+
+lemma subst_apply_term_restrict_subst_domain: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "vars_term t \<subseteq> V \<Longrightarrow> t \<cdot> restrict_subst_domain V \<sigma> = t \<cdot> \<sigma>"
+  by (rule term_subst_eq) (simp add: restrict_subst_domain_def subsetD)
+
+
 subsection \<open>Rename the Domain of a Substitution\<close>
 
 definition rename_subst_domain where \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
