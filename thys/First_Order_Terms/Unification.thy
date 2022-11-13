@@ -501,7 +501,7 @@ proof -
   qed
 qed
 
-lemma is_Var_mgu_if_not_in_equations: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+lemma mgu_is_Var_if_not_in_equations: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations" and x :: 'v
   assumes
     mgu_\<mu>: "is_mgu \<mu> E" and
@@ -534,11 +534,11 @@ proof -
     by (metis subst_apply_eq_Var subst_compose term.disc(1))
 qed
 
-corollary ball_is_Var_mgu: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+corollary mgu_ball_is_Var: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   "is_mgu \<mu> E \<Longrightarrow> \<forall>x \<in> - (\<Union>e\<in>E. vars_term (fst e) \<union> vars_term (snd e)). is_Var (\<mu> x)"
-  by (rule ballI) (rule is_Var_mgu_if_not_in_equations[folded Compl_iff])
+  by (rule ballI) (rule mgu_is_Var_if_not_in_equations[folded Compl_iff])
 
-lemma inj_on_mgu: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+lemma mgu_inj_on: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations"
   assumes mgu_\<mu>: "is_mgu \<mu> E"
   shows "inj_on \<mu> (- (\<Union>e \<in> E. vars_term (fst e) \<union> vars_term (snd e)))"
