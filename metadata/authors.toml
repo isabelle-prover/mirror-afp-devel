@@ -2572,6 +2572,23 @@ name = "Martin Hofmann"
 [hofmann.homepages]
 hofmann_homepage = "http://www.tcs.informatik.uni-muenchen.de/~mhofmann"
 
+[hofmeier]
+name = "Paul Hofmeier"
+
+[hofmeier.emails]
+
+[hofmeier.emails.hofmeier_email]
+user = [
+  "paul",
+  "hofmeier",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[hofmeier.homepages]
+
 [holub]
 name = "Štěpán Holub"
 

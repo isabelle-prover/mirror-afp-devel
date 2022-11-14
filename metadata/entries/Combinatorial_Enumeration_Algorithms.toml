@@ -1,0 +1,30 @@
+title = "Combinatorial Enumeration Algorithms"
+date = 2022-11-11
+topics = [
+  "Mathematics/Combinatorics",
+  "Computer science/Algorithms",
+]
+abstract = "Combinatorial objects have configurations which can be enumerated by algorithms, but especially for imperative programs, it is difficult to find out if they produce the correct output and don’t generate duplicates. Therefore, for some of the most common combinatorial objects, namely n_Sequences, n_Permutations, n_Subsets, Powerset, Integer_Compositions, Integer_Partitions, Weak_Integer_Compositions, Derangements and Trees, this entry formalizes efficient functional programs and verifies their correctness. In addition, it provides cardinality proofs for those combinatorial objects. Some cardinalities are verified using the enumeration functions and others are shown using existing libraries including other AFP entries."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hofmeier]
+email = "hofmeier_email"
+
+[authors.karayel]
+email = "karayel_email"
+
+[contributors]
+
+[notify]
+hofmeier = "hofmeier_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
