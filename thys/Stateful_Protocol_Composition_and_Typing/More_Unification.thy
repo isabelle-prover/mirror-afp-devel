@@ -2325,51 +2325,15 @@ proof -
   thus "is_imgu \<theta> {(s,t)}" by (metis is_imgu_def \<open>\<theta> \<in> unifiers {(s,t)}\<close>)
 qed
 
-lemma mgu_subst_range_vars:
-  assumes "mgu s t = Some \<sigma>" shows "range_vars \<sigma> \<subseteq> vars_term s \<union> vars_term t"
-proof -
-  obtain xs where *: "Unification.unify [(s, t)] [] = Some xs" and [simp]: "subst_of xs = \<sigma>"
-    using assms by (simp split: option.splits)
-  from unify_Some_UNIF [OF *] obtain ss
-    where "compose ss = \<sigma>" and "UNIF ss {#(s, t)#} {#}" by auto
-  with UNIF_range_vars_subset [of ss "{#(s, t)#}" "{#}"]
-    show ?thesis by (metis vars_mset_singleton fst_conv snd_conv) 
-qed
+lemmas mgu_subst_range_vars = mgu_range_vars
 
-lemma mgu_subst_domain_range_vars_disjoint:
-  assumes "mgu s t = Some \<sigma>" shows "subst_domain \<sigma> \<inter> range_vars \<sigma> = {}"
-proof -
-  have "is_imgu \<sigma> {(s, t)}" using assms mgu_sound by simp
-  hence "\<sigma> = \<sigma> \<circ>\<^sub>s \<sigma>" unfolding is_imgu_def by blast
-  thus ?thesis by (metis subst_idemp_iff) 
-qed
-
-lemma mgu_same_empty: "mgu (t::('a,'b) term) t = Some Var"
-proof -
-  { fix E::"('a,'b) equation list" and U::"('b \<times> ('a,'b) term) list"
-    assume "\<forall>(s,t) \<in> set E. s = t"
-    hence "Unification.unify E U = Some U"
-    proof (induction E U rule: Unification.unify.induct)
-      case (2 f S g T E U)
-      hence *: "f = g" "S = T" by auto
-      moreover have "\<forall>(s,t) \<in> set (zip T T). s = t" by (induct T) auto
-      hence "\<forall>(s,t) \<in> set (zip T T@E). s = t" using "2.prems"(1) by auto
-      moreover have "zip_option S T = Some (zip S T)" using \<open>S = T\<close> by auto
-      hence **: "decompose (Fun f S) (Fun g T) = Some (zip S T)"
-        using \<open>f = g\<close> unfolding decompose_def by auto
-      ultimately have "Unification.unify (zip S T@E) U = Some U" using "2.IH" * by auto
-      thus ?case using ** by auto
-    qed auto
-  }
-  hence "Unification.unify [(t,t)] [] = Some []" by auto
-  thus ?thesis by auto
-qed
+lemmas mgu_same_empty = mgu_same
 
 lemma mgu_var: assumes "x \<notin> fv t" shows "mgu (Var x) t = Some (Var(x := t))"
 proof -
   have "unify [(Var x,t)] [] = Some [(x,t)]" using assms by (auto simp add: subst_list_def)
   moreover have "subst_of [(x,t)] = Var(x := t)" unfolding subst_of_def subst_def by simp
-  ultimately show ?thesis by simp
+  ultimately show ?thesis by (simp add: mgu_def)
 qed
 
 lemma mgu_gives_wellformed_subst:
@@ -2688,7 +2652,7 @@ proof -
       by metis
   qed
   moreover obtain D where "unify [(s, t)] [] = Some D" "\<delta> = subst_of D"
-    using assms(1) by (auto split: option.splits)
+    using assms(1) by (auto simp: mgu_def split: option.splits)
   moreover have "Q [(s,t)] (subst_of [])"
     unfolding Q_def M_def R_def subtt_def subti_def
     by force

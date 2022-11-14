@@ -300,7 +300,7 @@ lemma mgu_wf_trm:
   shows "wf\<^sub>t\<^sub>r\<^sub>m (\<sigma> v)"
 proof -
   from assms obtain \<sigma>' where "subst_of \<sigma>' = \<sigma>" "\<forall>(v,t) \<in> set \<sigma>'. wf\<^sub>t\<^sub>r\<^sub>m t"
-    using unify_list_wf_trm[of "[(s,t)]" "[]"] by (auto split: option.splits)
+    using unify_list_wf_trm[of "[(s,t)]" "[]"] by (auto simp: mgu_def split: option.splits)
   thus ?thesis
   proof (induction \<sigma>' arbitrary: \<sigma> v rule: List.rev_induct)
     case (snoc x \<sigma>' \<sigma> v)

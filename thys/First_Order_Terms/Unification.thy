@@ -147,7 +147,7 @@ definition subst_of :: "('v \<times> ('f, 'v) term) list \<Rightarrow> ('f, 'v) 
     "subst_of ss = List.foldr (\<lambda>(x, t) \<sigma>. \<sigma> \<circ>\<^sub>s subst x t) ss Var"
 
 text \<open>Computing the mgu of two terms.\<close>
-fun mgu :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) subst option" where
+definition mgu :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) subst option" where
   "mgu s t =
     (case unify [(s, t)] [] of
       None \<Rightarrow> None
@@ -379,7 +379,7 @@ lemma mgu_complete:
   "mgu s t = None \<Longrightarrow> unifiers {(s, t)} = {}"
 proof -
   assume "mgu s t = None"
-  then have "unify [(s, t)] [] = None" by (cases "unify [(s, t)] []", auto)
+  then have "unify [(s, t)] [] = None" by (cases "unify [(s, t)] []", auto simp: mgu_def)
   then have "unifiers (set [(s, t)]) = {}" by (rule unify_complete)
   then show ?thesis by simp
 qed
@@ -411,7 +411,7 @@ lemma mgu_subst_domain:
   shows "subst_domain \<sigma> \<subseteq> vars_term s \<union> vars_term t"
 proof -
   obtain xs where "unify [(s, t)] [] = Some xs" and "\<sigma> = subst_of xs"
-    using assms by (simp split: option.splits)
+    using assms by (simp add: mgu_def split: option.splits)
   thus ?thesis
     using unify_subst_domain by fastforce
 qed
@@ -437,7 +437,7 @@ lemma mgu_range_vars: \<^marker>\<open>contributor \<open>Martin Desharnais\<clo
   shows "range_vars \<mu> \<subseteq> vars_term s \<union> vars_term t"
 proof -
   obtain xs where "unify [(s, t)] [] = Some xs" and "\<mu> = subst_of xs"
-    using assms by (simp split: option.splits)
+    using assms by (simp add: mgu_def split: option.splits)
   thus ?thesis
     using unify_range_vars by fastforce
 qed
@@ -458,7 +458,7 @@ lemma mgu_subst_domain_range_vars_disjoint: \<^marker>\<open>contributor \<open>
   shows "subst_domain \<mu> \<inter> range_vars \<mu> = {}"
 proof -
   obtain xs where "unify [(s, t)] [] = Some xs" and "\<mu> = subst_of xs"
-    using assms by (simp split: option.splits)
+    using assms by (simp add: mgu_def split: option.splits)
   thus ?thesis
     using unify_subst_domain_range_vars_disjoint by metis
 qed
@@ -469,7 +469,7 @@ lemma mgu_sound:
 proof -
   obtain ss where "unify [(s, t)] [] = Some ss"
     and "\<sigma> = subst_of ss"
-    using assms by (auto split: option.splits)
+    using assms by (auto simp: mgu_def split: option.splits)
   then have "is_imgu \<sigma> (set [(s, t)])" by (metis unify_sound)
   then show ?thesis by simp
 qed
@@ -481,7 +481,7 @@ corollary subst_apply_term_eq_subst_apply_term_if_mgu: \<^marker>\<open>contribu
   by (simp add: is_imgu_def unifiers_def)
 
 lemma mgu_same: "mgu t t = Some Var" \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  by (simp add: unify_same)
+  by (simp add: mgu_def unify_same)
 
 lemma ex_mgu_if_subst_apply_term_eq_subst_apply_term: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   fixes t u :: "('f, 'v) Term.term" and \<sigma> :: "('f, 'v) subst"
@@ -497,7 +497,7 @@ proof -
   show ?thesis
   proof (rule exI)
     show "Unification.mgu t u = Some (subst_of xs)"
-      using unify by simp
+      using unify by (simp add: mgu_def)
   qed
 qed
 

@@ -982,7 +982,7 @@ proof -
   let ?fv_disj = "\<lambda>v t S. \<not>(\<exists>(v',t') \<in> S - {(v,t)}. (insert v (fv t)) \<inter> (insert v' (fv t')) \<noteq> {})"
 
   from assms(1) obtain \<sigma>' where "Unification.unify [(s,t)] [] = Some \<sigma>'" "subst_of \<sigma>' = \<sigma>"
-    by (auto split: option.splits)
+    by (auto simp: mgu_def split: option.splits)
   hence "\<forall>(v,t) \<in> set \<sigma>'. \<Gamma> (Var v) = \<Gamma> t" "distinct (map fst \<sigma>')"
     using assms(2,3,4) unify_list_wt_if_same_type unify_list_distinct[of "[(s,t)]"] by auto
   thus "wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t \<sigma>" using \<open>subst_of \<sigma>' = \<sigma>\<close> unfolding wt\<^sub>s\<^sub>u\<^sub>b\<^sub>s\<^sub>t_def
