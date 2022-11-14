@@ -233,6 +233,17 @@ proof -
          (metis subst_compose_assoc)
 qed
 
+lemma mgu_sound:
+  assumes "mgu s t = Some \<sigma>"
+  shows "is_imgu \<sigma> {(s, t)}"
+proof -
+  obtain ss where "unify [(s, t)] [] = Some ss"
+    and "\<sigma> = subst_of ss"
+    using assms by (auto simp: mgu_def split: option.splits)
+  then have "is_imgu \<sigma> (set [(s, t)])" by (metis unify_sound)
+  then show ?thesis by simp
+qed
+
 text \<open>If \<open>unify\<close> gives up, then the given set of equations
   cannot be reduced to the empty set by \<open>UNIF\<close>.\<close>
 lemma unify_None:
@@ -461,17 +472,6 @@ proof -
     using assms by (simp add: mgu_def split: option.splits)
   thus ?thesis
     using unify_subst_domain_range_vars_disjoint by metis
-qed
-
-lemma mgu_sound:
-  assumes "mgu s t = Some \<sigma>"
-  shows "is_imgu \<sigma> {(s, t)}"
-proof -
-  obtain ss where "unify [(s, t)] [] = Some ss"
-    and "\<sigma> = subst_of ss"
-    using assms by (auto simp: mgu_def split: option.splits)
-  then have "is_imgu \<sigma> (set [(s, t)])" by (metis unify_sound)
-  then show ?thesis by simp
 qed
 
 corollary subst_apply_term_eq_subst_apply_term_if_mgu: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
