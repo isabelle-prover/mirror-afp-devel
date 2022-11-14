@@ -784,6 +784,23 @@ lemma is_ground_cls_list_is_ground_cls_sum_list[simp]:
   by (meson in_mset_sum_list2 is_ground_cls_def is_ground_cls_list_def)
 
 
+paragraph \<open>Grounding simplifications\<close>
+
+lemma grounding_of_clss_empty[simp]: "grounding_of_clss {} = {}"
+  by (simp add: grounding_of_clss_def)
+
+lemma grounding_of_clss_singleton[simp]: "grounding_of_clss {C} = grounding_of_cls C"
+  by (simp add: grounding_of_clss_def)
+
+lemma grounding_of_clss_insert:
+  "grounding_of_clss (insert C N) = grounding_of_cls C \<union> grounding_of_clss N"
+  by (simp add: grounding_of_clss_def)
+
+lemma grounding_of_clss_union:
+  "grounding_of_clss (A \<union> B) = grounding_of_clss A \<union> grounding_of_clss B"
+  by (simp add: grounding_of_clss_def)
+
+
 paragraph \<open>Grounding monotonicity\<close>
 
 lemma is_ground_cls_mono: "C \<subseteq># D \<Longrightarrow> is_ground_cls D \<Longrightarrow> is_ground_cls C"
@@ -897,6 +914,9 @@ lemma is_ground_cls_is_ground_atms_atms_of[simp]: "is_ground_cls C \<Longrightar
 lemma grounding_ground: "C \<in> grounding_of_clss M \<Longrightarrow> is_ground_cls C"
   unfolding grounding_of_clss_def grounding_of_cls_def by auto
 
+lemma is_ground_cls_if_in_grounding_of_cls: "C' \<in> grounding_of_cls C \<Longrightarrow> is_ground_cls C'"
+  using grounding_ground grounding_of_clss_singleton by blast
+
 lemma in_subset_eq_grounding_of_clss_is_ground_cls[simp]:
   "C \<in> CC \<Longrightarrow> CC \<subseteq> grounding_of_clss DD \<Longrightarrow> is_ground_cls C"
   unfolding grounding_of_clss_def grounding_of_cls_def by auto
@@ -912,6 +932,9 @@ lemma grounding_of_cls_empty[simp]: "grounding_of_cls {#} = {{#}}"
 
 lemma union_grounding_of_cls_ground: "is_ground_clss (\<Union> (grounding_of_cls ` N))"
   by (simp add: grounding_ground grounding_of_clss_def is_ground_clss_def)
+
+lemma is_ground_clss_grounding_of_clss[simp]: "is_ground_clss (grounding_of_clss N)"
+  using grounding_of_clss_def union_grounding_of_cls_ground by metis
 
 
 paragraph \<open>Grounding idempotence\<close>
