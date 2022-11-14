@@ -261,7 +261,7 @@ object AFP_Submit {
 
       def list(): Submission_List =
         Submission_List(
-          File.read_dir(up).flatMap(ID.unapply).flatMap { date =>
+          File.read_dir(up).flatMap(ID.unapply).reverse.flatMap { date =>
             val id = ID(date)
             val day = date.rep.toLocalDate
             read_status(id).map(Overview(id, day, AFP_Structure(up(id)).entries_unchecked.head, _))
