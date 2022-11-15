@@ -181,8 +181,9 @@ inductive PRIMREC :: "(nat list \<Rightarrow> nat) \<Rightarrow> bool" where
   SC: "PRIMREC SC"
 | CONSTANT: "PRIMREC (CONSTANT k)"
 | PROJ: "PRIMREC (PROJ i)"
-| COMP: "PRIMREC g \<Longrightarrow> \<forall>f \<in> set fs. PRIMREC f \<Longrightarrow> PRIMREC (COMP g fs)"
+| COMP: "PRIMREC g \<Longrightarrow> listsp PRIMREC fs \<Longrightarrow> PRIMREC (COMP g fs)"
 | PREC: "PRIMREC f \<Longrightarrow> PRIMREC g \<Longrightarrow> PRIMREC (PREC f g)"
+  monos listsp_mono
 
 
 subsection \<open>Main Result: Ackermann's Function is not Primitive Recursive\<close>
