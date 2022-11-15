@@ -11,12 +11,6 @@ import java.io.File as JFile
 
 
 object AFP_Check_Roots {
-  def print_good(string: String): Unit =
-    println(Console.BOLD + Console.GREEN + string + Console.RESET)
-
-  def print_bad(string: String): Unit =
-    println(Console.BOLD + Console.RED + string + Console.RESET)
-
   val exclude = List("etc")
 
   def dir_entries(path: Path): List[String] =
@@ -36,13 +30,14 @@ object AFP_Check_Roots {
     def apply(
       structure: Sessions.Structure,
       sessions: List[String],
-      check_dirs: List[Path]
+      check_dirs: List[Path],
+      progress: Progress
     ): Boolean =
       run(structure, sessions, check_dirs) match {
         case Nil => true
         case offenders =>
-          print_bad(failure_msg)
-          offenders.foreach(offender => println("  " + failure_format(offender)))
+          val msg = failure_msg + offenders.map("\n" + failure_format(_)).mkString
+          progress.echo_error_message(msg)
           false
       }
   }
@@ -132,19 +127,21 @@ object AFP_Check_Roots {
 
   /* check */
 
-  def afp_check_roots(checks: List[Check[_]], dirs: List[Path], check_dirs: List[Path]): Unit = {
+  def afp_check_roots(
+    checks: List[Check[_]],
+    dirs: List[Path],
+    check_dirs: List[Path],
+    progress: Progress = new Progress()
+  ): Unit = {
     val structure = Sessions.load_structure(Options.init(), dirs = dirs, select_dirs = check_dirs)
     val sessions = structure.build_selection(Sessions.Selection.empty).sorted
 
-    val bad = checks.exists(check => !check(structure, sessions, check_dirs))
+    val bad = checks.exists(check => !check(structure, sessions, check_dirs, progress))
 
-    if (bad) {
-      print_bad("Errors found.")
-      System.exit(1)
-    }
+    if (bad) System.exit(1)
     else {
-      print_good(sessions.length.toString + " sessions have been checked")
-      print_good(checks.length.toString + " checks have found no errors")
+      progress.echo(sessions.length.toString + " sessions have been checked")
+      progress.echo(checks.length.toString + " checks have found no errors")
     }
   }
 
@@ -174,12 +171,14 @@ Usage: isabelle afp_check_roots [OPTIONS]
 
       getopts(args)
 
+      val progress = new Console_Progress()
+
       if (check_dirs.isEmpty) {
         check_dirs ::= AFP_Structure().thys_dir
       } else {
         dirs ::= AFP_Structure().thys_dir
       }
 
-      afp_check_roots(checks, dirs, check_dirs)
+      afp_check_roots(checks, dirs, check_dirs, progress)
     })
 }
