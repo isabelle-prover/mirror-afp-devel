@@ -1,6 +1,6 @@
 /* Author: Lars Hupel and Fabian Huch, TU Muenchen
 
-
+Tools to check AFP session roots.
  */
 package afp
 
@@ -17,10 +17,18 @@ object AFP_Check_Roots {
   def print_bad(string: String): Unit =
     println(Console.BOLD + Console.RED + string + Console.RESET)
 
+  val exclude = List("etc")
+
+  def dir_entries(path: Path): List[String] =
+    File.read_dir(path).filter(name => (path + Path.basic(name)).is_dir).filterNot(exclude.contains)
+
+
+  /* checks */
+
   case class Check[T](
     name: String,
     failure_msg: String,
-    run: (Sessions.Structure, List[String], AFP_Structure) => List[T],
+    run: (Sessions.Structure, List[String], List[Path]) => List[T],
     failure_format: T => String = (t: T) => t.toString
   ) {
     override def toString: String = name
@@ -28,9 +36,9 @@ object AFP_Check_Roots {
     def apply(
       structure: Sessions.Structure,
       sessions: List[String],
-      afp_structure: AFP_Structure
+      check_dirs: List[Path]
     ): Boolean =
-      run(structure, sessions, afp_structure) match {
+      run(structure, sessions, check_dirs) match {
         case Nil => true
         case offenders =>
           print_bad(failure_msg)
@@ -67,8 +75,8 @@ object AFP_Check_Roots {
         t => t._1 + "{" + t._2.mkString(", ") + "}"),
       Check[String]("check_presence",
         "The following entries do not contain a corresponding session on top level:",
-        (structure, sessions, afp_structure) => {
-          val entries = afp_structure.entries_unchecked
+        (structure, sessions, check_dirs) => {
+          val entries = check_dirs.flatMap(dir_entries)
 
           entries.flatMap { entry_name =>
             if (!sessions.contains(entry_name) ||
@@ -77,24 +85,36 @@ object AFP_Check_Roots {
             else None
           }
         }),
+      Check[String]("check_roots",
+        "The following entries do not match with the ROOTS file:",
+        (_, _, check_dirs) => {
+          check_dirs.flatMap { dir =>
+            val root_entries = Sessions.parse_roots(dir + Path.basic("ROOTS")).toSet
+            val file_entries = dir_entries(dir).toSet
+            (root_entries.union(file_entries) -- root_entries.intersect(file_entries)).toList
+          }
+        }
+      ),
       Check[(String, List[Path])]("check_unused_thys",
         "The following sessions contain unused theories:",
-        (structure, sessions, afp_structure) => {
+        (structure, sessions, check_dirs) => {
           val selection = Sessions.Selection(sessions = sessions)
           val deps = structure.selection_deps(selection = selection)
 
-          def rel_path(path: Path): Path =
-            File.relative_path(afp_structure.thys_dir.absolute, path.absolute).get
-
           def is_thy_file(file: JFile): Boolean = file.isFile && file.getName.endsWith(".thy")
 
-          afp_structure.entries.flatMap { entry =>
-            val sessions = afp_structure.entry_sessions(entry).map(_.name)
+          val entry_dirs = check_dirs.flatMap(dir => dir_entries(dir).map(dir + Path.basic(_)))
+          entry_dirs.flatMap { dir =>
+            val entry = dir.base.implode
+            def rel_path(path: Path): Path = File.relative_path(dir.absolute, path.absolute).get
+
+            val sessions = Sessions.parse_root(dir + Path.basic("ROOT")).collect {
+              case e: Sessions.Session_Entry => e.name
+            }
             val theory_nodes = sessions.flatMap(deps.base_info(_).base.proper_session_theories)
             val thy_files = theory_nodes.map(node => rel_path(node.path))
 
-            val entry_dir = afp_structure.entry_thy_dir(entry)
-            val physical_files = File.find_files(entry_dir.file, is_thy_file, include_dirs = true)
+            val physical_files = File.find_files(dir.file, is_thy_file, include_dirs = true)
             val rel_files = physical_files.map(file => rel_path(Path.explode(file.getAbsolutePath)))
 
             val unused = rel_files.toSet -- thy_files.toSet
@@ -109,11 +129,14 @@ object AFP_Check_Roots {
     known_checks.find(check => check.name == name) getOrElse
       error("Unkown check " + quote(name))
 
-  def afp_check_roots(checks: List[Check[_]], afp_structure: AFP_Structure): Unit = {
-    val structure = afp_structure.sessions_structure
+
+  /* check */
+
+  def afp_check_roots(checks: List[Check[_]], dirs: List[Path], check_dirs: List[Path]): Unit = {
+    val structure = Sessions.load_structure(Options.init(), dirs = dirs, select_dirs = check_dirs)
     val sessions = structure.build_selection(Sessions.Selection.empty).sorted
 
-    val bad = checks.exists(check => !check(structure, sessions, afp_structure))
+    val bad = checks.exists(check => !check(structure, sessions, check_dirs))
 
     if (bad) {
       print_bad("Errors found.")
@@ -125,25 +148,38 @@ object AFP_Check_Roots {
     }
   }
 
+
+  /* isabelle tool wrapper */
+
   val isabelle_tool = Isabelle_Tool("afp_check_roots", "check ROOT files of AFP sessions",
     Scala_Project.here,
     { args =>
+      var dirs: List[Path] = Nil
       var checks: List[Check[_]] = known_checks
+      var check_dirs: List[Path] = Nil
 
       val getopts = Getopts("""
 Usage: isabelle afp_check_roots [OPTIONS]
 
   Options are:
+    -d DIR      add entry dir
     -C NAMES    checks (default: """ + known_checks.mkString("\"", ",", "\"") + """)
+    -D DIR      add and check entry dir
 
   Check ROOT files of AFP sessions.
 """,
-      "C:" -> (arg => checks = Library.distinct(space_explode(',', arg)).map(the_check)))
+      "d:" -> (arg => dirs ::= Path.explode(arg)),
+      "C:" -> (arg => checks = Library.distinct(space_explode(',', arg)).map(the_check)),
+      "D:" -> (arg => check_dirs ::= Path.explode(arg)))
 
       getopts(args)
 
-      val afp_structure = AFP_Structure()
+      if (check_dirs.isEmpty) {
+        check_dirs ::= AFP_Structure().thys_dir
+      } else {
+        dirs ::= AFP_Structure().thys_dir
+      }
 
-      afp_check_roots(checks, afp_structure)
+      afp_check_roots(checks, dirs, check_dirs)
     })
 }

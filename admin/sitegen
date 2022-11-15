@@ -25,7 +25,7 @@ echo "Checking metadata..."
 "$ISABELLE_TOOL" afp_check_metadata || exit 2
 
 echo "Checking ROOTs ..."
-"$ISABELLE_TOOL" afp_check_roots -C check_chapter,check_groups,check_presence,check_timeout || exit 2
+"$ISABELLE_TOOL" afp_check_roots -C check_chapter,check_groups,check_presence,check_roots,check_timeout || exit 2
 
 echo "Building Isabelle components ..."
 
