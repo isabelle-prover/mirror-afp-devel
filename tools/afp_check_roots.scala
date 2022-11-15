@@ -49,7 +49,7 @@ object AFP_Check_Roots {
 
   val known_checks: List[Check[_]] =
     List(
-      Check[String]("check_timeout",
+      Check[String]("timeout",
         "The following entries contain sessions without timeouts or with timeouts not divisible by 300:",
         (structure, sessions, _) =>
           sessions.flatMap { session_name =>
@@ -57,13 +57,13 @@ object AFP_Check_Roots {
             val timeout = info.options.real("timeout")
             if (timeout == 0 || timeout % 300 != 0) Some(session_name) else None
           }),
-      Check[String]("check_chapter", "The following entries are not in the AFP chapter:",
+      Check[String]("chapter", "The following entries are not in the AFP chapter:",
         (structure, sessions, _) =>
           sessions.flatMap { session_name =>
             val info = structure(session_name)
             if (info.chapter != "AFP") Some(session_name) else None
           }),
-      Check[(String, List[String])]("check_groups", "The following sessions have wrong groups:",
+      Check[(String, List[String])]("groups", "The following sessions have wrong groups:",
         (structure, sessions, _) =>
           sessions.flatMap { session_name =>
             val info = structure(session_name)
@@ -73,7 +73,7 @@ object AFP_Check_Roots {
             else None
           },
         t => t._1 + "{" + t._2.mkString(", ") + "}"),
-      Check[String]("check_presence",
+      Check[String]("presence",
         "The following entries do not contain a corresponding session on top level:",
         (structure, sessions, check_dirs) => {
           val entries = check_dirs.flatMap(dir_entries)
@@ -85,7 +85,7 @@ object AFP_Check_Roots {
             else None
           }
         }),
-      Check[String]("check_roots",
+      Check[String]("roots",
         "The following entries do not match with the ROOTS file:",
         (_, _, check_dirs) => {
           check_dirs.flatMap { dir =>
@@ -95,7 +95,7 @@ object AFP_Check_Roots {
           }
         }
       ),
-      Check[(String, List[Path])]("check_unused_thys",
+      Check[(String, List[Path])]("unused_thys",
         "The following sessions contain unused theories:",
         (structure, sessions, check_dirs) => {
           val selection = Sessions.Selection(sessions = sessions)
