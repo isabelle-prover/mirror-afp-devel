@@ -187,6 +187,24 @@ name = "Ralph-Johan Back"
 [back.homepages]
 back_homepage = "http://users.abo.fi/Ralph-Johan.Back/"
 
+[baksys]
+name = "Mantas Bakšys"
+
+[baksys.emails]
+
+[baksys.emails.baksys_email]
+user = [
+  "mb2412",
+]
+host = [
+  "cam",
+  "ac",
+  "uk",
+]
+
+[baksys.homepages]
+baksys_homepage = "https://github.com/MantasBaksys"
+
 [balbach]
 name = "Frank J. Balbach"
 

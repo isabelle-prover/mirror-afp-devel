@@ -6,7 +6,16 @@
     <description>Recent content in argyraki on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Fri, 02 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/argyraki/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 11 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/argyraki/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Balog–Szemerédi–Gowers Theorem</title>
+      <link>/entries/Balog_Szemeredi_Gowers.html</link>
+      <pubDate>Fri, 11 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Balog_Szemeredi_Gowers.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Khovanskii&amp;#x27;s Theorem</title>
       <link>/entries/Khovanskii_Theorem.html</link>

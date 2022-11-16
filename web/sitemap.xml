@@ -5,7 +5,13 @@
     <loc>/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/argyraki/</loc>
+    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/</loc>
+    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/baksys/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/card_number_partitions/</loc>
@@ -15,6 +21,9 @@
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/</loc>
+    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/edmonds/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
@@ -27,6 +36,18 @@
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/karayel/</loc>
+    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/pluennecke_ruzsa_inequality/</loc>
+    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/random_graph_subgraph_threshold/</loc>
+    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Balog_Szemeredi_Gowers.html</loc>
+    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/undirected_graph_theory/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/graph_theory/</loc>
@@ -45,9 +66,6 @@
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/design_theory/</loc>
-    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/edmonds/</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/girth_chromatic/</loc>
@@ -131,9 +149,6 @@
     <loc>/entries/Separation_Logic_Unbounded.html</loc>
     <lastmod>2022-09-05T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/argyraki/</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/bernoulli/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
@@ -147,9 +162,6 @@
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/paulson/</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/pluennecke_ruzsa_inequality/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/sulejmani/</loc>
@@ -519,9 +531,6 @@
     <lastmod>2021-12-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/ergodic_theory/</loc>
-    <lastmod>2021-12-28T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/random_graph_subgraph_threshold/</loc>
     <lastmod>2021-12-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Roth_Arithmetic_Progressions.html</loc>
@@ -4377,6 +4386,8 @@
     <loc>/theories/awn/</loc>
   </url><url>
     <loc>/theories/axiomaticcategorytheory/</loc>
+  </url><url>
+    <loc>/theories/balog_szemeredi_gowers/</loc>
   </url><url>
     <loc>/theories/banach_steinhaus/</loc>
   </url><url>
