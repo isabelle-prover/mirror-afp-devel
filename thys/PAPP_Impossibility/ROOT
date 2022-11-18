@@ -1,9 +1,8 @@
 chapter AFP
 
-session PAPP_Impossibility (AFP) = "HOL" +
+session PAPP_Impossibility (AFP) = "HOL-Library" +
   options [timeout = 900]
   sessions
-    "HOL-Library"
     Randomised_Social_Choice
   theories [document=false]
     SAT_Replay
