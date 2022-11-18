@@ -2,6 +2,7 @@
     Author:      Dmitriy Traytel <traytel at inf.ethz.ch>, 2014
     Author:      Jasmin Blanchette <j.c.blanchette at vu.nl>, 2014, 2017
     Author:      Anders Schlichtkrull <andschl at dtu.dk>, 2016, 2017
+    Author:      Martin Desharnais <desharnais at mpi-inf.mpg.de>, 2022
     Maintainer:  Anders Schlichtkrull <andschl at dtu.dk>
 *)
 
@@ -896,6 +897,24 @@ lemma is_ground_subst_lit_iff: "is_ground_lit L \<longleftrightarrow> (\<forall>
 lemma is_ground_subst_cls_iff: "is_ground_cls C \<longleftrightarrow> (\<forall>\<sigma>. C = C \<cdot> \<sigma>)"
   by (metis ex_ground_subst ground_subst_ground_cls is_ground_subst_cls)
 
+paragraph \<open>Grounding of substitutions\<close>
+
+lemma grounding_of_subst_cls_subset: "grounding_of_cls (C \<cdot> \<mu>) \<subseteq> grounding_of_cls C"
+proof (rule subsetI)
+  fix D
+  assume "D \<in> grounding_of_cls (C \<cdot> \<mu>)"
+  then obtain \<gamma> where D_def: "D = C \<cdot> \<mu> \<cdot> \<gamma>" and gr_\<gamma>: "is_ground_subst \<gamma>"
+    unfolding grounding_of_cls_def mem_Collect_eq by auto
+
+  show "D \<in> grounding_of_cls C"
+    unfolding grounding_of_cls_def mem_Collect_eq D_def
+    using is_ground_comp_subst[OF gr_\<gamma>, of \<mu>]
+    by force
+qed
+
+lemma grounding_of_subst_clss_subset: "grounding_of_clss (CC \<cdot>cs \<mu>) \<subseteq> grounding_of_clss CC"
+  using grounding_of_subst_cls_subset
+  by (auto simp: grounding_of_clss_def subst_clss_def)
 
 paragraph \<open>Members of ground expressions are ground\<close>
 
@@ -923,6 +942,10 @@ lemma in_subset_eq_grounding_of_clss_is_ground_cls[simp]:
 
 lemma is_ground_cls_empty[simp]: "is_ground_cls {#}"
   unfolding is_ground_cls_def by simp
+
+lemma is_ground_cls_add_mset[simp]:
+  "is_ground_cls (add_mset L C) \<longleftrightarrow> is_ground_lit L \<and> is_ground_cls C"
+  by (auto simp: is_ground_cls_def)
 
 lemma grounding_of_cls_ground: "is_ground_cls C \<Longrightarrow> grounding_of_cls C = {C}"
   unfolding grounding_of_cls_def by (simp add: ex_ground_subst)
