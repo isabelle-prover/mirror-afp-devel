@@ -1,0 +1,15 @@
+chapter AFP
+
+session PAPP_Impossibility (AFP) = "HOL" +
+  options [timeout = 900]
+  sessions
+    "HOL-Library"
+    Randomised_Social_Choice
+  theories [document=false]
+    SAT_Replay
+  theories
+    PAPP_Impossibility
+  document_files
+    root.tex
+    root.bib
+

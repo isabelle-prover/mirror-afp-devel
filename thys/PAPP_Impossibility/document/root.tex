@@ -1,0 +1,63 @@
+\documentclass[11pt,a4paper]{scrartcl}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts,amsmath,amssymb}
+\usepackage{pgfplots}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections}
+\author{Th\'eo Delemazure\\
+Tom Demeulemeester\\
+Manuel Eberl\\
+Jonas Israel\\
+Patrick Lederer}
+\maketitle
+
+\begin{abstract}
+In party-approval multi-winner elections, the goal is to allocate the seats of a fixed-size
+committee to parties based on approval ballots of the voters over the parties. In particular, each
+voter can approve multiple parties and each party can be assigned multiple seats.
+
+Three central requirements in this settings are:
+\begin{description}
+\item[Anonymity:] The result is invariant under renaming the voters.
+\item[Representation:] Every sufficiently large group of voters with similar
+preferences is represented by some committee members.
+\item[Strategy-proofness:] No voter can benefit by misreporting her true preferences.
+\end{description}
+We show that these three basic axioms are incompatible for party-approval multi-winner voting rules,
+thus proving a far-reaching impossibility theorem.
+
+The proof of this result is obtained by
+formulating the problem in propositional logic and then letting a SAT solver show that the
+formula is unsatisfiable. The DRUP proof output by the SAT solver is then converted into
+Lammich's GRAT format and imported into Isabelle/HOL with some custom-written ML code.
+
+This transformation is proof-producing, so the final Isabelle/HOL theorem does not rely on any oracles
+or other trusted external trusted components.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
