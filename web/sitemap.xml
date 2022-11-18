@@ -50,6 +50,27 @@
     <loc>/dependencies/undirected_graph_theory/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/delemazure/</loc>
+    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/demeulemeester/</loc>
+    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/eberl/</loc>
+    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/israel/</loc>
+    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/lederer/</loc>
+    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/randomised_social_choice/</loc>
+    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/PAPP_Impossibility.html</loc>
+    <lastmod>2022-11-10T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/graph_theory/</loc>
     <lastmod>2022-10-04T00:00:00+00:00</lastmod>
   </url><url>
@@ -150,9 +171,6 @@
     <lastmod>2022-09-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/bernoulli/</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/eberl/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/jacobson_basic_algebra/</loc>
@@ -2193,9 +2211,6 @@
     <lastmod>2018-04-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/brandt/</loc>
-    <lastmod>2018-03-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/randomised_social_choice/</loc>
     <lastmod>2018-03-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/saile/</loc>
@@ -5410,6 +5425,8 @@
     <loc>/theories/pairing_heap/</loc>
   </url><url>
     <loc>/theories/pal/</loc>
+  </url><url>
+    <loc>/theories/papp_impossibility/</loc>
   </url><url>
     <loc>/theories/paraconsistency/</loc>
   </url><url>

@@ -26,6 +26,15 @@
     </item>
     
     <item>
+      <title>The Incompatibility of Strategy-Proofness and Representation in Party-Approval Multi-Winner Elections</title>
+      <link>/entries/PAPP_Impossibility.html</link>
+      <pubDate>Thu, 10 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/PAPP_Impossibility.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Verification of Query Optimization Algorithms</title>
       <link>/entries/Query_Optimization.html</link>
       <pubDate>Tue, 04 Oct 2022 00:00:00 +0000</pubDate>
@@ -10805,6 +10814,15 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
     </item>
     
     <item>
+      <title>PAPP_Impossibility</title>
+      <link>/theories/papp_impossibility/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/papp_impossibility/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Paraconsistency</title>
       <link>/theories/paraconsistency/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -12277,7 +12295,7 @@ Referring to AFP Entries in Isabelle/JEdit Once you have downloaded the AFP, you
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/statistics/</guid>
-      <description>711 Entries   432 Authors   ~226,100 Lemmas   ~3,661,800 Lines of Code   Most used AFP entries:   Name Used by ? entries   1. List-Index 22   2. Collections 19   3. Show 16   4. Deriving 13   5. Coinductive 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
+      <description>712 Entries   436 Authors   ~226,200 Lemmas   ~3,664,200 Lines of Code   Most used AFP entries:   Name Used by ? entries   1. List-Index 22   2. Collections 19   3. Show 16   4. Deriving 13   5. Coinductive 12   6. Jordan_Normal_Form 12   7. Polynomial_Factorization 12   8. Regular-Sets 12   9.</description>
     </item>
     
     <item>

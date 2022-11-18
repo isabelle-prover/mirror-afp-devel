@@ -1279,6 +1279,22 @@ name = "Sára Decova"
 
 [decova.homepages]
 
+[delemazure]
+name = "Théo Delemazure"
+
+[delemazure.emails]
+
+[delemazure.homepages]
+delemazure_homepage = "https://theo.delemazure.fr/"
+
+[demeulemeester]
+name = "Tom Demeulemeester"
+
+[demeulemeester.emails]
+
+[demeulemeester.homepages]
+demeulemeester_homepage = "https://www.kuleuven.be/wieiswie/en/person/00131528"
+
 [derrick]
 name = "John Derrick"
 
@@ -2758,6 +2774,14 @@ host = [
 [immler.homepages]
 immler_homepage = "https://home.in.tum.de/~immler/"
 
+[israel]
+name = "Jonas Israel"
+
+[israel.emails]
+
+[israel.homepages]
+israel_homepage = "https://www.algo.tu-berlin.de/menue/people/jonas_israel/"
+
 [ito]
 name = "Yosuke Ito"
 
@@ -3461,6 +3485,14 @@ host = [
 ]
 
 [laursen.homepages]
+
+[lederer]
+name = "Patrick Lederer"
+
+[lederer.emails]
+
+[lederer.homepages]
+lederer_homepage = "https://www.cs.cit.tum.de/en/dss/members/patrick-lederer/"
 
 [lee]
 name = "Holden Lee"
