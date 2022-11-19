@@ -916,6 +916,18 @@ lemma grounding_of_subst_clss_subset: "grounding_of_clss (CC \<cdot>cs \<mu>) \<
   using grounding_of_subst_cls_subset
   by (auto simp: grounding_of_clss_def subst_clss_def)
 
+lemma grounding_of_subst_cls_renaming_ident[simp]:
+  assumes "is_renaming \<rho>"
+  shows "grounding_of_cls (C \<cdot> \<rho>) = grounding_of_cls C"
+  by (metis (no_types, lifting) assms subset_antisym subst_cls_comp_subst
+      subst_cls_eq_grounding_of_cls_subset_eq subst_cls_id_subst is_renaming_def)
+
+lemma grounding_of_subst_clss_renaming_ident[simp]:
+  assumes "is_renaming \<rho>"
+  shows "grounding_of_clss (CC \<cdot>cs \<rho>) = grounding_of_clss CC"
+  by (metis assms dual_order.eq_iff grounding_of_subst_clss_subset
+      is_renaming_inv_renaming_cancel_clss)
+
 paragraph \<open>Members of ground expressions are ground\<close>
 
 lemma is_ground_cls_as_atms: "is_ground_cls C \<longleftrightarrow> (\<forall>A \<in> atms_of C. is_ground_atm A)"
