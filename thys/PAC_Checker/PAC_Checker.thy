@@ -365,16 +365,16 @@ lemma set_insort_key_rel[simp]: \<open>set (insort_key_rel R x xs) = insert x (s
    auto
 
 lemma sorted_wrt_insort_key_rel:
-   \<open>total_on R (insert x (set xs)) \<Longrightarrow> transp R \<Longrightarrow> reflp R \<Longrightarrow>
+   \<open>totalp_on (insert x (set xs)) R \<Longrightarrow> transp R \<Longrightarrow> reflp R \<Longrightarrow>
     sorted_wrt R xs \<Longrightarrow> sorted_wrt R (insort_key_rel R x xs)\<close>
   by (induction xs)
-   (auto dest: transpD reflpD simp: Restricted_Predicates.total_on_def)
+   (auto dest: transpD reflpD simp: totalp_on_def)
 
 lemma sorted_wrt_insort_key_rel2:
-   \<open>total_on R (insert x (set xs)) \<Longrightarrow> transp R \<Longrightarrow> x \<notin> set xs \<Longrightarrow>
+   \<open>totalp_on (insert x (set xs)) R \<Longrightarrow> transp R \<Longrightarrow> x \<notin> set xs \<Longrightarrow>
     sorted_wrt R xs \<Longrightarrow> sorted_wrt R (insort_key_rel R x xs)\<close>
   by (induction xs)
-   (auto dest: transpD simp: Restricted_Predicates.total_on_def in_mono)
+   (auto dest: transpD simp: totalp_on_def in_mono)
 
 
 paragraph \<open>Step checking\<close>

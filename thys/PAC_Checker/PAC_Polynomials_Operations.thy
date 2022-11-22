@@ -1087,8 +1087,7 @@ lemma set_sorted_remdups[simp]:
    auto
 
 lemma distinct_sorted_remdups:
-  \<open>sorted_wrt R xs \<Longrightarrow> transp R \<Longrightarrow> Restricted_Predicates.total_on R UNIV \<Longrightarrow>
-    antisymp R \<Longrightarrow> distinct (sorted_remdups xs)\<close>
+  \<open>sorted_wrt R xs \<Longrightarrow> antisymp R \<Longrightarrow> distinct (sorted_remdups xs)\<close>
   by (induction xs rule: sorted_remdups.induct)
     (auto dest: antisympD)
 

@@ -268,7 +268,7 @@ definition "leq_lit L K = (case (K, L) of
 lemma transp_leq_lit[simp]: "transp leq_lit"
   unfolding transp_def leq_lit_def leq_head_def by (force split: option.splits literal.splits)
 
-lemma reflp_leq_lit[simp]: "reflp_on leq_lit A"
+lemma reflp_leq_lit[simp]: "reflp_on A leq_lit"
   unfolding reflp_on_def leq_lit_def leq_head_def by (auto split: option.splits literal.splits)
 
 lemma total_leq_lit[simp]: "totalp_on A leq_lit"
@@ -336,7 +336,7 @@ corollary set_quicksort [simp]: "set (quicksort R xs) = set xs"
   by (induction R xs rule: quicksort.induct) auto
 
 theorem sorted_wrt_quicksort:
-  assumes "transp R" and "totalp_on (set xs) R" and "reflp_on R (set xs)"
+  assumes "transp R" and "totalp_on (set xs) R" and "reflp_on (set xs) R"
   shows   "sorted_wrt R (quicksort R xs)"
 using assms
 proof (induction R xs rule: quicksort.induct)

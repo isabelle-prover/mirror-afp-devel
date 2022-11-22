@@ -179,7 +179,7 @@ by (auto simp: almost_full_on_def good_def)
 
 lemma almost_full_on_imp_reflp_on:
   assumes "almost_full_on P A"
-  shows "reflp_on P A"
+  shows "reflp_on A P"
 using assms by (auto simp: almost_full_on_def reflp_on_def)
 
 lemma almost_full_on_subset:
@@ -328,15 +328,15 @@ text \<open>
   Every total and well-founded relation is almost-full.
 \<close>
 lemma total_on_and_wfp_on_imp_almost_full_on:
-  assumes "total_on P A" and "wfp_on P A"
+  assumes "totalp_on A P" and "wfp_on P A"
   shows "almost_full_on P\<^sup>=\<^sup>= A"
 proof (rule ccontr)
   assume "\<not> almost_full_on P\<^sup>=\<^sup>= A"
   then obtain f :: "nat \<Rightarrow> 'a" where *: "\<And>i. f i \<in> A"
     and "\<forall>i j. i < j \<longrightarrow> \<not> P\<^sup>=\<^sup>= (f i) (f j)"
     unfolding almost_full_on_def by (auto dest: badE)
-  with \<open>total_on P A\<close> have "\<forall>i j. i < j \<longrightarrow> P (f j) (f i)"
-    unfolding total_on_def by blast
+  with \<open>totalp_on A P\<close> have "\<forall>i j. i < j \<longrightarrow> P (f j) (f i)"
+    unfolding totalp_on_def by blast
   then have "\<And>i. P (f (Suc i)) (f i)" by auto
   with \<open>wfp_on P A\<close> and * show False
     unfolding wfp_on_def by blast
@@ -389,7 +389,7 @@ text \<open>
 \<close>
 lemma finite_almost_full_on:
   assumes finite: "finite A"
-    and refl: "reflp_on P A"
+    and refl: "reflp_on A P"
   shows "almost_full_on P A"
 proof
   fix f :: "nat \<Rightarrow> 'a"
@@ -491,7 +491,7 @@ lemma every_qo_extension_wf_imp_af:
   shows "almost_full_on P A"
 proof
   from \<open>qo_on P A\<close>
-    have refl: "reflp_on P A"
+    have refl: "reflp_on A P"
     and trans: "transp_on P A"
     by (auto intro: qo_on_imp_reflp_on qo_on_imp_transp_on)
 
