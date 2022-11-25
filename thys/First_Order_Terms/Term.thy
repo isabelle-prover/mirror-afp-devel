@@ -25,6 +25,10 @@ lemma is_FunE [elim]:
   "is_Fun t \<Longrightarrow> (\<And>f ts. t = Fun f ts \<Longrightarrow> P) \<Longrightarrow> P"
   by (cases t) auto
 
+lemma inj_on_Var[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "inj_on Var A"
+  by (rule inj_onI) simp
+
 lemma member_image_the_Var_image_subst: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   assumes is_var_\<sigma>: "\<forall>x. is_Var (\<sigma> x)"
   shows "x \<in> the_Var ` \<sigma> ` V \<longleftrightarrow> Var x \<in> \<sigma> ` V"
@@ -491,6 +495,10 @@ definition rename_subst_domain where \<^marker>\<open>contributor \<open>Martin 
       \<sigma> (the_inv \<rho> (Var x))
     else
       Var x)"
+
+lemma rename_subst_domain_Var_lhs[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "rename_subst_domain Var \<sigma> = \<sigma>"
+  by (rule ext) (simp add: rename_subst_domain_def inj_image_mem_iff the_inv_f_f subst_domain_def)
 
 lemma rename_subst_domain_Var_rhs: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   "rename_subst_domain \<rho> Var = Var"
