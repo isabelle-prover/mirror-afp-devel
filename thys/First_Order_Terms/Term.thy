@@ -500,7 +500,7 @@ lemma rename_subst_domain_Var_lhs[simp]: \<^marker>\<open>contributor \<open>Mar
   "rename_subst_domain Var \<sigma> = \<sigma>"
   by (rule ext) (simp add: rename_subst_domain_def inj_image_mem_iff the_inv_f_f subst_domain_def)
 
-lemma rename_subst_domain_Var_rhs: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+lemma rename_subst_domain_Var_rhs[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   "rename_subst_domain \<rho> Var = Var"
   by (rule ext) (simp add: rename_subst_domain_def)
 
