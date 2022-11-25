@@ -330,7 +330,7 @@ declare [[code drop:
   Bleast
   can_select
   (* "set_eq :: 'a set \<Rightarrow> 'a set \<Rightarrow> bool" *)
-  irrefl
+  irrefl_on
   bacc
   set_of_pred
   set_of_seq
@@ -1624,14 +1624,14 @@ proof -
     by(auto simp add: RBT_set_def DList_set_def member_conv_keys ID_Some ccompare_prod_def ceq_prod_def Collect_member RBT_Set2.fold_conv_fold_keys' RBT_Set2.keys.rep_eq DList_Set.fold.rep_eq set_relcomp_set dest: equal.equal_eq[OF ID_ceq] split: option.split del: equalityI)
 qed
 
-lemma irrefl_code [code]:
+lemma irrefl_on_code [code]:
   fixes r :: "('a :: {ceq, ccompare} \<times> 'a) set" shows
-  "irrefl r \<longleftrightarrow> 
-  (case ID CEQ('a) of Some eq \<Rightarrow> (\<forall>(x, y) \<in> r. \<not> eq x y) | None \<Rightarrow>
-    case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''irrefl: ceq = None & ccompare = None'') (\<lambda>_. irrefl r)
-                | Some c \<Rightarrow> (\<forall>(x, y) \<in> r. c x y \<noteq> Eq))"
-apply(auto simp add: irrefl_distinct comparator.eq[OF ID_ccompare'] split: option.split dest!: ID_ceq[THEN equal.equal_eq])
-done
+  "irrefl_on A r \<longleftrightarrow>
+  (case ID CEQ('a) of Some eq \<Rightarrow> (\<forall>(x, y) \<in> r. x \<in> A \<longrightarrow> y \<in> A \<longrightarrow> \<not> eq x y) | None \<Rightarrow>
+    case ID CCOMPARE('a) of None \<Rightarrow> Code.abort (STR ''irrefl_on: ceq = None & ccompare = None'') (\<lambda>_. irrefl_on A r)
+                | Some c \<Rightarrow> (\<forall>(x, y) \<in> r. x \<in> A \<longrightarrow> y \<in> A \<longrightarrow> c x y \<noteq> Eq))"
+  apply(auto simp add: irrefl_on_distinct comparator.eq[OF ID_ccompare'] split: option.split dest!: ID_ceq[THEN equal.equal_eq])
+  done
 
 lemma wf_code [code]:
   fixes rbt :: "('a :: ccompare \<times> 'a) set_rbt" 
