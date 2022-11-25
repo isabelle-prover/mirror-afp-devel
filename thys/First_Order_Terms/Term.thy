@@ -479,7 +479,7 @@ lemma restrict_subst_domain_Var[simp]: \<^marker>\<open>contributor \<open>Marti
   unfolding restrict_subst_domain_def by auto
 
 lemma subst_domain_restrict_subst_domain[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  "subst_domain (restrict_subst_domain V \<sigma>) = subst_domain \<sigma> \<inter> V"
+  "subst_domain (restrict_subst_domain V \<sigma>) = V \<inter> subst_domain \<sigma>"
   unfolding restrict_subst_domain_def subst_domain_def by auto
 
 lemma subst_apply_term_restrict_subst_domain: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
