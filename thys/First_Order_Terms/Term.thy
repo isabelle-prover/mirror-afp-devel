@@ -542,6 +542,15 @@ definition rename_subst_domain_range where \<^marker>\<open>contributor \<open>M
     else
       Var x)"
 
+lemma rename_subst_domain_range_Var_lhs[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "rename_subst_domain_range Var \<sigma> = \<sigma>"
+  by (rule ext) (simp add: rename_subst_domain_range_def inj_image_mem_iff the_inv_f_f
+      subst_domain_def subst_compose_def)
+
+lemma rename_subst_domain_range_Var_rhs[simp]: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "rename_subst_domain_range \<rho> Var = Var"
+  by (rule ext) (simp add: rename_subst_domain_range_def)
+
 lemma subst_compose_renaming_rename_subst_domain_range: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   fixes \<sigma> \<rho> :: "('f, 'v) subst"
   assumes is_var_\<rho>: "\<forall>x. is_Var (\<rho> x)" and "inj \<rho>"
