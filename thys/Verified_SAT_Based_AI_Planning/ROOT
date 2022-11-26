@@ -26,3 +26,5 @@ session Verified_SAT_Based_AI_Planning (AFP) = HOL +
   document_files
     "root.tex"
     "root.bib"
+  export_files (in ".") [1]
+    "Verified_SAT_Based_AI_Planning.Solve_SASP:code/**"
