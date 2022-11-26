@@ -521,6 +521,40 @@ lemma subst_domain_rename_subst_domain_subset: \<^marker>\<open>contributor \<op
   by (auto simp add: subst_domain_def rename_subst_domain_def
       member_image_the_Var_image_subst[OF is_var_\<rho>])
 
+lemma subst_range_rename_subst_domain_subset: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes "inj \<rho>"
+  shows "subst_range (rename_subst_domain \<rho> \<sigma>) \<subseteq> subst_range \<sigma>"
+proof (intro Set.equalityI Set.subsetI)
+  fix t assume "t \<in> subst_range (rename_subst_domain \<rho> \<sigma>)"
+  then obtain x where
+    t_def: "t = rename_subst_domain \<rho> \<sigma> x" and
+    "rename_subst_domain \<rho> \<sigma> x \<noteq> Var x"
+    by (auto simp: image_iff subst_domain_def)
+
+  show "t \<in> subst_range \<sigma>"
+  proof (cases \<open>Var x \<in> \<rho> ` subst_domain \<sigma>\<close>)
+    case True
+    then obtain x' where "\<rho> x' = Var x" and "x' \<in> subst_domain \<sigma>"
+      by auto
+    then show ?thesis
+      using the_inv_f_f[OF \<open>inj \<rho>\<close>, of x']
+      by (simp add: t_def rename_subst_domain_def)
+  next
+    case False
+    hence False
+      using \<open>rename_subst_domain \<rho> \<sigma> x \<noteq> Var x\<close>
+      by (simp add: t_def rename_subst_domain_def)
+    thus ?thesis ..
+  qed
+qed
+
+lemma range_vars_rename_subst_domain_subset: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes "inj \<rho>"
+  shows "range_vars (rename_subst_domain \<rho> \<sigma>) \<subseteq> range_vars \<sigma>"
+  unfolding range_vars_def
+  using subst_range_rename_subst_domain_subset[OF \<open>inj \<rho>\<close>]
+  by (metis Union_mono image_mono)
+
 lemma renaming_cancels_rename_subst_domain: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   assumes is_var_\<rho>: "\<forall>x. is_Var (\<rho> x)" and "inj \<rho>" and vars_t: "vars_term t \<subseteq> subst_domain \<sigma>"
   shows "t \<cdot> \<rho> \<cdot> rename_subst_domain \<rho> \<sigma> = t \<cdot> \<sigma>"
