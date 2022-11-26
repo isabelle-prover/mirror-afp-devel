@@ -515,6 +515,12 @@ lemma rename_subst_domain_Var_rhs[simp]: \<^marker>\<open>contributor \<open>Mar
   "rename_subst_domain \<rho> Var = Var"
   by (rule ext) (simp add: rename_subst_domain_def)
 
+lemma subst_domain_rename_subst_domain_subset: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes is_var_\<rho>: "\<forall>x. is_Var (\<rho> x)"
+  shows "subst_domain (rename_subst_domain \<rho> \<sigma>) \<subseteq> the_Var ` \<rho> ` subst_domain \<sigma>"
+  by (auto simp add: subst_domain_def rename_subst_domain_def
+      member_image_the_Var_image_subst[OF is_var_\<rho>])
+
 lemma renaming_cancels_rename_subst_domain: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   assumes is_var_\<rho>: "\<forall>x. is_Var (\<rho> x)" and "inj \<rho>" and vars_t: "vars_term t \<subseteq> subst_domain \<sigma>"
   shows "t \<cdot> \<rho> \<cdot> rename_subst_domain \<rho> \<sigma> = t \<cdot> \<sigma>"
