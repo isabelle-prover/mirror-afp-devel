@@ -35,6 +35,17 @@ lemma member_image_the_Var_image_subst: \<^marker>\<open>contributor \<open>Mart
   using is_var_\<sigma> image_iff
   by (metis (no_types, opaque_lifting) term.collapse(1) term.sel(1))
 
+lemma image_the_Var_image_subst_renaming_eq: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes is_var_\<sigma>: "\<forall>x. is_Var (\<rho> x)"
+  shows "the_Var ` \<rho> ` V = (\<Union>x \<in> V. vars_term (\<rho> x))"
+proof (rule Set.equalityI; rule Set.subsetI)
+  from is_var_\<sigma> show "\<And>x. x \<in> the_Var ` \<rho> ` V \<Longrightarrow> x \<in> (\<Union>x\<in>V. vars_term (\<rho> x))"
+    using term.set_sel(3) by force
+next
+  from is_var_\<sigma> show "\<And>x. x \<in> (\<Union>x\<in>V. vars_term (\<rho> x)) \<Longrightarrow> x \<in> the_Var ` \<rho> ` V"
+    by (smt (verit, best) Term.term.simps(17) UN_iff image_eqI singletonD term.collapse(1))
+qed
+
 text \<open>Reorient equations of the form @{term "Var x = t"} and @{term "Fun f ss = t"} to facilitate
   simplification.\<close>
 setup \<open>
