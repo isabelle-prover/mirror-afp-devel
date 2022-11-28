@@ -91,3 +91,12 @@ have time to update their contributions.
     close should be the case for widely used base libraries, very loose
     is ok for standalone developments.
 
+**Sync between the archive and DBLP**
+The archive is indexed by DBLP here: https://dblp.org/db/journals/afp/index.html
+DBLP regularly checks https://www.isa-afp.org/ and adds new entries to
+its index. The DBLP team dblp@dagstuhl.de needs to be notified if the
+format of the archive's list of entries changes because DBLP needs to
+adjust their crawler accordingly.
+DBLP only adds new entries but does not update old ones. Thus additions
+of authors to entries, that sometimes happens in the archive, are ignored
+by DBLP. It goes against the DBLP view where publications do not evolve.
