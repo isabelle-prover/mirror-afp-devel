@@ -3141,6 +3141,24 @@ host = [
 [kerber.homepages]
 kerber_homepage = "http://www.cs.bham.ac.uk/~mmk"
 
+[keskin]
+name = "Ata Keskin"
+orcid = "0000-0002-8296-1766"
+
+[keskin.emails]
+
+[keskin.emails.keskin_email]
+user = [
+  "ata",
+  "keskin",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[keskin.homepages]
+
 [ketland]
 name = "Jeffrey Ketland"
 

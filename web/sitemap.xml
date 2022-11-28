@@ -29,6 +29,12 @@
     <loc>/dependencies/word_lib/</loc>
     <lastmod>2022-11-25T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/keskin/</loc>
+    <lastmod>2022-11-24T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Sauer_Shelah_Lemma.html</loc>
+    <lastmod>2022-11-24T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/argyraki/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
@@ -5657,6 +5663,8 @@
     <loc>/theories/saturation_framework/</loc>
   </url><url>
     <loc>/theories/saturation_framework_extensions/</loc>
+  </url><url>
+    <loc>/theories/sauer_shelah_lemma/</loc>
   </url><url>
     <loc>/theories/sc_dom_components/</loc>
   </url><url>
