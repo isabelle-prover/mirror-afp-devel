@@ -4664,6 +4664,27 @@ host = [
 
 [palmer.homepages]
 
+[park]
+name = "Seung Hoon Park"
+orcid = "0000-0001-7165-6857"
+
+[park.emails]
+
+[park.emails.park_email]
+user = [
+  "seunghoon",
+  "park",
+]
+host = [
+  "cs",
+  "ox",
+  "ac",
+  "uk",
+]
+
+[park.homepages]
+park_homepage = "https://www.cs.ox.ac.uk/people/simon.park/"
+
 [parkinson]
 name = "Matthew Parkinson"
 

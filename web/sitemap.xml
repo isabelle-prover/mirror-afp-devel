@@ -3,12 +3,33 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
+    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/argyraki/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
+    <loc>/entries/CHERI-C_Memory_Model.html</loc>
+    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
+    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/containers/</loc>
+    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/park/</loc>
+    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/separation_algebra/</loc>
+    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/word_lib/</loc>
+    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/argyraki/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/baksys/</loc>
@@ -20,13 +41,7 @@
     <loc>/entries/Combinatorial_Enumeration_Algorithms.html</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/edmonds/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/falling_factorial_sum/</loc>
@@ -208,9 +223,6 @@
   </url><url>
     <loc>/entries/Involutions2Squares.html</loc>
     <lastmod>2022-08-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/containers/</loc>
-    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/datatype_order_generator/</loc>
     <lastmod>2022-08-09T00:00:00+00:00</lastmod>
@@ -702,9 +714,6 @@
     <lastmod>2021-10-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/weerwag/</loc>
-    <lastmod>2021-10-13T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/word_lib/</loc>
     <lastmod>2021-10-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/X86_Semantics.html</loc>
@@ -2244,9 +2253,6 @@
     <lastmod>2018-03-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Hoare_Time.html</loc>
-    <lastmod>2018-02-26T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/separation_algebra/</loc>
     <lastmod>2018-02-26T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/LLL_Factorization.html</loc>
@@ -4505,6 +4511,8 @@
     <loc>/theories/certification_monads/</loc>
   </url><url>
     <loc>/theories/chandy_lamport/</loc>
+  </url><url>
+    <loc>/theories/cheri-c_memory_model/</loc>
   </url><url>
     <loc>/theories/chord_segments/</loc>
   </url><url>
