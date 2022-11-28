@@ -4,6 +4,7 @@ menu:
     main:
         name: "Submission"
         weight: 5
+rss: false
 ---
 
 ## Submission Guidelines

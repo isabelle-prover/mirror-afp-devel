@@ -4,6 +4,7 @@ menu:
     main:
         name: "About"
         weight: 7
+rss: false
 ---
 
 The Archive of Formal Proofs is a collection of proof libraries, examples, and larger scientific developments,

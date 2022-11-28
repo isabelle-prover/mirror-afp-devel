@@ -4,6 +4,7 @@ menu:
     main:
         name: "Download"
         weight: 3
+rss: false
 ---
 
 ### **Current stable version** (for most recent Isabelle release):
