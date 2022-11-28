@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Sauer-Shelah Lemma}
+\author{Ata Keskin}
+\maketitle
+
+\begin{abstract}
+	The Sauer-Shelah Lemma is a fundamental result in extremal set theory and combinatorics, that guarantees the existence of a set $T$ of size $k$
+	which is shattered by a family of sets $\mathcal{F}$, if the cardinality of the family is greater than some bound dependent on $k$. A set $T$ is
+	said to be shattered by a family $\mathcal{F}$ if every subset of $T$ can be obtained as an intersection of $T$ with some set $S \in \mathcal{F}$.
+	The Sauer-Shelah Lemma has found use in diverse fields such as computational geometry, approximation algorithms and machine learning. In this entry
+	we formalize the notion of shattering and prove the generalized and standard versions of the Sauer-Shelah Lemma. 
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+The goal of this entry is to formalize the Sauer-Shelah Lemma. The result was first published by Sauer \cite{SAUER1972145} and Shelah \cite{pjm/1102968432} independently from one another. The proof presented in this entry is based on an article by Kalai \cite{kalai_2008}. The lemma has a wide range of applications. Vapnik and \v{C}ervonenkis \cite{MR0288823} reproved and used the lemma in the context of statistical learning theory. For instance, the VC-dimension of a family of sets is defined as the size of the largest set the family shatters. In this context, the Sauer-Shelah Lemma is a result tying the VC-dimension of a family to the number of sets in the family. 
+
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
