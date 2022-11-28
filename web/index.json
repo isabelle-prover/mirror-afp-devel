@@ -19,7 +19,7 @@
   "used_by": 0
  },
  {
-  "abstract": "The Sauer-Shelah Lemma is a fundamental result in extremal set theory and combinatorics, that guarantees the existence of a set $T$ of size $k$ which is shattered by a family of sets $\\mathcal{F}$, if the cardinality of the family is greater than some bound dependent on $k$. A set $T$ is said to be shattered by a family $\\mathcal{F}$ if every subset of $T$ can be obtained as an intersection of $T$ with some set $S \\in \\mathcal{F}$. The Sauer-Shelah Lemma has found use in diverse fields such as computational geometry, approximation algorithms and machine learning. In this entry we formalize the notion of shattering and prove the generalized and standard versions of the Sauer-Shelah Lemma.",
+  "abstract": "The Sauer-Shelah Lemma is a fundamental result in extremal set theory and combinatorics. It guarantees the existence of a set $T$ of size $k$ that is shattered by a family of sets $\\mathcal{F}$ if the cardinality of the family is greater than some bound dependent on $k$. A set $T$ is said to be \u003cem\u003eshattered\u003c/em\u003e by a family $\\mathcal{F}$ if every subset of $T$ can be obtained as an intersection of $T$ with some set $S \\in \\mathcal{F}$. The Sauer-Shelah Lemma has found use in diverse fields such as computational geometry, approximation algorithms and machine learning. In this entry we formalize the notion of shattering and prove the generalized and standard versions of the Sauer-Shelah Lemma.",
   "authors": [
    "Ata Keskin"
   ],
