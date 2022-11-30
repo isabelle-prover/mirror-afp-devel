@@ -1,0 +1,11 @@
+chapter AFP
+
+session Multitape_To_Singletape_TM (AFP) = HOL +
+  options [timeout = 300]
+  sessions
+    "HOL-Library"
+  theories
+    Multi_Single_TM_Translation
+  document_files
+    "root.tex"
+    "root.bib"

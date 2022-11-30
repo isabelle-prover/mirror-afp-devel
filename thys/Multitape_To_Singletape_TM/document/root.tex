@@ -1,0 +1,94 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\newcommand{\OO}{{\cal O}}
+
+\begin{document}
+
+\title{A Verified Translation of Multitape Turing Machines into Singletape Turing Machines}
+\author{Christian Dalvit and Ren\'e Thiemann}
+
+\maketitle
+
+\begin{abstract}
+We define single- and multitape Turing machines (TMs)
+and verify a translation from multitape TMs to singletape TMs. In particular, the following results have been
+formalized: the accepted languages coincide, and whenever the multitape TM runs in
+$\OO(f(n))$ time, then the singletape TM has a worst-time complexity of
+$\OO(f(n)^2 + n)$.
+The translation is applicable both on deterministic and non-deterministic TMs.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+In 1965 Hartmanis and Stearns proved that multitape Turing machines (TMs) can be simulated by singletape Turing machines 
+\cite{hartmanis:1965}. Since then, alternative approaches for translating multitape TMs to singletape TMs have
+been formulated \cite{hopcroft:2014, sipser:2006}. In this AFP entry we define a translation which has the usual quadratic overhead in running
+time. 
+
+For the design of the translation we had to choose between
+the approach how to encode the $k$ tapes of a multitape
+TM onto a single tape.
+
+In the textbooks \cite{hopcroft:2014, sipser:2006}
+the $k$ tapes $t_1,\dots,t_n$ are stored sequentially onto a single tape $t_1 \# \dots \# t_n$ via a separator $\#$.
+The technical problem with this definition is that once a tape $t_i$ 
+needs to be enlarged to the right, the later tape content 
+$\# t_{i+1} \# \dots \# t_n$ needs to
+be shifted correspondingly.
+
+To avoid this problem, we followed the idea in the original work of
+Hartmanis et al.\ where the $k$-tapes are stored on top of each other, i.e., basically for the tape alphabet $\Gamma$ of the multitape TM we switch
+to $\Gamma^k$ in the singletape TM. As a consequence, the formal 
+translation could be kept simple, in particular no tape shifts need to be performed.
+
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
