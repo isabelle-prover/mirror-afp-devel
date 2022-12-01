@@ -1,0 +1,38 @@
+title = "Kneser's Theorem and the Cauchy–Davenport Theorem"
+date = 2022-11-21
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+We formalise Kneser's Theorem in combinatorics following the proof from the 2014 paper
+<a href=\"https://link.springer.com/chapter/10.1007/978-1-4939-1601-6_3\">A short proof of Kneser’s addition theorem for abelian groups</a>
+by Matt DeVos. We also show a strict version of Kneser's Theorem as well as the Cauchy–Davenport Theorem as a corollary of Kneser's Theorem."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.baksys]
+email = "baksys_email"
+
+[authors.argyraki]
+email = "argyraki_email"
+
+[contributors]
+
+[notify]
+baksys = "baksys_email"
+argyraki = "argyraki_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-1-4939-1601-6_3",
+]
+pubs = [
+  "Nathanson, Melvyn B, Additive Number Theory:  Inverse Problems and the Geometry of Sumsets,  Springer-Verlag,  1996,   vol. 165, Graduate Texts in Mathematics,   isbn 978-0-387-94655-9",
+  "Ruzsa, Imre Z., Sumsets and Structure, Course notes, 2008, available on https://www.math.cmu.edu/users/af1p/Teaching/AdditiveCombinatorics/Additive-Combinatorics.pdf   ",
+]
