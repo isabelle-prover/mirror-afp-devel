@@ -3493,6 +3493,25 @@ name = "Andrea Lattuada"
 [lattuada.homepages]
 lattuada_homepage = "https://andrea.lattuada.me"
 
+[lauermann]
+name = "Nils Lauermann"
+
+[lauermann.emails]
+
+[lauermann.emails.lauermann_email]
+user = [
+  "Nils",
+  "Lauermann",
+]
+host = [
+  "cl",
+  "cam",
+  "ac",
+  "uk",
+]
+
+[lauermann.homepages]
+
 [laursen]
 name = "Christian Pardillo-Laursen"
 
