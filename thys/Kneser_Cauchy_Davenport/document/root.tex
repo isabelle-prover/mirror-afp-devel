@@ -1,0 +1,48 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage{isabelle,isabellesym}
+\usepackage[english]{babel}  % for guillemots
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Kneser's Theorem and the Cauchy--Davenport Theorem}
+\author{Mantas Bak\v{s}ys and Angeliki Koutsoukou-Argyraki \\
+University of Cambridge\\
+\texttt{\{mb2412, ak2110\}@cam.ac.uk}}
+
+\maketitle
+
+\begin{abstract}
+We formalise Kneser's Theorem in combinatorics \cite{Nathanson_book, Ruzsa_book} following the proof from the 2014 paper "A short proof of Kneser’s addition theorem for abelian groups" by Matt DeVos \cite{DeVos_Kneser}. We also show a strict version of Kneser's Theorem as well as the Cauchy--Davenport Theorem as a corollary of Kneser's Theorem. 
+\end{abstract}
+\newpage
+\tableofcontents
+
+\subsection*{Acknowledgements}
+Angeliki Koutsoukou-Argyraki is funded by the ERC Advanced Grant ALEXANDRIA (Project GA
+742178) funded by the European Research Council and led by Lawrence C. Paulson 
+(University of Cambridge, Department of Computer Science and Technology). 
+Mantas Bak\v{s}ys received funding for his internship supervised by Koutsoukou-Argyraki by the 
+Cambridge Mathematics Placements (CMP) Programme and by the ALEXANDRIA Project. 
+We wish to thank Manuel Eberl for his useful 
+suggestion for treating induction when there is a type discrepancy between the induction hypothesis
+and the induction step.
+\newpage
+
+% include generated text of all theories
+\input{session}
+
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+
+\end{document}
