@@ -44,6 +44,21 @@
     <loc>/entries/Sauer_Shelah_Lemma.html</loc>
     <lastmod>2022-11-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/argyraki/</loc>
+    <lastmod>2022-11-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/baksys/</loc>
+    <lastmod>2022-11-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/jacobson_basic_algebra/</loc>
+    <lastmod>2022-11-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Kneser_Cauchy_Davenport.html</loc>
+    <lastmod>2022-11-21T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/pluennecke_ruzsa_inequality/</loc>
+    <lastmod>2022-11-21T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/dependencies/girth_chromatic/</loc>
     <lastmod>2022-11-14T00:00:00+00:00</lastmod>
   </url><url>
@@ -55,12 +70,6 @@
   </url><url>
     <loc>/entries/Turans_Graph_Theorem.html</loc>
     <lastmod>2022-11-14T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/argyraki/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/baksys/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/card_number_partitions/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
@@ -78,9 +87,6 @@
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/karayel/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/pluennecke_ruzsa_inequality/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Balog_Szemeredi_Gowers.html</loc>
@@ -207,9 +213,6 @@
     <lastmod>2022-09-05T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/bernoulli/</loc>
-    <lastmod>2022-09-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/jacobson_basic_algebra/</loc>
     <lastmod>2022-09-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Khovanskii_Theorem.html</loc>
@@ -5125,6 +5128,8 @@
     <loc>/theories/khovanskii_theorem/</loc>
   </url><url>
     <loc>/theories/kleene_algebra/</loc>
+  </url><url>
+    <loc>/theories/kneser_cauchy_davenport/</loc>
   </url><url>
     <loc>/theories/knights_tour/</loc>
   </url><url>
