@@ -44,6 +44,18 @@
     <loc>/entries/Sauer_Shelah_Lemma.html</loc>
     <lastmod>2022-11-24T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/dependencies/girth_chromatic/</loc>
+    <lastmod>2022-11-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/lauermann/</loc>
+    <lastmod>2022-11-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/random_graph_subgraph_threshold/</loc>
+    <lastmod>2022-11-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Turans_Graph_Theorem.html</loc>
+    <lastmod>2022-11-14T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/argyraki/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
@@ -69,9 +81,6 @@
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/pluennecke_ruzsa_inequality/</loc>
-    <lastmod>2022-11-11T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/random_graph_subgraph_threshold/</loc>
     <lastmod>2022-11-11T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Balog_Szemeredi_Gowers.html</loc>
@@ -117,9 +126,6 @@
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/design_theory/</loc>
-    <lastmod>2022-09-29T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/girth_chromatic/</loc>
     <lastmod>2022-09-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Maximum_Segment_Sum.html</loc>
@@ -5880,6 +5886,8 @@
     <loc>/theories/triangle/</loc>
   </url><url>
     <loc>/theories/trie/</loc>
+  </url><url>
+    <loc>/theories/turans_graph_theorem/</loc>
   </url><url>
     <loc>/theories/twelvefold_way/</loc>
   </url><url>
