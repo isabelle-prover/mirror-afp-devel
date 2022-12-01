@@ -1,0 +1,12 @@
+chapter AFP
+
+session Turans_Graph_Theorem (AFP) = "HOL-Probability" +
+  options [timeout = 600]
+  sessions
+    Girth_Chromatic
+    Random_Graph_Subgraph_Threshold
+  theories
+    Turan
+  document_files
+    "root.tex"
+    "root.bib"

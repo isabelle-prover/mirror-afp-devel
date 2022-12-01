@@ -1,0 +1,75 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Turán's Graph Theorem}
+\author{Nils Lauermann\\
+Computer Laboratory, University of Cambridge CB3 0FD\\
+\texttt{Nils.Lauermann@cl.cam.ac.uk}}
+\maketitle
+
+\begin{abstract}
+  Turán's Graph Theorem \cite{turan1941external} states that any undirected, simple graph with $n$ vertices that does not contain a $p$-clique, contains at most $\left( 1 - \frac{1}{p-1} \right) \frac{n^2}{2}$ edges.
+The theorem is an important result in graph theory and the foundation of the field of extremal graph theory.
+
+The formalisation follows Aigner and Ziegler's \cite{Aigner2018} presentation of Turán's initial proof \cite{turan1941external}.
+Besides a direct adaptation of the textbook proof, a simplified, second proof is presented which decreases the size of the formalised proof significantly.
+\end{abstract}
+
+\tableofcontents
+
+\subsection*{Acknowledgements}
+
+This formalisation was developed as part of the author's MPhil dissertation (Submitted on 6 June 2022) of the Advanced Computer Science course at the University of Cambridge.
+The project was supervised by Prof Lawrence C. Paulson and Dr Angeliki Koutsoukou-Argyraki.
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+\newpage
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
