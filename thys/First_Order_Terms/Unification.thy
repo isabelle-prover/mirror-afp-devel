@@ -386,6 +386,10 @@ proof -
     by (auto simp: unifiable_def)
 qed
 
+corollary ex_unify_if_unifiers_not_empty: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "unifiers es \<noteq> {} \<Longrightarrow> set xs = es \<Longrightarrow> \<exists>ys. unify xs [] = Some ys"
+  using unify_complete by auto
+
 lemma mgu_complete:
   "mgu s t = None \<Longrightarrow> unifiers {(s, t)} = {}"
 proof -
@@ -393,6 +397,21 @@ proof -
   then have "unify [(s, t)] [] = None" by (cases "unify [(s, t)] []", auto simp: mgu_def)
   then have "unifiers (set [(s, t)]) = {}" by (rule unify_complete)
   then show ?thesis by simp
+qed
+
+corollary ex_mgu_if_unifiers_not_empty: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  "unifiers {(t,u)} \<noteq> {} \<Longrightarrow> \<exists>\<mu>. mgu t u = Some \<mu>"
+  using mgu_complete by auto
+
+corollary ex_mgu_if_subst_apply_term_eq_subst_apply_term: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  fixes t u :: "('f, 'v) Term.term" and \<sigma> :: "('f, 'v) subst"
+  assumes t_eq_u: "t \<cdot> \<sigma> = u \<cdot> \<sigma>"
+  shows "\<exists>\<mu> :: ('f, 'v) subst. Unification.mgu t u = Some \<mu>"
+proof -
+  from t_eq_u have "unifiers {(t, u)} \<noteq> {}"
+    unfolding unifiers_def by auto
+  thus ?thesis
+    by (rule ex_mgu_if_unifiers_not_empty)
 qed
 
 lemma finite_subst_domain_subst_of:
@@ -483,24 +502,6 @@ corollary subst_apply_term_eq_subst_apply_term_if_mgu: \<^marker>\<open>contribu
 lemma mgu_same: "mgu t t = Some Var" \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   by (simp add: mgu_def unify_same)
 
-lemma ex_mgu_if_subst_apply_term_eq_subst_apply_term: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
-  fixes t u :: "('f, 'v) Term.term" and \<sigma> :: "('f, 'v) subst"
-  assumes t_eq_u: "t \<cdot> \<sigma> = u \<cdot> \<sigma>"
-  shows "\<exists>\<mu> :: ('f, 'v) subst. Unification.mgu t u = Some \<mu>"
-proof -
-  from t_eq_u have "unifiers {(t, u)} \<noteq> {}"
-    unfolding unifiers_def by auto
-  then obtain xs where unify: "unify [(t, u)] [] = Some xs"
-    using unify_complete
-    by (metis list.set(1) list.set(2) not_Some_eq)
-
-  show ?thesis
-  proof (rule exI)
-    show "Unification.mgu t u = Some (subst_of xs)"
-      using unify by (simp add: mgu_def)
-  qed
-qed
-
 lemma mgu_is_Var_if_not_in_equations: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations" and x :: 'v
   assumes
@@ -574,6 +575,64 @@ proof (rule inj_onI)
     by (simp_all add: \<tau>_def)
   with \<open>\<mu> x = \<mu> y\<close> show "x = y"
     by (simp add: subst_compose_def)
+qed
+
+lemma imgu_range_vars_of_equations_vars_subset: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations" and Evars :: "'v set"
+  assumes imgu_\<mu>: "is_imgu \<mu> E" and fin_E: "finite E"
+  defines "Evars \<equiv> (\<Union>e \<in> E. vars_term (fst e) \<union> vars_term (snd e))"
+  shows "(\<Union>x \<in> Evars. vars_term (\<mu> x)) \<subseteq> Evars"
+proof (rule Set.subsetI)
+  from imgu_\<mu> have unif_\<mu>: "\<mu> \<in> unifiers E" and minimal_\<mu>: "\<forall>\<tau> \<in> unifiers E. \<mu> \<circ>\<^sub>s \<tau> = \<tau>"
+    by (simp_all add: is_imgu_def)
+
+  from fin_E obtain es :: "('f, 'v) equation list" where
+    "set es = E"
+    using finite_list by auto
+  then obtain xs :: "('v \<times> ('f, 'v) Term.term) list" where
+    unify_es: "unify es [] = Some xs"
+    using unif_\<mu> ex_unify_if_unifiers_not_empty by blast
+
+  define \<tau> :: "('f, 'v) subst" where
+    "\<tau> = subst_of xs"
+
+  have dom_\<tau>: "subst_domain \<tau> \<subseteq> Evars"
+    using unify_subst_domain[OF unify_es, unfolded \<open>set es = E\<close>, folded Evars_def \<tau>_def] .
+  have range_vars_\<tau>: "range_vars \<tau> \<subseteq> Evars"
+    using unify_range_vars[OF unify_es, unfolded \<open>set es = E\<close>, folded Evars_def \<tau>_def] .
+  hence ball_vars_apply_\<tau>_subset: "\<forall>x \<in> subst_domain \<tau>. vars_term (\<tau> x) \<subseteq> Evars"
+    unfolding range_vars_def
+    by (simp add: SUP_le_iff)
+
+  have "\<tau> \<in> unifiers E"
+    using \<open>set es = E\<close> unify_es \<tau>_def is_imgu_def unify_sound by blast
+  with minimal_\<mu> have \<mu>_comp_\<tau>: "\<And>x. (\<mu> \<circ>\<^sub>s \<tau>) x = \<tau> x"
+    by auto
+
+  fix y :: 'v assume "y \<in> (\<Union>x \<in> Evars. vars_term (\<mu> x))"
+  then obtain x :: 'v where
+    x_in: "x \<in> Evars" and y_in: "y \<in> vars_term (\<mu> x)"
+    by (auto simp: subst_domain_def)
+  have vars_\<tau>_x: "vars_term (\<tau> x) \<subseteq> Evars"
+    using ball_vars_apply_\<tau>_subset subst_domain_def x_in by fastforce
+
+  show "y \<in> Evars"
+  proof (rule ccontr)
+    assume "y \<notin> Evars"
+    hence "y \<notin> vars_term (\<tau> x)"
+      using vars_\<tau>_x by blast
+    moreover have "y \<in> vars_term ((\<mu> \<circ>\<^sub>s \<tau>) x)"
+    proof -
+      have "\<tau> y = Var y"
+        using \<open>y \<notin> Evars\<close> dom_\<tau>
+        by (auto simp add: subst_domain_def)
+      thus ?thesis
+        unfolding subst_compose_def vars_term_subst_apply_term UN_iff
+        using y_in by force
+    qed
+    ultimately show False
+      using \<mu>_comp_\<tau>[of x] by simp
+  qed
 qed
 
 end
