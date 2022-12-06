@@ -68,7 +68,7 @@ lemma wf_prec_FL: "minimal_element (\<sqsubset>) UNIV"
 proof
   show "po_on (\<sqsubset>) UNIV" unfolding po_on_def
   proof
-    show "irreflp_on (\<sqsubset>) UNIV" unfolding irreflp_on_def Prec_FL_def
+    show "irreflp_on UNIV (\<sqsubset>)" unfolding irreflp_on_def Prec_FL_def
     proof
       fix Cl
       assume a_in: "Cl \<in> (UNIV::('f \<times> 'l) set)"

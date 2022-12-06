@@ -28,7 +28,7 @@ by (force simp: strict_suffix_def po_on_def transp_on_def irreflp_on_def)
 subsection \<open>Lexicographic Order on Infinite Sequences\<close>
 
 lemma antisymp_on_LEX:
-  assumes "irreflp_on P A" and "antisymp_on P A"
+  assumes "irreflp_on A P" and "antisymp_on P A"
   shows "antisymp_on (LEX P) (SEQ A)"
 proof
   fix f g assume SEQ: "f \<in> SEQ A" "g \<in> SEQ A" and "LEX P f g" and "LEX P g f"

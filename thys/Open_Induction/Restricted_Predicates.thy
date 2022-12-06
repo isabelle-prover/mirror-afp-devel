@@ -185,27 +185,14 @@ lemma antisymp_on_reflclp [simp]:
 definition qo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "qo_on P A \<longleftrightarrow> reflp_on A P \<and> transp_on P A"
 
-definition irreflp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "irreflp_on P A \<longleftrightarrow> (\<forall>a\<in>A. \<not> P a a)"
-
 definition po_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "po_on P A \<longleftrightarrow> (irreflp_on P A \<and> transp_on P A)"
+  "po_on P A \<longleftrightarrow> (irreflp_on A P \<and> transp_on P A)"
 
 lemma po_onI [Pure.intro]:
-  "\<lbrakk>irreflp_on P A; transp_on P A\<rbrakk> \<Longrightarrow> po_on P A"
+  "\<lbrakk>irreflp_on A P; transp_on P A\<rbrakk> \<Longrightarrow> po_on P A"
   by (auto simp: po_on_def)
 
-lemma irreflp_onI [Pure.intro]:
-  "(\<And>a. a \<in> A \<Longrightarrow> \<not> P a a) \<Longrightarrow> irreflp_on P A"
-  unfolding irreflp_on_def by blast
-
-lemma irreflp_on_converse:
-  "irreflp_on P A \<Longrightarrow> irreflp_on P\<inverse>\<inverse> A"
-  unfolding irreflp_on_def by blast
-
-lemma irreflp_on_converse_simp [simp]:
-  "irreflp_on P\<inverse>\<inverse> A \<longleftrightarrow> irreflp_on P A"
-  by (auto simp: irreflp_on_def)
+lemmas irreflp_on_converse_simp = irreflp_on_converse
 
 lemma po_on_converse_simp [simp]:
   "po_on P\<inverse>\<inverse> A \<longleftrightarrow> po_on P A"
@@ -217,17 +204,12 @@ lemma po_on_imp_qo_on:
   by (metis reflp_on_reflclp transp_on_reflclp)
 
 lemma po_on_imp_irreflp_on:
-  "po_on P A \<Longrightarrow> irreflp_on P A"
+  "po_on P A \<Longrightarrow> irreflp_on A P"
   by (auto simp: po_on_def)
 
 lemma po_on_imp_transp_on:
   "po_on P A \<Longrightarrow> transp_on P A"
   by (auto simp: po_on_def)
-
-lemma irreflp_on_subset:
-  assumes "A \<subseteq> B" and "irreflp_on P B"
-  shows "irreflp_on P A"
-  using assms by (auto simp: irreflp_on_def)
 
 lemma po_on_subset:
   assumes "A \<subseteq> B" and "po_on P B"
@@ -236,7 +218,7 @@ lemma po_on_subset:
   unfolding po_on_def by blast
 
 lemma transp_on_irreflp_on_imp_antisymp_on:
-  assumes "transp_on P A" and "irreflp_on P A"
+  assumes "transp_on P A" and "irreflp_on A P"
   shows "antisymp_on (P\<^sup>=\<^sup>=) A"
 proof
   fix a b assume "a \<in> A"
@@ -246,7 +228,7 @@ proof
     assume "a \<noteq> b"
     with \<open>P\<^sup>=\<^sup>= a b\<close> and \<open>P\<^sup>=\<^sup>= b a\<close> have "P a b" and "P b a" by auto
     with \<open>transp_on P A\<close> and \<open>a \<in> A\<close> and \<open>b \<in> A\<close> have "P a a" unfolding transp_on_def by blast
-    with \<open>irreflp_on P A\<close> and \<open>a \<in> A\<close> show False unfolding irreflp_on_def by blast
+    with \<open>irreflp_on A P\<close> and \<open>a \<in> A\<close> show False unfolding irreflp_on_def by blast
   qed
 qed
 
@@ -257,7 +239,7 @@ using transp_on_irreflp_on_imp_antisymp_on [of P A] and assms by (auto simp: po_
 
 lemma strict_reflclp [simp]:
   assumes "x \<in> A" and "y \<in> A"
-    and "transp_on P A" and "irreflp_on P A"
+    and "transp_on P A" and "irreflp_on A P"
   shows "strict (P\<^sup>=\<^sup>=) x y = P x y"
   using assms unfolding transp_on_def irreflp_on_def
   by blast
@@ -383,7 +365,7 @@ lemma wfp_on_restrict_to [simp]:
   by (auto simp: wfp_on_def)
 
 lemma irreflp_on_strict [simp, intro]:
-  "irreflp_on (strict P) A"
+  "irreflp_on A (strict P)"
   by (auto simp: irreflp_on_def)
 
 lemma transp_on_map':
@@ -402,9 +384,9 @@ lemma transp_on_map:
   using transp_on_map' [of Q B h A h, simplified, OF assms] by blast
 
 lemma irreflp_on_map:
-  assumes "irreflp_on Q B"
+  assumes "irreflp_on B Q"
     and "h ` A \<subseteq> B"
-  shows "irreflp_on (\<lambda>x y. Q (h x) (h y)) A"
+  shows "irreflp_on A (\<lambda>x y. Q (h x) (h y))"
   using assms unfolding irreflp_on_def by auto
 
 lemma po_on_map:
@@ -436,8 +418,8 @@ qed
 
 lemma wfp_on_imp_irreflp_on:
   assumes "wfp_on P A"
-  shows "irreflp_on P A"
-proof
+  shows "irreflp_on A P"
+proof (rule irreflp_onI)
   fix x
   assume "x \<in> A"
   show "\<not> P x x"
