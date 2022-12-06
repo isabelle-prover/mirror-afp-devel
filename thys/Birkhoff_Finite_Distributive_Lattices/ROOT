@@ -1,0 +1,12 @@
+chapter AFP
+
+session Birkhoff_Finite_Distributive_Lattices (AFP) = "HOL" +
+  (* options [document = pdf, document_output = "output"] *)
+  options [timeout = 300]
+  sessions
+    "HOL-Library"
+  theories
+    Birkhoff_Finite_Distributive_Lattices
+  document_files
+    "root.tex"
+    "root.bib"

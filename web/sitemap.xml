@@ -3,18 +3,24 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-11-30T00:00:00+00:00</lastmod>
+    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/</loc>
+    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Birkhoff_Finite_Distributive_Lattices.html</loc>
+    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/doty/</loc>
+    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Multitape_To_Singletape_TM.html</loc>
     <lastmod>2022-11-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/</loc>
-    <lastmod>2022-11-30T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/dalvit/</loc>
-    <lastmod>2022-11-30T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2022-11-30T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/thiemann/</loc>
@@ -178,9 +184,6 @@
   </url><url>
     <loc>/dependencies/padic_ints/</loc>
     <lastmod>2022-09-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/doty/</loc>
-    <lastmod>2022-09-18T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Risk_Free_Lending.html</loc>
     <lastmod>2022-09-18T00:00:00+00:00</lastmod>
@@ -4462,6 +4465,8 @@
     <loc>/theories/binomial-queues/</loc>
   </url><url>
     <loc>/theories/birdkmp/</loc>
+  </url><url>
+    <loc>/theories/birkhoff_finite_distributive_lattices/</loc>
   </url><url>
     <loc>/theories/blue_eyes/</loc>
   </url><url>

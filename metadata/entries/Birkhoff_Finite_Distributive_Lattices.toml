@@ -1,0 +1,37 @@
+title = "Birkhoff's Representation Theorem For Finite Distributive Lattices"
+date = 2022-12-06
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+This theory proves a theorem of Birkhoff that asserts that any
+finite distributive lattice is isomorphic to the set of
+<em>down-sets</em> of that lattice's join-irreducible elements. The
+isomorphism preserves order, meets and joins as well as
+complementation in the case the lattice is a Boolean algebra. A
+consequence of this representation theorem is that every finite
+Boolean algebra is isomorphic to a powerset algebra."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.doty]
+email = "doty_email"
+
+[contributors]
+
+[notify]
+doty = "doty_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1215/S0012-7094-37-00334-X",
+]
+pubs = [
+  "B. A. Davey and H. A. Priestley, “Chapter 5.&nbsp; Representation: The Finite Case,” in <i>Introduction to Lattices and Order</i>, 2nd ed., Cambridge, UK ; New York, NY: Cambridge University Press, 2002, pp. 112–124.",
+]
