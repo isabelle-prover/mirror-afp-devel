@@ -145,6 +145,18 @@ definition range_vars :: "('f, 'v) subst \<Rightarrow> 'v set"
 where
   "range_vars \<sigma> = \<Union>(vars_term ` subst_range \<sigma>)"
 
+lemma mem_range_varsI: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  assumes "\<sigma> x = Var y" and "x \<noteq> y"
+  shows "y \<in> range_vars \<sigma>"
+  unfolding range_vars_def UN_iff
+proof (rule bexI[of _ "Var y"])
+  show "y \<in> vars_term (Var y)"
+    by simp
+next
+  from assms show "Var y \<in> subst_range \<sigma>"
+    by (simp_all add: subst_domain_def)
+qed
+
 lemma subst_domain_Var [simp]:
   "subst_domain Var = {}"
   by (simp add: subst_domain_def)

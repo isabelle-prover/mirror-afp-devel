@@ -577,6 +577,58 @@ proof (rule inj_onI)
     by (simp add: subst_compose_def)
 qed
 
+lemma imgu_subst_domain_subset: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations" and Evars :: "'v set"
+  assumes imgu_\<mu>: "is_imgu \<mu> E" and fin_E: "finite E"
+  defines "Evars \<equiv> (\<Union>e \<in> E. vars_term (fst e) \<union> vars_term (snd e))"
+  shows "subst_domain \<mu> \<subseteq> Evars"
+proof (intro Set.subsetI)
+  from imgu_\<mu> have unif_\<mu>: "\<mu> \<in> unifiers E" and minimal_\<mu>: "\<forall>\<tau> \<in> unifiers E. \<mu> \<circ>\<^sub>s \<tau> = \<tau>"
+    by (simp_all add: is_imgu_def)
+
+  from fin_E obtain es :: "('f, 'v) equation list" where
+    "set es = E"
+    using finite_list by auto
+  then obtain xs :: "('v \<times> ('f, 'v) Term.term) list" where
+    unify_es: "unify es [] = Some xs"
+    using unif_\<mu> ex_unify_if_unifiers_not_empty by blast
+
+  define \<tau> :: "('f, 'v) subst" where
+    "\<tau> = subst_of xs"
+
+  have dom_\<tau>: "subst_domain \<tau> \<subseteq> Evars"
+    using unify_subst_domain[OF unify_es, unfolded \<open>set es = E\<close>, folded Evars_def \<tau>_def] .
+  have range_vars_\<tau>: "range_vars \<tau> \<subseteq> Evars"
+    using unify_range_vars[OF unify_es, unfolded \<open>set es = E\<close>, folded Evars_def \<tau>_def] .
+
+  have "\<tau> \<in> unifiers E"
+    using \<open>set es = E\<close> unify_es \<tau>_def is_imgu_def unify_sound by blast
+  with minimal_\<mu> have \<mu>_comp_\<tau>: "\<And>x. (\<mu> \<circ>\<^sub>s \<tau>) x = \<tau> x"
+    by auto
+
+  fix x :: 'v assume "x \<in> subst_domain \<mu>"
+  hence "\<mu> x \<noteq> Var x"
+    by (simp add: subst_domain_def)
+
+  show "x \<in> Evars"
+  proof (cases "x \<in> subst_domain \<tau>")
+    case True
+    thus ?thesis
+      using dom_\<tau> by auto
+  next
+    case False
+    hence "\<tau> x = Var x"
+      by (simp add: subst_domain_def)
+    hence "\<mu> x \<cdot> \<tau> = Var x"
+      using \<mu>_comp_\<tau>[of x] by (simp add: subst_compose)
+    thus ?thesis
+    proof (rule subst_apply_eq_Var[of "\<mu> x" \<tau> x])
+      show "\<And>y. \<mu> x = Var y \<Longrightarrow> \<tau> y = Var x \<Longrightarrow> ?thesis"
+        using \<open>\<mu> x \<noteq> Var x\<close> range_vars_\<tau> mem_range_varsI[of \<tau> _ x] by auto
+    qed
+  qed
+qed
+
 lemma imgu_range_vars_of_equations_vars_subset: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations" and Evars :: "'v set"
   assumes imgu_\<mu>: "is_imgu \<mu> E" and fin_E: "finite E"
