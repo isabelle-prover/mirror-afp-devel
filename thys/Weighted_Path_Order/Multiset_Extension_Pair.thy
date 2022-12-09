@@ -54,7 +54,8 @@ lemma mult_locally_cancelL:
 
 lemma mult_cancelL:
   assumes "trans s" "irrefl s" shows "(Z + X, Z + Y) \<in> mult s \<longleftrightarrow> (X, Y) \<in> mult s"
-  using assms mult_locally_cancelL by (simp add: mult_cancel union_commute) 
+  using assms
+  by (auto simp: union_commute intro!: mult_cancel elim: irrefl_on_subset) 
 
 lemma wf_trancl_conv:
   shows "wf (r\<^sup>+) \<longleftrightarrow> wf r"

@@ -210,7 +210,7 @@ proof -
      ((N - M) + I, (M - N) + I) \<in> mult S" 
     using N M by auto
   also have "\<dots> \<longleftrightarrow> (N - M, M - N) \<in> mult S" 
-    by (rule mult_cancel[OF tr ir])
+    by (rule mult_cancel[OF tr irrefl_on_subset[OF ir, simplified]])
   also have "\<dots> \<longleftrightarrow> (M \<noteq> N \<and> (\<forall> b \<in># N - M. \<exists> a \<in># M - N. (b,a) \<in> S))" 
   proof
     assume *: "(M \<noteq> N \<and> (\<forall> b \<in># N - M. \<exists> a \<in># M - N. (b,a) \<in> S))" 

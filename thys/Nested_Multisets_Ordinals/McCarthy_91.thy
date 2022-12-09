@@ -162,7 +162,7 @@ proof -
         hence "({#z + 11, z + 1#}, {#z#}) \<in> mult lt"
           unfolding mult_def by simp
         hence "({#z + 11, z + 1#} + ?etc2, {#z#} + ?etc2) \<in> mult lt"
-          by (rule mult_cancel[THEN iffD2, OF lt_trans lt_irrefl])
+          by (rule mult_cancel[THEN iffD2, OF lt_trans irrefl_on_subset[OF lt_irrefl, simplified]])
         thus ?thesis
           using n_ne_0 by (auto simp: image_mset_eq \<tau>_def upto_rec1[of 0 "int n - 1"])
       next
@@ -181,7 +181,7 @@ proof -
         hence "({#z + 11, 91#}, {#z#}) \<in> mult lt"
           unfolding mult_def by simp
         hence "({#z + 11, 91#} + ?etc2, {#z#} + ?etc2) \<in> mult lt"
-          by (rule mult_cancel[THEN iffD2, OF lt_trans lt_irrefl])
+          by (rule mult_cancel[THEN iffD2, OF lt_trans irrefl_on_subset[OF lt_irrefl, simplified]])
         thus ?thesis
           using n_ne_0 by (auto simp: image_mset_eq \<tau>_def upto_rec1[of 0 "int n - 1"])
       qed
