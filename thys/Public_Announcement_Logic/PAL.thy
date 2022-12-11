@@ -189,7 +189,7 @@ theorem AK_PAK: \<open>A o lift \<turnstile> p \<Longrightarrow> A; B \<turnstil
   by (induct p rule: AK.induct) (auto intro: PAK.intros(1-5) simp: tautology_ptautology)
 
 abbreviation validP
-  :: \<open>(('i :: countable, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i pfm set \<Rightarrow> 'i pfm \<Rightarrow> bool\<close>
+  :: \<open>(('i, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i pfm set \<Rightarrow> 'i pfm \<Rightarrow> bool\<close>
   (\<open>_; _ \<TTurnstile>\<^sub>! _\<close> [50, 50, 50] 50)
   where \<open>P; G \<TTurnstile>\<^sub>! p \<equiv> P; G \<TTurnstile>\<^sub>!\<star> p\<close>
 

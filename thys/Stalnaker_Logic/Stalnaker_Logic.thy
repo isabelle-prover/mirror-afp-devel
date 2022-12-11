@@ -109,7 +109,7 @@ lemma K_conjunct_imply:
   using A1 R1 assms conjunct_imply by blast
 
 lemma K_conj_imply_factor: 
-  fixes A :: \<open>(('i :: countable) fm \<Rightarrow> bool)\<close>  
+  fixes A :: \<open>('i fm \<Rightarrow> bool)\<close>  
   shows \<open>A \<turnstile> ((((K i p) \<^bold>\<and> (K i q)) \<^bold>\<longrightarrow> r) \<^bold>\<longrightarrow>((K i (p \<^bold>\<and> q)) \<^bold>\<longrightarrow> r))\<close>
 proof -
   have *: \<open>A \<turnstile> ((K i (p \<^bold>\<and> q)) \<^bold>\<longrightarrow> ((K i p) \<^bold>\<and> (K i q)))\<close>
@@ -117,7 +117,7 @@ proof -
     assume \<open>\<not> A \<turnstile> ((K i (p \<^bold>\<and> q)) \<^bold>\<longrightarrow> ((K i p) \<^bold>\<and> (K i q)))\<close>
     then have \<open>consistent A {\<^bold>\<not>((K i (p \<^bold>\<and> q)) \<^bold>\<longrightarrow> ((K i p) \<^bold>\<and> (K i q)))}\<close>
       by (metis imply.simps(1) inconsistent_imply insert_is_Un list.set(1))
-    let ?V = \<open>Extend A {\<^bold>\<not>((K i (p \<^bold>\<and> q)) \<^bold>\<longrightarrow> ((K i p) \<^bold>\<and> (K i q)))} from_nat\<close> 
+    let ?V = \<open>Extend A {\<^bold>\<not>((K i (p \<^bold>\<and> q)) \<^bold>\<longrightarrow> ((K i p) \<^bold>\<and> (K i q)))}\<close> 
     let ?M = \<open>\<lparr>\<W> = mcss A, \<K> = reach A, \<pi> = pi\<rparr>\<close> 
     have \<open>?V \<in> \<W> ?M \<and> ?M, ?V \<Turnstile> \<^bold>\<not>((K i (p \<^bold>\<and> q)) \<^bold>\<longrightarrow> ((K i p) \<^bold>\<and> (K i q)))\<close>
       using canonical_model \<open>consistent A {\<^bold>\<not> (K i (p \<^bold>\<and> q) \<^bold>\<longrightarrow> K i p \<^bold>\<and> K i q)}\<close> 
@@ -280,7 +280,7 @@ definition weakly_directed :: \<open>('i, 's) kripke \<Rightarrow> bool\<close> 
   \<open>weakly_directed M \<equiv> \<forall>i. \<forall>s \<in> \<W> M. \<forall>t \<in> \<W> M. \<forall>r \<in> \<W> M.
      (r \<in> \<K> M i s \<and> t \<in> \<K> M i s)\<longrightarrow>(\<exists> u \<in> \<W> M. (u \<in> \<K> M i r \<and> u \<in> \<K> M i t))\<close>
 
-inductive Ax_2 :: \<open>('i :: countable) fm \<Rightarrow> bool\<close> where 
+inductive Ax_2 :: \<open>'i fm \<Rightarrow> bool\<close> where 
   \<open>Ax_2 (\<^bold>\<not> K i (\<^bold>\<not> K i p) \<^bold>\<longrightarrow> K i (\<^bold>\<not> K i (\<^bold>\<not> p)))\<close> 
 
 subsection \<open>Soundness\<close>
@@ -307,7 +307,7 @@ lemma soundness_Ax_2: \<open>Ax_2 p \<Longrightarrow> weakly_directed M \<Longri
 subsection \<open>Imply completeness\<close>
 
 lemma Ax_2_weakly_directed:
-  fixes A :: \<open>(('i :: countable) fm \<Rightarrow> bool)\<close>
+  fixes A :: \<open>'i fm \<Rightarrow> bool\<close>
   assumes \<open>\<forall>p. Ax_2 p \<longrightarrow> A p\<close> \<open>consistent A V\<close> \<open>maximal A V\<close>
     and \<open>consistent A W\<close> \<open>maximal A W\<close> \<open>consistent A U\<close> \<open>maximal A U\<close>
     and \<open>W \<in> reach A i V\<close> \<open>U \<in> reach A i V\<close>
@@ -398,7 +398,7 @@ proof (rule ccontr)
 qed
 
 lemma mcs\<^sub>_\<^sub>2_weakly_directed:
-  fixes A :: \<open>(('i :: countable) fm \<Rightarrow> bool)\<close>
+  fixes A :: \<open>'i fm \<Rightarrow> bool\<close>
   assumes \<open>\<forall>p. Ax_2 p \<longrightarrow> A p\<close>
   shows \<open>weakly_directed \<lparr>\<W> = mcss A, \<K> = reach A, \<pi> = pi\<rparr>\<close>
   unfolding weakly_directed_def
@@ -416,7 +416,7 @@ proof (intro allI ballI, auto)
 qed
 
 lemma imply_completeness_K_2:
-  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M.
+  assumes valid: \<open>\<forall>(M :: ('i, 'i fm set) kripke). \<forall>w \<in> \<W> M.
     weakly_directed M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p\<close>
   shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (Ax_2 \<turnstile> imply qs p)\<close>
 proof (rule ccontr)
@@ -425,7 +425,7 @@ assume \<open>\<nexists>qs. set qs \<subseteq> G \<and> Ax_2 \<turnstile> imply 
     using K_Boole by blast
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
-  let ?V = \<open>Extend Ax_2 ?S from_nat\<close>
+  let ?V = \<open>Extend Ax_2 ?S\<close>
   let ?M = \<open>\<lparr>\<W> = mcss Ax_2, \<K> = reach Ax_2, \<pi> = pi\<rparr>\<close>
 
   have \<open>consistent Ax_2 ?S\<close>
@@ -443,10 +443,10 @@ qed
 
 section \<open>System S4.2\<close>
 
-abbreviation SystemS4_2 :: \<open>('i :: countable) fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>S\<^sub>4\<^sub>2 _" [50] 50) where
+abbreviation SystemS4_2 :: \<open>'i fm \<Rightarrow> bool\<close> ("\<turnstile>\<^sub>S\<^sub>4\<^sub>2 _" [50] 50) where
   \<open>\<turnstile>\<^sub>S\<^sub>4\<^sub>2 p \<equiv> AxT \<oplus> Ax4 \<oplus> Ax_2 \<turnstile> p\<close>
 
-abbreviation AxS4_2 :: \<open>('i :: countable) fm \<Rightarrow> bool\<close> where
+abbreviation AxS4_2 :: \<open>'i fm \<Rightarrow> bool\<close> where
   \<open>AxS4_2 \<equiv> AxT \<oplus> Ax4 \<oplus> Ax_2\<close>
 
 subsection \<open>Soundness\<close>
@@ -463,7 +463,7 @@ lemma soundness\<^sub>S\<^sub>4\<^sub>2: \<open>\<turnstile>\<^sub>S\<^sub>4\<^s
 subsection \<open>Completeness\<close>
 
 lemma imply_completeness_S4_2:
-  assumes valid: \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M.
+  assumes valid: \<open>\<forall>(M :: ('i, 'i fm set) kripke). \<forall>w \<in> \<W> M.
     w_directed_preorder M \<longrightarrow> (\<forall>q \<in> G. M, w \<Turnstile> q) \<longrightarrow> M, w \<Turnstile> p\<close>
   shows \<open>\<exists>qs. set qs \<subseteq> G \<and> (AxS4_2 \<turnstile> imply qs p)\<close>
 proof (rule ccontr)
@@ -472,7 +472,7 @@ proof (rule ccontr)
     using K_Boole by blast
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
-  let ?V = \<open>Extend AxS4_2 ?S from_nat\<close>
+  let ?V = \<open>Extend AxS4_2 ?S\<close>
   let ?M = \<open>\<lparr>\<W> = mcss AxS4_2, \<K> = reach AxS4_2, \<pi> = pi\<rparr>\<close>
 
   have \<open>consistent AxS4_2 ?S\<close>
@@ -490,7 +490,7 @@ proof (rule ccontr)
 qed
 
 lemma completeness\<^sub>S\<^sub>4\<^sub>2:
-  assumes \<open>\<forall>(M :: ('i :: countable, 'i fm set) kripke). \<forall>w \<in> \<W> M. w_directed_preorder M \<longrightarrow> M, w \<Turnstile> p\<close>
+  assumes \<open>\<forall>(M :: ('i, 'i fm set) kripke). \<forall>w \<in> \<W> M. w_directed_preorder M \<longrightarrow> M, w \<Turnstile> p\<close>
   shows \<open>\<turnstile>\<^sub>S\<^sub>4\<^sub>2 p\<close>
   using assms imply_completeness_S4_2[where G=\<open>{}\<close>] by auto
 
@@ -568,7 +568,7 @@ next
 qed (meson System_topoS4.intros)+
 
 lemma topoS4_S4:
-  fixes p :: \<open>('i :: countable) fm\<close>
+  fixes p :: \<open>'i fm\<close>
   shows \<open>\<turnstile>\<^sub>T\<^sub>o\<^sub>p p \<Longrightarrow> {} \<turnstile>\<^sub>S\<^sub>4 p\<close>
   unfolding empty_S4
 proof (induct p rule: System_topoS4.induct)
@@ -598,6 +598,6 @@ next
 qed (meson AK.intros)+
 
 theorem main\<^sub>S\<^sub>4': \<open>{} \<TTurnstile>\<^sub>S\<^sub>4 p \<longleftrightarrow> (\<turnstile>\<^sub>T\<^sub>o\<^sub>p p)\<close>
-  using main\<^sub>S\<^sub>4[of "{}"] S4_topoS4 topoS4_S4 by blast
+  using main\<^sub>S\<^sub>4[of "{}"] S4_topoS4 topoS4_S4 by fast
 
 end

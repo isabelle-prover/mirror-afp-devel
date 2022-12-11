@@ -11,7 +11,7 @@
   (Cambridge University Press 2001).
 *)
 
-theory Epistemic_Logic imports "HOL-Library.Countable" begin
+theory Epistemic_Logic imports Maximal_Consistent_Sets begin
 
 section \<open>Syntax\<close>
 
@@ -543,8 +543,35 @@ lemma inconsistent_imply:
 
 subsection \<open>Maximal consistent sets\<close>
 
-definition maximal :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> bool\<close> where
-  \<open>maximal A S \<equiv> \<forall>p. p \<notin> S \<longrightarrow> \<not> consistent A ({p} \<union> S)\<close>
+lemma fm_any_size: \<open>\<exists>p :: 'i fm. size p = n\<close>
+proof (induct n)
+  case 0
+  then show ?case
+    using fm.size(7) by blast
+next
+  case (Suc n)
+  then show ?case
+    by (metis add.commute add_0 add_Suc_right fm.size(12))
+qed
+
+lemma infinite_UNIV_fm: \<open>infinite (UNIV :: 'i fm set)\<close>
+  using fm_any_size by (metis (full_types) finite_imageI infinite_UNIV_nat surj_def)
+
+interpretation MCS \<open>consistent A\<close> for A :: \<open>'i fm \<Rightarrow> bool\<close>
+proof
+  show \<open>infinite (UNIV :: 'i fm set)\<close>
+    using infinite_UNIV_fm .
+next
+  fix S S'
+  assume \<open>consistent A S\<close> \<open>S' \<subseteq> S\<close>
+  then show \<open>consistent A S'\<close>
+    unfolding consistent_def by simp
+next
+  fix S
+  assume \<open>\<not> consistent A S\<close>
+  then show \<open>\<exists>S' \<subseteq> S. finite S' \<and> \<not> consistent A S'\<close>
+    unfolding consistent_def by blast
+qed
 
 theorem deriv_in_maximal:
   assumes \<open>consistent A V\<close> \<open>maximal A V\<close> \<open>A \<turnstile> p\<close>
@@ -599,101 +626,18 @@ theorem mcs_properties:
     and \<open>p \<in> V \<Longrightarrow> (p \<^bold>\<longrightarrow> q) \<in> V \<Longrightarrow> q \<in> V\<close>
   using assms deriv_in_maximal exactly_one_in_maximal consequent_in_maximal by blast+
 
-subsection \<open>Lindenbaum extension\<close>
-
-instantiation fm :: (countable) countable begin
-instance by countable_datatype
-end
-
-primrec extend :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> (nat \<Rightarrow> 'i fm) \<Rightarrow> nat \<Rightarrow> 'i fm set\<close> where
-  \<open>extend A S f 0 = S\<close>
-| \<open>extend A S f (Suc n) =
-    (if consistent A ({f n} \<union> extend A S f n)
-     then {f n} \<union> extend A S f n
-     else extend A S f n)\<close>
-
-definition Extend :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> (nat \<Rightarrow> 'i fm) \<Rightarrow> 'i fm set\<close> where
-  \<open>Extend A S f \<equiv> \<Union>n. extend A S f n\<close>
-
-lemma Extend_subset: \<open>S \<subseteq> Extend A S f\<close>
-  unfolding Extend_def using Union_upper extend.simps(1) range_eqI
-  by metis
-
-lemma extend_bound: \<open>(\<Union>n \<le> m. extend A S f n) = extend A S f m\<close>
-  by (induct m) (simp_all add: atMost_Suc)
-
-lemma consistent_extend: \<open>consistent A S \<Longrightarrow> consistent A (extend A S f n)\<close>
-  by (induct n) simp_all
-
-lemma UN_finite_bound:
-  assumes \<open>finite A\<close> \<open>A \<subseteq> (\<Union>n. f n)\<close>
-  shows \<open>\<exists>m :: nat. A \<subseteq> (\<Union>n \<le> m. f n)\<close>
-  using assms
-proof (induct rule: finite_induct)
-  case (insert x A)
-  then obtain m where \<open>A \<subseteq> (\<Union>n \<le> m. f n)\<close>
-    by fast
-  then have \<open>A \<subseteq> (\<Union>n \<le> (m + k). f n)\<close> for k
-    by fastforce
-  moreover obtain m' where \<open>x \<in> f m'\<close>
-    using insert(4) by blast
-  ultimately have \<open>{x} \<union> A \<subseteq> (\<Union>n \<le> m + m'. f n)\<close>
-    by auto
-  then show ?case
-    by blast
-qed simp
-
-lemma consistent_Extend:
-  assumes \<open>consistent A S\<close>
-  shows \<open>consistent A (Extend A S f)\<close>
-  unfolding Extend_def
-proof (rule ccontr)
-  assume \<open>\<not> consistent A (\<Union>n. extend A S f n)\<close>
-  then obtain S' where \<open>A \<turnstile> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close> \<open>set S' \<subseteq> (\<Union>n. extend A S f n)\<close>
-    unfolding consistent_def by blast
-  then obtain m where \<open>set S' \<subseteq> (\<Union>n \<le> m. extend A S f n)\<close>
-    using UN_finite_bound by (metis List.finite_set)
-  then have \<open>set S' \<subseteq> extend A S f m\<close>
-    using extend_bound by blast
-  moreover have \<open>consistent A (extend A S f m)\<close>
-    using assms consistent_extend by blast
-  ultimately show False
-    unfolding consistent_def using \<open>A \<turnstile> S' \<^bold>\<leadsto> \<^bold>\<bottom>\<close> by blast
-qed
-
-lemma maximal_Extend:
-  assumes \<open>surj f\<close>
-  shows \<open>maximal A (Extend A S f)\<close>
-proof (rule ccontr)
-  assume \<open>\<not> maximal A (Extend A S f)\<close>
-  then obtain p where \<open>p \<notin> Extend A S f\<close> \<open>consistent A ({p} \<union> Extend A S f)\<close>
-    unfolding maximal_def using assms consistent_Extend by blast
-  obtain k where n: \<open>f k = p\<close>
-    using \<open>surj f\<close> unfolding surj_def by metis
-  then have \<open>p \<notin> extend A S f (Suc k)\<close>
-    using \<open>p \<notin> Extend A S f\<close> unfolding Extend_def by blast
-  then have \<open>\<not> consistent A ({p} \<union> extend A S f k)\<close>
-    using n by fastforce
-  moreover have \<open>{p} \<union> extend A S f k \<subseteq> {p} \<union> Extend A S f\<close>
-    unfolding Extend_def by blast
-  ultimately have \<open>\<not> consistent A ({p} \<union> Extend A S f)\<close>
-    unfolding consistent_def by fastforce
-  then show False
-    using \<open>consistent A ({p} \<union> Extend A S f)\<close> by blast
-qed
-
 lemma maximal_extension:
-  fixes V :: \<open>('i :: countable) fm set\<close>
+  fixes V :: \<open>'i fm set\<close>
   assumes \<open>consistent A V\<close>
   obtains W where \<open>V \<subseteq> W\<close> \<open>consistent A W\<close> \<open>maximal A W\<close>
 proof -
-  let ?W = \<open>Extend A V from_nat\<close>
+  let ?W = \<open>Extend A V\<close>
   have \<open>V \<subseteq> ?W\<close>
     using Extend_subset by blast
   moreover have \<open>consistent A ?W\<close>
     using assms consistent_Extend by blast
   moreover have \<open>maximal A ?W\<close>
-    using assms maximal_Extend surj_from_nat by blast
+    using assms maximal_Extend by blast
   ultimately show ?thesis
     using that by blast
 qed
@@ -716,7 +660,7 @@ abbreviation canonical :: \<open>('i fm \<Rightarrow> bool) \<Rightarrow> ('i, '
   \<open>canonical A \<equiv> \<lparr>\<W> = mcss A, \<K> = reach A, \<pi> = pi\<rparr>\<close>
 
 lemma truth_lemma:
-  fixes p :: \<open>('i :: countable) fm\<close>
+  fixes p :: \<open>'i fm\<close>
   assumes \<open>consistent A V\<close> and \<open>maximal A V\<close>
   shows \<open>p \<in> V \<longleftrightarrow> canonical A, V \<Turnstile> p\<close>
   using assms
@@ -866,13 +810,13 @@ qed
 
 lemma canonical_model:
   assumes \<open>consistent A S\<close> and \<open>p \<in> S\<close>
-  defines \<open>V \<equiv> Extend A S from_nat\<close> and \<open>M \<equiv> canonical A\<close>
+  defines \<open>V \<equiv> Extend A S\<close> and \<open>M \<equiv> canonical A\<close>
   shows \<open>M, V \<Turnstile> p\<close> and \<open>consistent A V\<close> and \<open>maximal A V\<close>
 proof -
   have \<open>consistent A V\<close>
     using \<open>consistent A S\<close> unfolding V_def using consistent_Extend by blast
   have \<open>maximal A V\<close>
-    unfolding V_def using maximal_Extend surj_from_nat by blast
+    unfolding V_def using maximal_Extend by blast
   { fix x
     assume \<open>x \<in> S\<close>
     then have \<open>x \<in> V\<close>
@@ -887,7 +831,7 @@ qed
 
 subsection \<open>Completeness\<close>
 
-abbreviation valid :: \<open>(('i :: countable, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> 'i fm \<Rightarrow> bool\<close>
+abbreviation valid :: \<open>(('i, 'i fm set) kripke \<Rightarrow> bool) \<Rightarrow> 'i fm set \<Rightarrow> 'i fm \<Rightarrow> bool\<close>
   (\<open>_; _ \<TTurnstile> _\<close> [50, 50, 50] 50)
   where \<open>P; G \<TTurnstile> p \<equiv> P; G \<TTurnstile>\<star> p\<close>
 
@@ -900,7 +844,7 @@ proof (rule ccontr)
     using K_Boole by blast
 
   let ?S = \<open>{\<^bold>\<not> p} \<union> G\<close>
-  let ?V = \<open>Extend A ?S from_nat\<close>
+  let ?V = \<open>Extend A ?S\<close>
   let ?M = \<open>canonical A\<close>
 
   have \<open>consistent A ?S\<close>
@@ -908,7 +852,7 @@ proof (rule ccontr)
   then have \<open>?M, ?V \<Turnstile> (\<^bold>\<not> p)\<close> \<open>\<forall>q \<in> G. ?M, ?V \<Turnstile> q\<close>
     using canonical_model by fastforce+
   moreover have \<open>?V \<in> mcss A\<close>
-    using \<open>consistent A ?S\<close> consistent_Extend maximal_Extend surj_from_nat by blast
+    using \<open>consistent A ?S\<close> consistent_Extend maximal_Extend by blast
   ultimately have \<open>?M, ?V \<Turnstile> p\<close>
     using assms by simp
   then show False
