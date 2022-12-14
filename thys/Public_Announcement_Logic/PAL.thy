@@ -2,7 +2,7 @@
   File:      PAL.thy
   Author:    Asta Halkjær From
 
-  This work is a formalization of public announcement logic with countably many agents.
+  This work is a formalization of public announcement logic.
   It includes proofs of soundness and completeness for variants of the axiom system
     PA + DIST! + NEC!.
   The completeness proofs build on the Epistemic Logic theory.

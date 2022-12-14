@@ -2,8 +2,8 @@
   File:      Stalnaker_Logic.thy
   Author:    Laura Gamboa Guzman
 
-  This work is a formalization of Stalnaker's epistemic logic with countably 
-  many agents and its soundness and completeness theorems, as well as the 
+  This work is a formalization of Stalnaker's epistemic logic
+  and its soundness and completeness theorems, as well as the 
   equivalence between the axiomatization of S4 available in the Epistemic 
   Logic theory and the topological one.
   It builds on the Epistemic_Logic theory by A.H. From.

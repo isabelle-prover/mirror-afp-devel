@@ -2,7 +2,7 @@
   File:      Epistemic_Logic.thy
   Author:    Asta Halkjær From
 
-  This work is a formalization of epistemic logic with countably many agents.
+  This work is a formalization of epistemic logic.
   It includes proofs of soundness and completeness for the axiom system K.
   The completeness proof is based on the textbook "Reasoning About Knowledge"
   by Fagin, Halpern, Moses and Vardi (MIT Press 1995).
