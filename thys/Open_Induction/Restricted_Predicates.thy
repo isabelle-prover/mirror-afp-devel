@@ -171,17 +171,6 @@ proof -
   then show ?thesis unfolding wfp_on_def by blast
 qed
 
-definition antisymp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "antisymp_on P A \<longleftrightarrow> (\<forall>a\<in>A. \<forall>b\<in>A. P a b \<and> P b a \<longrightarrow> a = b)"
-
-lemma antisymp_onI [Pure.intro]:
-  "(\<And>a b. \<lbrakk>a \<in> A; b \<in> A; P a b; P b a\<rbrakk> \<Longrightarrow> a = b) \<Longrightarrow> antisymp_on P A"
-  by (auto simp: antisymp_on_def)
-
-lemma antisymp_on_reflclp [simp]:
-  "antisymp_on P\<^sup>=\<^sup>= A = antisymp_on P A"
-  by (auto simp: antisymp_on_def)
-
 definition qo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
   "qo_on P A \<longleftrightarrow> reflp_on A P \<and> transp_on P A"
 
@@ -219,8 +208,8 @@ lemma po_on_subset:
 
 lemma transp_on_irreflp_on_imp_antisymp_on:
   assumes "transp_on P A" and "irreflp_on A P"
-  shows "antisymp_on (P\<^sup>=\<^sup>=) A"
-proof
+  shows "antisymp_on A (P\<^sup>=\<^sup>=)"
+proof (rule antisymp_onI)
   fix a b assume "a \<in> A"
     and "b \<in> A" and "P\<^sup>=\<^sup>= a b" and "P\<^sup>=\<^sup>= b a"
   show "a = b"
@@ -234,7 +223,7 @@ qed
 
 lemma po_on_imp_antisymp_on:
   assumes "po_on P A"
-  shows "antisymp_on P A"
+  shows "antisymp_on A P"
 using transp_on_irreflp_on_imp_antisymp_on [of P A] and assms by (auto simp: po_on_def)
 
 lemma strict_reflclp [simp]:

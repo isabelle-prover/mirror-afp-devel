@@ -36,7 +36,7 @@ by (auto simp: glb_def)
 
 text \<open>Antisymmetric relations have unique glbs.\<close>
 lemma glb_unique:
-  "antisymp_on P A \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> glb P B x \<Longrightarrow> glb P B y \<Longrightarrow> x = y"
+  "antisymp_on A P \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> glb P B x \<Longrightarrow> glb P B y \<Longrightarrow> x = y"
 by (auto simp: glb_def antisymp_on_def)
 
 context pred_on

@@ -28,9 +28,9 @@ by (force simp: strict_suffix_def po_on_def transp_on_def irreflp_on_def)
 subsection \<open>Lexicographic Order on Infinite Sequences\<close>
 
 lemma antisymp_on_LEX:
-  assumes "irreflp_on A P" and "antisymp_on P A"
-  shows "antisymp_on (LEX P) (SEQ A)"
-proof
+  assumes "irreflp_on A P" and "antisymp_on A P"
+  shows "antisymp_on (SEQ A) (LEX P)"
+proof (rule antisymp_onI)
   fix f g assume SEQ: "f \<in> SEQ A" "g \<in> SEQ A" and "LEX P f g" and "LEX P g f"
   then obtain i j where "P (f i) (g i)" and "P (g j) (f j)"
     and "\<forall>k<i. f k = g k" and "\<forall>k<j. g k = f k" by (auto simp: LEX_def)
