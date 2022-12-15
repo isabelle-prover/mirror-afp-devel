@@ -687,4 +687,18 @@ proof (rule Set.subsetI)
   qed
 qed
 
+lemma imgu_range_vars_subset: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
+  fixes \<mu> :: "('f, 'v) subst" and E :: "('f, 'v) equations"
+  assumes imgu_\<mu>: "is_imgu \<mu> E" and fin_E: "finite E"
+  shows "range_vars \<mu> \<subseteq> (\<Union>e \<in> E. vars_term (fst e) \<union> vars_term (snd e))"
+proof -
+  have "range_vars \<mu> = (\<Union>x \<in> subst_domain \<mu>. vars_term (\<mu> x))"
+    by (simp add: range_vars_def)
+  also have "\<dots> \<subseteq> (\<Union>x \<in> (\<Union>e \<in> E. vars_term (fst e) \<union> vars_term (snd e)). vars_term (\<mu> x))"
+    using imgu_subst_domain_subset[OF imgu_\<mu> fin_E] by fast
+  also have "\<dots> \<subseteq> (\<Union>e \<in> E. vars_term (fst e) \<union> vars_term (snd e))"
+    using imgu_range_vars_of_equations_vars_subset[OF imgu_\<mu> fin_E] by metis
+  finally show ?thesis .
+qed
+
 end
