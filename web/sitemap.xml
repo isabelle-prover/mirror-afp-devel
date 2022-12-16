@@ -3,18 +3,54 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Quantifier_Elimination_Hybrid.html</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/algebraic_numbers/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/benor_kozen_reif/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/cordwell/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/datatype_order_generator/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/descartes_sign_rule/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/factor_algebraic_polynomial/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/platzer/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/polynomial_interpolation/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/tan/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/dependencies/virtual_substitution/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Birkhoff_Finite_Distributive_Lattices.html</loc>
     <lastmod>2022-12-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/doty/</loc>
-    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2022-12-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Multitape_To_Singletape_TM.html</loc>
@@ -30,9 +66,6 @@
     <lastmod>2022-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/containers/</loc>
-    <lastmod>2022-11-25T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/</loc>
     <lastmod>2022-11-25T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/park/</loc>
@@ -251,9 +284,6 @@
     <loc>/entries/Involutions2Squares.html</loc>
     <lastmod>2022-08-15T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/datatype_order_generator/</loc>
-    <lastmod>2022-08-09T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/dependencies/native_word/</loc>
     <lastmod>2022-08-09T00:00:00+00:00</lastmod>
   </url><url>
@@ -385,9 +415,6 @@
   </url><url>
     <loc>/dependencies/sunflowers/</loc>
     <lastmod>2022-05-08T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/benor_kozen_reif/</loc>
-    <lastmod>2022-04-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Fishers_Inequality.html</loc>
     <lastmod>2022-04-21T00:00:00+00:00</lastmod>
@@ -668,9 +695,6 @@
     <loc>/entries/Hahn_Jordan_Decomposition.html</loc>
     <lastmod>2021-11-19T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/algebraic_numbers/</loc>
-    <lastmod>2021-11-08T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/PAL.html</loc>
     <lastmod>2021-11-08T00:00:00+00:00</lastmod>
   </url><url>
@@ -758,13 +782,7 @@
     <loc>/dependencies/subset_boolean_algebras/</loc>
     <lastmod>2021-10-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/cordwell/</loc>
-    <lastmod>2021-10-02T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/authors/mitsch/</loc>
-    <lastmod>2021-10-02T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/platzer/</loc>
     <lastmod>2021-10-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/scharager/</loc>
@@ -848,9 +866,6 @@
     <loc>/dependencies/complex_geometry/</loc>
     <lastmod>2021-09-03T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/dependencies/factor_algebraic_polynomial/</loc>
-    <lastmod>2021-09-03T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/Cubic_Quartic_Equations.html</loc>
     <lastmod>2021-09-03T00:00:00+00:00</lastmod>
   </url><url>
@@ -861,9 +876,6 @@
     <lastmod>2021-08-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/li/</loc>
-    <lastmod>2021-08-21T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/dependencies/polynomial_interpolation/</loc>
     <lastmod>2021-08-21T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Three_Circles.html</loc>
@@ -1008,9 +1020,6 @@
     <lastmod>2021-04-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/sturm_tarski/</loc>
-    <lastmod>2021-04-24T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/tan/</loc>
     <lastmod>2021-04-24T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/BenOr_Kozen_Reif.html</loc>
@@ -5581,6 +5590,8 @@
     <loc>/theories/qr_decomposition/</loc>
   </url><url>
     <loc>/theories/quantales/</loc>
+  </url><url>
+    <loc>/theories/quantifier_elimination_hybrid/</loc>
   </url><url>
     <loc>/theories/quasi_borel_spaces/</loc>
   </url><url>

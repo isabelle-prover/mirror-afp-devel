@@ -1,0 +1,21 @@
+chapter AFP
+
+session Quantifier_Elimination_Hybrid (AFP) = Algebraic_Numbers +
+  options [timeout = 1200]
+  sessions
+    Datatype_Order_Generator
+    Descartes_Sign_Rule
+    Factor_Algebraic_Polynomial
+    "HOL-Analysis"
+    "HOL-Computational_Algebra"
+    Polynomial_Interpolation
+    Virtual_Substitution
+    BenOr_Kozen_Reif
+  theories
+    Hybrid_Multiv_Matrix
+    Hybrid_Multiv_Algorithm
+    Hybrid_Multiv_Matrix_Proofs
+    Hybrid_Multiv_Algorithm_Proofs
+  document_files
+    "root.tex"
+    "root.bib"

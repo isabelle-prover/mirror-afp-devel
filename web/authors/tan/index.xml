@@ -6,7 +6,16 @@
     <description>Recent content in tan on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sat, 24 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="/authors/tan/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 15 Dec 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/tan/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
+      <link>/entries/Quantifier_Elimination_Hybrid.html</link>
+      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Quantifier_Elimination_Hybrid.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>The BKR Decision Procedure for Univariate Real Arithmetic</title>
       <link>/entries/BenOr_Kozen_Reif.html</link>

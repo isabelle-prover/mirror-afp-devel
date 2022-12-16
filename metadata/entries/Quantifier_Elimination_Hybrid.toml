@@ -1,0 +1,36 @@
+title = "A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL"
+date = 2022-12-15
+topics = [
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = "We formalize a multivariate quantifier elimination (QE) algorithm in the theorem prover Isabelle/HOL. Our algorithm is complete, in that it is able to reduce <i>any</i> quantified formula in the first-order logic of real arithmetic to a logically equivalent quantifier-free formula. The algorithm we formalize is a hybrid mixture of Tarski's original QE algorithm and the Ben-Or, Kozen, and Reif algorithm, and it is the first complete multivariate QE algorithm formalized in Isabelle/HOL."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.cordwell]
+email = "cordwell_email"
+
+[authors.tan]
+email = "tan_email"
+
+[authors.platzer]
+email = "platzer_email"
+
+[contributors]
+
+[notify]
+cordwell = "cordwell_email"
+tan = "tan_email"
+platzer = "platzer_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2209.10978",
+]
+pubs = []
