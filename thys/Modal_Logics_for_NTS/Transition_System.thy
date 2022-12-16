@@ -7,9 +7,15 @@ section \<open>Nominal Transition Systems and Bisimulations\<close>
 
 subsection \<open>Basic Lemmas\<close>
 
-lemma symp_eqvt [eqvt]:
+lemma symp_on_eqvt [eqvt]:
+  assumes "symp_on A R" shows "symp_on (p \<bullet> A) (p \<bullet> R)"
+  using assms
+  by (auto simp: symp_on_def permute_fun_def permute_set_def permute_pure)
+
+lemma symp_eqvt:
   assumes "symp R" shows "symp (p \<bullet> R)"
-using assms unfolding symp_def by (subst permute_fun_def)+ (simp add: permute_pure)
+  using assms
+  by (auto simp: symp_on_def permute_fun_def permute_pure)
 
 
 subsection \<open>Nominal transition systems\<close>
