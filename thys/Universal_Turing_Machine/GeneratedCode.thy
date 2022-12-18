@@ -7,8 +7,8 @@ chapter \<open>Code extraction for interpreters and compilers\<close>
 theory GeneratedCode
   imports HaltingProblems_K_H
           Abacus_Hoare
-(*        "~~/src/HOL/Library/Code_Target_Numeral" (* see doc codegen.pdf *) *) 
-          "~~/src/HOL/Library/Code_Binary_Nat" (* see doc codegen.pdf *) 
+(*        "HOL-Library.Code_Target_Numeral" (* see doc codegen.pdf *) *)
+          "HOL-Library.Code_Binary_Nat" (* see doc codegen.pdf *)
 
 begin
 
