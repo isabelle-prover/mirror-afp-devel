@@ -41,7 +41,7 @@ lemma list_before_trans[trans]: "distinct l \<Longrightarrow> trans (list_before
   by (clarsimp simp: trans_def list_before_rel_alt) (metis index_nth_id less_trans)    
     
 lemma list_before_asym: "distinct l \<Longrightarrow> asym (list_before_rel l)"
-  by (meson asym.intros irrefl_def list_before_irrefl_eq_distinct list_before_trans transE)
+  by (meson asymI irrefl_def list_before_irrefl_eq_distinct list_before_trans transE)
 
 text \<open>Structural properties on the list\<close>    
 lemma list_before_rel_empty[simp]: "list_before_rel [] = {}"    

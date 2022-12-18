@@ -155,8 +155,8 @@ definition weights_nat :: "nat weights" where "weights_nat =
 
 instance
   by (intro_classes, unfold_locales)
-    (auto simp: weights_nat_def SN_iff_wf asymp.simps irreflp_def prod_encode_def
-      intro!: wf_subset[OF wf_lex_prod])
+    (auto simp: weights_nat_def SN_iff_wf irreflp_def prod_encode_def
+     intro: asympI intro!: wf_subset[OF wf_lex_prod])
 end
 
 definition prover :: "((nat, nat) Term.term literal list \<times> nat) list \<Rightarrow> bool" where

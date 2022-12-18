@@ -681,8 +681,8 @@ definition weights_unit :: "unit weights" where "weights_unit =
   \<lparr>w = Suc \<circ> snd, w0 = 1, pr_strict = \<lambda>(_, n) (_, m). n > m, least = \<lambda>_. True, scf = \<lambda>_ _. 1\<rparr>"
 
 instance
-  by (intro_classes, unfold_locales) (auto simp: weights_unit_def SN_iff_wf asymp.simps irreflp_def
-      intro!: wf_subset[OF wf_inv_image[OF wf], of _ snd])
+  by (intro_classes, unfold_locales) (auto simp: weights_unit_def SN_iff_wf irreflp_def
+      intro: asympI intro!: wf_subset[OF wf_inv_image[OF wf], of _ snd])
 end
 
 global_interpretation KBO:
@@ -724,7 +724,7 @@ lemma less_kbo_subst:
 lemma wfP_less_kbo: "wfP less_kbo"
 proof -
   have "SN {(x, y). fst (kbo x y)}"
-    using pr_strict_asymp by (fastforce simp: asymp.simps irreflp_def intro!: KBO.S_SN scf_ok)
+    using pr_strict_asymp by (fastforce simp: asympI irreflp_def intro!: KBO.S_SN scf_ok)
   then show ?thesis
     unfolding SN_iff_wf wfP_def by (rule wf_subset) (auto simp: less_kbo_def)
 qed

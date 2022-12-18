@@ -892,7 +892,7 @@ lemma trans_VWF [iff]: "trans VWF"
   by (simp add: VWF_def antisym_VWO trans_VWO trans_diff_Id)
 
 lemma asym_VWF [iff]: "asym VWF"
-  by (metis VWF_def asym.intros irrefl_diff_Id wf_VWF wf_not_sym)
+  by (metis wf_VWF wf_imp_asym)
 
 lemma total_VWF [iff]: "total VWF"
   using VWF_def total_VWOId by auto

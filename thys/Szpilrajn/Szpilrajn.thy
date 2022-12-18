@@ -99,11 +99,11 @@ lemma asym_if_irrefl_trans: "irrefl r \<Longrightarrow> trans r \<Longrightarrow
   by (intro asymI) (auto simp: irrefl_def trans_def)
 
 lemma antisym_if_irrefl_trans: "irrefl r \<Longrightarrow> trans r \<Longrightarrow> antisym r"
-  using antisym_def asym.cases asym_if_irrefl_trans by auto
+  using antisym_def asym_if_irrefl_trans by (auto dest: asymD)
     
 lemma asym_factor_asym_rel[simp]: "asym r \<Longrightarrow> asym_factor r = r"
   unfolding asym_factor_def
-  by (cases r rule: asym.cases) auto
+  by (auto dest: asymD)
 
 lemma irrefl_trans_asym_factor_id[simp]: "irrefl r \<Longrightarrow> trans r \<Longrightarrow> asym_factor r = r"
   using asym_factor_asym_rel[OF asym_if_irrefl_trans] .

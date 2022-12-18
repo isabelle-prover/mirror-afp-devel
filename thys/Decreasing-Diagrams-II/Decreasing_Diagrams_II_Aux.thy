@@ -26,7 +26,7 @@ abbreviation "strict_order R \<equiv> irrefl R \<and> trans R"
 
 (* move to Relation.thy? *)
 lemma order_asym: "trans R \<Longrightarrow> asym R = irrefl R"
-unfolding asym.simps irrefl_def trans_def by meson
+  by (metis asymD asym_if_irrefl_and_trans irreflI)
 
 (* move to Relation.thy? *)
 lemma strict_order_strict: "strict_order q \<Longrightarrow> strict (\<lambda>a b. (a, b) \<in> q\<^sup>=) = (\<lambda>a b. (a, b) \<in> q)"
@@ -100,7 +100,7 @@ proof (intro asymI2 notI)
   assume "(b,a) \<in> Sup C" then obtain "S" where "S \<in> C" and "(b,a) \<in> S" by blast
   from \<open>R \<in> C\<close> and \<open>S \<in> C\<close> and \<open>set_chain C\<close> have "R \<union> S = R \<or> R \<union> S = S" by blast
   with \<open>R \<in> C\<close> and \<open>S \<in> C\<close> have "R \<union> S \<in> C" by fastforce
-  with \<open>(a,b) \<in> R\<close> and \<open>(b,a) \<in> S\<close> and asym show "False" unfolding asym.simps by blast
+  with \<open>(a,b) \<in> R\<close> and \<open>(b,a) \<in> S\<close> and asym[THEN asymD] show "False" by blast
 qed
 
 lemma strict_order_lfp:
