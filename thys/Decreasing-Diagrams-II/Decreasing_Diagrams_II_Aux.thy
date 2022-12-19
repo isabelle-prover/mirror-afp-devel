@@ -18,15 +18,7 @@ begin
 subsection \<open>Trivialities\<close>
 
 (* move to Relation.thy? *)
-lemma asymI2: "(\<And>a b. (a,b) \<in> R \<Longrightarrow> (b,a) \<notin> R) \<Longrightarrow> asym R"
-by (metis asymI irrefl_def)
-
-(* move to Relation.thy? *)
 abbreviation "strict_order R \<equiv> irrefl R \<and> trans R"
-
-(* move to Relation.thy? *)
-lemma order_asym: "trans R \<Longrightarrow> asym R = irrefl R"
-  by (metis asymD asym_if_irrefl_and_trans irreflI)
 
 (* move to Relation.thy? *)
 lemma strict_order_strict: "strict_order q \<Longrightarrow> strict (\<lambda>a b. (a, b) \<in> q\<^sup>=) = (\<lambda>a b. (a, b) \<in> q)"
@@ -39,10 +31,6 @@ by (auto simp add: mono_def)
 (* move to Wellfounded.thy? *)
 lemma mono_lex2: "mono (lex_prod r)"
 by (auto simp add: mono_def)
-
-(* move to Wellfounded.thy? *)
-lemma irrefl_lex_prod: "irrefl R \<Longrightarrow> irrefl S \<Longrightarrow> irrefl (R <*lex*> S)"
-by (auto simp add: lex_prod_def irrefl_def)
 
 lemmas converse_inward = rtrancl_converse[symmetric] converse_Un converse_UNION converse_relcomp
   converse_converse converse_Id
@@ -94,7 +82,7 @@ qed
 lemma asym_Sup_of_chain:
   assumes "set_chain C" and asym: "\<And> R. R \<in> C \<Longrightarrow> asym R"
   shows "asym (Sup C)"
-proof (intro asymI2 notI)
+proof (intro asymI notI)
   fix a b
   assume "(a,b) \<in> Sup C" then obtain "R" where "R \<in> C" and "(a,b) \<in> R" by blast
   assume "(b,a) \<in> Sup C" then obtain "S" where "S \<in> C" and "(b,a) \<in> S" by blast
@@ -109,7 +97,9 @@ lemma strict_order_lfp:
 proof (intro lfp_chain_induct[of f strict_order])
   fix C :: "('b \<times> 'b) set set"
   assume "set_chain C" and "\<forall>R \<in> C. strict_order R"
-  from this show "strict_order (Sup C)" by (metis asym_Sup_of_chain trans_Sup_of_chain order_asym)
+  from this show "strict_order (Sup C)"
+    using asym_on_iff_irrefl_on_if_trans[of _ UNIV]
+    by (metis asym_Sup_of_chain trans_Sup_of_chain)
 qed fact+
 
 lemma trans_lfp:

@@ -407,7 +407,7 @@ Compactness of @{term "(\<Turnstile>)"} implies that @{const Red_F} is equivalen
 \<close>
 
 interpretation fin_std_red_F: finitary_standard_formula_redundancy Bot "(\<Turnstile>)" "(\<prec>)"
-  using transp_less asymp_less wfP_less by unfold_locales
+  using transp_less asymp_on_less wfP_less by unfold_locales
 
 lemma Red_F_conv: "Red_F = fin_std_red_F.Red_F"
 proof (intro ext)
@@ -482,7 +482,7 @@ Compactness of @{term "(\<Turnstile>)"} implies that @{const Red_I} is equivalen
 \<close>
 
 interpretation fin_std_red: calculus_with_finitary_standard_redundancy Inf Bot "(\<Turnstile>)"
-  using transp_less asymp_less wfP_less Inf_has_prem Inf_reductive by unfold_locales
+  using transp_less asymp_on_less wfP_less Inf_has_prem Inf_reductive by unfold_locales
 
 lemma redundant_infer_conv: "redundant_infer = fin_std_red.redundant_infer"
 proof (intro ext)
