@@ -76,7 +76,7 @@ fun compile_c_file source =
     val bash_output = File.bash_path output
     val res =
       Isabelle_System.bash_process
-        (Bash.script (bash_cc ^ " -c -o " ^ bash_output ^ " " ^ bash_source))
+        (Bash.script (bash_cc ^ " -no-pie -c -o " ^ bash_output ^ " " ^ bash_source))
     val err = Process_Result.err res
     val out = Process_Result.out res
     val _ = if err <> "" then warning err else ()
@@ -101,7 +101,7 @@ fun link sources =
     val bash_output = File.bash_path output
     val res =
       Isabelle_System.bash_process
-        (Bash.script (bash_cc ^ " -o " ^ bash_output ^ " " ^ bash_sources))
+        (Bash.script (bash_cc ^ " -no-pie -o " ^ bash_output ^ " " ^ bash_sources))
     val err = Process_Result.err res
     val out = Process_Result.out res
     val _ = if err <> "" then warning err else ()
