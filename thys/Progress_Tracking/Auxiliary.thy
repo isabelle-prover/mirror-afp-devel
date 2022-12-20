@@ -9,6 +9,8 @@ theory Auxiliary
 begin
 (*>*)
 
+unbundle multiset.lifting
+
 subsection\<open>General\<close>
 
 lemma sum_list_hd_tl:
@@ -132,7 +134,7 @@ lemma mset_neg_empty_iff: "mset_neg M = {#} \<longleftrightarrow> (\<forall>t. 0
     subgoal for y
       apply (induct y)
       apply (subst mset_neg_minus)
-      apply transfer
+      apply transfer'
       apply (simp add: Diff_eq_empty_iff_mset mset_subset_eqI)
       done
     done
@@ -400,6 +402,9 @@ no_notation IMPL (infix "imp" 60)
 notation AND  (infixr "aand" 70)
 notation OR   (infixr "or" 65)
 notation IMPL (infixr "imp" 60)
+
+lifting_update multiset.lifting
+lifting_forget multiset.lifting
 
 (*<*)
 end
