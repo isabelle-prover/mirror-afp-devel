@@ -10,6 +10,8 @@ imports
   "HOL-Computational_Algebra.Computational_Algebra"
 begin
 
+unbundle multiset.lifting
+
 subsection \<open>Miscellaneous\<close>
 
 lemma atLeastAtMost_nat_numeral:
@@ -540,5 +542,7 @@ proof (rule mpoly_eqI)
   qed
 qed
 
+lifting_update multiset.lifting
+lifting_forget multiset.lifting
 
 end

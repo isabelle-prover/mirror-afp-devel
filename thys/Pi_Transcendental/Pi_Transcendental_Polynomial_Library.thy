@@ -10,6 +10,8 @@ theory Pi_Transcendental_Polynomial_Library
   imports "HOL-Computational_Algebra.Computational_Algebra"
 begin
 
+unbundle multiset.lifting
+
 (* TODO: Move all this *)
 lemma Ints_sum: "(\<And>x. x \<in> A \<Longrightarrow> f x \<in> \<int>) \<Longrightarrow> sum f A \<in> \<int>"
   by (induction A rule: infinite_finite_induct) auto
@@ -377,5 +379,8 @@ proof -
        (auto simp: coeff_map_poly q_def nth_default_def f coeff_eq_0 simp del: upt_Suc)
   with that show ?thesis by blast
 qed
+
+lifting_update multiset.lifting
+lifting_forget multiset.lifting
 
 end

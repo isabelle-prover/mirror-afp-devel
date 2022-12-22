@@ -11,6 +11,8 @@ abbrevs
   "!z" = "\<^sub>z"
 begin
 
+unbundle multiset.lifting
+
 
 subsection \<open>Definition of Signed Multisets\<close>
 
@@ -299,7 +301,7 @@ subsection \<open>Conversions from and to Multisets\<close>
 lift_definition zmset_of :: "'a multiset \<Rightarrow> 'a zmultiset" is "\<lambda>f. (Abs_multiset f, {#})" .
 
 lemma zmset_of_inject[simp]: "zmset_of M = zmset_of N \<longleftrightarrow> M = N"
-  by (simp add: zmset_of_def, transfer, auto simp: equiv_zmset_def)
+  by (simp add: zmset_of_def, transfer', auto simp: equiv_zmset_def)
 
 lemma zmset_of_empty[simp]: "zmset_of {#} = {#}\<^sub>z"
   by (simp add: zmset_of_def zero_zmultiset_def)
@@ -730,10 +732,10 @@ instance
 end
 
 lemma zmset_of_less: "zmset_of M < zmset_of N \<longleftrightarrow> M < N"
-  by (clarsimp simp: zmset_of_def, transfer, simp)+
+  by (clarsimp simp: zmset_of_def, transfer', simp)+
 
 lemma zmset_of_le: "zmset_of M \<le> zmset_of N \<longleftrightarrow> M \<le> N"
-  by (simp_all add: less_eq_zmultiset_def zmset_of_def; transfer; auto simp: equiv_zmset_def)
+  by (simp_all add: less_eq_zmultiset_def zmset_of_def; transfer'; auto simp: equiv_zmset_def)
 
 instance zmultiset :: (preorder) ordered_ab_semigroup_add
   by (intro_classes, unfold less_eq_zmultiset_def, transfer, auto simp: equiv_zmset_def)
@@ -874,5 +876,8 @@ proof
   then show \<open>\<exists>N. M < N\<close>
     by blast
 qed
+
+lifting_update multiset.lifting
+lifting_forget multiset.lifting
 
 end
