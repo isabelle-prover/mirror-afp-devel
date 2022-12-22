@@ -98,10 +98,21 @@ setup \<open>Auto2_Setup.Normalizer.add_rewr_normalizer ("rewr_case", (to_meta_e
 setup \<open>Auto2_Setup.Normalizer.add_rewr_normalizer ("rewr_let", @{thm Let_def})\<close>
 
 (* Equivalence relations *)
+definition trans :: "('a \<times> 'a) set \<Rightarrow> bool" where
+  "trans r = Relation.trans r"
+
+lemma transD [forward]:
+  "trans r \<Longrightarrow> (x, y) \<in> r \<Longrightarrow> (y, z) \<in> r \<Longrightarrow> (x, z) \<in> r"
+  unfolding trans_def by (meson transD)
+
+lemma transI [backward]:
+  "(\<And>x y z. (x, y) \<in> r \<Longrightarrow> (y, z) \<in> r \<Longrightarrow> (x, z) \<in> r) \<Longrightarrow> trans r"
+  unfolding trans_def using transI by blast
+
 setup \<open>add_forward_prfstep @{thm Relation.symD}\<close>
 setup \<open>add_backward_prfstep @{thm Relation.symI}\<close>
-setup \<open>add_forward_prfstep @{thm Relation.transD}\<close>
-setup \<open>add_backward_prfstep @{thm Relation.transI}\<close>
+(* setup \<open>add_forward_prfstep @{thm Relation.transD}\<close> *)
+(* setup \<open>add_backward_prfstep @{thm Relation.transI}\<close> *)
 
 (* Options *)
 setup \<open>add_resolve_prfstep @{thm option.distinct(1)}\<close>
