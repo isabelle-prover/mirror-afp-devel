@@ -13,14 +13,14 @@ begin
 subsection \<open>Basic Definitions\<close>
 
 definition wqo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "wqo_on P A \<longleftrightarrow> transp_on P A \<and> almost_full_on P A"
+  "wqo_on P A \<longleftrightarrow> transp_on A P \<and> almost_full_on P A"
 
 lemma wqo_on_UNIV:
   "wqo_on (\<lambda>_ _. True) UNIV"
   using almost_full_on_UNIV by (auto simp: wqo_on_def transp_on_def)
 
 lemma wqo_onI [Pure.intro]:
-  "\<lbrakk>transp_on P A; almost_full_on P A\<rbrakk> \<Longrightarrow> wqo_on P A"
+  "\<lbrakk>transp_on A P; almost_full_on P A\<rbrakk> \<Longrightarrow> wqo_on P A"
   unfolding wqo_on_def almost_full_on_def by blast
 
 lemma wqo_on_imp_reflp_on:
@@ -28,7 +28,7 @@ lemma wqo_on_imp_reflp_on:
   using almost_full_on_imp_reflp_on by (auto simp: wqo_on_def)
 
 lemma wqo_on_imp_transp_on:
-  "wqo_on P A \<Longrightarrow> transp_on P A"
+  "wqo_on P A \<Longrightarrow> transp_on A P"
   by (auto simp: wqo_on_def)
 
 lemma wqo_on_imp_almost_full_on:
@@ -46,7 +46,7 @@ lemma wqo_on_imp_good:
 lemma wqo_on_subset:
   "A \<subseteq> B \<Longrightarrow> wqo_on P B \<Longrightarrow> wqo_on P A"
   using almost_full_on_subset [of A B P]
-    and transp_on_subset [of A B P]
+    and transp_on_subset [of B P A]
   unfolding wqo_on_def by blast
 
 
@@ -94,7 +94,7 @@ text \<open>
   The homomorphic image of a wqo set is wqo.
 \<close>
 lemma wqo_on_hom:
-  assumes "transp_on Q (h ` A)"
+  assumes "transp_on (h ` A) Q"
     and "\<forall>x\<in>A. \<forall>y\<in>A. P x y \<longrightarrow> Q (h x) (h y)"
     and "wqo_on P A"
   shows "wqo_on Q (h ` A)"
@@ -110,8 +110,8 @@ lemma wqo_on_mon:
     and wqo: "wqo_on Q B"
   shows "wqo_on P A"
 proof -
-  have "transp_on P A"
-  proof
+  have "transp_on A P"
+  proof (rule transp_onI)
     fix x y z assume [intro!]: "x \<in> A" "y \<in> A" "z \<in> A"
       and "P x y" and "P y z"
     with * have "Q (h x) (h y)" and "Q (h y) (h z)" by blast+
@@ -170,9 +170,9 @@ lemma wqo_on_with_bot:
   assumes "wqo_on P A"
   shows "wqo_on (option_le P) A\<^sub>\<bottom>" (is "wqo_on ?P ?A")
 proof -
-  { from assms have trans [unfolded transp_on_def]: "transp_on P A"
+  { from assms have trans [unfolded transp_on_def]: "transp_on A P"
       by (auto simp: wqo_on_def)
-    have "transp_on ?P ?A"
+    have "transp_on ?A ?P"
       by (auto simp: transp_on_def elim!: with_bot_cases, insert trans) blast }
   moreover
   { from assms and almost_full_on_with_bot
@@ -192,9 +192,9 @@ lemma wqo_on_Plus:
   assumes "wqo_on P A" and "wqo_on Q B"
   shows "wqo_on (sum_le P Q) (A <+> B)" (is "wqo_on ?P ?A")
 proof -
-  { from assms have trans [unfolded transp_on_def]: "transp_on P A" "transp_on Q B"
+  { from assms have trans [unfolded transp_on_def]: "transp_on A P" "transp_on B Q"
       by (auto simp: wqo_on_def)
-    have "transp_on ?P ?A"
+    have "transp_on ?A ?P"
       unfolding transp_on_def by (auto, insert trans) (blast+) }
   moreover
   { from assms and almost_full_on_Plus have "almost_full_on ?P ?A" by (auto simp: wqo_on_def) }
@@ -214,8 +214,8 @@ lemma wqo_on_Sigma:
   assumes "wqo_on P1 A1" and "wqo_on P2 A2"
   shows "wqo_on (prod_le P1 P2) (A1 \<times> A2)" (is "wqo_on ?P ?A")
 proof -
-  { from assms have "transp_on P1 A1" and "transp_on P2 A2" by (auto simp: wqo_on_def)
-    hence "transp_on ?P ?A" unfolding transp_on_def prod_le_def by blast }
+  { from assms have "transp_on A1 P1" and "transp_on A2 P2" by (auto simp: wqo_on_def)
+    hence "transp_on ?A ?P" unfolding transp_on_def prod_le_def by blast }
   moreover
   { from assms and almost_full_on_Sigma [of P1 A1 P2 A2]
       have "almost_full_on ?P ?A" by (auto simp: wqo_on_def) }
@@ -233,8 +233,8 @@ lemma wqo_on_prod_UNIV [intro]:
 subsection \<open>Higman's Lemma\<close>
 
 lemma transp_on_list_emb:
-  assumes "transp_on P A"
-  shows "transp_on (list_emb P) (lists A)"
+  assumes "transp_on A P"
+  shows "transp_on (lists A) (list_emb P)"
   using assms and list_emb_trans [of _ _ _ P]
     unfolding transp_on_def by blast
 
@@ -253,7 +253,7 @@ text \<open>
   Every reflexive and transitive relation on a finite set is a wqo.
 \<close>
 lemma finite_wqo_on:
-  assumes "finite A" and refl: "reflp_on A P" and "transp_on P A"
+  assumes "finite A" and refl: "reflp_on A P" and "transp_on A P"
   shows "wqo_on P A"
   using assms and finite_almost_full_on by (auto simp: wqo_on_def)
 
@@ -276,9 +276,9 @@ lemma wqo_on_map:
   shows "wqo_on P' A"
 proof
   let ?Q = "\<lambda>x y. Q (h x) (h y)"
-  from \<open>wqo_on P A\<close> have "transp_on P A"
+  from \<open>wqo_on P A\<close> have "transp_on A P"
     by (rule wqo_on_imp_transp_on)
-  then show "transp_on P' A"
+  then show "transp_on A P'"
     using \<open>wqo_on Q B\<close> and subset
     unfolding wqo_on_def transp_on_def P'_def by blast
 
@@ -296,7 +296,7 @@ proof
       where g: "\<And>i j. i < j \<Longrightarrow> g i < g j"
       and **: "\<forall>i. f (g i) \<in> A \<and> P (f (g i)) (f (g (Suc i)))"
       using * by auto
-    from chain_transp_on_less [OF ** \<open>transp_on P A\<close>]
+    from chain_transp_on_less [OF ** \<open>transp_on A P\<close>]
       have **: "\<And>i j. i < j \<Longrightarrow> P (f (g i)) (f (g j))" .
     let ?g = "\<lambda>i. h (f (g i))"
     from * and subset have B: "\<And>i. ?g i \<in> B" by auto

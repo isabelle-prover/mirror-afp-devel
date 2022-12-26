@@ -40,14 +40,14 @@ proof (rule antisymp_onI)
 qed
 
 lemma LEX_trans:
-  assumes "transp_on P A" and "f \<in> SEQ A" and "g \<in> SEQ A" and "h \<in> SEQ A"
+  assumes "transp_on A P" and "f \<in> SEQ A" and "g \<in> SEQ A" and "h \<in> SEQ A"
     and "LEX P f g" and "LEX P g h"
   shows "LEX P f h"
 using assms by (auto simp: LEX_def transp_on_def) (metis less_trans linorder_neqE_nat)
 
 lemma qo_on_LEXEQ:
-  "transp_on P A \<Longrightarrow> qo_on (LEXEQ P) (SEQ A)"
-by (auto simp: qo_on_def reflp_on_def transp_on_def [of "LEXEQ P"] dest: LEX_trans)
+  "transp_on A P \<Longrightarrow> qo_on (LEXEQ P) (SEQ A)"
+by (auto simp: qo_on_def reflp_on_def transp_on_def [of _ "LEXEQ P"] dest: LEX_trans)
 
 context minimal_element
 begin

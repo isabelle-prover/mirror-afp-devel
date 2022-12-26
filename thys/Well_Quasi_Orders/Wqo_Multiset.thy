@@ -48,8 +48,8 @@ lemma wqo_on_multisets:
   assumes "wqo_on P A"
   shows "wqo_on (mulex_on P A)\<^sup>=\<^sup>= (multisets A)"
 proof
-  from transp_on_mulex_on [of P A "multisets A"]
-    show "transp_on (mulex_on P A)\<^sup>=\<^sup>= (multisets A)"
+  from transp_on_mulex_on [of "multisets A" P A]
+    show "transp_on (multisets A) (mulex_on P A)\<^sup>=\<^sup>="
     unfolding transp_on_def by blast
 next
   from almost_full_on_multisets [OF assms [THEN wqo_on_imp_almost_full_on]]

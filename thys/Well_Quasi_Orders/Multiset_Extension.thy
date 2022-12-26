@@ -119,7 +119,7 @@ lemma mulex_on_trans:
   by (auto simp: mulex_on_def)
 
 lemma transp_on_mulex_on:
-  "transp_on (mulex_on P A) B"
+  "transp_on B (mulex_on P A)"
   using mulex_on_trans [of P A] by (auto simp: transp_on_def)
   
 lemma mulex_on_add_right [simp]:
@@ -513,7 +513,7 @@ lemma diff_set_Ex_iff:
 text \<open>Show that @{const mulex_on} is equivalent to the textbook definition
 of multiset-extension for transitive base orders.\<close>
 lemma mulex_on_alt_def:
-  assumes trans: "transp_on P A"
+  assumes trans: "transp_on A P"
   shows "mulex_on P A M N \<longleftrightarrow> M \<in> multisets A \<and> N \<in> multisets A \<and> (\<exists>X Y Z.
     X \<noteq> {#} \<and> N = Z + X \<and> M = Z + Y \<and> (\<forall>y. y \<in># Y \<longrightarrow> (\<exists>x. x \<in># X \<and> P y x)))"
   (is "?P M N \<longleftrightarrow> ?Q M N")

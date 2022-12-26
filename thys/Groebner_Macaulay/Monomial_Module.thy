@@ -310,7 +310,7 @@ proof -
     let ?A = "{t. pp_of_term t \<in> dgrad_set d m \<and> component_of_term t \<in> ?K}"
     let ?Q = "{f' \<in> F'. lt f' adds\<^sub>t lt f}"
     from dgrad fin_comps have "almost_full_on (adds\<^sub>t) ?A" by (rule Dickson_term)
-    moreover have "transp_on (adds\<^sub>t) ?A" by (auto intro: transp_onI dest: adds_term_trans)
+    moreover have "transp_on ?A (adds\<^sub>t)" by (auto intro: transp_onI dest: adds_term_trans)
     ultimately have "wfp_on (strict (adds\<^sub>t)) ?A" by (rule af_trans_imp_wf)
     moreover have "lt f \<in> lt ` ?Q"
     proof -

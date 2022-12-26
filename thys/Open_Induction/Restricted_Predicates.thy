@@ -34,9 +34,6 @@ using assms by (auto simp: chain_on_def)
 definition restrict_to :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)" where
   "restrict_to P A = (\<lambda>x y. x \<in> A \<and> y \<in> A \<and> P x y)"
 
-definition transp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "transp_on P A \<longleftrightarrow> (\<forall>x\<in>A. \<forall>y\<in>A. \<forall>z\<in>A. P x y \<and> P y z \<longrightarrow> P x z)"
-
 abbreviation "strict P \<equiv> \<lambda>x y. P x y \<and> \<not> (P y x)"
 
 abbreviation "incomparable P \<equiv> \<lambda>x y. \<not> P x y \<and> \<not> P y x"
@@ -46,36 +43,18 @@ abbreviation "antichain_on P f A \<equiv> \<forall>(i::nat) j. f i \<in> A \<and
 lemma strict_reflclp_conv [simp]:
   "strict (P\<^sup>=\<^sup>=) = strict P" by auto
 
-lemma transp_onI [Pure.intro]:
-  "(\<And>x y z. \<lbrakk>x \<in> A; y \<in> A; z \<in> A; P x y; P y z\<rbrakk> \<Longrightarrow> P x z) \<Longrightarrow> transp_on P A"
-  unfolding transp_on_def by blast
-
 lemma reflp_on_reflclp_simp [simp]:
   assumes "reflp_on A P" and "a \<in> A" and "b \<in> A"
   shows "P\<^sup>=\<^sup>= a b = P a b"
   using assms by (auto simp: reflp_on_def)
 
 lemmas reflp_on_converse_simp = reflp_on_conversp
-
-lemma transp_on_converse:
-  "transp_on P A \<Longrightarrow> transp_on P\<inverse>\<inverse> A"
-  unfolding transp_on_def by blast
-
-lemma transp_on_converse_simp [simp]:
-  "transp_on P\<inverse>\<inverse> A \<longleftrightarrow> transp_on P A"
-  unfolding transp_on_def by blast
-
-lemma transp_on_reflclp:
-  "transp_on P A \<Longrightarrow> transp_on P\<^sup>=\<^sup>= A"
-  unfolding transp_on_def by blast
+lemmas irreflp_on_converse_simp = irreflp_on_converse
+lemmas transp_on_converse_simp = transp_on_conversep
 
 lemma transp_on_strict:
-  "transp_on P A \<Longrightarrow> transp_on (strict P) A"
+  "transp_on A P \<Longrightarrow> transp_on A (strict P)"
   unfolding transp_on_def by blast
-
-lemma transp_on_subset:
-  "A \<subseteq> B \<Longrightarrow> transp_on P B \<Longrightarrow> transp_on P A"
-  by (auto simp: transp_on_def)
 
 definition wfp_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool"
 where
@@ -172,16 +151,14 @@ proof -
 qed
 
 definition qo_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "qo_on P A \<longleftrightarrow> reflp_on A P \<and> transp_on P A"
+  "qo_on P A \<longleftrightarrow> reflp_on A P \<and> transp_on A P"
 
 definition po_on :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a set \<Rightarrow> bool" where
-  "po_on P A \<longleftrightarrow> (irreflp_on A P \<and> transp_on P A)"
+  "po_on P A \<longleftrightarrow> (irreflp_on A P \<and> transp_on A P)"
 
 lemma po_onI [Pure.intro]:
-  "\<lbrakk>irreflp_on A P; transp_on P A\<rbrakk> \<Longrightarrow> po_on P A"
+  "\<lbrakk>irreflp_on A P; transp_on A P\<rbrakk> \<Longrightarrow> po_on P A"
   by (auto simp: po_on_def)
-
-lemmas irreflp_on_converse_simp = irreflp_on_converse
 
 lemma po_on_converse_simp [simp]:
   "po_on P\<inverse>\<inverse> A \<longleftrightarrow> po_on P A"
@@ -197,7 +174,7 @@ lemma po_on_imp_irreflp_on:
   by (auto simp: po_on_def)
 
 lemma po_on_imp_transp_on:
-  "po_on P A \<Longrightarrow> transp_on P A"
+  "po_on P A \<Longrightarrow> transp_on A P"
   by (auto simp: po_on_def)
 
 lemma po_on_subset:
@@ -207,7 +184,7 @@ lemma po_on_subset:
   unfolding po_on_def by blast
 
 lemma transp_on_irreflp_on_imp_antisymp_on:
-  assumes "transp_on P A" and "irreflp_on A P"
+  assumes "transp_on A P" and "irreflp_on A P"
   shows "antisymp_on A (P\<^sup>=\<^sup>=)"
 proof (rule antisymp_onI)
   fix a b assume "a \<in> A"
@@ -216,7 +193,7 @@ proof (rule antisymp_onI)
   proof (rule ccontr)
     assume "a \<noteq> b"
     with \<open>P\<^sup>=\<^sup>= a b\<close> and \<open>P\<^sup>=\<^sup>= b a\<close> have "P a b" and "P b a" by auto
-    with \<open>transp_on P A\<close> and \<open>a \<in> A\<close> and \<open>b \<in> A\<close> have "P a a" unfolding transp_on_def by blast
+    with \<open>transp_on A P\<close> and \<open>a \<in> A\<close> and \<open>b \<in> A\<close> have "P a a" unfolding transp_on_def by blast
     with \<open>irreflp_on A P\<close> and \<open>a \<in> A\<close> show False unfolding irreflp_on_def by blast
   qed
 qed
@@ -224,11 +201,11 @@ qed
 lemma po_on_imp_antisymp_on:
   assumes "po_on P A"
   shows "antisymp_on A P"
-using transp_on_irreflp_on_imp_antisymp_on [of P A] and assms by (auto simp: po_on_def)
+using transp_on_irreflp_on_imp_antisymp_on [of A P] and assms by (auto simp: po_on_def)
 
 lemma strict_reflclp [simp]:
   assumes "x \<in> A" and "y \<in> A"
-    and "transp_on P A" and "irreflp_on A P"
+    and "transp_on A P" and "irreflp_on A P"
   shows "strict (P\<^sup>=\<^sup>=) x y = P x y"
   using assms unfolding transp_on_def irreflp_on_def
   by blast
@@ -238,7 +215,7 @@ lemma qo_on_imp_reflp_on:
   by (auto simp: qo_on_def)
 
 lemma qo_on_imp_transp_on:
-  "qo_on P A \<Longrightarrow> transp_on P A"
+  "qo_on P A \<Longrightarrow> transp_on A P"
   by (auto simp: qo_on_def)
 
 lemma qo_on_subset:
@@ -358,19 +335,19 @@ lemma irreflp_on_strict [simp, intro]:
   by (auto simp: irreflp_on_def)
 
 lemma transp_on_map':
-  assumes "transp_on Q B"
+  assumes "transp_on B Q"
     and "g ` A \<subseteq> B"
     and "h ` A \<subseteq> B"
     and "\<And>x. x \<in> A \<Longrightarrow> Q\<^sup>=\<^sup>= (h x) (g x)"
-  shows "transp_on (\<lambda>x y. Q (g x) (h y)) A"
+  shows "transp_on A (\<lambda>x y. Q (g x) (h y))"
   using assms unfolding transp_on_def
   by auto (metis imageI subsetD)
 
 lemma transp_on_map:
-  assumes "transp_on Q B"
+  assumes "transp_on B Q"
     and "h ` A \<subseteq> B"
-  shows "transp_on (\<lambda>x y. Q (h x) (h y)) A"
-  using transp_on_map' [of Q B h A h, simplified, OF assms] by blast
+  shows "transp_on A (\<lambda>x y. Q (h x) (h y))"
+  using transp_on_map' [of B Q h A h, simplified, OF assms] by blast
 
 lemma irreflp_on_map:
   assumes "irreflp_on B Q"
@@ -386,7 +363,7 @@ lemma po_on_map:
   unfolding po_on_def by auto
 
 lemma chain_transp_on_less:
-  assumes "\<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))" and "transp_on P A" and "i < j"
+  assumes "\<forall>i. f i \<in> A \<and> P (f i) (f (Suc i))" and "transp_on A P" and "i < j"
   shows "P (f i) (f j)"
 using \<open>i < j\<close>
 proof (induct j)
@@ -614,7 +591,7 @@ lemma po_on_predecessors_eq_conv:
     by blast
 
 lemma restrict_to_rtranclp:
-  assumes "transp_on P A"
+  assumes "transp_on A P"
     and "x \<in> A" and "y \<in> A"
   shows "(restrict_to P A)\<^sup>*\<^sup>* x y \<longleftrightarrow> P\<^sup>=\<^sup>= x y"
 proof -
@@ -625,7 +602,7 @@ proof -
 qed
 
 lemma reflp_on_restrict_to_rtranclp:
-  assumes "reflp_on A P" and "transp_on P A"
+  assumes "reflp_on A P" and "transp_on A P"
     and "x \<in> A" and "y \<in> A"
   shows "(restrict_to P A)\<^sup>*\<^sup>* x y \<longleftrightarrow> P x y"
   unfolding restrict_to_rtranclp [OF assms(2-)]

@@ -291,7 +291,7 @@ qed simp
 lemma wqo_letter_less:
   assumes t: "trans r" and w: "wqo_on (\<lambda>a b. (a, b) \<in> r\<^sup>=) UNIV"
   shows "wqo_on (\<lambda>a b. (a, b) \<in> (letter_less r)\<^sup>=) UNIV"
-proof (rule wqo_on_hom[of _ id _ "prod_le (=) (\<lambda>a b. (a, b) \<in> r\<^sup>=)", unfolded image_id id_apply])
+proof (rule wqo_on_hom[of id _ _ "prod_le (=) (\<lambda>a b. (a, b) \<in> r\<^sup>=)", unfolded image_id id_apply])
   show "wqo_on (prod_le ((=) :: accent \<Rightarrow> accent \<Rightarrow> bool) (\<lambda>a b. (a, b) \<in> r\<^sup>=)) UNIV"
   by (rule dickson[OF finite_eq_wqo_on[OF finite_accent] w, unfolded UNIV_Times_UNIV])
 qed (insert t, auto simp: transp_on_def trans_def prod_le_def)
@@ -310,9 +310,9 @@ proof -
     trans_def irrefl_def q'_def by blast+
   from \<open>r \<subseteq> q\<close> \<open>wf r\<close> have "r \<subseteq> q'" by (auto simp add: q'_def)
   have "wqo_on (\<lambda>a b. (a,b) \<in> (greek_less q')\<^sup>=) UNIV"
-  proof (intro wqo_on_hom[of "(\<lambda>a b. (a, b) \<in> (greek_less q')\<^sup>=)" "id" UNIV
+  proof (intro wqo_on_hom[of id UNIV "(\<lambda>a b. (a, b) \<in> (greek_less q')\<^sup>=)"
          "list_emb (\<lambda>a b. (a, b) \<in> (letter_less q')\<^sup>=)", unfolded surj_id])
-    show "transp_on (\<lambda>a b. (a, b) \<in> (greek_less q')\<^sup>=) UNIV"
+    show "transp (\<lambda>a b. (a, b) \<in> (greek_less q')\<^sup>=)"
     using trans_greek_less[of q'] unfolding trans_def transp_on_def by blast
   next
     show "\<forall>x\<in>UNIV. \<forall>y\<in>UNIV. list_emb (\<lambda>a b. (a, b) \<in> (letter_less q')\<^sup>=) x y \<longrightarrow>

@@ -68,7 +68,7 @@ lemma wf_prec_FL: "minimal_element (\<sqsubset>) UNIV"
 proof
   show "po_on (\<sqsubset>) UNIV" unfolding po_on_def
   proof
-    show "irreflp_on UNIV (\<sqsubset>)" unfolding irreflp_on_def Prec_FL_def
+    show "irreflp (\<sqsubset>)" unfolding irreflp_on_def Prec_FL_def
     proof
       fix Cl
       assume a_in: "Cl \<in> (UNIV::('f \<times> 'l) set)"
@@ -77,20 +77,22 @@ proof
       ultimately show "\<not> (fst Cl \<prec>\<cdot> fst Cl \<or> fst Cl \<doteq> fst Cl \<and> snd Cl \<sqsubset>L snd Cl)" by blast
     qed
   next
-    show "transp_on (\<sqsubset>) UNIV" unfolding transp_on_def Prec_FL_def
-    proof (simp, intro allI impI)
-      fix C1 l1 C2 l2 C3 l3
-      assume trans_hyp: "(C1 \<prec>\<cdot> C2 \<or> C1 \<doteq> C2 \<and> l1 \<sqsubset>L l2) \<and> (C2 \<prec>\<cdot> C3 \<or> C2 \<doteq> C3 \<and> l2 \<sqsubset>L l3)"
-      have "C1 \<prec>\<cdot> C2 \<Longrightarrow> C2 \<doteq> C3 \<Longrightarrow> C1 \<prec>\<cdot> C3"
+    show "transp (\<sqsubset>)" unfolding Prec_FL_def
+    proof (rule transpI)
+      fix Cl1 Cl2 Cl3
+      assume trans_hyps:
+        "(fst Cl1 \<prec>\<cdot> fst Cl2 \<or> fst Cl1 \<doteq> fst Cl2 \<and> snd Cl1 \<sqsubset>L snd Cl2)"
+        "(fst Cl2 \<prec>\<cdot> fst Cl3 \<or> fst Cl2 \<doteq> fst Cl3 \<and> snd Cl2 \<sqsubset>L snd Cl3)"
+      have "fst Cl1 \<prec>\<cdot> fst Cl2 \<Longrightarrow> fst Cl2 \<doteq> fst Cl3 \<Longrightarrow> fst Cl1 \<prec>\<cdot> fst Cl3"
         using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
-      moreover have "C1 \<doteq> C2 \<Longrightarrow> C2 \<prec>\<cdot> C3 \<Longrightarrow> C1 \<prec>\<cdot> C3"
+      moreover have "fst Cl1 \<doteq> fst Cl2 \<Longrightarrow> fst Cl2 \<prec>\<cdot> fst Cl3 \<Longrightarrow> fst Cl1 \<prec>\<cdot> fst Cl3"
         using compat_equiv_prec by (metis equiv_equiv_F equivp_def)
-      moreover have "l1 \<sqsubset>L l2 \<Longrightarrow> l2 \<sqsubset>L l3 \<Longrightarrow> l1 \<sqsubset>L l3"
-        using wf_prec_L unfolding minimal_element_def po_on_def transp_on_def by (meson UNIV_I)
-      moreover have "C1 \<doteq> C2 \<Longrightarrow> C2 \<doteq> C3 \<Longrightarrow> C1 \<doteq> C3"
+      moreover have "snd Cl1 \<sqsubset>L snd Cl2 \<Longrightarrow> snd Cl2 \<sqsubset>L snd Cl3 \<Longrightarrow> snd Cl1 \<sqsubset>L snd Cl3"
+        using wf_prec_L unfolding minimal_element_def po_on_def transp_def by (meson UNIV_I)
+      moreover have "fst Cl1 \<doteq> fst Cl2 \<Longrightarrow> fst Cl2 \<doteq> fst Cl3 \<Longrightarrow> fst Cl1 \<doteq> fst Cl3"
         using equiv_equiv_F by (meson equivp_transp)
-      ultimately show "C1 \<prec>\<cdot> C3 \<or> C1 \<doteq> C3 \<and> l1 \<sqsubset>L l3" using trans_hyp
-        using trans_prec_F by blast
+      ultimately show "fst Cl1 \<prec>\<cdot> fst Cl3 \<or> fst Cl1 \<doteq> fst Cl3 \<and> snd Cl1 \<sqsubset>L snd Cl3"
+        using trans_hyps trans_prec_F by blast
     qed
   qed
 next

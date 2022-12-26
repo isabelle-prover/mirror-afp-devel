@@ -43,7 +43,7 @@ context pred_on
 begin
 
 lemma chain_glb:
-  assumes "transp_on (\<sqsubset>) A"
+  assumes "transp_on A (\<sqsubset>)"
   shows "chain C \<Longrightarrow> glb (\<sqsubset>) C x \<Longrightarrow> x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> y \<sqsubset> x \<Longrightarrow> chain ({y} \<union> C)"
 using assms [unfolded transp_on_def]
 unfolding chain_def glb_def lb_def
@@ -142,8 +142,8 @@ proof (rule ccontr)
     from ind [OF \<open>m \<in> A\<close>] and \<open>\<not> Q m\<close> obtain y
       where "y \<in> A" and "strict P y m" and "\<not> Q y" by blast
     then have "P y m" and "y \<in> ?B" by simp+
-    from transp_on_subset [OF \<open>?B \<subseteq> A\<close> qo_on_imp_transp_on [OF qo]]
-      have "transp_on P ?B" .
+    from transp_on_subset [OF qo_on_imp_transp_on [OF qo] \<open>?B \<subseteq> A\<close>]
+      have "transp_on ?B P" .
     from B.chain_glb [OF this chain \<open>glb P M m\<close> \<open>m \<in> ?B\<close> \<open>y \<in> ?B\<close> \<open>P y m\<close>]
       have "B.chain ({y} \<union> M)" .
     then show False

@@ -203,9 +203,9 @@ lemma well_order_implies_wqo:
   assumes "well_order r"
   shows "wqo_on (\<lambda>a b. (a, b) \<in> r) UNIV"
 proof (intro wqo_onI almost_full_onI)
-  show "transp_on (\<lambda>a b. (a, b) \<in> r) UNIV" using assms
+  show "transp (\<lambda>a b. (a, b) \<in> r)" using assms
   by (auto simp only: well_order_on_def linear_order_on_def partial_order_on_def preorder_on_def
-    trans_def transp_on_def)
+    trans_def transp_def)
 next
   fix f :: "nat \<Rightarrow> 'a"
   show "good (\<lambda>a b. (a, b) \<in> r) f"

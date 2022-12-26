@@ -418,14 +418,13 @@ subsection \<open>Further Results\<close>
 lemma af_trans_extension_imp_wf:
   assumes subrel: "\<And>x y. P x y \<Longrightarrow> Q x y"
     and af: "almost_full_on P A"
-    and trans: "transp_on Q A"
+    and trans: "transp_on A Q"
   shows "wfp_on (strict Q) A"
 proof (unfold wfp_on_def, rule notI)
   assume "\<exists>f. \<forall>i. f i \<in> A \<and> strict Q (f (Suc i)) (f i)"
   then obtain f where *: "\<forall>i. f i \<in> A \<and> ((strict Q)\<inverse>\<inverse>) (f i) (f (Suc i))" by blast
-  from chain_transp_on_less [OF this]
-    and transp_on_strict [THEN transp_on_converse, OF trans]
-  have "\<forall>i j. i < j \<longrightarrow> \<not> Q (f i) (f j)" by blast
+  from chain_transp_on_less[OF this]
+  have "\<forall>i j. i < j \<longrightarrow> \<not> Q (f i) (f j)" using trans using transp_on_conversep transp_on_strict by blast
   with subrel have "\<forall>i j. i < j \<longrightarrow> \<not> P (f i) (f j)" by blast
   with af show False
     using * by (auto simp: almost_full_on_def good_def)
@@ -433,7 +432,7 @@ qed
 
 lemma af_trans_imp_wf:
   assumes "almost_full_on P A"
-    and "transp_on P A"
+    and "transp_on A P"
   shows "wfp_on (strict P) A"
   using assms by (intro af_trans_extension_imp_wf)
 
@@ -444,9 +443,9 @@ lemma wf_and_no_antichain_imp_qo_extension_wf:
     and qo: "qo_on Q A"
   shows "wfp_on (strict Q) A"
 proof (rule ccontr)
-  have "transp_on (strict Q) A"
+  have "transp_on A (strict Q)"
     using qo unfolding qo_on_def transp_on_def by blast
-  then have *: "transp_on ((strict Q)\<inverse>\<inverse>) A" by (rule transp_on_converse)
+  then have *: "transp_on A ((strict Q)\<inverse>\<inverse>)" by simp
   assume "\<not> wfp_on (strict Q) A"
   then obtain f :: "nat \<Rightarrow> 'a" where A: "\<And>i. f i \<in> A"
     and "\<forall>i. strict Q (f (Suc i)) (f i)" unfolding wfp_on_def by blast+
@@ -492,7 +491,7 @@ lemma every_qo_extension_wf_imp_af:
 proof
   from \<open>qo_on P A\<close>
     have refl: "reflp_on A P"
-    and trans: "transp_on P A"
+    and trans: "transp_on A P"
     by (auto intro: qo_on_imp_reflp_on qo_on_imp_transp_on)
 
   fix f :: "nat \<Rightarrow> 'a"

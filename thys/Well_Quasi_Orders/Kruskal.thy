@@ -172,8 +172,8 @@ next
 qed
 
 lemma transp_on_emb:
-  assumes "transp_on P F"
-  shows "transp_on (emb P) trees"
+  assumes "transp_on F P"
+  shows "transp_on trees (emb P)"
   using assms and emb_trans [of P] unfolding transp_on_def by blast
 
 lemma kruskal:
