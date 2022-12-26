@@ -122,7 +122,7 @@ proof -
     by (simp add: deg_pp_alt keys_PP_oalist)
   also have "... = sum_list (map (OAlist_tc_lookup xs) (OAlist_tc_sorted_domain xs))"
     by (rule sum.distinct_set_conv_list, rule distinct_sorted_wrt_irrefl,
-        fact, fact transp_less, fact sorted_OAlist_tc_sorted_domain)
+        fact, fact transp_on_less, fact sorted_OAlist_tc_sorted_domain)
   also have "... = sum_list (map snd (list_of_oalist_tc xs))"
     by (rule arg_cong[where f=sum_list], simp add: OAlist_tc_sorted_domain_def OAlist_tc_lookup_eq_valueI)
   finally show ?thesis .

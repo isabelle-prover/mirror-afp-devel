@@ -67,7 +67,7 @@ lemma sort_set_unique:
   shows "x = y"
   using assms apply (simp add:sorted_wrt_map) 
   by (metis (no_types, lifting) irreflp_def less_irrefl sort_set_unique_rel 
-      transpD transpI transp_less)
+      transpD transpI transp_on_less)
 
 text \<open>If two sequences contain the same element and strictly increasing with respect.\<close>
 

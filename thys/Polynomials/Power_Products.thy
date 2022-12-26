@@ -1246,7 +1246,7 @@ proof (rule wfP_chain)
     assume "\<exists>seq. \<forall>i. seq (Suc i) \<prec> seq i"
     then obtain seq::"nat \<Rightarrow> 'a" where "\<forall>i. seq (Suc i) \<prec> seq i" ..
     hence "\<And>i. seq (Suc i) \<prec> seq i" ..
-    with ordered_powerprod_lin.transp_less have seq_decr: "\<And>i j. i < j \<Longrightarrow> (seq j) \<prec> (seq i)"
+    with ordered_powerprod_lin.transp_on_less have seq_decr: "\<And>i j. i < j \<Longrightarrow> (seq j) \<prec> (seq i)"
       by (rule transp_sequence)
 
     from dickson obtain i j::nat where "i < j" and i_adds_j: "seq i adds seq j"

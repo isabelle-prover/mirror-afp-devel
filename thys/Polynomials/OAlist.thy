@@ -328,7 +328,7 @@ next
     from assms(3)[OF False] have "lt k k'" by (simp add: xs)
     moreover from assms(1) have "sorted_wrt lt (map fst xs)" by (rule oalist_inv_rawD2)
     ultimately show "sorted_wrt lt (map fst ((k, v) # xs))"
-      by (simp add: xs sorted_wrt2[OF transp_less] del: sorted_wrt.simps)
+      by (simp add: xs sorted_wrt2[OF transp_on_less] del: sorted_wrt.simps)
   qed
 qed
 

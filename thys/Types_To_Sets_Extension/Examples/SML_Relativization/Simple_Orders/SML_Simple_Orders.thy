@@ -496,18 +496,6 @@ tts_lemma less_asym:
   shows P
     is preorder_class.less_asym.
 
-tts_lemma transp_less: "transp_on U (<\<^sub>o\<^sub>w)"
-  is preorder_class.transp_less.
-
-tts_lemma transp_le: "transp_on U (\<le>\<^sub>o\<^sub>w)"
-  is preorder_class.transp_le.
-
-tts_lemma transp_gr: "transp_on U (\<lambda>x y. y <\<^sub>o\<^sub>w x)"
-  is preorder_class.transp_gr.
-
-tts_lemma transp_ge: "transp_on U (\<lambda>x y. y \<le>\<^sub>o\<^sub>w x)"
-  is preorder_class.transp_ge.
-
 tts_lemma bdd_above_Int1:
   assumes "A \<subseteq> U" and "B \<subseteq> U" and "bdd_above A"
   shows "bdd_above (A \<inter> B)"

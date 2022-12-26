@@ -453,7 +453,7 @@ theorem heap_minimum:
   shows "heap l = Min_mset (arr_mset heap l r)"
 proof -
   have "(\<forall>x \<in># (arr_mset heap l r). (heap l) \<le> x)"
-    using assms(2) heap_first_el_alt transp_le by blast
+    using assms(2) heap_first_el_alt transp_on_le by blast
   thus ?thesis
     by (simp add: assms(1) dual_order.antisym)
 qed
