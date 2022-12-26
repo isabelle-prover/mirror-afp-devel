@@ -98,7 +98,7 @@ proof (intro lfp_chain_induct[of f strict_order])
   fix C :: "('b \<times> 'b) set set"
   assume "set_chain C" and "\<forall>R \<in> C. strict_order R"
   from this show "strict_order (Sup C)"
-    using asym_on_iff_irrefl_on_if_trans[of _ UNIV]
+    using asym_on_iff_irrefl_on_if_trans_on[of UNIV]
     by (metis asym_Sup_of_chain trans_Sup_of_chain)
 qed fact+
 
