@@ -231,24 +231,15 @@ ML \<comment> \<open>\<^file>\<open>~~/src/Pure/PIDE/resources.ML\<close>\<close
 Resources for theories and auxiliary files.
 *)*)
 \<open>
-structure C_Resources =
+structure C_Resources:
+sig
+  val parse_file: C_Parse.T list -> (theory -> Token.file) * C_Parse.T list
+end =
 struct
-(* load files *)
 
-fun parse_files make_paths =
-  Scan.ahead C_Parse.not_eof -- C_Parse.path_input >> (fn (tok, source) => fn thy =>
-    (case C_Token.get_files tok of
-      [] =>
-        let
-          val master_dir = Resources.master_directory thy;
-          val name = Input.string_of source;
-          val pos = Input.pos_of source;
-          val delimited = Input.is_delimited source;
-          val src_paths = make_paths (Path.explode name);
-        in map (Command.read_file master_dir pos delimited) src_paths end
-    | files => map Exn.release files));
-
-val parse_file = parse_files single >> (fn f => f #> the_single);
+val parse_file =
+  (Scan.ahead C_Parse.not_eof >> C_Token.get_files) -- C_Parse.path_input
+    >> (the_single oo Resources.parsed_files single)
 
 end;
 \<close>
