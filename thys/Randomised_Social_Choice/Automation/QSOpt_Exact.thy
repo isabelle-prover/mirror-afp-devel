@@ -352,8 +352,8 @@ fun read_result_file filename =
 fun solve_program prog =
     let
     val name = string_of_int (Time.toMicroseconds (Time.now ()))
-    val lpname = Path.implode (Path.expand (Isabelle_System.create_tmp_path name ".lp"))
-    val resultname = Path.implode (Path.expand (Isabelle_System.create_tmp_path name ".sol"))
+    val lpname = File.standard_path (Isabelle_System.create_tmp_path name ".lp")
+    val resultname = File.standard_path (Isabelle_System.create_tmp_path name ".sol")
     val _ = save_program lpname prog
     val esolver_path = getenv "QSOPT_EXACT_PATH"
     val esolver = if esolver_path = "" then "esolver" else esolver_path
