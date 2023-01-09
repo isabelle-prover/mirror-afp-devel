@@ -525,7 +525,8 @@ proof -
   have "abs_infty_poly (to_module s * x) = 
         (MAX xa. abs_infty_q
          ((of_int_mod_ring s) * poly.coeff (of_qr x) xa))"
-  using abs_infty_poly_def to_module_mult by force    
+  using abs_infty_poly_def to_module_mult
+    by (metis (mono_tags, lifting) comp_apply image_cong)   
   also have "\<dots> \<le> (MAX xa. \<bar>s\<bar> * abs_infty_q (poly.coeff (of_qr x) xa))"
     using abs_infty_q_scale fin1 fin2 by (subst Max_mono', auto)
   also have "\<dots> = \<bar>s\<bar> * abs_infty_poly x"
