@@ -7,8 +7,11 @@ begin
 
 section \<open>Kyber Algorithm using NTT for Fast Multiplication\<close>
 
+hide_type Matrix.vec
+
 context kyber_ntt
 begin
+
 
 definition mult_ntt:: "'a qr \<Rightarrow> 'a qr \<Rightarrow> 'a qr" (infixl "*\<^bsub>ntt\<^esub>" 70) where
   "mult_ntt f g = inv_ntt_poly (ntt_poly f \<star> ntt_poly g)"
@@ -17,7 +20,8 @@ lemma mult_ntt:
   "f*g = f *\<^bsub>ntt\<^esub> g"
   unfolding mult_ntt_def using convolution_thm_ntt_poly by auto
 
-definition scalar_prod_ntt:: "('a qr, 'k) vec \<Rightarrow> ('a qr, 'k) vec \<Rightarrow> 'a qr" (infixl "\<bullet>\<^bsub>ntt\<^esub>" 70) where
+definition scalar_prod_ntt:: 
+  "('a qr, 'k) vec \<Rightarrow> ('a qr, 'k) vec \<Rightarrow> 'a qr" (infixl "\<bullet>\<^bsub>ntt\<^esub>" 70) where
   "scalar_prod_ntt v w = 
   (\<Sum>i\<in>(UNIV::'k set). (vec_nth v i) *\<^bsub>ntt\<^esub> (vec_nth w i))"
 
