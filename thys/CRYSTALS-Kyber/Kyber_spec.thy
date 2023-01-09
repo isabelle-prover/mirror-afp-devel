@@ -5,6 +5,9 @@ imports Main "HOL-Computational_Algebra.Computational_Algebra"
   "Berlekamp_Zassenhaus.Poly_Mod_Finite_Field"
 
 begin
+hide_type Matrix.vec
+hide_const Matrix.vec_index
+
 section \<open>Type Class for Factorial Ring $\mathbb{Z}_q[x]/(x^n+1)$.\<close>
 text \<open>The Kyber algorithms work over the quotient ring $\mathbb{Z}_q[x]/(x^n+1)$
 where $q$ is a prime with $q\equiv 1 \mod 4$ and $n$ is a power of $2$.
@@ -329,6 +332,38 @@ It is important, that $q$ is a prime with the property $q\equiv 1\mod 4$.
 \<close>
 
 
+definition to_module :: "int \<Rightarrow> 'a ::qr_spec qr" where
+  "to_module x = to_qr (Poly [of_int_mod_ring x ::'a mod_ring])"
+
+text \<open>Properties in the ring \<open>'a qr\<close>. A good representative has degree up to n.\<close>
+lemma deg_mod_qr_poly:
+  assumes "degree x < deg_qr TYPE('a::qr_spec)"
+  shows "x mod (qr_poly :: 'a mod_ring poly) = x"
+using mod_poly_less[of x qr_poly] unfolding deg_qr_def
+by (metis assms degree_qr_poly) 
+
+lemma of_qr_to_qr': 
+  assumes "degree x < deg_qr TYPE('a::qr_spec)"
+  shows "of_qr (to_qr x) = (x ::'a mod_ring poly)"
+using deg_mod_qr_poly[OF assms] of_qr_to_qr[of x] by simp
+
+
+
+lemma deg_of_qr: 
+  "degree (of_qr (x ::'a qr)) < deg_qr TYPE('a::qr_spec)"
+by (metis deg_qr_pos degree_0 degree_qr_poly degree_mod_less' 
+  qr_poly_nz of_qr.rep_eq)
+
+
+lemma to_qr_smult_to_module: 
+  "to_qr (Polynomial.smult a p) = (to_qr (Poly [a])) * (to_qr p)"
+by (metis Poly.simps(1) Poly.simps(2) mult.left_neutral 
+  mult_smult_left smult_one to_qr_mult)
+
+lemma of_qr_to_qr_smult:
+  "of_qr (to_qr (Polynomial.smult a p)) = 
+  Polynomial.smult a (of_qr (to_qr p))"
+by (simp add: mod_smult_left of_qr_to_qr)
 
 
 locale kyber_spec =
@@ -379,41 +414,10 @@ using n_gt_1 by auto
 lemma nat_n: "nat n = n"
 using n_gt_zero by force
 
-text \<open>Properties in the ring \<open>'a qr\<close>. A good representative has degree up to n.\<close>
-lemma deg_mod_qr_poly:
-  assumes "degree x < deg_qr TYPE('a)"
-  shows "x mod (qr_poly :: 'a mod_ring poly) = x"
-using mod_poly_less[of x qr_poly] unfolding deg_qr_def
-by (metis assms degree_qr_poly) 
-
-lemma of_qr_to_qr': 
-  assumes "degree x < deg_qr TYPE('a)"
-  shows "of_qr (to_qr x) = (x ::'a mod_ring poly)"
-using deg_mod_qr_poly[OF assms] of_qr_to_qr[of x] by simp
-
 lemma deg_qr_n: 
   "deg_qr TYPE('a) = n"
 unfolding deg_qr_def using qr_poly'_eq n_gt_1
 by (simp add: degree_add_eq_left degree_monom_eq)
-
-lemma deg_of_qr: 
-  "degree (of_qr (x ::'a qr)) < deg_qr TYPE('a)"
-by (metis deg_qr_pos degree_0 degree_qr_poly degree_mod_less' 
-  qr_poly_nz of_qr.rep_eq)
-
-definition to_module :: "int \<Rightarrow> 'a qr" where
-  "to_module x = to_qr (Poly [of_int_mod_ring x ::'a mod_ring])"
-
-lemma to_qr_smult_to_module: 
-  "to_qr (Polynomial.smult a p) = (to_qr (Poly [a])) * (to_qr p)"
-by (metis Poly.simps(1) Poly.simps(2) mult.left_neutral 
-  mult_smult_left smult_one to_qr_mult)
-
-lemma of_qr_to_qr_smult:
-  "of_qr (to_qr (Polynomial.smult a p)) = 
-  Polynomial.smult a (of_qr (to_qr p))"
-by (simp add: mod_smult_left of_qr_to_qr)
-
 
 end
 end
