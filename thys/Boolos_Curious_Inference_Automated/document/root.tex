@@ -1,0 +1,44 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+\usepackage{latexsym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage{stmaryrd}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Automation of Boolos' Curious Inference in Isabelle/HOL}
+\author{Christoph Benzmüller, David Fuenmayor, Alexander Steen and Geoff Sutcliffe}
+
+\maketitle
+
+\begin{abstract}
+  Boolos' Curious Inference is automated in Isabelle/HOL after interactive speculation of a suitable shorthand notation (one or two definitions).
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\section{Introduction}
+In his article \textit{A Curious Inference} \cite{BCI}, George Boolos discusses an example of the hyper-exponential speedup of proofs when moving from first-order logic to higher-order logic. The first-order proof problem he presents (hereafter called BCP, for Boolos' Curious Problem) has no short proof in first-order logic, but it has an elegant short proof in higher-order logic.
+
+The feasibility of interactive reconstructions of proofs of the BCP at the same level of proof granularity as exercised in Boolos' original paper was shown already one and half decades ago by Benzmüller and Brown~\cite{BoolosOmegaMizar}. Such an exercise has just recently been repeated in Isabelle/HOL by Ketland~\cite{KetlandAFP}.
+However, as demonstrated in \cite{J63}, interactive proof for solving BCP is no longer needed, since proof automation in higher-order logic has progressed to the extent that short proofs for BCP can now be found by state-of-the-art higher-order automated theorem provers nearly fully automatically: the only extra human input is to provide one or two suitable shorthand notations. 
+
+In this AFP paper, we provide Isabelle/HOL sources related to experiments performed in \cite{J63}, showing that interactive proof development for BCP (and related problems), as recently practiced by Ketland \cite{KetlandAFP}, can now be replaced by almost fully automated proofs. The availability of a powerful hammer tool, such as \textit{Sledgehammer} \cite{Sledgehammer}, is of course an essential prerequisite.
+
+In the formalisation presented below, we stick as closely as possible to the syntax of Boolos' original work; this is made easy in the user interface of Isabelle/HOL \cite{IsabelleJEDIT}.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
