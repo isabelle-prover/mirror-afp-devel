@@ -1,0 +1,65 @@
+\documentclass[10pt,a4paper]{report}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{geometry}
+\geometry{a4paper, portrait}
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}  % for \mathbb
+\usepackage{amsmath}  % for \tag
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\renewcommand{\phi}{\varphi}
+\renewcommand{\rho}{\varrho}
+\newcommand{\nat}{\mathbb{N}}
+\newcommand{\NP}{\mathcal{NP}}
+\newcommand{\SAT}{\texttt{SAT}}
+\newcommand{\bbOI}{\{\isasymbbbO,\isasymbbbI\}}
+\newcommand{\prev}{\mathit{prev}}
+\newcommand{\inputpos}{\mathit{inputpos}}
+
+\begin{document}
+
+\title{The Cook-Levin theorem}
+\author{Frank J. Balbach}
+\maketitle
+
+\begin{abstract}
+The Cook-Levin theorem states that deciding the satisfiability of Boolean
+formulas in conjunctive normal form is $\NP$-complete.  This entry
+formalizes a proof of this theorem based on the textbook \emph{Computational
+Complexity:\ A Modern Approach} by Arora and Barak.  It contains definitions
+of deterministic multi-tape Turing machines, the complexity classes
+$\mathcal{P}$ and $\NP$, polynomial-time many-one reduction, and the decision
+problem \SAT.  For the $\NP$-hardness of \SAT, the proof first shows that every
+polynomial-time computation can be performed by a two-tape oblivious Turing
+machine. An $\NP$ problem can then be reduced to \SAT{} by a polynomial-time
+Turing machine that encodes computations of the problem's oblivious two-tape
+verifier Turing machine as formulas in conjunctive normal form.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{plain}
+\bibliography{root}
+
+\end{document}

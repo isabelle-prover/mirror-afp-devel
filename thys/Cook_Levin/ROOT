@@ -1,0 +1,29 @@
+chapter AFP
+
+session Cook_Levin (AFP) = "HOL-Analysis" +
+  options [timeout = 1800]
+  sessions
+    "HOL-Eisbach"
+  theories
+    Basics
+    Combinations
+    Elementary
+    Memorizing
+    Composing
+    Arithmetic
+    Lists_Lists
+    Two_Four_Symbols
+    Symbol_Ops
+    Wellformed
+    NP
+    Satisfiability
+    Oblivious
+    Oblivious_Polynomial
+    Oblivious_2_Tape
+    Reducing
+    Aux_TM_Reducing
+    Sat_TM_CNF
+    Reduction_TM
+  document_files
+    "root.tex"
+    "root.bib"

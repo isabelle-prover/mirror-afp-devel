@@ -70,6 +70,7 @@ CAVA_Automata
 CAVA_LTL_Modelchecker
 CCS
 CISC-Kernel
+Cook_Levin
 CRYSTALS-Kyber
 CRDT
 CSP_RefTK
