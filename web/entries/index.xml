@@ -17,6 +17,15 @@
     </item>
     
     <item>
+      <title>The Cook-Levin theorem</title>
+      <link>/entries/Cook_Levin.html</link>
+      <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Cook_Levin.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>A First Complete Algorithm for Real Quantifier Elimination in Isabelle/HOL</title>
       <link>/entries/Quantifier_Elimination_Hybrid.html</link>
       <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>

@@ -1,0 +1,33 @@
+title = "The Cook-Levin theorem"
+date = 2023-01-08
+topics = [
+  "Computer science/Automata and formal languages",
+  "Logic/Computability",
+]
+abstract = """
+The Cook-Levin theorem states that deciding the satisfiability of Boolean formulas in conjunctive normal form is $\\mathcal{NP}$-complete.  This entry
+formalizes a proof of this theorem based on the textbook <em>Computational Complexity: A Modern Approach</em> by Arora and Barak.  It contains definitions of deterministic multi-tape Turing machines, the complexity classes $\\mathcal{P}$ and $\\mathcal{NP}$, polynomial-time many-one reduction, and the decision problem $\\mathtt{SAT}$.  For the $\\mathcal{NP}$-hardness of $\\mathtt{SAT}$, the proof first shows that every polynomial-time computation can be performed by a two-tape oblivious Turing machine. An $\\mathcal{NP}$ problem can then be reduced to $\\mathtt{SAT}$ by a polynomial-time Turing machine that encodes computations of the problem's oblivious two-tape verifier Turing machine as formulas in conjunctive normal form."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.balbach]
+email = "balbach_email"
+
+[contributors]
+
+[notify]
+balbach = "balbach_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "Sanjeev Arora and Boaz Barak. Computational Complexity: A Modern Approach.  Cambridge University Press, 2006.",
+  "Stephen A. Cook. The complexity of theorem-proving procedures. Proceedings of the third annual ACM symposium on Theory of computing, 1971.",
+  "L. A. Levin. Universal sequential search problems. Problems of Information Transmission, 9(3):265–266, 1973.",
+]

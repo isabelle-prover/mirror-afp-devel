@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/logic/computability/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>The Cook-Levin theorem</title>
+      <link>/entries/Cook_Levin.html</link>
+      <pubDate>Sun, 08 Jan 2023 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Cook_Levin.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
       <link>/entries/Boolos_Curious_Inference_Automated.html</link>
       <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>

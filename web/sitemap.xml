@@ -23,6 +23,12 @@
     <loc>/topics/</loc>
     <lastmod>2023-01-09T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/authors/balbach/</loc>
+    <lastmod>2023-01-08T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Cook_Levin.html</loc>
+    <lastmod>2023-01-08T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Quantifier_Elimination_Hybrid.html</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -1339,9 +1345,6 @@
   </url><url>
     <loc>/authors/taylor/</loc>
     <lastmod>2020-09-07T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/balbach/</loc>
-    <lastmod>2020-08-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/fleury/</loc>
     <lastmod>2020-08-31T00:00:00+00:00</lastmod>
@@ -4709,6 +4712,8 @@
     <loc>/theories/containers/</loc>
   </url><url>
     <loc>/theories/containers-benchmarks/</loc>
+  </url><url>
+    <loc>/theories/cook_levin/</loc>
   </url><url>
     <loc>/theories/core_dom/</loc>
   </url><url>
