@@ -3,15 +3,24 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/</loc>
+    <lastmod>2023-01-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/</loc>
+    <lastmod>2023-01-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/from/</loc>
+    <lastmod>2023-01-09T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/Synthetic_Completeness.html</loc>
+    <lastmod>2023-01-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Quantifier_Elimination_Hybrid.html</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/algebraic_numbers/</loc>
-    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/benor_kozen_reif/</loc>
@@ -27,9 +36,6 @@
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/descartes_sign_rule/</loc>
-    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/entries/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
@@ -220,9 +226,6 @@
   </url><url>
     <loc>/entries/Risk_Free_Lending.html</loc>
     <lastmod>2022-09-18T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/from/</loc>
-    <lastmod>2022-09-13T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Implicational_Logic.html</loc>
     <lastmod>2022-09-13T00:00:00+00:00</lastmod>
@@ -5859,6 +5862,8 @@
     <loc>/theories/symmetric_polynomials/</loc>
   </url><url>
     <loc>/theories/syntax_independent_logic/</loc>
+  </url><url>
+    <loc>/theories/synthetic_completeness/</loc>
   </url><url>
     <loc>/theories/szemeredi_regularity/</loc>
   </url><url>

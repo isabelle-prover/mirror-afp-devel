@@ -1,0 +1,81 @@
+\documentclass[11pt,a4paper,oneside]{book}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{fullpage}
+\usepackage{amssymb}
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\begin{document}
+
+\title{Synthetic Completeness}
+\author{Asta Halkjær From}
+\maketitle
+
+\setcounter{page}{2}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+In this work, I provide an abstract framework for proving the completeness of a logical calculus using the synthetic method.
+The synthetic method is based on maximal consistent saturated sets (MCSs).
+A set of formulas is consistent (with respect to the calculus) when we cannot derive a contradiction from it.
+It is maximally consistent when it contains every formula that is consistent with it.
+For logics where it is relevant, it is saturated when it contains a witness for every existential formula.
+To prove completeness using these maximal consistent saturated sets, we prove a truth lemma: every formula in an MCS has a satisfying model.
+Here, Hintikka sets provide a useful stepping stone.
+These can be seen as characterizations of the MCSs based on simple subformula conditions rather than via the calculus.
+We then prove that every Hintikka set gives rise to a satisfying model and that MCSs are Hintikka sets.
+Now, assume a valid formula cannot be derived.
+Then its negation must be consistent and therefore satisfiable.
+This contradicts validity and the original formula must be derivable.
+
+To start, I build maximal consistent saturated sets for any logic that satisfies a small set of assumptions.
+I do this using a transfinite version of Lindenbaum's lemma, which allows me to support languages of any cardinality.
+I then prove useful abstract results about derivations and refutations as they relate to MCSs.
+Finally, I show how Hintikka sets can be derived from the logic's semantics, outlining one way to prove the required truth lemma.
+
+To demonstrate the versatility of the framework, I instantiate it with five different examples.
+The formalization contains soundness and completeness results for:
+a propositional tableau calculus,
+a propositional sequent calculus,
+an axiomatic system for modal logic,
+a labelled natural deduction system for hybrid logic and
+a natural deduction system for first-order logic.
+The tableau example uses custom Hintikka sets based on the calculus, but the other four examples derive them from the semantics in the style of the framework.
+The hybrid and first-order logic examples rely on saturated MCSs.
+This places requirements on the cardinalities of their languages to ensure that there are enough witnesses available.
+In both cases, the type of witnesses must be infinite and have cardinality at least that of the type of propositional/predicate symbols.
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Contents}
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\nocite{*}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
