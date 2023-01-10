@@ -5893,6 +5893,13 @@ host = [
 [starosta.homepages]
 starosta_homepage = "https://users.fit.cvut.cz/~staroste/"
 
+[steen]
+name = "Alexander Steen"
+
+[steen.emails]
+
+[steen.homepages]
+
 [steinberg]
 name = "Matías Steinberg"
 
@@ -6145,6 +6152,13 @@ host = [
 ]
 
 [sulejmani.homepages]
+
+[sutcliffe]
+name = "Geoff Sutcliffe"
+
+[sutcliffe.emails]
+
+[sutcliffe.homepages]
 
 [sylvestre]
 name = "Jeremy Sylvestre"

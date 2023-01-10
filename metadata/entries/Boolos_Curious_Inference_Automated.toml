@@ -1,0 +1,42 @@
+title = "Automation of Boolos' Curious Inference in Isabelle/HOL"
+date = 2022-12-05
+topics = [
+  "Logic",
+  "Logic/Philosophical aspects",
+  "Logic/Computability",
+  "Logic/Proof theory",
+  "Logic/General logic",
+  "Computer science/Artificial intelligence",
+  "Tools",
+]
+abstract = "Boolos’ Curious Inference is automated in Isabelle/HOL after interactive speculation of a suitable shorthand notation (one or two definitions)."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.benzmueller]
+email = "benzmueller_email"
+
+[authors.fuenmayor]
+email = "fuenmayor_email"
+
+[authors.steen]
+
+[authors.sutcliffe]
+
+[contributors]
+
+[notify]
+benzmueller = "benzmueller_email"
+fuenmayor = "fuenmayor_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.2208.06879",
+]
+pubs = []

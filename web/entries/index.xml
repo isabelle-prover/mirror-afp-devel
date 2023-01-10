@@ -35,6 +35,15 @@
     </item>
     
     <item>
+      <title>Automation of Boolos&#39; Curious Inference in Isabelle/HOL</title>
+      <link>/entries/Boolos_Curious_Inference_Automated.html</link>
+      <pubDate>Mon, 05 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Boolos_Curious_Inference_Automated.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>A Verified Translation of Multitape Turing Machines into Singletape Turing Machines</title>
       <link>/entries/Multitape_To_Singletape_TM.html</link>
       <pubDate>Wed, 30 Nov 2022 00:00:00 +0000</pubDate>
