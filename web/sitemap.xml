@@ -38,6 +38,9 @@
     <loc>/dependencies/benor_kozen_reif/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/entries/Propositional_Logic_Class.html</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/authors/cordwell/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
@@ -48,6 +51,9 @@
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/descartes_sign_rule/</loc>
+    <lastmod>2022-12-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/doty/</loc>
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/dependencies/factor_algebraic_polynomial/</loc>
@@ -66,9 +72,6 @@
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Birkhoff_Finite_Distributive_Lattices.html</loc>
-    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/doty/</loc>
     <lastmod>2022-12-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Boolos_Curious_Inference_Automated.html</loc>
@@ -5590,6 +5593,8 @@
     <loc>/theories/promela/</loc>
   </url><url>
     <loc>/theories/proof_strategy_language/</loc>
+  </url><url>
+    <loc>/theories/propositional_logic_class/</loc>
   </url><url>
     <loc>/theories/propositional_proof_systems/</loc>
   </url><url>

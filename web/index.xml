@@ -35,6 +35,15 @@
     </item>
     
     <item>
+      <title>Class-based Classical Propositional Logic</title>
+      <link>/entries/Propositional_Logic_Class.html</link>
+      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Propositional_Logic_Class.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Birkhoff&#39;s Representation Theorem For Finite Distributive Lattices</title>
       <link>/entries/Birkhoff_Finite_Distributive_Lattices.html</link>
       <pubDate>Tue, 06 Dec 2022 00:00:00 +0000</pubDate>
@@ -11335,6 +11344,15 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/theories/proof_strategy_language/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Propositional_Logic_Class</title>
+      <link>/theories/propositional_logic_class/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/theories/propositional_logic_class/</guid>
       <description></description>
     </item>
     

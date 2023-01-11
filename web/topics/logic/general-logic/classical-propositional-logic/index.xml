@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language><atom:link href="/topics/logic/general-logic/classical-propositional-logic/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Class-based Classical Propositional Logic</title>
+      <link>/entries/Propositional_Logic_Class.html</link>
+      <pubDate>Thu, 15 Dec 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/Propositional_Logic_Class.html</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Soundness and Completeness of Implicational Logic</title>
       <link>/entries/Implicational_Logic.html</link>
       <pubDate>Tue, 13 Sep 2022 00:00:00 +0000</pubDate>

@@ -1,0 +1,44 @@
+title = "Class-based Classical Propositional Logic"
+date = 2022-12-15
+topics = [
+  "Logic/General logic/Classical propositional logic",
+  "Logic/Proof theory",
+]
+abstract = """
+We formulate classical propositional logic as an axiom class. Our
+  class represents a Hilbert-style proof system with the axioms
+  \\(\\vdash \\varphi \\to \\psi \\to \\varphi\\),
+  \\(\\vdash (\\varphi \\to \\psi \\to \\chi) \\to (\\varphi \\to \\psi) \\to
+  \\varphi \\to \\chi\\), and
+  \\(\\vdash ((\\varphi \\to \\bot) \\to \\bot) \\to \\varphi\\) along with the
+  rule <em>modus ponens</em>
+  \\(\\vdash \\varphi \\to \\psi \\Longrightarrow \\; \\vdash \\varphi
+  \\Longrightarrow \\; \\vdash \\psi\\). In this axiom class we provide
+  lemmas to obtain <em>Maximally Consistent Sets</em> via Zorn's lemma.
+  We define the concrete classical propositional calculus inductively
+  and show it instantiates our axiom class. We formulate the usual
+  semantics for the propositional calculus and show strong soundness
+  and completeness. We provide conventional definitions of the other
+  logical connectives and prove various common identities. Finally, we
+  show that the propositional calculus <em>embeds</em> into any logic in
+  our axiom class."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.doty]
+email = "doty_email"
+
+[contributors]
+
+[notify]
+doty = "doty_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
