@@ -117,7 +117,44 @@ object AFP_Check_Roots {
             else None
           }
         },
-        t => t._1 + ": {" + t._2.mkString((", ")) + "}")
+        t => t._1 + ": {" + t._2.mkString(", ") + "}"),
+      Check[(String, List[Path])]("unused_document_files",
+        "The following entries contain unused document files:",
+        (structure, _, check_dirs) => {
+          val entry_dirs = check_dirs.flatMap(dir => dir_entries(dir).map(dir + Path.basic(_)))
+          entry_dirs.flatMap { dir =>
+            val entry = dir.base.implode
+
+            def rel_path(path: Path): Path = File.relative_path(dir.absolute, path.absolute).get
+
+            val sessions = Sessions.parse_root(dir + Path.basic("ROOT")).collect {
+              case e: Sessions.Session_Entry => e.name
+            }
+
+            val session_document_files =
+              sessions.flatMap { session_name =>
+                val info = structure(session_name)
+                info.document_files.map { case (dir, file) => (info.dir + dir, file) }
+              }
+
+            val document_files =
+              session_document_files.map { case (dir, path) => rel_path(dir + path) }
+
+            val document_dirs = session_document_files.map(_._1.file).distinct
+            val physical_files =
+              document_dirs.flatMap(File.find_files(_, _.isFile, include_dirs = true))
+            val rel_files = physical_files.map(file => rel_path(Path.explode(file.getAbsolutePath)))
+
+            val unused = rel_files.toSet -- document_files.toSet
+            if (unused.nonEmpty) Some(entry -> unused.toList) else None
+          }
+        },
+        t => t._1 + ": {" + t._2.mkString(", ") + "}"),
+      Check[String]("document_presence",
+        "The following entries do not contain a document root.tex",
+        (structure, _, check_dirs) =>
+          check_dirs.flatMap(dir_entries).filterNot(
+            structure(_).document_files.map(_._2).contains(Path.basic("root.tex"))))
     ).sortBy(_.name)
 
   def the_check(name: String): Check[_] =
