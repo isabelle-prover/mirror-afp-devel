@@ -74,6 +74,9 @@
     <loc>/entries/Birkhoff_Finite_Distributive_Lattices.html</loc>
     <lastmod>2022-12-06T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>/entries/Boolos_Curious_Inference_Automated.html</loc>
     <lastmod>2022-12-05T00:00:00+00:00</lastmod>
   </url><url>
@@ -100,6 +103,12 @@
   </url><url>
     <loc>/authors/thiemann/</loc>
     <lastmod>2022-11-30T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/AOT.html</loc>
+    <lastmod>2022-11-28T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/kirchner/</loc>
+    <lastmod>2022-11-28T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/CHERI-C_Memory_Model.html</loc>
     <lastmod>2022-11-25T00:00:00+00:00</lastmod>
@@ -2462,9 +2471,6 @@
     <loc>/entries/Lowe_Ontological_Argument.html</loc>
     <lastmod>2017-09-21T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>/authors/kirchner/</loc>
-    <lastmod>2017-09-17T00:00:00+00:00</lastmod>
-  </url><url>
     <loc>/entries/PLM.html</loc>
     <lastmod>2017-09-17T00:00:00+00:00</lastmod>
   </url><url>
@@ -4433,6 +4439,8 @@
     <loc>/theories/anselmgod/</loc>
   </url><url>
     <loc>/theories/aodv/</loc>
+  </url><url>
+    <loc>/theories/aot/</loc>
   </url><url>
     <loc>/theories/applicative_lifting/</loc>
   </url><url>

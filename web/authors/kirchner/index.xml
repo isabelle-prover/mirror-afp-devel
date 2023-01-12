@@ -6,7 +6,16 @@
     <description>Recent content in kirchner on Archive of Formal Proofs</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-gb</language>
-    <lastBuildDate>Sun, 17 Sep 2017 00:00:00 +0000</lastBuildDate><atom:link href="/authors/kirchner/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 28 Nov 2022 00:00:00 +0000</lastBuildDate><atom:link href="/authors/kirchner/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Abstract Object Theory</title>
+      <link>/entries/AOT.html</link>
+      <pubDate>Mon, 28 Nov 2022 00:00:00 +0000</pubDate>
+      
+      <guid>/entries/AOT.html</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL</title>
       <link>/entries/PLM.html</link>
