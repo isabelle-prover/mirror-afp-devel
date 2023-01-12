@@ -31,6 +31,6 @@ platzer = "platzer_email"
 
 [related]
 dois = [
-  "10.48550/arXiv.2209.10978",
+  "10.1145/3573105.3575672",
 ]
 pubs = []
