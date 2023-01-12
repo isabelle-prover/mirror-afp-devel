@@ -679,6 +679,10 @@ object AFP_Submit {
             fieldlabel(Nest_Key(key, NAME), "Short Name") ::
             hidden(Nest_Key(key, NAME), entry.name) ::
             text(entry.name)),
+          par(
+            fieldlabel(Nest_Key(key, DATE), "Date") ::
+            hidden(Nest_Key(key, DATE), entry.date.toString) ::
+            text(entry.date.toString)),
           par(List(
             fieldlabel("", "Topics"),
             list(indexed(entry.topics, key, TOPIC, render_topic)))),
@@ -724,7 +728,7 @@ object AFP_Submit {
           case Model.Status.Review => "Review in progress."
           case Model.Status.Added => "Added to the AFP."
           case Model.Status.Rejected => "Submission rejected."
-        } getOrElse "Submission saved"
+        } getOrElse "Draft saved. Submit to editors once successfully built."
 
       val archive_url =
         if (handler.get_archive(submission.id).exists(_.get_ext == "zip"))
@@ -787,12 +791,24 @@ object AFP_Submit {
           span(text(overview.date.toString)) ::
           span(List(abs_link(api.rel_url(SUBMISSION, List(ID -> overview.id)),
             text(overview.name)))) ::
-          selection(Nest_Key(key, STATUS), Some(overview.status.toString),
-            Model.Status.values.toList.map(v => option(v.toString, v.toString))) ::
-          action_button(api.abs_url(API_SUBMISSION_STATUS), "update", key) :: Nil)
+          class_("right")(span(List(
+            selection(Nest_Key(key, STATUS), Some(overview.status.toString),
+              Model.Status.values.toList.map(v => option(v.toString, v.toString))),
+            action_button(api.abs_url(API_SUBMISSION_STATUS), "update", key)))) :: Nil)
+
+      def list1(ls: List[XML.Elem]): XML.Elem = if (ls.isEmpty) par(Nil) else list(ls)
+
+      val ls = indexed(submission_list.submissions, Params.empty, ENTRY, (o, k) => (o, k))
+      val finished =
+        ls.filter(t => Set(Model.Status.Added, Model.Status.Rejected).contains(t._1.status))
 
       List(submit_form(api.abs_url(API_SUBMISSION_STATUS),
-        List(list(indexed(submission_list.submissions, Params.empty, ENTRY, render_overview)))))
+        text("Open") :::
+        list1(ls.filter(_._1.status == Model.Status.Submitted).map(render_overview)) ::
+        text("In Progress") :::
+        list1(ls.filter(_._1.status == Model.Status.Review).map(render_overview)) ::
+        text("Finished") :::
+        list1(finished.map(render_overview)) :: Nil))
     }
 
     def render_created(created: Model.Created): XML.Body =
