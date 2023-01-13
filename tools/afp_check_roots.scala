@@ -26,7 +26,8 @@ object AFP_Check_Roots {
     name: String,
     failure_msg: String,
     run: (Sessions.Structure, List[String], List[Path]) => List[T],
-    failure_format: T => String = (t: T) => t.toString
+    failure_format: T => String = (t: T) => t.toString,
+    is_error: Boolean = true
   ) {
     override def toString: String = name
 
@@ -137,7 +138,8 @@ object AFP_Check_Roots {
             if (unused.nonEmpty) Some(dir.base.implode -> unused.toList) else None
           }
         },
-        t => t._1 + ": {" + t._2.mkString(", ") + "}"),
+        t => t._1 + ": {" + t._2.mkString(", ") + "}",
+        is_error = false),
       Check[String]("document_presence",
         "The following entries do not contain a document root.tex",
         (structure, _, check_dirs) =>
@@ -161,12 +163,15 @@ object AFP_Check_Roots {
     val structure = Sessions.load_structure(Options.init(), dirs = dirs, select_dirs = check_dirs)
     val sessions = structure.build_selection(Sessions.Selection.empty).sorted
 
-    val bad = checks.exists(check => !check(structure, sessions, check_dirs, progress))
+    val (ok, bad) = checks.partition(_(structure, sessions, check_dirs, progress))
 
-    if (bad) System.exit(1)
+    if (bad.exists(_.is_error)) System.exit(1)
     else {
       progress.echo(sessions.length.toString + " sessions have been checked")
-      progress.echo(checks.length.toString + " checks have found no errors")
+      if (bad.nonEmpty)
+        progress.echo(bad.length.toString + " checks out of " + checks.length.toString +
+          " have found warnings")
+      else progress.echo(checks.length.toString + " checks have found no errors")
     }
   }
 
