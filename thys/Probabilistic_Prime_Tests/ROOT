@@ -12,3 +12,4 @@ session Probabilistic_Prime_Tests (AFP) = "HOL-Probability" +
     Solovay_Strassen_Test
   document_files
     "root.tex"
+    "root.bib"
