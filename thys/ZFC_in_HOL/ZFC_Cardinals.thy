@@ -1578,7 +1578,7 @@ qed
 lemma ordertype_Field_Restr:
   assumes "wf r" "total_on A r" "trans r" "small A" "Field (Restr r A) = A"
   shows "ordertype (Field (Restr r A)) (Restr r A) = ordertype A r"
-  using assms by (force simp: ordertype_eq_ordertype wf_Restr total_on_def trans_Restr)
+  using assms by (force simp: ordertype_eq_ordertype wf_Int1 total_on_def trans_Restr)
 
 proposition ordertype_eq_ordertype_iso_Restr:
   assumes r: "wf r" "total_on A r" "trans r" and "small A" and FA: "Field (Restr r A) = A"
