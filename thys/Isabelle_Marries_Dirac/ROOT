@@ -21,3 +21,4 @@ session "Isabelle_Marries_Dirac" (AFP) = "Jordan_Normal_Form" +
     Quantum_Prisoners_Dilemma
   document_files
     "root.tex"
+    "root.bib"
