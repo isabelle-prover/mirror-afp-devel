@@ -648,7 +648,7 @@ next
   qed
 qed
 
-text \<open>Equivalence condition for the @{text nth_digit} function @{cite "h10lecturenotes"}
+text \<open>Equivalence condition for the @{text nth_digit} function \<^cite>\<open>"h10lecturenotes"\<close>
       (see equation 2.29)\<close>
 
 lemma digit_gen_equiv:

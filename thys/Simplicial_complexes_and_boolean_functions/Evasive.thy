@@ -116,7 +116,7 @@ section\<open>Definition of \emph{evasive} Boolean function\<close>
 
 text\<open>Now we introduce the definition of evasive Boolean function.
   It is based on the height of the ifex expression of the given function.
-  The definition is inspired by the one by Scoville~\cite[Ex. 6.19]{SC19}.\<close>
+  The definition is inspired by the one by Scoville~\<^cite>\<open>\<open>Ex. 6.19\<close> in "SC19"\<close>.\<close>
 
 definition evasive :: "nat => ((nat => bool) => bool) => bool"
   where "evasive n f \<equiv> (height (mk_ifex f [0..n])) = n"

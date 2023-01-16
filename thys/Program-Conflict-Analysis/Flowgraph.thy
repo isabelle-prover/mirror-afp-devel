@@ -9,7 +9,7 @@ begin
 text_raw \<open>\label{thy:Flowgraph}\<close>
 
 text \<open>
-  We use a flowgraph-based program model that extends the one we used previously \cite{LM07}. 
+  We use a flowgraph-based program model that extends the one we used previously \<^cite>\<open>"LM07"\<close>. 
   A program is represented as an edge annotated graph and a set of procedures. The nodes of the graph are partitioned by the procedures, i.e. every node belongs to exactly one procedure. There are no edges
   between nodes of different procedures. Every procedure has a distinguished entry and return node and a set of monitors it synchronizes on. Additionally, the program has a distinguished {\em main} procedure.
   The edges are annotated with statements. A statement is either a base statement, a procedure call or a thread creation (spawn). Procedure calls and thread creations refer to the called procedure or to the initial procedure

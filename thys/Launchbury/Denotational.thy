@@ -3,7 +3,7 @@ theory Denotational
 begin
 
 text \<open>
-This is the actual denotational semantics as found in \cite{launchbury}.
+This is the actual denotational semantics as found in \<^cite>\<open>"launchbury"\<close>.
 \<close>
 
 interpretation semantic_domain Fn Fn_project B B_project "(\<Lambda> x. x)".

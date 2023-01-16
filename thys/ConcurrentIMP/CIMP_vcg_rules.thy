@@ -20,7 +20,7 @@ subsubsection\<open> VCG rules \label{sec:cimp:vcg_rules} \<close>
 text\<open>
 
 We can develop some (but not all) of the familiar Hoare rules; see
-@{cite [cite_macro=citet] "DBLP:journals/acta/Lamport80"} and the
+\<^citet>\<open>"DBLP:journals/acta/Lamport80"\<close> and the
 seL4/l4.verified lemma buckets for inspiration. We avoid many of the
 issues Lamport mentions as we only treat basic (atomic) commands.
 

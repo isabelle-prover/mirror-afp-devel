@@ -457,7 +457,7 @@ begin
 
 text \<open>We eliminate the assumption of antiparallel edges by adding a vertex for every edge.
   Thus, antiparallel edges are split up into a cycle of 4 edges. This idea already appears in
-  @{cite Aharoni1983EJC}.\<close>
+  \<^cite>\<open>Aharoni1983EJC\<close>.\<close>
 
 datatype (plugins del: transfer size) 'v' vertex = Vertex 'v' | Edge 'v' 'v'
 

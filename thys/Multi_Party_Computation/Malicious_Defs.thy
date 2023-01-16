@@ -1,7 +1,7 @@
 section \<open>Malicious Security\<close>
 
 text \<open>Here we define security in the malicious security setting. We follow the definitions given in 
-\cite{DBLP:series/isc/HazayL10} and \cite{DBLP:books/cu/Goldreich2004}. The definition of malicious security 
+\<^cite>\<open>"DBLP:series/isc/HazayL10"\<close> and \<^cite>\<open>"DBLP:books/cu/Goldreich2004"\<close>. The definition of malicious security 
 follows the real/ideal world paradigm.\<close>
 
 subsection \<open>Malicious Security Definitions\<close>

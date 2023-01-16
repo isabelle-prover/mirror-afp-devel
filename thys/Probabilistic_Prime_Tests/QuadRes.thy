@@ -11,7 +11,7 @@ imports
   Algebraic_Auxiliaries
 begin
 
-text \<open>Proofs are inspired by \cite{Quadratic_Residues}.\<close>
+text \<open>Proofs are inspired by \<^cite>\<open>"Quadratic_Residues"\<close>.\<close>
 
 lemma inj_on_QuadRes:
   fixes p :: int

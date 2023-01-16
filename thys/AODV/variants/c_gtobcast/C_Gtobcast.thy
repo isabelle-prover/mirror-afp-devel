@@ -11,7 +11,7 @@ begin
 chapter "Variant C: From Groupcast to Broadcast"
 
 text \<open>
-  Explanation~\cite[\textsection 10.4]{FehnkerEtAl:AWN:2013}:
+  Explanation~\<^cite>\<open>\<open>\textsection 10.4\<close> in "FehnkerEtAl:AWN:2013"\<close>:
   A node maintains a set of `precursor nodes' for each of its valid routes.
   If the link to a route's next hop is lost, an error message is groupcast 
   to the associated precursor nodes. The idea is to reduce the number of

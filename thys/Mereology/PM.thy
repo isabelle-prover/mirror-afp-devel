@@ -8,15 +8,15 @@ begin
 
 text \<open> In this paper, we use Isabelle/HOL to verify some elementary theorems and alternative axiomatizations
 of classical extensional mereology, as well as some of its weaker subtheories.\footnote{For similar 
-developments see @{cite "sen_computational_2017"} and @{cite "bittner_formal_2018"}.} We mostly follow the 
-presentations from @{cite "simons_parts:_1987"}, @{cite "varzi_parts_1996"} and @{cite "casati_parts_1999"}, 
-with some important corrections from @{cite "pontow_note_2004"} and @{cite "hovda_what_2009"} as well as
-some detailed proofs adapted from @{cite "pietruszczak_metamereology_2018"}.\footnote{For help with 
+developments see \<^cite>\<open>"sen_computational_2017"\<close> and \<^cite>\<open>"bittner_formal_2018"\<close>.} We mostly follow the 
+presentations from \<^cite>\<open>"simons_parts:_1987"\<close>, \<^cite>\<open>"varzi_parts_1996"\<close> and \<^cite>\<open>"casati_parts_1999"\<close>, 
+with some important corrections from \<^cite>\<open>"pontow_note_2004"\<close> and \<^cite>\<open>"hovda_what_2009"\<close> as well as
+some detailed proofs adapted from \<^cite>\<open>"pietruszczak_metamereology_2018"\<close>.\footnote{For help with 
 this project I am grateful to Zach Barnett, Sam Baron, Bob Beddor, Olivier Danvy, Mark Goh,
 Jeremiah Joven Joaquin, Wang-Yen Lee, Kee Wei Loo, Bruno Woltzenlogel Paleo, Michael Pelczar, Hsueh Qu, 
 Abelard Podgorski, Divyanshu Sharma, Manikaran Singh, Neil Sinhababu, Weng-Hong Tang and Zhang Jiang.} \<close> 
 
-text \<open> We will use the following notation throughout.\footnote{See @{cite "simons_parts:_1987"} pp. 99-100 
+text \<open> We will use the following notation throughout.\footnote{See \<^cite>\<open>"simons_parts:_1987"\<close> pp. 99-100 
 for a helpful comparison of alternative notations.} \<close>
 
 typedecl i
@@ -34,10 +34,10 @@ consts general_product :: "(i \<Rightarrow> bool) \<Rightarrow> i" (binder "\<pi
 section \<open> Premereology \<close>
 
 text \<open> The theory of \emph{premereology} assumes parthood is reflexive and transitive.\footnote{ 
-For discussion of reflexivity see @{cite "kearns_can_2011"}. For transitivity see @{cite "varzi_note_2006"}.}
+For discussion of reflexivity see \<^cite>\<open>"kearns_can_2011"\<close>. For transitivity see \<^cite>\<open>"varzi_note_2006"\<close>.}
 In other words, parthood is assumed to be a partial ordering relation.\footnote{Hence the name \emph{premereology},
-from @{cite "parsons_many_2014"} p. 6.} Overlap is defined as common parthood.\footnote{See
-@{cite "simons_parts:_1987"} p. 28, @{cite "varzi_parts_1996"} p. 261 and @{cite "casati_parts_1999"} p. 36. } \<close>
+from \<^cite>\<open>"parsons_many_2014"\<close> p. 6.} Overlap is defined as common parthood.\footnote{See
+\<^cite>\<open>"simons_parts:_1987"\<close> p. 28, \<^cite>\<open>"varzi_parts_1996"\<close> p. 261 and \<^cite>\<open>"casati_parts_1999"\<close> p. 36. } \<close>
 
 locale PM =
   assumes part_reflexivity: "P x x"
@@ -102,7 +102,7 @@ proof -
   with overlap_eq show "O z y"..
 qed
 
-text \<open> The next lemma is from @{cite "hovda_what_2009"} p. 66. \<close>
+text \<open> The next lemma is from \<^cite>\<open>"hovda_what_2009"\<close> p. 66. \<close>
 
 lemma overlap_lemma: "\<exists>x. (P x y \<and> O z x) \<longrightarrow> O y z"
 proof -

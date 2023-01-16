@@ -62,7 +62,7 @@ All JKBPs in the following sections are assumed to be subjective.
 
 This syntactic restriction implies the desired semantic property, that
 we can evaluate a guard at an arbitrary world that is compatible with
-a given observation \citep[\S3]{DBLP:journals/dc/FaginHMV97}.
+a given observation \<^citep>\<open>\<open>\S3\<close> in "DBLP:journals/dc/FaginHMV97"\<close>.
 
 \<close>
 
@@ -178,8 +178,8 @@ text\<open>
 The previous section showed how a JKBP can be interpreted statically,
 with respect to a fixed Kripke structure. As we also wish to capture
 how agents interact, we adopt the \emph{interpreted systems} and
-\emph{contexts} of \cite{FHMV:1995}, which we term \emph{environments}
-following \cite{Ron:1996}.
+\emph{contexts} of \<^cite>\<open>"FHMV:1995"\<close>, which we term \emph{environments}
+following \<^cite>\<open>"Ron:1996"\<close>.
 
 A \emph{pre-environment} consists of the following:
 \begin{itemize}
@@ -223,7 +223,7 @@ Given that we want the agents to make optimal use of the information
 they have access to, we allow these structures to depend on the entire
 history of the system, suitably conditioned by what the agents can
 observe. We capture this notion of observation with a \emph{view}
-\citep{Ron:1996}, which is an arbitrary function of a trace:
+\<^citep>\<open>"Ron:1996"\<close>, which is an arbitrary function of a trace:
 
 \<close>
 
@@ -308,7 +308,7 @@ qed
 text\<open>
 
 This construction supplants the role of the \emph{local states} of
-\citet{FHMV:1995}.
+\<^citet>\<open>"FHMV:1995"\<close>.
 
 The following section shows how we can canonically interpret the JKBP
 with respect to this structure.
@@ -616,8 +616,8 @@ text\<open>
 Thus, at least with synchronous views, we are justified in talking
 about \emph{the} representation of a JKBP in a given environment. More
 generally these results are also valid for the more general notion of
-\emph{provides witnesses} as shown by \citet[Lemma 7.2.4]{FHMV:1995}
-and \citet{DBLP:journals/dc/FaginHMV97}: it requires only that if a
+\emph{provides witnesses} as shown by \<^citet>\<open>\<open>Lemma 7.2.4\<close> in "FHMV:1995"\<close>
+and \<^citet>\<open>"DBLP:journals/dc/FaginHMV97"\<close>: it requires only that if a
 subjective knowledge formula is false on a trace then there is a trace
 of the same length or less that bears witness to that effect. This is
 a useful generalisation in asynchronous settings.

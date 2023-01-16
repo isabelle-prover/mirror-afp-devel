@@ -506,8 +506,8 @@ text \<open>
   The definitions of cycles in textbooks vary w.r.t to the minimial length
   of a cycle.
 
-  The definition given here matches \cite{diestel2010graph}.
-  \cite{bangjensen2009digraphs} excludes loops from being cycles.
+  The definition given here matches \<^cite>\<open>"diestel2010graph"\<close>.
+  \<^cite>\<open>"bangjensen2009digraphs"\<close> excludes loops from being cycles.
   Volkmann (Lutz Volkmann: Graphen an allen Ecken und Kanten, 2006 (?))
   places no restriction on the length in the definition, but later
   usage assumes cycles to be non-empty.

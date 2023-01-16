@@ -15,7 +15,7 @@ subsection\<open>Background\<close>
 text\<open>
 An explanation of the methodology chosen for the exposition of all
 matters related to the size of the categories and associated entities
-is given in \cite{milehins_category_2021}.
+is given in \<^cite>\<open>"milehins_category_2021"\<close>.
 \<close>
 
 named_theorems cat_small_cs_simps
@@ -194,7 +194,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 A definition of a finite category can be found in nLab 
-\cite{noauthor_nlab_nodate}\footnote{
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/finite+category}
 }.
 \<close>

@@ -284,7 +284,7 @@ end
 
 subsection \<open>Controller 2D\<close>
 
-text \<open>An example from @{cite "barriertubes"}\<close>
+text \<open>An example from \<^cite>\<open>"barriertubes"\<close>\<close>
 
 experiment begin
 

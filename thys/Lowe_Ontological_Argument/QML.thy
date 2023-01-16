@@ -6,12 +6,12 @@ nitpick_params[user_axioms=true, show_all, expect=genuine, format = 3, atoms e =
 (*>*)
   
 section \<open>Embedding of Quantified Modal Logic\<close>
-text\<open>\noindent{As is well known, the Isabelle proof assistant @{cite "Isabelle"} does not natively support modal logics, so
+text\<open>\noindent{As is well known, the Isabelle proof assistant \<^cite>\<open>"Isabelle"\<close> does not natively support modal logics, so
 we have used a technique known as \emph{shallow semantic embedding}, which allows us
 to take advantage of the expressive power of higher-order logic in order to embed the semantics
-of an object language. We draw on previous work on the embedding of multimodal logics in HOL @{cite "J23"},
+of an object language. We draw on previous work on the embedding of multimodal logics in HOL \<^cite>\<open>"J23"\<close>,
 which has successfully been applied to the analysis and verification of ontological arguments
-(e.g. @{cite C55 and J32 and J35}).}\<close>
+(e.g. \<^cite>\<open>C55 and J32 and J35\<close>).}\<close>
 
 subsection \<open>Type Declarations\<close>  
 
@@ -93,7 +93,7 @@ lemma "\<lfloor>(\<lambda>\<alpha>. \<phi> \<alpha>) (\<tau>::e) \<^bold>\<leftr
 lemma "\<lfloor>(\<lambda>\<alpha>. \<^bold>\<box>\<phi> \<alpha>) (\<tau>::w\<Rightarrow>e) \<^bold>\<leftrightarrow> (\<^bold>\<box>\<phi> \<tau>)\<rfloor>" by simp
 lemma "\<lfloor>(\<lambda>\<alpha>. \<^bold>\<box>\<phi> \<alpha>) (\<tau>::e) \<^bold>\<leftrightarrow> (\<^bold>\<box>\<phi> \<tau>)\<rfloor>" by simp    
 
-text\<open>\noindent{Modal collapse is countersatisfiable, as shown by Nitpick @{cite "Nitpick"}.}\<close>
+text\<open>\noindent{Modal collapse is countersatisfiable, as shown by Nitpick \<^cite>\<open>"Nitpick"\<close>.}\<close>
 lemma "\<lfloor>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>\<rfloor>" nitpick oops
 
 subsection \<open>Axiomatization of Further Logics\<close>
@@ -108,11 +108,11 @@ abbreviation V  where "V \<equiv> \<^bold>\<forall>\<phi>. \<^bold>\<diamond>\<p
 
 text\<open>\noindent{Instead of postulating combinations of the above  axioms we make use of 
 the well-known \emph{Sahlqvist correspondence}, which links axioms to constraints on a model's accessibility
-relation (cf. @{cite "J23"} for further details).
+relation (cf. \<^cite>\<open>"J23"\<close> for further details).
 We show  that  reflexivity, symmetry, seriality, transitivity and euclideanness imply
 axioms \emph{T, B, D, IV, V} respectively.\footnote{Implication can also be proven in the reverse direction
 (which is not needed for our purposes).
-Using these definitions, we can derive axioms for the most common modal logics (see also @{cite "C47"}). 
+Using these definitions, we can derive axioms for the most common modal logics (see also \<^cite>\<open>"C47"\<close>). 
 Thereby we are free to use either the semantic constraints or the related \emph{Sahlqvist} axioms. Here we provide 
 both versions. In what follows we use the semantic constraints for improved performance.}}\<close>
 lemma "reflexive R  \<Longrightarrow>  \<lfloor>T\<rfloor>" by blast

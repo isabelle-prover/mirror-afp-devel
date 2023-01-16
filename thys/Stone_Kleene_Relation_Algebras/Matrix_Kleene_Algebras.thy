@@ -8,13 +8,13 @@ section \<open>Matrix Kleene Algebras\<close>
 text \<open>
 This theory gives a matrix model of Stone-Kleene relation algebras.
 The main result is that matrices over Kleene algebras form Kleene algebras.
-The automata-based construction is due to Conway \cite{Conway1971}.
-An implementation of the construction in Isabelle/HOL that extends \cite{ArmstrongGomesStruthWeber2016} was given in \cite{Asplund2014} without a correctness proof.
+The automata-based construction is due to Conway \<^cite>\<open>"Conway1971"\<close>.
+An implementation of the construction in Isabelle/HOL that extends \<^cite>\<open>"ArmstrongGomesStruthWeber2016"\<close> was given in \<^cite>\<open>"Asplund2014"\<close> without a correctness proof.
 
 For specifying the size of matrices, Isabelle/HOL's type system requires the use of types, not sets.
 This creates two issues when trying to implement Conway's recursive construction directly.
 First, the matrix size changes for recursive calls, which requires dependent types.
-Second, some submatrices used in the construction are not square, which requires typed Kleene algebras \cite{Kozen1998}, that is, categories of Kleene algebras.
+Second, some submatrices used in the construction are not square, which requires typed Kleene algebras \<^cite>\<open>"Kozen1998"\<close>, that is, categories of Kleene algebras.
 
 Because these instruments are not available in Isabelle/HOL, we use square matrices with a constant size given by the argument of the Kleene star operation.
 Smaller, possibly rectangular submatrices are identified by two lists of indices: one for the rows to include and one for the columns to include.

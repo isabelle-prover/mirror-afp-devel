@@ -8,7 +8,7 @@ section\<open>Axiomatic network models\<close>
 
 text\<open>In this section we develop a formal definition of an \emph{asynchronous unreliable causal broadcast network}.
      We choose this model because it satisfies the causal delivery requirements of many operation-based
-     CRDTs~\cite{Almeida:2015fc,Baquero:2014ed}. Moreover, it is suitable for use in decentralised settings,
+     CRDTs~\<^cite>\<open>"Almeida:2015fc" and "Baquero:2014ed"\<close>. Moreover, it is suitable for use in decentralised settings,
      as motivated in the introduction, since it does not require waiting for communication with
      a central server or a quorum of nodes.\<close>
 
@@ -191,7 +191,7 @@ The axioms can be understood as follows:
         With this axiom, we assert that messages are not created ``out of thin air'' by the network itself, and that the only source of messages are the nodes.
     \item[deliver-locally:] If a node broadcasts some message $\isa{m}$, then the same node must subsequently also deliver $\isa{m}$ to itself.
         Since $\isa{m}$ does not actually travel over the network, this local delivery is always possible, even if the network is interrupted.
-        Local delivery may seem redundant, since the effect of the delivery could also be implemented by the broadcast event itself; however, it is standard practice in the description of broadcast protocols that the sender of a message also sends it to itself, since this property simplifies the definition of algorithms built on top of the broadcast abstraction \cite{Cachin:2011wt}.
+        Local delivery may seem redundant, since the effect of the delivery could also be implemented by the broadcast event itself; however, it is standard practice in the description of broadcast protocols that the sender of a message also sends it to itself, since this property simplifies the definition of algorithms built on top of the broadcast abstraction \<^cite>\<open>"Cachin:2011wt"\<close>.
     \item[msg-id-unique:] We do not assume that the message type $\isacharprime\isa{msg}$ has any particular structure; we only assume the existence of a function $\isa{msg-id} \mathbin{\isacharcolon\isacharcolon} \isacharprime\isa{msg} \mathbin{\isasymRightarrow} \isacharprime\isa{msgid}$ that maps every message to some globally unique identifier of type $\isacharprime\isa{msgid}$.
         We assert this uniqueness by stating that if $\isa{m1}$ and $\isa{m2}$ are any two messages broadcast by any two nodes, and their $\isa{msg-id}$s are the same, then they were in fact broadcast by the same node and the two messages are identical. 
         In practice, these globally unique IDs can by implemented using unique node identifiers, sequence numbers or timestamps.
@@ -209,7 +209,7 @@ lemma (in network) broadcasts_unique:
   shows "Broadcast m \<notin> set (history j)"
   using assms msg_id_unique by blast
     
-text\<open>Based on the well-known definition by \cite{Lamport:1978jq}, we say that
+text\<open>Based on the well-known definition by \<^cite>\<open>"Lamport:1978jq"\<close>, we say that
     $\isa{m1}\prec\isa{m2}$ if any of the following is true:
     \begin{enumerate}
       \item $\isa{m1}$ and $\isa{m2}$ were broadcast by the same node, and $\isa{m1}$ was broadcast before $\isa{m2}$.

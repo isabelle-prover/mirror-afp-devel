@@ -13,7 +13,7 @@ imports
 begin
 
 text \<open>
-Proofs are inspired by \cite{solovay_strassen_ori, SolovayStrassenTest, wiki:Solovay_Strassen_test, planetmath:SolovayStrassenTest}.
+Proofs are inspired by \<^cite>\<open>"solovay_strassen_ori" and "SolovayStrassenTest" and "wiki:Solovay_Strassen_test" and "planetmath:SolovayStrassenTest"\<close>.
 \<close>
 definition "euler_witness a p \<longleftrightarrow> [Jacobi a p \<noteq> a ^ ((p - 1) div 2)] (mod p)"
 abbreviation "euler_liar a p \<equiv> \<not> euler_witness a p"

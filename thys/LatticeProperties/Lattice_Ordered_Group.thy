@@ -9,7 +9,7 @@ imports Modular_Distrib_Lattice
 begin
 
 text\<open>
-This theory introduces lattice ordered groups \cite{birkhoff:1942} 
+This theory introduces lattice ordered groups \<^cite>\<open>"birkhoff:1942"\<close> 
 and proves some results about them. The most important result is 
 that a lattice ordered group is also a distributive lattice.
 \<close>

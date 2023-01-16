@@ -769,7 +769,7 @@ lemma subspace_elems_embed:
 
 
 section \<open>Core proofs\<close>
-text\<open>The numbering of the theorems has been borrowed from the textbook~\cite{thebook}.\<close>
+text\<open>The numbering of the theorems has been borrowed from the textbook~\<^cite>\<open>"thebook"\<close>.\<close>
 
 subsection \<open>Theorem 4\<close>
 subsubsection \<open>Base case of Theorem 4\<close>
@@ -1197,7 +1197,7 @@ proof-
     text \<open>Recall that @{term lhj} claims the existence of a layered subspace for any colouring
     (of a fixed size, where the size of a colouring refers to the number of colours). Therefore, the
     colourings have to be defined first, before the layered subspaces can be obtained. The colouring
-    \<open>\<chi>L\<close> here is $\chi^*$ in the book~\cite{thebook}, an
+    \<open>\<chi>L\<close> here is $\chi^*$ in the book~\<^cite>\<open>"thebook"\<close>, an
     \<open>s\<close>-colouring; see the fact \<open>s_coloured\<close> a couple of lines
     below.\<close>
 
@@ -1240,7 +1240,7 @@ proof-
       using assms(1) dim1_subspace_is_line[of "t+1" "L" "n"] L_prop line_points_in_cube[of L_line n "t+1"] 
       unfolding layered_subspace_def L_line_def by auto
 
-    text \<open>Here, \<open>\<chi>S\<close> is $\chi^{**}$ in the book~\cite{thebook}, an r-colouring.\<close>
+    text \<open>Here, \<open>\<chi>S\<close> is $\chi^{**}$ in the book~\<^cite>\<open>"thebook"\<close>, an r-colouring.\<close>
     define \<chi>S where "\<chi>S \<equiv> (\<lambda>y\<in>cube m (t+1). \<chi> (join (L_line 0) y n m))"
     have "\<chi>S \<in> (cube m (t + 1)) \<rightarrow>\<^sub>E {..<r::nat}"
     proof
@@ -1265,7 +1265,7 @@ proof-
 
     paragraph \<open>Part 2: Constructing the $(k+1)$-dimensional subspace \<open>T\<close>\\\<close>
 
-    text \<open>Below, \<open>Tset\<close> is the set as defined in the book~\cite{thebook}. It
+    text \<open>Below, \<open>Tset\<close> is the set as defined in the book~\<^cite>\<open>"thebook"\<close>. It
     represents the $(k+1)$-dimensional subspace. In this construction, subspaces (e.g.
     \<open>T\<close>) are functions whose image is a set. See the fact \<open>im_T_eq_Tset\<close>
     below.\<close>

@@ -6,7 +6,7 @@ Author: Chelsea Edmonds
 
 text \<open> This library aims to present a general theory for undirected graphs. The formalisation 
 approach models edges as sets with two elements, and is inspired in part by the graph theory 
-basics defined by Lars Noschinski in \cite{noschinski_2012} which are used in \cite{edmonds_szemeredis, edmonds_roths}. 
+basics defined by Lars Noschinski in \<^cite>\<open>"noschinski_2012"\<close> which are used in \<^cite>\<open>"edmonds_szemeredis" and "edmonds_roths"\<close>. 
 Crucially this library makes the definition more flexible by removing the type synonym from vertices 
 to natural numbers. This is limiting in more advanced mathematical applications, where it is common 
 for vertices to represent elements of some other set. It additionally extends significantly on basic
@@ -19,7 +19,7 @@ section \<open> Undirected Graph Theory Basics \<close>
 
 text \<open>This first theory focuses on the basics of graph theory (vertices, edges, degree, incidence, 
 neighbours etc), as well as defining a number of different types of basic graphs.
-This theory draws inspiration from \cite{noschinski_2012, edmonds_szemeredis, edmonds_roths} \<close>
+This theory draws inspiration from \<^cite>\<open>"noschinski_2012" and "edmonds_szemeredis" and "edmonds_roths"\<close> \<close>
 
 theory Undirected_Graph_Basics imports Main "HOL-Library.Multiset" "HOL-Library.Disjoint_Sets" 
 "HOL-Library.Extended_Real" "Girth_Chromatic.Girth_Chromatic_Misc"
@@ -112,7 +112,7 @@ fun mk_edge :: "'a \<times> 'a \<Rightarrow> 'a edge" where
 
 text \<open>All edges is simply the set of subsets of a set S of size 2\<close>
 definition "all_edges S \<equiv> {e . e \<subseteq> S \<and> card e = 2}" 
-text \<open> Note, this is a different definition to Noschinski's \cite{noschinski_2012} ugraph which uses 
+text \<open> Note, this is a different definition to Noschinski's \<^cite>\<open>"noschinski_2012"\<close> ugraph which uses 
 the @{term "mk_edge"} function unnecessarily \<close>
 
 text \<open> Basic properties of these functions \<close>
@@ -530,7 +530,7 @@ definition is_edge_between :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a edge
 "is_edge_between X Y e \<equiv> \<exists> x y. e = {x, y} \<and> x \<in> X \<and> y \<in> Y"
 
 text \<open>All edges between two sets of vertices, @{term X} and @{term Y}, in a graph, @{term G}. 
-Inspired by Szemeredi development \cite{edmonds_szemeridis} and generalised here \<close>
+Inspired by Szemeredi development \<^cite>\<open>"edmonds_szemeridis"\<close> and generalised here \<close>
 
 definition all_edges_between :: "'a set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'a) set" where
 "all_edges_between X Y \<equiv> {(x, y) . x \<in> X \<and> y \<in> Y \<and> {x, y} \<in> E}"
@@ -667,7 +667,7 @@ qed
 subsection \<open>Edge Density\<close>
 
 text \<open>The edge density between two sets of vertices, @{term X} and @{term Y}, in @{term G}.
-      This is the same definition as taken in the Szemeredi development, generalised here \cite{edmonds_szemeredis}\<close>
+      This is the same definition as taken in the Szemeredi development, generalised here \<^cite>\<open>"edmonds_szemeredis"\<close>\<close>
 
 definition "edge_density X Y \<equiv> card (all_edges_between X Y)/(card X * card Y)"
 lemma edge_density_ge0: "edge_density X Y \<ge> 0"
@@ -903,7 +903,7 @@ proof -
 qed
 
 text \<open> We are often interested in the set of subgraphs. This is still very possible using locale definitions.
-Interesting Note - random graphs \cite{Hupel_Random} has a different definition for the well formed 
+Interesting Note - random graphs \<^cite>\<open>"Hupel_Random"\<close> has a different definition for the well formed 
 constraint to be added in here instead of in the main subgraph definition\<close>
 
 definition (in graph_system) subgraphs:: "'a pregraph set" where

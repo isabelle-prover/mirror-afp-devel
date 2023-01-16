@@ -43,7 +43,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 For further information see
-\cite{noauthor_nlab_nodate}\footnote{\url{
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{\url{
 https://ncatlab.org/nlab/show/dagger+category
 }}.
 \<close>
@@ -99,7 +99,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 For further information see
-\cite{noauthor_nlab_nodate}\footnote{\url{
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{\url{
 https://ncatlab.org/nlab/show/Rel
 }}.
 \<close>
@@ -148,7 +148,7 @@ subsection\<open>Monoidal category\<close>
 
 
 text\<open>
-For background information see Chapter 2 in \cite{etingof_tensor_2015}.
+For background information see Chapter 2 in \<^cite>\<open>"etingof_tensor_2015"\<close>.
 \<close>
 
 
@@ -1685,7 +1685,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 For further information see
-\cite{noauthor_wikipedia_2001}\footnote{\url{
+\<^cite>\<open>"noauthor_wikipedia_2001"\<close>\footnote{\url{
 https://en.wikipedia.org/wiki/Category_of_relations
 }}.
 \<close>
@@ -2019,7 +2019,7 @@ subsection\<open>Dagger monoidal categories\<close>
 subsubsection\<open>Background\<close>
 
 
-text\<open>See \cite{coecke_survey_2010} for further information.\<close>
+text\<open>See \<^cite>\<open>"coecke_survey_2010"\<close> for further information.\<close>
 
 
 named_theorems dmcat_field_simps

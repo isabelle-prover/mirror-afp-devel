@@ -10,7 +10,7 @@ text \<open>
 To show that our theory of paths integrates with verification tasks, we verify the correctness of three basic path algorithms.
 Algorithms at the presented level are executable and can serve prototyping purposes.
 Data refinement can be carried out to move from such algorithms to more efficient programs.
-The total-correctness proofs use a library developed in \cite{Guttmann2018c}.
+The total-correctness proofs use a library developed in \<^cite>\<open>"Guttmann2018c"\<close>.
 \<close>
 
 theory Path_Algorithms

@@ -4,7 +4,7 @@ begin
 nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=3] (*default Nitpick settings*)
 
 section \<open>Example application: Logics of Formal Undeterminedness (LFUs)\<close>
-text\<open>\noindent{The LFUs @{cite LFU} @{cite LFI} are a family of paracomplete logics featuring a 'determinedness'
+text\<open>\noindent{The LFUs \<^cite>\<open>LFU\<close> \<^cite>\<open>LFI\<close> are a family of paracomplete logics featuring a 'determinedness'
 operator @{text "\<^bold>\<circ>"} that can be used to recover some classical properties of negation (in particular TND).
 LFUs behave in a sense dually to LFIs. Both can be semantically embedded as extensions of Boolean algebras.
 Here we show how to semantically embed LFUs as derivative algebras.}\<close>

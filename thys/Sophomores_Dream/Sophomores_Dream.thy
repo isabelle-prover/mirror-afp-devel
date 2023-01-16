@@ -8,9 +8,9 @@ theory Sophomores_Dream
 begin
 
 text \<open>
-  This formalisation mostly follows the very clear proof sketch from Wikipedia~\cite{wikipedia}.
+  This formalisation mostly follows the very clear proof sketch from Wikipedia~\<^cite>\<open>"wikipedia"\<close>.
   That article also provides an interesting historical perspective. A more detailed 
-  exploration of Bernoulli's historical proof can be found in the book by Dunham~\cite{dunham}.
+  exploration of Bernoulli's historical proof can be found in the book by Dunham~\<^cite>\<open>"dunham"\<close>.
 
   The name `Sophomore's Dream' apparently comes from a book by Borwein et al., in analogy to
   the `Freshman's Dream' equation $(x+y)^n = x^n + y^n$ (which is generally \<^emph>\<open>not\<close> true except

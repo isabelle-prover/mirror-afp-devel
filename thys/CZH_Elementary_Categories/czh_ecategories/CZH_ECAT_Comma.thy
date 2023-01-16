@@ -23,8 +23,8 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 
 text\<open>
-See Exercise 1.3.vi in \cite{riehl_category_2016} or 
-Chapter II-6 in \cite{mac_lane_categories_2010}.
+See Exercise 1.3.vi in \<^cite>\<open>"riehl_category_2016"\<close> or 
+Chapter II-6 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 definition cat_comma_Obj :: "V \<Rightarrow> V \<Rightarrow> V"
@@ -1231,7 +1231,7 @@ subsubsection\<open>Background\<close>
 
 
 text\<open>
-See \cite{noauthor_wikipedia_2001}\footnote{
+See \<^cite>\<open>"noauthor_wikipedia_2001"\<close>\footnote{
 \url{https://en.wikipedia.org/wiki/Opposite_category}
 } for background information.
 \<close>
@@ -1689,7 +1689,7 @@ subsection\<open>Projections for a comma category\<close>
 subsubsection\<open>Definitions and elementary properties\<close>
 
 
-text\<open>See Chapter II-6 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-6 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_comma_proj_left :: "V \<Rightarrow> V \<Rightarrow> V" (\<open>(_ \<^sub>C\<^sub>F\<Sqinter> _)\<close> [1000, 1000] 999)
   where "\<GG> \<^sub>C\<^sub>F\<Sqinter> \<HH> =
@@ -2616,7 +2616,7 @@ subsection\<open>Comma categories constructed from a functor and an object\<clos
 subsubsection\<open>Definitions and elementary properties\<close>
 
 
-text\<open>See Chapter II-6 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-6 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cat_cf_obj_comma :: "V \<Rightarrow> V \<Rightarrow> V" (\<open>(_ \<^sub>C\<^sub>F\<down> _)\<close> [1000, 1000] 999)
   where "\<FF> \<^sub>C\<^sub>F\<down> b \<equiv> \<FF> \<^sub>C\<^sub>F\<down>\<^sub>C\<^sub>F (cf_const (cat_1 0 0) (\<FF>\<lparr>HomCod\<rparr>) b)"
@@ -4292,7 +4292,7 @@ subsection\<open>Comma functors\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Theorem 1 in Chapter X-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Theorem 1 in Chapter X-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_arr_cf_comma :: "V \<Rightarrow> V \<Rightarrow> V" 
   (\<open>(_ \<^sub>A\<down>\<^sub>C\<^sub>F _)\<close> [1000, 1000] 999)

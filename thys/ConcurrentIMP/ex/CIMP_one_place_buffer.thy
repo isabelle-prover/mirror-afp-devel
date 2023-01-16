@@ -20,12 +20,9 @@ section\<open>Example: a one-place buffer \label{sec:one_place_buffer}\<close>
 text\<open>
 
 To demonstrate the CIMP reasoning infrastructure, we treat the trivial
-one-place buffer example of @{cite [cite_macro=citet]
-\<open>\S3.3\<close> "DBLP:journals/toplas/LamportS84"}. Note that the
-semantics for our language is different to @{cite
-[cite_macro=citeauthor] "DBLP:journals/toplas/LamportS84"}'s, who
-treated a historical variant of CSP (i.e., not the one in @{cite
-"Hoare:1985"}).
+one-place buffer example of \<^citet>\<open>\<open>\S3.3\<close> in "DBLP:journals/toplas/LamportS84"\<close>. Note that the
+semantics for our language is different to \<^cite>\<open>"DBLP:journals/toplas/LamportS84" using "citeauthor"\<close>'s, who
+treated a historical variant of CSP (i.e., not the one in \<^cite>\<open>"Hoare:1985"\<close>).
 
 We introduce some syntax for fixed-topology (static channel-based)
 scenarios.
@@ -46,8 +43,7 @@ where
 
 text\<open>
 
-These definitions largely follow @{cite [cite_macro=citet]
-"DBLP:journals/toplas/LamportS84"}. We have three processes
+These definitions largely follow \<^citet>\<open>"DBLP:journals/toplas/LamportS84"\<close>. We have three processes
 communicating over two channels. We enumerate program locations.
 
 \<close>
@@ -117,8 +113,7 @@ definition IL :: ex_pred where
 text\<open>
 
 If @{const p3} terminates, then it has @{const p1}'s value. This is
-stronger than @{cite [cite_macro=citeauthor]
-"DBLP:journals/toplas/LamportS84"}'s as we don't ask that the first
+stronger than \<^cite>\<open>"DBLP:journals/toplas/LamportS84" using "citeauthor"\<close>'s as we don't ask that the first
 process has also terminated.
 
 \<close>

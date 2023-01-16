@@ -11,7 +11,7 @@ begin
 chapter "Variant A: Skipping the RREQ ID"
 
 text \<open>
-  Explanation~\cite[\textsection 10.1]{FehnkerEtAl:AWN:2013}:
+  Explanation~\<^cite>\<open>\<open>\textsection 10.1\<close> in "FehnkerEtAl:AWN:2013"\<close>:
   AODV does not need the route request identifier. This number, in 
   combination with the IP address of the originator, is used to identify 
   every RREQ message in a unique way. This variant shows that the 

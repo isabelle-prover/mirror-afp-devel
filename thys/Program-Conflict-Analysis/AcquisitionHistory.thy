@@ -8,14 +8,14 @@ imports ConsInterleave
 begin
 text_raw \<open>\label{thy:AcquisitionHistory}\<close>
 
-text \<open>The concept of {\em acquisition histories} was introduced by Kahlon, Ivancic, and Gupta \cite{KIG05} as a bounded size abstraction of executions that acquire and release locks that contains enough information
+text \<open>The concept of {\em acquisition histories} was introduced by Kahlon, Ivancic, and Gupta \<^cite>\<open>"KIG05"\<close> as a bounded size abstraction of executions that acquire and release locks that contains enough information
   to decide consistent interleavability. In this work, we use this concept for reentrant monitors.
   As in Section~\ref{thy:ConsInterleave}, we encode monitor usage information in pairs of sets of monitors, and regard lists of such pairs as (abstract) executions.
   An item @{term "(E,U)"} of such a list describes a sequence of steps of the concrete execution that first enters the monitors in @{term E} and then passes through the monitors in @{term U}. The monitors in @{term E} are
   never left by the execution. Note that due to the syntactic binding of monitors to the program structure, any execution of a single thread can be abstracted to a sequence of @{term "(E,U)"}-pairs. 
   Restricting the possible schedules (see Section \ref{thy:Normalization}) will allow us to also abstract executions reaching a single program point to a sequence of such pairs.
 
-  We want to decide whether two executions are interleavable. The key observation of \cite{KIG05} is, that two executions @{term "e"} and @{term "e'"} are {\em not} interleavable if and only if 
+  We want to decide whether two executions are interleavable. The key observation of \<^cite>\<open>"KIG05"\<close> is, that two executions @{term "e"} and @{term "e'"} are {\em not} interleavable if and only if 
   there is a conflicting pair @{term "(m,m')"} of monitors, such that @{term e} enters (and never leaves) @{term m} and then uses @{term m'} and @{term e'} enters (and never leaves) @{term m'} and then uses @{term m}.  
 
   An acquisition history is a map from monitors to set of monitors. The acquisition history of an execution maps a monitor @{term m} that is allocated at the end of the execution to all monitors that are used after or in the 

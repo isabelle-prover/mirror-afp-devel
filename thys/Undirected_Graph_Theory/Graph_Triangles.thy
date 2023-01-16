@@ -4,7 +4,7 @@
 section \<open> Triangles in Graph \<close>
 text \<open> Triangles are an important tool in graph theory. This theory presents a number of basic 
 definitions/lemmas which are useful for general reasoning using triangles. The definitions and lemmas
-in this theory are adapted from previous less general work in \cite{edmonds_szemeredis} and \cite{edmonds_roths}\<close>
+in this theory are adapted from previous less general work in \<^cite>\<open>"edmonds_szemeredis"\<close> and \<^cite>\<open>"edmonds_roths"\<close>\<close>
 theory Graph_Triangles imports Undirected_Graph_Basics
       "HOL-Combinatorics.Multiset_Permutations"
 begin

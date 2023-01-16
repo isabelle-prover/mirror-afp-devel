@@ -5,7 +5,7 @@ imports
   "HOL-Library.Tree_Multiset"
 begin
 
-text\<open>Splay heaps were invented by Okasaki~\cite{Okasaki}. They represent
+text\<open>Splay heaps were invented by Okasaki~\<^cite>\<open>"Okasaki"\<close>. They represent
 priority queues by splay trees, not by heaps!\<close>
 
 fun get_min :: "('a::linorder) tree \<Rightarrow> 'a" where

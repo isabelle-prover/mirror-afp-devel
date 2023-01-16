@@ -6,7 +6,7 @@ theory Arrow_Order imports Main "HOL-Library.FuncSet"
 begin
 
 text\<open>This theory formalizes the third proof due to
-Geanakoplos~\cite{Geanakoplos05}.  Preferences are modeled as strict
+Geanakoplos~\<^cite>\<open>"Geanakoplos05"\<close>.  Preferences are modeled as strict
 linear orderings. The set of alternatives need not be finite.
 
 Individuals are assumed to be finite but are not a priori identified with an

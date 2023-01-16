@@ -4,8 +4,8 @@ theory utp_theory
 imports utp_rel_laws
 begin
 
-text \<open> Here, we mechanise a representation of UTP theories using locales~\cite{Ballarin06}. We also
-  link them to the HOL-Algebra library~\cite{Ballarin17}, which allows us to import properties from 
+text \<open> Here, we mechanise a representation of UTP theories using locales~\<^cite>\<open>"Ballarin06"\<close>. We also
+  link them to the HOL-Algebra library~\<^cite>\<open>"Ballarin17"\<close>, which allows us to import properties from 
   complete lattices and Galois connections. \<close>
 
 subsection \<open> Complete lattice of predicates \<close>
@@ -137,7 +137,7 @@ declare top_closed [simp del]
 declare bottom_closed [simp del]
 
 text \<open> The healthiness conditions of a UTP theory lattice form a complete lattice, and allows us to make
-  use of complete lattice results from HOL-Algebra~\cite{Ballarin17}, such as the Knaster-Tarski theorem. We can also
+  use of complete lattice results from HOL-Algebra~\<^cite>\<open>"Ballarin17"\<close>, such as the Knaster-Tarski theorem. We can also
   retrieve lattice operators as below. \<close>
 
 abbreviation utp_top ("\<^bold>\<top>")

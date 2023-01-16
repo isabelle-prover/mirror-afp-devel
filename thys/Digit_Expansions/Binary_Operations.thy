@@ -123,7 +123,7 @@ next
 qed
 
 subsection \<open>Binary orthogonality\<close>
-text \<open>cf. @{cite h10lecturenotes} section 2.6.1 on "Binary orthogonality"\<close>
+text \<open>cf. \<^cite>\<open>h10lecturenotes\<close> section 2.6.1 on "Binary orthogonality"\<close>
 text \<open>The following definition differs slightly from the one in the paper. However, we later prove the 
      equivalence of the two definitions.\<close>
 
@@ -278,7 +278,7 @@ text \<open>Preliminary result on the standard non-strict of natural numbers\<cl
 lemma bitwise_leq: "(\<forall>k. a \<exclamdown> k \<le>  b \<exclamdown> k) \<longrightarrow> a \<le> b"
   using digitwise_leq[of 2] by (simp add: nth_digit_base2_equiv)
 
-text \<open>cf. @{cite h10lecturenotes} section 2.6.2 on "Binary Masking"\<close>
+text \<open>cf. \<^cite>\<open>h10lecturenotes\<close> section 2.6.2 on "Binary Masking"\<close>
 text \<open>Again, the equivalence to the definition there will be proved in a later lemma.\<close>
 
 fun masks :: "nat => nat => bool" (infix "\<preceq>" 49) where

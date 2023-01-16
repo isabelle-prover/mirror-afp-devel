@@ -9,8 +9,8 @@ begin
 
 text \<open>
   This theory defines a probabilistic while combinator for discrete (sub-)probabilities and
-  formalises rules for probabilistic termination similar to those by Hurd \cite{Hurd2002TPHOLs}
-  and McIver and Morgan \cite{McIverMorgan2005}.
+  formalises rules for probabilistic termination similar to those by Hurd \<^cite>\<open>"Hurd2002TPHOLs"\<close>
+  and McIver and Morgan \<^cite>\<open>"McIverMorgan2005"\<close>.
 \<close>
 
 section \<open>Miscellaneous library additions\<close>

@@ -13,7 +13,7 @@ no_notation inverse_divide (infixl "'/" 70)
 
 text \<open>
   Each statement in the formal text is annotated with the location of the originating statement
-  in Jacobson's text @{cite Jacobson1985}.  Each fact that Jacobson states explicitly is marked
+  in Jacobson's text \<^cite>\<open>Jacobson1985\<close>.  Each fact that Jacobson states explicitly is marked
   as @{command theorem} unless it is translated to a @{command sublocale} declaration.
   Literal quotations from Jacobson's text are reproduced in double quotes.
 

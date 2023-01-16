@@ -9,7 +9,7 @@ imports SatSolverVerification
 begin
 
 text\<open>This theory formalizes the transition rule system given by
-Krsti\' c and Goel in \cite{KrsticGoel}. Some rules of the system are 
+Krsti\' c and Goel in \<^cite>\<open>"KrsticGoel"\<close>. Some rules of the system are 
 generalized a bit, so that the system can model some more general solvers 
 (e.g., SMT solvers).\<close>
 
@@ -43,7 +43,7 @@ where
 "applicableDecide state decisionVars == \<exists> state'. appliedDecide state state' decisionVars"
 
 text\<open>Notice that the given UnitPropagate description is weaker than
-in original \cite{KrsticGoel} paper. Namely, propagation can be done
+in original \<^cite>\<open>"KrsticGoel"\<close> paper. Namely, propagation can be done
 over a clause that is not a member of the formula, but is entailed by
 it. The condition imposed on the variable of the unit literal is
 necessary to ensure the termination.\<close>

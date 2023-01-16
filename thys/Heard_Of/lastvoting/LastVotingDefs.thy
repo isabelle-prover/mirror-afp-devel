@@ -6,9 +6,9 @@ section \<open>Verification of the \emph{LastVoting} Consensus Algorithm\<close>
 
 text \<open>
   The \emph{LastVoting} algorithm can be considered as a representation of
-  Lamport's Paxos consensus algorithm~\cite{lamport:part-time}
+  Lamport's Paxos consensus algorithm~\<^cite>\<open>"lamport:part-time"\<close>
   in the Heard-Of model. It is a coordinated algorithm designed to
-  tolerate benign failures. Following~\cite{charron:heardof}, we formalize
+  tolerate benign failures. Following~\<^cite>\<open>"charron:heardof"\<close>, we formalize
   its proof of correctness in Isabelle, using the framework of theory \<open>HOModel\<close>.
 \<close>
 
@@ -246,7 +246,7 @@ text \<open>
   \item \<open>c\<close> hears from a strict majority of processes in steps 0 and 2
     of phase \<open>ph\<close>, and
   \item every process hears from \<open>c\<close> in steps 1 and 3 (this is slightly
-    weaker than the predicate that appears in~\cite{charron:heardof}, but
+    weaker than the predicate that appears in~\<^cite>\<open>"charron:heardof"\<close>, but
     obviously sufficient).
   \end{itemize}
 

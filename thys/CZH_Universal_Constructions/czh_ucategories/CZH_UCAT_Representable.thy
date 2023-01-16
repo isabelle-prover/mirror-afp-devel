@@ -17,8 +17,8 @@ subsubsection\<open>Definitions and elementary properties\<close>
 
 
 text\<open>
-See Chapter III-2 in \cite{mac_lane_categories_2010} 
-or Section 2.1 in \cite{riehl_category_2016}.
+See Chapter III-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close> 
+or Section 2.1 in \<^cite>\<open>"riehl_category_2016"\<close>.
 \<close>
 
 definition cat_representation :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"

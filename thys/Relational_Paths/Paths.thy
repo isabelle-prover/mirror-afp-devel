@@ -7,7 +7,7 @@
 section \<open>Relational Characterisation of Paths\<close>
 
 text \<open>
-This theory provides the relation-algebraic characterisations of paths, as defined in Sections 3--5 of \cite{BerghammerFurusawaGuttmannHoefner2020}.
+This theory provides the relation-algebraic characterisations of paths, as defined in Sections 3--5 of \<^cite>\<open>"BerghammerFurusawaGuttmannHoefner2020"\<close>.
 \<close>
 
 theory Paths

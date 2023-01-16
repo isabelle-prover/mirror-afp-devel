@@ -133,10 +133,10 @@ text\<open>Now the rank nullity theorem can be proved; given any linear form
   range subspaces is equal to the dimension of the source vector space.\<close>
 
 text\<open>The statement of the ``rank nullity theorem for linear algebra'', as 
-  well as its proof, follow the ones on~\cite{AX97}. The proof is the 
+  well as its proof, follow the ones on~\<^cite>\<open>"AX97"\<close>. The proof is the 
   traditional one found in the literature. The theorem is also named 
   ``fundamental theorem of linear algebra'' in some texts (for instance,
-  in~\cite{GO10}).\<close>
+  in~\<^cite>\<open>"GO10"\<close>).\<close>
 
 context finite_dimensional_vector_space
 begin

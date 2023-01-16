@@ -154,7 +154,7 @@ next
   then show "C i \<sqsubseteq> C (Suc i)" by (auto dest: monotoneD)
 qed
 
-text\<open>\emph{Directed completeness} is an important notion in domain theory~\cite{abramski94},
+text\<open>\emph{Directed completeness} is an important notion in domain theory~\<^cite>\<open>"abramski94"\<close>,
 asserting that every nonempty directed set has a supremum.
 Here, a set $X$ is \emph{directed} if any pair of two elements in $X$ has a bound in $X$.\<close>
 
@@ -168,7 +168,7 @@ lemma monotone_directed_complete:
   using monotone_directed_image[OF mono dir] I0 by auto
 
 text \<open>The next one is quite complete, only the empty set may fail to have a supremum.
-The terminology follows \cite{Bergman2015},
+The terminology follows \<^cite>\<open>"Bergman2015"\<close>,
 although there it is defined more generally depending on a cardinal $\alpha$
 such that a nonempty set $X$ of cardinality below $\alpha$ has a supremum.\<close>
 
@@ -398,7 +398,7 @@ proof (intro iffI completeI, elim CollectE conjE)
 qed (insert finite_complete_le_pair_complete, auto)
 
 
-text \<open>Gierz et al.~\cite{gierz03} showed that a directed complete partial order is semicomplete
+text \<open>Gierz et al.~\<^cite>\<open>"gierz03"\<close> showed that a directed complete partial order is semicomplete
 if and only if it is also a semilattice.
 We generalize the claim so that the underlying relation is only transitive.\<close>
 

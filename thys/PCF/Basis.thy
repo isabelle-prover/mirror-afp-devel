@@ -66,7 +66,7 @@ using assms by (induct xs) (auto simp: prod_cont_iff intro: cont_apply)
 text\<open>
 
 The following proof is due to
-\citet[Eqn~2.28]{DBLP:journals/siamcomp/Scott76}.
+\<^citet>\<open>\<open>Eqn~2.28\<close> in "DBLP:journals/siamcomp/Scott76"\<close>.
 
 \<close>
 

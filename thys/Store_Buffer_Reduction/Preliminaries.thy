@@ -15,16 +15,16 @@ setup {*add_constructor_syntax "latex" "Preliminaries.foodatatype" *}
 (*>*)
 section \<open>Preliminaries \label{sec:preliminaries}\<close>
 text \<open>
-The formalization presented in this papaer is mechanized and checked within the generic interactive theorem prover \emph{Isabelle}\cite{Paulson:IGTP94}. 
+The formalization presented in this papaer is mechanized and checked within the generic interactive theorem prover \emph{Isabelle}\<^cite>\<open>"Paulson:IGTP94"\<close>. 
 Isabelle is called generic as it provides a framework to formalize various \emph{object logics} declared via natural deduction style inference rules.
-The object logic that we employ for our formalization is the higher order logic of \emph{Isabelle/HOL}\cite{Nipkow:IHOL02}. 
+The object logic that we employ for our formalization is the higher order logic of \emph{Isabelle/HOL}\<^cite>\<open>"Nipkow:IHOL02"\<close>. 
 
 This article is written using Isabelle's document generation facilities, which guarantees a close correspondence between the presentation and the actual theory files.
 We distinguish formal entities typographically from other text. 
 We use a sans serif font for types and constants (including functions and predicates), \eg @{term "map"}, a slanted serif font for free variables, \eg @{term "x"}, and a slanted sans serif font for bound variables, \eg @{term "Bind x. x"}.
 Small capitals are used for data type constructors, \eg @{term[names_short] "Foo"}, and type variables have a leading tick, \eg  @{typ "'a"}. HOL keywords are typeset in type-writer font, \eg \holkeyword{let}. %We also take the freedom to borrow C notation, \eg @{term "UnsgndT"} when presenting C0.
 
-To group common premises and to support modular reasoning Isabelle provides \emph{locales}\cite{Ballarin:TYPES03-34,Ballarin:MKM06-31}. 
+To group common premises and to support modular reasoning Isabelle provides \emph{locales}\<^cite>\<open>"Ballarin:TYPES03-34" and "Ballarin:MKM06-31"\<close>. 
 A locale provides a name for a context of fixed parameters and premises, together with an elaborate infrastructure to define new locales by inheriting and extending other locales, prove theorems within locales and interpret (instantiate) locales. In our formalization we employ this infrastructure to separate the memory system from the programming language semantics. 
 
 The logical and mathematical notions follow the standard notational conventions with a bias towards functional programming. 

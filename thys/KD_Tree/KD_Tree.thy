@@ -25,13 +25,13 @@ text \<open>
 
   Deviations from the papers:
 
-  The chosen tree representation is taken from @{cite "DBLP:journals/toms/FriedmanBF77"} with one minor
+  The chosen tree representation is taken from \<^cite>\<open>"DBLP:journals/toms/FriedmanBF77"\<close> with one minor
   adjustment. Originally the leafs hold buckets of points of size \<open>b\<close>. This representation fixes the
   bucket size to \<open>b = 1\<close>, a single point per Leaf. This is only a minor adjustment since the paper
   proves that \<open>b = 1\<close> is the optimal bucket size for minimizing the running time of the nearest neighbor
-  algorithm @{cite "DBLP:journals/toms/FriedmanBF77"}, only simplifies building the optimized
-  \<open>k\<close>-d trees @{cite "DBLP:journals/toms/FriedmanBF77"} and has little influence on the
-  search algorithm @{cite "DBLP:journals/cacm/Bentley75"}.
+  algorithm \<^cite>\<open>"DBLP:journals/toms/FriedmanBF77"\<close>, only simplifies building the optimized
+  \<open>k\<close>-d trees \<^cite>\<open>"DBLP:journals/toms/FriedmanBF77"\<close> and has little influence on the
+  search algorithm \<^cite>\<open>"DBLP:journals/cacm/Bentley75"\<close>.
 \<close>
 
 type_synonym 'k point = "(real, 'k) vec"

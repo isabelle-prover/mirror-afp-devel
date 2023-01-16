@@ -233,7 +233,7 @@ state.safe} implements the declarative @{const Trace.safe}. The proof
 was complicated by the fact that initially it was not true and I had
 to debug @{const Trace.safe} by proof.
 Unfortunately Isabelle's current counterexample
-finders~\cite{BerghoferN-SEFM04,Weber05bounded}
+finders~\<^cite>\<open>"BerghoferN-SEFM04" and "Weber05bounded"\<close>
 did not seem to work here due to search space reasons.
 Once the bugs were ironed out, the following key lemma,
 together with some smaller lemmas,

@@ -16,8 +16,8 @@ if and only if it satisfies the following property:
 term "(\<forall> x y z . x \<sqinter> z = y \<sqinter> z \<and> x \<squnion> z = y \<squnion> z \<Longrightarrow> x = y)"
 
 text\<open>
-This result was proved by Bergmann in \cite{bergmann:1929}. The formalization
-presented here is based on \cite{birkhoff:1967,burris:sankappanavar:1981}.
+This result was proved by Bergmann in \<^cite>\<open>"bergmann:1929"\<close>. The formalization
+presented here is based on \<^cite>\<open>"birkhoff:1967" and "burris:sankappanavar:1981"\<close>.
 \<close>
 
 class modular_lattice = lattice +

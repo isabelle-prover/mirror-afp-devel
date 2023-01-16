@@ -2,7 +2,7 @@ section \<open>Example\<close>
 
 text \<open>We provide an example in order to prove that our locale is non-vacuous.
 This example corresponds to the computation and associated snapshot described
-in Section 4 of~\cite{chandy}.\<close>
+in Section 4 of~\<^cite>\<open>"chandy"\<close>.\<close>
 
 theory Example
   imports

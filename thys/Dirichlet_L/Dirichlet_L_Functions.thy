@@ -558,12 +558,12 @@ qed
 
 text \<open>
   The proof for non-principal character is quite involved and is typically very complicated
-  and technical in most textbooks. For instance, Apostol~\cite{apostol1976analytic} proves the
+  and technical in most textbooks. For instance, Apostol~\<^cite>\<open>"apostol1976analytic"\<close> proves the
   result separately for real and non-real characters, where the non-real case is relatively short
   and nice, but the real case involves a number of complicated asymptotic estimates.
 
   The following proof, on the other hand -- like our proof of the analogous result for the 
-  Riemann $\zeta$ function -- is based on Newman's book~\cite{newman1998analytic}. Newman gives 
+  Riemann $\zeta$ function -- is based on Newman's book~\<^cite>\<open>"newman1998analytic"\<close>. Newman gives 
   a very short, concise, and high-level sketch that we aim to reproduce faithfully here.
 \<close>
 context dcharacter

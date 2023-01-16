@@ -11,7 +11,7 @@ We consider only square matrices.
 The main result is that matrices over Stone relation algebras form a Stone relation algebra.
 
 We use the monoid structure underlying semilattices to provide finite sums, which are necessary for defining the composition of two matrices.
-See \cite{ArmstrongFosterStruthWeber2016,ArmstrongGomesStruthWeber2016} for similar liftings to matrices for semirings and relation algebras.
+See \<^cite>\<open>"ArmstrongFosterStruthWeber2016" and "ArmstrongGomesStruthWeber2016"\<close> for similar liftings to matrices for semirings and relation algebras.
 A technical difference is that those theories are mostly based on semirings whereas our hierarchy is mostly based on lattices (and our semirings directly inherit from semilattices).
 
 Relation algebras have both a semiring and a lattice structure such that semiring addition and lattice join coincide.

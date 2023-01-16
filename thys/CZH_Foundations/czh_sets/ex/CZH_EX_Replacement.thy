@@ -8,7 +8,7 @@ begin
 
 text\<open>
 The statement of the main result presented in this subsection
-can be found in \cite{noauthor_wikipedia_2001}\footnote{
+can be found in \<^cite>\<open>"noauthor_wikipedia_2001"\<close>\footnote{
 \url{https://en.wikipedia.org/wiki/Zermelo_set_theory}
 }
 \<close>

@@ -42,9 +42,9 @@ definition symmetric :: "('a,'b) pre_digraph \<Rightarrow> bool" where
   "symmetric G \<equiv> sym (arcs_ends G)"
 
 text \<open>
-  Matches "pseudo digraphs" from \cite{bangjensen2009digraphs}, except for
+  Matches "pseudo digraphs" from \<^cite>\<open>"bangjensen2009digraphs"\<close>, except for
   allowing the null graph. For a discussion of that topic,
-  see also \cite{harary1974nullgraph}.
+  see also \<^cite>\<open>"harary1974nullgraph"\<close>.
 \<close>
 locale fin_digraph = wf_digraph +
   assumes finite_verts[simp]: "finite (verts G)"

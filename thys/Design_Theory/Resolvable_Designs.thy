@@ -5,8 +5,8 @@
 section \<open>Resolvable Designs\<close>
 text \<open>Resolvable designs have further structure, and can be "resolved" into a set of resolution 
 classes. A resolution class is a subset of blocks which exactly partitions the point set. 
-Definitions based off the handbook \cite{colbournHandbookCombinatorialDesigns2007}
- and Stinson \cite{stinsonCombinatorialDesignsConstructions2004}.
+Definitions based off the handbook \<^cite>\<open>"colbournHandbookCombinatorialDesigns2007"\<close>
+ and Stinson \<^cite>\<open>"stinsonCombinatorialDesignsConstructions2004"\<close>.
 This theory includes a proof of an alternate statement of Bose's theorem\<close>
 
 theory Resolvable_Designs imports BIBD
@@ -158,7 +158,7 @@ qed
 subsubsection \<open>Bose's Inequality\<close>
 text \<open>Boses inequality is an important theorem on RBIBD's. This is a proof 
 of an alternate statement of the thm, which does not require a linear algebraic approach, 
-taken directly from Stinson \cite{stinsonCombinatorialDesignsConstructions2004}\<close>
+taken directly from Stinson \<^cite>\<open>"stinsonCombinatorialDesignsConstructions2004"\<close>\<close>
 theorem bose_inequality_alternate: "\<b> \<ge> \<v> + \<r> - 1 \<longleftrightarrow> \<r> \<ge> \<k> + \<Lambda>"
 proof - 
   define k b v l r where intdefs: "k \<equiv> (int \<k>)" "b \<equiv> int \<b>" "v = int \<v>" "l \<equiv> int \<Lambda>" "r \<equiv> int \<r>"

@@ -2078,7 +2078,7 @@ text \<open>We assume a two-variable formula Lq that satisfies two axioms
 resembling the properties of the strict or nonstrict ordering on naturals.
 The choice of these axioms is motivated by an abstract account of Rosser's trick
 to improve on Gödel's First Incompleteness Theorem, reported in our
-CADE 2019 paper~\cite{DBLP:conf/cade/0001T19}.\<close>
+CADE 2019 paper~\<^cite>\<open>"DBLP:conf/cade/0001T19"\<close>.\<close>
 
 locale Deduct_with_PseudoOrder =
 Deduct_with_False_Disj

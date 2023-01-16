@@ -363,7 +363,7 @@ qed
 
 text \<open>
   Using a clever Tschirnhausen transformation mentioned e.g. in the article by
-  Nowak~\cite{nowak2000}, we can also assume w.l.o.g. that the coefficient $a_{n-1}$ is zero.
+  Nowak~\<^cite>\<open>"nowak2000"\<close>, we can also assume w.l.o.g. that the coefficient $a_{n-1}$ is zero.
 \<close>
 lemma alg_closedI_reducible_coeff_deg_minus_one_eq_0:
   assumes "\<And>p :: 'a poly. degree p > 1 \<Longrightarrow> lead_coeff p = 1 \<Longrightarrow> coeff p (degree p - 1) = 0 \<Longrightarrow>

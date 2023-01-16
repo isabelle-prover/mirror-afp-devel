@@ -8,7 +8,7 @@ begin
 
 text \<open>
   This work formalizes Pratt's proof system as described in his article
-  ``Every Prime has a Succinct Certificate''\cite{pratt1975certificate}.
+  ``Every Prime has a Succinct Certificate''\<^cite>\<open>"pratt1975certificate"\<close>.
 
   The proof system makes use of two types of predicates:
   \begin{itemize}

@@ -24,7 +24,7 @@ text\<open>
 
 We relate the denotational semantics for PCF of \S\ref{sec:densem} to
 a \emph{big-step} (or \emph{natural}) operational semantics. This
-follows \citet{DBLP:conf/mfps/Pitts93}.
+follows \<^citet>\<open>"DBLP:conf/mfps/Pitts93"\<close>.
 
 \<close>
 
@@ -38,7 +38,7 @@ In contrast to \S\ref{sec:directsem} we must be more careful in our
 treatment of \<open>\<alpha>\<close>-equivalent terms, as we would like our
 operational semantics to identify of all these. To that end we adopt
 de Bruijn notation, adapting the work of
-\citet{DBLP:journals/jar/Nipkow01}, and show that it is suitably
+\<^citet>\<open>"DBLP:journals/jar/Nipkow01"\<close>, and show that it is suitably
 equivalent to our original syntactic story.
 
 \<close>
@@ -617,8 +617,8 @@ subsection\<open>Operational Semantics\<close>
 text \<open>
 
 The evaluation relation (big-step, or natural operational
-semantics). This is similar to \citet[\S6.2]{Gunter:1992},
-\citet{DBLP:conf/mfps/Pitts93} and \citet[Chapter~11]{Winskel:1993}.
+semantics). This is similar to \<^citet>\<open>\<open>\S6.2\<close> in "Gunter:1992"\<close>,
+\<^citet>\<open>"DBLP:conf/mfps/Pitts93"\<close> and \<^citet>\<open>\<open>Chapter~11\<close> in "Winskel:1993"\<close>.
 
 We firstly define the \emph{values} that expressions can evaluate to:
 these are either constants or closed abstractions.
@@ -868,7 +868,7 @@ expect this to be entirely straightforward. Here we show that the
 denotational semantics is \emph{computationally adequate}, which means
 that it can be used to soundly reason about contextual equivalence.
 
-We follow \citet{DBLP:conf/mfps/Pitts93,PittsAM:relpod} by defining a
+We follow \<^citet>\<open>"DBLP:conf/mfps/Pitts93" and "PittsAM:relpod"\<close> by defining a
 suitable logical relation between our @{typ "ValD"} domain and the set
 of programs (closed terms). These are termed "formal approximation
 relations" by Plotkin. The machinery of \S\ref{sec:synlr} requires us
@@ -1377,7 +1377,7 @@ to be an arbitrary term, where the free variables are the
 ``holes''. We substitute a closed expression @{term "e"} uniformly for
 all of the free variables in @{term "C"}. If open, the term @{term
 "e"} can be closed using enough @{term "AbsN"}s. This seems to be a
-standard trick now, see e.g. \citet{DBLP:conf/popl/KoutavasW06}. If we
+standard trick now, see e.g. \<^citet>\<open>"DBLP:conf/popl/KoutavasW06"\<close>. If we
 didn't have CBN (only CBV) then it might be worth showing that this is
 an adequate treatment.
 
@@ -1401,7 +1401,7 @@ lemma ctxt_sub_cong:
 (*>*)
 text\<open>
 
-Following \citet{PittsAM:relpod} we define a relation between values
+Following \<^citet>\<open>"PittsAM:relpod"\<close> we define a relation between values
 that ``have the same form''. This is weak at functional values. We
 don't distinguish between strict and non-strict abstractions.
 
@@ -1526,12 +1526,12 @@ contextual equivalence. We expect this result is useful for showing
 contextual equivalence for \emph{typed} programs as well, but leave it
 to future work to demonstrate this.
 
-See \citet[\S6.2]{Gunter:1992} for further discussion of computational
+See \<^citet>\<open>\<open>\S6.2\<close> in "Gunter:1992"\<close> for further discussion of computational
 adequacy at higher types.
 
 The reader may wonder why we did not use Nominal syntax to define our
 operational semantics, following
-\citet{DBLP:journals/entcs/UrbanN09}. The reason is that Nominal2 does
+\<^citet>\<open>"DBLP:journals/entcs/UrbanN09"\<close>. The reason is that Nominal2 does
 not support the definition of continuous functions over Nominal
 syntax, which is required by the evaluators of \S\ref{sec:directsem}
 and \S\ref{sec:directsem_db}. As observed above, in the setting of
@@ -1541,15 +1541,15 @@ simpler notion of substitution than is needed for investigations into
 reduce ``under binders''.
 
 The ``fast and loose reasoning is morally correct'' work of
-\citet{DBLP:conf/popl/DanielssonHJG06} can be seen as a kind of
+\<^citet>\<open>"DBLP:conf/popl/DanielssonHJG06"\<close> can be seen as a kind of
 adequacy result.
 
-\citet{DBLP:conf/tphol/BentonKV09} demonstrate a similar computational
+\<^citet>\<open>"DBLP:conf/tphol/BentonKV09"\<close> demonstrate a similar computational
 adequacy result in Coq. However their system is only geared up for
 this kind of metatheory, and not reasoning about particular programs;
 its term language is combinatory.
 
-\citet{DBLP:conf/ppdp/BentonKBH07,DBLP:conf/ppdp/BentonKBH09} have
+\<^citet>\<open>"DBLP:conf/ppdp/BentonKBH07" and "DBLP:conf/ppdp/BentonKBH09"\<close> have
 shown that it is difficult to scale this domain-theoretic approach up
 to richer languages, such as those with dynamic allocation of mutable
 references, especially if these references can contain (arbitrary)

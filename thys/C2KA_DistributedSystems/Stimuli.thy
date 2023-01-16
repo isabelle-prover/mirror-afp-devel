@@ -28,7 +28,7 @@ begin
 text \<open>
 The class \emph{stimuli} describes the stimulus structure for \CCKAabbrv. We do not use 
 Isabelle's built-in theories for groups and orderings to allow a different notation for the operations 
-on stimuli to be consistent with~\cite{Jaskolka2015ab}.
+on stimuli to be consistent with~\<^cite>\<open>"Jaskolka2015ab"\<close>.
 \<close>
 
 class plus_ord =

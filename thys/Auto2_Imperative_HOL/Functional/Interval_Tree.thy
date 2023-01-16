@@ -12,7 +12,7 @@ begin
 text \<open>
   Functional version of interval tree. This is an augmented data
   structure on top of regular binary search trees (see BST.thy).
-  See \cite[Section 14.3]{cormen2009introduction} for a reference.
+  See \<^cite>\<open>\<open>Section 14.3\<close> in "cormen2009introduction"\<close> for a reference.
 \<close>
 
 subsection \<open>Definition of an interval tree\<close>

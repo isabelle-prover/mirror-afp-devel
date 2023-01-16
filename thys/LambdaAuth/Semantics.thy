@@ -1128,7 +1128,7 @@ next
     by (fastforce simp: Abs1_eq(3) elim: jw_Roll_inv[where \<alpha> = \<alpha>] jw_Unroll_inv[where \<alpha> = \<alpha>])
 qed fastforce+
 
-subsection \<open>Corrected Lemma 1 from Miller et al.~\cite{adsg}: Weak Type Soundness\<close>
+subsection \<open>Corrected Lemma 1 from Miller et al.~\<^cite>\<open>"adsg"\<close>: Weak Type Soundness\<close>
 
 lemma type_soundness:
   assumes "{$$} \<turnstile>\<^sub>W e : \<tau>"

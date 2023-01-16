@@ -26,7 +26,7 @@ that are provided in the collection offer the functionality that is similar to
 certain aspects of the functionality provided by the standard proof 
 methods of Isabelle that combine classical reasoning and simplification 
 (e.g., the method @{method auto} 
-\cite{nipkow_isabellehol_2002, wenzel_isabelle/isar_2019-1}), 
+\<^cite>\<open>"nipkow_isabellehol_2002" and "wenzel_isabelle/isar_2019-1"\<close>), 
 but there are notable differences. More specifically, the methods provided in 
 the collection allow for the side conditions of
 the rewrite rules to be solved via intro-resolution.
@@ -64,7 +64,7 @@ and evolving nature of this work, a comprehensive literature review
 is considered to be outside its scope. Therefore, the only contributions
 claimed by the author are the implementation of the algorithms associated 
 with the methods provided as part of the CS in 
-\textit{Isabelle/ML} \cite{milner_definition_1997, wenzel_isabelle/isar_2019} 
+\textit{Isabelle/ML} \<^cite>\<open>"milner_definition_1997" and "wenzel_isabelle/isar_2019"\<close> 
 and their integration with the Isabelle/Isar infrastructure.
 
 The implementation of the methods associated with the framework builds 
@@ -76,14 +76,14 @@ in Isabelle.
 
 It should also be mentioned that the Isabelle/ML code from the 
 main distribution of Isabelle2020 and from
-\textit{The Isabelle/ML Cookbook} \cite{urban_isabelle_2019} was frequently 
+\textit{The Isabelle/ML Cookbook} \<^cite>\<open>"urban_isabelle_2019"\<close> was frequently 
 reused (with amendments) during the development of the library. Some particular
 examples of such reuse include 
 \begin{itemize}
 \item The adoption of the code for the tactic \<open>remdups_tac\<close> from the file
 \<open>~/Tools/Intuitionistic.ML\<close>.
 \item The adoption of the code presented in subsection 3.3 of 
-\cite{urban_isabelle_2019} for higher-order matching and unification.
+\<^cite>\<open>"urban_isabelle_2019"\<close> for higher-order matching and unification.
 \end{itemize}
 \<close>
 
@@ -227,7 +227,7 @@ have not been investigated and there is little guarantee that they will be
 suitable for any specific target application.
 It is also important to note that the methods have only been tested 
 extensively on the subgoals that do not contain any explicit occurrences 
-of the \textit{Isabelle/Pure} \cite{paulson_foundation_1989}
+of the \textit{Isabelle/Pure} \<^cite>\<open>"paulson_foundation_1989"\<close>
 universal quantifier. Only very limited and highly experimental
 support for the first-/higher-order reasoning is provided by 
 the CS.

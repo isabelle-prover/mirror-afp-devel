@@ -872,7 +872,7 @@ subsection \<open>Linkage\<close>
 
 text \<open>
   The following definition of orthogonality is stronger than the original definition 3.5 in
-  @{cite AharoniBergerGeorgakopoulusPerlsteinSpruessel2011JCT} in that the outflow from any
+  \<^cite>\<open>AharoniBergerGeorgakopoulusPerlsteinSpruessel2011JCT\<close> in that the outflow from any
   \<open>A\<close>-vertices in the set must saturate the vertex; @{term "S \<subseteq> SAT \<Gamma> f"} is not enough.
 
   With the original definition of orthogonal current, the reduction from networks to webs fails because

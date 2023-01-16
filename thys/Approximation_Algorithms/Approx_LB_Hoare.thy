@@ -5,7 +5,7 @@ theory Approx_LB_Hoare
 begin
 
 text \<open>This is a formalization of the load balancing algorithms and proofs
-in the book by Kleinberg and Tardos \cite{KleinbergT06}.\<close>
+in the book by Kleinberg and Tardos \<^cite>\<open>"KleinbergT06"\<close>.\<close>
 
 hide_const (open) sorted
 

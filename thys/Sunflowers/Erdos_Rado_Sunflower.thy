@@ -2,8 +2,8 @@
 
 section \<open>The Sunflower Lemma\<close>
 
-text \<open>We formalize the proof of the sunflower lemma of Erd\H{o}s and Rado~\cite{erdos_rado}, 
-as it is presented in the textbook~\cite[Chapter~6]{book}.  
+text \<open>We formalize the proof of the sunflower lemma of Erd\H{o}s and Rado~\<^cite>\<open>"erdos_rado"\<close>, 
+as it is presented in the textbook~\<^cite>\<open>\<open>Chapter~6\<close> in "book"\<close>.  
 We further integrate Exercise 6.2 from the textbook,
 which provides a lower bound on the existence of sunflowers.\<close>
 
@@ -185,7 +185,7 @@ lemma Erdos_Rado_sunflower:
       metis Erdos_Rado_sunflower_same_card)
 
 text \<open>We further provide a lower bound on the existence of sunflowers, 
-i.e., Exercise 6.2 of the textbook~\cite{book}.
+i.e., Exercise 6.2 of the textbook~\<^cite>\<open>"book"\<close>.
 To be more precise, we prove that there is a set of sets of cardinality 
 @{term \<open>(r - 1 :: nat)^k\<close>}, where each element is a set of cardinality 
 @{term k}, such that there is no subset which is a sunflower with cardinality
@@ -328,7 +328,7 @@ qed
 text \<open>The difference between the lower and the
 upper bound on the existence of sunflowers as they have been formalized
 is @{term \<open>fact k\<close>}. There is more recent work with tighter bounds
-\cite{sunflower_new}, but we only integrate the initial 
+\<^cite>\<open>"sunflower_new"\<close>, but we only integrate the initial 
 result of Erd\H{o}s and Rado in this theory.\<close>
 
 text \<open>We further provide the Erd\H{o}s Rado lemma 

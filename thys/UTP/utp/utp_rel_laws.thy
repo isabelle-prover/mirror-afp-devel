@@ -740,7 +740,7 @@ qed
 
 text \<open> The following two proofs are adapted from the AFP entry 
   \href{https://www.isa-afp.org/entries/Kleene_Algebra.shtml}{Kleene Algebra}. 
-  See also~\cite{Armstrong2012,Armstrong2015}. \<close>
+  See also~\<^cite>\<open>"Armstrong2012" and "Armstrong2015"\<close>. \<close>
 
 lemma upower_inductl: "Q \<sqsubseteq> ((P ;; Q) \<sqinter> R) \<Longrightarrow> Q \<sqsubseteq> P \<^bold>^ n ;; R"
 proof (induct n)

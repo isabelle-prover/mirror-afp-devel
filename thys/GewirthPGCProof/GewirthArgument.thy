@@ -25,14 +25,14 @@ the latter generalisation step (from "I" to all individuals) is done on purely l
 Gewirth's result is thus meant to hold with some kind of apodicticity (i.e.~necessity).
 Deryck Beyleveld, author of an authoritative book on Gewirth's argument, puts it this way:
 "The argument purports to establish the PGC as a rationally necessary proposition with an apodictic status
-\emph{for any PPA} equivalent to that enjoyed by the logical principle of noncontradiction itself." (@{cite "Beyleveld"} p. 1) 
+\emph{for any PPA} equivalent to that enjoyed by the logical principle of noncontradiction itself." (\<^cite>\<open>"Beyleveld"\<close> p. 1) 
 If this is correct, then he succeeded in the task that Kant set himself, i.e.~to found certain basic principles of morality in reason alone.}\<close>
 text\<open>\noindent{The argument for the PGC  employs what Gewirth calls "the dialectically necessary method" within the "internal viewpoint" (perspective) of an agent.
 Although the drawn inferences are relative to the reasoning agent, Gewirth further argues that
 "the dialectically necessary method propounds the contents of this relativity
 as necessary ones, since the statements it presents reflect judgements all agents necessarily make on the basis of what is necessarily
 involved in their actions ... The statements the method attributes to the agent are set forth as necessary ones in that they reflect what is conceptually
-necessary to being an agent who voluntarily or freely acts for purposes he wants to attain." (@{cite "GewirthRM"}).
+necessary to being an agent who voluntarily or freely acts for purposes he wants to attain." (\<^cite>\<open>"GewirthRM"\<close>).
 In other words, the "dialectical necessity" of the assertions and inferences made in the argument comes from the definitional features (conceptual analysis)
 of the involved notions of agency, purposeful action, obligation, rights, etc. Hence the alternative notions of logical (i.e.~indexical) validity
 and 'a priori necessity', developed in Kaplan's logical framework LD, have been considered by us as appropriate to model this kind of "dialectical necessity".}\<close>
@@ -134,13 +134,13 @@ text\<open>\noindent{Furthermore, we have seen the need to postulate the followi
 This axiom can be seen as a variation of the so-called Kant's law ("ought implies can"), i.e.~an impossible act cannot be obligatory.
 In the same vein, our variation can be read as "ought implies ought to can" and is closer to Gewirth's own description:
 that having an obligation to do X implies that "I ought (in the same sense and the same criterion) to be free to do X,
-that I ought not to be prevented from doing X, that my capacity to do X ought not to be interfered with." (@{cite "GewirthRM"} p. 91-95)}\<close>
+that I ought not to be prevented from doing X, that my capacity to do X ought not to be interfered with." (\<^cite>\<open>"GewirthRM"\<close> p. 91-95)}\<close>
 axiomatization where OIOAC: "\<lfloor>\<^bold>O\<^sub>i\<phi> \<^bold>\<rightarrow> \<^bold>O\<^sub>i(\<^bold>\<diamond>\<^sub>a\<phi>)\<rfloor>\<^sup>D"
 
 text\<open>\noindent{Concerning the concept of interference, we state that the existence of an individual (successfully) interfering
 with some state of affairs S implies that S cannot possibly obtain in any of the actually possible situations (and the other way round).
 Note that for this definition we have employed a possibility operator (\<open>\<^bold>\<diamond>\<^sub>a\<close>) which is weaker than metaphysical
-possibility (\<open>\<^bold>\<diamond>\<^sub>p\<close>) (see Carmo and Jones DDL framework @{cite "CJDDL"} for details).
+possibility (\<open>\<^bold>\<diamond>\<^sub>p\<close>) (see Carmo and Jones DDL framework \<^cite>\<open>"CJDDL"\<close> for details).
 Also note that we have also employed the (stronger) classical notion of modal
 validity instead of indexical validity. (So far we haven't been able to get theorem provers and model finders to prove/disprove
 Gewirth's proof if formalizing this axiom as simply indexically valid.)}\<close>
@@ -155,14 +155,14 @@ lemma InterferenceWithFWB: "\<lfloor>\<^bold>\<forall>a.  \<^bold>\<diamond>\<^s
 
 subsubsection \<open>Rights and Other-Directed Obligations\<close>
  
-text\<open>\noindent{Gewirth points out the existence of a correlation between an agent's own claim rights and other-referring obligations (see e.g. @{cite "GewirthRM"}, p. 66).
+text\<open>\noindent{Gewirth points out the existence of a correlation between an agent's own claim rights and other-referring obligations (see e.g. \<^cite>\<open>"GewirthRM"\<close>, p. 66).
 A claim right is a right which entails duties or obligations on other agents regarding the right-holder
 (so-called Hohfeldian claim rights in legal theory).
 We model this concept of claim rights in such a way that an individual 'a' has a (claim) right to some property 'P' if and only if
 it is obligatory that every
 (other) individual 'b' does not interfere with the state of affairs 'P(a)' from obtaining.
 Since there is no particular individual to whom this directive is addressed, this obligation has been referred to by Gewirth as being "other-directed"
-(aka. "other-referring") in contrast to "other-directing" obligations which entail a moral obligation for some particular subject (@{cite "Beyleveld"} p. 41,51).
+(aka. "other-referring") in contrast to "other-directing" obligations which entail a moral obligation for some particular subject (\<^cite>\<open>"Beyleveld"\<close> p. 41,51).
 This latter distinction is essential to Gewirth's argument.}\<close>
 definition RightTo::"e\<Rightarrow>(e\<Rightarrow>m)\<Rightarrow>m" where "RightTo a \<phi> \<equiv> \<^bold>O\<^sub>i(\<^bold>\<forall>b. \<^bold>\<not>InterferesWith b (\<phi> a))"
 
@@ -172,7 +172,7 @@ lemma True nitpick[satisfy, card c = 1, card e = 1, card w = 2] oops \<comment> 
 
 subsection \<open>Formal Proof of Gewirth's Argument for the PGC\<close>
 
-text\<open>\noindent{Following Beyleveld's summary (@{cite "Beyleveld"}, ch. 2), the main steps of the argument are (with original numbering): }\<close>
+text\<open>\noindent{Following Beyleveld's summary (\<^cite>\<open>"Beyleveld"\<close>, ch. 2), the main steps of the argument are (with original numbering): }\<close>
 text\<open>\noindent{(1) I act voluntarily for some (freely chosen) purpose E (equivalent --by definition-- to: I am a PPA).}\<close>
 text\<open>\noindent{(2) E is (subjectively) good (i.e.~I value E proactively).}\<close>
 text\<open>\noindent{(3) My freedom and well-being (FWB) are generically necessary conditions of my agency (i.e.~I need them to achieve any purpose whatsoever).}\<close>

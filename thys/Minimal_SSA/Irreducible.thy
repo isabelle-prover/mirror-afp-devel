@@ -4,14 +4,14 @@
 
 section \<open>Minimality under Irreducible Control Flow\<close>
 
-txt \<open>Braun~et~al.~\cite{braun13cc} provide an extension to the original construction algorithm to ensure
+txt \<open>Braun~et~al.~\<^cite>\<open>"braun13cc"\<close> provide an extension to the original construction algorithm to ensure
 minimality according to Cytron's definition even in the case of irreducible control flow. This extension
 establishes the property of being \emph{redundant-scc-free}, i.e.\ the resulting graph $G$ contains no
 subsets inducing a strongly connected subgraph $G'$ via \pf s such that $G'$ has less than two
 $\phi$ arguments in $G\setminus G'$. In this section we will show that a graph with this property is Cytron-minimal.
 
-Our formalization follows the proof sketch given in \cite{braun13cc}.
-We first provide a formal proof of Lemma 1 from \cite{braun13cc} which states that every redundant set of \pf s contains at least one redundant SCC.
+Our formalization follows the proof sketch given in \<^cite>\<open>"braun13cc"\<close>.
+We first provide a formal proof of Lemma 1 from \<^cite>\<open>"braun13cc"\<close> which states that every redundant set of \pf s contains at least one redundant SCC.
 A redundant set of \pf s is a set $P$ of \pf s with $P \cup \{v\} \supseteq A$, where $A$ is the union over all \pf s arguments contained in $P$.
 I.e.\ $P$ references at most one SSA value ($v$) outside $P$.
 A redundant SCC is a redundant set that is strongly connected according to the \emph{is-argument} relation.

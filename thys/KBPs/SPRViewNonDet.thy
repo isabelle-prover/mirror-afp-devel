@@ -68,7 +68,7 @@ text\<open>
 
 \label{sec:kbps-theory-spr-non-deterministic-protocols}
 
-For completeness we reproduce the results of \citet{Ron:1996}
+For completeness we reproduce the results of \<^citet>\<open>"Ron:1996"\<close>
 regarding non-deterministic KBPs in broadcast environments.
 
 The determinism requirement is replaced by the constraint that actions
@@ -266,7 +266,7 @@ text\<open>
 As usual, showing that @{term "spr_sim"} is in fact a simulation is
 routine for all properties except for reverse simulation. For that we
 use proof techniques similar to those of
-\citet{DBLP:journals/tocl/LomuscioMR00}: the goal is to show that,
+\<^citet>\<open>"DBLP:journals/tocl/LomuscioMR00"\<close>: the goal is to show that,
 given @{term "t \<in> jkbpC"}, we can construct a trace @{term "t' \<in>
 jkbpC"} indistinguishable from @{term "t"} by agent @{term "a"}, based
 on the public actions, the common observation and @{term "a"}'s

@@ -25,7 +25,7 @@ Hence as each definition @{haskell "f = body"} yields a rule of the form
 f"}. Clearly this has dire implications for the preservation of
 termination behaviour.
 
-\citet{Tullsen:PhDThesis} in his \S3.1.2 observes that the semantic
+\<^citet>\<open>"Tullsen:PhDThesis"\<close> in his \S3.1.2 observes that the semantic
 essence of the \textsf{fold} rule is Park induction:
 \begin{center}
   @{thm[mode=Rule] "fix_least"[where F=f]} {\texttt{fix\_least}}

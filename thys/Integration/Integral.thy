@@ -9,7 +9,7 @@ imports RealRandVar
 begin
   (*simple function integral set*)
 text \<open>Having learnt from my failures, we take the safe and clean way
-  of Heinz Bauer \cite{Bauer}. It proceeds as outlined in the
+  of Heinz Bauer \<^cite>\<open>"Bauer"\<close>. It proceeds as outlined in the
   introduction. In three steps, we fix the integral for elementary
   (``step-'')functions, for limits of these, and finally for
   differences between such limits. 

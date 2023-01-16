@@ -16,7 +16,7 @@ text \<open>
   \<open>Sequence\<close> and \<open>Intensional\<close> theories. A shallow embedding
   represents \tlastar{} using Isabelle/HOL predicates, while a \emph{deep}
   embedding would represent \tlastar{} formulas and pre-formulas as mutually
-  inductive datatypes\footnote{See e.g. \cite{Wildmoser04} for a discussion
+  inductive datatypes\footnote{See e.g. \<^cite>\<open>"Wildmoser04"\<close> for a discussion
   about deep vs. shallow embeddings in Isabelle/HOL.}.  
   The choice of a shallow over a deep embedding is motivated by the following 
   factors: a shallow embedding is usually less involved, and existing Isabelle

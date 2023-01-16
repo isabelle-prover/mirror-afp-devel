@@ -2193,7 +2193,7 @@ end
 subsection \<open>Single-vertex saturation in unhindered bipartite webs\<close>
 
 text \<open>
-  The proof of lemma 6.10 in @{cite "AharoniBergerGeorgakopoulusPerlsteinSpruessel2011JCT"} is flawed.
+  The proof of lemma 6.10 in \<^cite>\<open>"AharoniBergerGeorgakopoulusPerlsteinSpruessel2011JCT"\<close> is flawed.
   The transfinite steps (taking the least upper bound) only preserves unhinderedness, but not looseness.
   However, the single steps to non-limit ordinals assumes that \<open>\<Omega> - f\<^sub>i\<close> is loose in order to
   apply Lemma 6.9.

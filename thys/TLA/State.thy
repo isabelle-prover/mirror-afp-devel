@@ -13,8 +13,8 @@ begin
 
 text\<open>
   We adopt the hidden state appraoch, as used in the existing 
-  Isabelle/HOL TLA embedding \cite{Merz98}. This approach is also used
-  in \cite{Ehmety01}.
+  Isabelle/HOL TLA embedding \<^cite>\<open>"Merz98"\<close>. This approach is also used
+  in \<^cite>\<open>"Ehmety01"\<close>.
   Here, a state space is defined by its projections, and everything else is
   unknown. Thus, a variable is a projection of the state space, and has the same
   type as a state function. Moreover, strong typing is achieved, since the projection
@@ -159,7 +159,7 @@ qed
 subsection "Temporal Quantifiers"
 
 text\<open>
-  In \cite{Lamport94}, Lamport gives a stuttering invariant definition
+  In \<^cite>\<open>"Lamport94"\<close>, Lamport gives a stuttering invariant definition
   of quantification over (flexible) variables. It relies on similarity
   of two sequences (as supported in our @{theory TLA.Sequence} theory), and
   equivalence of two sequences up to a variable (the bound variable).

@@ -27,8 +27,8 @@ next
 qed
     
 
-text\<open>The original version of the interpolation theorem is due to Craig~\cite{craig1957linear}.
-Our proof partly follows the approach of Troelstra and Schwichtenberg~\cite{troelstra2000basic} but,
+text\<open>The original version of the interpolation theorem is due to Craig~\<^cite>\<open>"craig1957linear"\<close>.
+Our proof partly follows the approach of Troelstra and Schwichtenberg~\<^cite>\<open>"troelstra2000basic"\<close> but,
 especially with the mini formulas, adds its own spin.\<close>
 
 theorem SC_Craig_interpolation:

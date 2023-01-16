@@ -17,9 +17,9 @@ In particular, we consider the variants of semirings, in which
 \item the semilattice order has a greatest element.
 \end{itemize}
 We have applied results from this theory a number of papers for unifying computation models.
-For example, see \cite{Guttmann2012c} for various relational and matrix-based computation models and \cite{BerghammerGuttmann2015b} for multirelational models.
+For example, see \<^cite>\<open>"Guttmann2012c"\<close> for various relational and matrix-based computation models and \<^cite>\<open>"BerghammerGuttmann2015b"\<close> for multirelational models.
 
-The main results in this theory relate different ways of defining reflexive-transitive closures as discussed in \cite{BerghammerGuttmann2015b}.
+The main results in this theory relate different ways of defining reflexive-transitive closures as discussed in \<^cite>\<open>"BerghammerGuttmann2015b"\<close>.
 \<close>
 
 theory Semirings
@@ -259,7 +259,7 @@ end
 
 text \<open>
 Our next structure adds one half of the associativity property.
-This inequality holds, for example, for multirelations under the compositions defined by Parikh and Peleg \cite{Parikh1983,Peleg1987}.
+This inequality holds, for example, for multirelations under the compositions defined by Parikh and Peleg \<^cite>\<open>"Parikh1983" and "Peleg1987"\<close>.
 The converse inequality requires up-closed multirelations for Parikh's composition.
 \<close>
 
@@ -361,7 +361,7 @@ qed
 
 text \<open>
 Moreover, right recursion gives the same result as symmetric recursion.
-The next proof follows an argument of \cite[Satz 10.1.5]{Berghammer2012}.
+The next proof follows an argument of \<^cite>\<open>\<open>Satz 10.1.5\<close> in "Berghammer2012"\<close>.
 \<close>
 
 lemma rstar_sstar:

@@ -15,7 +15,7 @@ text \<open>
   \caption{Lens Composition}
   \label{fig:Comp}
   \end{figure}
-  We introduce the algebraic lens operators; for more information please see our paper~\cite{Foster16a}.
+  We introduce the algebraic lens operators; for more information please see our paper~\<^cite>\<open>"Foster16a"\<close>.
   Lens composition, illustrated in Figure~\ref{fig:Comp}, constructs a lens by composing the source 
   of one lens with the view of another.\<close>
 

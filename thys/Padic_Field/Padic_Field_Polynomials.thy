@@ -28,7 +28,7 @@ text \<open>
   this the Gauss norm, rather than the Gauss valuation, but this is just to conform with our
   decision to work exclusively with the $p$-adic valuation and not discuss the equivalent
   real-valued $p$-adic norm. For a detailed treatment of Gauss norms one can see, for example
-  \cite{engler2005valued}.
+  \<^cite>\<open>"engler2005valued"\<close>.
 \<close>
 context padic_fields
 begin

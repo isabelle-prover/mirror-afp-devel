@@ -2,8 +2,8 @@ section \<open>Transporting BD Security\<close>
 
 text \<open>This theory proves a transport theorem for BD security: from
 a stronger to a weaker security model.
-It corresponds to Theorem 2 from \cite{cosmedis-SandP2017}
-and to Theorem 6 (the Transport Theorem) from \cite{BDsecurity-ITP2021}.
+It corresponds to Theorem 2 from \<^cite>\<open>"cosmedis-SandP2017"\<close>
+and to Theorem 6 (the Transport Theorem) from \<^cite>\<open>"BDsecurity-ITP2021"\<close>.
 \<close>
 
 

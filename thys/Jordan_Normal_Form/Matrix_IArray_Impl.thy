@@ -14,7 +14,7 @@ text \<open>In this theory we implement matrices as arrays of arrays.
   There might be room for optimizations. 
 
   To implement the infinite carrier set, we use A.\ Lochbihler's container framework
-  \cite{Containers-AFP}.\<close>
+  \<^cite>\<open>"Containers-AFP"\<close>.\<close>
 
 theory Matrix_IArray_Impl
 imports

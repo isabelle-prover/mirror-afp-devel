@@ -2312,7 +2312,7 @@ embedding need not be continuous, a quasi-geodesic does not have to be compact, 
 can be a problem. However, in a geodesic space, it is always possible to deform a quasi-geodesic
 into a continuous one (at the price of worsening the quasi-isometry constants). This is the content
 of the proposition \verb+quasi_geodesic_made_lipschitz+ below, which is a variation around Lemma
-III.H.1.11 in~\cite{bridson_haefliger}. The strategy of the proof is simple: assume that the
+III.H.1.11 in~\<^cite>\<open>"bridson_haefliger"\<close>. The strategy of the proof is simple: assume that the
 quasi-geodesic $c$ is defined on $[a,b]$. Then, on the points $a$, $a+C/\lambda$, $\cdots$,
 $a+ N \cdot C/\lambda$, $b$, take $d$ equal to $c$, where $N$ is chosen so that the distance
 between the last point and $b$ is in $[C/\lambda, 2C/\lambda)$. In the intervals, take $d$ to

@@ -18,7 +18,7 @@ named_theorems cat_discrete_cs_intros
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale cat_discrete = category \<alpha> \<CC> for \<alpha> \<CC> +
   assumes cat_discrete_Arr: "f \<in>\<^sub>\<circ> \<CC>\<lparr>Arr\<rparr> \<Longrightarrow> f \<in>\<^sub>\<circ> \<R>\<^sub>\<circ> (\<CC>\<lparr>CId\<rparr>)"
@@ -64,7 +64,7 @@ lemma (in cat_discrete) cat_discrete_is_arrE[elim]:
 subsection\<open>The discrete category\<close>
 
 text\<open>
-As explained in Chapter I-2 in \cite{mac_lane_categories_2010}, every discrete
+As explained in Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>, every discrete
 category is identified with its set of objects. 
 In this work, it is assumed that the set of objects and the set of arrows
 in the canonical discrete category coincide; the domain and the codomain 
@@ -314,7 +314,7 @@ subsection\<open>Discrete functor\<close>
 subsubsection\<open>Local assumptions for the discrete functor\<close>
 
 
-text\<open>See Chapter III in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter III in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 locale cf_discrete = category \<alpha> \<CC> for \<alpha> I F \<CC> +
   assumes cf_discrete_selector_vrange[cat_discrete_cs_intros]: 

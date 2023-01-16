@@ -48,7 +48,7 @@ Parameters:
 \noindent We represent rational numbers as pairs: \<open>\<Delta> = \<Delta>1/\<Delta>2\<close> and \<open>\<Gamma> = \<Gamma>1/\<Gamma>2\<close>.
 \bigskip
 
-Hirai and Yamamoto \cite{HiraiY11} proved that under the following constraints
+Hirai and Yamamoto \<^cite>\<open>"HiraiY11"\<close> proved that under the following constraints
 insertion and deletion preserve the WB invariant, i.e.\
 \<open>\<Delta>\<close> and \<open>\<Gamma>\<close> are \emph{valid}:\<close>
 

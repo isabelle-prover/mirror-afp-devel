@@ -926,7 +926,7 @@ subsection \<open>The conventional version of the Euler--MacLaurin formula\<clos
 
 text \<open>
   The following theorems are the classic Euler--MacLaurin formula that can be found,
-  with slight variations, in many sources (e.\,g.\ \cite{AS_HMF, apostol99, GKP_CM}).
+  with slight variations, in many sources (e.\,g.\ \<^cite>\<open>"AS_HMF" and "apostol99" and "GKP_CM"\<close>).
 \<close>
 
 context
@@ -1009,7 +1009,7 @@ qed
 subsection \<open>The ``Concrete Mathematics'' version of the Euler--MacLaurin formula\<close>
 
 text \<open>
-  As explained in \textit{Concrete Mathematics}~\cite{GKP_CM}, the above form of the 
+  As explained in \textit{Concrete Mathematics}~\<^cite>\<open>"GKP_CM"\<close>, the above form of the 
   formula has some drawbacks: When applying it to determine the asymptotics of some concrete 
   function, one is usually left with several different unwieldy constant terms that are difficult 
   to get rid of.

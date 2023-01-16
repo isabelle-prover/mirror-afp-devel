@@ -491,7 +491,7 @@ qed
 
 text \<open>
   We now define the following upper bound on the expected exponential height due to
-  Cormen\ \textit{et\ al.}~\cite{cormen}:
+  Cormen\ \textit{et\ al.}~\<^cite>\<open>"cormen"\<close>:
 \<close>
 lemma eheight_exp_bound: "eheight_exp n \<le> real ((n + 3) choose 3) / 4"
 proof (induction n rule: less_induct)
@@ -519,8 +519,8 @@ qed
 
 text \<open>
   We then show that this is indeed an upper bound on the expected exponential height by induction
-  over the set of elements. This proof mostly follows that by Cormen\ \textit{et al.}~\cite{cormen},
-  and partially an answer on the Computer Science Stack Exchange~\cite{sofl}.
+  over the set of elements. This proof mostly follows that by Cormen\ \textit{et al.}~\<^cite>\<open>"cormen"\<close>,
+  and partially an answer on the Computer Science Stack Exchange~\<^cite>\<open>"sofl"\<close>.
 \<close>
 
 text \<open>
@@ -581,7 +581,7 @@ text \<open>
   This upper bound is asymptotically equivalent to $c \ln n$ with
   $c = \frac{3}{\ln 2} \approx 4.328$. This is actually a relatively tight upper bound, since
   the exact asymptotics of the expected height of a random BST is $c \ln n$ with
-  $c \approx 4.311$.~\cite{reed} However, the proof of these precise asymptotics is very intricate
+  $c \approx 4.311$.~\<^cite>\<open>"reed"\<close> However, the proof of these precise asymptotics is very intricate
   and we will therefore be content with the upper bound.
 
   In particular, we can now show that the expected height is $O(\log n)$.

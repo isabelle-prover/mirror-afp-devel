@@ -8,7 +8,7 @@ section\<open> Brent's algorithm \label{sec:brent} \<close>
 
 text\<open>
 
-@{cite "Brent:1980"} improved on the Tortoise and Hare algorithm and
+\<^cite>\<open>"Brent:1980"\<close> improved on the Tortoise and Hare algorithm and
 used it to factor large primes. In practice it makes significantly
 fewer calls to the function \<open>f\<close> before detecting a loop.
 

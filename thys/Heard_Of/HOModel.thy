@@ -114,7 +114,7 @@ text \<open>
 subsection \<open>A Generic Representation of Heard-Of Algorithms\<close>
 
 text \<open>
-  Charron-Bost and Schiper~\cite{charron:heardof} introduce
+  Charron-Bost and Schiper~\<^cite>\<open>"charron:heardof"\<close> introduce
   the Heard-Of (HO) model for representing fault-tolerant
   distributed algorithms. In this model, algorithms execute in communication-closed
   rounds: at any round~$r$, processes only receive messages that were sent for
@@ -132,7 +132,7 @@ text \<open>
 
   The original HO model is sufficient for representing algorithms
   tolerating benign failures such as process crashes or message loss. A later
-  extension for algorithms tolerating Byzantine (or value) failures~\cite{biely:tolerating} 
+  extension for algorithms tolerating Byzantine (or value) failures~\<^cite>\<open>"biely:tolerating"\<close> 
   adds a second collection of sets $SHO(p,r) \subseteq HO(p,r)$ that contain those
   processes $q$ from which process $p$ receives the message that $q$ was indeed
   supposed to send for round $r$ according to the algorithm. In other words, 
@@ -408,7 +408,7 @@ text \<open>
   is expected to hold at every round and a \emph{global} part that must hold
   of the sequence of (S)HO assignments and may thus express liveness assumptions.
 
-  In the parlance of~\cite{charron:heardof}, a \emph{HO machine} is an HO algorithm
+  In the parlance of~\<^cite>\<open>"charron:heardof"\<close>, a \emph{HO machine} is an HO algorithm
   augmented with a communication predicate. We therefore define (C)(S)HO machines as
   the corresponding extensions of the record defining an HO algorithm.
 \<close>

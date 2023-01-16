@@ -6,7 +6,7 @@ begin
 (*>*)
 
 text \<open>This is the simplified version of Jeroslow's Second Incompleteness Theorem
-reported in our CADE 2019 paper~\cite{DBLP:conf/cade/0001T19}.
+reported in our CADE 2019 paper~\<^cite>\<open>"DBLP:conf/cade/0001T19"\<close>.
 The simplification consists of replacing pseudo-terms with plain terms
 and representability with (what we call in the paper) term-representability.
 This simplified version does not incur the complications of the original.\<close>
@@ -228,7 +228,7 @@ qed
 
 subsection \<open>A variant of the Second Incompleteness Theorem\<close>
 
-text \<open>This variant (also discussed in our CADE 2019 paper~\cite{DBLP:conf/cade/0001T19}) strengthens
+text \<open>This variant (also discussed in our CADE 2019 paper~\<^cite>\<open>"DBLP:conf/cade/0001T19"\<close>) strengthens
 the conclusion of the theorem to the standard formulation
 of "does not prove its own consistency" at the expense of two
 additional derivability-like conditions, HBL4 and WHBL2.\<close>

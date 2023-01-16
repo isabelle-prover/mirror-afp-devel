@@ -12,7 +12,7 @@ type_synonym  ('variable) strips_state = "('variable, bool) state"
 (*>*)
 text \<open> We start by declaring a \isakeyword{record} for STRIPS operators.
 This which allows us to define a data type and automatically generated selector operations. 
-\footnote{For the full reference on records see \cite[11.6, pp.260-265]{wenzel--2018}} 
+\footnote{For the full reference on records see \<^cite>\<open>\<open>11.6, pp.260-265\<close> in "wenzel--2018"\<close>} 
 
 The record specification given below closely resembles the canonical representation of
 STRIPS operators with fields corresponding to precondition, add effects as well as delete effects.\<close>

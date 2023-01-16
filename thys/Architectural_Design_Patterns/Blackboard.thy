@@ -4,7 +4,7 @@
 *)
 section "A Theory of Blackboard Architectures"
 text\<open>
-  In the following, we formalize the specification of the blackboard pattern as described in~\cite{Marmsoler2018c}.
+  In the following, we formalize the specification of the blackboard pattern as described in~\<^cite>\<open>"Marmsoler2018c"\<close>.
 \<close>
 
 theory Blackboard

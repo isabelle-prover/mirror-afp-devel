@@ -40,7 +40,7 @@ text \<open>
   We encourage structured proofs with comments and
   explanations. The Isabelle document preparation tools support
   antiquotations like @{thm true}, normal {\LaTeX} commands and BibTeX
-  citations. See \cite{LNCS2283} and the Isabelle documentation for
+  citations. See \<^cite>\<open>"LNCS2283"\<close> and the Isabelle documentation for
   more information.  
 \<close>
 lemma very_true: "True"

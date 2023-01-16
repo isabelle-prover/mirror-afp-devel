@@ -4,8 +4,8 @@ begin
 section \<open>Design Operations\<close>
 text \<open>Incidence systems have a number of very typical computational operations
 which can be used for constructions in design theory. Definitions in this section are based off
-the handbook of combinatorial designs, hypergraph theory \cite{bergeHypergraphsCombinatoricsFinite1989}, 
-and the GAP design theory library \cite{soicherDesignsGroupsComputing2013}\<close>
+the handbook of combinatorial designs, hypergraph theory \<^cite>\<open>"bergeHypergraphsCombinatoricsFinite1989"\<close>, 
+and the GAP design theory library \<^cite>\<open>"soicherDesignsGroupsComputing2013"\<close>\<close>
 
 subsection \<open>Incidence system definitions\<close>
 

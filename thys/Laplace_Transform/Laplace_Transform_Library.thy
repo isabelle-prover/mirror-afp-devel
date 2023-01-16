@@ -6,9 +6,9 @@ begin
 section \<open>References\<close>
 
 text \<open>
-Much of this formalization is based on Schiff's textbook @{cite "Schiff2013"}.
+Much of this formalization is based on Schiff's textbook \<^cite>\<open>"Schiff2013"\<close>.
 Parts of this formalization are inspired by the HOL-Light formalization
-(@{cite "Taqdees2013"}, @{cite "Rashid2017"}, @{cite "Rashid2018"}), but stated more generally for
+(\<^cite>\<open>"Taqdees2013"\<close>, \<^cite>\<open>"Rashid2017"\<close>, \<^cite>\<open>"Rashid2018"\<close>), but stated more generally for
 piecewise continuous (instead of piecewise continuously differentiable) functions.
 \<close>
 

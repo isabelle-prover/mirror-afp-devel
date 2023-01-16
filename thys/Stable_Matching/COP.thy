@@ -5,34 +5,34 @@ imports
 begin
 
 (*>*)
-section\<open> \citet{HatfieldKojima:2010}: Substitutes and stability for matching with contracts \label{sec:cop} \<close>
+section\<open> \<^citet>\<open>"HatfieldKojima:2010"\<close>: Substitutes and stability for matching with contracts \label{sec:cop} \<close>
 
 text\<open>
 
-\citet{HatfieldKojima:2010} set about weakening @{const "substitutes"}
+\<^citet>\<open>"HatfieldKojima:2010"\<close> set about weakening @{const "substitutes"}
 and therefore making the @{emph \<open>cumulative offer processes\<close>} (COPs,
 \S\ref{sec:contracts-cop}) applicable to more matching problems. In
 doing so they lose the lattice structure of the stable matches, which
 necessitates redeveloping the results of \S\ref{sec:contracts}.
 
 In contrast to the COP of \S\ref{sec:contracts-cop},
-\citet{HatfieldKojima:2010} develop and analyze a @{emph
+\<^citet>\<open>"HatfieldKojima:2010"\<close> develop and analyze a @{emph
 \<open>single-offer\<close>} variant, where only one doctor (who has
 no held contract) proposes per round. The order of doctors making
 offers is not specified. We persist with the simultaneous-offer COP as
-it is deterministic. See \citet{HirataKasuya:2014} for equivalence
+it is deterministic. See \<^citet>\<open>"HirataKasuya:2014"\<close> for equivalence
 arguments.
 
 We begin with some observations due to
 \citeauthor{AygunSonmez:2012-WP}. Firstly, as for the
 matching-with-contracts setting of \S\ref{sec:contracts},
-\citet{AygunSonmez:2012-WP} demonstrate that these results depend on
+\<^citet>\<open>"AygunSonmez:2012-WP"\<close> demonstrate that these results depend on
 hospital preferences satisfying @{const "irc"}. We do not formalize
 their examples. Secondly, an alternative to hospitals having choice
 functions (as we have up to now) is for the hospitals to have
 preference orders over sets, which is suggested by both
-\citet{HatfieldMilgrom:2005} (weakly) and \citet{HatfieldKojima:2010}.
-\citet[\S2]{AygunSonmez:2012-WP} argue that this approach is
+\<^citet>\<open>"HatfieldMilgrom:2005"\<close> (weakly) and \<^citet>\<open>"HatfieldKojima:2010"\<close>.
+\<^citet>\<open>\<open>\S2\<close> in "AygunSonmez:2012-WP"\<close> argue that this approach is
 under-specified and propose to define \<open>Ch\<close> as choosing
 amongst maximal elements of some non-strict preference order (i.e.,
 including indifference). They then claim that this is equivalent to
@@ -47,7 +47,7 @@ subsection\<open> Theorem~1: the COP yields a stable match under @{emph \<open>b
 text\<open>
 
 The weakest replacement condition suggested by
-\citet[\S1]{HatfieldKojima:2010} for the @{const "substitutes"}
+\<^citet>\<open>\<open>\S1\<close> in "HatfieldKojima:2010"\<close> for the @{const "substitutes"}
 condition on hospital choice functions is termed @{emph \<open>bilateral
 substitutes\<close>}:
 \begin{quote}
@@ -116,7 +116,7 @@ using %invisible assms by (auto intro!: bilateral_substitutes_onI dest: substitu
 
 text\<open>
 
-\citet[\S4, Definition~5]{AygunSonmez:2012-WP} give the following
+\<^citet>\<open>\<open>\S4, Definition~5\<close> in "AygunSonmez:2012-WP"\<close> give the following
 equivalent definition:
 
 \<close>
@@ -153,14 +153,14 @@ begin
 text\<open>
 
 The key difficulty in showing the stability of the result of the COP
-under this condition \citep[Theorem~1]{HatfieldKojima:2010} is in
+under this condition \<^citep>\<open>\<open>Theorem~1\<close> in "HatfieldKojima:2010"\<close> is in
 proving that it ensures we get an @{const "allocation"}; the remainder
 of the proof of \S\ref{sec:contracts-cop} (for a single hospital,
 where this property is trivial) goes through unchanged. We avail
-ourselves of \citet[Lemma]{HirataKasuya:2014}, which they say is a
+ourselves of \<^citet>\<open>\<open>Lemma\<close> in "HirataKasuya:2014"\<close>, which they say is a
 restatement of the proof of
-\citet[Theorem~1]{HatfieldKojima:2010}. See also
-\citet[Appendix~A]{AygunSonmez:2012-WP}.
+\<^citet>\<open>\<open>Theorem~1\<close> in "HatfieldKojima:2010"\<close>. See also
+\<^citet>\<open>\<open>Appendix~A\<close> in "AygunSonmez:2012-WP"\<close>.
 
 \<close>
 
@@ -351,7 +351,7 @@ end
 
 text (in ContractsWithBilateralSubstitutesAndIRC) \<open>
 
-\citet[\S3.1]{HatfieldKojima:2010} provide an example that shows that
+\<^citet>\<open>\<open>\S3.1\<close> in "HatfieldKojima:2010"\<close> provide an example that shows that
 the traditional optimality and strategic results do not hold under
 @{const "bilateral_substitutes"}, which motivates looking for a
 stronger condition that remains weaker than @{const "substitutes"}.
@@ -509,7 +509,7 @@ subsection\<open> Theorem~3: @{emph \<open>pareto separability\<close>} relates 
 
 text\<open>
 
-\citet[\S4]{HatfieldKojima:2010} proceed to define @{emph \<open>unilateral
+\<^citet>\<open>\<open>\S4\<close> in "HatfieldKojima:2010"\<close> proceed to define @{emph \<open>unilateral
 substitutes\<close>}:
 \begin{quote}
 
@@ -560,7 +560,7 @@ lemmas %invisible unilateral_substitutesD = iffD1[OF unilateral_substitutes_def,
 (*>*)
 text\<open>
 
-\citet[\S4, Definition~6]{AygunSonmez:2012-WP} give the following equivalent definition:
+\<^citet>\<open>\<open>\S4, Definition~6\<close> in "AygunSonmez:2012-WP"\<close> give the following equivalent definition:
 
 \<close>
 
@@ -616,7 +616,7 @@ by %invisible unfold_locales
 
 text (in Contracts) \<open>
 
-\citet[Theorem~3]{HatfieldKojima:2010} relate @{const
+\<^citet>\<open>\<open>Theorem~3\<close> in "HatfieldKojima:2010"\<close> relate @{const
 "unilateral_substitutes"} to @{const "substitutes"} using @{emph
 \<open>Pareto separability\<close>}:
 \begin{quote}
@@ -712,14 +712,14 @@ by blast
 end
 
 
-subsubsection\<open> \citet{AfacanTurhan:2015}: @{emph \<open>doctor separability\<close>} relates bi- and unilateral substitutes \<close>
+subsubsection\<open> \<^citet>\<open>"AfacanTurhan:2015"\<close>: @{emph \<open>doctor separability\<close>} relates bi- and unilateral substitutes \<close>
 
 context Contracts
 begin
 
 text \<open>
 
-\citet[Theorem~1]{AfacanTurhan:2015} relate @{const
+\<^citet>\<open>\<open>Theorem~1\<close> in "AfacanTurhan:2015"\<close> relate @{const
 "bilateral_substitutes"} and @{const "unilateral_substitutes"} using
 @{emph \<open>doctor separability\<close>}:
 \begin{quote}
@@ -848,7 +848,7 @@ by metis
 
 text\<open>
 
-\citet[Remark~2]{AfacanTurhan:2015} observe the independence of the
+\<^citet>\<open>\<open>Remark~2\<close> in "AfacanTurhan:2015"\<close> observe the independence of the
 @{const "doctor_separable"}, @{const "pareto_separable"} and @{const
 "bilateral_substitutes"} conditions.
 
@@ -865,7 +865,7 @@ begin
 text \<open>
 
 We return to analyzing the COP following
-\citet{HatfieldKojima:2010}. The next goal is to establish a
+\<^citet>\<open>"HatfieldKojima:2010"\<close>. The next goal is to establish a
 doctor-optimality result for it in the spirit of
 \S\ref{sec:contracts-optimality}.
 
@@ -1030,7 +1030,7 @@ text\<open>
 
 \label{sec:cop-theorem-4}
 
-\citet[Theorem~4]{HatfieldKojima:2010} assert that we effectively
+\<^citet>\<open>\<open>Theorem~4\<close> in "HatfieldKojima:2010"\<close> assert that we effectively
 recover @{const "substitutes"} for the contracts relevant to the
 COP. We cannot adopt their phrasing as it talks about the execution
 traces of the COP, and not just its final state. Instead we present
@@ -1312,7 +1312,7 @@ end
 
 text (in Contracts) \<open>
 
-\citet[Corollary~1 (of Theorem~5 and Lemma~1)]{HatfieldKojima:2010}:
+\<^citet>\<open>\<open>Corollary~1 (of Theorem~5 and Lemma~1)\<close> in "HatfieldKojima:2010"\<close>:
 @{const "unilateral_substitutes"} implies there is a hospital-pessimal
 match, which is indeed the doctor-optimal one.
 
@@ -1335,7 +1335,7 @@ qed
 
 text\<open>
 
-\citet[p1717]{HatfieldKojima:2010} show that there is not always a
+\<^citet>\<open>\<open>p1717\<close> in "HatfieldKojima:2010"\<close> show that there is not always a
 hospital-optimal/doctor-pessimal match when hospital preferences
 satisfy @{const "unilateral_substitutes"}, in contrast to the
 situation under @{const "substitutes"} (see
@@ -1351,11 +1351,11 @@ subsection\<open> Theorem~6: A ``rural hospitals'' theorem \label{sec:cop-rh} \<
 
 text (in Contracts) \<open>
 
-\citet[Theorem~6]{HatfieldKojima:2010} demonstrates a ``rural
+\<^citet>\<open>\<open>Theorem~6\<close> in "HatfieldKojima:2010"\<close> demonstrates a ``rural
 hospitals'' theorem for the COP assuming hospital choice functions
 satisfy @{const "unilateral_substitutes"} and @{const "lad"}, as for
-\S\ref{sec:contracts-rh}. However \citet[\S4,
-Example~1]{AygunSonmez:2012-WP} observe that @{thm [source]
+\S\ref{sec:contracts-rh}. However \<^citet>\<open>\<open>\S4,
+Example~1\<close> in "AygunSonmez:2012-WP"\<close> observe that @{thm [source]
 "lad_on_substitutes_on_irc_on"} does not hold with @{const
 "bilateral_substitutes"} instead of @{const "substitutes"}, and their
 Example~3 similarly for @{const "unilateral_substitutes"}. Moreover
@@ -1384,7 +1384,7 @@ begin
 text\<open>
 
 The proofs of these first two lemmas are provided by
-\citet[Theorem~6]{HatfieldKojima:2010}. We treat unemployment in the
+\<^citet>\<open>\<open>Theorem~6\<close> in "HatfieldKojima:2010"\<close>. We treat unemployment in the
 definition of the function @{term "A"} as we did in
 \S\ref{sec:contracts-t1-converse}.
 

@@ -6,7 +6,7 @@ begin
 
 subsection \<open>Assertions and state model\<close>
 
-text \<open>We define our assertion language as described in Section 2.3 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>We define our assertion language as described in Section 2.3 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 datatype ('a, 'b, 'c, 'd) assertion =
   Sem "('d \<Rightarrow> 'c) \<Rightarrow> 'a \<Rightarrow> bool"
@@ -39,7 +39,7 @@ end
 
 type_synonym ('a, 'b, 'c) interp = "('a \<Rightarrow> 'b) \<Rightarrow> 'c set"
 
-text \<open>The following locale captures the state model described in Section 2.2 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The following locale captures the state model described in Section 2.2 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 locale logic = pre_logic +
 
@@ -74,7 +74,7 @@ locale logic = pre_logic +
 
 begin
 
-text \<open>The validity of assertions corresponds to Figure 3 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The validity of assertions corresponds to Figure 3 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 fun sat :: "'a \<Rightarrow> ('d \<Rightarrow> 'c) \<Rightarrow> ('d, 'c, 'a) interp \<Rightarrow> ('a, 'b, 'c, 'd) assertion \<Rightarrow> bool" ("_, _, _ \<Turnstile> _" [51, 65, 68, 66] 50) where
   "\<sigma>, s, \<Delta> \<Turnstile> Mult p A \<longleftrightarrow> (\<exists>a. \<sigma> = p \<odot> a \<and> a, s, \<Delta> \<Turnstile> A)"
@@ -247,7 +247,7 @@ lemma larger_implies_compatible:
 
 section \<open>Frame rule\<close>
 
-text \<open>This section corresponds to Section 2.5 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>This section corresponds to Section 2.5 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 definition safe :: "('a \<times> ('d \<Rightarrow> 'c)) command \<Rightarrow> ('a \<times> ('d \<Rightarrow> 'c)) \<Rightarrow> bool" where
   "safe c \<sigma> \<longleftrightarrow> (\<sigma>, None) \<notin> c"
@@ -302,7 +302,7 @@ proof -
 qed
 
 
-text \<open>This theorem corresponds to Theorem 2 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>This theorem corresponds to Theorem 2 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theorem frame_rule:
   assumes "valid_command c"

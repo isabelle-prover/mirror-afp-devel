@@ -14,7 +14,7 @@ lemmas neq0_if = less_imp_neq dual_order.strict_implies_not_eq
 subsection \<open>Logarithmic Height\<close>
 
 text \<open>The locale below is parameterized wrt to \<open>\<Delta>\<close>. The original definition of weight-balanced trees
-\cite{NievergeltR72,NievergeltR73} uses \<open>\<alpha>\<close>. The constants \<open>\<alpha>\<close> and \<open>\<Delta>\<close> are interdefinable.
+\<^cite>\<open>"NievergeltR72" and "NievergeltR73"\<close> uses \<open>\<alpha>\<close>. The constants \<open>\<alpha>\<close> and \<open>\<Delta>\<close> are interdefinable.
 Below we start from \<open>\<Delta>\<close> but derive \<open>\<alpha>\<close>-versions of theorems as well.\<close>
 
 locale WBT0 =

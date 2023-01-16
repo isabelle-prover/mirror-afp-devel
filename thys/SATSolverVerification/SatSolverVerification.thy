@@ -14,7 +14,7 @@ theorems significant on their own, it is an essential part of the SAT
 solver correctness proof because it contains most of the technical
 details used in the proofs that follow. These lemmas serve as a basis
 for partial correctness proof for pseudo-code implementation of modern
-SAT solvers described in \cite{JARrad}, in terms of Hoare logic.\<close>
+SAT solvers described in \<^cite>\<open>"JARrad"\<close>, in terms of Hoare logic.\<close>
 
 (******************************************************************************)
 subsection\<open>Literal Trail\<close>

@@ -8,7 +8,7 @@
 section \<open>Modal Kleene Algebras\<close>
 
 text \<open>This section studies laws that relate antidomain and antirange semirings and Kleene algebra,
-notably Galois connections and conjugations as those studied in~\cite{MoellerStruth,DesharnaisStruthSCP}.\<close>
+notably Galois connections and conjugations as those studied in~\<^cite>\<open>"MoellerStruth" and "DesharnaisStruthSCP"\<close>.\<close>
 
 theory Modal_Kleene_Algebra
 imports Range_Semiring

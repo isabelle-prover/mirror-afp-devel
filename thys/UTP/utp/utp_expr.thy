@@ -13,7 +13,7 @@ text \<open> Before building the predicate model, we will build a model of expre
   alphabetised predicates. Expressions are represented semantically as mapping from
   the alphabet @{typ "'\<alpha>"} to the expression's type @{typ "'a"}. This general model will allow us to unify
   all constructions under one type. The majority definitions in the file are given using
-  the \emph{lifting} package~\cite{Huffman13}, which allows us to reuse much of the existing
+  the \emph{lifting} package~\<^cite>\<open>"Huffman13"\<close>, which allows us to reuse much of the existing
   library of HOL functions. \<close>
 
 typedef ('t, '\<alpha>) uexpr = "UNIV :: ('\<alpha> \<Rightarrow> 't) set" ..

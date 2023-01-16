@@ -5,11 +5,11 @@ begin
   (*>*)
 
 text \<open>
-  We formalize a more general version of Szpilrajn's extension theorem~@{cite "Szpilrajn:1930"},
-  employing the terminology of Bossert and Suzumura~@{cite "Bossert:2010"}. We also formalize 
+  We formalize a more general version of Szpilrajn's extension theorem~\<^cite>\<open>"Szpilrajn:1930"\<close>,
+  employing the terminology of Bossert and Suzumura~\<^cite>\<open>"Bossert:2010"\<close>. We also formalize 
   Theorem 2.7 of their book. Our extension theorem states that any preorder can be extended to a
   total preorder while maintaining its structure. The proof of the extension theorem follows the
-  proof presented in the Wikipedia article~@{cite Wiki}.
+  proof presented in the Wikipedia article~\<^cite>\<open>Wiki\<close>.
 \<close>
 
 section \<open>Definitions\<close>
@@ -728,7 +728,7 @@ lemma consistent_Restr[simp]: "consistent r \<Longrightarrow> consistent (Restr 
   using trancl_mono by fastforce
 
 text \<open>
-  This corresponds to Theorem 2.2~@{cite "Bossert:2010"}.
+  This corresponds to Theorem 2.2~\<^cite>\<open>"Bossert:2010"\<close>.
 \<close>
 theorem trans_if_refl_total_consistent:
   assumes "refl r" "total r" and "consistent r"
@@ -778,7 +778,7 @@ proof(rule consistentI, standard)
 qed
 
 text \<open>
-  With Theorem 2.6~@{cite "Bossert:2010"}, we show that \<^term>\<open>consistent\<close> characterises the existence
+  With Theorem 2.6~\<^cite>\<open>"Bossert:2010"\<close>, we show that \<^term>\<open>consistent\<close> characterises the existence
   of order extensions.
 \<close>
 corollary order_extension_iff_consistent:
@@ -788,7 +788,7 @@ corollary order_extension_iff_consistent:
 
 
 text \<open>
-  The following theorem corresponds to Theorem 2.7~@{cite "Bossert:2010"}.
+  The following theorem corresponds to Theorem 2.7~\<^cite>\<open>"Bossert:2010"\<close>.
   Bossert and Suzumura claim that this theorem generalises Szpilrajn's theorem; however, we cannot
   use the theorem to strictly extend a given order \<^term>\<open>Q\<close>. Therefore, it is not strong enough to
   extend a strict partial order to a strict linear order. It works for total preorders (called 

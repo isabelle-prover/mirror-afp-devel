@@ -10,7 +10,7 @@ begin
 
 text \<open> An alphabetised relation is simply a predicate whose state-space is a product type. In this
   theory we construct the core operators of the relational calculus, and prove a libary of 
-  associated theorems, based on Chapters 2 and 5 of the UTP book~\cite{Hoare&98}. \<close>
+  associated theorems, based on Chapters 2 and 5 of the UTP book~\<^cite>\<open>"Hoare&98"\<close>. \<close>
   
 subsection \<open> Relational Alphabets \<close>
   
@@ -134,7 +134,7 @@ abbreviation conv_r :: "('a, '\<alpha> \<times> '\<beta>) uexpr \<Rightarrow> ('
 where "conv_r e \<equiv> e \<oplus>\<^sub>p swap\<^sub>L"
 
 text \<open> Assignment is defined using substitutions, where latter defines what each variable should
-  map to. This approach, which is originally due to Back~\cite{Back1998}, permits more general 
+  map to. This approach, which is originally due to Back~\<^cite>\<open>"Back1998"\<close>, permits more general 
   assignment expressions. The definition of the operator identifies the after state binding, $b'$, 
   with the substitution function applied to the before state binding $b$. \<close>
   
@@ -189,7 +189,7 @@ definition assigns_ra :: "'\<alpha> usubst \<Rightarrow> ('\<beta>, '\<alpha>) l
 text \<open> Assumptions ($c^{\top}$) and assertions ($c_{\bot}$) are encoded as conditionals. An assumption
   behaves like skip if the condition is true, and otherwise behaves like @{term false} (miracle).
   An assertion is the same, but yields @{term true}, which is an abort. They are the same as
-  tests, as in Kleene Algebra with Tests~\cite{kozen1997kleene,Armstrong2015} 
+  tests, as in Kleene Algebra with Tests~\<^cite>\<open>"kozen1997kleene" and "Armstrong2015"\<close> 
   (KAT), which embeds a Boolean algebra into a Kleene algebra to represent conditions. \<close>
 
 definition rassume :: "'\<alpha> upred \<Rightarrow> '\<alpha> hrel" where
@@ -207,7 +207,7 @@ definition while_top :: "'\<alpha> cond \<Rightarrow> '\<alpha> hrel \<Rightarro
 definition while_bot :: "'\<alpha> cond \<Rightarrow> '\<alpha> hrel \<Rightarrow> '\<alpha> hrel" where
 [urel_defs]: "while_bot b P = (\<mu> X \<bullet> (P ;; X) \<triangleleft> b \<triangleright>\<^sub>r II)"
 
-text \<open> While loops with invariant decoration (cf. \cite{Armstrong2015}) -- partial correctness. \<close>
+text \<open> While loops with invariant decoration (cf. \<^cite>\<open>"Armstrong2015"\<close>) -- partial correctness. \<close>
 
 definition while_inv :: "'\<alpha> cond \<Rightarrow> '\<alpha> cond \<Rightarrow> '\<alpha> hrel \<Rightarrow> '\<alpha> hrel" where
 [urel_defs]: "while_inv b p S = while_top b S"
@@ -262,7 +262,7 @@ definition rel_ares :: "'\<alpha> hrel \<Rightarrow> ('\<beta> \<Longrightarrow>
 text \<open> We next describe frames and antiframes with the help of lenses. A frame states that $P$
   defines how variables in $a$ changed, and all those outside of $a$ remain the same. An
   antiframe describes the converse: all variables outside $a$ are specified by $P$, and all those in
-  remain the same. For more information please see \cite{Morgan90a}.\<close>
+  remain the same. For more information please see \<^cite>\<open>"Morgan90a"\<close>.\<close>
 
 definition frame :: "('a \<Longrightarrow> '\<alpha>) \<Rightarrow> '\<alpha> hrel \<Rightarrow> '\<alpha> hrel" where
 [urel_defs]: "frame a P = (P \<and> $\<^bold>v\<acute> =\<^sub>u $\<^bold>v \<oplus> $\<^bold>v\<acute> on &a)"

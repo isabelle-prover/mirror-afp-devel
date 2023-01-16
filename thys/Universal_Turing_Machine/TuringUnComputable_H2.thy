@@ -57,10 +57,10 @@ subsubsection \<open>Undecidability of the General Halting Problem H, Variant 2,
 
 text \<open>
   This variant of the decision problem H is discussed in the book
-  Computability and Logic by Boolos, Burgess and Jeffrey~\cite{Boolos07} in chapter 4.
+  Computability and Logic by Boolos, Burgess and Jeffrey~\<^cite>\<open>"Boolos07"\<close> in chapter 4.
 
   The proof makes use of the TMs @{term "tm_copy"} and @{term "tm_dither"}.
-  In \cite{Boolos07}, the machines are called {\em copy} and {\em dither}.
+  In \<^cite>\<open>"Boolos07"\<close>, the machines are called {\em copy} and {\em dither}.
 \<close>
 
 fun dummy_code :: "tprog0 \<Rightarrow> nat"  (* the witness for the instantiation of class hph2 *)

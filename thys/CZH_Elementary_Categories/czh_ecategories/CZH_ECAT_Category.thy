@@ -101,9 +101,9 @@ subsection\<open>Definition and elementary properties\<close>
 text\<open>
 The definition of a category that is used in this work is
 is similar to the definition that can be found in Chapter I-2 in 
-\cite{mac_lane_categories_2010}. The amendments to the definitions that are 
+\<^cite>\<open>"mac_lane_categories_2010"\<close>. The amendments to the definitions that are 
 associated with size have already been explained in 
-\cite{milehins_category_2021}.
+\<^cite>\<open>"milehins_category_2021"\<close>.
 \<close>
 
 locale category = \<Z> \<alpha> + vfsequence \<CC> + CId: vsv \<open>\<CC>\<lparr>CId\<rparr>\<close> for \<alpha> \<CC> +
@@ -582,7 +582,7 @@ subsection\<open>Opposite category\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition op_cat :: "V \<Rightarrow> V"
   where "op_cat \<CC> = [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Dom\<rparr>, fflip (\<CC>\<lparr>Comp\<rparr>), \<CC>\<lparr>CId\<rparr>]\<^sub>\<circ>"
@@ -771,7 +771,7 @@ lemmas [cat_arrow_cs_intros] = category.cat_CId_is_epic_arr
 subsection\<open>Right inverse and left inverse of an arrow\<close>
 
 
-text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition is_right_inverse :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   where "is_right_inverse \<CC> g f = 
@@ -859,7 +859,7 @@ lemmas [cat_op_intros] = category.op_cat_is_right_inverse[THEN iffD2]
 subsection\<open>Inverse of an arrow\<close>
 
 
-text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition is_inverse :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   where "is_inverse \<CC> g f =
@@ -1037,7 +1037,7 @@ qed
 subsection\<open>Isomorphism\<close>
 
 
-text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition is_iso_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   where "is_iso_arr \<CC> a b f \<longleftrightarrow>
@@ -1263,7 +1263,7 @@ lemma (in category) cat_is_iso_arr_if_is_epic_arr_is_left_inverse:
 subsection\<open>The inverse arrow\<close>
 
 
-text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition the_inverse :: "V \<Rightarrow> V \<Rightarrow> V" (\<open>(_\<inverse>\<^sub>C\<index>)\<close> [1000] 999)
   where "f\<inverse>\<^sub>C\<^bsub>\<CC>\<^esub> = (THE g. is_inverse \<CC> g f)"
@@ -1401,7 +1401,7 @@ lemmas [cat_cs_simps] = category.cat_the_inverse_the_inverse
 subsection\<open>Isomorphic objects\<close>
 
 
-text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition obj_iso :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool" 
   where "obj_iso \<CC> a b \<longleftrightarrow> (\<exists>f. f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b)"
@@ -1514,7 +1514,7 @@ lemma (in category) cat_obj_null_obj_iso:
 subsection\<open>Groupoid\<close>
 
 
-text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale groupoid = category \<alpha> \<CC> for \<alpha> \<CC> +
   assumes grpd_is_iso_arr: "f : a \<mapsto>\<^bsub>\<CC>\<^esub> b \<Longrightarrow> f : a \<mapsto>\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<CC>\<^esub> b"

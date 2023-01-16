@@ -12,7 +12,7 @@ begin
 
 text \<open>
   We define a weak regular algebra which can serve as a common basis for Kleene algebra and demonic reginement algebra.
-  It is closely related to an axiomatisation given by Conway~\cite{conway71regular}. 
+  It is closely related to an axiomatisation given by Conway~\<^cite>\<open>"conway71regular"\<close>. 
 \<close>
 
 class dagger_op =
@@ -204,7 +204,7 @@ lemma dagger_slide: "x \<cdot> (y \<cdot> x)\<^sup>\<dagger> = (x \<cdot> y)\<^s
 
 text \<open>
   We say that $y$ preserves $x$ if $x \cdot y \cdot x = x \cdot y$ and $!x \cdot y \cdot !x = !x \cdot y$. This definition is taken
-  from Solin~\cite{Solin11}. It is useful for program transformation.
+  from Solin~\<^cite>\<open>"Solin11"\<close>. It is useful for program transformation.
 \<close>
   
 lemma preservation1: "x \<cdot> y \<le> x \<cdot> y \<cdot> x \<Longrightarrow> x \<cdot> y\<^sup>\<dagger> \<le> (x \<cdot> y + z)\<^sup>\<dagger> \<cdot> x"

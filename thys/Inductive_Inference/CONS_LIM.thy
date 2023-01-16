@@ -5,9 +5,9 @@ theory CONS_LIM
 begin
 
 text \<open>That there are classes in @{term "LIM - CONS"} was noted by
-Barzdin~\cite{b-iiafp-74,b-iiafp-77} and Blum and Blum~\cite{bb-tmtii-75}. It
-was proven by Wiehagen~\cite{w-lerfss-76} (see also Wiehagen and
-Zeugmann~\cite{wz-idmowle-94}). The proof uses this class:\<close>
+Barzdin~\<^cite>\<open>"b-iiafp-74" and "b-iiafp-77"\<close> and Blum and Blum~\<^cite>\<open>"bb-tmtii-75"\<close>. It
+was proven by Wiehagen~\<^cite>\<open>"w-lerfss-76"\<close> (see also Wiehagen and
+Zeugmann~\<^cite>\<open>"wz-idmowle-94"\<close>). The proof uses this class:\<close>
 
 definition U_LIMCONS :: "partial1 set" ("U\<^bsub>LIM-CONS\<^esub>") where
   "U\<^bsub>LIM-CONS\<^esub> \<equiv> {vs @ [j] \<odot> p| vs j p. j \<ge> 2 \<and> p \<in> \<R>\<^sub>0\<^sub>1 \<and> \<phi> j = vs @ [j] \<odot> p}"

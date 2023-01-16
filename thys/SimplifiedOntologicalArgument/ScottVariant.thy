@@ -1,4 +1,4 @@
-subsection\<open>Ultrafilter Analysis of Scott's Variant (Fig.~3 in \cite{C85}))\<close>
+subsection\<open>Ultrafilter Analysis of Scott's Variant (Fig.~3 in \<^cite>\<open>"C85"\<close>))\<close>
 
 theory ScottVariant imports 
   HOML 

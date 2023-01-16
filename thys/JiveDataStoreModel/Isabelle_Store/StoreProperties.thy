@@ -41,7 +41,7 @@ the static fields if we encounter a \<open>nullV\<close> reference in the pointe
 chain.\<close>
 
 text \<open>We formalize some properties of reachability. 
-Especially, Lemma 3.2 as given in \cite[p. 53]{Poetzsch-Heffter97specification} is proven.\<close>
+Especially, Lemma 3.2 as given in \<^cite>\<open>\<open>p. 53\<close> in "Poetzsch-Heffter97specification"\<close> is proven.\<close>
 
 lemma unreachable_Null: 
   assumes reach: "s\<turnstile> l reachable_from x" shows "x\<noteq>nullV"
@@ -459,7 +459,7 @@ subsection \<open>Reachability of a Reference from a Reference\<close>
 
 text \<open>The predicate \<open>rreach\<close> tests whether a value is reachable from
 another value. This is an extension of the predicate \<open>oreach\<close> as described
-in \cite[p. 54]{Poetzsch-Heffter97specification} because now arrays are handled as well.
+in \<^cite>\<open>\<open>p. 54\<close> in "Poetzsch-Heffter97specification"\<close> because now arrays are handled as well.
 \<close>
 
 definition rreach:: "Store \<Rightarrow> Value \<Rightarrow> Value \<Rightarrow> bool" 
@@ -471,7 +471,7 @@ subsection \<open>Disjointness of Reachable Locations\<close>
 
 text \<open>The predicate \<open>disj\<close> tests whether two values are disjoint
 in a given store. Its properties as given in 
-\cite[Lemma 3.3, p. 54]{Poetzsch-Heffter97specification} are then proven.
+\<^cite>\<open>\<open>Lemma 3.3, p. 54\<close> in "Poetzsch-Heffter97specification"\<close> are then proven.
 \<close>
 
 definition disj:: "Value \<Rightarrow> Value \<Rightarrow> Store \<Rightarrow> bool" where
@@ -493,7 +493,7 @@ lemma disj_cases [consumes 1]:
   shows "P"
   using assms by (auto simp add: disj_def)
 
-text \<open>Lemma 3.3 (i) in \cite{Poetzsch-Heffter97specification}\<close>
+text \<open>Lemma 3.3 (i) in \<^cite>\<open>"Poetzsch-Heffter97specification"\<close>\<close>
 lemma disj1: "\<lbrakk>disj x y s; \<not> s\<turnstile> l reachable_from x; \<not> s\<turnstile> l reachable_from y\<rbrakk> 
               \<Longrightarrow> disj x y (s\<langle>l:=z\<rangle>)"
   by (auto simp add: disj_def)
@@ -562,9 +562,9 @@ subsection \<open>X-Equivalence\<close>
 text \<open>We call two stores $s_1$ and $s_2$ equivalent wrt. a given value $X$
 (which is called X-equivalence)
  iff $X$ and all values
-reachable from $X$ in $s_1$ or $s_2$ have the same state \cite[p. 55]{Poetzsch-Heffter97specification}. 
+reachable from $X$ in $s_1$ or $s_2$ have the same state \<^cite>\<open>\<open>p. 55\<close> in "Poetzsch-Heffter97specification"\<close>. 
 This is tested by  the predicate
-\<open>xeq\<close>. Lemma 3.4 of  \cite{Poetzsch-Heffter97specification} is then proven for \<open>xeq\<close>.
+\<open>xeq\<close>. Lemma 3.4 of  \<^cite>\<open>"Poetzsch-Heffter97specification"\<close> is then proven for \<open>xeq\<close>.
 \<close> 
 
 definition xeq:: "Value \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool" where
@@ -581,7 +581,7 @@ lemma xeqI: "\<lbrakk>alive x s = alive x t;
              \<rbrakk> \<Longrightarrow> s \<equiv>[x] t"
   by (auto simp add: xeq_def)
 
-text \<open>Lemma 3.4 (i) in  \cite{Poetzsch-Heffter97specification}.\<close>
+text \<open>Lemma 3.4 (i) in  \<^cite>\<open>"Poetzsch-Heffter97specification"\<close>.\<close>
 lemma xeq1_refl: "s \<equiv>[x] s"
   by (simp add: xeq_def)
 
@@ -741,7 +741,7 @@ subsection \<open>T-Equivalence\<close>
 
 text \<open>T-equivalence is the extension of X-equivalence from values to types. Two stores are
 T-equivalent iff they are X-equivalent for all values of type T. This is formalized by the
-predicate \<open>teq\<close> \cite[p. 55]{Poetzsch-Heffter97specification}.\<close>
+predicate \<open>teq\<close> \<^cite>\<open>\<open>p. 55\<close> in "Poetzsch-Heffter97specification"\<close>.\<close>
 
 definition teq:: "Javatype \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool" where
 "teq t s1 s2 = (\<forall> x. typeof x \<le> t \<longrightarrow> s1 \<equiv>[x] s2)"
@@ -751,7 +751,7 @@ subsection \<open>Less Alive\<close>
 text \<open>To specify that methods have no side-effects, the following binary relation on stores 
 plays a prominent role. It expresses that the two stores differ only in values that are alive
 in the store passed as first argument. This is formalized by the predicate \<open>lessalive\<close>
-\cite[p. 55]{Poetzsch-Heffter97specification}.
+\<^cite>\<open>\<open>p. 55\<close> in "Poetzsch-Heffter97specification"\<close>.
 The stores have to be X-equivalent for the references of the
 first store that are alive, and the values of the static fields have to be the same in both stores.
 \<close>
@@ -852,7 +852,7 @@ definition
 definition
   less_Store_def: "(s::Store) < t \<longleftrightarrow> s \<le> t \<and> \<not> t \<le> s"
 
-text \<open>We prove Lemma 3.5 of \cite[p. 56]{Poetzsch-Heffter97specification} for this relation.
+text \<open>We prove Lemma 3.5 of \<^cite>\<open>\<open>p. 56\<close> in "Poetzsch-Heffter97specification"\<close> for this relation.
 \<close>
 
 text \<open>Lemma 3.5 (i)\<close>
@@ -948,7 +948,7 @@ subsection \<open>Reachability of Types from Types\<close>
 
 text \<open>The predicate \<open>treach\<close> denotes the fact that the first type reaches 
 the second type by stepping finitely many times from a type to the range type of one 
-of its fields. This formalization diverges from \cite[p. 106]{Poetzsch-Heffter97specification} 
+of its fields. This formalization diverges from \<^cite>\<open>\<open>p. 106\<close> in "Poetzsch-Heffter97specification"\<close> 
 in that it does not include the number of steps that are allowed to reach the second type.
 Reachability of types is a static approximation of reachability in
 the store. If I cannot reach the type of a location from the type of a
@@ -1059,7 +1059,7 @@ proof
   qed
 qed
 
-text \<open>Lemma 4.6 in \cite[p. 107]{Poetzsch-Heffter97specification}.\<close>
+text \<open>Lemma 4.6 in \<^cite>\<open>\<open>p. 107\<close> in "Poetzsch-Heffter97specification"\<close>.\<close>
 lemma treach1: 
   assumes x_t: "typeof x \<le> T" 
   assumes not_treach: "\<not> treach T (typeof (ref l))"

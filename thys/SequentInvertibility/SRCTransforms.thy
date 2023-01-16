@@ -554,7 +554,7 @@ qed
 (*>*)
 text\<open>
 \section{Manipulating Rule Sets \label{isaSRC}}
-The removal of superfluous and redundant rules \cite{AL01} will not be harmful to invertibility: removing rules means that the conditions of earlier sections are more likely to be fulfilled.  Here, we formalise the results that the removal of such rules from a calculus $\mathcal{L}$ will create a new calculus $\mathcal{L}'$ which is equivalent.  In other words, if a sequent is derivable in $\mathcal{L}$, then it is derivable in $\mathcal{L}'$.
+The removal of superfluous and redundant rules \<^cite>\<open>"AL01"\<close> will not be harmful to invertibility: removing rules means that the conditions of earlier sections are more likely to be fulfilled.  Here, we formalise the results that the removal of such rules from a calculus $\mathcal{L}$ will create a new calculus $\mathcal{L}'$ which is equivalent.  In other words, if a sequent is derivable in $\mathcal{L}$, then it is derivable in $\mathcal{L}'$.
 The results formalised in this section are for \SC multisuccedent calculi.
 
 When dealing with lists of premisses, a rule $R$ with premisses $P$ will be redundant given a rule $R'$ with premisses $P'$ if there exists some $p$ such that $P = p \# P'$.  There are other ways in which a rule could be redundant; say if $P = Q @ P'$, or if $P = P' @ Q$, and so on.  The order of the premisses is not really important, since the formalisation operates on the finite set based upon the list.  The more general ``append'' lemma could be proved from the lemma we give; we prove the inductive step case in the proof of such an append lemma.  This is a height preserving transformation.  Some of the proof is shown:
@@ -658,7 +658,7 @@ contain the premisses of $r_{2}$ (these premisses are \texttt{extend S ps}).  Th
   qed
 qed(*>*)
 text\<open>
-\noindent Recall that to remove superfluous rules, we must know that Cut is admissible in the original calculus \cite{AL01}.  Again, we add the two distinguished premisses at the head of the premiss list; general results about permutation of lists will achieve a more general result.  Since one uses Cut in the proof, this will in general not be height-preserving:
+\noindent Recall that to remove superfluous rules, we must know that Cut is admissible in the original calculus \<^cite>\<open>"AL01"\<close>.  Again, we add the two distinguished premisses at the head of the premiss list; general results about permutation of lists will achieve a more general result.  Since one uses Cut in the proof, this will in general not be height-preserving:
 \<close>
 
 lemma removeSuperfluous:

@@ -349,7 +349,7 @@ subsection \<open>Existence of primes in intervals\<close>
 
 text \<open>
   For fixed \<open>\<epsilon>\<close>, The interval $(x; \varepsilon x]$ contains a prime number for any sufficiently
-  large \<open>x\<close>. This proof was taken from A.\,J. Hildebrand's lecture notes~\cite{hildebrand_ant}.
+  large \<open>x\<close>. This proof was taken from A.\,J. Hildebrand's lecture notes~\<^cite>\<open>"hildebrand_ant"\<close>.
 \<close>
 lemma (in prime_number_theorem) prime_in_interval_exists:
   fixes c :: real
@@ -608,7 +608,7 @@ subsection \<open>Bounds on the prime \<open>\<omega>\<close> function\<close>
 text \<open>
   Next, we will examine the asymptotic behaviour of the prime \<open>\<omega>\<close> function $\omega(n)$,
   i.\,e.\ the number of distinct prime factors of \<open>n\<close>. These proofs are again taken from
-  A.\,J. Hildebrand's lecture notes~\cite{hildebrand_ant}.
+  A.\,J. Hildebrand's lecture notes~\<^cite>\<open>"hildebrand_ant"\<close>.
 \<close>
 
 lemma ln_gt_1:

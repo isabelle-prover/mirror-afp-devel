@@ -107,7 +107,7 @@ interpretation polynomial_ring "R" "carrier R"
   unfolding polynomial_ring_def polynomial_ring_axioms_def
   using field_axioms carrier_is_subfield by simp
 
-text \<open>The following lemma can be found in Ireland and Rosen~\cite[\textsection 7.1, Lemma 2]{ireland1982}.\<close>
+text \<open>The following lemma can be found in Ireland and Rosen~\<^cite>\<open>\<open>\textsection 7.1, Lemma 2\<close> in "ireland1982"\<close>.\<close>
 
 lemma gauss_poly_div_gauss_poly_iff_1:
   fixes l m :: nat
@@ -308,7 +308,7 @@ lemma geom_nat:
   shows "(x-1) * (\<Sum>i \<in> {..<q}. x^i) = x^q-1"
   by (induction q, auto simp:algebra_simps)
 
-text \<open>The following lemma can be found in Ireland and Rosen~\cite[\textsection 7.1, Lemma 3]{ireland1982}.\<close>
+text \<open>The following lemma can be found in Ireland and Rosen~\<^cite>\<open>\<open>\textsection 7.1, Lemma 3\<close> in "ireland1982"\<close>.\<close>
 
 lemma gauss_poly_div_gauss_poly_iff_2:
   fixes a :: int
@@ -727,7 +727,7 @@ proof -
 qed
 
 text \<open>The following lemma, for the case when @{term "R"} is a simple prime field, can be found in
-Ireland and Rosen~\cite[\textsection 7.1, Theorem 2]{ireland1982}. Here the result is verified even
+Ireland and Rosen~\<^cite>\<open>\<open>\textsection 7.1, Theorem 2\<close> in "ireland1982"\<close>. Here the result is verified even
 for arbitrary finite fields.\<close>
 
 lemma multiplicity_of_factor_of_gauss_poly:
@@ -850,7 +850,7 @@ next
 qed
 
 text \<open>The following lemma, for the case when @{term "R"} is a simple prime field, can be found in Ireland
-and Rosen~\cite[\textsection 7.1, Corollary 1]{ireland1982}. Here the result is verified even for
+and Rosen~\<^cite>\<open>\<open>\textsection 7.1, Corollary 1\<close> in "ireland1982"\<close>. Here the result is verified even for
 arbitrary finite fields.\<close>
 
 lemma card_irred_aux:

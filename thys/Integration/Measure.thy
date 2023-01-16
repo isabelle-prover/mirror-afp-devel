@@ -10,7 +10,7 @@ Markus Wenzel here,
   changing the names according to Joe Hurd*)
 text \<open>Now we are already set for the central concept of
   measure. The following definitions are translated as faithfully as possible
-  from those in Joe Hurd's thesis \cite{hurd2002}.\<close>
+  from those in Joe Hurd's thesis \<^cite>\<open>"hurd2002"\<close>.\<close>
 
 definition
   measurable:: "'a set set \<Rightarrow> 'b set set \<Rightarrow> ('a \<Rightarrow> 'b) set" where
@@ -60,7 +60,7 @@ text \<open>This last property deserves some comments. The conclusion is
   In our formal setting this is unsatisfactory, because the
   sum operator\footnote{Which is merely syntactic sugar for the
   \isa{suminf} functional from the \isa{Series} theory
-  \cite{Fleuriot:2000:MNR}.}, like any HOL function, is total, although
+  \<^cite>\<open>"Fleuriot:2000:MNR"\<close>.}, like any HOL function, is total, although
   a series obviously need not converge. It is defined using the \<open>\<epsilon>\<close> operator, and its
   behavior is unspecified in the diverging case. Hence, the above assertion
   would give no information about the convergence of the series. 
@@ -69,7 +69,7 @@ text \<open>This last property deserves some comments. The conclusion is
   countable union of sets is measurable is unnecessary when the
   measurable sets form a sigma algebra, which is postulated in the
   final definition\footnote{Joe Hurd inherited this practice from a very
-  influential probability textbook \cite{Williams.mart}}. 
+  influential probability textbook \<^cite>\<open>"Williams.mart"\<close>}. 
 \<close>
 
 definition
@@ -88,7 +88,7 @@ text \<open>Note that our definition is restricted to finite measure
   that for a function mapping one sigma algebra into another, it is
   sufficient to be measurable regarding only a generator of the target
   sigma algebra. Formalizing the interesting proof out of Bauer's
-  textbook \cite{Bauer} is relatively straightforward using rule
+  textbook \<^cite>\<open>"Bauer"\<close> is relatively straightforward using rule
   induction.\<close>
 
 theorem assumes sig: "sigma_algebra a" and meas: "f \<in> measurable a b" shows 

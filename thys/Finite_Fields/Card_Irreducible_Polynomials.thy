@@ -12,7 +12,7 @@ text \<open>The following theorem is a slightly generalized form of the formula 
 Gauss for the number of monic irreducible polynomials over a finite field. He originally verified 
 the result for the case when @{term "R"} is a simple prime field.
 The version of the formula here for the case where @{term "R"} may be an arbitrary finite field can
-be found in Chebolu and Min{\'a}{\v{c}}~\cite{chebolu2010}.\<close>
+be found in Chebolu and Min{\'a}{\v{c}}~\<^cite>\<open>"chebolu2010"\<close>.\<close>
 
 theorem (in finite_field) card_irred:
   assumes "n > 0"

@@ -13,16 +13,16 @@ generalizations of topological algebras.
 We divide this section into two parts. In the first we define and interrelate the topological operators of 
 interior, closure, border and frontier. In the second we introduce the (more fundamental) notion of
 derivative (aka. derived set) and its related notion of (Cantorian) coherence, defining both as operators.
-We follow the naming conventions introduced originally by Kuratowski @{cite Kuratowski1}
-(cf. also @{cite Kuratowski2}) and Zarycki @{cite Zarycki1}.}\<close>
+We follow the naming conventions introduced originally by Kuratowski \<^cite>\<open>Kuratowski1\<close>
+(cf. also \<^cite>\<open>Kuratowski2\<close>) and Zarycki \<^cite>\<open>Zarycki1\<close>.}\<close>
 
 subsection \<open>Interior and closure\<close>
 text\<open>\noindent{In this section we examine the traditional notion of topological (closure, resp. interior) algebras
-in the spirit of McKinsey \& Tarski @{cite AOT}, but drawing primarily from the works of Zarycki
-@{cite Zarycki1} and Kuratowski @{cite Kuratowski1}.
-We also explore the less-known notions of border (cf. 'Rand' @{cite Hausdorff}, 'bord' @{cite Zarycki1}) and
-frontier (aka. 'boundary'; cf. 'Grenze' @{cite Hausdorff}, 'fronti\`ere' @{cite Zarycki1} @{cite Kuratowski2})
-as studied by Zarycki @{cite Zarycki1} and define corresponding operations for them.}\<close>
+in the spirit of McKinsey \& Tarski \<^cite>\<open>AOT\<close>, but drawing primarily from the works of Zarycki
+\<^cite>\<open>Zarycki1\<close> and Kuratowski \<^cite>\<open>Kuratowski1\<close>.
+We also explore the less-known notions of border (cf. 'Rand' \<^cite>\<open>Hausdorff\<close>, 'bord' \<^cite>\<open>Zarycki1\<close>) and
+frontier (aka. 'boundary'; cf. 'Grenze' \<^cite>\<open>Hausdorff\<close>, 'fronti\`ere' \<^cite>\<open>Zarycki1\<close> \<^cite>\<open>Kuratowski2\<close>)
+as studied by Zarycki \<^cite>\<open>Zarycki1\<close> and define corresponding operations for them.}\<close>
 
 subsubsection \<open>Interior conditions\<close>
 
@@ -40,8 +40,8 @@ definition "Int_7 \<phi>  \<equiv> \<forall>A B. \<phi>(A \<^bold>\<rightarrow> 
 definition "Int_8 \<phi>  \<equiv> \<forall>A B. \<phi>(\<phi> A \<^bold>\<or> \<phi> B) \<^bold>\<approx> (\<phi> A) \<^bold>\<or> (\<phi> B)"
 definition "Int_9 \<phi>  \<equiv> \<forall>A B. \<phi> A \<^bold>\<preceq> B \<longrightarrow> \<phi> A \<^bold>\<preceq> \<phi> B"
 
-text\<open>\noindent{@{text "\<phi>"} is an interior operator (@{text "\<II>(\<phi>)"}) iff it satisfies conditions 1-4 (cf. @{cite Zarycki1}
-and also @{cite Kuratowski2}). This characterization is shown consistent by generating a non-trivial model.}\<close>
+text\<open>\noindent{@{text "\<phi>"} is an interior operator (@{text "\<II>(\<phi>)"}) iff it satisfies conditions 1-4 (cf. \<^cite>\<open>Zarycki1\<close>
+and also \<^cite>\<open>Kuratowski2\<close>). This characterization is shown consistent by generating a non-trivial model.}\<close>
 abbreviation "\<II> \<phi> \<equiv> Int_1 \<phi> \<and> Int_2 \<phi> \<and> Int_3 \<phi> \<and> Int_4 \<phi>"
 lemma "\<II> \<phi>" nitpick[satisfy, card w=3] oops (*model found: characterization is consistent*)
 
@@ -82,8 +82,8 @@ definition "Cl_7 \<phi> \<equiv> \<forall>A B. (\<phi> A) \<^bold>\<rightarrow> 
 definition "Cl_8 \<phi>  \<equiv> \<forall>A B. \<phi>(\<phi> A \<^bold>\<and> \<phi> B) \<^bold>\<approx> (\<phi> A) \<^bold>\<and> (\<phi> B)"
 definition "Cl_9 \<phi>  \<equiv> \<forall>A B.  A \<^bold>\<preceq> \<phi> B \<longrightarrow> \<phi> A \<^bold>\<preceq> \<phi> B"
 
-text\<open>\noindent{@{text "\<phi>"} is a closure operator (@{text "\<CC>(\<phi>)"}) iff it satisfies conditions 1-4 (cf. @{cite Kuratowski1}
-@{cite Kuratowski2}). This characterization is shown consistent by generating a non-trivial model.}\<close>
+text\<open>\noindent{@{text "\<phi>"} is a closure operator (@{text "\<CC>(\<phi>)"}) iff it satisfies conditions 1-4 (cf. \<^cite>\<open>Kuratowski1\<close>
+\<^cite>\<open>Kuratowski2\<close>). This characterization is shown consistent by generating a non-trivial model.}\<close>
 abbreviation "\<CC> \<phi>  \<equiv> Cl_1 \<phi> \<and> Cl_2 \<phi> \<and> Cl_3  \<phi> \<and> Cl_4 \<phi>"
 lemma "\<CC> \<phi>" nitpick[satisfy, card w=3] oops (*model found: characterization is consistent*)
 
@@ -155,7 +155,7 @@ definition "Fr_5 \<phi> \<equiv> \<forall>A. \<phi>(\<phi>(\<phi> A)) \<^bold>\<
 definition "Fr_6 \<phi> \<equiv> \<forall>A B. A \<^bold>\<preceq> B \<longrightarrow> (\<phi> A \<^bold>\<preceq> B \<^bold>\<or> \<phi> B)"
 
 text\<open>\noindent{@{text "\<phi>"} is a topological frontier operator (@{text "\<FF>(\<phi>)"}) iff it satisfies conditions 1-4
-(cf. @{cite Zarycki1}). This is also shown consistent by generating a non-trivial model.}\<close>
+(cf. \<^cite>\<open>Zarycki1\<close>). This is also shown consistent by generating a non-trivial model.}\<close>
 abbreviation "\<FF> \<phi>  \<equiv> Fr_1 \<phi> \<and> Fr_2 \<phi> \<and> Fr_3 \<phi> \<and> Fr_4 \<phi>"
 lemma "\<FF> \<phi>" nitpick[satisfy, card w=3] oops (*model found: characterization is consistent*)
 
@@ -205,7 +205,7 @@ definition "Br_9 \<phi> \<equiv> \<forall>A B. \<phi>(A \<^bold>\<and> B) \<^bol
 definition "Br_10 \<phi> \<equiv> \<forall>A. \<phi>(\<^bold>\<midarrow>(\<phi> A) \<^bold>\<and> \<phi>\<^sup>d A) \<^bold>\<approx> \<^bold>\<bottom>"
 
 text\<open>\noindent{@{text "\<phi>"} is a topological border operator (@{text "\<BB>(\<phi>)"}) iff it satisfies conditions 1-3
-(cf. @{cite Zarycki1}). This is also shown consistent.}\<close>
+(cf. \<^cite>\<open>Zarycki1\<close>). This is also shown consistent.}\<close>
 abbreviation "\<BB> \<phi>  \<equiv> Br_1 \<phi> \<and> Br_2 \<phi> \<and> Br_3 \<phi>"
 lemma "\<BB> \<phi>" nitpick[satisfy, card w=3] oops (*model found: characterization is consistent*)
 

@@ -11,13 +11,13 @@ begin
 chapter "Variant D: Forwarding the Route Request"
 
 text \<open>
-  Explanation~\cite[\textsection 10.5]{FehnkerEtAl:AWN:2013}:
+  Explanation~\<^cite>\<open>\<open>\textsection 10.5\<close> in "FehnkerEtAl:AWN:2013"\<close>:
   In AODV's route discovery process, a destination node (or an intermediate 
   node with an active route to the destination) will generate a RREP message 
   in response to a received RREQ message. The RREQ message is then dropped 
   and not forwarded. This termination of the route discovery process at the 
   destination can lead to other nodes inadvertently creating non-optimal 
-  routes to the source node~\cite{MK10}.
+  routes to the source node~\<^cite>\<open>"MK10"\<close>.
   A possible modification to solve this problem is to allow the destination 
   node to continue to forward the RREQ message. A route request is only 
   stopped if it has been handled before. The forwarded RREQ message from the 

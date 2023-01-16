@@ -142,7 +142,7 @@ property: under certain conditions, the above safety property
 holds. The question is: which conditions? It is clear that the room
 must be empty when its owner enters it, or all bets
 are off. But is that sufficient? Unfortunately not. Jackson's Alloy tool
-took 2 seconds~\cite[p.~303]{Jackson06}
+took 2 seconds~\<^cite>\<open>\<open>p.~303\<close> in "Jackson06"\<close>
 to find the following ``guest-in-the-middle'' attack:
 
 \begin{enumerate}
@@ -224,7 +224,7 @@ the same set of reachable states is obtained, modulo the absence of
 
 We have formalized a very general safety policy of always using the
 latest card. A special case of this policy is the one called
-\emph{NoIntervening} by Jackson~\cite[p.~200]{Jackson06}: every \<open>check_in\<close> must immediately be followed by the corresponding @{thm[source]
+\emph{NoIntervening} by Jackson~\<^cite>\<open>\<open>p.~200\<close> in "Jackson06"\<close>: every \<open>check_in\<close> must immediately be followed by the corresponding @{thm[source]
 enter_room}.
 \<close>
 

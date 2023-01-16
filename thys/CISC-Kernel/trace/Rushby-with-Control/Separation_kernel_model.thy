@@ -13,7 +13,7 @@ text \<open>
  First (Section~\ref{sect:initial_state}) we instantiate the CISK generic model.
  Functions that instantiate a generic function of the CISK model are prefixed with an `r',
  `r' standing for ``Rushby';, as CISK is derived originally from a model
-  by Rushby~\cite{Verbeek2013}.
+  by Rushby~\<^cite>\<open>"Verbeek2013"\<close>.
  For example, `rifp' is the instantiation of the generic `ifp'.
  
  Later (Section~\ref{sect:discharging}) all CISK proof obligations are discharged, e.g., 

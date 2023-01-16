@@ -38,9 +38,7 @@ text\<open>
 We begin by recounting some standard theorems from the early days of
 denotational semantics. The origins of these results are lost to
 history; the interested reader can find some of it in
-\citet{Bekic:1969, Manna:1974, Greibach:1975, Stoy:1977,
-DBLP:books/daglib/0002432, Harel:1980, Plotkin:1983, Winskel:1993,
-DBLP:journals/toplas/Sangiorgi09}.
+\<^citet>\<open>"Bekic:1969" and "Manna:1974" and "Greibach:1975" and "Stoy:1977" and "DBLP:books/daglib/0002432" and "Harel:1980" and "Plotkin:1983" and "Winskel:1993" and "DBLP:journals/toplas/Sangiorgi09"\<close>.
 
 \<close>
 
@@ -50,9 +48,9 @@ text\<open>
 
 The \emph{rolling rule} captures what intuitively happens when we
 re-order a recursive computation consisting of two parts. This theorem
-dates from the 1970s at the latest -- see \citet[p210]{Stoy:1977} and
-\citet{Plotkin:1983}. The following proofs were provided by
-\citet{GillHutton:2009}.
+dates from the 1970s at the latest -- see \<^citet>\<open>\<open>p210\<close> in "Stoy:1977"\<close> and
+\<^citet>\<open>"Plotkin:1983"\<close>. The following proofs were provided by
+\<^citet>\<open>"GillHutton:2009"\<close>.
 
 \<close>
 
@@ -110,13 +108,13 @@ of @{term "f"} and @{term "g"}:
 \]
 \citet*{FokkingaMeijer:1991}, and also their later
 \citet*{barbed-wire:1991}, made extensive use of this rule, as did
-\citet{Tullsen:PhDThesis} in his program transformation tool PATH.
+\<^citet>\<open>"Tullsen:PhDThesis"\<close> in his program transformation tool PATH.
 This diagram is strongly reminiscent of the simulations used to
 establish refinement relations between imperative programs and their
 specifications \citep*{EdR:cup98}.
 
 The following proof is close to the third variant of
-\citet[p215]{Stoy:1977}. We relate the two fixpoints using the rule
+\<^citet>\<open>\<open>p215\<close> in "Stoy:1977"\<close>. We relate the two fixpoints using the rule
 \texttt{parallel\_fix\_ind}:
 \begin{center}
   @{thm[mode=Rule] parallel_fix_ind}
@@ -139,8 +137,8 @@ qed simp
 text\<open>
 
 This lemma also goes by the name of \emph{Plotkin's axiom}
-\citep{PittsAM:relpod} or \emph{uniformity}
-\citep{DBLP:conf/lics/SimpsonP00}.
+\<^citep>\<open>"PittsAM:relpod"\<close> or \emph{uniformity}
+\<^citep>\<open>"DBLP:conf/lics/SimpsonP00"\<close>.
 
 \<close>
 (*<*)
@@ -161,7 +159,7 @@ subsubsection\<open>More about \<open>lfp-fusion\<close>\<close>
 text\<open>
 
 Alternative proofs. This is the ``intuitive'' one
-\citet[p125]{Gunter:1992} and \citet[p46]{Tullsen:PhDThesis}, where we
+\<^citet>\<open>\<open>p125\<close> in "Gunter:1992"\<close> and \<^citet>\<open>\<open>p46\<close> in "Tullsen:PhDThesis"\<close>, where we
 can shuffle @{term "g"} to the end of the the iteration of @{term "f"}
 using @{term "fgh"}.
 
@@ -191,7 +189,7 @@ proof -
   finally show ?thesis .
 qed
 
-text\<open>This is the first one by \citet[p213]{Stoy:1977}, almost
+text\<open>This is the first one by \<^citet>\<open>\<open>p213\<close> in "Stoy:1977"\<close>, almost
 identical to the above.\<close>
 
 lemma lfp_fusion3_aux:
@@ -221,7 +219,7 @@ proof -
   finally show ?thesis .
 qed
 
-text\<open>Stoy's second proof \citep[p214]{Stoy:1977} is similar to the
+text\<open>Stoy's second proof \<^citep>\<open>\<open>p214\<close> in "Stoy:1977"\<close> is similar to the
 original proof using fixed-point induction.\<close>
 
 lemma lfp_fusion4:
@@ -247,7 +245,7 @@ proof(rule below_antisym)
   qed simp
 qed
 
-text\<open>A wrinkly variant from \citet[p11]{barbed-wire:1991}.\<close>
+text\<open>A wrinkly variant from \<^citet>\<open>\<open>p11\<close> in "barbed-wire:1991"\<close>.\<close>
 
 lemma lfp_fusion_barbed_variant:
   assumes ff': "f\<cdot>\<bottom> = f'\<cdot>\<bottom>"

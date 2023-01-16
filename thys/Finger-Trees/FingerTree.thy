@@ -6,7 +6,7 @@ begin
 
 text \<open>
   We implement and prove correct 2-3 finger trees as described by Ralf Hinze 
-  and Ross Paterson\cite{HiPa06}.
+  and Ross Paterson\<^cite>\<open>"HiPa06"\<close>.
 \<close>
 
 text \<open>

@@ -4,11 +4,11 @@ begin
 
 section \<open>Kleene normal form and the number of $\mu$-operations\<close>
 
-text \<open>Kleene's original normal form theorem~\cite{Kleene43} states that
+text \<open>Kleene's original normal form theorem~\<^cite>\<open>"Kleene43"\<close> states that
 every partial recursive $f$ can be expressed as $f(x) = u(\mu y[t(i, x, y) =
 0]$ for some $i$, where $u$ and $t$ are specially crafted primitive recursive
 functions tied to Kleene's definition of partial recursive functions.
-Rogers~\cite[p.~29f.]{Rogers87} relaxes the theorem by allowing $u$ and $t$
+Rogers~\<^cite>\<open>\<open>p.~29f.\<close> in "Rogers87"\<close> relaxes the theorem by allowing $u$ and $t$
 to be any primitive recursive functions of arity one and three, respectively.
 Both versions require a separate $t$-predicate for every arity. We will show
 a unified version for all arities by treating $x$ as an encoded list of
@@ -584,9 +584,9 @@ many shapes. We prove the minimum we need for Chapter~\ref{c:iirf}.\<close>
 
 subsection \<open>Rogers's fixed-point theorem\<close>
 
-text \<open>In this section we prove a theorem that Rogers~\cite{Rogers87}
+text \<open>In this section we prove a theorem that Rogers~\<^cite>\<open>"Rogers87"\<close>
 credits to Kleene, but admits that it is a special case and not the original
-formulation. We follow Wikipedia~\cite{wiki-krt} and call it the Rogers's
+formulation. We follow Wikipedia~\<^cite>\<open>"wiki-krt"\<close> and call it the Rogers's
 fixed-point theorem.\<close>
 
 lemma s11_inj: "inj (\<lambda>x. smn 1 p [x])"
@@ -701,7 +701,7 @@ qed
 
 subsection \<open>Kleene's fixed-point theorem\<close>
 
-text \<open>The next theorem is what Rogers~\cite[p.~214]{Rogers87} calls
+text \<open>The next theorem is what Rogers~\<^cite>\<open>\<open>p.~214\<close> in "Rogers87"\<close> calls
 Kleene's version of what we call Rogers's fixed-point theorem. More precisely
 this would be Kleene's \emph{second} fixed-point theorem, but since we do not
 cover the first one, we leave out the number.\<close>
@@ -1481,7 +1481,7 @@ subsection \<open>The Gödel numbering @{term \<phi>}\label{s:goedel_numbering}\
 text \<open>While the term \emph{Gödel numbering} is often used generically for
 mappings between natural numbers and mathematical concepts, the inductive
 inference literature uses it in a more specific sense. There it is equivalent
-to the notion of acceptable numbering~\cite{Rogers87}: For every numbering
+to the notion of acceptable numbering~\<^cite>\<open>"Rogers87"\<close>: For every numbering
 there is a recursive function mapping the numbering's indices to equivalent
 ones of a Gödel numbering.\<close>
 

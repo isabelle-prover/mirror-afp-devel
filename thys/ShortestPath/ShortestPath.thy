@@ -4,7 +4,7 @@ imports
 begin
 
 section \<open>Shortest Path (with non-negative edge costs)\<close>
-text\<open>The following theory is used in the verification of a certifying algorithm's checker for shortest path. For more information see \cite{FrameworkVerificationofCertifyingComputations}.\<close>
+text\<open>The following theory is used in the verification of a certifying algorithm's checker for shortest path. For more information see \<^cite>\<open>"FrameworkVerificationofCertifyingComputations"\<close>.\<close>
 
 locale basic_sp = 
   fin_digraph +

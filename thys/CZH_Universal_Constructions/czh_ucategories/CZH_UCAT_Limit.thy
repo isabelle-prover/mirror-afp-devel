@@ -25,8 +25,8 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 The concept of a limit is introduced in Chapter III-4 in
-\cite{mac_lane_categories_2010}; the concept of a colimit is introduced in
-Chapter III-3 in \cite{mac_lane_categories_2010}.
+\<^cite>\<open>"mac_lane_categories_2010"\<close>; the concept of a colimit is introduced in
+Chapter III-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 locale is_cat_limit = is_cat_cone \<alpha> r \<JJ> \<CC> \<FF> u for \<alpha> \<JJ> \<CC> \<FF> r u + 
@@ -841,8 +841,8 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 The concept of a limit is introduced in Chapter III-4 in
-\cite{mac_lane_categories_2010}; the concept of a colimit is introduced in
-Chapter III-3 in \cite{mac_lane_categories_2010}. The definitions of small
+\<^cite>\<open>"mac_lane_categories_2010"\<close>; the concept of a colimit is introduced in
+Chapter III-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>. The definitions of small
 limits were tailored for ZFC in HOL.
 \<close>
 
@@ -1554,7 +1554,7 @@ sublocale is_cat_finite_colimit \<subseteq> is_tm_cat_colimit
 subsection\<open>Creation of limits\<close>
 
 
-text\<open>See Chapter V-1 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter V-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_creates_limits :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   where "cf_creates_limits \<alpha> \<GG> \<FF> =
@@ -1630,7 +1630,7 @@ subsection\<open>Preservation of limits and colimits\<close>
 subsubsection\<open>Definitions and elementary properties\<close>
 
 
-text\<open>See Chapter V-4 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter V-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_preserves_limits :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   where "cf_preserves_limits \<alpha> \<GG> \<FF> =

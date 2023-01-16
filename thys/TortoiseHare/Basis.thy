@@ -81,7 +81,7 @@ In the absence of a general-purpose development of Hoare Logic for
 total correctness in Isabelle/HOL\footnote{At the time of writing the
 distribution contains several for partial correctness, and one for
 total correctness over a language with restricted expressions.  SIMPL
-(@{cite "DBLP:journals/afp/Schirmer08"}) is overkill for our present
+(\<^cite>\<open>"DBLP:journals/afp/Schirmer08"\<close>) is overkill for our present
 purposes.}, we adopt the following syntactic contrivance that eases
 making multiple assertions about function results. ``Programs''
 consist of the state-transformer semantics of statements.

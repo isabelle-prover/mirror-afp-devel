@@ -45,8 +45,8 @@ lemma index_one_alt_bl_not_exist:
 subsection \<open>Necessary Conditions for Existence\<close>
 
 text \<open>The necessary conditions on the existence of a $(v, k, \lambda)$-bibd are one of the 
-fundamental first theorems on designs. Proofs based off MATH3301 lecture notes \cite{HerkeLectureNotes2016}
- and Stinson \cite{stinsonCombinatorialDesignsConstructions2004}\<close>
+fundamental first theorems on designs. Proofs based off MATH3301 lecture notes \<^cite>\<open>"HerkeLectureNotes2016"\<close>
+ and Stinson \<^cite>\<open>"stinsonCombinatorialDesignsConstructions2004"\<close>\<close>
 
 lemma necess_cond_1_rhs: 
   assumes "x \<in> \<V>"
@@ -516,7 +516,7 @@ begin
 subsubsection \<open>Intersection Property on Symmetric BIBDs\<close>
 text \<open>Below is a proof of an important property on symmetric BIBD's regarding the equivalence
 of intersection numbers and the design index. This is an intuitive counting proof, and involved
-significantly more work in a formal environment. Based of Lecture Note \cite{HerkeLectureNotes2016}\<close>
+significantly more work in a formal environment. Based of Lecture Note \<^cite>\<open>"HerkeLectureNotes2016"\<close>\<close>
 
 lemma intersect_mult_set_eq_block:
   assumes "blv \<in># \<B>"
@@ -845,7 +845,7 @@ sublocale symmetric_bibd \<subseteq> simple_design
 
 subsubsection \<open>Residual/Derived Sym BIBD Constructions\<close>
 text \<open>Using the intersect result, we can reason further on residual and derived designs. 
-Proofs based off lecture notes \cite{HerkeLectureNotes2016}\<close>
+Proofs based off lecture notes \<^cite>\<open>"HerkeLectureNotes2016"\<close>\<close>
 
 locale symmetric_bibd_block_transformations = symmetric_bibd + bibd_block_transformations
 begin 

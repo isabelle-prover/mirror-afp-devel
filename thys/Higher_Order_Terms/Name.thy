@@ -16,7 +16,7 @@ text \<open>
 
   The full flexibility of strings (i.e.\ string manipulations) is only required where fresh names
   are being produced. Otherwise, only a linear order on terms is needed. Conveniently, Sternagel and
-  Thiemann @{cite sternagel2015deriving} provide tooling to automatically generate such a
+  Thiemann \<^cite>\<open>sternagel2015deriving\<close> provide tooling to automatically generate such a
   lexicographic order.
 \<close>
 

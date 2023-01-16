@@ -335,7 +335,7 @@ is in an interval $I$ if at least half of them are in $I$. This works because af
 sequence the elements that will be in the interval must necessarily form a consecutive subsequence,
 if its length is larger than $\frac{n}{2}$ the median must be in it.
 
-The remainder follows the proof in \cite[\textsection 2.1]{alon1999} using the Hoeffding inequality
+The remainder follows the proof in \<^cite>\<open>\<open>\textsection 2.1\<close> in "alon1999"\<close> using the Hoeffding inequality
 to estimate the probability that at least half of the sequence elements will be in the interval $I$.\<close>
 
 lemma interval_rule:
@@ -540,8 +540,8 @@ corollary (in prob_space) median_bound_1:
 text \<open>This is a specialization of the above, where $\alpha = \frac{1}{6}$ and the interval is described
 using a mid point @{term "\<mu>"} and radius @{term "\<delta>"}. The choice of $\alpha = \frac{1}{6}$ implies
 a success probability per random variable of $\frac{2}{3}$. It is a commonly chosen success
-probability for Monte-Carlo algorithms (cf. \cite[\textsection 4]{baryossef2002} or
-\cite[\textsection 1]{kane2010}).\<close>
+probability for Monte-Carlo algorithms (cf. \<^cite>\<open>\<open>\textsection 4\<close> in "baryossef2002"\<close> or
+\<^cite>\<open>\<open>\textsection 1\<close> in "kane2010"\<close>).\<close>
 
 corollary (in prob_space) median_bound_2:
   fixes \<mu> \<delta> :: real

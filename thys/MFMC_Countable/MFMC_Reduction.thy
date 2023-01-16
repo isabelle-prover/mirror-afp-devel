@@ -61,7 +61,7 @@ context
   assumes sep: "separating (bipartite_web_of \<Gamma>) S"
 begin
 
-text \<open>Proof of separation follows @{cite Aharoni1983EJC}\<close>
+text \<open>Proof of separation follows \<^cite>\<open>Aharoni1983EJC\<close>\<close>
 
 lemma separating_of_bipartite_aux:
   assumes p: "path \<Gamma> x p y" and y: "y \<in> B \<Gamma>"
@@ -917,7 +917,7 @@ proof
 qed
 
 text \<open>
-  The reduction of Conjecture 1.2 to Conjecture 3.6 is flawed in @{cite "AharoniBergerGeorgakopoulusPerlsteinSpruessel2011JCT"}.
+  The reduction of Conjecture 1.2 to Conjecture 3.6 is flawed in \<^cite>\<open>"AharoniBergerGeorgakopoulusPerlsteinSpruessel2011JCT"\<close>.
   Not every essential A-B separating set of vertices in @{term "web_of_network \<Delta>"} is an s-t-cut in
   @{term \<Delta>}, as the following counterexample shows.
 

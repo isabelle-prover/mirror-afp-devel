@@ -200,8 +200,8 @@ given defined arguments, then its result is defined and coincides with
 @{term \<open>(=)\<close>}.
 
 Note this effectively restricts us to @{class \<open>flat\<close>}
-element types; see @{cite [cite_macro=citet] \<open>\S4.12\<close>
-"Paulson:1987"} for a discussion.
+element types; see \<^citet>\<open>\<open>\S4.12\<close> in
+"Paulson:1987"\<close> for a discussion.
 
 \<close>
 

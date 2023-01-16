@@ -1,4 +1,4 @@
-subsection\<open>Simplified Variant (Fig.~6 in \cite{C85})\<close>
+subsection\<open>Simplified Variant (Fig.~6 in \<^cite>\<open>"C85"\<close>)\<close>
 
 theory SimpleVariant imports 
   HOML 

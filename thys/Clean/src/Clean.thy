@@ -323,8 +323,8 @@ subsection\<open> The Assignment Operations (embedded in State-Exception Monad) 
 text\<open>Based on the global variable states, we define   \<^term>\<open>break\<close>-aware and \<^term>\<open>return\<close>-aware 
 version of the assignment. The trick to do this in a generic \<^emph>\<open>and\<close> type-safe way is to provide
 the generated accessor and update functions (the ``lens'' representing this global variable,
-cf. @{cite "Foster2009BidirectionalPL" and "DBLP:journals/toplas/FosterGMPS07" and
-"DBLP:conf/ictac/FosterZW16"}) to the generic assign operators. This pair of accessor and update
+cf. \<^cite>\<open>"Foster2009BidirectionalPL" and "DBLP:journals/toplas/FosterGMPS07" and
+"DBLP:conf/ictac/FosterZW16"\<close>) to the generic assign operators. This pair of accessor and update
 carries all relevant semantic and type information of this particular variable and \<^emph>\<open>characterizes\<close>
 this variable semantically. Specific syntactic support~\<^footnote>\<open>via the Isabelle concept of
 cartouche: \<^url>\<open>https://isabelle.in.tum.de/doc/isar-ref.pdf\<close>\<close> will hide away the syntactic overhead and permit a human-readable

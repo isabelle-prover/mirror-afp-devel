@@ -3,7 +3,7 @@ theory Upper_Lower_Solution
 imports Flow
 begin
 
-text \<open>Following  Walter~\cite{walter} in section 9\<close>
+text \<open>Following  Walter~\<^cite>\<open>"walter"\<close> in section 9\<close>
 
 lemma IVT_min:
   fixes f :: "real \<Rightarrow> 'b :: {linorder_topology,real_normed_vector,ordered_real_vector}"

@@ -219,7 +219,7 @@ proof(rule qbs_eqI)
   qed (simp add: pair_qbs_Mx_def)
 qed
 
-text \<open> The following lemma corresponds to \cite{Heunen_2017} Proposition 19(1). \<close>
+text \<open> The following lemma corresponds to \<^cite>\<open>"Heunen_2017"\<close> Proposition 19(1). \<close>
 lemma r_preserves_product :
   "measure_to_qbs (X \<Otimes>\<^sub>M Y) = measure_to_qbs X \<Otimes>\<^sub>Q measure_to_qbs Y"
   by(auto intro!: qbs_eqI simp: measurable_pair_iff pair_qbs_Mx_def)

@@ -263,7 +263,7 @@ A projection for a comma category constructed from a functor and an object
 creates small limits
 \<close>
 
-text\<open>See Chapter V-6 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter V-6 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 lemma cf_obj_cf_comma_proj_creates_limits:
   assumes "\<GG> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<XX>"

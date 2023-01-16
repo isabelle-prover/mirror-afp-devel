@@ -11,13 +11,13 @@ notation fps_nth (infixl "$" 75)
 
 section \<open>Extensions on Formal Power Series (FPS) Library\<close>
 
-text \<open>This section presents a few extensions on the Formal Power Series (FPS) library, described in \cite{Chaieb2011} \<close>
+text \<open>This section presents a few extensions on the Formal Power Series (FPS) library, described in \<^cite>\<open>"Chaieb2011"\<close> \<close>
 
 subsection \<open>FPS Equivalence Relation \<close>
 
 text \<open> This proof requires reasoning around the equivalence of coefficients mod some prime number. 
 This section defines an equivalence relation on FPS using the pattern described by Paulson 
-in \cite{paulsonDefiningFunctionsEquivalence2006}, as well as some basic lemmas for reasoning around 
+in \<^cite>\<open>"paulsonDefiningFunctionsEquivalence2006"\<close>, as well as some basic lemmas for reasoning around 
 how the equivalence holds after common operations are applied \<close>
 
 definition "fpsmodrel p \<equiv> { (f, g). \<forall> n. (f $ n) mod p = (g $ n) mod p }"
@@ -287,11 +287,11 @@ qed
 (* Lucas theorem proof *) 
 subsection \<open>Lucas Theorem Proof\<close>
 
-text \<open> The proof of Lucas's theorem combines a generating function approach, based off \cite{Fine} with induction.
+text \<open> The proof of Lucas's theorem combines a generating function approach, based off \<^cite>\<open>"Fine"\<close> with induction.
 For formalisation purposes, it was easier to first prove a well known corollary of the main theorem (also 
 often presented as an alternative statement for Lucas's theorem), which can itself be used to backwards 
 prove the the original statement by induction.
-This approach was adapted from P. Cameron's lecture notes on combinatorics \cite{petercameronNotesCombinatorics2007} \<close>
+This approach was adapted from P. Cameron's lecture notes on combinatorics \<^cite>\<open>"petercameronNotesCombinatorics2007"\<close> \<close>
 
 subsubsection \<open> Proof of the Corollary \<close>
 text \<open> This step makes use of the coefficient equivalence arguments proved in the previous sections \<close>
@@ -321,7 +321,7 @@ subsubsection \<open> Proof of the Theorem \<close>
 
 text \<open>The theorem statement requires a formalised way of referring to the base $p$ representation of a number. 
 We use a definition that specifies the $i$th digit of the base $p$ representation. This definition is originally 
-from the Hilbert's 10th Problem Formalisation project \cite{bayerDPRMTheoremIsabelle2019} which this work contributes to.\<close>
+from the Hilbert's 10th Problem Formalisation project \<^cite>\<open>"bayerDPRMTheoremIsabelle2019"\<close> which this work contributes to.\<close>
 definition nth_digit_general :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where
   "nth_digit_general num i base = (num div (base ^ i)) mod base"
 

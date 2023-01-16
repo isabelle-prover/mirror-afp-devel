@@ -17,11 +17,11 @@ text\<open>
 \label{sec:directsem}
 
 Using this machinery we can demonstrate some classical results about
-PCF \citep{Plotkin77}. We diverge from the traditional treatment by
+PCF \<^citep>\<open>"Plotkin77"\<close>. We diverge from the traditional treatment by
 considering PCF as an untyped language and including both call-by-name
 (CBN) and call-by-value (CBV) abstractions following
-\citet{DBLP:conf/icalp/Reynolds74}. We also adopt some of the
-presentation of \citet[Chapter~11]{Winskel:1993}, in particular by
+\<^citet>\<open>"DBLP:conf/icalp/Reynolds74"\<close>. We also adopt some of the
+presentation of \<^citet>\<open>\<open>Chapter~11\<close> in "Winskel:1993"\<close>, in particular by
 making the fixed point operator a binding construct.
 
 We model the syntax of PCF as a HOL datatype, where variables have
@@ -215,7 +215,7 @@ We can shown the Y combinator is the least fixed point operator using
 just the minimal invariant.  In other words, @{term "fix"} is
 definable in untyped PCF minus the @{term "Fix"} construct.
 
-This is Example~3.6 from \citet{PittsAM:relpod}. He attributes the
+This is Example~3.6 from \<^citet>\<open>"PittsAM:relpod"\<close>. He attributes the
 proof to Plotkin.
 
 These two functions are \<open>\<Delta> \<equiv> \<lambda>f x. f (x x)\<close> and \<open>Y \<equiv>
@@ -304,11 +304,11 @@ is \emph{adequate}, as we show in \S\ref{sec:opsem}, it is not
 \emph{fully abstract}, i.e. it contains undefinable values (junk).
 
 One way of showing this is to reason operationally; see, for instance,
-\citet[\S4]{Plotkin77} and \citet[\S6.1]{Gunter:1992}.
+\<^citet>\<open>\<open>\S4\<close> in "Plotkin77"\<close> and \<^citet>\<open>\<open>\S6.1\<close> in "Gunter:1992"\<close>.
 
 Another is to use \emph{logical relations}, following
-\citet{Plotkin:1973}, and also
-\citet{Mitchell:1996,Sieber:1992,DBLP:conf/mfps/Stoughton93}.
+\<^citet>\<open>"Plotkin:1973"\<close>, and also
+\<^citet>\<open>"Mitchell:1996" and "Sieber:1992" and "DBLP:conf/mfps/Stoughton93"\<close>.
 
 For this purpose we define a logical relation to be a set of vectors
 over @{typ "ValD"} that is closed under continuous functions of type
@@ -404,7 +404,7 @@ text\<open>
 
 The fundamental property of logical relations states that all PCF
 expressions satisfy all PCF logical relations. This result is
-essentially due to \citet{Plotkin:1973}.  The proof is by a
+essentially due to \<^citet>\<open>"Plotkin:1973"\<close>.  The proof is by a
 straightforward induction on the expression @{term "M"}.
 
 \<close>
@@ -561,7 +561,7 @@ text \<open>
 \label{sec:por}
 
 We show that parallel-or is not \<open>\<lambda>\<close>-definable following
-\citet{Sieber:1992} and \citet{DBLP:conf/mfps/Stoughton93}.
+\<^citet>\<open>"Sieber:1992"\<close> and \<^citet>\<open>"DBLP:conf/mfps/Stoughton93"\<close>.
 
 Parallel-or is similar to the familiar short-circuting or except that
 if the first argument is @{term "\<bottom>"} and the second one is
@@ -936,7 +936,7 @@ subsection\<open>Plotkin's existential quantifier\<close>
 text\<open>
 
 We can also show that the existential quantifier of
-\citet[\S5]{Plotkin77} is not PCF-definable using logical relations.
+\<^citet>\<open>\<open>\S5\<close> in "Plotkin77"\<close> is not PCF-definable using logical relations.
 
 Our definition is quite loose; if the argument function @{term "f"}
 maps any value to @{term "ValTT"} then @{term "plotkin_exists"} yields
@@ -1295,7 +1295,7 @@ operation is not PCF-definable. (It is definable for each base
 added an (unlifted) product type then it should be provable that
 parallel evaluation is required to support \<open>seq\<close> on these
 objects (given \<open>seq\<close> on all other objects). (See
-\citet[\S5.4]{DBLP:conf/hopl/HudakHJW07} and sundry posts to the
+\<^citet>\<open>\<open>\S5.4\<close> in "DBLP:conf/hopl/HudakHJW07"\<close> and sundry posts to the
 internet by Lennart Augustsson.) This may be difficult to do plausibly
 without adding a type system.
 

@@ -202,8 +202,8 @@ Error, line .... 14.13, syntax error: deleting  COLON LOWER_STRING_LITERAL
 section\<open>Reference Manual\label{sec:reference}\<close>
 text\<open>In this section, we briefly introduce the syntax of the most important commands and 
 methods of Isabelle/PSPSP. We follow, in our presentation, the style of the Isabelle/Isar
-manual~\cite{isabelle:isar:2021}. For details about the standard Isabelle commands and methods, 
-we refer to the reader to this manual~~\cite{isabelle:isar:2021}.
+manual~\<^cite>\<open>"isabelle:isar:2021"\<close>. For details about the standard Isabelle commands and methods, 
+we refer to the reader to this manual~~\<^cite>\<open>"isabelle:isar:2021"\<close>.
 \<close>
 subsection\<open>Top-Level Isabelle Commands\<close>
 paragraph\<open>@{command "trac"}\<close>
@@ -222,7 +222,7 @@ This command takes one argument, the name of the protocol (as given in the trac 
 In general, this command proves a large number of properties over the protocol specification that 
 are later used by our security proof. In particular, the command does internally instantiation 
 proofs showing, e.g., that the protocol specifications satisifies the requirements of the typing
-results of~\cite{typingisabelle}.
+results of~\<^cite>\<open>"typingisabelle"\<close>.
 \<close>
 paragraph\<open>@{command "compute_fixpoint"}\<close>
 text\<open> \<^rail>\<open> @@{command "compute_fixpoint"} protocol_name fixpoint_name\<close>
@@ -263,7 +263,7 @@ behavior can be configured using one of the following three options:
 
 For a detailed discussion of these three modes and the different software stacks that need to 
 be trusted, we refer the reader to the tutorial describing the code 
-generator~\cite[Section 5.1]{isabelle:codegen:2021}. 
+generator~\<^cite>\<open>\<open>Section 5.1\<close> in "isabelle:codegen:2021"\<close>. 
 \<close>
 
 paragraph\<open>@{command"manual_protocol_security_proof"}\<close>

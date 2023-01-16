@@ -2346,7 +2346,7 @@ This means that if the pattern @{term p} is compatible with the type @{term T} o
 the closed term @{term t} that it has to match, then it is always possible to extract a
 list of terms @{term ts} corresponding to the variables in @{term p}.
 Interestingly, this important property is missing in the description of the
-{\sc PoplMark} Challenge \cite{PoplMark}.
+{\sc PoplMark} Challenge \<^cite>\<open>"PoplMark"\<close>.
 \<close>
 
 theorem ptyping_match:

@@ -6,7 +6,7 @@ imports Sorted_Less2
 begin 
 
 text\<open>The definition and the inter\_sorted\_correct lemma in this theory are the same as those
-     in Collections \cite{OpsOnSortedLists-AFP}. 
+     in Collections \<^cite>\<open>"OpsOnSortedLists-AFP"\<close>. 
      except the former is for a descending list while the latter is for an ascending one.\<close>
 
 fun inter_sorted_rev :: "'a::{linorder} list \<Rightarrow> 'a list \<Rightarrow> 'a list" where

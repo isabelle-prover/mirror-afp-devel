@@ -2,9 +2,9 @@ theory Refinement imports Main
 begin
   section\<open>Monotonic Predicate Transformers\<close>
 text\<open>
-  In this section we introduce the basics of refinement calculus \cite{back-wright-98}.
-  Part of this theory is a reformulation of some definitions from \cite{preoteasa:back:2010a},
-  but here they are given for predicates, while \cite{preoteasa:back:2010a} uses
+  In this section we introduce the basics of refinement calculus \<^cite>\<open>"back-wright-98"\<close>.
+  Part of this theory is a reformulation of some definitions from \<^cite>\<open>"preoteasa:back:2010a"\<close>,
+  but here they are given for predicates, while \<^cite>\<open>"preoteasa:back:2010a"\<close> uses
   sets.
 \<close>
 
@@ -300,7 +300,7 @@ text\<open>
   subsection\<open>Fusion of predicate transformers\<close>
   
   text\<open>
-  In this section we define the fusion operator from \cite{back:butler:1995}. The fusion
+  In this section we define the fusion operator from \<^cite>\<open>"back:butler:1995"\<close>. The fusion
   of two programs $S$ and $T$ is intuitively equivalent with the parallel execution of the two
   programs. If $S$ and $T$ assign nondeterministically some value to some program variable
   $x$, then the fusion of $S$ and $T$ will assign a value to $x$ which can be assigned by

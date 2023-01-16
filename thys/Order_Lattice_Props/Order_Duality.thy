@@ -12,10 +12,10 @@ theory Order_Duality
 begin
 
 text \<open>This component presents an "explicit" formalisation of order and lattice duality. It augments the data type based one
- used by Wenzel in his lattice components \cite{Wenzel}, and complements the "implicit" formalisation given by locales. It uses a functor dual, 
+ used by Wenzel in his lattice components \<^cite>\<open>"Wenzel"\<close>, and complements the "implicit" formalisation given by locales. It uses a functor dual, 
 supplied within a type class, which is simply a bijection (isomorphism) between types, with the constraint that
 the dual of a dual object is the original object. In Wenzel's formalisation, by contrast, dual is a bijection, but not
- idempotent or involutive. In the past, Preoteasa has used a similar approach with Isabelle~\cite{Preoteasa11b}.\<close>
+ idempotent or involutive. In the past, Preoteasa has used a similar approach with Isabelle~\<^cite>\<open>"Preoteasa11b"\<close>.\<close>
 
 text \<open>Duality is such a fundamental concept in order and lattice theory that it probably deserves to be included in the type classes
 for these objects, as in this section.\<close>

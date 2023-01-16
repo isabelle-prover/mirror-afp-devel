@@ -19,7 +19,7 @@ text \<open>In the past subsections, we described the algorithms each peer uses 
   partial order.)
 
   The latter is a standard assumption in the modelling of distributed systems (compare e.g.
-  \cite[Chapter 6.1]{raynal2013}) effectively implied by the fact that there are no physical causal
+  \<^cite>\<open>\<open>Chapter 6.1\<close> in "raynal2013"\<close>) effectively implied by the fact that there are no physical causal
   loops.
 
   Additionally, we assume that a message will be only received by a peer, when the antecedent
@@ -34,8 +34,8 @@ text \<open>In the past subsections, we described the algorithms each peer uses 
   \item Two peers having received the same set of messages will be in the same state.
   \end{itemize}
 
-  The model assumptions are derived from Gomes et al.\cite{gomes2017verifying} and
-  Shapiro et al.\cite{shapiro:inria-00555588} with minor modifications required for WOOT.\<close>
+  The model assumptions are derived from Gomes et al.\<^cite>\<open>"gomes2017verifying"\<close> and
+  Shapiro et al.\<^cite>\<open>"shapiro:inria-00555588"\<close> with minor modifications required for WOOT.\<close>
 
 theory DistributedExecution
   imports IntegrateAlgorithm CreateAlgorithms "HOL-Library.Product_Lexorder"
@@ -97,7 +97,7 @@ text \<open>
   \end{itemize}
 
   The transitive closure of this relation is the famous happened before relation introduced
-  by Lamport\cite{Lamport1978}.
+  by Lamport\<^cite>\<open>"Lamport1978"\<close>.
 
   In the @{text "dist_execution"} we will assume that the relation is acyclic - which implies that
   the transitive closure @{term "happened_immediately_before\<^sup>+\<^sup>+"} is a strict partial

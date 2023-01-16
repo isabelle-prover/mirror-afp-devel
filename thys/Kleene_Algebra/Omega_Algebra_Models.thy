@@ -18,7 +18,7 @@ subsection \<open>Relation Omega Algebras\<close>
 text \<open>In the relational model, the omega of a relation relates all
 those elements in the domain of the relation, from which an infinite
 chain starts, with all other elements; all other elements are not
-related to anything~\cite{hofnerstruth10nontermination}. Thus, the
+related to anything~\<^cite>\<open>"hofnerstruth10nontermination"\<close>. Thus, the
 omega of a relation is most naturally defined coinductively.\<close>
 
 coinductive_set omega :: "('a \<times> 'a) set \<Rightarrow> ('a \<times> 'a) set" for R where

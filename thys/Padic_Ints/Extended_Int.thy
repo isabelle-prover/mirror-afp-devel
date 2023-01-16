@@ -15,7 +15,7 @@ text\<open>
   The following is based very closely on the theory \<^theory>\<open>HOL-Library.Extended_Nat\<close> from the 
   standard Isabelle distribution, with adaptations made to formalize the integers extended with
   an element for infinity. This is the standard range for the valuation function on a discretely
-  valued ring such as the field of $p$-adic numbers, such as in \cite{engler2005valued}.
+  valued ring such as the field of $p$-adic numbers, such as in \<^cite>\<open>"engler2005valued"\<close>.
 \<close>
 
 context

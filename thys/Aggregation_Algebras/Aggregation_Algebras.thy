@@ -16,8 +16,8 @@ The unary operation \<open>minarc\<close> finds an edge with a minimal weight in
 It yields the position of such an edge as a regular element of a Stone relation algebra.
 
 We give axioms for these operations which are sufficient to prove the correctness of Prim's and Kruskal's minimum spanning tree algorithms.
-The operations have been proposed and axiomatised first in \cite{Guttmann2016c} with simplified axioms given in \cite{Guttmann2018a}.
-The present version adds two axioms to prove total correctness of the spanning tree algorithms as discussed in \cite{Guttmann2018b}.
+The operations have been proposed and axiomatised first in \<^cite>\<open>"Guttmann2016c"\<close> with simplified axioms given in \<^cite>\<open>"Guttmann2018a"\<close>.
+The present version adds two axioms to prove total correctness of the spanning tree algorithms as discussed in \<^cite>\<open>"Guttmann2018b"\<close>.
 \<close>
 
 theory Aggregation_Algebras

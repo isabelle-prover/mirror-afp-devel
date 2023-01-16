@@ -19,7 +19,7 @@ text\<open>
 Our first example of a multi-agent broadcast scenario is the classic
 muddy children puzzle, one of a class of such puzzles that exemplify
 non-obvious reasoning about mutual states of knowledge. It goes as
-follows \citep[\S1.1, Example~7.2.5]{FHMV:1995}:
+follows \<^citep>\<open>\<open>\S1.1, Example~7.2.5\<close> in "FHMV:1995"\<close>:
 \begin{quotation}
 
   $N$ children are playing together, $k$ of whom get mud on their

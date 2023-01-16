@@ -13,7 +13,7 @@ imports
   CryptHOL.Negligible
 begin
 
-text \<open>Formalisation of Shoup's construction of an IND-CCA secure cipher from a PRF and an unpredictable function \cite[\S 7]{Shoup2004IACR}.\<close>
+text \<open>Formalisation of Shoup's construction of an IND-CCA secure cipher from a PRF and an unpredictable function \<^cite>\<open>\<open>\S 7\<close> in "Shoup2004IACR"\<close>.\<close>
 
 type_synonym bitstring = "bool list"
 

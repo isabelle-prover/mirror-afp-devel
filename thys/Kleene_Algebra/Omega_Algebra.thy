@@ -11,7 +11,7 @@ imports Kleene_Algebra
 begin
 
 text \<open>
-\emph{Omega algebras}~\cite{cohen00omega} extend Kleene algebras by an
+\emph{Omega algebras}~\<^cite>\<open>"cohen00omega"\<close> extend Kleene algebras by an
 $\omega$-operation that axiomatizes infinite iteration (just like the
 Kleene star axiomatizes finite iteration).
 \<close>
@@ -197,7 +197,7 @@ nitpick -- "no proof, no counterexample"
 *)
 
 text \<open>The next lemmas are axioms of Wagner's complete axiomatisation
-for omega-regular languages~\cite{Wagner77omega}, but in a slightly
+for omega-regular languages~\<^cite>\<open>"Wagner77omega"\<close>, but in a slightly
 different setting.\<close>
 
 lemma wagner_1 [simp]: "(x \<cdot> x\<^sup>\<star>)\<^sup>\<omega> = x\<^sup>\<omega>"
@@ -358,7 +358,7 @@ proof (rule order.antisym)
 qed
 
 text \<open>The following theorem by Bachmair and
-Dershowitz~\cite{bachmair86commutation} is a corollary.\<close>
+Dershowitz~\<^cite>\<open>"bachmair86commutation"\<close> is a corollary.\<close>
 
 lemma bachmair_dershowitz:
   assumes "y \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star>"
@@ -368,7 +368,7 @@ lemma bachmair_dershowitz:
 text \<open>
 The next lemmas consider an abstract variant of the empty word
 property from language theory and match it with the absence of
-infinite iteration~\cite{struth12regeq}.
+infinite iteration~\<^cite>\<open>"struth12regeq"\<close>.
 \<close>
 
 definition (in dioid_one_zero) ewp

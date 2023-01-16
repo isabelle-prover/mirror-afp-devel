@@ -32,7 +32,7 @@ subsubsection "Counting sort"
 text \<open>
 \emph{Counting sort} is a well-known algorithm that sorts a collection of objects of any kind, as
 long as each such object is associated with a signed integer key, according to their respective keys
-(cf. \cite{R1}, \cite{R2}). If $xs$ is the input array containing $n$ objects to be sorted, $out$ is
+(cf. \<^cite>\<open>"R1"\<close>, \<^cite>\<open>"R2"\<close>). If $xs$ is the input array containing $n$ objects to be sorted, $out$ is
 the output, sorted array, and $key$ is the function mapping objects to keys, counting sort works as
 follows (assuming arrays to be zero-based):
 
@@ -644,7 +644,7 @@ for any $k \in I(mi,ma)$. Therefore, it results:
 r(k,n,mi,ma)=(n-1)\frac{k - mi + 1}{ma - mi + 1},
 \end{equation*}
 
-so that function $r$ resembles the approximate rank function $R$ described in \cite{R3}.
+so that function $r$ resembles the approximate rank function $R$ described in \<^cite>\<open>"R3"\<close>.
 
 In case 2, let $Z$ be the set of the integers $i$ such that $0 \leq i \leq n-1$. As $r(k,n,mi,ma)$
 matches 0 for $k = mi$ and $n-1$ for $k = ma$, by the intermediate value theorem, for each $i \in Z$
@@ -714,7 +714,7 @@ line passing through points $(mi,0)$ and $(ma,n)$. Therefore, it results:
 r(k,n,mi,ma)=n\frac{k - mi}{ma - mi},
 \end{equation*}
 
-so that function $r$ matches the approximate rank function $R$ described in \cite{R3}.
+so that function $r$ matches the approximate rank function $R$ described in \<^cite>\<open>"R3"\<close>.
 \<close>
 
 subsubsection "Buckets' number -- Proof"
@@ -1077,8 +1077,8 @@ subsection "Formal definitions"
 text \<open>
 Here below, a formal definition of GCsort is provided, which will later enable to formally prove the
 correctness of the algorithm. Henceforth, the main points of the formal definitions and proofs are
-commented. For further information, see Isabelle documentation, particularly \cite{R5}, \cite{R6},
-\cite{R7}, and \cite{R8}.
+commented. For further information, see Isabelle documentation, particularly \<^cite>\<open>"R5"\<close>, \<^cite>\<open>"R6"\<close>,
+\<^cite>\<open>"R7"\<close>, and \<^cite>\<open>"R8"\<close>.
 
 The following formalization of GCsort does not define any specific function @{text index} to be used
 to split buckets into finer-grained ones. It rather defines only the type @{text index_sign} of such
@@ -1253,7 +1253,7 @@ text \<open>
 
 Finally, function @{text gcsort_aux} formalizes GCsort. Since the algorithm is tail-recursive, this
 function complies with the requirements for an auxiliary tail-recursive function applying to step 1
-of the proof method described in \cite{R4} -- henceforth briefly referred to as the \emph{proof
+of the proof method described in \<^cite>\<open>"R4"\<close> -- henceforth briefly referred to as the \emph{proof
 method} --. This feature will later enable to formally prove the algorithm's correctness properties
 by means of such method.
 

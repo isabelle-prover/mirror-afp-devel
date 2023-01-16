@@ -873,7 +873,7 @@ parse certain liberal extensions out of the C
 standard~\<^footnote>\<open>\<^url>\<open>http://hackage.haskell.org/package/language-c\<close>\<close>;
 \<^item> and another parser accepting C99/C11/C18 code in \<^url>\<open>https://gitlab.lisn.upsaclay.fr/burkhart.wolff/Isabelle_C/-/tree/C/C18-FrontEnd\<close> that
 is close to the C standard while focusing on resolving ambiguities of the
-standard~\<^footnote>\<open>\<^url>\<open>https://github.com/jhjourdan/C11parser\<close>\<close>~\cite{DBLP:journals/toplas/JourdanP17}. \<close>
+standard~\<^footnote>\<open>\<^url>\<open>https://github.com/jhjourdan/C11parser\<close>\<close>~\<^cite>\<open>"DBLP:journals/toplas/JourdanP17"\<close>. \<close>
 
 text \<open> Note that the two parsers are not accepting/rejecting the same range of arbitrary C
 code. We have actually already encountered situations where an error is raised by one parser, while

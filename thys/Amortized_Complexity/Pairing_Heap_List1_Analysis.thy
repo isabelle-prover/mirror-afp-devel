@@ -11,7 +11,7 @@ imports
 begin
 
 text
-\<open>Amortized analysis of pairing heaps as defined by Okasaki \cite{Okasaki}.\<close>
+\<open>Amortized analysis of pairing heaps as defined by Okasaki \<^cite>\<open>"Okasaki"\<close>.\<close>
 
 fun hps where
 "hps (Hp _ hs) = hs"

@@ -13,7 +13,7 @@ begin
 text \<open>The encoders are represented as partial prefix-free functions. The advantage of
 prefix free codes is that they can be easily combined by concatenation. The approach
 of using prefix free codes (on the byte-level) for the representation of complex data
-structures is common in many industry encoding libraries (cf. \cite{rfc8949}).
+structures is common in many industry encoding libraries (cf. \<^cite>\<open>"rfc8949"\<close>).
 
 The reason for representing encoders using partial functions, stems from some use-cases
 where the objects to be encoded may be in a much smaller sets, as their type may suggest.
@@ -21,7 +21,7 @@ For example a natural number may be known to have a given range, or a function m
 encodable because it has a finite domain.
 
 Note: Prefix-free codes can also be automatically derived using Huffmans' algorithm, which was
-formalized by Blanchette~\cite{Huffman-AFP}. This is especially useful if it is possible to transmit
+formalized by Blanchette~\<^cite>\<open>"Huffman-AFP"\<close>. This is especially useful if it is possible to transmit
 a dictionary before the data. On the other hand these standard codes are useful, when the above is
 impractical and/or the distribution of the input is unknown or expected to be close to the one's
 implied by standard codes.
@@ -82,7 +82,7 @@ definition is_encoding :: "'a encoding \<Rightarrow> bool"
 text \<open>An encoding function is represented as partial functions into lists of booleans, where
 each list element represents a bit. Such a function is defined to be an encoding, if it is
 prefix-free on its domain. This is similar to the formalization by Hibon and
-Paulson~\cite{Source_Coding_Theorem-AFP} except for the use of partial functions for the
+Paulson~\<^cite>\<open>"Source_Coding_Theorem-AFP"\<close> except for the use of partial functions for the
 practical reasons described in Section~\ref{sec:intro}.\<close>
 
 lemma is_encodingI:
@@ -299,7 +299,7 @@ definition Ng\<^sub>e :: "nat encoding" where
         (let r = floorlog 2 n - 1 in (r, n - 2^r))
       else None)"
 
-text \<open>@{term "Ng\<^sub>e"} is an encoding for positive numbers using Elias-Gamma encoding\cite{elias1975}.\<close>
+text \<open>@{term "Ng\<^sub>e"} is an encoding for positive numbers using Elias-Gamma encoding\<^cite>\<open>"elias1975"\<close>.\<close>
 
 lemma elias_gamma_bit_count:
   "bit_count (Ng\<^sub>e n) = (if n > 0 then 2 * \<lfloor>log 2 n\<rfloor> + 1 else (\<infinity>::ereal))"
@@ -373,8 +373,8 @@ qed
 definition N\<^sub>e :: "nat encoding" where "N\<^sub>e x = Ng\<^sub>e (x+1)"
 
 text \<open>@{term "N\<^sub>e"} is an encoding for all natural numbers using exponential Golomb
-encoding~\cite{teuhola1978}. Exponential Golomb codes are also used in video compression
-applications~\cite{richardson2010}.\<close>
+encoding~\<^cite>\<open>"teuhola1978"\<close>. Exponential Golomb codes are also used in video compression
+applications~\<^cite>\<open>"richardson2010"\<close>.\<close>
 
 lemma exp_golomb_encoding: "is_encoding N\<^sub>e"
 proof -

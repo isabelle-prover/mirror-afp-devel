@@ -3,8 +3,8 @@
 *)
 
 section \<open>Group Divisible Designs\<close>
-text \<open>Definitions in this section taken from the handbook \cite{colbournHandbookCombinatorialDesigns2007}
-and Stinson \cite{stinsonCombinatorialDesignsConstructions2004}\<close>
+text \<open>Definitions in this section taken from the handbook \<^cite>\<open>"colbournHandbookCombinatorialDesigns2007"\<close>
+and Stinson \<^cite>\<open>"stinsonCombinatorialDesignsConstructions2004"\<close>\<close>
 theory Group_Divisible_Designs imports Resolvable_Designs
 begin
 
@@ -676,7 +676,7 @@ qed
 
 subsubsection \<open>Wilson's Construction\<close>
 text \<open>Wilson's construction involves the combination of multiple k-GDD's. This proof was
-based of Stinson \cite{stinsonCombinatorialDesignsConstructions2004}\<close>
+based of Stinson \<^cite>\<open>"stinsonCombinatorialDesignsConstructions2004"\<close>\<close>
 
 lemma wilsons_construction_proper: 
   assumes "card I = w"

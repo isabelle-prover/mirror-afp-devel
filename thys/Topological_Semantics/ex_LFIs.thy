@@ -4,7 +4,7 @@ begin
 nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=3] (*default Nitpick settings*)
 
 section \<open>Example application: Logics of Formal Inconsistency (LFIs)\<close>
-text\<open>\noindent{The LFIs @{cite LFI} @{cite RLFI} are a family of paraconsistent logics featuring a 'consistency'
+text\<open>\noindent{The LFIs \<^cite>\<open>LFI\<close> \<^cite>\<open>RLFI\<close> are a family of paraconsistent logics featuring a 'consistency'
 operator @{text "\<^bold>\<circ>"} that can be used to recover some classical properties of negation (in particular ECQ).
 We show how to semantically embed LFIs as extensions of Boolean algebras (here as frontier algebras).}\<close>
 
@@ -36,7 +36,7 @@ lemma "[a, \<^bold>\<not>a \<^bold>\<turnstile>\<^sub>g b]" nitpick oops (*count
 lemma "[a, \<^bold>\<not>a \<^bold>\<turnstile>\<^sub>g \<^bold>\<not>b]" nitpick oops (*countermodel*)
 
 text\<open>\noindent{We define two pairs of in/consistency operators and show how they relate to each other.
-Using LFIs terminology, the minimal logic so encoded corresponds to 'RmbC-ciw' (cf. @{cite RLFI}).}\<close>
+Using LFIs terminology, the minimal logic so encoded corresponds to 'RmbC-ciw' (cf. \<^cite>\<open>RLFI\<close>).}\<close>
 abbreviation op_inc_a::"\<sigma>\<Rightarrow>\<sigma>" ("\<bullet>\<^sup>A_" [57]58) where "\<bullet>\<^sup>AA \<equiv> A \<^bold>\<and> \<^bold>\<not>A"
 abbreviation op_con_a::"\<sigma>\<Rightarrow>\<sigma>" ("\<^bold>\<circ>\<^sup>A_" [57]58) where "\<^bold>\<circ>\<^sup>AA \<equiv> \<^bold>\<midarrow>\<bullet>\<^sup>AA"
 abbreviation op_inc_b::"\<sigma>\<Rightarrow>\<sigma>" ("\<bullet>\<^sup>B_" [57]58) where "\<bullet>\<^sup>BA \<equiv> \<B> A"

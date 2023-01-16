@@ -50,7 +50,7 @@ text \<open>
   @{typ "_ pmf"} satisfies \eqref{eq:discard} and \eqref{eq:commute}.
   Equations \eqref{eq:discard} and \eqref{eq:duplicate} can be directly used as rewrite rules.%
   \footnote{%
-    If they both hold, then \eqref{eq:commute} holds, too \cite{LochbihlerSchneider2016ITP}.
+    If they both hold, then \eqref{eq:commute} holds, too \<^cite>\<open>"LochbihlerSchneider2016ITP"\<close>.
   }
   However, the simplifier does not handle \eqref{eq:commute} well because \eqref{eq:commute} is a
   higher-order permutative rewrite rule and ordered rewriting in the simplifier can only handle 
@@ -63,7 +63,7 @@ text \<open>
   If further commutative operators show up in the HOL term, then the ordered rewrite system need not
   be confluent and the simproc only performs a best effort.  We do not know whether this general case
   can be solved by ordered rewriting as a complete solution would have to solve the graph isomorphism
-  problem by term rewriting \cite{Basin1994IPL}.
+  problem by term rewriting \<^cite>\<open>"Basin1994IPL"\<close>.
 \<close>
 
 ML_file \<open>monad_rules.ML\<close>

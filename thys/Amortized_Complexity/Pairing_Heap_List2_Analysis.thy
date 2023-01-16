@@ -12,7 +12,7 @@ begin
 
 text
 \<open>Amortized analysis of a modified version of the pairing heaps
-defined by Okasaki \cite{Okasaki}.\<close>
+defined by Okasaki \<^cite>\<open>"Okasaki"\<close>.\<close>
 
 fun lift_hp :: "'b \<Rightarrow> ('a hp \<Rightarrow> 'b) \<Rightarrow> 'a heap \<Rightarrow> 'b" where
 "lift_hp c f None = c" |

@@ -162,7 +162,7 @@ lemma kstar_prop: "f \<le> \<eta> \<Longrightarrow> kstar f \<le> \<eta>"
 
 subsection \<open>Antidomain\<close>
 
-text \<open>Next I define an antidomain operation and prove the axioms of antidomain semirings~\cite{GomesGHSW16,DesharnaisS11}.\<close>
+text \<open>Next I define an antidomain operation and prove the axioms of antidomain semirings~\<^cite>\<open>"GomesGHSW16" and "DesharnaisS11"\<close>.\<close>
 
 definition "kad f = (\<lambda>x. if (f x = {}) then {x} else {})"
 

@@ -11,9 +11,9 @@ fun is_mini_formula where
 "is_mini_formula _ = False"
 
 text\<open>
-  The similarity between these ``mini'' formulas and Johansson's minimal calculus of implications~\cite{johansson1937minimal} is mostly in name.
+  The similarity between these ``mini'' formulas and Johansson's minimal calculus of implications~\<^cite>\<open>"johansson1937minimal"\<close> is mostly in name.
   Johansson does replace @{term "\<^bold>\<not> F"} by @{term "F \<^bold>\<rightarrow> \<bottom>"} in one place, but generally keeps it.
-  The main focus of ~\cite{johansson1937minimal} is on removing rules from Calculi anyway, not on removing connectives.
+  The main focus of ~\<^cite>\<open>"johansson1937minimal"\<close> is on removing rules from Calculi anyway, not on removing connectives.
   We are only borrowing the name.\<close>
 
 (*lemma mini_Top[simp,intro!]: "is_mini_formula \<top>" unfolding Top_def by simp *)

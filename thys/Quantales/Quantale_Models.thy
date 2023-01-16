@@ -13,7 +13,7 @@ begin
 
 text \<open>Most of the models in this section expand those of dioids (and hence Kleene algebras). They really belong here, 
 because quantales form a stronger setting than dioids or Kleene algebras. They are, however, subsumed by the general lifting
-results of partial semigroups and monoids from another AFP entry~\cite{DongolGHS17}.\<close>
+results of partial semigroups and monoids from another AFP entry~\<^cite>\<open>"DongolGHS17"\<close>.\<close>
 
 
 subsection \<open>Quantales of Booleans\<close>
@@ -64,14 +64,14 @@ instance set :: (monoid_mult) unital_quantale..
 
 
 text \<open>There is much more to this example. In fact, every quantale can be represented, up to isomorphism, 
-as a certain quotient of a powerset quantale over some semigroup~\cite{Rosenthal90}. This representation theorem is 
+as a certain quotient of a powerset quantale over some semigroup~\<^cite>\<open>"Rosenthal90"\<close>. This representation theorem is 
 formalised in the section on nuclei.\<close>
 
 
 subsection \<open>Language, Relation, Trace and Path Quantales\<close>
 
 text \<open>The language quantale is implcit in the powerset quantale over a semigroup or monoid. The free list monoid has
-already been linked with the class of monoid as an instance in Isabelle's dioid components~\cite{ArmstrongSW13}. I provide an alternative
+already been linked with the class of monoid as an instance in Isabelle's dioid components~\<^cite>\<open>"ArmstrongSW13"\<close>. I provide an alternative
 interpretation. In all of the following locale statements, an interpretation for Sup-quantales fails, due to the occurance of some low level
 less operations in the underlying model...\<close>
 

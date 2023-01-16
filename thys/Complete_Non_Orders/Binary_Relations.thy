@@ -269,7 +269,7 @@ end
 subsection \<open>Locales for Binary Relations\<close>
 
 text \<open>We now define basic properties of binary relations,
-in form of \emph{locales}~\cite{Kammuller00,locale}.\<close>
+in form of \emph{locales}~\<^cite>\<open>"Kammuller00" and "locale"\<close>.\<close>
 
 subsubsection \<open>Syntactic Locales\<close>
 
@@ -935,7 +935,7 @@ end
 
 declare semiconnex.intro[intro]
 
-text \<open>Totality is negated antisymmetry \cite[Proposition 2.2.4]{Schmidt1993}.\<close>
+text \<open>Totality is negated antisymmetry \<^cite>\<open>\<open>Proposition 2.2.4\<close> in "Schmidt1993"\<close>.\<close>
 proposition semiconnex_iff_neg_antisymmetric:
   fixes less (infix "\<sqsubset>" 50)
   shows "semiconnex A (\<sqsubset>) \<longleftrightarrow> antisymmetric A (\<lambda>x y. \<not> x \<sqsubset> y)" (is "?l \<longleftrightarrow> ?r")

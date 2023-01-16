@@ -43,7 +43,7 @@ subsection\<open>Definition and elementary properties\<close>
 
 
 text\<open>
-See Chapter I-3 in \cite{mac_lane_categories_2010} and the description
+See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close> and the description
 of the concept of a digraph homomorphism in the previous chapter.
 \<close>
 
@@ -405,7 +405,7 @@ subsection\<open>Opposite semifunctor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition op_smcf :: "V \<Rightarrow> V"
   where "op_smcf \<FF> =
@@ -741,7 +741,7 @@ subsection\<open>Composition of contravariant semifunctors\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See section 1.2 in \cite{bodo_categories_1970}.\<close>
+text\<open>See section 1.2 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 definition smcf_cn_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<circ>\<close> 55)
   where "\<GG> \<^sub>S\<^sub>M\<^sub>C\<^sub>F\<circ> \<FF> =
@@ -1193,7 +1193,7 @@ subsection\<open>Identity semifunctor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 abbreviation (input) smcf_id :: "V \<Rightarrow> V" where "smcf_id \<equiv> dghm_id"
 
@@ -1284,7 +1284,7 @@ subsection\<open>Constant semifunctor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 abbreviation (input) smcf_const :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "smcf_const \<equiv> dghm_const"
@@ -1397,7 +1397,7 @@ subsection\<open>Faithful semifunctor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale is_ft_semifunctor = is_semifunctor \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF> + 
   assumes ft_smcf_is_ft_dghm: 
@@ -1542,7 +1542,7 @@ subsection\<open>Full semifunctor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale is_fl_semifunctor = is_semifunctor \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF> + 
   assumes fl_smcf_is_fl_dghm:
@@ -1668,7 +1668,7 @@ subsection\<open>Fully faithful semifunctor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 locale is_ff_semifunctor = 
   is_ft_semifunctor \<alpha> \<AA> \<BB> \<FF> + is_fl_semifunctor \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF>
@@ -1738,7 +1738,7 @@ subsection\<open>Isomorphism of semicategories\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale is_iso_semifunctor = is_semifunctor \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF> + 
   assumes iso_smcf_is_iso_dghm: 
@@ -2081,7 +2081,7 @@ subsection\<open>Isomorphic semicategories\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 locale iso_semicategory = L: semicategory \<alpha> \<AA> + R: semicategory \<alpha> \<BB> 
   for \<alpha> \<AA> \<BB> +

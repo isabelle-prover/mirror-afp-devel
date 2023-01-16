@@ -18,7 +18,7 @@ between two \<open>\<alpha>\<close>-categories.
 It continues the development that was initiated in section
 \ref{sec:dg_FUNCT}.
 A general reference for this section is Chapter II-4 in 
-\cite{mac_lane_categories_2010}.
+\<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 named_theorems smc_FUNCT_cs_simps

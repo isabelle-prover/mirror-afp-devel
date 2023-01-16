@@ -62,7 +62,7 @@ subsection \<open>Example Application: Compute Norms of Eigenvalues\<close>
 text \<open>For complexity analysis of some matrix $A$ it is important to compute the spectral
   radius of a matrix, i.e., the maximal norm of all complex eigenvalues, 
   since the spectral radius determines
-  the growth rates of matrix-powers $A^n$, cf.~\cite{JNF-AFP} for a formalized statement
+  the growth rates of matrix-powers $A^n$, cf.~\<^cite>\<open>"JNF-AFP"\<close> for a formalized statement
   of this fact.\<close>
 
 definition eigenvalues :: "rat mat \<Rightarrow> complex list" where

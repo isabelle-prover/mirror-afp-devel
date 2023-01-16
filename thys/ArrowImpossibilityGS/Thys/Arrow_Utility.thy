@@ -6,7 +6,7 @@ theory Arrow_Utility imports Complex_Main
 begin
 
 text\<open>This theory formalizes the first proof due to
-Geanakoplos~\cite{Geanakoplos05}.  In contrast to the standard model
+Geanakoplos~\<^cite>\<open>"Geanakoplos05"\<close>.  In contrast to the standard model
 of preferences as linear orders, we model preferences as \emph{utility
 functions} mapping each alternative to a real number. The type of
 alternatives and voters is assumed to be finite.\<close>

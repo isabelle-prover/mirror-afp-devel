@@ -15,7 +15,7 @@ text \<open>
 \null
 
 This section formalizes the definitions of sequential processes and sequential composition given in
-\cite{R4}, and then proves that under the assumptions discussed above, noninterference security is
+\<^cite>\<open>"R4"\<close>, and then proves that under the assumptions discussed above, noninterference security is
 conserved under sequential composition for any pair of processes sharing an alphabet that contains
 successful termination. Finally, this result is generalized to an arbitrary list of processes.
 \<close>
@@ -24,7 +24,7 @@ successful termination. Finally, this result is generalized to an arbitrary list
 subsection "Sequential processes"
 
 text \<open>
-In \cite{R4}, a \emph{sequential process} is defined as a process whose alphabet contains successful
+In \<^cite>\<open>"R4"\<close>, a \emph{sequential process} is defined as a process whose alphabet contains successful
 termination. Since sequential composition applies to sequential processes, the first problem put by
 the formalization of this operation is that of finding a suitable way to represent such a process.
 
@@ -32,7 +32,7 @@ A simple but effective strategy is to identify it with a process having alphabet
 where @{typ 'a} is the native type of its ordinary (i.e. distinct from termination) events. Then,
 ordinary events will be those matching pattern \<open>Some _\<close>, whereas successful termination will
 be denoted by the special event @{term None}. This means that the \emph{sentences} of a sequential
-process, defined in \cite{R4} as the traces after which the process can terminate successfully, will
+process, defined in \<^cite>\<open>"R4"\<close> as the traces after which the process can terminate successfully, will
 be nothing but the event lists @{term xs} such that @{term "xs @ [None]"} is a trace (which implies
 that @{term xs} is a trace as well).
 
@@ -41,7 +41,7 @@ formalize the properties of sequential processes related to this event, expressi
 the selected representation. The first of the resulting predicates, \<open>weakly_sequential\<close>, is
 the minimum required for allowing the identification of event @{term None} with successful
 termination, namely that @{term None} may occur in a trace as its last event only. The second
-predicate, \<open>sequential\<close>, following what Hoare does in \cite{R4}, extends the first predicate
+predicate, \<open>sequential\<close>, following what Hoare does in \<^cite>\<open>"R4"\<close>, extends the first predicate
 with an additional requirement, namely that whenever the process can engage in event @{term None},
 it cannot engage in any other event. A simple counterexample shows that this requirement does not
 imply the first one: a process whose traces are @{term "{[], [None], [None, None]}"} satisfies the
@@ -53,7 +53,7 @@ not allow event @{term None} to be affected by confidential events, viz. by ordi
 allowed to affect some event in the alphabet. Interestingly, this property, which will prove to be
 necessary for the target theorem to hold, is nothing but the CSP counterpart of a condition required
 for a security type system to enforce termination-sensitive noninterference security of programs,
-namely that program termination must not depend on confidential data (cf. \cite{R5}, section 9.2.6).
+namely that program termination must not depend on confidential data (cf. \<^cite>\<open>"R5"\<close>, section 9.2.6).
 
 \null
 \<close>
@@ -79,7 +79,7 @@ text \<open>
 
 Here below is the proof of some useful lemmas involving the constants just defined. Particularly, it
 is proven that process sequentiality is indeed stronger than weak sequentiality, and a sentence of a
-refusals union closed (cf. \cite{R3}), sequential process admits the set of all the ordinary events
+refusals union closed (cf. \<^cite>\<open>"R3"\<close>), sequential process admits the set of all the ordinary events
 of the process as a refusal. The use of the latter lemma in the proof of the target security
 conservation theorem is the reason why the theorem requires to assume that the first of the
 processes to be composed be refusals union closed (cf. below).
@@ -179,9 +179,9 @@ subsection "Sequential composition"
 
 text \<open>
 In what follows, the definition of the failures resulting from the sequential composition of two
-processes @{term P}, @{term Q} given in \cite{R4} is formalized as the inductive definition of set
+processes @{term P}, @{term Q} given in \<^cite>\<open>"R4"\<close> is formalized as the inductive definition of set
 \<open>seq_comp_failures P Q\<close>. Then, the sequential composition of @{term P} and @{term Q},
-denoted by means of notation \<open>P ; Q\<close> following \cite{R4}, is defined as the process having
+denoted by means of notation \<open>P ; Q\<close> following \<^cite>\<open>"R4"\<close>, is defined as the process having
 \<open>seq_comp_failures P Q\<close> as failures set and the empty set as divergences set.
 
 For the sake of generality, this definition is based on the mere implicit assumption that the input
@@ -200,9 +200,9 @@ of @{term P} with a trace of @{term Q}. Thus, in order that the refusals of \<op
 closed under set union, the union of any two refusals of @{term xs} must still be a refusal (cf.
 rule \<open>SCF_R4\<close>). Indeed, this property will prove to be sufficient to ensure that for any two
 processes whose refusals are closed under set union, their sequential composition still be such,
-which is what is expected for any process of practical significance (cf. \cite{R3}).
+which is what is expected for any process of practical significance (cf. \<^cite>\<open>"R3"\<close>).
 
-According to the definition given in \cite{R4}, a divergence of \<open>P ; Q\<close> is either a
+According to the definition given in \<^cite>\<open>"R4"\<close>, a divergence of \<open>P ; Q\<close> is either a
 divergence of @{term P}, or the concatenation of a sentence of @{term P} with a divergence of
 @{term Q}. Apparently, this definition does not match the formal one stated here below, which
 identifies the divergences set of \<open>P ; Q\<close> with the empty set. Nonetheless, as remarked
@@ -211,7 +211,7 @@ since this is the minimum required to confer the meaning of successful terminati
 corresponding alphabet symbol. But a weakly sequential process cannot have any divergence, so that
 the two definitions are actually equivalent. In fact, a divergence is a trace such that, however it
 is extended with arbitrary additional events, the resulting event list is still a trace (cf. process
-properties @{term process_prop_5} and @{term process_prop_6} in \cite{R2}). Therefore, if @{term xs}
+properties @{term process_prop_5} and @{term process_prop_6} in \<^cite>\<open>"R2"\<close>). Therefore, if @{term xs}
 were a divergence, then @{term "xs @ [None, None]"} would be a trace, which is impossible in case
 the process satisfies predicate @{term weakly_sequential}.
 
@@ -244,7 +244,7 @@ text \<open>
 
 Here below is the proof that, for any two processes @{term P}, @{term Q} defined over the same
 alphabet containing successful termination, set @{term "seq_comp_failures P Q"} indeed enjoys the
-characteristic properties of the failures set of a process as defined in \cite{R2} provided that
+characteristic properties of the failures set of a process as defined in \<^cite>\<open>"R2"\<close> provided that
 @{term P} is weakly sequential, which is what happens in any meaningful case.
 
 \null
@@ -646,7 +646,7 @@ text \<open>
 \null
 
 Here below, the previous result is applied to derive useful expressions for the outputs of the
-functions returning the elements of a process, as defined in \cite{R2} and \cite{R3}, when acting on
+functions returning the elements of a process, as defined in \<^cite>\<open>"R2"\<close> and \<^cite>\<open>"R3"\<close>, when acting on
 the sequential composition of a pair of processes.
 
 \null
@@ -1560,7 +1560,7 @@ text \<open>
 Everything is now ready for proving the target security conservation theorem. The two closure
 properties that the definition of noninterference security requires process futures to satisfy, one
 for the addition of events into traces and the other for the deletion of events from traces (cf.
-\cite{R2}), will be faced separately; here below is the proof of the former property.
+\<^cite>\<open>"R2"\<close>), will be faced separately; here below is the proof of the former property.
 Unsurprisingly, rule induction on set @{term seq_comp_failures} is applied, and the closure of the
 failures of a secure process under intransitive purge (proven in the previous section) is used to
 meet the proof obligations arising from rule \<open>SCF_R3\<close>.

@@ -14,7 +14,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 \<open>SemiCAT\<close> is usually defined as a category of semicategories and semifunctors
-(e.g., see \cite{noauthor_nlab_nodate}\footnote{
+(e.g., see \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/semicategory}
 }).
 However, there is little that can prevent one from exposing \<open>SemiCAT\<close>

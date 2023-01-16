@@ -14,7 +14,7 @@ subsection\<open>\<open>hom\<close>-function\<close>
 
 text\<open>
 The \<open>hom\<close>-function is a part of the definition of the \<open>Hom\<close>-functor,
-as presented in \cite{noauthor_nlab_nodate}\footnote{\url{
+as presented in \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{\url{
 https://ncatlab.org/nlab/show/hom-functor
 }}.
 \<close>
@@ -403,7 +403,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 
 text\<open>
-See \cite{noauthor_nlab_nodate}\footnote{\url{
+See \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{\url{
 https://ncatlab.org/nlab/show/hom-functor
 }}.
 \<close>
@@ -683,7 +683,7 @@ subsection\<open>Composition of a \<open>Hom\<close>-functor and a functor\<clos
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See subsection 1.15 in \cite{bodo_categories_1970}.\<close>
+text\<open>See subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 definition cf_lcomp_Hom :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>Hom\<^sub>O\<^sub>.\<^sub>C\<index>_'(/_-,-/')\<close>)
   where "Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(\<FF>-,-) = cf_cn_cov_lcomp \<CC> (Hom\<^sub>O\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>\<CC>(-,-)) \<FF>"
@@ -1009,9 +1009,9 @@ subsection\<open>Projections of the \<open>Hom\<close>-functor\<close>
 
 text\<open>
 The projections of the \<open>Hom\<close>-functor coincide with the definitions
-of the \<open>Hom\<close>-functor given in Chapter II-2 in \cite{mac_lane_categories_2010}.
+of the \<open>Hom\<close>-functor given in Chapter II-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 They are also exposed in the aforementioned article in 
-nLab \cite{noauthor_nlab_nodate}\footnote{\url{
+nLab \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{\url{
 https://ncatlab.org/nlab/show/hom-functor
 }}.
 \<close>

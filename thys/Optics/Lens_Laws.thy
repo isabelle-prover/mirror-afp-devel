@@ -8,7 +8,7 @@ begin
 subsection \<open>Lens Signature\<close>
   
 text \<open>This theory introduces the signature of lenses and indentifies the core algebraic hierarchy of lens 
-  classes, including laws for well-behaved, very well-behaved, and bijective lenses~\cite{Foster07,Fischer2015,Gibbons17}.\<close>
+  classes, including laws for well-behaved, very well-behaved, and bijective lenses~\<^cite>\<open>"Foster07" and "Fischer2015" and "Gibbons17"\<close>.\<close>
   
 record ('a, 'b) lens =
   lens_get :: "'b \<Rightarrow> 'a" ("get\<index>")
@@ -18,7 +18,7 @@ type_notation
   lens (infixr "\<Longrightarrow>" 0)
 
 text \<open> Alternative parameters ordering, inspired by Back and von Wright's refinement 
-  calculus~\cite{Back1998}, which similarly uses two functions to characterise updates to variables. \<close>
+  calculus~\<^cite>\<open>"Back1998"\<close>, which similarly uses two functions to characterise updates to variables. \<close>
 
 abbreviation (input) lens_set :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'b" ("lset\<index>") where
 "lens_set \<equiv> (\<lambda> X v s. put\<^bsub>X\<^esub> s v)"
@@ -34,7 +34,7 @@ text \<open>
   \end{figure}
 
   A lens $X : \view \lto \src$, for source type $\src$ and view type $\view$, identifies
-  $\view$ with a subregion of $\src$~\cite{Foster07,Foster09}, as illustrated in Figure~\ref{fig:Lens}. The arrow denotes
+  $\view$ with a subregion of $\src$~\<^cite>\<open>"Foster07" and "Foster09"\<close>, as illustrated in Figure~\ref{fig:Lens}. The arrow denotes
   $X$ and the hatched area denotes the subregion $\view$ it characterises. Transformations on
   $\view$ can be performed without affecting the parts of $\src$ outside the hatched area. The lens
   signature consists of a pair of functions $\lget_X : \src \Rightarrow \view$ that extracts a view
@@ -87,7 +87,7 @@ text \<open>Lens override uses a lens to replace part of a source type with a gi
 subsection \<open>Weak Lenses\<close>
 
 text \<open> Weak lenses are the least constrained class of lenses in our algebraic hierarchy. They
-  simply require that the PutGet law~\cite{Foster09,Fischer2015} is satisfied, meaning that
+  simply require that the PutGet law~\<^cite>\<open>"Foster09" and "Fischer2015"\<close> is satisfied, meaning that
   $\lget$ is the inverse of $\lput$. \<close>
 
 locale weak_lens =
@@ -133,7 +133,7 @@ lemma dom_pget: "dom pget\<^bsub>x\<^esub> = \<S>\<^bsub>x\<^esub>"
 
 subsection \<open>Well-behaved Lenses\<close>
 
-text \<open> Well-behaved lenses add to weak lenses that requirement that the GetPut law~\cite{Foster09,Fischer2015}
+text \<open> Well-behaved lenses add to weak lenses that requirement that the GetPut law~\<^cite>\<open>"Foster09" and "Fischer2015"\<close>
   is satisfied, meaning that $\lput$ is the inverse of $\lget$. \<close>
 
 locale wb_lens = weak_lens +
@@ -205,8 +205,8 @@ lemma mwb_lens_weak [simp]:
 
 subsection \<open>Very Well-behaved Lenses\<close>
 
-text \<open>Very well-behaved lenses combine all three laws, as in the literature~\cite{Foster09,Fischer2015}.
-  The same set of axioms can be found in Back and von Wright's refinement calculus~\cite{Back1998}, 
+text \<open>Very well-behaved lenses combine all three laws, as in the literature~\<^cite>\<open>"Foster09" and "Fischer2015"\<close>.
+  The same set of axioms can be found in Back and von Wright's refinement calculus~\<^cite>\<open>"Back1998"\<close>, 
   though with different names for the functions. \<close>
 
 locale vwb_lens = wb_lens + mwb_lens
@@ -343,7 +343,7 @@ text \<open>Bijective lenses characterise the situation where the source and vie
   in other words the view type full characterises the whole source type. It is often useful
   when the view type and source type are syntactically different, but nevertheless correspond
   precisely in terms of what they observe. Bijective lenses are formulates using
-  the strong GetPut law~\cite{Foster09,Fischer2015}.\<close>
+  the strong GetPut law~\<^cite>\<open>"Foster09" and "Fischer2015"\<close>.\<close>
 
 locale bij_lens = weak_lens +
   assumes strong_get_put: "put \<sigma> (get \<rho>) = \<rho>"

@@ -7,8 +7,8 @@ section \<open>Prim's Minimum Spanning Tree Algorithm\<close>
 
 text \<open>
 In this theory we prove total correctness of Prim's minimum spanning tree algorithm.
-The proof has the same overall structure as the total-correctness proof of Kruskal's algorithm \cite{Guttmann2018c}.
-The partial-correctness proof of Prim's algorithm is discussed in \cite{Guttmann2016c,Guttmann2018b}.
+The proof has the same overall structure as the total-correctness proof of Kruskal's algorithm \<^cite>\<open>"Guttmann2018c"\<close>.
+The partial-correctness proof of Prim's algorithm is discussed in \<^cite>\<open>"Guttmann2016c" and "Guttmann2018b"\<close>.
 \<close>
 
 theory Prim

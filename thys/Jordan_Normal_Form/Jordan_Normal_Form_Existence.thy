@@ -22,7 +22,7 @@ text\<open>We prove existence of Jordan normal forms by means of first applying 
 subsection \<open>Pseudo Code Algorithm\<close>
 
 text \<open>The following algorithm is used to compute JNFs from upper-triangular matrices.
-It was generalized from \cite[Sect.~11.1.4]{PO07} where this algorithm was not
+It was generalized from \<^cite>\<open>\<open>Sect.~11.1.4\<close> in "PO07"\<close> where this algorithm was not
 explicitly specified but only applied on an example. We further introduced step 2
 which does not occur in the textbook description.
 

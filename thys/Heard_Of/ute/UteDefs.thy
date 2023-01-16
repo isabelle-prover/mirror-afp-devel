@@ -5,7 +5,7 @@ begin
 section \<open>Verification of the \ute{} Consensus Algorithm\<close>
 
 text \<open>
-  Algorithm \ute{} is presented in~\cite{biely:tolerating}. It is an
+  Algorithm \ute{} is presented in~\<^cite>\<open>"biely:tolerating"\<close>. It is an
   uncoordinated algorithm that tolerates value (a.k.a.\ Byzantine) faults,
   and can be understood as a variant of \emph{UniformVoting}. The parameters
   $T$, $E$, and $\alpha$ appear as thresholds of the algorithm and in the
@@ -13,7 +13,7 @@ text \<open>
   in order to adapt the algorithm to the characteristics of different systems.
 
   We formalize in Isabelle the correctness proof of the algorithm that
-  appears in~\cite{biely:tolerating}, using the framework of theory
+  appears in~\<^cite>\<open>"biely:tolerating"\<close>, using the framework of theory
   \<open>HOModel\<close>.
 \<close>
 
@@ -78,7 +78,7 @@ definition Ute_initState where
 
 text \<open>
   The following locale introduces the parameters used for the \ute{}
-  algorithm and their constraints~\cite{biely:tolerating}.
+  algorithm and their constraints~\<^cite>\<open>"biely:tolerating"\<close>.
 \<close>
 
 locale ute_parameters =
@@ -173,7 +173,7 @@ where
 subsection \<open>Communication Predicate for \ute{}\<close>
 
 text \<open>
-  Following~\cite{biely:tolerating}, we now define the communication predicate
+  Following~\<^cite>\<open>"biely:tolerating"\<close>, we now define the communication predicate
   for the \ute{} algorithm to be correct.
 
   The round-by-round predicate stipulates the following conditions:
@@ -182,7 +182,7 @@ text \<open>
   \item every process should receive more than \<open>max(T, N + 2*\<alpha> - E - 1)\<close> 
     correct messages.
   \end{itemize}
-  \cite{biely:tolerating} also requires that every process should receive more
+  \<^cite>\<open>"biely:tolerating"\<close> also requires that every process should receive more
   than \<open>\<alpha>\<close> correct messages, but this is implied, since \<open>T > \<alpha>\<close>
   (cf. lemma \<open>alpha_lt_T\<close>).
 \<close>
@@ -205,7 +205,7 @@ text \<open>
   \item every process receives more than \<open>E\<close> correct messages in the
     second step of phase \<open>\<Phi>+1\<close>.
   \end{itemize}
-  The predicate in the article~\cite{biely:tolerating} requires infinitely
+  The predicate in the article~\<^cite>\<open>"biely:tolerating"\<close> requires infinitely
   many such phases, but one is clearly enough.
 \<close>
 

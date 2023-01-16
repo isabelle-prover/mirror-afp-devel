@@ -11,7 +11,7 @@ begin
 subsection \<open>Definitions\<close>
 
 text \<open>This version of pairing heaps is a modified version
-of the one by Okasaki \cite{Okasaki} that avoids structural invariants.\<close>
+of the one by Okasaki \<^cite>\<open>"Okasaki"\<close> that avoids structural invariants.\<close>
 
 datatype 'a hp = Hp 'a (hps: "'a hp list")
 

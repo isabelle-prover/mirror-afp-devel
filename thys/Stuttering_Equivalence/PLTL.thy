@@ -715,7 +715,7 @@ qed
 
 text \<open>
   Comparing the definition of the next-free formula in the case of
-  formulas \<open>X\<^sub>p \<phi>\<close> with the one that appears in~\cite{peled:ltl-x},
+  formulas \<open>X\<^sub>p \<phi>\<close> with the one that appears in~\<^cite>\<open>"peled:ltl-x"\<close>,
   there is a subtle difference. Peled and Wilke define the second disjunct as
   a disjunction of formulas
 %
@@ -729,7 +729,7 @@ text \<open>
   being true because of \<open>chi val'\<close> being true immediately.
   The subtle error in the definition of the formula was acknowledged 
   by Peled and Wilke and apparently had not been noticed since the 
-  publication of~\cite{peled:ltl-x} in 1996 (which has been cited more
+  publication of~\<^cite>\<open>"peled:ltl-x"\<close> in 1996 (which has been cited more
   than a hundred times according to Google Scholar). Although the error
   was corrected easily, the fact that authors, reviewers, and readers
   appear to have missed it for so long underscores the usefulness of

@@ -4,7 +4,7 @@
 *)
 section "A Calculus for Dynamic Architectures"
 text \<open>
-  The following theory formalizes our calculus for dynamic architectures~\cite{Marmsoler2017b,Marmsoler2017c} and verifies its soundness.
+  The following theory formalizes our calculus for dynamic architectures~\<^cite>\<open>"Marmsoler2017b" and "Marmsoler2017c"\<close> and verifies its soundness.
   The calculus allows to reason about temporal-logic specifications of component behavior in a dynamic setting.
   The theory is based on our theory of configuration traces and introduces the notion of behavior trace assertion to specify component behavior in a dynamic setting.
 \<close>

@@ -53,7 +53,7 @@ Expressions of type @{typ exp} are given by the following grammar:
 \mid {} & @{term "Var x"} && \text{variable} \\
 \mid {} & @{term "Let as e"} && \text{recursive let}
 \end{alignatstar}
-In the introduction we pretty-print expressions to resemble the notation in \cite{launchbury} and omit
+In the introduction we pretty-print expressions to resemble the notation in \<^cite>\<open>"launchbury"\<close> and omit
 the constructor names @{term Var}, @{term App}, \<open>Lam\<close> and @{term Let}. In the actual theories, these are visible.
 These expressions are, due to the machinery of the Nominal package, actually alpha-equivalency classes, so @{thm alpha_test} holds provably. This differs from Launchbury's original definition, which expects distinctly-named expressions and performs explicit alpha-renaming in the semantics.
 
@@ -71,7 +71,7 @@ text_raw \<open>
 \<close>
 
 text \<open>
-Launchbury's original semantics, extended with some technical overhead related to name binding (following \cite{sestoft}),
+Launchbury's original semantics, extended with some technical overhead related to name binding (following \<^cite>\<open>"sestoft"\<close>),
 is defined as follows:\\
 %\begin{center}
 \parbox[t]{\rulelen}{\centering@{thm[mode=Axiom] Launchbury.reds.Lambda}}~{\sc Lambda}\\[2ex]
@@ -89,7 +89,7 @@ The value domain of the denotational semantics is the initial solution to
 \[
 D = [D \to D]_\bot
 \]
-as introduced in \cite{abramsky}. The type @{typ Value}, together with the bottom value @{term_type "\<bottom>::Value"}, the
+as introduced in \<^cite>\<open>"abramsky"\<close>. The type @{typ Value}, together with the bottom value @{term_type "\<bottom>::Value"}, the
 injection @{term_type "Fn"} and the projection @{term "DUMMY \<down>Fn DUMMY"}\<open>::\<close>@{typeof "Fn_project"},
 is constructed as a pointed chain-complete partial order from this equation by the HOLCF package.
 The type of semantic environments is  @{typ "var \<Rightarrow> Value"}.
@@ -160,15 +160,15 @@ text \<open>The statement of adequacy reads:
 subsection \<open>Differences to our previous work\<close>
 
 text \<open>
-We have previously published \cite{breitner2013} of which the present work is a continuation. They differ in scope and focus:
+We have previously published \<^cite>\<open>"breitner2013"\<close> of which the present work is a continuation. They differ in scope and focus:
 
 \subsubsection{The treatment of $\sqcup$}
 
-In \cite{breitner2013}, the question of the precise meaning of $\sqcup$ is discussed in detail. The
+In \<^cite>\<open>"breitner2013"\<close>, the question of the precise meaning of $\sqcup$ is discussed in detail. The
 original paper is not clear about whether this operator denotes the least upper bound, or the
-right-sided override operator. A lemma stated in \cite{launchbury} only holds if $\sqcup$ is the least upper bound,
+right-sided override operator. A lemma stated in \<^cite>\<open>"launchbury"\<close> only holds if $\sqcup$ is the least upper bound,
 but with that definition, Launchbury's Theorem 2 -- the generalized correctness theorem -- is false;
-a counter-example is given in \cite{breitner2013}.
+a counter-example is given in \<^cite>\<open>"breitner2013"\<close>.
 
 We came up with an alternative operational semantics that keeps more of the
 evaluation context in the judgments and allows the correctness theorem to be proved inductively
@@ -195,7 +195,7 @@ is a defining equation. The argument on the left hand side is the representative
 (defined using the Nominal package), so this is only allowed if the right hand side is indeed independent
  of the actual choice of \<open>x\<close>. This is shown most commonly and easily if \<open>x\<close> is fresh in all the
 other arguments (@{term "atom x \<sharp> \<rho>"}), and indeed the Nominal package allows us to specify this as a side
-condition to the defining equation, which is what we did in \cite{breitner2013}.
+condition to the defining equation, which is what we did in \<^cite>\<open>"breitner2013"\<close>.
 
 But this convenience comes as a price: Such side-conditions are
 only allowed if the argument has finite support (otherwise there might no variable fulfilling
@@ -235,7 +235,7 @@ where the right-hand-side can be shown to be invariant of the choice of \<open>x
 @{thm (lhs) Denotational.ESem_simps(6)}.
 
 This allows us to use the type @{typ "var \<Rightarrow> Value"} for the semantic envionments and considerably
-simplifies the formalization compared to \cite{breitner2013}.
+simplifies the formalization compared to \<^cite>\<open>"breitner2013"\<close>.
 
 \subsubsection{No type @{type assn}}
 
@@ -244,14 +244,14 @@ to define our type @{type exp}, which contains a constructor @{term "Let binds e
 of the parameter for the binding is @{typ "(var \<times> exp) list"}, but the Nominal package does not support
 such nested recursion, and requires a mutual recursive definition with a custom type (@{type assn})
 with constructors @{term ANil} and @{term ACons} that is isomorphic to @{typ "(var \<times> exp) list"}.
-In \cite{breitner2013}, this type and conversion functions from and to @{typ "(var \<times> exp) list"}
+In \<^cite>\<open>"breitner2013"\<close>, this type and conversion functions from and to @{typ "(var \<times> exp) list"}
 cluttered the whole development. In the present work we improved this by defining the type with
 a ``temporary'' constructor @{term_type LetA}. Afterwards we define conversions functions and
 the desired constructor @{term_type Let}, and re-state all lemmas produced by the Nominal package
 (such as type exhaustiveness, distinctiveness of constructors and the induction rules) with that
 constructor. From that point on, the development is free of the crutch @{typ assn}.
 
-In short, the notable changes in this work over \cite{breitner2013} are:
+In short, the notable changes in this work over \<^cite>\<open>"breitner2013"\<close> are:
 \begin{itemize}
 \item We consider \<open>\<squnion>\<close> to be a right-sided update and do discuss neither the problem with
 \<open>\<squnion>\<close> denoting the least uppper bound, nor possible solutions.
@@ -269,7 +269,7 @@ of Launchbury's semantics as well.
 
 They identified a step in his adequacy proof
 relating the standard and the resourced denotational semantics that is not as trivial as it seems at
-first and worked out a detailed pen-and-paper proof \cite{functionspaces}, where they first 
+first and worked out a detailed pen-and-paper proof \<^cite>\<open>"functionspaces"\<close>, where they first 
 construct a similarity relation @{term "DUMMY \<triangleleft>\<triangleright> DUMMY"} between the standard semantic domain
 (@{type Value}) and the resourced domain (@{type CValue}) and show that the denotation semantics yield
 similar results (@{thm denotational_semantics_similar}), which is one step in the adequacy proof.
@@ -278,9 +278,9 @@ and fixing a mistake in the paper (Lemma 2.3(3) does not hold; the problem can b
 an extra round of take-induction in the proof of Proposition 9).
 
 Currently, they are working on completing the adequacy proof as outlined by Launchbury, i.e.\ by going
-via the alternative natural semantics given in \cite{launchbury}, which differs from the semantics
+via the alternative natural semantics given in \<^cite>\<open>"launchbury"\<close>, which differs from the semantics
 above in that the application rule works with an indirection on the heap instead of a substitution
-and that the variable rule has no blackholing and no update. In \cite{indirections}, they relate
+and that the variable rule has no blackholing and no update. In \<^cite>\<open>"indirections"\<close>, they relate
 the original semantics with one where indirections have been introduced. The next step, modifying
 the variable rule, is under development. Once that is done they can close the loop and have
 completed Launchbury's work.

@@ -447,7 +447,7 @@ next
 qed
 
 text \<open>
-  Following Lynch~\cite{lynch:distributed}, we introduce some more useful
+  Following Lynch~\<^cite>\<open>"lynch:distributed"\<close>, we introduce some more useful
   concepts for reasoning about the data structure.
 \<close>
 

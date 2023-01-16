@@ -23,7 +23,7 @@ text \<open>
   the remaining solutions are a trivial consequence of these.
 
   Information on the material treated in this formalisation can be found in many textbooks and
-   lecture notes, e.\,g.\ \cite{jacobson2008solving, auckland_pell}.
+   lecture notes, e.\,g.\ \<^cite>\<open>"jacobson2008solving" and "auckland_pell"\<close>.
 \<close>
 
 subsection \<open>Preliminary facts\<close>

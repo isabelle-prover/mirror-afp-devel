@@ -13,7 +13,7 @@ imports
 begin
 
 text \<open>
-  The Jacobi symbol is a generalisation of the Legendre symbol to non-primes \cite{Legendre_Symbol, Jacobi_Symbol}.
+  The Jacobi symbol is a generalisation of the Legendre symbol to non-primes \<^cite>\<open>"Legendre_Symbol" and "Jacobi_Symbol"\<close>.
   It is defined as
   \[\left(\frac{a}{n}\right) =
       \left(\frac{a}{p_1}\right)^{k_1} \ldots \left(\frac{a}{p_l}\right)^{k_l}\]

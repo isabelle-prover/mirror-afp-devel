@@ -286,7 +286,7 @@ In particular, we can construct a traffic snapshot and a view, such that
 it satisfies our safety predicate for each car, but if we switch the
 perspective of the view to another car, the situation is unsafe. A
 visualisation of this situation can be found in the publication
-of this work at iFM 2017 \cite{Linker2017}.
+of this work at iFM 2017 \<^cite>\<open>"Linker2017"\<close>.
 \<close>
 
 lemma safety_not_invariant_switch:

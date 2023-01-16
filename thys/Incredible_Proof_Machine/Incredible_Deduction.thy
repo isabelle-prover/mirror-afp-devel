@@ -174,7 +174,7 @@ begin
     show False by auto
   qed
 
-  text \<open>This lemma can be found in \cite{incredible}, but it is otherwise inconsequential.\<close>
+  text \<open>This lemma can be found in \<^cite>\<open>"incredible"\<close>, but it is otherwise inconsequential.\<close>
   lemma scopes_nest:
     fixes ps1 ps2
     shows "scope ps1 \<subseteq> scope ps2 \<or> scope ps2 \<subseteq> scope ps1 \<or> scope ps1 \<inter> scope ps2 = {}"

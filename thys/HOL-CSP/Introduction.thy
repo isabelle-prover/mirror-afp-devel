@@ -54,13 +54,13 @@ text\<open>
    This is a formalization in Isabelle/HOL of the work of Hoare and Roscoe
    on the denotational semantics of the Failure/Divergence Model of CSP. 
    It follows essentially the presentation of CSP in Roscoe's
-   Book "Theory and Practice of Concurrency" @{cite "roscoe:csp:1998" }
+   Book "Theory and Practice of Concurrency" \<^cite>\<open>"roscoe:csp:1998"\<close>
    and the semantic details in a joint Paper of Roscoe and Brooks
    "An improved failures model for communicating processes"
-   @{cite "brookes-roscoe85"}.
+   \<^cite>\<open>"brookes-roscoe85"\<close>.
 
    The original version of this formalization, called HOL-CSP 1.0 
-   @{cite "tej.ea:corrected:1997"}, revealed minor, but omnipresent foundational errors
+   \<^cite>\<open>"tej.ea:corrected:1997"\<close>, revealed minor, but omnipresent foundational errors
    in key concepts like the process invariant. A correction was
    proposed slightly before the apparition of Roscoe's book (all three authors  were
    in e-mail contact at that time).
@@ -93,7 +93,7 @@ text\<open>
 text\<open> 
   In contrast to HOL-CSP 1.0, which came with
   an own fixpoint theory partly inspired by previous work of Alberto Camilieri under 
-  HOL4 @{cite"Camilleri91"}, it is the goal of the redesign of HOL-CSP 2.0  to reuse 
+  HOL4 \<^cite>\<open>"Camilleri91"\<close>, it is the goal of the redesign of HOL-CSP 2.0  to reuse 
   the HOLCF theory  that emmerged from Franz Regensburgers work and was substantially 
   extended by Brian Huffman. Thus, the footprint of the HOL-CSP 2.0
   theory should be reduced drastically. Moreover, all proofs
@@ -102,7 +102,7 @@ text\<open>
   theory development with Isabelle. \<close>
 
 section\<open>Introduction\<close>
-text\<open>DRAWN FROM THE PAPER @{cite "tej.ea:corrected:1997"}\<close>
+text\<open>DRAWN FROM THE PAPER \<^cite>\<open>"tej.ea:corrected:1997"\<close>\<close>
 text\<open>
   In his invited lecture at FME'96, C.A.R. Hoare presented his view on the status 
   quo of formal methods in industry. With respect to formal proof methods, he ruled 
@@ -112,16 +112,16 @@ text\<open>
   methods" in industry.
   
   In this paper, we report of a larger verification effort as part of the  UniForM project 
-  @{cite "KriegBrueckner95"}. It revealed an obscure latent error that was not detected 
+  \<^cite>\<open>"KriegBrueckner95"\<close>. It revealed an obscure latent error that was not detected 
   within a decade. It cannot be said that the object of interest is a "large software 
   system" whose failure may "cost millions", but it is a well-known subject in the center 
   of academic interest considered foundational for several formal methods tools: the 
-  theory of the failure- divergence model of CSP (@{cite "Hoare:1985:CSP:3921"}, 
-  @{cite "brookes-roscoe85"}). And indeed we hope that this work may further encourage the use 
+  theory of the failure- divergence model of CSP (\<^cite>\<open>"Hoare:1985:CSP:3921"\<close>, 
+  \<^cite>\<open>"brookes-roscoe85"\<close>). And indeed we hope that this work may further encourage the use 
   of formal proof methods at least in the academic community working on formal methods.
   
   Implementations of proof support for a formal method can roughly be divided into two 
-  categories. In direct tools like FDR @{cite "FDRTutorial2000"}, the logical rules of a 
+  categories. In direct tools like FDR \<^cite>\<open>"FDRTutorial2000"\<close>, the logical rules of a 
   method (possibly integrated into complex proof techniques) are hard-wired into the code of 
   their implementation. Such tools tend to be difficult to modify and to formally reason 
   about, but can possess enviable automatic proof power in specific problem domains 
@@ -129,7 +129,7 @@ text\<open>
 
   The other category can be labelled as logical embeddings. Formal methods such as CSP 
   or Z can be logically embedded into an LCF-style tactical theorem prover such as HOL 
-  @{cite "gordon.ea:hol:1993"} or Isabelle@{cite "nipkow.ea:isabelle:2002"}. Coming with 
+  \<^cite>\<open>"gordon.ea:hol:1993"\<close> or Isabelle\<^cite>\<open>"nipkow.ea:isabelle:2002"\<close>. Coming with 
   an open system design going back to Milner, these provers allow for user-programmed 
   extensions in a logically sound way. Their  strength is flexibility, generality and 
   expressiveness that makes them to symbolic programming environments.
@@ -154,7 +154,7 @@ text\<open>
   with potential interleaving. The semantics becomes compositional, and internal communication
   between sub-components of a component can be modeled by the concealment operator. 
 
-  Hoares work @{cite "Hoare:1985:CSP:3921"} was strongly inspired by this initial idea.
+  Hoares work \<^cite>\<open>"Hoare:1985:CSP:3921"\<close> was strongly inspired by this initial idea.
   However, it became quickly clear that the simplistic automata vision is not a satisfying
   paradigm for all aspects of concurrency. Particularly regarding the nature of communication,
   where one "sends" actively information and the other "receives" it, the bi-directional 

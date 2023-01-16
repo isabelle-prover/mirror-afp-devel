@@ -65,7 +65,7 @@ to occur only in the end of traces in order to signalize successful termination 
 a process. (In the original text of Hoare, this treatment was more
 liberal and lead to foundational problems: the process invariant
 could not be established for the sequential composition operator
-of CSP; see @{cite "tej.ea:corrected:1997"} for details.)\<close>
+of CSP; see \<^cite>\<open>"tej.ea:corrected:1997"\<close> for details.)\<close>
 
 datatype '\<alpha> event = ev '\<alpha> | tick
 

@@ -1702,7 +1702,7 @@ proof (rule ccontr)
     We now take more or less the same approach as before, except that now we find a polynomial
     that has all of the conjugates of the coefficients \<open>\<beta>\<close> as roots. Note that this is a slight
     deviation from Baker's proof, who picks one polynomial for each \<open>\<beta>\<close> independently. I did it
-    this way because, as Bernard~\cite{bernard} observed, it makes the proof a bit easier.
+    this way because, as Bernard~\<^cite>\<open>"bernard"\<close> observed, it makes the proof a bit easier.
   \<close>
   define P :: "int poly" where "P = \<Prod>((min_int_poly \<circ> \<beta>) ` X)"
   define Roots :: "complex set" where "Roots = {x. ipoly P x = 0}"

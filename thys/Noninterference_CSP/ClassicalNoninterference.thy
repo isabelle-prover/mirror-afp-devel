@@ -15,7 +15,7 @@ text \<open>
 \null
 
 The purpose of this section is to prove the equivalence of CSP noninterference security as defined
-previously to the classical notion of noninterference security as formulated in \cite{R3} in the
+previously to the classical notion of noninterference security as formulated in \<^cite>\<open>"R3"\<close> in the
 case of processes representing deterministic state machines, henceforth briefly referred to as
 \emph{classical processes}.
 
@@ -28,7 +28,7 @@ subsection "Classical noninterference"
 
 text \<open>
 Here below are the formalizations of the functions \emph{sources} and \emph{ipurge} defined in
-\cite{R3}, as well as of the classical notion of noninterference security as stated ibid. for a
+\<^cite>\<open>"R3"\<close>, as well as of the classical notion of noninterference security as stated ibid. for a
 deterministic state machine in the general case of a possibly intransitive noninterference policy.
 
 Observe that the function \emph{run} used in \emph{R3} is formalized as function
@@ -286,7 +286,7 @@ subsection "Classical processes"
 
 text \<open>
 The deterministic state machines used as model of computation in the classical theory of
-noninterference security, as expounded in \cite{R3}, have the property that each action produces an
+noninterference security, as expounded in \<^cite>\<open>"R3"\<close>, have the property that each action produces an
 output. Hence, it is natural to take as alphabet of a classical process the universe of the pairs
 \<open>(x, p)\<close>, where \<open>x\<close> is an action and \<open>p\<close> an output. For any state \<open>s\<close>,
 such an event \<open>(x, p)\<close> may occur just in case \<open>p\<close> matches the output produced by

@@ -1,6 +1,6 @@
 section \<open>(Co)Inductive Predicates\<close>
 
-text \<open>This subsection corresponds to Section 4 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>This subsection corresponds to Section 4 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theory FixedPoint
   imports Distributivity Combinability
@@ -77,7 +77,7 @@ lemma smaller_empty:
   "smaller_interp empty_interp x"
   by (simp add: empty_interp_def smaller_interp_def)
 
-text \<open>The definition of set-closure properties corresponds to Definition 8 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The definition of set-closure properties corresponds to Definition 8 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 definition set_closure_property :: "('a \<Rightarrow> 'a \<Rightarrow> 'a set) \<Rightarrow> ('d, 'c, 'a) interp \<Rightarrow> bool" where
   "set_closure_property S \<Delta> \<longleftrightarrow> (\<forall>a b s. a \<in> \<Delta> s \<and> b \<in> \<Delta> s \<longrightarrow> S a b \<subseteq> \<Delta> s)"
@@ -1146,7 +1146,7 @@ qed
 
 
 
-text \<open>The following theorem corresponds to Theorem 5 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The following theorem corresponds to Theorem 5 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theorem FP_preserves_set_closure_property:
   assumes "monotonic f"

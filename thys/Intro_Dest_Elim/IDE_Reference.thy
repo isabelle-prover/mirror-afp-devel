@@ -23,7 +23,7 @@ of predicates stated in the object logic Isabelle/HOL
 of the proof assistant Isabelle.
 
 The primary functionality of the framework is available via the 
-\textit{Isabelle/Isar} \cite{bertot_isar_1999, wenzel_isabelleisar_2007} 
+\textit{Isabelle/Isar} \<^cite>\<open>"bertot_isar_1999" and "wenzel_isabelleisar_2007"\<close> 
 command @{command mk_ide}.
 Given a definition of a predicate in Isabelle/HOL, the
 command can synthesize introduction, destruction and elimination rules
@@ -39,14 +39,14 @@ subsection\<open>Related and previous work\<close>
 
 text\<open>
 The standard distribution of Isabelle provides the \textit{attribute} 
-@{attribute elim_format} \cite{wenzel_isabelle/isar_2019-1} 
+@{attribute elim_format} \<^cite>\<open>"wenzel_isabelle/isar_2019-1"\<close> 
 that can be used for the conversion of the
 destruction rules to the elimination rules. The primary functionality of this
 attribute is reused in the implementation of the command @{command mk_ide}.
 
 Furthermore, Isabelle offers several definitional packages 
 that provide similar rules automatically for the constants created
-by these definitional packages \cite{wenzel_isabelle/isar_2019-1}. 
+by these definitional packages \<^cite>\<open>"wenzel_isabelle/isar_2019-1"\<close>. 
 However, to the best knowledge of the author,
 none of these packages can generate such rules for arbitrary predicates.
 Perhaps, in the future, the approaches can be unified or integrated in
@@ -109,7 +109,7 @@ prior to the application of the functionality associated with the keyword
 then the output of the command 
 (prior to the application of the attributes) is formatted using an algorithm
 associated with the attribute @{attribute rule_format} 
-\cite{wenzel_isabelle/isar_2019-1}. 
+\<^cite>\<open>"wenzel_isabelle/isar_2019-1"\<close>. 
   \<^descr> \<^theory_text>\<open>mk_ide\<close> (\<^theory_text>\<open>rf\<close>) \<open>def_thm\<close> \<^theory_text>\<open>|dest\<close>
 \<open>name[attrbs]\<close>\<^theory_text>\<open>|\<close> converts the definition
 \<open>def_thm\<close> into one or more destruction rules, followed by the application of the
@@ -149,7 +149,7 @@ text\<open>
 In this section, some of the capabilities of the framework IDE are demonstrated
 by example. The example is based on the definition of the constant
 \<^const>\<open>monoid\<close> from the standard library of 
-Isabelle/HOL \cite{noauthor_isabellehol_2020} and given by 
+Isabelle/HOL \<^cite>\<open>"noauthor_isabellehol_2020"\<close> and given by 
 \begin{center}
 @{thm monoid_def[unfolded monoid_axioms_def, no_vars]}
 \end{center}

@@ -5,11 +5,11 @@ imports
 begin
 
 (*>*)
-section\<open> \citet{Kojima:2010}: The non-existence of a stable and non-bossy mechanism \label{sec:bossiness} \<close>
+section\<open> \<^citet>\<open>"Kojima:2010"\<close>: The non-existence of a stable and non-bossy mechanism \label{sec:bossiness} \<close>
 
 text (in Contracts) \<open>
 
-\citet{Kojima:2010} says that ``a mechanism is @{emph \<open>nonbossy\<close>} if an
+\<^citet>\<open>"Kojima:2010"\<close> says that ``a mechanism is @{emph \<open>nonbossy\<close>} if an
 agent cannot change [the] allocation of other agents unless doing so
 also changes her own allocation.'' He shows that no mechanism can be
 both @{const "stable_on"} and @{emph \<open>nonbossy\<close>} in a one-to-one marriage
@@ -77,7 +77,7 @@ end
 text (in Contracts) \<open>
 
 The proof is somewhat similar to those for Roth's impossibility
-results (see, for instance, \citet[Theorem~4.4]{RothSotomayor:1990}).
+results (see, for instance, \<^citet>\<open>\<open>Theorem~4.4\<close> in "RothSotomayor:1990"\<close>).
 It relies on the existence of at least three doctors, three hospitals,
 and a complete set of contracts between these. The following locale
 captures a suitable set of constraints.
@@ -475,7 +475,7 @@ text\<open>
 Therefore doctors can interfere with other doctors' allocations under
 the COP without necessarily disadvantaging themselves, which has
 implications for the notion of @{emph \<open>group strategy-proof\<close>}
-\citep{HatfieldKojima:2009}; see \S\ref{sec:strategic-gsp}.
+\<^citep>\<open>"HatfieldKojima:2009"\<close>; see \S\ref{sec:strategic-gsp}.
 
 \<close>
 (*<*)

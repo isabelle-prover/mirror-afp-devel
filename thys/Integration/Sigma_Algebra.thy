@@ -17,7 +17,7 @@ text \<open>The $\isacommand {theory}$ command commences a formal document and e
   numbers is loaded. This theory includes and builds upon a tiny theory of the
   same name by Markus Wenzel. This theory as well as \<open>Measure\<close>
   in \ref{sec:measure-spaces} is heavily
-  influenced by Joe Hurd's thesis \cite{hurd2002} and has been designed to keep the terminology as
+  influenced by Joe Hurd's thesis \<^cite>\<open>"hurd2002"\<close> and has been designed to keep the terminology as
   consistent as possible with that work.
 
   Sigma algebras are an elementary concept in measure

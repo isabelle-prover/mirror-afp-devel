@@ -1401,7 +1401,7 @@ end
 section \<open>Refinement to Gabow's Data Structure\<close>text_raw\<open>\label{sec:algo-ds}\<close>
 
 text \<open>
-  The implementation due to Gabow \cite{Gabow2000} represents a path as
+  The implementation due to Gabow \<^cite>\<open>"Gabow2000"\<close> represents a path as
   a stack \<open>S\<close> of single nodes, and a stack \<open>B\<close> that contains the
   boundaries of the collapsed segments. Moreover, a map \<open>I\<close> maps nodes
   to their stack indices.

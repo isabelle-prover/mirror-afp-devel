@@ -181,7 +181,7 @@ text \<open>
   The following distribution describes the number of comparisons made by randomised 
   QuickSort in terms of the list length. (This is only valid if all list elements are distinct)
 
-  A succinct explanation of this cost analysis is given by Jacek Cicho\'{n}~\cite{cichon}.
+  A succinct explanation of this cost analysis is given by Jacek Cicho\'{n}~\<^cite>\<open>"cichon"\<close>.
 \<close>
 fun rqs_cost :: "nat \<Rightarrow> nat pmf" where
   "rqs_cost 0 = return_pmf 0"

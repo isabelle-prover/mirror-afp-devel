@@ -1,6 +1,6 @@
 section \<open>Extended Finite State Machines\<close>
 
-text\<open>This theory defines extended finite state machines as presented in \cite{foster2018}. States
+text\<open>This theory defines extended finite state machines as presented in \<^cite>\<open>"foster2018"\<close>. States
 are indexed by natural numbers, however, since transition matrices are implemented by finite sets,
 the number of reachable states in $S$ is necessarily finite. For ease of implementation, we
 implicitly make the initial state zero for all EFSMs. This allows EFSMs to be represented purely by

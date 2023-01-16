@@ -10,7 +10,7 @@ field to prove Macintyre's quantifier elimination theorem. In particular, we def
 subsets of $\mathbb{Q}_p^n$, semi-algebraic functions $\mathbb{Q}_p^n \to \mathbb{Q}_p$, and semi-
 algebraic mappings $\mathbb{Q}_p^n \to \mathbb{Q}_p^m$  for arbitrary $n, m \in \mathbb{N}$. In
 addition we prove that many common sets and functions are semi-algebraic. We are closely following
-the paper \cite{denef1986} by Denef, where an algebraic proof of Mactinyre's theorem is developed.\<close>
+the paper \<^cite>\<open>"denef1986"\<close> by Denef, where an algebraic proof of Mactinyre's theorem is developed.\<close>
 
 (**************************************************************************************************)
 (**************************************************************************************************)
@@ -624,7 +624,7 @@ text\<open>
   $p$-adic valuation on $\mathbb{Q}_p$. In fact, by Macintyre's quantifier elimination theorem
   for the first-order theory of $\mathbb{Q}_p$ in this language, one can equivalently remove the
   ``quantifier-free" clause from the latter definition. The definition we give here is also
-  equivalent, and due to Denef in \cite{denef1986}. The given definition here is desirable mainly
+  equivalent, and due to Denef in \<^cite>\<open>"denef1986"\<close>. The given definition here is desirable mainly
   for its utility in producing a proof of Macintyre's theorem, which is our overarching goal.
 \<close>
       (********************************************************************************************)
@@ -6629,7 +6629,7 @@ subsection\<open>Semialgebraic Functions\<close>
 text\<open>
   The most natural way to define a semialgebraic function $f: \mathbb{Q}_p^n \to \mathbb{Q}_p$ is a
   function whose graph is a semialgebraic subset of $\mathbb{Q}_p^{n+1}$. However, the definition
-  given here is slightly different, and devised by Denef in \cite{denef1986} in order to prove
+  given here is slightly different, and devised by Denef in \<^cite>\<open>"denef1986"\<close> in order to prove
   Macintyre's theorem. As Denef notes, we can use Macintyre's theorem to deduce that the given
   definition perfectly aligns with the intuitive one.
 \<close>

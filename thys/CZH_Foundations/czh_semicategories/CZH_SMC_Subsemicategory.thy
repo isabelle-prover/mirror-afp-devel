@@ -24,7 +24,7 @@ subsection\<open>Simple subsemicategory\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale subsemicategory = 
   sdg: semicategory \<alpha> \<BB> + dg: semicategory \<alpha> \<CC> for \<alpha> \<BB> \<CC> + 
@@ -250,7 +250,7 @@ subsection\<open>Inclusion semifunctor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 abbreviation (input) smcf_inc :: "V \<Rightarrow> V \<Rightarrow> V"
   where "smcf_inc \<equiv> dghm_inc"
@@ -340,7 +340,7 @@ lemmas [smc_op_simps] = subsemicategory.subdg_op_smc_smcf_inc
 subsection\<open>Full subsemicategory\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale fl_subsemicategory = subsemicategory +
   assumes fl_subsemicategory_fl_subdigraph: "smc_dg \<BB> \<subseteq>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> smc_dg \<CC>"
@@ -384,7 +384,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 
 text\<open>
-See \cite{noauthor_nlab_nodate}\footnote{
+See \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/wide+subcategory}
 }).
 \<close>

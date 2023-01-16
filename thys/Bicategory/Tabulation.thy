@@ -15,7 +15,7 @@ begin
     and \<open>\<rho>\<close> is a $2$-cell from \<open>g\<close> to \<open>r \<cdot> f\<close>, such that a certain biuniversal property
     is satisfied.
     The notion was introduced in a study of bicategories of spans and relations by
-    Carboni, Kasangian, and Street \cite{carboni-et-al} (hereinafter, ``CKS''),
+    Carboni, Kasangian, and Street \<^cite>\<open>"carboni-et-al"\<close> (hereinafter, ``CKS''),
     who named it after a related,
     but different notion previously used by Freyd in his study of the algebra of relations.
     One can find motivation for the concept of tabulation by considering the problem of

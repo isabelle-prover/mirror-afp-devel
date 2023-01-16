@@ -14,8 +14,8 @@ subsection\<open> Step 1: Specification \label{sec:KMP:specification} \<close>
 
 text\<open>
 
-We begin with the specification of string matching given by @{cite [cite_macro=citet] \<open>Chapter~16\<close>
-"Bird:PearlsofFAD:2010"}. (References to ``Bird'' in the following are to this text.) Note that
+We begin with the specification of string matching given by \<^citet>\<open>\<open>Chapter~16\<close> in
+"Bird:PearlsofFAD:2010"\<close>. (References to ``Bird'' in the following are to this text.) Note that
 we assume @{const \<open>eq\<close>} has some nice properties (see \S\ref{sec:equality}) and
 use strict lists.
 
@@ -618,8 +618,7 @@ text\<open>
               (q_4) edge [bend left,color=red]      (q_0)  % K opt
               (q_5) edge [bend left]                (q_2);
   \end{tikzpicture}
-  \caption{An example from @{cite [cite_macro=citet]
-    \<open>\S2.1\<close> "CrochemoreRytter:2002"}. The MP tree for the
+  \caption{An example from \<^citet>\<open>\<open>\S2.1\<close> in "CrochemoreRytter:2002"\<close>. The MP tree for the
     pattern $01001$ is drawn in black: right transitions are labelled
     with a symbol, whereas left transitions are unlabelled. The two
     `K'-optimised left transitions are shown in red. The boxes denote
@@ -627,16 +626,13 @@ text\<open>
   \label{fig:example_tree}
 \end{figure}
 
-This tree can be interpreted as a sort of automaton\footnote{@{cite
-[cite_macro=citet] \<open>\S3.1\<close> "Bird:2012"} suggests it can
-be thought of as a doubly-linked list, following @{cite
-[cite_macro=citet] "TakeichiAkama:1990"}.)}, where @{const
+This tree can be interpreted as a sort of automaton\footnote{\<^citet>\<open>\<open>\S3.1\<close> in "Bird:2012"\<close> suggests it can
+be thought of as a doubly-linked list, following \<^citet>\<open>"TakeichiAkama:1990"\<close>.)}, where @{const
 \<open>op2\<close>} goes @{const \<open>right\<close>} if the pattern
 continues with the next element of the text, and @{const
 \<open>left\<close>} otherwise, to determine how much of a prefix of
 the pattern could still be in play.  Figure~\ref{fig:example_tree}
-visualises such an automaton for the pattern $01001$, used by @{cite
-[cite_macro=citet] \<open>\S2.1\<close> "CrochemoreRytter:2002"} to
+visualises such an automaton for the pattern $01001$, used by \<^citet>\<open>\<open>\S2.1\<close> in "CrochemoreRytter:2002"\<close> to
 illustrate the difference between Morris-Pratt (MP) and
 Knuth-Morris-Pratt (KMP) preprocessing as we discuss below.  Note that
 these are not the classical Mealy machines that correspond to regular
@@ -720,10 +716,10 @@ nested fixed points.
 The KMP preprocessor is expressed by the @{const \<open>left2\<close>} function, where @{const \<open>op2\<close>} is used
 to match the pattern against itself; the use of @{const \<open>op2\<close>} in @{const \<open>matches2\<close>} (``the driver'')
 is responsible for matching the (preprocessed) pattern against the text. This formally cashes in
-an observation by @{cite [cite_macro=citet] \<open>\S5\<close> "vanderWoude:1989"}, that these two algorithms
+an observation by \<^citet>\<open>\<open>\S5\<close> in "vanderWoude:1989"\<close>, that these two algorithms
 are essentially the same, which has eluded other presentations\footnote{For instance, contrast
 our shared use of @{const \<open>op2\<close>} with the separated \texttt{match}
-and \texttt{rematch} functions of @{cite [cite_macro=citet] \<open>Figure~1\<close> "AgerDanvyRohde:2006"}.}.
+and \texttt{rematch} functions of \<^citet>\<open>\<open>Figure~1\<close> in "AgerDanvyRohde:2006"\<close>.}.
 
 Bird uses @{const \<open>Null\<close>} on a left path to signal to the driver that it should discard the
 current element of the text and restart matching from the beginning of the pattern (i.e,
@@ -749,8 +745,8 @@ driver comparisons; consider the pattern $\mathtt{1}^n$ for instance.
 More formally, @{const \<open>next\<close>} ensures that the heads of
 the suffixes of the pattern (@{term \<open>vs\<close>}) on consecutive
 labels on left paths are distinct; see below for a proof of this fact
-in our setting, and @{cite [cite_macro=citet] \<open>\S3.3.4\<close>
-"Gusfield:1997"} for a classical account. Unlike Bird's suggestion
+in our setting, and \<^citet>\<open>\<open>\S3.3.4\<close> in
+"Gusfield:1997"\<close> for a classical account. Unlike Bird's suggestion
 (p134), our @{const \<open>next\<close>} function is not recursive.
 
 We note in passing that while MP only allows \<open>Null\<close> on
@@ -854,8 +850,7 @@ such as:
   @{term \<open>t = Node\<cdot>(pat, [::])\<cdot>Null\<cdot>Null\<close>}
 \end{center}
 
-Using worker/wrapper fusion @{cite [cite_macro=citep]
-"GillHutton:2009" and "Gammie:2011"} specialised to @{const
+Using worker/wrapper fusion \<^citep>\<open>"GillHutton:2009" and "Gammie:2011"\<close> specialised to @{const
 \<open>sscanl\<close>} (@{thm [source] "sscanl_ww_fusion"}) we only
 need to establish this identity for valid representations, i.e., when
 \<open>t\<close> lies under the image of \<open>rep2\<close>. In
@@ -954,17 +949,14 @@ does depend on being able to traverse incompletely defined trees.
 
 The key difficulty in defining this computation in HOL using present
 technology is that @{const \<open>op2\<close>} is neither terminating
-nor @{emph \<open>friendly\<close>} in the terminology of @{cite [cite_macro=citet]
-"BlanchetteEtAl:2017"}.
+nor @{emph \<open>friendly\<close>} in the terminology of \<^citet>\<open>"BlanchetteEtAl:2017"\<close>.
 
 While this representation works for automata with this sort of
 structure, it is unclear how general it is; in particular it may not
 work so well if @{const \<open>left\<close>} branches can go forward
-as well as back. See also the commentary in @{cite [cite_macro=citet]
-"HinzeJeuring:2001"}, who observe that sharing is easily lost, and so
+as well as back. See also the commentary in \<^citet>\<open>"HinzeJeuring:2001"\<close>, who observe that sharing is easily lost, and so
 it is probably only useful in ``closed'' settings like the present
-one, unless the language is extended in unusual ways @{cite
-[cite_macro=citep] "JeanninEtAl:2017"}.
+one, unless the language is extended in unusual ways \<^citep>\<open>"JeanninEtAl:2017"\<close>.
 
 \label{thm:k_property}
 
@@ -1662,7 +1654,7 @@ qed
 text\<open>
 
 We conclude this section by observing that accumulator-introduction is a well known technique
-(see, for instance, @{cite [cite_macro=citet] \<open>\S13.6\<close> "Hutton:2016"}), but the examples in the
+(see, for instance, \<^citet>\<open>\<open>\S13.6\<close> in "Hutton:2016"\<close>), but the examples in the
 literature assume that the type involved is defined inductively. Bird adopts this strategy without
 considering what the mixed inductive/coinductive rule is that justifies the preservation of total
 correctness.
@@ -1966,9 +1958,9 @@ text\<open>
 The final program above is easily syntactically translated into the
 Haskell shown in Figure~\ref{fig:haskell-kmp}, and one can expect
 GHC's list fusion machinery to compile the top-level driver into an
-efficient loop.  @{cite [cite_macro=citet] "LochbihlerMaximova:2015"}
+efficient loop.  \<^citet>\<open>"LochbihlerMaximova:2015"\<close>
 have mechanised this optimisation for Isabelle/HOL's code generator
-(and see also @{cite [cite_macro=citet] "Huffman:2009"}).
+(and see also \<^citet>\<open>"Huffman:2009"\<close>).
 
 As we lack both pieces of infrastructure we show such a fusion is sound
 by hand.

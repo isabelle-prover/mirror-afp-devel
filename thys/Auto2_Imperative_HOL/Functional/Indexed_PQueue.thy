@@ -12,7 +12,7 @@ begin
 text \<open>
   Verification of indexed priority queue: functional part. The data
   structure is also verified by Lammich in
-  \cite{Refine_Imperative_HOL-AFP}.
+  \<^cite>\<open>"Refine_Imperative_HOL-AFP"\<close>.
 \<close>
 
 subsection \<open>Successor functions, eq-pred predicate\<close>

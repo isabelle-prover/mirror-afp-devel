@@ -96,7 +96,7 @@ begin
 
   text \<open>
     Our primary definition for ``monoidal category'' follows the somewhat non-traditional
-    development in \cite{Etingof15}.  There a monoidal category is defined to be a category
+    development in \<^cite>\<open>"Etingof15"\<close>.  There a monoidal category is defined to be a category
     \<open>C\<close> equipped with a binary \emph{tensor product} functor \<open>T: C \<times> C \<rightarrow> C\<close>,
     an \emph{associativity isomorphism}, which is a natural isomorphism
     \<open>\<alpha>: T o (T \<times> C) \<rightarrow> T o (C \<times> T)\<close>, a \emph{unit object} \<open>\<I>\<close> of \<open>C\<close>,
@@ -109,7 +109,7 @@ begin
     In more traditional developments, the definition of monoidal category involves additional
     left and right \emph{unitor} isomorphisms \<open>\<lambda>\<close> and \<open>\<rho>\<close> and associated axioms
     involving their components.
-    However, as is shown in \cite{Etingof15} and formalized here, the unitors are uniquely
+    However, as is shown in \<^cite>\<open>"Etingof15"\<close> and formalized here, the unitors are uniquely
     determined by \<open>\<alpha>\<close> and their values \<open>\<lambda>(\<I>)\<close> and \<open>\<rho>(\<I>)\<close> at \<open>\<I>\<close>,
     which coincide.  Treating \<open>\<lambda>\<close> and \<open>\<rho>\<close> as defined notions results in a more
     economical basic definition of monoidal category that requires less data to be given,
@@ -725,7 +725,7 @@ begin
     text\<open>
       The components of the left and right unitors are related via a ``triangle''
       diagram that also involves the associator.
-      The proof follows \cite{Etingof15}, Proposition 2.2.3.
+      The proof follows \<^cite>\<open>"Etingof15"\<close>, Proposition 2.2.3.
 \<close>
 
     lemma triangle:
@@ -789,7 +789,7 @@ $$\xymatrix{
         qed
       qed
       text\<open>
-         In \cite{Etingof15} it merely states that the preceding result suffices
+         In \<^cite>\<open>"Etingof15"\<close> it merely states that the preceding result suffices
          ``because any object of \<open>C\<close> is isomorphic to one of the form @{term "\<I> \<otimes> b"}.''
          However, it seems a little bit more involved than that to formally transport the
          equation \<open>(*)\<close> along the isomorphism @{term "\<l>[b]"} from @{term "\<I> \<otimes> b"}
@@ -885,10 +885,10 @@ $$\xymatrix{
     qed
 
     text\<open>
-      The following result is quoted without proof as Theorem 7 of \cite{Kelly64} where it is
-      attributed to MacLane \cite{MacLane63}.  It also appears as \cite{MacLane71},
+      The following result is quoted without proof as Theorem 7 of \<^cite>\<open>"Kelly64"\<close> where it is
+      attributed to MacLane \<^cite>\<open>"MacLane63"\<close>.  It also appears as \<^cite>\<open>"MacLane71"\<close>,
       Exercise 1, page 161.  I did not succeed within a few hours to construct a proof following
-      MacLane's hint.  The proof below is based on \cite{Etingof15}, Proposition 2.2.4.
+      MacLane's hint.  The proof below is based on \<^cite>\<open>"Etingof15"\<close>, Proposition 2.2.4.
 \<close>
 
     lemma lunit_tensor':
@@ -1018,9 +1018,9 @@ $$\xymatrix{
     qed
 
     text\<open>
-      The following non-obvious fact is Corollary 2.2.5 from \cite{Etingof15}.
-      The statement that @{term "\<l>[\<I>] = \<r>[\<I>]"} is Theorem 6 from \cite{Kelly64}.
-      MacLane \cite{MacLane71} does not show this, but assumes it as an axiom.
+      The following non-obvious fact is Corollary 2.2.5 from \<^cite>\<open>"Etingof15"\<close>.
+      The statement that @{term "\<l>[\<I>] = \<r>[\<I>]"} is Theorem 6 from \<^cite>\<open>"Kelly64"\<close>.
+      MacLane \<^cite>\<open>"MacLane71"\<close> does not show this, but assumes it as an axiom.
 \<close>
 
     lemma unitor_coincidence:
@@ -1086,7 +1086,7 @@ $$\xymatrix{
 
   text\<open>
     We now show that the unit \<open>\<iota>\<close> of a monoidal category is unique up to a unique
-    isomorphism (Proposition 2.2.6 of \cite{Etingof15}).
+    isomorphism (Proposition 2.2.6 of \<^cite>\<open>"Etingof15"\<close>).
 \<close>
 
   locale monoidal_category_with_alternate_unit =
@@ -1126,7 +1126,7 @@ $$\xymatrix{
     qed
 
     text\<open>
-      The following is Exercise 2.2.7 of \cite{Etingof15}.
+      The following is Exercise 2.2.7 of \<^cite>\<open>"Etingof15"\<close>.
 \<close>
 
     lemma i_maps_\<iota>_to_\<iota>\<^sub>1:
@@ -4423,7 +4423,7 @@ $$\xymatrix{
     qed
 
     text\<open>
-      MacLane \cite{MacLane71} says: ``A coherence theorem asserts `Every diagram commutes',''
+      MacLane \<^cite>\<open>"MacLane71"\<close> says: ``A coherence theorem asserts `Every diagram commutes',''
       but that is somewhat misleading.  A coherence theorem provides some kind of hopefully
       useful way of distinguishing diagrams that definitely commute from diagrams that might not.
       The next result expresses coherence for monoidal categories in this way.

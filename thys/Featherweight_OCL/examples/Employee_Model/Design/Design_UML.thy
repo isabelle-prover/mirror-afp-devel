@@ -64,7 +64,7 @@ text\<open>
 text\<open>Such generic function or ``compiler'' can be implemented in
   Isabelle on the ML level.  This has been done, for a semantics
   following the open-world assumption, for UML 2.0
-  in~\cite{brucker.ea:extensible:2008-b, brucker:interactive:2007}. In
+  in~\<^cite>\<open>"brucker.ea:extensible:2008-b" and "brucker:interactive:2007"\<close>. In
   this paper, we follow another approach for UML 2.4: we define the
   concepts of the compilation informally, and present a concrete
   example which is verified in Isabelle/HOL.\<close>
@@ -73,14 +73,14 @@ subsection\<open>Outlining the Example\<close>
 
 text\<open>We are presenting here a ``design-model'' of the (slightly
 modified) example Figure 7.3, page 20 of
-the OCL standard~\cite{omg:ocl:2012}. To be precise, this theory contains the formalization of
+the OCL standard~\<^cite>\<open>"omg:ocl:2012"\<close>. To be precise, this theory contains the formalization of
 the data-part covered by the UML class model (see \autoref{fig:person}):\<close>
 
 text\<open>
 \begin{figure}
   \centering\scalebox{.3}{\includegraphics{figures/person.png}}%
   \caption{A simple UML class model drawn from Figure 7.3,
-  page 20 of~\cite{omg:ocl:2012}. \label{fig:person}}
+  page 20 of~\<^cite>\<open>"omg:ocl:2012"\<close>. \label{fig:person}}
 \end{figure}
 \<close>
 

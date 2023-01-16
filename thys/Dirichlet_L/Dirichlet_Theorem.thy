@@ -14,8 +14,8 @@ text \<open>
   We can now turn to the proof of the main result: Dirichlet's theorem about the infinitude
   of primes in arithmetic progressions.
 
-  There are previous proofs of this by John Harrison in HOL Light~\cite{harrison-dirichlet} and 
-  by Mario Carneiro in Metamath~\cite{carneiro16}. Both of them strive to prove Dirichlet's
+  There are previous proofs of this by John Harrison in HOL Light~\<^cite>\<open>"harrison-dirichlet"\<close> and 
+  by Mario Carneiro in Metamath~\<^cite>\<open>"carneiro16"\<close>. Both of them strive to prove Dirichlet's
   theorem with a minimum amount of auxiliary results and definitions, whereas our goal was to
   get a short and simple proof of Dirichlet's theorem built upon a large library of Analytic
   Number Theory.
@@ -81,7 +81,7 @@ subsection \<open>The contribution of the non-principal characters\<close>
 
 text \<open>
   The estimates in the next two sections are partially inspired by John Harrison's
-  proof of Dirichlet's Theorem~\cite{harrison-dirichlet}.
+  proof of Dirichlet's Theorem~\<^cite>\<open>"harrison-dirichlet"\<close>.
 
   We first estimate the growth of the partial sums of
     \[-L'(1, \chi)/L(1, \chi) = \sum_{k=1}^\infty \chi(k) \frac{\Lambda(k)}{k}\]

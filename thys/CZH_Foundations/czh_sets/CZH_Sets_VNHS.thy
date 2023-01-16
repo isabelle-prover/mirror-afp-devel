@@ -15,7 +15,7 @@ subsection\<open>Background\<close>
 text\<open>
 The subsection presents several further auxiliary results about the 
 von Neumann hierarchy of sets. The primary general reference for this section
-is \cite{takeuti_introduction_1971}.
+is \<^cite>\<open>"takeuti_introduction_1971"\<close>.
 \<close>
 
 
@@ -825,7 +825,7 @@ The subsection demonstrates that the axioms of ZFC except for the
 Axiom Schema of Replacement hold in \<^term>\<open>Vset \<alpha>\<close> for any limit ordinal
 \<^term>\<open>\<alpha>\<close> such that \<^term>\<open>\<omega> \<in>\<^sub>\<circ> \<alpha>\<close>\footnote{The presentation of the axioms is 
 loosely based on the statement of the axioms of ZFC in Chapters 1-11 in 
-\cite{takeuti_introduction_1971}.}.
+\<^cite>\<open>"takeuti_introduction_1971"\<close>.}.
 \<close>
 
 locale \<Z> = 

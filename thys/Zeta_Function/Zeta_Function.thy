@@ -1072,8 +1072,8 @@ qed
 subsection \<open>The non-vanishing of $\zeta$ for $\mathfrak{R}(s) \geq 1$\<close>
 
 text \<open>
-  This proof is based on a sketch by Newman~\cite{newman1998analytic}, which was previously
-  formalised in HOL Light by Harrison~\cite{harrison2009pnt}, albeit in a much more concrete
+  This proof is based on a sketch by Newman~\<^cite>\<open>"newman1998analytic"\<close>, which was previously
+  formalised in HOL Light by Harrison~\<^cite>\<open>"harrison2009pnt"\<close>, albeit in a much more concrete
   and low-level style.
 
   Our aim here is to reproduce Newman's proof idea cleanly and on the same high level of
@@ -1835,7 +1835,7 @@ qed
 subsection \<open>The periodic zeta function\<close>
 
 text \<open>
-  The periodic zeta function $F(s, q)$ (as described e.\,g.\ by Apostol~\cite{apostol1976analytic} 
+  The periodic zeta function $F(s, q)$ (as described e.\,g.\ by Apostol~\<^cite>\<open>"apostol1976analytic"\<close> 
   is related to the Hurwitz zeta function. It is periodic in \<open>q\<close> with period 1 and it can be 
   represented by a Dirichlet series that is absolutely convergent for $\mathfrak{R}(s) > 1$.
    If \<open>q \<notin> \<int>\<close>, it furthermore convergent for $\mathfrak{R}(s) > 0$.

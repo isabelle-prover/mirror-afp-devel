@@ -261,7 +261,7 @@ text \<open>Positive orientation.\<close>
 
 text \<open>Given a representative Hermitean matrix of a circline, it represents exactly one of the two
 possible oriented circlines. The choice of what should be called a positive orientation is
-arbitrary. We follow Schwerdtfeger \cite{schwerdtfeger}, use the leading coefficient $A$ as the
+arbitrary. We follow Schwerdtfeger \<^cite>\<open>"schwerdtfeger"\<close>, use the leading coefficient $A$ as the
 first criterion, and say that circline matrices with $A > 0$ are called positively oriented, and
 with $A < 0$ negatively oriented. However, Schwerdtfeger did not discuss the possible case of $A =
 0$ (the case of lines), so we had to extend his definition to achieve a total characterization.\<close>

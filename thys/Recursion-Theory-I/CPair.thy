@@ -11,7 +11,7 @@ begin
 
 text \<open>
   We introduce a particular coding \<open>c_pair\<close> from ordered pairs
-  of natural numbers to natural numbers.  See \cite{Rogers} and the
+  of natural numbers to natural numbers.  See \<^cite>\<open>"Rogers"\<close> and the
   Isabelle documentation for more information.
 \<close>
 

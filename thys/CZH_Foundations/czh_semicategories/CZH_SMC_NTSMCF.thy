@@ -49,7 +49,7 @@ subsection\<open>Definition and elementary properties\<close>
 text\<open>
 A natural transformation of semifunctors, as presented in this work,
 is a generalization of the concept of a natural transformation, as presented in
-Chapter I-4 in \cite{mac_lane_categories_2010}, to semicategories and
+Chapter I-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>, to semicategories and
 semifunctors.
 \<close>
 
@@ -390,7 +390,7 @@ subsection\<open>Opposite natural transformation of semifunctors\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See section 1.5 in \cite{bodo_categories_1970}.\<close>
+text\<open>See section 1.5 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 definition op_ntsmcf :: "V \<Rightarrow> V"
   where "op_ntsmcf \<NN> =
@@ -515,7 +515,7 @@ subsection\<open>Vertical composition of natural transformations\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-4 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition ntsmcf_vcomp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<bullet>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<close> 55)
   where "ntsmcf_vcomp \<MM> \<NN> = 
@@ -702,7 +702,7 @@ subsection\<open>Horizontal composition of natural transformations\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition ntsmcf_hcomp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<circ>\<^sub>N\<^sub>T\<^sub>S\<^sub>M\<^sub>C\<^sub>F\<close> 55)
   where "ntsmcf_hcomp \<MM> \<NN> =

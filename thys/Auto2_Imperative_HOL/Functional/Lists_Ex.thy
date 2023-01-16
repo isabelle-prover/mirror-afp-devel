@@ -11,11 +11,11 @@ begin
 
 text \<open>
   Examples on lists. The itrev example comes from
-  \cite[Section 2.4]{prog-prove}.
+  \<^cite>\<open>\<open>Section 2.4\<close> in "prog-prove"\<close>.
 
   The development here of insertion and deletion on lists is
   essential for verifying functional binary search trees and
-  red-black trees. The idea, following Nipkow~\cite{nipkow16},
+  red-black trees. The idea, following Nipkow~\<^cite>\<open>"nipkow16"\<close>,
   is that showing sorted-ness and preservation of multisets for trees
   should be done on the in-order traversal of the tree.
 \<close>

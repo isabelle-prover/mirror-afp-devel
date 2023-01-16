@@ -195,7 +195,7 @@ proof -
     by (auto simp: sum_incoming_pointwise)
   finally show "?LHS = ?RHS" .
 qed  
-text \<open>Note that we tried to follow the proof presented by Cormen et al.~\cite{CLRS09} 
+text \<open>Note that we tried to follow the proof presented by Cormen et al.~\<^cite>\<open>"CLRS09"\<close> 
   as closely as possible. Unfortunately, this proof generalizes the summation to all 
   nodes immediately, rendering the first equation invalid.
   Trying to fix this error, we encountered that the step that uses the conservation 

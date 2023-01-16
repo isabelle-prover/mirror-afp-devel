@@ -20,11 +20,11 @@ Isabelle/Isar infrastructure and full automation of the application of
 the ERA under favorable conditions. 
 The design of the framework rests largely on our 
 interpretation of several ideas expressed by the authors 
-of \cite{kuncar_types_2019} and \cite{immler_smooth_2019}. 
+of \<^cite>\<open>"kuncar_types_2019"\<close> and \<^cite>\<open>"immler_smooth_2019"\<close>. 
 
 It has already been mentioned that the primary functionality of the ETTS 
 is available via the Isabelle/Isar 
-\cite{bertot_isar_1999,wenzel_isabelleisar_2007}
+\<^cite>\<open>"bertot_isar_1999" and "wenzel_isabelleisar_2007"\<close>
 commands @{command tts_context}, @{command tts_lemmas} and @{command tts_lemma}.
 There also exist secondary commands aimed at resolving certain specific 
 problems that one may encounter during relativization:
@@ -37,7 +37,7 @@ explained in more detail in subsection \ref{sec:sbts} below.
 It is important to note that the description of the ETTS presented
 in this subsection is only a simplified model
 of its programmatic implementation in
-\textit{Isabelle/ML} \cite{milner_definition_1997,wenzel_isabelle/isar_2019}. 
+\textit{Isabelle/ML} \<^cite>\<open>"milner_definition_1997" and "wenzel_isabelle/isar_2019"\<close>. 
 \<close>
 
 
@@ -48,14 +48,14 @@ subsection\<open>Preliminaries\<close>
 text\<open>
 The ERA is an extension of the RA that 
 provides means for the automation of a design pattern similar 
-to the one that was proposed in \cite{immler_smooth_2019}, 
+to the one that was proposed in \<^cite>\<open>"immler_smooth_2019"\<close>, 
 as well as several additional steps for pre-processing of the input 
 and post-processing of the result of the relativization.
 In a certain restricted sense the ERA can be seen as 
 a localized form of the RA, as it provides additional infrastructure 
 aimed specifically at making the relativization of theorems stated in the 
 context of Isabelle's \textit{locales} 
-\cite{kammuller_locales_1999, berardi_locales_2004, ballarin_locales_2014} 
+\<^cite>\<open>"kammuller_locales_1999" and "berardi_locales_2004" and "ballarin_locales_2014"\<close> 
 more convenient.
 
 In what follows, assume the existence of an underlying well-formed 
@@ -97,7 +97,7 @@ relativization process is related to the application of Transfer during
 step 5 of the RA: a suitable transfer rule for a given constant-instance 
 may exist only under non-conventional side conditions:
 an important example that showcases this issue is the built-in constant 
-$\varepsilon$ (see \cite{kuncar_types_2019} and \cite{immler_smooth_2019}
+$\varepsilon$ (see \<^cite>\<open>"kuncar_types_2019"\<close> and \<^cite>\<open>"immler_smooth_2019"\<close>
 for further information). 
 Unfortunately, the ETTS does not offer a fundamental solution to this problem: 
 the responsibility for providing suitable transfer rules for the application 
@@ -107,9 +107,9 @@ additional infrastructure that may improve the user experience when
 dealing with the transfer rules that can only be conveniently stated in 
 an explicitly relativized local context (usually a relativized
 locale): a common problem that was already explored in 
-\cite{immler_smooth_2019}.
+\<^cite>\<open>"immler_smooth_2019"\<close>.
 
-The authors of \cite{immler_smooth_2019} choose to perform the relativization
+The authors of \<^cite>\<open>"immler_smooth_2019"\<close> choose to perform the relativization
 of theorems that stem from their specifications in a locale context 
 from within another dedicated relativized locale context.
 The relativized operations that are represented either by the locale parameters
@@ -172,7 +172,7 @@ Once the proof is completed, the result is registered in the so-called
 \textit{sbt-database} allowing a lookup of such results by the 
 sbterm $t$ (the terms and results are allowed to morph
 when the lookup is performed from within a context different 
-from $\Gamma$ \cite{kauers_context_2007}).
+from $\Gamma$ \<^cite>\<open>"kauers_context_2007"\<close>).
 \<close>
 
 
@@ -209,14 +209,14 @@ of the sbterm specification follows a convention similar to the one
 introduced for the RI specification elements.
 
 The rewrite rules for the set-based theorem can be any set of 
-valid rules for the Isabelle simplifier \cite{wenzel_isabelle/isar_2019-1}; 
+valid rules for the Isabelle simplifier \<^cite>\<open>"wenzel_isabelle/isar_2019-1"\<close>; 
 the known premises for the set-based theorem can be any finite 
 sequence of deductions in $\Gamma$; 
 the specification of the elimination of premises in the set-based theorem 
 is a pair $(\bar{t}, m)$, where $\bar{t}$ is a sequence of formulae and $m$ 
 is a proof method; the attributes for the set-based theorem
 is a sequence of attributes of Isabelle
-(e.g., see \cite{wenzel_isabelle/isar_2019-1}).
+(e.g., see \<^cite>\<open>"wenzel_isabelle/isar_2019-1"\<close>).
 \<close>
 
 
@@ -267,7 +267,7 @@ $\Gamma \subseteq \Gamma'$ and
 Then, the properties of the Hilbert choice $\varepsilon$ are used for the 
 definition of $\mathsf{Rep}$ and $\mathsf{Abs}$ such that 
 \mbox{$\Gamma' \vdash {}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}$} 
-(e.g., see \cite{kuncar_types_2015}).
+(e.g., see \<^cite>\<open>"kuncar_types_2015"\<close>).
 In this case, \mbox{$(U_{\alpha\ \mathsf{set}},\beta,\mathsf{Rep}_{\beta\rightarrow\alpha},\mathsf{Abs}_{\alpha\rightarrow\beta})$} 
 is an RI with respect to $\Gamma'$. Furthermore, a fresh 
 $T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}}$ (for $\Gamma$) is defined as a transfer 

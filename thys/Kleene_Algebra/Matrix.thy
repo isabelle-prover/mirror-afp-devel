@@ -13,7 +13,7 @@ begin
 text \<open>In this section we formalise a perhaps more natural version of
 matrices of fixed dimension ($m \times n$-matrices). It is well known
 that such matrices over a Kleene algebra form a Kleene
-algebra~\cite{conway71regular}.\<close>
+algebra~\<^cite>\<open>"conway71regular"\<close>.\<close>
 
 subsection \<open>Type Definition\<close>
 

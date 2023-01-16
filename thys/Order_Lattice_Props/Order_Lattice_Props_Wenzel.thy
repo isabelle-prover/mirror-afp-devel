@@ -17,7 +17,7 @@ subsection \<open>Wenzel's Approach Revisited\<close>
 text \<open>This approach is similar to, but inferior to the explicit class-based one. The main caveat is that duality is not involutive 
 with this approach, and this allows dualising less theorems.\<close>
 
-text \<open>I copy Wenzel's development \cite{Wenzel} in this subsection and extend it with additional properties. I show only the most important properties.\<close>
+text \<open>I copy Wenzel's development \<^cite>\<open>"Wenzel"\<close> in this subsection and extend it with additional properties. I show only the most important properties.\<close>
 
 datatype 'a dual = dual (un_dual: 'a) ("\<partial>")
 

@@ -1177,7 +1177,7 @@ boolean algebras.\<close>
 context boolean_algebra
 begin
 
-text \<open>The following two conditions are taken from Koppelberg's book~\cite{Koppelberg89}.\<close>
+text \<open>The following two conditions are taken from Koppelberg's book~\<^cite>\<open>"Koppelberg89"\<close>.\<close>
 
 lemma atom_neg: "atom x \<Longrightarrow> x \<noteq> \<bottom> \<and> (\<forall>y z. x \<le> y \<or> x \<le> -y)"
   by (auto simp add: atom_def) (metis local.dual_order.not_eq_order_implies_strict local.inf.cobounded1 local.inf.cobounded2 local.inf_shunt)

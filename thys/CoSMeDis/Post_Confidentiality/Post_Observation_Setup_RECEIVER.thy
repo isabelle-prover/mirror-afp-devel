@@ -13,7 +13,7 @@ a remote friend of \<open>PID\<close>'s owner, or \<open>PID\<close> is marked a
 This is formulated as a BD Security
 property and is proved by unwinding.
 
-See \cite{cosmedis-SandP2017} for more details.
+See \<^cite>\<open>"cosmedis-SandP2017"\<close> for more details.
 \<close>
 
 subsubsection\<open>Observation setup\<close>

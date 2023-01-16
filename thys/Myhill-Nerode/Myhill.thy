@@ -16,7 +16,7 @@ subsection \<open>Second direction proved using partial derivatives\<close>
 
 text \<open>
   An alternaive proof using the notion of partial derivatives for regular 
-  expressions due to Antimirov \cite{Antimirov95}.
+  expressions due to Antimirov \<^cite>\<open>"Antimirov95"\<close>.
 \<close>
 
 lemma MN_Rel_Derivs:

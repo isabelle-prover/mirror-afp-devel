@@ -48,7 +48,7 @@ definition "print_system_rat = print_result_system_iarrays (solve_iarrays matrix
 
 subsection\<open>The Mathematica bug\<close>
 
-text\<open>Varona et al \cite{VA} detected that the commercial software \<open>Mathematica\<registered>\<close>, 
+text\<open>Varona et al \<^cite>\<open>"VA"\<close> detected that the commercial software \<open>Mathematica\<registered>\<close>, 
 in its versions 8.0, 9.0 and 9.0.1, was computing erroneously determinants of matrices 
 of big integers, even for small dimensions  (in their work they present an example of a 
 matrix of dimension \<open>14 \<times> 14\<close>). The situation is

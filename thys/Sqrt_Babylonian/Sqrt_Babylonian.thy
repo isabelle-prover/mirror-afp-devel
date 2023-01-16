@@ -45,7 +45,7 @@ text \<open>
   on the underlying algorithm that is used to compute the precise square-roots on integers, if these 
   exist.
 
-  The major motivation for developing the precise algorithms was given by \ceta{} \cite{CeTA},
+  The major motivation for developing the precise algorithms was given by \ceta{} \<^cite>\<open>"CeTA"\<close>,
   a tool for certifiying termination proofs. Here, non-linear equations of the form
   $(a_1x_1 + \dots a_nx_n)^2 = p$ had to be solved over the integers, where $p$ is a concrete polynomial.
   For example, for the equation $(ax + by)^2 = 4x^2 - 12xy + 9y^2$ one easily figures out that

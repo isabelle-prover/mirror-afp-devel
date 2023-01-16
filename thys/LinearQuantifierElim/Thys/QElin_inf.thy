@@ -8,7 +8,7 @@ subsection \<open>Quantifier elimination with infinitesimals \label{sec:lin-inf}
 
 text\<open>This section formalizes Loos and Weispfenning's quantifier
 elimination procedure based on (the simulation of)
-infinitesimals~\cite{LoosW93}.\<close>
+infinitesimals~\<^cite>\<open>"LoosW93"\<close>.\<close>
 
 fun asubst_peps :: "real * real list \<Rightarrow> atom \<Rightarrow> atom fm" ("asubst\<^sub>+") where
 "asubst_peps (r,cs) (Less s (d#ds)) =

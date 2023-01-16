@@ -472,7 +472,7 @@ lemma smc_Set_is_monic_arr:
 
 text\<open>
 An epic arrow in \<open>Set\<close> is a total surjective function (see Chapter I-5 
-in \cite{mac_lane_categories_2010}).
+in \<^cite>\<open>"mac_lane_categories_2010"\<close>).
 \<close>
 
 lemma smc_Set_is_epic_arrI:
@@ -575,7 +575,7 @@ subsection\<open>Terminal object, initial object and null object\<close>
 
 text\<open>
 An object in \<open>Set\<close> is terminal if and only if it is a singleton 
-set (see Chapter I-5 in \cite{mac_lane_categories_2010}).
+set (see Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).
 \<close>
 
 lemma (in \<Z>) smc_Set_obj_terminal: 
@@ -704,7 +704,7 @@ qed
 
 text\<open>
 An object in \<open>Set\<close> is initial if and only if it is the empty 
-set (see Chapter I-5 in \cite{mac_lane_categories_2010}).
+set (see Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).
 \<close>
 
 lemma (in \<Z>) smc_Set_obj_initial: "obj_initial (smc_Set \<alpha>) A \<longleftrightarrow> A = 0"

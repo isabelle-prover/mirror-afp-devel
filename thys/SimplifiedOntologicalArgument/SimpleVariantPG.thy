@@ -1,4 +1,4 @@
-subsection\<open>Simplified Variant with Axiom T2 (Fig.~7 in \cite{C85})\<close>
+subsection\<open>Simplified Variant with Axiom T2 (Fig.~7 in \<^cite>\<open>"C85"\<close>)\<close>
 
 theory SimpleVariantPG imports 
   HOML 

@@ -5,7 +5,7 @@ imports "HOL-Hoare.Hoare_Logic"
 begin
 
 text \<open>The algorithm is classical, the proof is based on and augments the one
-by Berghammer and M\"uller-Olm \cite{BerghammerM03}.\<close>
+by Berghammer and M\"uller-Olm \<^cite>\<open>"BerghammerM03"\<close>.\<close>
 
 subsection "Graph"
 

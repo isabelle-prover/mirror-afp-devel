@@ -14,7 +14,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 \<open>CAT\<close> is usually defined as a category of categories and functors
-(e.g., see Chapter I-2 in \cite{mac_lane_categories_2010}).
+(e.g., see Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).
 However, there is little that can prevent one from exposing \<open>CAT\<close>
 as a digraph and provide additional structure gradually in
 subsequent theories. 

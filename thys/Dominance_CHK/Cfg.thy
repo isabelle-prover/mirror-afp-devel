@@ -7,7 +7,7 @@ imports Main
 begin
 
 text \<open>The specification of computing dominators is defined.
-      For fast data flow analysis presented by CHK \cite{Dominance_Algorithm}, 
+      For fast data flow analysis presented by CHK \<^cite>\<open>"Dominance_Algorithm"\<close>, 
       a directed graph with explicit node list and sets of initial nodes is defined.
       Each node refers to its rPO (reverse PostOrder) number w.r.t a DFST, and 
       related properties as assumptions are handled using a locale.\<close>

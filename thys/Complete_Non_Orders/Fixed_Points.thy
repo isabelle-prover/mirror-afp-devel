@@ -12,11 +12,11 @@ section \<open>Existence of Fixed Points in Complete Related Sets\<close>
 text \<open>\label{sec:qfp-exists}\<close>
 
 text \<open>The following proof is simplified and generalized from
-  Stouti--Maaden \cite{SM13}. We construct some set whose extreme bounds 
+  Stouti--Maaden \<^cite>\<open>"SM13"\<close>. We construct some set whose extreme bounds 
   -- if they exist, typically when the underlying related set is complete -- 
   are fixed points of a monotone or inflationary function on any 
   related set. When the related set is attractive, those are actually the least fixed points.
-  This generalizes \cite{SM13}, relaxing reflexivity and antisymmetry.\<close>
+  This generalizes \<^cite>\<open>"SM13"\<close>, relaxing reflexivity and antisymmetry.\<close>
 
 locale fixed_point_proof = related_set +
   fixes f
@@ -259,7 +259,7 @@ inflationary or monotone map over a well-complete antisymmetric set
 has a fixed point.
 
 In order to formalize such a theorem in Isabelle,
-we followed Grall's~\cite{grall10} elementary proof for Bourbaki--Witt and Markowsky's theorems.
+we followed Grall's~\<^cite>\<open>"grall10"\<close> elementary proof for Bourbaki--Witt and Markowsky's theorems.
 His idea is to consider well-founded derivation trees over $A$,
 where from a set $C \subseteq A$ of premises
 one can derive $f\:(\bigsqcup C)$ if $C$ is a chain.

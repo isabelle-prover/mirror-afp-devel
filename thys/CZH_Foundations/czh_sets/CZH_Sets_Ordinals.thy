@@ -16,7 +16,7 @@ subsection\<open>Background\<close>
 text\<open>
 The subsection presents several results about ordinal 
 numbers. The primary general reference for this section 
-is \cite{takeuti_introduction_1971}.
+is \<^cite>\<open>"takeuti_introduction_1971"\<close>.
 \<close>
 
 lemmas [intro] = Limit_is_Ord Ord_in_Ord

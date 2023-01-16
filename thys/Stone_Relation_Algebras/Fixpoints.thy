@@ -11,7 +11,7 @@ Besides fixpoints we consider least prefixpoints and greatest postfixpoints of f
 We do not assume that the underlying structure is complete or that all functions are continuous or isotone.
 Assumptions about the existence of fixpoints and necessary properties of the involved functions will be stated explicitly in each theorem.
 This way, the results can be instantiated by various structures, such as complete lattices and Kleene algebras, which impose different kinds of restriction.
-See, for example, \cite{AartsBackhouseBoitenDoornbosGasterenGeldropHoogendijkVoermansWoude1995,DaveyPriestley2002} for fixpoint calculi in complete lattices.
+See, for example, \<^cite>\<open>"AartsBackhouseBoitenDoornbosGasterenGeldropHoogendijkVoermansWoude1995" and "DaveyPriestley2002"\<close> for fixpoint calculi in complete lattices.
 Our fixpoint calculus contains similar rules, in particular:
 \begin{itemize}
 \item unfold rule,
@@ -23,7 +23,7 @@ Our fixpoint calculus contains similar rules, in particular:
 \item diagonal rule.
 \end{itemize}
 All of our rules are based on existence rather than completeness of the underlying structure.
-We have applied results from this theory in \cite{Guttmann2012c} and subsequent papers for unifying and reasoning about the semantics of recursion in various relational and matrix-based computation models.
+We have applied results from this theory in \<^cite>\<open>"Guttmann2012c"\<close> and subsequent papers for unifying and reasoning about the semantics of recursion in various relational and matrix-based computation models.
 \<close>
 
 theory Fixpoints
@@ -535,7 +535,7 @@ proof -
 qed
 
 text \<open>
-The following results generalise parts of \cite[Exercise 8.27]{DaveyPriestley2002} from continuous functions on complete partial orders to the present setting.
+The following results generalise parts of \<^cite>\<open>\<open>Exercise 8.27\<close> in "DaveyPriestley2002"\<close> from continuous functions on complete partial orders to the present setting.
 \<close>
 
 lemma mu_commute_fixpoint_1:

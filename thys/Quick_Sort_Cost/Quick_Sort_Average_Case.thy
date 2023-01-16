@@ -13,7 +13,7 @@ subsection \<open>Definition of deterministic QuickSort\<close>
   
 text \<open>
   This is the functional description of the standard variant of deterministic QuickSort that 
-  always chooses the first list element as the pivot as given by Hoare in 1962~\cite{hoare}. 
+  always chooses the first list element as the pivot as given by Hoare in 1962~\<^cite>\<open>"hoare"\<close>. 
   For a list that is already sorted, this leads to $n(n-1)$ 
   comparisons, but as is well known, the average case is not that bad.
 \<close>
@@ -93,7 +93,7 @@ subsection \<open>Analysis\<close>
 text \<open>
   We will reduce the average-case analysis to showing that it is essentially equivalent to 
   the randomised QuickSort we analysed earlier. Similar, but more direct analyses are given 
-  by Hoare~\cite{hoare} and Sedgewick~\cite{sedgewick}. 
+  by Hoare~\<^cite>\<open>"hoare"\<close> and Sedgewick~\<^cite>\<open>"sedgewick"\<close>. 
 
   The proof is relatively straightforward -- but still a bit messy. We show that the cost 
   distribution of QuickSort run on a random permutation of a set of size $n$ is exactly the same 

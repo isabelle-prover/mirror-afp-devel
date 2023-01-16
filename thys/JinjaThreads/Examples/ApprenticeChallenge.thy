@@ -11,7 +11,7 @@ imports
   "../Execute/Code_Generation"
 begin
 
-text \<open>This theory implements the apprentice challenge by Porter and Moore \cite{MoorePorter2002TOPLAS}.\<close>
+text \<open>This theory implements the apprentice challenge by Porter and Moore \<^cite>\<open>"MoorePorter2002TOPLAS"\<close>.\<close>
 
 definition ThreadC :: "addr J_mb cdecl"
 where 

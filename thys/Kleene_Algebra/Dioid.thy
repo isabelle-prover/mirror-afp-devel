@@ -127,7 +127,7 @@ subsection \<open>Near Semirings\<close>
 
 text \<open>\emph{Near semirings} (also called seminearrings) are
 generalisations of near rings to the semiring case. They have been
-studied, for instance, in G.~Pilz's book~\cite{pilz83nearrings} on
+studied, for instance, in G.~Pilz's book~\<^cite>\<open>"pilz83nearrings"\<close> on
 near rings. According to his definition, a near semiring consists of
 an additive and a multiplicative semigroup that interact via a single
 distributivity law (left or right). The additive semigroup is not
@@ -156,8 +156,8 @@ are a starting point for process algebras.
 
 By modelling variants of dioids as variants of semirings in which
 addition is idempotent we follow the tradition of
-Birkhoff~\cite{birkhoff67lattices}, but deviate from the definitions
-in Gondran and Minoux's book~\cite{gondran10graphs}.\<close>
+Birkhoff~\<^cite>\<open>"birkhoff67lattices"\<close>, but deviate from the definitions
+in Gondran and Minoux's book~\<^cite>\<open>"gondran10graphs"\<close>.\<close>
 
 class near_dioid = ab_near_semiring + plus_ord +
   assumes add_idem' [simp]: "x + x = x"
@@ -207,8 +207,8 @@ end (* near_dioid *)
 text \<open>We now make multiplication in near dioids left isotone, which
 is equivalent to left subdistributivity, as we have seen. The
 corresponding structures form the basis of probabilistic Kleene
-algebras~\cite{mciverweber05pka} and game
-algebras~\cite{venema03gamealgebra}. We are not aware that these
+algebras~\<^cite>\<open>"mciverweber05pka"\<close> and game
+algebras~\<^cite>\<open>"venema03gamealgebra"\<close>. We are not aware that these
 structures have a special name, so we baptise them \emph{pre-dioids}.
 
 We do not explicitly define pre-semirings since we have no application

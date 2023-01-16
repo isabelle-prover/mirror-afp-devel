@@ -8,7 +8,7 @@ lemma literal_subset_sandwich:
   shows "R = \<box> \<or> R = C"
 using assms by(cases F rule: is_lit_plus.cases; simp) blast+ (* proof somewhat strange internally\<dots> *)
 
-text\<open>Proof following Gallier~\cite{gallier2015logic}.\<close>
+text\<open>Proof following Gallier~\<^cite>\<open>"gallier2015logic"\<close>.\<close>
 theorem CSC_Resolution_pre: "\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> \<forall>\<gamma> \<in> set_mset \<Gamma>. is_cnf \<gamma> \<Longrightarrow> (\<Union>(cnf ` set_mset \<Gamma>)) \<turnstile> \<box>"
 proof(induction rule: LSC.induct)
   case (Ax k \<Gamma>)

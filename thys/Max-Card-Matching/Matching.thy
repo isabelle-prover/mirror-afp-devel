@@ -351,7 +351,7 @@ proof -
 qed
 
 section \<open>Final Theorem\<close>
-text\<open>The following theorem is due to Edmond~\cite{Edmonds:matching}:\<close>
+text\<open>The following theorem is due to Edmond~\<^cite>\<open>"Edmonds:matching"\<close>:\<close>
 
 theorem maximum_cardinality_matching:
   assumes "matching V E M" and "OSC L E"
@@ -362,5 +362,5 @@ theorem maximum_cardinality_matching:
   by simp
 
 text\<open>The widely used algorithmic library LEDA has a certifying algorithm for maximum cardinality matching.
-This Isabelle proof is part of the work done to verify the checker of this certifying algorithm. For more information see \cite{VerificationofCertifyingComputations}.\<close>
+This Isabelle proof is part of the work done to verify the checker of this certifying algorithm. For more information see \<^cite>\<open>"VerificationofCertifyingComputations"\<close>.\<close>
 end

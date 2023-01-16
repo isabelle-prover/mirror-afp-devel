@@ -21,7 +21,7 @@ text\<open>
 Our attention now shifts to showing how we can synthesise standard
 automata that \emph{implement} a JKBP under certain conditions. We
 proceed by defining \emph{incremental views} following
-\cite{Ron:1996}, which provide the interface between the system and
+\<^cite>\<open>"Ron:1996"\<close>, which provide the interface between the system and
 these automata. The algorithm itself is presented in
 \S\ref{sec:kbps-alg}.
 
@@ -119,7 +119,7 @@ To ease composition with the system we adopt the function @{term
 "pInit"} which maps the initial observation to an initial automaton
 state.
 
-\citet{Ron:1996} shows that even non-deterministic JKBPs can be
+\<^citet>\<open>"Ron:1996"\<close> shows that even non-deterministic JKBPs can be
 implemented with deterministic transition functions; intuitively all
 relevant uncertainty the agent has about the system must be encoded
 into each automaton state, so there is no benefit to doing this
@@ -494,7 +494,7 @@ Our goal now is to reduce the space required by the automaton
 constructed by @{term "mkAutoEC"} by \emph{simulating} the equivalence
 classes (\S\ref{sec:kripke-theory-simulations}).
 
-The following locale captures the framework of \citet{Ron:1996}:
+The following locale captures the framework of \<^citet>\<open>"Ron:1996"\<close>:
 
 \<close>
 
@@ -636,7 +636,7 @@ text\<open>
 
 It can be shown that a suitable simulation into a finite structure is
 adequate to establish the existence of finite-state implementations
-\citep[Theorem~2]{Ron:1996}: essentially we apply the simulation to
+\<^citep>\<open>\<open>Theorem~2\<close> in "Ron:1996"\<close>: essentially we apply the simulation to
 the states of @{term "mkAutoEC"}. However this result does not make it
 clear how the transition function can be incrementally
 constructed. One approach is to maintain @{term "jkbpC"} while
@@ -723,7 +723,7 @@ our extra requirements of a simulation.
 Firstly we relate the concrete representation @{typ "'rep"} of
 equivalence classes under simulation to differ from the abstract
 representation @{typ "'ss set"} using the abstraction function @{term
-"simAbs"} \citep{EdR:cup98}; there is no one-size-fits-all concrete
+"simAbs"} \<^citep>\<open>"EdR:cup98"\<close>; there is no one-size-fits-all concrete
 representation, as we will see.
 
 Secondly we ask for a function @{term "simInit a iobs"} that
@@ -867,7 +867,7 @@ text\<open>
 
 This follows from a simple induction on @{term "t"}.
 
-The following is a version of the Theorem 2 of \citet{Ron:1996}.
+The following is a version of the Theorem 2 of \<^citet>\<open>"Ron:1996"\<close>.
 
 \<close>
 
@@ -883,7 +883,7 @@ theorem (in AlgSimIncrEnvironment) mkAutoSim_implements:
 text\<open>
 
 The reader may care to contrast these structures with the
-\emph{progression structures} of \citet{Ron:1997}, where states
+\emph{progression structures} of \<^citet>\<open>"Ron:1997"\<close>, where states
 contain entire Kripke structures, and expanding the automaton is
 alternated with bisimulation reduction to ensure termination when a
 finite-state implementation exists (see \S\ref{sec:kbps-alg-auto-min})

@@ -14,7 +14,7 @@ begin
 text \<open>
 \null
 
-In his outstanding work on Communicating Sequential Processes \cite{R6}, Hoare has defined two
+In his outstanding work on Communicating Sequential Processes \<^cite>\<open>"R6"\<close>, Hoare has defined two
 fundamental binary operations allowing to compose the input processes into another, typically more
 complex, process: sequential composition and concurrent composition. Particularly, the output of the
 latter operation is a process in which any event not shared by both operands can occur whenever the
@@ -24,17 +24,17 @@ concurrent processes, which on the contrary can engage asynchronously in the res
 events.
 
 This paper formalizes Hoare's definition of concurrent composition and proves, in the general case
-of a possibly intransitive policy, that CSP noninterference security \cite{R1} is conserved under
+of a possibly intransitive policy, that CSP noninterference security \<^cite>\<open>"R1"\<close> is conserved under
 this operation, viz. the security of both of the input processes implies that of the output process.
-This result, along with the analogous one concerning sequential composition attained in \cite{R5},
+This result, along with the analogous one concerning sequential composition attained in \<^cite>\<open>"R5"\<close>,
 enables the construction of more and more complex processes enforcing noninterference security by
 composing, sequentially or concurrently, simpler secure processes, whose security can in turn be
-proven using either the definition of security formulated in \cite{R1}, or the unwinding theorems
-demonstrated in \cite{R2}, \cite{R3}, and \cite{R4}.
+proven using either the definition of security formulated in \<^cite>\<open>"R1"\<close>, or the unwinding theorems
+demonstrated in \<^cite>\<open>"R2"\<close>, \<^cite>\<open>"R3"\<close>, and \<^cite>\<open>"R4"\<close>.
 
 Throughout this paper, the salient points of definitions and proofs are commented; for additional
-information, cf. Isabelle documentation, particularly \cite{R7}, \cite{R8}, \cite{R9}, and
-\cite{R10}.
+information, cf. Isabelle documentation, particularly \<^cite>\<open>"R7"\<close>, \<^cite>\<open>"R8"\<close>, \<^cite>\<open>"R9"\<close>, and
+\<^cite>\<open>"R10"\<close>.
 \<close>
 
 
@@ -44,10 +44,10 @@ text \<open>
 The starting point is comprised of some definitions and lemmas propaedeutic to the proof of the
 target security conservation theorem.
 
-Particularly, the definition of operator \emph{after} given in \cite{R6} is formalized, and it is
+Particularly, the definition of operator \emph{after} given in \<^cite>\<open>"R6"\<close> is formalized, and it is
 proven that for any secure process @{term P} and any trace @{term xs} of @{term P}, @{term P} after
 @{term xs} is still a secure process. Then, this result is used to generalize the lemma stating the
-closure of the failures of a secure process @{term P} under intransitive purge, proven in \cite{R5},
+closure of the failures of a secure process @{term P} under intransitive purge, proven in \<^cite>\<open>"R5"\<close>,
 to the futures of @{term P} associated to any one of its traces. This is a generalization of the
 former result since @{term "futures P xs = failures P"} for @{term "xs = []"}.
 
@@ -84,9 +84,9 @@ text \<open>
 \null
 
 Here below is the definition of operator \emph{after}, for which a symbolic notation similar to the
-one used in \cite{R6} is introduced. Then, it is proven that for any process @{term P} and any trace
+one used in \<^cite>\<open>"R6"\<close> is introduced. Then, it is proven that for any process @{term P} and any trace
 @{term xs} of @{term P}, the failures set and the divergences set of @{term P} after @{term xs}
-indeed enjoy their respective characteristic properties as defined in \cite{R1}.
+indeed enjoy their respective characteristic properties as defined in \<^cite>\<open>"R1"\<close>.
 
 \null
 \<close>
@@ -177,12 +177,12 @@ by (drule ipurge_tr_ref_aux_futures, simp_all add: futures_def)
 subsection "Concurrent composition"
 
 text \<open>
-In \cite{R6}, the concurrent composition of two processes @{term P}, @{term Q}, expressed using
+In \<^cite>\<open>"R6"\<close>, the concurrent composition of two processes @{term P}, @{term Q}, expressed using
 notation \<open>P \<parallel> Q\<close>, is defined as a process whose alphabet is the union of the alphabets of
 @{term P} and @{term Q}, so that the shared events requiring the synchronous participation of both
 processes are those in the intersection of their alphabets.
 
-In the formalization of Communicating Sequential Processes developed in \cite{R1}, the alphabets of
+In the formalization of Communicating Sequential Processes developed in \<^cite>\<open>"R1"\<close>, the alphabets of
 @{term P} and @{term Q} are the data types @{typ 'a} and @{typ 'b} nested in their respective types
 @{typ "'a process"} and @{typ "'b process"}. Therefore, for any two maps @{term "p :: 'a \<Rightarrow> 'c"},
 @{term "q :: 'b \<Rightarrow> 'c"}, the concurrent composition of @{term P} and @{term Q} with respect to
@@ -191,31 +191,31 @@ as a process of type @{typ "'c process"}, where meaningful events are those in
 @{term "range p \<union> range q"} and shared events are those in @{term "range p \<inter> range q"}.
 
 The case where @{term "- (range p \<union> range q) \<noteq> {}"} constitutes a generalization of the definition
-given in \cite{R6}, and the events in @{term "- (range p \<union> range q)"}, not being mapped to any event
+given in \<^cite>\<open>"R6"\<close>, and the events in @{term "- (range p \<union> range q)"}, not being mapped to any event
 in the alphabets of the input processes, shall be understood as fake events lacking any meaning.
 Consistently with this interpretation, such events are allowed to occur in divergent traces only --
 necessarily, since divergences are capable by definition of giving rise to any sort of event. As a
-result, while in \cite{R6} the refusals associated to non-divergent traces are the union of two
+result, while in \<^cite>\<open>"R6"\<close> the refusals associated to non-divergent traces are the union of two
 sets, a refusal of @{term P} and a refusal of @{term Q}, in the following definition they are the
 union of three sets instead, where the third set is any subset of @{term "- (range p \<union> range q)"}.
 
-Since the definition given in \cite{R6} preserves the identity of the events of the input processes,
+Since the definition given in \<^cite>\<open>"R6"\<close> preserves the identity of the events of the input processes,
 a further generalization resulting from the following definition corresponds to the case where
 either map @{term p}, @{term q} is not injective. However, as shown below, these generalizations
 turn out to compromise neither the compliance of the output of concurrent composition with the
-characteristic properties of processes as defined in \cite{R1}, nor even the validity of the target
+characteristic properties of processes as defined in \<^cite>\<open>"R1"\<close>, nor even the validity of the target
 security conservation theorem.
 
 Since divergences can contain fake events, whereas non-divergent traces cannot, it is necessary to
 add divergent failures to the failures set explicitly. The following definition of the divergences
-set restricts the definition given in \cite{R6}, as it identifies a divergence with an arbitrary
+set restricts the definition given in \<^cite>\<open>"R6"\<close>, as it identifies a divergence with an arbitrary
 extension of an event sequence @{term xs} being a divergence of both @{term P} and @{term Q}, rather
 than a divergence of either process and a trace of the other one. This is a reasonable restriction,
 in that it requires the concurrent composition of @{term P} and @{term Q} to admit a shared event
 @{term x} in a divergent trace just in case both @{term P} and @{term Q} diverge and can then accept
 @{term x}, analogously to what is required for a non-divergent trace. Anyway, the definitions match
 if the input processes do not diverge, which is the case for any process of practical significance
-(cf. \cite{R6}).
+(cf. \<^cite>\<open>"R6"\<close>).
 
 \null
 \<close>
@@ -255,7 +255,7 @@ text \<open>
 Here below is the proof that, for any two processes @{term P}, @{term Q} and any two maps @{term p},
 @{term q}, sets @{term "con_comp_failures P Q p q"} and @{term "con_comp_divergences P Q p q"} enjoy
 the characteristic properties of the failures and the divergences sets of a process as defined in
-\cite{R1}.
+\<^cite>\<open>"R1"\<close>.
 
 \null
 \<close>
@@ -745,7 +745,7 @@ text \<open>
 \null
 
 Here below, the previous result is applied to derive useful expressions for the outputs of the
-functions returning the elements of a process, as defined in \cite{R1} and \cite{R2}, when acting on
+functions returning the elements of a process, as defined in \<^cite>\<open>"R1"\<close> and \<^cite>\<open>"R2"\<close>, when acting on
 the concurrent composition of a pair of processes.
 
 \null
@@ -784,7 +784,7 @@ In what follows, three lemmas are proven. The first one, whose proof makes use o
 choice, establishes an additional property required for the above definition of concurrent
 composition to be correct, namely that for any two processes whose refusals are closed under set
 union, their concurrent composition still be such, which is what is expected for any process of
-practical significance (cf. \cite{R2}). The other two lemmas are auxiliary properties of concurrent
+practical significance (cf. \<^cite>\<open>"R2"\<close>). The other two lemmas are auxiliary properties of concurrent
 composition used in the proof of the target security conservation theorem.
 
 \null

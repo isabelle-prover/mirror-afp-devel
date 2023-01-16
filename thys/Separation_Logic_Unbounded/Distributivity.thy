@@ -1,6 +1,6 @@
 section \<open>Distributivity and Factorisability\<close>
 
-text \<open>This section corresponds to Section 2.4 and Figure 4 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>This section corresponds to Section 2.4 and Figure 4 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theory Distributivity
   imports UnboundedLogic

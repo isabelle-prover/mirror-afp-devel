@@ -296,8 +296,8 @@ where "BExpr_low b = (\<forall> s t \<beta> . s \<approx>\<^sub>\<beta> t \<long
 subsubsection\<open>Definition and characterisation of security\<close>
 
 text\<open>Now, the notion of security, as defined in the paper. Banerjee
-and Naumann's paper~\cite{DBLP:journals/jfp/BanerjeeN05} and the
-Mobius Deliverable 2.3~\cite{MobiusDeliverable2.3} contain similar
+and Naumann's paper~\<^cite>\<open>"DBLP:journals/jfp/BanerjeeN05"\<close> and the
+Mobius Deliverable 2.3~\<^cite>\<open>"MobiusDeliverable2.3"\<close> contain similar
 notions.\<close>
 
 definition secure::"OBJ \<Rightarrow> bool"

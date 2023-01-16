@@ -519,7 +519,7 @@ value[code] "slide [2,4,5,2 :: nat] Leaf (1, 3)"
 
 subsection \<open>Summary of the Correctness Proof\<close>
 
-text \<open>We closely follow Basin et al.'s proof outline~\cite{BASIN2015186}.
+text \<open>We closely follow Basin et al.'s proof outline~\<^cite>\<open>"BASIN2015186"\<close>.
   \begin{enumerate}
     \item Lemma 1, the correctness result about the function @{term SWA.slide}, is formalized 
       by @{thm[source] SWA.valid_slide}. It follows from the following auxiliary facts:

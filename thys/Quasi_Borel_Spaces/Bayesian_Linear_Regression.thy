@@ -8,7 +8,7 @@ theory Bayesian_Linear_Regression
   imports "Measure_as_QuasiBorel_Measure"
 begin
 
-text \<open> We formalize the Bayesian linear regression presented in \cite{Heunen_2017} section VI.\<close>
+text \<open> We formalize the Bayesian linear regression presented in \<^cite>\<open>"Heunen_2017"\<close> section VI.\<close>
 subsubsection \<open> Prior \<close>
 abbreviation "\<nu> \<equiv> density lborel (\<lambda>x. ennreal (normal_density 0 3 x))"
 

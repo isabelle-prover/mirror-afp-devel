@@ -4,7 +4,7 @@ begin
 section \<open>Walks, Paths and Cycles \<close>
 text \<open> The definition of walks, paths, cycles, and related concepts are foundations of graph theory,
 yet there can be some differences in literature between definitions. This formalisation draws inspiration 
-from Noschinski's Graph Library \cite{noschinski2015}, however focuses on an undirected graph context
+from Noschinski's Graph Library \<^cite>\<open>"noschinski2015"\<close>, however focuses on an undirected graph context
 compared to a directed graph context, and extends on some definitions, as required to formalise
 Balog Szemeredi Gowers theorem. \<close>
 
@@ -402,7 +402,7 @@ lemma gen_paths_ss_walks: "gen_paths \<subseteq> walks"
 
 subsection \<open> Cycles \<close>
 text \<open>Note, a cycle must be non trivial (i.e. have an edge), but as we let a loop by a cycle
-we broaden the definition in comparison to Noschinski \cite{noschinski_2015} for a cycle to be of 
+we broaden the definition in comparison to Noschinski \<^cite>\<open>"noschinski_2015"\<close> for a cycle to be of 
 length greater than 1 rather than 3 \<close>
 definition is_cycle :: "'a list \<Rightarrow> bool" where
 "is_cycle xs \<equiv> is_closed_walk xs \<and> walk_length xs \<ge> 1 \<and> distinct (tl xs)"

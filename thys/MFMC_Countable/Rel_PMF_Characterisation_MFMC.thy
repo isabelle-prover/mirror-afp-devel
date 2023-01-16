@@ -355,7 +355,7 @@ interpretation rel_spmf_characterisation by unfold_locales(rule rel_pmf_measureI
 
 corollary rel_pmf_distr_mono: "rel_pmf R OO rel_pmf S \<le> rel_pmf (R OO S)"
 \<comment> \<open>This fact has already been proven for the registration of @{typ "'a pmf"} as a BNF,
-  but this proof is much shorter and more elegant. See @{cite HoelzlLochbihlerTraytel2015ITP} for a
+  but this proof is much shorter and more elegant. See \<^cite>\<open>HoelzlLochbihlerTraytel2015ITP\<close> for a
   comparison of formalisations.\<close>
 proof(intro le_funI le_boolI rel_pmf_measureI_bounded, elim relcomppE)
   fix p q r A

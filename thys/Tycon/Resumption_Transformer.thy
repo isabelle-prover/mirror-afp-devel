@@ -131,7 +131,7 @@ subsection \<open>Nondeterministic interleaving\<close>
 
 text \<open>In this section we present a more general formalization of the
 nondeterministic interleaving operation presented in Chapter 7 of the
-author's PhD thesis \cite{holcf11}. If both arguments are \<open>Done\<close>, then \<open>zipRT\<close> combines the results with the function
+author's PhD thesis \<^cite>\<open>"holcf11"\<close>. If both arguments are \<open>Done\<close>, then \<open>zipRT\<close> combines the results with the function
 \<open>f\<close> and terminates. While either argument is \<open>More\<close>,
 \<open>zipRT\<close> nondeterministically chooses one such argument, runs
 it for one step, and then calls itself recursively.\<close>

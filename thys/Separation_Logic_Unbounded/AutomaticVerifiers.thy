@@ -1,6 +1,6 @@
 section \<open>Fractional Predicates and Magic Wands in Automatic Separation Logic Verifiers\<close>
 
-text \<open>This section corresponds to Section 5 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>This section corresponds to Section 5 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theory AutomaticVerifiers
   imports FixedPoint WandProperties
@@ -11,7 +11,7 @@ begin
 
 subsection \<open>Syntactic multiplication\<close>
 
-text \<open>The following definition corresponds to Figure 6 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The following definition corresponds to Figure 6 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 fun syn_mult :: "'b \<Rightarrow> ('a, 'b, 'c, 'd) assertion \<Rightarrow> ('a, 'b, 'c, 'd) assertion" where
   "syn_mult \<pi> (Star A B) = Star (syn_mult \<pi> A) (syn_mult \<pi> B)"
@@ -32,7 +32,7 @@ lemma div_state_ok:
   "\<sigma> = \<pi> \<odot> (div_state \<pi> \<sigma>)"
   by (metis (mono_tags) div_state_def someI_ex unique_inv)
 
-text \<open>The following theorem corresponds to Theorem 6 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The following theorem corresponds to Theorem 6 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theorem syn_sen_mult_same:
   "\<sigma>, s, \<Delta> \<Turnstile> syn_mult \<pi> A \<longleftrightarrow> \<sigma>, s, \<Delta> \<Turnstile> Mult \<pi> A"
@@ -235,7 +235,7 @@ next
 qed
 
 
-text \<open>The following theorem corresponds to Theorem 7 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The following theorem corresponds to Theorem 7 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theorem exists_lfp_gfp:
   assumes "pos_neg_rec_call True A"
@@ -331,7 +331,7 @@ qed (auto)
 
 subsection \<open>Theorems\<close>
 
-text \<open>The following two theorems correspond to the rules shown in Section 5.1 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The following two theorems correspond to the rules shown in Section 5.1 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theorem apply_wand:
   "Star (syn_mult \<pi> A) (Mult \<pi> (Wand A B)), \<Delta> \<turnstile> syn_mult \<pi> B"
@@ -351,7 +351,7 @@ theorem package_wand:
   shows "F, \<Delta> \<turnstile> Mult \<pi> (Wand A B)"
   by (metis adjunct2 assms entails_def syn_mult.simps(2) syn_sen_mult_same)
 
-text \<open>The following four theorems correspond to the rules shown in Section 5.2 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The following four theorems correspond to the rules shown in Section 5.2 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theorem fold_lfp:
   assumes "pos_neg_rec_call True A"
@@ -373,7 +373,7 @@ theorem unfold_gfp:
     shows "Mult \<pi> Pred, GFP (applies_eq A) \<turnstile> syn_mult \<pi> A"
   by (simp add: assms entails_def exists_lfp_gfp(2) syn_sen_mult_same)
 
-text \<open>The following theorems correspond to the rule shown in Section 5.3 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The following theorems correspond to the rule shown in Section 5.3 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theorem wf_assertion_combinable_lfp:
   assumes "wf_assertion A"

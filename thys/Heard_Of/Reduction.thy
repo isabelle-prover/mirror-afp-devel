@@ -36,7 +36,7 @@ text \<open>
   distributed algorithms are preserved by our reduction. For example, the
   Consensus (and Weak Consensus) problems fall into this class.
 
-  The proofs follow Chaouch-Saad et al.~\cite{saad:reduction}, where the
+  The proofs follow Chaouch-Saad et al.~\<^cite>\<open>"saad:reduction"\<close>, where the
   reduction theorem was proved for uncoordinated HO algorithms.
 \<close>
 
@@ -426,7 +426,7 @@ proof -
 qed
 
 text \<open>
-  We now prove two invariants asserted in \cite{saad:reduction}. The first
+  We now prove two invariants asserted in \<^cite>\<open>"saad:reduction"\<close>. The first
   one states that any message \<open>m\<close> in transit from process \<open>p\<close>
   to process \<open>q\<close> for round \<open>r\<close> corresponds to the message
   computed by \<open>p\<close> for \<open>q\<close>, given \<open>p\<close>'s state at its

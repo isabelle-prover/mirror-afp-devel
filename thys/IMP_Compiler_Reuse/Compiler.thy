@@ -21,7 +21,7 @@ happiness.}
 
 \null\null
 
-After introducing the didactic imperative programming language IMP, @{cite "Nipkow21-1"} specifies
+After introducing the didactic imperative programming language IMP, \<^cite>\<open>"Nipkow21-1"\<close> specifies
 compilation of IMP commands into a lower-level language based on a stack machine, and expounds a
 formal verification of that compiler. Exercise 8.4 asks the reader to adjust such proof for a new
 compilation target, consisting of a machine language that (i) accesses memory locations through
@@ -32,7 +32,7 @@ steps, namely a source-to-assembly step matching the original compilation proces
 assembly-to-machine step. In this way, proving assembly code-machine code equivalence is the only
 extant task.
 
-@{cite "Noce21"} introduces a reasoning toolbox that allows for a compiler correctness proof shorter
+\<^cite>\<open>"Noce21"\<close> introduces a reasoning toolbox that allows for a compiler correctness proof shorter
 than the book's one, as such promising to constitute a further enhanced reference for the formal
 verification of real-world compilers. This paper in turn shows that such toolbox can be reused to
 accomplish the aforesaid task as well, which demonstrates that the proposed approach also promotes
@@ -41,12 +41,12 @@ proof reuse in multi-stage compiler verifications.
 The formal proof development presented in this paper consists of two theory files, as follows.
 
   \<^item> The former theory, briefly referred to as ``the @{text Compiler} theory'', is derived from the
-@{text "HOL-IMP.Compiler"} one included in the Isabelle2021-1 distribution @{cite "Nipkow21-2"}.\\
-However, the signature of function @{text bcomp} is modified in the same way as in @{cite "Noce21"}.
+@{text "HOL-IMP.Compiler"} one included in the Isabelle2021-1 distribution \<^cite>\<open>"Nipkow21-2"\<close>.\\
+However, the signature of function @{text bcomp} is modified in the same way as in \<^cite>\<open>"Noce21"\<close>.
 
   \<^item> The latter theory, briefly referred to as ``the @{text Compiler2} theory'', is derived from the
-@{text Compiler2} one developed in @{cite "Noce21"}.\\
-However, unlike @{cite "Noce21"}, the original language IMP is considered here, without extending it
+@{text Compiler2} one developed in \<^cite>\<open>"Noce21"\<close>.\\
+However, unlike \<^cite>\<open>"Noce21"\<close>, the original language IMP is considered here, without extending it
 with non-deterministic choice. Hence, the additional case pertaining to non-deterministic choice in
 the proof of lemma @{text ccomp_correct} is not present any longer.
 
@@ -54,8 +54,8 @@ Both theory files are split into the same subsections as the respective original
 the most salient differences with respect to the original theories are commented in both of them.
 
 For further information about the formal definitions and proofs contained in this paper, see
-Isabelle documentation, particularly @{cite "Paulson21"}, @{cite "Nipkow21-3"}, @{cite "Krauss21"},
-and @{cite "Nipkow11"}.
+Isabelle documentation, particularly \<^cite>\<open>"Paulson21"\<close>, \<^cite>\<open>"Nipkow21-3"\<close>, \<^cite>\<open>"Krauss21"\<close>,
+and \<^cite>\<open>"Nipkow11"\<close>.
 \<close>
 
 
@@ -83,14 +83,14 @@ subsection "Instructions and stack machine"
 
 text \<open>
 Here below, both the syntax and the semantics of the instruction set are defined. As a deterministic
-language is considered here, as opposed to the non-deterministic one addressed in @{cite "Noce21"},
+language is considered here, as opposed to the non-deterministic one addressed in \<^cite>\<open>"Noce21"\<close>,
 instruction semantics can be defined via a simple non-recursive function @{text iexec} (identical to
-the one used in @{cite "Nipkow21-1"}, since the instruction set is the same). However, an inductive
-predicate @{text iexec_pred}, resembling the @{text iexec} one used in @{cite "Noce21"} and denoted
+the one used in \<^cite>\<open>"Nipkow21-1"\<close>, since the instruction set is the same). However, an inductive
+predicate @{text iexec_pred}, resembling the @{text iexec} one used in \<^cite>\<open>"Noce21"\<close> and denoted
 by the same infix symbol @{text \<mapsto>}, is also defined. Though notation @{text "(ins, cf) \<mapsto> cf'"} is
 just an alias for @{text "cf' = iexec ins cf"}, it is used in place of the latter in the definition
 of predicate @{text exec1}, which formalizes single-step program execution. The reason is that the
-compiler correctness proof developed in the @{text Compiler2} theory of @{cite "Noce21"} depends on
+compiler correctness proof developed in the @{text Compiler2} theory of \<^cite>\<open>"Noce21"\<close> depends on
 the introduction and elimination rules deriving from predicate @{text iexec}'s inductive definition.
 Thus, the use of predicate @{text iexec_pred} is a trick enabling Isabelle's classical reasoner to
 keep using such rules, which restricts the changes to be made to the proofs in the @{text Compiler2}
@@ -101,10 +101,10 @@ will keep being used as an assembly language. In order to have a machine languag
 to memory locations via their addresses, modeled as integers, an additional type @{text m_instr} of
 machine instructions, in one-to-one correspondence with assembly instructions, is introduced. The
 underlying idea is to reuse the proofs that source code and compiled (assembly) code simulate each
-other built in @{cite "Nipkow21-2"} and @{cite "Noce21"}, so that the only extant task is proving
+other built in \<^cite>\<open>"Nipkow21-2"\<close> and \<^cite>\<open>"Noce21"\<close>, so that the only extant task is proving
 that assembly code and machine code in turn simulate each other. This is nothing but an application
 of the \emph{divide et impera} strategy of considering multiple compilation stages mentioned in
-@{cite "Nipkow21-1"}, section 8.5.
+\<^cite>\<open>"Nipkow21-1"\<close>, section 8.5.
 
 In other words, the solution developed in what follows does not require any change to the original
 compiler completeness and correctness proofs. This result is achieved by splitting compilation into
@@ -713,17 +713,17 @@ qed fastforce+
 subsection "Preservation of semantics"
 
 text \<open>
-Like @{cite "Nipkow21-2"}, this theory ends with the proof of theorem @{text ccomp_bigstep}, which
+Like \<^cite>\<open>"Nipkow21-2"\<close>, this theory ends with the proof of theorem @{text ccomp_bigstep}, which
 states that source programs are simulated by assembly ones, as proving that assembly programs are in
 turn simulated by machine ones is still a pending task. This missing link will be established in the
 @{text Compiler2} theory. Such a state of affairs might appear as nothing but an extravagant choice:
-if the original development detailed in @{cite "Nipkow21-1"} addresses the ``easy'' direction of the
+if the original development detailed in \<^cite>\<open>"Nipkow21-1"\<close> addresses the ``easy'' direction of the
 program bisimulation proof in the @{text Compiler} theory, why moving its machine code add-on to the
 @{text Compiler2} theory? The bad news here are that the move has occurred as proving that assembly
 programs are simulated by machine ones is no longer ``easy''. Indeed, this task demands the further
 reasoning tools used in the @{text Compiler2} theory to cope with the reverse, ``hard'' direction of
 the program bisimulation proof. On the other hand, the good news are that such tools, in the form
-introduced in @{cite "Noce21"}, are sufficiently general and powerful to also accomplish that task,
+introduced in \<^cite>\<open>"Noce21"\<close>, are sufficiently general and powerful to also accomplish that task,
 as will be shown shortly.
 
 \null

@@ -11,7 +11,7 @@ begin
 (* For proofs involving the cardinality of concrete, finite sets see \<open>card_insert_if\<close>. *)
 
 text \<open>
-  Primitives and axioms as given in \cite[pp.~9-17]{schutz1997}.
+  Primitives and axioms as given in \<^cite>\<open>\<open>pp.~9-17\<close> in "schutz1997"\<close>.
 \<close>
 
 text \<open>

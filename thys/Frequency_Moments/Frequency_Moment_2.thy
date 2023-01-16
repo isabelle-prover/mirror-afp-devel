@@ -12,7 +12,7 @@ theory Frequency_Moment_2
 begin
 
 text \<open>This section contains a formalization of the algorithm for the second frequency moment.
-It is based on the algorithm described in \cite[\textsection 2.2]{alon1999}.
+It is based on the algorithm described in \<^cite>\<open>\<open>\textsection 2.2\<close> in "alon1999"\<close>.
 The only difference is that the algorithm is adapted to work with prime field of odd order, which
 greatly reduces the implementation complexity.\<close>
 

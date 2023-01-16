@@ -18,8 +18,8 @@ subsection "Introduction"
 
 text \<open>
 This paper presents a compiler correctness proof for the didactic imperative programming language
-IMP, introduced in @{cite "Nipkow14"}, shorter than the proof described in @{cite "Nipkow14"} and
-included in the Isabelle2021 distribution @{cite "Klein21"}. Actually, the size of the presented
+IMP, introduced in \<^cite>\<open>"Nipkow14"\<close>, shorter than the proof described in \<^cite>\<open>"Nipkow14"\<close> and
+included in the Isabelle2021 distribution \<^cite>\<open>"Klein21"\<close>. Actually, the size of the presented
 proof is just two thirds of the book's proof in the number of formal text lines, and as such it
 promises to constitute a further enhanced reference for the formal verification of compilers meant
 for larger, real-world programming languages.
@@ -27,7 +27,7 @@ for larger, real-world programming languages.
 Given compiler \emph{completeness}, viz. the simulation of source code execution by compiled code,
 "in a deterministic language like IMP", compiler correctness "reduces to preserving termination: if
 the machine program terminates, so must the source program", even though proving this "is not much
-easier" (@{cite "Nipkow14"}, section 8.4). However, the presented proof does not depend on language
+easier" (\<^cite>\<open>"Nipkow14"\<close>, section 8.4). However, the presented proof does not depend on language
 determinism, so that the proposed approach is applicable to non-deterministic languages as well.
 
 As a confirmation, this paper extends IMP with an additional command @{text "c\<^sub>1 OR c\<^sub>2"}, standing
@@ -39,8 +39,8 @@ non-deterministic choice, since this command is not included in the original lan
 non-deterministic choice turns out to extend that proof just by a modest number of lines.
 
 For further information about the formal definitions and proofs contained in this paper, see
-Isabelle documentation, particularly @{cite "Paulson21"}, @{cite "Nipkow21"}, @{cite "Krauss21"},
-and @{cite "Nipkow11"}.
+Isabelle documentation, particularly \<^cite>\<open>"Paulson21"\<close>, \<^cite>\<open>"Nipkow21"\<close>, \<^cite>\<open>"Krauss21"\<close>,
+and \<^cite>\<open>"Nipkow11"\<close>.
 \<close>
 
 
@@ -50,9 +50,9 @@ text \<open>
 Here below are the definitions of IMP commands, extended with non-deterministic choice, as well as
 of their big-step semantics.
 
-As in the original theory file @{cite "Klein21"}, program counter's values are modeled using type
+As in the original theory file \<^cite>\<open>"Klein21"\<close>, program counter's values are modeled using type
 @{typ int} rather than @{typ nat}. As a result, the same declarations and definitions used in
-@{cite "Klein21"} to deal with this modeling choice are adopted here as well.
+\<^cite>\<open>"Klein21"\<close> to deal with this modeling choice are adopted here as well.
 
 \null
 \<close>
@@ -105,7 +105,7 @@ of non-deterministic choice commands, the instruction set is extended with an ad
 counter unconditionally either jumps by the specified offset, or just moves to the next instruction.
 
 As instruction execution can be non-deterministic, an inductively defined predicate @{text iexec},
-rather than a simple non-recursive function as the one used in @{cite "Klein21"}, must be introduced
+rather than a simple non-recursive function as the one used in \<^cite>\<open>"Klein21"\<close>, must be introduced
 to define instruction semantics.
 
 \null
@@ -162,7 +162,7 @@ text \<open>
 
 Next, compilation is formalized for arithmetic and boolean expressions (functions @{text acomp} and
 @{text bcomp}), as well as for commands (function @{text ccomp}). Particularly, as opposed to what
-happens in @{cite "Klein21"}, here @{text bcomp} takes a single input, viz. a 3-tuple comprised of
+happens in \<^cite>\<open>"Klein21"\<close>, here @{text bcomp} takes a single input, viz. a 3-tuple comprised of
 a boolean expression, a flag, and a jump offset. In this way, all three functions accept a single
 input, which enables to streamline the compiler correctness proof developed in what follows.
 

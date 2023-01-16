@@ -145,7 +145,7 @@ subsection \<open>Main result\<close>
 
 text \<open>
   The following proofs are basically a one-to-one translation of Franz Lemmermeyer's
-  presentation~\cite{lemmermeyer05} of Snyder's proof of the Mason--Stothers theorem.
+  presentation~\<^cite>\<open>"lemmermeyer05"\<close> of Snyder's proof of the Mason--Stothers theorem.
 \<close>
 lemma prime_power_dvd_pderiv:
   fixes f p :: "'a :: field_gcd poly"

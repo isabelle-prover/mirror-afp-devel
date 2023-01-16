@@ -20,7 +20,7 @@ unless:
 \item or the group has at least one registered user and the post is being marked as "public"
 \end{itemize}
 
-See \cite{cosmedis-SandP2017} for more details.
+See \<^cite>\<open>"cosmedis-SandP2017"\<close> for more details.
 \<close>
 
 context Post_RECEIVER

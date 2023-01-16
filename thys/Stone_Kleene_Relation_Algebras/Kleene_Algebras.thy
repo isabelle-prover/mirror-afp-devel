@@ -6,9 +6,9 @@
 section \<open>Kleene Algebras\<close>
 
 text \<open>
-Kleene algebras have been axiomatised by Kozen to describe the equational theory of regular languages \cite{Kozen1994}.
+Kleene algebras have been axiomatised by Kozen to describe the equational theory of regular languages \<^cite>\<open>"Kozen1994"\<close>.
 Binary relations are another important model.
-This theory implements variants of Kleene algebras based on idempotent left semirings \cite{Moeller2007}.
+This theory implements variants of Kleene algebras based on idempotent left semirings \<^cite>\<open>"Moeller2007"\<close>.
 The weakening of some semiring axioms allows the treatment of further computation models.
 The presented algebras are special cases of iterings, so many results can be inherited.
 \<close>
@@ -97,7 +97,7 @@ context left_kleene_algebra
 begin
 
 text \<open>
-A number of lemmas in this class are taken from Georg Struth's Kleene algebra theory \cite{ArmstrongGomesStruthWeber2016}.
+A number of lemmas in this class are taken from Georg Struth's Kleene algebra theory \<^cite>\<open>"ArmstrongGomesStruthWeber2016"\<close>.
 \<close>
 
 lemma star_sub_one:

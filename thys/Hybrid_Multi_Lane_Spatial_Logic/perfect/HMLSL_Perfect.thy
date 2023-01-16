@@ -88,7 +88,7 @@ text\<open>
 With the definition of sensors, we can also express how the spatial situation
 changes after the different transitions. In particular, we can prove 
 lemmas corresponding to the activity and stability rules of the
-proof system for MLSL \cite{Linker2015a}.
+proof system for MLSL \<^cite>\<open>"Linker2015a"\<close>.
 
 Observe that we were not able to prove these rules for basic HMLSL, since 
 its generic sensor function allows for instantiations where the perceived length changes

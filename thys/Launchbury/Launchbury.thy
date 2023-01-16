@@ -4,11 +4,11 @@ begin
 
 subsubsection \<open>The natural semantics\<close>
 
-text \<open>This is the semantics as in \cite{launchbury}, with two differences:
+text \<open>This is the semantics as in \<^cite>\<open>"launchbury"\<close>, with two differences:
 \begin{itemize}
 \item Explicit freshness requirements for bound variables in the application and the Let rule.
 \item An additional parameter that stores variables that have to be avoided, but do not occur
-in the judgement otherwise, follwing \cite{sestoft}.
+in the judgement otherwise, follwing \<^cite>\<open>"sestoft"\<close>.
 \end{itemize}
 \<close>
 

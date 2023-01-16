@@ -5358,7 +5358,7 @@ text \<open> Let now \<^term>\<open>\<tau> \<equiv> trace_parallel_plan_strips I
 \<^term>\<open>t' \<equiv> length \<tau>\<close>.
 
 Any model of the SATPlan encoding \<^term>\<open>\<A>\<close> must satisfy the following properties:
-\footnote{Cf. \cite[Theorem 3.1, p. 1044]{DBLP:journals/ai/RintanenHN06} for the construction
+\footnote{Cf. \<^cite>\<open>\<open>Theorem 3.1, p. 1044\<close> in "DBLP:journals/ai/RintanenHN06"\<close> for the construction
 of \<^term>\<open>\<A>\<close>.}
 
   \begin{enumerate}

@@ -136,7 +136,7 @@ subsection\<open>\<open>\<Up>\<close>: category with parallel arrows between two
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-2 and Chapter III-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-2 and Chapter III-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition the_cat_parallel :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>\<Up>\<^sub>C\<close>)
   where "\<Up>\<^sub>C \<aa> \<bb> F =
@@ -616,7 +616,7 @@ subsubsection\<open>Background\<close>
 
 
 text\<open>
-See Chapter III-3 and Chapter III-4 in \cite{mac_lane_categories_2010}).
+See Chapter III-3 and Chapter III-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).
 \<close>
 
 
@@ -1189,7 +1189,7 @@ subsection\<open>\<open>\<up>\<up>\<close>: category with two parallel arrows be
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-2 and Chapter III-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-2 and Chapter III-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition the_cat_parallel_2 :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>\<up>\<up>\<^sub>C\<close>)
   where "\<up>\<up>\<^sub>C \<aa> \<bb> \<gg> \<ff> = \<Up>\<^sub>C \<aa> \<bb> (set {\<gg>, \<ff>})"

@@ -32,13 +32,13 @@ subsection\<open>Related work\<close>
 
 text\<open>
 Since the publication of the framework Types-To-Sets in
-\cite{blanchette_types_2016}, there has been a growing interest
+\<^cite>\<open>"blanchette_types_2016"\<close>, there has been a growing interest
 in its use in applied formalization. Some 
 of the examples of the application of the framework include
-\cite{divason_perron-frobenius_2016}, 
-\cite{maletzky_hilberts_2019} and \cite{immler_smooth_2019}. However, this
+\<^cite>\<open>"divason_perron-frobenius_2016"\<close>, 
+\<^cite>\<open>"maletzky_hilberts_2019"\<close> and \<^cite>\<open>"immler_smooth_2019"\<close>. However, this
 list is not exhaustive. Arguably, the most significant application example 
-was developed in \cite{immler_smooth_2019}, where Fabian Immler and
+was developed in \<^cite>\<open>"immler_smooth_2019"\<close>, where Fabian Immler and
 Bohua Zhan performed the 
 relativization of over 200 theorems from the standard mathematics library
 of Isabelle/HOL.
@@ -74,7 +74,7 @@ of this work:
 \item \textit{SML Relativization}: a relativization 
 of elements of the standard mathematics library of Isabelle/HOL
 \item \textit{TTS Vector Spaces}: a renovation of the set-based
-library that was developed in \cite{immler_smooth_2019} using the ETTS
+library that was developed in \<^cite>\<open>"immler_smooth_2019"\<close> using the ETTS
 instead of the existing interface for Types-To-Sets
 \item \textit{TTS Foundations}: a relativization of a miniature type-based 
 library with every constant being parametric under the side
@@ -90,7 +90,7 @@ subsection\<open>SML Relativization\<close>
 text\<open>
 The standard library that is associated with the 
 object logic Isabelle/HOL and provided as a part of the 
-standard distribution of Isabelle \cite{noauthor_isabellehol_2020} 
+standard distribution of Isabelle \<^cite>\<open>"noauthor_isabellehol_2020"\<close> 
 contains a significant number of formalized results from a variety of 
 fields of mathematics. However, the formalization is performed using a 
 type-based approach: for example, the carrier sets associated with the 
@@ -115,19 +115,19 @@ subsection\<open>TTS Vector Spaces\<close>
 
 text\<open>
 The TTS Vector Spaces is a remake of the library of relativized results that 
-was developed in \cite{immler_smooth_2019} using the ETTS.
+was developed in \<^cite>\<open>"immler_smooth_2019"\<close> using the ETTS.
 The theorems that are provided in the library TTS Vector Spaces are nearly 
-identical to the results that are provided in \cite{immler_smooth_2019}. 
+identical to the results that are provided in \<^cite>\<open>"immler_smooth_2019"\<close>. 
 
 A detailed description of the original library has already
-been given in \cite{immler_smooth_2019} and will not be restated.
-The definitional frameworks that are used in \cite{immler_smooth_2019}
+been given in \<^cite>\<open>"immler_smooth_2019"\<close> and will not be restated.
+The definitional frameworks that are used in \<^cite>\<open>"immler_smooth_2019"\<close>
 and the TTS Vector Spaces are similar. While the unoverloading 
 of most of the constants could be performed by using the 
 command @{command ud}, the command @{command ctr} could not 
 be used to establish that the unoverloaded constants are 
 parametric under a suitable set of side conditions. Therefore,
-like in \cite{immler_smooth_2019}, the proofs of the transfer rules were 
+like in \<^cite>\<open>"immler_smooth_2019"\<close>, the proofs of the transfer rules were 
 performed manually. However, the advantages 
 of using the ETTS become apparent during the relativization of 
 theorems: the complex infrastructure that was needed for 
@@ -156,7 +156,7 @@ theorems that are different from the original constants that are used in the
 type-based theorems can be seen as unnatural and inconvenient. 
 Unfortunately, the library SML Relativization suffers from both 
 of the aforementioned problems. The library that was 
-developed in \cite{immler_smooth_2019} 
+developed in \<^cite>\<open>"immler_smooth_2019"\<close> 
 (hence, also the library TTS Vector Spaces) 
 suffers, primarily, from the former problem, but, arguably, due to the methodology
 that was chosen for the relativization, the library has a more restricted scope

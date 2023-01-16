@@ -554,7 +554,7 @@ subsection \<open>Partitions on Multisets\<close>
 text \<open>A partition on a multiset A is a multiset of multisets, where the sum over P equals A and the 
 empty multiset is not in the partition. Based off set partition definition. 
 We note that unlike set partitions, there is no requirement for elements in the multisets to be 
-distinct due to the definition of union on multisets \cite{benderPartitionsMultisets1974}\<close>
+distinct due to the definition of union on multisets \<^cite>\<open>"benderPartitionsMultisets1974"\<close>\<close>
 
 lemma mset_size_partition_dep: "size {# a \<in># A . P a \<or> Q a #} = 
     size {# a \<in># A . P a #} +  size {# a \<in># A . Q a #} -  size {# a \<in># A . P a \<and> Q a #}"

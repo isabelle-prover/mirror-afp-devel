@@ -4,7 +4,7 @@
 
 theory FunWithFunctions imports Complex_Main begin
 
-text\<open>See \cite{Tao2006}. Was first brought to our attention by Herbert
+text\<open>See \<^cite>\<open>"Tao2006"\<close>. Was first brought to our attention by Herbert
 Ehler who provided a similar proof.\<close>
 
 theorem identity1: fixes f :: "nat \<Rightarrow> nat"
@@ -30,7 +30,7 @@ proof -
 qed
 
 
-text\<open>See \cite{Tao2006}. Possible extension:
+text\<open>See \<^cite>\<open>"Tao2006"\<close>. Possible extension:
 Should also hold if the range of \<open>f\<close> is the reals!
 \<close>
 

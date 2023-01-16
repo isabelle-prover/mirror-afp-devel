@@ -10,7 +10,7 @@ subsection \<open>Definition of circlines\<close>
 (* ----------------------------------------------------------------- *)
 
 text \<open>In our formalization we follow the approach described by Schwerdtfeger
-\cite{schwerdtfeger} and represent circlines by Hermitean, non-zero
+\<^cite>\<open>"schwerdtfeger"\<close> and represent circlines by Hermitean, non-zero
 $2\times 2$ matrices. In the original formulation, a matrix
 $\left(\begin{array}{cc}A & B\\C & D\end{array}\right)$ corresponds to
 the equation $A\cdot z\cdot \overline{z} + B\cdot \overline{z} + C\cdot z + D = 0$,

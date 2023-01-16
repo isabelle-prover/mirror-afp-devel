@@ -5,7 +5,7 @@
 
 subsection \<open> Relational model \<close> (* by Victor Gomes, Georg Struth *)
 
-text \<open> In this subsection, we follow Gomes and Struth~\cite{afp:vericomp} and show that relations 
+text \<open> In this subsection, we follow Gomes and Struth~\<^cite>\<open>"afp:vericomp"\<close> and show that relations 
 form Kleene algebras.  \<close>
 
 theory HS_VC_KA_rel

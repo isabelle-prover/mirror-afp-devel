@@ -1,11 +1,11 @@
 section \<open>The CoSMeDis single node specification\<close>
 
 text \<open>This is the specification of a CoSMeDis node, as described
-in Sections II and IV.B of \cite{cosmedis-SandP2017}.
+in Sections II and IV.B of \<^cite>\<open>"cosmedis-SandP2017"\<close>.
 NB: What that paper refers to as "nodes" are referred in this formalization
 as "APIs".
 
-A CoSMeDis node extends CoSMed \cite{cosmed-itp2016,cosmed-jar2018,cosmed-AFP}
+A CoSMeDis node extends CoSMed \<^cite>\<open>"cosmed-itp2016" and "cosmed-jar2018" and "cosmed-AFP"\<close>
 with inter-node communication actions.
 \<close>
 

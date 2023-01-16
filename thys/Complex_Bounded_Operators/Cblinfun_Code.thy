@@ -49,7 +49,7 @@ text \<open>The following lemma registers cblinfun as an abstract datatype with
   writing \<^term>\<open>mat_of_cblinfun B\<close>.
   (See, e.g., lemma \<open>cblinfun_of_mat_plusOp\<close> below).
 
-  See @{cite "code-generation-tutorial"} for more information on 
+  See \<^cite>\<open>"code-generation-tutorial"\<close> for more information on 
   @{theory_text \<open>[code abstype]\<close>}.\<close>
 
 declare mat_of_cblinfun_inverse [code abstype]

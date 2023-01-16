@@ -26,7 +26,7 @@ their generalizations.
 The terminology was adapted from the informal imperative
 object oriented programming, where the term slicing often refers to the
 process of copying an object of a subclass type to an object of a 
-superclass type \cite{noauthor_wikipedia_2001}\footnote{
+superclass type \<^cite>\<open>"noauthor_wikipedia_2001"\<close>\footnote{
 \url{https://en.wikipedia.org/wiki/Object_slicing}
 }.
 However, it is important to note that the term has other meanings in 
@@ -60,7 +60,7 @@ subsubsection\<open>Composition and composable arrows\<close>
 
 text\<open>
 The definition of a set of \<open>composable_arrs\<close> is equivalent to the definition
-of \<open>composable pairs\<close> presented on page 10 in \cite{mac_lane_categories_2010}
+of \<open>composable pairs\<close> presented on page 10 in \<^cite>\<open>"mac_lane_categories_2010"\<close>
 (see theorem \<open>dg_composable_arrs'\<close> below). 
 Nonetheless, the definition is meant to be used sparingly. Normally,
 the arrows are meant to be specified explicitly using the predicate 
@@ -156,9 +156,9 @@ subsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 The definition of a semicategory that is used in this work is
-similar to the definition that was used in \cite{mitchell_dominion_1972}.
+similar to the definition that was used in \<^cite>\<open>"mitchell_dominion_1972"\<close>.
 It is also a natural generalization of the definition of a category that is
-presented in Chapter I-2 in \cite{mac_lane_categories_2010}. The generalization
+presented in Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>. The generalization
 is performed by omitting the identity and the axioms associated
 with it. The amendments to the definitions that are associated with size 
 have already been explained in the previous chapter.
@@ -577,7 +577,7 @@ subsection\<open>Opposite semicategory\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition op_smc :: "V \<Rightarrow> V"
   where "op_smc \<CC> = [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Dom\<rparr>, fflip (\<CC>\<lparr>Comp\<rparr>)]\<^sub>\<circ>"
@@ -764,7 +764,7 @@ lemmas (in semicategory) smc_pattern_rectangle_left =
 subsection\<open>Monic arrow and epic arrow\<close>
 
 
-text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition is_monic_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   where "is_monic_arr \<CC> b c m \<longleftrightarrow>
@@ -932,7 +932,7 @@ qed
 subsection\<open>Idempotent arrow\<close>
 
 
-text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition is_idem_arr :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   where "is_idem_arr \<CC> b f \<longleftrightarrow> f : b \<mapsto>\<^bsub>\<CC>\<^esub> b \<and> f \<circ>\<^sub>A\<^bsub>\<CC>\<^esub> f = f"
@@ -962,7 +962,7 @@ lemma (in semicategory) op_smc_is_idem_arr[smc_op_simps]:
 subsection\<open>Terminal object and initial object\<close>
 
 
-text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition obj_terminal :: "V \<Rightarrow> V \<Rightarrow> bool"
   where "obj_terminal \<CC> t \<longleftrightarrow> 
@@ -1015,7 +1015,7 @@ lemma op_smc_obj_terminal[smc_op_simps]:
 subsection\<open>Null object\<close>
 
 
-text\<open>See Chapter I-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition obj_null :: "V \<Rightarrow> V \<Rightarrow> bool"
   where "obj_null \<CC> a \<longleftrightarrow> obj_initial \<CC> a \<and> obj_terminal \<CC> a"

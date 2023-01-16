@@ -15,7 +15,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 The methodology chosen for the exposition of \<open>Par\<close> as a category is 
-analogous to the one used in \cite{milehins_category_2021} 
+analogous to the one used in \<^cite>\<open>"milehins_category_2021"\<close> 
 for the exposition of \<open>Par\<close> as a semicategory. 
 \<close>
 

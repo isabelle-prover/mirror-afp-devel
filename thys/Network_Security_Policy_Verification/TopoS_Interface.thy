@@ -6,7 +6,7 @@ begin
 
 section \<open>Security Invariants\<close>
   text\<open>
-    A good documentation of this formalization is available in \cite{diekmann2014forte}. 
+    A good documentation of this formalization is available in \<^cite>\<open>"diekmann2014forte"\<close>. 
 \<close>
 
   text\<open>
@@ -171,7 +171,7 @@ It is a secure default host attribute, we will use the symbol \<open>\<bottom>\<
 
 The newly introduced Boolean \<open>receiver_violation\<close> tells whether a security violation happens at the sender's or the receiver's side.
 
-The details can be looked up in \cite{diekmann2014forte}. 
+The details can be looked up in \<^cite>\<open>"diekmann2014forte"\<close>. 
 \<close>
 
   \<comment> \<open>Some notes about the notation:

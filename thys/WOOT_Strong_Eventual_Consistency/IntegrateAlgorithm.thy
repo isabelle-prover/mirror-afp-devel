@@ -98,7 +98,7 @@ text \<open>Algorithm @{term integrate} describes the main function that is call
   A first attempt to resolve this would be to insert the W-characters by choosing an insertion point
   using the order induced by their identifiers to achieve a consistent ordering.
   But this method fails in some cases: a counter-example was found by 
-  Oster et al.~\cite[section 2]{oster2006data}.
+  Oster et al.~\<^cite>\<open>\<open>section 2\<close> in "oster2006data"\<close>.
 
   The solution introduced by the authors of WOOT is to restrict the identifier comparison to the 
   set of W-characters in the range @{term "substr l u s"} whose predecessor and successor are

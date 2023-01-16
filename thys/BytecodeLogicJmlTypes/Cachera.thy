@@ -14,7 +14,7 @@ section\<open>A derived logic for a strong type system\<close>
 text\<open>In this section we consider a system of derived assertions, for
 a type system for bounded heap consumption. The type system arises by
 reformulating the analysis of Cachera, Jensen, Pichardie, and
-Schneider \cite{CaJePiSc05MemoryUsage} for a high-level functional
+Schneider \<^cite>\<open>"CaJePiSc05MemoryUsage"\<close> for a high-level functional
 language. The original approach of Cachera et al.~consists of
 formalising the correctness proof of a certain analysis technique in
 Coq. Consequently, the verification of a program requires the
@@ -29,9 +29,9 @@ a largely syntax-directed single-pass traversal of the (low-level)
 code using a domain-specific program logic. This approach to
 proof-carrying code was already explored in the MRG project, with
 respect to program logics of partial correctness
-\cite{BeringerHofmannMomiglianoShkaravska:LPAR2004} and a type system
+\<^cite>\<open>"BeringerHofmannMomiglianoShkaravska:LPAR2004"\<close> and a type system
 for memory consumption by Hofmann and
-Jost~\cite{HofmannJost:POPL2003}. In order to obtain
+Jost~\<^cite>\<open>"HofmannJost:POPL2003"\<close>. In order to obtain
 syntax-directedness of the proof rules, these had to be formulated at
 the granularity of typing judgements. In contrast, the present proof
 system admits proof rules for individual JVM instructions.

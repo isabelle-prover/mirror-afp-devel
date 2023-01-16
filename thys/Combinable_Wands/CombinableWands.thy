@@ -827,7 +827,7 @@ qed
 
 subsection Theorems
 
-text \<open>The following theorem is crucial to use the package logic~\cite{Dardinier22} to automatically
+text \<open>The following theorem is crucial to use the package logic~\<^cite>\<open>"Dardinier22"\<close> to automatically
 compute footprints of combinable wands.\<close>
 
 theorem R_mono_transformer:

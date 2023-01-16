@@ -16,7 +16,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 
 text\<open>
-See \cite{noauthor_wikipedia_2001}\footnote{
+See \<^cite>\<open>"noauthor_wikipedia_2001"\<close>\footnote{
 \url{https://en.wikipedia.org/wiki/Equaliser_(mathematics)}
 }.
 \<close>
@@ -748,7 +748,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 
 text\<open>
-See \cite{noauthor_wikipedia_2001}\footnote{
+See \<^cite>\<open>"noauthor_wikipedia_2001"\<close>\footnote{
 \url{https://en.wikipedia.org/wiki/Equaliser_(mathematics)}
 }.
 \<close>

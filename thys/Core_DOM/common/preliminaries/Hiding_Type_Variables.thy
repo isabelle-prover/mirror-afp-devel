@@ -529,7 +529,7 @@ definition hide_tvar_X :: "(_, 'retval::linorder) hide_tvar_baz
 subsection\<open>Introduction\<close>
 text\<open>
   When modelling object-oriented data models in HOL with the goal of preserving \<^emph>\<open>extensibility\<close> 
-  (e.g., as described in~\cite{brucker.ea:extensible:2008-b,brucker:interactive:2007}) one needs 
+  (e.g., as described in~\<^cite>\<open>"brucker.ea:extensible:2008-b" and "brucker:interactive:2007"\<close>) one needs 
   to define type constructors with a large number of type variables. This can reduce the readability
   of the overall formalization. Thus, we use a short-hand notation in cases were the names of 
   the type variables are known from the context. In more detail, this theory  sets up both 

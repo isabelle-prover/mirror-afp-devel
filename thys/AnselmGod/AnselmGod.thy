@@ -5,14 +5,14 @@ imports Main
 begin
 
 text \<open>This paper presents an automated verification of Anselm's ontological argument, as
-reconstructed by Paul Oppenheimer and Edward Zalta @{cite "oppenheimer_logic_1991"}, in
+reconstructed by Paul Oppenheimer and Edward Zalta \<^cite>\<open>"oppenheimer_logic_1991"\<close>, in
 Isabelle/HOL, an interactive theorem prover for higher-order logic. Previously, the argument has being
-automated by Oppenheimer and Zalta in Prover9 @{cite "oppenheimer_computationally-discovered_2011"},
+automated by Oppenheimer and Zalta in Prover9 \<^cite>\<open>"oppenheimer_computationally-discovered_2011"\<close>,
 an automated theorem prover for first-order logic, and by John Rushby in PVS
-@{cite "rushby_ontological_2013"}, an automated theorem prover for higher-order logic. Automations of
-other versions of the argument include @{cite "benzmuller_godels_2013"}, @{cite "rushby_mechanized_2016"} 
-and @{cite "fuenmayor_types_2017"}. My purpose here is to present a basis for comparison in the spirit 
-of @{cite "wiedijk_seventeen_2006"}, which compares automated proofs of the irrationality 
+\<^cite>\<open>"rushby_ontological_2013"\<close>, an automated theorem prover for higher-order logic. Automations of
+other versions of the argument include \<^cite>\<open>"benzmuller_godels_2013"\<close>, \<^cite>\<open>"rushby_mechanized_2016"\<close> 
+and \<^cite>\<open>"fuenmayor_types_2017"\<close>. My purpose here is to present a basis for comparison in the spirit 
+of \<^cite>\<open>"wiedijk_seventeen_2006"\<close>, which compares automated proofs of the irrationality 
 of $\sqrt 2$.\<close>
 
 text \<open>Oppenheimer and Zalta's reconstruction is based on the idea of treating `that than 
@@ -20,7 +20,7 @@ which nothing greater can be conceived' as a definite description, and treating 
 descriptions as singular terms. But in Isabelle/HOL all terms, including definite descriptions, 
 are assumed to denote. So the main task is to embed a free logic for definite descriptions within 
 Isabelle/HOL. (Previously, a free logic has been embedded into  Isabelle/HOL by  Christoph
-Benzmuller and Dana Scott @{cite "benzmuller_automating_2016"}. But theirs differs from Zalta
+Benzmuller and Dana Scott \<^cite>\<open>"benzmuller_automating_2016"\<close>. But theirs differs from Zalta
 and Oppenheimer's in several ways). Once Isabelle/HOL is equipped with free definite descriptions,
 reconstructing the argument is straightforward.\<close>
 
@@ -55,10 +55,10 @@ abbreviation particular_quantifier:: "(i \<Rightarrow> bool) \<Rightarrow> bool"
 abbreviation particular_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<^bold>\<exists>" [8] 9)
   where "\<^bold>\<exists> x. \<phi> x \<equiv> \<^bold>\<exists> \<phi>"    
 text \<open>Note that the quantifiers here range over both existent and non-existent individuals, whereas 
-the quantifiers in @{cite "benzmuller_automating_2016"} range only over existent individuals.\<close>
+the quantifiers in \<^cite>\<open>"benzmuller_automating_2016"\<close> range only over existent individuals.\<close>
 
 text \<open>In the free logic employed by Oppenheimer and Zalta, statements of identity in which terms
-do not denote are always false @{cite "oppenheimer_logic_1991"}, p. 511. So the domain of the identity
+do not denote are always false \<^cite>\<open>"oppenheimer_logic_1991"\<close>, p. 511. So the domain of the identity
 relation should be restricted to exclude the null-individual:\<close>
 
 abbreviation identity:: "i \<Rightarrow> i \<Rightarrow> bool" ("is")
@@ -74,7 +74,7 @@ abbreviation uniqueness_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> bool" (bi
 
 text \<open>Finally, the logic employed by Oppenheimer and Zalta is a negative free logic, in that
 applications of atomic predicates to non-denoting terms are always false
-@{cite "oppenheimer_logic_1991"}, p. 511. So it's necessary to introduce a higher-order predicate
+\<^cite>\<open>"oppenheimer_logic_1991"\<close>, p. 511. So it's necessary to introduce a higher-order predicate
 distinguishing between atomic and non-atomic predicates, and to introduce an axiom stipulating that
 no atomic predicate is true of the null individual:\<close>
 
@@ -98,12 +98,12 @@ abbreviation description_syntax:: "(i \<Rightarrow> bool) \<Rightarrow> i" (bind
 where "\<^bold>\<tau> x. \<phi> x \<equiv> \<^bold>\<tau> \<phi>"
 
 text \<open>In Oppenheimer and Zalta's reconstruction of the argument, definite descriptions
-are governed by the Russellian axiom schema @{cite "oppenheimer_logic_1991"}, p. 513:\<close>
+are governed by the Russellian axiom schema \<^cite>\<open>"oppenheimer_logic_1991"\<close>, p. 513:\<close>
 axiomatization where description_axiom:
 "atomic \<psi> \<Longrightarrow> \<psi> (\<^bold>\<tau> x. \<phi> x) \<equiv> (\<^bold>\<exists> x. \<phi> x \<and> (\<^bold>\<forall> y. \<phi> y \<longrightarrow> x \<^bold>= y) \<and> \<psi> x)"
 
 text \<open>From this axiom schema, Oppenheimer and Zalta derive two intermediary theorems
- to be used in the reconstruction of their argument  @{cite "oppenheimer_logic_1991"}, pp. 513-4. 
+ to be used in the reconstruction of their argument  \<^cite>\<open>"oppenheimer_logic_1991"\<close>, pp. 513-4. 
 According to the first:\<close>
 theorem  description_theorem_1: "unique x. \<phi> x \<Longrightarrow> \<^bold>\<exists> y. y \<^bold>= (\<^bold>\<tau> x. \<phi> x)"
 using description_axiom identity_atomic by blast
@@ -117,7 +117,7 @@ theorem description_theorem_2: "\<^bold>\<exists> x. x \<^bold>= (\<^bold>\<tau>
 by (simp add: lemma_1)
 
 text \<open>In the course of verifying the argument using Prover9, Oppenheimer and Zalta discovered 
-a simplified proof which uses instead @{cite "oppenheimer_computationally-discovered_2011"}, p. 345:\<close>
+a simplified proof which uses instead \<^cite>\<open>"oppenheimer_computationally-discovered_2011"\<close>, p. 345:\<close>
 theorem description_theorem_3:
 "atomic \<psi> \<Longrightarrow> \<psi> (\<^bold>\<tau> x. \<phi> x) \<Longrightarrow> \<^bold>\<exists> y. y \<^bold>= (\<^bold>\<tau> x. \<phi> x)" 
 using negativity_constraint by fastforce
@@ -133,7 +133,7 @@ consts greater_than:: "i\<Rightarrow>i\<Rightarrow>bool" ("G") \<comment> \<open
 consts conceivable:: "i\<Rightarrow>bool" ("C") \<comment> \<open>exists in the understanding\<close>
 text \<open>Note that @{term "E a"} is not intended by Oppenheimer and Zalta to be equivalent to
 @{term "\<^bold>\<exists> x. a = x"} since according to their reading of the argument, some things do not exist
-in reality @{cite "oppenheimer_logic_1991"}, p. 514.\<close>
+in reality \<^cite>\<open>"oppenheimer_logic_1991"\<close>, p. 514.\<close>
 
 text \<open>Finally, the presentation of the argument is simplified by introducing
 the following abbreviation for the predicate `is a being greater than which none can be conceived':\<close>
@@ -147,13 +147,13 @@ definition g :: "i" where "g \<equiv> (\<^bold>\<tau> x. \<Phi> x)"
 
 text \<open>In Oppenheimer and Zalta's presentation every name is assumed to denote, so a name for
 God cannot be introduced until it is proved that the description @{term "(\<^bold>\<tau> x. \<Phi> x)"} denotes
- @{cite "oppenheimer_logic_1991"}, p, 520. But since it's not assumed in this presentation that every
+ \<^cite>\<open>"oppenheimer_logic_1991"\<close>, p, 520. But since it's not assumed in this presentation that every
 name denotes or, in other words, since it's not assumed that no names denote the null individual,
  it's not necessary to postpone this step.\<close>
 
 text \<open>The final quasi-logical premise in Oppenheimer and Zalta's reconstruction of the argument
 is the connectivity of `is greater than', which is used in the proof of the following lemma
-@{cite "oppenheimer_logic_1991"}, p. 518:\<close>
+\<^cite>\<open>"oppenheimer_logic_1991"\<close>, p. 518:\<close>
   
 lemma lemma_2:
   assumes connectivity: "\<^bold>\<forall> x. \<^bold>\<forall> y. G x y \<or> G y x \<or> x \<^bold>= y"
@@ -180,7 +180,7 @@ shows "E g" \<comment> \<open>God exists.\<close>
 
   text \<open>Isabelle can verify the argument in one line with the command \<open>using premise_1 premise_2 connectivity lemma_1 g_def description_theorem_1 by smt\<close>.
 But since proofs in Isabelle using \<open>smt\<close> are currently considered impermanent, I instead give Zalta
-and Oppenheimer's handwritten proof @{cite "oppenheimer_computationally-discovered_2011"}, p. 337:\<close>  
+and Oppenheimer's handwritten proof \<^cite>\<open>"oppenheimer_computationally-discovered_2011"\<close>, p. 337:\<close>  
 proof (rule ccontr)
   assume atheism: "\<not> E g"
   from premise_1 and connectivity and lemma_2 have "unique x. \<Phi> x" by simp
@@ -198,7 +198,7 @@ section \<open>The Prover9 Argument\<close>
 
 text \<open>In the course of verifying the argument using Prover9, Oppenheimer and Zalta 
 discovered a simplified version which employs only \<open>premise_2\<close>, but not \<open>premise_1\<close>
-or the connectivity of `greater than' @{cite "oppenheimer_computationally-discovered_2011"}.\<close>
+or the connectivity of `greater than' \<^cite>\<open>"oppenheimer_computationally-discovered_2011"\<close>.\<close>
 
 theorem
 assumes premise_2:  "\<not> E (\<^bold>\<tau> x. \<Phi> x) \<longrightarrow> (\<^bold>\<exists> y. G y (\<^bold>\<tau> x. \<Phi> x) \<and> C y)"
@@ -255,11 +255,11 @@ theorem
 
 text \<open>So under the supposition that `is greater than' is atomic, \<open>premise_2\<close>
 is equivalent to God's existence, suggesting an atheist might wish to reject it as question-begging
-(see @{cite "oppenheimer_computationally-discovered_2011"}, pp. 348-9 and
-@{cite "garbacz_prover9s_2012"} for more detailed discussion of this point).\<close> 
+(see \<^cite>\<open>"oppenheimer_computationally-discovered_2011"\<close>, pp. 348-9 and
+\<^cite>\<open>"garbacz_prover9s_2012"\<close> for more detailed discussion of this point).\<close> 
 
 text \<open>However, Ted Parent has pointed out that \<open>premise_2\<close> need not stand on its own,
-but may be further supported by the following argument @{cite "parent_prover9_2015"},
+but may be further supported by the following argument \<^cite>\<open>"parent_prover9_2015"\<close>,
  p. 478:\<close>
 
 lemma
@@ -273,7 +273,7 @@ particularly questionable. If `exists in the understanding' is atomic, then it f
 the understanding, then something is the largest positive integer. But since `the largest positive
 integer' is a grammatical description, there is a case to be made that the largest positive integer
 does exist in the understanding, even though nothing is the largest positive integer
-@{cite "parent_prover9_2015"}, p. 480-1.\<close>
+\<^cite>\<open>"parent_prover9_2015"\<close>, p. 480-1.\<close>
 
 section \<open>Conclusion\<close>
 
@@ -282,7 +282,7 @@ Prover9 and the reconstruction presented here in Isabelle/HOL is that whereas  P
 first-order logic, Isabelle/HOL employs higher-order logic. That means that the Russellian 
 \<open>description_axiom\<close> schema can be stated directly in Isabelle/HOL, whereas in Prover9 
 it has to be represented indirectly using first-order quantifiers ranging over predicates and
-relations @{cite "oppenheimer_computationally-discovered_2011"}, pp. 338-41.\<close>
+relations \<^cite>\<open>"oppenheimer_computationally-discovered_2011"\<close>, pp. 338-41.\<close>
 
 text \<open>Because of the way Oppenheimer and Zalta carry out this embedding, it is presupposed
 in their presentation that all the non-logical predicates which occur in their argument are 

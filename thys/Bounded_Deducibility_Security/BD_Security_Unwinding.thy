@@ -7,7 +7,7 @@ begin
 section \<open>Unwinding proof method\<close>
 
 text \<open>This section formalizes the unwinding proof method for BD Security discussed in
-@{cite \<open>Section 5.1\<close> "cocon-CAV2014"}\<close>
+\<^cite>\<open>\<open>Section 5.1\<close> in "cocon-CAV2014"\<close>\<close>
 
 context BD_Security_IO
 begin

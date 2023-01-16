@@ -323,7 +323,7 @@ subsection \<open>A specific puzzle\<close>
 
 text \<open>
   We now look at one particular instance of this puzzle, which was given as an exercise in
-  \<^emph>\<open>Abstract Algebra\<close> by Dummit and Foote (Exercise 23 in Section 14.6)~\cite{dummit}.
+  \<^emph>\<open>Abstract Algebra\<close> by Dummit and Foote (Exercise 23 in Section 14.6)~\<^cite>\<open>"dummit"\<close>.
 
  Suppose we know that
   $x + y + z = 1$, $x^2 + y^2 + z^2 = 2$, and $x^3 + y^3 + z^3 = 3$. Then what is

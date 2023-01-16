@@ -205,15 +205,15 @@ qed
   
 text \<open>
   In the following, we will prove the correctness of the 
-  Akiyama--Tanigawa algorithm~\cite{kaneko2000}, which is a simple algorithm for computing 
-  Bernoulli numbers that was discovered by Akiyama and Tanigawa~\cite{aki_tani1999} essentially 
+  Akiyama--Tanigawa algorithm~\<^cite>\<open>"kaneko2000"\<close>, which is a simple algorithm for computing 
+  Bernoulli numbers that was discovered by Akiyama and Tanigawa~\<^cite>\<open>"aki_tani1999"\<close> essentially 
   as a by-product of their studies of the Euler--Zagier multiple zeta function. The algorithm 
   is based on a number triangle (similar to Pascal's triangle) in which the Bernoulli numbers 
   are the leftmost diagonal.
 
   While the algorithm itself is quite simple, proving it correct is not entirely trivial.
   We will use generating functions and Stirling numbers, mostly following the presentation by
-  Kaneko~\cite{kaneko2000}.
+  Kaneko~\<^cite>\<open>"kaneko2000"\<close>.
 \<close>
 
 
@@ -551,7 +551,7 @@ lemma bernoulli'_odd_numeral_eq_0 [simp]: "bernoulli' (numeral (Num.Bit1 n)) = 0
 text \<open>
   The following explicit formula for Bernoulli numbers can also derived reasonably easily
   using the generating functions of Stirling numbers and Bernoulli numbers. The proof follows 
-  an answer by Marko Riedel on the Mathematics StackExchange~\cite{riedel_mathse_2014}.
+  an answer by Marko Riedel on the Mathematics StackExchange~\<^cite>\<open>"riedel_mathse_2014"\<close>.
 \<close>
 theorem bernoulli_altdef: 
   "bernoulli n = (\<Sum>m\<le>n. \<Sum>k\<le>m. (-1)^k * real (m choose k) * real k^n / real (Suc m))"
@@ -1033,7 +1033,7 @@ qed
 subsection \<open>Akiyama--Tanigawa algorithm\<close>
   
 text \<open>
-  First, we define the Akiyama--Tanigawa number triangle as shown by Kaneko~\cite{kaneko2000}.
+  First, we define the Akiyama--Tanigawa number triangle as shown by Kaneko~\<^cite>\<open>"kaneko2000"\<close>.
   We define this generically, parametrised by the first row. This makes the proofs a 
   little bit more modular.
 \<close>

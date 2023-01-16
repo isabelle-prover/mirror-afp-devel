@@ -20,7 +20,7 @@ text \<open>This theory provides rewrite rules for the simplification of LTL for
     \item Syntactic Implication Checking
   \end{itemize}
   It reuses parts of LTL\_Rewrite.thy (CAVA, LTL\_TO\_GBA). Furthermore, some rules were taken from
-  \cite{DBLP:conf/cav/SomenziB00} and \cite{DBLP:conf/tacas/BabiakKRS12}. All functions are defined for @{type ltln}.\<close>
+  \<^cite>\<open>"DBLP:conf/cav/SomenziB00"\<close> and \<^cite>\<open>"DBLP:conf/tacas/BabiakKRS12"\<close>. All functions are defined for @{type ltln}.\<close>
 
 
 

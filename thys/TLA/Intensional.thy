@@ -17,14 +17,14 @@ text\<open>
   implication ($\longrightarrow$) and meta-level entailment ($\Longrightarrow$) 
   commute, viz. the proof rule \<open>impI:\<close> @{thm impI}. 
   However, the deduction theorem does not hold for 
-  most modal and temporal logics \cite[page 95]{Lamport02}\cite{Merz98}.
+  most modal and temporal logics \<^cite>\<open>\<open>page 95\<close> in "Lamport02"\<close>\<^cite>\<open>"Merz98"\<close>.
   For example $A \vdash \Box A$ holds, meaning that if $A$ holds in any world, then
   it always holds. However, $\vdash A \longrightarrow \Box A$, stating that 
   $A$ always holds if it initially holds, is not valid.
 
-  Merz  \cite{Merz98} overcame this problem by creating an
+  Merz  \<^cite>\<open>"Merz98"\<close> overcame this problem by creating an
   @{term Intensional} logic. It exploits Isabelle's 
-  axiomatic type class feature  \cite{Wenzel00b} by creating a type
+  axiomatic type class feature  \<^cite>\<open>"Wenzel00b"\<close> by creating a type
   class @{term world}, which provides Skolem constants to associate formulas
   with the world they hold in. The class is trivial, not requiring any axioms.
 \<close>

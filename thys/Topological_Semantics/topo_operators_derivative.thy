@@ -9,13 +9,13 @@ subsection \<open>Derivative and coherence\<close>
 text\<open>\noindent{In this section we investigate two related operators, namely the `derivative' (or `derived set')
 and the (Cantorian) `coherence' of a set. The derivative of a set is the set of its accumulation (aka. limit)
 points. The coherence of a set A is the set formed by those limit points of A belonging to A.
-For the derivative operator we draw upon the works by Kuratowski @{cite Kuratowski1} and
-(in more detail) by Zarycki @{cite Zarycki3}; cf.~also McKinsey \& Tarski @{cite AOT}.
-For the (Cantorian) coherence operator we follow the treatment given by Zarycki in @{cite Zarycki2}.}\<close>
+For the derivative operator we draw upon the works by Kuratowski \<^cite>\<open>Kuratowski1\<close> and
+(in more detail) by Zarycki \<^cite>\<open>Zarycki3\<close>; cf.~also McKinsey \& Tarski \<^cite>\<open>AOT\<close>.
+For the (Cantorian) coherence operator we follow the treatment given by Zarycki in \<^cite>\<open>Zarycki2\<close>.}\<close>
 
 subsubsection \<open>Derivative conditions\<close>
 
-text\<open>\noindent{The derivative conditions overlap partly with Kuratowski closure conditions @{cite Kuratowski1}.
+text\<open>\noindent{The derivative conditions overlap partly with Kuratowski closure conditions \<^cite>\<open>Kuratowski1\<close>.
 We try to make both notations coincide when possible.}\<close>
 
 abbreviation "Der_1 \<phi>  \<equiv> Cl_1 \<phi>"
@@ -32,8 +32,8 @@ Condition Der-2 basically says (when assuming other derivative axioms) that the 
 i.e. that all points are accumulation points (no point is isolated) w.r.t the whole space.
 Der-4 is a weakened (left-to-right) variant of Cl-4.
 Condition Der-4e corresponds to a (weaker) condition than Der-4 and is used in more recent literature
-(in particular in the works of Leo Esakia @{cite Esakia}).
-When other derivative axioms are assumed, Der-5 above as used by Zarycki @{cite Zarycki3} says that
+(in particular in the works of Leo Esakia \<^cite>\<open>Esakia\<close>).
+When other derivative axioms are assumed, Der-5 above as used by Zarycki \<^cite>\<open>Zarycki3\<close> says that
 the only clopen sets in the space are the top and bottom elements (empty set and universe, resp.).
 We verify some properties:}\<close>
 
@@ -64,8 +64,8 @@ lemma PD12: "Der_1 \<phi> \<Longrightarrow> Der_2 \<phi> \<Longrightarrow> Der_4
 qed
 
 text\<open>\noindent{The conditions below can serve to axiomatize a derivative operator. Different authors consider different
-sets of conditions. We define below some corresponding to Zarycki @{cite Zarycki3}, Kuratowski @{cite Kuratowski1}
-@{cite Zarycki2}, McKinsey \& Tarski @{cite AOT}, and Esakia @{cite Esakia}, respectively.}\<close>
+sets of conditions. We define below some corresponding to Zarycki \<^cite>\<open>Zarycki3\<close>, Kuratowski \<^cite>\<open>Kuratowski1\<close>
+\<^cite>\<open>Zarycki2\<close>, McKinsey \& Tarski \<^cite>\<open>AOT\<close>, and Esakia \<^cite>\<open>Esakia\<close>, respectively.}\<close>
 abbreviation "\<DD>z \<phi>  \<equiv> Der_1 \<phi> \<and> Der_2 \<phi> \<and> Der_3 \<phi> \<and> Der_4 \<phi> \<and> Der_5 \<phi>"
 abbreviation "\<DD>k \<phi>  \<equiv> Der_1 \<phi> \<and> Der_2 \<phi> \<and> Der_3 \<phi> \<and> Der_4 \<phi>"
 abbreviation "\<DD>mt \<phi> \<equiv> Der_1 \<phi>           \<and> Der_3 \<phi> \<and> Der_4 \<phi>"
@@ -152,7 +152,7 @@ lemma fp_CD_sup_closed: "Der_inf \<phi> \<Longrightarrow> supremum_closed (fp (\
 
 subsubsection \<open>Coherence conditions\<close>
 text\<open>\noindent{We finish this section by introducing the `coherence' operator (Cantor's `Koherenz') as discussed
-by Zarycki in @{cite Zarycki2}. As happens with the derivative operator, the coherence operator cannot
+by Zarycki in \<^cite>\<open>Zarycki2\<close>. As happens with the derivative operator, the coherence operator cannot
 be derived from interior, closure, border, nor frontier.}\<close>
 
 definition "Kh_1 \<phi> \<equiv> ADDI_b \<phi>"

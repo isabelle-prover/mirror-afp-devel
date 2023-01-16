@@ -8,7 +8,7 @@ theory Normalizing_Sequences
   imports Transfer_Operator Asymptotic_Density
 begin
 
-text \<open>In this file, we prove the main result in~\cite{gouezel_normalizing_sequences}: in a
+text \<open>In this file, we prove the main result in~\<^cite>\<open>"gouezel_normalizing_sequences"\<close>: in a
 conservative system, if a renormalized sequence $S_n f/B_n$ converges in distribution towards
 a limit which is not a Dirac mass at $0$, then $B_n$ can not grow exponentially fast. We also prove
 the easier result that, in a probability preserving system, normalizing sequences grow at most
@@ -254,7 +254,7 @@ by (rule cesaro_imp_density_one[OF _ disjoint_sets_measure_Cesaro_tendsto_zero[O
 
 subsection \<open>Normalizing sequences do not grow exponentially in conservative systems\<close>
 
-text \<open>We prove the main result in~\cite{gouezel_normalizing_sequences}: in a
+text \<open>We prove the main result in~\<^cite>\<open>"gouezel_normalizing_sequences"\<close>: in a
 conservative system, if a renormalized sequence $S_n f/B_n$ converges in distribution towards
 a limit which is not a Dirac mass at $0$, then $B_n$ can not grow exponentially fast. The proof
 is expressed in the following locale. The main theorem is Theorem~\verb+subexponential_growth+
@@ -1105,7 +1105,7 @@ end (*of locale conservative_limit*)
 subsection \<open>Normalizing sequences grow at most polynomially in probability preserving systems\<close>
 
 text \<open>In probability preserving systems, normalizing sequences grow at most polynomially.
-The proof, also given in~\cite{gouezel_normalizing_sequences}, is considerably easier than
+The proof, also given in~\<^cite>\<open>"gouezel_normalizing_sequences"\<close>, is considerably easier than
 the conservative case. We prove that $B_{n+1} \leq C B_n$ (more precisely, this only holds if
 $B_{n+1}$ is large enough), by arguing that $S_{n+1} f = S_n f + f \circ T^n$, where $f\circ T^n$
 is negligible if $B_{n+1}$ is large thanks to the measure preservation. We also prove that

@@ -7,7 +7,7 @@ section \<open>Verification of the \emph{One-Third Rule} Consensus Algorithm\<cl
 text \<open>
   We now apply the framework introduced so far to the verification of
   concrete algorithms, starting with algorithm \emph{One-Third Rule},
-  which is one of the simplest algorithms presented in~\cite{charron:heardof}.
+  which is one of the simplest algorithms presented in~\<^cite>\<open>"charron:heardof"\<close>.
   Nevertheless, the algorithm has some interesting characteristics:
   it ensures safety (i.e., the Integrity and Agreement) properties in the
   presence of arbitrary benign faults, and if everything works perfectly,

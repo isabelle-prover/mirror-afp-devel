@@ -23,11 +23,11 @@ text \<open>
 subsection \<open>The strong law\<close>
 
 text \<open>
-  The proof uses Birkhoff's Theorem from Gouëzel's formalisation of ergodic theory~\cite{gouezel}
+  The proof uses Birkhoff's Theorem from Gouëzel's formalisation of ergodic theory~\<^cite>\<open>"gouezel"\<close>
   and the fact that the shift operator $T(x_1, x_2, x_3, \ldots) = (x_2, x_3, \ldots)$ is ergodic.
   This proof can be found in various textbooks on probability theory/ergodic
-  theory, e.g. the ones by Krengel~\cite[p.~24]{krengel} and
-  Simmonet~\cite[Chapter 15, pp.~311--325]{Simonnet1996}.
+  theory, e.g. the ones by Krengel~\<^cite>\<open>\<open>p.~24\<close> in "krengel"\<close> and
+  Simmonet~\<^cite>\<open>\<open>Chapter 15, pp.~311--325\<close> in "Simonnet1996"\<close>.
 \<close>
 theorem (in prob_space) strong_law_of_large_numbers_iid:
   fixes X :: "nat \<Rightarrow> 'a \<Rightarrow> real"

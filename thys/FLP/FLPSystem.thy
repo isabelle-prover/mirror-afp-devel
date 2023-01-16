@@ -264,7 +264,7 @@ text\<open>
   ...while the silent decision values of the process which is active in
   a step may only increase or stay the same.
   
-  This follows as stated in \cite{Voelzer} from the \emph{diamond property}
+  This follows as stated in \<^cite>\<open>"Voelzer"\<close> from the \emph{diamond property}
   for a reachable configuration and a single step, i.e. \isb{DiamondTwo},
   and in addition from the fact that output messages cannot get lost, i.e.
   \isb{NoOutMessageLoss}.
@@ -309,7 +309,7 @@ text\<open>
   of a process cannot go from {0} to {1} or vice versa in a step.
 
   This is a slightly more generic version of Proposition 3 (c) from
-  \cite{Voelzer} since it is proven for both values, while Völzer is only
+  \<^cite>\<open>"Voelzer"\<close> since it is proven for both values, while Völzer is only
   interested in the situation starting with $\var{val(q,c) = \{0\}}$.
 
   \voelzer{Proposition 3(c)}

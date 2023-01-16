@@ -65,7 +65,7 @@ qed
 
 subsection \<open>Partial Correctness\<close>
 
-text \<open>Partial correctness for loops\citep[Lemma 7.2.2, \S7, p.~185]{McIver_M_04}.\<close>
+text \<open>Partial correctness for loops\<^citep>\<open>\<open>Lemma 7.2.2, \S7, p.~185\<close> in "McIver_M_04"\<close>.\<close>
 lemma wlp_Loop:
   assumes wd: "well_def body"
       and uI: "unitary I"
@@ -93,8 +93,8 @@ qed
 subsection \<open>Total Correctness\<close>
 text_raw \<open>\label{s:loop_total}\<close>
 
-text \<open>The first total correctness lemma for loops which terminate with probability 1\citep[Lemma
-7.3.1, \S7, p.~186]{McIver_M_04}.\<close>
+text \<open>The first total correctness lemma for loops which terminate with probability 1\<^citep>\<open>\<open>Lemma
+7.3.1, \S7, p.~186\<close> in "McIver_M_04"\<close>.\<close>
 
 lemma wp_Loop:
   assumes wd:   "well_def body"

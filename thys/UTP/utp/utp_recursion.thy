@@ -33,7 +33,7 @@ qed
 subsection \<open> Obtaining Unique Fixed-points \<close>
     
 text \<open> Obtaining termination proofs via approximation chains. Theorems and proofs adapted
-  from Chapter 2, page 63 of the UTP book~\cite{Hoare&98}.  \<close>
+  from Chapter 2, page 63 of the UTP book~\<^cite>\<open>"Hoare&98"\<close>.  \<close>
 
 type_synonym 'a chain = "nat \<Rightarrow> 'a upred"
 

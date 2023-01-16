@@ -7,35 +7,35 @@ begin
 
 section \<open>Introduction\<close>
 
- text \<open>Dana Scott's version \cite{ScottNotes} (cf.~Fig.~1)
- of G\"odel's proof of God's existence \cite{GoedelNotes} is 
+ text \<open>Dana Scott's version \<^cite>\<open>"ScottNotes"\<close> (cf.~Fig.~1)
+ of G\"odel's proof of God's existence \<^cite>\<open>"GoedelNotes"\<close> is 
  formalized in quantified modal logic KB (QML KB) within the proof assistant Isabelle/HOL. 
  QML KB is  modeled as a fragment of classical higher-order logic (HOL); 
  thus, the formalization is essentially a formalization in HOL. The employed embedding 
- of QML KB in HOL is adapting the work of Benzm\"uller and Paulson \cite{J23,B9}.
+ of QML KB in HOL is adapting the work of Benzm\"uller and Paulson \<^cite>\<open>"J23" and "B9"\<close>.
  Note that the QML KB formalization employs quantification over individuals and 
  quantification over sets of individuals (properties).
 
  The gaps in Scott's proof have been automated 
- with Sledgehammer \cite{Sledgehammer}, performing remote calls to the higher-order automated
- theorem prover LEO-II \cite{LEO-II}. Sledgehammer suggests the 
- Metis \cite{Metis} calls, which result in proofs that are verified by Isabelle/HOL.
- For consistency checking, the model finder Nitpick \cite{Nitpick} has been employed.
+ with Sledgehammer \<^cite>\<open>"Sledgehammer"\<close>, performing remote calls to the higher-order automated
+ theorem prover LEO-II \<^cite>\<open>"LEO-II"\<close>. Sledgehammer suggests the 
+ Metis \<^cite>\<open>"Metis"\<close> calls, which result in proofs that are verified by Isabelle/HOL.
+ For consistency checking, the model finder Nitpick \<^cite>\<open>"Nitpick"\<close> has been employed.
  The successfull calls to Sledgehammer
  are deliberately kept as comments in the file for demonstration purposes
  (normally, they are automatically eliminated by Isabelle/HOL).
  
  Isabelle is described in the textbook by Nipkow, 
- Paulson, and Wenzel \cite{Isabelle} and in tutorials available 
+ Paulson, and Wenzel \<^cite>\<open>"Isabelle"\<close> and in tutorials available 
  at: @{url "http://isabelle.in.tum.de"}.
  
 \subsection{Related Work}
 
- The formalization presented here is related to the THF \cite{J22} and 
- Coq \cite{Coq} formalizations at 
+ The formalization presented here is related to the THF \<^cite>\<open>"J22"\<close> and 
+ Coq \<^cite>\<open>"Coq"\<close> formalizations at 
  @{url "https://github.com/FormalTheology/GoedelGod/tree/master/Formalizations/"}.
  
- An older ontological argument by Anselm was formalized in PVS by John Rushby \cite{rushby}.
+ An older ontological argument by Anselm was formalized in PVS by John Rushby \<^cite>\<open>"rushby"\<close>.
 \<close>
 
 section \<open>An Embedding of QML KB in HOL\<close>
@@ -192,7 +192,7 @@ text \<open>There is only one God: any two God-like beings are equal.\<close>
 section \<open>Modal Collapse\<close>  
 
 text \<open>G\"odel's axioms have been criticized for entailing the so-called 
-modal collapse. The prover Satallax \cite{Satallax} confirms this. 
+modal collapse. The prover Satallax \<^cite>\<open>"Satallax"\<close> confirms this. 
 However, sledgehammer is not able to determine which axioms, 
 definitions and previous theorems are used by Satallax;
 hence it suggests to call Metis using everything, but this (unsurprinsingly) fails.

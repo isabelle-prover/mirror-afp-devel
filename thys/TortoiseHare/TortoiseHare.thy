@@ -160,7 +160,7 @@ subsubsection\<open> Side observations \<close>
 
 text\<open>
 
-We can also show termination ala \citet{Filliatre:2007}.
+We can also show termination ala \<^citet>\<open>"Filliatre:2007"\<close>.
 
 \<close>
 
@@ -222,7 +222,7 @@ text\<open>
 
 This approach does not provide an upper bound on \<open>nu\<close> however.
 
-@{cite "Harper:PiSML:2011"} observes (in his \S13.5.2) that if \<open>mu\<close> is zero then \<open>nu = lambda\<close>.
+\<^cite>\<open>"Harper:PiSML:2011"\<close> observes (in his \S13.5.2) that if \<open>mu\<close> is zero then \<open>nu = lambda\<close>.
 
 \<close>
 

@@ -15,8 +15,8 @@ subsection\<open>Yoneda map\<close>
 text\<open>
 The Yoneda map is the bijection that is used in the statement of the
 Yoneda Lemma, as presented, for example, in Chapter III-2 in 
-\cite{mac_lane_categories_2010} or in subsection 1.15 
-in \cite{bodo_categories_1970}.
+\<^cite>\<open>"mac_lane_categories_2010"\<close> or in subsection 1.15 
+in \<^cite>\<open>"bodo_categories_1970"\<close>.
 \<close>
 
 definition Yoneda_map :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -52,8 +52,8 @@ subsubsection\<open>Definition and elementary properties\<close>
 text\<open>
 The Yoneda components are the components of the natural transformations
 that appear in the statement of the Yoneda Lemma (e.g., see 
-Chapter III-2 in \cite{mac_lane_categories_2010} or subsection 1.15 
-in \cite{bodo_categories_1970}).
+Chapter III-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close> or subsection 1.15 
+in \<^cite>\<open>"bodo_categories_1970"\<close>).
 \<close>
 
 definition Yoneda_component :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -147,8 +147,8 @@ subsubsection\<open>Definition and elementary properties\<close>
 text\<open>
 The Yoneda arrows are the natural transformations that 
 appear in the statement of the Yoneda Lemma in Chapter III-2 in 
-\cite{mac_lane_categories_2010} and subsection 1.15 
-in \cite{bodo_categories_1970}.
+\<^cite>\<open>"mac_lane_categories_2010"\<close> and subsection 1.15 
+in \<^cite>\<open>"bodo_categories_1970"\<close>.
 \<close>
 
 definition Yoneda_arrow :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" 
@@ -303,9 +303,9 @@ subsection\<open>Yoneda Lemma\<close>
 
 text\<open>
 The following lemma is approximately equivalent to the Yoneda Lemma 
-stated in subsection 1.15 in \cite{bodo_categories_1970} 
+stated in subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close> 
 (the first two conclusions correspond to the statement of the 
-Yoneda lemma in Chapter III-2 in \cite{mac_lane_categories_2010}).
+Yoneda lemma in Chapter III-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).
 \<close>
 
 lemma (in category) cat_Yoneda_Lemma: 
@@ -546,7 +546,7 @@ The following definition is merely a technical generalization
 that is used in the context of the description of the 
 composition of a \<open>Hom\<close>-natural transformation with a natural transformation
 later in this section
-(also see subsection 1.15 in \cite{bodo_categories_1970}).
+(also see subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close>).
 \<close>
 
 definition ntcf_Hom_component :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -1193,7 +1193,7 @@ Composition of a \<open>Hom\<close>-natural transformation with two natural tran
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See subsection 1.15 in \cite{bodo_categories_1970}.\<close>
+text\<open>See subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 definition ntcf_Hom :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>Hom\<^sub>A\<^sub>.\<^sub>C\<index>'(/_-,_-/')\<close>)
   where "Hom\<^sub>A\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>(\<phi>-,\<psi>-) =
@@ -1540,7 +1540,7 @@ Composition of a \<open>Hom\<close>-natural transformation with a natural transf
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See subsection 1.15 in \cite{bodo_categories_1970}.\<close>
+text\<open>See subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 definition ntcf_lcomp_Hom :: "V \<Rightarrow> V \<Rightarrow> V" (\<open>Hom\<^sub>A\<^sub>.\<^sub>C\<index>'(/_-,-/')\<close>)
   where "Hom\<^sub>A\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>(\<phi>-,-) = Hom\<^sub>A\<^sub>.\<^sub>C\<^bsub>\<alpha>\<^esub>(\<phi>-,ntcf_id (cf_id (\<phi>\<lparr>NTDGCod\<rparr>))-)"
@@ -1869,7 +1869,7 @@ subsection\<open>Projections of a \<open>Hom\<close>-natural transformation\<clo
 text\<open>
 The concept of a projection of a \<open>Hom\<close>-natural transformation appears 
 in the corollary to the Yoneda Lemma in Chapter III-2 in 
-\cite{mac_lane_categories_2010} (although the concept has not been given
+\<^cite>\<open>"mac_lane_categories_2010"\<close> (although the concept has not been given
 any specific name in the aforementioned reference).
 \<close>
 
@@ -2305,7 +2305,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 text\<open>
 The evaluation arrow is a part of the definition of the evaluation functor.
 The evaluation functor appears in Chapter III-2 in
-\cite{mac_lane_categories_2010}.
+\<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 definition cf_eval_arrow :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -2845,7 +2845,7 @@ subsection\<open>Evaluation functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_eval :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "cf_eval \<alpha> \<beta> \<CC> =
@@ -3144,7 +3144,7 @@ subsection\<open>\<open>N\<close>-functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_nt :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "cf_nt \<alpha> \<beta> \<FF> =
@@ -3417,7 +3417,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 The following subsection is based on the elements of the content
-of Chapter III-2 in \cite{mac_lane_categories_2010}. 
+of Chapter III-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>. 
 \<close>
 
 definition ntcf_Yoneda_arrow :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -3854,7 +3854,7 @@ The Yoneda natural transformation: definition and elementary properties
 
 text\<open>
 The main result of this subsection corresponds to the corollary to the 
-Yoneda Lemma on page 61 in \cite{mac_lane_categories_2010}.
+Yoneda Lemma on page 61 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 definition ntcf_Yoneda :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -4023,9 +4023,9 @@ subsection\<open>\<open>Hom\<close>-map\<close>
 
 text\<open>
 This subsection presents some of the results stated as Corollary 2 
-in subsection 1.15 in \cite{bodo_categories_1970} and the corollary 
+in subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close> and the corollary 
 following the statement of the Yoneda Lemma on 
-page 61 in \cite{mac_lane_categories_2010} in a variety of forms.
+page 61 in \<^cite>\<open>"mac_lane_categories_2010"\<close> in a variety of forms.
 \<close>
 
 
@@ -4034,7 +4034,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 The following function makes an explicit appearance in subsection 1.15 in 
-\cite{bodo_categories_1970}.
+\<^cite>\<open>"bodo_categories_1970"\<close>.
 \<close>
 
 definition ntcf_Hom_map :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -4316,7 +4316,7 @@ subsubsection\<open>\<open>Hom\<close>-natural transformation and isomorphisms\<
 
 text\<open>
 This subsection presents further results that were stated 
-as Corollary 2 in subsection 1.15 in \cite{bodo_categories_1970}.
+as Corollary 2 in subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close>.
 \<close>
 
 lemma (in category) cat_is_iso_arr_ntcf_Hom_snd_is_iso_ntcf:
@@ -4660,7 +4660,7 @@ subsection\<open>Yoneda map for arbitrary functors\<close>
 text\<open>
 The concept of the Yoneda map for arbitrary functors was developed based
 on the function that was used in the statement of Lemma 3 in 
-subsection 1.15 in \cite{bodo_categories_1970}.
+subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close>.
 \<close>
 
 definition af_Yoneda_map :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -4697,7 +4697,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 The following natural transformation is used in the proof of Lemma 3 in 
-subsection 1.15 in \cite{bodo_categories_1970}.
+subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close>.
 \<close>
 
 definition af_Yoneda_arrow :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -4995,7 +4995,7 @@ subsubsection\<open>Yoneda Lemma for arbitrary functors\<close>
 
 text\<open>
 The following lemmas correspond to variants of the elements of Lemma 3 
-in subsection 1.15 in \cite{bodo_categories_1970}.
+in subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close>.
 \<close>
 
 lemma (in category) cat_af_Yoneda_map_af_Yoneda_arrow_app:
@@ -5283,7 +5283,7 @@ subsubsection\<open>Yoneda map for arbitrary functors and natural isomorphisms\<
 
 text\<open>
 The following lemmas correspond to variants of the elements of
-Lemma 3 in subsection 1.15 in \cite{bodo_categories_1970}.
+Lemma 3 in subsection 1.15 in \<^cite>\<open>"bodo_categories_1970"\<close>.
 \<close>
 
 lemma (in category) cat_ntcf_lcomp_Hom_is_iso_ntcf_if_is_iso_ntcf:
@@ -5484,7 +5484,7 @@ subsection\<open>The Yoneda Functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 
 definition Yoneda_functor :: "V \<Rightarrow> V \<Rightarrow> V"

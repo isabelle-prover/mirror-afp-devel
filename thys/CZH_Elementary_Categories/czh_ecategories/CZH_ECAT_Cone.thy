@@ -19,9 +19,9 @@ subsubsection\<open>Definition and elementary properties\<close>
 text\<open>
 In the context of this work, the concept of a cone corresponds to that of a cone
 to the base of a functor from a vertex, as defined in Chapter III-4 in
-\cite{mac_lane_categories_2010}; the concept of a cocone corresponds to that
+\<^cite>\<open>"mac_lane_categories_2010"\<close>; the concept of a cocone corresponds to that
 of a cone from the base of a functor to a vertex, as defined in Chapter III-3
-in \cite{mac_lane_categories_2010}.
+in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 locale is_cat_cone = is_ntcf \<alpha> \<JJ> \<CC> \<open>cf_const \<JJ> \<CC> c\<close> \<FF> \<NN> for \<alpha> c \<JJ> \<CC> \<FF> \<NN> +
@@ -444,7 +444,7 @@ subsection\<open>Cone and cocone functors\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter V-1 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter V-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_Cone :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "cf_Cone \<alpha> \<beta> \<FF> = 

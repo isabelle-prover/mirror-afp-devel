@@ -983,7 +983,7 @@ proof-
 qed
 
 text \<open>The next lemma turns out to have very important applications in further proof development, as
-it enables so called ,,without-loss-of-generality (wlog)'' reasoning \cite{wlog}. Namely, if the
+it enables so called ,,without-loss-of-generality (wlog)'' reasoning \<^cite>\<open>"wlog"\<close>. Namely, if the
 property is preserved under Möbius transformations, then instead of three arbitrary different
 points one can consider only the case of points $0_{hc}$, $1_{hc}$, and $\infty_{hc}$.\<close>
 lemma wlog_moebius_01inf:

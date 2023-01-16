@@ -18,7 +18,7 @@ named_theorems cat_order_cs_intros
 subsection\<open>Preorder category\<close>
 
 
-text\<open>See Chapter I-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale cat_preorder = category \<alpha> \<CC> for \<alpha> \<CC> +
   assumes cat_peo: 
@@ -144,7 +144,7 @@ qed
 subsection\<open>Partial order category\<close>
 
 
-text\<open>See Chapter I-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale cat_partial_order = cat_preorder \<alpha> \<CC> for \<alpha> \<CC> +
   assumes cat_po: "\<lbrakk> a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>; b \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>; a \<le>\<^sub>O\<^bsub>\<CC>\<^esub> b; b \<le>\<^sub>O\<^bsub>\<CC>\<^esub> a \<rbrakk> \<Longrightarrow> a = b"
@@ -169,7 +169,7 @@ lemmas [cat_order_cs_intros] = cat_partial_orderD(1)
 subsection\<open>Linear order category\<close>
 
 
-text\<open>See Chapter I-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale cat_linear_order = cat_partial_order \<alpha> \<CC> for \<alpha> \<CC> +
   assumes cat_lo: "\<lbrakk> a \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr>; b \<in>\<^sub>\<circ> \<CC>\<lparr>Obj\<rparr> \<rbrakk> \<Longrightarrow> a \<le>\<^sub>O\<^bsub>\<CC>\<^esub> b \<or> b \<le>\<^sub>O\<^bsub>\<CC>\<^esub> a"
@@ -198,7 +198,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 
 text\<open>
-See \cite{noauthor_nlab_nodate}\footnote{
+See \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/monotone+function}
 }.
 \<close>

@@ -8,7 +8,7 @@ attacks on security and privacy. They are very useful to identify the steps an a
 takes through a system when approaching the attack goal. Here, we provide 
 a proof calculus to analyse concrete attacks using a notion of attack validity.
 We define a state based semantics with Kripke models and the temporal logic
-CTL in the proof assistant Isabelle \cite{npw:02} using its Higher Order Logic 
+CTL in the proof assistant Isabelle \<^cite>\<open>"npw:02"\<close> using its Higher Order Logic 
 (HOL). We prove the correctness and completeness (adequacy) of Attack Trees in Isabelle 
 with respect to the model.\<close>
 

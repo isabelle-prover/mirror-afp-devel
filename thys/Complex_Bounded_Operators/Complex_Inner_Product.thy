@@ -60,7 +60,7 @@ lemma cinner_extensionality:
 lemma polar_identity:
   includes notation_norm
   shows \<open>\<parallel>x + y\<parallel>^2 = \<parallel>x\<parallel>^2 + \<parallel>y\<parallel>^2 + 2 * Re (x \<bullet>\<^sub>C y)\<close>
-    \<comment> \<open>Shown in the proof of Corollary 1.5 in @{cite conway2013course}\<close>
+    \<comment> \<open>Shown in the proof of Corollary 1.5 in \<^cite>\<open>conway2013course\<close>\<close>
 proof -
   have \<open>(x \<bullet>\<^sub>C y) + (y \<bullet>\<^sub>C x) = (x \<bullet>\<^sub>C y) + cnj (x \<bullet>\<^sub>C y)\<close>
     by simp
@@ -90,14 +90,14 @@ proposition parallelogram_law:
   includes notation_norm
   fixes x y :: "'a::complex_inner"
   shows \<open>\<parallel>x+y\<parallel>^2 + \<parallel>x-y\<parallel>^2 = 2*( \<parallel>x\<parallel>^2 + \<parallel>y\<parallel>^2 )\<close>
-    \<comment> \<open>Shown in the proof of Theorem 2.3 in @{cite conway2013course}\<close>
+    \<comment> \<open>Shown in the proof of Theorem 2.3 in \<^cite>\<open>conway2013course\<close>\<close>
   by (simp add: polar_identity_minus polar_identity)
 
 
 theorem pythagorean_theorem:
   includes notation_norm
   shows \<open>(x \<bullet>\<^sub>C y) = 0 \<Longrightarrow> \<parallel> x + y \<parallel>^2 = \<parallel> x \<parallel>^2 + \<parallel> y \<parallel>^2\<close>
-    \<comment> \<open>Shown in the proof of Theorem 2.2 in @{cite conway2013course}\<close>
+    \<comment> \<open>Shown in the proof of Theorem 2.2 in \<^cite>\<open>conway2013course\<close>\<close>
   by (simp add: polar_identity)
 
 lemma pythagorean_theorem_sum:
@@ -799,7 +799,7 @@ lemma orthogonal_complement_zero[simp]:
 subsection \<open>Projections\<close>
 
 lemma smallest_norm_exists:
-  \<comment> \<open>Theorem 2.5 in @{cite conway2013course} (inside the proof)\<close>
+  \<comment> \<open>Theorem 2.5 in \<^cite>\<open>conway2013course\<close> (inside the proof)\<close>
   includes notation_norm
   fixes M :: \<open>'a::chilbert_space set\<close>
   assumes q1: \<open>convex M\<close> and q2: \<open>closed M\<close> and q3: \<open>M \<noteq> {}\<close>
@@ -968,7 +968,7 @@ qed
 
 
 lemma smallest_norm_unique:
-  \<comment> \<open>Theorem 2.5 in @{cite conway2013course} (inside the proof)\<close>
+  \<comment> \<open>Theorem 2.5 in \<^cite>\<open>conway2013course\<close> (inside the proof)\<close>
   includes notation_norm
   fixes M :: \<open>'a::complex_inner set\<close>
   assumes q1: \<open>convex M\<close>
@@ -1010,7 +1010,7 @@ proof -
 qed
 
 theorem smallest_dist_exists:
-  \<comment> \<open>Theorem 2.5 in @{cite conway2013course}\<close>
+  \<comment> \<open>Theorem 2.5 in \<^cite>\<open>conway2013course\<close>\<close>
   fixes M::\<open>'a::chilbert_space set\<close> and h
   assumes a1: \<open>convex M\<close> and a2: \<open>closed M\<close> and a3: \<open>M \<noteq> {}\<close>
   shows  \<open>\<exists>k. is_arg_min (\<lambda> x. dist x h) (\<lambda> x. x \<in> M) k\<close>
@@ -1026,7 +1026,7 @@ proof -
 qed
 
 theorem smallest_dist_unique:
-  \<comment> \<open>Theorem 2.5 in @{cite conway2013course}\<close>
+  \<comment> \<open>Theorem 2.5 in \<^cite>\<open>conway2013course\<close>\<close>
   fixes M::\<open>'a::complex_inner set\<close> and h
   assumes a1: \<open>convex M\<close>
   assumes \<open>is_arg_min (\<lambda> x. dist x h) (\<lambda> x. x \<in> M) r\<close>
@@ -1043,7 +1043,7 @@ proof-
 qed
 
 
-\<comment> \<open>Theorem 2.6 in @{cite conway2013course}\<close>
+\<comment> \<open>Theorem 2.6 in \<^cite>\<open>conway2013course\<close>\<close>
 theorem smallest_dist_is_ortho:
   fixes M::\<open>'a::complex_inner set\<close> and h k::'a
   assumes b1: \<open>closed_csubspace M\<close>
@@ -1360,7 +1360,7 @@ lemma projection_fixes_image:
   assumes "closed_csubspace M" and "x \<in> M"
   shows "projection M x = x"
   using is_projection_on_fixes_image
-    \<comment> \<open>Theorem 2.7 in @{cite conway2013course}\<close>
+    \<comment> \<open>Theorem 2.7 in \<^cite>\<open>conway2013course\<close>\<close>
   by (simp add: assms complex_vector.subspace_0 projection_eqI)
 
 lemma is_projection_on_closed:
@@ -1420,7 +1420,7 @@ proposition projection_reduces_norm:
   shows \<open>\<parallel> projection M h \<parallel> \<le> \<parallel> h \<parallel>\<close>
   using assms is_projection_on_iff_orthog orthog_proj_exists is_projection_on_reduces_norm projection_eqI by blast
 
-\<comment> \<open>Theorem 2.7 (version) in @{cite conway2013course}\<close>
+\<comment> \<open>Theorem 2.7 (version) in \<^cite>\<open>conway2013course\<close>\<close>
 theorem is_projection_on_bounded_clinear:
   fixes M :: \<open>'a::complex_inner set\<close>
   assumes a1: "is_projection_on \<pi> M" and a2: "closed_csubspace M"
@@ -1491,7 +1491,7 @@ theorem projection_bounded_clinear:
   fixes M :: \<open>('a::chilbert_space) set\<close>
   assumes a1: "closed_csubspace M"
   shows \<open>bounded_clinear (projection M)\<close>
-    \<comment> \<open>Theorem 2.7 in @{cite conway2013course}\<close>
+    \<comment> \<open>Theorem 2.7 in \<^cite>\<open>conway2013course\<close>\<close>
   using assms is_projection_on_iff_orthog orthog_proj_exists is_projection_on_bounded_clinear projection_eqI by blast
 
 proposition is_projection_on_idem:
@@ -1523,7 +1523,7 @@ proof-
     by blast
 qed
 
-\<comment> \<open>Theorem 2.7 in @{cite conway2013course}\<close>
+\<comment> \<open>Theorem 2.7 in \<^cite>\<open>conway2013course\<close>\<close>
 proposition projection_kernel_is_orthogonal_complement:
   fixes M :: \<open>'a::chilbert_space set\<close>
   assumes "closed_csubspace M"
@@ -1539,7 +1539,7 @@ lemma is_projection_on_id_minus:
   using double_orthogonal_complement_increasing by blast
 
 
-text \<open>Exercise 2 (section 2, chapter I) in  @{cite conway2013course}\<close>
+text \<open>Exercise 2 (section 2, chapter I) in  \<^cite>\<open>conway2013course\<close>\<close>
 lemma projection_on_orthogonal_complement[simp]:
   fixes M :: "'a::chilbert_space set"
   assumes a1: "closed_csubspace M"
@@ -1597,7 +1597,7 @@ subsection \<open>More orthogonal complement\<close>
 
 text \<open>The following lemmas logically fit into the "orthogonality" section but depend on projections for their proofs.\<close>
 
-text \<open>Corollary 2.8 in @{cite conway2013course}\<close>
+text \<open>Corollary 2.8 in \<^cite>\<open>conway2013course\<close>\<close>
 theorem double_orthogonal_complement_id[simp]:
   fixes M :: \<open>'a::chilbert_space set\<close>
   assumes a1: "closed_csubspace M"
@@ -2033,7 +2033,7 @@ next
 qed
 
 lemma riesz_frechet_representation_existence:
-  \<comment> \<open>Theorem 3.4 in @{cite conway2013course}\<close>
+  \<comment> \<open>Theorem 3.4 in \<^cite>\<open>conway2013course\<close>\<close>
   fixes f::\<open>'a::chilbert_space \<Rightarrow> complex\<close>
   assumes a1: \<open>bounded_clinear f\<close>
   shows \<open>\<exists>t. \<forall>x.  f x = t \<bullet>\<^sub>C x\<close>
@@ -2070,7 +2070,7 @@ next
 qed
 
 lemma riesz_frechet_representation_unique:
-  \<comment> \<open>Theorem 3.4 in @{cite conway2013course}\<close>
+  \<comment> \<open>Theorem 3.4 in \<^cite>\<open>conway2013course\<close>\<close>
   fixes f::\<open>'a::complex_inner \<Rightarrow> complex\<close>
   assumes \<open>\<And>x. f x = (t \<bullet>\<^sub>C x)\<close>
   assumes \<open>\<And>x. f x = (u \<bullet>\<^sub>C x)\<close>

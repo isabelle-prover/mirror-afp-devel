@@ -7,17 +7,17 @@ section \<open>Fault-tolerant Midpoint algorithm\<close>
 
 theory LynchInstance imports Complex_Main begin
 
-text \<open>This algorithm is presented in \cite{lynch_cs}.\<close>
+text \<open>This algorithm is presented in \<^cite>\<open>"lynch_cs"\<close>.\<close>
 
 subsection \<open>Model of the system\<close>
 
 text \<open>The main ideas for the formalization of the system were
-obtained from \cite{shankar92mechanical}.\<close>
+obtained from \<^cite>\<open>"shankar92mechanical"\<close>.\<close>
 
 subsubsection \<open>Types in the formalization\<close>
 
 text \<open>The election of the basics types was based on
-\cite{shankar92mechanical}. There, the process are natural numbers and
+\<^cite>\<open>"shankar92mechanical"\<close>. There, the process are natural numbers and
 the real time and the clock readings are reals.\<close>
 
 type_synonym process = nat  
@@ -48,12 +48,12 @@ PR :: "process set" where
 subsubsection \<open>Convergence function\<close>
 
 text \<open>This functions is called ``Fault-tolerant Midpoint''
-(\cite{schneider87understanding})\<close>
+(\<^cite>\<open>"schneider87understanding"\<close>)\<close>
 
 text \<open>In this algorithm each process has an array where it store the
 clocks readings from the others processes (including itself). We
 formalise that as a function from processes to clock time as
-\cite{shankar92mechanical}.\<close>
+\<^cite>\<open>"shankar92mechanical"\<close>.\<close>
 
 text \<open>First we define two functions. They take a function of clock
 readings and a set of processes and they return a set of @{term khl}
@@ -75,7 +75,7 @@ kmin :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarro
 
 text \<open>With the previus functions we define a new one @{term
 reduce}\footnote{The name of this function was taken from
-\cite{lynch_cs}.}. This take a function of clock readings and a set of
+\<^cite>\<open>"lynch_cs"\<close>.}. This take a function of clock readings and a set of
 processes and return de set of readings of the not dicarded
 processes. In order to define this function we use the image operator
 (@{term "(`)"}) of Isabelle.\<close>
@@ -464,7 +464,7 @@ qed
 
 subsection \<open>Precision Enhancement property\<close>
 
-text \<open>An informal proof of this theorem can be found in \cite{miner93}\<close>
+text \<open>An informal proof of this theorem can be found in \<^cite>\<open>"miner93"\<close>\<close>
 
 subsubsection \<open>Auxiliary lemmas\<close>
 
@@ -496,7 +496,7 @@ only this lemma we can prove the Precision Enhancement property with
 the bound $\pi(x,y) = x + y$. But this bound not satisfy the property
 \[ \pi(2\Lambda + 2 \beta\rho, \delta_S + 2\rho(r_{max}+\beta) +
 2\Lambda) \leq \delta_S 
-\] that is used in \cite{shankar92mechanical} for prove the
+\] that is used in \<^cite>\<open>"shankar92mechanical"\<close> for prove the
 Schneider's schema.\<close>
 
 lemma subsets_int:

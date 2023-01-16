@@ -21,7 +21,7 @@ confidentiality property.
 Moreover, the empty value sequence is treated specially in order to capture harmless cases
 where the observers may deduce that no secret updates have occurred,
 e.g.~if the system has not been initialized yet.
-See @{cite \<open>Section 3.4\<close> "cosmed-jar2018"} for a detailed discussion of the bound.\<close>
+See \<^cite>\<open>\<open>Section 3.4\<close> in "cosmed-jar2018"\<close> for a detailed discussion of the bound.\<close>
 
 inductive B :: "value list \<Rightarrow> value list \<Rightarrow> bool"
 and BO :: "value list \<Rightarrow> value list \<Rightarrow> bool"

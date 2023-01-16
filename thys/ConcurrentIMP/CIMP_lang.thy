@@ -27,17 +27,14 @@ it is programmer-readable, includes sequential composition, supports a
 program logic and VCG (\S\ref{sec:cimp-vcg}), etc. These processes are
 composed in parallel at the top-level.
 
-CIMP is inspired by IMP, as presented by @{cite [cite_macro=citet]
-"Winskel:1993"} and @{cite [cite_macro=citet]
-"ConcreteSemantics:2014"}, and the classical process algebras CCS
-@{cite [cite_macro=citep] "Milner:1980" and "Milner:1989"} and CSP
-@{cite [cite_macro=citep] "Hoare:1985"}. Note that the algebraic
+CIMP is inspired by IMP, as presented by \<^citet>\<open>"Winskel:1993"\<close> and \<^citet>\<open>"ConcreteSemantics:2014"\<close>, and the classical process algebras CCS
+\<^citep>\<open>"Milner:1980" and "Milner:1989"\<close> and CSP
+\<^citep>\<open>"Hoare:1985"\<close>. Note that the algebraic
 properties of this language have not been developed.
 
 As we operate in a concurrent setting, we need to provide a small-step
 semantics (\S\ref{sec:cimp-semantics}), which we give in the style of
-\emph{structural operational semantics} (SOS) as popularised by @{cite
-[cite_macro=citet] "DBLP:journals/jlp/Plotkin04"}. The semantics of a
+\emph{structural operational semantics} (SOS) as popularised by \<^citet>\<open>"DBLP:journals/jlp/Plotkin04"\<close>. The semantics of a
 complete system (\S\ref{sec:cimp-system-steps}) is presently taken
 simply to be the states reachable by interleaving the enabled steps of
 the individual processes, subject to message passing rendezvous. We
@@ -99,9 +96,9 @@ trickier proofs about the VCG.
 In contrast to classical process algebras, we have local state and
 distinct request and response actions. These provide an interface to
 Isabelle/HOL's datatypes that avoids the need for binding (ala the
-$\pi$-calculus of @{cite [cite_macro=citet] "Milner:1989"}) or large
-non-deterministic sums (ala CCS @{cite [cite_macro=citep] \<open>\S2.8\<close>
-"Milner:1980"}). Intuitively the requester poses a @{typ "'question"} with
+$\pi$-calculus of \<^citet>\<open>"Milner:1989"\<close>) or large
+non-deterministic sums (ala CCS \<^citep>\<open>\<open>\S2.8\<close> in
+"Milner:1980"\<close>). Intuitively the requester poses a @{typ "'question"} with
 a \<open>Request\<close> command, which upon rendezvous with a
 responder's \<open>Response\<close> command receives an @{typ
 "'answer"}. The @{typ "'question"} is a deterministic function of the
@@ -112,7 +109,7 @@ channel; these can be modelled by a judicious choice of @{typ
 
 We also provide a binary external choice operator @{term\<open>Choose\<close>} (infix @{term\<open>(\<oplus>)\<close>}).
 Internal choice can be recovered in combination with local operations
-(see @{cite [cite_macro=citet] \<open>\S2.3\<close> "Milner:1980"}).
+(see \<^citet>\<open>\<open>\S2.3\<close> in "Milner:1980"\<close>).
 
 We abbreviate some common commands: \<open>SKIP\<close> is a local
 operation that does nothing, and the floor brackets simplify
@@ -181,9 +178,9 @@ text\<open>
 We define a \emph{labelled transition system} (an LTS) using an
 execution-stack style of semantics that avoids special treatment of
 the \<open>SKIP\<close>s introduced by a traditional small step
-semantics (such as @{cite [cite_macro=citet] \<open>Chapter~14\<close>
-"Winskel:1993"}) when a basic command is executed. This was suggested
-by Thomas Sewell; @{cite [cite_macro=citet] "PittsAM:opespe"} gave a
+semantics (such as \<^citet>\<open>\<open>Chapter~14\<close> in
+"Winskel:1993"\<close>) when a basic command is executed. This was suggested
+by Thomas Sewell; \<^citet>\<open>"PittsAM:opespe"\<close> gave a
 semantics to an ML-like language using this approach.
 
 We record the location of the command that was executed to support
@@ -244,7 +241,7 @@ text\<open>
 A global state maps process names to process' local states. One might
 hope to allow processes to have distinct types of local state, but
 there remains no good solution yet in a simply-typed setting; see
-@{cite [cite_macro=citet] "DBLP:journals/entcs/SchirmerW09"}.
+\<^citet>\<open>"DBLP:journals/entcs/SchirmerW09"\<close>.
 
 \<close>
 
@@ -289,8 +286,7 @@ text\<open>
 
 In classical process algebras matching communication actions yield
 \<open>\<tau>\<close> steps, which aids nested parallel composition
-and the restriction operation @{cite [cite_macro=citep]
-\<open>\S2.2\<close> "Milner:1980"}. As CIMP does not provide either
+and the restriction operation \<^citep>\<open>\<open>\S2.2\<close> in "Milner:1980"\<close>. As CIMP does not provide either
 we do not need to hide communication labels. In CCS/CSP it is not
 clear how one reasons about the communication history, and it seems
 that assertional reasoning about these languages is not well
@@ -317,8 +313,7 @@ Conversely the \<open>LSTP\<close> operator lifts predicates over
 local states into predicates over \<^typ>\<open>('answer, 'location, 'proc, 'question, 'state) system_state\<close>.
 
 Predicates that do not depend on control locations were termed @{emph
-\<open>universal assertions\<close>} by @{cite [cite_macro=citet]
-\<open>\S3.6\<close> "DBLP:journals/acta/LevinG81"}.
+\<open>universal assertions\<close>} by \<^citet>\<open>\<open>\S3.6\<close> in "DBLP:journals/acta/LevinG81"\<close>.
 
 \<close>
 
@@ -338,12 +333,9 @@ subsection\<open>Control predicates \label{sec:cimp-control-predicates}\<close>
 
 text\<open>
 
-Following @{cite [cite_macro=citet]
-"DBLP:journals/acta/Lamport80"}\footnote{@{cite [cite_macro=citet]
-"MannaPnueli:1995"} also develop a theory of locations. I think
+Following \<^citet>\<open>"DBLP:journals/acta/Lamport80"\<close>\footnote{\<^citet>\<open>"MannaPnueli:1995"\<close> also develop a theory of locations. I think
 Lamport attributes control predicates to Owicki in her PhD thesis
-(under Gries). I did not find a treatment of procedures. @{cite
-[cite_macro=citet] "MannaPnueli:1991"} observe that a notation for
+(under Gries). I did not find a treatment of procedures. \<^citet>\<open>"MannaPnueli:1991"\<close> observe that a notation for
 making assertions over sets of locations reduces clutter
 significantly.}, we define the \<open>at\<close> predicate, which
 holds of a process when control resides at that location. Due to
@@ -381,8 +373,7 @@ We provide the following definitions to the end-user.
 \<open>AT\<close> maps process names to a predicate that is true of
 locations where control for that process resides, and the abbreviation \<open>at\<close> provides a conventional
 way to use it. The constant \<open>atS\<close> specifies that control for process \<open>p\<close> resides at one of
-the given locations. This stands in for, and generalises, the \<open>in\<close> predicate of @{cite [cite_macro=citet]
-"DBLP:journals/acta/Lamport80"}.
+the given locations. This stands in for, and generalises, the \<open>in\<close> predicate of \<^citet>\<open>"DBLP:journals/acta/Lamport80"\<close>.
 
 \<close>
 
@@ -455,7 +446,7 @@ where
 text\<open>
 
 We construct infinite runs of a system by allowing stuttering, i.e., arbitrary repetitions of states
-following @{cite [cite_macro=citet] \<open>Chapter~8\<close>"Lamport:2002"}, by taking the reflexive
+following \<^citet>\<open>\<open>Chapter~8\<close> in"Lamport:2002"\<close>, by taking the reflexive
 closure of the @{const system_step} relation. Therefore terminated
 programs infinitely repeat their final state (but note our definition
 of terminated processes in \S\ref{sec:cimp-termination}).

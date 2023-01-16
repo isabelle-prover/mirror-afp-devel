@@ -1,5 +1,5 @@
 text 
-\<open>This theory formalizes some of the results appearing in the paper "Stellar Consensus By Reduction"\cite{disc_paper}.
+\<open>This theory formalizes some of the results appearing in the paper "Stellar Consensus By Reduction"\<^cite>\<open>"disc_paper"\<close>.
 We prove static properties of personal Byzantine quorum systems and Stellar quorum systems.\<close>
 
 theory Stellar_Quorums

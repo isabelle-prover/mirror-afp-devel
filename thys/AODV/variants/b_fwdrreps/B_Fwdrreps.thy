@@ -11,7 +11,7 @@ begin
 chapter "Variant B: Forwarding the Route Reply"
 
 text \<open>
-  Explanation~\cite[\textsection 10.2]{FehnkerEtAl:AWN:2013}:
+  Explanation~\<^cite>\<open>\<open>\textsection 10.2\<close> in "FehnkerEtAl:AWN:2013"\<close>:
   In AODV's route discovery process, a RREP message from the destination 
   node is unicast back along a route towards the originator of the RREQ 
   message. Every intermediate node on the selected route will process the 
@@ -19,7 +19,7 @@ text \<open>
   However, there is a possibility that the RREP message is discarded at an 
   intermediate node, which results in the originator node not receiving a 
   reply. The discarding of the RREP message is due to the RFC specification 
-  of AODV~\cite{RFC3561} stating that an intermediate node only forwards the 
+  of AODV~\<^cite>\<open>"RFC3561"\<close> stating that an intermediate node only forwards the 
   RREP message if it is not the originator node and it has created or 
   updated a routing table entry to the destination node described in the 
   RREP message. The latter requirement means that if a valid routing table 

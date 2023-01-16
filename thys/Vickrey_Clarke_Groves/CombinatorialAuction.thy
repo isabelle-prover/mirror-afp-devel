@@ -487,7 +487,7 @@ proof -
 qed
 
 text \<open>Adequacy theorem: The allocation satisfies the standard pen-and-paper specification 
-of a VCG auction. See, for example, \cite[\S~1.2]{cramton}.\<close>
+of a VCG auction. See, for example, \<^cite>\<open>\<open>\S~1.2\<close> in "cramton"\<close>.\<close>
 theorem vcgaIsMaximal: 
   assumes "distinct \<Omega>" "set \<Omega> \<noteq> {}" "finite N" "\<forall> X. b (seller, X) = 0" 
   shows "sum b (vcga' N \<Omega> b r) = Max{sum b a| a. a \<in> soldAllocations N (set \<Omega>)}"

@@ -4,7 +4,7 @@
 
 section \<open>Minimality\<close>
 
-text \<open>We show that every reducible CFG without trivial \pf s is minimal, recreating the proof in~\cite{braun13cc}.
+text \<open>We show that every reducible CFG without trivial \pf s is minimal, recreating the proof in~\<^cite>\<open>"braun13cc"\<close>.
   The original proof is inlined as prose text.\<close>
 
 theory Minimality

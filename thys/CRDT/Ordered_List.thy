@@ -6,7 +6,7 @@
 
 section\<open>Replicated Growable Array\<close>
 
-text\<open>The RGA, introduced by \cite{Roh:2011dw}, is a replicated ordered list (sequence) datatype
+text\<open>The RGA, introduced by \<^cite>\<open>"Roh:2011dw"\<close>, is a replicated ordered list (sequence) datatype
      that supports \emph{insert} and \emph{delete} operations.\<close>
   
 theory
@@ -23,7 +23,7 @@ text\<open>Insertion operations place the new element \emph{after} an existing l
 Deletion operations refer to the ID of the list element that is to be deleted.
 However, it is not safe for a deletion operation to completely remove a list element, because then a concurrent insertion after the deleted element would not be able to locate the insertion position.
 Instead, the list retains so-called \emph{tombstones}: a deletion operation merely sets a flag on a list element to mark it as deleted, but the element actually remains in the list.
-A separate garbage collection process can be used to eventually purge tombstones \cite{Roh:2011dw}, but we do not consider tombstone removal here.\<close>
+A separate garbage collection process can be used to eventually purge tombstones \<^cite>\<open>"Roh:2011dw"\<close>, but we do not consider tombstone removal here.\<close>
 
 hide_const insert
 

@@ -11,7 +11,7 @@ and the disadvantage that we cannot represent sharing.
 
 datatype 'a ifex = Trueif | Falseif | IF 'a "'a ifex" "'a ifex"
 
-text\<open>The type is the same as in Boolean Expression Checkers by Nipkow~\cite{Boolean_Expression_Checkers-AFP}.
+text\<open>The type is the same as in Boolean Expression Checkers by Nipkow~\<^cite>\<open>"Boolean_Expression_Checkers-AFP"\<close>.
 Internally, Boolean Expression Checkers transforms the boolean expressions to reduced BDTs of this type.
 Tests like being tautology testing are then trivial.
 \<close>

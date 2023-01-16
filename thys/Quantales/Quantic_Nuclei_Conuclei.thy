@@ -11,10 +11,10 @@ theory Quantic_Nuclei_Conuclei
 begin
 
 text \<open>Quantic nuclei and conuclei are an important part of the structure theory of quantales. I formalise
-the basics, following Rosenthal's book~\cite{Rosenthal90}. In the structure theorems, I collect all parts 
+the basics, following Rosenthal's book~\<^cite>\<open>"Rosenthal90"\<close>. In the structure theorems, I collect all parts 
 of the proof, but do not present the theorems in compact form due to difficulties to speak about subalgebras 
 and homomorphic images without explicit carrier sets. Nuclei also arise in the context of complete Heyting algebras,
-frames and locales~\cite{Johnstone82}. Their formalisation seems an interesting future task.\<close>
+frames and locales~\<^cite>\<open>"Johnstone82"\<close>. Their formalisation seems an interesting future task.\<close>
 
 subsection \<open>Nuclei\<close>
 

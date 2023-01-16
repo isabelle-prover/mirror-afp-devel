@@ -2,7 +2,7 @@ section \<open>The CoSMeDis network of communicating nodes \<close>
 
 text \<open>This is the specification of an entire CoSMeDis network
 of communicating  nodes, as described
-in Section IV.B of \cite{cosmedis-SandP2017}
+in Section IV.B of \<^cite>\<open>"cosmedis-SandP2017"\<close>
 NB: What that paper refers to as "nodes" are referred in this formalization
 as "APIs".
 \<close>

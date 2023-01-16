@@ -40,7 +40,7 @@ theory C_paper
   imports "../main/C_Main"
 begin
 
-text \<open> This theory contains the examples presented in F-IDE 2019 paper~\cite{Tuong-IsabelleC:2019}. \<close>
+text \<open> This theory contains the examples presented in F-IDE 2019 paper~\<^cite>\<open>"Tuong-IsabelleC:2019"\<close>. \<close>
 
 section \<open>Setup\<close>
 

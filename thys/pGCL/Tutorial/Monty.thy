@@ -13,7 +13,7 @@ text \<open>
 We now tackle a more substantial example, allowing us to demonstrate
 the tools for compositional reasoning and the use of invariants in
 non-recursive programs.  Our example is the well-known Monty Hall puzzle
-in statistical inference \citep{Selvin_75}.
+in statistical inference \<^citep>\<open>"Selvin_75"\<close>.
 
 The setting is a game show:  There is a prize hidden behind one
 of three doors, and the contestant is invited to choose one.  Once

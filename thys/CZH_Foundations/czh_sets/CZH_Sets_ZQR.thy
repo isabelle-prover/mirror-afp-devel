@@ -22,7 +22,7 @@ The set of real numbers \<open>\<real>\<^sub>\<circ>\<close> is defined in a way
 with the set of natural numbers \<^const>\<open>\<omega>\<close>. However, otherwise, 
 real numbers are allowed to be arbitrary sets 
 in \<^term>\<open>Vset (\<omega> + \<omega>)\<close>.\footnote{
-The idea itself is not new, e.g., see \cite{chen_hotg_2021}.
+The idea itself is not new, e.g., see \<^cite>\<open>"chen_hotg_2021"\<close>.
 }
 Integer and rational numbers are exposed via canonical injections into
 the set of real numbers from the types \<^typ>\<open>int\<close> and \<^typ>\<open>rat\<close>, respectively.
@@ -31,7 +31,7 @@ are defined and some of their main properties are exposed.
 
 The primary reference for this section is the textbook
 \<open>The Real Numbers and Real Analysis\<close> by E. Bloch
-\cite{bloch_real_2010}. Nonetheless, it is not claimed that the exposition of 
+\<^cite>\<open>"bloch_real_2010"\<close>. Nonetheless, it is not claimed that the exposition of 
 the subject presented in this section is entirely congruent with the exposition
 in the aforementioned reference.
 
@@ -487,7 +487,7 @@ subsubsection\<open>Axioms of an ordered field with the least upper bound proper
 text\<open>
 The exposition follows the Definitions 2.2.1 and 2.2.3 from 
 the textbook \<open>The Real Numbers and Real Analysis\<close> by E. Bloch
-\cite{bloch_real_2010}.
+\<^cite>\<open>"bloch_real_2010"\<close>.
 \<close>
 
 lemma vreal_zero_closed: "0\<^sub>\<real> \<in>\<^sub>\<circ> \<real>\<^sub>\<circ>"
@@ -1141,7 +1141,7 @@ subsubsection\<open>Axioms of a well ordered integral domain\<close>
 
 text\<open>The exposition follows Definition 1.4.1 from the textbook 
 \<open>The Real Numbers and Real Analysis\<close> by E. Bloch
-\cite{bloch_real_2010}.\<close>
+\<^cite>\<open>"bloch_real_2010"\<close>.\<close>
 
 lemma vint_zero_closed: "0\<^sub>\<int> \<in>\<^sub>\<circ> \<int>\<^sub>\<circ>" by auto
 
@@ -1757,7 +1757,7 @@ subsubsection\<open>Axioms of an ordered field\<close>
 
 text\<open>The exposition follows Theorem 1.5.5 from the textbook
 \<open>The Real Numbers and Real Analysis\<close> by E. Bloch
-\cite{bloch_real_2010}.\<close>
+\<^cite>\<open>"bloch_real_2010"\<close>.\<close>
 
 lemma vrat_zero_closed: "0\<^sub>\<rat> \<in>\<^sub>\<circ> \<rat>\<^sub>\<circ>" by auto
 

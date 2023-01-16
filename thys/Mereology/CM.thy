@@ -7,8 +7,8 @@ begin
 (*>*)
 
 text \<open> The theory of \emph{closed mereology} adds to ground mereology conditions guaranteeing the
-existence of sums and products.\footnote{See @{cite "masolo_atomicity_1999"} p. 238. @{cite "varzi_parts_1996"} p. 263 
-and @{cite "casati_parts_1999"} p. 43 give a slightly weaker version of the sum closure axiom, which is
+existence of sums and products.\footnote{See \<^cite>\<open>"masolo_atomicity_1999"\<close> p. 238. \<^cite>\<open>"varzi_parts_1996"\<close> p. 263 
+and \<^cite>\<open>"casati_parts_1999"\<close> p. 43 give a slightly weaker version of the sum closure axiom, which is
 equivalent given axioms considered later.} \<close>
 
 locale CM = M +
@@ -334,7 +334,7 @@ end
 subsection \<open> Differences  \<close>
 
 text \<open> Some writers also add to closed mereology the axiom of difference closure.\footnote{See, for example,
-@{cite "varzi_parts_1996"} p. 263 and @{cite "masolo_atomicity_1999"} p. 238.} \<close>
+\<^cite>\<open>"varzi_parts_1996"\<close> p. 263 and \<^cite>\<open>"masolo_atomicity_1999"\<close> p. 238.} \<close>
 
 locale CMD = CM +
   assumes difference_eq: 
@@ -421,7 +421,7 @@ end
 subsection \<open> The Universe \<close>
 
 text \<open> Another closure condition sometimes considered is the existence of the universe.\footnote{
-See, for example, @{cite "varzi_parts_1996"} p. 264 and @{cite "casati_parts_1999"} p. 45.}  \<close>
+See, for example, \<^cite>\<open>"varzi_parts_1996"\<close> p. 264 and \<^cite>\<open>"casati_parts_1999"\<close> p. 45.}  \<close>
 
 locale CMU = CM +
   assumes universe_eq: "u = (THE z. \<forall>w. P w z)" 
@@ -485,7 +485,7 @@ end
 subsection \<open> Complements \<close>
 
 text \<open> As is a condition ensuring the existence of complements.\footnote{See, for example, 
- @{cite "varzi_parts_1996"} p. 264 and @{cite "casati_parts_1999"} p. 45.} \<close>
+ \<^cite>\<open>"varzi_parts_1996"\<close> p. 264 and \<^cite>\<open>"casati_parts_1999"\<close> p. 45.} \<close>
 
 locale CMC = CM +
   assumes complement_eq: "\<midarrow>x = (THE z. \<forall>w. P w z \<longleftrightarrow> \<not> O w x)"

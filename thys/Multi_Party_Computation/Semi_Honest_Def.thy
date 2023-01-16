@@ -1,6 +1,6 @@
 section \<open>Semi-Honest Security\<close> 
 
-text \<open>We follow the security definitions for the semi honest setting as described in \cite{DBLP:books/sp/17/Lindell17}.
+text \<open>We follow the security definitions for the semi honest setting as described in \<^cite>\<open>"DBLP:books/sp/17/Lindell17"\<close>.
 In the semi honest model the parties are assumed not to deviate from the protocol transcript. 
 Semi honest security guarantees that no information is leaked during the running of the protocol.\<close>
 

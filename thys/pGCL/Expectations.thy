@@ -422,7 +422,7 @@ where
 
 text \<open>Standard expectations are the embeddings of boolean predicates, mapping @{term False} to 0
 and @{term True} to 1. We write @{term "\<guillemotleft>P\<guillemotright>"} rather than @{term "[P]"} (the syntax employed by
-\citet{McIver_M_04}) for boolean embedding to avoid clashing with the HOL syntax for lists.\<close>
+\<^citet>\<open>"McIver_M_04"\<close>) for boolean embedding to avoid clashing with the HOL syntax for lists.\<close>
 
 lemma embed_bool_nneg[simp,intro]:
   "nneg \<guillemotleft>P\<guillemotright>"

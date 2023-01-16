@@ -37,7 +37,7 @@ datatype ('c, 't :: time) cconstraint =
 section \<open>Syntactic Definition\<close>
 
 text \<open>
-  For an informal description of timed automata we refer to Bengtsson and Yi \cite{BengtssonY03}.
+  For an informal description of timed automata we refer to Bengtsson and Yi \<^cite>\<open>"BengtssonY03"\<close>.
   We define a timed automaton \<open>A\<close>
 \<close>
 

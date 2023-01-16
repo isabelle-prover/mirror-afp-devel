@@ -13,15 +13,15 @@ begin
 (*>*)
 text\<open>
 
-We adopt the general theory of \citet{PittsAM:relpod} for solving
+We adopt the general theory of \<^citet>\<open>"PittsAM:relpod"\<close> for solving
 recursive domain predicates. This is based on the idea of
-\emph{minimal invariants} that \citet[Def 2]{DBLP:conf/mfps/Pitts93}
+\emph{minimal invariants} that \<^citet>\<open>\<open>Def 2\<close> in "DBLP:conf/mfps/Pitts93"\<close>
 ascribes ``essentially to D. Scott''.
 
 Ideally we would like to do the proofs once and use Pitts's
 \emph{relational structures}. Unfortunately it seems we need
 higher-order polymorphism (type functions) to make this work (but see
-\citet{Huffman:MonadTransformers:2012}). Here we develop three
+\<^citet>\<open>"Huffman:MonadTransformers:2012"\<close>). Here we develop three
 versions, one for each of our applications. The proofs are similar
 (but not quite identical) in all cases.
 
@@ -600,8 +600,8 @@ subsection\<open>Relations between pairs of domains\<close>
 
 text\<open>
 
-Following \citet{DBLP:conf/icalp/Reynolds74} and
-\citet{DBLP:journals/tcs/Filinski07}, we want to relate two pairs of
+Following \<^citet>\<open>"DBLP:conf/icalp/Reynolds74"\<close> and
+\<^citet>\<open>"DBLP:journals/tcs/Filinski07"\<close>, we want to relate two pairs of
 mutually-recursive domains. Each of the pairs represents a (monadic)
 computation and value space.
 

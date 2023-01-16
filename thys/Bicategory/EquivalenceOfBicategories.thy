@@ -155,7 +155,7 @@ begin
 
     text \<open>
       It is perhaps not so easy to discover a proof that \<open>F\<close> is locally essentially surjective.
-      Here we follow the proof of \cite{johnson-yau-2d-categories}, Lemma 6.2.13, except we
+      Here we follow the proof of \<^cite>\<open>"johnson-yau-2d-categories"\<close>, Lemma 6.2.13, except we
       have expressed it in a way that explicitly shows its constructive nature, given that
       we have already chosen an extension of each component of \<open>\<eta>\<close> and \<open>\<epsilon>\<close> to an adjoint
       equivalence.

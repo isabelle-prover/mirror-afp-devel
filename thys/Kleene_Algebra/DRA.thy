@@ -11,7 +11,7 @@ theory DRA
 begin
 
 text \<open>
-  A demonic refinement algebra *DRA)~\cite{vonwright04refinement} is a Kleene algebra without right annihilation plus 
+  A demonic refinement algebra *DRA)~\<^cite>\<open>"vonwright04refinement"\<close> is a Kleene algebra without right annihilation plus 
   an operation for possibly infinite iteration.
 \<close>
 class dra = kleene_algebra_zerol +
@@ -335,7 +335,7 @@ lemma "y \<cdot> w \<le> x \<cdot> y + z \<Longrightarrow> y \<cdot> w\<^sup>\<i
 (*nitpick [expect=genuine]*)
 oops
 
-text \<open>At the end of this file, we consider a data refinement example from von Wright~\cite{Wright02}.\<close>
+text \<open>At the end of this file, we consider a data refinement example from von Wright~\<^cite>\<open>"Wright02"\<close>.\<close>
 
 lemma data_refinement:
   assumes "s' \<le> s \<cdot> z" and "z \<cdot> e' \<le> e" and "z \<cdot> a' \<le> a \<cdot> z" and "z \<cdot> b \<le> z" and "b\<^sup>\<infinity> = b\<^sup>\<star>"

@@ -13,7 +13,7 @@ text \<open>
   We formalise the predicate transformer model of demonic refinement algebra.
   Predicate transformers are formalised as strict and additive functions over a field of sets,
   or alternatively as costrict and multiplicative functions. 
-  In the future, this should be merged with Preoteasa's more abstract formalisation~\cite{Preoteasa11}.
+  In the future, this should be merged with Preoteasa's more abstract formalisation~\<^cite>\<open>"Preoteasa11"\<close>.
 \<close>
 
 no_notation 
@@ -155,7 +155,7 @@ definition fun_iteration :: "'a bfun \<Rightarrow> 'a bfun" where
   
 text \<open>
   Verifying the iteration laws is left for future work. This could be obtained by integrating
-  Preoteasa's approach~\cite{Preoteasa11}.
+  Preoteasa's approach~\<^cite>\<open>"Preoteasa11"\<close>.
 \<close>
 
 end

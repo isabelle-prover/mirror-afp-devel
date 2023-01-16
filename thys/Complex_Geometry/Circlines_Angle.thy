@@ -8,7 +8,7 @@ subsection \<open>Angle between circlines\<close>
 (* ----------------------------------------------------------------- *)
 
 text \<open>Angle between circlines can be defined in purely algebraic terms (following Schwerdtfeger
-\cite{schwerdtfeger}) and using this definitions many properties can be easily proved.\<close>
+\<^cite>\<open>"schwerdtfeger"\<close>) and using this definitions many properties can be easily proved.\<close>
 
 fun mat_det_12 :: "complex_mat \<Rightarrow> complex_mat \<Rightarrow> complex" where
   "mat_det_12 (A1, B1, C1, D1) (A2, B2, C2, D2) = A1*D2 + A2*D1 - B1*C2 - B2*C1"
@@ -93,7 +93,7 @@ subsubsection \<open>Connection with the elementary angle definition between cir
 
 text\<open>We want to connect algebraic definition of an angle with a traditional one and 
 to prove equivalency between these two definitions. For the traditional definition of 
-an angle we follow the approach suggested by Needham \cite{needham}.\<close>
+an angle we follow the approach suggested by Needham \<^cite>\<open>"needham"\<close>.\<close>
 
 lemma Re_sgn:
   assumes "is_real A" and "A \<noteq> 0"

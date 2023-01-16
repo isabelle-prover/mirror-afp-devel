@@ -16,7 +16,7 @@ text\<open>Combinatorics on Words, as the name suggests, studies words, finite o
 The essential operation on finite words is the concatenation of two words, which is associative and noncommutative.
 This operation yields many simply formulated problems, often in terms of \emph{equations on words}, that are mathematically challenging.
 
-See for instance @{cite ChoKa97} for an introduction to Combinatorics on Words, and \cite{Lo,Lo2,Lo3} as another reference for Combinatorics on Words.
+See for instance \<^cite>\<open>ChoKa97\<close> for an introduction to Combinatorics on Words, and \<^cite>\<open>"Lo" and "Lo2" and "Lo3"\<close> as another reference for Combinatorics on Words.
 This theory deals exclusively with finite words and  provides basic facts of the field which can be considered as folklore.
 
 The most natural way to represent finite words is by the type @{typ "'a list"}.

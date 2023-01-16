@@ -129,7 +129,7 @@ definition
   "wrapS \<equiv> \<Lambda> s i . s !! i"
 
 text\<open>Note the identity requires that @{term "f"} be
-strict. \citet[\S6.1]{GillHutton:2009} do not make this requirement,
+strict. \<^citet>\<open>\<open>\S6.1\<close> in "GillHutton:2009"\<close> do not make this requirement,
 an oversight on their part.
 
 In practice all functions worth memoising are strict in the memoised
@@ -214,9 +214,9 @@ definition
 text\<open>
 
 This proof is only fiddly due to the way mutual recursion is encoded:
-we need to use Beki\'{c}'s Theorem \citep{Bekic:1969}\footnote{The
+we need to use Beki\'{c}'s Theorem \<^citep>\<open>"Bekic:1969"\<close>\footnote{The
 interested reader can find some historical commentary in
-\citet{Harel:1980, DBLP:journals/toplas/Sangiorgi09}.} to massage the
+\<^citet>\<open>"Harel:1980" and "DBLP:journals/toplas/Sangiorgi09"\<close>.} to massage the
 definitions into their final form.
 
 \<close>

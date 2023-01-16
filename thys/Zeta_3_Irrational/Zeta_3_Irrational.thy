@@ -19,13 +19,13 @@ text \<open>
   Both Ap\'{e}ry and Beukers make use of an asymptotic upper bound on
   $\text{lcm}\{1\ldots n\}$ -- namely $\text{lcm}\{1\ldots n\} \in o(c^n)$ for
   any $c > e$, which is a consequence of the Prime Number Theorem (which, fortunately,
-  is available in the \emph{Archive of Formal Proofs}~\cite{afp_primes1,afp_primes2}).
+  is available in the \emph{Archive of Formal Proofs}~\<^cite>\<open>"afp_primes1" and "afp_primes2"\<close>).
 
   I follow the concise presentation of Beukers's proof in Filaseta's lecture
-  notes~\cite{filaseta}, which turned out to be very amenable to formalisation.
+  notes~\<^cite>\<open>"filaseta"\<close>, which turned out to be very amenable to formalisation.
 
   There is another earlier formalisation of the irrationality of $\zeta(3)$ by
-  Mahboubi\ \emph{et al.}~\cite{mahboubi}, who followed Ap\'{e}ry's original proof,
+  Mahboubi\ \emph{et al.}~\<^cite>\<open>"mahboubi"\<close>, who followed Ap\'{e}ry's original proof,
   but were ultimately forced to find a more elementary way to prove the asymptotics
   of $\text{lcm}\{1\ldots n\}$ than the Prime Number Theorem.
 

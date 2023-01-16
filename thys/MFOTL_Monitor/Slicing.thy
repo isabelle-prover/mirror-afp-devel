@@ -7,7 +7,7 @@ begin
 section \<open>Slicing framework\<close>
 
 text \<open>This section formalizes the abstract slicing framework and the joint data slicer
-  presented in the article~\cite[Sections 4.2 and~4.3]{SchneiderBBKT-STTT20}.\<close>
+  presented in the article~\<^cite>\<open>\<open>Sections 4.2 and~4.3\<close> in "SchneiderBBKT-STTT20"\<close>.\<close>
 
 subsection \<open>Abstract slicing\<close>
 

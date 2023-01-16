@@ -306,7 +306,7 @@ end (* Dyn_Tab3 *)
 
 subsection "Queue"
 
-text\<open>See, for example, the book by Okasaki~\cite{Okasaki}.\<close>
+text\<open>See, for example, the book by Okasaki~\<^cite>\<open>"Okasaki"\<close>.\<close>
 
 locale Queue
 begin

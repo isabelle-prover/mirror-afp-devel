@@ -3,7 +3,7 @@
 section \<open>Matrices for given marginals\<close>
 
 text \<open>This theory derives from the finite max-flow min-cut theorem the existence of
-matrices with given marginals based on a proof by Georg Kellerer \cite{Kellerer1961MA}.\<close>
+matrices with given marginals based on a proof by Georg Kellerer \<^cite>\<open>"Kellerer1961MA"\<close>.\<close>
 
 theory Matrix_For_Marginals
   imports MFMC_Misc "HOL-Library.Diagonal_Subsequence" MFMC_Finite

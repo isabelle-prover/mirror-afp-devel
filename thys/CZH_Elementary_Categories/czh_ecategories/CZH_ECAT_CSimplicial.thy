@@ -12,7 +12,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 The content of this section is based, primarily, on the elements of the 
-content of Chapter I-2 in \cite{mac_lane_categories_2010}.
+content of Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 named_theorems cat_simplicial_cs_simps

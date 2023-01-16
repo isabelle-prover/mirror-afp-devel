@@ -15,7 +15,7 @@ algebra. We consider arbitrary index sets, not necessarily the
 positive natural numbers up to some bounds; our coefficient algebra is
 a dioid. Our only restriction is that summation in the product of
 matrices is over a finite index set. This follows essentially Droste
-and Kuich's introductory article in the Handbook of Weighted Automata~\cite{weightedautomata09}.
+and Kuich's introductory article in the Handbook of Weighted Automata~\<^cite>\<open>"weightedautomata09"\<close>.
 
 Under these assumptions we show that dioids are closed under matrix
 formation. Our proofs are similar to those for formal power series,

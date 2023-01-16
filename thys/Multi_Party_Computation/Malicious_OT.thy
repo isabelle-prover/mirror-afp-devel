@@ -1,6 +1,6 @@
 subsection \<open>Malicious OT\<close>
 
-text \<open>Here we prove secure the 1-out-of-2 OT protocol given in \cite{DBLP:series/isc/HazayL10} (p190). 
+text \<open>Here we prove secure the 1-out-of-2 OT protocol given in \<^cite>\<open>"DBLP:series/isc/HazayL10"\<close> (p190). 
 For party 1 reduce security to the DDH assumption and for party 2 we show information theoretic security.\<close>
 
 theory Malicious_OT imports

@@ -13,7 +13,7 @@ begin
 
 subsection \<open>Antidomain Monoids\<close>
 
-text \<open>We axiomatise antidomain monoids, using the axioms of~\cite{DesharnaisJipsenStruth}.\<close>
+text \<open>We axiomatise antidomain monoids, using the axioms of~\<^cite>\<open>"DesharnaisJipsenStruth"\<close>.\<close>
 
 class antidomain_op =
   fixes antidomain_op :: "'a \<Rightarrow> 'a" ("ad")
@@ -97,7 +97,7 @@ proof -
     using a_add_idem am_add_op_def by auto
 qed
 
-text \<open>The distributivity laws remain to be proved; our proofs follow those of Maddux~\cite{Maddux}.\<close>
+text \<open>The distributivity laws remain to be proved; our proofs follow those of Maddux~\<^cite>\<open>"Maddux"\<close>.\<close>
 
 lemma prod_split [simp]: "ad x \<cdot> ad y \<oplus> ad x \<cdot> d y = ad x"
   using a_add_idem am_d_def am_add_op_def by auto
@@ -263,7 +263,7 @@ end
 
 subsection \<open>Antidomain Near-Semirings\<close>
 
-text \<open>We define antidomain near-semirings. We do not consider units separately. The axioms are taken from~\cite{DesharnaisStruthAMAST}.\<close>
+text \<open>We define antidomain near-semirings. We do not consider units separately. The axioms are taken from~\<^cite>\<open>"DesharnaisStruthAMAST"\<close>.\<close>
 
 notation zero_class.zero ("0")
 
@@ -492,7 +492,7 @@ end
 
 subsection \<open>Antidomain Pre-Dioids\<close>
 
-text \<open>Antidomain pre-diods are based on a different set of axioms, which are again taken from~\cite{DesharnaisStruthAMAST}.\<close>
+text \<open>Antidomain pre-diods are based on a different set of axioms, which are again taken from~\<^cite>\<open>"DesharnaisStruthAMAST"\<close>.\<close>
 
 class antidomain_pre_dioid = pre_dioid_one_zerol + antidomain_op +
   assumes apd1 [simp]: "ad x \<cdot> x = 0"
@@ -730,7 +730,7 @@ end
 
 subsection \<open>Antidomain Semirings\<close>
 
-text \<open>Antidomain semirings are direct expansions of antidomain pre-dioids, but do not require idempotency of addition. Hence we give a slightly different axiomatisation, following~\cite{DesharnaisStruthSCP}.\<close>
+text \<open>Antidomain semirings are direct expansions of antidomain pre-dioids, but do not require idempotency of addition. Hence we give a slightly different axiomatisation, following~\<^cite>\<open>"DesharnaisStruthSCP"\<close>.\<close>
 
 class antidomain_semiringl = semiring_one_zerol + plus_ord + antidomain_op +
   assumes as1 [simp]: "ad x \<cdot> x = 0"

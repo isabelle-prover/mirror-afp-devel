@@ -594,7 +594,7 @@ text \<open>
   However, we get a Galois connection for the special case of 
   single-valued relations.
  
-  Regarding data refinement as Galois connections is inspired by \cite{mmo97},
+  Regarding data refinement as Galois connections is inspired by \<^cite>\<open>"mmo97"\<close>,
   that also uses the adjuncts of
   a Galois connection to express data refinement by program refinement.
 \<close>

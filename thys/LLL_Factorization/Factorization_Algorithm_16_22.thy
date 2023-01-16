@@ -12,7 +12,7 @@ text \<open>Algorithm 16.22 is quite similar to the LLL factorization algorithm 
 in the previous section. Its main difference is that it has an inner loop where each inner loop
 iteration has one invocation of the LLL basis reduction algorithm. Algorithm 16.22 of the textbook
 is therefore closer to the factorization algorithm as it is described by Lenstra, Lenstra, and
-Lov{\'a}sz \cite{LLL}, which also uses an inner loop.
+Lov{\'a}sz \<^cite>\<open>"LLL"\<close>, which also uses an inner loop.
 
 The advantage of the inner loop is that it can find factors earlier, 
 and then small lattices suffice where without the inner loop one

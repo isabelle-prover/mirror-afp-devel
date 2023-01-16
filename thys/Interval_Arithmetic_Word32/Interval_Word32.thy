@@ -179,7 +179,7 @@ declare more_real_of_word_simps [simp]
 text\<open>Interval-Word32.thy implements conservative interval arithmetic operators on 32-bit word 
    values, with explicit infinities for values outside the representable bounds. It is suitable 
    for use in interpreters for languages which  must have a well-understood low-level behavior
-   (see Interpreter.thy). This work was originally part of the paper by Bohrer \emph{et al.}~\cite{BohrerTMMP18}.
+   (see Interpreter.thy). This work was originally part of the paper by Bohrer \emph{et al.}~\<^cite>\<open>"BohrerTMMP18"\<close>.
 
    It is worth noting that this is not the first formalization of interval arithmetic in 
    Isabelle/HOL. This article is presented regardless because it has unique goals in mind

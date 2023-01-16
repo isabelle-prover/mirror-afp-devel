@@ -19,12 +19,12 @@ subsection\<open>Background\<close>
 
 text\<open>
 The content of this chapter is an adoption of the applied relativization
-study presented in \cite{immler_smooth_2019} to the ETTS. 
+study presented in \<^cite>\<open>"immler_smooth_2019"\<close> to the ETTS. 
 The content of this chapter incorporates 
 many elements of the content of the aforementioned relativization study without 
 an explicit reference. Nonetheless, no attempt was made to ensure that
 the theorems obtained as a result of this work are identical to the theorems 
-obtained in \cite{immler_smooth_2019}. 
+obtained in \<^cite>\<open>"immler_smooth_2019"\<close>. 
 \<close>
 
 

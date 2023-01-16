@@ -12,7 +12,7 @@ begin
 subsection \<open>Definitions\<close>
 
 text
-\<open>This implementation follows Okasaki \cite{Okasaki}.
+\<open>This implementation follows Okasaki \<^cite>\<open>"Okasaki"\<close>.
 It satisfies the invariant that \<open>Empty\<close> only occurs
 at the root of a pairing heap. The functional correctness proof does not
 require the invariant but the amortized analysis (elsewhere) makes use of it.\<close>

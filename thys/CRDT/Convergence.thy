@@ -18,7 +18,7 @@ imports
   Util
 begin
   
-text\<open>The \emph{happens-before} relation, as introduced by \cite{Lamport:1978jq}, captures 
+text\<open>The \emph{happens-before} relation, as introduced by \<^cite>\<open>"Lamport:1978jq"\<close>, captures 
      causal dependencies between operations. It can be defined in terms of sending and receiving
      messages on a network.
      However, for now, we keep it abstract, our only restriction on the happens-before relation is

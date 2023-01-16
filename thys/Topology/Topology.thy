@@ -13,7 +13,7 @@ begin
 text\<open>
   This theory gives a formal account of basic notions of general
   topology as they can be found in various textbooks, e.g. in
-  \cite{mccarty67:_topol} or in \cite{querenburg01:_mengen_topol}.
+  \<^cite>\<open>"mccarty67:_topol"\<close> or in \<^cite>\<open>"querenburg01:_mengen_topol"\<close>.
   The development includes open and closed sets, neighbourhoods, as
   well as closure, open core, frontier, and adherent points of a set,
   dense sets, continuous functions, filters, ultra filters,

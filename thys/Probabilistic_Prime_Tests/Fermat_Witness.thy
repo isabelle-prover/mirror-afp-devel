@@ -315,7 +315,7 @@ proof -
   ultimately show ?thesis by force
 qed
 
-text \<open>Proofs in the following section are inspired by \cite{Cornwell, MillerRabinTest, lecture_notes}.\<close>
+text \<open>Proofs in the following section are inspired by \<^cite>\<open>"Cornwell" and "MillerRabinTest" and "lecture_notes"\<close>.\<close>
 
 proposition not_Carmichael_number_imp_card_fermat_witness_bound:
   fixes n :: nat

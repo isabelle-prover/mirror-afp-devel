@@ -237,7 +237,7 @@ text \<open>
   and replace the specification statement @{term "SPEC (\<lambda>x. x\<in>V)"} by
   the head operation on distinct lists. For the lists, we use
   the list-set data structure provided by the Isabelle Collection Framework
-  \cite{L09_collections,LL10}.
+  \<^cite>\<open>"L09_collections" and "LL10"\<close>.
 
   For this example, we write the refined program ourselves.
   An automation of this task can be achieved with the automatic refinement tool,

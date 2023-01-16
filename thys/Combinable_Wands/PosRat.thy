@@ -1,6 +1,6 @@
 section \<open>State Model with Fractional Permissions\<close>
 
-text \<open>In this section, we define a concrete state model based on fractional permissions \cite{Boyland03}.
+text \<open>In this section, we define a concrete state model based on fractional permissions \<^cite>\<open>"Boyland03"\<close>.
 A state is a pair of a permission mask and a partial heap.
 A permission mask is a total map from heap locations to a rational between 0 and 1 (included),
 while a partial heap is a partial map from heap locations to values.

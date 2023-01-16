@@ -1,12 +1,12 @@
 section \<open>Public Announcement Logic (PAL) in HOL\<close>
 
 text \<open>An earlier encoding and automation of the wise men puzzle, utilizing a shallow embedding of 
-higher-order (multi-)modal logic in HOL, has been presented in \cite{J41,J44}. However, this work did not 
+higher-order (multi-)modal logic in HOL, has been presented in \<^cite>\<open>"J41" and "J44"\<close>. However, this work did not 
 convincingly address the interaction dynamics between the involved agents. Here we therefore extend and adapt 
-the universal (meta-)logical reasoning approach of \cite{J41} for public announcement logic (PAL) and 
+the universal (meta-)logical reasoning approach of \<^cite>\<open>"J41"\<close> for public announcement logic (PAL) and 
 we demonstrate how it can be utilized to achieve a convincing encoding and automation of the 
 wise men puzzle in HOL, so that also the interaction dynamics as given in the scenario is adequately 
-addressed. For further background information on the work presented here we refer to \cite{R78,C90}.\<close>
+addressed. For further background information on the work presented here we refer to \<^cite>\<open>"R78" and "C90"\<close>.\<close>
 
 theory PAL imports Main begin  (* Sebastian Reiche and Christoph Benzmüller, 2021 *)
 nitpick_params[user_axioms,expect=genuine]

@@ -14,7 +14,7 @@ condition on traces via the state. Unsurprisingly, it is not trivial
 to convince oneself that \<open>safe\<close> really has the informal meaning
 set out at the beginning of subsection~\ref{sec:formalizing-safety}.
 Hence we now describe an alternative, purely trace based model,
-similar to Paulson's inductive protocol model~\cite{Paulson-JCS98}.
+similar to Paulson's inductive protocol model~\<^cite>\<open>"Paulson-JCS98"\<close>.
 The events are:
 \<close>
 
@@ -87,7 +87,7 @@ all these functions are defined by primitive recursion over traces:
 However, not every trace is possible. Function @{const hotel} tells us
 which traces correspond to real hotels:
 @{thm[display]hotel.simps}
-Alternatively we could have followed Paulson~\cite{Paulson-JCS98}
+Alternatively we could have followed Paulson~\<^cite>\<open>"Paulson-JCS98"\<close>
 in defining @{const hotel} as an inductive set of traces.
 The difference is only slight.
 
@@ -469,7 +469,7 @@ With Lemma~\ref{state-lemmas}.\ref{safe_only_owner_enter_normal}
 we obtain @{prop"owns s r = \<lfloor>g\<rfloor>"}.
 
 Having dispensed with @{const isin} we could also eliminate @{const
-Exit} to arrive at a model closer to the ones in~\cite{Jackson06}.
+Exit} to arrive at a model closer to the ones in~\<^cite>\<open>"Jackson06"\<close>.
 
 Finally one may quibble that all the safety theorems proved so far
 assume safety of the room at that point in time when somebody enters

@@ -27,7 +27,7 @@ subsection\<open>Definition and elementary properties\<close>
 text\<open>
 A transformation of digraph homomorphisms, as presented in this work, 
 is a generalization of the concept of a natural transformation, as presented in
-Chapter I-4 in \cite{mac_lane_categories_2010}, to digraphs and digraph
+Chapter I-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>, to digraphs and digraph
 homomorphisms. The generalization is performed by excluding the commutativity 
 axiom from the definition. 
 
@@ -271,7 +271,7 @@ subsection\<open>Opposite transformation of digraph homomorphisms\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See section 1.5 in \cite{bodo_categories_1970}.\<close>
+text\<open>See section 1.5 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 definition op_tdghm :: "V \<Rightarrow> V"
   where "op_tdghm \<NN> =

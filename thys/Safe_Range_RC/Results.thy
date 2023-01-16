@@ -48,7 +48,7 @@ lemmas icdt22_lemma_9' = inres_SPEC[OF _ extra_cp.SPLIT_correct[unfolded extra_c
   of Q "(Qfin, Qinf)" for Q Qfin Qinf, simplified]
 
 text \<open>Now, we summarize the formally verified results from
-our ICDT'22 paper~\cite{DBLP:conf/icdt/RaszykBKT22}:
+our ICDT'22 paper~\<^cite>\<open>"DBLP:conf/icdt/RaszykBKT22"\<close>:
 \begin{description}
 \item[@{thm [source] icdt22_lemma_1}:] @{thm icdt22_lemma_1[no_vars]}
 \item[@{thm [source] icdt22_definition_2}:] @{thm icdt22_definition_2[no_vars]}

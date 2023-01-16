@@ -203,7 +203,7 @@ text \<open>Note that the only remaining problem in applying
   The second approach is illustrated in the following theorem. Note that all preconditions --
   including the ones from the context --
   can easily be checked with the help of Sturm's method.
-  This method is used as a fast approximative technique in CeTA \cite{CeTA}. Only if the desired degree
+  This method is used as a fast approximative technique in CeTA \<^cite>\<open>"CeTA"\<close>. Only if the desired degree
   cannot be ensured by this method, the more costly complex algebraic number based 
   factorization is applied.\<close>
 

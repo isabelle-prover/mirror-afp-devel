@@ -14,7 +14,7 @@ text \<open>
   and the red-black tree implementation (from \<open>HOL-Library\<close>) cannot be used.
 \<close>
 
-text \<open>The ice cream example from Jurafsky and Martin \cite{Jurafsky}.\<close>
+text \<open>The ice cream example from Jurafsky and Martin \<^cite>\<open>"Jurafsky"\<close>.\<close>
 
 definition
   "states = [''start'', ''hot'', ''cold'', ''end'']"

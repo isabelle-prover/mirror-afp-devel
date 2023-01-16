@@ -9,7 +9,7 @@ imports SatSolverVerification
 begin
 
 text\<open>This theory formalizes the transition rule system given by
-Nieuwenhuis et al. in \cite{NieuwenhuisOliverasTinelli}\<close>
+Nieuwenhuis et al. in \<^cite>\<open>"NieuwenhuisOliverasTinelli"\<close>\<close>
 
 
 (******************************************************************************)

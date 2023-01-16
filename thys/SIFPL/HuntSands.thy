@@ -6,11 +6,11 @@ section\<open>Flow-sensitivity a la Hunt and Sands\<close>
 text\<open>\label{sec:HuntSands}\footnote{As the Isabelle theory representing this section is
 dependent only on VDM.thy and Lattice.thy, name conflicts with
 notions defined in Section \ref{sec:BaseLineNI} are avoided.} The
-paper \cite{HuntSands:POPL2006} by Hunt and Sands presents a
+paper \<^cite>\<open>"HuntSands:POPL2006"\<close> by Hunt and Sands presents a
 generalisation of the type system of Volpano et al.~to
 flow-sensitivity. Thus, programs such as $l:=h; l:=5$ are not rejected
 any longer by the type system. Following the description in Section 4
-of our paper~\cite{BeringerHofmann:CSF2007}, we embed Hunt and Sands'
+of our paper~\<^cite>\<open>"BeringerHofmann:CSF2007"\<close>, we embed Hunt and Sands'
 type system into the program logic given in Section \ref{sec:VDM}.\<close>
 
 subsection\<open>General $A; R \Rightarrow S$-security\<close>
@@ -94,7 +94,7 @@ where "Q p H = (\<lambda> s t . \<forall> x . (\<not> LEQ p (H x)) \<longrightar
 
 text\<open>$Q$ expresses the preservation of values in a single execution,
 and corresponds to the first clause of Definition 3.2 in
-\cite{HuntSands:POPL2006}. In accordance with this, the following
+\<^cite>\<open>"HuntSands:POPL2006"\<close>. In accordance with this, the following
 definition of security instantiates the $A$ position of $A; R
 \Rightarrow S$-security with $Q$, while the context-dependent binary
 state relations are plugged in as the $R$ and $S$ components.\<close>
@@ -948,7 +948,7 @@ done
 (*>*)
 
 text\<open>An induction on the typing rules now proves the main theorem
-which was called Theorem 4 in~\cite{BeringerHofmann:CSF2007}.\<close>
+which was called Theorem 4 in~\<^cite>\<open>"BeringerHofmann:CSF2007"\<close>.\<close>
 
 theorem Theorem4[rule_format]: 
   "(p,G,c,H):HS \<Longrightarrow> 
@@ -961,7 +961,7 @@ text\<open>By the construction of the operator $\mathit{Sec}$ (lemmas
 \<open>Prop4A\<close> and \<open>Prop4A\<close> in Section \ref{sec:ARSsecurity}) we
 obtain the soundness property with respect to the oprational
 semantics, i.e.~the result stated as Theorem 3.3 in
-\cite{HuntSands:POPL2006}.\<close>
+\<^cite>\<open>"HuntSands:POPL2006"\<close>.\<close>
 
 theorem HuntSands33: "(p,G,c,H):HS \<Longrightarrow> secure p G c H"
 (*<*)

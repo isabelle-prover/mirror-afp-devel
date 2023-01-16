@@ -8,10 +8,10 @@ section \<open>Lehmer's Theorem\<close>
 text_raw \<open>\label{sec:lehmer}\<close>
 
 text \<open>
-  In this section we prove Lehmer's Theorem~\cite{lehmer1927fermat_converse} and its converse.
+  In this section we prove Lehmer's Theorem~\<^cite>\<open>"lehmer1927fermat_converse"\<close> and its converse.
   These two theorems characterize a necessary and complete criterion for primality. This criterion
   is the basis of the Lucas-Lehmer primality test and the primality certificates of
-  Pratt~\cite{pratt1975certificate}.
+  Pratt~\<^cite>\<open>"pratt1975certificate"\<close>.
 \<close>
 
 lemma mod_1_coprime_nat:

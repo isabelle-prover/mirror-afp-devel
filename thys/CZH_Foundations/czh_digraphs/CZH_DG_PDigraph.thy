@@ -15,7 +15,7 @@ subsection\<open>Background\<close>
 text\<open>
 The concept of a product digraph, as presented in this work, 
 is a generalization of the concept of a product category,
-as presented in Chapter II-3 in \cite{mac_lane_categories_2010}.
+as presented in Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 named_theorems dg_prod_cs_simps
@@ -809,7 +809,7 @@ subsection\<open>Projection\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition dghm_proj :: "V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V \<Rightarrow> V" (\<open>\<pi>\<^sub>D\<^sub>G\<close>)
   where "\<pi>\<^sub>D\<^sub>G I \<AA> i =
@@ -1463,7 +1463,7 @@ subsection\<open>Product of two digraphs\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition dg_prod_2 :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>\<times>\<^sub>D\<^sub>G\<close> 80)
   where "\<AA> \<times>\<^sub>D\<^sub>G \<BB> \<equiv> dg_prod (2\<^sub>\<nat>) (if2 \<AA> \<BB>)"

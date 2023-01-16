@@ -496,7 +496,7 @@ subsection \<open>Final result\<close>
 
 text \<open>
   To show the final result, we first prove the real case using Herglotz's trick, following
-  the presentation in `Proofs from {THE BOOK}'.~\cite[Chapter~23]{thebook}.
+  the presentation in `Proofs from {THE BOOK}'.~\<^cite>\<open>\<open>Chapter~23\<close> in "thebook"\<close>.
 \<close>
 lemma cot_pfd_formula_real:
   assumes "x \<notin> \<int>"

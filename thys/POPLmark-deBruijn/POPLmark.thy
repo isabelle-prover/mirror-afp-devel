@@ -168,7 +168,7 @@ in the second clauses of the above functions. Some standard properties of liftin
 and substitution, which can be proved by structural induction on terms and types,
 are proved below. Properties of this kind are
 quite standard for encodings using de Bruijn indices and can also be found in
-papers by Barras and Werner \cite{Barras-Werner-JAR} and Nipkow \cite{Nipkow-JAR01}.
+papers by Barras and Werner \<^cite>\<open>"Barras-Werner-JAR"\<close> and Nipkow \<^cite>\<open>"Nipkow-JAR01"\<close>.
 \<close>
 
 lemma liftE_length [simp]: "\<parallel>\<up>\<^sub>e n k \<Gamma>\<parallel> = \<parallel>\<Gamma>\<parallel>"
@@ -1311,7 +1311,7 @@ where
 text \<open>
 The notion of a @{term value} is now used in the defintion of the evaluation
 relation \mbox{\<open>t \<longmapsto> t'\<close>}. There are several ways for defining this evaluation
-relation: Aydemir et al.\ \cite{PoplMark} advocate the use of {\it evaluation
+relation: Aydemir et al.\ \<^cite>\<open>"PoplMark"\<close> advocate the use of {\it evaluation
 contexts} that allow to separate the description of the ``immediate'' reduction rules,
 i.e.\ $\beta$-reduction, from the description of the context in which these reductions
 may occur in. The rationale behind this approach is to keep the formalization more modular.

@@ -16,7 +16,7 @@ synchronous data-flow networks,
 discrete event models and so on, as illustrated in \autoref{fig:het-timed-system}. 
 This raises the interest in architectural composition languages 
 that allow for ``bolting the respective sub-models together'', along their various interfaces, and 
-specifying the various ways of collaboration and coordination~@{cite "nguyenvan:hal-01583815"}.
+specifying the various ways of collaboration and coordination~\<^cite>\<open>"nguyenvan:hal-01583815"\<close>.
 
 We are interested in languages that allow for specifying the timed coordination of subsystems by 
 addressing the following conceptual issues:
@@ -102,7 +102,7 @@ text\<open>
 section\<open>The TESL Language\<close>
    
 text\<open>
-  The TESL language @{cite "BouJacHarPro2014MEMOCODE"} was initially designed to coordinate the
+  The TESL language \<^cite>\<open>"BouJacHarPro2014MEMOCODE"\<close> was initially designed to coordinate the
   execution of heterogeneous components during the simulation of a system. We define here a minimal
   kernel of operators that will form the basis of a family of specification languages, including the
   original TESL language, which is described at \url{http://wdi.supelec.fr/software/TESL/}.

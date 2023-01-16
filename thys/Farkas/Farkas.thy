@@ -1253,7 +1253,7 @@ text \<open>In this section, we convert the previous variations of Farkas' Lemma
 
 subsection \<open>Farkas' Lemma on Delta-Rationals\<close>
 
-text \<open>We start with Lemma~2 of \cite{Bromberger2017}, a
+text \<open>We start with Lemma~2 of \<^cite>\<open>"Bromberger2017"\<close>, a
   variant of Farkas' Lemma for delta-rationals. To be more precise, it states
   that a set of non-strict inequalities over delta-rationals is unsatisfiable
   if and only if there is a linear combination of the inequalities that results

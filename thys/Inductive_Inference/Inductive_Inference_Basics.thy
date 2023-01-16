@@ -5,7 +5,7 @@ theory Inductive_Inference_Basics
 begin
 
 text \<open>Inductive inference originates from work by
-Solomonoff~\cite{s-ftiip1-64,s-ftiip2-64} and Gold~\cite{g-lil-67,g-lr-65}
+Solomonoff~\<^cite>\<open>"s-ftiip1-64" and "s-ftiip2-64"\<close> and Gold~\<^cite>\<open>"g-lil-67" and "g-lr-65"\<close>
 and comes in many variations. The common theme is to infer additional
 information about objects, such as formal languages or functions, from incomplete
 data, such as finitely many words contained in the language or argument-value
@@ -68,9 +68,9 @@ inference types):
 
 The bulk of this chapter is devoted to the first category of results. Most
 results that we are going to formalize have been called ``classical'' by
-Jantke and Beick~\cite{jb-cpnii-81}, who compare a large number of inference
-types. Another comparison is by Case and Smith~\cite{cs-cicmii-83}. Angluin
-and Smith~\cite{as-ii-87} give an overview of various forms of inductive
+Jantke and Beick~\<^cite>\<open>"jb-cpnii-81"\<close>, who compare a large number of inference
+types. Another comparison is by Case and Smith~\<^cite>\<open>"cs-cicmii-83"\<close>. Angluin
+and Smith~\<^cite>\<open>"as-ii-87"\<close> give an overview of various forms of inductive
 inference.
 
 All (interesting) proofs herein are based on my lecture notes of the

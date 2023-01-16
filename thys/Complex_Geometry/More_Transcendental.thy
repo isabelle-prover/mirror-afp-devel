@@ -16,20 +16,20 @@ section \<open>Related work\<close>
 
 text\<open>During the last decade, there have been many results in formalizing
 geometry in proof-assistants. Parts of Hilbert's seminal book
-,,Foundations of Geometry'' \cite{hilbert} have been formalized both
+,,Foundations of Geometry'' \<^cite>\<open>"hilbert"\<close> have been formalized both
 in Coq and Isabelle/Isar.  Formalization of first two groups of axioms
 in Coq, in an intuitionistic setting was done by Dehlinger et
-al. \cite{hilbert-coq}. First formalization in Isabelle/HOL was done
-by Fleuriot and Meikele \cite{hilbert-isabelle}, and some further
-developments were made in master thesis of Scott \cite{hilbert-scott}.
-Large fragments of Tarski's geometry \cite{tarski} have been
-formalized in Coq by Narboux et al. \cite{narboux-tarski}. Within Coq,
+al. \<^cite>\<open>"hilbert-coq"\<close>. First formalization in Isabelle/HOL was done
+by Fleuriot and Meikele \<^cite>\<open>"hilbert-isabelle"\<close>, and some further
+developments were made in master thesis of Scott \<^cite>\<open>"hilbert-scott"\<close>.
+Large fragments of Tarski's geometry \<^cite>\<open>"tarski"\<close> have been
+formalized in Coq by Narboux et al. \<^cite>\<open>"narboux-tarski"\<close>. Within Coq,
 there are also formalizations of von Plato's constructive geometry by
-Kahn \cite{vonPlato,von-plato-formalization}, French high school
-geometry by Guilhot \cite{guilhot} and ruler and compass geometry by
-Duprat \cite{duprat2008}, etc.
+Kahn \<^cite>\<open>"vonPlato" and "von-plato-formalization"\<close>, French high school
+geometry by Guilhot \<^cite>\<open>"guilhot"\<close> and ruler and compass geometry by
+Duprat \<^cite>\<open>"duprat2008"\<close>, etc.
 
-In our previous work \cite{petrovic2012formalizing}, we have already
+In our previous work \<^cite>\<open>"petrovic2012formalizing"\<close>, we have already
 formally investigated a Cartesian model of Euclidean geometry. 
 \<close>
 

@@ -489,7 +489,7 @@ qed
   
 text \<open>
   This following proof is based on ``Rudiments of the theory of the gamma function'' 
-  by Bruce Berndt~\cite{berndt}.
+  by Bruce Berndt~\<^cite>\<open>"berndt"\<close>.
 \<close>
 lemma tendsto_of_real_0_I: 
   "(f \<longlongrightarrow> 0) G \<Longrightarrow> ((\<lambda>x. (of_real (f x))) \<longlongrightarrow> (0 ::'a::real_normed_div_algebra)) G"

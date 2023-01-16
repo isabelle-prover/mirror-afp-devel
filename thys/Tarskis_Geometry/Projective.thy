@@ -1856,9 +1856,9 @@ proof -
   show "apply_cltn2 p C = q" by fast
 qed
 
-subsubsection \<open>Parts of some Statements from \cite{borsuk}\<close>
+subsubsection \<open>Parts of some Statements from \<^cite>\<open>"borsuk"\<close>\<close>
 text \<open>All theorems with names beginning with \emph{statement} are based
-  on corresponding theorems in \cite{borsuk}.\<close>
+  on corresponding theorems in \<^cite>\<open>"borsuk"\<close>.\<close>
 
 lemma statement52_existence:
   fixes a :: "proj2^3" and a3 :: "proj2"

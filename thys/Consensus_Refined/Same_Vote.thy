@@ -100,7 +100,7 @@ lemma SV_inv3_invariant: "reach sv_TS \<subseteq> SV_inv3"
 
 text \<open>
 
-This is a different characterization of @{term safe}, due to Lampson~\cite{lampson_abcds_2001}:
+This is a different characterization of @{term safe}, due to Lampson~\<^cite>\<open>"lampson_abcds_2001"\<close>:
   @{term "safe' s r v = (\<forall>r'< r. (\<exists>Q \<in> Quorum. \<forall>a \<in> Q. \<forall>w. votes s r' a = Some w \<longrightarrow> w = v))"}
 
 It is, however, strictly stronger than our characterization, since we do not at this point assume

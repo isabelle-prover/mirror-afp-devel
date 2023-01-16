@@ -6,7 +6,7 @@ theory utp_var
   utp_parser_utils
 begin
 
-text \<open> In this first UTP theory we set up variables, which are are built on lenses~\cite{Foster09,Foster16a}. 
+text \<open> In this first UTP theory we set up variables, which are are built on lenses~\<^cite>\<open>"Foster09" and "Foster16a"\<close>. 
   A large part of this theory is setting up the parser for UTP variable syntax. \<close>
 
 subsection \<open> Initial syntax setup \<close>
@@ -36,7 +36,7 @@ declare plus_lens_distr [THEN sym, simp]
 subsection \<open> Variable foundations \<close>
   
 text \<open> This theory describes the foundational structure of UTP variables, upon which the rest      
-  of our model rests. We start by defining alphabets, which following~\cite{Feliachi2010,Feliachi2012}
+  of our model rests. We start by defining alphabets, which following~\<^cite>\<open>"Feliachi2010" and "Feliachi2012"\<close>
   in this shallow model are simply represented as types @{typ "'\<alpha>"}, though by convention usually a record
   type where each field corresponds to a variable. UTP variables in this frame are simply modelled 
   as lenses @{typ "'a \<Longrightarrow> '\<alpha>"}, where the view type @{typ "'a"} is the variable type, and the 

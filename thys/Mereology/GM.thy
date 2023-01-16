@@ -6,7 +6,7 @@ theory GM
 begin (*>*)
 
 text \<open> The theory of \emph{general mereology} adds the axiom of fusion to ground mereology.\footnote{
-See @{cite "simons_parts:_1987"} p. 36, @{cite "varzi_parts_1996"} p. 265 and @{cite "casati_parts_1999"} p. 46.} \<close>
+See \<^cite>\<open>"simons_parts:_1987"\<close> p. 36, \<^cite>\<open>"varzi_parts_1996"\<close> p. 265 and \<^cite>\<open>"casati_parts_1999"\<close> p. 46.} \<close>
 
 locale GM = M +
   assumes fusion: 

@@ -24,7 +24,7 @@ subsection\<open>Simple subcategory\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale subcategory = sdg: category \<alpha> \<BB> + dg: category \<alpha> \<CC> for \<alpha> \<BB> \<CC>  +
   assumes subcat_subsemicategory: "cat_smc \<BB> \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^bsub>\<alpha>\<^esub> cat_smc \<CC>" 
@@ -312,7 +312,7 @@ subsection\<open>Inclusion functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 abbreviation (input) cf_inc :: "V \<Rightarrow> V \<Rightarrow> V"
   where "cf_inc \<equiv> dghm_inc"
@@ -389,7 +389,7 @@ lemma (in subcategory) subcat_op_cat_cf_inc:
 subsection\<open>Full subcategory\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale fl_subcategory = subcategory +
   assumes fl_subcat_fl_subsemicategory: "cat_smc \<BB> \<subseteq>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> cat_smc \<CC>"
@@ -429,7 +429,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 See 
-\cite{noauthor_nlab_nodate}\footnote{
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/wide+subcategory}
 }.
 \<close>
@@ -525,7 +525,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 See nLab
-\cite{noauthor_nlab_nodate}\footnote{
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/replete+subcategory}
 }.
 \<close>

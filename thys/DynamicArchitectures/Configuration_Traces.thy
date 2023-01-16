@@ -4,8 +4,8 @@
 *)
 section "A Theory of Dynamic Architectures"
 text \<open>
-  The following theory formalizes configuration traces~\cite{Marmsoler2016a,Marmsoler2016} as a model for dynamic architectures.
-  Since configuration traces may be finite as well as infinite, the theory depends on Lochbihler's theory of co-inductive lists~\cite{Lochbihler2010}.
+  The following theory formalizes configuration traces~\<^cite>\<open>"Marmsoler2016a" and "Marmsoler2016"\<close> as a model for dynamic architectures.
+  Since configuration traces may be finite as well as infinite, the theory depends on Lochbihler's theory of co-inductive lists~\<^cite>\<open>"Lochbihler2010"\<close>.
 \<close>
 theory Configuration_Traces
   imports Coinductive.Coinductive_List

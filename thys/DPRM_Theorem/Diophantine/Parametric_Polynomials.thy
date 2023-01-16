@@ -13,7 +13,7 @@ subsection \<open>Parametric Polynomials\<close>
 
 text \<open>This section defines parametric polynomials and builds up the infrastructure to later prove
       that a given predicate or relation is Diophantine. The formalization follows 
-      @{cite "h10lecturenotes"}.\<close>
+      \<^cite>\<open>"h10lecturenotes"\<close>.\<close>
 
 type_synonym assignment = "nat \<Rightarrow> nat"
 

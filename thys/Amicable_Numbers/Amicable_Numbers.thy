@@ -129,7 +129,7 @@ lemma prime_gcd: fixes m::nat and n::nat assumes "prime m" and "prime n"
 and "m \<noteq> n" shows "gcd m n =1 " using prime_def
   by (simp add: assms primes_coprime)
 
-text\<open>We refer to definitions from \cite{aliquotwiki}:\<close>
+text\<open>We refer to definitions from \<^cite>\<open>"aliquotwiki"\<close>:\<close>
 
 definition aliquot_sum :: "nat \<Rightarrow> nat"
   where "aliquot_sum n \<equiv> \<Sum>(properdiv_set n)"
@@ -158,8 +158,8 @@ qed
 
 subsection\<open>Euler's sigma function and properties\<close>
 
-text\<open>The sources of the following useful material on Euler's sigma function are \cite{garciaetal1},
-\cite{garciaetal2}, \cite{sandifer} and \cite{escott}.\<close>
+text\<open>The sources of the following useful material on Euler's sigma function are \<^cite>\<open>"garciaetal1"\<close>,
+\<^cite>\<open>"garciaetal2"\<close>, \<^cite>\<open>"sandifer"\<close> and \<^cite>\<open>"escott"\<close>.\<close>
 
 definition Esigma :: "nat \<Rightarrow> nat"
   where "Esigma n \<equiv> \<Sum>(divisor_set n)"
@@ -401,7 +401,7 @@ lemma irregularAmicPair_sym:
 
 subsubsection\<open>Twin Amicable Pairs\<close>
 
-text \<open>We refer to the definition in \cite{amicwiki}:\<close>
+text \<open>We refer to the definition in \<^cite>\<open>"amicwiki"\<close>:\<close>
 
 definition twinAmicPair :: "nat \<Rightarrow> nat \<Rightarrow> bool" where
   "twinAmicPair n m \<longleftrightarrow>
@@ -415,7 +415,7 @@ lemma twinAmicPair_sym:
 subsubsection\<open>Isotopic Amicable Pairs\<close>
 
 text\<open>A way of generating an amicable pair from a given amicable pair under certain conditions is 
-given below. Such amicable pairs are called Isotopic \cite{garciaetal1}.\<close>
+given below. Such amicable pairs are called Isotopic \<^cite>\<open>"garciaetal1"\<close>.\<close>
 
 lemma isotopic_amicable_pair:
   fixes m n g h M N :: nat
@@ -635,7 +635,7 @@ qed
 
 subsubsection\<open>Betrothed (Quasi-Amicable) Pairs\<close>
 
-text\<open>We refer to the definition in \cite{betrothedwiki}:\<close>
+text\<open>We refer to the definition in \<^cite>\<open>"betrothedwiki"\<close>:\<close>
 
 definition QuasiAmicable_pair :: "nat \<Rightarrow> nat \<Rightarrow> bool"  (infixr "QAmic" 80)
   where "m QAmic n \<longleftrightarrow> (m + 1 = aliquot_sum n) \<and> (n + 1 = aliquot_sum m)"
@@ -700,7 +700,7 @@ One_nat_def Suc_leI add_cancel_left_left add_le_same_cancel1 add_mult_distrib2 a
 
 subsubsection\<open>More examples\<close>
 
-text\<open>The first odd-odd amicable pair was discovered by Euler \cite{garciaetal1}. In the following 
+text\<open>The first odd-odd amicable pair was discovered by Euler \<^cite>\<open>"garciaetal1"\<close>. In the following 
 proof, amicability is shown using the properties of Euler's sigma function.\<close>
 
 lemma odd_odd_amicable_Euler: "69615 Amic 87633"
@@ -798,7 +798,7 @@ proof-
   show ?thesis using A B Amicable_pair_def Amicable_pair_equiv_def_conv by auto
 qed
 
-text\<open>The following is the smallest odd-odd amicable pair \cite{garciaetal1}. In the following proof, 
+text\<open>The following is the smallest odd-odd amicable pair \<^cite>\<open>"garciaetal1"\<close>. In the following proof, 
 amicability is shown directly by evaluating the sets of divisors.\<close>
 
 lemma Amicable_pair_example_smallest_odd_odd: "12285 Amic 14595"
@@ -831,7 +831,7 @@ qed
 
 section\<open>Euler's Rule\<close>
 
-text\<open>We present Euler's Rule as in \cite{garciaetal1}. The proof has been reconstructed.\<close>
+text\<open>We present Euler's Rule as in \<^cite>\<open>"garciaetal1"\<close>. The proof has been reconstructed.\<close>
 
 theorem Euler_Rule_Amicable:
   fixes k l f p q r m n :: nat
@@ -1140,7 +1140,7 @@ mult_2_right plus_nat.simps(2) power.simps(2))
     by (metis prime_ge_1_nat)
 qed
 
-text\<open>Another approach by Euler \cite{garciaetal1}:\<close>
+text\<open>Another approach by Euler \<^cite>\<open>"garciaetal1"\<close>:\<close>
 
 theorem Euler_Rule_Amicable_1:
   fixes m n a :: nat
@@ -1171,7 +1171,7 @@ qed
 section\<open>Th\={a}bit ibn Qurra's Rule and more examples\<close>
 
 text\<open>Euler's Rule (theorem Euler\_Rule\_Amicable) is actually a generalisation of the following 
-rule by Th\={a}bit ibn Qurra from the 9th century \cite{garciaetal1}. Th\={a}bit ibn Qurra's Rule is 
+rule by Th\={a}bit ibn Qurra from the 9th century \<^cite>\<open>"garciaetal1"\<close>. Th\={a}bit ibn Qurra's Rule is 
 the special case for $l=1$ thus $f=3$.\<close>
 
 corollary Thabit_ibn_Qurra_Rule_Amicable:
@@ -1196,7 +1196,7 @@ or using the properties of Euler's sigma function as it was done in the previous
 prove amicability more directly as we can apply Th\={a}bit ibn Qurra's Rule.\<close>
 
 text\<open>The following is the first example of an amicable pair known to the Pythagoreans and can be
-derived from Th\={a}bit ibn Qurra's Rule with $k=2$ \cite{garciaetal1}.\<close>
+derived from Th\={a}bit ibn Qurra's Rule with $k=2$ \<^cite>\<open>"garciaetal1"\<close>.\<close>
 
 lemma Amicable_Example_Pythagoras:
   shows "220 Amic 284"
@@ -1216,7 +1216,7 @@ proof-
 qed
 
 text\<open>The following example of an amicable pair was (re)discovered by Fermat and can be derived from
-Th\={a}bit ibn Qurra's Rule with $k=4$ \cite{garciaetal1}.\<close>
+Th\={a}bit ibn Qurra's Rule with $k=4$ \<^cite>\<open>"garciaetal1"\<close>.\<close>
 
 lemma Amicable_Example_Fermat:
   shows  "17296 Amic 18416"
@@ -1237,7 +1237,7 @@ proof-
 qed
 
 text\<open>The following example of an amicable pair was (re)discovered by Descartes and can be derived 
-from Th\={a}bit ibn Qurra's Rule with $k=7$ \cite{garciaetal1}.\<close>
+from Th\={a}bit ibn Qurra's Rule with $k=7$ \<^cite>\<open>"garciaetal1"\<close>.\<close>
 
 lemma Amicable_Example_Descartes:
   shows "9363584 Amic 9437056"
@@ -1355,7 +1355,7 @@ qed
 
 section\<open>Te Riele's Rule and Borho's Rule with breeders\<close>
 
-text\<open>With the following rule \cite{garciaetal1} we can get an amicable pair from a known amicable 
+text\<open>With the following rule \<^cite>\<open>"garciaetal1"\<close> we can get an amicable pair from a known amicable 
 pair under certain conditions.\<close>
 
 theorem teRiele_Rule_Amicable: 
@@ -1462,7 +1462,7 @@ proof-
  qed
 
  text \<open>By replacing the assumption that \<open>(a*u) Amic (a*p)\<close> in the above rule by te Riele with the 
- assumption that \<open>(a*u) breeder u\<close>, we obtain Borho's Rule with breeders \cite{garciaetal1}.\<close>
+ assumption that \<open>(a*u) breeder u\<close>, we obtain Borho's Rule with breeders \<^cite>\<open>"garciaetal1"\<close>.\<close>
 
 theorem Borho_Rule_breeders_Amicable: 
   fixes a u r c q x :: nat 

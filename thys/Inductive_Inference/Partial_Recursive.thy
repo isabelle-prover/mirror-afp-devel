@@ -14,7 +14,7 @@ relatively low-hanging fruits to round off the chapter.
 
 The formalization of partial recursive functions is very much inspired by the
 Universal Turing Machine AFP entry by Xu
-et~al.~\cite{Universal_Turing_Machine-AFP}. It models partial recursive
+et~al.~\<^cite>\<open>"Universal_Turing_Machine-AFP"\<close>. It models partial recursive
 functions as algorithms whose semantics is given by an evaluation function.
 This works well for most of this chapter. For the next chapter, however, it
 is beneficial to regard partial recursive functions as ``proper'' partial
@@ -23,7 +23,7 @@ conventional and convenient notation for the common special cases of unary
 and binary partial recursive functions.
 
 Especially for the nontrivial proofs I consulted the classical textbook by
-Rogers~\cite{Rogers87}, which also partially explains my preferring the
+Rogers~\<^cite>\<open>"Rogers87"\<close>, which also partially explains my preferring the
 traditional term ``recursive'' to the more modern ``computable''.\<close>
 
 
@@ -33,7 +33,7 @@ section \<open>Basic definitions\<close>
 subsection \<open>Partial recursive functions\<close>
 
 text \<open>To represent partial recursive functions we start from the same
-datatype as Xu et~al.~\cite{Universal_Turing_Machine-AFP}, more specifically
+datatype as Xu et~al.~\<^cite>\<open>"Universal_Turing_Machine-AFP"\<close>, more specifically
 from Urban's version of the formalization. In fact the datatype @{text recf}
 and the function @{text arity} below have been copied verbatim from it.\<close>
 
@@ -100,7 +100,7 @@ text \<open>In prose the terms ``halt'', ``terminate'', ``converge'', and
 converg} and @{text diverg} will be used consistently.\<close>
 
 text \<open>Our second major deviation from Xu
-et~al.~\cite{Universal_Turing_Machine-AFP} is that we model the semantics of
+et~al.~\<^cite>\<open>"Universal_Turing_Machine-AFP"\<close> is that we model the semantics of
 a @{typ recf} by combining the value and the termination of a function into
 one evaluation function with codomain @{typ "nat option"}, rather than
 separating both aspects into an evaluation function with codomain @{typ nat}
@@ -501,7 +501,7 @@ lemma eval_Mn_total:
 section \<open>Simple functions\<close>
 
 text \<open>This section, too, bears some similarity to Urban's formalization
-in Xu et~al.~\cite{Universal_Turing_Machine-AFP}, but is more minimalistic in
+in Xu et~al.~\<^cite>\<open>"Universal_Turing_Machine-AFP"\<close>, but is more minimalistic in
 scope.
 
 As a general naming rule, instances of @{typ recf} and functions
@@ -894,7 +894,7 @@ lemma r_prod_encode [simp]: "eval r_prod_encode [m, n] \<down>= prod_encode (m, 
   unfolding r_prod_encode_def prod_encode_def using r_triangle_prim by simp
 
 text \<open>These abbreviations are just two more things borrowed from
-Xu~et~al.~\cite{Universal_Turing_Machine-AFP}.\<close>
+Xu~et~al.~\<^cite>\<open>"Universal_Turing_Machine-AFP"\<close>.\<close>
 
 abbreviation "pdec1 z \<equiv> fst (prod_decode z)"
 
@@ -1287,7 +1287,7 @@ subsubsection \<open>Encoding and decoding\<close>
 text \<open>Lists are encoded by pairing the length of the list with the code
 for the tuple made up of the list's elements. Then all these codes are
 incremented in order to make room for the empty list
-(cf.~Rogers~\cite[p.~71]{Rogers87}).\<close>
+(cf.~Rogers~\<^cite>\<open>\<open>p.~71\<close> in "Rogers87"\<close>).\<close>
 
 fun list_encode :: "nat list \<Rightarrow> nat" where
   "list_encode [] = 0"

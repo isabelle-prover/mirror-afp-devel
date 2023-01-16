@@ -12,7 +12,7 @@ imports
 begin
 
 text \<open>
-  In his proof of the Prime Number Theorem, Newman~\cite{newman1998analytic} uses a Tauberian 
+  In his proof of the Prime Number Theorem, Newman~\<^cite>\<open>"newman1998analytic"\<close> uses a Tauberian 
   theorem that was first proven by Ingham. Newman gives a nice and straightforward proof of this
   theorem based on contour integration. This section will be concerned with proving this theorem.
   

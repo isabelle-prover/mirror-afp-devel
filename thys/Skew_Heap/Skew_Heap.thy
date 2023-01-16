@@ -9,7 +9,7 @@ begin
 
 unbundle pattern_aliases
 
-text\<open>Skew heaps~\cite{SleatorT-SIAM86} are possibly the simplest functional
+text\<open>Skew heaps~\<^cite>\<open>"SleatorT-SIAM86"\<close> are possibly the simplest functional
 priority queues that have logarithmic (albeit amortized) complexity.
 
 The implementation below could be generalized to separate the elements from

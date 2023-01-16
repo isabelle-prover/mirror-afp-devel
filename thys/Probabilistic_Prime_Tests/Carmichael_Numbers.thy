@@ -13,7 +13,7 @@ begin
 text \<open>
   A Carmichael number is a composite number \<open>n\<close> that Fermat's test incorrectly labels
   as primes no matter which witness \<open>a\<close> is chosen (except in the case that \<open>a\<close> shares a
-  factor with \<open>n\<close>). \cite{Carmichael_numbers, wiki:Carmichael_number}
+  factor with \<open>n\<close>). \<^cite>\<open>"Carmichael_numbers" and "wiki:Carmichael_number"\<close>
 \<close>
 definition Carmichael_number :: "nat \<Rightarrow> bool" where
   "Carmichael_number n \<longleftrightarrow> n > 1 \<and> \<not>prime n \<and> (\<forall>a. coprime a n \<longrightarrow> [a ^ (n - 1) = 1] (mod n))"
@@ -43,7 +43,7 @@ proof -
 qed
 
 text \<open>
-  The proofs are inspired by \cite{Carmichael_numbers, Carmichael_number_square_free}.
+  The proofs are inspired by \<^cite>\<open>"Carmichael_numbers" and "Carmichael_number_square_free"\<close>.
 \<close>
 lemma Carmichael_number_imp_squarefree_aux:
   assumes "Carmichael_number n"
@@ -410,7 +410,7 @@ lemma Carmichael_number_iff':
 
 text \<open>
   The smallest Carmichael number is 561, and it was found and proven so by
-  Carmichael in 1910~\cite{carmichael1910note}.
+  Carmichael in 1910~\<^cite>\<open>"carmichael1910note"\<close>.
 \<close>
 lemma Carmichael_number_561: "Carmichael_number 561" (is "Carmichael_number ?n")
 proof -

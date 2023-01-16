@@ -14,7 +14,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 In this body of work, a subdigraph is a natural generalization of the concept 
-of a subcategory, as defined in Chapter I-3 in \cite{mac_lane_categories_2010}, 
+of a subcategory, as defined in Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>, 
 to digraphs. 
 It should be noted that a similar concept also exists in the conventional
 graph theory, but further details are considered to be outside of the scope of 
@@ -188,7 +188,7 @@ subsection\<open>Inclusion digraph homomorphism\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition dghm_inc :: "V \<Rightarrow> V \<Rightarrow> V"
   where "dghm_inc \<BB> \<CC> = [vid_on (\<BB>\<lparr>Obj\<rparr>), vid_on (\<BB>\<lparr>Arr\<rparr>), \<BB>, \<CC>]\<^sub>\<circ>"
@@ -268,7 +268,7 @@ lemmas [dg_op_simps] = subdigraph.subdg_op_dg_dghm_inc
 subsection\<open>Full subdigraph\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale fl_subdigraph = subdigraph + 
   assumes fl_subdg_is_fl_dghm_inc: "dghm_inc \<BB> \<CC> : \<BB> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^sub>.\<^sub>f\<^sub>u\<^sub>l\<^sub>l\<^bsub>\<alpha>\<^esub> \<CC>" 
@@ -330,7 +330,7 @@ subsection\<open>Wide subdigraph\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
-See \cite{noauthor_nlab_nodate}\footnote{
+See \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/wide+subcategory}
 }).
 \<close>

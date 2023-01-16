@@ -5,7 +5,7 @@ imports NonInterferenceInter
 begin
 
 text \<open>In this section, we show how a valid CFG from the slicing framework in
-\cite{Wasserrab:08} can be lifted to fulfil all properties of the 
+\<^cite>\<open>"Wasserrab:08"\<close> can be lifted to fulfil all properties of the 
 \<open>NonInterferenceIntraGraph\<close> locale. Basically, we redefine the
 hitherto existing \<open>Entry\<close> and \<open>Exit\<close> nodes as new
 \<open>High\<close> and \<open>Low\<close> nodes, and introduce two new nodes

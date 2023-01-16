@@ -1,14 +1,14 @@
 section\<open>\<open>\<Sigma>\<close>-Protocols\<close>
 
-text\<open>\<open>\<Sigma>\<close>-protocols were first introduced as an abstract notion by Cramer \cite{Cramerthesis}. 
-We point the reader to \cite{sigma_protocols} for a good introduction to the primitive as well as informal proofs
+text\<open>\<open>\<Sigma>\<close>-protocols were first introduced as an abstract notion by Cramer \<^cite>\<open>"Cramerthesis"\<close>. 
+We point the reader to \<^cite>\<open>"sigma_protocols"\<close> for a good introduction to the primitive as well as informal proofs
 of many of the constructions we formalise in this work. In particular the construction of commitment schemes from 
 \<open>\<Sigma>\<close>-protocols and the construction of compound AND and OR statements.
 
 In this section we define \<open>\<Sigma>\<close>-protocols then provide a general proof that they can be used to construct commitment schemes.
 Defining security for \<open>\<Sigma>\<close>-protocols uses a mixture of the game-based and simulation-based paradigms. The honest verifier 
 zero knowledge property is considered using simulation-based proof, thus we follow the follow the simulation-based formalisation 
-of \cite{DBLP:journals/afp/AspinallB19} and \cite{DBLP:conf/itp/Butler0G17}.\<close>
+of \<^cite>\<open>"DBLP:journals/afp/AspinallB19"\<close> and \<^cite>\<open>"DBLP:conf/itp/Butler0G17"\<close>.\<close>
 
 subsection\<open>Defining \<open>\<Sigma>\<close>-protocols\<close>
 
@@ -139,7 +139,7 @@ end
 subsection\<open>Commitments from \<open>\<Sigma>\<close>-protocols\<close>
 
 text\<open>In this section we provide a general proof that \<open>\<Sigma>\<close>-protocols can be used to construct commitment schemes. 
-We follow  the construction given by Damgard in \cite{sigma_protocols}.\<close>
+We follow  the construction given by Damgard in \<^cite>\<open>"sigma_protocols"\<close>.\<close>
 
 locale \<Sigma>_protocols_to_commitments = \<Sigma>_protocols_base init response check Rel S_raw \<A>ss challenge_space valid_pub
   for init :: "'pub_input \<Rightarrow> 'witness \<Rightarrow> ('rand \<times> 'msg) spmf"

@@ -19,7 +19,7 @@ In particular, we consider the following algebraic structures:
 \item Brouwer algebras
 \item Boolean algebras
 \end{itemize}
-Most of these structures and many results in this theory are discussed in \cite{BalbesDwinger1974,Birkhoff1967,Blyth2005,Curry1977,Graetzer1971,Maddux1996}.
+Most of these structures and many results in this theory are discussed in \<^cite>\<open>"BalbesDwinger1974" and "Birkhoff1967" and "Blyth2005" and "Curry1977" and "Graetzer1971" and "Maddux1996"\<close>.
 \<close>
 
 theory P_Algebras

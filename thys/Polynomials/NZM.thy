@@ -31,7 +31,7 @@ begin
 
 text \<open>
 We show that our check on monotonicity is strong enough to capture the 
-exact criterion for polynomials of degree 2 that is presented in \cite{NZM10}:
+exact criterion for polynomials of degree 2 that is presented in \<^cite>\<open>"NZM10"\<close>:
 \begin{itemize}
 \item $ax^2 + bx + c$ is monotone if $b + a > 0$ and $a \geq 0$
 \item $ax^2 + bx + c$ is weakly monotone if $b + a \geq 0$ and $a \geq 0$

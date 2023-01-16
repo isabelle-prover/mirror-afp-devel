@@ -1,4 +1,4 @@
-subsection\<open>Simplified Variant with Simple Entailment in Logic K (Fig.~8 in \cite{C85})\<close>
+subsection\<open>Simplified Variant with Simple Entailment in Logic K (Fig.~8 in \<^cite>\<open>"C85"\<close>)\<close>
 
 theory SimpleVariantSE imports 
   HOML 

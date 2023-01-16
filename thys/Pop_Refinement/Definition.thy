@@ -6,7 +6,7 @@ begin
 
 text \<open>\label{chap:definition}\<close>
 
-text \<open>In stepwise refinement~\cite{DijkstraConstructive,WirthRefinement},
+text \<open>In stepwise refinement~\<^cite>\<open>"DijkstraConstructive" and "WirthRefinement"\<close>,
 a program is derived from a specification
 via a sequence of intermediate specifications.\<close>
 

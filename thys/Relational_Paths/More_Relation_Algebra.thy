@@ -7,7 +7,7 @@
 section \<open>(More) Relation Algebra\<close>
 
 text \<open>
-This theory presents fundamental properties of relation algebras, which are not present in the AFP entry on relation algebras but could be integrated there \cite{ArmstrongFosterStruthWeber2014}.
+This theory presents fundamental properties of relation algebras, which are not present in the AFP entry on relation algebras but could be integrated there \<^cite>\<open>"ArmstrongFosterStruthWeber2014"\<close>.
 Many theorems concern vectors and points.
 \<close>
 
@@ -113,7 +113,7 @@ lemma bij_swap:
     shows "z \<le> y\<^sup>T;x \<longleftrightarrow> x \<le> y;z"
 by (metis assms inj_sur_semi_swap conv_invol)
 
-text \<open>The following result is \cite[Proposition 4.2.2(iv)]{SchmidtStroehlein1993}.\<close>
+text \<open>The following result is \<^cite>\<open>\<open>Proposition 4.2.2(iv)\<close> in "SchmidtStroehlein1993"\<close>.\<close>
 
 lemma ss422iv:
   assumes "is_p_fun y"
@@ -134,7 +134,7 @@ proof -
     by (simp add: assms(2) order.antisym)
 qed
 
-text \<open>The following results are variants of \cite[Proposition 4.2.3]{SchmidtStroehlein1993}.\<close>
+text \<open>The following results are variants of \<^cite>\<open>\<open>Proposition 4.2.3\<close> in "SchmidtStroehlein1993"\<close>.\<close>
 
 lemma ss423conv:
   assumes "bijective x"
@@ -205,7 +205,7 @@ lemma vector_prop1:
     shows "-v\<^sup>T;v = 0"
 by (metis assms compl_inf_bot inf_top.right_neutral one_compl one_idem_mult vector_2)
 
-text \<open>The following results and a number of others in this theory are from \cite{Guttmann2017a}.\<close>
+text \<open>The following results and a number of others in this theory are from \<^cite>\<open>"Guttmann2017a"\<close>.\<close>
 
 lemma ee:
   assumes "is_vector v"
@@ -337,7 +337,7 @@ lemma point_equations:
  apply (metis assms conv_contrav conv_one conv_zero is_point_def is_vector_def tarski)
 by (metis assms conv_contrav conv_one is_point_def is_vector_def)
 
-text \<open>The following result is \cite[Proposition 2.4.5(i)]{SchmidtStroehlein1993}.\<close>
+text \<open>The following result is \<^cite>\<open>\<open>Proposition 2.4.5(i)\<close> in "SchmidtStroehlein1993"\<close>.\<close>
 
 lemma point_singleton:
   assumes "is_point p"
@@ -378,7 +378,7 @@ next
     using inf_compl_bot by blast
 qed
 
-text \<open>The following result is part of \cite[Proposition 2.4.5(ii)]{SchmidtStroehlein1993}.\<close>
+text \<open>The following result is part of \<^cite>\<open>\<open>Proposition 2.4.5(ii)\<close> in "SchmidtStroehlein1993"\<close>.\<close>
 
 lemma point_not_equal:
   assumes "is_point p"
@@ -653,7 +653,7 @@ proof -
     using 1 2 by force
 qed
 
-text \<open>Intermediate Point Theorem \cite[Proposition 2.4.8]{SchmidtStroehlein1993}\<close>
+text \<open>Intermediate Point Theorem \<^cite>\<open>\<open>Proposition 2.4.8\<close> in "SchmidtStroehlein1993"\<close>\<close>
 
 lemma intermediate_point_theorem:
   assumes "point p"
@@ -736,7 +736,7 @@ lemma star_star_plus:
   "x\<^sup>\<star> + y\<^sup>\<star> = x\<^sup>+ + y\<^sup>\<star>"
 by (metis (full_types) sup.left_commute star_plus_one star_unfoldl_eq sup.commute)
 
-text \<open>The following two lemmas are from \cite{Guttmann2018b}.\<close>
+text \<open>The following two lemmas are from \<^cite>\<open>"Guttmann2018b"\<close>.\<close>
 
 lemma cancel_separate:
   assumes "x ; y \<le> 1'"
@@ -821,7 +821,7 @@ qed
 
 text \<open>Acyclic relations\<close>
 
-text \<open>The following result is from \cite{Guttmann2017c}.\<close>
+text \<open>The following result is from \<^cite>\<open>"Guttmann2017c"\<close>.\<close>
 
 lemma acyclic_inv:
   assumes "is_acyclic t"

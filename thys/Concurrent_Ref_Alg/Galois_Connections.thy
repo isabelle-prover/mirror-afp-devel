@@ -9,7 +9,7 @@ text \<open>
   The definition of Galois connections used is quite simple but encodes a lot of 
   information.
   The material in this section is largely based on the work of the Eindhoven
-  Mathematics of Program Construction Group \cite{fixedpointcalculus1995}
+  Mathematics of Program Construction Group \<^cite>\<open>"fixedpointcalculus1995"\<close>
   and the reader is referred to their work for a full explanation of this section.
 \<close>
 

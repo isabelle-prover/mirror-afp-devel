@@ -5,7 +5,7 @@ section\<open>Graphical Output\<close>
 text\<open>It is often more intuitive and aesthetically pleasing to view EFSMs graphically. DOT is a graph
 layout engine which converts textual representations of graphs to more useful formats, such as SVG
 or PNG representations. This theory defines functions to convert arbitrary EFSMs to DOT for easier
-viewing. Here, transitions use the syntactic sugar presented in \cite{foster2018} such that they
+viewing. Here, transitions use the syntactic sugar presented in \<^cite>\<open>"foster2018"\<close> such that they
 take the form $\textit{label}:\textit{arity}[g_1, \ldots, g_g]/f_1, \ldots, f_f[u_1, \ldots, u_u]$.\<close>
 
 theory EFSM_Dot

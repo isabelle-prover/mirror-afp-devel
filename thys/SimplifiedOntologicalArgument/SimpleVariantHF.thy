@@ -1,4 +1,4 @@
-subsection\<open>Hauptfiltervariant (Fig.~10 in \cite{C85})\<close>
+subsection\<open>Hauptfiltervariant (Fig.~10 in \<^cite>\<open>"C85"\<close>)\<close>
 
 theory SimpleVariantHF imports
   HOML 

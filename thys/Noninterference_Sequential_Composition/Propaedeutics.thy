@@ -20,7 +20,7 @@ text \<open>
 
 \null
 
-In his outstanding work on Communicating Sequential Processes \cite{R4}, Hoare has defined two
+In his outstanding work on Communicating Sequential Processes \<^cite>\<open>"R4"\<close>, Hoare has defined two
 fundamental binary operations allowing to compose the input processes into another, typically more
 complex, process: sequential composition and concurrent composition. Particularly, the output of the
 former operation is a process that initially behaves like the first operand, and then like the
@@ -29,7 +29,7 @@ In order to distinguish it from deadlock, successful termination is regarded as 
 the process alphabet (required to be the same for both the input processes and the output one).
 
 This paper formalizes Hoare's definition of sequential composition and proves, in the general case
-of a possibly intransitive policy, that CSP noninterference security \cite{R2} is conserved under
+of a possibly intransitive policy, that CSP noninterference security \<^cite>\<open>"R2"\<close> is conserved under
 this operation, viz. the security of both of the input processes implies that of the output process.
 
 This property is conditional on two nontrivial assumptions. The first assumption is that the policy
@@ -43,7 +43,7 @@ From the above sketch of the sequential composition of two processes @{term P} a
 notwithstanding its informal character, it clearly follows that any failure of the output process
 is either a failure of @{term P} (case A), or a pair @{term "(xs @ ys, Y)"}, where @{term xs} is a
 trace of @{term P} and @{term "(ys, Y)"} is a failure of @{term Q} (case B). On the other hand,
-according to the definition of security given in \cite{R2}, the output process is secure just in
+according to the definition of security given in \<^cite>\<open>"R2"\<close>, the output process is secure just in
 case, for each of its failures, any event @{term x} contained in the failure trace can be removed
 from the trace, or inserted into the trace of another failure after the same previous events as in
 the original trace, and the resulting pair is still a failure of the process, provided that the
@@ -62,7 +62,7 @@ failure of @{term Q}, so that the pair @{term "(xs' @ ys'', Y'')"}, where @{term
 the transformation of @{term xs}, be a failure of the output process.
 
 The transformations bringing from @{term ys} and @{term Y} to @{term ys''} and @{term Y''} are
-implemented by the functions @{term ipurge_tr_aux} and @{term ipurge_ref_aux} defined in \cite{R3}.
+implemented by the functions @{term ipurge_tr_aux} and @{term ipurge_ref_aux} defined in \<^cite>\<open>"R3"\<close>.
 Therefore, the proof of the target security conservation theorem requires that of the following
 lemma: given a process @{term P}, a noninterference policy @{term I}, and an event-domain map
 @{term D}, if @{term P} is secure with respect to @{term I} and @{term D} and @{term "(xs, X)"} is a
@@ -72,8 +72,8 @@ closed under intransitive purge. This section contains a proof of such closure l
 further definitions and lemmas required for the proof of the target theorem.
 
 Throughout this paper, the salient points of definitions and proofs are commented; for additional
-information, cf. Isabelle documentation, particularly \cite{R6}, \cite{R7}, \cite{R8}, and
-\cite{R9}.
+information, cf. Isabelle documentation, particularly \<^cite>\<open>"R6"\<close>, \<^cite>\<open>"R7"\<close>, \<^cite>\<open>"R8"\<close>, and
+\<^cite>\<open>"R9"\<close>.
 \<close>
 
 
@@ -753,7 +753,7 @@ item @{term x} of @{term xs} allowed to be affected by @{term U}, if @{term ys} 
 output list for the sublist of @{term xs} preceding @{term x}, then
 @{term "(ys @ ipurge_tr I D (D x) xs', ipurge_ref I D (D x) xs' X')"} is a failure provided that
 such is @{term "(ys @ x # xs', X')"}, by virtue of the definition of CSP noninterference security
-\cite{R2}. Hence, the property of being a failure is conserved upon each recursive call by the event
+\<^cite>\<open>"R2"\<close>. Hence, the property of being a failure is conserved upon each recursive call by the event
 list-event set pair such that the list matches the concatenation of the partial output list with the
 residual input list, and the set matches the residual input set. This holds until the residual input
 list is nil, which is the base case determining the end of the computation.
@@ -764,7 +764,7 @@ function as a further argument, in addition to the residual input list, in the r
 contained within the definition of the function. Therefore, the output list has to be accumulated
 into a parameter of the function, viz. the function needs to be tail-recursive. This suggests to
 prove the properties of interest of the function by applying the ten-step proof method for theorems
-on tail-recursive functions described in \cite{R1}.
+on tail-recursive functions described in \<^cite>\<open>"R1"\<close>.
 
 The starting point is to formulate a naive definition of the function, which will then be refined as
 specified by the proof method. A slight complication is due to the preliminary replacement of the
@@ -823,7 +823,7 @@ intransitive purge.
 
 In what follows, the steps provided for by the aforesaid proof method will be dealt with one after
 the other, with the purpose of proving the target closure lemma in the final step. For more
-information on this proof method, cf. \cite{R1}.
+information on this proof method, cf. \<^cite>\<open>"R1"\<close>.
 \<close>
 
 subsubsection "Step 1"
@@ -1672,7 +1672,7 @@ text \<open>
 \null
 
 Finally, in what follows, properties @{term process_prop_1}, @{term process_prop_5}, and
-@{term process_prop_6} of processes (cf. \cite{R2}) are put into the form of introduction rules.
+@{term process_prop_6} of processes (cf. \<^cite>\<open>"R2"\<close>) are put into the form of introduction rules.
 
 \null
 \<close>

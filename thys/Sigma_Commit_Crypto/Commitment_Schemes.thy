@@ -9,7 +9,7 @@ The two main properties of commitment schemes are hiding and binding.\<close>
 
 text\<open>Hiding is the property that the commitment leaks no information about the committed value, and 
 binding is the property that the committer cannot reveal their a different message to the one they
-committed to; that is they are bound to their commitment. We follow the game based approach \cite{DBLP:journals/iacr/Shoup04} to
+committed to; that is they are bound to their commitment. We follow the game based approach \<^cite>\<open>"DBLP:journals/iacr/Shoup04"\<close> to
 define security. A game is played between an adversary and a challenger.\<close>
 
 theory Commitment_Schemes imports

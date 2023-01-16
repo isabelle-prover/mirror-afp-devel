@@ -11,17 +11,17 @@ text \<open>
   contains a generic functional model of the behaviour of a separation kernel
   as a transition system, definitions of
   the security property and proofs that the functional model satisfies 
-  security properties. It is based on Rushby's approach \cite{Rushby1992noninterference}
+  security properties. It is based on Rushby's approach \<^cite>\<open>"Rushby1992noninterference"\<close>
   for  noninterference.  For an explanation of the model, its structure and
   an overview of the proofs, we refer to the document entitled ``A New
   Theory of Intransitive Noninterference for Separation Kernels with
-  Control''~\cite{Verbeek2013}.
+  Control''~\<^cite>\<open>"Verbeek2013"\<close>.
 
   The structure of the model is based on locales and refinement:
   \begin{itemize}
   \item locale ``Kernel" defines a highly generic model for a kernel, with execution semantics. 
         It defines a state transition system with some extensions to the one
-        used in \cite{Rushby1992noninterference}.
+        used in \<^cite>\<open>"Rushby1992noninterference"\<close>.
         The transition system defined here stores the currently active
         domain in the state, and has transitions for explicit
         context switches and interrupts and provides a notion of control.

@@ -7,7 +7,7 @@ begin
 section "Under-Approximate Relational Judgement"
 
 text \<open>
-  This is the relational analogue of OHearn's~\cite{OHearn_19} and de Vries \& Koutavas'~\cite{deVries_Koutavas_11}
+  This is the relational analogue of OHearn's~\<^cite>\<open>"OHearn_19"\<close> and de Vries \& Koutavas'~\<^cite>\<open>"deVries_Koutavas_11"\<close>
   judgements.
 
   Note that in our case it doesn't really make sense to talk about ``erroneous'' states: the
@@ -207,7 +207,7 @@ lemma ir_valid_If:
 text \<open>
   Inspired by the 
   ``@{text "p(n) = {\<sigma> | you can get back from \<sigma> to some state in p by executing C backwards n times}"}''
-  part of OHearn~\cite{OHearn_19}.
+  part of OHearn~\<^cite>\<open>"OHearn_19"\<close>.
 \<close>
 primrec get_back where
   "get_back P b c 0 = (\<lambda>t t'. P t t')" |
@@ -378,7 +378,7 @@ qed
 section "A Decomposition Principle: Proofs via Under-Approximate Hoare Logic"
 
 text \<open>
-  We show the under-approximate analogue holds for Beringer's~\cite{Beringer_11} decomposition
+  We show the under-approximate analogue holds for Beringer's~\<^cite>\<open>"Beringer_11"\<close> decomposition
   principle for over-approximate relational logic.
 \<close>
 
@@ -590,7 +590,7 @@ lemma low_eq_strong_upd[simp]:
   by(auto simp: low_eq_strong_def)
 
 text \<open>
-  A variation on client0 from O'Hearn~\cite{OHearn_19}: how to reason about loops via a single unfolding
+  A variation on client0 from O'Hearn~\<^cite>\<open>"OHearn_19"\<close>: how to reason about loops via a single unfolding
 \<close>
 definition client0 :: com where
   "client0 \<equiv> (Assign ''x'' (N 0);;
@@ -717,7 +717,7 @@ subsection "client1"
 
 
 text \<open>
-  An example roughly equivalent to cient1 from O'Hearn~\cite{OHearn_19}0 
+  An example roughly equivalent to cient1 from O'Hearn~\<^cite>\<open>"OHearn_19"\<close>0 
 
   In particular we use the backwards variant rule to reason about the loop.
 \<close>
@@ -763,7 +763,7 @@ lemma client1:
 subsection "client2"
 
 text \<open>
-  An example akin to client2 from O'Hearn~\cite{OHearn_19}. 
+  An example akin to client2 from O'Hearn~\<^cite>\<open>"OHearn_19"\<close>. 
 
   Note that this example is carefully written to show use of the frontier rule first to
   reason up to the broken loop iteration, and then we unfold the loop at that point to

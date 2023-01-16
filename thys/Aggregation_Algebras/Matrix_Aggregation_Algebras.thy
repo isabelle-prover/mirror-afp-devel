@@ -6,7 +6,7 @@
 section \<open>Matrix Algebras for Aggregation and Minimisation\<close>
 
 text \<open>
-This theory formalises aggregation orders and lattices as introduced in \cite{Guttmann2018a}.
+This theory formalises aggregation orders and lattices as introduced in \<^cite>\<open>"Guttmann2018a"\<close>.
 Aggregation in these algebras is an associative and commutative operation satisfying additional properties related to the partial order and its least element.
 We apply the aggregation operation to finite matrices over the aggregation algebras, which shows that they form an s-algebra.
 By requiring the aggregation algebras to be linearly ordered, we also obtain that the matrices form an m-algebra.

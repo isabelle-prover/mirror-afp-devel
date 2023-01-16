@@ -7,7 +7,7 @@ begin
 subsection \<open>Approximating the Rewrite Rule\<close>
 
 text \<open>
-  The original rule looks as follows (see also \cite{ghc-rewriting}):
+  The original rule looks as follows (see also \<^cite>\<open>"ghc-rewriting"\<close>):
   \begin{verbatim}
   "fold/build"
     forall k z (g :: forall b. (a -> b -> b) -> b -> b).

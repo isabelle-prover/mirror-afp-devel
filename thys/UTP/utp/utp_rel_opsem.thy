@@ -7,7 +7,7 @@ theory utp_rel_opsem
 begin
 
 text \<open> This theory uses the laws of relational calculus to create a basic operational semantics.
-  It is based on Chapter 10 of the UTP book~\cite{Hoare&98}. \<close>
+  It is based on Chapter 10 of the UTP book~\<^cite>\<open>"Hoare&98"\<close>. \<close>
   
 fun trel :: "'\<alpha> usubst \<times> '\<alpha> hrel \<Rightarrow> '\<alpha> usubst \<times> '\<alpha> hrel \<Rightarrow> bool" (infix "\<rightarrow>\<^sub>u" 85) where
 "(\<sigma>, P) \<rightarrow>\<^sub>u (\<rho>, Q) \<longleftrightarrow> (\<langle>\<sigma>\<rangle>\<^sub>a ;; P) \<sqsubseteq> (\<langle>\<rho>\<rangle>\<^sub>a ;; Q)"

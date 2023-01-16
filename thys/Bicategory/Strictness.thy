@@ -243,7 +243,7 @@ begin
     It seems difficult to find references that explicitly describe a strictification
     construction in elementary terms like this (in retrospect, it ought to have been relatively
     easy to rediscover such a construction, but my thinking got off on the wrong track).
-    One reference that I did find useful was \cite{unapologetic-strictification},
+    One reference that I did find useful was \<^cite>\<open>"unapologetic-strictification"\<close>,
     which discusses strictification for monoidal categories.
   \<close>
 
@@ -3547,8 +3547,8 @@ begin
     proof -
       text \<open>
         The formal proof here was constructed following the string diagram sketch below,
-        which appears in \cite{nlab-zigzag-diagram}
-        (see it also in context in \cite{nlab-adjoint-equivalence}).
+        which appears in \<^cite>\<open>"nlab-zigzag-diagram"\<close>
+        (see it also in context in \<^cite>\<open>"nlab-adjoint-equivalence"\<close>).
         The diagram is reproduced here by permission of its author, Mike Shulman,
         who says (private communication):
         ``Just don't give the impression that the proof itself is due to me, because it's not.

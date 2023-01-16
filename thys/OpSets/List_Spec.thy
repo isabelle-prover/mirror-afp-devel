@@ -8,12 +8,12 @@ section\<open>Relationship to Strong List Specification\<close>
 
 text\<open>In this section we show that our list specification is stronger than the
 $\mathcal{A}_\textsf{strong}$ specification of collaborative text editing by
-Attiya et al.~\cite{Attiya:2016kh}. We do this by showing that the OpSet
+Attiya et al.~\<^cite>\<open>"Attiya:2016kh"\<close>. We do this by showing that the OpSet
 interpretation of any set of insertion and deletion operations satisfies all
 of the consistency criteria that constitute the $\mathcal{A}_\textsf{strong}$
 specification.
 
-Attiya et al.'s specification is as follows~\cite{Attiya:2016kh}:
+Attiya et al.'s specification is as follows~\<^cite>\<open>"Attiya:2016kh"\<close>:
 
 \begin{displayquote}
 An abstract execution $A = (H, \textsf{vis})$ belongs to the

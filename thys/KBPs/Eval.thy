@@ -111,7 +111,7 @@ formulas are not deeply nested, so it is not worth trying too hard
 here.
 
 In general this is less efficient than the tableau approach of
-\citet[Proposition~3.2.1]{FHMV:1995}, which labels all states with all
+\<^citet>\<open>\<open>Proposition~3.2.1\<close> in "FHMV:1995"\<close>, which labels all states with all
 formulas. However it is often the case that the set of relevant worlds
 is much smaller than the set of all system states.
 

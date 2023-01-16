@@ -8,7 +8,7 @@ begin
 
 text\<open>We end this session by applying DSL to the combinatorics of
 finite function posets. We first define some basic concepts; we take
-a different approach from \cite{2020arXiv200109715G}, in that the
+a different approach from \<^cite>\<open>"2020arXiv200109715G"\<close>, in that the
 order relation is presented as a predicate (of type @{typ \<open>[i,i] \<Rightarrow> o\<close>}). 
 
 Two elements of a poset are \<^emph>\<open>compatible\<close> if they have a common lower
@@ -243,6 +243,6 @@ qed
 text\<open>The fact that a poset $P$ has the ccc has useful consequences for the
 theory of forcing, since it implies that cardinals from the original
 model are exactly the cardinals in any generic extension by $P$
-\cite[Chap.~IV]{kunen2011set}.\<close>
+\<^cite>\<open>\<open>Chap.~IV\<close> in "kunen2011set"\<close>.\<close>
 
 end

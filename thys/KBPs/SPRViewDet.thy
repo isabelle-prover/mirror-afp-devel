@@ -28,11 +28,11 @@ information \emph{common knowledge}; roughly put, the agents all learn
 the same things at the same time as the system evolves, so the
 relation amongst the agents' states of knowledge never becomes more
 complex than it is in the initial state
-\citep[Chapter~6]{FHMV:1995}. For this reason we might hope to find
+\<^citep>\<open>\<open>Chapter~6\<close> in "FHMV:1995"\<close>. For this reason we might hope to find
 finite-state implementations of JKBPs in broadcast environments.
 
 The broadcast assumption by itself is insufficient in general, however
-\citep[\S7]{Ron:1996}, and so we need to further constrain the
+\<^citep>\<open>\<open>\S7\<close> in "Ron:1996"\<close>, and so we need to further constrain the
 scenario. Here we require that for each canonical trace the JKBP
 prescribes at most one action. In practice this constraint is easier
 to verify than the circularity would suggest; we return to this point
@@ -908,7 +908,7 @@ lemma (in -) [code]:
 text\<open>
 
 Similarly the common knowledge operation computes the transitive
-closure \citep{AFP:TRANCL} of the union of the knowledge relations for
+closure \<^citep>\<open>"AFP:TRANCL"\<close> of the union of the knowledge relations for
 the agents \<open>as\<close>:
 
 \<close>
@@ -2227,7 +2227,7 @@ qed
 text\<open>
 
 The scenario presented here is a variant of the broadcast environments
-treated by \citet{Ron:1996}, which we cover in the next section.
+treated by \<^citet>\<open>"Ron:1996"\<close>, which we cover in the next section.
 
 \FloatBarrier
 

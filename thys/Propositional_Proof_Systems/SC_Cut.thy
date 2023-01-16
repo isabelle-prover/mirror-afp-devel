@@ -78,7 +78,7 @@ proof -
     by blast
 qed
 (* since these are the only lemmas that need contraction on sets, I've decided to transfer those in place *)
-text\<open>According to Troelstra and Schwichtenberg~\cite{troelstra2000basic}, the sharing variant is the one we want to prove.\<close>
+text\<open>According to Troelstra and Schwichtenberg~\<^cite>\<open>"troelstra2000basic"\<close>, the sharing variant is the one we want to prove.\<close>
   
 lemma Cut_Atom_pre: "Atom k,\<Gamma> \<Rightarrow> \<Delta> \<Longrightarrow> \<Gamma> \<Rightarrow> Atom k,\<Delta> \<Longrightarrow> \<Gamma> \<Rightarrow> \<Delta>"
 proof(induction "Atom k,\<Gamma>" "\<Delta>" arbitrary: \<Gamma> rule: SCp.induct)

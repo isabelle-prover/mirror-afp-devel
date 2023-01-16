@@ -48,8 +48,8 @@ x^ay^b = z^c,
 in this formalization denoted as @{term "x\<^sup>@a\<cdot>y\<^sup>@b = z\<^sup>@c"}, with $2 \leq a,b,c$.
 We formalize here a proof that the equation has periodic solutions only in free monoids, that is, that any three words 
 $x$, $y$ and $z$ satisfying the equality pairwise commute.
-The result was first proved in @{cite LySch62} in a more general setting of free groups.
-There are several proofs to be found in the literature (for instance @{cite Lo83 and Dmsi2006}).
+The result was first proved in \<^cite>\<open>LySch62\<close> in a more general setting of free groups.
+There are several proofs to be found in the literature (for instance \<^cite>\<open>Lo83 and Dmsi2006\<close>).
 The presented proof is the author's proof.
 \<close>
 

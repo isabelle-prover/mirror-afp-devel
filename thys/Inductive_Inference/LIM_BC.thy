@@ -5,7 +5,7 @@ theory LIM_BC
 begin
 
 text \<open>The proper inclusion of LIM in BC has been proved by
-Barzdin~\cite{b-ttlsf-74} (see also Case and Smith~\cite{cs-cicmii-83}). The
+Barzdin~\<^cite>\<open>"b-ttlsf-74"\<close> (see also Case and Smith~\<^cite>\<open>"cs-cicmii-83"\<close>). The
 proof constructs a class $V \in \mathrm{BC} - \mathrm{LIM}$ by
 diagonalization against all LIM strategies. Exploiting Lemma~R for LIM, we
 can assume that all such strategies are total functions. From the effective

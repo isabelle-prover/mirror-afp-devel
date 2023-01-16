@@ -101,7 +101,7 @@ lemma stieltjes_gamma_real_altdef:
 subsection \<open>Proof of the Laurent expansion\<close>
 
 text \<open>
-  We shall follow the proof by Briggs and Chowla~\cite{briggs55}, which examines the entire
+  We shall follow the proof by Briggs and Chowla~\<^cite>\<open>"briggs55"\<close>, which examines the entire
   function $g(s) = (2^{1-s}-1)\zeta(s)$. They determine the value of $g^{(k)}(1)$ in two
   different ways: First by the Dirichlet series of $g$ and then by its power series expansion 
   around 1. We shall do the same here.  

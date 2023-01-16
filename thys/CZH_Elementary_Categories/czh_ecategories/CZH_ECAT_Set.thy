@@ -16,7 +16,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 The methodology chosen for the exposition of \<open>Set\<close> as a category is 
-analogous to the one used in \cite{milehins_category_2021} 
+analogous to the one used in \<^cite>\<open>"milehins_category_2021"\<close> 
 for the exposition of \<open>Set\<close> as a semicategory. 
 \<close>
 
@@ -2748,7 +2748,7 @@ subsection\<open>Equalizer object for the category \<open>Set\<close>\<close>
 
 text\<open>
 The definition of the (non-categorical concept of an) equalizer can be 
-found in \cite{noauthor_wikipedia_2001}\footnote{
+found in \<^cite>\<open>"noauthor_wikipedia_2001"\<close>\footnote{
 \url{https://en.wikipedia.org/wiki/Equaliser_(mathematics)}
 }\<close>
 

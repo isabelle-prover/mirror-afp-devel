@@ -7,18 +7,18 @@ nitpick_params[user_axioms=true, show_all, expect=genuine, format = 3]
 
 section \<open>Introduction\<close>
 text\<open>\noindent{We present an encoding of an ambitious ethical theory ---Alan Gewirth's "Principle of Generic Consistency (PGC)"--- 
-in Isabelle/HOL. The PGC has stirred much attention in philosophy and ethics @{cite "Beyleveld"} and has been proposed as a
-potential means to bound the impact of artificial general intelligence (AGI) @{cite "Kornai"}.
+in Isabelle/HOL. The PGC has stirred much attention in philosophy and ethics \<^cite>\<open>"Beyleveld"\<close> and has been proposed as a
+potential means to bound the impact of artificial general intelligence (AGI) \<^cite>\<open>"Kornai"\<close>.
 With our contribution we make a first, important step towards formally assessing the PGC and its potential applications in AI.
-Our formalisation utilises the shallow semantical embedding approach @{cite "J23"}
-and adapts a recent embedding of dyadic deontic logic in HOL @{cite "C71"} @{cite "BenzmuellerDDL"}.
+Our formalisation utilises the shallow semantical embedding approach \<^cite>\<open>"J23"\<close>
+and adapts a recent embedding of dyadic deontic logic in HOL \<^cite>\<open>"C71"\<close> \<^cite>\<open>"BenzmuellerDDL"\<close>.
 }\<close>
 
 section \<open>Semantic Embedding of Carmo and Jones' Dyadic Deontic Logic (DDL) augmented with Kaplanian contexts\<close>
 
-text\<open>\noindent{We introduce a modification of the semantic embedding developed by Benzm\"uller et al. @{cite "C71"} @{cite "BenzmuellerDDL"}
-for the Dyadic Deontic Logic originally presented by Carmo and Jones @{cite "CJDDL"}. We extend this embedding
-to a two-dimensional semantics as originally presented by David Kaplan @{cite "Kaplan1979"} @{cite "Kaplan1989"}.}\<close>
+text\<open>\noindent{We introduce a modification of the semantic embedding developed by Benzm\"uller et al. \<^cite>\<open>"C71"\<close> \<^cite>\<open>"BenzmuellerDDL"\<close>
+for the Dyadic Deontic Logic originally presented by Carmo and Jones \<^cite>\<open>"CJDDL"\<close>. We extend this embedding
+to a two-dimensional semantics as originally presented by David Kaplan \<^cite>\<open>"Kaplan1979"\<close> \<^cite>\<open>"Kaplan1989"\<close>.}\<close>
 
 subsection \<open>Definition of Types\<close>
 
@@ -135,7 +135,7 @@ lemma C_8: "\<lfloor>\<^bold>O\<langle>B|A\<rangle> \<^bold>\<rightarrow> \<^bol
 
 subsubsection \<open>Verifying Axiomatic Characterisation\<close>
 
-text\<open>\noindent{The following theorems have been taken from the original Carmo and Jones' paper (@{cite "CJDDL"} p.293ff).}\<close>
+text\<open>\noindent{The following theorems have been taken from the original Carmo and Jones' paper (\<^cite>\<open>"CJDDL"\<close> p.293ff).}\<close>
 
 lemma CJ_3: "\<lfloor>\<^bold>\<box>\<^sub>pA \<^bold>\<rightarrow> \<^bold>\<box>\<^sub>aA\<rfloor>" by (simp add: sem_4a)
 lemma CJ_4: "\<lfloor>\<^bold>\<not>\<^bold>O\<langle>\<^bold>\<bottom>|A\<rangle>\<rfloor>" by (simp add: sem_5a)
@@ -167,7 +167,7 @@ lemma CJ_13p: "\<lfloor>\<^bold>\<box>\<^sub>p(A \<^bold>\<leftrightarrow> B) \<
 
 lemma CJ_O_O: "\<lfloor>\<^bold>O\<langle>B|A\<rangle> \<^bold>\<rightarrow> \<^bold>O\<langle>A \<^bold>\<rightarrow> B|\<^bold>\<top>\<rangle>\<rfloor>" using sem_5bd4 by presburger
 
-text\<open>\noindent{An ideal obligation which is actually possible both to fulfill and to violate entails an actual obligation (@{cite "CJDDL"} p.319).}\<close>
+text\<open>\noindent{An ideal obligation which is actually possible both to fulfill and to violate entails an actual obligation (\<^cite>\<open>"CJDDL"\<close> p.319).}\<close>
 lemma CJ_Oi_Oa: "\<lfloor>(\<^bold>O\<^sub>iA \<^bold>\<and> \<^bold>\<diamond>\<^sub>aA \<^bold>\<and> \<^bold>\<diamond>\<^sub>a(\<^bold>\<not>A)) \<^bold>\<rightarrow> \<^bold>O\<^sub>aA\<rfloor>" using sem_5e sem_4a by blast
 
 text\<open>\noindent{Bridge relations between conditional obligations and actual/ideal obligations:}\<close>

@@ -1,6 +1,6 @@
-section\<open>Presentation of All Variants as Studied in \cite{C85} \label{sec:all}\<close>
+section\<open>Presentation of All Variants as Studied in \<^cite>\<open>"C85"\<close> \label{sec:all}\<close>
 
-subsection\<open>Preliminaries: Modal Ultrafilter (Fig.~2 in \cite{C85})\<close>
+subsection\<open>Preliminaries: Modal Ultrafilter (Fig.~2 in \<^cite>\<open>"C85"\<close>)\<close>
 
 theory MFilter imports HOML
 begin 

@@ -7,7 +7,7 @@ begin
 
 section \<open>Introduction\<close>
 
-text \<open>The original problem statement @{cite xkcd} explains the puzzle well:
+text \<open>The original problem statement \<^cite>\<open>xkcd\<close> explains the puzzle well:
 
 \begin{quotation}
 A group of people with assorted eye colors live on an island.
@@ -39,7 +39,7 @@ Who leaves the island, and on what night?
 \end{quotation}
 
 It might seem weird that the Guru's declaration gives anyone any new information.
-For an informal discussion, see \cite[Section~1.1]{fagin1995}.\<close>
+For an informal discussion, see \<^cite>\<open>\<open>Section~1.1\<close> in "fagin1995"\<close>.\<close>
 
 section \<open>Modeling the world \label{sec:world}\<close>
 

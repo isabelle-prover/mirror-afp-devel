@@ -25,7 +25,7 @@ lemma ctxt_app_subst:
   shows "ctxt_subst E (ctxt_subst F t) = ctxt_subst (E . F) t"
   by (induction E, auto)
     
-text\<open>The structural substitution is based on Geuvers and al.~\cite{DBLP:journals/apal/GeuversKM13}.\<close>
+text\<open>The structural substitution is based on Geuvers and al.~\<^cite>\<open>"DBLP:journals/apal/GeuversKM13"\<close>.\<close>
 
 primrec
   struct_subst_trm :: "[trm, nat, nat, ctxt] \<Rightarrow> trm"  ("_[_=_ _]\<^sup>T" [300, 0, 0, 0] 300) and

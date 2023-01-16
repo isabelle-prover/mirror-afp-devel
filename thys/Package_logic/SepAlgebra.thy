@@ -1,6 +1,6 @@
 section \<open>Separation Algebra\<close>
 
-text \<open>In this section, we formalize the concept of a separation algebra~\cite{Calcagno2007, Dockins2009}, on which our package logic is based.\<close>
+text \<open>In this section, we formalize the concept of a separation algebra~\<^cite>\<open>"Calcagno2007" and "Dockins2009"\<close>, on which our package logic is based.\<close>
 
 theory SepAlgebra
   imports Main

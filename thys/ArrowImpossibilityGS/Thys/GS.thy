@@ -8,7 +8,7 @@ theory GS imports Arrow_Order
 begin
 
 text\<open>The Gibbard-Satterthwaite theorem as a corollary to Arrow's
-theorem. The proof follows Nisan~\cite{NisanRTV07}.\<close>
+theorem. The proof follows Nisan~\<^cite>\<open>"NisanRTV07"\<close>.\<close>
 
 definition "manipulable f == \<exists>P\<in>Prof. \<exists>i. \<exists>L\<in>Lin. (f P, f(P(i:=L))) : P i"
 

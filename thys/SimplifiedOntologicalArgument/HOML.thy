@@ -1,4 +1,4 @@
-section\<open>Higher-Order Modal Logic in HOL (cf.~\cite{J23} and Fig.~1 in \cite{C85}).\<close>
+section\<open>Higher-Order Modal Logic in HOL (cf.~\<^cite>\<open>"J23"\<close> and Fig.~1 in \<^cite>\<open>"C85"\<close>).\<close>
 
 theory HOML imports Main
 begin

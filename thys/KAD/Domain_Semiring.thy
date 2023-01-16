@@ -17,7 +17,7 @@ subsection \<open>Domain Semigroups and Domain Monoids\<close>
 class domain_op =
   fixes domain_op :: "'a \<Rightarrow> 'a" ("d")
 
-text \<open>First we define the class of domain semigroups. Axioms are taken from~\cite{DesharnaisJipsenStruth}.\<close>
+text \<open>First we define the class of domain semigroups. Axioms are taken from~\<^cite>\<open>"DesharnaisJipsenStruth"\<close>.\<close>
 
 class domain_semigroup = semigroup_mult + domain_op +
   assumes dsg1 [simp]: "d x \<cdot> x = x"
@@ -238,7 +238,7 @@ end
 
 subsection \<open>Domain Near-Semirings\<close>
 
-text \<open>The axioms for domain near-semirings are taken from~\cite{DesharnaisStruthAMAST}.\<close>
+text \<open>The axioms for domain near-semirings are taken from~\<^cite>\<open>"DesharnaisStruthAMAST"\<close>.\<close>
 
 class domain_near_semiring = ab_near_semiring + plus_ord + domain_op +
   assumes dns1 [simp]: "d x \<cdot> x = x"
@@ -476,7 +476,7 @@ subsection \<open>Domain Pre-Dioids\<close>
 text \<open>
   Pre-semirings with one and a left zero are automatically dioids.
   Hence there is no point defining domain pre-semirings separately from domain dioids. The axioms
-are once again from~\cite{DesharnaisStruthAMAST}.
+are once again from~\<^cite>\<open>"DesharnaisStruthAMAST"\<close>.
 \<close>
 
 class domain_pre_dioid_one = pre_dioid_one + domain_op +
@@ -584,7 +584,7 @@ end
 
 subsection \<open>Domain Semirings\<close>
 
-text \<open>We do not consider domain semirings without units separately at the moment. The axioms are taken from from~\cite{DesharnaisStruthSCP}\<close>
+text \<open>We do not consider domain semirings without units separately at the moment. The axioms are taken from from~\<^cite>\<open>"DesharnaisStruthSCP"\<close>\<close>
 
 class domain_semiringl = semiring_one_zerol + plus_ord + domain_op +
   assumes dsr1 [simp]: "x + d x \<cdot> x = d x \<cdot> x"

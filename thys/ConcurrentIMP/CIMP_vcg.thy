@@ -23,18 +23,14 @@ We provide a simple-minded verification condition generator (VCG) for this langu
 support for establishing state-based invariants. It is just one way of reasoning about CIMP programs
 and is proven sound wrt to the CIMP semantics.
 
-Our approach follows @{cite [cite_macro=citet]
-"DBLP:journals/acta/Lamport80" and "DBLP:journals/toplas/LamportS84"}
-(and the later @{cite [cite_macro=citet] "Lamport:2002"}) and closely
-related work by @{cite [cite_macro=citet] "AptFrancezDeRoever:1980"},
-@{cite [cite_macro=citet] "CousotCousot:1980"} and @{cite
-[cite_macro=citet] "DBLP:journals/acta/LevinG81"}, who suggest the
-incorporation of a history variable. @{cite [cite_macro=citet]
-"CousotCousot:1980"} apparently contains a completeness proof.
+Our approach follows \<^citet>\<open>"DBLP:journals/acta/Lamport80" and "DBLP:journals/toplas/LamportS84"\<close>
+(and the later \<^citet>\<open>"Lamport:2002"\<close>) and closely
+related work by \<^citet>\<open>"AptFrancezDeRoever:1980"\<close>,
+\<^citet>\<open>"CousotCousot:1980"\<close> and \<^citet>\<open>"DBLP:journals/acta/LevinG81"\<close>, who suggest the
+incorporation of a history variable. \<^citet>\<open>"CousotCousot:1980"\<close> apparently contains a completeness proof.
 Lamport mentions that this technique was well-known in the mid-80s
 when he proposed the use of prophecy variables\footnote{@{url
-"https://lamport.azurewebsites.net/pubs/pubs.html"}}. See also @{cite
-[cite_macro=citet] "deRoeverEtAl:2001"} for an extended discussion of
+"https://lamport.azurewebsites.net/pubs/pubs.html"}}. See also \<^citet>\<open>"deRoeverEtAl:2001"\<close> for an extended discussion of
 some of this.
 
 \<close>
@@ -352,10 +348,8 @@ which isolate the \<open>basic_com\<close> commands with immediate
 externally-visible behaviour. Note that non-determinism means that
 more than one \<open>basic_com\<close> can be enabled at a time.
 
-The representation of evaluation contexts follows @{cite
-[cite_macro=citet] "DBLP:journals/jar/Berghofer12"}. This style of
-operational semantics was originated by @{cite [cite_macro=citet]
-"FelleisenHieb:1992"}.
+The representation of evaluation contexts follows \<^citet>\<open>"DBLP:journals/jar/Berghofer12"\<close>. This style of
+operational semantics was originated by \<^citet>\<open>"FelleisenHieb:1992"\<close>.
 
 \<close>
 
@@ -570,14 +564,13 @@ text\<open>
 We do not develop a proper Hoare logic or full VCG for CIMP: this
 machinery merely packages up the subgoals that arise from induction
 over the reachable states (\S\ref{sec:cimp-invariants}). This is
-somewhat in the spirit of @{cite [cite_macro=citet] "Ridge:2009"}.
+somewhat in the spirit of \<^citet>\<open>"Ridge:2009"\<close>.
 
 Note that this approach is not compositional: it consults the original
 system to find matching communicating pairs, and \<open>aft\<close>
 tracks the labels of possible successor statements. More serious Hoare
-logics are provided by @{cite [cite_macro=citet]
-"DBLP:journals/acta/Lamport80" and "DBLP:journals/toplas/LamportS84"
-and "CousotCousot89-IC"}.
+logics are provided by \<^citet>\<open>"DBLP:journals/acta/Lamport80" and "DBLP:journals/toplas/LamportS84"
+and "CousotCousot89-IC"\<close>.
 
 Intuitively we need to discharge a proof obligation for either @{const
 "Request"}s or @{const "Response"}s but not both. Here we choose to

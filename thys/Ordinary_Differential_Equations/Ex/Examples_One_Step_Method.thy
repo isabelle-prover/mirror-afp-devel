@@ -219,7 +219,7 @@ theorem oil_30:
   by (tactic \<open>ode_bnds_tac @{thms oil_fas_def} 30 20 7 30 [(0, 1, "0xff0000")] (* "out_oil_30.out" *) "" @{context} 1\<close>)
 end
 
-subsection \<open>Example V in Walter's textbook~\cite{walter}\<close>
+subsection \<open>Example V in Walter's textbook~\<^cite>\<open>"walter"\<close>\<close>
 experiment begin
 
 schematic_goal e3_fas:

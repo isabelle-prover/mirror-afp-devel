@@ -41,7 +41,7 @@ text \<open>
   consistency of WOOT.
 
   While introducing operation-based CRDTs Shapiro et al. also establish
-  \cite{shapiro2011conflict}[Theorem 2.2]. If the following two conditions are met:
+  \<^cite>\<open>"shapiro2011conflict"\<close>[Theorem 2.2]. If the following two conditions are met:
   \begin{itemize}
     \item
       Concurrent operations commute, i.e., if a pair of operations @{text "m\<^sub>1"},
@@ -53,7 +53,7 @@ text \<open>
     \item Assuming causal delivery, the messages are applicable.
   \end{itemize}
   Then the CRDT has strong convergence.
-  The same authors extend the above result in \cite[Proposition 2.2]{shapiro:inria-00555588}
+  The same authors extend the above result in \<^cite>\<open>\<open>Proposition 2.2\<close> in "shapiro:inria-00555588"\<close>
   to more general delivery orders $\xrightarrow{d}$ (weaker than the one induced by the
   happened-before relation), i.e., two messages may be causally dependent but concurrent with
   respect to $\xrightarrow{d}$. Assuming operations that are concurrent with respect to
@@ -71,7 +71,7 @@ text \<open>
 
   The first constraint is a direct consequence of the semantic causal delivery order. The uniqueness
   of identifiers can be directly established by analyzing the implementation of the message creation
-  algorithms. Alternatively, Gomes et al.~\cite{gomes2017verifying} use an axiomatic approach, where
+  algorithms. Alternatively, Gomes et al.~\<^cite>\<open>"gomes2017verifying"\<close> use an axiomatic approach, where
   they require the underlying network protocol to deliver messages with unique identifiers. They
   provide a formal framework in Isabelle/HOL that can be used to show consistency of arbitrary
   CRDTs. Their results could be used to establish constraints \ref{en:proof:deps_are_met} and
@@ -84,7 +84,7 @@ text \<open>
   argument.
 
   Zeller et. al. actually predict the above circumstance in the context of state-based CRDTs
-  \cite{DBLP:conf/forte/ZellerBP14}:
+  \<^cite>\<open>"DBLP:conf/forte/ZellerBP14"\<close>:
   \begin{displayquote}
   In theory it could even be the case that there are two reachable states for which the merge
   operation does not yield the correct result, but where the two states can never be reached in the

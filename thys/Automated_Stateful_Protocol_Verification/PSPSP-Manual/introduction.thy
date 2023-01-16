@@ -19,7 +19,7 @@ In this section, we describe the installation and use of
 Isabelle/PSPSP, the system implementing the approach described in our
 CSF submission.
 
-Isabelle/PSPSP is built on top of the latest version of Isabelle/HOL~\cite{nipkow2002isabelle}. 
+Isabelle/PSPSP is built on top of the latest version of Isabelle/HOL~\<^cite>\<open>"nipkow2002isabelle"\<close>. 
 While Isabelle is widely perceived as an interactive theorem prover for HOL
 (Higher-order Logic), we would mention that Isabelle can be understood
 as a framework that provides various extension points. In our work, we

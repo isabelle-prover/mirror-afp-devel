@@ -9,7 +9,7 @@ begin
 text\<open>
 The section presents a proof of \<open>|\<real>|\<le>|\<P>(\<nat>)|\<close> in Isabelle/HOL. The proof is 
 based on an outline at the beginning of Chapter 4 in the textbook 
-\<open>Set Theory\<close> by Thomas Jech \cite{jech_set_2006}.
+\<open>Set Theory\<close> by Thomas Jech \<^cite>\<open>"jech_set_2006"\<close>.
 \<close>
 
 lemma Pow_lepoll_mono: 

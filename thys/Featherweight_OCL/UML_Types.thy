@@ -236,7 +236,7 @@ type_synonym ('\<AA>)st = "'\<AA> state \<times> '\<AA> state"
 
 text\<open>We will require for all objects that there is a function that
 projects the oid of an object in the state (we will settle the question how to define
-this function later). We will use the Isabelle type class mechanism~\cite{haftmann.ea:constructive:2006} 
+this function later). We will use the Isabelle type class mechanism~\<^cite>\<open>"haftmann.ea:constructive:2006"\<close> 
 to capture this:\<close>
 
 class object =  fixes oid_of :: "'a \<Rightarrow> oid"
@@ -310,7 +310,7 @@ by(simp add: null_fun_def Sem_def)
 section\<open>Basic OCL Value Types\<close>
 
 text \<open>The structure of this section roughly follows the structure of Chapter
-11 of the OCL standard~\cite{omg:ocl:2012}, which introduces the OCL
+11 of the OCL standard~\<^cite>\<open>"omg:ocl:2012"\<close>, which introduces the OCL
 Library.\<close>
 
 text\<open>The semantic domain of the (basic) boolean type is now defined as the Standard:

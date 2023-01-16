@@ -194,7 +194,7 @@ lemma paths_with_new_start_in_v0: "xs \<in> paths_with_new \<Longrightarrow> hd 
 subsection \<open>The Last Vertex of the New Path\<close>
 
 text \<open>
-  McCuaig in \cite{DBLP:journals/jgt/McCuaig84} calls the last vertex of @{term P_new} by the name
+  McCuaig in \<^cite>\<open>"DBLP:journals/jgt/McCuaig84"\<close> calls the last vertex of @{term P_new} by the name
   @{term x}.  However, this name is somewhat confusing because it is so short and it will be visible
   in most places from now on, so let us give this vertex the more descriptive name of
   @{term new_last}.

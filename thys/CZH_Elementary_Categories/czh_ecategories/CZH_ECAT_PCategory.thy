@@ -13,7 +13,7 @@ begin
 subsection\<open>Background\<close>
 
 
-text\<open>See Chapter II-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 named_theorems cat_prod_cs_simps
 named_theorems cat_prod_cs_intros
@@ -592,7 +592,7 @@ subsection\<open>Projection\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_proj :: "V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V \<Rightarrow> V" (\<open>\<pi>\<^sub>C\<close>)
   where "\<pi>\<^sub>C I \<AA> i =
@@ -960,7 +960,7 @@ subsection\<open>Prodfunctor with respect to a fixed argument\<close>
 text\<open>
 A prodfunctor is a functor whose domain is a product category. 
 It is a generalization of the concept of the bifunctor,
-as presented in Chapter II-3 in \cite{mac_lane_categories_2010}.  
+as presented in Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.  
 \<close>
 
 definition prodfunctor_proj :: "V \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -1304,7 +1304,7 @@ subsection\<open>Product of two categories\<close>
 subsubsection\<open>Definition and elementary properties.\<close>
 
 
-text\<open>See Chapter II-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cat_prod_2 :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>\<times>\<^sub>C\<close> 80)
   where "\<AA> \<times>\<^sub>C \<BB> \<equiv> cat_prod (2\<^sub>\<nat>) (\<lambda>i. if i = 0 then \<AA> else \<BB>)"
@@ -1598,7 +1598,7 @@ subsection\<open>Projections for the product of two categories\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_proj_fst :: "V \<Rightarrow> V \<Rightarrow> V" (\<open>\<pi>\<^sub>C\<^sub>.\<^sub>1\<close>)
   where "\<pi>\<^sub>C\<^sub>.\<^sub>1 \<AA> \<BB> = cf_proj (2\<^sub>\<nat>) (\<lambda>i. if i = 0 then \<AA> else \<BB>) 0"
@@ -2181,10 +2181,10 @@ subsection\<open>Bifunctors\<close>
 
 text\<open>
 A bifunctor is defined as a functor from a product of two categories
-to a category (see Chapter II-3 in \cite{mac_lane_categories_2010}).
+to a category (see Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).
 This subsection exposes the elementary properties of the projections of the 
 bifunctors established by fixing an argument in a functor (see Chapter II-3 
-in \cite{mac_lane_categories_2010} for further information).
+in \<^cite>\<open>"mac_lane_categories_2010"\<close> for further information).
 \<close>
 
 
@@ -3373,7 +3373,7 @@ subsection\<open>Array bifunctor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_array :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V"
   where "cf_array \<BB> \<CC> \<DD> \<FF> \<GG> =

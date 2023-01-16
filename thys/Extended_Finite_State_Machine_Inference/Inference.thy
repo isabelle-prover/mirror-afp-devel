@@ -121,7 +121,7 @@ lemma make_pta_aux_fold [code]:
   by(induct l arbitrary: e, auto)
 
 subsection\<open>Integrating Heuristics\<close>
-text\<open>A key contribution of the inference technique presented in \cite{foster2019} is the ability to
+text\<open>A key contribution of the inference technique presented in \<^cite>\<open>"foster2019"\<close> is the ability to
 introduce \emph{internal variables} to the model to generalise behaviours and allow transitions to
 be merged. This is done by providing the inference technique with a set of \emph{heuristics}. The
 aim here is not to create a ``one size fits all'' magic oracle, rather to recognise particular

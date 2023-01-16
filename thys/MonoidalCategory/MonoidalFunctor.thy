@@ -21,7 +21,7 @@ begin
       of tensor product and a natural isomorphism @{term \<psi>} that expresses the preservation
       of the unit object.  These natural isomorphisms are subject to coherence conditions;
       the condition for @{term \<phi>} involving the associator and the conditions for @{term \<psi>}
-      involving the unitors.  However, as pointed out in \cite{Etingof15} (Section 2.4),
+      involving the unitors.  However, as pointed out in \<^cite>\<open>"Etingof15"\<close> (Section 2.4),
       it is not necessary to take the natural isomorphism @{term \<psi>} as given,
       since the mere assumption that @{term "F \<I>\<^sub>C"} is isomorphic to @{term "\<I>\<^sub>D"}
       is sufficient for there to be a canonical definition of @{term \<psi>} from which the
@@ -75,7 +75,7 @@ begin
     text \<open>
       We wish to exhibit a canonical definition of an isomorphism
       @{term "\<psi> \<in> D.hom \<I>\<^sub>D (F \<I>\<^sub>C)"} that satisfies certain coherence conditions that
-      involve the left and right unitors.  In \cite{Etingof15}, the isomorphism @{term \<psi>}
+      involve the left and right unitors.  In \<^cite>\<open>"Etingof15"\<close>, the isomorphism @{term \<psi>}
       is defined by the equation @{term "\<l>\<^sub>D[F \<I>\<^sub>C] = F \<l>\<^sub>C[\<I>\<^sub>C] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, \<I>\<^sub>C) \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D F \<I>\<^sub>C)"},
       which suffices for the definition because the functor \<open>- \<otimes>\<^sub>D F \<I>\<^sub>C\<close> is fully faithful.
       It is then asserted (Proposition 2.4.3) that the coherence condition

@@ -66,7 +66,7 @@ proof(rule measure_eqI)
 qed (simp add: assms(1))
 
 text \<open> Every probability measure on a standard Borel space can be represented as a measure on
-       a quasi-Borel space~\cite{Heunen_2017}, Proposition 23.\<close>
+       a quasi-Borel space~\<^cite>\<open>"Heunen_2017"\<close>, Proposition 23.\<close>
 locale standard_borel_prob_space = standard_borel P + p:prob_space P
   for P :: "'a measure"
 begin

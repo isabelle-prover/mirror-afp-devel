@@ -4,7 +4,7 @@ theory Incidence imports Main begin
 
 section\<open>Incidence\<close>
 text\<open>
-D.Hilbert made a rigorous reconstruction of Euclidean geometry in Chapter 1 of @{cite "Hilbert"}.
+D.Hilbert made a rigorous reconstruction of Euclidean geometry in Chapter 1 of \<^cite>\<open>"Hilbert"\<close>.
 There, five types of axioms are listed and 32 theorems are proved.
 In Hilbert's axiom system, basic concepts such as points and lines are treated as undefined terms, and only their relationships are defined by axioms.
 In addition, the continuity axiom stipulates that the Euclidean plane is essentially equivalent to the real plane R2, ensuring that the axiom system is categorical.

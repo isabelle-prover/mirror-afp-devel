@@ -9,7 +9,7 @@ begin
 
 subsection \<open> Definitions \<close>
 
-text \<open> We formalize quasi-Borel spaces introduced by Heunen et al.~\cite{Heunen_2017}.\<close>
+text \<open> We formalize quasi-Borel spaces introduced by Heunen et al.~\<^cite>\<open>"Heunen_2017"\<close>.\<close>
 
 subsubsection \<open> Quasi-Borel Spaces\<close>
 definition qbs_closed1 :: "(real \<Rightarrow> 'a) set \<Rightarrow> bool"

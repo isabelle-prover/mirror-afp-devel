@@ -11,7 +11,7 @@ begin
   
 text \<open>
   Partial equivalence relations, following theory
-  Lib/Partial\_Equivalence\_Relation in \cite{Collections-AFP}.
+  Lib/Partial\_Equivalence\_Relation in \<^cite>\<open>"Collections-AFP"\<close>.
 \<close>
 
 definition part_equiv :: "('a \<times> 'a) set \<Rightarrow> bool" where [rewrite]:

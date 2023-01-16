@@ -4,9 +4,9 @@ theory VS imports VDM begin
 section\<open>Base-line noninterference\<close>
 
 text\<open>\label{sec:BaseLineNI} We now show how to interprete the type
-system of Volpano, Smith and Irvine~\cite{VolpanoSmithIrvine:JCS1996},
+system of Volpano, Smith and Irvine~\<^cite>\<open>"VolpanoSmithIrvine:JCS1996"\<close>,
 as described in Section 3 of our
-paper~\cite{BeringerHofmann:CSF2007}.\<close>
+paper~\<^cite>\<open>"BeringerHofmann:CSF2007"\<close>.\<close>
 
 subsection\<open>Basic definitions\<close>
 

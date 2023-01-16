@@ -9,7 +9,7 @@ begin
 subsection\<open>Analytic Test Function\<close>
 text\<open>
   We investigate the analytic test function used by Fike and Alonso in their
-  2011 paper~@{cite "fike_alonso-2011"} as a relatively non-trivial example.
+  2011 paper~\<^cite>\<open>"fike_alonso-2011"\<close> as a relatively non-trivial example.
   The function is defined as: @{term "\<lambda>x. exp x / (sqrt (sin x ^ 3 + cos x ^ 3))"}.
 \<close>
 definition fa_test :: "real \<Rightarrow> real"

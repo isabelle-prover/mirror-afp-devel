@@ -5,7 +5,7 @@ section \<open>Two approaches that failed \label{sec:two-approaches-that}\<close
 text\<open>
 Defining Lebesgue integration can be quite involved, judging by the
 process in \ref{sec:stepwise-approach} that imitates Bauer's way
-\cite{Bauer}.  So it is quite tempting to try cutting a corner. The
+\<^cite>\<open>"Bauer"\<close>.  So it is quite tempting to try cutting a corner. The
 following two alternative approaches back up my experience that this
 almost never pays in formalization. The theory that seems most complex
 at first sight is often the one that is closest to formal reasoning
@@ -15,7 +15,7 @@ and deliberately avoids ``hand-waving''.
 subsection \<open>A closed expression \label{sec:closed-expression}\<close>
 
 text \<open>
-  In contrast, Billingsley's definition \cite[p.~172]{Billingsley86} is
+  In contrast, Billingsley's definition \<^cite>\<open>\<open>p.~172\<close> in "Billingsley86"\<close> is
   strikingly short. For nonnegative measurable functions $f$:
 
   \begin{quote}
@@ -77,7 +77,7 @@ subsection \<open>A one-step inductive definition \label{sec:one-step}\<close>
 text \<open>
   This idea was sparked by the following note: ``(\ldots) the integral
   is uniquely determined by certain simple properties it is natural to
-  require of it'' \cite[p.~175]{Billingsley86}. Billingsley goes on
+  require of it'' \<^cite>\<open>\<open>p.~175\<close> in "Billingsley86"\<close>. Billingsley goes on
   discussing exactly those properties that are so hard to derive
   from his definition. So why not simply define integration using
   these properties? That is the gist of an inductive set definition, like

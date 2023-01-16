@@ -17,9 +17,9 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 The definition of the product object is a specialization of the 
-definition presented in Chapter III-4 in \cite{mac_lane_categories_2010}.
+definition presented in Chapter III-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 In the definition presented below, the discrete category that is used in the 
-definition presented in \cite{mac_lane_categories_2010} is parameterized by
+definition presented in \<^cite>\<open>"mac_lane_categories_2010"\<close> is parameterized by
 an index set and the functor from the discrete category is 
 parameterized by a function from the index set to the set of 
 the objects of the category.

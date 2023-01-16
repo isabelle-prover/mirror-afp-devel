@@ -9,7 +9,7 @@ begin
 
 text \<open>
   The following proof of Hensel's lemma for formal power series follows the book
-  ``Algebraic Geometry for Scientists and Engineers'' by Abhyankar~\cite[p.~90--92]{abhyankar1990}.
+  ``Algebraic Geometry for Scientists and Engineers'' by Abhyankar~\<^cite>\<open>\<open>p.~90--92\<close> in "abhyankar1990"\<close>.
 \<close>
 
 definition fps_poly_swap1 :: "'a :: zero fps poly \<Rightarrow> 'a poly fps" where

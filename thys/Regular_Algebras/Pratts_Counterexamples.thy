@@ -10,7 +10,7 @@ theory Pratts_Counterexamples
   imports Regular_Algebras
 begin
 
-text \<open>We create two regular algebra models due to Pratt~\cite{Pratt} which are used to
+text \<open>We create two regular algebra models due to Pratt~\<^cite>\<open>"Pratt"\<close> which are used to
         distinguish K1 algebras from K1l and K1r algebras.\<close>
 
 datatype pratt1 = 

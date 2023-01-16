@@ -15,18 +15,18 @@ text \<open>
 \null
 
 An extension of classical noninterference security for deterministic state machines, as introduced
-by Goguen and Meseguer \cite{R2} and elegantly formalized by Rushby \cite{R3}, to nondeterministic
+by Goguen and Meseguer \<^cite>\<open>"R2"\<close> and elegantly formalized by Rushby \<^cite>\<open>"R3"\<close>, to nondeterministic
 systems should satisfy two fundamental requirements: it should be based on a mathematically precise
 theory of nondeterminism, and should be equivalent to (or at least not weaker than) the classical
 notion in the degenerate deterministic case.
 
 The purpose of this section is to formulate a definition of noninterference security that meet these
 requirements, applying to the concept of process as formalized by Hoare in his remarkable theory of
-Communicating Sequential Processes (CSP) \cite{R1}. The general case of a possibly intransitive
+Communicating Sequential Processes (CSP) \<^cite>\<open>"R1"\<close>. The general case of a possibly intransitive
 noninterference policy will be considered.
 
 Throughout this paper, the salient points of definitions and proofs are commented; for additional
-information see Isabelle documentation, particularly \cite{R5}, \cite{R6}, \cite{R7}, and \cite{R8}.
+information see Isabelle documentation, particularly \<^cite>\<open>"R5"\<close>, \<^cite>\<open>"R6"\<close>, \<^cite>\<open>"R7"\<close>, and \<^cite>\<open>"R8"\<close>.
 \<close>
 
 
@@ -36,7 +36,7 @@ text \<open>
 It is convenient to represent CSP processes by means of a type definition including a type variable,
 which stands for the process alphabet. Type \<open>process\<close> shall then be isomorphic to the subset
 of the product type of failures sets and divergences sets comprised of the pairs that satisfy the
-properties enunciated in \cite{R1}, section 3.9. Such subset shall be shown to contain process
+properties enunciated in \<^cite>\<open>"R1"\<close>, section 3.9. Such subset shall be shown to contain process
 \emph{STOP}, which proves that it is nonempty.
 
 Property \emph{C5} is not considered as it is entailed by \emph{C7}. Moreover, the formalization of
@@ -114,7 +114,7 @@ text \<open>
 \null
 
 Here below are the definitions of some functions acting on processes. Functions \<open>failures\<close>,
-\<open>traces\<close>, and \<open>deterministic\<close> match the homonymous notions defined in \cite{R1}. As for
+\<open>traces\<close>, and \<open>deterministic\<close> match the homonymous notions defined in \<^cite>\<open>"R1"\<close>. As for
 the other ones:
 
 \begin{itemize}
@@ -157,7 +157,7 @@ text \<open>
 
 In what follows, properties \<open>process_prop_2\<close> and \<open>process_prop_3\<close> of processes are put
 into the form of introduction rules, which will turn out to be useful in subsequent proofs.
-Particularly, the more general formulation of \<open>process_prop_2\<close> as given in \cite{R1} (section
+Particularly, the more general formulation of \<open>process_prop_2\<close> as given in \<^cite>\<open>"R1"\<close> (section
 3.9, property \emph{C2}) is restored, and it is expressed in terms of both functions
 \<open>failures\<close> and \<open>futures\<close>.
 
@@ -217,7 +217,7 @@ More precisely, let \<open>sinks I D u xs\<close> be the set of the security dom
 event list \<open>xs\<close> that may be affected by domain \<open>u\<close> according to interference relation
 \<open>I\<close>, where \<open>D\<close> is the mapping of events into their domains. Since the general case of a
 possibly intransitive relation \<open>I\<close> is considered, function \<open>sinks\<close> has to be defined
-recursively, similarly to what happens for function \emph{sources} in \cite{R3}. However,
+recursively, similarly to what happens for function \emph{sources} in \<^cite>\<open>"R3"\<close>. However,
 contrariwise to function \emph{sources}, function \<open>sinks\<close> takes into account the influence of
 the input domain on the input event list, so that the recursive decomposition of the latter has to
 be performed by item appending rather than prepending.

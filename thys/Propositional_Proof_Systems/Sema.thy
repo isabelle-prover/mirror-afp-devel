@@ -24,7 +24,7 @@ lemma relevant_atoms_same_semantics: "\<forall>k \<in> atoms F. \<A>\<^sub>1 k =
   by(induction F; simp)
 
 context begin
-text\<open>Just a definition more similar to~\cite[p. 5]{schoening1987logik}.
+text\<open>Just a definition more similar to~\<^cite>\<open>\<open>p. 5\<close> in "schoening1987logik"\<close>.
 Unfortunately, using this as the main definition would get in the way of automated reasoning all the time.\<close>
 private primrec formula_semantics_alt where
 "formula_semantics_alt \<A> (Atom k) = \<A> k" |
@@ -36,7 +36,7 @@ private primrec formula_semantics_alt where
 private lemma "formula_semantics_alt \<A> F \<longleftrightarrow> \<A> \<Turnstile> F"
   by(induction F; simp)
 
-text\<open>If you fancy a definition more similar to~\cite[p. 39]{gallier2015logic},
+text\<open>If you fancy a definition more similar to~\<^cite>\<open>\<open>p. 39\<close> in "gallier2015logic"\<close>,
 this is probably the closest you can go without going incredibly ugly.\<close>
 private primrec formula_semantics_tt where
 "formula_semantics_tt \<A> (Atom k) = \<A> k" |

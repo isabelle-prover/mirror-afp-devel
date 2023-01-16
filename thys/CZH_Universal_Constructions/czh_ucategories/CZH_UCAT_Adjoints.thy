@@ -25,8 +25,8 @@ subsection\<open>Definition and elementary properties\<close>
 
 
 text\<open>
-See subsection 2.1 in \cite{bodo_categories_1970} or Chapter IV-1 in
-\cite{mac_lane_categories_2010}.
+See subsection 2.1 in \<^cite>\<open>"bodo_categories_1970"\<close> or Chapter IV-1 in
+\<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 locale is_cf_adjunction =
@@ -132,7 +132,7 @@ subsection\<open>Opposite adjunction\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See \cite{kan_adjoint_1958} for further information.\<close>
+text\<open>See \<^cite>\<open>"kan_adjoint_1958"\<close> for further information.\<close>
 
 abbreviation op_cf_adj_nt :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "op_cf_adj_nt \<CC> \<DD> \<phi> \<equiv> inv_ntcf (bnt_flip (op_cat \<CC>) \<DD> \<phi>)"
@@ -274,7 +274,7 @@ subsubsection\<open>Alternative form of the naturality condition\<close>
 
 text\<open>
 The lemmas in this subsection are based on the comments on page 81 in 
-\cite{mac_lane_categories_2010}.
+\<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 lemma (in is_cf_adjunction) cf_adj_Comp_commute_RL:
@@ -438,7 +438,7 @@ subsection\<open>Unit\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter IV-1 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter IV-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_adjunction_unit :: "V \<Rightarrow> V" (\<open>\<eta>\<^sub>C\<close>)
   where "\<eta>\<^sub>C \<Phi> =
@@ -600,7 +600,7 @@ subsubsection\<open>Every component of a unit is a universal arrow\<close>
 
 text\<open>
 The lemmas in this subsection are based on elements of the statement of 
-Theorem 1 in Chapter IV-1 in \cite{mac_lane_categories_2010}.
+Theorem 1 in Chapter IV-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 lemma (in is_cf_adjunction) cf_adj_umap_of_unit:
@@ -979,7 +979,7 @@ subsubsection\<open>Every component of a counit is a universal arrow\<close>
 
 text\<open>
 The lemmas in this subsection are based on elements of the statement of 
-Theorem 1 in Chapter IV-1 in \cite{mac_lane_categories_2010}.
+Theorem 1 in Chapter IV-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 lemma (in is_cf_adjunction) cf_adj_umap_fo_counit:
@@ -1140,8 +1140,8 @@ subsection\<open>Counit-unit equations\<close>
 
 text\<open>
 The following equations appear as part of the statement of 
-Theorem 1 in Chapter IV-1 in \cite{mac_lane_categories_2010}.
-These equations also appear in \cite{noauthor_wikipedia_2001},
+Theorem 1 in Chapter IV-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
+These equations also appear in \<^cite>\<open>"noauthor_wikipedia_2001"\<close>,
 where they are named \<open>counit-unit equations\<close>.
 \<close>
 
@@ -1293,7 +1293,7 @@ text\<open>
 The subsection presents the construction of an adjunction given 
 a structured collection of universal morphisms from objects to functors.
 The content of this subsection follows the statement and the proof
-of Theorem 2-i in Chapter IV-1 in \cite{mac_lane_categories_2010}.
+of Theorem 2-i in Chapter IV-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 
@@ -1696,7 +1696,7 @@ The subsection presents the construction of an adjunction given
 a functor and a structured collection of universal morphisms 
 from objects to functors.
 The content of this subsection follows the statement and the proof
-of Theorem 2-ii in Chapter IV-1 in \cite{mac_lane_categories_2010}.
+of Theorem 2-ii in Chapter IV-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 
@@ -2108,7 +2108,7 @@ text\<open>
 The subsection presents the construction of an adjunction given 
 a structured collection of universal morphisms from functors to objects.
 The content of this subsection follows the statement and the proof
-of Theorem 2-iii in Chapter IV-1 in \cite{mac_lane_categories_2010}.
+of Theorem 2-iii in Chapter IV-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 definition cf_adjunction_of_counit :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -2281,7 +2281,7 @@ The subsection presents the construction of an adjunction given
 a functor and a structured collection of universal morphisms 
 from functors to objects.
 The content of this subsection follows the statement and the proof
-of Theorem 2-iv in Chapter IV-1 in \cite{mac_lane_categories_2010}.
+of Theorem 2-iv in Chapter IV-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 
@@ -2628,7 +2628,7 @@ text\<open>
 The subsection presents the construction of an adjunction given 
 two natural transformations satisfying counit-unit equations.
 The content of this subsection follows the statement and the proof
-of Theorem 2-v in Chapter IV-1 in \cite{mac_lane_categories_2010}.
+of Theorem 2-v in Chapter IV-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 lemma counit_unit_is_cf_adjunction:
@@ -2904,9 +2904,9 @@ subsection\<open>Adjoints are unique up to isomorphism\<close>
 text\<open>
 The content of the following subsection is based predominantly on
 the statement and the proof of Corollary 1 in 
-Chapter IV-1 in \cite{mac_lane_categories_2010}. However, similar 
-results can also be found in section 4 in \cite{riehl_category_2016}
-and in subsection 2.1 in \cite{bodo_categories_1970}.
+Chapter IV-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>. However, similar 
+results can also be found in section 4 in \<^cite>\<open>"riehl_category_2016"\<close>
+and in subsection 2.1 in \<^cite>\<open>"bodo_categories_1970"\<close>.
 \<close>
 
 

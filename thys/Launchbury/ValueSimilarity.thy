@@ -3,11 +3,11 @@ imports Value CValue Pointwise
 begin
 
 text \<open>
-This theory formalizes Section 3 of \cite{functionspaces}. Their domain $D$ is our type @{typ Value},
+This theory formalizes Section 3 of \<^cite>\<open>"functionspaces"\<close>. Their domain $D$ is our type @{typ Value},
 their domain $E$ is our type @{typ CValue} and $A$ corresponds to @{typ "(C \<rightarrow> CValue)"}.
 
 In our case, the construction of the domains was taken care of by the HOLCF package
-(\cite{holcf}), so where \cite{functionspaces} refers to elements of the domain approximations
+(\<^cite>\<open>"holcf"\<close>), so where \<^cite>\<open>"functionspaces"\<close> refers to elements of the domain approximations
 $D_n$ resp. $E_n$, these are just elements of @{typ Value} resp. @{typ CValue} here. Therefore the
 \emph{n-injection} $\phi_n^E \colon E_n \to E$ is the identity here.
 
@@ -23,7 +23,7 @@ turns into our non-overloaded \<open>_ \<down>CFn _\<close>\<open>::\<close>@{ty
 \<close>
 
 text \<open>
-To have our presentation closer to \cite{functionspaces}, we introduce some notation:
+To have our presentation closer to \<^cite>\<open>"functionspaces"\<close>, we introduce some notation:
 \<close>
 
 notation Value_take ("\<psi>\<^sup>D\<^bsub>_\<^esub>")
@@ -33,7 +33,7 @@ notation CValue_take ("\<psi>\<^sup>E\<^bsub>_\<^esub>")
 subsubsection \<open>A note about section 2.3\<close>
 
 text \<open>
-Section 2.3 of  \cite{functionspaces} contains equations (2) and (3) which do not hold in general.
+Section 2.3 of  \<^cite>\<open>"functionspaces"\<close> contains equations (2) and (3) which do not hold in general.
 We demonstrate that fact here using our corresponding definition, but the counter-example carries
 over to the original formulation. Lemma (2) is a generalisation of (3) to the resourced semantics,
 so the counter-example for (3) is the simpler and more educating:
@@ -79,7 +79,7 @@ proof-
 qed
 
 
-text \<open>A suitable substitute for the lemma can be found in 4.3.5 (1) in \cite{fullabstraction},
+text \<open>A suitable substitute for the lemma can be found in 4.3.5 (1) in \<^cite>\<open>"fullabstraction"\<close>,
 which in our setting becomes the following (note the extra invocation of @{term "Value_take n"} on
 the left hand side):
 \<close>
@@ -90,7 +90,7 @@ lemma "Abramsky 4,3,5 (1)":
 
 text \<open>
 The problematic equations are used in the proof of the only-if direction of proposition 9 in
-\cite{functionspaces}. It can be fixed by applying take-induction, which inserts the
+\<^cite>\<open>"functionspaces"\<close>. It can be fixed by applying take-induction, which inserts the
 extra call to @{term "Value_take n"} in the right spot.
 \<close>
 

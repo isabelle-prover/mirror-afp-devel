@@ -7,12 +7,12 @@ text_raw \<open>\label{chap:formal}\<close>
 
 text \<open>This article contains a formalization of the strong normalization
 theorem for the $\lambda_{ml}$-calculus. The formalization is based on a proof
-by Lindley and Stark \cite{TT-lifting}. An informal description of the
-formalization can be found in \cite{Doczkal:09}.
+by Lindley and Stark \<^cite>\<open>"TT-lifting"\<close>. An informal description of the
+formalization can be found in \<^cite>\<open>"Doczkal:09"\<close>.
 
 This formalization extends the example proof of strong normalization for the
 simply-typed $\lambda$-calculus, which is included in the Isabelle distribution
-\cite{SN.thy}. The parts of the original proof which have been left unchanged
+\<^cite>\<open>"SN.thy"\<close>. The parts of the original proof which have been left unchanged
 are not displayed in this document.
 
 The next section deals with the formalization of syntax, typing, and
@@ -100,7 +100,7 @@ text \<open>Except for the explicit requirement that contexts be valid in the
 variable case and the freshness requirements in \isa{t3} and \isa{t5}, this
 typing
 relation is a direct translation of the original typing relation in
-\cite{TT-lifting} to Curry-style typing.\<close>
+\<^cite>\<open>"TT-lifting"\<close> to Curry-style typing.\<close>
 
 fun
   lookup :: "(name\<times>trm) list \<Rightarrow> name \<Rightarrow> trm"   
@@ -224,7 +224,7 @@ text_raw \<open>\label{sec:reduction}\<close>
 
 text \<open>With substitution in place, we can now define the reduction relation on
 $\lambda_{ml}$-terms. To derive strong induction and case rules, all the rules
-must be vc-compatible (cf. \cite{nominal-techniques}). This requires some
+must be vc-compatible (cf. \<^cite>\<open>"nominal-techniques"\<close>). This requires some
 additional freshness conditions. Note that in this particular case the
 additional freshness conditions only serve the technical purpose of
 automatically deriving strong reasoning principles. To show that the version
@@ -431,7 +431,7 @@ by(nominal_induct t t' avoiding: x v rule: reduction.strong_induct)
 (*section {* Strong Normalization *}
 text_raw {* \label{sec:SN-formal} *} *)
 
-text \<open>Following \cite{SN.thy}, we use an inductive variant of strong
+text \<open>Following \<^cite>\<open>"SN.thy"\<close>, we use an inductive variant of strong
 normalization, as it allows for inductive proofs on terms being strongly
 normalizing, without establishing that
 the reduction relation is finitely branching.\<close>   
@@ -510,7 +510,7 @@ unfolding NORMAL_def by(auto intro: SN_intro)
 section \<open>Stacks\<close>
 text_raw \<open>\label{sec:stacks}\<close>
 
-text\<open>As explained in \cite{TT-lifting}, the monadic type structure of
+text\<open>As explained in \<^cite>\<open>"TT-lifting"\<close>, the monadic type structure of
 the $\lambda_{ml}$-calculus does not lend itself to an easy definition of a
 logical relation along the type structure of the calculus. Therefore, we need to
 introduce stacks as an auxiliary notion to handle the monadic type constructor
@@ -661,7 +661,7 @@ by(nominal_induct k avoiding: t x v  rule: stack.strong_induct)
 section \<open>Reducibility for Terms and Stacks\<close>
 text_raw \<open>\label{sec:reducibility-formal}\<close>
 
-text \<open>Following \cite{SN.thy}, we formalize the logical relation as a function
+text \<open>Following \<^cite>\<open>"SN.thy"\<close>, we formalize the logical relation as a function
 @{term "RED"} of type @{typ "ty \<Rightarrow> trm set"} for the term part and accordingly
 @{term SRED} of type @{typ "ty \<Rightarrow> stack set"} for the stack part of the logical
 relation.\<close>
@@ -797,7 +797,7 @@ proof -
 qed
 
 text \<open>The lemma above is a simplified version of the one used in
-\cite{SN.thy}. Since we have generalized our notion of reduction from terms to
+\<^cite>\<open>"SN.thy"\<close>. Since we have generalized our notion of reduction from terms to
 stacks, we can also generalize the notion of strong normalization. The new
 induction principle will be used to prove the @{term "T"} case of the
 properties of the reducibility relation.\<close>
@@ -828,7 +828,7 @@ proof -
 qed
 
 text \<open>To prove CR1-3, the authors of
-\cite{TT-lifting} use a case distinction on the reducts of @{term "t \<star> k"},
+\<^cite>\<open>"TT-lifting"\<close> use a case distinction on the reducts of @{term "t \<star> k"},
 where $t$ is a neutral term and therefore no interaction occurs between $t$ and
 $k$.
 
@@ -988,9 +988,9 @@ lemma SN_Ret: "SN u \<Longrightarrow> SN [u]"
 by(induct rule:SN.induct) (metis SN.intros red_Ret)
 
 text \<open>All the properties of reducibility are shown simultaneously by induction
-on the type. Lindley and Stark \cite{TT-lifting} only spell out the cases
+on the type. Lindley and Stark \<^cite>\<open>"TT-lifting"\<close> only spell out the cases
 dealing with the monadic type constructor $T$. We do the same by reusing the
-proofs from \cite{SN.thy} for the other cases. To shorten the presentation,
+proofs from \<^cite>\<open>"SN.thy"\<close> for the other cases. To shorten the presentation,
 these proofs are omitted\<close>
     
 lemma RED_props: 
@@ -1115,9 +1115,9 @@ constructors. The only nontrivial cases are abstraction and sequencing.\<close>
 
 section \<open>Abstraction Preserves Reducibility\<close>    
 
-text \<open>Once again we could reuse the proofs from \cite{SN.thy}. The proof uses
+text \<open>Once again we could reuse the proofs from \<^cite>\<open>"SN.thy"\<close>. The proof uses
 the \isa{double-SN} rule and the lemma \isa{red-Lam} below. Unfortunately, this
-time the proofs are not fully identical to the proofs in \cite{SN.thy} because
+time the proofs are not fully identical to the proofs in \<^cite>\<open>"SN.thy"\<close> because
 we consider $\beta\eta$-reduction rather than $\beta$-reduction only. However,
 the differences are only minor.\<close>
     
@@ -1292,7 +1292,7 @@ section \<open>Sequencing Preserves Reducibility\<close>
 text \<open>This section corresponds to the main part of the paper being formalized
 and as such deserves special attention. In the lambda case one has to formalize
 doing induction on $\max(s) + max(t)$ for two strongly normalizing terms $s$ and
-$t$ (cf. \cite[Section 6.3]{proofs+types}). Above, this was done through a
+$t$ (cf. \<^cite>\<open>\<open>Section 6.3\<close> in "proofs+types"\<close>). Above, this was done through a
 \isa{double-SN}
 rule. The central Lemma 7 of Lindley and Stark's paper uses an even more
 complicated induction scheme. They assume terms $p$ and $n$ as well as a stack
@@ -1313,7 +1313,7 @@ possibility was only discovered \textit{after} having formalized $ K \mapsto K'
 \Rightarrow |K| \geq |K'|$. The proof of this seemingly simple fact
 was about 90 lines of Isar code.} Doing induction on the sum above, this is
 necessary to handle the case of a reduction occurring in $K$. We differ
-from \cite{TT-lifting} and establish an induction principle which to some extent
+from \<^cite>\<open>"TT-lifting"\<close> and establish an induction principle which to some extent
 resembles the lexicographic order on $$(\SN,\mapsto) \times (\SN,\mapsto) \times
 (\N,>)\,.$$\<close>
 
@@ -1517,8 +1517,8 @@ subsection \<open>Central lemma\<close>
 text_raw \<open>\label{sec:central}\<close>
 
 text \<open>Now we have everything in place we need to tackle the central ``Lemma
-7'' of \cite{TT-lifting} (cf. Figure~\ref{fig:lemma7}). The proof is quite long,
-but for the most part, the reasoning is that of \cite{TT-lifting}.\<close>
+7'' of \<^cite>\<open>"TT-lifting"\<close> (cf. Figure~\ref{fig:lemma7}). The proof is quite long,
+but for the most part, the reasoning is that of \<^cite>\<open>"TT-lifting"\<close>.\<close>
 
 lemma to_RED_aux: 
   assumes p: "SN p"
@@ -1686,7 +1686,7 @@ qed
 section \<open>Fundamental Theorem\<close>
 text_raw \<open>\label{sec:FTLR}\<close>
 
-text \<open>The remainder of this section follows \cite{SN.thy} very closely.  We
+text \<open>The remainder of this section follows \<^cite>\<open>"SN.thy"\<close> very closely.  We
 first establish that all well typed terms are reducible if we substitute
 reducible terms for the free variables.\<close>
 

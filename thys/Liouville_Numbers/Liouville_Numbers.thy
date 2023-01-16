@@ -36,7 +36,7 @@ subsection \<open>Definition of Liouville numbers\<close>
 
 text \<open>
   The following definitions and proofs are largely adapted from those in the Wikipedia
-  article on Liouville numbers.~\cite{wikipedia}
+  article on Liouville numbers.~\<^cite>\<open>"wikipedia"\<close>
 \<close>
 
 text \<open>

@@ -321,7 +321,7 @@ text \<open>Recall that $V$ is the union of $V_1 = \{jp \mid j\geq2 \land p \in
 \varphi_k = jak0^\infty\}$.\<close>
 
 text \<open>The proof is adapted from a proof of a stronger result by
-Freivalds, Kinber, and Wiehagen~\cite[Theorem~27]{fkw-iisde-95} concerning an
+Freivalds, Kinber, and Wiehagen~\<^cite>\<open>\<open>Theorem~27\<close> in "fkw-iisde-95"\<close> concerning an
 inference type not defined here.
 
 The proof is by contradiction. If $V$ was in TOTAL, there would be

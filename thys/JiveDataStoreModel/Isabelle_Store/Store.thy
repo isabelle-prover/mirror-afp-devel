@@ -206,7 +206,7 @@ subsection \<open>Derived Properties of the Store\<close>
 
 text \<open>In this subsection, a number of lemmas formalize various properties of the Store.
 Especially the 13 axioms are proven that must hold for a modelling of a Store 
-(see \cite[p. 45]{Poetzsch-Heffter97specification}). They are labeled with
+(see \<^cite>\<open>\<open>p. 45\<close> in "Poetzsch-Heffter97specification"\<close>). They are labeled with
 Store1 to Store13.\<close>
 
 lemma alive_init [simp,intro]: "alive (init T) s"

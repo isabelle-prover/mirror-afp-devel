@@ -516,7 +516,7 @@ lemma ex_lemma:"
 subsection \<open>The Recursive Function rec\_Minr\<close>
 
 text \<open>
-  Definition of \<open>Min[R]\<close> on page 77 of Boolos's book~\cite{Boolos07}.
+  Definition of \<open>Min[R]\<close> on page 77 of Boolos's book~\<^cite>\<open>"Boolos07"\<close>.
 \<close>
 
 fun Minr :: "(nat list \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat"
@@ -792,7 +792,7 @@ lemma le_lemma:
 subsection \<open>The Recursive Function rec\_maxr\<close>
 
 text \<open>
-  Definition of \<open>Max[Rr]\<close> on page 77 of Boolos's book~\cite{Boolos07}.
+  Definition of \<open>Max[Rr]\<close> on page 77 of Boolos's book~\<^cite>\<open>"Boolos07"\<close>.
 \<close>
 
 fun Maxr :: "(nat list \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> nat \<Rightarrow> nat"
@@ -1169,7 +1169,7 @@ type_synonym rtype = "nat list \<Rightarrow> bool"
 
 text \<open>
   The specifcation of the multi-way branching statement (definition by cases).
-  See page 74 of Boolos's book~\cite{Boolos07}.
+  See page 74 of Boolos's book~\<^cite>\<open>"Boolos07"\<close>.
 \<close>
 fun Embranch :: "(ftype * rtype) list \<Rightarrow> nat list \<Rightarrow> nat"
   where
@@ -1777,7 +1777,7 @@ declare loR.simps[simp del]
 
 text \<open>
   \<open>Lo\<close> specifies the \<open>lo\<close> function given on page 79 of 
-  Boolos's book~\cite{Boolos07}. It is one of the two notions of integeral logarithmetic
+  Boolos's book~\<^cite>\<open>"Boolos07"\<close>. It is one of the two notions of integeral logarithmetic
   operation on that page. The other is \<open>lg\<close>.
 \<close>
 fun lo :: " nat \<Rightarrow> nat \<Rightarrow> nat"
@@ -1915,7 +1915,7 @@ fun lgR :: "nat list \<Rightarrow> bool"
 
 text \<open>
   \<open>lg\<close> specifies the \<open>lg\<close> function given on page 79 of 
-  Boolos's book~\cite{Boolos07}. It is one of the two notions of integral logarithmetic
+  Boolos's book~\<^cite>\<open>"Boolos07"\<close>. It is one of the two notions of integral logarithmetic
   operation on that page. The other is \<open>lo\<close>.
 \<close>
 fun lg :: "nat \<Rightarrow> nat \<Rightarrow> nat"
@@ -2006,7 +2006,7 @@ subsection \<open>The Recursive Function rec\_entry\<close>
 text \<open>
   \<open>Entry sr i\<close> returns the \<open>i\<close>-th entry of a list of natural 
   numbers encoded by number \<open>sr\<close> using Godel's coding.
-  This function is called {\em ent} on page 80 of Boolos's book~\cite{Boolos07}.
+  This function is called {\em ent} on page 80 of Boolos's book~\<^cite>\<open>"Boolos07"\<close>.
 \<close>
 fun Entry :: "nat \<Rightarrow> nat \<Rightarrow> nat"
   where

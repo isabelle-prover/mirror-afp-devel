@@ -142,7 +142,7 @@ subsection \<open>The Girard--Newton Theorem\<close>
 
 text \<open>
   The following is a nice combinatorial proof of the Girard--Newton Theorem due to
-  Doron Zeilberger~\cite{zeilberger}.
+  Doron Zeilberger~\<^cite>\<open>"zeilberger"\<close>.
 
   The precise statement is this:
 

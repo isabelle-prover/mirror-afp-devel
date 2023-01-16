@@ -9,13 +9,13 @@ imports
 begin
 
 (*>*)
-section\<open> \citet{HatfieldMilgrom:2005}: Matching with contracts \label{sec:contracts} \<close>
+section\<open> \<^citet>\<open>"HatfieldMilgrom:2005"\<close>: Matching with contracts \label{sec:contracts} \<close>
 
 text\<open>
 
 We take the original paper on matching with contracts by
-\citet{HatfieldMilgrom:2005} as our roadmap, which follows a similar
-path to \citet[\S2.5]{RothSotomayor:1990}. We defer further motivation
+\<^citet>\<open>"HatfieldMilgrom:2005"\<close> as our roadmap, which follows a similar
+path to \<^citet>\<open>\<open>\S2.5\<close> in "RothSotomayor:1990"\<close>. We defer further motivation
 to these texts. Our first move is to capture the scenarios described
 in their {\S}I(A) (p916) in a locale.
 
@@ -560,7 +560,7 @@ subsection\<open> Theorem~1: Existence of stable pairs \<close>
 text\<open>
 
 We proceed to define a function whose fixed points capture all stable
-matches. \citet[I(B), p917]{HatfieldMilgrom:2005} provide the
+matches. \<^citet>\<open>\<open>I(B), p917\<close> in "HatfieldMilgrom:2005"\<close> provide the
 following intuition:
 \begin{quote}
 
@@ -578,7 +578,7 @@ somebody, so @{term "X = XH \<union> XD"} [where @{term "X"} is the
 set of all contracts]. This logic is summarized in the first theorem.
 
 \end{quote}
-See also \citet[p6,\S4]{Fleiner:2003} and \citet[\S2]{Fleiner:2002},
+See also \<^citet>\<open>\<open>p6,\S4\<close> in "Fleiner:2003"\<close> and \<^citet>\<open>\<open>\S2\<close> in "Fleiner:2002"\<close>,
 from whom we adopt the term @{emph \<open>stable pair\<close>}.
 
 \<close>
@@ -597,10 +597,10 @@ abbreviation match :: "'x set \<times> 'x set \<Rightarrow> 'x set" where
 
 text \<open>
 
-\citet[Theorem~1]{HatfieldMilgrom:2005} state that every solution
+\<^citet>\<open>\<open>Theorem~1\<close> in "HatfieldMilgrom:2005"\<close> state that every solution
 @{term "(XD, XH)"} of @{const "stable_pair"} yields a stable match
 @{term "XD \<inter> XH"}, and conversely, i.e., every stable match is
-the intersection of some stable pair. \citet{AygunSonmez:2012-WP2}
+the intersection of some stable pair. \<^citet>\<open>"AygunSonmez:2012-WP2"\<close>
 show that neither is the case without further restrictions on the
 hospitals' choice functions @{term "Ch"}; we exhibit their
 counterexample below.
@@ -686,7 +686,7 @@ oops
 
 text\<open>
 
-\citet{HatfieldMilgrom:2005} also claim that the converse holds:
+\<^citet>\<open>"HatfieldMilgrom:2005"\<close> also claim that the converse holds:
 
 \<close>
 
@@ -707,13 +707,13 @@ this. We show it holds under stronger assumptions in
 end
 
 
-subsubsection\<open> Theorem~1 does not hold \citep{AygunSonmez:2012-WP2} \label{sec:contracts-t1-counterexample} \<close>
+subsubsection\<open> Theorem~1 does not hold \<^citep>\<open>"AygunSonmez:2012-WP2"\<close> \label{sec:contracts-t1-counterexample} \<close>
 
 text\<open>
 
-The following counterexample, due to \citet[\S3:
-Example~2]{AygunSonmez:2012-WP2}, comprehensively demonstrates that
-\citet[Theorem~1]{HatfieldMilgrom:2005} does not hold.
+The following counterexample, due to \<^citet>\<open>\<open>\S3:
+Example~2\<close> in "AygunSonmez:2012-WP2"\<close>, comprehensively demonstrates that
+\<^citet>\<open>\<open>Theorem~1\<close> in "HatfieldMilgrom:2005"\<close> does not hold.
 
 We create three types: \<open>D2\<close> consists of two elements,
 representing the doctors, and \<open>H\<close> is the type of the single
@@ -940,7 +940,7 @@ using %invisible assms StableNoDecomp_XD_XH stable by fastforce
 
 text\<open>
 
-So there is not hope for \citet[Theorem~1]{HatfieldMilgrom:2005} as it
+So there is not hope for \<^citet>\<open>\<open>Theorem~1\<close> in "HatfieldMilgrom:2005"\<close> as it
 stands. Note that the counterexample satisfies the @{const "substitutes"}
 condition (see \S\ref{sec:cf-substitutes}):
 
@@ -972,7 +972,7 @@ subsubsection\<open> Theorem 1 holds with @{emph \<open>independence of rejected
 
 text\<open>
 
-\citet{AygunSonmez:2012-WP2} propose to rectify this issue by
+\<^citet>\<open>"AygunSonmez:2012-WP2"\<close> propose to rectify this issue by
 requiring hospitals' choices to satisfy @{const "irc"}
 (\S\ref{sec:cf-irc}). Reassuringly their counterexample fails to
 satisfy it:
@@ -1099,7 +1099,7 @@ begin
 
 text\<open>
 
-Following \citet[Proof of Theorem~1]{HatfieldMilgrom:2005}, we
+Following \<^citet>\<open>\<open>Proof of Theorem~1\<close> in "HatfieldMilgrom:2005"\<close>, we
 partition the set of all contracts into @{term "[X, XD_smallest - X,
 XH_largest - X]"} with careful definitions of the two sets @{term
 "XD_smallest"} and @{term "XH_largest"}. Specifically @{term
@@ -1231,8 +1231,8 @@ end
 
 text\<open>
 
-Our ultimate statement of Theorem~1 of \cite{HatfieldMilgrom:2005} ala
-\citet{AygunSonmez:2012-WP2} goes as follows, bearing in mind that we
+Our ultimate statement of Theorem~1 of \<^cite>\<open>"HatfieldMilgrom:2005"\<close> ala
+\<^citet>\<open>"AygunSonmez:2012-WP2"\<close> goes as follows, bearing in mind that we
 are working in the @{const "ContractsWithIRC"} locale:
 
 \<close>
@@ -1250,9 +1250,9 @@ text (in Contracts) \<open>
 
 Having revived Theorem~1, we reformulate @{const "stable_pair"} as a
 monotone (aka @{emph \<open>isotone\<close>}) function and exploit the lattice
-structure of its fixed points, following \citet[{\S}II,
-Theorem~3]{HatfieldMilgrom:2005}. This underpins all of their results
-that we formulate here. \citet[\S2]{Fleiner:2002} provides an
+structure of its fixed points, following \<^citet>\<open>\<open>{\S}II,
+Theorem~3\<close> in "HatfieldMilgrom:2005"\<close>. This underpins all of their results
+that we formulate here. \<^citet>\<open>\<open>\S2\<close> in "Fleiner:2002"\<close> provides an
 intuitive gloss of these definitions.
 
 \<close>
@@ -1410,13 +1410,13 @@ text\<open>
 \label{sec:contracts-codegen-gfp_F}
 
 We demonstrate the effectiveness of our definitions by executing an
-example due to \citet[p920]{HatfieldMilgrom:2005} using Isabelle/HOL's
-code generator \citep{Haftmann-Nipkow:2010:code}. Note that, while
+example due to \<^citet>\<open>\<open>p920\<close> in "HatfieldMilgrom:2005"\<close> using Isabelle/HOL's
+code generator \<^citep>\<open>"Haftmann-Nipkow:2010:code"\<close>. Note that, while
 adequate for this toy instance, the representations used here are
 hopelessly n{\"a}ive: sets are represented by lists and operations
 typically traverse the entire contract space. It is feasible, with
 more effort, to derive efficient algorithms; see, for instance,
-\citet{Bijlsma:1991,Bulwahn-et-al:2008:imp_HOL}.
+\<^citet>\<open>"Bijlsma:1991" and "Bulwahn-et-al:2008:imp_HOL"\<close>.
 
 \<close>
 
@@ -1607,7 +1607,7 @@ subsection\<open> Theorem~4: Optimality \label{sec:contracts-optimality} \<close
 
 text (in ContractsWithSubstitutes) \<open>
 
-\citet[Theorem~4]{HatfieldMilgrom:2005} assert that the greatest fixed
+\<^citet>\<open>\<open>Theorem~4\<close> in "HatfieldMilgrom:2005"\<close> assert that the greatest fixed
 point @{const "gfp_F"} of @{const "F"} yields the stable match most
 preferred by the doctors in the following sense:
 
@@ -1763,7 +1763,7 @@ end
 
 text\<open>
 
-The general lattice-theoretic results of e.g. \citet{Fleiner:2002}
+The general lattice-theoretic results of e.g. \<^citet>\<open>"Fleiner:2002"\<close>
 depend on the full Tarski-Knaster fixed point theorem, which is
 difficult to state in the present type class-based setting. (The
 theorem itself is available in the Isabelle/HOL distribution but
@@ -1772,11 +1772,11 @@ requires working with less convenient machinery.)
 \<close>
 
 
-subsection\<open> Theorem~5 does not hold \citep{HatfieldKojima:2008} \<close>
+subsection\<open> Theorem~5 does not hold \<^citep>\<open>"HatfieldKojima:2008"\<close> \<close>
 
 text (in Contracts) \<open>
 
-\citet[Theorem~5]{HatfieldMilgrom:2005} claim that:
+\<^citet>\<open>\<open>Theorem~5\<close> in "HatfieldMilgrom:2005"\<close> claim that:
 \begin{quote}
 
 Suppose \<open>H\<close> contains at least two hospitals, which we
@@ -1790,11 +1790,11 @@ stable set of contracts exists.
 
 \end{quote}
 
-\citet[Observation~1]{HatfieldKojima:2008} show this is not true:
+\<^citet>\<open>\<open>Observation~1\<close> in "HatfieldKojima:2008"\<close> show this is not true:
 there can be stable matches even if hospital choice functions violate
 @{const "substitutes"}. This motivates looking for conditions weaker
 than @{const "substitutes"} that still guarantee stable matches, a
-project taken up by \citet{HatfieldKojima:2010}; see
+project taken up by \<^citet>\<open>"HatfieldKojima:2010"\<close>; see
 \S\ref{sec:cop}. We omit their counterexample to this incorrect claim.
 
 \<close>
@@ -1804,7 +1804,7 @@ subsection\<open> Theorem~6: ``Vacancy chain'' dynamics \label{sec:contracts-vac
 
 text (in ContractsWithSubstitutesAndIRC) \<open>
 
-\citet[II(C), p923]{HatfieldMilgrom:2005} propose a model for updating
+\<^citet>\<open>\<open>II(C), p923\<close> in "HatfieldMilgrom:2005"\<close> propose a model for updating
 a stable match @{term "X"} when a doctor @{term "d'"}
 retires. Intuitively the contracts mentioning @{term "d'"} are
 discarded and a modified algorithm run from the @{const "XH_largest"}
@@ -1970,7 +1970,7 @@ Given that some hospitals are less desirable than others, the question
 arises of whether there is a mechanism that can redistribute doctors
 to under-resourced hospitals while retaining the stability of the
 match. Roth's @{emph \<open>rural hospitals theorem\<close>}
-\citep[Theorem~5.12]{RothSotomayor:1990} resolves this in the negative
+\<^citep>\<open>\<open>Theorem~5.12\<close> in "RothSotomayor:1990"\<close> resolves this in the negative
 by showing that each doctor and hospital signs the same number of
 contracts in every stable match. In the context of contracts the
 theorem relies on the further hypothesis that hospital choices satisfy
@@ -2001,7 +2001,7 @@ begin
 
 text\<open>
 
-The following results lead to \citet[Theorem~8]{HatfieldMilgrom:2005},
+The following results lead to \<^citet>\<open>\<open>Theorem~8\<close> in "HatfieldMilgrom:2005"\<close>,
 and the proofs go as they say. Again we state these with respect to an
 arbitrary solution to @{const "stable_pair"}.
 
@@ -2077,7 +2077,7 @@ end
 
 text\<open>
 
-\citet[Theorem~9]{HatfieldMilgrom:2005} show that without @{const
+\<^citet>\<open>\<open>Theorem~9\<close> in "HatfieldMilgrom:2005"\<close> show that without @{const
 "lad"}, the rural hospitals theorem does not hold. Their proof does
 not seem to justify the theorem as stated (for instance, the contracts
 \<open>x'\<close>, \<open>y'\<close> and \<open>z'\<close> need not
@@ -2244,7 +2244,7 @@ done
 
 text\<open>
 
-\citet{CiupanHatfieldKominers:2016} discuss an alternative approach to
+\<^citet>\<open>"CiupanHatfieldKominers:2016"\<close> discuss an alternative approach to
 this result in a marriage market.
 
 \<close>
@@ -2254,7 +2254,7 @@ subsection\<open> Theorems~15 and 16: Cumulative Offer Processes \label{sec:cont
 
 text\<open>
 
-The goal of \citet[{\S}V]{HatfieldMilgrom:2005} is to connect this
+The goal of \<^citet>\<open>\<open>{\S}V\<close> in "HatfieldMilgrom:2005"\<close> is to connect this
 theory of contracts with matching to earlier work on auctions by the
 first of the authors, in particular by eliminating the @{const
 "substitutes"} hypothesis. They do so by defining a @{emph \<open>cumulative
@@ -2423,7 +2423,7 @@ end
 
 text (in ContractsWithSubstitutes) \<open>
 
-\citet[Theorem~15]{HatfieldMilgrom:2005} assert that @{const
+\<^citet>\<open>\<open>Theorem~15\<close> in "HatfieldMilgrom:2005"\<close> assert that @{const
 "fp_cop_F"} is equivalent to the doctor-offering algorithm @{const
 "gfp_F"}, assuming @{const "substitutes"}. (Note that the fixed points
 generated by increasing functions do not necessarily form a lattice,
@@ -2493,7 +2493,7 @@ by eval
 
 text\<open>
 
-\citet[Theorem~16]{HatfieldMilgrom:2005} assert that this process
+\<^citet>\<open>\<open>Theorem~16\<close> in "HatfieldMilgrom:2005"\<close> assert that this process
 yields a stable match when we have a single hospital (now called an
 auctioneer) with unrestricted preferences. As before, this holds
 provided the auctioneer's preferences satisfy @{const "irc"}.
@@ -2575,7 +2575,7 @@ qed
 
 text\<open>
 
-\citet{AygunSonmez:2012-WP2} observe that any blocking contract must
+\<^citet>\<open>"AygunSonmez:2012-WP2"\<close> observe that any blocking contract must
 be weakly preferred by its doctor to anything in the outcome of the
 @{const "fp_cop_F"}:
 
@@ -2659,18 +2659,18 @@ subsection\<open> Concluding remarks \<close>
 
 text\<open>
 
-From \citet{HatfieldMilgrom:2005}, we have not shown Theorems~2, 7, 13
+From \<^citet>\<open>"HatfieldMilgrom:2005"\<close>, we have not shown Theorems~2, 7, 13
 and~14, all of which are intended to position their results against
 prior work in this space. We delay establishing their strategic
 results (Theorems~10, 11 and~12) to \S\ref{sec:strategic}, after we
 have developed more useful invariants for the COP.
 
-By assuming \isa{irc}, \citet{AygunSonmez:2012-WP2} are essentially
+By assuming \isa{irc}, \<^citet>\<open>"AygunSonmez:2012-WP2"\<close> are essentially
 trading on Plott's path independence condition
 (\S\ref{sec:cf-path-independence}), as observed by
-\citet{ChambersYenmez:2013}. The latter show that these results
+\<^citet>\<open>"ChambersYenmez:2013"\<close>. The latter show that these results
 generalize naturally to many-to-many matches, where doctors also use
-path-independent choice functions; see also \citet{Fleiner:2003}.
+path-independent choice functions; see also \<^citet>\<open>"Fleiner:2003"\<close>.
 
 For many applications, however, @{const "substitutes"} proves to be
 too strong a condition. The COP of \S\ref{sec:contracts-cop} provides

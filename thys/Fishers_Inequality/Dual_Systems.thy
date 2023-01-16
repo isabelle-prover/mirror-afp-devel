@@ -3,9 +3,9 @@
 *)
 
 section \<open> Dual Systems \<close>
-text \<open>The concept of a dual incidence system \cite{colbournHandbookCombinatorialDesigns2007}
+text \<open>The concept of a dual incidence system \<^cite>\<open>"colbournHandbookCombinatorialDesigns2007"\<close>
  is an important property in design theory. It enables us to reason on the existence of several 
-different types of design constructs through dual properties \cite{stinsonCombinatorialDesignsConstructions2004}\<close>
+different types of design constructs through dual properties \<^cite>\<open>"stinsonCombinatorialDesignsConstructions2004"\<close>\<close>
 
 theory Dual_Systems imports Incidence_Matrices
 begin

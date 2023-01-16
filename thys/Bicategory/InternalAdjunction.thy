@@ -2082,7 +2082,7 @@ begin
     In this section, we show that, just as an equivalence between categories can always
     be refined to an adjoint equivalence, an internal equivalence in a bicategory can also
     always be so refined.
-    The proof, which follows that of Theorem 3.3 from \cite{nlab-adjoint-equivalence},
+    The proof, which follows that of Theorem 3.3 from \<^cite>\<open>"nlab-adjoint-equivalence"\<close>,
     makes use of the fact that if an internal equivalence satisfies one of the triangle
     identities, then it also satisfies the other.
   \<close>
@@ -2194,7 +2194,7 @@ begin
         using a \<eta>_in_hom
         by (metis arrI in_hhom_def obj_simps(2-3) vconn_implies_hpar(1-2))
       text \<open>
-        The following is quoted from \cite{nlab-adjoint-equivalence}:
+        The following is quoted from \<^cite>\<open>"nlab-adjoint-equivalence"\<close>:
         \begin{quotation}
           ``Since \<open>g \<cong> gfg' \<cong> g'\<close>, the isomorphism \<open>fg' \<cong> 1\<close> also induces an isomorphism \<open>fg \<cong> 1\<close>,
           which we denote \<open>\<xi>\<close>.  Now \<open>\<eta>\<close> and \<open>\<xi>\<close> may not satisfy the zigzag identities, but if we
@@ -2242,7 +2242,7 @@ begin
         by (metis \<xi> in_hhom_def iso_is_arr obj_simps(2-3) vconn_implies_hpar(1-4))
       text \<open>
         At the time of this writing, the definition of \<open>\<epsilon>\<close> given on nLab
-        \cite{nlab-adjoint-equivalence} had an apparent typo:
+        \<^cite>\<open>"nlab-adjoint-equivalence"\<close> had an apparent typo:
         the expression \<open>f \<star> g \<star> \<xi>\<^sup>-\<^sup>1\<close> should read \<open>\<xi>\<^sup>-\<^sup>1 \<star> f \<star> g\<close>, as we have used here.
       \<close>
       let ?\<epsilon> = "\<xi> \<cdot> (f \<star> inv \<eta> \<star> g) \<cdot> (inv \<xi> \<star> f \<star> g)"

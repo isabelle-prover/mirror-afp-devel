@@ -35,7 +35,7 @@ section "Group Actions"
 text \<open>
   We begin by augmenting the existing definition of a group with a group action.
 
-  The group action was defined according to @{cite groupaction}.
+  The group action was defined according to \<^cite>\<open>groupaction\<close>.
 \<close>
 
 locale orbit_stabiliser = group +
@@ -65,7 +65,7 @@ section "Stabiliser Theorems"
 text \<open>
 We begin our proofs by showing that the stabiliser forms a subgroup.
 
-This proof follows the template from  @{cite stabsub}.
+This proof follows the template from  \<^cite>\<open>stabsub\<close>.
 \<close>
 
 theorem stabiliser_subgroup: "subgroup (stabiliser x) G"
@@ -102,7 +102,7 @@ text \<open>
 As an intermediate step we formulate a lemma about the relationship between the group action
 and the stabiliser.
 
-This proof follows the template from @{cite stabsubcor}.
+This proof follows the template from \<^cite>\<open>stabsubcor\<close>.
 \<close>
 
 corollary stabiliser_subgroup_corollary:
@@ -217,7 +217,7 @@ section "Orbit-Stabiliser Theorem"
 text \<open>
   We can now establish the bijection between orbit(x) and the quotient group G/(stabiliser(x))
 
-  The idea for this bijection is from @{cite orbitstab}
+  The idea for this bijection is from \<^cite>\<open>orbitstab\<close>
 \<close>
 theorem orbit_stabiliser_bij:
   "bij_betw (\<lambda>H. rep H \<odot> x) (carrier (G LMod (stabiliser x))) (orbit x) "

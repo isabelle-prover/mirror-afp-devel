@@ -14,11 +14,11 @@ begin
 text \<open>
 \null
 
-The necessary and sufficient condition for CSP noninterference security \cite{R2} stated by the
-Ipurge Unwinding Theorem \cite{R3} is expressed in terms of a pair of event lists varying over the
+The necessary and sufficient condition for CSP noninterference security \<^cite>\<open>"R2"\<close> stated by the
+Ipurge Unwinding Theorem \<^cite>\<open>"R3"\<close> is expressed in terms of a pair of event lists varying over the
 set of process traces. This does not render it suitable for the subsequent application of rule
 induction in the case of a process defined inductively, since rule induction may rather be applied
-to a single variable ranging over an inductively defined set (cf. \cite{R6}).
+to a single variable ranging over an inductively defined set (cf. \<^cite>\<open>"R6"\<close>).
 
 However, the formulation of an inductive definition is the standard way of defining a process that
 admits traces of unbounded length, indeed because it provides rule induction as a powerful method to
@@ -32,21 +32,21 @@ traces, and is thus suitable for rule induction; hence its name, \emph{Inductive
 Similarly to the Ipurge Unwinding Theorem, the new theorem only requires to consider individual
 accepted and refused events for each process trace, and applies to the general case of a possibly
 intransitive noninterference policy. Specific variants of this theorem are additionally proven for
-deterministic processes and trace set processes \cite{R3}.
+deterministic processes and trace set processes \<^cite>\<open>"R3"\<close>.
 
 For details about the theory of Communicating Sequential Processes, to which the notion of process
-security defined in \cite{R2} and applied in this paper refers, cf. \cite{R4}.
+security defined in \<^cite>\<open>"R2"\<close> and applied in this paper refers, cf. \<^cite>\<open>"R4"\<close>.
 
 As regards the formal contents of this paper, the salient points of definitions and proofs are
-commented; for additional information, cf. Isabelle documentation, particularly \cite{R6},
-\cite{R7}, \cite{R8}, and \cite{R9}.
+commented; for additional information, cf. Isabelle documentation, particularly \<^cite>\<open>"R6"\<close>,
+\<^cite>\<open>"R7"\<close>, \<^cite>\<open>"R8"\<close>, and \<^cite>\<open>"R9"\<close>.
 \<close>
 
 
 subsection "Propaedeutic lemmas"
 
 text \<open>
-Here below are the proofs of some lemmas on the constants defined in \cite{R2} and \cite{R3} which
+Here below are the proofs of some lemmas on the constants defined in \<^cite>\<open>"R2"\<close> and \<^cite>\<open>"R3"\<close> which
 are propaedeutic to the demonstration of the Inductive Unwinding Theorem.
 
 Among other things, the lemmas being proven formalize the following statements:
@@ -323,7 +323,7 @@ subsection "Closure of the traces of a secure process under reverse intransitive
 text \<open>
 The derivation of the Inductive Unwinding Theorem from the Ipurge Unwinding Theorem requires to
 prove that the set of the traces of a secure process is closed under reverse intransitive purge,
-i.e. function @{term ipurge_tr_rev} \cite{R3}. This can be expressed formally by means of the
+i.e. function @{term ipurge_tr_rev} \<^cite>\<open>"R3"\<close>. This can be expressed formally by means of the
 following statement:
 
 \null
@@ -337,7 +337,7 @@ The reason why such closure property holds is that the reverse intransitive purg
 can equivalently be computed as follows: for each item @{term x} of @{term xs}, if @{term x} may
 affect @{term u}, retain @{term x} and go on recursively using as input the sublist of @{term xs}
 following @{term x}, say @{term xs'}; otherwise, discard @{term x} and go on recursively using
-@{term "ipurge_tr I D (D x) xs'"} \cite{R2} as input.
+@{term "ipurge_tr I D (D x) xs'"} \<^cite>\<open>"R2"\<close> as input.
 
 The result actually matches @{term "ipurge_tr_rev I D u xs"}. In fact, for each @{term x} not
 affecting @{term u}, @{term "ipurge_tr I D (D x) xs'"} retains any item of @{term xs'} not affected
@@ -347,7 +347,7 @@ by @{term x}, which is the case for any item of @{term xs'} affecting @{term u},
 Furthermore, if @{term xs} is a trace of a secure process, the result is still a trace. In fact, for
 each @{term x} not affecting @{term u}, if @{term ys} is the partial output for the sublist of
 @{term xs} preceding @{term x}, then @{term "ys @ ipurge_tr I D (D x) xs'"} is a trace provided such
-is @{term "ys @ x # xs'"}, by virtue of the definition of CSP noninterference security \cite{R2}.
+is @{term "ys @ x # xs'"}, by virtue of the definition of CSP noninterference security \<^cite>\<open>"R2"\<close>.
 Hence, the property of being a trace is conserved upon each recursive call by the concatenation of
 the partial output and the residual input, until the latter is nil and the former matches the total
 output.
@@ -358,7 +358,7 @@ to the function as an argument, in addition to the residual input, in the recurs
 within the definition of the function. Therefore, the output of the function has to be accumulated
 into one of its parameters, viz. the function needs to be tail-recursive. This suggests to prove the
 properties of interest of the function by applying the ten-step proof method for theorems on
-tail-recursive functions described in \cite{R1}.
+tail-recursive functions described in \<^cite>\<open>"R1"\<close>.
 
 The starting point is to formulate a naive definition of the function, which will then be refined as
 specified by the proof method. The name of the refined function, from which the name of the naive
@@ -766,9 +766,9 @@ subsection "The Inductive Unwinding Theorem in its general form"
 text \<open>
 In what follows, the Inductive Unwinding Theorem is proven, in the form applying to a generic
 process. The equivalence of the condition expressed by the theorem to CSP noninterference security,
-as defined in \cite{R2}, is demonstrated by showing that it is necessary and sufficient for the
+as defined in \<^cite>\<open>"R2"\<close>, is demonstrated by showing that it is necessary and sufficient for the
 verification of the condition expressed by the Ipurge Unwinding Theorem, under the same assumption
-that the sets of refusals of the process be closed under union (cf. \cite{R3}).
+that the sets of refusals of the process be closed under union (cf. \<^cite>\<open>"R3"\<close>).
 
 Particularly, the closure of the traces of a secure process under function @{term ipurge_tr_rev} and
 the idempotence of this function are used in the proof of condition necessity.
@@ -863,7 +863,7 @@ text \<open>
 
 Interestingly, this necessary and sufficient condition for the noninterference security of a process
 resembles the classical definition of noninterference security for a deterministic state machine
-with outputs formulated in \cite{R5}, which is formalized in \cite{R2} as predicate
+with outputs formulated in \<^cite>\<open>"R5"\<close>, which is formalized in \<^cite>\<open>"R2"\<close> as predicate
 \<open>c_secure\<close>.
 
 Denoting with (1) the former and with (2) the latter, the differences between them can be summarized
@@ -874,19 +874,19 @@ as follows:
 \item
 The event list appearing in (1) is constrained to vary over process traces, whereas the action list
 appearing in (2) is unconstrained.
-\\This comes as no surprise, since the state machines used as model of computation in \cite{R5}
+\\This comes as no surprise, since the state machines used as model of computation in \<^cite>\<open>"R5"\<close>
 accept any action list as a trace.
 
 \item
 The definition of function @{term ipurge_tr_rev}, used in (1), does not implicitly assume that the
 noninterference policy be reflexive, even though any policy of practical significance will be such.
 On the contrary, the definition of the intransitive purge function used in (2), which is formalized
-in \cite{R2} as function \<open>c_ipurge\<close>, makes this implicit assumption, as shown by the
+in \<^cite>\<open>"R2"\<close> as function \<open>c_ipurge\<close>, makes this implicit assumption, as shown by the
 consideration that \<open>c_ipurge I D (D x) [x] = [x]\<close> regardless of whether
 @{term "(D x, D x) \<in> I"} or not.
 \\This is the mathematical reason why the equivalence between CSP noninterference security and
 classical noninterference security for deterministic state machines with outputs, proven in
-\cite{R2}, is subordinated to the assumption that the noninterference policy be reflexive.
+\<^cite>\<open>"R2"\<close>, is subordinated to the assumption that the noninterference policy be reflexive.
 
 \item
 The equality of action outputs appearing in (2) is replaced in (1) by the equality of accepted and
@@ -905,9 +905,9 @@ subsection "The Inductive Unwinding Theorem for deterministic and trace set proc
 
 text \<open>
 Here below are the proofs of specific variants of the Inductive Unwinding Theorem applying to
-deterministic processes and trace set processes \cite{R3}. The variant for deterministic processes
+deterministic processes and trace set processes \<^cite>\<open>"R3"\<close>. The variant for deterministic processes
 is derived, following the above proof of the general form of the theorem, from the Ipurge Unwinding
-Theorem for deterministic processes \cite{R3}. Then, the variant for trace set processes is inferred
+Theorem for deterministic processes \<^cite>\<open>"R3"\<close>. Then, the variant for trace set processes is inferred
 from the variant for deterministic processes.
 
 Similarly to what happens for the Ipurge Unwinding Theorem, the refusals union closure assumption
@@ -915,7 +915,7 @@ that characterizes the general form of the Inductive Unwinding Theorem is replac
 that the process actually be deterministic in the variant for deterministic processes, and by the
 assumption that the set of traces actually be such in the variant for trace set processes. Moreover,
 these variants involve accepted events only, in accordance with the fact that in deterministic
-processes, refused events are completely specified by accepted events (cf. \cite{R4}, \cite{R2}).
+processes, refused events are completely specified by accepted events (cf. \<^cite>\<open>"R4"\<close>, \<^cite>\<open>"R2"\<close>).
 
 \null
 \<close>

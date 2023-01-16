@@ -168,7 +168,7 @@ proof -
     using I unfolding Gromov_product_at_def by (auto simp add: algebra_simps divide_simps)
 qed
 
-text \<open>The next lemma is~\cite[Proposition 10.2.1]{coornaert_delzant_papadopoulos} with better
+text \<open>The next lemma is~\<^cite>\<open>\<open>Proposition 10.2.1\<close> in "coornaert_delzant_papadopoulos"\<close> with better
 constants. It states that the distance between the projections
 on a quasi-convex set is controlled by the distance of the original points, with a gain given by the
 distances of the points to the set.\<close>
@@ -456,15 +456,15 @@ It states that a quasi-geodesic remains within bounded distance of a geodesic wi
 endpoints, the error depending only on $\delta$ and on the parameters $(\lambda, C)$ of the
 quasi-geodesic, but not on its length.
 
-There are several proofs of this result. We will follow the one of Shchur~\cite{shchur}, which
+There are several proofs of this result. We will follow the one of Shchur~\<^cite>\<open>"shchur"\<close>, which
 gets an optimal dependency in terms of the parameters of the quasi-isometry, contrary to all
 previous proofs. The price to pay is that the proof is more involved (relying in particular on
 the fact that the closest point projection on quasi-convex sets is exponentially contracting).
 
-We will also give afterwards for completeness the proof in~\cite{bridson_haefliger}, as it brings
+We will also give afterwards for completeness the proof in~\<^cite>\<open>"bridson_haefliger"\<close>, as it brings
 up interesting tools, although the dependency it gives is worse.\<close>
 
-text \<open>The next lemma (for $C = 0$, Lemma 2 in~\cite{shchur}) asserts that, if two points are not too far apart (at distance at most
+text \<open>The next lemma (for $C = 0$, Lemma 2 in~\<^cite>\<open>"shchur"\<close>) asserts that, if two points are not too far apart (at distance at most
 $10 \delta$), and far enough from a given geodesic segment, then when one moves towards this
 geodesic segment by a fixed amount (here $5 \delta$), then the two points become closer (the new
 distance is at most $5 \delta$, gaining a factor of $2$). Later, we will iterate this lemma to
@@ -605,7 +605,7 @@ proof -
     unfolding x'_def y'_def by auto
 qed
 
-text \<open>The next lemma (Lemma 10 in~\cite{shchur} for $C = 0$) asserts that the projection on a geodesic segment is
+text \<open>The next lemma (Lemma 10 in~\<^cite>\<open>"shchur"\<close> for $C = 0$) asserts that the projection on a geodesic segment is
 an exponential contraction.
 More precisely, if a path of length $L$ is at distance at least $D$ of a geodesic segment $G$,
 then the projection of the path on $G$ has diameter at most $C L \exp(-c D/\delta)$, where $C$ and
@@ -1052,7 +1052,7 @@ proof -
 qed
 
 text \<open>The next statement is the main step in the proof of the Morse-Gromov theorem given by Shchur
-in~\cite{shchur}, asserting that a quasi-geodesic and a geodesic with the same endpoints are close.
+in~\<^cite>\<open>"shchur"\<close>, asserting that a quasi-geodesic and a geodesic with the same endpoints are close.
 We show that a point on the quasi-geodesic is close to the geodesic -- the other inequality will
 follow easily later on. We also assume that the quasi-geodesic is parameterized by a Lipschitz map
 -- the general case will follow as any quasi-geodesic can be approximated by a Lipschitz map with
@@ -1465,7 +1465,7 @@ proof -
       text \<open>Auxiliary fact for later use in the inductive argument:
       the distance from $f(z)$ to $pi_z$ is controlled by the distance from $f(z)$ to any
       intermediate geodesic between points in $f[um, ym]$ and $f[yM, uM]$, up to a constant
-      essentially given by $L$. This is a variation around Lemma 5 in~\cite{shchur}.\<close>
+      essentially given by $L$. This is a variation around Lemma 5 in~\<^cite>\<open>"shchur"\<close>.\<close>
       have Rec: "Gromov_product_at (f z) (f um) (f uM) \<le> Gromov_product_at (f z) (f rm) (f rM) + (L + 4 * delta)" if "rm \<in> {um..ym}" "rM \<in> {yM..uM}" for rm rM
       proof -
         have *: "dist (f rm) (p rm) + dist (p rm) (f z) \<le> dist (f rm) (f z) + 4 * deltaG(TYPE('a))"
@@ -2453,7 +2453,7 @@ qed
 
 text \<open>The full statement of the Morse-Gromov Theorem, asserting that a quasi-geodesic is
 within controlled distance of a geodesic with the same endpoints. It is given in the formulation
-of Shchur~\cite{shchur}, with optimal control in terms of the parameters of the quasi-isometry.
+of Shchur~\<^cite>\<open>"shchur"\<close>, with optimal control in terms of the parameters of the quasi-isometry.
 This statement follows readily from the previous one and from the fact that quasi-geodesics can be
 approximated by Lipschitz ones.\<close>
 
@@ -2707,7 +2707,7 @@ terms of the distance from $x$ to $y$). This is useful both to ensure that short
 quasi-geodesics) stay close to geodesics, see the Morse lemme below, and to ensure that paths
 that avoid a given large ball of radius $R$ have to be exponentially long in terms of $R$ (this
 is extremely useful for random walks). This proposition is the first non-trivial result
-on hyperbolic spaces in~\cite{bridson_haefliger} (Proposition III.H.1.6). We follow their proof.
+on hyperbolic spaces in~\<^cite>\<open>"bridson_haefliger"\<close> (Proposition III.H.1.6). We follow their proof.
 
 The proof is geometric, and uses the existence of geodesics and the fact that geodesic
 triangles are thin. In fact, the result still holds if the space is not geodesic, as
@@ -2852,7 +2852,7 @@ proof -
 qed
 
 text \<open>We can now give another proof of the Morse-Gromov Theorem, as described
-in~\cite{bridson_haefliger}. It is more direct than the one we have given above, but it gives
+in~\<^cite>\<open>"bridson_haefliger"\<close>. It is more direct than the one we have given above, but it gives
 a worse dependence in terms of the quasi-isometry constants. In particular, when $C = \delta = 0$,
 it does not recover the fact that a quasi-geodesic has to coincide with a geodesic.\<close>
 

@@ -19,7 +19,7 @@ but we will see several equivalent characterizations later on. For instance, a s
 close to the union of the two other sides. This definition captures the main features of negative
 curvature at a large scale, and has proved extremely fruitful and influential.
 
-Two important references on this topic are~\cite{ghys_hyperbolique} and~\cite{bridson_haefliger}.
+Two important references on this topic are~\<^cite>\<open>"ghys_hyperbolique"\<close> and~\<^cite>\<open>"bridson_haefliger"\<close>.
 We will sometimes follow them, sometimes depart from them.\<close>
 
 definition Gromov_hyperbolic_subset::"real \<Rightarrow> ('a::metric_space) set \<Rightarrow> bool"
@@ -731,7 +731,7 @@ Hence, they are close together.
 $t = (y',z')_x$, by a continuity argument and the intermediate value theorem.
 Then the result follows from the first step in the triangle $xy'z'$.
 
-The proof we give is simpler than the one in~\cite{ghys_hyperbolique}, and gives better constants.\<close>
+The proof we give is simpler than the one in~\<^cite>\<open>"ghys_hyperbolique"\<close>, and gives better constants.\<close>
 
 proposition (in geodesic_space) slim_triangles_implies_hyperbolic:
   assumes "\<And>(x::'a) y z Gxy Gyz Gxz. geodesic_segment_between Gxy x y \<Longrightarrow> geodesic_segment_between Gxz x z \<Longrightarrow> geodesic_segment_between Gyz y z

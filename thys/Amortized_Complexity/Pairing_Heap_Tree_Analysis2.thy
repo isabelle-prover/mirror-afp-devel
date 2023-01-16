@@ -14,7 +14,7 @@ begin
 
 text
 \<open>Verification of logarithmic bounds on the amortized complexity of pairing heaps.
-As in \cite{FredmanSST86,Brinkop}, except that the treatment of @{const pass\<^sub>1} is simplified.
+As in \<^cite>\<open>"FredmanSST86" and "Brinkop"\<close>, except that the treatment of @{const pass\<^sub>1} is simplified.
 TODO: convert the other Pairing Heap analyses to this one.\<close>
 
 fun len :: "'a tree \<Rightarrow> nat" where 

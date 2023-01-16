@@ -9,7 +9,7 @@ imports
 begin
   
 text \<open> In this theory we begin to create an Isabelle version of the alphabetised predicate calculus
-  that is described in Chapter 1 of the UTP book~\cite{Hoare&98}. \<close>
+  that is described in Chapter 1 of the UTP book~\<^cite>\<open>"Hoare&98"\<close>. \<close>
   
 subsection \<open> Predicate type and syntax \<close>
   

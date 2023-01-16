@@ -146,7 +146,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 text\<open>
 A finite digraph is a generalization of the concept of a finite category,
 as presented in nLab 
-\cite{noauthor_nlab_nodate}\footnote{
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/finite+category}
 }.
 \<close>

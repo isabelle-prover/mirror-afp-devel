@@ -5,10 +5,10 @@ begin
 section \<open>Verification of the \emph{UniformVoting} Consensus Algorithm\<close>
 
 text \<open>
-  Algorithm \emph{UniformVoting} is presented in~\cite{charron:heardof}.
+  Algorithm \emph{UniformVoting} is presented in~\<^cite>\<open>"charron:heardof"\<close>.
   It can be considered as a deterministic version of Ben-Or's well-known 
-  probabilistic Consensus algorithm~\cite{ben-or:advantage}. We formalize
-  in Isabelle the correctness proof given in~\cite{charron:heardof},
+  probabilistic Consensus algorithm~\<^cite>\<open>"ben-or:advantage"\<close>. We formalize
+  in Isabelle the correctness proof given in~\<^cite>\<open>"charron:heardof"\<close>,
   using the framework of theory \<open>HOModel\<close>.
 \<close>
 
@@ -176,7 +176,7 @@ text \<open>
 
   The round-by-round predicate requires that for any two processes
   there is always one process heard by both of them. In other words,
-  no ``split rounds'' occur during the execution of the algorithm~\cite{charron:heardof}.
+  no ``split rounds'' occur during the execution of the algorithm~\<^cite>\<open>"charron:heardof"\<close>.
   Note that in particular, heard-of sets are never empty.
 \<close>
 
@@ -186,7 +186,7 @@ definition UV_commPerRd where
 text \<open>
   The global predicate requires the existence of a (space-)uniform round
   during which the heard-of sets of all processes are equal.
-  (Observe that \cite{charron:heardof} requires infinitely many uniform
+  (Observe that \<^cite>\<open>"charron:heardof"\<close> requires infinitely many uniform
   rounds, but the correctness proof uses just one such round.)
 \<close>
 

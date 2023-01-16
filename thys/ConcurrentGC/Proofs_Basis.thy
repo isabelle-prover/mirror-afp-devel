@@ -123,8 +123,7 @@ text\<open>
 
 We define a pile of predicates and accessor functions for the
 process's local states. One might hope that a more sophisticated
-approach would automate all of this (cf @{cite [cite_macro=citet]
-"DBLP:journals/entcs/SchirmerW09"}).
+approach would automate all of this (cf \<^citet>\<open>"DBLP:journals/entcs/SchirmerW09"\<close>).
 
 \<close>
 
@@ -282,7 +281,7 @@ subsection\<open>Object colours\<close>
 text\<open>
 
 We adopt the classical tricolour scheme for object colours due to
-@{cite [cite_macro=citet] "DBLP:journals/cacm/DijkstraLMSS78"}, but
+\<^citet>\<open>"DBLP:journals/cacm/DijkstraLMSS78"\<close>, but
 tweak it somewhat in the presence of worklists and TSO. Intuitively:
 \begin{description}
 \item[White] potential garbage, not yet reached

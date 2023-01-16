@@ -63,7 +63,7 @@ The development is organised as follows:
 
 
 Here is an example of a proof and an input file (taken from the appendix of our FMCAD
-paper~\cite{KaufmannFleuryBiere-FMCAD20}, available at \<^url>\<open>http://fmv.jku.at/pacheck_pasteque\<close>):
+paper~\<^cite>\<open>"KaufmannFleuryBiere-FMCAD20"\<close>, available at \<^url>\<open>http://fmv.jku.at/pacheck_pasteque\<close>):
 \<^verbatim>\<open>
 <res.input>      <res.proof>
  1 x*y;           3  = fz, -z+1;

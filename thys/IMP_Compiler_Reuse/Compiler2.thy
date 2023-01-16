@@ -12,7 +12,7 @@ theory Compiler2
 begin
 
 text \<open>
-The reasoning toolbox introduced in the @{text Compiler2} theory of @{cite "Noce21"} to cope with
+The reasoning toolbox introduced in the @{text Compiler2} theory of \<^cite>\<open>"Noce21"\<close> to cope with
 the ``hard'' direction of the bisimulation proof can be outlined as follows.
 
 First, predicate @{text execl_all} is defined to capture the notion of a \emph{complete small-step}
@@ -22,7 +22,7 @@ any complete execution of program @{term "P @ P' @ P''"} making the program coun
 beginning of program @{term P'} in some step, there exists a sub-execution being also a complete
 execution of @{term P'}. Under the further assumption that any complete execution of @{term P'}
 fulfills a given predicate @{term Q}, this implies the existence of a sub-execution fulfilling
-@{term Q} (as established by lemma @{text execl_all_sub} in @{cite "Noce21"}).
+@{term Q} (as established by lemma @{text execl_all_sub} in \<^cite>\<open>"Noce21"\<close>).
 
 The compilation of arithmetic/boolean expressions and commands, modeled by functions @{const acomp},
 @{const bcomp}, and @{const ccomp}, produces programs matching pattern @{term "P @ P' @ P''"}, where
@@ -46,7 +46,7 @@ is that this property can as well be formalized as a well-behavedness predicate 
 that the pending task takes again the form of proving that such a predicate holds for any complete
 small-step execution of an assembly program.
 
-Following this insight, the present theory extends the @{text Compiler2} theory of @{cite "Noce21"}
+Following this insight, the present theory extends the @{text Compiler2} theory of \<^cite>\<open>"Noce21"\<close>
 by reusing its reasoning toolbox to additionally prove that any such program execution is indeed
 well-behaved in this respect, too.
 \<close>
@@ -184,7 +184,7 @@ by (rule execl.cases [of "([], cfs)"], auto simp: execl_all_def exec1_def cpred_
 text \<open>
 \null
 
-In @{cite "Noce21"}, part of the proof of lemma @{text execl_all_sub} is devoted to establishing the
+In \<^cite>\<open>"Noce21"\<close>, part of the proof of lemma @{text execl_all_sub} is devoted to establishing the
 fundamental property of predicate @{const execl_all} stated above: for any complete execution of
 program @{term "P @ P' @ P''"} making the program counter point to the beginning of @{term P'} in
 its @{term k}-th step, there exists a sub-execution starting from the @{term k}-th step and being a
@@ -454,7 +454,7 @@ subsection "Main theorems"
 
 text \<open>
 Here below is the proof that every complete small-step execution of an assembly program fulfills
-predicate @{const cpred} (lemma @{text ccomp_correct}), which is reused as is from @{cite "Noce21"},
+predicate @{const cpred} (lemma @{text ccomp_correct}), which is reused as is from \<^cite>\<open>"Noce21"\<close>,
 followed by the proof that every such execution satisfies predicate @{const mpred} as well (lemma
 @{text ccomp_correct_m}), which closely resembles the former one.
 

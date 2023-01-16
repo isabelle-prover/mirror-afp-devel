@@ -318,7 +318,7 @@ lemma of_nat_qr_eq_0_iff [simp]:
 
 section \<open>Specification of Kyber\<close>
 text \<open>
-We now define a locale for the specification parameters of Kyber as in \cite{kyber}.
+We now define a locale for the specification parameters of Kyber as in \<^cite>\<open>"kyber"\<close>.
 The specifications use the parameters:
 
 \begin{tabular}{r l}

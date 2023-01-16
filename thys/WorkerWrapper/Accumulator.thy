@@ -55,7 +55,7 @@ lemma H_llist_hom_id: "list2H\<cdot>lnil = ID" by (simp add: list2H_def)
 lemma H2list_list2H_inv: "H2list oo list2H = ID"
   by (rule cfun_eqI, simp add: H2list_def list2H_def)
 
-text\<open>\citet[\S4.2]{GillHutton:2009} define the naive reverse
+text\<open>\<^citet>\<open>\<open>\S4.2\<close> in "GillHutton:2009"\<close> define the naive reverse
 function as follows.\<close>
 
 fixrec lrev :: "'a llist \<rightarrow> 'a llist"
@@ -203,7 +203,7 @@ proof -
 qed
 
 text\<open>If we use this result directly, we only get a partially-correct
-program transformation, see \citet{Tullsen:PhDThesis} for details.\<close>
+program transformation, see \<^citet>\<open>"Tullsen:PhDThesis"\<close> for details.\<close>
 
 lemma "lrev_work3 \<sqsubseteq> lrev_work2"
   unfolding lrev_work3_def

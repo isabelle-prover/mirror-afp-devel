@@ -8,7 +8,7 @@ begin
 
 
 text \<open>The algorithm is classical, the proofs are inspired by the ones
-by Berghammer and M\"uller-Olm \cite{BerghammerM03}.
+by Berghammer and M\"uller-Olm \<^cite>\<open>"BerghammerM03"\<close>.
 In particular the approximation ratio is improved from \<open>\<Delta>+1\<close> to \<open>\<Delta>\<close>.\<close>
 
 

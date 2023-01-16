@@ -7,7 +7,7 @@ section\<open>Binary operations over Boolean functions and simplicial complexes\
 
 text\<open>In this theory some results on binary operations over Boolean functions and
   their relationship to operations over the induced simplicial complexes are
-  presented. We follow the presentation by Chastain and Scoville~\cite[Sect. 1.1]{CHSC}.\<close>
+  presented. We follow the presentation by Chastain and Scoville~\<^cite>\<open>\<open>Sect. 1.1\<close> in "CHSC"\<close>.\<close>
 
 definition bool_fun_or :: "nat \<Rightarrow> (bool vec \<Rightarrow> bool) \<Rightarrow> (bool vec \<Rightarrow> bool) \<Rightarrow> (bool vec \<Rightarrow> bool)"
   where "(bool_fun_or n f g) \<equiv> (\<lambda>x. f x \<or> g x)"

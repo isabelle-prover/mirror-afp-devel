@@ -7,7 +7,7 @@ nitpick_params[assms=true, user_axioms=true, show_all, expect=genuine, format=3]
 
 section \<open>Shallow embedding of a Boolean algebra of propositions\<close>
 
-text\<open>\noindent{In this section we present a shallow semantical embedding (SSE, cf. @{cite J41} and @{cite J23})
+text\<open>\noindent{In this section we present a shallow semantical embedding (SSE, cf. \<^cite>\<open>J41\<close> and \<^cite>\<open>J23\<close>)
 for a family of logics whose semantics is based upon extensions of (complete and atomic) Boolean algebras.
 The range of such logics is indeed very wide, including, as we will see, quantified paraconsistent and
 paracomplete (e.g. intuitionistic) logics. Aside from illustrating how the SSE approach works in practice

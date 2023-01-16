@@ -11,7 +11,7 @@ begin
 
 text \<open>
   Functional version of algorithm for detecting rectangle intersection.
-  See \cite[Exercise 14.3-7]{cormen2009introduction} for a reference.
+  See \<^cite>\<open>\<open>Exercise 14.3-7\<close> in "cormen2009introduction"\<close> for a reference.
 \<close>
 
 subsection \<open>Definition of rectangles\<close>

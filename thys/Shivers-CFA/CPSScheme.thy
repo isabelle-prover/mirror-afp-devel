@@ -45,7 +45,7 @@ lemmas mutual_lambda_call_var_inducts =
 
 text \<open>
 Three example programs. These were generated using the Haskell implementation
-of Shivers' algorithm that we wrote as a prototype\cite{HaskProto}.
+of Shivers' algorithm that we wrote as a prototype\<^cite>\<open>"HaskProto"\<close>.
 \<close>
 
 abbreviation "ex1 == (Lambda 1 [(1,''cont'')] (App 2 (R 3 (1,''cont'')) [(C 4 0)]))"

@@ -26,7 +26,7 @@ using [[simproc add: stream_fusion, stream_fusion_trace]]
 apply(simp add: concat_map_maps) \<comment> \<open>fuses partially\<close>
 by(unfold rhs_def) rule
 
-subsection \<open>Micro-benchmarks from Farmer et al. \cite{FarmerHoenerGill2014PEPM}\<close>
+subsection \<open>Micro-benchmarks from Farmer et al. \<^cite>\<open>"FarmerHoenerGill2014PEPM"\<close>\<close>
 
 definition test_enum :: "nat \<Rightarrow> nat" \<comment> \<open>@{const id} required to avoid eta contraction\<close>
 where "test_enum n = foldl (+) 0 (List.maps (\<lambda>x. upt 1 (id x)) (upt 1 n))"
@@ -38,7 +38,7 @@ definition test_merge :: "integer \<Rightarrow> nat"
 where "test_merge n = foldl (+) 0 (List.maps (\<lambda>x. if 2 dvd x then upt 1 x else upt 2 x) (upt 1 (nat_of_integer n)))"
 
 text \<open>
-  This rule performs the merge operation from \cite[\S 5.2]{FarmerHoenerGill2014PEPM} for \<open>if\<close>.
+  This rule performs the merge operation from \<^cite>\<open>\<open>\S 5.2\<close> in "FarmerHoenerGill2014PEPM"\<close> for \<open>if\<close>.
   In general, we would also need it for all case operators.
 \<close>
 lemma unstream_if [stream_fusion]:

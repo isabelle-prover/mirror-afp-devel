@@ -6,7 +6,7 @@
 section \<open>Behaviour Structure \label{sec:behaviour_structure}\<close>
 
 text \<open>
-Hoare et al.~\cite{Hoare2011aa} presented the framework of Concurrent Kleene Algebra (\CKAabbrv) which captures the concurrent 
+Hoare et al.~\<^cite>\<open>"Hoare2011aa"\<close> presented the framework of Concurrent Kleene Algebra (\CKAabbrv) which captures the concurrent 
 behaviour of agents. The framework of \CKAabbrv is adopted to describe agent behaviours in distributed 
 systems. For a \CKAabbrv~$\CKAstructure$,~$\CKAset$ is a set of possible behaviours. The operator~$+$ is 
 interpreted as a choice between two behaviours, the operator~$\CKAseq$ is interpreted as a sequential 

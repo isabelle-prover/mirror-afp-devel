@@ -12,6 +12,6 @@ imports
   "USubst"
   "Axioms"
 begin
-text \<open>This formalization of Differential Game Logic \<^url>\<open>http://arxiv.org/abs/1902.07230\<close> \cite{DBLP:conf/cade/Platzer19} consists of
+text \<open>This formalization of Differential Game Logic \<^url>\<open>http://arxiv.org/abs/1902.07230\<close> \<^cite>\<open>"DBLP:conf/cade/Platzer19"\<close> consists of
 the syntax, denotational semantics, static semantics, uniform substitution lemmas, uniform substitution soundness proofs, and soundness proofs for axioms.\<close>
 end 

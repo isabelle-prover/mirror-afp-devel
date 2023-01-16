@@ -211,9 +211,9 @@ subsection\<open>Modelling Access Control\<close>
 text \<open>
   In the following, we define a rather complex access control model for our 
   scenario that extends traditional role-based access control 
-  (RBAC)~\cite{sandhu.ea:role-based:1996} with treatment relationships and sealed 
-  envelopes. Sealed envelopes (see~\cite{bruegger:generation:2012} for details)
-  are a variant of break-the-glass access control (see~\cite{brucker.ea:extending:2009} 
+  (RBAC)~\<^cite>\<open>"sandhu.ea:role-based:1996"\<close> with treatment relationships and sealed 
+  envelopes. Sealed envelopes (see~\<^cite>\<open>"bruegger:generation:2012"\<close> for details)
+  are a variant of break-the-glass access control (see~\<^cite>\<open>"brucker.ea:extending:2009"\<close> 
   for a general motivation and explanation of break-the-glass access control).
 \<close>
 

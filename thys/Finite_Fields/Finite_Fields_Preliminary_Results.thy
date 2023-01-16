@@ -11,12 +11,12 @@ polynomials in \verb|HOL-Algebra|. These are introduced in Section~\ref{sec:pder
 
 A cornerstone of the proof is the derivation of Gauss' formula for the number of monic irreducible
 polynomials over a finite field $R$ in Section~\ref{sec:card_irred}. The proof follows the
-derivation by Ireland and Rosen~\cite[\textsection 7]{ireland1982} closely, with the caveat that it
+derivation by Ireland and Rosen~\<^cite>\<open>\<open>\textsection 7\<close> in "ireland1982"\<close> closely, with the caveat that it
 does not assume that $R$ is a simple prime field, but that it is just a finite field.
 This works by adjusting a proof step with the information that the order of a finite field must be 
 of the form $p^n$, where $p$ is the characteristic of the field, derived in Section~\ref{sec:ring_char}.
 The final step relies on the M\"obius inversion theorem formalized by
-Eberl~\cite{Dirichlet_Series-AFP}.\footnote{Thanks to Katharina Kreuzer for discovering that
+Eberl~\<^cite>\<open>"Dirichlet_Series-AFP"\<close>.\footnote{Thanks to Katharina Kreuzer for discovering that
 formalization.}
 
 With Gauss' formula it is possible to show the existence of the finite fields of order $p^n$ 
@@ -24,7 +24,7 @@ where $p$ is a prime and $n > 0$. During the proof the fact that the polynomial 
 in a field of order $n$ is also derived, which is necessary for the uniqueness result as well.
 
 The uniqueness proof is inspired by the derivation of the same result in
-Lidl and Niederreiter~\cite{lidl1986}, but because of the already derived existence proof for 
+Lidl and Niederreiter~\<^cite>\<open>"lidl1986"\<close>, but because of the already derived existence proof for 
 irreducible polynomials, it was possible to reduce its complexity.
 
 The classification consists of three theorems:

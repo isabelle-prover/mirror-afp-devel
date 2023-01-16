@@ -42,7 +42,7 @@ definition U :: "'a mrel" where
 
 abbreviation "NC \<equiv> U - 1\<^sub>\<pi>"
 
-text \<open>We write NC where $\overline{1_\pi}$ is written in~\cite{FurusawaS15a}.\<close>
+text \<open>We write NC where $\overline{1_\pi}$ is written in~\<^cite>\<open>"FurusawaS15a"\<close>.\<close>
 
 text \<open>Next we prove some basic set-theoretic properties.\<close>
 
@@ -114,7 +114,7 @@ lemma s_prod_assoc1: "(R \<cdot> S ) \<cdot> T \<subseteq> R \<cdot> (S \<cdot> 
 lemma seq_conc_subdistr: "(R \<parallel> S) \<cdot> T \<subseteq> (R \<cdot> T) \<parallel> (S \<cdot> T)"
   by (clarsimp simp: mr_simp UnI1 UnI2, blast)
 
-text \<open>Next we provide some counterexamples. These do not feature in~\cite{FurusawaS15a}.\<close>
+text \<open>Next we provide some counterexamples. These do not feature in~\<^cite>\<open>"FurusawaS15a"\<close>.\<close>
 
 lemma  "R \<cdot> {} = {}"
   nitpick 

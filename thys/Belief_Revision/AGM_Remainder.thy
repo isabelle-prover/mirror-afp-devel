@@ -129,7 +129,7 @@ context Compact_logic
 begin
 
 text \<open>The following lemma is the Lindembaum's lemma requiring the Zorn's lemma (already available in standard Isabelle/HOL). 
-  For more details, please refer to the book "Theory of logical calculi" @{cite wojcicki2013theory}. 
+  For more details, please refer to the book "Theory of logical calculi" \<^cite>\<open>wojcicki2013theory\<close>. 
 This very important lemma states that we can get a maximal set (remainder \<open>B'\<close>) starting from any set 
 \<open>B\<close> if this latter does not infer the proposition \<open>\<phi>\<close> we want to eliminate\<close>
 lemma upper_remainder: \<open>B \<subseteq> A \<Longrightarrow> \<not> B \<turnstile> \<phi> \<Longrightarrow> \<exists>B'. B \<subseteq> B' \<and>  B' \<in> A .\<bottom>. \<phi>\<close> 

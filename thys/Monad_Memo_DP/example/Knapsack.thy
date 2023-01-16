@@ -28,7 +28,7 @@ no_notation fun_app_lifted (infixl "." 999)
 
 text \<open>
   The correctness proof closely follows Kleinberg \<open>&\<close> Tardos: "Algorithm Design",
-  chapter "Dynamic Programming" @{cite "Kleinberg-Tardos"}
+  chapter "Dynamic Programming" \<^cite>\<open>"Kleinberg-Tardos"\<close>
 \<close>
 
 definition

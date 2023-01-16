@@ -19,7 +19,7 @@ text \<open>
   \item A generator for @{typ "'a llist"} may return infinitely many @{const Skip}s in a row.
     Then, the \<open>lunstream\<close> function suffers from the same difficulties as @{const lfilter} with
     definitions, but we can define it using the least fixpoint approach described in
-    \cite{LochbihlerHoelzl2014ITP}. Consequently, we can only fuse transformers that are monotone and
+    \<^cite>\<open>"LochbihlerHoelzl2014ITP"\<close>. Consequently, we can only fuse transformers that are monotone and
     continuous with respect to the ccpo ordering. This in particular excludes @{const lappend}.
   \end{itemize}
   Here, we take the both approaches where we consider the first preferable to the second.

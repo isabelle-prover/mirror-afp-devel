@@ -9,7 +9,7 @@ subsection \<open>Variation with multiple independent secret posts\<close>
 
 text \<open>This section formalizes the lifting of the confidentiality of one
 given (arbitrary but fixed) post to the confidentiality of two posts of
-arbitrary nodes of the network, as described in \cite[Appendix E]{cosmedis-SandP2017}.
+arbitrary nodes of the network, as described in \<^cite>\<open>\<open>Appendix E\<close> in "cosmedis-SandP2017"\<close>.
 \<close>
 
 subsubsection\<open>Issuer observation setup\<close>

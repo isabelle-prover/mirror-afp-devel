@@ -1,4 +1,4 @@
-subsection\<open>Ultrafilter Variant (Fig.~5 in \cite{C85})\<close>
+subsection\<open>Ultrafilter Variant (Fig.~5 in \<^cite>\<open>"C85"\<close>)\<close>
 
 theory UFilterVariant imports 
   HOML 

@@ -69,7 +69,7 @@ translations
 subsubsection\<open>\<open>VLambda\<close>\<close>
 
 
-text\<open>The following notation was adapted from \cite{paulson_hereditarily_2013}.\<close>
+text\<open>The following notation was adapted from \<^cite>\<open>"paulson_hereditarily_2013"\<close>.\<close>
 
 syntax "_vlam" :: "[pttrn, V, V] \<Rightarrow> V" (\<open>(3\<lambda>_\<in>\<^sub>\<circ>_./ _)\<close> 10)
 translations "\<lambda>x\<in>\<^sub>\<circ>A. f" \<rightleftharpoons> "CONST VLambda A (\<lambda>x. f)"
@@ -1147,7 +1147,7 @@ subsection\<open>Cartesian products\<close>
 
 text\<open>
 The following lemma is based on Theorem 6.2 from 
-\cite{takeuti_introduction_1971}.
+\<^cite>\<open>"takeuti_introduction_1971"\<close>.
 \<close>
 
 lemma vtimes_vsubset_VPowVPow: "A \<times>\<^sub>\<circ> B \<subseteq>\<^sub>\<circ> VPow (VPow (A \<union>\<^sub>\<circ> B))"

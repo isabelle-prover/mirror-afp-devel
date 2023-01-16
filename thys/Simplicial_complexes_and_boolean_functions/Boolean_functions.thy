@@ -59,7 +59,7 @@ lemma "count_true (vec (5::nat) (\<lambda>i. True)) = 5"
 
 text\<open>The threshold function is a Boolean function
   which also satisfies the condition of being \emph{evasive}.
-  We follow the definition by Scoville~\cite[Problem 6.5]{SC19}.\<close>
+  We follow the definition by Scoville~\<^cite>\<open>\<open>Problem 6.5\<close> in "SC19"\<close>.\<close>
 
 definition bool_fun_threshold :: "nat => (bool vec => bool)"
   where "bool_fun_threshold i = (\<lambda>v. if i \<le> count_true v then True else False)"

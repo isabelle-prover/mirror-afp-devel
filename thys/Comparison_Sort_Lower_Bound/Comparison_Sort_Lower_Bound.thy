@@ -37,7 +37,7 @@ datatype 'a sorter = Return "'a list" | Query 'a 'a "bool \<Rightarrow> 'a sorte
     
 
 text \<open>
-  Cormen~\emph{et\ al.}~\cite{cormen}\ use a similar `decision tree' model where an sorting 
+  Cormen~\emph{et\ al.}~\<^cite>\<open>"cormen"\<close>\ use a similar `decision tree' model where an sorting 
   algorithm for lists of fixed size $n$ is modelled as a binary tree where each node is a 
   comparison of two elements. They also demand that every leaf in the tree be reachable in 
   order to avoid `dead' subtrees (if the algorithm makes redundant comparisons, there may be 

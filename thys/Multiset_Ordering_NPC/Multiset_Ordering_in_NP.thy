@@ -51,7 +51,7 @@ subsection \<open>Definition of the Encoding\<close>
 
 text \<open>We need to encode formulas of the shape that exactly one variable
   is evaluated to true. Here, we use the linear encoding of 
-   \cite[Section~5.3]{DBLP:journals/jsat/EenS06}
+   \<^cite>\<open>\<open>Section~5.3\<close> in "DBLP:journals/jsat/EenS06"\<close>
   that requires some auxiliary variables. More precisely, for each
   propositional variable that we want to count we require two auxiliary variables.\<close>
 
@@ -76,7 +76,7 @@ fun encodeGammaCond :: "'a \<Rightarrow> 'a \<Rightarrow> bool \<Rightarrow> boo
 | "encodeGammaCond gam eps True False = enc_not_and gam eps" 
 end
 
-text \<open>The encoding of the multiset comparisons is based on \cite[Sections~3.6 and 3.7]{RPO_NP}.
+text \<open>The encoding of the multiset comparisons is based on \<^cite>\<open>\<open>Sections~3.6 and 3.7\<close> in "RPO_NP"\<close>.
   It uses propositional variables $\gamma_{ij}$ and $\epsilon_i$. 
   We further add auxiliary variables that are required for the exactly-one-encoding.\<close>
 

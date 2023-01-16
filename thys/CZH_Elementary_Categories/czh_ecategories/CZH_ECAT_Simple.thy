@@ -16,7 +16,7 @@ subsection\<open>Background\<close>
 text\<open>
 The section presents a variety of simple categories, 
 (such as the empty category \<open>0\<close> and the singleton category \<open>1\<close>)
-and functors between them (see \cite{mac_lane_categories_2010}
+and functors between them (see \<^cite>\<open>"mac_lane_categories_2010"\<close>
 for further information).
 \<close>
 
@@ -28,7 +28,7 @@ subsection\<open>Empty category \<open>0\<close>\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cat_0 :: "V"
   where "cat_0 = [0, 0, 0, 0, 0, 0]\<^sub>\<circ>"
@@ -248,7 +248,7 @@ subsection\<open>Empty natural transformation\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter X-1 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter X-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition ntcf_0 :: "V \<Rightarrow> V" 
   where "ntcf_0 \<CC> = [0, cf_0 \<CC>, cf_0 \<CC>, cat_0, \<CC>]\<^sub>\<circ>"
@@ -421,7 +421,7 @@ subsection\<open>\<open>1\<close>: category with one object and one arrow\<close
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cat_1 :: "V \<Rightarrow> V \<Rightarrow> V"
   where "cat_1 \<aa> \<ff> =

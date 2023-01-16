@@ -7,7 +7,7 @@ theory Groebner_Macaulay
 begin
 
 text \<open>Relationship between Gr\"obner bases and Macaulay matrices, following
-  @{cite "Wiesinger-Widi2015"}.\<close>
+  \<^cite>\<open>"Wiesinger-Widi2015"\<close>.\<close>
 
 subsection \<open>Gr\"obner Bases\<close>
 

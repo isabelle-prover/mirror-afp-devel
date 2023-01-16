@@ -1,7 +1,7 @@
 section \<open>Dichotomous Lazard\<close>
   
 text \<open>This theory contains Lazard's optimization in the computation of
-  the subresultant PRS as described by Ducos \cite[Section 2]{Ducos}.\<close>
+  the subresultant PRS as described by Ducos \<^cite>\<open>\<open>Section 2\<close> in "Ducos"\<close>.\<close>
 theory Dichotomous_Lazard
 imports 
   "HOL-Computational_Algebra.Polynomial_Factorial" (* to_fract *)

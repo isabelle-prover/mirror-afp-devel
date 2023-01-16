@@ -21,10 +21,10 @@ text \<open>\noindent and even prove properties of them, like for example:
   In addition to that, some native functions in Isabelle are under-defined, e.g.,
   @{term "[] ! 1"}. But it is still possible to show lemmas about these undefined values, e.g.:
   @{lemma "[] ! 1 = [a,b] ! 3" by simp}.
-  While it is possible to define a notion of algorithm in Isabelle~\cite{klein2018java}, we think
+  While it is possible to define a notion of algorithm in Isabelle~\<^cite>\<open>"klein2018java"\<close>, we think
   that this is not necessary for the purpose of this formalization, since the reader needs to verify
   that the formalized functions correctly model the algorithms described by
-  Oster et al.~\cite{oster2006data} anyway.
+  Oster et al.~\<^cite>\<open>"oster2006data"\<close> anyway.
   However, we show that Isabelle can generate code for the functions, indicating that
   non-constructible terms are not being used within the algorithms.\<close>
 

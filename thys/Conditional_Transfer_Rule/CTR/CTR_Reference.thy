@@ -24,7 +24,7 @@ This section presents a reference manual for the sub-framework CTR
 that can be used for the automated synthesis of 
 conditional transfer rules.
 The CTR evolved from the frameworks \textit{Conditional Parametricity} (CP) 
-\cite{gilcher_conditional_2017} and Types-To-Sets
+\<^cite>\<open>"gilcher_conditional_2017"\<close> and Types-To-Sets
 that are available as part of the main distribution of Isabelle.
 However, it does not require either the axiom LT or the axiom UO
 associated with the Types-To-Sets for its operation.
@@ -52,12 +52,12 @@ The command provides an interface for the application of two
 plausible algorithms for the synthesis of the transfer rules
 that have a restricted and overlapping scope of applicability. 
 The first algorithm (\textit{CTR I}) was developed and implemented in 
-\cite{gilcher_conditional_2017}. 
+\<^cite>\<open>"gilcher_conditional_2017"\<close>. 
 An outline of the second algorithm (\textit{CTR II}) 
-was proposed in \cite{lammich_automatic_2013} and \cite{immler_smooth_2019}:
+was proposed in \<^cite>\<open>"lammich_automatic_2013"\<close> and \<^cite>\<open>"immler_smooth_2019"\<close>:
 CTR II relies on the functionality of the 
 @{method transfer_prover} 
-(see subsection 4.6 in \cite{kuncar_types_2015}). 
+(see subsection 4.6 in \<^cite>\<open>"kuncar_types_2015"\<close>). 
 More details about CTR II are given in the next subsection.
 
 The command @{command ctr_relator} can be used for the 
@@ -67,11 +67,11 @@ constant-instance whose definition is passed as an argument to CTR II.
 However, as a fallback solution, the command @{command ctr} may 
 use the \textit{relators} that are associated with the standard 
 \textit{BNF} infrastructure
-of Isabelle/HOL (e.g., see \cite{traytel_foundational_2012}).
+of Isabelle/HOL (e.g., see \<^cite>\<open>"traytel_foundational_2012"\<close>).
 The only necessary condition for the registration of the ctr-relators 
 is that they must satisfy the type-constraint 
 associated with the action of a BNF on relations (e.g., see 
-\cite{traytel_foundational_2012} or \cite{blanchette_bindings_2019}).
+\<^cite>\<open>"traytel_foundational_2012"\<close> or \<^cite>\<open>"blanchette_bindings_2019"\<close>).
 \<close>
 
 
@@ -94,7 +94,7 @@ commands can be integrated.
 It should also be mentioned that the Isabelle/ML code from the main 
 distribution of Isabelle was frequently reused during the 
 development of CTR. Lastly, it should be mentioned that the 
-framework SpecCheck \cite{kappelmann_speccheck_2021} was used for unit 
+framework SpecCheck \<^cite>\<open>"kappelmann_speccheck_2021"\<close> was used for unit 
 testing the framework CTR.
 \<close>
 
@@ -127,7 +127,7 @@ of the domain of $\mathsf{ctr}_{\mathsf{Rel}}$). CTR II consists of three parts:
 \textbf{Synthesis of a parametricity relation}. 
 An outline of an algorithm for the conversion of a type to a 
 \textit{parametricity relation} 
-is given in subsection 4.1.1 in \cite{kuncar_types_2015}. 
+is given in subsection 4.1.1 in \<^cite>\<open>"kuncar_types_2015"\<close>. 
 Thus, every nullary type constructor in $?\bar{\gamma}\ K$ is replaced by the 
 identity relation $=$, every non-nullary type constructor $\kappa$ 
 in $?\bar{\gamma}\ K$ is replaced by its corresponding 
@@ -266,7 +266,7 @@ that the type variable that has the indexname \<open>?a\<^sub>i\<close> (\<open>
 \<open>n\<close> is a non-negative integer) is meant to 
 correspond to the binary relation \<open>A\<^sub>i\<close> in the parametricity relation constructed by 
 the command prior to the statement of the transfer rule (for further 
-information see subsection 4.1 in \cite{kuncar_types_2015}). This is relevant only
+information see subsection 4.1 in \<^cite>\<open>"kuncar_types_2015"\<close>). This is relevant only
 for CTR II.
 
     \<^descr> \<^theory_text>\<open>in\<close> \<open>(b:) def_thm (mixfix)\<close> is used for
@@ -281,7 +281,7 @@ arguments (however, there are further implicit restrictions).
 If a new constant is introduced by the command, then the optional argument
 \<open>mixfix\<close> is used for the specification 
 of the concrete inner syntax for the constant in the usual manner
-(e.g. see \cite{wenzel_isabelle/isar_2019-1}). The optional binding \<open>b\<close> is
+(e.g. see \<^cite>\<open>"wenzel_isabelle/isar_2019-1"\<close>). The optional binding \<open>b\<close> is
 used for the specification of the names of the entities that
 are provided after the successful execution of the command. It is hoped
 that the algorithm chosen for the specification of the names 
@@ -329,7 +329,7 @@ generates the transfer rule @{thm [source] mono_transfer}:
 @{thm [display, mode=IfThenNoBox] mono_transfer[no_vars]}
 \end{center}
 A detailed explanation of the underlying algorithm can be found in 
-\cite{gilcher_conditional_2017}.
+\<^cite>\<open>"gilcher_conditional_2017"\<close>.
 \<close>
 
 

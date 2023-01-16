@@ -16,7 +16,7 @@ subsection\<open>Background\<close>
 text\<open>
 The concept of a product semicategory, as presented in this work, 
 is a generalization of the concept of a product category, as presented in
-Chapter II-3 in \cite{mac_lane_categories_2010}.
+Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 named_theorems smc_prod_cs_simps
@@ -657,7 +657,7 @@ subsection\<open>Projection\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition smcf_proj :: "V \<Rightarrow> (V \<Rightarrow> V) \<Rightarrow> V \<Rightarrow> V" (\<open>\<pi>\<^sub>S\<^sub>M\<^sub>C\<close>)
   where "\<pi>\<^sub>S\<^sub>M\<^sub>C I \<AA> i =
@@ -1216,7 +1216,7 @@ subsection\<open>Product of two semicategories\<close>
 subsubsection\<open>Definition and elementary properties.\<close>
 
 
-text\<open>See Chapter II-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition smc_prod_2 :: "V \<Rightarrow> V \<Rightarrow> V" (infixr \<open>\<times>\<^sub>S\<^sub>M\<^sub>C\<close> 80)
   where "\<AA> \<times>\<^sub>S\<^sub>M\<^sub>C \<BB> \<equiv> smc_prod (2\<^sub>\<nat>) (\<lambda>i. (i = 0 ? \<AA> : \<BB>))"
@@ -1500,7 +1500,7 @@ subsection\<open>Projections for the product of two semicategories\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition smcf_proj_fst :: "V \<Rightarrow> V \<Rightarrow> V" (\<open>\<pi>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>1\<close>)
   where "\<pi>\<^sub>S\<^sub>M\<^sub>C\<^sub>.\<^sub>1 \<AA> \<BB> = smcf_proj (2\<^sub>\<nat>) (\<lambda>i. (i = 0 ? \<AA> : \<BB>)) 0"

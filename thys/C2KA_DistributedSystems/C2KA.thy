@@ -24,7 +24,7 @@ and it describes how a new stimulus is generated as a result of the response inv
 an agent behaviour. From~$\OutSemimodule$, the next stimulus mapping~$\outOp$ distributes over~$\STIMplus$ 
 and~$+$. Also, since~$\OutSemimodule$ is unitary, it is the case that the idle agent forwards any stimulus that 
 acts on it and since~$\OutSemimodule$ is zero-preserving, the inactive agent always generates the deactivation 
-stimulus. A full account of \CCKAabbrv can be found in~\cite{Jaskolka2015ab,Jaskolka2013aa,Jaskolka2014aa}. 
+stimulus. A full account of \CCKAabbrv can be found in~\<^cite>\<open>"Jaskolka2015ab" and "Jaskolka2013aa" and "Jaskolka2014aa"\<close>. 
 \<close>
 
 theory C2KA

@@ -779,7 +779,7 @@ proof(intro soundI2 nnegI bounded_byI, simp_all add:wp_eval)
 qed
 
 text \<open>This gives the equivalence with the alternative definition for
-  loops\citep[\S7, p.~198, footnote 23]{McIver_M_04}.\<close>
+  loops\<^citep>\<open>\<open>\S7, p.~198, footnote 23\<close> in "McIver_M_04"\<close>.\<close>
 
 lemma wlp_Loop1:
   fixes body :: "'s prog"

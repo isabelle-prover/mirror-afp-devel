@@ -11,7 +11,7 @@ begin
 
   text \<open>
     This theory develops an ``object-free'' definition of category loosely following
-    \cite{AHS}, Sec. 3.52-3.53.
+    \<^cite>\<open>"AHS"\<close>, Sec. 3.52-3.53.
     We define the notion ``category'' in terms of axioms that concern a single
     partial binary operation on a type, some of whose elements are to be regarded
     as the ``arrows'' of the category.

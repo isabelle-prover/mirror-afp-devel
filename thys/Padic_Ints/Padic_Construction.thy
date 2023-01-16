@@ -11,7 +11,7 @@ text\<open>
   limit of the finite rings $\mathbb{Z} / p^n \mathbb{Z}$ along the residue maps
   $\mathbb{Z} / p^n \mathbb{Z} \mapsto \mathbb{Z} / p^n \mathbb{Z} $ defined by
   $x \mapsto x \mod p^m$ when $n \geq m$. This is exposited, for example, in section 7.6 of 
-  \cite{dummit2004abstract}. The other main route for formalization is to first define the
+  \<^cite>\<open>"dummit2004abstract"\<close>. The other main route for formalization is to first define the
   $p$-adic absolute value $|\cdot|_p$ on the rational numbers, and then define the field
   $\mathbb{Q}_p$ of $p$-adic numbers as the completion of the rationals under this absolute
   value. One can then define the ring of $p$-adic integers $\mathbb{Z}_p$ as the unit ball in 

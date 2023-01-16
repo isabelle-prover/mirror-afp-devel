@@ -9,7 +9,7 @@ begin
 text \<open>The Center Selection (or metric k-center) problem. Given a set of \textit{sites} \<open>S\<close>
 in a metric space, find a subset \<open>C \<subseteq> S\<close> that minimizes the maximal distance from any \<open>s \<in> S\<close>
 to some \<open>c \<in> C\<close>. This theory presents a verified 2-approximation algorithm.
-It is based on Section 11.2 in the book by Kleinberg and Tardos \cite{KleinbergT06}.
+It is based on Section 11.2 in the book by Kleinberg and Tardos \<^cite>\<open>"KleinbergT06"\<close>.
 In contrast to the proof in the book, our proof is a standard invariant proof.\<close>
 
 locale Center_Selection =

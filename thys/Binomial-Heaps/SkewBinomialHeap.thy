@@ -4,7 +4,7 @@ theory SkewBinomialHeap
 imports Main "HOL-Library.Multiset"
 begin
 
-text \<open>Skew Binomial Queues as specified by Brodal and Okasaki \cite{BrOk96}
+text \<open>Skew Binomial Queues as specified by Brodal and Okasaki \<^cite>\<open>"BrOk96"\<close>
   are a data structure for priority queues with worst case O(1) {\em findMin}, 
   {\em insert}, and {\em meld} operations, and worst-case logarithmic 
   {\em deleteMin} operation.
@@ -1590,11 +1590,11 @@ text \<open>
   Bootstrapping adds one more level of recursion:
   An {\em element} is an entry and a priority queues of elements.
 
-  In the original paper on skew binomial queues \cite{BrOk96}, higher order 
+  In the original paper on skew binomial queues \<^cite>\<open>"BrOk96"\<close>, higher order 
   functors and recursive structures are used to elegantly implement bootstrapped
   heaps on top of ordinary heaps. However, such concepts are not supported in
   Isabelle/HOL, nor in Standard ML. Hence we have to use the 
-  ,,much less clean'' \cite{BrOk96} alternative:  
+  ,,much less clean'' \<^cite>\<open>"BrOk96"\<close> alternative:  
   We manually specialize the heap datastructure, and re-implement the functions
   on the specialized data structure.
 
@@ -1994,7 +1994,7 @@ declare insert.simps[simp del]
 subsubsection "Bootstrapping: Phase 1"
 text \<open>
   In this section, we define the ticked versions
-  of the functions, as defined in \cite{BrOk96}.
+  of the functions, as defined in \<^cite>\<open>"BrOk96"\<close>.
   These functions work on elements, i.e. only on 
   heaps that contain at least one entry.
   Additionally, we define an invariant for elements, and

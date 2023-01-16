@@ -1,15 +1,15 @@
 section \<open>Subresultants and the subresultant PRS\<close>
 
 text \<open>This theory contains most of the soundness proofs of the subresultant PRS algorithm,
-  where we closely follow the papers of Brown \cite{Brown} and Brown and Traub \cite{BrownTraub}.
-  This is in contrast to a similar Coq formalization of Mahboubi \cite{Mahboubi06} which
+  where we closely follow the papers of Brown \<^cite>\<open>"Brown"\<close> and Brown and Traub \<^cite>\<open>"BrownTraub"\<close>.
+  This is in contrast to a similar Coq formalization of Mahboubi \<^cite>\<open>"Mahboubi06"\<close> which
   is based on polynomial determinants.
 
   Whereas the current file only contains an algorithm to compute the resultant of two polynomials
   efficiently, there is another theory ``Subresultant-Gcd'' which also contains the algorithm
   to compute the GCD of two polynomials via the subresultant algorithm. In both algorithms we
   integrate Lazard's optimization in the dichotomous version,
-  but not the second optmization described by Ducos \cite{Ducos}.\<close>
+  but not the second optmization described by Ducos \<^cite>\<open>"Ducos"\<close>.\<close>
 theory Subresultant
 imports
   Resultant_Prelim

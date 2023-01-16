@@ -6,7 +6,7 @@ theory Derivatives3
 imports Regular_Exps3
 begin
 
-text\<open>This theory is based on work by Brozowski \cite{Brzozowski64}.\<close>
+text\<open>This theory is based on work by Brozowski \<^cite>\<open>"Brzozowski64"\<close>.\<close>
 
 subsection \<open>Brzozowski's derivatives of regular expressions\<close>
 

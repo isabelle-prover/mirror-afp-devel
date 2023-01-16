@@ -28,7 +28,7 @@ begin
     Finally, it is shown that right adjoint functors are unique up to natural
     isomorphism.
 
-    The reference \cite{Wikipedia-Adjoint-Functors} was useful in constructing this theory.
+    The reference \<^cite>\<open>"Wikipedia-Adjoint-Functors"\<close> was useful in constructing this theory.
 \<close>
 
   section "Left Adjoint Functor"

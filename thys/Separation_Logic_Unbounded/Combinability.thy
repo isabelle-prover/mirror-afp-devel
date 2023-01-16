@@ -1,6 +1,6 @@
 section \<open>Combinability\<close>
 
-text \<open>This section corresponds to Section 3 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>This section corresponds to Section 3 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 theory Combinability
   imports UnboundedLogic
@@ -9,7 +9,7 @@ begin
 context logic
 begin
 
-text \<open>The definition of combinable assertions corresponds to Definition 4 of the paper~\cite{UnboundedSL}.\<close>
+text \<open>The definition of combinable assertions corresponds to Definition 4 of the paper~\<^cite>\<open>"UnboundedSL"\<close>.\<close>
 
 definition combinable :: "('d, 'c, 'a) interp \<Rightarrow> ('a, 'b, 'c, 'd) assertion \<Rightarrow> bool" where
   "combinable \<Delta> A \<longleftrightarrow> (\<forall>p q. Star (Mult p A) (Mult q A), \<Delta> \<turnstile> Mult (sadd p q) A)"

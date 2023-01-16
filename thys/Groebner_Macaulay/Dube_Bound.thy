@@ -55,12 +55,12 @@ qed
 corollary Dube_ge_d: "d \<le> Dube"
   by (simp add: Dube_def Dube_aux_ge_d del: Dube_aux.simps)
 
-text \<open>Dub\'{e} in @{cite Dube1990} proves the following theorem, to obtain a short closed form for
+text \<open>Dub\'{e} in \<^cite>\<open>Dube1990\<close> proves the following theorem, to obtain a short closed form for
   the degree bound. However, the proof he gives is wrong: In the last-but-one proof step of Lemma 8.1
   the sum on the right-hand-side of the inequality can be greater than 1/2 (e.g. for @{prop "n = 7"},
   @{prop "d = 2"} and @{prop "j = 1"}), rendering the value inside the big brackets negative. This is
   also true without the additional summand \<open>2\<close> we had to introduce in function @{const Dube_aux} to
-  correct another mistake found in @{cite Dube1990}.
+  correct another mistake found in \<^cite>\<open>Dube1990\<close>.
   Nonetheless, experiments carried out in Mathematica still suggest that the short closed form is a
   valid upper bound for @{const Dube}, even with the additional summand \<open>2\<close>. So, with some effort it
   might be possible to prove the theorem below; but in fact function @{const Dube} gives typically

@@ -11,7 +11,7 @@ begin
 
 text \<open>
   In this section, we derive Euclid's formula for primitive Pythagorean triples using
-  Gaussian integers, following Stillwell~\cite{stillwell}.
+  Gaussian integers, following Stillwell~\<^cite>\<open>"stillwell"\<close>.
 \<close>
 definition prim_pyth_triple :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
   "prim_pyth_triple x y z \<longleftrightarrow> x > 0 \<and> y > 0 \<and> coprime x y \<and> x\<^sup>2 + y\<^sup>2 = z\<^sup>2"

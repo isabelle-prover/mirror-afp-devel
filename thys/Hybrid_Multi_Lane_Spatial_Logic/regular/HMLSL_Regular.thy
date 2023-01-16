@@ -34,7 +34,7 @@ hence we cannot prove similar lemmas as for perfect sensors.
 
 However, we can still prove 
 lemmas corresponding to the activity and stability rules of the
-proof system for MLSL \cite{Linker2015a}.
+proof system for MLSL \<^cite>\<open>"Linker2015a"\<close>.
 
 Similar to the situation with perfect sensors, needed to instantiate the 
 sensor function, to ensure that the perceived length does not change

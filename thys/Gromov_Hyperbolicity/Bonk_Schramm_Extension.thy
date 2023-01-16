@@ -11,13 +11,13 @@ begin
 text \<open>We want to show that any metric space is isometrically embedded in a
 metric space which is geodesic (i.e., there is an embedded geodesic between any
 two points) and complete. There are many such constructions, but a very interesting one
-has been given by Bonk and Schramm in~\cite{bonk_schramm}, together with an additional property of the
+has been given by Bonk and Schramm in~\<^cite>\<open>"bonk_schramm"\<close>, together with an additional property of the
 completion: if the space is delta-hyperbolic (in the sense of Gromov), then its
 completion also is, with the same constant delta. It follows in particular that a $0$-hyperbolic
 space embeds in a $0$-hyperbolic geodesic space, i.e., a metric tree (there is an easier
 direct construction in this case).
 
-Another embedding of a metric space in a geodesic one is constructed by Mineyev~\cite{mineyev},
+Another embedding of a metric space in a geodesic one is constructed by Mineyev~\<^cite>\<open>"mineyev"\<close>,
 it is more canonical in a sense (isometries of the original space extend
 to the new space), but it is not clear if it preserves hyperbolicity.
 

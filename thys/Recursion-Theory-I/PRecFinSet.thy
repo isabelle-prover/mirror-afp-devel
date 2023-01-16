@@ -13,7 +13,7 @@ text \<open>
   We introduce a particular mapping \<open>nat_to_set\<close> from natural
   numbers to finite sets of natural numbers and a particular mapping
   \<open>set_to_nat\<close> from finite sets of natural numbers to natural
-  numbers.  See \cite{Rogers} and \cite{Soare} for more information.
+  numbers.  See \<^cite>\<open>"Rogers"\<close> and \<^cite>\<open>"Soare"\<close> for more information.
 \<close>
 
 definition

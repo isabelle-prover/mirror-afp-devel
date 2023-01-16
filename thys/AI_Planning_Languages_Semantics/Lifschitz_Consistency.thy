@@ -1,5 +1,5 @@
 section \<open>Soundness theorem for the STRIPS semantics\<close>
-text \<open>We prove the soundness theorem according to ~\cite{lifschitz1987semantics}.\<close>
+text \<open>We prove the soundness theorem according to ~\<^cite>\<open>"lifschitz1987semantics"\<close>.\<close>
 
 theory Lifschitz_Consistency
 imports PDDL_STRIPS_Semantics
@@ -16,7 +16,7 @@ context ast_domain begin
   text \<open>The Isabelle/HOL formula @{prop \<open>f s = Some s'\<close>} means
     that \<open>f\<close> is applicable in state \<open>s\<close>, and the result is \<open>s'\<close>. \<close>
 
-  text \<open>Definition B (i)--(iv) in Lifschitz's paper~\cite{lifschitz1987semantics}\<close>
+  text \<open>Definition B (i)--(iv) in Lifschitz's paper~\<^cite>\<open>"lifschitz1987semantics"\<close>\<close>
 
   fun is_NegPredAtom where
     "is_NegPredAtom (Not x) = is_predAtom x" | "is_NegPredAtom _ = False"
@@ -58,7 +58,7 @@ context ast_domain begin
         \<and> (\<forall>fmla\<in>set(adds (effect opr)). is_predAtom fmla))"
     by (cases "(opr,f)" rule: sound_opr.cases) auto
 
-  text \<open>Definition B (v)--(vii) in  Lifschitz's paper~\cite{lifschitz1987semantics}\<close>
+  text \<open>Definition B (v)--(vii) in  Lifschitz's paper~\<^cite>\<open>"lifschitz1987semantics"\<close>\<close>
 definition sound_system
     :: "ground_action set
       \<Rightarrow> world_model
@@ -96,7 +96,7 @@ definition sound_system
       by (simp add: compose_action_def fold_plus_sum_list_rev)
   qed
 
-  text \<open>Soundness Theorem in Lifschitz's paper~\cite{lifschitz1987semantics}.\<close>
+  text \<open>Soundness Theorem in Lifschitz's paper~\<^cite>\<open>"lifschitz1987semantics"\<close>.\<close>
 theorem STRIPS_sema_sound:
   assumes "sound_system \<Sigma> M\<^sub>0 s\<^sub>0 f"
     \<comment> \<open>For a sound system \<open>\<Sigma>\<close>\<close>

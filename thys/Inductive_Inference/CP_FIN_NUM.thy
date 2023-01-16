@@ -610,7 +610,7 @@ theorem CP_not_subseteq_NUM: "\<not> CP \<subseteq> NUM"
 
 text \<open>Conversely there is a subclass of @{term "U\<^sub>0"} that
 is in NUM but cannot be learned in a class-preserving way. The following
-proof is due to Jantke and Beick~\cite{jb-cpnii-81}. The idea is to
+proof is due to Jantke and Beick~\<^cite>\<open>"jb-cpnii-81"\<close>. The idea is to
 diagonalize against all strategies, that is, all partial recursive
 functions.\<close>
 

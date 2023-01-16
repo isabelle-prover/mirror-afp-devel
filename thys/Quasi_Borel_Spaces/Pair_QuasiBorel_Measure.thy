@@ -9,7 +9,7 @@ theory Pair_QuasiBorel_Measure
 begin
 
 subsubsection \<open> Binary Product Measure\<close>
-text \<open> Special case of \cite{Heunen_2017} Proposition 23 where $\Omega = \mathbb{R}\times \mathbb{R}$ and $X = X \times Y$.
+text \<open> Special case of \<^cite>\<open>"Heunen_2017"\<close> Proposition 23 where $\Omega = \mathbb{R}\times \mathbb{R}$ and $X = X \times Y$.
       Let $[\alpha,\mu ] \in P(X)$ and $[\beta ,\nu] \in P(Y)$. $\alpha\times\beta$ is the $\alpha$ in Proposition 23. \<close>
 definition qbs_prob_pair_measure_t :: "['a qbs_prob_t, 'b qbs_prob_t] \<Rightarrow> ('a \<times> 'b) qbs_prob_t" where
 "qbs_prob_pair_measure_t p q  \<equiv> (let (X,\<alpha>,\<mu>) = p;

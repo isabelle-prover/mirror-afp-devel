@@ -217,7 +217,7 @@ lemma not_connected_set: "\<not> is_connected_set V' \<Longrightarrow> u \<in> V
 subsection \<open>Graph Properties on Connectivity \<close>
 
 text \<open>The shortest path is defined to be the infinum of the set of connecting path walk lengths. 
-Drawing inspiration from \cite{noschinski2012}, we use the infinum and enats as this enables more 
+Drawing inspiration from \<^cite>\<open>"noschinski2012"\<close>, we use the infinum and enats as this enables more 
 natural reasoning in a non-finite setting, while also being useful for proofs of a more probabilistic
 or analysis nature\<close>
 

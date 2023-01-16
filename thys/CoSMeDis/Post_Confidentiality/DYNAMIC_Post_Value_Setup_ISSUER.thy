@@ -9,7 +9,7 @@ begin
 subsection \<open>Variation with dynamic declassification trigger\<close>
 
 text \<open>This section formalizes the ``dynamic'' variation of one
-post confidentiality properties, as described in \cite[Appendix C]{cosmedis-SandP2017}.
+post confidentiality properties, as described in \<^cite>\<open>\<open>Appendix C\<close> in "cosmedis-SandP2017"\<close>.
 \<close>
 
 locale Post = ObservationSetup_ISSUER

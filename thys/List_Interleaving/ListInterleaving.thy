@@ -15,7 +15,7 @@ text \<open>
 \null
 
 Among the various mathematical tools introduced in his outstanding work on Communicating Sequential
-Processes \cite{R2}, Hoare has defined \emph{interleaves} as the predicate satisfied by any three
+Processes \<^cite>\<open>"R2"\<close>, Hoare has defined \emph{interleaves} as the predicate satisfied by any three
 lists \emph{s}, \emph{t}, emph{u} such that \emph{s} may be split into sublists alternately
 extracted from \emph{t} and \emph{u}, whatever is the criterion for extracting an item from either
 \emph{t} or \emph{u} in each step.
@@ -29,9 +29,9 @@ stronger version of the predicate, named \emph{Interleaves}, is shown to fulfil 
 applying to the addition of a suffix to the input lists.
 
 Throughout this paper, the salient points of definitions and proofs are commented; for additional
-information, cf. Isabelle documentation, particularly \cite{R3}, \cite{R4}, \cite{R5}, and
-\cite{R6}. For a sample nontrivial application of the mathematical machinery developed in this
-paper, cf. \cite{R1}.
+information, cf. Isabelle documentation, particularly \<^cite>\<open>"R3"\<close>, \<^cite>\<open>"R4"\<close>, \<^cite>\<open>"R5"\<close>, and
+\<^cite>\<open>"R6"\<close>. For a sample nontrivial application of the mathematical machinery developed in this
+paper, cf. \<^cite>\<open>"R1"\<close>.
 \<close>
 
 
@@ -39,7 +39,7 @@ subsection "A first version of interleaving"
 
 text \<open>
 Here below is the definition of predicate \<open>interleaves\<close>, as well as of a convenient symbolic
-notation for it. As in the definition of predicate \emph{interleaves} formulated in \cite{R2}, the
+notation for it. As in the definition of predicate \emph{interleaves} formulated in \<^cite>\<open>"R2"\<close>, the
 recursive decomposition of the input lists is performed by item prepending. In the case of a list
 \<open>ws\<close> constructed recursively by item appending rather than prepending, the statement that it
 satisfies predicate \<open>interleaves\<close> with two further lists can nevertheless be proven by

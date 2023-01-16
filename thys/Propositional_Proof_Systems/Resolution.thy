@@ -10,7 +10,7 @@ inductive Resolution :: "'a literal set set \<Rightarrow> 'a literal set \<Right
 Ass: "C \<in> S \<Longrightarrow> S \<turnstile> C" |
 R: "S \<turnstile> C \<Longrightarrow> S \<turnstile> D \<Longrightarrow> k\<^sup>+ \<in> C \<Longrightarrow> k\<inverse> \<in> D \<Longrightarrow> S \<turnstile> (C - {k\<^sup>+}) \<union> (D - {k\<inverse>})"
 text\<open>The problematic part of this formulation is that we can't talk about a "Resolution Refutation" in an inductive manner. 
-  In the places where Gallier's proofs~\cite{gallier2015logic} do that, we have to work around that.\<close>
+  In the places where Gallier's proofs~\<^cite>\<open>"gallier2015logic"\<close> do that, we have to work around that.\<close>
 
 lemma Resolution_weaken: "S \<turnstile> D \<Longrightarrow> T \<union> S \<turnstile> D"
   by(induction rule: Resolution.induct; auto intro: Resolution.intros)

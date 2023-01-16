@@ -17,7 +17,7 @@ subsection \<open>The IND-CCA2 game for public-key encryption\<close>
 
 text \<open>
   We model an IND-CCA2 security game in the multi-user setting as described in
-  \cite{BellareBoldyrevaMicali2000EUROCRYPT}.
+  \<^cite>\<open>"BellareBoldyrevaMicali2000EUROCRYPT"\<close>.
 \<close>
 
 locale ind_cca2 = pk_enc +

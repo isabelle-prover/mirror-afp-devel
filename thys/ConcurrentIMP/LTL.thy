@@ -12,13 +12,13 @@ text\<open>
 
 To talk about liveness we need to consider infinitary behaviour on
 sequences. Traditionally future-time linear temporal logic (LTL) is used to do
-this @{cite "MannaPnueli:1991" and "OwickiLamport:1982"}.
+this \<^cite>\<open>"MannaPnueli:1991" and "OwickiLamport:1982"\<close>.
 
 The following is a straightforward shallow embedding of the
-now-traditional anchored semantics of LTL @{cite "MannaPnueli:1988"}. Some of it is adapted
-from the sophisticated TLA development in the AFP due to @{cite [cite_macro=citet] "TLA-AFP"}.
+now-traditional anchored semantics of LTL \<^cite>\<open>"MannaPnueli:1988"\<close>. Some of it is adapted
+from the sophisticated TLA development in the AFP due to \<^citet>\<open>"TLA-AFP"\<close>.
 
-Unlike @{cite [cite_macro=citet] "Lamport:2002"}, include the
+Unlike \<^citet>\<open>"Lamport:2002"\<close>, include the
 next operator, which is convenient for stating rules. Sometimes it allows us to
 ignore the system, i.e. to state rules as temporally valid
 (LTL-valid) rather than just temporally program valid (LTL-cimp-), in Jackson's terminology.
@@ -387,7 +387,7 @@ apply clarsimp
 apply (metis add_Suc_right le_less less_Suc_eq)
 done
 
-lemma unless_induct: \<comment>\<open> Rule \texttt{WAIT} from @{cite [cite_macro=citet] \<open>Fig~3.3\<close> "MannaPnueli:1995"}\<close>
+lemma unless_induct: \<comment>\<open> Rule \texttt{WAIT} from \<^citet>\<open>\<open>Fig~3.3\<close> in "MannaPnueli:1995"\<close>\<close>
   assumes I: "(I \<^bold>\<hookrightarrow> \<circle>(I \<^bold>\<or> R)) \<sigma>"
   assumes P: "(P \<^bold>\<hookrightarrow> I \<^bold>\<or> R) \<sigma>"
   assumes Q: "(I \<^bold>\<hookrightarrow> Q) \<sigma>"
@@ -410,11 +410,10 @@ text\<open>
 Most of our assertions will be of the form @{term "A \<^bold>\<longrightarrow> \<diamond>C"} (pronounced ``\<open>A\<close> leads to \<open>C\<close>'')
 or @{term "A \<^bold>\<longrightarrow> B \<U> C"} (``\<open>A\<close> leads to \<open>C\<close> via \<open>B\<close>'').
 
-Most of these rules are due to @{cite [cite_macro=citet]
-"Jackson:1998"} who used leads-to-via in a sequential setting. Others
-are due to @{cite [cite_macro=citet] "MannaPnueli:1991"}.
+Most of these rules are due to \<^citet>\<open>"Jackson:1998"\<close> who used leads-to-via in a sequential setting. Others
+are due to \<^citet>\<open>"MannaPnueli:1991"\<close>.
 
-The leads-to-via connective is similar to the ``ensures'' modality of @{cite [cite_macro=citet] \<open>\S3.4.4\<close> "ChandyMisra:1989"}.
+The leads-to-via connective is similar to the ``ensures'' modality of \<^citet>\<open>\<open>\S3.4.4\<close> in "ChandyMisra:1989"\<close>.
 
 \<close>
 
@@ -555,7 +554,7 @@ qed
 
 text\<open>
 
-The well-founded response rule due to @{cite [cite_macro=citet] \<open>Fig~1.23: \texttt{WELL} (well-founded response)\<close>"MannaPnueli:2010"},
+The well-founded response rule due to \<^citet>\<open>\<open>Fig~1.23: \texttt{WELL} (well-founded response)\<close> in"MannaPnueli:2010"\<close>,
 generalised to an arbitrary set of assertions and sequence predicates.
 \<^item> \<open>W1\<close> generalised to be contingent.
 \<^item> \<open>W2\<close> is a well-founded set of assertions that by \<open>W1\<close> includes \<open>P\<close>
@@ -592,7 +591,7 @@ subsection\<open>Fairness\<close>
 
 text\<open>
 
-A few renderings of weak fairness. @{cite [cite_macro=citet] "vanGlabbeekHofner:2019"} call this
+A few renderings of weak fairness. \<^citet>\<open>"vanGlabbeekHofner:2019"\<close> call this
 "response to insistence" as a generalisation of weak fairness.
 
 \<close>
@@ -672,7 +671,7 @@ using stable_unless[OF assms(2)] assms(1) by (metis (mono_tags) weakly_fair_unle
 
 text\<open>
 
-Similarly for strong fairness. @{cite [cite_macro=citet] "vanGlabbeekHofner:2019"} call this
+Similarly for strong fairness. \<^citet>\<open>"vanGlabbeekHofner:2019"\<close> call this
 "response to persistence" as a generalisation of strong fairness.
 
 \<close>
@@ -720,11 +719,11 @@ subsection\<open>Safety and liveness \label{sec:ltl-safety-liveness}\<close>
 
 text\<open>
 
-@{cite [cite_macro=citet] "Sistla:1994"} shows some characterisations
+\<^citet>\<open>"Sistla:1994"\<close> shows some characterisations
 of LTL formulas in terms of safety and liveness. Note his @{term
 "(\<U>)"} is actually @{term "(\<W>)"}.
 
-See also @{cite [cite_macro=citet] "ChangMannaPnueli:1992"}.
+See also \<^citet>\<open>"ChangMannaPnueli:1992"\<close>.
 
 \<close>
 

@@ -383,7 +383,7 @@ text \<open>
     worklist. The idea is that decrementing the counter is more efficient than 
     checking whether all states on the rule's RHS have been discovered.
 
-  A similar algorithm is sketched in \cite{tata2007}(Exercise~1.18).
+  A similar algorithm is sketched in \<^cite>\<open>"tata2007"\<close>(Exercise~1.18).
 \<close>
 type_synonym ('Q,'L) br'_state = "'Q set \<times> 'Q set \<times> (('Q,'L) ta_rule \<rightharpoonup> nat)"
 

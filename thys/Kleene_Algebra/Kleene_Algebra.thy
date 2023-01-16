@@ -301,7 +301,7 @@ qed
 
 text \<open>The next lemma is used in omega algebras to prove, for
 instance, Bachmair and Dershowitz's separation of termination
-theorem~\cite{bachmair86commutation}. The property at the left-hand
+theorem~\<^cite>\<open>"bachmair86commutation"\<close>. The property at the left-hand
 side of the equivalence is known as \emph{quasicommutation}.\<close>
 
 lemma quasicomm_var: "y \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star> \<longleftrightarrow> y\<^sup>\<star> \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star>"
@@ -475,7 +475,7 @@ lemma star_denest_var_9 [simp]: "(x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup
 
 text \<open>The following statements are well known from term
 rewriting. They are all variants of the Church-Rosser theorem in
-Kleene algebra~\cite{struth06churchrosser}. But first we prove a law
+Kleene algebra~\<^cite>\<open>"struth06churchrosser"\<close>. But first we prove a law
 relating two confluence properties.\<close>
 
 lemma confluence_var [iff]: "y \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<longleftrightarrow> y\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
@@ -574,7 +574,7 @@ begin
 text \<open>In left Kleene algebras the non-fact @{prop "z + y \<cdot> x \<le> y \<Longrightarrow> z \<cdot> x\<^sup>\<star> \<le> y"}
 is a good challenge for counterexample generators. A model of left
 Kleene algebras in which the right star induction law does not hold
-has been given by Kozen~\cite{kozen90kleene}.\<close>
+has been given by Kozen~\<^cite>\<open>"kozen90kleene"\<close>.\<close>
 
 text \<open>We now show that the right unfold law becomes an equality.\<close>
 
@@ -591,7 +591,7 @@ proof (rule order.antisym)
 qed
 
 text \<open>The following more complex unfold law has been used as an
-axiom, called prodstar, by Conway~\cite{conway71regular}.\<close>
+axiom, called prodstar, by Conway~\<^cite>\<open>"conway71regular"\<close>.\<close>
 
 lemma star_prod_unfold [simp]: "1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y = (x \<cdot> y)\<^sup>\<star>"
 proof (rule order.antisym)
@@ -650,7 +650,7 @@ qed
 
 text \<open>The following properties are related to a property from
 propositional dynamic logic which has been attributed to Albert
-Meyer~\cite{harelkozentiuryn00dynamic}. Here we prove it as a theorem
+Meyer~\<^cite>\<open>"harelkozentiuryn00dynamic"\<close>. Here we prove it as a theorem
 of Kleene algebra.\<close>
 
 lemma star_square: "(x \<cdot> x)\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -697,7 +697,7 @@ lemma tc_eq: "x \<cdot> x = x \<Longrightarrow> x\<^sup>\<star> \<cdot> x = x"
   by (auto intro: tc)
 
 
-text \<open>The next fact has been used by Boffa~\cite{boffa90remarque} to
+text \<open>The next fact has been used by Boffa~\<^cite>\<open>"boffa90remarque"\<close> to
 axiomatise the equational theory of regular expressions.\<close>
 
 lemma boffa_var: "x \<cdot> x \<le> x \<Longrightarrow> x\<^sup>\<star> = 1 + x"
@@ -735,7 +735,7 @@ subsection \<open>Left Kleene Algebras with Zero\<close>
 text \<open>
 There are applications where only a left zero is assumed, for instance
 in the context of total correctness and for demonic refinement
-algebras~\cite{vonwright04refinement}.
+algebras~\<^cite>\<open>"vonwright04refinement"\<close>.
 \<close>
 
 class left_kleene_algebra_zerol = left_kleene_algebra + dioid_one_zerol
@@ -760,7 +760,7 @@ class left_kleene_algebra_zero = left_kleene_algebra_zerol + dioid_one_zero
 subsection \<open>Pre-Kleene Algebras\<close>
 
 text \<open>Pre-Kleene algebras are essentially probabilistic Kleene
-algebras~\cite{mciverweber05pka}.  They have a weaker right star
+algebras~\<^cite>\<open>"mciverweber05pka"\<close>.  They have a weaker right star
 unfold axiom. We are still looking for theorems that could be proved
 in this setting.\<close>
 
@@ -859,7 +859,7 @@ lemma "(\<forall>x y. y \<le> x \<cdot> y \<longrightarrow> y = 0) \<Longrightar
 end
 
 text \<open>Finally, here come the Kleene algebras \`a~la
-Kozen~\cite{kozen94complete}. We only prove quasi-identities in this
+Kozen~\<^cite>\<open>"kozen94complete"\<close>. We only prove quasi-identities in this
 section. Since left Kleene algebras are complete with respect to the
 equational theory of regular expressions and regular languages, all
 identities hold already without the right star induction axiom.\<close>
@@ -915,7 +915,7 @@ end (* kleene_algebra *)
 
 text \<open>We finish with some properties on (multiplicatively)
 commutative Kleene algebras. A chapter in Conway's
-book~\cite{conway71regular} is devoted to this topic.\<close>
+book~\<^cite>\<open>"conway71regular"\<close> is devoted to this topic.\<close>
 
 class commutative_kleene_algebra = kleene_algebra +
   assumes mult_comm [ac_simps]: "x \<cdot> y = y \<cdot> x"

@@ -30,7 +30,7 @@
 section\<open>Basic Data Types\<close>
 text\<open>
   \label{sec:Core_DOM_Basic_Datatypes}
-  This theory formalizes the primitive data types used by the DOM standard~\cite{dom-specification}.
+  This theory formalizes the primitive data types used by the DOM standard~\<^cite>\<open>"dom-specification"\<close>.
 \<close> 
 theory Core_DOM_Basic_Datatypes
   imports

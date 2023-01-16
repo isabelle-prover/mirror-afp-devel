@@ -3,7 +3,7 @@ subsection \<open>Vectors and Matrices in $\mathbb{C}^2$\<close>
 (* ---------------------------------------------------------------------------- *)
 
 text \<open>Representing vectors and matrices of arbitrary dimensions pose a challenge in formal theorem
-proving \cite{harrison05}, but we only need to consider finite dimension spaces $\mathbb{C}^2$ and
+proving \<^cite>\<open>"harrison05"\<close>, but we only need to consider finite dimension spaces $\mathbb{C}^2$ and
 $\mathbb{R}^3$.\<close>
 
 theory Matrices

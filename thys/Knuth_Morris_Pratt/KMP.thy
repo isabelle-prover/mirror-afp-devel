@@ -137,7 +137,7 @@ definition "I_in_na s t i \<equiv> \<lambda>(j,pos).
 subsection\<open>Algorithm\<close>
 
 (*Algorithm is common knowledge \<longrightarrow> remove citation here, move explanations to KMP below?*)
-text\<open>The following definition is taken from Helmut Seidl's lecture on algorithms and data structures@{cite GAD} except that we
+text\<open>The following definition is taken from Helmut Seidl's lecture on algorithms and data structures\<^cite>\<open>GAD\<close> except that we
 \<^item> output the identified position @{term \<open>pos :: nat option\<close>} instead of just @{const True}
 \<^item> use @{term \<open>pos :: nat option\<close>} as break-flag to support the abort within the loops
 \<^item> rewrite @{prop \<open>i \<le> length t - length s\<close>} in the first while-condition to @{prop \<open>i + length s \<le> length t\<close>} to avoid having to use @{typ int} for list indexes (or the additional precondition @{prop \<open>length s \<le> length t\<close>})
@@ -183,7 +183,7 @@ text\<open>Note that the precondition cannot be removed without an extra branch:
 
 section\<open>Knuth--Morris--Pratt algorithm\<close>
 
-text\<open>Just like our templates@{cite KMP77}@{cite GAD}, we first verify the main routine and discuss the computation of the auxiliary values @{term \<open>\<ff> s\<close>} only in a later section.\<close>
+text\<open>Just like our templates\<^cite>\<open>KMP77\<close>\<^cite>\<open>GAD\<close>, we first verify the main routine and discuss the computation of the auxiliary values @{term \<open>\<ff> s\<close>} only in a later section.\<close>
 
 subsection\<open>Preliminaries: Borders of lists\<close>
 
@@ -310,8 +310,8 @@ qed
 
 subsection\<open>Main routine\<close>
 
-text\<open>The following is Seidl's "border"-table@{cite GAD} (values shifted by 1 so we don't need @{typ int}),
-or equivalently, "f" from Knuth's, Morris' and Pratt's paper@{cite KMP77} (with indexes starting at 0).\<close>
+text\<open>The following is Seidl's "border"-table\<^cite>\<open>GAD\<close> (values shifted by 1 so we don't need @{typ int}),
+or equivalently, "f" from Knuth's, Morris' and Pratt's paper\<^cite>\<open>KMP77\<close> (with indexes starting at 0).\<close>
 fun \<ff> :: "'a list \<Rightarrow> nat \<Rightarrow> nat" where
   "\<ff> s 0 = 0" \<comment> \<open>This increments the compare position while @{prop \<open>j=(0::nat)\<close>}\<close> |
   "\<ff> s j = length (intrinsic_border (take j s)) + 1"
@@ -542,7 +542,7 @@ definition "I_in_cb s j \<equiv> \<lambda>i.
 
 subsubsection\<open>Algorithm\<close>
 
-text\<open>Again, we follow Seidl@{cite GAD}, p.582. Apart from the +1-shift, we make another modification:
+text\<open>Again, we follow Seidl\<^cite>\<open>GAD\<close>, p.582. Apart from the +1-shift, we make another modification:
 Instead of directly setting @{term \<open>\<ff>s!1\<close>}, we let the first loop-iteration (if there is one) do that for us.
 This allows us to remove the precondition @{prop \<open>s \<noteq> []\<close>}, as the index bounds are respected even in that corner case.\<close>
 

@@ -14,25 +14,25 @@ begin
 text_raw \<open>\label{thy:Introduction}\<close>
 text \<open>
   
-  Dijkstra's algorithm \cite{Dijk59} is an algorithm used to
+  Dijkstra's algorithm \<^cite>\<open>"Dijk59"\<close> is an algorithm used to
   find shortest paths from one given vertex to all other vertices in a
   non-negatively weighted graph.  
   
   The implementation of the algorithm is meant to be an application
   of our extensions to the Isabelle Collections Framework (ICF)
-  \cite{L09_collections,LL10,NKP10}. Moreover, it serves as a test case 
-  for our data refinement framework \cite{refinement_framework}.
+  \<^cite>\<open>"L09_collections" and "LL10" and "NKP10"\<close>. Moreover, it serves as a test case 
+  for our data refinement framework \<^cite>\<open>"refinement_framework"\<close>.
   We use ICF-Maps to efficiently represent the graph and
   result and the newly introduced unique priority queues for the work
   list.
 
-  For a documentation of the refinement framework see \cite{refinement_framework},
+  For a documentation of the refinement framework see \<^cite>\<open>"refinement_framework"\<close>,
   that also contains a userguide and some simpler examples.
 
   The development utilizes a stepwise refinement approach. Starting from an
   abstract algorithm that has a nice correctness proof, we stepwise refine
   the algorithm until we end up with an efficient implementation, for that 
-  we generate code using Isabelle/HOL's code generator\cite{Haft09,HaNi10}.
+  we generate code using Isabelle/HOL's code generator\<^cite>\<open>"Haft09" and "HaNi10"\<close>.
   
   \paragraph{Structure of the Submission.}
   The abstract version of the algorithm with the correctness proof, as well

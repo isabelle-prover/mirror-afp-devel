@@ -18,7 +18,7 @@ text \<open>Whereas we previously only proved the closure properties of algebrai
   The theory also contains a code-setup to implement real numbers via real algebraic numbers.\<close>
 
 
-text \<open>The results are taken from the textbook \cite[pages 329ff]{AlgNumbers}.\<close>
+text \<open>The results are taken from the textbook \<^cite>\<open>\<open>pages 329ff\<close> in "AlgNumbers"\<close>.\<close>
 
 
 theory Real_Algebraic_Numbers

@@ -10,7 +10,7 @@ begin
 
 subsection \<open>Definitions\<close>
 
-text \<open>Pairing heaps \cite{FredmanSST86}
+text \<open>Pairing heaps \<^cite>\<open>"FredmanSST86"\<close>
 in their original representation as binary trees.\<close>
 
 fun get_min  :: "'a :: linorder tree \<Rightarrow> 'a" where

@@ -16,11 +16,11 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 See 
-\cite{noauthor_nlab_nodate}\footnote{
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/initial+object}
-}, \cite{noauthor_nlab_nodate}\footnote{
+}, \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/terminal+object}
-} and Chapter X-1 in \cite{mac_lane_categories_2010}.
+} and Chapter X-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 locale is_cat_obj_empty_terminal = is_cat_limit \<alpha> cat_0 \<CC> \<open>cf_0 \<CC>\<close> z \<ZZ> 
@@ -405,11 +405,11 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 See 
-\cite{noauthor_nlab_nodate}\footnote{
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/initial+object}
-}, \cite{noauthor_nlab_nodate}\footnote{
+}, \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/terminal+object}
-} and Chapter X-1 in \cite{mac_lane_categories_2010}.
+} and Chapter X-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 locale is_cat_obj_id_initial = is_cat_limit \<alpha> \<CC> \<CC> \<open>cf_id \<CC>\<close> z \<ZZ> for \<alpha> \<CC> z \<ZZ>

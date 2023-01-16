@@ -1,6 +1,6 @@
 subsection \<open> Oblivious transfer constructed from ETPs \<close>
 
-text\<open>Here we construct the OT protocol based on ETPs given in \cite{DBLP:books/sp/17/Lindell17} (Chapter 4) and prove
+text\<open>Here we construct the OT protocol based on ETPs given in \<^cite>\<open>"DBLP:books/sp/17/Lindell17"\<close> (Chapter 4) and prove
 semi honest security for both parties. We show information theoretic security for Party 1 and reduce the security of 
 Party 2 to the HCP assumption.\<close>
 

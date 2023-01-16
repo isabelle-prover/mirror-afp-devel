@@ -18,7 +18,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 text\<open>
 The definitions and the elementary properties of the pullbacks and the 
 pushouts can be found, for example, in Chapter III-3 and Chapter III-4 in 
-\cite{mac_lane_categories_2010}. 
+\<^cite>\<open>"mac_lane_categories_2010"\<close>. 
 \<close>
 
 locale is_cat_pullback =

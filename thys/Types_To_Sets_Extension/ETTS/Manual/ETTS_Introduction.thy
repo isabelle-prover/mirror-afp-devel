@@ -20,23 +20,23 @@ subsection\<open>Background\<close>
 text\<open>
 The \textit{standard library} that is associated with the 
 object logic Isabelle/HOL and provided as a part of 
-the standard distribution of Isabelle \cite{noauthor_isabellehol_2020} 
+the standard distribution of Isabelle \<^cite>\<open>"noauthor_isabellehol_2020"\<close> 
 contains a significant number of formalized results from a 
 variety of fields of mathematics (e.g., order theory, algebra, topology). 
 Nevertheless, using the argot that was promoted in the 
-original publication of Types-To-Sets \cite{blanchette_types_2016}, 
+original publication of Types-To-Sets \<^cite>\<open>"blanchette_types_2016"\<close>, 
 the formalization is performed using a type-based approach. 
 Thus, for example, the carrier sets associated with the algebraic structures 
 and the underlying sets of the topological spaces, effectively, 
 consist of all terms of an arbitrary type. This restriction can create 
 an inconvenience when working with mathematical objects induced on a 
 subset of the carrier set/underlying set associated with the original 
-object (e.g., see \cite{immler_smooth_2019}).
+object (e.g., see \<^cite>\<open>"immler_smooth_2019"\<close>).
 
 To address this limitation, several additional libraries were developed 
 upon the foundations of the standard library 
-(e.g., \textit{HOL-Algebra} \cite{ballarin_isabellehol_2020} and 
-\textit{HOL-Analysis} \cite{noauthor_isabellehol_2020-1}). 
+(e.g., \textit{HOL-Algebra} \<^cite>\<open>"ballarin_isabellehol_2020"\<close> and 
+\textit{HOL-Analysis} \<^cite>\<open>"noauthor_isabellehol_2020-1"\<close>). 
 In terms of the argot associated with Types-To-Sets, these libraries provide 
 the set-based counterparts of many type-based theorems in the standard library,
 along with a plethora of additional results. Nonetheless, the proofs of 
@@ -50,11 +50,11 @@ mathematical knowledge formalized in Isabelle/HOL: potentially,
 every type-based theorem can be converted to a set-based theorem in 
 a semi-automated manner and the relationship between such type-based 
 and set-based theorems can be articulated clearly and explicitly 
-\cite{blanchette_types_2016}. 
+\<^cite>\<open>"blanchette_types_2016"\<close>. 
 In this document, we describe a particular implementation of the framework 
 Types-To-Sets in Isabelle/HOL that takes the form of a further extension 
 of the language Isabelle/Isar with several new commands and attributes 
-(e.g., see \cite{wenzel_isabelle/isar_2019-1}).
+(e.g., see \<^cite>\<open>"wenzel_isabelle/isar_2019-1"\<close>).
 \<close>
 
 
@@ -67,25 +67,25 @@ A reader of this document is assumed to be familiar with
 the proof assistant Isabelle, the proof language Isabelle/Isar,
 the meta-logic Isabelle/Pure and
 the object logic Isabelle/HOL, as described in, 
-\cite{paulson_natural_1986, wenzel_isabelle/isar_2019-1},
-\cite{bertot_isar_1999, wenzel_isabelleisar_2007, wenzel_isabelle/isar_2019-1},
-\cite{paulson_foundation_1989, wenzel_isabelle/isar_2019-1} and
-\cite{yang_comprehending_2017}, respectively. Familiarity with the
+\<^cite>\<open>"paulson_natural_1986" and "wenzel_isabelle/isar_2019-1"\<close>,
+\<^cite>\<open>"bertot_isar_1999" and "wenzel_isabelleisar_2007" and "wenzel_isabelle/isar_2019-1"\<close>,
+\<^cite>\<open>"paulson_foundation_1989" and "wenzel_isabelle/isar_2019-1"\<close> and
+\<^cite>\<open>"yang_comprehending_2017"\<close>, respectively. Familiarity with the
 content of the original articles about Types-To-Sets
-\cite{blanchette_types_2016,kuncar_types_2019} and
+\<^cite>\<open>"blanchette_types_2016" and "kuncar_types_2019"\<close> and
 the first large-scale application of Types-To-Sets
-(as described in \cite{immler_smooth_2019}) 
+(as described in \<^cite>\<open>"immler_smooth_2019"\<close>) 
 is not essential but can be useful.
 
 The notational conventions that are used in this document are
 approximately equivalent to the conventions that were suggested in
-\cite{blanchette_types_2016}, \cite{yang_comprehending_2017} and
-\cite{kuncar_types_2019}. 
+\<^cite>\<open>"blanchette_types_2016"\<close>, \<^cite>\<open>"yang_comprehending_2017"\<close> and
+\<^cite>\<open>"kuncar_types_2019"\<close>. 
 However, a disparity comes from our use of explicit notation 
 for the \textit{schematic variables}. In Isabelle/HOL, free variables 
 that occur in the theorems at the top-level in the theory context 
 are generalized implicitly, which may be expressed by replacing 
-fixed variables by schematic variables \cite{wenzel_isabelle/isar_2001}. 
+fixed variables by schematic variables \<^cite>\<open>"wenzel_isabelle/isar_2001"\<close>. 
 In this article, the schematic variables will be prefixed with the 
 question mark ``$?$'', like so: $?a$. Nonetheless, explicit 
 quantification over the type variables at the top-level 
@@ -113,19 +113,19 @@ Let ${}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}$ denote
 \end{aligned},
 \]
 let $\rightsquigarrow$ denote the constant/type \textit{dependency relation} 
-(see subsection 2.3 in \cite{blanchette_types_2016}), 
+(see subsection 2.3 in \<^cite>\<open>"blanchette_types_2016"\<close>), 
 let $\rightsquigarrow^{\downarrow}$ 
 be a \textit{substitutive closure} of the constant/type dependency relation, 
 let $R^{+}$ denote the transitive closure of 
 the binary relation $R$, let $\Delta_c$ denote the set of all types for which 
 $c$ is \textit{overloaded} and let $\sigma\not\leq S $ mean that $\sigma$ is not 
-an instance of any type in $S$ (see \cite{blanchette_types_2016} and 
-\cite{yang_comprehending_2017}).
+an instance of any type in $S$ (see \<^cite>\<open>"blanchette_types_2016"\<close> and 
+\<^cite>\<open>"yang_comprehending_2017"\<close>).
 
 The framework Types-To-Sets extends Isabelle/HOL with two axioms: 
 \textit{Local Typedef Rule} (LT) and the \textit{Unoverloading Rule} (UO). 
 The consistency of Isabelle/HOL augmented with the LT and
-the UO is proved in Theorem 11 in \cite{yang_comprehending_2017}.
+the UO is proved in Theorem 11 in \<^cite>\<open>"yang_comprehending_2017"\<close>.
 
 The LT is given by
 \[
@@ -158,16 +158,16 @@ through a chain of constant and type definitions and there is no
 matching definition for $c_{\sigma}$.
 
 The statement of the \textit{original relativization algorithm} (ORA) can be 
-found in subsection 5.4 in \cite{blanchette_types_2016}. Here, we present
+found in subsection 5.4 in \<^cite>\<open>"blanchette_types_2016"\<close>. Here, we present
 a variant of the algorithm that includes some of the amendments that were 
-introduced in \cite{immler_smooth_2019}, which will be referred to as the 
+introduced in \<^cite>\<open>"immler_smooth_2019"\<close>, which will be referred to as the 
 \textit{relativization algorithm} (RA). 
 The differences between the ORA and 
 the RA are implementation-specific and have no effect on the output 
 of the algorithm, if applied to a conventional input.
 Let $\bar{a}$ denote a finite sequence $a_1,\ldots,a_n$ 
 for some positive integer $n$; let $\Upsilon$ be a \textit{type class} 
-\cite{nipkow_type_1991,wenzel_type_1997,altenkirch_constructive_2007} 
+\<^cite>\<open>"nipkow_type_1991" and "wenzel_type_1997" and "altenkirch_constructive_2007"\<close> 
 that depends on the overloaded constants $\bar{*}$ and 
 let $U\downarrow\bar{f}$ be used 
 to state that $U$ is closed under the operations $\bar{f}$; 
@@ -230,19 +230,19 @@ U\neq\emptyset,{}_{\alpha}(\beta\approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}
 The input to the RA is assumed to be a theorem 
 $\vdash\phi\left[?\alpha_{\Upsilon}\right]$. 
 Step 1 will be referred to as the first step of the dictionary 
-construction (subsection 5.2 in \cite{blanchette_types_2016}); 
+construction (subsection 5.2 in \<^cite>\<open>"blanchette_types_2016"\<close>); 
 step 2 as unoverloading of the type $?\alpha_{\Upsilon}$: 
-it includes class internalization (subsection 5.1 in \cite{blanchette_types_2016}) 
+it includes class internalization (subsection 5.1 in \<^cite>\<open>"blanchette_types_2016"\<close>) 
 and the application of the UO (it corresponds to the application 
-of the attribute @{attribute unoverload_type} \cite{immler_smooth_2019}); 
+of the attribute @{attribute unoverload_type} \<^cite>\<open>"immler_smooth_2019"\<close>); 
 step 3 provides the assumptions that are the prerequisites for 
 the application of the LT; 
 step 4 is reserved for the concrete type instantiation; 
 step 5 is the application of \textit{Transfer} 
-(section 6 in \cite{blanchette_types_2016}); 
+(section 6 in \<^cite>\<open>"blanchette_types_2016"\<close>); 
 step 6 refers to the application of the LT; 
 step 7 is the export of the theorem from the local 
-context \cite{wenzel_isabelle/isar_2019}.
+context \<^cite>\<open>"wenzel_isabelle/isar_2019"\<close>.
 \<close>
 
 
@@ -251,22 +251,22 @@ subsubsection\<open>Implementation of Types-To-Sets\label{subsec:ITTS}\<close>
 
 text\<open>
 
-In \cite{blanchette_types_2016}, the authors extended the implementation 
+In \<^cite>\<open>"blanchette_types_2016"\<close>, the authors extended the implementation 
 of Isabelle/HOL with the LT and UO. Also, they introduced the 
 attributes @{attribute internalize_sort},
 @{attribute unoverload} and @{attribute cancel_type_definition}  
 that allowed for the execution of steps 1, 3 and 7 (respectively) of the ORA. 
 Other steps could be performed using the technology that already existed. 
-In \cite{immler_smooth_2019}, the implementation was augmented with the 
+In \<^cite>\<open>"immler_smooth_2019"\<close>, the implementation was augmented with the 
 attribute @{attribute unoverload_type},
 which largely subsumed the functionality of the attributes 
 @{attribute internalize_sort} and @{attribute unoverload}.
 
 The examples of the application of the ORA to theorems in 
-Isabelle/HOL that were developed in \cite{blanchette_types_2016}
+Isabelle/HOL that were developed in \<^cite>\<open>"blanchette_types_2016"\<close>
 already contained an implicit suggestion that the constants and theorems 
 needed for the first step of the dictionary construction in step 2 of 
-the ORA and the \textit{transfer rules} \cite{kuncar_types_2015} 
+the ORA and the \textit{transfer rules} \<^cite>\<open>"kuncar_types_2015"\<close> 
 needed for step 6 of the ORA can and should 
 be obtained prior to the application of the algorithm. Thus, using the notation
 from subsection \ref{sec:ra}, for each constant-instance $c_{\sigma}$ 
@@ -282,40 +282,40 @@ $c^{\mathsf{on}}_{\mathsf{with}}$
 such that $R\left[T_{\alpha\rightarrow\beta\rightarrow\mathbb{B}}\right]
 \ (c^{\mathsf{on}}_{\mathsf{with}}\ U_{\alpha\ \mathsf{set}})\ c_{\mathsf{with}}$ 
 ($\mathbb{B}$ denotes the built-in Isabelle/HOL type $bool$
-\cite{kuncar_types_2015})
-is a conditional transfer rule (e.g., see \cite{gonthier_lifting_2013}), 
+\<^cite>\<open>"kuncar_types_2015"\<close>)
+is a conditional transfer rule (e.g., see \<^cite>\<open>"gonthier_lifting_2013"\<close>), 
 with $T$ being a binary 
 relation that is at least right-total and bi-unique, 
 assuming the default order on predicates
-in Isabelle/HOL (see \cite{kuncar_types_2015}).  
+in Isabelle/HOL (see \<^cite>\<open>"kuncar_types_2015"\<close>).  
 
-The unoverloading \cite{kaufmann_mechanized_2010} 
+The unoverloading \<^cite>\<open>"kaufmann_mechanized_2010"\<close> 
 and relativization of constants for the application 
 of the RA was performed manually in 
-\cite{blanchette_types_2016,kuncar_types_2019,immler_smooth_2019}. 
+\<^cite>\<open>"blanchette_types_2016" and "kuncar_types_2019" and "immler_smooth_2019"\<close>. 
 Nonetheless, unoverloading could be performed using the 
 \textit{classical overloading elimination algorithm} proposed 
-in \cite{kaufmann_mechanized_2010}, but it is likely that an implementation
+in \<^cite>\<open>"kaufmann_mechanized_2010"\<close>, but it is likely that an implementation
 of this algorithm was not publicly available at the time of writing
-of this document. In \cite{immler_automation_2019}, an alternative algorithm was 
+of this document. In \<^cite>\<open>"immler_automation_2019"\<close>, an alternative algorithm was 
 implemented and made available via the command 
 @{command unoverload_definition}, 
 although it suffers from several limitations in comparison to the 
-algorithm in \cite{kaufmann_mechanized_2010}. 
+algorithm in \<^cite>\<open>"kaufmann_mechanized_2010"\<close>. 
 The transfer rules 
 for the constants that are conditionally parametric 
 can be synthesized automatically using the command 
 @{command parametric_constant} 
-\cite{gilcher_conditional_2017} from the standard distribution of Isabelle; 
-the framework \textit{autoref} \cite{lammich_automatic_2013} allows 
+\<^cite>\<open>"gilcher_conditional_2017"\<close> from the standard distribution of Isabelle; 
+the framework \textit{autoref} \<^cite>\<open>"lammich_automatic_2013"\<close> allows 
 for the synthesis of transfer rules $R\ t\ t'$, 
-including both the \textit{parametricity relation} \cite{kuncar_types_2015}
+including both the \textit{parametricity relation} \<^cite>\<open>"kuncar_types_2015"\<close>
 $R$ and the term $t$, 
 based on $t'$, under favorable conditions; 
-lastly, in \cite{lammich_automatic_2013} and \cite{immler_smooth_2019}, 
+lastly, in \<^cite>\<open>"lammich_automatic_2013"\<close> and \<^cite>\<open>"immler_smooth_2019"\<close>, 
 the authors suggest an outline of another feasible algorithm for the 
 synthesis of the transfer rules based on the functionality of the framework
-Transfer \cite{gonthier_lifting_2013}, but do not provide an implementation.
+Transfer \<^cite>\<open>"gonthier_lifting_2013"\<close>, but do not provide an implementation.
 
 Finally, the assumption 
 ${}_{\alpha}(\beta \approx U)_{\mathsf{Rep}}^{\mathsf{Abs}}$ 
@@ -326,7 +326,7 @@ the instantiation of types required in step 4 of the RA can
 be performed using the standard attributes of Isabelle; 
 step 6 can be performed using the attribute 
 @{attribute cancel_type_definition} developed in 
-\cite{blanchette_types_2016}; step 7 is expected to be performed manually
+\<^cite>\<open>"blanchette_types_2016"\<close>; step 7 is expected to be performed manually
 by the user.
 
 \<close>
@@ -360,9 +360,9 @@ The framework CTR provides the commands @{command ud} and @{command ctr} for
 the automation of unoverloading of definitions and 
 synthesis of conditional transfer rules from definitions, 
 respectively. Further information about this framework can be found in its
-reference manual \cite{milehins_conditional_2021}.
+reference manual \<^cite>\<open>"milehins_conditional_2021"\<close>.
 In this context, we also mention that both the CTR and the ETTS were tested 
-using the framework SpecCheck \cite{kappelmann_speccheck_2021}.
+using the framework SpecCheck \<^cite>\<open>"kappelmann_speccheck_2021"\<close>.
 
 The extension was designed under a policy of non-intervention with the  
 existing implementation of the framework Types-To-Sets. Therefore, it does

@@ -18,10 +18,9 @@ section\<open>Preliminaries\<close>
 
 text\<open>
 
-The auxiliary concepts defined here are standard \cite{Routley:79, Sen:70a,
-Taylor:2005}. Throughout we make use of a fixed set @{term "A"} of
+The auxiliary concepts defined here are standard \<^cite>\<open>"Routley:79" and "Sen:70a" and "Taylor:2005"\<close>. Throughout we make use of a fixed set @{term "A"} of
 alternatives, drawn from some arbitrary type @{typ "'a"} of suitable
-size. Taylor \cite{Taylor:2005} terms this set an \emph{agenda}. Similarly
+size. Taylor \<^cite>\<open>"Taylor:2005"\<close> terms this set an \emph{agenda}. Similarly
 we have a type @{typ "'i"} of individuals and a population @{term "Is"}.
 
 \<close>

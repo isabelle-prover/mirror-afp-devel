@@ -63,7 +63,7 @@ text\<open>The key difference to the work by Kleymann (and America and de
 Boer) is that soundness and completeness are shown for arbitrary,
 i.e.\ unbounded nondeterminism.  This is a significant extension and
 appears to have been an open problem. The details are found below and
-are explained in a separate paper~\cite{Nipkow-CSL02}.\<close>
+are explained in a separate paper~\<^cite>\<open>"Nipkow-CSL02"\<close>.\<close>
 
 lemma strengthen_pre:
  "\<lbrakk> \<forall>z s. P' z s \<longrightarrow> P z s; C \<turnstile>\<^sub>t {P}c{Q}  \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P'}c{Q}"

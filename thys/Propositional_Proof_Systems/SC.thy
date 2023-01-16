@@ -20,7 +20,7 @@ OrR: "\<Gamma> \<Rightarrow> F,G,\<Delta> \<Longrightarrow> \<Gamma> \<Rightarro
 ImpL: "\<lbrakk> \<Gamma> \<Rightarrow> F,\<Delta>; G,\<Gamma> \<Rightarrow> \<Delta> \<rbrakk> \<Longrightarrow> Imp F G, \<Gamma> \<Rightarrow> \<Delta>" |
 ImpR: "F,\<Gamma> \<Rightarrow> G,\<Delta> \<Longrightarrow> \<Gamma> \<Rightarrow> Imp F G, \<Delta>"
 
-text\<open>Many of the proofs here are inspired Troelstra and Schwichtenberg~\cite{troelstra2000basic}.\<close>
+text\<open>Many of the proofs here are inspired Troelstra and Schwichtenberg~\<^cite>\<open>"troelstra2000basic"\<close>.\<close>
 
 lemma
   shows BotL_canonical[intro!]: "\<bottom>,\<Gamma>\<Rightarrow>\<Delta>"

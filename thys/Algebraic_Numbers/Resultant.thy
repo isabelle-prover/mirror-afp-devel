@@ -9,7 +9,7 @@ text \<open>This theory contains
   facts about resultants which are required for addition and multiplication
   of algebraic numbers.
 
-  The results are taken from the textbook \cite[pages 227ff and 235ff]{AlgNumbers}.
+  The results are taken from the textbook \<^cite>\<open>\<open>pages 227ff and 235ff\<close> in "AlgNumbers"\<close>.
 \<close> 
 
 theory Resultant

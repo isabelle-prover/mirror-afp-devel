@@ -93,7 +93,7 @@ lemma Cl_F: "Fr_4 \<F> \<Longrightarrow> \<forall>A. Cl(\<F> A)" using Cl_fr_def
 
 subsection \<open>Further properties\<close>
 
-text\<open>\noindent{The definitions and theorems below are well known in the literature (e.g. @{cite Kuratowski2}).
+text\<open>\noindent{The definitions and theorems below are well known in the literature (e.g. \<^cite>\<open>Kuratowski2\<close>).
 Here we uncover the minimal conditions under which they hold (taking frontier operation as primitive).}\<close>
 lemma Cl_Bzero: "Fr_2 \<F> \<Longrightarrow> \<forall>A. Cl A \<longleftrightarrow> \<B>(\<^bold>\<midarrow>A) \<^bold>\<approx> \<^bold>\<bottom>" using pA2 pC1 unfolding conn by metis
 lemma Op_Bzero: "\<forall>A. Op A \<longleftrightarrow> (\<B> A) \<^bold>\<approx> \<^bold>\<bottom>" using pB1 pI1 unfolding conn by metis

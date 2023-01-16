@@ -3,7 +3,7 @@
 *)
 section \<open>Linear Bound Argument - General \<close>
 text \<open>Lemmas to enable general reasoning using the linear bound argument for combinatorial proofs.
-Jukna \cite{juknaExtremalCombinatorics2011} presents a good overview of the mathematical background 
+Jukna \<^cite>\<open>"juknaExtremalCombinatorics2011"\<close> presents a good overview of the mathematical background 
 this theory is based on and applications \<close>
 theory Linear_Bound_Argument imports Incidence_Matrices Jordan_Normal_Form.DL_Rank 
 Jordan_Normal_Form.Ring_Hom_Matrix

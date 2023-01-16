@@ -73,7 +73,7 @@ text\<open>  Theorem 11.36 - If g is God-like, then the property of being God-li
 
 text\<open> As shown before, this theorem's proof could be completely automatized for G\"odel's and Fitting's variants.
 For Anderson's version however, we had to provide Isabelle with some help based on the corresponding natural-language proof 
-given by Anderson (see @{cite "anderson90:_some_emend_of_goedel_ontol_proof"} Theorem 2*, p. 296) \<close>
+given by Anderson (see \<^cite>\<open>"anderson90:_some_emend_of_goedel_ontol_proof"\<close> Theorem 2*, p. 296) \<close>
 (*Anderson's Proof: Suppose that g is God-like* and necessarily has a property Q. Then
 by definition (of "God-like*"), that property is positive. But necessarily, if
 Q is positive, then if anything is God-like*, then it has Q -again by the
@@ -215,7 +215,7 @@ text\<open>  \pagebreak \<close>
 section \<open>Conclusion\<close>
 text\<open>  We presented a shallow semantical embedding in Isabelle/HOL for an intensional higher-order modal logic
 (a successor of Montague/Gallin intensional logics) as introduced by M. Fitting in his textbook \emph{Types, Tableaus and 
-G\"odel's God} @{cite "Fitting"}. 
+G\"odel's God} \<^cite>\<open>"Fitting"\<close>. 
 We subsequently employed this logic to formalise and verify all results (theorems, examples and exercises) relevant 
 to the discussion of G\"odel's ontological argument in the last part of Fitting's book. Three different versions of
 the ontological argument have been considered: the first one by G\"odel himself (respectively, Scott), the second 

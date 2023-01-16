@@ -49,7 +49,7 @@ subsection\<open>Definition and elementary properties\<close>
 text\<open>
 The definition of a natural transformation that is used in this work is
 is similar to the definition that can be found in Chapter I-4 in 
-\cite{mac_lane_categories_2010}.
+\<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 locale is_ntcf = 
@@ -352,7 +352,7 @@ lemma these_ntcfs_iff: (*not simp*)
 subsection\<open>Opposite natural transformation\<close>
 
 
-text\<open>See section 1.5 in \cite{bodo_categories_1970}.\<close>
+text\<open>See section 1.5 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 definition op_ntcf :: "V \<Rightarrow> V"
   where "op_ntcf \<NN> = 
@@ -478,7 +478,7 @@ subsection\<open>Vertical composition of natural transformations\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-4 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 abbreviation (input) ntcf_vcomp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<bullet>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<close> 55)
   where "ntcf_vcomp \<equiv> ntsmcf_vcomp"
@@ -661,7 +661,7 @@ subsection\<open>Horizontal composition of natural transformations\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 abbreviation (input) ntcf_hcomp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<circ>\<^sub>N\<^sub>T\<^sub>C\<^sub>F\<close> 55)
   where "ntcf_hcomp \<equiv> ntsmcf_hcomp"
@@ -903,7 +903,7 @@ subsection\<open>Identity natural transformation\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-4 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition ntcf_id :: "V \<Rightarrow> V"
   where "ntcf_id \<FF> = [\<FF>\<lparr>HomCod\<rparr>\<lparr>CId\<rparr> \<circ>\<^sub>\<circ> \<FF>\<lparr>ObjMap\<rparr>, \<FF>, \<FF>, \<FF>\<lparr>HomDom\<rparr>, \<FF>\<lparr>HomCod\<rparr>]\<^sub>\<circ>"
@@ -1561,7 +1561,7 @@ subsection\<open>Constant natural transformation\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition ntcf_const :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "ntcf_const \<JJ> \<CC> f = 
@@ -1846,7 +1846,7 @@ lemmas [cat_cs_simps] = is_functor.cf_ntcf_comp_cf_ntcf_const
 subsection\<open>Natural isomorphism\<close>
 
 
-text\<open>See Chapter I-4 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale is_iso_ntcf = is_ntcf +
   assumes iso_ntcf_is_iso_arr[cat_arrow_cs_intros]: 
@@ -2006,7 +2006,7 @@ subsection\<open>A natural isomorphism is an isomorphism in the category \<open>
 
 text\<open>
 The results that are presented in this subsection can be found in 
-nLab (see \cite{noauthor_nlab_nodate}\footnote{\url{
+nLab (see \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{\url{
 https://ncatlab.org/nlab/show/natural+isomorphism
 }}).
 \<close>
@@ -2431,7 +2431,7 @@ subsection\<open>Functor isomorphism\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See subsection 1.5 in \cite{bodo_categories_1970}.\<close>
+text\<open>See subsection 1.5 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 locale iso_functor =
   fixes \<alpha> \<FF> \<GG>

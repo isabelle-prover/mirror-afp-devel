@@ -9,41 +9,41 @@ section \<open>Introduction\<close>
 
 text\<open>  We present a study on Computational Metaphysics: a computer-formalisation and verification
 of Fitting's variant of the ontological argument (for the existence of God) as presented in
-his textbook \emph{Types, Tableaus and G\"odel's God} @{cite "Fitting"}. Fitting's argument 
-is an emendation of Kurt G\"odel's modern variant @{cite "GoedelNotes"} (resp. Dana Scott's 
-variant @{cite "ScottNotes"}) of the ontological argument. \<close>
+his textbook \emph{Types, Tableaus and G\"odel's God} \<^cite>\<open>"Fitting"\<close>. Fitting's argument 
+is an emendation of Kurt G\"odel's modern variant \<^cite>\<open>"GoedelNotes"\<close> (resp. Dana Scott's 
+variant \<^cite>\<open>"ScottNotes"\<close>) of the ontological argument. \<close>
 
-text\<open> The motivation is to avoid the \emph{modal collapse} @{cite Sobel and sobel2004logic}, which has been criticised
+text\<open> The motivation is to avoid the \emph{modal collapse} \<^cite>\<open>Sobel and sobel2004logic\<close>, which has been criticised
 as an undesirable side-effect of the axioms of G\"odel resp. Scott. The modal collapse essentially  
 states that  there are no contingent truths and that everything is determined.
-Several authors (e.g. @{cite "anderson90:_some_emend_of_goedel_ontol_proof" and "AndersonGettings" and "Hajek2002" and "bjordal99"}) 
+Several authors (e.g. \<^cite>\<open>"anderson90:_some_emend_of_goedel_ontol_proof" and "AndersonGettings" and "Hajek2002" and "bjordal99"\<close>) 
 have proposed emendations of the argument with the aim of maintaining the essential result 
 (the necessary existence of God) while at the same time avoiding the modal collapse. 
 Related work  has formalised several of these variants on the computer and verified or falsified them. For example,
-G\"odel's axioms @{cite "GoedelNotes"} have been shown inconsistent @{cite C55 and C60}
-while Scott's version has been verified @{cite "ECAI"}. Further experiments, contributing amongst others
+G\"odel's axioms \<^cite>\<open>"GoedelNotes"\<close> have been shown inconsistent \<^cite>\<open>C55 and C60\<close>
+while Scott's version has been verified \<^cite>\<open>"ECAI"\<close>. Further experiments, contributing amongst others
 to the clarification of a related debate between H\'ajek and Anderson, are presented and discussed in
-@{cite "J23"}. The enabling technique in all of these experiments has been
+\<^cite>\<open>"J23"\<close>. The enabling technique in all of these experiments has been
 shallow semantical embeddings of (extensional) higher-order modal logics in classical higher-order
-logic (see @{cite J23 and R59} and the references therein). \<close>
+logic (see \<^cite>\<open>J23 and R59\<close> and the references therein). \<close>
 
 text\<open> Fitting's emendation also intends to avoid the modal collapse. However, in contrast to the above variants, Fitting's
 solution is based on the use of an intensional as opposed to an extensional higher-order modal logic.
 For our work this imposed the additional challenge to provide a shallow embedding of this more advanced
-logic. The experiments presented below confirm that Fitting's argument as presented in his textbook @{cite "Fitting"}
+logic. The experiments presented below confirm that Fitting's argument as presented in his textbook \<^cite>\<open>"Fitting"\<close>
 is valid and that it avoids the modal collapse as intended. \<close>
 
 text\<open> The work presented here originates from the \emph{Computational Metaphysics} lecture course  
-held at FU Berlin in Summer 2016 @{cite "C65"}. \pagebreak \<close>
+held at FU Berlin in Summer 2016 \<^cite>\<open>"C65"\<close>. \pagebreak \<close>
 
 
 section \<open>Embedding of Intensional Higher-Order Modal Logic\<close>
   
 text\<open>  The object logic being embedded, intensional higher-order modal logic (IHOML), is a modification of the intentional logic developed by Montague
-and Gallin @{cite "Gallin75"}. IHOML is introduced by Fitting in the second part of his textbook @{cite "Fitting"}
+and Gallin \<^cite>\<open>"Gallin75"\<close>. IHOML is introduced by Fitting in the second part of his textbook \<^cite>\<open>"Fitting"\<close>
 in order to formalise his emendation of G\"odel's ontological argument. We offer here a shallow embedding
 of this logic in Isabelle/HOL, which has been inspired by previous work on the semantical embedding of
-multimodal logics with quantification @{cite "J23"}. We expand this approach to allow for actualist quantifiers,
+multimodal logics with quantification \<^cite>\<open>"J23"\<close>. We expand this approach to allow for actualist quantifiers,
 intensional types and their related operations. \<close>
 
 subsection \<open>Type Declarations\<close>
@@ -122,7 +122,7 @@ subsubsection \<open>Possibilist Quantification\<close>
 subsubsection \<open>Actualist Quantification\<close>
   
 text\<open>  The following predicate is used to model actualist quantifiers by restricting the domain of quantification at every possible world.
-This standard technique has been referred to as \emph{existence relativization} (@{cite "fitting98"}, p. 106),
+This standard technique has been referred to as \emph{existence relativization} (\<^cite>\<open>"fitting98"\<close>, p. 106),
 highlighting the fact that this predicate can be seen as a kind of meta-logical `existence predicate' telling us
 which individuals \emph{actually} exist at a given world. This meta-logical concept does not appear in our object language. \<close>
   consts Exists::"\<up>\<langle>\<zero>\<rangle>" ("existsAt")  
@@ -147,7 +147,7 @@ subsubsection \<open>Modal Operators\<close>
     where "\<^bold>\<diamond>\<phi> \<equiv> \<lambda>w.\<exists>v. (w r v)\<and>(\<phi> v)"
 
 subsubsection \<open>\emph{Extension-of} Operator\<close>
-text\<open> According to Fitting's semantics (@{cite "Fitting"}, pp. 92-4) \<open>\<down>\<close> is an unary operator applying only to 
+text\<open> According to Fitting's semantics (\<^cite>\<open>"Fitting"\<close>, pp. 92-4) \<open>\<down>\<close> is an unary operator applying only to 
  intensional terms. A term of the form \<open>\<down>\<alpha>\<close> designates the extension of the intensional object designated by 
  \<open>\<alpha>\<close>, at some \emph{given} world. For instance, suppose we take possible worlds as persons,
  we can therefore think of the concept `red' as a function that maps each person to the set of objects that person
@@ -230,7 +230,7 @@ as evidenced by the following tests: \<close>
  lemma "\<lfloor>(\<^bold>\<forall>\<^sup>Ex.\<^bold>\<box>(\<phi> x)) \<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<forall>\<^sup>Ex.(\<phi> x))\<rfloor>" nitpick oops \<comment> \<open>countersatisfiable\<close>
  lemma "\<lfloor>\<^bold>\<box>(\<^bold>\<forall>\<^sup>Ex.(\<phi> x)) \<^bold>\<rightarrow> (\<^bold>\<forall>\<^sup>Ex.\<^bold>\<box>(\<phi> x))\<rfloor>" nitpick oops \<comment> \<open>countersatisfiable\<close>
     
-text\<open>  Above we have made use of (counter-)model finder \emph{Nitpick} @{cite "Nitpick"} for the first time.  
+text\<open>  Above we have made use of (counter-)model finder \emph{Nitpick} \<^cite>\<open>"Nitpick"\<close> for the first time.  
 For all the conjectured lemmas above, \emph{Nitpick} has found a countermodel, i.e. a model satisfying all 
 the axioms which falsifies the given formula. This means, the formulas are not valid. \<close>   
  
@@ -276,7 +276,7 @@ subsection \<open>Useful Definitions for Axiomatization of Further Logics\<close
   lemma "equivalence aRel  \<Longrightarrow>  \<lfloor>M\<rfloor> \<and> \<lfloor>V\<rfloor>" by blast \<comment> \<open>S5: preorder + symmetric\<close>
   lemma "reflexive aRel \<and> euclidean aRel  \<Longrightarrow>  \<lfloor>M\<rfloor> \<and> \<lfloor>V\<rfloor>" by blast \<comment> \<open>S5\<close>
 
-  text\<open>  Using these definitions, we can derive axioms for the most common modal logics (see also @{cite "C47"}). 
+  text\<open>  Using these definitions, we can derive axioms for the most common modal logics (see also \<^cite>\<open>"C47"\<close>). 
   Thereby we are free to use either the semantic constraints or the related \emph{Sahlqvist} axioms. Here we provide 
   both versions. In what follows we use the semantic constraints (for improved performance).
   \pagebreak \<close>

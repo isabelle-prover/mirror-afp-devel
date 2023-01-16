@@ -16,7 +16,7 @@ dioids. These so far include the powerset dioid over a monoid,
 languages, binary relations, sets of traces, sets paths (in a graph),
 as well as the min-plus and the max-plus semirings. Most of these
 models are taken from an article about Kleene algebras with
-domain~\cite{desharnaismoellerstruth06kad}.
+domain~\<^cite>\<open>"desharnaismoellerstruth06kad"\<close>.
 
 The advantage of formally linking these models with the abstract
 axiomatisations of dioids is that all abstract theorems are
@@ -157,7 +157,7 @@ interpretation rel_monoid: monoid_mult Id "(O)" ..
 subsection \<open>Trace Dioids\<close>
 
 text \<open>Traces have been considered, for instance, by
-Kozen~\cite{kozen00hoare} in the context of Kleene algebras with
+Kozen~\<^cite>\<open>"kozen00hoare"\<close> in the context of Kleene algebras with
 tests. Intuitively, a trace is an execution sequence of a labelled
 transition system from some state to some other state, in which state
 labels and action labels alternate, and which begin and end with a

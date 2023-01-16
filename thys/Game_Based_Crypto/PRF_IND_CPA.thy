@@ -11,7 +11,7 @@ theory PRF_IND_CPA imports
 begin
 
 text \<open>
-  Formalises the construction from \cite{PetcherMorrisett2015POST}.
+  Formalises the construction from \<^cite>\<open>"PetcherMorrisett2015POST"\<close>.
 \<close>
 
 declare [[simproc del: let_simp]]

@@ -16,9 +16,9 @@ The proof here follows Theorem 10.50 in
   Basu, S., Pollack, R., Roy, M.-F.: Algorithms in Real Algebraic Geometry. 
   Springer Berlin Heidelberg, Berlin, Heidelberg (2016).
 
-This theorem has also been fomalised in Coq \cite{zsido2014theorem}. The relationship
+This theorem has also been fomalised in Coq \<^cite>\<open>"zsido2014theorem"\<close>. The relationship
 between this theorem and root isolation has been elaborated in Eigenwillig's PhD
-thesis \cite{eigenwillig2008real}.
+thesis \<^cite>\<open>"eigenwillig2008real"\<close>.
 \<close>
 
 subsection \<open>No sign changes case\<close>

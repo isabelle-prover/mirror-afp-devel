@@ -11,7 +11,7 @@ begin
 
 text \<open>
   Imperative implementation of indexed priority queue. The data structure
-  is also verified in \cite{Refine_Imperative_HOL-AFP} by Peter Lammich.
+  is also verified in \<^cite>\<open>"Refine_Imperative_HOL-AFP"\<close> by Peter Lammich.
 \<close>
 
 datatype 'a indexed_pqueue =

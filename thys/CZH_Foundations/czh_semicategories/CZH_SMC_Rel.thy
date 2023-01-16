@@ -18,8 +18,8 @@ The methodology chosen for the exposition
 of \<open>Rel\<close> as a semicategory is analogous to the 
 one used in the previous chapter for the exposition of \<open>Rel\<close> as a digraph. 
 The general references for this section are Chapter I-7 
-in \cite{mac_lane_categories_2010} and nLab 
-\cite{noauthor_nlab_nodate}\footnote{
+in \<^cite>\<open>"mac_lane_categories_2010"\<close> and nLab 
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/Rel}
 }.
 \<close>
@@ -398,7 +398,7 @@ subsection\<open>Monic arrow and epic arrow\<close>
 
 text\<open>
 The conditions for an arrow of \<open>Rel\<close> to be either monic or epic are 
-outlined in nLab \cite{noauthor_nlab_nodate}\footnote{
+outlined in nLab \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/Rel}
 }.
 \<close>
@@ -800,7 +800,7 @@ subsection\<open>Terminal object, initial object and null object\<close>
 text\<open>
 An object in the semicategory \<open>Rel\<close> is terminal/initial/null if and only if 
 it is the empty set (see
-nLab \cite{noauthor_nlab_nodate})\footnote{
+nLab \<^cite>\<open>"noauthor_nlab_nodate"\<close>)\footnote{
 \url{https://ncatlab.org/nlab/show/database+of+categories}
 }. 
 \<close>

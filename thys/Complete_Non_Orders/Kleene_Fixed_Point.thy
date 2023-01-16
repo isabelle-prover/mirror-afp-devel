@@ -10,7 +10,7 @@ for a pointed directed complete partial order $\tp{A,\SLE}$
 and a Scott-continuous map $f: A \to A$,
 the supremum of $\set{f^n(\bot) \mid n\in\Nat}$ exists in $A$ and is a least 
 fixed point.
-Mashburn \cite{mashburn83} generalized the result so that
+Mashburn \<^cite>\<open>"mashburn83"\<close> generalized the result so that
 $\tp{A,\SLE}$ is a $\omega$-complete partial order
 and $f$ is $\omega$-continuous.
 

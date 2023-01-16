@@ -208,7 +208,7 @@ lemma Bernstein_changes_eq_rescale: assumes "c \<noteq> d" and "degree P \<le> p
   using assms by (auto simp: Bernstein_coeffs_eq_rescale Bernstein_changes_def
                   Bernstein_changes_01_def)
 
-text \<open>This is related and mostly equivalent to previous Descartes test \cite{li2019counting}\<close>
+text \<open>This is related and mostly equivalent to previous Descartes test \<^cite>\<open>"li2019counting"\<close>\<close>
 lemma Bernstein_changes_test: 
   fixes P::"real poly"
   assumes "degree P \<le> p" and "P \<noteq> 0" and "c < d"

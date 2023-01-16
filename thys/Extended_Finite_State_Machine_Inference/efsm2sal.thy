@@ -1,7 +1,7 @@
 section\<open>Output to SAL\<close>
 text\<open>SAL is a framework for combining different tools for abstraction, program analysis, theorem
 proving, and model checking. It is able to verify and refute properties of EFSMs phrased in LTL. In
-\cite{foster2019}, it is proposed that a model checker be used to assist in checking the conditions
+\<^cite>\<open>"foster2019"\<close>, it is proposed that a model checker be used to assist in checking the conditions
 necessary for one transition to subsume another. In order to effect this, it is necessary to convert
 the EFSM into a format that SAL can recognise. This theory file sets out the various definitions
 needed to do this such that SAL can be used to check subsumption conditions when running the EFSM

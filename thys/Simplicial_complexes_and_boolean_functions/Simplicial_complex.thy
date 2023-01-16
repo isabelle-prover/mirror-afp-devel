@@ -101,7 +101,7 @@ section\<open>Simplicial complex induced by a monotone Boolean function\<close>
 
 text\<open>In this section we introduce the definition of the
   simplicial complex induced by a monotone Boolean function,
-  following the definition in Scoville~\cite[Def. 6.9]{SC19}.\<close>
+  following the definition in Scoville~\<^cite>\<open>\<open>Def. 6.9\<close> in "SC19"\<close>.\<close>
 
 text\<open>First we introduce the set of tuples for which
   a Boolean function is @{term False}.\<close>
@@ -187,7 +187,7 @@ corollary
 text\<open>The simplicial complex induced by a
   monotone Boolean function is a simplicial complex.
   This result is proven in Scoville as part of the
-  proof of Proposition 6.16~\cite[Prop. 6.16]{SC19}.\<close>
+  proof of Proposition 6.16~\<^cite>\<open>\<open>Prop. 6.16\<close> in "SC19"\<close>.\<close>
 
 context simplicial_complex
 begin

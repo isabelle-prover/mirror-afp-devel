@@ -34,7 +34,7 @@ subsection "Introduction"
 
 text \<open>
 The interface for hash-functions is defined in the class @{class hashable} which has been developed
-as part of the Isabelle Collection Framework \cite{rbt}. It requires a hash-function
+as part of the Isabelle Collection Framework \<^cite>\<open>"rbt"\<close>. It requires a hash-function
 (@{const hashcode}), a bounded hash-function (@{const bounded_hashcode}),
 and a default hash-table size (@{const def_hashmap_size}).
 

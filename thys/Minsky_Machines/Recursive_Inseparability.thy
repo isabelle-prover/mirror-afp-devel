@@ -6,13 +6,13 @@ begin
 
 text \<open>Two sets $A$ and $B$ are recursively inseparable if there is no computable set that
 contains $A$ and is disjoint from $B$. In particular, a set is computable if the set and its
-complement are recursively inseparable. The terminology was introduced by Smullyan~@{cite R58}.
+complement are recursively inseparable. The terminology was introduced by Smullyan~\<^cite>\<open>R58\<close>.
 The underlying idea can be traced back to Rosser, who essentially showed that provable and
-disprovable sentences are \emph{arithmetically} inseparable in Peano Arithmetic~@{cite R36};
-see also Kleene's symmetric version of Gödel's incompleteness theorem~@{cite K52}.
+disprovable sentences are \emph{arithmetically} inseparable in Peano Arithmetic~\<^cite>\<open>R36\<close>;
+see also Kleene's symmetric version of Gödel's incompleteness theorem~\<^cite>\<open>K52\<close>.
 
 Here we formalize recursive inseparability on top of the \texttt{Recursion-Theory-I} AFP
-entry~@{cite RTI}. Our main result is a version of Rice' theorem that states that the index
+entry~\<^cite>\<open>RTI\<close>. Our main result is a version of Rice' theorem that states that the index
 sets of any two given recursively enumerable sets are recursively inseparable.\<close>
 
 subsection \<open>Definition and basic facts\<close>
@@ -73,7 +73,7 @@ lemma computable_rec_inseparable_conv:
 
 subsection \<open>Rice's theorem\<close>
 
-text \<open>We provide a stronger version of Rice's theorem compared to @{cite RTI}.
+text \<open>We provide a stronger version of Rice's theorem compared to \<^cite>\<open>RTI\<close>.
 Unfolding the definition of recursive inseparability, it states that there are no decidable
 sets $X$ such that
 \begin{itemize}
@@ -82,7 +82,7 @@ sets $X$ such that
 \end{itemize}
 This is true even if $X$ is not an index set (i.e., if an index of a r.e.\ set is an element
 of $X$, then $X$ contains all indices of that r.e.\ set), which is a requirement of Rice's
-theorem in @{cite RTI}.\<close>
+theorem in \<^cite>\<open>RTI\<close>.\<close>
 
 lemma c_pair_inj':
   "c_pair x1 y1 = c_pair x2 y2 \<longleftrightarrow> x1 = x2 \<and> y1 = y2"

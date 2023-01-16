@@ -15,7 +15,7 @@ begin
 subsection \<open>Families of Proto-Quantales\<close>
   
 text \<open>Proto-Quanales are complete lattices equipped with an operation of composition or multiplication
-that need not be associative. The notation in this component differs from Rosenthal's \cite{Rosenthal90}, but is consistent with the one we use 
+that need not be associative. The notation in this component differs from Rosenthal's \<^cite>\<open>"Rosenthal90"\<close>, but is consistent with the one we use 
 for semirings and Kleene algebras.\<close>
   
 class proto_near_quantale = complete_lattice + times + 

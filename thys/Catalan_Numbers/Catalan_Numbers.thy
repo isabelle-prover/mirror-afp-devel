@@ -250,7 +250,7 @@ subsection \<open>Integral formula\<close>
 
 text \<open>
   The recursive formula we have just proven allows us to derive an integral formula for 
-  the Catalan numbers. The proof was adapted from a textbook proof by Steven Roman.~\cite{catalan}
+  the Catalan numbers. The proof was adapted from a textbook proof by Steven Roman.~\<^cite>\<open>"catalan"\<close>
 \<close>
 
 context

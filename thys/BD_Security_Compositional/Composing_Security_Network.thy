@@ -2,9 +2,9 @@ section \<open>N-ary compositionality theorem\<close>
 
 text \<open>This theory provides the n-ary version of
 the compositionality theorem for BD security.
-It corresponds to Theorem 3 from \cite{cosmedis-SandP2017}
+It corresponds to Theorem 3 from \<^cite>\<open>"cosmedis-SandP2017"\<close>
 and to Theorem 7 (the System Compositionality Theorem, n-ary case) from
-\cite{BDsecurity-ITP2021}.
+\<^cite>\<open>"BDsecurity-ITP2021"\<close>.
 \<close>
 
 theory Composing_Security_Network

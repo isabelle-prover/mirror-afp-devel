@@ -5,7 +5,7 @@ imports SC_Depth SC_Cut
 begin
 
 text\<open>This system attempts to mimic the original sequent calculus 
-  (``Reihen von Formeln, durch Kommata getrennt'', translates roughly to sequences of formulas, separated by a comma)~\cite{gentzen1935untersuchungen}.\<close>
+  (``Reihen von Formeln, durch Kommata getrennt'', translates roughly to sequences of formulas, separated by a comma)~\<^cite>\<open>"gentzen1935untersuchungen"\<close>.\<close>
 inductive SCg :: "'a formula list \<Rightarrow> 'a formula list \<Rightarrow> bool" (infix "\<Rightarrow>" 30) where
 Anfang: "[\<DD>] \<Rightarrow> [\<DD>]" |
 FalschA: "[\<bottom>] \<Rightarrow> []" |

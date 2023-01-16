@@ -15,7 +15,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 The following section is based, primarily, on the elements of the content 
-of Chapter III-1 in \cite{mac_lane_categories_2010}.
+of Chapter III-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 named_theorems ua_field_simps
@@ -287,7 +287,7 @@ lemmas [cat_cs_intros] = is_functor.cf_umap_fo_is_arr'
 subsection\<open>Universal arrow: definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-1 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition universal_arrow_of :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> bool"
   where "universal_arrow_of \<FF> c r u \<longleftrightarrow>
@@ -381,7 +381,7 @@ subsection\<open>Uniqueness\<close>
 text\<open>
 The following properties are related to the uniqueness of the 
 universal arrow. These properties can be inferred from the content of
-Chapter III-1 in \cite{mac_lane_categories_2010}.
+Chapter III-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 lemma (in is_functor) cf_universal_arrow_of_ex_is_iso_arr:
@@ -629,7 +629,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 text\<open>
 The concept of the universal natural transformation is introduced for the 
 statement of the elements of a variant of Proposition 1 in Chapter III-2
-in \cite{mac_lane_categories_2010}.
+in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 definition ntcf_ua_of :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -944,7 +944,7 @@ subsubsection\<open>Universal natural transformation and universal arrow\<close>
 text\<open>
 The lemmas in this subsection correspond to 
 variants of elements of Proposition 1 in Chapter III-2 in 
-\cite{mac_lane_categories_2010}.
+\<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 lemma (in is_functor) cf_ntcf_ua_of_is_iso_ntcf:

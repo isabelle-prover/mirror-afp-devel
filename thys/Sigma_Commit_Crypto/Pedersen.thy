@@ -1,13 +1,13 @@
 subsection\<open>Pedersen Commitment Scheme\<close>
 
-text\<open>The Pedersen commitment scheme \cite{BLP:conf/crypto/Pedersen91} is a commitment scheme based on a cyclic group. We use the 
+text\<open>The Pedersen commitment scheme \<^cite>\<open>"BLP:conf/crypto/Pedersen91"\<close> is a commitment scheme based on a cyclic group. We use the 
 construction of cyclic groups from CryptHOL to formalise the commitment scheme. We prove perfect hiding
 and computational binding, with a reduction to the discrete log problem. We a proof of the Pedersen commitment scheme
 is realised in the instantiation of the Schnorr \<open>\<Sigma>\<close>-protocol with the general construction of commitment schemes 
 from \<open>\<Sigma>\<close>-protocols. The commitment scheme that is realised there however take the inverse of the message in the commitment 
 phase due to the construction of the simulator in the \<open>\<Sigma>\<close>-protocol proof. The two schemes are in some way equal however
 as we do not have a well defined notion of equality for commitment schemes we keep this section of the formalisation. This 
-also serves as reference to the formal proof of the Pedersen commitment scheme we provide in \cite{DBLP:conf/post/ButlerAG19}.\<close>
+also serves as reference to the formal proof of the Pedersen commitment scheme we provide in \<^cite>\<open>"DBLP:conf/post/ButlerAG19"\<close>.\<close>
 
 theory Pedersen imports
   Commitment_Schemes

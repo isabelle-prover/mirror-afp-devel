@@ -18,7 +18,7 @@ This section contains a proof of anonymity property @{text id_anonymous}, which 
 pseudonymous identifier remains anonymous if its anonymity is not compromised by means other than
 attacking the protocol and neither attack option described in section \ref{Protocol} is viable. As
 shown here below, this property can be proven by applying rules @{thm [source] rtrancl_induct} and
-@{text rtrancl_start} in a suitable combination @{cite "Noce20"}.
+@{text rtrancl_start} in a suitable combination \<^cite>\<open>"Noce20"\<close>.
 
 \null
 \<close>

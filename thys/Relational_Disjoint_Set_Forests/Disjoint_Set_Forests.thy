@@ -25,7 +25,7 @@ end
 text \<open>
 An arc in a Stone relation algebra corresponds to an atom in a relation algebra and represents a single edge in a graph.
 A point represents a set of nodes.
-A rectangle represents the Cartesian product of two sets of nodes \cite{BerghammerStruth2010}.
+A rectangle represents the Cartesian product of two sets of nodes \<^cite>\<open>"BerghammerStruth2010"\<close>.
 \<close>
 
 context times_top
@@ -167,8 +167,8 @@ lemma update_postcondition:
     done
   done
 
-text \<open>Back and von Wright's array independence requirements \cite{BackWright1998}, 
-  later also lens laws \cite{FosterGreenwaldMoorePierceSchmitt2007}\<close>
+text \<open>Back and von Wright's array independence requirements \<^cite>\<open>"BackWright1998"\<close>, 
+  later also lens laws \<^cite>\<open>"FosterGreenwaldMoorePierceSchmitt2007"\<close>\<close>
 
 text \<open>Theorem 2.1\<close>
 
@@ -837,7 +837,7 @@ begin
 
 text \<open>Theorem 5.4 \<open>distinct_points\<close> has been moved to theory \<open>Relation_Algebras\<close> in entry \<open>Stone_Relation_Algebras\<close>\<close>
 
-text \<open>Back and von Wright's array independence requirements \cite{BackWright1998}\<close>
+text \<open>Back and von Wright's array independence requirements \<^cite>\<open>"BackWright1998"\<close>\<close>
 
 text \<open>Theorem 2.2\<close>
 
@@ -965,7 +965,7 @@ qed
 
 text \<open>
 The above total-correctness proof allows us to extract a function, which can be used in other implementations below.
-This is a technique of \cite{Guttmann2018c}.
+This is a technique of \<^cite>\<open>"Guttmann2018c"\<close>.
 \<close>
 
 lemma make_set_exists:

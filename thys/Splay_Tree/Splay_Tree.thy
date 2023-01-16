@@ -9,7 +9,7 @@ begin
 
 declare sorted_wrt.simps(2)[simp del]
 
-text\<open>Splay trees were invented by Sleator and Tarjan~\cite{SleatorT-JACM85}.\<close>
+text\<open>Splay trees were invented by Sleator and Tarjan~\<^cite>\<open>"SleatorT-JACM85"\<close>.\<close>
 
 subsection "Function \<open>splay\<close>"
 
@@ -122,7 +122,7 @@ definition delete :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" 
 
 subsection "Functional Correctness Proofs I"
 
-text \<open>This subsection follows the automated method by Nipkow \cite{Nipkow-ITP16}.\<close>
+text \<open>This subsection follows the automated method by Nipkow \<^cite>\<open>"Nipkow-ITP16"\<close>.\<close>
 
 lemma splay_Leaf_iff[simp]: "(splay a t = Leaf) = (t = Leaf)"
 by(induction a t rule: splay.induct) (auto split: tree.splits)

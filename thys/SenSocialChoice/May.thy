@@ -14,13 +14,13 @@ begin
 
 section\<open>May's Theorem\<close>
 
-text \<open>May's Theorem \cite{May:1952} provides a characterisation of
+text \<open>May's Theorem \<^cite>\<open>"May:1952"\<close> provides a characterisation of
 majority voting in terms of four conditions that appear quite natural for
 \emph{a priori} unbiased social choice scenarios. It can be seen as a
-refinement of some earlier work by Arrow \cite[Chapter V.1]{Arrow:1963}.
+refinement of some earlier work by Arrow \<^cite>\<open>\<open>Chapter V.1\<close> in "Arrow:1963"\<close>.
 
 The following is a mechanisation of Sen's generalisation
-\cite[Chapter~5*]{Sen:70a}; originally Arrow and May consider only two
+\<^cite>\<open>\<open>Chapter~5*\<close> in "Sen:70a"\<close>; originally Arrow and May consider only two
 alternatives, whereas Sen's model maps profiles of full RPRs to a possibly
 intransitive relation that does at least generate a choice set that
 satisfies May's conditions.\<close>
@@ -51,7 +51,7 @@ lemma anonymousD:
 
 text \<open>Similarly, an SCF is \emph{neutral} if it is insensitive to the
 identity of the alternatives. This is Sen's characterisation
-\cite[p72]{Sen:70a}.\<close>
+\<^cite>\<open>\<open>p72\<close> in "Sen:70a"\<close>.\<close>
 
 definition neutral :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> bool" where
   "neutral scf A Is \<equiv>
@@ -534,12 +534,12 @@ qed
 
 end
 
-text\<open>May's original paper \cite{May:1952} goes on to show that the
+text\<open>May's original paper \<^cite>\<open>"May:1952"\<close> goes on to show that the
 conditions are independent by exhibiting choice rules that differ from
 @{term "MMD"} and satisfy the conditions remaining after any particular one
 is removed. I leave this to future work.
 
-May also wrote a later article \cite{May:1953} where he shows that the
+May also wrote a later article \<^cite>\<open>"May:1953"\<close> where he shows that the
 conditions are completely independent, i.e. for every partition of the
 conditions into two sets, there is a voting rule that satisfies one and not
 the other.
@@ -551,7 +551,7 @@ conditions.
 
 subsection\<open>The Plurality Rule\<close>
 
-text\<open>Goodin and List \cite{GoodinList:2006} show that May's original
+text\<open>Goodin and List \<^cite>\<open>"GoodinList:2006"\<close> show that May's original
 result can be generalised to characterise plurality voting. The following
 shows that this result is a short step from Sen's much earlier
 generalisation.

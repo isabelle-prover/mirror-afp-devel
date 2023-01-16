@@ -6,10 +6,10 @@ begin
 section \<open>Verification of the \eigbyz{} Consensus Algorithm\<close>
 
 text \<open>
-  Lynch~\cite{lynch:distributed} presents \eigbyz{}, a version of
+  Lynch~\<^cite>\<open>"lynch:distributed"\<close> presents \eigbyz{}, a version of
   the \emph{exponential information gathering} algorithm tolerating
   Byzantine faults, that works in $f$ rounds, and that was originally
-  introduced in~\cite{bar-noy:shifting-gears}.
+  introduced in~\<^cite>\<open>"bar-noy:shifting-gears"\<close>.
 
   We begin by introducing an anonymous type of processes of finite
   cardinality that will instantiate the type variable \<open>'proc\<close>

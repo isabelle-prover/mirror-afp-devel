@@ -504,7 +504,7 @@ lemma recursion: "mono (f :: 'a \<Rightarrow> 'a :: domain_boolean_quantale) \<L
   apply (erule lfp_ordinal_induct [where f=f], simp)
   by (auto simp: ad.addual.ardual.fbox_demodalisation3 Sup_distr Sup_distl intro: Sup_mono)
 
-text \<open>We have already tested this rule in the context of test quantales~\cite{ArmstrongGS15}, which is based
+text \<open>We have already tested this rule in the context of test quantales~\<^cite>\<open>"ArmstrongGS15"\<close>, which is based
 on a formalisation of quantales that is currently not in the AFP. The two theories will be merged as
 soon as the quantale is available in the AFP.\<close>
 

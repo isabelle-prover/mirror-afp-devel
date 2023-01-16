@@ -135,7 +135,7 @@ representing valuations, a refinement of this specification is needed
 and the function \<open>solve\<close> is replaced by the function \<open>solve_exec\<close> returning optional \<open>(var, rat) mapping\<close> instead
 of \<open>var \<Rightarrow> rat\<close> function. This way, efficient data structures
 for representing mappings can be easily plugged-in during code
-generation \cite{florian-refinement}. A conversion from the \<open>mapping\<close> datatype to HOL function is denoted by \<open>\<langle>_\<rangle>\<close> and
+generation \<^cite>\<open>"florian-refinement"\<close>. A conversion from the \<open>mapping\<close> datatype to HOL function is denoted by \<open>\<langle>_\<rangle>\<close> and
 given by: @{thm map2fun_def'[no_vars]}.\<close>
 
 locale SolveExec =
@@ -163,7 +163,7 @@ have a structure of a linearly ordered vector space over \<open>\<rat>\<close>
 (represented by the type class \<open>lrv\<close>) and must guarantee that
 if some non-strict constraints are satisfied in \<open>\<rat>'\<close>, then
 there is a satisfying valuation for the original constraints in \<open>\<rat>\<close>. Our final implementation uses the \<open>\<rat>\<^sub>\<delta>\<close> space, defined in
-\cite{simplex-rad} (basic idea is to replace \<open>p < c\<close> by \<open>p \<le> c - \<delta>\<close> and \<open>p > c\<close> by \<open>p \<ge> c + \<delta>\<close> for a symbolic
+\<^cite>\<open>"simplex-rad"\<close> (basic idea is to replace \<open>p < c\<close> by \<open>p \<le> c - \<delta>\<close> and \<open>p > c\<close> by \<open>p \<ge> c + \<delta>\<close> for a symbolic
 parameter \<open>\<delta>\<close>). So, all constraints are reduced to the form
 \<open>p \<bowtie> b\<close>, where \<open>p\<close> is a linear polynomial (still over
 \<open>\<rat>\<close>), \<open>b\<close> is constant from \<open>\<rat>'\<close> and \<open>\<bowtie>
@@ -3968,7 +3968,7 @@ by induction) that this definition satisfies the \<open>check\<close>
 specification. Note that this definition uses general recursion, so
 its termination is non-trivial. It has been shown that it terminates
 for all states satisfying the check preconditions. The proof is based
-on the proof outline given in \cite{simplex-rad}. It is very
+on the proof outline given in \<^cite>\<open>"simplex-rad"\<close>. It is very
 technically involved, but conceptually uninteresting so we do not
 discuss it in more details.\<close>
 

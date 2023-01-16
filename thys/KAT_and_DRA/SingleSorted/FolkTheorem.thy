@@ -10,7 +10,7 @@ theory FolkTheorem
 begin
 
 text \<open>
-  We prove Kozen's transformation theorem for while loops \cite{Kozen97} in a weak setting that unifies
+  We prove Kozen's transformation theorem for while loops \<^cite>\<open>"Kozen97"\<close> in a weak setting that unifies
   previous proofs in Kleene algebra with tests, demonic refinement algebras and a variant of probabilistic
   Kleene algebra.
 \<close>

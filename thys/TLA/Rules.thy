@@ -18,7 +18,7 @@ text\<open>
   required for proofs based on fairness assumptions, and flexible quantification,
   are not discussed here. 
 
-  The \tlastar{} paper \cite{Merz99} suggest both a \emph{hetereogeneous} and a 
+  The \tlastar{} paper \<^cite>\<open>"Merz99"\<close> suggest both a \emph{hetereogeneous} and a 
   \emph{homogenous} proof system for \tlastar{}.
   The homogeneous version eliminates the auxiliary definitions from the
   \<open>Preformula\<close> theory, creating a single provability relation.
@@ -148,10 +148,10 @@ subsection "Derived Theorems"
 
 text\<open>
   This section includes some derived theorems based on the axioms, taken
-  from the \tlastar{} paper~\cite{Merz99}. We mimic the proofs given there
+  from the \tlastar{} paper~\<^cite>\<open>"Merz99"\<close>. We mimic the proofs given there
   and avoid semantic reasoning whenever possible.
 
-  The \<open>alw\<close> theorem of~\cite{Merz99} states that if F holds
+  The \<open>alw\<close> theorem of~\<^cite>\<open>"Merz99"\<close> states that if F holds
   in all worlds then it always holds, i.e. $F \vDash \Box F$. However,
   the derivation of this theorem (using the proof rules above) 
   relies on access of the set of free variables (FV), which is not
@@ -202,7 +202,7 @@ proof
 qed (rule alw)
 
 text \<open>
-  \cite{Merz99} proves the following theorem using the deduction theorem of
+  \<^cite>\<open>"Merz99"\<close> proves the following theorem using the deduction theorem of
   \tlastar{}: \<open>(\<turnstile> F \<Longrightarrow> \<turnstile> G) \<Longrightarrow> \<turnstile> []F \<longrightarrow> G\<close>, which can only be
   proved by induction on the formula structure, in a deep embedding.
 \<close>
@@ -427,7 +427,7 @@ proof -
 qed
 
 text \<open>
-  We now derive Lamport's 6 simple temporal logic rules (STL1)-(STL6) \cite{Lamport94}.
+  We now derive Lamport's 6 simple temporal logic rules (STL1)-(STL6) \<^cite>\<open>"Lamport94"\<close>.
   Firstly, STL1 is the same as @{thm alw} derived above.
 \<close>
 

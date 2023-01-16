@@ -7,7 +7,7 @@ begin (*>*)
 
 text \<open> The theory of \emph{general extensional mereology}, also known as \emph{classical extensional
 mereology} adds general mereology to extensional mereology.\footnote{For this axiomatization see
-@{cite "varzi_parts_1996"} p. 265  and @{cite "casati_parts_1999"} p. 46.} \<close>
+\<^cite>\<open>"varzi_parts_1996"\<close> p. 265  and \<^cite>\<open>"casati_parts_1999"\<close> p. 46.} \<close>
 
 locale GEM = GM + EM +
   assumes sum_eq: "x \<oplus> y = (THE z. \<forall>v. O v z \<longleftrightarrow> O v x \<or> O v y)" 
@@ -118,7 +118,7 @@ proof -
   thus "\<forall>y. O y (\<sigma> v. F v) \<longleftrightarrow> (\<exists>x. F x \<and> O y x)" using z by (rule ssubst)
 qed
 
-text \<open> The next lemma characterises fusions in terms of parthood.\footnote{See @{cite "pontow_note_2004"} pp. 202-9.} \<close>
+text \<open> The next lemma characterises fusions in terms of parthood.\footnote{See \<^cite>\<open>"pontow_note_2004"\<close> pp. 202-9.} \<close>
 
 lemma fusion_part_character: "\<exists>x. F x \<Longrightarrow> 
   (\<forall>y. P y (\<sigma> v. F v) \<longleftrightarrow> (\<forall>w. P w y \<longrightarrow> (\<exists>v. F v \<and> O w v)))"
@@ -605,8 +605,8 @@ subsection \<open> Strong Fusion \<close>
 
 text \<open> An alternative axiomatization of general extensional mereology adds a stronger version of the
 fusion axiom to minimal mereology, with correspondingly stronger definitions of sums and general
-sums.\footnote{See @{cite "tarski_foundations_1983"} p. 25. The proofs in this section are adapted
-from @{cite "hovda_what_2009"}.} \<close>
+sums.\footnote{See \<^cite>\<open>"tarski_foundations_1983"\<close> p. 25. The proofs in this section are adapted
+from \<^cite>\<open>"hovda_what_2009"\<close>.} \<close>
 
 locale GEM1 = MM + 
   assumes strong_fusion: "\<exists>x. F x \<Longrightarrow> \<exists>x. (\<forall>y. F y \<longrightarrow> P y x) \<and> (\<forall>y. P y x \<longrightarrow> (\<exists>z. F z \<and> O y z))"

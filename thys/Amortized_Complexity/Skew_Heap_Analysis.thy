@@ -11,18 +11,18 @@ imports
 begin
 
 text\<open>The following proof is a simplified version of the one by Kaldewaij and
-Schoenmakers~\cite{KaldewaijS-IPL91}.\<close>
+Schoenmakers~\<^cite>\<open>"KaldewaijS-IPL91"\<close>.\<close>
 
 text \<open>right-heavy:\<close>
 definition rh :: "'a tree => 'a tree => nat" where
 "rh l r = (if size l < size r then 1 else 0)"
 
-text \<open>Function \<open>\<Gamma>\<close> in \cite{KaldewaijS-IPL91}: number of right-heavy nodes on left spine.\<close>
+text \<open>Function \<open>\<Gamma>\<close> in \<^cite>\<open>"KaldewaijS-IPL91"\<close>: number of right-heavy nodes on left spine.\<close>
 fun lrh :: "'a tree \<Rightarrow> nat" where
 "lrh Leaf = 0" |
 "lrh (Node l _ r) = rh l r + lrh l"
 
-text \<open>Function \<open>\<Delta>\<close> in \cite{KaldewaijS-IPL91}: number of not-right-heavy nodes on right spine.\<close>
+text \<open>Function \<open>\<Delta>\<close> in \<^cite>\<open>"KaldewaijS-IPL91"\<close>: number of not-right-heavy nodes on right spine.\<close>
 fun rlh :: "'a tree \<Rightarrow> nat" where
 "rlh Leaf = 0" |
 "rlh (Node l _ r) = (1 - rh l r) + rlh r"

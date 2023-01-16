@@ -4,7 +4,7 @@
 section \<open> The Bird tree \<close>
 
 text \<open>
-  We define the Bird tree following \cite{Hinze2009JFP} and prove that it is a
+  We define the Bird tree following \<^cite>\<open>"Hinze2009JFP"\<close> and prove that it is a
   permutation of the Stern-Brocot tree. As a corollary, we derive that the Bird tree also
   contains all rational numbers in lowest terms exactly once.
 \<close>

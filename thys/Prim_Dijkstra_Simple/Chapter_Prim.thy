@@ -1,8 +1,8 @@
 chapter \<open>Prim's Minimum Spanning Tree Algorithm\<close>
 text \<open>
-  Prim's algorithm~\cite{Prim57} is a classical algorithm to find a minimum spanning 
+  Prim's algorithm~\<^cite>\<open>"Prim57"\<close> is a classical algorithm to find a minimum spanning 
   tree of an undirected graph. In this section we describe our formalization 
-  of Prim's algorithm, roughly following the presentation of Cormen et al.~\cite{Cormen-Leiserson-Rivest}.
+  of Prim's algorithm, roughly following the presentation of Cormen et al.~\<^cite>\<open>"Cormen-Leiserson-Rivest"\<close>.
   
   Our approach features stepwise refinement. We start by a generic MST algorithm (Section~\ref{sec:generic_mst}) 
   that covers both Prim's and Kruskal's algorithms. It maintains a subgraph \<open>A\<close> of an MST.
@@ -21,7 +21,7 @@ text \<open>
   each step are mostly independent from the other steps. This modularization greatly helps
   to keep the proof manageable. Moreover, the steps also correspond to a natural split 
   of the ideas behind Prim's algorithm: The same structuring is also done in the presentation 
-  of Cormen et al.~\cite{Cormen-Leiserson-Rivest}, though not as detailed as ours.
+  of Cormen et al.~\<^cite>\<open>"Cormen-Leiserson-Rivest"\<close>, though not as detailed as ours.
 \<close>
 (*<*)
 theory Chapter_Prim

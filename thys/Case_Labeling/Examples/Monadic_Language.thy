@@ -18,7 +18,7 @@ ML \<open>
 \<close>
 
 
-text \<open>This language is inspired by the languages used in AutoCorres @{cite greenaway_bridging_2012}\<close>
+text \<open>This language is inspired by the languages used in AutoCorres \<^cite>\<open>greenaway_bridging_2012\<close>\<close>
 
 consts bind :: "'a option \<Rightarrow> ('a \<Rightarrow> 'b option) \<Rightarrow> 'b option" (infixr "|>>" 4)
 consts return :: "'a \<Rightarrow> 'a option"

@@ -11,7 +11,7 @@ and then applying the ATC connected to the root node by an edge labeled with the
 the FSM. The result of such an application is here called an ATC-reaction.
 
 ATCs are here modelled to have edges for every possible output from each non-leaf node. This is not
-a restriction on the definition of ATCs by Hierons @{cite "hierons"} as a missing edge can be 
+a restriction on the definition of ATCs by Hierons \<^cite>\<open>"hierons"\<close> as a missing edge can be 
 expressed by an edge to a leaf.
 \<close>
 

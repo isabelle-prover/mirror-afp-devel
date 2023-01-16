@@ -4,13 +4,13 @@ theory IMP imports Main begin
 section \<open>The language IMP\<close>
 
 text\<open>\label{sec:IMP}In this section we define a simple imperative programming
-language. Syntax and operational semantics are as in \cite{Winskel93},
+language. Syntax and operational semantics are as in \<^cite>\<open>"Winskel93"\<close>,
 except that we enrich the language with a single unnamed,
 parameterless procedure. Both, this section and the following one
 merely set the basis for the development described in the later
 sections and largely follow the approach to formalize program logics
 advocated by Kleymann, Nipkow, and others - see for example
-\cite{KleymannPhD,Nipkow-CSL02,Nipkow-AFP-AHL}.\<close>
+\<^cite>\<open>"KleymannPhD" and "Nipkow-CSL02" and "Nipkow-AFP-AHL"\<close>.\<close>
 
 subsection\<open>Syntax\<close> 
 
@@ -74,7 +74,7 @@ where
 "evalB (compB f e1 e2) s = f (evalE e1 s) (evalE e2 s)"
 
 text\<open>The operational semantics is a standard big-step relation, with
-a height index that facilitates the Kleymann-Nipkow-style~\cite{KleymannPhD,Nipkow-CSL02}
+a height index that facilitates the Kleymann-Nipkow-style~\<^cite>\<open>"KleymannPhD" and "Nipkow-CSL02"\<close>
 soundness proof of the program logic.\<close>
 
 inductive_set Semn :: "(State \<times> IMP \<times> nat \<times> State) set" where

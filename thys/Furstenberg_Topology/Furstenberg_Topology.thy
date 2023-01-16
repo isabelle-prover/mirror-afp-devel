@@ -12,7 +12,7 @@ begin
 
 text \<open>
   This article gives a formal version of Furstenberg's topological proof of the infinitude of
-  primes~\cite{furstenberg}. He defines a topology on the integers based on arithmetic progressions
+  primes~\<^cite>\<open>"furstenberg"\<close>. He defines a topology on the integers based on arithmetic progressions
   (or, equivalently, residue classes).
 
   Apart from yielding a short proof of the infinitude of primes, this topology is also fairly
@@ -436,7 +436,7 @@ text \<open>
   The metrizability of Furstenberg's topology (i.\,e.\ that it is induced by some metric) can
   be shown from the fact that it is second countable and $T_3$ using Urysohn's Metrization Theorem, 
   but this is not available in Isabelle yet. Let us therefore give an \<^emph>\<open>explicit\<close> metric, 
-  as described by Zulfeqarr~\cite{zulfeqarr}. We follow the exposition by Dirmeier~\cite{dirmeier}.
+  as described by Zulfeqarr~\<^cite>\<open>"zulfeqarr"\<close>. We follow the exposition by Dirmeier~\<^cite>\<open>"dirmeier"\<close>.
 
   First, we define a kind of norm on the integers. The norm depends on a real parameter \<open>q > 1\<close>.
   The value of \<open>q\<close> does not matter in the sense that all values induce the same topology

@@ -93,7 +93,7 @@ text\<open>
 \epigraph{Calculemus!}{\textit{Leibniz}}
 \<close>
   
-section\<open>Universal Logical Reasoning\footnote{This introductory section is based on the description of the topic in @{cite UniversalReasoning}.}\<close>
+section\<open>Universal Logical Reasoning\footnote{This introductory section is based on the description of the topic in \<^cite>\<open>UniversalReasoning\<close>.}\<close>
 
 text\<open>
 
@@ -117,10 +117,10 @@ Nowadays with the rise of powerful computer systems such a universal logical fra
 repercussions throughout the sciences and may be a vital part of human-machine interaction in the
 future. Leibniz' ideas have inspired recent efforts to use functional higher-order logic (HOL) as
 such a universal logical language and to represent various logical systems by the use of
-\emph{shallow semantical embeddings}@{cite UniversalReasoning}.
+\emph{shallow semantical embeddings}\<^cite>\<open>UniversalReasoning\<close>.
 
 Notably this approach received attention due to the formalization, validation and analysis
-of G\"odel's ontological proof of the existence of God by Christoph Benzm\"uller@{cite GoedelGod},
+of G\"odel's ontological proof of the existence of God by Christoph Benzm\"uller\<^cite>\<open>GoedelGod\<close>,
 for which higher-order modal logic was embedded in the computerized logic framework Isabelle/HOL.
 \<close>
 
@@ -170,9 +170,9 @@ stated in the background logic, which makes the construction of models for the s
 the degree of automation that can be retained.
 
 The shallow semantical embedding of modal logic was the basis for the analysis of
-G\"odel's ontological argument@{cite GoedelGod} and the general concept has shown great potential as a universal
+G\"odel's ontological argument\<^cite>\<open>GoedelGod\<close> and the general concept has shown great potential as a universal
 tool for logical embeddings while retaining the existing infrastructure for automation as for
-example present in a framework like Isabelle/HOL\footnote{See @{cite UniversalReasoning} for an
+example present in a framework like Isabelle/HOL\footnote{See \<^cite>\<open>UniversalReasoning\<close> for an
 overview and an description of the ambitions of the approach.}.
 
 \<close>
@@ -183,7 +183,7 @@ section\<open>Relational Type Theory vs. Functional Type Theory\<close>
 text\<open>
 The universality of this approach has since been challenged by Paul Oppenheimer and Edward Zalta
 who argue in the paper \emph{Relations Versus Functions at the Foundations of Logic: Type-Theoretic
-Considerations}@{cite rtt} that relational type theory is more general than functional type theory.
+Considerations}\<^cite>\<open>rtt\<close> that relational type theory is more general than functional type theory.
 In particular they argue that the Theory of Abstract Objects, which is founded in relational type
 theory, cannot be properly characterized in functional type theory.
 
@@ -247,7 +247,7 @@ text\<open>
 It is widely supposed that every entity falls into one of two categories:
 Some are concrete; the rest abstract. The distinction is supposed to be
 of fundamental significance for metaphysics and epistemology.
-}{\textit{Stanford Encyclopedia of Philosophy\cite{sep-abstract-objects}}}
+}{\textit{Stanford Encyclopedia of Philosophy\<^cite>\<open>"sep-abstract-objects"\<close>}}
 \<close>
 
 section\<open>Motivation\<close>
@@ -262,10 +262,10 @@ and complex abstract objects. \textelp{} The theory of abstract objects attempts
 these objects within a systematic and axiomatic framework. \textelp{We can} think of abstract
 objects as possible and actual property-patterns. \textelp{} Our theory of abstract
 objects will \emph{objectify} or \emph{reify} the group of properties satisfying \textins{such a}
-pattern.}\cite{MallyTheory}\footnote{The introduction to the theory
-in this and the next section is based on the documentation of the theory in @{cite MallyTheory} and @{cite MallyDistinction}, which
-is paraphrased and summarized throughout the sections. Further references about the topic include @{cite PM},
-@{cite zalta1988intensional}, @{cite zalta1983abstract}.}
+pattern.}\<^cite>\<open>"MallyTheory"\<close>\footnote{The introduction to the theory
+in this and the next section is based on the documentation of the theory in \<^cite>\<open>MallyTheory\<close> and \<^cite>\<open>MallyDistinction\<close>, which
+is paraphrased and summarized throughout the sections. Further references about the topic include \<^cite>\<open>PM\<close>,
+\<^cite>\<open>zalta1988intensional\<close>, \<^cite>\<open>zalta1983abstract\<close>.}
 
 So what is the fundamental distinction between abstract and concrete objects? The analysis
 in the Theory of Abstract Objects is based on a distinction between two fundamental modes of
@@ -292,7 +292,7 @@ To clarify the difference between the two concepts note that any object either e
 or its negation. The same is not true for encoding. For example it is not determinate whether 
 Sherlock Holmes has a mole on his left foot. Therefore the abstract object Sherlock Holmes neither
 encodes the property of having a mole on his left foot, nor the property of not having a mole on
-his left foot\footnote{see @{cite MallyDistinction}}.
+his left foot\footnote{see \<^cite>\<open>MallyDistinction\<close>}.
 
 The theory even allows for an abstract object to encode properties that no object
 could possibly exemplify and reason about them, for example the quadratic circle. In classical logic
@@ -311,7 +311,7 @@ It turns out that by the means of abstract objects and encoding  the Theory of A
   can be used to represent and reason about a large variety of concepts that
 regularly occur in philosophy, mathematics or linguistics.
 
-In \cite{MallyTheory} the principal objectives of the theory are summarized as follows:
+In \<^cite>\<open>"MallyTheory"\<close> the principal objectives of the theory are summarized as follows:
 \begin{itemize}
   \item To describe the logic underlying (scientific) thought and reasoning by extending
         classical propositional, predicate, and modal logic.
@@ -354,7 +354,7 @@ text\<open>
   some of the basic concepts of the theory are presented in advance to provide
   further motivation for the formalism.
 
-  The following are the two most important principles of the theory (see~@{cite MallyTheory}):
+  The following are the two most important principles of the theory (see~\<^cite>\<open>MallyTheory\<close>):
 
   \begin{itemize}
     \item \<open>\<exists>x(A!x & \<forall>F(xF \<equiv> \<phi>))\<close>
@@ -391,15 +391,15 @@ section\<open>The Language of PLM\<close>
   
 text\<open>
 The target of the embedding is the second-order fragment of object theory as described
-in chapter 7 of Edward Zalta's upcoming \emph{Principia Logico-Metaphysica} (PLM)@{cite PM}.
+in chapter 7 of Edward Zalta's upcoming \emph{Principia Logico-Metaphysica} (PLM)\<^cite>\<open>PM\<close>.
 The logical foundation of the theory uses a second-order modal logic (without primitive identity)
 formulated using relational type theory that is modified to admit \emph{encoding} as a second mode
 of predication besides the traditional \emph{exemplification}.
 In the following an informal description of the important aspects of the language is provided;
 for a detailed and fully formal description and the type-theoretic background refer to the respective
-chapters of PLM@{cite PM}.
+chapters of PLM\<^cite>\<open>PM\<close>.
 
-A compact description of the language can be given in Backus-Naur Form (BNF)\mbox{@{cite \<open>Definition (6)\<close> PM}},
+A compact description of the language can be given in Backus-Naur Form (BNF)\mbox{\<^cite>\<open>\<open>Definition (6)\<close> in PM\<close>},
 as shown in figure~\ref{BNF}, in which the following grammatical categories are used:
 
 \begin{tabular}[h]{ll}
@@ -416,7 +416,7 @@ as shown in figure~\ref{BNF}, in which the following grammatical categories are 
 \end{tabular}
 
 \begin{figure}[!h]
-  \caption{BNF grammar of the language of PLM\cite[p. 170]{PM}}
+  \caption{BNF grammar of the language of PLM\<^cite>\<open>\<open>p. 170\<close> in "PM"\<close>}
   \centering
   \includegraphics{BNF.pdf}
   \label{BNF}
@@ -431,7 +431,7 @@ in section~\ref{russell-paradox}.
 Note that there is a case in which propositional formulas \emph{can} contain encoding
 expressions. This is due to the fact that \emph{subformula} is defined in such a
 way that \<open>xQ\<close> is \emph{not} a subformula of \<open>\<iota>x(xQ)\<close>\footnote{For
-a formal definition of subformula refer to definition (\ref{PM-df-subformula}) in @{cite PM}.}.
+a formal definition of subformula refer to definition (\ref{PM-df-subformula}) in \<^cite>\<open>PM\<close>.}.
 Thereby \<open>F\<iota>x(xQ)\<close> is a propositional formula and \<open>[\<lambda>y F\<iota>x(xQ)]\<close> a well-formed
 \<open>\<lambda>\<close>-expression. On the other hand \<open>xF\<close> is not a propositional formula and therefore
 \<open>[\<lambda>x xF]\<close> not a well-formed \<open>\<lambda>\<close>-expression. This fact will become relevant in
@@ -462,7 +462,7 @@ The language does not contain a primitive identity, but
 \end{tabular}
 
 The identity for \<open>n\<close>-place relations for \<open>n \<ge> 2\<close> is defined in terms of the
-identity of one-place relations, see (\ref{PM-p-identity})@{cite PM} for the full details.
+identity of one-place relations, see (\ref{PM-p-identity})\<^cite>\<open>PM\<close> for the full details.
 
 The identity for ordinary objects follows Leibniz' law of the identity of indiscernibles:
 Two ordinary objects that necessarily exemplify the same properties are identical.
@@ -488,7 +488,7 @@ an actuality operator, axioms for definite descriptions that go along with Russe
 of descriptions, the substitution of identicals as per the defined identity, \<open>\<alpha>\<close>-,
 \<open>\<beta>\<close>-, \<open>\<eta>\<close>- and a special \<open>\<iota>\<close>-conversion for \<open>\<lambda>\<close>-expressions, as well
 as dedicated axioms for encoding. A full accounting of the axioms in their representation in the
-embedding is found in section~\ref{axioms}. For the original axioms refer to @{cite \<open>Chap. 8\<close> PM}.
+embedding is found in section~\ref{axioms}. For the original axioms refer to \<^cite>\<open>\<open>Chap. 8\<close> in PM\<close>.
 At this point the axioms of encoding are the most relevant, namely:
 
   \begin{itemize}
@@ -546,7 +546,7 @@ substituted for each other in an exemplification formula, the law of the exclude
 used in propositional reasoning, etc.
 
 The Theory of Abstract Objects is an \emph{extensional} theory of \emph{intensional}
-entities\mbox{@{cite \<open>(\ref{PM-prop-equiv})\<close> PM}}.
+entities\mbox{\<^cite>\<open>\<open>(\ref{PM-prop-equiv})\<close> in PM\<close>}.
 
 \<close>
   
@@ -585,7 +585,7 @@ depends solely on its proxy. However, the map from abstract objects to special u
 not injective; more than one abstract object can share the same proxy. This way a violation of
 Cantor's theorem is avoided. As a consequence there are abstract objects, that
 cannot be distinguished by the properties they exemplify. Interestingly the existence of abstract objects
-that are exemplification-indistinguishable is a theorem of PLM, see (\ref{PM-aclassical2})@{cite PM}.
+that are exemplification-indistinguishable is a theorem of PLM, see (\ref{PM-aclassical2})\<^cite>\<open>PM\<close>.
 
 Although the Aczel-model illustrated in figure~\ref{aczel-model-graphic} is non-modal,
 the extension to a modal version is straightforward by introducing primitive possible worlds
@@ -612,10 +612,10 @@ section\<open>The Framework Isabelle/HOL\<close>
 
 text\<open>
 The embedding is implemented in Isabelle/HOL, that provides a functional higher-order logic
-that serves as meta-logic. An introduction to Isabelle/HOL can be found in @{cite Isabelle}\footnote{
+that serves as meta-logic. An introduction to Isabelle/HOL can be found in \<^cite>\<open>Isabelle\<close>\footnote{
 An updated version is available at \url{http://isabelle.in.tum.de/doc/tutorial.pdf} or in the
 documentation of the current Isabelle release, see \url{http://isabelle.in.tum.de/}.}. For a general
-introduction to HOL and its automation refer to @{cite B5}.
+introduction to HOL and its automation refer to \<^cite>\<open>B5\<close>.
 
 The Isabelle theory containing the embedding is included in the appendix and documented in this chapter.
 Throughout the chapter references to the various sections of the appendix can be found.
@@ -641,7 +641,7 @@ text\<open>
   One of the major challenges of an implementation of the Theory of Abstract Objects in functional
   logic is the fact that a naive representation of the \<open>\<lambda>\<close>-expressions of the theory using the
   unrestricted, \<open>\<beta>\<close>-convertible \<open>\<lambda>\<close>-expressions of functional logic results in the following
-  paradox (see @{cite \<open>pp. 24-25\<close> rtt}):
+  paradox (see \<^cite>\<open>\<open>pp. 24-25\<close> in rtt\<close>):
 
   Assume \<open>[\<lambda>x \<exists>F (xF & \<not>Fx)]\<close> were a valid \<open>\<lambda>\<close>-expression denoting a relation.
   Now the comprehension axiom of abstract objects requires the following:
@@ -676,7 +676,7 @@ text\<open>
 The introduction mentioned that shallow semantical embeddings were used to successfully represent
 different varieties of modal logic by implementing them using Kripke semantics. The advantage here
 is that Kripke semantics is well understood and there are extensive results about its soundness and
-completeness that can be utilized in the analysis of semantical embeddings (see~@{cite ModalLogics}).
+completeness that can be utilized in the analysis of semantical embeddings (see~\<^cite>\<open>ModalLogics\<close>).
 
 For the Theory of Abstract Objects the situation is different. Section~\ref{aczel-model} already
 established that even a modal version of the traditional Aczel-model is extensional and therefore
@@ -765,7 +765,7 @@ several \emph{layers} as follows:
         background logic as meta-logic.
   \item The third layer derives the axiom system of PLM mostly using the semantics of the second
         layer and partly using the model structure directly.
-  \item Based on the third layer the deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM}
+  \item Based on the third layer the deductive system PLM as described in \<^cite>\<open>\<open>Chap. 9\<close> in PM\<close>
         is derived solely using the axiom system of the third layer and the fundamental meta-rules
         stated in PLM. The model structure and the constructed semantics are explicitly
         not used in any proofs. Thereby the reasoning in this last layer is independent of the
@@ -1020,7 +1020,7 @@ text\<open>
   Following the model described in section~\ref{hyper-aczel-model} the connectives and quantifiers
   are defined in such a way that they behave classically if evaluated for the designated actual state @{term "dj"},
   whereas their behavior is governed by uninterpreted constants in any other state\footnote{Early attempts
-  in using an intuitionistic version of connectives and quantifiers based on \cite{DOttaviano2012} were
+  in using an intuitionistic version of connectives and quantifiers based on \<^cite>\<open>"DOttaviano2012"\<close> were
   found to be insufficient to capture the full hyperintensionality of PLM, but served as inspiration
   for the current construction.}.
 
@@ -1203,7 +1203,7 @@ text\<open>
     \item Abstract objects are not possibly concrete.
   \end{itemize}
 
-  An additional requirement is enforced by axiom (\ref{PM-qml}.4)\cite{PM}, see~\ref{axioms-necessity}.
+  An additional requirement is enforced by axiom (\ref{PM-qml}.4)\<^cite>\<open>"PM"\<close>, see~\ref{axioms-necessity}.
   To satisfy this axiom the following has to be assured:
   \begin{itemize}
     \item Possibly contingent objects exist. In the meta-logic this means that there exists
@@ -1957,7 +1957,7 @@ text\<open>
 
   Most of the axioms in PLM are stated as \emph{axiom schemata}. They use variables that range over
   and can therefore be instantiated for any formula and term.
-  Furthermore PLM introduces the notion of \emph{closures} (see~@{cite \<open>(\ref{PM-closures})\<close> PM}). Effectively this means
+  Furthermore PLM introduces the notion of \emph{closures} (see~\<^cite>\<open>\<open>(\ref{PM-closures})\<close> in PM\<close>). Effectively this means
   that the statement of an axiom schema implies that the universal generalization of the schema,
   the actualization of the schema and (except for modally-fragile axioms) the necessitation of the
   schema is also an axiom.
@@ -2004,7 +2004,7 @@ text\<open>
   setting of Isabelle/HOL requires special attention.
   Therefore in the following the complete axiom system is listed and discussed in
   detail where necessary. Additionally each axiom is associated with the numbering in
-  the current draft of PLM@{cite PM}.
+  the current draft of PLM\<^cite>\<open>PM\<close>.
 \<close>
   
 subsection\<open>Axioms for Negations and Conditionals\<close>
@@ -2302,7 +2302,7 @@ text\<open>
   on the underlying model structure.
 
   To verify that the axiom system faithfully represents the reference system, the
-  deductive system PLM as described in @{cite \<open>Chap. 9\<close> PM} is derived solely based on the
+  deductive system PLM as described in \<^cite>\<open>\<open>Chap. 9\<close> in PM\<close> is derived solely based on the
   formulation of the axioms without falling back to the model structure or the semantics (see~\ref{TAO_PLM}).
 
 \pagebreak
@@ -2321,7 +2321,7 @@ begin
 section\<open>The Deductive System PLM\<close>
   
 text\<open>
-  The derivation of the deductive system PLM (@{cite \<open>Chap. 9\<close> PM}) from the axiom system constitutes
+  The derivation of the deductive system PLM (\<^cite>\<open>\<open>Chap. 9\<close> in PM\<close>) from the axiom system constitutes
   a major part of the Isabelle theory in the appendix (see~\ref{TAO_PLM}). Its extent of
   over one hundred pages makes it infeasible to discuss every aspect in full detail.
 
@@ -2336,7 +2336,7 @@ text\<open>
 
   PLM distinguishes between two sets of theorems: the theorems, that are derivable from
   the complete axiom system including the modally-fragile axiom,
-  and the set of theorems, that have \emph{modally-strict} proofs (see~@{cite \<open>(\ref{PM-theoremhood})\<close> PM}).
+  and the set of theorems, that have \emph{modally-strict} proofs (see~\<^cite>\<open>\<open>(\ref{PM-theoremhood})\<close> in PM\<close>).
 
   A proof is modally-strict, if it does not depend on any modally-fragile axioms.
 
@@ -2457,7 +2457,7 @@ subsection\<open>The Rule of Substitution\<close>
 text\<open>
   A challenge in the derivation of the deductive system that is worth to examine in
   detail is the \emph{rule of substitution}.  The rule is stated in PLM as follows
-  (see~(\ref{PM-rule-sub-nec})@{cite PM}):
+  (see~(\ref{PM-rule-sub-nec})\<^cite>\<open>PM\<close>):
 
   \begin{addmargin}{1cm}
     If \<open>\<turnstile>\<^sub>\<box> \<psi> \<equiv> \<chi>\<close> and \<open>\<phi>'\<close> is the result of substituting the formula \<open>\<chi>\<close>
@@ -2486,7 +2486,7 @@ text\<open>
   (necessarily) equivalent in the \emph{actual state} - no statement about other states is implied.
 
   Another issue arises if one considers one of the example cases of legitimate uses of the rule
-  of substitution in PLM (see~@{cite \<open>(\ref{PM-rule-sub-nec})\<close> PM}):
+  of substitution in PLM (see~\<^cite>\<open>\<open>(\ref{PM-rule-sub-nec})\<close> in PM\<close>):
 
   \begin{addmargin}{1cm}
     If \<open>\<turnstile> \<exists>x A!x\<close> and \<open>\<turnstile>\<^sub>\<box> A!x \<equiv> \<not>\<diamond>E!x\<close>, then \<open>\<turnstile> \<exists>x \<not>\<diamond>E!x\<close>.
@@ -2671,7 +2671,7 @@ text\<open>
 subsection\<open>Summary\<close>
   
 text\<open>
-  A full representation of the deductive system PLM, as described in @{cite \<open>Chap. 9\<close> PM}, could
+  A full representation of the deductive system PLM, as described in \<^cite>\<open>\<open>Chap. 9\<close> in PM\<close>, could
   be derived without violating the layered structure of the embedding.
 
   Although compromises affecting the degree of automation had to be made, the resulting
@@ -2815,7 +2815,7 @@ text\<open>
 
   The first axiom is equivalent to the fact that concreteness matches the domains of ordinary, resp.
   abstract objects, whereas the second and third axiom correspond to the conjuncts of
-  axiom~(\ref{PM-qml}.4)@{cite PM}.
+  axiom~(\ref{PM-qml}.4)\<^cite>\<open>PM\<close>.
 
 \begin{remark}
   Additionally some further desirable meta-logical properties of the embedding are verified
@@ -3066,7 +3066,7 @@ text\<open>
   Therefore, future versions of the embedding will have to include a distinction between relation
   terms and relation variables in a similar way as is already done for individuals. An alternative
   approach that could result in a more elegant representation would be to implement concepts of free
-  logic based on the research in @{cite FreeLogic} for both individuals and relations.
+  logic based on the research in \<^cite>\<open>FreeLogic\<close> for both individuals and relations.
 \<close>
 
 subsection\<open>Modally-strict Proofs and the Converse of RN\<close>
@@ -3090,7 +3090,7 @@ from axioms whose necessitations are axioms as well (see~\ref{axiom-schemata}).
 
 The metarule RN states in essence that if there is a modally-strict proof for \<open>\<phi>\<close>,
 then \<open>\<box>\<phi>\<close> is derivable as a theorem. PLM proves this fact by induction on the length
-of the derivation. Remark (\ref{PM-abstraction-contingent})@{cite PM}
+of the derivation. Remark (\ref{PM-abstraction-contingent})\<^cite>\<open>PM\<close>
 gives an example of a case in which the converse is false: if \<open>\<box>\<phi>\<close> is derivable as a
 theorem, this does not imply that there is a modally-strict proof for \<open>\<phi>\<close>.
 
@@ -3382,7 +3382,7 @@ section\<open>Relations vs. Functions\<close>
 
 text\<open>
   As mentioned in the introduction, Oppenheimer and Zalta argue that relational type theory is more
-  fundamental than functional type theory (see @{cite rtt}). One of their main arguments is that the
+  fundamental than functional type theory (see \<^cite>\<open>rtt\<close>). One of their main arguments is that the
   Theory of Abstract Objects is not representable in functional type theory.
   The success of the presented embedding, however, suggests that the topic has to be
   examined more closely.
@@ -3399,7 +3399,7 @@ text\<open>
   is insufficient for a representation of the theory.
 
   The embedding does not share several of the properties of
-  the representative functional type theory constructed in @{cite \<open>pp. 9-12\<close> rtt}:
+  the representative functional type theory constructed in \<^cite>\<open>\<open>pp. 9-12\<close> in rtt\<close>:
 
   \begin{itemize}
     \item Relations are \emph{not} represented as functions from individuals to propositions.
@@ -3425,7 +3425,7 @@ text\<open>
   formulas, so not all functions of type \mbox{\<open>\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>\<close>} are supposed to denote relations.
   However, since in classical functional type theory functions are total, \<open>\<Lambda>\<^sub>n\<close> has to map
   all these functions to some object of type \<open>R\<^sub>n\<close>. To solve this problem concepts used in
-  the embedding of free logic can help\footnote{See the embedding of free logic constructed in @{cite FreeLogic}.}.
+  the embedding of free logic can help\footnote{See the embedding of free logic constructed in \<^cite>\<open>FreeLogic\<close>.}.
   The function \<open>\<Lambda>\<^sub>n\<close> can map functions of type \mbox{\<open>\<iota>\<Rightarrow>\<dots>\<Rightarrow>\<iota>\<Rightarrow>\<o>\<close>} that do not
   correspond to propositional formulas to objects of type \<open>R\<^sub>n\<close> that
   represent invalid (resp. non-existing) relations. For invalid relations the functions used
@@ -3434,7 +3434,7 @@ text\<open>
 
   Oppenheimer and Zalta argue that using a free logic and letting non-propositional
   formulas fail to denote is not an option, since it prevents classical reasoning for non-propositional
-  formulas\footnote{See @{cite \<open>pp. 30-31\<close> rtt}.}. Although this is true for the case of a simple
+  formulas\footnote{See \<^cite>\<open>\<open>pp. 30-31\<close> in rtt\<close>.}. Although this is true for the case of a simple
   functional type theory, it does not apply to the constructed theory: since only objects of
   type \<open>R\<^sub>n\<close> may fail to denote, non-propositional reasoning is unaffected.
 
@@ -3444,7 +3444,7 @@ text\<open>
   involving non-propositional formulas are assigned \emph{non-standard} denotations,
   i.e. they do denote, but \<open>\<beta>\<close>-conversion only holds under certain conditions
   (see~\ref{differences-lambda}). Although this concept has merits as well, future versions of the embedding
-  may instead utilize the concepts described in @{cite FreeLogic} to replace this construction
+  may instead utilize the concepts described in \<^cite>\<open>FreeLogic\<close> to replace this construction
   by a free logic implementation that will more closely reflect the concepts of propositional formulas
   and \<open>\<lambda>\<close>-expressions in object theory.
 \end{remark}

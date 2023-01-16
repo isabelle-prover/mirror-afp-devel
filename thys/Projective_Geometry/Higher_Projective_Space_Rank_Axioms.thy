@@ -6,7 +6,7 @@ begin
 
 text \<open>
 Contents:
-\<^item> Following @{cite Magaud_2012} we introduce a set of axioms for projective space geometry based on
+\<^item> Following \<^cite>\<open>Magaud_2012\<close> we introduce a set of axioms for projective space geometry based on
 the notions of matroid and rank.
 \<close>
 

@@ -19,7 +19,7 @@ between two \<open>\<alpha>\<close>-categories.
 It continues the development that was initiated in sections 
 \ref{sec:dg_FUNCT} and \ref{sec:smc_FUNCT}.
 A general reference for this section is Chapter II-4 in 
-\cite{mac_lane_categories_2010}.
+\<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 named_theorems cat_FUNCT_cs_simps
@@ -749,7 +749,7 @@ subsection\<open>Diagonal functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition cf_diagonal :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>\<Delta>\<^sub>C\<^sub>F\<close>)
   where "\<Delta>\<^sub>C\<^sub>F \<alpha> \<JJ> \<CC> =
@@ -877,7 +877,7 @@ subsection\<open>Diagonal functor for functors with tiny maps\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition tm_cf_diagonal :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" (\<open>\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m\<close>) 
   where "\<Delta>\<^sub>C\<^sub>F\<^sub>.\<^sub>t\<^sub>m \<alpha> \<JJ> \<CC> =
@@ -1002,9 +1002,9 @@ subsubsection\<open>Definition and elementary properties\<close>
 text\<open>
 Most of the definitions and the results presented in this 
 and the remaining subsections
-can be found in \cite{mac_lane_categories_2010} and 
-\cite{riehl_category_2016} (e.g., see Chapter X-3 
-in \cite{mac_lane_categories_2010}).
+can be found in \<^cite>\<open>"mac_lane_categories_2010"\<close> and 
+\<^cite>\<open>"riehl_category_2016"\<close> (e.g., see Chapter X-3 
+in \<^cite>\<open>"mac_lane_categories_2010"\<close>).
 \<close>
 
 definition exp_cf_cat :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"

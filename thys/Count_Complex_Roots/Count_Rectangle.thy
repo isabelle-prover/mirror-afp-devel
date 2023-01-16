@@ -7,7 +7,7 @@ begin
 text \<open>Counting roots in a rectangular area can be in a purely algebraic approach 
   without introducing (analytic) winding number (@{term winding_number})
   nor the argument principle (@{thm argument_principle}). This has been illustrated
-  by Michael Eisermann \cite{eisermann2012fundamental}. We lightly make use of 
+  by Michael Eisermann \<^cite>\<open>"eisermann2012fundamental"\<close>. We lightly make use of 
   @{term winding_number} here only to shorten the proof of one of the technical lemmas.\<close>    
 
 subsection \<open>Misc\<close>

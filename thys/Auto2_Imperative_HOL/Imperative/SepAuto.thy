@@ -11,7 +11,7 @@ begin
 
 text \<open>
   Separation logic for Imperative\_HOL, and setup of auto2. The development of
-  separation logic here follows \cite{Separation_Logic_Imperative_HOL-AFP} by Lammich and Meis.
+  separation logic here follows \<^cite>\<open>"Separation_Logic_Imperative_HOL-AFP"\<close> by Lammich and Meis.
 \<close>
 
 subsection \<open>Partial Heaps\<close>

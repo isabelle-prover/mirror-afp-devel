@@ -14,7 +14,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 The application example presented in this section is based on 
-Exercise 6.1.ii in \cite{riehl_category_2016}. The primary purpose
+Exercise 6.1.ii in \<^cite>\<open>"riehl_category_2016"\<close>. The primary purpose
 of this section is the instantiation of the locales associated
 with the pointwise Kan extensions.
 \<close>

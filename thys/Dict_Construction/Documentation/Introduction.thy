@@ -7,10 +7,10 @@ begin
 subsection \<open>Introduction\<close>
 
 text \<open>
- Isabelle's logic features \emph{type classes}~\cite{haftmann2007typeclasses,wenzel1997typeclasses}.
+ Isabelle's logic features \emph{type classes}~\<^cite>\<open>"haftmann2007typeclasses" and "wenzel1997typeclasses"\<close>.
  These are built into the kernel and are used extensively in theory developments.
  The existing \emph{code generator}, when targeting Standard ML, performs the well-known dictionary
- construction or \emph{dictionary translation}~\cite{haftmann2010codegeneration}.
+ construction or \emph{dictionary translation}~\<^cite>\<open>"haftmann2010codegeneration"\<close>.
  This works by replacing type classes with records, instances with values, and occurrences with
  explicit parameters.
 

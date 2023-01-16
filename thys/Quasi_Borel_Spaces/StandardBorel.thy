@@ -9,7 +9,7 @@ begin
 
 text \<open>A standard Borel space is the Borel space associated with a Polish space.
       Here, we define standard Borel spaces in another, but equivallent, way.
-      See @{cite "Heunen_2017"} Proposition 5. \<close>
+      See \<^cite>\<open>"Heunen_2017"\<close> Proposition 5. \<close>
 abbreviation "real_borel \<equiv> borel :: real measure"
 abbreviation "nat_borel \<equiv> borel :: nat measure"
 abbreviation "ennreal_borel \<equiv> borel :: ennreal measure"

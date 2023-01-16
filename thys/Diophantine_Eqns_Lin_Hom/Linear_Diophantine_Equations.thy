@@ -367,7 +367,7 @@ end
 subsection \<open>Pointwise Restricting Solutions\<close>
 
 text \<open>
-  Constructing the list of \<open>u\<close> vectors from Huet's proof @{cite "Huet1978"}, satisfying
+  Constructing the list of \<open>u\<close> vectors from Huet's proof \<^cite>\<open>"Huet1978"\<close>, satisfying
   \<^item> \<open>\<forall>i<length u. u ! i \<le> y ! i\<close> and
   \<^item> \<open>0 < sum_list u \<le> a\<^sub>k\<close>.
 \<close>

@@ -311,7 +311,7 @@ method rename_alpha_vars = tactic \<open> Lens_Utils.rename_alpha_vars \<close>
 subsection \<open>Locale State Spaces \<close>
 
 text \<open> Alternative to the alphabet command, we also introduce the statespace command, which
-  implements Schirmer and Wenzel's locale-based approach to state space modelling~\cite{Schirmer2009}. 
+  implements Schirmer and Wenzel's locale-based approach to state space modelling~\<^cite>\<open>"Schirmer2009"\<close>. 
 
   It has the advantage of allowing multiple inheritance of state spaces, and also variable names are 
   fully internalised with the locales. The approach is also far simpler than record-based state

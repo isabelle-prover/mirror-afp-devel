@@ -42,7 +42,7 @@ lemma cf_smcf_components:
 subsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale is_functor = 
   \<Z> \<alpha> + vfsequence \<FF> + HomDom: category \<alpha> \<AA> + HomCod: category \<alpha> \<BB> 
@@ -462,7 +462,7 @@ subsection\<open>Opposite functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition op_cf :: "V \<Rightarrow> V"
   where "op_cf \<FF> =
@@ -803,7 +803,7 @@ subsection\<open>Composition of contravariant functors\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See section 1.2 in \cite{bodo_categories_1970}.\<close>
+text\<open>See section 1.2 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 definition cf_cn_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl "\<^sub>C\<^sub>F\<circ>" 55)
   where "\<GG> \<^sub>C\<^sub>F\<circ> \<FF> =
@@ -1188,7 +1188,7 @@ proof-
 qed
 
 
-text\<open>See section 1.2 in \cite{bodo_categories_1970}).\<close>
+text\<open>See section 1.2 in \<^cite>\<open>"bodo_categories_1970"\<close>).\<close>
 
 lemma cf_cn_cov_comp_is_functor[cat_cn_cs_intros]:
   assumes "\<GG> : \<BB> \<^sub>C\<mapsto>\<mapsto>\<^bsub>\<alpha>\<^esub> \<CC>" and "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<BB>"
@@ -1224,7 +1224,7 @@ proof-
 qed
 
 
-text\<open>See section 1.2 in \cite{bodo_categories_1970}.\<close>
+text\<open>See section 1.2 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 lemma cf_cov_cn_comp_is_functor[cat_cn_cs_intros]:
   assumes "\<GG> : \<BB> \<mapsto>\<mapsto>\<^sub>C\<^bsub>\<alpha>\<^esub> \<CC>" and "\<FF> : \<AA> \<^sub>C\<mapsto>\<mapsto>\<^bsub>\<alpha>\<^esub> \<BB>"
@@ -1246,7 +1246,7 @@ subsection\<open>Identity functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 abbreviation (input) cf_id :: "V \<Rightarrow> V" where "cf_id \<equiv> dghm_id"
 
@@ -1342,7 +1342,7 @@ subsection\<open>Constant functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 abbreviation cf_const :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "cf_const \<CC> \<DD> a \<equiv> smcf_const \<CC> \<DD> a (\<DD>\<lparr>CId\<rparr>\<lparr>a\<rparr>)"
@@ -1511,7 +1511,7 @@ subsection\<open>Faithful functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 locale is_ft_functor = is_functor \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF> + 
   assumes ft_cf_is_ft_semifunctor[slicing_intros]: 
@@ -1653,7 +1653,7 @@ subsection\<open>Full functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 locale is_fl_functor = is_functor \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF> + 
   assumes fl_cf_is_fl_semifunctor:
@@ -1773,7 +1773,7 @@ subsection\<open>Fully faithful functor\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 locale is_ff_functor = is_ft_functor \<alpha> \<AA> \<BB> \<FF> + is_fl_functor \<alpha> \<AA> \<BB> \<FF>
   for \<alpha> \<AA> \<BB> \<FF>
@@ -1839,7 +1839,7 @@ subsection\<open>Isomorphism of categories\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 locale is_iso_functor = is_functor \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF> + 
   assumes iso_cf_is_iso_semifunctor: 
@@ -2165,7 +2165,7 @@ subsection\<open>Isomorphic categories\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 locale iso_category = L: category \<alpha> \<AA> + R: category \<alpha> \<BB> for \<alpha> \<AA> \<BB> +
   assumes iso_cat_is_iso_functor: "\<exists>\<FF>. \<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>C\<^sub>.\<^sub>i\<^sub>s\<^sub>o\<^bsub>\<alpha>\<^esub> \<BB>"

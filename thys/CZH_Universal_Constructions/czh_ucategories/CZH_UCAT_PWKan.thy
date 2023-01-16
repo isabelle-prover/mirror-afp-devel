@@ -12,8 +12,8 @@ subsection\<open>Pointwise Kan extensions\<close>
 
 text\<open>
 The following subsection is based on elements of the
-content of section 6.3 in \cite{riehl_category_2016} and
-Chapter X-5 in \cite{mac_lane_categories_2010}.
+content of section 6.3 in \<^cite>\<open>"riehl_category_2016"\<close> and
+Chapter X-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 locale is_cat_pw_rKe = is_cat_rKe \<alpha> \<BB> \<CC> \<AA> \<KK> \<TT> \<GG> \<epsilon>
@@ -175,7 +175,7 @@ This subsection and several further subsections
 (\ref{sec:lem_X_5_start}-\ref{sec:lem_X_5_end})
 expose definitions that are used in the proof of the technical lemma that
 was used in the proof of Theorem 3 from Chapter X-5
-in \cite{mac_lane_categories_2010}.
+in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 definition L_10_5_N :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
@@ -3290,7 +3290,7 @@ subsection\<open>The limit and the colimit for the pointwise Kan extensions\<clo
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Theorem 3 in Chapter X-5 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Theorem 3 in Chapter X-5 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition the_pw_cat_rKe_limit :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "the_pw_cat_rKe_limit \<alpha> \<KK> \<TT> \<GG> c =

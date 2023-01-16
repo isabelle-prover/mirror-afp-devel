@@ -1409,7 +1409,7 @@ text \<open>
   The proof is a fairly standard one that uses Hensel's lemma. Some preliminary tricks are
   required to be able to use it, however, namely a number of non-obvious changes of variables
   to turn the polynomial with Puiseux coefficients into one with formal power series coefficients.
-  The overall approach was taken from an article by Nowak~\cite{nowak2000}.
+  The overall approach was taken from an article by Nowak~\<^cite>\<open>"nowak2000"\<close>.
 
   Basically, what we need to show is this: Let 
   \[p(X,Z) = a_n(Z) X^n + a_{n-1}(Z) X^{n-1} + \ldots + a_0(Z)\]

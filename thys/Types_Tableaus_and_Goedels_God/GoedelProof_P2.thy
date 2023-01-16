@@ -50,7 +50,7 @@ theorem T3: "\<lfloor>\<^bold>\<diamond>\<^bold>\<exists>\<^sup>E G\<rfloor>" us
     
 subsubsection \<open>Axioms\<close>
         
-text\<open>  \<open>\<P>\<close> satisfies the so-called stability conditions (see @{cite "Fitting"}, p. 124), which means
+text\<open>  \<open>\<P>\<close> satisfies the so-called stability conditions (see \<^cite>\<open>"Fitting"\<close>, p. 124), which means
  it designates rigidly (note that this makes for an \emph{essentialist} assumption). \<close>
 axiomatization where
       A4a: "\<lfloor>\<^bold>\<forall>X. \<P> X \<^bold>\<rightarrow> \<^bold>\<box>(\<P> X)\<rfloor>"      \<comment> \<open>axiom 11.11\<close>
@@ -67,7 +67,7 @@ text\<open> \bigbreak \<close>
     
 subsubsection \<open>Theorems\<close>
 text\<open>  Remark: Essence is defined here (and in Fitting's variant) in the version of Scott; G\"odel's original version leads to the inconsistency
- reported in @{cite C55 and C60} \<close>
+ reported in \<^cite>\<open>C55 and C60\<close> \<close>
 
 abbreviation essenceOf::"\<up>\<langle>\<up>\<langle>\<zero>\<rangle>,\<zero>\<rangle>" ("\<E>") where
   "\<E> Y x \<equiv> (Y x) \<^bold>\<and> (\<^bold>\<forall>Z. Z x \<^bold>\<rightarrow> Y \<Rrightarrow> Z)"   
@@ -260,7 +260,7 @@ lemma PosPropertiesNecExist: "\<lfloor>\<^bold>\<forall>Y. \<P> Y \<^bold>\<righ
  
     
 subsubsection \<open>More Objections\<close>
-text\<open>  Fitting discusses the objection raised by Sobel @{cite "sobel2004logic"}, who argues that G\"odel's axiom system
+text\<open>  Fitting discusses the objection raised by Sobel \<^cite>\<open>"sobel2004logic"\<close>, who argues that G\"odel's axiom system
  is too strong: it implies that whatever is the case is so necessarily, i.e. the modal system collapses (\<open>\<phi> \<longrightarrow> \<box>\<phi>\<close>).
  The \emph{modal collapse} has been philosophically interpreted as implying the absence of free will. \<close>
 

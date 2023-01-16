@@ -8,7 +8,7 @@ imports
   Perron_Frobenius_Aux
 begin
 
-text \<open>We follow the textbook proof of Serre \cite[Theorem 5.2.1]{SerreMatrices}.\<close>
+text \<open>We follow the textbook proof of Serre \<^cite>\<open>\<open>Theorem 5.2.1\<close> in "SerreMatrices"\<close>.\<close>
 
 context
   fixes A :: "complex ^ 'n ^ 'n :: finite"

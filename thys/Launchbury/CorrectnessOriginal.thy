@@ -3,7 +3,7 @@ imports Denotational Launchbury
 begin
 
 text \<open>
-This is the main correctness theorem, Theorem 2 from \cite{launchbury}.
+This is the main correctness theorem, Theorem 2 from \<^cite>\<open>"launchbury"\<close>.
 \<close>
 
 (* Another possible invariant seems to be: "edom \<rho> - domA \<Gamma> \<subseteq> set L" *)

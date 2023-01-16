@@ -8,9 +8,9 @@ begin
 
 text \<open> The theory of \emph{ground mereology} adds to premereology the antisymmetry of parthood, and
 defines proper parthood as nonidentical parthood.\footnote{For this axiomatization of ground mereology see,
-for example, @{cite "varzi_parts_1996"} p. 261 and @{cite "casati_parts_1999"} p. 36. For discussion of the 
-antisymmetry of parthood see, for example, @{cite "cotnoir_antisymmetry_2010"}. For the definition of 
-proper parthood as nonidentical parthood, see for example, @{cite "leonard_calculus_1940"} p. 47.} 
+for example, \<^cite>\<open>"varzi_parts_1996"\<close> p. 261 and \<^cite>\<open>"casati_parts_1999"\<close> p. 36. For discussion of the 
+antisymmetry of parthood see, for example, \<^cite>\<open>"cotnoir_antisymmetry_2010"\<close>. For the definition of 
+proper parthood as nonidentical parthood, see for example, \<^cite>\<open>"leonard_calculus_1940"\<close> p. 47.} 
 In other words, ground mereology assumes that parthood is a partial order.\<close>
 
 locale M = PM +
@@ -74,12 +74,12 @@ text \<open> The rest of this section compares four alternative axiomatizations 
 verifies their equivalence. \<close>
 
 text \<open> The first alternative axiomatization defines proper parthood as nonmutual instead of nonidentical parthood.\footnote{
-See, for example, @{cite "varzi_parts_1996"} p. 261 and @{cite "casati_parts_1999"} p. 36. For the distinction
-between nonmutual and nonidentical parthood, see @{cite "parsons_many_2014"} pp. 6-8.}
+See, for example, \<^cite>\<open>"varzi_parts_1996"\<close> p. 261 and \<^cite>\<open>"casati_parts_1999"\<close> p. 36. For the distinction
+between nonmutual and nonidentical parthood, see \<^cite>\<open>"parsons_many_2014"\<close> pp. 6-8.}
 In the presence of antisymmetry, the two definitions of proper parthood are equivalent.\footnote{
-See @{cite "cotnoir_antisymmetry_2010"} p. 398, @{cite "donnelly_using_2011"} p. 233, 
-@{cite "cotnoir_non-wellfounded_2012"} p. 191, @{cite "obojska_remarks_2013"} p. 344,
-@{cite "cotnoir_does_2016"} p. 128 and @{cite "cotnoir_is_2018"}.} \<close>
+See \<^cite>\<open>"cotnoir_antisymmetry_2010"\<close> p. 398, \<^cite>\<open>"donnelly_using_2011"\<close> p. 233, 
+\<^cite>\<open>"cotnoir_non-wellfounded_2012"\<close> p. 191, \<^cite>\<open>"obojska_remarks_2013"\<close> p. 344,
+\<^cite>\<open>"cotnoir_does_2016"\<close> p. 128 and \<^cite>\<open>"cotnoir_is_2018"\<close>.} \<close>
 
 locale M1 = PM +
   assumes nmp_eq: "PP x y \<longleftrightarrow> P x y \<and> \<not> P y x"
@@ -151,7 +151,7 @@ qed
 
 text \<open> Conversely, assuming the two definitions of proper parthood are equivalent entails the antisymmetry
 of parthood, leading to the second alternative axiomatization, which assumes both equivalencies.\footnote{
-For this point see especially @{cite "parsons_many_2014"} pp. 9-10.} \<close>
+For this point see especially \<^cite>\<open>"parsons_many_2014"\<close> pp. 9-10.} \<close>
 
 locale M2 = PM +
   assumes nip_eq: "PP x y \<longleftrightarrow> P x y \<and> x \<noteq> y"
@@ -185,8 +185,8 @@ proof
 qed
 
 text \<open> In the context of the other axioms, antisymmetry is equivalent to the extensionality of parthood, 
-which gives the third alternative axiomatization.\footnote{For this point see @{cite "cotnoir_antisymmetry_2010"} p. 401 
-and @{cite "cotnoir_non-wellfounded_2012"} p. 191-2.} \<close>
+which gives the third alternative axiomatization.\footnote{For this point see \<^cite>\<open>"cotnoir_antisymmetry_2010"\<close> p. 401 
+and \<^cite>\<open>"cotnoir_non-wellfounded_2012"\<close> p. 191-2.} \<close>
 
 locale M3 = PM +
   assumes nip_eq: "PP x y \<longleftrightarrow> P x y \<and> x \<noteq> y"
@@ -241,7 +241,7 @@ proof
 qed
 
 text \<open>The fourth axiomatization adopts proper parthood as primitive.\footnote{See, for example, 
-@{cite "simons_parts:_1987"}, p. 26 and @{cite "casati_parts_1999"} p. 37.} Improper parthood is
+\<^cite>\<open>"simons_parts:_1987"\<close>, p. 26 and \<^cite>\<open>"casati_parts_1999"\<close> p. 37.} Improper parthood is
 defined as proper parthood or identity.\<close>
 
 locale M4 =

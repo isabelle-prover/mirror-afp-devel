@@ -8,20 +8,20 @@ nitpick_params[user_axioms=true, show_all, expect=genuine, format = 3]
 section \<open>Extending the Carmo and Jones DDL Logical Framework\<close>
 text\<open>\noindent{In the last section, we have modelled Kaplanian contexts by introducing a new type of object (type c) and modelled
 sentence meanings as so-called "characters", i.e. functions from contexts to sets of worlds (type \<open>c\<Rightarrow>w\<Rightarrow>o\<close>).
-We also made the corresponding adjustments to the original semantic embedding of Carmo and Jones' DDL @{cite "C71"} @{cite "BenzmuellerDDL"}.
+We also made the corresponding adjustments to the original semantic embedding of Carmo and Jones' DDL \<^cite>\<open>"C71"\<close> \<^cite>\<open>"BenzmuellerDDL"\<close>.
 So far we haven't said much about what these Kaplanian contexts are or which effect they should have on the evaluation
 of logical validity. We restricted ourselves to illustrating that their introduction does not have any influence
 on the (classical) modal validity of several DDL key theorems.
 In this section we introduce an alternative notion of logical validity suited for working with contexts:
-indexical validity @{cite "Kaplan1979"} @{cite "Kaplan1989"}.}\<close>
+indexical validity \<^cite>\<open>"Kaplan1979"\<close> \<^cite>\<open>"Kaplan1989"\<close>.}\<close>
 
 subsection \<open>Context Features\<close>
-text\<open>\noindent{Kaplan's theory ("Logic of Demonstratives" @{cite "Kaplan1979"}) aims at modelling the behaviour of
+text\<open>\noindent{Kaplan's theory ("Logic of Demonstratives" \<^cite>\<open>"Kaplan1979"\<close>) aims at modelling the behaviour of
 certain context-sensitive linguistic expressions like
 the pronouns 'I', 'my', 'you', 'he', 'his', 'she', 'it', the demonstrative pronouns 'that', 'this', the adverbs 'here', 'now',
 'tomorrow', 'yesterday', the adjectives 'actual', 'present', and others. Such expressions are known as "indexicals"
 and so Kaplan's logical system (among others) is usually referred to as a "logic of indexicals" (although
-in his seminal work he referred to it as a "logic of demonstratives" (LD)) @{cite "Kaplan1979"}.
+in his seminal work he referred to it as a "logic of demonstratives" (LD)) \<^cite>\<open>"Kaplan1979"\<close>.
 In the following we will refer to Kaplan's logic as the logic "LD".
 It is characteristic of an indexical that its content varies with context, i.e. they have a context-sensitive character.
 Non-indexicals have a fixed character. The same content is invoked in all contexts.
@@ -62,14 +62,14 @@ text\<open>\noindent{The following can be seen as a kind of 'analytic/a priori n
 traditional alethic necessity).
 In Kaplan's framework, a sentence being logically (i.e. indexically) valid means its being true \emph{a priori}: it is guaranteed to be true
 in every possible context in which it is uttered, even though it may express distinct propositions in different contexts. This correlation
-between indexical validity and \emph{a prioricity} has also been claimed in other two-dimensional semantic frameworks @{cite "SEP2DSem"}.}\<close>
+between indexical validity and \emph{a prioricity} has also been claimed in other two-dimensional semantic frameworks \<^cite>\<open>"SEP2DSem"\<close>.}\<close>
 abbreviation ldvalidbox :: "m\<Rightarrow>m" ("\<^bold>\<box>\<^sup>D_" [52]53) where "\<^bold>\<box>\<^sup>D\<phi> \<equiv> \<lambda>c w. \<lfloor>\<phi>\<rfloor>\<^sup>D" \<comment> \<open> notice the D superscript \<close>
 lemma "\<lfloor>\<^bold>\<box>\<^sup>D\<phi>\<rfloor>\<^sub>C \<equiv> \<forall>c.\<lfloor>\<phi>\<rfloor>\<^sub>c" by simp \<comment> \<open>  this operator works analogously to the box operator in modal logic S5 \<close>
 
 text\<open>\noindent{Quite trivially, the necessitation rule works for the combination of indexical validity with the previous operator.}\<close>
 lemma NecLD: "\<lfloor>A\<rfloor>\<^sup>D \<Longrightarrow> \<lfloor>\<^bold>\<box>\<^sup>DA\<rfloor>\<^sup>D"  by simp
 
-text\<open>\noindent{The operator above is not part of the original Kaplan's LD (@{cite "Kaplan1979"}) and has been added
+text\<open>\noindent{The operator above is not part of the original Kaplan's LD (\<^cite>\<open>"Kaplan1979"\<close>) and has been added
 by us in order to better highlight some semantic features of our formalisation of Gewirth's argument in the next section and to being able to
 use the necessitation rule for some inference steps.}\<close>
 

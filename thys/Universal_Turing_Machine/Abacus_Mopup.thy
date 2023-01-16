@@ -8,7 +8,7 @@
 chapter \<open>Abacus Programs\<close>
 
 text \<open>Abacus Machines (aka Counter Machines) and their programs
- are discussed in \cite{Boolos07}.
+ are discussed in \<^cite>\<open>"Boolos07"\<close>.
 They serve as an intermediate computation model in the course of
 the translation of Recursive Functions into Turing Machines.
 \<close>
@@ -19,7 +19,7 @@ text \<open>In this section we define the higher order function mopup\_n\_tm tha
 a mopup Turing Machine for every argument n. The generated mopup function deletes all
 numerals from the right tape except the n-th one. Such mopup machines will be used
 in order to tidy up the result computed by Turing Machines that were compiled from Abacus programs.
-Refer to  \cite{Boolos07} for more details.
+Refer to  \<^cite>\<open>"Boolos07"\<close> for more details.
 \<close>
 
 theory Abacus_Mopup

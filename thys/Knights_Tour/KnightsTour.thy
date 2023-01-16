@@ -13,14 +13,14 @@ horizontally or two squares horizontally and one square vertically. Finding a Kn
 instance of the Hamiltonian Path Problem. A Knight's circuit is a Knight's path, where additionally 
 the Knight can move from the last square to the first square of the path, forming a loop.
 
-Cull and De Curtins @{cite "cull_decurtins_1987"} prove the existence of a Knight's path on a \<open>n\<times>m\<close>-board for
+Cull and De Curtins \<^cite>\<open>"cull_decurtins_1987"\<close> prove the existence of a Knight's path on a \<open>n\<times>m\<close>-board for
 sufficiently large \<open>n\<close> and \<open>m\<close>. The main idea for the proof is to inductivly construct a Knight's 
 path for the \<open>n\<times>m\<close>-board from a few pre-computed Knight's paths for small boards, i.e. \<open>5\<times>5\<close>, 
 \<open>8\<times>6\<close>, ..., \<open>8\<times>9\<close>. The paths for small boards are transformed (i.e. transpose, mirror, translate) 
 and concatenated to create paths for larger boards.
 
 While formalizing the proofs I discovered two mistakes in the original proof in 
-@{cite "cull_decurtins_1987"}: (i) the pre-computed path for the \<open>6\<times>6\<close>-board that ends in 
+\<^cite>\<open>"cull_decurtins_1987"\<close>: (i) the pre-computed path for the \<open>6\<times>6\<close>-board that ends in 
 the upper-left (in Figure 2) and (ii) the pre-computed path for the \<open>8\<times>8\<close>-board that ends in 
 the upper-left (in Figure 5) are incorrect: on the \<open>6\<times>6\<close>-board the Knight cannot step 
 from square 26 to square 27; in the \<open>8\<times>8\<close>-board the Knight cannot step from square 27 to 
@@ -1608,7 +1608,7 @@ qed
 section \<open>Parsing Paths\<close>
 
 text \<open>In this section functions are implemented to parse and construct paths. The parser converts 
-the matrix representation (\<open>(nat list) list\<close>) used in @{cite "cull_decurtins_1987" } to a path 
+the matrix representation (\<open>(nat list) list\<close>) used in \<^cite>\<open>"cull_decurtins_1987"\<close> to a path 
 (\<open>path\<close>).\<close>
 
 text \<open>for debugging\<close>
@@ -2021,7 +2021,7 @@ proof -
 qed
 
 text \<open>@{thm knights_path_5xm_lr_exists} and @{thm knights_path_5xm_lr_exists} formalize Lemma 1 
-from @{cite "cull_decurtins_1987"}.\<close>
+from \<^cite>\<open>"cull_decurtins_1987"\<close>.\<close>
 lemmas knights_path_5xm_exists = knights_path_5xm_lr_exists knights_path_5xm_ur_exists
 
 section \<open>Knight's Paths and Circuits for \<open>6\<times>m\<close>-Boards\<close>
@@ -2409,7 +2409,7 @@ proof -
 qed
 
 text \<open>@{thm knights_path_6xm_ul_exists} and @{thm knights_circuit_6xm_exists} formalize Lemma 2 
-from @{cite "cull_decurtins_1987"}.\<close>
+from \<^cite>\<open>"cull_decurtins_1987"\<close>.\<close>
 lemmas knights_path_6xm_exists = knights_path_6xm_ul_exists knights_circuit_6xm_exists
 
 section \<open>Knight's Paths and Circuits for \<open>8\<times>m\<close>-Boards\<close>
@@ -2883,7 +2883,7 @@ proof -
 qed
 
 text \<open>@{thm knights_circuit_8xm_exists} and @{thm knights_path_8xm_ul_exists} formalize Lemma 3 
-from @{cite "cull_decurtins_1987"}.\<close>
+from \<^cite>\<open>"cull_decurtins_1987"\<close>.\<close>
 lemmas knights_path_8xm_exists = knights_circuit_8xm_exists knights_path_8xm_ul_exists
 
 section \<open>Knight's Paths and Circuits for \<open>n\<times>m\<close>-Boards\<close>
@@ -3063,7 +3063,7 @@ abbreviation "kp9x9ul \<equiv> the (to_path
 lemma kp_9x9_ul: "knights_path b9x9 kp9x9ul"
   by (simp only: knights_path_exec_simp) eval 
 
-text \<open>The following lemma is a sub-proof used in Lemma 4 in @{cite "cull_decurtins_1987"}. 
+text \<open>The following lemma is a sub-proof used in Lemma 4 in \<^cite>\<open>"cull_decurtins_1987"\<close>. 
 I moved the sub-proof out to a separate lemma.\<close>
 lemma knights_circuit_exists_even_n_gr10:
   assumes "even n" "n \<ge> 10" "m \<ge> 5"
@@ -3114,9 +3114,9 @@ qed
 
 text \<open>For every \<open>n\<times>m\<close>-board with \<open>min n m \<ge> 5\<close> and odd \<open>n\<close> there exists a Knight's path that 
 starts in \<open>(n,1)\<close> (top-left) and ends in \<open>(n-1,m-1)\<close> (top-right).\<close>
-text \<open>This lemma formalizes Lemma 4 from @{cite "cull_decurtins_1987"}. Formalizing the proof of 
+text \<open>This lemma formalizes Lemma 4 from \<^cite>\<open>"cull_decurtins_1987"\<close>. Formalizing the proof of 
 this lemma was quite challenging as a lot of details on how to exactly combine the boards are 
-left out in the original proof in @{cite "cull_decurtins_1987"}.\<close>
+left out in the original proof in \<^cite>\<open>"cull_decurtins_1987"\<close>.\<close>
 lemma knights_path_odd_n_exists:
   assumes "odd n" "min n m \<ge> 5"
   shows "\<exists>ps. knights_path (board n m) ps \<and> hd ps = (int n,1) \<and> last ps = (int n-1,int m-1)"

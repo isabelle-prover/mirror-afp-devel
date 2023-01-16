@@ -11,7 +11,7 @@ section \<open>E. J. Lowe's Modal Ontological Argument\<close>
 
 subsection \<open>Introduction\<close>
 text\<open>\noindent{E. J. Lowe presented his argument in an article named "A Modal Version of the Ontological Argument",
-which has been published as a chapter in \cite{moreland2013}.
+which has been published as a chapter in \<^cite>\<open>"moreland2013"\<close>.
 The structure of this argument is very representative of philosophical arguments.
 It features eight premises from which new inferences are drawn until arriving at a final conclusion:
 the necessary existence of God
@@ -105,7 +105,7 @@ abbreviation mforallActB::"(e\<Rightarrow>wo)\<Rightarrow>wo" (binder"\<^bold>\<
 abbreviation mexistsActB::"(e\<Rightarrow>wo)\<Rightarrow>wo" (binder"\<^bold>\<exists>\<^sup>A"[8]9)
   where "\<^bold>\<exists>\<^sup>Ax. (\<phi> x) \<equiv> \<^bold>\<exists>\<^sup>A\<phi>"
     
-text\<open>\noindent{We use Isabelle's Nitpick tool @{cite "Nitpick"} to verify that actualist quantification validates
+text\<open>\noindent{We use Isabelle's Nitpick tool \<^cite>\<open>"Nitpick"\<close> to verify that actualist quantification validates
 neither the Barcan formula nor its converse.}\<close>
     
 lemma "\<lfloor>(\<^bold>\<forall>\<^sup>Ax. \<^bold>\<box>(\<phi> x)) \<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<forall>\<^sup>Ax. \<phi> x)\<rfloor>"
@@ -182,7 +182,7 @@ this chapter the notion of existential dependence may, for all intents and purpo
 as primitive. There is an advantage in this, inasmuch as finding a perfectly apt definition of
 existential dependence is no easy task, as I explain in `Ontological Dependence.'"
 Lowe refers hereby to his article on ontological dependence in the Stanford Encyclopedia of Philosophy
-@{cite "sep-dependence-ontological"} for further discussion.}
+\<^cite>\<open>"sep-dependence-ontological"\<close> for further discussion.}
 
 We have called an entity \emph{dependent} if and only if there \emph{actually exists} an object y such that
 x \emph{depends for its existence} on it;
@@ -261,7 +261,7 @@ lemma "\<lfloor>\<^bold>\<forall>x. E! x\<rfloor>"
 lemma "\<lfloor>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<phi>\<rfloor>"
   nitpick[user_axioms] oops \<comment> \<open>Countermodel found: modal collapse is not valid\<close>
     
-text\<open>\noindent{By using Isabelle's \emph{Sledgehammer} tool @{cite "Sledgehammer"}, we can verify the validity
+text\<open>\noindent{By using Isabelle's \emph{Sledgehammer} tool \<^cite>\<open>"Sledgehammer"\<close>, we can verify the validity
 of the selected conclusions C1, C5 and C7, and even find the premises they rely upon.}\<close>
     
 text\<open>\noindent{(C1) \emph{All abstract beings depend for their existence on concrete beings.}}\<close>

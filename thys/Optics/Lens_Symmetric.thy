@@ -4,7 +4,7 @@ theory Lens_Symmetric
   imports Lens_Order
 begin
 
-text \<open> A characterisation of Hofmann's ``Symmetric Lenses''~\cite{Hofmann2011}, where
+text \<open> A characterisation of Hofmann's ``Symmetric Lenses''~\<^cite>\<open>"Hofmann2011"\<close>, where
   a lens is accompanied by its complement. \<close>
 
 record ('a, 'b, 's) slens = 

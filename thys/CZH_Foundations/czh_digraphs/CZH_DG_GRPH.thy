@@ -14,7 +14,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 Conventionally, \<open>GRPH\<close> defined as a category of digraphs and digraph 
-homomorphisms (e.g., see Chapter II-7 in \cite{mac_lane_categories_2010}).
+homomorphisms (e.g., see Chapter II-7 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).
 However, there is little that can prevent one from exposing \<open>GRPH\<close>
 as a digraph and provide additional structure gradually later. 
 Thus, in this section, \<open>\<alpha>\<close>-\<open>GRPH\<close> is 

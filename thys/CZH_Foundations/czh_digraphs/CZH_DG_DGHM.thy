@@ -30,7 +30,7 @@ subsection\<open>Definition and elementary properties\<close>
 text\<open>
 A homomorphism of digraphs, as presented in this work, can be seen as a
 generalization of the concept of a functor between categories, as presented in
-Chapter I-3 in \cite{mac_lane_categories_2010}, to digraphs. 
+Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>, to digraphs. 
 The generalization is performed by removing the axioms (1) from the definition.
 It is expected that the resulting definition is consistent with the conventional
 notion of a homomorphism of digraphs in graph theory, but further details 
@@ -40,7 +40,7 @@ The definition of a digraph homomorphism is parameterized by a limit ordinal
 \<open>\<alpha>\<close> such that \<open>\<omega> < \<alpha>\<close>. Such digraph homomorphisms are referred to either as
 \<open>\<alpha>\<close>-digraph homomorphisms or homomorphisms of \<open>\<alpha>\<close>-digraphs.
 
-Following \cite{mac_lane_categories_2010}, all digraph homomorphisms are 
+Following \<^cite>\<open>"mac_lane_categories_2010"\<close>, all digraph homomorphisms are 
 covariant (see Chapter II-2). However, a special notation is adapted for the 
 digraph homomorphisms from an opposite digraph. Normally, such 
 digraph homomorphisms will be referred to as the contravariant digraph 
@@ -323,7 +323,7 @@ subsection\<open>Opposite digraph homomorphism\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition op_dghm :: "V \<Rightarrow> V"
   where "op_dghm \<FF> =
@@ -399,7 +399,7 @@ subsection\<open>Composition of covariant digraph homomorphisms\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition dghm_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<close> 55)
   where "\<GG> \<circ>\<^sub>D\<^sub>G\<^sub>H\<^sub>M \<FF> =
@@ -587,7 +587,7 @@ subsection\<open>Composition of contravariant digraph homomorphisms\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See section 1.2 in \cite{bodo_categories_1970}.\<close>
+text\<open>See section 1.2 in \<^cite>\<open>"bodo_categories_1970"\<close>.\<close>
 
 definition dghm_cn_comp :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<^sub>D\<^sub>G\<^sub>H\<^sub>M\<circ>\<close> 55)
   where "\<GG> \<^sub>D\<^sub>G\<^sub>H\<^sub>M\<circ> \<FF> =
@@ -891,7 +891,7 @@ subsection\<open>Identity digraph homomorphism\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition dghm_id :: "V \<Rightarrow> V"
   where "dghm_id \<CC> = [vid_on (\<CC>\<lparr>Obj\<rparr>), vid_on (\<CC>\<lparr>Arr\<rparr>), \<CC>, \<CC>]\<^sub>\<circ>"
@@ -1015,7 +1015,7 @@ subsection\<open>Constant digraph homomorphism\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition dghm_const :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "dghm_const \<CC> \<DD> a f =
@@ -1132,7 +1132,7 @@ subsection\<open>Faithful digraph homomorphism\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 locale is_ft_dghm = is_dghm \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF> +
   assumes ft_dghm_v11_on_Hom: 
@@ -1277,7 +1277,7 @@ subsection\<open>Full digraph homomorphism\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale is_fl_dghm = is_dghm \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF> +
   assumes fl_dghm_surj_on_Hom: 
@@ -1376,7 +1376,7 @@ subsection\<open>Fully faithful digraph homomorphism\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale is_ff_dghm = is_ft_dghm \<alpha> \<AA> \<BB> \<FF> + is_fl_dghm \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF>
 
@@ -1434,7 +1434,7 @@ subsection\<open>Isomorphism of digraphs\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale is_iso_dghm = is_dghm \<alpha> \<AA> \<BB> \<FF> for \<alpha> \<AA> \<BB> \<FF> +
   assumes iso_dghm_ObjMap_v11: "v11 (\<FF>\<lparr>ObjMap\<rparr>)"
@@ -1724,7 +1724,7 @@ lemma (in is_iso_dghm) iso_dghm_HomCod_is_arr_conv:
 subsection\<open>An isomorphism of digraphs is an isomorphism in the category \<open>GRPH\<close>\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 lemma is_iso_arr_is_iso_dghm: 
   assumes "\<FF> : \<AA> \<mapsto>\<mapsto>\<^sub>D\<^sub>G\<^bsub>\<alpha>\<^esub> \<BB>"
@@ -1898,7 +1898,7 @@ subsection\<open>Isomorphic digraphs\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-3 in \cite{mac_lane_categories_2010}).\<close>
+text\<open>See Chapter I-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 locale iso_digraph = 
   fixes \<alpha> \<AA> \<BB> :: V

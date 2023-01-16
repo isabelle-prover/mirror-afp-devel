@@ -22,7 +22,7 @@ subsection\<open>Kan extension\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter X-3 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter X-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 locale is_cat_rKe = 
   AG: is_functor \<alpha> \<BB> \<CC> \<KK> + 
@@ -166,8 +166,8 @@ subsubsection\<open>Universal property\<close>
 
 
 text\<open>
-See Chapter X-3 in \cite{mac_lane_categories_2010} and 
-\cite{noauthor_wikipedia_2001}\footnote{
+See Chapter X-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close> and 
+\<^cite>\<open>"noauthor_wikipedia_2001"\<close>\footnote{
 \url{https://en.wikipedia.org/wiki/Kan_extension}
 }.
 \<close>
@@ -686,7 +686,7 @@ subsection\<open>The Kan extension\<close>
 
 text\<open>
 The following subsection is based on the statement and proof of 
-Theorem 1 in Chapter X-3 in \cite{mac_lane_categories_2010}.
+Theorem 1 in Chapter X-3 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 
@@ -2700,7 +2700,7 @@ subsection\<open>Preservation of Kan extensions\<close>
 
 text\<open>
 The following definitions are similar to the definitions that can be 
-found in \cite{riehl_category_2016} or \cite{lehner_all_2014}.
+found in \<^cite>\<open>"riehl_category_2016"\<close> or \<^cite>\<open>"lehner_all_2014"\<close>.
 \<close>
 
 locale is_cat_rKe_preserves =
@@ -2838,8 +2838,8 @@ subsection\<open>All concepts are Kan extensions\<close>
 
 text\<open>
 Background information for this subsection is provided in 
-Chapter X-7 in \cite{mac_lane_categories_2010}
-and subsection 6.5 in \cite{riehl_category_2016}. 
+Chapter X-7 in \<^cite>\<open>"mac_lane_categories_2010"\<close>
+and subsection 6.5 in \<^cite>\<open>"riehl_category_2016"\<close>. 
 It should be noted that only the connections between the Kan extensions,
 limits and adjunctions are exposed (an alternative proof of the Yoneda
 lemma using Kan extensions is not provided in the context of this work).

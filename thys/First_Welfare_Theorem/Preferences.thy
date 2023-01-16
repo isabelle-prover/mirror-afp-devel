@@ -496,7 +496,7 @@ proof (rule weak_convexI)
     by (meson assms(1) at_least_as_goodD convexD reals(3) y_in_upper_cont)
 qed
 
-text \<open> Definition of convexity in "Handbook of Social Choice and Welfare"@{cite "arrow2010handbook"}. \<close>
+text \<open> Definition of convexity in "Handbook of Social Choice and Welfare"\<^cite>\<open>"arrow2010handbook"\<close>. \<close>
 
 lemma convex_def_alt:
   assumes "rational_preference carrier relation"

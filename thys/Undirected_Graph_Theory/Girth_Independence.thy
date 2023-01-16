@@ -3,7 +3,7 @@ begin
 
 section \<open> Girth and Independence \<close>
 text \<open> We translate and extend on a number of definitions and lemmas on girth and independence
-from Noschinski's ugraph representation \cite{noschinski_2012}. \<close>
+from Noschinski's ugraph representation \<^cite>\<open>"noschinski_2012"\<close>. \<close>
 
 context sgraph
 begin

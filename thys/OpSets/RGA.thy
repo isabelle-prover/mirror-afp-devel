@@ -6,11 +6,11 @@
 
 section\<open>The Replicated Growable Array (RGA)\<close>
 
-text\<open>The RGA algorithm \cite{Roh:2011dw} is a replicated list (or
+text\<open>The RGA algorithm \<^cite>\<open>"Roh:2011dw"\<close> is a replicated list (or
 collaborative text-editing) algorithm. In this section we prove that
 RGA satisfies our list specification. The Isabelle/HOL definition of
 RGA in this section is based on our prior work on formally verifying
-CRDTs \cite{Gomes:2017gy,Gomes:2017vo}.\<close>
+CRDTs \<^cite>\<open>"Gomes:2017gy" and "Gomes:2017vo"\<close>.\<close>
 
 theory RGA
   imports Insert_Spec

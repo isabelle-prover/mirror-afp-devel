@@ -13,9 +13,9 @@ theory Frequency_Moment_0
 begin
 
 text \<open>This section contains a formalization of a new algorithm for the zero-th frequency moment
-inspired by ideas described in \cite{baryossed2002}.
+inspired by ideas described in \<^cite>\<open>"baryossed2002"\<close>.
 It is a KMV-type ($k$-minimum value) algorithm with a rounding method and matches the space complexity 
-of the best algorithm described in \cite{baryossef2002}.
+of the best algorithm described in \<^cite>\<open>"baryossef2002"\<close>.
 
 In addition to the Isabelle proof here, there is also an informal hand-written proof in
 Appendix~\ref{sec:f0_proof}.\<close>

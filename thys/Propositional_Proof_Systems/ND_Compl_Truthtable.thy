@@ -2,7 +2,7 @@ theory ND_Compl_Truthtable
 imports ND_Sound
 begin
 
-text\<open>This proof is inspired by Huth and Ryan~\cite{huth2004logic}.\<close>
+text\<open>This proof is inspired by Huth and Ryan~\<^cite>\<open>"huth2004logic"\<close>.\<close>
   
 definition "turn_true \<A> F \<equiv> if \<A> \<Turnstile> F then F else (Not F)"
 lemma lemma0[simp,intro!]: "\<A> \<Turnstile> turn_true \<A> F" unfolding turn_true_def by simp

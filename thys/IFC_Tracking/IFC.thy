@@ -107,7 +107,7 @@ and reaching_ret: \<open>\<And> x. x \<in> nodes \<Longrightarrow> \<exists> \<p
 subsection \<open>Security\<close>
 text_raw \<open>\label{sec:sec}\<close>
 
-text \<open>We define our notion of security, which corresponds to what Bohannon et al.~\cite{Bohannon:2009:RN:1653662.1653673} 
+text \<open>We define our notion of security, which corresponds to what Bohannon et al.~\<^cite>\<open>"Bohannon:2009:RN:1653662.1653673"\<close> 
 refer to as indistinguishable security.  In order to do so we require notions of observations made
 by the attacker, termination and equivalence of input states.\<close>
 

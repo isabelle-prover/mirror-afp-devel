@@ -243,7 +243,7 @@ begin
 
 text \<open>
   The correctness proof closely follows Kleinberg \<open>&\<close> Tardos: "Algorithm Design",
-  chapter "Dynamic Programming" @{cite "Kleinberg-Tardos"}
+  chapter "Dynamic Programming" \<^cite>\<open>"Kleinberg-Tardos"\<close>
 \<close>
 
 fun weight :: "nat list \<Rightarrow> int extended" where

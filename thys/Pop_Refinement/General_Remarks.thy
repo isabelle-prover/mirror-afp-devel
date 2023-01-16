@@ -125,11 +125,11 @@ are consistent with the interpretation as non-determinism,
 because security depends on the ability to yield different outcomes,
 e.g.\ generating a nonce in a cryptographic protocol.
 The popular notion of refinement as inclusion of sets of traces
-(e.g.~\cite{AbadiLamportRefinement})
+(e.g.~\<^cite>\<open>"AbadiLamportRefinement"\<close>)
 is consistent  with the interpretation as under-specification,
 because a refined specification is allowed to reduce the possible outcomes.
 Thus, hyperproperties are not always preserved by
-refinement as trace set inclusion~\cite{ClarksonSchneiderHyperproperties}.\<close>
+refinement as trace set inclusion~\<^cite>\<open>"ClarksonSchneiderHyperproperties"\<close>.\<close>
 
 text \<open>As exemplified in \secref{sec:specificationII},
 a pop-refinement specification can explicitly distinguish
@@ -153,7 +153,7 @@ text \<open>\label{sec:specform}\<close>
 
 text \<open>Specialized formalisms (e.g.\ state machines, temporal logic),
 shallowly or deeply embedded into the logic of the theorem prover
-(e.g.~\cite{AFP-Statecharts,AFP_TLA}),
+(e.g.~\<^cite>\<open>"AFP-Statecharts" and "AFP_TLA"\<close>),
 can be used to express some of the requirements
 of a pop-refinement specification.
 The logic of the theorem prover provides semantic integration
@@ -265,7 +265,7 @@ text \<open>\label{sec:genflex}\<close>
 text \<open>Inclusion of predicates over programs
 is a general and flexible notion of refinement.
 More specialized notions of refinement
-(e.g.~\cite{HoareData,MilnerSimulation})
+(e.g.~\<^cite>\<open>"HoareData" and "MilnerSimulation"\<close>)
 can be used for any auxiliary types, functions, etc.\
 out of which the @{term spec\<^sub>i} predicates may be constructed,
 as long as the top-level implication

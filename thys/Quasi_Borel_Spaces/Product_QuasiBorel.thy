@@ -167,7 +167,7 @@ proof(rule qbs_morphismI)
   qed
 qed
 
-text \<open> The following lemma corresponds to \cite{Heunen_2017} Proposition 19(1). \<close>
+text \<open> The following lemma corresponds to \<^cite>\<open>"Heunen_2017"\<close> Proposition 19(1). \<close>
 lemma r_preserves_product':
   "measure_to_qbs (\<Pi>\<^sub>M i\<in>I. M i) = (\<Pi>\<^sub>Q i\<in>I. measure_to_qbs (M i))"
 proof(rule qbs_eqI)

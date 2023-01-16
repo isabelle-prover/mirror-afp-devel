@@ -6,7 +6,7 @@ theory Derivatives
 imports Regular_Exp
 begin
 
-text\<open>This theory is based on work by Brozowski \cite{Brzozowski64} and Antimirov \cite{Antimirov95}.\<close>
+text\<open>This theory is based on work by Brozowski \<^cite>\<open>"Brzozowski64"\<close> and Antimirov \<^cite>\<open>"Antimirov95"\<close>.\<close>
 
 subsection \<open>Brzozowski's derivatives of regular expressions\<close>
 
@@ -316,7 +316,7 @@ by (metis finite_pderivs_lang_UNIV pderivs_lang_subset rev_finite_subset subset_
 
 text\<open>The following relationship between the alphabetic width of regular expressions
 (called \<open>awidth\<close> below) and the number of partial derivatives was proved
-by Antimirov~\cite{Antimirov95} and formalized by Max Haslbeck.\<close>
+by Antimirov~\<^cite>\<open>"Antimirov95"\<close> and formalized by Max Haslbeck.\<close>
 
 fun awidth :: "'a rexp \<Rightarrow> nat" where
 "awidth Zero = 0" |

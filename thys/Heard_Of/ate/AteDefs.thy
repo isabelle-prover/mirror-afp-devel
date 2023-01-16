@@ -5,7 +5,7 @@ begin
 section \<open>Verification of the \ate{} Consensus algorithm\<close>
 
 text \<open>
-  Algorithm \ate{} is presented in~\cite{biely:tolerating}. Like \ute{},
+  Algorithm \ate{} is presented in~\<^cite>\<open>"biely:tolerating"\<close>. Like \ute{},
   it is an uncoordinated algorithm that tolerates value faults, and it
   is parameterized by values $T$, $E$, and $\alpha$ that serve a similar
   function as in \ute{}, allowing the algorithm to be adapted to the
@@ -13,7 +13,7 @@ text \<open>
   variant of \emph{OneThirdRule} tolerating Byzantine faults.
 
   We formalize in Isabelle the correctness proof of the algorithm that
-  appears in~\cite{biely:tolerating}, using the framework of theory
+  appears in~\<^cite>\<open>"biely:tolerating"\<close>, using the framework of theory
   \<open>HOModel\<close>.
 \<close>
 
@@ -49,7 +49,7 @@ definition Ate_initState where
 
 text \<open>
   The following locale introduces the parameters used for the \ate{}
-  algorithm and their constraints~\cite{biely:tolerating}.
+  algorithm and their constraints~\<^cite>\<open>"biely:tolerating"\<close>.
 \<close>
 
 locale ate_parameters =
@@ -106,7 +106,7 @@ where
 subsection \<open>Communication Predicate for \ate{}\<close>
 
 text \<open>
-  Following~\cite{biely:tolerating}, we now define the communication
+  Following~\<^cite>\<open>"biely:tolerating"\<close>, we now define the communication
   predicate for the \ate{} algorithm. The round-by-round predicate
   requires that no process may receive more than \<open>\<alpha>\<close> corrupted
   messages at any round.

@@ -7,7 +7,7 @@ imports Minkowski "HOL-Library.Disjoint_Sets"
 begin
 
 text \<open>
-  In Schutz \cite[pp.~18-30]{schutz1997}, this is ``Chapter 3: Temporal order on a path''.
+  In Schutz \<^cite>\<open>\<open>pp.~18-30\<close> in "schutz1997"\<close>, this is ``Chapter 3: Temporal order on a path''.
   All theorems are from Schutz, all lemmas are either parts of the Schutz proofs extracted, or
   additional lemmas which needed to be added, with the exception of the three transitivity lemmas
   leading to Theorem 9, which are given by Schutz as well.
@@ -4700,7 +4700,7 @@ subsection "betw4 - strict and non-strict, basic lemmas"
 context MinkowskiBetweenness begin
 
 text \<open>Define additional notation for non-strict \<^term>\<open>local_ordering\<close> -
-  cf Schutz' monograph \cite[ p.~27]{schutz1997}.\<close>
+  cf Schutz' monograph \<^cite>\<open>\<open> p.~27\<close> in "schutz1997"\<close>.\<close>
 
 abbreviation nonstrict_betw_right :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("[_;_;_\<rbrakk>") where
   "nonstrict_betw_right a b c \<equiv> [a;b;c] \<or> b = c"

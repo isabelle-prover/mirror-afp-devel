@@ -3,7 +3,7 @@ begin
 
 section \<open>Design Theory Basics\<close>
 text \<open>All definitions in this section reference the handbook of combinatorial designs
- \cite{colbournHandbookCombinatorialDesigns2007}\<close>
+ \<^cite>\<open>"colbournHandbookCombinatorialDesigns2007"\<close>\<close>
 
 subsection \<open>Initial setup\<close>
 

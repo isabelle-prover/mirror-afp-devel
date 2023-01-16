@@ -4,7 +4,7 @@
 
 section \<open>Fisher's Inequality\<close>
 
-text \<open>This theory presents the proof of Fisher's Inequality \cite{fisherExaminationDifferentPossible1940a}
+text \<open>This theory presents the proof of Fisher's Inequality \<^cite>\<open>"fisherExaminationDifferentPossible1940a"\<close>
  on BIBD's (i.e. uniform Fisher's) and the generalised nonuniform Fisher's Inequality \<close>
 theory Fishers_Inequality imports Rank_Argument_General Linear_Bound_Argument
 begin
@@ -16,7 +16,7 @@ begin
 text \<open>Row/Column transformation steps \<close>
 
 text\<open>Following design theory lecture notes from MATH3301 at the University of Queensland
- \cite{HerkeLectureNotes2016}, a simple transformation to produce an upper triangular matrix using elementary
+ \<^cite>\<open>"HerkeLectureNotes2016"\<close>, a simple transformation to produce an upper triangular matrix using elementary
 row operations is to (1) Subtract the first row from each other row, and (2) add all columns to the first column\<close>
 
 lemma transform_N_step1_vals: 
@@ -226,7 +226,7 @@ qed
 text \<open>The general non-uniform version of fisher's inequality is also known as the "Block town problem".
 In this case we are working in a constant intersect design, hence the inequality is the opposite
 way around compared to the BIBD version. The theorem below is the more traditional set theoretic 
-approach. This proof is based off one by Jukna \cite{juknaExtremalCombinatorics2011} \<close>
+approach. This proof is based off one by Jukna \<^cite>\<open>"juknaExtremalCombinatorics2011"\<close> \<close>
 theorem general_fishers_inequality:  "\<b> \<le> \<v>"
 proof (cases "\<m> = 0 \<or> \<b> = 1")
   case True

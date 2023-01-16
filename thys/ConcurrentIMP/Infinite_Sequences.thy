@@ -158,8 +158,8 @@ text\<open>
 
 Famously properties on infinite sequences can be decomposed into
 @{emph \<open>safety\<close>} and @{emph \<open>liveness\<close>}
-properties @{cite "AlpernSchneider:1985" and "Schneider:1987"}. See
-@{cite [cite_macro=citet] "Kindler:1994"} for an overview.
+properties \<^cite>\<open>"AlpernSchneider:1985" and "Schneider:1987"\<close>. See
+\<^citet>\<open>"Kindler:1994"\<close> for an overview.
 
 \<close>
 
@@ -274,7 +274,7 @@ qed
 
 text\<open>
 
-@{cite "Sistla:1994"} proceeds to give a topological analysis of fairness. An \<^emph>\<open>absolute\<close>
+\<^cite>\<open>"Sistla:1994"\<close> proceeds to give a topological analysis of fairness. An \<^emph>\<open>absolute\<close>
 liveness property is a liveness property whose complement is stable.
 
 \<close>

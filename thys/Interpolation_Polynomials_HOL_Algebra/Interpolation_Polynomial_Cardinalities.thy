@@ -321,7 +321,7 @@ proof -
   finally show ?thesis by simp
 qed
 
-text \<open>A corollary is the classic result~\cite[Theorem 7.15]{shoup2009computational} that there is
+text \<open>A corollary is the classic result~\<^cite>\<open>\<open>Theorem 7.15\<close> in "shoup2009computational"\<close> that there is
 exactly one polynomial of degree less than $n$ interpolating $n$ points:\<close>
 
 corollary (in field) interpolating_polynomial_one:

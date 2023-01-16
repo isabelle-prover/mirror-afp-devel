@@ -103,13 +103,13 @@ JVM specification does not prescribe any particular object layout. The
 proposed type reflects this indeterminacy, but allows one to calculate
 the byte-correct size of a heap only after a layout scheme has been
 supplied. Alternative heap models would be the store-less semantics in
-the sense of Jonkers~\cite{Jonkers1981} and
-Deutsch~\cite{Deutsch1992}, (where the heap is modelled as a partial
+the sense of Jonkers~\<^cite>\<open>"Jonkers1981"\<close> and
+Deutsch~\<^cite>\<open>"Deutsch1992"\<close>, (where the heap is modelled as a partial
 equivalence relation on access paths), or object-based semantics in
-the sense of Reddy~\cite{Reddy1996}, where the heap is represented as
+the sense of Reddy~\<^cite>\<open>"Reddy1996"\<close>, where the heap is represented as
 a history of update operations.  H\"ahnle et al.~use a variant of the
 latter in their dynamic logic for a {\sc
-JavaCard}~~\cite{HaehnleM:Cassis2005}.\<close>
+JavaCard}~~\<^cite>\<open>"HaehnleM:Cassis2005"\<close>.\<close>
 
 type_synonym Heap = "(Addr, Object) AssList"
 
@@ -179,7 +179,7 @@ where nextLoc_fresh: "h\<down>(nextLoc h) = None"
 
 subsubsection\<open>Operational judgements\<close> 
 
-text\<open>Similar to Bannwart-M\"uller~\cite{BannwartMueller05}, we define
+text\<open>Similar to Bannwart-M\"uller~\<^cite>\<open>"BannwartMueller05"\<close>, we define
 two operational judgements: a one-step relation and a relation that
 represents the transitive closure of the former until the end of the
 current method invocation. These relations are mutually recursive,
@@ -190,7 +190,7 @@ interpreted with respect to the current method body. The transitive
 closure ignores the bottom part of the operand stack and the store of
 the final configuration. It simply returns the heap and the result of
 the method invocation, where the latter is given by the topmost value
-on the operand stack. In contrast to~\cite{BannwartMueller05}, we do
+on the operand stack. In contrast to~\<^cite>\<open>"BannwartMueller05"\<close>, we do
 not use an explicit \<open>return\<close> variable. Both relations take an
 additional index of type \<open>nat\<close> that monitors the derivation
 height. This is useful in the proof of soundness of the program

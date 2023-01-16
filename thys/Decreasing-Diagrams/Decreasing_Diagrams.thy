@@ -25,7 +25,7 @@ theory Decreasing_Diagrams imports "HOL-Library.Multiset" "Abstract-Rewriting.Ab
 
 subsection  \<open>Valley Version\<close>
 
-text \<open>This section follows~\cite{vO94}.\<close>
+text \<open>This section follows~\<^cite>\<open>"vO94"\<close>.\<close>
 
 subsubsection \<open>Appendix\<close>
 
@@ -1148,7 +1148,7 @@ lemma newman: assumes "WCR ars" and "SN ars" shows "CR ars"  proof -
 qed
 
 subsection \<open>Conversion Version\<close>
-text \<open>This section follows~\cite{vO08a}.\<close>
+text \<open>This section follows~\<^cite>\<open>"vO08a"\<close>.\<close>
 text \<open>auxiliary results on multisets\<close>
 lemma mul_eq_add_right: "(M,M+P) \<in> mul_eq r" proof -
  have "M = M + {#}" "set_mset {#} \<subseteq> dm r P" by auto

@@ -66,7 +66,7 @@ typedef  linear_poly = "{c :: var \<Rightarrow> rat. inv c}"
 
 text\<open>Linear polynomials are of the form $a_1 \cdot x_1 + ... + a_n
 \cdot x_n$. Their formalization follows the data-refinement approach
-of Isabelle/HOL \cite{florian-refinement}. Abstract representation of
+of Isabelle/HOL \<^cite>\<open>"florian-refinement"\<close>. Abstract representation of
 polynomials are functions mapping variables to their coefficients,
 where only finitely many variables have non-zero
 coefficients. Operations on polynomials are defined as operations on

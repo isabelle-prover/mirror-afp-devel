@@ -6,7 +6,7 @@ begin
 
 subsection \<open> Signature and Axioms \<close>
 
-text \<open>Prisms are like lenses, but they act on sum types rather than product types~\cite{Gibbons17}.
+text \<open>Prisms are like lenses, but they act on sum types rather than product types~\<^cite>\<open>"Gibbons17"\<close>.
   See \url{https://hackage.haskell.org/package/lens-4.15.2/docs/Control-Lens-Prism.html}
   for more information.\<close>
 

@@ -12,9 +12,9 @@ begin
 text \<open>
 We formalise the proofs of two transcendence criteria by J. Han\v{c}l and P. Rucki that
 assert the transcendence of the sums of certain infinite series built up by sequences that 
-fulfil certain properties (Theorems 2.1 and 2.2 in \cite{hancl2005}, HanclRucki1 and HanclRucki2 
+fulfil certain properties (Theorems 2.1 and 2.2 in \<^cite>\<open>"hancl2005"\<close>, HanclRucki1 and HanclRucki2 
 here respectively). Both proofs make use of Roth's celebrated theorem on diophantine approximations 
-to algebraic numbers from 1955 \cite{roth_1955} which we assume and implement within the locale 
+to algebraic numbers from 1955 \<^cite>\<open>"roth_1955"\<close> which we assume and implement within the locale 
 RothsTheorem.
 
 A small mistake was detected in the original proof of Theorem 2.1, and the authors gave us a fix for the problem (by email). 
@@ -141,7 +141,7 @@ proof -
 
   text \<open>
 Remark:
-In the original proof of Theorem 2.1 in \cite{hancl2005}
+In the original proof of Theorem 2.1 in \<^cite>\<open>"hancl2005"\<close>
 it was claimed in p.534 that from assumption (3) (i.e. @{thm liminf_1}),
 we obtain that:
 $\forall A>1~\exists k_0~ \forall k > k_0~ \frac{1}{A} \frac{b_k}{ a_k} > \frac{ b_{k+1}}{ a_{k+1}} $,

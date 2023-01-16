@@ -4,7 +4,7 @@ theory Sema_Craig
 imports Substitution_Sema
 begin
 
-text\<open>Semantic proof of Craig interpolation following Harrison~\cite{harrison2009handbook}.\<close>
+text\<open>Semantic proof of Craig interpolation following Harrison~\<^cite>\<open>"harrison2009handbook"\<close>.\<close>
   
 (* we don't really need this lemma, sledgehammer would find a proof anyway. But it would be massively ugly. *)
 lemma subst_true_false:

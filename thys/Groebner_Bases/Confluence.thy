@@ -627,7 +627,7 @@ proof -
   finally(cbelow_on_transitive) show ?thesis .
 qed
 
-text \<open>The generalized Newman lemma, taken from @{cite Winkler1983}:\<close>
+text \<open>The generalized Newman lemma, taken from \<^cite>\<open>Winkler1983\<close>:\<close>
 
 lemma loc_connectivity_implies_confluence:
   assumes "is_loc_connective_on A ord (\<rightarrow>)" and "dw_closed A"

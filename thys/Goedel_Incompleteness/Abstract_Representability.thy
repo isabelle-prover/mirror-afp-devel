@@ -351,7 +351,7 @@ representation predicate is provably false on numerals that do not encode
 proofs; it would hold trivially for surjective proof encodings.
 
 Cleanness is not a standard concept in the literature -- we have
-introduced it in our CADE 2019 paper~\cite{DBLP:conf/cade/0001T19}.\<close>
+introduced it in our CADE 2019 paper~\<^cite>\<open>"DBLP:conf/cade/0001T19"\<close>.\<close>
 
 locale CleanRepr_Proofs =
 Encode_Proofs

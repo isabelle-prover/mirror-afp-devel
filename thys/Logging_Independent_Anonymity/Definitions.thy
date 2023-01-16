@@ -19,7 +19,7 @@ text \<open>
 in a cryptographic protocol to remain anonymous although the attacker can log the messages generated
 or accepted by legitimate agents, and map any two observable messages contained in any such message
 to the same agent. An approach to modeling and verifying this security property according to the
-\emph{relational method} for formal protocol verification has been described in @{cite "Noce20"},
+\emph{relational method} for formal protocol verification has been described in \<^cite>\<open>"Noce20"\<close>,
 along with the method itself. This approach makes use of two further type constructors for messages,
 @{text IDInfo} and @{text Log}, as well as of two functions, @{text crypts} and @{text key_sets}.
 Particularly, @{text IDInfo} is used to model message anonymity, while the remaining constants are
@@ -38,7 +38,7 @@ condition.
 
 This paper illustrates how logging-independent message anonymity can be formalized according to the
 relational method by considering a real-world protocol, namely the Restricted Identification one by
-the BSI @{cite "BSI16-2"} @{cite "BSI16-3"}, whose very purpose is to allow for the exchange of
+the BSI \<^cite>\<open>"BSI16-2"\<close> \<^cite>\<open>"BSI16-3"\<close>, whose very purpose is to allow for the exchange of
 messages endowed with this security property.
 \<close>
 
@@ -64,7 +64,7 @@ cryptographically secure. In a real-world PKI, each sector has actually two dist
 which enables the tokens to generate as many different pseudonymous identifiers per sector, but this
 detail is irrelevant to the anonymity of such identifiers and can then be omitted from the model.
 
-According to @{cite "BSI16-2"} @{cite "BSI16-3"}, the Restricted Identification protocol may only be
+According to \<^cite>\<open>"BSI16-2"\<close> \<^cite>\<open>"BSI16-3"\<close>, the Restricted Identification protocol may only be
 executed using the session keys established via Chip Authentication version 2/3, after performing
 Terminal Authentication version 2 with a terminal certificate containing both sector public keys'
 hashes (including domain parameters), whose authenticity is ensured by the certificate's signature.
@@ -130,8 +130,8 @@ the private keys used to generate them, logging-independent message anonymity ha
 rather than logging-dependent one.
 
 For further information about the formal definitions and proofs contained in this paper, see
-Isabelle documentation, particularly @{cite "Paulson21"}, @{cite "Nipkow21"}, @{cite "Krauss21"},
-and @{cite "Nipkow11"}.
+Isabelle documentation, particularly \<^cite>\<open>"Paulson21"\<close>, \<^cite>\<open>"Nipkow21"\<close>, \<^cite>\<open>"Krauss21"\<close>,
+and \<^cite>\<open>"Nipkow11"\<close>.
 \<close>
 
 
@@ -143,13 +143,13 @@ plus the spy. Actually, the model can safely ignore terminals altogether and ass
 presented to sectors as a whole, since all the terminal-side messages used in the protocol refer to
 sectors rather than to individual terminals. The only possible exceptions are signature key pairs.
 In fact, although the entity signing terminal certificates is the same for every terminal in a given
-sector (in @{cite "BSI16-2"} and @{cite "BSI16-3"}, it is named \emph{Document Verifier}), nothing
+sector (in \<^cite>\<open>"BSI16-2"\<close> and \<^cite>\<open>"BSI16-3"\<close>, it is named \emph{Document Verifier}), nothing
 prevents that entity to use distinct signature generation keys for different terminals (for example,
 if their certificates are issued at different times). Nonetheless, the granularity of signature key
 pairs is irrelevant to the anonymity of token pseudonymous identifiers according to the previous
 considerations, so these key pairs can be associated with sectors as well.
 
-As opposed to what happens in @{cite "Noce20"}, there is no correlation here between any two agents
+As opposed to what happens in \<^cite>\<open>"Noce20"\<close>, there is no correlation here between any two agents
 @{text "Token n"} and @{text "Sector n"} marked with the same numeric identifier @{text n}. In fact,
 tokens and sectors are independent of each other, and any token may be presented to whatever sector.
 
@@ -173,14 +173,14 @@ private keys referred to by the numeric identifiers in $S$, each one occurring a
 once. Using \emph{multisets} of natural numbers instead of sets would have allowed private keys to
 be used as factors even more than once, but this option can be left out as the PKI does not provide
 for any public key computed in this way. The need for this ad hoc message format, like those used to
-represent session keys and Chip Authentication Data in @{cite "Noce20"}, confirms that reuse of the
+represent session keys and Chip Authentication Data in \<^cite>\<open>"Noce20"\<close>, confirms that reuse of the
 spy's capabilities' model in the inductive method is hindered by the likely need for ad hoc message
-formats in case of protocols using nontrivial public key cryptography @{cite "Noce20"}.
+formats in case of protocols using nontrivial public key cryptography \<^cite>\<open>"Noce20"\<close>.
 
 Besides key agreement keys, messages comprise signature generation/verification keys (identified by
 the numeric identifiers of the respective sectors), hash values, cryptograms, and compound messages
 built via message concatenation. Furthermore, message anonymity is modeled by means of constructor
-@{text IDInfo} @{cite "Noce20"}. Since the anonymity of terminal-side messages is of no concern, the
+@{text IDInfo} \<^cite>\<open>"Noce20"\<close>. Since the anonymity of terminal-side messages is of no concern, the
 interpretation of message @{text "\<langle>n, X\<rangle>"} is "message @{text X} is mapped to @{term "Token n"}",
 namely @{text n} is always interpreted as a token's numeric identifier rather than a sector's one.
 

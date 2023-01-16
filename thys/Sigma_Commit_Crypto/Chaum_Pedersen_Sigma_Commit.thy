@@ -1,6 +1,6 @@
 subsection\<open>Chaum-Pedersen \<open>\<Sigma>\<close>-protocol\<close>
 
-text\<open>The Chaum-Pedersen \<open>\<Sigma>\<close>-protocol \cite{DBLP:conf/crypto/ChaumP92} considers a relation of equality of discrete logs.\<close>
+text\<open>The Chaum-Pedersen \<open>\<Sigma>\<close>-protocol \<^cite>\<open>"DBLP:conf/crypto/ChaumP92"\<close> considers a relation of equality of discrete logs.\<close>
 
 theory Chaum_Pedersen_Sigma_Commit imports
   Commitment_Schemes

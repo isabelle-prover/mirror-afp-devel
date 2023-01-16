@@ -10,10 +10,10 @@ begin
 
 subsection "Introduction"
 
-text\<open>Braun, Rem and Hoogerwoord \cite{BraunRem,Hoogerwoord} used
+text\<open>Braun, Rem and Hoogerwoord \<^cite>\<open>"BraunRem" and "Hoogerwoord"\<close> used
 specific balanced binary trees, often called Braun trees (where in
 each node with subtrees $l$ and $r$, $size(r) \le size(l) \le
-size(r)+1$), to implement flexible arrays. Paulson \cite{Paulson}
+size(r)+1$), to implement flexible arrays. Paulson \<^cite>\<open>"Paulson"\<close>
 (based on code supplied by Okasaki)
 implemented priority queues via Braun trees. This theory verifies
 Paulsons's implementation, with small simplifications.\<close>

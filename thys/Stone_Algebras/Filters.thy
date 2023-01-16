@@ -18,7 +18,7 @@ Another result is that in a distributive lattice ultrafilters are prime filters.
 We also prove a lemma of Gr\"atzer and Schmidt about principal filters.
 
 We apply these results in proving the construction theorem for Stone algebras (described in a separate theory).
-See, for example, \cite{BalbesDwinger1974,Birkhoff1967,Blyth2005,DaveyPriestley2002,Graetzer1971} for further results about filters.
+See, for example, \<^cite>\<open>"BalbesDwinger1974" and "Birkhoff1967" and "Blyth2005" and "DaveyPriestley2002" and "Graetzer1971"\<close> for further results about filters.
 \<close>
 
 theory Filters
@@ -165,7 +165,7 @@ lemma up_bot [simp]:
   by simp
 
 text \<open>
-The following result is the ultrafilter lemma, generalised from \cite[10.17]{DaveyPriestley2002} to orders with a least element.
+The following result is the ultrafilter lemma, generalised from \<^cite>\<open>\<open>10.17\<close> in "DaveyPriestley2002"\<close> to orders with a least element.
 Its proof uses Isabelle/HOL's \<open>Zorn_Lemma\<close>, which requires closure under union of arbitrary (possibly empty) chains.
 Actually, the proof does not use any of the underlying order properties except \<open>bot_least\<close>.
 \<close>
@@ -465,7 +465,7 @@ next
 qed
 
 text \<open>
-The following result is part of \cite[Exercise 2.23]{DaveyPriestley2002}.
+The following result is part of \<^cite>\<open>\<open>Exercise 2.23\<close> in "DaveyPriestley2002"\<close>.
 \<close>
 
 lemma filter_inf_filter [simp]:
@@ -778,7 +778,7 @@ proof -
 qed
 
 text \<open>
-The following result is \cite[Lemma II]{GraetzerSchmidt1958}.
+The following result is \<^cite>\<open>\<open>Lemma II\<close> in "GraetzerSchmidt1958"\<close>.
 If both join and meet of two filters are principal filters, both filters are principal filters.
 \<close>
 
@@ -822,7 +822,7 @@ proof -
 qed
 
 text \<open>
-The following result generalises \cite[10.11]{DaveyPriestley2002} to distributive lattices as remarked after that section.
+The following result generalises \<^cite>\<open>\<open>10.11\<close> in "DaveyPriestley2002"\<close> to distributive lattices as remarked after that section.
 \<close>
 
 lemma ultra_filter_prime:

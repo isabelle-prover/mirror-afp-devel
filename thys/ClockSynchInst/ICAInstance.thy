@@ -7,20 +7,20 @@ section \<open>Interactive Convergence Algorithms (ICA)\<close>
 
 theory ICAInstance imports Complex_Main begin
 
-text \<open>This algorithm is presented in \cite{lamport_cs}.\<close>
+text \<open>This algorithm is presented in \<^cite>\<open>"lamport_cs"\<close>.\<close>
 
 text \<open>A proof of the three properties can be found in
-\cite{shankar92mechanical}.\<close>
+\<^cite>\<open>"shankar92mechanical"\<close>.\<close>
 
 subsection \<open>Model of the system\<close>
 
 text \<open>The main ideas for the formalization of the system were
-obtained from \cite{shankar92mechanical}.\<close>
+obtained from \<^cite>\<open>"shankar92mechanical"\<close>.\<close>
 
 subsubsection \<open>Types in the formalization\<close>
 
 text \<open>The election of the basics types was based on
-\cite{shankar92mechanical}. There, the process are natural numbers and
+\<^cite>\<open>"shankar92mechanical"\<close>. There, the process are natural numbers and
 the real time and the clock readings are reals.\<close>
 
 type_synonym process = nat
@@ -32,7 +32,7 @@ subsubsection \<open>Some constants\<close>
 text\<open>Here we define some parameters of the algorithm that we use:
 the number of process and the fix value that is used to discard the
 processes whose clocks differ more than this amount from the own one
-(see \cite{shankar92mechanical}). The defined constants must satisfy
+(see \<^cite>\<open>"shankar92mechanical"\<close>). The defined constants must satisfy
 this axiom (if $np = 0$ we have a division by cero in the definition
 of the convergence function).\<close>
 
@@ -52,12 +52,12 @@ PR :: "process set" where
 subsubsection \<open>Convergence function\<close>
 
 text \<open>This functions is called ``Egocentric Average''
-(\cite{schneider87understanding})\<close>
+(\<^cite>\<open>"schneider87understanding"\<close>)\<close>
 
 text \<open>In this algorithm each process has an array where it store the
 clocks readings from the others processes (including itself). We
 formalise that as a function from processes to clock time as
-\cite{shankar92mechanical}.\<close>
+\<^cite>\<open>"shankar92mechanical"\<close>.\<close>
 
 text \<open>First we define an auxiliary function. It takes a function of
 clock readings and two processes, and return de reading of the second
@@ -99,7 +99,7 @@ done
 subsection \<open>Precision Enhancement property\<close>
 
 text \<open>An informal proof of this theorem can be found in
-\cite{shankar92mechanical}\<close>
+\<^cite>\<open>"shankar92mechanical"\<close>\<close>
 
 subsubsection \<open>Auxiliary lemmas\<close>
 

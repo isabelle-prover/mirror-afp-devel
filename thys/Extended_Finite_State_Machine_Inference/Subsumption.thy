@@ -1,7 +1,7 @@
 section \<open>Contexts and Subsumption\<close>
-text\<open>This theory uses contexts to extend the idea of transition subsumption from \cite{lorenzoli2008} to
+text\<open>This theory uses contexts to extend the idea of transition subsumption from \<^cite>\<open>"lorenzoli2008"\<close> to
 EFSM transitions with register update functions. The \emph{subsumption in context} relation is the
-main contribution of \cite{foster2018}.\<close>
+main contribution of \<^cite>\<open>"foster2018"\<close>.\<close>
 
 theory Subsumption
   imports

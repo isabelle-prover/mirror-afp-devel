@@ -279,7 +279,7 @@ subsection "Online Algorithm Move-to-Front is 2-Competitive"
 definition MTF :: "('a,unit) alg_on" where
 "MTF = (\<lambda>_. (), \<lambda>s r. ((size (fst s) - 1,[]), ()))"
 
-text\<open>It was first proved by Sleator and Tarjan~\cite{SleatorT-CACM85} that
+text\<open>It was first proved by Sleator and Tarjan~\<^cite>\<open>"SleatorT-CACM85"\<close> that
 the Move-to-Front algorithm is 2-competitive.\<close>
 
 (* The core idea with upper bounds: *)

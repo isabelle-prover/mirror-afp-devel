@@ -23,7 +23,7 @@ subsection\<open>Arrow with a domain and a codomain\<close>
 
 text\<open>
 The definition of and notation for an arrow with a domain and codomain is
-adapted from Chapter I-1 in \cite{mac_lane_categories_2010}.
+adapted from Chapter I-1 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 The definition is applicable to digraphs and all other relevant derived
 entities, such as semicategories and categories, that are presented in
 the subsequent chapters.
@@ -59,7 +59,7 @@ lemmas [dg_shared_cs_simps, dg_cs_simps] = is_arrD(2,3)
 subsection\<open>\<open>Hom\<close>-set\<close>
 
 
-text\<open>See Chapter I-8 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-8 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 abbreviation Hom :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V" 
   where "Hom \<CC> a b \<equiv> set {f. f : a \<mapsto>\<^bsub>\<CC>\<^esub> b}"
@@ -82,7 +82,7 @@ lemma in_Hom_iff[dg_shared_cs_simps, dg_cs_simps]:
 text\<open>
 The \<open>Hom\<close>-sets in a given digraph are pairwise disjoint. This property 
 was exposed as Axiom (v) in an alternative definition of a category presented 
-in Chapter I-8 in \cite{mac_lane_categories_2010}. Within the scope of the 
+in Chapter I-8 in \<^cite>\<open>"mac_lane_categories_2010"\<close>. Within the scope of the 
 definitional framework employed in this study, this property holds 
 unconditionally.
 \<close>
@@ -115,25 +115,25 @@ subsection\<open>Digraph: background information\<close>
 text\<open>
 The definition of a digraph that is employed in this work is similar
 to the definition of a \<open>directed graph\<close> presented in Chapter I-2 in 
-\cite{mac_lane_categories_2010}. However, there are notable differences.
+\<^cite>\<open>"mac_lane_categories_2010"\<close>. However, there are notable differences.
 More specifically, the definition is parameterized by a limit ordinal \<open>\<alpha>\<close>, 
 such that \<open>\<omega> < \<alpha>\<close>; the set of objects is assumed to be a subset 
 of the set \<open>V\<^sub>\<alpha>\<close> in the von Neumann hierarchy of sets (e.g., 
-see \cite{takeuti_introduction_1971}). Such digraphs are called \<open>\<alpha>\<close>-\<open>digraphs\<close> 
+see \<^cite>\<open>"takeuti_introduction_1971"\<close>). Such digraphs are called \<open>\<alpha>\<close>-\<open>digraphs\<close> 
 to make the dependence on the parameter \<open>\<alpha>\<close> explicit.\footnote{
 The prefix ``\<open>\<alpha>\<close>-'' may be omitted whenever it is possible to infer the value 
 of \<open>\<alpha>\<close> from the context. This applies not only to the digraphs, but all 
 other entities that are parameterized by a limit ordinal \<open>\<alpha>\<close> such that 
 \<open>\<omega> < \<alpha>\<close>.} This definition was inspired by the ideas expressed in 
-\cite{feferman_set-theoretical_1969}, \cite{sica_doing_2006} and
-\cite{shulman_set_2008}.
+\<^cite>\<open>"feferman_set-theoretical_1969"\<close>, \<^cite>\<open>"sica_doing_2006"\<close> and
+\<^cite>\<open>"shulman_set_2008"\<close>.
 
 In ZFC in HOL, the predicate \<^term>\<open>small\<close> is used for distinguishing the
 terms of any type of the form \<^typ>\<open>'a set\<close> that are isomorphic to elements 
 of a term of the type \<^typ>\<open>V\<close> (the elements can be exposed via the predicate
 \<^const>\<open>elts\<close>). Thus, the collection of the elements associated with any term of 
 the type \<^typ>\<open>V\<close> (e.g., \<^term>\<open>elts (a::V)\<close>) is always small 
-(see the theorem @{thm [source] small_elts} in \cite{paulson_zermelo_2019}).
+(see the theorem @{thm [source] small_elts} in \<^cite>\<open>"paulson_zermelo_2019"\<close>).
 Therefore, in this study, in an attempt to avoid confusion, the term ``small''
 is never used to refer to digraphs. 
 Instead, a new terminology is introduced in this body of work.
@@ -141,7 +141,7 @@ Instead, a new terminology is introduced in this body of work.
 Thus, in this work, an \<open>\<alpha>\<close>-digraph is a tiny \<open>\<alpha>\<close>-digraph if and only if 
 the set of its objects and the set of its arrows both belong to the set \<open>V\<^sub>\<alpha>\<close>. 
 This notion is similar to the notion of a small category in the sense of 
-the definition employed in Chapter I-6 in \cite{mac_lane_categories_2010}, 
+the definition employed in Chapter I-6 in \<^cite>\<open>"mac_lane_categories_2010"\<close>, 
 if it is assumed that the ``smallness'' is determined with respect to the 
 set \<open>V\<^sub>\<alpha>\<close> instead of the universe \<open>U\<close>. Also, in what follows, any member of 
 the set \<open>V\<^sub>\<alpha>\<close> will be referred to as an \<open>\<alpha>\<close>-tiny set.
@@ -486,7 +486,7 @@ subsection\<open>Opposite digraph\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter II-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter II-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition op_dg :: "V \<Rightarrow> V"
   where "op_dg \<CC> = [\<CC>\<lparr>Obj\<rparr>, \<CC>\<lparr>Arr\<rparr>, \<CC>\<lparr>Cod\<rparr>, \<CC>\<lparr>Dom\<rparr>]\<^sub>\<circ>"

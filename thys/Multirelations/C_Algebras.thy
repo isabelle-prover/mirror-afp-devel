@@ -15,7 +15,7 @@ no_notation
 
 subsection \<open>C-Monoids\<close>
 
-text \<open>We start with the c-monoid axioms. These can be found in Section~4 of~\cite{FurusawaS15a}.\<close>
+text \<open>We start with the c-monoid axioms. These can be found in Section~4 of~\<^cite>\<open>"FurusawaS15a"\<close>.\<close>
 
 class proto_monoid = 
   fixes s_id :: "'a" ("1\<^sub>\<sigma>")
@@ -39,7 +39,7 @@ class c_monoid = proto_bi_monoid +
 
 begin
 
-text \<open>Next we define domain explicitly as at the beginning of Section 4 in~\cite{FurusawaS15a} 
+text \<open>Next we define domain explicitly as at the beginning of Section 4 in~\<^cite>\<open>"FurusawaS15a"\<close> 
 and start proving the algebraic facts from Section 4. Those involving concrete multirelations, such as Proposition 4.1,
 are considered in the theory file for multirelations.\<close>
 
@@ -217,7 +217,7 @@ end
 subsection \<open>C-Trioids\<close>
 
 text \<open>We can now define the class of c-trioids and prove properties in this class. This covers 
-the algebraic material of Section 5 in~\cite{FurusawaS15a}.\<close>
+the algebraic material of Section 5 in~\<^cite>\<open>"FurusawaS15a"\<close>.\<close>
 
 class proto_dioid = join_semilattice_zero + proto_monoid +
   assumes  s_prod_distr: "(x + y) \<cdot> z = x \<cdot> z + y \<cdot> z"
@@ -382,12 +382,12 @@ text \<open>Lemma 5.4 is verified below because its proofs are simplified by usi
 
 subsection \<open>Results for Concurrent Dynamic Algebra\<close>
 
-text \<open>The following proofs and refutation are related to Section 6 in~\cite{FurusawaS15a}. 
+text \<open>The following proofs and refutation are related to Section 6 in~\<^cite>\<open>"FurusawaS15a"\<close>. 
 We do not consider those involving Kleene algebras in this section. We also do not introduce specific 
 notation for diamond operators.\<close>
 
 text \<open>First we prove Lemma 6.1. Part (1) and (3) have already been verified above. Part (2) and (4) require
-additional assumptions which are present in the context of concurrent dynamic algebra~\cite{FurusawaS15b}. We
+additional assumptions which are present in the context of concurrent dynamic algebra~\<^cite>\<open>"FurusawaS15b"\<close>. We
 also present the counterexamples from Lemma 6.3.\<close>
 
 lemma "(x \<cdot> y) \<cdot> d z = x \<cdot> (y \<cdot> d z)"
@@ -483,7 +483,7 @@ end
 
 subsection \<open>C-Lattices\<close>
 
-text \<open>We can now define c-lattices and prove the results from Section 7 in~\cite{FurusawaS15a}.\<close>
+text \<open>We can now define c-lattices and prove the results from Section 7 in~\<^cite>\<open>"FurusawaS15a"\<close>.\<close>
 
 class pbl_monoid = proto_trioid +
   fixes U :: 'a
@@ -539,7 +539,7 @@ lemma d_equiv_prop: "(\<forall>z. z + x = z + y \<and> z \<sqinter> x = z \<sqin
 
 end
 
-text \<open>The symbol $\overline{1}_\pi$ from~\cite{FurusawaS15a} is written nc in this theory file.\<close>
+text \<open>The symbol $\overline{1}_\pi$ from~\<^cite>\<open>"FurusawaS15a"\<close> is written nc in this theory file.\<close>
 
 class c_lattice =  pbdl_monoid +
   fixes nc :: "'a"
@@ -865,7 +865,7 @@ qed
 
 subsection \<open>Domain in C-Lattices\<close>
 
-text \<open>We now prove variants of the domain axioms and verify the properties of Section 8 in~\cite{FurusawaS15a}.\<close>
+text \<open>We now prove variants of the domain axioms and verify the properties of Section 8 in~\<^cite>\<open>"FurusawaS15a"\<close>.\<close>
 
 lemma cl9_d [simp]: "d (x \<sqinter> 1\<^sub>\<sigma>) = x \<sqinter> 1\<^sub>\<sigma>"
   by (simp add: local.d_def)
@@ -899,7 +899,7 @@ lemma alt_d_def_nc_nc: "d (x \<sqinter> nc) = 1\<^sub>\<sigma> \<sqinter> ((x \<
 lemma alt_d_def_nc_U: "d (x \<sqinter> nc) = 1\<^sub>\<sigma> \<sqinter> ((x \<sqinter> nc) \<cdot> 1\<^sub>\<pi>) \<parallel> U"
   by (metis alt_d_def_nc_nc local.c2_d s_nc_U)
 
-text \<open>We verify the identity before Lemma 8.2 of~\cite{FurusawaS15a} together with variants.\<close>
+text \<open>We verify the identity before Lemma 8.2 of~\<^cite>\<open>"FurusawaS15a"\<close> together with variants.\<close>
 
 lemma d_def_split [simp]: "d (x \<sqinter> nc) + d (x \<cdot> 0) = d x"
   by (metis local.d_add_ax x_split_var)
@@ -966,8 +966,8 @@ lemma d_x_nc [simp]: "d (x \<cdot> nc) = d x"
 lemma d_x_U [simp]: "d (x \<cdot> U) = d x"
   by (simp add: local.c4 local.d_def)
 
-text \<open>The next properties of domain are important, but do not feature in~\cite{FurusawaS15a}. 
-Proofs can be found in~\cite{FurusawaS15b}.\<close>
+text \<open>The next properties of domain are important, but do not feature in~\<^cite>\<open>"FurusawaS15a"\<close>. 
+Proofs can be found in~\<^cite>\<open>"FurusawaS15b"\<close>.\<close>
 
 lemma d_llp1: "d x \<le> d y \<Longrightarrow> x \<le> d y \<cdot> x"
   by (metis local.d_rest_ax local.s_prod_isor)
@@ -1005,7 +1005,7 @@ qed
 
 subsection \<open>Structural Properties of C-Lattices\<close>
 
-text \<open>Now we consider the results from Section 9 and 10 in~\cite{FurusawaS15a}. 
+text \<open>Now we consider the results from Section 9 and 10 in~\<^cite>\<open>"FurusawaS15a"\<close>. 
 First we verify the conditions for Proposition 9.1.\<close>
       
 lemma d_meet_closed [simp]: "d (d x \<sqinter> d y) = d x \<sqinter> d y"
@@ -1339,7 +1339,7 @@ lemma nvc_hom_meet: "((x \<sqinter> nc) \<cdot>  nc \<sqinter> (y \<sqinter> nc)
 subsection \<open>Terminal and Nonterminal Elements\<close>
 
 text \<open>Now we define the projection functions on terminals and nonterminal parts and verify the properties
-of Section 11 in~\cite{FurusawaS15a}.\<close>
+of Section 11 in~\<^cite>\<open>"FurusawaS15a"\<close>.\<close>
 
 definition tau :: "'a \<Rightarrow> 'a" ("\<tau>") where 
   "\<tau> x = x \<cdot> 0"
@@ -1685,7 +1685,7 @@ end
 
 subsection \<open>Powers in C-Algebras\<close>
 
-text \<open>We define the power functions from Section~6 in~\cite{FurusawaS15a} after Lemma~12.4.\<close>
+text \<open>We define the power functions from Section~6 in~\<^cite>\<open>"FurusawaS15a"\<close> after Lemma~12.4.\<close>
 
 context proto_dioid
 begin
@@ -1753,7 +1753,7 @@ end
 subsection \<open>C-Kleene Algebras\<close>
 
 text \<open>The definition of c-Kleene algebra is slightly different from that in Section~6
-of~\cite{FurusawaS15a}. It is used to prove properties from Section~6 and Section~12.\<close>
+of~\<^cite>\<open>"FurusawaS15a"\<close>. It is used to prove properties from Section~6 and Section~12.\<close>
 
 class c_kleene_algebra = c_lattice + star_op +
   assumes star_unfold: "1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -1861,7 +1861,7 @@ lemma tau_star_tau [simp]: "\<tau> ((\<tau> x)\<^sup>\<star>) = \<tau> x"
 lemma tau_star_nu [simp]: "\<tau> ((\<nu> x)\<^sup>\<star>) = 0"
   using local.alpha_fp local.tau_def nu_star_nu by presburger
 
-text \<open>Finally we verify Lemma 6.2. Proofs can be found in~\cite{FurusawaS15b}.\<close>
+text \<open>Finally we verify Lemma 6.2. Proofs can be found in~\<^cite>\<open>"FurusawaS15b"\<close>.\<close>
 
 lemma d_star_unfold [simp]: 
 assumes "\<And>x y z. (x \<cdot> y) \<cdot> d z = x \<cdot> (y \<cdot> d z)"
@@ -1926,9 +1926,9 @@ end
 
 subsection \<open>C-Omega Algebras\<close>
 
-text \<open>These structures do not feature in~\cite{FurusawaS15a}, but in fact, 
+text \<open>These structures do not feature in~\<^cite>\<open>"FurusawaS15a"\<close>, but in fact, 
 many lemmas from Section 13 can be proved in this setting. The proto-quantales and c-quantales
-using in~\cite{FurusawaS15a} provide a more expressive setting in which least and greatest fixpoints 
+using in~\<^cite>\<open>"FurusawaS15a"\<close> provide a more expressive setting in which least and greatest fixpoints 
 need not be postulated; they exists due to properties of sequential composition and addition over 
 complete lattices.\<close>
 

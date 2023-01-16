@@ -7,7 +7,7 @@ begin
 subsection\<open>Ferrante-Rackoff \label{sec:FRE}\<close>
 
 text\<open>This section formalizes a slight variant of Ferrante and
-Rackoff's algorithm~\cite{FerranteR-SIAM75}. We consider equalities
+Rackoff's algorithm~\<^cite>\<open>"FerranteR-SIAM75"\<close>. We consider equalities
 separately, which improves performance.\<close>
 
 fun between :: "real * real list \<Rightarrow> real * real list \<Rightarrow> real * real list"

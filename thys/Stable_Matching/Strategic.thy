@@ -18,7 +18,7 @@ possible we specialize our lemmas to it.
 \<close>
 
 
-subsection\<open> \citet{HatfieldMilgrom:2005}: Theorems~10 and~11: Truthful revelation as a Dominant Strategy \label{sec:strategic-contracts} \<close>
+subsection\<open> \<^citet>\<open>"HatfieldMilgrom:2005"\<close>: Theorems~10 and~11: Truthful revelation as a Dominant Strategy \label{sec:strategic-contracts} \<close>
 
 text (in ContractsWithSubstitutes) \<open>
 
@@ -26,10 +26,10 @@ Theorems~10 and 11 demonstrate that doctors cannot obtain better
 results for themselves in the doctor-optimal match (i.e., @{term "cop ds"}, equal to @{term "match (gfp_F ds)"} by @{thm [source]
 "Theorem_15_match"} assuming hospital preferences satisfy @{const
 "substitutes"}) by misreporting their preferences. (See
-\citet[\S4.2]{RothSotomayor:1990} for a discussion about the
+\<^citet>\<open>\<open>\S4.2\<close> in "RothSotomayor:1990"\<close> for a discussion about the
 impossibility of a mechanism being strategy-proof for all agents.)
 
-\citet[{\S}III(B)]{HatfieldMilgrom:2005} provide the
+\<^citet>\<open>\<open>{\S}III(B)\<close> in "HatfieldMilgrom:2005"\<close> provide the
 following intuition:
 \begin{quote}
 
@@ -55,7 +55,7 @@ manipulated preferences @{term "Pd (Xd x)"} do not improve the outcome
 for doctor @{term "Xd x"} with respect to their true preferences
 @{term "Pd' (Xd x)"} in the doctor-optimal match for @{term "Pd'"}.
 
-This is weaker than \citet[Lemma~1]{HatfieldKojima:2009} (see
+This is weaker than \<^citet>\<open>\<open>Lemma~1\<close> in "HatfieldKojima:2009"\<close> (see
 \S\ref{sec:strategic-hk2010-lemma1}) as we do not guarantee that the
 allocation does not change. By the bossiness result of
 \S\ref{sec:bossiness}, such manipulations can change the outcomes of
@@ -211,7 +211,7 @@ by unfold_locales blast+
 
 text\<open>
 
-Our version of \citet[Theorem~10]{HatfieldMilgrom:2005} (for the COP)
+Our version of \<^citet>\<open>\<open>Theorem~10\<close> in "HatfieldMilgrom:2005"\<close> (for the COP)
 states that if a doctor submits a preference order containing just
 @{term "x"}, where @{term "x"} is their contract in some stable match
 @{term "X"}, then that doctor receives exactly @{term "x"} in the
@@ -265,7 +265,7 @@ end
 
 text (in ContractsWithSubstitutes) \<open>
 
-The second theorem \citep[Theorem~11]{HatfieldMilgrom:2005} depends on
+The second theorem \<^citep>\<open>\<open>Theorem~11\<close> in "HatfieldMilgrom:2005"\<close> depends on
 both Theorem~10 and the rural hospitals theorem
 (\S\ref{sec:contracts-rh}, \S\ref{sec:cop-rh}). It shows that,
 assuming everything else is fixed, if doctor @{term "d'"} obtains
@@ -482,20 +482,20 @@ Note that this theorem depends on the hypotheses introduced by the
 x"}. The following sections show more general and syntactically
 self-contained results.
 
-We omit \citet[Theorem~12]{HatfieldMilgrom:2005}, which demonstrates
+We omit \<^citet>\<open>\<open>Theorem~12\<close> in "HatfieldMilgrom:2005"\<close>, which demonstrates
 the almost-necessity of LAD for truth revelation to be the dominant
 strategy for doctors.
 
 \<close>
 
 
-subsection\<open> \citet{HatfieldKojima:2009,HatfieldKojima:2010}: The doctor-optimal match is group strategy-proof \label{sec:strategic-gsp} \<close>
+subsection\<open> \<^citet>\<open>"HatfieldKojima:2009" and "HatfieldKojima:2010"\<close>: The doctor-optimal match is group strategy-proof \label{sec:strategic-gsp} \<close>
 
 text \<open>
 
-\citet[Theorem~7]{HatfieldKojima:2010} assert that the COP is group
+\<^citet>\<open>\<open>Theorem~7\<close> in "HatfieldKojima:2010"\<close> assert that the COP is group
 strategy-proof, which we define below. We begin by focusing on a
-single agent \citep{HatfieldKojima:2009}: \begin{quote}
+single agent \<^citep>\<open>"HatfieldKojima:2009"\<close>: \begin{quote}
 
 A mechanism @{term "\<phi>"} is @{emph \<open>strategy-proof\<close>} if, for any
 preference profile @{term "Pd"}, there is no doctor @{term "d"} and
@@ -564,7 +564,7 @@ end
 text\<open>
 
 The adaptation to groups is straightforward
-\citep{HatfieldKojima:2009,HatfieldKojima:2010}:
+\<^citep>\<open>"HatfieldKojima:2009" and "HatfieldKojima:2010"\<close>:
 \begin{quote}
 
 A mechanism @{term "\<phi>"} is @{emph \<open>group strategy-proof\<close>} if, for
@@ -584,8 +584,8 @@ prefer the outcome with manipulated preferences, as
 \citeauthor{Kojima:2010}'s bossiness results (see
 \S\ref{sec:bossiness}) show that a doctor may influence other doctors'
 allocations without affecting their own. See
-\citet[\S3]{HatfieldKojima:2009} for discussion, and also
-\citet[Chapter~4]{RothSotomayor:1990}; in particular their \S4.3.1
+\<^citet>\<open>\<open>\S3\<close> in "HatfieldKojima:2009"\<close> for discussion, and also
+\<^citet>\<open>\<open>Chapter~4\<close> in "RothSotomayor:1990"\<close>; in particular their \S4.3.1
 discusses the robustness of these results and exogenous transfers.
 
 \<close>
@@ -630,8 +630,8 @@ text\<open>
 
 \label{sec:strategic-hk2010-lemma1}
 
-Perhaps surprisingly, \citet[Lemma~1, for a single
-doctor]{HatfieldKojima:2010} assert that shuffling any contract above
+Perhaps surprisingly, \<^citet>\<open>\<open>Lemma~1, for a single
+doctor\<close> in "HatfieldKojima:2010"\<close> assert that shuffling any contract above
 the doctor-optimal one to the top of a doctor's preference order
 preserves exactly the doctor-optimal match, which on the face of it
 seems to contradict the bossiness result of \S\ref{sec:bossiness}: by
@@ -985,8 +985,8 @@ text (in ContractsWithSubstitutes) \<open>
 Again, this result does not directly apply to @{term "gfp_F"} due to
 the mechanism domain hypothesis.
 
-Finally, \citet[Corollary~2]{HatfieldKojima:2010} (respectively,
-\citet[Corollary~1]{HatfieldKojima:2009}) assert that the COP (@{const
+Finally, \<^citet>\<open>\<open>Corollary~2\<close> in "HatfieldKojima:2010"\<close> (respectively,
+\<^citet>\<open>\<open>Corollary~1\<close> in "HatfieldKojima:2009"\<close>) assert that the COP (@{const
 "gfp_F"}) is ``weakly Pareto optimal'', i.e., that there is no @{const
 "individually_rational"} allocation that every doctor strictly prefers
 to the doctor-optimal match.
@@ -1045,7 +1045,7 @@ end
 
 text\<open>
 
-\citet[\S4.4]{RothSotomayor:1990} discuss how the non-proposing agents
+\<^citet>\<open>\<open>\S4.4\<close> in "RothSotomayor:1990"\<close> discuss how the non-proposing agents
 can strategise to improve their outcomes in one-to-one matches.
 
 \<close>

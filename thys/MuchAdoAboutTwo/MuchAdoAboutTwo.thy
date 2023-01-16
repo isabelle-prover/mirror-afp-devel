@@ -17,19 +17,19 @@ text \<open>
 
 Due to Donald E. Knuth, it is known for some time that certain sorting
 functions for lists of arbitrary types can be proved correct by only showing
-that they are correct for boolean lists (\cite{KnuthSortingAndSearching},
-see also \cite{LogicalAbstractionsInHaskell}).
+that they are correct for boolean lists (\<^cite>\<open>"KnuthSortingAndSearching"\<close>,
+see also \<^cite>\<open>"LogicalAbstractionsInHaskell"\<close>).
 This reduction idea, i.e. reducing a proof for an arbitrary type to a proof for a fixed type with a fixed number of values, has also instances in other
 fields.
-Recently, in \cite{MuchAdoAboutTwo}, a similar result as Knuth's 0-1-principle
+Recently, in \<^cite>\<open>"MuchAdoAboutTwo"\<close>, a similar result as Knuth's 0-1-principle
 is explained for the problem of parallel prefix computation 
-\cite{PrefixSumsAndTheirApplications}.
+\<^cite>\<open>"PrefixSumsAndTheirApplications"\<close>.
 That is the task to compute, for given $x_1, \ldots, x_n$ and an associative
 operation $\oplus$, the values $x_1$, $x_1 \oplus x_2$, $\ldots$,
  $x_1 \oplus x_2 \oplus \cdots \oplus x_n$.
 There are several solutions which optimise this computation, and an
 obvious question is to ask whether these solutions are correct.
-One way to answer this question is given in \cite{MuchAdoAboutTwo}.
+One way to answer this question is given in \<^cite>\<open>"MuchAdoAboutTwo"\<close>.
 There, a ``0-1-2-principle'' is proved which relates an unspecified solution
 of the parallel prefix computation, expressed as a function \<open>candidate\<close>,
 with \<open>scanl1\<close>, a functional representation of the parallel prefix
@@ -42,8 +42,8 @@ of the parallel prefix computation.
 Although it seems that nearly nothing is known about the function
 \<open>candidate\<close>, it turns out that the type of \<open>candidate\<close> already
 suffices for the proof of the paper's result. The key is relational
-parametricity \cite{TypesAbstractionsAndParametricPolymorphism} in the form of
-a free theorem \cite{TheoremsForFree}. This, some rewriting and a few 
+parametricity \<^cite>\<open>"TypesAbstractionsAndParametricPolymorphism"\<close> in the form of
+a free theorem \<^cite>\<open>"TheoremsForFree"\<close>. This, some rewriting and a few 
 properties about list-processing functions thrown in allow to proof the
 ``0-1-2-principle''.
 
@@ -58,7 +58,7 @@ parts then yields the theorem.
 
 
 
-Th article at hand formalises the proofs given in \cite{MuchAdoAboutTwo},
+Th article at hand formalises the proofs given in \<^cite>\<open>"MuchAdoAboutTwo"\<close>,
 which is called here ``the original paper''. Compared to that paper, there are 
 several differences in this article. The major differences are listed below.
 A more detailed collection follows thereafter.
@@ -228,7 +228,7 @@ where
 section \<open>A Free Theorem\<close>
 
 text \<open>
-The key to proof the final theorem is the following free theorem \cite{TypesAbstractionsAndParametricPolymorphism,TheoremsForFree} of \<open>candidate\<close>. 
+The key to proof the final theorem is the following free theorem \<^cite>\<open>"TypesAbstractionsAndParametricPolymorphism" and "TheoremsForFree"\<close> of \<open>candidate\<close>. 
 Since there is no proof possible without specifying the underlying
 (functional) language (which would be beyond the scope of this work),
 this lemma is expected to hold. As a consequence, all following lemmas and also
@@ -527,7 +527,7 @@ section \<open>Preparatory Material\<close>
 text \<open>
 In the original paper, the following lemmas L1 to L8 are given without a proof,
 although it is hinted there that most of them follow from parametricity
-properties \cite{TypesAbstractionsAndParametricPolymorphism,TheoremsForFree}.
+properties \<^cite>\<open>"TypesAbstractionsAndParametricPolymorphism" and "TheoremsForFree"\<close>.
 Alternatively, most of them can be shown by induction over lists.
 However, since we are using Isabelle's list datatype, we rely on already
 existing results.

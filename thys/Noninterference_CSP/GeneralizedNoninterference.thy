@@ -15,7 +15,7 @@ text \<open>
 \null
 
 The purpose of this section is to compare CSP noninterference security as defined previously with
-McCullough's notion of generalized noninterference security as formulated in \cite{R4}. It will be
+McCullough's notion of generalized noninterference security as formulated in \<^cite>\<open>"R4"\<close>. It will be
 shown that this security property is weaker than both CSP noninterference security for a generic
 process, and classical noninterference security for classical processes, viz. it is a necessary but
 not sufficient condition for them. This renders CSP noninterference security preferable as an
@@ -29,7 +29,7 @@ of datatype constructors and main theorems, contain prefix \<open>g_\<close>.
 subsection "Generalized noninterference"
 
 text \<open>
-The original formulation of generalized noninterference security as contained in \cite{R4} focuses
+The original formulation of generalized noninterference security as contained in \<^cite>\<open>"R4"\<close> focuses
 on systems whose events, split in inputs and outputs, are mapped into either of two security levels,
 \emph{high} and \emph{low}. Such a system is said to be secure just in case, for any trace
 \<open>xs\<close> and any high-level input \<open>x\<close>, the set of the \emph{possible low-level futures} of
@@ -245,7 +245,7 @@ not the case for deterministic processes, so the aforesaid security properties m
 be equivalent as regards such processes.
 
 However, a counterexample proving the contrary is provided by a deterministic state machine
-resembling systems \emph{A} and \emph{B} described in \cite{R4}, section 3.1. This machine is proven
+resembling systems \emph{A} and \emph{B} described in \<^cite>\<open>"R4"\<close>, section 3.1. This machine is proven
 not to be classical noninterference-secure, whereas the corresponding classical process turns out to
 be generalized noninterference-secure, which proves that the generalized noninterference security of
 a classical process is not a sufficient condition for the classical noninterference security of the

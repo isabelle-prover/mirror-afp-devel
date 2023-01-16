@@ -35,7 +35,7 @@ text\<open>
         (unwrap \circ wrap)\ work = work
       \end{haskell}}\hfill \textsf{(worker/wrapper fusion)}}}%
  \end{center}%
- \caption{The worker/wrapper transformation and fusion rule of \citet{GillHutton:2009}.}\label{fig:ww}
+ \caption{The worker/wrapper transformation and fusion rule of \<^citet>\<open>"GillHutton:2009"\<close>.}\label{fig:ww}
 \end{figure}
 
 The worker/wrapper transformation and associated fusion rule as

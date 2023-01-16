@@ -394,7 +394,7 @@ where "P \<nabla>2 p = (\<lambda>x. case p x of
 text\<open>
   The following operator is used for transition policies only: a transition policy is transformed 
   into a state-exception monad. Such a monad can for example be used for test case generation using 
-  HOL-Testgen~\cite{brucker.ea:theorem-prover:2012}.
+  HOL-Testgen~\<^cite>\<open>"brucker.ea:theorem-prover:2012"\<close>.
 \<close>
 
 definition policy2MON :: "('\<iota>\<times>'\<sigma> \<mapsto> 'o\<times>'\<sigma>) \<Rightarrow> ('\<iota> \<Rightarrow>('o decision,'\<sigma>) MON\<^sub>S\<^sub>E)"

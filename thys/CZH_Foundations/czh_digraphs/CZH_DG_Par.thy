@@ -14,7 +14,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 \<open>Par\<close> is usually defined as a category of sets and partial functions
-(see nLab \cite{noauthor_nlab_nodate}\footnote{
+(see nLab \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/partial+function}
 }).
 However, there is little that can prevent one from exposing \<open>Par\<close> 

@@ -5,7 +5,7 @@
 
   text \<open>
     The objective of this section is to construct a formalization of bicategories that is
-    compatible with our previous formulation of categories \cite{Category3-AFP}
+    compatible with our previous formulation of categories \<^cite>\<open>"Category3-AFP"\<close>
     and that permits us to carry over unchanged as much of the work done on categories as possible.
     For these reasons, we conceive of a bicategory in what might be regarded as a somewhat
     unusual fashion.  Rather than a traditional development, which would typically define

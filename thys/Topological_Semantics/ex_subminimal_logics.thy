@@ -7,7 +7,7 @@ section \<open>Example application: Subintuitionistic and subminimal logics\<clo
 
 text\<open>\noindent{In this section we examine some special paracomplete logics. The idea is to illustrate an approach by
 means of which we can obtain logics which are boldly paracomplete and (non-boldly) paraconsistent at the
-same time, Johansson's 'minimal logic' @{cite JML} being the paradigmatic case we aim at modelling.}\<close>
+same time, Johansson's 'minimal logic' \<^cite>\<open>JML\<close> being the paradigmatic case we aim at modelling.}\<close>
 
 text\<open>\noindent{Drawing upon the literature on Johanson's minimal logic, we introduce an unconstrained propositional
 constant Q, which we then employ to define a 'rigid' frontier operation @{text "\<F>'"}.}\<close>

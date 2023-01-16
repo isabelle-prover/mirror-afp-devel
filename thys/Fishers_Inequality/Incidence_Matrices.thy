@@ -4,8 +4,8 @@ Theory: Incidence_Matrices.thy
 
 section \<open> Incidence Vectors and Matrices \<close>
 text \<open>Incidence Matrices are an important representation for any incidence set system. The majority
-of basic definitions and properties proved in this theory are based on Stinson \cite{stinsonCombinatorialDesignsConstructions2004}
-and Colbourn \cite{colbournHandbookCombinatorialDesigns2007}.\<close>
+of basic definitions and properties proved in this theory are based on Stinson \<^cite>\<open>"stinsonCombinatorialDesignsConstructions2004"\<close>
+and Colbourn \<^cite>\<open>"colbournHandbookCombinatorialDesigns2007"\<close>.\<close>
 
 theory Incidence_Matrices imports "Design_Extras" Matrix_Vector_Extras "List-Index.List_Index"
  "Design_Theory.Design_Isomorphisms"
@@ -58,7 +58,7 @@ subsection \<open> Incidence Matrices \<close>
 text \<open> A function which takes a list of points, and list of sets of points, and returns 
 a $v \times b$ 0-1 matrix $M$, where $v$ is the number of points, and $b$ the number of sets, such 
 that there is a 1 in the i, j position if and only if point i is in block j. The matrix has 
-type @{typ "('b :: ring_1) mat"} to allow for operations commonly used on matrices \cite{stinsonCombinatorialDesignsConstructions2004}\<close>
+type @{typ "('b :: ring_1) mat"} to allow for operations commonly used on matrices \<^cite>\<open>"stinsonCombinatorialDesignsConstructions2004"\<close>\<close>
 
 definition inc_mat_of :: "'a list \<Rightarrow> 'a set list \<Rightarrow> ('b :: {ring_1}) mat" where
 "inc_mat_of Vs Bs \<equiv> mat (length Vs) (length Bs) (\<lambda> (i,j) . if (Vs ! i) \<in> (Bs ! j) then 1 else 0)"
@@ -1646,7 +1646,7 @@ sublocale ordered_regular_pairwise_balance \<subseteq> ordered_constant_rep
 context ordered_regular_pairwise_balance
 begin
 
-text \<open> Stinson's Theorem 1.15. Stinson \cite{stinsonCombinatorialDesignsConstructions2004} 
+text \<open> Stinson's Theorem 1.15. Stinson \<^cite>\<open>"stinsonCombinatorialDesignsConstructions2004"\<close> 
 gives an iff condition for incidence matrices of regular pairwise 
 balanced designs. The other direction is proven in the @{term "zero_one_matrix"} context \<close>
 lemma rpbd_incidence_matrix_cond: "N * (N\<^sup>T) = \<Lambda> \<cdot>\<^sub>m (J\<^sub>m \<v>) + (\<r> - \<Lambda>) \<cdot>\<^sub>m (1\<^sub>m \<v>)"
@@ -1781,7 +1781,7 @@ end
 
 subsection \<open> Zero One Matrix Incidence System Existence \<close>
 text \<open>We prove 0-1 matrices with certain properties imply the existence of an incidence system
-with particular properties. This leads to Stinson's theorem in the other direction \cite{stinsonCombinatorialDesignsConstructions2004} \<close>
+with particular properties. This leads to Stinson's theorem in the other direction \<^cite>\<open>"stinsonCombinatorialDesignsConstructions2004"\<close> \<close>
 
 context zero_one_matrix
 begin

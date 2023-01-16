@@ -4,7 +4,7 @@
 
 subsection \<open>Extending the input length of a PRF using a universal hash function\<close>
 
-text \<open> This example is taken from \cite[\S 4.2]{Shoup2004IACR}.\<close>
+text \<open> This example is taken from \<^cite>\<open>\<open>\S 4.2\<close> in "Shoup2004IACR"\<close>.\<close>
 
 theory PRF_UHF imports
   CryptHOL.GPV_Bisim

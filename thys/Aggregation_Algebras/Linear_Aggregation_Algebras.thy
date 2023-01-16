@@ -6,7 +6,7 @@
 section \<open>Algebras for Aggregation and Minimisation with a Linear Order\<close>
 
 text \<open>
-This theory gives several classes of instances of linear aggregation lattices as described in \cite{Guttmann2018a}.
+This theory gives several classes of instances of linear aggregation lattices as described in \<^cite>\<open>"Guttmann2018a"\<close>.
 Each of these instances can be used as edge weights and the resulting graphs will form s-algebras and m-algebras as shown in a separate theory.
 \<close>
 

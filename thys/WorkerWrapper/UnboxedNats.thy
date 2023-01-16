@@ -16,7 +16,7 @@ begin
 section\<open>Unboxing types.\<close>
 
 text\<open>The original application of the worker/wrapper transformation
-was the unboxing of flat types by \citet{SPJ-JL:1991}. We can model
+was the unboxing of flat types by \<^citet>\<open>"SPJ-JL:1991"\<close>. We can model
 the boxed and unboxed types as (respectively) pointed and unpointed
 domains in HOLCF. Concretely @{typ "UNat"} denotes the discrete domain
 of naturals, @{typ "UNat\<^sub>\<bottom>"} the lifted (flat and pointed) variant, and
@@ -53,7 +53,7 @@ lemma fac_fac_body_eq: "fac = fix\<cdot>fac_body"
 
 text\<open>Wrap / unwrap functions. Note the explicit lifting of the
 co-domain. For some reason the published version of
-\citet{GillHutton:2009} does not discuss this point: if we're going to
+\<^citet>\<open>"GillHutton:2009"\<close> does not discuss this point: if we're going to
 handle recursive functions, we need a bottom.
 
 @{term "unbox"} simply removes the tag, yielding a possibly-divergent

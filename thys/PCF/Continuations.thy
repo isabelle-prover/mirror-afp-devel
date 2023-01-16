@@ -15,14 +15,14 @@ text\<open>
 \label{sec:continuations}
 
 This is a fairly literal version of
-\citet{DBLP:conf/icalp/Reynolds74}, adapted to untyped PCF. A more
+\<^citet>\<open>"DBLP:conf/icalp/Reynolds74"\<close>, adapted to untyped PCF. A more
 abstract account has been given by
-\citet{DBLP:journals/tcs/Filinski07} in terms of a monadic meta
+\<^citet>\<open>"DBLP:journals/tcs/Filinski07"\<close> in terms of a monadic meta
 language, which is difficult to model in Isabelle (but see
-\citet{Huffman:MonadTransformers:2012}).
+\<^citet>\<open>"Huffman:MonadTransformers:2012"\<close>).
 
 We begin by giving PCF a continuation semantics following the modern
-account of \citet{wadler92:_essence_of_funct_progr}.  We use the
+account of \<^citet>\<open>"wadler92:_essence_of_funct_progr"\<close>.  We use the
 symmetric function space \<open>('o ValK, 'o) K \<rightarrow> ('o ValK, 'o) K\<close>
 as our language includes call-by-name.
 
@@ -158,8 +158,8 @@ locale at_least_two_elements =
 
 text\<open>
 
-Following \citet{DBLP:conf/icalp/Reynolds74} and \citet[Remark
-47]{DBLP:journals/tcs/Filinski07} we use the following continuation:
+Following \<^citet>\<open>"DBLP:conf/icalp/Reynolds74"\<close> and \<^citet>\<open>\<open>Remark
+47\<close> in "DBLP:journals/tcs/Filinski07"\<close> we use the following continuation:
 
 \<close>
 
@@ -228,10 +228,10 @@ subsection\<open>Logical relation\<close>
 
 text\<open>
 
-We follow \citet{DBLP:conf/icalp/Reynolds74} by simultaneously
+We follow \<^citet>\<open>"DBLP:conf/icalp/Reynolds74"\<close> by simultaneously
 defining a pair of relations over values and functions. Both are
 bottom-reflecting, in contrast to the situation for computational
-adequacy in \S\ref{sec:compad}.  \citet{DBLP:journals/tcs/Filinski07}
+adequacy in \S\ref{sec:compad}.  \<^citet>\<open>"DBLP:journals/tcs/Filinski07"\<close>
 differs by assuming that values are always defined, and relates values
 and monadic computations.
 
@@ -719,7 +719,7 @@ lemma theta_induct[case_names F, consumes 1]:
 (*>*)
 text\<open>
 
-Theorem 1 from \citet{DBLP:conf/icalp/Reynolds74}.
+Theorem 1 from \<^citet>\<open>"DBLP:conf/icalp/Reynolds74"\<close>.
 
 \<close>
 
@@ -900,7 +900,7 @@ qed
 
 text\<open>
 
-Lemma 1 from \citet{DBLP:conf/icalp/Reynolds74}.
+Lemma 1 from \<^citet>\<open>"DBLP:conf/icalp/Reynolds74"\<close>.
 
 \<close>
 
@@ -955,7 +955,7 @@ qed
 (*>*)
 text\<open>
 
-Theorem 2 from \citet{DBLP:conf/icalp/Reynolds74}.
+Theorem 2 from \<^citet>\<open>"DBLP:conf/icalp/Reynolds74"\<close>.
 
 \<close>
 
@@ -966,16 +966,16 @@ end
 
 text\<open>
 
-\citet[Remark~48]{DBLP:journals/tcs/Filinski07} observes that there
+\<^citet>\<open>\<open>Remark~48\<close> in "DBLP:journals/tcs/Filinski07"\<close> observes that there
 will not be a retraction between direct and continuation semantics for
 languages with richer notions of effects.
 
 It should be routine to extend the above approach to the higher-order
-backtracking language of \citet{DBLP:conf/icfp/WandV04}.
+backtracking language of \<^citet>\<open>"DBLP:conf/icfp/WandV04"\<close>.
 
 I wonder if it is possible to construct continuation semantics from
 direct semantics as proposed by
-\citet{DBLP:journals/jacm/SethiT80}. Roughly we might hope to lift a
+\<^citet>\<open>"DBLP:journals/jacm/SethiT80"\<close>. Roughly we might hope to lift a
 retraction between two value domains to a retraction at higher types
 by synthesising a suitable logical relation.
 

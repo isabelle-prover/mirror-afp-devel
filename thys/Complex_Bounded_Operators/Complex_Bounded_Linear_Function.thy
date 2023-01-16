@@ -1213,7 +1213,7 @@ lemma adj_uminus: \<open>(-A)* = - (A*)\<close>
   by (simp add: cblinfun.minus_left cinner_adj_left)
 
 lemma cinner_real_hermiteanI:
-  \<comment> \<open>Prop. II.2.12 in @{cite conway2013course}\<close>
+  \<comment> \<open>Prop. II.2.12 in \<^cite>\<open>conway2013course\<close>\<close>
   assumes \<open>\<And>\<psi>. cinner \<psi> (A *\<^sub>V \<psi>) \<in> \<real>\<close>
   shows \<open>A = A*\<close>
 proof -
@@ -3792,13 +3792,13 @@ qed
 subsection \<open>Riesz-representation theorem\<close>
 
 theorem riesz_frechet_representation_cblinfun_existence:
-  \<comment> \<open>Theorem 3.4 in @{cite conway2013course}\<close>
+  \<comment> \<open>Theorem 3.4 in \<^cite>\<open>conway2013course\<close>\<close>
   fixes f::\<open>'a::chilbert_space \<Rightarrow>\<^sub>C\<^sub>L complex\<close>
   shows \<open>\<exists>t. \<forall>x.  f *\<^sub>V x = (t \<bullet>\<^sub>C x)\<close>
   apply transfer by (rule riesz_frechet_representation_existence)
 
 lemma riesz_frechet_representation_cblinfun_unique:
-  \<comment> \<open>Theorem 3.4 in @{cite conway2013course}\<close>
+  \<comment> \<open>Theorem 3.4 in \<^cite>\<open>conway2013course\<close>\<close>
   fixes f::\<open>'a::complex_inner \<Rightarrow>\<^sub>C\<^sub>L complex\<close>
   assumes \<open>\<And>x. f *\<^sub>V x = (t \<bullet>\<^sub>C x)\<close>
   assumes \<open>\<And>x. f *\<^sub>V x = (u \<bullet>\<^sub>C x)\<close>
@@ -4393,7 +4393,7 @@ text \<open>Some of the theorems here logically belong into \<^theory>\<open>Com
   but the proof uses some concepts from the present theory.\<close>
 
 lemma all_ortho_bases_same_card:
-  \<comment> \<open>Follows @{cite conway2013course}, Proposition 4.14\<close>
+  \<comment> \<open>Follows \<^cite>\<open>conway2013course\<close>, Proposition 4.14\<close>
   fixes E F :: \<open>'a::chilbert_space set\<close>
   assumes \<open>is_ortho_set E\<close> \<open>is_ortho_set F\<close> \<open>ccspan E = top\<close> \<open>ccspan F = top\<close>
   shows \<open>\<exists>f. bij_betw f E F\<close>

@@ -124,7 +124,7 @@ abbreviation globally::"\<sigma> \<Rightarrow> \<sigma>" ("\<^bold>G _" 55)
 text\<open>
 The spatial atoms to refer to reservations, claims
 and free space are direct translations of the original
-definitions of MLSL \cite{Hilscher2011} into the Isabelle implementation.
+definitions of MLSL \<^cite>\<open>"Hilscher2011"\<close> into the Isabelle implementation.
 \<close>
 
 abbreviation re:: "cars \<Rightarrow> \<sigma>" ("re'(_')" 70)
@@ -148,7 +148,7 @@ Even though we do not need them for the subsequent proofs of safety,
 we define ways to measure the number of lanes (width) and the
 size of the extension (length) of a view. This allows us 
 to connect the atomic formulas for reservations and claims
-with the atom denoting free space \cite{Linker2015a}.
+with the atom denoting free space \<^cite>\<open>"Linker2015a"\<close>.
 \<close>
 
 abbreviation width_eq::"nat \<Rightarrow> \<sigma>" ("\<^bold>\<omega> = _ " 60)

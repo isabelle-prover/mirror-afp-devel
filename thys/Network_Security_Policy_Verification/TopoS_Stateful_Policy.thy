@@ -5,7 +5,7 @@ begin
 section\<open>Stateful Policy\<close>
 
 
-text\<open>Details described in \cite{diekmann2014esss}.\<close>
+text\<open>Details described in \<^cite>\<open>"diekmann2014esss"\<close>.\<close>
 
 
 text\<open>Algorithm\<close>

@@ -1,6 +1,6 @@
 subsection\<open>Consistency\<close>
 
-text\<open>We follow the proofs by Melvin Fitting~\cite{fitting1990first}.\<close>
+text\<open>We follow the proofs by Melvin Fitting~\<^cite>\<open>"fitting1990first"\<close>.\<close>
 theory Consistency
 imports Sema
 begin
@@ -59,7 +59,7 @@ lemma "pcp {{(\<^bold>\<not> (Atom 1)) \<^bold>\<rightarrow> Atom 2},
    {((\<^bold>\<not> (Atom 1)) \<^bold>\<rightarrow> Atom 2), \<^bold>\<not>(\<^bold>\<not> (Atom 1))},
   {((\<^bold>\<not> (Atom 1)) \<^bold>\<rightarrow> Atom 2), \<^bold>\<not>(\<^bold>\<not> (Atom 1)),  Atom 1}}" by (auto simp add: pcp_def)
 
-text\<open>Fitting uses uniform notation~\cite{smullyan1963unifying} for the definition of @{const pcp}. 
+text\<open>Fitting uses uniform notation~\<^cite>\<open>"smullyan1963unifying"\<close> for the definition of @{const pcp}. 
 We try to mimic this, more to see whether it works than because it is ultimately necessary.\<close>
 (* It does help a bit, occasionally. *)
     

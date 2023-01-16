@@ -8,7 +8,7 @@ begin
 text\<open>
 The code that is presented in this section was originally written 
 by Manuel Eberl and appeared in a post on the mailing list of Isabelle:
-\cite{eberl_syntax_2021}.
+\<^cite>\<open>"eberl_syntax_2021"\<close>.
 The code was ported with minor amendments by the author of this work.
 \<close>
 

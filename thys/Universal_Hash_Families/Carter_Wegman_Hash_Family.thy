@@ -8,16 +8,16 @@ begin
 
 text \<open>The Carter-Wegman hash family is a generic method to obtain
 $k$-universal hash families for arbitrary $k$. (There are faster solutions, such as tabulation
-hashing, which are limited to a specific $k$. See for example \cite{thorup2010}.)
+hashing, which are limited to a specific $k$. See for example \<^cite>\<open>"thorup2010"\<close>.)
 
-The construction was described by Wegman and Carter~\cite{wegman1981}, it is a hash
+The construction was described by Wegman and Carter~\<^cite>\<open>"wegman1981"\<close>, it is a hash
 family between the elements of a finite field and works by choosing randomly a polynomial
 over the field with degree less than $k$. The hash function is the evaluation of a such a
 polynomial.
 
 Using the property that the fraction of polynomials interpolating a given set of $s \leq k$
 points is @{term "1/(card (carrier R)^s)"}, which is shown in
-\cite{Interpolation_Polynomials_HOL_Algebra-AFP}, it is possible to obtain both that
+\<^cite>\<open>"Interpolation_Polynomials_HOL_Algebra-AFP"\<close>, it is possible to obtain both that
 the hash functions are $k$-wise independent and uniformly distributed.
 
 In the following two locales are introduced, the main reason for both is to make the statements

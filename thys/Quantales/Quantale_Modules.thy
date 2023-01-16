@@ -13,7 +13,7 @@ begin
 subsection \<open>Quantale Modules\<close>
   
 text \<open>Quantale modules are extensions of semigroup actions in that a quantale acts on a complete lattice.
-These have been investigated by Abramsky and Vickers~\cite{AbramskyV93} and others, predominantly in the context
+These have been investigated by Abramsky and Vickers~\<^cite>\<open>"AbramskyV93"\<close> and others, predominantly in the context
 of pointfree topology.\<close>
   
 locale unital_quantale_module = 

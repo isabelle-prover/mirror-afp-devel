@@ -420,7 +420,7 @@ recursion in the basic theory of cofinality; indeed, only one use is needed.
 In the setting of Isabelle/ZF, this is convenient since the machinery of
 recursion is pretty clumsy. On the downside, this way of presenting things 
 results in a longer proof of the factorization lemma. This approach was
-taken by the author in the notes \cite{apunte_st} for an introductory course
+taken by the author in the notes \<^cite>\<open>"apunte_st"\<close> for an introductory course
 in Set Theory.
 
 To organize the use of the hypotheses of the factorization lemma,

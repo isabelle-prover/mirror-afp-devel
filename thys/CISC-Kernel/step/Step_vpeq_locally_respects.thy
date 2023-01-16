@@ -4,7 +4,7 @@ theory Step_vpeq_locally_respects
   imports Step Step_invariants Step_vpeq
 begin
 
-text \<open>The notion of locally respects is common usage. We augment it by assuming that the @{term atomic_step_invariant} holds (see~\cite{Verbeek2013}).\<close>
+text \<open>The notion of locally respects is common usage. We augment it by assuming that the @{term atomic_step_invariant} holds (see~\<^cite>\<open>"Verbeek2013"\<close>).\<close>
 
 subsubsection \<open>Locally respects of atomic step functions\<close>
 lemma ipc_respects_policy:

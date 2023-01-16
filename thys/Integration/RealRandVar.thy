@@ -8,7 +8,7 @@ text \<open>While most of the above material was modeled after Hurd's work
   (but still proved independently),
   the original content basically starts here\footnote{There are two
   main reasons why the above has not been imported using Sebastian
-Skalberg's import tool \cite{Skalberg}. Firstly, there are
+Skalberg's import tool \<^cite>\<open>"Skalberg"\<close>. Firstly, there are
   inconveniences caused by different conventions in HOL, meaning
   predicates instead of sets foremost, that make the consistent use of
   such basic definitions impractical. What is more, the import tool
@@ -25,7 +25,7 @@ Skalberg's import tool \cite{Skalberg}. Firstly, there are
   name, ``measurable functions'', is even less precise.
 
   A lot of the theory in this and the preceding section has also been
-  formalized within the Mizar project \cite{mesfunc1,mesfunc2}. The
+  formalized within the Mizar project \<^cite>\<open>"mesfunc1" and "mesfunc2"\<close>. The
   abstract of the second source hints that it was also planned as a
   stepping stone for Lebesgue integration, though further results in
   this line could not be found. The main difference lies in the use of
@@ -34,7 +34,7 @@ Skalberg's import tool \cite{Skalberg}. Firstly, there are
   to allow infinite values, but ``($\ldots$) we felt that the complications
   that this generated ($\ldots$) more than canceled out the gain in
   uniformity ($\ldots$), and that a simpler theory resulted from sticking to
-  the standard real numbers.'' \cite[p.~32f]{hurd2002}. Hurd also advocates
+  the standard real numbers.'' \<^cite>\<open>\<open>p.~32f\<close> in "hurd2002"\<close>. Hurd also advocates
   going directly to the hyper-reals, should the need for infinite
   measures arise. I agree, nevertheless sticking to his example for the reasons
   mentioned in the prologue.\<close>
@@ -68,9 +68,9 @@ text \<open>As explained in the first paragraph, the preceding
   measurable. Generalization for $\<open>\<real>\<close>^n$ brings another unified way to
   prove all the measurability theorems in this theory plus, for instance,
   measurability of the trigonometric and exponential functions. This approach is detailed in another influential textbook
-  by Billingsley \cite{Billingsley86}. It requires some concepts of
+  by Billingsley \<^cite>\<open>"Billingsley86"\<close>. It requires some concepts of
   topologic spaces, which made the following elementary
-  course, based on Bauer's excellent book \cite{Bauer}, seem more feasible.
+  course, based on Bauer's excellent book \<^cite>\<open>"Bauer"\<close>, seem more feasible.
    
   Two more definitions go next. The image measure, law, or
   distribution --- the last term being specific to probability --- of a  
@@ -422,7 +422,7 @@ text \<open>For the general case of addition, we need one more set to be
   Of course, the rationals come to
   mind. They were not available in Isabelle/HOL\footnote{At least not
   as a subset of the reals, to the definition of which a type of
-  positive rational numbers contributed \cite{Fleuriot:2000:MNR}.}, so
+  positive rational numbers contributed \<^cite>\<open>"Fleuriot:2000:MNR"\<close>.}, so
   I built a theory with the necessary properties on my own. [Meanwhile
   Isabelle has proper rationals and SR's development of the rationals has been
   moved to and merged with Isabelle's rationals.\<close>

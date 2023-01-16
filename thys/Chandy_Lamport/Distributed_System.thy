@@ -2,7 +2,7 @@ section \<open>Modelling distributed systems\<close>
 
 text \<open>We assume familiarity with Chandy and Lamport's
 paper \emph{Distributed Snapshots: Determining Global States of
-Distributed Systems}~\cite{chandy}.\<close>
+Distributed Systems}~\<^cite>\<open>"chandy"\<close>.\<close>
 
 theory Distributed_System
 

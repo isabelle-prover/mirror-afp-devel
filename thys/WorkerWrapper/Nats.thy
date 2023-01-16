@@ -24,7 +24,7 @@ fine-grained as this development.
 
 Note: we default to just CPOs (not pointed CPOs) in this theory. We
 adopt bothg the Isabelle syntax for overloaded arithmetic and the
-notation for unboxed operators of \citet{SPJ-JL:1991}.\<close>
+notation for unboxed operators of \<^citet>\<open>"SPJ-JL:1991"\<close>.\<close>
 
 default_sort predomain
 
@@ -216,7 +216,7 @@ lemma bbind_leftID'[simp]: "unbox\<cdot>a >>= box = a" by (cases a, simp_all add
 (*<*)
 text \<open>
 
-The optimisations of \citet{SPJ-JL:1991}.
+The optimisations of \<^citet>\<open>"SPJ-JL:1991"\<close>.
 
 p11: Repeated unboxing of the same value can be done once (roughly:
 store the value in a register). Their story is more general.

@@ -77,7 +77,7 @@ subsection \<open>Example from \isafor/\ceta\<close>
 text \<open>An argument filter is a mapping @{term \<pi>} from n-ary function symbols into 
 lists of positions, i.e., where each position is between 0 and n-1. In \isafor,
 (Isabelle's Formalization of Rewriting) and \ceta 
-\cite{DBLP:conf/tphol/ThiemannS09}, the corresponding certifier for 
+\<^cite>\<open>"DBLP:conf/tphol/ThiemannS09"\<close>, the corresponding certifier for 
 term rewriting related properties,
 this is modelled as follows, where a partial argument filter in a map is extended to a full one 
 by means of an default filter.\<close>

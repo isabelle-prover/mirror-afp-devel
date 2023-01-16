@@ -8,7 +8,7 @@ theory Fast_Dice_Roll imports
   While_SPMF
 begin
 
-text \<open>This formalisation follows the ideas by J\'er\'emie Lumbroso \cite{Lumbroso2013arxiv}.\<close>
+text \<open>This formalisation follows the ideas by J\'er\'emie Lumbroso \<^cite>\<open>"Lumbroso2013arxiv"\<close>.\<close>
 
 lemma sample_bits_fusion:
   fixes v :: nat

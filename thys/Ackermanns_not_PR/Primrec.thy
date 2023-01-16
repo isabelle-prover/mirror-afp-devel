@@ -1,7 +1,7 @@
 section \<open>Ackermann's Function and the PR Functions\<close>
 
 text \<open>
-  This proof has been adopted from a development by Nora Szasz \cite{szasz93}.
+  This proof has been adopted from a development by Nora Szasz \<^cite>\<open>"szasz93"\<close>.
   \medskip
 \<close>
 

@@ -4,7 +4,7 @@ theory Approx_BP_Hoare
   imports Complex_Main "HOL-Hoare.Hoare_Logic" "HOL-Library.Disjoint_Sets"
 begin
 
-text \<open>The algorithm and proofs are based on the work by Berghammer and Reuter @{cite BerghammerR03}.\<close>
+text \<open>The algorithm and proofs are based on the work by Berghammer and Reuter \<^cite>\<open>BerghammerR03\<close>.\<close>
 
 subsection \<open>Formalization of a Correct Bin Packing\<close>
 
@@ -60,7 +60,7 @@ lemma bpI:
   using assms unfolding bp_def partition_on_def by blast
 
 text \<open>Although we assume the \<open>S\<close> and \<open>L\<close> sets as given, manually obtaining them from \<open>U\<close> is trivial
-      and can be achieved in linear time. Proposed by the article @{cite "BerghammerR03"}.\<close>
+      and can be achieved in linear time. Proposed by the article \<^cite>\<open>"BerghammerR03"\<close>.\<close>
 lemma S_L_set_generation:
 "VARS S L W u
   {True}
@@ -81,7 +81,7 @@ subsection \<open>The Proposed Approximation Algorithm\<close>
 subsubsection \<open>Functional Correctness\<close>
 
 text \<open>According to the article, \<open>inv\<^sub>1\<close> holds if \<open>P\<^sub>1 \<union> wrap B\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2 \<union> {{v} |v. v \<in> V}\<close>
-      is a correct solution for the bin packing problem @{cite BerghammerR03}. However, various
+      is a correct solution for the bin packing problem \<^cite>\<open>BerghammerR03\<close>. However, various
       assumptions made in the article seem to suggest that more information is demanded from this
       invariant and, indeed, mere correctness (as defined in @{thm [source] bp_def}) does not appear to suffice.
       To amend this, four additional conjuncts have been added to this invariant, whose necessity
@@ -527,7 +527,7 @@ next
       as this need not be the case if \<open>P\<^sub>1\<close> and \<open>P\<^sub>2 \<union> wrap B\<^sub>2\<close> happened to be equal.\<close>
   have DISJNT: "P\<^sub>1 \<inter> (P\<^sub>2 \<union> wrap B\<^sub>2) = {}" using invrules(5) by blast
 
-  \<comment> \<open>This part of the proof is based on the proof on page 72 of the article @{cite BerghammerR03}.\<close>
+  \<comment> \<open>This part of the proof is based on the proof on page 72 of the article \<^cite>\<open>BerghammerR03\<close>.\<close>
   have "c * card P\<^sub>1 = (\<Sum>B \<in> P\<^sub>1. c)" by simp
   also have "... < (\<Sum>B \<in> P\<^sub>1. W B + w (f B))"
     using f_def(2) sum_strict_mono[OF FINITE(1) False] by fastforce
@@ -581,7 +581,7 @@ proof -
     then show ?thesis using wrap_card[of B\<^sub>2] by linarith
   qed simp
 
-  \<comment> \<open>This part of the proof is based on the proof on page 73 of the article @{cite BerghammerR03}.\<close>
+  \<comment> \<open>This part of the proof is based on the proof on page 73 of the article \<^cite>\<open>BerghammerR03\<close>.\<close>
   from assms(2) have "2 * card P\<^sub>2 + 2 * card (wrap B\<^sub>2) \<le> card (\<Union>P\<^sub>2) + card (wrap B\<^sub>2) + 1"
     using wrap_card[of B\<^sub>2] by linarith
   then have "2 * (card P\<^sub>2 + card (wrap B\<^sub>2)) \<le> card (\<Union>P\<^sub>2) + card B\<^sub>2 + 1"
@@ -624,7 +624,7 @@ lemma inv\<^sub>2I:
 text \<open>If \<open>P\<close> is a correct solution of the bin packing problem, \<open>inv\<^sub>2\<close> holds for the partial solution,
       and there are no more small objects left to be distributed, then the amount of bins of the partial solution
       is no larger than \<open>3 / 2\<close> of the amount of bins in \<open>P\<close>. This proof strongly follows the proof in
-      \<open>Theorem 4.1\<close> of the article @{cite BerghammerR03}.\<close>
+      \<open>Theorem 4.1\<close> of the article \<^cite>\<open>BerghammerR03\<close>.\<close>
 lemma bin_packing_lower_bound_card:
   assumes "V \<inter> S = {}" "inv\<^sub>2 P\<^sub>1 P\<^sub>2 B\<^sub>1 B\<^sub>2 V" "bp P"
   shows "card (P\<^sub>1 \<union> wrap B\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2 \<union> {{v} |v. v \<in> V}) \<le> 3 / 2 * card P"
@@ -854,7 +854,7 @@ proof -
   from inv\<^sub>3I[OF this] show ?thesis using assms(3) by blast
 qed
 
-text \<open>The bin packing algorithm as it is proposed in the article @{cite BerghammerR03}.
+text \<open>The bin packing algorithm as it is proposed in the article \<^cite>\<open>BerghammerR03\<close>.
       \<open>P\<close> will not only be a correct solution of the bin packing problem, but the amount of bins
       will be a lower bound for \<open>3 / 2\<close> of the amount of bins of any correct solution \<open>Q\<close>, and thus
       guarantee an approximation factor of \<open>3 / 2\<close> for the optimum.\<close>
@@ -906,11 +906,11 @@ end (* BinPacking *)
 
 subsection \<open>The Full Linear Time Version of the Proposed Algorithm\<close>
 
-text \<open>Finally, we prove the Algorithm proposed on page 78 of the article @{cite BerghammerR03}.
+text \<open>Finally, we prove the Algorithm proposed on page 78 of the article \<^cite>\<open>BerghammerR03\<close>.
       This version generates the S and L sets beforehand and uses them directly to calculate the solution,
       thus removing the need for intersection operations, and ensuring linear time if we can
       perform \<open>insertion, removal, and selection of an element, the union of two sets,
-      and the emptiness test in constant time\<close> @{cite BerghammerR03}.\<close>
+      and the emptiness test in constant time\<close> \<^cite>\<open>BerghammerR03\<close>.\<close>
 
 locale BinPacking_Complete =
   fixes U :: "'a set" \<comment> \<open>A finite, non-empty set of objects\<close>
@@ -1315,7 +1315,7 @@ next
   finally have *: "(\<Sum>B \<in> P\<^sub>1 \<union> P\<^sub>2 \<union> wrap B\<^sub>2. W B) \<le> W U" .
   have DISJNT: "P\<^sub>1 \<inter> (P\<^sub>2 \<union> wrap B\<^sub>2) = {}" using invrules(5) by blast
 
-  \<comment> \<open>This part of the proof is based on the proof on page 72 of the article @{cite BerghammerR03}.\<close>
+  \<comment> \<open>This part of the proof is based on the proof on page 72 of the article \<^cite>\<open>BerghammerR03\<close>.\<close>
   have "c * card P\<^sub>1 = (\<Sum>B \<in> P\<^sub>1. c)" by simp
   also have "... < (\<Sum>B \<in> P\<^sub>1. W B + w (f B))"
     using f_def(2) sum_strict_mono[OF FINITE(1) False] by fastforce
@@ -1363,7 +1363,7 @@ proof -
     then show ?thesis using wrap_card[of B\<^sub>2] by linarith
   qed simp
 
-  \<comment> \<open>This part of the proof is based on the proof on page 73 of the article @{cite BerghammerR03}.\<close>
+  \<comment> \<open>This part of the proof is based on the proof on page 73 of the article \<^cite>\<open>BerghammerR03\<close>.\<close>
   from assms(2) have "2 * card P\<^sub>2 + 2 * card (wrap B\<^sub>2) \<le> card (\<Union>P\<^sub>2) + card (wrap B\<^sub>2) + 1"
     using wrap_card[of B\<^sub>2] by linarith
   then have "2 * (card P\<^sub>2 + card (wrap B\<^sub>2)) \<le> card (\<Union>P\<^sub>2) + card B\<^sub>2 + 1"
@@ -1623,7 +1623,7 @@ proof -
   from inv\<^sub>3I[OF this] show ?thesis using assms(3) invrules(5) by blast
 qed
 
-text \<open>The bin packing algorithm as it is proposed on page 78 of the article @{cite BerghammerR03}.
+text \<open>The bin packing algorithm as it is proposed on page 78 of the article \<^cite>\<open>BerghammerR03\<close>.
       \<open>P\<close> will not only be a correct solution of the bin packing problem, but the amount of bins
       will be a lower bound for \<open>3 / 2\<close> of the amount of bins of any correct solution \<open>Q\<close>, and thus
       guarantee an approximation factor of \<open>3 / 2\<close> for the optimum.\<close>

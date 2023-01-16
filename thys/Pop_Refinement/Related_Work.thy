@@ -7,7 +7,7 @@ begin
 text \<open>\label{chap:related}\<close>
 
 text \<open>In existing approaches to stepwise refinement
-(e.g.~\cite{BBook,ZReference,SystematicVDM,RefinementCalculus}),
+(e.g.~\<^cite>\<open>"BBook" and "ZReference" and "SystematicVDM" and "RefinementCalculus"\<close>),
 specifications express requirements less directly than pop-refinement:
 a specification implicitly characterizes its possible implementations
 as the set of programs that can be derived from the specification

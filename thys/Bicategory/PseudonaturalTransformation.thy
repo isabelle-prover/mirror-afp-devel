@@ -40,9 +40,9 @@ begin
     which is ``op-lax'' and this variation extends as well to the special case of pseudofunctors,
     though in that case it does not result in any essential difference in the notion,
     due to the assumed invertibility.  We have chosen the direction that agrees with
-    Leinster \cite{leinster-basic-bicategories}, and with the ``nLab'' article
-    \cite{nlab-lax-natural-transformation} on lax natural transformations, but note that the
-    ``nLab'' article \cite{nlab-pseudonatural-transformation} on pseudonatural transformations
+    Leinster \<^cite>\<open>"leinster-basic-bicategories"\<close>, and with the ``nLab'' article
+    \<^cite>\<open>"nlab-lax-natural-transformation"\<close> on lax natural transformations, but note that the
+    ``nLab'' article \<^cite>\<open>"nlab-pseudonatural-transformation"\<close> on pseudonatural transformations
     seems to make the opposite choice.
   \<close>
 

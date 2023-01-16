@@ -159,7 +159,7 @@ lemmas eval_\<MM> = primes_M_def[unfolded eval_prime_sum_upto]
 subsection \<open>Basic properties\<close>
 
 text \<open>
-  The proofs in this section are mostly taken from Apostol~\cite{apostol1976analytic}.
+  The proofs in this section are mostly taken from Apostol~\<^cite>\<open>"apostol1976analytic"\<close>.
 \<close>
 
 lemma measurable_\<pi> [measurable]: "\<pi> \<in> borel \<rightarrow>\<^sub>M borel"
@@ -754,7 +754,7 @@ lemma le_numeral_iff: "m \<le> numeral n \<longleftrightarrow> m = numeral n \<o
 
 text \<open>
   The following nice proof for the upper bound $\theta(x) \leq \ln 4 \cdot x$ is taken
-  from Otto Forster's lecture notes on Analytic Number Theory~\cite{forsteranalytic}.
+  from Otto Forster's lecture notes on Analytic Number Theory~\<^cite>\<open>"forsteranalytic"\<close>.
 \<close>
 lemma prod_primes_upto_less:
   defines "F \<equiv> (\<lambda>n. (\<Prod>{p::nat. prime p \<and> p \<le> n}))"

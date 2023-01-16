@@ -73,7 +73,7 @@ lemma isStaticLoc_simps [simp]:
 text \<open>The function \<open>ref\<close> yields the
 object or array containing the location that is passed
 as argument (see the function \<open>obj\<close> in 
-\cite[p. 43 f.]{Poetzsch-Heffter97specification}).
+\<^cite>\<open>\<open>p. 43 f.\<close> in "Poetzsch-Heffter97specification"\<close>).
 Note that for static locations
 the result is \<open>nullV\<close> since static locations 
 are not associated to any object.

@@ -6,7 +6,7 @@
 section \<open>Stone Construction\<close>
 
 text \<open>
-This theory proves the uniqueness theorem for the triple representation of Stone algebras and the construction theorem of Stone algebras \cite{ChenGraetzer1969,Katrinak1973}.
+This theory proves the uniqueness theorem for the triple representation of Stone algebras and the construction theorem of Stone algebras \<^cite>\<open>"ChenGraetzer1969" and "Katrinak1973"\<close>.
 Every Stone algebra $S$ has an associated triple consisting of
 \begin{itemize}
 \item the set of regular elements $B(S)$ of $S$,
@@ -21,7 +21,7 @@ We first show that
 \item $\varphi(S)$ is a bounded lattice homomorphism.
 \end{itemize}
 Next, from a triple $T = (B,D,\varphi)$ such that $B$ is a Boolean algebra, $D$ is a distributive lattice with a greatest element and $\varphi : B \to F(D)$ is a bounded lattice homomorphism, we construct a Stone algebra $S(T)$.
-The elements of $S(T)$ are pairs taken from $B \times F(D)$ following the construction of \cite{Katrinak1973}.
+The elements of $S(T)$ are pairs taken from $B \times F(D)$ following the construction of \<^cite>\<open>"Katrinak1973"\<close>.
 We need to represent $S(T)$ as a type to be able to instantiate the Stone algebra class.
 Because the pairs must satisfy a condition depending on $\varphi$, this would require dependent types.
 Since Isabelle/HOL does not have dependent types, we use a function lifting instead.
@@ -1664,7 +1664,7 @@ subsection \<open>Triple Isomorphism\<close>
 
 text \<open>
 In this section we prove that the triple of the Stone algebra of a triple is isomorphic to the original triple.
-The notion of isomorphism for triples is described in \cite{ChenGraetzer1969}.
+The notion of isomorphism for triples is described in \<^cite>\<open>"ChenGraetzer1969"\<close>.
 It amounts to an isomorphism of Boolean algebras, an isomorphism of distributive lattices with a greatest element, and a commuting diagram involving the structure maps.
 \<close>
 

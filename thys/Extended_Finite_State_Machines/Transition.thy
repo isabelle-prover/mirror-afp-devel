@@ -1,11 +1,11 @@
 chapter\<open>Models\<close>
-text\<open>In this chapter, we present our formalisation of EFSMs from \cite{foster2018}. We first
+text\<open>In this chapter, we present our formalisation of EFSMs from \<^cite>\<open>"foster2018"\<close>. We first
 define transitions, before defining EFSMs as finite sets of transitions between states. Finally,
 we provide a framework of function definitions and key lemmas such that LTL properties over EFSMs
 can be more easily specified and proven.\<close>
 
 section\<open>Transitions\<close>
-text\<open>Here we define the transitions which make up EFSMs. As per \cite{foster2018}, each transition
+text\<open>Here we define the transitions which make up EFSMs. As per \<^cite>\<open>"foster2018"\<close>, each transition
 has a label and an arity and, optionally, guards, outputs, and updates. To implement this, we use
 the record type such that each component of the transition can be accessed.\<close>
 

@@ -15,7 +15,7 @@ certain interrupt points are split
 into several atomic steps.
 A communication interface of events and IPC is less
 ``trivial'' than it may seem it at a first glance, for example the 
-L4 microkernel API {\em only} provided IPC as communication primitive~\cite{Liedtke1995}. 
+L4 microkernel API {\em only} provided IPC as communication primitive~\<^cite>\<open>"Liedtke1995"\<close>. 
 In particular, the concrete actions illustrate how an application
 of the CISK framework can be used to separate policy enforcement from other 
 computations unrelated to policy enforcement.

@@ -45,7 +45,7 @@ text \<open>
   Section~\ref{sec:userguide.structure} explains the concepts of the Isabelle Collections Framework in more detail.
   Section~\ref{sec:userguide.ext} provides information on extending the framework along with detailed examples, and 
   Section~\ref{sec:userguide.design} contains a discussion on the design of this framework.
-  There is also a paper \cite{LammichLochbihler2010ITP} on the design of the Isabelle Collections Framework available.
+  There is also a paper \<^cite>\<open>"LammichLochbihler2010ITP"\<close> on the design of the Isabelle Collections Framework available.
 \<close>
 
 subsection "Introductory Example"
@@ -259,7 +259,7 @@ text \<open>
       Collections Framework. The most related concept are abstract
       collection interfaces, that provide some default algorithms,
       e.g. {\em java.util.AbstractSet}.  The concept of {\em Algorithm} in
-      the C++ Standard Template Library \cite{C++STL} matches the concept
+      the C++ Standard Template Library \<^cite>\<open>"C++STL"\<close> matches the concept
       of Generic Algorithm quite well.
 
 

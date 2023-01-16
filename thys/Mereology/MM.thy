@@ -7,18 +7,18 @@ begin
 (*>*)
 
 text \<open> Minimal mereology adds to ground mereology the axiom of weak supplementation.\footnote{
-See @{cite "varzi_parts_1996"} and @{cite "casati_parts_1999"} p. 39. The name \emph{minimal mereology}
-reflects the, controversial, idea that weak supplementation is analytic. See, for example, @{cite "simons_parts:_1987"}
-p. 116, @{cite "varzi_extensionality_2008"} p. 110-1, and @{cite "cotnoir_is_2018"}. For general
-discussion of weak supplementation see, for example @{cite "smith_mereology_2009"} pp. 507 and 
-@{cite "donnelly_using_2011"}.} \<close>
+See \<^cite>\<open>"varzi_parts_1996"\<close> and \<^cite>\<open>"casati_parts_1999"\<close> p. 39. The name \emph{minimal mereology}
+reflects the, controversial, idea that weak supplementation is analytic. See, for example, \<^cite>\<open>"simons_parts:_1987"\<close>
+p. 116, \<^cite>\<open>"varzi_extensionality_2008"\<close> p. 110-1, and \<^cite>\<open>"cotnoir_is_2018"\<close>. For general
+discussion of weak supplementation see, for example \<^cite>\<open>"smith_mereology_2009"\<close> pp. 507 and 
+\<^cite>\<open>"donnelly_using_2011"\<close>.} \<close>
 
 locale MM = M +
   assumes weak_supplementation: "PP y x \<Longrightarrow> (\<exists> z. P z x \<and> \<not> O z y)"
 
 text \<open> The rest of this section considers three alternative axiomatizations of minimal mereology. The
 first alternative axiomatization replaces improper with proper parthood in the consequent of weak
-supplementation.\footnote{See @{cite "simons_parts:_1987"} p. 28.} \<close>
+supplementation.\footnote{See \<^cite>\<open>"simons_parts:_1987"\<close> p. 28.} \<close>
 
 locale MM1 = M +
   assumes proper_weak_supplementation: 
@@ -69,8 +69,8 @@ proof
   qed
 qed
 
-text \<open> The following two corollaries are sometimes found in the literature.\footnote{See @{cite "simons_parts:_1987"} p. 27. For the names \emph{weak company} 
-and \emph{strong company} see @{cite "cotnoir_non-wellfounded_2012"} p. 192-3 and @{cite "varzi_mereology_2016"}.} \<close>
+text \<open> The following two corollaries are sometimes found in the literature.\footnote{See \<^cite>\<open>"simons_parts:_1987"\<close> p. 27. For the names \emph{weak company} 
+and \emph{strong company} see \<^cite>\<open>"cotnoir_non-wellfounded_2012"\<close> p. 192-3 and \<^cite>\<open>"varzi_mereology_2016"\<close>.} \<close>
 
 context MM
 begin
@@ -103,8 +103,8 @@ end
 
 text \<open> If weak supplementation is formulated in terms of nonidentical parthood, then the antisymmetry 
 of parthood is redundant, and we have the second alternative axiomatization of minimal mereology.\footnote{
-See @{cite "cotnoir_antisymmetry_2010"} p. 399, @{cite "donnelly_using_2011"} p. 232,
-@{cite "cotnoir_non-wellfounded_2012"} p. 193 and @{cite "obojska_remarks_2013"} pp. 235-6.} \<close>
+See \<^cite>\<open>"cotnoir_antisymmetry_2010"\<close> p. 399, \<^cite>\<open>"donnelly_using_2011"\<close> p. 232,
+\<^cite>\<open>"cotnoir_non-wellfounded_2012"\<close> p. 193 and \<^cite>\<open>"obojska_remarks_2013"\<close> pp. 235-6.} \<close>
 
 locale MM2 = PM +
   assumes nip_eq: "PP x y \<longleftrightarrow> P x y \<and> x \<noteq> y"
@@ -144,7 +144,7 @@ qed
 
 text \<open> Likewise, if proper parthood is adopted as primitive, then the asymmetry of proper parthood
 is redundant in the context of weak supplementation, leading to the third alternative
-axiomatization.\footnote{See @{cite "donnelly_using_2011"} p. 232 and @{cite "cotnoir_is_2018"}.} \<close>
+axiomatization.\footnote{See \<^cite>\<open>"donnelly_using_2011"\<close> p. 232 and \<^cite>\<open>"cotnoir_is_2018"\<close>.} \<close>
 
 locale MM3 =
   assumes part_eq: "P x y \<longleftrightarrow> PP x y \<or> x = y"

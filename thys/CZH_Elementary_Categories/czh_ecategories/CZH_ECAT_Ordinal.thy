@@ -13,7 +13,7 @@ subsection\<open>Background\<close>
 text\<open>
 The content of this section is based on the treatment of the ordinal numbers
 from the perspective of category theory as exposed, for example,
-in Chapter I-2 in \cite{mac_lane_categories_2010}.
+in Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 named_theorems cat_ordinal_cs_simps

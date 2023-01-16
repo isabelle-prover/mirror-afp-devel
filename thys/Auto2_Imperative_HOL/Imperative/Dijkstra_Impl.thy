@@ -12,7 +12,7 @@ begin
 text \<open>
   Imperative implementation of Dijkstra's shortest path algorithm. The
   algorithm is also verified by Nordhoff and Lammich in
-  \cite{Dijkstra_Shortest_Path-AFP}.
+  \<^cite>\<open>"Dijkstra_Shortest_Path-AFP"\<close>.
 \<close>
 
 datatype dijkstra_state = Dijkstra_State (est_a: "nat array") (heap_pq: "nat indexed_pqueue")

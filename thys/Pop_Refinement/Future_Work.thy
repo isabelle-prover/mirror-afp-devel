@@ -31,7 +31,7 @@ using automated transformation techniques like
 term rewriting,
 application of algorithmic templates,
 and term construction by witness finding,
-e.g.\ \cite{SmithMarktoberdorf,SpecwareWebSite}.
+e.g.\ \<^cite>\<open>"SmithMarktoberdorf" and "SpecwareWebSite"\<close>.
 Automated transformations may require
 parameters to be provided and applicability conditions to be proved,
 but should generally save effort
@@ -43,7 +43,7 @@ would be advantageous for pop-refinement.\<close>
 section \<open>Other Kinds of Design Objects\<close>
 text \<open>\label{sec:otherdesign}\<close>
 
-text \<open>It has been suggested~\cite{LambertPrivate}
+text \<open>It has been suggested~\<^cite>\<open>"LambertPrivate"\<close>
 that pop-refinement could be used
 to develop other kinds of design objects than programs,
 e.g.\ protocols, digital circuits, and hybrid systems.

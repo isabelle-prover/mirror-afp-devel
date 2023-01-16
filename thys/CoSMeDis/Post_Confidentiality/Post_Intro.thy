@@ -27,7 +27,7 @@ We will write \<open>AID\<close> instead of \<open>i\<close> (which will be fixe
 and \<open>aid\<close> instead of \<open>j\<close>.}
 
 \ \\
-As explained in \cite{cosmedis-SandP2017}, in order to prove this property
+As explained in \<^cite>\<open>"cosmedis-SandP2017"\<close>, in order to prove this property
 for the CoSMeDis network, we compose BD security properties of
 individual CoSMeDis nodes. When formulating the individual node properties, we will
 distinguish between the \emph{secret issuer} node \<open>i\<close> and the (potential)
@@ -48,8 +48,8 @@ Finally, we lift the above BD security property, which refers to a single secret
 i.e., a post at some node, to simultaneous BD Security for two independent secret sources,
 i.e., two different posts at two (possibly different) nodes. For this, we use the
 BD Security system compositionality and transport theorems formalized in the AFP entry
-\cite{BDSecuritycomp-AFP}.
-More details about this approach can be found in \cite{cosmedis-SandP2017};
+\<^cite>\<open>"BDSecuritycomp-AFP"\<close>.
+More details about this approach can be found in \<^cite>\<open>"cosmedis-SandP2017"\<close>;
 in particular, Appendix A from that paper discusses the transport theorem.
 \<close>
 

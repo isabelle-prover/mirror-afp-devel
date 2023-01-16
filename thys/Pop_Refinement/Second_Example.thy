@@ -15,15 +15,15 @@ section \<open>Hyperproperties\<close>
 text \<open>\label{sec:hyper}\<close>
 
 text \<open>Hyperproperties are predicates over sets of traces~%
-\cite{ClarksonSchneiderHyperproperties}.
+\<^cite>\<open>"ClarksonSchneiderHyperproperties"\<close>.
 Hyperproperties capture security policies
-like non-interference~\cite{GoguenMeseguerNonInterference},
+like non-interference~\<^cite>\<open>"GoguenMeseguerNonInterference"\<close>,
 which applies to deterministic systems,
-and generalized non-interference (GNI)~\cite{McCulloughSpecificationsMLS},
+and generalized non-interference (GNI)~\<^cite>\<open>"McCulloughSpecificationsMLS"\<close>,
 which generalizes non-interference to non-deterministic systems.\<close>
 
-text \<open>The formulation of GNI in~\cite{ClarksonSchneiderHyperproperties},
-which is derived from~\cite{McLeanPossibilisticProperties},
+text \<open>The formulation of GNI in~\<^cite>\<open>"ClarksonSchneiderHyperproperties"\<close>,
+which is derived from~\<^cite>\<open>"McLeanPossibilisticProperties"\<close>,
 is based on:
 \begin{itemize}
 \item
@@ -401,7 +401,7 @@ lemma exec_wfp_always_in_states:
 by (metis exec_always exec_wfp_in_states exec_wfp_no_error option.exhaust)
 
 text \<open>Program execution can be described
-in terms of the trace formalism in~\cite{ClarksonSchneiderHyperproperties}.
+in terms of the trace formalism in~\<^cite>\<open>"ClarksonSchneiderHyperproperties"\<close>.
 Every possible (non-erroneous) execution of a program
 can be described by a trace of two states---initial and final.
 In this definition,
@@ -424,11 +424,11 @@ where [intro!]: "
 
 text \<open>The finite traces of a program could be turned into infinite traces
 by infinitely stuttering the final state,
-obtaining the `executions' defined in~\cite{ClarksonSchneiderHyperproperties}.
+obtaining the `executions' defined in~\<^cite>\<open>"ClarksonSchneiderHyperproperties"\<close>.
 However, such infinite traces carry no additional information
 compared to the finite traces from which they are derived:
 for programs in this language,
-the infinite executions of~\cite{ClarksonSchneiderHyperproperties}
+the infinite executions of~\<^cite>\<open>"ClarksonSchneiderHyperproperties"\<close>
 are modeled as finite traces of type @{typ trace}.\<close>
 
 
@@ -693,8 +693,8 @@ text \<open>Since GNI is implied by @{const spec\<^sub>0}
 and since every pop-refinement of @{const spec\<^sub>0} implies @{const spec\<^sub>0},
 GNI is preserved through every pop-refinement of @{const spec\<^sub>0}.
 Pop-refinement differs from the popular notion of refinement
-as inclusion of sets of traces (e.g.~\cite{AbadiLamportRefinement}),
-which does not preserve GNI~\cite{ClarksonSchneiderHyperproperties}.\<close>
+as inclusion of sets of traces (e.g.~\<^cite>\<open>"AbadiLamportRefinement"\<close>),
+which does not preserve GNI~\<^cite>\<open>"ClarksonSchneiderHyperproperties"\<close>.\<close>
 
 
 section \<open>Stepwise Refinement\<close>

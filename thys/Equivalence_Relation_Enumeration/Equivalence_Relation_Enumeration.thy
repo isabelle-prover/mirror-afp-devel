@@ -8,8 +8,8 @@ begin
 text \<open>As mentioned in the abstract the enumeration algorithm relies on the bijection between
 restricted growth functions (RGFs) of length @{term "n"} and the equivalence relations on
 @{term "{..<n}"}, where the bijection is the operation that forms the equivalence kernels of an RGF.
-The method is being dicussed, for example, by~\cite{hutchinson1963, milne1977} or
-\cite[\textsection 1.5]{white1986}.
+The method is being dicussed, for example, by~\<^cite>\<open>"hutchinson1963" and "milne1977"\<close> or
+\<^cite>\<open>\<open>\textsection 1.5\<close> in "white1986"\<close>.
 
 An enumeration algorithm for RGFs is less convoluted than one for equivalence relations or
 partitions and the representation has the advantage that checking whether a pair of elements are
@@ -23,7 +23,7 @@ Section~\ref{sec:app} an interesting application is being discussed, where the e
 partitions is applied within a proof. Section~\ref{sec:add} contains a few additional results,
 such as the fact that the length of the enumerated list is a Bell number. The latter result relies
 on the formalization of the cardinality of equivalence relations by
-Bulwahn~\cite{Card_Equiv_Relations-AFP}.\<close>
+Bulwahn~\<^cite>\<open>"Card_Equiv_Relations-AFP"\<close>.\<close>
 
 section \<open>Preliminary Results\<close>
 
@@ -440,7 +440,7 @@ qed
 section \<open>Example Application\label{sec:app}\<close>
 
 text \<open>In this section, I wanted to discuss an interesting application within the context of
-a proof in Isabelle. This is motivated by a real-world example \cite[\textsection 2.2]{alon1999},
+a proof in Isabelle. This is motivated by a real-world example \<^cite>\<open>\<open>\textsection 2.2\<close> in "alon1999"\<close>,
 where a function in a 4-times iterated sum could only be reduced by splitting it according to the
 equivalence relation formed by the indices. The notepad below illustrates how this can be done
 (in the case of 3 index variables).\<close>

@@ -14,7 +14,7 @@ trace back the actions leading to:
 They state that the current status can only occur via a ``legal'' sequence of actions.
 Because the BD properties have (dynamic triggers within) declassification bounds
 that refer to such statuses, the traceback properties complement BD Security in adding
-confidentiality assurance. \cite[Section 5.2]{cosmed-itp2016} gives more details and explanations.
+confidentiality assurance. \<^cite>\<open>\<open>Section 5.2\<close> in "cosmed-itp2016"\<close> gives more details and explanations.
 \<close>
 
 

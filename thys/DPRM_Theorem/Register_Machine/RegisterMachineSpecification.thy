@@ -7,8 +7,8 @@ begin
 
 subsubsection \<open>Basic Datatype Definitions\<close>
 
-text \<open>The following specification of register machines is inspired by @{cite "mech_turing"} (see 
-      @{cite "mech_turing_afp"} for the corresponding AFP article).\<close>
+text \<open>The following specification of register machines is inspired by \<^cite>\<open>"mech_turing"\<close> (see 
+      \<^cite>\<open>"mech_turing_afp"\<close> for the corresponding AFP article).\<close>
 
 (* Type synonyms for registers (= register indices) the "tape" (sim. to a
  * Turing machine) that contains a list of register values.

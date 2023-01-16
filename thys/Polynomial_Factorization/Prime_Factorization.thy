@@ -7,7 +7,7 @@ section \<open>Prime Factorization\<close>
 
 text \<open>This theory contains not-completely naive algorithms to test primality
   and to perform prime factorization. More precisely, it corresponds to prime factorization
-  algorithm A in Knuth's textbook \cite{Knuth}.\<close>
+  algorithm A in Knuth's textbook \<^cite>\<open>"Knuth"\<close>.\<close>
 
 theory Prime_Factorization
 imports

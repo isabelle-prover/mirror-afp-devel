@@ -86,7 +86,7 @@ lemma test_iteration_sim: "\<lbrakk>test p; p\<cdot>x \<le> x\<cdot>p\<rbrakk> \
 lemma test_iteration_annir: "test p \<Longrightarrow> !p\<cdot>(p\<cdot>x)\<^sup>\<infinity> = !p"
   by (metis annil test_comp_mult1 iteration_idep mult.assoc)
 
-text \<open>Next we give an example of a program transformation from von Wright~\cite{Wright02}.\<close>
+text \<open>Next we give an example of a program transformation from von Wright~\<^cite>\<open>"Wright02"\<close>.\<close>
 
 lemma loop_refinement: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p\<cdot>x)\<^sup>\<infinity>\<cdot>!p \<le> (p\<cdot>q\<cdot>x)\<^sup>\<infinity>\<cdot>!(p\<cdot>q)\<cdot>(p\<cdot>x)\<^sup>\<infinity>\<cdot>!p"
 proof -
@@ -175,7 +175,7 @@ proof -
 qed
 
 text \<open>
-  This variant is due to H\"ofner, Struth and Sutcliffe~\cite{HofnerSS09}.
+  This variant is due to H\"ofner, Struth and Sutcliffe~\<^cite>\<open>"HofnerSS09"\<close>.
 \<close>
 
 theorem atom_ref_back_struth: 
@@ -219,7 +219,7 @@ proof -
 qed
     
 
-text \<open>Finally, we prove Cohen's~\cite{Cohen00} variation of the atomicity refinement theorem.\<close>
+text \<open>Finally, we prove Cohen's~\<^cite>\<open>"Cohen00"\<close> variation of the atomicity refinement theorem.\<close>
 
 lemma atom_ref_cohen: 
   assumes "r\<cdot>p\<cdot>y \<le> y\<cdot>r" "y\<cdot>p\<cdot>l \<le> l\<cdot>y" "r\<cdot>p\<cdot>l \<le> l\<cdot>r"

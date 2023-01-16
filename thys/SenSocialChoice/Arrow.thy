@@ -31,7 +31,7 @@ subsection\<open>Semi-decisiveness Implies Decisiveness\<close>
 
 text\<open>
 
-I follow \cite[Chapter~3*]{Sen:70a} quite closely here. Formalising his
+I follow \<^cite>\<open>\<open>Chapter~3*\<close> in "Sen:70a"\<close> quite closely here. Formalising his
 appeal to the @{term "iia"} assumption is the main complication here.
 
 \<close>
@@ -613,10 +613,10 @@ subsection\<open>Arrow's General Possibility Theorem\<close>
 text\<open>
 
 Finally we conclude with the celebrated ``possibility'' result. Note that we
-assume the set of individuals is finite; \cite{Routley:79} relaxes this with
+assume the set of individuals is finite; \<^cite>\<open>"Routley:79"\<close> relaxes this with
 some fancier set theory. Having an infinite set of alternatives doesn't
 matter, though the result is a bit more plausible if we assume finiteness
-\cite[p54]{Sen:70a}.
+\<^cite>\<open>\<open>p54\<close> in "Sen:70a"\<close>.
 
 \<close>
 

@@ -114,15 +114,15 @@ qed
 
 text \<open>
   We now prove the transcendence of $i\pi$, from which the transcendence of $\pi$ will follow
-  as a trivial corollary. The first proof of this was given by von Lindemann~\cite{lindemann_pi82}.
+  as a trivial corollary. The first proof of this was given by von Lindemann~\<^cite>\<open>"lindemann_pi82"\<close>.
   The central ingredient is the fundamental theorem of symmetric functions.
 
   The proof can, by now, be considered folklore and one can easily find many similar variants of
-  it, but we mostly follows the nice exposition given by Niven~\cite{niven_pi39}.
+  it, but we mostly follows the nice exposition given by Niven~\<^cite>\<open>"niven_pi39"\<close>.
 
   An independent previous formalisation in Coq that uses the same basic techniques was given by
-  Bernard et al.~\cite{bernard_pi16}. They later also formalised the much stronger
-  Lindemann--Weierstra{\ss} theorem~\cite{bernard_lw17}.
+  Bernard et al.~\<^cite>\<open>"bernard_pi16"\<close>. They later also formalised the much stronger
+  Lindemann--Weierstra{\ss} theorem~\<^cite>\<open>"bernard_lw17"\<close>.
 \<close>
 lemma transcendental_i_pi: "\<not>algebraic (\<i> * pi)"
 proof

@@ -10,7 +10,7 @@ subsection \<open>Assumptions of this Approach\<close>
 text \<open>
 Classical IFC noninterference, a special case of a noninterference
 definition using partial equivalence relations (per)
-\cite{SabelfeldS:01}, partitions the variables (i.e.\ locations) into
+\<^cite>\<open>"SabelfeldS:01"\<close>, partitions the variables (i.e.\ locations) into
 security levels. Usually, only levels for secret or high, written
 \<open>H\<close>, and public or low, written \<open>L\<close>, variables are
 used. Basically, a program that is noninterferent has to fulfil one
@@ -26,7 +26,7 @@ beginning of the program, (ii) all \<open>L\<close>-variables are observed (or
 used in our terms) at the end and (iii) every variable is either
 \<open>H\<close> or \<open>L\<close>. This security label is fixed for a variable
 and can not be altered during a program run. Thus, we have to extend 
-the prerequisites of the slicing framework in \cite{Wasserrab:08} accordingly
+the prerequisites of the slicing framework in \<^cite>\<open>"Wasserrab:08"\<close> accordingly
 in a new locale:
 
 \<close>

@@ -75,7 +75,7 @@ end
 subsection \<open>Relation of AGM revision and AGM contraction \<close>
 
 text\<open>The AGM contraction of @{term \<open>K\<close>} by @{term \<open>\<phi>\<close>} can be defined as the AGM revision of @{term \<open>K\<close>} by @{text \<open>\<not>\<phi>\<close>}
-intersect with @{term \<open>K\<close>} (to remove @{text \<open>\<not>\<phi>\<close>} from K revised). This definition is known as Harper identity @{cite "Harper1976"}\<close>
+intersect with @{term \<open>K\<close>} (to remove @{text \<open>\<not>\<phi>\<close>} from K revised). This definition is known as Harper identity \<^cite>\<open>"Harper1976"\<close>\<close>
 sublocale AGM_Revision \<subseteq> AGM_Contraction where contraction = \<open>\<lambda>K \<phi>. K \<inter> (K \<^bold>* .\<not> \<phi>)\<close> 
 proof(unfold_locales, goal_cases)
   case closure:(1 K A \<phi>)
@@ -131,7 +131,7 @@ qed
 locale AGMC_S = AGM_Contraction + Supraclassical_logic
 
 text\<open>The AGM revision of @{term \<open>K\<close>} by @{term \<open>\<phi>\<close>} can be defined as the AGM contraction of @{term \<open>K\<close>} by @{text \<open>\<not>\<phi>\<close>}
-followed by an expansion by @{term \<open>\<phi>\<close>}. This definition is known as Levi identity @{cite "Levi1977SubjunctivesDA"}.\<close>
+followed by an expansion by @{term \<open>\<phi>\<close>}. This definition is known as Levi identity \<^cite>\<open>"Levi1977SubjunctivesDA"\<close>.\<close>
 sublocale AGMC_S \<subseteq> AGM_Revision where revision = \<open>\<lambda>K \<phi>. (K \<div> .\<not> \<phi>) \<oplus> \<phi>\<close>
 proof(unfold_locales, goal_cases)
   case closure:(1 K A \<phi>)

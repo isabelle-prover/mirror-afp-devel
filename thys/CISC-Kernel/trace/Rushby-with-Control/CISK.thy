@@ -7,11 +7,11 @@ begin
 text \<open>
   This section presents a generic model of a Controlled Interruptible Separation Kernel (CISK).
   It formulates security, i.e., intransitive noninterference.
-  For a presentation of this model, see Section 2 of~\cite{Verbeek2013}.
+  For a presentation of this model, see Section 2 of~\<^cite>\<open>"Verbeek2013"\<close>.
 \<close>
 
 text \<open>
-  First, a locale is defined that defines all generic functions and all proof obligations (see Section 2.3 of ~\cite{Verbeek2013}).
+  First, a locale is defined that defines all generic functions and all proof obligations (see Section 2.3 of ~\<^cite>\<open>"Verbeek2013"\<close>).
 \<close>
 locale Controllable_Interruptible_Separation_Kernel = \<comment> \<open>CISK\<close>
 fixes kstep :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'state_t" \<comment> \<open>Executes one atomic kernel action\<close>
@@ -87,9 +87,9 @@ termination by lexicographic_order
 
 text\<open>
   Function \emph{run} defines the execution semantics.
-  This function is presented in ~\cite{Verbeek2013} by pseudo code (see Algorithm 1).
+  This function is presented in ~\<^cite>\<open>"Verbeek2013"\<close> by pseudo code (see Algorithm 1).
   Before defining the run function, we define accessor functions for the control mechanism.
-  Functions next\_action, next\_execs and next\_state correspond to ``control.a'', ``control.x'' and ``control.s'' in ~\cite{Verbeek2013}.
+  Functions next\_action, next\_execs and next\_state correspond to ``control.a'', ``control.x'' and ``control.s'' in ~\<^cite>\<open>"Verbeek2013"\<close>.
 \<close>
 abbreviation next_action::"'state_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> 'action_t option"
 where "next_action \<equiv> Kernel.next_action current CISK_control"
@@ -124,7 +124,7 @@ termination by lexicographic_order
 subsubsection \<open>Formulations of security\<close>
 
 text\<open>
-  The definitions of security as presented in Section 2.2 of~\cite{Verbeek2013}.
+  The definitions of security as presented in Section 2.2 of~\<^cite>\<open>"Verbeek2013"\<close>.
 \<close>
 
 abbreviation kprecondition

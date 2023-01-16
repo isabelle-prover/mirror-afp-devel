@@ -12,7 +12,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 \<open>Rel\<close> is usually defined as a category of sets and binary relations
-(e.g., see Chapter I-7 in \cite{mac_lane_categories_2010}). However, there
+(e.g., see Chapter I-7 in \<^cite>\<open>"mac_lane_categories_2010"\<close>). However, there
 is little that can prevent one from exposing \<open>Rel\<close> as a digraph and
 provide additional structure gradually later. 
 Thus, in this section, \<open>\<alpha>\<close>-\<open>Rel\<close> is defined as a digraph of sets 
@@ -177,7 +177,7 @@ qed
 subsubsection\<open>Composition\<close>
 
 
-text\<open>See Chapter I-7 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-7 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition comp_Rel :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<circ>\<^sub>R\<^sub>e\<^sub>l\<close> 55)
   where "comp_Rel S T = [S\<lparr>ArrVal\<rparr> \<circ>\<^sub>\<circ> T\<lparr>ArrVal\<rparr>, T\<lparr>ArrDom\<rparr>, S\<lparr>ArrCod\<rparr>]\<^sub>\<circ>"
@@ -239,7 +239,7 @@ subsubsection\<open>Inclusion arrow\<close>
 
 text\<open>
 The definition of the inclusion arrow is based on the concept of the 
-inclusion map, e.g., see \cite{noauthor_wikipedia_2001}\footnote{
+inclusion map, e.g., see \<^cite>\<open>"noauthor_wikipedia_2001"\<close>\footnote{
 \url{https://en.wikipedia.org/wiki/Inclusion_map}
 }\<close>
 
@@ -294,7 +294,7 @@ qed (auto simp: incl_Rel_components assms)
 subsubsection\<open>Identity\<close>
 
 
-text\<open>See Chapter I-7 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-7 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition id_Rel :: "V \<Rightarrow> V"
   where "id_Rel A = incl_Rel A A"
@@ -366,7 +366,7 @@ subsubsection\<open>Converse\<close>
 
 
 text\<open>
-As mentioned in Chapter I-7 in \cite{mac_lane_categories_2010}, the 
+As mentioned in Chapter I-7 in \<^cite>\<open>"mac_lane_categories_2010"\<close>, the 
 category \<open>Rel\<close> is usually equipped with an additional structure that is
 the operation of taking a converse of a relation.
 The operation is meant to be used almost exclusively as part of 
@@ -708,7 +708,7 @@ Dagger categories are exposed explicitly later.
 In the context of this section, the ``dagger'' is viewed merely as 
 an explicitly defined homomorphism. A definition of a dagger functor, upon
 which the definition presented in this section is based, can be found in nLab 
-\cite{noauthor_nlab_nodate}\footnote{\url{https://ncatlab.org/nlab/show/Rel})}.
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{\url{https://ncatlab.org/nlab/show/Rel})}.
 This reference also contains the majority of the results that are presented
 in this subsection.
 \<close>

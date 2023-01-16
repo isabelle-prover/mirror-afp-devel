@@ -10,7 +10,7 @@ theory Frequency_Moment_k
 begin
 
 text \<open>This section contains a formalization of the algorithm for the $k$-th frequency moment.
-It is based on the algorithm described in \cite[\textsection 2.1]{alon1999}.\<close>
+It is based on the algorithm described in \<^cite>\<open>\<open>\textsection 2.1\<close> in "alon1999"\<close>.\<close>
 
 type_synonym fk_state = "nat \<times> nat \<times> nat \<times> nat \<times> (nat \<times> nat \<Rightarrow> (nat \<times> nat))"
 

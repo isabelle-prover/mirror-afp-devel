@@ -8,7 +8,7 @@ text_raw\<open>
 section\<open>Configuration Translation\<close>
 text_raw\<open>\label{sec:conv}\<close>
 text\<open>
-All the results we present in this section are formalized and verified in Isabelle/HOL~\cite{nipkow2002isabelle}.
+All the results we present in this section are formalized and verified in Isabelle/HOL~\<^cite>\<open>"nipkow2002isabelle"\<close>.
 This means that their formal correctness can be trusted a level close to absolute certainty.
 The definitions and lemmas stated here are merely a repetition of lemmas stated in other theory files.
 This means that they have been directly set to this document from Isabelle and no typos or hidden assumptions are possible.
@@ -147,7 +147,7 @@ text\<open>If no matching entry is found, the behavior is undefined.\<close>
 subsubsection\<open>iptables Firewall\<close>
 text_raw\<open>\label{sec:lfwfw}\<close>
 text\<open>The firewall subsystem in a linux router is not any less complex than any of the of the other systems.
-Fortunately, this complexity has been dealt with in~\cite{diekmann2016verified,Iptables_Semantics-AFP} already and we can directly use the result.\<close>
+Fortunately, this complexity has been dealt with in~\<^cite>\<open>"diekmann2016verified" and "Iptables_Semantics-AFP"\<close> already and we can directly use the result.\<close>
 text\<open>In short, one of the results is that a complex \emph{iptables} configuration can be simplified to be represented by a single list of matches that only support the following match conditions:
 \begin{itemize}
   \item (String) prefix matches on the input and output interfaces.
@@ -161,7 +161,7 @@ Given that this information is usually stored alongside the packet content, this
 In case the output interface is not needed (e.g., when evaluating an OpenFlow table), it can simply be left blank.
 
 Obviously, a simplification into the above match type cannot always produce an equivalent firewall, and the set of accepted packets has to be over- or underapproximated.
-The reader interested in the details of this is strongly referred to~\cite{diekmann2016verified}; we are simply going to continue with the result: @{const simple_fw}.
+The reader interested in the details of this is strongly referred to~\<^cite>\<open>"diekmann2016verified"\<close>; we are simply going to continue with the result: @{const simple_fw}.
 \<close>
 text\<open>One property of the simplification is worth noting here: The simplified firewall does not know state and the simplification approximates stateful matches by stateless ones. 
 Thus, the overapproximation of a stateful firewall ruleset that begins with accepting packets of established connections usually begins with a rule that accepts all packets.
@@ -176,8 +176,8 @@ This has two implications:
 \item All configurations that are representable in our model should produce the correct behavior wrt. their semantics.
   The problem is that correct here means that the behavior is the same that any real device would produce.
   Since we cannot possibly account for all device types, we instead focus on those that conform to the OpenFlow specifications.
-  To account for the multiple different versions of the specification (e.g.~\cite{specification10,specification15}), we tried making our model a subset of 
-  both the oldest stable version 1.0~\cite{specification10} and the newest available specification version 1.5.1~\cite{specification15}.
+  To account for the multiple different versions of the specification (e.g.~\<^cite>\<open>"specification10" and "specification15"\<close>), we tried making our model a subset of 
+  both the oldest stable version 1.0~\<^cite>\<open>"specification10"\<close> and the newest available specification version 1.5.1~\<^cite>\<open>"specification15"\<close>.
 \item Conversely, our model does not need to represent all possible behavior of an OpenFlow switch, just the behavior that can be invoked by the result of our translation.
   This is especially useful regarding for controller interaction, but also for MPLS or VLANs, which we did not model in Section \ref{sec:lfw}.
 \end{itemize}\<close>
@@ -196,7 +196,7 @@ The details of this are explained in the following sections.
 
 subsubsection\<open>Matching Flow Table entries\<close>
 text_raw\<open>\label{sec:of_match}\<close>
-text\<open>Table 3 of Section 3.1 of \cite{specification10} gives a list of required packet fields that can be used to match packets.
+text\<open>Table 3 of Section 3.1 of \<^cite>\<open>"specification10"\<close> gives a list of required packet fields that can be used to match packets.
 This directly translates into the type for a match expression on a single field:\<close>
 
 schematic_goal "(field_match :: of_match_field) \<in> {
@@ -212,16 +212,16 @@ schematic_goal "(field_match :: of_match_field) \<in> {
 }" by(fact of_match_field_typeset)
 text\<open>
 Two things are worth additional mention: L3 and L4 ``addressess''.
-The @{term IPv4Src} and @{term IPv4Dst} matches are specified as ``can be subnet masked'' in~\cite{specification10}, 
-  whereras~\cite{specification15} states clearly that arbitrary bitmasks can be used. We took the conservative approach here.
-Our alteration of @{term L4Src} and @{term L4Dst} is more grave. While~\cite{specification10} does not state anything about layer 4 ports and masks,
-\cite{specification15} specifically forbids using masks on them. 
-Nevertheless, OpenVSwitch \cite{openvswitch} and some other implementations support them.
+The @{term IPv4Src} and @{term IPv4Dst} matches are specified as ``can be subnet masked'' in~\<^cite>\<open>"specification10"\<close>, 
+  whereras~\<^cite>\<open>"specification15"\<close> states clearly that arbitrary bitmasks can be used. We took the conservative approach here.
+Our alteration of @{term L4Src} and @{term L4Dst} is more grave. While~\<^cite>\<open>"specification10"\<close> does not state anything about layer 4 ports and masks,
+\<^cite>\<open>"specification15"\<close> specifically forbids using masks on them. 
+Nevertheless, OpenVSwitch \<^cite>\<open>"openvswitch"\<close> and some other implementations support them.
 We will explain in detail why we must include bitmasks on layer 4 ports to obtain a meaningful translation in Section~\ref{sec:convi}.\<close>
 
 text\<open>One @{type of_match_field} is not enough to classify a packet. 
 To match packets, we thus use entire sets of match fields.
-As Guha \emph{et al.}~\cite{guha2013machine} noted\footnote{See also: \cite[\<section>2.3]{michaelis2016middlebox}}, executing a set of given @{type of_match_field}s on a packet requires careful consideration.
+As Guha \emph{et al.}~\<^cite>\<open>"guha2013machine"\<close> noted\footnote{See also: \<^cite>\<open>\<open>\<section>2.3\<close> in "michaelis2016middlebox"\<close>}, executing a set of given @{type of_match_field}s on a packet requires careful consideration.
 For example, it is not meaningful to use @{term IPv4Dst} if the given packet is not actually an IP packet, i.e.
 @{term IPv4Dst} has the prerequisite of @{term "EtherType 0x0800"} being among the match fields.
 Guha \emph{et al.} decided to use the fact that the preconditions can be arranged on a directed acyclic graph (or rather: an acyclic forest).
@@ -229,7 +229,7 @@ They evaluated match conditions in a manner following that graph:
 first, all field matches without preconditions are evaluated.
 Upon evaluating a field match (e.g., @{term "EtherType 0x0800"}), the matches that had their precondition fulfilled by it
   (e.g., @{term IPv4Src} and @{term IPv4Src} in this example) are evalutated.
-This mirrors the faulty behavior of some implementations (see \cite{guha2013machine}).
+This mirrors the faulty behavior of some implementations (see \<^cite>\<open>"guha2013machine"\<close>).
 Adopting that behavior into our model would mean that any packet matches against the field match set @{term "{IPv4Dst (PrefixMatch 134744072 32)}"} 
 instead of just those destined for 8.8.8.8 or causing an error. We found this to be unsatisfactory.\<close>
 
@@ -260,7 +260,7 @@ This function @{term "\<gamma>"} takes the match condition @{term m} from a flow
 and decides whether a packet matches those.\<close>
 
 text\<open>The flow table is simply a list of flow table entries @{type flow_entry_match}.
-Deciding the right flow entry to use for a given packet is explained in the OpenFlow specification \cite{specification10}, Section 3.4:
+Deciding the right flow entry to use for a given packet is explained in the OpenFlow specification \<^cite>\<open>"specification10"\<close>, Section 3.4:
 \begin{quote}
   Packets are matched against flow entries based on prioritization. 
   An entry that specifies an exact match (i.e., has no wildcards) is always the highest priority\footnote{This behavior has been deprecated.}.
@@ -269,11 +269,11 @@ Deciding the right flow entry to use for a given packet is explained in the Open
   If multiple entries have the same priority, the switch is free to choose any ordering.
 \end{quote}
 We use the term ``overlapping'' for  the flow entries that can cause a packet to match multiple flow entries with the same priority.
-Guha \emph{et al.}~\cite{guha2013machine} have dealt with overlapping.
-However, the semantics for a flow table they presented \cite[Figure 5]{guha2013machine}
+Guha \emph{et al.}~\<^cite>\<open>"guha2013machine"\<close> have dealt with overlapping.
+However, the semantics for a flow table they presented \<^cite>\<open>\<open>Figure 5\<close> in "guha2013machine"\<close>
   is slightly different from what they actually used in their theory files.
 We have tried to reproduce the original inductive definition (while keeping our abstraction @{term \<gamma>}),
- in Isabelle/HOL\footnote{The original is written in Coq~\cite{barras1997coq} and we can not use it directly.}:\<close>
+ in Isabelle/HOL\footnote{The original is written in Coq~\<^cite>\<open>"barras1997coq"\<close> and we can not use it directly.}:\<close>
 lemma "\<gamma> (ofe_fields fe) p = True \<Longrightarrow>
  \<forall>fe' \<in> set (ft1 @ ft2). ofe_prio fe' > ofe_prio fe \<longrightarrow> \<gamma> (ofe_fields fe') p = False \<Longrightarrow> 
  guha_table_semantics \<gamma> (ft1 @ fe # ft2) p (Some (ofe_action fe))" 
@@ -287,7 +287,7 @@ text\<open>This means that, given at least two distinct actions exist and our ma
 we can say that a flow table and two actions exist such that both actions are executed. This can be misleading, as the switch might choose an 
 ordering on some flow table and never execute some of the (overlapped) actions.\<close>
 
-text\<open>Instead, we decided to follow Section 5.3 of the specification \cite{specification15}, which states:
+text\<open>Instead, we decided to follow Section 5.3 of the specification \<^cite>\<open>"specification15"\<close>, which states:
 \begin{quote}
   If there are multiple matching flow entries, the selected flow entry is explicitly undefined.
 \end{quote}
@@ -438,7 +438,7 @@ text\<open>The main difficulties for @{const simple_match_to_of_match} lie in ma
   \item A @{type simple_match} allows a (string) prefix match on the input and output interfaces.
     Given a list of existing interfaces on the router @{term ifs}, the function has to insert flow entries for each interface matching the prefix.
   \item A @{type simple_match} can match ports by an interval. Now it becomes obvious why Section~\ref{sec:of_match} added bitmasks to @{const L4Src} and @{const L4Dst}.
-    Using the algorithm to split word intervals into intervals that can be represented by prefix matches from~\cite{diekmann2016verified},
+    Using the algorithm to split word intervals into intervals that can be represented by prefix matches from~\<^cite>\<open>"diekmann2016verified"\<close>,
       we can efficiently represent the original interval by a few (32 in the worst case) prefix matches and insert flow entries for each of them.%
       \footnote{It might be possible to represent the interval match more efficiently than a split into prefixes. However, that would produce overlapping matches (which is not a problem if we assing separate priorities) 
         and we did not have a verified implementation of an algorithm that does so.}
@@ -467,7 +467,7 @@ The conclusion then states that the @{type simple_match} @{term r} matches iff a
 The third assumption is part of the explanation why we did not use @{const simple_linux_router_altered}:
 @{const simple_match_to_of_match} cannot deal with output interface matches. 
 Thus, before passing a generalized simple firewall to @{const pack_OF_entries}, we would have to set the output ports to @{const ifaceAny}.
-A system replace output interface matches with destination IP addresses has already been formalized and will be published in a future version of \cite{Iptables_Semantics-AFP}.
+A system replace output interface matches with destination IP addresses has already been formalized and will be published in a future version of \<^cite>\<open>"Iptables_Semantics-AFP"\<close>.
 For now, we limit ourselves to firewalls that do not do output port matching, i.e., we require @{term "no_oif_match fw"}.
 \<close>
 
@@ -514,13 +514,13 @@ lemma "
 subsubsection\<open>Comparison to Exodus\<close>
 text\<open>
   We are not the first researchers to attempt automated static migration to SDN.
-  The (only) other attempt we are aware of is \emph{Exodus} by Nelson \emph{et al.}~\cite{nelson2015exodus}.
+  The (only) other attempt we are aware of is \emph{Exodus} by Nelson \emph{et al.}~\<^cite>\<open>"nelson2015exodus"\<close>.
 \<close>
 text\<open>
 There are some fundamental differences between Exodus and our work:
 \begin{itemize}
   \item Exodus focuses on Cisco IOS instead of linux.
-  \item Exodus does not produce OpenFlow rulesets, but FlowLog~\cite{nelson2014tierless} controller programs.
+  \item Exodus does not produce OpenFlow rulesets, but FlowLog~\<^cite>\<open>"nelson2014tierless"\<close> controller programs.
   \item Exodus is not limited to using a single flow table.
   \item Exodus requires continuous controller interaction for some of its functions.
   \item Exodus attempts to support as much functionality as possible and has implemented support for dynamic routing, VLANs and NAT.

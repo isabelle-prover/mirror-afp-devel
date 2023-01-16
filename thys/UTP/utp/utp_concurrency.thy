@@ -12,7 +12,7 @@ text \<open> In this theory we describe the UTP scheme for concurrency, \emph{pa
   which provides a general parallel operator parametrised by a ``merge predicate'' that explains
   how to merge the after states of the composed predicates. It can thus be applied to many languages
   and concurrency schemes, with this theory providing a number of generic laws. The operator is
-  explained in more detail in Chapter 7 of the UTP book~\cite{Hoare&98}. \<close>
+  explained in more detail in Chapter 7 of the UTP book~\<^cite>\<open>"Hoare&98"\<close>. \<close>
   
 subsection \<open> Variable Renamings \<close>
 

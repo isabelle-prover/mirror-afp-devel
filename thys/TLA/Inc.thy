@@ -13,7 +13,7 @@ begin
 
 text\<open>
   This example illustrates use of the embedding by mechanising
-  the running example of Lamports original TLA paper \cite{Lamport94}.
+  the running example of Lamports original TLA paper \<^cite>\<open>"Lamport94"\<close>.
 \<close>
 
 datatype pcount = a | b | g

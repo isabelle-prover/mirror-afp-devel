@@ -6,7 +6,7 @@ begin
 
 text \<open>
   Another instantiation of the algebra for Blanchette et al.'s term type
-  @{cite blanchette2016lambda}.
+  \<^cite>\<open>blanchette2016lambda\<close>.
 \<close>
 
 hide_const (open) Lambda_Free_Term.subst

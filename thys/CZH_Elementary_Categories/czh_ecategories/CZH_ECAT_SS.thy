@@ -13,8 +13,8 @@ subsection\<open>Background\<close>
 text\<open>
 General information about \<open>\<rightarrow>\<bullet>\<leftarrow>\<close> and \<open>\<leftarrow>\<bullet>\<rightarrow>\<close> (also known as 
 cospans and spans, respectively) can be found in in Chapters III-3 and III-4 
-in \cite{mac_lane_categories_2010}, as well as 
-nLab \cite{noauthor_nlab_nodate}\footnote{
+in \<^cite>\<open>"mac_lane_categories_2010"\<close>, as well as 
+nLab \<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/cospan}
 }\footnote{\url{https://ncatlab.org/nlab/show/span}}.
 \<close>
@@ -167,7 +167,7 @@ subsection\<open>Categories \<open>\<rightarrow>\<bullet>\<leftarrow>\<close> an
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-3 and Chapter III-4 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-3 and Chapter III-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition the_cat_scospan :: V (\<open>\<rightarrow>\<bullet>\<leftarrow>\<^sub>C\<close>)
   where "\<rightarrow>\<bullet>\<leftarrow>\<^sub>C =
@@ -940,7 +940,7 @@ text\<open>
 The functors from \<open>\<rightarrow>\<bullet>\<leftarrow>\<close> and \<open>\<leftarrow>\<bullet>\<rightarrow>\<close> are introduced as
 convenient abstractions for the definition of the 
 pullbacks and the pushouts (e.g., see Chapter III-3 and 
-Chapter III-4 in \cite{mac_lane_categories_2010}).
+Chapter III-4 in \<^cite>\<open>"mac_lane_categories_2010"\<close>).
 \<close>
 
 

@@ -14,13 +14,13 @@ adhoc_overloading Applicative.pure pure_option
 adhoc_overloading Applicative.pure State_Monad.return
 adhoc_overloading Applicative.ap State_Monad.ap
 
-text \<open> Hutton and Fulger \cite{HuttonFulger2008TFP} suggested the following tree relabelling problem
+text \<open> Hutton and Fulger \<^cite>\<open>"HuttonFulger2008TFP"\<close> suggested the following tree relabelling problem
   as an example for reasoning about effects. Given a binary tree with labels at the leaves, the
   relabelling assigns a unique number to every leaf.  Their correctness property states that the
-  list of labels in the obtained tree is distinct.  As observed by Gibbons and Bird \cite{backwards},
+  list of labels in the obtained tree is distinct.  As observed by Gibbons and Bird \<^cite>\<open>"backwards"\<close>,
   this breaks the abstraction of the state monad, because the relabeling function must be run.
   Although Hutton and Fulger are careful to reason in point-free style, they nevertheless unfold
-  the implementation of the state monad operations.  Gibbons and Hinze \cite{GibbonsHinze2011ICFP}
+  the implementation of the state monad operations.  Gibbons and Hinze \<^cite>\<open>"GibbonsHinze2011ICFP"\<close>
   suggest to state the correctness in an effectful way using an exception-state monad.  Thereby, they
   lose the applicative structure and have to resort to a full monad.
 
@@ -97,7 +97,7 @@ next
     by applicative_nf simp
 qed
 
-text \<open>We directly show correctness without going via streams like Hutton and Fulger \cite{HuttonFulger2008TFP}. \<close>
+text \<open>We directly show correctness without going via streams like Hutton and Fulger \<^cite>\<open>"HuttonFulger2008TFP"\<close>. \<close>
 
 lemma correctness_pure:
   fixes t :: "'a tree"
@@ -171,7 +171,7 @@ unfolding ap_state_rev_rev_def pure_state_rev_rev_def
 by transfer(applicative_nf, rule refl)
 
 text \<open>
-  The formulation by Gibbons and Bird \cite{backwards} crucially depends on Kleisli composition,
+  The formulation by Gibbons and Bird \<^cite>\<open>"backwards"\<close> crucially depends on Kleisli composition,
   so we need the state monad rather than the applicative functor only.
 \<close>
 

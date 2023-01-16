@@ -7,18 +7,18 @@ begin
 (*>*)
 
 text \<open> Closed extensional mereology combines closed mereology with extensional mereology.\footnote{
-See @{cite "varzi_parts_1996"} p. 263 and @{cite "casati_parts_1999"} p. 43.} \<close>  
+See \<^cite>\<open>"varzi_parts_1996"\<close> p. 263 and \<^cite>\<open>"casati_parts_1999"\<close> p. 43.} \<close>  
 
 locale CEM = CM + EM
 
 text \<open> Likewise, closed minimal mereology combines closed mereology with minimal mereology.\footnote{
-See @{cite "casati_parts_1999"} p. 43.} \<close>
+See \<^cite>\<open>"casati_parts_1999"\<close> p. 43.} \<close>
 
 locale CMM = CM + MM
 
 text \<open> But famously closed minimal mereology and closed extensional mereology are the same theory,
 because in closed minimal mereology product closure and weak supplementation entail strong
-supplementation.\footnote{See @{cite "simons_parts:_1987"} p. 31 and @{cite "casati_parts_1999"} p. 44.} \<close>
+supplementation.\footnote{See \<^cite>\<open>"simons_parts:_1987"\<close> p. 31 and \<^cite>\<open>"casati_parts_1999"\<close> p. 44.} \<close>
 
 sublocale CMM \<subseteq> CEM
 proof
@@ -398,7 +398,7 @@ qed
 
 subsection \<open> Distributivity \<close>
 
-text \<open> The proofs in this section are adapted from @{cite "pietruszczak_metamereology_2018"} pp. 102-4.  \<close>
+text \<open> The proofs in this section are adapted from \<^cite>\<open>"pietruszczak_metamereology_2018"\<close> pp. 102-4.  \<close>
 
 lemma common_summand_in_product: "P x ((x \<oplus> y) \<otimes> (x \<oplus> z))"
     using common_first_summand by (rule common_part_in_product)

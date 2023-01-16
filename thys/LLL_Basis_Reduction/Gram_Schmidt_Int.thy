@@ -7,7 +7,7 @@
 subsection \<open>Gram-Schmidt Implementation for Integer Vectors\<close>
 
 text \<open>This theory implements the Gram-Schmidt algorithm on integer vectors
-  using purely integer arithmetic. The formalization is based on \cite{GS_EKM}.\<close>
+  using purely integer arithmetic. The formalization is based on \<^cite>\<open>"GS_EKM"\<close>.\<close>
 
 theory Gram_Schmidt_Int
   imports 

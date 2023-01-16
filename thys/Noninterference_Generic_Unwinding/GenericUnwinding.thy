@@ -21,13 +21,13 @@ such a machine more straightforward, there is a need of some sufficient conditio
 that just individual actions, rather than unbounded sequences of actions, have to be taken into
 consideration.
 
-By extending previous results applying to transitive noninterference policies, Rushby \cite{R4} has
+By extending previous results applying to transitive noninterference policies, Rushby \<^cite>\<open>"R4"\<close> has
 proven an unwinding theorem that provides a sufficient condition of this kind in the general case of
 a possibly intransitive policy. This condition consists of a combination of predicates, which have
 to be satisfied by a generic function mapping security domains into equivalence relations over
 machine states.
 
-An analogous problem arises for CSP noninterference security, whose definition given in \cite{R1}
+An analogous problem arises for CSP noninterference security, whose definition given in \<^cite>\<open>"R1"\<close>
 requires to consider any possible future, i.e. any indefinitely long sequence of subsequent events
 and any indefinitely large set of refused events associated to that sequence, for each process
 trace.
@@ -36,11 +36,11 @@ This paper provides a sufficient condition for CSP noninterference security, whi
 to just consider individual accepted and refused events and applies to the general case of a
 possibly intransitive policy. This condition follows Rushby's one for classical noninterference
 security; in some detail, it consists of a combination of predicates, which are the translations of
-Rushby's ones into Hoare's Communicating Sequential Processes model of computation \cite{R3}. These
+Rushby's ones into Hoare's Communicating Sequential Processes model of computation \<^cite>\<open>"R3"\<close>. These
 predicates have to be satisfied by a generic function mapping security domains into equivalence
 relations over process traces; hence the name given to the condition,
 \emph{Generic Unwinding Theorem}. Variants of this theorem applying to deterministic processes and
-trace set processes (cf. \cite{R2}) are also proven.
+trace set processes (cf. \<^cite>\<open>"R2"\<close>) are also proven.
 
 The sufficient condition for security expressed by the Generic Unwinding Theorem would be even more
 valuable if it also provided a necessary condition, viz. if for any secure process, there existed
@@ -52,9 +52,9 @@ Generic Unwinding Theorem does not express a necessary condition for security as
 process and a noninterference policy for that process are constructed such that the process is
 secure with respect to the policy, but no domain-relation map satisfying the condition exists.
 
-The contents of this paper are based on those of \cite{R1} and \cite{R2}. The salient points of
+The contents of this paper are based on those of \<^cite>\<open>"R1"\<close> and \<^cite>\<open>"R2"\<close>. The salient points of
 definitions and proofs are commented; for additional information, cf. Isabelle documentation,
-particularly \cite{R5}, \cite{R6}, \cite{R7}, and \cite{R8}.
+particularly \<^cite>\<open>"R5"\<close>, \<^cite>\<open>"R6"\<close>, \<^cite>\<open>"R7"\<close>, and \<^cite>\<open>"R8"\<close>.
 
 For the sake of brevity, given a function \<open>F\<close> of type
 \<open>'a\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>m \<Rightarrow> 'a\<^sub>m\<^sub>+\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>n \<Rightarrow> 'b\<close>, the explanatory text may discuss of \<open>F\<close>
@@ -68,8 +68,8 @@ subsection "Propaedeutic definitions and lemmas"
 
 text \<open>
 Here below are the translations of Rushby's predicates \emph{weakly step consistent} and
-\emph{locally respects} \cite{R4}, applying to deterministic state machines, into Hoare's
-Communicating Sequential Processes model of computation \cite{R3}.
+\emph{locally respects} \<^cite>\<open>"R4"\<close>, applying to deterministic state machines, into Hoare's
+Communicating Sequential Processes model of computation \<^cite>\<open>"R3"\<close>.
 
 The differences with respect to Rushby's original predicates are the following ones:
 
@@ -213,7 +213,7 @@ qed
 subsection "The Generic Unwinding Theorem: proof of condition sufficiency"
 
 text \<open>
-Rushby's \emph{Unwinding Theorem for Intransitive Policies} \cite{R4} states that a sufficient
+Rushby's \emph{Unwinding Theorem for Intransitive Policies} \<^cite>\<open>"R4"\<close> states that a sufficient
 condition for a deterministic state machine with outputs to be secure is the existence of some
 domain-relation map \emph{R} such that:
 
@@ -241,37 +241,37 @@ indistinguishable with respect to the actions in \emph{u} (2), transition into t
 class \emph{C'} as a result of an action (3), and transition remaining inside \emph{C} as a result
 of an action not allowed to affect \emph{u} (4).
 
-This idea can simply be translated into the realm of Communicating Sequential Processes \cite{R3} by
+This idea can simply be translated into the realm of Communicating Sequential Processes \<^cite>\<open>"R3"\<close> by
 replacing the words "machine", "state", "action" with "process", "trace", "event", respectively, as
 long as a clarification is provided of what it precisely means for a pair of traces to be
 "indistinguishable" with respect to the events in a given domain. Intuitively, this happens just in
 case the events in that domain being accepted or refused after either trace are the same, thus the
 simplest choice would be to replace output consistency with \emph{future consistency} as defined in
-\cite{R2}. However, indistinguishability between traces in the same equivalence class is not
+\<^cite>\<open>"R2"\<close>. However, indistinguishability between traces in the same equivalence class is not
 required in the case of a domain allowed to be affected by any domain, since the policy puts no
 restriction on the differences in process histories that may be detected by such a domain. Hence, it
-is sufficient to replace output consistency with \emph{weak future consistency} \cite{R2}.
+is sufficient to replace output consistency with \emph{weak future consistency} \<^cite>\<open>"R2"\<close>.
 
 Furthermore, indistinguishability with respect to individual refused events does not imply
 indistinguishability with respect to sets of refused events, i.e. refusals, unless for each trace,
 the corresponding refusals set is closed under set union. Therefore, for the condition to be
-sufficient for process security, the \emph{refusals union closure} of the process \cite{R2} is also
-required. As remarked in \cite{R2}, this property holds for any process admitting a meaningful
+sufficient for process security, the \emph{refusals union closure} of the process \<^cite>\<open>"R2"\<close> is also
+required. As remarked in \<^cite>\<open>"R2"\<close>, this property holds for any process admitting a meaningful
 interpretation, so that taking it as an additional assumption does not give rise to any actual
 limitation on the applicability of the theorem.
 
 As a result of these considerations, the Generic Unwinding Theorem, formalized in what follows as
 theorem \<open>generic_unwinding\<close>, states that a sufficient condition for the CSP noninterference
-security \cite{R1} of a process being refusals union closed \cite{R2} is the existence of some
+security \<^cite>\<open>"R1"\<close> of a process being refusals union closed \<^cite>\<open>"R2"\<close> is the existence of some
 domain-relation map \emph{R} such that:
 
 \begin{enumerate}
 
 \item
-\emph{R} is a view partition \cite{R2};
+\emph{R} is a view partition \<^cite>\<open>"R2"\<close>;
 
 \item
-\emph{R} is weakly future consistent \cite{R2};
+\emph{R} is weakly future consistent \<^cite>\<open>"R2"\<close>;
 
 \item
 \emph{R} is weakly step consistent;
@@ -864,10 +864,10 @@ assumptions for both historical reasons -- Rushby's Unwinding Theorem for determ
 machines deals with equivalence relations -- and practical reasons -- predicate
 @{term "refl_on (traces P)"} may only be verified by a relation included in
 @{term "traces P \<times> traces P"}, thus ensuring that traces be not correlated with non-trace event
-lists, which is a necessary condition for weak future consistency (cf. \cite{R2}).
+lists, which is a necessary condition for weak future consistency (cf. \<^cite>\<open>"R2"\<close>).
 
 Here below are convenient variants of the Generic Unwinding Theorem applying to deterministic
-processes and trace set processes (cf. \cite{R2}).
+processes and trace set processes (cf. \<^cite>\<open>"R2"\<close>).
 
 \null
 \<close>
@@ -1000,7 +1000,7 @@ text \<open>
 \null
 
 The next step consists of the definition of a trace set \<open>T\<^sub>c\<close>, the corresponding trace set
-process \<open>P\<^sub>c\<close> (cf. \cite{R2}), and a reflexive, intransitive noninterference policy \<open>I\<^sub>c\<close>
+process \<open>P\<^sub>c\<close> (cf. \<^cite>\<open>"R2"\<close>), and a reflexive, intransitive noninterference policy \<open>I\<^sub>c\<close>
 for this process, where subscript "c" stands for "counterexample". As event-domain map, the identity
 function is used, which explains why the policy is defined over events themselves.
 
@@ -1024,7 +1024,7 @@ text \<open>
 \null
 
 Process @{term P\<^sub>c} can be shown to be secure with respect to policy @{term I\<^sub>c}. This result can be
-obtained by applying the Ipurge Unwinding Theorem, in the version for trace set processes \cite{R2},
+obtained by applying the Ipurge Unwinding Theorem, in the version for trace set processes \<^cite>\<open>"R2"\<close>,
 and then performing an exhaustive case distinction over all traces and domains, which obviously is
 possible by virtue of their finiteness.
 

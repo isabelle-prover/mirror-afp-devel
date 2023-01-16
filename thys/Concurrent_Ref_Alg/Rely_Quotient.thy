@@ -2,7 +2,7 @@ section \<open>Rely Quotient Operator \label{S:rely-quotient}\<close>
 
 text \<open>
   The rely quotient operator is used to generalise a Jones-style rely condition
-  to a process \cite{jon83a}.
+  to a process \<^cite>\<open>"jon83a"\<close>.
   It is defined in terms of the parallel operator and a process $i$
   representing interference from the environment.
 \<close>
@@ -115,7 +115,7 @@ qed
 text \<open>
   Refining the ``denominator'' in a quotient, gives a reverse refinement 
   for the quotients. This corresponds to weaken rely condition law of
-  Jones \cite{jon83a}, 
+  Jones \<^cite>\<open>"jon83a"\<close>, 
   i.e. assuming less about the environment.
 \<close>
 
@@ -176,7 +176,7 @@ begin
 text \<open>
   The following is a fundamental law for introducing a parallel composition
   of process to refine a conjunction of specifications. 
-  It represents an abstract view of the parallel introduction law of Jones \cite{jon83a}.
+  It represents an abstract view of the parallel introduction law of Jones \<^cite>\<open>"jon83a"\<close>.
 \<close>
 
 lemma introduce_parallel: 

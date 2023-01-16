@@ -12,7 +12,7 @@ would evaluate to \emph{true.} Instead, we need a three-valued logic such that w
 evaluate nonsensical guards.
 
 The \texttt{trilean} datatype is used to implement three-valued Bochvar logic
-\cite{bochvar1981}. Here we prove that the logic is an idempotent semiring, define a partial order,
+\<^cite>\<open>"bochvar1981"\<close>. Here we prove that the logic is an idempotent semiring, define a partial order,
 and prove some other useful lemmas.\<close>
 
 theory Trilean

@@ -1,12 +1,12 @@
 subsection\<open>Formal Study of Version No.2 of Gödel’s Argument as 
-  Reported by Kanckos and Lethen, 2019 \cite{KanckosLethen19} (Fig.~11 in \cite{C85})\<close>
+  Reported by Kanckos and Lethen, 2019 \<^cite>\<open>"KanckosLethen19"\<close> (Fig.~11 in \<^cite>\<open>"C85"\<close>)\<close>
 
 theory KanckosLethenNo2Possibilist imports
   HOML 
   MFilter 
   BaseDefs
 begin  
-text\<open>Axioms of Version No. 2 \cite{KanckosLethen19}.\<close>
+text\<open>Axioms of Version No. 2 \<^cite>\<open>"KanckosLethen19"\<close>.\<close>
 abbreviation delta ("\<Delta>") where "\<Delta> A \<equiv> \<lambda>x.(\<^bold>\<forall>\<psi>. ((A \<psi>) \<^bold>\<rightarrow> (\<psi> x)))"
 abbreviation N ("\<N>") where "\<N> \<phi> \<equiv> \<lambda>x.(\<^bold>\<box>(\<phi> x))"
 
@@ -23,7 +23,7 @@ lemma axB': "\<forall>x y. \<not>(x\<^bold>ry) \<or> (y\<^bold>rx)" using axB by
 lemma axM': "\<forall>x. (x\<^bold>rx)" using axM by blast
 lemma ax4': "\<forall>x y z. (((x\<^bold>ry) \<and> (y\<^bold>rz)) \<longrightarrow> (x\<^bold>rz))" using ax4 by auto 
 
-text\<open>Proofs for all theorems for No.2 from \cite{KanckosLethen19}.\<close>
+text\<open>Proofs for all theorems for No.2 from \<^cite>\<open>"KanckosLethen19"\<close>.\<close>
 theorem Theorem0: "\<lfloor>\<^bold>\<forall>\<phi> \<psi>.((\<^bold>\<forall>Q. ((Q \<phi>)  \<^bold>\<rightarrow> (Q \<psi>))) \<^bold>\<rightarrow>  ((\<P> \<phi>) \<^bold>\<rightarrow> (\<P>  \<phi>)))\<rfloor>" by auto \<comment>\<open>not needed\<close>
 theorem Theorem1: "\<lfloor>\<P> \<G>\<rfloor>"  unfolding G_def  using Axiom2 axM by blast
 theorem Theorem2: "\<lfloor>\<^bold>\<forall>x. ((\<G> x)\<^bold>\<rightarrow>(\<^bold>\<exists>y. \<G> y))\<rfloor>" by blast  \<comment>\<open>not needed\<close>

@@ -1,6 +1,6 @@
 section \<open>Package Logic\<close>
 
-text \<open>In this section, we define our package logic, as described in \cite{Dardinier22},
+text \<open>In this section, we define our package logic, as described in \<^cite>\<open>"Dardinier22"\<close>,
 and then prove that this logic is sound and complete for packaging magic wands.\<close>
 
 theory PackageLogic

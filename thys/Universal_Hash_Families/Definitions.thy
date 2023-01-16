@@ -16,7 +16,7 @@ space, then the family is $k$-universal if:
 independent family of random variables.
 \end{itemize}
 
-This definition closely follows the definition from Vadhan~\cite[\textsection 3.5.5]{vadhan2012}, with the minor
+This definition closely follows the definition from Vadhan~\<^cite>\<open>\<open>\textsection 3.5.5\<close> in "vadhan2012"\<close>, with the minor
 modification that independence is required not only for exactly $k$, but also for \emph{fewer} than $k$ distinct
 domain elements. The correction is due to the fact that in the corner case where $D$ has fewer than $k$ elements,
 the second part of their definition becomes void. In the formalization this helps avoid an unnecessary assumption in

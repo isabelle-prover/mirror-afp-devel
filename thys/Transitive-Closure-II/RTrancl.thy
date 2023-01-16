@@ -29,7 +29,7 @@ theory RTrancl
 imports "Regular-Sets.Regexp_Method"
 begin
 
-text \<open>In previous work \cite{rtrancl_fin} we described a generic work-list
+text \<open>In previous work \<^cite>\<open>"rtrancl_fin"\<close> we described a generic work-list
 algorithm to compute reflexive-transitive closures for \emph{finite} relations:
 given a finite relation $r$, it computed $@{term "r^*"}$. 
 
@@ -49,7 +49,7 @@ The main differences are that
 \end{itemize}
 
 These new features have been essential to certify size-change termination 
-proofs \cite{sct} where the transitive closure of all size-change graphs 
+proofs \<^cite>\<open>"sct"\<close> where the transitive closure of all size-change graphs 
 has to be computed. Here, the relation is size-change graph composition.
 \begin{itemize}
 \item Given an initial set of size-change graphs with $n$ arguments, 
@@ -75,7 +75,7 @@ text \<open>
   underlying data structure can freely be chosen, you just have to provide
   certain operations like union, selection of an element. 
 
-  In contrast to \cite{rtrancl_fin}, the algorithm does not demand that $r$ is finite
+  In contrast to \<^cite>\<open>"rtrancl_fin"\<close>, the algorithm does not demand that $r$ is finite
   and that $r$ is explicitly provided (e.g., as a list of pairs).
   Instead, it suffices that for every element, only finitely many 
   elements can be reached via $r$, and $r$ can be provided as a function which

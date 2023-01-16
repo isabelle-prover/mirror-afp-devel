@@ -21,7 +21,7 @@ on the social choice function need to be weakened. One approach is to only
 require that the set of alternatives that society ranks highest (and is
 otherwise indifferent about) be non-empty.
 
-Following \cite[Chapter~4*]{Sen:70a}, a \emph{Social Decision Function}
+Following \<^cite>\<open>\<open>Chapter~4*\<close> in "Sen:70a"\<close>, a \emph{Social Decision Function}
 (SDF) yields a choice function for every profile.\<close>
 
 definition
@@ -147,9 +147,9 @@ subsection\<open>Sen's Liberal Paradox\<close>
 text\<open>Having side-stepped Arrow's Theorem, Sen proceeds to other conditions
 one may ask of an SCF. His analysis of \emph{liberalism}, mechanised in this
 section, has attracted much criticism over the years
-\cite{AnalyseKritik:1996}.
+\<^cite>\<open>"AnalyseKritik:1996"\<close>.
 
-Following \cite[Chapter~6*]{Sen:70a}, a \emph{liberal} social choice rule is
+Following \<^cite>\<open>\<open>Chapter~6*\<close> in "Sen:70a"\<close>, a \emph{liberal} social choice rule is
 one that, for each individual, there is a pair of alternatives that she is
 decisive over.\<close>
 

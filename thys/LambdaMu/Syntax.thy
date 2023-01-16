@@ -1,7 +1,7 @@
 section \<open>The $\lambda\mu$-calculus\<close>
 
 text\<open>More examples, as well as a call-by-value programming language built on
-top of our formalisation, can be found in an associated Bitbucket repository~\cite{bitbucket}.\<close>
+top of our formalisation, can be found in an associated Bitbucket repository~\<^cite>\<open>"bitbucket"\<close>.\<close>
   
 theory Syntax
   imports Main

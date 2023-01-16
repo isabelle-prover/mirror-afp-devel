@@ -3,13 +3,13 @@ section \<open>Overview\<close>
 text \<open>
   Computing the maximal strongly connected components (SCCs) of a 
   finite directed graph is a celebrated problem in the
-  theory of graph algorithms. Although Tarjan's algorithm~\cite{tarjan:depth-first} 
+  theory of graph algorithms. Although Tarjan's algorithm~\<^cite>\<open>"tarjan:depth-first"\<close> 
   is perhaps the best-known solution, there are many others. In his PhD 
-  thesis, Bloemen~\cite{bloemen:strong} presents an algorithm that is itself based
-  on earlier algorithms by Munro~\cite{munro:efficient} and
-  Dijkstra~\cite{dijkstra:finding}. Just like these algorithms, Bloemen's
+  thesis, Bloemen~\<^cite>\<open>"bloemen:strong"\<close> presents an algorithm that is itself based
+  on earlier algorithms by Munro~\<^cite>\<open>"munro:efficient"\<close> and
+  Dijkstra~\<^cite>\<open>"dijkstra:finding"\<close>. Just like these algorithms, Bloemen's
   solution is based on enumerating SCCs in a depth-first traversal of the graph.
-  Gabow's algorithm that has already been formalized in Isabelle~\cite{lammich:gabow}
+  Gabow's algorithm that has already been formalized in Isabelle~\<^cite>\<open>"lammich:gabow"\<close>
   also falls into this category of solutions.
   Nevertheless, Bloemen goes on to present a parallel variant of the algorithm
   suitable for execution on multi-core processors, based on clever data structures
@@ -434,7 +434,7 @@ section \<open>Algorithm for computing strongly connected components\<close>
 text \<open>
   We now introduce our representation of Bloemen's algorithm in Isabelle/HOL.
   The auxiliary function @{text unite} corresponds to the inner \textsf{while}
-  loop in Bloemen's pseudo-code~\cite[p.32]{bloemen:strong}. It is applied to
+  loop in Bloemen's pseudo-code~\<^cite>\<open>\<open>p.32\<close> in "bloemen:strong"\<close>. It is applied to
   two nodes @{text v} and @{text w} (and the environment @{text e} holding the
   current values of the program variables) when a loop is found, i.e.\ when
   @{text w} is a successor of @{text v} in the graph that has already been

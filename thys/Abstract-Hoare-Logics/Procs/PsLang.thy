@@ -26,7 +26,7 @@ datatype
 consts body :: "pname \<Rightarrow> com"
 
 text\<open>We generalize from a single procedure to a whole set of
-procedures following the ideas of von Oheimb~\cite{Oheimb-FSTTCS99}.
+procedures following the ideas of von Oheimb~\<^cite>\<open>"Oheimb-FSTTCS99"\<close>.
 The basic setup is modified only in a few places:
 \begin{itemize}
 \item We introduce a new basic type @{typ pname} of procedure names.

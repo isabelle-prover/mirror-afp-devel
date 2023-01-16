@@ -10,7 +10,7 @@ theory Arith_Prog_Rel_Primes
 begin
 
 text \<open>
- Statement of the problem (from ~\cite{putnam}): For which integers $n>1$ does the set of positive 
+ Statement of the problem (from ~\<^cite>\<open>"putnam"\<close>): For which integers $n>1$ does the set of positive 
  integers less than and relatively prime to $n$ constitute an arithmetic progression?
  
  The solution of the above problem is theorem @{text arith_prog_rel_primes_solution}.

@@ -24,7 +24,7 @@ text\<open>
   the notion of size inverted so that small numbers have large valuation, and zero has maximally 
   large valuation. The $p$-adic distance between two points is just the valuation of the difference
   of those points, and is thus equivalent to the metric induced by the $p$-adic absolute value. 
-  For background on valuations and absolute values for $p$-adic rings see \cite{engler2005valued}.
+  For background on valuations and absolute values for $p$-adic rings see \<^cite>\<open>"engler2005valued"\<close>.
   In what follows, we develop the topology of the $p$-adic from a valuative perspective rather than 
   a metric perspective. Though equivalent to the metric approach in the $p$-adic case, this
   approach is more general in that there exist valued rings whose valuations take values in
@@ -145,7 +145,7 @@ qed
 
 text\<open>
   The definition of Cauchy sequence here is equivalent to standard the metric notion, and is
-  identical to the one found on page 50 of \cite{engler2005valued}.
+  identical to the one found on page 50 of \<^cite>\<open>"engler2005valued"\<close>.
 \<close>
 
 lemma closed_seqs_diff_closed:

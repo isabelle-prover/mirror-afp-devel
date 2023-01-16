@@ -21,7 +21,7 @@ text \<open>Every finite abelian group is also finitely generated.\<close>
 sublocale finite_comm_group \<subseteq> fin_gen_comm_group G "carrier G"
   using generate_incl generate_sincl by (unfold_locales, auto)
 
-text \<open>This lemma contains the proof of Kemper from his lecture notes on algebra~\cite{kemper}.
+text \<open>This lemma contains the proof of Kemper from his lecture notes on algebra~\<^cite>\<open>"kemper"\<close>.
 However, the proof is not done in the context of a finitely generated group but for a finitely
 generated subgroup in a commutative group.\<close>
 

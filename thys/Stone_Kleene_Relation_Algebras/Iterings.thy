@@ -10,15 +10,15 @@ This theory introduces algebraic structures with an operation that describes ite
 An iteration describes the repeated sequential execution of a computation.
 This is typically modelled by fixpoints, but different computation models use different fixpoints in the refinement order.
 We therefore look at equational and simulation axioms rather than induction axioms.
-Our development is based on \cite{Guttmann2012c} and the proposed algebras generalise Kleene algebras.
+Our development is based on \<^cite>\<open>"Guttmann2012c"\<close> and the proposed algebras generalise Kleene algebras.
 
-We first consider a variant of Conway semirings \cite{BloomEsik1993a} based on idempotent left semirings.
-Conway semirings expand semirings by an iteration operation satisfying Conway's sumstar and productstar axioms \cite{Conway1971}.
+We first consider a variant of Conway semirings \<^cite>\<open>"BloomEsik1993a"\<close> based on idempotent left semirings.
+Conway semirings expand semirings by an iteration operation satisfying Conway's sumstar and productstar axioms \<^cite>\<open>"Conway1971"\<close>.
 Many properties of iteration follow already from these equational axioms.
 
 Next we introduce iterings, which use generalised versions of simulation axioms in addition to sumstar and productstar.
 Unlike the induction axioms of the Kleene star, which hold only in partial-correctness models, the simulation axioms are also valid in total and general correctness models.
-They are still powerful enough to prove the correctness of complex results such as separation theorems of \cite{Cohen2000} and Back's atomicity refinement theorem \cite{BackWright1999,Wright2004}.
+They are still powerful enough to prove the correctness of complex results such as separation theorems of \<^cite>\<open>"Cohen2000"\<close> and Back's atomicity refinement theorem \<^cite>\<open>"BackWright1999" and "Wright2004"\<close>.
 \<close>
 
 theory Iterings

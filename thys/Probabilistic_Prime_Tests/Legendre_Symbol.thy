@@ -142,7 +142,7 @@ qed
 lemma card_Int: "card (A \<inter> B) = card A - card (A - B)" if "finite A"
   by (metis Diff_Diff_Int Diff_subset card_Diff_subset finite_Diff that)
 
-text \<open>Proofs are inspired by \cite{Quadratic_Reciprocity}.\<close>
+text \<open>Proofs are inspired by \<^cite>\<open>"Quadratic_Reciprocity"\<close>.\<close>
 
 theorem supplement2_Legendre:
   fixes p :: int

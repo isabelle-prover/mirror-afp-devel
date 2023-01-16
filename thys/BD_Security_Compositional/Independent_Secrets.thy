@@ -1,7 +1,7 @@
 section \<open>Combining independent secret sources\<close>
 
 text \<open>This theory formalizes the discussion about considering
-combined sources of secrets from \cite[Appendix E]{cosmedis-SandP2017}.
+combined sources of secrets from \<^cite>\<open>\<open>Appendix E\<close> in "cosmedis-SandP2017"\<close>.
 \<close>
 
 theory Independent_Secrets

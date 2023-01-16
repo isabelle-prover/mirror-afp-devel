@@ -12,8 +12,8 @@ begin
 section \<open>Boolean Algebras\<close>
 
 text \<open>
-We show that Isabelle/HOL's \<open>boolean_algebra\<close> class is equivalent to Huntington's axioms \cite{Huntington1933}.
-See \cite{WamplerDoty2016} for related results.
+We show that Isabelle/HOL's \<open>boolean_algebra\<close> class is equivalent to Huntington's axioms \<^cite>\<open>"Huntington1933"\<close>.
+See \<^cite>\<open>"WamplerDoty2016"\<close> for related results.
 \<close>
 
 subsection \<open>Huntington's Axioms\<close>
@@ -462,7 +462,7 @@ We also include Meredith's axiomatisation.
 subsection \<open>Lee Byrne's Formulation A\<close>
 
 text \<open>
-The following axiomatisation is from \cite[Formulation A]{Byrne1946}; see also \cite{Frink1941}.
+The following axiomatisation is from \<^cite>\<open>\<open>Formulation A\<close> in "Byrne1946"\<close>; see also \<^cite>\<open>"Frink1941"\<close>.
 \<close>
 
 text \<open>Theorem 3\<close>
@@ -522,7 +522,7 @@ end
 subsection \<open>Lee Byrne's Formulation B\<close>
 
 text \<open>
-The following axiomatisation is from \cite[Formulation B]{Byrne1946}.
+The following axiomatisation is from \<^cite>\<open>\<open>Formulation B\<close> in "Byrne1946"\<close>.
 \<close>
 
 text \<open>Theorem 4\<close>
@@ -560,7 +560,7 @@ end
 subsection \<open>Meredith's Equational Axioms\<close>
 
 text \<open>
-The following axiomatisation is from \cite[page 221 (1) \{A,N\}]{MeredithPrior1968}.
+The following axiomatisation is from \<^cite>\<open>\<open>page 221 (1) \{A,N\}\<close> in "MeredithPrior1968"\<close>.
 \<close>
 
 class boolean_algebra_mp = sup + uminus +
@@ -605,7 +605,7 @@ text \<open>
 The following version is an equational axiomatisation based on semilattices.
 We add the double complement rule and that \<open>top\<close> is unique.
 The final axiom \<open>ba3_export\<close> encodes the logical statement $P \vee Q = P \vee (\neg P \wedge Q)$.
-Its dual appears in \cite{BalbesHorn1970}.
+Its dual appears in \<^cite>\<open>"BalbesHorn1970"\<close>.
 \<close>
 
 text \<open>Theorem 5\<close>
@@ -658,7 +658,7 @@ text \<open>
 We apply Huntington's axioms to the range of a unary operation, which serves as complement on the range.
 This gives a Boolean algebra structure on the range without imposing any further constraints on the set.
 The obtained structure is used as a reference in the subsequent development and to inherit the results proved here.
-This is taken from \cite{Guttmann2012c,GuttmannStruthWeber2011b} and follows the development of Boolean algebras in \cite{Maddux1996}.
+This is taken from \<^cite>\<open>"Guttmann2012c" and "GuttmannStruthWeber2011b"\<close> and follows the development of Boolean algebras in \<^cite>\<open>"Maddux1996"\<close>.
 \<close>
 
 text \<open>Definition 6\<close>
@@ -1525,7 +1525,7 @@ section \<open>Boolean Algebras in Stone Algebras\<close>
 
 text \<open>
 We specialise \<open>inf\<close> to meet and complement to pseudocomplement.
-This puts Stone algebras into the picture; for these it is well known that regular elements form a Boolean subalgebra \cite{Graetzer1971}.
+This puts Stone algebras into the picture; for these it is well known that regular elements form a Boolean subalgebra \<^cite>\<open>"Graetzer1971"\<close>.
 \<close>
 
 text \<open>Definition 17\<close>
@@ -1635,10 +1635,10 @@ end
 section \<open>Domain Semirings\<close>
 
 text \<open>
-The following development of tests in IL-semirings, prepredomain semirings, predomain semirings and domain semirings is mostly based on \cite{MoellerDesharnais2019}; see also \cite{DesharnaisMoeller2014}.
-See \cite{DesharnaisMoellerStruth2006b} for domain axioms in idempotent semirings.
-See \cite{DesharnaisJipsenStruth2009,JacksonStokes2004} for domain axioms in semigroups and monoids.
-Some variants have been implemented in \cite{GomesGuttmannHoefnerStruthWeber2016}.
+The following development of tests in IL-semirings, prepredomain semirings, predomain semirings and domain semirings is mostly based on \<^cite>\<open>"MoellerDesharnais2019"\<close>; see also \<^cite>\<open>"DesharnaisMoeller2014"\<close>.
+See \<^cite>\<open>"DesharnaisMoellerStruth2006b"\<close> for domain axioms in idempotent semirings.
+See \<^cite>\<open>"DesharnaisJipsenStruth2009" and "JacksonStokes2004"\<close> for domain axioms in semigroups and monoids.
+Some variants have been implemented in \<^cite>\<open>"GomesGuttmannHoefnerStruthWeber2016"\<close>.
 \<close>
 
 subsection \<open>Idempotent Left Semirings\<close>
@@ -2429,7 +2429,7 @@ section \<open>Antidomain Semirings\<close>
 
 text \<open>
 We now develop prepreantidomain semirings, preantidomain semirings and antidomain semirings.
-See \cite{DesharnaisStruth2008b,DesharnaisStruth2008a,DesharnaisStruth2011} for related work on internal axioms for antidomain.
+See \<^cite>\<open>"DesharnaisStruth2008b" and "DesharnaisStruth2008a" and "DesharnaisStruth2011"\<close> for related work on internal axioms for antidomain.
 \<close>
 
 subsection \<open>Prepreantidomain Semirings\<close>

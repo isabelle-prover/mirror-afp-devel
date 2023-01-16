@@ -6,7 +6,7 @@ imports Dom_Semi_List  "HOL-Library.While_Combinator" "Jinja.SemilatAlg"
 begin
 
 text \<open>A kildall's algorithm for computing dominators. 
-      It uses the ideas and the framework of kildall's algorithm implemented in Jinja \cite{Kildall-AFP},
+      It uses the ideas and the framework of kildall's algorithm implemented in Jinja \<^cite>\<open>"Kildall-AFP"\<close>,
       and modifications are needed to make it work for a fast algorithm for computing dominators\<close>
 
 type_synonym state_dom = "nat list "

@@ -97,7 +97,7 @@ lemma Cl_F: "Der_1 \<D> \<Longrightarrow> Der_4e \<D> \<Longrightarrow> \<forall
 
 subsection \<open>Further properties\<close>
 
-text\<open>\noindent{The definitions and theorems below are well known in the literature (e.g. @{cite Kuratowski2}).
+text\<open>\noindent{The definitions and theorems below are well known in the literature (e.g. \<^cite>\<open>Kuratowski2\<close>).
 Here we uncover the minimal conditions under which they hold (taking derivative operation as primitive).}\<close>
 lemma Cl_Bzero: "\<forall>A. Cl A \<longleftrightarrow> \<B>(\<^bold>\<midarrow>A) \<^bold>\<approx> \<^bold>\<bottom>" using pA2 pC1 unfolding conn by metis
 lemma Op_Bzero: "\<forall>A. Op A \<longleftrightarrow>  \<B> A \<^bold>\<approx> \<^bold>\<bottom>" using pB1 pI1 unfolding conn by metis

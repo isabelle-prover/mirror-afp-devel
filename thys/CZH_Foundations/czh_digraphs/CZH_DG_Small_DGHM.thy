@@ -17,7 +17,7 @@ subsubsection\<open>Definition and elementary properties\<close>
 
 text\<open>
 The following construction is based on the concept
-of a \<open>small functor\<close> used in \cite{shulman_set_2008}
+of a \<open>small functor\<close> used in \<^cite>\<open>"shulman_set_2008"\<close>
 in the context of the presentation of the set theory \<open>ZFC/S\<close>.
 \<close>
 

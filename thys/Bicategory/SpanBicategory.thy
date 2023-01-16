@@ -4249,7 +4249,7 @@ $$\xymatrix{
 
   text \<open>
     In this section, we chararacterize the maps (\emph{i.e}~the left adjoints)
-    in a span bicategory.  This is Proposition 2 of \cite{carboni-et-al}.
+    in a span bicategory.  This is Proposition 2 of \<^cite>\<open>"carboni-et-al"\<close>.
   \<close>
 
   context span_bicategory

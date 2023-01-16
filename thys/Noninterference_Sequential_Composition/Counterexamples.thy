@@ -25,9 +25,9 @@ assumption, whereas the latter drops the process sequentiality assumption, repla
 sequentiality alone. In both cases, all the other assumptions of the theorem keep being satisfied.
 
 Both counterexamples make use of reflexive security policies, which is the case for any policy of
-practical significance, and are based on trace set processes as defined in \cite{R3}. The security
+practical significance, and are based on trace set processes as defined in \<^cite>\<open>"R3"\<close>. The security
 of the processes input to sequential composition, as well as the insecurity of the resulting
-process, are demonstrated by means of the Ipurge Unwinding Theorem proven in \cite{R3}.
+process, are demonstrated by means of the Ipurge Unwinding Theorem proven in \<^cite>\<open>"R3"\<close>.
 \<close>
 
 

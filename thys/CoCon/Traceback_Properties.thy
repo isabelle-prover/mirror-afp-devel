@@ -40,7 +40,7 @@ a consequence of either a conference approval action by the superuser (if the ph
 Setup) or a phase change action by a chair (otherwise).
 \end{description}
 
-More details and explanations can be found in \cite[Section 3.6]{cocon-JAR2021}.
+More details and explanations can be found in \<^cite>\<open>\<open>Section 3.6\<close> in "cocon-JAR2021"\<close>.
 \<close>
 
 

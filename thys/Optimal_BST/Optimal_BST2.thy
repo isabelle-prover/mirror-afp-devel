@@ -9,7 +9,7 @@ imports
 begin
 
 text \<open>Knuth presented an optimization of the previously known cubic dynamic programming algorithm
-to a quadratic one. A simplified proof of this optimization was found by Yao~\cite{Yao80}.
+to a quadratic one. A simplified proof of this optimization was found by Yao~\<^cite>\<open>"Yao80"\<close>.
 Mehlhorn follows Yao closely. The core of the optimization argument is given abstractly
 in theory @{theory Optimal_BST.Quadrilateral_Inequality}. In addition we first need to establish some more
 properties of @{const argmin}.\<close>
@@ -213,7 +213,7 @@ declare opt_bst2.simps[simp del]
 
 abbreviation "min_wpl3 i j k \<equiv> min_wpl i (k-1) + min_wpl (k+1) j + w i j"
 
-text\<open>The correctness proof \cite{Yao} is based on a general theory of `quatrilateral inequalities'
+text\<open>The correctness proof \<^cite>\<open>"Yao"\<close> is based on a general theory of `quatrilateral inequalities'
 developed in locale QI that we now instantiate:\<close>
 
 interpretation QI

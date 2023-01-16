@@ -215,7 +215,7 @@ text \<open>
     evaluates all possible cases before it decides which one is taken.
 
     Case certificates are described in Haftmann's PhD thesis
-    \cite[Def.\ 27]{Haftmann2009PhD}. For a datatype \<open>dt\<close>
+    \<^cite>\<open>\<open>Def.\ 27\<close> in "Haftmann2009PhD"\<close>. For a datatype \<open>dt\<close>
     with constructors \<open>C\<^sub>1\<close> to \<open>C\<^sub>n\<close>
     where each constructor \<open>C\<^sub>i\<close> takes \<open>k\<^sub>i\<close> parameters,
     the certificate for the case combinator \<open>case_dt\<close>

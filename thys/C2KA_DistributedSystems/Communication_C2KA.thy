@@ -7,13 +7,13 @@ section \<open>Notions of Communication for \CCKAabbrv \label{sec:communication}
 
 text \<open>
 Distributed systems contain a significant number of interactions among their constituent agents. Any interaction, 
-direct or indirect, of an agent with its neighbouring agents can be understood as a \emph{communication}~\cite{Milner1989aa}. 
+direct or indirect, of an agent with its neighbouring agents can be understood as a \emph{communication}~\<^cite>\<open>"Milner1989aa"\<close>. 
 Therefore, any potential for communication between two system agents can be characterized by the existence of a communication 
 path allowing for the transfer of data or control from one agent to another. Potential for communication allows system
 agents to have an \emph{influence} over each other. The study of agent influence allows for the 
 determination of the overall structure of the distributed system of which the agents comprise. A full treatment of the potential 
-for communication within distributed systems specified using \CCKAabbrv has been given in~\cite{Jaskolka2015ab} 
-and~\cite{Jaskolka2014ac} and is highlighted below.
+for communication within distributed systems specified using \CCKAabbrv has been given in~\<^cite>\<open>"Jaskolka2015ab"\<close> 
+and~\<^cite>\<open>"Jaskolka2014ac"\<close> and is highlighted below.
 
 Consider a distributed system with~$\Agent{A}, \Agent{B} \in \A$ such that~$\Agent{A} \neq \Agent{B}$. We write~$\agent{A}{a}$ 
 where~$\Agent{A}$ is the name given to the agent and~$a \in \CKAset$ is the agent behaviour. For~$\agent{A}{a}$ and~$\agent{B}{b}$, 

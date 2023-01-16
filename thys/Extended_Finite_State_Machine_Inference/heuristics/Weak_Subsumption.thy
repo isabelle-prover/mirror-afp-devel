@@ -1,6 +1,6 @@
 subsection\<open>Weak Subsumption\<close>
 text\<open>Unfortunately, the \emph{direct subsumption} relation cannot be transformed into executable
-code. To solve this problem, \cite{foster2019} advocates for the use of a model checker, but this
+code. To solve this problem, \<^cite>\<open>"foster2019"\<close> advocates for the use of a model checker, but this
 turns out to be prohibitively slow for all but the smallest of examples. To solve this problem, we
 must make a practical compromise and use another heuristic: the \emph{weak subsumption} heuristic.
 This heuristic simply tries to delete each transition in turn and runs the original traces used to

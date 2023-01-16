@@ -16,7 +16,7 @@ text \<open>
   efficient than for the implementation provided by \<^theory>\<open>HOL-Library.Multiset\<close>.
 
   A high-level overview of an older version of this formalization as well as some experimental data
-  is to be found in @{cite "Sternagel2012"}.
+  is to be found in \<^cite>\<open>"Sternagel2012"\<close>.
 \<close>
 subsection \<open>Definition of Natural Mergesort\<close>
 

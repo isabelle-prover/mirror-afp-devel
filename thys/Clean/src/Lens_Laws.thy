@@ -19,7 +19,7 @@ begin
 subsection \<open>Lens Signature\<close>
   
 text \<open>This theory introduces the signature of lenses and indentifies the core algebraic hierarchy of lens 
-  classes, including laws for well-behaved, very well-behaved, and bijective lenses~\cite{Foster07,Fischer2015,Gibbons17}.\<close>
+  classes, including laws for well-behaved, very well-behaved, and bijective lenses~\<^cite>\<open>"Foster07" and "Fischer2015" and "Gibbons17"\<close>.\<close>
   
 record ('a, 'b) lens =
   lens_get :: "'b \<Rightarrow> 'a" ("get\<index>")
@@ -39,7 +39,7 @@ text \<open>
   \end{figure}
 
   A lens $X : \view \lto \src$, for source type $\src$ and view type $\view$, identifies
-  $\view$ with a subregion of $\src$~\cite{Foster07,Foster09}, as illustrated in Figure~\ref{fig:Lens}. The arrow denotes
+  $\view$ with a subregion of $\src$~\<^cite>\<open>"Foster07" and "Foster09"\<close>, as illustrated in Figure~\ref{fig:Lens}. The arrow denotes
   $X$ and the hatched area denotes the subregion $\view$ it characterises. Transformations on
   $\view$ can be performed without affecting the parts of $\src$ outside the hatched area. The lens
   signature consists of a pair of functions $\lget_X : \src \Rightarrow \view$ that extracts a view
@@ -66,7 +66,7 @@ text \<open> Function $\lcreate_X~v$ creates an instance of the source type of $
 subsection \<open>Weak Lenses\<close>
 
 text \<open> Weak lenses are the least constrained class of lenses in our algebraic hierarchy. They
-  simply require that the PutGet law~\cite{Foster09,Fischer2015} is satisfied, meaning that
+  simply require that the PutGet law~\<^cite>\<open>"Foster09" and "Fischer2015"\<close> is satisfied, meaning that
   $\lget$ is the inverse of $\lput$. \<close>
 
 locale weak_lens =
@@ -114,7 +114,7 @@ declare weak_lens.create_get [simp]
 
 subsection \<open>Well-behaved Lenses\<close>
 
-text \<open> Well-behaved lenses add to weak lenses that requirement that the GetPut law~\cite{Foster09,Fischer2015}
+text \<open> Well-behaved lenses add to weak lenses that requirement that the GetPut law~\<^cite>\<open>"Foster09" and "Fischer2015"\<close>
   is satisfied, meaning that $\lput$ is the inverse of $\lget$. \<close>
 
 locale wb_lens = weak_lens +
@@ -184,7 +184,7 @@ lemma mwb_lens_weak [simp]:
 
 subsection \<open>Very Well-behaved Lenses\<close>
 
-text \<open>Very well-behaved lenses combine all three laws, as in the literature~\cite{Foster09,Fischer2015}.\<close>
+text \<open>Very well-behaved lenses combine all three laws, as in the literature~\<^cite>\<open>"Foster09" and "Fischer2015"\<close>.\<close>
 
 locale vwb_lens = wb_lens + mwb_lens
 begin
@@ -244,7 +244,7 @@ text \<open>Bijective lenses characterise the situation where the source and vie
   in other words the view type full characterises the whole source type. It is often useful
   when the view type and source type are syntactically different, but nevertheless correspond
   precisely in terms of what they observe. Bijective lenses are formulates using
-  the strong GetPut law~\cite{Foster09,Fischer2015}.\<close>
+  the strong GetPut law~\<^cite>\<open>"Foster09" and "Fischer2015"\<close>.\<close>
 
 locale bij_lens = weak_lens +
   assumes strong_get_put: "put \<sigma> (get \<rho>) = \<rho>"

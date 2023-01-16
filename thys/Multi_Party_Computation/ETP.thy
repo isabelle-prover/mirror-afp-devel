@@ -1,6 +1,6 @@
 subsection \<open> ETP definitions \<close>
 
-text \<open> We define Extended Trapdoor Permutations (ETPs) following \cite{DBLP:books/sp/17/Lindell17} and \cite{DBLP:books/cu/Goldreich2004}. 
+text \<open> We define Extended Trapdoor Permutations (ETPs) following \<^cite>\<open>"DBLP:books/sp/17/Lindell17"\<close> and \<^cite>\<open>"DBLP:books/cu/Goldreich2004"\<close>. 
 In particular we consider the property of Hard Core Predicates (HCPs). \<close>
 
 theory ETP imports

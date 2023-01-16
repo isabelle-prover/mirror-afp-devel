@@ -108,7 +108,7 @@ lemma rpr_choiceFn: "\<lbrakk> finite A; rpr A r \<rbrakk> \<Longrightarrow> cho
 subsection\<open>Social Choice Functions (SCFs)\<close>
 
 text \<open>A \emph{social choice function} (SCF), also called a
-\emph{collective choice rule} by Sen \cite[p28]{Sen:70a}, is a function that
+\emph{collective choice rule} by Sen \<^cite>\<open>\<open>p28\<close> in "Sen:70a"\<close>, is a function that
 somehow aggregates society's opinions, expressed as a profile, into a
 preference relation.\<close>
 
@@ -220,7 +220,7 @@ lemma iiaE:
 subsection\<open>Decisiveness and Semi-decisiveness\<close>
 
 text\<open>This notion is the key to Arrow's Theorem, and hinges on the use of
-strict preference \cite[p42]{Sen:70a}.\<close>
+strict preference \<^cite>\<open>\<open>p42\<close> in "Sen:70a"\<close>.\<close>
 
 text\<open>A coalition @{term "C"} of agents is \emph{semi-decisive} for @{term
 "x"} over @{term "y"} if, whenever the coalition prefers @{term "x"} to

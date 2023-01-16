@@ -11,7 +11,7 @@ section \<open>G\"odel's Argument, Formally\<close>
 text\<open> 
  "G\"odel's particular version of the argument is a direct descendent of that of Leibniz, which in turn derives
   from one of Descartes. These arguments all have a two-part structure: prove God's existence is necessary,
-  if possible; and prove God's existence is possible." @{cite "Fitting"}, p. 138. \<close> 
+  if possible; and prove God's existence is possible." \<^cite>\<open>"Fitting"\<close>, p. 138. \<close> 
 
 subsection \<open>Part I - God's Existence is Possible\<close>
 
@@ -117,7 +117,7 @@ lemma A3implT2_global: "\<lfloor>\<^bold>\<forall>Z X. (pos Z \<^bold>\<and> int
   using A3implT2_local by (rule localImpGlobalCons) 
   
 text\<open>  Being Godlike is a positive property. Note that this theorem can be axiomatized directly,
-as noted by Dana Scott (see @{cite "Fitting"}, p. 152). We will do so for the second part. \<close>
+as noted by Dana Scott (see \<^cite>\<open>"Fitting"\<close>, p. 152). We will do so for the second part. \<close>
 theorem T2: "\<lfloor>\<P> G\<rfloor>" using A3implT2_global A3 by simp
   
 text\<open>  Theorem 11.17 (Informal Proposition 3) - Possibly God exists: \<close>

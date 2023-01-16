@@ -1,4 +1,4 @@
-subsection\<open>Preliminaries: Further Basic Notions (Fig.~3 in \cite{C85})\<close>
+subsection\<open>Preliminaries: Further Basic Notions (Fig.~3 in \<^cite>\<open>"C85"\<close>)\<close>
 
 theory BaseDefs imports HOML
 begin  

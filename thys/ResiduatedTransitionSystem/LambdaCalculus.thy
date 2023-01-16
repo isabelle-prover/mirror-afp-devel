@@ -16,7 +16,7 @@ chapter "The Lambda Calculus"
     We have syntactic constructors for variables, \<open>\<lambda>\<close>-abstractions, and applications.
     An additional constructor represents a \<open>\<beta>\<close>-redex that has been marked for contraction.
     This is a slightly different approach that that taken by other authors
-    (\emph{e.g.}~\cite{barendregt} or \cite{huet-residual-theory}), in which it is the
+    (\emph{e.g.}~\<^cite>\<open>"barendregt"\<close> or \<^cite>\<open>"huet-residual-theory"\<close>), in which it is the
     application constructor that is marked to indicate a redex to be contracted,
     but it seems more natural in the present setting in which a single syntax is used to
     represent both terms and reductions.
@@ -29,11 +29,11 @@ chapter "The Lambda Calculus"
     is to develop the theory of substitution using de Bruijn indices.
     In addition, various properties concerning the commutation of residuation and substitution
     have to be proved.  This part of the work has benefited greatly from previous work
-    of Huet \cite{huet-residual-theory}, in which the theory of residuation was formalized
+    of Huet \<^cite>\<open>"huet-residual-theory"\<close>, in which the theory of residuation was formalized
     in the proof assistant Coq.  In particular, it was very helpful to have already available
     known-correct statements of various lemmas regarding indices, substitution, and residuation.
     The development of the theory culminates in the proof of L\'{e}vy's ``Cube Lemma''
-    \cite{levy}, which is the key axiom in the definition of RTS.
+    \<^cite>\<open>"levy"\<close>, which is the key axiom in the definition of RTS.
 
     Once reductions in the \<open>\<lambda>\<close>-calculus have been cast as transitions of an RTS,
     we are able to take advantage of generic results already proved for RTS's; in particular,
@@ -43,7 +43,7 @@ chapter "The Lambda Calculus"
     we turn to the study of developments.  A development of a term is a reduction path from
     that term in which the only redexes that are contracted are those that are residuals of
     redexes in the original term.  We prove the Finite Developments Theorem: all developments
-    are finite.  The proof given here follows that given by de Vrijer \cite{deVrijer},
+    are finite.  The proof given here follows that given by de Vrijer \<^cite>\<open>"deVrijer"\<close>,
     except that here we make the adaptations necessary for a syntax based on de Bruijn
     indices, rather than the classical named-variable syntax used by de Vrijer.
     Using the Finite Developments Theorem, we define a function that takes a term and constructs
@@ -318,7 +318,7 @@ begin
 
     text \<open>
       The following development of the properties of raising indices, substitution, and
-      residuation has benefited greatly from the previous work by Huet \cite{huet-residual-theory}.
+      residuation has benefited greatly from the previous work by Huet \<^cite>\<open>"huet-residual-theory"\<close>.
       In particular, it was very helpful to have correct statements of various lemmas
       available, rather than having to reconstruct them.
     \<close>
@@ -377,7 +377,7 @@ begin
     subsection "Substitution"
 
     text \<open>
-      Following \cite{huet-residual-theory}, we now define a generalized substitution operation
+      Following \<^cite>\<open>"huet-residual-theory"\<close>, we now define a generalized substitution operation
       with adjustment of indices.  The ultimate goal is to define the result of contraction
       of a marked redex \<open>Beta t u\<close> to be \<open>subst u t\<close>.  However, to be able to give a proper
       recursive definition of \<open>subst\<close>, we need to introduce a parameter \<open>n\<close> to keep track of the
@@ -510,7 +510,7 @@ begin
       by (metis add_Suc)+
 
     text \<open>
-      The Substitution Lemma, as given by Huet \cite{huet-residual-theory}.
+      The Substitution Lemma, as given by Huet \<^cite>\<open>"huet-residual-theory"\<close>.
     \<close>
 
     lemma substitution_lemma:
@@ -534,7 +534,7 @@ begin
       positions corresponding to redexes that were originally marked in \<open>t\<close> and that
       were not contracted by any of the reductions of \<open>u\<close>.
 
-      This definition has also benefited from the presentation in \cite{huet-residual-theory}.
+      This definition has also benefited from the presentation in \<^cite>\<open>"huet-residual-theory"\<close>.
     \<close>
 
     fun resid  (infix "\\" 70)
@@ -965,7 +965,7 @@ begin
       by (metis Raise_not_Nil Raise_resid)
 
     text \<open>
-      The following is Huet's Commutation Theorem \cite{huet-residual-theory}:
+      The following is Huet's Commutation Theorem \<^cite>\<open>"huet-residual-theory"\<close>:
       ``substitution commutes with residuation''.
     \<close>
 
@@ -1020,7 +1020,7 @@ begin
       by (metis Coinitial_iff_Con resid.simps(7))+
 
     text \<open>
-      We can now prove L\'{e}vy's ``Cube Lemma'' \cite{levy}, which is the key axiom
+      We can now prove L\'{e}vy's ``Cube Lemma'' \<^cite>\<open>"levy"\<close>, which is the key axiom
       for a residuated transition system.
     \<close>
 
@@ -3032,9 +3032,9 @@ begin
     of redexes present in the original term.  That is, no redexes are contracted that were
     newly created as a result of the previous reductions.  The main theorem about developments
     is the Finite Developments Theorem, which states that all developments are finite.
-    A proof of this theorem was published by Hindley \cite{hindley}, who attributes the
-    result to Schroer \cite{schroer}.  Other proofs were published subsequently.
-    Here we follow the paper by de Vrijer \cite{deVrijer}, which may in some sense be considered
+    A proof of this theorem was published by Hindley \<^cite>\<open>"hindley"\<close>, who attributes the
+    result to Schroer \<^cite>\<open>"schroer"\<close>.  Other proofs were published subsequently.
+    Here we follow the paper by de Vrijer \<^cite>\<open>"deVrijer"\<close>, which may in some sense be considered
     the definitive work because de Vrijer's proof gives an exact bound on the number of steps
     in a development.  Since de Vrijer used a classical, named-variable representation of
     \<open>\<lambda>\<close>-terms, for the formalization given in the present article it was necessary to find the
@@ -3364,7 +3364,7 @@ begin
   end
 
   text \<open>
-    In \cite{hindley}, Hindley proceeds by using structural induction to establish
+    In \<^cite>\<open>"hindley"\<close>, Hindley proceeds by using structural induction to establish
     a bound on the length of a development of a term.
     The only case that poses any difficulty is the case of a \<open>\<beta>\<close>-redex, which is
     \<open>\<^bold>\<lambda>\<^bold>[t\<^bold>] \<^bold>\<Zspot> u\<close> in the notation used here.  He notes that there is an easy bound on the
@@ -3384,7 +3384,7 @@ begin
     transformation with a bounded increase in length.  This can be considered as a
     weak form of standardization for developments.
 
-    A later paper by de Vrijer \cite{deVrijer} obtains an explicit function for the
+    A later paper by de Vrijer \<^cite>\<open>"deVrijer"\<close> obtains an explicit function for the
     exact number of steps in a development of maximal length.  His proof is very
     straightforward and amenable to formalization, and it is what we follow here.
     The main issue for us is that de Vrijer uses a classical representation of \<open>\<lambda>\<close>-terms,
@@ -5675,9 +5675,9 @@ begin
       we prove the Leftmost Reduction Theorem: leftmost reduction is a normalizing
       strategy.
 
-      The Standardization Theorem was first proved by Curry and Feys \cite{curry-and-feys},
+      The Standardization Theorem was first proved by Curry and Feys \<^cite>\<open>"curry-and-feys"\<close>,
       with subsequent proofs given by a number of authors.  Formalized proofs have also
-      been given; a recent one (using Agda) is presented in \cite{copes}, with references
+      been given; a recent one (using Agda) is presented in \<^cite>\<open>"copes"\<close>, with references
       to earlier work.  The version of the theorem that we formalize here is a ``strong''
       version, which asserts the existence of a standard reduction path congruent to a
       a given elementary reduction path.  At the core of the proof is a function that

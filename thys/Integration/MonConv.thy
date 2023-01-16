@@ -17,7 +17,7 @@ text \<open>A sensible requirement for an integral operator is that it be
   There are converging sequences of real numbers, real functions and
   sets. Monotone convergence could even be defined more generally for
   any type in the axiomatic type class\footnote{For the concept of axiomatic type
-  classes, see \cite{Nipkow93,wenzelax}} \<open>ord\<close> of ordered
+  classes, see \<^cite>\<open>"Nipkow93" and "wenzelax"\<close>} \<open>ord\<close> of ordered
   types like this.
 
   @{prop "mon_conv u f \<equiv> (\<forall>n. u n \<le> u (Suc n)) \<and> Sup (range u) = f"}
@@ -55,7 +55,7 @@ theorem realfun_mon_conv_iff: "(u\<up>f) = (\<forall>w. (\<lambda>n. u n w)\<up>
   by (auto simp add: mon_conv_real_def mon_conv_real_fun_def le_fun_def)
 
 text \<open>The long arrow signifies convergence of real sequences as
-  defined in the theory \<open>SEQ\<close> \cite{Fleuriot:2000:MNR}. Monotone convergence
+  defined in the theory \<open>SEQ\<close> \<^cite>\<open>"Fleuriot:2000:MNR"\<close>. Monotone convergence
   for real functions is simply pointwise monotone convergence.
 
   Quite a few properties of these definitions will be necessary later,

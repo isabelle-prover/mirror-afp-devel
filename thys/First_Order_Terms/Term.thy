@@ -324,7 +324,7 @@ lemma subst_domain_subst_compose:
 
 
 text \<open>A substitution is idempotent iff the variables in its range are disjoint from its domain.
-  (See also "Term Rewriting and All That" \cite[Lemma 4.5.7]{AllThat}.)\<close>
+  (See also "Term Rewriting and All That" \<^cite>\<open>\<open>Lemma 4.5.7\<close> in "AllThat"\<close>.)\<close>
 lemma subst_idemp_iff:
   "\<sigma> \<circ>\<^sub>s \<sigma> = \<sigma> \<longleftrightarrow> subst_domain \<sigma> \<inter> range_vars \<sigma> = {}"
 proof

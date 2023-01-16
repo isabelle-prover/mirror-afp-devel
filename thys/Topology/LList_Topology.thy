@@ -18,7 +18,7 @@ text\<open>
   proved that safety properties are closed sets and that liveness
   properties are dense sets. Finally, we prove in each of the the
   three different topologies the respective theorem of Alpern and
-  Schneider \cite{alpern85:_defin_liven}, which states that every
+  Schneider \<^cite>\<open>"alpern85:_defin_liven"\<close>, which states that every
   property can be represented as an intersection of a safety property
   and a liveness property.\<close>
 

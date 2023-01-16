@@ -12,7 +12,7 @@ subsection\<open>Background\<close>
 
 text\<open>
 \<open>Set\<close> is usually defined as a category of sets and total functions
-(see Chapter I-2 in \cite{mac_lane_categories_2010}). However, there
+(see Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>). However, there
 is little that can prevent one from exposing \<open>Set\<close> as a digraph and
 provide additional structure gradually later. 
 Thus, in this section, \<open>\<alpha>\<close>-\<open>Set\<close> is defined as a digraph of sets 
@@ -145,7 +145,7 @@ lemma set_Collect_arr_Set[simp]:
 subsubsection\<open>Composition\<close>
 
 
-text\<open>See \cite{mac_lane_categories_2010}).\<close>
+text\<open>See \<^cite>\<open>"mac_lane_categories_2010"\<close>).\<close>
 
 abbreviation (input) comp_Set :: "V \<Rightarrow> V \<Rightarrow> V" (infixl \<open>\<circ>\<^sub>S\<^sub>e\<^sub>t\<close> 55)
   where "comp_Set \<equiv> comp_Rel"

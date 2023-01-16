@@ -1,7 +1,7 @@
 (* Author: Matthias Brun,   ETH Zürich, 2019 *)
 (* Author: Dmitriy Traytel, ETH Zürich, 2019 *)
 
-section \<open>Formalization of Miller et al.'s~\cite{adsg} Main Results\<close>
+section \<open>Formalization of Miller et al.'s~\<^cite>\<open>"adsg"\<close> Main Results\<close>
 
 (*<*)
 theory Results

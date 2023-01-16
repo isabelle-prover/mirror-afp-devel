@@ -10,8 +10,8 @@ section\<open> Choice Functions \label{sec:cf} \<close>
 text\<open>
 
 We now develop a few somewhat general results about choice functions,
-following \citet{Moulin:1985,Sen:1970,Border:2012}.
-\citet{sep-preferences} provide some philosophical background on this
+following \<^citet>\<open>"Moulin:1985" and "Sen:1970" and "Border:2012"\<close>.
+\<^citet>\<open>"sep-preferences"\<close> provide some philosophical background on this
 topic. While this material is foundational to the story we tell about
 stable matching, it is perhaps best skipped over on a first reading.
 
@@ -135,10 +135,10 @@ alternative that is rejected from @{term "A"} shall remain rejected
 when there is ``increased competition,'' i.e., from all sets that
 contain @{term "A"}.
 
-\citet{HatfieldMilgrom:2005} define this property as simply the
-monotonicity of @{const "Rf"}. \citet{AygunSonmez:2012-WP2} instead
+\<^citet>\<open>"HatfieldMilgrom:2005"\<close> define this property as simply the
+monotonicity of @{const "Rf"}. \<^citet>\<open>"AygunSonmez:2012-WP2"\<close> instead
 use the complicated condition shown here. Condition
-\<open>\<alpha>\<close>, due to \citet[p17, see below]{Sen:1970}, is
+\<open>\<alpha>\<close>, due to \<^citet>\<open>\<open>p17, see below\<close> in "Sen:1970"\<close>, is
 the most general and arguably the most perspicuous.
 
 \<close>
@@ -217,7 +217,7 @@ text\<open>
 
 The above substitutes condition is equivalent to the
 @{emph \<open>independence of irrelevant alternatives\<close>}, AKA condition
-\<open>\<alpha>\<close> due to \citet{Sen:1970}. Intuitively if
+\<open>\<alpha>\<close> due to \<^citet>\<open>"Sen:1970"\<close>. Intuitively if
 \<open>a\<close> is chosen from a set \<open>A\<close>, then it must
 be chosen from every subset of \<open>A\<close> that it belongs
 to. Note the lack of finiteness assumptions here.
@@ -263,10 +263,10 @@ by (meson f_range_onD f_range_on_antimono subset_antisym subset_eq)
 
 text\<open>
 
-\citet[p914, bottom right]{HatfieldMilgrom:2005} claim that the
+\<^citet>\<open>\<open>p914, bottom right\<close> in "HatfieldMilgrom:2005"\<close> claim that the
 @{const "substitutes"} condition coincides with the
 @{emph \<open>substitutable preferences\<close>} condition for the college admissions
-problem of \citet[Definition~6.2]{RothSotomayor:1990}, which is
+problem of \<^citet>\<open>\<open>Definition~6.2\<close> in "RothSotomayor:1990"\<close>, which is
 similar to @{const "iia"}:
 
 \<close>
@@ -295,7 +295,7 @@ qed
 
 text\<open>
 
-\citet[p152]{Moulin:1985} defines an equivalent @{emph \<open>Chernoff\<close>}
+\<^citet>\<open>\<open>p152\<close> in "Moulin:1985"\<close> defines an equivalent @{emph \<open>Chernoff\<close>}
 condition. Intuitively this captures the idea that ``a best choice in
 some issue [set of alternatives] is still best if the issue shrinks.''
 
@@ -324,7 +324,7 @@ by clarsimp (metis (mono_tags, lifting) Int_iff Un_iff Un_subset_iff contra_subs
 
 text\<open>
 
-\citet[p159]{Moulin:1985} states a series of equivalent formulations
+\<^citet>\<open>\<open>p159\<close> in "Moulin:1985"\<close> states a series of equivalent formulations
 of the @{const "Chernoff"} condition. He also claims that these hold
 if the two sets are disjoint.
 
@@ -405,8 +405,8 @@ subsection\<open> The @{emph \<open>irrelevance of rejected contracts\<close>} c
 
 text\<open>
 
-\citet[\S4]{AygunSonmez:2012-WP2} propose to repair the results of
-\citet{HatfieldMilgrom:2005} by imposing the @{emph \<open>irrelevance of
+\<^citet>\<open>\<open>\S4\<close> in "AygunSonmez:2012-WP2"\<close> propose to repair the results of
+\<^citet>\<open>"HatfieldMilgrom:2005"\<close> by imposing the @{emph \<open>irrelevance of
 rejected contracts\<close>} (IRC) condition. Intuitively this requires the
 choice function @{term "f"} to ignore unchosen alternatives.
 
@@ -439,8 +439,8 @@ qed simp
 text\<open>
 
 An equivalent condition is called @{emph \<open>consistency\<close>} by some
-(\citet[Definition~2]{ChambersYenmez:2013},
-\citet[Equation~(14)]{Fleiner:2002}). Like @{const "iia"}, this
+(\<^citet>\<open>\<open>Definition~2\<close> in "ChambersYenmez:2013"\<close>,
+\<^citet>\<open>\<open>Equation~(14)\<close> in "Fleiner:2002"\<close>). Like @{const "iia"}, this
 formulation generalizes to infinite universes.
 
 \<close>
@@ -492,7 +492,7 @@ using %invisible assms by (metis consistency_onD f_range_onD order_refl)
 
 text\<open>
 
-\citet[p154]{Moulin:1985} defines a similar but weaker property he
+\<^citet>\<open>\<open>p154\<close> in "Moulin:1985"\<close> defines a similar but weaker property he
 calls @{emph \<open>Aizerman\<close>}:
 
 \<close>
@@ -515,7 +515,7 @@ using %invisible assms by (metis Aizerman_onI consistency_onD order_refl)
 text\<open>
 
 The converse requires @{term "f"} to be idempotent
-\citep[p157]{Moulin:1985}:
+\<^citep>\<open>\<open>p157\<close> in "Moulin:1985"\<close>:
 
 \<close>
 
@@ -530,7 +530,7 @@ subsection\<open> The @{emph \<open>law of aggregate demand\<close>} condition a
 
 text\<open>
 
-\citet[{\S}III]{HatfieldMilgrom:2005} impose the @{emph \<open>law of
+\<^citet>\<open>\<open>{\S}III\<close> in "HatfieldMilgrom:2005"\<close> impose the @{emph \<open>law of
 aggregate demand\<close>} (aka @{emph \<open>size monotonicity\<close>}) to obtain the rural
 hospitals theorem (\S\ref{sec:contracts-rh}). It captures the
 following intuition:
@@ -557,8 +557,8 @@ abbreviation lad :: "'a::finite cfun \<Rightarrow> bool" where
 text\<open>
 
 This definition is identical amongst
-\citet[{\S}III]{HatfieldMilgrom:2005}, \citet[(20)]{Fleiner:2002}, and
-\citet[Definition~4]{AygunSonmez:2012-WP2}.
+\<^citet>\<open>\<open>{\S}III\<close> in "HatfieldMilgrom:2005"\<close>, \<^citet>\<open>\<open>(20)\<close> in "Fleiner:2002"\<close>, and
+\<^citet>\<open>\<open>Definition~4\<close> in "AygunSonmez:2012-WP2"\<close>.
 
 \<close>
 (*<*)
@@ -579,7 +579,7 @@ using assms unfolding lad_on_def by (simp add: subsetI)
 (*>*)
 text\<open>
 
-\citet[\S5, Proposition~1]{AygunSonmez:2012-WP2} show that @{const
+\<^citet>\<open>\<open>\S5, Proposition~1\<close> in "AygunSonmez:2012-WP2"\<close> show that @{const
 "substitutes"} and @{const "lad"} imply @{const "irc"}, which
 therefore rescues many results in the matching-with-contracts
 literature.
@@ -617,7 +617,7 @@ subsection\<open> The @{emph \<open>expansion\<close>} condition \<close>
 
 text\<open>
 
-According to \citet[p152]{Moulin:1985}, a choice function satifies
+According to \<^citet>\<open>\<open>p152\<close> in "Moulin:1985"\<close>, a choice function satifies
 @{emph \<open>expansion\<close>} if an alternative chosen from two sets is also chosen
 from their union.
 
@@ -634,7 +634,7 @@ lemmas %invisible expansion_onD = iffD1[OF expansion_on_def, rule_format, THEN s
 
 text\<open>
 
-Condition \<open>\<gamma>\<close> due to \citet{Sen:1971} generalizes
+Condition \<open>\<gamma>\<close> due to \<^citet>\<open>"Sen:1971"\<close> generalizes
 @{const "expansion"} to collections of sets of choices.
 
 \<close>
@@ -722,9 +722,9 @@ the choice functions to ever yield non-empty sets.
 This game of uncovering the preference relations (if any) underlying a
 choice function goes by the name of @{emph \<open>revealed preference\<close>}. (In
 contrast, later we show how these conditions guarantee the existence
-of stable many-to-one matches.) See \citet{Moulin:1985} and
-\citet{Border:2012} for background, intuition and critique, and
-\citet{Sen:1971} for further classical results and proofs.
+of stable many-to-one matches.) See \<^citet>\<open>"Moulin:1985"\<close> and
+\<^citet>\<open>"Border:2012"\<close> for background, intuition and critique, and
+\<^citet>\<open>"Sen:1971"\<close> for further classical results and proofs.
 
 We adopt the following notion here:
 
@@ -757,8 +757,8 @@ can be rationalized, continues by establishing some properties of all
 rationalizable choice functions, and concludes by considering what it
 takes to establish stronger properties.
 
-Following \citet[\S5, Definition~2]{Border:2012} and
-\citet[Definition~2]{Sen:1971}, we can generate the @{emph \<open>revealed
+Following \<^citet>\<open>\<open>\S5, Definition~2\<close> in "Border:2012"\<close> and
+\<^citet>\<open>\<open>Definition~2\<close> in "Sen:1971"\<close>, we can generate the @{emph \<open>revealed
 weakly preferred\<close>} relation for the choice function @{term "f"}:
 
 \<close>
@@ -807,7 +807,7 @@ abbreviation V_axiom :: "'a cfun \<Rightarrow> bool" where
 text\<open>
 
 This axiom characterizes rationality; see
-\citet[Theorem~7]{Border:2012}. \citet[\S3]{Sen:1971} calls a decisive
+\<^citet>\<open>\<open>Theorem~7\<close> in "Border:2012"\<close>. \<^citet>\<open>\<open>\S3\<close> in "Sen:1971"\<close> calls a decisive
 choice function that satisfies @{const "V_axiom"} @{emph \<open>normal\<close>}.
 
 \<close>
@@ -833,7 +833,7 @@ using %invisible rationalizes_on_f_range_on_V_axiom_on f_range_on_V_axiom_on_rat
 text\<open>
 
 We could also ask that @{term "f"} be determined directly by how it
-behaves on pairs (\citet{Sen:1971}, \citet[p151]{Moulin:1985}), which
+behaves on pairs (\<^citet>\<open>"Sen:1971"\<close>, \<^citet>\<open>\<open>p151\<close> in "Moulin:1985"\<close>), which
 turns out to be equivalent:
 
 \<close>
@@ -877,7 +877,7 @@ qed
 text\<open>
 
 All rationalizable choice functions satisfy @{const "iia"} and @{const
-"expansion"} (\citet{Sen:1971}, \citet[p152]{Moulin:1985}).
+"expansion"} (\<^citet>\<open>"Sen:1971"\<close>, \<^citet>\<open>\<open>p152\<close> in "Moulin:1985"\<close>).
 
 \<close>
 
@@ -938,12 +938,12 @@ constraining the choice function so that it is rationalized by
 familiar ordering relations.
 
 For instance, the following shows that the @{emph \<open>axioms of revealed
-preference\<close>} are rationalized by total preorders \citep[Definitions~8
-and~13]{Sen:1971}\footnote{For \citet[p9]{Sen:1970}, an ordering is
+preference\<close>} are rationalized by total preorders \<^citep>\<open>\<open>Definitions~8
+and~13\<close> in "Sen:1971"\<close>\footnote{For \<^citet>\<open>\<open>p9\<close> in "Sen:1970"\<close>, an ordering is
 complete (total), reflexive, and transitive. Alternative names are:
 complete pre-ordering, complete quasi-ordering, and weak
 ordering.}. These are alo equivalent to some congruence axioms due to
-Samuelson \citep{Border:2012}.
+Samuelson \<^citep>\<open>"Border:2012"\<close>.
 
 We define @{term "x"} to be @{emph \<open>strictly revealed-preferred to\<close>}
 @{term "y"} if there is a situation where both are on offer and only
@@ -977,7 +977,7 @@ using assms unfolding rsp_on_def f_range_on_def by blast
 
 text\<open>
 
-\citet[p309]{Sen:1971} defines the @{emph \<open>weak axiom of revealed
+\<^citet>\<open>\<open>p309\<close> in "Sen:1971"\<close> defines the @{emph \<open>weak axiom of revealed
 preference\<close>} (WARP) as follows:
 
 \<close>
@@ -991,7 +991,7 @@ abbreviation warp :: "'a cfun \<Rightarrow> bool" where
 text\<open>
 
 The @{emph \<open>strong axiom of revealed preference\<close>} (SARP) is essentially
-the transitive closure of @{const "warp"} \citep[p309]{Sen:1971}:
+the transitive closure of @{const "warp"} \<^citep>\<open>\<open>p309\<close> in "Sen:1971"\<close>:
 
 \<close>
 
@@ -1018,7 +1018,7 @@ unfolding %invisible rsp_on_def irrefl_def by fastforce
 text\<open>
 
 For decisive choice functions, @{const "warp"} implies @{const
-"sarp"}. We show this following \citet{Sen:1971}, via the @{emph \<open>weak
+"sarp"}. We show this following \<^citet>\<open>"Sen:1971"\<close>, via the @{emph \<open>weak
 congruence axiom\<close>} (WCA): if @{term "f"} chooses @{term "x"} from some
 set @{term "B"} and @{term "y"} is revealed to be weakly preferred,
 then @{term "f"} must choose @{term "y"} from @{term "B"} as well.
@@ -1189,17 +1189,17 @@ The @{const "decisive"} constraint here is necessary: consider a
 Condorcet cycle over @{term "{x, y, z}"}: forcing @{term "f {x, y,
 z}"} to be non-empty resolves this.
 
-\citet{Sen:1971} proves that these and other conditions on choice
+\<^citet>\<open>"Sen:1971"\<close> proves that these and other conditions on choice
 functions are equivalent (under the @{const "decisive"} hypothesis).
 
 \<close>
 
 
-subsubsection\<open> The @{emph \<open>strong axiom of revealed preference\<close>} ala \citet{AygunSonmez:2012-WP2} \<close>
+subsubsection\<open> The @{emph \<open>strong axiom of revealed preference\<close>} ala \<^citet>\<open>"AygunSonmez:2012-WP2"\<close> \<close>
 
 text\<open>
 
-\citet[\S6]{AygunSonmez:2012-WP2} adopt a different definition for a
+\<^citet>\<open>\<open>\S6\<close> in "AygunSonmez:2012-WP2"\<close> adopt a different definition for a
 @{emph \<open>strong axiom of revealed preference\<close>} and show that it holds for
 all choice functions that satisfy @{const "iia"} and @{const
 "consistency"}.
@@ -1397,13 +1397,13 @@ subsection\<open> Plott's @{emph \<open>path independence\<close>} condition \la
 
 text\<open>
 
-As recognised by \citet[\S4]{Fleiner:2002} and
-\citet{ChambersYenmez:2013} in the context of matching with contracts,
+As recognised by \<^citet>\<open>\<open>\S4\<close> in "Fleiner:2002"\<close> and
+\<^citet>\<open>"ChambersYenmez:2013"\<close> in the context of matching with contracts,
 the @{const "irc"} and @{const "substitutes"} conditions together are
 equivalent to @{emph \<open>path independence\<close>}, a condition introduced to the
 social choice setting by
-\citet{Plott:1973}. \citet[Lemma~6]{Moulin:1985} ascribes this
-equivalence result to \citet{AizermanMalishevski:1981}.
+\<^citet>\<open>"Plott:1973"\<close>. \<^citet>\<open>\<open>Lemma~6\<close> in "Moulin:1985"\<close> ascribes this
+equivalence result to \<^citet>\<open>"AizermanMalishevski:1981"\<close>.
 
 \<close>
 
@@ -1492,7 +1492,7 @@ We now show that a choice function over a finite universe satisfying
 @{const "path_independent"} is characterized by taking the maximum
 elements of some finite set of orderings.
 
-\citet[Definition~12]{Moulin:1985} says that a choice function is
+\<^citet>\<open>\<open>Definition~12\<close> in "Moulin:1985"\<close> says that a choice function is
 @{emph \<open>pseudo-rationalized\<close>} by the orderings @{term "Rs"} if @{term
 "f"} chooses all of the @{term "greatest r"} elements of @{term "B"}
 for each @{term "r \<in> Rs"}:
@@ -1519,7 +1519,7 @@ words, strict total linear orders. This allows us to treat
 non-decisive choice functions, and we later show that the choice
 function is decisive iff the orders are total.
 
-\citet[Theorem~5]{Moulin:1985} assumes @{const "Aizerman"} and @{const
+\<^citet>\<open>\<open>Theorem~5\<close> in "Moulin:1985"\<close> assumes @{const "Aizerman"} and @{const
 "Chernoff"}, which are equivalent to @{const "path_independent"}.
 
 \<close>
@@ -1881,7 +1881,7 @@ qed
 
 text\<open>
 
-Our top-level theorem is essentially \citet[Theorem~5]{Moulin:1985}:
+Our top-level theorem is essentially \<^citet>\<open>\<open>Theorem~5\<close> in "Moulin:1985"\<close>:
 
 \<close>
 

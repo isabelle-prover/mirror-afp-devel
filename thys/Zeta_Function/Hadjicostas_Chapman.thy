@@ -5,7 +5,7 @@ begin
 
 text \<open>
   In this section, we will derive a formula for the \<open>\<zeta>\<close> function that was conjectured by 
-  Hadjicostas~\cite{hadjicostas2004} and proven shortly afterwards by Chapman~\cite{chapman2004}.
+  Hadjicostas~\<^cite>\<open>"hadjicostas2004"\<close> and proven shortly afterwards by Chapman~\<^cite>\<open>"chapman2004"\<close>.
   The formula is:
     \begin{align*}
     &\int_0^1 \int_0^1 \frac{(-\ln (xy))^z (1-x)}{1-xy}\ \text{d}x\,\text{d}y\\
@@ -15,7 +15,7 @@ text \<open>
   for any \<open>z\<close> with $\mathfrak{R}(z) > -2$. In particular, setting $z = 1$, we can derive
   the following formula for the Euler--Mascheroni constant \<open>\<gamma>\<close>:
     \[-\int_0^1 \int_0^1 \frac{1-x}{(1-xy) \ln (xy)}\ \text{d}x\,\text{d}y = \gamma\]
-  This formula was first proven by Sondow~\cite{sondow2002}.      
+  This formula was first proven by Sondow~\<^cite>\<open>"sondow2002"\<close>.      
 \<close>
 
 subsection \<open>The real case\<close>

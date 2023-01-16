@@ -5,7 +5,7 @@ theory Step_vpeq_weakly_step_consistent
 begin
 
 
-text \<open>The notion of weak step consistency is common usage. We augment it by assuming that the @{term atomic_step_invariant} holds (see~\cite{Verbeek2013}).\<close>
+text \<open>The notion of weak step consistency is common usage. We augment it by assuming that the @{term atomic_step_invariant} holds (see~\<^cite>\<open>"Verbeek2013"\<close>).\<close>
 
 subsubsection \<open>Weak step consistency of auxiliary functions\<close>
 

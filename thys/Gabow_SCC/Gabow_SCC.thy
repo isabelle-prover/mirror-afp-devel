@@ -6,7 +6,7 @@ begin
 text \<open>
   As a first variant, we implement an algorithm that computes a list of SCCs 
   of a graph, in topological order. This is the standard variant described by
-  Gabow~\cite{Gabow2000}.
+  Gabow~\<^cite>\<open>"Gabow2000"\<close>.
 \<close>
 
 section \<open>Specification\<close>

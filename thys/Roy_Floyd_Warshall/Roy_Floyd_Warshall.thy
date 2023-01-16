@@ -14,7 +14,7 @@ text \<open>
 
   This algorithm is often named after ``Floyd'', ``Warshall'', or
   ``Floyd-Warshall'', but the earliest known description is due to B. Roy
-  @{cite "Roy:1959"}.
+  \<^cite>\<open>"Roy:1959"\<close>.
 
   \<^medskip>
   Subsequently we use a direct mathematical model of the relation, bypassing

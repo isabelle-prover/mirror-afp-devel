@@ -7,7 +7,7 @@ section \<open>Kleene Relation Algebras\<close>
 
 text \<open>
 This theory combines Kleene algebras with Stone relation algebras.
-Relation algebras with transitive closure have been studied by \cite{Ng1984}.
+Relation algebras with transitive closure have been studied by \<^cite>\<open>"Ng1984"\<close>.
 The weakening to Stone relation algebras allows us to talk about reachability in weighted graphs, for example.
 
 Many results in this theory are used in the correctness proof of Prim's minimum spanning tree algorithm.

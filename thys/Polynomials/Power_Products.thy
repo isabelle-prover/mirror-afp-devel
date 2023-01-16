@@ -1551,7 +1551,7 @@ qed
 subsubsection \<open>Lexicographic Term Order\<close>
 
 text \<open>Term orders are certain linear orders on power-products, satisfying additional requirements.
-  Further information on term orders can be found, e.\,g., in @{cite Robbiano1985}.\<close>
+  Further information on term orders can be found, e.\,g., in \<^cite>\<open>Robbiano1985\<close>.\<close>
 
 context wellorder
 begin

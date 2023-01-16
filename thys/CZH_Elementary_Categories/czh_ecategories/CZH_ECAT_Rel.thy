@@ -15,11 +15,11 @@ subsection\<open>Background\<close>
 
 text\<open>
 The methodology chosen for the exposition of \<open>Rel\<close> as a category is analogous 
-to the one used in \cite{milehins_category_2021} 
+to the one used in \<^cite>\<open>"milehins_category_2021"\<close> 
 for the exposition of \<open>Rel\<close> as a semicategory. 
 The general references for this section are Chapter I-7 in 
-\cite{mac_lane_categories_2010} and nLab 
-\cite{noauthor_nlab_nodate}\footnote{
+\<^cite>\<open>"mac_lane_categories_2010"\<close> and nLab 
+\<^cite>\<open>"noauthor_nlab_nodate"\<close>\footnote{
 \url{https://ncatlab.org/nlab/show/Rel}
 }.
 \<close>

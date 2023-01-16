@@ -175,7 +175,7 @@ qed
 text\<open>Finally, the next two corollaries illustrate the only possible
 exceptions to the value of the cardinality of the continuum: The limit
 cardinals of countable cofinality. That these are the only exceptions
-is a consequence of Easton's Theorem~\cite[Thm 15.18]{Jech_Millennium}.\<close>
+is a consequence of Easton's Theorem~\<^cite>\<open>\<open>Thm 15.18\<close> in "Jech_Millennium"\<close>.\<close>
 
 corollary cf_continuum: "\<aleph>\<^bsub>0\<^esub> < cf(2\<^bsup>\<up>\<aleph>\<^bsub>0\<^esub>\<^esup>)"
   using cf_cexp InfCard_Aleph nat_into_Card by simp

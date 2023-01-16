@@ -12,7 +12,7 @@ begin
 chapter \<open>Submonoids of a free monoid\<close>
 
 text\<open>This chapter deals with properties of submonoids of a free monoid, that is, with monoids of words.
-See more in Chapter 1 of @{cite Lo83}.
+See more in Chapter 1 of \<^cite>\<open>Lo83\<close>.
 \<close>
 
 section \<open>Hull\<close>

@@ -153,7 +153,7 @@ situation occur when introducing proof rules for mutually recursive procedures.
 There the straightforward generalization of the proof rule of a recursive procedure
 to mutually recursive procedures suffers of a similar problem. We would need
 to prove that the variant decreases before every recursive call. Nipkow
-\cite{nipkow:2002} has introduced a rule for mutually recursive procedures
+\<^cite>\<open>"nipkow:2002"\<close> has introduced a rule for mutually recursive procedures
 in which the variant is required to decrease only in a sequence of recursive
 calls before calling again a procedure in this sequence. We introduce a
 similar proof rule in which the variant depends also on the situation

@@ -7,7 +7,7 @@ begin
 subsection "Interior Point Method"
 
 text\<open>This section formalizes a new quantifier elimination procedure
-based on the idea of Ferrante and Rackoff~\cite{FerranteR-SIAM75} (see
+based on the idea of Ferrante and Rackoff~\<^cite>\<open>"FerranteR-SIAM75"\<close> (see
 also \S\ref{sec:FRE}) of taking a point between each lower and upper
 bound as a test point. For dense linear orders it is not obvious how
 to realize this because we cannot name any intermediate point

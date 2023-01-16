@@ -29,7 +29,7 @@ lemma (in finite_incidence_system) image_set_system_finite:
 subsection \<open>Incidence System Isomorphisms\<close>
 
 text \<open>Isomorphism's are defined by the Handbook of Combinatorial Designs 
-\cite{colbournHandbookCombinatorialDesigns2007}\<close>
+\<^cite>\<open>"colbournHandbookCombinatorialDesigns2007"\<close>\<close>
 
 locale incidence_system_isomorphism = source: incidence_system \<V> \<B> + target: incidence_system \<V>' \<B>'
   for "\<V>" and "\<B>" and "\<V>'" and "\<B>'" + fixes bij_map ("\<pi>")

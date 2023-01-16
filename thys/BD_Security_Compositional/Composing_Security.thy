@@ -2,9 +2,9 @@ section \<open>Binary compositionality theorem\<close>
 
 text \<open>This theory provides the binary version of
 the compositionality theorem for BD security.
-It corresponds to Theorem 1 from \cite{cosmedis-SandP2017}
+It corresponds to Theorem 1 from \<^cite>\<open>"cosmedis-SandP2017"\<close>
 and to Theorem 5 (the System Compositionality Theorem) from
-\cite{BDsecurity-ITP2021}.
+\<^cite>\<open>"BDsecurity-ITP2021"\<close>.
 \<close>
 
 theory Composing_Security

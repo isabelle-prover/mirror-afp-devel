@@ -33,7 +33,7 @@ between a user and a smart card, which is the subject of this paper -- requires 
 exchanged on a secure channel, so as to prevent it from falling into the hands of an eavesdropper.
 A possible method to establish such a channel is Password Authenticated Connection Establishment
 (PACE), which itself is a password-based Diffie-Hellman key agreement protocol, specified in the
-form of a smart card protocol in \cite{R4}. Thus, in addition to the user's password, another
+form of a smart card protocol in \<^cite>\<open>"R4"\<close>. Thus, in addition to the user's password, another
 password is needed if PACE is used, namely the one from which the PACE authentication key is
 derived.
 
@@ -51,13 +51,13 @@ threshold. If the PACE authentication key is derived from the user's password, s
 blocked as well. Thus, an additional PACE authentication key would be needed for any user's
 operation not requiring to be preceded by the verification of the user's password, but only to be
 performed on a secure channel, such as the verification of a Personal Unblocking Code (PUC) by means
-of command RESET RETRY COUNTER \cite{R5} to unblock the password. On the contrary, a single PACE
+of command RESET RETRY COUNTER \<^cite>\<open>"R5"\<close> to unblock the password. On the contrary, a single PACE
 authentication key is sufficient for all user's operations provided it is independent of the user's
 password, which leads to a simpler system.
 
 \item
 The user is typically allowed to change her password, e.g. by means of command CHANGE REFERENCE DATA
-\cite{R5}. If the PACE authentication key is derived from the user's password, such key has to be
+\<^cite>\<open>"R5"\<close>. If the PACE authentication key is derived from the user's password, such key has to be
 changed as well. This gives rise to additional functional requirements which can be nontrivial to
 meet, particularly in the case of a preexisting implementation having to be adapted. For instance,
 if the key itself is stored on the smart card rather than being derived at run time from the user's
@@ -75,10 +75,10 @@ rather derived from an independent password, then a new question arises: is this
 secret?
 
 In order to find the answer, it is useful to schematize the protocol applying the informal notation
-used in \cite{R1}. If Generic Mapping is employed as mapping method (cf. \cite{R4}), the protocol
+used in \<^cite>\<open>"R1"\<close>. If Generic Mapping is employed as mapping method (cf. \<^cite>\<open>"R4"\<close>), the protocol
 takes the following form, where agents $U$ and $C$ stand for a given user and her own smart card,
 step C$n$ for the $n$th command APDU, and step R$n$ for the $n$th response APDU (for further
-information, cf. \cite{R4} and \cite{R5}).
+information, cf. \<^cite>\<open>"R4"\<close> and \<^cite>\<open>"R5"\<close>).
 
 \null
 
@@ -112,7 +112,7 @@ encrypted with the PACE authentication key $K$.
 In the second GENERAL AUTHENTICATE command/response pair (steps C2 and R2), the user and the card
 exchange the respective ephemeral public keys $PK_{Map,PCD} = [SK_{Map,PCD}]G$ and $PK_{Map,IC} =
 [SK_{Map,IC}]G$, where $G$ is the static cryptographic group generator (the notation used in
-\cite{R6} is applied). Then, both parties compute the ephemeral generator $G' = [s + SK_{Map,PCD}
+\<^cite>\<open>"R6"\<close> is applied). Then, both parties compute the ephemeral generator $G' = [s + SK_{Map,PCD}
 \times SK_{Map,IC}]G$.
 
 In the third GENERAL AUTHENTICATE command/response pair (steps C3 and R3), the user and the card
@@ -128,16 +128,16 @@ order to abstract from unnecessary details, the above scheme represents these MA
 generated using the single session key $KS$.
 
 Finally, in steps C5 and R5, the user sends her password to the card on the secure messaging channel
-established by session keys $KS_{Enc}$ and $KS_{MAC}$, e.g. via command VERIFY \cite{R5}, and the
-card returns the success status word 0x9000 \cite{R5} over the same channel. In order to abstract
+established by session keys $KS_{Enc}$ and $KS_{MAC}$, e.g. via command VERIFY \<^cite>\<open>"R5"\<close>, and the
+card returns the success status word 0x9000 \<^cite>\<open>"R5"\<close> over the same channel. In order to abstract
 from unnecessary details, the above scheme represents both messages as cryptograms generated using
 the single session key $KS$.
 
 So, what if the PACE authentication key $K$ were stolen by an attacker -- henceforth called
-\emph{spy} as done in \cite{R1}? In this case, even if the user's terminal were protected from
+\emph{spy} as done in \<^cite>\<open>"R1"\<close>? In this case, even if the user's terminal were protected from
 attacks, the spy could get hold of the user's password by replacing the user's smart card with a
 fake one capable of performing a remote data transmission, so as to pull off a \emph{grandmaster
-chess attack} \cite{R2}. In this way, the following scenario would occur, where agents $F$ and $S$
+chess attack} \<^cite>\<open>"R2"\<close>. In this way, the following scenario would occur, where agents $F$ and $S$
 stand for the fake card and the spy.
 
 \null
@@ -172,7 +172,7 @@ happens in the final step C5'.
 This argument demonstrates that the answer to the pending question is affirmative, namely the PACE
 authentication key is indeed required to be secret, if Generic Mapping is used. Moreover, the same
 conclusion can be drawn on the basis of a similar argument in case the mapping method being used is
-Integrated Mapping (cf. \cite{R4}). Therefore, the PACE password from which the key is derived must
+Integrated Mapping (cf. \<^cite>\<open>"R4"\<close>). Therefore, the PACE password from which the key is derived must
 be secret as well.
 
 This requirement has a significant impact on both the security and the usability of the system. In
@@ -183,12 +183,12 @@ computation must be stored somewhere in the user's terminal, which gives rise to
 The alternative is to have the PACE password typed in by the user, which renders longer the overall
 credentials that the user is in charge of managing securely. Furthermore, any operation having to be
 performed on a secure messaging channel before the user types in her password -- such as identifying
-the user in case the smart card is endowed with an identity application compliant with \cite{R3} and
-\cite{R4} -- would require an additional PACE password independent of the user's one. Hence, such
+the user in case the smart card is endowed with an identity application compliant with \<^cite>\<open>"R3"\<close> and
+\<^cite>\<open>"R4"\<close> -- would require an additional PACE password independent of the user's one. Hence, such
 preliminary operations and the subsequent user's password verification would have to be performed on
 distinct secure messaging channels, which would cause a deterioration in the system performance.
 
-In case Chip Authentication Mapping is used as mapping method instead (cf. \cite{R4}), the resulting
+In case Chip Authentication Mapping is used as mapping method instead (cf. \<^cite>\<open>"R4"\<close>), the resulting
 protocol can be schematized as follows.
 
 \null
@@ -230,7 +230,7 @@ The user can then verify the authenticity of the chip applying the following pro
 Read the static public key $PK_{IC} = [SK_{IC}]G$ from a dedicated file of the smart card, named
 \emph{EF.CardSecurity}.
 \\Because of the read access conditions to be enforced by this file, it must be read over the secure
-messaging channel established by session keys $KS_{Enc}$ and $KS_{MAC}$ (cf. \cite{R3}).
+messaging channel established by session keys $KS_{Enc}$ and $KS_{MAC}$ (cf. \<^cite>\<open>"R3"\<close>).
 
 \item
 Verify the signature contained in file EF.CardSecurity, generated over the contents of the file by a
@@ -248,7 +248,7 @@ the certified public key $PK_{IC}$, and thus is authentic.
 
 The reading of file EF.CardSecurity is performed next to the last GENERAL AUTHENTICATE command as a
 separate operation, by sending one or more READ BINARY commands on the secure messaging channel
-established by session keys $KS_{Enc}$ and $KS_{MAC}$ (cf. \cite{R3}, \cite{R4}, and \cite{R5}). The
+established by session keys $KS_{Enc}$ and $KS_{MAC}$ (cf. \<^cite>\<open>"R3"\<close>, \<^cite>\<open>"R4"\<close>, and \<^cite>\<open>"R5"\<close>). The
 above scheme represents this operation by inserting the public key $PK_{IC}$ and its signature into
 the cryptogram returned by the last GENERAL AUTHENTICATE command, so as to abstract from unnecessary
 details once again.
@@ -263,7 +263,7 @@ longer required to be secret, which solves all the problems ensuing from such re
 
 The purpose of this paper is indeed to construct a formal model of the above protocol in the Chip
 Authentication Mapping case and prove its security, applying Paulson's Inductive Method as described
-in \cite{R1}. In more detail, the formal development is aimed at proving that such protocol enforces
+in \<^cite>\<open>"R1"\<close>. In more detail, the formal development is aimed at proving that such protocol enforces
 the following security properties.
 
 \begin{itemize}
@@ -282,14 +282,14 @@ This property ensures that the protocol is successful in preserving the secrecy 
 Authenticity theorem \<open>pr_user_authenticity\<close>: if a smart card receives the password of a user
 (not necessarily the cardholder), then the message must have been originally sent by that user. This
 property ensures that the protocol enables users to authenticate themselves to their smart cards,
-viz. provides an \emph{external authentication} service (cf. \cite{R5}).
+viz. provides an \emph{external authentication} service (cf. \<^cite>\<open>"R5"\<close>).
 
 \item
 Authenticity theorem \<open>pr_card_authenticity\<close>: if a user sends her password to a smart card and
 receives a success code as response, then the card is her own one and the response must have been
 originally sent by that card. This property ensures that the protocol enables smart cards to
 authenticate themselves to their cardholders, viz. provides an \emph{internal authentication}
-service (cf. \cite{R5}).
+service (cf. \<^cite>\<open>"R5"\<close>).
 
 \end{itemize}
 
@@ -318,7 +318,7 @@ in each protocol run.
 \item
 The public keys for Diffie-Hellman key agreement being used are comprised of the elements of a
 cryptographic cyclic group of prime order $n$, and the private keys are the elements of the finite
-field comprised of the integers from 0 to $n$ - 1 (cf. \cite{R4}, \cite{R6}). Hence, the operations
+field comprised of the integers from 0 to $n$ - 1 (cf. \<^cite>\<open>"R4"\<close>, \<^cite>\<open>"R6"\<close>). Hence, the operations
 defined in these algebraic structures, as well as the generation of public keys from known private
 keys, correspond to additional ways in which the spy can generate fake messages starting from known
 ones. A possible option to reflect this in the formal model would be to extend the inductive
@@ -329,7 +329,7 @@ definition. Thus, an alternative formalization ought to be found.
 \end{itemize}
 
 These difficulties are solved by extending the Inductive Method, with respect to the form specified
-in \cite{R1}, as follows.
+in \<^cite>\<open>"R1"\<close>, as follows.
 
 \begin{itemize}
 
@@ -356,14 +356,14 @@ set \<open>synth H\<close> with such operations unnecessary.
 \end{itemize}
 
 Throughout this paper, the salient points of definitions and proofs are commented; for additional
-information, cf. Isabelle documentation, particularly \cite{R7}, \cite{R8}, \cite{R9}, and
-\cite{R10}.
+information, cf. Isabelle documentation, particularly \<^cite>\<open>"R7"\<close>, \<^cite>\<open>"R8"\<close>, \<^cite>\<open>"R9"\<close>, and
+\<^cite>\<open>"R10"\<close>.
 
-Paulson's Inductive Method is described in \cite{R1}, and further information is provided in
-\cite{R7} as a case study. The formal developments described in \cite{R1} and \cite{R7} are included
+Paulson's Inductive Method is described in \<^cite>\<open>"R1"\<close>, and further information is provided in
+\<^cite>\<open>"R7"\<close> as a case study. The formal developments described in \<^cite>\<open>"R1"\<close> and \<^cite>\<open>"R7"\<close> are included
 in the Isabelle distribution.
 
-Additional information on the involved cryptography can be found in \cite{R4} and \cite{R6}.
+Additional information on the involved cryptography can be found in \<^cite>\<open>"R4"\<close> and \<^cite>\<open>"R6"\<close>.
 \<close>
 
 
@@ -371,7 +371,7 @@ subsection "Propaedeutic definitions"
 
 text \<open>
 First of all, the data types of encryption/signature keys, Diffie-Hellman private keys, and
-Diffie-Hellman public keys are defined. Following \cite{R7}, encryption/signature keys are
+Diffie-Hellman public keys are defined. Following \<^cite>\<open>"R7"\<close>, encryption/signature keys are
 identified with natural numbers, whereas Diffie-Hellman private keys and public keys are represented
 as rational and integer numbers in order to model the algebraic structures that they form (a field
 and a group, respectively; cf. above).
@@ -400,7 +400,7 @@ datatype agent = CA | Card nat | User nat
 text \<open>
 \null
 
-In addition to the kinds of messages considered in \cite{R1}, the data type of messages comprises
+In addition to the kinds of messages considered in \<^cite>\<open>"R1"\<close>, the data type of messages comprises
 also users' passwords, Diffie-Hellman private and public keys, and Chip Authentication Data.
 Particularly, for each \<open>n\<close>, \<open>Passwd n\<close> is the password of @{term "User n"}, accepted
 as being the correct one by @{term "Card n"}.
@@ -677,7 +677,7 @@ abbreviation start_U :: "msg set" where
 text \<open>
 \null
 
-As in \cite{R1}, function \<open>spies\<close> models the set of the messages that the spy can see in a
+As in \<^cite>\<open>"R1"\<close>, function \<open>spies\<close> models the set of the messages that the spy can see in a
 protocol trace. However, it is no longer necessary to identify \<open>spies []\<close> with the initial
 knowledge of the spy, since her current knowledge in correspondence with protocol state
 @{term "(evs, S, A, U)"} is represented as set \<open>analz (A \<union> spies evs)\<close>, where
@@ -710,7 +710,7 @@ numbers to natural numbers.
 
 \item
 Axiom \<open>sesK_inj\<close> states that function @{term sesK} is injective, and formalizes the fact that
-the key derivation function specified in \cite{R4} for deriving session keys from shared secrets
+the key derivation function specified in \<^cite>\<open>"R4"\<close> for deriving session keys from shared secrets
 makes use of robust hash functions, so that collisions are negligible.
 \\Since Diffie-Hellman private keys are represented as rational numbers and encryption/signature
 keys as natural numbers (cf. above), a model of function @{term sesK} satisfying the axiom is built

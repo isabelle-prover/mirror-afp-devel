@@ -50,7 +50,7 @@ text \<open>\label{ex:employee-analysis:ocl}\<close>
 section\<open>OCL Part: Invariant\<close>
 text\<open>These recursive predicates can be defined conservatively
 by greatest fix-point
-constructions---automatically. See~\cite{brucker.ea:hol-ocl-book:2006,brucker:interactive:2007}
+constructions---automatically. See~\<^cite>\<open>"brucker.ea:hol-ocl-book:2006" and "brucker:interactive:2007"\<close>
 for details. For the purpose of this example, we state them as axioms
 here.
 

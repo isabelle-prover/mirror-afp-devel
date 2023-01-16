@@ -14,7 +14,7 @@ begin
 text \<open>
 \null
 
-In accordance with Hoare's formal definition of deterministic processes \cite{R3}, this section
+In accordance with Hoare's formal definition of deterministic processes \<^cite>\<open>"R3"\<close>, this section
 shows that a process is deterministic just in case it is a \emph{trace set process}, i.e. it may be
 identified by means of a trace set alone, matching the set of its traces, in place of a
 failures-divergences pair. Then, variants of the Ipurge Unwinding Theorem are proven for
@@ -29,7 +29,7 @@ Here below are the definitions of predicates \<open>d_future_consistent\<close> 
 \<open>d_weakly_future_consistent\<close>, which are variants of predicates @{term future_consistent} and
 @{term weakly_future_consistent} meant for applying to deterministic processes. In some detail,
 being deterministic processes such that refused events are completely specified by accepted events
-(cf. \cite{R3}, \cite{R1}), the new predicates are such that their truth values can be determined
+(cf. \<^cite>\<open>"R3"\<close>, \<^cite>\<open>"R1"\<close>), the new predicates are such that their truth values can be determined
 by just considering the accepted events of the process taken as input.
 
 Then, it is proven that these predicates are characterized by the same connection as that of their
@@ -284,16 +284,16 @@ qed (insert d_implies_ruc [OF A], rule ipurge_unwinding)
 subsection "Trace set processes"
 
 text \<open>
-In \cite{R3}, section 2.8, Hoare formulates a simplified definition of a deterministic process,
+In \<^cite>\<open>"R3"\<close>, section 2.8, Hoare formulates a simplified definition of a deterministic process,
 identified with a \emph{trace set}, i.e. a set of event lists containing the empty list and any
 prefix of each of its elements. Of course, this is consistent with the definition of determinism
 applying to processes identified with failures-divergences pairs, which implies that their refusals
-are completely specified by their traces (cf. \cite{R3}, \cite{R1}).
+are completely specified by their traces (cf. \<^cite>\<open>"R3"\<close>, \<^cite>\<open>"R1"\<close>).
 
 Here below are the definitions of a function \<open>ts_process\<close>, converting the input set of lists
 into a process, and a predicate \<open>trace_set\<close>, returning @{term True} just in case the input set
 of lists has the aforesaid properties. An analysis is then conducted about the output of the
-functions defined in \cite{R1}, section 1.1, when acting on a \emph{trace set process}, i.e. a
+functions defined in \<^cite>\<open>"R1"\<close>, section 1.1, when acting on a \emph{trace set process}, i.e. a
 process that may be expressed as \<open>ts_process T\<close> where \<open>trace_set T\<close> matches
 @{term True}.
 

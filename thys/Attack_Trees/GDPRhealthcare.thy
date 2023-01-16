@@ -1,6 +1,6 @@
 section \<open>Application example from IoT healthcare\<close> 
 text \<open>The  example of an IoT healthcare systems is taken from the context of the CHIST-ERA project
-SUCCESS \cite{suc:16}.  In this system architecture, data is collected by sensors 
+SUCCESS \<^cite>\<open>"suc:16"\<close>.  In this system architecture, data is collected by sensors 
 in the home or via a smart phone helping to monitor bio markers of the patient. The data 
 collection is in a cloud based server to enable hospitals (or scientific institutions) 
 to access the data which is controlled via the smart phone.

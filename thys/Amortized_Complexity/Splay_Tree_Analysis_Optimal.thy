@@ -7,7 +7,7 @@ imports
   "HOL-Library.Sum_of_Squares"
 begin
 
-text\<open>This analysis follows Schoenmakers~\cite{Schoenmakers-IPL93}.\<close>
+text\<open>This analysis follows Schoenmakers~\<^cite>\<open>"Schoenmakers-IPL93"\<close>.\<close>
 
 subsubsection "Analysis of splay"
 

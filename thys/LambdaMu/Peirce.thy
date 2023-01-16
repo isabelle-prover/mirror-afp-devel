@@ -6,7 +6,7 @@ begin
   
 text\<open>As an example of our $\lambda\mu$ formalisation, we show show a
      $\lambda\mu$-term inhabiting Peirce's Law. The example is due to
-     Parigot~\cite{DBLP:conf/lpar/Parigot92}.\<close>  
+     Parigot~\<^cite>\<open>"DBLP:conf/lpar/Parigot92"\<close>.\<close>  
     
 text\<open>Peirce's law: $((A \rightarrow B) \rightarrow A) \rightarrow A$.\<close>
 

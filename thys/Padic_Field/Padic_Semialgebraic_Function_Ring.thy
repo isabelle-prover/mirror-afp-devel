@@ -14,7 +14,7 @@ text\<open>
   carrier set of $\mathbb{Q}_p^m$.
 
   The developments in this theory are mainly lemmas and defintitions which build the necessary
-  theory to prove the cell decomposition theorems of \cite{denef1986}, and finally Macintyre's
+  theory to prove the cell decomposition theorems of \<^cite>\<open>"denef1986"\<close>, and finally Macintyre's
   Theorem, which says that semi-algebraic sets are closed under projections.
 \<close>
 (**************************************************************************************************)

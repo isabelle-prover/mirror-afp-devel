@@ -71,7 +71,7 @@ text\<open>
 This is the least-information synchronous view, given the requirements
 of \S\ref{sec:kbps-views}. We show that finite-state implementations
 exist for all environments with respect to this view as per
-\citet{Ron:1996}.
+\<^citet>\<open>"Ron:1996"\<close>.
 
 The corresponding incremental view simply increments the counter
 records the new observation.
@@ -662,7 +662,7 @@ where
 text\<open>
 
 The function \<open>memo_list_trancl\<close> comes from the executable
-transitive closure theory of \citep{AFP:TRANCL}.
+transitive closure theory of \<^citep>\<open>"AFP:TRANCL"\<close>.
 
 The evaluation function evaluates a subjective knowledge formula on
 the representation of an equivalence class:
@@ -1451,7 +1451,7 @@ We define two records @{term "acts_MapOps"} and @{term "trans_MapOps"}
 satisfying the @{term "MapOps"} predicate
 (\S\ref{sec:kbps-theory-map-ops}). Discharging the obligations in the
 @{term "Algorithm"} locale is routine, leaning on the work of
-\citet{DBLP:conf/itp/LammichL10}.
+\<^citet>\<open>"DBLP:conf/itp/LammichL10"\<close>.
 
 \<close>
 

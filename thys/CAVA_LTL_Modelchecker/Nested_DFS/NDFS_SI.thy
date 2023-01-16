@@ -14,10 +14,10 @@ begin
 text \<open>
   Implementation of a nested DFS algorithm for accepting cycle detection
   using the refinement framework. The algorithm uses the improvement of 
-  Holzmann et al.~\cite{HPY97}, i.e., it reports a cycle if the inner 
+  Holzmann et al.~\<^cite>\<open>"HPY97"\<close>, i.e., it reports a cycle if the inner 
   DFS finds a path back to 
   the stack of the outer DFS. Moreover, an early cycle detection optimization is
-  implemented~\cite{SE05}, i.e., the outer DFS may already report a cycle on 
+  implemented~\<^cite>\<open>"SE05"\<close>, i.e., the outer DFS may already report a cycle on 
   a back-edge involving an accepting node.
 
   The algorithm returns a witness in case that an accepting cycle is detected.
@@ -26,7 +26,7 @@ text \<open>
   generic DFS-Algorithm, which are then used to instantiate the concrete
   nested DFS-algorithm for B\"uchi emptiness check. This formalization can be
   seen as a predecessor of the formalization of 
-  Gabow's algorithm~\cite{La14_ITP}, where this technique has been
+  Gabow's algorithm~\<^cite>\<open>"La14_ITP"\<close>, where this technique has been
   further developed.
 \<close>
 

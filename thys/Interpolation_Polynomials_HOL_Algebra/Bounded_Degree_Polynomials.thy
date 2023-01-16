@@ -16,7 +16,7 @@ definition bounded_degree_polynomials
 text \<open>Note: The definition for @{term "bounded_degree_polynomials"} includes the zero polynomial
 in @{term "bounded_degree_polynomials F 0"}. The reason for this adjustment is that, contrary to
 definition in HOL Algebra, most authors set the degree of the zero polynomial to
-$-\infty$~\cite[\textsection 7.2.2]{shoup2009computational}. That
+$-\infty$~\<^cite>\<open>\<open>\textsection 7.2.2\<close> in "shoup2009computational"\<close>. That
 definition make some identities, such as $\mathrm{deg}(f g) = \mathrm{deg}\, f + \mathrm{deg}\, g$
 for polynomials $f$ and $g$ unconditionally true.
 In particular, it prevents an unnecessary corner case in the statement of the results established

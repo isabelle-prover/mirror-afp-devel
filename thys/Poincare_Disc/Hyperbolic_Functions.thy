@@ -10,12 +10,12 @@ Tarski's axioms except for Euclid's axiom. We shown that is satisfies
 the negation of Euclid's axiom, and, moreover, the existence of
 limiting parallels axiom. The model is defined within the extended
 complex plane, which has been described quite precisely by
-Schwerdfeger~\cite{schwerdtfeger} and formalized in the previous work
-of the first two authors~\cite{amai-complexplane}.\<close> 
+Schwerdfeger~\<^cite>\<open>"schwerdtfeger"\<close> and formalized in the previous work
+of the first two authors~\<^cite>\<open>"amai-complexplane"\<close>.\<close> 
 
 paragraph \<open>Related work.\<close>
 
-text\<open>In 1840 Lobachevsky~\cite{lobachevsky1840geometrische} published developments
+text\<open>In 1840 Lobachevsky~\<^cite>\<open>"lobachevsky1840geometrische"\<close> published developments
 about non-Euclidean geometry. Hyperbolic
 geometry is studied through many of its models. The concept of a
 projective disc model was introduced by Klein while Poincar\'e
@@ -25,10 +25,10 @@ preserve orientation. In this paper, we focus on the formalization of
 the latter.
 
 Regarding non-Euclidean geometry, Makarios showed the
-independence of Euclid's axiom~\cite{makarios}. He did so by
+independence of Euclid's axiom~\<^cite>\<open>"makarios"\<close>. He did so by
 formalizing that the Klein--Beltrami model is a model of Tarski's
 axioms at the exception of Euclid's axiom. Latter Coghetto formalized 
-the Klein-Beltrami model within Mizar~\cite{coghetto2018klein1,coghetto2018klein2}.
+the Klein-Beltrami model within Mizar~\<^cite>\<open>"coghetto2018klein1" and "coghetto2018klein2"\<close>.
 \<close>
 
 section \<open>Background theories\<close>

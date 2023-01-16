@@ -15,7 +15,7 @@ begin
 subsection \<open>Definition of the Encoding\<close>
 
 text \<open>The multiset-elements are either annotated variables or indices (of clauses).
-  We basically follow the proof in \cite{RPO_NPC} where these elements are encoded as terms 
+  We basically follow the proof in \<^cite>\<open>"RPO_NPC"\<close> where these elements are encoded as terms 
   (and the relation is some fixed recursive path order).\<close>
 
 datatype Annotation = Unsigned | Positive | Negative
@@ -33,7 +33,7 @@ text \<open>We encode a CNF into a multiset-problem, i.e., a quadruple (xs, ys, 
   xs and ys are the lists to compare, and S and NS are underlying relations of the generalized multiset ordering.
   In the encoding, we add the strict relation S to the non-strict relation NS as this is a somewhat more
   natural order. In particular, the relations S and NS are precisely those that are obtained when using
-  the mentioned recursive path order of \cite{RPO_NPC}.\<close>
+  the mentioned recursive path order of \<^cite>\<open>"RPO_NPC"\<close>.\<close>
 
 definition multiset_problem_of_cnf :: "'a cnf \<Rightarrow> 
   ('a ms_elem list \<times> 

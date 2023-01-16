@@ -6,7 +6,7 @@ begin
 
 subsection\<open>Cooper\<close>
 
-text\<open>This section formalizes Cooper's algorithm~\cite{Cooper72}.\<close>
+text\<open>This section formalizes Cooper's algorithm~\<^cite>\<open>"Cooper72"\<close>.\<close>
 
 lemma set_atoms0_iff:
  "qfree \<phi> \<Longrightarrow> a \<in> set(Z.atoms\<^sub>0 \<phi>) \<longleftrightarrow> a \<in> atoms \<phi> \<and> hd_coeff a \<noteq> 0"

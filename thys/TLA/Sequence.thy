@@ -23,7 +23,7 @@ text \<open>
   important for the semantics of TLA. We identify a finite sequence with an
   infinite sequence that ends in infinite stuttering. In this way, we avoid the
   complications of having to handle both finite and infinite sequences of states:
-  see e.g. Devillers et al \cite{Devillers97} who discuss several variants of
+  see e.g. Devillers et al \<^cite>\<open>"Devillers97"\<close> who discuss several variants of
   representing possibly infinite sequences in HOL, Isabelle and PVS.
 \<close>
 
@@ -218,7 +218,7 @@ text \<open>
   The key novelty with the @{term "Sequence"} theory, is the treatment of
   stuttering invariance, which enables verification of stuttering invariance of
   the operators derived using it. Such proofs require comparing sequences
-  up to stuttering. Here, Lamport's \cite{Lamport94} method is used to
+  up to stuttering. Here, Lamport's \<^cite>\<open>"Lamport94"\<close> method is used to
   mechanise the equality of sequences up to stuttering: he defines 
   the \<open>\<natural>\<close> operator, which collapses a sequence by removing
   all stuttering steps, except possibly infinite stuttering at the end of the sequence. 

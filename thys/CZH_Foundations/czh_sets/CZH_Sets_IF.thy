@@ -16,7 +16,7 @@ families of sets, such as unions and intersections of the indexed families
 of sets, disjoint unions and infinite Cartesian products.
 
 Certain elements of the content of this section were inspired by
-elements of the content of \cite{paulson_hereditarily_2013}. 
+elements of the content of \<^cite>\<open>"paulson_hereditarily_2013"\<close>. 
 However, as previously, many other results were ported (with amendments) from 
 the main library of Isabelle/HOL.
 \<close>

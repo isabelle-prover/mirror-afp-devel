@@ -12,7 +12,7 @@ begin
 
 subsection \<open>Conway's Classical Axioms\<close>
 
-text \<open>Conway's classical axiomatisation of Regular Algebra from~\cite{Conway}.\<close>
+text \<open>Conway's classical axiomatisation of Regular Algebra from~\<^cite>\<open>"Conway"\<close>.\<close>
  
 class star_dioid = dioid_one_zero + star_op + plus_ord
 
@@ -210,7 +210,7 @@ qed (simp_all add: opp_mult_def mult.assoc distrib_left)
 
 subsection \<open>Boffa's Axioms\<close>
 
-text \<open>Boffa's two axiomatisations of Regular Algebra from~\cite{Boffa1,Boffa2}.\<close>
+text \<open>Boffa's two axiomatisations of Regular Algebra from~\<^cite>\<open>"Boffa1" and "Boffa2"\<close>.\<close>
 
 class B1_algebra = conway_dioid +
   assumes R: "x \<cdot> x = x \<Longrightarrow> x\<^sup>\<star> = 1 + x"
@@ -1030,7 +1030,7 @@ sublocale C3_algebra \<subseteq> C2_algebra ..
 
 subsection \<open>Kozen's Kleene Algebras\<close>
 
-text \<open>Kozen's Kleene Algebras~\cite{Kozen,Kozensemi}.\<close>
+text \<open>Kozen's Kleene Algebras~\<^cite>\<open>"Kozen" and "Kozensemi"\<close>.\<close>
 
 class Kl_base = star_dioid +
   assumes Kl: "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -1163,7 +1163,7 @@ sublocale K2_algebra \<subseteq> koz: kleene_algebra
 
 subsection \<open>Salomaa's Axioms\<close>
 
-text \<open>Salomaa's axiomatisations of Regular Algebra~\cite{Salomaa}.\<close>
+text \<open>Salomaa's axiomatisations of Regular Algebra~\<^cite>\<open>"Salomaa"\<close>.\<close>
 
 class salomaa_base = star_dioid +
   fixes ewp :: "'a \<Rightarrow> bool" 

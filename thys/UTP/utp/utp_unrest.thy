@@ -12,11 +12,11 @@ text \<open> Unrestriction is an encoding of semantic freshness that allows us t
   altering the value of $x$ has no effect on the valuation of $p$. This is a sufficient
   notion to prove many laws that would ordinarily rely on an \emph{fv} function. 
 
-  Unrestriction was first defined in the work of Marcel Oliveira~\cite{Oliveira2005-PHD,Oliveira07} in his
+  Unrestriction was first defined in the work of Marcel Oliveira~\<^cite>\<open>"Oliveira2005-PHD" and "Oliveira07"\<close> in his
   UTP mechanisation in \emph{ProofPowerZ}. Our definition modifies his in that our variables
   are semantically characterised as lenses, and supported by the lens laws, rather than named 
-  syntactic entities. We effectively fuse the ideas from both Feliachi~\cite{Feliachi2010} and 
-  Oliveira's~\cite{Oliveira07} mechanisations of the UTP, the former being also purely semantic
+  syntactic entities. We effectively fuse the ideas from both Feliachi~\<^cite>\<open>"Feliachi2010"\<close> and 
+  Oliveira's~\<^cite>\<open>"Oliveira07"\<close> mechanisations of the UTP, the former being also purely semantic
   in nature.
 
   We first set up overloaded syntax for unrestriction, as several concepts will have this

@@ -44,7 +44,7 @@ begin
 
 text\<open>
   This theory contains all the definitions used for policy normalisation as described 
-  in~\cite{brucker.ea:icst:2010,brucker.ea:formal-fw-testing:2014}.
+  in~\<^cite>\<open>"brucker.ea:icst:2010" and "brucker.ea:formal-fw-testing:2014"\<close>.
 
   The normalisation procedure transforms policies into semantically equivalent  ones which are 
   ``easier'' to test. It is organized into nine phases. We impose the following two restrictions 

@@ -12,7 +12,7 @@ begin
 subsection "The axioms"
 text \<open>The axioms, and all theorems beginning with \emph{th}
   followed by a number, are based on corresponding axioms and
-  theorems in \cite{schwabhauser}.\<close>
+  theorems in \<^cite>\<open>"schwabhauser"\<close>.\<close>
 
 locale tarski_first3 =
   fixes C :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> bool"     ("_ _ \<congruent> _ _" [99,99,99,99] 50)

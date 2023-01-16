@@ -6,17 +6,17 @@ imports
 begin
 
 (*>*)
-section\<open> \citet{Sotomayor:1996}: A non-constructive proof of the existence of stable marriages \label{sec:sotomayor} \<close>
+section\<open> \<^citet>\<open>"Sotomayor:1996"\<close>: A non-constructive proof of the existence of stable marriages \label{sec:sotomayor} \<close>
 
 text\<open>
 
 We set the scene with a non-constructive proof of the existence of
-stable matches due to \citet{Sotomayor:1996}. This approach is
+stable matches due to \<^citet>\<open>"Sotomayor:1996"\<close>. This approach is
 pleasantly agnostic about the strictness of preferences, and moreover
 avoids getting bogged down in reasoning about programs; most existing
 proofs involve such but omit formal treatments of the requisite
-assertions. This tradition started with \citet{GaleShapley:1962}; see
-\citet{Bijlsma:1991} for a rigorous treatment.
+assertions. This tradition started with \<^citet>\<open>"GaleShapley:1962"\<close>; see
+\<^citet>\<open>"Bijlsma:1991"\<close> for a rigorous treatment.
 
 The following contains the full details of an Isabelle/HOL
 formalization of her proof, and aims to introduce the machinery we
@@ -216,7 +216,7 @@ text\<open>
 
 Later we will elide obvious technical lemmas like the following. The
 more obscure proofs are typically generated automatically by
-sledgehammer \citep{Blanchette:2016}.
+sledgehammer \<^citep>\<open>"Blanchette:2016"\<close>.
 
 \<close>
 
@@ -407,7 +407,7 @@ We @{emph \<open>interpret\<close>} the locale by supplying constants that insta
 the variables we fixed earlier, and proving that these satisfy the
 assumptions. In this case we provide concrete preference orders, and
 by doing so we demonstrate that our theory is non-vacuous. We
-arbitrarily choose \citet[Example~2.15]{RothSotomayor:1990} which
+arbitrarily choose \<^citet>\<open>\<open>Example~2.15\<close> in "RothSotomayor:1990"\<close> which
 demonstrates the non-existence of man- or woman-optimal matches if
 preferences are non-strict. (We define optimality shortly.) The
 following bunch of types eases the description of this particular
@@ -504,7 +504,7 @@ match. We now add the notion of @{emph \<open>optimality\<close>} to our locale,
 all interpretations will automatically inherit it. Later we will also
 extend locales by adding new fixed variables and assumptions.
 
-Following \citet[Definition~2.11]{RothSotomayor:1990}, a stable match
+Following \<^citet>\<open>\<open>Definition~2.11\<close> in "RothSotomayor:1990"\<close>, a stable match
 is @{emph \<open>optimal for men\<close>} if every man likes it at least as much as
 any other stable match (and similarly for an @{emph \<open>optimal for
 women\<close>} match).
@@ -564,16 +564,16 @@ qed
 
 text\<open>
 
-\citet{Sotomayor:1996} remarks that, if the preferences are strict,
+\<^citet>\<open>"Sotomayor:1996"\<close> remarks that, if the preferences are strict,
 there is only one weakly Pareto optimal match for men, and that it is
 man-optimal. (This is the match found by the classic man-proposing
-deferred acceptance algorithm due to \citet{GaleShapley:1962}.)
+deferred acceptance algorithm due to \<^citet>\<open>"GaleShapley:1962"\<close>.)
 However she omits a proof that the man-optimal match actually exists
 under strict preferences.
 
 The easiest way to show this and further results is to exhibit the
 lattice structure of the stable matches discovered by Conway (see
-\citet[Theorem~2.16]{RothSotomayor:1990}), where the men- and
+\<^citet>\<open>\<open>Theorem~2.16\<close> in "RothSotomayor:1990"\<close>), where the men- and
 women-optimal matches are the extremal points. This suggests looking
 for a monotonic function whose fixed points are this lattice, which is
 the essence of the analysis of matching with contracts in

@@ -1,6 +1,6 @@
 subsection\<open>Schnorr \<open>\<Sigma>\<close>-protocol\<close>
 
-text\<open>In this section we show the Schnoor protocol \cite{DBLP:journals/joc/Schnorr91} is a \<open>\<Sigma>\<close>-protocol and then use it to construct a commitment scheme.
+text\<open>In this section we show the Schnoor protocol \<^cite>\<open>"DBLP:journals/joc/Schnorr91"\<close> is a \<open>\<Sigma>\<close>-protocol and then use it to construct a commitment scheme.
 The security statements for the resulting commitment scheme come for free from our general proof of the construction.\<close> 
 
 theory Schnorr_Sigma_Commit imports

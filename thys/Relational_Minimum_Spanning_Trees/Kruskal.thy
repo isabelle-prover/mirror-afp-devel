@@ -7,7 +7,7 @@ section \<open>Kruskal's Minimum Spanning Tree Algorithm\<close>
 
 text \<open>
 In this theory we prove total correctness of Kruskal's minimum spanning tree algorithm.
-The proof uses the following steps \cite{Guttmann2018c}.
+The proof uses the following steps \<^cite>\<open>"Guttmann2018c"\<close>.
 We first establish that the algorithm terminates and constructs a spanning tree.
 This is a constructive proof of the existence of a spanning tree; any spanning tree algorithm could be used for this.
 We then conclude that a minimum spanning tree exists.

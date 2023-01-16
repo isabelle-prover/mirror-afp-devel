@@ -32,7 +32,7 @@ $$\textstyle \delta_c = \log_2 {1 \over p_c}, \qquad
   \hbox{where}\enskip p_c = {w_c \over \sum_a w_a}.$$
 This number is generally not an integer, so we cannot use it directly.
 Nonetheless, the above criterion is a useful yardstick and paves the way for
-arithmetic coding \cite{rissanen-1976}, a generalization of the method
+arithmetic coding \<^cite>\<open>"rissanen-1976"\<close>, a generalization of the method
 presented here.
 
 \def\xabacabad{\xa\xb\xa\xc\xa\xb\xa\xd}%
@@ -103,7 +103,7 @@ $$\vcenter{\hbox{\includegraphics[scale=1.25]{tree-abc-non-full.pdf}}}
 subsection \<open>Huffman's Algorithm\<close>
 
 text \<open>
-David Huffman \cite{huffman-1952} discovered a simple algorithm for
+David Huffman \<^cite>\<open>"huffman-1952"\<close> discovered a simple algorithm for
 constructing an optimum code tree for specified symbol frequencies:
 Create a forest consisting of only leaf nodes, one for each symbol in the
 alphabet, taking the given symbol frequencies as initial weights for the nodes.
@@ -149,7 +149,7 @@ subsection \<open>The Textbook Proof\<close>
 text \<open>
 Why does the algorithm work? In his article, Huffman gave some motivation but
 no real proof. For a proof sketch, we turn to Donald Knuth
-\cite[p.~403--404]{knuth-1997}:
+\<^cite>\<open>\<open>p.~403--404\<close> in "knuth-1997"\<close>:
 
 \begin{quote}
 It is not hard to prove that this method does in fact minimize the weighted
@@ -178,7 +178,7 @@ assert the existence of an optimum tree that contains the subtree
 $$\vcenter{\hbox{\includegraphics[scale=1.25]{tree-w1-w2-leaves.pdf}}}$$
 Indeed, the formalization works without it.
 
-Cormen et al.\ \cite[p.~385--391]{cormen-et-al-2001} provide a very similar
+Cormen et al.\ \<^cite>\<open>\<open>p.~385--391\<close> in "cormen-et-al-2001"\<close> provide a very similar
 proof, articulated around the following propositions:
 
 \begin{quote}
@@ -211,16 +211,16 @@ subsection \<open>Overview of the Formalization\<close>
 
 text \<open>
 This document presents a formalization of the proof of Huffman's algorithm
-written using Isabelle/HOL \cite{nipkow-et-al-2008}. Our proof is based on the
+written using Isabelle/HOL \<^cite>\<open>"nipkow-et-al-2008"\<close>. Our proof is based on the
 informal proofs given by Knuth and Cormen et al. The development was done
-independently of Laurent Th\'ery's Coq proof \cite{thery-2003,thery-2004},
+independently of Laurent Th\'ery's Coq proof \<^cite>\<open>"thery-2003" and "thery-2004"\<close>,
 which through its ``cover'' concept represents a considerable departure from
 the textbook proof.
 
 The development consists of a little under 100 lemmas and theorems. Most of
 them have very short proofs thanks to the extensive use of simplification
 rules and custom induction rules. The remaining proofs are written using the
-structured proof format Isar \cite{wenzel-2008}.
+structured proof format Isar \<^cite>\<open>"wenzel-2008"\<close>.
 \<close>
 
 subsection \<open>Head of the Theory File\<close>
@@ -299,7 +299,7 @@ predicates involves introduction and elimination rules, which are more clumsy
 than simplification rules.
 
 \item Isabelle's counterexample generator \isakeyword{quickcheck}
-\cite{berghofer-nipkow-2004}, which we used extensively during the top-down
+\<^cite>\<open>"berghofer-nipkow-2004"\<close>, which we used extensively during the top-down
 development of the proof (together with \isakeyword{sorry}), has better support
 for recursive definitions.
 \end{myitemize}
@@ -336,7 +336,7 @@ subtrees are disjoint. Intuitively, this means that every symbol in the
 alphabet occurs in exactly one leaf node. Consistency is a sufficient condition
 for $\delta_a$ (the length of the {\sl unique\/} code word for $a$) to be
 defined. Although this well\-formed\-ness property is not mentioned in algorithms
-textbooks \cite{aho-et-al-1983,cormen-et-al-2001,knuth-1997}, it is essential
+textbooks \<^cite>\<open>"aho-et-al-1983" and "cormen-et-al-2001" and "knuth-1997"\<close>, it is essential
 and appears as an assumption in many of our lemmas.
 \<close>
 
@@ -418,7 +418,7 @@ rules. The resulting proof obligations concern (a)~case completeness,
 Isabelle's simplifier and classical reasoner, whereas (c) requires a single
 invocation of \textit{lexicographic\_order}, a tactic that was originally
 designed to prove termination of recursive functions
-\cite{bulwahn-et-al-2007,krauss-2007,krauss-2009}.
+\<^cite>\<open>"bulwahn-et-al-2007" and "krauss-2007" and "krauss-2009"\<close>.
 \<close>
 
 subsection \<open>Symbol Depths\<close>
@@ -647,7 +647,7 @@ primrec cost :: "'a tree \<Rightarrow> nat" where
 
 text \<open>
 One interpretation of this recursive law is that the cost of a tree is the sum
-of the weights of its inner nodes \cite[p.~405]{knuth-1997}. (Recall that
+of the weights of its inner nodes \<^cite>\<open>\<open>p.~405\<close> in "knuth-1997"\<close>. (Recall that
 $@{term "weight (Node w t\<^sub>1 t\<^sub>2)"} = @{term "weight t\<^sub>1 + weight t\<^sub>2"}$.) Since
 the cost of a tree is such a fundamental concept, it seems necessary to prove
 that the above function definition is correct.
@@ -896,7 +896,7 @@ quadratic, but with a larger constant. Using a binary search in @{const
 insortTree}, the corresponding imperative algorithm is $O(n \log n)$ if we keep
 the weight cache and $O(n^2)$ if we drop it. An $O(n)$ imperative implementation
 is possible by maintaining two queues, one containing the unprocessed leaf nodes
-and the other containing the combined trees \cite[p.~404]{knuth-1997}.
+and the other containing the combined trees \<^cite>\<open>\<open>p.~404\<close> in "knuth-1997"\<close>.
 
 The tree returned by the algorithm preserves the alphabet, consistency, and
 symbol frequencies of the original forest.
@@ -941,7 +941,7 @@ fun sibling :: "'a tree \<Rightarrow> 'a \<Rightarrow> 'a" where
 
 text \<open>
 Because @{const sibling} is defined using sequential pattern matching
-\cite{krauss-2007,krauss-2009}, reasoning about it can become tedious.
+\<^cite>\<open>"krauss-2007" and "krauss-2009"\<close>, reasoning about it can become tedious.
 Simplification rules therefore play an important role.
 \<close>
 
@@ -1543,7 +1543,7 @@ $$@{prop "swapFourSyms t a b c d = swapSyms (swapSyms t a c) b d"}.$$
 This definition fails in the face of aliasing: If $a = d$, but
 $b \ne c$, then \<open>swapFourSyms a b c d\<close> would leave $a$ in $b$'s
 position.%
-\footnote{Cormen et al.\ \cite[p.~390]{cormen-et-al-2001} forgot to consider
+\footnote{Cormen et al.\ \<^cite>\<open>\<open>p.~390\<close> in "cormen-et-al-2001"\<close> forgot to consider
 this case in their proof. Thomas Cormen indicated in a personal communication
 that this will be corrected in the next edition of the book.}
 \<close>
@@ -1830,7 +1830,7 @@ does not increase the weighted path length.
 \end{quote}
 
 \noindent
-Lemma~16.2 in Cormen et al.~\cite[p.~389]{cormen-et-al-2001} expresses a
+Lemma~16.2 in Cormen et al.~\<^cite>\<open>\<open>p.~389\<close> in "cormen-et-al-2001"\<close> expresses a
 similar property, which turns out to be a corollary of our cost property:
 
 \begin{quote}
@@ -1908,7 +1908,7 @@ has minimum path length for the weights $w_1 + w_2$, $w_3$, $\ldots\,$, $w_m$.
 
 \noindent
 We only need the ``if'' direction of Knuth's equivalence. Lemma~16.3 in
-Cormen et al.~\cite[p.~391]{cormen-et-al-2001} expresses essentially the same
+Cormen et al.~\<^cite>\<open>\<open>p.~391\<close> in "cormen-et-al-2001"\<close> expresses essentially the same
 property:
 
 \begin{quote}
@@ -2270,7 +2270,7 @@ So what have we achieved? Assuming that our definitions really mean what we
 intend them to mean, we established that our functional implementation of
 Huffman's algorithm, when invoked properly, constructs a binary tree that
 represents an optimal prefix code for the specified alphabet and frequencies.
-Using Isabelle's code generator \cite{haftmann-nipkow-2007}, we can convert the
+Using Isabelle's code generator \<^cite>\<open>"haftmann-nipkow-2007"\<close>, we can convert the
 Isabelle code into Standard ML, OCaml, or Haskell and use it in a real
 application.
 
@@ -2299,8 +2299,8 @@ $$\vcenter{\hbox{\includegraphics{tree-suboptimal.pdf}}}
 section \<open>Related Work \label{related-work}\<close>
 
 text \<open>
-Laurent Th\'ery's Coq formalization of Huffman's algorithm \cite{thery-2003,%
-thery-2004} is an obvious yardstick for our work. It has a somewhat wider
+Laurent Th\'ery's Coq formalization of Huffman's algorithm \<^cite>\<open>"thery-2003" and "%
+thery-2004"\<close> is an obvious yardstick for our work. It has a somewhat wider
 scope, proving among others the isomorphism between prefix codes and full binary
 trees. With 291 theorems, it is also much larger.
 
@@ -2371,7 +2371,7 @@ The main contribution of this document has been to demonstrate that the
 textbook proof of Huffman's algorithm can be elegantly formalized using
 a state-of-the-art theorem prover such as Isabelle/HOL. In the process, we
 uncovered a few minor snags in the proof given in Cormen et
-al.~\cite{cormen-et-al-2001}.
+al.~\<^cite>\<open>"cormen-et-al-2001"\<close>.
 
 We also found that custom induction rules, in combination with suitable
 simplification rules, greatly help the automatic proof tactics, sometimes

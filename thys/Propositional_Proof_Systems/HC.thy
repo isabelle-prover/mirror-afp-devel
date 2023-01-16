@@ -36,7 +36,7 @@ lemmas HC_intros[intro!] =
   AX0.intros[THEN AX10.intros(1), THEN HC.intros(1)]
   AX10.intros(2-)[THEN HC.intros(1)]
 
-text\<open>The first four axioms, as originally formulated by Hilbert~\cite{hilbert1928grundlagen}.\<close>
+text\<open>The first four axioms, as originally formulated by Hilbert~\<^cite>\<open>"hilbert1928grundlagen"\<close>.\<close>
 inductive_set AXH where
   "(F \<^bold>\<rightarrow> (G \<^bold>\<rightarrow> F)) \<in> AXH" |
   "(F \<^bold>\<rightarrow> (F \<^bold>\<rightarrow> G)) \<^bold>\<rightarrow> (F \<^bold>\<rightarrow> G) \<in> AXH" |

@@ -15,7 +15,7 @@ show that the algorithm's correctness still holds when imposing the same constra
 as in the computation locale.
 
 We use a preexisting theory of lazy list chains by Schlichtkrull, Blanchette,
-Traytel and Waldmann~\cite{Ordered_Resolution_Prover-AFP} to construct infinite traces.\<close>
+Traytel and Waldmann~\<^cite>\<open>"Ordered_Resolution_Prover-AFP"\<close> to construct infinite traces.\<close>
 
 primrec ltake where
   "ltake 0 t = []"

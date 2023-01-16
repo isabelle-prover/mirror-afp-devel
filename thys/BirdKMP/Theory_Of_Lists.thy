@@ -221,8 +221,7 @@ subsection\<open> Some of the usual operations \<close>
 
 text\<open>
 
-A variety of functions on lists. Drawn from @{cite [cite_macro=citet]
-"Bird:1987"}, @{theory \<open>HOL.List\<close>} and
+A variety of functions on lists. Drawn from \<^citet>\<open>"Bird:1987"\<close>, @{theory \<open>HOL.List\<close>} and
 @{theory \<open>HOLCF-Prelude.Data_List\<close>}. The definitions vary because,
 for instance, the strictness of some of those in
 @{theory \<open>HOLCF-Prelude.Data_List\<close>} correspond neither to those in
@@ -751,7 +750,7 @@ lemma sscanl_lfp_fusion:
   shows "smap\<cdot>g oo sscanl\<cdot>f\<cdot>z = sscanl\<cdot>f'\<cdot>(g\<cdot>z)"
 using assms by (clarsimp simp: cfun_eq_iff sscanl_lfp_fusion')
 
-lemma sscanl_ww_fusion': \<comment>\<open> Worker/wrapper @{cite [cite_macro=citep] "GillHutton:2009" and "Gammie:2011"} specialised to @{const \<open>sscanl\<close>} \<close>
+lemma sscanl_ww_fusion': \<comment>\<open> Worker/wrapper \<^citep>\<open>"GillHutton:2009" and "Gammie:2011"\<close> specialised to @{const \<open>sscanl\<close>} \<close>
   fixes wrap :: "'b \<rightarrow> 'a"
   fixes unwrap :: "'a \<rightarrow> 'b"
   fixes z :: "'a"
@@ -763,7 +762,7 @@ lemma sscanl_ww_fusion': \<comment>\<open> Worker/wrapper @{cite [cite_macro=cit
 using assms
 by (induct xs arbitrary: z) (simp add: cfun_eq_iff retraction_cfcomp_strict | metis)+
 
-lemma sscanl_ww_fusion: \<comment>\<open> Worker/wrapper @{cite [cite_macro=citep] "GillHutton:2009" and "Gammie:2011"} specialised to @{const \<open>sscanl\<close>} \<close>
+lemma sscanl_ww_fusion: \<comment>\<open> Worker/wrapper \<^citep>\<open>"GillHutton:2009" and "Gammie:2011"\<close> specialised to @{const \<open>sscanl\<close>} \<close>
   fixes wrap :: "'b \<rightarrow> 'a"
   fixes unwrap :: "'a \<rightarrow> 'b"
   fixes z :: "'a"
@@ -799,7 +798,7 @@ by (induct xs) simp_all
 lemma sinits_snoc[simp]: "sinits\<cdot>(xs :@ [:x:]) = sinits\<cdot>xs :@ [:xs :@ [:x:]:]"
 by (induct xs) simp_all
 
-lemma sinits_foldr': \<comment>\<open> @{cite [cite_macro=citet] \<open>p30\<close> "Bird:1987"} \<close>
+lemma sinits_foldr': \<comment>\<open> \<^citet>\<open>\<open>p30\<close> in "Bird:1987"\<close> \<close>
   shows "sinits\<cdot>xs = sfoldr\<cdot>(\<Lambda> x xs. [:[::]:] :@ smap\<cdot>(x :#)\<cdot>xs)\<cdot>[:[::]:]\<cdot>xs"
 by (induct xs) simp_all
 
@@ -807,7 +806,7 @@ lemma sinits_sscanl':
   shows "smap\<cdot>(sfoldl\<cdot>f\<cdot>z)\<cdot>(sinits\<cdot>xs) = sscanl\<cdot>f\<cdot>z\<cdot>xs"
 by (induct xs arbitrary: z) (simp_all cong: smap_cong add: oo_def eta_cfun)
 
-lemma sinits_sscanl: \<comment>\<open> @{cite [cite_macro=citet] \<open>Lemma~5\<close> "Bird:1987"}, @{cite [cite_macro=citet] \<open>p118 ``the scan lemma''\<close> "Bird:PearlsofFAD:2010"} \<close>
+lemma sinits_sscanl: \<comment>\<open> \<^citet>\<open>\<open>Lemma~5\<close> in "Bird:1987"\<close>, \<^citet>\<open>\<open>p118 ``the scan lemma''\<close> in "Bird:PearlsofFAD:2010"\<close> \<close>
   shows "smap\<cdot>(sfoldl\<cdot>f\<cdot>z) oo sinits = sscanl\<cdot>f\<cdot>z"
 by (simp add: sinits_sscanl' cfun_eq_iff)
 

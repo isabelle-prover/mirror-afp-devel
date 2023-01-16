@@ -15,8 +15,8 @@ subsection \<open>Closure Operators\<close>
 
 text \<open>Closure and coclosure operators in orders and complete lattices are defined in this section,
 and some basic properties are proved. Isabelle infers the appropriate types. Facts are 
-taken mainly from the Compendium of Continuous Lattices~\cite{GierzHKLMS80} and 
-Rosenthal's book on quantales~\cite{Rosenthal90}.\<close>
+taken mainly from the Compendium of Continuous Lattices~\<^cite>\<open>"GierzHKLMS80"\<close> and 
+Rosenthal's book on quantales~\<^cite>\<open>"Rosenthal90"\<close>.\<close>
 
 definition clop :: "('a::order \<Rightarrow> 'a) \<Rightarrow> bool" where
   "clop f = (id \<le> f \<and> mono f \<and> f \<circ> f \<le> f)"

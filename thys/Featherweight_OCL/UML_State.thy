@@ -135,8 +135,8 @@ $\inv_\sigma(\sigma)$ mentioned above that states the condition that
 there is a ``one-to-one'' correspondence between object
 representations and $\oid$'s: $\forall \mathit{oid} \in \dom\ap
 \sigma\spot oid = \HolOclOidOf\ap \drop{\sigma(\mathit{oid})}$.  This
-condition is also mentioned in~\cite[Annex A]{omg:ocl:2012} and goes
-back to \citet{richters:precise:2002}; however, we state this
+condition is also mentioned in~\<^cite>\<open>\<open>Annex A\<close> in "omg:ocl:2012"\<close> and goes
+back to \<^citet>\<open>"richters:precise:2002"\<close>; however, we state this
 condition as an invariant on states rather than a global axiom. It
 can, therefore, not be taken for granted that an $\oid$ makes sense
 both in pre- and post-states of OCL expressions.
@@ -156,7 +156,7 @@ with logical equality.\<close>
 
 text\<open>We turn now to the generic definition of referential equality on objects:
 Equality on objects in a state is reduced to equality on the
-references to these objects. As in HOL-OCL~\cite{brucker.ea:hol-ocl:2008,brucker.ea:hol-ocl-book:2006},
+references to these objects. As in HOL-OCL~\<^cite>\<open>"brucker.ea:hol-ocl:2008" and "brucker.ea:hol-ocl-book:2006"\<close>,
 we will store the reference of an object inside the object in a (ghost) field.
 By establishing certain invariants (``consistent state''), it can
 be assured that there is a ``one-to-one-correspondence'' of objects

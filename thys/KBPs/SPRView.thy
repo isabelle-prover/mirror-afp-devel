@@ -103,7 +103,7 @@ lemma (in Environment) spr_tLast[dest]:
 
 text\<open>
 
-\citet[Theorem~5]{Ron:1996} showed that it is not the case that
+\<^citet>\<open>\<open>Theorem~5\<close> in "Ron:1996"\<close> showed that it is not the case that
 finite-state implementations always exist with respect to the SPR
 view, and so we consider three special cases:
 \begin{itemize}

@@ -1,6 +1,6 @@
 section\<open>Tarski axioms\<close>
 
-text \<open>In this section we introduce axioms of Tarski \cite{tarski} trough a series of locales.\<close>
+text \<open>In this section we introduce axioms of Tarski \<^cite>\<open>"tarski"\<close> trough a series of locales.\<close>
 
 theory Tarski
 imports Main

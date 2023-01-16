@@ -14,7 +14,7 @@ text\<open>
 The section presents a variety of simple digraphs, such as the empty digraph \<open>0\<close>
 and a digraph with one object and one arrow \<open>1\<close>. All of the entities 
 presented in this section are generalizations of certain simple categories,
-whose definitions can be found in \cite{mac_lane_categories_2010}.
+whose definitions can be found in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 
@@ -25,7 +25,7 @@ subsection\<open>Empty digraph \<open>0\<close>\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition dg_0 :: V
   where "dg_0 = [0, 0, 0, 0]\<^sub>\<circ>"

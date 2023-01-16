@@ -21,7 +21,7 @@ of the undecidability of the Sepcial Halting Problem. There, we used the Turing 
 
 The machine @{term "tm_semi_id_gt0"} is identical to the machine {\em dither}, which is discussed
 in length together with the Turing Machine {\em copy} in the book
-by Boolos, Burgess, and Jeffrey~\cite{Boolos07}.
+by Boolos, Burgess, and Jeffrey~\<^cite>\<open>"Boolos07"\<close>.
 
 For backwards compatibility with the original AFP entry, we again present the formalization of
 the machines{\em dither} and {\em copy} here in this section.

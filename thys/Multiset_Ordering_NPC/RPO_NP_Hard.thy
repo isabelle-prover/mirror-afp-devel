@@ -1,7 +1,7 @@
 section \<open>Deciding RPO-constraints is NP-hard\<close>
 
 text \<open>We show that for a given an RPO it is NP-hard to decide whether two terms are in relation,
-  following a proof in \cite{RPO_NPC}.\<close>
+  following a proof in \<^cite>\<open>"RPO_NPC"\<close>.\<close>
 
 theory RPO_NP_Hard
   imports 

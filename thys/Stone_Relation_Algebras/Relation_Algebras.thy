@@ -7,22 +7,22 @@ section \<open>Relation Algebras\<close>
 
 text \<open>
 The main structures introduced in this theory are Stone relation algebras.
-They generalise Tarski's relation algebras \cite{Tarski1941} by weakening the Boolean algebra lattice structure to a Stone algebra.
+They generalise Tarski's relation algebras \<^cite>\<open>"Tarski1941"\<close> by weakening the Boolean algebra lattice structure to a Stone algebra.
 Our motivation is to generalise relation-algebraic methods from unweighted graphs to weighted graphs.
 Unlike unweighted graphs, weighted graphs do not form a Boolean algebra because there is no complement operation on the edge weights.
 However, edge weights form a Stone algebra, and matrices over edge weights (that is, weighted graphs) form a Stone relation algebra.
 
-The development in this theory is described in our papers \cite{Guttmann2016c,Guttmann2017b}.
+The development in this theory is described in our papers \<^cite>\<open>"Guttmann2016c" and "Guttmann2017b"\<close>.
 Our main application there is the verification of Prim's minimum spanning tree algorithm.
-Related work about fuzzy relations \cite{Goguen1967,Winter2001b}, Dedekind categories \cite{KawaharaFurusawa2001} and rough relations \cite{Comer1993,Pawlak1996} is also discussed in these papers.
+Related work about fuzzy relations \<^cite>\<open>"Goguen1967" and "Winter2001b"\<close>, Dedekind categories \<^cite>\<open>"KawaharaFurusawa2001"\<close> and rough relations \<^cite>\<open>"Comer1993" and "Pawlak1996"\<close> is also discussed in these papers.
 In particular, Stone relation algebras do not assume that the underlying lattice is complete or a Heyting algebra, and they do not assume that composition has residuals.
 
 We proceed in two steps.
-First, we study the positive fragment in the form of single-object bounded distributive allegories \cite{FreydScedrov1990}.
+First, we study the positive fragment in the form of single-object bounded distributive allegories \<^cite>\<open>"FreydScedrov1990"\<close>.
 Second, we extend these structures by a pseudocomplement operation with additional axioms to obtain Stone relation algebras.
 
 Tarski's relation algebras are then obtained by a simple extension that imposes a Boolean algebra.
-See, for example, \cite{BirdMoor1997,HirschHodkinson2002,Maddux1996,Maddux2006,Schmidt2011,SchmidtStroehlein1993} for further details about relations and relation algebras, and \cite{AndrekaMikulas2011,BredihinSchein1978} for algebras of relations with a smaller signature.
+See, for example, \<^cite>\<open>"BirdMoor1997" and "HirschHodkinson2002" and "Maddux1996" and "Maddux2006" and "Schmidt2011" and "SchmidtStroehlein1993"\<close> for further details about relations and relation algebras, and \<^cite>\<open>"AndrekaMikulas2011" and "BredihinSchein1978"\<close> for algebras of relations with a smaller signature.
 \<close>
 
 theory Relation_Algebras
@@ -70,8 +70,8 @@ abbreviation linear_order   :: "'a \<Rightarrow> bool" where "linear_order x   \
 end
 
 text \<open>
-We reuse the relation algebra axioms given in \cite{Maddux1996} except for one -- see lemma \<open>conv_complement_sub\<close> below -- which we replace with the Dedekind rule (or modular law) \<open>dedekind_1\<close>.
-The Dedekind rule or variants of it are known from \cite{BirdMoor1997,FreydScedrov1990,KawaharaFurusawaMori1999,SchmidtStroehlein1993}.
+We reuse the relation algebra axioms given in \<^cite>\<open>"Maddux1996"\<close> except for one -- see lemma \<open>conv_complement_sub\<close> below -- which we replace with the Dedekind rule (or modular law) \<open>dedekind_1\<close>.
+The Dedekind rule or variants of it are known from \<^cite>\<open>"BirdMoor1997" and "FreydScedrov1990" and "KawaharaFurusawaMori1999" and "SchmidtStroehlein1993"\<close>.
 We add \<open>comp_left_zero\<close>, which follows in relation algebras but not in the present setting.
 The main change is that only a bounded distributive lattice is required, not a Boolean algebra.
 \<close>
@@ -657,7 +657,7 @@ lemma vector_export_comp_unit:
   by (simp add: vector_export_comp)
 
 text \<open>
-We solve a few exercises from \cite{SchmidtStroehlein1993}.
+We solve a few exercises from \<^cite>\<open>"SchmidtStroehlein1993"\<close>.
 \<close>
 
 lemma ex231a [simp]:
@@ -704,7 +704,7 @@ next
 qed
 
 text \<open>
-The following result generalises \cite[Exercise 2]{Oliveira2009}.
+The following result generalises \<^cite>\<open>\<open>Exercise 2\<close> in "Oliveira2009"\<close>.
 It is used to show that the while-loop preserves injectivity of the constructed tree.
 \<close>
 

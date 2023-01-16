@@ -13,7 +13,7 @@ text \<open>
   Verification of Dijkstra's algorithm: function part.
 
   The algorithm is also verified by Nordhoff and Lammich in
-  \cite{Dijkstra_Shortest_Path-AFP}.
+  \<^cite>\<open>"Dijkstra_Shortest_Path-AFP"\<close>.
 \<close>
 
 subsection \<open>Graphs\<close>

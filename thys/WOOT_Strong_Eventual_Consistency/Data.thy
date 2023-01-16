@@ -80,8 +80,8 @@ text \<open>%
     receives the full insert message.}%
     \label{fig:session}%
   \end{figure}
-  Following the presentation by Oster et al.~\cite{oster2006data} we describe the WOOT framework as
-  an operation-based CRDT~\cite{shapiro2011conflict}.
+  Following the presentation by Oster et al.~\<^cite>\<open>"oster2006data"\<close> we describe the WOOT framework as
+  an operation-based CRDT~\<^cite>\<open>"shapiro2011conflict"\<close>.
 
   In WOOT, the shared data type is a string over an alphabet @{text "'\<Sigma>"}.
   Each peer starts with a prescribed initial state representing the empty string.
@@ -105,7 +105,7 @@ text \<open>%
   same or at a different peer (see Section~\ref{sec:integrate}).
 
   The interaction of the WOOT Framework can be visualized using a space-time
-  diagram~\cite{kshemkalyani2011distributed}.
+  diagram~\<^cite>\<open>"kshemkalyani2011distributed"\<close>.
   An example session between 3 peers is shown in Figure~\ref{fig:session}.
   Note that, each peer sees the edit operations in a different order.\<close>
 

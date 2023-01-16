@@ -32,16 +32,16 @@ text_raw \<open>%
 section \<open>Introduction\<close>
 
 text \<open>
-\CryptHOL{}~\cite{Basin2017, Lochbihler2016} is a framework for constructing rigorous game-based
-proofs using the proof assistant Isabelle/HOL~\cite{Nipkow2002}.
+\CryptHOL{}~\<^cite>\<open>"Basin2017" and "Lochbihler2016"\<close> is a framework for constructing rigorous game-based
+proofs using the proof assistant Isabelle/HOL~\<^cite>\<open>"Nipkow2002"\<close>.
 Games are expressed as probabilistic functional programs that are shallowly embedded in higher-order logic (HOL) using \CryptHOL{}'s combinators.
-The security statements, both concrete and asymptotic, are expressed as Isabelle/HOL theorem statements, and their proofs are written declaratively in Isabelle's proof language Isar~\cite{Wenzel1999}.
+The security statements, both concrete and asymptotic, are expressed as Isabelle/HOL theorem statements, and their proofs are written declaratively in Isabelle's proof language Isar~\<^cite>\<open>"Wenzel1999"\<close>.
 This way, Isabelle mechanically checks that all definitions and statements are type-correct and each proof step is a valid logical inference in HOL.
 This ensures that the resulting theorems are valid in higher-order logic.
 
 This tutorial explains the \CryptHOL{} essentials using a simple security proof.
-Our running example is a variant of the hashed ElGamal encryption scheme~\cite{Elgamal1985}.
-We formalize the scheme, the indistinguishability under chosen plaintext (IND-CPA) security property, the computational Diffie-Hellman (CDH) hardness assumption~\cite{Diffie1976}, and the security proof in the random oracle model.
+Our running example is a variant of the hashed ElGamal encryption scheme~\<^cite>\<open>"Elgamal1985"\<close>.
+We formalize the scheme, the indistinguishability under chosen plaintext (IND-CPA) security property, the computational Diffie-Hellman (CDH) hardness assumption~\<^cite>\<open>"Diffie1976"\<close>, and the security proof in the random oracle model.
 This illustrates how the following aspects of a cryptographic security proof are formalized using \CryptHOL{}:
 
 \begin{itemize}
@@ -60,16 +60,16 @@ This illustrates how the following aspects of a cryptographic security proof are
 
 This tutorial assumes that the reader knows the basics of Isabelle/HOL and game-based cryptography and wants to get hands-on experience with \CryptHOL{}.
 The semantics behind CryptHOL's embedding in higher-order logic and its soundness are not discussed;
-we refer the reader to the scientific articles for that~\cite{Basin2017, Lochbihler2016}.
-Shoup's tutorial~\cite{Shoup2004IACR} provides a good introduction to game-based proofs.
+we refer the reader to the scientific articles for that~\<^cite>\<open>"Basin2017" and "Lochbihler2016"\<close>.
+Shoup's tutorial~\<^cite>\<open>"Shoup2004IACR"\<close> provides a good introduction to game-based proofs.
 The following Isabelle features are frequently used in \CryptHOL{} formalizations; the tutorials are available from the Documentation panel in Isabelle/jEdit.
 \begin{itemize}
-\item Function definitions (tutorials @{doc "prog-prove"} and @{doc "functions"},~\cite{Krauss2009}) for games and reductions
-\item Locales (tutorial @{doc locales},~\cite{Ballarin2014}) to modularize the formalization
-\item The Transfer package~\cite{Huffman2013} for automating parametricity and representation independence proofs
+\item Function definitions (tutorials @{doc "prog-prove"} and @{doc "functions"},~\<^cite>\<open>"Krauss2009"\<close>) for games and reductions
+\item Locales (tutorial @{doc locales},~\<^cite>\<open>"Ballarin2014"\<close>) to modularize the formalization
+\item The Transfer package~\<^cite>\<open>"Huffman2013"\<close> for automating parametricity and representation independence proofs
 \end{itemize}
 
-This document is generated from a corresponding Isabelle theory file available online~\cite{Lochbihler2017b}.%
+This document is generated from a corresponding Isabelle theory file available online~\<^cite>\<open>"Lochbihler2017b"\<close>.%
 \footnote{%
   The tutorial has been added to the Archive of Formal Proofs after the release of Isabelle2018.
   Until the subsequent Isabelle release, the tutorial is only available in the development version at
@@ -89,14 +89,14 @@ the Isabelle/HOL and functional programming topics that are essential for formal
 subsection \<open>Getting started\<close>
 
 text \<open>
-\CryptHOL{} is available as part of the Archive of Formal Proofs~\cite{Lochbihler2017a}.
+\CryptHOL{} is available as part of the Archive of Formal Proofs~\<^cite>\<open>"Lochbihler2017a"\<close>.
 Cryptography formalizations based on \CryptHOL{} are arranged in Isabelle theory files that import the relevant libraries.
 \<close>
 
 subsection \<open>Getting started\<close>
 
 text \<open>
-\CryptHOL{} is available as part of the Archive of Formal Proofs~\cite{Lochbihler2017a}.
+\CryptHOL{} is available as part of the Archive of Formal Proofs~\<^cite>\<open>"Lochbihler2017a"\<close>.
 Cryptography formalizations based on \CryptHOL{} are arranged in Isabelle theory files that import the relevant libraries.
 \<close>
 
@@ -211,7 +211,7 @@ text \<open>
 The LCDH game itself is expressed as a function from the adversary @{term "\<A>"} to the subprobability distribution of the adversary winning.
 \CryptHOL{} provides operators to express these distributions as probabilistic programs and reason about them using program logics:
 \begin{itemize}
-\item The \<open>do\<close> notation desugars to monadic sequencing in the monad of subprobabilities~\cite{Wadler1989}.
+\item The \<open>do\<close> notation desugars to monadic sequencing in the monad of subprobabilities~\<^cite>\<open>"Wadler1989"\<close>.
   Intuitively, every line \<open>x \<leftarrow> p;\<close> samples an element @{term x} from the distribution @{term p}.
   The sampling is independent, unless the distribution @{term p} depends on previously sampled variables.
   At the end of the block, the @{term "return_spmf DUMMY"} returns whether the adversary has won the game.
@@ -365,7 +365,7 @@ begin
 
 text \<open>
 The three actual operations are generative probabilistic values (GPV) of type @{typ [source] "(_, 'query, 'response) gpv"}.
-A GPV is a probabilistic algorithm that has not yet been connected to its oracles; see the theoretical paper @{cite Basin2017} for details.
+A GPV is a probabilistic algorithm that has not yet been connected to its oracles; see the theoretical paper \<^cite>\<open>Basin2017\<close> for details.
 The interface to the oracle is abstracted in the two type parameters @{typ 'query} for queries and @{typ 'response} for responses.
 As before, we omit the specification of the functional behavior, namely that decrypting an encryption with a key pair returns the plaintext.
 \<close>
@@ -374,11 +374,11 @@ subsection \<open>Security notions with oracles: IND-CPA security \label{section
 
 text \<open>
 In general, there are several security notions for the same cryptographic concept.
-For encryption schemes, an indistinguishability notion of security~\cite{Goldwasser1982} is often used.
+For encryption schemes, an indistinguishability notion of security~\<^cite>\<open>"Goldwasser1982"\<close> is often used.
 We now formalize the notion indistinguishability under chosen plaintext attacks (IND-CPA) for public-key encryption schemes.
-Goldwasser et al.~\cite{Goldwasser1984} showed that IND-CPA is equivalent to semantic security.
+Goldwasser et al.~\<^cite>\<open>"Goldwasser1984"\<close> showed that IND-CPA is equivalent to semantic security.
 
-\begin{definition}[IND-CPA @{cite Shoup2004IACR}]
+\begin{definition}[IND-CPA \<^cite>\<open>Shoup2004IACR\<close>]
 Let @{term key_gen}, @{term encrypt} and @{term decrypt} denote a public-key encryption scheme.
 The IND-CPA game is a two-stage game between the \emph{adversary} and a \emph{challenger}:
 \begin{description}
@@ -470,7 +470,7 @@ text \<open>
 With all the above modelling definitions in place,
 we are now ready to explain how concrete cryptographic constructions are expressed in \CryptHOL.
 In general, a cryptographic construction builds a cryptographic concept from possibly several simpler cryptographic concepts.
-In the running example, the hashed ElGamal cipher~\cite{Elgamal1985} constructs a public-key encryption scheme from a finite cyclic group and a hash function.
+In the running example, the hashed ElGamal cipher~\<^cite>\<open>"Elgamal1985"\<close> constructs a public-key encryption scheme from a finite cyclic group and a hash function.
 Accordingly, the formalisation consists of three steps:
 
 \begin{enumerate}
@@ -775,8 +775,8 @@ instead of @{term "\<A>"}. The formal justification for this replacement happens
 \item Inlining the identity oracle transformer @{term id_oracle} does not change an adversary and can therefore be dropped.
 \end{enumerate}
 
-The first step is automated using Isabelle's Transfer package~\cite{Huffman2013},
-which is based on Mitchell's representation independence~\cite{Mitchell1986}.
+The first step is automated using Isabelle's Transfer package~\<^cite>\<open>"Huffman2013"\<close>,
+which is based on Mitchell's representation independence~\<^cite>\<open>"Mitchell1986"\<close>.
 The replacement is controlled by so-called transfer rules of the form @{term "R x y"} which
 indicates that @{term x} shall replace @{term y}; the correspondence relation @{term R} captures the 
 kind of replacement.
@@ -796,7 +796,7 @@ To capture the change, we define the correspondence relation @{term cr} on the s
 (As we are in the process of adding this state, this state is irrelevant and @{term cr} is therefore always true.
 We nevertheless have to make an explicit definition such that Isabelle does not automatically beta-reduce terms, which would confuse @{method transfer}.) 
 We then prove that it relates the initial states and that @{term cr} is a bisimulation relation
-for the two oracle transformers; see @{cite Basin2017} for details.
+for the two oracle transformers; see \<^cite>\<open>Basin2017\<close> for details.
 The bisimulation proof itself is automated, too: A bit of term rewriting (@{command "unfolding"}) 
 makes the two oracle transformers structurally identical except for the state update function.
 Having proved that the state update function @{term "\<lambda>_ \<sigma>. \<sigma>"} is a correct replacement for
@@ -884,7 +884,7 @@ text \<open>
 We also want to inline the key generation and encryption algorithms,
 push the @{term "TRY DUMMY ELSE DUMMY :: (_, _, _) gpv"} towards the assertion (which is possible because the adversary is lossless by assumption),
 and rearrange the samplings a bit.
-The latter is automated using \<open>monad_normalisation\<close>~\cite{Schneider2017}.%
+The latter is automated using \<open>monad_normalisation\<close>~\<^cite>\<open>"Schneider2017"\<close>.%
 \footnote{%
   The tool \<open>monad_normalisation\<close> augments Isabelle's simplifier with a normalization procedure for commutative monads based on higher-order ordered rewriting.
   It can also commute across control structures like \<open>if\<close> and \<open>case\<close>.
@@ -939,7 +939,7 @@ text\<open>\input{fig-5}\<close>
 subsection \<open>Capturing a failure event\<close>
 
 text \<open>
-Suppose that two games behave the same except when a so-called failure event occurs @{cite Shoup2004IACR}.
+Suppose that two games behave the same except when a so-called failure event occurs \<^cite>\<open>Shoup2004IACR\<close>.
 Then the chance of an adversary distinguishing the two games is bounded by the probability of the failure event.
 In other words, the simulation of the reduction is allowed to break if the failure event occurs.
 In the running example, such an argument is a key step to derive the bound on the adversary's advantage.
@@ -993,7 +993,7 @@ The @{thm [source] "fundamental_lemma"} bounds the absolute difference between t
 In the running example, we would like to avoid querying the random oracle when encrypting the chosen message.
 The next game @{term game\<^sub>2} is identical except that the call to the random oracle @{term ro.oracle} is replaced with sampling a random bitstring.%
 \footnote{%
-  In Shoup's terminology @{cite Shoup2004IACR}, such a step makes (a gnome sitting inside) the random oracle forgetting the query.
+  In Shoup's terminology \<^cite>\<open>Shoup2004IACR\<close>, such a step makes (a gnome sitting inside) the random oracle forgetting the query.
 }
 \<close>
 define game\<^sub>2 :: "nat \<Rightarrow> nat \<Rightarrow> (bool \<times> bool) spmf"
@@ -1318,7 +1318,7 @@ theorem asymptotic_security_elgamal:
   shows "negligible (\<lambda>\<eta>. ind_cpa.advantage \<eta> (ro.oracle \<eta>, ro.initial) (\<A> \<eta>))"
 text \<open>
 The proof is canonical, too:
-Using the lemmas about @{term negligible} and Eberl's library for asymptotic reasoning~\cite{Eberl2015},
+Using the lemmas about @{term negligible} and Eberl's library for asymptotic reasoning~\<^cite>\<open>"Eberl2015"\<close>,
 we transform the asymptotic statement into a concrete one and then simply use the concrete security statement.
 \<close>
 apply(rule negligible_mono[OF assms(1)])

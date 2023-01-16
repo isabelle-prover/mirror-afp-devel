@@ -12,7 +12,7 @@ begin
 
 text \<open>Action algebras have been defined and discussed in œ
 Pratt's paper on \emph{Action Logic and Pure
-Induction}~\cite{pratt90action}. They are expansions of Kleene
+Induction}~\<^cite>\<open>"pratt90action"\<close>. They are expansions of Kleene
 algebras by operations of left and right residuation. They are
 interesting, first because most models of Kleene algebras, e.g.
 relations, traces, paths and languages, possess the residuated

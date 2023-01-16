@@ -9,7 +9,7 @@ begin
 text \<open>
   Generation of fresh names in general can be thought of as picking a string that is not an element
   of a (finite) set of already existing names. For Isabelle, the \<^emph>\<open>Nominal\<close> framework
-  @{cite urban2008nominal and urban2013nominal} provides support for reasoning over fresh names, but
+  \<^cite>\<open>urban2008nominal and urban2013nominal\<close> provides support for reasoning over fresh names, but
   unfortunately, its definitions are not executable.
 
   Instead, I chose to model generation of fresh names as a monad based on @{type state}. With this,

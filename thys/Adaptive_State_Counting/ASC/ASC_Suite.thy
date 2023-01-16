@@ -177,8 +177,8 @@ subsection \<open> Function N \<close>
 text \<open>
 Function @{verbatim N} narrows the sets of reaction to the determinisitc state cover considered by 
 the adaptive state counting algorithm to contain only relevant sequences.
-It is the main refinement of the original formulation of the algorithm as given in @{cite "hierons"}.
-An example for the necessity for this refinement is given in @{cite "refinement"}.
+It is the main refinement of the original formulation of the algorithm as given in \<^cite>\<open>"hierons"\<close>.
+An example for the necessity for this refinement is given in \<^cite>\<open>"refinement"\<close>.
 \<close>
 
 fun N :: "('in \<times> 'out) list \<Rightarrow> ('in, 'out, 'state) FSM \<Rightarrow> 'in list set \<Rightarrow> ('in \<times> 'out) list set set" 

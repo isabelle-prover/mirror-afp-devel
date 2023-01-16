@@ -281,7 +281,7 @@ text\<open>The previous lemmas finish our original, direct relativization
 of the material involving the iterative proof (as appearing in \<^theory>\<open>ZF.Cardinal\<close>)
 of the Schröder-Bernstein theorem. Next, we formalize 
 Zermelo's proof that replaces the recursive construction by a fixed point
-represented as an intersection \cite[Exr. x4.27]{moschovakis1994notes}. This allows
+represented as an intersection \<^cite>\<open>\<open>Exr. x4.27\<close> in "moschovakis1994notes"\<close>. This allows
 to avoid at least one replacement assumption.\<close>
 
 lemma dedekind_zermelo:

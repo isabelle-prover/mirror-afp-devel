@@ -12,7 +12,7 @@ imports
 begin
 
 text\<open>
-  The Stern-Brocot tree is discussed at length by \citet[\S4.5]{GrahamKnuthPatashnik1994CM}.
+  The Stern-Brocot tree is discussed at length by \<^citet>\<open>\<open>\S4.5\<close> in "GrahamKnuthPatashnik1994CM"\<close>.
   In essence the tree enumerates the rational numbers in their lowest terms by constructing the
   \<open>mediant\<close> of two bounding fractions.
 \<close>
@@ -77,13 +77,13 @@ text\<open>
   \end{figure}
   
   Our ultimate goal is to show that the Stern-Brocot tree contains all rationals (in lowest terms),
-  and that each occurs exactly once in the tree. A proof is sketched in \citet[\S4.5]{GrahamKnuthPatashnik1994CM}.
+  and that each occurs exactly once in the tree. A proof is sketched in \<^citet>\<open>\<open>\S4.5\<close> in "GrahamKnuthPatashnik1994CM"\<close>.
 \<close>
 
 subsection \<open>Specification via a recursion equation\<close>
 
 text \<open>
-  \cite{Hinze2009JFP} derives the following recurrence relation for the Stern-Brocot tree. 
+  \<^cite>\<open>"Hinze2009JFP"\<close> derives the following recurrence relation for the Stern-Brocot tree. 
   We will show in \S\ref{section:eq:rec:iterative} that his derivation is sound with respect to the
   standard iterative definition of the tree shown above.
 \<close>
@@ -187,7 +187,7 @@ text \<open>
   Intuitively, the tree enjoys the \emph{binary search tree} ordering property when we map our
   pairs of naturals into rationals. This suffices to show that each rational appears at most once
   in the tree. To establish this seems to require more structure than is present in the recursion
-  equations, and so we follow \citet{BackhouseFerreira2008MPC} and \citet{Hinze2009JFP} by
+  equations, and so we follow \<^citet>\<open>"BackhouseFerreira2008MPC"\<close> and \<^citet>\<open>"Hinze2009JFP"\<close> by
   introducing another definition of the tree, which summarises the path to each node using a matrix.
 
   We then derive an iterative version and use invariant reasoning on that.
@@ -275,7 +275,7 @@ proof -
 qed
 
 text\<open>
-  The following are the key ordering properties derived by \citet{BackhouseFerreira2008MPC}.
+  The following are the key ordering properties derived by \<^citet>\<open>"BackhouseFerreira2008MPC"\<close>.
   They hinge on the matrices containing only natural numbers.
 \<close>
 
@@ -614,8 +614,8 @@ by(subst num_mod_den.code; simp; fail)+
 
 text\<open>
   The arithmetic transformations need the precondition that @{const den} contains only
-  positive numbers, no @{term "0 :: nat"}. \citet[p502]{Hinze2009JFP} gets a bit sloppy here; it is
-  not straightforward to adapt his lifting framework \cite{Hinze2010Lifting} to conditional equations.
+  positive numbers, no @{term "0 :: nat"}. \<^citet>\<open>\<open>p502\<close> in "Hinze2009JFP"\<close> gets a bit sloppy here; it is
+  not straightforward to adapt his lifting framework \<^cite>\<open>"Hinze2010Lifting"\<close> to conditional equations.
 \<close>
 
 lemma mod_tree_lemma1:
@@ -683,8 +683,8 @@ subsection\<open>Loopless linearisation of the Stern-Brocot tree.\<close>
 
 text \<open>
   This is a loopless linearisation of the Stern-Brocot tree that gives Stern's diatomic sequence,
-  which is also known as Dijkstra's fusc function \cite{Dijkstra1982EWD570,Dijkstra1982EWD578}.
-  Loopless \`a la \cite{Bird2006MPC} means that the first element of the stream can be computed in linear
+  which is also known as Dijkstra's fusc function \<^cite>\<open>"Dijkstra1982EWD570" and "Dijkstra1982EWD578"\<close>.
+  Loopless \`a la \<^cite>\<open>"Bird2006MPC"\<close> means that the first element of the stream can be computed in linear
   time and every further element in constant time.
 \<close>
 

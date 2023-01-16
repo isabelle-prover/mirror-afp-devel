@@ -147,7 +147,7 @@ text \<open> For the case of \<^file>\<open>../generated/c_ast.ML\<close>, it is
 mandatory to have a ``physical'' representation of the file in \<^dir>\<open>../generated\<close>:
 it could be generated ``on-the-fly'' with \<^theory_text>\<open>code_reflect\<close> and immediately
 loaded: Citadelle has an option to choose between the two
-tasks~\cite{DBLP:journals/afp/TuongW15}.\<^footnote>\<open>\<^url>\<open>https://gitlab.lisn.upsaclay.fr/frederictuong/isabelle_contrib/-/tree/master/Citadelle/src/compiler\<close>\<close>\<close>
+tasks~\<^cite>\<open>"DBLP:journals/afp/TuongW15"\<close>.\<^footnote>\<open>\<^url>\<open>https://gitlab.lisn.upsaclay.fr/frederictuong/isabelle_contrib/-/tree/master/Citadelle/src/compiler\<close>\<close>\<close>
 
 text \<open> After loading the AST, it is possible in Citadelle to do various meta-programming
 renaming, such as the one depicted in the next command. Actually, its content is explicitly included

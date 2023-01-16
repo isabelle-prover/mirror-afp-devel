@@ -19,7 +19,7 @@ text\<open>
 We use a generic DFS to construct the transitions and action function
 of the implementation of the JKBP. This theory is largely due to
 Stefan Berghofer and Alex Krauss
-\citep{DBLP:conf/tphol/BerghoferR09}. All proofs are elided as the
+\<^citep>\<open>"DBLP:conf/tphol/BerghoferR09"\<close>. All proofs are elided as the
 fine details of how we explore the state space are inessential to the
 synthesis algorithm.
 

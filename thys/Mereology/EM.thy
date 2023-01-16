@@ -7,7 +7,7 @@ begin
 (*>*)
 
 text \<open> Extensional mereology adds to ground mereology the axiom of strong supplementation.\footnote{
-See @{cite "simons_parts:_1987"} p. 29, @{cite "varzi_parts_1996"} p. 262 and @{cite "casati_parts_1999"} 
+See \<^cite>\<open>"simons_parts:_1987"\<close> p. 29, \<^cite>\<open>"varzi_parts_1996"\<close> p. 262 and \<^cite>\<open>"casati_parts_1999"\<close> 
 p. 39-40.} \<close>
 
 locale EM = M +
@@ -15,8 +15,8 @@ locale EM = M +
     "\<not> P x y \<Longrightarrow> (\<exists>z. P z x \<and> \<not> O z y)"
 begin
 
-text \<open> Strong supplementation entails weak supplementation.\footnote{See @{cite "simons_parts:_1987"}
-p. 29 and @{cite "casati_parts_1999"} p. 40.} \<close>
+text \<open> Strong supplementation entails weak supplementation.\footnote{See \<^cite>\<open>"simons_parts:_1987"\<close>
+p. 29 and \<^cite>\<open>"casati_parts_1999"\<close> p. 40.} \<close>
 
 lemma weak_supplementation: "PP x y \<Longrightarrow> (\<exists>z. P z y \<and> \<not> O z x)"
 proof -
@@ -27,7 +27,7 @@ qed
 
 end
 
-text \<open> So minimal mereology is a subtheory of extensional mereology.\footnote{@{cite "casati_parts_1999"} p. 40.} \<close>
+text \<open> So minimal mereology is a subtheory of extensional mereology.\footnote{\<^cite>\<open>"casati_parts_1999"\<close> p. 40.} \<close>
 
 sublocale EM \<subseteq> MM
 proof
@@ -35,8 +35,8 @@ proof
   show "PP y x \<Longrightarrow> \<exists>z. P z x \<and> \<not> O z y" using weak_supplementation.
 qed
 
-text \<open> Strong supplementation also entails the proper parts principle.\footnote{See @{cite "simons_parts:_1987"}
-pp. 28-9 and @{cite "varzi_parts_1996"} p. 263.} \<close>
+text \<open> Strong supplementation also entails the proper parts principle.\footnote{See \<^cite>\<open>"simons_parts:_1987"\<close>
+pp. 28-9 and \<^cite>\<open>"varzi_parts_1996"\<close> p. 263.} \<close>
 
 context EM
 begin
@@ -78,7 +78,7 @@ proof -
 qed
 
 text \<open> Which with antisymmetry entails the extensionality of proper parthood.\footnote{See
-@{cite "simons_parts:_1987"} p. 28, @{cite "varzi_parts_1996"} p. 263 and @{cite "casati_parts_1999"}
+\<^cite>\<open>"simons_parts:_1987"\<close> p. 28, \<^cite>\<open>"varzi_parts_1996"\<close> p. 263 and \<^cite>\<open>"casati_parts_1999"\<close>
 p. 40.} \<close>
 
 theorem proper_part_extensionality:
@@ -145,7 +145,7 @@ proof -
 qed
 
 text \<open> It also follows from strong supplementation that parthood is definable in terms of overlap.\footnote{
-See @{cite "parsons_many_2014"} p. 4.}  \<close>
+See \<^cite>\<open>"parsons_many_2014"\<close> p. 4.}  \<close>
 
 lemma part_overlap_eq: "P x y \<longleftrightarrow> (\<forall>z. O z x \<longrightarrow> O z y)"
 proof

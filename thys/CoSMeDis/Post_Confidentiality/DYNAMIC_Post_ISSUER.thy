@@ -29,11 +29,11 @@ and the \<^emph>\<open>last\<close> update \<^emph>\<open>before\<close> one of 
 (3) the public knowledge that what is being sent is always the last version (modeled as
 the correlation predicate)
 
-See \cite[Appendix C]{cosmedis-SandP2017} for more details. This is the dynamic-trigger
+See \<^cite>\<open>\<open>Appendix C\<close> in "cosmedis-SandP2017"\<close> for more details. This is the dynamic-trigger
 (i.e., trigger-incorporating inductive bound) version of the property proved in
 Section~\ref{sec:post-issuer}.
 For a discussion of this ``while-or-last-before'' style of formalizing bounds,
-see @{cite \<open>Section 3.4\<close> "cosmed-jar2018"} about the the corresponding property of CoSMed.
+see \<^cite>\<open>\<open>Section 3.4\<close> in "cosmed-jar2018"\<close> about the the corresponding property of CoSMed.
 \<close>
 
 context Post

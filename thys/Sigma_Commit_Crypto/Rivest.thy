@@ -1,7 +1,7 @@
 subsection\<open>Rivest Commitment Scheme\<close>
 
-text\<open>The Rivest commitment scheme was first introduced in \cite{rivest1999}. We note however the original
-scheme did not allow for perfect hiding. This was pointed out by Blundo and Masucci in \cite{DBLP:journals/dcc/BlundoMSW02}
+text\<open>The Rivest commitment scheme was first introduced in \<^cite>\<open>"rivest1999"\<close>. We note however the original
+scheme did not allow for perfect hiding. This was pointed out by Blundo and Masucci in \<^cite>\<open>"DBLP:journals/dcc/BlundoMSW02"\<close>
 who alightly ammended the commitment scheme so that is provided perfect hiding.
 
 The Rivest commitment scheme uses a trusted initialiser to provide correlated randomness to the two parties 

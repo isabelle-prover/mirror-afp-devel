@@ -10,7 +10,7 @@ begin
 subsection \<open>General properties of Mersenne numbers and Mersenne primes\<close>
 
 text \<open>
-  We mostly follow the proofs given on Wikipedia~\cite{wiki:mersenne,wiki:lucas_lehmer} in the
+  We mostly follow the proofs given on Wikipedia~\<^cite>\<open>"wiki:mersenne" and "wiki:lucas_lehmer"\<close> in the
   following sections.
 
   We first show some basic and theorems about Mersenne numbers and Mersenne primes in general,
@@ -768,11 +768,11 @@ text \<open>
   In this section, we will prove that the Lucas--Lehmer test is both a necessary and sufficient
   condition for the primality of a Mersenne number of the form $2^p - 1$ for an odd prime $p$.
   The proof that shall be given here is rather explicit and heavily draws from the Wikipedia
-  article on the Lucas--Lehmer test~\cite{wiki:lucas_lehmer}.
+  article on the Lucas--Lehmer test~\<^cite>\<open>"wiki:lucas_lehmer"\<close>.
 
   A shorter and more high-level proof of a more general statement can be obtained using more
   theory on finite fields (in particular the field $\text{GF}(q^2)$ (cf.\ e.\,g.\ 
-  Rödseth~\cite{roedseth94}).
+  Rödseth~\<^cite>\<open>"roedseth94"\<close>).
 \<close>
 
 definition lucas_lehmer_test where
@@ -781,8 +781,8 @@ definition lucas_lehmer_test where
 
 text \<open>
   We can now prove that any Mersenne number $2^p - 1$ for $p$ prime that passes the 
-  Lucas--Lehmer test is prime. We follow the simple argument given by Bruce~\cite{bruce93},
-  which is also given on Wikipedia~\cite{wiki:lucas_lehmer}.
+  Lucas--Lehmer test is prime. We follow the simple argument given by Bruce~\<^cite>\<open>"bruce93"\<close>,
+  which is also given on Wikipedia~\<^cite>\<open>"wiki:lucas_lehmer"\<close>.
 \<close>
 theorem lucas_lehmer_sufficient:
   assumes "prime p" "odd p"
@@ -948,8 +948,8 @@ qed
 
 text \<open>
   Next, we show that any Mersenne prime passes the Lucas--Lehmer test. We again follow the
-  rather explicit proof outlined on Wikipedia~\cite{wiki:lucas_lehmer}, which is a simplified
-  (but less general and less abstract) version of the proof by Rödseth~\cite{roedseth94}.
+  rather explicit proof outlined on Wikipedia~\<^cite>\<open>"wiki:lucas_lehmer"\<close>, which is a simplified
+  (but less general and less abstract) version of the proof by Rödseth~\<^cite>\<open>"roedseth94"\<close>.
 \<close>
 theorem (in mersenne_prime) lucas_lehmer_necessary:
   "(2 ^ p - 1) dvd gen_lucas_lehmer_sequence 4 (p - 2)"

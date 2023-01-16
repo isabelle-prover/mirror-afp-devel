@@ -80,7 +80,7 @@ subsection\<open>Transfer rules I: \<^const>\<open>lfp\<close> transfer\<close>
 
 
 text\<open>
-The following context contains code from \cite{immler_re_2019}.
+The following context contains code from \<^cite>\<open>"immler_re_2019"\<close>.
 \<close>
 
 context

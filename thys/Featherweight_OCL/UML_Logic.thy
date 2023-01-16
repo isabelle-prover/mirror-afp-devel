@@ -230,9 +230,9 @@ text\<open>
   \emph{logical equality} and written \inlineisar+_ \<triangleq> _+
   which is not present in the current standard but was discussed in
   prior texts on OCL like the Amsterdam
-  Manifesto~\cite{cook.ea::amsterdam:2002} and was identified as
+  Manifesto~\<^cite>\<open>"cook.ea::amsterdam:2002"\<close> and was identified as
   desirable extension of OCL in the Aachen
-  Meeting~\cite{brucker.ea:summary-aachen:2013} in the future 2.5 OCL
+  Meeting~\<^cite>\<open>"brucker.ea:summary-aachen:2013"\<close> in the future 2.5 OCL
   Standard. The purpose of strong equality is to define and reason
   over OCL. It is therefore a natural task in Featherweight OCL to
   formally investigate the somewhat quite complex relationship between

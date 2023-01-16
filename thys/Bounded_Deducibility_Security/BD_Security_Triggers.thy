@@ -6,7 +6,7 @@ begin
 
 subsection \<open>Trigger-preserving BD security\<close>
 
-text \<open>Section 3.3 of @{cite "cosmed-jar2018"} gives a recipe for incorporating declassification
+text \<open>Section 3.3 of \<^cite>\<open>"cosmed-jar2018"\<close> gives a recipe for incorporating declassification
 triggers into the bound, and discusses the question whether this is always possible without loss of
 generality, giving a partially positive answer:  the transformed security property is equivalent to
 a slightly strengthened version of the original one.\<close>
@@ -17,7 +17,7 @@ context Abstract_BD_Security
 begin
 
 text \<open>The strengthened variant of BD Security is called \<^emph>\<open>trigger-preserving\<close> in
-@{cite "cosmed-jar2018"}, because the difference to regular BD Security is that the (non-firing of
+\<^cite>\<open>"cosmed-jar2018"\<close>, because the difference to regular BD Security is that the (non-firing of
 the) declassification trigger in the original trace is preserved in alternative traces.\<close>
 
 definition secureTT :: bool where
@@ -94,7 +94,7 @@ lemma secureTT_iff_secure: "Prime.secureTT \<longleftrightarrow> Prime.secure"
   by (auto simp: list_all_iff)
 
 text \<open>The modified property is equivalent to trigger-preserving BD Security in the original setup
-@{cite \<open>Proposition 2\<close> "cosmed-jar2018"}.\<close>
+\<^cite>\<open>\<open>Proposition 2\<close> in "cosmed-jar2018"\<close>.\<close>
 
 lemma secureTT_iff_secure': "Orig.secureTT \<longleftrightarrow> Prime.secure"
 proof
@@ -126,7 +126,7 @@ next
 qed
 
 text \<open>The modified property also strengthens the regular notion of BD Security in the original
-setup @{cite \<open>Proposition 1\<close> "cosmed-jar2018"}.\<close>
+setup \<^cite>\<open>\<open>Proposition 1\<close> in "cosmed-jar2018"\<close>.\<close>
 
 lemma secure'_secure: "Prime.secure \<Longrightarrow> Orig.secure"
   using secureTT_iff_secure' Orig.secureTT_secure
@@ -138,7 +138,7 @@ subsubsection \<open>Reflexive-transitive closure of declassification bounds\<cl
 
 text \<open>Another property of trigger-preserving BD Security is that security w.r.t. an arbitrary bound
 \<^term>\<open>B\<close> is equivalent to security w.r.t. its reflexive-transitive closure \<^term>\<open>B\<^sup>*\<^sup>*\<close>
-@{cite \<open>Proposition 3\<close> "cosmed-jar2018"}.\<close>
+\<^cite>\<open>\<open>Proposition 3\<close> in "cosmed-jar2018"\<close>.\<close>
 
 locale Abstract_BD_Security_Transitive_Closure = Orig: Abstract_BD_Security
 begin

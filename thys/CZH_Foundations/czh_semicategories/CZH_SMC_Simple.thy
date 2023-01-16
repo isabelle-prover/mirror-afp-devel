@@ -17,7 +17,7 @@ The section presents a variety of simple semicategories, such as the empty
 semicategory \<open>0\<close> and a semicategory with one object and one arrow \<open>1\<close>.
 All of the entities presented in this section are generalizations of certain
 simple categories, whose definitions can be found 
-in \cite{mac_lane_categories_2010}.
+in \<^cite>\<open>"mac_lane_categories_2010"\<close>.
 \<close>
 
 
@@ -28,7 +28,7 @@ subsection\<open>Empty semicategory \<open>0\<close>\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter I-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter I-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition smc_0 :: "V"
   where "smc_0 = [0, 0, 0, 0, 0]\<^sub>\<circ>"

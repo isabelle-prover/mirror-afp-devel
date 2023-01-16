@@ -24,7 +24,7 @@ subsection \<open>A Discrete Variant of Heron's Algorithm\<close>
 
 text \<open>
   An algorithm for calculating the discrete square root, taken from 
-  Cohen~\cite{cohen2010algebraic}. This algorithm is essentially a discretised variant of
+  Cohen~\<^cite>\<open>"cohen2010algebraic"\<close>. This algorithm is essentially a discretised variant of
   Heron's method or Newton's method specialised to the square root function.
 \<close>
 
@@ -137,7 +137,7 @@ subsection \<open>Square Testing\<close>
 
 text \<open>
   Next, we implement an algorithm to determine whether a given natural number is a perfect square,
-  as described by Cohen~\cite{cohen2010algebraic}. Essentially, the number first determines whether
+  as described by Cohen~\<^cite>\<open>"cohen2010algebraic"\<close>. Essentially, the number first determines whether
   the number is a square. Essentially
 \<close>
 

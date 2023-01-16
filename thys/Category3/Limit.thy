@@ -3307,7 +3307,7 @@ begin
   text\<open>
     A category with equalizers has limits of shape @{term J} if it has products
     indexed by the set of arrows of @{term J} and the set of objects of @{term J}.
-    The proof is patterned after \cite{MacLane}, Theorem 2, page 109:
+    The proof is patterned after \<^cite>\<open>"MacLane"\<close>, Theorem 2, page 109:
     \begin{quotation}
        \noindent
        ``The limit of \<open>F: J \<rightarrow> C\<close> is the equalizer \<open>e\<close>

@@ -16,7 +16,7 @@ text \<open>We extend the distributed system locale presented
 earlier: Now we are given a trace t of the distributed system between
 two configurations, the initial and final configuartions of t. Our objective
 is to show that the Chandy--Lamport algorithm terminated successfully and
-exhibits the same properties as claimed in~\cite{chandy}. In the initial state
+exhibits the same properties as claimed in~\<^cite>\<open>"chandy"\<close>. In the initial state
 no snapshotting must have taken place yet, however the computation itself may
 have progressed arbitrarily far already.
 
@@ -498,7 +498,7 @@ of the Chandy-Lamport algorithm. We prove that the snapshot is
 consistent, i.e.\ there exists a permutation $t'$ of the trace $t$ and an intermediate
 configuration $c'$ of $t'$ such that the configuration recorded in the snapshot
 corresponds to the snapshot taken during execution of $t$, which is given as Theorem 1
-in~\cite{chandy}.\<close>
+in~\<^cite>\<open>"chandy"\<close>.\<close>
 
 lemma snapshot_stable_ver_2:
   shows "trace init t final \<Longrightarrow> has_snapshotted (S t i) p \<Longrightarrow> j \<ge> i \<Longrightarrow> has_snapshotted (S t j) p"
@@ -5215,7 +5215,7 @@ qed
 subsection \<open>Stable property detection\<close>
 
 text \<open>Finally, we show that the computed snapshot is indeed
-suitable for stable property detection, as claimed in~\cite{chandy}.\<close>
+suitable for stable property detection, as claimed in~\<^cite>\<open>"chandy"\<close>.\<close>
 
 definition stable where
   "stable p \<equiv> (\<forall>c. p c \<longrightarrow> (\<forall>t c'. trace c t c' \<longrightarrow> p c'))"

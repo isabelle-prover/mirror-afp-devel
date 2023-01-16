@@ -14,7 +14,7 @@ text\<open>
 This article provides a 
 formalization of the elementary theory of 1-categories without
 an additional structure. For further information see 
-chapter Introduction in \cite{milehins_category_2021}.
+chapter Introduction in \<^cite>\<open>"milehins_category_2021"\<close>.
 \<close>
 
 

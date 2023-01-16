@@ -14,7 +14,7 @@ text\<open>The Periodicity Lemma says that if a sufficiently long word has two p
 then the period can be refined to @{term "gcd p q"}. 
 The consequence is equivalent to the fact that the corresponding periodic roots commute. 
 ``Sufficiently long'' here means at least @{term "p + q - gcd p q"}.
-It is also known as the Fine and Wilf theorem due to its authors @{cite FineWilf}.\<close>
+It is also known as the Fine and Wilf theorem due to its authors \<^cite>\<open>FineWilf\<close>.\<close>
 
 text\<open>
 If we relax the requirement to @{term "p + q"}, then the claim becomes easy, and it is proved in theory @{theory Combinatorics_Words.CoWBasic} as @{term two_pers_root}: @{thm[names_long] two_pers_root[no_vars]}.

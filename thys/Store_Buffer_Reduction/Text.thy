@@ -958,7 +958,7 @@ the final configuration @{term c'} which is now also unsafe according to free fl
 
 section \<open>PIMP \label{sec:pimp}\<close>
 text \<open>
-PIMP is a parallel version of IMP\cite{Nipkow-FSTTCS-96}, a canonical WHILE-language. 
+PIMP is a parallel version of IMP\<^cite>\<open>"Nipkow-FSTTCS-96"\<close>, a canonical WHILE-language. 
 
 
 An expression @{term "e"} is either 

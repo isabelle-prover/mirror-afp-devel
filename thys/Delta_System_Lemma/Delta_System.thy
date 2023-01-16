@@ -12,9 +12,9 @@ non trivial version; others, for cardinals greater than \<^term>\<open>\<aleph>\
 some weak versions of the generalized continuum hypothesis for the
 cardinals involved.
 
-The proof is essentially the one in \cite[III.2.6]{kunen2011set} for the
+The proof is essentially the one in \<^cite>\<open>\<open>III.2.6\<close> in "kunen2011set"\<close> for the
 case  \<^term>\<open>\<aleph>\<^bsub>1\<^esub>\<close>; another similar presentation can be found in
-\cite[Chap.~16]{JW}.\<close>
+\<^cite>\<open>\<open>Chap.~16\<close> in "JW"\<close>.\<close>
 
 lemma delta_system_Aleph1:
   assumes "\<forall>A\<in>F. Finite(A)" "F \<approx> \<aleph>\<^bsub>1\<^esub>"

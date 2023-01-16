@@ -1,6 +1,6 @@
 subsection \<open>Noar Pinkas OT\<close>
 
-text\<open>Here we prove security for the Noar Pinkas OT from \cite{DBLP:conf/soda/NaorP01}.\<close>
+text\<open>Here we prove security for the Noar Pinkas OT from \<^cite>\<open>"DBLP:conf/soda/NaorP01"\<close>.\<close>
 
 theory Noar_Pinkas_OT imports
   Cyclic_Group_Ext 

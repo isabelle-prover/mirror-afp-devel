@@ -7,7 +7,7 @@ begin
 section \<open>Compositional Reasoning\<close>
 
 text \<open>This section formalizes the compositional unwinding method discussed in
-@{cite \<open>Section 5.2\<close> "cocon-CAV2014"}\<close>
+\<^cite>\<open>\<open>Section 5.2\<close> in "cocon-CAV2014"\<close>\<close>
 
 context BD_Security_IO begin
 

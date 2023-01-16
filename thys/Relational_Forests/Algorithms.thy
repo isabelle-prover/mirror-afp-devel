@@ -89,8 +89,8 @@ lemma spanning_forest_spanning_regular:
   by (smt (z3) assms cancel_separate_1 components_increasing dual_order.trans forest_components_star star_isotone spanning_forest_def)
 
 text \<open>
-We prove total correctness of Kruskal's spanning tree algorithm (ignoring edge weights) \cite{Kruskal1956}.
-The algorithm and proof are adapted from the AFP theory \<open>Relational_Minimum_Spanning_Trees.Kruskal\<close> to work in Stone-Kleene relation algebras \cite{Guttmann2017c,Guttmann2018c}.
+We prove total correctness of Kruskal's spanning tree algorithm (ignoring edge weights) \<^cite>\<open>"Kruskal1956"\<close>.
+The algorithm and proof are adapted from the AFP theory \<open>Relational_Minimum_Spanning_Trees.Kruskal\<close> to work in Stone-Kleene relation algebras \<^cite>\<open>"Guttmann2017c" and "Guttmann2018c"\<close>.
 \<close>
 
 lemma kruskal_vc_1:
@@ -297,7 +297,7 @@ subsection \<open>Breadth-first search\<close>
 
 text \<open>
 We prove total correctness of a simple breadth-first search algorithm.
-It is a variant of an algorithm discussed in \cite{Berghammer1999}.
+It is a variant of an algorithm discussed in \<^cite>\<open>"Berghammer1999"\<close>.
 \<close>
 
 theorem bfs_reachability:
@@ -516,8 +516,8 @@ qed
 subsection \<open>Extending partial orders to linear orders\<close>
 
 text \<open>
-We prove total correctness of Szpilrajn's algorithm \cite{Szpilrajn1930}.
-A partial-correctness proof using Prover9 is given in \cite{BerghammerStruth2010}.
+We prove total correctness of Szpilrajn's algorithm \<^cite>\<open>"Szpilrajn1930"\<close>.
+A partial-correctness proof using Prover9 is given in \<^cite>\<open>"BerghammerStruth2010"\<close>.
 \<close>
 
 theorem szpilrajn:

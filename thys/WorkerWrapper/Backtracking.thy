@@ -20,8 +20,8 @@ text\<open>
 
 To illustrate the utility of worker/wrapper fusion to programming
 language semantics, we consider here the first-order part of a
-higher-order backtracking language by \citet{DBLP:conf/icfp/WandV04};
-see also \citet{DBLP:journals/ngc/DanvyGR01}. We refer the reader to
+higher-order backtracking language by \<^citet>\<open>"DBLP:conf/icfp/WandV04"\<close>;
+see also \<^citet>\<open>"DBLP:journals/ngc/DanvyGR01"\<close>. We refer the reader to
 these papers for a broader motivation for these languages.
 
 As syntax is typically considered to be inductively generated, with
@@ -178,7 +178,7 @@ number into "the rest of the computation", and the other outright
 failure.
 
 In general we could work with an arbitrary observation type ala
-\citet{DBLP:conf/icalp/Reynolds74}, but for convenience we use the
+\<^citet>\<open>"DBLP:conf/icalp/Reynolds74"\<close>, but for convenience we use the
 clearly adequate concrete type @{typ "nat discr llist"}.
 
 \<close>
@@ -191,7 +191,7 @@ type_synonym K = "Success \<rightarrow> Failure \<rightarrow> Obs"
 text\<open>
 
 To ease our development we adopt what
-\citet[\S5]{DBLP:conf/icfp/WandV04} call a "failure computation"
+\<^citet>\<open>\<open>\S5\<close> in "DBLP:conf/icfp/WandV04"\<close> call a "failure computation"
 instead of a failure continuation, which would have the type @{typ
 "unit \<rightarrow> Obs"}.
 
@@ -345,8 +345,8 @@ text\<open>
 
 We now show how the monadic operations correspond by showing that
 @{term "SK"} witnesses a \emph{monad morphism}
-\citep[\S6]{wadler92:_comprehending_monads}. As required by
-\citet[Definition~2.1]{DBLP:journals/ngc/DanvyGR01}, the mapping needs
+\<^citep>\<open>\<open>\S6\<close> in "wadler92:_comprehending_monads"\<close>. As required by
+\<^citet>\<open>\<open>Definition~2.1\<close> in "DBLP:journals/ngc/DanvyGR01"\<close>, the mapping needs
 to hold for our specific operations in addition to the common monadic
 scaffolding.
 
@@ -414,16 +414,16 @@ theorem evalS_evalK:
 text\<open>
 
 This proof can be considered an instance of the approach of
-\citet{DBLP:journals/jfp/HuttonJG10}, which uses the worker/wrapper
+\<^citet>\<open>"DBLP:journals/jfp/HuttonJG10"\<close>, which uses the worker/wrapper
 machinery to relate two algebras.
 
 This result could be obtained by a structural induction over the
 syntax of the language. However our goal here is to show how such a
 transformation can be achieved by purely equational means; this has
 the advantange that our proof can be locally extended, e.g. to the
-full language of \citet{DBLP:journals/ngc/DanvyGR01} simply by proving
+full language of \<^citet>\<open>"DBLP:journals/ngc/DanvyGR01"\<close> simply by proving
 extra equations. In contrast the higher-order language of
-\citet{DBLP:conf/icfp/WandV04} is beyond the reach of this approach.
+\<^citet>\<open>"DBLP:conf/icfp/WandV04"\<close> is beyond the reach of this approach.
 
 \<close>
 (*<*)

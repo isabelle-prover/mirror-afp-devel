@@ -22,16 +22,16 @@ subsubsection\<open>Background\<close>
 text\<open>
 This section presents a reference manual for the sub-framework UD. 
 The UD can be used for the elimination of 
-\textit{sort constraints} (e.g., see \cite{altenkirch_constructive_2007})
+\textit{sort constraints} (e.g., see \<^cite>\<open>"altenkirch_constructive_2007"\<close>)
 and unoverloading of definitions in the object logic Isabelle/HOL of the 
 formal proof assistant Isabelle. 
 The UD evolved from the author's work on an extension of the 
 framework \textit{Types-To-Sets} 
 (see 
-\cite{blanchette_types_2016, kuncar_types_2019, immler_smooth_2019, immler_automation_2019},
+\<^cite>\<open>"blanchette_types_2016" and "kuncar_types_2019" and "immler_smooth_2019" and "immler_automation_2019"\<close>,
 for a description of the framework Types-To-Sets
-and \cite{milehins_extension_2021} for a description of the author's extension)
-and builds upon certain ideas expressed in \cite{kaufmann_mechanized_2010}.
+and \<^cite>\<open>"milehins_extension_2021"\<close> for a description of the author's extension)
+and builds upon certain ideas expressed in \<^cite>\<open>"kaufmann_mechanized_2010"\<close>.
 \<close>
 
 
@@ -44,7 +44,7 @@ elimination of sort constraints and unoverloading of definitions.
 Thus, the command @{command ud} allows for the synthesis
 of the convenience constants and theorems that are usually needed for the 
 application of the derivation step 2 of the original relativization algorithm
-of Types-To-Sets (see subsection 5.4 in \cite{blanchette_types_2016}). However, 
+of Types-To-Sets (see subsection 5.4 in \<^cite>\<open>"blanchette_types_2016"\<close>). However, 
 it is expected that the command can be useful for other purposes.
 \<close>
 
@@ -55,25 +55,25 @@ text\<open>
 The functionality provided by the command @{command ud} shares similarities
 with the functionality provided by the algorithms for the elimination of
 sort constraints and elimination of overloading that were 
-presented in \cite{kaufmann_mechanized_2010}
+presented in \<^cite>\<open>"kaufmann_mechanized_2010"\<close>
 and with the algorithm associated with the command 
 \mbox{\textbf{unoverload\_definition}} that was proposed
-in \cite{immler_automation_2019}. 
+in \<^cite>\<open>"immler_automation_2019"\<close>. 
 Nonetheless, technically, unlike \mbox{\textbf{unoverload\_definition}}, 
 the command @{command ud} does
 not require the additional axiom UO associated with Types-To-Sets for 
-its operation (see \cite{blanchette_types_2016}, 
-\cite{immler_automation_2019}), it uses 
-the \textit{definitional axioms} (e.g., see \cite{kaufmann_mechanized_2010})
+its operation (see \<^cite>\<open>"blanchette_types_2016"\<close>, 
+\<^cite>\<open>"immler_automation_2019"\<close>), it uses 
+the \textit{definitional axioms} (e.g., see \<^cite>\<open>"kaufmann_mechanized_2010"\<close>)
 instead of arbitrary theorems supplied by the user
 and it is independent of the infrastructure associated with
 the \textit{axiomatic type classes} 
-\cite{nipkow_type_1991,wenzel_type_1997,altenkirch_constructive_2007}.
+\<^cite>\<open>"nipkow_type_1991" and "wenzel_type_1997" and "altenkirch_constructive_2007"\<close>.
 
 It should also be mentioned that the Isabelle/ML code from the main 
 distribution of Isabelle was frequently reused during the 
 development of the UD. Lastly, it should be mentioned that the
-framework SpecCheck \cite{kappelmann_speccheck_2021} was used for unit 
+framework SpecCheck \<^cite>\<open>"kappelmann_speccheck_2021"\<close> was used for unit 
 testing the framework UD.
 \<close>
 
@@ -84,11 +84,11 @@ subsection\<open>Theory\label{sec:ud_theory}\<close>
 
 text\<open>
 The general references for this subsection are
-\cite{kaufmann_mechanized_2010} and \cite{yang_comprehending_2017}.
+\<^cite>\<open>"kaufmann_mechanized_2010"\<close> and \<^cite>\<open>"yang_comprehending_2017"\<close>.
 The command @{command ud} relies 
 on a restricted (non-recursive) variant of the 
 \textit{classical overloading elimination algorithm}
-that was originally proposed in \cite{kaufmann_mechanized_2010}.
+that was originally proposed in \<^cite>\<open>"kaufmann_mechanized_2010"\<close>.
 It is assumed that there exists 
 a variable $ud_{\mathsf{with}}$ that stores theorems of the 
 form $c_{\tau} = c_{\mathsf{with}}\ \bar{*}$, where $c_{\tau}$ and 
@@ -96,7 +96,7 @@ $c_{\mathsf{with}}$ are distinct \textit{constant-instances}
 and $\bar{*}$ is a finite sequence of \textit{uninterpreted constant-instances},
 such that, if $c_{\tau}$ depends on a type variable $\alpha_{\Upsilon}$, 
 with $\Upsilon$ being a \textit{type class} 
-\cite{nipkow_type_1991,wenzel_type_1997,altenkirch_constructive_2007}
+\<^cite>\<open>"nipkow_type_1991" and "wenzel_type_1997" and "altenkirch_constructive_2007"\<close>
 that depends on the overloaded 
 constants $\bar{*'}$, then $\bar{*}$ contains $\bar{*'}$ as a subsequence. 
 Lastly, the binary operation $\cup$ is defined in a manner such that 
@@ -155,7 +155,7 @@ In step 1, the previously established
 property $c_{\sigma} \leq c_{\tau}$ is used to create the 
 (extended variant of the) type substitution 
 map $\rho$ such that $\sigma = \rho \left( \tau \right)$ 
-(see \cite{kuncar_types_2015}) and perform the type
+(see \<^cite>\<open>"kuncar_types_2015"\<close>) and perform the type
 substitution in $c_{\tau}=\phi_{\tau}\left[\bar{*}\right]$ 
 to obtain $c_{\sigma}=\phi_{\sigma}\left[\bar{*}\right]$; 
 in step 2, the collection of theorems $ud_{\mathsf{with}}$ is unfolded,
@@ -167,7 +167,7 @@ variables that occur in it, replacing every uninterpreted constant-instance
 fresh term variable, and applying the abstraction until the resulting term 
 is closed: this term forms the right-hand side of a new definitional axiom 
 of a fresh constant $c_{\mathsf{with}}$ (if the conditions associated with 
-the definitional principles of Isabelle/HOL \cite{yang_comprehending_2017} 
+the definitional principles of Isabelle/HOL \<^cite>\<open>"yang_comprehending_2017"\<close> 
 are satisfied); step 4 is justified by the beta-contraction; 
 step 5 is a substitution of the uninterpreted constants $\bar{*} \cup \bar{*'}$;
 step 6 follows trivially from the results of the application of steps 2 and 5.
@@ -191,10 +191,10 @@ From the perspective of the relativization algorithm associated with
 Types-To-Sets this can be useful because there is no 
 guarantee that the automatically synthesized constants $c_{\mathsf{with}}$ 
 will possess desirable parametricity characteristics
-(e.g., see \cite{kuncar_types_2015} and \cite{immler_smooth_2019}).
+(e.g., see \<^cite>\<open>"kuncar_types_2015"\<close> and \<^cite>\<open>"immler_smooth_2019"\<close>).
 Unfortunately, the implemented algorithm still suffers from the fundamental 
-limitation that was already outlined in \cite{kaufmann_mechanized_2010}, 
-\cite{blanchette_types_2016} and \cite{kuncar_types_2019}: 
+limitation that was already outlined in \<^cite>\<open>"kaufmann_mechanized_2010"\<close>, 
+\<^cite>\<open>"blanchette_types_2016"\<close> and \<^cite>\<open>"kuncar_types_2019"\<close>: 
 it does not offer a solution for handling the 
 constants whose types contain occurrences of the type constructors whose 
 type definitions contain occurrences of unresolvable overloading.
@@ -227,7 +227,7 @@ The optional binding \<open>b\<close> is used for the specification
 of the names of the entities added by the command to the theory and the 
 optional argument \<open>mixfix\<close> is used for the specification 
 of the concrete inner syntax for the constant in the usual manner
-(e.g., see \cite{wenzel_isabelle/isar_2019-1}). 
+(e.g., see \<^cite>\<open>"wenzel_isabelle/isar_2019-1"\<close>). 
 If either \<open>b\<close> or \<open>mixfix\<close> are not specified by the user, then the command
 introduces sensible defaults. Following the specification of the 
 definition of the constant, an additional theorem that establishes
@@ -286,7 +286,7 @@ subsubsection\<open>Low-level overloading\<close>
 
 text\<open>
 The following example closely follows Example 5 in section 5.2. in 
-\cite{kaufmann_mechanized_2010}. 
+\<^cite>\<open>"kaufmann_mechanized_2010"\<close>. 
 \<close>
 
 consts pls :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
@@ -329,10 +329,10 @@ and
 \end{center}
 The definitions of the constants \<^const>\<open>pls_nat.with\<close> and 
 \<^const>\<open>pls_times.with\<close> are consistent with the ones suggested in
-\cite{kaufmann_mechanized_2010}. Nonetheless, of course, it is
+\<^cite>\<open>"kaufmann_mechanized_2010"\<close>. Nonetheless, of course, it is
 important to keep in mind that the command @{command ud}
 has a more restricted scope of applicability than the
-algorithm suggested in \cite{kaufmann_mechanized_2010}.
+algorithm suggested in \<^cite>\<open>"kaufmann_mechanized_2010"\<close>.
 \<close>
 
 text\<open>\newpage\<close>

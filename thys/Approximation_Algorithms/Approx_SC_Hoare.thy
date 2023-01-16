@@ -7,7 +7,7 @@ imports
 begin
 
 text \<open>This is a formalization of the set cover algorithm and proof
-in the book by Kleinberg and Tardos \cite{KleinbergT06}.\<close>
+in the book by Kleinberg and Tardos \<^cite>\<open>"KleinbergT06"\<close>.\<close>
 
 definition harm :: "nat \<Rightarrow> 'a :: real_normed_field" where
   "harm n = (\<Sum>k=1..n. inverse (of_nat k))"

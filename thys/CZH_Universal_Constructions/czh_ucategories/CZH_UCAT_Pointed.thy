@@ -21,7 +21,7 @@ pointed arrow is merely an arrow in \<open>Set\<close> from a singleton set to a
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition ntcf_paa :: "V \<Rightarrow> V \<Rightarrow> V \<Rightarrow> V"
   where "ntcf_paa \<aa> B b = [(\<lambda>a\<in>\<^sub>\<circ>set {\<aa>}. b), set {\<aa>}, B]\<^sub>\<circ>"
@@ -163,7 +163,7 @@ subsection\<open>Pointed natural transformation\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition ntcf_pointed :: "V \<Rightarrow> V \<Rightarrow> V"
   where "ntcf_pointed \<alpha> \<aa> =
@@ -421,7 +421,7 @@ subsection\<open>Inverse pointed natural transformation\<close>
 subsubsection\<open>Definition and elementary properties\<close>
 
 
-text\<open>See Chapter III-2 in \cite{mac_lane_categories_2010}.\<close>
+text\<open>See Chapter III-2 in \<^cite>\<open>"mac_lane_categories_2010"\<close>.\<close>
 
 definition ntcf_pointed_inv :: "V \<Rightarrow> V \<Rightarrow> V"
   where "ntcf_pointed_inv \<alpha> \<aa> =

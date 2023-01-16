@@ -14,7 +14,7 @@ begin
 text \<open>
 \null
 
-The definition of noninterference security for Communicating Sequential Processes given in \cite{R1}
+The definition of noninterference security for Communicating Sequential Processes given in \<^cite>\<open>"R1"\<close>
 requires to consider any possible future, i.e. any indefinitely long sequence of subsequent events
 and any indefinitely large set of refused events associated to that sequence, for each process
 trace. In order to render the verification of the security of a process more straightforward, there
@@ -28,14 +28,14 @@ holds, but also that a process is not secure by verifying that the condition fai
 This section provides a necessary and sufficient condition for CSP noninterference security, which
 indeed requires to just consider individual accepted and refused events and applies to the general
 case of a possibly intransitive policy. This condition follows Rushby's output consistency for
-deterministic state machines with outputs \cite{R4}, and has to be satisfied by a specific function
+deterministic state machines with outputs \<^cite>\<open>"R4"\<close>, and has to be satisfied by a specific function
 mapping security domains into equivalence relations over process traces. The definition of this
 function makes use of an intransitive purge function following Rushby's one; hence the name given to
 the condition, \emph{Ipurge Unwinding Theorem}.
 
-The contents of this paper are based on those of \cite{R1}. The salient points of definitions and
+The contents of this paper are based on those of \<^cite>\<open>"R1"\<close>. The salient points of definitions and
 proofs are commented; for additional information, cf. Isabelle documentation, particularly
-\cite{R5}, \cite{R6}, \cite{R7}, and \cite{R8}.
+\<^cite>\<open>"R5"\<close>, \<^cite>\<open>"R6"\<close>, \<^cite>\<open>"R7"\<close>, and \<^cite>\<open>"R8"\<close>.
 
 For the sake of brevity, given a function \<open>F\<close> of type
 \<open>'a\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>m \<Rightarrow> 'a\<^sub>m\<^sub>+\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>n \<Rightarrow> 'b\<close>, the explanatory text may discuss of \<open>F\<close>
@@ -48,7 +48,7 @@ matching pattern \<open>F a\<^sub>1 \<dots> a\<^sub>m\<close>.
 subsection "Propaedeutic definitions and lemmas"
 
 text \<open>
-The definition of CSP noninterference security formulated in \cite{R1} requires that some sets of
+The definition of CSP noninterference security formulated in \<^cite>\<open>"R1"\<close> requires that some sets of
 events be refusals, i.e. sets of refused events, for some traces. Therefore, a sufficient condition
 for security just involving individual refused events will require that some single events be
 refused, viz. form singleton refusals, after the occurrence of some traces. However, such a
@@ -72,12 +72,12 @@ condition, as will be done in the Ipurge Unwinding Theorem, does not give rise t
 limitation on the applicability of such a result.
 
 As for predicates \emph{view partition} and \emph{future consistent}, defined here below as well,
-they translate Rushby's predicates \emph{view-partitioned} and \emph{output consistent} \cite{R4},
+they translate Rushby's predicates \emph{view-partitioned} and \emph{output consistent} \<^cite>\<open>"R4"\<close>,
 applying to deterministic state machines with outputs, into Hoare's Communicating Sequential
-Processes model of computation \cite{R3}. The reason for the verbal difference between the active
+Processes model of computation \<^cite>\<open>"R3"\<close>. The reason for the verbal difference between the active
 form of predicate \emph{view partition} and the passive form of predicate \emph{view-partitioned} is
 that the implied subject of the former is a domain-relation map rather than a process, whose
-homologous in \cite{R4}, viz. a machine, is the implied subject of the latter predicate instead.
+homologous in \<^cite>\<open>"R4"\<close>, viz. a machine, is the implied subject of the latter predicate instead.
 
 More remarkably, the formal differences with respect to Rushby's original predicates are the
 following ones:
@@ -147,7 +147,7 @@ text \<open>
 \null
 
 Here below are some lemmas propaedeutic for the proof of the Ipurge Unwinding Theorem, just
-involving constants defined in \cite{R1}.
+involving constants defined in \<^cite>\<open>"R1"\<close>.
 
 \null
 \<close>
@@ -441,7 +441,7 @@ Functions \<open>sinks_aux\<close>, \<open>ipurge_tr_aux\<close>, and \<open>ipu
 are auxiliary versions of functions @{term sinks}, @{term ipurge_tr}, and @{term ipurge_ref} taking
 as input a set of domains rather than a single domain. As shown below, these functions are useful
 for the study of single domain ones, involved in the definition of CSP noninterference security
-\cite{R1}, since they distribute over list concatenation, while being susceptible to be expressed in
+\<^cite>\<open>"R1"\<close>, since they distribute over list concatenation, while being susceptible to be expressed in
 terms of the corresponding single domain functions in case the input set of domains is a singleton.
 
 A further function, \<open>unaffected_domains\<close>, takes as inputs a set of domains \<open>U\<close> and an
@@ -504,10 +504,10 @@ not allowed to affect \<open>u\<close>, as detected via function \<open>sources\
 
 \end{itemize}
 
-In other words, these functions follow Rushby's ones \emph{sources} and \emph{ipurge} \cite{R4},
-formalized in \cite{R1} as \<open>c_sources\<close> and \<open>c_ipurge\<close>. The only difference consists of
+In other words, these functions follow Rushby's ones \emph{sources} and \emph{ipurge} \<^cite>\<open>"R4"\<close>,
+formalized in \<^cite>\<open>"R1"\<close> as \<open>c_sources\<close> and \<open>c_ipurge\<close>. The only difference consists of
 dropping the implicit supposition that the noninterference policy be reflexive, as done in the
-definition of CPS noninterference security \cite{R1}. This goal is achieved by defining the output
+definition of CPS noninterference security \<^cite>\<open>"R1"\<close>. This goal is achieved by defining the output
 of function \<open>sources\<close>, when it is applied to the empty list, as being the empty set rather
 than the singleton comprised of the input domain.
 
@@ -1077,7 +1077,7 @@ text \<open>
 
 In what follows, it is proven by induction that the lists output by functions @{term ipurge_tr} and
 @{term ipurge_tr_rev}, as well as those output by @{term ipurge_tr_aux} and
-@{term ipurge_tr_rev_aux}, satisfy predicate @{term Interleaves} (cf. \cite{R2}), in correspondence
+@{term ipurge_tr_rev_aux}, satisfy predicate @{term Interleaves} (cf. \<^cite>\<open>"R2"\<close>), in correspondence
 with suitable input predicates expressed in terms of functions @{term sinks} and @{term sinks_aux},
 respectively. Then, some lemmas on the aforesaid functions are demonstrated without induction, using
 previous lemmas along with the properties of predicate @{term Interleaves}.
@@ -1292,14 +1292,14 @@ subsection "The Ipurge Unwinding Theorem: proof of condition sufficiency"
 
 text \<open>
 The Ipurge Unwinding Theorem, formalized in what follows as theorem \<open>ipurge_unwinding\<close>, states
-that a necessary and sufficient condition for the CSP noninterference security \cite{R1} of a
+that a necessary and sufficient condition for the CSP noninterference security \<^cite>\<open>"R1"\<close> of a
 process being refusals union closed is that domain-relation map @{term rel_ipurge} be weakly future
 consistent. Notwithstanding the equivalence of future consistency and weak future consistency for
 @{term rel_ipurge} (cf. above), expressing the theorem in terms of the latter reduces the range of
 the domains to be considered in order to prove or disprove the security of a process, and then is
 more convenient.
 
-According to the definition of CSP noninterference security formulated in \cite{R1}, a process is
+According to the definition of CSP noninterference security formulated in \<^cite>\<open>"R1"\<close>, a process is
 regarded as being secure just in case the occurrence of an event \emph{e} may only affect future
 events allowed to be affected by \emph{e}. Identifying security with the weak future consistency of
 @{term rel_ipurge} means reversing the view of the problem with respect to the direction of time. In

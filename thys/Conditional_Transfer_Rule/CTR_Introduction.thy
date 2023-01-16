@@ -15,7 +15,7 @@ subsection\<open>Background\<close>
 text\<open>
 The framework Conditional Transfer Rule (CTR) provides several experimental
 \textit{Isabelle/Isar} 
-\cite{wenzel_isabelle/isar_2001, wenzel_isabelle/isar_2019-1, bertot_isar_1999}
+\<^cite>\<open>"wenzel_isabelle/isar_2001" and "wenzel_isabelle/isar_2019-1" and "bertot_isar_1999"\<close>
 commands that are aimed at the automation of unoverloading
 of definitions and synthesis of conditional transfer rules 
 in the object logic Isabelle/HOL of the formal proof assistant Isabelle.

@@ -21,7 +21,7 @@ definition netFlow :: "'capacity"
   where "netFlow \<equiv> (\<Sum>e \<in> outgoing' k. f e) - (\<Sum>e \<in> incoming' k. f e)"
 
 text \<open>We can show that the net flow equals the value of the flow.
-  Note: Cormen et al.~\cite{CLRS09} present a whole page full of 
+  Note: Cormen et al.~\<^cite>\<open>"CLRS09"\<close> present a whole page full of 
   summation calculations for this proof, and our formal proof also 
   looks quite complicated.
 \<close>

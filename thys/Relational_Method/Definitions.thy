@@ -26,7 +26,7 @@ As Bertrand Russell says in the last pages of \emph{A History of Western Philoso
 feature of science is that "we can make successive approximations to the truth, in which each new
 stage results from an improvement, not a rejection, of what has gone before". When dealing with a
 formal verification method for information processing systems, such as Paulson's inductive method
-for the verification of cryptographic protocols (cf. @{cite "Paulson98"}, @{cite "Paulson20"}), a
+for the verification of cryptographic protocols (cf. \<^cite>\<open>"Paulson98"\<close>, \<^cite>\<open>"Paulson20"\<close>), a
 more modest goal for this iterative improvement process, yet of significant practical importance, is
 to streamline the definitions and proofs needed to model such a system and verify its properties.
 
@@ -166,7 +166,7 @@ this form, where @{term "s = s\<^sub>0"}, @{term "P = (\<lambda>s. X \<in> parts
 type @{text msg}, and @{text Q}, if present, puts some constraint on @{text X} or its components.
 \\Such a proof consists of two steps. First, lemma @{text "\<lbrakk>s \<turnstile> s'; P s'; \<not> P s[; Q]\<rbrakk> \<Longrightarrow> R s'"} is
 proven by simplification, using the definitions of protocol relations. Then, the target proposition
-is proven by applying rule @{text rtrancl_start} as a destruction rule (cf. @{cite "Paulson20"}) and
+is proven by applying rule @{text rtrancl_start} as a destruction rule (cf. \<^cite>\<open>"Paulson20"\<close>) and
 proving @{term "P s'"} by assumption, @{term "\<not> P s"} by simplification, and the residual subgoal
 by means of the previous lemma.
 
@@ -230,7 +230,7 @@ subsection "A sample protocol"
 text \<open>
 As previously mentioned, this paper tries the relational method, including message anonymity, by
 applying it to the verification of a sample authentication protocol in which Password Authenticated
-Connection Establishment (PACE) with Chip Authentication Mapping (cf. @{cite "ICAO15"}) is first
+Connection Establishment (PACE) with Chip Authentication Mapping (cf. \<^cite>\<open>"ICAO15"\<close>) is first
 used by an \emph{owner} to establish a secure channel with her own \emph{asset} and authenticate it,
 and then the owner sends a password (other than the PACE one) to the asset over that channel so as
 to authenticate herself. This enables to achieve a reliable mutual authentication even if the PACE
@@ -242,7 +242,7 @@ respectively.
 
 In more detail, this protocol provides for the following steps. In this list, messages are specified
 using the same syntax that will be adopted in the formal text (for further information about PACE
-with Chip Authentication Mapping, cf. @{cite "ICAO15"}).
+with Chip Authentication Mapping, cf. \<^cite>\<open>"ICAO15"\<close>).
 
   \<^enum> \emph{Asset n} $\rightarrow$ \emph{Owner n}:
 \\\hspace*{1em}@{text "Crypt (Auth_ShaKey n) (PriKey S)"}
@@ -440,7 +440,7 @@ anonymous.
     \<^enum> Theorem @{text auth_shakey_anonymous}: an asset-owner pair's PACE key is anonymous.
 
   \<^item> Section \ref{Possibility}, \emph{Possibility properties}, shows how possibility properties (cf.
-@{cite "Paulson98"}) can be proven by constructing sample protocol runs, either ordinary or attack
+\<^cite>\<open>"Paulson98"\<close>) can be proven by constructing sample protocol runs, either ordinary or attack
 ones. Two such properties are proven:
 
     \<^enum> Theorem @{text runs_unbounded}: for any possible protocol state @{text s} and any asset-owner
@@ -456,11 +456,11 @@ agents.
 given confidentiality, authenticity, or anonymity property are necessary for it to hold.
 
 For further information about the formal definitions and proofs contained in these sections, see
-Isabelle documentation, particularly @{cite "Paulson20"}, @{cite "Nipkow20"}, @{cite "Krauss20"},
-and @{cite "Nipkow11"}.
+Isabelle documentation, particularly \<^cite>\<open>"Paulson20"\<close>, \<^cite>\<open>"Nipkow20"\<close>, \<^cite>\<open>"Krauss20"\<close>,
+and \<^cite>\<open>"Nipkow11"\<close>.
 
 \textbf{Important note.} This sample protocol was already considered in a former paper of mine (cf.
-@{cite "Noce17"}). For any purpose, that paper should be regarded as being obsolete and superseded
+\<^cite>\<open>"Noce17"\<close>). For any purpose, that paper should be regarded as being obsolete and superseded
 by the present paper.
 \<close>
 

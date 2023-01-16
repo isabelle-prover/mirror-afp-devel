@@ -28,7 +28,7 @@ subsection \<open> FSMs as transition systems \<close>
 
 text \<open>
 We interpret FSMs as transition systems with a singleton initial state set, based on 
-@{cite "Transition_Systems_and_Automata-AFP"}. 
+\<^cite>\<open>"Transition_Systems_and_Automata-AFP"\<close>. 
 \<close>
                                    
 global_interpretation FSM : transition_system_initial
@@ -50,7 +50,7 @@ subsection \<open> Language \<close>
 
 text \<open>
 The following definitions establish basic notions for FSMs similarly to those of nondeterministic
-finite automata as defined in @{cite "Transition_Systems_and_Automata-AFP"}.
+finite automata as defined in \<^cite>\<open>"Transition_Systems_and_Automata-AFP"\<close>.
 
 In particular, the language of an FSM state are the IO-parts of the paths in the FSM enabled from
 that state.

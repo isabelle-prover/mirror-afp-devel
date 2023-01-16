@@ -11,8 +11,8 @@ begin
 
 text \<open>
   We formalize Banach-Steinhaus theorem as theorem @{text banach_steinhaus}. This theorem was 
-  originally proved in Banach-Steinhaus's paper~\cite{banach1927principe}. For the proof, we follow
-  Sokal's approach~\cite{sokal2011really}. Furthermore, we prove as a corollary a result about
+  originally proved in Banach-Steinhaus's paper~\<^cite>\<open>"banach1927principe"\<close>. For the proof, we follow
+  Sokal's approach~\<^cite>\<open>"sokal2011really"\<close>. Furthermore, we prove as a corollary a result about
   pointwise convergent sequences of bounded operators whose domain is a Banach space.
 \<close>
 

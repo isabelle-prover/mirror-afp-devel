@@ -51,7 +51,7 @@ begin
 text\<open>
   This theory provides the formalisations required for the transformation of UPF policies. 
   A typical usage scenario can be observed in the firewall case 
-  study~\cite{brucker.ea:formal-fw-testing:2014}.
+  study~\<^cite>\<open>"brucker.ea:formal-fw-testing:2014"\<close>.
 \<close>
   
 subsection\<open>Elementary Operators\<close>

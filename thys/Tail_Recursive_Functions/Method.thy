@@ -395,9 +395,9 @@ function \<open>f\<close>.
 
 In the continuation, the application of this method is illustrated by analyzing
 two case studies drawn from an exercise comprised in Isabelle online course
-material; see \cite{R5}. The salient points of definitions and proofs are
+material; see \<^cite>\<open>"R5"\<close>. The salient points of definitions and proofs are
 commented; for additional information see Isabelle documentation, particularly
-\cite{R1}, \cite{R2}, \cite{R3}, and \cite{R4}.
+\<^cite>\<open>"R1"\<close>, \<^cite>\<open>"R2"\<close>, \<^cite>\<open>"R3"\<close>, and \<^cite>\<open>"R4"\<close>.
 \<close>
 
 (*<*)

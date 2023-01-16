@@ -23,7 +23,7 @@ text \<open>This theory contains basic definition and results on algebraic numbe
   when executed on the rational numbers or on the reals or complex numbers, and that
   the GCD of a rational polynomial can be expressed via the GCD of integer polynomials.\<close>
 
-text \<open>Many results are taken from the textbook \cite[pages 317ff]{AlgNumbers}.\<close>
+text \<open>Many results are taken from the textbook \<^cite>\<open>\<open>pages 317ff\<close> in "AlgNumbers"\<close>.\<close>
 
 theory Algebraic_Numbers_Prelim
 imports

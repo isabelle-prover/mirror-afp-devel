@@ -12,8 +12,8 @@ text_raw \<open>\label{chapter:Userguide}\<close>
 
 text \<open>
   This user guide shows how to use and extend the lightweight containers framework (LC).
-  For a more theoretical discussion, see \cite{Lochbihler2013ITP}.
-  This user guide assumes that you are familiar with refinement in the code generator \cite{HaftmannBulwahn2013codetut,HaftmannKrausKuncarNipkow2013ITP}.
+  For a more theoretical discussion, see \<^cite>\<open>"Lochbihler2013ITP"\<close>.
+  This user guide assumes that you are familiar with refinement in the code generator \<^cite>\<open>"HaftmannBulwahn2013codetut" and "HaftmannKrausKuncarNipkow2013ITP"\<close>.
   The theory \<open>Containers_Userguide\<close> generates it; so if you want to experiment with the examples, you can find their source code there.
   Further examples can be found in the @{dir \<open>Examples\<close>} folder.
 \<close>
@@ -930,7 +930,7 @@ text \<open>
 
   \item \textbf{Define a heuristics for picking an implementation.}
     \\
-    See \cite{Lochbihler2013ITP} for an explanation.
+    See \<^cite>\<open>"Lochbihler2013ITP"\<close> for an explanation.
   \end{enumerate}
 \<close>
 

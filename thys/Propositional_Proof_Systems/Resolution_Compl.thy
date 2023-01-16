@@ -3,7 +3,7 @@ theory Resolution_Compl
 imports Resolution CNF_Sema
 begin
   
-text\<open>Completeness proof following Schöning~\cite{schoening1987logik}.\<close>
+text\<open>Completeness proof following Schöning~\<^cite>\<open>"schoening1987logik"\<close>.\<close>
 
 definition "make_lit v a \<equiv> case v of True \<Rightarrow> Pos a | False \<Rightarrow> Neg a"
 

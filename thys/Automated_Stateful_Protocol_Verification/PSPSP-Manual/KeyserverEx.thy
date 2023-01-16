@@ -11,7 +11,7 @@ text\<open>
   In this section, we briefly explain how to use Isabelle/PSPSP for proving the security of 
   protocols. As Isabelle/PSPSP is build on top of Isabelle/HOL, the overall user interface
   and the high-level language (called Isar) are inherited from Isabelle. We refer the reader
-  to \cite{nipkow2002isabelle} and the system manuals that are part of the Isabelle 
+  to \<^cite>\<open>"nipkow2002isabelle"\<close> and the system manuals that are part of the Isabelle 
   distribution. The latter are accessible within Isabelle/jEdit in the documentation pane 
   on the left-hand side of the main window . 
 \<close>
@@ -165,7 +165,7 @@ is checked by Isabelle's LCF-style kernel).\<close>
 text\<open>Moreover, we provide two alternative configuration, one using an approach called 
 ``normalization by evaluation'' (nbe) and one using Isabelle's code generator for direct code
 evaluation (eval). Please see \autoref{sec:reference} and Isabelle's code generator 
-manual~\cite{isabelle:codegen:2021} for details.\<close>
+manual~\<^cite>\<open>"isabelle:codegen:2021"\<close> for details.\<close>
 protocol_security_proof [nbe] ssp: Keyserver
 
 text\<open>While the stack of code that needs to be trusted for the normalization by evaluation is 
