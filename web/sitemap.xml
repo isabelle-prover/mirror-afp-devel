@@ -3,13 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>/</loc>
-    <lastmod>2023-01-09T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/</loc>
-    <lastmod>2023-01-09T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/bordg/</loc>
+    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/</loc>
-    <lastmod>2023-01-09T00:00:00+00:00</lastmod>
+    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/authors/mateo/</loc>
+    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/mathematics/</loc>
+    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/entries/StrictOmegaCategories.html</loc>
+    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>/topics/</loc>
+    <lastmod>2023-01-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/from/</loc>
     <lastmod>2023-01-09T00:00:00+00:00</lastmod>
@@ -18,9 +33,6 @@
     <lastmod>2023-01-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Synthetic_Completeness.html</loc>
-    <lastmod>2023-01-09T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/</loc>
     <lastmod>2023-01-09T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/authors/balbach/</loc>
@@ -72,9 +84,6 @@
     <lastmod>2022-12-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Birkhoff_Finite_Distributive_Lattices.html</loc>
-    <lastmod>2022-12-06T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/topics/mathematics/</loc>
     <lastmod>2022-12-06T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Boolos_Curious_Inference_Automated.html</loc>
@@ -1087,9 +1096,6 @@
   </url><url>
     <loc>/authors/nordhoff/</loc>
     <lastmod>2021-04-01T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>/authors/bordg/</loc>
-    <lastmod>2021-03-29T00:00:00+00:00</lastmod>
   </url><url>
     <loc>/entries/Grothendieck_Schemes.html</loc>
     <lastmod>2021-03-29T00:00:00+00:00</lastmod>
@@ -5866,6 +5872,8 @@
     <loc>/theories/stream-fusion/</loc>
   </url><url>
     <loc>/theories/stream_fusion_code/</loc>
+  </url><url>
+    <loc>/theories/strictomegacategories/</loc>
   </url><url>
     <loc>/theories/strong_security/</loc>
   </url><url>
