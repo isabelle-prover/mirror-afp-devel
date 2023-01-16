@@ -55,12 +55,12 @@ fun postprocess_parametricity b thm ctxt =
 (*post-processing of a relativization*)
 fun postprocess_relativization b mf thm ctxt = 
   let
-    
     val (_, rhst, _) = thm 
       |> Thm.concl_of
       |> HOLogic.dest_Trueprop 
       |> CTR_Conversions.dest_trt
-    val (rhst, ctxt') = Logic.unvarify_local_term ctxt rhst 
+    val (rhst, ctxt') = rhst
+      |> Logic.unvarify_local_term (Local_Theory.begin_nested ctxt |> snd)  
     val (absts, rhst) = rhst
       |> Term.strip_abs_eta (rhst |> strip_abs_vars |> length) 
     val argts = rhst
@@ -91,9 +91,15 @@ fun postprocess_relativization b mf thm ctxt =
     val _ = ow_def_thm 
       |> single
       |> (ow_def_thm |> Thm.derivation_name |> thm_printer lthy' true)
-    val thm = Thm.pure_unfold lthy' (ow_def_thm |> Thm.symmetric |> single) thm
+    val thm' = thm 
+      |> singleton (Proof_Context.export ctxt lthy')
+      |> Thm.pure_unfold lthy' (ow_def_thm |> Thm.symmetric |> single)
+    val lthy'' = Local_Theory.end_nested lthy'
+    val thm'' = singleton (Proof_Context.export lthy' lthy'') thm'
+    val ow_def_thm'' = singleton (Proof_Context.export lthy' lthy'') ow_def_thm
   in 
-    PPRelativization ((ow_def_thm, thm), postprocess_transfer_rule b thm lthy') 
+    ((ow_def_thm'', thm''), postprocess_transfer_rule b thm'' lthy'')
+    |> PPRelativization 
   end;
 
 (*post-processing of a failed attempt to perform relativization*)

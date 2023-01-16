@@ -104,22 +104,22 @@ fun mk_attr_string attrs =
     in "[" ^ attrsc ^ "]" end
 
 (*create a conclusion from a term represented by a string*)
-fun mk_is ctxt thm_in_name attrs_in = 
-  mk_etts_indent ctxt 2 ^ "is " ^ thm_in_name ^ mk_attr_string attrs_in
+fun mk_is ctxt thm_in_str attrs_in = 
+  mk_etts_indent ctxt 2 ^ "is " ^ thm_in_str ^ mk_attr_string attrs_in
 
 (*create conclusions*)
-fun mk_shows ctxt thm_in_name attrs_in conclcs = case conclcs of
+fun mk_shows ctxt thm_in_str attrs_in conclcs = case conclcs of
     [] => ""
   | conclcs => 
       mk_etts_indent ctxt 1 ^
       "shows " ^ 
       String.concatWith "\n" conclcs ^ "\n" ^
-      mk_is ctxt thm_in_name attrs_in;
+      mk_is ctxt thm_in_str attrs_in;
 
 (*create a preamble*)
-fun mk_preamble etts_thm_type thm_out_name attrs_out =
+fun mk_preamble etts_thm_type thm_out_str attrs_out =
   (string_of_etts_thm_type etts_thm_type) ^ " " ^ 
-  thm_out_name ^ 
+  thm_out_str ^ 
   mk_attr_string attrs_out ^ ":\n"
 
 
@@ -128,7 +128,7 @@ fun mk_preamble etts_thm_type thm_out_name attrs_out =
 (**** Conversion of theorems to strings for theory output ****)
 
 fun theorem_string_of_term 
-  ctxt etts_thm_type thm_out_name attrs_out thm_in_name attrs_in t =
+  ctxt etts_thm_type thm_out_str attrs_out thm_in_str attrs_in t =
   let
     val ctxt = mk_print_ctxt ctxt
     val t = t
@@ -142,8 +142,8 @@ fun theorem_string_of_term
       |> Logic.strip_imp_concl
       |> Logic.dest_conjunctions
       |> map (print_term ctxt) 
-      |> mk_shows ctxt thm_in_name attrs_in
-    val preamblec = mk_preamble etts_thm_type thm_out_name attrs_out
+      |> mk_shows ctxt thm_in_str attrs_in
+    val preamblec = mk_preamble etts_thm_type thm_out_str attrs_out
     val done = ".\n\n"
     val thmc = String.concatWith "" [preamblec, assmsc, conclc, done]
   in thmc end;

@@ -82,7 +82,7 @@ fun elim_assms assm_thms thm = fold (flip Thm.implies_elim) assm_thms thm;
 (*create a single theorem from a fact via Pure conjunction*)
 fun thm_of_fact ctxt thms =
   let
-    
+
     val ts = map Thm.full_prop_of thms    
 
     val (num_rep_prems, _) = num_rep_prem (op aconv) ts
@@ -152,14 +152,14 @@ fun thm_of_fact ctxt thms =
 in
 
 (*output to an active area*)
-fun active_output ctxt thm_out_name attrs_out thm_in_name attrs_in thms = 
+fun active_output ctxt thm_out_str attrs_out thm_in_str attrs_in thms = 
   let
     val (thms, ctxt') = Thm.unvarify_local_fact ctxt thms
     val thmc = thms
       |> thm_of_fact ctxt' 
       |> Thm.full_prop_of
       |> theorem_string_of_term 
-        ctxt tts_lemma thm_out_name attrs_out thm_in_name attrs_in
+        ctxt tts_lemma thm_out_str attrs_out thm_in_str attrs_in
   in (ctxt, thmc) end;
 
 end;
@@ -171,6 +171,9 @@ end;
 
 fun tts_lemmas ctxt tts_output_type thm_specs =
   let
+
+    fun process_thm_out_str c =
+      if Symbol_Pos.is_identifier c then c else quote c
 
     val 
       {
@@ -185,7 +188,7 @@ fun tts_lemmas ctxt tts_output_type thm_specs =
     val writer = ETTS_Writer.initialize 4
 
     fun folder
-      ((b, attrs_out), (thms, (thm_in_name, attrs_in))) (ctxt, thmcs, writer) =
+      ((b, attrs_out), (thms, (thm_in_str, attrs_in))) (ctxt, thmcs, writer) =
       let
       
         val ((out_thms, writer), ctxt) = 
@@ -209,9 +212,9 @@ fun tts_lemmas ctxt tts_output_type thm_specs =
           else 
             active_output 
               ctxt 
-              (Name_Space.base_name b) 
+              (b |> Name_Space.base_name |> process_thm_out_str) 
               attrs_out 
-              thm_in_name 
+              thm_in_str 
               attrs_in 
               out_thms
 
@@ -271,6 +274,19 @@ fun mk_thm_specs ctxt thm_specs_raw =
 
     (*auxiliary functions*)
 
+    fun process_thm_in_name c = 
+      let
+        val flag_identifier = c
+          |> Long_Name.explode
+          |> map Symbol_Pos.is_identifier
+          |> List.all I
+      in if flag_identifier then c else quote c end
+
+    (*based on Facts.string_of_ref from Facts.ML in src/Pure*)
+    fun process_thm_in_ref (Facts.Named ((name, _), sel)) = 
+        process_thm_in_name name ^ Facts.string_of_selection sel
+      | process_thm_in_ref (Facts.Fact _) = raise Fail "Illegal literal fact";
+
     fun binding_last c =
       let val binding_last_h = Long_Name.base_name #> Binding.qualified_name
       in if size c = 0 then Binding.empty else binding_last_h c end
@@ -292,7 +308,7 @@ fun mk_thm_specs ctxt thm_specs_raw =
       |> map (apsnd the_single)
       |> 
         (
-          Facts.ref_name 
+          Facts.string_of_ref
           #> binding_last 
           |> apdupl 
           |> apfst
@@ -322,7 +338,7 @@ fun mk_thm_specs ctxt thm_specs_raw =
           |> apfst
           |> map
         )
-      |> map (Facts.ref_name |> apfst |> apsnd |> apsnd)
+      |> map (process_thm_in_ref |> apfst |> apsnd |> apsnd)
 
   in thm_specs end;
 
