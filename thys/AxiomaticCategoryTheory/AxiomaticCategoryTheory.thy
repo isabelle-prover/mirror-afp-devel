@@ -15,7 +15,7 @@ begin
 section\<open>Introduction\<close>
 
   text\<open>This document provides a concise overview on the core results of our previous
-       work @{cite "C67,R58,C57"} on the exploration of axiom systems for category theory.
+       work @{cite "C67" and "R58" and "C57"} on the exploration of axiom systems for category theory.
        Extending the previous studies we
        include one further axiomatic theory in our experiments. This additional
        theory has been suggested by Mac Lane~@{cite "MacLane48"} in
