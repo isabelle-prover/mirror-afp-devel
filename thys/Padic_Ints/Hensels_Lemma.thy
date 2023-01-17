@@ -7,7 +7,7 @@ text\<open>
   The following proof of Hensel's Lemma is directly adapted from Keith Conrad's proof which is
   given in an online note \<^cite>\<open>"keithconrad"\<close>. The same note was used as the basis for a 
   formalization of Hensel's Lemma by Robert Lewis in the Lean proof assistant
-  \<^cite>\<open>"10.1145/3293880.3294089"\<close>.  \<close>
+  \<^cite>\<open>"Thi"\<close>.  \<close>
 (**************************************************************************************************)
 (**************************************************************************************************)
 section\<open>Auxiliary Lemmas for Hensel's Lemma\<close>

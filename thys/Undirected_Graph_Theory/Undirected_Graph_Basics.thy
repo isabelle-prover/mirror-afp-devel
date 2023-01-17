@@ -530,7 +530,7 @@ definition is_edge_between :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a edge
 "is_edge_between X Y e \<equiv> \<exists> x y. e = {x, y} \<and> x \<in> X \<and> y \<in> Y"
 
 text \<open>All edges between two sets of vertices, @{term X} and @{term Y}, in a graph, @{term G}. 
-Inspired by Szemeredi development \<^cite>\<open>"edmonds_szemeridis"\<close> and generalised here \<close>
+Inspired by Szemeredi development \<^cite>\<open>"edmonds_szemeredis"\<close> and generalised here \<close>
 
 definition all_edges_between :: "'a set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'a) set" where
 "all_edges_between X Y \<equiv> {(x, y) . x \<in> X \<and> y \<in> Y \<and> {x, y} \<in> E}"

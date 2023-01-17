@@ -45,7 +45,7 @@ begin
   
 text\<open>
   This theory contains those elementary transformation rules which are presented in the ICST 
-  2010 paper~\<^cite>\<open>"brucker.ea:firewall:2010"\<close>. They are not used elsewhere.
+  2010 paper~\<^cite>\<open>"brucker.ea:icst:2010"\<close>. They are not used elsewhere.
 \<close>
   
 lemma elem1:

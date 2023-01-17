@@ -213,7 +213,7 @@ declare opt_bst2.simps[simp del]
 
 abbreviation "min_wpl3 i j k \<equiv> min_wpl i (k-1) + min_wpl (k+1) j + w i j"
 
-text\<open>The correctness proof \<^cite>\<open>"Yao"\<close> is based on a general theory of `quatrilateral inequalities'
+text\<open>The correctness proof \<^cite>\<open>"Yao80"\<close> is based on a general theory of `quatrilateral inequalities'
 developed in locale QI that we now instantiate:\<close>
 
 interpretation QI
