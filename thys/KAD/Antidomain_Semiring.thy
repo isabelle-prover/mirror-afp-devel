@@ -97,7 +97,7 @@ proof -
     using a_add_idem am_add_op_def by auto
 qed
 
-text \<open>The distributivity laws remain to be proved; our proofs follow those of Maddux~\<^cite>\<open>"Maddux"\<close>.\<close>
+text \<open>The distributivity laws remain to be proved; our proofs follow those of Maddux~\<^cite>\<open>"maddux"\<close>.\<close>
 
 lemma prod_split [simp]: "ad x \<cdot> ad y \<oplus> ad x \<cdot> d y = ad x"
   using a_add_idem am_d_def am_add_op_def by auto

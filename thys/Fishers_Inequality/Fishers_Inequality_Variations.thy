@@ -81,7 +81,7 @@ lemma to_int_mod_ring_lift_01_eq:
 end
 
 subsection \<open>The Odd-town Problem\<close>
-text \<open> The odd-town problem \<^cite>\<open>"abaiLINEARALGEBRAMETHODS1988"\<close> is perhaps one of the most common 
+text \<open> The odd-town problem \<^cite>\<open>"babaiLINEARALGEBRAMETHODS1988"\<close> is perhaps one of the most common 
 introductory problems for applying the linear algebra bound method to a combinatorial problem. 
 In mathematical literature, it is considered simpler than Fisher's Inequality, however presents some 
 interesting challenges to formalisation. Most significantly, it considers the incidence matrix to have 

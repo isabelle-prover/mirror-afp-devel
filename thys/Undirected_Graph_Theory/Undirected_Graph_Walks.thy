@@ -4,7 +4,7 @@ begin
 section \<open>Walks, Paths and Cycles \<close>
 text \<open> The definition of walks, paths, cycles, and related concepts are foundations of graph theory,
 yet there can be some differences in literature between definitions. This formalisation draws inspiration 
-from Noschinski's Graph Library \<^cite>\<open>"noschinski2015"\<close>, however focuses on an undirected graph context
+from Noschinski's Graph Library \<^cite>\<open>"noschinski_2015"\<close>, however focuses on an undirected graph context
 compared to a directed graph context, and extends on some definitions, as required to formalise
 Balog Szemeredi Gowers theorem. \<close>
 

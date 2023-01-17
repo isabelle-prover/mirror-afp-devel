@@ -197,7 +197,7 @@ nitpick -- "no proof, no counterexample"
 *)
 
 text \<open>The next lemmas are axioms of Wagner's complete axiomatisation
-for omega-regular languages~\<^cite>\<open>"Wagner77omega"\<close>, but in a slightly
+for omega-regular languages~\<^cite>\<open>"wagner77omega"\<close>, but in a slightly
 different setting.\<close>
 
 lemma wagner_1 [simp]: "(x \<cdot> x\<^sup>\<star>)\<^sup>\<omega> = x\<^sup>\<omega>"
