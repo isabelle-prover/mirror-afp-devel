@@ -352,7 +352,7 @@ functionality that is approximately equivalent to the application of all
 steps of the RA and several additional steps of 
 pre-processing of the input and post-processing of the result
 (collectively referred to as the \textit{extended relativization algorithm} 
-or ERA). 
+or ERA).
 
 As part of our work on the ETTS, we have also designed 
 the auxiliary framework \textit{Conditional Transfer Rule} (CTR). 
@@ -362,7 +362,9 @@ synthesis of conditional transfer rules from definitions,
 respectively. Further information about this framework can be found in its
 reference manual \<^cite>\<open>"milehins_conditional_2021"\<close>.
 In this context, we also mention that both the CTR and the ETTS were tested 
-using the framework SpecCheck \<^cite>\<open>"kappelmann_speccheck_2021"\<close>.
+using the framework SpecCheck \<^cite>\<open>"kappelmann_speccheck_2021"\<close>.\footnote{
+Some of the elements of the content of the tests are based on the 
+elements of the content of \<^cite>\<open>"cain_nine_2019"\<close>.}
 
 The extension was designed under a policy of non-intervention with the  
 existing implementation of the framework Types-To-Sets. Therefore, it does

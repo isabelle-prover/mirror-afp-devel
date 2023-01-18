@@ -68,7 +68,7 @@ subsection\<open>\<open>tts_algorithm\<close>\<close>
 
 text\<open>
 Some of the elements of the content of this section are based on the 
-elements of the content of \cite{cain_nine_2019}. 
+elements of the content of \<^cite>\<open>"cain_nine_2019"\<close>. 
 \<close>
 
 (*the following theorem is restated for forward compatibility*)
